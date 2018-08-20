@@ -17,7 +17,7 @@ pragma solidity ^0.4.11;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 library SafeMath {
@@ -28,37 +28,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -157,7 +157,7 @@ contract Burnable is Controlled {
   ///  a function with this modifier, also the burner can call but also the
   /// target of the function must be the burner
   modifier onlyControllerOrBurner(address target) {
-    assert(msg.sender == controller || (msg.sender == burner &amp;&amp; msg.sender == target));
+    assert(msg.sender == controller || (msg.sender == burner && msg.sender == target));
     _;
   }
 
@@ -178,10 +178,10 @@ contract Burnable is Controlled {
 
 contract MiniMeTokenI is ERC20Token, Burnable {
 
-      string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+      string public name;                //The Token's name: e.g. DigixDAO Tokens
       uint8 public decimals;             //Number of decimals of the smallest unit
       string public symbol;              //An identifier: e.g. REP
-      string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+      string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 ///////////////////
 // ERC20 Methods
@@ -326,9 +326,9 @@ contract Contribution is Controlled, TokenController, Finalizable {
   }
 
   modifier contributionOpen() {
-    assert(getBlockNumber() &gt;= startBlock &amp;&amp;
-            getBlockNumber() &lt;= endBlock &amp;&amp;
-            finalizedBlock == 0 &amp;&amp;
+    assert(getBlockNumber() >= startBlock &&
+            getBlockNumber() <= endBlock &&
+            finalizedBlock == 0 &&
             address(msp) != 0x0);
     _;
   }
@@ -387,11 +387,11 @@ contract Contribution is Controlled, TokenController, Finalizable {
     require(_mspController != 0x0);
     mspController = _mspController;
 
-    require(_exchangeRate &gt; 0);
+    require(_exchangeRate > 0);
     exchangeRate = _exchangeRate;
 
-    assert(_startBlock &gt;= getBlockNumber());
-    require(_startBlock &lt; _endBlock);
+    assert(_startBlock >= getBlockNumber());
+    require(_startBlock < _endBlock);
     startBlock = _startBlock;
     endBlock = _endBlock;
 
@@ -412,7 +412,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
 
     initializedBlock = getBlockNumber();
     // SIT amount should be no more than 20% of MSP total supply cap
-    assert(sit.totalSupplyAt(initializedBlock) * 5 &lt;= _totalSupplyCap);
+    assert(sit.totalSupplyAt(initializedBlock) * 5 <= _totalSupplyCap);
     totalSupplyCap = _totalSupplyCap;
 
     // We are going to sale 70% of total supply cap
@@ -430,7 +430,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
   function setExchangeRate(
       uint _exchangeRate
   ) public onlyController {
-    assert(getBlockNumber() &lt; startBlock);
+    assert(getBlockNumber() < startBlock);
     exchangeRate = _exchangeRate;
   }
 
@@ -464,7 +464,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
   }
 
   function doBuy(address _th) internal {
-    require(msg.value &gt;= minimum_investment);
+    require(msg.value >= minimum_investment);
 
     // Antispam mechanism
     address caller;
@@ -479,19 +479,19 @@ contract Contribution is Controlled, TokenController, Finalizable {
 
     uint256 toFund = msg.value;
     uint256 leftForSale = tokensForSale();
-    if (toFund &gt; 0) {
-      if (leftForSale &gt; 0) {
+    if (toFund > 0) {
+      if (leftForSale > 0) {
         uint256 tokensGenerated = toFund.mul(exchangeRate);
 
         // Check total supply cap reached, sell the all remaining tokens
-        if (tokensGenerated &gt; leftForSale) {
+        if (tokensGenerated > leftForSale) {
           tokensGenerated = leftForSale;
           toFund = leftForSale.div(exchangeRate);
         }
 
         assert(msp.generateTokens(_th, tokensGenerated));
         totalSold = totalSold.add(tokensGenerated);
-        if (totalSold &gt;= minimum_goal) {
+        if (totalSold >= minimum_goal) {
           goalMet = true;
         }
         destEthDevs.transfer(toFund);
@@ -502,7 +502,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
     }
 
     uint256 toReturn = msg.value.sub(toFund);
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       // If the call comes from the Token controller,
       // then we return it to the token Holder.
       // Otherwise we return to the sender.
@@ -523,7 +523,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
     assembly {
       size := extcodesize(_addr)
     }
-    return (size &gt; 0);
+    return (size > 0);
   }
 
   function refund() public {
@@ -531,7 +531,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
     require(!goalMet);
 
     uint256 amountTokens = msp.balanceOf(msg.sender);
-    require(amountTokens &gt; 0);
+    require(amountTokens > 0);
     uint256 amountEther = amountTokens.div(exchangeRate);
     address th = msg.sender;
 
@@ -548,8 +548,8 @@ contract Contribution is Controlled, TokenController, Finalizable {
   ///  by creating the remaining tokens and transferring the controller to the configured
   ///  controller.
   function finalize() public initialized {
-    assert(getBlockNumber() &gt;= startBlock);
-    assert(msg.sender == controller || getBlockNumber() &gt; endBlock || tokensForSale() == 0);
+    assert(getBlockNumber() >= startBlock);
+    assert(msg.sender == controller || getBlockNumber() > endBlock || tokensForSale() == 0);
     require(finalizedBlock == 0);
 
     finalizedBlock = getBlockNumber();
@@ -592,7 +592,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
 
   /// @return Total tokens availale for the sale in weis.
   function tokensForSale() public constant returns(uint256) {
-    return totalSaleSupplyCap &gt; totalSold ? totalSaleSupplyCap - totalSold : 0;
+    return totalSaleSupplyCap > totalSold ? totalSaleSupplyCap - totalSold : 0;
   }
 
 
@@ -656,7 +656,7 @@ contract Contribution is Controlled, TokenController, Finalizable {
 contract SITExchanger is Controlled, TokenController {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) public collected;
+  mapping (address => uint256) public collected;
   uint256 public totalCollected;
   MiniMeTokenI public sit;
   MiniMeTokenI public msp;
@@ -672,7 +672,7 @@ contract SITExchanger is Controlled, TokenController {
   ///  corresponding MSPs
   function collect() public {
     // SIT sholder could collect MSP right after contribution started
-    assert(getBlockNumber() &gt; contribution.startBlock());
+    assert(getBlockNumber() > contribution.startBlock());
 
     // Get current MSP ballance
     uint256 balance = sit.balanceOfAt(msg.sender, contribution.initializedBlock());
@@ -680,7 +680,7 @@ contract SITExchanger is Controlled, TokenController {
     // And then subtract the amount already collected
     uint256 amount = balance.sub(collected[msg.sender]);
 
-    require(amount &gt; 0);  // Notify the user that there are no tokens to exchange
+    require(amount > 0);  // Notify the user that there are no tokens to exchange
 
     totalCollected = totalCollected.add(amount);
     collected[msg.sender] = collected[msg.sender].add(amount);

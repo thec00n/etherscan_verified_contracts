@@ -20,7 +20,7 @@ pragma solidity ^0.4.18;
  * schools, and other community members about the application of blockchain
  * technology. For further information: modular.network
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -80,17 +80,17 @@ library DirectCrowdsaleLib {
   	require(self.base.validPurchase());
 
   	// if the token price increase interval has passed, update the current day and change the token price
-  	if ((self.base.milestoneTimes.length &gt; self.base.currentMilestone + 1) &amp;&amp;
-        (now &gt; self.base.milestoneTimes[self.base.currentMilestone + 1]))
+  	if ((self.base.milestoneTimes.length > self.base.currentMilestone + 1) &&
+        (now > self.base.milestoneTimes[self.base.currentMilestone + 1]))
     {
-        while((self.base.milestoneTimes.length &gt; self.base.currentMilestone + 1) &amp;&amp;
-              (now &gt; self.base.milestoneTimes[self.base.currentMilestone + 1]))
+        while((self.base.milestoneTimes.length > self.base.currentMilestone + 1) &&
+              (now > self.base.milestoneTimes[self.base.currentMilestone + 1]))
         {
           self.base.currentMilestone += 1;
         }
 
         self.base.changeTokenPrice(self.base.saleData[self.base.milestoneTimes[self.base.currentMilestone]][0]);
-        LogTokenPriceChange(self.base.tokensPerEth,&quot;Token Price has changed!&quot;);
+        LogTokenPriceChange(self.base.tokensPerEth,"Token Price has changed!");
     }
 
   	uint256 _numTokens; //number of tokens that will be purchased
@@ -111,21 +111,21 @@ library DirectCrowdsaleLib {
     _amount = _amount - _remainder;
     self.base.leftoverWei[msg.sender] += _leftoverWei;
 
-    // can&#39;t overflow because it is under the cap
+    // can't overflow because it is under the cap
     self.base.hasContributed[msg.sender] += _amount;
 
-    assert(_numTokens &lt;= self.base.token.balanceOf(this));
+    assert(_numTokens <= self.base.token.balanceOf(this));
 
     // calculate the amount of ether in the owners balance
     (err,_newBalance) = self.base.ownerBalance.plus(_amount);
     require(!err);
 
-    self.base.ownerBalance = _newBalance;   // &quot;deposit&quot; the amount
+    self.base.ownerBalance = _newBalance;   // "deposit" the amount
 
-    // can&#39;t overflow because it will be under the cap
+    // can't overflow because it will be under the cap
 	  self.base.withdrawTokensMap[msg.sender] += _numTokens;
 
-    //subtract tokens from owner&#39;s share
+    //subtract tokens from owner's share
     (err,_remainder) = self.base.withdrawTokensMap[self.base.owner].minus(_numTokens);
     require(!err);
     self.base.withdrawTokensMap[self.base.owner] = _remainder;
@@ -135,7 +135,7 @@ library DirectCrowdsaleLib {
     return true;
   }
 
-  /*Functions &quot;inherited&quot; from CrowdsaleLib library*/
+  /*Functions "inherited" from CrowdsaleLib library*/
 
   function setTokens(DirectCrowdsaleStorage storage self) public returns (bool) {
     return self.base.setTokens();
@@ -191,16 +191,16 @@ library CrowdsaleLib {
     bool tokensSet; //true if tokens have been prepared for crowdsale
 
     //Maps timestamp to token price and address purchase cap starting at that time
-    mapping (uint256 =&gt; uint256[2]) saleData;
+    mapping (uint256 => uint256[2]) saleData;
 
     //shows how much wei an address has contributed
-  	mapping (address =&gt; uint256) hasContributed;
+  	mapping (address => uint256) hasContributed;
 
     //For token withdraw function, maps a user address to the amount of tokens they can withdraw
-  	mapping (address =&gt; uint256) withdrawTokensMap;
+  	mapping (address => uint256) withdrawTokensMap;
 
-    // any leftover wei that buyers contributed that didn&#39;t add up to a whole token amount
-    mapping (address =&gt; uint256) leftoverWei;
+    // any leftover wei that buyers contributed that didn't add up to a whole token amount
+    mapping (address => uint256) leftoverWei;
 
   	CrowdsaleToken token; //token being sold
   }
@@ -238,12 +238,12 @@ library CrowdsaleLib {
                 public
   {
   	require(self.owner == 0);
-    require(_saleData.length &gt; 0);
+    require(_saleData.length > 0);
     require((_saleData.length%3) == 0); // ensure saleData is 3-item sets
-    require(_saleData[0] &gt; (now + 2 hours));
-    require(_endTime &gt; _saleData[0]);
-    require(_owner &gt; 0);
-    require(_percentBurn &lt;= 100);
+    require(_saleData[0] > (now + 2 hours));
+    require(_endTime > _saleData[0]);
+    require(_owner > 0);
+    require(_percentBurn <= 100);
     self.owner = _owner;
     self.startTime = _saleData[0];
     self.endTime = _endTime;
@@ -251,10 +251,10 @@ library CrowdsaleLib {
     self.percentBurn = _percentBurn;
 
     uint256 _tempTime;
-    for(uint256 i = 0; i &lt; _saleData.length; i += 3){
-      require(_saleData[i] &gt; _tempTime);
-      require(_saleData[i + 1] &gt; 0);
-      require((_saleData[i + 2] == 0) || (_saleData[i + 2] &gt;= 100));
+    for(uint256 i = 0; i < _saleData.length; i += 3){
+      require(_saleData[i] > _tempTime);
+      require(_saleData[i + 1] > 0);
+      require((_saleData[i + 2] == 0) || (_saleData[i + 2] >= 100));
       self.milestoneTimes.push(_saleData[i]);
       self.saleData[_saleData[i]][0] = _saleData[i + 1];
       self.saleData[_saleData[i]][1] = _saleData[i + 2];
@@ -267,14 +267,14 @@ library CrowdsaleLib {
   /// @param self Stored crowdsale from crowdsale contract
   /// @return success
   function crowdsaleActive(CrowdsaleStorage storage self) public view returns (bool) {
-  	return (now &gt;= self.startTime &amp;&amp; now &lt;= self.endTime);
+  	return (now >= self.startTime && now <= self.endTime);
   }
 
   /// @dev function to check if the crowdsale has ended
   /// @param self Stored crowdsale from crowdsale contract
   /// @return success
   function crowdsaleEnded(CrowdsaleStorage storage self) public view returns (bool) {
-  	return now &gt; self.endTime;
+  	return now > self.endTime;
   }
 
   /// @dev function to check if a purchase is valid
@@ -282,10 +282,10 @@ library CrowdsaleLib {
   /// @return true if the transaction can buy tokens
   function validPurchase(CrowdsaleStorage storage self) internal returns (bool) {
     bool nonZeroPurchase = msg.value != 0;
-    if (crowdsaleActive(self) &amp;&amp; nonZeroPurchase) {
+    if (crowdsaleActive(self) && nonZeroPurchase) {
       return true;
     } else {
-      LogErrorMsg(msg.value, &quot;Invalid Purchase! Check start time and amount of ether.&quot;);
+      LogErrorMsg(msg.value, "Invalid Purchase! Check start time and amount of ether.");
       return false;
     }
   }
@@ -297,16 +297,16 @@ library CrowdsaleLib {
     bool ok;
 
     if (self.withdrawTokensMap[msg.sender] == 0) {
-      LogErrorMsg(0, &quot;Sender has no tokens to withdraw!&quot;);
+      LogErrorMsg(0, "Sender has no tokens to withdraw!");
       return false;
     }
 
     if (msg.sender == self.owner) {
       if(!crowdsaleEnded(self)){
-        LogErrorMsg(0, &quot;Owner cannot withdraw extra tokens until after the sale!&quot;);
+        LogErrorMsg(0, "Owner cannot withdraw extra tokens until after the sale!");
         return false;
       } else {
-        if(self.percentBurn &gt; 0){
+        if(self.percentBurn > 0){
           uint256 _burnAmount = (self.withdrawTokensMap[msg.sender] * self.percentBurn)/100;
           self.withdrawTokensMap[msg.sender] = self.withdrawTokensMap[msg.sender] - _burnAmount;
           ok = self.token.burnToken(_burnAmount);
@@ -328,7 +328,7 @@ library CrowdsaleLib {
   /// @return true if wei was withdrawn
   function withdrawLeftoverWei(CrowdsaleStorage storage self) public returns (bool) {
     if (self.leftoverWei[msg.sender] == 0) {
-      LogErrorMsg(0, &quot;Sender has no extra wei to withdraw!&quot;);
+      LogErrorMsg(0, "Sender has no extra wei to withdraw!");
       return false;
     }
 
@@ -343,18 +343,18 @@ library CrowdsaleLib {
   /// @param self Stored crowdsale from crowdsale contract
   /// @return true if owner withdrew eth
   function withdrawOwnerEth(CrowdsaleStorage storage self) public returns (bool) {
-    if ((!crowdsaleEnded(self)) &amp;&amp; (self.token.balanceOf(this)&gt;0)) {
-      LogErrorMsg(0, &quot;Cannot withdraw owner ether until after the sale!&quot;);
+    if ((!crowdsaleEnded(self)) && (self.token.balanceOf(this)>0)) {
+      LogErrorMsg(0, "Cannot withdraw owner ether until after the sale!");
       return false;
     }
 
     require(msg.sender == self.owner);
-    require(self.ownerBalance &gt; 0);
+    require(self.ownerBalance > 0);
 
     uint256 amount = self.ownerBalance;
     self.ownerBalance = 0;
     self.owner.transfer(amount);
-    LogOwnerEthWithdrawn(msg.sender,amount,&quot;Crowdsale owner has withdrawn all funds!&quot;);
+    LogOwnerEthWithdrawn(msg.sender,amount,"Crowdsale owner has withdrawn all funds!");
 
     return true;
   }
@@ -368,7 +368,7 @@ library CrowdsaleLib {
                             internal
                             returns (bool)
   {
-  	require(_tokensPerEth &gt; 0);
+  	require(_tokensPerEth > 0);
 
     self.tokensPerEth = _tokensPerEth;
 
@@ -381,7 +381,7 @@ library CrowdsaleLib {
   function setTokens(CrowdsaleStorage storage self) public returns (bool) {
     require(msg.sender == self.owner);
     require(!self.tokensSet);
-    require(now &lt; self.endTime);
+    require(now < self.endTime);
 
     uint256 _tokenBalance;
 
@@ -405,7 +405,7 @@ library CrowdsaleLib {
     uint256[3] memory _thisData;
     uint256 index;
 
-    while((index &lt; self.milestoneTimes.length) &amp;&amp; (self.milestoneTimes[index] &lt; timestamp)) {
+    while((index < self.milestoneTimes.length) && (self.milestoneTimes[index] < timestamp)) {
       index++;
     }
     if(index == 0)
@@ -430,8 +430,8 @@ library TokenLib {
 
   struct TokenStorage {
     bool initialized;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     string name;
     string symbol;
@@ -476,7 +476,7 @@ library TokenLib {
     self.balances[_owner] = _initial_supply;
   }
 
-  /// @dev Transfer tokens from caller&#39;s account to another account.
+  /// @dev Transfer tokens from caller's account to another account.
   /// @param self Stored token from token contract
   /// @param _to Address to send tokens
   /// @param _value Number of tokens to send
@@ -489,7 +489,7 @@ library TokenLib {
     (err,balance) = self.balances[msg.sender].minus(_value);
     require(!err);
     self.balances[msg.sender] = balance;
-    //It&#39;s not possible to overflow token supply
+    //It's not possible to overflow token supply
     self.balances[_to] = self.balances[_to] + _value;
     Transfer(msg.sender, _to, _value);
     return true;
@@ -535,7 +535,7 @@ library TokenLib {
     return self.balances[_owner];
   }
 
-  /// @dev Authorize an account to send tokens on caller&#39;s behalf
+  /// @dev Authorize an account to send tokens on caller's behalf
   /// @param self Stored token from token contract
   /// @param _spender Address to authorize
   /// @param _value Number of tokens authorized account may send
@@ -553,7 +553,7 @@ library TokenLib {
   /// @param self Stored token from token contract
   /// @param _owner Address of token holder
   /// @param _spender Address of authorized spender
-  /// @return remaining Number of tokens spender has left in owner&#39;s account
+  /// @return remaining Number of tokens spender has left in owner's account
   function allowance(TokenStorage storage self, address _owner, address _spender)
                      public
                      view
@@ -579,7 +579,7 @@ library TokenLib {
 
       self.allowed[msg.sender][_spender] = _newAllowed;
     } else {
-      if (_valueChange &gt; self.allowed[msg.sender][_spender]) {
+      if (_valueChange > self.allowed[msg.sender][_spender]) {
         self.allowed[msg.sender][_spender] = 0;
       } else {
         _newAllowed = self.allowed[msg.sender][_spender] - _valueChange;
@@ -596,7 +596,7 @@ library TokenLib {
   /// @param _newOwner Address for the new owner
   /// @return True if completed
   function changeOwner(TokenStorage storage self, address _newOwner) public returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; (_newOwner &gt; 0));
+    require((self.owner == msg.sender) && (_newOwner > 0));
 
     self.owner = _newOwner;
     OwnerChange(msg.sender, _newOwner);
@@ -608,7 +608,7 @@ library TokenLib {
   /// @param _amount Number of tokens to mint
   /// @return True if completed
   function mintToken(TokenStorage storage self, uint256 _amount) public returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; self.stillMinting);
+    require((self.owner == msg.sender) && self.stillMinting);
     uint256 _newAmount;
     bool err;
 

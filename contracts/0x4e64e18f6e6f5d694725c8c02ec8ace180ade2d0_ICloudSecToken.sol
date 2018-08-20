@@ -32,13 +32,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -96,7 +96,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -105,7 +105,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value;
             allowed[_from][msg.sender] -= _value;
@@ -128,14 +128,14 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /* ICloudSec Contract */
 contract ICloudSecToken is owned, SafeMath, StandardToken {
-    string public name = &quot;ICloudSec&quot;;                                       // Set the name for display purposes
-    string public symbol = &quot;CLOUD&quot;;                                         // Set the symbol for display purposes
+    string public name = "ICloudSec";                                       // Set the name for display purposes
+    string public symbol = "CLOUD";                                         // Set the symbol for display purposes
     address public ICloudSecAddress = this;                                 // Address of the ICloudSec token
     uint8 public decimals = 0;                                              // Amount of decimals for display purposes
     uint256 public totalSupply = 200000000000;                             	// Set total supply of ICloudSecs
@@ -143,7 +143,7 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
     uint256 public sellPriceEth = 100000000000 wei;                                 // Sell price for ICloudSecs
     uint256 public gasForCLOUD = 1 finney;                                  // Eth from contract against CLOUD to pay tx
     uint256 public CLOUDForGas = 10;                                        // CLOUD to contract against eth to pay tx
-    uint256 public gasReserve = 10 finney;                                  // Eth amount that remains in the contract for gas and can&#39;t be sold
+    uint256 public gasReserve = 10 finney;                                  // Eth amount that remains in the contract for gas and can't be sold
     uint256 public minBalanceForAccounts = 1 finney;                       	// Minimal eth balance of sender and recipient
     bool public directTradeAllowed = false;                                 // Halt trading CLOUD by sending to the contract directly
 
@@ -184,16 +184,16 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
 
 /* Transfer function extended by check of eth balances and pay transaction costs with CLOUD if not enough eth */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (_value &lt; CLOUDForGas) throw;                                      // Prevents drain and spam
-        if (msg.sender != owner &amp;&amp; _to == ICloudSecAddress &amp;&amp; directTradeAllowed) {
+        if (_value < CLOUDForGas) throw;                                      // Prevents drain and spam
+        if (msg.sender != owner && _to == ICloudSecAddress && directTradeAllowed) {
             sellICloudSecsAgainstEther(_value);                             // Trade ICloudSecs against eth by sending to the token contract
             return true;
         }
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {               // Check if sender has enough and for overflows
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {               // Check if sender has enough and for overflows
             balances[msg.sender] = safeSub(balances[msg.sender], _value);   // Subtract CLOUD from the sender
 
-            if (msg.sender.balance &gt;= minBalanceForAccounts &amp;&amp; _to.balance &gt;= minBalanceForAccounts) {    // Check if sender can pay gas and if recipient could
+            if (msg.sender.balance >= minBalanceForAccounts && _to.balance >= minBalanceForAccounts) {    // Check if sender can pay gas and if recipient could
                 balances[_to] = safeAdd(balances[_to], _value);             // Add the same amount of CLOUD to the recipient
                 Transfer(msg.sender, _to, _value);                          // Notify anyone listening that this transfer took place
                 return true;
@@ -202,10 +202,10 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
                 balances[_to] = safeAdd(balances[_to], safeSub(_value, CLOUDForGas));  // Recipient balance -CLOUDForGas
                 Transfer(msg.sender, _to, safeSub(_value, CLOUDForGas));      // Notify anyone listening that this transfer took place
 
-                if(msg.sender.balance &lt; minBalanceForAccounts) {
+                if(msg.sender.balance < minBalanceForAccounts) {
                     if(!msg.sender.send(gasForCLOUD)) throw;                  // Send eth to sender
                   }
-                if(_to.balance &lt; minBalanceForAccounts) {
+                if(_to.balance < minBalanceForAccounts) {
                     if(!_to.send(gasForCLOUD)) throw;                         // Send eth to recipient
                 }
             }
@@ -215,10 +215,10 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
 
 /* User buys ICloudSecs and pays in Ether */
     function buyICloudSecsAgainstEther() payable returns (uint amount) {
-        if (buyPriceEth == 0 || msg.value &lt; buyPriceEth) throw;             // Avoid dividing 0, sending small amounts and spam
+        if (buyPriceEth == 0 || msg.value < buyPriceEth) throw;             // Avoid dividing 0, sending small amounts and spam
         amount = msg.value / buyPriceEth;                                   // Calculate the amount of ICloudSecs
-        if (balances[this] &lt; amount) throw;                                 // Check if it has enough to sell
-        balances[msg.sender] = safeAdd(balances[msg.sender], amount);       // Add the amount to buyer&#39;s balance
+        if (balances[this] < amount) throw;                                 // Check if it has enough to sell
+        balances[msg.sender] = safeAdd(balances[msg.sender], amount);       // Add the amount to buyer's balance
         balances[this] = safeSub(balances[this], amount);                   // Subtract amount from ICloudSec balance
         Transfer(this, msg.sender, amount);                                 // Execute an event reflecting the change
         return amount;
@@ -227,15 +227,15 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
 
 /* User sells ICloudSecs and gets Ether */
     function sellICloudSecsAgainstEther(uint256 amount) returns (uint revenue) {
-        if (sellPriceEth == 0 || amount &lt; CLOUDForGas) throw;                 // Avoid selling and spam
-        if (balances[msg.sender] &lt; amount) throw;                           // Check if the sender has enough to sell
+        if (sellPriceEth == 0 || amount < CLOUDForGas) throw;                 // Avoid selling and spam
+        if (balances[msg.sender] < amount) throw;                           // Check if the sender has enough to sell
         revenue = safeMul(amount, sellPriceEth);                            // Revenue = eth that will be send to the user
-        if (safeSub(this.balance, revenue) &lt; gasReserve) throw;             // Keep min amount of eth in contract to provide gas for transactions
-        if (!msg.sender.send(revenue)) {                                    // Send ether to the seller. It&#39;s important
+        if (safeSub(this.balance, revenue) < gasReserve) throw;             // Keep min amount of eth in contract to provide gas for transactions
+        if (!msg.sender.send(revenue)) {                                    // Send ether to the seller. It's important
             throw;                                                          // To do this last to avoid recursion attacks
         } else {
             balances[this] = safeAdd(balances[this], amount);               // Add the amount to ICloudSec balance
-            balances[msg.sender] = safeSub(balances[msg.sender], amount);   // Subtract the amount from seller&#39;s balance
+            balances[msg.sender] = safeSub(balances[msg.sender], amount);   // Subtract the amount from seller's balance
             Transfer(this, msg.sender, revenue);                            // Execute an event reflecting on the change
             return revenue;                                                 // End function and returns
         }
@@ -245,14 +245,14 @@ contract ICloudSecToken is owned, SafeMath, StandardToken {
 /* refund to owner */
     function refundToOwner (uint256 amountOfEth, uint256 CLOUD) onlyOwner {
         uint256 eth = safeMul(amountOfEth, 1 ether);
-        if (!msg.sender.send(eth)) {                                        // Send ether to the owner. It&#39;s important
+        if (!msg.sender.send(eth)) {                                        // Send ether to the owner. It's important
             throw;                                                          // To do this last to avoid recursion attacks
         } else {
             Transfer(this, msg.sender, eth);                                // Execute an event reflecting on the change
         }
-        if (balances[this] &lt; CLOUD) throw;                                    // Check if it has enough to sell
-        balances[msg.sender] = safeAdd(balances[msg.sender], CLOUD);          // Add the amount to buyer&#39;s balance
-        balances[this] = safeSub(balances[this], CLOUD);                      // Subtract amount from seller&#39;s balance
+        if (balances[this] < CLOUD) throw;                                    // Check if it has enough to sell
+        balances[msg.sender] = safeAdd(balances[msg.sender], CLOUD);          // Add the amount to buyer's balance
+        balances[this] = safeSub(balances[this], CLOUD);                      // Subtract amount from seller's balance
         Transfer(this, msg.sender, CLOUD);                                    // Execute an event reflecting the change
     }
 

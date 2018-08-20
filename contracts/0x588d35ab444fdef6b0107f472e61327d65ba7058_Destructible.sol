@@ -1,7 +1,7 @@
 contract Destructible {
 
 /**
-* @dev mapping of security =&gt; (investorEthAddress, investerInfo)
+* @dev mapping of security => (investorEthAddress, investerInfo)
 */
     address _owner; //owner of this contract
 

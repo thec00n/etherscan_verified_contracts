@@ -6,8 +6,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -196,7 +196,7 @@ contract PublicSale is Pausable {
         external
         onlyOwner
     {
-        require(gas &gt; 0);
+        require(gas > 0);
         maxgas = gas;
         emit ChangeMaxGas(gas);
     }
@@ -208,7 +208,7 @@ contract PublicSale is Pausable {
         require(whitelist != address(0));
 
         List = Whitelist(whitelist);
-        emit Change(whitelist, &quot;whitelist&quot;);
+        emit Change(whitelist, "whitelist");
     }
 
     function setWallet(address newWallet)
@@ -218,7 +218,7 @@ contract PublicSale is Pausable {
         require(newWallet != address(0));
 
         wallet = newWallet;
-        emit Change(newWallet, &quot;wallet&quot;);
+        emit Change(newWallet, "wallet");
     }
 
 //  sale controller
@@ -244,7 +244,7 @@ contract PublicSale is Pausable {
 //  collect eth
     event Purchase(address indexed buyer, uint256 purchased, uint256 refund, uint256 tokens);
 
-    mapping (address =&gt; uint256) public buyers;
+    mapping (address => uint256) public buyers;
 
     function collect()
         public
@@ -257,10 +257,10 @@ contract PublicSale is Pausable {
         require(ignited);
         require(List.whitelist(buyer));
         require(buyer != address(0));
-        require(buyers[buyer].add(amount) &gt;= minimum);
-        require(buyers[buyer] &lt; exceed);
-        require(weiRaised &lt; maxcap);
-        require(tx.gasprice &lt;= maxgas);
+        require(buyers[buyer].add(amount) >= minimum);
+        require(buyers[buyer] < exceed);
+        require(weiRaised < maxcap);
+        require(tx.gasprice <= maxgas);
 
         uint256 purchase;
         uint256 refund;
@@ -268,7 +268,7 @@ contract PublicSale is Pausable {
         (purchase, refund) = getPurchaseAmount(buyer, amount);
 
         weiRaised = weiRaised.add(purchase);
-        if(weiRaised &gt;= maxcap) ignited = false;
+        if(weiRaised >= maxcap) ignited = false;
 
         buyers[buyer] = buyers[buyer].add(purchase);
 
@@ -287,9 +287,9 @@ contract PublicSale is Pausable {
         uint256 d1 = maxcap.sub(weiRaised);
         uint256 d2 = exceed.sub(buyers[_buyer]);
 
-        uint256 d = (d1 &gt; d2) ? d2 : d1;
+        uint256 d = (d1 > d2) ? d2 : d1;
 
-        return (_amount &gt; d) ? (d, _amount.sub(d)) : (_amount, 0);
+        return (_amount > d) ? (d, _amount.sub(d)) : (_amount, 0);
     }
 
 //  finalize
@@ -336,7 +336,7 @@ contract PublicSale is Pausable {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -413,7 +413,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -430,10 +430,10 @@ contract Whitelist is Ownable, RBAC {
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     checkRole(msg.sender, ROLE_WHITELISTED);
@@ -474,7 +474,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       addAddressToWhitelist(addrs[i]);
     }
   }
@@ -483,7 +483,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address addr)
     onlyOwner
@@ -497,13 +497,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       removeAddressFromWhitelist(addrs[i]);
     }
   }
@@ -512,7 +512,7 @@ contract Whitelist is Ownable, RBAC {
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -525,7 +525,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal

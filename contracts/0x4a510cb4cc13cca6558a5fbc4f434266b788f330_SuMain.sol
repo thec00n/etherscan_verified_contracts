@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 *.......................Blockchain.rentable.advertising........................*
 *..............................................................................*
 * First, I just want to say we are so excited and humbled to get this far and  *
-* that you&#39;re even reading this. So thank you!                                 *
+* that you're even reading this. So thank you!                                 *
 *                                                                              *
 * This file is organized into multiple contracts that separate functionality   *
 * into logical parts. The deployed contract, SuMain, is at the bottom and      *
@@ -18,7 +18,7 @@ pragma solidity ^0.4.21;
 *  - SuOperation: The actual square data and the personalize function          *
 *  - SuPromo, SuVending: How we sell or grant squares                          *
 *..............................................................................*
-*............................Su.&amp;.William.Entriken.............................*
+*............................Su.&.William.Entriken.............................*
 *...................................(c) 2018...................................*
 \******************************************************************************/
 
@@ -147,7 +147,7 @@ interface ERC721Enumerable /* is ERC721 */ {
 /// @author William Entriken (https://phor.net)
 contract PublishInterfaces is ERC165 {
     /// @dev Every interface that we support
-    mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+    mapping(bytes4 => bool) internal supportedInterfaces;
 
     function PublishInterfaces() internal {
         supportedInterfaces[0x01ffc9a7] = true; // ERC165
@@ -160,7 +160,7 @@ contract PublishInterfaces is ERC165 {
     /// @return `true` if the contract implements `interfaceID` and
     ///  `interfaceID` is not 0xffffffff, `false` otherwise
     function supportsInterface(bytes4 interfaceID) external view returns (bool) {
-        return supportedInterfaces[interfaceID] &amp;&amp; (interfaceID != 0xffffffff);
+        return supportedInterfaces[interfaceID] && (interfaceID != 0xffffffff);
     }
 }
 
@@ -175,10 +175,10 @@ contract PublishInterfaces is ERC165 {
 /// @author William Entriken (https://phor.net)
 contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInterfaces {
     /// @dev The authorized address for each NFT
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     /// @dev The authorized operators for each address
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /// @dev Guarantees msg.sender is the owner of _tokenId
     /// @param _tokenId The token to validate belongs to msg.sender
@@ -190,7 +190,7 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     }
     
     modifier mustBeOwnedByThisContract(uint256 _tokenId) {
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= TOTAL_SUPPLY);
+        require(_tokenId >= 1 && _tokenId <= TOTAL_SUPPLY);
         address owner = _tokenOwnerWithSubstitutions[_tokenId];
         require(owner == address(0) || owner == address(this));
         _;
@@ -213,7 +213,7 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     }
     
     modifier mustBeValidToken(uint256 _tokenId) {
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= TOTAL_SUPPLY);
+        require(_tokenId >= 1 && _tokenId <= TOTAL_SUPPLY);
         _;
     }
     
@@ -267,9 +267,9 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -281,13 +281,13 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
 	
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;
+    ///  except this function just sets data to ""
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
     function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable
     {
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /// @notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE
@@ -337,7 +337,7 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
         emit Approval(_owner, _approved, _tokenId);
     }
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+    /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your asset.
     /// @dev Emits the ApprovalForAll event
     /// @param _operator Address to add to the set of authorized operators.
@@ -372,25 +372,25 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
 
     /// @notice A descriptive name for a collection of NFTs in this contract
     function name() external pure returns (string) {
-        return &quot;Su Squares&quot;;
+        return "Su Squares";
     }
 
     /// @notice An abbreviated name for NFTs in this contract
     function symbol() external pure returns (string) {
-        return &quot;SU&quot;;
+        return "SU";
     }
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) 
         external
         view
         mustBeValidToken(_tokenId)
         returns (string _tokenURI)
     {
-        _tokenURI = &quot;https://tenthousandsu.com/erc721/00000.json&quot;;
+        _tokenURI = "https://tenthousandsu.com/erc721/00000.json";
         bytes memory _tokenURIBytes = bytes(_tokenURI);
         _tokenURIBytes[33] = byte(48+(_tokenId / 10000) % 10);
         _tokenURIBytes[34] = byte(48+(_tokenId / 1000) % 10);
@@ -410,17 +410,17 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     }
 
     /// @notice Enumerate valid NFTs
-    /// @dev Throws if `_index` &gt;= `totalSupply()`.
+    /// @dev Throws if `_index` >= `totalSupply()`.
     /// @param _index A counter less than `totalSupply()`
     /// @return The token identifier for the `_index`th NFT,
     ///  (sort order not specified)
     function tokenByIndex(uint256 _index) external view returns (uint256) {
-        require(_index &lt; TOTAL_SUPPLY);
+        require(_index < TOTAL_SUPPLY);
         return _index + 1;
     }
 
     /// @notice Enumerate NFTs assigned to an owner
-    /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+    /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
     ///  `_owner` is the zero address, representing invalid NFTs.
     /// @param _owner An address where we are interested in NFTs owned by them
     /// @param _index A counter less than `balanceOf(_owner)`
@@ -428,7 +428,7 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     ///   (sort order not specified)
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256 _tokenId) {
         require(_owner != address(0));
-        require(_index &lt; _tokensOfOwnerWithSubstitutions[_owner].length);
+        require(_index < _tokensOfOwnerWithSubstitutions[_owner].length);
         _tokenId = _tokensOfOwnerWithSubstitutions[_owner][_index];
         // Handle substitutions
         if (_owner == address(this)) {
@@ -491,14 +491,14 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
 
     uint256 private constant TOTAL_SUPPLY = 10000; // SOLIDITY ISSUE #3356 make this immutable
 
-    bytes4 private constant ERC721_RECEIVED = bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;));
+    bytes4 private constant ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
     
     /// @dev The owner of each NFT
     ///  If value == address(0), NFT is owned by address(this)
     ///  If value != address(0), NFT is owned by value
     ///  assert(This contract never assigns awnerhip to address(0) or destroys NFTs)
     ///  See commented out code in constructor, saves hella gas
-    mapping (uint256 =&gt; address) private _tokenOwnerWithSubstitutions;
+    mapping (uint256 => address) private _tokenOwnerWithSubstitutions;
 
     /// @dev The list of NFTs owned by each address
     ///  Nomenclature: this[key][index] = value
@@ -506,21 +506,21 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
     ///  If key == address(this) and value == 0, then index + 1 is the NFT
     ///  assert(0 is not a valid NFT)
     ///  See commented out code in constructor, saves hella gas
-    mapping (address =&gt; uint256[]) private _tokensOfOwnerWithSubstitutions;
+    mapping (address => uint256[]) private _tokensOfOwnerWithSubstitutions;
     
-    /// @dev (Location + 1) of each NFT in its owner&#39;s list
+    /// @dev (Location + 1) of each NFT in its owner's list
     ///  Nomenclature: this[key] = value
     ///  If value != 0, _tokensOfOwnerWithSubstitutions[owner][value - 1] = nftId
     ///  If value == 0, _tokensOfOwnerWithSubstitutions[owner][key - 1] = nftId
     ///  assert(2**256-1 is not a valid NFT)
     ///  See commented out code in constructor, saves hella gas
-    mapping (uint256 =&gt; uint256) private _ownedTokensIndexWithSubstitutions;
+    mapping (uint256 => uint256) private _ownedTokensIndexWithSubstitutions;
 
     // Due to implementation choices (no mint, no burn, contiguous NFT ids), it
     // is not necessary to keep an array of NFT ids nor where each NFT id is
     // located in that array.
     // address[] private nftIds;
-    // mapping (uint256 =&gt; uint256) private nftIndexOfId;
+    // mapping (uint256 => uint256) private nftIndexOfId;
     
     function SuNFT() internal {
         // Publish interfaces with ERC-165
@@ -531,17 +531,17 @@ contract SuNFT is ERC165, ERC721, ERC721Metadata, ERC721Enumerable, PublishInter
         // The effect of substitution makes storing address(this), address(this)
         // ..., address(this) for a total of TOTAL_SUPPLY times unnecessary at
         // deployment time
-        // for (uint256 i = 1; i &lt;= TOTAL_SUPPLY; i++) {
+        // for (uint256 i = 1; i <= TOTAL_SUPPLY; i++) {
         //     _tokenOwnerWithSubstitutions[i] = address(this);
         // }
 
         // The effect of substitution makes storing 1, 2, ..., TOTAL_SUPPLY
         // unnecessary at deployment time
         _tokensOfOwnerWithSubstitutions[address(this)].length = TOTAL_SUPPLY;
-        // for (uint256 i = 0; i &lt; TOTAL_SUPPLY; i++) {
+        // for (uint256 i = 0; i < TOTAL_SUPPLY; i++) {
         //     _tokensOfOwnerWithSubstitutions[address(this)][i] = i + 1;
         // }
-        // for (uint256 i = 1; i &lt;= TOTAL_SUPPLY; i++) {
+        // for (uint256 i = 1; i <= TOTAL_SUPPLY; i++) {
         //     _ownedTokensIndexWithSubstitutions[i] = i - 1;
         // }
     }
@@ -617,7 +617,7 @@ contract SuOperation is SuNFT {
     /// @param _squareId The top-left is 1, to its right is 2, ..., top-right is
     ///  100 and then 101 is below 1... the last one at bottom-right is 10000
     /// @param _squareId A 10x10 image for your square, in 8-bit RGB words
-    ///  ordered like the squares are ordered. See Imagemagick&#39;s command
+    ///  ordered like the squares are ordered. See Imagemagick's command
     ///  convert -size 10x10 -depth 8 in.rgb out.png
     /// @param _title A description of your square (max 64 bytes UTF-8)
     /// @param _href A hyperlink for your square (max 96 bytes)
@@ -631,14 +631,14 @@ contract SuOperation is SuNFT {
         onlyOwnerOf(_squareId)
         payable
     {
-        require(bytes(_title).length &lt;= 64);
-        require(bytes(_href).length &lt;= 96);
+        require(bytes(_title).length <= 64);
+        require(bytes(_href).length <= 96);
         require(_rgbData.length == 300);
         suSquares[_squareId].version++;
         suSquares[_squareId].rgbData = _rgbData;
         suSquares[_squareId].title = _title;
         suSquares[_squareId].href = _href;
-        if (suSquares[_squareId].version &gt; 3) {
+        if (suSquares[_squareId].version > 3) {
             require(msg.value == 100 finney);
         }
         emit Personalized(_squareId);
@@ -664,7 +664,7 @@ contract SuPromo is AccessControl, SuNFT {
         mustBeValidToken(_tokenId)
         mustBeOwnedByThisContract(_tokenId)
     {
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
         promoCreatedCount++;
         _transfer(_tokenId, _newOwner);
     }

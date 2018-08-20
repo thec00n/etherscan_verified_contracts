@@ -30,37 +30,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -72,7 +72,7 @@ contract SafeMath {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="4231362724232c6c25272d30252702212d2c31272c313b316c2c2736">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="4231362724232c6c25272d30252702212d2c31272c313b316c2c2736">[email protected]</span>>
 contract MultiSigWallet {
 
     // flag to determine if address is for a real contract or not
@@ -90,9 +90,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -145,8 +145,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (ownerCount &gt; MAX_OWNER_COUNT) throw;
-        if (_required &gt; ownerCount) throw;
+        if (ownerCount > MAX_OWNER_COUNT) throw;
+        if (_required > ownerCount) throw;
         if (_required == 0) throw;
         if (ownerCount == 0) throw;
         _;
@@ -156,7 +156,7 @@ contract MultiSigWallet {
     function()
     payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         Deposit(msg.sender, msg.value);
     }
 
@@ -170,7 +170,7 @@ contract MultiSigWallet {
     public
     validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0) throw;
             isOwner[_owners[i]] = true;
         }
@@ -201,13 +201,13 @@ contract MultiSigWallet {
     ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
         if (owners[i] == owner) {
             owners[i] = owners[owners.length - 1];
             break;
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
         changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -289,7 +289,7 @@ contract MultiSigWallet {
     returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
             count += 1;
             if (count == required)
@@ -351,7 +351,7 @@ contract MultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
         if (confirmations[transactionId][owners[i]])
         count += 1;
     }
@@ -365,9 +365,9 @@ contract MultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-        if ((pending &amp;&amp; !transactions[i].executed) ||
-        (executed &amp;&amp; transactions[i].executed))
+        for (uint i=0; i<transactionCount; i++)
+        if ((pending && !transactions[i].executed) ||
+        (executed && transactions[i].executed))
         count += 1;
     }
 
@@ -392,13 +392,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
         if (confirmations[transactionId][owners[i]]) {
             confirmationsTemp[count] = owners[i];
             count += 1;
         }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
         _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -416,15 +416,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-        if ((pending &amp;&amp; !transactions[i].executed) ||
-        (executed &amp;&amp; transactions[i].executed))
+        for (i=0; i<transactionCount; i++)
+        if ((pending && !transactions[i].executed) ||
+        (executed && transactions[i].executed))
         {
             transactionIdsTemp[count] = i;
             count += 1;
         }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
         _transactionIds[i - from] = transactionIdsTemp[i];
     }
 
@@ -469,10 +469,10 @@ contract DecentBetVault is SafeMath {
         unlockedAtTime = safeAdd(getTime(), timeOffset);
     }
 
-    /// @notice Transfer locked tokens to Decent.bet&#39;s multisig wallet
+    /// @notice Transfer locked tokens to Decent.bet's multisig wallet
     function unlock() external {
         // Wait your turn!
-        if (getTime() &lt; unlockedAtTime) throw;
+        if (getTime() < unlockedAtTime) throw;
         // Will fail if allocation (and therefore toTransfer) is 0.
         if (!decentBetToken.transfer(decentBetMultisig, decentBetToken.balanceOf(this))) throw;
     }
@@ -499,9 +499,9 @@ contract DecentBetToken is SafeMath, ERC20 {
     enum State{Waiting, PreSale, CommunitySale, PublicSale, Success}
 
     // Token information
-    string public constant name = &quot;Decent.Bet Token&quot;;
+    string public constant name = "Decent.Bet Token";
 
-    string public constant symbol = &quot;DBET&quot;;
+    string public constant symbol = "DBET";
 
     uint256 public constant decimals = 18;  // decimal places
 
@@ -515,9 +515,9 @@ contract DecentBetToken is SafeMath, ERC20 {
 
     uint256 public constant hundredPercent = 100;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Authorized addresses
     address public team;
@@ -536,13 +536,13 @@ contract DecentBetToken is SafeMath, ERC20 {
 
     // Whitelisted addresses for pre-sale
     address[] public preSaleWhitelist;
-    mapping (address =&gt; bool) public preSaleAllowed;
+    mapping (address => bool) public preSaleAllowed;
 
     // Whitelisted addresses from community
     address[] public communitySaleWhitelist;
-    mapping (address =&gt; bool) public communitySaleAllowed;
+    mapping (address => bool) public communitySaleAllowed;
     uint[2] public communitySaleCap = [100000 ether, 200000 ether];
-    mapping (address =&gt; uint[2]) communitySalePurchases;
+    mapping (address => uint[2]) communitySalePurchases;
 
     uint256 public preSaleStartTime; // Pre-sale start block timestamp
     uint256 public fundingStartTime; // crowdsale start block timestamp
@@ -563,7 +563,7 @@ contract DecentBetToken is SafeMath, ERC20 {
 
     address public decentBetMultisig;
 
-    DecentBetVault public timeVault; // DecentBet&#39;s time-locked vault
+    DecentBetVault public timeVault; // DecentBet's time-locked vault
 
     event Upgrade(address indexed _from, address indexed _to, uint256 _value);
 
@@ -590,9 +590,9 @@ contract DecentBetToken is SafeMath, ERC20 {
         // For testing/dev
         //         if(_fundingStartTime == 0) throw;
         // Crowdsale can only officially start during/after the current block timestamp.
-        if (_fundingStartTime &lt; getTime()) throw;
+        if (_fundingStartTime < getTime()) throw;
 
-        if (_fundingEndTime &lt;= _fundingStartTime) throw;
+        if (_fundingEndTime <= _fundingStartTime) throw;
 
         isDecentBetToken = true;
 
@@ -624,7 +624,7 @@ contract DecentBetToken is SafeMath, ERC20 {
         return balances[who];
     }
 
-    /// @notice Transfer `value` DBET tokens from sender&#39;s account
+    /// @notice Transfer `value` DBET tokens from sender's account
     /// `msg.sender` to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -635,7 +635,7 @@ contract DecentBetToken is SafeMath, ERC20 {
         if (getState() != State.Success) throw;
         // Abort if crowdfunding was not a success.
         uint256 senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= value &amp;&amp; value &gt; 0) {
+        if (senderBalance >= value && value > 0) {
             senderBalance = safeSub(senderBalance, value);
             balances[msg.sender] = senderBalance;
             balances[to] = safeAdd(balances[to], value);
@@ -645,7 +645,7 @@ contract DecentBetToken is SafeMath, ERC20 {
         return false;
     }
 
-    /// @notice Transfer `value` DBET tokens from sender &#39;from&#39;
+    /// @notice Transfer `value` DBET tokens from sender 'from'
     /// to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -657,9 +657,9 @@ contract DecentBetToken is SafeMath, ERC20 {
         if (getState() != State.Success) throw;
         // Abort if not in Success state.
         // protect against wrapping uints
-        if (balances[from] &gt;= value &amp;&amp;
-        allowed[from][msg.sender] &gt;= value &amp;&amp;
-        safeAdd(balances[to], value) &gt; balances[to])
+        if (balances[from] >= value &&
+        allowed[from][msg.sender] >= value &&
+        safeAdd(balances[to], value) > balances[to])
         {
             balances[to] = safeAdd(balances[to], value);
             balances[from] = safeSub(balances[from], value);
@@ -704,7 +704,7 @@ contract DecentBetToken is SafeMath, ERC20 {
 
         // Validate input value.
         if (value == 0) throw;
-        if (value &gt; balances[msg.sender]) throw;
+        if (value > balances[msg.sender]) throw;
 
         // update the balances here first before calling out (reentrancy)
         balances[msg.sender] = safeSub(balances[msg.sender], value);
@@ -722,7 +722,7 @@ contract DecentBetToken is SafeMath, ERC20 {
         if (getState() != State.Success) throw;
         // Abort if not in Success state.
         if (agent == 0x0) throw;
-        // don&#39;t set agent to nothing
+        // don't set agent to nothing
         if (msg.sender != upgradeMaster) throw;
         // Only a master can designate the next agent
         upgradeAgent = UpgradeAgent(agent);
@@ -755,7 +755,7 @@ contract DecentBetToken is SafeMath, ERC20 {
         if (msg.sender != upgradeMaster) throw;
         // only upgradeMaster can finalize
         if (finalizedUpgrade) throw;
-        // can&#39;t finalize twice
+        // can't finalize twice
 
         finalizedUpgrade = true;
         // prevent future upgrades
@@ -780,23 +780,23 @@ contract DecentBetToken is SafeMath, ERC20 {
     // Returns the current rate after adding bonuses for the time period
     function getTokensAtCurrentRate(uint weiValue) constant returns (uint) {
         /* Pre-sale */
-        if(getTime() &gt;= preSaleStartTime &amp;&amp; getTime() &lt; fundingStartTime) {
+        if(getTime() >= preSaleStartTime && getTime() < fundingStartTime) {
             return safeDiv(safeMul(weiValue, safeMul(baseTokensPerEther, 120)), 100); // 20% bonus
         }
 
         /* Community sale */
-        else if(getTime() &gt;= fundingStartTime &amp;&amp; getTime() &lt; fundingStartTime + 1 days) {
+        else if(getTime() >= fundingStartTime && getTime() < fundingStartTime + 1 days) {
             return safeDiv(safeMul(weiValue, safeMul(baseTokensPerEther, 120)), 100); // 20% bonus
-        } else if(getTime() &gt;= (fundingStartTime + 1 days) &amp;&amp; getTime() &lt; fundingStartTime + 2 days) {
+        } else if(getTime() >= (fundingStartTime + 1 days) && getTime() < fundingStartTime + 2 days) {
             return safeDiv(safeMul(weiValue, safeMul(baseTokensPerEther, 120)), 100); // 20% bonus
         }
 
         /* Public sale */
-        else if(getTime() &gt;= (fundingStartTime + 2 days) &amp;&amp; getTime() &lt; fundingStartTime + 1 weeks) {
+        else if(getTime() >= (fundingStartTime + 2 days) && getTime() < fundingStartTime + 1 weeks) {
             return safeDiv(safeMul(weiValue, safeMul(baseTokensPerEther, 110)), 100); // 10% bonus
-        } else if(getTime() &gt;= fundingStartTime + 1 weeks &amp;&amp; getTime() &lt; fundingStartTime + 2 weeks) {
+        } else if(getTime() >= fundingStartTime + 1 weeks && getTime() < fundingStartTime + 2 weeks) {
             return safeDiv(safeMul(weiValue, safeMul(baseTokensPerEther, 105)), 100); // 5% bonus
-        } else if(getTime() &gt;= fundingStartTime + 2 weeks &amp;&amp; getTime() &lt; fundingEndTime) {
+        } else if(getTime() >= fundingStartTime + 2 weeks && getTime() < fundingEndTime) {
             return safeMul(weiValue, baseTokensPerEther); // 0% bonus
         }
     }
@@ -818,10 +818,10 @@ contract DecentBetToken is SafeMath, ERC20 {
     function addToCommunitySaleWhitelist(address[] addresses) onlyTeam {
 
         // Add to community sale whitelist only if state is Waiting or Presale right now.
-        if(getState() != State.Waiting &amp;&amp;
+        if(getState() != State.Waiting &&
         getState() != State.PreSale) throw;
 
-        for(uint i = 0; i &lt; addresses.length; i++) {
+        for(uint i = 0; i < addresses.length; i++) {
             if(!communitySaleAllowed[addresses[i]]) {
                 communitySaleWhitelist.push(addresses[i]);
                 communitySaleAllowed[addresses[i]] = true;
@@ -831,19 +831,19 @@ contract DecentBetToken is SafeMath, ERC20 {
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function invest() payable {
 
         // Abort if not in PreSale, CommunitySale or PublicSale state.
-        if (getState() != State.PreSale &amp;&amp;
-        getState() != State.CommunitySale &amp;&amp;
+        if (getState() != State.PreSale &&
+        getState() != State.CommunitySale &&
         getState() != State.PublicSale) throw;
 
-        // User hasn&#39;t been whitelisted for pre-sale.
-        if(getState() == State.PreSale &amp;&amp; !preSaleAllowed[msg.sender]) throw;
+        // User hasn't been whitelisted for pre-sale.
+        if(getState() == State.PreSale && !preSaleAllowed[msg.sender]) throw;
 
-        // User hasn&#39;t been whitelisted for community sale.
-        if(getState() == State.CommunitySale &amp;&amp; !communitySaleAllowed[msg.sender]) throw;
+        // User hasn't been whitelisted for community sale.
+        if(getState() == State.CommunitySale && !communitySaleAllowed[msg.sender]) throw;
 
         // Do not allow creating 0 tokens.
         if (msg.value == 0) throw;
@@ -854,22 +854,22 @@ contract DecentBetToken is SafeMath, ERC20 {
         allocateTokens(msg.sender, createdTokens);
     }
 
-    // Allocates tokens to an investors&#39; address
+    // Allocates tokens to an investors' address
     function allocateTokens(address _address, uint amount) internal {
 
         // we are creating tokens, so increase the totalSupply.
         totalSupply = safeAdd(totalSupply, amount);
 
-        // don&#39;t go over the limit!
-        if (totalSupply &gt; tokenCreationMax) throw;
+        // don't go over the limit!
+        if (totalSupply > tokenCreationMax) throw;
 
-        // Don&#39;t allow community whitelisted addresses to purchase more than their cap.
+        // Don't allow community whitelisted addresses to purchase more than their cap.
         if(getState() == State.CommunitySale) {
             // Community sale day 1.
             // Whitelisted addresses can purchase a maximum of 100k DBETs (10k USD).
-            if(getTime() &gt;= fundingStartTime &amp;&amp;
-            getTime() &lt; fundingStartTime + 1 days) {
-                if(safeAdd(communitySalePurchases[msg.sender][0], amount) &gt; communitySaleCap[0])
+            if(getTime() >= fundingStartTime &&
+            getTime() < fundingStartTime + 1 days) {
+                if(safeAdd(communitySalePurchases[msg.sender][0], amount) > communitySaleCap[0])
                 throw;
                 else
                 communitySalePurchases[msg.sender][0] =
@@ -878,9 +878,9 @@ contract DecentBetToken is SafeMath, ERC20 {
 
             // Community sale day 2.
             // Whitelisted addresses can purchase a maximum of 200k DBETs (20k USD).
-            else if(getTime() &gt;= (fundingStartTime + 1 days) &amp;&amp;
-            getTime() &lt; fundingStartTime + 2 days) {
-                if(safeAdd(communitySalePurchases[msg.sender][1], amount) &gt; communitySaleCap[1])
+            else if(getTime() >= (fundingStartTime + 1 days) &&
+            getTime() < fundingStartTime + 2 days) {
+                if(safeAdd(communitySalePurchases[msg.sender][1], amount) > communitySaleCap[1])
                 throw;
                 else
                 communitySalePurchases[msg.sender][1] =
@@ -903,14 +903,14 @@ contract DecentBetToken is SafeMath, ERC20 {
     function finalizeCrowdfunding() external {
         // Abort if not in Funding Success state.
         if (getState() != State.Success) throw;
-        // don&#39;t finalize unless we won
+        // don't finalize unless we won
         if (finalizedCrowdfunding) throw;
-        // can&#39;t finalize twice (so sneaky!)
+        // can't finalize twice (so sneaky!)
 
         // prevent more creation of tokens
         finalizedCrowdfunding = true;
 
-        // Founder&#39;s supply : 18% of total goes to vault, time locked for 6 months
+        // Founder's supply : 18% of total goes to vault, time locked for 6 months
         uint256 vaultTokens = safeDiv(safeMul(totalSupply, vaultPercentOfTotal), crowdfundPercentOfTotal);
         balances[timeVault] = safeAdd(balances[timeVault], vaultTokens);
         Transfer(0, timeVault, vaultTokens);
@@ -946,25 +946,25 @@ contract DecentBetToken is SafeMath, ERC20 {
         if(finalizedCrowdfunding) return State.Success;
 
         /* Pre-sale not started */
-        else if (getTime() &lt; preSaleStartTime) return State.Waiting;
+        else if (getTime() < preSaleStartTime) return State.Waiting;
 
         /* Pre-sale */
-        else if (getTime() &gt;= preSaleStartTime &amp;&amp;
-        getTime() &lt; fundingStartTime &amp;&amp;
-        totalSupply &lt; tokenCreationMax) return State.PreSale;
+        else if (getTime() >= preSaleStartTime &&
+        getTime() < fundingStartTime &&
+        totalSupply < tokenCreationMax) return State.PreSale;
 
         /* Community sale */
-        else if (getTime() &gt;= fundingStartTime &amp;&amp;
-        getTime() &lt; fundingStartTime + 2 days &amp;&amp;
-        totalSupply &lt; tokenCreationMax) return State.CommunitySale;
+        else if (getTime() >= fundingStartTime &&
+        getTime() < fundingStartTime + 2 days &&
+        totalSupply < tokenCreationMax) return State.CommunitySale;
 
         /* Public sale */
-        else if (getTime() &gt;= (fundingStartTime + 2 days) &amp;&amp;
-        getTime() &lt; fundingEndTime &amp;&amp;
-        totalSupply &lt; tokenCreationMax) return State.PublicSale;
+        else if (getTime() >= (fundingStartTime + 2 days) &&
+        getTime() < fundingEndTime &&
+        totalSupply < tokenCreationMax) return State.PublicSale;
 
         /* Success */
-        else if (getTime() &gt;= fundingEndTime ||
+        else if (getTime() >= fundingEndTime ||
         totalSupply == tokenCreationMax) return State.Success;
     }
 

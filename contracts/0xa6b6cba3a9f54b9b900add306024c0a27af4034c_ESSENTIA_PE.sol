@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /*
 
-    Copyright 2018, Angelo A. M. &amp; Vicent Nos &amp; Mireia Puig
+    Copyright 2018, Angelo A. M. & Vicent Nos & Mireia Puig
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ pragma solidity ^0.4.24;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -32,20 +32,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -99,7 +99,7 @@ contract ESSENTIA_PE is Ownable {
 
     using SafeMath for uint256;
 
-    string public name = &quot;ESSENTIA Public Engagement&quot;;      // Extended name of this contract
+    string public name = "ESSENTIA Public Engagement";      // Extended name of this contract
     uint256 public tokenPrice = 0;        // Set the fixed ESS token price
     uint256 public maxCap = 0;            // Set the target maximum cap in ETH
     address public FWDaddrETH;            // Set the address to forward the received ETH to
@@ -107,7 +107,7 @@ contract ESSENTIA_PE is Ownable {
     uint256 public totalSold;             // Keep track of the contributions total
     uint256 public decimals = 18;         // The decimals to consider
 
-    mapping (address =&gt; uint256) public sold;       // Map the ESS token allcations
+    mapping (address => uint256) public sold;       // Map the ESS token allcations
 
     uint256 public pubEnd = 0;                      // Set the unixtime END for the public engagement
     address contractAddr=this;                      // Better way to point to this from this
@@ -119,13 +119,13 @@ contract ESSENTIA_PE is Ownable {
 
 
     //
-    // &quot;toETHaddr&quot; is the address to which the ETH contributions are forwarded to, aka FWDaddrETH
-    // &quot;addrESSgenesis&quot; is the address of the Essentia ERC20 token contract, aka ESSgenesis
+    // "toETHaddr" is the address to which the ETH contributions are forwarded to, aka FWDaddrETH
+    // "addrESSgenesis" is the address of the Essentia ERC20 token contract, aka ESSgenesis
     //
     // NOTE: this contract will sell only its token balance on the ERC20 specified in addrESSgenesis
     //       the maxCap in ETH and the tokenPrice will indirectly set the ESS token amount on sale
     //
-    // NOTE: this contract should have sufficient ESS token balance to be &gt; maxCap / tokenPrice
+    // NOTE: this contract should have sufficient ESS token balance to be > maxCap / tokenPrice
     //
     // NOTE: this contract will stop REGARDLESS of the above (maxCap) when its token balance is all sold
     //
@@ -189,17 +189,17 @@ contract ESSENTIA_PE is Ownable {
 
     function buy() public payable {
 
-        require(block.timestamp &lt; pubEnd);          // Require the current unixtime to be lower than the END unixtime
-        require(msg.value &gt; 0);                     // Require the sender to send an ETH tx higher than 0
+        require(block.timestamp < pubEnd);          // Require the current unixtime to be lower than the END unixtime
+        require(msg.value > 0);                     // Require the sender to send an ETH tx higher than 0
 
         // Requiring this to avoid going out of tokens, aka we are getting just true/false from the transfer call
-        require(msg.value + totalSold &lt;= maxCap);
+        require(msg.value + totalSold <= maxCap);
 
         // Calculate the amount of tokens per contribution
         uint256 tokenAmount = (msg.value * tokenUnit) / tokenPrice;
 
         // Requiring sufficient token balance on this contract to accept the tx
-        require(tokenAmount &lt;= essToken.balanceOf(this));
+        require(tokenAmount <= essToken.balanceOf(this));
 
         transferBuy(msg.sender, tokenAmount);       // Instruct the accounting function
         totalSold = totalSold.add(msg.value);       // Account for the total contributed/sold
@@ -212,11 +212,11 @@ contract ESSENTIA_PE is Ownable {
 
     function withdrawPUB() public returns(bool){
 
-        require(block.timestamp &gt; pubEnd);          // Require the PE to be over - actual time higher than end unixtime
-        require(sold[msg.sender] &gt; 0);              // Require the ESS token balance to be sent to be higher than 0
+        require(block.timestamp > pubEnd);          // Require the PE to be over - actual time higher than end unixtime
+        require(sold[msg.sender] > 0);              // Require the ESS token balance to be sent to be higher than 0
 
         // Send ESS tokens to the contributors proportionally to their contribution/s
-        if(!ESSgenesis.call(bytes4(keccak256(&quot;transfer(address,uint256)&quot;)), msg.sender, sold[msg.sender])){revert();}
+        if(!ESSgenesis.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, sold[msg.sender])){revert();}
 
         delete sold[msg.sender];
         return true;
@@ -243,8 +243,8 @@ contract ESSENTIA_PE is Ownable {
         // ..we try to make sure anyway that no ETH would get stuck in this contract
         //
     function EMGwithdraw(uint256 weiValue) external onlyOwner {
-        require(block.timestamp &gt; pubEnd);          // Require the public engagement to be over
-        require(weiValue &gt; 0);                      // Require a non-zero value
+        require(block.timestamp > pubEnd);          // Require the public engagement to be over
+        require(weiValue > 0);                      // Require a non-zero value
 
         FWDaddrETH.transfer(weiValue);              // Transfer to the external ETH forward address
     }

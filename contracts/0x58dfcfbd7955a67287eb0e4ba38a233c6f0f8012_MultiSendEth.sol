@@ -11,8 +11,8 @@ contract MultiSendEth {
         require(owner==msg.sender);
         require(dests.length == values.length);
         uint256 i = 0;
-        while (i &lt; dests.length) {
-            require(this.balance&gt;=values[i]);
+        while (i < dests.length) {
+            require(this.balance>=values[i]);
             dests[i].transfer(values[i]);
             i++;
         }

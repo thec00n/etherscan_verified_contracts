@@ -18,7 +18,7 @@ contract StandardToken is Token
 
     function transfer(address _to, uint256 _value) returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+        if (balances[msg.sender] >= _value && _value > 0)
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -29,7 +29,7 @@ contract StandardToken is Token
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0)
         {
             balances[_to] += _value;
             balances[_from] -= _value;
@@ -56,8 +56,8 @@ contract StandardToken is Token
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -67,7 +67,7 @@ contract Riccoin is StandardToken
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;H1.0&#39;;
+    string public version = 'H1.0';
     
     address public beneficiary;
     address public creator;
@@ -102,12 +102,12 @@ contract Riccoin is StandardToken
         uint256 amount = msg.value * unitsOneEthCanBuy;
         
         
-        if((now - starttime) &lt;= (deadline - starttime) / 20)
+        if((now - starttime) <= (deadline - starttime) / 20)
             amount = 23 * (amount/20);
-        else if((now - starttime) &lt;= 9 * ((deadline - starttime) / 20) )
+        else if((now - starttime) <= 9 * ((deadline - starttime) / 20) )
             amount = 11 * (amount/10);
 
-        require(balances[beneficiary] &gt;= amount);
+        require(balances[beneficiary] >= amount);
         
         amountRaised += msg.value;
         balances[beneficiary] = balances[beneficiary] - amount;
@@ -117,11 +117,11 @@ contract Riccoin is StandardToken
     }
 
     modifier afterDeadline()
-    { if (now &gt;= deadline) _; }
+    { if (now >= deadline) _; }
 
     function checkGoalReached() afterDeadline
     {
-        if (amountRaised &gt;= fundingGoal)
+        if (amountRaised >= fundingGoal)
         {
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
@@ -152,7 +152,7 @@ contract Riccoin is StandardToken
     {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData))
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData))
             { throw; }
         return true;
     }

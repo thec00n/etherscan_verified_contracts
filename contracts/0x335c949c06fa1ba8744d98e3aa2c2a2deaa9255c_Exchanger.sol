@@ -15,12 +15,12 @@ interface ITradeableAsset {
 
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
-/* A basic permissions hierarchy (Owner -&gt; Admin -&gt; Everyone else). One owner may appoint and remove any number of admins
+/* A basic permissions hierarchy (Owner -> Admin -> Everyone else). One owner may appoint and remove any number of admins
    and may transfer ownership to another individual address */
 contract Administered {
     address public creator;
 
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
     
     constructor()  public {
         creator = msg.sender;
@@ -92,7 +92,7 @@ contract Exchanger is Administered, tokenRecipient {
     constructor(address _token, 
                 uint32 _weight,
                 address _formulaContract) {
-        require (_weight &gt; 0 &amp;&amp; weight &lt;= 1000000);
+        require (_weight > 0 && weight <= 1000000);
         
         weight = _weight;
         tokenContract = ITradeableAsset(_token);
@@ -152,20 +152,20 @@ contract Exchanger is Administered, tokenRecipient {
       @dev Play central banker and set the fractional reserve ratio, from 1 to 1000000 ppm.
       It is highly disrecommended to do this while trading is enabled! Obviously this should 
       only be done in combination with a matching deposit or withdrawal of ether, 
-      and I&#39;ll enforce it at a later point.
+      and I'll enforce it at a later point.
      */
     function setReserveWeight(uint ppm) onlyAdmin public {
-        require (ppm&gt;0 &amp;&amp; ppm&lt;=1000000);
+        require (ppm>0 && ppm<=1000000);
         weight = uint32(ppm);
     }
 
     function setFee(uint ppm) onlyAdmin public {
-        require (ppm &gt;= 0 &amp;&amp; ppm &lt;= 1000000);
+        require (ppm >= 0 && ppm <= 1000000);
         fee = uint32(ppm);
     }
 
     function setMultiplier(uint newValue) onlyAdmin public {
-        require (newValue &gt; 0);
+        require (newValue > 0);
         multiplier = uint32(newValue);
     }
 
@@ -209,14 +209,14 @@ contract Exchanger is Administered, tokenRecipient {
 
         purchaseReturn = (purchaseReturn - (purchaseReturn * (fee / 1000000)));
 
-        if (purchaseReturn &gt; tokenContract.balanceOf(this)){
+        if (purchaseReturn > tokenContract.balanceOf(this)){
             return tokenContract.balanceOf(this);
         }
         return purchaseReturn;
     }
 
     /**
-     @dev Get the SELL price based on the order size. Returned as amount (in wei) that you&#39;ll get for your tokens.
+     @dev Get the SELL price based on the order size. Returned as amount (in wei) that you'll get for your tokens.
      */
     function getSalePrice(uint256 tokensToSell) public view returns(uint) {
         uint256 saleReturn = formulaContract.calculateSaleReturn(
@@ -226,7 +226,7 @@ contract Exchanger is Administered, tokenRecipient {
             tokensToSell 
         ); 
         saleReturn = (saleReturn - (saleReturn * (fee/1000000)));
-        if (saleReturn &gt; address(this).balance) {
+        if (saleReturn > address(this).balance) {
             return address(this).balance;
         }
         return saleReturn;
@@ -237,7 +237,7 @@ contract Exchanger is Administered, tokenRecipient {
     //this protects the trader against slippage due to other orders that make it into earlier blocks after they 
     //place their order. 
     //
-    //With buy, send the amount of ether you want to spend on the token - you&#39;ll get it back immediately if minPurchaseReturn
+    //With buy, send the amount of ether you want to spend on the token - you'll get it back immediately if minPurchaseReturn
     //is not met or if this Exchanger is not in a condition to service your order (usually this happens when there is not a full 
     //reserve of tokens to satisfy the stated weight)
     //
@@ -260,8 +260,8 @@ contract Exchanger is Administered, tokenRecipient {
             msg.value);
         amount = (amount - (amount * (fee / 1000000)));
         require (enabled); // ADDED SEMICOLON    
-        require (amount &gt;= minPurchaseReturn);
-        require (tokenContract.balanceOf(this) &gt;= amount);
+        require (amount >= minPurchaseReturn);
+        require (tokenContract.balanceOf(this) >= amount);
         emit Buy(msg.sender, msg.value, amount);
         tokenContract.transfer(msg.sender, amount);
     }
@@ -280,8 +280,8 @@ contract Exchanger is Administered, tokenRecipient {
         amountInWei = (amountInWei - (amountInWei * (fee / 1000000)));
 
         require (enabled); // ADDED SEMICOLON
-        require (amountInWei &gt;= minSaleReturn);
-        require (amountInWei &lt;= address(this).balance);
+        require (amountInWei >= minSaleReturn);
+        require (amountInWei <= address(this).balance);
         require (tokenContract.transferFrom(msg.sender, this, quantity));
 
         emit Sell(msg.sender, quantity, amountInWei);
@@ -308,8 +308,8 @@ contract Exchanger is Administered, tokenRecipient {
         amountInWei = (amountInWei - (amountInWei * (fee / 1000000)));
         
         require (enabled); // ADDED SEMICOLON
-        require (amountInWei &gt;= minSaleReturn);
-        require (amountInWei &lt;= address(this).balance);
+        require (amountInWei >= minSaleReturn);
+        require (amountInWei <= address(this).balance);
         require (tokenContract.transferFrom(seller, this, quantity));
 
         emit Sell(seller, quantity, amountInWei);

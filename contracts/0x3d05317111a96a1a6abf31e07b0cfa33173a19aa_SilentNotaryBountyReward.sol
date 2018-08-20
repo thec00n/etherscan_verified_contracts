@@ -52,7 +52,7 @@ contract SilentNotaryBountyReward is Ownable {
   address public teamWallet;
 
   /// Remaining bounty rewards
-  mapping (address =&gt; uint) public bountyRewards;
+  mapping (address => uint) public bountyRewards;
 
   /// Total count of addresses which have collected their rewards
   uint public collectedAddressesCount;
@@ -75,7 +75,7 @@ contract SilentNotaryBountyReward is Ownable {
   function SilentNotaryBountyReward(address _token, address _teamWallet, uint _startTime) {
     require(_token != 0);
     require(_teamWallet != 0);
-    require(_startTime &gt; 0);
+    require(_startTime > 0);
 
     token = ERC20(_token);
     teamWallet = _teamWallet;
@@ -89,12 +89,12 @@ contract SilentNotaryBountyReward is Ownable {
 
   /// @dev Claim bounty reward
   function claimReward() public {
-    require(now &gt;= startTime &amp;&amp; now &lt;= startTime + DURATION);
+    require(now >= startTime && now <= startTime + DURATION);
 
     var receiver = msg.sender;
     var reward = bountyRewards[receiver];
-    assert(reward &gt; 0);
-    assert(token.balanceOf(address(this)) &gt;= reward);
+    assert(reward > 0);
+    assert(token.balanceOf(address(this)) >= reward);
 
     delete bountyRewards[receiver];
     collectedAddressesCount++;
@@ -109,7 +109,7 @@ contract SilentNotaryBountyReward is Ownable {
   /// @param tokenAmount Amount of tokens to reward
   function importReward(address receiver, uint tokenAmount) public onlyOwner {
     require(receiver != 0);
-    require(tokenAmount &gt; 0);
+    require(tokenAmount > 0);
 
     bountyRewards[receiver] = tokenAmount;
   }
@@ -124,9 +124,9 @@ contract SilentNotaryBountyReward is Ownable {
 
   /// @dev Withdraw remaining tokens after reward claim period is over (for owner)
   function withdrawRemainder() public onlyOwner {
-    require(now &gt; startTime + DURATION);
+    require(now > startTime + DURATION);
     var remainingBalance = token.balanceOf(address(this));
-    require(remainingBalance &gt; 0);
+    require(remainingBalance > 0);
 
     token.transfer(teamWallet, remainingBalance);
   }

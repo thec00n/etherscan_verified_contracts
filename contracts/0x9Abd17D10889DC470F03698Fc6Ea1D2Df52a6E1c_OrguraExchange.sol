@@ -1,5 +1,5 @@
 /**
- * The OGXNext &quot;Orgura Exchange&quot; token contract bases on the ERC20 standard token contracts 
+ * The OGXNext "Orgura Exchange" token contract bases on the ERC20 standard token contracts 
  * OGX Coin ICO. (Orgura group)
  * authors: Roongrote Suranart
  * */
@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -52,7 +52,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -131,7 +131,7 @@ contract TokenTimelock {
     uint64 public releaseTime;
 
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) public {
-        require(_releaseTime &gt; uint64(block.timestamp));
+        require(_releaseTime > uint64(block.timestamp));
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -141,10 +141,10 @@ contract TokenTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(uint64(block.timestamp) &gt;= releaseTime);
+        require(uint64(block.timestamp) >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -160,7 +160,7 @@ contract TokenTimelock {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -170,8 +170,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -220,7 +220,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -259,8 +259,8 @@ contract Owned {
 
 
 contract OrguraExchange is StandardToken, Owned {
-    string public constant name = &quot;Orgura Exchange&quot;;
-    string public constant symbol = &quot;OGX&quot;;
+    string public constant name = "Orgura Exchange";
+    string public constant symbol = "OGX";
     uint8 public constant decimals = 18;
 
     /// Maximum tokens to be allocated.
@@ -273,23 +273,23 @@ contract OrguraExchange is StandardToken, Owned {
     uint256 public constant BASE_RATE = 7169;
 
 
-    /// seconds since 01.01.1970 to 19.04.2018 (0:00:00 o&#39;clock UTC)
+    /// seconds since 01.01.1970 to 19.04.2018 (0:00:00 o'clock UTC)
     /// HOT sale start time
-    uint64 private constant dateSeedSale = 1523145600 + 0 hours; // 8 April 2018 00:00:00 o&#39;clock UTC
+    uint64 private constant dateSeedSale = 1523145600 + 0 hours; // 8 April 2018 00:00:00 o'clock UTC
 
     /// Seed sale end time; Sale PreSale start time 20.04.2018
-    uint64 private constant datePreSale = 1524182400 + 0 hours; // 20 April 2018 0:00:00 o&#39;clock UTC
+    uint64 private constant datePreSale = 1524182400 + 0 hours; // 20 April 2018 0:00:00 o'clock UTC
 
     /// Sale PreSale end time; Sale Round 1 start time 1.05.2018
-    uint64 private constant dateSaleR1 = 1525132800 + 0 hours; // 1 May 2018 0:00:00 o&#39;clock UTC
+    uint64 private constant dateSaleR1 = 1525132800 + 0 hours; // 1 May 2018 0:00:00 o'clock UTC
 
     /// Sale Round 1 end time; Sale Round 2 start time 15.05.2018
-    uint64 private constant dateSaleR2 = 1526342400 + 0 hours; // 15 May 2018 0:00:00 o&#39;clock UTC
+    uint64 private constant dateSaleR2 = 1526342400 + 0 hours; // 15 May 2018 0:00:00 o'clock UTC
 
     /// Sale Round 2 end time; Sale Round 3 start time 31.05.2018
-    uint64 private constant dateSaleR3 = 1527724800 + 0 hours; // 31 May 2018 0:00:00 o&#39;clock UTC
+    uint64 private constant dateSaleR3 = 1527724800 + 0 hours; // 31 May 2018 0:00:00 o'clock UTC
 
-    /// Sale Round 3  end time; 14.06.2018 0:00:00 o&#39;clock UTC
+    /// Sale Round 3  end time; 14.06.2018 0:00:00 o'clock UTC
     uint64 private constant date14June2018 = 1528934400 + 0 hours;
 
     /// Token trading opening time (14.07.2018)
@@ -308,10 +308,10 @@ contract OrguraExchange is StandardToken, Owned {
 
     /// Date Locked until
     uint64[4] private dateTokensLockedTills = [
-        1536883200, // locked until this date (14 Sep 2018) 00:00:00 o&#39;clock UTC
-        1544745600, // locked until this date (14 Dec 2018) 00:00:00 o&#39;clock UTC
-        1557792000, // locked until this date (14 May 2019) 00:00:00 o&#39;clock UTC
-        1581638400 // locked until this date (14 Feb 2020) 00:00:00 o&#39;clock UTC
+        1536883200, // locked until this date (14 Sep 2018) 00:00:00 o'clock UTC
+        1544745600, // locked until this date (14 Dec 2018) 00:00:00 o'clock UTC
+        1557792000, // locked until this date (14 May 2019) 00:00:00 o'clock UTC
+        1581638400 // locked until this date (14 Feb 2020) 00:00:00 o'clock UTC
     ];
 
     //Locked Unil percentages
@@ -320,15 +320,15 @@ contract OrguraExchange is StandardToken, Owned {
     /// team tokens are locked until this date (27 APR 2019) 00:00:00
     uint64 private constant dateTeamTokensLockedTill = 1556323200;
 
-    /// no tokens can be ever issued when this is set to &quot;true&quot;
+    /// no tokens can be ever issued when this is set to "true"
     bool public tokenSaleClosed = false;
 
     /// contract to be called to release the Penthamon team tokens
     address public timelockContractAddress;
 
     modifier inProgress {
-        require(totalSupply &lt; TOKENS_SALE_HARD_CAP
-            &amp;&amp; !tokenSaleClosed &amp;&amp; now &gt;= dateSeedSale);
+        require(totalSupply < TOKENS_SALE_HARD_CAP
+            && !tokenSaleClosed && now >= dateSeedSale);
         _;
     }
 
@@ -345,7 +345,7 @@ contract OrguraExchange is StandardToken, Owned {
         //_; 
 
         //Begin at date trading open setting
-        require(uint64(block.timestamp) &gt; date14July2018);
+        require(uint64(block.timestamp) > date14July2018);
         _;
     }
 
@@ -362,12 +362,12 @@ contract OrguraExchange is StandardToken, Owned {
     /// @param _beneficiary Address that newly issued token will be sent to.
     function purchaseTokens(address _beneficiary) public payable inProgress {
         // only accept a minimum amount of ETH?
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
 
         uint256 tokens = computeTokenAmount(msg.value);
         
         // roll back if hard cap reached
-        require(totalSupply.add(tokens) &lt;= TOKENS_SALE_HARD_CAP);
+        require(totalSupply.add(tokens) <= TOKENS_SALE_HARD_CAP);
         
         doIssueTokens(_beneficiary, tokens);
 
@@ -380,9 +380,9 @@ contract OrguraExchange is StandardToken, Owned {
     /// @param _addresses the amounts of tokens, with decimals expanded (full).
     function issueTokensMulti(address[] _addresses, uint256[] _tokens) public onlyOwner beforeEnd {
         require(_addresses.length == _tokens.length);
-        require(_addresses.length &lt;= 100);
+        require(_addresses.length <= 100);
 
-        for (uint256 i = 0; i &lt; _tokens.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _tokens.length; i = i.add(1)) {
             doIssueTokens(_addresses[i], _tokens[i]);
         }
     }
@@ -422,7 +422,7 @@ contract OrguraExchange is StandardToken, Owned {
         uint256 tokenBase = ethAmount.mul(BASE_RATE);
         uint8 roundNum = currentRoundIndex();
         tokens = tokenBase.mul(100)/(100 - (roundDiscountPercentages[roundNum]));
-        while(tokens.add(totalSupply) &gt; roundCaps[roundNum] &amp;&amp; roundNum &lt; 4){
+        while(tokens.add(totalSupply) > roundCaps[roundNum] && roundNum < 4){
            roundNum++;
            tokens = tokenBase.mul(100)/(100 - (roundDiscountPercentages[roundNum])); 
         }
@@ -434,7 +434,7 @@ contract OrguraExchange is StandardToken, Owned {
         roundNum = currentRoundIndexByDate();
 
         /// round determined by conjunction of both time and total sold tokens
-        while(roundNum &lt; 4 &amp;&amp; totalSupply &gt; roundCaps[roundNum]) {
+        while(roundNum < 4 && totalSupply > roundCaps[roundNum]) {
             roundNum++;
         }
     }
@@ -442,11 +442,11 @@ contract OrguraExchange is StandardToken, Owned {
     /// @dev Determine the current sale tier.
     /// @return the index of the current sale tier by date.
     function currentRoundIndexByDate() internal view returns (uint8 roundNum) {
-        require(now &lt;= date14June2018); 
-        if(now &gt; dateSaleR3) return 4;
-        if(now &gt; dateSaleR2) return 3;
-        if(now &gt; dateSaleR1) return 2;
-        if(now &gt; datePreSale) return 1;
+        require(now <= date14June2018); 
+        if(now > dateSaleR3) return 4;
+        if(now > dateSaleR2) return 3;
+        if(now > dateSaleR1) return 2;
+        if(now > datePreSale) return 1;
         else return 0;
     }
 
@@ -468,7 +468,7 @@ contract OrguraExchange is StandardToken, Owned {
         uint256 fagmentSale = 0* 10**uint256(decimals); // 0 fegment Sale
 
         /// check for rounding errors when cap is reached
-        if(totalSupply.add(sumlockedAndReservedTokens) &gt; HARD_CAP) {
+        if(totalSupply.add(sumlockedAndReservedTokens) > HARD_CAP) {
 
             sumlockedAndReservedTokens = HARD_CAP.sub(totalSupply);
 
@@ -481,7 +481,7 @@ contract OrguraExchange is StandardToken, Owned {
 
         uint256 _total_lockedTokens =0;
 
-        for (uint256 i = 0; i &lt; lockedTillPercentages.length; i = i.add(1)) 
+        for (uint256 i = 0; i < lockedTillPercentages.length; i = i.add(1)) 
         {
             _total_lockedTokens =0;
             _total_lockedTokens = amount_lockedTokens.mul(lockedTillPercentages[i])* 10**uint256(decimals)/100;
@@ -532,7 +532,7 @@ contract OrguraExchange is StandardToken, Owned {
 
     /**
      * issue the tokens for Reserved 
-     * @param reservedTokens &amp; bounty Tokens the amount of tokens to be issued
+     * @param reservedTokens & bounty Tokens the amount of tokens to be issued
      * */
     function issueReservedTokens(uint reservedTokens) internal{
         balances[owner] = reservedTokens;

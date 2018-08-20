@@ -33,13 +33,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -47,12 +47,12 @@ contract SafeMath {
 
 contract VBToken is SafeMath, owned {
 
-    string public name = &quot;VBToken&quot;;        //  token name
-    string public symbol = &quot;VB&quot;;      //  token symbol
+    string public name = "VBToken";        //  token name
+    string public symbol = "VB";      //  token symbol
     uint public decimals = 8;           //  token digit
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     uint public totalSupply = 0;
 
@@ -106,17 +106,17 @@ contract VBToken is SafeMath, owned {
     }
 
     modifier validEth {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.value &lt;= maxEth);
+        assert(msg.value >= minEth && msg.value <= maxEth);
         _;
     }
 
     modifier validPeriod {
-        assert(now &gt;= openTime &amp;&amp; now &lt; closeTime);
+        assert(now >= openTime && now < closeTime);
         _;
     }
 
     modifier validQuantity {
-        assert(valueSale &gt;= saleQuantity);
+        assert(valueSale >= saleQuantity);
         _;
     }
 
@@ -169,8 +169,8 @@ contract VBToken is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(validTransfer(_value));
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -195,9 +195,9 @@ contract VBToken is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         require(validTransfer(_value));
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
@@ -207,7 +207,7 @@ contract VBToken is SafeMath, owned {
     }
 
     function batchtransfer(address[] _to, uint256[] _amount) public returns(bool success) {
-        for(uint i = 0; i &lt; _to.length; i++){
+        for(uint i = 0; i < _to.length; i++){
             require(transfer(_to[i], _amount[i]));
         }
         return true;
@@ -254,7 +254,7 @@ contract VBToken is SafeMath, owned {
         uint quantity = eth * price / 10 ** 10;
 
         uint leftQuantity = safeSub(valueSale, saleQuantity);
-        if (quantity &gt; leftQuantity) {
+        if (quantity > leftQuantity) {
             quantity = leftQuantity;
         }
 
@@ -287,7 +287,7 @@ contract VBToken is SafeMath, owned {
             return FINISHED;
         }
 
-        if (now &lt; openTime) {
+        if (now < openTime) {
             return BEFORE_SALE;
         }
 
@@ -295,7 +295,7 @@ contract VBToken is SafeMath, owned {
             return FINISHED;
         }
 
-        if (now &gt;= openTime &amp;&amp; now &lt; closeTime) {
+        if (now >= openTime && now < closeTime) {
             return IN_SALE;
         }
 
@@ -310,7 +310,7 @@ contract VBToken is SafeMath, owned {
         uint period = getPeriod();
         require(period == FINISHED);
 
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         msg.sender.transfer(amount);
     }
 

@@ -129,8 +129,8 @@ feePercentage = 9500;
 
 fundCollection = owner;
 transperrun = 25;
-Acontract = new BetA(this,minAmount,&quot;A&quot;);
-Bcontract = new BetB(this,minAmount,&quot;B&quot;);
+Acontract = new BetA(this,minAmount,"A");
+Bcontract = new BetB(this,minAmount,"B");
 
 }
 
@@ -171,19 +171,19 @@ transperrun = _transperrun;
 }
 
 function cancelBet() public onlyOwner returns(uint _balance){
-require(this.balance &gt; 0);
+require(this.balance > 0);
 //uint i;
 team memory tempteam;
 uint p;
 
 
-if (AteamBets.length &lt; transperrun)
+if (AteamBets.length < transperrun)
 p = AteamBets.length;
 else
 p = transperrun;
 
 //i = 0;
-while (p &gt; 0){
+while (p > 0){
 
 tempteam = AteamBets[p-1];
 AteamBets[p-1] = AteamBets[AteamBets.length -1];
@@ -199,12 +199,12 @@ tempteam.amount = 0;
 
 }
 
-if (BteamBets.length &lt; transperrun)
+if (BteamBets.length < transperrun)
 p = BteamBets.length;
 else
 p = transperrun;
 //i= 0;
-while (p &gt; 0){
+while (p > 0){
 
 tempteam = BteamBets[p-1];
 BteamBets[p-1] = BteamBets[BteamBets.length - 1];
@@ -228,7 +228,7 @@ return this.balance;
 }
 
 function result(uint _team) public onlyOwner returns (uint _balance){
-require(this.balance &gt; 0);
+require(this.balance > 0);
 require(checkTeamValue(_team));
 
 //uint i;
@@ -240,13 +240,13 @@ if(_team == 1){
 
 
 
-if (AteamBets.length &lt; transperrun)
+if (AteamBets.length < transperrun)
 p = AteamBets.length;
 else
 p = transperrun;
 
 //i = 0;
-while (p &gt; 0){
+while (p > 0){
 transferAmount = AteamBets[p-1].amount + (AteamBets[p-1].amount * BteamAmount / AteamAmount);
 tempteam = AteamBets[p-1];
 
@@ -268,12 +268,12 @@ transferAmount = 0;
 
 }else{
 
-if (BteamBets.length &lt; transperrun)
+if (BteamBets.length < transperrun)
 p = BteamBets.length;
 else
 p = transperrun;
 //i = 0;
-while (p &gt; 0){
+while (p > 0){
 transferAmount = BteamBets[p-1].amount + (BteamBets[p-1].amount * AteamAmount / BteamAmount);
 tempteam = BteamBets[p-1];
 BteamBets[p-1] = BteamBets[BteamBets.length - 1];
@@ -326,7 +326,7 @@ return correctteam;
 
 function bet(uint _team,address _betOwner) payable public returns (bool success){
 require(paused == false);
-require(msg.value &gt;= minAmount);
+require(msg.value >= minAmount);
 
 
 require(checkTeamValue(_team));

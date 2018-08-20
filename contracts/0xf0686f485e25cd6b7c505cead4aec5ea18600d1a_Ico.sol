@@ -69,7 +69,7 @@ contract EIP20 is EIP20Interface {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -90,11 +90,11 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -103,12 +103,12 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -130,8 +130,8 @@ contract EIP20 is EIP20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Gabicoin is Owned, EIP20
@@ -150,7 +150,7 @@ contract Gabicoin is Owned, EIP20
     event Activate();
 
     // Constructor.
-    function Gabicoin() EIP20(0, &quot;Gabicoin&quot;, 2, &quot;GCO&quot;) public
+    function Gabicoin() EIP20(0, "Gabicoin", 2, "GCO") public
     {
         owner = msg.sender;
     }
@@ -185,7 +185,7 @@ contract Gabicoin is Owned, EIP20
         require(isActive);// Only after activation.
         require(!icoBalances[addr].hasTransformed);// Only for not transfromed structs.
 
-        for (uint i = 0; i &lt; 3; i++)
+        for (uint i = 0; i < 3; i++)
         {
             if (activatedPhases[i])// Check phase activation.
             {
@@ -212,7 +212,7 @@ contract Gabicoin is Owned, EIP20
     bool public isActive;
 
     // Ico balances.
-    mapping (address =&gt; IcoBalance) public icoBalances;
+    mapping (address => IcoBalance) public icoBalances;
 }
 
 contract Bounty is Owned
@@ -267,7 +267,7 @@ contract Bounty is Owned
     }
 
     // Bounties.
-    mapping (address =&gt; uint) public bounties;
+    mapping (address => uint) public bounties;
 
     // Total bounty.
     uint public bountyTotal = 0;
@@ -311,7 +311,7 @@ contract Ico is Owned
         bounty = _bounty;
 
         // Save info abount phases.
-        for (uint i = 0; i &lt; 3; i++)
+        for (uint i = 0; i < 3; i++)
         {
             startDates[i] = _startDates[i];
             endDates[i] = _endDates[i];
@@ -325,19 +325,19 @@ contract Ico is Owned
     // Return true if date in phase with given number.
     function isPhase(uint number, uint date) view public returns (bool)
     {
-        return startDates[number] &lt;= date &amp;&amp; date &lt;= endDates[number];
+        return startDates[number] <= date && date <= endDates[number];
     }
 
     // Return true for succesfull Pre-ICO.
     function preIcoWasSuccessful() view public returns (bool)
     {
-        return ((totalInvested[0] / prices[0]) / 2 &gt;= preIcoSoftCap);
+        return ((totalInvested[0] / prices[0]) / 2 >= preIcoSoftCap);
     }
 
     // Return true for succesfull ICO.
     function icoWasSuccessful() view public returns (bool)
     {
-        return ((totalInvested[1] / prices[1]) + (totalInvested[2] * 5 / prices[2] / 4) &gt;= icoSoftCap);
+        return ((totalInvested[1] / prices[1]) + (totalInvested[2] * 5 / prices[2] / 4) >= icoSoftCap);
     }
 
     // Return ether funds
@@ -397,7 +397,7 @@ contract Ico is Owned
     {
         require(state == State.Runned);
 
-        if (now &gt;= endDates[2])// ICO and Pre-ICO softcaps have achieved.
+        if (now >= endDates[2])// ICO and Pre-ICO softcaps have achieved.
         {
             if (preIcoWasSuccessful() || icoWasSuccessful())
             {
@@ -412,7 +412,7 @@ contract Ico is Owned
         }
     }
     
-    // Activate Gabicoin if that&#39;s posible.
+    // Activate Gabicoin if that's posible.
     function activate() public
     {
         require(!Gabicoin(token).isActive());// Check token activity.
@@ -468,14 +468,14 @@ contract Ico is Owned
     // Buy tokens function.
     function buyTokens(address buyer, uint value, uint phaseNumber) internal
     {
-        require(totalInvested[phaseNumber] &lt; hardCaps[phaseNumber]);// Check investment posibility.
+        require(totalInvested[phaseNumber] < hardCaps[phaseNumber]);// Check investment posibility.
 
         // Define local variables here.
         uint amount;
         uint rest;
 
         // Compute rest.
-        if (totalInvested[phaseNumber] + value / prices[phaseNumber] &gt; hardCaps[phaseNumber])
+        if (totalInvested[phaseNumber] + value / prices[phaseNumber] > hardCaps[phaseNumber])
         {
             rest = hardCaps[phaseNumber] * prices[phaseNumber] - totalInvested[phaseNumber];
         }
@@ -485,7 +485,7 @@ contract Ico is Owned
         }
 
         amount = value - rest;
-        require(amount &gt; 0);
+        require(amount > 0);
         invested[buyer][phaseNumber] += amount;
         totalInvested[phaseNumber] += amount;
         BuyTokens(buyer, amount, phaseNumber);
@@ -520,8 +520,8 @@ contract Ico is Owned
     // Get funds from successful Pre-ICO.
     function getPreIcoFunds() onlyOwner() external returns (uint)
     {
-        require(state != State.Failed &amp;&amp; state != State.Paused);// Check state.
-        require(now &gt;= endDates[0]);// Check ending of Pre-ICO.
+        require(state != State.Failed && state != State.Paused);// Check state.
+        require(now >= endDates[0]);// Check ending of Pre-ICO.
         require(!preIcoCashedOut);// Check cash out from Pre-ICO.
 
         if (preIcoWasSuccessful())
@@ -540,7 +540,7 @@ contract Ico is Owned
     function getEtherum() onlyOwner() external returns (uint)
     {
         require(state == State.Finished);// Check state.
-        require(now &gt;= endDates[2]);// Check end of ICO.
+        require(now >= endDates[2]);// Check end of ICO.
 
         if (icoWasSuccessful())
         {
@@ -557,7 +557,7 @@ contract Ico is Owned
     State public state;
 
     // Invested from address.
-    mapping (address =&gt; uint[3]) public invested;
+    mapping (address => uint[3]) public invested;
 
     // Total invested at each phase.
     uint[3] public totalInvested;

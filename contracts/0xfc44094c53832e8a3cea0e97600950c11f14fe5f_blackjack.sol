@@ -35,7 +35,7 @@ contract casino is mortal{
   /** the maximum bet **/
   uint public maximumBet;
   /** tells if an address is authorized to call game functions **/
-  mapping(address =&gt; bool) public authorized;
+  mapping(address => bool) public authorized;
   
   /** 
    * constructur. initialize the contract with initial values. 
@@ -96,13 +96,13 @@ contract blackjack is casino {
    *   the value of a card can be determined by looking up cardValues[cardId%13]**/
   uint8[13] cardValues = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
   /** tells if the player already claimed his win **/
-  mapping(bytes32 =&gt; bool) public over;
+  mapping(bytes32 => bool) public over;
   /** the bets of the games in case they have been initialized before stand **/
-  mapping(bytes32 =&gt; uint) bets;
+  mapping(bytes32 => uint) bets;
    /** list of splits per game - length 0 in most cases **/
-  mapping(bytes32 =&gt; uint8[]) splits;
+  mapping(bytes32 => uint8[]) splits;
   /** tells if a hand of a given game has been doubled **/
-  mapping(bytes32 =&gt; mapping(uint8 =&gt; bool)) doubled;
+  mapping(bytes32 => mapping(uint8 => bool)) doubled;
   
   /** notify listeners that a new round of blackjack started **/
   event NewGame(bytes32 indexed id, bytes32 deck, bytes32 cSeed, address player, uint bet);
@@ -134,10 +134,10 @@ contract blackjack is casino {
    **/
   function initGame(address player, uint value, bytes32 deck, bytes32 srvSeed, bytes32 cSeed) onlyAuthorized  public{
     //throw if game with id already exists. later maybe throw only if game with id is still running
-    assert(value &gt;= minimumBet &amp;&amp; value &lt;= maximumBet);
-    assert(!over[srvSeed]&amp;&amp;bets[srvSeed]==0);//make sure the game hasn&#39;t been payed already
+    assert(value >= minimumBet && value <= maximumBet);
+    assert(!over[srvSeed]&&bets[srvSeed]==0);//make sure the game hasn't been payed already
     bets[srvSeed] = value;
-    assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player, value, false));
+    assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player, value, false));
     NewGame(srvSeed, deck, cSeed, player, value);
   }
 
@@ -151,10 +151,10 @@ contract blackjack is casino {
   function double(address player, bytes32 id, uint8 hand, uint value) onlyAuthorized public {
     require(!over[id]);
     require(checkBet(id, value));//make sure the game has been initialized and the transfered value is correct
-    require(hand &lt;= splits[id].length &amp;&amp; !doubled[id][hand]);//make sure the hand has not been doubled yet
+    require(hand <= splits[id].length && !doubled[id][hand]);//make sure the hand has not been doubled yet
     doubled[id][hand] = true;
     bets[id] += value;
-    assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player, value, false));
+    assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player, value, false));
     Double(id, hand);
   }
 
@@ -169,16 +169,16 @@ contract blackjack is casino {
   function split(address player, bytes32 id, uint8 hand, uint value) onlyAuthorized public  {
     require(!over[id]);
     require(checkBet(id, value));//make sure the game has been initialized and the transfered value is correct
-    require(splits[id].length &lt; 3);
+    require(splits[id].length < 3);
     splits[id].push(hand);
     bets[id] += value;
-    assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player, value, false));
+    assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player, value, false));
     Split(id,hand);
   }
   
   /**
    * by surrendering half the bet is returned to the player.
-   * send the plain server seed to check if it&#39;s correct
+   * send the plain server seed to check if it's correct
    * @param player the player address
    *        seed   the server seed
    *        bet    the original bet
@@ -187,19 +187,19 @@ contract blackjack is casino {
     var id = keccak256(seed);
     require(!over[id]);
     over[id] = true;
-    if(bets[id]&gt;0){
+    if(bets[id]>0){
       assert(bets[id]==bet);
-      assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player,bet / 2, true));
+      assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player,bet / 2, true));
       Result(id, player, bet / 2, true);
     }
     else{
-      assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player,bet / 2, false));
+      assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player,bet / 2, false));
       Result(id, player, bet / 2, false);
     }
   }
 
   /** 
-   * first checks if deck and the player&#39;s number of cards are correct, then checks if the player won and if so, sends the win.
+   * first checks if deck and the player's number of cards are correct, then checks if the player won and if so, sends the win.
    * @param player the player address
    *        deck      the partial deck
    *        seed      the plain server seed
@@ -220,19 +220,19 @@ contract blackjack is casino {
     
     var (win,loss) = determineOutcome(deck, numCards, splits, doubled, bet);
     
-    if(bets[gameId] &gt; 0){//initGame method called before
+    if(bets[gameId] > 0){//initGame method called before
       assert(checkBet(gameId, bet));
       win += bets[gameId];//pay back the bet
     }
     else
       NewGame(gameId, deckHash, cSeed, player, bet);
     
-    if (win &gt; loss){
-      assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player, win-loss, true));
+    if (win > loss){
+      assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player, win-loss, true));
       Result(gameId, player, win-loss, true); 
     }  
-    else if(loss &gt; win){//shift balance from the player to the casino
-      assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256,bool)&quot;)),player, loss-win, false));
+    else if(loss > win){//shift balance from the player to the casino
+      assert(msg.sender.call(bytes4(keccak256("shift(address,uint256,bool)")),player, loss-win, false));
       Result(gameId, player, loss-win, false); 
     }
     else
@@ -259,7 +259,7 @@ contract blackjack is casino {
    **/
   function convertToBytes(uint8[] byteArray) internal constant returns(bytes b) {
     b = new bytes(byteArray.length);
-    for (uint8 i = 0; i &lt; byteArray.length; i++)
+    for (uint8 i = 0; i < byteArray.length; i++)
       b[i] = byte(byteArray[i]);
   }
   
@@ -271,7 +271,7 @@ contract blackjack is casino {
    * */
   function checkBet(bytes32 gameId, uint bet) internal constant returns (bool correct){
     uint factor = splits[gameId].length + 1;
-    for(uint8 i = 0; i &lt; splits[gameId].length+1; i++){
+    for(uint8 i = 0; i < splits[gameId].length+1; i++){
       if(doubled[gameId][i]) factor++;
     }
     return bets[gameId] == bet * factor;
@@ -293,20 +293,20 @@ contract blackjack is casino {
     var (dealerValue, dealerBJ) = getDealerValue(cards, sum(numCards));
     uint win;
     uint loss;
-    for (uint8 h = 0; h &lt; numCards.length; h++) {
+    for (uint8 h = 0; h < numCards.length; h++) {
       uint8 playerValue = playerValues[h];
-      //bust if value &gt; 21
-      if (playerValue &gt; 21){
+      //bust if value > 21
+      if (playerValue > 21){
         win = 0;
         loss = bet;
       } 
       //player blackjack but no dealer blackjack
-      else if (numCards.length == 1 &amp;&amp; playerValue == 21 &amp;&amp; numCards[h] == 2 &amp;&amp; !dealerBJ) {
+      else if (numCards.length == 1 && playerValue == 21 && numCards[h] == 2 && !dealerBJ) {
         win = bet * 3 / 2; //pay 3 to 2
         loss = 0;
       }
       //player wins regularly
-      else if (playerValue &gt; dealerValue || dealerValue &gt; 21){
+      else if (playerValue > dealerValue || dealerValue > 21){
         win = bet;
         loss = 0;
       }
@@ -331,11 +331,11 @@ contract blackjack is casino {
   }
 
   /**
-   *   calculates the value of the player&#39;s hands.
+   *   calculates the value of the player's hands.
    *   @param cards     holds the (partial) deck.
    *          numCards  the number of cards per player hand
-   *          pSplits   the player&#39;s splits (hand index)
-   *   @return the values of the player&#39;s hands
+   *          pSplits   the player's splits (hand index)
+   *   @return the values of the player's hands
    **/
   function getPlayerValues(uint8[] cards, uint8[] numCards, uint8[] pSplits) constant internal returns(uint8[5] playerValues) {
     uint8 cardIndex;
@@ -344,32 +344,32 @@ contract blackjack is casino {
   }
 
   /**
-   *   recursively plays the player&#39;s hands.
+   *   recursively plays the player's hands.
    *   @param hIndex        the hand index
    *          cIndex        the index of the next card to draw
    *          sIndex        the index of the next split, if there is any
-   *          playerValues  the values of the player&#39;s hands (not yet complete)
+   *          playerValues  the values of the player's hands (not yet complete)
    *          cards         holds the (partial) deck.
    *          numCards      the number of cards per player hand
    *          pSplits        the array of splits
-   *   @return the values of the player&#39;s hands and the current card index
+   *   @return the values of the player's hands and the current card index
    **/
   function playHand(uint8 hIndex, uint8 cIndex, uint8 sIndex, uint8[5] playerValues, uint8[] cards, uint8[] numCards, uint8[] pSplits) constant internal returns(uint8, uint8, uint8[5]) {
     playerValues[hIndex] = cardValues[cards[cIndex] % 13];
-    cIndex = cIndex &lt; 4 ? cIndex + 2 : cIndex + 1;
-    while (sIndex &lt; pSplits.length &amp;&amp; pSplits[sIndex] == hIndex) {
+    cIndex = cIndex < 4 ? cIndex + 2 : cIndex + 1;
+    while (sIndex < pSplits.length && pSplits[sIndex] == hIndex) {
       sIndex++;
       (cIndex, sIndex, playerValues) = playHand(sIndex, cIndex, sIndex, playerValues, cards, numCards, pSplits);
     }
     uint8 numAces = playerValues[hIndex] == 11 ? 1 : 0;
     uint8 card;
-    for (uint8 i = 1; i &lt; numCards[hIndex]; i++) {
+    for (uint8 i = 1; i < numCards[hIndex]; i++) {
       card = cards[cIndex] % 13;
       playerValues[hIndex] += cardValues[card];
       if (card == 0) numAces++;
-      cIndex = cIndex &lt; 4 ? cIndex + 2 : cIndex + 1;
+      cIndex = cIndex < 4 ? cIndex + 2 : cIndex + 1;
     }
-    while (numAces &gt; 0 &amp;&amp; playerValues[hIndex] &gt; 21) {
+    while (numAces > 0 && playerValues[hIndex] > 21) {
       playerValues[hIndex] -= 10;
       numAces--;
     }
@@ -379,10 +379,10 @@ contract blackjack is casino {
 
 
   /**
-   *   calculates the value of a dealer&#39;s hand.
+   *   calculates the value of a dealer's hand.
    *   @param cards     holds the (partial) deck.
    *          numCards  the number of cards the player holds
-   *   @return the value of the dealer&#39;s hand and a flag indicating if the dealer has got a blackjack
+   *   @return the value of the dealer's hand and a flag indicating if the dealer has got a blackjack
    **/
   function getDealerValue(uint8[] cards, uint8 numCards) constant internal returns(uint8 dealerValue, bool bj) {
 
@@ -393,7 +393,7 @@ contract blackjack is casino {
     uint8 numAces;
     if (card == 0) numAces++;
     if (card2 == 0) numAces++;
-    if (dealerValue &gt; 21) { //2 aces,count as 12
+    if (dealerValue > 21) { //2 aces,count as 12
       dealerValue -= 10;
       numAces--;
     } else if (dealerValue == 21) {
@@ -401,11 +401,11 @@ contract blackjack is casino {
     }
     //take cards until value reaches 17 or more. 
     uint8 i;
-    while (dealerValue &lt; 17) {
+    while (dealerValue < 17) {
       card = cards[numCards + i + 2] % 13;
       dealerValue += cardValues[card];
       if (card == 0) numAces++;
-      if (dealerValue &gt; 21 &amp;&amp; numAces &gt; 0) {
+      if (dealerValue > 21 && numAces > 0) {
         dealerValue -= 10;
         numAces--;
       }
@@ -420,7 +420,7 @@ contract blackjack is casino {
    * @return the sum of the numbers
    **/
   function sum(uint8[] numbers) constant internal returns(uint8 s) {
-    for (uint i = 0; i &lt; numbers.length; i++) {
+    for (uint i = 0; i < numbers.length; i++) {
       s += numbers[i];
     }
   }

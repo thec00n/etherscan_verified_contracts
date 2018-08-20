@@ -8,11 +8,11 @@ contract ERC20Basic {
 
 contract service{
     address tokenContract = 0xf4e7Cf1C71d983199dfe21C6569eC0125fc39000;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     uint256 public totalSupply = 0 ;
-    string public name = &quot;雷門接收測試&quot;;
-    string public symbol = &quot;雷門test&quot;;
+    string public name = "雷門接收測試";
+    string public symbol = "雷門test";
     uint8 public decimals = 2;
     
     function receiveApproval(address _sender,uint256 _value,
@@ -30,7 +30,7 @@ contract service{
         return true;
     }
     function withdraw(uint256 _value){
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         require(ERC20Basic(tokenContract).transfer(msg.sender, _value));
     }
 }

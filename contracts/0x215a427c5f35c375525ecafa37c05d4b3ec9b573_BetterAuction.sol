@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 contract BetterAuction {
     // Mapping for members of multisig
-    mapping (address =&gt; bool) public members;
+    mapping (address => bool) public members;
     // Auction start time, seconds from 1970-01-01
     uint256 public auctionStart;
     // Auction bidding period in seconds, relative to auctionStart
@@ -22,7 +22,7 @@ contract BetterAuction {
     // Highest bid amount
     uint256 public highestBid;
     // Allowed withdrawals of previous bids
-    mapping(address =&gt; uint256) pendingReturns;
+    mapping(address => uint256) pendingReturns;
     // Set to true at the end, disallows any change
     bool auctionClosed;
 
@@ -36,7 +36,7 @@ contract BetterAuction {
     struct Proposal {
         address recipient;
         uint256 numVotes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
         bool isRecover;
     }
  
@@ -46,12 +46,12 @@ contract BetterAuction {
     }
  
     modifier isAuctionActive {
-        if (now &lt; auctionStart || now &gt; (auctionStart + biddingPeriod)) throw;
+        if (now < auctionStart || now > (auctionStart + biddingPeriod)) throw;
         _;
     }
  
     modifier isAuctionEnded {
-        if (now &lt; (auctionStart + biddingPeriod)) throw;
+        if (now < (auctionStart + biddingPeriod)) throw;
         _;
     }
 
@@ -71,7 +71,7 @@ contract BetterAuction {
         members[_address2] = true;
         members[_address3] = true;
         auctionStart = now;
-        if (_biddingPeriod &gt; _recoveryAfterPeriod) throw;
+        if (_biddingPeriod > _recoveryAfterPeriod) throw;
         biddingPeriod = _biddingPeriod;
         recoveryAfterPeriod = _recoveryAfterPeriod;
     }
@@ -95,7 +95,7 @@ contract BetterAuction {
         if (msg.sender == highestBidder) {
             highestBid += msg.value;
             HighestBidIncreased(msg.sender, highestBid);
-        } else if (pendingReturns[msg.sender] + msg.value &gt; highestBid) {
+        } else if (pendingReturns[msg.sender] + msg.value > highestBid) {
             var amount = pendingReturns[msg.sender] + msg.value;
             pendingReturns[msg.sender] = 0;
             // Save previous highest bidders funds
@@ -111,11 +111,11 @@ contract BetterAuction {
  
     // Bidders can only place bid while the auction is active 
     function bidderPlaceBid() isAuctionActive payable {
-        if ((pendingReturns[msg.sender] &gt; 0 || msg.sender == highestBidder) &amp;&amp; msg.value &gt; 0) {
+        if ((pendingReturns[msg.sender] > 0 || msg.sender == highestBidder) && msg.value > 0) {
             bidderUpdateBid();
         } else {
             // Reject bids below the highest bid
-            if (msg.value &lt;= highestBid) throw;
+            if (msg.value <= highestBid) throw;
             // Save previous highest bidders funds
             if (highestBidder != 0) {
                 pendingReturns[highestBidder] = highestBid;
@@ -130,7 +130,7 @@ contract BetterAuction {
     // Withdraw a bid that was overbid.
     function nonHighestBidderRefund() payable {
         var amount = pendingReturns[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             pendingReturns[msg.sender] = 0;
             if (!msg.sender.send(amount + msg.value)) throw;
         } else {
@@ -159,10 +159,10 @@ contract BetterAuction {
         p.numVotes++;
 
         // Required signatures have been met
-        if (p.numVotes &gt;= REQUIRED_SIGNATURES) {
+        if (p.numVotes >= REQUIRED_SIGNATURES) {
             if ( p.isRecover ) {
                 // Is it too early for recovery?
-                if (now &lt; (auctionStart + recoveryAfterPeriod)) throw;
+                if (now < (auctionStart + recoveryAfterPeriod)) throw;
                 // Recover any ethers accidentally sent to contract
                 if (!p.recipient.send(this.balance)) throw;
             } else {

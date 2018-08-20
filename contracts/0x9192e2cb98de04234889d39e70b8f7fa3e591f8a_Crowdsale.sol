@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -137,7 +137,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -184,7 +184,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -265,7 +265,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -311,9 +311,9 @@ contract RefundVault is Ownable {
 contract TestPCoin is PausableToken {
    using SafeMath for uint256;
 
-   string public constant name = &#39;TestPCoin&#39;;
+   string public constant name = 'TestPCoin';
 
-   string public constant symbol = &#39;TESTP&#39;;
+   string public constant symbol = 'TESTP';
 
    uint8 public constant decimals = 18;
 
@@ -339,7 +339,7 @@ contract TestPCoin is PausableToken {
    // The maximum amount of tokens sold in the crowdsale
    uint256 public limitCrowdsale = 50e24;
 
-   /// @notice Only allows the execution of the function if it&#39;s comming from crowdsale
+   /// @notice Only allows the execution of the function if it's comming from crowdsale
    modifier onlyCrowdsale() {
       require(msg.sender == crowdsale);
       _;
@@ -348,15 +348,15 @@ contract TestPCoin is PausableToken {
    // When someone refunds tokens
    event RefundedTokens(address indexed user, uint256 tokens);
 
-   /// @notice Constructor used to set the platform &amp; development tokens. This is
+   /// @notice Constructor used to set the platform & development tokens. This is
    /// The 20% + 20% of the 100 M tokens used for platform and development team.
    /// The owner, msg.sender, is able to do allowance for other contracts. Remember
-   /// to use `transferFrom()` if you&#39;re allowed
+   /// to use `transferFrom()` if you're allowed
    function TestPCoin() {
       balances[msg.sender] = initialSupply; // 40M tokens wei
    }
 
-   /// @notice Function to set the crowdsale smart contract&#39;s address only by the owner of this token
+   /// @notice Function to set the crowdsale smart contract's address only by the owner of this token
    /// @param _crowdsale The address that will be used
    function setCrowdsaleAddress(address _crowdsale) external onlyOwner whenNotPaused {
       require(_crowdsale != address(0));
@@ -369,11 +369,11 @@ contract TestPCoin is PausableToken {
    /// @param tokens The amount of tokens corresponding to that buyer
    function distributePresaleTokens(address _buyer, uint tokens) external onlyOwner whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0 &amp;&amp; tokens &lt;= limitPresale);
+      require(tokens > 0 && tokens <= limitPresale);
 
-      // Check that the limit of 10M presale tokens hasn&#39;t been met yet
-      require(tokensDistributedPresale &lt; limitPresale);
-      require(tokensDistributedPresale.add(tokens) &lt; limitPresale);
+      // Check that the limit of 10M presale tokens hasn't been met yet
+      require(tokensDistributedPresale < limitPresale);
+      require(tokensDistributedPresale.add(tokens) < limitPresale);
 
       tokensDistributedPresale = tokensDistributedPresale.add(tokens);
       balances[_buyer] = balances[_buyer].add(tokens);
@@ -384,11 +384,11 @@ contract TestPCoin is PausableToken {
    /// @param tokens The amount of tokens to send to that address
    function distributeICOTokens(address _buyer, uint tokens) external onlyCrowdsale whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0);
+      require(tokens > 0);
 
-      // Check that the limit of 50M ICO tokens hasn&#39;t been met yet
-      require(tokensDistributedCrowdsale &lt; limitCrowdsale);
-      require(tokensDistributedCrowdsale.add(tokens) &lt;= limitCrowdsale);
+      // Check that the limit of 50M ICO tokens hasn't been met yet
+      require(tokensDistributedCrowdsale < limitCrowdsale);
+      require(tokensDistributedCrowdsale.add(tokens) <= limitCrowdsale);
 
       tokensDistributedCrowdsale = tokensDistributedCrowdsale.add(tokens);
       balances[_buyer] = balances[_buyer].add(tokens);
@@ -399,8 +399,8 @@ contract TestPCoin is PausableToken {
    /// @param tokens The tokens to return
    function refundTokens(address _buyer, uint256 tokens) external onlyCrowdsale whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0);
-      require(balances[_buyer] &gt;= tokens);
+      require(tokens > 0);
+      require(balances[_buyer] >= tokens);
 
       balances[_buyer] = balances[_buyer].sub(tokens);
       RefundedTokens(_buyer, tokens);
@@ -410,7 +410,7 @@ contract TestPCoin is PausableToken {
    function burnTokens() external onlyCrowdsale whenNotPaused {
 
       uint256 remainingICOToken = limitCrowdsale.sub(tokensDistributedCrowdsale);
-      if(remainingICOToken &gt; 0 &amp;&amp; !remainingTokenBurnt) {
+      if(remainingICOToken > 0 && !remainingTokenBurnt) {
       remainingTokenBurnt = true;
       limitCrowdsale = limitCrowdsale.sub(remainingICOToken);
       totalSupply = totalSupply.sub(remainingICOToken);
@@ -421,7 +421,7 @@ contract TestPCoin is PausableToken {
 // 2. If the goal is reached, the state of the vault will change and the ether will be sent to the address
 // 3. If the goal is not reached , the state of the vault will change to refunding and the users will be able to call claimRefund() to get their ether
 
-/// @author Manoj Patidar &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3b3a2b7aaa7a2b1aea2adaca983a4aea2aaafeda0acae">[email&#160;protected]</a>&gt;
+/// @author Manoj Patidar <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3b3a2b7aaa7a2b1aea2adaca983a4aea2aaafeda0acae">[email protected]</a>>
 contract Crowdsale is Pausable {
    using SafeMath for uint256;
 
@@ -488,7 +488,7 @@ contract Crowdsale is Pausable {
    // 7.5e6 + 1e18
    uint256 public constant minimumGoal = 5.33e19;
 
-   // If the crowdsale wasn&#39;t successful, this will be true and users will be able
+   // If the crowdsale wasn't successful, this will be true and users will be able
    // to claim the refund of their ether
    bool public isRefunding = false;
 
@@ -502,10 +502,10 @@ contract Crowdsale is Pausable {
    uint256 public limitGasPrice = 50000000000 wei;
 
    // How much each user paid for the crowdsale
-   mapping(address =&gt; uint256) public crowdsaleBalances;
+   mapping(address => uint256) public crowdsaleBalances;
 
    // How many tokens each user got for the crowdsale
-   mapping(address =&gt; uint256) public tokensBought;
+   mapping(address => uint256) public tokensBought;
 
    // To indicate who purchased what amount of tokens and who received what amount of wei
    event TokenPurchase(address indexed buyer, uint256 value, uint256 amountOfTokens);
@@ -515,7 +515,7 @@ contract Crowdsale is Pausable {
 
    // Only allow the execution of the function before the crowdsale starts
    modifier beforeStarting() {
-      require(now &lt; startTime);
+      require(now < startTime);
       _;
    }
 
@@ -535,18 +535,18 @@ contract Crowdsale is Pausable {
       require(_walletB != address(0));
 
       // If you send the start and end time on the constructor, the end must be larger
-      if(_startTime &gt; 0 &amp;&amp; _endTime &gt; 0)
-         require(_startTime &lt; _endTime);
+      if(_startTime > 0 && _endTime > 0)
+         require(_startTime < _endTime);
 
       wallet = _wallet;
       walletB = _walletB;
       token = TestPCoin(_tokenAddress);
       vault = new RefundVault(_wallet);
 
-      if(_startTime &gt; 0)
+      if(_startTime > 0)
          startTime = _startTime;
 
-      if(_endTime &gt; 0)
+      if(_endTime > 0)
          endTime = _endTime;
    }
 
@@ -563,31 +563,31 @@ contract Crowdsale is Pausable {
 
       uint256 amountPaid = calculateExcessBalance();
 
-      if(tokensRaised &lt; limitTier1) {
+      if(tokensRaised < limitTier1) {
 
          // Tier 1
          tokens = amountPaid.mul(rate);
 
          // If the amount of tokens that you want to buy gets out of this tier
-         if(tokensRaised.add(tokens) &gt; limitTier1)
+         if(tokensRaised.add(tokens) > limitTier1)
             tokens = calculateExcessTokens(amountPaid, limitTier1, 1, rate);
-      } else if(tokensRaised &gt;= limitTier1 &amp;&amp; tokensRaised &lt; limitTier2) {
+      } else if(tokensRaised >= limitTier1 && tokensRaised < limitTier2) {
 
          // Tier 2
          tokens = amountPaid.mul(rateTier2);
 
          // If the amount of tokens that you want to buy gets out of this tier
-         if(tokensRaised.add(tokens) &gt; limitTier2)
+         if(tokensRaised.add(tokens) > limitTier2)
             tokens = calculateExcessTokens(amountPaid, limitTier2, 2, rateTier2);
-      } else if(tokensRaised &gt;= limitTier2 &amp;&amp; tokensRaised &lt; limitTier3) {
+      } else if(tokensRaised >= limitTier2 && tokensRaised < limitTier3) {
 
          // Tier 3
          tokens = amountPaid.mul(rateTier3);
 
          // If the amount of tokens that you want to buy gets out of this tier
-         if(tokensRaised.add(tokens) &gt; limitTier3)
+         if(tokensRaised.add(tokens) > limitTier3)
             tokens = calculateExcessTokens(amountPaid, limitTier3, 3, rateTier3);
-      } else if(tokensRaised &gt;= limitTier3) {
+      } else if(tokensRaised >= limitTier3) {
 
          // Tier 4
          tokens = amountPaid.mul(rateTier4);
@@ -603,7 +603,7 @@ contract Crowdsale is Pausable {
       TokenPurchase(msg.sender, amountPaid, tokens);
       numberOfTransactions = numberOfTransactions.add(1);
 
-      if(tokensRaisedBeforeThisTransaction &gt; minimumGoal) {
+      if(tokensRaisedBeforeThisTransaction > minimumGoal) {
 
          walletB.transfer(amountPaid);
 
@@ -623,21 +623,21 @@ contract Crowdsale is Pausable {
    /// @notice Calculates how many ether will be used to generate the tokens in
    /// case the buyer sends more than the maximum balance but has some balance left
    /// and updates the balance of that buyer.
-   /// For instance if he&#39;s 500 balance and he sends 1000, it will return 500
+   /// For instance if he's 500 balance and he sends 1000, it will return 500
    /// and refund the other 500 ether
    function calculateExcessBalance() internal whenNotPaused returns(uint256) {
       uint256 amountPaid = msg.value;
       uint256 differenceWei = 0;
       uint256 exceedingBalance = 0;
 
-      // If we&#39;re in the last tier, check that the limit hasn&#39;t been reached
+      // If we're in the last tier, check that the limit hasn't been reached
       // and if so, refund the difference and return what will be used to
       // buy the remaining tokens
-      if(tokensRaised &gt;= limitTier3) {
+      if(tokensRaised >= limitTier3) {
          uint256 addedTokens = tokensRaised.add(amountPaid.mul(rateTier4));
 
          // If tokensRaised + what you paid converted to tokens is bigger than the max
-         if(addedTokens &gt; maxTokensRaised) {
+         if(addedTokens > maxTokensRaised) {
 
             // Refund the difference
             uint256 difference = addedTokens.sub(maxTokensRaised);
@@ -649,7 +649,7 @@ contract Crowdsale is Pausable {
       uint256 addedBalance = crowdsaleBalances[msg.sender].add(amountPaid);
 
       // Checking that the individual limit of 1000 ETH per user is not reached
-      if(addedBalance &lt;= maxPurchase) {
+      if(addedBalance <= maxPurchase) {
          crowdsaleBalances[msg.sender] = crowdsaleBalances[msg.sender].add(amountPaid);
       } else {
 
@@ -662,10 +662,10 @@ contract Crowdsale is Pausable {
       }
 
       // Make the transfers at the end of the function for security purposes
-      if(differenceWei &gt; 0)
+      if(differenceWei > 0)
          msg.sender.transfer(differenceWei);
 
-      if(exceedingBalance &gt; 0) {
+      if(exceedingBalance > 0) {
 
          // Return the exceeding balance to the buyer
          msg.sender.transfer(exceedingBalance);
@@ -674,7 +674,7 @@ contract Crowdsale is Pausable {
       return amountPaid;
    }
 
-   /// @notice Set&#39;s the rate of tokens per ether for each tier. Use it after the
+   /// @notice Set's the rate of tokens per ether for each tier. Use it after the
    /// smart contract is deployed to set the price according to the ether price
    /// at the start of the ICO
    /// @param tier1 The amount of tokens you get in the tier one
@@ -684,8 +684,8 @@ contract Crowdsale is Pausable {
    function setTierRates(uint256 tier1, uint256 tier2, uint256 tier3, uint256 tier4)
       external onlyOwner whenNotPaused
    {
-      require(tier1 &gt; 0 &amp;&amp; tier2 &gt; 0 &amp;&amp; tier3 &gt; 0 &amp;&amp; tier4 &gt; 0);
-      require(tier1 &gt; tier2 &amp;&amp; tier2 &gt; tier3 &amp;&amp; tier3 &gt; tier4);
+      require(tier1 > 0 && tier2 > 0 && tier3 > 0 && tier4 > 0);
+      require(tier1 > tier2 && tier2 > tier3 && tier3 > tier4);
 
       rate = tier1;
       rateTier2 = tier2;
@@ -698,31 +698,31 @@ contract Crowdsale is Pausable {
    function setEndDate(uint256 _endTime)
       external onlyOwner whenNotPaused
    {
-      require(now &lt;= _endTime);
-      require(startTime &lt; _endTime);
+      require(now <= _endTime);
+      require(startTime < _endTime);
 
       endTime = _endTime;
    }
 
 
    /// @notice Check if the crowdsale has ended and enables refunds only in case the
-   /// goal hasn&#39;t been reached
+   /// goal hasn't been reached
    function checkCompletedCrowdsale() public whenNotPaused {
       if(!isEnded) {
-         if(hasEnded() &amp;&amp; !goalReached()){
+         if(hasEnded() && !goalReached()){
             vault.enableRefunds();
 
             isRefunding = true;
             isEnded = true;
             Finalized();
-         } else if(hasEnded()  &amp;&amp; goalReached()) {
+         } else if(hasEnded()  && goalReached()) {
 
 
             isEnded = true;
 
 
             // Burn token only when minimum goal reached and maxGoal not reached.
-            if(tokensRaised &lt; maxTokensRaised) {
+            if(tokensRaised < maxTokensRaised) {
 
                token.burnTokens();
 
@@ -737,7 +737,7 @@ contract Crowdsale is Pausable {
 
    /// @notice If crowdsale is unsuccessful, investors can claim refunds here
    function claimRefund() public whenNotPaused {
-     require(hasEnded() &amp;&amp; !goalReached() &amp;&amp; isRefunding);
+     require(hasEnded() && !goalReached() && isRefunding);
 
      vault.refund(msg.sender);
      token.refundTokens(msg.sender, tokensBought[msg.sender]);
@@ -755,15 +755,15 @@ contract Crowdsale is Pausable {
       uint256 tierSelected,
       uint256 _rate
    ) public returns(uint256 totalTokens) {
-      require(amount &gt; 0 &amp;&amp; tokensThisTier &gt; 0 &amp;&amp; _rate &gt; 0);
-      require(tierSelected &gt;= 1 &amp;&amp; tierSelected &lt;= 4);
+      require(amount > 0 && tokensThisTier > 0 && _rate > 0);
+      require(tierSelected >= 1 && tierSelected <= 4);
 
       uint weiThisTier = tokensThisTier.sub(tokensRaised).div(_rate);
       uint weiNextTier = amount.sub(weiThisTier);
       uint tokensNextTier = 0;
       bool returnTokens = false;
 
-      // If there&#39;s excessive wei for the last tier, refund those
+      // If there's excessive wei for the last tier, refund those
       if(tierSelected != 4)
          tokensNextTier = calculateTokensTier(weiNextTier, tierSelected.add(1));
       else
@@ -777,13 +777,13 @@ contract Crowdsale is Pausable {
 
    /// @notice Buys the tokens given the price of the tier one and the wei paid
    /// @param weiPaid The amount of wei paid that will be used to buy tokens
-   /// @param tierSelected The tier that you&#39;ll use for thir purchase
-   /// @return calculatedTokens Returns how many tokens you&#39;ve bought for that wei paid
+   /// @param tierSelected The tier that you'll use for thir purchase
+   /// @return calculatedTokens Returns how many tokens you've bought for that wei paid
    function calculateTokensTier(uint256 weiPaid, uint256 tierSelected)
         internal constant returns(uint256 calculatedTokens)
    {
-      require(weiPaid &gt; 0);
-      require(tierSelected &gt;= 1 &amp;&amp; tierSelected &lt;= 4);
+      require(weiPaid > 0);
+      require(tierSelected >= 1 && tierSelected <= 4);
 
       if(tierSelected == 1)
          calculatedTokens = weiPaid.mul(rate);
@@ -799,26 +799,26 @@ contract Crowdsale is Pausable {
    /// @notice Checks if a purchase is considered valid
    /// @return bool If the purchase is valid or not
    function validPurchase() internal constant returns(bool) {
-      bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-      bool nonZeroPurchase = msg.value &gt; 0;
-      bool withinTokenLimit = tokensRaised &lt; maxTokensRaised;
-      bool minimumPurchase = msg.value &gt;= minPurchase;
-      bool hasBalanceAvailable = crowdsaleBalances[msg.sender] &lt; maxPurchase;
+      bool withinPeriod = now >= startTime && now <= endTime;
+      bool nonZeroPurchase = msg.value > 0;
+      bool withinTokenLimit = tokensRaised < maxTokensRaised;
+      bool minimumPurchase = msg.value >= minPurchase;
+      bool hasBalanceAvailable = crowdsaleBalances[msg.sender] < maxPurchase;
 
       // We want to limit the gas to avoid giving priority to the biggest paying contributors
-      //bool limitGas = tx.gasprice &lt;= limitGasPrice;
+      //bool limitGas = tx.gasprice <= limitGasPrice;
 
-      return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinTokenLimit &amp;&amp; minimumPurchase &amp;&amp; hasBalanceAvailable;
+      return withinPeriod && nonZeroPurchase && withinTokenLimit && minimumPurchase && hasBalanceAvailable;
    }
 
    /// @notice To see if the minimum goal of tokens of the ICO has been reached
    /// @return bool True if the tokens raised are bigger than the goal or false otherwise
    function goalReached() public constant returns(bool) {
-      return tokensRaised &gt;= minimumGoal;
+      return tokensRaised >= minimumGoal;
    }
 
    /// @notice Public function to check if the crowdsale has ended or not
    function hasEnded() public constant returns(bool) {
-      return now &gt; endTime || tokensRaised &gt;= maxTokensRaised;
+      return now > endTime || tokensRaised >= maxTokensRaised;
    }
 }

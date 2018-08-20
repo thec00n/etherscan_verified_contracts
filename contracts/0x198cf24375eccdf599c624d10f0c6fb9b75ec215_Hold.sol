@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -45,7 +45,7 @@ contract Ownable {
  * Manager that stores permitted addresses 
  */
 contract PermissionManager is Ownable {
-    mapping (address =&gt; bool) permittedAddresses;
+    mapping (address => bool) permittedAddresses;
 
     function addAddress(address newAddress) public onlyOwner {
         permittedAddresses[newAddress] = true;
@@ -73,8 +73,8 @@ contract Registry is Ownable {
     uint quoteUSD;
     uint contributionRNTB;
   }
-  mapping(address =&gt; ContributorData) public contributorList;
-  mapping(uint =&gt; address) private contributorIndexes;
+  mapping(address => ContributorData) public contributorList;
+  mapping(uint => address) private contributorIndexes;
 
   uint private nextContributorIndex;
 
@@ -213,9 +213,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -223,7 +223,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -232,7 +232,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -262,8 +262,8 @@ contract ERC223ReceivingContract {
     tkn.sender = _from;
     tkn.value = _value;
     tkn.data = _data;
-    if(_data.length &gt; 0) {
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+    if(_data.length > 0) {
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
     }
 
@@ -300,16 +300,16 @@ contract ERC223Interface {
 contract UnityToken is ERC223Interface {
   using SafeMath for uint;
 
-  string public constant name = &quot;Unity Token&quot;;
-  string public constant symbol = &quot;UNT&quot;;
+  string public constant name = "Unity Token";
+  string public constant symbol = "UNT";
   uint8 public constant decimals = 18;
 
 
   /* The supply is initially 100UNT to the precision of 18 decimals */
   uint public constant INITIAL_SUPPLY = 100000 * (10 ** uint(decimals));
 
-  mapping(address =&gt; uint) balances; // List of user balances.
-  mapping(address =&gt; bool) allowedAddresses;
+  mapping(address => uint) balances; // List of user balances.
+  mapping(address => bool) allowedAddresses;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -327,7 +327,7 @@ contract UnityToken is ERC223Interface {
 
   address public owner;
 
-  /* Constructor initializes the owner&#39;s balance and the supply  */
+  /* Constructor initializes the owner's balance and the supply  */
   function UnityToken() public {
     owner = msg.sender;
     totalSupply = INITIAL_SUPPLY;
@@ -342,7 +342,7 @@ contract UnityToken is ERC223Interface {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
     if (isContract(_to)) {
       require(allowedAddresses[_to]);
-      if (balanceOf(msg.sender) &lt; _value)
+      if (balanceOf(msg.sender) < _value)
         revert();
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -388,12 +388,12 @@ contract UnityToken is ERC223Interface {
     //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -404,7 +404,7 @@ contract UnityToken is ERC223Interface {
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
     require(allowedAddresses[_to]);
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -443,7 +443,7 @@ contract Hold is Ownable {
     uint nextContributorToTransferEth;
     address public observer;
     uint dateDeployed;
-    mapping(address =&gt; bool) private hasWithdrawedEth;
+    mapping(address => bool) private hasWithdrawedEth;
 
     event InitialBalanceChanged(uint balance);
     event EthReleased(uint ethreleased);
@@ -489,16 +489,16 @@ contract Hold is Ownable {
 
     function releaseAllETH() onlyPermitted public {
         uint balReleased = getBalanceReleased();
-        require(balReleased &gt; 0);
-        require(this.balance &gt;= balReleased);
+        require(balReleased > 0);
+        require(this.balance >= balReleased);
         multisig.transfer(balReleased);
         withdrawed += balReleased;
         EthReleased(balReleased);
     }
 
     function releaseETH(uint n) onlyPermitted public {
-        require(this.balance &gt;= n);
-        require(getBalanceReleased() &gt;= n);
+        require(this.balance >= n);
+        require(getBalanceReleased() >= n);
         multisig.transfer(n);
         withdrawed += n;
         EthReleased(n);
@@ -510,7 +510,7 @@ contract Hold is Ownable {
 
     function changeStageAndReleaseETH() public onlyObserver {
         uint8 newStage = currentStage + 1;
-        require(newStage &lt;= stages);
+        require(newStage <= stages);
         currentStage = newStage;
         StageChanged(newStage);
         releaseAllETH();
@@ -518,7 +518,7 @@ contract Hold is Ownable {
 
     function changeStage() public onlyObserver {
         uint8 newStage = currentStage + 1;
-        require(newStage &lt;= stages);
+        require(newStage <= stages);
         currentStage = newStage;
         StageChanged(newStage);
     }
@@ -528,17 +528,17 @@ contract Hold is Ownable {
     }
 
     function returnETHByOwner() public onlyOwner {
-        require(now &gt; dateDeployed + 183 days);
+        require(now > dateDeployed + 183 days);
         uint balance = getBalance();
         owner.transfer(getBalance());
         EthReturnedToOwner(owner, balance);
     }
 
     function refund(uint _numberOfReturns) public onlyOwner {
-        require(_numberOfReturns &gt; 0);
+        require(_numberOfReturns > 0);
         address currentParticipantAddress;
 
-        for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+        for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
             currentParticipantAddress = registry.getContributorByIndex(nextContributorToTransferEth);
             if (currentParticipantAddress == 0x0) 
                 return;

@@ -5,14 +5,14 @@ pragma solidity ^0.4.21;
 // token, until the contract is locked down
 //
 // Deploy with the following:
-// - string _symbol, e.g. &#39;FLX&#39;
-// - string _name, e.g. &#39;FlexibleToken&#39;
+// - string _symbol, e.g. 'FLX'
+// - string _name, e.g. 'FlexibleToken'
 // - uint8 _decimals, e.g. 18
 // - uint _initialSupply, e.g. 1,000,000.000000000000000000 for 1 mil with 18
 //   decimals
 //
-// Owner can call `setSymbol(&quot;xyz&quot;)` to update the symbol and
-// `setName(&quot;xyz name&quot;)` to update the name. Once the owner calls `lock()`,
+// Owner can call `setSymbol("xyz")` to update the symbol and
+// `setName("xyz name")` to update the name. Once the owner calls `lock()`,
 // the name and symbol can no longer be updated
 //
 // Note that blockchain explorers may not automatically update the symbol and
@@ -31,10 +31,10 @@ pragma solidity ^0.4.21;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -42,7 +42,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -116,8 +116,8 @@ contract FlexibleToken is ERC20Interface, Owned {
     uint public _totalSupply;
     bool public locked = false;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Locked();
     event SymbolUpdated(string oldSymbol, string newSymbol);

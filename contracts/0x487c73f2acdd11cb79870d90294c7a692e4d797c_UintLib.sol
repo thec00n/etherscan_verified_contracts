@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -30,32 +30,32 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 /// @title UintUtil
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f0b0e01060a032f0300001f1d06010841001d08">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f0b0e01060a032f0300001f1d06010841001d08">[email protected]</a>>
 /// @dev uint utility functions
 library UintLib {
     using SafeMath  for uint;
 
     function tolerantSub(uint x, uint y) constant returns (uint z) {
-        if (x &gt;= y) z = x - y;
+        if (x >= y) z = x - y;
         else z = 0;
     }
 
@@ -78,11 +78,11 @@ library UintLib {
         returns (uint) {
 
         uint len = arr.length;
-        require(len &gt; 1);
-        require(scale &gt; 0);
+        require(len > 1);
+        require(scale > 0);
 
         uint avg = 0;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             avg += arr[i];
         }
 
@@ -93,9 +93,9 @@ library UintLib {
         }
 
         uint cvs = 0;
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             uint sub = 0;
-            if (arr[i] &gt; avg) {
+            if (arr[i] > avg) {
                 sub = arr[i] - avg;
             } else {
                 sub = avg - arr[i];

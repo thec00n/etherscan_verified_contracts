@@ -10,19 +10,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint256 c = a / b;
       return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
   }
 }
@@ -85,11 +85,11 @@ contract TWDTToken is ERC20,Ownable {
     bool public needVerified;
 
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-	mapping (address =&gt; bool) public frozenAccount;
-	mapping (address =&gt; bool) public frozenAccountSend;
-    mapping (address =&gt; bool) public verifiedAccount;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) allowed;
+	mapping (address => bool) public frozenAccount;
+	mapping (address => bool) public frozenAccountSend;
+    mapping (address => bool) public verifiedAccount;
     event FrozenFunds(address target, bool frozen);
     event FrozenFundsSend(address target, bool frozen);
     event VerifiedFunds(address target, bool Verified);
@@ -98,8 +98,8 @@ contract TWDTToken is ERC20,Ownable {
     event Error_No_Binding_Address(address _from, address _to);
 
 	constructor() public {  	
-		name=&quot;Taiwan Digital Token&quot;;
-		symbol=&quot;TWDT-ETH&quot;;
+		name="Taiwan Digital Token";
+		symbol="TWDT-ETH";
 		totalSupply = 100000000000*(10**decimals);
 		balanceOf[msg.sender] = totalSupply;	
 	    needVerified = false;
@@ -113,12 +113,12 @@ contract TWDTToken is ERC20,Ownable {
 		require(_from != 0x0);
 	    require(_to != 0x0);
         // SafeMath 已檢查
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 	    require(!frozenAccount[_from]);                  
         require(!frozenAccount[_to]); 
         require(!frozenAccountSend[_from]); 
-        if(!needVerified || (needVerified &amp;&amp; verifiedAccount[_from] &amp;&amp; verifiedAccount[_to])){
+        if(!needVerified || (needVerified && verifiedAccount[_from] && verifiedAccount[_to])){
 
             uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 
@@ -162,14 +162,14 @@ contract TWDTToken is ERC20,Ownable {
 	function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
 	    require(_from != 0x0);
 	    require(_to != 0x0);
-	    require(_value &gt; 0);
-	    require(allowed[_from][msg.sender] &gt;= _value);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(_value > 0);
+	    require(allowed[_from][msg.sender] >= _value);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 	    require(!frozenAccount[_from]);                  
         require(!frozenAccount[_to]);
         require(!frozenAccountSend[_from]);   
-        if(!needVerified || (needVerified &amp;&amp; verifiedAccount[_from] &amp;&amp; verifiedAccount[_to])){
+        if(!needVerified || (needVerified && verifiedAccount[_from] && verifiedAccount[_to])){
 
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); 
             balanceOf[_from] = balanceOf[_from].sub(_value);
@@ -207,10 +207,10 @@ contract TWDTToken is ERC20,Ownable {
 
     function mintToken(address _target, uint256 _mintedAmount) onlyOwner public {
         require(_target != 0x0);
-        require(_mintedAmount &gt; 0);
+        require(_mintedAmount > 0);
         require(!frozenAccount[_target]);
-        require(totalSupply + _mintedAmount &gt; totalSupply);
-        require(balanceOf[_target] + _mintedAmount &gt; balanceOf[_target]);
+        require(totalSupply + _mintedAmount > totalSupply);
+        require(balanceOf[_target] + _mintedAmount > balanceOf[_target]);
         balanceOf[_target] = balanceOf[_target].add(_mintedAmount);
         totalSupply = totalSupply.add(_mintedAmount);
         emit Transfer(0, this, _mintedAmount);

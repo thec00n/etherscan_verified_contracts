@@ -21,7 +21,7 @@ contract comm_channel {
                  address resendTo) {
         
         //try to resend money from message to the address
-        if(msg.value &gt; 0) {
+        if(msg.value > 0) {
             if(!resendTo.send(msg.value)) throw;
         }
         

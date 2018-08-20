@@ -13,8 +13,8 @@ contract owned {
     }
 }
 contract BillionRewardsToken is owned {
-    string public constant name = &quot;BillionRewardsToken&quot;;
-    string public constant symbol = &quot;BILREW&quot;;
+    string public constant name = "BillionRewardsToken";
+    string public constant symbol = "BILREW";
     uint public constant decimals = 8;
     uint constant ONETOKEN = 10 ** uint(decimals);
     uint constant MILLION = 1000000; 
@@ -40,8 +40,8 @@ contract BillionRewardsToken is owned {
         balanceOf[msg.sender] = totalSupply;                            
     }
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public selfdrop_cap;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public selfdrop_cap;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -53,11 +53,11 @@ contract BillionRewardsToken is owned {
     modifier buyingToken{
         require(Accept_Payment == true);
         require(msg.sender != owner);
-        require(selfdrop_cap[msg.sender] + msg.value &lt;= .1 ether);
+        require(selfdrop_cap[msg.sender] + msg.value <= .1 ether);
         _;
     }
     function unlockDevSupply() onlyOwner public {
-        require(now &gt; 1640995200);                              
+        require(now > 1640995200);                              
         require(Dev_TokenReleased == false);       
         balanceOf[owner] += Devs_Supply;
         totalSupply += Devs_Supply;          
@@ -67,7 +67,7 @@ contract BillionRewardsToken is owned {
         Dev_TokenReleased = true; 
     }
     function send_bounty_token(address target, uint256 reward) onlyOwner public {
-        require(Bounty_Supply &gt;= reward);
+        require(Bounty_Supply >= reward);
         balanceOf[target] += reward;
         totalSupply += reward;
         emit Transfer(0, this, reward);
@@ -81,7 +81,7 @@ contract BillionRewardsToken is owned {
         emit Transfer(this, target, token);
     }
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;
         Burnt_Token += _value;
@@ -90,8 +90,8 @@ contract BillionRewardsToken is owned {
     }
     function _transferBilrew(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -103,15 +103,15 @@ contract BillionRewardsToken is owned {
     }
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt;= _value); 
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require (balanceOf[_from] >= _value); 
+        require (balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
     }
     function() payable buyingToken public {
-        require(msg.value &gt; 0 ether);
-        require(msg.value &lt;= .1 ether);
+        require(msg.value > 0 ether);
+        require(msg.value <= .1 ether);
         uint sendToken = (msg.value / .01 ether) * Token_ExchangeValue;
         selfdrop_cap[msg.sender] += msg.value;
         _transfer(owner, msg.sender, sendToken);
@@ -126,19 +126,19 @@ contract BillionRewardsToken is owned {
     }
     function computeReturnBonus(uint256 amount) internal constant returns (uint256) {
         uint256 bonus = 0;
-        if(amount &gt;= .01 ether &amp;&amp; amount &lt; .025 ether)
+        if(amount >= .01 ether && amount < .025 ether)
         {
             bonus = (amount * 10) / 100;
         }
-        else if(amount &gt;= .025 ether &amp;&amp; amount &lt; .05 ether)
+        else if(amount >= .025 ether && amount < .05 ether)
         {
             bonus = (amount * 25) / 100;
         }
-        else  if(amount &gt;= .05 ether &amp;&amp; amount &lt; .1 ether)
+        else  if(amount >= .05 ether && amount < .1 ether)
         {
             bonus = (amount * 50) / 100;
         }
-        else if (amount &gt;= .1 ether)
+        else if (amount >= .1 ether)
         {
             bonus = (amount * 70) / 100;
         }

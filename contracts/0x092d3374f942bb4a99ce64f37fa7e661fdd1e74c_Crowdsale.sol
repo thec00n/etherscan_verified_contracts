@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -69,23 +69,23 @@ contract BasicToken is ERC20Basic, Ownable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
         revert();
         }
         _;
     }
 
     /**
-     * Transfers ACO tokens from the sender&#39;s account to another given account.
+     * Transfers ACO tokens from the sender's account to another given account.
      * 
      * @param _to The address of the recipient.
      * @param _amount The amount of tokens to send.
      * */
     function transfer(address _to, uint256 _amount) public onlyPayloadSize(2 * 32) returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -105,7 +105,7 @@ contract BasicToken is ERC20Basic, Ownable {
 
 contract AdvancedToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     /**
      * Transfers tokens from the account of the owner by an approved spender. 
@@ -115,7 +115,7 @@ contract AdvancedToken is BasicToken, ERC20 {
      * @param _amount The amount of tokens to transfer.
      * */
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -125,7 +125,7 @@ contract AdvancedToken is BasicToken, ERC20 {
 
     /**
      * Allows another account to spend a given amount of tokens on behalf of the 
-     * owner&#39;s account. If the owner has previously allowed a spender to spend
+     * owner's account. If the owner has previously allowed a spender to spend
      * tokens on his or her behalf and would like to change the approval amount,
      * he or she will first have to set the allowance back to 0 and then update
      * the allowance.
@@ -169,7 +169,7 @@ contract MintableToken is AdvancedToken {
      * @param _amount The amount of tokens to mint. 
      * */
     function mint(address _to, uint256 _amount) external onlyOwner onlyPayloadSize(2 * 32) returns (bool) {
-        require(_to != 0x0 &amp;&amp; _amount &gt; 0 &amp;&amp; !mintingFinished);
+        require(_to != 0x0 && _amount > 0 && !mintingFinished);
         balances[_to] = balances[_to].add(_amount);
         totalSupply = totalSupply.add(_amount);
         Transfer(0x0, _to, _amount);
@@ -205,8 +205,8 @@ contract ACO is MintableToken {
     function ACO() public {
         totalSupply = 0;
         decimals = 18;
-        name = &quot;ACO&quot;;
-        symbol = &quot;ACO&quot;;
+        name = "ACO";
+        symbol = "ACO";
     }
 }
 
@@ -238,7 +238,7 @@ contract MultiOwnable {
      * @param _newOwner The address which will be granted ownership.
      * */
     function transferOwnership(address _newOwner) public onlyOwners {
-        require(_newOwner != 0x0 &amp;&amp; _newOwner != owners[0] &amp;&amp; _newOwner != owners[1]);
+        require(_newOwner != 0x0 && _newOwner != owners[0] && _newOwner != owners[1]);
         if (msg.sender == owners[0]) {
             OwnershipTransferred(owners[0], _newOwner);
             owners[0] = _newOwner;
@@ -268,8 +268,8 @@ contract Crowdsale is MultiOwnable {
     uint256 public cap;
     uint256[4] private bonusStages;
 
-    mapping (address =&gt; uint256) investments;
-    mapping (address =&gt; bool) hasAuthorizedWithdrawal;
+    mapping (address => uint256) investments;
+    mapping (address => bool) hasAuthorizedWithdrawal;
 
     event TokensPurchased(address indexed by, uint256 amount);
     event RefundIssued(address indexed by, uint256 amount);
@@ -286,7 +286,7 @@ contract Crowdsale is MultiOwnable {
         endTime = startTime.add(90 days);
         bonusStages[0] = startTime.add(14 days);
 
-        for (uint i = 1; i &lt; bonusStages.length; i++) {
+        for (uint i = 1; i < bonusStages.length; i++) {
             bonusStages[i] = bonusStages[i - 1].add(14 days);
         }
     }
@@ -306,13 +306,13 @@ contract Crowdsale is MultiOwnable {
      * @param _beneficiary The address the newly minted tokens will be sent to.
      * */
     function buyTokens(address _beneficiary) public payable {
-        require(_beneficiary != 0x0 &amp;&amp; validPurchase() &amp;&amp; weiRaised().sub(msg.value) &lt; cap);
-        if (this.balance &gt;= minimumGoal &amp;&amp; !success) {
+        require(_beneficiary != 0x0 && validPurchase() && weiRaised().sub(msg.value) < cap);
+        if (this.balance >= minimumGoal && !success) {
             success = true;
             IcoSuccess();
         }
         uint256 weiAmount = msg.value;
-        if (this.balance &gt; cap) {
+        if (this.balance > cap) {
             CapReached();
             uint256 toRefund = this.balance.sub(cap);
             msg.sender.transfer(toRefund);
@@ -340,12 +340,12 @@ contract Crowdsale is MultiOwnable {
      * */
     function getBonusPercentage() internal view returns (uint256 bonusPercentage) {
         uint256 timeStamp = now;
-        if (timeStamp &gt; bonusStages[3]) {
+        if (timeStamp > bonusStages[3]) {
             bonusPercentage = 0;
         } else { 
             bonusPercentage = 25;
-            for (uint i = 0; i &lt; bonusStages.length; i++) {
-                if (timeStamp &lt;= bonusStages[i]) {
+            for (uint i = 0; i < bonusStages.length; i++) {
+                if (timeStamp <= bonusStages[i]) {
                     break;
                 } else {
                     bonusPercentage = bonusPercentage.sub(5);
@@ -369,9 +369,9 @@ contract Crowdsale is MultiOwnable {
      * than 0.
      * */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
     
     /**
@@ -384,7 +384,7 @@ contract Crowdsale is MultiOwnable {
         if (_addr == 0x0) {
             _addr = msg.sender;
         }
-        require(!isSuccess() &amp;&amp; hasEnded() &amp;&amp; investments[_addr] &gt; 0);
+        require(!isSuccess() && hasEnded() && investments[_addr] > 0);
         uint256 toRefund = investments[_addr];
         investments[_addr] = 0;
         _addr.transfer(toRefund);
@@ -398,9 +398,9 @@ contract Crowdsale is MultiOwnable {
      * function cannot be called if the ICO is not a success.
      * */
     function authorizeWithdrawal() public onlyOwners {
-        require(hasEnded() &amp;&amp; isSuccess() &amp;&amp; !hasAuthorizedWithdrawal[msg.sender]);
+        require(hasEnded() && isSuccess() && !hasAuthorizedWithdrawal[msg.sender]);
         hasAuthorizedWithdrawal[msg.sender] = true;
-        if (hasAuthorizedWithdrawal[owners[0]] &amp;&amp; hasAuthorizedWithdrawal[owners[1]]) {
+        if (hasAuthorizedWithdrawal[owners[0]] && hasAuthorizedWithdrawal[owners[1]]) {
             FundsWithdrawn(owners[0], this.balance);
             MULTI_SIG.transfer(this.balance);
         }
@@ -415,7 +415,7 @@ contract Crowdsale is MultiOwnable {
      * @param _amount The amount of tokens to mint.
      * */
     function issueBounty(address _to, uint256 _amount) public onlyOwners {
-        require(_to != 0x0 &amp;&amp; _amount &gt; 0);
+        require(_to != 0x0 && _amount > 0);
         ACO_Token.mint(_to, _amount);
     }
     
@@ -462,7 +462,7 @@ contract Crowdsale is MultiOwnable {
      * Returns true if the duration of the ICO is over.
      * */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**

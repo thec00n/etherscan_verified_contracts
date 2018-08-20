@@ -5,10 +5,10 @@ contract GasToken1 {
     // Generic ERC20
     //////////////////////////////////////////////////////////////////////////
 
-    // owner -&gt; amount
-    mapping(address =&gt; uint256) s_balances;
-    // owner -&gt; spender -&gt; max amount
-    mapping(address =&gt; mapping(address =&gt; uint256)) s_allowances;
+    // owner -> amount
+    mapping(address => uint256) s_balances;
+    // owner -> spender -> max amount
+    mapping(address => mapping(address => uint256)) s_allowances;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -20,7 +20,7 @@ contract GasToken1 {
     }
 
     function internalTransfer(address from, address to, uint256 value) internal returns (bool success) {
-        if (value &lt;= s_balances[from]) {
+        if (value <= s_balances[from]) {
             s_balances[from] -= value;
             s_balances[to] += value;
             Transfer(from, to, value);
@@ -39,7 +39,7 @@ contract GasToken1 {
     // Spec: Send `value` amount of tokens from address `from` to address `to`
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         address spender = msg.sender;
-        if(value &lt;= s_allowances[from][spender] &amp;&amp; internalTransfer(from, to, value)) {
+        if(value <= s_allowances[from][spender] && internalTransfer(from, to, value)) {
             s_allowances[from][spender] -= value;
             return true;
         } else {
@@ -52,7 +52,7 @@ contract GasToken1 {
     // current allowance with `value`.
     function approve(address spender, uint256 value) public returns (bool success) {
         address owner = msg.sender;
-        if (value != 0 &amp;&amp; s_allowances[owner][spender] != 0) {
+        if (value != 0 && s_allowances[owner][spender] != 0) {
             return false;
         }
         s_allowances[owner][spender] = value;
@@ -74,8 +74,8 @@ contract GasToken1 {
     //////////////////////////////////////////////////////////////////////////
 
     uint8 constant public decimals = 2;
-    string constant public name = &quot;Gastoken.io&quot;;
-    string constant public symbol = &quot;GST1&quot;;
+    string constant public name = "Gastoken.io";
+    string constant public symbol = "GST1";
 
     // We start our storage at this location. The EVM word at this location
     // contains the number of stored words. The stored words follow at
@@ -95,7 +95,7 @@ contract GasToken1 {
     // `value` words of EVM storage. The minted tokens are owned by the
     // caller of this function.
     function mint(uint256 value) public {
-        uint256 storage_location_array = STORAGE_LOCATION_ARRAY;  // can&#39;t use constants inside assembly
+        uint256 storage_location_array = STORAGE_LOCATION_ARRAY;  // can't use constants inside assembly
 
         if (value == 0) {
             return;
@@ -110,15 +110,15 @@ contract GasToken1 {
         // Set memory locations in interval [l, r]
         uint256 l = storage_location_array + supply + 1;
         uint256 r = storage_location_array + supply + value;
-        assert(r &gt;= l);
+        assert(r >= l);
 
-        for (uint256 i = l; i &lt;= r; i++) {
+        for (uint256 i = l; i <= r; i++) {
             assembly {
                 sstore(i, 1)
             }
         }
 
-        // Write updated supply &amp; balance
+        // Write updated supply & balance
         assembly {
             sstore(storage_location_array, add(supply, value))
         }
@@ -126,7 +126,7 @@ contract GasToken1 {
     }
 
     function freeStorage(uint256 value) internal {
-        uint256 storage_location_array = STORAGE_LOCATION_ARRAY;  // can&#39;t use constants inside assembly
+        uint256 storage_location_array = STORAGE_LOCATION_ARRAY;  // can't use constants inside assembly
 
         // Read supply
         uint256 supply;
@@ -137,7 +137,7 @@ contract GasToken1 {
         // Clear memory locations in interval [l, r]
         uint256 l = storage_location_array + supply - value + 1;
         uint256 r = storage_location_array + supply;
-        for (uint256 i = l; i &lt;= r; i++) {
+        for (uint256 i = l; i <= r; i++) {
             assembly {
                 sstore(i, 0)
             }
@@ -154,7 +154,7 @@ contract GasToken1 {
     // will trigger a partial gas refund.
     function free(uint256 value) public returns (bool success) {
         uint256 from_balance = s_balances[msg.sender];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             return false;
         }
 
@@ -169,7 +169,7 @@ contract GasToken1 {
     // Otherwise, identical to free.
     function freeUpTo(uint256 value) public returns (uint256 freed) {
         uint256 from_balance = s_balances[msg.sender];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             value = from_balance;
         }
 
@@ -185,13 +185,13 @@ contract GasToken1 {
     function freeFrom(address from, uint256 value) public returns (bool success) {
         address spender = msg.sender;
         uint256 from_balance = s_balances[from];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             return false;
         }
 
-        mapping(address =&gt; uint256) from_allowances = s_allowances[from];
+        mapping(address => uint256) from_allowances = s_allowances[from];
         uint256 spender_allowance = from_allowances[spender];
-        if (value &gt; spender_allowance) {
+        if (value > spender_allowance) {
             return false;
         }
 
@@ -208,13 +208,13 @@ contract GasToken1 {
     function freeFromUpTo(address from, uint256 value) public returns (uint256 freed) {
         address spender = msg.sender;
         uint256 from_balance = s_balances[from];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             value = from_balance;
         }
 
-        mapping(address =&gt; uint256) from_allowances = s_allowances[from];
+        mapping(address => uint256) from_allowances = s_allowances[from];
         uint256 spender_allowance = from_allowances[spender];
-        if (value &gt; spender_allowance) {
+        if (value > spender_allowance) {
             value = spender_allowance;
         }
 

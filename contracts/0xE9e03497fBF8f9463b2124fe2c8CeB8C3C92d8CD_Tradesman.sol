@@ -27,8 +27,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -51,8 +51,8 @@ contract TokenERC20 {
     // Internal transfer, only can be called by this contract
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                                                // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);                                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);                  // Check for overflows
+        require(balanceOf[_from] >= _value);                                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);                  // Check for overflows
         uint previousBalances = balanceOf[_from] + balanceOf[_to];          // Save this for an assertion in the future
         balanceOf[_from] -= _value;                                         // Subtract from the sender
         balanceOf[_to] += _value;                                           // Add the same to the recipient
@@ -61,7 +61,7 @@ contract TokenERC20 {
     }
 
 
-    /// @notice Send `_value` (in wei, with 18 zeros) tokens to `_to` from msg.sender&#39;s account
+    /// @notice Send `_value` (in wei, with 18 zeros) tokens to `_to` from msg.sender's account
     /// @param _to The address of the recipient
     /// @param _value the amount to send 
     function transfer(address _to, uint256 _value) public {
@@ -74,7 +74,7 @@ contract TokenERC20 {
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);                    // Check allowance (array[approver][approvee])
+        require(_value <= allowance[_from][msg.sender]);                    // Check allowance (array[approver][approvee])
         allowance[_from][msg.sender] -= _value;                             // deduct _value from allowance
         _transfer(_from, _to, _value);                                      // transfer
         return true;
@@ -103,7 +103,7 @@ contract TokenERC20 {
     /// @notice Destroy tokens.  Remove `_value` (in wei, with 18 zeros) tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);                           // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);                           // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                                    // Subtract from the sender
         totalSupply -= _value;                                              // Updates totalSupply
         Burn(msg.sender, _value);
@@ -115,10 +115,10 @@ contract TokenERC20 {
     /// @param _from the address of the sender
     /// @param _value the amount of money to burn
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);                    // Check allowance.  `_from` must have already approved `msg.sender`
+        require(balanceOf[_from] >= _value);                                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);                    // Check allowance.  `_from` must have already approved `msg.sender`
         balanceOf[_from] -= _value;                                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;                             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;                             // Subtract from the sender's allowance
         totalSupply -= _value;                                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -132,11 +132,11 @@ contract TokenERC20 {
 contract Tradesman is owned, TokenERC20 {
 
     uint256 public sellPrice;
-    uint256 public sellMultiplier;  // allows token to be valued at &lt; 1 ETH
+    uint256 public sellMultiplier;  // allows token to be valued at < 1 ETH
     uint256 public buyPrice;
-    uint256 public buyMultiplier;   // allows token to be valued at &lt; 1 ETH
+    uint256 public buyMultiplier;   // allows token to be valued at < 1 ETH
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     // This generates a public event on the blockchain that will notify clients
     event FrozenFunds(address target, bool frozen);
@@ -152,8 +152,8 @@ contract Tradesman is owned, TokenERC20 {
     // value in wei, with 18 zeros
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);                 // Check for overflows
+        require (balanceOf[_from] >= _value);                               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]);                 // Check for overflows
         require (!frozenAccount[_from]);                                    // Check if sender is frozen
         require (!frozenAccount[_to]);                                      // Check if recipient is frozen
         balanceOf[_from] -= _value;                                         // Subtract from the sender
@@ -174,7 +174,7 @@ contract Tradesman is owned, TokenERC20 {
     }
     */
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens, if ordered by law
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens, if ordered by law
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -182,11 +182,11 @@ contract Tradesman is owned, TokenERC20 {
         FrozenFunds(target, freeze);
     }
 
-    /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth. Multipliers allow for token value &lt; 1 ETH
+    /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth. Multipliers allow for token value < 1 ETH
     /// @param newSellPrice Price the users can sell to the contract
     /// @param newBuyPrice Price users can buy from the contract
-    /// @param newSellMultiplier Allows token value &lt; 1 ETH. num_eth = num_tokens * (sellPrice / sellMultiplier)
-    /// @param newBuyMultiplier Allows token value &lt; 1 ETH.  num_tokens = num_eth * (buyMultiplier / buyPrice)
+    /// @param newSellMultiplier Allows token value < 1 ETH. num_eth = num_tokens * (sellPrice / sellMultiplier)
+    /// @param newBuyMultiplier Allows token value < 1 ETH.  num_tokens = num_eth * (buyMultiplier / buyPrice)
     function setPrices(uint256 newSellPrice, uint256 newSellMultiplier, uint256 newBuyPrice, uint256 newBuyMultiplier) onlyOwner public {
         sellPrice       = newSellPrice;                                     // sellPrice should be less than buyPrice
         sellMultiplier  = newSellMultiplier;                                // so buyPrice cannot be 1 if also selling
@@ -197,15 +197,15 @@ contract Tradesman is owned, TokenERC20 {
     //  Set `buyMultiplier` = 0 after all tokens sold.  We can still accept donations.
     /// @notice Automatically buy tokens from contract by sending ether (no `data` required).
     function () payable public {
-        uint amount = msg.value * buyMultiplier / buyPrice;                 // calculates the amount.  Multiplier allows token value &lt; 1 ETH
+        uint amount = msg.value * buyMultiplier / buyPrice;                 // calculates the amount.  Multiplier allows token value < 1 ETH
         _transfer(this, msg.sender, amount);                                // makes the transfers
     }
     
     //  Set `buyMultiplier` = 0 after all tokens sold.
     /// @notice Buy tokens from contract by sending ether, with `data` = `0xa6f2ae3a`. 
     function buy() payable public {
-        require (buyMultiplier &gt; 0);                                        // if no more tokens, make Tx fail.
-        uint amount = msg.value * buyMultiplier / buyPrice;                 // calculates the amount.  Multiplier allows token value &lt; 1 ETH
+        require (buyMultiplier > 0);                                        // if no more tokens, make Tx fail.
+        uint amount = msg.value * buyMultiplier / buyPrice;                 // calculates the amount.  Multiplier allows token value < 1 ETH
         _transfer(this, msg.sender, amount);                                // makes the transfers
     }
     
@@ -213,10 +213,10 @@ contract Tradesman is owned, TokenERC20 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require (sellMultiplier &gt; 0);                                       // if not buying back tokens, make Tx fail.
-        require(this.balance &gt;= amount * sellPrice / sellMultiplier);       // checks if the contract has enough ether to buy.    Multiplier allows token value &lt; 1 ETH
+        require (sellMultiplier > 0);                                       // if not buying back tokens, make Tx fail.
+        require(this.balance >= amount * sellPrice / sellMultiplier);       // checks if the contract has enough ether to buy.    Multiplier allows token value < 1 ETH
         _transfer(msg.sender, this, amount);                                // makes the transfers
-        msg.sender.transfer(amount * sellPrice / sellMultiplier);           // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice / sellMultiplier);           // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
     
     /// @notice Allow contract to transfer ether directly

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,12 +85,12 @@ contract ERC20Basic {
 
 contract TrueVeganCoin is ERC20Basic {
 
-    string public tokenName = &quot;True Vegan Coin&quot;;  
-    string public tokenSymbol = &quot;TVC&quot;; 
+    string public tokenName = "True Vegan Coin";  
+    string public tokenSymbol = "TVC"; 
 
     uint256 public constant decimals = 18;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function TrueVeganCoin() {
         totalSupply = 55 * (10**6) * 10**decimals; // 55 millions
@@ -102,8 +102,8 @@ contract TrueVeganCoin is ERC20Basic {
     }
 
     function transfer(address _to, uint256 amount) returns (bool result) {
-        require(amount &gt; 0);
-        require(balances[msg.sender] &gt;= amount);
+        require(amount > 0);
+        require(balances[msg.sender] >= amount);
         balances[msg.sender] -= amount;
         balances[_to] += amount;
         Transfer(msg.sender, _to, amount);
@@ -136,14 +136,14 @@ contract TrueVeganCoinPresale is Claimable {
     }
 
     function () payable {
-        assert(block.timestamp &gt;= saleStartUnixTime);
-        assert(block.timestamp &lt; saleEndUnixTime);
-        require(msg.value &gt; 0);
+        assert(block.timestamp >= saleStartUnixTime);
+        assert(block.timestamp < saleEndUnixTime);
+        require(msg.value > 0);
         require(!saleIsClosed);
 
         uint256 tokens = msg.value.mul(tokenExchangeRate);
 
-        assert(currentTokenSupply - tokens &gt;= 0);
+        assert(currentTokenSupply - tokens >= 0);
         currentTokenSupply -= tokens;
 
         if (!tvc.transfer(msg.sender,tokens)) {
@@ -154,7 +154,7 @@ contract TrueVeganCoinPresale is Claimable {
     }
 
     function endSale() onlyOwner {
-        assert(block.timestamp &gt; saleEndUnixTime || currentTokenSupply == 0);
+        assert(block.timestamp > saleEndUnixTime || currentTokenSupply == 0);
         assert(!saleIsClosed);
 
         saleIsClosed = true;
@@ -169,7 +169,7 @@ contract TrueVeganCoinPresale is Claimable {
 
 
     function claimUnsoldCoins() onlyOwner {
-        assert(block.timestamp &gt; saleEndUnixTime);
+        assert(block.timestamp > saleEndUnixTime);
         assert(saleIsClosed);
         uint256 amount = currentTokenSupply;
         currentTokenSupply = 0;

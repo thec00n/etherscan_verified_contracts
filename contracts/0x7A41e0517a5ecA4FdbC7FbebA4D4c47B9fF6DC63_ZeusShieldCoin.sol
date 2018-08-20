@@ -60,9 +60,9 @@ contract migration {
 /// @title Zeus Shield Coin (ZSC)
 contract ZeusShieldCoin is owned, ERC20Interface {
     // Public variables of the token
-    string public constant standard = &#39;ERC20&#39;;
-    string public constant name = &#39;Zeus Shield Coin&#39;;  
-    string public constant symbol = &#39;ZSC&#39;;
+    string public constant standard = 'ERC20';
+    string public constant name = 'Zeus Shield Coin';  
+    string public constant symbol = 'ZSC';
     uint8  public constant decimals = 18;
     uint public registrationTime = 0;
     bool public registered = false;
@@ -74,14 +74,14 @@ contract ZeusShieldCoin is owned, ERC20Interface {
 
 
     // This creates an array with all balances 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
    
     // These are related to ZSC team members
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint[3]) public frozenTokens;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint[3]) public frozenTokens;
 
     // Variables of token frozen rules for ZSC team members.
     uint[3] public unlockat;
@@ -114,16 +114,16 @@ contract ZeusShieldCoin is owned, ERC20Interface {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) 
         returns (bool success) 
     {
         if (!registered) return false;
-        if (_amount &lt;= 0) return false;
+        if (_amount <= 0) return false;
         if (frozenRules(msg.sender, _amount)) return false;
 
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && balances[_to] + _amount > balances[_to]) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -136,7 +136,7 @@ contract ZeusShieldCoin is owned, ERC20Interface {
  
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -144,12 +144,12 @@ contract ZeusShieldCoin is owned, ERC20Interface {
         returns (bool success) 
     {
         if (!registered) return false;
-        if (_amount &lt;= 0) return false;
+        if (_amount <= 0) return false;
         if (frozenRules(_from, _amount)) return false;
 
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && balances[_to] + _amount > balances[_to]) {
 
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -199,7 +199,7 @@ contract ZeusShieldCoin is owned, ERC20Interface {
 
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -276,16 +276,16 @@ contract ZeusShieldCoin is owned, ERC20Interface {
         // 91500 * 1000 * 10**18; 100% of locked tokens within 6 months
         // 73200 * 1000 * 10**18;  80% of locked tokens within 12 months
         // 45750 * 1000 * 10**18;  50% of locked tokens within 24 months
-        freeze(&quot;0xCDc5BDEFC6Fddc66E73250fCc2F08339e091dDA3&quot;, individual);
-        freeze(&quot;0x8b47D27b085a661E6306Ac27A932a8c0b1C11b84&quot;, individual);
-        freeze(&quot;0x825f4977DB4cd48aFa51f8c2c9807Ee89120daB7&quot;, individual);
-        freeze(&quot;0xcDf5D7049e61b2F50642DF4cb5a005b1b4A5cfc2&quot;, individual);
-        freeze(&quot;0xab0461FB41326a960d3a2Fe2328DD9A65916181d&quot;, individual);
-        freeze(&quot;0xd2A131F16e4339B2523ca90431322f559ABC4C3d&quot;, individual);
-        freeze(&quot;0xCcB4d663E6b05AAda0e373e382628B9214932Fff&quot;, individual);
-        freeze(&quot;0x60284720542Ff343afCA6a6DBc542901942260f2&quot;, individual);
-        freeze(&quot;0xcb6d0e199081A489f45c73D1D22F6de58596a99C&quot;, individual);
-        freeze(&quot;0x928D99333C57D31DB917B4c67D4d8a033F2143A7&quot;, individual);
+        freeze("0xCDc5BDEFC6Fddc66E73250fCc2F08339e091dDA3", individual);
+        freeze("0x8b47D27b085a661E6306Ac27A932a8c0b1C11b84", individual);
+        freeze("0x825f4977DB4cd48aFa51f8c2c9807Ee89120daB7", individual);
+        freeze("0xcDf5D7049e61b2F50642DF4cb5a005b1b4A5cfc2", individual);
+        freeze("0xab0461FB41326a960d3a2Fe2328DD9A65916181d", individual);
+        freeze("0xd2A131F16e4339B2523ca90431322f559ABC4C3d", individual);
+        freeze("0xCcB4d663E6b05AAda0e373e382628B9214932Fff", individual);
+        freeze("0x60284720542Ff343afCA6a6DBc542901942260f2", individual);
+        freeze("0xcb6d0e199081A489f45c73D1D22F6de58596a99C", individual);
+        freeze("0x928D99333C57D31DB917B4c67D4d8a033F2143A7", individual);
     }
 
     /// @dev Token frozen rules for token holders.
@@ -296,17 +296,17 @@ contract ZeusShieldCoin is owned, ERC20Interface {
         returns (bool success) 
     {
         if (frozenAccount[_from]) {
-            if (now &lt; unlockat[0]) {
+            if (now < unlockat[0]) {
                // 100% locked within the first 6 months.
-               if (balances[_from] - _value &lt; frozenTokens[_from][0]) 
+               if (balances[_from] - _value < frozenTokens[_from][0]) 
                     return true;  
-            } else if (now &gt;= unlockat[0] &amp;&amp; now &lt; unlockat[1]) {
+            } else if (now >= unlockat[0] && now < unlockat[1]) {
                // 20% unlocked after 6 months.
-               if (balances[_from] - _value &lt; frozenTokens[_from][1]) 
+               if (balances[_from] - _value < frozenTokens[_from][1]) 
                     return true;  
-            } else if (now &gt;= unlockat[1] &amp;&amp; now &lt; unlockat[2]) {
+            } else if (now >= unlockat[1] && now < unlockat[2]) {
                // 50% unlocked after 12 months. 
-               if (balances[_from]- _value &lt; frozenTokens[_from][2]) 
+               if (balances[_from]- _value < frozenTokens[_from][2]) 
                    return true;  
             } else {
                // 100% unlocked after 24 months.

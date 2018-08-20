@@ -3,13 +3,13 @@ pragma solidity ^0.4.21;
 // File: @gnosis.pm/util-contracts/contracts/Proxy.sol
 
 /// @title Proxied - indicates that a contract will be proxied. Also defines storage requirements for Proxy.
-/// @author Alan Lu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="640508050a24030a0b170d174a1409">[email&#160;protected]</a>&gt;
+/// @author Alan Lu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="640508050a24030a0b170d174a1409">[email protected]</a>>
 contract Proxied {
     address public masterCopy;
 }
 
 /// @title Proxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8cbccddded9d6f8dfd6d7cbd1cb96c8d5">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8cbccddded9d6f8dfd6d7cbd1cb96c8d5">[email protected]</a>>
 contract Proxy is Proxied {
     /// @dev Constructor function sets address of master copy contract.
     /// @param _masterCopy Master copy address.

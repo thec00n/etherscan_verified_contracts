@@ -9,13 +9,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -33,8 +33,8 @@ contract CreatorEnabled {
 // ERC20 standard
 contract StdToken is SafeMath {
 
-    mapping(address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     uint public totalSupply = 0;
 
 
@@ -84,7 +84,7 @@ contract StdToken is SafeMath {
     }
 
     modifier onlyPayloadSize(uint _size) {
-      require(msg.data.length &gt;= _size + 4);
+      require(msg.data.length >= _size + 4);
       _;
     }
 }
@@ -95,7 +95,7 @@ contract IGoldFee {
 
 contract GoldFee is CreatorEnabled {
 
-    mapping(address =&gt; bool) exceptAddresses;
+    mapping(address => bool) exceptAddresses;
 
     function GoldFee() {
         creator = msg.sender;
@@ -104,7 +104,7 @@ contract GoldFee is CreatorEnabled {
     function getMin(uint out)returns (uint) {
         // 0.002 GOLD is min fee
         uint minFee = (2 * 1 ether) / 1000;
-        if (out &lt; minFee) {
+        if (out < minFee) {
              return minFee;
         }
         return out;
@@ -113,7 +113,7 @@ contract GoldFee is CreatorEnabled {
     function getMax(uint out)returns (uint) {
         // 0.02 GOLD is max fee
         uint maxFee = (2 * 1 ether) / 100;
-        if (out &gt;= maxFee) {
+        if (out >= maxFee) {
              return maxFee;
         }
         return out;
@@ -143,13 +143,13 @@ contract GoldFee is CreatorEnabled {
 
         // If the sender holds at least 10000 MNTP, then the transaction fee is 0.0333333% GOLD,
         // but not more than 0.02 MNTP
-        if (_mntpBalance &gt;= (10000 * 1 ether)) {
+        if (_mntpBalance >= (10000 * 1 ether)) {
              return getMax((_value / 100) / 30);
         }
-        if (_mntpBalance &gt;= (1000 * 1 ether)) {
+        if (_mntpBalance >= (1000 * 1 ether)) {
              return getMin((_value / 100) / 30);
         }
-        if (_mntpBalance &gt;= (10 * 1 ether)) {
+        if (_mntpBalance >= (10 * 1 ether)) {
              return getMin((_value / 100) / 3);
         }
 
@@ -172,8 +172,8 @@ contract GoldFee is CreatorEnabled {
 
 contract Gold is StdToken, CreatorEnabled {
 
-    string public constant name = &quot;GoldMint GOLD cryptoasset&quot;;
-    string public constant symbol = &quot;GOLD&quot;;
+    string public constant name = "GoldMint GOLD cryptoasset";
+    string public constant symbol = "GOLD";
     uint8 public constant decimals = 18;
 
     // this is used to send fees (that is then distributed as rewards)
@@ -277,7 +277,7 @@ contract Gold is StdToken, CreatorEnabled {
              sendThis = safeSub(_value,fee);
 
              // 1.Transfer fee
-             // A -&gt; rewards account
+             // A -> rewards account
              //
              // Each GOLD token transfer should send transaction fee to
              // GoldmintMigration contract if Migration process is not started.
@@ -290,7 +290,7 @@ contract Gold is StdToken, CreatorEnabled {
         }
 
         // 2.Transfer
-        // A -&gt; B
+        // A -> B
         return super.transfer(_to, sendThis);
     }
 
@@ -301,7 +301,7 @@ contract Gold is StdToken, CreatorEnabled {
         uint fee = goldFee.calculateFee(msg.sender, migrationStarted, migrationFinished, yourCurrentMntpBalance, _value);
         if (0 != fee) {
              // 1.Transfer fee
-             // A -&gt; rewards account
+             // A -> rewards account
              //
              // Each GOLD token transfer should send transaction fee to
              // GoldmintMigration contract if Migration process is not started.
@@ -314,7 +314,7 @@ contract Gold is StdToken, CreatorEnabled {
         }
 
         // 2.Transfer
-        // A -&gt; B
+        // A -> B
         uint sendThis = safeSub(_value,fee);
         return super.transferFrom(_from, _to, sendThis);
     }
@@ -387,12 +387,12 @@ contract GoldmintMigration is CreatorEnabled {
         string comment;
     }
 
-    mapping (uint=&gt;Migration) public mntpMigrations;
-    mapping (address=&gt;uint) public mntpMigrationIndexes;
+    mapping (uint=>Migration) public mntpMigrations;
+    mapping (address=>uint) public mntpMigrationIndexes;
     uint public mntpMigrationsCount = 0;
 
-    mapping (uint=&gt;Migration) public goldMigrations;
-    mapping (address=&gt;uint) public goldMigrationIndexes;
+    mapping (uint=>Migration) public goldMigrations;
+    mapping (address=>uint) public goldMigrationIndexes;
     uint public goldMigrationsCount = 0;
 
     event MntpMigrateWanted(address _ethAddress, string _gmAddress, uint256 _value);
@@ -435,7 +435,7 @@ contract GoldmintMigration is CreatorEnabled {
         goldToken.lockTransfer(_lock);
     }
 
-    // This method is called when migration to Goldmint&#39;s blockchain
+    // This method is called when migration to Goldmint's blockchain
     // process is started...
     function startMigration() public onlyCreator {
         require((State.Init == state) || (State.MigrationPaused == state));
@@ -459,7 +459,7 @@ contract GoldmintMigration is CreatorEnabled {
         state = State.MigrationPaused;
     }
 
-    // that doesn&#39;t mean that you cant migrate from Ethereum -&gt; Goldmint blockchain
+    // that doesn't mean that you cant migrate from Ethereum -> Goldmint blockchain
     // that means that you will get no reward
     function finishMigration() public onlyCreator {
         require((State.MigrationStarted == state) || (State.MigrationPaused == state));
@@ -479,7 +479,7 @@ contract GoldmintMigration is CreatorEnabled {
     // MNTP
     // Call this to migrate your MNTP tokens to Goldmint MNT
     // (this is one-way only)
-    // _gmAddress is something like that - &quot;BTS7yRXCkBjKxho57RCbqYE3nEiprWXXESw3Hxs5CKRnft8x7mdGi&quot;
+    // _gmAddress is something like that - "BTS7yRXCkBjKxho57RCbqYE3nEiprWXXESw3Hxs5CKRnft8x7mdGi"
     //
     // !!! WARNING: will not allow anyone to migrate tokens partly
     // !!! DISCLAIMER: check goldmint blockchain address format. You will not be able to change that!
@@ -511,7 +511,7 @@ contract GoldmintMigration is CreatorEnabled {
         mig.tokensCount = myBalance;
         mig.migrated = false;
         mig.date = uint64(now);
-        mig.comment = &#39;&#39;;
+        mig.comment = '';
 
         mntpMigrations[mntpMigrationsCount + 1] = mig;
         mntpMigrationIndexes[msg.sender] = mntpMigrationsCount + 1;
@@ -530,7 +530,7 @@ contract GoldmintMigration is CreatorEnabled {
 
     function setMntpMigrated(address _who, bool _isMigrated, string _comment) public onlyCreator {
         uint index = mntpMigrationIndexes[_who];
-        require(index &gt; 0);
+        require(index > 0);
 
         mntpMigrations[index].migrated = _isMigrated;
         mntpMigrations[index].comment = _comment;
@@ -563,7 +563,7 @@ contract GoldmintMigration is CreatorEnabled {
         mig.tokensCount = myBalance;
         mig.migrated = false;
         mig.date = uint64(now);
-        mig.comment = &#39;&#39;;
+        mig.comment = '';
 
         goldMigrations[goldMigrationsCount + 1] = mig;
         goldMigrationIndexes[msg.sender] = goldMigrationsCount + 1;
@@ -582,7 +582,7 @@ contract GoldmintMigration is CreatorEnabled {
 
     function setGoldMigrated(address _who, bool _isMigrated, string _comment) public onlyCreator {
         uint index = goldMigrationIndexes[_who];
-        require(index &gt; 0);
+        require(index > 0);
 
         goldMigrations[index].migrated = _isMigrated;
         goldMigrations[index].comment = _comment;
@@ -623,7 +623,7 @@ contract GoldmintMigration is CreatorEnabled {
     // On 2nd day of migration, you will get: 100 - 100 * 1/365 = 99.7261% of your rewards
     // On 365th day of migration, you will get: 100 - 100 * 364/365 = 0.274%
     function calculateMyRewardDecreased(uint _day, uint _myRewardMax) public constant returns(uint){
-        if (_day &gt;= 365) {
+        if (_day >= 365) {
              return 0;
         }
 

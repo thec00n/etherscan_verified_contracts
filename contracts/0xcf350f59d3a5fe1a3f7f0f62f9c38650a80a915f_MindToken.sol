@@ -30,7 +30,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -55,18 +55,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert(x &lt;= MAX_UINT256 - y);
+        assert(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert(x &gt;= y);
+        assert(x >= y);
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        assert(x &lt;= MAX_UINT256 / y);
+        assert(x <= MAX_UINT256 / y);
         return x * y;
     }
 }
@@ -124,7 +124,7 @@ contract Haltable is Ownable {
 
 contract ERC223Token is ERC223, SafeMath, Haltable {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string public name;
   string public symbol;
@@ -184,7 +184,7 @@ contract ERC223Token is ERC223, SafeMath, Haltable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -194,7 +194,7 @@ contract ERC223Token is ERC223, SafeMath, Haltable {
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    assert(balanceOf(msg.sender) &gt;= _value);
+    assert(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -204,7 +204,7 @@ contract ERC223Token is ERC223, SafeMath, Haltable {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    assert(balanceOf(msg.sender) &gt;= _value);
+    assert(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver reciever = ContractReceiver(_to);
@@ -248,8 +248,8 @@ contract MindToken is ERC223Token {
    */
     function MindToken() {
             
-        name = &quot;Mind10 Token&quot;;
-        symbol = &quot;Mind10&quot;;
+        name = "Mind10 Token";
+        symbol = "Mind10";
         decimals = 8;
         totalSupply = 500000000000000;
     
@@ -270,20 +270,20 @@ contract MindToken is ERC223Token {
     }
     
     modifier onlyAfter(uint time) {
-        assert(now &gt;= time);
+        assert(now >= time);
         _;
     }
 
     modifier onlyBefore(uint time) {
-        assert(now &lt;= time);
+        assert(now <= time);
         _;
     }
     
     function () payable stopInEmergency {
-        assert(msg.value &gt;= 0.01 * 1 ether);
+        assert(msg.value >= 0.01 * 1 ether);
         doPurchase();
         
-        //if (msg.value &lt; 0.01 * 1 ether) throw;
+        //if (msg.value < 0.01 * 1 ether) throw;
         
     }
     
@@ -301,7 +301,7 @@ contract MindToken is ERC223Token {
         collectedTokens = safeAdd(collectedTokens, tokens);
         collectedEthers = safeAdd(collectedEthers, msg.value);
         
-        //assert(collectedTokens &lt;= cap);
+        //assert(collectedTokens <= cap);
         
         weiRaised = safeAdd(weiRaised, msg.value);
         tokensSold = safeAdd(tokensSold, tokens);

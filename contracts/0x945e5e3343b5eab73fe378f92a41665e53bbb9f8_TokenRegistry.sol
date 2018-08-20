@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -20,7 +20,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,13 +56,13 @@ contract Ownable {
 }
 
 /// @title Token Register Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680307060f040109060f28040707181a01060f46071a0f">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1e7a7f70777b725e7271716e6c77707930716c79">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680307060f040109060f28040707181a01060f46071a0f">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1e7a7f70777b725e7271716e6c77707930716c79">[email protected]</a>>.
 contract TokenRegistry is Ownable {
 
     address[] public tokens;
 
-    mapping (string =&gt; address) tokenSymbolMap;
+    mapping (string => address) tokenSymbolMap;
 
     function registerToken(address _token, string _symbol)
         public
@@ -79,7 +79,7 @@ contract TokenRegistry is Ownable {
         onlyOwner {
         require(tokenSymbolMap[_symbol] == _token);
         delete tokenSymbolMap[_symbol];
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             if (tokens[i] == _token) {
                 tokens[i] == tokens[tokens.length - 1];
                 tokens.length --;
@@ -100,7 +100,7 @@ contract TokenRegistry is Ownable {
         constant
         returns (bool) {
 
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             if (tokens[i] == _token) {
                 return true;
             }

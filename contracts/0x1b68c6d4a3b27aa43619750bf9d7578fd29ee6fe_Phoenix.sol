@@ -5,12 +5,12 @@ contract SafeMath {
 
 function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
 uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -39,7 +39,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -75,17 +75,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Phoenix is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Phoenix&quot;;
-    string public constant symbol = &quot;PHX&quot;;
+    string public constant name = "Phoenix";
+    string public constant symbol = "PHX";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address for ETH for Phoenix
@@ -115,9 +115,9 @@ contract Phoenix is StandardToken, SafeMath {
     {
       isFinalized = false;                   //controls pre through crowdsale state
       saleStarted = false;
-      PhoenixFundDeposit = &#39;0xCA0664Cc0c1E1EE6CF4507670C9060e03f16F508&#39;;
-      PhoenixExchangeDeposit = &#39;0x7A0B7a6c058b354697fbC5E641C372E877593631&#39;;
-      ethFundDeposit = &#39;0xfF0b05152A8477A92E5774685667e32484A76f6A&#39;;
+      PhoenixFundDeposit = '0xCA0664Cc0c1E1EE6CF4507670C9060e03f16F508';
+      PhoenixExchangeDeposit = '0x7A0B7a6c058b354697fbC5E641C372E877593631';
+      ethFundDeposit = '0xfF0b05152A8477A92E5774685667e32484A76f6A';
       totalSupply = PhoenixFund + PhoenixExchangeFund;
       balances[PhoenixFundDeposit] = PhoenixFund;    // Deposit tokens for Owners
       balances[PhoenixExchangeDeposit] = PhoenixExchangeFund;    // Deposit tokens for Exchange and Promotion
@@ -132,26 +132,26 @@ contract Phoenix is StandardToken, SafeMath {
       if (!saleStarted) throw;
       if (msg.value == 0) throw;
       //change exchange rate based on duration
-      if (now &gt; firstWeek &amp;&amp; now &lt; secondWeek){
+      if (now > firstWeek && now < secondWeek){
         tokenExchangeRate = 41;
       }
-      else if (now &gt; secondWeek &amp;&amp; now &lt; thirdWeek){
+      else if (now > secondWeek && now < thirdWeek){
         tokenExchangeRate = 29;
       }
-      else if (now &gt; thirdWeek &amp;&amp; now &lt; fourthWeek){
+      else if (now > thirdWeek && now < fourthWeek){
         tokenExchangeRate = 25;
       }
-      else if (now &gt; fourthWeek){
+      else if (now > fourthWeek){
         tokenExchangeRate = 18;
         isPreSale = false;
       }
       //create tokens
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       // return money if something goes wrong
-      if(isPreSale &amp;&amp; tokenPreSaleCap &lt; checkedSupply) throw;
-      if (tokenCreationCap &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
+      if(isPreSale && tokenPreSaleCap < checkedSupply) throw;
+      if (tokenCreationCap < checkedSupply) throw;  // odd fractions won't be found
       totalSupply = checkedSupply;
       //All good. start the transfer
       balances[msg.sender] += tokens;  // safeAdd not needed
@@ -162,10 +162,10 @@ contract Phoenix is StandardToken, SafeMath {
     function finalize() external {
       if (isFinalized) throw;
       if (msg.sender != ethFundDeposit) throw; // locks finalize to the ultimate ETH owner
-      if (totalSupply &lt; tokenCreationCap){
+      if (totalSupply < tokenCreationCap){
         uint256 remainingTokens = safeSubtract(tokenCreationCap, totalSupply);
         uint256 checkedSupply = safeAdd(totalSupply, remainingTokens);
-        if (tokenCreationCap &lt; checkedSupply) throw;
+        if (tokenCreationCap < checkedSupply) throw;
         totalSupply = checkedSupply;
         balances[msg.sender] += remainingTokens;
         CreatePHX(msg.sender, remainingTokens);

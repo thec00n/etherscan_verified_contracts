@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -153,10 +153,10 @@ contract LandAccessControl {
 contract CanReceiveApproval {
     event ReceiveApproval(address from, uint256 value, address token);
 
-    mapping (bytes4 =&gt; bool) allowedFuncs;
+    mapping (bytes4 => bool) allowedFuncs;
 
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 
@@ -167,8 +167,8 @@ contract CanReceiveApproval {
 
 
     function bytesToBytes4(bytes b) internal pure returns (bytes4 out) {
-        for (uint i = 0; i &lt; 4; i++) {
-            out |= bytes4(b[i] &amp; 0xFF) &gt;&gt; (i &lt;&lt; 3);
+        for (uint i = 0; i < 4; i++) {
+            out |= bytes4(b[i] & 0xFF) >> (i << 3);
         }
     }
 
@@ -187,10 +187,10 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
         string title;
     }
 
-    mapping (uint =&gt; Rank) public ranks;
+    mapping (uint => Rank) public ranks;
     uint public ranksCount = 0;
 
-    mapping (address =&gt; uint) public userRanks;
+    mapping (address => uint) public userRanks;
 
     event TokensTransferred(address wallet, uint value);
     event NewRankAdded(uint index, uint _landLimit, string _title, uint _priceCandy, uint _priceEth);
@@ -202,20 +202,20 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
     function UserRank(address _landManagementAddress) LandAccessControl(_landManagementAddress) public {
 
-        allowedFuncs[bytes4(keccak256(&quot;_receiveBuyNextRank(address)&quot;))] = true;
-        allowedFuncs[bytes4(keccak256(&quot;_receiveBuyRank(address,uint256)&quot;))] = true;
+        allowedFuncs[bytes4(keccak256("_receiveBuyNextRank(address)"))] = true;
+        allowedFuncs[bytes4(keccak256("_receiveBuyRank(address,uint256)"))] = true;
         //3350000000000000 for candy
 
-        addRank(1,   36000000000000000000,   120600000000000000,&quot;Cryptolord&quot;);
-        addRank(5,   144000000000000000000,  482400000000000000,&quot;Forklord&quot;);
-        addRank(10,  180000000000000000000,  603000000000000000,&quot;Decentralord&quot;);
-        addRank(20,  360000000000000000000,  1206000000000000000,&quot;Technomaster&quot;);
-        addRank(50,  1080000000000000000000, 3618000000000000000,&quot;Bitmaster&quot;);
-        addRank(100, 1800000000000000000000, 6030000000000000000,&quot;Megamaster&quot;);
-        addRank(200, 3600000000000000000000, 12060000000000000000,&quot;Cyberduke&quot;);
-        addRank(400, 7200000000000000000000, 24120000000000000000,&quot;Nanoprince&quot;);
-        addRank(650, 9000000000000000000000, 30150000000000000000,&quot;Hyperprince&quot;);
-        addRank(1000,12600000000000000000000,42210000000000000000,&quot;Ethercaesar&quot;);
+        addRank(1,   36000000000000000000,   120600000000000000,"Cryptolord");
+        addRank(5,   144000000000000000000,  482400000000000000,"Forklord");
+        addRank(10,  180000000000000000000,  603000000000000000,"Decentralord");
+        addRank(20,  360000000000000000000,  1206000000000000000,"Technomaster");
+        addRank(50,  1080000000000000000000, 3618000000000000000,"Bitmaster");
+        addRank(100, 1800000000000000000000, 6030000000000000000,"Megamaster");
+        addRank(200, 3600000000000000000000, 12060000000000000000,"Cyberduke");
+        addRank(400, 7200000000000000000000, 24120000000000000000,"Nanoprince");
+        addRank(650, 9000000000000000000000, 30150000000000000000,"Hyperprince");
+        addRank(1000,12600000000000000000000,42210000000000000000,"Ethercaesar");
 
 
     }
@@ -228,7 +228,7 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
     function addRank(uint _landLimit, uint _priceCandy, uint _priceEth, string _title) onlyOwner public  {
         //стоимость добавляемого должна быть не ниже предыдущего
-        require(ranks[ranksCount].priceCandy &lt;= _priceCandy &amp;&amp; ranks[ranksCount].priceEth &lt;= _priceEth);
+        require(ranks[ranksCount].priceCandy <= _priceCandy && ranks[ranksCount].priceEth <= _priceEth);
         ranksCount++;
         Rank storage r = ranks[ranksCount];
 
@@ -241,12 +241,12 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function editRank(uint _index, uint _priceCandy, uint _priceEth) onlyManager public  {
-        require(_index &gt; 0 &amp;&amp; _index &lt;= ranksCount);
-        if (_index &gt; 1) {
-            require(ranks[_index - 1].priceCandy &lt;= _priceCandy &amp;&amp; ranks[_index - 1].priceEth &lt;= _priceEth);
+        require(_index > 0 && _index <= ranksCount);
+        if (_index > 1) {
+            require(ranks[_index - 1].priceCandy <= _priceCandy && ranks[_index - 1].priceEth <= _priceEth);
         }
-        if (_index &lt; ranksCount) {
-            require(ranks[_index + 1].priceCandy &gt;= _priceCandy &amp;&amp; ranks[_index + 1].priceEth &gt;= _priceEth);
+        if (_index < ranksCount) {
+            require(ranks[_index + 1].priceCandy >= _priceCandy && ranks[_index + 1].priceEth >= _priceEth);
         }
 
         Rank storage r = ranks[_index];
@@ -274,7 +274,7 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
     function _buyNextRank(address _beneficiary) internal {
         uint _index = userRanks[_beneficiary] + 1;
-        require(_index &lt;= ranksCount);
+        require(_index <= ranksCount);
 
         require(candyToken.transferFrom(_beneficiary, this, ranks[_index].priceCandy));
         userRanks[_beneficiary] = _index;
@@ -283,8 +283,8 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function _buyRank(address _beneficiary, uint _index) internal {
-        require(_index &lt;= ranksCount);
-        require(userRanks[_beneficiary] &lt; _index);
+        require(_index <= ranksCount);
+        require(userRanks[_beneficiary] < _index);
 
         uint fullPrice = _getPrice(userRanks[_beneficiary], _index);
 
@@ -295,8 +295,8 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function getPreSaleRank(address _user, uint _index) onlyManager whilePresaleOpen public {
-        require(_index &lt;= ranksCount);
-        require(userRanks[_user] &lt; _index);
+        require(_index <= ranksCount);
+        require(userRanks[_user] < _index);
         userRanks[_user] = _index;
         emit BuyRank(_user, _index);
     }
@@ -305,7 +305,7 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
     function getNextRank(address _user) onlyUnicornContract public returns (uint) {
         uint _index = userRanks[_user] + 1;
-        require(_index &lt;= ranksCount);
+        require(_index <= ranksCount);
         userRanks[_user] = _index;
         return _index;
         emit BuyNextRank(msg.sender, _index);
@@ -313,8 +313,8 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function getRank(address _user, uint _index) onlyUnicornContract public {
-        require(_index &lt;= ranksCount);
-        require(userRanks[_user] &lt;= _index);
+        require(_index <= ranksCount);
+        require(userRanks[_user] <= _index);
         userRanks[_user] = _index;
         emit BuyRank(_user, _index);
     }
@@ -323,7 +323,7 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
     function _getPrice(uint _userRank, uint _index) private view returns (uint) {
         uint fullPrice = 0;
 
-        for(uint i = _userRank+1; i &lt;= _index; i++)
+        for(uint i = _userRank+1; i <= _index; i++)
         {
             fullPrice = fullPrice.add(ranks[i].priceCandy);
         }
@@ -333,8 +333,8 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function getIndividualPrice(address _user, uint _index) public view returns (uint) {
-        require(_index &lt;= ranksCount);
-        require(userRanks[_user] &lt; _index);
+        require(_index <= ranksCount);
+        require(userRanks[_user] < _index);
 
         return _getPrice(userRanks[_user], _index);
     }
@@ -368,7 +368,7 @@ contract UserRank is LandAccessControl, CanReceiveApproval {
 
 
     function withdrawTokens() public onlyManager  {
-        require(candyToken.balanceOf(this) &gt; 0);
+        require(candyToken.balanceOf(this) > 0);
         candyToken.transfer(landManagement.walletAddress(), candyToken.balanceOf(this));
         emit TokensTransferred(landManagement.walletAddress(), candyToken.balanceOf(this));
     }

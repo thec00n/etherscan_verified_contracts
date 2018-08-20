@@ -8,7 +8,7 @@ library SafeMath {
   */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
     }
 
@@ -16,7 +16,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
     }
   
@@ -35,8 +35,8 @@ contract BCSToken {
     uint256 public totalSupply;
     address private owner;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,8 +50,8 @@ contract BCSToken {
      * Initializes contract with initial supply tokens to the creator of the contract
      */
     function BCSToken() public {
-    	name = &quot;BlockChainStore Token&quot;;                          // Set the name for display purposes
-        symbol = &quot;BCST&quot;;                                         // and symbol
+    	name = "BlockChainStore Token";                          // Set the name for display purposes
+        symbol = "BCST";                                         // and symbol
     	uint256 initialSupply = 100000000;			            // 100M	tokens
         totalSupply = initialSupply * (10 ** uint256(decimals));// 8 digits for mantissa , no safeMath needed here
         balanceOf[msg.sender] = totalSupply;                    // Give the creator all initial tokens
@@ -65,9 +65,9 @@ contract BCSToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(SafeMath.add(balanceOf[_to] ,_value) &gt;= balanceOf[_to]);
+        require(SafeMath.add(balanceOf[_to] ,_value) >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = SafeMath.add(balanceOf[_from] , balanceOf[_to]);
         // Subtract from the sender
@@ -101,7 +101,7 @@ contract BCSToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender]=SafeMath.sub(allowance[_from][msg.sender] , _value);
         _transfer(_from, _to, _value);
         return true;
@@ -129,7 +129,7 @@ contract BCSToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);                          // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);                          // Check if the sender has enough
         require(owner==msg.sender);                                        // Check owner only can destroy
         balanceOf[msg.sender]=SafeMath.sub(balanceOf[msg.sender],_value);  // Subtract from the sender
         totalSupply = SafeMath.sub(totalSupply , _value);                  // Updates totalSupply

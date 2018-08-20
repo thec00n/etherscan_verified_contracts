@@ -3,17 +3,17 @@ pragma solidity ^0.4.15;
  
 
 contract SAUBAERtoken  {
-    string public constant symbol = &quot;SAUBAER&quot;;
-    string public constant name = &quot;SAUBAER&quot;;
+    string public constant symbol = "SAUBAER";
+    string public constant name = "SAUBAER";
     uint8 public constant decimals = 1;
 	// Owner of the contract
 	address public owner;
 	// Total supply of tokens
 	uint256 _totalSupply = 100000;
 	// Ledger of the balance of the account
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 	// Owner of account approuves the transfert of an account to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
      
     // Triggered when tokens are transferred
@@ -33,7 +33,7 @@ contract SAUBAERtoken  {
     // SEND TOKEN: Transfer amount _value from the addr calling function to address _to
     function transfer(address _to, uint256 _value) returns (bool success) {
         // Check if the value is autorized
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             // Decrease the sender balance
             balances[msg.sender] -= _value;
             // Increase the sender balance

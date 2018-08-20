@@ -62,34 +62,34 @@ contract EFTCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         uint _amount = amount / 5;
 
         // period 1 : 100%
-        if(now &gt; 1518307200 &amp;&amp; now &lt; 1519862401) {
+        if(now > 1518307200 && now < 1519862401) {
             amount += amount;
         }
         
         // period 2 : 75%
-        if(now &gt; 1519862400 &amp;&amp; now &lt; 1522537201) {
+        if(now > 1519862400 && now < 1522537201) {
             amount += _amount * 15;
         }
 
         // Pperiod 3 : 50%
-        if(now &gt; 1522537200 &amp;&amp; now &lt; 1525129201) {
+        if(now > 1522537200 && now < 1525129201) {
             amount += _amount * 10;
         }
 
         // Pperiod 4 : 25%
-        if(now &gt; 1525129200 &amp;&amp; now &lt; 1527807601) { 
+        if(now > 1525129200 && now < 1527807601) { 
             amount += _amount * 5;
         }
 
         // Pperiod 5 : 10%
-        if(now &gt; 1527807600 &amp;&amp; now &lt; 1530399600) {
+        if(now > 1527807600 && now < 1530399600) {
             amount += _amount * 2;
         }
 

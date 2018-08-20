@@ -63,20 +63,20 @@ library EROMaths {
   }
 // Saftey Checks for Divison Tasks
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 // Saftey Checks for Subtraction Tasks
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 // Saftey Checks for Addition Tasks
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -98,7 +98,7 @@ contract Ownable {
     _;
   }
 
-   // validates an address - currently only checks that it isn&#39;t null
+   // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -122,9 +122,9 @@ contract Ownable {
 contract EroStandardToken is EROSToken, Ownable {
     
     using EROMaths for uint256;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
      
@@ -140,11 +140,11 @@ contract EroStandardToken is EROSToken, Ownable {
     function transfer(address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[msg.sender]) return false;
         require(
-            (balances[msg.sender] &gt;= _value)
-            &amp;&amp; (_value &gt; 0)
-            &amp;&amp; (_to != address(0))
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to])
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4));
+            (balances[msg.sender] >= _value)
+            && (_value > 0)
+            && (_to != address(0))
+            && (balances[_to].add(_value) >= balances[_to])
+            && (msg.data.length >= (2 * 32) + 4));
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -155,12 +155,12 @@ contract EroStandardToken is EROSToken, Ownable {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[msg.sender]) return false;
         require(
-            (allowed[_from][msg.sender] &gt;= _value) 
-            &amp;&amp; (balances[_from] &gt;= _value) 
-            &amp;&amp; (_value &gt; 0) 
-            &amp;&amp; (_to != address(0)) 
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to])
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4) 
+            (allowed[_from][msg.sender] >= _value) 
+            && (balances[_from] >= _value) 
+            && (_value > 0) 
+            && (_to != address(0)) 
+            && (balances[_to].add(_value) >= balances[_to])
+            && (msg.data.length >= (2 * 32) + 4) 
         );
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -194,15 +194,15 @@ contract EROSCOIN is EroStandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     
-    uint256 constant public decimals = 8; //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 TTC = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint256 constant public decimals = 8; //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 TTC = 980 base units. It's like comparing 1 wei to 1 ether.
     uint256 public totalSupply = 240 * (10**7) * 10**8 ; // 2.4 billion tokens, 8 decimal places
-    string constant public name = &quot;EROSCOIN&quot;; //fancy name: eg EROSCOIN Alpha
-    string constant public symbol = &quot;ERO&quot;; //An identifier: eg ERO
-    string constant public version = &quot;v1.1.3&quot;;       //Version 0.1.6 standard. Just an arbitrary versioning scheme.
+    string constant public name = "EROSCOIN"; //fancy name: eg EROSCOIN Alpha
+    string constant public symbol = "ERO"; //An identifier: eg ERO
+    string constant public version = "v1.1.3";       //Version 0.1.6 standard. Just an arbitrary versioning scheme.
     
     function EROSCOIN(){
         balances[msg.sender] = totalSupply;               // Give the creator all initial tokens
@@ -213,10 +213,10 @@ contract EROSCOIN is EroStandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }

@@ -22,8 +22,8 @@ contract ERC20 {
  */
 contract MainstreetToken is ERC20 {
     
-    mapping (address =&gt; uint) ownerMIT;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) ownerMIT;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalMIT;
     uint public start;
     
@@ -41,14 +41,14 @@ contract MainstreetToken is ERC20 {
     }
     
     modifier isActive() {
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             throw;
         }
         _;
     }
 
     modifier isNotActive() {
-        if (!testing &amp;&amp; block.timestamp &gt;= start) {
+        if (!testing && block.timestamp >= start) {
             throw;
         }
         _;
@@ -62,25 +62,25 @@ contract MainstreetToken is ERC20 {
     }
 
     modifier senderHasSufficient(uint MIT) {
-        if (ownerMIT[msg.sender] &lt; MIT) {
+        if (ownerMIT[msg.sender] < MIT) {
             throw;
         }
         _;
     }
 
     modifier transferApproved(address from, uint MIT) {
-        if (allowed[from][msg.sender] &lt; MIT || ownerMIT[from] &lt; MIT) {
+        if (allowed[from][msg.sender] < MIT || ownerMIT[from] < MIT) {
             throw;
         }
         _;
     }
 
     modifier allowanceIsZero(address spender, uint value) {
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         // allowance to zero by calling `approve(_spender,0)` if it is not
         // already 0 to mitigate the race condition described here:
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((value != 0) &amp;&amp; (allowed[msg.sender][spender] != 0)) {
+        if ((value != 0) && (allowed[msg.sender][spender] != 0)) {
             throw;
         }
         _;
@@ -96,7 +96,7 @@ contract MainstreetToken is ERC20 {
     /**
      * @dev Constructor.
      * @param _mainstreetCrowdfund Address of crowdfund contract.
-     * @param _intellisys Address to receive intellisys&#39; tokens.
+     * @param _intellisys Address to receive intellisys' tokens.
      * @param _start Timestamp when the token becomes active.
      */
     function MainstreetToken(address _mainstreetCrowdfund, address _intellisys, uint _start, bool _testing) {
@@ -182,11 +182,11 @@ contract MainstreetCrowdfund {
     uint public start;
     uint public end;
 
-    mapping (address =&gt; uint) public senderETH;
-    mapping (address =&gt; uint) public senderMIT;
-    mapping (address =&gt; uint) public recipientETH;
-    mapping (address =&gt; uint) public recipientMIT;
-    mapping (address =&gt; uint) public recipientExtraMIT;
+    mapping (address => uint) public senderETH;
+    mapping (address => uint) public senderMIT;
+    mapping (address => uint) public recipientETH;
+    mapping (address => uint) public recipientMIT;
+    mapping (address => uint) public recipientExtraMIT;
 
     uint public totalETH;
     uint public limitETH;
@@ -194,7 +194,7 @@ contract MainstreetCrowdfund {
     uint public bonus1StartETH;
     uint public bonus2StartETH;
 
-    mapping (address =&gt; bool) public whitelistedAddresses;
+    mapping (address => bool) public whitelistedAddresses;
     
     address public exitAddress;
     address public creator;
@@ -207,10 +207,10 @@ contract MainstreetCrowdfund {
         if (address(mainstreetToken) == 0) {
             throw;
         }
-        if (block.timestamp &lt; start || block.timestamp &gt;= end) {
+        if (block.timestamp < start || block.timestamp >= end) {
             throw;
         }
-        if (totalETH + msg.value &gt; limitETH) {
+        if (totalETH + msg.value > limitETH) {
             throw;
         }
         _;
@@ -306,10 +306,10 @@ contract MainstreetCrowdfund {
         uint MIT = msg.value * 10;   // $1 / MIT based on $10 / ETH value
 
         // Calculate time-based bonus.
-        if (block.timestamp - start &lt; 1 weeks) {
+        if (block.timestamp - start < 1 weeks) {
             MIT += MIT / 10;    // 10% bonus
         }
-        else if (block.timestamp - start &lt; 5 weeks) {
+        else if (block.timestamp - start < 5 weeks) {
             MIT += MIT / 20;    // 5% bonus
         }
 
@@ -321,10 +321,10 @@ contract MainstreetCrowdfund {
         uint oldExtra = recipientExtraMIT[recipient];
 
         // Calculate new value-based bonus.
-        if (recipientETH[recipient] &gt;= bonus2StartETH) {
+        if (recipientETH[recipient] >= bonus2StartETH) {
             recipientExtraMIT[recipient] = (recipientMIT[recipient] * 8) / 100;      // 8% bonus
         }
-        else if (recipientETH[recipient] &gt;= bonus1StartETH) {
+        else if (recipientETH[recipient] >= bonus1StartETH) {
             recipientExtraMIT[recipient] = (recipientMIT[recipient] * 4) / 100;      // 4% bonus
         }
 

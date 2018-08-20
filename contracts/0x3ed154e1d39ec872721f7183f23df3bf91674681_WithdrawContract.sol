@@ -36,10 +36,10 @@ pragma solidity ^0.4.15;
 
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40212432292100232f2425232f2e342538346e292f">[email&#160;protected]</a>&gt;
+/// @author Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40212432292100232f2425232f2e342538346e292f">[email protected]</a>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
-///  &quot;user permissions&quot;
+///  authorization control functions, this simplifies & the implementation of
+///  "user permissions"
 contract Owned {
 
     address public owner;
@@ -107,7 +107,7 @@ contract Owned {
 //File: node_modules/giveth-common-contracts/contracts/Escapable.sol
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd9c998f949cbd9e9299989e929389988589d39492">[email&#160;protected]</a>&gt;
+    Contributor: Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd9c998f949cbd9e9299989e929389988589d39492">[email protected]</a>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ contract Owned {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.15;
@@ -136,7 +136,7 @@ pragma solidity ^0.4.15;
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist;
+    mapping (address=>bool) private escapeBlacklist;
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -218,7 +218,7 @@ pragma solidity ^0.4.18;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -234,7 +234,7 @@ contract MiniMeToken {
 
 /// @dev This is the main contract, it is intended to distribute deposited funds
 ///  from a TRUSTED `owner` to token holders of a MiniMe style ERC-20 Token;
-///  only deposits from the `owner` using the functions `newTokenPayment()` &amp;
+///  only deposits from the `owner` using the functions `newTokenPayment()` &
 ///  `newEtherPayment()` will be distributed, any other funds sent to this
 ///  contract can only be removed via the `escapeHatch()`
 contract WithdrawContract is Escapable {
@@ -250,8 +250,8 @@ contract WithdrawContract is Escapable {
     Deposit[] public deposits; // Array of deposits to this contract
     MiniMeToken rewardToken;     // Token that is used for withdraws
 
-    mapping (address =&gt; uint) public nextDepositToPayout; // Tracks Payouts
-    mapping (address =&gt; mapping(uint =&gt; bool)) skipDeposits;
+    mapping (address => uint) public nextDepositToPayout; // Tracks Payouts
+    mapping (address => mapping(uint => bool)) skipDeposits;
 
 /////////
 // Constructor
@@ -261,7 +261,7 @@ contract WithdrawContract is Escapable {
     ///  the `owner` role is assigned to the address that deploys this contract
     /// @param _rewardToken The address of the token that is used to determine the
     ///  distribution of the deposits according to the balance held at the
-    ///  deposit&#39;s specified `block`
+    ///  deposit's specified `block`
     /// @param _escapeHatchCaller The address of a trusted account or contract
     ///  to call `escapeHatch()` to send the specified token (or ether) held in
     ///  this contract to the `escapeHatchDestination`
@@ -297,8 +297,8 @@ contract WithdrawContract is Escapable {
         public onlyOwner payable
         returns (uint _idDeposit)
     {
-        require(msg.value&gt;0);
-        require(_block &lt; block.number);
+        require(msg.value>0);
+        require(_block < block.number);
         _idDeposit = deposits.length ++;
 
         // Record the deposit
@@ -326,8 +326,8 @@ contract WithdrawContract is Escapable {
         public onlyOwner
         returns (uint _idDeposit)
     {
-        require(_amount &gt; 0);
-        require(_block &lt; block.number);
+        require(_amount > 0);
+        require(_block < block.number);
 
         // Must `approve()` this contract in a previous transaction
         require( _token.transferFrom(msg.sender, address(this), _amount) );
@@ -342,11 +342,11 @@ contract WithdrawContract is Escapable {
     }
 
     /// @notice This function is a failsafe function in case a token is
-    ///  deposited that has an issue that could prevent it&#39;s withdraw loop break
+    ///  deposited that has an issue that could prevent it's withdraw loop break
     ///  (e.g. transfers are disabled), can only be called by the `owner`
     /// @param _idDeposit The id number for the deposit being canceled
     function cancelPaymentGlobally(uint _idDeposit) public onlyOwner {
-        require(_idDeposit &lt; deposits.length);
+        require(_idDeposit < deposits.length);
         deposits[_idDeposit].canceled = true;
         CancelPaymentGlobally(_idDeposit);
     }
@@ -362,15 +362,15 @@ contract WithdrawContract is Escapable {
     function withdraw() public {
         uint acc = 0; // Accumulates the amount of tokens/ether to be sent
         uint i = nextDepositToPayout[msg.sender]; // Iterates through the deposits
-        require(i&lt;deposits.length);
+        require(i<deposits.length);
         ERC20 currentToken = deposits[i].token; // Sets the `currentToken` to ether
 
-        require(msg.gas&gt;149000); // Throws if there is no gas to do at least a single transfer.
-        while (( i&lt; deposits.length) &amp;&amp; ( msg.gas &gt; 148000)) {
+        require(msg.gas>149000); // Throws if there is no gas to do at least a single transfer.
+        while (( i< deposits.length) && ( msg.gas > 148000)) {
             Deposit storage d = deposits[i];
 
-            // Make sure `deposit[i]` shouldn&#39;t be skipped
-            if ((!d.canceled)&amp;&amp;(!isDepositSkiped(msg.sender, i))) {
+            // Make sure `deposit[i]` shouldn't be skipped
+            if ((!d.canceled)&&(!isDepositSkiped(msg.sender, i))) {
 
                 // The current diposti is different of the accumulated until now,
                 // so we return the accumulated tokens until now and resset the
@@ -404,7 +404,7 @@ contract WithdrawContract is Escapable {
     /// @param _idDeposit The id number for the deposit being canceled
     /// @param _skip True if the caller wants to skip the payment for `idDeposit`
     function skipPayment(uint _idDeposit, bool _skip) public {
-        require(_idDeposit &lt; deposits.length);
+        require(_idDeposit < deposits.length);
         skipDeposits[msg.sender][_idDeposit] = _skip;
         SkipPayment(_idDeposit, _skip);
     }
@@ -421,9 +421,9 @@ contract WithdrawContract is Escapable {
     ///  unit of the `token` (wei for ether)
     function getPendingReward(ERC20 _token, address _holder) public constant returns(uint) {
         uint acc =0;
-        for (uint i=nextDepositToPayout[msg.sender]; i&lt;deposits.length; i++) {
+        for (uint i=nextDepositToPayout[msg.sender]; i<deposits.length; i++) {
             Deposit storage d = deposits[i];
-            if ((d.token == _token)&amp;&amp;(!d.canceled) &amp;&amp; (!isDepositSkiped(_holder, i))) {
+            if ((d.token == _token)&&(!d.canceled) && (!isDepositSkiped(_holder, i))) {
                 acc +=  d.amount *
                     rewardToken.balanceOfAt(_holder, d.block) /
                         rewardToken.totalSupplyAt(d.block);
@@ -437,13 +437,13 @@ contract WithdrawContract is Escapable {
     /// @return True if there are payments to be collected
     function canWithdraw(address _holder) public constant returns (bool) {
         if (nextDepositToPayout[_holder] == deposits.length) return false;
-        for (uint i=nextDepositToPayout[msg.sender]; i&lt;deposits.length; i++) {
+        for (uint i=nextDepositToPayout[msg.sender]; i<deposits.length; i++) {
             Deposit storage d = deposits[i];
-            if ((!d.canceled) &amp;&amp; (!isDepositSkiped(_holder, i))) {
+            if ((!d.canceled) && (!isDepositSkiped(_holder, i))) {
                 uint amount =  d.amount *
                     rewardToken.balanceOfAt(_holder, d.block) /
                         rewardToken.totalSupplyAt(d.block);
-                if (amount&gt;0) return true;
+                if (amount>0) return true;
             }
         }
         return false;
@@ -478,7 +478,7 @@ contract WithdrawContract is Escapable {
     function doPayment(uint _idDeposit,  address _dest, ERC20 _token, uint _amount) internal returns (bool) {
         if (_amount == 0) return true;
         if (address(_token) == 0) {
-            if (!_dest.send(_amount)) return false;   // If we can&#39;t send, we continue...
+            if (!_dest.send(_amount)) return false;   // If we can't send, we continue...
         } else {
             if (!_token.transfer(_dest, _amount)) return false;
         }

@@ -13,13 +13,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -84,8 +84,8 @@ contract BitflaxPresale is owned {
     }
 
     function () payable {
-        if (saleStart &lt; now &amp;&amp; saleEnd &gt; now) {
-            require(msg.value &gt;= minInvestment);
+        if (saleStart < now && saleEnd > now) {
+            require(msg.value >= minInvestment);
             totalInvestors = totalInvestors + 1;
         } else {
             revert();

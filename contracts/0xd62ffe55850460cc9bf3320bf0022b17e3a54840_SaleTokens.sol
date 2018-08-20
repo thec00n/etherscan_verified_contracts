@@ -18,9 +18,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -98,34 +98,34 @@ contract SaleTokens is Ownable {
 
     function stopSale() onlyOwner {
         isSale = false;
-        if(tokensContract.balanceOf(this) &gt; 0){
+        if(tokensContract.balanceOf(this) > 0){
             tokensContract.transfer(msg.sender, tokensContract.balanceOf(this));
         }
-        if (this.balance &gt; 0){
+        if (this.balance > 0){
             msg.sender.transfer(this.balance);
         }
     }
 
     function withdraw() onlyOwner {
-        assert(this.balance &gt; 0);
+        assert(this.balance > 0);
         msg.sender.transfer(this.balance);
     }
 
     function getPrice(uint256 value) view public returns (uint256 price){
         price = 0.00015 ether;
-        if (value &gt;= 0.075 ether &amp;&amp; value &lt; 0.135 ether)
+        if (value >= 0.075 ether && value < 0.135 ether)
         {
             price = 0.000135 ether;
         }
-        else if(value &gt;= 0.135 ether &amp;&amp; value &lt; 0.25 ether)
+        else if(value >= 0.135 ether && value < 0.25 ether)
         {
             price = 0.00012 ether;
         }
-        else if(value &gt;= 0.25 ether &amp;&amp; value &lt; 1 ether)
+        else if(value >= 0.25 ether && value < 1 ether)
         {
             price = 0.00011 ether;
         }
-        else if (value &gt;= 1 ether)
+        else if (value >= 1 ether)
         {
             price = 0.0001 ether;
         }
@@ -133,11 +133,11 @@ contract SaleTokens is Ownable {
 
     function () payable {
         assert(isSale);
-        assert(tokensContract.balanceOf(this) &gt; 0);
-        assert(msg.value &gt; minInvest);
+        assert(tokensContract.balanceOf(this) > 0);
+        assert(msg.value > minInvest);
 
         uint256 countTokens = msg.value.mul(10**uint256(tokensContract.decimals())).div(getPrice(msg.value));
-        assert(tokensContract.balanceOf(this) &gt;= countTokens);
+        assert(tokensContract.balanceOf(this) >= countTokens);
         tokensContract.transfer(msg.sender, countTokens);
     }
 }

@@ -8,8 +8,8 @@ pragma solidity ^0.4.11;
 	
 	uint256 public totalSupply;
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping(address=&gt;uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping(address=>uint256)) public allowance;
 
 	event Transfer(address from, address to, uint256 value);
 	event Approval(address from, address to, uint256 value);
@@ -20,8 +20,8 @@ pragma solidity ^0.4.11;
 		totalSupply = 1000000;
 
 		balanceOf[msg.sender] = totalSupply;
-		name = &quot;MarketMaker&quot;;
-		symbol = &quot;MMC2&quot;;
+		name = "MarketMaker";
+		symbol = "MMC2";
 
 	}
 
@@ -30,8 +30,8 @@ pragma solidity ^0.4.11;
 
 	function _transfer(address _from, address _to, uint256 _value) internal {
 		require(_to != 0x0);
-		require(balanceOf[_from] &gt;= _value);
-		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+		require(balanceOf[_from] >= _value);
+		require(balanceOf[_to] + _value >= balanceOf[_to]);
 
 		balanceOf[_to] += _value;
 		balanceOf[_from] -= _value;
@@ -46,7 +46,7 @@ pragma solidity ^0.4.11;
 	}
 	
 	function transferFrom(address _from, address _to, uint256 _value) public {
-		require(_value &lt;= allowance[_from] [_to]);
+		require(_value <= allowance[_from] [_to]);
 		allowance[_from] [_to] -= _value;
 		_transfer(_from, _to, _value);
 	}

@@ -23,7 +23,7 @@ contract ERC20 is ERC20Basic {
 
 
 contract MultiSender {
-    mapping(address =&gt; uint256) public txCount;
+    mapping(address => uint256) public txCount;
     address public owner;
     address public pendingOwner;
     uint16 public arrayLimit = 150;
@@ -36,7 +36,7 @@ contract MultiSender {
     
     modifier hasFee(){
         // uint256 fee = txCount[msg.sender]
-        require(msg.value &gt;= fee - discountRate(msg.sender));
+        require(msg.value >= fee - discountRate(msg.sender));
         _;
     }
     function MultiSender(address _owner, address _pendingOwner){
@@ -71,11 +71,11 @@ contract MultiSender {
     }
     
     function multisendToken(address token, address[] _contributors, uint256[] _balances) public hasFee payable {
-        require(_contributors.length &lt;= arrayLimit);
+        require(_contributors.length <= arrayLimit);
         ERC20 erc20token = ERC20(token);
         uint8 i = 0;
-        require(erc20token.allowance(msg.sender, this) &gt; 0);
-        for(i; i&lt;_contributors.length;i++){
+        require(erc20token.allowance(msg.sender, this) > 0);
+        for(i; i<_contributors.length;i++){
             erc20token.transferFrom(msg.sender, _contributors[i], _balances[i]);
         }
         txCount[msg.sender]++;
@@ -83,9 +83,9 @@ contract MultiSender {
     
     function multisendEther(address[] _contributors, uint256[] _balances) public hasFee payable{
         // this function is always free, however if there is anything left over, I will keep it.
-        require(_contributors.length &lt;= arrayLimit);
+        require(_contributors.length <= arrayLimit);
         uint8 i = 0;
-        for(i; i&lt;_contributors.length;i++){
+        for(i; i<_contributors.length;i++){
             _contributors[i].transfer(_balances[i]);
         }
         txCount[msg.sender]++;

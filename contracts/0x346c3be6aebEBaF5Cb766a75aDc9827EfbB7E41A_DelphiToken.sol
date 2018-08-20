@@ -7,7 +7,7 @@ contract Token {
     function transferFrom(address from, address to, uint256 value) returns (bool success);
     function approve(address spender, uint256 value) returns (bool success);
 
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions.
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions.
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function allowance(address owner, address spender) constant returns (uint256 remaining);
@@ -23,14 +23,14 @@ contract StandardToken is Token {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
@@ -38,7 +38,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             // Balance too low
             throw;
         }
@@ -57,7 +57,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             // Balance or allowance too low
             throw;
         }
@@ -110,14 +110,14 @@ contract StandardToken is Token {
 
 
 /// @title DelphiToken contract
-/// @author Christopher Grant - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7ccd6cdd7d0cbd4ccc1d6e4c0c1c8d4cccd8ac9c5d6cfc1d0d7">[email&#160;protected]</a>&gt;
+/// @author Christopher Grant - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7ccd6cdd7d0cbd4ccc1d6e4c0c1c8d4cccd8ac9c5d6cfc1d0d7">[email protected]</a>>
 contract DelphiToken is StandardToken {
 
     /*
      *  Token meta data
      */
-    string constant public name = &quot;Delphi&quot;;
-    string constant public symbol = &quot;DEL&quot;;
+    string constant public name = "Delphi";
+    string constant public symbol = "DEL";
     uint8 constant public decimals = 18;
 
     /*

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 // Etheremon ERC721
 
-// copyright <span class="__cf_email__" data-cfemail="7e1d11100a1f1d0a3e3b0a161b0c1b131110501d1113">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="7e1d11100a1f1d0a3e3b0a161b0c1b131110501d1113">[email protected]</span>
 
 contract SafeMath {
 
@@ -14,12 +14,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -36,7 +36,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -177,10 +177,10 @@ contract ERC721 {
 }
 
 contract EtheremonAsset is BasicAccessControl, ERC721 {
-    string public constant name = &quot;EtheremonAsset&quot;;
-    string public constant symbol = &quot;EMONA&quot;;
+    string public constant name = "EtheremonAsset";
+    string public constant symbol = "EMONA";
     
-    mapping (address =&gt; mapping (uint256 =&gt; address)) public allowed;
+    mapping (address => mapping (uint256 => address)) public allowed;
     
     // data contract
     address public dataContract;
@@ -265,10 +265,10 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
             return false;
         if (obj.trainer != _owner)
             return false;
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
-        return (!battle.isOnBattle(obj.monsterId) &amp;&amp; !trade.isOnTrading(obj.monsterId));
+        return (!battle.isOnBattle(obj.monsterId) && !trade.isOnTrading(obj.monsterId));
     }
     
     function approve(address _to, uint256 _tokenId) requireBattleContract requireTradeContract isActive external {
@@ -279,7 +279,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         require(msg.sender == obj.trainer);
         require(msg.sender != _to);
         
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))
@@ -299,7 +299,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         
         require(allowed[obj.trainer][_tokenId] == msg.sender);
         
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))
@@ -325,7 +325,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         require(msg.sender != _to);
         require(_to != address(0));
         
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))
@@ -352,7 +352,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         require(_to != _from);
         require(allowed[_from][_tokenId] == msg.sender);
     
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))

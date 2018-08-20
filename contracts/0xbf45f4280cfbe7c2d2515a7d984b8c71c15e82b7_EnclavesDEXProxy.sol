@@ -7,9 +7,9 @@ contract EtherDeltaI {
   uint public feeMake; //percentage times (1 ether)
   uint public feeTake; //percentage times (1 ether)
 
-  mapping (address =&gt; mapping (address =&gt; uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
-  mapping (address =&gt; mapping (bytes32 =&gt; bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
-  mapping (address =&gt; mapping (bytes32 =&gt; uint)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
+  mapping (address => mapping (address => uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (bytes32 => bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
+  mapping (address => mapping (bytes32 => uint)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
 
   function deposit() payable;
 
@@ -49,20 +49,20 @@ library KindMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -71,10 +71,10 @@ library KindMath {
 
 contract KeyValueStorage {
 
-  mapping(address =&gt; mapping(bytes32 =&gt; uint256)) _uintStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; address)) _addressStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; bool)) _boolStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; bytes32)) _bytes32Storage;
+  mapping(address => mapping(bytes32 => uint256)) _uintStorage;
+  mapping(address => mapping(bytes32 => address)) _addressStorage;
+  mapping(address => mapping(bytes32 => bool)) _boolStorage;
+  mapping(address => mapping(bytes32 => bytes32)) _bytes32Storage;
 
   /**** Get Methods ***********/
 
@@ -215,11 +215,11 @@ contract EnclavesDEXProxy is StorageConsumer {
   bool freezeTrading;
   bool depositTokenLock;
 
-  mapping (address =&gt; mapping (uint256 =&gt; bool)) nonceCheck;
+  mapping (address => mapping (uint256 => bool)) nonceCheck;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
-  mapping (address =&gt; mapping (bytes32 =&gt; bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
-  mapping (address =&gt; mapping (bytes32 =&gt; uint256)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
+  mapping (address => mapping (address => uint256)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (bytes32 => bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
+  mapping (address => mapping (bytes32 => uint256)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
 
   address internal implementation;
   address public proposedImplementation;
@@ -263,7 +263,7 @@ contract EnclavesDEXProxy is StorageConsumer {
 
   function upgrade() public onlyAdmin {
     require(proposedImplementation != address(0));
-    require(proposedTimestamp &lt; now);
+    require(proposedTimestamp < now);
     implementation = proposedImplementation;
     Upgraded(implementation);
   }

@@ -7,7 +7,7 @@ contract Dividend {
         uint index;
     }
 
-    mapping (address =&gt; Record) public records;
+    mapping (address => Record) public records;
     address[] public investors;
     address public funder;
     uint public startTime;
@@ -35,14 +35,14 @@ contract Dividend {
     function invest() public payable returns (uint) {
         uint value = msg.value;
         uint shares = allocateShares(value, (now - startTime) / 1 hours);
-        if (shares &gt; 0) {
-            for (uint i = investors.length; i &gt; 0; i--) {
+        if (shares > 0) {
+            for (uint i = investors.length; i > 0; i--) {
                 Record storage rec = records[investors[i - 1]];
                 rec.balance += value * rec.shares / totalShares;
             }
             address investor = msg.sender;
             rec = records[investor];
-            if (rec.index &gt; 0) {
+            if (rec.index > 0) {
                 rec.shares += shares;
             } else {
                 rec.shares = shares;
@@ -57,12 +57,12 @@ contract Dividend {
     function withdraw() public returns (uint) {
         Record storage rec = records[msg.sender];
         uint balance = rec.balance;
-        if (balance &gt; 0) {
+        if (balance > 0) {
             rec.balance = 0;
             msg.sender.transfer(balance);
             Withdrawn(now, msg.sender, balance);
         }
-        if (now - lastInvestmentTime &gt; 4 weeks) {
+        if (now - lastInvestmentTime > 4 weeks) {
             selfdestruct(funder);
         }
         return balance;

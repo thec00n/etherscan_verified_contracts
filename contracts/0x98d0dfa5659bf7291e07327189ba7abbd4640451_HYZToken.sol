@@ -17,9 +17,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -27,7 +27,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,9 +78,9 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // 用mapping保存每个地址对应的余额
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     // 返回_owner给_spender授权token的剩余量
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // 事件，用来通知客户端交易发生
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -114,9 +114,9 @@ contract TokenERC20 {
         // 确保目地地址不为0x0，因为0x0地址代表的是销毁
         require(_to != 0x0);
         // 确保发送者账户有足够的余额
-        require(balanceOf[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balanceOf[_from] >= _value && _value > 0);
         // 确保_value为正数，如果为负数，那相当于付款者账户钱越买越多～哈哈～
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // 交易前，双方账户余额总和
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // 将发送方账户余额减value
@@ -147,8 +147,8 @@ contract TokenERC20 {
      * 批量转账固定金额
      */
     function batchTransfer(address[] _to, uint _value) public returns (bool success) {
-        require(_to.length &gt; 0 &amp;&amp; _to.length &lt;= 20);
-        for (uint i = 0; i &lt; _to.length; i++) {
+        require(_to.length > 0 && _to.length <= 20);
+        for (uint i = 0; i < _to.length; i++) {
             _transfer(msg.sender, _to[i], _value);
         }
         return true;
@@ -164,7 +164,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
@@ -207,7 +207,7 @@ contract TokenERC20 {
      * @param _value 销毁的数量
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // 检查合约账户是否有足够的代币
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         // 将合约账户余额减少
@@ -224,14 +224,14 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         balanceOf[_from] = balanceOf[_from].sub(_value);
         // Subtract from the targeted balance
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);
         // Update totalSupply
         emit Burn(_from, _value);
@@ -251,7 +251,7 @@ contract HYZToken is Ownable, TokenERC20 {
 
     uint minBalanceForAccounts;
 
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -267,16 +267,16 @@ contract HYZToken is Ownable, TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
         // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Check for overflows
         require(!frozenAccount[_from]);
         // 检查发送人账号是否被冻结
         require(!frozenAccount[_to]);
         // 检查接收人账号是否被冻结
 
-        if (msg.sender.balance &lt; minBalanceForAccounts)
+        if (msg.sender.balance < minBalanceForAccounts)
             sell((minBalanceForAccounts - msg.sender.balance) / sellPrice);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
@@ -298,7 +298,7 @@ contract HYZToken is Ownable, TokenERC20 {
     }
 
     /// 资产冻结
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target 目标冻结的账户地址
     /// @param freeze 是否冻结 true|false
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -332,7 +332,7 @@ contract HYZToken is Ownable, TokenERC20 {
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
         address myAddress = this;
-        require(myAddress.balance &gt;= amount * sellPrice);
+        require(myAddress.balance >= amount * sellPrice);
         // 检查合约是否有足够的以太币去购买
         _transfer(msg.sender, this, amount);
         // makes the transfers

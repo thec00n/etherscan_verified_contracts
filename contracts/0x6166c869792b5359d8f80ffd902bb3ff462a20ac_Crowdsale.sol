@@ -35,20 +35,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,26 +60,26 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -165,16 +165,16 @@ contract Pausable is Ownable {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * @dev This simplifies the implementation of &quot;user permissions&quot;.
+ * @dev This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable {
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     require(whitelist[msg.sender]);
@@ -201,7 +201,7 @@ contract Whitelist is Ownable {
    * false if all addresses were already in the whitelist
    */
   function addAddressesToWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (addAddressToWhitelist(addrs[i])) {
         success = true;
       }
@@ -212,7 +212,7 @@ contract Whitelist is Ownable {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address addr) onlyOwner public returns(bool success) {
     if (whitelist[addr]) {
@@ -226,10 +226,10 @@ contract Whitelist is Ownable {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (removeAddressFromWhitelist(addrs[i])) {
         success = true;
       }
@@ -249,10 +249,10 @@ contract Presale is Whitelist {
   uint256 private cap;
 
   function Presale(uint256 _startTime, uint256 duration, uint256 _rate, uint256 _cap) public {
-    require(_rate &gt; 0);
-    require(_cap &gt; 0);
-    require(_startTime &gt;= now);
-    require(duration &gt; 0);
+    require(_rate > 0);
+    require(_cap > 0);
+    require(_startTime >= now);
+    require(duration > 0);
 
     rate = _rate;
     cap = _cap;
@@ -281,16 +281,16 @@ contract Presale is Whitelist {
   }
 
   function hasEnded() internal constant returns(bool) {
-    return now &gt; endTime || weiRaised &gt;= cap;
+    return now > endTime || weiRaised >= cap;
   }
 
   function hasStarted() internal constant returns(bool) {
-    return now &gt; startTime;
+    return now > startTime;
   }
 
   function validPurchase(uint256 value) internal view returns (bool) {
-    bool withinCap = weiRaised.add(value) &lt;= cap;
-    return withinCap &amp;&amp; withinPeriod();
+    bool withinCap = weiRaised.add(value) <= cap;
+    return withinCap && withinPeriod();
   }
 
   function presaleRate() public view returns(uint256) {
@@ -298,7 +298,7 @@ contract Presale is Whitelist {
   }
 
   function withinPeriod () private constant returns(bool) {
-    return now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    return now >= startTime && now <= endTime;
   }
 
   function increasePresaleEndTime(uint _days) public onlyWhitelisted {
@@ -371,7 +371,7 @@ contract VestingTrustee is Ownable, CanReclaimToken {
     }
 
     // Holder to grant information mapping.
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     // Total tokens available for vesting.
     uint256 public totalVesting;
@@ -401,22 +401,22 @@ contract VestingTrustee is Ownable, CanReclaimToken {
         external onlyOwner {
 
         require(_to != address(0));
-        require(_to != address(this)); // Don&#39;t allow holder to be this contract.
-        require(_value &gt; 0);
-        require(_value.sub(prevested) &gt; 0);
-        require(vestingPercentage &gt; 0);
+        require(_to != address(this)); // Don't allow holder to be this contract.
+        require(_value > 0);
+        require(_value.sub(prevested) > 0);
+        require(vestingPercentage > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(_value.sub(prevested)) &lt;= token.balanceOf(address(this)));
+        require(totalVesting.add(_value.sub(prevested)) <= token.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -460,7 +460,7 @@ contract VestingTrustee is Ownable, CanReclaimToken {
     /// @dev Calculate the total amount of vested tokens of a holder at a given time.
     /// @param _holder address The address of the holder.
     /// @param _time uint256 The specific time to calculate against.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function vestedTokens(address _holder, uint256 _time) external constant returns (uint256) {
         Grant memory grant = grants[_holder];
         if (grant.value == 0) {
@@ -475,13 +475,13 @@ contract VestingTrustee is Ownable, CanReclaimToken {
     /// @param _time uint256 The time to be checked
     /// @return a uint256 Representing the amount of vested tokens of a specific grant.
     function calculateVestedTokens(Grant _grant, uint256 _time) private constant returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return _grant.prevested;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested;
-        if (_time &gt;= _grant.end) {
+        // If we're after the end of the vesting period - everything is vested;
+        if (_time >= _grant.end) {
             return _grant.value;
         }
 
@@ -507,7 +507,7 @@ contract VestingTrustee is Ownable, CanReclaimToken {
             revert();
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             revert();
@@ -579,13 +579,13 @@ contract TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -599,13 +599,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -634,10 +634,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -716,7 +716,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -737,16 +737,16 @@ contract MiniMeToken is Controlled {
                return;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            var previousBalanceFrom = balanceOfAt(_from, block.number);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (isContract(controller)) {
@@ -760,7 +760,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -768,7 +768,7 @@ contract MiniMeToken is Controlled {
 
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -854,7 +854,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -879,7 +879,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -941,9 +941,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -958,9 +958,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -991,16 +991,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -1016,7 +1016,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -1035,15 +1035,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -1142,8 +1142,8 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
   uint256 private startTime; //start time of the public sale initialized after the presale is over
   uint256 private endTime; //endtime of the public sale
   uint256 public maxTokens;
-  mapping(address =&gt; uint256) public contributions; //contributions of each investor
-  mapping(address =&gt; uint256) public investorCaps; //for whitelisting
+  mapping(address => uint256) public contributions; //contributions of each investor
+  mapping(address => uint256) public investorCaps; //for whitelisting
   address[] public investors; //investor list who participate in the ICO
   address[] public founders; //list of founders
   address[] public advisors; //list of advisors
@@ -1184,8 +1184,8 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
     {
       require(_wallet != address(0));
       require(erc20Token != address(0));
-      require(_tiers &gt; 0 &amp;&amp; _tiers &lt;= maxTiers);
-      require(_cap &gt; 0);
+      require(_tiers > 0 && _tiers <= maxTiers);
+      require(_cap > 0);
       require(_reserveWallet != address(0));
       token = MiniMeToken(erc20Token);
       wallet = _wallet;
@@ -1208,7 +1208,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
     if (finalized) return Stage.Finalized;
     if (!tiersInitialized || !Presale.hasStarted()) return Stage.Preparing;
     if (!Presale.hasEnded()) return Stage.Presale;
-    if (Presale.hasEnded() &amp;&amp; !hasStarted()) return Stage.PresaleFinished;
+    if (Presale.hasEnded() && !hasStarted()) return Stage.PresaleFinished;
     if (!hasEnded()) return Stage.PublicSale;
     if (hasEnded()) return Stage.Success;
     return Stage.Preparing;
@@ -1224,12 +1224,12 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
   function initTiers(uint256[] rates, uint256[] totalWeis) public onlyWhitelisted returns(uint256) {
     require(token.controller() == address(this));
     require(!tiersInitialized);
-    require(rates.length == totalTiers &amp;&amp; rates.length == totalWeis.length);
+    require(rates.length == totalTiers && rates.length == totalWeis.length);
     uint256 tierMax = 0;
 
-    for (uint8 i=0; i &lt; totalTiers; i++) {
+    for (uint8 i=0; i < totalTiers; i++) {
 
-      require(totalWeis[i] &gt; 0 &amp;&amp; rates[i] &gt; 0);
+      require(totalWeis[i] > 0 && rates[i] > 0);
 
       tierMax = tierMax.add(totalWeis[i]);
       tiers[i] = Tier({
@@ -1245,15 +1245,15 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
   // function for whitelisting investors with caps
   function setCapForParticipants(address[] participants, uint256[] caps) onlyWhitelisted public  {
-    require(participants.length &lt;= 50 &amp;&amp; participants.length == caps.length);
-    for (uint8 i=0; i &lt; participants.length; i++) {
+    require(participants.length <= 50 && participants.length == caps.length);
+    for (uint8 i=0; i < participants.length; i++) {
       investorCaps[participants[i]] = caps[i];
     }
   }
 
 
   function addGrant(address assignee, uint256 value, bool isFounder) public onlyWhitelisted whenNotPaused {
-    require(value &gt; 0);
+    require(value > 0);
     require(assignee != address(0));
     uint256 start;
     uint256 cliff;
@@ -1286,7 +1286,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
   // called by the owner to close the crowdsale
   function finalize() public onlyWhitelisted inStage(Stage.Success) {
     require(!finalized);
-    //trustee&#39;s ownership is transfered from the crowdsale to owner of the contract
+    //trustee's ownership is transfered from the crowdsale to owner of the contract
     trustee.transferOwnership(msg.sender);
     //enable token transfer
     token.enableTransfers(true);
@@ -1294,7 +1294,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
     uint256 unsold = maxTokens.sub(token.totalSupply());
     transferTokens(reserveWallet, unsold);
 
-    // change the token&#39;s controller to a zero Address so that it cannot
+    // change the token's controller to a zero Address so that it cannot
     // generate or destroy tokens
     token.changeController(0x0);
     finalized = true;
@@ -1302,8 +1302,8 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
   //start the public sale manually after the presale is over, duration is in days
   function startPublicSale(uint _startTime, uint _duration) public onlyWhitelisted inStage(Stage.PresaleFinished) {
-    require(_startTime &gt;= now);
-    require(_duration &gt; 0);
+    require(_startTime >= now);
+    require(_duration > 0);
     startTime = _startTime;
     endTime = _startTime + _duration * 1 days;
     publicSaleInitialized = true;
@@ -1332,18 +1332,18 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
   // MAIN BUYING Function
   function buyTokens(address purchaser, uint256 value) internal  whenNotPaused returns(uint256) {
-    require(value &gt; 0);
+    require(value > 0);
     Stage stage = getStage();
     require(stage == Stage.Presale || stage == Stage.PublicSale);
 
     //the purchase amount cannot be more than the whitelisted cap
     uint256 purchaseAmount = Math.min256(value, investorCaps[purchaser].sub(contributions[purchaser]));
-    require(purchaseAmount &gt; 0);
+    require(purchaseAmount > 0);
     uint256 numTokens;
 
     //call the presale contract
     if (stage == Stage.Presale) {
-      if (Presale.totalWei().add(purchaseAmount) &gt; Presale.totalCap()) {
+      if (Presale.totalWei().add(purchaseAmount) > Presale.totalCap()) {
         purchaseAmount = Presale.capRemaining();
       }
       numTokens = Presale.buyTokens(purchaser, purchaseAmount);
@@ -1351,7 +1351,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
       uint totalWei = weiRaised.add(purchaseAmount);
       uint8 currentTier = getTier(weiRaised); //get current tier
-      if (totalWei &gt;= cap) { // will TOTAL_CAP(HARD_CAP) of the public sale be reached ?
+      if (totalWei >= cap) { // will TOTAL_CAP(HARD_CAP) of the public sale be reached ?
         totalWei = cap;
         //purchase amount can be only be (CAP - WeiRaised)
         purchaseAmount = cap.sub(weiRaised);
@@ -1359,7 +1359,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
       // if the totalWei( weiRaised + msg.value) fits within current cap
       // number of tokens would be rate * purchaseAmount
-      if (totalWei &lt;= tiers[currentTier].max) {
+      if (totalWei <= tiers[currentTier].max) {
         numTokens = purchaseAmount.mul(tiers[currentTier].rate);
       } else {
         //wei remaining in the current tier
@@ -1377,7 +1377,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
     }
 
     // total tokens sold in the entire sale
-    require(tokensSold.add(numTokens) &lt;= publicTokensAvailable);
+    require(tokensSold.add(numTokens) <= publicTokensAvailable);
     tokensSold = tokensSold.add(numTokens);
 
     // forward funds to the wallet
@@ -1386,7 +1386,7 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
     transferTokens(purchaser, numTokens);
 
     // return the remaining unused wei back
-    if (value.sub(purchaseAmount) &gt; 0) {
+    if (value.sub(purchaseAmount) > 0) {
       msg.sender.transfer(value.sub(purchaseAmount));
     }
 
@@ -1432,27 +1432,27 @@ contract Crowdsale is Presale, Pausable, CanReclaimToken {
 
   function transferTokens(address to, uint256 value) internal {
     uint totalSupply = token.totalSupply();
-    require(totalSupply.add(value) &lt;= maxTokens);
+    require(totalSupply.add(value) <= maxTokens);
     token.generateTokens(to, value);
   }
 
   function sendPrivateSaleTokens(address to, uint256 value) public whenNotPaused onlyWhitelisted {
-    require(privateSaleTokensSold.add(value) &lt;= privateSaleTokensAvailable);
+    require(privateSaleTokensSold.add(value) <= privateSaleTokensAvailable);
     privateSaleTokensSold = privateSaleTokensSold.add(value);
     transferTokens(to, value);
   }
 
   function hasEnded() internal constant returns(bool) {
-    return now &gt; endTime || weiRaised &gt;= cap;
+    return now > endTime || weiRaised >= cap;
   }
 
   function hasStarted() internal constant returns(bool) {
-    return publicSaleInitialized &amp;&amp; now &gt;= startTime;
+    return publicSaleInitialized && now >= startTime;
   }
 
   function getTier(uint256 _weiRaised) internal constant returns(uint8) {
-    for (uint8 i = 0; i &lt; totalTiers; i++) {
-      if (_weiRaised &lt; tiers[i].max) {
+    for (uint8 i = 0; i < totalTiers; i++) {
+      if (_weiRaised < tiers[i].max) {
         return i;
       }
     }

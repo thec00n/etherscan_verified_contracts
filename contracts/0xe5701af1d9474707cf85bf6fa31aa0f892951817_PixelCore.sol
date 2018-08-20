@@ -2,7 +2,7 @@
 pragma solidity ^0.4.11;
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076362736247667f6e686a7d6269296468">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076362736247667f6e686a7d6269296468">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -28,7 +28,7 @@ contract ERC721 {
 
 
 /// @title A facet of PixelCore that manages special access privileges.
-/// @author Oliver Schneider &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036a6d656c43736a7b666f606c6a6d702d6a6c">[email&#160;protected]</a>&gt; (https://pixelcoins.io)
+/// @author Oliver Schneider <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036a6d656c43736a7b666f606c6a6d702d6a6c">[email protected]</a>> (https://pixelcoins.io)
 contract PixelAuthority {
 
     /// @dev Emited when contract is upgraded
@@ -54,7 +54,7 @@ contract PixelAuthority {
 
 
 /// @title Base contract for PixelCoins. Holds all common structs, events and base variables.
-/// @author Oliver Schneider &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="553c3b333a15253c2d3039363a3c3b267b3c3a">[email&#160;protected]</a>&gt; (https://pixelcoins.io)
+/// @author Oliver Schneider <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="553c3b333a15253c2d3039363a3c3b267b3c3a">[email protected]</a>> (https://pixelcoins.io)
 /// @dev See the PixelCore contract documentation to understand how the various contract facets are arranged.
 contract PixelBase is PixelAuthority {
     /*** EVENTS ***/
@@ -70,14 +70,14 @@ contract PixelBase is PixelAuthority {
     /*** STORAGE ***/
     /// @dev A mapping from pixel ids to the address that owns them. A pixel address of 0 means,
     /// that the pixel can still be bought.
-    mapping (uint256 =&gt; address) public pixelIndexToOwner;
+    mapping (uint256 => address) public pixelIndexToOwner;
     /// Address that is approved to change ownship
-    mapping (uint256 =&gt; address) public pixelIndexToApproved;
+    mapping (uint256 => address) public pixelIndexToApproved;
     /// Stores the color of an pixel, indexed by pixelid
-    mapping (uint256 =&gt; uint32) public colors;
+    mapping (uint256 => uint32) public colors;
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (address => uint256) ownershipTokenCount;
 
     // Internal utility functions: These functions all assume that their input arguments
     // are valid. We leave it to public methods to sanitize their inputs and follow
@@ -106,7 +106,7 @@ contract PixelBase is PixelAuthority {
 
     /// @dev Checks if a given address currently has transferApproval for a particular Pixel.
     /// @param _claimant the address we are confirming pixel is approved for.
-    /// @param _tokenId pixel id, only valid when &gt; 0
+    /// @param _tokenId pixel id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return pixelIndexToApproved[_tokenId] == _claimant;
     }
@@ -114,33 +114,33 @@ contract PixelBase is PixelAuthority {
 
 
 /// @title The facet of the PixelCoins core contract that manages ownership, ERC-721 (draft) compliant.
-/// @author Oliver Schneider &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b42454d446b5b42534e474844424558054244">[email&#160;protected]</a>&gt; (https://pixelcoins.io), based on Axiom Zen (https://www.axiomzen.co)
+/// @author Oliver Schneider <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b42454d446b5b42534e474844424558054244">[email protected]</a>> (https://pixelcoins.io), based on Axiom Zen (https://www.axiomzen.co)
 /// @dev Ref: https://github.com/ethereum/EIPs/issues/721
 ///  See the PixelCore contract documentation to understand how the various contract facets are arranged.
 contract PixelOwnership is PixelBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;PixelCoins&quot;;
-    string public constant symbol = &quot;PXL&quot;;
+    string public constant name = "PixelCoins";
+    string public constant symbol = "PXL";
 
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint256,string)'));
 
 
-    string public metaBaseUrl = &quot;https://pixelcoins.io/meta/&quot;;
+    string public metaBaseUrl = "https://pixelcoins.io/meta/";
 
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
@@ -256,14 +256,14 @@ contract PixelOwnership is PixelBase, ERC721 {
 
     /// @notice Returns the addresses currently assigned ownership of the given pixel area.
     function ownersOfArea(uint256 x, uint256 y, uint256 x2, uint256 y2) external view returns (address[] result) {
-        require(x2 &gt; x &amp;&amp; y2 &gt; y);
-        require(x2 &lt;= WIDTH &amp;&amp; y2 &lt;= HEIGHT);
+        require(x2 > x && y2 > y);
+        require(x2 <= WIDTH && y2 <= HEIGHT);
         result = new address[]((y2 - y) * (x2 - x));
 
         uint256 r = 0;
-        for (uint256 i = y; i &lt; y2; i++) {
+        for (uint256 i = y; i < y2; i++) {
             uint256 tokenId = i * WIDTH;
-            for (uint256 j = x; j &lt; x2; j++) {
+            for (uint256 j = x; j < x2; j++) {
                 result[r] = pixelIndexToOwner[tokenId + j];
                 r++;
             }
@@ -272,7 +272,7 @@ contract PixelOwnership is PixelBase, ERC721 {
 
     /// @notice Returns a list of all Pixel IDs assigned to an address.
     /// @param _owner The owner whosed Pixels we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Pixel array looking for pixels belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -291,7 +291,7 @@ contract PixelOwnership is PixelBase, ERC721 {
             // sequentially up to the totalCat count.
             uint256 pixelId;
 
-            for (pixelId = 0; pixelId &lt;= totalPixels; pixelId++) {
+            for (pixelId = 0; pixelId <= totalPixels; pixelId++) {
                 if (pixelIndexToOwner[pixelId] == _owner) {
                     result[resultIndex] = pixelId;
                     resultIndex++;
@@ -313,7 +313,7 @@ contract PixelOwnership is PixelBase, ERC721 {
             reversed[i++] = byte(48 + remainder);
         }
         bytes memory s = new bytes(i);
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
             s[j] = reversed[i - 1 - j];
         }
         str = string(s);
@@ -332,10 +332,10 @@ contract PixelOwnership is PixelBase, ERC721 {
         bytes memory inStrb = bytes(inStr);
         bytes memory s = new bytes(inStrb.length + i);
         uint j;
-        for (j = 0; j &lt; inStrb.length; j++) {
+        for (j = 0; j < inStrb.length; j++) {
             s[j] = inStrb[j];
         }
-        for (j = 0; j &lt; i; j++) {
+        for (j = 0; j < i; j++) {
             s[j + inStrb.length] = reversed[i - 1 - j];
         }
         str = string(s);
@@ -360,7 +360,7 @@ contract PixelPainting is PixelOwnership {
     // Sets the color of an individual pixel
     function setPixelColor(uint256 _tokenId, uint32 _color) external {
         // check that the token id is in the range
-        require(_tokenId &lt; HEIGHT * WIDTH);
+        require(_tokenId < HEIGHT * WIDTH);
         // check that the sender is owner of the pixel
         require(_owns(msg.sender, _tokenId));
         colors[_tokenId] = _color;
@@ -368,13 +368,13 @@ contract PixelPainting is PixelOwnership {
 
     // Sets the color of the pixels in an area, left to right and then top to bottom
     function setPixelAreaColor(uint256 x, uint256 y, uint256 x2, uint256 y2, uint32[] _colors) external {
-        require(x2 &gt; x &amp;&amp; y2 &gt; y);
-        require(x2 &lt;= WIDTH &amp;&amp; y2 &lt;= HEIGHT);
+        require(x2 > x && y2 > y);
+        require(x2 <= WIDTH && y2 <= HEIGHT);
         require(_colors.length == (y2 - y) * (x2 - x));
         uint256 r = 0;
-        for (uint256 i = y; i &lt; y2; i++) {
+        for (uint256 i = y; i < y2; i++) {
             uint256 tokenId = i * WIDTH;
-            for (uint256 j = x; j &lt; x2; j++) {
+            for (uint256 j = x; j < x2; j++) {
                 if (_owns(msg.sender, tokenId + j)) {
                     uint32 color = _colors[r];
                     colors[tokenId + j] = color;
@@ -387,19 +387,19 @@ contract PixelPainting is PixelOwnership {
 
     // Returns the color of a given pixel
     function getPixelColor(uint256 _tokenId) external view returns (uint32 color) {
-        require(_tokenId &lt; HEIGHT * WIDTH);
+        require(_tokenId < HEIGHT * WIDTH);
         color = colors[_tokenId];
     }
 
     // Returns the colors of the pixels in an area, left to right and then top to bottom
     function getPixelAreaColor(uint256 x, uint256 y, uint256 x2, uint256 y2) external view returns (uint32[] result) {
-        require(x2 &gt; x &amp;&amp; y2 &gt; y);
-        require(x2 &lt;= WIDTH &amp;&amp; y2 &lt;= HEIGHT);
+        require(x2 > x && y2 > y);
+        require(x2 <= WIDTH && y2 <= HEIGHT);
         result = new uint32[]((y2 - y) * (x2 - x));
         uint256 r = 0;
-        for (uint256 i = y; i &lt; y2; i++) {
+        for (uint256 i = y; i < y2; i++) {
             uint256 tokenId = i * WIDTH;
-            for (uint256 j = x; j &lt; x2; j++) {
+            for (uint256 j = x; j < x2; j++) {
                 result[r] = colors[tokenId + j];
                 r++;
             }
@@ -421,7 +421,7 @@ contract PixelMinting is PixelPainting {
     // buy en empty pixel
     function buyEmptyPixel(uint256 _tokenId) external payable {
         require(msg.value == pixelPrice);
-        require(_tokenId &lt; HEIGHT * WIDTH);
+        require(_tokenId < HEIGHT * WIDTH);
         require(pixelIndexToOwner[_tokenId] == address(0));
         // increase authority balance
         authorityBalance += msg.value;
@@ -432,17 +432,17 @@ contract PixelMinting is PixelPainting {
 
     // buy an area of pixels, left to right, top to bottom
     function buyEmptyPixelArea(uint256 x, uint256 y, uint256 x2, uint256 y2) external payable {
-        require(x2 &gt; x &amp;&amp; y2 &gt; y);
-        require(x2 &lt;= WIDTH &amp;&amp; y2 &lt;= HEIGHT);
+        require(x2 > x && y2 > y);
+        require(x2 <= WIDTH && y2 <= HEIGHT);
         require(msg.value == pixelPrice * (x2-x) * (y2-y));
         
         uint256 i;
         uint256 tokenId;
         uint256 j;
         // check that all pixels to buy are available
-        for (i = y; i &lt; y2; i++) {
+        for (i = y; i < y2; i++) {
             tokenId = i * WIDTH;
-            for (j = x; j &lt; x2; j++) {
+            for (j = x; j < x2; j++) {
                 require(pixelIndexToOwner[tokenId + j] == address(0));
             }
         }
@@ -450,9 +450,9 @@ contract PixelMinting is PixelPainting {
         authorityBalance += msg.value;
 
         // Do the actual transfer
-        for (i = y; i &lt; y2; i++) {
+        for (i = y; i < y2; i++) {
             tokenId = i * WIDTH;
-            for (j = x; j &lt; x2; j++) {
+            for (j = x; j < x2; j++) {
                 _transfer(0, msg.sender, tokenId + j);
             }
         }
@@ -473,9 +473,9 @@ contract PixelAuction is PixelMinting {
     }
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
     // Allowed withdrawals of previous bids
-    mapping (address =&gt; uint) pendingReturns;
+    mapping (address => uint) pendingReturns;
 
     // Duration of an auction
     uint256 public duration = 60 * 60 * 24 * 4;
@@ -535,11 +535,11 @@ contract PixelAuction is PixelMinting {
         // Revert the call if the bidding
         // period is over.
         require(auction.live);
-        require(auction.endTime &gt; block.timestamp);
+        require(auction.endTime > block.timestamp);
 
         // If the bid is not higher, send the
         // money back.
-        require(msg.value &gt; auction.highestBid);
+        require(msg.value > auction.highestBid);
 
         if (auction.highestBidder != 0) {
             // Sending back the money by simply using
@@ -559,7 +559,7 @@ contract PixelAuction is PixelMinting {
     /// Withdraw a bid that was overbid.
     function withdraw() external returns (bool) {
         uint amount = pendingReturns[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `send` returns.
@@ -593,7 +593,7 @@ contract PixelAuction is PixelMinting {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // 1. Conditions
-        require(auction.endTime &lt; block.timestamp);
+        require(auction.endTime < block.timestamp);
         require(auction.live); // this function has already been called
 
         // 2. Effects
@@ -653,7 +653,7 @@ contract PixelAuction is PixelMinting {
 
 
 /// @title PixelCore: Pixels in the blockchain
-/// @author Oliver Schneider &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731a1d151c33031a0b161f101c1a1d005d1a1c">[email&#160;protected]</a>&gt; (https://pixelcoins.io), based on Axiom Zen (https://www.axiomzen.co)
+/// @author Oliver Schneider <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731a1d151c33031a0b161f101c1a1d005d1a1c">[email protected]</a>> (https://pixelcoins.io), based on Axiom Zen (https://www.axiomzen.co)
 /// @dev The main PixelCoins contract
 contract PixelCore is PixelAuction {
 
@@ -668,7 +668,7 @@ contract PixelCore is PixelAuction {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -680,7 +680,7 @@ contract PixelCore is PixelAuction {
     // @dev Allows the authority to capture the balance available to the contract.
     function withdrawBalance() external onlyAuthority returns (bool) {
         uint amount = authorityBalance;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             authorityBalance = 0;
             if (!authorityAddress.send(amount)) {
                 authorityBalance = amount;

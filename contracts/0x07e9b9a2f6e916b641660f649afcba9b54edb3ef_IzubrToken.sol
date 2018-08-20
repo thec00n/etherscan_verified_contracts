@@ -42,20 +42,20 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,14 +83,14 @@ contract ERC20
 
 contract IzubrToken is Ownable, ERC20, SafeMath 
 {
-    string  public constant standard    = &#39;Token 0.1&#39;;
-    string  public constant name        = &#39;Izubr&#39;;
-    string  public constant symbol      = &quot;IZR&quot;;
+    string  public constant standard    = 'Token 0.1';
+    string  public constant name        = 'Izubr';
+    string  public constant symbol      = "IZR";
     uint8   public constant decimals    = 18;
     uint256 public constant tokenKoef = 1000000000000000000;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     uint       private constant gasPrice = 3000000;
 
@@ -105,8 +105,8 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     uint256    public crowdsaleStartTime;
     uint256    public crowdsaleFinishTime;
 
-    mapping (address =&gt; uint256)  public investors;
-    mapping (uint256 =&gt; address)  public investorsIter;
+    mapping (address => uint256)  public investors;
+    mapping (uint256 => address)  public investorsIter;
     uint256                       public numberOfInvestors;
 
     modifier onlyTokenHolders 
@@ -118,7 +118,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) 
     {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -154,7 +154,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     function transfer(address _to, uint256 _value)
         public enabledState onlyPayloadSize(2 * 32) 
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = sub( balances[msg.sender], _value );
         balances[_to] = add( balances[_to], _value );
@@ -165,8 +165,8 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     function transferFrom(address _from, address _to, uint256 _value)
         public enabledState onlyPayloadSize(3 * 32) 
     {
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         balances[_from] = sub( balances[_from], _value );
         balances[_to] = add( balances[_to], _value );
@@ -194,7 +194,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     function () public payable
     {
         require(state == State.PreICO || state == State.Crowdsale);
-        require(now &lt; crowdsaleFinishTime);
+        require(now < crowdsaleFinishTime);
 
         uint256 valueWei = msg.value;
 
@@ -202,13 +202,13 @@ contract IzubrToken is Ownable, ERC20, SafeMath
 
         uint256 valueTokens = div( mul( valueWei, price ), 1 ether);
 
-        if( valueTokens &gt; 33333*tokenKoef ) // 5 BTC
+        if( valueTokens > 33333*tokenKoef ) // 5 BTC
         {
             price = price * 112 / 100;
             valueTokens = mul( valueWei, price );
         }
 
-        require(valueTokens &gt; 10*tokenKoef);
+        require(valueTokens > 10*tokenKoef);
 
 
         collectedTokens = add( collectedTokens, valueTokens );
@@ -232,7 +232,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
         uint result;
         uint mul = 1;
 
-        for(uint i = 20; i &gt; 0; i--) 
+        for(uint i = 20; i > 0; i--) 
         {
             result += uint8(source[i-1])*mul;
             mul = mul*256;
@@ -248,7 +248,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     function depositTokens(address _who, uint256 _valueTokens) public onlyOwner 
     {
         require(state == State.PreICO || state == State.Crowdsale);
-        require(now &lt; crowdsaleFinishTime);
+        require(now < crowdsaleFinishTime);
 
         uint256 bonus = currentBonus();
         uint256 tokens = _valueTokens * (100 + bonus) / 100;
@@ -269,27 +269,27 @@ contract IzubrToken is Ownable, ERC20, SafeMath
 
         if (state == State.PreICO) 
         {
-            if( nday &lt; 7*1 ) bonus = 100;
+            if( nday < 7*1 ) bonus = 100;
             else
-            if( nday &lt; 7*2 ) bonus = 80;
+            if( nday < 7*2 ) bonus = 80;
             else
-            if( nday &lt; 7*3 ) bonus = 70;
+            if( nday < 7*3 ) bonus = 70;
             else
-            if( nday &lt; 7*4 ) bonus = 60;
+            if( nday < 7*4 ) bonus = 60;
             else
-            if( nday &lt; 7*5 ) bonus = 50;
+            if( nday < 7*5 ) bonus = 50;
             else             bonus = 40;
         }
         else
         if (state == State.Crowdsale) 
         {
-            if( nday &lt; 1 ) bonus = 20;
+            if( nday < 1 ) bonus = 20;
             else
-            if( nday &lt; 4 ) bonus = 15;
+            if( nday < 4 ) bonus = 15;
             else
-            if( nday &lt; 8 ) bonus = 10;
+            if( nday < 8 ) bonus = 10;
             else
-            if( nday &lt; 12 ) bonus = 5;
+            if( nday < 12 ) bonus = 5;
         }
 
         return bonus;
@@ -376,7 +376,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     {
         require(state == State.PreICO || state == State.Crowdsale);
 
-        if (now &gt; crowdsaleFinishTime) 
+        if (now > crowdsaleFinishTime) 
         {
             t = 0;
         } 
@@ -390,13 +390,13 @@ contract IzubrToken is Ownable, ERC20, SafeMath
     {
         require(state == State.PreICO || state == State.Crowdsale);
 
-        require(now &gt;= crowdsaleFinishTime || 
-            (collectedTokens &gt;= minimalSuccessTokens &amp;&amp; msg.sender == owner));
+        require(now >= crowdsaleFinishTime || 
+            (collectedTokens >= minimalSuccessTokens && msg.sender == owner));
 
-        if (collectedTokens &lt; minimalSuccessTokens) 
+        if (collectedTokens < minimalSuccessTokens) 
         {
             // Investors can get their ether calling withdrawBack() function
-            while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) 
+            while (_investorsToProcess > 0 && numberOfInvestors > 0) 
             {
                 address addr = investorsIter[--numberOfInvestors];
                 uint256 inv = investors[addr];
@@ -409,7 +409,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
                 delete investorsIter[numberOfInvestors];
             }
 
-            if (numberOfInvestors &gt; 0) 
+            if (numberOfInvestors > 0) 
             {
                 return;
             }
@@ -425,7 +425,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
         } 
         else 
         {
-            while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) 
+            while (_investorsToProcess > 0 && numberOfInvestors > 0) 
             {
                 --numberOfInvestors;
                 --_investorsToProcess;
@@ -438,7 +438,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
                 delete investorsIter[numberOfInvestors];
             }
 
-            if (numberOfInvestors &gt; 0) 
+            if (numberOfInvestors > 0) 
             {
                 return;
             }
@@ -469,7 +469,7 @@ contract IzubrToken is Ownable, ERC20, SafeMath
         uint256 tokens = investors[msg.sender];
         uint256 value = div( tokens, etherPrice );
 
-        if (value &gt; 0) 
+        if (value > 0) 
         {
             investors[msg.sender] = 0;
             require( msg.sender.call.gas(gasPrice).value(value)() );

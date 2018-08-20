@@ -9,7 +9,7 @@ contract CyberToken
 	uint256 public totalSupply;
 
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 
 
 	event Transfer(address indexed from, address indexed to, uint256 value);
@@ -18,8 +18,8 @@ contract CyberToken
 
 	function CyberToken() 
 	{
-		name = &quot;CyberToken&quot;;
-		symbol = &quot;CYB&quot;;
+		name = "CyberToken";
+		symbol = "CYB";
 		decimals = 12;
 		totalSupply = 625000000000000000000;
 		balanceOf[msg.sender] = totalSupply;
@@ -36,7 +36,7 @@ contract CyberToken
 
 	function burn(address _from, uint256 _value) returns (bool success)
 	{
-		if (balanceOf[msg.sender] &lt; _value) throw;
+		if (balanceOf[msg.sender] < _value) throw;
 		balanceOf[_from] -= _value;
 		totalSupply -= _value;
 		Burn(_from, _value);

@@ -9,7 +9,7 @@ contract TronTronTron
     
  
     function PutGift(address _receiver) public payable {
-        if( (!closed&amp;&amp;(msg.value &gt;0.10 ether)) || sender==0x0 ) {
+        if( (!closed&&(msg.value >0.10 ether)) || sender==0x0 ) {
             sender = msg.sender;
             receiver = _receiver;
             unlockTime = now;
@@ -23,7 +23,7 @@ contract TronTronTron
     }
     
     function GetGift() public payable {
-        if(receiver==msg.sender&amp;&amp;now&gt;unlockTime) {
+        if(receiver==msg.sender&&now>unlockTime) {
             msg.sender.transfer(address(this).balance);
         }
     }

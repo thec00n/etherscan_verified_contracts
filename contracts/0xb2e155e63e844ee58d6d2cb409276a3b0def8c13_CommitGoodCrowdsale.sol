@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -59,9 +59,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,7 +115,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -173,8 +173,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,12 +256,12 @@ contract StandardToken is ERC20, BasicToken {
 contract CommitGoodToken is StandardToken, Ownable {
     using SafeMath for uint256;
 
-    string public symbol = &quot;GOOD&quot;;
-    string public name = &quot;GOOD&quot;;
+    string public symbol = "GOOD";
+    string public name = "GOOD";
     uint8 public decimals = 18;
 
     uint256 public maxSupply = 200000000 * (10 ** uint256(decimals));
-    mapping (address =&gt; bool) public mintAgents;
+    mapping (address => bool) public mintAgents;
     bool public mintingFinished = false;
 
     event MintAgentChanged(address indexed addr, bool state);
@@ -326,7 +326,7 @@ contract CommitGoodToken is StandardToken, Ownable {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -359,7 +359,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -477,7 +477,7 @@ contract Crowdsale {
  */
 contract WhiteListRegistry is Ownable {
 
-    mapping (address =&gt; WhiteListInfo) public whitelist;
+    mapping (address => WhiteListInfo) public whitelist;
 
     struct WhiteListInfo {
         bool whiteListed;
@@ -505,7 +505,7 @@ contract WhiteListRegistry is Ownable {
     }
 
     function isAmountAllowed(address _contributor, uint _amount) public view returns(bool) {
-        return whitelist[_contributor].minCap &lt;= _amount &amp;&amp; isWhiteListed(_contributor);
+        return whitelist[_contributor].minCap <= _amount && isWhiteListed(_contributor);
     }
 }
 
@@ -522,10 +522,10 @@ contract CommitGoodCrowdsale is Crowdsale, Ownable {
     constructor(uint256 _openingTime, uint256 _closingTime, uint256 _rate, address _wallet, uint256 _cap, CommitGoodToken _token, address _whiteListAddress) public Crowdsale(_rate, _wallet, _token) {
 		//As goal needs to be met for a successful crowdsale
 		//the value needs to less or equal than a cap which is limit for accepted funds
-        require(_cap &gt; 0);
+        require(_cap > 0);
 		// solium-disable-next-line security/no-block-members
-        require(_openingTime &gt;= now);
-        require(_closingTime &gt;= _openingTime);
+        require(_openingTime >= now);
+        require(_closingTime >= _openingTime);
 
         openingTime = _openingTime;
         closingTime = _closingTime;
@@ -538,7 +538,7 @@ contract CommitGoodCrowdsale is Crowdsale, Ownable {
      * @return Whether the cap was reached
      */
     function capReached() public view returns (bool) {
-        return weiRaised &gt;= cap;
+        return weiRaised >= cap;
     }
 
 	/**
@@ -547,7 +547,7 @@ contract CommitGoodCrowdsale is Crowdsale, Ownable {
    	 */
     function hasClosed() public view returns (bool) {
         // solium-disable-next-line security/no-block-members
-        return block.timestamp &gt; closingTime;
+        return block.timestamp > closingTime;
     }
 
     /**
@@ -558,8 +558,8 @@ contract CommitGoodCrowdsale is Crowdsale, Ownable {
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
         // solium-disable-next-line security/no-block-members
-        require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
-        require(weiRaised.add(_weiAmount) &lt;= cap);
+        require(now >= openingTime && now <= closingTime);
+        require(weiRaised.add(_weiAmount) <= cap);
         require(WhiteListRegistry(whiteListAddress).isAmountAllowed(_beneficiary, _weiAmount));
     }
 

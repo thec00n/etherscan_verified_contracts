@@ -18,20 +18,20 @@ library SafeMath {
 	}
 	
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 	
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -43,12 +43,12 @@ library SafeMath {
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has multiple owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract MultiOwnable {
 	
 	address[] public owners;
-	mapping(address =&gt; bool) public isOwner;
+	mapping(address => bool) public isOwner;
 	
 	event OwnerAddition(address indexed owner);
 	event OwnerRemoval(address indexed owner);
@@ -119,7 +119,7 @@ contract MultiOwnable {
 	ownerExists(_owner)
 	{
 		isOwner[_owner] = false;
-		for (uint i = 0; i &lt; owners.length - 1; i++)
+		for (uint i = 0; i < owners.length - 1; i++)
 			if (owners[i] == _owner) {
 				owners[i] = owners[owners.length - 1];
 				break;
@@ -151,7 +151,7 @@ contract BrokerImp is DestroyableMultiOwner {
 	address public broker;
 	address public pool;
 	uint256 public ethReward;
-	mapping(address =&gt; bool) public ethSent;
+	mapping(address => bool) public ethSent;
 	
 	event CommissionChanged(uint256 _previousCommission, uint256 _commision);
 	event EthRewardChanged(uint256 _previousEthReward, uint256 _ethReward);
@@ -197,7 +197,7 @@ contract BrokerImp is DestroyableMultiOwner {
 			ethSent[_beneficiary] = true;
 		}
 		return (
-		token.transferFrom(pool, broker, brokerCommission) &amp;&amp;
+		token.transferFrom(pool, broker, brokerCommission) &&
 		token.transferFrom(pool, _beneficiary, _value)
 		);
 	}

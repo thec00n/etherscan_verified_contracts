@@ -97,17 +97,17 @@ contract CryptoRomeAuction is CryptoRomeControl {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function auctionExpired() public view returns (bool) {
-        return now &gt; (SafeMath.add(auctionStart, auctionDuration));
+        return now > (SafeMath.add(auctionStart, auctionDuration));
     }
 
     function bidOnWonder() public payable {
         require(!_isContract(msg.sender));
         require(!auctionExpired());
-        require(msg.value &gt;= (highestBid + 10000000000000000));
+        require(msg.value >= (highestBid + 10000000000000000));
 
         if (highestBid != 0) {
             highestBidder.transfer(highestBid);
@@ -134,20 +134,20 @@ contract CryptoRomeAuction is CryptoRomeControl {
 contract Wonder is ERC721, CryptoRomeControl {
     
     // Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;CryptoRomeWonder&quot;;
-    string public constant symbol = &quot;CROMEW&quot;;
+    string public constant name = "CryptoRomeWonder";
+    string public constant symbol = "CROMEW";
 
     uint256[] internal allWonderTokens;
 
-    mapping(uint256 =&gt; string) internal tokenURIs;
+    mapping(uint256 => string) internal tokenURIs;
     address public originalAuction;
-    mapping (uint256 =&gt; bool) public wonderForSale;
-    mapping (uint256 =&gt; uint256) public askingPrice;
+    mapping (uint256 => bool) public wonderForSale;
+    mapping (uint256 => uint256) public askingPrice;
 
     // Map of Wonder to the owner
-    mapping (uint256 =&gt; address) public wonderIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) wonderIndexToApproved;
+    mapping (uint256 => address) public wonderIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) wonderIndexToApproved;
     
     modifier onlyOwnerOf(uint256 _tokenId) {
         require(wonderIndexToOwner[_tokenId] == msg.sender);
@@ -184,7 +184,7 @@ contract Wonder is ERC721, CryptoRomeControl {
     
     function purchaseWonder(uint256 _wonderId) whenNotPaused public payable {
         require(wonderForSale[_wonderId]);
-        require(msg.value &gt;= askingPrice[_wonderId]);
+        require(msg.value >= askingPrice[_wonderId]);
         wonderForSale[_wonderId] = false;
         uint256 fee = devFee(msg.value);
         ceoWallet.transfer(fee);
@@ -207,7 +207,7 @@ contract Wonder is ERC721, CryptoRomeControl {
         wonderForSale[newWonderId] = false;
 
         // Only 8 wonders should ever exist (0-7)
-        require(newWonderId &lt; 8);
+        require(newWonderId < 8);
         _transfer(0, _owner, newWonderId);
         return newWonderId;
     }
@@ -300,7 +300,7 @@ contract Wonder is ERC721, CryptoRomeControl {
             uint256 resultIndex = 0;
             uint256 wonderId;
 
-            for (wonderId = 0; wonderId &lt; totalWonders; wonderId++) {
+            for (wonderId = 0; wonderId < totalWonders; wonderId++) {
                 if (wonderIndexToOwner[wonderId] == _owner) {
                     result[resultIndex] = wonderId;
                     resultIndex++;
@@ -328,16 +328,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   /**
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   /**
@@ -345,7 +345,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

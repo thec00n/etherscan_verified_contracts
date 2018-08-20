@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -111,8 +111,8 @@ contract TokenDistributor is Ownable {
     constructor ( address _targetToken, uint256 _totalStakeHolders, address[] _stakeHolders) public Ownable() {
         setTargetToken(_targetToken);
         maxStakeHolders = _totalStakeHolders;
-        if (_stakeHolders.length &gt; 0) {
-            for (uint256 count = 0; count &lt; _stakeHolders.length &amp;&amp; count &lt; _totalStakeHolders; count++) {
+        if (_stakeHolders.length > 0) {
+            for (uint256 count = 0; count < _stakeHolders.length && count < _totalStakeHolders; count++) {
                 if (_stakeHolders[count] != 0x0) {
                     _setStakeHolder(_stakeHolders[count]);
                 }
@@ -121,11 +121,11 @@ contract TokenDistributor is Ownable {
     }
 
     function isDistributionDue (address _token) public view returns (bool) {
-        return getTokenBalance(_token) &gt; 1;
+        return getTokenBalance(_token) > 1;
     }
 
     function isDistributionDue () public view returns (bool) {
-        return getTokenBalance(targetToken) &gt; 1;
+        return getTokenBalance(targetToken) > 1;
     }
 
     function countStakeHolders () public view returns (uint256) {
@@ -142,14 +142,14 @@ contract TokenDistributor is Ownable {
     }
 
     function setTargetToken (address _targetToken) public onlyOwner returns (bool) {
-        if(_targetToken != 0x0 &amp;&amp; targetToken == 0x0) {
+        if(_targetToken != 0x0 && targetToken == 0x0) {
           targetToken = _targetToken;
           return true;
         }
     }
 
     function _setStakeHolder (address _stakeHolder) internal onlyOwner returns (bool) {
-        require(countStakeHolders() &lt; maxStakeHolders, &quot;Max StakeHolders set&quot;);
+        require(countStakeHolders() < maxStakeHolders, "Max StakeHolders set");
         stakeHolders.push(_stakeHolder);
         return true;
     }
@@ -163,16 +163,16 @@ contract TokenDistributor is Ownable {
         uint256 balance = getTokenBalance(_token);
         uint256 perStakeHolder = getPortion(balance);
 
-        if (balance &lt; 1) {
+        if (balance < 1) {
             emit InsufficientTokenBalance(_token, block.timestamp);
             return false;
         } else {
-            for (uint256 count = 0; count &lt; stakeHolders.length; count++) {
+            for (uint256 count = 0; count < stakeHolders.length; count++) {
                 _transfer(_token, stakeHolders[count], perStakeHolder);
             }
 
             uint256 newBalance = getTokenBalance(_token);
-            if (newBalance &gt; 0 &amp;&amp; getPortion(newBalance) == 0) {
+            if (newBalance > 0 && getPortion(newBalance) == 0) {
                 _transfer(_token, owner, newBalance);
             }
 
@@ -189,13 +189,13 @@ contract TokenDistributor is Ownable {
 contract WeightedTokenDistributor is TokenDistributor {
     using SafeMath for uint;
 
-    mapping( address =&gt; uint256) public stakeHoldersWeight;
+    mapping( address => uint256) public stakeHoldersWeight;
 
     constructor ( address _targetToken, uint256 _totalStakeHolders, address[] _stakeHolders, uint256[] _weights) public
     TokenDistributor(_targetToken, _totalStakeHolders, stakeHolders)
     {
-        if (_stakeHolders.length &gt; 0) {
-            for (uint256 count = 0; count &lt; _stakeHolders.length &amp;&amp; count &lt; _totalStakeHolders; count++) {
+        if (_stakeHolders.length > 0) {
+            for (uint256 count = 0; count < _stakeHolders.length && count < _totalStakeHolders; count++) {
                 if (_stakeHolders[count] != 0x0) {
                   _setStakeHolder( _stakeHolders[count], _weights[count] );
                 }
@@ -204,7 +204,7 @@ contract WeightedTokenDistributor is TokenDistributor {
     }
 
     function getTotalWeight () public view returns (uint256 _total) {
-        for (uint256 count = 0; count &lt; stakeHolders.length; count++) {
+        for (uint256 count = 0; count < stakeHolders.length; count++) {
             _total = _total.add(stakeHoldersWeight[stakeHolders[count]]);
         }
     }
@@ -215,7 +215,7 @@ contract WeightedTokenDistributor is TokenDistributor {
     }
 
     function getPortion (uint256 _total) public view returns (uint256) {
-        revert(&quot;Kindly indicate stakeHolder and totalWeight&quot;);
+        revert("Kindly indicate stakeHolder and totalWeight");
     }
 
     function _setStakeHolder (address _stakeHolder, uint256 _weight) internal onlyOwner returns (bool) {
@@ -225,24 +225,24 @@ contract WeightedTokenDistributor is TokenDistributor {
     }
 
     function _setStakeHolder (address _stakeHolder) internal onlyOwner returns (bool) {
-        revert(&quot;Kindly set Weights for stakeHolder&quot;);
+        revert("Kindly set Weights for stakeHolder");
     }
 
     function distribute (address _token) public returns (bool) {
         uint256 balance = getTokenBalance(_token);
         uint256 totalWeight = getTotalWeight();
 
-        if (balance &lt; 1) {
+        if (balance < 1) {
             emit InsufficientTokenBalance(_token, block.timestamp);
             return false;
         } else {
-            for (uint256 count = 0; count &lt; stakeHolders.length; count++) {
+            for (uint256 count = 0; count < stakeHolders.length; count++) {
                 uint256 perStakeHolder = getPortion(balance, totalWeight, stakeHolders[count]);
                 _transfer(_token, stakeHolders[count], perStakeHolder);
             }
 
             uint256 newBalance = getTokenBalance(_token);
-            if (newBalance &gt; 0) {
+            if (newBalance > 0) {
                 _transfer(_token, owner, newBalance);
             }
 

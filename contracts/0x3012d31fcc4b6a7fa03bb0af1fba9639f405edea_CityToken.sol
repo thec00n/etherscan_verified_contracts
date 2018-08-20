@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ contract Managed {
     address swap = addressesOfAdmins[length - 1];
     uint256 index = 0;
 
-    for (uint256 i = 0; i &lt; length; i++) {
+    for (uint256 i = 0; i < length; i++) {
       if (addressesOfAdmins[i] == _admin) {
         index = i;
       }
@@ -88,7 +88,7 @@ contract Managed {
   }
 
   function clearAdmins () onlyOwner() public {
-    require(addressesOfAdmins.length &gt; 0);
+    require(addressesOfAdmins.length > 0);
     addressesOfAdmins.length = 0;
   }
 
@@ -123,7 +123,7 @@ contract Managed {
       return true;
     }
 
-    for (uint256 i = 0; i &lt; addressesOfAdmins.length; i++) {
+    for (uint256 i = 0; i < addressesOfAdmins.length; i++) {
       if (addressesOfAdmins[i] == _admin) {
         return true;
       }
@@ -151,11 +151,11 @@ contract CityToken is Managed {
   bool private erc721Enabled = false;
 
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (uint256 =&gt; uint256) private countryOfItem;
-  mapping (uint256 =&gt; uint256[]) private itemsOfCountry;
-  mapping (uint256 =&gt; address) private approvedOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (uint256 => uint256) private countryOfItem;
+  mapping (uint256 => uint256[]) private itemsOfCountry;
+  mapping (uint256 => address) private approvedOfItem;
 
   /* Constructor */
   constructor () public {
@@ -179,7 +179,7 @@ contract CityToken is Managed {
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -200,18 +200,18 @@ contract CityToken is Managed {
   function listMultipleItems (uint256[] _itemIds, uint256[] _countryIds, uint256 _price, address _owner) onlyAdmins() notEmergency() hasCountryToken() external {
     require(_itemIds.length == _countryIds.length);
 
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       listItem(_itemIds[i], _countryIds[i], _price, _owner);
     }
   }
 
   function listItem (uint256 _itemId, uint256 _countryId, uint256 _price, address _owner) onlyAdmins() notEmergency() hasCountryToken() public {
     require(countryToken != address(0));
-    require(_price &gt; 0);
+    require(_price > 0);
     require(priceOf(_itemId) == 0);
     require(ownerOf(_itemId) == address(0));
     require(countryToken.ownerOf(_countryId) != address(0));
-    require(countryToken.priceOf(_countryId) &gt; 0);
+    require(countryToken.priceOf(_countryId) > 0);
 
     ownerOfItem[_itemId] = _owner;
     priceOfItem[_itemId] = _price;
@@ -237,9 +237,9 @@ contract CityToken is Managed {
   }
 
   function buy (uint256 _itemId) notEmergency() hasCountryToken() payable public {
-    require(priceOf(_itemId) &gt; 0);
+    require(priceOf(_itemId) > 0);
     require(ownerOf(_itemId) != address(0));
-    require(msg.value &gt;= priceOf(_itemId));
+    require(msg.value >= priceOf(_itemId));
     require(ownerOf(_itemId) != msg.sender);
     require(msg.sender != address(0));
     require(countryToken.ownerOf(countryOf(_itemId)) != address(0));
@@ -263,14 +263,14 @@ contract CityToken is Managed {
     countryOwner.transfer(countryCut);
     oldOwner.transfer(price.sub(totalCut));
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
   }
 
   /* Read */
   function tokenExists (uint256 _itemId) public view returns (bool _exists) {
-    return priceOf(_itemId) &gt; 0;
+    return priceOf(_itemId) > 0;
   }
 
   function countrySupply (uint256 _countryId) public view returns (uint256 _countrySupply) {
@@ -300,7 +300,7 @@ contract CityToken is Managed {
 
     uint256[] memory items = new uint256[](_take);
 
-    for (uint256 i = 0; i &lt; _take; i++) {
+    for (uint256 i = 0; i < _take; i++) {
       items[i] = listedItems[_from + i];
     }
 
@@ -314,7 +314,7 @@ contract CityToken is Managed {
 
     uint256[] memory items = new uint256[](_take);
 
-    for (uint256 i = 0; i &lt; _take; i++) {
+    for (uint256 i = 0; i < _take; i++) {
       items[i] = itemsOfCountry[_countryId][_from + i];
     }
 
@@ -325,7 +325,7 @@ contract CityToken is Managed {
     uint256[] memory items = new uint256[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -343,7 +343,7 @@ contract CityToken is Managed {
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         counter++;
       }
@@ -388,15 +388,15 @@ contract CityToken is Managed {
   }
 
   function name () public pure returns (string _name) {
-    return &quot;CryptoCountries.io Cities&quot;;
+    return "CryptoCountries.io Cities";
   }
 
   function symbol () public pure returns (string _symbol) {
-    return &quot;CC2&quot;;
+    return "CC2";
   }
 
   function tokenURI (uint256 _itemId) public pure returns (string) {
-    return _concat(&quot;https://cryptocountries.io/api/metadata/city/&quot;, _uintToString(_itemId));
+    return _concat("https://cryptocountries.io/api/metadata/city/", _uintToString(_itemId));
   }
 
   function totalSupply () public view returns (uint256 _totalSupply) {
@@ -404,15 +404,15 @@ contract CityToken is Managed {
   }
 
   function tokenByIndex (uint256 _index) public view returns (uint256 _itemId) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return listedItems[_index];
   }
 
   function tokenOfOwnerByIndex (address _owner, uint256 _index) public view returns (uint256 _itemId) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
 
     uint count = 0;
-    for (uint i = 0; i &lt; listedItems.length; i++) {
+    for (uint i = 0; i < listedItems.length; i++) {
       uint itemId = listedItems[i];
       if (ownerOf(itemId) == _owner) {
         if (count == _index) { return itemId; }
@@ -437,7 +437,7 @@ contract CityToken is Managed {
   }
 
   function _uintToString (uint i) internal pure returns (string) {
-		if (i == 0) return &quot;0&quot;;
+		if (i == 0) return "0";
 
 		uint j = i;
 		uint len;
@@ -463,8 +463,8 @@ contract CityToken is Managed {
     string memory ab = new string(_ba.length + _bb.length);
     bytes memory bab = bytes(ab);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+    for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
     return string(bab);
   }
 }

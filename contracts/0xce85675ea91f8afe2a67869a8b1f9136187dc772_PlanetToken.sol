@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable 
 {
@@ -64,18 +64,18 @@ contract BasicNFT is NFT, NFTEvents
   uint public totalTokens;
 
   // Array of owned tokens for a user
-  mapping(address =&gt; uint[]) public ownedTokens;
-  mapping(address =&gt; uint) _virtualLength;
-  mapping(uint =&gt; uint) _tokenIndexInOwnerArray;
+  mapping(address => uint[]) public ownedTokens;
+  mapping(address => uint) _virtualLength;
+  mapping(uint => uint) _tokenIndexInOwnerArray;
 
   // Mapping from token ID to owner
-  mapping(uint =&gt; address) public tokenOwner;
+  mapping(uint => address) public tokenOwner;
 
   // Allowed transfers for a token (only one at a time)
-  mapping(uint =&gt; address) public allowedTransfer;
+  mapping(uint => address) public allowedTransfer;
 
   // Metadata associated with each token
-  mapping(uint =&gt; string) public tokenMetadata;
+  mapping(uint => string) public tokenMetadata;
 
   function totalSupply() public constant returns (uint) 
   {
@@ -89,7 +89,7 @@ contract BasicNFT is NFT, NFTEvents
 
   function tokenOfOwnerByIndex(address owner, uint index) public constant returns (uint) 
   {
-    require(index &gt;= 0 &amp;&amp; index &lt; balanceOf(owner));
+    require(index >= 0 && index < balanceOf(owner));
     return ownedTokens[owner][index];
   }
 
@@ -97,7 +97,7 @@ contract BasicNFT is NFT, NFTEvents
   {
     uint size = _virtualLength[owner];
     uint[] memory result = new uint[](size);
-    for (uint i = 0; i &lt; size; i++) {
+    for (uint i = 0; i < size; i++) {
       result[i] = ownedTokens[owner][i];
     }
     return result;
@@ -156,7 +156,7 @@ contract BasicNFT is NFT, NFTEvents
 
   function _removeTokenFrom(address from, uint tokenId) internal 
   {
-    require(_virtualLength[from] &gt; 0);
+    require(_virtualLength[from] > 0);
     uint length = _virtualLength[from];
     uint index = _tokenIndexInOwnerArray[tokenId];
     uint swapToken = ownedTokens[from][length - 1];
@@ -183,16 +183,16 @@ contract BasicNFT is NFT, NFTEvents
 
 contract PlanetToken is Ownable, BasicNFT 
 {
-  string public name = &#39;Planet Tokens&#39;;
-  string public symbol = &#39;PT&#39;;
+  string public name = 'Planet Tokens';
+  string public symbol = 'PT';
    
-  mapping (uint =&gt; uint) public cordX;
-  mapping (uint =&gt; uint) public cordY;
-  mapping (uint =&gt; uint) public cordZ;
-  mapping (uint =&gt; uint) public lifeD;
-  mapping (uint =&gt; uint) public lifeN;
-  mapping (uint =&gt; uint) public lifeA;    
-  mapping (uint =&gt; uint) public latestPing;
+  mapping (uint => uint) public cordX;
+  mapping (uint => uint) public cordY;
+  mapping (uint => uint) public cordZ;
+  mapping (uint => uint) public lifeD;
+  mapping (uint => uint) public lifeN;
+  mapping (uint => uint) public lifeA;    
+  mapping (uint => uint) public latestPing;
     
   struct planet
   {
@@ -217,8 +217,8 @@ contract PlanetToken is Ownable, BasicNFT
       uint checkpoint;
   }
 
-  mapping(uint =&gt; planet) planets;
-  mapping(address =&gt; _donations) donations;
+  mapping(uint => planet) planets;
+  mapping(address => _donations) donations;
   
   string private universe;
   uint private min_donation;
@@ -253,10 +253,10 @@ contract PlanetToken is Ownable, BasicNFT
       
     // Check required paramters
     require(tokenOwner[buildTokenId(x, y, z)] == 0);
-    require(msg.value &gt;= MinimumDonation);
-    require(x &lt;= coordinate_limit);
-    require(y &lt;= coordinate_limit);
-    require(z &lt;= coordinate_limit);
+    require(msg.value >= MinimumDonation);
+    require(x <= coordinate_limit);
+    require(y <= coordinate_limit);
+    require(z <= coordinate_limit);
      
     // Update token records
     latestPing[buildTokenId(x, y, z)] = now;
@@ -270,9 +270,9 @@ contract PlanetToken is Ownable, BasicNFT
     cordZ[buildTokenId(x, y, z)] = z;
 
     // Update DNA records
-    lifeD[buildTokenId(x, y, z)] = uint256(keccak256(x, &#39;|x|&#39;, msg.sender, &#39;|&#39;, universe));
-    lifeN[buildTokenId(x, y, z)] = uint256(keccak256(y, &#39;|y|&#39;, msg.sender, &#39;|&#39;, universe));
-    lifeA[buildTokenId(x, y, z)] = uint256(keccak256(z, &#39;|z|&#39;, msg.sender, &#39;|&#39;, universe));
+    lifeD[buildTokenId(x, y, z)] = uint256(keccak256(x, '|x|', msg.sender, '|', universe));
+    lifeN[buildTokenId(x, y, z)] = uint256(keccak256(y, '|y|', msg.sender, '|', universe));
+    lifeA[buildTokenId(x, y, z)] = uint256(keccak256(z, '|z|', msg.sender, '|', universe));
       
     // Map the planet object too ...
     planets[buildTokenId(x, y, z)].x = x;
@@ -292,7 +292,7 @@ contract PlanetToken is Ownable, BasicNFT
     // Update donation info
     uint this_block = block.number;
     uint new_checkpoint = donations[donation_address].checkpoint + donations[donation_address].interval; 
-    if(this_block &gt; new_checkpoint)
+    if(this_block > new_checkpoint)
     {
         donations[donation_address].checkpoint = this_block;
         donations[donation_address].amount = donations[donation_address].ppp * totalTokens;
@@ -308,7 +308,7 @@ contract PlanetToken is Ownable, BasicNFT
   {
       uint this_block = block.number;
       uint next_block = donations[donation_address].checkpoint + donations[donation_address].interval;
-      if(this_block &lt; next_block)
+      if(this_block < next_block)
       {
           return next_block - this_block;
       }
@@ -360,7 +360,7 @@ contract PlanetToken is Ownable, BasicNFT
 
   function buildTokenId(uint x, uint y, uint z) public view returns (uint256) 
   {
-    return uint256(keccak256(x, &#39;|&#39;, y, &#39;|&#39;, z, &#39;|&#39;, universe));
+    return uint256(keccak256(x, '|', y, '|', z, '|', universe));
   }
 
   function exists(uint x, uint y, uint z) public constant returns (bool) 

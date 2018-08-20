@@ -3,7 +3,7 @@ pragma solidity ^0.4.22;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -121,18 +121,18 @@ contract RocsBase is Pausable {
     Roc[] public rocs;
 
     // rocIdとtokenIdのマッピング
-    mapping(uint =&gt; uint) public rocIndex;
+    mapping(uint => uint) public rocIndex;
     // rocIdからtokenIdを取得
     function getRocIdToTokenId(uint _rocId) public view returns (uint) {
         return rocIndex[_rocId];
     }
 
     /// @dev 所有するアドレスへのマッピング
-    mapping (uint =&gt; address) public rocIndexToOwner;
+    mapping (uint => address) public rocIndexToOwner;
     // @dev 所有者アドレスから所有するトークン数へのマッピング
-    mapping (address =&gt; uint) public ownershipTokenCount;
+    mapping (address => uint) public ownershipTokenCount;
     /// @dev 呼び出しが承認されたアドレスへのマッピング
-    mapping (uint =&gt; address) public rocIndexToApproved;
+    mapping (uint => address) public rocIndexToApproved;
 
     /// @dev 特定のRocの所有権をアドレスに割り当てます。
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
@@ -168,28 +168,28 @@ contract ERC721 {
 contract RocsOwnership is RocsBase, ERC721 {
 
     /// @notice ERC721で定義されている、置き換え不可能なトークンの名前と記号。
-    string public constant name = &quot;CryptoFeather&quot;;
-    string public constant symbol = &quot;CFE&quot;;
+    string public constant name = "CryptoFeather";
+    string public constant symbol = "CFE";
 
     bytes4 constant InterfaceSignature_ERC165 = 
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('totalSupply()'));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  この契約によって実装された標準化されたインタフェースでtrueを返します。
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
 
@@ -202,7 +202,7 @@ contract RocsOwnership is RocsBase, ERC721 {
 
     /// @dev 特定のアドレスに指定されたrocが存在するかどうかをチェックします。
     /// @param _claimant the address we are confirming kitten is approved for.
-    /// @param _tokenId kitten id, only valid when &gt; 0
+    /// @param _tokenId kitten id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return rocIndexToApproved[_tokenId] == _claimant;
     }
@@ -321,7 +321,7 @@ contract RocsBreeding is RocsOwnership {
         returns(uint)
     {
         // 支払いを確認します。
-        require(msg.value &gt;= eggPrice);
+        require(msg.value >= eggPrice);
         uint createRocId = _createRoc(
             _rocId,
             _dna, 
@@ -377,12 +377,12 @@ contract RocsMarkets is RocsBreeding {
     }
 
     // トークンIDから対応するマーケットへの出品にマップします。
-    mapping (uint256 =&gt; Markets) tokenIdToMarkets;
+    mapping (uint256 => Markets) tokenIdToMarkets;
 
     // マーケットへの出品の手数料を設定
     uint256 public ownerCut = 0;
     function setOwnerCut(uint256 _cut) public onlyOwner {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
     }
 
@@ -484,14 +484,14 @@ contract RocsMarkets is RocsBreeding {
         uint128 sellingPrice = uint128(markets.marketsPrice);
         // 入札額が価格以上である事を確認する。
         // msg.valueはweiの数
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
         // マーケットへの出品構造体が削除される前に、販売者への参照を取得します。
         address seller = markets.seller;
 
         // マーケットへの出品を削除します。
         _removeMarkets(checkTokenId);
 
-        if (sellingPrice &gt; 0) {
+        if (sellingPrice > 0) {
             // 競売人のカットを計算します。
             uint128 marketseerCut = uint128(_computeCut(sellingPrice));
             uint128 sellerProceeds = sellingPrice - marketseerCut;
@@ -534,7 +534,7 @@ contract RocsCore is RocsMarkets {
     // @dev 利用可能な残高を取得できるようにします。
     function withdrawBalance(uint _subtractFees) external onlyOwner {
         uint256 balance = address(this).balance;
-        if (balance &gt; _subtractFees) {
+        if (balance > _subtractFees) {
             owner.transfer(balance - _subtractFees);
         }
     }

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="70131f1e04111304303504181502151d1f1e5e131f1d">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="70131f1e04111304303504181502151d1f1e5e131f1d">[email protected]</a>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -46,7 +46,7 @@ contract BasicAccessControl {
     modifier onlyModerators() {
         if (msg.sender != owner) {
             bool found = false;
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == msg.sender) {
                     found = true;
                     break;
@@ -69,7 +69,7 @@ contract BasicAccessControl {
 
     function AddModerator(address _newModerator) onlyOwner public {
         if (_newModerator != address(0)) {
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == _newModerator) {
                     return;
                 }
@@ -80,12 +80,12 @@ contract BasicAccessControl {
     
     function RemoveModerator(address _oldModerator) onlyOwner public {
         uint foundIndex = 0;
-        for (; foundIndex &lt; moderators.length; foundIndex++) {
+        for (; foundIndex < moderators.length; foundIndex++) {
             if (moderators[foundIndex] == _oldModerator) {
                 break;
             }
         }
-        if (foundIndex &lt; moderators.length) {
+        if (foundIndex < moderators.length) {
             moderators[foundIndex] = moderators[moderators.length-1];
             delete moderators[moderators.length-1];
             moderators.length--;
@@ -176,15 +176,15 @@ contract EtheremonData is EtheremonDataBase {
         uint createTime;
     }
 
-    mapping(uint32 =&gt; MonsterClass) public monsterClass;
-    mapping(uint64 =&gt; MonsterObj) public monsterWorld;
-    mapping(address =&gt; uint64[]) public trainerDex;
-    mapping(address =&gt; uint256) public trainerExtraBalance;
+    mapping(uint32 => MonsterClass) public monsterClass;
+    mapping(uint64 => MonsterObj) public monsterWorld;
+    mapping(address => uint64[]) public trainerDex;
+    mapping(address => uint256) public trainerExtraBalance;
     
     
     // write access
     function withdrawEther(address _sendTo, uint _amount) onlyOwner public returns(ResultCode) {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             return ResultCode.ERROR_INVALID_AMOUNT;
         }
         
@@ -218,10 +218,10 @@ contract EtheremonData is EtheremonDataBase {
         } else if (_type == ArrayType.OBJ_SKILL) {
             array = monsterWorld[_id].skills;
         }
-        if (_index &lt; array.length) {
+        if (_index < array.length) {
             if (_value == 255) {
                 // consider as delete
-                for(uint i = _index; i &lt; array.length - 1; i++) {
+                for(uint i = _index; i < array.length - 1; i++) {
                     array[i] = array[i+1];
                 }
                 delete array[array.length-1];
@@ -295,12 +295,12 @@ contract EtheremonData is EtheremonDataBase {
     function removeMonsterIdMapping(address _trainer, uint64 _monsterId) onlyModerators public {
         uint foundIndex = 0;
         uint64[] storage objIdList = trainerDex[_trainer];
-        for (; foundIndex &lt; objIdList.length; foundIndex++) {
+        for (; foundIndex < objIdList.length; foundIndex++) {
             if (objIdList[foundIndex] == _monsterId) {
                 break;
             }
         }
-        if (foundIndex &lt; objIdList.length) {
+        if (foundIndex < objIdList.length) {
             objIdList[foundIndex] = objIdList[objIdList.length-1];
             delete objIdList[objIdList.length-1];
             objIdList.length--;
@@ -310,9 +310,9 @@ contract EtheremonData is EtheremonDataBase {
     }
     
     function addMonsterIdMapping(address _trainer, uint64 _monsterId) onlyModerators public {
-        if (_trainer != address(0) &amp;&amp; _monsterId &gt; 0) {
+        if (_trainer != address(0) && _monsterId > 0) {
             uint64[] storage objIdList = trainerDex[_trainer];
-            for (uint i = 0; i &lt; objIdList.length; i++) {
+            for (uint i = 0; i < objIdList.length; i++) {
                 if (objIdList[i] == _monsterId) {
                     return;
                 }
@@ -330,7 +330,7 @@ contract EtheremonData is EtheremonDataBase {
             return 0;
         uint256 amount = 0;
         uint32 gap = uint32(safeSubtract(class.total, monster.lastClaimIndex));
-        if (gap &gt; 0) {
+        if (gap > 0) {
             monster.lastClaimIndex = class.total;
             amount = safeMult(gap, class.returnPrice);
             trainerExtraBalance[monster.trainer] = safeAdd(trainerExtraBalance[monster.trainer], amount);
@@ -340,7 +340,7 @@ contract EtheremonData is EtheremonDataBase {
     
     function collectAllReturnBalance(address _trainer) onlyModerators public returns(uint256 amount) {
         uint64[] storage objIdList = trainerDex[_trainer];
-        for (uint i = 0; i &lt; objIdList.length; i++) {
+        for (uint i = 0; i < objIdList.length; i++) {
             clearMonsterReturnBalance(objIdList[i]);
         }
         return trainerExtraBalance[_trainer];
@@ -405,7 +405,7 @@ contract EtheremonData is EtheremonDataBase {
         } else if (_type == ArrayType.OBJ_SKILL) {
             array = monsterWorld[_id].skills;
         }
-        if (_index &gt;= array.length)
+        if (_index >= array.length)
             return 0;
         return array[_index];
     }
@@ -444,7 +444,7 @@ contract EtheremonData is EtheremonDataBase {
     }
     
     function getMonsterObjId(address _trainer, uint index) constant public returns(uint64) {
-        if (index &gt;= trainerDex[_trainer].length)
+        if (index >= trainerDex[_trainer].length)
             return 0;
         return trainerDex[_trainer][index];
     }
@@ -452,7 +452,7 @@ contract EtheremonData is EtheremonDataBase {
     function getExpectedBalance(address _trainer) constant public returns(uint256) {
         uint64[] storage objIdList = trainerDex[_trainer];
         uint256 monsterBalance = 0;
-        for (uint i = 0; i &lt; objIdList.length; i++) {
+        for (uint i = 0; i < objIdList.length; i++) {
             MonsterObj memory monster = monsterWorld[objIdList[i]];
             MonsterClass storage class = monsterClass[monster.classId];
             uint32 gap = uint32(safeSubtract(class.total, monster.lastClaimIndex));

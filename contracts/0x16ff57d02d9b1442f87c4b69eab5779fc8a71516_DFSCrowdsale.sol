@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,7 +97,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="097b6c646a66493b">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="097b6c646a66493b">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -135,7 +135,7 @@ contract HasNoEther is Ownable {
 
 /** 
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="186a7d757b77582a">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="186a7d757b77582a">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -153,7 +153,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="beccdbd3ddd1fe8c">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="beccdbd3ddd1fe8c">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -190,7 +190,7 @@ contract HasNoTokens is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -224,7 +224,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -331,8 +331,8 @@ contract MintableToken is StandardToken, Ownable {
 contract DFSToken is MintableToken, HasNoEther, HasNoContracts, HasNoTokens { //MintableToken is StandardToken, Ownable
     using SafeMath for uint256;
 
-    string public name = &quot;DFS&quot;;
-    string public symbol = &quot;DFS&quot;;
+    string public name = "DFS";
+    string public symbol = "DFS";
     uint256 public decimals = 18;
 
 }
@@ -366,9 +366,9 @@ contract DFSCrowdsale is Ownable, HasNoTokens {
      * Throws if crowdsale is not running: not started, ended or max cap reached
      */
     modifier crowdsaleIsRunning(){
-        //require(now &gt; startTimestamp);
-        //require(now &lt;= endTimestamp);
-        //require(availableSupply &gt; 0);
+        //require(now > startTimestamp);
+        //require(now <= endTimestamp);
+        //require(availableSupply > 0);
         require(crowdsaleRunning());
         _;
     }
@@ -390,17 +390,17 @@ contract DFSCrowdsale is Ownable, HasNoTokens {
     }
 
     function() payable crowdsaleIsRunning {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 tokens = price.mul(msg.value);
-        assert(tokens &gt; 0);
-        require(availableSupply - tokens &gt;= 0);
+        assert(tokens > 0);
+        require(availableSupply - tokens >= 0);
 
         mintTokens(msg.sender, tokens);
         LogSale(msg.sender, msg.value, tokens);
     } 
 
     function crowdsaleRunning() constant public returns(bool){
-        return (now &gt; startTimestamp) &amp;&amp;  (now &lt;= endTimestamp) &amp;&amp; (availableSupply &gt; 0) &amp;&amp; !finalized;
+        return (now > startTimestamp) &&  (now <= endTimestamp) && (availableSupply > 0) && !finalized;
     }
 
 
@@ -422,7 +422,7 @@ contract DFSCrowdsale is Ownable, HasNoTokens {
     * - message sent by owner
     */
     function finalizeCrowdsale() public {
-        require ( (now &gt; endTimestamp) || (availableSupply == 0) || (msg.sender == owner) );
+        require ( (now > endTimestamp) || (availableSupply == 0) || (msg.sender == owner) );
         finalized = dfs.finishMinting();
         dfs.transferOwnership(owner);
     } 

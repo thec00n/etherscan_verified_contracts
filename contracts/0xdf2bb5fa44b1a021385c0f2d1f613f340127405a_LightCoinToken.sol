@@ -21,7 +21,7 @@ contract BaseSafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -32,7 +32,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -56,7 +56,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 		
         uint256 c = a / b;
 
@@ -69,7 +69,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -78,7 +78,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -98,7 +98,7 @@ contract BaseSafeMath {
 
         uint128 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -109,7 +109,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -133,7 +133,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 	
         uint128 c = a / b;
 
@@ -146,7 +146,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -155,7 +155,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -175,7 +175,7 @@ contract BaseSafeMath {
 
         uint64 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -186,7 +186,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -210,7 +210,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 	
         uint64 c = a / b;
 
@@ -223,7 +223,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -232,7 +232,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -256,8 +256,8 @@ contract BaseERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -326,8 +326,8 @@ contract LightCoinToken is BaseERC20, BaseSafeMath {
 		owner = 0x9a64fE62837d8E2C0Bd0C2a96bbDdEA609Ab2F19;
 		lockOwner = 0x821C05372425709a68090A17075A855dd20371c7;
 		startTime = 1515686400;
-        name = &quot;Lightcoin&quot;;
-        symbol = &quot;Light&quot;;
+        name = "Lightcoin";
+        symbol = "Light";
         decimals = 8;
         totalSupply = 21000000000000000000;
 		balanceOf[owner] = totalSupply * 90 /100 ;
@@ -389,10 +389,10 @@ contract LightCoinToken is BaseERC20, BaseSafeMath {
 	}
 	
 	function releaseToken() public{
-	   require(now &gt;= startTime + 2 * 365 * 86400 );	   
+	   require(now >= startTime + 2 * 365 * 86400 );	   
        uint256 i = ((now  - startTime - 2 * 365 * 86400) / (0.5 * 365 * 86400));
 	   uint256  releasevalue = totalSupply /40 ;
-	   require(lockAmount &gt; (4 - i - 1) * releasevalue); 	   
+	   require(lockAmount > (4 - i - 1) * releasevalue); 	   
 	   lockAmount -= releasevalue ;
 	   balanceOf[lockOwner] +=  releasevalue ;
     }

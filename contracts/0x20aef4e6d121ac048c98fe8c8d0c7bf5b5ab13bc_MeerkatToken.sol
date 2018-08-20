@@ -24,7 +24,7 @@ contract MeerkatToken is ERC20Interface {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
 
     // ------------------------------------------------------------------------
@@ -32,8 +32,8 @@ contract MeerkatToken is ERC20Interface {
     // ------------------------------------------------------------------------
     constructor() public {
         owner = msg.sender;
-        symbol = &quot;MCT&quot;;
-        name = &quot;Meerkat Token&quot;;
+        symbol = "MCT";
+        name = "Meerkat Token";
         decimals = 18;
         _totalSupply = 10000000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -58,15 +58,15 @@ contract MeerkatToken is ERC20Interface {
 
 
     // ------------------------------------------------------------------------
-    // Safele Transfer the balance from msg.sender&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Safele Transfer the balance from msg.sender's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _value) public returns (bool success) {
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[msg.sender] + balances[_to];
         // Subtract from the sender
@@ -83,7 +83,7 @@ contract MeerkatToken is ERC20Interface {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

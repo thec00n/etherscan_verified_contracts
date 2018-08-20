@@ -9,7 +9,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.20;
 
@@ -111,11 +111,11 @@ contract DSStop is DSAuth, DSNote {
 
 contract DSMath {
     function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 }
 
@@ -132,8 +132,8 @@ contract EIP20Interface {
 }
 
 contract DSTokenBase is EIP20Interface, DSMath {
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return _balances[_owner];
@@ -174,8 +174,8 @@ contract DSTokenBase is EIP20Interface, DSMath {
 }
 
  contract FUXEToken is DSTokenBase, DSStop {
-       string   public  name = &quot;FUXECoin&quot;;
-       string   public  symbol = &quot;FUX&quot;;
+       string   public  name = "FUXECoin";
+       string   public  symbol = "FUX";
        uint256  public  decimals = 18; // standard token precision. override to customize
 
      function FUXEToken() public {

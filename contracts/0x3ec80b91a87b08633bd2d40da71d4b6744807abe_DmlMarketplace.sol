@@ -2,15 +2,15 @@ pragma solidity ^0.4.22;
 
 contract DmlMarketplace {
     // Public Variables
-    mapping(address =&gt; bool) public moderators;
+    mapping(address => bool) public moderators;
     address public token;
     
     // bountyFactory address
     DmlBountyFactory public bountyFactory;
     
     
-    mapping(bytes32 =&gt; uint) public totals;
-    mapping(address =&gt; mapping(bytes32 =&gt; bool)) public hasPurchased;
+    mapping(bytes32 => uint) public totals;
+    mapping(address => mapping(bytes32 => bool)) public hasPurchased;
     
     constructor() public {
         moderators[msg.sender] = true;
@@ -63,7 +63,7 @@ contract DmlMarketplace {
 
         hasPurchased[sender][algoId] = true;
         
-        if (totals[algoId] &lt; 1) {
+        if (totals[algoId] < 1) {
             totals[algoId] = 1;
         } else {
             totals[algoId]++;
@@ -84,8 +84,8 @@ contract DmlBountyFactory {
     address public marketplace;
     address public token;
     address[] public allBountyAddresses;
-    mapping(address =&gt; address[]) public bountyAddressByCreator;
-    mapping(address =&gt; address[]) public bountyAddressByParticipant;
+    mapping(address => address[]) public bountyAddressByCreator;
+    mapping(address => address[]) public bountyAddressByParticipant;
     
     constructor(address tokenAddress) public {
         marketplace = msg.sender;
@@ -136,7 +136,7 @@ contract Bounty {
     address[] public winners;
     address[] public participants;
     Status public status;
-    mapping(address =&gt; bool) public participantsMap;
+    mapping(address => bool) public participantsMap;
 
     enum Status {
         Initialized,
@@ -168,7 +168,7 @@ contract Bounty {
     
     function isFunded() public view returns (bool success) {
         ERC20Interface c = ERC20Interface(token);
-        require(getTotalPrize() &lt;= c.balanceOf(address(this)));
+        require(getTotalPrize() <= c.balanceOf(address(this)));
         return true;
     }
 
@@ -242,7 +242,7 @@ contract Bounty {
     }
     
     function startEnrollment() public {
-        require(prizes.length &gt; 0);
+        require(prizes.length > 0);
         require(isFunded());
         setStatus(Status.EnrollmentStart);
     }
@@ -268,7 +268,7 @@ contract Bounty {
         require(status == Status.BountyEnd);
         require(newWinners.length == prizes.length);
 
-        for (uint i = 0; i &lt; newWinners.length; i++) {
+        for (uint i = 0; i < newWinners.length; i++) {
             require(participantsMap[newWinners[i]]);
         }
 
@@ -292,7 +292,7 @@ contract Bounty {
         require(winners.length == prizes.length);
         require(status == Status.EvaluationEnd);
 
-        for (uint i = 0; i &lt; prizes.length; i++) {
+        for (uint i = 0; i < prizes.length; i++) {
             require(c.transfer(winners[i], prizes[i]));
         }
         
@@ -301,7 +301,7 @@ contract Bounty {
     
     function getTotalPrize() public constant returns (uint total) {
         uint t = 0;
-        for (uint i = 0; i &lt; prizes.length; i++) {
+        for (uint i = 0; i < prizes.length; i++) {
             t = t + prizes[i];
         }
         return t;

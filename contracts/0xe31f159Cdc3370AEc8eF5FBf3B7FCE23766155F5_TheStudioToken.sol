@@ -7,19 +7,19 @@ contract Project {function studioHandler( address _from, uint256 _value );}
      
     Project public project_contract;
  
-    mapping( address =&gt; bool ) public projects;
-    mapping( address =&gt; bool ) public projectExists;
-    mapping( uint =&gt; address) public  projectIndex;
+    mapping( address => bool ) public projects;
+    mapping( address => bool ) public projectExists;
+    mapping( uint => address) public  projectIndex;
     uint projectCount;
     address public owner;
     address public management;
     
-    mapping( address =&gt; bool ) public mediaTokens;
-    mapping( address =&gt; uint256 ) public mediaTokensInitialSupply;
-    mapping( address =&gt; uint8 ) public mediaTokensDecimalUnits;
-    mapping( address =&gt; string ) public mediaTokensName;
-    mapping( address =&gt; string ) public mediaTokensSymbol;
-    mapping( uint =&gt; address) public  mediaTokenIndex;
+    mapping( address => bool ) public mediaTokens;
+    mapping( address => uint256 ) public mediaTokensInitialSupply;
+    mapping( address => uint8 ) public mediaTokensDecimalUnits;
+    mapping( address => string ) public mediaTokensName;
+    mapping( address => string ) public mediaTokensSymbol;
+    mapping( uint => address) public  mediaTokenIndex;
     uint mediaTokenCount;
 
 
@@ -117,7 +117,7 @@ contract ERC20 {
 contract BaseToken is ERC20 {
 
     
-    string public standard = &#39;Token 1.0&#39;;
+    string public standard = 'Token 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -130,13 +130,13 @@ contract BaseToken is ERC20 {
     
 
     /* This creates an array with all balances */
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
+    mapping (address => bool) public frozenAccount;
     uint accountCount;
     
    
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -161,7 +161,7 @@ contract BaseToken is ERC20 {
 
     }
 
-    // Function allows for external access to tokenHoler&#39;s Balance
+    // Function allows for external access to tokenHoler's Balance
     function balanceOf(address tokenHolder) constant returns(uint256) {
 
         return balanceOf[tokenHolder];
@@ -203,8 +203,8 @@ contract BaseToken is ERC20 {
     function transfer(address _to, uint256 _value) returns(bool ok) {
         
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
        //if ( frozenAccount[ msg.sender ]  ) throw;
         appendTokenHolders(_to);
         balanceOf[msg.sender] -= _value; // Subtract from the sender
@@ -245,9 +245,9 @@ contract BaseToken is ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
         //if ( frozenAccount[ _from ]  ) throw;
         appendTokenHolders(_to);
         balanceOf[_from] -= _value; // Subtract from the sender
@@ -259,7 +259,7 @@ contract BaseToken is ERC20 {
   /*
     function burn(uint256 _value) returns(bool success) {
         
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(msg.sender, _value);
@@ -270,9 +270,9 @@ contract BaseToken is ERC20 {
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
         
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
-        if ( (totalSupply - _value) &lt;  ( initialSupply / 2 )) throw;
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
+        if ( (totalSupply - _value) <  ( initialSupply / 2 )) throw;
         balanceOf[_from] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(_from, _value);
@@ -323,7 +323,7 @@ contract TheStudioToken is ERC20, Projects  {
     
    
     /* Public variables of the token */
-    string public standard = &#39;Token 1.0&#39;;
+    string public standard = 'Token 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -342,13 +342,13 @@ contract TheStudioToken is ERC20, Projects  {
     
 
     /* This creates an array with all balances */
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
-    mapping( address =&gt;bool ) public accountFreeze;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
+    mapping( address =>bool ) public accountFreeze;
     uint accountCount;
     
    
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -372,8 +372,8 @@ contract TheStudioToken is ERC20, Projects  {
         balanceOf[msg.sender] = _initialSupply; // Give the creator all initial tokens
         totalSupply = _initialSupply; // Update total supply
         initialSupply = _initialSupply;
-        name = &quot;STUDIO&quot;; // Set the name for display purposes
-        symbol = &quot;STDO&quot;; // Set the symbol for display purposes
+        name = "STUDIO"; // Set the name for display purposes
+        symbol = "STDO"; // Set the symbol for display purposes
         decimals = 8; // Amount of decimals for display purposes
         owner = msg.sender;
 
@@ -394,11 +394,11 @@ contract TheStudioToken is ERC20, Projects  {
     
      function studioLevel ( address _address ) public constant returns(string){
         
-        if ( balanceOf [ _address] == 0 ) return &quot;NO LOVE&quot;;
-        if ( balanceOf [ _address] &lt; associateproducer * 100000000 ) return &quot;FAN&quot;;
-        if ( balanceOf [ _address] &lt; producer * 100000000  ) return &quot;ASSOCIATE PRODUCER&quot;;
-        if ( balanceOf [ _address] &lt; executiveproducer * 100000000  ) return &quot;PRODUCER&quot;;
-        return &quot;EXECUTIVE PRODUCER&quot;;
+        if ( balanceOf [ _address] == 0 ) return "NO LOVE";
+        if ( balanceOf [ _address] < associateproducer * 100000000 ) return "FAN";
+        if ( balanceOf [ _address] < producer * 100000000  ) return "ASSOCIATE PRODUCER";
+        if ( balanceOf [ _address] < executiveproducer * 100000000  ) return "PRODUCER";
+        return "EXECUTIVE PRODUCER";
         
     }
     
@@ -464,8 +464,8 @@ contract TheStudioToken is ERC20, Projects  {
      function transfer(address _to, uint256 _value) returns(bool ok) {
         
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         if ( accountFreeze[ msg.sender ]  ) throw;
         appendTokenHolders(_to);
         balanceOf[msg.sender] -= _value; // Subtract from the sender
@@ -479,9 +479,9 @@ contract TheStudioToken is ERC20, Projects  {
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
     
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
         if ( accountFreeze[ _from ]  ) throw;
         appendTokenHolders(_to);
         balanceOf[_from] -= _value; // Subtract from the sender
@@ -500,7 +500,7 @@ contract TheStudioToken is ERC20, Projects  {
     
       
     
-    // Function allows for external access to tokenHoler&#39;s Balance
+    // Function allows for external access to tokenHoler's Balance
     function balanceOf(address tokenHolder) constant returns(uint256) {
 
         return balanceOf[tokenHolder];
@@ -529,8 +529,8 @@ contract TheStudioToken is ERC20, Projects  {
  
    
      function burn(uint256 _value) returns(bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-        if ( (totalSupply - _value) &lt;  ( initialSupply / 2 ) ) throw;
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        if ( (totalSupply - _value) <  ( initialSupply / 2 ) ) throw;
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(msg.sender, _value);
@@ -538,9 +538,9 @@ contract TheStudioToken is ERC20, Projects  {
     }
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
-       if ( (totalSupply - _value) &lt;  ( initialSupply / 2 )) throw;
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
+       if ( (totalSupply - _value) <  ( initialSupply / 2 )) throw;
         balanceOf[_from] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(_from, _value);

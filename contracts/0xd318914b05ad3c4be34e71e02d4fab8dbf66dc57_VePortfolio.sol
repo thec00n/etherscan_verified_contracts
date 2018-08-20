@@ -28,20 +28,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner public {
 
     // Transfer tokens to owner
-    for(uint256 i = 0; i &lt; tokens.length; i++) {
+    for(uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -121,7 +121,7 @@ contract VePortfolio is TokenDestructible {
 
     struct Bucket {
         uint256 value; // Ether
-        mapping(address =&gt; uint256) holdings; // Tokens
+        mapping(address => uint256) holdings; // Tokens
         ExposureInfo[] exposures;
         bool trading;
         uint64 maxClosingTime;
@@ -136,8 +136,8 @@ contract VePortfolio is TokenDestructible {
     address public portfolioManager;
     address public trader;
 
-    mapping (bytes32 =&gt; Bucket) private buckets;
-    mapping (address =&gt; uint) public model;
+    mapping (bytes32 => Bucket) private buckets;
+    mapping (address => uint) public model;
     address[] public assets;
 
 
@@ -220,7 +220,7 @@ contract VePortfolio is TokenDestructible {
         clearModel();
 
         assets.length = _assets.length;
-        for(uint i = 0; i &lt; assets.length; i++) {
+        for(uint i = 0; i < assets.length; i++) {
             assets[i] = _assets[i];
         }
     }
@@ -237,7 +237,7 @@ contract VePortfolio is TokenDestructible {
         clearModel();
 
         uint total = 0;
-        for(uint256 i = 0; i &lt; _assets.length; i++) {
+        for(uint256 i = 0; i < _assets.length; i++) {
             uint256 alloc = _alloc[i];
             address asset = _assets[i];
 
@@ -247,7 +247,7 @@ contract VePortfolio is TokenDestructible {
 
         // allocation should be at least 99%
         uint256 whole = 1 ether;
-        require(whole.sub(total) &lt; 10 finney);
+        require(whole.sub(total) < 10 finney);
     }
 
     function createBucket(bytes32[] exposureIds)
@@ -256,16 +256,16 @@ contract VePortfolio is TokenDestructible {
         returns (bytes32)
     {
         require(collectibleExposure != address(0));
-        require(exposureIds.length &gt; 0);
+        require(exposureIds.length > 0);
 
         bytes32 bucketId = calculateBucketId(exposureIds);
         Bucket storage bucket = buckets[bucketId];
         require(bucket.exposures.length == 0); // ensure it is a new bucket
 
-        for (uint256 i = 0; i &lt; exposureIds.length; i++) {
+        for (uint256 i = 0; i < exposureIds.length; i++) {
             bytes32 exposureId = exposureIds[i];
             uint64 closureTime = collectibleExposure.getClosingTime(exposureId);
-            if (bucket.maxClosingTime &lt; closureTime) {
+            if (bucket.maxClosingTime < closureTime) {
                 bucket.maxClosingTime = closureTime;
             }
 
@@ -289,11 +289,11 @@ contract VePortfolio is TokenDestructible {
     {
         require(collectibleExposure != address(0));
         Bucket storage bucket = buckets[bucketId];
-        require(bucket.exposures.length &gt; 0); // ensure bucket exists
+        require(bucket.exposures.length > 0); // ensure bucket exists
         require(bucket.trading == false);
         uint256 finalValue;
 
-        for (uint256 i = 0; i &lt; bucket.exposures.length; i++) {
+        for (uint256 i = 0; i < bucket.exposures.length; i++) {
             ExposureInfo storage exposure = bucket.exposures[i];
             finalValue += exposure.value;
 
@@ -320,7 +320,7 @@ contract VePortfolio is TokenDestructible {
         uint256 amount
     ) onlyTrader {
         //Bucket storage bucket = buckets[bucketId];
-        require(buckets[bucketId].value &gt;= amount);
+        require(buckets[bucketId].value >= amount);
         require(isInPortfolioModel(orderToken));
 
         uint256 tradedAmount;
@@ -358,7 +358,7 @@ contract VePortfolio is TokenDestructible {
         bytes32 bucketId,
         uint256 amount
     ) onlyTrader {
-        require(buckets[bucketId].holdings[orderToken] &gt;= amount);
+        require(buckets[bucketId].holdings[orderToken] >= amount);
         uint256 tradedValue;
         uint256 leftoverTokens;
 
@@ -390,7 +390,7 @@ contract VePortfolio is TokenDestructible {
     //--- Public constant functions
 
     function bucketExists(bytes32 bucketId) public constant returns (bool) {
-        return buckets[bucketId].exposures.length &gt; 0;
+        return buckets[bucketId].exposures.length > 0;
     }
 
     function calculateBucketId(bytes32[] exposures)
@@ -418,7 +418,7 @@ contract VePortfolio is TokenDestructible {
     //--- Private mutable functions
 
     function clearModel() private {
-        for(uint256 i = 0; i &lt; assets.length; i++) {
+        for(uint256 i = 0; i < assets.length; i++) {
             delete model[assets[i]];
         }
     }
@@ -428,7 +428,7 @@ contract VePortfolio is TokenDestructible {
     function validateModel(address[] _assets) internal {
         require(assets.length == _assets.length);
 
-        for (uint256 i = 0; i &lt; assets.length; i++) {
+        for (uint256 i = 0; i < assets.length; i++) {
             require(_assets[i] == assets[i]);
         }
     }
@@ -471,7 +471,7 @@ contract VeExposure is TokenDestructible {
     uint256 public minVeriAmount;
     uint256 public maxVeriAmount;
 
-    mapping (bytes32 =&gt; Exposure) exposures;
+    mapping (bytes32 => Exposure) exposures;
     //--- Constructor
 
     function VeExposure(
@@ -483,8 +483,8 @@ contract VeExposure is TokenDestructible {
         uint256 _maxVeriAmount
     ) {
         require(_veToken != address(0));
-        require(_minDuration &gt; 0 &amp;&amp; _minDuration &lt;= _maxDuration);
-        require(_minVeriAmount &gt; 0 &amp;&amp; _minVeriAmount &lt;= _maxVeriAmount);
+        require(_minDuration > 0 && _minDuration <= _maxDuration);
+        require(_minVeriAmount > 0 && _minVeriAmount <= _maxVeriAmount);
 
         veToken = _veToken;
         ratio = _ratio;
@@ -509,25 +509,25 @@ contract VeExposure is TokenDestructible {
     }
 
     function setMinDuration(uint32 _minDuration) public onlyOwner {
-        require(_minDuration &gt; 0 &amp;&amp; _minDuration &lt;= maxDuration);
+        require(_minDuration > 0 && _minDuration <= maxDuration);
 
         minDuration = _minDuration;
     }
 
     function setMaxDuration(uint32 _maxDuration) public onlyOwner {
-        require(_maxDuration &gt;= minDuration);
+        require(_maxDuration >= minDuration);
 
         maxDuration = _maxDuration;
     }
 
     function setMinVeriAmount(uint32 _minVeriAmount) public onlyOwner {
-        require(_minVeriAmount &gt; 0 &amp;&amp; _minVeriAmount &lt;= maxVeriAmount);
+        require(_minVeriAmount > 0 && _minVeriAmount <= maxVeriAmount);
 
         minVeriAmount = _minVeriAmount;
     }
 
     function setMaxVeriAmount(uint32 _maxVeriAmount) public onlyOwner {
-        require(_maxVeriAmount &gt;= minVeriAmount);
+        require(_maxVeriAmount >= minVeriAmount);
 
         maxVeriAmount = _maxVeriAmount;
     }
@@ -565,8 +565,8 @@ contract VeExposure is TokenDestructible {
     //--- Public functions
 
     function open(uint256 veriAmount, uint32 duration, uint256 nonce) public payable {
-        require(veriAmount &gt;= minVeriAmount &amp;&amp; veriAmount &lt;= maxVeriAmount);
-        require(duration &gt;= minDuration &amp;&amp; duration &lt;= maxDuration);
+        require(veriAmount >= minVeriAmount && veriAmount <= maxVeriAmount);
+        require(duration >= minDuration && duration <= maxDuration);
         require(checkRatio(veriAmount, msg.value));
 
         bytes32 id = calculateId({
@@ -645,13 +645,13 @@ contract VeExposure is TokenDestructible {
         Exposure storage exposure = exposures[id];
         state = uint8(exposure.state);
 
-        if (exposure.state == State.Collected &amp;&amp; hasPassed(exposure.closingTime)) {
+        if (exposure.state == State.Collected && hasPassed(exposure.closingTime)) {
             state = uint8(State.Closing);
         }
     }
 
     function exists(bytes32 id) public constant returns (bool) {
-        return exposures[id].creationTime &gt; 0;
+        return exposures[id].creationTime > 0;
     }
 
     function checkRatio(uint256 veriAmount, uint256 value)
@@ -727,7 +727,7 @@ contract VeExposure is TokenDestructible {
         constant
         returns (bool)
     {
-        return block.timestamp &gt;= time;
+        return block.timestamp >= time;
     }
 }
 

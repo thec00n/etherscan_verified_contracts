@@ -1,8 +1,8 @@
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 /*  ----------------------------------------------------------------------------------------
 
-    Dev:    &quot;Owned&quot; to ensure control of contracts
+    Dev:    "Owned" to ensure control of contracts
 
             Identical to https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/ownership/Ownable.sol
 
@@ -39,27 +39,27 @@ library SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a); // Ensuring no negatives
+    assert(b <= a); // Ensuring no negatives
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a &amp;&amp; c&gt;=b);
+    assert(c >= a && c>=b);
     return c;
   }
 }
 
 /*  ----------------------------------------------------------------------------------------
 
-    Dev:    ESG Asset Holder is called when the token &quot;burn&quot; function is called
+    Dev:    ESG Asset Holder is called when the token "burn" function is called
 
     Sum:    Locked to false so users cannot burn their tokens until the Asset Contract is
             put in place with value.
@@ -90,8 +90,8 @@ contract ESGAssetHolder {
     ---------------------------------------------------------------------------------------- */
 contract ESGToken is Owned {
         
-    string public name = &quot;ESG Token&quot;;               // Name of token
-    string public symbol = &quot;ESG&quot;;                   // Token symbol
+    string public name = "ESG Token";               // Name of token
+    string public symbol = "ESG";                   // Token symbol
     uint256 public decimals = 3;                    // Decimals for the token
     uint256 public currentSupply;                   // Current supply of tokens
     uint256 public supplyCap;                       // Hard cap on supply of tokens
@@ -100,9 +100,9 @@ contract ESGToken is Owned {
     bool public tokenParametersSet;                        // Ensure that parameters required are set
     bool public controllerSet;                             // Ensure that ICO controller is set
 
-    mapping (address =&gt; uint256) public balanceOf;                      // Balances of addresses
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;    // Allowances from addresses
-    mapping (address =&gt; bool) public frozenAccount;                     // Safety mechanism
+    mapping (address => uint256) public balanceOf;                      // Balances of addresses
+    mapping (address => mapping (address => uint)) public allowance;    // Allowances from addresses
+    mapping (address => bool) public frozenAccount;                     // Safety mechanism
 
 
     modifier onlyControllerOrOwner() {            // Ensures that only contracts can manage key functions
@@ -167,7 +167,7 @@ contract ESGToken is Owned {
     }
 
     function parametersAreSet() constant returns (bool) {
-        return tokenParametersSet &amp;&amp; controllerSet;
+        return tokenParametersSet && controllerSet;
     }
 
     /*  ----------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ contract ESGToken is Owned {
    
     ---------------------------------------------------------------------------------------- */
     function setTokenCapInUnits(uint256 _supplyCap) onlyControllerOrOwner {   // Supply cap in UNITS
-        assert(_supplyCap &gt; 0);
+        assert(_supplyCap > 0);
         
         supplyCap = SafeMath.safeMul(_supplyCap, (10**decimals));
     }
@@ -192,7 +192,7 @@ contract ESGToken is Owned {
     
     ---------------------------------------------------------------------------------------- */
     function mintLockedTokens(uint256 _mMentTkns) onlyControllerOrOwner {
-        assert(_mMentTkns &gt; 0);
+        assert(_mMentTkns > 0);
         assert(tokenParametersSet);
 
         mint(timelockTokens, _mMentTkns);  
@@ -225,8 +225,8 @@ contract ESGToken is Owned {
         require(_address != 0x0);
         uint256 amount = SafeMath.safeMul(_amount, (10**decimals));             // Tokens minted using unit parameter supplied
 
-        // Ensure that supplyCap is set and that new tokens don&#39;t breach cap
-        assert(supplyCap &gt; 0 &amp;&amp; amount &gt; 0 &amp;&amp; SafeMath.safeAdd(currentSupply, amount) &lt;= supplyCap);
+        // Ensure that supplyCap is set and that new tokens don't breach cap
+        assert(supplyCap > 0 && amount > 0 && SafeMath.safeAdd(currentSupply, amount) <= supplyCap);
         
         balanceOf[_address] = SafeMath.safeAdd(balanceOf[_address], amount);    // Add tokens to address
         currentSupply = SafeMath.safeAdd(currentSupply, amount);                // Add to supply
@@ -247,7 +247,7 @@ contract ESGToken is Owned {
         require(!frozenAccount[msg.sender]);        // Ensure account is not frozen
 
         /* 
-            Update balances from &quot;from&quot; and &quot;to&quot; addresses with the tokens transferred
+            Update balances from "from" and "to" addresses with the tokens transferred
             safeSub method ensures that address sender has enough tokens to send
         */
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);    
@@ -272,7 +272,7 @@ contract ESGToken is Owned {
         /* 
             Ensure sender has been authorised to send the required number of tokens
         */
-        if (allowance[_from][msg.sender] &lt; _value)
+        if (allowance[_from][msg.sender] < _value)
             return false;
 
         /* 
@@ -281,7 +281,7 @@ contract ESGToken is Owned {
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value); 
 
         /* 
-            Update balances from &quot;from&quot; and &quot;to&quot; addresses with the tokens transferred
+            Update balances from "from" and "to" addresses with the tokens transferred
             safeSub method ensures that address sender has enough tokens to send
         */
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);
@@ -305,7 +305,7 @@ contract ESGToken is Owned {
         require(!frozenAccount[msg.sender]);                // Check account is not frozen
 
         /* Requiring the user to set to zero before resetting to nonzero */
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) {
            return false;
         }
 
@@ -317,7 +317,7 @@ contract ESGToken is Owned {
 
     /*  ----------------------------------------------------------------------------------------
 
-    Dev:    Function to check the amount of tokens that the owner has allowed the &quot;spender&quot; to
+    Dev:    Function to check the amount of tokens that the owner has allowed the "spender" to
             transfer
 
     Param:  _owner          Address of the authoriser who owns the tokens
@@ -363,12 +363,12 @@ contract ESGToken is Owned {
     ---------------------------------------------------------------------------------------- */
     function burn(uint _amount) returns (bool result) {
 
-        if (_amount &gt; balanceOf[msg.sender])
+        if (_amount > balanceOf[msg.sender])
             return false;       // If owner has enough to burn
 
         /* 
             Remove tokens from circulation
-            Update sender&#39;s balance of tokens
+            Update sender's balance of tokens
         */
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _amount);
         currentSupply = SafeMath.safeSub(currentSupply, _amount);
@@ -401,7 +401,7 @@ contract ESGToken is Owned {
     }
 
     function setAssetHolder(address _assetAdress) onlyOwner {   // Used to lock in the Asset Contract
-        assert(!lockedAssetHolder);             // Check that we haven&#39;t locked the asset holder yet
+        assert(!lockedAssetHolder);             // Check that we haven't locked the asset holder yet
         esgAssetHolder = ESGAssetHolder(_assetAdress);
     }    
 }

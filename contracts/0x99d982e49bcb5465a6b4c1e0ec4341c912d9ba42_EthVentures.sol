@@ -15,7 +15,7 @@
 //  	Ex: We generate 100 Eth profit, then it will be distributed in 33 times in 3.33 ether packages, then those packages get shared between shareholders. With the example above if you hold 5%, then you will earn 33 times 0.1665 Eth, which is 5.4945 Eth profit in total.
 //
 //
-//  Profit: This contract itself is not generating any profit, it&#39;s just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
+//  Profit: This contract itself is not generating any profit, it's just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
 //      Ex: A dice game built on this contract that generates say 10 Eth daily, will send the fees directly here
 //      Ex: A doubler game built on this contract that generates 50 Eth daily, that will send all fees here
 //      Ex: Any other form of contract that takes a % fee, and will send the fees directly here to be distributed between EthVentures shareholders.
@@ -37,7 +37,7 @@
 //
 //
 //============================================================================================================================
-// Copyright &#194;&#169; 2016, This piece of code cannot be copied or reused without the author&#39;s permission!
+// Copyright Â© 2016, This piece of code cannot be copied or reused without the author's permission!
 //
 //***********************************START
 contract EthVentures {
@@ -59,7 +59,7 @@ contract EthVentures {
   uint public totaldeposited=0;
   uint public totalpaidout=0;
   uint public totaldividends=0;
-  string public Message_To_Investors=&quot;Welcome to EthVentures!&quot;;  // the manager can send short messages to investors
+  string public Message_To_Investors="Welcome to EthVentures!";  // the manager can send short messages to investors
   
   address public owner;
 
@@ -83,7 +83,7 @@ contract EthVentures {
   function Enter() {
 	//DIVIDEND PAYOUT FUNCTION, IT WILL GET INCOME FROM OTHER CONTRACTS, THE DIVIDENDS WILL ALWAYS BE SENT
 	//IN LESS THAN 5 ETHER SIZE PACKETS, BECAUSE ANY DEPOSIT OVER 5 ETHER GETS REGISTERED AS AN INVESTOR!!!
-	if (msg.value &lt; 5 ether) 
+	if (msg.value < 5 ether) 
 	{ 
 	
 		uint PRE_inv_length = investors.length;
@@ -95,9 +95,9 @@ contract EthVentures {
 
 		    
 	//Distribute Dividends
-	if(PRE_inv_length !=0 &amp;&amp; PRE_amount !=0)
+	if(PRE_inv_length !=0 && PRE_amount !=0)
 	{
-	    for(uint PRE_i=0; PRE_i&lt;PRE_inv_length;PRE_i++)  
+	    for(uint PRE_i=0; PRE_i<PRE_inv_length;PRE_i++)  
 		{
 		
 			PRE_payout = PRE_amount * investors[PRE_i].percentage_ownership /10000000000;    //calculate pay out
@@ -125,7 +125,7 @@ contract EthVentures {
 	uint alreadyinvestor_id;
 	
     //go through all investors and see if the current investor was already an investor or not
-    for(uint i=0; i&lt;inv_length;i++)  
+    for(uint i=0; i<inv_length;i++)  
     {
 	if( msg.sender==   investors[i].etherAddress) // if yes then:
 	{
@@ -135,7 +135,7 @@ contract EthVentures {
 	}
     }
     
-     // if it&#39;s a new investor then add it to the array
+     // if it's a new investor then add it to the array
     if(alreadyinvestor==false)
 	{
 	total_investors=inv_length+1;
@@ -153,7 +153,7 @@ contract EthVentures {
     // pay out the 1% management fee
      if (fees != 0) 
      {
-     	if(balance&gt;fees)
+     	if(balance>fees)
 	{
       	owner.send(fees);            //send the 1% to the manager
       	balance -= fees;             //balance update

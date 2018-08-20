@@ -75,12 +75,12 @@ contract PearlBonus {
         require(!saleClosed);
         
         // Minimum amount is 1 finney
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         
         // Price is 1 ETH = 80,000 PRL
         uint256 amount = msg.value * 80000;
         
-        require(amount &lt;= pearl.balanceOf(this));
+        require(amount <= pearl.balanceOf(this));
         
         pearl.transfer(msg.sender, amount);
         

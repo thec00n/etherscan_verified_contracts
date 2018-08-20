@@ -21,32 +21,32 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -60,7 +60,7 @@ library SafeMath {
 contract ERC223BasicToken is DNCBasic{
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint _value) returns (bool success) {
         uint codeLength;
@@ -73,7 +73,7 @@ contract ERC223BasicToken is DNCBasic{
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             DNCReceivingContract receiver = DNCReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -88,10 +88,10 @@ contract ERC223BasicToken is DNCBasic{
 
 contract GoldBank is ERC223BasicToken{
 	address admin;
-	string public name = &quot;DinarCoin&quot;;
-    string public symbol = &quot;DNC&quot;;
+	string public name = "DinarCoin";
+    string public symbol = "DNC";
     uint public decimals = 18;
-	mapping (address =&gt; bool) public mintable;
+	mapping (address => bool) public mintable;
 
 	event Minted(address indexed recipient, uint256 value);
 	event Burned(address indexed user, uint256 value);

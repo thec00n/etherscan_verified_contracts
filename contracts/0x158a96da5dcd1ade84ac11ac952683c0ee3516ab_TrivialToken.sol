@@ -11,7 +11,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -60,7 +60,7 @@ contract ERC223Token is BasicToken, ERC223TokenInterface {
     }
 
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -88,14 +88,14 @@ contract ERC223Token is BasicToken, ERC223TokenInterface {
         uint length;
         _address = _address; //Silence compiler warning
         assembly { length := extcodesize(_address) }
-        return length &gt; 0;
+        return length > 0;
     }
 }
 
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   function asyncSend(address dest, uint256 amount) internal {
@@ -109,7 +109,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -126,20 +126,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -192,15 +192,15 @@ contract TrivialToken is ERC223Token, PullPayment {
     State public currentState;
 
     //Token contributors and holders
-    mapping(address =&gt; uint) public contributions;
+    mapping(address => uint) public contributions;
     address[] public contributors;
 
     //Modififers
     modifier onlyInState(State expectedState) { require(expectedState == currentState); _; }
-    modifier onlyBefore(uint256 _time) { require(now &lt; _time); _; }
-    modifier onlyAfter(uint256 _time) { require(now &gt; _time); _; }
+    modifier onlyBefore(uint256 _time) { require(now < _time); _; }
+    modifier onlyAfter(uint256 _time) { require(now > _time); _; }
     modifier onlyTrivial() { require(msg.sender == trivial); _; }
-    modifier onlyKeyHolders() { require(balances[msg.sender] &gt;= SafeMath.div(
+    modifier onlyKeyHolders() { require(balances[msg.sender] >= SafeMath.div(
         SafeMath.mul(tokensForIco, TOKENS_PERCENTAGE_FOR_KEY_HOLDER), 100)); _;
     }
     modifier onlyAuctionWinner() {
@@ -217,15 +217,15 @@ contract TrivialToken is ERC223Token, PullPayment {
         uint256 _tokensForTrivial,
         uint256 _tokensForIco
     ) {
-        require(now &lt; _icoEndTime);
+        require(now < _icoEndTime);
         require(
             TOTAL_SUPPLY == SafeMath.add(
                 _tokensForArtist,
                 SafeMath.add(_tokensForTrivial, _tokensForIco)
             )
         );
-        require(MIN_BID_PERCENTAGE &lt; 100);
-        require(TOKENS_PERCENTAGE_FOR_KEY_HOLDER &lt; 100);
+        require(MIN_BID_PERCENTAGE < 100);
+        require(TOKENS_PERCENTAGE_FOR_KEY_HOLDER < 100);
 
         name = _name;
         symbol = _symbol;
@@ -256,7 +256,7 @@ contract TrivialToken is ERC223Token, PullPayment {
     function contributeInIco() payable
     onlyInState(State.IcoStarted)
     onlyBefore(icoEndTime) {
-        require(msg.value &gt; MIN_ETH_AMOUNT);
+        require(msg.value > MIN_ETH_AMOUNT);
 
         if (contributions[msg.sender] == 0) {
             contributors.push(msg.sender);
@@ -270,11 +270,11 @@ contract TrivialToken is ERC223Token, PullPayment {
     function distributeTokens(uint256 contributorsNumber)
     onlyInState(State.IcoStarted)
     onlyAfter(icoEndTime) {
-        for (uint256 i = 0; i &lt; contributorsNumber &amp;&amp; nextContributorIndexToBeGivenTokens &lt; contributors.length; ++i) {
+        for (uint256 i = 0; i < contributorsNumber && nextContributorIndexToBeGivenTokens < contributors.length; ++i) {
             address currentContributor = contributors[nextContributorIndexToBeGivenTokens++];
             uint256 tokensForContributor = SafeMath.div(
                 SafeMath.mul(tokensForIco, contributions[currentContributor]),
-                amountRaised  // amountRaised can&#39;t be 0, ICO is cancelled then
+                amountRaised  // amountRaised can't be 0, ICO is cancelled then
             );
             balances[currentContributor] = tokensForContributor;
             tokensDistributedToContributors = SafeMath.add(tokensDistributedToContributors, tokensForContributor);
@@ -290,7 +290,7 @@ contract TrivialToken is ERC223Token, PullPayment {
         }
 
         // all contributors must have received their tokens to finish ICO
-        require(nextContributorIndexToBeGivenTokens &gt;= contributors.length);
+        require(nextContributorIndexToBeGivenTokens >= contributors.length);
 
         balances[artist] = SafeMath.add(balances[artist], tokensForArtist);
         balances[trivial] = SafeMath.add(balances[trivial], tokensForTrivial);
@@ -332,16 +332,16 @@ contract TrivialToken is ERC223Token, PullPayment {
     onlyInState(State.AuctionStarted)
     onlyBefore(auctionEndTime) {
         //Must be greater or equal to minimal amount
-        require(msg.value &gt;= MIN_ETH_AMOUNT);
+        require(msg.value >= MIN_ETH_AMOUNT);
         uint256 bid = calculateUserBid();
 
         //If there was a bid already
-        if (highestBid &gt;= MIN_ETH_AMOUNT) {
+        if (highestBid >= MIN_ETH_AMOUNT) {
             //Must be greater or equal to 105% of previous bid
             uint256 minimalOverBid = SafeMath.add(highestBid, SafeMath.div(
                 SafeMath.mul(highestBid, MIN_BID_PERCENTAGE), 100
             ));
-            require(bid &gt;= minimalOverBid);
+            require(bid >= minimalOverBid);
             //Return to previous bidder his balance
             //Value to return: current balance - current bid - paymentsInAsyncSend
             uint256 amountToReturn = SafeMath.sub(SafeMath.sub(
@@ -360,10 +360,10 @@ contract TrivialToken is ERC223Token, PullPayment {
     function calculateUserBid() private returns (uint256) {
         uint256 bid = msg.value;
         uint256 contribution = balanceOf(msg.sender);
-        if (contribution &gt; 0) {
+        if (contribution > 0) {
             //Formula: (sentETH * allTokens) / (allTokens - userTokens)
             //User sends 16ETH, has 40 of 200 tokens
-            //(16 * 200) / (200 - 40) =&gt; 3200 / 160 =&gt; 20
+            //(16 * 200) / (200 - 40) => 3200 / 160 => 20
             bid = SafeMath.div(
                 SafeMath.mul(msg.value, TOTAL_SUPPLY),
                 SafeMath.sub(TOTAL_SUPPLY, contribution)
@@ -375,7 +375,7 @@ contract TrivialToken is ERC223Token, PullPayment {
     function finishAuction()
     onlyInState(State.AuctionStarted)
     onlyAfter(auctionEndTime) {
-        require(highestBid &gt; 0);  // auction cannot be finished until at least one person bids
+        require(highestBid > 0);  // auction cannot be finished until at least one person bids
         currentState = State.AuctionFinished;
         AuctionFinished(highestBidder, highestBid);
     }
@@ -383,7 +383,7 @@ contract TrivialToken is ERC223Token, PullPayment {
     function withdrawShares(address holder) public
     onlyInState(State.AuctionFinished) {
         uint256 availableTokens = balances[holder];
-        require(availableTokens &gt; 0);
+        require(availableTokens > 0);
         balances[holder] = 0;
 
         if (holder != highestBidder) {
@@ -394,7 +394,7 @@ contract TrivialToken is ERC223Token, PullPayment {
     }
 
     function isKeyHolder(address person) constant returns (bool) {
-        return balances[person] &gt;= SafeMath.div(tokensForIco, TOKENS_PERCENTAGE_FOR_KEY_HOLDER); }
+        return balances[person] >= SafeMath.div(tokensForIco, TOKENS_PERCENTAGE_FOR_KEY_HOLDER); }
 
     /*
         General methods
@@ -412,7 +412,7 @@ contract TrivialToken is ERC223Token, PullPayment {
 
     function claimIcoContribution(address contributor) onlyInState(State.IcoCancelled) {
         uint256 contribution = contributions[contributor];
-        require(contribution &gt; 0);
+        require(contribution > 0);
         contributions[contributor] = 0;
         contributor.transfer(contribution);
     }*/
@@ -427,8 +427,8 @@ contract TrivialToken is ERC223Token, PullPayment {
     onlyTrivial() {
         require(
             (
-                currentState == State.AuctionFinished &amp;&amp;
-                now &gt; SafeMath.add(auctionEndTime, CLEANUP_DELAY) // Delay in correct state
+                currentState == State.AuctionFinished &&
+                now > SafeMath.add(auctionEndTime, CLEANUP_DELAY) // Delay in correct state
             ) ||
             currentState == State.IcoCancelled // No delay in cancelled state
         );

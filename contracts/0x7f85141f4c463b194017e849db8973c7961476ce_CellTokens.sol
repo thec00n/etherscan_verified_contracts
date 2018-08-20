@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ contract CellTokens {
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
   bool private erc721Enabled = false;
   bool private mergeEnabled = false;
   uint256 private increaseLimit1 = 0.02 ether;
@@ -68,9 +68,9 @@ contract CellTokens {
   
   uint256[] private listedItems;
   
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (address =&gt; string) private usernameOfAddress;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (address => string) private usernameOfAddress;
   
   
   function CellTokens () public {
@@ -137,13 +137,13 @@ contract CellTokens {
   }
    /* Buying */
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(200).div(95);
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(135).div(96);
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(125).div(97);
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(117).div(97);
     } else {
       return _price.mul(115).div(98);
@@ -151,13 +151,13 @@ contract CellTokens {
   }
 
   function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(5).div(100); // 5%
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(4).div(100); // 4%
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(3).div(100); // 3%
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(3).div(100); // 3%
     } else {
       return _price.mul(2).div(100); // 2%
@@ -166,10 +166,10 @@ contract CellTokens {
   
   function requestMerge(uint256[] ids)onlyMergeEnable() external {
       require(ids.length == 4);
-      require(ids[0]%(10**8)/(10**4)&lt;max_merge_size);
-      require(ids[0]%(10**8)/(10**4)&lt;max_merge_size);
-      require(ids[0]%(10**8)/(10**4)&lt;max_merge_size);
-      require(ids[0]%(10**8)/(10**4)&lt;max_merge_size);
+      require(ids[0]%(10**8)/(10**4)<max_merge_size);
+      require(ids[0]%(10**8)/(10**4)<max_merge_size);
+      require(ids[0]%(10**8)/(10**4)<max_merge_size);
+      require(ids[0]%(10**8)/(10**4)<max_merge_size);
       require(ownerOfItem[ids[0]] == msg.sender);
       require(ownerOfItem[ids[1]] == msg.sender);
       require(ownerOfItem[ids[2]] == msg.sender);
@@ -190,7 +190,7 @@ contract CellTokens {
   } 
   
   function checkIsOnSale(uint256 _ypos)public view returns(bool isOnSale){
-      if(_ypos&lt;Reserved_upRow||_ypos&gt;Reserved_downRow){
+      if(_ypos<Reserved_upRow||_ypos>Reserved_downRow){
           return false;
       }else{
           return true;
@@ -208,10 +208,10 @@ contract CellTokens {
   }
 
   function setUserName(string _name)payable public{
-      require(msg.value &gt;= 0.01 ether);
+      require(msg.value >= 0.01 ether);
       usernameOfAddress[msg.sender] = _name;
       uint256 excess = msg.value - 0.01 ether;
-      if (excess &gt; 0) {
+      if (excess > 0) {
           msg.sender.transfer(excess);
       }
   }
@@ -223,7 +223,7 @@ contract CellTokens {
   }
     function buyOld (uint256 _index) payable public {
         require(_index!=0);
-        require(msg.value &gt;= priceOf(_index));
+        require(msg.value >= priceOf(_index));
         require(ownerOf(_index) != msg.sender);
         require(ownerOf(_index) != address(0));
 
@@ -238,14 +238,14 @@ contract CellTokens {
         uint256 devCut = calculateDevCut(price);
         oldOwner.transfer(price.sub(devCut));
     
-        if (excess &gt; 0) {
+        if (excess > 0) {
           newOwner.transfer(excess);
         }
     }
     function buyNew (uint256 _xpos,uint256 _ypos,uint256 _size) payable public {
         require(checkIsOnSale(_ypos) == true);
         require(_size == 1);
-        require(_xpos + _size &lt;= MAX_COLS);
+        require(_xpos + _size <= MAX_COLS);
         uint256 _itemId = generateId(_xpos,_ypos,_size);
         require(priceOf(_itemId)==0);
         uint256 price =startingPrice;
@@ -260,7 +260,7 @@ contract CellTokens {
         uint256 devCut = calculateDevCut(price);
         oldOwner.transfer(price.sub(devCut));
     
-        if (excess &gt; 0) {
+        if (excess > 0) {
           newOwner.transfer(excess);
         }
     }
@@ -274,16 +274,16 @@ contract CellTokens {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;Crypto10K.io&quot;;
+    return "Crypto10K.io";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;cells&quot;;
+    return "cells";
   }
   
   function totalSupply() public view returns (uint256 _totalSupply) {
       uint256 total = 0;
-      for(uint8 i=0; i&lt;listedItems.length; i++){
+      for(uint8 i=0; i<listedItems.length; i++){
           if(ownerOf(listedItems[i])!=address(0)){
               total++;
           }
@@ -293,7 +293,7 @@ contract CellTokens {
 
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
-    for (uint8 i = 0; i &lt; listedItems.length; i++) {
+    for (uint8 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
           counter++;
       }
@@ -308,7 +308,7 @@ contract CellTokens {
   function cellsOf (address _owner) public view returns (uint256[] _tokenIds) {
     uint256[] memory items = new uint256[](balanceOf(_owner));
     uint256 itemCounter = 0;
-    for (uint8 i = 0; i &lt; listedItems.length; i++) {
+    for (uint8 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -319,7 +319,7 @@ contract CellTokens {
     function getAllCellIds () public view returns (uint256[] _tokenIds) {
         uint256[] memory items = new uint256[](totalSupply());
         uint256 itemCounter = 0;
-        for (uint8 i = 0; i &lt; listedItems.length; i++) {
+        for (uint8 i = 0; i < listedItems.length; i++) {
             if (ownerOfItem[listedItems[i]] != address(0)) {
                 items[itemCounter] = listedItems[i];
                 itemCounter += 1;
@@ -358,7 +358,7 @@ contract CellTokens {
         uint256[] memory prices = new uint256[](totalSupply());
         address[] memory owners = new address[](totalSupply());
         uint256 itemCounter = 0;
-        for (uint8 i = 0; i &lt; listedItems.length; i++) {
+        for (uint8 i = 0; i < listedItems.length; i++) {
             if (ownerOf(listedItems[i]) !=address(0)) {
                 items[itemCounter] = listedItems[i];
                 prices[itemCounter] = priceOf(listedItems[i]);

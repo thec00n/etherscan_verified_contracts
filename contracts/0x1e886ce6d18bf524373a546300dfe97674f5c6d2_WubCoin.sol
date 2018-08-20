@@ -36,37 +36,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -79,11 +79,11 @@ library SafeMath {
 contract ERC20CompatibleToken {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances; // List of user balances.
+    mapping(address => uint) balances; // List of user balances.
 
     event Transfer(address indexed from, address indexed to, uint value);
   	event Approval(address indexed owner, address indexed spender, uint256 value);
-  	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  	mapping (address => mapping (address => uint256)) internal allowed;
 
 
    /**
@@ -94,8 +94,8 @@ contract ERC20CompatibleToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -109,7 +109,7 @@ contract ERC20CompatibleToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -144,7 +144,7 @@ contract ERC20CompatibleToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -169,8 +169,8 @@ contract ERC223Interface {
 contract WubCoin is ERC223Interface, ERC20CompatibleToken {
     using SafeMath for uint;
 
-    string  public name    = &quot;WubCoin&quot;;
-    string  public symbol  = &quot;WUB&quot;;
+    string  public name    = "WubCoin";
+    string  public symbol  = "WUB";
     uint8   public decimals = 18;
     uint256 public totalSupply = 0;
     address public owner;
@@ -180,7 +180,7 @@ contract WubCoin is ERC223Interface, ERC20CompatibleToken {
     }
 
     /**
-     * We don&#39;t accept payments to the token contract directly.
+     * We don't accept payments to the token contract directly.
      */
     function() payable {
         revert();
@@ -223,7 +223,7 @@ contract WubCoin is ERC223Interface, ERC20CompatibleToken {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -233,7 +233,7 @@ contract WubCoin is ERC223Interface, ERC20CompatibleToken {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -250,7 +250,7 @@ contract WubCoin is ERC223Interface, ERC20CompatibleToken {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }

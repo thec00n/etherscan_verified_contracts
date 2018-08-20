@@ -8,7 +8,7 @@ contract FunGame
         address parent;
         uint8 level;
     }
-    mapping(address=&gt;user) public map;
+    mapping(address=>user) public map;
     function FunGame()
     {
         owner = msg.sender;

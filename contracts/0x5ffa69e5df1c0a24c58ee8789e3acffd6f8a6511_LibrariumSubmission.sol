@@ -19,7 +19,7 @@ contract owned {
 
 
 contract Registration { 
-     mapping (address =&gt; bool) public isRegistered;  
+     mapping (address => bool) public isRegistered;  
 }
 
 contract LibrariumSubmission is owned { 
@@ -42,12 +42,12 @@ contract LibrariumSubmission is owned {
     uint256 public categoriesCount; 
     uint256 public titleCount; 
     
-    mapping (uint256 =&gt; Title) public titles;
-    mapping (address =&gt; uint256) public balances; //Ether on account for sellers 
-    mapping (address =&gt; uint256) public salesEth; //Total eth earned by seller
-    mapping (address =&gt; uint256) public titlesSold; //Total copies of books sold by seller
-    mapping (uint256 =&gt; uint256) public copiesSold;  //Copies sold of each title
-    mapping (address =&gt; string) public usernames; // Names of buyers and sellers registered 
+    mapping (uint256 => Title) public titles;
+    mapping (address => uint256) public balances; //Ether on account for sellers 
+    mapping (address => uint256) public salesEth; //Total eth earned by seller
+    mapping (address => uint256) public titlesSold; //Total copies of books sold by seller
+    mapping (uint256 => uint256) public copiesSold;  //Copies sold of each title
+    mapping (address => string) public usernames; // Names of buyers and sellers registered 
     
     function AddCategory(string categoryName) public onlyOwner { 
         CategoryAdded(categoriesCount,categoryName);
@@ -80,7 +80,7 @@ contract LibrariumSubmission is owned {
     }
     
     function DelistTitle(uint256 titleId) public  { 
-        require (titleId &lt; titleCount); 
+        require (titleId < titleCount); 
         require (msg.sender == owner || msg.sender == titles[titleId].owner);
         
         TitleDelisted(titleId);
@@ -88,13 +88,13 @@ contract LibrariumSubmission is owned {
     }
     
     function ApproveTitle(uint256 titleId) public onlyOwner { 
-        require (titleId &lt; titleCount); 
+        require (titleId < titleCount); 
         
         TitleApproved(titleId);
     }
     
     function EditTile(uint256 id,uint256 category,string name,string media_hash,string desc,uint256 price) public { 
-        require (id &lt; titleCount);
+        require (id < titleCount);
         require(titles[id].owner == msg.sender);
         
         titles[id].price = price;
@@ -104,13 +104,13 @@ contract LibrariumSubmission is owned {
     }
     
     function VendTitle(uint256 titleId) public payable {
-        require (titleId &lt; titleCount); 
+        require (titleId < titleCount); 
         Title storage t = titles[titleId]; 
         require(msg.value == t.price); 
         
         uint256 temp = balances[t.owner];
         balances[t.owner] += msg.value; 
-        require(balances[t.owner] &gt; temp);
+        require(balances[t.owner] > temp);
         
         copiesSold[titleId]++;
         titlesSold[t.owner]++;
@@ -120,7 +120,7 @@ contract LibrariumSubmission is owned {
     }
     
     function WidthdrawEarnings(uint256 amount) public { 
-        require(balances[msg.sender] &gt;= amount); 
+        require(balances[msg.sender] >= amount); 
          balances[msg.sender] -= amount; 
          msg.sender.transfer(amount);
     }

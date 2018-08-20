@@ -10,31 +10,31 @@ library SafeMath {
   
   function div(uint a, uint b) internal pure returns (uint) 
   {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -56,8 +56,8 @@ contract Ownable {
 
 contract GranitePreICO is Ownable {
     using SafeMath for uint;
-    string public constant name = &quot;Pre-ICO Granite Labor Coin&quot;;
-    string public constant symbol = &quot;PGLC&quot;;
+    string public constant name = "Pre-ICO Granite Labor Coin";
+    string public constant symbol = "PGLC";
     uint public constant coinPrice = 25 * 10 ** 14;
     uint public constant decimals = 18;
     uint public constant bonus = 50;
@@ -67,9 +67,9 @@ contract GranitePreICO is Ownable {
     uint public investorsCount = 0;
     uint public constant hardCap = 250000 * 10 ** 18;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint) personalBonuses;
-    mapping(uint =&gt; address) investors;
+    mapping(address => uint256) balances;
+    mapping(address => uint) personalBonuses;
+    mapping(uint => address) investors;
 
     event Paid(address indexed from, uint value);
 
@@ -80,12 +80,12 @@ contract GranitePreICO is Ownable {
     function receiveETH() internal {
         require(isActive); // can receive ETH only if pre-ICO is active
         
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
         
         uint coinsCount = msg.value.div(coinPrice).mul(10 ** 18); // counts amount
-        coinsCount = coinsCount.add(coinsCount.div(100).mul(personalBonuses[msg.sender] &gt; 0 ? personalBonuses[msg.sender] : bonus)); // bonus
+        coinsCount = coinsCount.add(coinsCount.div(100).mul(personalBonuses[msg.sender] > 0 ? personalBonuses[msg.sender] : bonus)); // bonus
 
-        require((totalSupply + coinsCount) &lt;= hardCap);
+        require((totalSupply + coinsCount) <= hardCap);
 
         if (balances[msg.sender] == 0) {
             investors[investorsCount] = msg.sender;
@@ -104,17 +104,17 @@ contract GranitePreICO is Ownable {
     }
 
     function getPersonalBonus(address _addr) constant public returns(uint) {
-        return personalBonuses[_addr] &gt; 0 ? personalBonuses[_addr] : bonus;
+        return personalBonuses[_addr] > 0 ? personalBonuses[_addr] : bonus;
     }
 
     function setPersonalBonus(address _addr, uint8 _value) onlyOwner public {
-        require(_value &gt; 0 &amp;&amp; _value &lt;=100);
+        require(_value > 0 && _value <=100);
         personalBonuses[_addr] = _value;
     }
  
     function getInvestorAddress(uint index) constant public returns(address)
     {
-        require(investorsCount &gt; index);
+        require(investorsCount > index);
         return investors[index];
     }
     
@@ -130,7 +130,7 @@ contract GranitePreICO is Ownable {
     }
     
     function setMinAmount(uint amount) onlyOwner public {
-        require(amount &gt; 0);
+        require(amount > 0);
         minAmount = amount;
     }
 

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -88,7 +88,7 @@ contract Ownable {
 
 
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) internal investorMap;
+    mapping(address => bool) internal investorMap;
 
     /**
     * event for investor approval logging
@@ -129,7 +129,7 @@ contract Whitelist is Ownable {
       * @param toApprove array of investors to be approved
       */
     function approveInvestorsInBulk(address[] toApprove) external onlyOwner {
-        for (uint i = 0; i &lt; toApprove.length; i++) {
+        for (uint i = 0; i < toApprove.length; i++) {
             investorMap[toApprove[i]] = true;
             emit Approved(toApprove[i]);
         }
@@ -147,7 +147,7 @@ contract Whitelist is Ownable {
       * @param toDisapprove array of investors to be disapproved
       */
     function disapproveInvestorsInBulk(address[] toDisapprove) external onlyOwner {
-        for (uint i = 0; i &lt; toDisapprove.length; i++) {
+        for (uint i = 0; i < toDisapprove.length; i++) {
             delete investorMap[toDisapprove[i]];
             emit Disapproved(toDisapprove[i]);
         }
@@ -158,7 +158,7 @@ contract Whitelist is Ownable {
 /**
  * @title Validator
  * @dev The Validator contract has a validator address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Validator {
     address public validator;
@@ -225,7 +225,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -243,7 +243,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -273,7 +273,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -284,8 +284,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -299,7 +299,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -348,7 +348,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -435,8 +435,8 @@ contract CompliantToken is Validator, DetailedERC20, MintableToken {
         address spender;
     }
 
-    mapping (uint =&gt; TransactionStruct) public pendingTransactions;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public pendingApprovalAmount;
+    mapping (uint => TransactionStruct) public pendingTransactions;
+    mapping (address => mapping (address => uint256)) public pendingApprovalAmount;
     uint256 public currentNonce = 0;
     uint256 public transferFee;
     address public feeRecipient;
@@ -452,7 +452,7 @@ contract CompliantToken is Validator, DetailedERC20, MintableToken {
     }
 
     modifier checkIsValueValid(uint256 _value) {
-        require(_value &gt; 0);
+        require(_value > 0);
         _;
     }
 
@@ -615,10 +615,10 @@ contract CompliantToken is Validator, DetailedERC20, MintableToken {
         uint256 pendingAmount = pendingApprovalAmount[msg.sender][address(0)];
 
         if (msg.sender == feeRecipient) {
-            require(_value.add(pendingAmount) &lt;= balances[msg.sender]);
+            require(_value.add(pendingAmount) <= balances[msg.sender]);
             pendingApprovalAmount[msg.sender][address(0)] = pendingAmount.add(_value);
         } else {
-            require(_value.add(pendingAmount).add(transferFee) &lt;= balances[msg.sender]);
+            require(_value.add(pendingAmount).add(transferFee) <= balances[msg.sender]);
             pendingApprovalAmount[msg.sender][address(0)] = pendingAmount.add(_value).add(transferFee);
         }
 
@@ -652,12 +652,12 @@ contract CompliantToken is Validator, DetailedERC20, MintableToken {
         uint256 pendingAmount = pendingApprovalAmount[_from][msg.sender];
         
         if (_from == feeRecipient) {
-            require(_value.add(pendingAmount) &lt;= balances[_from]);
-            require(_value.add(pendingAmount) &lt;= allowedTransferAmount);
+            require(_value.add(pendingAmount) <= balances[_from]);
+            require(_value.add(pendingAmount) <= allowedTransferAmount);
             pendingApprovalAmount[_from][msg.sender] = pendingAmount.add(_value);
         } else {
-            require(_value.add(pendingAmount).add(transferFee) &lt;= balances[_from]);
-            require(_value.add(pendingAmount).add(transferFee) &lt;= allowedTransferAmount);
+            require(_value.add(pendingAmount).add(transferFee) <= balances[_from]);
+            require(_value.add(pendingAmount).add(transferFee) <= allowedTransferAmount);
             pendingApprovalAmount[_from][msg.sender] = pendingAmount.add(_value).add(transferFee);
         }
 
@@ -818,9 +818,9 @@ contract Crowdsale {
 
 
     constructor(uint256 _startTime, uint256 _endTime, uint256 _tokenCap, uint256 _rate, address _wallet, MintableToken _token) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
         require(_token != address(0));
 
@@ -859,7 +859,7 @@ contract Crowdsale {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // Override this method to have a way to add business logic to your crowdsale when buying
@@ -876,10 +876,10 @@ contract Crowdsale {
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
         uint256 tokens = msg.value.mul(rate);
-        require(totalSupply.add(tokens) &lt;= tokenCap);
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        require(totalSupply.add(tokens) <= tokenCap);
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
 }
@@ -901,7 +901,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -932,9 +932,9 @@ contract CompliantCrowdsale is Validator, FinalizableCrowdsale {
         uint256 weiAmount;
     }
 
-    mapping (uint =&gt; MintStruct) public pendingMints;
+    mapping (uint => MintStruct) public pendingMints;
     uint256 public currentMintNonce;
-    mapping (address =&gt; uint) public rejectedMintBalance;
+    mapping (address => uint) public rejectedMintBalance;
 
     modifier checkIsInvestorApproved(address _account) {
         require(whiteListingContract.isInvestorApproved(_account));
@@ -1102,7 +1102,7 @@ contract CompliantCrowdsale is Validator, FinalizableCrowdsale {
 
     /** @dev claim back ether if buy tokens request is rejected */
     function claim() external {
-        require(rejectedMintBalance[msg.sender] &gt; 0);
+        require(rejectedMintBalance[msg.sender] > 0);
         uint256 value = rejectedMintBalance[msg.sender];
         rejectedMintBalance[msg.sender] = 0;
 

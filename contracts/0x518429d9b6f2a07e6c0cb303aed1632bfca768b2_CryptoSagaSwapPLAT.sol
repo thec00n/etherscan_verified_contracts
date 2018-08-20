@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -195,16 +195,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -427,7 +427,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -445,7 +445,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -475,7 +475,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -486,8 +486,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -501,7 +501,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -550,7 +550,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -569,7 +569,7 @@ contract StandardToken is ERC20, BasicToken {
 contract AccessDeposit is Claimable {
 
   // Access for adding deposit.
-  mapping(address =&gt; bool) private depositAccess;
+  mapping(address => bool) private depositAccess;
 
   // Modifier for accessibility to add deposit.
   modifier onlyAccessDeposit {
@@ -603,7 +603,7 @@ contract AccessDeposit is Claimable {
 contract AccessDeploy is Claimable {
 
   // Access for deploying heroes.
-  mapping(address =&gt; bool) private deployAccess;
+  mapping(address => bool) private deployAccess;
 
   // Modifier for accessibility to deploy a hero on a location.
   modifier onlyAccessDeploy {
@@ -636,7 +636,7 @@ contract AccessDeploy is Claimable {
 contract AccessMint is Claimable {
 
   // Access for minting new tokens.
-  mapping(address =&gt; bool) private mintAccess;
+  mapping(address => bool) private mintAccess;
 
   // Modifier for accessibility to define new hero types.
   modifier onlyAccessMint {
@@ -669,8 +669,8 @@ contract AccessMint is Claimable {
  */
 contract Gold is StandardToken, Claimable, AccessMint {
 
-  string public constant name = &quot;Gold&quot;;
-  string public constant symbol = &quot;G&quot;;
+  string public constant name = "Gold";
+  string public constant symbol = "G";
   uint8 public constant decimals = 18;
 
   // Event that is fired when minted.
@@ -703,8 +703,8 @@ contract Gold is StandardToken, Claimable, AccessMint {
  */
 contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessDeploy, AccessDeposit {
 
-  string public constant name = &quot;CryptoSaga Hero&quot;;
-  string public constant symbol = &quot;HERO&quot;;
+  string public constant name = "CryptoSaga Hero";
+  string public constant symbol = "HERO";
   
   struct HeroClass {
     // ex) Soldier, Knight, Fighter...
@@ -738,10 +738,10 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
   }
     
   struct HeroInstance {
-    // What is this hero&#39;s type? ex) John, Sally, Mark...
+    // What is this hero's type? ex) John, Sally, Mark...
     uint32 heroClassId;
     
-    // Individual hero&#39;s name.
+    // Individual hero's name.
     string heroName;
     
     // Current level of this hero.
@@ -757,7 +757,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     // Current stats of this hero. 
     // 0: ATK	1: DEF 2: AGL	3: LUK 4: HP.
     uint32[5] currentStats;
-    // The individual value for this hero&#39;s stats. 
+    // The individual value for this hero's stats. 
     // This will affect the current stats of heroes.
     // 0: ATK	1: DEF 2: AGL	3: LUK 4: HP.
     uint32[5] ivForStats;
@@ -772,13 +772,13 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
   uint256 public requiredGoldIncreaseFactor = 1000000000000000000;
 
   // Existing hero classes.
-  mapping(uint32 =&gt; HeroClass) public heroClasses;
+  mapping(uint32 => HeroClass) public heroClasses;
   // The number of hero classes ever defined.
   uint32 public numberOfHeroClasses;
 
   // Existing hero instances.
   // The key is _tokenId.
-  mapping(uint256 =&gt; HeroInstance) public tokenIdToHeroInstance;
+  mapping(uint256 => HeroInstance) public tokenIdToHeroInstance;
   // The number of tokens ever minted. This works as the serial number.
   uint256 public numberOfTokenIds;
 
@@ -786,7 +786,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
   Gold public goldContract;
 
   // Deposit of players (in Gold).
-  mapping(address =&gt; uint256) public addressToGoldDeposit;
+  mapping(address => uint256) public addressToGoldDeposit;
 
   // Random seed.
   uint32 private seed = 0;
@@ -813,7 +813,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     uint256 _duration
   );
 
-  // @dev Get the class&#39;s entire infomation.
+  // @dev Get the class's entire infomation.
   function getClassInfo(uint32 _classId)
     external view
     returns (string className, uint8 classRank, uint8 classRace, uint32 classAge, uint8 classType, uint32 maxLevel, uint8 aura, uint32[5] baseStats, uint32[5] minIVs, uint32[5] maxIVs) 
@@ -822,7 +822,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return (_cl.className, _cl.classRank, _cl.classRace, _cl.classAge, _cl.classType, _cl.maxLevel, _cl.aura, _cl.baseStats, _cl.minIVForStats, _cl.maxIVForStats);
   }
 
-  // @dev Get the class&#39;s name.
+  // @dev Get the class's name.
   function getClassName(uint32 _classId)
     external view
     returns (string)
@@ -830,7 +830,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return heroClasses[_classId].className;
   }
 
-  // @dev Get the class&#39;s rank.
+  // @dev Get the class's rank.
   function getClassRank(uint32 _classId)
     external view
     returns (uint8)
@@ -846,7 +846,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return heroClasses[_classId].currentNumberOfInstancedHeroes;
   }
 
-  // @dev Get the hero&#39;s entire infomation.
+  // @dev Get the hero's entire infomation.
   function getHeroInfo(uint256 _tokenId)
     external view
     returns (uint32 classId, string heroName, uint32 currentLevel, uint32 currentExp, uint32 lastLocationId, uint256 availableAt, uint32[5] currentStats, uint32[5] ivs, uint32 bp)
@@ -856,7 +856,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return (_h.heroClassId, _h.heroName, _h.currentLevel, _h.currentExp, _h.lastLocationId, _h.availableAt, _h.currentStats, _h.ivForStats, _bp);
   }
 
-  // @dev Get the hero&#39;s class id.
+  // @dev Get the hero's class id.
   function getHeroClassId(uint256 _tokenId)
     external view
     returns (uint32)
@@ -864,7 +864,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return tokenIdToHeroInstance[_tokenId].heroClassId;
   }
 
-  // @dev Get the hero&#39;s name.
+  // @dev Get the hero's name.
   function getHeroName(uint256 _tokenId)
     external view
     returns (string)
@@ -872,7 +872,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return tokenIdToHeroInstance[_tokenId].heroName;
   }
 
-  // @dev Get the hero&#39;s level.
+  // @dev Get the hero's level.
   function getHeroLevel(uint256 _tokenId)
     external view
     returns (uint32)
@@ -880,7 +880,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return tokenIdToHeroInstance[_tokenId].currentLevel;
   }
   
-  // @dev Get the hero&#39;s location.
+  // @dev Get the hero's location.
   function getHeroLocation(uint256 _tokenId)
     external view
     returns (uint32)
@@ -896,7 +896,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return tokenIdToHeroInstance[_tokenId].availableAt;
   }
 
-  // @dev Get the hero&#39;s BP.
+  // @dev Get the hero's BP.
   function getHeroBP(uint256 _tokenId)
     public view
     returns (uint32)
@@ -905,7 +905,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return (_tmp[0] + _tmp[1] + _tmp[2] + _tmp[3] + _tmp[4]);
   }
 
-  // @dev Get the hero&#39;s required gold for level up.
+  // @dev Get the hero's required gold for level up.
   function getHeroRequiredGoldForLevelUp(uint256 _tokenId)
     public view
     returns (uint256)
@@ -913,7 +913,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return (uint256(2) ** (tokenIdToHeroInstance[_tokenId].currentLevel / 10)) * requiredGoldIncreaseFactor;
   }
 
-  // @dev Get the hero&#39;s required exp for level up.
+  // @dev Get the hero's required exp for level up.
   function getHeroRequiredExpForLevelUp(uint256 _tokenId)
     public view
     returns (uint32)
@@ -929,7 +929,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     return addressToGoldDeposit[_address];
   }
 
-  // @dev Get the token id of the player&#39;s #th token.
+  // @dev Get the token id of the player's #th token.
   function getTokenIdOfAddressAndIndex(address _address, uint256 _index)
     external view
     returns (uint256)
@@ -944,13 +944,13 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
   {
     var _tokens = tokensOf(_address);
     uint32 _totalBP = 0;
-    for (uint256 i = 0; i &lt; _tokens.length; i ++) {
+    for (uint256 i = 0; i < _tokens.length; i ++) {
       _totalBP += getHeroBP(_tokens[i]);
     }
     return _totalBP;
   }
 
-  // @dev Set the hero&#39;s name.
+  // @dev Set the hero's name.
   function setHeroName(uint256 _tokenId, string _name)
     onlyOwnerOf(_tokenId)
     public
@@ -993,11 +993,11 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
 
     // Initial heroes.
     // Name, Rank, Race, Age, Type, Max Level, Aura, Stats.
-    defineType(&quot;Archangel&quot;, 4, 1, 13540, 0, 99, 3, [uint32(74), 75, 57, 99, 95], [uint32(8), 6, 8, 5, 5], [uint32(8), 10, 10, 6, 6]);
-    defineType(&quot;Shadowalker&quot;, 3, 4, 134, 1, 75, 4, [uint32(45), 35, 60, 80, 40], [uint32(3), 2, 10, 4, 5], [uint32(5), 5, 10, 7, 5]);
-    defineType(&quot;Pyromancer&quot;, 2, 0, 14, 2, 50, 1, [uint32(50), 28, 17, 40, 35], [uint32(5), 3, 2, 3, 3], [uint32(8), 4, 3, 4, 5]);
-    defineType(&quot;Magician&quot;, 1, 3, 224, 2, 30, 0, [uint32(35), 15, 25, 25, 30], [uint32(3), 1, 2, 2, 2], [uint32(5), 2, 3, 3, 3]);
-    defineType(&quot;Farmer&quot;, 0, 0, 59, 0, 15, 2, [uint32(10), 22, 8, 15, 25], [uint32(1), 2, 1, 1, 2], [uint32(1), 3, 1, 2, 3]);
+    defineType("Archangel", 4, 1, 13540, 0, 99, 3, [uint32(74), 75, 57, 99, 95], [uint32(8), 6, 8, 5, 5], [uint32(8), 10, 10, 6, 6]);
+    defineType("Shadowalker", 3, 4, 134, 1, 75, 4, [uint32(45), 35, 60, 80, 40], [uint32(3), 2, 10, 4, 5], [uint32(5), 5, 10, 7, 5]);
+    defineType("Pyromancer", 2, 0, 14, 2, 50, 1, [uint32(50), 28, 17, 40, 35], [uint32(5), 3, 2, 3, 3], [uint32(8), 4, 3, 4, 5]);
+    defineType("Magician", 1, 3, 224, 2, 30, 0, [uint32(35), 15, 25, 25, 30], [uint32(3), 1, 2, 2, 2], [uint32(5), 2, 3, 3, 3]);
+    defineType("Farmer", 0, 0, 59, 0, 15, 2, [uint32(10), 22, 8, 15, 25], [uint32(1), 2, 1, 1, 2], [uint32(1), 3, 1, 2, 3]);
   }
 
   // @dev Define a new hero type (class).
@@ -1005,10 +1005,10 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     onlyOwner
     public
   {
-    require(_classRank &lt; 5);
-    require(_classType &lt; 3);
-    require(_aura &lt; 5);
-    require(_minIVForStats[0] &lt;= _maxIVForStats[0] &amp;&amp; _minIVForStats[1] &lt;= _maxIVForStats[1] &amp;&amp; _minIVForStats[2] &lt;= _maxIVForStats[2] &amp;&amp; _minIVForStats[3] &lt;= _maxIVForStats[3] &amp;&amp; _minIVForStats[4] &lt;= _maxIVForStats[4]);
+    require(_classRank < 5);
+    require(_classType < 3);
+    require(_aura < 5);
+    require(_minIVForStats[0] <= _maxIVForStats[0] && _minIVForStats[1] <= _maxIVForStats[1] && _minIVForStats[2] <= _maxIVForStats[2] && _minIVForStats[3] <= _maxIVForStats[3] && _minIVForStats[4] <= _maxIVForStats[4]);
 
     HeroClass memory _heroType = HeroClass({
       className: _className,
@@ -1042,9 +1042,9 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     returns (uint256)
   {
     require(_owner != address(0));
-    require(_heroClassId &lt; numberOfHeroClasses);
+    require(_heroClassId < numberOfHeroClasses);
 
-    // The information of the hero&#39;s class.
+    // The information of the hero's class.
     var _heroClassInfo = heroClasses[_heroClassId];
 
     // Mint ERC721 token.
@@ -1053,7 +1053,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     // Build random IVs for this hero instance.
     uint32[5] memory _ivForStats;
     uint32[5] memory _initialStats;
-    for (uint8 i = 0; i &lt; 5; i++) {
+    for (uint8 i = 0; i < 5; i++) {
       _ivForStats[i] = (random(_heroClassInfo.maxIVForStats[i] + 1, _heroClassInfo.minIVForStats[i]));
       _initialStats[i] = _heroClassInfo.baseStats[i] + _ivForStats[i];
     }
@@ -1061,7 +1061,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     // Temporary hero instance.
     HeroInstance memory _heroInstance = HeroInstance({
       heroClassId: _heroClassId,
-      heroName: &quot;&quot;,
+      heroName: "",
       currentLevel: 1,
       currentExp: 0,
       lastLocationId: 0,
@@ -1096,7 +1096,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     var _heroInstance = tokenIdToHeroInstance[_tokenId];
 
     // The character should be avaiable. 
-    require(_heroInstance.availableAt &lt;= now);
+    require(_heroInstance.availableAt <= now);
 
     _heroInstance.lastLocationId = _locationId;
     _heroInstance.availableAt = now + _duration;
@@ -1119,7 +1119,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
 
     var _newExp = _heroInstance.currentExp + _exp;
 
-    // Sanity check to ensure we don&#39;t overflow.
+    // Sanity check to ensure we don't overflow.
     require(_newExp == uint256(uint128(_newExp)));
 
     _heroInstance.currentExp += _newExp;
@@ -1147,19 +1147,19 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     var _heroInstance = tokenIdToHeroInstance[_tokenId];
 
     // The character should be avaiable. (Should have already returned from the dungeons, arenas, etc.)
-    require(_heroInstance.availableAt &lt;= now);
+    require(_heroInstance.availableAt <= now);
 
-    // The information of the hero&#39;s class.
+    // The information of the hero's class.
     var _heroClassInfo = heroClasses[_heroInstance.heroClassId];
 
-    // Hero shouldn&#39;t level up exceed its max level.
-    require(_heroInstance.currentLevel &lt; _heroClassInfo.maxLevel);
+    // Hero shouldn't level up exceed its max level.
+    require(_heroInstance.currentLevel < _heroClassInfo.maxLevel);
 
     // Required Exp.
     var requiredExp = getHeroRequiredExpForLevelUp(_tokenId);
 
     // Need to have enough exp.
-    require(_heroInstance.currentExp &gt;= requiredExp);
+    require(_heroInstance.currentExp >= requiredExp);
 
     // Required Gold.
     var requiredGold = getHeroRequiredGoldForLevelUp(_tokenId);
@@ -1168,13 +1168,13 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     var _ownerOfToken = ownerOf(_tokenId);
 
     // Need to have enough Gold balance.
-    require(addressToGoldDeposit[_ownerOfToken] &gt;= requiredGold);
+    require(addressToGoldDeposit[_ownerOfToken] >= requiredGold);
 
     // Increase Level.
     _heroInstance.currentLevel += 1;
 
     // Increase Stats.
-    for (uint8 i = 0; i &lt; 5; i++) {
+    for (uint8 i = 0; i < 5; i++) {
       _heroInstance.currentStats[i] = _heroClassInfo.baseStats[i] + (_heroInstance.currentLevel - 1) * _heroInstance.ivForStats[i];
     }
     
@@ -1193,9 +1193,9 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     whenNotPaused
     public
   {
-    require(goldContract.allowance(msg.sender, this) &gt;= _amount);
+    require(goldContract.allowance(msg.sender, this) >= _amount);
 
-    // Send msg.sender&#39;s Gold to this contract.
+    // Send msg.sender's Gold to this contract.
     if (goldContract.transferFrom(msg.sender, this, _amount)) {
        // Increment deposit.
       addressToGoldDeposit[msg.sender] += _amount;
@@ -1206,7 +1206,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
   function withdrawDeposit(uint256 _amount)
     public
   {
-    require(addressToGoldDeposit[msg.sender] &gt;= _amount);
+    require(addressToGoldDeposit[msg.sender] >= _amount);
 
     // Send deposit of Golds to msg.sender. (Rather minting...)
     if (goldContract.transfer(msg.sender, _amount)) {
@@ -1220,7 +1220,7 @@ contract CryptoSagaHero is ERC721Token, Claimable, Pausable, AccessMint, AccessD
     private
     returns (uint32)
   {
-    require(_upper &gt; _lower);
+    require(_upper > _lower);
 
     seed = uint32(keccak256(keccak256(block.blockhash(block.number), seed), now));
     return seed % (_upper - _lower) + _lower;
@@ -1232,14 +1232,14 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract BitGuildToken {
   // Public variables of the token
-  string public name = &quot;BitGuild PLAT&quot;;
-  string public symbol = &quot;PLAT&quot;;
+  string public name = "BitGuild PLAT";
+  string public symbol = "PLAT";
   uint8 public decimals = 18;
   uint256 public totalSupply = 10000000000 * 10 ** uint256(decimals); // 10 billion tokens;
 
   // This creates an array with all balances
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   // This generates a public event on the blockchain that will notify clients
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -1262,9 +1262,9 @@ contract BitGuildToken {
     // Prevent transfer to 0x0 address. Use burn() instead
     require(_to != 0x0);
     // Check if the sender has enough
-    require(balanceOf[_from] &gt;= _value);
+    require(balanceOf[_from] >= _value);
     // Check for overflows
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
     // Save this for an assertion in the future
     uint previousBalances = balanceOf[_from] + balanceOf[_to];
     // Subtract from the sender
@@ -1298,7 +1298,7 @@ contract BitGuildToken {
    * @param _value the amount to send
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value &lt;= allowance[_from][msg.sender]);  // Check allowance
+    require(_value <= allowance[_from][msg.sender]);  // Check allowance
     allowance[_from][msg.sender] -= _value;
     _transfer(_from, _to, _value);
     return true;
@@ -1342,7 +1342,7 @@ contract BitGuildToken {
    * @param _value the amount of money to burn
    */
   function burn(uint256 _value) public returns (bool success) {
-    require(balanceOf[msg.sender] &gt;= _value);        // Check if the sender has enough
+    require(balanceOf[msg.sender] >= _value);        // Check if the sender has enough
     balanceOf[msg.sender] -= _value;                 // Subtract from the sender
     totalSupply -= _value;                           // Updates totalSupply
     Burn(msg.sender, _value);
@@ -1358,10 +1358,10 @@ contract BitGuildToken {
    * @param _value the amount of money to burn
    */
   function burnFrom(address _from, uint256 _value) public returns (bool success) {
-    require(balanceOf[_from] &gt;= _value);             // Check if the targeted balance is enough
-    require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+    require(balanceOf[_from] >= _value);             // Check if the targeted balance is enough
+    require(_value <= allowance[_from][msg.sender]); // Check allowance
     balanceOf[_from] -= _value;                      // Subtract from the targeted balance
-    allowance[_from][msg.sender] -= _value;          // Subtract from the sender&#39;s allowance
+    allowance[_from][msg.sender] -= _value;          // Subtract from the sender's allowance
     totalSupply -= _value;                           // Update totalSupply
     Burn(_from, _value);
     return true;
@@ -1371,7 +1371,7 @@ contract BitGuildToken {
 
 contract PLATPriceOracle {
 
-  mapping (address =&gt; bool) admins;
+  mapping (address => bool) admins;
 
   // How much PLAT you get for 1 ETH, multiplied by 10^18
   uint256 public ETHPrice = 60000000000000000000000;
@@ -1383,7 +1383,7 @@ contract PLATPriceOracle {
   }
 
   function updatePrice(uint256 _newPrice) public {
-    require(_newPrice &gt; 0);
+    require(_newPrice > 0);
     require(admins[msg.sender] == true);
     ETHPrice = _newPrice;
     PriceChanged(_newPrice);
@@ -1398,7 +1398,7 @@ contract PLATPriceOracle {
 
 /**
  * @title CryptoSagaSwapPLAT
- * @dev This directly summons hero. Accepts Bitguild&#39;s PLAT tokens.
+ * @dev This directly summons hero. Accepts Bitguild's PLAT tokens.
  */
 contract CryptoSagaSwapPLAT is Pausable{
 
@@ -1419,8 +1419,8 @@ contract CryptoSagaSwapPLAT is Pausable{
 
   // Blacklisted heroes.
   // This is needed in order to protect players, in case there exists any hero with critical issues.
-  // We promise we will use this function carefully, and this won&#39;t be used for balancing the OP heroes.
-  mapping(uint32 =&gt; bool) public blackList;
+  // We promise we will use this function carefully, and this won't be used for balancing the OP heroes.
+  mapping(uint32 => bool) public blackList;
 
   // Random seed.
   uint32 private seed = 0;
@@ -1468,17 +1468,17 @@ contract CryptoSagaSwapPLAT is Pausable{
     require(_extraData.length != 0);
 
     uint256 _amount;
-    for(uint256 i = 0; i &lt; _extraData.length; i++) {
+    for(uint256 i = 0; i < _extraData.length; i++) {
       _amount = _amount + uint(_extraData[i]) * (2 ** (8 * (_extraData.length - (i + 1))));
     }
 
     // Up to 5 purchases at once.
-    require(_amount &gt;= 1 &amp;&amp; _amount &lt;= 5);
+    require(_amount >= 1 && _amount <= 5);
 
     uint256 _priceOfBundle = _amount * ethPrice * platPriceOracleContract.ETHPrice() / (10 ** 18);
 
     // Sent PLAT tokens should be more than the price of bundle.
-    require(_value &gt;= _priceOfBundle);
+    require(_value >= _priceOfBundle);
 
     payWithPLAT(_amount);
 
@@ -1488,18 +1488,18 @@ contract CryptoSagaSwapPLAT is Pausable{
   function payWithPLAT(uint256 _amount)
     private
   {
-    for (uint i = 0; i &lt; _amount; i ++) {
+    for (uint i = 0; i < _amount; i ++) {
       // Get value 0 ~ 9999.
       var _randomValue = random(10000, 0);
       
       // We hard-code this in order to give credential to the players. 
       uint8 _heroRankToMint = 0; 
 
-      if (_randomValue &lt; 5000) {
+      if (_randomValue < 5000) {
         _heroRankToMint = 1;
-      } else if (_randomValue &lt; 9550) {
+      } else if (_randomValue < 9550) {
         _heroRankToMint = 2;
-      }  else if (_randomValue &lt; 9950) {
+      }  else if (_randomValue < 9950) {
         _heroRankToMint = 3;
       } else {
         _heroRankToMint = 4;
@@ -1521,8 +1521,8 @@ contract CryptoSagaSwapPLAT is Pausable{
     uint32 _numberOfClasses = heroContract.numberOfHeroClasses();
     uint32[] memory _candidates = new uint32[](_numberOfClasses);
     uint32 _count = 0;
-    for (uint32 i = 0; i &lt; _numberOfClasses; i ++) {
-      if (heroContract.getClassRank(i) == _heroRankToMint &amp;&amp; blackList[i] != true) {
+    for (uint32 i = 0; i < _numberOfClasses; i ++) {
+      if (heroContract.getClassRank(i) == _heroRankToMint && blackList[i] != true) {
         _candidates[_count] = i;
         _count++;
       }
@@ -1538,7 +1538,7 @@ contract CryptoSagaSwapPLAT is Pausable{
     private
     returns (uint32)
   {
-    require(_upper &gt; _lower);
+    require(_upper > _lower);
     
     seed = uint32(keccak256(keccak256(block.blockhash(block.number - 1), seed), now));
     return seed % (_upper - _lower) + _lower;

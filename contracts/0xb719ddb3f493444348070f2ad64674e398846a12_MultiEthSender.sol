@@ -13,12 +13,12 @@ library SafeMath {
     return a / b;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -31,9 +31,9 @@ contract MultiEthSender {
     function multiSendEth(uint256 amount, address[] list) public returns (bool){
         uint256 _userCount = list.length;
 
-        require( address(this).balance &gt; amount.mul(_userCount));
+        require( address(this).balance > amount.mul(_userCount));
 
-        for(uint256 _i = 0; _i &lt; _userCount; _i++){
+        for(uint256 _i = 0; _i < _userCount; _i++){
             list[_i].transfer(amount);
             emit Send(amount, list[_i]);
         }

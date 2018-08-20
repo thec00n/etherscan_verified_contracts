@@ -75,7 +75,7 @@ contract Deed {
     
     function setBalance(uint newValue) onlyRegistrar onlyActive payable {
         // Check if it has enough balance to set the value
-        if (value &lt; newValue) throw;
+        if (value < newValue) throw;
         value = newValue;
         // Send the difference to the owner
         if (!owner.send(this.balance - newValue)) throw;
@@ -113,8 +113,8 @@ contract Registrar {
     AbstractENS public ens;
     bytes32 public rootNode;
 
-    mapping (bytes32 =&gt; entry) _entries;
-    mapping (address =&gt; mapping(bytes32 =&gt; Deed)) public sealedBids;
+    mapping (bytes32 => entry) _entries;
+    mapping (address => mapping(bytes32 => Deed)) public sealedBids;
     
     enum Mode { Open, Auction, Owned, Forbidden, Reveal }
     uint32 constant auctionLength = 5 days;
@@ -138,16 +138,16 @@ contract Registrar {
     }
 
     // State transitions for names:
-    //   Open -&gt; Auction (startAuction)
-    //   Auction -&gt; Reveal
-    //   Reveal -&gt; Owned
-    //   Reveal -&gt; Open (if nobody bid)
-    //   Owned -&gt; Forbidden (invalidateName)
-    //   Owned -&gt; Open (releaseDeed)
+    //   Open -> Auction (startAuction)
+    //   Auction -> Reveal
+    //   Reveal -> Owned
+    //   Reveal -> Open (if nobody bid)
+    //   Owned -> Forbidden (invalidateName)
+    //   Owned -> Open (releaseDeed)
     function state(bytes32 _hash) constant returns (Mode) {
         var entry = _entries[_hash];
-        if(now &lt; entry.registrationDate) {
-            if(now &lt; entry.registrationDate - revealPeriod) {
+        if(now < entry.registrationDate) {
+            if(now < entry.registrationDate - revealPeriod) {
                 return Mode.Auction;
             } else {
                 return Mode.Reveal;
@@ -174,7 +174,7 @@ contract Registrar {
     }
     
     modifier registryOpen() {
-        if(now &lt; registryStarted  || now &gt; registryStarted + 4 years || ens.owner(rootNode) != address(this)) throw;
+        if(now < registryStarted  || now > registryStarted + 4 years || ens.owner(rootNode) != address(this)) throw;
         _;
     }
     
@@ -191,7 +191,7 @@ contract Registrar {
     function Registrar(address _ens, bytes32 _rootNode, uint _startDate) {
         ens = AbstractENS(_ens);
         rootNode = _rootNode;
-        registryStarted = _startDate &gt; 0 ? _startDate : now;
+        registryStarted = _startDate > 0 ? _startDate : now;
     }
 
     /**
@@ -201,7 +201,7 @@ contract Registrar {
      * @return The maximum of two unsigned integers
      */
     function max(uint a, uint b) internal constant returns (uint max) {
-        if (a &gt; b)
+        if (a > b)
             return a;
         else
             return b;
@@ -214,7 +214,7 @@ contract Registrar {
      * @return The minimum of two unsigned integers
      */
     function min(uint a, uint b) internal constant returns (uint min) {
-        if (a &lt; b)
+        if (a < b)
             return a;
         else
             return b;
@@ -233,18 +233,18 @@ contract Registrar {
             ptr := add(s, 1)
             end := add(mload(s), ptr)
         }
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -279,7 +279,7 @@ contract Registrar {
      * @param _hashes An array of hashes, at least one of which you presumably want to bid on
      */
     function startAuctions(bytes32[] _hashes)  {
-        for (uint i = 0; i &lt; _hashes.length; i ++ ) {
+        for (uint i = 0; i < _hashes.length; i ++ ) {
             startAuction(_hashes[i]);
         }
     }
@@ -310,8 +310,8 @@ contract Registrar {
      * @param sealedBid A sealedBid, created by the shaBid function
      */
     function newBid(bytes32 sealedBid) payable {
-        if (address(sealedBids[msg.sender][sealedBid]) &gt; 0 ) throw;
-        if (msg.value &lt; minPrice) throw;
+        if (address(sealedBids[msg.sender][sealedBid]) > 0 ) throw;
+        if (msg.value < minPrice) throw;
         // creates a new hash contract with the owner
         Deed newBid = new Deed(msg.value);
         sealedBids[msg.sender][sealedBid] = newBid;
@@ -339,17 +339,17 @@ contract Registrar {
 
         var auctionState = state(_hash);
         if(auctionState == Mode.Owned) {
-            // Too late! Bidder loses their bid. Get&#39;s 0.5% back.
+            // Too late! Bidder loses their bid. Get's 0.5% back.
             bid.closeDeed(5);
             BidRevealed(_hash, _owner, actualValue, 1);
         } else if(auctionState != Mode.Reveal) {
             // Invalid phase
             throw;
-        } else if (_value &lt; minPrice || bid.creationDate() &gt; h.registrationDate - revealPeriod) {
+        } else if (_value < minPrice || bid.creationDate() > h.registrationDate - revealPeriod) {
             // Bid too low or too late, refund 99.5%
             bid.closeDeed(995);
             BidRevealed(_hash, _owner, actualValue, 0);
-        } else if (_value &gt; h.highestBid) {
+        } else if (_value > h.highestBid) {
             // new winner
             // cancel the other bid, refund 99.5%
             if(address(h.deed) != 0) {
@@ -363,13 +363,13 @@ contract Registrar {
             h.highestBid = actualValue;
             h.deed = bid;
             BidRevealed(_hash, _owner, actualValue, 2);
-        } else if (_value &gt; h.value) {
+        } else if (_value > h.value) {
             // not winner, but affects second place
             h.value = actualValue;
             bid.closeDeed(995);
             BidRevealed(_hash, _owner, actualValue, 3);
         } else {
-            // bid doesn&#39;t affect auction
+            // bid doesn't affect auction
             bid.closeDeed(995);
             BidRevealed(_hash, _owner, actualValue, 4);
         }
@@ -381,10 +381,10 @@ contract Registrar {
      */ 
     function cancelBid(address bidder, bytes32 seal) {
         Deed bid = sealedBids[bidder][seal];
-        // If the bid hasn&#39;t been revealed after any possible auction date, then close it
+        // If the bid hasn't been revealed after any possible auction date, then close it
         if (address(bid) == 0 
-            || now &lt; bid.creationDate() + initialAuctionPeriod 
-            || bid.owner() &gt; 0) throw;
+            || now < bid.creationDate() + initialAuctionPeriod 
+            || bid.owner() > 0) throw;
 
         // Send the canceller 0.5% of the bid, and burn the rest.
         bid.setOwner(msg.sender);
@@ -428,8 +428,8 @@ contract Registrar {
     function releaseDeed(bytes32 _hash) onlyOwner(_hash) {
         entry h = _entries[_hash];
         Deed deedContract = h.deed;
-        if (now &lt; h.registrationDate + 1 years 
-            || now &gt; registryStarted + 8 years) throw;
+        if (now < h.registrationDate + 1 years 
+            || now > registryStarted + 8 years) throw;
 
         HashReleased(_hash, h.value);
         
@@ -450,7 +450,7 @@ contract Registrar {
      * 
      */
     function invalidateName(string unhashedName) inState(sha3(unhashedName), Mode.Owned) {
-        if (strlen(unhashedName) &gt; 6 ) throw;
+        if (strlen(unhashedName) > 6 ) throw;
         bytes32 hash = sha3(unhashedName);
         
         entry h = _entries[hash];
@@ -486,7 +486,7 @@ contract Registrar {
      */
     function returnDeed(Deed deed) {
         // Only return if we own the deed, and it was created before our start date.
-        if(deed.registrar() != address(this) || deed.creationDate() &gt; registryStarted)
+        if(deed.registrar() != address(this) || deed.creationDate() > registryStarted)
             throw;
         deed.closeDeed(1000);
     }

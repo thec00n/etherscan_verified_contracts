@@ -41,9 +41,9 @@ contract GoCryptobotRandom is GoCryptobotAccessControl {
     }
 
     function _initRandom() internal {
-        require(commitmentNumber &lt; block.number);
+        require(commitmentNumber < block.number);
 
-        if (commitmentNumber &lt; block.number - 255) {
+        if (commitmentNumber < block.number - 255) {
             randomBytes = block.blockhash(block.number - 1);
         } else {
             randomBytes = block.blockhash(commitmentNumber);
@@ -51,11 +51,11 @@ contract GoCryptobotRandom is GoCryptobotAccessControl {
     }
 
     function _shuffle(uint8[] deck) internal {
-        require(deck.length &lt; 256);
+        require(deck.length < 256);
 
         uint8 deckLength = uint8(deck.length);
         uint8 random;
-        for (uint8 i = 0; i &lt; deckLength; i++) {
+        for (uint8 i = 0; i < deckLength; i++) {
             if (i % 32 == 0) {
                 randomBytes = keccak256(randomBytes);
             }
@@ -76,7 +76,7 @@ contract GoCryptobotRandom is GoCryptobotAccessControl {
 }
 
 contract GoCryptobotScore is GoCryptobotRandom {
-    // A part&#39;s skill consists of color and level. (Total 2 bytes)
+    // A part's skill consists of color and level. (Total 2 bytes)
     //   1   2
     // Skill
     // +---+---+
@@ -97,8 +97,8 @@ contract GoCryptobotScore is GoCryptobotRandom {
     //
     // L = Level, 1 ~ 50.
     //
-    // A part doesn&#39;t contains color because individual color doesn&#39;t affect to
-    // the score, but it is used to calculate player&#39;s theme color.
+    // A part doesn't contains color because individual color doesn't affect to
+    // the score, but it is used to calculate player's theme color.
     //
     uint256 constant PART_BASE_SIZE = 1;
     uint256 constant PART_SIZE = PART_BASE_SIZE + 3 * PART_SKILL_SIZE;
@@ -118,7 +118,7 @@ contract GoCryptobotScore is GoCryptobotRandom {
     // |         BOOSTER PART      |
     // +---+---+---+---+---+---+---+
     //
-    // C = Whether player&#39;s theme effect is enabled or not, 1 or 0.
+    // C = Whether player's theme effect is enabled or not, 1 or 0.
     //
     // The theme effect is set to 1 iff the theme of each part are identical.
     //
@@ -153,7 +153,7 @@ contract GoCryptobotScore is GoCryptobotRandom {
 
         byte eventMajorColor = byte(uint8(_eventMajorColor));
         byte eventMinorColor = byte(uint8(_eventMinorColor));
-        for (uint i = 0; i &lt; 3; i++) {
+        for (uint i = 0; i < 3; i++) {
             byte skillColor = _getPartSkillColor(data, partOffset, i);
             if (skillColor == eventMajorColor) {
                 majorSkillSum += _getPartSkillLevel(data, partOffset, i);
@@ -193,7 +193,7 @@ contract GoCryptobotRounds is GoCryptobotScore {
         _shuffle(colorSelection);
 
         uint[4] memory totalScores;
-        for (uint8 i = 0; i &lt; 4; i++) {
+        for (uint8 i = 0; i < 4; i++) {
             uint8 majorColor = eventColors[i][colorSelection[i]];
             uint8 minorColor = eventColors[i][colorSelection[i]^1];
             uint[4] memory roundScores = _round(playerData, EventType(eventTypes[i]), EventColor(majorColor), EventColor(minorColor));
@@ -207,8 +207,8 @@ contract GoCryptobotRounds is GoCryptobotScore {
         uint maxScore;
         uint maxCount;
         uint8[4] memory candidates;
-        for (i = 0; i &lt; 4; i++) {
-            if (maxScore &lt; totalScores[i]) {
+        for (i = 0; i < 4; i++) {
+            if (maxScore < totalScores[i]) {
                 maxScore = totalScores[i];
                 maxCount = 0;
                 candidates[maxCount++] = i + 1;
@@ -216,7 +216,7 @@ contract GoCryptobotRounds is GoCryptobotScore {
                 candidates[maxCount++] = i + 1;
             }
         }
-        assert(maxCount &gt; 0);
+        assert(maxCount > 0);
         if (maxCount == 1) {
             WinnerTeam(candidates, candidates[0]);
         } else {
@@ -227,7 +227,7 @@ contract GoCryptobotRounds is GoCryptobotScore {
     function _round(bytes memory playerData, EventType eventType, EventColor eventMajorColor, EventColor eventMinorColor) internal returns(uint[4]) {
         uint numOfPlayers = playerData.length / PLAYER_SIZE;
         uint[4] memory scores;
-        for (uint i = 0; i &lt; numOfPlayers; i++) {
+        for (uint i = 0; i < numOfPlayers; i++) {
             scores[i / (numOfPlayers / 4)] += _getPlayerEventScore(playerData, i, eventType, eventMajorColor, eventMinorColor);
         }
         RoundFinished(eventType, eventMajorColor, eventMinorColor, scores[0], scores[1], scores[2], scores[3]);

@@ -30,9 +30,9 @@ contract HodlBox {
     // Only the contract creator can release funds from their HodlBox,
     // and only after the defined number of blocks has passed.
     if (msg.sender != hodler) throw;
-    if (block.number &lt; hodlTillBlock) throw;
+    if (block.number < hodlTillBlock) throw;
     if (withdrawn) throw;
-    if (hodling &lt;= 0) throw;
+    if (hodling <= 0) throw;
     withdrawn = true;
     hodling = 0;
 
@@ -45,14 +45,14 @@ contract HodlBox {
   // constant functions do not mutate state
   function hodlCountdown() constant returns (uint) {
     var hodlCount = hodlTillBlock - block.number;
-    if (block.number &gt;= hodlTillBlock) {
+    if (block.number >= hodlTillBlock) {
       return 0;
     }
     return hodlCount;
   }
 
   function isDeholdable() constant returns (bool) {
-    if (block.number &lt; hodlTillBlock) {
+    if (block.number < hodlTillBlock) {
       return false;
     } else {
       return true;

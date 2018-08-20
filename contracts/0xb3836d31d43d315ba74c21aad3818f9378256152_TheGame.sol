@@ -13,7 +13,7 @@ contract PlayersStorage {
     uint256 timestamp;
     bool exist;
   }
-  mapping (address =&gt; Player) private m_players;
+  mapping (address => Player) private m_players;
   address private m_owner;
     
   modifier onlyOwner() {
@@ -159,20 +159,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -218,9 +218,9 @@ contract TheGame is ERC677Recipient {
   uint256 private constant COMPOUNDING_FREQ = 1 days;
   uint256 private constant DELAY_ON_EXIT = 100 hours;
   uint256 private constant DELAY_ON_NEW_LEVEL = 7 days;
-  string private constant NOT_ACTIVE_STR = &quot;NotActive&quot;;
+  string private constant NOT_ACTIVE_STR = "NotActive";
   uint256 private constant PERCENT_TAX_ON_EXIT = 10;
-  string private constant ACTIVE_STR = &quot;Active&quot;;
+  string private constant ACTIVE_STR = "Active";
   uint256 private constant PERCENT_REFERRAL_BOUNTY = 1;
   uint256 private m_levelStartupTimestamp;
   uint256 private m_ponziPriceInWei;
@@ -253,7 +253,7 @@ contract TheGame is ERC677Recipient {
   
   modifier checkAccess() {
     require(m_state == State.NotActive  // solium-disable-line indentation, operator-whitespace
-      || now.sub(m_creationTimestamp) &lt;= DURATION_TO_ACCESS_FOR_OWNER); 
+      || now.sub(m_creationTimestamp) <= DURATION_TO_ACCESS_FOR_OWNER); 
     _;
   }
   
@@ -263,7 +263,7 @@ contract TheGame is ERC677Recipient {
   }
   
   modifier gameIsAvailable() {
-    require(now &gt;= m_levelStartupTimestamp.add(DELAY_ON_NEW_LEVEL));
+    require(now >= m_levelStartupTimestamp.add(DELAY_ON_NEW_LEVEL));
     _;
   }
 
@@ -307,12 +307,12 @@ contract TheGame is ERC677Recipient {
     input = m_playersStorage.playerInput(msg.sender);
     
     // Check whether the player is DELAY_ON_EXIT hours in the game
-    require(now &gt;= timestamp.add(DELAY_ON_EXIT));
+    require(now >= timestamp.add(DELAY_ON_EXIT));
     
     // calc output
     uint256 outputInPonzi = calcOutput(input, now.sub(timestamp).div(COMPOUNDING_FREQ));
     
-    assert(outputInPonzi &gt; 0);
+    assert(outputInPonzi > 0);
     
     // convert ponzi to eth
     uint256 outputInWei = ponziToWei(outputInPonzi, m_ponziPriceInWei);
@@ -320,7 +320,7 @@ contract TheGame is ERC677Recipient {
     // set zero before sending to prevent Re-Entrancy 
     m_playersStorage.deletePlayer(msg.sender);
     
-    if (m_ponziPriceInWei &gt; 0 &amp;&amp; address(this).balance &gt;= outputInWei) {
+    if (m_ponziPriceInWei > 0 && address(this).balance >= outputInWei) {
       // if we have enough eth on address(this).balance 
       // send it to sender
       
@@ -328,9 +328,9 @@ contract TheGame is ERC677Recipient {
       // untrusted Transfer !!!
       uint256 oldBalance = address(this).balance;
       msg.sender.transfer(outputInWei);
-      assert(address(this).balance.add(outputInWei) &gt;= oldBalance);
+      assert(address(this).balance.add(outputInWei) >= oldBalance);
       
-    } else if (m_ponziToken.balanceOf(address(this)) &gt;= outputInPonzi) {
+    } else if (m_ponziToken.balanceOf(address(this)) >= outputInPonzi) {
       // else if we have enough ponzi on balance
       // send it to sender
       
@@ -400,7 +400,7 @@ contract TheGame is ERC677Recipient {
       return 0;
     }
     uint256 timestamp = m_playersStorage.playerTimestamp(msg.sender);
-    if (now &gt;= timestamp.add(DELAY_ON_EXIT)) {
+    if (now >= timestamp.add(DELAY_ON_EXIT)) {
       delay = 0;
     } else {
       delay = timestamp.add(DELAY_ON_EXIT).sub(now);
@@ -532,7 +532,7 @@ contract TheGame is ERC677Recipient {
     atState(State.Active)
     returns(uint256 delay) 
   {
-    if (now &gt;= m_levelStartupTimestamp.add(DELAY_ON_NEW_LEVEL)) {
+    if (now >= m_levelStartupTimestamp.add(DELAY_ON_NEW_LEVEL)) {
       delay = 0;
     } else {
       delay = m_levelStartupTimestamp.add(DELAY_ON_NEW_LEVEL).sub(now);
@@ -629,11 +629,11 @@ contract TheGame is ERC677Recipient {
     returns(bool)
   {
     uint256 input = inputAmount;
-    // return false if player already in game or if input &lt; 1000,
+    // return false if player already in game or if input < 1000,
     // because calcOutput() use INTEREST_RATE_DENOMINATOR = 1000.
     // and input must div by INTEREST_RATE_DENOMINATOR, if 
-    // input &lt;1000 then dividing always equal 0.
-    if (m_playersStorage.playerExist(addr) || input &lt; 1000) 
+    // input <1000 then dividing always equal 0.
+    if (m_playersStorage.playerExist(addr) || input < 1000) 
       return false;
     
     // check if referralAddr is player
@@ -670,7 +670,7 @@ contract TheGame is ERC677Recipient {
     output = input;
     uint256 counter = numberOfPayout;
     // calc compound interest 
-    while (counter &gt; 0) {
+    while (counter > 0) {
       output = output.add(output.mul(m_interestRateNumerator).div(INTEREST_RATE_DENOMINATOR));
       counter = counter.sub(1);
     }
@@ -713,12 +713,12 @@ contract TheGame is ERC677Recipient {
     //        ...                                |
     // level 14 : 0.1% interest rate = 1 / 1000  |  
     
-    // level &gt;14 : 0.1% interest rate = 1 / 1000 |  third stage
+    // level >14 : 0.1% interest rate = 1 / 1000 |  third stage
 
-    if (newLevel &lt;= 5) {
+    if (newLevel <= 5) {
       // first stage from 5% to 1%. numerator from 50 to 10
       numerator = uint256(6).sub(newLevel).mul(10);
-    } else if ( newLevel &gt;= 6 &amp;&amp; newLevel &lt;= 14) {
+    } else if ( newLevel >= 6 && newLevel <= 14) {
       // second stage from 0.9% to 0.1%. numerator from 9 to 1
       numerator = uint256(15).sub(newLevel);
     } else {

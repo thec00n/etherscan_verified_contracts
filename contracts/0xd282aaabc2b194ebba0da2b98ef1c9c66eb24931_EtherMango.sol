@@ -7,8 +7,8 @@ contract EtherMango {
     uint public feePercent = 100;
     address owner;
     uint public numProducts;
-    mapping(uint =&gt; Product) public products;
-    mapping(address =&gt; mapping(uint =&gt; bool)) public purchases;
+    mapping(uint => Product) public products;
+    mapping(address => mapping(uint => bool)) public purchases;
 
     event ProductAdded(uint productId, address merchant, uint price);
     event ProductPurchased(uint productId, address buyer);

@@ -43,7 +43,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract Ownable {
@@ -102,20 +102,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -142,7 +142,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -197,7 +197,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -208,8 +208,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -223,7 +223,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -272,7 +272,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -292,9 +292,9 @@ contract VZToken is StandardToken, Ownable {
 
     /* metadata */
 
-    string public constant name = &quot;VectorZilla Token&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;VZT&quot;; // solium-disable-line uppercase
-    string public constant version = &quot;1.0&quot;; // solium-disable-line uppercase
+    string public constant name = "VectorZilla Token"; // solium-disable-line uppercase
+    string public constant symbol = "VZT"; // solium-disable-line uppercase
+    string public constant version = "1.0"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
 
     /* all accounts in wei */
@@ -310,7 +310,7 @@ contract VZToken is StandardToken, Ownable {
     address public tokenSaleContract;
 
     /* Following stuff is to manage regulatory hurdles on who can and cannot use VZT token  */
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
 
@@ -335,7 +335,7 @@ contract VZToken is StandardToken, Ownable {
     }
 
     modifier onlyWhenBurnable(uint256 _value) {
-        require(totalSupply - _value &gt;= INITIAL_SUPPLY - BURNABLE_UP_TO);
+        require(totalSupply - _value >= INITIAL_SUPPLY - BURNABLE_UP_TO);
         _;
     }
 
@@ -410,9 +410,9 @@ contract VZToken is StandardToken, Ownable {
         onlyWhenBurnable(_value)
         onlyWhenNotFrozen(msg.sender)
         returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
-      // no need to require value &lt;= totalSupply, since that would imply the
-      // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+      // no need to require value <= totalSupply, since that would imply the
+      // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -471,7 +471,7 @@ contract VZToken is StandardToken, Ownable {
     /* Owner withdrawal of an ether deposited from Token ether balance */
     function withdrawToOwner(uint256 weiAmt) public onlyOwner {
         // do not allow zero transfer
-        require(weiAmt &gt; 0);
+        require(weiAmt > 0);
         owner.transfer(weiAmt);
         // signal the event for communication only it is meaningful
         Withdraw(this, msg.sender, weiAmt);
@@ -513,7 +513,7 @@ contract VZToken is StandardToken, Ownable {
         assembly {
             size: = extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     /**
@@ -529,9 +529,9 @@ contract VZToken is StandardToken, Ownable {
         returns(bool) {
         address _from = owner;
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -544,7 +544,7 @@ contract VZToken is StandardToken, Ownable {
         return true;
     }
     /**
-     * @dev Batch transfer of tokens to addresses from owner&#39;s balance
+     * @dev Batch transfer of tokens to addresses from owner's balance
      * @param addresses address[] The address that will receive the minted tokens.
      * @param _values uint256[] The amount of tokens to be sent.
      * @return True if the operation was successful.
@@ -553,10 +553,10 @@ contract VZToken is StandardToken, Ownable {
         public onlyOwnerAndContract
         returns (bool) {
         require(addresses.length == _values.length);
-        require(addresses.length &lt;= 20); //only batches of 20 allowed
+        require(addresses.length <= 20); //only batches of 20 allowed
         uint i = 0;
         uint len = addresses.length;
-        for (;i &lt; len; i++) {
+        for (;i < len; i++) {
             sendToken(addresses[i], _values[i]);
         }
         return true;
@@ -652,7 +652,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -681,8 +681,8 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;VectorZilla Public Presale&quot;;  // solium-disable-line uppercase
-    string public constant version = &quot;1.0&quot;; // solium-disable-line uppercase
+    string public constant name = "VectorZilla Public Presale";  // solium-disable-line uppercase
+    string public constant version = "1.0"; // solium-disable-line uppercase
 
     VZToken token;
 
@@ -715,9 +715,9 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     }
 
     //purchase log that captures
-    mapping (address =&gt; PurchaseLog) public purchaseLog;
+    mapping (address => PurchaseLog) public purchaseLog;
     //capture refunds
-    mapping (address =&gt; bool) public refundLog;
+    mapping (address => bool) public refundLog;
     //capture buyers in array, this is for quickly looking up from DAPP
     address[] public buyers;
     uint256 public buyerCount = 0;                                              // total number of buyers purchased VZT
@@ -726,7 +726,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     bool public publicSoftCapReached = false;                               // it becomes true when public softcap is reached
 
     // list of addresses that can purchase
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     // event logging for token purchase
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
@@ -799,10 +799,10 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         onlyOwner 
         returns (bool) 
         {
-        require(_addresses.length &lt;= 50);
+        require(_addresses.length <= 50);
         uint idx = 0;
         uint len = _addresses.length;
-        for (; idx &lt; len; idx++) {
+        for (; idx < len; idx++) {
             address _addr = _addresses[idx];
             addToWhitelist(_addr);
         }
@@ -829,7 +829,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         require(_user != address(0));
         require(_user != address(this));
         require(purchaseLog[_user].kycApproved);
-        require(purchaseLog[_user].vztValue &gt; 0);
+        require(purchaseLog[_user].vztValue > 0);
         require(!purchaseLog[_user].tokensDistributed);
         require(!refundLog[_user]);
         purchaseLog[_user].tokensDistributed = true;
@@ -841,7 +841,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     }
 
     /*
-        Refund ethers to buyer if KYC couldn&#39;t/wasn&#39;t verified.
+        Refund ethers to buyer if KYC couldn't/wasn't verified.
     */
     function refundEthIfKYCNotVerified(address _user) public onlyOwner returns (bool) {
         if (!purchaseLog[_user].kycApproved) {
@@ -863,14 +863,14 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         Check to see if this is public presale.
     */
     function isPresale() public view returns (bool) {
-        return !isFinalized &amp;&amp; now &gt;= startDate &amp;&amp; now &lt;= endDate;
+        return !isFinalized && now >= startDate && now <= endDate;
     }
 
     /*
         check if allocated has sold out.
     */
     function hasSoldOut() public view returns (bool) {
-        return PRESALE_TOKEN_HARD_CAP - tokensSold &lt; getMinimumPurchaseVZTLimit();
+        return PRESALE_TOKEN_HARD_CAP - tokensSold < getMinimumPurchaseVZTLimit();
     }
 
     /*
@@ -878,14 +878,14 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         for sale has been purchased.
     */
     function hasEnded() public view returns (bool) {
-        return now &gt; endDate || hasSoldOut();
+        return now > endDate || hasSoldOut();
     }
 
     /*
         Determine if the minimum goal in wei has been reached.
     */
     function isMinimumGoalReached() public view returns (bool) {
-        return totalCollected &gt;= MIN_FUNDING_GOAL;
+        return totalCollected >= MIN_FUNDING_GOAL;
     }
 
     /*
@@ -896,7 +896,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     }
 
     function setMinimumPurchaseEtherLimit(uint256 newMinimumPurchaseLimit) external onlyOwner {
-        require(newMinimumPurchaseLimit &gt; 0);
+        require(newMinimumPurchaseLimit > 0);
         minimumPurchaseLimit = newMinimumPurchaseLimit;
     }
     /*
@@ -918,7 +918,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     function getTier() public view returns (uint256) {
         // Assume presale top tier discount
         uint256 tier = 1;
-        if (now &gt;= startDate &amp;&amp; now &lt; endDate &amp;&amp; getSoftCapReached()) {
+        if (now >= startDate && now < endDate && getSoftCapReached()) {
             // tier 2 discount
             tier = 2;
         }
@@ -932,9 +932,9 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         // 0 - presale not started
         // 1 - presale started
         // 2 - presale ended
-        if (now &lt; startDate)
+        if (now < startDate)
             return ([0, startDate, endDate]);
-        else if (now &lt;= endDate &amp;&amp; !hasEnded())
+        else if (now <= endDate && !hasEnded())
             return ([1, startDate, endDate]);
         else
             return ([2, startDate, endDate]);
@@ -980,7 +980,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         Just in case we need to tweak pre-sale dates
     */
     function setDates(uint256 newStartDate, uint256 newEndDate) public onlyOwner {
-        require(newEndDate &gt;= newStartDate);
+        require(newEndDate >= newStartDate);
         startDate = newStartDate;
         endDate = newEndDate;
     }
@@ -992,13 +992,13 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     //  @param buyer The address that will hold the newly created tokens
     // @return True if payment is processed successfully
     function doPayment(address buyer) internal returns(bool success) {
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);
+        require(tx.gasprice <= MAX_GAS_PRICE);
         // Antispam
         // do not allow contracts to game the system
         require(buyer != address(0));
         require(!isContract(buyer));
         // limit the amount of contributions to once per 100 blocks
-        //require(getBlockNumber().sub(lastCallBlock[msg.sender]) &gt;= maxCallFrequency);
+        //require(getBlockNumber().sub(lastCallBlock[msg.sender]) >= maxCallFrequency);
         //lastCallBlock[msg.sender] = getBlockNumber();
 
         if (msg.sender != owner) {
@@ -1006,9 +1006,9 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
             require(isPresale());
             // stop if no more token is allocated for sale
             require(!hasSoldOut());
-            require(msg.value &gt;= minimumPurchaseLimit);
+            require(msg.value >= minimumPurchaseLimit);
         }
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         purchasePresale(buyer, msg.value);
         return true;
     }
@@ -1024,14 +1024,14 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     /// @dev Internal function to process sale
     /// @param buyer The buyer address
     /// @param value  The value of ether paid
     function purchasePresale(address buyer, uint256 value) internal {
-         require(value &gt;= minimumPurchaseLimit);
+         require(value >= minimumPurchaseLimit);
          require(buyer != address(0));
         uint256 tokens = 0;
         // still under soft cap
@@ -1039,7 +1039,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
             // 1 ETH for 1,250 VZT
             tokens = value * PRESALE_RATE;
             // get less if over softcap
-            if (tokensSold + tokens &gt; PRESALE_TOKEN_SOFT_CAP) {
+            if (tokensSold + tokens > PRESALE_TOKEN_SOFT_CAP) {
                 uint256 availablePresaleTokens = PRESALE_TOKEN_SOFT_CAP - tokensSold;
                 uint256 softCapTokens = (value - (availablePresaleTokens / PRESALE_RATE)) * SOFTCAP_RATE;
                 tokens = availablePresaleTokens + softCapTokens;
@@ -1066,16 +1066,16 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
     */
     function processSale(address buyer, uint256 value, uint256 vzt, uint256 vztRate) internal {
         require(buyer != address(0));
-        require(vzt &gt; 0);
-        require(vztRate &gt; 0);
-        require(value &gt; 0);
+        require(vzt > 0);
+        require(vztRate > 0);
+        require(value > 0);
 
         uint256 vztOver = 0;
         uint256 excessEthInWei = 0;
         uint256 paidValue = value;
         uint256 purchasedVzt = vzt;
 
-        if (tokensSold + purchasedVzt &gt; PRESALE_TOKEN_HARD_CAP) {// if maximum is exceeded
+        if (tokensSold + purchasedVzt > PRESALE_TOKEN_HARD_CAP) {// if maximum is exceeded
             // find overage
             vztOver = tokensSold + purchasedVzt - PRESALE_TOKEN_HARD_CAP;
             // overage ETH to refund
@@ -1123,7 +1123,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         // signal the event for communication
         TokenPurchase(buyer, beneficiary, paidValue, purchasedVzt);
         // transfer must be done at the end after all states are updated to prevent reentrancy attack.
-        if (excessEthInWei &gt; 0 &amp;&amp; !purchaseLog[buyer].paidFiat) {
+        if (excessEthInWei > 0 && !purchaseLog[buyer].paidFiat) {
             // refund overage ETH
             buyer.transfer(excessEthInWei);
             // signal the event for communication
@@ -1163,15 +1163,15 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         Internal function to manage refunds 
     */
     function doRefund(address buyer) internal returns (bool) {
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);
+        require(tx.gasprice <= MAX_GAS_PRICE);
         require(buyer != address(0));
         require(!purchaseLog[buyer].paidFiat);
         if (msg.sender != owner) {
             // cannot refund unless authorized
-            require(isFinalized &amp;&amp; !isMinimumGoalReached());
+            require(isFinalized && !isMinimumGoalReached());
         }
-        require(purchaseLog[buyer].ethValue &gt; 0);
-        require(purchaseLog[buyer].vztValue &gt; 0);
+        require(purchaseLog[buyer].ethValue > 0);
+        require(purchaseLog[buyer].vztValue > 0);
         require(!refundLog[buyer]);
         require(!purchaseLog[buyer].tokensDistributed);
 
@@ -1185,7 +1185,7 @@ contract VZTPresale is Ownable, Pausable, HasNoTokens {
         purchaseLog[buyer].vztValue = 0;
         refundLog[buyer] = true;
         //delete from purchase log.
-        //but we won&#39;t remove buyer from buyers array
+        //but we won't remove buyer from buyers array
         delete purchaseLog[buyer];
         //decrement global counters
         tokensSold = tokensSold.sub(vztValue);

@@ -7,7 +7,7 @@ contract SpeculateCoin {
     address public owner;
     bool public start;
     uint256 public transactions;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     event Transfer(address indexed from, address indexed to, uint256 value);
     
     function Start() {
@@ -17,8 +17,8 @@ contract SpeculateCoin {
     
     function SpeculateCoin() {
         balanceOf[this] = 2100000000000000;
-        name = &quot;SpeculateCoin&quot;;     
-        symbol = &quot;SPC&quot;;
+        name = "SpeculateCoin";     
+        symbol = "SPC";
         owner = msg.sender;
         decimals = 8;
         transactions = 0;
@@ -26,8 +26,8 @@ contract SpeculateCoin {
     }
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) return;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return;
+        if (balanceOf[msg.sender] < _value) return;
+        if (balanceOf[_to] + _value < balanceOf[_to]) return;
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -37,7 +37,7 @@ contract SpeculateCoin {
         if(msg.value == 0) { return; }
         uint256 price = 100 + (transactions * 100);
         uint256 amount = msg.value / price;
-        if (start == false || amount &lt; 100000000 || amount &gt; 1000000000000 || balanceOf[this] &lt; amount) {
+        if (start == false || amount < 100000000 || amount > 1000000000000 || balanceOf[this] < amount) {
             msg.sender.transfer(msg.value);
             return; 
         }

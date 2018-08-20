@@ -4,7 +4,7 @@ pragma solidity ^0.4.2;
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -22,18 +22,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -99,20 +99,20 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -125,14 +125,14 @@ contract SafeMath {
 
 
 /// @title Token contract - Implements Standard Token Interface but adds Pyramid Scheme Support :)
-/// @author Rishab Hegde - &lt;<span class="__cf_email__" data-cfemail="a2c1cdccd6c3c1d6e2d0cbd1cac3c0cac7c5c6c78cc1cdcf">[email&#160;protected]</span>&gt;
+/// @author Rishab Hegde - <<span class="__cf_email__" data-cfemail="a2c1cdccd6c3c1d6e2d0cbd1cac3c0cac7c5c6c78cc1cdcf">[email protected]</span>>
 contract PonziCoin is StandardToken, SafeMath {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;PonziCoin&quot;;
-    string constant public symbol = &quot;SEC&quot;;
+    string constant public name = "PonziCoin";
+    string constant public symbol = "SEC";
     uint8 constant public decimals = 3;
 
     uint public buyPrice = 10 szabo;
@@ -153,7 +153,7 @@ contract PonziCoin is StandardToken, SafeMath {
       returns (bool)
     {
       uint tokenCount = msg.value / buyPrice;
-      if (tokenCount &gt; tierBudget) {
+      if (tokenCount > tierBudget) {
         tokenCount = tierBudget;
       }
       
@@ -164,12 +164,12 @@ contract PonziCoin is StandardToken, SafeMath {
       totalSupply += tokenCount;
       tierBudget -= tokenCount;
 
-      if (tierBudget &lt;= 0) {
+      if (tierBudget <= 0) {
         tierBudget = 100000;
         buyPrice *= 2;
         sellPrice *= 2;
       }
-      if (msg.value &gt; investment) {
+      if (msg.value > investment) {
         msg.sender.transfer(msg.value - investment);
       }
       return true;
@@ -179,7 +179,7 @@ contract PonziCoin is StandardToken, SafeMath {
       public
       returns (bool)
     {
-      if (balances[msg.sender] &gt;= tokenCount) {
+      if (balances[msg.sender] >= tokenCount) {
         uint withdrawal = tokenCount * sellPrice;
         balances[msg.sender] -= tokenCount;
         totalSupply -= tokenCount;
@@ -193,7 +193,7 @@ contract PonziCoin is StandardToken, SafeMath {
     /// @dev Contract constructor function sets initial token balances.
     function PonziCoin()
     {   
-        // It&#39;s not a good scam unless it&#39;s pre-mined
+        // It's not a good scam unless it's pre-mined
         balances[founder] = 200000;
         totalSupply += 200000;
     }

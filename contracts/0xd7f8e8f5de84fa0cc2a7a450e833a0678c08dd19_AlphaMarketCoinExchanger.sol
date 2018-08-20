@@ -10,7 +10,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -28,7 +28,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -90,12 +90,12 @@ contract Multiowned {
 
     // METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them.
     function Multiowned(address[] _owners, uint _required) public {
         m_numOwners = _owners.length;
         m_chiefOwnerIndexBit = 2**1;
-        for (uint i = 0; i &lt; m_numOwners; i++) {
+        for (uint i = 0; i < m_numOwners; i++) {
             m_owners[1 + i] = _owners[i];
             m_ownerIndex[uint(_owners[i])] = 1 + i;
         }
@@ -105,13 +105,13 @@ contract Multiowned {
     // Revokes a prior confirmation of the given operation
     function revoke(bytes32 _operation) external {
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) {
             return;
         }
         uint ownerIndexBit = 2**ownerIndex;
         var pending = m_pending[_operation];
-        if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+        if (pending.ownersDone & ownerIndexBit > 0) {
             pending.yetNeeded++;
             pending.ownersDone -= ownerIndexBit;
             Revoke(msg.sender, _operation);
@@ -137,11 +137,11 @@ contract Multiowned {
             return;
         }
 
-        if (m_numOwners &gt;= c_maxOwners) {
+        if (m_numOwners >= c_maxOwners) {
             clearPending();
             reorganizeOwners();
         }
-        require(m_numOwners &lt; c_maxOwners);
+        require(m_numOwners < c_maxOwners);
         m_numOwners++;
         m_owners[m_numOwners] = _owner;
         m_ownerIndex[uint(_owner)] = m_numOwners;
@@ -150,7 +150,7 @@ contract Multiowned {
     
     function removeOwner(address _owner) onlymanyowners(sha3(msg.data)) external {
         uint ownerIndex = m_ownerIndex[uint(_owner)];
-        if (ownerIndex == 0 || m_required &gt; m_numOwners - 1) {
+        if (ownerIndex == 0 || m_required > m_numOwners - 1) {
             return;
         }
 
@@ -162,7 +162,7 @@ contract Multiowned {
     }
     
     function changeRequirement(uint _newRequired) onlymanyowners(sha3(msg.data)) external {
-        if (_newRequired &gt; m_numOwners) {
+        if (_newRequired > m_numOwners) {
             return;
         }
         m_required = _newRequired;
@@ -171,21 +171,21 @@ contract Multiowned {
     }
     
     function isOwner(address _addr) internal view returns (bool) {
-        return m_ownerIndex[uint(_addr)] &gt; 0;
+        return m_ownerIndex[uint(_addr)] > 0;
     }
     
     function hasConfirmed(bytes32 _operation, address _owner) public view returns (bool) {
         var pending = m_pending[_operation];
         uint ownerIndex = m_ownerIndex[uint(_owner)];
 
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) {
             return false;
         }
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        if (pending.ownersDone & ownerIndexBit == 0) {
             return false;
         } else {
             return true;
@@ -197,11 +197,11 @@ contract Multiowned {
     function confirmAndCheck(bytes32 _operation) internal returns (bool) {
         // determine what index the present sender is:
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         require(ownerIndex != 0);
 
         var pending = m_pending[_operation];
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             // reset count of confirmations needed.
             pending.yetNeeded = c_maxOwners + m_required;
@@ -212,11 +212,11 @@ contract Multiowned {
         }
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             Confirmation(msg.sender, _operation);
             // ok - check if count is enough to go ahead and chief owner confirmed operation.
-            if ((pending.yetNeeded &lt;= c_maxOwners + 1) &amp;&amp; ((pending.ownersDone &amp; m_chiefOwnerIndexBit != 0) || (ownerIndexBit == m_chiefOwnerIndexBit))) {
+            if ((pending.yetNeeded <= c_maxOwners + 1) && ((pending.ownersDone & m_chiefOwnerIndexBit != 0) || (ownerIndexBit == m_chiefOwnerIndexBit))) {
                 // enough confirmations: reset and run interior.
                 delete m_pendingIndex[m_pending[_operation].index];
                 delete m_pending[_operation];
@@ -231,14 +231,14 @@ contract Multiowned {
 
     function reorganizeOwners() private returns (bool) {
         uint free = 1;
-        while (free &lt; m_numOwners) {
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) {
+        while (free < m_numOwners) {
+            while (free < m_numOwners && m_owners[free] != 0) {
                 free++;
             }
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) {
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) {
                 m_numOwners--;
             }
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0) {
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0) {
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[uint(m_owners[free])] = free;
                 m_owners[m_numOwners] = 0;
@@ -248,7 +248,7 @@ contract Multiowned {
     
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i) {
+        for (uint i = 0; i < length; ++i) {
             if (m_pendingIndex[i] != 0) {
                 delete m_pending[m_pendingIndex[i]];
             }
@@ -268,9 +268,9 @@ contract Multiowned {
     uint public m_chiefOwnerIndexBit;
     uint constant c_maxOwners = 7;
     // index on the list of owners to allow reverse lookup
-    mapping(uint =&gt; uint) public m_ownerIndex;
+    mapping(uint => uint) public m_ownerIndex;
     // the ongoing operations.
-    mapping(bytes32 =&gt; PendingState) public m_pending;
+    mapping(bytes32 => PendingState) public m_pending;
     bytes32[] public m_pendingIndex;
 }
 
@@ -302,7 +302,7 @@ contract AlphaMarketCoinExchanger is Multiowned {
     }
 
     function transferEther(address to, uint value) external onlymanyowners(sha3(msg.data)) {
-        if(value == 0 || this.balance &lt; value || to == 0x0){
+        if(value == 0 || this.balance < value || to == 0x0){
             return;
         }
         to.transfer(value);
@@ -310,7 +310,7 @@ contract AlphaMarketCoinExchanger is Multiowned {
     }
 
     function transferTokens(address to, uint256 value) external onlymanyowners(sha3(msg.data)) {
-        if(value == 0 || token.balanceOf(this) &lt; value || to == 0x0) {
+        if(value == 0 || token.balanceOf(this) < value || to == 0x0) {
             return;
         }
         token.transfer(to, value);
@@ -339,9 +339,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -349,7 +349,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -358,7 +358,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -372,7 +372,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -383,8 +383,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -398,7 +398,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -447,7 +447,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -509,9 +509,9 @@ contract AlphaMarketCoin is StandardToken {
 
     bool public isTransferEnabled = false;
     address public controller;
-    mapping(address =&gt; bool) public earlyAccess;
+    mapping(address => bool) public earlyAccess;
 
     uint8 public constant decimals = 18;
-    string public constant name = &#39;AlphaMarket Coin&#39;;
-    string public constant symbol = &#39;AMC&#39;;
+    string public constant name = 'AlphaMarket Coin';
+    string public constant symbol = 'AMC';
 }

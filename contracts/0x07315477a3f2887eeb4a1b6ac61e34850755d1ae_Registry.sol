@@ -41,15 +41,15 @@ contract Registrar {
         bool active;
     }
 
-    mapping(address =&gt; uint) public registrantIndex;
+    mapping(address => uint) public registrantIndex;
     Registrant[] public registrants;
 
     /**
-    * Function can&#39;t have ether.
+    * Function can't have ether.
     * modifier
     */
     modifier noEther() {
-        if (msg.value &gt; 0) throw;
+        if (msg.value > 0) throw;
         _
     }
 
@@ -79,7 +79,7 @@ contract Registrar {
     * @param _data - The registrant data string.
     */
     function add(address _registrant, bytes _data) isRegistrar noEther returns (bool) {
-        if (registrantIndex[_registrant] &gt; 0) {
+        if (registrantIndex[_registrant] > 0) {
             Error(2); // Duplicate registrant
             return false;
         }
@@ -125,7 +125,7 @@ contract Registrar {
     */
     function isActiveRegistrant(address _registrant) constant returns (bool) {
         uint pos = registrantIndex[_registrant];
-        return (pos &gt; 0 &amp;&amp; registrants[pos].active);
+        return (pos > 0 && registrants[pos].active);
     }
 
     /**
@@ -134,7 +134,7 @@ contract Registrar {
     */
     function getRegistrants() constant returns (address[]) {
         address[] memory result = new address[](registrants.length-1);
-        for (uint j = 1; j &lt; registrants.length; j++) {
+        for (uint j = 1; j < registrants.length; j++) {
             result[j-1] = registrants[j].addr;
         }
         return result;
@@ -148,7 +148,7 @@ contract Registrar {
 
     /**
     * Desctruct the smart contract. Since this is first, alpha release of Open Registry for IoT, updated versions will follow.
-    * Registry&#39;s discontinue must be executed first.
+    * Registry's discontinue must be executed first.
     */
     function discontinue() isRegistrar noEther {
       selfdestruct(msg.sender);
@@ -221,17 +221,17 @@ contract Registry {
     Thing[] public things;
 
     // Identity to Thing index pointer for lookups and duplicates prevention.
-    mapping(bytes32 =&gt; uint) public idToThing;
+    mapping(bytes32 => uint) public idToThing;
 
     // Content of ProtoBuffer schema.
     bytes[] public schemas;
 
     /**
-    * Function can&#39;t contain Ether value.
+    * Function can't contain Ether value.
     * modifier
     */
     modifier noEther() {
-        if (msg.value &gt; 0) throw;
+        if (msg.value > 0) throw;
         _
     }
 
@@ -275,12 +275,12 @@ contract Registry {
     * @param _ids - Identities of the Thing in chunked format. Maximum size of one Identity is 2057 bytes32 elements.
     */
     function _addIdentities(uint _thingIndex, bytes32[] _ids) internal returns(bool){
-        // Checks if there&#39;s duplicates and creates references
+        // Checks if there's duplicates and creates references
         if (false == _rewireIdentities(_ids, 0, _thingIndex, 0)) {
             return false;
         }
 
-        // Thing don&#39;t have Identities yet.
+        // Thing don't have Identities yet.
         if (things[_thingIndex].identities.length == 0) {
             // Copy directly. Cheaper than one by one.
             things[_thingIndex].identities = _ids;
@@ -291,8 +291,8 @@ contract Registry {
             uint32 cell = uint32(things[_thingIndex].identities.length);
             // Copy new IDs to the end of array one by one
             things[_thingIndex].identities.length += _ids.length;
-            // If someone will provide _ids array with more than 2^32, it will go into infinite loop at a caller&#39;s expense.
-            for (uint32 k = 0; k &lt; _ids.length; k++) {
+            // If someone will provide _ids array with more than 2^32, it will go into infinite loop at a caller's expense.
+            for (uint32 k = 0; k < _ids.length; k++) {
                 things[_thingIndex].identities[cell++] = _ids[k];
             }
         }
@@ -300,14 +300,14 @@ contract Registry {
     }
 
     /**
-    * Point provided Identities to the desired &quot;things&quot; array index in the lookup hash table idToThing.
+    * Point provided Identities to the desired "things" array index in the lookup hash table idToThing.
     * internal_function
     * @param _ids - Identities of the Thing.
     * @param _oldIndex - Previous index that this Identities pointed to, prevents accidental rewiring and duplicate Identities.
     * @param _newIndex - things array index the Identities should point to.
     * @param _newIndex - things array index the Identities should point to.
     * @param _idsForcedLength — Internal use only. Zero by default. Used to revert side effects if execution fails at any point.
-    *       Prevents infinity loop in recursion. Though recursion is not desirable, it&#39;s used to avoid over-complication of the code.
+    *       Prevents infinity loop in recursion. Though recursion is not desirable, it's used to avoid over-complication of the code.
     */
     function _rewireIdentities(bytes32[] _ids, uint _oldIndex, uint _newIndex, uint32 _idsForcedLength) internal returns(bool) {
         // Current ID cell pointer
@@ -323,7 +323,7 @@ contract Registry {
         // How many bytes of payload are there in the last cell of single ID.
         uint8 lastCellBytesCnt;
         // Number of elements that needs to be processed in _ids array
-        uint32 idsLength = _idsForcedLength &gt; 0 ? _idsForcedLength : uint32(_ids.length);
+        uint32 idsLength = _idsForcedLength > 0 ? _idsForcedLength : uint32(_ids.length);
 
         // No Identities provided
         if (idsLength == 0) {
@@ -332,7 +332,7 @@ contract Registry {
         }
 
         // Each ID
-        while (cell &lt; idsLength) {
+        while (cell < idsLength) {
             // Get length of schema. First byte of packed ID.
             // Means that next urnNamespaceLength bytes is the schema definition.
             urnNamespaceLength = uint8(_ids[cell][0]);
@@ -344,12 +344,12 @@ contract Registry {
                 uint8(_ids[cell + (urnNamespaceLength + 2) / 32][(urnNamespaceLength + 2) % 32]);
 
             // We deal with the new Identity (instead rewiring after deletion)
-            if (_oldIndex == 0 &amp;&amp; (urnNamespaceLength == 0 || idLength == 0)) {
+            if (_oldIndex == 0 && (urnNamespaceLength == 0 || idLength == 0)) {
                 // Incorrect Identity structure.
                 Error(7, _ids);
 
                 // If at least one Identity already wired. And if this is not a recursive call.
-                if (cell &gt; 0 &amp;&amp; _idsForcedLength == 0) {
+                if (cell > 0 && _idsForcedLength == 0) {
                     _rewireIdentities(_ids, _newIndex, _oldIndex, cell); // Revert changes made so far
                 }
                 return false;
@@ -367,11 +367,11 @@ contract Registry {
                     lastCellBytesCnt = uint8((idLength + urnNamespaceLength + 3) % 32);
 
                     // Check if padded with zeros. Explicitly converting 2 into uint256 for correct calculations.
-                    if (uint256(_ids[cell + cellsPerId - 1]) * (uint256(2) ** (lastCellBytesCnt * 8)) &gt; 0) {  // Bitwise left shift, result have to be 0
+                    if (uint256(_ids[cell + cellsPerId - 1]) * (uint256(2) ** (lastCellBytesCnt * 8)) > 0) {  // Bitwise left shift, result have to be 0
                         // Identity is not padded with 0s
                         Error(8, _ids);
                         // If at least one Identity already wired. And if this is not a recursive call.
-                        if (cell &gt; 0 &amp;&amp; _idsForcedLength == 0) {
+                        if (cell > 0 && _idsForcedLength == 0) {
                             _rewireIdentities(_ids, _newIndex, _oldIndex, cell); // Revert changes made so far
                         }
                         return false;
@@ -382,14 +382,14 @@ contract Registry {
             // Single Identity array
             bytes32[] memory id = new bytes32[](cellsPerId);
 
-            for (uint8 j = 0; j &lt; cellsPerId; j++) {
+            for (uint8 j = 0; j < cellsPerId; j++) {
                 id[j] = _ids[cell++];
             }
 
             // Uniqueness check and reference for lookups
             idHash = sha3(id);
 
-            // If it points to where it&#39;s expected.
+            // If it points to where it's expected.
             if (idToThing[idHash] == _oldIndex) {
                 // Wire Identity
                 idToThing[idHash] = _newIndex;
@@ -397,7 +397,7 @@ contract Registry {
                 // References to a wrong Thing, e.g. Identity already exists, etc.
                 Error(1, _ids);
                 // If at least one Identity already wired. And if this is not a recursive call.
-                if (cell - cellsPerId &gt; 0 &amp;&amp; _idsForcedLength == 0) {
+                if (cell - cellsPerId > 0 && _idsForcedLength == 0) {
                     _rewireIdentities(_ids, _newIndex, _oldIndex, cell - cellsPerId); // Revert changes made so far
                 }
                 return false;
@@ -442,7 +442,7 @@ contract Registry {
     * public_function
     * @param _ids - The chunked identities array.
     * @param _data - Thing chunked data array.
-    * @param _schemaIndex - Index of the schema to parse Thing&#39;s data.
+    * @param _schemaIndex - Index of the schema to parse Thing's data.
     */
     function createThing(bytes32[] _ids, bytes32[] _data, uint88 _schemaIndex) isRegistrant returns(bool) {
         // No data provided
@@ -451,7 +451,7 @@ contract Registry {
             return false;
         }
 
-        if (_schemaIndex &gt;= schemas.length || _schemaIndex == 0) {
+        if (_schemaIndex >= schemas.length || _schemaIndex == 0) {
             Error(4, _ids);
             return false;
         }
@@ -467,10 +467,10 @@ contract Registry {
         // Now after all verifications passed we can add a the Thing.
         things.length++;
         // Creating structure in-place is 11k gas cheaper than assigning parameters separately.
-        // That&#39;s why methods like updateThingData, addIdentities are not reused here.
+        // That's why methods like updateThingData, addIdentities are not reused here.
         things[things.length - 1] = Thing(_ids, _data, msg.sender, _schemaIndex, true);
 
-        // &quot;Broadcast&quot; event
+        // "Broadcast" event
         Created(_ids, msg.sender);
         return true;
     }
@@ -480,11 +480,11 @@ contract Registry {
     * Review: user should be aware that if there will be not enough identities transaction will run out of gas.
     * Review: user should be aware that providing too many identities will result in some of them not being used.
     * public_function
-    * @param _ids - The Thing&#39;s IDs to be added in bytes32 chunks
+    * @param _ids - The Thing's IDs to be added in bytes32 chunks
     * @param _idsPerThing — number of IDs per thing, in relevant order
     * @param _data - The data chunks
     * @param _dataLength - The data length of every Thing to add, in relevant order
-    * @param _schemaIndex -Index of the schema to parse Thing&#39;s data
+    * @param _schemaIndex -Index of the schema to parse Thing's data
     */
     function createThings(bytes32[] _ids, uint16[] _idsPerThing, bytes32[] _data, uint16[] _dataLength, uint88 _schemaIndex) isRegistrant noEther  {
         // Current _id array index
@@ -499,11 +499,11 @@ contract Registry {
         uint24 idLength;
 
         // Each Thing
-        for (uint16 i = 0; i &lt; _idsPerThing.length; i++) {
+        for (uint16 i = 0; i < _idsPerThing.length; i++) {
             // Reset for each thing
             idCellsPerThing = 0;
             // Calculate number of cells for current Thing
-            for (uint16 j = 0; j &lt; _idsPerThing[i]; j++) {
+            for (uint16 j = 0; j < _idsPerThing[i]; j++) {
                 urnNamespaceLength = uint8(_ids[idIndex + idCellsPerThing][0]);
                 idLength =
                     // First byte
@@ -520,12 +520,12 @@ contract Registry {
             // Extract ids for a single Thing
             bytes32[] memory ids = new bytes32[](idCellsPerThing);
             // Reusing var name to maintain stack size in limits
-            for (j = 0; j &lt; idCellsPerThing; j++) {
+            for (j = 0; j < idCellsPerThing; j++) {
                 ids[j] = _ids[idIndex++];
             }
 
             bytes32[] memory data = new bytes32[](_dataLength[i]);
-            for (j = 0; j &lt; _dataLength[i]; j++) {
+            for (j = 0; j < _dataLength[i]; j++) {
                 data[j] = _data[dataIndex++];
             }
 
@@ -553,7 +553,7 @@ contract Registry {
             return false;
         }
 
-        if (things[index].ownerAddress != 0x0 &amp;&amp; things[index].ownerAddress != msg.sender) {
+        if (things[index].ownerAddress != 0x0 && things[index].ownerAddress != msg.sender) {
             Error(3, _id);
             return false;
         }
@@ -566,7 +566,7 @@ contract Registry {
     }
 
     /**
-    * Update Thing&#39;s data.
+    * Update Thing's data.
     * public_function
     * @param _id - The identity array.
     * @param _data - Thing data array.
@@ -580,12 +580,12 @@ contract Registry {
             return false;
         }
 
-        if (things[index].ownerAddress != 0x0 &amp;&amp; things[index].ownerAddress != msg.sender) {
+        if (things[index].ownerAddress != 0x0 && things[index].ownerAddress != msg.sender) {
             Error(3, _id);
             return false;
         }
 
-        if (_schemaIndex &gt; schemas.length || _schemaIndex == 0) {
+        if (_schemaIndex > schemas.length || _schemaIndex == 0) {
             Error(4, _id);
             return false;
         }
@@ -629,7 +629,7 @@ contract Registry {
     /**
     * Delete previously added Thing
     * public_function
-    * @param _id - One of Thing&#39;s Identities.
+    * @param _id - One of Thing's Identities.
     */
     function deleteThing(bytes32[] _id) isRegistrant noEther returns(bool) {
         uint index = idToThing[sha3(_id)];
@@ -644,7 +644,7 @@ contract Registry {
             return false;
         }
 
-        // Rewire Thing&#39;s identities to index 0, e.g. delete.
+        // Rewire Thing's identities to index 0, e.g. delete.
         if (false == _rewireIdentities(things[index].identities, index, 0, 0)) {
             // Cannot rewire, should never happen
             return false;
@@ -659,7 +659,7 @@ contract Registry {
                 return false;
             }
 
-            // &quot;Broadcast&quot; event with identities before they&#39;re lost.
+            // "Broadcast" event with identities before they're lost.
             Deleted(things[index].identities, things[index].ownerAddress);
 
             // Move last Thing to the place of deleted one.
@@ -681,7 +681,7 @@ contract Registry {
     }
 
     /**
-    * Get Thing&#39;s information
+    * Get Thing's information
     * constant_function
     * @param _id - identity of the thing.
     */
@@ -697,14 +697,14 @@ contract Registry {
     }
 
     /**
-    * Check if Thing is present in the registry by it&#39;s ID
+    * Check if Thing is present in the registry by it's ID
     * constant_function
     * @param _id - identity for lookup.
     */
 
     // Todo: reevaluate this method. Do we need it?
     function thingExist(bytes32[] _id) constant returns(bool) {
-        return idToThing[sha3(_id)] &gt; 0;
+        return idToThing[sha3(_id)] > 0;
     }
 
     /**
@@ -726,7 +726,7 @@ contract Registry {
 
     /**
     * Desctruct the smart contract. Since this is first, alpha release of Open Registry for IoT, updated versions will follow.
-    * Execute this prior to Registrar&#39;s contract discontinue()
+    * Execute this prior to Registrar's contract discontinue()
     */
     function discontinue() isRegistrar noEther returns(bool) {
       selfdestruct(msg.sender);

@@ -119,14 +119,14 @@ contract WhiteListed is Operatable, WhiteListedBasic {
     }
 
     uint public count;
-    mapping (address =&gt; Batch) public batchMap;
+    mapping (address => Batch) public batchMap;
 
     event Whitelisted(address indexed addr, uint whitelistedCount, bool isWhitelisted, uint indexed batch, uint weiAllocation);
 
     function addWhiteListed(address[] addrs, uint[] batches, uint[] weiAllocation) external canOperate {
         require(addrs.length == batches.length);
         require(addrs.length == weiAllocation.length);
-        for (uint i = 0; i &lt; addrs.length; i++) {
+        for (uint i = 0; i < addrs.length; i++) {
             Batch storage batch = batchMap[addrs[i]];
             if (batch.isWhitelisted != true) {
                 batch.isWhitelisted = true;
@@ -164,7 +164,7 @@ contract WhiteListed is Operatable, WhiteListedBasic {
 
     function setAllocation(address[] addrs, uint[] weiAllocation) public canOperate {
         require(addrs.length == weiAllocation.length);
-        for (uint i = 0; i &lt; addrs.length; i++) {
+        for (uint i = 0; i < addrs.length; i++) {
             if (batchMap[addrs[i]].isWhitelisted == true) {
                 batchMap[addrs[i]].weiAllocated = weiAllocation[i];
             }
@@ -173,7 +173,7 @@ contract WhiteListed is Operatable, WhiteListedBasic {
 
     function setBatchNumber(address[] addrs, uint[] batch) public canOperate {
         require(addrs.length == batch.length);
-        for (uint i = 0; i &lt; addrs.length; i++) {
+        for (uint i = 0; i < addrs.length; i++) {
             if (batchMap[addrs[i]].isWhitelisted == true) {
                 batchMap[addrs[i]].batchNumber = batch[i];
             }

@@ -3,7 +3,7 @@ pragma solidity 0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -39,11 +39,11 @@ contract Ownable {
 /**
  * @title Authorizable
  * @dev The Authorizable contract has authorized addresses, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;multiple user permissions&quot;.
+ * functions, this simplifies the implementation of "multiple user permissions".
  */
 contract Authorizable is Ownable {
     
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => bool) public authorized;
     event AuthorizationSet(address indexed addressAuthorized, bool indexed authorization);
 
     /**
@@ -86,7 +86,7 @@ contract Authorizable is Ownable {
  * @title Whitelist interface
  */
 contract Whitelist is Authorizable {
-    mapping(address =&gt; bool) whitelisted;
+    mapping(address => bool) whitelisted;
     event AddToWhitelist(address _beneficiary);
     event RemoveFromWhitelist(address _beneficiary);
    

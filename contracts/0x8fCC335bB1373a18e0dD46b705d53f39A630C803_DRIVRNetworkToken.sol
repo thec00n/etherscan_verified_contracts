@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract DRIVRNetworkToken {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract DRIVRNetworkToken {
 
     function DRIVRNetworkToken() {
         totalSupply = 750000000;
-        symbol = &#39;DVN&#39;;
+        symbol = 'DVN';
         owner = 0x93190e450bfa7246c66dd3e83d13ea154ed2fd3f;
         balances[owner] = totalSupply;
         decimals = 0;

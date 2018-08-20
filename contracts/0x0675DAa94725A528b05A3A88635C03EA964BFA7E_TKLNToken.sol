@@ -65,7 +65,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -77,18 +77,18 @@ contract Owned {
 
 contract TKLNToken is Owned, CrowdsaleParameters {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;Taklimakan&#39;;
-    string public symbol = &#39;TKLN&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'Taklimakan';
+    string public symbol = 'TKLN';
     uint8 public decimals = 18;
 
     /* Arrays of all balances, vesting, approvals, and approval uses */
-    mapping (address =&gt; uint256) private balances;              // Total token balances
-    mapping (address =&gt; uint256) private balances90dayFreeze;   // Balances frozen for 90 days after ICO end
-    mapping (address =&gt; uint256) private balances180dayFreeze;  // Balances frozen for 180 days after ICO end
-    mapping (address =&gt; uint) private vestingTimesForPools;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
-    mapping (address =&gt; mapping (address =&gt; bool)) private allowanceUsed;
+    mapping (address => uint256) private balances;              // Total token balances
+    mapping (address => uint256) private balances90dayFreeze;   // Balances frozen for 90 days after ICO end
+    mapping (address => uint256) private balances180dayFreeze;  // Balances frozen for 180 days after ICO end
+    mapping (address => uint) private vestingTimesForPools;
+    mapping (address => mapping (address => uint256)) private allowed;
+    mapping (address => mapping (address => bool)) private allowanceUsed;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -139,7 +139,7 @@ contract TKLNToken is Owned, CrowdsaleParameters {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -204,7 +204,7 @@ contract TKLNToken is Owned, CrowdsaleParameters {
     }
 
     /**
-    *  Send coins from sender&#39;s address to address specified in parameters
+    *  Send coins from sender's address to address specified in parameters
     *
     * @param _to - address to send to
     * @param _value - amount to send in Wei
@@ -212,14 +212,14 @@ contract TKLNToken is Owned, CrowdsaleParameters {
     function transfer(address _to, uint256 _value) public transfersAllowed onlyPayloadSize(2*32) returns (bool success) {
         updateVesting(msg.sender);
 
-        require(vestedBalanceOf(msg.sender) &gt;= _value);
+        require(vestedBalanceOf(msg.sender) >= _value);
 
         // Subtract from the sender
         // _value is never greater than balance of input validation above
         balances[msg.sender] -= _value;
 
         // If tokens issued from this address need to vest (i.e. this address is a pool), freeze them here
-        if (vestingTimesForPools[msg.sender] &gt; 0) {
+        if (vestingTimesForPools[msg.sender] > 0) {
             addToVesting(msg.sender, _to, vestingTimesForPools[msg.sender], _value);
         }
 
@@ -296,10 +296,10 @@ contract TKLNToken is Owned, CrowdsaleParameters {
         updateVesting(_from);
 
         // Check if the sender has enough
-        require(vestedBalanceOf(_from) &gt;= _value);
+        require(vestedBalanceOf(_from) >= _value);
 
         // Check allowed
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Subtract from the sender
         // _value is never greater than balance because of input validation above
@@ -313,7 +313,7 @@ contract TKLNToken is Owned, CrowdsaleParameters {
         allowed[_from][msg.sender] -= _value;
 
         // If tokens issued from this address need to vest (i.e. this address is a pool), freeze them here
-        if (vestingTimesForPools[_from] &gt; 0) {
+        if (vestingTimesForPools[_from] > 0) {
             addToVesting(_from, _to, vestingTimesForPools[_from], _value);
         }
 
@@ -383,10 +383,10 @@ contract TKLNToken is Owned, CrowdsaleParameters {
     }
 
     function updateVesting(address sender) internal {
-        if (CrowdsaleParameters.vestingTime90Days &lt; now) {
+        if (CrowdsaleParameters.vestingTime90Days < now) {
             balances90dayFreeze[sender] = 0;
         }
-        if (CrowdsaleParameters.vestingTime180Days &lt; now) {
+        if (CrowdsaleParameters.vestingTime180Days < now) {
             balances180dayFreeze[sender] = 0;
         }
     }

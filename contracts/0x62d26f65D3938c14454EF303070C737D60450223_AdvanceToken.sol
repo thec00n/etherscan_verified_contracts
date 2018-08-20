@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -52,7 +52,7 @@ contract owned {
 }
 
 contract saleOwned is owned{
-    mapping (address =&gt; bool) public saleContract;
+    mapping (address => bool) public saleContract;
 
     modifier onlySaleOwner {        
         require(msg.sender == owner || true == saleContract[msg.sender]);
@@ -124,8 +124,8 @@ contract BaseToken is Pausable{
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256))  approvals;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256))  approvals;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -143,8 +143,8 @@ contract BaseToken is Pausable{
     
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_from] >= _value);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -155,8 +155,8 @@ contract BaseToken is Pausable{
     }
 
     function transferFrom(address _from, address _to, uint _value) whenNotPaused public returns (bool) {
-        assert(balanceOf[_from] &gt;= _value);
-        assert(approvals[_from][msg.sender] &gt;= _value);
+        assert(balanceOf[_from] >= _value);
+        assert(approvals[_from][msg.sender] >= _value);
         
         approvals[_from][msg.sender] = approvals[_from][msg.sender].sub(_value);
         balanceOf[_from] = balanceOf[_from].sub(_value);
@@ -184,16 +184,16 @@ contract BaseToken is Pausable{
 /*       ADVANCED TOKEN STARTS HERE       */
 /******************************************/
 contract AdvanceToken is BaseToken {
-    string tokenName        = &quot;BetEncore&quot;;       // Set the name for display purposes
-    string tokenSymbol      = &quot;BTEN&quot;;            // Set the symbol for display purposes
+    string tokenName        = "BetEncore";       // Set the name for display purposes
+    string tokenSymbol      = "BTEN";            // Set the symbol for display purposes
 
     struct frozenStruct {
         uint startTime;
         uint endTime;
     }
     
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; frozenStruct) public frozenTime;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => frozenStruct) public frozenTime;
 
     event FrozenFunds(address target, bool frozen, uint startTime, uint endTime);    
     event Burn(address indexed from, uint256 value);
@@ -202,8 +202,8 @@ contract AdvanceToken is BaseToken {
     
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(false == isFrozen(_from));                  // Check if sender is frozen
         if(saleContract[_from] == false)                    // for refund
             require(false == isFrozen(_to));                // Check if recipient is frozen
@@ -225,7 +225,7 @@ contract AdvanceToken is BaseToken {
         if(false == frozenAccount[target])
             return false;
 
-        if(frozenTime[target].startTime &lt;= now &amp;&amp; now &lt;= frozenTime[target].endTime)
+        if(frozenTime[target].startTime <= now && now <= frozenTime[target].endTime)
             return true;
         
         return false;
@@ -239,7 +239,7 @@ contract AdvanceToken is BaseToken {
     }
 
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         emit Burn(msg.sender, _value);
@@ -247,7 +247,7 @@ contract AdvanceToken is BaseToken {
     }
 
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         totalSupply = totalSupply.sub(_value);
         emit Burn(_from, _value);

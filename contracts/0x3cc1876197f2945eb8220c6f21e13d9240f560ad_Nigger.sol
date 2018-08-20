@@ -8,15 +8,15 @@ contract Nigger
 	address 	owner;
 
 
-    string 		public standard = &#39;Token 0.1&#39;;
-	string 		public name = &quot;Nigger&quot;; 
-	string 		public symbol = &quot;NGR&quot;;
+    string 		public standard = 'Token 0.1';
+	string 		public name = "Nigger"; 
+	string 		public symbol = "NGR";
 	uint8 		public decimals = 18; 
 	uint256 	public totalSupply = 40695277 * 1e18;
 	
 
-	mapping (address =&gt; uint256) balances;	
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;	
+	mapping (address => mapping (address => uint256)) allowed;
 
 
 	modifier ownerOnly() 
@@ -65,7 +65,7 @@ contract Nigger
     function transfer(address _to, uint256 _value) public returns(bool success)
 	{ 
 
-		require(_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; _to != msg.sender);
+		require(_to != 0x0 && _value > 0 && balances[msg.sender] >= _value && _to != msg.sender);
 
 
 		balances[msg.sender] -= _value;
@@ -79,7 +79,7 @@ contract Nigger
    function burn(uint256 _value) public returns(bool success)
 	{
 
-		require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value && _value > 0);
 
 
 		balances[msg.sender] -= _value;
@@ -93,7 +93,7 @@ contract Nigger
 	function canTransferFrom(address _owner, address _spender) public constant returns(uint256 tokens) 
 	{
 
-		require(_owner != 0x0 &amp;&amp; _spender != 0x0);
+		require(_owner != 0x0 && _spender != 0x0);
 		
 
 		if (_owner == _spender)
@@ -110,9 +110,9 @@ contract Nigger
 	function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) 
 	{
 
-        require(_value &gt; 0 &amp;&amp; _from != 0x0 &amp;&amp; _to != 0x0 &amp;&amp; _to != _from &amp;&amp;
-        		allowed[_from][msg.sender] &gt;= _value &amp;&amp; 
-        		balances[_from] &gt;= _value);
+        require(_value > 0 && _from != 0x0 && _to != 0x0 && _to != _from &&
+        		allowed[_from][msg.sender] >= _value && 
+        		balances[_from] >= _value);
                 
 
         balances[_from] -= _value;
@@ -127,7 +127,7 @@ contract Nigger
     function approve(address _spender, uint256 _value) public returns(bool success)  
     {
 
-        require(_spender != 0x0 &amp;&amp; _spender != msg.sender);
+        require(_spender != 0x0 && _spender != msg.sender);
 
 
         allowed[msg.sender][_spender] = _value;

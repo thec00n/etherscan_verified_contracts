@@ -7,7 +7,7 @@ contract StakeProver {
         uint timestamp;
     }
 
-    mapping(bytes32 =&gt; info_pair) public hash_db;
+    mapping(bytes32 => info_pair) public hash_db;
 
     function publish(bytes32 hashed_val) {
         if (hash_db[hashed_val].publisher != address(0)) {

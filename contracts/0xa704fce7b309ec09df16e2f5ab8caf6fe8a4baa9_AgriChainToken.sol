@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 // ----------------------------------------------------------------------------
-// &#39;AGRI&#39; - AgriChain Utility Token Contract
+// 'AGRI' - AgriChain Utility Token Contract
 //
 // Symbol           : AGRI
 // Name             : AgriChain Utility Token
@@ -11,7 +11,7 @@ pragma solidity ^0.4.24;
 // Company          : AgriChain Pty Ltd (trading as BlockGrain)
 //                  : https://agrichain.com
 // Version          : 2.1 
-// Author           : Martin Halford &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6102150e2100061308020900080f4f020e0c">[email&#160;protected]</a>&gt;
+// Author           : Martin Halford <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6102150e2100061308020900080f4f020e0c">[email protected]</a>>
 // Published        : 15 Aug 2018
 //
 // ----------------------------------------------------------------------------
@@ -27,30 +27,30 @@ library SafeMath {
             return 0;
         }
         uint256 c = _a * _b;
-        require(c / _a == _b, &quot;Muliply overflow error.&quot;);
+        require(c / _a == _b, "Muliply overflow error.");
         return c;
     }
 
     function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        require(_b &gt; 0, &quot;Divide by zero error.&quot;); 
+        require(_b > 0, "Divide by zero error."); 
         uint256 c = _a / _b;
         return c;
     }
 
     function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        require(_b &lt;= _a, &quot;Subtraction overflow error.&quot;);
+        require(_b <= _a, "Subtraction overflow error.");
         uint256 c = _a - _b;
         return c;
     }
 
     function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
         uint256 c = _a + _b;
-        require(c &gt;= _a, &quot;Addition overflow error.&quot;);
+        require(c >= _a, "Addition overflow error.");
         return c;
     }
 
     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0, &quot;Mod overflow error&quot;);
+        require(b != 0, "Mod overflow error");
         return a % b;
     }
 }
@@ -96,7 +96,7 @@ contract Owned {
     }
 
     modifier onlyOwner {
-        require(msg.sender == owner, &quot;Not contract owner.&quot;);
+        require(msg.sender == owner, "Not contract owner.");
         _;
     }
 
@@ -104,7 +104,7 @@ contract Owned {
         newOwner = _newOwner;
     }
     function acceptOwnership() public {
-        require(msg.sender == newOwner, &quot;Not new contract owner.&quot;);
+        require(msg.sender == newOwner, "Not new contract owner.");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
         newOwner = address(0);
@@ -126,24 +126,24 @@ contract AgriChainToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint256 _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // Flag to allow or disallow transfers
     bool public isAllowingTransfers;
 
     // List of admins who can mint, burn and allow transfers of tokens
-    mapping (address =&gt; bool) public administrators;
+    mapping (address => bool) public administrators;
 
     // modifier to check if transfers being allowed
     modifier allowingTransfers() {
-        require(isAllowingTransfers, &quot;Contract currently not allowing transfers.&quot;);
+        require(isAllowingTransfers, "Contract currently not allowing transfers.");
         _;
     }
 
     // modifier to check admin status
     modifier onlyAdmin() {
-        require(administrators[msg.sender], &quot;Not contract administrator.&quot;);
+        require(administrators[msg.sender], "Not contract administrator.");
         _;
     }
 
@@ -158,8 +158,8 @@ contract AgriChainToken is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     constructor(uint initialTokenSupply) public {
-        symbol = &quot;AGRI&quot;;
-        name = &quot;AgriChain Utility Token&quot;;
+        symbol = "AGRI";
+        name = "AgriChain Utility Token";
         decimals = 18;
         _totalSupply = initialTokenSupply * 10**uint(decimals);
 
@@ -182,8 +182,8 @@ contract AgriChainToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public allowingTransfers returns (bool success) {
@@ -195,7 +195,7 @@ contract AgriChainToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -222,7 +222,7 @@ contract AgriChainToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -230,7 +230,7 @@ contract AgriChainToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -241,10 +241,10 @@ contract AgriChainToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        revert(&quot;Contract does not accept ETH.&quot;);
+        revert("Contract does not accept ETH.");
     }
 
     // ------------------------------------------------------------------------
@@ -259,7 +259,7 @@ contract AgriChainToken is ERC20Interface, Owned {
     // Do ** NOT ** let totalSupply exceed MAX_SUPPLY
     // ------------------------------------------------------------------------
     function mintTokens(uint256 _value) public onlyAdmin {
-        require(_totalSupply.add(_value) &lt;= MAX_SUPPLY, &quot;Cannot mint greater than maximum supply.&quot;);
+        require(_totalSupply.add(_value) <= MAX_SUPPLY, "Cannot mint greater than maximum supply.");
         balances[msg.sender] = balances[msg.sender].add(_value);
         _totalSupply = _totalSupply.add(_value);
         emit Transfer(0, msg.sender, _value);      
@@ -269,7 +269,7 @@ contract AgriChainToken is ERC20Interface, Owned {
     // Administrator can burn tokens
     // ------------------------------------------------------------------------
     function burn(uint256 _value) public onlyAdmin {
-        require(_value &lt;= balances[msg.sender], &quot;Burn value exceeds balance.&quot;);
+        require(_value <= balances[msg.sender], "Burn value exceeds balance.");
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         _totalSupply = _totalSupply.sub(_value);

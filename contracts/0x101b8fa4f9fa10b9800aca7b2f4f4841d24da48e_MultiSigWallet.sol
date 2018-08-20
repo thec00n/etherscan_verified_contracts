@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ccbfb8a9aaada2e2aba9a3beaba98cafa3a2bfa9a2bfb5bfe2a2a9b8">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ccbfb8a9aaada2e2aba9a3beaba98cafa3a2bfa9a2bfb5bfe2a2a9b8">[email protected]</a>>
 contract MultiSigWallet {
 
     /*
@@ -22,16 +22,16 @@ contract MultiSigWallet {
     /*
      *  Storage
      */
-    mapping (uint =&gt; Transaction) public transactions;
+    mapping (uint => Transaction) public transactions;
     
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => mapping (address => bool)) public confirmations;
     
-    mapping (address =&gt; bool) public isOwner;
+    mapping (address => bool) public isOwner;
     address[] public owners;
 
     address public delayedOwner;
     // This value is the timestamp when the confirmation becomes valid.
-    mapping (uint =&gt; uint) public delayedConfirmations;
+    mapping (uint => uint) public delayedConfirmations;
 
     uint public transactionCount;
 
@@ -51,7 +51,7 @@ contract MultiSigWallet {
     }
 
     modifier ownerDoesNotExist(address owner) {
-        require(!isOwner[owner] &amp;&amp; owner != delayedOwner);
+        require(!isOwner[owner] && owner != delayedOwner);
         _;
     }
 
@@ -67,7 +67,7 @@ contract MultiSigWallet {
 
 // as of now this could be refactored out - there is verification in code
     modifier confirmed(uint transactionId, address owner) {
-        require(confirmations[transactionId][owner] || (owner == delayedOwner &amp;&amp; delayedConfirmations[transactionId] &lt; now));
+        require(confirmations[transactionId][owner] || (owner == delayedOwner && delayedConfirmations[transactionId] < now));
         _;
     }
 
@@ -85,7 +85,7 @@ contract MultiSigWallet {
     function() public
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             emit Deposit(msg.sender, msg.value);
     }
 
@@ -102,8 +102,8 @@ contract MultiSigWallet {
         require(_length == REQUIRED);
         delayedOwner = _delayedOwner;
         
-        for (uint i = 0; i &lt; _length; i++) {
-            require(!isOwner[_owners[i]] &amp;&amp; _owners[i] != 0);
+        for (uint i = 0; i < _length; i++) {
+            require(!isOwner[_owners[i]] && _owners[i] != 0);
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -118,7 +118,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -191,13 +191,13 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == REQUIRED)
                 return true;
         }
-        if (delayedConfirmations[transactionId] &gt; 0 &amp;&amp; delayedConfirmations[transactionId] &lt; now)
+        if (delayedConfirmations[transactionId] > 0 && delayedConfirmations[transactionId] < now)
         {
             count += 1;
             if (count == REQUIRED)
@@ -243,15 +243,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }

@@ -73,14 +73,14 @@ contract SafeMath {
        // Check if it is safe to add two numbers
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     // Check if it is safe to subtract two numbers
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
         uint c = a - b;
-        assert(b &lt;= a &amp;&amp; c &lt;= a);
+        assert(b <= a && c <= a);
         return c;
     }
 
@@ -93,14 +93,14 @@ contract SafeMath {
 }
 
 contract BITStationERC20 is SafeMath, ERC20Token, Owned {
-    string public constant name = &#39;BitStation&#39;;                              // Set the token name for display
-    string public constant symbol = &#39;BSTN&#39;;                                  // Set the token symbol for display
+    string public constant name = 'BitStation';                              // Set the token name for display
+    string public constant symbol = 'BSTN';                                  // Set the token symbol for display
     uint8 public constant decimals = 18;                                     // Set the number of decimals for display
     uint256 public constant INITIAL_SUPPLY = 12000000000 * 10 ** uint256(decimals);
     uint256 public totalSupply;
-    string public version = &#39;1&#39;;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    string public version = '1';
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     modifier rejectTokensToContract(address _to) {
         require(_to != address(this));
@@ -115,7 +115,7 @@ contract BITStationERC20 is SafeMath, ERC20Token, Owned {
     
     function transfer(address _to, uint256 _value) rejectTokensToContract(_to) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -125,8 +125,8 @@ contract BITStationERC20 is SafeMath, ERC20Token, Owned {
 
     function transferFrom(address _from, address _to, uint256 _value) rejectTokensToContract(_to) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = safeSub(balances[_from],_value);
         balances[_to] = safeAdd(balances[_to],_value);
@@ -154,10 +154,10 @@ contract BITStationERC20 is SafeMath, ERC20Token, Owned {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 

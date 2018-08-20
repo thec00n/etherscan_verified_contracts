@@ -8,10 +8,10 @@ contract SpiceMembers {
         bytes32 info;
     }
 
-    mapping (address =&gt; Member) member;
+    mapping (address => Member) member;
 
     address public owner;
-    mapping (uint =&gt; address) public memberAddress;
+    mapping (uint => address) public memberAddress;
     uint public memberCount;
 
     event TransferOwnership(address indexed sender, address indexed owner);
@@ -34,7 +34,7 @@ contract SpiceMembers {
     }
 
     modifier onlyManager {
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt; MemberLevel.Manager) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) < MemberLevel.Manager) throw;
         _;
     }
 
@@ -69,7 +69,7 @@ contract SpiceMembers {
         // Make sure trying to remove a non-existing member throws an error
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure members are only allowed to delete members lower than their level
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].level = MemberLevel.None;
         RemoveMember(msg.sender, _target);
@@ -77,13 +77,13 @@ contract SpiceMembers {
 
     function setMemberLevel(address _target, MemberLevel level) {
         // Make sure all levels are larger than None but not higher than Director
-        if (level == MemberLevel.None || level &gt; MemberLevel.Director) throw;
+        if (level == MemberLevel.None || level > MemberLevel.Director) throw;
         // Make sure the _target is currently already a member
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the new level is lower level than we are (we cannot overpromote)
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= level) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= level) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].level = level;
         SetMemberLevel(msg.sender, _target, level);
@@ -93,7 +93,7 @@ contract SpiceMembers {
         // Make sure the target is currently already a member
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner &amp;&amp; msg.sender != _target &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && msg.sender != _target && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].info = info;
         SetMemberInfo(msg.sender, _target, info);
@@ -144,15 +144,15 @@ contract SpiceControlled {
     }
 
     function hasDirectorAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Director || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Director || hasOwnerAccess(_target));
     }
 
     function hasManagerAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(_target));
     }
 
     function hasMemberAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Member || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Member || hasOwnerAccess(_target));
     }
 }
 
@@ -167,7 +167,7 @@ contract SpiceRates is SpiceControlled, IPayoutCalculator {
     }
 
     uint public hourlyRate;
-    mapping(bytes32 =&gt; RatesEntry) entries;
+    mapping(bytes32 => RatesEntry) entries;
     bytes32[] infos;
 
     event SetHourlyRate(uint hourlyRate);
@@ -187,7 +187,7 @@ contract SpiceRates is SpiceControlled, IPayoutCalculator {
     }
 
     function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyManager {
-        if (_percentage &gt; 100) throw;
+        if (_percentage > 100) throw;
         if (_info == 0) throw;
 
         RatesEntry entry = entries[_info];

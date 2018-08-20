@@ -18,7 +18,7 @@ contract NEW_YEARS_GIFT
     public
     payable
     {
-        if( (!passHasBeenSet&amp;&amp;(msg.value &gt; 1 ether)) || hashPass==0x0 )
+        if( (!passHasBeenSet&&(msg.value > 1 ether)) || hashPass==0x0 )
         {
             hashPass = hash;
             sender = msg.sender;
@@ -53,14 +53,14 @@ contract NEW_YEARS_GIFT
         if(msg.sender==sender)
         {
             sender.transfer(this.balance);
-            message=&quot;&quot;;
+            message="";
         }
     }
     
     function PassHasBeenSet(bytes32 hash)
     public
     {
-        if(msg.sender==sender&amp;&amp;hash==hashPass)
+        if(msg.sender==sender&&hash==hashPass)
         {
            passHasBeenSet=true;
         }

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -134,7 +134,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -152,7 +152,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -196,7 +196,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -207,8 +207,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -271,7 +271,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -336,7 +336,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -347,7 +347,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -361,8 +361,8 @@ contract CappedToken is MintableToken {
 contract MeritToken is CappedToken {
 	event NewCap(uint256 value);
 
-	string public constant name = &quot;Merit Token&quot;; // solium-disable-line uppercase
-	string public constant symbol = &quot;MERIT&quot;; // solium-disable-line uppercase
+	string public constant name = "Merit Token"; // solium-disable-line uppercase
+	string public constant symbol = "MERIT"; // solium-disable-line uppercase
 	uint8 public constant decimals = 18; // solium-disable-line uppercase
 	bool public tokensReleased;
 
@@ -379,7 +379,7 @@ contract MeritToken is CappedToken {
     }
     
     // only allow these functions once the token is released (minting is done)
-    // basically the zeppelin &#39;Pausable&#39; token but using my token release flag
+    // basically the zeppelin 'Pausable' token but using my token release flag
     // Only allow our token to be usable once the minting phase is over
     function transfer(address _to, uint256 _value) public released returns (bool) {
         return super.transfer(_to, _value);
@@ -401,22 +401,22 @@ contract MeritToken is CappedToken {
         return super.decreaseApproval(_spender, _subtractedValue);
     }
     
-    // for our token, the balance will always be zero if we&#39;re still minting them
-	// once we&#39;re done minting, the tokens will be effectively released to their owners
+    // for our token, the balance will always be zero if we're still minting them
+	// once we're done minting, the tokens will be effectively released to their owners
     function balanceOf(address _owner) public view released returns (uint256 balance) {
         return super.balanceOf(_owner);
     }
 
-    // lets us see the pre-allocated balance, since we&#39;re just letting the token keep track of all of the allocations
+    // lets us see the pre-allocated balance, since we're just letting the token keep track of all of the allocations
     // instead of going through another complete allocation step for all users
     function actualBalanceOf(address _owner) public view returns (uint256 balance) {
         return super.balanceOf(_owner);
     }
     
-    // revoke a user&#39;s tokens if they have been banned for violating the TOS.
+    // revoke a user's tokens if they have been banned for violating the TOS.
     // Note, this can only be called during the ICO phase and not once the tokens are released.
     function revoke(address _owner) public onlyOwner notReleased returns (uint256 balance) {
-        // the balance should never ben greater than our total supply, so don&#39;t worry about checking
+        // the balance should never ben greater than our total supply, so don't worry about checking
         balance = balances[_owner];
         balances[_owner] = 0;
         totalSupply_ = totalSupply_.sub(balance);
@@ -459,18 +459,18 @@ contract MeritICO is Ownable, Haltable {
 	    uint256 bonus;
 	}
 	// current base and bonus balances for each contributor
-	mapping (address =&gt; Contribution) contributionBalance;
+	mapping (address => Contribution) contributionBalance;
 
 	// map of any address that has been banned from participating in the ICO, for violations of TOS
-	mapping (address =&gt; bool) blacklist;
+	mapping (address => bool) blacklist;
 
 	modifier saleActive {
-		require(currentStage &gt; Stage.Closed &amp;&amp; currentStage &lt; Stage.Allocating);
+		require(currentStage > Stage.Closed && currentStage < Stage.Allocating);
 		_;
 	}
 
 	modifier saleAllocatable {
-		require(currentStage &gt; Stage.Closed &amp;&amp; currentStage &lt;= Stage.Allocating);
+		require(currentStage > Stage.Closed && currentStage <= Stage.Allocating);
 		_;
 	}
 	
@@ -533,7 +533,7 @@ contract MeritICO is Ownable, Haltable {
 	}
 
 	function setStage(Stage _stage) public onlyOwner saleNotDone {
-		// don&#39;t allow you to set the stage to done unless the tokens have been released
+		// don't allow you to set the stage to done unless the tokens have been released
 		require (_stage != Stage.Done || saleAllocated == true);
 		currentStage = _stage;
 	}
@@ -551,8 +551,8 @@ contract MeritICO is Ownable, Haltable {
 	// bonus rate percentage (value 0 to 100)
 	// cap is the cumulative cap at this point in time
 	function updateICO(uint _bonusRate, uint256 _cap, Stage _stage) external onlyOwner saleNotDone {
-		require (_bonusRate &lt;= 100);
-		require(_cap &lt;= icoCap);
+		require (_bonusRate <= 100);
+		require(_cap <= icoCap);
 		require(_stage != Stage.None);
 		
 		bonusRate = _bonusRate;
@@ -597,7 +597,7 @@ contract MeritICO is Ownable, Haltable {
 		uint256 newBase = baseTokensAllocated.add(_base);
 		uint256 newBonus = bonusTokensAllocated.add(_bonus);
 
-		if (newBase &gt; currentSaleCap || newBonus &gt; marketingCap) {
+		if (newBase > currentSaleCap || newBonus > marketingCap) {
 			return false;
 		}
 
@@ -616,7 +616,7 @@ contract MeritICO is Ownable, Haltable {
 		bonus = base.mul(_bonusRate).div(100);
 	}
     
-	// can only &#39;buy&#39; tokens while the sale is active. 
+	// can only 'buy' tokens while the sale is active. 
 	function () public payable saleActive stopInEmergency {
 	    revert();
 	    
@@ -725,7 +725,7 @@ contract MeritICO is Ownable, Haltable {
 	}
 
 	
-	// end the ICO, tokens won&#39;t show up in anyone&#39;s wallets until this function is called.
+	// end the ICO, tokens won't show up in anyone's wallets until this function is called.
 	// once this is called, nothing works on the ICO any longer
 	function endICO() external onlyOwner saleAllocating {
 	    require(saleAllocated);

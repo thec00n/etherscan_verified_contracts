@@ -2,14 +2,14 @@ pragma solidity ^0.4.11;
 
 /*  Copyright 2017 GoInto, LLC
 
-    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+    Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
         http://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+    distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
@@ -28,8 +28,8 @@ contract GointoMigration {
         address addedBy;
     }
 
-    mapping (address =&gt; Manager) internal managers;
-    mapping (string =&gt; address) internal contracts;
+    mapping (address => Manager) internal managers;
+    mapping (string => address) internal contracts;
 
     event EventSetContract(address by, string key, address contractAddress);
     event EventAddAdmin(address by, address admin);
@@ -59,13 +59,13 @@ contract GointoMigration {
 
     /**
      * Set a contract location by key
-     * @param key - The string key to be used for lookup.  e.g. &#39;etherep&#39;
+     * @param key - The string key to be used for lookup.  e.g. 'etherep'
      * @param contractAddress - The address of the contract
      */
     function setContract(string key, address contractAddress) external onlyManager {
 
         // Keep the key length down
-        require(bytes(key).length &lt;= 32);
+        require(bytes(key).length <= 32);
 
         // Set
         contracts[key] = contractAddress;
@@ -77,13 +77,13 @@ contract GointoMigration {
 
     /**
      * Get a contract location by key
-     * @param key - The string key to be used for lookup.  e.g. &#39;etherep&#39;
+     * @param key - The string key to be used for lookup.  e.g. 'etherep'
      * @return contractAddress - The address of the contract
      */
     function getContract(string key) external constant returns (address) {
 
         // Keep the key length down
-        require(bytes(key).length &lt;= 32);
+        require(bytes(key).length <= 32);
 
         // Set
         return contracts[key];
@@ -120,7 +120,7 @@ contract GointoMigration {
      */
     function removeAdmin(address adminAddress) external onlyAdmin {
 
-        // Let&#39;s make sure we have at least one admin
+        // Let's make sure we have at least one admin
         require(adminAddress != msg.sender);
 
         // Set

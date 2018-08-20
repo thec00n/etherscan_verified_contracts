@@ -14,9 +14,9 @@ contract TBECrowdsale {
     uint256 public endDate;
     
 
-    mapping (address =&gt; bool) public tokenAddress;
-    mapping (address =&gt; uint256) public balanceOfEther;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => bool) public tokenAddress;
+    mapping (address => uint256) public balanceOfEther;
+    mapping (address => uint256) public balanceOf;
 
     modifier isCreator() {
         require(msg.sender == creator);
@@ -61,8 +61,8 @@ contract TBECrowdsale {
 
     
     function () payable public {
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(now > startDate);
+        require(now < endDate);
         
         
         uint256 amount = price;

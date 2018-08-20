@@ -38,7 +38,7 @@ contract Ownership is Owned {
         bytes32 license;
     }
 
-    mapping(bytes32 =&gt; Entry) public registry;
+    mapping(bytes32 => Entry) public registry;
     bytes32[] public works;
 
     struct License {
@@ -47,7 +47,7 @@ contract Ownership is Owned {
         bool isValid;
     }
 
-    mapping(bytes32 =&gt; License) public licenses;
+    mapping(bytes32 => License) public licenses;
     bytes32[] public licenseIds;
 
     uint256 public fee;
@@ -60,8 +60,8 @@ contract Ownership is Owned {
         fee = _fee;
 
         License memory license = License({
-            text: &quot;All rights reserved. Predominance of the custom &#39;text&#39; field in case of conflict.&quot;,
-            title: &quot;All rights reserved&quot;,
+            text: "All rights reserved. Predominance of the custom 'text' field in case of conflict.",
+            title: "All rights reserved",
             isValid: true
         });
 
@@ -81,7 +81,7 @@ contract Ownership is Owned {
         require(!registry[_hash].isValid);
         require(licenses[_license].isValid);
 
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
 
         Entry memory entry = Entry({
             author: _author,
@@ -105,7 +105,7 @@ contract Ownership is Owned {
         require(!registry[_hash].isValid);
         require(licenses[licenseIds[0]].isValid);
 
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
 
         Entry memory entry = Entry({
             author: _author,

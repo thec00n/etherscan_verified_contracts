@@ -2,7 +2,7 @@ pragma solidity 0.4.4;
 
 contract AddressNames{
 
-	mapping(address =&gt; string) addressNames;
+	mapping(address => string) addressNames;
 	address[] namedAddresses;
 
 	function setName(string name){
@@ -22,7 +22,7 @@ contract AddressNames{
 	}
 
 	function _setNameToAddress(address who, string name) internal returns (bool valid){
-		if (bytes(name).length &lt; 3){
+		if (bytes(name).length < 3){
 		valid = false;
 		}
 

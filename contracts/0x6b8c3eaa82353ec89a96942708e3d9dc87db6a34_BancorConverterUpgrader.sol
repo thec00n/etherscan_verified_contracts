@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -60,7 +60,7 @@ contract Owned is IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public view returns (string) {}
     function symbol() public view returns (string) {}
     function decimals() public view returns (uint8) {}
@@ -205,7 +205,7 @@ contract BancorConverterUpgrader is Owned {
 
     /**
         @dev upgrade an old converter to the latest version
-        will throw if ownership wasn&#39;t transferred to the upgrader before calling this function.
+        will throw if ownership wasn't transferred to the upgrader before calling this function.
         ownership of the new converter will be transferred back to the original owner.
         fires the ConverterUpgrade event upon success.
 
@@ -214,7 +214,7 @@ contract BancorConverterUpgrader is Owned {
     */
     function upgrade(IBancorConverter _oldConverter, bytes32 _version) public {
         bool formerVersions = false;
-        if (_version == &quot;0.4&quot;)
+        if (_version == "0.4")
             formerVersions = true;
         acceptConverterOwnership(_oldConverter);
         IBancorConverter toConverter = createConverter(_oldConverter);
@@ -291,7 +291,7 @@ contract BancorConverterUpgrader is Owned {
         bool isSet;
         uint16 connectorTokenCount = _isLegacyVersion ? _oldConverter.reserveTokenCount() : _oldConverter.connectorTokenCount();
 
-        for (uint16 i = 0; i &lt; connectorTokenCount; i++) {
+        for (uint16 i = 0; i < connectorTokenCount; i++) {
             address connectorAddress = _isLegacyVersion ? _oldConverter.reserveTokens(i) : _oldConverter.connectorTokens(i);
             (virtualBalance, weight, isVirtualBalanceEnabled, isPurchaseEnabled, isSet) = readConnector(
                 _oldConverter,
@@ -323,11 +323,11 @@ contract BancorConverterUpgrader is Owned {
     */
     function copyQuickBuyPath(IBancorConverter _oldConverter, IBancorConverter _newConverter) private {
         uint256 quickBuyPathLength = _oldConverter.getQuickBuyPathLength();
-        if (quickBuyPathLength &lt;= 0)
+        if (quickBuyPathLength <= 0)
             return;
 
         IERC20Token[] memory path = new IERC20Token[](quickBuyPathLength);
-        for (uint256 i = 0; i &lt; quickBuyPathLength; i++) {
+        for (uint256 i = 0; i < quickBuyPathLength; i++) {
             path[i] = _oldConverter.quickBuyPath(i);
         }
 
@@ -349,7 +349,7 @@ contract BancorConverterUpgrader is Owned {
         uint256 connectorBalance;
         uint16 connectorTokenCount = _isLegacyVersion ? _oldConverter.reserveTokenCount() : _oldConverter.connectorTokenCount();
 
-        for (uint16 i = 0; i &lt; connectorTokenCount; i++) {
+        for (uint16 i = 0; i < connectorTokenCount; i++) {
             address connectorAddress = _isLegacyVersion ? _oldConverter.reserveTokens(i) : _oldConverter.connectorTokens(i);
             IERC20Token connector = IERC20Token(connectorAddress);
             connectorBalance = _isLegacyVersion ? _oldConverter.getReserveBalance(connector) : _oldConverter.getConnectorBalance(connector);
@@ -361,10 +361,10 @@ contract BancorConverterUpgrader is Owned {
         @dev returns the connector settings
 
         @param _converter       old converter contract address
-        @param _address         connector&#39;s address to read from
+        @param _address         connector's address to read from
         @param _isLegacyVersion true if the converter version is under 0.5
 
-        @return connector&#39;s settings
+        @return connector's settings
     */
     function readConnector(IBancorConverter _converter, address _address, bool _isLegacyVersion) 
         private

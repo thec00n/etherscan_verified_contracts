@@ -31,13 +31,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,16 +57,16 @@ contract PersianToken is TokenERC20, Owned, SafeMath {
 
     // The actual total supply is not constant and it will be updated with the real redeemed tokens once the ICO is over
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint8 public constant decimals = 18;
-    string public constant name = &#39;Persian&#39;;
-    string public constant symbol = &#39;PRS&#39;;
-    string public constant version = &#39;1.0.0&#39;;
+    string public constant name = 'Persian';
+    string public constant symbol = 'PRS';
+    string public constant version = '1.0.0';
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -74,7 +74,7 @@ contract PersianToken is TokenERC20, Owned, SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if(balances[msg.sender] &lt; _value || allowed[_from][msg.sender] &lt; _value) return false;
+        if(balances[msg.sender] < _value || allowed[_from][msg.sender] < _value) return false;
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -109,7 +109,7 @@ contract TokenICO is PersianToken {
     uint256 public icoStartBlock;
     uint256 public icoEndBlock;
     uint256 public totalContributions;
-    mapping (address =&gt; uint256) public contributions;
+    mapping (address => uint256) public contributions;
 
     // At max 300.000 Persian (with 18 decimals) will be ever generated from this ICO
     uint256 public constant maxTotalSupply = 300000 * 10**18;
@@ -129,7 +129,7 @@ contract TokenICO is PersianToken {
         contributions[msg.sender] = 0;
         balances[msg.sender] = safeAdd(balances[msg.sender], balance);
         totalSupply = safeAdd(totalSupply, balance);
-        require(totalSupply &lt;= maxTotalSupply);
+        require(totalSupply <= maxTotalSupply);
         Claimed(msg.sender, balance);
         return true;
     }
@@ -139,25 +139,25 @@ contract TokenICO is PersianToken {
     }
 
     function estimateBalanceOf(address _owner) constant returns (uint256 estimatedTokens) {
-        return contributions[_owner] &gt; 0 ? safeMul( maxTotalSupply / totalContributions, contributions[_owner]) : 0;
+        return contributions[_owner] > 0 ? safeMul( maxTotalSupply / totalContributions, contributions[_owner]) : 0;
     }
 
-    // This check is an helper function for &#208;App to check the effect of the NEXT tx, NOT simply the current state of the contract
+    // This check is an helper function for ÐApp to check the effect of the NEXT tx, NOT simply the current state of the contract
     function isICOOpen() constant returns (bool _open) {
-        return block.number &gt;= (icoStartBlock - 1) &amp;&amp; !isICOEnded();
+        return block.number >= (icoStartBlock - 1) && !isICOEnded();
     }
 
-    // This check is an helper function for &#208;App to check the effect of the NEXT tx, NOT simply the current state of the contract
+    // This check is an helper function for ÐApp to check the effect of the NEXT tx, NOT simply the current state of the contract
     function isICOEnded() constant returns (bool _ended) {
-        return block.number &gt;= icoEndBlock;
+        return block.number >= icoEndBlock;
     }
 
     modifier onlyDuringICO {
-        require(block.number &gt;= icoStartBlock &amp;&amp; block.number &lt;= icoEndBlock); _;
+        require(block.number >= icoStartBlock && block.number <= icoEndBlock); _;
     }
 
     modifier onlyAfterICO {
-        require(block.number &gt; icoEndBlock); _;
+        require(block.number > icoEndBlock); _;
     }
 }
 

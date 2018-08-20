@@ -22,7 +22,7 @@ contract Factory is Version {
         _;
     }
 
-    mapping(address =&gt; bool) public contracts;
+    mapping(address => bool) public contracts;
 
     function Factory(string _version) internal Version(_version) {}
 
@@ -62,9 +62,9 @@ contract PaymentAddress {
 
 contract PaymentAddressFactory is Factory {
     // index of created contracts
-    mapping (bytes4 =&gt; address) public paymentAddresses;
+    mapping (bytes4 => address) public paymentAddresses;
 
-    function PaymentAddressFactory() public Factory(&quot;1.0.0&quot;) {}
+    function PaymentAddressFactory() public Factory("1.0.0") {}
 
     // deploy a new contract
     function newPaymentAddress(address _collector, bytes4 _identifier)

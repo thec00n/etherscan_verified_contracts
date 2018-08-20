@@ -51,7 +51,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -60,7 +60,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -83,8 +83,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract CNYToken is StandardToken {
@@ -96,19 +96,19 @@ contract CNYToken is StandardToken {
 
     address public founder;               // The address of the founder
     string public name;                   // fancy name: eg Simon Bucks
-    uint8 public decimals;                // How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                // How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 // An identifier: eg SBX
-    string public version = &#39;CNY0.1&#39;;     // CNY 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'CNY0.1';     // CNY 0.1 standard. Just an arbitrary versioning scheme.
     
 
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
     // The last comment for address
-    mapping(address =&gt; string) lastComment;
+    mapping(address => string) lastComment;
 
     // The comments for transfers per address
-    mapping (address =&gt; mapping (uint256 =&gt; string)) comments;
+    mapping (address => mapping (uint256 => string)) comments;
 
     function CNYToken(
         uint256 _initialAmount,
@@ -124,7 +124,7 @@ contract CNYToken is StandardToken {
     }
 
    function transferWithComment(address _to, uint256 _value, string _comment) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             lastComment[msg.sender] = _comment;
@@ -134,7 +134,7 @@ contract CNYToken is StandardToken {
     }
 
     function transferFromWithComment(address _from, address _to, uint256 _value, string _comment) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -169,14 +169,14 @@ contract CNYToken is StandardToken {
     function transferProxy(address _from, address _to, uint256 _value, uint256 _fee,
         uint8 _v,bytes32 _r, bytes32 _s, string _comment) returns (bool){
 
-        if(balances[_from] &lt; _fee + _value) throw;
+        if(balances[_from] < _fee + _value) throw;
 
         uint256 nonce = nonces[_from];
         bytes32 h = sha3(_from,_to,_value,_fee,nonce);
         if(_from != ecrecover(h,_v,_r,_s)) throw;
 
-        if(balances[_to] + _value &lt; balances[_to]
-            || balances[msg.sender] + _fee &lt; balances[msg.sender]) throw;
+        if(balances[_to] + _value < balances[_to]
+            || balances[msg.sender] + _fee < balances[msg.sender]) throw;
         balances[_to] += _value;
         Transfer(_from, _to, _value);
 
@@ -238,7 +238,7 @@ contract CNYToken is StandardToken {
      * @param _addr
      */
     function getSpecifiedComment(address _addr, uint256 _nonce) constant returns (string){
-        if (nonces[_addr] &lt; _nonce) throw;
+        if (nonces[_addr] < _nonce) throw;
         return comments[_addr][_nonce];
     }
 
@@ -247,10 +247,10 @@ contract CNYToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
@@ -268,7 +268,7 @@ contract CNYToken is StandardToken {
     event Burn(address indexed from, uint256 value);
 
     function burn(uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) throw;            // Check if the sender has enough
+        if (balances[msg.sender] < _value) throw;            // Check if the sender has enough
         balances[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -276,8 +276,8 @@ contract CNYToken is StandardToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value) throw;                // Check if the sender has enough
-        if (_value &gt; allowed[_from][msg.sender]) throw;    // Check allowance
+        if (balances[_from] < _value) throw;                // Check if the sender has enough
+        if (_value > allowed[_from][msg.sender]) throw;    // Check allowance
         balances[_from] -= _value;                          // Subtract from the sender
         totalSupply -= _value;                               // Updates totalSupply
         Burn(_from, _value);
@@ -292,7 +292,7 @@ contract CNYToken is StandardToken {
     // @param _value The value of the token
     function allocateTokens(address _to, uint256 _value) {
         if(msg.sender != founder) throw;            // only the founder have the authority
-        if(totalSupply + _value &lt;= totalSupply || balances[_to] + _value &lt;= balances[_to]) throw;
+        if(totalSupply + _value <= totalSupply || balances[_to] + _value <= balances[_to]) throw;
         totalSupply += _value;
         balances[_to] += _value;
         Increase(_to,_value);

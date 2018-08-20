@@ -19,11 +19,11 @@ contract Countdown {
     
     function ClickButton() public payable {
         // Pay at least 1 dollar to click the button
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
         
         // Refund people who click the button
         // after it expires
-        if (now &gt; deadline) {
+        if (now > deadline) {
             revert();
         }
     
@@ -39,7 +39,7 @@ contract Countdown {
     // after the button expires
     function Win() public {
         require(msg.sender == winner);
-        require(now &gt; deadline);
+        require(now > deadline);
         uint pendingReward = reward;
         reward = 0;
         winner.transfer(pendingReward);

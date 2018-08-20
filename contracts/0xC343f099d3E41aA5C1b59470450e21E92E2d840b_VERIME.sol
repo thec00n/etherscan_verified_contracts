@@ -3,15 +3,15 @@ pragma solidity ^0.4.11;
 contract VERIME  {
     uint public _totalSupply = 1000000000000000000000000000;
 
-    string public constant symbol = &quot;VME&quot;;
-    string public constant name = &quot;Verime Mobile&quot;;
+    string public constant symbol = "VME";
+    string public constant name = "Verime Mobile";
     uint8 public constant decimals = 18;
 
     address public owner;
     address public whitelistedContract;
     bool freeTransfer = false;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function VERIME(address _multisig) {
         balances[_multisig] = _totalSupply;
@@ -47,8 +47,8 @@ contract VERIME  {
 
     function transfer(address _to, uint256 _value) ownerOrEnabledTransfer public returns (bool) {
         require(
-        balances[msg.sender]&gt;= _value
-        &amp;&amp; _value &gt; 0
+        balances[msg.sender]>= _value
+        && _value > 0
         );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -57,9 +57,9 @@ contract VERIME  {
     }
     function transferFrom(address _from, address _to, uint256 _value) ownerOrEnabledTransfer public returns (bool success) {
         require(
-        allowed[_from][msg.sender]  &gt;= _value
-        &amp;&amp; balances[_from] &gt;= _value
-        &amp;&amp; _value &gt; 0
+        allowed[_from][msg.sender]  >= _value
+        && balances[_from] >= _value
+        && _value > 0
         );
         balances[_from] -= _value;
         balances[_to] += _value;

@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -100,7 +100,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -195,7 +195,7 @@ contract TeamVesting is Object {
         if (errorCode != OK) {
             return errorCode;
         }
-        if (eventsHistory != 0x0 &amp;&amp; eventsHistory != _eventsHistory) {
+        if (eventsHistory != 0x0 && eventsHistory != _eventsHistory) {
             return TIME_LOCK_INVALID_INVOCATION;
         }
         eventsHistory = _eventsHistory;
@@ -239,9 +239,9 @@ contract TeamVesting is Object {
     // used to calculate amount we are able to spend according to current timestamp 
     function getVesting() returns (uint) {
         uint amount;
-        for(uint i = 24; i &gt;= 6;) {
+        for(uint i = 24; i >= 6;) {
            uint date = 30 days * i;
-           if(now &gt; (lock.initDate + date)) {
+           if(now > (lock.initDate + date)) {
               if(lock.lastSpending == i) {
                  break;
               }

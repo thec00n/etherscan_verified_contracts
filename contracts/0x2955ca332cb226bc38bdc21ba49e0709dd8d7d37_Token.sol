@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -135,7 +135,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,7 +151,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -174,8 +174,8 @@ contract BurnableToken is StandardToken {
     - Вкладчик может забрать свои средства вызовом функции `refund()` после неудачного завершение компании `withdraw(true)`
 */
 contract Token is BurnableToken, Ownable {
-    string public name = &quot;RealStart Token&quot;;
-    string public symbol = &quot;RST&quot;;
+    string public name = "RealStart Token";
+    string public symbol = "RST";
     uint256 public decimals = 18;
     
     uint256 public INITIAL_SUPPLY = 10000000 * 1 ether;                             // Amount tokens
@@ -205,7 +205,7 @@ contract Crowdsale is Pausable {
     bool public crowdsaleFinished = false;
     bool public refundOpen = false;
 
-    mapping(address =&gt; uint256) saleBalances; 
+    mapping(address => uint256) saleBalances; 
 
     event NewContribution(address indexed holder, uint256 tokenAmount, uint256 etherAmount);
     event Refunded(address indexed holder, uint256 etherAmount);
@@ -224,15 +224,15 @@ contract Crowdsale is Pausable {
     /// @dev Test max purchase: new Crowdsale(); !$0.purchase()(10001); $0.purchase()(10000)
     function purchase() whenNotPaused payable {
         require(!crowdsaleFinished);
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime);
-        require(tokensSold &lt; tokensForSale);
-        require(msg.value &gt;= 0.001 * 1 ether &amp;&amp; msg.value &lt;= 100 * 1 ether);
+        require(now >= startTime && now < endTime);
+        require(tokensSold < tokensForSale);
+        require(msg.value >= 0.001 * 1 ether && msg.value <= 100 * 1 ether);
 
         uint sum = msg.value;
         uint amount = sum.div(priceTokenWeiPreICO).mul(1 ether);
         uint retSum = 0;
         
-        if(tokensSold.add(amount) &gt; tokensForSale) {
+        if(tokensSold.add(amount) > tokensForSale) {
             uint retAmount = tokensSold.add(amount).sub(tokensForSale);
             retSum = retAmount.mul(priceTokenWeiPreICO).div(1 ether);
 
@@ -246,7 +246,7 @@ contract Crowdsale is Pausable {
 
         token.transfer(msg.sender, amount);
 
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
 
@@ -257,11 +257,11 @@ contract Crowdsale is Pausable {
     function withdraw(bool refund) onlyOwner {
         require(!crowdsaleFinished);
 
-        if(token.balanceOf(this) &gt; 0) {
+        if(token.balanceOf(this) > 0) {
             token.transfer(beneficiary, token.balanceOf(this));
         }
 
-        if(refund &amp;&amp; tokensSold &lt; tokensForSale) {
+        if(refund && tokensSold < tokensForSale) {
             refundOpen = true;
         }
         else {
@@ -277,7 +277,7 @@ contract Crowdsale is Pausable {
     function refund() {
         require(crowdsaleFinished);
         require(refundOpen);
-        require(saleBalances[msg.sender] &gt; 0);
+        require(saleBalances[msg.sender] > 0);
 
         uint sum = saleBalances[msg.sender];
 

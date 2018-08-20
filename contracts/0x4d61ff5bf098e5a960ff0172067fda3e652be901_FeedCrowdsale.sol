@@ -16,27 +16,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -134,7 +134,7 @@ interface TokenInterface {
   
   address[] tokenBuyers;
   
-  mapping(address=&gt;uint256) EthersSentByBuyers; 
+  mapping(address=>uint256) EthersSentByBuyers; 
   /**
    * event for token purchase logging
    * @param purchaser who paid for the tokens
@@ -146,11 +146,11 @@ interface TokenInterface {
 
   constructor(uint256 _startTime, address _wallet, address _tokenAddress) public 
   {
-    require(_startTime &gt;=now);
+    require(_startTime >=now);
     require(_wallet != 0x0);
     startTime = _startTime;  
     endTime = startTime + totalDurationInDays;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
     owner = _wallet;
     maxTokensToSaleInPrivateSale = 100000000 * 10 ** uint256(decimals);
     maxTokensToSaleInPreICO = 200000000 * 10 ** uint256(decimals);
@@ -176,46 +176,46 @@ interface TokenInterface {
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
         
         //private sale (30 days)
-        if (timeElapsedInDays &lt;30)
+        if (timeElapsedInDays <30)
         {
-            require(amountSent&gt;=minimumContributionInPrivatePhase);
+            require(amountSent>=minimumContributionInPrivatePhase);
             bonus = tokens.mul(bonusInPrivateSale);
             bonus = bonus.div(100);
-            require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPrivateSale);  
+            require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPrivateSale);  
             token.addPrivateSaleBuyer(sender,tokens.add(bonus));
         }
         //break
-        else if (timeElapsedInDays &gt;=30 &amp;&amp; timeElapsedInDays &lt;51)
+        else if (timeElapsedInDays >=30 && timeElapsedInDays <51)
         {
             revert();
         }
         //pre-ico/presale
-        else if (timeElapsedInDays&gt;=51 &amp;&amp; timeElapsedInDays&lt;72)
+        else if (timeElapsedInDays>=51 && timeElapsedInDays<72)
         {
-            require(amountSent&gt;=minimumContributionInPreICO &amp;&amp; amountSent&lt;=maximumContributionInPreICO);
-            if (amountSent&gt;=1.68 ether &amp;&amp; amountSent &lt; 17 ether)
+            require(amountSent>=minimumContributionInPreICO && amountSent<=maximumContributionInPreICO);
+            if (amountSent>=1.68 ether && amountSent < 17 ether)
             {
                 bonus = tokens.mul(5);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreICO); 
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreICO); 
             }
-            else if (amountSent&gt;=17 ether &amp;&amp; amountSent &lt; 169 ether)
+            else if (amountSent>=17 ether && amountSent < 169 ether)
             {
                 bonus = tokens.mul(10);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreICO); 
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreICO); 
             }
-            else if (amountSent&gt;=169 ether &amp;&amp; amountSent &lt; 841 ether)
+            else if (amountSent>=169 ether && amountSent < 841 ether)
             {
                 bonus = tokens.mul(15);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreICO); 
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreICO); 
             }
-            else if (amountSent&gt;=841 ether &amp;&amp; amountSent &lt; 1680 ether)
+            else if (amountSent>=841 ether && amountSent < 1680 ether)
             {
                 bonus = tokens.mul(20);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreICO); 
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreICO); 
             }
             //adding to pre ico sale for soft cap refunding
             if (EthersSentByBuyers[sender] == 0)
@@ -231,14 +231,14 @@ interface TokenInterface {
             token.addPreSaleBuyer(sender,tokens.add(bonus));
         }
         //break
-        else if (timeElapsedInDays&gt;=72 &amp;&amp; timeElapsedInDays&lt;83)
+        else if (timeElapsedInDays>=72 && timeElapsedInDays<83)
         {
             revert();
         }
         //main ico
-        else if(timeElapsedInDays&gt;=83)
+        else if(timeElapsedInDays>=83)
         {
-            require(amountSent&lt;=maximumContributionInMainICO);
+            require(amountSent<=maximumContributionInMainICO);
             bonus = 0;
         }
     }
@@ -249,7 +249,7 @@ interface TokenInterface {
     require(beneficiary != 0x0);
     require(isCrowdsalePaused == false);
     require(validPurchase());
-    require(TOKENS_SOLD&lt;maxTokensToSale &amp;&amp; weiRaised&lt;hardCap);
+    require(TOKENS_SOLD<maxTokensToSale && weiRaised<hardCap);
    
     uint256 weiAmount = msg.value;
     
@@ -257,7 +257,7 @@ interface TokenInterface {
     uint256 tokens = weiAmount.mul(ratePerWei);
     uint256 bonus = determineBonus(tokens,weiAmount,beneficiary);
     tokens = tokens.add(bonus);
-    require(TOKENS_SOLD.add(tokens)&lt;=maxTokensToSale);
+    require(TOKENS_SOLD.add(tokens)<=maxTokensToSale);
     
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -275,14 +275,14 @@ interface TokenInterface {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
     
     /**
@@ -321,7 +321,7 @@ interface TokenInterface {
      function getUnsoldTokensBack() public onlyOwner
      {
         uint contractTokenBalance = token.balanceOf(address(this));
-        require(contractTokenBalance&gt;0);
+        require(contractTokenBalance>0);
         token.transfer(owner,contractTokenBalance);
      }
      
@@ -329,13 +329,13 @@ interface TokenInterface {
       * Refund the tokens to buyers of presale if soft cap not reached
       **/ 
      function RefundToBuyers() public payable onlyOwner {
-         //require(now &gt; startTime.add(72 days) );
-         require(weiRaised&lt;softCapForPreICO);
-         require(msg.value&gt;=weiRaisedInPreICO);
-         for (uint i=0;i&lt;tokenBuyers.length;i++)
+         //require(now > startTime.add(72 days) );
+         require(weiRaised<softCapForPreICO);
+         require(msg.value>=weiRaisedInPreICO);
+         for (uint i=0;i<tokenBuyers.length;i++)
          {
              uint etherAmount = EthersSentByBuyers[tokenBuyers[i]];
-             if (etherAmount&gt;0)
+             if (etherAmount>0)
              {
                 tokenBuyers[i].transfer(etherAmount);
                 EthersSentByBuyers[tokenBuyers[i]] = 0;

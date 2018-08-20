@@ -18,7 +18,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -93,7 +93,7 @@ contract BountyDistribute is HasNoTokens {
 
         ERC20 token = ERC20(_token);
 
-        for (uint256 i = 0; i &lt; _to.length; i++) {
+        for (uint256 i = 0; i < _to.length; i++) {
             token.transfer(_to[i], _value[i]);
         }
     }

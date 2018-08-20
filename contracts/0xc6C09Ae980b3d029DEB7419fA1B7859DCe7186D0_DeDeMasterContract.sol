@@ -13,7 +13,7 @@ contract ERC20Interface {
 
 contract DeDeMasterContract {
 
-	mapping (address =&gt; bool) public isDeDeContract;
+	mapping (address => bool) public isDeDeContract;
 
 	event Issue(address dip, address scs, address issuer, address dedeAddress);
 	//event Transfer(address from, address to, address issuer, address dedeAddress); // unused in current version
@@ -39,8 +39,8 @@ contract DeDeMasterContract {
 
 		//have eth input, or try token transferfrom
 		if(_targetAddress == 0){ // ether
-			require(msg.value &gt;= _targetAmount);
-			if(msg.value &gt; _targetAmount){
+			require(msg.value >= _targetAmount);
+			if(msg.value > _targetAmount){
 				msg.sender.transfer(msg.value - _targetAmount);
 			}
 		}
@@ -107,7 +107,7 @@ contract DeDeContract {
 	uint256 public bulletAmount;
 
 	function DeDeContract(address _dip, address _scs, address _issuer, uint256 _targetAmount, uint256 _bulletAmount, address _targetAddress, address _bulletAddress, uint256 _validationTime) payable {
-		require(now &lt; _validationTime);
+		require(now < _validationTime);
 
 		masterContract = msg.sender;
 
@@ -126,14 +126,14 @@ contract DeDeContract {
 	function activate(address sender) payable {
 		require(msg.sender == masterContract);
 		require(sender == scs);
-		require(now &gt;= validationTime &amp;&amp; now &lt; validationTime + 1 days);
+		require(now >= validationTime && now < validationTime + 1 days);
 
 		if(targetAddress != 0){
 			assert(ERC20Interface(targetAddress).transfer(scs, targetAmount)); // send target token to scs
 		}
 
 		if(bulletAddress == 0){
-			require(msg.value &gt;= bulletAmount);
+			require(msg.value >= bulletAmount);
 			suicide(dip); // force send bullet ether to dip
 		}
 		else{
@@ -143,7 +143,7 @@ contract DeDeContract {
 	}
 	function nullify(address sender) {
 		require(msg.sender == masterContract);
-		require(now &gt;= (validationTime + 1 days) &amp;&amp; (sender == dip || sender == scs));
+		require(now >= (validationTime + 1 days) && (sender == dip || sender == scs));
 	
 		if(targetAddress != 0){
 			assert(ERC20Interface(targetAddress).transfer(dip, targetAmount));

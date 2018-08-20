@@ -18,7 +18,7 @@ contract StandardToken is Token {
     }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -29,7 +29,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -56,16 +56,16 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract SolarEclipseToken is StandardToken {
     uint8 public decimals = 18;
-    string public name = &#39;Solar Eclipse Token&#39;;
+    string public name = 'Solar Eclipse Token';
     address owner;
-    string public symbol = &#39;SET&#39;;
+    string public symbol = 'SET';
 
     uint startTime = 1503330410; // Aug 21, 2017 at 15:46:50 UTC
     uint endTime = 1503349461; // Aug 21, 2017 at 21:04:21 UTC
@@ -86,13 +86,13 @@ contract SolarEclipseToken is StandardToken {
     }
 
     function () payable {
-        if (now &lt; startTime) revert(); // revert if solar eclipse has not started
-        if (now &gt; endTime) revert(); // revert if solar eclipse has ended
-        if (totalSupply &gt;= totalSupplyCap) revert(); // revert if totalSupplyCap has been exhausted
+        if (now < startTime) revert(); // revert if solar eclipse has not started
+        if (now > endTime) revert(); // revert if solar eclipse has ended
+        if (totalSupply >= totalSupplyCap) revert(); // revert if totalSupplyCap has been exhausted
 
         uint tokensIssued = msg.value * tokensPerETH;
 
-        if (totalSupply + tokensIssued &gt; totalSupplyCap) {
+        if (totalSupply + tokensIssued > totalSupplyCap) {
             tokensIssued = totalSupplyCap - totalSupply; // ensure supply is capped
         }
 

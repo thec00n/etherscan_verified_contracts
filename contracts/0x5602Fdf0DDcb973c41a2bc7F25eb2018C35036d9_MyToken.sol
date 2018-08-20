@@ -19,14 +19,14 @@ contract owned {
 }
 
 contract MyToken is owned {
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -47,8 +47,8 @@ contract MyToken is owned {
 
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert(); 
-        if (balanceOf[msg.sender] &lt; _value) revert();
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (balanceOf[msg.sender] < _value) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -78,9 +78,9 @@ contract MyToken is owned {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert();
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
-        if (_value &gt; allowance[_from][msg.sender]) revert();
+        if (balanceOf[_from] < _value) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
+        if (_value > allowance[_from][msg.sender]) revert();
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -89,7 +89,7 @@ contract MyToken is owned {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) revert();
+        if (balanceOf[msg.sender] < _value) revert();
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -97,8 +97,8 @@ contract MyToken is owned {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) revert();
-        if (_value &gt; allowance[_from][msg.sender]) revert();
+        if (balanceOf[_from] < _value) revert();
+        if (_value > allowance[_from][msg.sender]) revert();
         balanceOf[_from] -= _value;
         totalSupply -= _value;
         Burn(_from, _value);

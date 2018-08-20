@@ -73,7 +73,7 @@ contract StandardToken is ERC20Token ,Controlled{
 
         if(!transfersEnabled) throw;
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -86,7 +86,7 @@ contract StandardToken is ERC20Token ,Controlled{
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
         if(!transfersEnabled) throw;
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -127,7 +127,7 @@ contract StandardToken is ERC20Token ,Controlled{
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply;
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw; // Check for overflow
+        if (curTotalSupply + _amount < curTotalSupply) throw; // Check for overflow
         totalSupply=curTotalSupply + _amount;
 
         balances[_owner]+=_amount;
@@ -135,16 +135,16 @@ contract StandardToken is ERC20Token ,Controlled{
         Transfer(0, _owner, _amount);
         return true;
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MiniMeTokenSimple is StandardToken {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     // `parentToken` is the Token address that was cloned to produce this token;
@@ -227,9 +227,9 @@ contract PFC is MiniMeTokenSimple {
     _tokenFactory,
     0x0,                     // no parent token
     0,                       // no snapshot block number from parent
-    &quot;Power Fans Token&quot;,      // Token name
+    "Power Fans Token",      // Token name
     18,                      // Decimals
-    &quot;PFC&quot;,                   // Symbol
+    "PFC",                   // Symbol
     false                    // Enable transfers
     ) {}
 }

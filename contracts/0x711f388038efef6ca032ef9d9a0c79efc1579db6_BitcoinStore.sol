@@ -8,13 +8,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -109,7 +109,7 @@ contract BitcoinStore is Ownable, SafeMath {
   onlyOwner
   returns (uint) {
       uint i = 0;
-      while (i &lt; dests.length) {
+      while (i < dests.length) {
          ERC20(_tokenAddr).transfer(dests[i], values[i]);
          i += 1;
       }
@@ -118,7 +118,7 @@ contract BitcoinStore is Ownable, SafeMath {
 
   /* fallback function for when ether is sent to the contract */
   function () external payable {
-    require(eth_ratio &gt; 0); // safe divide
+    require(eth_ratio > 0); // safe divide
     uint buytokens = safeMul(bitcoin_ratio , msg.value)/eth_ratio;
     ERC20(Bitcoin_address).transfer(msg.sender, buytokens);
 
@@ -126,7 +126,7 @@ contract BitcoinStore is Ownable, SafeMath {
   }
 
   function buy() public payable {
-    require(eth_ratio &gt; 0); // safe divide
+    require(eth_ratio > 0); // safe divide
     uint buytokens = safeMul(bitcoin_ratio , msg.value)/eth_ratio;
     ERC20(Bitcoin_address).transfer(msg.sender, buytokens);
     

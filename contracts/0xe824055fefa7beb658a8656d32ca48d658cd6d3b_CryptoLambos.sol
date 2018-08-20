@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -160,10 +160,10 @@ contract CryptoLambos is Pausable, Destructible {
     Lambo storage _lambo = lambos[_id];
 
     require(_lambo.enabled);
-    require(msg.value  &gt;= _lambo.price);
+    require(msg.value  >= _lambo.price);
     require(msg.sender != _lambo.ownerAddress);
-    require(bytes(_nickname).length &lt;= 50);
-    require(bytes(_note).length &lt;= 100);
+    require(bytes(_nickname).length <= 50);
+    require(bytes(_note).length <= 100);
 
     uint256 _price      = _lambo.price;
     uint256 _commission = _price.div(20);
@@ -171,11 +171,11 @@ contract CryptoLambos is Pausable, Destructible {
     address _prevOwner  = _lambo.ownerAddress;
     uint256 _newPrice   = _calcNextPrice(_price);
 
-    if (bytes(_lambo.nickname).length &gt; 0) {
+    if (bytes(_lambo.nickname).length > 0) {
       delete _lambo.nickname;
     }
     
-    if (bytes(_lambo.note).length &gt; 0) {
+    if (bytes(_lambo.note).length > 0) {
       delete _lambo.note;
     }
     
@@ -203,7 +203,7 @@ contract CryptoLambos is Pausable, Destructible {
   }
 
   function addLambo(string _model, uint256 _price, bool _enabled) public whenNotPaused onlyOwner {
-    lambos.push(Lambo(_model, owner, _price, _enabled, &quot;Crypto_Lambos&quot;, &quot;Look ma! A Lambo!&quot;));
+    lambos.push(Lambo(_model, owner, _price, _enabled, "Crypto_Lambos", "Look ma! A Lambo!"));
 
     Added(lambos.length, _model, owner, _price, _enabled);
   }

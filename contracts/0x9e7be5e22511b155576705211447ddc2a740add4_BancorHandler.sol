@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-// import { ERC20 as Token } from &quot;openzeppelin-solidity/contracts/token/ERC20/ERC20.sol&quot;;
-// import { ExchangeHandler } from &quot;./ExchangeHandler.sol&quot;;
+// import { ERC20 as Token } from "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+// import { ExchangeHandler } from "./ExchangeHandler.sol";
 
 // pragma solidity ^0.4.24;
 
@@ -130,9 +130,9 @@ contract BancorHandler is ExchangeHandler {
     ) internal returns (uint256 amountObtained, address destinationToken) {
         // Find the length of the conversion path
         uint256 len;
-        for(len = 1; len &lt; orderAddresses.length; len++) {
+        for(len = 1; len < orderAddresses.length; len++) {
             if(orderAddresses[len] == 0) {
-                require(len &gt; 1, &quot;First element in conversion path was 0&quot;);
+                require(len > 1, "First element in conversion path was 0");
                 destinationToken = orderAddresses[len - 1];
                 len--;
                 break;
@@ -145,7 +145,7 @@ contract BancorHandler is ExchangeHandler {
         address[] memory conversionPath = new address[](len);
 
         // Move the contents from orderAddresses to conversionPath
-        for(uint256 i = 0; i &lt; len; i++) {
+        for(uint256 i = 0; i < len; i++) {
             conversionPath[i] = orderAddresses[i + 1];
         }
 

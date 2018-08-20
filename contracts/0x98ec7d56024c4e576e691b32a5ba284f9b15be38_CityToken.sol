@@ -18,7 +18,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -67,20 +67,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,25 +112,25 @@ contract CityToken is ERC721, Ownable {
   uint256 public lastPurchase;
 
   // City Data
-  mapping (uint256 =&gt; City) public cityData;
+  mapping (uint256 => City) public cityData;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   // Balances from % payouts.
-  mapping (address =&gt; uint256) private payoutBalances; 
+  mapping (address => uint256) private payoutBalances; 
 
   // The amount of Eth this country has withdrawn from the pool.
-  mapping (uint256 =&gt; uint256) private countryWithdrawn;
+  mapping (uint256 => uint256) private countryWithdrawn;
 
   // Events
   event CityPurchased(uint256 indexed _tokenId, address indexed _owner, uint256 _purchasePrice);
@@ -161,8 +161,8 @@ contract CityToken is ERC721, Ownable {
      require (countryOwner != address(0));
 
      if (_startingPrice == 0) {
-       if (price &gt;= thirdCap) _startingPrice = price.div(80);
-       else if (price &gt;= secondCap) _startingPrice = price.div(75);
+       if (price >= thirdCap) _startingPrice = price.div(80);
+       else if (price >= secondCap) _startingPrice = price.div(75);
        else _startingPrice = 0.002 ether;
      }
 
@@ -177,9 +177,9 @@ contract CityToken is ERC721, Ownable {
   */
   function createListing(uint256 _tokenId, uint256 _startingPrice, uint256 _payoutPercentage, address _owner) onlyOwner() public {
 
-    // make sure price &gt; 0
-    require(_startingPrice &gt; 0);
-    // make sure token hasn&#39;t been used yet
+    // make sure price > 0
+    require(_startingPrice > 0);
+    // make sure token hasn't been used yet
     require(cityData[_tokenId].price == 0);
     
     // create new token
@@ -198,7 +198,7 @@ contract CityToken is ERC721, Ownable {
   }
 
   function createMultiple (uint256[] _itemIds, uint256[] _prices, uint256[] _payouts, address _owner) onlyOwner() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       createListing(_itemIds[i], _prices[i], _payouts[i], _owner);
     }
   }
@@ -208,11 +208,11 @@ contract CityToken is ERC721, Ownable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) private view returns (uint256 _nextPrice) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(200).div(94);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(135).div(95);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(118).div(96);
     } else {
       return _price.mul(115).div(97);
@@ -220,11 +220,11 @@ contract CityToken is ERC721, Ownable {
   }
 
   function calculatePoolCut (uint256 _price) public view returns (uint256 _poolCut) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(10).div(100); // 10%
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(9).div(100); // 9%
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(8).div(100); // 8%
     } else {
       return _price.mul(7).div(100); // 7%
@@ -247,8 +247,8 @@ contract CityToken is ERC721, Ownable {
     address newOwner = msg.sender;
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
 
     uint256 excess = msg.value.sub(price);
@@ -271,7 +271,7 @@ contract CityToken is ERC721, Ownable {
     // raise event
     CityPurchased(_tokenId, newOwner, price);
 
-    // Transfer payment to old owner minus the developer&#39;s and pool&#39;s cut.
+    // Transfer payment to old owner minus the developer's and pool's cut.
     oldOwner.transfer(price.sub(devCut.add(poolCut)));
 
     // Transfer 10% profit to current country owner
@@ -282,7 +282,7 @@ contract CityToken is ERC721, Ownable {
     countryOwner.transfer(poolCut.mul(COUNTRY_PAYOUT).div(100));
 
     // Send refund to owner if needed
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
 
@@ -326,7 +326,7 @@ contract CityToken is ERC721, Ownable {
   }
 
   /**
-  * @dev Withdraw dev&#39;s cut
+  * @dev Withdraw dev's cut
   */
   function withdraw() onlyOwner public {
     owner.transfer(devOwed);
@@ -334,7 +334,7 @@ contract CityToken is ERC721, Ownable {
   }
 
   /**
-  * @dev Sets item&#39;s payout
+  * @dev Sets item's payout
   * @param _itemId itemId to be changed
   */
   function setPayout(uint256 _itemId, uint256 _newPayout) onlyOwner public {
@@ -349,7 +349,7 @@ contract CityToken is ERC721, Ownable {
   function updatePayout(address _owner) public {
     uint256[] memory cities = ownedTokens[_owner];
     uint256 owed;
-    for (uint256 i = 0; i &lt; cities.length; i++) {
+    for (uint256 i = 0; i < cities.length; i++) {
         uint256 totalCityOwed = poolTotal * cityData[cities[i]].payout / 10000;
         uint256 cityOwed = totalCityOwed.sub(cityData[cities[i]].withdrawn);
         owed += cityOwed;
@@ -404,11 +404,11 @@ contract CityToken is ERC721, Ownable {
   }
 
   /**
-  * @dev Determines if token exists by checking it&#39;s price
+  * @dev Determines if token exists by checking it's price
   * @param _tokenId uint256 ID of token
   */
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return cityData[_tokenId].price &gt; 0;
+    return cityData[_tokenId].price > 0;
   }
 
   /**
@@ -601,11 +601,11 @@ contract CityToken is ERC721, Ownable {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;EtherCities.io City&quot;;
+    return "EtherCities.io City";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;EC&quot;;
+    return "EC";
   }
 
 }

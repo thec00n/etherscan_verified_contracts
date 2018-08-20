@@ -60,25 +60,25 @@ contract DSAuth is DSAuthEvents {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -112,7 +112,7 @@ contract DSMath {
 
 contract FeeAuthority is DSMath, DSAuth {
         
-    mapping (address =&gt; uint) tokenRates;
+    mapping (address => uint) tokenRates;
     uint defaultFeePercentage;
 
     constructor () public {
@@ -120,19 +120,19 @@ contract FeeAuthority is DSMath, DSAuth {
     }
 
     function setDefaultFee (uint newFeeWad) public auth {
-        require(newFeeWad &lt; 0.1 ether); /* require &lt;10% fee */
+        require(newFeeWad < 0.1 ether); /* require <10% fee */
         defaultFeePercentage = newFeeWad;
     }
     
     function setFee (address token, uint newFeeWad) public auth {
         /* set the new fee for a token. auth modifier ensures only owner can call. */
-        require(newFeeWad &lt; 0.1 ether); /* require &lt;10% fee */
+        require(newFeeWad < 0.1 ether); /* require <10% fee */
         tokenRates[token] = newFeeWad;
     }
     
     function rateOf (address token) internal view returns (uint) {
         if (tokenRates[token] == 0) {
-        /* use default fee rate if the token&#39;s fee rate is not specified */
+        /* use default fee rate if the token's fee rate is not specified */
             return defaultFeePercentage;
         } else {
             return tokenRates[token];

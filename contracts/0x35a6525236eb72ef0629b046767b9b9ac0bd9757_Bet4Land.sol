@@ -35,8 +35,8 @@ contract Bet4Land is owned {
 
     uint gameNum;
     /* This notes all games and a map from gameId to gameIdx */
-    mapping(uint =&gt; Game) games;
-    mapping(uint =&gt; uint) indexMap;
+    mapping(uint => Game) games;
+    mapping(uint => uint) indexMap;
 
     /** constructor */
     function Bet4Land() public {
@@ -58,8 +58,8 @@ contract Bet4Land is owned {
      * Only can be called by newOwner
      */
     function getGameInfoByIndex(uint gameIndex) onlyOwner public view returns (uint gameId, bytes8 landKey, uint seedBlock, uint userNum, string content) {
-        require(gameIndex &lt; gameNum);               // should exist
-        require(gameIndex &gt;= 1);                    // should exist
+        require(gameIndex < gameNum);               // should exist
+        require(gameIndex >= 1);                    // should exist
         gameId = games[gameIndex].gameId;
         landKey = games[gameIndex].landKey;
         seedBlock = games[gameIndex].seedBlock;
@@ -73,8 +73,8 @@ contract Bet4Land is owned {
      */
     function getGameInfoById(uint gameId) public view returns (uint gameIndex, bytes8 landKey, uint seedBlock, uint userNum, string content) {
         gameIndex = indexMap[gameId];
-        require(gameIndex &lt; gameNum);              // should exist
-        require(gameIndex &gt;= 1);                   // should exist
+        require(gameIndex < gameNum);              // should exist
+        require(gameIndex >= 1);                   // should exist
         landKey = games[gameIndex].landKey;
         seedBlock = games[gameIndex].seedBlock;
         userNum = games[gameIndex].userNum;

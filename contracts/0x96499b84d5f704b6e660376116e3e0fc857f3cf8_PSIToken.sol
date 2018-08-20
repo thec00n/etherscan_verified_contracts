@@ -6,18 +6,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   //address[] public addressLUT;
   /**
   * @dev transfer token for a specified address
@@ -48,7 +48,7 @@ contract BasicToken is ERC20Basic {
   function transfer(address _to, uint256 _value) returns (bool) {
       
     // Check to see if transfer window has been reached
-    require (now &gt;= 1512835200); // transfers can&#39;t happen until 3mo after sale ends (1512835200)
+    require (now >= 1512835200); // transfers can't happen until 3mo after sale ends (1512835200)
     
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -77,7 +77,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
     
     // Check to see if transfer window has been reached
-    require (now &gt;= 1512835200); // transfers can&#39;t happen until 3mo after sale ends (1512835200)
+    require (now >= 1512835200); // transfers can't happen until 3mo after sale ends (1512835200)
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -126,11 +126,11 @@ contract UpgradeAgent {
 
 contract PSIToken is StandardToken {
     address public owner;
-    string public constant name = &quot;Protostarr&quot;; // Protostarr
-    string public constant symbol = &quot;PSR&quot;; // PSR
+    string public constant name = "Protostarr"; // Protostarr
+    string public constant symbol = "PSR"; // PSR
     uint256 public constant decimals = 4;
     
-    // Address for founder&#39;s PSI token and ETH deposits
+    // Address for founder's PSI token and ETH deposits
     address public constant founders_addr = 0xEa16ebd8Cdf5A51fa0a80bFA5665146b2AB82210;
     
     UpgradeAgent public upgradeAgent;
@@ -153,7 +153,7 @@ contract PSIToken is StandardToken {
         
         if(address(upgradeAgent) == 0x00) revert();
         // Validate input value.
-        if (value &lt;= 0) revert();
+        if (value <= 0) revert();
         
         balances[msg.sender] = balances[msg.sender].sub(value);
         
@@ -192,7 +192,7 @@ contract PSIToken is StandardToken {
     }
     // issue tokens for received ether
     function createTokens(address recipient) payable {
-        if(msg.value&lt;=uint256(1 ether).div(600)) {
+        if(msg.value<=uint256(1 ether).div(600)) {
             revert();
         }
     
@@ -228,22 +228,22 @@ contract PSIToken is StandardToken {
     // 1505059200 SALE ENDS
     // 1512835200 transfer period begins
     function getPrice() constant returns (uint result) {
-        if (now &lt; 1502640000) { // before power hour  1502640000
-            revert(); // DISQUALIFIED!!! There&#39;s one every season!!!
+        if (now < 1502640000) { // before power hour  1502640000
+            revert(); // DISQUALIFIED!!! There's one every season!!!
         } else {
-            if (now &lt; 1502645400) { // before week 1 start (in power hour)  1502643600 (new 1502645400)
+            if (now < 1502645400) { // before week 1 start (in power hour)  1502643600 (new 1502645400)
                 return 170;
             } else {
-                if (now &lt; 1503244800) { // before week 2 start (in week 1)  1503244800
+                if (now < 1503244800) { // before week 2 start (in week 1)  1503244800
                     return 150;
                 } else {
-                    if (now &lt; 1503849600) { // before week 3 start (in week 2)  1503849600
+                    if (now < 1503849600) { // before week 3 start (in week 2)  1503849600
                         return 130;
                     } else {
-                        if (now &lt; 1504454400) { // before week 4 start (in week 3)  1504454400
+                        if (now < 1504454400) { // before week 4 start (in week 3)  1504454400
                             return 110;
                         } else {
-                            if (now &lt; 1505059200) { // before end of sale (in week 4)  1505059200
+                            if (now < 1505059200) { // before end of sale (in week 4)  1505059200
                                 return 100;
                             } else {
                                 revert(); // sale has ended, kill transaction

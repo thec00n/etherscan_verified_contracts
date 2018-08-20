@@ -6,12 +6,12 @@ pragma solidity ^0.4.24;
  */
 library SafeMath {
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,13 +48,13 @@ contract Owned {
 contract ERC20Token {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Ansforce Intelligence Token&quot;;
-    string public constant symbol = &quot;AIT&quot;;
+    string public constant name = "Ansforce Intelligence Token";
+    string public constant symbol = "AIT";
     uint8 public constant decimals = 18;
     uint256 public totalSupply = 0;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed from, uint256 value, address indexed to, bytes extraData);
@@ -67,10 +67,10 @@ contract ERC20Token {
      */
     function _transfer(address from, address to, uint256 value) internal {
         // Check if the sender has enough balance
-        require(balanceOf[from] &gt;= value);
+        require(balanceOf[from] >= value);
 
         // Check for overflow
-        require(balanceOf[to] + value &gt; balanceOf[to]);
+        require(balanceOf[to] + value > balanceOf[to]);
 
         // Save this for an amount double check assertion
         uint256 previousBalances = balanceOf[from].add(balanceOf[to]);
@@ -106,7 +106,7 @@ contract ERC20Token {
      * @param value the amount to send
      */
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
-        require(value &lt;= allowance[from][msg.sender]);
+        require(value <= allowance[from][msg.sender]);
         allowance[from][msg.sender] = allowance[from][msg.sender].sub(value);
         _transfer(from, to, value);
         return true;
@@ -135,7 +135,7 @@ contract AnsforceIntelligenceToken is Owned, ERC20Token {
     
     function init(uint256 _supply, address _vault) public onlyOwner {
         require(totalSupply == 0);
-        require(_supply &gt; 0);
+        require(_supply > 0);
         require(_vault != address(0));
         totalSupply = _supply;
         balanceOf[_vault] = totalSupply;
@@ -162,7 +162,7 @@ contract AnsforceIntelligenceToken is Owned, ERC20Token {
     }
     
     
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => uint256) public freezeOf;
     
     /* This notifies clients about the amount frozen */
     event Freeze(address indexed target, uint256 value);
@@ -171,7 +171,7 @@ contract AnsforceIntelligenceToken is Owned, ERC20Token {
     event Unfreeze(address indexed target, uint256 value);
     
     function freeze(address target, uint256 _value) public onlyOwner returns (bool success) {
-        require( _value &gt; 0 );
+        require( _value > 0 );
         balanceOf[target] = SafeMath.sub(balanceOf[target], _value);
         freezeOf[target] = SafeMath.add(freezeOf[target], _value);
         emit Freeze(target, _value);
@@ -179,7 +179,7 @@ contract AnsforceIntelligenceToken is Owned, ERC20Token {
     }
 
     function unfreeze(address target, uint256 _value) public onlyOwner returns (bool success) {
-        require( _value &gt; 0 );
+        require( _value > 0 );
         freezeOf[target] = SafeMath.sub(freezeOf[target], _value);
         balanceOf[target] = SafeMath.add(balanceOf[target], _value);
         emit Unfreeze(target, _value);

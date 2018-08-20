@@ -35,10 +35,10 @@ contract AirdropFinal {
         token = ERC20(_token);
     }
 
-    // Uses transferFrom so you&#39;ll need to approve some tokens before this one to
+    // Uses transferFrom so you'll need to approve some tokens before this one to
     // this contract address
     function startAirdrop(address[] users, uint256 amounts) public {
-        for(uint256 i = 0; i &lt; users.length; i++) {
+        for(uint256 i = 0; i < users.length; i++) {
             address account = users[i];
             uint256 amount = amounts;
             

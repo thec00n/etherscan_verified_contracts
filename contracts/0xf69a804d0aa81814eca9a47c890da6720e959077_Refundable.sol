@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -140,7 +140,7 @@ contract KYCCrowdsale is Ownable{
 
     bool public isKYCRequired = false;
 
-    mapping (bytes32 =&gt; address) public whiteListed;
+    mapping (bytes32 => address) public whiteListed;
 
     function enableKYC() external onlyOwner {
         require(!isKYCRequired); // kyc is not enabled
@@ -270,15 +270,15 @@ contract Crowdsale is Pausable, KYCCrowdsale{
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    uint256 public roundOneLimit = 9500000 ether;
    uint256 public roundTwoLimit = 6750000 ether;
    
   function updateRoundLimits(uint256 _amount) private {
-      if (roundOneLimit &gt; 0){
-          if(roundOneLimit &gt; _amount){
+      if (roundOneLimit > 0){
+          if(roundOneLimit > _amount){
                 roundOneLimit = roundOneLimit.sub(_amount);
                 return;
           } else {
@@ -293,20 +293,20 @@ contract Crowdsale is Pausable, KYCCrowdsale{
   
       uint256 buffer = 0;
       uint256 tokens = 0;
-      if(weiAmount &lt; 1 ether)
+      if(weiAmount < 1 ether)
       
         // 20% disount = $0.28 EQUI Price , default category
         // 1 ETH = 2400 EQUI
         return (weiAmount.mul(1 ether)).div(defaultBonussRate);
 
-      else if(weiAmount &gt;= 1 ether) {
+      else if(weiAmount >= 1 ether) {
           
           
-          if(roundOneLimit &gt; 0){
+          if(roundOneLimit > 0){
               
               uint256 amount = roundOneRate * roundOneLimit;
               
-              if (weiAmount &gt; amount){
+              if (weiAmount > amount){
                   buffer = weiAmount - amount;
                   tokens =  (amount.mul(1 ether)).div(roundOneRate);
               }else{
@@ -317,7 +317,7 @@ contract Crowdsale is Pausable, KYCCrowdsale{
         
           }
           
-          if(buffer &gt; 0){
+          if(buffer > 0){
               uint256 roundTwo = (buffer.mul(1 ether)).div(roundTwoRate);
               return tokens + roundTwo;
           }
@@ -334,18 +334,18 @@ contract Crowdsale is Pausable, KYCCrowdsale{
   // @return true if the transaction can buy tokens
   function validPurchase() internal view {
     require(msg.value != 0);
-    require(remainingTokens() &gt; 0,&quot;contract doesn&#39;t have tokens&quot;);
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    require(remainingTokens() > 0,"contract doesn't have tokens");
+    require(now >= startTime && now <= endTime);
   }
 
   function updateEndTime(uint256 newTime) onlyOwner external {
-    require(newTime &gt; startTime);
+    require(newTime > startTime);
     endTime = newTime;
     emit EndTimeUpdated();
   }
 
   function updateEQUIPrice(uint256 weiAmount) onlyOwner external {
-    require(weiAmount &gt; 0);
+    require(weiAmount > 0);
     assert((1 ether) % weiAmount == 0);
     emit EQUIPriceUpdated(rate, weiAmount);
     rate = weiAmount;
@@ -354,14 +354,14 @@ contract Crowdsale is Pausable, KYCCrowdsale{
     defaultBonussRate = (rate.mul(8)).div(10);    // price at 20% discount
   }
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; uint256) internal deposited;
+  mapping(address => uint256) balances;
+  mapping(address => uint256) internal deposited;
 
   struct account{
       uint256[] releaseTime;
-      mapping(uint256 =&gt; uint256) balance;
+      mapping(uint256 => uint256) balance;
   }
-  mapping(address =&gt; account) ledger;
+  mapping(address => account) ledger;
 
 
   function assignTokens(address beneficiary, uint256 amount) private returns(uint256 lockedFor){
@@ -383,9 +383,9 @@ contract Crowdsale is Pausable, KYCCrowdsale{
   }
 
   function unlockedBalance(address _owner) public view returns (uint256 amount) {
-    for(uint256 i = 0 ; i &lt; ledger[_owner].releaseTime.length; i++){
+    for(uint256 i = 0 ; i < ledger[_owner].releaseTime.length; i++){
         uint256 time = ledger[_owner].releaseTime[i];
-        if(now &gt;= time) amount +=  ledger[_owner].balance[time];
+        if(now >= time) amount +=  ledger[_owner].balance[time];
     }
   }
 
@@ -393,19 +393,19 @@ contract Crowdsale is Pausable, KYCCrowdsale{
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function releaseEQUITokens(bytes32 hash, uint8 v, bytes32 r, bytes32 s) public whenNotPaused {
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
 
     uint256 amount = 0;
-    for(uint8 i = 0 ; i &lt; ledger[msg.sender].releaseTime.length; i++){
+    for(uint8 i = 0 ; i < ledger[msg.sender].releaseTime.length; i++){
         uint256 time = ledger[msg.sender].releaseTime[i];
-        if(now &gt;= time &amp;&amp; ledger[msg.sender].balance[time] &gt; 0){
+        if(now >= time && ledger[msg.sender].balance[time] > 0){
             amount = ledger[msg.sender].balance[time];
             ledger[msg.sender].balance[time] = 0;
             continue;
         }
     }
 
-    if(amount &lt;= 0 || balances[msg.sender] &lt; amount){
+    if(amount <= 0 || balances[msg.sender] < amount){
         revert();
     }
 

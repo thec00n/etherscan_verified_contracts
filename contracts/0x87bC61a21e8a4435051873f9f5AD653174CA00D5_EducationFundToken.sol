@@ -2,27 +2,27 @@ pragma solidity ^0.4.16;
 
 contract EducationFundToken {
 
-    string public name = &quot;EducationFundToken&quot;;
-    string public symbol = &quot;EDUT&quot;;
+    string public name = "EducationFundToken";
+    string public symbol = "EDUT";
     uint8 public decimals = 0;
 
     address owner = 0x3755530e18033E3EDe5E6b771F1F583bf86EfD10;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function MyKidsEducationFund() public {
         balanceOf[msg.sender] = 1000;
-        name = &quot;EducationFundToken&quot;;
-        symbol = &quot;EDUT&quot;;
+        name = "EducationFundToken";
+        symbol = "EDUT";
     }
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -35,7 +35,7 @@ contract EducationFundToken {
     }
      
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -47,7 +47,7 @@ contract EducationFundToken {
     }
 
     function () payable public {
-        require(msg.value &gt;= 0);
+        require(msg.value >= 0);
         uint tokens = msg.value / 1 finney;
         balanceOf[msg.sender] += tokens;
         owner.transfer(msg.value);

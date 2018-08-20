@@ -13,12 +13,12 @@ library SafeMath {
   }
  
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a); 
+    assert(b <= a); 
     return a - b; 
   } 
   
   function add(uint a, uint b) internal pure returns (uint) { 
-    uint c = a + b; assert(c &gt;= a);
+    uint c = a + b; assert(c >= a);
     return c;
   }
  
@@ -46,12 +46,12 @@ contract Own {
 contract Tangle is Own {
     
     using SafeMath for uint;
-    string public constant name = &quot;Tangle&quot;;
-    string public constant symbol = &quot;TNC&quot;;
+    string public constant name = "Tangle";
+    string public constant symbol = "TNC";
     uint32 public constant decimals = 7;
     uint public totalSupply = 10000000;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping(address => uint)) allowed;
     
     
     function Tangle() public {
@@ -63,7 +63,7 @@ contract Tangle is Own {
     }
     
     function transfer(address _to, uint _value) public returns (bool success) {
-        if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value); 
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -73,9 +73,9 @@ contract Tangle is Own {
     }
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if( allowed[_from][msg.sender] &gt;= _value &amp;&amp;
-            balances[_from] &gt;= _value 
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if( allowed[_from][msg.sender] >= _value &&
+            balances[_from] >= _value 
+            && balances[_to] + _value >= balances[_to]) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
             balances[_from] = balances[_from].sub(_value); 
             balances[_to] = balances[_to].add(_value);

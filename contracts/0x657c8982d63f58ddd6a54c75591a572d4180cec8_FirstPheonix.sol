@@ -150,7 +150,7 @@ contract CardProto is CardBase {
     }
 
     // limits for mythic cards
-    mapping(uint16 =&gt; Limit) public limits;
+    mapping(uint16 => Limit) public limits;
 
     // can only set limits once
     function setLimit(uint16 id, uint64 limit) public onlyGovernor {
@@ -169,8 +169,8 @@ contract CardProto is CardBase {
 
     // could make these arrays to save gas
     // not really necessary - will be update a very limited no of times
-    mapping(uint8 =&gt; bool) public seasonTradable;
-    mapping(uint8 =&gt; bool) public seasonTradabilityLocked;
+    mapping(uint8 => bool) public seasonTradable;
+    mapping(uint8 => bool) public seasonTradabilityLocked;
     uint8 public currentSeason;
 
     function makeTradable(uint8 season) public onlyGovernor {
@@ -192,8 +192,8 @@ contract CardProto is CardBase {
     }
 
     function nextSeason() public onlyGovernor {
-        //Seasons shouldn&#39;t go to 0 if there is more than the uint8 should hold, the governor should know this &#175;\_(ツ)_/&#175; -M
-        require(currentSeason &lt;= 255); 
+        //Seasons shouldn't go to 0 if there is more than the uint8 should hold, the governor should know this ¯\_(ツ)_/¯ -M
+        require(currentSeason <= 255); 
 
         currentSeason++;
         mythic.length = 0;
@@ -230,13 +230,13 @@ contract CardProto is CardBase {
 
     // there is a particular design decision driving this:
     // need to be able to iterate over mythics only for card generation
-    // don&#39;t store 5 different arrays: have to use 2 ids
+    // don't store 5 different arrays: have to use 2 ids
     // better to bear this cost (2 bytes per proto card)
     // rather than 1 byte per instance
 
     uint16 public protoCount;
     
-    mapping(uint16 =&gt; ProtoCard) protos;
+    mapping(uint16 => ProtoCard) protos;
 
     uint16[] public mythic;
     uint16[] public legendary;
@@ -249,7 +249,7 @@ contract CardProto is CardBase {
         uint8[] healths, uint8[] cardTypes, uint8[] tribes, bool[] packable
     ) public onlyGovernor returns(uint16) {
 
-        for (uint i = 0; i &lt; externalIDs.length; i++) {
+        for (uint i = 0; i < externalIDs.length; i++) {
 
             ProtoCard memory card = ProtoCard({
                 exists: true,
@@ -408,10 +408,10 @@ contract CardProto is CardBase {
             uint16 id;
             uint64 limit;
             bool set;
-            for (uint i = 0; i &lt; mythic.length; i++) {
+            for (uint i = 0; i < mythic.length; i++) {
                 id = mythic[(random + i) % mythic.length];
                 (limit, set) = getLimit(id);
-                if (set &amp;&amp; limit &gt; 0){
+                if (set && limit > 0){
                     return id;
                 }
             }
@@ -423,7 +423,7 @@ contract CardProto is CardBase {
     }
 
     // can never adjust tradable cards
-    // each season gets a &#39;balancing beta&#39;
+    // each season gets a 'balancing beta'
     // totally immutable: season, rarity
     function replaceProto(
         uint16 index, uint8 god, uint8 cardType, uint8 mana, uint8 attack, uint8 health, uint8 tribe
@@ -467,14 +467,14 @@ contract FirstPheonix is Pausable {
 
     uint16 PHEONIX_PROTO = 380;
 
-    mapping(address =&gt; bool) public claimed;
+    mapping(address => bool) public claimed;
 
     function approvePack(address toApprove) public onlyOwner {
         approved.push(toApprove);
     }
 
     function isApproved(address test) public view returns (bool) {
-        for (uint i = 0; i &lt; approved.length; i++) {
+        for (uint i = 0; i < approved.length; i++) {
             if (approved[i] == test) {
                 return true;
             }

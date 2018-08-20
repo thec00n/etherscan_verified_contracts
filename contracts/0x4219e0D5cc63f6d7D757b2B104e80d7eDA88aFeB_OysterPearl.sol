@@ -21,10 +21,10 @@ contract OysterPearl {
     uint256 public storageStep;
 
     // Array definitions
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     // ERC20 event
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -50,8 +50,8 @@ contract OysterPearl {
      */
     function OysterPearl() public {
         director = msg.sender;
-        name = &quot;Oyster Pearl&quot;;
-        symbol = &quot;TPRL&quot;;
+        name = "Oyster Pearl";
+        symbol = "TPRL";
         decimals = 18;
         saleClosed = true;
         directorLock = false;
@@ -172,10 +172,10 @@ contract OysterPearl {
         require(!buried[msg.sender]);
         
         // An address must have at least claimAmount to be buried
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
         // Prevent addresses with large balances from getting buried
-        require(balances[msg.sender] &lt;= retentionMax);
+        require(balances[msg.sender] <= retentionMax);
         
         // Set buried state to true
         buried[msg.sender] = true;
@@ -185,7 +185,7 @@ contract OysterPearl {
         
         buriedSupply += balances[msg.sender];
         
-        if (buriedSupply &gt;= storageStep) {
+        if (buriedSupply >= storageStep) {
             storageStep += (totalSupply - storageStep) / 2;
             claimAmount = claimAmount / 2;
             Step(storageStep, claimAmount);
@@ -202,7 +202,7 @@ contract OysterPearl {
      * 
      * Claim PRL from a buried address
      *
-     * If a prior claim wasn&#39;t made during the current epoch, then claimAmount can be withdrawn
+     * If a prior claim wasn't made during the current epoch, then claimAmount can be withdrawn
      *
      * @param _payout the address of the website owner
      * @param _fee the address of the broker node
@@ -221,10 +221,10 @@ contract OysterPearl {
         require(msg.sender != _fee);
         
         // It must be either the first time this address is being claimed or atleast epoch in time has passed
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= epoch);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= epoch);
         
         // Check if the buried address has enough
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
         // Reset the claim clock to the current block time
         claimed[msg.sender] = block.timestamp;
@@ -262,7 +262,7 @@ contract OysterPearl {
         
         // If the receiving address is buried, it cannot exceed retentionMax
         if (buried[_to]) {
-            require(balances[_to] + _value &lt;= retentionMax);
+            require(balances[_to] + _value <= retentionMax);
             buriedSupply += _value;
         }
         
@@ -270,10 +270,10 @@ contract OysterPearl {
         require(_to != 0x0);
         
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
@@ -312,7 +312,7 @@ contract OysterPearl {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -364,7 +364,7 @@ contract OysterPearl {
         require(!buried[msg.sender]);
         
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         // Subtract from the sender
         balances[msg.sender] -= _value;
@@ -388,15 +388,15 @@ contract OysterPearl {
         require(!buried[_from]);
         
         // Check if the targeted balance is enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         // Subtract from the targeted balance
         balances[_from] -= _value;
         
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
         
         // Update totalSupply

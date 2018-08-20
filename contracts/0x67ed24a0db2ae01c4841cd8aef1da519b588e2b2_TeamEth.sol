@@ -20,8 +20,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -152,10 +152,10 @@ contract TeamEth {
 
     // team withdrawal after specified time
     function withdraw_1() onlyAdmin public {
-       require(ethToBeClaimed &gt; 0);
+       require(ethToBeClaimed > 0);
        require(withdraw_1Completed == false);
        // ensure current time is later than time set
-       require(now &gt;= unlockDate1);
+       require(now >= unlockDate1);
        // now allow a percentage of the balance to be claimed
        admin.transfer(ethToBeClaimed.div(quarter1));
        emit Withdrew(admin, ethToBeClaimed.div(quarter1));    // 25%
@@ -164,10 +164,10 @@ contract TeamEth {
     
     // team withdrawal after specified time
     function withdraw_2() onlyAdmin public {
-       require(ethToBeClaimed &gt; 0);
+       require(ethToBeClaimed > 0);
        require(withdraw_2Completed == false);
        // ensure current time is later than time set
-       require(now &gt;= unlockDate2);
+       require(now >= unlockDate2);
        // now allow a percentage of the balance to be claimed
        admin.transfer(ethToBeClaimed.div(quarter2));
        emit Withdrew(admin, ethToBeClaimed.div(quarter2));    // 25%
@@ -176,10 +176,10 @@ contract TeamEth {
     
     // team withdrawal after specified time
     function withdraw_3() onlyAdmin public {
-       require(ethToBeClaimed &gt; 0);
+       require(ethToBeClaimed > 0);
        require(withdraw_3Completed == false);
        // ensure current time is later than time set
-       require(now &gt;= unlockDate3);
+       require(now >= unlockDate3);
        // now allow a percentage of the balance to be claimed
        admin.transfer(ethToBeClaimed.div(quarter3));
        emit Withdrew(admin, ethToBeClaimed.div(quarter3));    // 25%
@@ -189,7 +189,7 @@ contract TeamEth {
     // team withdrawal after specified time
     function withdraw_4() onlyAdmin public {
        // ensure current time is later than time set
-       require(now &gt;= unlockDate4);
+       require(now >= unlockDate4);
        // now allow all remaining balance to be claimed
        admin.transfer(address(this).balance);
        emit Withdrew(admin, address(this).balance);    // all remaining balance

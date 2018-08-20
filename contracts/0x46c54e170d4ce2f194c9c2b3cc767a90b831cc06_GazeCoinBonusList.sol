@@ -44,7 +44,7 @@ contract Owned {
 // Admin
 // ----------------------------------------------------------------------------
 contract Admined is Owned {
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 
     event AdminAdded(address addr);
     event AdminRemoved(address addr);
@@ -72,7 +72,7 @@ contract Admined is Owned {
 // ----------------------------------------------------------------------------
 contract GazeCoinBonusList is Admined {
     bool public sealed;
-    mapping(address =&gt; uint) public bonusList;
+    mapping(address => uint) public bonusList;
 
     event AddressListed(address indexed addr, uint tier);
 
@@ -81,7 +81,7 @@ contract GazeCoinBonusList is Admined {
     function add(address[] addresses, uint tier) public onlyAdmin {
         require(!sealed);
         require(addresses.length != 0);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(addresses[i] != address(0));
             if (bonusList[addresses[i]] != tier) {
                 bonusList[addresses[i]] = tier;
@@ -92,7 +92,7 @@ contract GazeCoinBonusList is Admined {
     function remove(address[] addresses) public onlyAdmin {
         require(!sealed);
         require(addresses.length != 0);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(addresses[i] != address(0));
             if (bonusList[addresses[i]] != 0) {
                 bonusList[addresses[i]] = 0;

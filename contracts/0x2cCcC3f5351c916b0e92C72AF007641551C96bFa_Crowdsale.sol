@@ -50,8 +50,8 @@ contract CrowdsaleLimit {
   uint public crowdsale_eth_refund = 0;
    
   // setting team list and set percentage of tokens
-  mapping(address =&gt; uint) public team_addresses_token_percentage;
-  mapping(uint =&gt; address) public team_addresses_idx;
+  mapping(address => uint) public team_addresses_token_percentage;
+  mapping(uint => address) public team_addresses_idx;
   uint public team_address_count= 0;
   uint public team_token_percentage_total= 0;
   uint public team_token_percentage_max= 40;
@@ -63,15 +63,15 @@ contract CrowdsaleLimit {
   // limitation of buying tokens
   modifier allowCrowdsaleAmountLimit(){	
 	if (msg.value == 0) revert();
-	if((crowdsale_eth_fund.add(msg.value)) &gt; CROWDSALE_ETH_IN_WEI_FUND_MAX) revert();
-	if((CROWDSALE_GASPRICE_IN_WEI_MAX &gt; 0) &amp;&amp; (tx.gasprice &gt; CROWDSALE_GASPRICE_IN_WEI_MAX)) revert();
+	if((crowdsale_eth_fund.add(msg.value)) > CROWDSALE_ETH_IN_WEI_FUND_MAX) revert();
+	if((CROWDSALE_GASPRICE_IN_WEI_MAX > 0) && (tx.gasprice > CROWDSALE_GASPRICE_IN_WEI_MAX)) revert();
 	_;
   }
    
   function CrowdsaleLimit(uint _start, uint _end) public {
 	require(_start != 0);
 	require(_end != 0);
-	require(_start &lt; _end);
+	require(_start < _end);
 			
 	startsAt = _start;
     endsAt = _end;
@@ -91,13 +91,13 @@ contract CrowdsaleLimit {
   
   // check if the goal is reached
   function isMinimumGoalReached() public constant returns (bool) {
-    return crowdsale_eth_fund &gt;= CROWDSALE_ETH_IN_WEI_FUND_MIN;
+    return crowdsale_eth_fund >= CROWDSALE_ETH_IN_WEI_FUND_MIN;
   }
   
   // add new team percentage of tokens
   function addTeamAddressInternal(address addr, uint release_time, uint token_percentage) internal {
-	if((team_token_percentage_total.add(token_percentage)) &gt; team_token_percentage_max) revert();
-	if((team_token_percentage_total.add(token_percentage)) &gt; 100) revert();
+	if((team_token_percentage_total.add(token_percentage)) > team_token_percentage_max) revert();
+	if((team_token_percentage_total.add(token_percentage)) > 100) revert();
 	if(team_addresses_token_percentage[addr] != 0) revert();
 	
 	team_addresses_token_percentage[addr]= token_percentage;
@@ -111,7 +111,7 @@ contract CrowdsaleLimit {
    
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endsAt;
+    return now > endsAt;
   }
 }
 
@@ -182,10 +182,10 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   address public multisigWallet;
     
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
      
   /* the number of tokens already sold through this contract*/
   uint public tokensSold = 0;
@@ -228,10 +228,10 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   /* Crowdfund state machine management. */
   function getState() public constant returns (State) {
     if(finalized) return State.Finalized;
-    else if (now &lt; startsAt) return State.PreFunding;
-    else if (now &lt;= endsAt &amp;&amp; !isMinimumGoalReached()) return State.Funding;
+    else if (now < startsAt) return State.PreFunding;
+    else if (now <= endsAt && !isMinimumGoalReached()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; crowdsale_eth_fund &gt; 0 &amp;&amp; loadedRefund &gt;= crowdsale_eth_fund) return State.Refunding;
+    else if (!isMinimumGoalReached() && crowdsale_eth_fund > 0 && loadedRefund >= crowdsale_eth_fund) return State.Refunding;
     else return State.Failure;
   }
     
@@ -249,7 +249,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
 	//uint tokens= total.mul(100).div(100-team_token_percentage_total).sub(total);
 	uint tokens= total.mul(team_token_percentage_total).div(100-team_token_percentage_total);
 	
-	for(uint i=0; i&lt;team_address_count; i++) {
+	for(uint i=0; i<team_address_count; i++) {
 		address addr= team_addresses_idx[i];
 		if(addr==0x0) continue;
 		
@@ -271,14 +271,14 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
 	uint256 tokenAmount= 0;
 	
 	if(getState() == State.PreFunding) {
-		if (weiAmount &lt; PRESALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
-		if((PRESALE_ETH_IN_WEI_FUND_MAX &gt; 0) &amp;&amp; ((presale_eth_fund.add(weiAmount)) &gt; PRESALE_ETH_IN_WEI_FUND_MAX)) revert();		
+		if (weiAmount < PRESALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
+		if((PRESALE_ETH_IN_WEI_FUND_MAX > 0) && ((presale_eth_fund.add(weiAmount)) > PRESALE_ETH_IN_WEI_FUND_MAX)) revert();		
 		
 		tokenAmount = calculateTokenPresale(weiAmount, token_decimals);
 		presale_eth_fund = presale_eth_fund.add(weiAmount);
 	}
 	else if((getState() == State.Funding) || (getState() == State.Success)) {
-		if (weiAmount &lt; CROWDSALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
+		if (weiAmount < CROWDSALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
 		
 		tokenAmount = calculateTokenCrowsale(weiAmount, token_decimals);
 		
@@ -337,7 +337,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   }
   
   function setEndsAt(uint time) onlyOwner public {
-    if(now &gt; time) {
+    if(now > time) {
       revert();
     }
 
@@ -370,20 +370,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

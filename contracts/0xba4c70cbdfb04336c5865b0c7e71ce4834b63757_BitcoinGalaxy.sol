@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
 contract BitcoinGalaxy {
-    string public symbol = &quot;BTCG&quot;;
-    string public name = &quot;BitcoinGalaxy&quot;;
+    string public symbol = "BTCG";
+    string public name = "BitcoinGalaxy";
     uint8 public constant decimals = 8;
     uint256 _totalSupply = 0;
 	uint256 _maxTotalSupply = 2100000000000000;
@@ -18,9 +18,9 @@ contract BitcoinGalaxy {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
  
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
  
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
  
     function totalSupply() public constant returns (uint256) {        
 		return _totalSupply;
@@ -31,9 +31,9 @@ contract BitcoinGalaxy {
     }
  
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount 
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -48,10 +48,10 @@ contract BitcoinGalaxy {
         address _to,
         uint256 _amount
     ) public returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -74,16 +74,16 @@ contract BitcoinGalaxy {
 	
 	function Mine() public returns (bool success)
 	{
-		if (now &lt; _rewardEnd &amp;&amp; _currentMined &gt;= _maxMiningReward)
+		if (now < _rewardEnd && _currentMined >= _maxMiningReward)
 			revert();
-		else if (now &gt;= _rewardEnd)
+		else if (now >= _rewardEnd)
 		{
 			_rewardStart = now;
 			_rewardEnd = now + _rewardTimePeriod;
 			_currentMined = 0;
 		}
 	
-		if (now &gt;= _nextRewardHalving)
+		if (now >= _nextRewardHalving)
 		{
 			_nextRewardHalving = now + _rewardHalvingTimePeriod;
 			_miningReward = _miningReward / 2;
@@ -93,7 +93,7 @@ contract BitcoinGalaxy {
 			_rewardEnd = now + _rewardTimePeriod;
 		}	
 		
-		if ((_currentMined &lt; _maxMiningReward) &amp;&amp; (_totalSupply &lt; _maxTotalSupply))
+		if ((_currentMined < _maxMiningReward) && (_totalSupply < _maxTotalSupply))
 		{
 			balances[msg.sender] += _miningReward;
 			_currentMined += _miningReward;

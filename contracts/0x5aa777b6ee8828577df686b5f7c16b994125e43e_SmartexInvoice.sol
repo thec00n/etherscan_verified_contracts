@@ -1,6 +1,6 @@
 /** 
  * @notice Smartex Controller
- * @author Christopher Moore <span class="__cf_email__" data-cfemail="8eede3e1e1fcebcefde3effcfaebf6a0e7e1">[email&#160;protected]</span> - Smartex.io Ltd. 2016 - https://smartex.io
+ * @author Christopher Moore <span class="__cf_email__" data-cfemail="8eede3e1e1fcebcefde3effcfaebf6a0e7e1">[email protected]</span> - Smartex.io Ltd. 2016 - https://smartex.io
  */
 
 contract owned {
@@ -22,7 +22,7 @@ contract owned {
 
 /** 
  * @notice Smartex Invoice
- * @author Christopher Moore <span class="__cf_email__" data-cfemail="84e7e9ebebf6e1c4f7e9e5f6f0e1fcaaedeb">[email&#160;protected]</span> - Smartex.io Ltd. 2016 - https://smartex.io
+ * @author Christopher Moore <span class="__cf_email__" data-cfemail="84e7e9ebebf6e1c4f7e9e5f6f0e1fcaaedeb">[email protected]</span> - Smartex.io Ltd. 2016 - https://smartex.io
  */
 contract SmartexInvoice is owned {
 

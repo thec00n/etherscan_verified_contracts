@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -174,7 +174,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -192,7 +192,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -221,7 +221,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -232,8 +232,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -296,7 +296,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -376,8 +376,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -390,7 +390,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -406,7 +406,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -437,7 +437,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -452,9 +452,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -477,7 +477,7 @@ contract RateToken is Ownable {
         uint256 percent;
     }
     //Discount per address
-    mapping(address =&gt; Discount) private discounts;
+    mapping(address => Discount) private discounts;
     //Token conversion rate
     uint256 public rate;
 
@@ -496,7 +496,7 @@ contract RateToken is Ownable {
    * @param _rateInWei The amount of rate to be set
     */
     function setRate(uint _rateInWei) onlyOwner public {
-        require(_rateInWei &gt; 0);
+        require(_rateInWei > 0);
         rate = _rateInWei;
         RateSet(rate);
     }
@@ -512,9 +512,9 @@ contract RateToken is Ownable {
     // NOTE FROM BLOCKERA - PERCENTAGE COULD BE UINT8 (0 - 255)
     function addDiscount(address _buyer, uint256 _minTokens, uint256 _percent) public onlyOwner returns (bool) { 
         require(_buyer != address(0));
-        require(_minTokens &gt; 0);
-        require(_percent &gt; 0);
-        require(_percent &lt; 100);
+        require(_minTokens > 0);
+        require(_percent > 0);
+        require(_percent < 100);
         Discount memory discount;
         discount.minTokens = _minTokens;
         discount.percent = _percent;
@@ -540,10 +540,10 @@ contract RateToken is Ownable {
     */
     function calculateWeiNeeded(address _buyer, uint _tokens) public view returns (uint256) {
         require(_buyer != address(0));
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
 
         Discount memory discount = discounts[_buyer];
-        require(_tokens &gt;= discount.minTokens);
+        require(_tokens >= discount.minTokens);
         if (discount.minTokens == 0) {
             return _tokens.div(rate);
         }
@@ -576,7 +576,7 @@ contract RateToken is Ownable {
         uint256 normalTokens = _buyerAmountInWei.mul(rate);
         uint256 discountBonus = normalTokens.mul(discount.percent).div(100);
         uint256 tokens = normalTokens + discountBonus;
-        require(tokens &gt;= discount.minTokens);
+        require(tokens >= discount.minTokens);
         return tokens;
     }  
 }
@@ -588,19 +588,19 @@ contract RateToken is Ownable {
  * @dev Implementation of the Caerus token.
  */
 contract CaerusToken is RateToken, PausableToken, DetailedERC20 {
-    mapping (address =&gt; uint256) public contributions;
+    mapping (address => uint256) public contributions;
     uint256 public tokenSold = 0; 
     uint256 public weiRaised = 0; 
     address transferAddress;
     
-    mapping (address =&gt; TokenVesting) public vestedTokens;
+    mapping (address => TokenVesting) public vestedTokens;
 
     event TokensBought(address indexed buyer, uint256 tokens);
     event Contribution(address indexed buyer, uint256 amountInWei);
     event VestedTokenCreated(address indexed beneficiary, uint256 duration, uint256 tokens);
     event TokensSpent(address indexed tokensHolder, uint256 tokens);
 
-    function CaerusToken(address _transferAddress, uint _initialRate) public RateToken(_initialRate) DetailedERC20(&quot;Caerus Token&quot;, &quot;CAER&quot;, 18) {
+    function CaerusToken(address _transferAddress, uint _initialRate) public RateToken(_initialRate) DetailedERC20("Caerus Token", "CAER", 18) {
         totalSupply_ = 73000000 * 10 ** 18;
         transferAddress = _transferAddress;
         balances[owner] = totalSupply_;
@@ -623,7 +623,7 @@ contract CaerusToken is RateToken, PausableToken, DetailedERC20 {
     * @dev Allow addresses to buy tokens.
     */
     function buyTokens() payable public whenNotPaused {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         uint256 tokens = calculateTokens(msg.sender, msg.value);
         transferTokens(owner, msg.sender, tokens);
@@ -704,8 +704,8 @@ contract CaerusToken is RateToken, PausableToken, DetailedERC20 {
     * @param _tokens the amount of tokens to be transferred.
     */
     function transferTokens(address _from, address _to, uint256 _tokens) private {
-        require(_tokens &gt; 0);
-        require(balances[_from] &gt;= _tokens);
+        require(_tokens > 0);
+        require(balances[_from] >= _tokens);
         
         balances[_from] = balances[_from].sub(_tokens);
         balances[_to] = balances[_to].add(_tokens);

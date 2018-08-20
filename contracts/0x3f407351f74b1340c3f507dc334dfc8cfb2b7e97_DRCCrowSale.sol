@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns ( uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns ( uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -44,7 +44,7 @@ contract StandardToken is SafeMath,ERC20 {
     }
 
     function transfer(address dst, uint wad) public returns (bool) {
-        assert(balances[msg.sender] &gt;= wad);
+        assert(balances[msg.sender] >= wad);
         
         balances[msg.sender] = safeSub(balances[msg.sender], wad);
         balances[dst] = safeAdd(balances[dst], wad);
@@ -55,8 +55,8 @@ contract StandardToken is SafeMath,ERC20 {
     }
     
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        assert(wad &gt; 0 );
-        assert(balances[src] &gt;= wad);
+        assert(wad > 0 );
+        assert(balances[src] >= wad);
         
         balances[src] = safeSub(balances[src], wad);
         balances[dst] = safeAdd(balances[dst], wad);
@@ -85,9 +85,9 @@ contract StandardToken is SafeMath,ERC20 {
     }
     
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) freezes;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) freezes;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract DSAuth {
@@ -130,9 +130,9 @@ contract DSAuth {
 
 contract DRCToken is StandardToken,DSAuth {
 
-    string public name = &quot;Digit RedWine Coin&quot;;
+    string public name = "Digit RedWine Coin";
     uint8 public decimals = 18;
-    string public symbol = &quot;DRC&quot;;
+    string public symbol = "DRC";
     
     /* This notifies clients about the amount frozen */
     event Freeze(address indexed from, uint256 value);
@@ -171,8 +171,8 @@ contract DRCToken is StandardToken,DSAuth {
     }
     
     function freeze(address dst,uint256 _value) Auth public returns (bool success) {
-        assert(balances[dst] &gt;= _value); // Check if the sender has enough
-        assert(_value &gt; 0) ; 
+        assert(balances[dst] >= _value); // Check if the sender has enough
+        assert(_value > 0) ; 
         balances[dst] = SafeMath.safeSub(balances[dst], _value);                      // Subtract from the sender
         freezes[dst] = SafeMath.safeAdd(freezes[dst], _value);                                // Updates totalSupply
         Freeze(dst, _value);
@@ -180,8 +180,8 @@ contract DRCToken is StandardToken,DSAuth {
     }
     
     function unfreeze(address dst,uint256 _value) Auth public returns (bool success) {
-        assert(freezes[dst] &gt;= _value);            // Check if the sender has enough
-        assert(_value &gt; 0) ; 
+        assert(freezes[dst] >= _value);            // Check if the sender has enough
+        assert(_value > 0) ; 
         freezes[dst] = SafeMath.safeSub(freezes[dst], _value);                      // Subtract from the sender
         balances[dst] = SafeMath.safeAdd(balances[dst], _value);
         Unfreeze(dst, _value);
@@ -261,25 +261,25 @@ contract DRCCrowSale is SafeMath,DSAuth {
         unfreezeStartTime = timestamp;
     }
     
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  unfroze;
-    mapping (address =&gt; uint256)                 public  userBuys;
-    mapping (uint =&gt; bool)  public  burned;
+    mapping (uint => mapping (address => bool))  public  unfroze;
+    mapping (address => uint256)                 public  userBuys;
+    mapping (uint => bool)  public  burned;
     
     // anyone can burn
     function burn(IcoState state) external Auth{
         uint256 burnAmount = 0;
         //only burn once
         assert(burned[uint(state)] == false);
-        if(state == IcoState.Presale1 &amp;&amp; (icoState == IcoState.Presale2 || icoState == IcoState.Finished)){
-            assert(Presale1Sold &lt; tokensForPresale1);
+        if(state == IcoState.Presale1 && (icoState == IcoState.Presale2 || icoState == IcoState.Finished)){
+            assert(Presale1Sold < tokensForPresale1);
             burnAmount = safeSub(tokensForPresale1,Presale1Sold);
         } 
-        else if(state == IcoState.Presale2 &amp;&amp; icoState == IcoState.Finished){ 
-            assert(Presale2Sold &lt; tokensForPresale2);
+        else if(state == IcoState.Presale2 && icoState == IcoState.Finished){ 
+            assert(Presale2Sold < tokensForPresale2);
             burnAmount = safeSub(tokensForPresale2,Presale2Sold);
         } 
-        else if(state == IcoState.Finished &amp;&amp; icoState == IcoState.Finished){
-            assert(PublicSold &lt; tokensForSale);
+        else if(state == IcoState.Finished && icoState == IcoState.Finished){
+            assert(PublicSold < tokensForSale);
             burnAmount = safeSub(tokensForSale,PublicSold);
         } 
         else {
@@ -293,30 +293,30 @@ contract DRCCrowSale is SafeMath,DSAuth {
     function presaleUnfreeze(uint step) external{
         
         assert(unfroze[step][msg.sender] == false);
-        assert(DRC.freezeOf(msg.sender) &gt; 0 );
-        assert(unfreezeStartTime &gt; 0);
+        assert(DRC.freezeOf(msg.sender) > 0 );
+        assert(unfreezeStartTime > 0);
         assert(msg.sender != platform);
         
         uint256 freeze  = DRC.freezeOf(msg.sender);
         uint256 unfreezeAmount = 0;
 
         if(step == 1){
-            require( block.timestamp &gt; (unfreezeStartTime + 30 days));
+            require( block.timestamp > (unfreezeStartTime + 30 days));
             unfreezeAmount = freeze / 3;
         }
         else if(step == 2){
-            require( block.timestamp &gt; (unfreezeStartTime + 60 days));
+            require( block.timestamp > (unfreezeStartTime + 60 days));
             unfreezeAmount = freeze / 2;
         }
         else if(step == 3){
-            require( block.timestamp &gt; (unfreezeStartTime + 90 days));
+            require( block.timestamp > (unfreezeStartTime + 90 days));
             unfreezeAmount = freeze;
         }
         else{
             throw ;
         }
         
-        require(unfreezeAmount &gt; 0 );
+        require(unfreezeAmount > 0 );
         
         DRC.unfreeze(msg.sender,unfreezeAmount);
         unfroze[step][msg.sender] = true;
@@ -326,8 +326,8 @@ contract DRCCrowSale is SafeMath,DSAuth {
     function teamUnfreeze() external{
         uint month = 6;
         
-        assert(DRC.freezeOf(msg.sender) &gt; 0 );
-        assert(finishTime &gt; 0);
+        assert(DRC.freezeOf(msg.sender) > 0 );
+        assert(finishTime > 0);
         assert(msg.sender == team);
         uint step = safeSub(block.timestamp, finishTime) / (3600*24*30);
         
@@ -336,17 +336,17 @@ contract DRCCrowSale is SafeMath,DSAuth {
         
         uint256 per = tokensForTeam / month;
         
-        for(uint i = 0 ;i &lt;= step &amp;&amp; i &lt; month;i++){
+        for(uint i = 0 ;i <= step && i < month;i++){
             if(unfroze[i][msg.sender] == false){
                 unfreezeAmount += per;
             }
         }
         
-        require(unfreezeAmount &gt; 0 );
-        require(unfreezeAmount &lt;= freeze);
+        require(unfreezeAmount > 0 );
+        require(unfreezeAmount <= freeze);
 
         DRC.unfreeze(msg.sender,unfreezeAmount);
-        for(uint j = 0; j &lt;= step &amp;&amp; i &lt; month; j++){
+        for(uint j = 0; j <= step && i < month; j++){
             unfroze[j][msg.sender] = true;
         }
     }
@@ -355,8 +355,8 @@ contract DRCCrowSale is SafeMath,DSAuth {
      function platformUnfreeze() external{
         uint month = 12;
         
-        assert(DRC.freezeOf(msg.sender) &gt; 0 );
-        assert(finishTime &gt; 0);
+        assert(DRC.freezeOf(msg.sender) > 0 );
+        assert(finishTime > 0);
         assert(msg.sender == platform);
         uint step = safeSub(block.timestamp, finishTime) / (3600*24*30);
         
@@ -365,17 +365,17 @@ contract DRCCrowSale is SafeMath,DSAuth {
         
         uint256 per = tokensForPlatform / month;
         
-        for(uint i = 0 ;i &lt;= step &amp;&amp; i &lt; month;i++){
+        for(uint i = 0 ;i <= step && i < month;i++){
             if(unfroze[i][msg.sender] == false){
                 unfreezeAmount += per;
             }
         }
         
-        require(unfreezeAmount &gt; 0 );
-        require(unfreezeAmount &lt;= freeze);
+        require(unfreezeAmount > 0 );
+        require(unfreezeAmount <= freeze);
 
         DRC.unfreeze(msg.sender,unfreezeAmount);
-        for(uint j = 0; j &lt;= step &amp;&amp; i &lt; month; j++){
+        for(uint j = 0; j <= step && i < month; j++){
             unfroze[j][msg.sender] = true;
         }
     }
@@ -389,7 +389,7 @@ contract DRCCrowSale is SafeMath,DSAuth {
         assert(address(DRC) == address(0));
         assert(drc.owner() == address(this));
         assert(drc.totalSupply() == 0);
-        assert(_team != _parnter &amp;&amp; _parnter != _platform &amp;&amp; _team != _platform);
+        assert(_team != _parnter && _parnter != _platform && _team != _platform);
         
         team =_team;
         parnter=_parnter;
@@ -423,12 +423,12 @@ contract DRCCrowSale is SafeMath,DSAuth {
                  (icoState == IcoState.Presale2) );
         // require          
         if((icoState == IcoState.Presale1) || (icoState == IcoState.Presale2)){
-            require(msg.value &gt;= 10 ether);
+            require(msg.value >= 10 ether);
         } 
         else {
-            require(msg.value &gt;= 0.01 ether);
+            require(msg.value >= 0.01 ether);
             //limit peer user less than 10 eth
-            require(userBuys[msg.sender] + msg.value &lt;= 10 ether);
+            require(userBuys[msg.sender] + msg.value <= 10 ether);
         }
  
 
@@ -438,15 +438,15 @@ contract DRCCrowSale is SafeMath,DSAuth {
         (sold,canbuy) = getSold();
 
         // refund eth for last buy
-        if (sold + amount &gt; canbuy){
+        if (sold + amount > canbuy){
             uint256 delta = sold + amount - canbuy;
             uint256 refundMoney = msg.value * delta / amount;
             amount = canbuy-sold;
-            require(refundMoney &gt; 0);
+            require(refundMoney > 0);
             msg.sender.transfer(refundMoney);
         }
         
-        require(amount &gt; 0);
+        require(amount > 0);
     
         DRC.push(msg.sender, amount);
         
@@ -507,7 +507,7 @@ contract DRCCrowSale is SafeMath,DSAuth {
     }
 
     function finalize() external Owner payable {
-        require(this.balance &gt; 0 );
+        require(this.balance > 0 );
 
         require(owner.send(this.balance));
     }

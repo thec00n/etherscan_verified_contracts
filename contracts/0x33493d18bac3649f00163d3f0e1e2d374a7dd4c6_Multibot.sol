@@ -14,18 +14,18 @@ contract ERC20Interface {
 contract Multibot is ERC20Interface {
     address public owner;
 
-    string public constant symbol = &quot;MBT&quot;;
-    string public constant name = &quot;Multibot&quot;;
+    string public constant symbol = "MBT";
+    string public constant name = "Multibot";
     uint8 public constant decimals = 8;
     uint256 initialSupply = 2500000000000000;
     
     uint256 public shareholdersBalance;
     uint256 public totalShareholders;
-    mapping (address =&gt; bool) registeredShareholders;
-    mapping (uint =&gt; address) public shareholders;
+    mapping (address => bool) registeredShareholders;
+    mapping (uint => address) public shareholders;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -37,7 +37,7 @@ contract Multibot is ERC20Interface {
     }
     
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
  
@@ -63,15 +63,15 @@ contract Multibot is ERC20Interface {
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if(_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to])
+        if(_to != 0x0 && _value > 0 && balances[msg.sender] >= _value && balances[_to] + _value > balances[_to])
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
-            if (msg.sender == owner &amp;&amp; _to != owner) {
+            if (msg.sender == owner && _to != owner) {
                 shareholdersBalance += _value;
             }
-            if (msg.sender != owner &amp;&amp; _to == owner) {
+            if (msg.sender != owner && _to == owner) {
                 shareholdersBalance -= _value;
             }
             if (owner != _to) {
@@ -92,15 +92,15 @@ contract Multibot is ERC20Interface {
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
             
-            if (_from == owner &amp;&amp; _to != owner) {
+            if (_from == owner && _to != owner) {
                 shareholdersBalance += _value;
             }
-            if (_from != owner &amp;&amp; _to == owner) {
+            if (_from != owner && _to == owner) {
                 shareholdersBalance -= _value;
             }
             if (owner != _to) {
@@ -118,7 +118,7 @@ contract Multibot is ERC20Interface {
     /// @param _spender The address authorized to spend
     /// @param _value the max amount they can spend
     function approve(address _spender, uint256 _value) returns (bool success) {
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) 
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) 
         {
             return false;
         }
@@ -135,7 +135,7 @@ contract Multibot is ERC20Interface {
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) onlyOwner returns (bool success) {
-        require (balances[msg.sender] &gt; _value);            // Check if the sender has enough
+        require (balances[msg.sender] > _value);            // Check if the sender has enough
         balances[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);

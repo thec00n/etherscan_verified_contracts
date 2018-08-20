@@ -104,15 +104,15 @@ contract CryptoAtoms is ADM312, ERC721 {
     
     Atom[] public atoms;
     
-    mapping (uint64  =&gt; bool) public dnaExist;
-    mapping (address =&gt; bool) public bonusReceived;
-    mapping (address =&gt; uint) public ownerAtomsCount;
-    mapping (uint =&gt; address) public atomOwner;
+    mapping (uint64  => bool) public dnaExist;
+    mapping (address => bool) public bonusReceived;
+    mapping (address => uint) public ownerAtomsCount;
+    mapping (uint => address) public atomOwner;
     
     event NewWithdraw(address sender, uint balance);
     
     function createCustomAtom(uint64 _dna, uint8 _gen, uint8 _lev, uint8 _cool, uint128 _isRent, uint128 _isBuy, uint32 _isReady) public onlyAdmin {
-        require(dnaExist[_dna]==false &amp;&amp; _cool+_lev&gt;=4);
+        require(dnaExist[_dna]==false && _cool+_lev>=4);
         Atom memory newAtom = Atom(_dna, _gen, _lev, _cool, 0, 2**50, 2**50, _isRent, _isBuy, _isReady);
         uint id = atoms.push(newAtom) - 1;
         atomOwner[id] = msg.sender;
@@ -192,7 +192,7 @@ contract CryptoAtoms is ADM312, ERC721 {
     
     //ERC721
     
-    mapping (uint =&gt; address) tokenApprovals;
+    mapping (uint => address) tokenApprovals;
     
     function totalSupply() public view returns (uint256 total){
   	    return atoms.length;

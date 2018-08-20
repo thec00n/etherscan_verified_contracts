@@ -43,7 +43,7 @@ contract Pandemica
     }
     
     function Count() onlyowner {
-        while (counter&gt;0) {
+        while (counter>0) {
             Tx[counter].txuser.send((Tx[counter].txvalue/100)*3);
             counter-=1;
         }

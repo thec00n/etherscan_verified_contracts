@@ -31,7 +31,7 @@ uint8 public decimals;
 uint public _totalSupply = 250000000000000000000000000;
         
         /* This creates an array with all balances */
-        mapping (address =&gt; uint256) public balanceOf;
+        mapping (address => uint256) public balanceOf;
         uint256 public totalSupply;
         
             event Transfer(address indexed from, address indexed to, uint256 value);
@@ -46,8 +46,8 @@ uint public _totalSupply = 250000000000000000000000000;
     constructor() public {
         totalSupply = 250000000000000000000000000;  // Update total supply with the decimal amount
         balanceOf[msg.sender] = 250000000000000000000000000;                // Give the creator all initial tokens
-        name = &quot;ApeCash&quot;;                                   // Set the name for display purposes
-        symbol = &quot;APE&quot;;                               // Set the symbol for display purposes
+        name = "ApeCash";                                   // Set the name for display purposes
+        symbol = "APE";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
     }
     
@@ -55,7 +55,7 @@ uint public _totalSupply = 250000000000000000000000000;
         /* Send coins */
         function transfer(address _to, uint256 _value) public {
         /* Check if sender has balance and for overflows */
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
 
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
@@ -72,9 +72,9 @@ uint public _totalSupply = 250000000000000000000000000;
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

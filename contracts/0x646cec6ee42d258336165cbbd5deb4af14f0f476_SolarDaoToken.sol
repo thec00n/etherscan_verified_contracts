@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
  /// @title Ownable contract - base contract with an owner
- /// @author <span class="__cf_email__" data-cfemail="eb8f8e9dab98868a999f8884859f998a889f8e8a86c5888486">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="eb8f8e9dab98868a999f8884859f998a889f8e8a86c5888486">[email protected]</span>
 contract Ownable {
   address public owner;
 
@@ -22,7 +22,7 @@ contract Ownable {
 }
 
 /// @title Haltable contract - abstract contract that allows children to implement an emergency stop mechanism.
-/// @author <span class="__cf_email__" data-cfemail="4125243701322c203335222e2f353320223524202c6f222e2c">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="4125243701322c203335222e2f353320223524202c6f222e2c">[email protected]</span>
 /// Originally envisioned in FirstBlood ICO contract.
 contract Haltable is Ownable {
   bool public halted;
@@ -51,7 +51,7 @@ contract Haltable is Ownable {
 
 
  /// @title ERC20 interface see https://github.com/ethereum/EIPs/issues/20
- /// @author <span class="__cf_email__" data-cfemail="0c68697a4c7f616d7e786f6362787e6d6f78696d61226f6361">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="0c68697a4c7f616d7e786f6362787e6d6f78696d61226f6361">[email protected]</span>
 contract ERC20 {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);
@@ -65,7 +65,7 @@ contract ERC20 {
 }
 
  /// @title SafeMath contract - math operations with safety checks
- /// @author <span class="__cf_email__" data-cfemail="25414053655648445751464a4b51574446514044480b464a48">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="25414053655648445751464a4b51574446514044480b464a48">[email protected]</span>
 contract SafeMath {
   function safeMul(uint a, uint b) internal returns (uint) {
     uint c = a * b;
@@ -74,37 +74,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -114,10 +114,10 @@ contract SafeMath {
 
 
 /// @title SolarDaoToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
-/// @author <span class="__cf_email__" data-cfemail="3357564573405e524147505c5d474152504756525e1d505c5e">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="3357564573405e524147505c5d474152504756525e1d505c5e">[email protected]</span>
 contract SolarDaoToken is SafeMath, ERC20, Ownable {
- string public name = &quot;Solar DAO Token&quot;;
- string public symbol = &quot;SDAO&quot;;
+ string public name = "Solar DAO Token";
+ string public symbol = "SDAO";
  uint public decimals = 4;
 
  /// contract that is allowed to create new tokens and allows unlift the transfer limits on this token
@@ -125,9 +125,9 @@ contract SolarDaoToken is SafeMath, ERC20, Ownable {
  /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
  bool public released = false;
  /// approve() allowances
- mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+ mapping (address => mapping (address => uint)) allowed;
  /// holder balances
- mapping(address =&gt; uint) balances;
+ mapping(address => uint) balances;
 
  /// @dev Limit token transfer until the crowdsale is over.
  modifier canTransfer() {
@@ -153,7 +153,7 @@ contract SolarDaoToken is SafeMath, ERC20, Ownable {
  /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
  /// @param size payload size
  modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
  }
 

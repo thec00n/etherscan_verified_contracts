@@ -19,7 +19,7 @@ contract SmartContractWorkshop {
 
 	string public eventWebsite;
 
-	mapping(address=&gt;Person) public attendants;
+	mapping(address=>Person) public attendants;
 
 	address[] allAttendants;
 	address[] faceToFaceAttendants;
@@ -32,11 +32,11 @@ contract SmartContractWorkshop {
 
 	function register(string _name, string _email, bool _attendsInPerson) payable {
 
-		require (msg.value == currentPrice() &amp;&amp; attendants[msg.sender].purchased == false);
+		require (msg.value == currentPrice() && attendants[msg.sender].purchased == false);
 
 		if(_attendsInPerson == true ) {
 			ticketsFaceToFaceSold++;
-			require (ticketsFaceToFaceSold &lt;= faceToFaceLimit);
+			require (ticketsFaceToFaceSold <= faceToFaceLimit);
 
 			addAttendantAndTransfer(_name, _email, _attendsInPerson);
 			faceToFaceAttendants.push(msg.sender);
@@ -70,7 +70,7 @@ contract SmartContractWorkshop {
     }
 
 	function currentPrice() public view returns (uint256) {
-		if(baseprice + (ticketsSold * priceIncrease) &gt;= maxPrice) {
+		if(baseprice + (ticketsSold * priceIncrease) >= maxPrice) {
 			return maxPrice;
 		} else {
 			return baseprice + (ticketsSold * priceIncrease);

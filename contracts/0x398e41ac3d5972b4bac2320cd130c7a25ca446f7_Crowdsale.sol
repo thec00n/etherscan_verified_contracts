@@ -34,9 +34,9 @@ library SafeMath {
    * @dev Integer division of two numbers, truncating the quotient.
    */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
    * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
    */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
    */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,10 +104,10 @@ contract Crowdsale {
   address public owner;
 
   // How many tokens each address bought at the normal rate
-  mapping (address =&gt; uint) public regularTokensSold;
+  mapping (address => uint) public regularTokensSold;
 
   // How many tokens each address bought at the presale rate
-  mapping (address =&gt; uint) public presaleTokensSold;
+  mapping (address => uint) public presaleTokensSold;
 
   // List of all the investors
   address[] public investors;
@@ -119,7 +119,7 @@ contract Crowdsale {
   bool public inPresale = true;
 
   // How many tokens each address can buy at the presale rate
-  mapping (address =&gt; uint) public presaleAllocations;
+  mapping (address => uint) public presaleAllocations;
 
   // The total number of tokens bought
   uint256 public totalPresaleTokensSold = 0;
@@ -178,8 +178,8 @@ contract Crowdsale {
     uint256 _presaleRate, 
     uint256 _ownerInitialTokens
   ) public payable {
-    require(_rate &gt; 0);
-    require(_presaleRate &gt; 0);
+    require(_rate > 0);
+    require(_presaleRate > 0);
     require(_owner != address(0));
 
     rate = _rate;
@@ -214,7 +214,7 @@ contract Crowdsale {
     uint256 weiAmount = msg.value;
 
     _preValidatePurchase(_beneficiary);
-    require(weiAmount &gt;= MINIMUMINVESTMENTPRESALE);
+    require(weiAmount >= MINIMUMINVESTMENTPRESALE);
 
     uint256 presaleAllocation = presaleAllocations[_beneficiary];
 
@@ -248,13 +248,13 @@ contract Crowdsale {
     uint256 weiAmount = msg.value;
     _preValidatePurchase(_beneficiary);
 
-    require(weiAmount &gt;= MINIMUMINVESTMENTSALE);
+    require(weiAmount >= MINIMUMINVESTMENTSALE);
 
     uint256 tokens = weiAmount.mul(rate);
 
-    // Check we haven&#39;t sold too many tokens
+    // Check we haven't sold too many tokens
     totalRegularTokensSold = totalRegularTokensSold.add(tokens);
-    require(totalRegularTokensSold &lt;= regularTokenMaxSales);
+    require(totalRegularTokensSold <= regularTokenMaxSales);
 
     // Update total number of Wei raised
     weiRaised = weiRaised.add(weiAmount);
@@ -300,7 +300,7 @@ contract Crowdsale {
    * Mints the tokens in the Token contract.
    */
   function transferTokens() public onlyOwner {
-    for (uint256 i = 0; i &lt; investors.length; i = i.add(1)) {
+    for (uint256 i = 0; i < investors.length; i = i.add(1)) {
       address investor = investors[i];
 
       uint256 tokens = regularTokensSold[investor];
@@ -309,11 +309,11 @@ contract Crowdsale {
       regularTokensSold[investor] = 0;
       presaleTokensSold[investor] = 0;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         _deliverTokens(token, investor, tokens);
       }
 
-      if (presaleTokens &gt; 0) {
+      if (presaleTokens > 0) {
         _deliverTokens(token, investor, presaleTokens);
       }
     }
@@ -323,7 +323,7 @@ contract Crowdsale {
    * Mints the tokens in the Token contract. With Offset and Limit
    */
   function transferTokensWithOffsetAndLimit(uint256 offset, uint256 limit) public onlyOwner {
-    for (uint256 i = offset; i &lt;  _min256(investors.length,offset+limit); i = i.add(1)) {
+    for (uint256 i = offset; i <  _min256(investors.length,offset+limit); i = i.add(1)) {
       address investor = investors[i];
 
       uint256 tokens = regularTokensSold[investor];
@@ -332,11 +332,11 @@ contract Crowdsale {
       regularTokensSold[investor] = 0;
       presaleTokensSold[investor] = 0;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         _deliverTokens(token, investor, tokens);
       }
 
-      if (presaleTokens &gt; 0) {
+      if (presaleTokens > 0) {
         _deliverTokens(token, investor, presaleTokens);
       }
     }
@@ -435,7 +435,7 @@ contract Crowdsale {
   }
 
   function _min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   /**
@@ -444,9 +444,9 @@ contract Crowdsale {
    * @param _presaleTokens the number of tokens which the investor has bought
    */
   function _recordPresalePurchase(address _beneficiary, uint256 _presaleTokens) internal {
-    // Check we haven&#39;t sold too many presale tokens
+    // Check we haven't sold too many presale tokens
     totalPresaleTokensSold = totalPresaleTokensSold.add(_presaleTokens);
-    require(totalPresaleTokensSold &lt;= PRESALETOKENMAXSALES);
+    require(totalPresaleTokensSold <= PRESALETOKENMAXSALES);
 
     investors.push(_beneficiary);
 
@@ -462,7 +462,7 @@ contract Crowdsale {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_ = 45467000000000000000000000;
 
@@ -480,7 +480,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -521,15 +521,15 @@ contract ERC20 is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
 
   // Name of the token
-  string constant public name = &quot;Quant&quot;;
+  string constant public name = "Quant";
   // Token abbreviation
-  string constant public symbol = &quot;QNT&quot;;
+  string constant public symbol = "QNT";
   // Decimal places
   uint8 constant public decimals = 18;
   // Zeros after the point
   uint256 constant public DECIMAL_ZEROS = 1000000000000000000;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   address public crowdsale;
 
@@ -556,8 +556,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -571,7 +571,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -620,7 +620,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

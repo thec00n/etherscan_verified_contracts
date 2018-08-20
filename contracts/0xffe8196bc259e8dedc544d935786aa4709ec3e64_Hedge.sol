@@ -61,9 +61,9 @@ contract IERC20Token {
 contract Hedge is IERC20Token, owned{
 
         /* Public variables of the token */
-        string public standard = &quot;Hedge v1.0&quot;;
-        string public name = &quot;Hedge&quot;;
-        string public symbol = &quot;HDG&quot;;
+        string public standard = "Hedge v1.0";
+        string public name = "Hedge";
+        string public symbol = "HDG";
         uint8 public decimals = 18;
         uint256 public initialSupply = 50000000 * 10 ** 18;
         uint256 public tokenFrozenUntilBlock;
@@ -71,9 +71,9 @@ contract Hedge is IERC20Token, owned{
 
         /* Private variables of the token */
         uint256 supply = initialSupply;
-        mapping (address =&gt; uint256) balances;
-        mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-        mapping (address =&gt; bool) restrictedAddresses;
+        mapping (address => uint256) balances;
+        mapping (address => mapping (address => uint256)) allowances;
+        mapping (address => bool) restrictedAddresses;
 
         event TokenFrozen(uint256 _frozenUntilBlock, string _reason);
 
@@ -101,11 +101,11 @@ contract Hedge is IERC20Token, owned{
 
         /* Send coins */
         function transfer(address _to, uint256 _value) returns (bool success) {
-                require (block.number &gt;= tokenFrozenUntilBlock) ;       // Throw is token is frozen in case of emergency
+                require (block.number >= tokenFrozenUntilBlock) ;       // Throw is token is frozen in case of emergency
                 require (!restrictedAddresses[_to]) ;                // Prevent transfer to restricted addresses
-                require (balances[msg.sender] &gt;= _value);           // Check if the sender has enough
-                require (balances[_to] + _value &gt;= balances[_to]) ;  // Check for overflows
-                require (!(msg.sender == owner &amp;&amp; block.timestamp &lt; timeLock &amp;&amp; (balances[msg.sender]-_value) &lt; 10000000 * 10 ** 18));
+                require (balances[msg.sender] >= _value);           // Check if the sender has enough
+                require (balances[_to] + _value >= balances[_to]) ;  // Check for overflows
+                require (!(msg.sender == owner && block.timestamp < timeLock && (balances[msg.sender]-_value) < 10000000 * 10 ** 18));
 
                 balances[msg.sender] -= _value;                     // Subtract from the sender
                 balances[_to] += _value;                            // Add the same to the recipient
@@ -115,7 +115,7 @@ contract Hedge is IERC20Token, owned{
 
         /* Allow another contract to spend some tokens in your behalf */
         function approve(address _spender, uint256 _value) returns (bool success) {
-                require (block.number &gt; tokenFrozenUntilBlock); // Throw is token is frozen in case of emergency
+                require (block.number > tokenFrozenUntilBlock); // Throw is token is frozen in case of emergency
                 allowances[msg.sender][_spender] = _value;          // Set allowance
                 Approval(msg.sender, _spender, _value);             // Raise Approval event
                 return true;
@@ -131,12 +131,12 @@ contract Hedge is IERC20Token, owned{
 
         /* A contract attempts to get the coins */
         function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-                require (block.number &gt; tokenFrozenUntilBlock); // Throw is token is frozen in case of emergency
+                require (block.number > tokenFrozenUntilBlock); // Throw is token is frozen in case of emergency
                 require (!restrictedAddresses[_to]);                // Prevent transfer to restricted addresses
-                require(balances[_from] &gt;= _value);                // Check if the sender has enough
-                require (balances[_to] + _value &gt;= balances[_to]);  // Check for overflows
-                require (_value &lt;= allowances[_from][msg.sender]);  // Check allowance
-                require (!(_from == owner &amp;&amp; block.timestamp &lt; timeLock &amp;&amp; (balances[_from]-_value) &lt; 10000000 * 10 ** 18));
+                require(balances[_from] >= _value);                // Check if the sender has enough
+                require (balances[_to] + _value >= balances[_to]);  // Check for overflows
+                require (_value <= allowances[_from][msg.sender]);  // Check allowance
+                require (!(_from == owner && block.timestamp < timeLock && (balances[_from]-_value) < 10000000 * 10 ** 18));
                 balances[_from] -= _value;                          // Subtract from the sender
                 balances[_to] += _value;                            // Add the same to the recipient
                 allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -145,7 +145,7 @@ contract Hedge is IERC20Token, owned{
         }
 
         function burn(uint256 _value) returns (bool success) {
-                require(balances[msg.sender] &gt;= _value);                 // Check if the sender has enough
+                require(balances[msg.sender] >= _value);                 // Check if the sender has enough
                 balances[msg.sender] -= _value;                          // Subtract from the sender
                 supply-=_value;
                 Burn(msg.sender, _value);
@@ -153,10 +153,10 @@ contract Hedge is IERC20Token, owned{
         }
 
         function burnFrom(address _from, uint256 _value) returns (bool success) {
-                require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-                require(_value &lt;= allowances[_from][msg.sender]);    // Check allowance
+                require(balances[_from] >= _value);                // Check if the targeted balance is enough
+                require(_value <= allowances[_from][msg.sender]);    // Check allowance
                 balances[_from] -= _value;                         // Subtract from the targeted balance
-                allowances[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+                allowances[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
                 supply -= _value;                              // Update totalSupply
                 Burn(_from, _value);
                 return true;

@@ -70,22 +70,22 @@ contract kBit is Token, owned {
     string public name;                   
     uint8 public decimals;                
     string public symbol;                 
-    string public version = &#39;H1.0&#39;;    
+    string public version = 'H1.0';    
 
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
 
 
     function kBit(
         ) {
         balances[msg.sender] = 555000 * 1000000000000000000;    // Give the creator all initial tokens, 18 zero is 18 Decimals
         totalSupply = 555000 * 1000000000000000000;             // Update total supply, , 18 zero is 18 Decimals
-        name = &quot;kBit&quot;;                            				// Token Name
+        name = "kBit";                            				// Token Name
         decimals = 18;                            				// Amount of decimals for display purposes
-        symbol = &quot;KBIT&quot;;                          				// Token Symbol
+        symbol = "KBIT";                          				// Token Symbol
     }
     
     function () {
@@ -107,8 +107,8 @@ contract kBit is Token, owned {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);               // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]); // Check for overflows
+        require (balances[_from] >= _value);               // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balances[_from] -= _value;                         // Subtract from the sender
@@ -118,14 +118,14 @@ contract kBit is Token, owned {
     
     /* Transfer tokens */
     function transfer(address _to, uint256 _value) public {
-        if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency
+        if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency
         _transfer(msg.sender, _to, _value);
     }
 
     /* Transfer tokens from other address */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -138,7 +138,7 @@ contract kBit is Token, owned {
     /* Set allowance for other address */
     function approve(address _spender, uint256 _value) public
         returns (bool success) {
-        if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency    
+        if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency    
         allowed[msg.sender][_spender] = _value;
         return true;
     }
@@ -149,7 +149,7 @@ contract kBit is Token, owned {
         
    /* Destroy tokens */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -158,10 +158,10 @@ contract kBit is Token, owned {
     
      /* Destroy tokens from account */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowed
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowed
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -175,7 +175,7 @@ contract kBit is Token, owned {
         Transfer(this, target, mintedAmount);
     }
     
-    /* Freeze specific account from sending &amp; receiving tokens */
+    /* Freeze specific account from sending & receiving tokens */
     function freezeAccount(address target, bool freeze) onlyOwner public {
         frozenAccount[target] = freeze;
         FrozenFunds(target, freeze);

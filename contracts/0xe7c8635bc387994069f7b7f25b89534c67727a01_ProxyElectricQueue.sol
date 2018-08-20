@@ -21,19 +21,19 @@ contract ProxyElectricQueue
              Manager = manager;
         }
     function changeActualQueue(address actualQueueAddress){
-    if (msg.sender != Owner &amp;&amp; msg.sender != Manager) return ;
+    if (msg.sender != Owner && msg.sender != Manager) return ;
         ActualQueue =IElectricQueue(actualQueueAddress);
     }
     
     function investInCharger (uint chargerId) payable  {
-        if(msg.value &lt; 1 ether){
+        if(msg.value < 1 ether){
             if(!msg.sender.send(msg.value))
                 throw;
         } 
         ActualQueue.investInQueue.value(msg.value)(msg.sender,chargerId);
     }
     function returnMoney() payable{
-        if(msg.value &lt; 10 finney || msg.value &gt; 1 ether){
+        if(msg.value < 10 finney || msg.value > 1 ether){
              if(!msg.sender.send(msg.value))
                 throw;
         }
@@ -41,7 +41,7 @@ contract ProxyElectricQueue
 
     }
     function ()  payable{
-        if(msg.value &lt; 1 ether){
+        if(msg.value < 1 ether){
            if(!msg.sender.send(msg.value))
                 throw;
         } 

@@ -1,6 +1,6 @@
 pragma solidity 0.4.18;
 
-// This contract provides the functions necessary to record (&quot;push&quot;) &amp; retrieve
+// This contract provides the functions necessary to record ("push") & retrieve
 // public funding data to the Ethereum blockchain for the National Research
 // Council of Canada
 
@@ -43,7 +43,7 @@ contract DisclosureManager {
 
 	// getListCount() returns the number of records in disclosureList (not including the empty 0th record)
 	function getListCount() public constant returns(uint listCount) {
-  	if (disclosureList.length &gt; 0) {
+  	if (disclosureList.length > 0) {
 			return disclosureList.length - 1;    // Returns the last rowNumber, reflecting number of records in list
 		} else {
 			return 0;    // The case of an uninitialized list
@@ -51,7 +51,7 @@ contract DisclosureManager {
 	}
 	// Future idea: Another function to return total number of unamended Entries? (ie actual record count)
 
-	// Create/push a new entry to our array, returns the new Entry&#39;s rowNumber
+	// Create/push a new entry to our array, returns the new Entry's rowNumber
 	function newEntry(bytes32 organization,
 					  bytes32 recipient,
 					  bytes32 location,
@@ -104,9 +104,9 @@ contract DisclosureManager {
 						bytes32 comment) public isOwner() returns(uint newRowNumber) {    // returns the new rowNumber of amended record
 
 		// Make sure passed rowNumber is in bounds
-		if (rowNumber &gt;= disclosureList.length) { revert(); }
-		if (rowNumber &lt; 1) { revert(); }
-		if (disclosureList[rowNumber].amended &gt; 0) { revert(); }    // This record is already amended
+		if (rowNumber >= disclosureList.length) { revert(); }
+		if (rowNumber < 1) { revert(); }
+		if (disclosureList[rowNumber].amended > 0) { revert(); }    // This record is already amended
 
 		// First create new entry
 		Disclosure memory disclosure;
@@ -137,8 +137,8 @@ contract DisclosureManager {
 	// Returns row regardless of whether or not it has been amended
 	function pullRow(uint rowNumber) public constant returns(bytes32, bytes32, bytes32, bytes16, bytes1, bytes16, bytes32, bytes32, uint) {
 		// First make sure rowNumber passed is within bounds
-		if (rowNumber &gt;= disclosureList.length) { revert(); }
-		if (rowNumber &lt; 1) { revert(); }
+		if (rowNumber >= disclosureList.length) { revert(); }
+		if (rowNumber < 1) { revert(); }
 		// Should not use any gas:
 		Disclosure memory entry = disclosureList[rowNumber];
 		return (entry.organization, entry.recipient, entry.location, entry.amount, entry.fundingType, entry.date, entry.purpose, entry.comment, entry.amended);
@@ -147,15 +147,15 @@ contract DisclosureManager {
 	// Returns latest entry of record intended to pull
 	function pullEntry(uint rowNumber) public constant returns(bytes32, bytes32, bytes32, bytes16, bytes1, bytes16, bytes32, bytes32) {
 		// First make sure rowNumber passed is within bounds
-		if (rowNumber &gt;= disclosureList.length) { revert(); }
-		if (rowNumber &lt; 1) { revert(); }
+		if (rowNumber >= disclosureList.length) { revert(); }
+		if (rowNumber < 1) { revert(); }
 		// If this entry has been amended, return amended entry instead (recursively)
-		// just make sure there are never any cyclical lists (shouldn&#39;t be possible using these functions)
-		if (disclosureList[rowNumber].amended &gt; 0) return pullEntry(disclosureList[rowNumber].amended);
+		// just make sure there are never any cyclical lists (shouldn't be possible using these functions)
+		if (disclosureList[rowNumber].amended > 0) return pullEntry(disclosureList[rowNumber].amended);
 		// Should not require any gas to run:
 		Disclosure memory entry = disclosureList[rowNumber];
 		return (entry.organization, entry.recipient, entry.location, entry.amount, entry.fundingType, entry.date, entry.purpose, entry.comment);
-		// No event for pullEntry() since it shouldn&#39;t cost gas to call it
+		// No event for pullEntry() since it shouldn't cost gas to call it
 	}
 
 }

@@ -44,7 +44,7 @@ contract Token {
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -55,9 +55,9 @@ contract StandardToken is Token {
         // Prevent transfer to 0x0 address.
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         uint previousBalances = balances[msg.sender] + balances[_to];
         balances[msg.sender] -= _value;
@@ -72,9 +72,9 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         /// same as above
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
-        require(allowed[_from][msg.sender] &gt; _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value > balances[_to]);
+        require(allowed[_from][msg.sender] > _value);
         
         uint previousBalances = balances[_from] + balances[_to];
         balances[_from] -= _value;
@@ -100,8 +100,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances; /// balance amount of tokens for address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances; /// balance amount of tokens for address
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract EduCoin is StandardToken {
@@ -112,12 +112,12 @@ contract EduCoin is StandardToken {
         require(false);
     }
 
-    string public constant name = &quot;Hcancan&quot;;   
-    string public constant symbol = &quot;HC&quot;;
+    string public constant name = "Hcancan";   
+    string public constant symbol = "HC";
     uint256 private constant _INITIAL_SUPPLY = 15*10**27;
     uint8 public decimals = 18;         
     uint256 public totalSupply;            
-    //string public version = &#39;H0.1&#39;;
+    //string public version = 'H0.1';
 
     function EduCoin(
     ) public {

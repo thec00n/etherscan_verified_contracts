@@ -24,8 +24,8 @@ contract Controller {
 
 contract SanityPools is Controller {
 
-    //mapping of the pool&#39;s index with the corresponding balances
-    mapping (uint256 =&gt; mapping (address =&gt; uint256)) balances;
+    //mapping of the pool's index with the corresponding balances
+    mapping (uint256 => mapping (address => uint256)) balances;
     //Array of 100 pools max
     Pool[100] pools;
     //Index of the active pool
@@ -34,7 +34,7 @@ contract SanityPools is Controller {
     uint256 public week_in_blocs = 39529;
 
     modifier validIndex(uint256 _index){
-        require(_index &lt;= index_active);
+        require(_index <= index_active);
         _;
     }
 
@@ -55,7 +55,7 @@ contract SanityPools is Controller {
 
     //Functions reserved for the owner
     function createPool(string _name, uint256 _min, uint256 _max) onlyOwner {
-        require(index_active &lt; 100);
+        require(index_active < 100);
         //Creates a new struct and saves in storage
         pools[index_active] = Pool(_name, _min, _max, 0x0, ERC20(0x0), 0, false, 0);
         //updates the active index
@@ -75,8 +75,8 @@ contract SanityPools is Controller {
 
     function buyTokens(uint256 _index) onlyOwner validIndex(_index) {
         Pool storage pool = pools[_index];
-        require(pool.pool_eth_value &gt;= pool.min_amount);
-        require(pool.pool_eth_value &lt;= pool.max_amount || pool.max_amount == 0);
+        require(pool.pool_eth_value >= pool.min_amount);
+        require(pool.pool_eth_value <= pool.max_amount || pool.max_amount == 0);
         require(!pool.bought_tokens);
         //Prevent burning of ETH by mistake
         require(pool.sale != 0x0);
@@ -92,7 +92,7 @@ contract SanityPools is Controller {
         //Allows to withdraw all the tokens after a certain amount of time, in the case
         //of an unplanned situation
         Pool storage pool = pools[_index];
-        require(block.number &gt;= (pool.buy_block + week_in_blocs));
+        require(block.number >= (pool.buy_block + week_in_blocs));
         ERC20 token = ERC20(_token);
         uint256 contract_token_balance = token.balanceOf(address(this));
         require (contract_token_balance != 0);
@@ -112,10 +112,10 @@ contract SanityPools is Controller {
 
     function refund(uint256 _index) validIndex(_index) {
         Pool storage pool = pools[_index];
-        //Can&#39;t refund if tokens were bought
+        //Can't refund if tokens were bought
         require(!pool.bought_tokens);
         uint256 eth_to_withdraw = balances[_index][msg.sender];
-        //Updates the user&#39;s balance prior to sending ETH to prevent recursive call.
+        //Updates the user's balance prior to sending ETH to prevent recursive call.
         balances[_index][msg.sender] = 0;
         //Updates the pool ETH value
         pool.pool_eth_value -= eth_to_withdraw;
@@ -124,16 +124,16 @@ contract SanityPools is Controller {
 
     function withdraw(uint256 _index) validIndex(_index) {
         Pool storage pool = pools[_index];
-        // Disallow withdraw if tokens haven&#39;t been bought yet.
+        // Disallow withdraw if tokens haven't been bought yet.
         require(pool.bought_tokens);
         uint256 contract_token_balance = pool.token.balanceOf(address(this));
         // Disallow token withdrawals if there are no tokens to withdraw.
         require(contract_token_balance != 0);
-        // Store the user&#39;s token balance in a temporary variable.
+        // Store the user's token balance in a temporary variable.
         uint256 tokens_to_withdraw = (balances[_index][msg.sender] * contract_token_balance) / pool.pool_eth_value;
         // Update the value of tokens currently held by the contract.
         pool.pool_eth_value -= balances[_index][msg.sender];
-        // Update the user&#39;s balance prior to sending to prevent recursive call.
+        // Update the user's balance prior to sending to prevent recursive call.
         balances[_index][msg.sender] = 0;
         //The 1% fee
         uint256 fee = tokens_to_withdraw / 100;
@@ -147,10 +147,10 @@ contract SanityPools is Controller {
         Pool storage pool = pools[_index];
         require(!pool.bought_tokens);
         //Check if the contribution is within the limits or if there is no max amount
-        require(pool.pool_eth_value+msg.value &lt;= pool.max_amount || pool.max_amount == 0);
+        require(pool.pool_eth_value+msg.value <= pool.max_amount || pool.max_amount == 0);
         //Update the eth held by the pool
         pool.pool_eth_value += msg.value;
-        //Updates the user&#39;s balance
+        //Updates the user's balance
         balances[_index][msg.sender] += msg.value;
     }
 }

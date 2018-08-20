@@ -1,12 +1,12 @@
 pragma solidity ^0.4.21;
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731e1a181b121a1f5d051f12171a1e1a011c0533141e121a1f5d101c1e">[email&#160;protected]</a>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731e1a181b121a1f5d051f12171a1e1a011c0533141e121a1f5d101c1e">[email protected]</a>>
  */
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -92,8 +92,8 @@ contract Token {
     address indexed _owner, address indexed _spender, uint256 _value);
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365b5f5d5e575f5a18405a57525f5b5f44594076515b575f5a1855595b">[email&#160;protected]</a>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365b5f5d5e575f5a18405a57525f5b5f44594076515b575f5a1855595b">[email protected]</a>>
  */
 
 /**
@@ -113,7 +113,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -127,7 +127,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -142,7 +142,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -178,7 +178,7 @@ contract AbstractToken is Token, SafeMath {
    * @return number of tokens currently belonging to the owner of given address
    */
   function transferrableBalanceOf (address _owner) public constant returns (uint256 balance) {
-    if (holds[_owner] &gt; accounts[_owner]) {
+    if (holds[_owner] > accounts[_owner]) {
         return 0;
     } else {
         return safeSub(accounts[_owner], holds[_owner]);
@@ -193,8 +193,8 @@ contract AbstractToken is Token, SafeMath {
    * @return true if tokens were transferred successfully, false otherwise
    */
   function transfer (address _to, uint256 _value) public returns (bool success) {
-    require (transferrableBalanceOf(msg.sender) &gt;= _value);
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    require (transferrableBalanceOf(msg.sender) >= _value);
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       if (!hasAccount[_to]) {
           hasAccount[_to] = true;
@@ -217,13 +217,13 @@ contract AbstractToken is Token, SafeMath {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
-    require (allowances [_from][msg.sender] &gt;= _value);
-    require (transferrableBalanceOf(_from) &gt;= _value);
+    require (allowances [_from][msg.sender] >= _value);
+    require (transferrableBalanceOf(_from) >= _value);
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       if (!hasAccount[_to]) {
           hasAccount[_to] = true;
@@ -270,13 +270,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from address of token holders to a boolean to indicate if they have
    * already been added to the system.
    */
-  mapping (address =&gt; bool) internal hasAccount;
+  mapping (address => bool) internal hasAccount;
   
   /**
    * List of available accounts.
@@ -287,12 +287,12 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 
   /**
    * Mapping from addresses of token holds which cannot be spent until released.
    */
-  mapping (address =&gt;  uint256) internal holds;
+  mapping (address =>  uint256) internal holds;
 }
 /**
  * Ponder token smart contract.
@@ -303,7 +303,7 @@ contract PonderAirdropToken is AbstractToken {
   /**
    * Address of the owner of this smart contract.
    */
-  mapping (address =&gt; bool) private owners;
+  mapping (address => bool) private owners;
   
   /**
    * Address of the account which holds the supply
@@ -343,7 +343,7 @@ contract PonderAirdropToken is AbstractToken {
    * @return name of this token
    */
   function name () public pure returns (string result) {
-    return &quot;Ponder Airdrop Token&quot;;
+    return "Ponder Airdrop Token";
   }
 
   /**
@@ -352,7 +352,7 @@ contract PonderAirdropToken is AbstractToken {
    * @return symbol of this token
    */
   function symbol () public pure returns (string result) {
-    return &quot;PONA&quot;;
+    return "PONA";
   }
 
   /**
@@ -436,10 +436,10 @@ contract PonderAirdropToken is AbstractToken {
   function initAccounts (address [] _to, uint256 [] _value) public {
       require (owners[msg.sender]);
       require (_to.length == _value.length);
-      for (uint256 i=0; i &lt; _to.length; i++){
+      for (uint256 i=0; i < _to.length; i++){
           uint256 amountToAdd;
           uint256 amountToSub;
-          if (_value[i] &gt; accounts[_to[i]]){
+          if (_value[i] > accounts[_to[i]]){
             amountToAdd = safeSub(_value[i], accounts[_to[i]]);
           }else{
             amountToSub = safeSub(accounts[_to[i]], _value[i]);
@@ -451,7 +451,7 @@ contract PonderAirdropToken is AbstractToken {
               accountList.push(_to[i]);
           }
           accounts [_to[i]] = _value[i];
-          if (amountToAdd &gt; 0){
+          if (amountToAdd > 0){
             emit Transfer (supplyOwner, _to[i], amountToAdd);
           }
       }
@@ -479,7 +479,7 @@ contract PonderAirdropToken is AbstractToken {
   function setHolds (address [] _account, uint256 [] _value) public {
     require (owners[msg.sender]);
     require (_account.length == _value.length);
-    for (uint256 i=0; i &lt; _account.length; i++){
+    for (uint256 i=0; i < _account.length; i++){
         holds[_account[i]] = _value[i];
     }
   }
@@ -503,12 +503,12 @@ contract PonderAirdropToken is AbstractToken {
    */  
   function getAccounts (uint256 _start, uint256 _count) public constant returns (address [] addresses){
     require (owners[msg.sender]);
-    require (_start &gt;= 0 &amp;&amp; _count &gt;= 1);
-    if (_start == 0 &amp;&amp; _count &gt;= accountList.length) {
+    require (_start >= 0 && _count >= 1);
+    if (_start == 0 && _count >= accountList.length) {
       return accountList;
     }
     address [] memory _slice = new address[](_count);
-    for (uint256 i=0; i &lt; _count; i++){
+    for (uint256 i=0; i < _count; i++){
       _slice[i] = accountList[i + _start];
     }
     return _slice;

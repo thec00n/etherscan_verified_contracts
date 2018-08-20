@@ -14,7 +14,7 @@ contract PearlDistribute {
     address public pearlContract = 0x1844b21593262668B7248d0f57a220CaaBA46ab9;
     OysterPearl pearl = OysterPearl(pearlContract);
 
-    mapping (address =&gt; uint256) public pearlSend;
+    mapping (address => uint256) public pearlSend;
 
     function PearlDistribute() public {
         calcAmount = 0;
@@ -44,8 +44,8 @@ contract PearlDistribute {
     function distribute() public onlyDirector {
         require(!complete);
         require(calcMode);
-        require(calcAmount&gt;0);
-        require(calcAmount &lt;= pearl.balanceOf(this));
+        require(calcAmount>0);
+        require(calcAmount <= pearl.balanceOf(this));
         calcMode = false;
         stakes();
         complete = true;

@@ -1,5 +1,5 @@
 // OwnTheDay-Token Source code
-// copyright 2018 xeroblood &lt;https://owntheday.io&gt;
+// copyright 2018 xeroblood <https://owntheday.io>
 
 pragma solidity 0.4.19;
 
@@ -26,9 +26,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -89,7 +89,7 @@ contract Ownable {
 
     /* Withdraw */
     /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract. User funds are immediately sent to the old
     owner in `claimDay`, no user funds are left in the contract.
     */
@@ -98,7 +98,7 @@ contract Ownable {
     }
 
     function withdrawAmount(uint256 _amount) public onlyOwner {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         owner.transfer(_amount);
     }
 
@@ -154,7 +154,7 @@ contract Pausable is Ownable {
 
 /**
 * @title Helps contracts guard agains reentrancy attacks.
-* @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="9eecfbf3fdf1deac">[email&#160;protected]</span>π.com&gt;
+* @author Remco Bloemen <<span class="__cf_email__" data-cfemail="9eecfbf3fdf1deac">[email protected]</span>π.com>
 * @notice If you mark a function `nonReentrant`, you should also
 * mark it `external`.
 */
@@ -212,27 +212,27 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
     bool private migrationFinished = false;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) public tokenOwner;
+    mapping (uint256 => address) public tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) public tokenApprovals;
+    mapping (uint256 => address) public tokenApprovals;
 
     // Mapping from owner to list of owned token IDs
-    mapping (address =&gt; uint256[]) public ownedTokens;
+    mapping (address => uint256[]) public ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) public ownedTokensIndex;
+    mapping(uint256 => uint256) public ownedTokensIndex;
 
     /// @dev A mapping from Day Index to Current Price.
     ///  Initial Price set at 1 finney (1/1000th of an ether).
-    mapping (uint256 =&gt; uint256) public dayIndexToPrice;
+    mapping (uint256 => uint256) public dayIndexToPrice;
 
     /// @dev A mapping from Day Index to the address owner. Days with
     ///  no valid owner address are assigned to contract owner.
-    //mapping (uint256 =&gt; address) public dayIndexToOwner;      // &lt;---  redundant with tokenOwner
+    //mapping (uint256 => address) public dayIndexToOwner;      // <---  redundant with tokenOwner
 
     /// @dev A mapping from Account Address to Nickname.
-    mapping (address =&gt; string) public ownerAddressToName;
+    mapping (address => string) public ownerAddressToName;
 
     /**
     * @dev Guarantees msg.sender is owner of the given token
@@ -249,11 +249,11 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
     }
 
     function name() public pure returns (string _name) {
-        return &quot;OwnTheDay.io Days&quot;;
+        return "OwnTheDay.io Days";
     }
 
     function symbol() public pure returns (string _symbol) {
-        return &quot;DAYS&quot;;
+        return "DAYS";
     }
 
     /// @dev Assigns initial days to owners during minting period.
@@ -261,8 +261,8 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
     function assignInitialDays(address _to, uint256 _tokenId, uint256 _price) public onlyOwner onlyDuringMigration {
         require(msg.sender != address(0));
         require(_to != address(0));
-        require(_tokenId &gt;= 0 &amp;&amp; _tokenId &lt; 366);
-        require(_price &gt;= 1 finney);
+        require(_tokenId >= 0 && _tokenId < 366);
+        require(_price >= 1 finney);
         dayIndexToPrice[_tokenId] = _price;
         _mint(_to, _tokenId);
     }
@@ -355,11 +355,11 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
 
     /// @dev Calculate the Final Sale Price after the Owner-Cut has been calculated
     function calculateOwnerCut(uint256 _price) public pure returns (uint256) {
-        if (_price &gt; 5000 finney) {
+        if (_price > 5000 finney) {
             return _price.mul(2).div(100);
-        } else if (_price &gt; 500 finney) {
+        } else if (_price > 500 finney) {
             return _price.mul(3).div(100);
-        } else if (_price &gt; 250 finney) {
+        } else if (_price > 250 finney) {
             return _price.mul(4).div(100);
         }
         return _price.mul(5).div(100);
@@ -367,13 +367,13 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
 
     /// @dev Calculate the Price Increase based on the current Purchase Price
     function calculatePriceIncrease(uint256 _price) public pure returns (uint256) {
-        if (_price &gt; 5000 finney) {
+        if (_price > 5000 finney) {
             return _price.mul(15).div(100);
-        } else if (_price &gt; 2500 finney) {
+        } else if (_price > 2500 finney) {
             return _price.mul(18).div(100);
-        } else if (_price &gt; 500 finney) {
+        } else if (_price > 500 finney) {
             return _price.mul(26).div(100);
-        } else if (_price &gt; 250 finney) {
+        } else if (_price > 250 finney) {
             return _price.mul(36).div(100);
         }
         return _price; // 100% increase
@@ -381,7 +381,7 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
 
     /// @dev Gets the Current (or Default) Price of a Day
     function getPriceByDayIndex(uint256 _dayIndex) public view returns (uint256) {
-        require(_dayIndex &gt;= 0 &amp;&amp; _dayIndex &lt; 366);
+        require(_dayIndex >= 0 && _dayIndex < 366);
         uint256 price = dayIndexToPrice[_dayIndex];
         if (price == 0) { price = 1 finney; }
         return price;
@@ -390,7 +390,7 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
     /// @dev Sets the Nickname for an Account Address
     function setAccountNickname(string _nickname) public whenNotPaused {
         require(msg.sender != address(0));
-        require(bytes(_nickname).length &gt; 0);
+        require(bytes(_nickname).length > 0);
         ownerAddressToName[msg.sender] = _nickname;
     }
 
@@ -398,7 +398,7 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
     /// The Purchase Price is Paid to the Previous Owner
     function claimDay(uint256 _dayIndex) public nonReentrant whenNotPaused payable {
         require(msg.sender != address(0));
-        require(_dayIndex &gt;= 0 &amp;&amp; _dayIndex &lt; 366);
+        require(_dayIndex >= 0 && _dayIndex < 366);
 
         address buyer = msg.sender;
         address seller = tokenOwner[_dayIndex];
@@ -409,11 +409,11 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
         if (purchasePrice == 0) {
             purchasePrice = 1 finney; // == 0.001 ether or 1000000000000000 wei
         }
-        require(amountPaid &gt;= purchasePrice);
+        require(amountPaid >= purchasePrice);
 
         // If too much was paid, track the change to be returned
         uint256 changeToReturn = 0;
-        if (amountPaid &gt; purchasePrice) {
+        if (amountPaid > purchasePrice) {
             changeToReturn = amountPaid.sub(purchasePrice);
             amountPaid -= changeToReturn;
         }
@@ -444,7 +444,7 @@ contract OwnTheDayContract is ERC721, Pausable, ReentrancyGuard {
         if (seller != address(0)) {
             seller.transfer(salePrice);
         }
-        if (changeToReturn &gt; 0) {
+        if (changeToReturn > 0) {
             buyer.transfer(changeToReturn);
         }
     }

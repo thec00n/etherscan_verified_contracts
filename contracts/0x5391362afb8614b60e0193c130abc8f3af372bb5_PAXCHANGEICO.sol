@@ -5,7 +5,7 @@ PAXCHANGE ICO Contract
 PAXCHANGE TOKEN is an ERC-20 Token Standar Compliant
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="2d4b034c435942434442034c4648416d4a404c4441034e4240">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="2d4b034c435942434442034c4648416d4a404c4441034e4240">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -23,7 +23,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -63,10 +63,10 @@ contract PAXCHANGEICO {
     string public campaignUrl;
     uint256 public constant version = 1;
     uint256[4] public prices = [
-    7800, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 30% bonus =&gt; 1eth = 7800 PAXCHANGE
-    7200, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 20% bonus =&gt; 1eth = 7200 PAXCHANGE
-    6600, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 10% bonus =&gt; 1eth = 6600 PAXCHANGE
-    3000  // 1 eth~=300$ 1 PAXCHANGE = 0.1$ =&gt; 1eth = 3000 PAXCHANGE
+    7800, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 30% bonus => 1eth = 7800 PAXCHANGE
+    7200, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 20% bonus => 1eth = 7200 PAXCHANGE
+    6600, // 1 eth~=300$ 1 PAXCHANGE = 0.05$ + 10% bonus => 1eth = 6600 PAXCHANGE
+    3000  // 1 eth~=300$ 1 PAXCHANGE = 0.1$ => 1eth = 3000 PAXCHANGE
     ];
     /**
     *Log Events
@@ -118,21 +118,21 @@ contract PAXCHANGEICO {
         totalRaised = totalRaised.add(msg.value);
         currentBalance = totalRaised;
 
-        if (state == State.PreSale &amp;&amp; now &lt; startTime + 1 weeks){ //if we are on the first week of the presale
+        if (state == State.PreSale && now < startTime + 1 weeks){ //if we are on the first week of the presale
             tokenBought = uint256(msg.value).mul(prices[0]);
-            if (totalRaised.add(tokenBought) &gt; 10000000 * (10**18)){
+            if (totalRaised.add(tokenBought) > 10000000 * (10**18)){
                 revert();
             }
         }
-        else if (state == State.PreSale &amp;&amp; now &lt; startTime + 2 weeks){ //if we are on the second week of the presale
+        else if (state == State.PreSale && now < startTime + 2 weeks){ //if we are on the second week of the presale
             tokenBought = uint256(msg.value).mul(prices[1]);
-            if (totalRaised.add(tokenBought) &gt; 10000000 * (10**18)){
+            if (totalRaised.add(tokenBought) > 10000000 * (10**18)){
                 revert();
             }
         }
-        else if (state == State.PreSale &amp;&amp; now &lt; startTime + 3 weeks){ //if we are on the third week of the presale
+        else if (state == State.PreSale && now < startTime + 3 weeks){ //if we are on the third week of the presale
             tokenBought = uint256(msg.value).mul(prices[2]);
-            if (totalRaised.add(tokenBought) &gt; 10000000 * (10**18)){
+            if (totalRaised.add(tokenBought) > 10000000 * (10**18)){
                 revert();
             }
         }
@@ -153,10 +153,10 @@ contract PAXCHANGEICO {
     */
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &gt; preSaledeadline &amp;&amp; now &lt; ICOdeadline){
+        if(now > preSaledeadline && now < ICOdeadline){
             state = State.ICO;
         }
-        else if(now &gt; ICOdeadline &amp;&amp; state==State.ICO){
+        else if(now > ICOdeadline && state==State.ICO){
             state = State.Successful;
             completedAt = now;
             LogFundingSuccessful(totalRaised);
@@ -187,7 +187,7 @@ contract PAXCHANGEICO {
     *enought gas transaction could not be finished
     */
     function () public payable {
-        require(msg.value &gt; 1 finney);
+        require(msg.value > 1 finney);
         contribute();
     }
 }

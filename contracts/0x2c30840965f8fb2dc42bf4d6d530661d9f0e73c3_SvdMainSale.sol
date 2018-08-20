@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -145,7 +145,7 @@ contract SvdMainSale is Pausable {
     address public wallet;
 
     // track the investments made from each address
-    mapping(address =&gt; uint256) public investments;
+    mapping(address => uint256) public investments;
 
     // total amount of funds raised (in wei)
     uint256 public weiRaised;
@@ -176,9 +176,9 @@ contract SvdMainSale is Pausable {
         uint256 _minWeiInvestment,
         uint256 _maxWeiInvestment,
         address _wallet) public {
-        require(_endTime &gt; _startTime);
-        require(_minWeiInvestment &gt; 0);
-        require(_maxWeiInvestment &gt; _minWeiInvestment);
+        require(_endTime > _startTime);
+        require(_minWeiInvestment > 0);
+        require(_maxWeiInvestment > _minWeiInvestment);
         require(_wallet != address(0));
 
         startTime = _startTime;
@@ -202,7 +202,7 @@ contract SvdMainSale is Pausable {
      * @return true if SvdMainSale event has started
      */
     function hasStarted() external view returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     /**
@@ -210,7 +210,7 @@ contract SvdMainSale is Pausable {
      * @return true if SvdMainSale event has ended
      */
     function hasEnded() external view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**
@@ -242,10 +242,10 @@ contract SvdMainSale is Pausable {
     // overriding Crowdsale#validPurchase to add extra cap logic
     // @return true if investors can buy at the moment
     function validPurchase() internal view returns (bool) {
-        if (msg.value &lt; minWeiInvestment || msg.value &gt; maxWeiInvestment) {
+        if (msg.value < minWeiInvestment || msg.value > maxWeiInvestment) {
             return false;
         }
-        bool withinPeriod = (now &gt;= startTime) &amp;&amp; (now &lt;= endTime); 
+        bool withinPeriod = (now >= startTime) && (now <= endTime); 
         return withinPeriod;
     }
 }

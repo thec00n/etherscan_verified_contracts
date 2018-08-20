@@ -20,19 +20,19 @@ contract ERC20Interface {
 contract CPAYToken is ERC20Interface {
     using SafeMath for uint256;
 
-    string public name = &quot;CPAY Token&quot;;
-    string public symbol = &quot;CPAY&quot;;
+    string public name = "CPAY Token";
+    string public symbol = "CPAY";
 
     uint256 public totalSupply = 90414745;
     uint8 public decimals = 0;
 
     address public owner;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
  
     uint256 public totalPayments;
-    mapping(address =&gt; uint256) public payments;
+    mapping(address => uint256) public payments;
 
     bool public paused = false;
 
@@ -117,7 +117,7 @@ contract CPAYToken is ERC20Interface {
     function decreaseApproval (address _spender, uint _subtractedValue) whenNotPaused returns (bool success) {
 
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -128,7 +128,7 @@ contract CPAYToken is ERC20Interface {
 
     function burn(uint _value) returns (bool success)
     {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -186,7 +186,7 @@ contract CPAYToken is ERC20Interface {
         uint256 payment = payments[payee];
 
         require(payment != 0);
-        require(this.balance &gt;= payment);
+        require(this.balance >= payment);
 
         totalPayments = totalPayments.sub(payment);
         payments[payee] = 0;
@@ -197,7 +197,7 @@ contract CPAYToken is ERC20Interface {
 
     function withdrawToAdress(address _to, uint256 _amount) onlyOwner {
         require(_to != address(0));
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         _to.transfer(_amount);
     }
 
@@ -216,13 +216,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

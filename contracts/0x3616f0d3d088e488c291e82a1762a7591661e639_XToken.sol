@@ -4,10 +4,10 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract XToken {
 
-  string public constant name = &quot;XTOKEN&quot;;
-  string public constant symbol = &quot;XTOKEN&quot;;
+  string public constant name = "XTOKEN";
+  string public constant symbol = "XTOKEN";
   uint8 public constant decimals = 18;
-  string public constant version = &#39;0.15&#39;;
+  string public constant version = '0.15';
   uint256 public constant totalSupply = 1000000000 * 1000000000000000000;
 
   address public owner;
@@ -22,8 +22,8 @@ contract XToken {
     }
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function RoundToken() {
     owner = msg.sender;
@@ -42,7 +42,7 @@ contract XToken {
   }
 
   function transfer(address _to, uint256 _value) checkIfToContract(_to) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -53,7 +53,7 @@ contract XToken {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) checkIfToContract(_to) returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;

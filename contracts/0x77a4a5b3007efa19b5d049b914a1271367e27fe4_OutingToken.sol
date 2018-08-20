@@ -28,7 +28,7 @@ library SafeMath {
     */
     function ADD (uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
         @return difference of a and b
     */
     function SUB (uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     
@@ -83,7 +83,7 @@ contract Trustable is Ownable {
 
 
     //Only trusted addresses are able to transfer tokens during the Crowdsale
-    mapping (address =&gt; bool) trusted;
+    mapping (address => bool) trusted;
 
     event AddTrusted (address indexed _trustable);
     event RemoveTrusted (address indexed _trustable);
@@ -174,9 +174,9 @@ contract Token is ERC20, Pausable{
     uint256 _totalSupply = 56000000000000000; 
 
     //Balances for each account
-    mapping (address =&gt; uint256)  balances;
+    mapping (address => uint256)  balances;
     //Owner of the account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //Notifies users about the amount burnt
     event Burn(address indexed _from, uint256 _value);
@@ -197,7 +197,7 @@ contract Token is ERC20, Pausable{
         return balances[_owner];
     }
 
-    //Transfer the balance from owner&#39;s account to another account
+    //Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
         external
         notZeroAddress(_to)
@@ -217,7 +217,7 @@ contract Token is ERC20, Pausable{
         returns (bool success)
     {
         //Require allowance to be not too big
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
         balances[_from] = balances[_from].SUB(_amount);
         balances[_to] = balances[_to].ADD(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].SUB(_amount);
@@ -253,7 +253,7 @@ contract Token is ERC20, Pausable{
         returns (bool success)
     {
         uint256 increased = allowed[msg.sender][_spender].ADD(_addedValue);
-        require(increased &lt;= balances[msg.sender]);
+        require(increased <= balances[msg.sender]);
         //Cannot approve more coins then you have
         allowed[msg.sender][_spender] = increased;
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
@@ -266,7 +266,7 @@ contract Token is ERC20, Pausable{
         returns (bool success)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.SUB(_subtractedValue);
@@ -293,9 +293,9 @@ contract Token is ERC20, Pausable{
 contract OutingToken is Token{
 
     //Name of the token
-    string public constant name = &quot;Outing&quot;;
+    string public constant name = "Outing";
     //Symbol of the token
-    string public constant symbol = &quot;OTG&quot;;
+    string public constant symbol = "OTG";
     //Number of decimals of Outing
     uint8 public constant decimals = 8;
 
@@ -337,14 +337,14 @@ contract OutingToken is Token{
     //Check if team wallet is unlocked
     function unlockTokens(address _address) external {
         if (_address == OUTINGRESERVE) {
-            require(UNLOCK_OUTINGRESERVE &lt;= now);
-            require (outingreserveBalance &gt; 0);
+            require(UNLOCK_OUTINGRESERVE <= now);
+            require (outingreserveBalance > 0);
             balances[OUTINGRESERVE] = outingreserveBalance;
             outingreserveBalance = 0;
             Transfer (this, OUTINGRESERVE, balances[OUTINGRESERVE]);
         } else if (_address == TEAM) {
-            require(UNLOCK_TEAM &lt;= now);
-            require (teamBalance &gt; 0);
+            require(UNLOCK_TEAM <= now);
+            require (teamBalance > 0);
             balances[TEAM] = teamBalance;
             teamBalance = 0;
             Transfer (this, TEAM, balances[TEAM]);

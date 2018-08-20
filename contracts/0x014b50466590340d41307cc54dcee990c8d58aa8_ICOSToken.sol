@@ -1,6 +1,6 @@
 /*
- * ICOS Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="f19c989a9990989ddf879d9095989c98839e87b1969c90989ddf929e9c">[email&#160;protected]</span>&gt;
+ * ICOS Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="f19c989a9990989ddf879d9095989c98839e87b1969c90989ddf929e9c">[email protected]</span>>
  */
 
 pragma solidity ^0.4.11;
@@ -89,8 +89,8 @@ contract Token {
     address indexed _owner, address indexed _spender, uint256 _value);
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="432e2a282b222a2f6d352f22272a2e2a312c3503242e222a2f6d202c2e">[email&#160;protected]</span>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="432e2a282b222a2f6d352f22272a2e2a312c3503242e222a2f6d202c2e">[email protected]</span>>
  */
 pragma solidity ^0.4.11;
 
@@ -111,7 +111,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &gt; MAX_UINT256 - y) throw;
+    if (x > MAX_UINT256 - y) throw;
     return x + y;
   }
 
@@ -125,7 +125,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &lt; y) throw;
+    if (x < y) throw;
     return x - y;
   }
 
@@ -140,7 +140,7 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    if (x &gt; MAX_UINT256 / y) throw;
+    if (x > MAX_UINT256 / y) throw;
     return x * y;
   }
 }
@@ -175,8 +175,8 @@ contract AbstractToken is Token, SafeMath {
    * @return true if tokens were transferred successfully, false otherwise
    */
   function transfer (address _to, uint256 _value) returns (bool success) {
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (msg.sender, _to, _value);
@@ -195,13 +195,13 @@ contract AbstractToken is Token, SafeMath {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success) {
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (_from, _to, _value);
@@ -244,13 +244,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
@@ -289,7 +289,7 @@ contract ICOSToken is AbstractToken {
    * @return name of this token
    */
   function name () constant returns (string name) {
-    return &quot;ICOS&quot;;
+    return "ICOS";
   }
 
   /**
@@ -364,8 +364,8 @@ contract ICOSToken is AbstractToken {
    * @return true on success, false on error
    */
   function burnTokens (uint256 _value) returns (bool success) {
-    if (_value &gt; accounts [msg.sender]) return false;
-    else if (_value &gt; 0) {
+    if (_value > accounts [msg.sender]) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       tokensCount = safeSub (tokensCount, _value);
       return true;

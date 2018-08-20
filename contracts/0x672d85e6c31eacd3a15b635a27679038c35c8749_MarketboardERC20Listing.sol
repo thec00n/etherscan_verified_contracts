@@ -15,8 +15,8 @@ contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
-    string public constant name = &quot;Token Name&quot;;
-    string public constant symbol = &quot;SYM&quot;;
+    string public constant name = "Token Name";
+    string public constant symbol = "SYM";
     uint8 public constant decimals = 18;  // 18 is the most common number of decimal places
 
 }
@@ -97,7 +97,7 @@ contract MarketboardERC20Listing {
 
     }
 
-    /// Get the number of tokens that equals 1 TOKEN in it&#39;s base denomination
+    /// Get the number of tokens that equals 1 TOKEN in it's base denomination
     function tokenBase() public view returns(uint256) {
 
         // Fetch token balance
@@ -161,7 +161,7 @@ contract MarketboardERC20Listing {
     function purchase(address recipient) public payable {
 
         // Check if the right amount of Ether was sent
-        require(msg.value &gt;= totalPrice());
+        require(msg.value >= totalPrice());
 
         // Send event
         MarketboardListingComplete(tokenContract, balance, msg.value, fee(), tokenPrice);
@@ -173,8 +173,8 @@ contract MarketboardERC20Listing {
 
 		// Get the amount of Ether to send to the seller
 		uint256 basePrice = tokenPrice * balance / tokenBase();
-		require(basePrice &gt; 0);
-		require(basePrice &lt; this.balance);
+		require(basePrice > 0);
+		require(basePrice < this.balance);
 
 		// Send Ether to the seller
 		seller.transfer(basePrice);
@@ -187,7 +187,7 @@ contract MarketboardERC20Listing {
     /// If somehow another unrelated type of token was sent to this contract, this can be used to claim those tokens back.
     function claimUnrelatedTokens(address unrelatedTokenContract, address recipient) moderatorOrSellerOnly public {
 
-        // Make sure we&#39;re not dealing with the known token
+        // Make sure we're not dealing with the known token
         require(tokenContract != unrelatedTokenContract);
 
         // Send tokens to the recipient

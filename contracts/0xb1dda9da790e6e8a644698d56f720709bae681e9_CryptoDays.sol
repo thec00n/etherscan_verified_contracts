@@ -1,5 +1,5 @@
 // CryptoDays Source code
-// copyright 2018 xeroblood &lt;https://owntheday.io&gt;
+// copyright 2018 xeroblood <https://owntheday.io>
 
 pragma solidity 0.4.19;
 
@@ -26,9 +26,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -136,7 +136,7 @@ contract Pausable is Ownable {
 
 /**
 * @title Helps contracts guard agains reentrancy attacks.
-* @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b6a1a9a7ab84f6">[email&#160;protected]</a>π.com&gt;
+* @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b6a1a9a7ab84f6">[email protected]</a>π.com>
 * @notice If you mark a function `nonReentrant`, you should also
 * mark it `external`.
 */
@@ -174,7 +174,7 @@ contract CryptoDaysBase is Pausable, ReentrancyGuard {
 
     /// @dev A mapping from Day Index to the address owner. Days with
     ///  no valid owner address are assigned to contract owner.
-    mapping (address =&gt; uint256) public availableForWithdraw;
+    mapping (address => uint256) public availableForWithdraw;
 
     function contractBalance() public view returns (uint256) {
         return this.balance;
@@ -182,8 +182,8 @@ contract CryptoDaysBase is Pausable, ReentrancyGuard {
 
     function withdrawBalance() public nonReentrant {
         require(msg.sender != address(0));
-        require(availableForWithdraw[msg.sender] &gt; 0);
-        require(availableForWithdraw[msg.sender] &lt;= this.balance);
+        require(availableForWithdraw[msg.sender] > 0);
+        require(availableForWithdraw[msg.sender] <= this.balance);
         uint256 amount = availableForWithdraw[msg.sender];
         availableForWithdraw[msg.sender] = 0;
         BalanceCollected(msg.sender, amount);
@@ -193,11 +193,11 @@ contract CryptoDaysBase is Pausable, ReentrancyGuard {
     /// @dev Calculate the Final Sale Price after the Owner-Cut has been calculated
     function calculateOwnerCut(uint256 price) public pure returns (uint256) {
         uint8 percentCut = 5;
-        if (price &gt; 5500 finney) {
+        if (price > 5500 finney) {
             percentCut = 2;
-        } else if (price &gt; 1250 finney) {
+        } else if (price > 1250 finney) {
             percentCut = 3;
-        } else if (price &gt; 250 finney) {
+        } else if (price > 250 finney) {
             percentCut = 4;
         }
         return price.mul(percentCut).div(100);
@@ -206,13 +206,13 @@ contract CryptoDaysBase is Pausable, ReentrancyGuard {
     /// @dev Calculate the Price Increase based on the current Purchase Price
     function calculatePriceIncrease(uint256 price) public pure returns (uint256) {
         uint8 percentIncrease = 100;
-        if (price &gt; 5500 finney) {
+        if (price > 5500 finney) {
             percentIncrease = 13;
-        } else if (price &gt; 2750 finney) {
+        } else if (price > 2750 finney) {
             percentIncrease = 21;
-        } else if (price &gt; 1250 finney) {
+        } else if (price > 1250 finney) {
             percentIncrease = 34;
-        } else if (price &gt; 250 finney) {
+        } else if (price > 250 finney) {
             percentIncrease = 55;
         }
         return price.mul(percentIncrease).div(100);
@@ -229,18 +229,18 @@ contract CryptoDays is CryptoDaysBase {
 
     /// @dev A mapping from Day Index to Current Price.
     ///  Initial Price set at 1 finney (1/1000th of an ether).
-    mapping (uint16 =&gt; uint256) public dayIndexToPrice;
+    mapping (uint16 => uint256) public dayIndexToPrice;
 
     /// @dev A mapping from Day Index to the address owner. Days with
     ///  no valid owner address are assigned to contract owner.
-    mapping (uint16 =&gt; address) public dayIndexToOwner;
+    mapping (uint16 => address) public dayIndexToOwner;
 
     /// @dev A mapping from Account Address to Nickname.
-    mapping (address =&gt; string) public ownerAddressToName;
+    mapping (address => string) public ownerAddressToName;
 
     /// @dev Gets the Current (or Default) Price of a Day
     function getPriceByDayIndex(uint16 dayIndex) public view returns (uint256) {
-        require(dayIndex &gt;= 0 &amp;&amp; dayIndex &lt; 366);
+        require(dayIndex >= 0 && dayIndex < 366);
         uint256 price = dayIndexToPrice[dayIndex];
         if (price == 0) { price = 1 finney; }
         return price;
@@ -249,7 +249,7 @@ contract CryptoDays is CryptoDaysBase {
     /// @dev Sets the Nickname for an Account Address
     function setAccountNickname(string nickname) public whenNotPaused {
         require(msg.sender != address(0));
-        require(bytes(nickname).length &gt; 0);
+        require(bytes(nickname).length > 0);
         ownerAddressToName[msg.sender] = nickname;
     }
 
@@ -257,7 +257,7 @@ contract CryptoDays is CryptoDaysBase {
     /// The Purchase Price is Paid to the Previous Owner
     function claimDay(uint16 dayIndex) public nonReentrant whenNotPaused payable {
         require(msg.sender != address(0));
-        require(dayIndex &gt;= 0 &amp;&amp; dayIndex &lt; 366);
+        require(dayIndex >= 0 && dayIndex < 366);
 
         // Prevent buying from self
         address buyer = msg.sender;
@@ -272,11 +272,11 @@ contract CryptoDays is CryptoDaysBase {
         if (purchasePrice == 0) {
             purchasePrice = 1 finney; // == 0.001 ether or 1000000000000000 wei
         }
-        require(amountPaid &gt;= purchasePrice);
+        require(amountPaid >= purchasePrice);
 
         // If too much was paid, track the change to be returned
         uint256 changeToReturn = 0;
-        if (amountPaid &gt; purchasePrice) {
+        if (amountPaid > purchasePrice) {
             changeToReturn = amountPaid.sub(purchasePrice);
             amountPaid -= changeToReturn;
         }
@@ -303,7 +303,7 @@ contract CryptoDays is CryptoDaysBase {
         } else {
             availableForWithdraw[owner] += salePrice;
         }
-        if (changeToReturn &gt; 0) {
+        if (changeToReturn > 0) {
             buyer.transfer(changeToReturn);
         }
     }

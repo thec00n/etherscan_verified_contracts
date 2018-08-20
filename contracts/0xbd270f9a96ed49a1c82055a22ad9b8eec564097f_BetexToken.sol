@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -157,7 +157,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="93e1f6fef0fcd3a1">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="93e1f6fef0fcd3a1">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -176,7 +176,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="483a2d252b27087a">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="483a2d252b27087a">[email protected]</a>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -201,7 +201,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="14667179777b5426">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="14667179777b5426">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -239,7 +239,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f785929a9498b7c5">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f785929a9498b7c5">[email protected]</a>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -254,7 +254,7 @@ contract NoOwner is HasNoEther, HasNoTokens, HasNoContracts {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -272,7 +272,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -302,7 +302,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -313,8 +313,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -328,7 +328,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -377,7 +377,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -394,8 +394,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract BetexToken is StandardToken, NoOwner {
 
-    string public constant name = &quot;Betex Token&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;BETEX&quot;; // solium-disable-line uppercase
+    string public constant name = "Betex Token"; // solium-disable-line uppercase
+    string public constant symbol = "BETEX"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
 
     // transfer unlock time (except team and broker recipients)
@@ -405,13 +405,13 @@ contract BetexToken is StandardToken, NoOwner {
     uint256 public secondUnlockTime; 
 
     // addresses locked till second unlock time
-    mapping (address =&gt; bool) public blockedTillSecondUnlock;
+    mapping (address => bool) public blockedTillSecondUnlock;
 
     // token holders
     address[] public holders;
 
     // holder number
-    mapping (address =&gt; uint256) public holderNumber;
+    mapping (address => uint256) public holderNumber;
 
     // ICO address
     address public icoAddress;
@@ -447,7 +447,7 @@ contract BetexToken is StandardToken, NoOwner {
     )
         public 
     {        
-        require(_secondUnlockTime &gt; firstUnlockTime);
+        require(_secondUnlockTime > firstUnlockTime);
 
         firstUnlockTime = _firstUnlockTime;
         secondUnlockTime = _secondUnlockTime;
@@ -514,7 +514,7 @@ contract BetexToken is StandardToken, NoOwner {
 
     // enforce second lock on receiver
     function enforceSecondLock(address _from, address _to) internal {
-        if (now &lt; secondUnlockTime) { // solium-disable-line security/no-block-members
+        if (now < secondUnlockTime) { // solium-disable-line security/no-block-members
             if (_from == TEAM_ADDRESS || _from == BROKER_RESERVE_ADDRESS) {
                 require(balances[_to] == uint256(0) || blockedTillSecondUnlock[_to]);
                 blockedTillSecondUnlock[_to] = true;
@@ -524,9 +524,9 @@ contract BetexToken is StandardToken, NoOwner {
 
     // preserve holders list
     function preserveHolders(address _from, address _to, uint256 _value) internal {
-        if (balances[_from].sub(_value) &lt; MIN_HOLDER_TOKENS) 
+        if (balances[_from].sub(_value) < MIN_HOLDER_TOKENS) 
             removeHolder(_from);
-        if (balances[_to].add(_value) &gt;= MIN_HOLDER_TOKENS) 
+        if (balances[_to].add(_value) >= MIN_HOLDER_TOKENS) 
             addHolder(_to);   
     }
 
@@ -534,7 +534,7 @@ contract BetexToken is StandardToken, NoOwner {
     function removeHolder(address _holder) internal {
         uint256 _number = holderNumber[_holder];
 
-        if (_number == 0 || holders.length == 0 || _number &gt; holders.length)
+        if (_number == 0 || holders.length == 0 || _number > holders.length)
             return;
 
         uint256 _index = _number.sub(1);
@@ -560,9 +560,9 @@ contract BetexToken is StandardToken, NoOwner {
 
     // @return true if transfer operation is allowed
     function transferAllowed(address _sender) internal view returns(bool) {
-        if (now &gt; secondUnlockTime || _sender == icoAddress) // solium-disable-line security/no-block-members
+        if (now > secondUnlockTime || _sender == icoAddress) // solium-disable-line security/no-block-members
             return true;
-        if (now &lt; firstUnlockTime) // solium-disable-line security/no-block-members
+        if (now < firstUnlockTime) // solium-disable-line security/no-block-members
             return false;
         if (blockedTillSecondUnlock[_sender])
             return false;

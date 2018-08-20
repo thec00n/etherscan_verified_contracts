@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
-// import &quot;./interface/DiviesInterface.sol&quot;;
+// import "./interface/DiviesInterface.sol";
 
 interface DiviesInterface {
     function deposit() external payable;
 }
 
 
-// import &quot;./library/SafeMath.sol&quot;;
+// import "./library/SafeMath.sol";
 /**
  * @title SafeMath v0.1.9
  * @dev Math operations with safety checks that throw on error
@@ -32,7 +32,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -40,9 +40,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -54,7 +54,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -67,7 +67,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -81,7 +81,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -114,7 +114,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -122,7 +122,7 @@ library SafeMath {
 }
 
 
-//import &quot;./library/UintCompressor.sol&quot;;
+//import "./library/UintCompressor.sol";
 library UintCompressor {
     using SafeMath for *;
     
@@ -132,18 +132,18 @@ library UintCompressor {
         returns(uint256)
     {
         // check conditions 
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
         _start = exponent(_start);
         
         // check that the include data fits into its segment 
-        require(_include &lt; (_end / _start));
+        require(_include < (_end / _start));
         
         // build middle
-        if (_include &gt; 0)
+        if (_include > 0)
             _include = _include.mul(_start);
         
         return((_var.sub((_var / _start).mul(_start))).add(_include).add((_var / _end).mul(_end)));
@@ -155,8 +155,8 @@ library UintCompressor {
 	    returns(uint256)
     {
         // check conditions
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
@@ -176,7 +176,7 @@ library UintCompressor {
 }
 
 
-//import &quot;./interface/HourglassInterface.sol&quot;;
+//import "./interface/HourglassInterface.sol";
 interface HourglassInterface {
     function() payable external;
     function buy(address _playerAddress) payable external returns(uint256);
@@ -201,7 +201,7 @@ contract Divies {
     HourglassInterface constant P3Dcontract_ = HourglassInterface(0x7fc8eb833aebf2b52155c386801a374e90b0c95e);     
     
     uint256 public pusherTracker_ = 100;
-    mapping (address =&gt; Pusher) public pushers_;
+    mapping (address => Pusher) public pushers_;
     struct Pusher
     {
         uint256 tracker;
@@ -217,7 +217,7 @@ contract Divies {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     
@@ -243,7 +243,7 @@ contract Divies {
         
     }
     
-    // used so the distribute function can call hourglass&#39;s withdraw
+    // used so the distribute function can call hourglass's withdraw
     function() external payable {}
     
     
@@ -274,7 +274,7 @@ contract Divies {
         isHuman()
     {
         // make sure _percent is within boundaries
-        require(_percent &gt; 0 &amp;&amp; _percent &lt; 100, &quot;please pick a percent between 1 and 99&quot;);
+        require(_percent > 0 && _percent < 100, "please pick a percent between 1 and 99");
         
         // data setup
         address _pusher = msg.sender;
@@ -282,10 +282,10 @@ contract Divies {
         uint256 _mnPayout;
         uint256 _compressedData;
         
-        // limit pushers greed (use &quot;if&quot; instead of require for level 42 top kek)
+        // limit pushers greed (use "if" instead of require for level 42 top kek)
         if (
-            pushers_[_pusher].tracker &lt;= pusherTracker_.sub(100) &amp;&amp; // pusher is greedy: wait your turn
-            pushers_[_pusher].time.add(1 hours) &lt; now               // pusher is greedy: its not even been 1 hour
+            pushers_[_pusher].tracker <= pusherTracker_.sub(100) && // pusher is greedy: wait your turn
+            pushers_[_pusher].time.add(1 hours) < now               // pusher is greedy: its not even been 1 hour
         )
         {
             // update pushers wait que 
@@ -293,13 +293,13 @@ contract Divies {
             pusherTracker_++;
             
             // setup mn payout for event
-            if (P3Dcontract_.balanceOf(_pusher) &gt;= P3Dcontract_.stakingRequirement())
+            if (P3Dcontract_.balanceOf(_pusher) >= P3Dcontract_.stakingRequirement())
                 _mnPayout = (_bal / 10) / 3;
             
             // setup _stop.  this will be used to tell the loop to stop
             uint256 _stop = (_bal.mul(100 - _percent)) / 100;
             
-            // buy &amp; sell    
+            // buy & sell    
             P3Dcontract_.buy.value(_bal)(_pusher);
             P3Dcontract_.sell(P3Dcontract_.balanceOf(address(this)));
             
@@ -307,7 +307,7 @@ contract Divies {
             uint256 _tracker = P3Dcontract_.dividendsOf(address(this));
     
             // reinvest/sell loop
-            while (_tracker &gt;= _stop) 
+            while (_tracker >= _stop) 
             {
                 // lets burn some tokens to distribute dividends to p3d holders
                 P3Dcontract_.reinvest();
@@ -323,7 +323,7 @@ contract Divies {
             _compressedData = _compressedData.insert(1, 47, 47);
         }
         
-        // update pushers timestamp  (do outside of &quot;if&quot; for super saiyan level top kek)
+        // update pushers timestamp  (do outside of "if" for super saiyan level top kek)
         pushers_[_pusher].time = now;
     
         // prep event compression data 

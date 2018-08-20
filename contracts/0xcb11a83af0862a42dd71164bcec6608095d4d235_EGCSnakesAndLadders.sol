@@ -8,17 +8,17 @@ contract EGCSnakesAndLadders {
         uint position;
         uint points;
         uint rolls;
-        mapping (uint =&gt; uint) history;
+        mapping (uint => uint) history;
     }
 
     address public owner;
     uint public total_points;
-    mapping (address =&gt; User) public users;
+    mapping (address => User) public users;
 
     uint private seed;
-    mapping (uint =&gt; uint) private ups;
-    mapping (uint =&gt; uint) private downs;
-    mapping (uint =&gt; uint) private coins;
+    mapping (uint => uint) private ups;
+    mapping (uint => uint) private downs;
+    mapping (uint => uint) private coins;
     
     constructor() public {
         owner = msg.sender;
@@ -85,7 +85,7 @@ contract EGCSnakesAndLadders {
         uint random = calcRandomNumber();
 
         uint bonus = users[msg.sender].position.div(100);
-        bonus = (bonus &lt; 3) ? (bonus.add(1)) : 3;
+        bonus = (bonus < 3) ? (bonus.add(1)) : 3;
 
         uint points = users[msg.sender].points.add(bonus);
         uint position = users[msg.sender].position.add(random);
@@ -97,17 +97,17 @@ contract EGCSnakesAndLadders {
 
         points = points.add(random);
 
-        if (position_ups &gt; 0) {
+        if (position_ups > 0) {
             position = position.add(position_ups);
             points = points.add(position_ups);
         }
         
-        if (position_downs &gt; 0) {
+        if (position_downs > 0) {
             position = position.sub(position_downs);
             points = points.sub(position_downs);
         }
 
-        if (position_coins &gt; 0) {
+        if (position_coins > 0) {
             points = points.add(position_coins);
         }
 
@@ -125,7 +125,7 @@ contract EGCSnakesAndLadders {
 
     function userWithdraw() public {
         uint amount = users[msg.sender].points.mul(calcExchangeRate());
-        require(amount &gt; 0);
+        require(amount > 0);
 
         total_points = total_points.sub(users[msg.sender].points);
         users[msg.sender].position = 0;
@@ -160,13 +160,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

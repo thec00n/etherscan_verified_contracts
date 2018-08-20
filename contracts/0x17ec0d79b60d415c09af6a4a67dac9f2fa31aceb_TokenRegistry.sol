@@ -3,14 +3,14 @@
   Copyright 2017 ZeroEx Intl.
   Modifications Copyright 2018 bZeroX, LLC
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -22,7 +22,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,9 +100,9 @@ contract TokenRegistry is Ownable {
     event LogTokenSymbolChange(address indexed token, string oldSymbol, string newSymbol);
     event LogTokenURLChange(address indexed token, string oldURL, string newURL);
 
-    mapping (address =&gt; TokenMetadata) public tokens;
-    mapping (string =&gt; address) internal tokenBySymbol;
-    mapping (string =&gt; address) internal tokenByName;
+    mapping (address => TokenMetadata) public tokens;
+    mapping (string => address) internal tokenBySymbol;
+    mapping (string => address) internal tokenByName;
 
     address[] public tokenAddresses;
 
@@ -115,27 +115,27 @@ contract TokenRegistry is Ownable {
     }
 
     modifier tokenExists(address _token) {
-        require(tokens[_token].token != address(0), &quot;TokenRegistry::token doesn&#39;t exist&quot;);
+        require(tokens[_token].token != address(0), "TokenRegistry::token doesn't exist");
         _;
     }
 
     modifier tokenDoesNotExist(address _token) {
-        require(tokens[_token].token == address(0), &quot;TokenRegistry::token exists&quot;);
+        require(tokens[_token].token == address(0), "TokenRegistry::token exists");
         _;
     }
 
     modifier nameDoesNotExist(string _name) {
-        require(tokenByName[_name] == address(0), &quot;TokenRegistry::name exists&quot;);
+        require(tokenByName[_name] == address(0), "TokenRegistry::name exists");
         _;
     }
 
     modifier symbolDoesNotExist(string _symbol) {
-        require(tokenBySymbol[_symbol] == address(0), &quot;TokenRegistry::symbol exists&quot;);
+        require(tokenBySymbol[_symbol] == address(0), "TokenRegistry::symbol exists");
         _;
     }
 
     modifier addressNotNull(address _address) {
-        require(_address != address(0), &quot;TokenRegistry::address is null&quot;);
+        require(_address != address(0), "TokenRegistry::address is null");
         _;
     }
 
@@ -184,7 +184,7 @@ contract TokenRegistry is Ownable {
         onlyOwner
         tokenExists(_token)
     {
-        require(tokenAddresses[_index] == _token, &quot;TokenRegistry::invalid index&quot;);
+        require(tokenAddresses[_index] == _token, "TokenRegistry::invalid index");
 
         tokenAddresses[_index] = tokenAddresses[tokenAddresses.length - 1];
         tokenAddresses.length -= 1;
@@ -202,7 +202,7 @@ contract TokenRegistry is Ownable {
         delete tokens[_token];
     }
 
-    /// @dev Allows owner to modify an existing token&#39;s name.
+    /// @dev Allows owner to modify an existing token's name.
     /// @param _token Address of existing token.
     /// @param _name New name.
     function setTokenName(address _token, string _name)
@@ -218,7 +218,7 @@ contract TokenRegistry is Ownable {
         token.name = _name;
     }
 
-    /// @dev Allows owner to modify an existing token&#39;s symbol.
+    /// @dev Allows owner to modify an existing token's symbol.
     /// @param _token Address of existing token.
     /// @param _symbol New symbol.
     function setTokenSymbol(address _token, string _symbol)
@@ -234,7 +234,7 @@ contract TokenRegistry is Ownable {
         token.symbol = _symbol;
     }
 
-    /// @dev Allows owner to modify an existing token&#39;s icon URL.
+    /// @dev Allows owner to modify an existing token's icon URL.
     /// @param _token URL of token token.
     /// @param _url New URL to token icon.
     function setTokenURL(address _token, string _url)
@@ -250,9 +250,9 @@ contract TokenRegistry is Ownable {
     /*
      * View functions
      */
-    /// @dev Provides a registered token&#39;s address when given the token symbol.
+    /// @dev Provides a registered token's address when given the token symbol.
     /// @param _symbol Symbol of registered token.
-    /// @return Token&#39;s address.
+    /// @return Token's address.
     function getTokenAddressBySymbol(string _symbol) 
         public
         view 
@@ -261,9 +261,9 @@ contract TokenRegistry is Ownable {
         return tokenBySymbol[_symbol];
     }
 
-    /// @dev Provides a registered token&#39;s address when given the token name.
+    /// @dev Provides a registered token's address when given the token name.
     /// @param _name Name of registered token.
-    /// @return Token&#39;s address.
+    /// @return Token's address.
     function getTokenAddressByName(string _name) 
         public
         view
@@ -272,7 +272,7 @@ contract TokenRegistry is Ownable {
         return tokenByName[_name];
     }
 
-    /// @dev Provides a registered token&#39;s metadata, looked up by address.
+    /// @dev Provides a registered token's metadata, looked up by address.
     /// @param _token Address of registered token.
     /// @return Token metadata.
     function getTokenMetaData(address _token)
@@ -296,7 +296,7 @@ contract TokenRegistry is Ownable {
         );
     }
 
-    /// @dev Provides a registered token&#39;s metadata, looked up by name.
+    /// @dev Provides a registered token's metadata, looked up by name.
     /// @param _name Name of registered token.
     /// @return Token metadata.
     function getTokenByName(string _name)
@@ -314,7 +314,7 @@ contract TokenRegistry is Ownable {
         return getTokenMetaData(_token);
     }
 
-    /// @dev Provides a registered token&#39;s metadata, looked up by symbol.
+    /// @dev Provides a registered token's metadata, looked up by symbol.
     /// @param _symbol Symbol of registered token.
     /// @return Token metadata.
     function getTokenBySymbol(string _symbol)

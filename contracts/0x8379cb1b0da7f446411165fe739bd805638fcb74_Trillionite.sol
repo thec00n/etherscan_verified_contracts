@@ -14,9 +14,9 @@ contract StandardToken is Token {
 function transfer(address _to, uint256 _value) returns (bool success) {
 require(_to != 0x0);
 
-require(balances[msg.sender] &gt;= _value);
+require(balances[msg.sender] >= _value);
 
-require(balances[_to] + _value &gt; balances[_to]);
+require(balances[_to] + _value > balances[_to]);
 
 uint previousBalances = balances[msg.sender] + balances[_to];
 
@@ -26,12 +26,12 @@ balances[_to] += _value;
 Transfer(msg.sender, _to, _value);
 assert(balances[msg.sender] + balances[_to] == previousBalances);
 
-if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+if (balances[msg.sender] >= _value && _value > 0) {
 return true;
 } else { return false; }
 }
 function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 balances[_to] += _value;
 balances[_from] -= _value;
 allowed[_from][msg.sender] -= _value;
@@ -50,31 +50,31 @@ return true;
 function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
 return allowed[_owner][_spender];
 }
-mapping (address =&gt; uint256) balances;
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping (address => uint256) balances;
+mapping (address => mapping (address => uint256)) allowed;
 uint256 public totalSupply;
 }
 contract Trillionite is StandardToken {
 string public name;
 uint8 public decimals;
 string public symbol;
-string public version = &#39;T1.0&#39;;
+string public version = 'T1.0';
 uint256 public unitsOneEthCanBuy;
 uint256 public totalEthInWei;
 address public fundsWallet;
 function Trillionite() {
 balances[msg.sender] = 1000000000000000000000000000000;
 totalSupply = 1000000000000000000000000000000;
-name = &quot;Trillionite&quot;;
+name = "Trillionite";
 decimals = 18;
-symbol = &quot;XTR&quot;;
+symbol = "XTR";
 unitsOneEthCanBuy = 1000000;
 fundsWallet = msg.sender;
 }
 function() payable{
 totalEthInWei = totalEthInWei + msg.value;
 uint256 amount = msg.value * unitsOneEthCanBuy;
-if (balances[fundsWallet] &lt; amount) {
+if (balances[fundsWallet] < amount) {
 return;
 }
 balances[fundsWallet] = balances[fundsWallet] - amount;
@@ -85,7 +85,7 @@ fundsWallet.transfer(msg.value);
 function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
 allowed[msg.sender][_spender] = _value;
 Approval(msg.sender, _spender, _value);
-if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
 return true;
 }
 }

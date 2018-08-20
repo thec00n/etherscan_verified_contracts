@@ -13,9 +13,9 @@ contract ERC20 {
 
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
 
@@ -44,7 +44,7 @@ contract ERC20 {
     }
 
     function transfer(address _to, uint _amount) public returns (bool success)  {
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]);
+        require(balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -52,7 +52,7 @@ contract ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]);
         balances[_to] += _amount;
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;

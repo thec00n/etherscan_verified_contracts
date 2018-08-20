@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,8 +92,8 @@ contract ProofToken is Controllable {
   }
 
   Checkpoint[] totalSupplyHistory;
-  mapping(address =&gt; Checkpoint[]) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => Checkpoint[]) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   bool public mintingFinished = false;
   bool public presaleBalancesLocked = false;
@@ -126,7 +126,7 @@ contract ProofToken is Controllable {
       transfersEnabled = false;
       masterTransfersEnabled = false;
       creationBlock = block.number;
-      version = &#39;0.1&#39;;
+      version = '0.1';
   }
 
   function() public payable {
@@ -153,7 +153,7 @@ contract ProofToken is Controllable {
     //  requires that the `parentToken.totalSupplyAt` be queried at the
     //  genesis block for this token as that contains totalSupply of this
     //  token at this block number.
-    if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+    if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
         if (address(parentToken) != 0) {
             return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
         } else {
@@ -187,7 +187,7 @@ contract ProofToken is Controllable {
     //  requires that the `parentToken.balanceOfAt` be queried at the
     //  genesis block for that token as this contains initial balance of
     //  this token
-    if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+    if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
         if (address(parentToken) != 0) {
             return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
         } else {
@@ -219,7 +219,7 @@ contract ProofToken is Controllable {
   * @return success {bool}
   */
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
     allowed[_from][msg.sender] -= _amount;
     return doTransfer(_from, _to, _amount);
   }
@@ -285,14 +285,14 @@ contract ProofToken is Controllable {
       require(masterTransfersEnabled);
     }
 
-    require(_amount &gt; 0);
-    require(parentSnapShotBlock &lt; block.number);
-    require((_to != 0) &amp;&amp; (_to != address(this)));
+    require(_amount > 0);
+    require(parentSnapShotBlock < block.number);
+    require((_to != 0) && (_to != address(this)));
 
     // If the amount being transfered is more than the balance of the
     // account the transfer returns false
     uint256 previousBalanceFrom = balanceOfAt(_from, block.number);
-    require(previousBalanceFrom &gt;= _amount);
+    require(previousBalanceFrom >= _amount);
 
     // First update the balance array with the new value for the address
     //  sending the tokens
@@ -301,7 +301,7 @@ contract ProofToken is Controllable {
     // Then update the balance array with the new value for the address
     //  receiving the tokens
     uint256 previousBalanceTo = balanceOfAt(_to, block.number);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
     // An event to make the transfer easy to find on the blockchain
@@ -320,8 +320,8 @@ contract ProofToken is Controllable {
     uint256 curTotalSupply = totalSupply();
     uint256 previousBalanceTo = balanceOf(_owner);
 
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
 
     updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
     updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
@@ -346,7 +346,7 @@ contract ProofToken is Controllable {
   function importPresaleBalances(address[] _addresses, uint256[] _balances) public onlyController returns (bool) {
     require(presaleBalancesLocked == false);
 
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       updateValueAtNow(balances[_addresses[i]], _balances[i]);
       Transfer(0, _addresses[i], _balances[i]);
     }
@@ -400,17 +400,17 @@ contract ProofToken is Controllable {
       if (_checkpoints.length == 0)
         return 0;
       // Shortcut for the actual value
-      if (_block &gt;= _checkpoints[_checkpoints.length-1].fromBlock)
+      if (_block >= _checkpoints[_checkpoints.length-1].fromBlock)
         return _checkpoints[_checkpoints.length-1].value;
-      if (_block &lt; _checkpoints[0].fromBlock)
+      if (_block < _checkpoints[0].fromBlock)
         return 0;
 
       // Binary search of the value in the array
       uint256 min = 0;
       uint256 max = _checkpoints.length-1;
-      while (max &gt; min) {
+      while (max > min) {
           uint256 mid = (max + min + 1) / 2;
-          if (_checkpoints[mid].fromBlock&lt;=_block) {
+          if (_checkpoints[mid].fromBlock<=_block) {
               min = mid;
           } else {
               max = mid-1;
@@ -426,7 +426,7 @@ contract ProofToken is Controllable {
   * @return value {uint256} Value to add to the checkpoints ledger
    */
   function updateValueAtNow(Checkpoint[] storage _checkpoints, uint256 _value) internal {
-      if ((_checkpoints.length == 0) || (_checkpoints[_checkpoints.length-1].fromBlock &lt; block.number)) {
+      if ((_checkpoints.length == 0) || (_checkpoints[_checkpoints.length-1].fromBlock < block.number)) {
               Checkpoint storage newCheckPoint = _checkpoints[_checkpoints.length++];
               newCheckPoint.fromBlock = uint128(block.number);
               newCheckPoint.value = uint128(_value);
@@ -438,7 +438,7 @@ contract ProofToken is Controllable {
 
 
   function min(uint256 a, uint256 b) internal constant returns (uint) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
   }
 
   /**
@@ -454,7 +454,7 @@ contract ProofToken is Controllable {
         _snapshotBlock = block.number;
       }
 
-      if (_snapshotBlock &gt; block.number) {
+      if (_snapshotBlock > block.number) {
         _snapshotBlock = block.number;
       }
 

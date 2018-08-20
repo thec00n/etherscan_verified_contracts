@@ -11,8 +11,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // 余额数组
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; //2维数组限额
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance; //2维数组限额
 
     //Token转移事件 This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -44,9 +44,9 @@ contract TokenERC20 {
         // 确定收款地址存在  Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // 检查付款地址是否有足够的余额 Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         //检查收款地址收到的金额是否是负数  Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         //收款地址和付款地址的总额  Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // 付款地址中的余额-付款金额  Subtract from the sender
@@ -80,7 +80,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // 检查限额 Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // 检查限额 Check allowance
         allowance[_from][msg.sender] -= _value;  //减少相应的限额
         _transfer(_from, _to, _value);  //调用调用交易，完成交易
         return true;
@@ -127,7 +127,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   //判断使用者的余额是否充足 Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   //判断使用者的余额是否充足 Check if the sender has enough
         balanceOf[msg.sender] -= _value;            //减掉token Subtract from the sender
         totalSupply -= _value;                      //减掉总taoken数 Updates totalSupply
         emit Burn(msg.sender, _value);              //触发Burn事件
@@ -143,10 +143,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // 检查别人的余额是否充足  Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // 检查限额是否充足 Check allowance
+        require(balanceOf[_from] >= _value);                // 检查别人的余额是否充足  Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // 检查限额是否充足 Check allowance
         balanceOf[_from] -= _value;                         // 蒸发token Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // 去除限额 Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // 去除限额 Subtract from the sender's allowance
         totalSupply -= _value;                              // 减掉总taoken数Update totalSupply
         emit Burn(_from, _value);			    //触发Burn事件
         return true;
@@ -175,13 +175,13 @@ contract owned {
 
     bool public freeze=true;
 
-    function cdc() TokenERC20(1000000000,&quot;car data chain&quot;,&quot;CDC&quot;) public {}
+    function cdc() TokenERC20(1000000000,"car data chain","CDC") public {}
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (freeze);
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
 	    uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // 付款地址中的余额-付款金额  Subtract from the sender
         balanceOf[_from] -= _value;                         // Subtract from the sender

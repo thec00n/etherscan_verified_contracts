@@ -7,19 +7,19 @@ pragma solidity 0.4.18;
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -161,7 +161,7 @@ contract Claimable is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="5725323a34381765">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="5725323a34381765">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -180,7 +180,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="2b594e4648446b19">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="2b594e4648446b19">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -239,7 +239,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -248,7 +248,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -280,7 +280,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -291,8 +291,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -306,7 +306,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -355,7 +355,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -439,8 +439,8 @@ library SafeERC20 {
 
 contract VITToken is Claimable, HasNoTokens, MintableToken {
     // solhint-disable const-name-snakecase
-    string public constant name = &quot;Vice&quot;;
-    string public constant symbol = &quot;VIT&quot;;
+    string public constant name = "Vice";
+    string public constant symbol = "VIT";
     uint8 public constant decimals = 18;
     // solhint-enable const-name-snakecase
 
@@ -499,8 +499,8 @@ contract VITTokenSale is Claimable {
 
     // Refund data and state.
     uint256 public refundEndTime;
-    mapping (address =&gt; uint256) public refundableEther;
-    mapping (address =&gt; uint256) public claimableTokens;
+    mapping (address => uint256) public refundableEther;
+    mapping (address => uint256) public claimableTokens;
     uint256 public totalClaimableTokens = 0;
     bool public finalizedRefund = false;
 
@@ -508,10 +508,10 @@ contract VITTokenSale is Claimable {
     uint256 public tokensSold = 0;
 
     // Accumulated amount each participant has contributed so far.
-    mapping (address =&gt; uint256) public participationHistory;
+    mapping (address => uint256) public participationHistory;
 
     // Maximum amount that each participant is allowed to contribute (in WEI), during the restricted period.
-    mapping (address =&gt; uint256) public participationCaps;
+    mapping (address => uint256) public participationCaps;
 
     // Initial allocations.
     address[20] public strategicPartnersPools;
@@ -525,7 +525,7 @@ contract VITTokenSale is Claimable {
 
     /// @dev Reverts if called when not during sale.
     modifier onlyDuringSale() {
-        require(!saleEnded() &amp;&amp; now &gt;= startTime);
+        require(!saleEnded() && now >= startTime);
 
         _;
     }
@@ -560,11 +560,11 @@ contract VITTokenSale is Claimable {
     function VITTokenSale(address _fundingRecipient, uint256 _startTime, uint256 _endTime, uint256 _refundEndTime,
         uint256 _vitPerWei, address[20] _strategicPartnersPools) public {
         require(_fundingRecipient != address(0));
-        require(_startTime &gt; now &amp;&amp; _startTime &lt; _endTime &amp;&amp; _endTime &lt; _refundEndTime);
-        require(_startTime.add(RESTRICTED_PERIOD_DURATION) &lt; _endTime);
-        require(_vitPerWei &gt; 0);
+        require(_startTime > now && _startTime < _endTime && _endTime < _refundEndTime);
+        require(_startTime.add(RESTRICTED_PERIOD_DURATION) < _endTime);
+        require(_vitPerWei > 0);
 
-        for (uint i = 0; i &lt; _strategicPartnersPools.length; ++i) {
+        for (uint i = 0; i < _strategicPartnersPools.length; ++i) {
             require(_strategicPartnersPools[i] != address(0));
         }
 
@@ -589,13 +589,13 @@ contract VITTokenSale is Claimable {
         uint256 cappedWeiReceived = msg.value;
         uint256 weiAlreadyParticipated = participationHistory[recipient];
 
-        // If we&#39;re during the restricted period, then only the white-listed participants are allowed to participate,
+        // If we're during the restricted period, then only the white-listed participants are allowed to participate,
         if (saleDuringRestrictedPeriod()) {
             uint256 participationCap = participationCaps[recipient];
             cappedWeiReceived = Math.min256(cappedWeiReceived, participationCap.sub(weiAlreadyParticipated));
         }
 
-        require(cappedWeiReceived &gt; 0);
+        require(cappedWeiReceived > 0);
 
         // Calculate how much tokens can be sold to this participant.
         uint256 tokensLeftInSale = MAX_TOKENS_SOLD.sub(tokensSold);
@@ -605,8 +605,8 @@ contract VITTokenSale is Claimable {
 
         // Issue tokens and transfer to recipient.
         uint256 tokensToIssue = weiToParticipate.mul(vitPerWei);
-        if (tokensLeftInSale.sub(tokensToIssue) &lt; vitPerWei) {
-            // If purchase would cause less than vitPerWei tokens left then nobody could ever buy them, so we&#39;ll gift
+        if (tokensLeftInSale.sub(tokensToIssue) < vitPerWei) {
+            // If purchase would cause less than vitPerWei tokens left then nobody could ever buy them, so we'll gift
             // them to the last buyer.
             tokensToIssue = tokensLeftInSale;
         }
@@ -624,7 +624,7 @@ contract VITTokenSale is Claimable {
 
         // Partial refund if full participation not possible, e.g. due to cap being reached.
         uint256 refund = msg.value.sub(weiToParticipate);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }
@@ -633,7 +633,7 @@ contract VITTokenSale is Claimable {
     /// @param _participants address[] The list of participant addresses.
     /// @param _cap uint256 The cap amount (in ETH).
     function setRestrictedParticipationCap(address[] _participants, uint256 _cap) external onlyOwner {
-        for (uint i = 0; i &lt; _participants.length; ++i) {
+        for (uint i = 0; i < _participants.length; ++i) {
             participationCaps[_participants[i]] = _cap;
         }
     }
@@ -641,7 +641,7 @@ contract VITTokenSale is Claimable {
     /// @dev Finalizes the token sale event, by stopping token minting.
     function finalize() external onlyAfterSale {
         // Issue any unsold tokens back to the company.
-        if (tokensSold &lt; MAX_TOKENS_SOLD) {
+        if (tokensSold < MAX_TOKENS_SOLD) {
             issueTokens(fundingRecipient, MAX_TOKENS_SOLD.sub(tokensSold));
         }
 
@@ -679,14 +679,14 @@ contract VITTokenSale is Claimable {
         require(_tokensToClaim != 0);
 
         address participant = msg.sender;
-        require(claimableTokens[participant] &gt; 0);
+        require(claimableTokens[participant] > 0);
 
         uint256 claimableTokensAmount = claimableTokens[participant];
-        require(_tokensToClaim &lt;= claimableTokensAmount);
+        require(_tokensToClaim <= claimableTokensAmount);
 
         uint256 refundableEtherAmount = refundableEther[participant];
         uint256 etherToClaim = _tokensToClaim.mul(refundableEtherAmount).div(claimableTokensAmount);
-        assert(etherToClaim &gt; 0);
+        assert(etherToClaim > 0);
 
         refundableEther[participant] = refundableEtherAmount.sub(etherToClaim);
         claimableTokens[participant] = claimableTokensAmount.sub(_tokensToClaim);
@@ -695,7 +695,7 @@ contract VITTokenSale is Claimable {
         // Transfer the tokens from the token sale smart contract to the participant.
         assert(vitToken.transfer(participant, _tokensToClaim));
 
-        // Transfer the Ether to the beneficiary of the funding (as long as the refund hasn&#39;t finalized yet).
+        // Transfer the Ether to the beneficiary of the funding (as long as the refund hasn't finalized yet).
         if (!finalizedRefund) {
             fundingRecipient.transfer(etherToClaim);
         }
@@ -717,11 +717,11 @@ contract VITTokenSale is Claimable {
         address participant = msg.sender;
 
         uint256 refundableEtherAmount = refundableEther[participant];
-        require(_etherToClaim &lt;= refundableEtherAmount);
+        require(_etherToClaim <= refundableEtherAmount);
 
         uint256 claimableTokensAmount = claimableTokens[participant];
         uint256 tokensToClaim = _etherToClaim.mul(claimableTokensAmount).div(refundableEtherAmount);
-        assert(tokensToClaim &gt; 0);
+        assert(tokensToClaim > 0);
 
         refundableEther[participant] = refundableEtherAmount.sub(_etherToClaim);
         claimableTokens[participant] = claimableTokensAmount.sub(tokensToClaim);
@@ -744,7 +744,7 @@ contract VITTokenSale is Claimable {
 
     /// @dev Initialize token grants.
     function grantInitialAllocations() private onlyOwner {
-        for (uint i = 0; i &lt; strategicPartnersPools.length; ++i) {
+        for (uint i = 0; i < strategicPartnersPools.length; ++i) {
             issueTokens(strategicPartnersPools[i], STRATEGIC_PARTNERS_POOL_ALLOCATION);
         }
     }
@@ -762,7 +762,7 @@ contract VITTokenSale is Claimable {
     /// @dev Returns whether the sale has ended.
     /// @return bool Whether the sale has ended or not.
     function saleEnded() private view returns (bool) {
-        return tokensSold &gt;= MAX_TOKENS_SOLD || now &gt;= endTime;
+        return tokensSold >= MAX_TOKENS_SOLD || now >= endTime;
     }
 
     /// @dev Returns whether the sale is during its restricted period, where only white-listed participants are allowed
@@ -770,18 +770,18 @@ contract VITTokenSale is Claimable {
     /// @return bool Whether the sale is during its restricted period, where only white-listed participants are allowed
     /// to participate.
     function saleDuringRestrictedPeriod() private view returns (bool) {
-        return now &lt;= startTime.add(RESTRICTED_PERIOD_DURATION);
+        return now <= startTime.add(RESTRICTED_PERIOD_DURATION);
     }
 
     /// @dev Returns whether the sale is during its refund period.
     /// @return bool whether the sale is during its refund period.
     function saleDuringRefundPeriod() private view returns (bool) {
-        return saleEnded() &amp;&amp; now &lt;= refundEndTime;
+        return saleEnded() && now <= refundEndTime;
     }
 
     /// @dev Returns whether the sale is during its refund period.
     /// @return bool whether the sale is during its refund period.
     function saleAfterRefundPeriod() private view returns (bool) {
-        return saleEnded() &amp;&amp; now &gt; refundEndTime;
+        return saleEnded() && now > refundEndTime;
     }
 }

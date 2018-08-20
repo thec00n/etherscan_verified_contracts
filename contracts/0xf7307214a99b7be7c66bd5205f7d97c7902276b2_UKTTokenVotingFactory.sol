@@ -16,8 +16,8 @@ library BytesTools {
 		uint256 parsed = 0;
 		bool decimals = false;
 		
-		for (uint256 i = 0; i &lt; n.length; i++) {
-			if ( n[i] &gt;= 48 &amp;&amp; n[i] &lt;= 57) {
+		for (uint256 i = 0; i < n.length; i++) {
+			if ( n[i] >= 48 && n[i] <= 57) {
 				
 				if (decimals) break;
 				
@@ -65,7 +65,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
@@ -75,7 +75,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -88,7 +88,7 @@ library SafeMath {
 			return 1;
 		}
 		uint c = a ** b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -121,7 +121,7 @@ contract ERC223Reciever {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	
@@ -194,7 +194,7 @@ contract Ownable {
 
 /**
  * @title  UKT Token Voting contract
- * @author  Oleg Levshin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177b7261647f7e79576274786d3a6372767a39797263">[email&#160;protected]</a>&gt;
+ * @author  Oleg Levshin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177b7261647f7e79576274786d3a6372767a39797263">[email protected]</a>>
  */
 contract UKTTokenVoting is ERC223Reciever, Ownable {
 	
@@ -209,17 +209,17 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 		uint256 blockNumber;
 	}
 	
-	mapping(address =&gt; bool) public acceptedTokens;
-	mapping(address =&gt; uint256) public acceptedTokensValues;
+	mapping(address => bool) public acceptedTokens;
+	mapping(address => uint256) public acceptedTokensValues;
 	
 	bytes32[] public proposals;
-	mapping (uint256 =&gt; uint256) public proposalsWeights;
+	mapping (uint256 => uint256) public proposalsWeights;
 	
 	uint256 public dateStart;
 	uint256 public dateEnd;
 	
 	address[] public voters;
-	mapping (address =&gt; Vote) public votes;
+	mapping (address => Vote) public votes;
 	
 	bool public isFinalized = false;
 	bool public isFinalizedValidly = false;
@@ -235,23 +235,23 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 		address[] _acceptedTokens,
 		uint256[] _acceptedTokensValues
 	) public {
-		require(_dateEnd &gt; now);
-		require(_proposals.length &gt; 1);
-		require(_acceptedTokens.length &gt; 0);
-		require(_acceptedTokensValues.length &gt; 0);
+		require(_dateEnd > now);
+		require(_proposals.length > 1);
+		require(_acceptedTokens.length > 0);
+		require(_acceptedTokensValues.length > 0);
 		require(_acceptedTokens.length == _acceptedTokensValues.length);
 		
 		dateStart = now;
 		dateEnd = _dateEnd;
 		
-		proposals.push(&quot;Not valid proposal&quot;);
+		proposals.push("Not valid proposal");
 		proposalsWeights[0] = 0;
-		for(uint256 i = 0; i &lt; _proposals.length; i++) {
+		for(uint256 i = 0; i < _proposals.length; i++) {
 			proposals.push(_proposals[i]);
 			proposalsWeights[i+1] = 0;
 		}
 		
-		for(uint256 j = 0; j &lt; _acceptedTokens.length; j++) {
+		for(uint256 j = 0; j < _acceptedTokens.length; j++) {
 			acceptedTokens[_acceptedTokens[j]] = true;
 			acceptedTokensValues[_acceptedTokens[j]] = _acceptedTokensValues[j];
 		}
@@ -266,20 +266,20 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 		uint256 _value,
 		bytes _data
 	) external returns (bool) {
-		// voting hasn&#39;t ended yet
-		require(now &lt; dateEnd);
+		// voting hasn't ended yet
+		require(now < dateEnd);
 		
 		// executed from contract in acceptedTokens
 		require(acceptedTokens[msg.sender] == true);
 		
 		// value of tokens is enough for voting
-		require(_value &gt;= acceptedTokensValues[msg.sender]);
+		require(_value >= acceptedTokensValues[msg.sender]);
 		
 		// give proposal index is valid
 		uint256 proposalIdx = _data.parseInt();
 		require(isValidProposal(proposalIdx));
 		
-		// user hasn&#39;t voted yet
+		// user hasn't voted yet
 		require(isAddressNotVoted(_from));
 		
 		uint256 weight = _value.div(acceptedTokensValues[msg.sender]);
@@ -299,23 +299,23 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 	 * @dev Gets winner tuple after voting is finished
 	 */
 	function getWinner() external view returns (uint256 winnerIdx, bytes32 winner, uint256 winnerWeight) {
-		require(now &gt;= dateEnd);
+		require(now >= dateEnd);
 		
 		winnerIdx = 0;
 		winner = proposals[winnerIdx];
 		winnerWeight = proposalsWeights[winnerIdx];
 		
-		for(uint256 i = 1; i &lt; proposals.length; i++) {
-			if(proposalsWeights[i] &gt;= winnerWeight) {
+		for(uint256 i = 1; i < proposals.length; i++) {
+			if(proposalsWeights[i] >= winnerWeight) {
 				winnerIdx = i;
 				winner = proposals[winnerIdx];
 				winnerWeight = proposalsWeights[i];
 			}
 		}
 		
-		if (winnerIdx &gt; 0) {
-			for(uint256 j = 1; j &lt; proposals.length; j++) {
-				if(j != winnerIdx &amp;&amp; proposalsWeights[j] == proposalsWeights[winnerIdx]) {
+		if (winnerIdx > 0) {
+			for(uint256 j = 1; j < proposals.length; j++) {
+				if(j != winnerIdx && proposalsWeights[j] == proposalsWeights[winnerIdx]) {
 					return (0, proposals[0], proposalsWeights[0]);
 				}
 			}
@@ -329,7 +329,7 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 	 * @dev Finalizes voting
 	 */
 	function finalize(bool _isFinalizedValidly) external onlyOwner {
-		require(now &gt;= dateEnd &amp;&amp; ! isFinalized);
+		require(now >= dateEnd && ! isFinalized);
 		
 		isFinalized = true;
 		isFinalizedValidly = _isFinalizedValidly;
@@ -357,7 +357,7 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 			return _refundTokens(to);
 		}
 		
-		for(uint256 i = 0; i &lt; voters.length; i++) {
+		for(uint256 i = 0; i < voters.length; i++) {
 			_refundTokens(voters[i]);
 		}
 		
@@ -370,8 +370,8 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 	 */
 	function isValidProposal(uint256 proposalIdx) private view returns (bool) {
 		return (
-			proposalIdx &gt; 0 &amp;&amp;
-			proposals[proposalIdx].length &gt; 0
+			proposalIdx > 0 &&
+			proposals[proposalIdx].length > 0
 		);
 	}
 	
@@ -383,10 +383,10 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 		// solium-disable-next-line operator-whitespace
 		return (
 			// solium-disable-next-line operator-whitespace
-			votes[_address].proposalIdx == 0 &amp;&amp;
-			votes[_address].tokensValue == 0 &amp;&amp;
-			votes[_address].weight == 0 &amp;&amp;
-			votes[_address].tokenContractAddress == address(0) &amp;&amp;
+			votes[_address].proposalIdx == 0 &&
+			votes[_address].tokensValue == 0 &&
+			votes[_address].weight == 0 &&
+			votes[_address].tokenContractAddress == address(0) &&
 			votes[_address].blockNumber == 0
 		);
 	}
@@ -417,7 +417,7 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 			proposalsWeights[vote.proposalIdx] = proposalsWeights[vote.proposalIdx].sub(vote.weight);
 		}
 		
-		return vote.tokenContractAddress.call(bytes4(keccak256(&quot;transfer(address,uint256)&quot;)), to, vote.tokensValue);
+		return vote.tokenContractAddress.call(bytes4(keccak256("transfer(address,uint256)")), to, vote.tokensValue);
 	}
 	
 	
@@ -435,12 +435,12 @@ contract UKTTokenVoting is ERC223Reciever, Ownable {
 
 /**
  * @title  UKT Token Voting Factory contract
- * @author  Oleg Levshin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec2cbd8ddc6c7c0eedbcdc1d483dacbcfc380c0cbda">[email&#160;protected]</a>&gt;
+ * @author  Oleg Levshin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec2cbd8ddc6c7c0eedbcdc1d483dacbcfc380c0cbda">[email protected]</a>>
  */
 contract UKTTokenVotingFactory is Ownable {
 	
 	address[] public votings;
-	mapping(address =&gt; int256) public votingsWinners;
+	mapping(address => int256) public votingsWinners;
 	
 	event VotingCreated(address indexed votingAddress, uint256 dateEnd, bytes32[] proposals, address[] acceptedTokens, uint256[] acceptedTokensValues);
 	event WinnerSetted(address indexed votingAddress, uint256 winnerIdx, bytes32 winner, uint256 winnerWeight);
@@ -451,7 +451,7 @@ contract UKTTokenVotingFactory is Ownable {
 	 * @dev Checks voting contract address for validity
 	 */
 	function isValidVoting(address votingAddress) private view returns (bool) {
-		for (uint256 i = 0; i &lt; votings.length; i++) {
+		for (uint256 i = 0; i < votings.length; i++) {
 			if (votings[i] == votingAddress) {
 				return true;
 			}
@@ -504,7 +504,7 @@ contract UKTTokenVotingFactory is Ownable {
 		
 		(winnerIdx, winner, winnerWeight) = UKTTokenVoting(votingAddress).getWinner();
 		
-		bool isFinalizedValidly = winnerIdx &gt; 0;
+		bool isFinalizedValidly = winnerIdx > 0;
 		
 		UKTTokenVoting(votingAddress).finalize(isFinalizedValidly);
 		
@@ -520,7 +520,7 @@ contract UKTTokenVotingFactory is Ownable {
 	 * @dev Gets voting winner
 	 */
 	function getVotingWinner(address votingAddress) public view returns (bytes32) {
-		require(votingsWinners[votingAddress] &gt; -1);
+		require(votingsWinners[votingAddress] > -1);
 		
 		return UKTTokenVoting(votingAddress).proposals(uint256(votingsWinners[votingAddress]));
 	}

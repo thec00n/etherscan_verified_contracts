@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
 // Almacert v.1.0.8
-// Universita&#39; degli Studi di Cagliari
+// Universita' degli Studi di Cagliari
 // http://www.unica.it
 // @authors:
-// Flosslab s.r.l. &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d04030b022d0b01021e1e010c0f430e0200">[email&#160;protected]</a>&gt;
+// Flosslab s.r.l. <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d04030b022d0b01021e1e010c0f430e0200">[email protected]</a>>
 
 contract Almacert {
 
@@ -31,7 +31,7 @@ contract Almacert {
     address private manager;
     address public owner;
 
-    mapping(string =&gt; Student) private student;
+    mapping(string => Student) private student;
 
     constructor() public{
         owner = msg.sender;
@@ -53,7 +53,7 @@ contract Almacert {
         string  memory id;
         string  memory fCode;
         string  memory session;
-        for (uint i = 0; i &lt; _len; i++) {
+        for (uint i = 0; i < _len; i++) {
             id = sub_id(_ids, i);
             fCode = sub_fCode(_fCodes, i);
             session = sub_session(_sessions, i);
@@ -64,7 +64,7 @@ contract Almacert {
     function subset(string _source, uint _pos, uint _LENGTH) pure private returns (string) {
         bytes memory strBytes = bytes(_source);
         bytes memory result = new bytes(_LENGTH);
-        for (uint i = (_pos * _LENGTH); i &lt; (_pos * _LENGTH + _LENGTH); i++) {
+        for (uint i = (_pos * _LENGTH); i < (_pos * _LENGTH + _LENGTH); i++) {
             result[i - (_pos * _LENGTH)] = strBytes[i];
         }
         return string(result);
@@ -85,8 +85,8 @@ contract Almacert {
     function removeStudent(string _id) restricted public {
         require(student[_id].hash != 0x00);
         student[_id].hash = 0x00;
-        student[_id].fCode = &#39;&#39;;
-        student[_id].session = &#39;&#39;;
+        student[_id].fCode = '';
+        student[_id].session = '';
     }
 
     function changeOwner(address _new_owner) restricted public{

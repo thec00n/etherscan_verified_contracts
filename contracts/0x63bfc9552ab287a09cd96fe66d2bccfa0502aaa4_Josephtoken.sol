@@ -4,7 +4,7 @@ pragma solidity ^0.4.8;                  //specify compiler version
 contract Josephtoken {                     //this is a smart contract!
     
     address owner;                       //which account gets the 1000 josephtoken to begin with
-    mapping (address =&gt; uint) balances;  //keep track of the number of josephtoken in each account
+    mapping (address => uint) balances;  //keep track of the number of josephtoken in each account
     
     function Josephtoken() public {
         owner = msg.sender;              //msg.sender is the address of the account that called the function
@@ -13,9 +13,9 @@ contract Josephtoken {                     //this is a smart contract!
     }
     
     function transfer(uint amount, address recipient) public {      //move josephtoken between accounts
-        require(balances[msg.sender] &gt;= amount);
-        require(balances[msg.sender] - amount &lt;= balances[msg.sender]);
-        require(balances[recipient] + amount &gt;= balances[recipient]);
+        require(balances[msg.sender] >= amount);
+        require(balances[msg.sender] - amount <= balances[msg.sender]);
+        require(balances[recipient] + amount >= balances[recipient]);
         balances[msg.sender] -= amount;
         balances[recipient] += amount;
         //hmm, how might evil attacker Jennifer try to exploit this function?

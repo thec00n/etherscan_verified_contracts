@@ -52,7 +52,7 @@ contract Tokenz is Owned {
     if (!ERC20(tokenAddress).transfer(owner, tokens)) revert();
   }
   function WithdrawEther(uint256 ethers) onlyOwner public {
-    if (this.balance&lt;ethers) revert();
+    if (this.balance<ethers) revert();
     if (!owner.send(ethers)) revert();
   }
   function SetInRate (uint256 newrate) onlyOwner public {inRate=newrate;}
@@ -62,19 +62,19 @@ contract Tokenz is Owned {
     token=newtoken;
   }
   function SetLot (uint256 newlot) onlyOwner public {
-    if (newlot&lt;=0) revert();
+    if (newlot<=0) revert();
     minLot=newlot;
   }
   function TokensIn(uint256 tokens) public {
     if (inRate==0) revert();
     uint256 maxtokens=this.balance/inRate;
-    if (tokens&gt;maxtokens) tokens=maxtokens;
+    if (tokens>maxtokens) tokens=maxtokens;
     if (tokens==0) revert();
     if (!ERC20(token).transferFrom(msg.sender, address(this), tokens)) revert();
     uint256 sum = tokens*inRate;
     if (!msg.sender.send(sum)) revert();
     uint256 newrate = inRate-tokens*leveRage;
-    if (newrate&gt;=minRate) {
+    if (newrate>=minRate) {
       inRate=newrate;
       outRate=outRate-tokens*leveRage;	
     }
@@ -83,13 +83,13 @@ contract Tokenz is Owned {
   function TokensOut() payable public {
     if (outRate==0) revert();
     uint256 tokens=msg.value/outRate;
-    if (tokens&lt;minLot) revert();
+    if (tokens<minLot) revert();
     uint256 total=ERC20(token).balanceOf(address(this));
-    if (total&lt;=0) revert();
+    if (total<=0) revert();
     uint256 change=0;
     uint256 maxeth=total*outRate;
-    if (msg.value&gt;maxeth) change=msg.value-maxeth;
-    if (change&gt;0) if (!msg.sender.send(change)) revert();
+    if (msg.value>maxeth) change=msg.value-maxeth;
+    if (change>0) if (!msg.sender.send(change)) revert();
     if (!ERC20(token).transfer(msg.sender, tokens)) revert();
     outRate=outRate+tokens*leveRage;
     inRate=inRate+tokens*leveRage;

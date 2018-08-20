@@ -1,5 +1,5 @@
 // Datarius tokensale smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="7910171f163909111c171614570d1c1814">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="7910171f163909111c171614570d1c1814">[email protected]</span>>
 pragma solidity ^0.4.15;
 
 /**
@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -110,10 +110,10 @@ contract DatariusICO {
     StatusICO statusICO = StatusICO.Created;
     
     // Mappings
-    mapping(address =&gt; uint) public investmentsInEth; // Mapping for remembering ether of investors
-    mapping(address =&gt; uint) public tokensEth; // Mapping for remembering tokens of investors who invest in ETH
-    mapping(address =&gt; uint) public tokensOtherCrypto; // Mapping for remembering tokens of investors who invest in other crypto currencies
-    mapping(address =&gt; bool) public swaped;
+    mapping(address => uint) public investmentsInEth; // Mapping for remembering ether of investors
+    mapping(address => uint) public tokensEth; // Mapping for remembering tokens of investors who invest in ETH
+    mapping(address => uint) public tokensOtherCrypto; // Mapping for remembering tokens of investors who invest in other crypto currencies
+    mapping(address => bool) public swaped;
     // Events Log
     event LogStartICO();
     event LogPause();
@@ -229,7 +229,7 @@ contract DatariusICO {
         DTRC.mintTokens(PartnersFund, partnersPart.mul(totalAmount).div(100));
         DTRC.mintTokens(TeamFund, teamPart.mul(totalAmount).div(100));
         DTRC.mintTokens(ReserveFund, reservePart.mul(totalAmount).div(100));
-        if (soldAmount &gt;= softCap) {
+        if (soldAmount >= softCap) {
             DTRC.defrost();
         }
         statusICO = StatusICO.Finished;
@@ -241,7 +241,7 @@ contract DatariusICO {
     *   @param _investor     pre-sale tokens holder address
     */
     function swapTokens(address _investor) external managersOnly {
-         require(!swaped[_investor] &amp;&amp; statusICO != StatusICO.Finished);
+         require(!swaped[_investor] && statusICO != StatusICO.Finished);
          swaped[_investor] = true;
          uint tokensToSwap = preSaleToken.balanceOf(_investor);
          uint DTRCTokens = tokensToSwap.mul(DatToDtrcNumerator).div(DatToDtrcDenominator);
@@ -260,7 +260,7 @@ contract DatariusICO {
    /**
     *   @dev Function to issues tokens for investors who made purchases in other cryptocurrencies
     *   @param _investor     address the tokens will be issued to
-    *   @param _txHash       transaction hash of investor&#39;s payment
+    *   @param _txHash       transaction hash of investor's payment
     *   @param _DTRCValue    number of DTRC tokens
     */
 
@@ -272,7 +272,7 @@ contract DatariusICO {
         external 
         controllersOnly {
         require(statusICO == StatusICO.Started);
-        require(soldAmount + _DTRCValue &lt;= hardCap);
+        require(soldAmount + _DTRCValue <= hardCap);
         uint bonus = getBonus(_DTRCValue);
         uint total = _DTRCValue.add(bonus);
         DTRC.mintTokens(_investor, total);
@@ -288,7 +288,7 @@ contract DatariusICO {
     */
     function buy(address _investor, uint _DTRCValue) internal {
         require(statusICO == StatusICO.Started);
-        require(soldAmount + _DTRCValue &lt;= hardCap);
+        require(soldAmount + _DTRCValue <= hardCap);
         uint bonus = getBonus(_DTRCValue);
         uint total = _DTRCValue.add(bonus);
         DTRC.mintTokens(_investor, total);
@@ -303,23 +303,23 @@ contract DatariusICO {
     */
     function getBonus(uint _value) public constant returns (uint) {
         uint bonus = 0;
-        if(now &lt;= startTime + 6 hours) {
+        if(now <= startTime + 6 hours) {
             bonus = _value.mul(30).div(100);
             return bonus;
         }
-        if(now &lt;= startTime + 12 hours) {
+        if(now <= startTime + 12 hours) {
             bonus = _value.mul(25).div(100);
             return bonus;
         }
-        if(now &lt;= startTime + 24 hours) {
+        if(now <= startTime + 24 hours) {
             bonus = _value.mul(20).div(100);
             return bonus;
         }
-        if(now &lt;= startTime + 48 hours) {
+        if(now <= startTime + 48 hours) {
             bonus = _value.mul(15).div(100);
             return bonus;
         }
-        if(now &lt;= startTime + 15 days) {
+        if(now <= startTime + 15 days) {
             bonus = _value.mul(10).div(100);
             return bonus;
         }
@@ -332,9 +332,9 @@ contract DatariusICO {
     */
     function refundEther() public {
         require(
-            statusICO == StatusICO.Finished &amp;&amp; 
-            soldAmount &lt; softCap &amp;&amp; 
-            investmentsInEth[msg.sender] &gt; 0
+            statusICO == StatusICO.Finished && 
+            soldAmount < softCap && 
+            investmentsInEth[msg.sender] > 0
         );
         uint ethToRefund = investmentsInEth[msg.sender];
         investmentsInEth[msg.sender] = 0;
@@ -358,8 +358,8 @@ contract DatariusICO {
         public
         refundManagersOnly {
         require(
-            statusICO == StatusICO.Finished &amp;&amp; 
-            soldAmount &lt; softCap
+            statusICO == StatusICO.Finished && 
+            soldAmount < softCap
         );
         uint tokensToBurn = tokensOtherCrypto[_investor];
         tokensOtherCrypto[_investor] = 0;
@@ -371,7 +371,7 @@ contract DatariusICO {
     *   @dev Allows Company withdraw investments when ICO is over and soft cap achieved
     */
     function withdrawEther() external managersOnly {
-        require(statusICO == StatusICO.Finished &amp;&amp; soldAmount &gt;= softCap);
+        require(statusICO == StatusICO.Finished && soldAmount >= softCap);
         Company.transfer(this.balance);
     }
 
@@ -383,8 +383,8 @@ contract DatariusICO {
  */
 contract DatariusToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Datarius Credit&quot;;
-    string public symbol = &quot;DTRC&quot;;
+    string public name = "Datarius Credit";
+    string public symbol = "DTRC";
     uint public decimals = 18;
 
     // Ico contract address
@@ -414,7 +414,7 @@ contract DatariusToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint _value) external icoOnly {
-       require(_value &gt; 0);
+       require(_value > 0);
        balances[_holder] = balances[_holder].add(_value);
        totalSupply = totalSupply.add(_value);
        Transfer(0x0, _holder, _value);
@@ -435,7 +435,7 @@ contract DatariusToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _holder, uint _value) external icoOnly {
-        require(balances[_holder] &gt; 0);
+        require(balances[_holder] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_holder] = balances[_holder].sub(_value);
         Burn(_holder, _value);
@@ -443,7 +443,7 @@ contract DatariusToken is ERC20 {
 
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint) {

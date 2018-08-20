@@ -9,8 +9,8 @@ contract DINRegistry {
         uint256 updated;   // Last updated time (Unix timestamp).
     }
 
-    // DIN =&gt; Record
-    mapping (uint256 =&gt; Record) records;
+    // DIN => Record
+    mapping (uint256 => Record) records;
 
     // The first DIN registered.
     uint256 public genesis;

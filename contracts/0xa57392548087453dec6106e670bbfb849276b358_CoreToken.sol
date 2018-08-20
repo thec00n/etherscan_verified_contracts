@@ -5,7 +5,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -266,17 +266,17 @@ contract StandardToken is ERC20, BasicToken {
 contract AirDropToken is StandardToken, Ownable {
 
     function drop(address[] _participants, uint _value) public onlyOwner {
-        require(_participants.length &gt; 0);
-        require(_value &gt; 0);
+        require(_participants.length > 0);
+        require(_value > 0);
 
         uint commonValue = _value * _participants.length;
 
-        require(commonValue &lt;= balances[msg.sender]);
+        require(commonValue <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(commonValue);
 
-        for(uint i = 0; i &lt; _participants.length; i++) {
+        for(uint i = 0; i < _participants.length; i++) {
             address participant = _participants[i];
             require(participant != address(0));
             balances[participant] = balances[participant].add(_value);
@@ -318,15 +318,15 @@ contract TransferCommissionToken is StandardToken, Ownable  {
     }
 
     function _updateCommission(uint _commission) internal {
-        require(_commission &gt; 0);
+        require(_commission > 0);
 
         commission = _commission;
         CommissionUpdated(commission);
     }
 
     function setWhitelist(address[] _whitelist) external onlyOwner {
-        require(_whitelist.length &gt; 0);
-        require(_whitelist.length &lt;= MAX_WHITELISTED_COUNT);
+        require(_whitelist.length > 0);
+        require(_whitelist.length <= MAX_WHITELISTED_COUNT);
 
         whitelist = _whitelist;
     }
@@ -345,11 +345,11 @@ contract TransferCommissionToken is StandardToken, Ownable  {
 
     function _collectFee(address _from, address _to, uint _value) internal {
         if(collector == address(0)) return;
-        if(whitelist.length &gt; 0 &amp;&amp; (_contains(whitelist, _from) || _contains(whitelist, _to))) return;
+        if(whitelist.length > 0 && (_contains(whitelist, _from) || _contains(whitelist, _to))) return;
 
         uint feeValue = _value.mul(commission).div(PERCENT_DELIMITER).div(100);
 
-        require(feeValue &lt;= balances[_from]);
+        require(feeValue <= balances[_from]);
 
         balances[_from] = balances[_from].sub(feeValue);
         balances[collector] = balances[collector].add(feeValue);
@@ -357,7 +357,7 @@ contract TransferCommissionToken is StandardToken, Ownable  {
     }
 
     function _contains(address[] _list, address _item) internal returns (bool) {
-        for(uint i = 0; i &lt; _list.length; i++){
+        for(uint i = 0; i < _list.length; i++){
             if(_list[i] == _item) return true;
         }
 
@@ -380,9 +380,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);

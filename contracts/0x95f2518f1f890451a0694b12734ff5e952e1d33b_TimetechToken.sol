@@ -4,17 +4,17 @@ contract TimetechToken {
   using SafeMath for uint;
   using SafeERC20 for TimetechToken;
 
-  string public name = &quot;timetech&quot;;
-  string public constant symbol = &quot;TTEC&quot;;
+  string public name = "timetech";
+  string public constant symbol = "TTEC";
   uint8 public constant decimals = 18;
   uint public constant decimalsFactor = 10 ** uint(decimals);
   uint public cap = 8290000000 * decimalsFactor;
 
   address public owner;
   bool public paused = false;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   uint256 totalSupply_;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   bool public mintingFinished = false;
 
   modifier onlyOwner() {
@@ -61,8 +61,8 @@ contract TimetechToken {
   }
 
   function setCap(uint256 _cap) onlyOwner public {
-    require(cap &gt; 0);
-    require(_cap &gt;= totalSupply_);
+    require(cap > 0);
+    require(_cap >= totalSupply_);
     uint256 old = cap;
     cap = _cap;
     emit CapChanged(old, cap);
@@ -82,7 +82,7 @@ contract TimetechToken {
 
   function transfer(address _to, uint256 _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -92,8 +92,8 @@ contract TimetechToken {
 
   function transferFrom(address _from, address _to, uint256 _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -116,7 +116,7 @@ contract TimetechToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -143,7 +143,7 @@ contract TimetechToken {
   }
 
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
     totalSupply_ = totalSupply_.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount);
@@ -187,9 +187,9 @@ library SafeMath {
    * @dev Integer division of two numbers, truncating the quotient.
    */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -197,7 +197,7 @@ library SafeMath {
    * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
    */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -206,7 +206,7 @@ library SafeMath {
    */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

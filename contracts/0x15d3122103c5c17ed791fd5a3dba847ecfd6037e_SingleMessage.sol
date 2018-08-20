@@ -40,8 +40,8 @@ contract SingleMessage is Ownable {
   }
 
   function set(string newMessage) external payable {
-    require(msg.value &gt;= priceInWei);
-    require(bytes(newMessage).length &lt;= maxLength);
+    require(msg.value >= priceInWei);
+    require(bytes(newMessage).length <= maxLength);
 
     uint256 newPrice = priceInWei * 2;
     MessageSet(newMessage, priceInWei, newPrice, msg.sender);
@@ -50,7 +50,7 @@ contract SingleMessage is Ownable {
   }
 
   function withdraw(address destination, uint256 amountInWei) external onlyOwner {
-    require(this.balance &gt;= amountInWei);
+    require(this.balance >= amountInWei);
     require(destination != address(0));
     destination.transfer(amountInWei);
   }

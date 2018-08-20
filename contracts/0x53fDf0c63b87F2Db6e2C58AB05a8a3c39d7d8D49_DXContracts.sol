@@ -8,8 +8,8 @@ contract DXContracts {
     bytes32 sha256sum;
     address[] signers;
     uint timeStamp;
-    mapping (address=&gt;bool) hasSigned;
-    mapping (address=&gt;string) signerName;
+    mapping (address=>bool) hasSigned;
+    mapping (address=>string) signerName;
     bool sealed;
     uint numberAlreadySigned;
   }
@@ -27,9 +27,9 @@ contract DXContracts {
         return (contracts[index].hasSigned[_signer]);
     }
     
-  mapping (bytes32=&gt;uint) public contractIndex;
+  mapping (bytes32=>uint) public contractIndex;
  
-  mapping (address=&gt;bool) isAdmin;
+  mapping (address=>bool) isAdmin;
      
   function DXContracts()
   {
@@ -73,7 +73,7 @@ contract DXContracts {
     uint index=contractIndex[_sha256sum];
     if (contracts[index].sealed) throw;
     bool isSigner;
-    for (uint k=0; k&lt;contracts[index].signers.length; k++)
+    for (uint k=0; k<contracts[index].signers.length; k++)
     {
         if (contracts[index].signers[k]==msg.sender) isSigner=true;
     }

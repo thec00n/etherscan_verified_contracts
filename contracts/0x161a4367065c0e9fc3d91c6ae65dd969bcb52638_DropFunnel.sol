@@ -16,7 +16,7 @@ contract DropFunnel {
 
 	function dropVotes(address[] receivers) public {
 	    require(msg.sender == owner);
-	    for (uint i = 0; i &lt; receivers.length; i++){
+	    for (uint i = 0; i < receivers.length; i++){
 	        if (!token.transfer(receivers[i],dropAmount)) {
 	            emit PaymentFailure(receivers[i]);
 	        }

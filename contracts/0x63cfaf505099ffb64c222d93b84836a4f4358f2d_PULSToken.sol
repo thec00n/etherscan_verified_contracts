@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -52,8 +52,8 @@ contract BasicERC20Token is Ownable {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
@@ -106,8 +106,8 @@ contract BasicERC20Token is Ownable {
     function _transfer(address _from, address _to, uint256 _amount) internal returns (bool) {
         require (_from != 0x0);                               // Prevent transfer to 0x0 address
         require (_to != 0x0);                               // Prevent transfer to 0x0 address
-        require (balances[_from] &gt;= _amount);          // Check if the sender has enough tokens
-        require (balances[_to] + _amount &gt; balances[_to]);  // Check for overflows
+        require (balances[_from] >= _amount);          // Check if the sender has enough tokens
+        require (balances[_to] + _amount > balances[_to]);  // Check for overflows
 
         uint256 length;
         assembly {
@@ -149,7 +149,7 @@ contract BasicERC20Token is Ownable {
      * @return True if the operation was successful.
      */
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
-        require (allowed[_from][msg.sender] &gt;= _amount);          // Check if the sender has enough
+        require (allowed[_from][msg.sender] >= _amount);          // Check if the sender has enough
 
         _transfer(_from, _to, _amount);
 
@@ -168,8 +168,8 @@ contract BasicERC20Token is Ownable {
      */
     function approve(address _spender, uint256 _amount) public returns (bool) {
         require (_spender != 0x0);                       // Prevent transfer to 0x0 address
-        require (_amount &gt;= 0);
-        require (balances[msg.sender] &gt;= _amount);       // Check if the msg.sender has enough to allow 
+        require (_amount >= 0);
+        require (balances[msg.sender] >= _amount);       // Check if the msg.sender has enough to allow 
 
         if (_amount == 0) allowed[msg.sender][_spender] = _amount;
         else allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_amount);
@@ -185,8 +185,8 @@ contract BasicERC20Token is Ownable {
  */
 contract PULSToken is BasicERC20Token {
 	// Public variables of the token
-	string public constant name = &#39;PULS Token&#39;;
-	string public constant symbol = &#39;PULS&#39;;
+	string public constant name = 'PULS Token';
+	string public constant symbol = 'PULS';
 	uint256 public constant decimals = 18;
 	uint256 public constant INITIAL_SUPPLY = 88888888000000000000000000;
 
@@ -198,7 +198,7 @@ contract PULSToken is BasicERC20Token {
         uint256 collectedEther;
     }
 
-	mapping (address =&gt; Reserve) reserved;
+	mapping (address => Reserve) reserved;
 
 	// Public structure to record locked tokens for a specific lock.
 	struct Lock {
@@ -214,7 +214,7 @@ contract PULSToken is BasicERC20Token {
 	}
 	
 	// Public list of lockLists.
-	mapping (address =&gt; lockList) addressLocks;
+	mapping (address => lockList) addressLocks;
 
 	/**
      * @dev Throws if called by any account other than the crowdsale address.
@@ -347,7 +347,7 @@ contract PULSToken is BasicERC20Token {
      * @return True if the operation was successful.
      */
 	function sendTokens(address _beneficiary) onlyOwner public returns (bool) {
-		require (reserved[_beneficiary].pulsAmount &gt; 0);		 // Check if reserved tokens for _beneficiary address is greater then 0
+		require (reserved[_beneficiary].pulsAmount > 0);		 // Check if reserved tokens for _beneficiary address is greater then 0
 
 		_transfer(crowdsaleAddress, _beneficiary, reserved[_beneficiary].pulsAmount);
 
@@ -368,7 +368,7 @@ contract PULSToken is BasicERC20Token {
      */
 	function reserveTokens(address _beneficiary, uint256 _pulsAmount, uint256 _eth, uint256 _reserveTypeId) onlyCrowdsaleAddress public returns (bool) {
 		require (_beneficiary != 0x0);					// Prevent transfer to 0x0 address
-		require (totalSupply &gt;= _pulsAmount);           // Check if such tokens amount left
+		require (totalSupply >= _pulsAmount);           // Check if such tokens amount left
 
 		totalSupply = totalSupply.sub(_pulsAmount);
 		reserved[_beneficiary].pulsAmount = reserved[_beneficiary].pulsAmount.add(_pulsAmount);
@@ -387,7 +387,7 @@ contract PULSToken is BasicERC20Token {
      * @return True if the operation was successful.
      */
 	function revertReservation(address _addressToRevert) onlyOwner public returns (bool) {
-		require (reserved[_addressToRevert].pulsAmount &gt; 0);	
+		require (reserved[_addressToRevert].pulsAmount > 0);	
 
 		totalSupply = totalSupply.add(reserved[_addressToRevert].pulsAmount);
 		reserved[_addressToRevert].pulsAmount = 0;
@@ -410,7 +410,7 @@ contract PULSToken is BasicERC20Token {
      * @return True if the operation was successful.
      */
 	function lockTokens(uint256 _amount, uint256 _minutesToLock, bytes32 _pulseLockHash) public returns (bool){
-		require(balances[msg.sender] &gt;= _amount);
+		require(balances[msg.sender] >= _amount);
 
 		Lock memory lockStruct;
         lockStruct.amount = _amount;
@@ -435,14 +435,14 @@ contract PULSToken is BasicERC20Token {
      */
 	function unlockTokens(address _addressToUnlock) public returns (bool){
 		uint256 i = 0;
-		while(i &lt; addressLocks[_addressToUnlock].lockedTokens.length) {
-			if (now &gt; addressLocks[_addressToUnlock].lockedTokens[i].startTime + addressLocks[_addressToUnlock].lockedTokens[i].timeToLock) {
+		while(i < addressLocks[_addressToUnlock].lockedTokens.length) {
+			if (now > addressLocks[_addressToUnlock].lockedTokens[i].startTime + addressLocks[_addressToUnlock].lockedTokens[i].timeToLock) {
 
 				balances[_addressToUnlock] = balances[_addressToUnlock].add(addressLocks[_addressToUnlock].lockedTokens[i].amount);
 				emit TokenUnlocking(_addressToUnlock, addressLocks[_addressToUnlock].lockedTokens[i].amount);
 
-				if (i &lt; addressLocks[_addressToUnlock].lockedTokens.length) {
-					for (uint256 j = i; j &lt; addressLocks[_addressToUnlock].lockedTokens.length - 1; j++){
+				if (i < addressLocks[_addressToUnlock].lockedTokens.length) {
+					for (uint256 j = i; j < addressLocks[_addressToUnlock].lockedTokens.length - 1; j++){
 			            addressLocks[_addressToUnlock].lockedTokens[j] = addressLocks[_addressToUnlock].lockedTokens[j + 1];
 			        }
 				}
@@ -475,20 +475,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -501,7 +501,7 @@ contract StagedCrowdsale is Ownable {
 
     using SafeMath for uint256;
 
-    // Public structure of crowdsale&#39;s stages.
+    // Public structure of crowdsale's stages.
     struct Stage {
         uint256 hardcap;
         uint256 price;
@@ -519,7 +519,7 @@ contract StagedCrowdsale is Ownable {
      * @return A uint256 specifing the current stage number.
      */
     function getCurrentStage() public view returns(uint256) {
-        for(uint256 i=0; i &lt; stages.length; i++) {
+        for(uint256 i=0; i < stages.length; i++) {
             if(stages[i].closed == 0) {
                 return i;
             }
@@ -535,7 +535,7 @@ contract StagedCrowdsale is Ownable {
      * @param _price The amount of tokens you will receive per 1 ETH for this stage.
      */
     function addStage(uint256 _hardcap, uint256 _price, uint256 _minInvestment, uint _invested) onlyOwner public {
-        require(_hardcap &gt; 0 &amp;&amp; _price &gt; 0);
+        require(_hardcap > 0 && _price > 0);
         Stage memory stage = Stage(_hardcap.mul(1 ether), _price, _minInvestment.mul(1 ether).div(10), _invested.mul(1 ether), 0);
         stages.push(stage);
     }
@@ -553,7 +553,7 @@ contract StagedCrowdsale is Ownable {
         stages[_stageNumber].closed = now;
         stages[_stageNumber].invested = stages[_stageNumber].hardcap;
 
-        if (_stageNumber + 1 &lt;= stages.length - 1) {
+        if (_stageNumber + 1 <= stages.length - 1) {
             stages[_stageNumber + 1].invested = stages[_stageNumber].hardcap;
         }
     }
@@ -565,7 +565,7 @@ contract StagedCrowdsale is Ownable {
      * @return True if the operation was successful.
     */
     function removeStages() onlyOwner public returns (bool) {
-        require(stages.length &gt; 0);
+        require(stages.length > 0);
 
         stages.length = 0;
 
@@ -653,20 +653,20 @@ contract PULSCrowdsale is StagedCrowdsale {
      * @param _beneficiary The address of the buyer.
      */
 	function buyTokens(address _beneficiary) payable notEnded notPaused public {
-		require(msg.value &gt;= 0);
+		require(msg.value >= 0);
 		
 		uint256 stageIndex = getCurrentStage();
 		Stage storage stageCurrent = stages[stageIndex];
 
-		require(msg.value &gt;= stageCurrent.minInvestment);
+		require(msg.value >= stageCurrent.minInvestment);
 
 		uint256 tokens;
 
 		// if puts us in new stage - receives with next stage price
-		if (stageCurrent.invested.add(msg.value) &gt;= stageCurrent.hardcap){
+		if (stageCurrent.invested.add(msg.value) >= stageCurrent.hardcap){
 			stageCurrent.closed = now;
 
-			if (stageIndex + 1 &lt;= stages.length - 1) {
+			if (stageIndex + 1 <= stages.length - 1) {
 				Stage storage stageNext = stages[stageIndex + 1];
 
 				tokens = msg.value.mul(stageCurrent.price);
@@ -703,7 +703,7 @@ contract PULSCrowdsale is StagedCrowdsale {
      * @param _beneficiary The address of the buyer.
      */
 	function privatePresaleTokenReservation(address _beneficiary, uint256 _amount, uint256 _reserveTypeId) onlyOwner public {
-		require (_reserveTypeId &gt; 0);
+		require (_reserveTypeId > 0);
 		token.reserveTokens(_beneficiary, _amount, 0, _reserveTypeId);
 		emit TokenReservation(msg.sender, _beneficiary, 0, _amount);
 	}

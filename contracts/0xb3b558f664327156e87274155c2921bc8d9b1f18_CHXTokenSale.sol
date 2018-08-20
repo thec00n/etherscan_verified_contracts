@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -70,7 +70,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -110,8 +110,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -160,7 +160,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,10 +184,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -199,7 +199,7 @@ contract BurnableToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -239,8 +239,8 @@ contract Ownable {
 }
 
 contract CHXToken is BurnableToken, Ownable {
-    string public constant name = &quot;Chainium&quot;;
-    string public constant symbol = &quot;CHX&quot;;
+    string public constant name = "Chainium";
+    string public constant symbol = "CHX";
     uint8 public constant decimals = 18;
 
     bool public isRestricted = true;
@@ -278,7 +278,7 @@ contract CHXToken is BurnableToken, Ownable {
         if (isRestricted) {
             require(
                 msg.sender == owner ||
-                (msg.sender == tokenSaleContractAddress &amp;&amp; tokenSaleContractAddress != address(0))
+                (msg.sender == tokenSaleContractAddress && tokenSaleContractAddress != address(0))
             );
         }
         _;
@@ -342,7 +342,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_recipients.length == _values.length);
 
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             require(transfer(_recipients[i], _values[i]));
         }
 
@@ -355,7 +355,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_recipients.length == _values.length);
 
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             require(transferFrom(_from, _recipients[i], _values[i]));
         }
 
@@ -368,7 +368,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_senders.length == _values.length);
 
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             require(transferFrom(_senders[i], _to, _values[i]));
         }
 
@@ -382,7 +382,7 @@ contract CHXToken is BurnableToken, Ownable {
         require(_senders.length == _recipients.length);
         require(_senders.length == _values.length);
 
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             require(transferFrom(_senders[i], _recipients[i], _values[i]));
         }
 
@@ -395,7 +395,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_spenders.length == _values.length);
 
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             require(approve(_spenders[i], _values[i]));
         }
 
@@ -408,7 +408,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_spenders.length == _addedValues.length);
 
-        for (uint i = 0; i &lt; _addedValues.length; i++) {
+        for (uint i = 0; i < _addedValues.length; i++) {
             require(increaseApproval(_spenders[i], _addedValues[i]));
         }
 
@@ -421,7 +421,7 @@ contract CHXToken is BurnableToken, Ownable {
     {
         require(_spenders.length == _subtractedValues.length);
 
-        for (uint i = 0; i &lt; _subtractedValues.length; i++) {
+        for (uint i = 0; i < _subtractedValues.length; i++) {
             require(decreaseApproval(_spenders[i], _subtractedValues[i]));
         }
 
@@ -440,7 +440,7 @@ contract CHXToken is BurnableToken, Ownable {
         super.burn(_value);
     }
 
-    // Enable recovery of ether sent by mistake to this contract&#39;s address.
+    // Enable recovery of ether sent by mistake to this contract's address.
     function drainStrayEther(uint _amount)
         external
         onlyOwner
@@ -450,7 +450,7 @@ contract CHXToken is BurnableToken, Ownable {
         return true;
     }
 
-    // Enable recovery of any ERC20 compatible token, sent by mistake to this contract&#39;s address.
+    // Enable recovery of any ERC20 compatible token, sent by mistake to this contract's address.
     function drainStrayTokens(ERC20Basic _token, uint _amount)
         external
         onlyOwner
@@ -464,7 +464,7 @@ contract CHXToken is BurnableToken, Ownable {
 
 contract Whitelistable is Ownable {
 
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
     address public whitelistAdmin;
 
     function Whitelistable()
@@ -495,7 +495,7 @@ contract Whitelistable is Ownable {
         external
         onlyOwnerOrWhitelistAdmin
     {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whitelist[_addresses[i]] = true;
         }
     }
@@ -504,7 +504,7 @@ contract Whitelistable is Ownable {
         external
         onlyOwnerOrWhitelistAdmin
     {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whitelist[_addresses[i]] = false;
         }
     }
@@ -527,7 +527,7 @@ contract CHXTokenSale is Whitelistable {
 
     uint public saleStartTime;
     uint public saleEndTime;
-    uint public maxGasPrice = 20e9 wei; // 20 GWEI - to prevent &quot;gas race&quot;
+    uint public maxGasPrice = 20e9 wei; // 20 GWEI - to prevent "gas race"
     uint public minContribution = 100 finney; // 0.1 ETH
     uint public maxContributionPhase1 = 500 finney; // 0.5 ETH
     uint public maxContributionPhase2 = 10 ether;
@@ -535,8 +535,8 @@ contract CHXTokenSale is Whitelistable {
 
     CHXToken public tokenContract;
 
-    mapping (address =&gt; uint) public etherContributions;
-    mapping (address =&gt; uint) public tokenAllocations;
+    mapping (address => uint) public etherContributions;
+    mapping (address => uint) public tokenAllocations;
     uint public etherCollected;
     uint public tokensSold;
 
@@ -579,14 +579,14 @@ contract CHXTokenSale is Whitelistable {
         address investor = msg.sender;
         uint contribution = msg.value;
 
-        require(saleStartTime &lt;= now &amp;&amp; now &lt;= saleEndTime);
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(saleStartTime <= now && now <= saleEndTime);
+        require(tx.gasprice <= maxGasPrice);
         require(whitelist[investor]);
-        require(contribution &gt;= minContribution);
-        if (phase1DurationInHours.mul(1 hours).add(saleStartTime) &gt;= now) {
-            require(etherContributions[investor].add(contribution) &lt;= maxContributionPhase1);
+        require(contribution >= minContribution);
+        if (phase1DurationInHours.mul(1 hours).add(saleStartTime) >= now) {
+            require(etherContributions[investor].add(contribution) <= maxContributionPhase1);
         } else {
-            require(etherContributions[investor].add(contribution) &lt;= maxContributionPhase2);
+            require(etherContributions[investor].add(contribution) <= maxContributionPhase2);
         }
 
         etherContributions[investor] = etherContributions[investor].add(contribution);
@@ -605,7 +605,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             _recipient.transfer(this.balance);
         }
     }
@@ -615,7 +615,7 @@ contract CHXTokenSale is Whitelistable {
         onlyOwner
     {
         uint unsoldTokens = tokenContract.balanceOf(this);
-        if (unsoldTokens &gt; 0) {
+        if (unsoldTokens > 0) {
             require(tokenContract.transfer(_recipient, unsoldTokens));
         }
     }
@@ -629,7 +629,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newStartTime &lt;= _newEndTime);
+        require(_newStartTime <= _newEndTime);
         saleStartTime = _newStartTime;
         saleEndTime = _newEndTime;
     }
@@ -638,7 +638,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newMaxGasPrice &gt; 0);
+        require(_newMaxGasPrice > 0);
         maxGasPrice = _newMaxGasPrice;
     }
 
@@ -646,7 +646,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newMinContribution &gt; 0);
+        require(_newMinContribution > 0);
         minContribution = _newMinContribution;
     }
 
@@ -654,7 +654,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newMaxContributionPhase1 &gt; minContribution);
+        require(_newMaxContributionPhase1 > minContribution);
         maxContributionPhase1 = _newMaxContributionPhase1;
     }
 
@@ -662,7 +662,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newMaxContributionPhase2 &gt; minContribution);
+        require(_newMaxContributionPhase2 > minContribution);
         maxContributionPhase2 = _newMaxContributionPhase2;
     }
 
@@ -670,7 +670,7 @@ contract CHXTokenSale is Whitelistable {
         external
         onlyOwner
     {
-        require(_newPhase1DurationInHours &gt; 0);
+        require(_newPhase1DurationInHours > 0);
         phase1DurationInHours = _newPhase1DurationInHours;
     }
 }

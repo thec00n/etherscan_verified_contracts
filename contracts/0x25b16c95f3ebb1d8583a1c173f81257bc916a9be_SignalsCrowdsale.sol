@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -102,7 +102,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -147,8 +147,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -338,7 +338,7 @@ contract AdviserTimeLock is Ownable{
     event TokensWithdrawn(address owner, uint amount);
 
     /*
-     * Constructor changing owner to owner multisig &amp; setting time lock
+     * Constructor changing owner to owner multisig & setting time lock
      * @param address of the Signals Token contract
      * @param address of the owner multisig
      */
@@ -353,7 +353,7 @@ contract AdviserTimeLock is Ownable{
      * @dev Will withdraw the whole allowance;
      */
     function withdraw() onlyOwner public {
-        require(now - start &gt;= 25920000);
+        require(now - start >= 25920000);
         uint toWithdraw = canWithdraw();
         token.transfer(owner, toWithdraw);
         withdrawn += toWithdraw;
@@ -368,7 +368,7 @@ contract AdviserTimeLock is Ownable{
         uint256 sinceStart = now - start;
         uint256 allowed = (sinceStart/2592000)*504546000000000;
         uint256 toWithdraw;
-        if (allowed &gt; token.balanceOf(address(this))) {
+        if (allowed > token.balanceOf(address(this))) {
             toWithdraw = token.balanceOf(address(this));
         } else {
             toWithdraw = allowed - withdrawn;
@@ -426,7 +426,7 @@ contract AdvisoryPool is Ownable{
     AdviserTimeLock public tokenLocker23;
 
     /*
-     * Constructor changing owner to owner multisig &amp; calling the allocation
+     * Constructor changing owner to owner multisig & calling the allocation
      * @param address of the Signals Token contract
      * @param address of the owner multisig
      */
@@ -510,7 +510,7 @@ contract CommunityPool is Ownable{
      * @param uint amount units of tokens to be given away
      */
     function allocToMember(address member, uint amount) public onlyOwner {
-        require(amount &gt; 0);
+        require(amount > 0);
         token.transfer(member, amount);
         CommunityTokensAllocated(member, amount);
     }
@@ -536,7 +536,7 @@ contract CompanyReserve is Ownable{
     uint start;
 
     /*
-     * Constructor changing owner to owner multisig &amp; setting time lock
+     * Constructor changing owner to owner multisig & setting time lock
      * @param address of the Signals Token contract
      * @param address of the owner multisig
      */
@@ -553,7 +553,7 @@ contract CompanyReserve is Ownable{
      * @dev Will withdraw the whole allowance;
      */
     function withdraw() onlyOwner public {
-        require(now - start &gt;= 25920000);
+        require(now - start >= 25920000);
         uint256 toWithdraw = canWithdraw();
         withdrawn += toWithdraw;
         token.transfer(owner, toWithdraw);
@@ -569,11 +569,11 @@ contract CompanyReserve is Ownable{
         uint256 sinceStart = now - start;
         uint256 allowed;
 
-        if (sinceStart &gt;= 0) {
+        if (sinceStart >= 0) {
             allowed = 555000000000000;
-        } else if (sinceStart &gt;= 31536000) { // one year difference
+        } else if (sinceStart >= 31536000) { // one year difference
             allowed = 1480000000000000;
-        } else if (sinceStart &gt;= 63072000) { // two years difference
+        } else if (sinceStart >= 63072000) { // two years difference
             allowed = 3330000000000000;
         } else {
             return 0;
@@ -598,8 +598,8 @@ contract CompanyReserve is Ownable{
 contract PresaleToken is PausableToken, MintableToken {
 
     // Standard token variables
-    string constant public name = &quot;SGNPresaleToken&quot;;
-    string constant public symbol = &quot;SGN&quot;;
+    string constant public name = "SGNPresaleToken";
+    string constant public symbol = "SGN";
     uint8 constant public decimals = 9;
 
     event TokensBurned(address initiatior, address indexed _partner, uint256 _tokens);
@@ -616,7 +616,7 @@ contract PresaleToken is PausableToken, MintableToken {
     * @param _tokens uint256 amount of tokens to burn
     */
     function burnTokens(address _partner, uint256 _tokens) public onlyOwner {
-        require(balances[_partner] &gt;= _tokens);
+        require(balances[_partner] >= _tokens);
 
         balances[_partner] -= _tokens;
         totalSupply -= _tokens;
@@ -632,8 +632,8 @@ contract PresaleToken is PausableToken, MintableToken {
 contract SignalsToken is PausableToken, MintableToken {
 
     // Standard token variables
-    string constant public name = &quot;Signals Network Token&quot;;
-    string constant public symbol = &quot;SGN&quot;;
+    string constant public name = "Signals Network Token";
+    string constant public symbol = "SGN";
     uint8 constant public decimals = 9;
 
 }
@@ -645,7 +645,7 @@ contract PrivateRegister is Ownable {
         uint8 extra;
     }
 
-    mapping (address =&gt; contribution) verified;
+    mapping (address => contribution) verified;
 
     event ApprovedInvestor(address indexed investor);
     event BonusesRegistered(address indexed investor, uint8 extra);
@@ -659,7 +659,7 @@ contract PrivateRegister is Ownable {
     function approve(address _investor, uint8 _extra) onlyOwner public{
         require(!isContract(_investor));
         verified[_investor].approved = true;
-        if (_extra &lt;= 100) {
+        if (_extra <= 100) {
             verified[_investor].extra = _extra;
             BonusesRegistered(_investor, _extra);
         }
@@ -688,13 +688,13 @@ contract PrivateRegister is Ownable {
     /*
      * Check if address is a contract to prevent contracts from participating the direct sale.
      * @param addr address to be checked
-     * @return boolean of it is or isn&#39;t an contract address
-     * @credits Manuel Ar&#225;oz
+     * @return boolean of it is or isn't an contract address
+     * @credits Manuel Aráoz
      */
     function isContract(address addr) public view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -707,7 +707,7 @@ contract CrowdsaleRegister is Ownable {
         uint8 extra;
     }
 
-    mapping (address =&gt; contribution) verified;
+    mapping (address => contribution) verified;
 
     event ApprovedInvestor(address indexed investor);
     event BonusesRegistered(address indexed investor, uint8 commission, uint8 extra);
@@ -721,7 +721,7 @@ contract CrowdsaleRegister is Ownable {
     function approve(address _investor, uint8 _commission, uint8 _extra) onlyOwner public{
         require(!isContract(_investor));
         verified[_investor].approved = true;
-        if (_commission &lt;= 15 &amp;&amp; _extra &lt;= 5) {
+        if (_commission <= 15 && _extra <= 5) {
             verified[_investor].commission = _commission;
             verified[_investor].extra = _extra;
             BonusesRegistered(_investor, _commission, _extra);
@@ -751,13 +751,13 @@ contract CrowdsaleRegister is Ownable {
     /*
      * Check if address is a contract to prevent contracts from participating the direct sale.
      * @param addr address to be checked
-     * @return boolean of it is or isn&#39;t an contract address
-     * @credits Manuel Ar&#225;oz
+     * @return boolean of it is or isn't an contract address
+     * @credits Manuel Aráoz
      */
     function isContract(address addr) public view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -788,7 +788,7 @@ contract PresalePool is Ownable {
     event PartnerResolved(address indexed partner, uint256 burned, uint256 created);
 
     /*
-     * Constructor changing owner to owner multisig, setting all the contract addresses &amp; compensation rates
+     * Constructor changing owner to owner multisig, setting all the contract addresses & compensation rates
      * @param address of the Signals Token contract
      * @param address of the KYC registry
      * @param address of the owner multisig
@@ -824,7 +824,7 @@ contract PresalePool is Ownable {
         uint256 oldBalance;
         uint256 newBalance;
 
-        if (PublicPresale.balanceOf(msg.sender) &gt; 0) {
+        if (PublicPresale.balanceOf(msg.sender) > 0) {
             oldBalance = PublicPresale.balanceOf(msg.sender);
             newBalance = oldBalance * compensation1 / 100;
             PublicPresale.burnTokens(msg.sender, oldBalance);
@@ -832,7 +832,7 @@ contract PresalePool is Ownable {
             SupporterResolved(msg.sender, oldBalance, newBalance);
         }
 
-        if (PartnerPresale.balanceOf(msg.sender) &gt; 0) {
+        if (PartnerPresale.balanceOf(msg.sender) > 0) {
             oldBalance = PartnerPresale.balanceOf(msg.sender);
             newBalance = oldBalance * compensation2 / 100;
             PartnerPresale.burnTokens(msg.sender, oldBalance);
@@ -852,7 +852,7 @@ contract PresalePool is Ownable {
         uint256 oldBalance;
         uint256 newBalance;
 
-        if (PublicPresale.balanceOf(whom) &gt; 0) {
+        if (PublicPresale.balanceOf(whom) > 0) {
             oldBalance = PublicPresale.balanceOf(whom);
             newBalance = oldBalance * compensation1 / 100;
             PublicPresale.burnTokens(whom, oldBalance);
@@ -860,7 +860,7 @@ contract PresalePool is Ownable {
             SupporterResolved(whom, oldBalance, newBalance);
         }
 
-        if (PartnerPresale.balanceOf(whom) &gt; 0) {
+        if (PartnerPresale.balanceOf(whom) > 0) {
             oldBalance = PartnerPresale.balanceOf(whom);
             newBalance = oldBalance * compensation2 / 100;
             PartnerPresale.burnTokens(whom, oldBalance);
@@ -875,7 +875,7 @@ contract PresalePool is Ownable {
      * Function to clean up the state and moved not allocated tokens to custody
      */
     function clean() onlyOwner public {
-        require(now &gt;= deadLine);
+        require(now >= deadLine);
         uint256 notAllocated = token.balanceOf(address(this));
         token.transfer(owner, notAllocated);
         selfdestruct(owner);
@@ -954,7 +954,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -978,7 +978,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
 contract SignalsCrowdsale is FinalizableCrowdsale {
 
-    // Cap &amp; price related values
+    // Cap & price related values
     uint256 public constant HARD_CAP = 18000*(10**18);
     uint256 public toBeRaised = 18000*(10**18);
     uint256 public constant PRICE = 360000;
@@ -1001,7 +1001,7 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
     CrowdsaleRegister register;
     PrivateRegister register2;
 
-    // Start &amp; End related vars
+    // Start & End related vars
     bool public ready;
 
     // Events
@@ -1020,12 +1020,12 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool started = (startTime &lt;= now);
+        bool started = (startTime <= now);
         bool nonZeroPurchase = msg.value != 0;
-        bool capNotReached = (weiRaised &lt; HARD_CAP);
+        bool capNotReached = (weiRaised < HARD_CAP);
         bool approved = register.approved(msg.sender);
         bool approved2 = register2.approved(msg.sender);
-        return ready &amp;&amp; started &amp;&amp; !hasEnded &amp;&amp; nonZeroPurchase &amp;&amp; capNotReached &amp;&amp; (approved || approved2);
+        return ready && started && !hasEnded && nonZeroPurchase && capNotReached && (approved || approved2);
     }
 
     /*
@@ -1056,20 +1056,20 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
             (commission, extra) = register.getBonuses(beneficiary);
 
             // If extra access granted then give additional %
-            if (extra &gt; 0) {
+            if (extra > 0) {
                 discount += extra*10000;
             }
             tokens =  howMany(msg.value, discount);
 
             // If referral was involved, give some percent to the source
-            if (commission &gt; 0) {
+            if (commission > 0) {
                 premium = tokens.mul(commission).div(100);
                 token.mint(BOUNTY, premium);
             }
 
         } else {
             extra = register2.getBonuses(beneficiary);
-            if (extra &gt; 0) {
+            if (extra > 0) {
                 discount = extra*10000;
                 tokens =  howMany(msg.value, discount);
             }
@@ -1080,7 +1080,7 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
         tokensSold += tokens + premium;
         forwardFunds();
 
-        assert(token.totalSupply() &lt;= maxTokens);
+        assert(token.totalSupply() <= maxTokens);
     }
 
     /*
@@ -1095,7 +1095,7 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
 
     /*
      * Function to do preallocations - MANDATORY to continue
-     * @dev It&#39;s separated so it doesn&#39;t have to run in constructor
+     * @dev It's separated so it doesn't have to run in constructor
      */
     function initialize() public onlyOwner {
         require(!ready);
@@ -1123,12 +1123,12 @@ contract SignalsCrowdsale is FinalizableCrowdsale {
 
     /*
      * Function end or pause the sale
-     * @dev It&#39;s MANDATORY to finalize()
+     * @dev It's MANDATORY to finalize()
      */
     function endSale(bool end) public onlyOwner {
-        require(startTime &lt;= now);
+        require(startTime <= now);
         uint256 tokensLeft = maxTokens - token.totalSupply();
-        if (tokensLeft &gt; 0) {
+        if (tokensLeft > 0) {
             token.mint(wallet, tokensLeft);
         }
         hasEnded = end;

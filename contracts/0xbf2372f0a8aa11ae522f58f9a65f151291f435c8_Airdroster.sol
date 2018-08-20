@@ -6,10 +6,10 @@ pragma solidity ^0.4.18;
  library SafeMath {
      function add(uint a, uint b) internal pure returns (uint c) {
          c = a + b;
-         require(c &gt;= a);
+         require(c >= a);
      }
      function sub(uint a, uint b) internal pure returns (uint c) {
-         require(b &lt;= a);
+         require(b <= a);
          c = a - b;
      }
      function mul(uint a, uint b) internal pure returns (uint c) {
@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
          require(a == 0 || c / a == b);
      }
      function div(uint a, uint b) internal pure returns (uint c) {
-         require(b &gt; 0);
+         require(b > 0);
          c = a / b;
      }
  }
@@ -92,9 +92,9 @@ pragma solidity ^0.4.18;
      uint8 public decimals;
      uint public _totalSupply;
  
-     mapping(address =&gt; uint) balances;
-     mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-     mapping(address =&gt; transferInStruct[]) transferIns;
+     mapping(address => uint) balances;
+     mapping(address => mapping(address => uint)) allowed;
+     mapping(address => transferInStruct[]) transferIns;
 
  
     struct transferInStruct{
@@ -106,8 +106,8 @@ pragma solidity ^0.4.18;
      // Constructor
      // ------------------------------------------------------------------------
      function Airdroster() public {
-         symbol = &quot;STER&quot;;
-         name = &quot;Airdropster&quot;;
+         symbol = "STER";
+         name = "Airdropster";
          decimals = 18;
          _totalSupply = 1000000000 * 10**uint(decimals);
          balances[owner] = _totalSupply;
@@ -132,8 +132,8 @@ pragma solidity ^0.4.18;
  
  
      // ------------------------------------------------------------------------
-     // Transfer the balance from token owner&#39;s account to `to` account
-     // - Owner&#39;s account must have sufficient balance to transfer
+     // Transfer the balance from token owner's account to `to` account
+     // - Owner's account must have sufficient balance to transfer
      // - 0 value transfers are allowed
      // ------------------------------------------------------------------------
      function transfer(address to, uint tokens) public returns (bool success) {
@@ -146,7 +146,7 @@ pragma solidity ^0.4.18;
  
      // ------------------------------------------------------------------------
      // Token owner can approve for `spender` to transferFrom(...) `tokens`
-     // from the token owner&#39;s account
+     // from the token owner's account
      //
      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
      // recommends that there are no checks for the approval double-spend attack
@@ -179,7 +179,7 @@ pragma solidity ^0.4.18;
  
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -188,7 +188,7 @@ pragma solidity ^0.4.18;
  
      // ------------------------------------------------------------------------
      // Token owner can approve for `spender` to transferFrom(...) `tokens`
-     // from the token owner&#39;s account. The `spender` contract function
+     // from the token owner's account. The `spender` contract function
      // `receiveApproval(...)` is then executed
      // ------------------------------------------------------------------------
      function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -200,7 +200,7 @@ pragma solidity ^0.4.18;
  
  
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -215,24 +215,24 @@ pragma solidity ^0.4.18;
      }
      
       function batchTransfer(address[] _recipients, uint[] _values) onlyOwner returns (bool) {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require( _recipients.length > 0 && _recipients.length == _values.length);
 
         uint total = 0;
-        for(uint i = 0; i &lt; _values.length; i++){
+        for(uint i = 0; i < _values.length; i++){
             total = total.add(_values[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
         uint64 _now = uint64(now);
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             transferIns[_recipients[j]].push(transferInStruct(uint128(_values[j]),_now));
             Transfer(msg.sender, _recipients[j], _values[j]);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(total);
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
-        if(balances[msg.sender] &gt; 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
+        if(balances[msg.sender] > 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
 
         return true;
     }

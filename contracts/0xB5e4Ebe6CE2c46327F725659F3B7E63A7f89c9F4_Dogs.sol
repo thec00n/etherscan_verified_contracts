@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,31 +57,31 @@ contract Dogs {
 
   /*** CONSTANTS ***/
 
-  string public constant NAME = &quot;dogs-youCollect&quot;;
-  string public constant SYMBOL = &quot;DYC&quot;;
+  string public constant NAME = "dogs-youCollect";
+  string public constant SYMBOL = "DYC";
   uint256[] private tokens;
 
   /*** STORAGE ***/
 
   /// @dev A mapping from collectible IDs to the address that owns them. All collectibles have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public collectibleIndexToOwner;
+  mapping (uint256 => address) public collectibleIndexToOwner;
 
   /// @dev A mapping from CollectibleIDs to an address that has been approved to call
   ///  transferFrom(). Each Collectible can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public collectibleIndexToApproved;
+  mapping (uint256 => address) public collectibleIndexToApproved;
 
   // @dev A mapping from CollectibleIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) public collectibleIndexToPrice;
+  mapping (uint256 => uint256) public collectibleIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
   address public cooAddress;
 
-  mapping (uint =&gt; address) private subTokenCreator;
-  mapping (uint =&gt; address) private lastSubTokenBuyer;
-  mapping (uint =&gt; bool) private unlocked;
+  mapping (uint => address) private subTokenCreator;
+  mapping (uint => address) private lastSubTokenBuyer;
+  mapping (uint => bool) private unlocked;
 
   uint8 constant BASE_TOKEN_ID = 0;
   uint16 constant MAX_SETS_INDEX = 10000;
@@ -104,23 +104,23 @@ contract Dogs {
     return tokens.length;
   }
   function getInitialPriceOfToken(uint _tokenId) public pure returns (uint) {
-    if (_tokenId &gt; MAX_SETS_INDEX)
+    if (_tokenId > MAX_SETS_INDEX)
       return START_PRICE_DOG;
-    if (_tokenId &gt; 0)
+    if (_tokenId > 0)
       return START_PRICE_SETS;
     return START_PRICE_BASE_DOG;
   }
 
   function getNextPrice(uint price, uint _tokenId) public pure returns (uint) {
-    if (_tokenId&gt;DOUBLE_TOKENS_INDEX)
+    if (_tokenId>DOUBLE_TOKENS_INDEX)
       return price.mul(2);
-    if (_tokenId&gt;TRIBLE_TOKENS_INDEX)
+    if (_tokenId>TRIBLE_TOKENS_INDEX)
       return price.mul(3);
-    if (_tokenId&gt;FIFTY_TOKENS_INDEX)
+    if (_tokenId>FIFTY_TOKENS_INDEX)
       return price.mul(3).div(2);
-    if (price &lt; 1.2 ether)
+    if (price < 1.2 ether)
       return price.mul(200).div(92);
-    if (price &lt; 5 ether)
+    if (price < 5 ether)
       return price.mul(150).div(92);
     return price.mul(120).div(92);
   }
@@ -131,21 +131,21 @@ contract Dogs {
     uint256 sellingPrice = collectibleIndexToPrice[_tokenId];
     if (sellingPrice==0) {
       sellingPrice = getInitialPriceOfToken(_tokenId);
-      if (_tokenId&gt;MAX_SETS_INDEX)
+      if (_tokenId>MAX_SETS_INDEX)
         subTokenCreator[_tokenId] = msg.sender;
     }
 
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
 
     uint256 payment = sellingPrice.mul(92).div(100);
     uint256 feeOnce = sellingPrice.sub(payment).div(8);
 
     // transfer taxes
-    if (_tokenId &gt; 0) {
+    if (_tokenId > 0) {
       if (collectibleIndexToOwner[BASE_TOKEN_ID]!=address(0))
         collectibleIndexToOwner[BASE_TOKEN_ID].transfer(feeOnce);
-      if (_tokenId &gt; MAX_SETS_INDEX) {
+      if (_tokenId > MAX_SETS_INDEX) {
         if (collectibleIndexToOwner[_tokenId % MAX_SETS_INDEX]!=address(0))
           collectibleIndexToOwner[_tokenId % MAX_SETS_INDEX].transfer(feeOnce);
         if (subTokenCreator[_tokenId]!=address(0))
@@ -178,7 +178,7 @@ contract Dogs {
     TokenSold(_tokenId, sellingPrice, oldOwner, msg.sender);
     Transfer(oldOwner, msg.sender, _tokenId);
     // refund when paid too much
-    if (purchaseExcess&gt;0)
+    if (purchaseExcess>0)
       msg.sender.transfer(purchaseExcess);
   }
 
@@ -227,14 +227,14 @@ contract Dogs {
   /// @dev Creates a new promo collectible with the given name, with given _price and assignes it to an address.
   function createPromoCollectible(uint256 tokenId, address _owner, uint256 _price) public onlyCOO {
     require(collectibleIndexToOwner[tokenId]==address(0));
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address collectibleOwner = _owner;
     if (collectibleOwner == address(0)) {
       collectibleOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = getInitialPriceOfToken(tokenId);
     }
 
@@ -250,14 +250,14 @@ contract Dogs {
 
   function createSecondPromoCollectible(uint256 tokenId, address _creator, uint256 _price, address _owner) public onlyCOO {
     require(collectibleIndexToOwner[tokenId]==address(0));
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address collectibleOwner = _owner;
     if (collectibleOwner == address(0)) {
       collectibleOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = getInitialPriceOfToken(tokenId);
     }
 
@@ -274,8 +274,8 @@ contract Dogs {
   bool isChangePriceLocked = true;
   // allows owners of tokens to decrease the price of them or if there is no owner the coo can do it
   function changePrice(uint256 newPrice, uint256 _tokenId) public {
-    require((_owns(msg.sender, _tokenId) &amp;&amp; !isChangePriceLocked) || (_owns(address(0), _tokenId) &amp;&amp; msg.sender == cooAddress));
-    require(newPrice&lt;collectibleIndexToPrice[_tokenId]);
+    require((_owns(msg.sender, _tokenId) && !isChangePriceLocked) || (_owns(address(0), _tokenId) && msg.sender == cooAddress));
+    require(newPrice<collectibleIndexToPrice[_tokenId]);
     collectibleIndexToPrice[_tokenId] = newPrice;
   }
   function unlockToken(uint tokenId) public onlyCOO {
@@ -436,7 +436,7 @@ contract Dogs {
       uint256 tokenIndex;
       uint256 tokenId;
       result = 0;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (collectibleIndexToOwner[tokenId] == _owner) {
           result = result.add(1);
@@ -450,7 +450,7 @@ contract Dogs {
     //transfer ownership
     collectibleIndexToOwner[_tokenId] = _to;
 
-    // When creating new collectibles _from is 0x0, but we can&#39;t account that address.
+    // When creating new collectibles _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       // clear any previously approved ownership exchange
       delete collectibleIndexToApproved[_tokenId];
@@ -462,7 +462,7 @@ contract Dogs {
 
 
    /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire tokens array looking for tokens belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -478,7 +478,7 @@ contract Dogs {
 
       uint256 tokenIndex;
       uint256 tokenId;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (collectibleIndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;

@@ -1,6 +1,6 @@
 // Refund contract for extraBalance
 // Amounts to be paid are tokenized in another contract and allow using the same refund contract as for theDAO
-// Though it may be misleading, the names &#39;DAO&#39;, &#39;mainDAO&#39; are kept here for the ease of code review
+// Though it may be misleading, the names 'DAO', 'mainDAO' are kept here for the ease of code review
 
 contract DAO {
     function balanceOf(address addr) returns (uint);

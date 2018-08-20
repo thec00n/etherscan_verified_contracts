@@ -31,20 +31,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,8 +52,8 @@ library SafeMath {
 contract NewYearToken is IERC20{
     
     using SafeMath for uint256;
-    string public constant symbol = &quot;NYT&quot;;
-    string public constant name = &quot;New Year Token&quot;;
+    string public constant symbol = "NYT";
+    string public constant name = "New Year Token";
     uint8 public constant decimals = 18;
     uint private supplay= 0;
     uint private _CirculatingSupply = 0;
@@ -71,12 +71,12 @@ contract NewYearToken is IERC20{
     uint private constant icote=1515020399;
     
     
-    mapping(address=&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address=> uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function () payable{
     
-    if(now&lt;=preicote){
+    if(now<=preicote){
      createTokens();  
     }
     else {
@@ -92,7 +92,7 @@ contract NewYearToken is IERC20{
   
     function createTokens() payable{
          uint tokens = msg.value.mul(RATE1);
-            require(msg.value &gt; 0 &amp;&amp; supplay+tokens&lt;=_MaxSupply &amp;&amp; now&gt;=preicot &amp;&amp; now&lt;=preicote);
+            require(msg.value > 0 && supplay+tokens<=_MaxSupply && now>=preicot && now<=preicote);
            balances[msg.sender] = balances[msg.sender].add(tokens);
             _CirculatingSupply = _CirculatingSupply.add(tokens);
             supplay = supplay.add(tokens);
@@ -101,7 +101,7 @@ contract NewYearToken is IERC20{
     
     function createTokens1() payable{
          uint tokens = msg.value.mul(RATE2);
-            require(msg.value &gt; 0 &amp;&amp; supplay+tokens&lt;=_MaxSupply &amp;&amp; now&gt;=icot &amp;&amp; now&lt;=icote);
+            require(msg.value > 0 && supplay+tokens<=_MaxSupply && now>=icot && now<=icote);
            balances[msg.sender] = balances[msg.sender].add(tokens);
             _CirculatingSupply = _CirculatingSupply.add(tokens);
             supplay = supplay.add(tokens);
@@ -120,8 +120,8 @@ contract NewYearToken is IERC20{
     }
     function transfer(address _to, uint256 _value) returns (bool success){
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0 &amp;&amp; now&gt;icote
+            balances[msg.sender] >= _value
+            && _value > 0 && now>icote
         );
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -149,9 +149,9 @@ contract NewYearToken is IERC20{
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0
         );
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

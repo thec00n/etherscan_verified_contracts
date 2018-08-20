@@ -6,16 +6,16 @@ library SafeMath {
         assert(a == 0 || c / a == b);
         return c;}
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); 
+        // assert(b > 0); 
         uint256 c = a / b;
         // assert(a == b * c + a % b); 
         return c;}
  function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;}
 function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;}}
 //------------------------------------------------------------------------------------------------------------------//
     contract ERC20 {
@@ -37,8 +37,8 @@ function add(uint256 a, uint256 b) internal constant returns (uint256) {
 //------------------------------------------------------------------------------------------------------------------//     
   contract EthereumWhite is ERC20 {                    //Name of the Contract
      using SafeMath for uint256;                       //Use SafeMath
-     string public constant symbol = &quot;EWHITE&quot;;         //Token Symbol
-     string public constant name = &quot;Ethereum White&quot;;   //Token Name
+     string public constant symbol = "EWHITE";         //Token Symbol
+     string public constant name = "Ethereum White";   //Token Name
      uint8 public constant decimals = 8;               //Decimals
      uint256 _totalSupply = 9000000 * (10**8);         //TotalSupply starts to 9 Million 
      uint256 public _maxtotalSupply = 90000000 * (10**8);  // MaxTotalSupply is 90 Million
@@ -69,9 +69,9 @@ function add(uint256 a, uint256 b) internal constant returns (uint256) {
      uint128 reward;
      uint64 time;  }
      address public owner;
-     mapping(address =&gt; uint256) balances;
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-     mapping(address =&gt; transferInStruct[]) transferIns;
+     mapping(address => uint256) balances;
+     mapping(address => mapping (address => uint256)) allowed;
+     mapping(address => transferInStruct[]) transferIns;
 //------------------------------------------------------------------------------------------------------------------//    
 function InitialSettings() onlyOwner returns (bool success) {
     MultiReward = 45;     
@@ -91,10 +91,10 @@ function InitialSettings() onlyOwner returns (bool success) {
     reqfee = 1000000000;}
 //------------------------------------------------------------------------------------------------------------------// 
      modifier onlyPayloadSize(uint size) { 
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;}
 //------------------------------------------------------------------------------------------------------------------// 
-    string public SponsoredLink = &quot;Ethereum White&quot;;        
+    string public SponsoredLink = "Ethereum White";        
     function setSponsor(string note_) public onlyOwner {
       SponsoredLink = note_;
       SponsoredLink(SponsoredLink); }
@@ -136,13 +136,13 @@ function InitialSettings() onlyOwner returns (bool success) {
          gas=  _Gasfee * 1 wei;}       
 //------------------------------------------------------------------------------------------------------------------// 
          function transfer(address _to, uint256 _amount)  onlyPayloadSize(2 * 32) returns (bool success){
-         if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
-             if(_totalSupply&gt; _maxtotalSupply){
+         if (balances[msg.sender] >= _amount 
+            && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
+             if(_totalSupply> _maxtotalSupply){
              gas = 0;
              }
-                if (balances[msg.sender] &gt;= reqfee){
+                if (balances[msg.sender] >= reqfee){
              balances[msg.sender] -= _amount - gas ;}
              else{
             balances[msg.sender] -= _amount;}
@@ -155,10 +155,10 @@ function InitialSettings() onlyOwner returns (bool success) {
 
 //------------------------------------------------------------------------------------------------------------------// 
      function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(2 * 32) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -170,17 +170,17 @@ function InitialSettings() onlyOwner returns (bool success) {
 //------------------------------------------------------------------------------------------------------------------// 
          modifier canMint() {
          uint _now = now;
-        require(_totalSupply &lt; _maxtotalSupply);
-        require ((_now.sub(clockmint)).div(90 seconds) &gt;= 1);
+        require(_totalSupply < _maxtotalSupply);
+        require ((_now.sub(clockmint)).div(90 seconds) >= 1);
         _; }
 //------------------------------------------------------------------------------------------------------------------// 
         function Mine_Block() canMint returns (bool) {
-         if(clockmint &lt; clockowner) {return false;}
-         if(Miners &gt;= MaxMinersXblock){
+         if(clockmint < clockowner) {return false;}
+         if(Miners >= MaxMinersXblock){
          clockmint = now; 
          Miners=0;
          return true;}
-         if(balances[msg.sender] &lt;= (100 * (10**8))){ return false;}
+         if(balances[msg.sender] <= (100 * (10**8))){ return false;}
          Miners++;
          uint Calcrewardminers =1000000*_maxtotalSupply.div(((_totalSupply/9)*10)+(TotalAirdropRequests));
          _reward = Calcrewardminers*MultiReward;  
@@ -195,17 +195,17 @@ function InitialSettings() onlyOwner returns (bool success) {
 //------------------------------------------------------------------------------------------------------------------// 
         modifier canAirdrop() { 
          uint _now = now;
-        require(_totalSupply &lt; _maxtotalSupply);
-        require ((_now.sub(clockairdrop)).div(60 seconds) &gt;= 1);
+        require(_totalSupply < _maxtotalSupply);
+        require ((_now.sub(clockairdrop)).div(60 seconds) >= 1);
         _;}
 //------------------------------------------------------------------------------------------------------------------// 
          function Request_Airdrop() canAirdrop returns (bool) {
-         if(clockairdrop &lt; clockowner){ return false;}
-         if(Airdrop &gt;= MaxAirDropXblock){
+         if(clockairdrop < clockowner){ return false;}
+         if(Airdrop >= MaxAirDropXblock){
          clockairdrop = now; 
          Airdrop=0;
         return true; }
-          if(balances[msg.sender] &gt; (100 * (10**8))) return false;
+          if(balances[msg.sender] > (100 * (10**8))) return false;
          Airdrop++;
          uint Calcrewardairdrop =100000*_maxtotalSupply.div(((_totalSupply/9)*10)+TotalAirdropRequests);
          uint _reward = Calcrewardairdrop*MultiRewardAD;
@@ -220,19 +220,19 @@ function InitialSettings() onlyOwner returns (bool success) {
 //------------------------------------------------------------------------------------------------------------------// 
         modifier canPoS() {
          uint _now = now;
-        require(_totalSupply &lt; _maxtotalSupply);
-        require ((_now.sub(clockpos)).div(120 seconds) &gt;= 1);
+        require(_totalSupply < _maxtotalSupply);
+        require ((_now.sub(clockpos)).div(120 seconds) >= 1);
          uint _nownetowk = now;
         _;}
 //------------------------------------------------------------------------------------------------------------------// 
          function Proof_of_Stake() canPoS returns (bool) {
-         if(clockpos &lt; clockowner){return false;}
-         if(PoS &gt;= MaxPoSXblock){
+         if(clockpos < clockowner){return false;}
+         if(PoS >= MaxPoSXblock){
          clockpos = now; 
          PoS=0;
          return true; }
          PoS++;
-         if(balances[msg.sender] &gt;= InitalPos){
+         if(balances[msg.sender] >= InitalPos){
          uint ProofOfStake = balances[msg.sender].div(PoSPerCent);
          _rewardPoS = ProofOfStake;                    // Proof-of-stake 0.005%
          uint rewardPoS = _rewardPoS;

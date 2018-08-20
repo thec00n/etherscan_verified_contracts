@@ -32,7 +32,7 @@ contract HodlContract{
    {
        uint FeeAmount;
        FeeAddress = 0x9979cCFF79De92fbC1fb43bcD2a3a97Bb86b6920; 
-        FeeAmount = msg.value * 1/100; //1% fee because you don&#39;t have the self control to hodl yourself.
+        FeeAmount = msg.value * 1/100; //1% fee because you don't have the self control to hodl yourself.
         FeeAddress.transfer(FeeAmount);
         
         hodlID = hodls.length++;
@@ -49,9 +49,9 @@ contract HodlContract{
     
     function Realize(uint hodlID) public payable returns (uint amount){
     HodlStruct storage p = hodls[hodlID];
-    require (now &gt; p.waitTime  //Didn&#39;t wait long enough.
-    &amp;&amp; !p.executed //Not already executed.
-    &amp;&amp; msg.sender == p.recipient); //Only recipient as sender can get ether back.
+    require (now > p.waitTime  //Didn't wait long enough.
+    && !p.executed //Not already executed.
+    && msg.sender == p.recipient); //Only recipient as sender can get ether back.
         
         msg.sender.transfer(p.amount); // transfer the ether to the sender.
         p.executed = true;
@@ -62,8 +62,8 @@ contract HodlContract{
     function FindID(address beneficiary) public returns (uint hodlID){ //Emergency if user lost HodlID
         HodlStruct storage p = hodls[hodlID];
         
-        for (uint i = 0; i &lt;  hodls.length; ++i) {
-            if (p.recipient == beneficiary &amp;&amp; !p.executed ) {
+        for (uint i = 0; i <  hodls.length; ++i) {
+            if (p.recipient == beneficiary && !p.executed ) {
                 return hodlID;
             } else {
                 revert();

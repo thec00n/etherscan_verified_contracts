@@ -17,7 +17,7 @@ contract PasserBy {
   }
 
   function () external payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     vault.transfer(msg.value);
     emit PasserByTracker(msg.sender, vault, msg.value);
   }

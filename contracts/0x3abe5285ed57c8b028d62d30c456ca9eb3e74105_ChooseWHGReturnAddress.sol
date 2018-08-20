@@ -8,7 +8,7 @@ contract Owned {
     address public owner;
 
     // This contract only defines a modifier and a few useful functions
-    // The function body is inserted where the special symbol &quot;_&quot; in the
+    // The function body is inserted where the special symbol "_" in the
     // definition of a modifier appears.
     modifier onlyOwner { if (msg.sender == owner) _; }
 
@@ -26,11 +26,11 @@ contract Owned {
 
 contract ChooseWHGReturnAddress is Owned {
 
-    mapping (address =&gt; address) returnAddresses;
+    mapping (address => address) returnAddresses;
     uint public endDate;
 
     /// @param _endDate After this time, if `requestReturn()` has not been called
-    /// the upgraded parity multisig will be locked in as the &#39;returnAddr&#39;
+    /// the upgraded parity multisig will be locked in as the 'returnAddr'
     function ChooseWHGReturnAddress(uint _endDate) {
         endDate = _endDate;
     }
@@ -51,7 +51,7 @@ contract ChooseWHGReturnAddress is Owned {
 
         // After the end date, the newly deployed parity multisig will be
         //  chosen if no transaction is made.
-        require(now &lt;= endDate);
+        require(now <= endDate);
 
         require(returnAddresses[msg.sender] == 0x0);
         returnAddresses[msg.sender] = _returnAddr;

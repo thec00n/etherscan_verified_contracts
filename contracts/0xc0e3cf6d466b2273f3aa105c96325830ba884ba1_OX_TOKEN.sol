@@ -20,8 +20,8 @@ contract owned {
 
 contract OX_TOKEN is owned {
 
-  string public constant name = &quot;OX&quot;;
-  string public constant symbol = &quot;FIXED&quot;;
+  string public constant name = "OX";
+  string public constant symbol = "FIXED";
 
   event Transfer( address indexed _from,
                   address indexed _to,
@@ -37,8 +37,8 @@ contract OX_TOKEN is owned {
 
   uint public starttime;
   uint public inCirculation;
-  mapping( address =&gt; uint ) public oxen;
-  mapping( address =&gt; mapping (address =&gt; uint256) ) allowed;
+  mapping( address => uint ) public oxen;
+  mapping( address => mapping (address => uint256) ) allowed;
 
   function OX_TOKEN() {
     starttime = 0;
@@ -54,7 +54,7 @@ contract OX_TOKEN is owned {
   }
 
   function withdraw( uint amount ) onlyOwner returns (bool success) {
-    if (amount &lt;= this.balance)
+    if (amount <= this.balance)
       success = owner.send( amount );
     else
       success = false;
@@ -72,17 +72,17 @@ contract OX_TOKEN is owned {
   function buyOx() payable {
 
     // min purchase .1 E = 10**17 wei
-    if (!saleOn() || msg.value &lt; 100 finney) {
-      throw; // returns caller&#39;s Ether and unused gas
+    if (!saleOn() || msg.value < 100 finney) {
+      throw; // returns caller's Ether and unused gas
     }
 
-    // rate: 1 eth &lt;==&gt; 3000 ox
+    // rate: 1 eth <==> 3000 ox
     // to buy: msg.value * 3000 * (100 + bonus)
     //         ---------          -------------
     //          10**18                 100
     uint ox = div( mul(mul(msg.value,3), 100 + bonus()), 10**17 );
 
-    if (inCirculation + ox &gt; 1000000000) {
+    if (inCirculation + ox > 1000000000) {
       throw;
     }
 
@@ -113,7 +113,7 @@ contract OX_TOKEN is owned {
   }
 
   function transfer( address to, uint ox ) returns (bool success) {
-    if ( ox &gt; oxen[msg.sender] || saleOn() ) {
+    if ( ox > oxen[msg.sender] || saleOn() ) {
       return false;
     }
 
@@ -125,10 +125,10 @@ contract OX_TOKEN is owned {
 
   function transferFrom(address _from, address _to, uint256 _amount)
   returns (bool success) {
-    if (    oxen[_from] &gt;= _amount
-         &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-         &amp;&amp; _amount &gt; 0
-         &amp;&amp; oxen[_to] + _amount &gt; oxen[_to]
+    if (    oxen[_from] >= _amount
+         && allowed[_from][msg.sender] >= _amount
+         && _amount > 0
+         && oxen[_to] + _amount > oxen[_to]
        )
     {
       oxen[_from] -= _amount;
@@ -144,17 +144,17 @@ contract OX_TOKEN is owned {
   }
 
   function saleOn() constant returns(bool) {
-    return now - starttime &lt; 31 days;
+    return now - starttime < 31 days;
   }
 
   function bonus() constant returns(uint) {
     uint elapsed = now - starttime;
 
-    if (elapsed &lt; 1 days) return 25;
-    if (elapsed &lt; 1 weeks) return 20;
-    if (elapsed &lt; 2 weeks) return 15;
-    if (elapsed &lt; 3 weeks) return 10;
-    if (elapsed &lt; 4 weeks) return 5;
+    if (elapsed < 1 days) return 25;
+    if (elapsed < 1 weeks) return 20;
+    if (elapsed < 2 weeks) return 15;
+    if (elapsed < 3 weeks) return 10;
+    if (elapsed < 4 weeks) return 5;
     return 0;
   }
 

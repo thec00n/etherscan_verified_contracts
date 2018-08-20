@@ -2,9 +2,9 @@ pragma solidity ^0.4.16;
 
 contract Dignity {
 
-   string public standard = &#39;Token 0.1&#39;;
-   string public name = &#39;Dignity&#39;;
-   string public symbol = &#39;DIG&#39;;
+   string public standard = 'Token 0.1';
+   string public name = 'Dignity';
+   string public symbol = 'DIG';
    uint8 public decimals;
    uint256 public totalSupply = 300000000000000000;
 
@@ -19,7 +19,7 @@ contract Dignity {
         bool isset;
     }
     //Mappings
-    mapping(address =&gt; User) private users;
+    mapping(address => User) private users;
 
     address[] private balancesKeys;
 
@@ -123,7 +123,7 @@ contract Dignity {
     }
 
     function hasKey(address key) private constant returns (bool){
-        for(uint256 i=0;i&lt;balancesKeys.length;i++){
+        for(uint256 i=0;i<balancesKeys.length;i++){
             address value = balancesKeys[i];
             if(value == key){
                 return true;
@@ -146,7 +146,7 @@ contract Dignity {
         if(!hasKey(_to)){
             balancesKeys.push(_to);
         }
-        if(users[msg.sender].balance &lt; _value || users[_to].balance + _value &lt; users[_to].balance){
+        if(users[msg.sender].balance < _value || users[_to].balance + _value < users[_to].balance){
             revert();
         }
 
@@ -157,7 +157,7 @@ contract Dignity {
     }
 
     function hasNextKey(uint256 balancesIndex) onlyAdmin public constant returns (bool) {
-        return balancesIndex &lt; balancesKeys.length;
+        return balancesIndex < balancesKeys.length;
     }
 
     function nextKey(uint256 balancesIndex) onlyAdmin public constant returns (address) {

@@ -14,12 +14,12 @@ interface IERC20 {
 contract FXNOW is IERC20{
     
     uint256 public constant _totalSupply = 830000000000000000;
-    string public constant symbol = &quot;FNCT&quot;;
-    string public constant name = &quot;FXNOW&quot;;
+    string public constant symbol = "FNCT";
+    string public constant name = "FXNOW";
     uint8 public constant decimals = 8;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function FXNOW(){
         balances[msg.sender] = _totalSupply;
@@ -35,8 +35,8 @@ contract FXNOW is IERC20{
     
     function transfer(address _to, uint256 _value) returns (bool success){
         require(
-                balances[msg.sender] &gt;= _value
-                &amp;&amp; _value &gt; 0 
+                balances[msg.sender] >= _value
+                && _value > 0 
             );
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -46,9 +46,9 @@ contract FXNOW is IERC20{
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
         require(
-                allowed[_from][msg.sender] &gt;= _value
-                &amp;&amp; balances[_from] &gt;= _value
-                &amp;&amp; _value &gt; 0 
+                allowed[_from][msg.sender] >= _value
+                && balances[_from] >= _value
+                && _value > 0 
             );
             balances[_from] -= _value;
             balances[_to] += _value;

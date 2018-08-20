@@ -14,8 +14,8 @@ contract ERC20Interface {
 
 contract AgoraToken is ERC20Interface {
 
-  string public constant name = &quot;Agora&quot;;
-  string public constant symbol = &quot;AGO&quot;;
+  string public constant name = "Agora";
+  string public constant symbol = "AGO";
   uint8  public constant decimals = 18;
 
   uint256 constant minimumToRaise = 500 ether;
@@ -32,10 +32,10 @@ contract AgoraToken is ERC20Interface {
     uint256 value;
   }
 
-  mapping(address =&gt; uint256) shares;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(uint256 =&gt; mapping (address =&gt; BalanceSnapshot)) balancesAtBlock;
+  mapping(address => uint256) shares;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  mapping(uint256 => mapping (address => BalanceSnapshot)) balancesAtBlock;
 
   function AgoraToken() {
     owner = msg.sender;
@@ -53,11 +53,11 @@ contract AgoraToken is ERC20Interface {
   // Make a transfer of AGO between two addresses.
   function transfer(address _to, uint256 _value) returns (bool success) {
     // Freeze for dev team
-    require(msg.sender != owner &amp;&amp; _to != owner);
+    require(msg.sender != owner && _to != owner);
 
-    if (balances[msg.sender] &gt;= _value &amp;&amp;
-        _value &gt; 0 &amp;&amp;
-        balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value &&
+        _value > 0 &&
+        balances[_to] + _value > balances[_to]) {
       // We need to register the balance known for the last reference block.
       // That way, we can be sure that when the Claimer wants to check the balance
       // the system can be protected against double-spending AGO tokens claiming.
@@ -77,10 +77,10 @@ contract AgoraToken is ERC20Interface {
     // Freeze for dev team
     require(_to != owner);
 
-    if(balances[_from] &gt;= _value &amp;&amp;
-       _value &gt; 0 &amp;&amp;
-       allowed[_from][msg.sender] &gt;= _value &amp;&amp;
-       balances[_to] + _value &gt; balances[_to]) {
+    if(balances[_from] >= _value &&
+       _value > 0 &&
+       allowed[_from][msg.sender] >= _value &&
+       balances[_to] + _value > balances[_to]) {
       // Same as `transfer` :
       // We need to register the balance known for the last reference block.
       // That way, we can be sure that when the Claimer wants to check the balance
@@ -133,9 +133,9 @@ contract AgoraToken is ERC20Interface {
 
   // Get Agora tokens with a Ether payment.
   function buy() payable {
-    require(block.number &gt; icoStartBlock &amp;&amp; block.number &lt; icoEndBlock &amp;&amp; msg.sender != owner);
+    require(block.number > icoStartBlock && block.number < icoEndBlock && msg.sender != owner);
 
-    uint256 tokenAmount = msg.value * ((block.number &lt; icoPremiumEndBlock) ? 550 : 500);
+    uint256 tokenAmount = msg.value * ((block.number < icoPremiumEndBlock) ? 550 : 500);
 
     shares[msg.sender] += msg.value;
     balances[msg.sender] += tokenAmount;
@@ -149,13 +149,13 @@ contract AgoraToken is ERC20Interface {
   // Used to retrieve the Ethers raised from the ICO.
   // That way, Agora is becoming possible :).
   function withdraw(uint256 amount) {
-    require(block.number &gt; icoEndBlock &amp;&amp; raised &gt;= minimumToRaise &amp;&amp; msg.sender == owner);
+    require(block.number > icoEndBlock && raised >= minimumToRaise && msg.sender == owner);
     owner.transfer(amount);
   }
 
   // Methods use by the ICO investors. Requires the ICO to be a fail.
   function refill() {
-    require(block.number &gt; icoEndBlock &amp;&amp; raised &lt; minimumToRaise);
+    require(block.number > icoEndBlock && raised < minimumToRaise);
     uint256 share = shares[msg.sender];
     shares[msg.sender] = 0;
     msg.sender.transfer(share);
@@ -188,7 +188,7 @@ contract AgoraToken is ERC20Interface {
   // If the user have made (or received) a transfer of AGO token since the
   // last reference block, its balance will be written in the `balancesAtBlock`
   // mapping. So we can retrieve it from here.
-  // Otherwise, if the user havn&#39;t made a transaction since the last reference
+  // Otherwise, if the user havn't made a transaction since the last reference
   // block, the balance of AGO token is still good.
   function balanceAtBlock(address _owner, uint256 blockNumber) constant returns (uint256 balance) {
     if(balancesAtBlock[blockNumber][_owner].initialized) {

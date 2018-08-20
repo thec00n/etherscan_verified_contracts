@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -60,7 +60,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _value) {
+    if (balances[msg.sender] >= _value) {
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
       Transfer(msg.sender, _to, _value);
@@ -103,7 +103,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -113,7 +113,7 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
       balances[_to] = balances[_to].add(_value);
       balances[_from] = balances[_from].sub(_value);
       allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -268,10 +268,10 @@ contract MintableToken is StandardToken, Ownable {
 
 
 contract ARCDToken is MintableToken {
-    string public constant name = &quot;Arcade Token&quot;;
-    string public constant symbol = &quot;ARCD&quot;;
+    string public constant name = "Arcade Token";
+    string public constant symbol = "ARCD";
     uint8 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 }
 
 
@@ -313,7 +313,7 @@ contract ARCDCrowdsale is Crowdsale {
       // sanity checks
       assert(ETH_FUND_DEPOSIT != 0x0);
       assert(ARCD_FUND_DEPOSIT != 0x0);
-      assert(FUNDING_START_TIMESTAMP &lt; FUNDING_END_TIMESTAMP);
+      assert(FUNDING_START_TIMESTAMP < FUNDING_END_TIMESTAMP);
       assert(uint256(token.decimals()) == decimals);
 
       isFinalized = false;
@@ -334,21 +334,21 @@ contract ARCDCrowdsale is Crowdsale {
     // low level token purchase function
     function buyTokens(address beneficiary) public payable {
       require (!isFinalized);
-      require (block.timestamp &gt;= FUNDING_START_TIMESTAMP);
-      require (block.timestamp &lt;= FUNDING_END_TIMESTAMP);
+      require (block.timestamp >= FUNDING_START_TIMESTAMP);
+      require (block.timestamp <= FUNDING_END_TIMESTAMP);
       require (msg.value != 0);
       require (beneficiary != 0x0);
-      require (tx.gasprice &lt;= GAS_PRICE_LIMIT);
+      require (tx.gasprice <= GAS_PRICE_LIMIT);
 
-      uint256 tokens = msg.value.mul(TOKEN_EXCHANGE_RATE); // check that we&#39;re not over totals
+      uint256 tokens = msg.value.mul(TOKEN_EXCHANGE_RATE); // check that we're not over totals
       uint256 checkedSupply = token.totalSupply().add(tokens);
 
       // return money if something goes wrong
-      require (TOKEN_CREATION_CAP &gt;= checkedSupply);
+      require (TOKEN_CREATION_CAP >= checkedSupply);
 
       // return money if tokens is less than the min amount
       // the min amount does not apply if the availables tokens are less than the min amount.
-      require (tokens &gt;= MIN_BUY_TOKENS || (TOKEN_CREATION_CAP.sub(token.totalSupply())) &lt;= MIN_BUY_TOKENS);
+      require (tokens >= MIN_BUY_TOKENS || (TOKEN_CREATION_CAP.sub(token.totalSupply())) <= MIN_BUY_TOKENS);
 
       token.mint(beneficiary, tokens);
       CreateARCD(beneficiary, tokens);  // logs token creation
@@ -358,7 +358,7 @@ contract ARCDCrowdsale is Crowdsale {
 
     function finalize() public {
       require (!isFinalized);
-      require (block.timestamp &gt; FUNDING_END_TIMESTAMP || token.totalSupply() == TOKEN_CREATION_CAP);
+      require (block.timestamp > FUNDING_END_TIMESTAMP || token.totalSupply() == TOKEN_CREATION_CAP);
       require (msg.sender == ETH_FUND_DEPOSIT);
       isFinalized = true;
       token.finishMinting();

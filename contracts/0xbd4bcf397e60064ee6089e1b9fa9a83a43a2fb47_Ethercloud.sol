@@ -14,13 +14,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,10 +79,10 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   modifier onlyPayloadSize(uint size) {
-     if (msg.data.length &lt; size + 4) {
+     if (msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic, Ownable {
 
 contract StandardToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     /**
      * Transfers tokens from the account of the owner by an approved spender. 
@@ -123,7 +123,7 @@ contract StandardToken is BasicToken, ERC20 {
      * @param _amount The amount of tokens to transfer.
      * */
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -132,7 +132,7 @@ contract StandardToken is BasicToken, ERC20 {
 
     /**
      * Allows another account to spend a given amount of tokens on behalf of the 
-     * owner&#39;s account. If the owner has previously allowed a spender to spend
+     * owner's account. If the owner has previously allowed a spender to spend
      * tokens on his or her behalf and would like to change the approval amount,
      * he or she will first have to set the allowance back to 0 and then update
      * the allowance.
@@ -173,7 +173,7 @@ contract MintableToken is StandardToken {
   }
 
   /**
-   * Mints a given amount of tokens to the provided address. This function can only be called by the contract&#39;s
+   * Mints a given amount of tokens to the provided address. This function can only be called by the contract's
    * owner, which in this case is the ICO contract itself. From there, the founders of the ICO contract will be
    * able to invoke this function. 
    *
@@ -210,7 +210,7 @@ contract Ethercloud is MintableToken {
     function Ethercloud() public {
        totalSupply = 0;
        decimals = 18;
-       name = &quot;Ethercloud&quot;;
-       symbol = &quot;ETCL&quot;;
+       name = "Ethercloud";
+       symbol = "ETCL";
     }
 }

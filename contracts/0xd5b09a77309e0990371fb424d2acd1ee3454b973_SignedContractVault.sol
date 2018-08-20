@@ -10,7 +10,7 @@ contract SignedContractVault {
         string seller;
     }
 
-    mapping (string =&gt; Contract) private contracts;
+    mapping (string => Contract) private contracts;
 
     modifier onlyOwner {
         if (msg.sender != owner)
@@ -36,15 +36,15 @@ contract SignedContractVault {
 
     function createContract(string key, string signature) public onlyOwner {
         Contract _contract = contracts[key];
-        if (bytes(_contract.dawex).length &gt; 0) {
+        if (bytes(_contract.dawex).length > 0) {
             throw;
         }
-        contracts[key] = Contract(signature, &quot;&quot;, &quot;&quot;);
+        contracts[key] = Contract(signature, "", "");
     }
 
     function addBuyerSig(string key, string signature) public onlyOwner {
         Contract _contract = contracts[key];
-        if (bytes(_contract.dawex).length == 0 || bytes(_contract.buyer).length &gt; 0) {
+        if (bytes(_contract.dawex).length == 0 || bytes(_contract.buyer).length > 0) {
             throw;
         }
         _contract.buyer = signature;
@@ -52,7 +52,7 @@ contract SignedContractVault {
 
     function addSellerSig(string key, string signature) public onlyOwner {
         Contract _contract = contracts[key];
-        if (bytes(_contract.dawex).length == 0 || bytes(_contract.seller).length &gt; 0) {
+        if (bytes(_contract.dawex).length == 0 || bytes(_contract.seller).length > 0) {
             throw;
         }
         _contract.seller = signature;

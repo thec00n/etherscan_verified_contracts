@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d8aab9b1b6a198b4b1aebdabacb9aaf6bbb7b5">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8debece3e3f4a3f7e5e8e3eacde1e4fbe8fef9ecffa3eee2e0">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d8aab9b1b6a198b4b1aebdabacb9aaf6bbb7b5">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8debece3e3f4a3f7e5e8e3eacde1e4fbe8fef9ecffa3eee2e0">[email protected]</a>
 /*                 
 /* ==================================================================== */
 contract CaptainGameConfig {
@@ -19,10 +19,10 @@ contract CaptainGameConfig {
   }
 
   /** mapping**/
-  mapping(uint256 =&gt; Card) private cardInfo;  //normal card
-  mapping(uint32 =&gt; uint256) public captainIndxToCount;
-  mapping(uint32 =&gt; uint32) private calfactor;
-  mapping(uint32 =&gt; bool) private unitSellable;
+  mapping(uint256 => Card) private cardInfo;  //normal card
+  mapping(uint32 => uint256) public captainIndxToCount;
+  mapping(uint32 => uint32) private calfactor;
+  mapping(uint32 => bool) private unitSellable;
 
   function CaptainGameConfig() public {
     owner = msg.sender;
@@ -48,7 +48,7 @@ contract CaptainGameConfig {
     captainIndxToCount[8] = 100000;
     captainIndxToCount[9] = 100000;
 
-    calfactor[1] = 80; //for atk_min &amp; atk_max calculate
+    calfactor[1] = 80; //for atk_min & atk_max calculate
     calfactor[2] = 85;
     calfactor[3] = 90;
     calfactor[4] = 95;
@@ -109,7 +109,7 @@ contract CaptainGameConfig {
     } else if (level==2) {
       atk = cardInfo[cardId].atk * 150/100;
       defense = cardInfo[cardId].defense * 150/100;
-    } else if (level&gt;=3) {
+    } else if (level>=3) {
       atk = cardInfo[cardId].atk * (level-1)*2 - (level-2) * cardInfo[cardId].atk * 150/100;
       defense = cardInfo[cardId].defense * (level-1)*2 - (level-2) * cardInfo[cardId].defense * 150/100;
     }

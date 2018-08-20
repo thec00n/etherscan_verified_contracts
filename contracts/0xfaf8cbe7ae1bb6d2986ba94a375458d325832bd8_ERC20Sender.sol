@@ -26,8 +26,8 @@ contract ERC20Sender {
     function multisend(address token, address[] _contributors, uint256[] _balances) public {
         ERC20 erc20token = ERC20(token);
         uint8 i =0;
-        require(erc20token.allowance(msg.sender, this) &gt; 0);
-        for(i; i&lt;_contributors.length;i++){
+        require(erc20token.allowance(msg.sender, this) > 0);
+        for(i; i<_contributors.length;i++){
             erc20token.transferFrom(msg.sender, _contributors[i], _balances[i]);
         }
     }

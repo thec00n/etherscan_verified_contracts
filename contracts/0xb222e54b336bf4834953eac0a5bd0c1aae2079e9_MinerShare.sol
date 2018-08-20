@@ -13,9 +13,9 @@ contract MinerShare {
 	// 監聽股東提領的事件
 	event LogWithdrew(address sender, uint amount);
 	// 儲存股東們的 ETH Address
-	mapping(address =&gt; uint) public usersAddress;
+	mapping(address => uint) public usersAddress;
 	// 紀錄每個股東已經提領的數量
-	mapping(address =&gt; uint) public usersWithdrew;
+	mapping(address => uint) public usersWithdrew;
 
 	modifier onlyOwner() {
 		require(owner == msg.sender);
@@ -61,7 +61,7 @@ contract MinerShare {
 		// 改變總提領數量
 		totalWithdrew += avaliableWithdrew;
 		// 檢查是否為合法的提領
-		if (avaliableWithdrew &gt; 0) {
+		if (avaliableWithdrew > 0) {
 			// 轉移 ETH 至股東的 address
 			msg.sender.transfer(avaliableWithdrew);
 			LogWithdrew(msg.sender, avaliableWithdrew);

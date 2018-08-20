@@ -35,8 +35,8 @@ contract ERC20 {
 
 contract GamblicaCoin is ERC20, owned 
 {
-	string public constant symbol = &quot;GMBC&quot;;
-	string public constant name = &quot;GMBC&quot;;
+	string public constant symbol = "GMBC";
+	string public constant name = "GMBC";
 	uint8 public constant decimals = 18;
 
 	uint256 _totalSupply = 0;
@@ -44,11 +44,11 @@ contract GamblicaCoin is ERC20, owned
 	event Burned(address backer, uint _value);
  
 	// Balances for each account
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
  
 	// Owner of account approves the transfer of an amount to another account
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => mapping (address => uint256)) allowed;
 
 	address public crowdsale;
 
@@ -66,13 +66,13 @@ contract GamblicaCoin is ERC20, owned
 	function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) 
 	{
 		uint256 z = _x + _y;
-		assert(z &gt;= _x);
+		assert(z >= _x);
 		return z;
 	}
 
 	function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) 
 	{
-		assert(_x &gt;= _y);
+		assert(_x >= _y);
 		return _x - _y;
 	}
 	
@@ -88,12 +88,12 @@ contract GamblicaCoin is ERC20, owned
 	}
 
  
-	// Transfer the balance from owner&#39;s account to another account
+	// Transfer the balance from owner's account to another account
 	function transfer(address _to, uint256 _amount) public returns (bool success) 
 	{
-		if (balances[msg.sender] &gt;= _amount 
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to]
+		if (balances[msg.sender] >= _amount 
+			&& _amount > 0
+			&& balances[_to] + _amount > balances[_to]
 			) 
 		{
 			balances[msg.sender] -= _amount;
@@ -107,7 +107,7 @@ contract GamblicaCoin is ERC20, owned
  
 	// Send _value amount of tokens from address _from to address _to
 	// The transferFrom method is used for a withdraw workflow, allowing contracts to send
-	// tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+	// tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 	// fees in sub-currencies; the command should fail unless the _from account has
 	// deliberately authorized the sender of the message via some mechanism; we propose
 	// these standardized APIs for approval:
@@ -117,10 +117,10 @@ contract GamblicaCoin is ERC20, owned
 		uint256 _amount
 	) public returns (bool success) 
 	{
-		if (balances[_from] &gt;= _amount
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to] 
+		if (balances[_from] >= _amount
+			&& allowed[_from][msg.sender] >= _amount
+			&& _amount > 0
+			&& balances[_to] + _amount > balances[_to] 
 			)
 		{
 			balances[_from] -= _amount;
@@ -149,7 +149,7 @@ contract GamblicaCoin is ERC20, owned
 
 	function send(address target, uint256 mintedAmount) public onlyOwnerOrCrowdsale 
 	{
-		require(mintedAmount &gt; 0);
+		require(mintedAmount > 0);
 
 		balances[target] = safeAdd(balances[target], mintedAmount);
 		_totalSupply = safeAdd(_totalSupply, mintedAmount);
@@ -157,9 +157,9 @@ contract GamblicaCoin is ERC20, owned
 
 	function burn(address target, uint256 burnedAmount) public onlyOwnerOrCrowdsale
 	{
-		require(burnedAmount &gt; 0);
+		require(burnedAmount > 0);
 
-		if (balances[target] &gt;= burnedAmount)
+		if (balances[target] >= burnedAmount)
 		{
 			balances[target] -= burnedAmount;
 		}

@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -81,20 +81,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,10 +149,10 @@ contract TakeProfitToken is Token, Haltable {
     using SafeMath for uint256;
 
 
-    string constant public name = &quot;TakeProfit&quot;;
+    string constant public name = "TakeProfit";
     uint8 constant public decimals = 8;
-    string constant public symbol = &quot;XTP&quot;;       
-    string constant public version = &quot;1.1&quot;;
+    string constant public symbol = "XTP";       
+    string constant public version = "1.1";
 
 
     uint256 constant public UNIT = uint256(10)**decimals;
@@ -167,7 +167,7 @@ contract TakeProfitToken is Token, Haltable {
 
     function transfer(address _to, uint256 _value) public stopInEmergency returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -177,10 +177,10 @@ contract TakeProfitToken is Token, Haltable {
     function transferFrom(address _from, address _to, uint256 _value) public stopInEmergency returns (bool success) {
         require(_to != address(0));
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] = allowance.sub(_value);
         }
         Transfer(_from, _to, _value);
@@ -201,6 +201,6 @@ contract TakeProfitToken is Token, Haltable {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }

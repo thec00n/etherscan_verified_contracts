@@ -28,7 +28,7 @@ library Maths {
     uint256 minuend,
     uint256 subtrahend
   ) public pure returns (uint256 difference) {
-    assert(minuend &gt;= subtrahend);
+    assert(minuend >= subtrahend);
     difference = minuend - subtrahend;
   }
 
@@ -112,7 +112,7 @@ library Maths {
     uint256 a,
     uint256 b
   ) public pure returns (uint256 result) {
-    result = a &lt;= b ? a : b;
+    result = a <= b ? a : b;
   }
 
   /**
@@ -125,7 +125,7 @@ library Maths {
     uint256 a,
     uint256 b
   ) public pure returns (uint256 result) {
-    result = a &gt;= b ? a : b;
+    result = a >= b ? a : b;
   }
 
   /**
@@ -135,7 +135,7 @@ library Maths {
    * @return isTrue whether a is less than b
    */
   function isLessThan(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &lt; b;
+    isTrue = a < b;
   }
 
   /**
@@ -145,7 +145,7 @@ library Maths {
    * @return isTrue whether a is less than or equal to b
    */
   function isAtMost(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &lt;= b;
+    isTrue = a <= b;
   }
 
   /**
@@ -155,7 +155,7 @@ library Maths {
    * @return isTrue whether a is greater than b
    */
   function isGreaterThan(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &gt; b;
+    isTrue = a > b;
   }
 
   /**
@@ -165,7 +165,7 @@ library Maths {
    * @return isTrue whether a is less than b
    */
   function isAtLeast(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &gt;= b;
+    isTrue = a >= b;
   }
 }
 
@@ -255,7 +255,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using Maths for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -273,7 +273,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].minus(_value);
     balances[_to] = balances[_to].plus(_value);
@@ -302,7 +302,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   using Maths for uint256;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -313,8 +313,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].minus(_value);
     balances[_to] = balances[_to].plus(_value);
@@ -328,7 +328,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -377,7 +377,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.minus(_subtractedValue);
@@ -436,8 +436,8 @@ contract MintableToken is StandardToken, Manageable {
 contract MythexToken is MintableToken {
   using Maths for uint256;
 
-  string public constant name     = &quot;Mythex&quot;;
-  string public constant symbol   = &quot;MX&quot;;
+  string public constant name     = "Mythex";
+  string public constant symbol   = "MX";
   uint8  public constant decimals = 0;
 
   event Burn(address indexed burner, uint256 value);
@@ -449,7 +449,7 @@ contract MythexToken is MintableToken {
    * @return True if the operation was successful.
    */
   function burn(address _burner, uint256 _value) public onlyManagement returns (bool) {
-    require(_value &lt;= balances[_burner]);
+    require(_value <= balances[_burner]);
     balances[_burner] = balances[_burner].minus(_value);
     totalSupply_ = totalSupply_.minus(_value);
     emit Burn(_burner, _value);

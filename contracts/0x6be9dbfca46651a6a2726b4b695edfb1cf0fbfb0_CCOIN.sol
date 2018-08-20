@@ -12,11 +12,11 @@ contract Escrow {
 
     uint256 public claimable = 0; 
     uint256 public currentBalance = 0; 
-    mapping(bytes32 =&gt; uint256) public claimableRewards;
+    mapping(bytes32 => uint256) public claimableRewards;
 
     /// @notice valid reward and user has enough funds
     modifier validReward(uint256 _reward) {
-        require(_reward &gt; 0 &amp;&amp; _depositEscrow(_reward));
+        require(_reward > 0 && _depositEscrow(_reward));
         _;
     }
 
@@ -54,7 +54,7 @@ contract Escrow {
         if (exist) {
             return (_content.name, _content.description, _content.deliverable.reward, _content.addedOn);
         } else {
-            return (&quot;&quot;, &quot;&quot;, 0, 0);
+            return ("", "", 0, 0);
         }
     }
 
@@ -82,8 +82,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -98,9 +98,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -108,7 +108,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -117,7 +117,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -133,7 +133,7 @@ library DeliverableUtils {
 
     struct Deliverable {
         uint256 reward;
-        mapping(address=&gt;bool) fulfillment;
+        mapping(address=>bool) fulfillment;
         bool fulfilled;
     }
 
@@ -141,17 +141,17 @@ library DeliverableUtils {
     function fulfill(Deliverable storage self, address _creator, address _brand) internal returns(bool) {
         require(msg.sender == _creator || msg.sender == _brand);
         self.fulfillment[msg.sender] = true;
-        return self.fulfillment[_creator] &amp;&amp; self.fulfillment[_brand];
+        return self.fulfillment[_creator] && self.fulfillment[_brand];
     }
 
     /// @notice check if deliverable fulfilled completely
     function isFulfilled(Deliverable storage self, address _creator, address _brand) internal view returns(bool) {
-        return self.fulfillment[_creator] &amp;&amp; self.fulfillment[_brand];
+        return self.fulfillment[_creator] && self.fulfillment[_brand];
     }
 
     /// @notice return new deliverable struct if reward greater than 0
     function newDeliverable(uint256 _reward) internal pure returns(Deliverable _deliverable) {
-        require(_reward &gt; 0);
+        require(_reward > 0);
         return Deliverable(_reward, false);
     }
 }
@@ -168,15 +168,15 @@ library ContentUtils {
         DeliverableUtils.Deliverable deliverable;
     }
 
-    /// @notice utility for mapping bytes32=&gt;Content. Keys must be unique. It can be updated until it is locked.
+    /// @notice utility for mapping bytes32=>Content. Keys must be unique. It can be updated until it is locked.
     struct ContentMapping {
-        mapping(bytes32=&gt;Content) data;
+        mapping(bytes32=>Content) data;
         bytes32[] keys;
         bool locked;
     }
 
-    string constant UNIQUE_KEY_ERR = &quot;Content with ID already exists &quot;;
-    string constant KEY_NOT_FOUND_ERR = &quot;Key not found&quot;;
+    string constant UNIQUE_KEY_ERR = "Content with ID already exists ";
+    string constant KEY_NOT_FOUND_ERR = "Key not found";
 
     /// @notice put item into mapping
     function put(ContentMapping storage self, 
@@ -249,7 +249,7 @@ library ContentUtils {
 
     /// @notice index not out of bounds
     function isValidIndex(uint _index, uint _size) public pure {
-        require(_index &lt; _size, KEY_NOT_FOUND_ERR);
+        require(_index < _size, KEY_NOT_FOUND_ERR);
     }
 }
 
@@ -290,13 +290,13 @@ contract Agreement is Escrow {
 
     /// @notice agreement expired, refunds remaining balance in escrow
     modifier expired() {
-        require(block.timestamp &gt; expiration);
+        require(block.timestamp > expiration);
         _;
     }
 
     /// @notice agreement not expired, refunds remaining balance in escrow
     modifier notExpired() {
-        require(block.timestamp &lt; expiration);
+        require(block.timestamp < expiration);
         _;
     }
 
@@ -343,7 +343,7 @@ contract Agreement is Escrow {
     }
 
     function extendExpiration(uint _expiration) onlyBrand public returns (bool) {
-        require(_expiration &gt; expiration &amp;&amp; _expiration &gt;= block.timestamp);
+        require(_expiration > expiration && _expiration >= block.timestamp);
         expiration = _expiration;
         return true;
     }
@@ -379,7 +379,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -415,8 +415,8 @@ contract CCOIN is ERC20, Ownable {
     }
 
     // Public variables of the token
-    string public constant name = &quot;CCOIN&quot;;
-    string public constant symbol = &quot;CCOIN&quot;;
+    string public constant name = "CCOIN";
+    string public constant symbol = "CCOIN";
     uint public constant decimals = 18;
     uint public totalSupply = 1000000000 * 10 ** 18;
     bool public locked;
@@ -446,11 +446,11 @@ contract CCOIN is ERC20, Ownable {
 
     bool public stopInEmergency = false;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; Escrow) escrowAgreements;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => Escrow) escrowAgreements;
     // Whitelist
-    mapping(address =&gt; bool) public whitelisted;
+    mapping(address => bool) public whitelisted;
 
     event Whitelist(address indexed participant);
     event Locked();
@@ -461,19 +461,19 @@ contract CCOIN is ERC20, Ownable {
 
     // Lock transfer during the ICO
     modifier onlyUnlocked() {
-        if (msg.sender != crowdSaleaddress &amp;&amp; locked &amp;&amp; msg.sender != owner)
+        if (msg.sender != crowdSaleaddress && locked && msg.sender != owner)
             revert();
         _;
     }
 
     // @notice to protect short address attack
     modifier onlyPayloadSize(uint numWords){
-        assert(msg.data.length &gt;= numWords * 32 + 4);
+        assert(msg.data.length >= numWords * 32 + 4);
         _;
     }
 
     modifier onlyAuthorized() {
-        if (msg.sender != crowdSaleaddress &amp;&amp; msg.sender != owner)
+        if (msg.sender != crowdSaleaddress && msg.sender != owner)
             revert();
         _;
     }
@@ -540,10 +540,10 @@ contract CCOIN is ERC20, Ownable {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnlocked returns (bool success) {
-        if (balances[_from] &lt; _value)
+        if (balances[_from] < _value)
             revert();
         // Check if the sender has enough
-        if (_value &gt; allowed[_from][msg.sender])
+        if (_value > allowed[_from][msg.sender])
             revert();
         // Check allowance
         balances[_from] = SafeMath.sub(balances[_from], _value);
@@ -570,11 +570,11 @@ contract CCOIN is ERC20, Ownable {
     }
 
     function withdrawFromEscrow(address _agreementAddr, bytes32 _id) {
-        require(balances[_agreementAddr] &gt; 0);
+        require(balances[_agreementAddr] > 0);
         Agreement agreement = Agreement(_agreementAddr);
         require(agreement.creator() == msg.sender);
         uint256 reward = agreement.getClaimableRewards(_id);
-        require(reward &gt; 0);
+        require(reward > 0);
         balances[_agreementAddr] = SafeMath.sub(balances[_agreementAddr], reward);
         balances[msg.sender] = SafeMath.add(balances[msg.sender], reward);
     }
@@ -600,14 +600,14 @@ contract CCOIN is ERC20, Ownable {
     // @return res {bool} true if transaction was successful
     function contribute(address _backer) internal returns (bool res) {
         // stop when required minimum is not sent
-        if (msg.value &lt; minContributionETH)
+        if (msg.value < minContributionETH)
             revert();
 
         // calculate number of tokens
         uint tokensToSend = calculateNoOfTokensToSend();
 
-        // Ensure that max cap hasn&#39;t been reached
-        if (SafeMath.add(totalTokensSent, tokensToSend) &gt; maxCap)
+        // Ensure that max cap hasn't been reached
+        if (SafeMath.add(totalTokensSent, tokensToSend) > maxCap)
             revert();
 
         // Transfer tokens to contributor
@@ -623,15 +623,15 @@ contract CCOIN is ERC20, Ownable {
     // @notice This function will return number of tokens based on time intervals in the campaign
     function calculateNoOfTokensToSend() constant internal returns (uint) {
         uint tokenAmount = SafeMath.div(SafeMath.mul(msg.value, multiplier), tokenPriceWei);
-        if (block.number &lt;= startBlock + firstPeriod)
+        if (block.number <= startBlock + firstPeriod)
             return tokenAmount + SafeMath.div(SafeMath.mul(tokenAmount, firstBonus), 100);
-        else if (block.number &lt;= startBlock + secondPeriod)
+        else if (block.number <= startBlock + secondPeriod)
             return tokenAmount + SafeMath.div(SafeMath.mul(tokenAmount, secondBonus), 100);
-        else if (block.number &lt;= startBlock + thirdPeriod)
+        else if (block.number <= startBlock + thirdPeriod)
             return tokenAmount + SafeMath.div(SafeMath.mul(tokenAmount, thirdBonus), 100);
-        else if (block.number &lt;= startBlock + fourthPeriod)
+        else if (block.number <= startBlock + fourthPeriod)
             return tokenAmount + SafeMath.div(SafeMath.mul(tokenAmount, fourthBonus), 100);
-        else if (block.number &lt;= startBlock + fifthPeriod)
+        else if (block.number <= startBlock + fifthPeriod)
             return tokenAmount + SafeMath.div(SafeMath.mul(tokenAmount, fifthBonus), 100);
         else
             return tokenAmount;

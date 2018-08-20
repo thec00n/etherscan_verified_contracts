@@ -20,7 +20,7 @@ contract admined {
 
 contract Token {
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	// balanceOf[address] = 5;
 	string public name;
 	string public symbol; //Example: ETH
@@ -38,8 +38,8 @@ contract Token {
 	}
 
 	function transfer(address _to, uint256 _value) public{ //The function to transfer. Can be called by anyone. 
-		require(balanceOf[msg.sender] &gt;= _value); //If the address doesn&#39;t have enough balance, the function won&#39;t be executed
-		require(balanceOf[_to] + _value &gt;= balanceOf[_to]); //Check for overflow errors
+		require(balanceOf[msg.sender] >= _value); //If the address doesn't have enough balance, the function won't be executed
+		require(balanceOf[_to] + _value >= balanceOf[_to]); //Check for overflow errors
 		balanceOf[msg.sender] -= _value; //Substract the amount to send from the sender address
 		balanceOf[_to] += _value; //Add the amount to send to the receiver address
 		Transfer(msg.sender, _to, _value); //Tell the outside world that a transaction took place
@@ -50,14 +50,14 @@ contract Token {
 contract EcoCrypto is admined, Token{ //The main contract. The token which will inherit from the other two contracts. ie this contract will have already defined the functions defined in the previous contracts
 
 	function EcoCrypto() public  //initializer
-	  Token (10000000000000000000, &quot;EcoCrypto&quot;, &quot;ECO&quot;, 8 ){ //calles the constructor/initializer of the contract called taken
+	  Token (10000000000000000000, "EcoCrypto", "ECO", 8 ){ //calles the constructor/initializer of the contract called taken
 		
 	}
 
-	function transfer(address _to, uint256 _value) public{ //The main function.  It was already defined by the contract called token. Since we&#39;re defining a function with the same name transfer, we&#39;re overriding it
-		require(balanceOf[msg.sender] &gt; 0);
-		require(balanceOf[msg.sender] &gt;= _value);
-		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	function transfer(address _to, uint256 _value) public{ //The main function.  It was already defined by the contract called token. Since we're defining a function with the same name transfer, we're overriding it
+		require(balanceOf[msg.sender] > 0);
+		require(balanceOf[msg.sender] >= _value);
+		require(balanceOf[_to] + _value >= balanceOf[_to]);
 		//if(admin)
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;

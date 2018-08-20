@@ -19,12 +19,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -44,8 +44,8 @@ contract GameTable {
         bytes32 optionImage;
         uint amount;
         uint numPlayers;
-        mapping (uint =&gt; Player) players;
-        mapping (address =&gt; uint) playeramounts;
+        mapping (uint => Player) players;
+        mapping (address => uint) playeramounts;
     }
 
     struct Game {
@@ -59,12 +59,12 @@ contract GameTable {
         uint endTime;
         uint openTime;
         uint runingStatus;
-        mapping (uint =&gt; Option) options;
+        mapping (uint => Option) options;
     }
 
     address owner;
     uint numGames;
-    mapping (uint =&gt; Game) games;
+    mapping (uint => Game) games;
     address gameDeveloper = 0x18d91206b297359e8aed91810a86D6bFF0AF3462;
     //0x18d91206b297359e8aed91810a86d6bff0af3462
     
@@ -80,7 +80,7 @@ contract GameTable {
     }
 
     function newGame(bytes32 name, uint startDuration, uint endDuration, uint openDuration)  public returns (uint) {
-        if(startDuration &lt; 1 || openDuration&gt;888888888888 || endDuration&lt;startDuration || openDuration&lt;startDuration || openDuration&lt;endDuration || owner != msg.sender) revert();
+        if(startDuration < 1 || openDuration>888888888888 || endDuration<startDuration || openDuration<startDuration || openDuration<endDuration || owner != msg.sender) revert();
         address manager =  msg.sender;
         uint startTime = now + startDuration * 1 minutes;
         uint endTime = now + endDuration * 1 minutes;
@@ -105,8 +105,8 @@ contract GameTable {
 
     function newOption(uint gameinx, uint optionid, bytes32 name, bytes32 optionimage)  public returns (uint) {
         if (owner != msg.sender) revert();
-        if (gameinx &gt; numGames) revert();
-        if (now &gt;= games[gameinx].startTime) revert();
+        if (gameinx > numGames) revert();
+        if (now >= games[gameinx].startTime) revert();
         if (games[gameinx].runingStatus == 0){
             games[gameinx].runingStatus = 1;
         }
@@ -142,14 +142,14 @@ contract GameTable {
 
   
     function contribute(uint gameinx,uint optioninx)  public payable {
-        if ((gameinx&lt;0)||(gameinx&gt;999999999999999999999999999999999999)||(optioninx&lt;0)) revert();
-        if (optioninx &gt;= games[gameinx].numOptions) revert();
-        if (now &lt;= games[gameinx].startTime) revert();
-        if (now &gt;= games[gameinx].endTime) revert();
+        if ((gameinx<0)||(gameinx>999999999999999999999999999999999999)||(optioninx<0)) revert();
+        if (optioninx >= games[gameinx].numOptions) revert();
+        if (now <= games[gameinx].startTime) revert();
+        if (now >= games[gameinx].endTime) revert();
         //1000000000000000000=1eth
         //5000000000000000  = 0.005 ETH
-        if (msg.value&lt;5000000000000000 || msg.value&gt;1000000000000000000000000000) revert();
-        if (games[gameinx].amount &gt; 99999999999999999999999999999999999999999999999999999999) revert();
+        if (msg.value<5000000000000000 || msg.value>1000000000000000000000000000) revert();
+        if (games[gameinx].amount > 99999999999999999999999999999999999999999999999999999999) revert();
 
         games[gameinx].options[optioninx].players[games[gameinx].options[optioninx].numPlayers++] = Player({addr: msg.sender, amount: msg.value, profit:0});
         games[gameinx].options[optioninx].amount = games[gameinx].options[optioninx].amount.add(msg.value);
@@ -159,7 +159,7 @@ contract GameTable {
 
     function setWinner(uint gameinx,bytes32 gameName, uint optioninx, uint optionid, bytes32 optionName) public returns(bool res) {
         if (owner != msg.sender) revert();
-        if ((now &lt;= games[gameinx].openTime)||(games[gameinx].runingStatus&gt;1)) revert();
+        if ((now <= games[gameinx].openTime)||(games[gameinx].runingStatus>1)) revert();
         if (gameName != games[gameinx].gameName) revert();
         if (games[gameinx].options[optioninx].optionName != optionName) revert();
         if (games[gameinx].options[optioninx].optionid != optionid) revert();
@@ -172,12 +172,12 @@ contract GameTable {
 
     function safeWithdrawal(uint gameid) private {
         
-        if ((gameid&lt;0)||(gameid&gt;999999999999999999999999999999999999)) revert();
-        if (now &lt;= games[gameid].openTime) revert();
+        if ((gameid<0)||(gameid>999999999999999999999999999999999999)) revert();
+        if (now <= games[gameid].openTime) revert();
         if (games[gameid].runingStatus != 2) revert();
 
         uint winnerID = games[gameid].winner;
-        if (winnerID &gt;0 &amp;&amp; winnerID &lt; 9999) {
+        if (winnerID >0 && winnerID < 9999) {
             
             games[gameid].runingStatus = 3;
             uint totalWinpool = games[gameid].options[winnerID].amount;
@@ -187,14 +187,14 @@ contract GameTable {
             fee = fee.div(1000);
             uint reward=totalWinpool.sub(fee);
             //1000000000000000000=1eth
-            if(games[gameid].options[winnerID].amount&lt;100000000000){
+            if(games[gameid].options[winnerID].amount<100000000000){
                 gameDeveloper.transfer(reward);
             }
             else{
                 uint ratio = reward.mul(100);
                 ratio = ratio.div(games[gameid].options[winnerID].amount); //safe????
                 uint totalReturn = 0;
-                for(uint i = 0; i &lt; games[gameid].options[winnerID].numPlayers; i++) {
+                for(uint i = 0; i < games[gameid].options[winnerID].numPlayers; i++) {
                     uint returnWinAmount = games[gameid].options[winnerID].players[i].amount.mul(ratio);
                     returnWinAmount = returnWinAmount.div(100);
                     returnWinAmount = games[gameid].options[winnerID].players[i].amount.add(returnWinAmount);

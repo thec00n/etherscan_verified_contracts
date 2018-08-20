@@ -3,8 +3,8 @@ pragma solidity ^0.4.17;
 contract PresaleToken {
     
     /// Fields:
-    string public constant name = &quot;ShiftCash Presale Token&quot;;
-    string public constant symbol = &quot;SCASH&quot;;
+    string public constant name = "ShiftCash Presale Token";
+    string public constant symbol = "SCASH";
     uint public constant decimals = 18;
     uint public constant PRICE = 598;  // per 1 Ether
 
@@ -24,7 +24,7 @@ contract PresaleToken {
     State public currentState = State.Init;
     uint public totalSupply = 0; // amount of tokens already sold
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow = 0;
 
     // Token manager has exclusive priveleges to call administrative
@@ -34,8 +34,8 @@ contract PresaleToken {
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager = 0;
 
-    mapping (address =&gt; uint256) private balance;
-    mapping (address =&gt; bool) ownerAppended;
+    mapping (address => uint256) private balance;
+    mapping (address => bool) ownerAppended;
     address[] public owners;
 
     /// Modifiers:
@@ -66,7 +66,7 @@ contract PresaleToken {
         require(msg.value != 0);
         uint newTokens = msg.value * PRICE;
 
-        require(totalSupply + newTokens &lt;= TOKEN_SUPPLY_LIMIT);
+        require(totalSupply + newTokens <= TOKEN_SUPPLY_LIMIT);
 
         balance[_buyer] += newTokens;
         totalSupply += newTokens;
@@ -78,7 +78,7 @@ contract PresaleToken {
         
         Transfer(msg.sender, _buyer, newTokens);
 
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             require(escrow.send(this.balance));
         }
 
@@ -109,23 +109,23 @@ contract PresaleToken {
     }
 
     function setPresaleState(State _nextState) public onlyTokenManager {
-        // Init -&gt; Running
-        // Running -&gt; Paused
-        // Running -&gt; Migrating
-        // Paused -&gt; Running
-        // Paused -&gt; Migrating
-        // Migrating -&gt; Migrated
+        // Init -> Running
+        // Running -> Paused
+        // Running -> Migrating
+        // Paused -> Running
+        // Paused -> Migrating
+        // Migrating -> Migrated
         bool canSwitchState
-        =  (currentState == State.Init &amp;&amp; _nextState == State.Running)
-        || (currentState == State.Running &amp;&amp; _nextState == State.Paused)
+        =  (currentState == State.Init && _nextState == State.Running)
+        || (currentState == State.Running && _nextState == State.Paused)
         // switch to migration phase only if crowdsale manager is set
         || ((currentState == State.Running || currentState == State.Paused)
-        &amp;&amp; _nextState == State.Migrating
-        &amp;&amp; crowdsaleManager != 0x0)
-        || (currentState == State.Paused &amp;&amp; _nextState == State.Running)
+        && _nextState == State.Migrating
+        && crowdsaleManager != 0x0)
+        || (currentState == State.Paused && _nextState == State.Running)
         // switch to migrated only if everyting is migrated
-        || (currentState == State.Migrating &amp;&amp; _nextState == State.Migrated
-        &amp;&amp; totalSupply == 0);
+        || (currentState == State.Migrating && _nextState == State.Migrated
+        && totalSupply == 0);
 
         require(canSwitchState);
 
@@ -139,7 +139,7 @@ contract PresaleToken {
     }
 
     function setCrowdsaleManager(address _mgr) public onlyTokenManager {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentState != State.Migrating);
         crowdsaleManager = _mgr;
     }

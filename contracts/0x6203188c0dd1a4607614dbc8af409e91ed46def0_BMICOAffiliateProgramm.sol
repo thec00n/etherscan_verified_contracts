@@ -6,10 +6,10 @@ contract BMICOAffiliateProgramm {
         uint256 amount_investments;
         uint256 preico_holdersBonus;
     }
-    mapping (address =&gt; itemReferrals) referralsInfo;
+    mapping (address => itemReferrals) referralsInfo;
     uint256 public preico_holdersAmountInvestWithBonus = 0;
 
-    mapping (string =&gt; address) partnersPromo;
+    mapping (string => address) partnersPromo;
     struct itemPartners {
         uint256 attracted_investments;
         string promo;
@@ -17,7 +17,7 @@ contract BMICOAffiliateProgramm {
         uint256 preico_partnerBonus;
         bool create;
     }
-    mapping (address =&gt; itemPartners) partnersInfo;
+    mapping (address => itemPartners) partnersInfo;
 
     uint16 public ref_percent = 100; //1 = 0.01%, 10000 = 100%
 
@@ -26,7 +26,7 @@ contract BMICOAffiliateProgramm {
         address referral;
         uint256 amount_invest;
     }
-    mapping(address =&gt; itemHistory[]) history;
+    mapping(address => itemHistory[]) history;
 
     uint256 public amount_referral_invest;
 
@@ -53,7 +53,7 @@ contract BMICOAffiliateProgramm {
         }
         bytes memory bytesString = new bytes(32);
         uint256 charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(str) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -100,7 +100,7 @@ contract BMICOAffiliateProgramm {
     function setPromoToPartner(string promo) {
         assert(partnersPromo[promo]==address(0x0));
         assert(partnersInfo[msg.sender].create==false);
-        assert(str_length(promo)&gt;0 &amp;&amp; str_length(promo)&lt;=6);
+        assert(str_length(promo)>0 && str_length(promo)<=6);
 
         partnersPromo[promo] = msg.sender;
         partnersInfo[msg.sender].attracted_investments = 0;
@@ -114,7 +114,7 @@ contract BMICOAffiliateProgramm {
 
     function checkPartner(address partner_address) constant returns(bool isPartner, string promo){
         isPartner = partnersInfo[partner_address].create;
-        promo = &#39;-1&#39;;
+        promo = '-1';
         if(isPartner){
             promo = partnersInfo[partner_address].promo;
         }
@@ -122,22 +122,22 @@ contract BMICOAffiliateProgramm {
 
     function calc_partnerPercent(address partner) constant internal returns(uint16 percent){
         percent = 0;
-        if(partnersInfo[partner].personal_percent &gt; 0){
+        if(partnersInfo[partner].personal_percent > 0){
             percent = partnersInfo[partner].personal_percent;
         }
         else{
             uint256 attracted_investments = partnersInfo[partner].attracted_investments;
-            if(attracted_investments &gt; 0){
-                if(attracted_investments &lt; 3 ether){
+            if(attracted_investments > 0){
+                if(attracted_investments < 3 ether){
                     percent = 300; //1 = 0.01%, 10000 = 100%
                 }
-                else if(attracted_investments &gt;= 3 ether &amp;&amp; attracted_investments &lt; 10 ether){
+                else if(attracted_investments >= 3 ether && attracted_investments < 10 ether){
                     percent = 500;
                 }
-                else if(attracted_investments &gt;= 10 ether &amp;&amp; attracted_investments &lt; 100 ether){
+                else if(attracted_investments >= 10 ether && attracted_investments < 100 ether){
                     percent = 700;
                 }
-                else if(attracted_investments &gt;= 100 ether){
+                else if(attracted_investments >= 100 ether){
                     percent = 1000;
                 }
             }
@@ -145,7 +145,7 @@ contract BMICOAffiliateProgramm {
     }
 
     function partnerInfo(address partner_address) isOwner constant returns(string promo, uint256 attracted_investments, uint256[] h_datetime, uint256[] h_invest, address[] h_referrals){
-        if(partner_address != address(0x0) &amp;&amp; partnersInfo[partner_address].create){
+        if(partner_address != address(0x0) && partnersInfo[partner_address].create){
             promo = partnersInfo[partner_address].promo;
             attracted_investments = partnersInfo[partner_address].attracted_investments;
 
@@ -153,14 +153,14 @@ contract BMICOAffiliateProgramm {
             h_invest = new uint256[](history[partner_address].length);
             h_referrals = new address[](history[partner_address].length);
 
-            for(uint256 i=0; i&lt;history[partner_address].length; i++){
+            for(uint256 i=0; i<history[partner_address].length; i++){
                 h_datetime[i] = history[partner_address][i].datetime;
                 h_invest[i] = history[partner_address][i].amount_invest;
                 h_referrals[i] = history[partner_address][i].referral;
             }
         }
         else{
-            promo = &#39;-1&#39;;
+            promo = '-1';
             attracted_investments = 0;
             h_datetime = new uint256[](0);
             h_invest = new uint256[](0);
@@ -184,7 +184,7 @@ contract BMICOAffiliateProgramm {
         p_partner = 0;
         p_referral = 0;
         partner = address(0x0);
-        if(partnersPromo[promo] != address(0x0) &amp;&amp; partnersPromo[promo] != referral){
+        if(partnersPromo[promo] != address(0x0) && partnersPromo[promo] != referral){
             partner = partnersPromo[promo];
             if(msg.sender == contractPreICO){
                 referralsInfo[referral].amount_investments += amount;
@@ -193,11 +193,11 @@ contract BMICOAffiliateProgramm {
                 history[partner].push(itemHistory(now, referral, amount));
 
                 uint256 partner_bonus = (amount*uint256(calc_partnerPercent(partner)))/10000;
-                if(partner_bonus &gt; 0){
+                if(partner_bonus > 0){
                     partnersInfo[partner].preico_partnerBonus += partner_bonus;
                 }
                 uint256 referral_bonus = (amount*uint256(ref_percent))/10000;
-                if(referral_bonus &gt; 0){
+                if(referral_bonus > 0){
                     referralsInfo[referral].preico_holdersBonus += referral_bonus;
                     preico_holdersAmountInvestWithBonus += amount;
                 }

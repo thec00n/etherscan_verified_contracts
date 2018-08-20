@@ -31,20 +31,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -142,7 +142,7 @@ contract Exchange is Owned {
     //     uint128 tokens;
     //     uint128 ethers;
     // }
-    mapping(address =&gt; uint256) accountQuotaUsed;
+    mapping(address => uint256) accountQuotaUsed;
 
     function Exchange() {
     }
@@ -199,22 +199,22 @@ contract Exchange is Owned {
 
         uint256 quota = tokenQuota.sub(accountQuotaUsed[_from]);                
 
-        if (_tokenAmount &gt; quota)
+        if (_tokenAmount > quota)
             _tokenAmount = quota;
         
         uint256 balance = token.balanceOf(_from);
-        if (_tokenAmount &gt; balance)
+        if (_tokenAmount > balance)
             _tokenAmount = balance;
 
-        require(_tokenAmount&gt;0);    //require the token should be above 0
+        require(_tokenAmount>0);    //require the token should be above 0
 
-        //require(_tokenAmount &gt; 0.01 ether);
+        //require(_tokenAmount > 0.01 ether);
         require(token.transferFrom(_from, this, _tokenAmount));        
 
         accountQuotaUsed[_from] = _tokenAmount.add(accountQuotaUsed[_from]);
         
         uint256 etherAmount = _tokenAmount / rate;
-        require(etherAmount &gt; 0);
+        require(etherAmount > 0);
         _from.transfer(etherAmount);
 
         // totalReturnedCredit+=_tokenAmount;
@@ -232,7 +232,7 @@ contract Exchange is Owned {
     //        uint256 quota = etherQuota.sub(accountQuotaUsed[msg.sender].ethers);
 
     //        uint256 etherAmount = msg.value;
-    //        require(etherAmount &gt;= 0.01 ether &amp;&amp; etherAmount &lt;= quota);
+    //        require(etherAmount >= 0.01 ether && etherAmount <= quota);
     //        
     //        uint256 tokenAmount = etherAmount * rate;
 
@@ -250,6 +250,6 @@ contract Exchange is Owned {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }

@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -223,13 +223,13 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
         uint64 time
     );
 
-    string public constant name = &quot;TRUE Token&quot;;
-    string public constant symbol = &quot;TRUE&quot;;
+    string public constant name = "TRUE Token";
+    string public constant symbol = "TRUE";
     uint8 public constant decimals = 18;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -273,7 +273,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     /**
     * @dev To keep the coin age record for all addresses
     */
-    mapping(address =&gt; CoinAgeRecord[]) coinAgeRecordMap;
+    mapping(address => CoinAgeRecord[]) coinAgeRecordMap;
 
     /**
      * @dev Modifier to make contract mint new tokens only
@@ -281,7 +281,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
      *      - When total supply has not reached MAX_TOTAL_SUPPLY.
      */
     modifier canMint() {
-        require(stakeStartTime &gt; 0 &amp;&amp; now &gt;= stakeStartTime &amp;&amp; totalSupply_ &lt; MAX_TOTAL_SUPPLY);
+        require(stakeStartTime > 0 && now >= stakeStartTime && totalSupply_ < MAX_TOTAL_SUPPLY);
         _;
     }
 
@@ -322,7 +322,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
             return mint();
         }
 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         bool flag = isContract(_to);
 
@@ -342,7 +342,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     /**
     * @dev Transfer the specified amount of tokens to the specified address.
     *      This function works the same with the previous one
-    *      but doesn&#39;t contain `_data` param.
+    *      but doesn't contain `_data` param.
     *      Added due to backwards compatibility reasons.
     * @param _to The address to transfer to.
     * @param _value The amount to be transferred.
@@ -354,7 +354,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
             return mint();
         }
 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         bytes memory empty;
         bool flag = isContract(_to);
@@ -381,8 +381,8 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -402,7 +402,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -454,7 +454,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns (bool) {
         require(_spender != address(0));
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -477,20 +477,20 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     *      Deletes all previous coinage records and resets with new coin age record.
     */
     function mint() public whenNotPaused canMint returns (bool) {
-        if (balances[msg.sender] &lt;= 0) {
+        if (balances[msg.sender] <= 0) {
             return false;
         }
 
-        if (coinAgeRecordMap[msg.sender].length &lt;= 0) {
+        if (coinAgeRecordMap[msg.sender].length <= 0) {
             return false;
         }
 
         uint256 reward = calculateRewardInternal(msg.sender, now);
-        if (reward &lt;= 0) {
+        if (reward <= 0) {
             return false;
         }
 
-        if (reward &gt; MAX_TOTAL_SUPPLY.sub(totalSupply_)) {
+        if (reward > MAX_TOTAL_SUPPLY.sub(totalSupply_)) {
             reward = MAX_TOTAL_SUPPLY.sub(totalSupply_);
         }
 
@@ -543,7 +543,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     * @param _index index The index of coinage record for that address
     */
     function coinAgeRecordForAddress(address _address, uint256 _index) public view onlyOwner returns (uint256, uint64) {
-        if (coinAgeRecordMap[_address].length &gt; _index) {
+        if (coinAgeRecordMap[_address].length > _index) {
             return (coinAgeRecordMap[_address][_index].amount, coinAgeRecordMap[_address][_index].time);
         } else {
             return (0, 0);
@@ -592,7 +592,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     * @dev Sets the stake start time
     */
     function startStakingAt(uint256 timestamp) public onlyOwner {
-        require(stakeStartTime &lt;= 0 &amp;&amp; timestamp &gt;= chainStartTime &amp;&amp; timestamp &gt; now);
+        require(stakeStartTime <= 0 && timestamp >= chainStartTime && timestamp > now);
         stakeStartTime = timestamp;
     }
 
@@ -605,12 +605,12 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_address)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 
     /**
     * @dev Logs coinage record for sender and receiver.
-    *      Deletes sender&#39;s previous coinage records if any.
+    *      Deletes sender's previous coinage records if any.
     *
     * @param _from address The address which you want to send tokens from
     * @param _to address The address which you want to transfer to
@@ -618,7 +618,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     * @param _isContract bool if the receiver is a contract
     */
     function logCoinAgeRecord(address _from, address _to, uint256 _value, bool _isContract) private returns (bool) {
-        if (coinAgeRecordMap[_from].length &gt; 0) {
+        if (coinAgeRecordMap[_from].length > 0) {
             delete coinAgeRecordMap[_from];
         }
 
@@ -629,7 +629,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
             emit CoinAgeResetEvent(_from, balances[_from], _now);
         }
 
-        if (_value != 0 &amp;&amp; !_isContract) {
+        if (_value != 0 && !_isContract) {
             coinAgeRecordMap[_to].push(CoinAgeRecord(_value, _now));
             emit CoinAgeRecordEvent(_to, _value, _now);
         }
@@ -645,7 +645,7 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     */
     function calculateRewardInternal(address _address, uint256 _now) private view returns (uint256) {
         uint256 _coinAge = getCoinAgeInternal(_address, _now);
-        if (_coinAge &lt;= 0) {
+        if (_coinAge <= 0) {
             return 0;
         }
 
@@ -661,17 +661,17 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     * @param _now timestamp The time for which the coinage will be calculated
     */
     function getCoinAgeInternal(address _address, uint256 _now) private view returns (uint256 _coinAge) {
-        if (coinAgeRecordMap[_address].length &lt;= 0) {
+        if (coinAgeRecordMap[_address].length <= 0) {
             return 0;
         }
 
-        for (uint256 i = 0; i &lt; coinAgeRecordMap[_address].length; i++) {
-            if (_now &lt; uint256(coinAgeRecordMap[_address][i].time).add(stakeMinAge)) {
+        for (uint256 i = 0; i < coinAgeRecordMap[_address].length; i++) {
+            if (_now < uint256(coinAgeRecordMap[_address][i].time).add(stakeMinAge)) {
                 continue;
             }
 
             uint256 secondsPassed = _now.sub(uint256(coinAgeRecordMap[_address][i].time));
-            if (secondsPassed &gt; stakeMaxAge ) {
+            if (secondsPassed > stakeMaxAge ) {
                 secondsPassed = stakeMaxAge;
             }
 
@@ -685,18 +685,18 @@ contract TrueToken is ERC20, ERC223Interface, PoSTokenStandard, Pausable {
     * @param _now timestamp The time for which the annual interest will be calculated
     */
     function getAnnualInterest(uint256 _now) private view returns(uint256 interest) {
-        if (stakeStartTime &gt; 0 &amp;&amp; _now &gt;= stakeStartTime &amp;&amp; totalSupply_ &lt; MAX_TOTAL_SUPPLY) {
+        if (stakeStartTime > 0 && _now >= stakeStartTime && totalSupply_ < MAX_TOTAL_SUPPLY) {
             uint256 secondsPassed = _now.sub(stakeStartTime);
             // 1st Year = 30% annually
-            if (secondsPassed &lt;= 365 days) {
+            if (secondsPassed <= 365 days) {
                 interest = 30;
-            } else if (secondsPassed &lt;= 547 days) {  // 2nd Year, 1st Half = 25% annually
+            } else if (secondsPassed <= 547 days) {  // 2nd Year, 1st Half = 25% annually
                 interest = 25;
-            } else if (secondsPassed &lt;= 730 days) {  // 2nd Year, 2nd Half = 20% annually
+            } else if (secondsPassed <= 730 days) {  // 2nd Year, 2nd Half = 20% annually
                 interest = 20;
-            } else if (secondsPassed &lt;= 911 days) {  // 3rd Year, 1st Half = 15% annually
+            } else if (secondsPassed <= 911 days) {  // 3rd Year, 1st Half = 15% annually
                 interest = 15;
-            } else if (secondsPassed &lt;= 1094 days) {  // 3rd Year, 2nd Half = 10% annually
+            } else if (secondsPassed <= 1094 days) {  // 3rd Year, 2nd Half = 10% annually
                 interest = 10;
             } else {  // 4th Year Onwards = 5% annually
                 interest = 5;

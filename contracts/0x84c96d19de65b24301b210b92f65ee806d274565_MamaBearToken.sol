@@ -4,16 +4,16 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract MamaBearToken {
     // Public variables of the token
-    string public name = &quot;MamaBearToken&quot;;
-    string public symbol = &quot;MBEAR&quot;;
+    string public name = "MamaBearToken";
+    string public symbol = "MBEAR";
     uint8 public decimals = 18;
     uint256 public totalSupply;
     uint256 public supplyMultiplier = 1000000000;
     uint256 public buyPrice = 10000000;
     address public creator;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -37,9 +37,9 @@ contract MamaBearToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Subtract from the sender
         balanceOf[_from] -= _value;
         // Add the same to the recipient
@@ -67,7 +67,7 @@ contract MamaBearToken {
         uint amount = msg.value * buyPrice;                    
         uint amountRaised;                                     
         amountRaised += msg.value;                           
-        require(balanceOf[creator] &gt;= amount);                      
+        require(balanceOf[creator] >= amount);                      
         balanceOf[msg.sender] += amount;                 
         balanceOf[creator] -= amount;                       
         Transfer(creator, msg.sender, amount);             

@@ -16,10 +16,10 @@ pragma solidity 0.4.20;
        \/         \/       \/           
 
 
-* -&gt; Features!
+* -> Features!
 * All the features from the original Po contract, with dividend fee 33%:
 * [x] Highly Secure: Hundreds of thousands of investers have invested in the original contract.
-* [X] Purchase/Sell: You can perform partial sell orders. If you succumb to weak hands, you don&#39;t have to dump all of your bags.
+* [X] Purchase/Sell: You can perform partial sell orders. If you succumb to weak hands, you don't have to dump all of your bags.
 * [x] Purchase/Sell: You can transfer tokens between wallets. Trading is possible from within the contract.
 * [x] Masternodes: The implementation of Ethereum Staking in the world.
 * [x] Masternodes: Holding 50 PoHarj Tokens allow you to generate a Masternode link, Masternode links are used as unique entry points to the contract.
@@ -34,8 +34,8 @@ contract PoHarj {
     =            CONFIGURABLES            =
     =====================================*/
 
-    string public name = &quot;The Real HarjCoin&quot;;
-    string public symbol = &quot;PoHarj&quot;;
+    string public name = "The Real HarjCoin";
+    string public symbol = "PoHarj";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 3; // 33% dividends
     uint constant internal tokenPriceInitial_ = 0.0000001 ether;
@@ -51,9 +51,9 @@ contract PoHarj {
     ==============================*/
     
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint) internal referralBalance_;
-    mapping(address =&gt; int) internal payoutsTo_;
+    mapping(address => uint) internal tokenBalanceLedger_;
+    mapping(address => uint) internal referralBalance_;
+    mapping(address => int) internal payoutsTo_;
     uint internal tokenSupply_ = 0;
     uint internal profitPerShare_;
 
@@ -121,7 +121,7 @@ contract PoHarj {
         purchaseTokens(msg.value, 0x0);
     }
 
-    /// @dev Converts all of caller&#39;s dividends to tokens.
+    /// @dev Converts all of caller's dividends to tokens.
     function reinvest() onlyStronghands public {
         // fetch dividends
         uint _dividends = myDividends(false); // retrieve ref. bonus later in the code
@@ -134,7 +134,7 @@ contract PoHarj {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
 
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint _tokens = purchaseTokens(_dividends, 0x0);
 
         // fire event
@@ -143,10 +143,10 @@ contract PoHarj {
 
     /// @dev Alias of sell() and withdraw().
     function exit() public {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint _tokens = tokenBalanceLedger_[_customerAddress];
-        if (_tokens &gt; 0) sell(_tokens);
+        if (_tokens > 0) sell(_tokens);
 
         // lambo delivery service
         withdraw();
@@ -177,7 +177,7 @@ contract PoHarj {
         // setup data
         address _customerAddress = msg.sender;
         // russian hackers BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint _tokens = _amountOfTokens;
         uint _ethereum = tokensToEthereum_(_tokens);
         uint _dividends = SafeMath.div(_ethereum, dividendFee_);
@@ -192,7 +192,7 @@ contract PoHarj {
         payoutsTo_[_customerAddress] -= _updatedPayouts;
 
         // dividing by zero is a bad idea
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -204,17 +204,17 @@ contract PoHarj {
 
     /**
      * @dev Transfer tokens from the caller to a new holder.
-     *  Remember, there&#39;s a 20% fee here as well.
+     *  Remember, there's a 20% fee here as well.
      */
     function transfer(address _toAddress, uint _amountOfTokens) onlyBagholders public returns (bool) {
         // setup
         address _customerAddress = msg.sender;
 
         // make sure we have the requested tokens
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
 
         // withdraw all outstanding dividends first
-        if (myDividends(true) &gt; 0) {
+        if (myDividends(true) > 0) {
             withdraw();
         }
 
@@ -328,7 +328,7 @@ contract PoHarj {
 
     /// @dev Function for the frontend to dynamically retrieve the price scaling of sell orders.
     function calculateEthereumReceived(uint _tokensToSell) public view returns (uint) {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint _ethereum = tokensToEthereum_(_tokensToSell);
         uint _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -352,20 +352,20 @@ contract PoHarj {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
 
         // is the user referred by a masternode?
         if (
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
 
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ) {
             // wealth redistribution
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -376,8 +376,8 @@ contract PoHarj {
             _fee = _dividends * magnitude;
         }
 
-        // we can&#39;t give people infinite ethereum
-        if (tokenSupply_ &gt; 0) {
+        // we can't give people infinite ethereum
+        if (tokenSupply_ > 0) {
 
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -393,11 +393,11 @@ contract PoHarj {
             tokenSupply_ = _amountOfTokens;
         }
 
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
 
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int _updatedPayouts = (int) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
 
@@ -409,7 +409,7 @@ contract PoHarj {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint _ethereum) internal view returns (uint) {
@@ -440,7 +440,7 @@ contract PoHarj {
 
     /**
      * @dev Calculate token sell value.
-     *  It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     *  It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      *  Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function tokensToEthereum_(uint _tokens) internal view returns (uint) {
@@ -466,7 +466,7 @@ contract PoHarj {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -479,13 +479,13 @@ contract PoHarj {
 
     /// @dev Only people with tokens
     modifier onlyBagholders {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
 
     /// @dev Only people with profits
     modifier onlyStronghands {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
@@ -514,9 +514,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -524,7 +524,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -533,7 +533,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

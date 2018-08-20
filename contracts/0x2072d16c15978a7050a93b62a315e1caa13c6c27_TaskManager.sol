@@ -78,7 +78,7 @@ contract UsingAdmin is
         constant
         returns (address _addr)
     {
-        return addressOf(&quot;ADMIN&quot;);
+        return addressOf("ADMIN");
     }
 }
 
@@ -119,7 +119,7 @@ contract UsingMonarchyController is
         view
         returns (IMonarchyController)
     {
-        return IMonarchyController(addressOf(&quot;MONARCHY_CONTROLLER&quot;));
+        return IMonarchyController(addressOf("MONARCHY_CONTROLLER"));
     }
 }
 
@@ -155,7 +155,7 @@ contract UsingTreasury is
         view
         returns (ITreasury)
     {
-        return ITreasury(addressOf(&quot;TREASURY&quot;));
+        return ITreasury(addressOf("TREASURY"));
     }
 }
 
@@ -183,7 +183,7 @@ contract HasDailyLimit {
 
     // Sets the daily limit.
     function _setDailyLimit(uint _limit) internal {
-        require(_limit &lt;= MAX_ALLOWED);
+        require(_limit <= MAX_ALLOWED);
         vars.dailyLimit = uint112(_limit);
     }
 
@@ -191,21 +191,21 @@ contract HasDailyLimit {
     // You should use getDailyLimitRemaining() before calling this.
     function _useFromDailyLimit(uint _amount) internal {
         uint _remaining = updateAndGetRemaining();
-        require(_amount &lt;= _remaining);
+        require(_amount <= _remaining);
         vars.usedToday += uint112(_amount);
     }
 
-    // If necessary, resets the day&#39;s usage.
+    // If necessary, resets the day's usage.
     // Then returns the amount remaining for today.
     function updateAndGetRemaining() private returns (uint _amtRemaining) {
-        if (today() &gt; vars.lastDay) {
+        if (today() > vars.lastDay) {
             vars.usedToday = 0;
             vars.lastDay = today();
         }
         uint112 _usedToday = vars.usedToday;
         uint112 _dailyLimit = vars.dailyLimit;
         // This could be negative if _dailyLimit was reduced.
-        return uint(_usedToday &gt;= _dailyLimit ? 0 : _dailyLimit - _usedToday);
+        return uint(_usedToday >= _dailyLimit ? 0 : _dailyLimit - _usedToday);
     }
 
     // Returns the current day.
@@ -222,11 +222,11 @@ contract HasDailyLimit {
         return uint(vars.dailyLimit);
     }
     function getDailyLimitUsed() public view returns (uint) {
-        return uint(today() &gt; vars.lastDay ? 0 : vars.usedToday);
+        return uint(today() > vars.lastDay ? 0 : vars.usedToday);
     }
     function getDailyLimitRemaining() public view returns (uint) {
         uint _used = getDailyLimitUsed();
-        return uint(_used &gt;= vars.dailyLimit ? 0 : vars.dailyLimit - _used);
+        return uint(_used >= vars.dailyLimit ? 0 : vars.dailyLimit - _used);
     }
 }
 
@@ -251,7 +251,7 @@ contract AddressSet {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -281,8 +281,8 @@ contract AddressSet {
         else entry.exists = true;
 
         // Replace first entry with this one.
-        // Before: HEAD &lt;-&gt; X &lt;-&gt; Y
-        // After: HEAD &lt;-&gt; THIS &lt;-&gt; X &lt;-&gt; Y
+        // Before: HEAD <-> X <-> Y
+        // After: HEAD <-> THIS <-> X <-> Y
         // do: THIS.NEXT = [0].next; [0].next.prev = THIS; [0].next = THIS; THIS.prev = 0;
         Entry storage HEAD = entries[0x0];
         entry.next = HEAD.next;
@@ -299,12 +299,12 @@ contract AddressSet {
         // Do not allow the removal of HEAD.
         if (_address == address(0)) return;
         Entry storage entry = entries[_address];
-        // If it doesn&#39;t exist already, there is nothing to do.
+        // If it doesn't exist already, there is nothing to do.
         if (!entry.exists) return;
 
         // Stitch together next and prev, delete entry.
-        // Before: X &lt;-&gt; THIS &lt;-&gt; Y
-        // After: X &lt;-&gt; Y
+        // Before: X <-> THIS <-> Y
+        // After: X <-> Y
         // do: THIS.next.prev = this.prev; THIS.prev.next = THIS.next;
         entries[entry.prev].next = entry.next;
         entries[entry.next].prev = entry.prev;
@@ -324,7 +324,7 @@ contract AddressSet {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -350,7 +350,7 @@ contract AddressSet {
         // Iterate forward through all entries until the end.
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _curEntry = entries[_curEntry.next];
             _i++;
@@ -361,12 +361,12 @@ contract AddressSet {
 
 /**
     This is a simple class that maintains a doubly linked list of
-    address =&gt; uint amounts. Address balances can be added to 
+    address => uint amounts. Address balances can be added to 
     or removed from via add() and subtract(). All balances can
     be obtain by calling balances(). If an address has a 0 amount,
     it is removed from the Ledger.
 
-    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it&#39;s safe to
+    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it's safe to
           use to track Ether balances.
 
     Public methods:
@@ -387,7 +387,7 @@ contract Ledger {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -433,7 +433,7 @@ contract Ledger {
         uint _maxAmt = entry.balance;
         if (_maxAmt == 0) return;
         
-        if (_amt &gt;= _maxAmt) {
+        if (_amt >= _maxAmt) {
             // Subtract the max amount, and delete entry.
             total -= _maxAmt;
             entries[entry.prev].next = entry.next;
@@ -460,7 +460,7 @@ contract Ledger {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -486,7 +486,7 @@ contract Ledger {
         _balances = new uint[](_size);
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _balances[_i] = entries[_curEntry.next].balance;
             _curEntry = entries[_curEntry.next];
@@ -502,7 +502,7 @@ contract Ledger {
 
   - Anybody can add funding (according to whitelist)
   - Anybody can tell profits (balance - (funding + collateral)) to go to Treasury.
-  - Anyone can remove their funding, so long as balance &gt;= collateral.
+  - Anyone can remove their funding, so long as balance >= collateral.
   - Whitelist is managed by getWhitelistOwner() -- typically Admin.
 
   Exposes the following:
@@ -600,8 +600,8 @@ contract Bankrollable is
         address _bankroller = msg.sender;
         uint _collateral = getCollateral();
         uint _balance = address(this).balance;
-        uint _available = _balance &gt; _collateral ? _balance - _collateral : 0;
-        if (_amount &gt; _available) _amount = _available;
+        uint _available = _balance > _collateral ? _balance - _collateral : 0;
+        if (_amount > _available) _amount = _available;
 
         // Try to remove _amount from ledger, get actual _amount removed.
         _amount = ledger.subtract(_bankroller, _amount);
@@ -620,7 +620,7 @@ contract Bankrollable is
         returns (uint _profits)
     {
         int _p = profits();
-        if (_p &lt;= 0) return;
+        if (_p <= 0) return;
         _profits = uint(_p);
         profitsSent += _profits;
         // Send profits to Treasury
@@ -667,7 +667,7 @@ contract Bankrollable is
     }
 
     // Returns the amount that can currently be bankrolled.
-    //   - 0 if balance &lt; collateral
+    //   - 0 if balance < collateral
     //   - If profits: full bankroll
     //   - If no profits: remaning bankroll: balance - collateral
     function bankrollAvailable()
@@ -679,9 +679,9 @@ contract Bankrollable is
         uint _bankroll = bankroll;
         uint _collat = getCollateral();
         // Balance is below collateral!
-        if (_balance &lt;= _collat) return 0;
+        if (_balance <= _collat) return 0;
         // No profits, but we have a balance over collateral.
-        else if (_balance &lt; _collat + _bankroll) return _balance - _collat;
+        else if (_balance < _collat + _bankroll) return _balance - _collat;
         // Profits. Return only _bankroll
         else return _bankroll;
     }
@@ -793,7 +793,7 @@ contract TaskManager is
         public
         fromAdmin
     {
-        require(_bips &lt;= 10);
+        require(_bips <= 10);
         issueDividendRewardBips = _bips;
         emit IssueDividendRewardChanged(now, msg.sender, _bips);
     }
@@ -802,7 +802,7 @@ contract TaskManager is
         public
         fromAdmin
     {
-        require(_bips &lt;= 100);
+        require(_bips <= 100);
         sendProfitsRewardBips = _bips;
         emit SendProfitsRewardChanged(now, msg.sender, _bips);
     }
@@ -811,8 +811,8 @@ contract TaskManager is
         public
         fromAdmin
     {
-        require(_startReward &lt;= 1 ether);
-        require(_endReward &lt;= 1 ether);
+        require(_startReward <= 1 ether);
+        require(_endReward <= 1 ether);
         monarchyStartReward = _startReward;
         monarchyEndReward = _endReward;
         emit MonarchyRewardsChanged(now, msg.sender, _startReward, _endReward);
@@ -832,13 +832,13 @@ contract TaskManager is
         _profits = _tr.profitsSendable();
         // quit if no profits to send.
         if (_profits == 0) {
-            _taskError(&quot;No profits to send.&quot;);
+            _taskError("No profits to send.");
             return;
         }
         // call .issueDividend(), use return value to compute _reward
         _profits = _tr.issueDividend();
         if (_profits == 0) {
-            _taskError(&quot;No profits were sent.&quot;);
+            _taskError("No profits were sent.");
             return;
         } else {
             emit IssueDividendSuccess(now, address(_tr), _profits);
@@ -874,8 +874,8 @@ contract TaskManager is
         uint _newTrBalance = address(_tr).balance;
 
         // Quit if no profits. Otherwise compute profits.
-        if (_newTrBalance &lt;= _oldTrBalance) {
-            _taskError(&quot;No profits were sent.&quot;);
+        if (_newTrBalance <= _oldTrBalance) {
+            _taskError("No profits were sent.");
             return;
         } else {
             _profits = _newTrBalance - _oldTrBalance;
@@ -894,7 +894,7 @@ contract TaskManager is
         returns (uint _reward, uint _profits)
     {
         int _p = _IBankrollable(_bankrollable).profits();
-        if (_p &lt;= 0) return;
+        if (_p <= 0) return;
         _profits = uint(_p);
         _reward = _cappedReward((_profits * sendProfitsRewardBips) / 10000);
     }
@@ -908,17 +908,17 @@ contract TaskManager is
     function startMonarchyGame(uint _index)
         public
     {
-        // Don&#39;t bother trying if it&#39;s not startable
+        // Don't bother trying if it's not startable
         IMonarchyController _mc = getMonarchyController();
         if (!_mc.getIsStartable(_index)){
-            _taskError(&quot;Game is not currently startable.&quot;);
+            _taskError("Game is not currently startable.");
             return;
         }
 
         // Try to start the game. This may fail.
         address _game = _mc.startDefinedGame(_index);
         if (_game == address(0)) {
-            _taskError(&quot;MonarchyConroller.startDefinedGame() failed.&quot;);
+            _taskError("MonarchyConroller.startDefinedGame() failed.");
             return;
         } else {
             emit MonarchyGameStarted(now, _game, _mc.getInitialPrize(_index));   
@@ -936,7 +936,7 @@ contract TaskManager is
     {
         IMonarchyController _mc = getMonarchyController();
         _index = _mc.getFirstStartableIndex();
-        if (_index &gt; 0) _reward = _cappedReward(monarchyStartReward);
+        if (_index > 0) _reward = _cappedReward(monarchyStartReward);
     }
 
 
@@ -951,7 +951,7 @@ contract TaskManager is
         emit MonarchyGamesRefreshed(now, _numGamesEnded, _feesCollected);
 
         if (_numGamesEnded == 0) {
-            _taskError(&quot;No games ended.&quot;);
+            _taskError("No games ended.");
         } else {
             _sendReward(_numGamesEnded * monarchyEndReward);   
         }
@@ -982,8 +982,8 @@ contract TaskManager is
     function _sendReward(uint _reward) private {
         // Limit the reward to balance or dailyLimitRemaining
         uint _amount = _cappedReward(_reward);
-        if (_reward &gt; 0 &amp;&amp; _amount == 0) {
-            emit RewardFailure(now, msg.sender, _amount, &quot;Not enough funds, or daily limit reached.&quot;);
+        if (_reward > 0 && _amount == 0) {
+            emit RewardFailure(now, msg.sender, _amount, "Not enough funds, or daily limit reached.");
             return;
         }
 
@@ -993,7 +993,7 @@ contract TaskManager is
             totalRewarded += _amount;
             emit RewardSuccess(now, msg.sender, _amount);
         } else {
-            emit RewardFailure(now, msg.sender, _amount, &quot;Reward rejected by recipient (out of gas, or revert).&quot;);
+            emit RewardFailure(now, msg.sender, _amount, "Reward rejected by recipient (out of gas, or revert).");
         }
     }
 
@@ -1001,8 +1001,8 @@ contract TaskManager is
     function _cappedReward(uint _reward) private view returns (uint) {
         uint _balance = address(this).balance;
         uint _remaining = getDailyLimitRemaining();
-        if (_reward &gt; _balance) _reward = _balance;
-        if (_reward &gt; _remaining) _reward = _remaining;
+        if (_reward > _balance) _reward = _balance;
+        if (_reward > _remaining) _reward = _remaining;
         return _reward;
     }
 

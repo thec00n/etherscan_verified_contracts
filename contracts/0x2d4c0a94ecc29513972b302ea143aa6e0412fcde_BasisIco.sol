@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-// Created by Roman Oznobin (<span class="__cf_email__" data-cfemail="2b445174596b464a424705595e">[email&#160;protected]</span>) - http://code-expert.pro
-// Owner is Alexey Malashkin (<span class="__cf_email__" data-cfemail="731f161d1a1d14011217424b330a121d17160b5d0106">[email&#160;protected]</span>)
-// Smart contract for BasisToken of Ltd &quot;KKM&quot; (<span class="__cf_email__" data-cfemail="0c6d7e616d78797e6d7c60797f4c616d6560227e79">[email&#160;protected]</span>) - http://ruarmatura.ru/
+// Created by Roman Oznobin (<span class="__cf_email__" data-cfemail="2b445174596b464a424705595e">[email protected]</span>) - http://code-expert.pro
+// Owner is Alexey Malashkin (<span class="__cf_email__" data-cfemail="731f161d1a1d14011217424b330a121d17160b5d0106">[email protected]</span>)
+// Smart contract for BasisToken of Ltd "KKM" (<span class="__cf_email__" data-cfemail="0c6d7e616d78797e6d7c60797f4c616d6560227e79">[email protected]</span>) - http://ruarmatura.ru/
 
 library SafeMath {
 
@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -76,9 +76,9 @@ contract BasisIco  {
 
   using SafeMath for uint;
   
-    string public constant name = &quot;Basis Token&quot;;
+    string public constant name = "Basis Token";
 
-    string public constant symbol = &quot;BSS&quot;;
+    string public constant symbol = "BSS";
 
     uint32 public constant decimals = 0;  
     
@@ -136,9 +136,9 @@ contract BasisIco  {
     // Wei raised during ICO
     uint public weiRaised;
   //  list of owners and token balances 
-    mapping(address =&gt; uint) public ico_balances;
+    mapping(address => uint) public ico_balances;
   //  list of owners and ether balances for refund    
-    mapping(address =&gt; uint) public ico_investor;
+    mapping(address => uint) public ico_investor;
    
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     event  Finalized();  
@@ -149,7 +149,7 @@ contract BasisIco  {
     bool RefundICO =false;
     bool isFinalized =false;
     // The map of allowed tokens for external address access
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
 // The constractor of contract ...
   function BasisIco() public     {
@@ -168,17 +168,17 @@ contract BasisIco  {
   }
   
     modifier saleIsOn() {
-      require(now &gt; start_declaration &amp;&amp; now &lt; ico_finish);
+      require(now > start_declaration && now < ico_finish);
       _;
     }
 
     modifier NoBreak() {
-      require(now &lt; presale_finish  || now &gt; second_round_start);
+      require(now < presale_finish  || now > second_round_start);
       _;
     }
 
     modifier isUnderHardCap() {
-      require (bssTotalSuply &lt;= hardcap);
+      require (bssTotalSuply <= hardcap);
       _;
     }  
     
@@ -190,20 +190,20 @@ contract BasisIco  {
      }
   
     function setPrice () public isUnderHardCap saleIsOn {
-          if  (now &lt; presale_finish ){
+          if  (now < presale_finish ){
                // Chek total supply BSS for price level changes
-              if( bssTotalSuply &gt; 50000 &amp;&amp; bssTotalSuply &lt;= 100000 ) {
+              if( bssTotalSuply > 50000 && bssTotalSuply <= 100000 ) {
                   token_iso_price = rate.mul(85).div(100);
               }
-                if( bssTotalSuply &gt; 100000 &amp;&amp; bssTotalSuply &lt;= 150000 ) {
+                if( bssTotalSuply > 100000 && bssTotalSuply <= 150000 ) {
                   token_iso_price = rate.mul(90).div(100);
                   }
 
           }
           else {
-               if(bssTotalSuply &lt;= 200000) {
+               if(bssTotalSuply <= 200000) {
                    token_iso_price = rate.mul(90).div(100);
-               } else { if(bssTotalSuply &lt;= 400000) {
+               } else { if(bssTotalSuply <= 400000) {
                         token_iso_price = rate.mul(95).div(100);
                         }
                         else {
@@ -219,9 +219,9 @@ contract BasisIco  {
     }  
     
      function validPurchase(uint _msg_value) internal constant returns (bool) {
-     bool withinPeriod = now &gt;= start_declaration &amp;&amp; now &lt;= ico_finish;
+     bool withinPeriod = now >= start_declaration && now <= ico_finish;
      bool nonZeroPurchase = _msg_value != 0;
-     return withinPeriod &amp;&amp; nonZeroPurchase;
+     return withinPeriod && nonZeroPurchase;
    }
    
    function token_mint(address _investor, uint _tokens, uint _wei) internal {
@@ -242,10 +242,10 @@ contract BasisIco  {
 
      // calculate token amount to be created
      uint256 tokens = weiAmount.div(token_iso_price);
-     if  (now &lt; presale_finish ){
-         require ((bssTotalSuply + tokens) &lt;= softcap);
+     if  (now < presale_finish ){
+         require ((bssTotalSuply + tokens) <= softcap);
      }
-    require ((bssTotalSuply + tokens) &lt; hardcap);
+    require ((bssTotalSuply + tokens) < hardcap);
      // update state
      weiRaised = weiRaised.add(weiAmount);
 
@@ -270,10 +270,10 @@ contract BasisIco  {
 
      // calculate token amount to be created
      uint256 tokens = weiAmount.div(token_iso_price);
-      if  (now &lt; presale_finish ){
-         require ((bssTotalSuply + tokens) &lt;= softcap);
+      if  (now < presale_finish ){
+         require ((bssTotalSuply + tokens) <= softcap);
      }
-    require ((bssTotalSuply + tokens) &lt; hardcap);
+    require ((bssTotalSuply + tokens) < hardcap);
      // update state
      weiRaised = weiRaised.add(weiAmount);
 
@@ -287,7 +287,7 @@ contract BasisIco  {
    function extraTokenMint(address beneficiary, uint _tokens) external payable saleIsOn onlyOwner {
      
     require(beneficiary != address(0));
-    require ((bssTotalSuply + _tokens) &lt; hardcap);
+    require ((bssTotalSuply + _tokens) < hardcap);
     
     uint weiAmount = _tokens.mul(token_iso_price);
      // update state
@@ -301,7 +301,7 @@ contract BasisIco  {
   }
 
   function goalReached() public constant returns (bool) {
-    return bssTotalSuply &gt;= softcap;
+    return bssTotalSuply >= softcap;
   }
   
   function bounty_mining () internal {
@@ -313,7 +313,7 @@ contract BasisIco  {
   
   // vault finalization task, called when owner calls finalize()
   function finalization() public onlyOwner {
-    require (now &gt; ico_finish);
+    require (now > ico_finish);
     if (goalReached()) {
         bounty_mining ();
         EtherTakeAfterSoftcap ();
@@ -326,7 +326,7 @@ contract BasisIco  {
   }  
 
   function investor_Refund()  public {
-        require (RefundICO &amp;&amp; isFinalized);
+        require (RefundICO && isFinalized);
         address investor = msg.sender;
         uint for_refund = ico_investor[msg.sender];
         investor.transfer(for_refund);
@@ -334,7 +334,7 @@ contract BasisIco  {
   }
   
   function EtherTakeAfterSoftcap () onlyOwner public {
-      require ( bssTotalSuply &gt;= softcap );
+      require ( bssTotalSuply >= softcap );
       uint for_developer = this.balance;
       for_developer = for_developer.mul(6).div(100);
       developer.transfer(for_developer);
@@ -356,7 +356,7 @@ contract BasisIco  {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    require (_value &lt;= _allowance);
+    require (_value <= _allowance);
 
     ico_balances[_to] = ico_balances[_to].add(_value);
     ico_balances[_from] = ico_balances[_from].sub(_value);

@@ -139,10 +139,10 @@ library CreatorPresale {
     { return new Presale(_token, _bounty, _donation); }
 
     function version() constant returns (string)
-    { return &quot;v0.6.3&quot;; }
+    { return "v0.6.3"; }
 
     function abi() constant returns (string)
-    { return &#39;[{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setOwner&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;hammer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;destroy&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;donation&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;bounty&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_hammer&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setHammer&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;cancel&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;token&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_token&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_bounty&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_donation&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:true,&quot;type&quot;:&quot;fallback&quot;}]&#39;; }
+    { return '[{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"setOwner","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"hammer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destroy","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"donation","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"bounty","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_hammer","type":"address"}],"name":"setHammer","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"cancel","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"token","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_token","type":"address"},{"name":"_bounty","type":"uint256"},{"name":"_donation","type":"uint256"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"}]'; }
 }
 
 /**
@@ -155,7 +155,7 @@ contract Builder is Object {
     event Builded(address indexed client, address indexed instance);
  
     /* Addresses builded contracts at sender */
-    mapping(address =&gt; address[]) public getContractsOf;
+    mapping(address => address[]) public getContractsOf;
  
     /**
      * @dev Get last address
@@ -208,18 +208,18 @@ contract BuilderPresale is Builder {
                     uint256 _bounty,
                     uint256 _donation,
                     address _client) payable returns (address) {
-        if (buildingCostWei &gt; 0 &amp;&amp; beneficiary != 0) {
+        if (buildingCostWei > 0 && beneficiary != 0) {
             // Too low value
-            if (msg.value &lt; buildingCostWei) throw;
+            if (msg.value < buildingCostWei) throw;
             // Beneficiary send
             if (!beneficiary.send(buildingCostWei)) throw;
             // Refund
-            if (msg.value &gt; buildingCostWei) {
+            if (msg.value > buildingCostWei) {
                 if (!msg.sender.send(msg.value - buildingCostWei)) throw;
             }
         } else {
             // Refund all
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 if (!msg.sender.send(msg.value)) throw;
             }
         }

@@ -13,12 +13,12 @@ contract Token {
 }
 
 contract StandardToken is Token {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool success) {       
         address sender = msg.sender;
-        require(balances[sender] &gt;= _value);
+        require(balances[sender] >= _value);
         balances[sender] -= _value;
         balances[_to] += _value;
         Transfer(sender, _to, _value);
@@ -26,7 +26,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {      
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -50,12 +50,12 @@ contract StandardToken is Token {
 }
 
 contract GigaGivingToken is StandardToken {
-    string public constant NAME = &quot;Giga Coin&quot;;
-    string public constant SYMBOL = &quot;GC&quot;;
+    string public constant NAME = "Giga Coin";
+    string public constant SYMBOL = "GC";
     uint256 public constant DECIMALS = 0;
     uint256 public constant TOTAL_TOKENS = 15000000;
     uint256 public constant  CROWDSALE_TOKENS = 12000000;  
-    string public constant VERSION = &quot;GC.2&quot;;
+    string public constant VERSION = "GC.2";
 
     function GigaGivingToken () public {
         balances[msg.sender] = TOTAL_TOKENS; 
@@ -65,7 +65,7 @@ contract GigaGivingToken is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }

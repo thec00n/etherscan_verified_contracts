@@ -12,7 +12,7 @@ contract PrivateSale is ContractReceiver {
     address owner;
     // Conversion between wei and smallest unit of Token
     // GNU and ETH have both 18 decimal places
-    // 1 ETH = 500 USD &amp;&amp; 1 GNU = 0.025 USD ==&gt; 1 ETH = 20000 GNU
+    // 1 ETH = 500 USD && 1 GNU = 0.025 USD ==> 1 ETH = 20000 GNU
     // Then, in our case we have 1 wei = 20000 units
     uint256 rate;
 
@@ -36,10 +36,10 @@ contract PrivateSale is ContractReceiver {
         escrow = TimedEscrow(_escrowContract);
         owner = msg.sender;
         end = _end;
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
         numerator = _numerator;
-        require(_denominator &gt; 0);
+        require(_denominator > 0);
         denominator = _denominator;
         lockend1 = _lockend1;
         lockend2 = _lockend2;
@@ -57,19 +57,19 @@ contract PrivateSale is ContractReceiver {
 
     function setLockend1(uint256 _lockend1){
         require(msg.sender == owner);
-        require(_lockend1 &lt;= lockend1);
+        require(_lockend1 <= lockend1);
         lockend1 = _lockend1;
     }
 
     function setLockend2(uint256 _lockend2){
         require(msg.sender == owner);
-        require(_lockend2 &lt;= lockend2);
+        require(_lockend2 <= lockend2);
         lockend2 = _lockend2;
     }
 
     function setLockRatio(uint256 _numerator, uint256 _denominator){
         require(msg.sender == owner);
-        require(_denominator &gt; 0);
+        require(_denominator > 0);
         numerator = _numerator;
         denominator = _denominator;
     }
@@ -81,19 +81,19 @@ contract PrivateSale is ContractReceiver {
 
     // Empties the contract of the remaining tokens
     function withdrawTokens() public {
-        require(now &gt; end);
+        require(now > end);
         require(msg.sender == owner);
         tokContract.transfer(owner, tokContract.balanceOf(this));
     }
 
     function tokenFallback(address _from, uint _value, bytes _data) public {
         // Only the owner can send tokens to the SC
-        require(_from == owner, &quot;Only owner can send tokens&quot;);
+        require(_from == owner, "Only owner can send tokens");
     }
 
     // Fallback function to issue tokens when receiving ether
     function() public payable {
-        require(now &lt; end &amp;&amp; msg.value &gt;= mincontrib);
+        require(now < end && msg.value >= mincontrib);
         // Forward ether to owner, throws if error
         owner.transfer(msg.value);
 
@@ -146,7 +146,7 @@ contract ERC20Interface {
 contract StandardERC20 is ERC20Interface {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
 
     /**
@@ -163,7 +163,7 @@ contract StandardERC20 is ERC20Interface {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -184,7 +184,7 @@ contract StandardERC20 is ERC20Interface {
         Allowance part
     */
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -195,8 +195,8 @@ contract StandardERC20 is ERC20Interface {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -209,7 +209,7 @@ contract StandardERC20 is ERC20Interface {
     * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -257,7 +257,7 @@ contract StandardERC20 is ERC20Interface {
     */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -271,8 +271,8 @@ contract StandardERC20 is ERC20Interface {
 
 contract Token is StandardERC20 {
     
-    string public name    = &quot;Genuine Token&quot;;
-    string public symbol  = &quot;GNU&quot;;
+    string public name    = "Genuine Token";
+    string public symbol  = "GNU";
     uint8  public decimals = 18;
 
     address owner;
@@ -292,7 +292,7 @@ contract Token is StandardERC20 {
     }
 
     function transferOwnership(address tbo) public {
-        require(msg.sender == owner, &#39;Unauthorized&#39;);
+        require(msg.sender == owner, 'Unauthorized');
         owner = tbo;
     }
        
@@ -321,7 +321,7 @@ contract Token is StandardERC20 {
         require(_to != address(0));
 
         if (isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) revert();
+            if (balanceOf(msg.sender) < _value) revert();
             balances[msg.sender] = balanceOf(msg.sender).sub(_value);
             balances[_to] = balanceOf(_to).add(_value);
             assert(_to.call.value(0)(bytes4(sha3(_custom_fallback)), msg.sender, _value, _data));
@@ -371,12 +371,12 @@ contract Token is StandardERC20 {
                 //retrieve the size of the code on target address, this needs assembly
                 length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert(&quot;Insufficient balance&quot;);
+        if (balanceOf(msg.sender) < _value) revert("Insufficient balance");
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -387,7 +387,7 @@ contract Token is StandardERC20 {
     
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert(&quot;Insufficient balance&quot;);
+        if (balanceOf(msg.sender) < _value) revert("Insufficient balance");
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -415,9 +415,9 @@ contract Token is StandardERC20 {
 
         require(burnable == true || _who == owner);
 
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -551,15 +551,15 @@ library Array256Lib {
     uint256 rChild;
     uint256 swap;
     uint256 temp;
-    while(start &gt;= 0){
+    while(start >= 0){
       root = start;
       lChild = getLeftChildI(start);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end+1;
@@ -576,19 +576,19 @@ library Array256Lib {
       else
         start = start - 1;
     }
-    while(end &gt; 0){
+    while(end > 0){
       temp = self[end];
       self[end] = self[0];
       self[0] = temp;
       end = end - 1;
       root = 0;
       lChild = getLeftChildI(0);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end + 1;
@@ -609,11 +609,11 @@ library Array256Lib {
     bool contains;
     uint256 index;
 
-    for (uint256 i = 0; i &lt; self.length; i++) {
+    for (uint256 i = 0; i < self.length; i++) {
       (contains, index) = indexOf(self, self[i], false);
 
-      if (i &gt; index) {
-        for (uint256 j = i; j &lt; self.length - 1; j++){
+      if (i > index) {
+        for (uint256 j = i; j < self.length - 1; j++){
           self[j] = self[j + 1];
         }
 
@@ -653,7 +653,7 @@ contract BytesToTypes {
             size := mload(add(_input,_offst))
             let chunk_count := add(div(size,32),1) // chunk_count = size/32 + 1
             
-            if gt(mod(size,32),0) {// if size%32 &gt; 0
+            if gt(mod(size,32),0) {// if size%32 > 0
                 chunk_count := add(chunk_count,1)
             } 
             
@@ -1151,8 +1151,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -1167,9 +1167,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -1177,7 +1177,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -1186,7 +1186,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -1287,7 +1287,7 @@ contract TypesToBytes {
     
     function stringToBytes(uint _offst, bytes memory _input, bytes memory _output) internal {
         uint256 stack_size = _input.length / 32;
-        if(_input.length % 32 &gt; 0) stack_size++;
+        if(_input.length % 32 > 0) stack_size++;
         
         assembly {
             let index := 0
@@ -1341,7 +1341,7 @@ contract TimedEscrow is ContractReceiver, Seriality {
 
     Transaction[] transactions;
 
-    mapping(address =&gt; uint256[]) transactions_of;
+    mapping(address => uint256[]) transactions_of;
 
     // Events
     event addingTransaction(uint256 value, address addr, uint256 time, bool valid, bool executed, uint index);
@@ -1360,7 +1360,7 @@ contract TimedEscrow is ContractReceiver, Seriality {
     }
 
     function transferOwnership(address tbo){
-        require(msg.sender == owner, &#39;Unauthorized&#39;);
+        require(msg.sender == owner, 'Unauthorized');
         owner = tbo;
     }
 
@@ -1370,8 +1370,8 @@ contract TimedEscrow is ContractReceiver, Seriality {
     function voidTransaction(uint256 transaction_id){
         require(
             msg.sender == transactions[transaction_id].to_address
-            &amp;&amp; !transactions[transaction_id].executed
-        &amp;&amp; transactions[transaction_id].valid
+            && !transactions[transaction_id].executed
+        && transactions[transaction_id].valid
         );
         transactions[transaction_id].valid = false;
         tokContract.transfer(owner, transactions[transaction_id].value);
@@ -1394,7 +1394,7 @@ contract TimedEscrow is ContractReceiver, Seriality {
 
     function performTransaction(uint256 transaction_id){
         Transaction tbp = transactions[transaction_id];
-        require(now &gt; tbp.time &amp;&amp; tbp.valid &amp;&amp; !tbp.executed, &#39;Invalid transaction data&#39;);
+        require(now > tbp.time && tbp.valid && !tbp.executed, 'Invalid transaction data');
         tbp.executed = true;
         transactions[transaction_id] = tbp;
         tokContract.transfer(tbp.to_address, tbp.value);
@@ -1455,19 +1455,19 @@ contract TimedEscrow is ContractReceiver, Seriality {
     }
 
     function tokenFallback(address _from, uint _value, bytes _data) public {
-        require(_value &gt; 0, &#39;No transaction was added because value was zero&#39;);
+        require(_value > 0, 'No transaction was added because value was zero');
         Transaction memory transaction = transactionStructFromBytesSeriality(_data);
-        require(transaction.value == _value, &#39;Token sent were not equal to token to store&#39;);
-        require(transaction.time &gt; now, &#39;Time was in the past&#39;);
-        require(transaction.valid == true &amp;&amp; transaction.executed == false, &#39;Transaction data is invalid&#39;);
+        require(transaction.value == _value, 'Token sent were not equal to token to store');
+        require(transaction.time > now, 'Time was in the past');
+        require(transaction.valid == true && transaction.executed == false, 'Transaction data is invalid');
         addTransaction(transaction);
     }
 
     function rescheduleTransaction(uint256 transaction_id, uint256 newtime) public {
         require(msg.sender == owner);
         require(!transactions[transaction_id].executed
-        &amp;&amp; transactions[transaction_id].valid
-        &amp;&amp; transactions[transaction_id].time &gt; newtime);
+        && transactions[transaction_id].valid
+        && transactions[transaction_id].time > newtime);
         transactions[transaction_id].time = newtime;
     }
 

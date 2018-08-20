@@ -11,7 +11,7 @@
                                  _       
                                 | |      
   _ __  _ __ ___  ___  ___ _ __ | |_ ___ 
- | &#39;_ \| &#39;__/ _ \/ __|/ _ \ &#39;_ \| __/ __|
+ | '_ \| '__/ _ \/ __|/ _ \ '_ \| __/ __|
  | |_) | | |  __/\__ \  __/ | | | |_\__ \
  | .__/|_|  \___||___/\___|_| |_|\__|___/
  | |                                     
@@ -40,8 +40,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -56,9 +56,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -75,7 +75,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -122,8 +122,8 @@ contract TheEthGame {
     Cell[NUMBER_OF_CELLS] cells;
     
     address[] private ranking;
-    mapping(address =&gt; Player) players;
-    mapping(bytes32 =&gt; address) nameToAddress;
+    mapping(address => Player) players;
+    mapping(bytes32 => address) nameToAddress;
     
     uint256 public numberOfCellsBought;
     uint256 private totalScore;
@@ -195,10 +195,10 @@ contract TheEthGame {
         address rankOnePlayer;
         uint256 oldOwnerIndex;
         
-        for (uint256 i = 0; i &lt; ranking.length; i++) {
-            if (scoreOf(ranking[i]) &gt; scoreOf(rankOnePlayer)) {
+        for (uint256 i = 0; i < ranking.length; i++) {
+            if (scoreOf(ranking[i]) > scoreOf(rankOnePlayer)) {
                     rankOnePlayer = ranking[i];
-            } else if (scoreOf(ranking[i]) == scoreOf(rankOnePlayer) &amp;&amp; players[ranking[i]].lastCellBoughtOnBlockNumber &gt; players[rankOnePlayer].lastCellBoughtOnBlockNumber) {
+            } else if (scoreOf(ranking[i]) == scoreOf(rankOnePlayer) && players[ranking[i]].lastCellBoughtOnBlockNumber > players[rankOnePlayer].lastCellBoughtOnBlockNumber) {
                     rankOnePlayer = ranking[i];
             }
             
@@ -212,9 +212,9 @@ contract TheEthGame {
     }
 
     function buy (uint256 _cellId, address _referreal) payable public {
-        require(msg.value &gt;= priceOf(_cellId));
+        require(msg.value >= priceOf(_cellId));
         require(!isContract(msg.sender));
-        require(_cellId &lt; NUMBER_OF_CELLS);
+        require(_cellId < NUMBER_OF_CELLS);
         require(msg.sender != address(0));
         require(!isGameFinished()); //If game is finished nobody can buy cells.
         require(ownerOf(_cellId) != msg.sender);
@@ -227,8 +227,8 @@ contract TheEthGame {
 
         bool isReferrealDistributed = distributeToReferreal(price, _referreal);
         
-        //If numberOfCellsBought &gt; 0 imply totalScore &gt; 0
-        if (numberOfCellsBought &gt; 0) {
+        //If numberOfCellsBought > 0 imply totalScore > 0
+        if (numberOfCellsBought > 0) {
             harmonicSum = harmonicSum.add(price.mul(NUMBER_OF_CELLS_PERCENTAGE) / (numberOfCellsBought * 100));
             if (isReferrealDistributed) {
                 totalScoreSum = totalScoreSum.add(price.mul(SCORE_PERCENTAGE) / (totalScore * 100));
@@ -273,14 +273,14 @@ contract TheEthGame {
            ranking.push(newOwner);
         }
         
-        if (oldOwner == rankOnePlayerAddress || (players[oldOwner].numberOfCellsOwned == 0 &amp;&amp; oldOwner != address(0))) {
+        if (oldOwner == rankOnePlayerAddress || (players[oldOwner].numberOfCellsOwned == 0 && oldOwner != address(0))) {
             (address rankOnePlayer, uint256 oldOwnerIndex) = getRankOnePlayer(oldOwner); 
-            if (players[oldOwner].numberOfCellsOwned == 0 &amp;&amp; oldOwner != address(0)) {
+            if (players[oldOwner].numberOfCellsOwned == 0 && oldOwner != address(0)) {
                 delete ranking[oldOwnerIndex];
             }
             rankOnePlayerAddress = rankOnePlayer;
         }else{ //Otherwise check if the new owner score is greater or equal than the rank one player score.
-            if (scoreOf(newOwner) &gt;= scoreOf(rankOnePlayerAddress)) {
+            if (scoreOf(newOwner) >= scoreOf(rankOnePlayerAddress)) {
                 rankOnePlayerAddress = newOwner;
             }
         }
@@ -297,13 +297,13 @@ contract TheEthGame {
         
         emit Bought(oldOwner, newOwner);
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
           newOwner.transfer(excess);
         }
     }
     
     function distributeToReferreal (uint256 _price, address _referreal) internal returns (bool _isDstributed) {
-        if (_referreal != address(0) &amp;&amp; _referreal != msg.sender) {
+        if (_referreal != address(0) && _referreal != msg.sender) {
             players[msg.sender].referreal = _referreal;
         }
         
@@ -324,7 +324,7 @@ contract TheEthGame {
         uint256[] memory lastCellBoughtOnBlock = new uint256[](ranking.length);
         bytes32[] memory names = new bytes32[](ranking.length);
         
-        for (uint256 i = 0; i &lt; ranking.length; i++) {
+        for (uint256 i = 0; i < ranking.length; i++) {
             Player memory p = players[ranking[i]];
             
             scores[i] = p.score;
@@ -342,7 +342,7 @@ contract TheEthGame {
         bytes32[] memory names = new bytes32[](NUMBER_OF_CELLS);
         uint256[] memory nextPrices = new uint256[](NUMBER_OF_CELLS);
         
-        for (uint256 i = 0; i &lt; NUMBER_OF_CELLS; i++) {
+        for (uint256 i = 0; i < NUMBER_OF_CELLS; i++) {
              prices[i] = priceOf(i);
              owners[i] = ownerOf(i);
              names[i] = players[ownerOf(i)].name;
@@ -377,7 +377,7 @@ contract TheEthGame {
     }
     
     function isGameFinished() public view returns (bool _isGameFinished) {
-        return rankOnePlayerAddress != address(0) &amp;&amp; getNumberOfBlocksRemainingToWin() &lt; 0;
+        return rankOnePlayerAddress != address(0) && getNumberOfBlocksRemainingToWin() < 0;
     }
     
     function calculateScoresIfCellIsBought (address _newOwner, address _oldOwner, uint256 _cellId) internal view returns (uint256 _newOwnerScore, uint256 _oldOwnerScore) {
@@ -405,19 +405,19 @@ contract TheEthGame {
         
         (uint256 top, uint256 bottom, uint256 left, uint256 right) = getNeighbourhoodOf(_cellId);
         
-        if (top != NUMBER_OF_CELLS &amp;&amp; ownerOf(top) == _address) {
+        if (top != NUMBER_OF_CELLS && ownerOf(top) == _address) {
             numberOfNeighbours = numberOfNeighbours.add(1);
         }
         
-        if (bottom != NUMBER_OF_CELLS &amp;&amp; ownerOf(bottom) == _address) {
+        if (bottom != NUMBER_OF_CELLS && ownerOf(bottom) == _address) {
             numberOfNeighbours = numberOfNeighbours.add(1);
         }
         
-        if (left != NUMBER_OF_CELLS &amp;&amp; ownerOf(left) == _address) {
+        if (left != NUMBER_OF_CELLS && ownerOf(left) == _address) {
             numberOfNeighbours = numberOfNeighbours.add(1);
         }
         
-        if (right != NUMBER_OF_CELLS &amp;&amp; ownerOf(right) == _address) {
+        if (right != NUMBER_OF_CELLS && ownerOf(right) == _address) {
             numberOfNeighbours = numberOfNeighbours.add(1);
         }
         
@@ -425,21 +425,21 @@ contract TheEthGame {
     }
 
     function getNeighbourhoodOf(uint256 _cellId) internal pure returns (uint256 _top, uint256 _bottom, uint256 _left, uint256 _right) {
-        //IMPORTANT: The number &#39;NUMBER_OF_CELLS&#39; is used  to indicate that a cell does not exists.
+        //IMPORTANT: The number 'NUMBER_OF_CELLS' is used  to indicate that a cell does not exists.
         
         //Set top cell as non existent.
         uint256 topCellId = NUMBER_OF_CELLS;
         
         //If cell id is not on the first line set the correct _cellId as topCellId.
-        if(_cellId &gt;= NUMBER_OF_LINES){
+        if(_cellId >= NUMBER_OF_LINES){
            topCellId = _cellId.sub(NUMBER_OF_LINES);
         }
         
         //Get the cell under _cellId by adding the number of cells per line.
         uint256 bottomCellId = _cellId.add(NUMBER_OF_LINES);
         
-        //If it&#39;s greater or equal than NUMBER_OF_CELLS bottom cell does not exists.
-        if (bottomCellId &gt;= NUMBER_OF_CELLS) {
+        //If it's greater or equal than NUMBER_OF_CELLS bottom cell does not exists.
+        if (bottomCellId >= NUMBER_OF_CELLS) {
             bottomCellId = NUMBER_OF_CELLS;
         }
         
@@ -465,7 +465,7 @@ contract TheEthGame {
     }
 
     function _transfer(address _from, address _to, uint256 _cellId) internal {
-        require(_cellId &lt; NUMBER_OF_CELLS);
+        require(_cellId < NUMBER_OF_CELLS);
         require(ownerOf(_cellId) == _from);
         require(_to != address(0));
         require(_to != address(this));
@@ -527,7 +527,7 @@ contract TheEthGame {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) } // solium-disable-line
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -547,8 +547,8 @@ contract TheEthGameTrophy {
     event Transfer (address indexed _from, address indexed _to);
 
     constructor () public {
-        name = &quot;The Eth Game Winner&quot;;
-        description = &quot;2019-08-17&quot;;
+        name = "The Eth Game Winner";
+        description = "2019-08-17";
         rank = 1;
         creator = msg.sender;
     }
@@ -582,7 +582,7 @@ contract TheEthGameTrophy {
     }
   
     function award(address _address, string _message) public {
-        require(msg.sender == creator &amp;&amp; !isAwarded);
+        require(msg.sender == creator && !isAwarded);
         isAwarded = true;
         owner = _address;
         winner = _address;

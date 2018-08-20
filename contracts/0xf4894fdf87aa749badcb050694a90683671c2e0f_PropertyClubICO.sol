@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
 contract PropertyClubICO is Ownable {
     uint256 public constant minLimit = 0.4 ether;
     bool public isFinished;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     uint256 public totalRaised;
     
     
@@ -59,7 +59,7 @@ contract PropertyClubICO is Ownable {
     }
     
     function deposit() public payable {
-        require(msg.value &gt;= minLimit &amp;&amp; !isFinished);
+        require(msg.value >= minLimit && !isFinished);
         
         owner.transfer(msg.value);
         balanceOf[msg.sender] += msg.value;

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ contract EtherMemes {
   
   //No-Arg Constructor initializes basic low-end values.
   function EtherMemes() public {
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
      
       data[i].currentValue = 15000000000000000;
       data[i].memeHolder = msg.sender;
@@ -83,7 +83,7 @@ contract EtherMemes {
   // Doubles instance value  on purchase.
   // Verify  correct amount of ethereum has been received
   function purchaseCollectible(uint uniqueCollectibleID) public payable returns (uint, uint) {
-    require(uniqueCollectibleID &gt;= 0 &amp;&amp; uniqueCollectibleID &lt;= 31);
+    require(uniqueCollectibleID >= 0 && uniqueCollectibleID <= 31);
     // Set initial price to .02 (ETH)
     if ( data[uniqueCollectibleID].currentValue == 15000000000000000 ) {
       data[uniqueCollectibleID].currentValue = 30000000000000000;
@@ -92,7 +92,7 @@ contract EtherMemes {
       data[uniqueCollectibleID].currentValue = data[uniqueCollectibleID].currentValue * 2;
     }
     
-    require(msg.value &gt;= data[uniqueCollectibleID].currentValue * uint256(1));
+    require(msg.value >= data[uniqueCollectibleID].currentValue * uint256(1));
     // Call payPreviousOwner() after purchase.
     payPreviousOwner(data[uniqueCollectibleID].memeHolder,  (data[uniqueCollectibleID].currentValue / 10) * (8)); 
     transactionFee(ceoAddress, (data[uniqueCollectibleID].currentValue / 10) * (2));
@@ -106,7 +106,7 @@ contract EtherMemes {
   function getMemeHolders() external view returns (address[], uint256[]) {
     address[] memory memeHolders = new address[](32);
     uint256[] memory currentValues =  new uint256[](32);
-    for (uint i=0; i&lt;32; i++) {
+    for (uint i=0; i<32; i++) {
       memeHolders[i] = (data[i].memeHolder);
       currentValues[i] = (data[i].currentValue);
     }

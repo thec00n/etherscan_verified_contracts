@@ -2,14 +2,14 @@
 
   Copyright 2017 Cofound.it.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -85,9 +85,9 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
     uint tokensIssued;
   }
 
-  mapping(address =&gt; ContributorData) public contributorList;
+  mapping(address => ContributorData) public contributorList;
   uint public nextContributorIndex;
-  mapping(uint =&gt; address) public contributorIndexes;
+  mapping(uint => address) public contributorIndexes;
 
   state public crowdsaleState = state.pendingStart;
   enum state { pendingStart, priorityPass, openedPriorityPass, crowdsale, crowdsaleEnded }
@@ -118,7 +118,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   address public multisigAddress;
 
   uint nextContributorToClaim;
-  mapping(address =&gt; bool) hasClaimedEthWhenFail;
+  mapping(address => bool) hasClaimedEthWhenFail;
 
   uint public maxTokenSupply;
   bool public ownerHasClaimedTokens;
@@ -163,33 +163,33 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   // Check crowdsale state and calibrate it
   //
   function checkCrowdsaleState() internal returns (bool){
-    if (ethRaised == maxCap &amp;&amp; crowdsaleState != state.crowdsaleEnded){                         // Check if max cap is reached
+    if (ethRaised == maxCap && crowdsaleState != state.crowdsaleEnded){                         // Check if max cap is reached
       crowdsaleState = state.crowdsaleEnded;
       MaxCapReached(block.timestamp);                                                              // Close the crowdsale
       CrowdsaleEnded(block.timestamp);                                                             // Raise event
       return true;
     }
 
-    if (block.timestamp &gt; presaleStartTime &amp;&amp; block.timestamp &lt;= presaleUnlimitedStartTime){  // Check if we are in presale phase
+    if (block.timestamp > presaleStartTime && block.timestamp <= presaleUnlimitedStartTime){  // Check if we are in presale phase
       if (crowdsaleState != state.priorityPass){                                          // Check if state needs to be changed
         crowdsaleState = state.priorityPass;                                              // Set new state
         PresaleStarted(block.timestamp);                                                     // Raise event
         return true;
       }
-    }else if(block.timestamp &gt; presaleUnlimitedStartTime &amp;&amp; block.timestamp &lt;= crowdsaleStartTime){ // Check if we are in presale unlimited phase
+    }else if(block.timestamp > presaleUnlimitedStartTime && block.timestamp <= crowdsaleStartTime){ // Check if we are in presale unlimited phase
       if (crowdsaleState != state.openedPriorityPass){                                          // Check if state needs to be changed
         crowdsaleState = state.openedPriorityPass;                                              // Set new state
         PresaleUnlimitedStarted(block.timestamp);                                                  // Raise event
         return true;
       }
-    }else if(block.timestamp &gt; crowdsaleStartTime &amp;&amp; block.timestamp &lt;= crowdsaleEndedTime){        // Check if we are in crowdsale state
+    }else if(block.timestamp > crowdsaleStartTime && block.timestamp <= crowdsaleEndedTime){        // Check if we are in crowdsale state
       if (crowdsaleState != state.crowdsale){                                                   // Check if state needs to be changed
         crowdsaleState = state.crowdsale;                                                       // Set new state
         CrowdsaleStarted(block.timestamp);                                                         // Raise event
         return true;
       }
     }else{
-      if (crowdsaleState != state.crowdsaleEnded &amp;&amp; block.timestamp &gt; crowdsaleEndedTime){        // Check if crowdsale is over
+      if (crowdsaleState != state.crowdsaleEnded && block.timestamp > crowdsaleEndedTime){        // Check if crowdsale is over
         crowdsaleState = state.crowdsaleEnded;                                                  // Set new state
         CrowdsaleEnded(block.timestamp);                                                           // Raise event
         return true;
@@ -216,7 +216,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
     uint maxContrib;
     if (crowdsaleState == state.priorityPass){    // Check if we are in priority pass
       maxContrib = contributorList[_contributor].priorityPassAllowance - contributorList[_contributor].contributionAmount;
-      if (maxContrib &gt; (maxP1Cap - ethRaised)){   // Check if max contribution is more that max cap
+      if (maxContrib > (maxP1Cap - ethRaised)){   // Check if max contribution is more that max cap
         maxContrib = maxP1Cap - ethRaised;        // Alter max cap
       }
     }
@@ -233,12 +233,12 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
     uint maxContribution = calculateMaxContribution(_contributor);              // Calculate max users contribution
     uint contributionAmount = _amount;
     uint returnAmount = 0;
-    if (maxContribution &lt; _amount){                                             // Check if max contribution is lower than _amount sent
+    if (maxContribution < _amount){                                             // Check if max contribution is lower than _amount sent
       contributionAmount = maxContribution;                                     // Set that user contributes his maximum allowed contribution
       returnAmount = _amount - maxContribution;                                 // Calculate how much he must get back
     }
 
-    if (ethRaised + contributionAmount &gt; minCap &amp;&amp; minCap &gt; ethRaised) MinCapReached(block.timestamp);
+    if (ethRaised + contributionAmount > minCap && minCap > ethRaised) MinCapReached(block.timestamp);
 
     if (contributorList[_contributor].isActive == false){                       // Check if contributor has already contributed
       contributorList[_contributor].isActive = true;                            // Set his activity to true
@@ -254,7 +254,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
     ContributionMade(msg.sender, contributionAmount);
 
     uint tokenAmount = contributionAmount * ethToTokenConversion;               // Calculate how much tokens must contributor get
-    if (tokenAmount &gt; 0){
+    if (tokenAmount > 0){
       token.mintTokens(_contributor, tokenAmount);                                // Issue new tokens
       contributorList[_contributor].tokensIssued += tokenAmount;                  // log token issuance
     }
@@ -267,7 +267,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   function editContributors(address[] _contributorAddresses, uint[] _contributorPPAllowances) public onlyOwner{
     require(_contributorAddresses.length == _contributorPPAllowances.length); // Check if input data is correct
 
-    for(uint cnt = 0; cnt &lt; _contributorAddresses.length; cnt++){
+    for(uint cnt = 0; cnt < _contributorAddresses.length; cnt++){
       if (contributorList[_contributorAddresses[cnt]].isActive){
         contributorList[_contributorAddresses[cnt]].priorityPassAllowance = _contributorPPAllowances[cnt];
       }
@@ -293,7 +293,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   //
   function withdrawEth() onlyOwner public {
     require(this.balance != 0);
-    require(ethRaised &gt;= minCap);
+    require(ethRaised >= minCap);
 
     pendingEthWithdrawal = this.balance;
   }
@@ -307,7 +307,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   //
   function pullBalance() public {
     require(msg.sender == multisigAddress);
-    require(pendingEthWithdrawal &gt; 0);
+    require(pendingEthWithdrawal > 0);
 
     multisigAddress.transfer(pendingEthWithdrawal);
     pendingEthWithdrawal = 0;
@@ -317,8 +317,8 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   // Users can claim their contribution if min cap is not raised
   //
   function claimEthIfFailed() public {
-    require(block.timestamp &gt; crowdsaleEndedTime &amp;&amp; ethRaised &lt; minCap);    // Check if crowdsale has failed
-    require(contributorList[msg.sender].contributionAmount &gt; 0);          // Check if contributor has contributed to crowdsaleEndedTime
+    require(block.timestamp > crowdsaleEndedTime && ethRaised < minCap);    // Check if crowdsale has failed
+    require(contributorList[msg.sender].contributionAmount > 0);          // Check if contributor has contributed to crowdsaleEndedTime
     require(!hasClaimedEthWhenFail[msg.sender]);                          // Check if contributor has already claimed his eth
 
     uint ethContributed = contributorList[msg.sender].contributionAmount; // Get contributors contribution
@@ -332,10 +332,10 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   // Owner can batch return contributors contributions(eth)
   //
   function batchReturnEthIfFailed(uint _numberOfReturns) public onlyOwner{
-    require(block.timestamp &gt; crowdsaleEndedTime &amp;&amp; ethRaised &lt; minCap);                // Check if crowdsale has failed
+    require(block.timestamp > crowdsaleEndedTime && ethRaised < minCap);                // Check if crowdsale has failed
     address currentParticipantAddress;
     uint contribution;
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++){
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++){
       currentParticipantAddress = contributorIndexes[nextContributorToClaim];         // Get next unclaimed participant
       if (currentParticipantAddress == 0x0) return;                                   // Check if all the participants were compensated
       if (!hasClaimedEthWhenFail[currentParticipantAddress]) {                        // Check if participant has already claimed
@@ -354,7 +354,7 @@ contract Crowdsale is ReentrnacyHandlingContract, Owned{
   //
   function withdrawRemainingBalanceForManualRecovery() public onlyOwner{
     require(this.balance != 0);                                  // Check if there are any eth to claim
-    require(block.timestamp &gt; crowdsaleEndedTime);                 // Check if crowdsale is over
+    require(block.timestamp > crowdsaleEndedTime);                 // Check if crowdsale is over
     require(contributorIndexes[nextContributorToClaim] == 0x0);  // Check if all the users were refunded
     multisigAddress.transfer(this.balance);                      // Withdraw to multisig
   }

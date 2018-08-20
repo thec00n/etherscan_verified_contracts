@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -76,8 +76,8 @@ contract CBITToken is Ownable, ERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;CAMBITUS&quot;;
-    string public symbol = &quot;CBIT&quot;;
+    string public name = "CAMBITUS";
+    string public symbol = "CBIT";
     uint256 public decimals = 18;
 
     uint256 public _totalSupply = 250000000e18;
@@ -92,10 +92,10 @@ contract CBITToken is Ownable, ERC20 {
     uint256 public _ecosysSupply = 25000000e18;     //10%
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
     
     // start and end timestamps where investments are allowed (both inclusive)
     uint256 public startTime; 
@@ -119,7 +119,7 @@ contract CBITToken is Ownable, ERC20 {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     modifier canTradable() {
-        require(tradable || (now &gt; startTime + 180 days));
+        require(tradable || (now > startTime + 180 days));
         _;
     }
 
@@ -147,13 +147,13 @@ contract CBITToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function tokensale(address recipient) public payable {
         require(recipient != 0x0);
-        require(msg.value &gt;= minContribAmount);
+        require(msg.value >= minContribAmount);
         price = getPrice();
         uint256 weiAmount = msg.value;
         uint256 tokenToSend = weiAmount.mul(price);
         
-        require(tokenToSend &gt; 0);
-        require(_icoSupply &gt;= tokenToSend);
+        require(tokenToSend > 0);
+        require(_icoSupply >= tokenToSend);
         
         balances[multisig] = balances[multisig].sub(tokenToSend);
         balances[recipient] = balances[recipient].add(tokenToSend);
@@ -168,7 +168,7 @@ contract CBITToken is Ownable, ERC20 {
     // Token distribution to Team
     function sendICOSupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _icoSupply &gt;= value
+            to != 0x0 && value > 0 && _icoSupply >= value
         );
 
         balances[multisig] = balances[multisig].sub(value);
@@ -181,7 +181,7 @@ contract CBITToken is Ownable, ERC20 {
     // Token distribution to Team
     function sendTeamSupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _teamSupply &gt;= value
+            to != 0x0 && value > 0 && _teamSupply >= value
         );
 
         balances[multisig] = balances[multisig].sub(value);
@@ -194,7 +194,7 @@ contract CBITToken is Ownable, ERC20 {
     // Token distribution to Community
     function sendCommunitySupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _communitySupply &gt;= value
+            to != 0x0 && value > 0 && _communitySupply >= value
         );
 
         balances[multisig] = balances[multisig].sub(value);
@@ -207,7 +207,7 @@ contract CBITToken is Ownable, ERC20 {
     // Token distribution to Bounty
     function sendBountySupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _bountySupply &gt;= value
+            to != 0x0 && value > 0 && _bountySupply >= value
         );
 
         balances[multisig] = balances[multisig].sub(value);
@@ -220,7 +220,7 @@ contract CBITToken is Ownable, ERC20 {
     // Token distribution to Ecosystem
     function sendEcosysSupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _ecosysSupply &gt;= value
+            to != 0x0 && value > 0 && _ecosysSupply >= value
         );
 
         balances[multisig] = balances[multisig].sub(value);
@@ -258,7 +258,7 @@ contract CBITToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public canTradable returns (bool success)  {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -273,7 +273,7 @@ contract CBITToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public canTradable returns (bool success)  {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -289,7 +289,7 @@ contract CBITToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public returns (bool success)  {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -307,13 +307,13 @@ contract CBITToken is Ownable, ERC20 {
         // Get current price of a Token
     // @return the price or token value for a ether
     function getPrice() public view returns (uint result) {
-        if ( (now &lt; startTime + 30 days) &amp;&amp; (totalNumberTokenSold &lt; _preSaleSupply)) {
+        if ( (now < startTime + 30 days) && (totalNumberTokenSold < _preSaleSupply)) {
             return 7500;
-        } else if ( (now &lt; startTime + 60 days) &amp;&amp; (totalNumberTokenSold &lt; _preSaleSupply + _phase1Supply) ) {
+        } else if ( (now < startTime + 60 days) && (totalNumberTokenSold < _preSaleSupply + _phase1Supply) ) {
             return 5000;
-        } else if ( (now &lt; startTime + 90 days) &amp;&amp; (totalNumberTokenSold &lt; _preSaleSupply + _phase1Supply + _phase2Supply) ) {
+        } else if ( (now < startTime + 90 days) && (totalNumberTokenSold < _preSaleSupply + _phase1Supply + _phase2Supply) ) {
             return 3125;
-        } else if ( (now &lt; startTime + 99 days) &amp;&amp; (totalNumberTokenSold &lt; _preSaleSupply + _phase1Supply + _phase2Supply + _finalSupply) ) {
+        } else if ( (now < startTime + 99 days) && (totalNumberTokenSold < _preSaleSupply + _phase1Supply + _phase2Supply + _finalSupply) ) {
             return 1500;
         } else {
             return 0;

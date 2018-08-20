@@ -9,12 +9,12 @@ contract PhilcoinToken {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -29,8 +29,8 @@ contract PhilcoinToken {
 
     bool public purchasingAllowed = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalBonusTokensIssued = 0;
@@ -40,8 +40,8 @@ contract PhilcoinToken {
     uint256 public tokenRemainCap = 0;
 
 
-    function name() constant returns (string) { return &quot;Philcoin Token&quot;; }
-    function symbol() constant returns (string) { return &quot;PHT&quot;; }
+    function name() constant returns (string) { return "Philcoin Token"; }
+    function symbol() constant returns (string) { return "PHT"; }
     function decimals() constant returns (uint8) { return 18; }
     
     function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
@@ -52,10 +52,10 @@ contract PhilcoinToken {
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -71,11 +71,11 @@ contract PhilcoinToken {
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -88,7 +88,7 @@ contract PhilcoinToken {
     
     function approve(address _spender, uint256 _value) returns (bool success) {
 
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -134,7 +134,7 @@ contract PhilcoinToken {
 
         owner.transfer(msg.value);
         totalContribution += msg.value;
-        require (totalSupply &lt; tokenCreationCap);
+        require (totalSupply < tokenCreationCap);
         uint256 tokensIssued = safeMult(msg.value, tokenExchangeRate);
 
         totalSupply += tokensIssued;

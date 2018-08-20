@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -84,7 +84,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -124,7 +124,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -135,8 +135,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -218,8 +218,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract OpportyToken is StandardToken {
 
-  string public constant name = &quot;OpportyToken&quot;;
-  string public constant symbol = &quot;OPP&quot;;
+  string public constant name = "OpportyToken";
+  string public constant symbol = "OPP";
   uint8 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 1000000000 * (10 ** uint256(decimals));
@@ -238,7 +238,7 @@ contract OpportyToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -341,8 +341,8 @@ contract OpportyMonthHold is Pausable {
   enum SaleState { NEW, SALE, ENDED }
   SaleState public state;
 
-  mapping (uint =&gt; address) private assetOwners;
-  mapping (address =&gt; uint) private assetOwnersIndex;
+  mapping (uint => address) private assetOwners;
+  mapping (address => uint) private assetOwnersIndex;
   uint public assetOwnersIndexes;
 
   struct Bonus {
@@ -360,8 +360,8 @@ contract OpportyMonthHold is Pausable {
     bool withdrawed;
   }
 
-  mapping(address =&gt; Holder) public holderList;
-  mapping(uint =&gt; address) private holderIndexes;
+  mapping(address => Holder) public holderList;
+  mapping(uint => address) private holderIndexes;
   uint private holderIndex;
 
 
@@ -381,7 +381,7 @@ contract OpportyMonthHold is Pausable {
   event TokenChanged(address newAddress);
 
   modifier onlyAssetsOwners() {
-    require(assetOwnersIndex[msg.sender] &gt; 0 || msg.sender == owner);
+    require(assetOwnersIndex[msg.sender] > 0 || msg.sender == owner);
     _;
   }
 
@@ -407,8 +407,8 @@ contract OpportyMonthHold is Pausable {
 
   function changeBonus(uint minAmount, uint maxAmount, uint8 newBonus) public {
     bool find = false;
-    for (uint i = 0; i &lt; bonuses.length; ++i) {
-      if (bonuses[i].minAmount == minAmount &amp;&amp; bonuses[i].maxAmount == maxAmount ) {
+    for (uint i = 0; i < bonuses.length; ++i) {
+      if (bonuses[i].minAmount == minAmount && bonuses[i].maxAmount == maxAmount ) {
         bonuses[i].bonus = newBonus;
         find = true;
         break;
@@ -424,8 +424,8 @@ contract OpportyMonthHold is Pausable {
     uint8 bon = 0;
     am /= 10 ** 18;
     
-    for (uint i = 0; i &lt; bonuses.length; ++i) {
-        if (am &gt;= bonuses[i].minAmount &amp;&amp; am&lt;bonuses[i].maxAmount) 
+    for (uint i = 0; i < bonuses.length; ++i) {
+        if (am >= bonuses[i].minAmount && am<bonuses[i].maxAmount) 
           bon = bonuses[i].bonus;
     }
 
@@ -434,10 +434,10 @@ contract OpportyMonthHold is Pausable {
 
   function() public payable {
     require(state == SaleState.SALE);
-    require(msg.value &gt;= minimalContribution);
-    require(now &gt;= startDate);
+    require(msg.value >= minimalContribution);
+    require(now >= startDate);
 
-    if (now &gt; endDate) {
+    if (now > endDate) {
       state = SaleState.ENDED;
       msg.sender.transfer(msg.value);
       SaleEnded();
@@ -520,7 +520,7 @@ contract OpportyMonthHold is Pausable {
   }
 
   function returnTokens(uint nTokens) public onlyOwner returns (bool) {
-    require(nTokens &lt;= getBalance());
+    require(nTokens <= getBalance());
     token.transfer(msg.sender, nTokens);
     TokensTransfered(msg.sender, nTokens);
     return true;
@@ -529,7 +529,7 @@ contract OpportyMonthHold is Pausable {
   function unlockTokens() public returns (bool) {
     require(holderList[msg.sender].isActive);
     require(!holderList[msg.sender].withdrawed);
-    require(now &gt;= holderList[msg.sender].holdPeriodTimestamp);
+    require(now >= holderList[msg.sender].holdPeriodTimestamp);
 
     token.transfer(msg.sender, holderList[msg.sender].tokens); 
     holderList[msg.sender].withdrawed = true;
@@ -568,7 +568,7 @@ contract OpportyMonthHold is Pausable {
   }
 
   function batchChangeHoldPeriod(uint holdedPeriod) public onlyAssetsOwners {
-    for (uint i = 0; i &lt; holderIndex; ++i) {
+    for (uint i = 0; i < holderIndex; ++i) {
         holderList[holderIndexes[i]].holdPeriodTimestamp = holdedPeriod;
         HoldChanged(holderIndexes[i], holderList[holderIndexes[i]].tokens, holdedPeriod);
     }
@@ -581,7 +581,7 @@ contract OpportyMonthHold is Pausable {
 
   function getTokenAmount() public view returns (uint) {
     uint tokens = 0;
-    for (uint i = 0; i &lt; holderIndex; ++i) {
+    for (uint i = 0; i < holderIndex; ++i) {
         if (!holderList[holderIndexes[i]].withdrawed) {
           tokens += holderList[holderIndexes[i]].tokens;
         }

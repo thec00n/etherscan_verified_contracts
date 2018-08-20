@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -173,7 +173,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -183,8 +183,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -198,7 +198,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -300,8 +300,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract SovToken is MintableToken {
-  string public name = &quot;Sovereign&quot;;
-  string public symbol = &quot;SVT&quot;;
+  string public name = "Sovereign";
+  string public symbol = "SVT";
   uint256 public decimals = 18;
 
   uint256 private _tradeableDate = now;
@@ -320,11 +320,11 @@ contract SovToken is MintableToken {
   function transfer(address _to, uint256 _value) public returns (bool) 
   {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     
     // reject transaction if the transfer is before tradeable date and
     // the transfer is not from or to the pool
-    require(now &gt; _tradeableDate || _to == POOL || msg.sender == POOL);
+    require(now > _tradeableDate || _to == POOL || msg.sender == POOL);
     
     // if the transfer address is the conversion address - burn the tokens
     if (_to == CONVERT_ADDRESS)
@@ -391,9 +391,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, MintableToken _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -430,7 +430,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -446,9 +446,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 }
 
@@ -476,7 +476,7 @@ contract SovTokenCrowdsale is Crowdsale {
     uint256 weiAmount = msg.value;
 
     // validate if hardcap reached
-    require(weiRaised.add(weiAmount) &lt; HARD_CAP);
+    require(weiRaised.add(weiAmount) < HARD_CAP);
 
     // calculate token amount to be created
     uint256 tokens = getTokenAmount(weiAmount);
@@ -500,23 +500,23 @@ contract SovTokenCrowdsale is Crowdsale {
     uint256 bonus = 100;
 
     // determine bonus according to pre-sale period age
-    if (now &gt;= endTime)
+    if (now >= endTime)
       bonus = 0;
-    else if (now &lt;= startTime + (7 * TIME_UNIT))
+    else if (now <= startTime + (7 * TIME_UNIT))
       bonus += 75;
-    else if (now &lt;= startTime + (14 * TIME_UNIT))
+    else if (now <= startTime + (14 * TIME_UNIT))
       bonus += 65;
-    else if (now &lt;= startTime + (21 * TIME_UNIT))
+    else if (now <= startTime + (21 * TIME_UNIT))
       bonus += 55;
-    else if (now &lt;= startTime + (28 * TIME_UNIT))
+    else if (now <= startTime + (28 * TIME_UNIT))
       bonus += 45;
-    else if (now &lt;= startTime + (39 * TIME_UNIT))
+    else if (now <= startTime + (39 * TIME_UNIT))
       bonus += 35;
-    else if (now &lt;= startTime + (70 * TIME_UNIT))
+    else if (now <= startTime + (70 * TIME_UNIT))
       bonus = 0;
-    else if (now &lt;= startTime + (77 * TIME_UNIT))
+    else if (now <= startTime + (77 * TIME_UNIT))
       bonus += 10;
-    else if (now &lt;= startTime + (84 * TIME_UNIT))
+    else if (now <= startTime + (84 * TIME_UNIT))
       bonus += 5;
     else
       bonus = 100;
@@ -526,10 +526,10 @@ contract SovTokenCrowdsale is Crowdsale {
     bonus = 100;
     
     //determine applicable amount bonus
-    // 1 - 10 ETH 10%, &gt;10 ETH 20%
-    if (weiAmount &gt;= 1000000000000000000 &amp;&amp; weiAmount &lt; 10000000000000000000)
+    // 1 - 10 ETH 10%, >10 ETH 20%
+    if (weiAmount >= 1000000000000000000 && weiAmount < 10000000000000000000)
       bonus += 10;
-    else if (weiAmount &gt;= 10000000000000000000)
+    else if (weiAmount >= 10000000000000000000)
       bonus += 20;
 
     tokens = tokens * bonus / 100;
@@ -541,10 +541,10 @@ contract SovTokenCrowdsale is Crowdsale {
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) 
   {
-      bool isPreSale = now &gt;= startTime &amp;&amp; now &lt;= startTime + (39 * TIME_UNIT);
-      bool isIco = now &gt; startTime + (70 * TIME_UNIT) &amp;&amp; now &lt;= endTime;
+      bool isPreSale = now >= startTime && now <= startTime + (39 * TIME_UNIT);
+      bool isIco = now > startTime + (70 * TIME_UNIT) && now <= endTime;
       bool withinPeriod = isPreSale || isIco;
       bool nonZeroPurchase = msg.value != 0;
-      return withinPeriod &amp;&amp; nonZeroPurchase;
+      return withinPeriod && nonZeroPurchase;
   }
 }

@@ -17,7 +17,7 @@ pragma solidity ^0.4.19;
 * [x] CANUHODL takes 11% from any transaction (BUY | SELL | TRANSFER) and redistributes it across all CANU shareholders,
 based on how much stake you hold.
 * [x] These dividends can be cashed out immediately into ETH or reinvested into the system for more gains
-* [x] As each token is purchased the price of the coin goes up incrementally from its&#39; starting price.
+* [x] As each token is purchased the price of the coin goes up incrementally from its' starting price.
 Additionally, as each token is sold, the price of the token goes down incrementally.
 * [x] Masternodes: Holding 25 CANUHODL Tokens allow you to generate a Masternode link, Masternode links are used as unique entry points to the contract!
 All players who enter the contract through your Masternode have 30% of their 11% dividends fee rerouted from the master-node, to the node-master!
@@ -34,8 +34,8 @@ RECOGNITIONS
 
 DEVS
 ====
-- &lt;AI&gt;Pete
-- &lt;AI&gt;John
+- <AI>Pete
+- <AI>John
 - ChalkBwoy8
 */
 
@@ -45,25 +45,25 @@ contract CANUHODL {
     =================================*/
     // only people with tokens
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
 
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
     // administrators can:
-    // -&gt; change the name of the contract
-    // -&gt; change the name of the token
-    // -&gt; change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
+    // -> change the name of the contract
+    // -> change the name of the token
+    // -> change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
     // they CANNOT:
-    // -&gt; take funds
-    // -&gt; disable withdrawals
-    // -&gt; kill the contract
-    // -&gt; change the price of tokens
+    // -> take funds
+    // -> disable withdrawals
+    // -> kill the contract
+    // -> change the price of tokens
     modifier onlyAdministrator(){
         address _customerAddress = msg.sender;
         require(administrators[keccak256(_customerAddress)]);
@@ -79,13 +79,13 @@ contract CANUHODL {
 
         // are we still in the vulnerable phase?
         // if so, enact anti early whale protocol
-        if( onlyAmbassadors &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= ambassadorQuota_ )){
+        if( onlyAmbassadors && ((totalEthereumBalance() - _amountOfEthereum) <= ambassadorQuota_ )){
             require(
                 // is the customer in the ambassador list?
-                ambassadors_[_customerAddress] == true &amp;&amp;
+                ambassadors_[_customerAddress] == true &&
 
                 // does the customer purchase exceed the max ambassador quota?
-                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= ambassadorMaxPurchase_
+                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= ambassadorMaxPurchase_
 
             );
 
@@ -95,7 +95,7 @@ contract CANUHODL {
             // execute
             _;
         } else {
-            // in case the ether count drops low, the ambassador phase won&#39;t reinitiate
+            // in case the ether count drops low, the ambassador phase won't reinitiate
             onlyAmbassadors = false;
             _;
         }
@@ -141,8 +141,8 @@ contract CANUHODL {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;CANUHODL&quot;;
-    string public symbol = &quot;CANU&quot;;
+    string public name = "CANUHODL";
+    string public symbol = "CANU";
     uint8 constant public decimals = 18;
     uint8 constant internal percentageFee = 11;
     uint8 constant internal transferFee = 1; //1%
@@ -154,7 +154,7 @@ contract CANUHODL {
     uint256 public stakingRequirement = 25e18;
 
     // ambassador program
-    mapping(address =&gt; bool) internal ambassadors_;
+    mapping(address => bool) internal ambassadors_;
     uint256 constant internal ambassadorMaxPurchase_ = 2 ether;
     uint256 constant internal ambassadorQuota_ = 20 ether;
 
@@ -162,15 +162,15 @@ contract CANUHODL {
     =            DATASETS            =
     ================================*/
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal ambassadorAccumulatedQuota_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal ambassadorAccumulatedQuota_;
     uint256 private tokenSupply_ = 0;
     uint256 private profitPerShare_;
 
     // administrator list (see above on what they can do)
-    mapping(bytes32 =&gt; bool) public administrators;
+    mapping(bytes32 => bool) public administrators;
 
     // when this is set to true, only ambassadors can purchase tokens (this prevents a whale premine, it ensures a fairly distributed upper pyramid)
     bool public onlyAmbassadors = true;
@@ -221,7 +221,7 @@ contract CANUHODL {
     }
 
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
      */
     function reinvest()
         onlyStronghands()
@@ -238,7 +238,7 @@ contract CANUHODL {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
 
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends, 0x0);
 
         // fire event
@@ -251,10 +251,10 @@ contract CANUHODL {
     function exit()
         public
     {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
 
         // lambo delivery service
         withdraw();
@@ -295,7 +295,7 @@ contract CANUHODL {
          // setup data
          address _customerAddress = msg.sender;
          // russian hackers BTFO
-         require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+         require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
          uint256 _tokens = _amountOfTokens;
          uint256 _ethereum = tokensToEthereum_(_tokens);
          uint256 _dividends = getDividends(percentageFee, _ethereum);
@@ -310,7 +310,7 @@ contract CANUHODL {
          payoutsTo_[_customerAddress] -= _updatedPayouts;
 
          // dividing by zero is a bad idea
-         if (tokenSupply_ &gt; 0) {
+         if (tokenSupply_ > 0) {
              // update the amount of dividends per token
              profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
          }
@@ -322,7 +322,7 @@ contract CANUHODL {
 
     /**
      * Transfer tokens from the caller to a new holder.
-     * Remember, there&#39;s a 1% fee here as well.
+     * Remember, there's a 1% fee here as well.
      */
     function transfer(address _toAddress, uint256 _amountOfTokens)
         onlyBagholders()
@@ -335,10 +335,10 @@ contract CANUHODL {
         // make sure we have the requested tokens
         // also disables transfers until ambassador phase is over
         // ( we dont want whale premines )
-        require(!onlyAmbassadors &amp;&amp; _amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(!onlyAmbassadors && _amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
 
         // withdraw all outstanding dividends first
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
 
         // liquify 1% of the tokens that are transfered
         // these are dispersed to shareholders
@@ -554,7 +554,7 @@ contract CANUHODL {
         view
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = getDividends(percentageFee, _ethereum);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -582,20 +582,20 @@ contract CANUHODL {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
 
         // is the user referred by a masternode?
         if(
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
 
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
             // wealth redistribution
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -606,8 +606,8 @@ contract CANUHODL {
             _fee = _dividends * magnitude;
         }
 
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply_ &gt; 0){
+        // we can't give people infinite ethereum
+        if(tokenSupply_ > 0){
 
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -623,11 +623,11 @@ contract CANUHODL {
             tokenSupply_ = _amountOfTokens;
         }
 
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
 
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int256 _updatedPayouts = (int256) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
 
@@ -639,7 +639,7 @@ contract CANUHODL {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum)
@@ -674,7 +674,7 @@ contract CANUHODL {
 
     /**
      * Calculate token sell value.
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
      function tokensToEthereum_(uint256 _tokens)
@@ -707,7 +707,7 @@ contract CANUHODL {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -742,9 +742,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -752,7 +752,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -761,7 +761,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

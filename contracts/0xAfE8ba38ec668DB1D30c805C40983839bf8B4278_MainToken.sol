@@ -28,13 +28,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -42,7 +42,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -52,7 +52,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(
     address _from,
@@ -94,8 +94,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -142,7 +142,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -230,11 +230,11 @@ contract MintableToken is StandardToken, Ownable {
 
 contract FreezableToken is StandardToken {
 
-    mapping (bytes32 =&gt; uint64) internal chains;
+    mapping (bytes32 => uint64) internal chains;
 
-    mapping (bytes32 =&gt; uint) internal freezings;
+    mapping (bytes32 => uint) internal freezings;
 
-    mapping (address =&gt; uint) internal freezingBalance;
+    mapping (address => uint) internal freezingBalance;
 
     event Freezed(address indexed to, uint64 release, uint amount);
     event Released(address indexed owner, uint amount);
@@ -260,7 +260,7 @@ contract FreezableToken is StandardToken {
     }
 
     function getFreezing(address _addr, uint _index) public view returns (uint64 _release, uint _balance) {
-        for (uint i = 0; i &lt; _index + 1; i++) {
+        for (uint i = 0; i < _index + 1; i++) {
             _release = chains[toKey(_addr, _release)];
             if (_release == 0) {
                 return;
@@ -271,7 +271,7 @@ contract FreezableToken is StandardToken {
 
     function freezeTo(address _to, uint _amount, uint64 _until) public {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
 
@@ -288,7 +288,7 @@ contract FreezableToken is StandardToken {
         bytes32 headKey = toKey(msg.sender, 0);
         uint64 head = chains[headKey];
         require(head != 0);
-        require(uint64(block.timestamp) &gt; head);
+        require(uint64(block.timestamp) > head);
         bytes32 currentKey = toKey(msg.sender, head);
 
         uint64 next = chains[currentKey];
@@ -312,7 +312,7 @@ contract FreezableToken is StandardToken {
         uint release;
         uint balance;
         (release, balance) = getFreezing(msg.sender, 0);
-        while (release != 0 &amp;&amp; block.timestamp &gt; release) {
+        while (release != 0 && block.timestamp > release) {
             releaseOnce();
             tokens += balance;
             (release, balance) = getFreezing(msg.sender, 0);
@@ -328,7 +328,7 @@ contract FreezableToken is StandardToken {
     }
 
     function freeze(address _to, uint64 _until) internal {
-        require(_until &gt; block.timestamp);
+        require(_until > block.timestamp);
         bytes32 key = toKey(_to, _until);
         bytes32 parentKey = toKey(_to, uint64(0));
         uint64 next = chains[parentKey];
@@ -341,7 +341,7 @@ contract FreezableToken is StandardToken {
         bytes32 nextKey = toKey(_to, next);
         uint parent;
 
-        while (next != 0 &amp;&amp; _until &gt; next) {
+        while (next != 0 && _until > next) {
             parent = next;
             parentKey = nextKey;
 
@@ -370,7 +370,7 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -431,8 +431,8 @@ contract Consts {
     uint8 public constant TOKEN_DECIMALS_UINT8 = 2;
     uint public constant TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
 
-    string public constant TOKEN_NAME = &quot;Wechain Network&quot;;
-    string public constant TOKEN_SYMBOL = &quot;WCN&quot;;
+    string public constant TOKEN_NAME = "Wechain Network";
+    string public constant TOKEN_SYMBOL = "WCN";
     bool public constant PAUSED = false;
     address public constant TARGET_USER = 0x031e4bd2fa0bbdccf4d97b66abacb190c06aa3fc;
     
@@ -491,7 +491,7 @@ contract MainToken is Consts, FreezableMintableToken, BurnableToken, Pausable
         uint[5] memory amounts = [uint(300000000000),uint(50000000000),uint(400000000000),uint(100000000000),uint(150000000000)];
         uint64[5] memory freezes = [uint64(0),uint64(0),uint64(0),uint64(0),uint64(1544547601)];
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (freezes[i] == 0) {
                 mint(addresses[i], amounts[i]);
             } else {

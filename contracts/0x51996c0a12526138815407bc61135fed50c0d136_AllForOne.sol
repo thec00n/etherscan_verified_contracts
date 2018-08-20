@@ -6,9 +6,9 @@ pragma solidity ^0.4.21;
 contract AllForOne {
     
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    mapping (address =&gt; uint) private playerRegistrationStatus;
-    mapping (address =&gt; uint) private confirmedWinners;
-    mapping (uint =&gt; address) private numberToAddress;
+    mapping (address => uint) private playerRegistrationStatus;
+    mapping (address => uint) private confirmedWinners;
+    mapping (uint => address) private numberToAddress;
     uint private currentPlayersRequired;
     uint private currentBet;
     uint private playerCount;
@@ -37,8 +37,8 @@ contract AllForOne {
         _;
     }
     modifier betConditions () {
-        require (playerRegistrationStatus[msg.sender] &lt; currentGame);
-        require (playerCount &lt; currentPlayersRequired);
+        require (playerRegistrationStatus[msg.sender] < currentGame);
+        require (playerCount < currentPlayersRequired);
         require (msg.value == currentBet);
         require (confirmedWinners[msg.sender] == 0);
         _;
@@ -64,7 +64,7 @@ contract AllForOne {
         uint _status = 0;
         uint _playerCount = playerCount;
         address _lastWinner = lastWinner;
-        if (playerRegistrationStatus[msg.sender] &lt; currentGame) {
+        if (playerRegistrationStatus[msg.sender] < currentGame) {
         _status = 1;
         }
         return (_status, _playerCount, _lastWinner);
@@ -79,7 +79,7 @@ contract AllForOne {
         }
     function revealWinner () external revealConditions {
         uint _thisBlock = block.number;
-        if (_thisBlock - revealBlock &lt;= 255) {
+        if (_thisBlock - revealBlock <= 255) {
             playerCount = 0;
             currentGame++;
             uint _winningNumber = uint(block.blockhash(revealBlock)) % currentPlayersRequired + 1;

@@ -1,7 +1,7 @@
 pragma solidity ^ 0.4.16;
 contract owned {
     address public owner;
-    mapping (address =&gt;  bool) public admins;
+    mapping (address =>  bool) public admins;
 
     function owned() {
         owner = msg.sender;
@@ -41,7 +41,7 @@ contract BCT is owned {
     bool public usersCanUnfreeze;
 
     bool public ico = true; //turn ico on and of
-    mapping (address =&gt; bool) public admin;
+    mapping (address => bool) public admin;
 
 
     modifier notICO {
@@ -51,13 +51,13 @@ contract BCT is owned {
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt;  bool) public frozen;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address =>  bool) public frozen;
 
-    mapping (address =&gt;  bool) public canTrade; //user allowed to buy or sell
+    mapping (address =>  bool) public canTrade; //user allowed to buy or sell
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -89,8 +89,8 @@ contract BCT is owned {
         uint256 initialSupply = 20000000000000000000000000;
         balanceOf[msg.sender] = initialSupply ;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
-        name = &quot;BotConnect&quot;;                                   // Set the name for display purposes
-        symbol = &quot;BCT&quot;;                               // Set the symbol for display purposes
+        name = "BotConnect";                                   // Set the name for display purposes
+        symbol = "BCT";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
         minBalanceForAccounts = 1000000000000000;
         usersCanTrade=false;
@@ -149,7 +149,7 @@ contract BCT is owned {
      * function to freeze an account
      */
     function freeze (address target, bool froze )   {
-        if(froze || (!froze &amp;&amp; !usersCanUnfreeze)) {
+        if(froze || (!froze && !usersCanUnfreeze)) {
             require(admin[msg.sender]);
         }
 
@@ -165,8 +165,8 @@ contract BCT is owned {
         require(_to != 0x0);                                   // Prevent transfer to 0x0 address. Use burn() instead
 
         require(!frozen[_from]);                       //prevent transfer from frozen address
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -182,7 +182,7 @@ contract BCT is owned {
      */
     function transfer(address _to, uint256 _value) notICO {
         require(!frozen[msg.sender]);                       //prevent transfer from frozen address
-        if (msg.sender.balance  &lt; minBalanceForAccounts) {
+        if (msg.sender.balance  < minBalanceForAccounts) {
             sell((minBalanceForAccounts - msg.sender.balance) * sellPrice);
         }
         _transfer(msg.sender, _to, _value);
@@ -190,14 +190,14 @@ contract BCT is owned {
 
 
 
-    mapping (address =&gt; uint256) public totalLockedRewardsOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public lockedRewardsOf; //balance of a locked reward
-    mapping (address =&gt; mapping (uint32  =&gt; address)) public userRewarders; //indexed list of rewardees rewarder
-    mapping (address =&gt; mapping (address =&gt; uint32)) public userRewardCount; //a list of number of times a customer has received reward from a given merchant
-    mapping (address =&gt; uint32) public userRewarderCount; //number of rewarders per customer
+    mapping (address => uint256) public totalLockedRewardsOf;
+    mapping (address => mapping (address => uint256)) public lockedRewardsOf; //balance of a locked reward
+    mapping (address => mapping (uint32  => address)) public userRewarders; //indexed list of rewardees rewarder
+    mapping (address => mapping (address => uint32)) public userRewardCount; //a list of number of times a customer has received reward from a given merchant
+    mapping (address => uint32) public userRewarderCount; //number of rewarders per customer
 
     //merchant
-    mapping (address =&gt;  uint256  ) public totalRewardIssuedOut;
+    mapping (address =>  uint256  ) public totalRewardIssuedOut;
 
     /**
      * Reward tokens - tokens go to
@@ -210,15 +210,15 @@ contract BCT is owned {
     function reward(address _to, uint256 _value, bool locked, string data) {
         require(_to != 0x0);
         require(!frozen[msg.sender]);                       //prevent transfer from frozen address
-        if (msg.sender.balance  &lt; minBalanceForAccounts) {
+        if (msg.sender.balance  < minBalanceForAccounts) {
             sell((minBalanceForAccounts - msg.sender.balance) * sellPrice);
         }
         if(!locked) {
             _transfer(msg.sender, _to, _value);
         }else{
             //prevent transfer from frozen address
-            require(balanceOf[msg.sender] &gt;= _value);                // Check if the sender has enough
-            require(totalLockedRewardsOf[_to] + _value &gt; totalLockedRewardsOf[_to]); // Check for overflows
+            require(balanceOf[msg.sender] >= _value);                // Check if the sender has enough
+            require(totalLockedRewardsOf[_to] + _value > totalLockedRewardsOf[_to]); // Check for overflows
             balanceOf[msg.sender] -= _value;                         // Subtract from the sender
             totalLockedRewardsOf[_to] += _value;                           // Add the same to the recipient
             lockedRewardsOf[_to][msg.sender] += _value;
@@ -244,10 +244,10 @@ contract BCT is owned {
      */
     function transferReward(address _to, uint256 _value) {
         require(!frozen[msg.sender]);                       //prevent transfer from frozen address
-        require(lockedRewardsOf[msg.sender][_to] &gt;= _value );
-        require(totalLockedRewardsOf[msg.sender] &gt;= _value);
+        require(lockedRewardsOf[msg.sender][_to] >= _value );
+        require(totalLockedRewardsOf[msg.sender] >= _value);
 
-        if (msg.sender.balance  &lt; minBalanceForAccounts) {
+        if (msg.sender.balance  < minBalanceForAccounts) {
             sell((minBalanceForAccounts - msg.sender.balance) * sellPrice);
         }
         totalLockedRewardsOf[msg.sender] -= _value;                           // Add the same to the recipient
@@ -265,10 +265,10 @@ contract BCT is owned {
      * @param _value the amount to unlock
      */
     function unlockReward(address addr, uint256 _value) {
-        require(totalLockedRewardsOf[addr] &gt; _value);                       //prevent transfer from frozen address
-        require(lockedRewardsOf[addr][msg.sender] &gt;= _value );
+        require(totalLockedRewardsOf[addr] > _value);                       //prevent transfer from frozen address
+        require(lockedRewardsOf[addr][msg.sender] >= _value );
         if(_value==0) _value=lockedRewardsOf[addr][msg.sender];
-        if (msg.sender.balance  &lt; minBalanceForAccounts) {
+        if (msg.sender.balance  < minBalanceForAccounts) {
             sell((minBalanceForAccounts - msg.sender.balance) * sellPrice);
         }
         totalLockedRewardsOf[addr] -= _value;                           // Add the same to the recipient
@@ -290,7 +290,7 @@ contract BCT is owned {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(!frozen[_from]);                       //prevent transfer from frozen address
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -336,7 +336,7 @@ contract BCT is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -352,10 +352,10 @@ contract BCT is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value)  returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -389,12 +389,12 @@ contract BCT is owned {
 
     //user is buying grx
     function buy() payable returns (uint256 amount){
-        if(!usersCanTrade &amp;&amp; !canTrade[msg.sender]) revert();
+        if(!usersCanTrade && !canTrade[msg.sender]) revert();
         amount = msg.value * buyPrice;                    // calculates the amount
 
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
@@ -402,14 +402,14 @@ contract BCT is owned {
     //user is selling us grx, we are selling eth to the user
     function sell(uint256 amount) returns (uint revenue){
         require(!frozen[msg.sender]);
-        if(!usersCanTrade &amp;&amp; !canTrade[msg.sender]) {
-            require(minBalanceForAccounts &gt; amount/sellPrice);
+        if(!usersCanTrade && !canTrade[msg.sender]) {
+            require(minBalanceForAccounts > amount/sellPrice);
         }
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount / sellPrice;
-        require(msg.sender.send(revenue));                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(msg.sender.send(revenue));                // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

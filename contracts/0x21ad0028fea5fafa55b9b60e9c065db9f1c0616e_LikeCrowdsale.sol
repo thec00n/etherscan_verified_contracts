@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,30 +136,30 @@ contract HasOperator is Claimable {
 contract LikeCoin is ERC20, HasOperator {
     using SafeMath for uint256;
 
-    string constant public name = &quot;LikeCoin&quot;;
-    string constant public symbol = &quot;LIKE&quot;;
+    string constant public name = "LikeCoin";
+    string constant public symbol = "LIKE";
 
-    // Synchronized to Ether -&gt; Wei ratio, which is important
+    // Synchronized to Ether -> Wei ratio, which is important
     uint8 constant public decimals = 18;
 
     uint256 public supply = 0;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     address public crowdsaleAddr = 0x0;
     address public contributorPoolAddr = 0x0;
     uint256 public contributorPoolMintQuota = 0;
     address[] public creatorsPoolAddrs;
-    mapping(address =&gt; bool) isCreatorsPool;
+    mapping(address => bool) isCreatorsPool;
     uint256 public creatorsPoolMintQuota = 0;
-    mapping(address =&gt; uint256) public lockedBalances;
+    mapping(address => uint256) public lockedBalances;
     uint public unlockTime = 0;
     SignatureChecker public signatureChecker = SignatureChecker(0x0);
     bool public signatureCheckerFreezed = false;
     address public signatureOwner = 0x0;
     bool public allowDelegate = true;
-    mapping (address =&gt; mapping (uint256 =&gt; bool)) public usedNonce;
-    mapping (address =&gt; bool) public transferAndCallWhitelist;
+    mapping (address => mapping (uint256 => bool)) public usedNonce;
+    mapping (address => bool) public transferAndCallWhitelist;
 
     event Lock(address indexed _addr, uint256 _value);
     event SignatureCheckerChanged(address _newSignatureChecker);
@@ -181,7 +181,7 @@ contract LikeCoin is ERC20, HasOperator {
     }
 
     function _tryUnlockBalance(address _from) internal {
-        if (unlockTime != 0 &amp;&amp; now &gt;= unlockTime &amp;&amp; lockedBalances[_from] &gt; 0) {
+        if (unlockTime != 0 && now >= unlockTime && lockedBalances[_from] > 0) {
             balances[_from] = balances[_from].add(lockedBalances[_from]);
             delete lockedBalances[_from];
         }
@@ -204,7 +204,7 @@ contract LikeCoin is ERC20, HasOperator {
     function transferAndLock(address _to, uint256 _value) public returns (bool success) {
         require(msg.sender != 0x0);
         require(_to != 0x0);
-        require(now &lt; unlockTime);
+        require(now < unlockTime);
         require(msg.sender == crowdsaleAddr || msg.sender == owner || msg.sender == operator);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         lockedBalances[_to] = lockedBalances[_to].add(_value);
@@ -221,11 +221,11 @@ contract LikeCoin is ERC20, HasOperator {
 
     function _transferMultiple(address _from, address[] _addrs, uint256[] _values) internal returns (bool success) {
         require(_from != 0x0);
-        require(_addrs.length &gt; 0);
+        require(_addrs.length > 0);
         require(_values.length == _addrs.length);
         _tryUnlockBalance(_from);
         uint256 total = 0;
-        for (uint i = 0; i &lt; _addrs.length; ++i) {
+        for (uint i = 0; i < _addrs.length; ++i) {
             address addr = _addrs[i];
             require(addr != 0x0);
             uint256 value = _values[i];
@@ -246,7 +246,7 @@ contract LikeCoin is ERC20, HasOperator {
         assembly {
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     function _transferAndCall(address _from, address _to, uint256 _value, bytes _data) internal returns (bool success) {
@@ -278,7 +278,7 @@ contract LikeCoin is ERC20, HasOperator {
     modifier isDelegated(address _from, uint256 _maxReward, uint256 _claimedReward, uint256 _nonce) {
         require(allowDelegate);
         require(_from != 0x0);
-        require(_claimedReward &lt;= _maxReward);
+        require(_claimedReward <= _maxReward);
         require(!usedNonce[_from][_nonce]);
         usedNonce[_from][_nonce] = true;
         require(_transfer(_from, msg.sender, _claimedReward));
@@ -362,7 +362,7 @@ contract LikeCoin is ERC20, HasOperator {
         require(crowdsaleAddr == 0x0);
         require(_crowdsaleAddr != 0x0);
         require(_isContract(_crowdsaleAddr));
-        require(_privateFundUnlockTime &gt; now);
+        require(_privateFundUnlockTime > now);
         require(_value != 0);
         unlockTime = _privateFundUnlockTime;
         crowdsaleAddr = _crowdsaleAddr;
@@ -391,9 +391,9 @@ contract LikeCoin is ERC20, HasOperator {
 
     function registerCreatorsPools(address[] _poolAddrs, uint256 _mintLimit) onlyOwner public {
         require(creatorsPoolAddrs.length == 0);
-        require(_poolAddrs.length &gt; 0);
-        require(_mintLimit &gt; 0);
-        for (uint i = 0; i &lt; _poolAddrs.length; ++i) {
+        require(_poolAddrs.length > 0);
+        require(_mintLimit > 0);
+        for (uint i = 0; i < _poolAddrs.length; ++i) {
             require(_isContract(_poolAddrs[i]));
             creatorsPoolAddrs.push(_poolAddrs[i]);
             isCreatorsPool[_poolAddrs[i]] = true;
@@ -419,7 +419,7 @@ contract LikeCrowdsale is HasOperator {
     uint public end = 0;
     uint256 public coinsPerEth = 0;
 
-    mapping (address =&gt; bool) public kycDone;
+    mapping (address => bool) public kycDone;
 
     bool finalized = false;
 
@@ -432,8 +432,8 @@ contract LikeCrowdsale is HasOperator {
 
     function LikeCrowdsale(address _likeAddr, uint _start, uint _end, uint256 _coinsPerEth) public {
         require(_coinsPerEth != 0);
-        require(now &lt; _start);
-        require(_start &lt; _end);
+        require(now < _start);
+        require(_start < _end);
         owner = msg.sender;
         like = LikeCoin(_likeAddr);
         start = _start;
@@ -444,30 +444,30 @@ contract LikeCrowdsale is HasOperator {
     function changePrice(uint256 _newCoinsPerEth) onlyOwner public {
         require(_newCoinsPerEth != 0);
         require(_newCoinsPerEth != coinsPerEth);
-        require(now &lt; start);
+        require(now < start);
         coinsPerEth = _newCoinsPerEth;
         PriceChanged(_newCoinsPerEth);
     }
 
     function addPrivateFund(address _addr, uint256 _value) onlyOwner public {
-        require(now &lt; start);
-        require(_value &gt; 0);
+        require(now < start);
+        require(_value > 0);
         like.transferAndLock(_addr, _value);
         AddPrivateFund(_addr, _value);
     }
 
     function registerKYC(address[] _customerAddrs) ownerOrOperator public {
-        for (uint32 i = 0; i &lt; _customerAddrs.length; ++i) {
+        for (uint32 i = 0; i < _customerAddrs.length; ++i) {
             kycDone[_customerAddrs[i]] = true;
             RegisterKYC(_customerAddrs[i]);
         }
     }
 
     function () public payable {
-        require(now &gt;= start);
-        require(now &lt; end);
+        require(now >= start);
+        require(now < end);
         require(!finalized);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(kycDone[msg.sender]);
         uint256 coins = coinsPerEth.mul(msg.value);
         like.transfer(msg.sender, coins);
@@ -475,16 +475,16 @@ contract LikeCrowdsale is HasOperator {
     }
 
     function transferLike(address _to, uint256 _value) onlyOwner public {
-        require(now &lt; start || now &gt;= end);
+        require(now < start || now >= end);
         like.transfer(_to, _value);
         LikeTransfer(_to, _value);
     }
 
     function finalize() ownerOrOperator public {
         require(!finalized);
-        require(now &gt;= start);
+        require(now >= start);
         uint256 remainingCoins = like.balanceOf(this);
-        require(now &gt;= end || remainingCoins == 0);
+        require(now >= end || remainingCoins == 0);
         owner.transfer(this.balance);
         finalized = true;
         Finalize();

@@ -22,7 +22,7 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,8 +41,8 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
-        assert(c &gt;= b);
+        assert(c >= a);
+        assert(c >= b);
         return c;
     }
 }
@@ -83,21 +83,21 @@ contract StandardERC20Token is ERC20Interface {
     uint256 internal supply;
 
     // Mapping of balances
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     // Mapping of approval
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     // Modifier to check the length of msg.data
     modifier onlyPayloadSize(uint256 size) {
-        if(msg.data.length &lt; size.add(4)) {
+        if(msg.data.length < size.add(4)) {
             revert();
         }
         _;
     }
 
     /**
-    * @dev Don&#39;t accept ETH
+    * @dev Don't accept ETH
      */
     function () public payable {
         revert();
@@ -114,10 +114,10 @@ contract StandardERC20Token is ERC20Interface {
     */
     constructor(address _issuer, string _name, string _symbol, uint8 _decimals, uint256 _amount) public {
         require(_issuer != address(0));
-        require(bytes(_name).length &gt; 0);
-        require(bytes(_symbol).length &gt; 0);
-        require(_decimals &lt;= 18);
-        require(_amount &gt; 0);
+        require(bytes(_name).length > 0);
+        require(bytes(_symbol).length > 0);
+        require(_decimals <= 18);
+        require(_amount > 0);
 
         name = _name;
         symbol = _symbol;
@@ -154,8 +154,8 @@ contract StandardERC20Token is ERC20Interface {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(64) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -174,9 +174,9 @@ contract StandardERC20Token is ERC20Interface {
     */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(96) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -197,7 +197,7 @@ contract StandardERC20Token is ERC20Interface {
     * @return Whether the approval was successful or not
     */
     function approve(address _spender, uint256 _value) onlyPayloadSize(64) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(allowed[msg.sender][_spender] == 0);
 
         allowed[msg.sender][_spender] = _value;
@@ -225,7 +225,7 @@ contract StandardERC20Token is ERC20Interface {
     * @return Whether the approval was successful or not
     */
     function increaseApproval(address _spender, uint _value) onlyPayloadSize(64) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_value);
 
@@ -241,11 +241,11 @@ contract StandardERC20Token is ERC20Interface {
     * @return Whether the approval was successful or not
     */
     function decreaseApproval(address _spender, uint _value) onlyPayloadSize(64) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         uint256 value = allowed[msg.sender][_spender];
 
-        if (_value &gt;= value) {
+        if (_value >= value) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = value.sub(_value);
@@ -297,7 +297,7 @@ contract LongHashERC20Token is StandardERC20Token {
     * @return Whether the issuance was successful or not
     */
     function issue(uint256 _amount) onlyIssuer() public returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         uint256 value = _amount.mul(10 ** uint256(decimals));
 
         supply = supply.add(value);
@@ -316,10 +316,10 @@ contract LongHashERC20Token is StandardERC20Token {
     function burn(uint256 _amount) onlyIssuer() public returns (bool) {
         uint256 value;
 
-        require(_amount &gt; 0);
+        require(_amount > 0);
         value = _amount.mul(10 ** uint256(decimals));
-        require(supply &gt;= value);
-        require(balances[issuer] &gt;= value);
+        require(supply >= value);
+        require(balances[issuer] >= value);
 
         supply = supply.sub(value);
         balances[issuer] = balances[issuer].sub(value);
@@ -332,7 +332,7 @@ contract LongHashERC20Token is StandardERC20Token {
     * @dev Change the issuer of tokens
     *
     * @param _to The new issuer
-    * @param _transfer Whether transfer the old issuer&#39;s tokens to new issuer
+    * @param _transfer Whether transfer the old issuer's tokens to new issuer
     * @return Whether the burn was successful or not
     */
     function changeIssuer(address _to, bool _transfer) onlyIssuer() public returns (bool) {

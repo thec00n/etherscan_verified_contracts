@@ -2,14 +2,14 @@
 
   Copyright 2018 Source Code Chain Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -40,9 +40,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -50,7 +50,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -59,7 +59,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -74,8 +74,8 @@ contract BasicERC20Token {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -90,9 +90,9 @@ contract BasicERC20Token {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -130,7 +130,7 @@ contract BasicERC20Token {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -177,7 +177,7 @@ contract BasicERC20Token {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -193,10 +193,10 @@ contract BasicERC20Token {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -206,12 +206,12 @@ contract BasicERC20Token {
 
 /**
  * @title Source Code Chain AI Token.
- * @author Bertrand Huang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b494e595f594a454f05435e4a454c6b58445e59484e4848054244">[email&#160;protected]</a>&gt;.
+ * @author Bertrand Huang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b494e595f594a454f05435e4a454c6b58445e59484e4848054244">[email protected]</a>>.
  */
 contract SCCAIToken is BasicERC20Token {
     using SafeMath for uint256;
-    string public name = &quot;Source Code Chain AI Token&quot;;
-    string public symbol = &quot;SCC&quot;;
+    string public name = "Source Code Chain AI Token";
+    string public symbol = "SCC";
     uint public decimals = 18;
 
     uint public exchange = 100000;
@@ -234,7 +234,7 @@ contract SCCAIToken is BasicERC20Token {
     }
 
     modifier inProgress {
-        if(isStart &amp;&amp; !isClose) {
+        if(isStart && !isClose) {
             _;
         }else {
             revert();
@@ -267,11 +267,11 @@ contract SCCAIToken is BasicERC20Token {
     }
 
     function issueToken() payable inProgress public{
-        assert(balances[target] &gt; 0);
-        assert(msg.value &gt;= 0.0001 ether);
+        assert(balances[target] > 0);
+        assert(msg.value >= 0.0001 ether);
         uint256 tokens = msg.value.mul(exchange);
 
-        if (tokens &gt; balances[target]) {
+        if (tokens > balances[target]) {
             revert();
         }
 

@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -163,7 +163,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -192,9 +192,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -202,7 +202,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -211,7 +211,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -226,7 +226,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -241,7 +241,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _from,
@@ -262,21 +262,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -414,7 +414,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -430,14 +430,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -587,19 +587,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -649,7 +649,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -668,7 +668,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -769,7 +769,7 @@ contract RoyalStables is Ownable,ERC721Token {
     /**
         @dev Structure to hold Horsey collectible information
         @dev should be as small as possible but since its already greater than 256
-        @dev lets keep it &lt;= 512
+        @dev lets keep it <= 512
     */
     struct Horsey {
         address race;       /// @dev Stores the original race address this horsey was claimed from
@@ -779,13 +779,13 @@ contract RoyalStables is Ownable,ERC721Token {
     }
 
     /// @dev Maps all token ids to a unique Horsey
-    mapping(uint256 =&gt; Horsey) public horseys;
+    mapping(uint256 => Horsey) public horseys;
 
     /// @dev Maps addresses to the amount of carrots they own
-    mapping(address =&gt; uint32) public carrot_credits;
+    mapping(address => uint32) public carrot_credits;
 
     /// @dev Maps a horsey token id to the horsey name
-    mapping(uint256 =&gt; string) public names;
+    mapping(uint256 => string) public names;
 
     /// @dev Master is the current Horsey contract using this library
     address public master;
@@ -795,7 +795,7 @@ contract RoyalStables is Ownable,ERC721Token {
     */
     constructor() public
     Ownable()
-    ERC721Token(&quot;HORSEY&quot;,&quot;HRSY&quot;) {
+    ERC721Token("HORSEY","HRSY") {
     }
 
     /**
@@ -824,7 +824,7 @@ contract RoyalStables is Ownable,ERC721Token {
     */
     function storeName(uint256 tokenId, string newName) public
     onlyMaster() {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         names[tokenId] = newName;
     }
 
@@ -849,7 +849,7 @@ contract RoyalStables is Ownable,ERC721Token {
 
     function modifyHorsey(uint256 tokenId, address race, bytes32 dna, uint8 feedingCounter, uint8 tier) public
     onlyMaster() {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         Horsey storage hrsy = horseys[tokenId];
         hrsy.race = race;
         hrsy.dna = dna;
@@ -859,26 +859,26 @@ contract RoyalStables is Ownable,ERC721Token {
 
     function modifyHorseyDna(uint256 tokenId, bytes32 dna) public
     onlyMaster() {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         horseys[tokenId].dna = dna;
     }
 
     function modifyHorseyFeedingCounter(uint256 tokenId, uint8 feedingCounter) public
     onlyMaster() {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         horseys[tokenId].feedingCounter = feedingCounter;
     }
 
     function modifyHorseyTier(uint256 tokenId, uint8 tier) public
     onlyMaster() {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         horseys[tokenId].tier = tier;
     }
 
     function unstoreHorsey(uint256 tokenId) public
     onlyMaster()
     {
-        require(exists(tokenId),&quot;token not found&quot;);
+        require(exists(tokenId),"token not found");
         _burn(ownerOf(tokenId),tokenId);
         delete horseys[tokenId];
         delete names[tokenId];
@@ -886,13 +886,13 @@ contract RoyalStables is Ownable,ERC721Token {
 
     /// @dev requires the address to be non null
     modifier validAddress(address addr) {
-        require(addr != address(0),&quot;Address must be non zero&quot;);
+        require(addr != address(0),"Address must be non zero");
         _;
     }
 
      /// @dev requires the caller to be the master
     modifier onlyMaster() {
-        require(master == msg.sender,&quot;Address must be non zero&quot;);
+        require(master == msg.sender,"Address must be non zero");
         _;
     }
 }

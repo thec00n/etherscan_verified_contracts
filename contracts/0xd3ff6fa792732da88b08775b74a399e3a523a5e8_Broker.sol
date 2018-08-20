@@ -23,7 +23,7 @@ contract Broker {
 
   struct Item{
     string name;
-    // At least 0.1 Finney, because it&#39;s the fee to the developer
+    // At least 0.1 Finney, because it's the fee to the developer
     uint   price;
     // this could be a link to an Web page explaining about this item
     string detail;
@@ -112,11 +112,11 @@ contract Broker {
     inState(State.Created)
     onlyCreator
   {
-    require(price &gt; minimumdeveloperfee);
+    require(price > minimumdeveloperfee);
     item.name = name;
     item.price = price;
     item.detail = detail;
-    developerfee = (price/1000)&lt;minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
+    developerfee = (price/1000)<minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
   }
 
   function getBroker()
@@ -152,20 +152,20 @@ contract Broker {
     uint160 iaddr = 0;
     uint160 b1;
     uint160 b2;
-    for (uint i=2; i&lt;2+2*20; i+=2){
+    for (uint i=2; i<2+2*20; i+=2){
         iaddr *= 256;
         b1 = uint160(tmp[i]);
         b2 = uint160(tmp[i+1]);
-        if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-        else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-        if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-        else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+        if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+        else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+        if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+        else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
         iaddr += (b1*16+b2);
     }
     return address(iaddr);
   }
 
-  // We will have some &#39;peculiar&#39; list of documents
+  // We will have some 'peculiar' list of documents
   // for each deals. 
   // For ex, for House we will require
   // proof of documents about the basic information of the House,
@@ -187,7 +187,7 @@ contract Broker {
   {
     require(state != State.Inactive);
     require(state != State.Locked);
-    if(index&lt;item.documents.length){
+    if(index<item.documents.length){
       item.documents[index].state = FileState.Invalidated;
     }
   }
@@ -196,7 +196,7 @@ contract Broker {
     onlyBroker
     inState(State.Created)
   {
-    // if(index&lt;item.documents.length){
+    // if(index<item.documents.length){
     //   item.documents[index].state = FileState.Confirmed;
     // }
     Validated();

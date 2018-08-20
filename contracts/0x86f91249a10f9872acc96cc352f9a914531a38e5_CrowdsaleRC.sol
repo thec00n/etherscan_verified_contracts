@@ -6,8 +6,8 @@ contract CrowdsaleRC {
     address public beneficiary;
     uint public amountRaised;
     uint public maxAmount;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public whitelist;
+    mapping(address => uint256) public balanceOf;
+    mapping (address => bool) public whitelist;
     event FundTransfer(address backer, uint amount, bool isContribution);
 
     function CrowdsaleRC () public {
@@ -21,8 +21,8 @@ contract CrowdsaleRC {
     }
 
     function () payable public {
-        require( (msg.value &gt;= 0.1 ether) &amp;&amp;  block.timestamp &gt;= start &amp;&amp; block.timestamp &lt;= deadline &amp;&amp; amountRaised &lt; maxAmount
-        &amp;&amp; ( (msg.value &lt;= 100 ether) || (msg.value &gt; 100 ether &amp;&amp; whitelist[msg.sender]==true) )
+        require( (msg.value >= 0.1 ether) &&  block.timestamp >= start && block.timestamp <= deadline && amountRaised < maxAmount
+        && ( (msg.value <= 100 ether) || (msg.value > 100 ether && whitelist[msg.sender]==true) )
         );
 
         uint amount = msg.value;

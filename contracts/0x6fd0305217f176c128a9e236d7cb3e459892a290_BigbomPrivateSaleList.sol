@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -38,7 +38,7 @@ contract Ownable {
 }
 
 contract BigbomPrivateSaleList is Ownable {
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function BigbomPrivateSaleList() public  {}
 
@@ -56,7 +56,7 @@ contract BigbomPrivateSaleList is Ownable {
     // an optimization in case of network congestion
     function listAddresses( address[] _users, uint[] _amount ) public onlyOwner {
         require(_users.length == _amount.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _amount[i] );
         }
     }

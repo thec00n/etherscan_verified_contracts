@@ -4,17 +4,17 @@ pragma solidity ^0.4.20;
 // An ERC223 standard
 //
 // author: Kryptono Team
-// Contact: <span class="__cf_email__" data-cfemail="184f71747471797558736a61686c777677367d607b7079767f7d">[email&#160;protected]</span>
+// Contact: <span class="__cf_email__" data-cfemail="184f71747471797558736a61686c777677367d607b7079767f7d">[email protected]</span>
 
 library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 
@@ -71,8 +71,8 @@ contract BasicKNOW is ERC223 {
     using SafeMath for uint256;
     
     uint256 public constant decimals = 10;
-    string public constant symbol = &quot;KNOW&quot;;
-    string public constant name = &quot;KNOW&quot;;
+    string public constant symbol = "KNOW";
+    string public constant name = "KNOW";
     uint256 public _totalSupply = 10 ** 19; // total supply is 10^19 unit, equivalent to 10^9 KNOW
 
     // Owner of this contract
@@ -82,10 +82,10 @@ contract BasicKNOW is ERC223 {
     bool public tradable = false;
 
     // Balances KNOW for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
             
     /**
      * Functions with this modifier can only be executed by the owner
@@ -117,7 +117,7 @@ contract BasicKNOW is ERC223 {
         return _totalSupply;
     }
         
-    /// @dev Gets account&#39;s balance
+    /// @dev Gets account's balance
     /// @param _addr Address of the account
     /// @return Account balance
     function balanceOf(address _addr) 
@@ -138,7 +138,7 @@ contract BasicKNOW is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
  
     /// @dev Transfers the balance from msg.sender to an account
@@ -210,7 +210,7 @@ contract BasicKNOW is ERC223 {
          
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -269,10 +269,10 @@ contract KNOW is BasicKNOW {
     uint256 public _originalBuyPrice = 50 * 10**12; // original buy 1ETH = 5000 KNOW = 50 * 10**12 unit
 
     // List of approved investors
-    mapping(address =&gt; bool) private approvedInvestorList;
+    mapping(address => bool) private approvedInvestorList;
     
     // deposit
-    mapping(address =&gt; uint256) private deposit;
+    mapping(address => uint256) private deposit;
     
     // icoPercent
     uint256 public _icoPercent = 0;
@@ -312,9 +312,9 @@ contract KNOW is BasicKNOW {
      * total deposit must less than equal maximumBuyPrice
      */
     modifier validValue(){
-        // require value &gt;= _minimumBuy AND total deposit of msg.sender &lt;= maximumBuyPrice
-        require ( (msg.value &gt;= _minimumBuy) &amp;&amp;
-                ( (deposit[msg.sender].add(msg.value)) &lt;= _maximumBuy) );
+        // require value >= _minimumBuy AND total deposit of msg.sender <= maximumBuyPrice
+        require ( (msg.value >= _minimumBuy) &&
+                ( (deposit[msg.sender].add(msg.value)) <= _maximumBuy) );
         _;
     }
 
@@ -333,7 +333,7 @@ contract KNOW is BasicKNOW {
     validValue
     validInvestor {
         uint256 requestedUnits = (msg.value * _originalBuyPrice) / 10**18;
-        require(balances[owner] &gt;= requestedUnits);
+        require(balances[owner] >= requestedUnits);
         // prepare transfer data
         balances[owner] = balances[owner].sub(requestedUnits);
         balances[msg.sender] = balances[msg.sender].add(requestedUnits);
@@ -343,7 +343,7 @@ contract KNOW is BasicKNOW {
         
         // check total and auto turnOffSale
         totalTokenSold = totalTokenSold.add(requestedUnits);
-        if (totalTokenSold &gt;= _icoSupply){
+        if (totalTokenSold >= _icoSupply){
             _selling = false;
         }
         
@@ -388,11 +388,11 @@ contract KNOW is BasicKNOW {
     }
 
     /// @dev Updates buy price (owner ONLY)
-    /// @param newBuyPrice New buy price (in UNIT) 1ETH &lt;=&gt; 10 000 0000000000 unit
+    /// @param newBuyPrice New buy price (in UNIT) 1ETH <=> 10 000 0000000000 unit
     function setBuyPrice(uint256 newBuyPrice) 
     onlyOwner 
     public {
-        require(newBuyPrice&gt;0);
+        require(newBuyPrice>0);
         _originalBuyPrice = newBuyPrice; // unit
         // control _maximumBuy_USD = 10,000 USD, KNOW price is 0.1USD
         // maximumBuy_KNOW = 100,000 KNOW = 100,000,0000000000 unit = 10^15
@@ -423,7 +423,7 @@ contract KNOW is BasicKNOW {
     function addInvestorList(address[] newInvestorList)
     onlyOwner
     public {
-        for (uint256 i = 0; i &lt; newInvestorList.length; i++){
+        for (uint256 i = 0; i < newInvestorList.length; i++){
             approvedInvestorList[newInvestorList[i]] = true;
         }
     }
@@ -433,7 +433,7 @@ contract KNOW is BasicKNOW {
     function removeInvestorList(address[] investorList)
     onlyOwner
     public {
-        for (uint256 i = 0; i &lt; investorList.length; i++){
+        for (uint256 i = 0; i < investorList.length; i++){
             approvedInvestorList[investorList[i]] = false;
         }
     }

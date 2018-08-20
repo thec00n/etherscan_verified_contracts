@@ -26,15 +26,15 @@ contract DarkPool is Ownable {
     uint public end;
     uint public raised;
     uint public cap;
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     event Deposit(address indexed beneficiary, uint value);
     event Withdraw(address indexed beneficiary, uint value);
 
     function () external payable whenActive {
-        require(whitelisted(msg.sender), &quot;for hodl owners only&quot;);
+        require(whitelisted(msg.sender), "for hodl owners only");
         raised += msg.value;
         balances[msg.sender] += msg.value;
-        require(raised &lt;= cap, &quot;raised too much ether&quot;);
+        require(raised <= cap, "raised too much ether");
         emit Deposit(msg.sender, msg.value);
     }
     
@@ -50,11 +50,11 @@ contract DarkPool is Ownable {
     }
     
     function whitelisted(address _address) public view returns (bool) {
-        return hodl.balanceOf(_address) &gt; 0;
+        return hodl.balanceOf(_address) > 0;
     }
     
     function active() public view returns (bool) {
-        return now &lt; end;
+        return now < end;
     }
     
     modifier whenEnded() {

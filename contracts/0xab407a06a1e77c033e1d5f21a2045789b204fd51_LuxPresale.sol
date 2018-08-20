@@ -5,7 +5,7 @@ contract LuxPresale {
     address public beneficiary;
     uint public totalLux; uint public amountRaised; uint public deadline; uint public price; uint public presaleStartDate;
     token public tokenReward;
-    mapping(address =&gt; uint) public balanceOf;
+    mapping(address => uint) public balanceOf;
     bool fundingGoalReached = false; //закрыт ли сбор денег
     event GoalReached(address beneficiary, uint amountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -31,13 +31,13 @@ contract LuxPresale {
     /* The function without name is the default function that is called whenever anyone sends funds to a contract */
     
     function () payable {
-        if (now &lt; presaleStartDate) throw; // A participant cannot send funds before the presale start date
+        if (now < presaleStartDate) throw; // A participant cannot send funds before the presale start date
 
         if (crowdsaleClosed) { // выплачиваем токины 
-			if (msg.value &gt; 0) throw; // если после закрытия перечисляем эфиры
+			if (msg.value > 0) throw; // если после закрытия перечисляем эфиры
             uint reward = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (reward &gt; 0) {
+            if (reward > 0) {
                 if (!tokenReward.transfer(msg.sender, reward/price)) {
                     balanceOf[msg.sender] = reward;
                 }
@@ -49,7 +49,7 @@ contract LuxPresale {
         }
     }
     
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
     
     modifier onlyOwner() {
         if (msg.sender != beneficiary) {

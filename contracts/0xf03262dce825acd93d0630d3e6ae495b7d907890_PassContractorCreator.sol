@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with Pass DAO.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with Pass DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -48,7 +48,7 @@ contract PassDao {
     project[] public projects;
 
     // Map with the indexes of the projects
-    mapping (address =&gt; uint) projectID;
+    mapping (address => uint) projectID;
     
     // The address of the meta project
     address metaProject;
@@ -84,7 +84,7 @@ contract PassDao {
 // modifiers
 
     modifier onlyPassCommitteeRoom {if (msg.sender != revisions[0].committeeRoom  
-        &amp;&amp; revisions[0].committeeRoom != 0) throw; _;}
+        && revisions[0].committeeRoom != 0) throw; _;}
     
 // Constructor function
 
@@ -405,7 +405,7 @@ contract PassContractor {
         uint amount;
         // A description of the proposal
         string description;
-        // The hash of the proposal&#39;s document
+        // The hash of the proposal's document
         bytes32 hashOfTheDocument;
         // A unix timestamp, denoting the date when the proposal was created
         uint dateOfProposal;
@@ -448,8 +448,8 @@ contract PassContractor {
         address _sender,
         uint _proposalID, 
         uint _amount) constant external onlyClient returns (bool) {
-        if (_sender != recipient &amp;&amp; _sender != creator) return;
-        if (_amount &lt;= proposals[_proposalID].amount - proposals[_proposalID].submittedAmount) return true;
+        if (_sender != recipient && _sender != creator) return;
+        if (_amount <= proposals[_proposalID].amount - proposals[_proposalID].submittedAmount) return true;
     }
 
     /// @return The number of proposals     
@@ -492,7 +492,7 @@ contract PassContractor {
     /// @notice Function to clone a proposal from the last contractor
     /// @param _amount Amount (in wei) of the proposal
     /// @param _description A description of the proposal
-    /// @param _hashOfTheDocument The hash of the proposal&#39;s document
+    /// @param _hashOfTheDocument The hash of the proposal's document
     /// @param _dateOfProposal A unix timestamp, denoting the date when the proposal was created
     /// @param _orderAmount The sum amount (in wei) ordered for this proposal 
     /// @param _dateOfOrder A unix timestamp, denoting the date of the last order for the approved proposal
@@ -533,7 +533,7 @@ contract PassContractor {
     function closeSetup() returns (bool) {
         
         if (smartContractStartDate != 0 
-            || (msg.sender != creator &amp;&amp; msg.sender != Client())) return;
+            || (msg.sender != creator && msg.sender != Client())) return;
 
         smartContractStartDate = now;
 
@@ -586,8 +586,8 @@ contract PassContractor {
         bytes32 _hashOfTheDocument
     ) external returns (uint) {
         
-        if (msg.sender == Client() &amp;&amp; _creator != recipient &amp;&amp; _creator != creator) throw;
-        if (msg.sender != Client() &amp;&amp; msg.sender != recipient &amp;&amp; msg.sender != creator) throw;
+        if (msg.sender == Client() && _creator != recipient && _creator != creator) throw;
+        if (msg.sender != Client() && msg.sender != recipient && msg.sender != creator) throw;
 
         if (_amount == 0) throw;
         
@@ -613,7 +613,7 @@ contract PassContractor {
         uint _proposalID, 
         uint _amount) onlyClient {
 
-        if (_sender != recipient &amp;&amp; _sender != creator) throw;    
+        if (_sender != recipient && _sender != creator) throw;    
         proposals[_proposalID].submittedAmount += _amount;
         ProposalSubmitted(msg.sender, _amount);
     }
@@ -630,9 +630,9 @@ contract PassContractor {
         proposal c = proposals[_proposalID];
         
         uint _sum = c.orderAmount + _orderAmount;
-        if (_sum &gt; c.amount
-            || _sum &lt; c.orderAmount
-            || _sum &lt; _orderAmount) return; 
+        if (_sum > c.amount
+            || _sum < c.orderAmount
+            || _sum < _orderAmount) return; 
 
         c.orderAmount = _sum;
         c.dateOfLastOrder = now;
@@ -662,7 +662,7 @@ contract PassContractorCreator {
         bool metaProject;
         // The address of the existing project smart contract
         PassProject passProject;
-        // The name of the project (if the project smart contract doesn&#39;t exist)
+        // The name of the project (if the project smart contract doesn't exist)
         string projectName;
         // A description of the project (can be updated after)
         string projectDescription;
@@ -690,7 +690,7 @@ contract PassContractorCreator {
     /// @param _recipient The address of the recipient for withdrawals
     /// @param _metaProject True if meta project
     /// @param _passProject The address of the existing project smart contract
-    /// @param _projectName The name of the project (if the project smart contract doesn&#39;t exist)
+    /// @param _projectName The name of the project (if the project smart contract doesn't exist)
     /// @param _projectDescription A description of the project (can be updated after)
     /// @param _restore True if orders or proposals are to be cloned from other contracts
     /// @return The address of the created contractor smart contract
@@ -713,7 +713,7 @@ contract PassContractorCreator {
         else _project = _passProject;
 
         PassContractor _contractor = new PassContractor(_creator, _project, _recipient, _restore);
-        if (!_metaProject &amp;&amp; address(_passProject) == 0 &amp;&amp; !_restore) _project.setProjectManager(address(_contractor));
+        if (!_metaProject && address(_passProject) == 0 && !_restore) _project.setProjectManager(address(_contractor));
         
         uint _contractorID = contractors.length++;
         contractor c = contractors[_contractorID];

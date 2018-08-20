@@ -46,10 +46,10 @@ interface ChickenTokenDelegate {
 contract ChickenTokenDelegator is ERC20Interface {
 
   ChickenTokenDelegate public chickenHunt;
-  string public name = &quot;Chicken&quot;;
-  string public symbol = &quot;CHICKEN&quot;;
+  string public name = "Chicken";
+  string public symbol = "CHICKEN";
   uint8 public decimals = 0;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   address public manager;
 
   constructor() public {
@@ -63,7 +63,7 @@ contract ChickenTokenDelegator is ERC20Interface {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     if (success = chickenHunt.transferChickenFrom(_from, _to, _value)) {
       allowed[_from][msg.sender] -= _value;
       emit Transfer(_from, _to, _value);

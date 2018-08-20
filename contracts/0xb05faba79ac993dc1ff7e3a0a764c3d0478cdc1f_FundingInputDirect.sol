@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        General Funding Input Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e63676d65774e6061796267786b207c61">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e63676d65774e6061796267786b207c61">[email protected]</a>>
 
 */
 
@@ -26,7 +26,7 @@ contract FundingInputGeneral {
     }
 
     function setFundingAssetAddress(address _addr) public {
-        require(initialized == false &amp;&amp; msg.sender == deployer);
+        require(initialized == false && msg.sender == deployer);
         FundingAssetAddress = _addr;
         initialized = true;
     }
@@ -36,9 +36,9 @@ contract FundingInputGeneral {
     }
 
     function buy() public payable returns(bool) {
-        if(msg.value &gt; 0) {
+        if(msg.value > 0) {
             if(isContract(FundingAssetAddress)) {
-                if(FundingAssetAddress.call.value(msg.value)(bytes4(bytes32(keccak256(&quot;receivePayment(address,uint8)&quot;))), msg.sender, typeId)) {
+                if(FundingAssetAddress.call.value(msg.value)(bytes4(bytes32(keccak256("receivePayment(address,uint8)"))), msg.sender, typeId)) {
                     EventInputPaymentReceived(msg.sender, msg.value, typeId);
                     return true;
                 } else {
@@ -57,7 +57,7 @@ contract FundingInputGeneral {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -67,7 +67,7 @@ contract FundingInputGeneral {
 
  * @name        Direct Funding Input Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82efebe1e9fbc2ecedf5eeebf4e7acf0ed">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82efebe1e9fbc2ecedf5eeebf4e7acf0ed">[email protected]</a>>
 
 */
 

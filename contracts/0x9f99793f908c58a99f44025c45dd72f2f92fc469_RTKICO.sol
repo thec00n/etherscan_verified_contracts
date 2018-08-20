@@ -1,5 +1,5 @@
 //
-// compiler: solcjs -o ./build/contracts --optimize --abi --bin &lt;this file&gt;
+// compiler: solcjs -o ./build/contracts --optimize --abi --bin <this file>
 //  version: 0.4.19+commit.c4cbbb05.Emscripten.clang
 //
 pragma solidity ^0.4.19;
@@ -36,7 +36,7 @@ contract RTKICO is owned {
                    uint    _tokpereth ) public {
 
     require( isContract(_erc20) );
-    require( _tokpereth &gt; 0 );
+    require( _tokpereth > 0 );
 
     if (_treasury != address(0))
       require( isContract(_treasury) );
@@ -54,7 +54,7 @@ contract RTKICO is owned {
   function setDuration( uint dur ) public onlyOwner { duration = dur; }
 
   function() public payable {
-    if (now &lt; start || now &gt; (start + duration))
+    if (now < start || now > (start + duration))
       revert();
 
     // Calculation:
@@ -66,7 +66,7 @@ contract RTKICO is owned {
                         1e20 ),
                 (bonus()+100) );
 
-    if (qty &gt; tokenSC.balanceOf(address(this)) || qty &lt; 1)
+    if (qty > tokenSC.balanceOf(address(this)) || qty < 1)
       revert();
 
     tokenSC.transfer( msg.sender, qty );
@@ -76,30 +76,30 @@ contract RTKICO is owned {
 
   // unsold tokens can be claimed by owner after sale ends
   function claimUnsold() public onlyOwner {
-    if ( now &lt; (start + duration) )
+    if ( now < (start + duration) )
       revert();
 
     tokenSC.transfer( owner, tokenSC.balanceOf(address(this)) );
   }
 
   function withdraw( uint amount ) public onlyOwner returns (bool) {
-    require (amount &lt;= this.balance);
+    require (amount <= this.balance);
     return owner.send( amount );
   }
 
   function bonus() internal constant returns(uint) {
     uint elapsed = now - start;
 
-    if (elapsed &lt; 1 weeks) return 20;
-    if (elapsed &lt; 2 weeks) return 15;
-    if (elapsed &lt; 4 weeks) return 10;
+    if (elapsed < 1 weeks) return 20;
+    if (elapsed < 2 weeks) return 15;
+    if (elapsed < 4 weeks) return 10;
     return 0;
   }
 
   function isContract( address _a ) constant private returns (bool) {
     uint ecs;
     assembly { ecs := extcodesize(_a) }
-    return ecs &gt; 0;
+    return ecs > 0;
   }
 
   // ref: github.com/OpenZeppelin/zeppelin-solidity/

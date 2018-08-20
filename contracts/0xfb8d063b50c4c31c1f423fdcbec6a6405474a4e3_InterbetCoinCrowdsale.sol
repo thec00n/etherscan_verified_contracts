@@ -39,17 +39,17 @@ contract InterbetCoinCrowdsale {
     uint public icoPhaseTimeInterval = 1 weeks; // Interval of ICO phases
 
     uint public icoStart; // ICO starts one week after Presale ended
-    uint public icoTimeBonusPhase1End; // ICO&#39;s phase 1 end
-    uint public icoTimeBonusPhase2End; // ICO&#39;s phase 2 end
-    uint public icoEnd; // ICO&#39;s phase 3 end
+    uint public icoTimeBonusPhase1End; // ICO's phase 1 end
+    uint public icoTimeBonusPhase2End; // ICO's phase 2 end
+    uint public icoEnd; // ICO's phase 3 end
     uint public icoPrice = 5000; // Base price of ICO: 5,000 IBC = 1 ETH
     uint public totalFundingGoalInIBC = 630000000 * (10 ** ibcTokenDecimals); // Funding goal is 630 Mil IBC: 30 Mil (Presale) + 600 Mil (ICO)
     uint public fundingRatePredictionBonusPoolInIBC = 70000000 * (10 ** ibcTokenDecimals); // Funding rate prediction bonus pool of minimum 70 Mil IBC
 
     uint public icoReferralBonusInPercentage = 5; // 5% bonus for both referrer and contributor
-    uint public icoPhase1TimeBonusInPercentage = 20; // 20% bonus for ICO&#39;s phase 1
-    uint public icoPhase2TimeBonusInPercentage = 10; // 10% bonus for ICO&#39;s phase 2
-    uint public icoPhase3TimeBonusInPercentage = 0; // No bonus for ICO&#39;s phase 3
+    uint public icoPhase1TimeBonusInPercentage = 20; // 20% bonus for ICO's phase 1
+    uint public icoPhase2TimeBonusInPercentage = 10; // 10% bonus for ICO's phase 2
+    uint public icoPhase3TimeBonusInPercentage = 0; // No bonus for ICO's phase 3
     uint public icoFundingRatePredictionBonusInPercentage = 25; // 25% bonus for predicting the correct final funding rate
 
     uint public fundingRatePredictionBonusClaimWindow = 4 weeks; // After this window, the remaining pool of prediction bonus tokens will be destroyed
@@ -59,12 +59,12 @@ contract InterbetCoinCrowdsale {
     uint public ibcDistributed = 0; // Total tokens distributed
     uint public contributionCount = 0; // Number of contributions
 
-    mapping(address =&gt; uint256) public balanceOf; // Ether contributed
-    mapping(address =&gt; uint256) public ibcVaultBalanceOf; // IBC hold in vault
-    mapping(address =&gt; uint256) public baseRewardTokenBalanceOf; // IBC base reward without counting any bonus
+    mapping(address => uint256) public balanceOf; // Ether contributed
+    mapping(address => uint256) public ibcVaultBalanceOf; // IBC hold in vault
+    mapping(address => uint256) public baseRewardTokenBalanceOf; // IBC base reward without counting any bonus
 
-    mapping(address =&gt; uint256) public fundingRatePredictionOf; // The funding rate prediction
-    mapping(address =&gt; bool) public fundingRatePredictionBingoOf; // Bingo or not
+    mapping(address => uint256) public fundingRatePredictionOf; // The funding rate prediction
+    mapping(address => bool) public fundingRatePredictionBingoOf; // Bingo or not
 
     constructor() public {
         currentSaleStage = SaleStage.Presale;
@@ -88,18 +88,18 @@ contract InterbetCoinCrowdsale {
 
     function participatePresaleNow() private {
         require(currentSaleStage == SaleStage.Presale);
-        require(etherRaised &lt; presaleFundingTargetInEther);
+        require(etherRaised < presaleFundingTargetInEther);
 
-        require(msg.value &gt;= minFundInEther);
+        require(msg.value >= minFundInEther);
 
         uint amount = msg.value;
 
         uint price = presalePrice;
 
         uint tokenAmount = mul(amount, price);
-        require(add(ibcFunded, tokenAmount) &lt;= totalFundingGoalInIBC);
+        require(add(ibcFunded, tokenAmount) <= totalFundingGoalInIBC);
 
-        if (add(etherRaised, amount) &gt;= presaleFundingTargetInEther) {
+        if (add(etherRaised, amount) >= presaleFundingTargetInEther) {
             updateSaleStage(SaleStage.Break);
         }
 
@@ -124,17 +124,17 @@ contract InterbetCoinCrowdsale {
     function participateICONow(address referrer, uint fundingRatePrediction) private {
         require(currentSaleStage == SaleStage.Break || currentSaleStage == SaleStage.ICO);
         if (currentSaleStage == SaleStage.Break) {
-            if (now &gt;= icoStart &amp;&amp; now &lt; icoEnd) {
+            if (now >= icoStart && now < icoEnd) {
                 updateSaleStage(SaleStage.ICO);
             } else {
                 revert();
             }
         } else if (currentSaleStage == SaleStage.ICO) {
-            require(now &gt;= icoStart &amp;&amp; now &lt; icoEnd);
+            require(now >= icoStart && now < icoEnd);
         }
 
         require(referrer != msg.sender);
-        require(fundingRatePrediction &gt;= 1 &amp;&amp; fundingRatePrediction &lt;= 100);
+        require(fundingRatePrediction >= 1 && fundingRatePrediction <= 100);
 
         uint amount = msg.value;
 
@@ -148,8 +148,8 @@ contract InterbetCoinCrowdsale {
             referrerReferralBonus = mul(baseRewardTokenAmount, icoReferralBonusInPercentage) / 100;
         }
 
-        if (add(add(ibcFunded, tokenAmount), referrerReferralBonus) &lt; totalFundingGoalInIBC) {
-            require(msg.value &gt;= minFundInEther);
+        if (add(add(ibcFunded, tokenAmount), referrerReferralBonus) < totalFundingGoalInIBC) {
+            require(msg.value >= minFundInEther);
         } else {
             require(add(add(ibcFunded, tokenAmount), referrerReferralBonus) == totalFundingGoalInIBC);
         }
@@ -201,9 +201,9 @@ contract InterbetCoinCrowdsale {
     function checkTimeBonusPercentage() internal view returns(uint) {
         uint timeBonusInPercentage = 0;
 
-        if (now &lt; icoTimeBonusPhase1End) {
+        if (now < icoTimeBonusPhase1End) {
             timeBonusInPercentage = icoPhase1TimeBonusInPercentage;
-        } else if (now &lt; icoTimeBonusPhase2End) {
+        } else if (now < icoTimeBonusPhase2End) {
             timeBonusInPercentage = icoPhase2TimeBonusInPercentage;
         }
 
@@ -214,21 +214,21 @@ contract InterbetCoinCrowdsale {
     function claimToken() external {
         require(currentSaleStage == SaleStage.ICO || currentSaleStage == SaleStage.Closed);
         if (currentSaleStage == SaleStage.ICO) {
-            if (ibcFunded == totalFundingGoalInIBC || now &gt;= icoEnd) {
+            if (ibcFunded == totalFundingGoalInIBC || now >= icoEnd) {
                 updateSaleStage(SaleStage.Closed);
             } else {
                 revert();
             }
         }
 
-        require(ibcVaultBalanceOf[msg.sender] &gt; 0);
+        require(ibcVaultBalanceOf[msg.sender] > 0);
 
         uint tokenAmount = ibcVaultBalanceOf[msg.sender];
 
-        if (now &lt; icoEnd + fundingRatePredictionBonusClaimWindow) {
-            if (fundingRatePredictionBonusPoolInIBC &gt; 0) {
+        if (now < icoEnd + fundingRatePredictionBonusClaimWindow) {
+            if (fundingRatePredictionBonusPoolInIBC > 0) {
                 uint finalFundingRate = mul(ibcFunded, 100) / totalFundingGoalInIBC;
-                if (finalFundingRate &gt; 100) {
+                if (finalFundingRate > 100) {
                     finalFundingRate = 100;
                 }
 
@@ -238,7 +238,7 @@ contract InterbetCoinCrowdsale {
 
                         uint fundingRatePredictionBingoBonus = mul(baseRewardTokenBalanceOf[msg.sender], icoFundingRatePredictionBonusInPercentage) / 100;
 
-                        if (fundingRatePredictionBingoBonus &gt; fundingRatePredictionBonusPoolInIBC) {
+                        if (fundingRatePredictionBingoBonus > fundingRatePredictionBonusPoolInIBC) {
                             fundingRatePredictionBingoBonus = fundingRatePredictionBonusPoolInIBC;
                         }
 
@@ -268,11 +268,11 @@ contract InterbetCoinCrowdsale {
             icoTimeBonusPhase2End = icoTimeBonusPhase1End + icoPhaseTimeInterval;
             icoEnd = icoTimeBonusPhase2End + icoPhaseTimeInterval;
         } else if (saleStage == SaleStage.Closed) {
-            if (now &lt; icoEnd) {
+            if (now < icoEnd) {
                 icoEnd = now;
             }
 
-            if (ibcFunded &lt; totalFundingGoalInIBC) {
+            if (ibcFunded < totalFundingGoalInIBC) {
                 fundingRatePredictionBonusPoolInIBC = add(fundingRatePredictionBonusPoolInIBC, sub(totalFundingGoalInIBC, ibcFunded));
             }
 
@@ -284,9 +284,9 @@ contract InterbetCoinCrowdsale {
     function updateSaleStageManually(uint saleStage) external {
         require(msg.sender == admin);
 
-        require(saleStage &gt;= 1 &amp;&amp; saleStage &lt;= 4);
+        require(saleStage >= 1 && saleStage <= 4);
 
-        require(saleStage &gt; uint(currentSaleStage));
+        require(saleStage > uint(currentSaleStage));
 
         updateSaleStage(SaleStage(saleStage));
     }
@@ -304,11 +304,11 @@ contract InterbetCoinCrowdsale {
     function burnAllRemainingIBC() external {
         require(currentSaleStage == SaleStage.Closed);
 
-        require(now &gt;= icoEnd + fundingRatePredictionBonusClaimWindow);
+        require(now >= icoEnd + fundingRatePredictionBonusClaimWindow);
 
         require(msg.sender == admin);
 
-        require(fundingRatePredictionBonusPoolInIBC &gt; 0);
+        require(fundingRatePredictionBonusPoolInIBC > 0);
 
         uint currentFundingRatePredictionBonusPoolInIBC = fundingRatePredictionBonusPoolInIBC;
         fundingRatePredictionBonusPoolInIBC = 0;
@@ -330,13 +330,13 @@ contract InterbetCoinCrowdsale {
     }
 
     function sub(uint256 _a, uint256 _b) private pure returns(uint256) {
-        assert(_b &lt;= _a);
+        assert(_b <= _a);
         return _a - _b;
     }
 
     function add(uint256 _a, uint256 _b) private pure returns(uint256 c) {
         c = _a + _b;
-        assert(c &gt;= _a);
+        assert(c >= _a);
         return c;
     }
 

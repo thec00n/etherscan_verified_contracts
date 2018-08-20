@@ -10,8 +10,8 @@ contract Bestowal
         uint256 limit;
     }
     
-    mapping(address=&gt;Data) private data;
-    mapping(bytes8=&gt;address) private donor;
+    mapping(address=>Data) private data;
+    mapping(bytes8=>address) private donor;
 
     modifier isRegistered {
         require(donor[data[msg.sender].token] == msg.sender);
@@ -24,7 +24,7 @@ contract Bestowal
     }
 
     modifier validBlockNumber(uint256 _blockNumber) {
-        require(_blockNumber &gt;= block.number);
+        require(_blockNumber >= block.number);
         _;
     }
 
@@ -34,12 +34,12 @@ contract Bestowal
     }
 
     modifier validBalance(bytes8 _token) {
-        require(data[donor[_token]].balance &gt; 0);
+        require(data[donor[_token]].balance > 0);
         _;
     }
     
     modifier validLimit(bytes8 _token) {
-        require(block.number &gt;= data[donor[_token]].limit);
+        require(block.number >= data[donor[_token]].limit);
         _;
     }
     
@@ -51,7 +51,7 @@ contract Bestowal
         bytes32 _seed = keccak256(block.blockhash(block.number), msg.sender, block.difficulty, _rand);
         uint8[] memory _access = new uint8[](11);
             
-        for(uint8 i=0; i&lt;_access.length; i++)
+        for(uint8 i=0; i<_access.length; i++)
             _access[i] = uint8(uint(_seed) * (i + 1) % 16);
             
         data[msg.sender].token = bytes8(_seed);
@@ -70,7 +70,7 @@ contract Bestowal
         address _donor = donor[_token];
         uint256 _balance = data[_donor].balance;
         
-        for(uint8 i=0; i&lt;data[_donor].access.length; i++)
+        for(uint8 i=0; i<data[_donor].access.length; i++)
             if(data[_donor].access[i] != _access[i]) { revert(); }
         
         data[_donor].balance = 0;

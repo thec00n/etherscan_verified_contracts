@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,8 +46,8 @@ contract KolkhaCoin {
 
   modifier msgDataSize(uint nVar) {assert(msg.data.length == nVar*32 + 4); _ ;}
 
-  string public constant name = &quot;Kolkha&quot;;
-  string public constant symbol = &quot;KHC&quot;;
+  string public constant name = "Kolkha";
+  string public constant symbol = "KHC";
   uint public constant decimals = 6;
   uint public totalSupply;
 
@@ -56,8 +56,8 @@ contract KolkhaCoin {
   event Transfer(address indexed _from, address indexed _to, uint _value);
   event Approved(address indexed _owner, address indexed _spender, uint _value);
 
-  mapping(address =&gt; uint) public balanceOf;
-  mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+  mapping(address => uint) public balanceOf;
+  mapping(address => mapping(address => uint)) public allowance;
 
   function KolkhaCoin(uint initialSupply){
     balanceOf[msg.sender] = initialSupply;
@@ -67,9 +67,9 @@ contract KolkhaCoin {
   function transfer(address _to, uint _value) public msgDataSize(2) returns(bool success)
   {
     success = false;
-    require(balanceOf[msg.sender] &gt;= _value); //Check if the sender has enough balance
-    require(balanceOf[_to].add(_value) &gt; balanceOf[_to]); //Avoid overflow, and _value=0
-    require(_value &gt; 0); //just to be safe
+    require(balanceOf[msg.sender] >= _value); //Check if the sender has enough balance
+    require(balanceOf[_to].add(_value) > balanceOf[_to]); //Avoid overflow, and _value=0
+    require(_value > 0); //just to be safe
 
     //Perform the transfer
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
@@ -80,10 +80,10 @@ contract KolkhaCoin {
   }
 
   function transferFrom(address _from, address _to, uint _value) public msgDataSize(3) returns (bool success)  {
-    require(allowance[_from][_to] &gt;= _value); //check allowance, from _from to _to
-    require(balanceOf[_from] &gt;= _value); //Check if there&#39;s enough coins on the _from account
-    require(balanceOf[_to].add(_value) &gt; balanceOf[_to]); //Avoid overflow, and _value = 0
-    require(_value &gt; 0); //Just in case
+    require(allowance[_from][_to] >= _value); //check allowance, from _from to _to
+    require(balanceOf[_from] >= _value); //Check if there's enough coins on the _from account
+    require(balanceOf[_to].add(_value) > balanceOf[_to]); //Avoid overflow, and _value = 0
+    require(_value > 0); //Just in case
 
     //Transfer
     balanceOf[_from] = balanceOf[_from].sub(_value);

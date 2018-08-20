@@ -12,13 +12,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -68,8 +68,8 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;DTN&quot;;
-  string public constant name = &quot;Datareum&quot;;
+  string public constant symbol = "DTN";
+  string public constant name = "Datareum";
   uint8 public constant decimals = 18;
   uint256 _totalSupply = 1000000000 ether;
 
@@ -77,10 +77,10 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
   address public owner;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function totalSupply() public view returns (uint256) { //standart ERC-20 function
     return _totalSupply;
@@ -174,7 +174,7 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
   function sendAdvisorsBalance (address[] _addresses, uint[] _values) external onlyOwner {
     require(crowdsaleBalance == 0);
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(this,_addresses[i],_values[i]);
@@ -185,10 +185,10 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
   
   function sendFoundersBalance (address[] _addresses, uint[] _values) external onlyOwner {
     require(crowdsaleBalance == 0);
-    require(now &gt; finishDate + 1 years);
+    require(now > finishDate + 1 years);
 
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(this,_addresses[i],_values[i]);
@@ -199,10 +199,10 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
 
   function sendFutureFundingBalance (address[] _addresses, uint[] _values) external onlyOwner {
     require(crowdsaleBalance == 0);
-    require(now &gt; finishDate + 2 years);
+    require(now > finishDate + 2 years);
 
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(this,_addresses[i],_values[i]);
@@ -213,26 +213,26 @@ contract DatareumToken is Ownable { //ERC - 20 token contract
 
   uint public constant PRE_ICO_FINISH = 1525564740;
 
-  mapping (address =&gt; bool) public bountyAddresses;
+  mapping (address => bool) public bountyAddresses;
 
   function addBountyAddresses (address[] _addresses) external onlyOwner {
-    for (uint i = 0; i &lt; _addresses.length; i++){
+    for (uint i = 0; i < _addresses.length; i++){
       bountyAddresses[_addresses[i]] = true;
     }
   }
 
   function removeBountyAddresses (address[] _addresses) external onlyOwner {
-    for (uint i = 0; i &lt; _addresses.length; i++){
+    for (uint i = 0; i < _addresses.length; i++){
       bountyAddresses[_addresses[i]] = false;
     }
   }
 
   function sendBountyBalance (address[] _addresses, uint[] _values) external {
-    require(now &gt;= PRE_ICO_FINISH);
+    require(now >= PRE_ICO_FINISH);
     require (bountyAddresses[msg.sender]);
 
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(this,_addresses[i],_values[i]);

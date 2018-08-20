@@ -1,18 +1,18 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.21;
 /// @title Utility Functions for uint
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0367626d6a666f436f6c6c73716a6d642d6c7164">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0367626d6a666f436f6c6c73716a6d642d6c7164">[email protected]</a>>
 library MathUint {
     function mul(
         uint a,
@@ -33,7 +33,7 @@ library MathUint {
         pure
         returns (uint)
     {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     function add(
@@ -45,7 +45,7 @@ library MathUint {
         returns (uint c)
     {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function tolerantSub(
         uint a,
@@ -55,7 +55,7 @@ library MathUint {
         pure
         returns (uint c)
     {
-        return (a &gt;= b) ? a - b : 0;
+        return (a >= b) ? a - b : 0;
     }
     /// @dev calculate the square of Coefficient of Variation (CV)
     /// https://en.wikipedia.org/wiki/Coefficient_of_variation
@@ -68,10 +68,10 @@ library MathUint {
         returns (uint)
     {
         uint len = arr.length;
-        require(len &gt; 1);
-        require(scale &gt; 0);
+        require(len > 1);
+        require(scale > 0);
         uint avg = 0;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             avg += arr[i];
         }
         avg = avg / len;
@@ -81,9 +81,9 @@ library MathUint {
         uint cvs = 0;
         uint s;
         uint item;
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             item = arr[i];
-            s = item &gt; avg ? item - avg : avg - item;
+            s = item > avg ? item - avg : avg - item;
             cvs += mul(s, s);
         }
         return ((mul(mul(cvs, scale), scale) / avg) / avg) / (len - 1);
@@ -91,36 +91,36 @@ library MathUint {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -128,7 +128,7 @@ library MathUint {
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic
 ///      authorization control functions, this simplifies the implementation of
-///      &quot;user permissions&quot;.
+///      "user permissions".
 contract Ownable {
     address public owner;
     event OwnershipTransferred(
@@ -180,7 +180,7 @@ contract Claimable is Ownable {
         onlyOwner
         public
     {
-        require(newOwner != 0x0 &amp;&amp; newOwner != owner);
+        require(newOwner != 0x0 && newOwner != owner);
         pendingOwner = newOwner;
     }
     /// @dev Allows the pendingOwner address to finalize the transfer.
@@ -195,19 +195,19 @@ contract Claimable is Ownable {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title ERC20 Token Interface
 /// @dev see https://github.com/ethereum/EIPs/issues/20
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9cdc8c7c0ccc5e9c5c6c6d9dbc0c7ce87c6dbce">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9cdc8c7c0ccc5e9c5c6c6d9dbc0c7ce87c6dbce">[email protected]</a>>
 contract ERC20 {
     function balanceOf(
         address who
@@ -244,12 +244,12 @@ contract ERC20 {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -257,19 +257,19 @@ contract ERC20 {
 /// @title TokenTransferDelegate
 /// @dev Acts as a middle man to transfer ERC20 tokens on behalf of different
 /// versions of Loopring protocol to avoid ERC20 re-authorization.
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5337323d3a363f133f3c3c23213a3d347d3c2134">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5337323d3a363f133f3c3c23213a3d347d3c2134">[email protected]</a>>.
 contract TokenTransferDelegate {
     event AddressAuthorized(address indexed addr, uint32 number);
     event AddressDeauthorized(address indexed addr, uint32 number);
     // The following map is used to keep trace of order fill and cancellation
     // history.
-    mapping (bytes32 =&gt; uint) public cancelledOrFilled;
-    // This map is used to keep trace of order&#39;s cancellation history.
-    mapping (bytes32 =&gt; uint) public cancelled;
+    mapping (bytes32 => uint) public cancelledOrFilled;
+    // This map is used to keep trace of order's cancellation history.
+    mapping (bytes32 => uint) public cancelled;
     // A map from address to its cutoff timestamp.
-    mapping (address =&gt; uint) public cutoffs;
+    mapping (address => uint) public cutoffs;
     // A map from address to its trading-pair cutoff timestamp.
-    mapping (address =&gt; mapping (bytes20 =&gt; uint)) public tradingPairCutoffs;
+    mapping (address => mapping (bytes20 => uint)) public tradingPairCutoffs;
     /// @dev Add a Loopring protocol address.
     /// @param addr A loopring protocol address.
     function authorizeAddress(
@@ -326,7 +326,7 @@ contract TokenTransferDelegate {
         view;
 }
 /// @title An Implementation of TokenTransferDelegate.
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c6c3cccbc7cee2cecdcdd2d0cbccc58ccdd0c5">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c6c3cccbc7cee2cecdcdd2d0cbccc58ccdd0c5">[email protected]</a>>.
 contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
     using MathUint for uint;
     struct AddressInfo {
@@ -334,7 +334,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
         uint32  index;
         bool    authorized;
     }
-    mapping(address =&gt; AddressInfo) public addressInfos;
+    mapping(address => AddressInfo) public addressInfos;
     address public latestAddress;
     modifier onlyAuthorized()
     {
@@ -397,7 +397,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
         address addr = latestAddress;
         AddressInfo memory addrInfo;
         uint count = 0;
-        while (addr != 0x0 &amp;&amp; count &lt; max) {
+        while (addr != 0x0 && count < max) {
             addrInfo = addressInfos[addr];
             if (addrInfo.index == 0) {
                 break;
@@ -415,7 +415,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
         onlyAuthorized
         external
     {
-        if (value &gt; 0 &amp;&amp; from != to &amp;&amp; to != 0x0) {
+        if (value > 0 && from != to && to != 0x0) {
             require(
                 ERC20(token).transferFrom(from, to, value)
             );
@@ -432,13 +432,13 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
     {
         uint len = batch.length;
         require(len % 7 == 0);
-        require(walletSplitPercentage &gt; 0 &amp;&amp; walletSplitPercentage &lt; 100);
+        require(walletSplitPercentage > 0 && walletSplitPercentage < 100);
         ERC20 lrc = ERC20(lrcTokenAddress);
-        for (uint i = 0; i &lt; len; i += 7) {
+        for (uint i = 0; i < len; i += 7) {
             address owner = address(batch[i]);
             address prevOwner = address(batch[(i + len - 7) % len]);
-            // Pay token to previous order, or to miner as previous order&#39;s
-            // margin split or/and this order&#39;s margin split.
+            // Pay token to previous order, or to miner as previous order's
+            // margin split or/and this order's margin split.
             ERC20 token = ERC20(address(batch[i + 1]));
             // Here batch[i + 2] has been checked not to be 0.
             if (owner != prevOwner) {
@@ -452,7 +452,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
             }
             // Miner pays LRx fee to order owner
             uint lrcReward = uint(batch[i + 4]);
-            if (lrcReward != 0 &amp;&amp; minerFeeRecipient != owner) {
+            if (lrcReward != 0 && minerFeeRecipient != owner) {
                 require(
                     lrc.transferFrom(
                         minerFeeRecipient,
@@ -505,7 +505,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
         }
         uint walletFee = (walletFeeRecipient == 0x0) ? 0 : fee.mul(walletSplitPercentage) / 100;
         uint minerFee = fee - walletFee;
-        if (walletFee &gt; 0 &amp;&amp; walletFeeRecipient != owner) {
+        if (walletFee > 0 && walletFeeRecipient != owner) {
             require(
                 token.transferFrom(
                     owner,
@@ -514,7 +514,7 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
                 )
             );
         }
-        if (minerFee &gt; 0 &amp;&amp; minerFeeRecipient != 0x0 &amp;&amp; minerFeeRecipient != owner) {
+        if (minerFee > 0 && minerFeeRecipient != 0x0 && minerFeeRecipient != owner) {
             require(
                 token.transferFrom(
                     owner,
@@ -555,9 +555,9 @@ contract TokenTransferDelegateImpl is TokenTransferDelegate, Claimable {
         uint len = owners.length;
         require(len == tradingPairs.length);
         require(len == validSince.length);
-        for(uint i = 0; i &lt; len; i++) {
-            require(validSince[i] &gt; tradingPairCutoffs[owners[i]][tradingPairs[i]]);  // order trading pair is cut off
-            require(validSince[i] &gt; cutoffs[owners[i]]);                              // order is cut off
+        for(uint i = 0; i < len; i++) {
+            require(validSince[i] > tradingPairCutoffs[owners[i]][tradingPairs[i]]);  // order trading pair is cut off
+            require(validSince[i] > cutoffs[owners[i]]);                              // order is cut off
         }
     }
 }

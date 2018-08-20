@@ -15,7 +15,7 @@ contract MultiWhitelist {
     function multisetUserCategory(address[] users, uint category, whitelist listContract) public {
         require(msg.sender == owner);
 
-        for(uint i = 0 ; i &lt; users.length ; i++ ) {
+        for(uint i = 0 ; i < users.length ; i++ ) {
             listContract.setUserCategory(users[i],category);
         }
     }

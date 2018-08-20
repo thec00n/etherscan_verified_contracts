@@ -37,7 +37,7 @@ contract LoanDirectory {
     }
     
     function registerLoanReplace(Loan loan, uint256 indexReplace) {
-        require(indexReplace &lt; loans.length);
+        require(indexReplace < loans.length);
         Loan replaceLoan = loans[indexReplace]; // Get loan to delete
         require(replaceLoan.status() != replaceLoan.STATUS_INITIAL());
         require(loan.status() == loan.STATUS_INITIAL());
@@ -45,7 +45,7 @@ contract LoanDirectory {
     }
 
     function registerLoanReplaceDuplicated(Loan loan, uint256 replaceA, uint256 replaceB) {
-        require(replaceA &lt; loans.length &amp;&amp; replaceB &lt; loans.length);
+        require(replaceA < loans.length && replaceB < loans.length);
         require(replaceA != replaceB);
         require(loans[replaceA] == loans[replaceB]);
         require(loan.status() == loan.STATUS_INITIAL());

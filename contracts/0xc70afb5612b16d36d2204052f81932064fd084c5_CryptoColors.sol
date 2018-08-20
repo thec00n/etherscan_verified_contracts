@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,8 +95,8 @@ contract CryptoColors is Pausable {
 
   // CONSTANT
 
-  string public constant name = &quot;Pixinch Color&quot;;
-  string public constant symbol = &quot;PCLR&quot;;
+  string public constant name = "Pixinch Color";
+  string public constant symbol = "PCLR";
   uint public constant totalSupply = 16777216;
 
   // PUBLIC VARs
@@ -133,7 +133,7 @@ contract CryptoColors is Pausable {
   * @dev Garantee index and token are valid value
   */
   modifier isValid(uint _tokenId, uint _index) {
-    require(_validToken(_tokenId) &amp;&amp; _validIndex(_index));
+    require(_validToken(_tokenId) && _validIndex(_index));
     _;
   }
 
@@ -185,13 +185,13 @@ contract CryptoColors is Pausable {
   // min block index available in the tree;
   uint lastBlockId = 0;
   // mapping of owner and range index in the tree
-  mapping(address =&gt; uint256[]) ownerRangeIndex;
+  mapping(address => uint256[]) ownerRangeIndex;
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) tokenApprovals;
+  mapping (uint256 => address) tokenApprovals;
   // pending payments
-  mapping(address =&gt; uint) private payments;
+  mapping(address => uint) private payments;
   // mapping owner balance
-  mapping(address =&gt; uint) private ownerBalance;
+  mapping(address => uint) private ownerBalance;
   
 
   // CONSTRUCTOR
@@ -199,8 +199,8 @@ contract CryptoColors is Pausable {
   function CryptoColors(uint256 _startTime, uint256 _endTime, address _token, address _wallet) public {
     require(_token != address(0));
     require(_wallet != address(0));
-    require(_startTime &gt; 0);
-    require(_endTime &gt; now);
+    require(_startTime > 0);
+    require(_endTime > now);
 
     owner = msg.sender;
     
@@ -232,11 +232,11 @@ contract CryptoColors is Pausable {
   }
 
   function isGameActivated() public view returns (bool) {
-    return totalSupply == totalBoughtColor || now &gt; endTime;
+    return totalSupply == totalBoughtColor || now > endTime;
   }
 
   function isCrowdSaleActive() public view returns (bool) {
-    return now &lt; endTime &amp;&amp; now &gt;= startTime &amp;&amp; weiRaised &lt; cap;
+    return now < endTime && now >= startTime && weiRaised < cap;
   }
 
   function balanceOf(address _owner) public view returns (uint256 balance) {
@@ -258,7 +258,7 @@ contract CryptoColors is Pausable {
       uint[] memory indexes = ownerRangeIndex[_owner];
       result = new uint[](indexes.length);
       uint i = 0;
-      for (uint index = 0; index &lt; indexes.length; index++) {
+      for (uint index = 0; index < indexes.length; index++) {
         BlockRange storage br = tree[indexes[index]];
         if (br.owner == _owner) {
           result[i] = indexes[index];
@@ -290,7 +290,7 @@ contract CryptoColors is Pausable {
   }
 
   function lookupIndex(uint _tokenId, uint _start) public view returns (uint index) {
-    if (_tokenId &gt; totalSupply || _tokenId &gt; minId) {
+    if (_tokenId > totalSupply || _tokenId > minId) {
       return 0;
     }
     BlockRange storage startBlock = tree[_tokenId];
@@ -300,7 +300,7 @@ contract CryptoColors is Pausable {
     index = _start;
     startBlock = tree[index];
     require(startBlock.owner != address(0));
-    while (startBlock.end &lt; _tokenId &amp;&amp; startBlock.next != 0 ) {
+    while (startBlock.end < _tokenId && startBlock.next != 0 ) {
       index = startBlock.next;
       startBlock = tree[index];
     }
@@ -311,15 +311,15 @@ contract CryptoColors is Pausable {
 
   function buy() public payable whenActive whenNotPaused returns (string thanks) {
     require(msg.sender != address(0));
-    require(msg.value.div(colorPrice) &gt; 0);
+    require(msg.value.div(colorPrice) > 0);
     uint _nbColors = 0;
     uint value = msg.value;
-    if (totalSupply &gt; totalBoughtColor) {
+    if (totalSupply > totalBoughtColor) {
       (_nbColors, value) = buyColors(msg.sender, value);
     }
     if (totalSupply == totalBoughtColor) {
-      // require(value &gt;= colorPrice &amp;&amp; weiRaised.add(value) &lt;= cap);
-      if (weiRaised.add(value) &gt; cap) {
+      // require(value >= colorPrice && weiRaised.add(value) <= cap);
+      if (weiRaised.add(value) > cap) {
         value = cap.sub(weiRaised);
       }
       _nbColors = _nbColors.add(value.div(colorPrice));
@@ -330,7 +330,7 @@ contract CryptoColors is Pausable {
       }
     }
     forwardFunds(value);
-    return &quot;thank you for your participation.&quot;;
+    return "thank you for your participation.";
   }
 
   function purchase(uint _tokenId) public payable whenGameActive {
@@ -342,8 +342,8 @@ contract CryptoColors is Pausable {
     require(msg.sender != address(0));
 
     BlockRange storage bRange = tree[_index];
-    require(bRange.start &lt;= _tokenId &amp;&amp; _tokenId &lt;= bRange.end);
-    if (bRange.start &lt; bRange.end) {
+    require(bRange.start <= _tokenId && _tokenId <= bRange.end);
+    if (bRange.start < bRange.end) {
       // split and update index;
       _index = splitRange(_index, _tokenId, _tokenId);
       bRange = tree[_index];
@@ -351,7 +351,7 @@ contract CryptoColors is Pausable {
 
     uint price = bRange.price;
     address prevOwner = bRange.owner;
-    require(msg.value &gt;= price &amp;&amp; prevOwner != msg.sender);
+    require(msg.value >= price && prevOwner != msg.sender);
     if (prevOwner != address(0)) {
       payments[prevOwner] = payments[prevOwner].add(price);
       ownerBalance[prevOwner]--;
@@ -393,16 +393,16 @@ contract CryptoColors is Pausable {
   
   function transferWithIndex(address _to, uint256 _tokenId, uint _index) public isValid(_tokenId, _index) onlyOwnerOf(_index) {
     BlockRange storage bRange = tree[_index];
-    if (bRange.start &gt; _tokenId || _tokenId &gt; bRange.end) {
+    if (bRange.start > _tokenId || _tokenId > bRange.end) {
       _index = lookupIndex(_tokenId, _index);
-      require(_index &gt; 0);
+      require(_index > 0);
       bRange = tree[_index];
     }
-    if (bRange.start &lt; bRange.end) {
+    if (bRange.start < bRange.end) {
       _index = splitRange(_index, _tokenId, _tokenId);
       bRange = tree[_index];
     }
-    require(_to != address(0) &amp;&amp; bRange.owner != _to);
+    require(_to != address(0) && bRange.owner != _to);
     bRange.owner = _to;
     ownerRangeIndex[msg.sender].push(_index);
     Transfer(msg.sender, _to, _tokenId);
@@ -418,13 +418,13 @@ contract CryptoColors is Pausable {
   function approveWithIndex(address _to, uint256 _tokenId, uint _index) public isValid(_tokenId, _index) onlyOwnerOf(_index) {
     require(_to != address(0));
     BlockRange storage bRange = tree[_index];
-    if (bRange.start &gt; _tokenId || _tokenId &gt; bRange.end) {
+    if (bRange.start > _tokenId || _tokenId > bRange.end) {
       _index = lookupIndex(_tokenId, _index);
-      require(_index &gt; 0);
+      require(_index > 0);
       bRange = tree[_index];
     }
     require(_to != bRange.owner);
-    if (bRange.start &lt; bRange.end) {
+    if (bRange.start < bRange.end) {
       splitRange(_index, _tokenId, _tokenId);
     }
     tokenApprovals[_tokenId] = _to;
@@ -439,7 +439,7 @@ contract CryptoColors is Pausable {
   function takeOwnershipWithIndex(uint256 _tokenId, uint _index) public isValid(_tokenId, _index) {
     require(tokenApprovals[_tokenId] == msg.sender);
     BlockRange storage bRange = tree[_index];
-    require(bRange.start &lt;= _tokenId &amp;&amp; _tokenId &lt;= bRange.end);
+    require(bRange.start <= _tokenId && _tokenId <= bRange.end);
     ownerBalance[bRange.owner]--;
     bRange.owner = msg.sender;
     ownerRangeIndex[msg.sender].push(_index); 
@@ -469,10 +469,10 @@ contract CryptoColors is Pausable {
 
   function buyColors(address _to, uint256 value) private returns (uint _nbColors, uint valueRest) {
     _nbColors = value.div(colorPrice);
-    if (bonusStep &lt; 3 &amp;&amp; totalBoughtColor.add(_nbColors) &gt; nextBonusStepLimit) {
+    if (bonusStep < 3 && totalBoughtColor.add(_nbColors) > nextBonusStepLimit) {
       uint max = nextBonusStepLimit.sub(totalBoughtColor);
       uint val = max.mul(colorPrice);
-      if (max == 0 || val &gt; value) {
+      if (max == 0 || val > value) {
         return (0, value);
       }
       valueRest = value.sub(val);
@@ -487,7 +487,7 @@ contract CryptoColors is Pausable {
   }
 
   function reserveColors(address _to, uint _nbColors) private returns (uint) {
-    if (_nbColors &gt; totalSupply - totalBoughtColor) {
+    if (_nbColors > totalSupply - totalBoughtColor) {
       _nbColors = totalSupply - totalBoughtColor;
     }
     if (_nbColors == 0) {
@@ -501,7 +501,7 @@ contract CryptoColors is Pausable {
   }
 
   function checkForSteps() private {
-    if (bonusStep &lt; 3 &amp;&amp; totalBoughtColor &gt;= nextBonusStepLimit) {
+    if (bonusStep < 3 && totalBoughtColor >= nextBonusStepLimit) {
       if ( bonusStep == 0) {
         colorPrice = colorPrice + colorPrice;
       } else {
@@ -519,15 +519,15 @@ contract CryptoColors is Pausable {
   }
 
   function _validIndex(uint _index) internal view returns (bool) {
-    return _index &gt; 0 &amp;&amp; _index &lt; tree.length;
+    return _index > 0 && _index < tree.length;
   }
 
   function _validToken(uint _tokenId) internal pure returns (bool) {
-    return _tokenId &gt; 0 &amp;&amp; _tokenId &lt;= totalSupply;
+    return _tokenId > 0 && _tokenId <= totalSupply;
   }
 
   function reserveRange(address _to, uint _nbTokens) internal {
-    require(_nbTokens &lt;= totalSupply);
+    require(_nbTokens <= totalSupply);
     BlockRange storage rblock = tree[minId];
     rblock.start = minId;
     rblock.end = minId.add(_nbTokens).sub(1);
@@ -546,10 +546,10 @@ contract CryptoColors is Pausable {
   }
 
   function splitRange(uint index, uint start, uint end) internal returns (uint) {
-    require(index &gt; 0);
-    require(start &lt;= end);
+    require(index > 0);
+    require(start <= end);
     BlockRange storage startBlock = tree[index];
-    require(startBlock.start &lt; startBlock.end &amp;&amp; startBlock.start &lt;= start &amp;&amp; startBlock.end &gt;= end);
+    require(startBlock.start < startBlock.end && startBlock.start <= start && startBlock.end >= end);
 
     BlockRange memory rblockUnique = tree[start];
     rblockUnique.start = start;
@@ -558,7 +558,7 @@ contract CryptoColors is Pausable {
     rblockUnique.price = startBlock.price;
     
     uint nextStart = end.add(1);
-    if (nextStart &lt;= totalSupply) {
+    if (nextStart <= totalSupply) {
       rblockUnique.next = nextStart;
 
       BlockRange storage rblockEnd = tree[nextStart];
@@ -569,7 +569,7 @@ contract CryptoColors is Pausable {
       rblockEnd.price = startBlock.price;
     }
 
-    if (startBlock.start &lt; start) {
+    if (startBlock.start < start) {
       startBlock.end = start.sub(1);
     } else {
       startBlock.end = start;
@@ -610,9 +610,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -620,7 +620,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -629,7 +629,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -48,20 +48,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,7 +89,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -138,8 +138,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -202,7 +202,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,11 +214,11 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract MagnusCoin is StandardToken, Ownable, Contactable {
-    string public name = &quot;Magnus Coin&quot;;
-    string public symbol = &quot;MGS&quot;;
+    string public name = "Magnus Coin";
+    string public symbol = "MGS";
     uint256 public constant decimals = 18;
 
-    mapping (address =&gt; bool) internal allowedOverrideAddresses;
+    mapping (address => bool) internal allowedOverrideAddresses;
 
     bool public tokenActive = false;
     
@@ -237,9 +237,9 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     }
 
     modifier onlyIfValidAddress(address _to) {
-        // prevent &#39;invalid&#39; addresses for transfer destinations
+        // prevent 'invalid' addresses for transfer destinations
         require(_to != 0x0);
-        // don&#39;t allow transferring to this contract&#39;s address
+        // don't allow transferring to this contract's address
         require(_to != address(this));
         _;
     }
@@ -251,7 +251,7 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     function MagnusCoin() public {
 
         totalSupply = 118200000000000000000000000;
-        contactInformation = &quot;Magnus Collective&quot;;
+        contactInformation = "Magnus Collective";
         
 
         // msg.sender == owner of the contract
@@ -279,9 +279,9 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
 
     function ownerRecoverTokens(address _address, uint256 _value) external onlyOwner {
             require(_address != address(0));
-            require(now &lt; endtime );
-            require(_value &lt;= balances[_address]);
-            require(balances[_address].sub(_value) &gt;=0);
+            require(now < endtime );
+            require(_value <= balances[_address]);
+            require(balances[_address].sub(_value) >=0);
             balances[_address] = balances[_address].sub(_value);
             balances[owner] = balances[owner].add(_value);
             Transfer(_address, owner, _value);
@@ -298,14 +298,14 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     }
 
     function ownerActivateToken() external onlyOwner onlyIfTokenInactive {
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
 
         tokenActive = true;
         TokenActivated();
     }
 
     function ownerDeactivateToken() external onlyOwner onlyIfTokenActiveOrOverride {
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
 
         tokenActive = false;
         TokenDeactivated();

@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }
@@ -57,9 +57,9 @@ contract StandardToken is ERC20 {
     
     using SafeMath for uint256;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
@@ -94,8 +94,8 @@ contract StandardToken is ERC20 {
 }
   
 contract BitcoinOmega is StandardToken, Owned {
-  string public constant name = &quot;Bitcoin Omega&quot;;
-  string public constant symbol = &quot;BTCO&quot;;
+  string public constant name = "Bitcoin Omega";
+  string public constant symbol = "BTCO";
   uint public constant decimals = 18;
   uint256 public initialSupply;
 
@@ -108,7 +108,7 @@ contract BitcoinOmega is StandardToken, Owned {
   }
   
   function distribute1BTCO(address[] addresses) onlyOwner {
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
         balances[owner] -= 5000 * 10**18;
         balances[addresses[i]] += 5000 * 10**18;
         Transfer(owner, addresses[i], 5000 * 10**18);

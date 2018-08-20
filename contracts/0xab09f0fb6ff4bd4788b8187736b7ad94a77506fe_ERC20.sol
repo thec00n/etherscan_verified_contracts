@@ -17,16 +17,16 @@ contract ERC20 is ERC {
 	address public owner;
 	uint   token;
 	
-	mapping(address=&gt;uint) balance;
-	mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping(address=>uint) balance;
+	mapping (address => mapping (address => uint)) allowed;
 	event Transfer(address indexed _from, address indexed _to, uint _value);
 	event Approval(address indexed _owner, address indexed _spender, uint _value);
 	
 	function ERC20()  public {
 	    owner=msg.sender;
         totalSupply=1000000000;
-        name=&quot;Aasim&quot;;
-        symbol=&quot;AA&quot;;
+        name="Aasim";
+        symbol="AA";
         decimals=18;
 		
 	}
@@ -46,11 +46,11 @@ contract ERC20 is ERC {
 	}
 	function transfer(address _to, uint _value)  public returns (bool _success){
 		if(_to==address(0))revert();
-		if(balance[msg.sender]&lt;_value||_value==0)revert();
+		if(balance[msg.sender]<_value||_value==0)revert();
 		token =_value;
 		balance[msg.sender]-=token;
 		balance[_to]+=token;
-		if(balance[_to]+_value&lt;balance[_to]) revert();
+		if(balance[_to]+_value<balance[_to]) revert();
 		Transfer(msg.sender,_to,token);
 		return true;
 
@@ -65,11 +65,11 @@ contract ERC20 is ERC {
 	}
 	function transferFrom(address _from, address _to, uint _value) public returns (bool _success){
 		if(_to==address(0))revert();
-		if(balance[_from] &lt; _value)revert();
+		if(balance[_from] < _value)revert();
 		if(allowed[_from][msg.sender] ==0)revert();
-		if(allowed[_from][msg.sender] &gt;=_value){
+		if(allowed[_from][msg.sender] >=_value){
 		  allowed[_from][msg.sender]-=_value;
-		  if(balance[_to]+_value&lt;balance[_to]) revert();
+		  if(balance[_to]+_value<balance[_to]) revert();
 			balance[_from]-=_value;
 			balance[_to]+=_value;
 		

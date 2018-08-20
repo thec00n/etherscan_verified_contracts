@@ -25,7 +25,7 @@ library SafeMath {
     internal pure
     returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
@@ -39,7 +39,7 @@ library SafeMath {
     function sub(uint256 x, uint256 y)
     internal pure
     returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -87,8 +87,8 @@ contract Token {
  */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * @dev Transfers _value amount of tokens to address _to, and MUST fire the Transfer event. 
@@ -105,7 +105,7 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
             balances[_to] = SafeMath.add(balances[_to], _value);
             emit Transfer(msg.sender, _to, _value);
@@ -133,7 +133,7 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = SafeMath.add(balances[_to], _value);
             balances[_from] = SafeMath.sub(balances[_from], _value);
             allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -163,7 +163,7 @@ contract StandardToken is Token {
      * @dev NOTE: To prevent attack vectors like the one described in [1] and discussed in [2], clients 
      * @dev SHOULD make sure to create user interfaces in such a way that they set the allowance first 
      * @dev to 0 before setting it to another value for the same spender. THOUGH The contract itself 
-     * @dev shouldn&#39;t enforce it, to allow backwards compatilibilty with contracts deployed before.
+     * @dev shouldn't enforce it, to allow backwards compatilibilty with contracts deployed before.
      * @dev [1] https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      * @dev [2] https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
@@ -204,10 +204,10 @@ contract RelocationToken {
 contract StarambaToken is StandardToken {
 
     // Token metadata
-    string public constant name = &quot;STARAMBA.Token&quot;;
-    string public constant symbol = &quot;STT&quot;;
+    string public constant name = "STARAMBA.Token";
+    string public constant symbol = "STT";
     uint256 public constant decimals = 18;
-    string public constant version = &quot;1&quot;;
+    string public constant version = "1";
 
     uint256 public TOKEN_CREATION_CAP = 1000 * (10**6) * 10**decimals; // 1000 million STTs
     uint256 public constant TOKEN_MIN = 1 * 10**decimals;              // 1 STT
@@ -226,14 +226,14 @@ contract StarambaToken is StandardToken {
     uint8 supplyAdjustmentCount = 0;
 
     // Keep track of holders and icoBuyers
-    mapping (address =&gt; bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
+    mapping (address => bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
     address[] public holders;                  // array of all known holders - important for payouts later
 
-    // Store the hashes of admins&#39; msg.data
-    mapping (address =&gt; bytes32) private multiSigHashes;
+    // Store the hashes of admins' msg.data
+    mapping (address => bytes32) private multiSigHashes;
 
     // Declare vendor keys
-    mapping (address =&gt; bool) public vendors;
+    mapping (address => bool) public vendors;
 
     // Count amount of vendors for easier verification of correct contract deployment
     uint8 public vendorCount;
@@ -297,7 +297,7 @@ contract StarambaToken is StandardToken {
         STTadmin1 = _admin1;
         STTadmin2 = _admin2;
 
-        for (uint8 i = 0; i &lt; _vendors.length; i++){
+        for (uint8 i = 0; i < _vendors.length; i++){
             vendors[_vendors[i]] = true;
             vendorCount++;
         }
@@ -393,10 +393,10 @@ contract StarambaToken is StandardToken {
     external
     onlyVendor
     {
-        require(_amount &gt;= TOKEN_MIN);
+        require(_amount >= TOKEN_MIN);
 
         uint256 checkedSupply = SafeMath.add(totalSupply, _amount);
-        require(checkedSupply &lt;= TOKEN_CREATION_CAP);
+        require(checkedSupply <= TOKEN_CREATION_CAP);
 
         // Adjust the balance
         uint256 oldBalance = balances[_buyer];
@@ -416,12 +416,12 @@ contract StarambaToken is StandardToken {
     {
         require(_buyer.length == _amount.length);
 
-        for (uint8 i = 0 ; i &lt; _buyer.length; i++) {
-            require(_amount[i] &gt;= TOKEN_MIN);
+        for (uint8 i = 0 ; i < _buyer.length; i++) {
+            require(_amount[i] >= TOKEN_MIN);
             require(_buyer[i] != 0x0);
 
             uint256 checkedSupply = SafeMath.add(totalSupply, _amount[i]);
-            require(checkedSupply &lt;= TOKEN_CREATION_CAP);
+            require(checkedSupply <= TOKEN_CREATION_CAP);
 
             // Adjust the balance
             uint256 oldBalance = balances[_buyer[i]];
@@ -462,16 +462,16 @@ contract StarambaToken is StandardToken {
     external
     onlyOwner
     {
-        require (supplyAdjustmentCount &lt; 4);
+        require (supplyAdjustmentCount < 4);
         TOKEN_CREATION_CAP = SafeMath.add(TOKEN_CREATION_CAP, 50 * (10**6) * 10**decimals); // 50 million STTs
         supplyAdjustmentCount++;
     }
 
-    // Burn function - name indicating the burn of ALL owner&#39;s tokens
+    // Burn function - name indicating the burn of ALL owner's tokens
     function burnWholeBalance()
     external
     {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         totalSupply = SafeMath.sub(totalSupply, balances[msg.sender]);
         balances[msg.sender] = 0;
     }

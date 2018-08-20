@@ -8,20 +8,20 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract ShineCoinToken is Controlled {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;SHINE_0.1&#39;;
+    string public version = 'SHINE_0.1';
 
     struct Checkpoint {
         uint128 fromBlock;
@@ -105,9 +105,9 @@ contract ShineCoinToken is Controlled {
     // Unfreeze team wallet for transfers
     uint public unfreezeTeamRecepientBlock;
 
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     Checkpoint[] totalSupplyHistory;
 
@@ -161,8 +161,8 @@ contract ShineCoinToken is Controlled {
 
     function transfer(address _to, uint256 _amount) returns (bool success) {
         if (!transfersEnabled) throw;
-        if ((address(msg.sender) == frozenReserveTeamRecipient) &amp;&amp; (block.number &lt; unfreezeTeamRecepientBlock)) throw;
-        if ((_to == frozenReserveTeamRecipient) &amp;&amp; (block.number &lt; unfreezeTeamRecepientBlock)) throw;
+        if ((address(msg.sender) == frozenReserveTeamRecipient) && (block.number < unfreezeTeamRecepientBlock)) throw;
+        if ((_to == frozenReserveTeamRecipient) && (block.number < unfreezeTeamRecepientBlock)) throw;
         return doTransfer(msg.sender, _to, _amount);
     }
 
@@ -170,7 +170,7 @@ contract ShineCoinToken is Controlled {
         if (msg.sender != controller) {
             if (!transfersEnabled) throw;
 
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -182,12 +182,12 @@ contract ShineCoinToken is Controlled {
             return true;
         }
 
-        if (parentSnapShotBlock &gt;= block.number) throw;
+        if (parentSnapShotBlock >= block.number) throw;
 
         if ((_to == 0) || (_to == address(this))) throw;
 
         var previousBalanceFrom = balanceOfAt(_from, block.number);
-        if (previousBalanceFrom &lt; _amount) {
+        if (previousBalanceFrom < _amount) {
             return false;
         }
 
@@ -201,14 +201,14 @@ contract ShineCoinToken is Controlled {
         uint blocksFromLastBlock = block.number - lastBlock;
         uint rewardAmount = 0;
 
-        if (block.number &lt;= firstRewardPeriodEndBlock) {
-            if (blocksFromLastBlock &gt; firstLoos) {
+        if (block.number <= firstRewardPeriodEndBlock) {
+            if (blocksFromLastBlock > firstLoos) {
                 rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * blocksFromLastBlock;
             }
         }
-        else if (block.number &lt;= secondRewardPeriodEndBlock) {
-            if (blocksFromLastBlock &gt; secondLoos) {
-                if (lastBlock &lt; firstRewardPeriodEndBlock) {
+        else if (block.number <= secondRewardPeriodEndBlock) {
+            if (blocksFromLastBlock > secondLoos) {
+                if (lastBlock < firstRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - block.number);
                 }
                 else {
@@ -216,12 +216,12 @@ contract ShineCoinToken is Controlled {
                 }
             }
         }
-        else if (block.number &lt;= thirdRewardPeriodEndBlock) {
-            if (blocksFromLastBlock &gt; thirdLoos) {
-                if (lastBlock &lt; firstRewardPeriodEndBlock) {
+        else if (block.number <= thirdRewardPeriodEndBlock) {
+            if (blocksFromLastBlock > thirdLoos) {
+                if (lastBlock < firstRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (thirdRewardPeriodEndBlock - block.number);
                 }
-                else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                else if (lastBlock < secondRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (thirdRewardPeriodEndBlock - block.number);
                 }
                 else {
@@ -229,15 +229,15 @@ contract ShineCoinToken is Controlled {
                 }
             }
         }
-        else if (block.number &lt;= finalRewardPeriodEndBlock) {
-            if (blocksFromLastBlock &gt; finalLoos) {
-                if (lastBlock &lt; firstRewardPeriodEndBlock) {
+        else if (block.number <= finalRewardPeriodEndBlock) {
+            if (blocksFromLastBlock > finalLoos) {
+                if (lastBlock < firstRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
-                else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                else if (lastBlock < secondRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
-                else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                else if (lastBlock < secondRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
                 else {
@@ -246,14 +246,14 @@ contract ShineCoinToken is Controlled {
             }
         }
         else {
-            if (blocksFromLastBlock &gt; finalLoos) {
-                if (lastBlock &lt; firstRewardPeriodEndBlock) {
+            if (blocksFromLastBlock > finalLoos) {
+                if (lastBlock < firstRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
-                else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                else if (lastBlock < secondRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
-                else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                else if (lastBlock < secondRewardPeriodEndBlock) {
                     rewardAmount = previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                 }
                 else {
@@ -268,31 +268,31 @@ contract ShineCoinToken is Controlled {
         updateValueAtNow(balances[_from], previousBalanceFrom - _amount + rewardAmount);
 
         // UPDATE TOTAL
-        if (rewardAmount &gt; 0) {
+        if (rewardAmount > 0) {
             curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-            if (curTotalSupply + rewardAmount &lt; curTotalSupply) throw; // Check for overflow
+            if (curTotalSupply + rewardAmount < curTotalSupply) throw; // Check for overflow
             updateValueAtNow(totalSupplyHistory, curTotalSupply + rewardAmount);
         }
 
         rewardAmount = 0;
 
         var previousBalanceTo = balanceOfAt(_to, block.number);
-        if (previousBalanceTo + _amount &lt; previousBalanceTo) throw;
+        if (previousBalanceTo + _amount < previousBalanceTo) throw;
 
         checkpoints = balances[_to];
-        if (checkpoints.length &gt; 0) {
+        if (checkpoints.length > 0) {
             lastBlock = checkpoints[checkpoints.length - 1].fromBlock;
             blocksFromLastBlock = block.number - lastBlock;
 
-            if (_amount &gt;= (previousBalanceTo / 3)) {
-                if (blocksFromLastBlock &gt; finalLoos) {
+            if (_amount >= (previousBalanceTo / 3)) {
+                if (blocksFromLastBlock > finalLoos) {
 
-                    if (block.number &lt;= firstRewardPeriodEndBlock) {
+                    if (block.number <= firstRewardPeriodEndBlock) {
                         rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * blocksFromLastBlock;
                     }
-                    else if (block.number &lt;= secondRewardPeriodEndBlock) {
+                    else if (block.number <= secondRewardPeriodEndBlock) {
 
-                        if (lastBlock &lt; firstRewardPeriodEndBlock) {
+                        if (lastBlock < firstRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - block.number);
                         }
                         else {
@@ -300,12 +300,12 @@ contract ShineCoinToken is Controlled {
                         }
 
                     }
-                    else if (block.number &lt;= thirdRewardPeriodEndBlock) {
+                    else if (block.number <= thirdRewardPeriodEndBlock) {
 
-                        if (lastBlock &lt; firstRewardPeriodEndBlock) {
+                        if (lastBlock < firstRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (thirdRewardPeriodEndBlock - block.number);
                         }
-                        else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                        else if (lastBlock < secondRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (thirdRewardPeriodEndBlock - block.number);
                         }
                         else {
@@ -313,15 +313,15 @@ contract ShineCoinToken is Controlled {
                         }
 
                     }
-                    else if (block.number &lt;= finalRewardPeriodEndBlock) {
+                    else if (block.number <= finalRewardPeriodEndBlock) {
 
-                        if (lastBlock &lt; firstRewardPeriodEndBlock) {
+                        if (lastBlock < firstRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
-                        else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                        else if (lastBlock < secondRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
-                        else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                        else if (lastBlock < secondRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
                         else {
@@ -331,13 +331,13 @@ contract ShineCoinToken is Controlled {
                     }
                     else {
 
-                        if (lastBlock &lt; firstRewardPeriodEndBlock) {
+                        if (lastBlock < firstRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * firstRewardPeriodPercent * (firstRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * secondRewardPeriodPercent * (thirdRewardPeriodEndBlock - secondRewardPeriodEndBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
-                        else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                        else if (lastBlock < secondRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * secondRewardPeriodPercent * (secondRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - thirdRewardPeriodEndBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
-                        else if (lastBlock &lt; secondRewardPeriodEndBlock) {
+                        else if (lastBlock < secondRewardPeriodEndBlock) {
                             rewardAmount = previousBalanceFrom * thirdRewardPeriodPercent * (finalRewardPeriodEndBlock - lastBlock) + previousBalanceFrom * finalRewardPeriodPercent * (finalRewardPeriodEndBlock - block.number);
                         }
                         else {
@@ -354,9 +354,9 @@ contract ShineCoinToken is Controlled {
         updateValueAtNow(balances[_to], previousBalanceTo + _amount + rewardAmount);
 
         // UPDATE TOTAL
-        if (rewardAmount &gt; 0) {
+        if (rewardAmount > 0) {
             curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-            if (curTotalSupply + rewardAmount &lt; curTotalSupply) throw;
+            if (curTotalSupply + rewardAmount < curTotalSupply) throw;
             // Check for overflow
             updateValueAtNow(totalSupplyHistory, curTotalSupply + rewardAmount);
         }
@@ -373,7 +373,7 @@ contract ShineCoinToken is Controlled {
     function approve(address _spender, uint256 _amount) returns (bool success) {
         if (!transfersEnabled) throw;
 
-        if ((_amount != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_amount != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         if (isContract(controller)) {
             if (!TokenController(controller).onApprove(msg.sender, _spender, _amount))
@@ -417,7 +417,7 @@ contract ShineCoinToken is Controlled {
     returns (uint) {
 
         if ((balances[_owner].length == 0)
-        || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             }
@@ -432,7 +432,7 @@ contract ShineCoinToken is Controlled {
 
     function totalSupplyAt(uint _blockNumber) constant returns (uint) {
         if ((totalSupplyHistory.length == 0)
-        || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+        || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             }
@@ -472,11 +472,11 @@ contract ShineCoinToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw;
+        if (curTotalSupply + _amount < curTotalSupply) throw;
 
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         var previousBalanceTo = balanceOf(_owner);
-        if (previousBalanceTo + _amount &lt; previousBalanceTo) throw;
+        if (previousBalanceTo + _amount < previousBalanceTo) throw;
 
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -486,10 +486,10 @@ contract ShineCoinToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -503,15 +503,15 @@ contract ShineCoinToken is Controlled {
     ) constant internal returns (uint) {
         if (checkpoints.length == 0) return 0;
 
-        if (_block &gt;= checkpoints[checkpoints.length - 1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length - 1].fromBlock)
         return checkpoints[checkpoints.length - 1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         uint min = 0;
         uint max = checkpoints.length - 1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1) / 2;
-            if (checkpoints[mid].fromBlock &lt;= _block) {
+            if (checkpoints[mid].fromBlock <= _block) {
                 min = mid;
             }
             else {
@@ -524,7 +524,7 @@ contract ShineCoinToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length - 1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
             Checkpoint newCheckPoint = checkpoints[checkpoints.length++];
             newCheckPoint.fromBlock = uint128(block.number);
             newCheckPoint.value = uint128(_value);
@@ -541,11 +541,11 @@ contract ShineCoinToken is Controlled {
         assembly {
         size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function() payable {
@@ -636,13 +636,13 @@ contract ShineCrowdFunder is Controlled, SafeMath {
 
     event LogFundingReceived(address addr, uint amount, uint currentTotal);
 
-    mapping (address =&gt; uint256) private balanceOf;
+    mapping (address => uint256) private balanceOf;
 
-    mapping (address =&gt; uint) public fiatInvestorShare;
+    mapping (address => uint) public fiatInvestorShare;
 
     address[] fiatInvestors;
 
-    mapping (address =&gt; bool) private frozenAccount;
+    mapping (address => bool) private frozenAccount;
 
     enum State {
         Wait,
@@ -658,7 +658,7 @@ contract ShineCrowdFunder is Controlled, SafeMath {
     }
 
     modifier atEndOfFundraising() {
-        if (!((state == State.ExpiredRefund || state == State.Successful) &amp;&amp; block.number &gt; endBlockNumber)
+        if (!((state == State.ExpiredRefund || state == State.Successful) && block.number > endBlockNumber)
         ) {
             throw;
         }
@@ -672,7 +672,7 @@ contract ShineCrowdFunder is Controlled, SafeMath {
 
     modifier minInvestment() {
         // User has to send at least 0.01 Eth
-        require(msg.value &gt;= 10 ** 16);
+        require(msg.value >= 10 ** 16);
         _;
     }
 
@@ -735,7 +735,7 @@ contract ShineCrowdFunder is Controlled, SafeMath {
             fiatInvestorShare[target] = share;
             fiatInvestors.push(target);
         } else { // address already exists
-            if (share &gt; 0) {
+            if (share > 0) {
                 uint prevShare = fiatInvestorShare[target];
                 uint newShare = prevShare + share;
 
@@ -750,16 +750,16 @@ contract ShineCrowdFunder is Controlled, SafeMath {
     }
 
     function updateExchangeRate () {
-        if (tokensIssued &gt;= (1000000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (2000000 * 10 ** 9)) {
+        if (tokensIssued >= (1000000 * 10 ** 9) && tokensIssued < (2000000 * 10 ** 9)) {
             tokenExchangeRate = 600 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (2000000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (3500000 * 10 ** 9)) {
+        if (tokensIssued >= (2000000 * 10 ** 9) && tokensIssued < (3500000 * 10 ** 9)) {
             tokenExchangeRate = 500 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (3500000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (6000000 * 10 ** 9)) {
+        if (tokensIssued >= (3500000 * 10 ** 9) && tokensIssued < (6000000 * 10 ** 9)) {
             tokenExchangeRate = 400 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (6000000 * 10 ** 9)) {
+        if (tokensIssued >= (6000000 * 10 ** 9)) {
             tokenExchangeRate = 300 * 10 ** 9;
         }
     }
@@ -790,8 +790,8 @@ contract ShineCrowdFunder is Controlled, SafeMath {
     }
 
     function checkIfFundingCompleteOrExpired() {
-        if (block.number &gt; endBlockNumber || tokensIssued &gt;= capTokenAmount) {
-            if (currentBalance &gt;= minFundingGoal) {
+        if (block.number > endBlockNumber || tokensIssued >= capTokenAmount) {
+            if (currentBalance >= minFundingGoal) {
                 state = State.Successful;
                 payOut();
 
@@ -811,7 +811,7 @@ contract ShineCrowdFunder is Controlled, SafeMath {
         currentBalance = 0;
         state = State.Closed;
 
-        for (uint i = 0; i &lt; fiatInvestors.length; i++) {
+        for (uint i = 0; i < fiatInvestors.length; i++) {
             address investorAddress = fiatInvestors[i];
             uint investorShare = fiatInvestorShare[investorAddress];
             uint investorAmount = div(mul(balance, investorShare), 1000000);

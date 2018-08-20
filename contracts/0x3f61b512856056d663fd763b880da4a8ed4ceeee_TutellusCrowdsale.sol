@@ -5,7 +5,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,7 +124,7 @@ contract TokenTimelock is Ownable {
   bool public kycValid = false;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -134,11 +134,11 @@ contract TokenTimelock is Ownable {
     * @notice Transfers tokens held by timelock to beneficiary.
     */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
     require(kycValid);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -162,20 +162,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -189,7 +189,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -228,7 +228,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -257,7 +257,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -294,7 +294,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -360,8 +360,8 @@ contract MintableToken is StandardToken, Ownable {
  * @dev ERC20 Tutellus Token (TUT)
  */
 contract TutellusToken is MintableToken {
-   string public name = &quot;Tutellus&quot;;
-   string public symbol = &quot;TUT&quot;;
+   string public name = "Tutellus";
+   string public symbol = "TUT";
    uint8 public decimals = 18;
 }
 
@@ -405,9 +405,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -456,14 +456,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -481,21 +481,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -517,7 +517,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -591,16 +591,16 @@ contract Pausable is Ownable {
  *
  * @dev Crowdsale for the Tutellus.io ICO.
  *
- * Upon finalization the pool and the team&#39;s wallet are mined. It must be
+ * Upon finalization the pool and the team's wallet are mined. It must be
  * finalized once all the backers (including the vesting ones) have made
  * their contributions.
  */
 contract TutellusCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
     event ConditionsAdded(address indexed beneficiary, uint256 rate);
     
-    mapping(address =&gt; uint256) public conditions;
+    mapping(address => uint256) public conditions;
 
-    mapping(address =&gt; address) public timelocksContracts;
+    mapping(address => address) public timelocksContracts;
 
     uint256 salePercent = 60;   // Percent of TUTs for sale
     uint256 poolPercent = 30;   // Percent of TUTs for pool
@@ -635,7 +635,7 @@ contract TutellusCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
 
     function addSpecialRateConditions(address _address, uint256 _rate) public onlyOwner {
         require(_address != address(0));
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         conditions[_address] = _rate;
         ConditionsAdded(_address, _rate);
@@ -644,19 +644,19 @@ contract TutellusCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
     // Returns TUTs rate per 1 ETH depending on current time
     function getRateByTime() public constant returns (uint256) {
         uint256 timeNow = now;
-        if (timeNow &gt; (startTime + 11 weeks)) {
+        if (timeNow > (startTime + 11 weeks)) {
             return 1000;
-        } else if (timeNow &gt; (startTime + 10 weeks)) {
+        } else if (timeNow > (startTime + 10 weeks)) {
             return 1050; // + 5%
-        } else if (timeNow &gt; (startTime + 9 weeks)) {
+        } else if (timeNow > (startTime + 9 weeks)) {
             return 1100; // + 10%
-        } else if (timeNow &gt; (startTime + 8 weeks)) {
+        } else if (timeNow > (startTime + 8 weeks)) {
             return 1200; // + 20%
-        } else if (timeNow &gt; (startTime + 6 weeks)) {
+        } else if (timeNow > (startTime + 6 weeks)) {
             return 1350; // + 35%
-        } else if (timeNow &gt; (startTime + 4 weeks)) {
+        } else if (timeNow > (startTime + 4 weeks)) {
             return 1400; // + 40%
-        } else if (timeNow &gt; (startTime + 2 weeks)) {
+        } else if (timeNow > (startTime + 2 weeks)) {
             return 1450; // + 45%
         } else {
             return 1500; // + 50%
@@ -679,19 +679,19 @@ contract TutellusCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
 
     function buyTokens(address beneficiary) whenNotPaused public payable {
         require(beneficiary != address(0));
-        require(msg.value &gt;= minICO &amp;&amp; msg.value &lt;= vestingLimit);
+        require(msg.value >= minICO && msg.value <= vestingLimit);
         require(validPurchase());
 
         uint256 rate;
         address contractAddress;
 
         if (conditions[beneficiary] != 0) {
-            require(msg.value &gt;= specialLimit);
+            require(msg.value >= specialLimit);
             rate = conditions[beneficiary];
         } else {
             rate = getRateByTime();
-            if (rate &gt; 1200) {
-                require(msg.value &gt;= minPreICO);
+            if (rate > 1200) {
+                require(msg.value >= minPreICO);
             }
         }
 

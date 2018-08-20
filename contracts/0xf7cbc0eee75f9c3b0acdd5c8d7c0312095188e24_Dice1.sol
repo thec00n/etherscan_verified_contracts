@@ -16,7 +16,7 @@ contract Dice1{
     /* Constructor */
     function Dice1() payable{
         maxbet = msg.value/5;
-        require(maxbet &gt; minbet);
+        require(maxbet > minbet);
         
         banker = msg.sender;
     }
@@ -26,23 +26,23 @@ contract Dice1{
         return uint(block.blockhash(block.number-1))%10;
     }
     
-    // receive gambler&#39;s money and start betting
+    // receive gambler's money and start betting
     function () payable {
-        require(msg.value &gt;= minbet);
-        require(msg.value &lt;=maxbet);
-        require(this.balance &gt;= msg.value*2);
+        require(msg.value >= minbet);
+        require(msg.value <=maxbet);
+        require(this.balance >= msg.value*2);
         
         luckynum = _getrand09();
-        if (luckynum &lt; 5) {
+        if (luckynum < 5) {
             uint winvalue = msg.value*2*(10000-190)/10000;
             YouWin(msg.sender, msg.value, winvalue);
             msg.sender.transfer(winvalue);
-            winlose = &#39;win&#39;;
+            winlose = 'win';
         }
         else{
             YouLose(msg.sender, msg.value);
             msg.sender.transfer(1);
-            winlose = &#39;lose&#39;;
+            winlose = 'lose';
         }
     }
     

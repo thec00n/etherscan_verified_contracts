@@ -81,8 +81,8 @@ function allowance(address _owner, address _spender) constant returns (uint256);
 contract HeroLedger is HeroAccessControl{
     ERC20 public erc20;
     
-    mapping (address =&gt; uint256) public ownerIndexToERC20Balance;  
-    mapping (address =&gt; uint256) public ownerIndexToERC20Used;  
+    mapping (address => uint256) public ownerIndexToERC20Balance;  
+    mapping (address => uint256) public ownerIndexToERC20Used;  
     uint256 public totalBalance;
     uint256 public totalUsed;
     
@@ -94,7 +94,7 @@ contract HeroLedger is HeroAccessControl{
         require(candidateContract.isERC20());
         erc20 = candidateContract; 
         uint256 realTotal = erc20.balanceOf(this); 
-        require(realTotal &gt;= _totalPromo);
+        require(realTotal >= _totalPromo);
         totalPromo=_totalPromo;
         candy=_candy;
     }
@@ -102,7 +102,7 @@ contract HeroLedger is HeroAccessControl{
     function setERC20TotalPromo(uint256 _totalPromo,uint256 _candy) public onlyLeader {
         uint256 realTotal = erc20.balanceOf(this);
         totalPromo +=_totalPromo;
-        require(realTotal - totalBalance &gt;= totalPromo); 
+        require(realTotal - totalBalance >= totalPromo); 
         
         candy=_candy;
     }
@@ -115,7 +115,7 @@ contract HeroLedger is HeroAccessControl{
     }	
 		
 		function collect(uint256 amount) public {
-				require(ownerIndexToERC20Balance[msg.sender] &gt;= amount);
+				require(ownerIndexToERC20Balance[msg.sender] >= amount);
     		if(erc20.transfer(msg.sender, amount)){
     				ownerIndexToERC20Balance[msg.sender] -= amount;
     				totalBalance -=amount;
@@ -124,7 +124,7 @@ contract HeroLedger is HeroAccessControl{
     
     function withdrawERC20Balance(uint256 amount) external onlyLeader {
         uint256 realTotal = erc20.balanceOf(this);
-     		require((realTotal -  (totalPromo  + totalBalance- totalUsed ) )  &gt;=amount);
+     		require((realTotal -  (totalPromo  + totalBalance- totalUsed ) )  >=amount);
         erc20.transfer(leaderAddress, amount);
         totalBalance -=amount;
         totalUsed -=amount;
@@ -136,7 +136,7 @@ contract HeroLedger is HeroAccessControl{
     		require(_address != address(this));
         ERC20 candidateContract = ERC20(_address);
         uint256 realTotal = candidateContract.balanceOf(this);
-        require( realTotal &gt;= amount );
+        require( realTotal >= amount );
         candidateContract.transfer(leaderAddress, amount);
     }
     
@@ -183,12 +183,12 @@ contract HeroBase is  HeroLedger{
     uint128 public cdFee = 118102796674000; 
 
     Hero[] heroes;
-    mapping (uint256 =&gt; address) public heroIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (uint256 => address) public heroIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
 
-    mapping (uint256 =&gt; address) public heroIndexToApproved;   
-    mapping (uint256 =&gt; uint32) public heroIndexToWin;   
-    mapping (uint256 =&gt; uint32) public heroIndexToLoss;
+    mapping (uint256 => address) public heroIndexToApproved;   
+    mapping (uint256 => uint32) public heroIndexToWin;   
+    mapping (uint256 => uint32) public heroIndexToLoss;
   
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         ownershipTokenCount[_to]++;
@@ -210,11 +210,11 @@ contract HeroBase is  HeroLedger{
         internal
         returns (uint)
     {
-        require(_generation &lt;= 65535);
+        require(_generation <= 65535);
        
         
         uint16 _cooldownIndex = uint16(_generation/2);
-        if(_cooldownIndex &gt; 13){
+        if(_cooldownIndex > 13){
         	_cooldownIndex =13;
         }   
         Hero memory _hero = Hero({
@@ -229,7 +229,7 @@ contract HeroBase is  HeroLedger{
             items: uint32(0)
         });
         uint256 newHeroId = heroes.push(_hero) - 1;
-        require(newHeroId &lt;= 4294967295);
+        require(newHeroId <= 4294967295);
         Recruitment(
             _owner,
             newHeroId,
@@ -262,8 +262,8 @@ contract ERC721 {
 
 contract HeroOwnership is HeroBase, ERC721 {
 
-    string public name = &quot;MyHero&quot;;
-    string public symbol = &quot;MH&quot;;
+    string public name = "MyHero";
+    string public symbol = "MH";
 
     function implementsERC721() public pure returns (bool)
     {
@@ -346,7 +346,7 @@ contract HeroOwnership is HeroBase, ERC721 {
         returns (uint256 tokenId)
     {
         uint256 count = 0;
-        for (uint256 i = 1; i &lt;= totalSupply(); i++) {
+        for (uint256 i = 1; i <= totalSupply(); i++) {
             if (heroIndexToOwner[i] == _owner) {
                 if (count == _index) {
                     return i;
@@ -377,7 +377,7 @@ contract HeroFighting is HeroOwnership {
 
     function _triggerCooldown(Hero storage _newHero) internal {
         _newHero.cooldownEndTime = uint64(now + cooldowns[_newHero.cooldownIndex]);
-        if (_newHero.cooldownIndex &lt; 13) {
+        if (_newHero.cooldownIndex < 13) {
             _newHero.cooldownIndex += 1;
         }
     }
@@ -387,9 +387,9 @@ contract HeroFighting is HeroOwnership {
         view
         returns (bool)
     {
-        require(_heroId &gt; 0);
+        require(_heroId > 0);
 	      Hero memory hero = heroes[_heroId];
-        return (hero.cooldownEndTime &lt;= now);
+        return (hero.cooldownEndTime <= now);
     }
 
     function _fight(uint32 _yinId, uint32 _yangId)
@@ -401,7 +401,7 @@ contract HeroFighting is HeroOwnership {
         require(yin.recruitmentTime != 0);
         Hero storage yang = heroes[_yangId];
         uint16 parentGen = yin.generation;
-        if (yang.generation &gt; yin.generation) {
+        if (yang.generation > yin.generation) {
             parentGen = yang.generation;
         }        
         var (flag, childTalent, belongings1,  belongings2) = masterRecruitment.fightMix(yin.belongings,yang.belongings);
@@ -428,7 +428,7 @@ contract HeroFighting is HeroOwnership {
          returns (uint256 fee)
     {
     		Hero memory hero = heroes[heroId];
-    		require(hero.cooldownEndTime &gt; now);
+    		require(hero.cooldownEndTime > now);
     		uint64 cdTime = uint64(hero.cooldownEndTime-now);
     		fee= uint256(cdTime * cdFee * (hero.cooldownIndex+1));
     		
@@ -529,12 +529,12 @@ contract HeroAuction is HeroFighting {
     )
         public
     {
-        require(ownerIndexToERC20Balance[msg.sender] &gt;= orderAmount); 
+        require(ownerIndexToERC20Balance[msg.sender] >= orderAmount); 
         address saller = saleAuction.getSeller(_heroId);
         uint256 price = saleAuction.getCurrentPrice(_heroId,1);
-        require( price &lt;= orderAmount &amp;&amp; saller != address(0));
+        require( price <= orderAmount && saller != address(0));
        
-        if(saleAuction.order(_heroId, orderAmount, msg.sender)  &amp;&amp;orderAmount &gt;0 ){
+        if(saleAuction.order(_heroId, orderAmount, msg.sender)  &&orderAmount >0 ){
          
 	          ownerIndexToERC20Balance[msg.sender] -= orderAmount;
 	    		  ownerIndexToERC20Used[msg.sender] += orderAmount;  
@@ -586,12 +586,12 @@ contract HeroAuction is HeroFighting {
         require(_owns(msg.sender, _yinId));
         require(isReadyToFight(_yinId));
         require(_yinId !=_yangId);
-        require(ownerIndexToERC20Balance[msg.sender] &gt;= orderAmount);
+        require(ownerIndexToERC20Balance[msg.sender] >= orderAmount);
         
         address saller= fightAuction.getSeller(_yangId);
         uint256 price = fightAuction.getCurrentPrice(_yangId,1);
       
-        require( price &lt;= orderAmount &amp;&amp; saller != address(0));
+        require( price <= orderAmount && saller != address(0));
         
         if(fightAuction.order(_yangId, orderAmount, msg.sender)){
 	         _fight(uint32(_yinId), uint32(_yangId));
@@ -626,7 +626,7 @@ contract HeroAuction is HeroFighting {
     
     function promoBun(address _address) public {
         require(msg.sender == address(saleAuction));
-        if(totalPromo &gt;= candy &amp;&amp; candy &gt; 0){
+        if(totalPromo >= candy && candy > 0){
           ownerIndexToERC20Balance[_address] += candy;
           totalPromo -=candy;
          }
@@ -649,8 +649,8 @@ contract HeroMinting is HeroAuction {
         if (_owner == address(0)) {
              _owner = opmAddress;
         }
-        require(promoCreatedCount &lt; promoCreationLimit);
-        require(gen0CreatedCount &lt; gen0CreationLimit);
+        require(promoCreatedCount < promoCreationLimit);
+        require(gen0CreatedCount < gen0CreationLimit);
 
         promoCreatedCount++;
         gen0CreatedCount++;
@@ -658,8 +658,8 @@ contract HeroMinting is HeroAuction {
     }
 
     function createGen0Auction(uint256 _talent,uint256 price) public onlyOPM {
-        require(gen0CreatedCount &lt; gen0CreationLimit);
-        require(price &lt; 340282366920938463463374607431768211455);
+        require(gen0CreatedCount < gen0CreationLimit);
+        require(price < 340282366920938463463374607431768211455);
 
         uint256 heroId = _createHero(0, 0, 0, _talent, address(this));
         _approve(heroId, saleAuction);
@@ -683,11 +683,11 @@ contract HeroMinting is HeroAuction {
     function _computeNextGen0Price() internal view returns (uint256) {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
 
-        require(avePrice &lt; 340282366920938463463374607431768211455);
+        require(avePrice < 340282366920938463463374607431768211455);
 
         uint256 nextPrice = avePrice + (avePrice / 2);
 
-        if (nextPrice &lt; gen0StartingPrice) {
+        if (nextPrice < gen0StartingPrice) {
             nextPrice = gen0StartingPrice;
         }
 
@@ -740,7 +740,7 @@ contract HeroCore is HeroMinting {
 	    
     ) {
         Hero storage her = heroes[_id];
-        isReady = (her.cooldownEndTime &lt;= now);
+        isReady = (her.cooldownEndTime <= now);
         cooldownIndex = uint256(her.cooldownIndex);
         nextActionAt = uint256(her.cooldownEndTime);
         recruitmentTime = uint256(her.recruitmentTime);
@@ -772,11 +772,11 @@ contract HeroCore is HeroMinting {
          whenNotPaused 
     {
     		Hero storage hero = heroes[heroId];
-    		require(hero.cooldownEndTime &gt; now);
-    		require(ownerIndexToERC20Balance[msg.sender] &gt;= reduceAmount);
+    		require(hero.cooldownEndTime > now);
+    		require(ownerIndexToERC20Balance[msg.sender] >= reduceAmount);
     		
     		uint64 cdTime = uint64(hero.cooldownEndTime-now);
-    		require(reduceAmount &gt;= uint256(cdTime * cdFee * (hero.cooldownIndex+1)));
+    		require(reduceAmount >= uint256(cdTime * cdFee * (hero.cooldownIndex+1)));
     		
     		ownerIndexToERC20Balance[msg.sender] -= reduceAmount;
     		ownerIndexToERC20Used[msg.sender] += reduceAmount;  

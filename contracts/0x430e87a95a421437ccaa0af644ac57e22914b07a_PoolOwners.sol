@@ -3,7 +3,7 @@ pragma solidity ^0.4.3;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -25,7 +25,7 @@ contract Ownable {
    * @dev Throws if called by any account other than the owner.
    */
   modifier onlyOwner() {
-    require(msg.sender == owner, &quot;Sender not authorised.&quot;);
+    require(msg.sender == owner, "Sender not authorised.");
     _;
   }
 
@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,14 +113,14 @@ library itmap {
     }
 
     struct itmap {
-        mapping(uint =&gt; entry) data;
+        mapping(uint => entry) data;
         uint[] keys;
     }
     
     function insert(itmap storage self, uint key, uint value) internal returns (bool replaced) {
         entry storage e = self.data[key];
         e.value = value;
-        if (e.keyIndex &gt; 0) {
+        if (e.keyIndex > 0) {
             return true;
         } else {
             e.keyIndex = ++self.keys.length;
@@ -134,7 +134,7 @@ library itmap {
         if (e.keyIndex == 0)
             return false;
         
-        if (e.keyIndex &lt; self.keys.length) {
+        if (e.keyIndex < self.keys.length) {
             // Move an existing element into the vacated key slot.
             self.data[self.keys[self.keys.length - 1]].keyIndex = e.keyIndex;
             self.keys[e.keyIndex - 1] = self.keys[self.keys.length - 1];
@@ -145,7 +145,7 @@ library itmap {
     }
     
     function contains(itmap storage self, uint key) internal view returns (bool exists) {
-        return self.data[key].keyIndex &gt; 0;
+        return self.data[key].keyIndex > 0;
     }
     
     function size(itmap storage self) internal view returns (uint) {
@@ -173,23 +173,23 @@ contract PoolOwners is Ownable {
         uint256 key;
         uint256 percentage;
         uint256 shareTokens;
-        mapping(address =&gt; uint256) balance;
+        mapping(address => uint256) balance;
     }
-    mapping(address =&gt; Owner) public owners;
+    mapping(address => Owner) public owners;
 
     struct Distribution {
         address token;
         uint256 amount;
         uint256 owners;
         uint256 claimed;
-        mapping(address =&gt; bool) claimedAddresses;
+        mapping(address => bool) claimedAddresses;
     }
-    mapping(uint256 =&gt; Distribution) public distributions;
+    mapping(uint256 => Distribution) public distributions;
 
-    mapping(address =&gt; uint256) public tokenBalance;
-    mapping(address =&gt; uint256) public totalReturned;
+    mapping(address => uint256) public tokenBalance;
+    mapping(address => uint256) public totalReturned;
 
-    mapping(address =&gt; bool) private whitelist;
+    mapping(address => bool) private whitelist;
 
     itmap.itmap ownerMap;
     
@@ -232,8 +232,8 @@ contract PoolOwners is Ownable {
         @dev Transfers tokens to LP wallet address
      */
     function() public payable {
-        require(contributionStarted, &quot;Contribution phase hasn&#39;t started&quot;);
-        require(whitelist[msg.sender], &quot;You are not whitelisted&quot;);
+        require(contributionStarted, "Contribution phase hasn't started");
+        require(whitelist[msg.sender], "You are not whitelisted");
         contribute(msg.sender, msg.value); 
         wallet.transfer(msg.value);
     }
@@ -251,12 +251,12 @@ contract PoolOwners is Ownable {
         @param _amount The amount that the owner has sent
      */
     function contribute(address _sender, uint256 _amount) private {
-        require(!locked, &quot;Crowdsale period over, contribution is locked&quot;);
-        require(!distributionActive, &quot;Cannot contribute when distribution is active&quot;);
-        require(_amount &gt;= precisionMinimum, &quot;Amount needs to be above the minimum contribution&quot;);
-        require(hardCap &gt;= _amount, &quot;Your contribution is greater than the hard cap&quot;);
-        require(_amount % precisionMinimum == 0, &quot;Your amount isn&#39;t divisible by the minimum precision&quot;);
-        require(hardCap &gt;= totalContributed.add(_amount), &quot;Your contribution would cause the total to exceed the hardcap&quot;);
+        require(!locked, "Crowdsale period over, contribution is locked");
+        require(!distributionActive, "Cannot contribute when distribution is active");
+        require(_amount >= precisionMinimum, "Amount needs to be above the minimum contribution");
+        require(hardCap >= _amount, "Your contribution is greater than the hard cap");
+        require(_amount % precisionMinimum == 0, "Your amount isn't divisible by the minimum precision");
+        require(hardCap >= totalContributed.add(_amount), "Your contribution would cause the total to exceed the hardcap");
 
         totalContributed = totalContributed.add(_amount);
         uint256 share = percent(_amount, valuation, 5);
@@ -285,8 +285,8 @@ contract PoolOwners is Ownable {
         @param _owner Wallet of the owner
      */
     function whitelistWallet(address _owner) external onlyOwner() {
-        require(!locked, &quot;Can&#39;t whitelist when the contract is locked&quot;);
-        require(_owner != address(0), &quot;Empty address&quot;);
+        require(!locked, "Can't whitelist when the contract is locked");
+        require(_owner != address(0), "Empty address");
         whitelist[_owner] = true;
     }
 
@@ -294,7 +294,7 @@ contract PoolOwners is Ownable {
         @dev Start the distribution phase
      */
     function startContribution() external onlyOwner() {
-        require(!contributionStarted, &quot;Contribution has started&quot;);
+        require(!contributionStarted, "Contribution has started");
         contributionStarted = true;
     }
 
@@ -304,8 +304,8 @@ contract PoolOwners is Ownable {
         @param _value The equivalent contribution value
      */
     function setOwnerShare(address _owner, uint256 _value) public onlyOwner() {
-        require(!locked, &quot;Can&#39;t manually set shares, it&#39;s locked&quot;);
-        require(!distributionActive, &quot;Cannot set owners share when distribution is active&quot;);
+        require(!locked, "Can't manually set shares, it's locked");
+        require(!distributionActive, "Cannot set owners share when distribution is active");
 
         Owner storage o = owners[_owner];
         if (o.shareTokens == 0) {
@@ -320,17 +320,17 @@ contract PoolOwners is Ownable {
 
     /**
         @dev Transfer part or all of your ownership to another address
-        @param _receiver The address that you&#39;re sending to
+        @param _receiver The address that you're sending to
         @param _amount The amount of ownership to send, for your balance refer to `ownerShareTokens`
      */
     function sendOwnership(address _receiver, uint256 _amount) public onlyWhitelisted() {
         Owner storage o = owners[msg.sender];
         Owner storage r = owners[_receiver];
 
-        require(o.shareTokens &gt; 0, &quot;You don&#39;t have any ownership&quot;);
-        require(o.shareTokens &gt;= _amount, &quot;The amount exceeds what you have&quot;);
-        require(!distributionActive, &quot;Distribution cannot be active when sending ownership&quot;);
-        require(_amount % precisionMinimum == 0, &quot;Your amount isn&#39;t divisible by the minimum precision amount&quot;);
+        require(o.shareTokens > 0, "You don't have any ownership");
+        require(o.shareTokens >= _amount, "The amount exceeds what you have");
+        require(!distributionActive, "Distribution cannot be active when sending ownership");
+        require(_amount % precisionMinimum == 0, "Your amount isn't divisible by the minimum precision amount");
 
         o.shareTokens = o.shareTokens.sub(_amount);
 
@@ -355,7 +355,7 @@ contract PoolOwners is Ownable {
         @dev Lock the contribution/shares methods
      */
     function lockShares() public onlyOwner() {
-        require(!locked, &quot;Shares already locked&quot;);
+        require(!locked, "Shares already locked");
         locked = true;
     }
 
@@ -364,13 +364,13 @@ contract PoolOwners is Ownable {
         @param _token The token address to start the distribution of
      */
     function distributeTokens(address _token) public onlyWhitelisted() {
-        require(!distributionActive, &quot;Distribution is already active&quot;);
+        require(!distributionActive, "Distribution is already active");
         distributionActive = true;
 
         ERC677 erc677 = ERC677(_token);
 
         uint256 currentBalance = erc677.balanceOf(this) - tokenBalance[_token];
-        require(currentBalance &gt; distributionMinimum, &quot;Amount in the contract isn&#39;t above the minimum distribution limit&quot;);
+        require(currentBalance > distributionMinimum, "Amount in the contract isn't above the minimum distribution limit");
 
         totalDistributions++;
         Distribution storage d = distributions[totalDistributions]; 
@@ -391,9 +391,9 @@ contract PoolOwners is Ownable {
         Owner storage o = owners[_owner];
         Distribution storage d = distributions[totalDistributions]; 
 
-        require(o.shareTokens &gt; 0, &quot;You need to have a share to claim tokens&quot;);
-        require(distributionActive, &quot;Distribution isn&#39;t active&quot;);
-        require(!d.claimedAddresses[_owner], &quot;Tokens already claimed for this address&quot;);
+        require(o.shareTokens > 0, "You need to have a share to claim tokens");
+        require(distributionActive, "Distribution isn't active");
+        require(!d.claimedAddresses[_owner], "Tokens already claimed for this address");
 
         address token = d.token;
         uint256 tokenAmount = d.amount.mul(o.percentage).div(100000);
@@ -417,15 +417,15 @@ contract PoolOwners is Ownable {
         @param _amount The amount of tokens to withdraw
      */
     function withdrawTokens(address _token, uint256 _amount) public {
-        require(_amount &gt; 0, &quot;You have requested for 0 tokens to be withdrawn&quot;);
+        require(_amount > 0, "You have requested for 0 tokens to be withdrawn");
 
         Owner storage o = owners[msg.sender];
         Distribution storage d = distributions[totalDistributions]; 
 
-        if (distributionActive &amp;&amp; !d.claimedAddresses[msg.sender]) {
+        if (distributionActive && !d.claimedAddresses[msg.sender]) {
             claimTokens(msg.sender);
         }
-        require(o.balance[_token] &gt;= _amount, &quot;Amount requested is higher than your balance&quot;);
+        require(o.balance[_token] >= _amount, "Amount requested is higher than your balance");
 
         o.balance[_token] = o.balance[_token].sub(_amount);
         tokenBalance[_token] = tokenBalance[_token].sub(_amount);

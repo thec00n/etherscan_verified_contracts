@@ -104,7 +104,7 @@ contract KickicoCrowdsale is owned {
 	CSToken public tokenReward;
 	CSToken public oldTokenReward;
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 
 	event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -212,16 +212,16 @@ contract KickicoCrowdsale is owned {
 
 		uint _price = pricePerTokenInWei;
 		uint remain = threshold - totalCollected;
-		if (remain &lt; amount) {
+		if (remain < amount) {
 			amount = remain;
 		}
 
-		for (uint i = 0; i &lt; bonuses.length; i++) {
-			if (amount &lt; bonuses[i]) break;
+		for (uint i = 0; i < bonuses.length; i++) {
+			if (amount < bonuses[i]) break;
 
-			if (amount &gt;= bonuses[i] &amp;&amp; (i == bonuses.length - 1 || amount &lt; bonuses[i + 1])) {
-				if (i &lt; 15) {
-					_price = _price * 1000 / (1000 + ((i + 1 + (i &gt; 11 ? 1 : 0)) * 5));
+			if (amount >= bonuses[i] && (i == bonuses.length - 1 || amount < bonuses[i + 1])) {
+				if (i < 15) {
+					_price = _price * 1000 / (1000 + ((i + 1 + (i > 11 ? 1 : 0)) * 5));
 				}
 				else {
 					_price = _price * 1000 / (1000 + ((8 + i - 14) * 10));
@@ -233,7 +233,7 @@ contract KickicoCrowdsale is owned {
 		uint currentAmount = tokenAmount * _price;
 		mint(currentAmount, tokenAmount + tokenAmount * getBonusByRaised() / 1000, from);
 		uint change = original - currentAmount;
-		if (change &gt; 0 &amp;&amp; !isCustom) {
+		if (change > 0 && !isCustom) {
 			if (from.send(change)) {
 				FundTransfer(from, change, false);
 			}
@@ -246,15 +246,15 @@ contract KickicoCrowdsale is owned {
 	}
 
 	function closeICO() onlyOwner {
-		require(now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1] &amp;&amp; !IcoClosedManually);
+		require(now >= IcoStagePeriod[0] && now < IcoStagePeriod[1] && !IcoClosedManually);
 		IcoClosedManually = true;
 	}
 
 	function safeWithdrawal(uint amount) onlyOwner {
-		require(this.balance &gt;= amount);
+		require(this.balance >= amount);
 
 		// lock withdraw if stage not closed
-		if (now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1])
+		if (now >= IcoStagePeriod[0] && now < IcoStagePeriod[1])
 		require(IcoClosedManually || isReachedThreshold());
 
 		if (owner.send(amount)) {
@@ -263,17 +263,17 @@ contract KickicoCrowdsale is owned {
 	}
 
 	function isReachedThreshold() internal returns (bool reached) {
-		return pricePerTokenInWei &gt; (threshold - totalCollected);
+		return pricePerTokenInWei > (threshold - totalCollected);
 	}
 
 	function isIcoClosed() constant returns (bool closed) {
-		return (now &gt;= IcoStagePeriod[1] || IcoClosedManually || isReachedThreshold());
+		return (now >= IcoStagePeriod[1] || IcoClosedManually || isReachedThreshold());
 	}
 
 	bool public allowManuallyMintTokens = true;
 	function mintTokens(address[] recipients) onlyServer {
 		require(allowManuallyMintTokens);
-		for(uint i = 0; i &lt; recipients.length; i++) {
+		for(uint i = 0; i < recipients.length; i++) {
 			tokenReward.mintToken(recipients[i], oldTokenReward.balanceOf(recipients[i]), 1538902800);
 		}
 	}
@@ -284,10 +284,10 @@ contract KickicoCrowdsale is owned {
 
 	function() payable {
 		require(parametersHaveBeenSet);
-		require(msg.value &gt;= 50 finney);
+		require(msg.value >= 50 finney);
 
 		// validate by stage periods
-		require(now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1]);
+		require(now >= IcoStagePeriod[0] && now < IcoStagePeriod[1]);
 		// validate if closed manually or reached the threshold
 		require(!IcoClosedManually);
 		require(!isReachedThreshold());
@@ -305,7 +305,7 @@ contract KickicoCrowdsale is owned {
 
 	function kill() onlyOwner {
 		require(isIcoClosed());
-		if(this.balance &gt; 0) {
+		if(this.balance > 0) {
 			owner.transfer(this.balance);
 		}
 		changeTokenOwner(owner);

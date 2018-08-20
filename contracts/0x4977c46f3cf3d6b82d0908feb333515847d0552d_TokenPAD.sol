@@ -29,20 +29,20 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -54,14 +54,14 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenPAD is owned, SafeMath {
     // Public variables of the token
-    string public name = &quot;Platform for Air Drops&quot;;
-    string public symbol = &quot;PAD&quot;;
+    string public name = "Platform for Air Drops";
+    string public symbol = "PAD";
     uint8 public decimals = 18;
     uint256 public totalSupply = 15000000000000000000000000;
     
    
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -89,9 +89,9 @@ contract TokenPAD is owned, SafeMath {
          // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(add(balanceOf[_to],_value) &gt; balanceOf[_to]);
+        require(add(balanceOf[_to],_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = add(balanceOf[_from], balanceOf[_to]);
         // Subtract from the sender
@@ -125,7 +125,7 @@ contract TokenPAD is owned, SafeMath {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-         require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+         require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = sub(allowance[_from][msg.sender],_value);
         _transfer(_from, _to, _value);
         return true;
@@ -172,7 +172,7 @@ contract TokenPAD is owned, SafeMath {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] = sub( balanceOf[msg.sender],_value);            // Subtract from the sender
         totalSupply =sub(totalSupply,_value);                      // Updates totalSupply
         Burn(msg.sender, _value);

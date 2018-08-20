@@ -16,7 +16,7 @@ contract BittrexOpenSourceCloneCrowdsale {
     uint public initialTokenAmount;
     uint public currentTokenAmount;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /**
      * Constrctor function
@@ -42,7 +42,7 @@ contract BittrexOpenSourceCloneCrowdsale {
      */
     function () payable {
         uint amount = msg.value;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balanceOf[msg.sender] += amount;
             amountRaised += amount;
             currentBalance += amount;
@@ -58,7 +58,7 @@ contract BittrexOpenSourceCloneCrowdsale {
      * Deposit token sale proceeds to BOSC Account
      */
     function bank() public {
-        if (beneficiary == msg.sender &amp;&amp; currentBalance &gt; 0) {
+        if (beneficiary == msg.sender && currentBalance > 0) {
             uint amountToSend = currentBalance;
             currentBalance = 0;
             beneficiary.send(amountToSend);

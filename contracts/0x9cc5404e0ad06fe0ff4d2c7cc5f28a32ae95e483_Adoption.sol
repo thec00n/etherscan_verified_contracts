@@ -10,7 +10,7 @@ contract Adoption {
   Pepe[16] data;
 
   function Adoption() public {
-    for (uint i = 0; i &lt; 16; i++) {
+    for (uint i = 0; i < 16; i++) {
      
       data[i].price = 10000000000000000;
       data[i].owner = msg.sender;
@@ -26,14 +26,14 @@ contract Adoption {
   }
   // Adopting a pet
   function adopt(uint pepeId) public payable returns (uint, uint) {
-    require(pepeId &gt;= 0 &amp;&amp; pepeId &lt;= 15);
+    require(pepeId >= 0 && pepeId <= 15);
     if ( data[pepeId].price == 10000000000000000 ) {
       data[pepeId].price = 20000000000000000;
     } else {
       data[pepeId].price = data[pepeId].price * 2;
     }
     
-    require(msg.value &gt;= data[pepeId].price * uint256(1));
+    require(msg.value >= data[pepeId].price * uint256(1));
     returnEth(data[pepeId].owner,  (data[pepeId].price / 10) * (9)); 
     fee(ceoAddress, (data[pepeId].price / 10) * (1));
     data[pepeId].owner = msg.sender;
@@ -44,7 +44,7 @@ contract Adoption {
   function getAdopters() external view returns (address[], uint256[]) {
     address[] memory owners = new address[](16);
     uint256[] memory prices =  new uint256[](16);
-    for (uint i=0; i&lt;16; i++) {
+    for (uint i=0; i<16; i++) {
       owners[i] = (data[i].owner);
       prices[i] = (data[i].price);
     }

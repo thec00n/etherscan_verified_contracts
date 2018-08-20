@@ -22,9 +22,9 @@ contract etherKing{
     //history
     uint256 private historyCount;
     
-    mapping(uint256 =&gt; address) private winAddressHistory;
+    mapping(uint256 => address) private winAddressHistory;
     
-    mapping(uint256 =&gt; uint8) private winItemIdHistory;
+    mapping(uint256 => uint8) private winItemIdHistory;
     
     
     
@@ -67,7 +67,7 @@ contract etherKing{
     
     
     function winAddressOf() public view returns(address _address, uint256 winNum){
-        if(win &gt;= 6){
+        if(win >= 6){
             winNum = win;
             _address = address(0);
         } else {
@@ -85,7 +85,7 @@ contract etherKing{
     function ownerOfCountryCount(address _owner) public view returns(uint256){
         require(_owner != address(0));
         uint256 count = 0;
-        for(uint256 i = 0; i &lt; countryOwners.length; i++){
+        for(uint256 i = 0; i < countryOwners.length; i++){
             if(countryOwners[i] == _owner){
                 count++;
             }
@@ -96,7 +96,7 @@ contract etherKing{
 
     
     function isBuyFull() public view returns(bool){
-        for(uint256 i = 0; i &lt; countryOwners.length; i++){
+        for(uint256 i = 0; i < countryOwners.length; i++){
             if(countryOwners[i] == address(0)){
                 return false;
             }
@@ -107,8 +107,8 @@ contract etherKing{
     
     
     function buyCountry(uint256 countryId) public payable{
-        require(msg.value &gt;= price);
-        require(countryId &lt; countryOwners.length);
+        require(msg.value >= price);
+        require(countryId < countryOwners.length);
         require(countryOwners[countryId] == address(0));
         require(!isContract(msg.sender));
         require(msg.sender != address(0));
@@ -128,7 +128,7 @@ contract etherKing{
         
         uint256 reward = 1 ether;
         
-        if(reward &gt; this.balance)
+        if(reward > this.balance)
         {
             reward = this.balance;
         }
@@ -143,13 +143,13 @@ contract etherKing{
     
         
     function reset() onlyOwner public {
-        require(win &lt; 6);
+        require(win < 6);
         
         win = 6;
         
         battleCount++;
         
-        for(uint256 i = 0; i &lt; countryOwners.length; i++){
+        for(uint256 i = 0; i < countryOwners.length; i++){
             delete countryOwners[i];
         }
     }
@@ -175,7 +175,7 @@ contract etherKing{
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) } // solium-disable-line
-        return size &gt; 0;
+        return size > 0;
     }
    
     
@@ -199,15 +199,15 @@ contract etherKing{
     
     
     function getHistory(uint256 minBattleId, uint256 maxBattleId) public view returns(address[] _addressArray, uint8[] _itemArray, uint256 _minBattleId){
-        require(minBattleId &gt; 0);
-        require(maxBattleId &lt;= historyCount);
+        require(minBattleId > 0);
+        require(maxBattleId <= historyCount);
         
         uint256 length = (maxBattleId - minBattleId) + 1;
         _addressArray = new address[](length);
         _itemArray = new uint8[](length);
         _minBattleId = minBattleId;
         
-        for(uint256 i = 0; i &lt; length; i++){
+        for(uint256 i = 0; i < length; i++){
             _addressArray[i] = addressHistoryOf(minBattleId + i);
             _itemArray[i] = itemHistoryOf(minBattleId + i);
         }

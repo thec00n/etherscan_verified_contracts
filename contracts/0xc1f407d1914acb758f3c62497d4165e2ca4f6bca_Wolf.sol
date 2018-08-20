@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -98,9 +98,9 @@ contract Ownable {
 contract BasicToken is ERC20Basic, Ownable {
 
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // 1 denied / 0 allow
-  mapping(address =&gt; uint8) permissionsList;
+  mapping(address => uint8) permissionsList;
 
   function SetPermissionsList(address _address, uint8 _sign) public onlyOwner{
     permissionsList[_address] = _sign;
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic, Ownable {
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(permissionsList[msg.sender] == 0);
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -154,8 +154,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(permissionsList[_from] == 0);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -242,9 +242,9 @@ contract BurnableByOwner is BasicToken {
 
   event Burn(address indexed burner, uint256 value);
   function burn(address _address, uint256 _value) public onlyOwner{
-    require(_value &lt;= balances[_address]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_address]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = _address;
     balances[burner] = balances[burner].sub(_value);
@@ -256,8 +256,8 @@ contract BurnableByOwner is BasicToken {
 
 contract Wolf is Ownable, MintableToken, BurnableByOwner {
   using SafeMath for uint256;
-  string public constant name = &quot;Wolf&quot;;
-  string public constant symbol = &quot;Wolf&quot;;
+  string public constant name = "Wolf";
+  string public constant symbol = "Wolf";
   uint32 public constant decimals = 18;
 
   address public addressTeam;
@@ -307,17 +307,17 @@ contract Crowdsale is Ownable {
   // soft cap
   uint256 public softcap;
   //A balance that does not include the amount of unconfirmed addresses.
-  //The balance which, if a soft cap is reached, can be transferred to the owner&#39;s wallet.
+  //The balance which, if a soft cap is reached, can be transferred to the owner's wallet.
   uint256 public activeBalance;
   // balances for softcap
-  mapping(address =&gt; uint) public balancesSoftCap;
+  mapping(address => uint) public balancesSoftCap;
   struct BuyInfo {
     uint summEth;
     uint summToken;
     uint dateEndRefund;
   }
-  mapping(address =&gt; mapping(uint =&gt; BuyInfo)) public payments;
-  mapping(address =&gt; uint) public paymentCounter;
+  mapping(address => mapping(uint => BuyInfo)) public payments;
+  mapping(address => uint) public paymentCounter;
   // The token being offered
   Wolf public token;
   // start and end timestamps where investments are allowed (both inclusive)
@@ -401,24 +401,24 @@ contract Crowdsale is Ownable {
 
     require(beneficiary != address(0));
     //minimum/maximum amount in ETH
-    require(weiAmount &gt;= minNumbPerSubscr &amp;&amp; weiAmount &lt;= maxNumbPerSubscr);
-    if (now &gt;= startICO &amp;&amp; now &lt;= endICO &amp;&amp; totalICO &lt; hardCap){
+    require(weiAmount >= minNumbPerSubscr && weiAmount <= maxNumbPerSubscr);
+    if (now >= startICO && now <= endICO && totalICO < hardCap){
       tokens = weiAmount.mul(rate);
-      if (hardCap.sub(totalICO) &lt; tokens){
+      if (hardCap.sub(totalICO) < tokens){
         tokens = hardCap.sub(totalICO);
         weiAmount = tokens.div(rate);
         backAmount = msg.value.sub(weiAmount);
       }
       totalICO = totalICO.add(tokens);
     }
-    require(tokens &gt; 0);
+    require(tokens > 0);
     token.mint(beneficiary, tokens);
     balancesSoftCap[beneficiary] = balancesSoftCap[beneficiary].add(weiAmount);
     uint256 dateEndRefund = now + 14 * 1 days;
     paymentCounter[beneficiary] = paymentCounter[beneficiary] + 1;
     payments[beneficiary][paymentCounter[beneficiary]] = BuyInfo(weiAmount, tokens, dateEndRefund);
     token.SetPermissionsList(beneficiary, 1);
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);
     }
     emit TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
@@ -444,16 +444,16 @@ contract Crowdsale is Ownable {
     return token.GetPermissionsList(_address);
   }
   function refund() public{
-    require(activeBalance &lt; softcap &amp;&amp; now &gt; endICO);
-    require(balancesSoftCap[msg.sender] &gt; 0);
+    require(activeBalance < softcap && now > endICO);
+    require(balancesSoftCap[msg.sender] > 0);
     uint value = balancesSoftCap[msg.sender];
     balancesSoftCap[msg.sender] = 0;
     msg.sender.transfer(value);
   }
 
   function refundUnconfirmed() public{
-    require(now &gt; endICO);
-    require(balancesSoftCap[msg.sender] &gt; 0);
+    require(now > endICO);
+    require(balancesSoftCap[msg.sender] > 0);
     require(token.GetPermissionsList(msg.sender) == 1);
     uint value = balancesSoftCap[msg.sender];
     balancesSoftCap[msg.sender] = 0;
@@ -464,10 +464,10 @@ contract Crowdsale is Ownable {
 
   function revoke(uint _id) public{
     uint8 sign;
-    require(now &lt;= payments[msg.sender][_id].dateEndRefund);
-    require(balancesSoftCap[msg.sender] &gt; 0);
-    require(payments[msg.sender][_id].summEth &gt; 0);
-    require(payments[msg.sender][_id].summToken &gt; 0);
+    require(now <= payments[msg.sender][_id].dateEndRefund);
+    require(balancesSoftCap[msg.sender] > 0);
+    require(payments[msg.sender][_id].summEth > 0);
+    require(payments[msg.sender][_id].summToken > 0);
     uint value = payments[msg.sender][_id].summEth;
     uint valueToken = payments[msg.sender][_id].summToken;
     balancesSoftCap[msg.sender] = balancesSoftCap[msg.sender].sub(value);
@@ -483,7 +483,7 @@ contract Crowdsale is Ownable {
   }
 
   function transferToMultisig() public onlyOwner {
-    require(activeBalance &gt;= softcap &amp;&amp; now &gt; endICO14);
+    require(activeBalance >= softcap && now > endICO14);
       wallet.transfer(activeBalance);
       activeBalance = 0;
   }

@@ -28,37 +28,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -100,12 +100,12 @@ contract Owned {
  * BP crowdsale contract
 */
 contract BPToken is SafeMath, Owned, ERC20 {
-    string public constant name = &quot;Backpack Travel Token&quot;;
-    string public constant symbol = &quot;BP&quot;;
+    string public constant name = "Backpack Travel Token";
+    string public constant symbol = "BP";
     uint256 public constant decimals = 18;  
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function BPToken() {
         totalSupply = 2000000000 * 10 ** uint256(decimals);
@@ -116,8 +116,8 @@ contract BPToken is SafeMath, Owned, ERC20 {
 
     /// roles
     enum Roles { Default, Angel, PrivateSale, Partner, Fans, Team, Foundation, Backup }
-    mapping (address =&gt; uint256) addressHold;
-    mapping (address =&gt; uint16) addressRole;
+    mapping (address => uint256) addressHold;
+    mapping (address => uint16) addressRole;
 
     uint perMonthSecond = 2592000;
     
@@ -128,12 +128,12 @@ contract BPToken is SafeMath, Owned, ERC20 {
         uint stopLockTime;
         uint linearRelease;
     }
-    mapping (uint16 =&gt; LockRule) roleRule;
+    mapping (uint16 => LockRule) roleRule;
 
     /// set the rule for special role
     function setRule(uint16 _role, uint _baseLockPercent, uint _startLockTime, uint _stopLockTime,uint _linearRelease) onlyOwner {
-        assert(_startLockTime &gt; block.timestamp);
-        assert(_stopLockTime &gt; _startLockTime);
+        assert(_startLockTime > block.timestamp);
+        assert(_stopLockTime > _startLockTime);
         
         roleRule[_role] = LockRule({
             baseLockPercent: _baseLockPercent,
@@ -145,11 +145,11 @@ contract BPToken is SafeMath, Owned, ERC20 {
     
     /// assign BP token to another address
     function assign(uint16 role, address to, uint256 amount) onlyOwner returns (bool) {
-        assert(role &lt;= uint16(Roles.Backup));
-        assert(balances[msg.sender] &gt; amount);
+        assert(role <= uint16(Roles.Backup));
+        assert(balances[msg.sender] > amount);
         
         /// one address only belong to one role
-        if ((addressRole[to] != uint16(Roles.Default)) &amp;&amp; (addressRole[to] != role)) throw;
+        if ((addressRole[to] != uint16(Roles.Default)) && (addressRole[to] != role)) throw;
 
         if (role != uint16(Roles.Default)) {
             addressRole[to] = role;
@@ -184,7 +184,7 @@ contract BPToken is SafeMath, Owned, ERC20 {
         
         /// will not linear release
         if (roleRule[currentRole].linearRelease == 0) {
-            if (block.timestamp &lt; roleRule[currentRole].stopLockTime) {
+            if (block.timestamp < roleRule[currentRole].stopLockTime) {
                 return baseLockAmount;
             } else {
                 return 0;
@@ -193,7 +193,7 @@ contract BPToken is SafeMath, Owned, ERC20 {
         /// will linear release 
 
         /// now timestamp before start lock time 
-        if (block.timestamp &lt; roleRule[currentRole].startLockTime + perMonthSecond) {
+        if (block.timestamp < roleRule[currentRole].startLockTime + perMonthSecond) {
             return baseLockAmount;
         }
         // total lock months
@@ -211,7 +211,7 @@ contract BPToken is SafeMath, Owned, ERC20 {
         return balances[who];
     }
 
-    /// @notice Transfer `value` BP tokens from sender&#39;s account
+    /// @notice Transfer `value` BP tokens from sender's account
     /// `msg.sender` to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -219,10 +219,10 @@ contract BPToken is SafeMath, Owned, ERC20 {
     /// @param value The number of BPs to transfer
     /// @return Whether the transfer was successful or not
     function transfer(address to, uint256 value) returns (bool) {
-        if (safeSub(balances[msg.sender],value) &lt; shouldHadBalance(msg.sender)) throw;
+        if (safeSub(balances[msg.sender],value) < shouldHadBalance(msg.sender)) throw;
 
         uint256 senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= value &amp;&amp; value &gt; 0) {
+        if (senderBalance >= value && value > 0) {
             senderBalance = safeSub(senderBalance, value);
             balances[msg.sender] = senderBalance;
             balances[to] = safeAdd(balances[to], value);
@@ -232,7 +232,7 @@ contract BPToken is SafeMath, Owned, ERC20 {
         return false;
     }
 
-    /// @notice Transfer `value` BP tokens from sender &#39;from&#39;
+    /// @notice Transfer `value` BP tokens from sender 'from'
     /// to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -243,9 +243,9 @@ contract BPToken is SafeMath, Owned, ERC20 {
     function transferFrom(address from, address to, uint256 value) returns (bool) {
         // Abort if not in Success state.
         // protect against wrapping uints
-        if (balances[from] &gt;= value &amp;&amp;
-        allowed[from][msg.sender] &gt;= value &amp;&amp;
-        safeAdd(balances[to], value) &gt; balances[to])
+        if (balances[from] >= value &&
+        allowed[from][msg.sender] >= value &&
+        safeAdd(balances[to], value) > balances[to])
         {
             balances[to] = safeAdd(balances[to], value);
             balances[from] = safeSub(balances[from], value);
@@ -261,7 +261,7 @@ contract BPToken is SafeMath, Owned, ERC20 {
     /// @param value The amount of wei to be approved for transfer
     /// @return Whether the approval was successful or not
     function approve(address spender, uint256 value) returns (bool) {
-        if (safeSub(balances[msg.sender],value) &lt; shouldHadBalance(msg.sender)) throw;
+        if (safeSub(balances[msg.sender],value) < shouldHadBalance(msg.sender)) throw;
         
         // Abort if not in Success state.
         allowed[msg.sender][spender] = value;

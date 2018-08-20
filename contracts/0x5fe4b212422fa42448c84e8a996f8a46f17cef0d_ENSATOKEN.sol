@@ -46,27 +46,27 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract ENSATOKEN is ERC20,Ownable{
 	using SafeMath for uint256;
-	string public constant name=&quot;Energy Saving Chain &quot;;
-	string public symbol=&quot;ENSA&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="Energy Saving Chain ";
+	string public symbol="ENSA";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 	uint256 public totalSupply;
 	uint256 public constant MAX_SUPPLY=2100000000*10**decimals;
-  mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	event GetETH(address indexed _from, uint256 _value);
 

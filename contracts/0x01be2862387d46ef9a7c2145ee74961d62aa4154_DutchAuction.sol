@@ -8,7 +8,7 @@ contract Token {
 
 
 /// @title Dutch auction contract - creation of Gnosis tokens.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac9cedfdcdbd494dddfd5c8dddffad9d5d4c9dfd4c9c3c994d4dfce">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac9cedfdcdbd494dddfd5c8dddffad9d5d4c9dfd4c9c3c994d4dfce">[email protected]</a>>
 contract DutchAuction {
 
     /*
@@ -34,7 +34,7 @@ contract DutchAuction {
     uint public endTime;
     uint public totalReceived;
     uint public finalPrice;
-    mapping (address =&gt; uint) public bids;
+    mapping (address => uint) public bids;
     Stages public stage;
 
     /*
@@ -72,9 +72,9 @@ contract DutchAuction {
     }
 
     modifier timedTransitions() {
-        if (stage == Stages.AuctionStarted &amp;&amp; calcTokenPrice() &lt;= calcStopPrice())
+        if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice())
             finalizeAuction();
-        if (stage == Stages.AuctionEnded &amp;&amp; now &gt; endTime + WAITING_PERIOD)
+        if (stage == Stages.AuctionEnded && now > endTime + WAITING_PERIOD)
             stage = Stages.TradingStarted;
         _;
     }
@@ -99,7 +99,7 @@ contract DutchAuction {
         stage = Stages.AuctionDeployed;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param _gnosisToken Gnosis token address.
     function setup(address _gnosisToken)
         public
@@ -171,10 +171,10 @@ contract DutchAuction {
         // Prevent that more than 90% of tokens are sold. Only relevant if cap not reached.
         uint maxEther = (MAX_TOKENS_SOLD / 10**18) * calcTokenPrice() - totalReceived;
         uint maxEtherBasedOnTotalReceived = ceiling - totalReceived;
-        if (maxEtherBasedOnTotalReceived &lt; maxEther)
+        if (maxEtherBasedOnTotalReceived < maxEther)
             maxEther = maxEtherBasedOnTotalReceived;
         // Only invest maximum possible amount.
-        if (amount &gt; maxEther) {
+        if (amount > maxEther) {
             amount = maxEther;
             // Send change back to receiver address. In case of a ShapeShift bid the user receives the change back directly.
             if (!receiver.send(msg.value - amount))

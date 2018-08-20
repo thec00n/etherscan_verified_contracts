@@ -102,10 +102,10 @@ contract Slotthereum is Mortal {
     }
 
     function getBlockHash(uint i) internal constant returns (bytes32 blockHash) {
-        if (i &gt;= 255) {
+        if (i >= 255) {
             i = 255;
         }
-        if (i &lt;= 0) {
+        if (i <= 0) {
             i = 1;
         }
         blockHash = block.blockhash(block.number - i);
@@ -113,8 +113,8 @@ contract Slotthereum is Mortal {
 
     function getNumber(bytes32 _a) internal constant returns (uint8) {
         uint8 mint = pointer;
-        for (uint i = 31; i &gt;= 1; i--) {
-            if ((uint8(_a[i]) &gt;= 48) &amp;&amp; (uint8(_a[i]) &lt;= 57)) {
+        for (uint i = 31; i >= 1; i--) {
+            if ((uint8(_a[i]) >= 48) && (uint8(_a[i]) <= 57)) {
                 return uint8(_a[i]) - 48;
             }
         }
@@ -122,21 +122,21 @@ contract Slotthereum is Mortal {
     }
 
     function placeBet(uint8 start, uint8 end) public payable returns (bool) {
-        if (msg.value &lt; minBetAmount) {
+        if (msg.value < minBetAmount) {
             return false;
         }
 
-        if (msg.value &gt; maxBetAmount) {
+        if (msg.value > maxBetAmount) {
             return false;
         }
 
         uint8 counter = end - start + 1;
 
-        if (counter &gt; 7) {
+        if (counter > 7) {
             return false;
         }
 
-        if (counter &lt; 1) {
+        if (counter < 1) {
             return false;
         }
 
@@ -155,7 +155,7 @@ contract Slotthereum is Mortal {
         games[gameId].number = getNumber(games[gameId].hash);
         
         if (pointer == games[gameId].number) {
-            if (pointer &lt;= 4) {
+            if (pointer <= 4) {
                 pointer++;
             } else {
                 pointer--;
@@ -164,7 +164,7 @@ contract Slotthereum is Mortal {
             pointer = games[gameId].number;
         }
 
-        if ((games[gameId].number &gt;= start) &amp;&amp; (games[gameId].number &lt;= end)) {
+        if ((games[gameId].number >= start) && (games[gameId].number <= end)) {
             games[gameId].win = true;
             uint dec = msg.value / 10;
             uint parts = 10 - counter;
@@ -190,7 +190,7 @@ contract Slotthereum is Mortal {
     }
 
     function withdraw(uint amount) onlyowner returns (uint) {
-        if (amount &lt;= this.balance) {
+        if (amount <= this.balance) {
             msg.sender.transfer(amount);
             return amount;
         }
@@ -217,7 +217,7 @@ contract Slotthereum is Mortal {
 
     function getGameIds() constant returns(uint[]) {
         uint[] memory ids = new uint[](games.length);
-        for (uint i = 0; i &lt; games.length; i++) {
+        for (uint i = 0; i < games.length; i++) {
             ids[i] = games[i].id;
         }
         return ids;

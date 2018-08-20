@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 
 contract AddressOwnershipVerification {
-    mapping(address =&gt; mapping (uint32 =&gt; address)) _requests;        // Pending requests (transactee address =&gt; (deposit =&gt; transactor address)
-    mapping(address =&gt; mapping (address =&gt; uint32)) _requestsReverse; // Used for reverse lookups  (transactee address =&gt; (transactor address =&gt; deposit)
-    mapping(address =&gt; mapping (address =&gt; uint32)) _verifications;   // Verified requests (transactor address =&gt; (transactee address =&gt; deposit)
+    mapping(address => mapping (uint32 => address)) _requests;        // Pending requests (transactee address => (deposit => transactor address)
+    mapping(address => mapping (address => uint32)) _requestsReverse; // Used for reverse lookups  (transactee address => (transactor address => deposit)
+    mapping(address => mapping (address => uint32)) _verifications;   // Verified requests (transactor address => (transactee address => deposit)
 
     event RequestEvent(address indexed transactor, address indexed transactee, uint32 indexed deposit);      // Event is triggered when a new request is added
     event RemoveRequestEvent(address indexed transactor, address indexed transactee);                        // Event is triggered when an unverified request is removed
@@ -39,7 +39,7 @@ contract AddressOwnershipVerification {
             throw;
         }
 
-        // Deposit can&#39;t be 0 because all uint&#39;s get initialized to 0 in _requests
+        // Deposit can't be 0 because all uint's get initialized to 0 in _requests
         if (deposit == 0) {
             throw;
         }
@@ -63,7 +63,7 @@ contract AddressOwnershipVerification {
         RequestEvent(msg.sender, transactee, deposit);
     }
 
-    // Returns amount of wei transactee has to send to fullfill transactor&#39;s request
+    // Returns amount of wei transactee has to send to fullfill transactor's request
     function getRequest(address transactor, address transactee) returns (uint32 deposit) {
         return _requestsReverse[transactee][transactor];
     }
@@ -71,7 +71,7 @@ contract AddressOwnershipVerification {
     // Removes a pending request as transactor or transactee
     function removeRequest(address transactor, address transactee) returns (uint32) {
         // Only transactor and transactee can trigger removal of their request
-        if (msg.sender != transactor &amp;&amp; msg.sender != transactee) {
+        if (msg.sender != transactor && msg.sender != transactee) {
             throw;
         }
 
@@ -89,7 +89,7 @@ contract AddressOwnershipVerification {
     // Can be called by either transactor or transactee
     function revoke(address transactor, address transactee) {
         // Only transactor and transactee can trigger removal of their verification
-        if (msg.sender != transactor &amp;&amp; msg.sender != transactee) {
+        if (msg.sender != transactor && msg.sender != transactee) {
             throw;
         }
 

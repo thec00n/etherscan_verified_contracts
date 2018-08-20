@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,8 +45,8 @@ contract QPSEToken is IERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;Qompass&quot;;
-    string public symbol = &quot;QPSE&quot;;
+    string public name = "Qompass";
+    string public symbol = "QPSE";
     uint public decimals = 18;
 
     uint private constant STAGE_PRE_ICO = 1;
@@ -73,10 +73,10 @@ contract QPSEToken is IERC20 {
 //    address token_addr = 0x6f5A6AAfD56AF48673F0DDd32621dC140F16212a;
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
 
     // Owner of Token
     address public owner;
@@ -117,22 +117,22 @@ contract QPSEToken is IERC20 {
     // @return the transaction address and send the event as Transfer
     function tokensale(address recipient) public payable {
         require(recipient != 0x0);
-//        require(now &gt;= pre_startTime);
+//        require(now >= pre_startTime);
 
-        if (now &lt; pre_endTime) {
+        if (now < pre_endTime) {
             ico_stage = STAGE_PRE_ICO;
         } else {
             ico_stage = STAGE_MAIN_ICO;
         }
 
-        if ( fundRaised &gt;= _presaleSupply ) {
+        if ( fundRaised >= _presaleSupply ) {
             ico_stage = STAGE_MAIN_ICO;
         }
 	
         uint256 weiAmount = msg.value;
         uint tokens = weiAmount.mul(getPrice());
 
-        require(_icoSupply &gt;= tokens);
+        require(_icoSupply >= tokens);
 
         balances[token_addr] = balances[token_addr].sub(tokens);
         balances[recipient] = balances[recipient].add(tokens);
@@ -163,11 +163,11 @@ contract QPSEToken is IERC20 {
     // Token distribution
     function sendTokenToMultiAddr(address[] _toAddresses, uint256[] _amounts) public {
 	/* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transfer(_toAddresses[i], _amounts[i]);
         }
     }
@@ -178,7 +178,7 @@ contract QPSEToken is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public returns (bool success) {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -193,7 +193,7 @@ contract QPSEToken is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -209,7 +209,7 @@ contract QPSEToken is IERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require (
-            balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value && _value > 0
         );
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);

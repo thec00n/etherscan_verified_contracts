@@ -22,20 +22,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -44,8 +44,8 @@ contract Bitway is ERC20 {
 
     using SafeMath for uint256;
     
-    string public constant name = &quot;Bitway&quot;;
-    string public constant symbol = &quot;BTWN&quot;;
+    string public constant name = "Bitway";
+    string public constant symbol = "BTWN";
     uint256 public constant maxSupply = 21 * million * multiplier;
     uint256 public constant RATE = 1000;
     uint256 public constant decimals = 18;
@@ -74,8 +74,8 @@ contract Bitway is ERC20 {
     address public owner;
     bool public paused = true;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function () public payable {
         createCoins();
@@ -91,17 +91,17 @@ contract Bitway is ERC20 {
     }
 
     function softCapReached() public constant returns (bool) {
-        return totalSupply &gt;= softCap;
+        return totalSupply >= softCap;
     }
 
     function hardCapReached() public constant returns (bool) {
-        return stage &gt;= stageTotal;
+        return stage >= stageTotal;
     }
 
     function createCoins() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!paused);
-        require(totalSupply &lt; maxSupply);
+        require(totalSupply < maxSupply);
         mineCoins(msg.value.mul(RATE + bonusPercent() * RATE / 100));
         owner.transfer(msg.value);
     }
@@ -121,7 +121,7 @@ contract Bitway is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -130,9 +130,9 @@ contract Bitway is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_from] &gt;= _value);
-        require(_value &gt; 0);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_from] >= _value);
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -155,15 +155,15 @@ contract Bitway is ERC20 {
         require(!hardCapReached());
         balances[msg.sender] = balances[msg.sender].add(coins);
         totalSupply = totalSupply.add(coins);
-        if (totalSupply &gt;= targetSupply[stage]) {
+        if (totalSupply >= targetSupply[stage]) {
             stage = stage.add(1);
         }
     }
 
     function bonusPercent() internal constant returns (uint8) {
-        if (msg.value &gt; bonusHighCriteria) {
+        if (msg.value > bonusHighCriteria) {
             return bonus[stage * stageTotal + 2];
-        } else if (msg.value &gt; bonusMiddleCriteria) {
+        } else if (msg.value > bonusMiddleCriteria) {
             return bonus[stage * stageTotal + 1];
         } else {
             return bonus[stage * stageTotal];

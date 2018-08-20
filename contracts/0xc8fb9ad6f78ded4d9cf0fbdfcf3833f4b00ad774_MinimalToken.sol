@@ -16,7 +16,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -25,7 +25,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -48,15 +48,15 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MinimalToken is StandardToken {
     string public name;                     // Full token name
     uint8 public decimals;                  // Number of decimal places (usually 18)
     string public symbol;                   // Token ticker symbol
-    string public version = &quot;MTV0.1&quot;;       // Arbitrary versioning scheme
+    string public version = "MTV0.1";       // Arbitrary versioning scheme
     address public peg;                     // Address of peg contract (to reject direct transfers)
 
     function MinimalToken(
@@ -79,7 +79,7 @@ contract MinimalToken is StandardToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; _to != peg) {
+        if (balances[msg.sender] >= _value && _value > 0 && _to != peg) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -90,13 +90,13 @@ contract MinimalToken is StandardToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; (allowed[_from][msg.sender] &gt;= _value || (msg.sender == peg &amp;&amp; _to == peg)) &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && (allowed[_from][msg.sender] >= _value || (msg.sender == peg && _to == peg)) && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             Transfer(_from, _to, _value);
             return true;
-        } else if (balances[_from] &gt;= _value &amp;&amp; (msg.sender == peg &amp;&amp; _to == peg) &amp;&amp; _value &gt; 0) { 
+        } else if (balances[_from] >= _value && (msg.sender == peg && _to == peg) && _value > 0) { 
             balances[_to] += _value;
             balances[_from] -= _value;
             Transfer(_from, _to, _value);

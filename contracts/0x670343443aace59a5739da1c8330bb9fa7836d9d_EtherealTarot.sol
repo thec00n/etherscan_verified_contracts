@@ -2,15 +2,15 @@ pragma solidity ^ 0.4 .23;
 //Ethereal Tarot Reader http://tarot.etherealbazaar.com/
 contract EtherealTarot {
 
-  mapping(address =&gt; uint8[]) readings;
-  mapping(address =&gt; uint8[]) orientations;
+  mapping(address => uint8[]) readings;
+  mapping(address => uint8[]) orientations;
   uint8[78] cards;
   uint8 deckSize = 78;
   address public creator;
 
   constructor() public {
     creator = msg.sender;
-    for (uint8 card = 0; card &lt; deckSize; card++) {
+    for (uint8 card = 0; card < deckSize; card++) {
       cards[card] = card;
     }
   }
@@ -52,7 +52,7 @@ contract EtherealTarot {
     uint8[] memory oriented = new uint8[](requested);
 
     //Draw the whole spread
-    for (uint8 position = 0; position &lt; requested; position++) {
+    for (uint8 position = 0; position < requested; position++) {
       table[position] = draw_random_card(position);
       oriented[position] = random(2, position);
     }

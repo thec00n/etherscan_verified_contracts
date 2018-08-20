@@ -14,7 +14,7 @@ contract CAVAsset {
 // File: contracts/CAVPlatformInterface.sol
 
 contract CAVPlatform {
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
     function symbols(uint _idx) public constant returns (bytes32);
     function symbolsCount() public constant returns (uint);
 
@@ -65,20 +65,20 @@ contract ERC20Interface {
  * Every request that is made by caller first sent to the specific asset implementation
  * contract, which then calls back to be forwarded onto platform.
  *
- * Calls flow: Caller -&gt;
- *             Proxy.func(...) -&gt;
- *             Asset.__func(..., Caller.address) -&gt;
- *             Proxy.__func(..., Caller.address) -&gt;
+ * Calls flow: Caller ->
+ *             Proxy.func(...) ->
+ *             Asset.__func(..., Caller.address) ->
+ *             Proxy.__func(..., Caller.address) ->
  *             Platform.proxyFunc(..., symbol, Caller.address)
  *
  * Asset implementation contract is mutable, but each user have an option to stick with
- * old implementation, through explicit decision made in timely manner, if he doesn&#39;t agree
+ * old implementation, through explicit decision made in timely manner, if he doesn't agree
  * with new rules.
  * Each user have a possibility to upgrade to latest asset contract implementation, without the
  * possibility to rollback.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract CAVAssetProxy is ERC20Interface {
 
@@ -202,7 +202,7 @@ contract CAVAssetProxy is ERC20Interface {
      */
     function transfer(address _to, uint _value) returns(bool) {
         if (_to != 0x0) {
-          return _transferWithReference(_to, _value, &quot;&quot;);
+          return _transferWithReference(_to, _value, "");
         }
         else {
             return false;
@@ -214,7 +214,7 @@ contract CAVAssetProxy is ERC20Interface {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      *
      * @return success.
      */
@@ -244,7 +244,7 @@ contract CAVAssetProxy is ERC20Interface {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -264,7 +264,7 @@ contract CAVAssetProxy is ERC20Interface {
      */
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
         if (_to != 0x0) {
-            return _getAsset().__transferFromWithReference(_from, _to, _value, &quot;&quot;, msg.sender);
+            return _getAsset().__transferFromWithReference(_from, _to, _value, "", msg.sender);
          }
          else {
              return false;
@@ -279,7 +279,7 @@ contract CAVAssetProxy is ERC20Interface {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -365,7 +365,7 @@ contract CAVAssetProxy is ERC20Interface {
 
     // Asset implementation contract address that user decided to stick with.
     // 0x0 means that user uses latest version.
-    mapping(address =&gt; address) userOptOutVersion;
+    mapping(address => address) userOptOutVersion;
 
     /**
      * Only asset implementation contract assigned to sender is allowed to call.
@@ -434,7 +434,7 @@ contract CAVAssetProxy is ERC20Interface {
         if (_newVersion == 0x0) {
             return false;
         }
-        // Don&#39;t apply freeze-time for the initial setup.
+        // Don't apply freeze-time for the initial setup.
         if (latestVersion == 0x0) {
             latestVersion = _newVersion;
             return true;
@@ -472,7 +472,7 @@ contract CAVAssetProxy is ERC20Interface {
         if (pendingVersion == 0x0) {
             return false;
         }
-        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME &gt; now) {
+        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME > now) {
             return false;
         }
         latestVersion = pendingVersion;

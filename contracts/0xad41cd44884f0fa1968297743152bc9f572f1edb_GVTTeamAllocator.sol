@@ -20,7 +20,7 @@ contract ERC20Basic {
 // Time-locked wallet for Genesis Vision team tokens
 contract GVTTeamAllocator is Initable {
     // Address of team member to allocations mapping
-    mapping (address =&gt; uint256) allocations;
+    mapping (address => uint256) allocations;
 
     ERC20Basic gvt;
     uint unlockedAt;
@@ -50,9 +50,9 @@ contract GVTTeamAllocator is Initable {
         gvt = ERC20Basic(token);
     }
 
-    // Unlock team member&#39;s tokens by transferring them to his address
+    // Unlock team member's tokens by transferring them to his address
     function unlock() external {
-        require (now &gt;= unlockedAt);
+        require (now >= unlockedAt);
 
         // Update total number of locked tokens with the first unlock attempt
         if (tokensForAllocation == 0)

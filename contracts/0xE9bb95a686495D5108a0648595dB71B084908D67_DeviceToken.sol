@@ -51,7 +51,7 @@ contract ReturnData {
  * Receives calls from the proxy, and calls back immediatly without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Asset is AssetInterface, Bytes32, ReturnData {
     // Assigned asset proxy contract, immutable.
@@ -94,7 +94,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferWithReference(address _to, uint _value, string _reference, address _sender) onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferToICAPWithReference(bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferToICAPWithReference(bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferWithReference(_to, _value, _reference, _sender);
     }
@@ -141,7 +141,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferFromWithReference(address _from, address _to, uint _value, string _reference, address _sender) onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferFromToICAPWithReference(_from, bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferFromToICAPWithReference(_from, bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferFromWithReference(_from, _to, _value, _reference, _sender);
     }
@@ -236,7 +236,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
 
     // Interface functions to allow specifying ICAP addresses as strings.
     function transferToICAP(string _icap, uint _value) returns(bool) {
-        return transferToICAPWithReference(_icap, _value, &#39;&#39;);
+        return transferToICAPWithReference(_icap, _value, '');
     }
 
     function transferToICAPWithReference(string _icap, uint _value, string _reference) returns(bool) {
@@ -244,7 +244,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function transferFromToICAP(address _from, string _icap, uint _value) returns(bool) {
-        return transferFromToICAPWithReference(_from, _icap, _value, &#39;&#39;);
+        return transferFromToICAPWithReference(_from, _icap, _value, '');
     }
 
     function transferFromToICAPWithReference(address _from, string _icap, uint _value, string _reference) returns(bool) {
@@ -252,16 +252,16 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function isICAP(address _address) constant returns(bool) {
-        bytes32 a = bytes32(_address) &lt;&lt; 96;
-        if (a[0] != &#39;X&#39; || a[1] != &#39;E&#39;) {
+        bytes32 a = bytes32(_address) << 96;
+        if (a[0] != 'X' || a[1] != 'E') {
             return false;
         }
-        if (a[2] &lt; 48 || a[2] &gt; 57 || a[3] &lt; 48 || a[3] &gt; 57) {
+        if (a[2] < 48 || a[2] > 57 || a[3] < 48 || a[3] > 57) {
             return false;
         }
-        for (uint i = 4; i &lt; 20; i++) {
+        for (uint i = 4; i < 20; i++) {
             uint char = uint(a[i]);
-            if (char &lt; 48 || char &gt; 90 || (char &gt; 57 &amp;&amp; char &lt; 65)) {
+            if (char < 48 || char > 90 || (char > 57 && char < 65)) {
                 return false;
             }
         }
@@ -279,7 +279,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -301,7 +301,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -312,7 +312,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
 
 contract AssetWithAmbi is Asset, Ambi2EnabledFull {
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; (ambi2.hasRole(this, _role, _sender()))) {
+        if (address(ambi2) != 0x0 && (ambi2.hasRole(this, _role, _sender()))) {
             _;
         }
     }
@@ -329,7 +329,7 @@ contract DeviceToken is AssetWithAmbi {
 
     event Error(bytes32 error);
 
-    function setStatuses(StatusesInterface _statuses) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setStatuses(StatusesInterface _statuses) onlyRole('admin') returns(bool) {
         statuses = StatusesInterface(_statuses);
         return true;
     }
@@ -339,7 +339,7 @@ contract DeviceToken is AssetWithAmbi {
         returns(bool)
     {
         if (!statuses.checkStatus(_to, _value, _reference, _sender)) {
-            Error(&#39;Device has status problems&#39;);
+            Error('Device has status problems');
             return false;
         }
         return super._transferWithReference(_to, _value, _reference, _sender);
@@ -350,7 +350,7 @@ contract DeviceToken is AssetWithAmbi {
         returns(bool)
     {
         if (!statuses.checkStatusICAP(_icap, _value, _reference, _sender)) {
-            Error(&#39;Device has status problems&#39;);
+            Error('Device has status problems');
             return false;
         }
         return super._transferToICAPWithReference(_icap, _value, _reference, _sender);

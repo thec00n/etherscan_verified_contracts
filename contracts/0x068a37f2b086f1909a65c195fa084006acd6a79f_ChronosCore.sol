@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -293,7 +293,7 @@ contract ChronosBase is ChronosAccessControl {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -304,7 +304,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -343,8 +343,8 @@ contract ChronosFinance is ChronosBase, PullPayment {
     uint256 public wagerPool;
     
     /// @dev Send funds to a beneficiary. If sending fails, assign
-    /// funds to the beneficiary&#39;s balance for manual withdrawal.
-    /// @param beneficiary The beneficiary&#39;s address to send funds to
+    /// funds to the beneficiary's balance for manual withdrawal.
+    /// @param beneficiary The beneficiary's address to send funds to
     /// @param amount The amount to send.
     function _sendFunds(address beneficiary, uint256 amount) internal {
         if (!beneficiary.send(amount)) {
@@ -385,7 +385,7 @@ contract ChronosCore is ChronosFinance {
         _processGameEnd();
         
         // Enough Ether must be supplied.
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         if (!gameStarted) {
             // If the game is not started, the contract must not be paused.
@@ -422,7 +422,7 @@ contract ChronosCore is ChronosFinance {
         _sendFunds(gameStarter, dividend);
         
         // Give the wager price every 7th wager.
-        if (wagerIndex &gt; 0 &amp;&amp; (wagerIndex % 7) == 0) {
+        if (wagerIndex > 0 && (wagerIndex % 7) == 0) {
             // Give the wager prize to the sender.
             msg.sender.transfer(wagerPool);
             
@@ -441,7 +441,7 @@ contract ChronosCore is ChronosFinance {
         // to be greater than or equal to price.
         uint256 excess = msg.value - price;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             msg.sender.transfer(excess);
         }
     }
@@ -458,7 +458,7 @@ contract ChronosCore is ChronosFinance {
             return false;
         }
     
-        if (block.timestamp &lt;= lastPlayTimestamp + timeout) {
+        if (block.timestamp <= lastPlayTimestamp + timeout) {
             // The game has not yet finished.
             return false;
         }

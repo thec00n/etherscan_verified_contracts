@@ -11,20 +11,20 @@ library SafeMath { //standart library for uint
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,8 +85,8 @@ contract CQTToken is Ownable { //ERC - 20 token contract
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;CQT&quot;;
-  string public constant name = &quot;Checqit&quot;;
+  string public constant symbol = "CQT";
+  string public constant name = "Checqit";
   uint8 public constant decimals = 8;
   uint256 _totalSupply = 1000000000*pow(10,decimals);
 
@@ -94,10 +94,10 @@ contract CQTToken is Ownable { //ERC - 20 token contract
   address public owner;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function pow(uint256 a, uint256 b) internal pure returns (uint256){ //power function
     return (a**b);
@@ -138,10 +138,10 @@ contract CQTToken is Ownable { //ERC - 20 token contract
     )public returns (bool success) {
       require(this != _to);
 
-      if (balances[_from] &gt;= _amount
-       &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-       &amp;&amp; _amount &gt; 0
-       &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+      if (balances[_from] >= _amount
+       && allowed[_from][msg.sender] >= _amount
+       && _amount > 0
+       && balances[_to] + _amount > balances[_to]) {
        balances[_from] -= _amount;
        allowed[_from][msg.sender] -= _amount;
        balances[_to] += _amount;
@@ -199,14 +199,14 @@ contract CQTToken is Ownable { //ERC - 20 token contract
     return crowdsaleTokens;
   }
   
-  // balances for owner&#39;s team
+  // balances for owner's team
   uint public teamBalance = (uint)(250000000).mul(pow(10,decimals));
   uint public futureExpanstion = (uint)(130000000).mul(pow(10,decimals));
   uint public bountyProgram = (uint)(10000000).mul(pow(10,decimals));
 
-  mapping (address =&gt; bool) public teamBalanceMap;
-  mapping (address =&gt; bool) public futureExpanstionMap;
-  mapping (address =&gt; bool) public bountyProgramMap;
+  mapping (address => bool) public teamBalanceMap;
+  mapping (address => bool) public futureExpanstionMap;
+  mapping (address => bool) public bountyProgramMap;
 
   function addInTeamBalanceMap (address _address) public onlyOwner {
     require(!teamBalanceMap[_address]);

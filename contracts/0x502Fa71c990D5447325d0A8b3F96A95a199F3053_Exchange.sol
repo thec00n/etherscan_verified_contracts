@@ -7,8 +7,8 @@ contract Token {
     uint256 public totalSupply;
     uint8 public decimals;
     bool public allowTransactions;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function transfer(address _to, uint256 _value) returns (bool success);
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success);
     function approve(address _spender, uint256 _value) returns (bool success);
@@ -16,9 +16,9 @@ contract Token {
 }
 
 contract EthermiumAffiliates {
-    mapping(address =&gt; address[]) public referrals; // mapping of affiliate address to referral addresses
-    mapping(address =&gt; address) public affiliates; // mapping of referrals addresses to affiliate addresses
-    mapping(address =&gt; bool) public admins; // mapping of admin accounts
+    mapping(address => address[]) public referrals; // mapping of affiliate address to referral addresses
+    mapping(address => address) public affiliates; // mapping of referrals addresses to affiliate addresses
+    mapping(address => bool) public admins; // mapping of admin accounts
     string[] public affiliateList;
     address public owner;
 
@@ -47,17 +47,17 @@ contract Exchange {
     }
 
     function safeSub(uint a, uint b) returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
     address public owner;
-    mapping (address =&gt; uint256) public invalidOrder;
+    mapping (address => uint256) public invalidOrder;
 
     event SetOwner(address indexed previousOwner, address indexed newOwner);
     modifier onlyOwner {
@@ -72,36 +72,36 @@ contract Exchange {
         return owner;
     }
     function invalidateOrdersBefore(address user, uint256 nonce) onlyAdmin {
-        if (nonce &lt; invalidOrder[user]) throw;
+        if (nonce < invalidOrder[user]) throw;
         invalidOrder[user] = nonce;
     }
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public tokens; //mapping of token addresses to mapping of account balances
+    mapping (address => mapping (address => uint256)) public tokens; //mapping of token addresses to mapping of account balances
 
-    mapping (address =&gt; bool) public admins;
-    mapping (address =&gt; uint256) public lastActiveTransaction;
-    mapping (bytes32 =&gt; uint256) public orderFills;
+    mapping (address => bool) public admins;
+    mapping (address => uint256) public lastActiveTransaction;
+    mapping (bytes32 => uint256) public orderFills;
     address public feeAccount;
     uint256 public feeAffiliate; // percentage times (1 ether)
     uint256 public inactivityReleasePeriod;
-    mapping (bytes32 =&gt; bool) public traded;
-    mapping (bytes32 =&gt; bool) public withdrawn;
+    mapping (bytes32 => bool) public traded;
+    mapping (bytes32 => bool) public withdrawn;
     uint256 public makerFee; // fraction * 1 ether
     uint256 public takerFee; // fraction * 1 ether
     uint256 public affiliateFee; // fraction as proportion of 1 ether
     uint256 public makerAffiliateFee; // wei deductible from makerFee
     uint256 public takerAffiliateFee; // wei deductible form takerFee
 
-    mapping (address =&gt; address) public referrer;  // mapping of user addresses to their referrer addresses
+    mapping (address => address) public referrer;  // mapping of user addresses to their referrer addresses
 
     address public affiliateContract;
     address public tokenListContract;
 
 
     enum Errors {
-        INVLID_PRICE,           // Order prices don&#39;t match
+        INVLID_PRICE,           // Order prices don't match
         INVLID_SIGNATURE,       // Signature is invalid
-        TOKENS_DONT_MATCH,      // Maker/taker tokens don&#39;t match
+        TOKENS_DONT_MATCH,      // Maker/taker tokens don't match
         ORDER_ALREADY_FILLED,   // Order was already filled
         GAS_TOO_HIGH            // Too high gas fee
     }
@@ -131,7 +131,7 @@ contract Exchange {
     );
 
     function setInactivityReleasePeriod(uint256 expiry) onlyAdmin returns (bool success) {
-        if (expiry &gt; 1000000) throw;
+        if (expiry > 1000000) throw;
         inactivityReleasePeriod = expiry;
         return true;
     }
@@ -154,8 +154,8 @@ contract Exchange {
     }
 
     function setFees(uint256 makerFee_, uint256 takerFee_, uint256 affiliateFee_) onlyOwner {
-        require(makerFee_ &lt; 10 finney &amp;&amp; takerFee_ &lt; 10 finney);
-        require(affiliateFee_ &gt; affiliateFee);
+        require(makerFee_ < 10 finney && takerFee_ < 10 finney);
+        require(affiliateFee_ > affiliateFee);
         makerFee = makerFee_;
         takerFee = takerFee_;
         affiliateFee = affiliateFee_;
@@ -170,7 +170,7 @@ contract Exchange {
     }
 
     modifier onlyAdmin {
-        if (msg.sender != owner &amp;&amp; !admins[msg.sender]) throw;
+        if (msg.sender != owner && !admins[msg.sender]) throw;
         _;
     }
 
@@ -182,7 +182,7 @@ contract Exchange {
         //require(EthermiumTokenList(tokenListContract).isTokenInList(token));
         if (referrerAddress == msg.sender) referrerAddress = address(0);
         if (referrer[msg.sender] == address(0x0))   {
-            if (referrerAddress != address(0x0) &amp;&amp; EthermiumAffiliates(affiliateContract).getAffiliate(msg.sender) == address(0))
+            if (referrerAddress != address(0x0) && EthermiumAffiliates(affiliateContract).getAffiliate(msg.sender) == address(0))
             {
                 referrer[msg.sender] = referrerAddress;
                 EthermiumAffiliates(affiliateContract).assignReferral(referrerAddress, msg.sender);
@@ -201,7 +201,7 @@ contract Exchange {
     function deposit(address referrerAddress) payable {
         if (referrerAddress == msg.sender) referrerAddress = address(0);
         if (referrer[msg.sender] == address(0x0))   {
-            if (referrerAddress != address(0x0) &amp;&amp; EthermiumAffiliates(affiliateContract).getAffiliate(msg.sender) == address(0))
+            if (referrerAddress != address(0x0) && EthermiumAffiliates(affiliateContract).getAffiliate(msg.sender) == address(0))
             {
                 referrer[msg.sender] = referrerAddress;
                 EthermiumAffiliates(affiliateContract).assignReferral(referrerAddress, msg.sender);
@@ -217,8 +217,8 @@ contract Exchange {
     }
 
     function withdraw(address token, uint256 amount) returns (bool success) {
-        if (safeSub(block.number, lastActiveTransaction[msg.sender]) &lt; inactivityReleasePeriod) throw;
-        if (tokens[token][msg.sender] &lt; amount) throw;
+        if (safeSub(block.number, lastActiveTransaction[msg.sender]) < inactivityReleasePeriod) throw;
+        if (tokens[token][msg.sender] < amount) throw;
         tokens[token][msg.sender] = safeSub(tokens[token][msg.sender], amount);
         if (token == address(0)) {
             if (!msg.sender.send(amount)) throw;
@@ -232,9 +232,9 @@ contract Exchange {
         bytes32 hash = keccak256(this, token, amount, user, nonce);
         if (withdrawn[hash]) throw;
         withdrawn[hash] = true;
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), v, r, s) != user) throw;
-        if (feeWithdrawal &gt; 50 finney) feeWithdrawal = 50 finney;
-        if (tokens[token][user] &lt; amount) throw;
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s) != user) throw;
+        if (feeWithdrawal > 50 finney) feeWithdrawal = 50 finney;
+        if (tokens[token][user] < amount) throw;
         tokens[token][user] = safeSub(tokens[token][user], amount);
         tokens[address(0)][user] = safeSub(tokens[address(0x0)][user], feeWithdrawal);
         //tokens[token][feeAccount] = safeAdd(tokens[token][feeAccount], safeMul(feeWithdrawal, amount) / 1 ether);
@@ -336,15 +336,15 @@ contract Exchange {
         });
 
         //bytes32 makerOrderHash = keccak256(this, tradeAddresses[0], tradeValues[0], tradeAddresses[1], tradeValues[1], tradeValues[2], tradeAddresses[2]);
-        //bytes32 makerOrderHash = &#167;
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, t.makerOrderHash), v[0], rs[0], rs[1]) != t.maker)
+        //bytes32 makerOrderHash = §
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", t.makerOrderHash), v[0], rs[0], rs[1]) != t.maker)
         {
             LogError(uint8(Errors.INVLID_SIGNATURE), t.makerOrderHash, t.takerOrderHash);
             return 0;
         }
         //bytes32 takerOrderHash = keccak256(this, tradeAddresses[3], tradeValues[3], tradeAddresses[4], tradeValues[4], tradeValues[5], tradeAddresses[5]);
         //bytes32 takerOrderHash = keccak256(this, t.takerTokenBuy, t.takerAmountBuy, t.takerTokenSell, t.takerAmountSell, t.takerNonce, t.taker);
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, t.takerOrderHash), v[1], rs[2], rs[3]) != t.taker)
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", t.takerOrderHash), v[1], rs[2], rs[3]) != t.taker)
         {
             LogError(uint8(Errors.INVLID_SIGNATURE), t.makerOrderHash, t.takerOrderHash);
             return 0;
@@ -354,9 +354,9 @@ contract Exchange {
         {
             LogError(uint8(Errors.TOKENS_DONT_MATCH), t.makerOrderHash, t.takerOrderHash);
             return 0;
-        } // tokens don&#39;t match
+        } // tokens don't match
 
-        if (t.takerGasFee &gt; 100 finney)
+        if (t.takerGasFee > 100 finney)
         {
             LogError(uint8(Errors.GAS_TOO_HIGH), t.makerOrderHash, t.takerOrderHash);
             return 0;
@@ -365,13 +365,13 @@ contract Exchange {
 
 
         if (!(
-        (t.takerIsBuying == 0 &amp;&amp; safeMul(t.makerAmountSell, 1 ether) / t.makerAmountBuy &gt;= safeMul(t.takerAmountBuy, 1 ether) / t.takerAmountSell)
+        (t.takerIsBuying == 0 && safeMul(t.makerAmountSell, 1 ether) / t.makerAmountBuy >= safeMul(t.takerAmountBuy, 1 ether) / t.takerAmountSell)
         ||
-        (t.takerIsBuying &gt; 0 &amp;&amp; safeMul(t.makerAmountBuy, 1 ether) / t.makerAmountSell &lt;= safeMul(t.takerAmountSell, 1 ether) / t.takerAmountBuy)
+        (t.takerIsBuying > 0 && safeMul(t.makerAmountBuy, 1 ether) / t.makerAmountSell <= safeMul(t.takerAmountSell, 1 ether) / t.takerAmountBuy)
         ))
         {
             LogError(uint8(Errors.INVLID_PRICE), t.makerOrderHash, t.takerOrderHash);
-            return 0; // prices don&#39;t match
+            return 0; // prices don't match
         }
 
         TradeValues memory tv = TradeValues({
@@ -482,7 +482,7 @@ contract Exchange {
         address[6][] tradeAddresses
     )
     {
-        for (uint i = 0; i &lt; tradeAddresses.length; i++) {
+        for (uint i = 0; i < tradeAddresses.length; i++) {
             trade(
                 v[i],
                 rs[i],
@@ -529,20 +529,20 @@ contract Exchange {
 	        this, cancelAddresses[0], cancelValues[0], cancelAddresses[1],
 	        cancelValues[1], cancelValues[2], cancelAddresses[2]
         );
-        require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, orderHash), v[0], rs[0], rs[1]) == cancelAddresses[2]);
+        require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", orderHash), v[0], rs[0], rs[1]) == cancelAddresses[2]);
 
-        // Cancel action should be signed by cancel&#39;s initiator
+        // Cancel action should be signed by cancel's initiator
         bytes32 cancelHash = keccak256(this, orderHash, cancelAddresses[3], cancelValues[3]);
-        require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, cancelHash), v[1], rs[2], rs[3]) == cancelAddresses[3]);
+        require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", cancelHash), v[1], rs[2], rs[3]) == cancelAddresses[3]);
 
-        // Order owner should be same as cancel&#39;s initiator
+        // Order owner should be same as cancel's initiator
         require(cancelAddresses[2] == cancelAddresses[3]);
 
         // Do not allow to cancel already canceled or filled orders
         require(orderFills[orderHash] != cancelValues[0]);
 
         // Limit cancel fee
-        if (cancelValues[4] &gt; 50 finney) {
+        if (cancelValues[4] > 50 finney) {
             cancelValues[4] = 50 finney;
         }
 
@@ -558,6 +558,6 @@ contract Exchange {
     }
 
     function min(uint a, uint b) private pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }

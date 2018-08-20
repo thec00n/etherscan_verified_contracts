@@ -1,7 +1,7 @@
 contract SaveData{
     constructor() public {
     }
-    mapping (string=&gt;string) data;
+    mapping (string=>string) data;
     function setStr(string key, string value) public payable {
         data[key] = value;
     }

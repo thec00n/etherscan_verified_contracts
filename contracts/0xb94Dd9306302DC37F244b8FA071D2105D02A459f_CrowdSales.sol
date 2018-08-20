@@ -11,12 +11,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -47,7 +47,7 @@ contract owned {
     }
 
     function isAllowedTransferDuringICO() public constant returns (bool){
-        for(uint i = 0; i &lt; allowedTransferDuringICO.length; i++) {
+        for(uint i = 0; i < allowedTransferDuringICO.length; i++) {
             if (allowedTransferDuringICO[i] == msg.sender) {
                 return true;
             }
@@ -78,8 +78,8 @@ contract StandardToken is SafeMath, Token {
     uint public lockBlock;
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(block.number &gt;= lockBlock || isAllowedTransferDuringICO());
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        require(block.number >= lockBlock || isAllowedTransferDuringICO());
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -91,8 +91,8 @@ contract StandardToken is SafeMath, Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(block.number &gt;= lockBlock || isAllowedTransferDuringICO());
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        require(block.number >= lockBlock || isAllowedTransferDuringICO());
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -120,15 +120,15 @@ contract StandardToken is SafeMath, Token {
     }
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract EICToken is StandardToken {
 
     // metadata
-    string constant public name = &quot;Entertainment Industry Coin&quot;;
-    string constant public symbol = &quot;EIC&quot;;
+    string constant public name = "Entertainment Industry Coin";
+    string constant public symbol = "EIC";
     uint256 constant public decimals = 18;
 
     function EICToken(
@@ -146,7 +146,7 @@ contract EICToken is StandardToken {
         require(addr.length == token.length);
         allowedTransferDuringICO.push(addr[0]);
         allowedTransferDuringICO.push(addr[1]);
-        for (uint i = 0; i &lt; addr.length; i++) {
+        for (uint i = 0; i < addr.length; i++) {
             transfer(addr[i], token[i] * (10 ** decimals));
         }
     }
@@ -195,23 +195,23 @@ contract CrowdSales {
     	public
     	payable
     {
-    	require(block.number &lt;= token.lockBlock());
-        require(this.balance &lt;= 62500 * ( 10 ** 18 ));
-    	require(token.balanceOf(msg.sender) + (msg.value * tokenPrice) &gt;= (5 * (10 ** 18)) * tokenPrice);
-    	require(token.balanceOf(msg.sender) + (msg.value * tokenPrice) &lt;= (200 * (10 ** 18)) * tokenPrice);
+    	require(block.number <= token.lockBlock());
+        require(this.balance <= 62500 * ( 10 ** 18 ));
+    	require(token.balanceOf(msg.sender) + (msg.value * tokenPrice) >= (5 * (10 ** 18)) * tokenPrice);
+    	require(token.balanceOf(msg.sender) + (msg.value * tokenPrice) <= (200 * (10 ** 18)) * tokenPrice);
         token.transfer(msg.sender, msg.value * tokenPrice);
         Bid(msg.sender, msg.value * tokenPrice);
     }
 
     function finalize() public onlyOwner {
-        require(block.number &gt; token.lockBlock() || this.balance == 62500 * ( 10 ** 18 ));
+        require(block.number > token.lockBlock() || this.balance == 62500 * ( 10 ** 18 ));
         uint receiveWei = this.balance;
-        for (uint i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint i = 0; i < beneficiaries.length; i++) {
             Beneficiary storage beneficiary = beneficiaries[i];
             uint256 value = (receiveWei * beneficiary.ratio)/(1000);
             beneficiary.addr.transfer(value);
         }
-        if (token.balanceOf(this) &gt; 0) {
+        if (token.balanceOf(this) > 0) {
             uint256 remainingToken = token.balanceOf(this);
             address owner30 = 0x8a2454C1c79C23F6c801B0c2665dfB9Eab0539b1;
             address owner70 = 0x4583408F92427C52D1E45500Ab402107972b2CA6;

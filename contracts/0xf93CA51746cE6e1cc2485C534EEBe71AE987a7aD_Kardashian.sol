@@ -28,13 +28,13 @@ contract Kardashian {
   }
   
   function enter() {
-    if (msg.value &lt; 10 finney) {
+    if (msg.value < 10 finney) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 100 ether) {
+		if (msg.value > 100 ether) {
 			msg.sender.send(msg.value - 100 ether);	
 			amount = 100 ether;
     }
@@ -61,7 +61,7 @@ contract Kardashian {
     }
 
 		// while there are enough ether on the balance we can pay out to an earlier participant
-    while (balance &gt; participants[payoutIdx].amount / 100 * 190) {
+    while (balance > participants[payoutIdx].amount / 100 * 190) {
       uint transactionAmount = participants[payoutIdx].amount / 100 * 190;
       participants[payoutIdx].etherAddress.send(transactionAmount);
 

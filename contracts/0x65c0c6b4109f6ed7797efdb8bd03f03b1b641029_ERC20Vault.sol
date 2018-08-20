@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,12 +84,12 @@ contract ERC20 is ERC20Basic {
 }
 
 contract Erc20Wallet {
-  mapping (address =&gt; mapping (address =&gt; uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (address => uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
 
   event Deposit(address token, address user, uint amount, uint balance);
   event Withdraw(address token, address user, uint amount, uint balance);
 
-  mapping (address =&gt; uint) public totalDeposited;
+  mapping (address => uint) public totalDeposited;
 
   function() public {
     revert();
@@ -110,7 +110,7 @@ contract Erc20Wallet {
       tokens[token][msg.sender]);
   }
   function commonWithdraw(address token, uint value) internal {
-    require (tokens[token][msg.sender] &gt;= value);
+    require (tokens[token][msg.sender] >= value);
     tokens[token][msg.sender] -= value;
     totalDeposited[token] -= value;
     require((token != 0)?
@@ -156,11 +156,11 @@ contract Erc20Wallet {
 contract SplitErc20Payment is Erc20Wallet{
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint) public totalShares;
-  mapping (address =&gt; uint) public totalReleased;
+  mapping (address => uint) public totalShares;
+  mapping (address => uint) public totalReleased;
 
-  mapping (address =&gt; mapping (address =&gt; uint)) public shares; //mapping of token addresses to mapping of account balances (token=0 means Ether)
-  mapping (address =&gt; mapping (address =&gt; uint)) public released; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (address => uint)) public shares; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (address => uint)) public released; //mapping of token addresses to mapping of account balances (token=0 means Ether)
   address[] public payees;
 
   function withdrawToken(address, uint) public{
@@ -189,7 +189,7 @@ contract SplitErc20Payment is Erc20Wallet{
 
   function executeClaim(address token, address payee, uint payment) internal {
     require(payment != 0);
-    require(totalDeposited[token] &gt;= payment);
+    require(totalDeposited[token] >= payment);
 
     released[token][payee] += payment;
     totalReleased[token] += payment;
@@ -198,7 +198,7 @@ contract SplitErc20Payment is Erc20Wallet{
   }
 
   function calculateMaximumPayment(address token, address payee)view internal returns(uint){
-    require(shares[token][payee] &gt; 0);
+    require(shares[token][payee] > 0);
     uint totalReceived = totalDeposited[token] + totalReleased[token];
     return (totalReceived * shares[token][payee] / totalShares[token]) - released[token][payee];
   }
@@ -216,7 +216,7 @@ contract SplitErc20Payment is Erc20Wallet{
   function partialClaim(address token, uint payment) public {
     uint maximumPayment = calculateMaximumPayment(token, msg.sender);
 
-    require (payment &lt;= maximumPayment);
+    require (payment <= maximumPayment);
 
     executeClaim(token, msg.sender, payment);
   }
@@ -228,7 +228,7 @@ contract SplitErc20Payment is Erc20Wallet{
    */
   function addPayee(address token, address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
+    require(_shares > 0);
     require(shares[token][_payee] == 0);
 
     payees.push(_payee);
@@ -242,8 +242,8 @@ contract SplitErc20Payment is Erc20Wallet{
    */
   function addToPayeeBalance(address token, address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
-    require(shares[token][_payee] &gt; 0);
+    require(_shares > 0);
+    require(shares[token][_payee] > 0);
 
     shares[token][_payee] += _shares;
     totalShares[token] += _shares;
@@ -253,7 +253,7 @@ contract SplitErc20Payment is Erc20Wallet{
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -342,7 +342,7 @@ contract InvestmentRecordList is Ownable{
 
     function getIndex (InvestmentRecord _investmentRecord) public view returns (uint index, bool foundRecord){
         foundRecord = false;
-        for (index = 0; index &lt; investmentRecords.length; index++){
+        for (index = 0; index < investmentRecords.length; index++){
             if (investmentRecords[index] == _investmentRecord){
                 foundRecord = true;
                 break;
@@ -367,7 +367,7 @@ contract InvestmentRecord {
     }
 
     function expiredLockPeriod () public view returns (bool){
-        return now &gt;= timeStamp + lockPeriod;
+        return now >= timeStamp + lockPeriod;
     }
 
     function getValue () public view returns (uint){
@@ -382,7 +382,7 @@ contract InvestmentRecord {
 
 contract ERC20Vault is SplitErc20Payment{
   using SafeMath for uint256;
-  mapping (address =&gt; InvestmentRecordList) public pendingInvestments;
+  mapping (address => InvestmentRecordList) public pendingInvestments;
 
   function withdrawToken(address, uint) public {
     revert();
@@ -394,7 +394,7 @@ contract ERC20Vault is SplitErc20Payment{
       return 0;
 
     uint lockedValue = 0;
-    for(uint8 i = 0; i &lt; investmentRecordList.getInvestmentRecordListLength(); i++){
+    for(uint8 i = 0; i < investmentRecordList.getInvestmentRecordListLength(); i++){
       InvestmentRecord investmentRecord = investmentRecordList.getInvestmentRecord(i);
       if (investmentRecord.getToken() == token){
         if (investmentRecord.expiredLockPeriod()){
@@ -410,7 +410,7 @@ contract ERC20Vault is SplitErc20Payment{
   function claim(address token) public{
     uint lockedValue = getLockedValue(token);
     uint actualBalance = this.balanceOf(token, msg.sender);
-    require(actualBalance &gt; lockedValue);
+    require(actualBalance > lockedValue);
 
     super.partialClaim(token, actualBalance - lockedValue);
   }
@@ -418,7 +418,7 @@ contract ERC20Vault is SplitErc20Payment{
   function partialClaim(address token, uint payment) public{
     uint lockedValue = getLockedValue(token);
     uint actualBalance = this.balanceOf(token, msg.sender);
-    require(actualBalance - lockedValue &gt;= payment);
+    require(actualBalance - lockedValue >= payment);
 
     super.partialClaim(token, payment);
   }

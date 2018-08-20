@@ -16,29 +16,29 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 
@@ -77,8 +77,8 @@ contract TokenERC20 {
 
 
 	// This creates an array with all balances
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) public allowance;
 
 	// This generates a public event on the blockchain that will notify clients
 	event Transfer(address indexed from, address indexed to, uint256 value);
@@ -139,7 +139,7 @@ contract TokenERC20 {
 
 	function burnFrom(address _from, uint256 _value) public returns (bool success) {
 		balanceOf[_from] = balanceOf[_from].sub(_value);                         // Subtract from the targeted balance
-		allowance[_from][msg.sender] =allowance[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+		allowance[_from][msg.sender] =allowance[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
 		totalSupply = totalSupply.sub(_value);                              // Update totalSupply
 		emit Burn(_from, _value);
 		return true;
@@ -156,12 +156,12 @@ contract DJPToken is owned, TokenERC20  {
 
 	//Modify these variables
 	uint256 _initialSupply=500000000; 
-	string _tokenName=&quot;DJP&quot;;
-	string _tokenSymbol=&quot;DijitalPara&quot;;
+	string _tokenName="DJP";
+	string _tokenSymbol="DijitalPara";
 	address public lockedWallet = 0x3d41E1d1941957FB21c2d3503E59a69aa7990370;
 	uint256 public startTime;
 
-	mapping (address =&gt; bool) public frozenAccount;
+	mapping (address => bool) public frozenAccount;
 
 	/* This generates a public event on the blockchain that will notify clients */
 	event FrozenFunds(address target, bool frozen);
@@ -190,14 +190,14 @@ contract DJPToken is owned, TokenERC20  {
 	function checkLockedBalance(address wallet, uint256 _value) internal returns (bool){
 		if(wallet==lockedWallet){
 			
-			if(now&lt;startTime + 365 * 1 days){ //15% tokens locked first year
-				return balanceOf[lockedWallet].sub(_value)&gt;=totalSupply.mul(15).div(100)? true : false;
-			}else if(now&gt;=startTime + 365 * 1 days &amp;&amp; now&lt;startTime + 730 * 1 days){ //13% tokens locked second year
-				return balanceOf[lockedWallet].sub(_value)&gt;=totalSupply.mul(13).div(100)? true : false;
-			}else if(now&gt;=startTime + 730 * 1 days &amp;&amp; now&lt;startTime + 1095 * 1 days){ //10% tokens locked third year
-				return balanceOf[lockedWallet].sub(_value)&gt;=totalSupply.mul(10).div(100)? true : false;	
-			}else if(now&gt;=startTime + 1095 * 1 days &amp;&amp; now&lt;startTime + 1460 * 1 days){ //6% tokens locked fourth year
-				return balanceOf[lockedWallet].sub(_value)&gt;=totalSupply.mul(6).div(100)? true : false;	
+			if(now<startTime + 365 * 1 days){ //15% tokens locked first year
+				return balanceOf[lockedWallet].sub(_value)>=totalSupply.mul(15).div(100)? true : false;
+			}else if(now>=startTime + 365 * 1 days && now<startTime + 730 * 1 days){ //13% tokens locked second year
+				return balanceOf[lockedWallet].sub(_value)>=totalSupply.mul(13).div(100)? true : false;
+			}else if(now>=startTime + 730 * 1 days && now<startTime + 1095 * 1 days){ //10% tokens locked third year
+				return balanceOf[lockedWallet].sub(_value)>=totalSupply.mul(10).div(100)? true : false;	
+			}else if(now>=startTime + 1095 * 1 days && now<startTime + 1460 * 1 days){ //6% tokens locked fourth year
+				return balanceOf[lockedWallet].sub(_value)>=totalSupply.mul(6).div(100)? true : false;	
 			}else{ //No tokens locked from the forth year on
 				return true;
 			}

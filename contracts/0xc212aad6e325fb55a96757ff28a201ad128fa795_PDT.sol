@@ -68,20 +68,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,8 +93,8 @@ contract PDT {
     // totalSupply is zero by default, owner can issue and destroy coins any amount any time
     uint constant totalSupplyDefault = 0;
 
-    string public constant symbol = &quot;PDT&quot;;
-    string public constant name = &quot;Prime Donor Token&quot;;
+    string public constant symbol = "PDT";
+    string public constant name = "Prime Donor Token";
     uint8 public constant decimals = 5;
 
     uint public totalSupply = 0;
@@ -131,14 +131,14 @@ contract PDT {
     address public transferFeeOwner;
 
     function notOwner(address addr) internal view returns (bool) {
-        return addr != address(this) &amp;&amp; addr != owner &amp;&amp; addr != transferFeeOwner;
+        return addr != address(this) && addr != owner && addr != transferFeeOwner;
     }
 
 
     // ---------------------------- dividends related definitions --------------------
     // investors white list
     // dividends can be send only investors from list
-    mapping(address =&gt; bool) public investors;
+    mapping(address => bool) public investors;
 
     // minimal coin balance to pay dividends
     uint256 public constant investorMinimalBalance = uint256(10000)*(uint256(10)**decimals);
@@ -148,30 +148,30 @@ contract PDT {
     uint constant MULTIPLIER = 10e18;
 
     // dividends for custom coins
-    mapping(address=&gt;mapping(address=&gt;uint256)) lastDividends;
-    mapping(address=&gt;uint256) totalDividendsPerCoin;
+    mapping(address=>mapping(address=>uint256)) lastDividends;
+    mapping(address=>uint256) totalDividendsPerCoin;
 
     // dividends for custom ethers
-    mapping(address=&gt;uint256) lastEthers;
+    mapping(address=>uint256) lastEthers;
     uint256 divEthers;
 
 /*
     function balanceEnough(uint256 amount) internal view returns (bool) {
-        return balances[this] &gt;= dividends &amp;&amp; balances[this] - dividends &gt;= amount;
+        return balances[this] >= dividends && balances[this] - dividends >= amount;
     }
     */
 
     function activateDividendsCoins(address account) internal {
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             address addr = tokens[i];
-            if (totalDividendsPerCoin[addr] != 0 &amp;&amp; totalDividendsPerCoin[addr] &gt; lastDividends[addr][account]) {
-                if (investors[account] &amp;&amp; balances[account] &gt;= investorMinimalBalance) {
+            if (totalDividendsPerCoin[addr] != 0 && totalDividendsPerCoin[addr] > lastDividends[addr][account]) {
+                if (investors[account] && balances[account] >= investorMinimalBalance) {
                     var actual = totalDividendsPerCoin[addr] - lastDividends[addr][account];
                     var divs = (balances[account] * actual) / MULTIPLIER;
-                    Debug(divs, account, &quot;divs&quot;);
+                    Debug(divs, account, "divs");
 
                     ERC20 token = ERC20(addr);
-                    if (divs &gt; 0 &amp;&amp; token.balanceOf(this) &gt;= divs) {
+                    if (divs > 0 && token.balanceOf(this) >= divs) {
                         token.transfer(account, divs);
                         lastDividends[addr][account] = totalDividendsPerCoin[addr];
                     }
@@ -182,13 +182,13 @@ contract PDT {
     }
 
     function activateDividendsEthers(address account) internal {
-        if (divEthers != 0 &amp;&amp; divEthers &gt; lastEthers[account]) {
-            if (investors[account] &amp;&amp; balances[account] &gt;= investorMinimalBalance) {
+        if (divEthers != 0 && divEthers > lastEthers[account]) {
+            if (investors[account] && balances[account] >= investorMinimalBalance) {
                 var actual = divEthers - lastEthers[account];
                 var divs = (balances[account] * actual) / MULTIPLIER;
-                Debug(divs, account, &quot;divsEthers&quot;);
+                Debug(divs, account, "divsEthers");
 
-                require(divs &gt; 0 &amp;&amp; this.balance &gt;= divs);
+                require(divs > 0 && this.balance >= divs);
                 account.transfer(divs);
                 lastEthers[account] = divEthers;
             }
@@ -209,29 +209,29 @@ contract PDT {
     function addInvestor(address investor) public onlyOwner {
         activateDividends(investor);
         investors[investor] = true;
-        if (balances[investor] &gt;= investorMinimalBalance) {
+        if (balances[investor] >= investorMinimalBalance) {
             investorsTotalSupply = investorsTotalSupply.add(balances[investor]);
         }
     }
     function removeInvestor(address investor) public onlyOwner {
         activateDividends(investor);
         investors[investor] = false;
-        if (balances[investor] &gt;= investorMinimalBalance) {
+        if (balances[investor] >= investorMinimalBalance) {
             investorsTotalSupply = investorsTotalSupply.sub(balances[investor]);
         }
     }
 
     function sendDividends(address token_address, uint256 amount) public onlyOwner {
         require (token_address != address(this)); // do not send this contract for dividends
-        require(investorsTotalSupply &gt; 0); // investor capital must exists to pay dividends
+        require(investorsTotalSupply > 0); // investor capital must exists to pay dividends
         ERC20 token = ERC20(token_address);
-        require(token.balanceOf(this) &gt; amount);
+        require(token.balanceOf(this) > amount);
 
         totalDividendsPerCoin[token_address] = totalDividendsPerCoin[token_address].add(amount.mul(MULTIPLIER).div(investorsTotalSupply));
 
         // add tokens to the set
         uint idx = tokens.length;
-        for(uint i = 0; i &lt; tokens.length; i++) {
+        for(uint i = 0; i < tokens.length; i++) {
             if (tokens[i] == token_address || tokens[i] == address(0x0)) {
                 idx = i;
                 break;
@@ -244,7 +244,7 @@ contract PDT {
     }
 
     function sendDividendsEthers() public payable onlyOwner {
-        require(investorsTotalSupply &gt; 0); // investor capital must exists to pay dividends
+        require(investorsTotalSupply > 0); // investor capital must exists to pay dividends
         divEthers = divEthers.add((msg.value).mul(MULTIPLIER).div(investorsTotalSupply));
     }
 
@@ -255,10 +255,10 @@ contract PDT {
     // -------------------------------------------------------------------------------
  
     // Balances for each account
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed from , address indexed to , uint256 value);
@@ -268,9 +268,9 @@ contract PDT {
 
     function transferBalance(address from, address to, uint256 amount) internal {
         if (from != address(0x0)) {
-            require(balances[from] &gt;= amount);
-            if (notOwner(from) &amp;&amp; investors[from] &amp;&amp; balances[from] &gt;= investorMinimalBalance) {
-                if (balances[from] - amount &gt;= investorMinimalBalance) {
+            require(balances[from] >= amount);
+            if (notOwner(from) && investors[from] && balances[from] >= investorMinimalBalance) {
+                if (balances[from] - amount >= investorMinimalBalance) {
                     investorsTotalSupply = investorsTotalSupply.sub(amount);
                 } else {
                     investorsTotalSupply = investorsTotalSupply.sub(balances[from]);
@@ -280,8 +280,8 @@ contract PDT {
         }
         if (to != address(0x0)) {
             balances[to] = balances[to].add(amount);
-            if (notOwner(to) &amp;&amp; investors[to] &amp;&amp; balances[to] &gt;= investorMinimalBalance) {
-                if (balances[to] - amount &gt;= investorMinimalBalance) {
+            if (notOwner(to) && investors[to] && balances[to] >= investorMinimalBalance) {
+                if (balances[to] - amount >= investorMinimalBalance) {
                     investorsTotalSupply = investorsTotalSupply.add(amount);
                 } else {
                     investorsTotalSupply = investorsTotalSupply.add(balances[to]);
@@ -292,7 +292,7 @@ contract PDT {
 
     // if supply provided is 0, then default assigned
     function PDT(uint supply) public {
-        if (supply &gt; 0) {
+        if (supply > 0) {
             totalSupply = supply;
         } else {
             totalSupply = totalSupplyDefault;
@@ -314,11 +314,11 @@ contract PDT {
     function chargeTransferFee(address addr, uint amount)
         internal returns (uint) {
         activateDividends(addr);
-        if (notOwner(addr) &amp;&amp; balances[addr] &gt; 0) {
+        if (notOwner(addr) && balances[addr] > 0) {
             var fee = amount * transferFeeNum / transferFeeDenum;
-            if (fee &lt; minFee) {
+            if (fee < minFee) {
                 fee = minFee;
-            } else if (fee &gt; balances[addr]) {
+            } else if (fee > balances[addr]) {
                 fee = balances[addr];
             }
             amount = amount - fee;
@@ -334,11 +334,11 @@ contract PDT {
         public returns (bool) {
         activateDividends(msg.sender, to);
         //activateDividendsFunc(to);
-        if (amount &gt;= minTransfer
-            &amp;&amp; balances[msg.sender] &gt;= amount
-            &amp;&amp; balances[to] + amount &gt; balances[to]
+        if (amount >= minTransfer
+            && balances[msg.sender] >= amount
+            && balances[to] + amount > balances[to]
             ) {
-                if (balances[msg.sender] &gt;= amount) {
+                if (balances[msg.sender] >= amount) {
                     amount = chargeTransferFee(msg.sender, amount);
 
                     transferBalance(msg.sender, to, amount);
@@ -354,14 +354,14 @@ contract PDT {
         public returns (bool) {
         activateDividends(from, to);
         //activateDividendsFunc(to);
-        if ( amount &gt;= minTransfer
-            &amp;&amp; allowed[from][msg.sender] &gt;= amount
-            &amp;&amp; balances[from] &gt;= amount
-            &amp;&amp; balances[to] + amount &gt; balances[to]
+        if ( amount >= minTransfer
+            && allowed[from][msg.sender] >= amount
+            && balances[from] >= amount
+            && balances[to] + amount > balances[to]
             ) {
                 allowed[from][msg.sender] -= amount;
 
-                if (balances[from] &gt;= amount) {
+                if (balances[from] >= amount) {
                     amount = chargeTransferFee(from, amount);
 
                     transferBalance(from, to, amount);
@@ -384,7 +384,7 @@ contract PDT {
     }
 
     function setTransferFee(uint32 numinator, uint32 denuminator) onlyOwner public {
-        require(denuminator &gt; 0 &amp;&amp; numinator &lt; denuminator);
+        require(denuminator > 0 && numinator < denuminator);
         transferFeeNum = numinator;
         transferFeeDenum = denuminator;
     }
@@ -392,8 +392,8 @@ contract PDT {
     // Manual sell
     function sell(address to, uint amount) onlyOwner public {
         activateDividends(to);
-        //require(amount &gt;= minTransfer &amp;&amp; balanceEnough(amount));
-        require(amount &gt;= minTransfer);
+        //require(amount >= minTransfer && balanceEnough(amount));
+        require(amount >= minTransfer);
 
         transferBalance(this, to, amount);
         Transfer(this, to, amount);
@@ -406,7 +406,7 @@ contract PDT {
     }
 
     function changeRate(uint256 new_rate) public onlyOwner {
-        require(new_rate &gt; 0);
+        require(new_rate > 0);
         rate = new_rate;
     }
 
@@ -419,10 +419,10 @@ contract PDT {
         public payable {
         activateDividends(msg.sender);
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt;= minimalWei);
+        require(weiAmount >= minimalWei);
         //uint256 tkns = weiAmount.mul(rate) / 1 ether * (uint256(10)**decimals);
         uint256 tkns = weiAmount.mul(rate).div(1 ether).mul(uint256(10)**decimals);
-        require(tkns &gt; 0);
+        require(tkns > 0);
 
         weiRaised = weiRaised.add(weiAmount);
 
@@ -434,8 +434,8 @@ contract PDT {
     // destroy existing coins
     // TOD: not destroy dividends tokens
     function destroy(uint amount) onlyOwner public {
-          //require(amount &gt; 0 &amp;&amp; balanceEnough(amount));
-          require(amount &gt; 0);
+          //require(amount > 0 && balanceEnough(amount));
+          require(amount > 0);
           transferBalance(this, address(0x0), amount);
           totalSupply -= amount;
     }

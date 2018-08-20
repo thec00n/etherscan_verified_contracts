@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -45,11 +45,11 @@ contract PonziBet {
   uint[] public upBetRecords; 
   uint[] public downBetRecords;
   
-  mapping (address =&gt; uint) lastBet;
-  mapping (address =&gt; bool) userBet;
-  mapping (bool =&gt; uint) totalBalance;
-  mapping (address =&gt; uint) feeBalance;
-  mapping (address =&gt; mapping (bool =&gt; uint)) userBalances;
+  mapping (address => uint) lastBet;
+  mapping (address => bool) userBet;
+  mapping (bool => uint) totalBalance;
+  mapping (address => uint) feeBalance;
+  mapping (address => mapping (bool => uint)) userBalances;
   
   function PonziBet() public {
     admin = msg.sender;      
@@ -95,15 +95,15 @@ contract PonziBet {
      external 
      payable 
   {
-    require(msg.value &gt;= 10000000000000000);
-    if(roundTime == uint(0) || roundTime + 30 minutes &lt;= now) {
+    require(msg.value >= 10000000000000000);
+    if(roundTime == uint(0) || roundTime + 30 minutes <= now) {
       endPrice = uint(0);
       upBetRecords.length = uint(0);
       downBetRecords.length = uint(0);
       startPrice = pyramid.buyPrice();
       roundTime = now;    
     }
-    if(roundTime + 15 minutes &gt; now) {
+    if(roundTime + 15 minutes > now) {
       uint fee = msg.value.div(20);
       uint userAmount = msg.value.sub(fee);
       feeBalance[admin] =  feeBalance[admin].add(fee);
@@ -133,14 +133,14 @@ contract PonziBet {
   function placeBet() 
      external
   {
-    require(lastBet[msg.sender] &lt; roundTime + 15 minutes &amp;&amp; roundTime + 15 minutes &lt; now &amp;&amp; roundTime + 30 minutes &gt; now);
+    require(lastBet[msg.sender] < roundTime + 15 minutes && roundTime + 15 minutes < now && roundTime + 30 minutes > now);
     if(endPrice == uint(0)) {
       endPrice = pyramid.buyPrice();    
     }
-    if(startPrice &gt;= endPrice &amp;&amp; userBet[msg.sender] == true ) {
+    if(startPrice >= endPrice && userBet[msg.sender] == true ) {
       settleBet(true);
     }
-    else if(startPrice &lt; endPrice &amp;&amp; userBet[msg.sender] == false ) {
+    else if(startPrice < endPrice && userBet[msg.sender] == false ) {
       settleBet(false);
     }
     else {

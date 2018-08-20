@@ -17,7 +17,7 @@ contract Administration {
     bool        public  administrationContractFrozen;
 
     // keeps track of the contract moderators
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
 
     event ModeratorAdded(address indexed _invoker, address indexed _newMod, bool indexed _newModAdded);
     event ModeratorRemoved(address indexed _invoker, address indexed _removeMod, bool indexed _modRemoved);
@@ -136,13 +136,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -162,8 +162,8 @@ contract Vezt is Administration {
     bool                    public  tokenMintingEnabled;
     bool                    public  contractLaunched;
 
-    mapping (address =&gt; uint256)                        public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))   public allowed;
+    mapping (address => uint256)                        public balances;
+    mapping (address => mapping (address => uint256))   public allowed;
 
 
     event Transfer(address indexed _sender, address indexed _recipient, uint256 _amount);
@@ -178,8 +178,8 @@ contract Vezt is Administration {
     event SongTokenRemoved(address indexed _songTokenAddress, bool indexed _songTokenRemoved);
 
     function Vezt() {
-        name = &quot;Vezt&quot;;
-        symbol = &quot;VZT&quot;;
+        name = "Vezt";
+        symbol = "VZT";
         decimals = 18;
         totalSupply = 125000000000000000000000000;
         balances[0x79926C875f2636808de28CD73a45592587A537De] = balances[0x79926C875f2636808de28CD73a45592587A537De].add(totalSupply);
@@ -293,7 +293,7 @@ contract Vezt is Administration {
         public 
         returns (bool transferred)
     {
-        require(allowed[_owner][msg.sender] &gt;= _amount);
+        require(allowed[_owner][msg.sender] >= _amount);
         require(transferCheck(_owner, _receiver, _amount));
         allowed[_owner][msg.sender] = allowed[_owner][msg.sender].sub(_amount);
         balances[_owner] = balances[_owner].sub(_amount);
@@ -309,7 +309,7 @@ contract Vezt is Administration {
         public
         returns (bool approved)
     {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_amount);
         Approve(msg.sender, _spender, _amount);
         return true;
@@ -323,10 +323,10 @@ contract Vezt is Administration {
         onlyOwner
         returns (bool burned)
     {
-        require(_amount &gt; 0);
-        require(totalSupply.sub(_amount) &gt;= 0);
-        require(balances[msg.sender] &gt;= _amount);
-        require(balances[msg.sender].sub(_amount) &gt;= 0);
+        require(_amount > 0);
+        require(totalSupply.sub(_amount) >= 0);
+        require(balances[msg.sender] >= _amount);
+        require(balances[msg.sender].sub(_amount) >= 0);
         totalSupply = totalSupply.sub(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         Transfer(msg.sender, 0, _amount);
@@ -360,12 +360,12 @@ contract Vezt is Administration {
         returns (bool valid)
     {
         require(tokenMintingEnabled);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_sender != address(0x0));
-        require(totalSupply.add(_amount) &gt; 0);
-        require(totalSupply.add(_amount) &gt; totalSupply);
-        require(balances[_sender].add(_amount) &gt; 0);
-        require(balances[_sender].add(_amount) &gt; balances[_sender]);
+        require(totalSupply.add(_amount) > 0);
+        require(totalSupply.add(_amount) > totalSupply);
+        require(balances[_sender].add(_amount) > 0);
+        require(balances[_sender].add(_amount) > balances[_sender]);
         return true;
     }
     
@@ -379,12 +379,12 @@ contract Vezt is Administration {
         returns (bool valid)
     {
         require(!tokenTransfersFrozen);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_receiver != address(0));
-        require(balances[_sender] &gt;= _amount); // added check
-        require(balances[_sender].sub(_amount) &gt;= 0);
-        require(balances[_receiver].add(_amount) &gt; 0);
-        require(balances[_receiver].add(_amount) &gt; balances[_receiver]);
+        require(balances[_sender] >= _amount); // added check
+        require(balances[_sender].sub(_amount) >= 0);
+        require(balances[_receiver].add(_amount) > 0);
+        require(balances[_receiver].add(_amount) > balances[_receiver]);
         return true;
     }
 

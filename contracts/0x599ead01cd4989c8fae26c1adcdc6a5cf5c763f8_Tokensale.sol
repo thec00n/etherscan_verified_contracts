@@ -15,7 +15,7 @@ library SafeMath {
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ ERC20Interface loveContract = ERC20Interface(tokenAddress); // RTO is 0x80248B05
 //
 // Minimum = 0.00125 ETH
 //
-if ( msg.value &gt;= 1250000000000000 )
+if ( msg.value >= 1250000000000000 )
    {
    // Calculate tokens to sell
    uint256 weiAmount = msg.value;
@@ -90,7 +90,7 @@ if ( msg.value &gt;= 1250000000000000 )
    available_tokens = loveContract.balanceOf(thisAddress);    
     
    
-   if (available_tokens &gt;= tokens)
+   if (available_tokens >= tokens)
       {      
       
       	  lasttokencount = tokens;   
@@ -100,7 +100,7 @@ if ( msg.value &gt;= 1250000000000000 )
           last_transfer_state = loveContract.transfer(msg.sender,  tokens);
           
           
-      } // if (available_tokens &gt;= tokens)
+      } // if (available_tokens >= tokens)
       else
           {
           revert();
@@ -108,7 +108,7 @@ if ( msg.value &gt;= 1250000000000000 )
    
    
    
-   } // if ( msg.value &gt;= 1250000000000000 )
+   } // if ( msg.value >= 1250000000000000 )
    else
        {
        revert();
@@ -131,7 +131,7 @@ function owner_withdraw () public
 if (msg.sender != owner) return;
 
 owner.transfer( this.balance );
-lastaction = &quot;Withdraw&quot;;  
+lastaction = "Withdraw";  
 } // owner_withdraw
 
 
@@ -149,7 +149,7 @@ address tokenAddress = 0x80248B05a810F685B12C78e51984f808293e57D3;
 ERC20Interface loveContract = ERC20Interface(tokenAddress); // RTO is 0x80248B05a810F685B12C78e51984f808293e57D3
 
 uint256 balance = loveContract.balanceOf(this);
-assert(balance &gt; 0);
+assert(balance > 0);
 loveContract.transfer(owner, balance);
 
 

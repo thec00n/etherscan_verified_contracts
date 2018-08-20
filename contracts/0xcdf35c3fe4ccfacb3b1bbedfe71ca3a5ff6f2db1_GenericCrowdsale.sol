@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -74,7 +74,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -91,14 +91,14 @@ contract StandardToken is ERC223 {
     using SafeMath for uint;
 
     //user token balances
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     //token transer permissions
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
         if(isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) revert();
+            if (balanceOf(msg.sender) < _value) revert();
             balances[msg.sender] = balanceOf(msg.sender).sub(_value);
             balances[_to] = balanceOf(_to).add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -144,12 +144,12 @@ contract StandardToken is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         Transfer(msg.sender, _to, _value);
@@ -158,7 +158,7 @@ contract StandardToken is ERC223 {
       
       //function that is called when transaction target is a contract
       function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -178,7 +178,7 @@ contract StandardToken is ERC223 {
         public 
         returns (bool)
     {
-        if (balanceOf(_from) &lt; _value &amp;&amp; allowance(_from, msg.sender) &lt; _value) revert();
+        if (balanceOf(_from) < _value && allowance(_from, msg.sender) < _value) revert();
 
         bytes memory empty;
         balances[_to] = balanceOf(_to).add(_value);
@@ -250,10 +250,10 @@ contract StandardToken is ERC223 {
 
 contract MyDFSToken is StandardToken {
 
-    string public name = &quot;MyDFS Token&quot;;
+    string public name = "MyDFS Token";
     uint8 public decimals = 6;
-    string public symbol = &quot;MyDFS&quot;;
-    string public version = &#39;H1.0&#39;;
+    string public symbol = "MyDFS";
+    string public version = 'H1.0';
     uint256 public totalSupply;
 
     function () external {
@@ -343,7 +343,7 @@ contract DevTokensHolder is Ownable {
         view 
     {
         require(_from == owner || _from == address(crowdsale));
-        require(_value &gt; 0 || _data.length &gt; 0);
+        require(_value > 0 || _data.length > 0);
     }
 
     /// @notice The Dev (Owner) will call this method to extract the tokens
@@ -352,12 +352,12 @@ contract DevTokensHolder is Ownable {
         uint256 total = collectedTokens.add(balance);
 
         uint256 finalizedTime = crowdsale.finishTime();
-        require(finalizedTime &gt; 0 &amp;&amp; getTime() &gt; finalizedTime.add(14 days));
+        require(finalizedTime > 0 && getTime() > finalizedTime.add(14 days));
 
         uint256 canExtract = total.mul(getTime().sub(finalizedTime)).div(months(12));
         canExtract = canExtract.sub(collectedTokens);
 
-        if (canExtract &gt; balance) {
+        if (canExtract > balance) {
             canExtract = balance;
         }
 
@@ -420,16 +420,16 @@ contract AdvisorsTokensHolder is Ownable {
         view 
     {
         require(_from == owner || _from == address(crowdsale));
-        require(_value &gt; 0 || _data.length &gt; 0);
+        require(_value > 0 || _data.length > 0);
     }
 
     /// @notice The Dev (Owner) will call this method to extract the tokens
     function collectTokens() public onlyOwner {
         uint256 balance = token.balanceOf(address(this));
-        require(balance &gt; 0);
+        require(balance > 0);
 
         uint256 finalizedTime = crowdsale.finishTime();
-        require(finalizedTime &gt; 0 &amp;&amp; getTime() &gt; finalizedTime.add(14 days));
+        require(finalizedTime > 0 && getTime() > finalizedTime.add(14 days));
 
         require(token.transfer(owner, balance));
         TokensWithdrawn(owner, balance);
@@ -493,7 +493,7 @@ contract GenericCrowdsale is Ownable {
     //Token cantract
     ERC223 public tokenReward;
     //Wei balances for refund if ICO failed
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     //Emergency stop sell
     bool emergencyPaused = false;
@@ -522,12 +522,12 @@ contract GenericCrowdsale is Ownable {
     modifier sellActive() { 
         require(
             !emergencyPaused 
-            &amp;&amp; (state == State.PreIco || state == State.Ico)
-            &amp;&amp; amountRaised &lt; hardFundingGoal
+            && (state == State.PreIco || state == State.Ico)
+            && amountRaised < hardFundingGoal
         );
     _; }
     //Soft cap not reached
-    modifier goalNotReached() { require(state == State.IcoFinished &amp;&amp; amountRaised &lt; softFundingGoal); _; }
+    modifier goalNotReached() { require(state == State.IcoFinished && amountRaised < softFundingGoal); _; }
 
     /**
      * Constrctor function
@@ -537,7 +537,7 @@ contract GenericCrowdsale is Ownable {
         address addressOfTokenUsedAsReward
     ) public {
         require(ifSuccessfulSendTo != address(0) 
-            &amp;&amp; addressOfTokenUsedAsReward != address(0));
+            && addressOfTokenUsedAsReward != address(0));
         beneficiary = ifSuccessfulSendTo;
         tokenReward = ERC223(addressOfTokenUsedAsReward);
         state = State.Initialized;
@@ -552,7 +552,7 @@ contract GenericCrowdsale is Ownable {
         view 
     {
         require(_from == owner);
-        require(_value &gt; 0 || _data.length &gt; 0);
+        require(_value > 0 || _data.length > 0);
     }
 
     /**
@@ -568,10 +568,10 @@ contract GenericCrowdsale is Ownable {
         external 
         onlyOwner 
     {
-        require(hardFundingGoalInEthers &gt; 0
-            &amp;&amp; costOfEachToken &gt; 0
-            &amp;&amp; state == State.Initialized
-            &amp;&amp; discountEthers.length == discountValues.length);
+        require(hardFundingGoalInEthers > 0
+            && costOfEachToken > 0
+            && state == State.Initialized
+            && discountEthers.length == discountValues.length);
 
         hardFundingGoal = hardFundingGoalInEthers.mul(1 ether);
         minPurchase = minPurchaseInFinney.mul(1 finney);
@@ -595,12 +595,12 @@ contract GenericCrowdsale is Ownable {
         external
         onlyOwner
     {
-        require(softFundingGoalInEthers &gt; 0
-            &amp;&amp; hardFundingGoalInEthers &gt; 0
-            &amp;&amp; hardFundingGoalInEthers &gt; softFundingGoalInEthers
-            &amp;&amp; costOfEachToken &gt; 0
-            &amp;&amp; state &lt; State.Ico
-            &amp;&amp; discountEthers.length == discountValues.length);
+        require(softFundingGoalInEthers > 0
+            && hardFundingGoalInEthers > 0
+            && hardFundingGoalInEthers > softFundingGoalInEthers
+            && costOfEachToken > 0
+            && state < State.Ico
+            && discountEthers.length == discountValues.length);
 
         softFundingGoal = softFundingGoalInEthers.mul(1 ether);
         hardFundingGoal = hardFundingGoalInEthers.mul(1 ether);
@@ -689,7 +689,7 @@ contract GenericCrowdsale is Ownable {
     {
         uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
-        if (amount &gt; 0){
+        if (amount > 0){
             if (!msg.sender.send(amount)) {
                 balances[msg.sender] = amount;
             }
@@ -704,10 +704,10 @@ contract GenericCrowdsale is Ownable {
         payable 
         sellActive
     {
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= minPurchase);
+        require(msg.value > 0);
+        require(msg.value >= minPurchase);
         uint amount = msg.value;
-        if (amount &gt; hardFundingGoal.sub(amountRaised)) {
+        if (amount > hardFundingGoal.sub(amountRaised)) {
             uint availableAmount = hardFundingGoal.sub(amountRaised);
             msg.sender.transfer(amount.sub(availableAmount));
             amount = availableAmount;
@@ -724,11 +724,11 @@ contract GenericCrowdsale is Ownable {
         address user,
         uint256 amount
     ) internal {
-        require(amount &lt;= hardFundingGoal.sub(amountRaised));
+        require(amount <= hardFundingGoal.sub(amountRaised));
 
         uint256 passedSeconds = getTime().sub(started);
         uint256 week = 0;
-        if (passedSeconds &gt;= 604800){
+        if (passedSeconds >= 604800){
             week = passedSeconds.div(604800);
         }
         Debug(week);
@@ -736,13 +736,13 @@ contract GenericCrowdsale is Ownable {
         uint256 tokenPrice;
         if (state == State.Ico){
             uint256 cup = amountRaised.mul(4).div(hardFundingGoal);
-            if (cup &gt; week)
+            if (cup > week)
                 week = cup;
-            if (week &gt;= 4)
+            if (week >= 4)
                  week = 3;
             tokenPrice = price.mul(icoTokenPrice[week]).div(100);
         } else {
-            if (week &gt;= 2)
+            if (week >= 2)
                  week = 1;
             tokenPrice = price.mul(preIcoTokenPrice[week]).div(100);
         }
@@ -772,7 +772,7 @@ contract GenericCrowdsale is Ownable {
         returns(uint256) 
     {
         uint256 part = num % 1000000;
-        return part &gt; 0 ? num.div(1000000).mul(1000000) + 1000000 : num;
+        return part > 0 ? num.div(1000000).mul(1000000) + 1000000 : num;
     }
 
     /**
@@ -783,7 +783,7 @@ contract GenericCrowdsale is Ownable {
         view 
         returns(bool) 
     {
-        return state == State.IcoFinished &amp;&amp; amountRaised &gt;= softFundingGoal;
+        return state == State.IcoFinished && amountRaised >= softFundingGoal;
     }
 
     /**
@@ -793,7 +793,7 @@ contract GenericCrowdsale is Ownable {
         uint256[] discountEthers,
         uint256[] discountValues
     ) internal {
-        for (uint256 i = 0; i &lt; discountEthers.length; i++) {
+        for (uint256 i = 0; i < discountEthers.length; i++) {
             discounts.push(Discount(discountEthers[i].mul(1 ether), discountValues[i]));
         }
     }
@@ -808,9 +808,9 @@ contract GenericCrowdsale is Ownable {
         view
         returns (uint256)
     {
-        if (discounts.length &gt; 0)
-            for (uint256 i = 0; i &lt; discounts.length; i++) {
-                if (_amount &gt;= discounts[i].amount) {
+        if (discounts.length > 0)
+            for (uint256 i = 0; i < discounts.length; i++) {
+                if (_amount >= discounts[i].amount) {
                     return discounts[i].value;
                 }
             }
@@ -822,16 +822,16 @@ contract GenericCrowdsale is Ownable {
      */
     function checkGoals() internal {
         if (state == State.PreIco) {
-            if (amountRaised &gt;= hardFundingGoal) {
+            if (amountRaised >= hardFundingGoal) {
                 PreIcoLimitReached(amountRaised);
                 state = State.PreIcoFinished;
             }
         } else {
-            if (!softCapReached &amp;&amp; amountRaised &gt;= softFundingGoal){
+            if (!softCapReached && amountRaised >= softFundingGoal){
                 softCapReached = true;
                 SoftGoalReached(amountRaised);
             }
-            if (amountRaised &gt;= hardFundingGoal) {
+            if (amountRaised >= hardFundingGoal) {
                 finishTime = now;
                 HardGoalReached(amountRaised);
                 state = State.IcoFinished;

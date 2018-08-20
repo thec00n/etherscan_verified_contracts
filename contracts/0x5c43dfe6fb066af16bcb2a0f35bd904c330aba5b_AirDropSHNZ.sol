@@ -46,13 +46,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -89,8 +89,8 @@ contract AirDropSHNZ is Ownable {
     }
 
     function airDrop(address[] _addrs, uint256 _amount) public onlyOwner {
-        require(_addrs.length &gt; 0);
-        for (uint i = 0; i &lt; _addrs.length; i++) {
+        require(_addrs.length > 0);
+        for (uint i = 0; i < _addrs.length; i++) {
             if (_addrs[i] != 0x0) {
                 SHNZ.transfer(_addrs[i], _amount.mul(100000000));
             }
@@ -98,7 +98,7 @@ contract AirDropSHNZ is Ownable {
     }
 
     function issueTokens(address _beneficiary, uint256 _amount) public onlyOwner {
-        require(_beneficiary != 0x0 &amp;&amp; _amount &gt; 0);
+        require(_beneficiary != 0x0 && _amount > 0);
         SHNZ.transfer(_beneficiary, _amount.mul(100000000));
     }
 }

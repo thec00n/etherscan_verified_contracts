@@ -12,7 +12,7 @@ library SafeMath {
      * greater than minuend).
      */
     function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        assert(_b &lt;= _a);
+        assert(_b <= _a);
         return _a - _b;
     }
 
@@ -21,7 +21,7 @@ library SafeMath {
      */
     function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
         c = _a + _b;
-        assert(c &gt;= _a);
+        assert(c >= _a);
         return c;
     }
 }
@@ -32,7 +32,7 @@ library SafeMath {
  * @author OpenZeppelin ownership/Ownable.sol
  * @dev The Ownable contract has an owner address, and provides basic
  * authorization control functions, this simplifies the implementation of
- * &quot;user permissions&quot;.
+ * "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -124,7 +124,7 @@ contract Pausable is Ownable {
  * @dev Base contract which allows children to freeze account.
  */
 contract Freezable is Ownable {
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event Frozen(address target, bool frozen);
 
@@ -138,7 +138,7 @@ contract Freezable is Ownable {
     }
 
     /**
-     * @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving
+     * @notice `freeze? Prevent | Allow` `target` from sending & receiving
      * tokens
      * @param target Address to be frozen
      * @param freeze either to freeze it or not
@@ -196,9 +196,9 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -243,7 +243,7 @@ contract StandardToken is ERC20 {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(_to != address(0));
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -257,7 +257,7 @@ contract StandardToken is ERC20 {
      * on behalf of msg.sender. Beware that changing an allowance with this
      * method brings the risk that someone may use both the old and the new
      * allowance by unfortunate transaction ordering. One possible solution to
-     * mitigate this race condition is to first reduce the spender&#39;s allowance
+     * mitigate this race condition is to first reduce the spender's allowance
      * to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
@@ -283,8 +283,8 @@ contract StandardToken is ERC20 {
         public
         returns (bool)
     {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
 
         balances[_from] = balances[_from].sub(_value);
@@ -297,7 +297,7 @@ contract StandardToken is ERC20 {
 
 
 /**
- * @title Pausable, Freezable &amp; Burnable Token
+ * @title Pausable, Freezable & Burnable Token
  * @author OpenZeppelin token/ERC20/PausableToken.sol
  * @author OpenZeppelin token/ERC20/BurnableToken.sol
  * @dev StandardToken modified with pausable transfers.
@@ -357,9 +357,9 @@ contract Token is StandardToken, Pausable, Freezable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public onlyOwner whenNotPaused {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be
         // an assertion failure
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -373,9 +373,9 @@ contract Token is StandardToken, Pausable, Freezable {
 contract BIANGToken is Token {
     constructor() public {
         // Set the name for display purposes
-        name = &quot;Biang Biang Mian&quot;;
+        name = "Biang Biang Mian";
         // Set the symbol for display purposes
-        symbol = &quot;BIANG&quot;;
+        symbol = "BIANG";
         // Update total supply with the decimal amount
         totalSupply_ = 100000000 * 10 ** uint256(decimals);
         // Give the creator all initial tokens

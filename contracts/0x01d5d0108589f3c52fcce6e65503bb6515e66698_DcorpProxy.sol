@@ -212,7 +212,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -383,7 +383,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
         uint createdTimestamp;
         uint supportingWeight;
         uint rejectingWeight;
-        mapping(address =&gt; Vote) votes;
+        mapping(address => Vote) votes;
         address[] voteIndex;
         uint index;
     }
@@ -396,11 +396,11 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
     uint private constant MIN_QUORUM = 5; // 5%
 
     // Alocated balances
-    mapping (address =&gt; Balance) private allocated;
+    mapping (address => Balance) private allocated;
     address[] private allocatedIndex;
 
     // Proposals
-    mapping(address =&gt; Proposal) private proposals;
+    mapping(address => Proposal) private proposals;
     address[] private proposalIndex;
 
     // Tokens
@@ -438,7 +438,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @param _token The address to test against
      */
     modifier not_accepted_token(address _token) {
-        require(_token != address(drpsToken) &amp;&amp; _token != address(drpuToken));
+        require(_token != address(drpsToken) && _token != address(drpuToken));
         _;
     }
 
@@ -447,7 +447,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * Require that sender has more than zero tokens 
      */
     modifier only_token_holder() {
-        require(allocated[msg.sender].drps &gt; 0 || allocated[msg.sender].drpu &gt; 0);
+        require(allocated[msg.sender].drps > 0 || allocated[msg.sender].drpu > 0);
         _;
     }
 
@@ -470,7 +470,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @param _proposedAddress Address that was proposed
      */
     modifier only_during_voting_period(address _proposedAddress) {
-        require(now &lt;= proposals[_proposedAddress].createdTimestamp + VOTING_DURATION);
+        require(now <= proposals[_proposedAddress].createdTimestamp + VOTING_DURATION);
         _;
     }
 
@@ -481,7 +481,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @param _proposedAddress Address that was proposed
      */
     modifier only_after_voting_period(address _proposedAddress) {
-        require(now &gt; proposals[_proposedAddress].createdTimestamp + VOTING_DURATION);
+        require(now > proposals[_proposedAddress].createdTimestamp + VOTING_DURATION);
         _;
     }
 
@@ -557,7 +557,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * Deploy the proxy
      */
     function deploy() only_owner only_at_stage(Stages.Deploying) {
-        require(this.balance &gt;= drpCrowdsaleRecordedBalance);
+        require(this.balance >= drpCrowdsaleRecordedBalance);
         stage = Stages.Deployed;
     }
 
@@ -582,7 +582,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @return True if there is a balance that belongs to `_owner`
      */
     function hasBalance(address _owner) public constant returns (bool) {
-        return allocatedIndex.length &gt; 0 &amp;&amp; _owner == allocatedIndex[allocated[_owner].index];
+        return allocatedIndex.length > 0 && _owner == allocatedIndex[allocated[_owner].index];
     }
 
 
@@ -614,7 +614,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @return Whether `_proposedAddress` is already proposed 
      */
     function isProposed(address _proposedAddress) public constant returns (bool) {
-        return proposalIndex.length &gt; 0 &amp;&amp; _proposedAddress == proposalIndex[proposals[_proposedAddress].index];
+        return proposalIndex.length > 0 && _proposedAddress == proposalIndex[proposals[_proposedAddress].index];
     }
 
 
@@ -674,7 +674,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      */
     function hasVoted(address _proposedAddress, address _account) public constant returns (bool) {
         bool voted = false;
-        if (getVoteCount(_proposedAddress) &gt; 0) {
+        if (getVoteCount(_proposedAddress) > 0) {
             Proposal storage p = proposals[_proposedAddress];
             voted = p.voteIndex[p.votes[_account].index] == _account;
         }
@@ -762,11 +762,11 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
         Proposal storage p = proposals[_proposedAddress];
         bool supported = false;
 
-        if (!_strict || now &gt; p.createdTimestamp + VOTING_DURATION) {
+        if (!_strict || now > p.createdTimestamp + VOTING_DURATION) {
             var (support, reject) = getVotingResult(_proposedAddress);
-            supported = support &gt; reject;
+            supported = support > reject;
             if (supported) {
-                supported = support + reject &gt;= getTotalSupply() * MIN_QUORUM / 100;
+                supported = support + reject >= getTotalSupply() * MIN_QUORUM / 100;
             }
         }
         
@@ -796,7 +796,7 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
         IMultiOwned(drpsToken).removeOwner(this);
         IMultiOwned(drpuToken).removeOwner(this);
 
-        // Transfer Eth (safe because we don&#39;t know how much gas is used counting votes)
+        // Transfer Eth (safe because we don't know how much gas is used counting votes)
         uint balanceBefore = _acceptedAddress.balance;
         uint balanceToSend = this.balance;
         _acceptedAddress.transfer(balanceToSend);
@@ -848,8 +848,8 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
         Balance storage b = allocated[msg.sender];
 
         // Require sufficient balance
-        require(b.drps &gt;= _value);
-        require(b.drps - _value &lt;= b.drps);
+        require(b.drps >= _value);
+        require(b.drps - _value <= b.drps);
 
         // Update balance
         b.drps -= _value;
@@ -874,8 +874,8 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
         Balance storage b = allocated[msg.sender];
 
         // Require sufficient balance
-        require(b.drpu &gt;= _value);
-        require(b.drpu - _value &lt;= b.drpu);
+        require(b.drpu >= _value);
+        require(b.drpu - _value <= b.drpu);
 
         // Update balance
         b.drpu -= _value;
@@ -912,9 +912,9 @@ contract DcorpProxy is TokenObserver, TransferableOwnership, TokenRetriever {
      * @param _increase Indicated whether the weight is increased or decreased
      */
     function _adjustWeight(address _owner, uint _value, bool _increase) private {
-        for (uint i = proposalIndex.length; i &gt; 0; i--) {
+        for (uint i = proposalIndex.length; i > 0; i--) {
             Proposal storage p = proposals[proposalIndex[i - 1]];
-            if (now &gt; p.createdTimestamp + VOTING_DURATION) {
+            if (now > p.createdTimestamp + VOTING_DURATION) {
                 break; // Last active proposal
             }
 

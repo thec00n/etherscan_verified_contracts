@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
  _    _      _                              _        
 | |  | |    | |                            | |       
 | |  | | ___| | ___ ___  _ __ ___   ___    | |_ ___  
-| |/\| |/ _ | |/ __/ _ \| &#39;_ ` _ \ / _ \   | __/ _ \ 
+| |/\| |/ _ | |/ __/ _ \| '_ ` _ \ / _ \   | __/ _ \ 
 \  /\  |  __| | (_| (_) | | | | | |  __/   | || (_) |
  \/  \/ \___|_|\___\___/|_| |_| |_|\___|    \__\___/            
 
@@ -14,7 +14,7 @@ $$ |   $$ |\__|  $$ |              $$ |                    $$ |
 $$ |   $$ |$$\ $$$$$$\    $$$$$$\  $$ |$$\   $$\  $$$$$$$\ $$ |  $$\ 
 \$$\  $$  |$$ |\_$$  _|   \____$$\ $$ |$$ |  $$ |$$  _____|$$ | $$  |
  \$$\$$  / $$ |  $$ |     $$$$$$$ |$$ |$$ |  $$ |$$ /      $$$$$$  / 
-  \$$$  /  $$ |  $$ |$$\ $$  __$$ |$$ |$$ |  $$ |$$ |      $$  _$$&lt;  
+  \$$$  /  $$ |  $$ |$$\ $$  __$$ |$$ |$$ |  $$ |$$ |      $$  _$$<  
    \$  /   $$ |  \$$$$  |\$$$$$$$ |$$ |\$$$$$$  |\$$$$$$$\ $$ | \$$\ 
     \_/    \__|   \____/  \_______|\__| \______/  \_______|\__|  \__|
 */
@@ -52,14 +52,14 @@ contract Vitaluck {
     }
     Bet[] bets;
 
-    mapping (address =&gt; uint) public ownerBetsCount;    // How many bets have this address made
+    mapping (address => uint) public ownerBetsCount;    // How many bets have this address made
 
     // Stats
     uint totalTickets;          // The total amount of bets
     uint256 amountWon;          // The total amount of ETH won by users
     uint256 amountPlayed;       // The total amount of ETH played by users
 
-    // The countdown time will be used to reset the winning number after 48 hours if there aren&#39;t any new winning number
+    // The countdown time will be used to reset the winning number after 48 hours if there aren't any new winning number
     uint cooldownTime = 1 days;
 
     // To track the current winner
@@ -79,11 +79,11 @@ contract Vitaluck {
     This is the main function of the game. 
     It is called when a player sends ETH to the contract or play using Metamask.
     It calculates the amount of tickets bought by the player (according to the amount received by the contract) and generates a random number for each ticket.
-    We keep the best number of all. -&gt; 1 ticket = 0.01 ETH 
+    We keep the best number of all. -> 1 ticket = 0.01 ETH 
     */
     function Play() public payable {
-        // We don&#39;t run the function if the player paid less than 0.01 ETH
-        require(msg.value &gt;= minBetValue);
+        // We don't run the function if the player paid less than 0.01 ETH
+        require(msg.value >= minBetValue);
         
         // If this is the first ticket ever
         if(totalTickets == 0) {
@@ -119,7 +119,7 @@ contract Vitaluck {
         currentJackpot = currentJackpot - MsgValue10Percent;
 
         // Now that we have the biggest number of the player we check if this is better than the previous winning number
-        if(_finalRandomNumber &gt; currentWinningNumber) {
+        if(_finalRandomNumber > currentWinningNumber) {
             
             // we update the cooldown time (when the cooldown time is expired, the owner will be able to reset the game)
             currentResetTimer = now + cooldownTime;
@@ -141,8 +141,8 @@ contract Vitaluck {
             bets.push(Bet(_finalRandomNumber, true, msg.sender, uint32(now), JackpotWon));
             NewPlay(msg.sender, _finalRandomNumber, true);
             
-            // If the user&#39;s number is equal to 100 we reset the max number
-            if(_finalRandomNumber &gt;= 900) {
+            // If the user's number is equal to 100 we reset the max number
+            if(_finalRandomNumber >= 900) {
                 // We reset the winning address and set the current winning number to 1 (the next player will have 99% of chances to win)
                 currentWinningAddress = address(this);
                 currentWinningNumber = 1;
@@ -183,7 +183,7 @@ contract Vitaluck {
     */
     function manuallyResetGame() public onlyCeo {
         // We verifiy that 24h have passed since the beginning of the game
-        require(currentResetTimer &lt; now);
+        require(currentResetTimer < now);
 
         // The current winning address wins the jackpot (he/she wins 90% of the balance, we keep 10% to fund the next turn)
         uint256 JackpotWon = currentJackpot - minBetValue;
@@ -236,7 +236,7 @@ contract Vitaluck {
     function GetUserBets(address _owner) external view returns(uint[]) {
         uint[] memory result = new uint[](ownerBetsCount[_owner]);
         uint counter = 0;
-        for (uint i = 0; i &lt; bets.length; i++) {
+        for (uint i = 0; i < bets.length; i++) {
           if (bets[i].player == _owner) {
             result[counter] = i;
             counter++;
@@ -248,7 +248,7 @@ contract Vitaluck {
     function GetLastBetUser(address _owner) external view returns(uint[]) {
         uint[] memory result = new uint[](ownerBetsCount[_owner]);
         uint counter = 0;
-        for (uint i = 0; i &lt; bets.length; i++) {
+        for (uint i = 0; i < bets.length; i++) {
           if (bets[i].player == _owner) {
             result[counter] = i;
             counter++;

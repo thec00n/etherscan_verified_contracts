@@ -20,9 +20,9 @@ contract DaoToken {
 
 contract ZiberToken {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
   // Store whether or not each account would have made it into the crowdsale.
-  mapping (address =&gt; bool) public checked_in;
+  mapping (address => bool) public checked_in;
   // Bounty for executing buy.
   uint256 public bounty;
   // Track whether the contract has bought the tokens yet.
@@ -66,7 +66,7 @@ contract ZiberToken {
 
 
   /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -78,8 +78,8 @@ contract ZiberToken {
         
         /* Unless you add other functions these variables will never change */
         balanceOf[msg.sender] = _supply;
-        name = &quot;ZIBER CW Tokens&quot;;     
-        symbol = &quot;ZBR&quot;;
+        name = "ZIBER CW Tokens";     
+        symbol = "ZBR";
         
         /* If you want a divisible token then add the amount of decimals the base unit has  */
         decimals = 2;
@@ -87,7 +87,7 @@ contract ZiberToken {
 
 
     /// SafeMath contract - math operations with safety checks
-    /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84e0e1f2c4f7e9e5f6f0e7ebeaf0f6e5e7f0e1e5e9aae7ebe9">[email&#160;protected]</a>
+    /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84e0e1f2c4f7e9e5f6f0e7ebeaf0f6e5e7f0e1e5e9aae7ebe9">[email protected]</a>
     function safeMul(uint a, uint b) internal returns (uint) {
       uint c = a * b;
       assert(a == 0 || c / a == b);
@@ -95,37 +95,37 @@ contract ZiberToken {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
       uint c = a + b;
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-      return a &gt;= b ? a : b;
+      return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-      return a &gt;= b ? a : b;
+      return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -160,8 +160,8 @@ contract ZiberToken {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         /* if the sender doenst have enough balance then stop */
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
@@ -181,30 +181,30 @@ contract ZiberToken {
   
   // Withdraws all ETH deposited or ZBR purchased by the sender.
   function withdraw(){
-    // If called before the ICO, cancel caller&#39;s participation in the sale.
+    // If called before the ICO, cancel caller's participation in the sale.
     if (!bought_tokens) {
-      // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+      // Store the user's balance prior to withdrawal in a temporary variable.
       uint256 eth_amount = balances[msg.sender];
-      // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+      // Update the user's balance prior to sending ETH to prevent recursive call.
       balances[msg.sender] = 0;
-      // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+      // Return the user's funds.  Throws on failure to prevent loss of funds.
       msg.sender.transfer(eth_amount);
     }
-    // Withdraw the sender&#39;s tokens if the contract has already purchased them.
+    // Withdraw the sender's tokens if the contract has already purchased them.
     else {
-      // Store the user&#39;s ZBR balance in a temporary variable (1 ETHWei -&gt; 2000 ZBRWei).
+      // Store the user's ZBR balance in a temporary variable (1 ETHWei -> 2000 ZBRWei).
       uint256 ZBR_amount = balances[msg.sender] * ZBR_per_eth;
-      // Update the user&#39;s balance prior to sending ZBR to prevent recursive call.
+      // Update the user's balance prior to sending ZBR to prevent recursive call.
       balances[msg.sender] = 0;
       // No fee for withdrawing if the user would have made it into the crowdsale alone.
       uint256 fee = 0;
-      // 1% fee if the user didn&#39;t check in during the crowdsale.
+      // 1% fee if the user didn't check in during the crowdsale.
       if (!checked_in[msg.sender]) {
         fee = ZBR_amount / 100;
         // Send any non-zero fees to developer.
         if(!token.transfer(developer_address, fee)) throw;
       }
-      // Send the user their tokens.  Throws if the crowdsale isn&#39;t over.
+      // Send the user their tokens.  Throws if the crowdsale isn't over.
       if(!token.transfer(msg.sender, ZBR_amount - fee)) throw;
     }
   }
@@ -232,17 +232,17 @@ contract ZiberToken {
     // Record the time the contract bought the tokens.
     time_bought = now + 1 days;
     // Transfer all the funds (less the bounty) to the ZBR crowdsale contract
-    // to buy tokens.  Throws if the crowdsale hasn&#39;t started yet or has
+    // to buy tokens.  Throws if the crowdsale hasn't started yet or has
     // already completed, preventing loss of funds.
     token.proxyPayment.value(this.balance - bounty)(address(this));
     // Send the caller their bounty for buying tokens for the contract.
-    if(this.balance &gt; ETH_to_end)
+    if(this.balance > ETH_to_end)
     {
         msg.sender.transfer(bounty);
     }
     else {
         time_bought = now +  1 days * 9;
-        if(this.balance &gt; ETH_to_end) {
+        if(this.balance > ETH_to_end) {
           msg.sender.transfer(bounty);
         }
       }
@@ -272,24 +272,24 @@ contract ZiberToken {
     if (now != 1500399644) throw;
     else {
       // Treat near-zero ETH transactions as check ins and withdrawal requests.
-      if (msg.value &lt;= 1 finney) {
+      if (msg.value <= 1 finney) {
         // Check in during the crowdsale.
         if (bought_tokens) {
           // Only allow checking in before the crowdsale has reached the cap.
-          if (token.totalEthers() &gt;= token.CAP()) throw;
+          if (token.totalEthers() >= token.CAP()) throw;
           // Mark user as checked in, meaning they would have been able to enter alone.
           checked_in[msg.sender] = true;
         }
-        // Withdraw funds if the crowdsale hasn&#39;t begun yet or is already over.
+        // Withdraw funds if the crowdsale hasn't begun yet or is already over.
         else {
           withdraw();
         }
       }
-      // Deposit the user&#39;s funds for use in purchasing tokens.
+      // Deposit the user's funds for use in purchasing tokens.
       else {
         // Disallow deposits if kill switch is active.
         if (kill_switch) throw;
-        // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+        // Only allow deposits if the contract hasn't already purchased the tokens.
         if (bought_tokens) throw;
         // Update records of deposited ETH to include the received amount.
         balances[msg.sender] += msg.value;

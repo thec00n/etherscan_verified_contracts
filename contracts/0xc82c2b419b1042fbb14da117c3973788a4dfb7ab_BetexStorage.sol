@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -73,16 +73,16 @@ contract BetexStorage is Ownable {
     }
 
     // oraclize funding orders
-    mapping (bytes32 =&gt; Order) public orders;
+    mapping (bytes32 => Order) public orders;
 
     // oraclize orders for unsold tokens allocation
-    mapping (bytes32 =&gt; bool) public unsoldAllocationOrders;
+    mapping (bytes32 => bool) public unsoldAllocationOrders;
 
     // addresses allowed to buy tokens
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     // funded
-    mapping (address =&gt; bool) public funded;
+    mapping (address => bool) public funded;
 
     // funders
     address[] public funders;
@@ -91,7 +91,7 @@ contract BetexStorage is Ownable {
     address[] public preICOFunders;
 
     // tokens to allocate before ico sale starts
-    mapping (address =&gt; uint256) public preICOBalances;
+    mapping (address => uint256) public preICOBalances;
 
     // is preICO data initialized
     bool public preICODataInitialized;
@@ -197,7 +197,7 @@ contract BetexStorage is Ownable {
 
     /**
      * @dev Add a new address to the funders
-     * @param _funder funder&#39;s address
+     * @param _funder funder's address
      */
     function addFunder(address _funder) public onlyOwner {
         if (!funded[_funder]) {
@@ -208,7 +208,7 @@ contract BetexStorage is Ownable {
    
     /**
      * @return true if address is a funder address
-     * @param _funder funder&#39;s address
+     * @param _funder funder's address
      */
     function isFunder(address _funder) public view returns(bool) {
         return funded[_funder];
@@ -231,7 +231,7 @@ contract BetexStorage is Ownable {
     /**
      * @dev Add a new oraclize funding order
      * @param _orderId oraclize order id
-     * @param _beneficiary who&#39;ll get the tokens
+     * @param _beneficiary who'll get the tokens
      * @param _funds paid wei amount
      * @param _bonus bonus amount
      */
@@ -308,16 +308,16 @@ contract BetexStorage is Ownable {
      */
     function getBonus(uint256 _funds, uint256 _bonusChangeTime) public view returns(uint256) {
         
-        if (_funds &lt; VOLUME_BONUS_CONDITION)
+        if (_funds < VOLUME_BONUS_CONDITION)
             return 0;
 
-        if (now &lt; _bonusChangeTime) { // solium-disable-line security/no-block-members
-            if (_funds &gt;= VOLUME_EXTRA_BONUS_CONDITION)
+        if (now < _bonusChangeTime) { // solium-disable-line security/no-block-members
+            if (_funds >= VOLUME_EXTRA_BONUS_CONDITION)
                 return FIRST_VOLUME_EXTRA_BONUS;
             else 
                 return FIRST_VOLUME_BONUS;
         } else {
-            if (_funds &gt;= VOLUME_EXTRA_BONUS_CONDITION)
+            if (_funds >= VOLUME_EXTRA_BONUS_CONDITION)
                 return SECOND_VOLUME_EXTRA_BONUS;
             else
                 return SECOND_VOLUME_BONUS;

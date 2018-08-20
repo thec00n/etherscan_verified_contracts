@@ -22,7 +22,7 @@ contract ERC20Token{
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable{
   address public owner;
@@ -91,14 +91,14 @@ contract Safe is Ownable {
     // Check if it is safe to add two numbers
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     // Check if it is safe to subtract two numbers
     function safeSubtract(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a - b;
-        assert(b &lt;= a &amp;&amp; c &lt;= a);
+        assert(b <= a && c <= a);
         return c;
     }
     // Check if it is safe to multiply two numbers
@@ -114,20 +114,20 @@ contract Safe is Ownable {
     }
 }
 
-// Adapted from zeppelin-solidity&#39;s BasicToken, StandardToken and BurnableToken contracts
+// Adapted from zeppelin-solidity's BasicToken, StandardToken and BurnableToken contracts
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/ERC20/BasicToken.sol
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/ERC20/StandardToken.sol
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/ERC20/BurnableToken.sol
 contract imaxChainToken is Safe, ERC20Token {
-    string public constant name = &#39;Inverstment Management Asset Exchange&#39;;              // Set the token name for display
-    string public constant symbol = &#39;IMAX&#39;;                                  // Set the token symbol for display
+    string public constant name = 'Inverstment Management Asset Exchange';              // Set the token name for display
+    string public constant symbol = 'IMAX';                                  // Set the token symbol for display
     uint8 public constant decimals = 18;                                     // Set the number of decimals for display
     uint256 public constant INITIAL_SUPPLY = 1e9 * 10**uint256(decimals);
     uint256 public totalSupply;
-    string public version = &#39;1&#39;;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) freeze;
+    string public version = '1';
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) freeze;
 
     event Burn(address indexed burner, uint256 value);
     
@@ -145,7 +145,7 @@ contract imaxChainToken is Safe, ERC20Token {
     function transfer(address _to, uint256 _value)  whenNotPaused whenNotFreeze public returns (bool success) {
         require(_to != address(this));
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -156,8 +156,8 @@ contract imaxChainToken is Safe, ERC20Token {
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused whenNotFreeze public returns (bool success) {
         require(_to != address(this));
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = safeSubtract(balances[_from],_value);
         balances[_to] = safeAdd(balances[_to],_value);
@@ -203,7 +203,7 @@ contract imaxChainToken is Safe, ERC20Token {
    */
     function decreaseApproval(address _spender, uint _subtractedValue) whenNotFreeze public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = safeSubtract(oldValue,_subtractedValue);
@@ -234,7 +234,7 @@ contract imaxChainToken is Safe, ERC20Token {
     }
 
     function burn(uint256 _value) public {
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
       address burner = msg.sender;
       balances[burner] = safeSubtract(balances[burner],_value);
       totalSupply = safeSubtract(totalSupply, _value);
@@ -245,10 +245,10 @@ contract imaxChainToken is Safe, ERC20Token {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 

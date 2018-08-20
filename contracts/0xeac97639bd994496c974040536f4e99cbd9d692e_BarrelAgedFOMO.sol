@@ -117,12 +117,12 @@ contract BarrelAgedFOMO {
     */
 
     //first step of any good idea is a name 
-    string public constant name = &quot;Barrel Aged FOMO&quot;;
+    string public constant name = "Barrel Aged FOMO";
     //and of course after a name, we need a code name.
-    string public constant symbol = &quot;BARF&quot;;
+    string public constant symbol = "BARF";
     //Then determine brewing capacity
     uint256 public totalSupply = 1000;
-    //get all of that&#39;s devil&#39;s cut
+    //get all of that's devil's cut
     uint8 public constant decimals = 0;
 
 
@@ -134,8 +134,8 @@ contract BarrelAgedFOMO {
 
     //Then some overhead
     address public owner;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
@@ -210,7 +210,7 @@ contract BarrelAgedFOMO {
 ......................,NMMMMMMMMMMMMMMMMMMMMMMMMMO$,....................MNMMMMMM
 .......................$MMMMMMMMMMMMMMMMMMMMMMMMMMOD............................
 
-        Damn that&#39;s good!
+        Damn that's good!
 
         */
         balances[0xFFd2ac3C389EDB3DF325f2f1df9364b01F0D7fe5] += 10; // brewmaster samples
@@ -219,7 +219,7 @@ contract BarrelAgedFOMO {
 
     
 
-    /* Now it&#39;s time to send you the good stuff
+    /* Now it's time to send you the good stuff
 
 
 ................................~++??I777+7I77I+................................
@@ -349,7 +349,7 @@ contract BarrelAgedFOMO {
     function () public payable {
         //CheckInventory();
         numBrews = div(div(msg.value,ETH_Rate)*ETH_Rate_Factor,WeiinEth);
-        require(numBrews &gt; 0 &amp;&amp; balances[this] &gt;= numBrews);
+        require(numBrews > 0 && balances[this] >= numBrews);
         balances[msg.sender] += numBrews;
         balances[this] -= numBrews;
         owner.transfer(msg.value);
@@ -442,8 +442,8 @@ contract BarrelAgedFOMO {
     }
 
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -454,10 +454,10 @@ contract BarrelAgedFOMO {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -541,9 +541,9 @@ contract BarrelAgedFOMO {
     */
   
     function div(uint256 a, uint256 b) public pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 }

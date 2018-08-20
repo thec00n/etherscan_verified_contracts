@@ -8,7 +8,7 @@ contract AlexTrebek
 
     function Answer(string response)
     public payable {
-        if (responseHash == keccak256(response) &amp;&amp; msg.value &gt; 1 ether) {
+        if (responseHash == keccak256(response) && msg.value > 1 ether) {
             msg.sender.transfer(address(this).balance);
         }
     }

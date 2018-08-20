@@ -6,7 +6,7 @@
 
 pragma solidity ^0.4.15;
 
-// import &quot;./Crowdsale.sol&quot;;
+// import "./Crowdsale.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -15,7 +15,7 @@ pragma solidity ^0.4.15;
 
 // pragma solidity ^0.4.15;
 
-// import &#39;zeppelin-solidity/contracts/math/SafeMath.sol&#39;;
+// import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 // pragma solidity ^0.4.18;
 
 
@@ -34,24 +34,24 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
-// import &quot;./Haltable.sol&quot;;
+// import "./Haltable.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -60,14 +60,14 @@ library SafeMath {
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/ownership/Ownable.sol&quot;;
+// import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 // pragma solidity ^0.4.18;
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,7 +124,7 @@ contract Haltable is Ownable {
   }
 
   modifier stopNonOwnersInEmergency {
-    if (halted &amp;&amp; msg.sender != owner) revert();
+    if (halted && msg.sender != owner) revert();
     _;
   }
 
@@ -145,7 +145,7 @@ contract Haltable is Ownable {
 
 }
 
-// import &quot;./PricingStrategy.sol&quot;;
+// import "./PricingStrategy.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -154,7 +154,7 @@ contract Haltable is Ownable {
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/ownership/Ownable.sol&quot;;
+// import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
  * Interface for defining crowdsale pricing.
@@ -197,7 +197,7 @@ contract PricingStrategy is Ownable {
   function calculatePrice(uint value, uint weiRaised, uint tokensSold, address msgSender, uint decimals) public constant returns (uint tokenAmount);
 }
 
-// import &quot;./FinalizeAgent.sol&quot;;
+// import "./FinalizeAgent.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -221,7 +221,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public constant returns (bool);
@@ -231,7 +231,7 @@ contract FinalizeAgent {
 
 }
 
-// import &quot;./FractionalERC20.sol&quot;;
+// import "./FractionalERC20.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -240,11 +240,11 @@ contract FinalizeAgent {
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/token/ERC20.sol&quot;;
+// import "zeppelin-solidity/contracts/token/ERC20.sol";
 // pragma solidity ^0.4.18;
 
 
-// import &#39;./ERC20Basic.sol&#39;;
+// import './ERC20Basic.sol';
 // pragma solidity ^0.4.18;
 
 
@@ -365,10 +365,10 @@ contract Crowdsale is Haltable {
   address public signerAddress;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -432,8 +432,8 @@ contract Crowdsale is Haltable {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if (startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if (startsAt >= endsAt) {
         revert();
     }
 
@@ -468,8 +468,8 @@ contract Crowdsale is Haltable {
 
     //get the eth cap for the time period
     uint currentFgcCap = getCurrentFgcCap();
-    if (tokenAmount &gt; currentFgcCap) {
-      // We don&#39;t allow more than the current cap
+    if (tokenAmount > currentFgcCap) {
+      // We don't allow more than the current cap
       revert();
     }
 
@@ -506,25 +506,25 @@ contract Crowdsale is Haltable {
   }
 
   function getCurrentFgcCap() public constant returns (uint) {
-    if (block.timestamp &lt; startsAt) 
+    if (block.timestamp < startsAt) 
       return maxEthPerAddress;
 
     uint timeSinceStart = block.timestamp.sub(startsAt);
     uint currentPeriod = timeSinceStart.div(TIME_PERIOD_IN_SEC).add(1);
 
-    if (currentPeriod &lt; 2) {
+    if (currentPeriod < 2) {
       return 5000 * 10**token.decimals();
     }
-    if (currentPeriod &gt; 2 &amp;&amp; currentPeriod &lt; 5) {
+    if (currentPeriod > 2 && currentPeriod < 5) {
       return 1000 * 10**token.decimals();
     }
-    if (currentPeriod &gt; 4 &amp;&amp; currentPeriod &lt; 6) {
+    if (currentPeriod > 4 && currentPeriod < 6) {
       return 500 * 10**token.decimals();
     }
-    if (currentPeriod &gt; 5 &amp;&amp; currentPeriod &lt; 9) {
+    if (currentPeriod > 5 && currentPeriod < 9) {
       return 200 * 10**token.decimals();
     }
-    if (currentPeriod &gt; 8 &amp;&amp; currentPeriod &lt; 11) {
+    if (currentPeriod > 8 && currentPeriod < 11) {
       return 100 * 10**token.decimals();
     }
 
@@ -651,7 +651,7 @@ contract Crowdsale is Haltable {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if (!finalizeAgent.isFinalizeAgent()) {
       revert();
     }
@@ -709,8 +709,8 @@ contract Crowdsale is Haltable {
    *
    */
   function setEndsAt(uint time) onlyOwner {
-    if (now &gt; time) {
-      revert(); // Don&#39;t change past
+    if (now > time) {
+      revert(); // Don't change past
     }
 
     endsAt = time;
@@ -725,7 +725,7 @@ contract Crowdsale is Haltable {
   function setPricingStrategy(PricingStrategy _pricingStrategy) onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if (!pricingStrategy.isPricingStrategy()) {
       revert();
     }
@@ -741,7 +741,7 @@ contract Crowdsale is Haltable {
   function setMultisig(address addr) public onlyOwner {
 
     // Change
-    if (investorCount &gt; MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
+    if (investorCount > MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
       revert();
     }
 
@@ -780,7 +780,7 @@ contract Crowdsale is Haltable {
    * @return true if the crowdsale has raised enough money to be a successful.
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -811,13 +811,13 @@ contract Crowdsale is Haltable {
       return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) 
       return State.Preparing;
-    else if (block.timestamp &lt; startsAt) 
+    else if (block.timestamp < startsAt) 
       return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) 
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) 
       return State.Funding;
     else if (isMinimumGoalReached()) 
       return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) 
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) 
       return State.Refunding;
     else 
       return State.Failure;
@@ -877,7 +877,7 @@ contract Crowdsale is Haltable {
   function assignTokens(address receiver, uint tokenAmount) private;
 }
 
-// import &quot;./ReleasableToken.sol&quot;;
+// import "./ReleasableToken.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -886,8 +886,8 @@ contract Crowdsale is Haltable {
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/ownership/Ownable.sol&quot;;
-// import &quot;zeppelin-solidity/contracts/token/ERC20.sol&quot;;
+// import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+// import "zeppelin-solidity/contracts/token/ERC20.sol";
 
 
 /**
@@ -902,7 +902,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -926,7 +926,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 

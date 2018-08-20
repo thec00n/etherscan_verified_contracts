@@ -9,24 +9,24 @@ contract SwordMaster{
     uint256 PSNH=5000;
     bool public initialized=false;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public swordLevel;
-    mapping (address =&gt; uint256) public claimedGolds;
-    mapping (address =&gt; uint256) public lastCollect;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public swordLevel;
+    mapping (address => uint256) public claimedGolds;
+    mapping (address => uint256) public lastCollect;
+    mapping (address => address) public referrals;
     uint256 public marketGolds;
     function SwordMaster() public{
         ceoAddress=msg.sender;
     }
     function upgradeSword(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; msg.sender!=ref){
+        if(referrals[msg.sender]==0 && msg.sender!=ref){
             referrals[msg.sender]=ref;
         }
         uint256 goldUsed=getMyGolds();
         uint256 newGold=SafeMath.div(goldUsed,GOLD_TO_COLLECT_1SWORD);
         uint256 remainGold = newGold % MIN_GOLD_TO_UPGRADE;
         newGold = SafeMath.sub(newGold,remainGold);
-        if(newGold &lt;=0){
+        if(newGold <=0){
             return;
         } // upgrade failed
         swordLevel[msg.sender]=SafeMath.add(swordLevel[msg.sender],newGold);
@@ -99,7 +99,7 @@ contract SwordMaster{
         return SafeMath.mul(secondsPassed,swordLevel[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -121,9 +121,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -131,7 +131,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -140,7 +140,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -26,7 +26,7 @@ contract PRNG_Challenge {
 
     // MODIFIERS
     modifier only_min_value() {
-        if (msg.value &lt; min_value) throw;
+        if (msg.value < min_value) throw;
         _
     }
     modifier only_no_value() {

@@ -35,15 +35,15 @@ contract IERC20Token {
 
 contract EstatiumToken is IERC20Token, Owned {
   
-	string public standard = &quot;Estatium token v1.0&quot;;
-	string public name = &quot;Estatium&quot;;
-	string public symbol = &quot;EST&quot;;
+	string public standard = "Estatium token v1.0";
+	string public name = "Estatium";
+	string public symbol = "EST";
 	uint8 public decimals = 18;
 	bool public tokenFrozen;
    
 	uint256 supply = 0;
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowances;
     address public distributor;
       
 	event Mint(address indexed _to, uint256 _value);
@@ -67,8 +67,8 @@ contract EstatiumToken is IERC20Token, Owned {
 
 	function transfer(address _to, uint256 _value) returns (bool success) {
 		require(canSendtokens(msg.sender));
-		require(balances[msg.sender] &gt;= _value);
-		require (balances[_to] + _value &gt; balances[_to]);
+		require(balances[msg.sender] >= _value);
+		require (balances[_to] + _value > balances[_to]);
 		
         balances[msg.sender] -= _value;
 		balances[_to] += _value;
@@ -93,9 +93,9 @@ contract EstatiumToken is IERC20Token, Owned {
    
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 		require(canSendtokens(msg.sender));  
-		require (balances[_from] &gt;= _value);
-		require (balances[_to] + _value &gt; balances[_to]);
-		require (_value &lt;= allowances[_from][msg.sender]);
+		require (balances[_from] >= _value);
+		require (balances[_to] + _value > balances[_to]);
+		require (_value <= allowances[_from][msg.sender]);
 
 		balances[_from] -= _value;
 		balances[_to] += _value;
@@ -119,7 +119,7 @@ contract EstatiumToken is IERC20Token, Owned {
 	}
 
     function burn(uint _value) {
-        require (balances[msg.sender] &gt;= _value);
+        require (balances[msg.sender] >= _value);
         require(canSendtokens(msg.sender));
 
         balances[msg.sender] -= _value;

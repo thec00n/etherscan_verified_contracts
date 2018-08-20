@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,7 +120,7 @@ contract Pausable is Ownable {
 contract BonumPreICO is Pausable{
     using SafeMath for uint;
 
-    string public constant name = &quot;Bonum PreICO&quot;;
+    string public constant name = "Bonum PreICO";
 
     uint public fiatValueMultiplier = 10**6;
     uint public tokenDecimals = 10**18;
@@ -151,21 +151,21 @@ contract BonumPreICO is Pausable{
     }
 
     function setEthUsdRate(uint rate) external onlyOwner {
-        require(rate &gt; 0);
+        require(rate > 0);
         ethUsdRate = rate;
     }
 
     modifier underCap(){
-        require(tokensSold &lt; uint(750000).mul(tokenDecimals));
+        require(tokensSold < uint(750000).mul(tokenDecimals));
         _;
     }
 
     modifier minimumAmount(){
-        require(msg.value.mul(ethUsdRate).div(fiatValueMultiplier.mul(1 ether)) &gt;= 100);
+        require(msg.value.mul(ethUsdRate).div(fiatValueMultiplier.mul(1 ether)) >= 100);
         _;
     }
 
-    mapping (address =&gt; uint) public investors;
+    mapping (address => uint) public investors;
 
     function() payable public whenNotPaused minimumAmount underCap{
         uint tokens = msg.value.mul(ethUsdRate).div(fiatValueMultiplier);

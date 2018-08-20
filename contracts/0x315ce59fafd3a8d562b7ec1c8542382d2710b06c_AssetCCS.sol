@@ -2,7 +2,7 @@ pragma solidity 0.4.19;
 /**
 * @title Cacao Shares TOKEN
 * @dev ERC-20 Token Standard Compliant
-* @notice Contact <span class="__cf_email__" data-cfemail="dbb2b8b49bb8bab8bab4a8b3baa9bea8f5b8b4b6">[email&#160;protected]</span>
+* @notice Contact <span class="__cf_email__" data-cfemail="dbb2b8b49bb8bab8bab4a8b3baa9bea8f5b8b4b6">[email protected]</span>
 * @author Fares A. Akel C.
 * ================================================
 * CACAO SHARES IS A DIGITAL ASSET
@@ -18,13 +18,13 @@ pragma solidity 0.4.19;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -94,10 +94,10 @@ contract admined { //This token contract is administered
 
    /**
     * @dev Function to unlock transfers
-    * @notice It&#39;s only possible to unlock the transfers
+    * @notice It's only possible to unlock the transfers
     */
     function setTransferLockFree() onlyAdmin public {
-        require(lockTransfer == true);// only if it&#39;s locked
+        require(lockTransfer == true);// only if it's locked
         lockTransfer = false;
         SetTransferLock(lockTransfer);
     }
@@ -117,8 +117,8 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -190,10 +190,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 */
 contract AssetCCS is ERC20Token {
     
-    string public name = &#39;Cacao Shares&#39;;
+    string public name = 'Cacao Shares';
     uint8 public decimals = 18;
-    string public symbol = &#39;CCS&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'CCS';
+    string public version = '1';
 
     function AssetCCS() public {
         

@@ -23,7 +23,7 @@ contract CatDestiny is Destiny {
         uint8 life;
     }
 
-    mapping (uint8 =&gt; Weight[32]) private matrix;
+    mapping (uint8 => Weight[32]) private matrix;
     
     function fight(bytes32 cat1, bytes32 cat2, bytes32 seed) public returns (bytes32 winner) {
         int256 life1 = getLife(cat1);
@@ -38,9 +38,9 @@ contract CatDestiny is Destiny {
         life1 -= (attack2 - (defense1 * 3) / 2);
         life2 -= (attack1 - (defense2 * 3) / 2);
         
-        if (life1 &lt; life2) {
+        if (life1 < life2) {
             winner = cat2;
-        } else if (life2 &lt; life1) {
+        } else if (life2 < life1) {
             winner = cat1;
         } else {
             winner = bytes32(0);
@@ -51,7 +51,7 @@ contract CatDestiny is Destiny {
         uint8 k = gen(dna, att);
         w = matrix[att][k];
         
-        if (w.attack == 0 &amp;&amp; w.defense == 0 &amp;&amp; w.life == 0) {
+        if (w.attack == 0 && w.defense == 0 && w.life == 0) {
             w = Weight({
                 attack: uint8(keccak256(k, att)),
                 defense: uint8(keccak256(k, att)),
@@ -61,7 +61,7 @@ contract CatDestiny is Destiny {
     }
     
     function gen(bytes32 dna, uint256 p) private pure returns (uint8) {
-        return uint8(bytes1((dna &lt;&lt; (248 - (p * 5)))) &amp; 0x1f);
+        return uint8(bytes1((dna << (248 - (p * 5)))) & 0x1f);
     }
     
     function CatDestinity() public {

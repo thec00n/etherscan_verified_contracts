@@ -8,7 +8,7 @@ contract EDProxy {
 
     function dtrade(address _callee, uint8 v1, uint8 v2, uint256[] uints,address[] addresses,bytes32[] b) public {
         
-        if (_callee.delegatecall(bytes4(keccak256(&quot;trade(address,uint256,address,uint256,uint256,uint256,address,uint8,bytes32,bytes32,uint256)&quot;)),
+        if (_callee.delegatecall(bytes4(keccak256("trade(address,uint256,address,uint256,uint256,uint256,address,uint8,bytes32,bytes32,uint256)")),
           addresses[0],
           uints[0],
           addresses[2],
@@ -21,7 +21,7 @@ contract EDProxy {
           b[2],
           uints[8]
           )) {
-        (_callee.delegatecall(bytes4(keccak256(&quot;trade(address,uint256,address,uint256,uint256,uint256,address,uint8,bytes32,bytes32,uint256)&quot;)),
+        (_callee.delegatecall(bytes4(keccak256("trade(address,uint256,address,uint256,uint256,uint256,address,uint8,bytes32,bytes32,uint256)")),
            addresses[1],
            uints[1],
            addresses[3],

@@ -1,4 +1,4 @@
-// &lt;ORACLIZE_API_LIB&gt;
+// <ORACLIZE_API_LIB>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -6,7 +6,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -19,7 +19,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -113,25 +113,25 @@ library oraclizeLib {
     public
     view
     returns(OraclizeAddrResolverI){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             return OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             return OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             return OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             return OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             return OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             return OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             return OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
         }
     }
@@ -161,7 +161,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oracle.query.value(price)(timestamp, datasource, arg);
     }
 
@@ -176,7 +176,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oracle.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
 
@@ -191,7 +191,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oracle.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
 
@@ -206,7 +206,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oracle.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
 
@@ -223,7 +223,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oracle.queryN.value(price)(timestamp, datasource, args);
     }
@@ -241,7 +241,7 @@ library oraclizeLib {
     returns (bytes32 id){
         OraclizeI oracle = oraclize();
         uint price = oracle.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oracle.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
@@ -263,7 +263,7 @@ library oraclizeLib {
         return oraclize().setCustomGasPrice(gasPrice);
     }
 
-    // setting to internal doesn&#39;t cause major increase in deployment and saves gas
+    // setting to internal doesn't cause major increase in deployment and saves gas
     // per use, for this tiny function
     function getCodeSize(address _addr)
     public
@@ -283,16 +283,16 @@ library oraclizeLib {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -305,15 +305,15 @@ library oraclizeLib {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -325,19 +325,19 @@ library oraclizeLib {
     returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }
@@ -361,11 +361,11 @@ library oraclizeLib {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
@@ -373,21 +373,21 @@ library oraclizeLib {
     internal
     pure
     returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c)
     internal
     pure
     returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b)
     internal
     pure
     returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -406,8 +406,8 @@ library oraclizeLib {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -416,7 +416,7 @@ library oraclizeLib {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
@@ -424,7 +424,7 @@ library oraclizeLib {
     internal
     pure
     returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -449,7 +449,7 @@ library oraclizeLib {
         // get correct cbor output length
         uint outputlen = 0;
         bytes[] memory elemArray = new bytes[](arrlen);
-        for (uint i = 0; i &lt; arrlen; i++) {
+        for (uint i = 0; i < arrlen; i++) {
             elemArray[i] = (bytes(arr[i]));
             outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
         }
@@ -458,20 +458,20 @@ library oraclizeLib {
         outputlen += byte(cborlen).length;
         bytes memory res = new bytes(outputlen);
 
-        while (byte(cborlen).length &gt; ctr) {
+        while (byte(cborlen).length > ctr) {
             res[ctr] = byte(cborlen)[ctr];
             ctr++;
         }
-        for (i = 0; i &lt; arrlen; i++) {
+        for (i = 0; i < arrlen; i++) {
             res[ctr] = 0x5F;
             ctr++;
-            for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                // if there&#39;s a bug with larger strings, this may be the culprit
+            for (uint x = 0; x < elemArray[i].length; x++) {
+                // if there's a bug with larger strings, this may be the culprit
                 if (x % 23 == 0) {
-                    uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                    uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                     elemcborlen += 0x40;
                     uint lctr = ctr;
-                    while (byte(elemcborlen).length &gt; ctr - lctr) {
+                    while (byte(elemcborlen).length > ctr - lctr) {
                         res[ctr] = byte(elemcborlen)[ctr - lctr];
                         ctr++;
                     }
@@ -485,15 +485,15 @@ library oraclizeLib {
         return res;
     }    
 }
-// &lt;/ORACLIZE_API_LIB&gt;
+// </ORACLIZE_API_LIB>
 
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46273427252e282f220628293222293268282332">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46273427252e282f220628293222293268282332">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -501,11 +501,11 @@ library oraclizeLib {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -520,7 +520,7 @@ library oraclizeLib {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -532,7 +532,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -571,23 +571,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -623,7 +623,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -646,18 +646,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         uint ptr = self._ptr - 31;
         uint end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -685,12 +685,12 @@ library strings {
      */
     function compare(slice self, slice other) internal pure returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         uint selfptr = self._ptr;
         uint otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -700,10 +700,10 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint256 mask = uint256(-1); // 0xffff...
-                if(shortest &lt; 32) {
+                if(shortest < 32) {
                   mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
                 }
-                uint256 diff = (a &amp; mask) - (b &amp; mask);
+                uint256 diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -742,18 +742,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             l = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             l = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             l = 3;
         } else {
             l = 4;
         }
 
         // Check for truncated codepoints
-        if (l &gt; self._len) {
+        if (l > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -793,33 +793,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         uint b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -843,7 +843,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -869,7 +869,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -898,7 +898,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -926,7 +926,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -955,8 +955,8 @@ library strings {
         uint ptr = selfptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -967,7 +967,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &gt;= end)
+                    if (ptr >= end)
                         return selfptr + selflen;
                     ptr++;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -978,7 +978,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
 
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -995,8 +995,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private pure returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -1007,7 +1007,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &lt;= selfptr)
+                    if (ptr <= selfptr)
                         return selfptr;
                     ptr--;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -1018,7 +1018,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -1140,7 +1140,7 @@ library strings {
      */
     function count(slice self, slice needle) internal pure returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -1182,20 +1182,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -1223,9 +1223,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -1233,7 +1233,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -1242,7 +1242,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1251,7 +1251,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -1338,7 +1338,7 @@ contract Pausable is Ownable {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Config is Pausable {
     // 配置信息
@@ -1368,7 +1368,7 @@ contract Config is Pausable {
         setNormalRoomMax(1 ether);
         setTripleRoomMin(1 ether);
         setTripleRoomMax(10 ether);
-        setRandomApiKey(&quot;50faa373-68a1-40ce-8da8-4523db62d42a&quot;);
+        setRandomApiKey("50faa373-68a1-40ce-8da8-4523db62d42a");
         setMinSet(3);
         setMaxSet(10);
         referrelFund = 10;
@@ -1457,14 +1457,14 @@ contract Config is Pausable {
     }
 
     function setTaxRate(uint value) public onlyOwner{
-        if(value == 0 || value &gt;= 1000){
+        if(value == 0 || value >= 1000){
             return;
         }
         taxRate = value;
     }
 
     function setReferralFund(uint value) public onlyOwner{
-        if(value == 0 || value &gt;= 1000){
+        if(value == 0 || value >= 1000){
             return;
         }
         referrelFund = value;
@@ -1480,7 +1480,7 @@ contract UserManager {
         address referral;       
     }
    
-    mapping (address =&gt; UserInfo) allUsers;
+    mapping (address => UserInfo) allUsers;
     
     
     function UserManager() public{        
@@ -1500,7 +1500,7 @@ contract UserManager {
     }
 
     function subOpenRoomCount (address player) internal {          
-        if(allUsers[player].openRoomCount &gt; 0){
+        if(allUsers[player].openRoomCount > 0){
             allUsers[player].openRoomCount--;
         }
     }
@@ -1508,7 +1508,7 @@ contract UserManager {
     function setReferral (address player,address referral) internal { 
         if(referral == 0)
             return;
-        if(allUsers[player].referral == 0 &amp;&amp; referral != player){
+        if(allUsers[player].referral == 0 && referral != player){
             allUsers[player].referral = referral;
         }
     }
@@ -1552,7 +1552,7 @@ contract RoomManager {
 
     uint[] roomIDList;
 
-    mapping (uint =&gt; RoomInfo) roomMapping;   
+    mapping (uint => RoomInfo) roomMapping;   
 
     uint _roomindex;
 
@@ -1568,7 +1568,7 @@ contract RoomManager {
         uint num1 = num123 / 100;
         uint num2 = (num123 % 100) / 10;
         uint num3 = num123 % 10;
-        if(num1 + num2 + num3 &gt; 10){
+        if(num1 + num2 + num3 > 10){
             return 1;
         }
         return 0;
@@ -1578,7 +1578,7 @@ contract RoomManager {
         uint num1 = num123 / 100;
         uint num2 = (num123 % 100) / 10;
         uint num3 = num123 % 10;
-        return (num1 == num2 &amp;&amp; num1 == num3);
+        return (num1 == num2 && num1 == num3);
     }
 
     
@@ -1617,7 +1617,7 @@ contract RoomManager {
         ret = true;
         // return 
         // need to pay tax?
-        if(room.balance &gt; room.initBalance){
+        if(room.balance > room.initBalance){
             uint256 tax = SafeMath.div(SafeMath.mul(room.balance,taxrate),1000);            
             room.balance -= tax;
             taxPayed = true;
@@ -1647,7 +1647,7 @@ contract RoomManager {
 
     // just check if can be rolled and update balance,not calculate here
     function tryRollRoom(address user,uint256 value,uint roomid) internal returns(bool)  {
-        if(value &lt;= 0){
+        if(value <= 0){
             return false;
         }
 
@@ -1664,10 +1664,10 @@ contract RoomManager {
         uint256 betValue = getBetValue(room.initBalance,room.balance,room.setCount);
 
         // if value less
-        if (value &lt; betValue){
+        if (value < betValue){
             return false;
         }
-        if(value &gt; betValue){
+        if(value > betValue){
             user.transfer(value - betValue);
             value = betValue;
         }
@@ -1736,7 +1736,7 @@ contract RoomManager {
         room.currentSet++;
         int256 winamount = -int256(room.lastBet);
         bool isTriple = isTripleNumber(num123);
-        isend = room.currentSet &gt;= room.setCount || isTriple;
+        isend = room.currentSet >= room.setCount || isTriple;
         if(isend){
             tax = SafeMath.div(SafeMath.mul(room.balance,taxrate),1000);
             room.balance -= tax; 
@@ -1776,7 +1776,7 @@ contract RoomManager {
     function deleteRoomByRoomID (uint roomID) internal {
         delete roomMapping[roomID];
         uint len = roomIDList.length;
-        for(uint i = 0;i &lt; len;i++){
+        for(uint i = 0;i < len;i++){
             if(roomIDList[i] == roomID){
                 roomIDList[i] = roomIDList[len - 1];
                 roomIDList.length--;
@@ -1787,7 +1787,7 @@ contract RoomManager {
 
     function deleteRoomByIndex (uint index) internal {    
         uint len = roomIDList.length;
-        if(index &gt; len - 1){
+        if(index > len - 1){
             return;
         }
         delete roomMapping[roomIDList[index]];
@@ -1797,15 +1797,15 @@ contract RoomManager {
 
     function getAllBalance() public view returns(uint256) {
         uint256 ret = 0;
-        for(uint i = 0;i &lt; roomIDList.length;i++){
+        for(uint i = 0;i < roomIDList.length;i++){
             ret += roomMapping[roomIDList[i]].balance;
         }
         return ret;
     }
     
     function returnAllRoomsBalance() internal {
-        for(uint i = 0;i &lt; roomIDList.length;i++){            
-            if(roomMapping[roomIDList[i]].balance &gt; 0){
+        for(uint i = 0;i < roomIDList.length;i++){            
+            if(roomMapping[roomIDList[i]].balance > 0){
                 roomMapping[roomIDList[i]].owner.transfer(roomMapping[roomIDList[i]].balance);
                 roomMapping[roomIDList[i]].balance = 0;
                 roomMapping[roomIDList[i]].status = roomEnded;
@@ -1814,8 +1814,8 @@ contract RoomManager {
     }
 
     function removeFreeRoom() internal {
-        for(uint i = 0;i &lt; roomIDList.length;i++){
-            if(roomMapping[roomIDList[i]].balance ==0 &amp;&amp; roomMapping[roomIDList[i]].status == roomEnded){
+        for(uint i = 0;i < roomIDList.length;i++){
+            if(roomMapping[roomIDList[i]].balance ==0 && roomMapping[roomIDList[i]].status == roomEnded){
                 deleteRoomByIndex(i);
                 removeFreeRoom();
                 return;
@@ -1828,7 +1828,7 @@ contract RoomManager {
     }
 
     function getRoomID(uint index) public view returns(uint)  {
-        if(index &gt; roomIDList.length){
+        if(index > roomIDList.length){
             return 0;
         }
         return roomIDList[index];
@@ -1837,7 +1837,7 @@ contract RoomManager {
     function getRoomInfo(uint index) public view 
         returns(uint roomID,address owner,uint setCount,
             uint256 balance,uint status,uint curSet,uint data) {
-        if(index &gt; roomIDList.length){
+        if(index > roomIDList.length){
             return;
         }
         roomID = roomMapping[roomIDList[index]].roomid;
@@ -1869,7 +1869,7 @@ contract DiceOffline is Config,RoomManager,UserManager {
         uint roomid;       
     }
 
-    mapping (bytes32 =&gt; BetInfo) rollingBet;
+    mapping (bytes32 => BetInfo) rollingBet;
     uint256 public allWagered;
     uint256 public allWon;
     uint    public allPlayCount;
@@ -1890,7 +1890,7 @@ contract DiceOffline is Config,RoomManager,UserManager {
 
     // 提现
     function withdraw(uint256 value) public onlyOwner{
-        if(getAvailableBalance() &lt; value){
+        if(getAvailableBalance() < value){
             emit withdraw_failed();
             return;
         }
@@ -1909,18 +1909,18 @@ contract DiceOffline is Config,RoomManager,UserManager {
         }
         BetInfo memory bet = BetInfo(msg.sender,result,msg.value,0);
        
-        if(bet.value &lt; minStake){
+        if(bet.value < minStake){
             bet.player.transfer(bet.value);
             emit bet_failed(bet.player,bet.value,result,0,0);
             return false;
         }
 
         uint256 maxBet = getAvailableBalance() / 10;
-        if(maxBet &gt; maxStake){
+        if(maxBet > maxStake){
             maxBet = maxStake;
         }
 
-        if(bet.value &gt; maxBet){
+        if(bet.value > maxBet){
             bet.player.transfer(SafeMath.sub(bet.value,maxBet));
             bet.value = maxBet;
         }
@@ -1939,19 +1939,19 @@ contract DiceOffline is Config,RoomManager,UserManager {
 
     // 如果setCount为0，表示大小
     function openRoom(uint setCount,uint roomData,address referral) public payable returns(bool) {
-        if(setCount &gt; 0 &amp;&amp; (setCount &gt; maxSet || setCount &lt; minSet)){
+        if(setCount > 0 && (setCount > maxSet || setCount < minSet)){
             emit evt_createRoomFailed(msg.sender);
             msg.sender.transfer(msg.value);
             return false;
         }
         uint256 minValue = normalRoomMin;
         uint256 maxValue = normalRoomMax;
-        if(setCount &gt; 0){
+        if(setCount > 0){
             minValue = tripleRoomMin;
             maxValue = tripleRoomMax;
         }
 
-        if(msg.value &lt; minValue || msg.value &gt; maxValue){
+        if(msg.value < minValue || msg.value > maxValue){
             emit evt_createRoomFailed(msg.sender);
             msg.sender.transfer(msg.value);
             return false;
@@ -2017,7 +2017,7 @@ contract DiceOffline is Config,RoomManager,UserManager {
 
     /*TLSNotary for oraclize call 
     function offlineCallback(bytes32 myid) internal {
-        uint num = uint256(keccak256(block.difficulty,now)) &amp; 216;
+        uint num = uint256(keccak256(block.difficulty,now)) & 216;
         uint num1 = num % 6 + 1;
         uint num2 = (num / 6) % 6 + 1;
         uint num3 = (num / 36) % 6 + 1;
@@ -2098,44 +2098,44 @@ contract DiceOnline is DiceOffline {
     
     function doOraclize(bool isSystem) internal returns(bytes32) {
         randomQueryID += 1;
-        string memory queryString1 = &quot;[URL] [&#39;json(https://api.random.org/json-rpc/1/invoke).result.random[\&quot;data\&quot;]&#39;, &#39;\\n{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\&quot;method\&quot;:\&quot;generateSignedIntegers\&quot;,\&quot;params\&quot;:{\&quot;apiKey\&quot;:\&quot;&quot;;
+        string memory queryString1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\"]', '\\n{\"jsonrpc\":\"2.0\",\"method\":\"generateSignedIntegers\",\"params\":{\"apiKey\":\"";
         string memory queryString2 = random_api_key;
-        string memory queryString3 = &quot;\&quot;,\&quot;n\&quot;:3,\&quot;min\&quot;:1,\&quot;max\&quot;:6},\&quot;id\&quot;:&quot;;
+        string memory queryString3 = "\",\"n\":3,\"min\":1,\"max\":6},\"id\":";
         string memory queryString4 = oraclizeLib.uint2str(randomQueryID);
-        string memory queryString5 = &quot;}&#39;]&quot;;
+        string memory queryString5 = "}']";
 
         string memory queryString1_2 = queryString1.toSlice().concat(queryString2.toSlice());
         string memory queryString1_2_3 = queryString1_2.toSlice().concat(queryString3.toSlice());
         string memory queryString1_2_3_4 = queryString1_2_3.toSlice().concat(queryString4.toSlice());
         string memory queryString1_2_3_4_5 = queryString1_2_3_4.toSlice().concat(queryString5.toSlice());
-        //emit logString(queryString1_2_3_4_5,&quot;queryString&quot;);
+        //emit logString(queryString1_2_3_4_5,"queryString");
         if(isSystem)
-            return oraclizeLib.oraclize_query(&quot;nested&quot;, queryString1_2_3_4_5,systemGasForOraclize);
+            return oraclizeLib.oraclize_query("nested", queryString1_2_3_4_5,systemGasForOraclize);
         else
-            return oraclizeLib.oraclize_query(&quot;nested&quot;, queryString1_2_3_4_5,gasForOraclize);
+            return oraclizeLib.oraclize_query("nested", queryString1_2_3_4_5,gasForOraclize);
     }
 
     /*TLSNotary for oraclize call */
     function __callback(bytes32 myid, string result, bytes proof) public onlyOraclize {
         /* keep oraclize honest by retrieving the serialNumber from random.org result */
         proof;
-        //emit logString(result,&quot;result&quot;);       
+        //emit logString(result,"result");       
         strings.slice memory sl_result = result.toSlice();
-        sl_result = sl_result.beyond(&quot;[&quot;.toSlice()).until(&quot;]&quot;.toSlice());        
+        sl_result = sl_result.beyond("[".toSlice()).until("]".toSlice());        
       
-        string memory numString = sl_result.split(&#39;, &#39;.toSlice()).toString();
+        string memory numString = sl_result.split(', '.toSlice()).toString();
         uint num1 = oraclizeLib.parseInt(numString);
-        numString = sl_result.split(&#39;, &#39;.toSlice()).toString();
+        numString = sl_result.split(', '.toSlice()).toString();
         uint num2 = oraclizeLib.parseInt(numString);
-        numString = sl_result.split(&#39;, &#39;.toSlice()).toString();
+        numString = sl_result.split(', '.toSlice()).toString();
         uint num3 = oraclizeLib.parseInt(numString);
-        if(num1 &lt; 1 || num1 &gt; 6){            
+        if(num1 < 1 || num1 > 6){            
             return;
         }
-        if(num2 &lt; 1 || num2 &gt; 6){            
+        if(num2 < 1 || num2 > 6){            
             return;
         }
-        if(num3 &lt; 1 || num3 &gt; 6){            
+        if(num3 < 1 || num3 > 6){            
             return;
         }        
         doCalculate(num1  * 100 + num2 * 10 + num3,myid);        

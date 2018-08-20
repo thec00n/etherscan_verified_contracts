@@ -21,37 +21,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -84,13 +84,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -134,13 +134,13 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -193,8 +193,8 @@ contract RKCToken is StandardToken, Ownable {
     using SafeMath for uint;
 
     //--------------   Info for ERC20 explorers  -----------------//
-    string public name = &quot;Royal Kingdom Coin&quot;;
-    string public symbol = &quot;RKC&quot;;
+    string public name = "Royal Kingdom Coin";
+    string public symbol = "RKC";
     uint public decimals = 18;
 
     //---------------------   Constants   ------------------------//
@@ -222,7 +222,7 @@ contract RKCToken is StandardToken, Ownable {
 
     //---------------------   Premiums   -------------------------//
     uint[] public premiumPacks;
-    mapping(address =&gt; uint) premiumPacksPaid;
+    mapping(address => uint) premiumPacksPaid;
 
     //----------------------   Events  ---------------------------//
     event ICOOpened();
@@ -236,7 +236,7 @@ contract RKCToken is StandardToken, Ownable {
     // Constructor
     function RKCToken() {
         // Some percentage of the tokens is already reserved by early employees and investors
-        // Here we&#39;re initializing their balances
+        // Here we're initializing their balances
         distributePreSoldShares();
 
         // Starting price
@@ -267,12 +267,12 @@ contract RKCToken is StandardToken, Ownable {
         // Deciding how many tokens can be bought with the ether received
         uint tokens = getAttoTokensAmountPerWeiInternal(msg.value);
 
-        // Don&#39;t allow to buy more than 1% per transaction (secures from huge investors swalling the whole thing in 1 second)
+        // Don't allow to buy more than 1% per transaction (secures from huge investors swalling the whole thing in 1 second)
         uint allowedInOneTransaction = current_supply / 100;
-        if (tokens &gt; allowedInOneTransaction) throw;
+        if (tokens > allowedInOneTransaction) throw;
 
         // Just in case
-        if (tokens &gt; balances[ico_address]) throw;
+        if (tokens > balances[ico_address]) throw;
 
         // Transfer from the ICO pool
         balances[ico_address] = balances[ico_address].sub(tokens); // if not enough, will throw
@@ -282,7 +282,7 @@ contract RKCToken is StandardToken, Ownable {
         uint old_price = current_price_atto_tokens_per_wei;
         current_price_atto_tokens_per_wei = calculateCurrentPrice(getAttoTokensBoughtInICO());
         if (current_price_atto_tokens_per_wei == 0) current_price_atto_tokens_per_wei = 1; // in case it is too small that it gets rounded to zero
-        if (current_price_atto_tokens_per_wei &gt; old_price) current_price_atto_tokens_per_wei = old_price; // in case some weird overflow happens
+        if (current_price_atto_tokens_per_wei > old_price) current_price_atto_tokens_per_wei = old_price; // in case some weird overflow happens
 
         // Broadcasting price change event
         if (old_price != current_price_atto_tokens_per_wei) PriceChanged(old_price, current_price_atto_tokens_per_wei);
@@ -334,7 +334,7 @@ contract RKCToken is StandardToken, Ownable {
     // ***************************************************************************
 
     // Some percentage of the tokens is already reserved by early employees and investors
-    // Here we&#39;re initializing their balances
+    // Here we're initializing their balances
     function distributePreSoldShares() onlyOwner {
         // Making it impossible to call this function twice
         if (preSoldSharesDistributed) throw;
@@ -402,14 +402,14 @@ contract RKCToken is StandardToken, Ownable {
     function sendPremiumPack(uint amount) onlyOwner allowedPayments(msg.sender, amount) {
         premiumPacks.length += 1;
         premiumPacks[premiumPacks.length-1] = amount;
-        balances[msg.sender] = balances[msg.sender].sub(amount); // will throw and revert the whole thing if doesn&#39;t have this amount
+        balances[msg.sender] = balances[msg.sender].sub(amount); // will throw and revert the whole thing if doesn't have this amount
     }
 
     function updatePremiums(address account) private {
-        if (premiumPacks.length &gt; premiumPacksPaid[account]) {
+        if (premiumPacks.length > premiumPacksPaid[account]) {
             uint startPackIndex = premiumPacksPaid[account];
             uint finishPackIndex = premiumPacks.length - 1;
-            for(uint i = startPackIndex; i &lt;= finishPackIndex; i++) {
+            for(uint i = startPackIndex; i <= finishPackIndex; i++) {
                 if (current_supply != 0) { // just in case
                     uint owing = balances[account] * premiumPacks[i] / current_supply;
                     balances[account] = balances[account].add(owing);
@@ -424,15 +424,15 @@ contract RKCToken is StandardToken, Ownable {
     // Overriding payment functions to take control over the logic
 
     modifier allowedPayments(address payer, uint value) {
-        // Don&#39;t allow to transfer coins until the ICO ends
+        // Don't allow to transfer coins until the ICO ends
         if (isICOOpened) throw;
         if (!isICOClosed) throw;
 
         // Limit the quick dump possibility
         uint diff = 0;
         uint allowed = 0;
-        if (balances[payer] &gt; current_supply / 100) { // for balances &gt; 1% of total supply
-            if (block.timestamp &gt; ICO_START_TIME) {
+        if (balances[payer] > current_supply / 100) { // for balances > 1% of total supply
+            if (block.timestamp > ICO_START_TIME) {
                 diff = block.timestamp - ICO_START_TIME;
             } else {
                 diff = ICO_START_TIME - block.timestamp;
@@ -440,7 +440,7 @@ contract RKCToken is StandardToken, Ownable {
 
             allowed = (current_supply / 20) * (diff / (60 * 60 * 24 * 30)); // 5% unlocked every month
 
-            if (value &gt; allowed) throw;
+            if (value > allowed) throw;
         }
 
         _;

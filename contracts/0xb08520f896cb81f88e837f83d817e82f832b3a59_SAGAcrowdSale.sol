@@ -46,7 +46,7 @@ contract ERC20Basic {
 
 contract SAGAcrowdSale is Ownable {
 	address  public SAGA;
-	mapping (address =&gt; bool) public whiteList;
+	mapping (address => bool) public whiteList;
 	uint256 public price = 80000;
 	
 	function SAGAcrowdSale (address _SAGA) {
@@ -55,7 +55,7 @@ contract SAGAcrowdSale is Ownable {
 	
 
 	function addWhiteList (address[] _client) onlyOwner {
-		for (uint i = 0; i &lt; _client.length; i++) {
+		for (uint i = 0; i < _client.length; i++) {
 			whiteList[_client[i]] = true;
 		}
 	}
@@ -66,7 +66,7 @@ contract SAGAcrowdSale is Ownable {
 
 	function buyTokens () public payable {
 		require (whiteList[msg.sender]);
-    require (msg.value &gt;= 0.1 ether);
+    require (msg.value >= 0.1 ether);
 		uint256 tokenAmount = msg.value * price;
 		require(ERC20Basic(SAGA).transfer(msg.sender, tokenAmount));
 	}

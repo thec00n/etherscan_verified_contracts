@@ -22,9 +22,9 @@ contract Owned {
 }
 
 contract RYC is Owned {
-  mapping (address =&gt; mapping (bool =&gt; bool)) public RegisteredAddress;
+  mapping (address => mapping (bool => bool)) public RegisteredAddress;
 
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
 
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
@@ -68,7 +68,7 @@ contract RYC is Owned {
   function register(address _addr, bool _isPresale)
     public
     OnlyAdmin {
-    require(_addr != address(0) &amp;&amp; RegisteredAddress[_addr][_isPresale] == false);
+    require(_addr != address(0) && RegisteredAddress[_addr][_isPresale] == false);
 
     RegisteredAddress[_addr][_isPresale] = true;
 
@@ -78,7 +78,7 @@ contract RYC is Owned {
   function RegisterList(address[] _addrs, bool _isPresale)
     public
     OnlyAdmin {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       register(_addrs[i], _isPresale);
     }
   }
@@ -95,7 +95,7 @@ contract RYC is Owned {
   function UnregisterList(address[] _addrs, bool _isPresale)
     public
     OnlyAdmin {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       Unregister(_addrs[i], _isPresale);
     }
   }

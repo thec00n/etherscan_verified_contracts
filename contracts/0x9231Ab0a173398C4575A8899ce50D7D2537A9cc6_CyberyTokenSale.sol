@@ -6,11 +6,11 @@ contract CyberyTokenSale {
     uint256 public totalContribution = 0;
     uint256 public totalSupply = 0;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
-    function name() constant returns (string) { return &quot;Cybery Token&quot;; }
-    function symbol() constant returns (string) { return &quot;CYB&quot;; }
+    function name() constant returns (string) { return "Cybery Token"; }
+    function symbol() constant returns (string) { return "CYB"; }
     function decimals() constant returns (uint8) { return 18; }
     
     function balanceOf(address _owner) constant returns (uint256) { 
@@ -23,14 +23,14 @@ contract CyberyTokenSale {
     // Math operations with safety checks that throw on error
     //returns the difference of a minus b, asserts if the subtraction results in a negative number
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     //returns the sum of a and b, asserts if the calculation overflows
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -44,7 +44,7 @@ contract CyberyTokenSale {
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -85,7 +85,7 @@ contract CyberyTokenSale {
     // approve has to be called twice in 2 separate transactions - 
     // once to change the allowance to 0 and secondly to change it to the new allowance value
     function approve(address _spender, uint256 _value) validAddress(_spender) returns (bool success) {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -99,12 +99,12 @@ contract CyberyTokenSale {
 
     // fallback function can be used to buy tokens
     function () payable validAddress(msg.sender) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         assert(purchasingAllowed);
         owner.transfer(msg.value); // send ether to the fund collection wallet
         totalContribution = safeAdd(totalContribution, msg.value);
         uint256 tokensIssued = (msg.value * 100);  
-        //if (msg.value &gt;= 10 finney) { tokensIssued += totalContribution; }
+        //if (msg.value >= 10 finney) { tokensIssued += totalContribution; }
         totalSupply = safeAdd(totalSupply, tokensIssued);
         balances[msg.sender] = safeAdd(balances[msg.sender], tokensIssued);
         balances[owner] = safeAdd(balances[owner], tokensIssued); // 50% in project

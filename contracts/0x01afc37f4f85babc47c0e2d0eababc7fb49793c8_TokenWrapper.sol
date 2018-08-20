@@ -1,14 +1,14 @@
 /*
    Copyright 2016 Nexus Development, LLC
 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
@@ -37,8 +37,8 @@ contract ERC20 is ERC20Constant, ERC20Stateful, ERC20Events {}
 
 contract ERC20Base is ERC20
 {
-    mapping( address =&gt; uint ) _balances;
-    mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals;
+    mapping( address => uint ) _balances;
+    mapping( address => mapping( address => uint ) ) _approvals;
     uint _supply;
     function ERC20Base( uint initial_balance ) {
         _balances[msg.sender] = initial_balance;
@@ -51,7 +51,7 @@ contract ERC20Base is ERC20
         return _balances[who];
     }
     function transfer( address to, uint value) returns (bool ok) {
-        if( _balances[msg.sender] &lt; value ) {
+        if( _balances[msg.sender] < value ) {
             throw;
         }
         if( !safeToAdd(_balances[to], value) ) {
@@ -63,12 +63,12 @@ contract ERC20Base is ERC20
         return true;
     }
     function transferFrom( address from, address to, uint value) returns (bool ok) {
-        // if you don&#39;t have enough balance, throw
-        if( _balances[from] &lt; value ) {
+        // if you don't have enough balance, throw
+        if( _balances[from] < value ) {
             throw;
         }
-        // if you don&#39;t have approval, throw
-        if( _approvals[from][msg.sender] &lt; value ) {
+        // if you don't have approval, throw
+        if( _approvals[from][msg.sender] < value ) {
             throw;
         }
         if( !safeToAdd(_balances[to], value) ) {
@@ -90,7 +90,7 @@ contract ERC20Base is ERC20
         return _approvals[owner][spender];
     }
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
 }
 
@@ -137,8 +137,8 @@ contract TokenWrapperEvents {
 // Deposits only accepted via broker!
 contract TokenWrapper is ERC20Base(0), TokenWrapperInterface, TokenWrapperEvents {
     ReducedToken _unwrapped;
-    mapping(address=&gt;address) _broker2owner;
-    mapping(address=&gt;address) _owner2broker;
+    mapping(address=>address) _broker2owner;
+    mapping(address=>address) _owner2broker;
     function TokenWrapper( ReducedToken unwrapped) {
         _unwrapped = unwrapped;
     }
@@ -165,7 +165,7 @@ contract TokenWrapper is ERC20Base(0), TokenWrapperInterface, TokenWrapperEvents
         _supply += amount;
     }
     function withdraw(uint amount) {
-        if( _balances[msg.sender] &lt; amount ) {
+        if( _balances[msg.sender] < amount ) {
             throw;
         }
         _balances[msg.sender] -= amount;

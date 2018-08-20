@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -101,8 +101,8 @@ contract ICSTCrowSale is Ownable{
 
 	function () payable external
 	{
-			require(now&gt;startTime);
-			require(now&lt;=endTime);
+			require(now>startTime);
+			require(now<=endTime);
 			uint256 amount=0;
 			processFunding(msg.sender,msg.value,rate);
 			amount=msg.value.mul(rate);
@@ -119,8 +119,8 @@ contract ICSTCrowSale is Ownable{
     	onlyOwner 
 	{
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= token.balanceOf(this));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= token.balanceOf(this));
+        for (uint256 i = 0; i < count; i++) {
 			processFunding(_holders [i],paySize,1);
 			airdropSupply = airdropSupply.add(paySize); 
         }
@@ -129,7 +129,7 @@ contract ICSTCrowSale is Ownable{
 	function processFunding(address receiver,uint256 _value,uint256 _rate) internal
 	{
 		uint256 amount=_value.mul(_rate);
-		require(amount&lt;=token.balanceOf(this));
+		require(amount<=token.balanceOf(this));
 		if(!token.transfer(receiver,amount)){
 			revert();
 		}

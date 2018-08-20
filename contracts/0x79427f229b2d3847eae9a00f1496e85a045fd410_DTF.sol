@@ -7,10 +7,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -18,7 +18,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -107,16 +107,16 @@ contract DTF is ERC20, Owned, SafeMath {
     ERC20 public omg;
     ERC20 public ieth;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;DTF&quot;;
-        name = &quot;Decentralized Token Fund&quot;;
+        symbol = "DTF";
+        name = "Decentralized Token Fund";
         decimals = 18;
         _totalSupply = 0;
         balances[owner] = _totalSupply;
@@ -149,8 +149,8 @@ contract DTF is ERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -172,7 +172,7 @@ contract DTF is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -205,7 +205,7 @@ contract DTF is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -213,7 +213,7 @@ contract DTF is ERC20, Owned, SafeMath {
 
 
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         (uint kncExpectedPrice,) = kyber.getExpectedRate(ieth, knc, msg.value);
         (uint omgExpectedPrice,) = kyber.getExpectedRate(ieth, omg, msg.value);
         uint tmp = safeAdd(kncExpectedPrice, omgExpectedPrice);
@@ -222,19 +222,19 @@ contract DTF is ERC20, Owned, SafeMath {
         uint kncCount = kyber.trade.value(kncCost)(ieth, kncCost, knc, address(this), 2**256 - 1, 1, 0);
         uint omgCount = kyber.trade.value(omgCost)(ieth, omgCost, omg, address(this), 2**256 - 1, 1, 0);
         uint totalCount = 0;
-        if (kncCount &lt; omgCount) {
+        if (kncCount < omgCount) {
             totalCount = kncCount;
         } else {
             totalCount = omgCount;
         }
-        require(totalCount &gt; 0);
+        require(totalCount > 0);
         balances[msg.sender] = safeAdd(balances[msg.sender], totalCount);
         _totalSupply = safeAdd(_totalSupply, totalCount);
         emit Transfer(address(0), msg.sender, totalCount);
     }
 
     function getExpectedRate(uint value) public view returns (uint, uint, uint, uint) {
-        require(value &gt; 0);
+        require(value > 0);
         (uint kncExpectedPrice,) = kyber.getExpectedRate(ieth, knc, value);
         (uint omgExpectedPrice,) = kyber.getExpectedRate(ieth, omg, value);
         uint totalExpectedPrice = safeDiv(safeMul(kncExpectedPrice, omgExpectedPrice), safeAdd(kncExpectedPrice, omgExpectedPrice));

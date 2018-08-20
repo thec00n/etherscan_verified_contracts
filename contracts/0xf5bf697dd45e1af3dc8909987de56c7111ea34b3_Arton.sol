@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 contract Arton {
 
-    string public name = &quot;Arton&quot;;
-    string public symbol = &quot;ARX&quot;;
+    string public name = "Arton";
+    string public symbol = "ARX";
     uint256 public decimals = 6;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 100000000000000000;
     
@@ -20,8 +20,8 @@ contract Arton {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -29,9 +29,9 @@ contract Arton {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

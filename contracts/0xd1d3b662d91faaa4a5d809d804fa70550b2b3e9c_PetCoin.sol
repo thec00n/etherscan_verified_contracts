@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ee8a8f988bae8f8581838c8fc08d8183">[email&#160;protected]</a>
+// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ee8a8f988bae8f8581838c8fc08d8183">[email protected]</a>
 // released under Apache 2.0 licence
 library SafeMath {
 
@@ -12,8 +12,8 @@ library SafeMath {
     pure
     returns (uint256 c)
   {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -32,9 +32,9 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
     returns (uint256 c)
   {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -124,9 +124,9 @@ contract StandardToken is ERC20 {
 
   uint256 totalSupply_;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+  mapping(address => mapping(address => uint256)) internal allowed;
 
   /**
   * @dev Total number of tokens in existence
@@ -148,7 +148,7 @@ contract StandardToken is ERC20 {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -183,8 +183,8 @@ contract StandardToken is ERC20 {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -198,7 +198,7 @@ contract StandardToken is ERC20 {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -259,7 +259,7 @@ contract StandardToken is ERC20 {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -295,8 +295,8 @@ contract PetCoin is StandardToken, Owned {
   using SafeMath for uint256;
 
   // Token metadata
-  string public constant name = &quot;Petcoin&quot;;
-  string public constant symbol = &quot;PETC&quot;;
+  string public constant name = "Petcoin";
+  string public constant symbol = "PETC";
   uint256 public constant decimals = 18;
 
   // Token supply breakdown
@@ -321,7 +321,7 @@ contract PetCoin is StandardToken, Owned {
   uint16 public mintStartYear = 2019;
   uint16 public mintEndYear = 2118;
 
-  mapping (uint16 =&gt; bool) minted;
+  mapping (uint16 => bool) minted;
 
 
   constructor()
@@ -365,7 +365,7 @@ contract PetCoin is StandardToken, Owned {
     returns (bool)
   {
     uint16 year = _getYear(now);
-    require (year &gt;= mintStartYear &amp;&amp; year &lt;= mintEndYear &amp;&amp; !minted[year]);
+    require (year >= mintStartYear && year <= mintEndYear && !minted[year]);
     require (_to != address(0));
 
     totalSupply_ = totalSupply_.add(yearlyMintCap);
@@ -397,7 +397,7 @@ contract PetCoin is StandardToken, Owned {
     secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
     secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-    while (secondsAccountedFor &gt; timestamp) {
+    while (secondsAccountedFor > timestamp) {
       if (_isLeapYear(uint16(year - 1))) {
         secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
       }
@@ -466,7 +466,7 @@ contract PetCoinCrowdSale is Owned {
   }
 
   // Enum as mapping key not supported by Solidity yet
-  mapping(uint256 =&gt; Stage) public stages;
+  mapping(uint256 => Stage) public stages;
 
   /**
    * Event for token purchase logging
@@ -600,9 +600,9 @@ contract PetCoinCrowdSale is Owned {
     payable
     saleInProgress
   {
-    require(stages[uint256(state)].rate &gt; 0);
-    require(stages[uint256(state)].remaining &gt; 0);
-    require(msg.value &gt; 0);
+    require(stages[uint256(state)].rate > 0);
+    require(stages[uint256(state)].remaining > 0);
+    require(msg.value > 0);
 
     uint256 weiAmount = msg.value;
     uint256 refund = 0;
@@ -610,7 +610,7 @@ contract PetCoinCrowdSale is Owned {
     // calculate token amount to be created
     uint256 tokens = weiAmount.mul(stages[uint256(state)].rate);
 
-    if (tokens &gt; stages[uint256(state)].remaining) {
+    if (tokens > stages[uint256(state)].remaining) {
       // calculate wei needed to purchase the remaining tokens
       tokens = stages[uint256(state)].remaining;
       weiAmount = tokens.div(stages[uint256(state)].rate);
@@ -628,7 +628,7 @@ contract PetCoinCrowdSale is Owned {
 
     // update remaining of the stage
     stages[uint256(state)].remaining -= tokens;
-    assert(stages[uint256(state)].remaining &gt;= 0);
+    assert(stages[uint256(state)].remaining >= 0);
 
     if (stages[uint256(state)].remaining == 0) {
       _moveStage();
@@ -640,7 +640,7 @@ contract PetCoinCrowdSale is Owned {
     // forward ETH to the wallet
     _forwardFunds(weiAmount);
 
-    if (refund &gt; 0) { // refund the purchaser if required
+    if (refund > 0) { // refund the purchaser if required
       msg.sender.transfer(refund);
       emit Refund(
         msg.sender,

@@ -33,7 +33,7 @@ contract Bank {
     address private operator ;
     BankAccount[] private availableAddresses;
     Token[] private tokens;
-    mapping(uint256 =&gt; address) private assignments ;
+    mapping(uint256 => address) private assignments ;
 
     uint256 public firstFreeAddressIndex = 0;
 
@@ -55,10 +55,10 @@ contract Bank {
             uint256 j = startTok;
             if(j==0) j=1;
             uint256 counter =0;
-            for(i;i&lt;availableAddresses.length &amp;&amp; counter&lt;100;i++){
-                for(j;j&lt;tokens.length &amp;&amp; counter&lt;100;j++){
+            for(i;i<availableAddresses.length && counter<100;i++){
+                for(j;j<tokens.length && counter<100;j++){
                     counter++;
-                    if(tokens[j].balanceOf(availableAddresses[i])&gt;0){
+                    if(tokens[j].balanceOf(availableAddresses[i])>0){
                         return (i,j,true);
                     }
                 }
@@ -116,7 +116,7 @@ contract Bank {
 
     function AssignAddress(uint256 holderId) public{
         if(msg.sender==owner || msg.sender==operator){
-            if(assignments[holderId]!=0){ // nie można stworzyć 2 adres&#243;w dla jednego klienta
+            if(assignments[holderId]!=0){ // nie można stworzyć 2 adresów dla jednego klienta
     
             }
             else{

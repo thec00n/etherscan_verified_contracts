@@ -19,13 +19,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,8 +59,8 @@ interface tokenRecipient {
 contract LDX is owned {
     using SafeMath for uint256;
 
-    string public name = &quot;LeadRex&quot;;
-    string public symbol = &quot;LDX&quot;;
+    string public name = "LeadRex";
+    string public symbol = "LDX";
     uint8 public decimals = 18;
     uint256 DEC = 10 ** uint256(decimals);
     uint256 public totalSupply = 135900000 * DEC;
@@ -83,11 +83,11 @@ contract LDX is owned {
     }
 
     struct Deposited {
-        mapping(address =&gt; uint256) _deposited;
+        mapping(address => uint256) _deposited;
     }
 
-    mapping(uint =&gt; Round) public roundInfo;
-    mapping(uint =&gt; Deposited) allDeposited;
+    mapping(uint => Round) public roundInfo;
+    mapping(uint => Deposited) allDeposited;
 
     Round public currentRound;
 
@@ -165,8 +165,8 @@ contract LDX is owned {
         currentRound = roundInfo[0];
     }
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -184,7 +184,7 @@ contract LDX is owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) transferredIsOn public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -214,8 +214,8 @@ contract LDX is owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to].add(_value) &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to].add(_value) >= balanceOf[_to]);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -223,13 +223,13 @@ contract LDX is owned {
 
     function buyTokens(address beneficiary) payable public {
         require(state == State.Active);
-        require(msg.value &gt;= currentRound._minValue);
-        require(currentRound._rate &gt; 0);
-        require(address(this).balance &lt;= currentRound._hardCap);
+        require(msg.value >= currentRound._minValue);
+        require(currentRound._rate > 0);
+        require(address(this).balance <= currentRound._hardCap);
         uint amount = currentRound._rate.mul(msg.value);
         uint bonus = getBonusPercent(msg.value);
         amount = amount.add(amount.mul(bonus).div(100));
-        require(amount &lt;= currentRound._tokensForRound);
+        require(amount <= currentRound._tokensForRound);
 
         _transfer(owner, msg.sender, amount);
 
@@ -243,26 +243,26 @@ contract LDX is owned {
     }
 
     function getBonusPercent(uint _value) internal view returns(uint _bonus) {
-        if (_value &gt;= 15 ether) {
+        if (_value >= 15 ether) {
             return currentRound._bonus15;
-        } else if (_value &gt;= 8 ether) {
+        } else if (_value >= 8 ether) {
             return currentRound._bonus8;
-        } else if (_value &gt;= 4 ether) {
+        } else if (_value >= 4 ether) {
             return currentRound._bonus4;
-        } else if (_value &gt;= 1 ether) {
+        } else if (_value >= 1 ether) {
             return currentRound._bonus1;
         } else return 0;
     }
 
     function finishRound() onlyOwner public {
-        if (address(this).balance &lt; currentRound._softCap) {
+        if (address(this).balance < currentRound._softCap) {
             enableRefunds();
         } else {
             currentRound._wallet.transfer(address(this).balance);
             uint256 _nextRound = currentRound._number + 1;
             uint256 _burnTokens = currentRound._tokensForRound;
             balanceOf[owner] = balanceOf[owner].sub(_burnTokens);
-            if (_nextRound &lt; 5) {
+            if (_nextRound < 5) {
                 currentRound = roundInfo[_nextRound];
             } else {
                 state = State.Closed;
@@ -278,7 +278,7 @@ contract LDX is owned {
 
     function refund(address investor) public {
         require(state == State.Refunding);
-        require(allDeposited[currentRound._number]._deposited[investor] &gt; 0);
+        require(allDeposited[currentRound._number]._deposited[investor] > 0);
         uint256 depositedValue = allDeposited[currentRound._number]._deposited[investor];
         allDeposited[currentRound._number]._deposited[investor] = 0;
         investor.transfer(depositedValue);
@@ -286,13 +286,13 @@ contract LDX is owned {
     }
 
     function withdraw(uint amount) onlyOwner public returns(bool) {
-        require(amount &lt;= address(this).balance);
+        require(amount <= address(this).balance);
         owner.transfer(amount);
         return true;
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         emit Burn(msg.sender, _value);
         return true;

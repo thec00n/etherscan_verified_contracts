@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -148,21 +148,21 @@ contract TRMCrowdsale is Owned {
     }
 
     function doPurchase() payable {
-        require(now &gt;= startICO &amp;&amp; now &lt; endPostICO);
+        require(now >= startICO && now < endPostICO);
 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint sum = msg.value;
 
         uint tokensAmount;
         
-        if((TRM1BonusActive)&amp;&amp;(oldToken.balanceOf(msg.sender)&gt;=minTokenForSP)&amp;&amp;(tokenForSPSold&lt;tokenForSP)){
+        if((TRM1BonusActive)&&(oldToken.balanceOf(msg.sender)>=minTokenForSP)&&(tokenForSPSold<tokenForSP)){
             tokensAmount = sum.mul(ETHUSD).div(tokenSPUsdCentPrice).div(10000000000);
             
             tokenForSPSold=tokenForSPSold.add(tokensAmount);
         } else {
 
-            if(now &lt; endICO){
+            if(now < endICO){
                 tokensAmount = sum.mul(ETHUSD).div(tokenIcoUsdCentPrice).div(10000000000);
             } else {
                 tokensAmount = sum.mul(ETHUSD).div(tokenPostIcoUsdCentPrice).div(10000000000);
@@ -170,19 +170,19 @@ contract TRMCrowdsale is Owned {
     
     
             //Bonus
-            if(sum &lt; bonusWeiAmount){
+            if(sum < bonusWeiAmount){
                tokensAmount = tokensAmount.mul(100+smallBonusPercent).div(100);
             } else{
                tokensAmount = tokensAmount.mul(100+bigBonusPercent).div(100);
             }
         }
 
-        if(tokenBalance() &gt; tokensAmount){
+        if(tokenBalance() > tokensAmount){
             require(token.transfer(msg.sender, tokensAmount));
             multisig.transfer(msg.value);
         } else {
             manager.transfer(msg.value);
-            Print(&quot;Tokens will be released manually&quot;, msg.sender);
+            Print("Tokens will be released manually", msg.sender);
         }
 
 

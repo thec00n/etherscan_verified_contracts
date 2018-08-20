@@ -3,26 +3,26 @@ pragma solidity^0.4.21;
  *      ##########################################
  *      ##########################################
  *      ###                                                                                         ###
- *      ###                             &#119823;&#119845;&#119834;&#119858; &amp; &#119830;&#119842;&#119847; &#119812;&#119853;&#119841;&#119838;&#119851;                             ###
+ *      ###                             𝐏𝐥𝐚𝐲 & 𝐖𝐢𝐧 𝐄𝐭𝐡𝐞𝐫                             ###
  *      ###                                          at                                            ###
- *      ###                            &#119812;&#119827;&#119815;&#119812;&#119825;&#119808;&#119813;&#119813;&#119819;&#119812;.&#119810;&#119822;&#119820;                            ###
+ *      ###                            𝐄𝐓𝐇𝐄𝐑𝐀𝐅𝐅𝐋𝐄.𝐂𝐎𝐌                            ###
  *      ###                                                                                         ###
  *      ##########################################
  *      ##########################################
  *
- *      Welcome to the &#119812;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838; &#119819;&#119822;&#119827; &#119827;&#119848;&#119844;&#119838;&#119847; promotional contract!
- *      First you should go and play &#119812;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;.&#119836;&#119848;&#119846;
- *      Then you&#39;ll have earnt free &#119819;&#119822;&#119827; &#119827;&#119848;&#119844;&#119838;&#119847;&#119852; via this very promotion!
- *      Next you should learn about our &#119816;&#119810;&#119822; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;.&#119836;&#119848;&#119846;/&#119842;&#119836;&#119848;
- *      Then take part by buying even more &#119819;&#119822;&#119827; &#119853;&#119848;&#119844;&#119838;&#119847;&#119852;! 
- *      And don&#39;t forget to play &#119812;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838; some more because it&#39;s brilliant!
+ *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
+ *      First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
+ *      Then you'll have earnt free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
+ *      Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
+ *      Then take part by buying even more 𝐋𝐎𝐓 𝐭𝐨𝐤𝐞𝐧𝐬! 
+ *      And don't forget to play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 some more because it's brilliant!
  *
  *      If you want to chat to us you have loads of options:
- *      On &#119827;&#119838;&#119845;&#119838;&#119840;&#119851;&#119834;&#119846; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119853;.&#119846;&#119838;/&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;
- *      Or on &#119827;&#119856;&#119842;&#119853;&#119853;&#119838;&#119851; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119853;&#119856;&#119842;&#119853;&#119853;&#119838;&#119851;.&#119836;&#119848;&#119846;/&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;
- *      Or on &#119825;&#119838;&#119837;&#119837;&#119842;&#119853; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;.&#119851;&#119838;&#119837;&#119837;&#119842;&#119853;.&#119836;&#119848;&#119846;
+ *      On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
  *
- *      &#119812;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838; - the only &#119853;&#119851;&#119854;&#119845;&#119858; &#119837;&#119838;&#119836;&#119838;&#119847;&#119853;&#119851;&#119834;&#119845;&#119842;&#119859;&#119838;&#119837; &amp; &#119836;&#119841;&#119834;&#119851;&#119842;&#119853;&#119834;&#119835;&#119845;&#119838; blockchain lottery.
+ *      𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 - the only 𝐭𝐫𝐮𝐥𝐲 𝐝𝐞𝐜𝐞𝐧𝐭𝐫𝐚𝐥𝐢𝐳𝐞𝐝 & 𝐜𝐡𝐚𝐫𝐢𝐭𝐚𝐛𝐥𝐞 blockchain lottery.
  */
 contract EtheraffleInterface {
     uint public tktPrice;
@@ -38,7 +38,7 @@ contract EtheraffleLOTPromo {
     
     bool    public isActive;
     uint    constant public RAFEND     = 500400;     // 7:00pm Saturdays
-    uint    constant public BIRTHDAY   = 1500249600; // Etheraffle&#39;s birthday &lt;3
+    uint    constant public BIRTHDAY   = 1500249600; // Etheraffle's birthday <3
     uint    constant public ICOSTART   = 1522281600; // Thur 29th March 2018
     uint    constant public TIER1END   = 1523491200; // Thur 12th April 2018
     uint    constant public TIER2END   = 1525305600; // Thur 3rd May 2018
@@ -49,7 +49,7 @@ contract EtheraffleLOTPromo {
     EtheraffleInterface etheraffleContract;
 
     /* Mapping of  user address to weekNo to claimed bool */
-    mapping (address =&gt; mapping (uint =&gt; bool)) public claimed;
+    mapping (address => mapping (uint => bool)) public claimed;
     
     event LogActiveStatus(bool currentStatus, uint atTime);
     event LogTokenDeposit(address fromWhom, uint tokenAmount, bytes data);
@@ -74,21 +74,21 @@ contract EtheraffleLOTPromo {
     /*
      * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
      *          0 to get current week number. Requires user not to have already 
-     *          claimed week number in question&#39;s earnt promo LOT and for promo 
+     *          claimed week number in question's earnt promo LOT and for promo 
      *          to be active. It calculates LOT owed, and sends them to the 
-     *          caller. Should contract&#39;s LOT balance fall too low, attempts 
+     *          caller. Should contract's LOT balance fall too low, attempts 
      *          to redeem will arrest the contract to await a resupply of LOT.
      */
     function redeem(uint _weekNo) public {
         uint week    = _weekNo == 0 ? getWeek() : _weekNo;
         uint entries = getNumEntries(msg.sender, week);
         require(
-            !claimed[msg.sender][week] &amp;&amp;
-            entries &gt; 0 &amp;&amp;
+            !claimed[msg.sender][week] &&
+            entries > 0 &&
             isActive
             );
         uint amt = getPromoLOTEarnt(entries);
-        if (getLOTBalance(this) &lt; amt) {
+        if (getLOTBalance(this) < amt) {
             isActive = false;
             emit LogActiveStatus(false, now);
             return;
@@ -109,7 +109,7 @@ contract EtheraffleLOTPromo {
         return etheraffleContract.getUserNumEntries(_address, week);
     }
     /*
-     * @dev     Toggles promo on &amp; off. Only callable by the Etheraffle
+     * @dev     Toggles promo on & off. Only callable by the Etheraffle
      *          multisig wallet.
      *
      * @param _status   Desired bool status of the promo
@@ -120,12 +120,12 @@ contract EtheraffleLOTPromo {
     }
     /*
      * @dev     Same getWeek function as seen in main Etheraffle contract to 
-     *          ensure parity. Ddefined by number of weeks since Etheraffle&#39;s
+     *          ensure parity. Ddefined by number of weeks since Etheraffle's
      *          birthday.
      */
     function getWeek() public view returns (uint) {
         uint curWeek = (now - BIRTHDAY) / 604800;
-        if (now - ((curWeek * 604800) + BIRTHDAY) &gt; RAFEND) curWeek++;
+        if (now - ((curWeek * 604800) + BIRTHDAY) > RAFEND) curWeek++;
         return curWeek;
     }
     /**
@@ -137,7 +137,7 @@ contract EtheraffleLOTPromo {
      * @param _data  Token transaction data.
      */
     function tokenFallback(address _from, uint256 _value, bytes _data) external {
-        if (_value &gt; 0) emit LogTokenDeposit(_from, _value, _data);
+        if (_value > 0) emit LogTokenDeposit(_from, _value, _data);
     }
     /*
      * @dev     Retrieves current LOT token balance of an address.
@@ -166,14 +166,14 @@ contract EtheraffleLOTPromo {
         return etheraffleContract.tktPrice();
     }
     /*
-     * @dev     Function returns current ICO tier&#39;s exchange rate of LOT
+     * @dev     Function returns current ICO tier's exchange rate of LOT
      *          per ETH.
      */
     function getRate() public view returns (uint) {
-        if (now &lt;  ICOSTART) return 110000 * 10 ** 6;
-        if (now &lt;= TIER1END) return 100000 * 10 ** 6;
-        if (now &lt;= TIER2END) return 90000  * 10 ** 6;
-        if (now &lt;= TIER3END) return 80000  * 10 ** 6;
+        if (now <  ICOSTART) return 110000 * 10 ** 6;
+        if (now <= TIER1END) return 100000 * 10 ** 6;
+        if (now <= TIER2END) return 90000  * 10 ** 6;
+        if (now <= TIER3END) return 80000  * 10 ** 6;
         else return 0;
     }
     /*

@@ -75,44 +75,44 @@ contract Proxy {
  * Features: transfers, allowances, supply adjustments, lost wallet access recovery.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract ChronoBankPlatform is Owned {
     // Structure of a particular asset.
     struct Asset {
-        uint owner;                       // Asset&#39;s owner id.
-        uint totalSupply;                 // Asset&#39;s total supply.
-        string name;                      // Asset&#39;s name, for information purposes.
-        string description;               // Asset&#39;s description, for information purposes.
+        uint owner;                       // Asset's owner id.
+        uint totalSupply;                 // Asset's total supply.
+        string name;                      // Asset's name, for information purposes.
+        string description;               // Asset's description, for information purposes.
         bool isReissuable;                // Indicates if asset have dynamic of fixed supply.
         uint8 baseUnit;                   // Proposed number of decimals.
-        mapping(uint =&gt; Wallet) wallets;  // Holders wallets.
+        mapping(uint => Wallet) wallets;  // Holders wallets.
     }
 
     // Structure of an asset holder wallet for particular asset.
     struct Wallet {
         uint balance;
-        mapping(uint =&gt; uint) allowance;
+        mapping(uint => uint) allowance;
     }
 
     // Structure of an asset holder.
     struct Holder {
         address addr;                    // Current address of the holder.
-        mapping(address =&gt; bool) trust;  // Addresses that are trusted with recovery proocedure.
+        mapping(address => bool) trust;  // Addresses that are trusted with recovery proocedure.
     }
 
     // Iterable mapping pattern is used for holders.
     uint public holdersCount;
-    mapping(uint =&gt; Holder) public holders;
+    mapping(uint => Holder) public holders;
 
     // This is an access address mapping. Many addresses may have access to a single holder.
-    mapping(address =&gt; uint) holderIndex;
+    mapping(address => uint) holderIndex;
 
     // Asset symbol to asset mapping.
-    mapping(bytes32 =&gt; Asset) public assets;
+    mapping(bytes32 => Asset) public assets;
 
     // Asset symbol to asset proxy mapping.
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
 
     // Should use interface of the emitter, but address of events history.
     Emitter public eventsHistory;
@@ -152,7 +152,7 @@ contract ChronoBankPlatform is Owned {
         if (isOwner(msg.sender, _symbol)) {
             _;
         } else {
-            _error(&quot;Only owner: access denied&quot;);
+            _error("Only owner: access denied");
         }
     }
 
@@ -163,18 +163,18 @@ contract ChronoBankPlatform is Owned {
         if (proxies[_symbol] == msg.sender) {
             _;
         } else {
-            _error(&quot;Only proxy: access denied&quot;);
+            _error("Only proxy: access denied");
         }
     }
 
     /**
-     * Emits Error if _from doesn&#39;t trust _to.
+     * Emits Error if _from doesn't trust _to.
      */
     modifier checkTrust(address _from, address _to) {
         if (isTrusted(_from, _to)) {
             _;
         } else {
-            _error(&quot;Only trusted: access denied&quot;);
+            _error("Only trusted: access denied");
         }
     }
 
@@ -253,7 +253,7 @@ contract ChronoBankPlatform is Owned {
      * @return owner rights availability.
      */
     function isOwner(address _owner, bytes32 _symbol) constant returns(bool) {
-        return isCreated(_symbol) &amp;&amp; (assets[_symbol].owner == getHolderId(_owner));
+        return isCreated(_symbol) && (assets[_symbol].owner == getHolderId(_owner));
     }
 
     /**
@@ -350,22 +350,22 @@ contract ChronoBankPlatform is Owned {
     function _transfer(uint _fromId, uint _toId, uint _value, bytes32 _symbol, string _reference, uint _senderId) internal returns(bool) {
         // Should not allow to send to oneself.
         if (_fromId == _toId) {
-            _error(&quot;Cannot send to oneself&quot;);
+            _error("Cannot send to oneself");
             return false;
         }
         // Should have positive value.
         if (_value == 0) {
-            _error(&quot;Cannot send 0 value&quot;);
+            _error("Cannot send 0 value");
             return false;
         }
         // Should have enough balance.
-        if (_balanceOf(_fromId, _symbol) &lt; _value) {
-            _error(&quot;Insufficient balance&quot;);
+        if (_balanceOf(_fromId, _symbol) < _value) {
+            _error("Insufficient balance");
             return false;
         }
         // Should have enough allowance.
-        if (_fromId != _senderId &amp;&amp; _allowance(_fromId, _senderId, _symbol) &lt; _value) {
-            _error(&quot;Not enough allowance&quot;);
+        if (_fromId != _senderId && _allowance(_fromId, _senderId, _symbol) < _value) {
+            _error("Not enough allowance");
             return false;
         }
         _transferDirect(_fromId, _toId, _value, _symbol);
@@ -460,13 +460,13 @@ contract ChronoBankPlatform is Owned {
      */
     function issueAsset(bytes32 _symbol, uint _value, string _name, string _description, uint8 _baseUnit, bool _isReissuable) onlyContractOwner() returns(bool) {
         // Should have positive value if supply is going to be fixed.
-        if (_value == 0 &amp;&amp; !_isReissuable) {
-            _error(&quot;Cannot issue 0 value fixed asset&quot;);
+        if (_value == 0 && !_isReissuable) {
+            _error("Cannot issue 0 value fixed asset");
             return false;
         }
         // Should not be issued yet.
         if (isCreated(_symbol)) {
-            _error(&quot;Asset already issued&quot;);
+            _error("Asset already issued");
             return false;
         }
         uint holderId = _createHolderId(msg.sender);
@@ -494,18 +494,18 @@ contract ChronoBankPlatform is Owned {
     function reissueAsset(bytes32 _symbol, uint _value) onlyOwner(_symbol) returns(bool) {
         // Should have positive value.
         if (_value == 0) {
-            _error(&quot;Cannot reissue 0 value&quot;);
+            _error("Cannot reissue 0 value");
             return false;
         }
         Asset asset = assets[_symbol];
         // Should have dynamic supply.
         if (!asset.isReissuable) {
-            _error(&quot;Cannot reissue fixed asset&quot;);
+            _error("Cannot reissue fixed asset");
             return false;
         }
         // Resulting total supply should not overflow.
-        if (asset.totalSupply + _value &lt; asset.totalSupply) {
-            _error(&quot;Total supply overflow&quot;);
+        if (asset.totalSupply + _value < asset.totalSupply) {
+            _error("Total supply overflow");
             return false;
         }
         uint holderId = getHolderId(msg.sender);
@@ -530,14 +530,14 @@ contract ChronoBankPlatform is Owned {
     function revokeAsset(bytes32 _symbol, uint _value) returns(bool) {
         // Should have positive value.
         if (_value == 0) {
-            _error(&quot;Cannot revoke 0 value&quot;);
+            _error("Cannot revoke 0 value");
             return false;
         }
         Asset asset = assets[_symbol];
         uint holderId = getHolderId(msg.sender);
         // Should have enough tokens.
-        if (asset.wallets[holderId].balance &lt; _value) {
-            _error(&quot;Not enough tokens to revoke&quot;);
+        if (asset.wallets[holderId].balance < _value) {
+            _error("Not enough tokens to revoke");
             return false;
         }
         asset.wallets[holderId].balance -= _value;
@@ -566,7 +566,7 @@ contract ChronoBankPlatform is Owned {
         uint newOwnerId = _createHolderId(_newOwner);
         // Should pass ownership to another holder.
         if (asset.owner == newOwnerId) {
-            _error(&quot;Cannot pass ownership to oneself&quot;);
+            _error("Cannot pass ownership to oneself");
             return false;
         }
         address oldOwner = _address(asset.owner);
@@ -601,12 +601,12 @@ contract ChronoBankPlatform is Owned {
         uint fromId = _createHolderId(msg.sender);
         // Should trust to another address.
         if (fromId == getHolderId(_to)) {
-            _error(&quot;Cannot trust to oneself&quot;);
+            _error("Cannot trust to oneself");
             return false;
         }
         // Should trust to yet untrusted.
         if (isTrusted(msg.sender, _to)) {
-            _error(&quot;Already trusted&quot;);
+            _error("Already trusted");
             return false;
         }
         holders[fromId].trust[_to] = true;
@@ -640,7 +640,7 @@ contract ChronoBankPlatform is Owned {
     function recover(address _from, address _to) checkTrust(_from, msg.sender) returns(bool) {
         // Should recover to previously unused address.
         if (getHolderId(_to) != 0) {
-            _error(&quot;Should recover to new address&quot;);
+            _error("Should recover to new address");
             return false;
         }
         // We take current holder address because it might not equal _from.
@@ -670,12 +670,12 @@ contract ChronoBankPlatform is Owned {
     function _approve(uint _spenderId, uint _value, bytes32 _symbol, uint _senderId) internal returns(bool) {
         // Asset should exist.
         if (!isCreated(_symbol)) {
-            _error(&quot;Asset is not issued&quot;);
+            _error("Asset is not issued");
             return false;
         }
         // Should allow to another holder.
         if (_senderId == _spenderId) {
-            _error(&quot;Cannot approve to oneself&quot;);
+            _error("Cannot approve to oneself");
             return false;
         }
         assets[_symbol].wallets[_senderId].allowance[_spenderId] = _value;
@@ -891,7 +891,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      * @return success.
      */
     function transfer(address _to, uint _value) returns(bool) {
-        return _transferWithReference(_to, _value, &quot;&quot;);
+        return _transferWithReference(_to, _value, "");
     }
 
     /**
@@ -899,7 +899,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      *
      * @return success.
      */
@@ -924,7 +924,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -943,7 +943,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      * @return success.
      */
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return _transferFromWithReference(_from, _to, _value, &quot;&quot;);
+        return _transferFromWithReference(_from, _to, _value, "");
     }
 
     /**
@@ -952,7 +952,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      *
      * @return success.
      */
@@ -978,7 +978,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -1069,7 +1069,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
 
     // Asset implementation contract address that user decided to stick with.
     // 0x0 means that user uses latest version.
-    mapping(address =&gt; address) userOptOutVersion;
+    mapping(address => address) userOptOutVersion;
 
     /**
      * Only asset implementation contract assigned to sender is allowed to call.
@@ -1138,7 +1138,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
         if (_newVersion == 0x0) {
             return false;
         }
-        // Don&#39;t apply freeze-time for the initial setup.
+        // Don't apply freeze-time for the initial setup.
         if (latestVersion == 0x0) {
             latestVersion = _newVersion;
             return true;
@@ -1176,7 +1176,7 @@ function stringToBytes32(string memory source) returns (bytes32 result) {
         if (pendingVersion == 0x0) {
             return false;
         }
-        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME &gt; now) {
+        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME > now) {
             return false;
         }
         latestVersion = pendingVersion;

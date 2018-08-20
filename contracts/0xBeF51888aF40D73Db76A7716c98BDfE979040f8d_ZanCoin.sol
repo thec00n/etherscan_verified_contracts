@@ -17,11 +17,11 @@ pragma solidity ^0.4.21;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        assert(b &lt;= a);
+        assert(b <= a);
         c = a - b;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        assert(b &gt; 0);
+        assert(b > 0);
         c = a / b;
     }
 }
@@ -110,8 +110,8 @@ contract ZanCoin is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
     
     // ------------------------------------------------------------------------
     // Crowdsale data
@@ -135,8 +135,8 @@ contract ZanCoin is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     function ZanCoin() public {
-        symbol = &quot;ZAN&quot;;
-        name = &quot;ZAN Coin&quot;;
+        symbol = "ZAN";
+        name = "ZAN Coin";
         decimals = 18;
         _totalSupply = 17148385 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -166,8 +166,8 @@ contract ZanCoin is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -180,7 +180,7 @@ contract ZanCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -213,7 +213,7 @@ contract ZanCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -222,7 +222,7 @@ contract ZanCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -240,13 +240,13 @@ contract ZanCoin is ERC20Interface, Owned {
         uint eth_sent = msg.value;
         uint tokens_amount = eth_sent.mul(exchangeRate);
         
-        require(eth_sent &gt; 0);
-        require(exchangeRate &gt; 0);
-        require(stateStartDate &lt; now &amp;&amp; now &lt; stateEndDate);
-        require(balances[owner] &gt;= tokens_amount);
-        require(_totalSupply - (balances[owner] - tokens_amount) &lt;= saleCap);
+        require(eth_sent > 0);
+        require(exchangeRate > 0);
+        require(stateStartDate < now && now < stateEndDate);
+        require(balances[owner] >= tokens_amount);
+        require(_totalSupply - (balances[owner] - tokens_amount) <= saleCap);
         
-        // Don&#39;t accept ETH in the final state
+        // Don't accept ETH in the final state
         require(!isInFinalState);
         require(isInPreSaleState || isInRoundOneState || isInRoundTwoState);
         
@@ -256,28 +256,28 @@ contract ZanCoin is ERC20Interface, Owned {
     }
     
     // ------------------------------------------------------------------------
-    // Switches crowdsale stages: PreSale -&gt; Round One -&gt; Round Two
+    // Switches crowdsale stages: PreSale -> Round One -> Round Two
     // ------------------------------------------------------------------------
     function switchCrowdSaleStage() external onlyOwner {
-        require(!isInFinalState &amp;&amp; !isInRoundTwoState);
+        require(!isInFinalState && !isInRoundTwoState);
         
         if (!isInPreSaleState) {
             isInPreSaleState = true;
             exchangeRate = 1500;
             saleCap = (3 * 10**6) * (uint(10) ** decimals);
-            emit SwitchCrowdSaleStage(&quot;PreSale&quot;, exchangeRate);
+            emit SwitchCrowdSaleStage("PreSale", exchangeRate);
         }
         else if (!isInRoundOneState) {
             isInRoundOneState = true;
             exchangeRate = 1200;
             saleCap = saleCap + ((4 * 10**6) * (uint(10) ** decimals));
-            emit SwitchCrowdSaleStage(&quot;RoundOne&quot;, exchangeRate);
+            emit SwitchCrowdSaleStage("RoundOne", exchangeRate);
         }
         else if (!isInRoundTwoState) {
             isInRoundTwoState = true;
             exchangeRate = 900;
             saleCap = saleCap + ((5 * 10**6) * (uint(10) ** decimals));
-            emit SwitchCrowdSaleStage(&quot;RoundTwo&quot;, exchangeRate);
+            emit SwitchCrowdSaleStage("RoundTwo", exchangeRate);
         }
         
         stateStartDate = now + 5 minutes;
@@ -290,20 +290,20 @@ contract ZanCoin is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     function completeCrowdSale() external onlyOwner {
         require(!isInFinalState);
-        require(isInPreSaleState &amp;&amp; isInRoundOneState &amp;&amp; isInRoundTwoState);
+        require(isInPreSaleState && isInRoundOneState && isInRoundTwoState);
         
         owner.transfer(address(this).balance);
         exchangeRate = 0;
         isInFinalState = true;
-        emit SwitchCrowdSaleStage(&quot;Complete&quot;, exchangeRate);
+        emit SwitchCrowdSaleStage("Complete", exchangeRate);
     }
 
     // ------------------------------------------------------------------------
     // Token holders are able to burn their tokens.
     // ------------------------------------------------------------------------
     function burn(uint amount) public {
-        require(amount &gt; 0);
-        require(amount &lt;= balances[msg.sender]);
+        require(amount > 0);
+        require(amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(amount);
         _totalSupply = _totalSupply.sub(amount);

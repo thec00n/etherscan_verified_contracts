@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -62,9 +62,9 @@ contract ERC20 {
 contract StandardToken is ERC20{
     using SafeMath for uint256;
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
 
     // What is the balance of a particular account?
     // @param who The address of the particular account
@@ -79,7 +79,7 @@ contract StandardToken is ERC20{
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -94,7 +94,7 @@ contract StandardToken is ERC20{
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -109,7 +109,7 @@ contract StandardToken is ERC20{
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -130,10 +130,10 @@ Describle contact TokenMoney
 contract TokenMoney is owned,StandardToken {
 
   //name of contact
-    string public name = &quot;TokenMoney&quot;;
+    string public name = "TokenMoney";
     
     //symbol of contact
-    string public symbol = &quot;TOM&quot;;
+    string public symbol = "TOM";
     
     //ddecimals 
     uint8 public decimals = 18;
@@ -145,12 +145,12 @@ contract TokenMoney is owned,StandardToken {
     //
     
     //version
-    string public version = &quot;v1.0&quot;;
+    string public version = "v1.0";
     
    
     //create an array with all blance
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generate public event on blockchain  contact Erc20 that will notify client
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -170,9 +170,9 @@ contract TokenMoney is owned,StandardToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

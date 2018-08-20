@@ -10,7 +10,7 @@ contract Test
     function depositAndWithdraw(uint256 withdrawAmount) payable{
         poppins.Invest.value(msg.value)();
         poppins.Divest(withdrawAmount);
-        if(!(this.balance &gt; 1 ether)){
+        if(!(this.balance > 1 ether)){
             revert();
         }
         msg.sender.transfer(this.balance);

@@ -21,9 +21,9 @@ contract ProspectorsDevAllocation is Owned
     ProspectorsGoldToken public token;
     uint public initial_time;
 
-    mapping(uint =&gt; bool) public unlocked;
-    mapping(uint =&gt; uint) public unlock_times;
-    mapping(uint =&gt; uint) unlock_values;
+    mapping(uint => bool) public unlocked;
+    mapping(uint => uint) public unlock_times;
+    mapping(uint => uint) unlock_values;
     
     //contract with PGL tokens for Prospectors developers. Tokens will be frozen up to 4 years
     function ProspectorsDevAllocation(address _token)
@@ -52,7 +52,7 @@ contract ProspectorsDevAllocation is Owned
 
     function unlock(uint part)
     {
-        if (unlocked[part] == true || block.timestamp &lt; initial_time + unlock_times[part] || unlock_values[part] == 0) revert();
+        if (unlocked[part] == true || block.timestamp < initial_time + unlock_times[part] || unlock_values[part] == 0) revert();
         token.transfer(owner, unlock_values[part]);
         unlocked[part] = true;
     }

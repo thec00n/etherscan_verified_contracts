@@ -15,13 +15,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        Assert(b &lt;= a);
+        Assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        Assert(c &gt;= a &amp;&amp; c &gt;= b);
+        Assert(c >= a && c >= b);
         return c;
     }
 
@@ -34,9 +34,9 @@ contract SafeMath {
 
 
 contract Crowdsale is SafeMath {
-    /*Owner&#39;s address*/
+    /*Owner's address*/
     address public owner;
-    /* tokens will be transferred from BAP&#39;s address */
+    /* tokens will be transferred from BAP's address */
     address public initialTokensHolder = 0x084bf76c9ba9106d6114305fae9810fbbdb157d9;
     /* if the funding goal is not reached, investors may withdraw their funds */
     uint public fundingGoal =  260000000;
@@ -48,16 +48,16 @@ contract Crowdsale is SafeMath {
     uint public start = 1509375600;
     /* the start date of the crowdsale 11:59 pm 10/11/2017*/
     uint public end =   1510325999;
-    /*token&#39;s price  1ETH = 15000 KRB*/
+    /*token's price  1ETH = 15000 KRB*/
     uint public tokenPrice = 19000;
     /* the number of tokens already sold */
     uint public tokensSold;
     /* the address of the token contract */
     token public tokenReward;
     /* the balances (in ETH) of all investors */
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     /*this mapping tracking allowed specific investor to invest and their referral */
-    mapping(address =&gt; address) public permittedInvestors;
+    mapping(address => address) public permittedInvestors;
     /* indicated if the funding goal has been reached. */
     bool public fundingGoalReached = false;
     /* indicates if the crowdsale has been closed already */
@@ -88,7 +88,7 @@ contract Crowdsale is SafeMath {
         }
         uint amount = msg.value;
         uint numTokens = safeMul(amount, tokenPrice) / 1000000000000000000; // 1 ETH
-        if (now &lt; start || now &gt; end || safeAdd(tokensSold, numTokens) &gt; maxGoal) {
+        if (now < start || now > end || safeAdd(tokensSold, numTokens) > maxGoal) {
             revert();
         }
         balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], amount);
@@ -113,7 +113,7 @@ contract Crowdsale is SafeMath {
     }
 
     modifier afterDeadline() {
-        if (now &lt; end) {
+        if (now < end) {
             revert();
         }
         _;
@@ -128,21 +128,21 @@ contract Crowdsale is SafeMath {
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() {
-        if((tokensSold &gt;= fundingGoal &amp;&amp; now &gt;= end) || (tokensSold &gt;= maxGoal)) {
+        if((tokensSold >= fundingGoal && now >= end) || (tokensSold >= maxGoal)) {
             fundingGoalReached = true;
             crowdsaleClosed = true;
             tokenReward.burn();
             sendToBeneficiary();
             GoalReached(initialTokensHolder, amountRaised);
         }
-        if(now &gt;= end) {
+        if(now >= end) {
             crowdsaleClosed = true;
         }
     }
 
     function allowInvest(address investorAddress, address referralAddress) onlyOwner external {
         require(permittedInvestors[investorAddress] == 0x0);
-        if(referralAddress != 0x0 &amp;&amp; permittedInvestors[referralAddress] == 0x0) revert();
+        if(referralAddress != 0x0 && permittedInvestors[referralAddress] == 0x0) revert();
         permittedInvestors[investorAddress] = referralAddress == 0x0 ? initialTokensHolder : referralAddress;
         AllowSuccess(investorAddress, referralAddress);
     }
@@ -158,9 +158,9 @@ contract Crowdsale is SafeMath {
         require(this.balance != 0);
         if(!crowdsaleClosed) revert();
         uint amount = balanceOf[msg.sender];
-        if(address(this).balance &gt;= amount) {
+        if(address(this).balance >= amount) {
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 msg.sender.transfer(amount);
                 Withdraw(msg.sender, amount);
             }

@@ -17,12 +17,12 @@ contract MeerkatToken is ERC20Interface {
     uint8 public decimals;
     uint public initSupply;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     constructor() public {
         owner = msg.sender;
-        symbol = &quot;MCT&quot;;
-        name = &quot;Meerkat Token&quot;;
+        symbol = "MCT";
+        name = "Meerkat Token";
         decimals = 18;
         initSupply = 10000000000 * 10**uint(decimals);
         balances[owner] = initSupply;
@@ -39,8 +39,8 @@ contract MeerkatToken is ERC20Interface {
     }
 
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         uint previousBalances = balances[msg.sender] + balances[_to];
 
         balances[msg.sender] -= _value;

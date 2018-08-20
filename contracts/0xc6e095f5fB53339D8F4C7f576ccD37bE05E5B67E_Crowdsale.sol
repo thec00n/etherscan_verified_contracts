@@ -29,20 +29,20 @@ library SafeMath {
     }
  
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
  
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
  
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
   
@@ -55,7 +55,7 @@ library SafeMath {
 contract BasicToken is ERC20 {
     
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
   
     /**
   * @dev transfer token for a specified address
@@ -89,7 +89,7 @@ contract BasicToken is ERC20 {
  */
 contract StandardToken is BasicToken {
  
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
  
     /**
    * @dev Transfer tokens from one address to another
@@ -101,7 +101,7 @@ contract StandardToken is BasicToken {
         uint _allowance = allowed[_from][msg.sender];
  
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
  
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -142,7 +142,7 @@ contract StandardToken is BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -229,8 +229,8 @@ contract MintableToken is StandardToken, Ownable {
  
 contract MultiLevelToken is MintableToken {
     
-    string public constant name = &quot;Multi-level token&quot;;
-    string public constant symbol = &quot;MLT&quot;;
+    string public constant name = "Multi-level token";
+    string public constant symbol = "MLT";
     uint32 public constant decimals = 18;
     
 }
@@ -259,8 +259,8 @@ contract Crowdsale is Ownable{
     uint parent;
     uint256 parentMoney;
     address whom;
-    mapping (uint =&gt; mapping(address =&gt; uint))tree;
-    mapping (uint =&gt; mapping(uint =&gt; address)) order;
+    mapping (uint => mapping(address => uint))tree;
+    mapping (uint => mapping(uint => address)) order;
  
     function Crowdsale()public {
         multisig = 0xB52E296b76e7Da83ADE05C1458AED51D3911603f;
@@ -278,8 +278,8 @@ contract Crowdsale is Ownable{
     
     function distribute() public{
         
-        for (i=1;i&lt;=10;i++){
-            while (parent &gt;1){
+        for (i=1;i<=10;i++){
+            while (parent >1){
                 if (parent%3==0){
                             parent=parent.div(3);
                             whom = order[tier][parent];
@@ -308,7 +308,7 @@ contract Crowdsale is Ownable{
         tokens = tokens.mul(55).div(100);
         parentMoney = msg.value.mul(35).div(10);
         
-        if (msg.value &gt;= 50000000000000000 &amp;&amp; msg.value &lt; 100000000000000000){
+        if (msg.value >= 50000000000000000 && msg.value < 100000000000000000){
             tier=1;
             tree[tier][msg.sender]=a;
             order[tier][a]=msg.sender;
@@ -316,7 +316,7 @@ contract Crowdsale is Ownable{
             a+=1;
             distribute();
         }
-        else if (msg.value &gt;= 100000000000000000 &amp;&amp; msg.value &lt; 200000000000000000){
+        else if (msg.value >= 100000000000000000 && msg.value < 200000000000000000){
             tier=2;
             tree[tier][msg.sender]=b;
             order[tier][b]=msg.sender;
@@ -324,7 +324,7 @@ contract Crowdsale is Ownable{
             b+=1;
             distribute();
         }    
-        else if (msg.value &gt;= 200000000000000000 &amp;&amp; msg.value &lt; 500000000000000000){
+        else if (msg.value >= 200000000000000000 && msg.value < 500000000000000000){
             tier=3;
             tree[tier][msg.sender]=c;
             order[tier][c]=msg.sender;
@@ -332,7 +332,7 @@ contract Crowdsale is Ownable{
             c+=1;
             distribute();
         }
-        else if(msg.value &gt;= 500000000000000000 &amp;&amp; msg.value &lt; 1000000000000000000){
+        else if(msg.value >= 500000000000000000 && msg.value < 1000000000000000000){
             tier=4;
             tree[tier][msg.sender]=d;
             order[tier][d]=msg.sender;
@@ -340,7 +340,7 @@ contract Crowdsale is Ownable{
             d+=1;
             distribute();
         }
-        else if(msg.value &gt;= 1000000000000000000){
+        else if(msg.value >= 1000000000000000000){
             tier=5;
             tree[tier][msg.sender]=e;
             order[tier][e]=msg.sender;

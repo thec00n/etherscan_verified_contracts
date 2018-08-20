@@ -4,12 +4,12 @@ contract VouchCoin  {
 
   address public owner;
   uint public constant totalSupply = 10000000000000000;
-  string public constant name = &quot;VouchCoin&quot;;
-  string public constant symbol = &quot;VHC&quot;;
+  string public constant name = "VouchCoin";
+  string public constant symbol = "VHC";
   uint public constant decimals = 8;
-  string public standard = &quot;VouchCoin&quot;;
+  string public standard = "VouchCoin";
 
-  mapping (address =&gt; uint) public balanceOf;
+  mapping (address => uint) public balanceOf;
 
   event Transfer(address indexed from, address indexed to, uint value);
 
@@ -20,7 +20,7 @@ contract VouchCoin  {
 
   function transfer(address _to, uint _value) returns (bool success) {
     if (_to == 0x0) throw;
-    if (balanceOf[owner] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balanceOf[owner] >= _value && _value > 0) {
       balanceOf[owner] -= _value;
       balanceOf[_to] += _value;
       Transfer(owner, _to, _value);
@@ -30,8 +30,8 @@ contract VouchCoin  {
   }
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-    if (_from == 0x0 &amp;&amp; _to == 0x0) throw;
-    if (balanceOf[_from] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (_from == 0x0 && _to == 0x0) throw;
+    if (balanceOf[_from] >= _value && _value > 0) {
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;
       Transfer(_from, _to, _value);

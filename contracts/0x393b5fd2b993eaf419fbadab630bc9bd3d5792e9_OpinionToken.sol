@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b2f2e3f2e0b2a33222426312e25652824">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b2f2e3f2e0b2a33222426312e25652824">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -43,9 +43,9 @@ contract OpinionToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;Cryptopinions&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;OpinionToken&quot;; // solhint-disable-line
-  string public constant DEFAULT_TEXT = &quot;&quot;;
+  string public constant NAME = "Cryptopinions"; // solhint-disable-line
+  string public constant SYMBOL = "OpinionToken"; // solhint-disable-line
+  string public constant DEFAULT_TEXT = "";
 
   uint256 private firstStepLimit =  0.053613 ether;
   uint256 private secondStepLimit = 0.564957 ether;
@@ -58,19 +58,19 @@ contract OpinionToken is ERC721 {
 
   /// @dev A mapping from opinion IDs to the address that owns them. All opinions have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public opinionIndexToOwner;
+  mapping (uint256 => address) public opinionIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from opinionIDs to an address that has been approved to call
   ///  transferFrom(). Each opinion can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public opinionIndexToApproved;
+  mapping (uint256 => address) public opinionIndexToApproved;
 
   // @dev A mapping from opinionIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private opinionIndexToPrice;
+  mapping (uint256 => uint256) private opinionIndexToPrice;
   
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -183,7 +183,7 @@ contract OpinionToken is ERC721 {
   }
   
   function hasPriorDuplicate(string _tocheck,uint256 index) public view returns (bool){
-    for(uint i = 0; i&lt;index; i++){
+    for(uint i = 0; i<index; i++){
         if(compareStrings(_tocheck,opinions[i].text)){
             return true;
         }
@@ -219,7 +219,7 @@ contract OpinionToken is ERC721 {
   function sponsorOpinion(uint256 _tokenId,uint8 comment,bool _likesOpinion) public payable {
       //ensure comment corresponds to status of token. Tokens with a comment of 0 are unregistered.
       require(comment!=0);
-      require((_likesOpinion &amp;&amp; comment&lt;100) || (!_likesOpinion &amp;&amp; comment&gt;100));
+      require((_likesOpinion && comment<100) || (!_likesOpinion && comment>100));
       address sponsorAdr = msg.sender;
       require(_addressNotNull(sponsorAdr));
       // Making sure sent amount is greater than or equal to the sellingPrice
@@ -228,15 +228,15 @@ contract OpinionToken is ERC721 {
       address newOwner = msg.sender;
       require(_addressNotNull(newOwner));
       require(_addressNotNull(currentOwner));
-      require(msg.value &gt;= sellingPrice);
+      require(msg.value >= sellingPrice);
       uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 90), 100));
       uint256 ownerTake=uint256(SafeMath.div(SafeMath.mul(sellingPrice, 10), 100));
       uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
           // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       opinionIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 90);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       opinionIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 90);
     } else {
@@ -266,7 +266,7 @@ contract OpinionToken is ERC721 {
             ceoAddress.transfer(ownerTake);
         }
         else{
-            ceoAddress.transfer(sellingPrice); //eth for initial antisponsor goes to Cryptopinions, because you wouldn&#39;t want it to go to the creator of an opinion you don&#39;t like
+            ceoAddress.transfer(sellingPrice); //eth for initial antisponsor goes to Cryptopinions, because you wouldn't want it to go to the creator of an opinion you don't like
         }
         opinion.antisponsor=sponsorAdr;
         opinion.totalantisponsored=SafeMath.add(opinion.totalantisponsored,sellingPrice);
@@ -278,10 +278,10 @@ contract OpinionToken is ERC721 {
   function deleteThis(uint256 _tokenId) public payable{
     //Cost is 1 eth or five times the current valuation of the opinion, whichever is higher.
     uint256 sellingPrice = SafeMath.mul(opinionIndexToPrice[_tokenId],5);
-    if(sellingPrice&lt;1 ether){
+    if(sellingPrice<1 ether){
         sellingPrice=1 ether;
     }
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
     ceoAddress.transfer(sellingPrice);
     Opinion storage opinion = opinions[_tokenId];
     opinion.deleted=true;
@@ -307,7 +307,7 @@ contract OpinionToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
     
     uint256 payment = sellingPrice;
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
@@ -365,7 +365,7 @@ contract OpinionToken is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire opinions array looking for opinions belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -380,7 +380,7 @@ contract OpinionToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 opinionId;
-      for (opinionId = 0; opinionId &lt;= totalOpinions; opinionId++) {
+      for (opinionId = 0; opinionId <= totalOpinions; opinionId++) {
         if (opinionIndexToOwner[opinionId] == _owner) {
           result[resultIndex] = opinionId;
           resultIndex++;
@@ -431,7 +431,7 @@ contract OpinionToken is ERC721 {
 //If you contact us following purchase we will transfer domain, website source code etc. to you free of charge, otherwise we will continue to maintain the frontend site for 1 year.
 uint256 contractPrice=300 ether;
 function buyCryptopinions(address _newCEO) payable public{
-    require(msg.value &gt;= contractPrice);
+    require(msg.value >= contractPrice);
     ceoAddress.transfer(msg.value);
     _setCEO(_newCEO);
     _setPrice(9999999 ether);
@@ -455,7 +455,7 @@ function _setPrice(uint256 newprice) private{
   }
   
   function _createOpinionSet() private {
-      for(uint i = 0; i&lt;numIssued; i++){
+      for(uint i = 0; i<numIssued; i++){
         _createOpinion(DEFAULT_TEXT,ceoAddress,startingPrice);
       }
       //startingPrice = SafeMath.mul(startingPrice,stepMultiplier); //increase the price for the next set of tokens
@@ -472,10 +472,10 @@ function _setPrice(uint256 newprice) private{
       require(!opinion.claimed);
         uint256 newprice=SafeMath.mul(stepMultiplier,opinionIndexToPrice[_tokenId]);
         //max price 1 eth
-        if(newprice &gt; 0.1 ether){ //max price for a new opinion, 1 ether
+        if(newprice > 0.1 ether){ //max price for a new opinion, 1 ether
             newprice=0.1 ether;
         }
-        _createOpinion(&quot;&quot;,ceoAddress,newprice); //make a new opinion for someone else to buy
+        _createOpinion("",ceoAddress,newprice); //make a new opinion for someone else to buy
         opinion.claimed=true;
       
           //currentIssueRemaining=SafeMath.sub(currentIssueRemaining,1);
@@ -502,8 +502,8 @@ function _setPrice(uint256 newprice) private{
     });
     uint256 newOpinionId = opinions.push(_opinion) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newOpinionId == uint256(uint32(newOpinionId)));
 
     Birth(newOpinionId, _name, _owner);
@@ -531,12 +531,12 @@ function _setPrice(uint256 newprice) private{
 
   /// @dev Assigns ownership of a specific opinion to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of opinions is capped to 2^32 we can&#39;t overflow this
+    // Since the number of opinions is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     opinionIndexToOwner[_tokenId] = _to;
 
-    // When creating new opinions _from is 0x0, but we can&#39;t account that address.
+    // When creating new opinions _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -565,9 +565,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -575,7 +575,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -584,7 +584,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

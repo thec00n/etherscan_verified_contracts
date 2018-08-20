@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /// Item23s :3
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -38,33 +38,33 @@ contract EtherSoccer is ERC721 {
   //uint256 private startingPrice = 0.001 ether;
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoTeam&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoSoccer&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoTeam"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoSoccer"; // solhint-disable-line
 
   /*** STORAGE ***/
 
   /// @dev A mapping from item23 IDs to the address that owns them. All item23s have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public item23IndexToOwner;
+  mapping (uint256 => address) public item23IndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from Item23IDs to an address that has been approved to call
   ///  transferFrom(). Each Item23 can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public item23IndexToApproved;
+  mapping (uint256 => address) public item23IndexToApproved;
 
   // @dev A mapping from Item23IDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private item23IndexToPrice;
+  mapping (uint256 => uint256) private item23IndexToPrice;
 
   /// @dev A mapping from Item23IDs to the previpus price of the token. Used
   /// to calculate price delta for payouts
-  mapping (uint256 =&gt; uint256) private item23IndexToPreviousPrice;
+  mapping (uint256 => uint256) private item23IndexToPreviousPrice;
 
   // @dev A mapping from item23Id to the 7 last owners.
-  mapping (uint256 =&gt; address[5]) private item23IndexToPreviousOwners;
+  mapping (uint256 => address[5]) private item23IndexToPreviousOwners;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -148,10 +148,10 @@ function stringToUint(string _amount) internal constant returns (uint result) {
     totNum--;
     bool hasDot = false;
 
-    for (i = 0; i &lt; b.length; i++) {
+    for (i = 0; i < b.length; i++) {
         uint c = uint(b[i]);
 
-        if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+        if (c >= 48 && c <= 57) {
             result = result * 10 + (c - 48);
             counterBeforeDot ++;
             totNum--;
@@ -164,10 +164,10 @@ function stringToUint(string _amount) internal constant returns (uint result) {
     }
 
     if(hasDot) {
-        for (uint j = counterBeforeDot + 1; j &lt; 18; j++) {
+        for (uint j = counterBeforeDot + 1; j < 18; j++) {
             uint m = uint(b[j]);
 
-            if (m &gt;= 48 &amp;&amp; m &lt;= 57) {
+            if (m >= 48 && m <= 57) {
                 result = result * 10 + (m - 48);
                 counterAfterDot ++;
                 totNum--;
@@ -178,7 +178,7 @@ function stringToUint(string _amount) internal constant returns (uint result) {
             }
         }
     }
-     if(counterAfterDot &lt; 18){
+     if(counterAfterDot < 18){
          uint addNum = 18 - counterAfterDot;
          uint multuply = 10 ** addNum;
          return result = result * multuply;
@@ -247,7 +247,7 @@ function stringToUint(string _amount) internal constant returns (uint result) {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 priceDelta = SafeMath.sub(sellingPrice, previousPrice);
     uint256 ownerPayout = SafeMath.add(previousPrice, SafeMath.mul(SafeMath.div(priceDelta, 100), 40));
@@ -272,7 +272,7 @@ function stringToUint(string _amount) internal constant returns (uint result) {
     }
 
     // Next distribute payout Total among previous Owners
-    for (uint i = 0; i &lt; 5; i++) {
+    for (uint i = 0; i < 5; i++) {
         if (previousOwners[i] != address(this)) {
             strangePrice2+=uint256(SafeMath.mul(SafeMath.div(priceDelta, 100), 10));
         } else {
@@ -331,7 +331,7 @@ function stringToUint(string _amount) internal constant returns (uint result) {
   }
 
   /// @param _owner The owner whose item23 tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Item23s array looking for item23s belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -345,7 +345,7 @@ function stringToUint(string _amount) internal constant returns (uint result) {
       uint256 totalItem23s = totalSupply();
       uint256 resultIndex = 0;
       uint256 item23Id;
-      for (item23Id = 0; item23Id &lt;= totalItem23s; item23Id++) {
+      for (item23Id = 0; item23Id <= totalItem23s; item23Id++) {
         if (item23IndexToOwner[item23Id] == _owner) {
           result[resultIndex] = item23Id;
           resultIndex++;
@@ -408,8 +408,8 @@ function stringToUint(string _amount) internal constant returns (uint result) {
     });
     uint256 newItem23Id = item23s.push(_item23) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newItem23Id == uint256(uint32(newItem23Id)));
 
     Birth(newItem23Id, _name, _owner);
@@ -440,11 +440,11 @@ function stringToUint(string _amount) internal constant returns (uint result) {
 
   /// @dev Assigns ownership of a specific Item23 to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of item23s is capped to 2^32 we can&#39;t overflow this
+    // Since the number of item23s is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     item23IndexToOwner[_tokenId] = _to;
-    // When creating new item23s _from is 0x0, but we can&#39;t account that address.
+    // When creating new item23s _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -485,9 +485,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -495,7 +495,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -504,7 +504,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

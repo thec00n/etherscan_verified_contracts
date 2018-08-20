@@ -29,20 +29,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -57,8 +57,8 @@ contract SafeMath {
  */
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    *
@@ -67,7 +67,7 @@ contract StandardToken is ERC20, SafeMath {
    * http://vessenes.com/the-erc20-short-address-attack-explained/
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) revert();
+     if(msg.data.length < size + 4) revert();
      _;
   }
 
@@ -82,7 +82,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -125,14 +125,14 @@ contract owned {
 
 contract Fish  is owned, StandardToken {
 
-  string public constant TermsOfUSe = &quot;https://github.com/_______________________&quot;;
+  string public constant TermsOfUSe = "https://github.com/_______________________";
 
   /*
    * State variables
    */
 
-  string public constant symbol = &quot;FSH&quot;;
-  string public constant name = &quot;Fish&quot;;
+  string public constant symbol = "FSH";
+  string public constant name = "Fish";
   uint8 public constant decimals = 3;
 
   /*
@@ -159,7 +159,7 @@ contract Fish  is owned, StandardToken {
 
   // Growth rate is present in parts per million (ppm)
   uint32 public dailyGrowth_ppm = 6100;                                         // default growth is 20% (0.61% per day)
-  uint public dailyGrowthUpdated_date = now;                                    // Don&#39;t update it on first day of contract
+  uint public dailyGrowthUpdated_date = now;                                    // Don't update it on first day of contract
   
   uint32 private constant dailyGrowthMin_ppm =  6096;                           // 20% every month in price growth or 0.00610 daily
   uint32 private constant dailyGrowthMax_ppm = 23374;                           // 100% in growth every month or 0,02337 daily
@@ -175,7 +175,7 @@ contract Fish  is owned, StandardToken {
    * Adjust sell price and log the event
    */
   modifier adjustPrice() {
-    if ( (dailyGrowthUpdated_date + 1 days) &lt; now ) {
+    if ( (dailyGrowthUpdated_date + 1 days) < now ) {
       dailyGrowthUpdated_date = now;
       buyPrice_wie = buyPrice_wie * (1000000 + dailyGrowth_ppm) / 1000000;
       sellPrice_wie = buyPrice_wie * sell_ppc / 100;
@@ -198,17 +198,17 @@ contract Fish  is owned, StandardToken {
    * 
    *  Some other daily rates
    *
-   *   Per month -&gt; Value in ppm
-   *      1.3    -&gt;  8783
-   *      1.4    -&gt; 11278
-   *      1.5    -&gt; 13607
-   *      1.6    -&gt; 15790
-   *      1.7    -&gt; 17844
-   *      1.8    -&gt; 19786
+   *   Per month -> Value in ppm
+   *      1.3    ->  8783
+   *      1.4    -> 11278
+   *      1.5    -> 13607
+   *      1.6    -> 15790
+   *      1.7    -> 17844
+   *      1.8    -> 19786
    */
   function setGrowth(uint32 _newGrowth_ppm) onlyOwner external returns(bool result) {
-    if (_newGrowth_ppm &gt;= dailyGrowthMin_ppm &amp;&amp;
-        _newGrowth_ppm &lt;= dailyGrowthMax_ppm
+    if (_newGrowth_ppm >= dailyGrowthMin_ppm &&
+        _newGrowth_ppm <= dailyGrowthMax_ppm
     ) {
       dailyGrowth_ppm = _newGrowth_ppm;
       DailyGrowthUpdate(_newGrowth_ppm);
@@ -242,13 +242,13 @@ contract Fish  is owned, StandardToken {
    *
    */
   function buy() adjustPrice payable external {
-    require(msg.value &gt;= buyPrice_wie);
+    require(msg.value >= buyPrice_wie);
     var amount = safeDiv(msg.value, buyPrice_wie);
 
     assignBountryToReferals(msg.sender, amount);                                // First assign bounty
 
     // Buy discount if User is a new user and has set referral
-    if ( balances[msg.sender] == 0 &amp;&amp; referrals[msg.sender][0] != 0 ) {
+    if ( balances[msg.sender] == 0 && referrals[msg.sender][0] != 0 ) {
       // Check that user has to wait at least two weeks before he get break even on what he will get
       amount = amount * (100 + landingDiscount_ppc) / 100;
     }
@@ -268,17 +268,17 @@ contract Fish  is owned, StandardToken {
    *   Transfer the money
    */
   function sell(uint256 _amount) adjustPrice external {
-    require(_amount &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _amount);
+    require(_amount > 0 && balances[msg.sender] >= _amount);
     uint moneyWorth = safeMul(_amount, sellPrice_wie);
-    require(this.balance &gt; moneyWorth);                                         // We can&#39;t sell if we don&#39;t have enough money
+    require(this.balance > moneyWorth);                                         // We can't sell if we don't have enough money
     
     if (
-        balances[this] + _amount &gt; balances[this] &amp;&amp;
-        balances[msg.sender] - _amount &lt; balances[msg.sender]
+        balances[this] + _amount > balances[this] &&
+        balances[msg.sender] - _amount < balances[msg.sender]
     ) {
-      balances[this] = safeAdd(balances[this], _amount);                        // adds the amount to owner&#39;s balance
-      balances[msg.sender] = safeSub(balances[msg.sender], _amount);            // subtracts the amount from seller&#39;s balance
-      if (!msg.sender.send(moneyWorth)) {                                       // sends ether to the seller. It&#39;s important
+      balances[this] = safeAdd(balances[this], _amount);                        // adds the amount to owner's balance
+      balances[msg.sender] = safeSub(balances[msg.sender], _amount);            // subtracts the amount from seller's balance
+      if (!msg.sender.send(moneyWorth)) {                                       // sends ether to the seller. It's important
         revert();                                                               // to do this last to avoid recursion attacks
       } else {
         Transfer(msg.sender, this, _amount);                                    // executes an event reflecting on the change
@@ -294,7 +294,7 @@ contract Fish  is owned, StandardToken {
    */
   function issueTo(address _beneficiary, uint256 _amount_tkns) private {
     if (
-        balances[this] &gt;= _amount_tkns
+        balances[this] >= _amount_tkns
     ) {
       // All tokens are taken from balance
       balances[this] = safeSub(balances[this], _amount_tkns);
@@ -317,8 +317,8 @@ contract Fish  is owned, StandardToken {
    * This section describes all possible awards.
    */
     
-  mapping(address =&gt; address[3]) referrals;
-  mapping(address =&gt; uint256) bounties;
+  mapping(address => address[3]) referrals;
+  mapping(address => uint256) bounties;
 
   uint32 public constant landingDiscount_ppc = 4;                               // Landing discount is 4%
 
@@ -328,8 +328,8 @@ contract Fish  is owned, StandardToken {
    * reward of whoever told you about this contract. A win-win scenario.
    */
   function referral(address _referral) external returns(bool) {
-    if ( balances[_referral] &gt; 0 &amp;&amp;                                              // Referral participated already
-         balances[msg.sender] == 0  &amp;&amp;                                          // Sender is a new user
+    if ( balances[_referral] > 0 &&                                              // Referral participated already
+         balances[msg.sender] == 0  &&                                          // Sender is a new user
          referrals[msg.sender][0] == 0                                           // Not returning user. User can not reassign their referrals but they can assign them later on
     ) {
       var referral_referrals = referrals[_referral];
@@ -363,10 +363,10 @@ contract Fish  is owned, StandardToken {
    * Santa is coming! Who ever made impact to promote the Fish and can prove it will get the bonus
    */
   function assignBounty(address _account, uint256 _amount) onlyOwner external returns(bool) {
-    require(_amount &gt; 0); 
+    require(_amount > 0); 
      
-    if (balances[_account] &gt; 0 &amp;&amp;                                               // Account had participated already
-        bounties[_account] + _amount &lt;= 1000000                                 // no more than 100 token units per account
+    if (balances[_account] > 0 &&                                               // Account had participated already
+        bounties[_account] + _amount <= 1000000                                 // no more than 100 token units per account
     ) {
       issueTo(_account, _amount);
       return true;

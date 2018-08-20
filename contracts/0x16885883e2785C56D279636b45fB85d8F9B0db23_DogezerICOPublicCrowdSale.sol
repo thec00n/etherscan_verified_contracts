@@ -7,12 +7,12 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint256 x, uint256 y) pure internal returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function sub(uint256 x, uint256 y) pure internal returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -28,7 +28,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -118,7 +118,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -152,7 +152,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -211,7 +211,7 @@ contract StandardToken is ERC20, BasicToken {
 contract DogezerICOPublicCrowdSale is Haltable{
     using SafeMath for uint;
 
-    string public name = &quot;Dogezer Public Sale ITO&quot;;
+    string public name = "Dogezer Public Sale ITO";
 
     address public beneficiary;
 
@@ -228,10 +228,10 @@ contract DogezerICOPublicCrowdSale is Haltable{
     StandardToken public tokenRewardPreDGZ;
         
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint256) public nonWLBalanceOf;
-    mapping(address =&gt; uint256) public preBalanceOf;
-    mapping(address =&gt; bool) public whiteList;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public nonWLBalanceOf;
+    mapping(address => uint256) public preBalanceOf;
+    mapping(address => bool) public whiteList;
 
     event DGZTokensWithdraw(address where, uint amount);
     event DGZTokensSold(address where, uint amount);
@@ -270,12 +270,12 @@ contract DogezerICOPublicCrowdSale is Haltable{
     
     
     modifier onlyAfterStart() {
-        require (now &gt;= startTime);
+        require (now >= startTime);
         _;
     }
 
     modifier onlyBeforeEnd() {
-        require (now &lt; stopTime);
+        require (now < stopTime);
         _;
     }
 
@@ -289,10 +289,10 @@ contract DogezerICOPublicCrowdSale is Haltable{
     function () payable stopInEmergency onlyAfterStart onlyBeforeEnd public
     {
         require (crowdsaleClosed == false);
-        require (tokensAvailableForSale &gt; tokensSoldOnPublicRound);
-        require (msg.value &gt; 500000000000000);
+        require (tokensAvailableForSale > tokensSoldOnPublicRound);
+        require (msg.value > 500000000000000);
 
-        if ((balanceOf[msg.sender] + msg.value) &gt; maxPurchaseNonWhiteListed &amp;&amp; whiteList[msg.sender] == false) 
+        if ((balanceOf[msg.sender] + msg.value) > maxPurchaseNonWhiteListed && whiteList[msg.sender] == false) 
         {
             
             // DGZ tokens are not being reserved for the purchasers who are not in a whitelist yet.
@@ -311,13 +311,13 @@ contract DogezerICOPublicCrowdSale is Haltable{
      * the call of this function. It is recommended to check that addreses being added are VALID and not smartcontracts
      * as problem somewhere in the middle of the loop may cause error which will make all gas to be lost.
      * @param _addresses address[] Pass a bunch of etherium addresses as 
-     *        [&quot;0xca35b7d915458ef540ade6068dfe2f44e8fa733c&quot;, &quot;0x14723a09acff6d2a60dcdf7aa4aff308fddc160c&quot;] to add to WhiteList
+     *        ["0xca35b7d915458ef540ade6068dfe2f44e8fa733c", "0x14723a09acff6d2a60dcdf7aa4aff308fddc160c"] to add to WhiteList
      */        
     function addListToWhiteList (address[] _addresses) public onlyOwner
     {
-        for (uint i = 0; i &lt; _addresses.length; i++)
+        for (uint i = 0; i < _addresses.length; i++)
         {
-            if (nonWLBalanceOf[_addresses[i]] &gt; 0)
+            if (nonWLBalanceOf[_addresses[i]] > 0)
             {
                 sendTokens(_addresses[i], nonWLBalanceOf[_addresses[i]]);
                 nonWLBalanceOf[_addresses[i]] = 0;
@@ -333,7 +333,7 @@ contract DogezerICOPublicCrowdSale is Haltable{
      */    
     function addToWhiteList (address _address) public onlyOwner
     {
-        if (nonWLBalanceOf[_address] &gt; 0)
+        if (nonWLBalanceOf[_address] > 0)
         {
             sendTokens(_address, nonWLBalanceOf[_address]);
             nonWLBalanceOf[_address] = 0;
@@ -343,7 +343,7 @@ contract DogezerICOPublicCrowdSale is Haltable{
     
     
     /**
-     * @notice Finalize sales and sets bounty &amp; yearly paid value. Owned.
+     * @notice Finalize sales and sets bounty & yearly paid value. Owned.
      */        
     function finalizeSale () public onlyOwner
     {
@@ -389,9 +389,9 @@ contract DogezerICOPublicCrowdSale is Haltable{
     {
         require (crowdsaleClosed == true);
         require (
-            ((now &gt; stopTime + 1 years) &amp;&amp; (yearlyTeamTokensPaid[0] == false))
-            || ((now &gt; stopTime + 2 years) &amp;&amp; (yearlyTeamTokensPaid[1] == false))
-            || ((now &gt; stopTime + 3 years) &amp;&amp; (yearlyTeamTokensPaid[2] == false))
+            ((now > stopTime + 1 years) && (yearlyTeamTokensPaid[0] == false))
+            || ((now > stopTime + 2 years) && (yearlyTeamTokensPaid[1] == false))
+            || ((now > stopTime + 3 years) && (yearlyTeamTokensPaid[2] == false))
         );
 
         tokenReward.transfer(beneficiary, yearlyTeamAmount);
@@ -408,13 +408,13 @@ contract DogezerICOPublicCrowdSale is Haltable{
     /**
      * @notice A method to exchange preDGZ tokens to DGZ tokens. To use that method, a person first
      * need to call approve method of preDGZ to define how many tokens to convert. Note that function
-     * doesn&#39;t end with the rest of crowdsale - it may be possible to exchange preDGZ after the end of crowdsale
+     * doesn't end with the rest of crowdsale - it may be possible to exchange preDGZ after the end of crowdsale
      * @dev Exchanged preDGZ tokens are automatically burned.
      */        
     function exchangePreDGZTokens() stopInEmergency onlyAfterStart public
     {
         uint tokenAmount = tokenRewardPreDGZ.allowance(msg.sender, this);
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
         require(tokenRewardPreDGZ.transferFrom(msg.sender, address(0), tokenAmount));
         uint amountSendTokens = tokenAmount * preDGZtoDGZExchangeRate  / 100000000;
         preBalanceOf[msg.sender] += tokenAmount;
@@ -427,14 +427,14 @@ contract DogezerICOPublicCrowdSale is Haltable{
      * makes a mistake and send them to smartcontract without setting the allowance in advance. In such case
      * conversion of tokens by calling exchangePreDGZTokens is not possible. Ownable.
      * @dev IMPORTANT! Should only be called is Dogezer team is in possesion of preDGZ tokens. 
-     * @dev Doesn&#39;t increment tokensSoldOnPublicRound as these tokens are already accounted as preDGZTokensSold
+     * @dev Doesn't increment tokensSoldOnPublicRound as these tokens are already accounted as preDGZTokensSold
      * @param _address address Etherium address where to send tokens as a result of conversion.
      * @param preDGZAmount uint Number of preDGZ to convert.
      */        
     function manuallyExchangeContractPreDGZtoDGZ(address _address, uint preDGZAmount) public onlyOwner
     {
         require (_address != address(0));
-        require (preDGZAmount &gt; 0);
+        require (preDGZAmount > 0);
 
         uint amountSendTokens = preDGZAmount * preDGZtoDGZExchangeRate  / 100000000;
         preBalanceOf[_address] += preDGZAmount;
@@ -453,7 +453,7 @@ contract DogezerICOPublicCrowdSale is Haltable{
     function setTokenPrice (uint week, uint price, uint price5, uint price10) public onlyOwner
     {
         require (crowdsaleClosed == false);
-        require (week &gt;= 1 &amp;&amp; week &lt;= 3);
+        require (week >= 1 && week <= 3);
         if (week == 1)
             price1stWeek = [price, price5, price10];
         else if (week == 2)
@@ -498,24 +498,24 @@ contract DogezerICOPublicCrowdSale is Haltable{
     {
         var prices = price1stWeek;
 
-        if (now &gt;= startTime + 2 weeks)
+        if (now >= startTime + 2 weeks)
             prices = price3rdWeek;
-        else if (now &gt;= startTime + 1 weeks)
+        else if (now >= startTime + 1 weeks)
             prices = price2ndWeek;
 
 
         uint currentPrice = prices[0];
 
-        if (balanceOf[msg_sender] + msg_value &gt;= discountValue5)
+        if (balanceOf[msg_sender] + msg_value >= discountValue5)
         {
             currentPrice = prices[1];
-            if (balanceOf[msg_sender] + msg_value &gt;= discountValue10)
+            if (balanceOf[msg_sender] + msg_value >= discountValue10)
                 currentPrice = prices[2];
         }
 
         uint amountSendTokens = msg_value / currentPrice;
 
-        if (amountSendTokens &gt; (tokensAvailableForSale - tokensSoldOnPublicRound))
+        if (amountSendTokens > (tokensAvailableForSale - tokensSoldOnPublicRound))
         {
             uint tokensAvailable = tokensAvailableForSale - tokensSoldOnPublicRound;
             uint refund = msg_value - (tokensAvailable * currentPrice);

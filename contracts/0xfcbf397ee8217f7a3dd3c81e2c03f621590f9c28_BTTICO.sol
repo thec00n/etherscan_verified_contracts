@@ -19,7 +19,7 @@ contract owned {
   }
 }
 
-// &quot;extern&quot; declare functions from token contract
+// "extern" declare functions from token contract
 interface BitEther {
   function transfer(address to, uint256 value);
   function balanceOf( address owner ) constant returns (uint);
@@ -41,7 +41,7 @@ contract BTTICO is owned {
   }
 
   function() payable {
-    if (now &lt; STARTTIME || now &gt; ENDTIME)
+    if (now < STARTTIME || now > ENDTIME)
       revert();
 
     // (amountinwei/weipereth * bitether/eth) * ( (100 + bonuspercent)/100 )
@@ -49,7 +49,7 @@ contract BTTICO is owned {
     uint qty =
       div(mul(div(mul(msg.value, BTTPERETH),1000000000000000000),(bonus()+100)),100);
 
-    if (qty &gt; tokenSC.balanceOf(address(this)) || qty &lt; 1)
+    if (qty > tokenSC.balanceOf(address(this)) || qty < 1)
       revert();
 
     tokenSC.transfer( msg.sender, qty );
@@ -57,14 +57,14 @@ contract BTTICO is owned {
 
   // unsold tokens can be claimed by owner after sale ends
   function claimUnsold() onlyOwner {
-    if ( now &lt; ENDTIME )
+    if ( now < ENDTIME )
       revert();
 
     tokenSC.transfer( owner, tokenSC.balanceOf(address(this)) );
   }
 
   function withdraw( uint amount ) onlyOwner returns (bool) {
-    if (amount &lt;= this.balance)
+    if (amount <= this.balance)
       return owner.send( amount );
 
     return false;

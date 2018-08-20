@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-/** Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274f424b57674448494442575354094e48">[email&#160;protected]</a> or visit http://concepts.io for questions about this token contract */
+/** Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274f424b57674448494442575354094e48">[email protected]</a> or visit http://concepts.io for questions about this token contract */
 
 /** 
  * @title SafeMath
@@ -20,13 +20,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ interface ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -66,7 +66,7 @@ contract Ownable {
    * @param newOwner The address to transfer ownership to.
    */
   function transferOwnership(address newOwner) onlyOwner public {
-    require(newOwner != address(0) &amp;&amp; msg.sender==owner);
+    require(newOwner != address(0) && msg.sender==owner);
     owner = newOwner;
   }
 }
@@ -76,8 +76,8 @@ contract tokenCreator is Ownable{
     string internal _name;
     uint8 internal _decimals;
     uint internal _totalSupply = 500000000;
-    mapping (address =&gt; uint256) internal _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowed;
+    mapping (address => uint256) internal _balanceOf;
+    mapping (address => mapping (address => uint256)) internal _allowed;
 
     constructor(string symbol, string name, uint8 decimals, uint totalSupply) public {
         _symbol = symbol;
@@ -111,7 +111,7 @@ contract tokenCreator is Ownable{
     function transfer(address _to, uint _value) public returns (bool);
     event Transfer(address indexed _from, address indexed _to, uint _value);
 }
-contract supTokenMaker is tokenCreator(&quot;REPLY&quot;, &quot;True Reply Research Token&quot;, 18, 500000000), ERC20 {
+contract supTokenMaker is tokenCreator("REPLY", "True Reply Research Token", 18, 500000000), ERC20 {
     using SafeMath for uint256;
 
     event TokenTransferRequest(string method,address from, address backer, uint amount);
@@ -129,8 +129,8 @@ contract supTokenMaker is tokenCreator(&quot;REPLY&quot;, &quot;True Reply Resea
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        emit TokenTransferRequest(&quot;transfer&quot;,msg.sender, _to, _value);
-        require(_value &gt; 0 &amp;&amp; _value &lt;= _balanceOf[msg.sender]);
+        emit TokenTransferRequest("transfer",msg.sender, _to, _value);
+        require(_value > 0 && _value <= _balanceOf[msg.sender]);
 
         _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);
         _balanceOf[_to] = _balanceOf[_to].add(_value);
@@ -138,8 +138,8 @@ contract supTokenMaker is tokenCreator(&quot;REPLY&quot;, &quot;True Reply Resea
         return true;
     }
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        emit TokenTransferRequest(&quot;transferFrom&quot;,_from, _to, _value);
-        require(_to != address(0) &amp;&amp; _value &lt;= _balanceOf[_from] &amp;&amp; _value &lt;= _allowed[_from][msg.sender] &amp;&amp; _value &gt; 0);
+        emit TokenTransferRequest("transferFrom",_from, _to, _value);
+        require(_to != address(0) && _value <= _balanceOf[_from] && _value <= _allowed[_from][msg.sender] && _value > 0);
 
         _balanceOf[_from] =  _balanceOf[_from].sub(_value);
         _balanceOf[_to] = _balanceOf[_to].add(_value);

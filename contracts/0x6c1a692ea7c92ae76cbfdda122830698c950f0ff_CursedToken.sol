@@ -15,8 +15,8 @@ contract ApproveAndCallFallBack {
 }
 
 contract CursedToken is ERC20 {
-    string public symbol = &quot;CCB&quot;;
-    string public name = &quot;Cursed Cornbread&quot;;
+    string public symbol = "CCB";
+    string public name = "Cursed Cornbread";
     uint8 public decimals = 0;
     uint public totalSupply = 0;
     address public owner = 0x55516b579E56C1287f0700eddDa352C2d2c5b3b6;
@@ -25,20 +25,20 @@ contract CursedToken is ERC20 {
     // https://web.archive.org/web/20180313215224/https://www.givedirectly.org/give-now?crypto=eth#
     address public withdrawAddress = 0xa515BDA9869F619fe84357E3e44040Db357832C4;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function CursedToken() public {
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 

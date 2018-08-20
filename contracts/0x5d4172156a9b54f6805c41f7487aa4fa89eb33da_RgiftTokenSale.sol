@@ -53,20 +53,20 @@ contract RgiftTokenSale {
     }
 
     function () payable public {
-        require(msg.value == (1 ether / 2) || msg.value == 1 ether  || msg.value == (1 ether + (1 ether / 2)) || msg.value == 2 ether || msg.value &gt;= 3 ether);
-        require(now &gt; startDate);
+        require(msg.value == (1 ether / 2) || msg.value == 1 ether  || msg.value == (1 ether + (1 ether / 2)) || msg.value == 2 ether || msg.value >= 3 ether);
+        require(now > startDate);
         uint amount = 0;
-        if (msg.value &lt; 1 ether){ 
+        if (msg.value < 1 ether){ 
             amount = msg.value * price;
-        } else if (msg.value &gt;= 1 ether &amp;&amp; msg.value &lt; 2 ether){
+        } else if (msg.value >= 1 ether && msg.value < 2 ether){
             amount = msg.value * price;
             uint _amount = amount / 10;
             amount += _amount * 3;
-        } else if (msg.value &gt;= 2 ether &amp;&amp; msg.value &lt; 3 ether){
+        } else if (msg.value >= 2 ether && msg.value < 3 ether){
             amount = msg.value * price;
              _amount = amount / 5;
             amount += _amount * 2;
-        } else if (msg.value &gt;= 3 ether){
+        } else if (msg.value >= 3 ether){
             amount = msg.value * price;
              _amount = amount / 5;
             amount += _amount * 3;

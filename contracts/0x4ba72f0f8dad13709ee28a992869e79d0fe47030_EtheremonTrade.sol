@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="90f3fffee4f1f3e4d0d5e4f8f5e2f5fdfffebef3fffd">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="90f3fffee4f1f3e4d0d5e4f8f5e2f5fdfffebef3fffd">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -168,7 +168,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         uint createTime;
     }
     
-    // Gen0 has return price &amp; no longer can be caught when this contract is deployed
+    // Gen0 has return price & no longer can be caught when this contract is deployed
     struct Gen0Config {
         uint32 classId;
         uint256 originalPrice;
@@ -199,20 +199,20 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     // data contract
     address public dataContract;
     address public battleContract;
-    mapping(uint32 =&gt; Gen0Config) public gen0Config;
+    mapping(uint32 => Gen0Config) public gen0Config;
     
     // for selling
-    mapping(uint64 =&gt; SellingItem) public sellingDict;
+    mapping(uint64 => SellingItem) public sellingDict;
     uint32 public totalSellingItem;
     uint64[] public sellingList;
     
     // for borrowing
-    mapping(uint64 =&gt; BorrowItem) public borrowingDict;
+    mapping(uint64 => BorrowItem) public borrowingDict;
     uint32 public totalBorrowingItem;
     uint64[] public borrowingList;
     
-    mapping(address =&gt; uint64[]) public lendingList;
-    mapping(address =&gt; SoldItem[]) public soldList;
+    mapping(address => uint64[]) public lendingList;
+    mapping(address => SoldItem[]) public soldList;
     
     // trading fee
     uint16 public tradingFeePercentage = 1;
@@ -243,7 +243,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         battleContract = _battleContract;
     }
     
-     // admin &amp; moderators
+     // admin & moderators
     function setOriginalPriceGen0() onlyModerators public {
         gen0Config[1] = Gen0Config(1, 0.3 ether, 0.003 ether, 374);
         gen0Config[2] = Gen0Config(2, 0.3 ether, 0.003 ether, 408);
@@ -283,7 +283,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators public {
         // no user money is kept in this contract, only trasaction fee
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -296,7 +296,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         if (item.index == 0)
             return;
         
-        if (item.index &lt;= sellingList.length) {
+        if (item.index <= sellingList.length) {
             // Move an existing element into the vacated key slot.
             sellingDict[sellingList[sellingList.length-1]].index = item.index;
             sellingList[item.index-1] = sellingList[sellingList.length-1];
@@ -320,7 +320,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         if (item.index == 0)
             return;
         
-        if (item.index &lt;= borrowingList.length) {
+        if (item.index <= borrowingList.length) {
             // Move an existing element into the vacated key slot.
             borrowingDict[borrowingList[borrowingList.length-1]].index = item.index;
             borrowingList[item.index-1] = borrowingList[borrowingList.length-1];
@@ -350,15 +350,15 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         (obj.monsterId, obj.classId, obj.trainer, obj.exp, obj.createIndex, obj.lastClaimIndex, obj.createTime) = data.getMonsterObj(_objId);
 
         // clear balance for gen 0
-        if (obj.classId &lt;= GEN0_NO) {
+        if (obj.classId <= GEN0_NO) {
             Gen0Config storage gen0 = gen0Config[obj.classId];
             if (gen0.classId == obj.classId) {
-                if (obj.lastClaimIndex &lt; gen0.total) {
+                if (obj.lastClaimIndex < gen0.total) {
                     uint32 gap = uint32(safeSubtract(gen0.total, obj.lastClaimIndex));
-                    if (gap &gt; 0) {
+                    if (gap > 0) {
                         data.addExtraBalance(obj.trainer, safeMult(gap, gen0.returnPrice));
                         // reset total (accept name is cleared :( )
-                        data.setMonsterObj(obj.monsterId, &quot; name me &quot;, obj.exp, obj.createIndex, gen0.total);
+                        data.setMonsterObj(obj.monsterId, " name me ", obj.exp, obj.createIndex, gen0.total);
                     }
                 }
             }
@@ -372,7 +372,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     function addItemLendingList(address _trainer, uint64 _objId) private {
         if (_trainer != address(0)) {
             uint64[] storage objList = lendingList[_trainer];
-            for (uint index = 0; index &lt; objList.length; index++) {
+            for (uint index = 0; index < objList.length; index++) {
                 if (objList[index] == _objId) {
                     return;
                 }
@@ -384,12 +384,12 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     function removeItemLendingList(address _trainer, uint64 _objId) private {
         uint foundIndex = 0;
         uint64[] storage objList = lendingList[_trainer];
-        for (; foundIndex &lt; objList.length; foundIndex++) {
+        for (; foundIndex < objList.length; foundIndex++) {
             if (objList[foundIndex] == _objId) {
                 break;
             }
         }
-        if (foundIndex &lt; objList.length) {
+        if (foundIndex < objList.length) {
             objList[foundIndex] = objList[objList.length-1];
             delete objList[objList.length-1];
             objList.length--;
@@ -402,7 +402,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
             revert();
         // not on borrowing
         BorrowItem storage item = borrowingDict[_objId];
-        if (item.index &gt; 0)
+        if (item.index > 0)
             revert();
         // not on battle 
         EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
@@ -424,7 +424,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         }
         
         // on selling, then just update price
-        if (sellingDict[_objId].index &gt; 0){
+        if (sellingDict[_objId].index > 0){
             sellingDict[_objId].price = _price;
         } else {
             addSellingItem(_objId, _price);
@@ -486,7 +486,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function offerBorrowingItem(uint64 _objId, uint256 _price, uint _releaseTime) requireDataContract requireBattleContract isActive external {
         // make sure it is not on sale 
-        if (sellingDict[_objId].price &gt; 0 || _price == 0)
+        if (sellingDict[_objId].price > 0 || _price == 0)
             revert();
         // not on lent
         BorrowItem storage item = borrowingDict[_objId];
@@ -512,7 +512,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
             revert();
         }
         
-        if (item.index &gt; 0) {
+        if (item.index > 0) {
             // update info 
             item.price = _price;
             item.releaseTime = _releaseTime;
@@ -576,7 +576,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
             revert();
         if (item.lent == false)
             revert();
-        if (item.releaseTime &gt; block.timestamp)
+        if (item.releaseTime > block.timestamp)
             revert();
         
         if (msg.sender != item.owner)
@@ -590,11 +590,11 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function freeTransferItem(uint64 _objId, address _receiver) requireDataContract requireBattleContract external {
         // make sure it is not on sale 
-        if (sellingDict[_objId].price &gt; 0)
+        if (sellingDict[_objId].price > 0)
             revert();
         // not on borrowing
         BorrowItem storage item = borrowingDict[_objId];
-        if (item.index &gt; 0)
+        if (item.index > 0)
             revert();
         // not on battle 
         EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
@@ -621,11 +621,11 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function release(uint64 _objId) requireDataContract requireBattleContract external {
         // make sure it is not on sale 
-        if (sellingDict[_objId].price &gt; 0)
+        if (sellingDict[_objId].price > 0)
             revert();
         // not on borrowing
         BorrowItem storage item = borrowingDict[_objId];
-        if (item.index &gt; 0)
+        if (item.index > 0)
             revert();
         // not on battle 
         EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
@@ -639,7 +639,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
         (obj.monsterId, obj.classId, obj.trainer, obj.exp, _, _, obj.createTime) = data.getMonsterObj(_objId);
         
         // can not release gen 0
-        if (obj.classId &lt;= GEN0_NO) {
+        if (obj.classId <= GEN0_NO) {
             revert();
         }
         
@@ -679,7 +679,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
 
     function getSellingItem(uint _index) constant external returns(uint64 objId, uint32 classId, uint32 exp, uint64 bp, address trainer, uint createIndex, uint256 price) {
         objId = sellingList[_index];
-        if (objId &gt; 0) {
+        if (objId > 0) {
             (classId, trainer, exp, createIndex) = getBasicObjInfo(objId);
             EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
             bp = battle.getMonsterCP(objId);
@@ -689,7 +689,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getSellingItemByObjId(uint64 _objId) constant external returns(uint32 classId, uint32 exp, uint64 bp, address trainer, uint createIndex, uint256 price) {
         price = sellingDict[_objId].price;
-        if (price &gt; 0) {
+        if (price > 0) {
             (classId, trainer, exp, createIndex) = getBasicObjInfo(_objId);
             EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
             bp = battle.getMonsterCP(_objId);
@@ -732,13 +732,13 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getSoldItem(address _trainer, uint _index) constant external returns(uint64 objId, uint32 classId, uint32 exp, uint64 bp, address currentOwner, 
         uint createIndex, uint256 price, uint time) {
-        if (_index &gt; soldList[_trainer].length)
+        if (_index > soldList[_trainer].length)
             return;
         SoldItem memory soldItem = soldList[_trainer][_index];
         objId = soldItem.objId;
         price = soldItem.price;
         time = soldItem.time;
-        if (objId &gt; 0) {
+        if (objId > 0) {
             (classId, currentOwner, exp, createIndex) = getBasicObjInfo(objId);
             EtheremonBattleInterface battle = EtheremonBattleInterface(battleContract);
             bp = battle.getMonsterCP(objId);
@@ -751,7 +751,7 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getLendingItemInfo(address _trainer, uint _index) constant external returns(uint64 objId, address owner, address borrower, 
         uint256 price, bool lent, uint releaseTime, uint32 classId, uint32 exp, uint32 createIndex, uint64 bp) {
-        if (_index &gt; lendingList[_trainer].length)
+        if (_index > lendingList[_trainer].length)
             return;
         objId = lendingList[_trainer][_index];
         BorrowItem storage item = borrowingDict[objId];
@@ -773,6 +773,6 @@ contract EtheremonTrade is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     function isOnTrading(uint64 _objId) constant external returns(bool) {
-        return (sellingDict[_objId].price &gt; 0 || borrowingDict[_objId].owner != address(0));
+        return (sellingDict[_objId].price > 0 || borrowingDict[_objId].owner != address(0));
     }
 }

@@ -2,10 +2,10 @@ pragma solidity ^0.4.11;
 
 contract Erc20Token {
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /* Map between users and their approval addresses and amounts */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /* List of all token holders */
     address[] allTokenHolders;
@@ -37,14 +37,14 @@ contract Erc20Token {
 
      /* Transfer funds between two addresses that are not the current msg.sender - this requires approval to have been set separately and follows standard ERC20 guidelines */
      function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
-            bool isNew = balances[_to] &lt; 1;
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
+            bool isNew = balances[_to] < 1;
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
             if (isNew)
                 tokenOwnerAdd(_to);
-            if (balances[_from] &lt; 1)
+            if (balances[_from] < 1)
                 tokenOwnerRemove(_from);
             Transfer(_from, _to, _amount);
             return true;
@@ -74,14 +74,14 @@ contract Erc20Token {
         return balances[_owner];
     }
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) returns (bool success) {
         /* Check if sender has balance and for overflows */
-        if (balances[msg.sender] &lt; _amount || balances[_to] + _amount &lt; balances[_to])
+        if (balances[msg.sender] < _amount || balances[_to] + _amount < balances[_to])
             throw;
 
-        /* Do a check to see if they are new, if so we&#39;ll want to add it to our array */
-        bool isRecipientNew = balances[_to] &lt; 1;
+        /* Do a check to see if they are new, if so we'll want to add it to our array */
+        bool isRecipientNew = balances[_to] < 1;
 
         /* Add and subtract new balances */
         balances[msg.sender] -= _amount;
@@ -90,7 +90,7 @@ contract Erc20Token {
         /* Consolidate arrays if they are new or if sender now has empty balance */
         if (isRecipientNew)
             tokenOwnerAdd(_to);
-        if (balances[msg.sender] &lt; 1)
+        if (balances[msg.sender] < 1)
             tokenOwnerRemove(msg.sender);
 
         /* Fire notification event */
@@ -102,12 +102,12 @@ contract Erc20Token {
     function tokenOwnerAdd(address _addr) internal {
         /* First check if they already exist */
         uint256 tokenHolderCount = allTokenHolders.length;
-        for (uint256 i = 0; i &lt; tokenHolderCount; i++)
+        for (uint256 i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr)
                 /* Already found so we can abort now */
                 return;
 
-        /* They don&#39;t seem to exist, so let&#39;s add them */
+        /* They don't seem to exist, so let's add them */
         allTokenHolders.length++;
         allTokenHolders[allTokenHolders.length - 1] = _addr;
     }
@@ -119,25 +119,25 @@ contract Erc20Token {
         uint256 foundIndex = 0;
         bool found = false;
         uint256 i;
-        for (i = 0; i &lt; tokenHolderCount; i++)
+        for (i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr) {
                 foundIndex = i;
                 found = true;
                 break;
             }
 
-        /* If we didn&#39;t find them just return */
+        /* If we didn't find them just return */
         if (!found)
             return;
 
         /* We now need to shuffle down the array */
-        for (i = foundIndex; i &lt; tokenHolderCount - 1; i++)
+        for (i = foundIndex; i < tokenHolderCount - 1; i++)
             allTokenHolders[i] = allTokenHolders[i + 1];
         allTokenHolders.length--;
     }
 }
 
-contract ImperialCredits is Erc20Token(&quot;Imperial Credits&quot;, &quot;XIC&quot;, 0) {
+contract ImperialCredits is Erc20Token("Imperial Credits", "XIC", 0) {
     address owner;
     bool public isIco  = true;
 
@@ -151,11 +151,11 @@ contract ImperialCredits is Erc20Token(&quot;Imperial Credits&quot;, &quot;XIC&q
     function icoClose() {
       if (msg.sender != owner || !isIco)
         throw;
-      if (this.balance &gt; 0)
+      if (this.balance > 0)
         if (!owner.send(this.balance))
           throw;
       uint256 remaining = 1000000000 - totalSupplyAmount;
-      if (remaining &gt; 0) {
+      if (remaining > 0) {
         balances[msg.sender] += remaining;
         totalSupplyAmount = 1000000000;
       }
@@ -163,7 +163,7 @@ contract ImperialCredits is Erc20Token(&quot;Imperial Credits&quot;, &quot;XIC&q
     }
 
     function destroyCredits(uint256 amount) {
-      if (balances[msg.sender] &lt; amount)
+      if (balances[msg.sender] < amount)
         throw;
       balances[msg.sender] -= amount;
       totalSupplyAmount -= amount;
@@ -176,11 +176,11 @@ contract ImperialCredits is Erc20Token(&quot;Imperial Credits&quot;, &quot;XIC&q
     }
 
     function () payable {
-        if (totalSupplyAmount &gt;= 1000000000 || !isIco)
+        if (totalSupplyAmount >= 1000000000 || !isIco)
           throw;
         uint256 mintAmount = msg.value / 100000000000000;
         uint256 maxMint = 1000000000 - totalSupplyAmount;
-        if (mintAmount &gt; maxMint)
+        if (mintAmount > maxMint)
           mintAmount = maxMint;
         uint256 change = msg.value - (100000000000000 * mintAmount);
         if (!msg.sender.send(change))

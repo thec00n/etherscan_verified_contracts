@@ -1,8 +1,8 @@
 /**
- * Investors relations: <span class="__cf_email__" data-cfemail="a3d3c2d1d7cdc6d1d0e3dbd1d3c0cccdcdc6c0d78dc0cc">[email&#160;protected]</span>
+ * Investors relations: <span class="__cf_email__" data-cfemail="a3d3c2d1d7cdc6d1d0e3dbd1d3c0cccdcdc6c0d78dc0cc">[email protected]</span>
  * 
  * Ken Brannon
- * Contact: <span class="__cf_email__" data-cfemail="2249474c625a5052414d4c4c4741560c414d">[email&#160;protected]</span>
+ * Contact: <span class="__cf_email__" data-cfemail="2249474c625a5052414d4c4c4741560c414d">[email protected]</span>
 **/
 
 pragma solidity ^0.4.18;
@@ -30,20 +30,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -108,7 +108,7 @@ contract newCrowdsale is Ownable {
     uint256 public endTime;
   
     // to maintain a list of owners and their specific equity percentages
-    mapping(address=&gt;uint256) public ownerAddresses;  //the first one would always be the major owner
+    mapping(address=>uint256) public ownerAddresses;  //the first one would always be the major owner
     
     address[] owners;
     
@@ -149,7 +149,7 @@ contract newCrowdsale is Ownable {
         startTime = now + _daysToStart;   
         endTime = startTime + 90 days;
         
-        require(endTime &gt;= startTime);
+        require(endTime >= startTime);
         require(_walletMajorOwner != 0x0);
         
         ownerAddresses[_walletMajorOwner] = majorOwnerShares;
@@ -189,14 +189,14 @@ contract newCrowdsale is Ownable {
     
      // send ether to the fund collection wallet(s)
     function forwardFunds(uint256 partnerTokenAmount) internal {
-      for (uint i=0;i&lt;owners.length;i++)
+      for (uint i=0;i<owners.length;i++)
       {
          uint percent = ownerAddresses[owners[i]];
          uint amountToBeSent = msg.value.mul(percent);
          amountToBeSent = amountToBeSent.div(100);
          owners[i].transfer(amountToBeSent);
          
-         if (owners[i]!=owner &amp;&amp;  ownerAddresses[owners[i]]&gt;0)
+         if (owners[i]!=owner &&  ownerAddresses[owners[i]]>0)
          {
              token.transfer(owners[i],partnerTokenAmount);
          }
@@ -210,7 +210,7 @@ contract newCrowdsale is Ownable {
     function addPartner(address partner) public onlyOwner {
 
         require(partner != 0x0);
-        require(ownerAddresses[owner] &gt;=20);
+        require(ownerAddresses[owner] >=20);
         require(ownerAddresses[partner] == 0);
         owners.push(partner);
         ownerAddresses[partner] = 10;
@@ -224,8 +224,8 @@ contract newCrowdsale is Ownable {
      **/ 
     function removePartner(address partner) public onlyOwner  {
         require(partner != 0x0);
-        require(ownerAddresses[partner] &gt; 0);
-        require(ownerAddresses[owner] &lt;= 90);
+        require(ownerAddresses[partner] > 0);
+        require(ownerAddresses[owner] <= 90);
         ownerAddresses[partner] = 0;
         uint majorOwnerShare = ownerAddresses[owner];
         ownerAddresses[owner] = majorOwnerShare.add(10);
@@ -233,14 +233,14 @@ contract newCrowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
   
     function showMyTokenBalance(address myAddress) public returns (uint256 tokenBalance) {

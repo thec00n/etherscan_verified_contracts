@@ -15,13 +15,13 @@ contract ERC20 {
         }
 
 contract ESOFTCOIN is ERC20 {
-        string public constant name=&quot;ESOFTCOIN&quot;;
-        string public constant symbol=&quot;ESC&quot;;
+        string public constant name="ESOFTCOIN";
+        string public constant symbol="ESC";
         uint256 public constant decimals=18;
         uint public  totalSupply=20000000 * 10 ** uint256(decimals);
 
-        mapping(address =&gt; uint256) balances;
-        mapping (address =&gt; mapping (address =&gt; uint256)) public allowedToSpend;
+        mapping(address => uint256) balances;
+        mapping (address => mapping (address => uint256)) public allowedToSpend;
      
 
         function ESOFTCOIN() public{
@@ -56,7 +56,7 @@ contract ESOFTCOIN is ERC20 {
         */
         function transfer(address _to, uint256 _value) public returns (bool) {
                 require(_to != address(0));
-                require(_value &lt;= balances[msg.sender]);
+                require(_value <= balances[msg.sender]);
 
                 // SafeMath.sub will throw if there is not enough balance.
                 balances[msg.sender] -=_value;
@@ -74,8 +74,8 @@ contract ESOFTCOIN is ERC20 {
         */
         function transferFrom(address _from,address _to, uint256 _value) public returns (bool) {
                 require(_to != address(0));
-                require(_value &lt;= balances[msg.sender]);
-                require(_value &lt;= allowedToSpend[_from][msg.sender]);     // Check allowance
+                require(_value <= balances[msg.sender]);
+                require(_value <= allowedToSpend[_from][msg.sender]);     // Check allowance
                 allowedToSpend[_from][msg.sender] -= _value;
                 // SafeMath.sub will throw if there is not enough balance.
                 balances[msg.sender] -= _value;
@@ -127,19 +127,19 @@ contract ESOFTCOINCROWDSALE is ESOFTCOIN{
         }
 
         function getRate() view public returns(uint){
-                if(now&gt;=_presaleStartTimestamp &amp;&amp; now&lt;= _presaleEndTimestamp ){
+                if(now>=_presaleStartTimestamp && now<= _presaleEndTimestamp ){
                         return _tokenPresalesRate;
                 }
-                else if(now &gt;=_batch1_icosaleStartTimestamp &amp;&amp; now &lt;=_batch1_icosaleEndTimestamp){
+                else if(now >=_batch1_icosaleStartTimestamp && now <=_batch1_icosaleEndTimestamp){
                        return  _batch1_rate;
                 }
-                else if(now &gt;=_batch2_icosaleStartTimestamp &amp;&amp; now&lt;=_batch2_icosaleEndTimestamp){
+                else if(now >=_batch2_icosaleStartTimestamp && now<=_batch2_icosaleEndTimestamp){
                        return  _batch2_rate;
                 }
-                else if(now &gt;=_batch3_icosaleStartTimestamp &amp;&amp; now&lt;=_batch3_icosaleEndTimestamp){
+                else if(now >=_batch3_icosaleStartTimestamp && now<=_batch3_icosaleEndTimestamp){
                        return  _batch3_rate;
                 }
-                else if(now &gt;=_batch4_icosaleStartTimestamp){
+                else if(now >=_batch4_icosaleStartTimestamp){
                        return  _batch4_rate;
                 }
         }
@@ -156,9 +156,9 @@ contract ESOFTCOINCROWDSALE is ESOFTCOIN{
                 // Prevent transfer to 0x0 address. Use burn() instead
                 require(_to != 0x0);
                 // Check if the sender has enough
-                require(balances[_from] &gt;= _value);
+                require(balances[_from] >= _value);
                 // Check for overflows
-                require(balances[_to] + _value &gt; balances[_to]);
+                require(balances[_to] + _value > balances[_to]);
                 // Subtract from the sender
                 balances[_from] -= _value;
                 // Add the same to the recipient
@@ -178,7 +178,7 @@ contract ESOFTCOINCROWDSALE is ESOFTCOIN{
 
         function issueTokens(address _tokenBuyer, uint _valueofTokens) internal {
                 require(_tokenBuyer != 0x0);
-                require(_valueofTokens &gt;0);
+                require(_valueofTokens >0);
                 uint _amountofTokens=calculateTokens(_valueofTokens);
               _transfer(_owner,_tokenBuyer,_amountofTokens);
         }
@@ -191,7 +191,7 @@ contract ESOFTCOINCROWDSALE is ESOFTCOIN{
         
 
         function forwardFunds()internal {
-                 require(msg.value&gt;0);
+                 require(msg.value>0);
                 _wallet.transfer((msg.value * 950)/1000);
                 paygasfunds();
         }

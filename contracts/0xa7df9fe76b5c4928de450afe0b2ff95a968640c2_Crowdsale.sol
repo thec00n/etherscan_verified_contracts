@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -71,20 +71,20 @@ library SafeMath {
     }
     
     function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure  returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
     
     bool freeze = false;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     uint endOfICO = 1527681600; // 05.30.2018 12:00
     
@@ -115,7 +115,7 @@ contract BasicToken is ERC20Basic {
     * @dev Throws if called before the end of ICO.
     */
     modifier restrictionOnUse() {
-        require(now &gt; endOfICO);
+        require(now > endOfICO);
         _;
     }
     
@@ -163,7 +163,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     /**
     * @dev Transfers tokens from one address to another.
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
     * @param _value The amount of tokens to be transfered.
     */
     function transferFrom(address _from, address _to, uint256 _value) public restrictionOnUse isNotFrozen returns(bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         var _allowance = allowed[_from][msg.sender];
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public restrictionOnUse isNotFrozen returns (bool) {
-        require((_value &gt; 0)&amp;&amp;(_value &lt;= balances[msg.sender]));
+        require((_value > 0)&&(_value <= balances[msg.sender]));
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -259,7 +259,7 @@ contract BurnableToken is MintableToken {
     * @param _value The amount of token to be burned.
     */
     function burn(uint _value) restrictionOnUse isNotFrozen public returns (bool success) {
-        require((_value &gt; 0) &amp;&amp; (_value &lt;= balances[msg.sender]));
+        require((_value > 0) && (_value <= balances[msg.sender]));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(msg.sender, _value);
@@ -272,7 +272,7 @@ contract BurnableToken is MintableToken {
     * @param _from The address which you want to burn tokens from.
     */
     function burnFrom(address _from, uint _value) restrictionOnUse isNotFrozen public returns (bool success) {
-        require((balances[_from] &gt; _value) &amp;&amp; (_value &lt;= allowed[_from][msg.sender]));
+        require((balances[_from] > _value) && (_value <= allowed[_from][msg.sender]));
         var _allowance = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -296,9 +296,9 @@ contract SimpleTokenCoin is BurnableToken {
     address public forFund = 0x7b7c6d8ce28923e39611dD14A68DA6Af63c63FF7;
     address public forLoyalty = 0x22152A186AaD84b0eaadAD00e3F19547C30CcB02;
     
-    string public constant name = &quot;CoinTour&quot;;
+    string public constant name = "CoinTour";
     
-    string public constant symbol = &quot;COT&quot;;
+    string public constant symbol = "COT";
     
     uint32 public constant decimals = 8;
     
@@ -336,7 +336,7 @@ contract SimpleTokenCoin is BurnableToken {
      * @param bonus Array of amount of tokens to send.
      */
     function multisend(address[] users, uint[] bonus) public {
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             transfer(users[i], bonus[i]);
         }
     }
@@ -385,10 +385,10 @@ contract Crowdsale is SimpleTokenCoin {
     
     uint public availableTokensAmount;
     
-    mapping(address =&gt; uint) ethBalance;
+    mapping(address => uint) ethBalance;
     
     /**
-    * @dev Data type to save bonus system&#39;s information.
+    * @dev Data type to save bonus system's information.
     */
     struct BonusSystem {
         //Period number
@@ -413,7 +413,7 @@ contract Crowdsale is SimpleTokenCoin {
     * @param bonuses Percentage of bonus for each period.
     */
     function changeBonusSystem(uint[] percentageOfTokens, uint[] bonuses) public onlyOwner{
-        for (uint i = 0; i &lt; bonus.length; i++) {
+        for (uint i = 0; i < bonus.length; i++) {
             bonus[i].tokensPerPeriod = availableTokensAmount / 100 * percentageOfTokens[i];
             bonus[i].bonus = bonuses[i];
         }
@@ -436,8 +436,8 @@ contract Crowdsale is SimpleTokenCoin {
     * @dev Gets current bonus system.
     */
     function getCurrentBonusSystem() public constant returns (BonusSystem) {
-      for (uint i = 0; i &lt; bonus.length; i++) {
-        if (bonus[i].start &lt;= now &amp;&amp; bonus[i].end &gt;= now) {
+      for (uint i = 0; i < bonus.length; i++) {
+        if (bonus[i].start <= now && bonus[i].end >= now) {
           return bonus[i];
         }
       }
@@ -493,7 +493,7 @@ contract Crowdsale is SimpleTokenCoin {
     * @dev Throws if called when the period or tokens are over.
     */
     modifier isUnderPeriodLimit() {
-        require(getCurrentBonusSystem().start &lt;= now &amp;&amp; getCurrentBonusSystem().end &gt;= now &amp;&amp; getCurrentBonusSystem().tokensPerPeriod - getCurrentBonusSystem().soldTokens &gt; 0);
+        require(getCurrentBonusSystem().start <= now && getCurrentBonusSystem().end >= now && getCurrentBonusSystem().tokensPerPeriod - getCurrentBonusSystem().soldTokens > 0);
         _;
     }
 
@@ -511,11 +511,11 @@ contract Crowdsale is SimpleTokenCoin {
     }
     
     /**
-    * @dev Refund &#39;msg.sender&#39; in the case the Token Sale didn&#39;t 
+    * @dev Refund 'msg.sender' in the case the Token Sale didn't 
     * reach the minimum funding goal.
     */
     function refund() restrictionOnUse isNotFrozen public {
-        require(this.balance &lt; softcap);
+        require(this.balance < softcap);
         uint value = ethBalance[msg.sender]; 
         ethBalance[msg.sender] = 0; 
         msg.sender.transfer(value); 
@@ -528,7 +528,7 @@ contract Crowdsale is SimpleTokenCoin {
         uint tokens = rate.mul(msg.value).div(1 ether);
         uint bonusTokens = tokens / 100 * getCurrentBonusSystem().bonus;
         tokens += bonusTokens;
-        if (msg.value &lt; 10 finney || (tokens &gt; getCurrentBonusSystem().tokensPerPeriod.sub(getCurrentBonusSystem().soldTokens))) {
+        if (msg.value < 10 finney || (tokens > getCurrentBonusSystem().tokensPerPeriod.sub(getCurrentBonusSystem().soldTokens))) {
             msg.sender.transfer(msg.value);
         }
         else {

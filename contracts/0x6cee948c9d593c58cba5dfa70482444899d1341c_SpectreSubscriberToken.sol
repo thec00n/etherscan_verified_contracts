@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -116,7 +116,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -160,7 +160,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -174,7 +174,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -211,7 +211,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -230,19 +230,19 @@ contract StandardToken is ERC20, BasicToken {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -258,20 +258,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -301,13 +301,13 @@ library SafeMath {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -359,8 +359,8 @@ contract Controlled {
 contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   using SafeMath for uint;
 
-  string public constant name = &quot;SPECTRE SUBSCRIBER TOKEN&quot;;
-  string public constant symbol = &quot;SXS&quot;;
+  string public constant name = "SPECTRE SUBSCRIBER TOKEN";
+  string public constant symbol = "SXS";
   uint256 public constant decimals = 18;
 
   uint256 constant public TOKENS_AVAILABLE             = 240000000 * 10**decimals;
@@ -387,11 +387,11 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   uint256 public discountSaleEnd;
 
   //whitelisting
-  mapping(address =&gt; uint256) public whitelist;
+  mapping(address => uint256) public whitelist;
   uint256 constant D160 = 0x0010000000000000000000000000000000000000000;
 
   //bonus earned
-  mapping(address =&gt; uint256) public bonus;
+  mapping(address => uint256) public bonus;
 
   event Refund(address indexed _to, uint256 _value);
   event ContractFunded(address indexed _from, uint256 _value, uint256 _total);
@@ -411,8 +411,8 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
 
   modifier isTransferable() {
     require(tokenAddressesSet);
-    require(getNow() &gt; saleEnd);
-    require(totalSupply &gt;= MIN_CAP);
+    require(getNow() > saleEnd);
+    require(totalSupply >= MIN_CAP);
     _;
   }
 
@@ -434,10 +434,10 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   //@notice Fallback function that accepts the ether and allocates tokens to
   //the msg.sender corresponding to msg.value
   function() payable whenNotPaused public {
-    require(msg.value &gt;= MIN_FUND_AMOUNT);
-    if(getNow() &gt;= presaleStart &amp;&amp; getNow() &lt;= presaleEnd) {
+    require(msg.value >= MIN_FUND_AMOUNT);
+    if(getNow() >= presaleStart && getNow() <= presaleEnd) {
       purchasePresale();
-    } else if (getNow() &gt;= saleStart &amp;&amp; getNow() &lt;= saleEnd) {
+    } else if (getNow() >= saleStart && getNow() <= saleEnd) {
       purchase();
     } else {
       revert();
@@ -447,12 +447,12 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   //@notice function to be used for presale purchase
   function purchasePresale() internal {
     //Only check whitelist for the first 3 days of presale
-    if (getNow() &lt; (presaleStart + WHITELIST_PERIOD)) {
-      require(whitelist[msg.sender] &gt; 0);
+    if (getNow() < (presaleStart + WHITELIST_PERIOD)) {
+      require(whitelist[msg.sender] > 0);
       //Accept if the subsciber 95% to 120% of whitelisted amount
       uint256 minAllowed = whitelist[msg.sender].mul(95).div(100);
       uint256 maxAllowed = whitelist[msg.sender].mul(120).div(100);
-      require(msg.value &gt;= minAllowed &amp;&amp; msg.value &lt;= maxAllowed);
+      require(msg.value >= minAllowed && msg.value <= maxAllowed);
       //remove the address from whitelist
       whitelist[msg.sender] = 0;
     }
@@ -460,7 +460,7 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
     uint256 numTokens = msg.value.mul(10**decimals).div(TOKEN_PRICE);
     uint256 bonusTokens = 0;
 
-    if(totalSupply &lt; BONUS_SLAB) {
+    if(totalSupply < BONUS_SLAB) {
       //Any portion of tokens less than BONUS_SLAB are eligable for 33% bonus, otherwise 22% bonus
       uint256 remainingBonusSlabTokens = SafeMath.sub(BONUS_SLAB, totalSupply);
       uint256 bonusSlabTokens = Math.min256(remainingBonusSlabTokens, numTokens);
@@ -479,7 +479,7 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
     specWallet.transfer(msg.value);
 
     totalSupply = totalSupply.add(numTokens);
-    require(totalSupply &lt;= TOKENS_AVAILABLE);
+    require(totalSupply <= TOKENS_AVAILABLE);
 
     balances[msg.sender] = balances[msg.sender].add(numTokens);
     //fire the event notifying the transfer of tokens
@@ -493,7 +493,7 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
     uint256 numTokens = msg.value.mul(10**decimals).div(TOKEN_PRICE);
     uint256 bonusTokens = 0;
 
-    if(getNow() &lt;= discountSaleEnd) {
+    if(getNow() <= discountSaleEnd) {
       //calculate 11% bonus for tokens purchased on discount period
       bonusTokens = numTokens.mul(11).div(100);
     }
@@ -506,7 +506,7 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
 
     totalSupply = totalSupply.add(numTokens);
 
-    require(totalSupply &lt;= TOKENS_AVAILABLE);
+    require(totalSupply <= TOKENS_AVAILABLE);
     balances[msg.sender] = balances[msg.sender].add(numTokens);
     //fire the event notifying the transfer of tokens
     Transfer(0, msg.sender, numTokens);
@@ -550,11 +550,11 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   //@notice Can be called only when funding is not active and only by the owner
   function configure(uint256 _presaleStart, uint256 _presaleEnd, uint256 _saleStart, uint256 _saleEnd, uint256 _discountSaleEnd) onlyOwner public {
     require(!configured);
-    require(_presaleStart &gt; getNow());
-    require(_presaleEnd &gt; _presaleStart);
-    require(_saleStart &gt; _presaleEnd);
-    require(_saleEnd &gt; _saleStart);
-    require(_discountSaleEnd &gt; _saleStart &amp;&amp; _discountSaleEnd &lt;= _saleEnd);
+    require(_presaleStart > getNow());
+    require(_presaleEnd > _presaleStart);
+    require(_saleStart > _presaleEnd);
+    require(_saleEnd > _saleStart);
+    require(_discountSaleEnd > _saleStart && _discountSaleEnd <= _saleEnd);
     presaleStart = _presaleStart;
     presaleEnd = _presaleEnd;
     saleStart = _saleStart;
@@ -567,9 +567,9 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   }
 
   //@notice Function that can be called by purchasers to refund
-  //@notice Used only in case the ICO isn&#39;t successful.
+  //@notice Used only in case the ICO isn't successful.
   function refund() isRefundable public {
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
 
     uint256 tokenValue = balances[msg.sender].sub(bonus[msg.sender]);
     balances[msg.sender] = 0;
@@ -593,9 +593,9 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   }
 
   function setRefundable() onlyOwner {
-    require(this.balance &gt; 0);
-    require(getNow() &gt; saleEnd);
-    require(totalSupply &lt; MIN_CAP);
+    require(this.balance > 0);
+    require(getNow() > saleEnd);
+    require(totalSupply < MIN_CAP);
     Refundable();
     refundable = true;
   }
@@ -618,12 +618,12 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }
-    return (length&gt;0);
+    return (length>0);
   }
 
   //@notice function that is called when transaction target is a contract
   function transferToContract(address _from, address _to, uint256 _value, bytes _data) internal returns (bool success) {
-    require(balanceOf(_from) &gt;= _value);
+    require(balanceOf(_from) >= _value);
     balances[_from] = balanceOf(_from).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -642,7 +642,7 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
     require(_to == specDWallet || _to == specUWallet);
     require(isContract(_to));
     //owner can transfer tokens on behalf of users after 28 days
-    if (msg.sender == owner &amp;&amp; getNow() &gt; saleEnd + 28 days) {
+    if (msg.sender == owner && getNow() > saleEnd + 28 days) {
       OwnerTransfer(_from, _to, _value);
     } else {
       uint256 _allowance = allowed[_from][msg.sender];
@@ -667,8 +667,8 @@ contract SpectreSubscriberToken is StandardToken, Pausable, TokenController {
   // The 160 LSB is the address that wants to be added
   // The 96 MSB is the amount of to be set for the whitelist for that address
   function multiSetWhiteList(uint256[] data) public onlyOwner {
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address addr = address(data[i] &amp; (D160 - 1));
+    for (uint256 i = 0; i < data.length; i++) {
+      address addr = address(data[i] & (D160 - 1));
       uint256 amount = data[i] / D160;
       setWhiteList(addr, amount);
     }

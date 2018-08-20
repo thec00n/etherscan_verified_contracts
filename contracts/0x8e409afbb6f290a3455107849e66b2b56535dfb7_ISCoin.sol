@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,7 +65,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     uint256 totalSupply_;
     
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -133,8 +133,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -148,13 +148,13 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0));
+        require((_value != 0) && (allowed[msg.sender][_spender] != 0));
 
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -370,9 +370,9 @@ contract BurnableToken is BasicToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -427,14 +427,14 @@ contract TokenTimelock {
 
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
         // solium-disable-next-line security/no-block-members
-        require(_releaseTime &gt; block.timestamp);
+        require(_releaseTime > block.timestamp);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
     }
 
     function canRelease() public view returns (bool){
-        return block.timestamp &gt;= releaseTime;
+        return block.timestamp >= releaseTime;
     }
 
     /**
@@ -445,7 +445,7 @@ contract TokenTimelock {
         require(canRelease());
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -460,7 +460,7 @@ contract TokenTimelock {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale{
@@ -488,7 +488,7 @@ contract Crowdsale{
     }
 
     uint256 public currentPhase = 0;
-    mapping (address =&gt; uint256 ) public saleCount;
+    mapping (address => uint256 ) public saleCount;
 
     /**
      * Event for token purchase logging
@@ -535,13 +535,13 @@ contract Crowdsale{
 
         uint256 nowTime = block.timestamp;
         // this loop moves phases and insures correct stage according to date
-        while (currentPhase &lt; phases.length &amp;&amp; phases[currentPhase].till &lt; nowTime) {
+        while (currentPhase < phases.length && phases[currentPhase].till < nowTime) {
             currentPhase = currentPhase.add(1);
         }
 
         //check the min ether in pre-sale phase
         if (currentPhase == 0) {
-            require(weiAmount &gt;= 1 ether);
+            require(weiAmount >= 1 ether);
         }
 
         // calculate token amount to be created
@@ -550,7 +550,7 @@ contract Crowdsale{
         TokenLockType lockType = _getTokenLockType(weiAmount);
 
         if (lockType != TokenLockType.TYPE_NOT_LOCK) {
-            require(saleCount[_beneficiary].add(1) &lt;= MAX_SALECOUNT_PER_ADDRESS);
+            require(saleCount[_beneficiary].add(1) <= MAX_SALECOUNT_PER_ADDRESS);
             saleCount[_beneficiary] = saleCount[_beneficiary].add(1);
         }
 
@@ -581,7 +581,7 @@ contract Crowdsale{
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view {
         require(_beneficiary != address(0));
         require(_weiAmount != 0);
-        require(currentPhase &lt; phases.length);
+        require(currentPhase < phases.length);
     }
 
     /**
@@ -602,7 +602,7 @@ contract Crowdsale{
     function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
         uint256 tokens = _weiAmount.mul(rate);
         uint256 bonusRate = 0;
-        if (_weiAmount &gt;= 1000 ether) {
+        if (_weiAmount >= 1000 ether) {
             bonusRate = SEED_INVESTOR_BONUS_RATE;
         } else {
             bonusRate = phases[currentPhase].bonusRate;
@@ -618,7 +618,7 @@ contract Crowdsale{
      */
     function _getTokenLockType(uint256 _weiAmount) internal view returns (TokenLockType) {
         TokenLockType lockType = TokenLockType.TYPE_NOT_LOCK;
-        if (_weiAmount &gt;= 1000 ether) {
+        if (_weiAmount >= 1000 ether) {
             lockType = TokenLockType.TYPE_SEED_INVESTOR;
         } else if (currentPhase == 0 ) {
             lockType = TokenLockType.TYPE_PRE_SALE;
@@ -674,17 +674,17 @@ contract StopableCrowdsale is Crowdsale, Claimable{
 contract ISCoin is PausableToken, MintableToken, BurnableToken, StopableCrowdsale {
     using SafeMath for uint256;
 
-    string public name = &quot;Imperial Star Coin&quot;;
-    string public symbol = &quot;ISC&quot;;
+    string public name = "Imperial Star Coin";
+    string public symbol = "ISC";
     uint8 public decimals = 18;
 
-    mapping (address =&gt; address[] ) public balancesLocked;
+    mapping (address => address[] ) public balancesLocked;
 
     function ISCoin(address _wallet) public Crowdsale(_wallet) {}
 
 
     function setRate(uint256 _rate) public onlyOwner onlyNotStopped {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
@@ -710,7 +710,7 @@ contract ISCoin is PausableToken, MintableToken, BurnableToken, StopableCrowdsal
         address[] memory timelockAddrs = balancesLocked[_owner];
 
         uint256 totalLockedBalance = 0;
-        for (uint i = 0; i &lt; timelockAddrs.length; i++) {
+        for (uint i = 0; i < timelockAddrs.length; i++) {
             totalLockedBalance = totalLockedBalance.add(balances[timelockAddrs[i]]);
         }
         
@@ -719,9 +719,9 @@ contract ISCoin is PausableToken, MintableToken, BurnableToken, StopableCrowdsal
 
     function releaseToken(address _owner) public {
         address[] memory timelockAddrs = balancesLocked[_owner];
-        for (uint i = 0; i &lt; timelockAddrs.length; i++) {
+        for (uint i = 0; i < timelockAddrs.length; i++) {
             TokenTimelock timelock = TokenTimelock(timelockAddrs[i]);
-            if (timelock.canRelease() &amp;&amp; balances[timelock] &gt; 0) {
+            if (timelock.canRelease() && balances[timelock] > 0) {
                 timelock.release();
             }
         }

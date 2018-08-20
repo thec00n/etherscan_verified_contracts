@@ -9,13 +9,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure  returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure  returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -24,7 +24,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -94,23 +94,23 @@ contract Token is ERC20, Ownable {
     string public name;
     string public symbol;
     uint8 public decimals; // How many decimals to show.
-    string public version = &quot;v0.1&quot;;
+    string public version = "v0.1";
     uint public totalSupply;
     bool public locked;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     address public crowdSaleAddress;
 
 
     // Lock transfer for contributors during the ICO
     modifier onlyUnlocked() {
-        if (msg.sender != crowdSaleAddress &amp;&amp; msg.sender != owner &amp;&amp; locked)
+        if (msg.sender != crowdSaleAddress && msg.sender != owner && locked)
             revert();
         _;
     }
 
     modifier onlyAuthorized() {
-        if (msg.sender != owner &amp;&amp; msg.sender != crowdSaleAddress)
+        if (msg.sender != owner && msg.sender != crowdSaleAddress)
             revert();
         _;
     }
@@ -121,8 +121,8 @@ contract Token is ERC20, Ownable {
         require(_crowdsaleAddress != address(0));
         locked = true; // Lock the transfer of tokens during the crowdsale
         totalSupply = 2600000000e8;
-        name = &quot;Kripton&quot;;                           // Set the name for display purposes
-        symbol = &quot;LPK&quot;;                             // Set the symbol for display purposes
+        name = "Kripton";                           // Set the name for display purposes
+        symbol = "LPK";                             // Set the symbol for display purposes
         decimals = 8;                               // Amount of decimals
         crowdSaleAddress = _crowdsaleAddress;
         balances[_crowdsaleAddress] = totalSupply;
@@ -155,8 +155,8 @@ contract Token is ERC20, Ownable {
     // @parm _value {uint} amount of tokens to transfer
     // @return  {bool} true if successful
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnlocked returns(bool success) {
-        require(balances[_from] &gt;= _value); // Check if the sender has enough
-        require(_value &lt;= allowed[_from][msg.sender]); // Check if allowed is greater or equal
+        require(balances[_from] >= _value); // Check if the sender has enough
+        require(_value <= allowed[_from][msg.sender]); // Check if allowed is greater or equal
         balances[_from] = balances[_from].sub(_value); // Subtract from the sender
         balances[_to] = balances[_to].add(_value); // Add the same to the recipient
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract Token is ERC20, Ownable {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract Token is ERC20, Ownable {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

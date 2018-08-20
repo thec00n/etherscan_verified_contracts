@@ -52,10 +52,10 @@ contract AbstractSingularDTVToken is Token {
 
 
 /// @title Fund contract - Implements reward distribution.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1261667774737c3c75777d60757752717d7c61777c616b613c7c7766">[email&#160;protected]</a>&gt;
-/// @author Milad Mostavi - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdd0d4d1dcd993d0d2cec9dccbd4fdded2d3ced8d3cec4ce93d3d8c9">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1261667774737c3c75777d60757752717d7c61777c616b613c7c7766">[email protected]</a>>
+/// @author Milad Mostavi - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdd0d4d1dcd993d0d2cec9dccbd4fdded2d3ced8d3cec4ce93d3d8c9">[email protected]</a>>
 contract SingularDTVFund {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     /*
      *  External contracts
@@ -68,11 +68,11 @@ contract SingularDTVFund {
     address public owner;
     uint public totalReward;
 
-    // User&#39;s address =&gt; Reward at time of withdraw
-    mapping (address =&gt; uint) public rewardAtTimeOfWithdraw;
+    // User's address => Reward at time of withdraw
+    mapping (address => uint) public rewardAtTimeOfWithdraw;
 
-    // User&#39;s address =&gt; Reward which can be withdrawn
-    mapping (address =&gt; uint) public owed;
+    // User's address => Reward which can be withdrawn
+    mapping (address => uint) public owed;
 
     modifier onlyOwner() {
         // Only guard is allowed to do this action.
@@ -96,7 +96,7 @@ contract SingularDTVFund {
     }
 
     /// @dev Withdraws reward for user. Returns reward.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function calcReward(address forAddress) private returns (uint) {
         return singularDTVToken.balanceOf(forAddress) * (totalReward - rewardAtTimeOfWithdraw[forAddress]) / singularDTVToken.totalSupply();
     }
@@ -109,14 +109,14 @@ contract SingularDTVFund {
         uint value = calcReward(msg.sender) + owed[msg.sender];
         rewardAtTimeOfWithdraw[msg.sender] = totalReward;
         owed[msg.sender] = 0;
-        if (value &gt; 0 &amp;&amp; !msg.sender.send(value)) {
+        if (value > 0 && !msg.sender.send(value)) {
             revert();
         }
         return value;
     }
 
     /// @dev Credits reward to owed balance.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function softWithdrawRewardFor(address forAddress)
         external
         returns (uint)

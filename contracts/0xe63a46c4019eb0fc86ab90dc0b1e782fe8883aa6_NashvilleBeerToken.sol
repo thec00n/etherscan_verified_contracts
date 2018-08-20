@@ -6,7 +6,7 @@ contract NashvilleBeerToken {
   address public owner;
   bytes32[] public redeemedList;
   address constant public RECIPIENT = 0xB1384DfE8ac77a700F460C94352bdD47Dc0327eF; // Ethereum Meetup Donation Address
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   event LogBeerClaimed(address indexed owner, uint256 date);
   event LogBeerRedeemed(address indexed owner, bytes32 name, uint256 date);
@@ -23,7 +23,7 @@ contract NashvilleBeerToken {
   }
 
   function transfer(address _to, uint256 _amount) public returns(bool) {
-    require(balances[msg.sender] - _amount &lt;= balances[msg.sender]);
+    require(balances[msg.sender] - _amount <= balances[msg.sender]);
     balances[msg.sender] -= _amount;
     balances[_to] += _amount;
     LogTransfer(msg.sender, _to, now);
@@ -34,7 +34,7 @@ contract NashvilleBeerToken {
   }
 
   function redeemBeer(bytes32 _name) public returns(bool) {
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
     balances[msg.sender]--;
     redeemedList.push(_name);
     LogBeerRedeemed(msg.sender, _name, now);
@@ -42,7 +42,7 @@ contract NashvilleBeerToken {
 
   function claimToken() public payable returns(bool) {
     require(msg.value == 1 ether * 0.015);
-    require(totalSupply &lt; maxSupply);
+    require(totalSupply < maxSupply);
     RECIPIENT.transfer(msg.value);
     balances[msg.sender]++;
     totalSupply++;
@@ -51,7 +51,7 @@ contract NashvilleBeerToken {
 
   function assignToken(address _owner) public onlyOwner returns(bool) {
     require(balances[_owner] == 0);
-    require(totalSupply &lt; maxSupply);
+    require(totalSupply < maxSupply);
     balances[_owner]++;
     totalSupply++;
     LogBeerClaimed(_owner, now);
@@ -59,7 +59,7 @@ contract NashvilleBeerToken {
 
   function getRedeemedList() constant public returns (bytes32[]) {
     bytes32[] memory list = new bytes32[](redeemedList.length);
-    for (uint256 i = 0; i &lt; redeemedList.length; i++) {
+    for (uint256 i = 0; i < redeemedList.length; i++) {
       list[i] = redeemedList[i];
     }
     return list;

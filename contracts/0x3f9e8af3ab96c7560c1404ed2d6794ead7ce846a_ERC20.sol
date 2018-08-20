@@ -19,13 +19,13 @@ contract ERC20Interface {
 
 contract ERC20 is ERC20Interface {
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     constructor() public {
         totalSupply = 1000000000;
-        name = &quot;CDA Token&quot;;
-        symbol = &quot;CDA&quot;;
+        name = "CDA Token";
+        symbol = "CDA";
         decimals = 0;
         balanceOf[msg.sender] = totalSupply;
     }
@@ -36,8 +36,8 @@ contract ERC20 is ERC20Interface {
 
     function transfer(address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[msg.sender]);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(_value <= balanceOf[msg.sender]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -47,9 +47,9 @@ contract ERC20 is ERC20Interface {
 
       function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;

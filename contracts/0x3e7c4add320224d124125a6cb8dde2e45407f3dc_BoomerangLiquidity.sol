@@ -57,7 +57,7 @@ contract BoomerangLiquidity is Owned {
     
     function invest() public {
         uint256 amountToSend = address(this).balance;
-        if(amountToSend &gt; 1){
+        if(amountToSend > 1){
             uint256 half = amountToSend / 2;
             require(sk2xContract.call.value(half)());
             p3dContract.buy.value(half)(msg.sender);

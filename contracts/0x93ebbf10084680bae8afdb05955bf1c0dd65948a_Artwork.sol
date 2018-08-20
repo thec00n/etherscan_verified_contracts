@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-/* Ethart unindexed Artwork Contract &#39;COSIMA&#39; v1.0 2017-07-08
+/* Ethart unindexed Artwork Contract 'COSIMA' v1.0 2017-07-08
 
 	https://ethart.com - The Ethereum Art Network
 
@@ -8,7 +8,7 @@ pragma solidity ^0.4.11;
 	-------------------
 						_________________________________________
 						V										V
-	Controller --&gt; Registrar &lt;--&gt; Factory Contract1 --&gt; Artwork Contract1
+	Controller --> Registrar <--> Factory Contract1 --> Artwork Contract1
 								  Factory Contract2		Artwork Contract2
 										...					...
 								  Factory ContractN		Artwork ContractN
@@ -25,8 +25,8 @@ pragma solidity ^0.4.11;
 	
 	Factory Contracts:
 		- Factory Contracts can spawn Artwork Contracts in line with artists specifications
-		- Factory Contracts will only spawn Artwork Contracts who&#39;s sha256 hashes are unique per the Registrar&#39;s sha256 registry
-		- Factory Contracts will register every new Artwork Contract with it&#39;s details with the Registrar contract
+		- Factory Contracts will only spawn Artwork Contracts who's sha256 hashes are unique per the Registrar's sha256 registry
+		- Factory Contracts will register every new Artwork Contract with it's details with the Registrar contract
 	
 	Artwork Contracts:
 		- Artwork Contracts act as minimalist decentralised exchanges for their pieces in line with specified conditions
@@ -38,7 +38,7 @@ pragma solidity ^0.4.11;
 
 Artworks created with this factory have the following ABI:
 
-[{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;pieceForSale&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;referrerReward&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;proofSet&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_spender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;approve&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;ownerCommission&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_proofLink&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;name&quot;:&quot;setProof&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;proofLink&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalSupply&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;totalSupply&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;lowestAskAddress&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transferFrom&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;customText&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;fillBid&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;burn&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;highestBidPrice&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;title&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;ethartArtAwarded&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;highestBidAddress&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;highestBidTime&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;ethartArtReward&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;referrer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;balanceOf&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;balance&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;burnFrom&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;lowestAskPrice&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;cancelBid&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;newOwner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;changeOwner&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transfer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;pieceWanted&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;SHA256ofArtwork&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_price&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;offerPieceForSale&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;buyPiece&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;activationTime&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_spender&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;allowance&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;remaining&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;piecesOwned&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;cancelSale&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;ethartRevenueReward&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;fileLink&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;placeBid&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;editionSize&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;lowestAskTime&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_SHA256ofArtwork&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;_editionSize&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_title&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_fileLink&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_customText&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_ownerCommission&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;price&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;seller&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;NewLowestAsk&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;price&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;bidder&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;NewHighestBid&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;PieceTransferred&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;price&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;PieceSold&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Transfer&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_spender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Approval&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Burn&quot;,&quot;type&quot;:&quot;event&quot;}]
+[{"constant":true,"inputs":[],"name":"pieceForSale","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"referrerReward","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"proofSet","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_amount","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"ownerCommission","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_proofLink","type":"string"}],"name":"setProof","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"proofLink","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"totalSupply","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"lowestAskAddress","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"customText","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"fillBid","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"burn","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"highestBidPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"title","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"ethartArtAwarded","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"highestBidAddress","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"highestBidTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"ethartArtReward","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"referrer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_value","type":"uint256"}],"name":"burnFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"lowestAskPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"cancelBid","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"pieceWanted","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"SHA256ofArtwork","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"offerPieceForSale","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buyPiece","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"activationTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"piecesOwned","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"cancelSale","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"ethartRevenueReward","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"fileLink","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"placeBid","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"editionSize","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"lowestAskTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_SHA256ofArtwork","type":"bytes32"},{"name":"_editionSize","type":"uint256"},{"name":"_title","type":"string"},{"name":"_fileLink","type":"string"},{"name":"_customText","type":"string"},{"name":"_ownerCommission","type":"uint256"},{"name":"_owner","type":"address"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"price","type":"uint256"},{"indexed":false,"name":"seller","type":"address"}],"name":"NewLowestAsk","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"price","type":"uint256"},{"indexed":false,"name":"bidder","type":"address"}],"name":"NewHighestBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"to","type":"address"}],"name":"PieceTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"to","type":"address"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PieceSold","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"Burn","type":"event"}]
 
 */
 
@@ -83,17 +83,17 @@ contract Interface {
 
 contract Artwork {
 
-/* Ethart unindexed Artwork Contract &#39;COSIMA&#39; v1.0 2017-07-08
+/* Ethart unindexed Artwork Contract 'COSIMA' v1.0 2017-07-08
 
 1. Introduction
 
-This text is a plain English translation of the artwork smart contract&#39;s &#39;COSIMA&#39; programming logic and represent its terms of use (terms). This plain English translation is a best effort only and while all reasonable precautions - including significant bug bounties - have been taken to ensure that the smart contract will behave in the exact way outlined in these terms, mistakes do happen (see The DAO) which may result in unexpected and unintended contract behaviour which may include the total loss of invested funds (Ether), other tokens sent to it as well as accessibility of the contract itself. Due to the nature of smart contracts, once it is deployed on the blockchain it becomes immutably imbedded in it which means that any bugs and/or exploits discovered after deployment are unfixable. Should the code behave differently than outlined in these terms, the code - by the very nature of smart contracts - takes precedent over the terms. By deploying, interacting or otherwise using the smart contract you acknowledge and accept all associated risks while at the same time waive all rights to hold the creator of the smart contract, the artists who deployed the smart contract, its current owner as well as any other parties responsible for potential damages suffered by or caused by you through your interaction with the smart contract to yourself or others. No backsies.
+This text is a plain English translation of the artwork smart contract's 'COSIMA' programming logic and represent its terms of use (terms). This plain English translation is a best effort only and while all reasonable precautions - including significant bug bounties - have been taken to ensure that the smart contract will behave in the exact way outlined in these terms, mistakes do happen (see The DAO) which may result in unexpected and unintended contract behaviour which may include the total loss of invested funds (Ether), other tokens sent to it as well as accessibility of the contract itself. Due to the nature of smart contracts, once it is deployed on the blockchain it becomes immutably imbedded in it which means that any bugs and/or exploits discovered after deployment are unfixable. Should the code behave differently than outlined in these terms, the code - by the very nature of smart contracts - takes precedent over the terms. By deploying, interacting or otherwise using the smart contract you acknowledge and accept all associated risks while at the same time waive all rights to hold the creator of the smart contract, the artists who deployed the smart contract, its current owner as well as any other parties responsible for potential damages suffered by or caused by you through your interaction with the smart contract to yourself or others. No backsies.
 
 2. Contract deployment
 
 This smart contract enables its owner to issue limited edition pieces of art (pieces) that are cryptographically embedded in the Ethereum blockchain. Every piece can be owned, offered for sale, sold, bought, transferred and burned. The contract accepts bids from interested buyers and allows for the cancelation of bids as well as the cancelation of pieces offered for sale and filling of bids. In addition the owner of the contract as well as Ethart will earn a commission for every future sales of pieces irrespective of who owns, buys or sells them using the contract.
 
-The contract creation costs approximately 2.4 Mgas - assuming a gas price of 20 Gwei, contract creation will cost ~0.05 ETH or about $15 (@$300/ETH) on the Ethereum main net. If contract creation is not urgent and Ethereum&#39;s pending transactions pool is not congested gas prices can be lowered to ~4 Gwei which would reduce the cost of deployment to ~$3 per artwork at current prices. Please make sure you understand the implications of gas cost, gas price and Ether price before you engage with this contract as the price of Ether and gas prices accepted by miners can and do change on a daily basis.
+The contract creation costs approximately 2.4 Mgas - assuming a gas price of 20 Gwei, contract creation will cost ~0.05 ETH or about $15 (@$300/ETH) on the Ethereum main net. If contract creation is not urgent and Ethereum's pending transactions pool is not congested gas prices can be lowered to ~4 Gwei which would reduce the cost of deployment to ~$3 per artwork at current prices. Please make sure you understand the implications of gas cost, gas price and Ether price before you engage with this contract as the price of Ether and gas prices accepted by miners can and do change on a daily basis.
 
 During creation the contract asks for the following parameters:
 
@@ -102,9 +102,9 @@ During creation the contract asks for the following parameters:
 	- Title (the title or name of your artwork, if any)
 	- The link to your file (if any)
 	- Custom text (if any)
-	- The owner&#39;s commission in basis points (i.e. 1/100th of a percent)
+	- The owner's commission in basis points (i.e. 1/100th of a percent)
 
-SHA256 hash: A SHA256 hash is a fixed length cryptographic digest of a file. On Mac and Linux it can be calculated by opening a terminal window and typing &quot;openssl sha -sha256&quot; followed by a space and the filename (i.e. &quot;openssl sha -sha256 &lt;FILENAME&gt;&quot;) one wants to calculate the hash for. An online tool that serves the same purpose can be found at http://hash.online-convert.com/sha256-generator. By the nature of the cryptographic math the resulting hash is a) a unique fingerprint of the input file which can be independently verified by whomever has access to the original file, b) different for (almost) every file as long as at least one bit is different and c) almost impossible to reverse, meaning you can calculate a SHA256 hash from a file very easily but you can not generate the file from the SHA256 hash. Embedding the SHA256 hash in the contract at it&#39;s deployment therefore proofs that the limited edition pieces controlled by the smart contract&#39;s logic are linked to a particular file: the artwork.
+SHA256 hash: A SHA256 hash is a fixed length cryptographic digest of a file. On Mac and Linux it can be calculated by opening a terminal window and typing "openssl sha -sha256" followed by a space and the filename (i.e. "openssl sha -sha256 <FILENAME>") one wants to calculate the hash for. An online tool that serves the same purpose can be found at http://hash.online-convert.com/sha256-generator. By the nature of the cryptographic math the resulting hash is a) a unique fingerprint of the input file which can be independently verified by whomever has access to the original file, b) different for (almost) every file as long as at least one bit is different and c) almost impossible to reverse, meaning you can calculate a SHA256 hash from a file very easily but you can not generate the file from the SHA256 hash. Embedding the SHA256 hash in the contract at it's deployment therefore proofs that the limited edition pieces controlled by the smart contract's logic are linked to a particular file: the artwork.
 
 Edition size: The maximum number of pieces you wish your artwork to have.
 
@@ -112,21 +112,21 @@ Title: the title is stored as a public string in the contract
 
 File link: So people can independently verify that a particular file is associated with a particular instance of a smart contract you can here specify the publicly accessible link to the file. Note that providing a link is not mandatory and some artists may decide to only provide the SHA256 hash and reveal the actual file associated with it at a later point in time or never.
 
-Custom text: This field can be whatever you want it to be. One use case could be a set of custom attributes for limited edition collectible playing cards. In this case you would format your game card attributes in a standard manner for later use e.g. Strength, Constitution, Dexterity, Intelligence, Wisdom as &quot;12,8,6,9,3&quot; which a later application can then read and interpreted according to your game&#39;s rules.
+Custom text: This field can be whatever you want it to be. One use case could be a set of custom attributes for limited edition collectible playing cards. In this case you would format your game card attributes in a standard manner for later use e.g. Strength, Constitution, Dexterity, Intelligence, Wisdom as "12,8,6,9,3" which a later application can then read and interpreted according to your game's rules.
 
-Owner&#39;s commission: the account that deploys/ed the smart contract can set a commission for future sales that will be paid out to the current owner of smart contract. The commission is specified in basis points where 1 basis point equals 0.01%. The commission must be greater than 0 and lower than 10000 - Ethart&#39;s reward. If the owner wants to receive 5% for all future sales for example the commission will have to be set as 500.
+Owner's commission: the account that deploys/ed the smart contract can set a commission for future sales that will be paid out to the current owner of smart contract. The commission is specified in basis points where 1 basis point equals 0.01%. The commission must be greater than 0 and lower than 10000 - Ethart's reward. If the owner wants to receive 5% for all future sales for example the commission will have to be set as 500.
 
-At deployment the owner of the smart contract will be set as the account that deployed it. Please make sure to carefully note down your account details including your address, private key, password, JSON file etc and keep it safe and secret. Remember: whoever has access to this information has access to the contract and all the funds and rights associated with it. If you loose this information it is almost certainly going to be lost forever and your funds and artwork with it. Make at least one backup and keep it in a safe location. After contract deployment it is important for you to carefully note down the contract creation transaction receipt number, contract address and ABI for later reference. You and others will require this information to interact with the contract once it is live. If you created an artwork and lost your artwork&#39;s contract address you can look up the sha256 hash of your artwork in the registrar&#39;s artwok registry which will return your artwork&#39;s contract address to you.
+At deployment the owner of the smart contract will be set as the account that deployed it. Please make sure to carefully note down your account details including your address, private key, password, JSON file etc and keep it safe and secret. Remember: whoever has access to this information has access to the contract and all the funds and rights associated with it. If you loose this information it is almost certainly going to be lost forever and your funds and artwork with it. Make at least one backup and keep it in a safe location. After contract deployment it is important for you to carefully note down the contract creation transaction receipt number, contract address and ABI for later reference. You and others will require this information to interact with the contract once it is live. If you created an artwork and lost your artwork's contract address you can look up the sha256 hash of your artwork in the registrar's artwok registry which will return your artwork's contract address to you.
 
-The artwork contract acts as it&#39;s own decentralised exchange with an on chain order book of the lowest ask and highest bid for a piece and allows for trustless trade of the pieces of art via the Ethereum blockchain.
+The artwork contract acts as it's own decentralised exchange with an on chain order book of the lowest ask and highest bid for a piece and allows for trustless trade of the pieces of art via the Ethereum blockchain.
 
 3. Providing a proof
 
-After deployment and before the first pieces can be bought or sold the owner has to provide a proof. This proof demonstrates that the artwork was in fact deployed by the artist. The proof can be in the form of a link to a blog post, a tweet or press release, providing at the very least the artwork&#39;s contract address or contract creation transaction number.
+After deployment and before the first pieces can be bought or sold the owner has to provide a proof. This proof demonstrates that the artwork was in fact deployed by the artist. The proof can be in the form of a link to a blog post, a tweet or press release, providing at the very least the artwork's contract address or contract creation transaction number.
 
 4. Ethart commission
 
-The fee for letting you deploy your artworks is set by the registrar contract and will be between 0 and 10% of the edition size as well as between 0 and 10% of future revenues. Please make sure to check these numbers before you deploy your artwork&#39;s contarct as these values will be fixed after contract deployment. After you have provided the proof, the contract issues a percent of the edition size to Ethart automatically as following:
+The fee for letting you deploy your artworks is set by the registrar contract and will be between 0 and 10% of the edition size as well as between 0 and 10% of future revenues. Please make sure to check these numbers before you deploy your artwork's contarct as these values will be fixed after contract deployment. After you have provided the proof, the contract issues a percent of the edition size to Ethart automatically as following:
 
 - 1 piece for every (10000 / ethartArtReward) pieces increase in edition size
 - a (remainder / (10000 / ethartArtReward)) chance of an additional piece
@@ -177,7 +177,7 @@ The referrer of an artist receives referrerReward basis points of ethartRevenueR
 
 16. Withdrawing funds
 
-For security reasons Ethart contracts&#39; handling of ether transfers have been implemented following the best practise pull payment method from Open Zeppelin (https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/payment/PullPayment.sol). This means that all funds used in placing bids and buying pieces are being transfered to the registrar contract. Sellers, artists, owners, referrer and buyers canceling their bids or those who are being outbid can claim their funds by executing the withdrawPayments method of the registrar contract. Not only does this mitigate several security concerns but at the same time provides a single location for everyone to claim their funds in one transaction.
+For security reasons Ethart contracts' handling of ether transfers have been implemented following the best practise pull payment method from Open Zeppelin (https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/payment/PullPayment.sol). This means that all funds used in placing bids and buying pieces are being transfered to the registrar contract. Sellers, artists, owners, referrer and buyers canceling their bids or those who are being outbid can claim their funds by executing the withdrawPayments method of the registrar contract. Not only does this mitigate several security concerns but at the same time provides a single location for everyone to claim their funds in one transaction.
 
 17. Standing bug bounty
 
@@ -194,9 +194,9 @@ The factory contract this contract has been spawned from has a standing bug boun
 	uint256 public editionSize;					// The edition size of the artwork.
 	string public title;						// The title of the artwork.
 	string public fileLink;						// The link to the file of the artwork.
-	string public proofLink;					// Link to the creation proof by the artist -&gt; this has to be done after contract creation
+	string public proofLink;					// Link to the creation proof by the artist -> this has to be done after contract creation
 	string public customText;					// Custom text
-	uint256 public ownerCommission;				// Percent given to the contract owner for every sale - must be &gt;=0 &amp;&amp; &lt;=975 1000 = 100%.
+	uint256 public ownerCommission;				// Percent given to the contract owner for every sale - must be >=0 && <=975 1000 = 100%.
 	
 	uint256 public lowestAskPrice;				// The lowest price an owner of a piece is willing to sell it for.
 	address public lowestAskAddress;			// The address of the lowest ask.
@@ -236,10 +236,10 @@ The factory contract this contract has been spawned from has a standing bug boun
 	uint256 public ethartArtAwarded;
 
 	// Maps the number of pieces owned by an address
-	mapping (address =&gt; uint256) public piecesOwned;
+	mapping (address => uint256) public piecesOwned;
 	
 	// Used in burnFrom and transferFrom
- 	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+ 	mapping (address => mapping (address => uint256)) allowed;
 	
 	// set after deployment of Registrar contract
     address registrar = 0x5f68698245e8c8949450E68B8BD8acef37faaE7D;
@@ -262,7 +262,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 		uint256 _ownerCommission,
 		address _owner
 	) {
-		if (_ownerCommission &gt; (10000 - ethartRevenueReward)) {throw;}
+		if (_ownerCommission > (10000 - ethartRevenueReward)) {throw;}
 		Interface a = Interface(registrar);
 		ethartRevenueReward = a.getEthartRevenueReward();
 		ethartArtReward = a.getEthartArtReward();
@@ -288,21 +288,21 @@ The factory contract this contract has been spawned from has a standing bug boun
 	// The registrar can execute certain functions only after one year
 	modifier ethArtOnlyAfterOneYear()
 	{
-		require(msg.sender != registrar || now &gt; activationTime + 31536000);
+		require(msg.sender != registrar || now > activationTime + 31536000);
 		_;
 	}
 
 	// Sales / approvals have to be cancelled first for certain functions
 	modifier notLocked(address _owner, uint256 _amount)
 	{
-		require(_owner != lowestAskAddress || piecesOwned[_owner] &gt; _amount);
+		require(_owner != lowestAskAddress || piecesOwned[_owner] > _amount);
 		_;
 	}
 
 	// Mitigating ERC20 short address attacks (http://vessenes.com/the-erc20-short-address-attack-explained/)
 	modifier onlyPayloadSize(uint size)
 	{
-		require(msg.data.length &gt;= size + 4);
+		require(msg.data.length >= size + 4);
 		_;
 	}
 
@@ -319,7 +319,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 			remainder = editionSize % (10000 / ethartArtReward);
 			ethartArtAwarded = (editionSize - remainder) / (10000 / ethartArtReward);
 			// Yes - this is gameable - if it is that important to you: go ahead.
-			if (remainder &gt; 0 &amp;&amp; now % ((10000 / ethartArtReward) - 1) &lt;= remainder) {ethartArtAwarded++;}
+			if (remainder > 0 && now % ((10000 / ethartArtReward) - 1) <= remainder) {ethartArtAwarded++;}
 			piecesOwned[registrar] = ethartArtAwarded;
 			piecesOwned[owner] = editionSize - ethartArtAwarded;
 			}
@@ -327,11 +327,11 @@ The factory contract this contract has been spawned from has a standing bug boun
 		}
 
 	function transfer(address _to, uint256 _amount) notLocked(msg.sender, _amount) onlyPayloadSize(2 * 32) returns (bool success) {
-		if (piecesOwned[msg.sender] &gt;= _amount 
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; piecesOwned[_to] + _amount &gt; piecesOwned[_to]
+		if (piecesOwned[msg.sender] >= _amount 
+			&& _amount > 0
+			&& piecesOwned[_to] + _amount > piecesOwned[_to]
 			// use burn() instead
-			&amp;&amp; _to != 0x0)
+			&& _to != 0x0)
 			{
 			piecesOwned[msg.sender] -= _amount;
 			piecesOwned[_to] += _amount;
@@ -351,13 +351,13 @@ The factory contract this contract has been spawned from has a standing bug boun
 
 	function transferFrom(address _from, address _to, uint256 _amount) notLocked(_from, _amount) onlyPayloadSize(3 * 32)returns (bool success)
 		{
-			if (piecesOwned[_from] &gt;= _amount
-				&amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-				&amp;&amp; _amount &gt; 0
-				&amp;&amp; piecesOwned[_to] + _amount &gt; piecesOwned[_to]
+			if (piecesOwned[_from] >= _amount
+				&& allowed[_from][msg.sender] >= _amount
+				&& _amount > 0
+				&& piecesOwned[_to] + _amount > piecesOwned[_to]
 				// use burn() instead
-				&amp;&amp; _to != 0x0
-				&amp;&amp; (_from != lowestAskAddress || piecesOwned[_from] &gt; _amount))
+				&& _to != 0x0
+				&& (_from != lowestAskAddress || piecesOwned[_from] > _amount))
 					{
 					piecesOwned[_from] -= _amount;
 					allowed[_from][msg.sender] -= _amount;
@@ -382,7 +382,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 		}
 
 	function burn(uint256 _amount) notLocked(msg.sender, _amount) returns (bool success) {
-			if (piecesOwned[msg.sender] &gt;= _amount) {
+			if (piecesOwned[msg.sender] >= _amount) {
 				piecesOwned[msg.sender] -= _amount;
 				editionSize -= _amount;
 				Burn(msg.sender, _amount);
@@ -392,7 +392,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 		}
 
 	function burnFrom(address _from, uint256 _value) notLocked(_from, _value) onlyPayloadSize(2 * 32) returns (bool success) {
-		if (piecesOwned[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+		if (piecesOwned[_from] >= _value && allowed[_from][msg.sender] >= _value) {
 			piecesOwned[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;
 			editionSize -= _value;
@@ -403,7 +403,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 	}
 
 	function buyPiece() payable {
-		if (pieceForSale &amp;&amp; msg.value &gt;= lowestAskPrice) {
+		if (pieceForSale && msg.value >= lowestAskPrice) {
 			uint256 _amountOwner;
 			uint256 _amountEthart;
 			uint256 _amountSeller;
@@ -425,7 +425,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 			lowestAskPrice = 0;
 			// Reward the buyer with Patron tokens
 			a.issuePatrons(msg.sender, msg.value);
-			// Async send the contract owner&#39;s commission
+			// Async send the contract owner's commission
 			a.asyncSend(owner, _amountOwner);
 			// Async send the buy price - commissions to seller
 			a.asyncSend(lowestAskAddress, _amountSeller);
@@ -440,8 +440,8 @@ The factory contract this contract has been spawned from has a standing bug boun
 
 	// Offer a piece for sale at a fixed price - the price has to be lower than the current lowest price
 	function offerPieceForSale (uint256 _price) ethArtOnlyAfterOneYear {
-		if ((_price &lt; lowestAskPrice || !pieceForSale) &amp;&amp; piecesOwned[msg.sender] &gt;= 1) {
-				if (_price &lt;= highestBidPrice) {fillBid();}
+		if ((_price < lowestAskPrice || !pieceForSale) && piecesOwned[msg.sender] >= 1) {
+				if (_price <= highestBidPrice) {fillBid();}
 				else
 				{
 					pieceForSale = true;
@@ -456,13 +456,13 @@ The factory contract this contract has been spawned from has a standing bug boun
 
 	// place a bid for a piece - bid has to be higher than current highest bid
 	function placeBid () payable {
-		if (msg.value &gt; highestBidPrice || (pieceForSale &amp;&amp; msg.value &gt;= lowestAskPrice)) {
+		if (msg.value > highestBidPrice || (pieceForSale && msg.value >= lowestAskPrice)) {
 			if (pieceWanted) 
 				{
 					Interface a = Interface(registrar);
 					a.asyncSend(highestBidAddress, highestBidPrice);
 				}
-			if (pieceForSale &amp;&amp; msg.value &gt;= lowestAskPrice) {buyPiece();}
+			if (pieceForSale && msg.value >= lowestAskPrice) {buyPiece();}
 			else
 				{
 					pieceWanted = true;
@@ -476,10 +476,10 @@ The factory contract this contract has been spawned from has a standing bug boun
 		else {throw;}
 	}
 
-	// If the current lowest ask address wants to fill a bid it has to either cancel it&#39;s sale first and then
+	// If the current lowest ask address wants to fill a bid it has to either cancel it's sale first and then
 	// fill the bid or lower the lowest ask price to be equal or lower than the highest bid.
 	function fillBid () ethArtOnlyAfterOneYear notLocked(msg.sender, 1) {
-		if (pieceWanted &amp;&amp; piecesOwned[msg.sender] &gt;= 1) {
+		if (pieceWanted && piecesOwned[msg.sender] >= 1) {
 			uint256 _amountOwner;														
 			uint256 _amountEthart;
 			uint256 _amountSeller;
@@ -502,7 +502,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 			pieceWanted = false;
 			highestBidPrice = 0;
 			highestBidAddress = 0x0;
-			// Async send the contract owner&#39;s commission
+			// Async send the contract owner's commission
 			a.asyncSend(owner, _amountOwner);
 			// Async send the buy price - commissions to seller
 			a.asyncSend(msg.sender, _amountSeller);
@@ -514,7 +514,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 
 	// withdraw a bid - bids can only be withdrawn after 24 hours of being placed
 	function cancelBid () onlyBy (highestBidAddress){
-		if (pieceWanted &amp;&amp; now &gt; highestBidTime + 86400) {
+		if (pieceWanted && now > highestBidTime + 86400) {
 			pieceWanted = false;
 			highestBidPrice = 0;
 			highestBidAddress = 0x0;
@@ -527,7 +527,7 @@ The factory contract this contract has been spawned from has a standing bug boun
 
 	// cancels sales - sales can only be canceled 24 hours after it has been offered for sale
 	function cancelSale () onlyBy (lowestAskAddress){
-		if(pieceForSale &amp;&amp; now &gt; lowestAskTime + 86400) {
+		if(pieceForSale && now > lowestAskTime + 86400) {
 			pieceForSale = false;
 			lowestAskPrice = 0;
 			lowestAskAddress = 0x0;

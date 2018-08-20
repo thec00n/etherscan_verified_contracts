@@ -46,13 +46,13 @@ contract Share is Control {
      * the holds of every holder
      * the total holds stick to total
      */
-    mapping (address =&gt; uint) public holds;
+    mapping (address => uint) public holds;
 
     /**
-     * since we don&#39;t record holders&#39; address in a list
-     * and we don&#39;t want to loop holders list everytime when income
+     * since we don't record holders' address in a list
+     * and we don't want to loop holders list everytime when income
      *
-     * we use a mechanism called &#39;watermark&#39;
+     * we use a mechanism called 'watermark'
      * 
      * the watermark indicates the value that brought into each holds from the begining
      * it only goes up when new income send to the contract
@@ -61,16 +61,16 @@ contract Share is Control {
      * it goes up when user withdrawal bonus
      * and it goes up when user sell holds, goes down when user buy holds, since the total bonus of him stays the same.
      */
-    mapping (address =&gt; uint256) public fullfilled;
+    mapping (address => uint256) public fullfilled;
 
     /**
      * any one can setup a price to sell his holds
      * if set to 0, means not on sell
      */
-    mapping (address =&gt; uint256) public sellPrice;
-    mapping (address =&gt; uint256) public toSell;
+    mapping (address => uint256) public sellPrice;
+    mapping (address => uint256) public toSell;
     
-    mapping (address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping (address => mapping(address => uint256)) public allowance;
     uint256 public watermark;
     uint256 public total;
     uint256 public decimals;
@@ -100,12 +100,12 @@ contract Share is Control {
     }
 
     /**
-     * when there&#39;s income, the water mark goes up
+     * when there's income, the water mark goes up
      */
     function onIncome() public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             watermark += (msg.value / total);
-            assert(watermark * total &gt; watermark);
+            assert(watermark * total > watermark);
             emit INCOME(msg.value);
         }
     }
@@ -132,7 +132,7 @@ contract Share is Control {
      */
     function withdrawal() public whenNotPaused {
         if (holds[msg.sender] == 0) {
-            //you don&#39;t have any, don&#39;t bother
+            //you don't have any, don't bother
             return;
         }
         uint256 value = bonus();
@@ -144,13 +144,13 @@ contract Share is Control {
     }
 
     /**
-     * transfer holds from =&gt; to (only holds, no bouns)
+     * transfer holds from => to (only holds, no bouns)
      * this will withdrawal the holder bonus of these holds
-     * and the to&#39;s fullfilled will go up, since total bonus unchanged, but holds goes more
+     * and the to's fullfilled will go up, since total bonus unchanged, but holds goes more
      */
     function transferHolds(address from, address to, uint256 amount) internal {
-        require(holds[from] &gt;= amount);
-        require(holds[to] + amount &gt; holds[to]);
+        require(holds[from] >= amount);
+        require(holds[to] + amount > holds[to]);
 
         uint256 fromBonus = (watermark - fullfilled[from]) * amount;
         uint256 toBonus = (watermark - fullfilled[to]) * holds[to];
@@ -171,18 +171,18 @@ contract Share is Control {
      * and u can buy @ price higher than he setup
      */
     function buyFrom(address from) public payable whenNotPaused {
-        require(sellPrice[from] &gt; 0);
+        require(sellPrice[from] > 0);
         uint256 amount = msg.value / sellPrice[from];
 
-        if (amount &gt;= holds[from]) {
+        if (amount >= holds[from]) {
             amount = holds[from];
         }
 
-        if (amount &gt;= toSell[from]) {
+        if (amount >= toSell[from]) {
             amount = toSell[from];
         }
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         toSell[from] -= amount;
         transferHolds(from, msg.sender, amount);
@@ -201,7 +201,7 @@ contract Share is Control {
     }
     
     function transferFrom(address from, address to, uint256 amount) public whenNotPaused returns (bool) {
-        require(allowance[from][msg.sender] &gt;= amount);
+        require(allowance[from][msg.sender] >= amount);
         
         allowance[from][msg.sender] -= amount;
         transferHolds(from, to, amount);

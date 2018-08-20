@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -55,7 +55,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -74,7 +74,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -126,8 +126,8 @@ contract TalentToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;Talent Token&quot;;              
-string public symbol = &quot;TAL&quot;;                               // Token&#39;s Symbol
+string public name = "Talent Token";              
+string public symbol = "TAL";                               // Token's Symbol
 uint8 public decimals = 18;                                 // How Many Decimals for Token
 uint256 public totalSupply = 98000000 * 10**18;             // The total supply.
 
@@ -209,7 +209,7 @@ contract TalentICO {
     bool internal isTokenDeployed = false;                    // Flag to track the token deployment -- only can be set once
 
 
-     // Founder&#39;s Address
+     // Founder's Address
     address public founderAddress = 0xe3f38940A588922F2082FE30bCAe6bB0aa633a7b;                            
     // Owner of the contract
     address public owner;                                              
@@ -227,7 +227,7 @@ contract TalentICO {
         _;
     }
     modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -265,7 +265,7 @@ contract TalentICO {
         owner = newOwner;
     }
 
-    // Used to attach the token&#39;s contract.
+    // Used to attach the token's contract.
     function setTokenAddress(address _tokenAddress) external onlyFounders nonZeroAddress(_tokenAddress) {
         require(isTokenDeployed == false);
         token = TalentToken(_tokenAddress);
@@ -273,7 +273,7 @@ contract TalentICO {
     }
 
 
-    // Used to change founder&#39;s address.
+    // Used to change founder's address.
      function setfounderAddress(address _newFounderAddress) onlyFounders  nonZeroAddress(_newFounderAddress) {
         founderAddress = _newFounderAddress;
         ChangeFoundersWalletAddress(now, founderAddress);
@@ -282,7 +282,7 @@ contract TalentICO {
     // function call after ICO ends.
     // Transfers Remaining Tokens to holder.
     function ICOend() onlyFounders inState(State.Finish) returns (bool) {
-        require(now &gt; IcoEndDate);
+        require(now > IcoEndDate);
         uint256 remainingToken = token.balanceOf(this);  // remaining tokens
         if (remainingToken != 0) 
           token.transfer(founderAddress, remainingToken); 
@@ -299,9 +299,9 @@ contract TalentICO {
     payable 
     returns(bool) 
     {
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
 
-        require(now &gt;= IcoStartDate &amp;&amp; now &lt;= IcoEndDate);
+        require(now >= IcoStartDate && now <= IcoEndDate);
         fundTransfer(msg.value);
 
         uint256 amount = numberOfTokens(getCurrentExchangeRate(), msg.value);
@@ -340,7 +340,7 @@ contract TalentICO {
          return noOfToken;
     }
 
-    // Transfers funds to founder&#39;s account.
+    // Transfers funds to founder's account.
     function fundTransfer(uint256 weiAmount) internal {
         founderAddress.transfer(weiAmount);
     }
@@ -351,7 +351,7 @@ contract TalentICO {
     // Gets the current state of the crowdsale
     function getState() public constant returns(State) {
 
-        if (now &gt;= IcoStartDate &amp;&amp; now &lt;= IcoEndDate) {
+        if (now >= IcoStartDate && now <= IcoEndDate) {
             return State.Crowdfund;
         } 
         return State.Finish;
@@ -373,7 +373,7 @@ contract TalentICO {
         return WeiRaised;
     }
 
-    //Sends ether to founder&#39;s address.
+    //Sends ether to founder's address.
     function() public payable {
         buyTokens(msg.sender);
     }

@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 /**
 * @title TECH Token Contract
 * @dev ERC-20 Token Standar Compliant
-* Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dc8bb3aeb79fb4bdb5b29fb9b2a8b9aeaf9cbbb1bdb5b0f2bfb3b1">[email&#160;protected]</a>  www.WorkChainCenters.io
+* Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dc8bb3aeb79fb4bdb5b29fb9b2a8b9aeaf9cbbb1bdb5b0f2bfb3b1">[email protected]</a>  www.WorkChainCenters.io
 */
 
 /**
@@ -15,7 +15,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -109,9 +109,9 @@ contract ERC20TokenInterface {
 contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of all frozen status
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of all frozen status
 
     /**
     * @dev Get the balance of an specified address.
@@ -200,7 +200,7 @@ contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an
     function batch(address[] _target,uint256[] _amount) onlyAdmin public { //It takes an array of addresses and an amount
         require(_target.length == _amount.length); //data must be same size
         uint256 size = _target.length;
-        for (uint i=0; i&lt;size; i++) { //It moves over the array
+        for (uint i=0; i<size; i++) { //It moves over the array
             transfer(_target[i],_amount[i]); //Caller must hold needed tokens, if not it will revert
         }
     }
@@ -221,10 +221,10 @@ contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an
 * @dev ERC20 Token compliant
 */
 contract TECH is ERC20Token {
-    string public name = &#39;TECH&#39;;
+    string public name = 'TECH';
     uint8 public decimals = 18;
-    string public symbol = &#39;TECH&#39;;
-    string public version = &#39;0.3&#39;;
+    string public symbol = 'TECH';
+    string public version = '0.3';
 
     /**
     * @notice token contructor.
@@ -245,7 +245,7 @@ contract TECH is ERC20Token {
 
 
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

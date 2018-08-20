@@ -21,12 +21,12 @@ contract RecoveryWithTenant {
         address addr;
     }
     
-    mapping (address =&gt; uint) userIndex;
+    mapping (address => uint) userIndex;
     User[] public users;
 
     address public oracle;
     address public tenant;
-    mapping(uint =&gt; bool) nonceUsed;
+    mapping(uint => bool) nonceUsed;
     address public callDestination;
 
 
@@ -38,7 +38,7 @@ contract RecoveryWithTenant {
     }
     
     modifier noEther() {
-        if (msg.value &gt; 0) throw;
+        if (msg.value > 0) throw;
         _;
     }
 
@@ -73,7 +73,7 @@ contract RecoveryWithTenant {
     }
     
     function configure(address _tenant, address _callDestination, uint _nonce, uint8 _v, bytes32 _r, bytes32 _s) noEther onlyOracle returns (bool) {
-        if(tenant != oracle &amp;&amp; !_checkSigned(sha3(_tenant, _callDestination, _nonce), _nonce, _v, _r, _s))
+        if(tenant != oracle && !_checkSigned(sha3(_tenant, _callDestination, _nonce), _nonce, _v, _r, _s))
             return false;
         tenant = _tenant;
         callDestination = _callDestination;
@@ -82,7 +82,7 @@ contract RecoveryWithTenant {
     
     
     function addUser(address _userAddr, uint _nonce, uint8 _v, bytes32 _r, bytes32 _s) noEther onlyOracle returns (bool) {
-        if(userIndex[_userAddr] &gt; 0) {
+        if(userIndex[_userAddr] > 0) {
             Error(_nonce, 2);
             return false;
         }
@@ -98,7 +98,7 @@ contract RecoveryWithTenant {
     function recoverUser(address _oldAddr, address _newAddr, uint _nonce, uint8 _v, bytes32 _r, bytes32 _s) noEther onlyOracle returns (bool) {
         uint userPos = userIndex[_oldAddr];
         if (userPos == 0) {
-            Error(_nonce, 1); //user doesn&#39;t exsit
+            Error(_nonce, 1); //user doesn't exsit
             return false;
         }
         
@@ -123,7 +123,7 @@ contract RecoveryWithTenant {
     //############# STATIC FUNCTIONS
     
     function isUser(address _userAddr) constant returns (bool) {
-        return (userIndex[_userAddr] &gt; 0);
+        return (userIndex[_userAddr] > 0);
     }
 
 }

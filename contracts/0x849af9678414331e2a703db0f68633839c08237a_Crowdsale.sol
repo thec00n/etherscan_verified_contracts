@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -230,8 +230,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract MSPT is Ownable, MintableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;MySmartProperty Tokens&quot;;
-  string public constant symbol = &quot;MSPT&quot;;
+  string public constant name = "MySmartProperty Tokens";
+  string public constant symbol = "MSPT";
   uint32 public constant decimals = 18;
 
   address public addressSupporters;
@@ -395,71 +395,71 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum amount in ETH
-    require(weiAmount &gt;= minQuanValues);
-    if (now &gt;= startRoundSeed &amp;&amp; now &lt; endRoundSeed &amp;&amp; totalRoundSeedAmount &lt; maxAmountRoundSeed  &amp;&amp; tokens == 0){
+    require(weiAmount >= minQuanValues);
+    if (now >= startRoundSeed && now < endRoundSeed && totalRoundSeedAmount < maxAmountRoundSeed  && tokens == 0){
       tokens = weiAmount.div(100).mul(rateRoundSeed);
-      if (maxAmountRoundSeed.sub(totalRoundSeedAmount) &lt; tokens){
+      if (maxAmountRoundSeed.sub(totalRoundSeedAmount) < tokens){
         tokens = maxAmountRoundSeed.sub(totalRoundSeedAmount); 
         weiAmount = tokens.mul(100).div(rateRoundSeed);
         backAmount = msg.value.sub(weiAmount);
       }
       totalRoundSeedAmount = totalRoundSeedAmount.add(tokens);
-      if (totalRoundSeedAmount &gt;= maxAmountRoundSeed){
+      if (totalRoundSeedAmount >= maxAmountRoundSeed){
         startPreICO = now;
         endPreICO = startPreICO + 30 * 1 days;
       }   
     }
-    if (now &gt;= startPreICO &amp;&amp; now &lt; endPreICO &amp;&amp; totalPreICOAmount &lt; maxAmountPreICO &amp;&amp; tokens == 0){
+    if (now >= startPreICO && now < endPreICO && totalPreICOAmount < maxAmountPreICO && tokens == 0){
       tokens = weiAmount.div(100).mul(ratePreICO);
-      if (maxAmountPreICO.sub(totalPreICOAmount) &lt; tokens){
+      if (maxAmountPreICO.sub(totalPreICOAmount) < tokens){
         tokens = maxAmountPreICO.sub(totalPreICOAmount); 
         weiAmount = tokens.mul(100).div(ratePreICO);
         backAmount = msg.value.sub(weiAmount);
       }
       totalPreICOAmount = totalPreICOAmount.add(tokens);
-      if (totalPreICOAmount &gt;= maxAmountPreICO){
+      if (totalPreICOAmount >= maxAmountPreICO){
         startICO = now;
         endICO = startICO + 30 * 1 days;
       }   
     }    
-    if (now &gt;= startICO &amp;&amp; now &lt; endICO &amp;&amp; totalICOAmount &lt; maxAmountICO  &amp;&amp; tokens == 0){
+    if (now >= startICO && now < endICO && totalICOAmount < maxAmountICO  && tokens == 0){
       tokens = weiAmount.div(100).mul(rateICO);
-      if (maxAmountICO.sub(totalICOAmount) &lt; tokens){
+      if (maxAmountICO.sub(totalICOAmount) < tokens){
         tokens = maxAmountICO.sub(totalICOAmount); 
         weiAmount = tokens.mul(100).div(rateICO);
         backAmount = msg.value.sub(weiAmount);
       }
       totalICOAmount = totalICOAmount.add(tokens);
     }     
-    require(tokens &gt; 0);
+    require(tokens > 0);
     token.mint(beneficiary, tokens);
     wallet.transfer(weiAmount);
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
   }
 
   function mintTokens(address _to, uint256 _amount) onlyOwner public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_to != address(0));
-    if (now &gt;= mintStart1 &amp;&amp; now &lt; mintStart2){
+    if (now >= mintStart1 && now < mintStart2){
       allowTotalMintAmount = mintAmount1;  
     }
-    if (now &gt;= mintStart2 &amp;&amp; now &lt; mintStart3){
+    if (now >= mintStart2 && now < mintStart3){
       allowTotalMintAmount = mintAmount1.add(mintAmount2);  
     }  
-    if (now &gt;= mintStart3 &amp;&amp; now &lt; mintStart4){
+    if (now >= mintStart3 && now < mintStart4){
       allowTotalMintAmount = mintAmount1.add(mintAmount2).add(mintAmount3);  
     }       
-    if (now &gt;= mintStart4 &amp;&amp; now &lt; mintStart5){
+    if (now >= mintStart4 && now < mintStart5){
       allowTotalMintAmount = mintAmount1.add(mintAmount2).add(mintAmount3).add(mintAmount4);  
     }       
-    if (now &gt;= mintStart5){
+    if (now >= mintStart5){
       allowTotalMintAmount = totalMintAmount.add(totalTokens.sub(token.getTotalSupply()));
     }       
-    require(_amount.add(totalMintAmount) &lt;= allowTotalMintAmount);
+    require(_amount.add(totalMintAmount) <= allowTotalMintAmount);
     token.mint(_to, _amount);
     totalMintAmount = totalMintAmount.add(_amount);
     return true;

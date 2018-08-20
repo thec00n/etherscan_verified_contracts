@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac9c5c4decbc9deeacfdec2cfd8c9c2cfdbdfcf84c9c5c7">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac9c5c4decbc9deeacfdec2cfd8c9c2cfdbdfcf84c9c5c7">[email protected]</a>
 
 contract EtherCheque {
     enum Status { NONE, CREATED, LOCKED, EXPIRED }
@@ -36,8 +36,8 @@ contract EtherCheque {
     uint8 public maxAttempt = 3;
     bool public isMaintaining = false;
     
-    // hash cheque no -&gt; Cheque info
-    mapping(bytes32 =&gt; Cheque) items;
+    // hash cheque no -> Cheque info
+    mapping(bytes32 => Cheque) items;
 
     // modifier
     modifier onlyOwner() {
@@ -53,7 +53,7 @@ contract EtherCheque {
     modifier onlyModerators() {
         if (msg.sender != owner) {
             bool found = false;
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == msg.sender) {
                     found = true;
                     break;
@@ -84,7 +84,7 @@ contract EtherCheque {
     }
     
     function AddModerator(address _newModerator) onlyOwner {
-        for (uint index = 0; index &lt; moderators.length; index++) {
+        for (uint index = 0; index < moderators.length; index++) {
             if (moderators[index] == _newModerator) {
                 return;
             }
@@ -94,12 +94,12 @@ contract EtherCheque {
     
     function RemoveModerator(address _oldModerator) onlyOwner {
         uint foundIndex = 0;
-        for (; foundIndex &lt; moderators.length; foundIndex++) {
+        for (; foundIndex < moderators.length; foundIndex++) {
             if (moderators[foundIndex] == _oldModerator) {
                 break;
             }
         }
-        if (foundIndex &lt; moderators.length)
+        if (foundIndex < moderators.length)
         {
             moderators[foundIndex] = moderators[moderators.length-1];
             delete moderators[moderators.length-1];
@@ -131,7 +131,7 @@ contract EtherCheque {
     function WithdrawEther(address _sendTo, uint _amount) onlyModerators returns(ResultCode) {
         // can only can withdraw profit - unable to withdraw cheque value
         uint currentProfit = this.balance - (totalChequeValue - totalRedeemedValue);
-        if (_amount &gt; currentProfit) {
+        if (_amount > currentProfit) {
             LogWithdrawEther(_sendTo, ResultCode.ERROR_INVALID_AMOUNT, 0);
             return ResultCode.ERROR_INVALID_AMOUNT;
         }
@@ -183,14 +183,14 @@ contract EtherCheque {
         if (cheque.status == Status.NONE) 
             return (Status.NONE, 0, 0, 0);
 
-        if (cheque.expiringPeriod &gt; 0) {
+        if (cheque.expiringPeriod > 0) {
             uint timeGap = now;
-            if (timeGap &gt; cheque.createTime)
+            if (timeGap > cheque.createTime)
                 timeGap = timeGap - cheque.createTime;
             else
                 timeGap = 0;
 
-            if (cheque.expiringPeriod &gt; timeGap)
+            if (cheque.expiringPeriod > timeGap)
                 return (cheque.status, cheque.value, cheque.attempt, cheque.expiringPeriod - timeGap);
             else
                 return (Status.EXPIRED, cheque.value, cheque.attempt, 0);
@@ -218,14 +218,14 @@ contract EtherCheque {
         if (cheque.status == Status.NONE) 
             return (Status.NONE, 0, 0, 0);
 
-        if (cheque.expiringPeriod &gt; 0) {
+        if (cheque.expiringPeriod > 0) {
             uint timeGap = now;
-            if (timeGap &gt; cheque.createTime)
+            if (timeGap > cheque.createTime)
                 timeGap = timeGap - cheque.createTime;
             else
                 timeGap = 0;
 
-            if (cheque.expiringPeriod &gt; timeGap)
+            if (cheque.expiringPeriod > timeGap)
                 return (cheque.status, cheque.value, cheque.attempt, cheque.expiringPeriod - timeGap);
             else
                 return (Status.EXPIRED, cheque.value, cheque.attempt, 0);
@@ -241,12 +241,12 @@ contract EtherCheque {
         bytes32 chequeIdHash = bytes32(_chequeIdHash);
         bytes32 pinHash = bytes32(_pinHash);
         uint chequeValue = 0;
-        if (msg.value &lt; minChequeValue) {
+        if (msg.value < minChequeValue) {
             msg.sender.transfer(msg.value);
             LogCreate(chequeIdHash, uint(ResultCode.ERROR_MIN), chequeValue);
             return ResultCode.ERROR_MIN;
         }
-        if (maxChequeValue &gt; 0 &amp;&amp; msg.value &gt; maxChequeValue) {
+        if (maxChequeValue > 0 && msg.value > maxChequeValue) {
             msg.sender.transfer(msg.value);
             LogCreate(chequeIdHash, uint(ResultCode.ERROR_MAX), chequeValue);
             return ResultCode.ERROR_MAX;
@@ -291,11 +291,11 @@ contract EtherCheque {
                 LogRedeem(chequeIdHash, ResultCode.ERROR_INVALID_STATUS, 0, _sendTo);
                 return ResultCode.ERROR_INVALID_STATUS;
             }
-            if (cheque.attempt &gt; maxAttempt) {
+            if (cheque.attempt > maxAttempt) {
                 LogRedeem(chequeIdHash, ResultCode.ERROR_LOCKED, 0, _sendTo);
                 return ResultCode.ERROR_LOCKED;
             }
-            if (cheque.expiringPeriod &gt; 0 &amp;&amp; now &gt; (cheque.createTime + cheque.expiringPeriod)) {
+            if (cheque.expiringPeriod > 0 && now > (cheque.createTime + cheque.expiringPeriod)) {
                 LogRedeem(chequeIdHash, ResultCode.ERROR_EXPIRED, 0, _sendTo);
                 return ResultCode.ERROR_EXPIRED;
             }

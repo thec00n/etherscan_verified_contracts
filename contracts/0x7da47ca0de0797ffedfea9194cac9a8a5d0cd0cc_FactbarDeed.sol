@@ -4,9 +4,9 @@ interface ERC721Metadata {
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-    //     bytes4(keccak256(&#39;name()&#39;)) ^
-    //     bytes4(keccak256(&#39;symbol()&#39;)) ^
-    //     bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+    //     bytes4(keccak256('name()')) ^
+    //     bytes4(keccak256('symbol()')) ^
+    //     bytes4(keccak256('deedUri(uint256)'));
 
     /// @notice A descriptive name for a collection of deeds managed by this
     ///  contract
@@ -28,11 +28,11 @@ interface ERC721Metadata {
     ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)
     ///  * The JSON base element is an object
     ///  then these names of the base element SHALL have special meaning:
-    ///  * &quot;name&quot;: A string identifying the item to which `_deedId` grants
+    ///  * "name": A string identifying the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;description&quot;: A string detailing the item to which `_deedId` grants
+    ///  * "description": A string detailing the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;image&quot;: A URI pointing to a file of image/* mime type representing
+    ///  * "image": A URI pointing to a file of image/* mime type representing
     ///    the item to which `_deedId` grants ownership
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
@@ -82,9 +82,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -92,7 +92,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -101,7 +101,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -187,16 +187,16 @@ interface ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-    //     bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+    //     bytes4(keccak256('ownerOf(uint256)')) ^
+    //     bytes4(keccak256('countOfDeeds()')) ^
+    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+    //     bytes4(keccak256('approve(address,uint256)')) ^
+    //     bytes4(keccak256('takeOwnership(uint256)'));
 
     /// @notice Query a contract to see if it supports a certain interface
     /// @dev Returns `true` the interface is supported and `false` otherwise,
@@ -226,7 +226,7 @@ interface ERC721 {
     function countOfDeedsByOwner(address _owner) external view returns (uint256 _count);
 
     /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` &gt;= `countOfDeedsByOwner(_owner)` or if
+    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
     ///  `_owner` is the zero address, representing invalid deeds.
     /// @param _owner An address where we are interested in deeds owned by them
     /// @param _index A counter less than `countOfDeedsByOwner(_owner)`
@@ -240,20 +240,20 @@ interface ERC721 {
     ///  mechanism. This event emits when deeds are created (`from` == 0) and
     ///  destroyed (`to` == 0). Exception: during contract creation, any
     ///  transfers may occur without emitting `Transfer`. At the time of any transfer,
-    ///  the &quot;approved taker&quot; is implicitly reset to the zero address.
+    ///  the "approved taker" is implicitly reset to the zero address.
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _deedId);
 
-    /// @dev The Approve event emits to log the &quot;approved taker&quot; for a deed -- whether
+    /// @dev The Approve event emits to log the "approved taker" for a deed -- whether
     ///  set for the first time, reaffirmed by setting the same value, or setting to
-    ///  a new value. The &quot;approved taker&quot; is the zero address if nobody can take the
+    ///  a new value. The "approved taker" is the zero address if nobody can take the
     ///  deed now or it is an address if that address can call `takeOwnership` to attempt
-    ///  taking the deed. Any change to the &quot;approved taker&quot; for a deed SHALL cause
+    ///  taking the deed. Any change to the "approved taker" for a deed SHALL cause
     ///  Approve to emit. However, an exception, the Approve event will not emit when
-    ///  Transfer emits, this is because Transfer implicitly denotes the &quot;approved taker&quot;
+    ///  Transfer emits, this is because Transfer implicitly denotes the "approved taker"
     ///  is reset to the zero address.
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _deedId);
 
-    /// @notice Set the &quot;approved taker&quot; for your deed, or revoke approval by
+    /// @notice Set the "approved taker" for your deed, or revoke approval by
     ///  setting the zero address. You may `approve` any number of times while
     ///  the deed is assigned to you, only the most recent approval matters. Emits
     ///  an Approval event.
@@ -277,16 +277,16 @@ contract ERC721Deed is ERC721 {
   uint256 private totalDeeds;
 
   // Mapping from deed ID to owner
-  mapping (uint256 =&gt; address) private deedOwner;
+  mapping (uint256 => address) private deedOwner;
 
   // Mapping from deed ID to approved address
-  mapping (uint256 =&gt; address) private deedApprovedFor;
+  mapping (uint256 => address) private deedApprovedFor;
 
   // Mapping from owner to list of owned deed IDs
-  mapping (address =&gt; uint256[]) private ownedDeeds;
+  mapping (address => uint256[]) private ownedDeeds;
 
   // Mapping from deed ID to index of the owner deeds list
-  mapping(uint256 =&gt; uint256) private ownedDeedsIndex;
+  mapping(uint256 => uint256) private ownedDeedsIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given deed
@@ -330,20 +330,20 @@ contract ERC721Deed is ERC721 {
 
   /**
   * @dev Gets the deed ID of the specified address at the specified index
-  * @param _owner address for the deed&#39;s owner
+  * @param _owner address for the deed's owner
   * @param _index uint256 for the n-th deed in the list of deeds owned by this owner
   * @return uint256 representing the ID of the deed
   */
   function deedOfOwnerByIndex(address _owner, uint256 _index)
   external view returns (uint256 _deedId) {
     require(_owner != address(0));
-    require(_index &lt; ownedDeeds[_owner].length);
+    require(_index < ownedDeeds[_owner].length);
     _deedId = ownedDeeds[_owner][_index];
   }
 
   /**
   * @dev Gets all deed IDs of the specified address
-  * @param _owner address for the deed&#39;s owner
+  * @param _owner address for the deed's owner
   * @return uint256[] representing all deed IDs owned by the passed address
   */
   function deedsOf(address _owner)
@@ -496,7 +496,7 @@ contract ERC721Deed is ERC721 {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -507,7 +507,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(address(this).balance &gt;= payment);
+    require(address(this).balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -540,7 +540,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   address indexed newOwner, uint256 oldPrice, uint256 newPrice,
   uint256 transferFeeAmount, uint256 excess,  uint256 oldOwnerPaymentAmount );
 
-  // Payments to the deed&#39;s fee address via PullPayment are also supported by this contract.
+  // Payments to the deed's fee address via PullPayment are also supported by this contract.
   event Payment(uint256 indexed id, address indexed sender, address 
   indexed factTeam, uint256 amount);
 
@@ -557,16 +557,16 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   }
 
   // Mapping from _deedId to Factbar
-  mapping (uint256 =&gt; Factbar) private deeds;
+  mapping (uint256 => Factbar) private deeds;
 
   // Mapping from deed name to boolean indicating if the name is already taken
-  mapping (bytes32 =&gt; bool) private deedNameExists;
+  mapping (bytes32 => bool) private deedNameExists;
 
   // Needed to make all deeds discoverable. The length of this array also serves as our deed ID.
   uint256[] private deedIds;
 
   // These are the admins who have the power to create deeds.
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
 
   /* Variables in control of owner */
 
@@ -574,24 +574,24 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   uint256 private creationPrice = 0.0005 ether; 
 
   // The contract owner can change the base URL, in case it becomes necessary. It is needed for Metadata.
-  string public url = &quot;https://fact-bar.org/facts/&quot;;
+  string public url = "https://fact-bar.org/facts/";
 
   // ERC-165 Metadata
   bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-      bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+      bytes4(keccak256('supportsInterface(bytes4)'));
 
   bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-      bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-      bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-      bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-      bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+      bytes4(keccak256('ownerOf(uint256)')) ^
+      bytes4(keccak256('countOfDeeds()')) ^
+      bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+      bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+      bytes4(keccak256('approve(address,uint256)')) ^
+      bytes4(keccak256('takeOwnership(uint256)'));
 
   bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-      bytes4(keccak256(&#39;name()&#39;)) ^
-      bytes4(keccak256(&#39;symbol()&#39;)) ^
-      bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+      bytes4(keccak256('name()')) ^
+      bytes4(keccak256('symbol()')) ^
+      bytes4(keccak256('deedUri(uint256)'));
 
 
   function FactbarDeed() public {}
@@ -619,12 +619,12 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
 
   function name()
   external pure returns (string) {
-    return &quot;Factbar&quot;;
+    return "Factbar";
   }
 
   function symbol()
   external pure returns (string) {
-    return &quot;FTBR&quot;;
+    return "FTBR";
   }
 
   function supportsInterface(bytes4 _interfaceID)
@@ -671,13 +671,13 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   uint256 private increaseLimit4 = 5.0 ether;
 
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(200).div(100);
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(135).div(100);
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(125).div(100);
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(117).div(100);
     } else {
       return _price.mul(115).div(100);
@@ -685,13 +685,13 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   }
 
   function calculateTransferFee (uint256 _price) public view returns (uint256 _devCut) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(5).div(100); // 5%
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(4).div(100); // 4%
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(3).div(100); // 3%
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(3).div(100); // 3%
     } else {
       return _price.mul(3).div(100); // 3%
@@ -713,10 +713,10 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
     require(oldOwner != newOwner);
     
     // price must be more than zero
-    require(priceOf(_deedId) &gt; 0); 
+    require(priceOf(_deedId) > 0); 
     
     // offered price must be more than or equal to the current price
-    require(msg.value &gt;= price); 
+    require(msg.value >= price); 
 
     /// Any over-payment by the buyer will be sent back to him/her
     uint256 excess = msg.value.sub(price);
@@ -736,7 +736,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
     asyncSend(factTeamOf(_deedId), transferFee);
     asyncSend(oldOwner, oldOwnerPayment);
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
        asyncSend(newOwner, excess);
     }
 
@@ -744,7 +744,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
     transferFee, excess, oldOwnerPayment);
   }
 
-  // these events can be turned on to make up for Solidity&#39;s horrifying logging situation
+  // these events can be turned on to make up for Solidity's horrifying logging situation
   // event logUint(address add, string text, uint256 value);
   // event simpleLogUint(string text, uint256 value);
 
@@ -761,10 +761,10 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   external nonReentrant {
     withdrawPayments();
     if (msg.sender == owner) {
-      // The contract&#39;s balance MUST stay backing the outstanding withdrawals.
+      // The contract's balance MUST stay backing the outstanding withdrawals.
       //  Only the surplus not needed for any backing can be withdrawn by the owner.
       uint256 surplus = address(this).balance.sub(totalPayments);
-      if (surplus &gt; 0) {
+      if (surplus > 0) {
         owner.transfer(surplus);
       }
     }
@@ -836,7 +836,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
   private pure returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
       byte char = byte(bytes32(uint(_bytes32) * 2 ** (8 * j)));
       if (char != 0) {
         bytesString[charCount] = char;
@@ -844,7 +844,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
       }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
       bytesStringTrimmed[j] = bytesString[j];
     }
 
@@ -858,8 +858,8 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
     string memory ab = new string(_ba.length + _bb.length);
     bytes memory bab = bytes(ab);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+    for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
     return string(bab);
   }
 
@@ -871,7 +871,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
 
 // Permission is hereby granted, free of charge, 
 // to any person obtaining a copy of this software and 
-// associated documentation files (the &quot;Software&quot;), to 
+// associated documentation files (the "Software"), to 
 // deal in the Software without restriction, including 
 // without limitation the rights to use, copy, modify, 
 // merge, publish, distribute, sublicense, and/or sell 
@@ -882,7 +882,7 @@ contract FactbarDeed is ERC721Deed, Pausable, PullPayment, ReentrancyGuard {
 // The above copyright notice and this permission notice 
 // shall be included in all copies or substantial portions of the Software.
 
-// THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
 // OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 

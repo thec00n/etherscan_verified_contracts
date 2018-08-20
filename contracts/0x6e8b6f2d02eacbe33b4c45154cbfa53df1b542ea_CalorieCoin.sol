@@ -45,14 +45,14 @@ contract Token {
 
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -78,7 +78,7 @@ contract StandardToken is Token {
             codeLength := extcodesize(_to)
         }
 
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -93,9 +93,9 @@ contract StandardToken is Token {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -132,13 +132,13 @@ contract StandardToken is Token {
 
 contract CalorieCoin is owned, StandardToken {
 
-    string constant public name = &quot;CalorieCoin&quot;;
-    string constant public symbol = &quot;CAL&quot;;
+    string constant public name = "CalorieCoin";
+    string constant public symbol = "CAL";
     uint8 constant public decimals = 18;
     uint constant multiplier = 1000000000000000000;
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
     event Deployed(uint indexed _total_supply);
@@ -167,9 +167,9 @@ contract CalorieCoin is owned, StandardToken {
     }
 
     function burn(uint num) public {
-        require(num &gt; 0);
-        require(balances[msg.sender] &gt;= num);
-        require(totalSupply &gt;= num);
+        require(num > 0);
+        require(balances[msg.sender] >= num);
+        require(totalSupply >= num);
 
         uint pre_balance = balances[msg.sender];
 

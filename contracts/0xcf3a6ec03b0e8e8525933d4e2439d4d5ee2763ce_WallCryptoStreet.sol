@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 Game Name: WallCryptoStreet
 Game Link: https://wallcryptostreet.net/
 Rules: 
-- Players can purchase companies and sell shares &amp; ads to the other players. 
+- Players can purchase companies and sell shares & ads to the other players. 
 - Company owners receive a commission of 80% for the initial sell of their shares and 10% on consecutive sales.
 - When a company sell an ad, 50% of the revenue is distributed among the shareholders, 40% to you and 10% to us. 
 - Ads are visible until someone else pays more than the previous user. 
@@ -40,7 +40,7 @@ contract WallCryptoStreet {
     Share[] shares;
 
     // How many shares an addres own
-    mapping (address =&gt; uint) public addressSharesCount;
+    mapping (address => uint) public addressSharesCount;
     bool companiesAreInitiated;
     bool isPaused;
     
@@ -68,12 +68,12 @@ contract WallCryptoStreet {
         // Calculate the 5% value
         uint256 commission5percent = ((msg.value / 10)/2);
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - commission5percent; // =&gt; 95%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - commission5percent; // => 95%
         companies[_companyId].ownerAddress.transfer(commissionOwner);
 
         // Transfer the 5% commission to the developer
-        cfoAddress.transfer(commission5percent); // =&gt; 5%                   
+        cfoAddress.transfer(commission5percent); // => 5%                   
 
         // Update the company owner and set the new price
         companies[_companyId].ownerAddress = msg.sender;
@@ -105,7 +105,7 @@ contract WallCryptoStreet {
         // Get the list of shareholders for this company
         address[] memory shareholdersAddresses = getCompanyShareholders(_companyId);
         // We loop thrugh all of the shareholders and transfer their commission
-        for (uint8 i = 0; i &lt; 5; i++) {
+        for (uint8 i = 0; i < 5; i++) {
             shareholdersAddresses[i].transfer(commissionOneShareholder);
         }
 
@@ -124,8 +124,8 @@ contract WallCryptoStreet {
     
         uint256 commission1percent = (msg.value / 100);
         /*
-        We check if this is the first purchase of a share or a &quot;repurchase&quot;.
-        If it&#39;s the first purchase we transfer a larger commission to the company owner
+        We check if this is the first purchase of a share or a "repurchase".
+        If it's the first purchase we transfer a larger commission to the company owner
         */
         if(shares[_shareId].ownerAddress == cfoAddress) {
             // This is the initial sale
@@ -155,7 +155,7 @@ contract WallCryptoStreet {
     function getCompanyShareholders(uint _companyId) public view returns(address[]) {
         address[] memory result = new address[](5);
         uint counter = 0;
-        for (uint i = 0; i &lt; shares.length; i++) {
+        for (uint i = 0; i < shares.length; i++) {
           if (shares[i].companyId == _companyId) {
             result[counter] = shares[i].ownerAddress;
             counter++;
@@ -170,9 +170,9 @@ contract WallCryptoStreet {
     The price is set in WEI.
     */
     function updateCompanyPrice(uint _companyId, uint256 _newPrice) public {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         require(companies[_companyId].ownerAddress == msg.sender);
-        require(_newPrice &lt; companies[_companyId].curPrice);
+        require(_newPrice < companies[_companyId].curPrice);
         companies[_companyId].curPrice = _newPrice;
     }
     
@@ -182,9 +182,9 @@ contract WallCryptoStreet {
     The price is set in WEI.
     */
     function updateSharePrice(uint _shareId, uint256 _newPrice) public {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         require(shares[_shareId].ownerAddress == msg.sender);
-        require(_newPrice &lt; shares[_shareId].curPrice);
+        require(_newPrice < shares[_shareId].curPrice);
         shares[_shareId].curPrice = _newPrice;
     }
     
@@ -232,7 +232,7 @@ contract WallCryptoStreet {
     function getMyShares() public view returns(uint[]) {
         uint[] memory result = new uint[](addressSharesCount[msg.sender]);
         uint counter = 0;
-        for (uint i = 0; i &lt; shares.length; i++) {
+        for (uint i = 0; i < shares.length; i++) {
           if (shares[i].ownerAddress == msg.sender) {
             result[counter] = i;
             counter++;
@@ -247,18 +247,18 @@ contract WallCryptoStreet {
         uint256 _sharePrice = 999000000000000000000;
 
         // Loop through all the shares of this company
-        for (uint8 i = 0; i &lt; shares.length; i++) {
+        for (uint8 i = 0; i < shares.length; i++) {
             // Get only the shares of this company
             if(shares[i].companyId == _companyId) {
-                // Check if this share is less expensive than the previous and if it&#39;s not already owned by the connected user
-                if(shares[i].curPrice &lt; _sharePrice &amp;&amp; shares[i].ownerAddress != msg.sender) {
+                // Check if this share is less expensive than the previous and if it's not already owned by the connected user
+                if(shares[i].curPrice < _sharePrice && shares[i].ownerAddress != msg.sender) {
                     _sharePrice = shares[i].curPrice;
                     _shareId = i;
                 }
             }
         }
 
-        // Return the price or the id of the company&#39;s least expensive share
+        // Return the price or the id of the company's least expensive share
         if(_type == 0) {
             return(_shareId);
         } else {
@@ -267,7 +267,7 @@ contract WallCryptoStreet {
     }
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -279,18 +279,18 @@ contract WallCryptoStreet {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     // The dev can use this function to create new companies.
     function createCompany(string _companyName, uint256 _companyPrice) public onlyCeo {
-        uint companyId = companies.push(Company(_companyName, cfoAddress, _companyPrice, 10000000000000000, &quot;0&quot;, &quot;#&quot;,0)) - 1;
+        uint companyId = companies.push(Company(_companyName, cfoAddress, _companyPrice, 10000000000000000, "0", "#",0)) - 1;
         // The initial price of a share is always the initial price of a company / 10.
         uint256 sharePrice = _companyPrice / 10;
         
@@ -305,15 +305,15 @@ contract WallCryptoStreet {
     // Initiate functions that will create the companies
     function InitiateCompanies() public onlyCeo {
         require(companiesAreInitiated == false);
-        createCompany(&quot;Apple&quot;, 350000000000000000); 
-        createCompany(&quot;Snapchat&quot;, 200000000000000000); 
-        createCompany(&quot;Facebook&quot;, 250000000000000000); 
-        createCompany(&quot;Google&quot;, 250000000000000000); 
-        createCompany(&quot;Microsoft&quot;, 350000000000000000); 
-        createCompany(&quot;Nintendo&quot;, 150000000000000000); 
-        createCompany(&quot;Mc Donald&quot;, 250000000000000000); 
-        createCompany(&quot;Kodak&quot;, 100000000000000000);
-        createCompany(&quot;Twitter&quot;, 100000000000000000);
+        createCompany("Apple", 350000000000000000); 
+        createCompany("Snapchat", 200000000000000000); 
+        createCompany("Facebook", 250000000000000000); 
+        createCompany("Google", 250000000000000000); 
+        createCompany("Microsoft", 350000000000000000); 
+        createCompany("Nintendo", 150000000000000000); 
+        createCompany("Mc Donald", 250000000000000000); 
+        createCompany("Kodak", 100000000000000000);
+        createCompany("Twitter", 100000000000000000);
 
     }
 }

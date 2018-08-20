@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,7 +66,7 @@ contract EIP20Interface {
 }
 
 contract Mintable is Ownable {
-    mapping(address =&gt; bool) minters;
+    mapping(address => bool) minters;
 
     modifier onlyMinter {
         require(minters[msg.sender] == true);
@@ -88,21 +88,21 @@ contract Mintable is Ownable {
 
 contract AkilosToken is EIP20Interface, Ownable, SafeMath, Mintable {
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => mapping(address => uint256)) public allowed;
 
-    string public name = &quot;Akilos&quot;;
+    string public name = "Akilos";
 
     uint8 public decimals = 18;
 
-    string public symbol = &quot;ALS&quot;;
+    string public symbol = "ALS";
 
     function AkilosToken() public {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
 
@@ -112,7 +112,7 @@ contract AkilosToken is EIP20Interface, Ownable, SafeMath, Mintable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
         allowed[_from][msg.sender] = safeSub(allowance, _value);
@@ -153,7 +153,7 @@ contract AkilosIco is Ownable, SafeMath {
 
     uint256 public maxSupply;
 
-    mapping(address =&gt; uint256) public participants;
+    mapping(address => uint256) public participants;
 
     AkilosToken public token;
 
@@ -162,8 +162,8 @@ contract AkilosIco is Ownable, SafeMath {
     bool private initialised;
 
     modifier participationOpen  {
-        require(block.number &gt;= startBlock);
-        require(block.number &lt;= endBlock);
+        require(block.number >= startBlock);
+        require(block.number <= endBlock);
         _;
     }
 
@@ -194,25 +194,25 @@ contract AkilosIco is Ownable, SafeMath {
     function participate(address participant, uint256 value) internal participationOpen {
         require(participant != address(0x0));
 
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
 
         require(initialised);
 
         uint256 totalSupply = token.totalSupply();
-        require(totalSupply &lt; maxSupply);
+        require(totalSupply < maxSupply);
 
         uint256 tokenCount = safeMul(value, exchangeRate);
         uint256 remaining = 0;
 
         uint256 newTotalSupply = safeAdd(totalSupply, tokenCount);
-        if (newTotalSupply &gt; maxSupply) {
+        if (newTotalSupply > maxSupply) {
             uint256 newTokenCount = newTotalSupply - maxSupply;
 
             remaining = safeDiv(tokenCount - newTokenCount, exchangeRate);
             tokenCount = newTokenCount;
         }
 
-        if (remaining &gt; 0) {
+        if (remaining > 0) {
             msg.sender.transfer(remaining);
             value = safeSub(value, remaining);
         }

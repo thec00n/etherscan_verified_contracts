@@ -2,7 +2,7 @@ pragma solidity ^ 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -46,18 +46,18 @@ library SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b)internal pure returns(uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b);  There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b);  There is no case in which this doesn't hold
         return c;
     }
     function sub(uint256 a, uint256 b)internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b)internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -138,14 +138,14 @@ contract BasicToken is ERC20Basic,
 Pausable {
     uint256 startPreSale; uint256 endPreSale; uint256 startSale; 
     uint256 endSale; 
-    using SafeMath for uint256; mapping(address =&gt; uint256)balances; uint256 preICOReserveTokens; uint256 icoReserveTokens; 
+    using SafeMath for uint256; mapping(address => uint256)balances; uint256 preICOReserveTokens; uint256 icoReserveTokens; 
     address businessReserveAddress; uint256 public timeLock = 1586217600; //7 April 2020 locked
     uint256 public incentiveTokensLimit;
     modifier checkAdditionalTokenLock(uint256 value) {
 
         if (msg.sender == businessReserveAddress) {
             
-            if ((now&lt;endSale) ||(now &lt; timeLock &amp;&amp;value&gt;incentiveTokensLimit)) {
+            if ((now<endSale) ||(now < timeLock &&value>incentiveTokensLimit)) {
                 revert();
             } else {
                 _;
@@ -175,7 +175,7 @@ Pausable {
         bool
     ) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -217,7 +217,7 @@ contract BurnableToken is BasicToken {
    */
     function burn()public {
         uint256 _value = balances[msg.sender];
-        // no need to require value &lt;= totalSupply, since that would imply the sender&#39;s
+        // no need to require value <= totalSupply, since that would imply the sender's
         // balance is greater than the totalSupply, which *should* be an assertion
         // failure
 
@@ -230,7 +230,7 @@ contract BurnableToken is BasicToken {
 }
 
 contract StandardToken is ERC20,BurnableToken {
-    mapping(address =&gt; mapping(address =&gt; uint256))internal allowed;
+    mapping(address => mapping(address => uint256))internal allowed;
 
     /**
   * @dev Transfer tokens from one address to another
@@ -241,8 +241,8 @@ contract StandardToken is ERC20,BurnableToken {
     function transferFrom(address _from, address _to, uint256 _value)public whenNotPaused checkAdditionalTokenLock(_value) returns(
         bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -254,7 +254,7 @@ contract StandardToken is ERC20,BurnableToken {
   *
   * Beware that changing an allowance with this method brings the risk that someone may use both the old
   * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-  * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+  * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
   * @param _spender The address which will spend the funds.
   * @param _value The amount of tokens to be spent.
@@ -294,7 +294,7 @@ contract StandardToken is ERC20,BurnableToken {
         bool success
     ) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -304,9 +304,9 @@ contract StandardToken is ERC20,BurnableToken {
     }
 }
 contract SMRTCoin is StandardToken {
-    string public constant name = &quot;SMRT&quot;;
+    string public constant name = "SMRT";
     uint public constant decimals = 18;
-    string public constant symbol = &quot;SMRT&quot;;
+    string public constant symbol = "SMRT";
     using SafeMath for uint256; uint256 public weiRaised = 0; address depositWalletAddress; 
     event Buy(address _from, uint256 _ethInWei, string userId); 
     
@@ -331,7 +331,7 @@ contract SMRTCoin is StandardToken {
    * This will be called by adding data to represnet data.
    */
     function buy(string userId)public payable whenNotPaused {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(msg.sender != address(0));
         weiRaised += msg.value;
         forwardFunds();
@@ -341,13 +341,13 @@ contract SMRTCoin is StandardToken {
    * This function will called by only distributors to send tokens by calculating from offchain listners
    */
     function getBonustokens(uint256 tokens)internal returns(uint256 bonusTokens) {
-        require(now &lt;= endSale);
+        require(now <= endSale);
         uint256 bonus;
-        if (now &lt;= endPreSale) {
+        if (now <= endPreSale) {
             bonus = 50;
-        } else if (now &lt; startSale + 1 weeks) {
+        } else if (now < startSale + 1 weeks) {
             bonus = 10;
-        } else if (now &lt; startSale + 2 weeks) {
+        } else if (now < startSale + 2 weeks) {
             bonus = 5;
         }
 
@@ -357,11 +357,11 @@ contract SMRTCoin is StandardToken {
         tokens =  tokens.add(getBonustokens(tokens));
         uint256 tokenLimit = (tokens.mul(20)).div(100); //as 20 becuase its 10 percnet of total
         incentiveTokensLimit  = incentiveTokensLimit.add(tokenLimit);
-        if (now &lt;= endPreSale &amp;&amp; preICOReserveTokens &gt;= tokens) {
+        if (now <= endPreSale && preICOReserveTokens >= tokens) {
             preICOReserveTokens = preICOReserveTokens.sub(tokens);
             transfer(businessReserveAddress, tokens);
             transfer(recieverAddress, tokens);
-        } else if (now &lt; endSale &amp;&amp; icoReserveTokens &gt;= tokens) {
+        } else if (now < endSale && icoReserveTokens >= tokens) {
             icoReserveTokens = icoReserveTokens.sub(tokens);
             transfer(businessReserveAddress, tokens);
             transfer(recieverAddress, tokens);

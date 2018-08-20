@@ -12,7 +12,7 @@ contract BirthdayGift {
     function () payable public {}
     
     function DaysTillUnlock () public constant returns (uint256 _days) {
-        if (now &gt; unlockTime) {
+        if (now > unlockTime) {
             return 0;
         }
         return (unlockTime - now) / 60 / 60 / 24;
@@ -35,7 +35,7 @@ contract BirthdayGift {
     
     function OpenGift () public {
         require (msg.sender == recipient);
-        require (now &gt;= unlockTime);
+        require (now >= unlockTime);
         selfdestruct (recipient);
     }
 }

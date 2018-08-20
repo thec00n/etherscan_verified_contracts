@@ -12,12 +12,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c&gt;= a);
+        assert(c>= a);
         return c;
     }
 }
@@ -36,24 +36,24 @@ contract ERC721 {
 }
 
 contract AthleteToken is ERC721 {
-    string public constant NAME = &quot;CryptoFantasy&quot;;
-    string public constant SYMBOL = &quot;Athlete&quot;;
+    string public constant NAME = "CryptoFantasy";
+    string public constant SYMBOL = "Athlete";
     uint256 private constant initPrice = 0.001 ether;
     event Birth(uint256 tokenId, address owner);
     event TokenSold(uint256 tokenId, uint256 sellPrice, address sellOwner, address buyOwner, string athleteId);
     event Transfer(address from, address to, uint256 tokenId);
-    mapping (uint256 =&gt; address) public athleteIndexToOwner;
+    mapping (uint256 => address) public athleteIndexToOwner;
 
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     
-    mapping (uint256 =&gt; address) public athleteIndexToApproved;
-    mapping (uint256 =&gt; uint256) private athleteIndexToPrice;
-    mapping (uint256 =&gt; uint256) private athleteIndexToActualFee;
-    mapping (uint256 =&gt; uint256) private athleteIndexToSiteFee;
-    mapping (uint256 =&gt; address) private athleteIndexToActualWalletId;
-    mapping (uint256 =&gt; string) private athleteIndexToAthleteID;
-    mapping (uint256 =&gt; bool) private athleteIndexToAthleteVerificationState;
+    mapping (uint256 => address) public athleteIndexToApproved;
+    mapping (uint256 => uint256) private athleteIndexToPrice;
+    mapping (uint256 => uint256) private athleteIndexToActualFee;
+    mapping (uint256 => uint256) private athleteIndexToSiteFee;
+    mapping (uint256 => address) private athleteIndexToActualWalletId;
+    mapping (uint256 => string) private athleteIndexToAthleteID;
+    mapping (uint256 => bool) private athleteIndexToAthleteVerificationState;
     address public ceoAddress;
     address public cooAddress;
     uint256 public promoCreatedCount;
@@ -67,7 +67,7 @@ contract AthleteToken is ERC721 {
         bool    isVerified;
     }
     Athlete[] private athletes;
-    mapping (uint256 =&gt; Athlete) private athleteIndexToAthlete;
+    mapping (uint256 => Athlete) private athleteIndexToAthlete;
     modifier onlyCEO() {
         require(msg.sender == ceoAddress);
         _;
@@ -100,7 +100,7 @@ contract AthleteToken is ERC721 {
         
         address _athleteOwner = address(this);
         bool _verified = true;
-        if ( _sellPrice &lt;= 0 ) {
+        if ( _sellPrice <= 0 ) {
             _sellPrice = initPrice;
         }
         if ( _actualAddress == address(0) ){
@@ -187,7 +187,7 @@ contract AthleteToken is ERC721 {
         //safely check to prevent against an unexpected 0x0 default
         require(_addressNotNull(buyOwner));
         //make sure sent amount is greater than or equal to the sellPrice
-        require(msg.value &gt;= sellPrice);
+        require(msg.value >= sellPrice);
         uint256 actualFee = uint256(SafeMath.div(SafeMath.mul(sellPrice, athleteIndexToActualFee[_tokenId]), 100)); // calculate actual fee
         uint256 siteFee   = uint256(SafeMath.div(SafeMath.mul(sellPrice, athleteIndexToSiteFee[_tokenId]), 100));   // calculate site fee
         uint256 payment   = uint256(SafeMath.sub(sellPrice, SafeMath.add(actualFee, siteFee)));   //payment for seller
@@ -239,7 +239,7 @@ contract AthleteToken is ERC721 {
             uint256 resultIndex = 0;
             uint256 athleteId;
 
-            for(athleteId = 0; athleteId &lt;= totalAthletes; athleteId++) {
+            for(athleteId = 0; athleteId <= totalAthletes; athleteId++) {
                 if (athleteIndexToOwner[athleteId] == _owner) {
                     result[resultIndex] = athleteId;
                     resultIndex++;
@@ -279,7 +279,7 @@ contract AthleteToken is ERC721 {
         
         bool _verified = true;
         // Check sell price and origin wallet id
-        if ( _sellPrice &lt;= 0 ) {
+        if ( _sellPrice <= 0 ) {
             _sellPrice = initPrice;
         }
         if ( _actualAddress == address(0) ){

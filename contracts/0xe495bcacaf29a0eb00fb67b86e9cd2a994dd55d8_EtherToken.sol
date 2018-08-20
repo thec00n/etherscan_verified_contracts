@@ -2,14 +2,14 @@
 
   Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -58,7 +58,7 @@ contract ERC20Token is Token {
         public
         returns (bool) 
     {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]); 
+        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]); 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -69,7 +69,7 @@ contract ERC20Token is Token {
         public 
         returns (bool) 
     {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]); 
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]); 
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -102,8 +102,8 @@ contract ERC20Token is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -121,10 +121,10 @@ contract UnlimitedAllowanceToken is ERC20Token {
         returns (bool) 
     {
         uint allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]); 
+        require(balances[_from] >= _value && allowance >= _value && balances[_to] + _value >= balances[_to]); 
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT) {
+        if (allowance < MAX_UINT) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -157,7 +157,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -167,7 +167,7 @@ contract SafeMath {
         returns (uint256)
     {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -176,7 +176,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b)
@@ -184,7 +184,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b)
@@ -192,7 +192,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b)
@@ -200,15 +200,15 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 contract EtherToken is UnlimitedAllowanceToken, SafeMath {
 
-    string constant public name = &quot;Ether Token&quot;;
-    string constant public symbol = &quot;WETH&quot;;
-    string constant public version = &quot;2.0.0&quot;; // version 1.0.0 deployed on mainnet at 0x2956356cd2a2bf3202f771f50d3d14a367b48070
+    string constant public name = "Ether Token";
+    string constant public symbol = "WETH";
+    string constant public version = "2.0.0"; // version 1.0.0 deployed on mainnet at 0x2956356cd2a2bf3202f771f50d3d14a367b48070
     uint8 constant public decimals = 18;
 
     /// @dev Fallback to calling deposit when ether is sent directly to contract.

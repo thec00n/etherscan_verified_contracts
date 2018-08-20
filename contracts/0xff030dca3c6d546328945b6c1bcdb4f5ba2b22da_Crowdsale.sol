@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
 /**
- * Contract &quot;Math&quot;
+ * Contract "Math"
  * Purpose: Math operations with safety checks
  */
 library Math {
@@ -21,7 +21,7 @@ library Math {
     */
     function Div(uint a, uint b) constant internal returns (uint) {
       //overflow check; b must not be 0
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
@@ -32,7 +32,7 @@ library Math {
     */
     function Sub(uint a, uint b) constant internal returns (uint) {
       //b must be greater that a as we need to store value in unsigned integer
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
@@ -42,13 +42,13 @@ library Math {
     function Add(uint a, uint b) constant internal returns (uint) {
       uint c = a + b;
       //result must be greater as a or b can not be negative
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 }
 
 /**
- * Contract &quot;ERC20Basic&quot;
+ * Contract "ERC20Basic"
  * Purpose: Defining ERC20 standard with basic functionality like - CheckBalance and Transfer including Transfer event
  */
 contract ERC20Basic {
@@ -67,12 +67,12 @@ contract ERC20Basic {
 }
 
 /**
- * Contract &quot;ERC20&quot;
+ * Contract "ERC20"
  * Purpose: Defining ERC20 standard with more advanced functionality like - Authorize spender to transfer EXH token
  */
 contract ERC20 is ERC20Basic {
 
-  //Get EXH token amount that spender can spend from provided owner&#39;s account 
+  //Get EXH token amount that spender can spend from provided owner's account 
   function allowance(address owner, address spender) public constant returns (uint);
 
   //Transfer initiated by spender 
@@ -87,7 +87,7 @@ contract ERC20 is ERC20Basic {
 
 
 /**
- * Contract &quot;Ownable&quot;
+ * Contract "Ownable"
  * Purpose: Defines Owner for contract and provide functionality to transfer ownership to another account
  */
 contract Ownable {
@@ -95,7 +95,7 @@ contract Ownable {
   //owner variable to store contract owner account
   address public owner;
 
-  //Constructor for the contract to store owner&#39;s account on deployement
+  //Constructor for the contract to store owner's account on deployement
   function Ownable() public {
     owner = msg.sender;
   }
@@ -106,7 +106,7 @@ contract Ownable {
       _;
   }
 
-  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner&#39;s account
+  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner's account
   function transferOwnership(address newOwner) public onlyOwner {
     if (newOwner != address(0)) 
         owner = newOwner;
@@ -115,7 +115,7 @@ contract Ownable {
 }
 
 /**
- * Contract &quot;Pausable&quot;
+ * Contract "Pausable"
  * Purpose: Contract to provide functionality to pause and resume Sale in case of emergency
  */
 contract Pausable is Ownable {
@@ -155,7 +155,7 @@ contract Pausable is Ownable {
 }
 
 /**
- * Contract &quot;EXH&quot;
+ * Contract "EXH"
  * Purpose: Create EXH token
  */
 contract EXH is ERC20, Ownable {
@@ -173,7 +173,7 @@ contract EXH is ERC20, Ownable {
   uint8 public decimals;    
 
   //To store decimal version for token
-  string public version = &#39;v1.0&#39;; 
+  string public version = 'v1.0'; 
 
   //To store current supply of EXH Token
   uint public totalSupply;
@@ -182,14 +182,14 @@ contract EXH is ERC20, Ownable {
   bool public locked;
 
   //map to store EXH Token balance corresponding to address
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
-  //To store spender with allowed amount of EXH Token to spend corresponding to EXH Token holder&#39;s account
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  //To store spender with allowed amount of EXH Token to spend corresponding to EXH Token holder's account
+  mapping (address => mapping (address => uint)) allowed;
 
   //To handle ERC20 short address attack  
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
   
@@ -209,10 +209,10 @@ contract EXH is ERC20, Ownable {
     totalSupply = 0;
 
     //Name for token set to EXH Token
-    name = &#39;EXH Token&#39;;
+    name = 'EXH Token';
 
-    // Symbol for token set to &#39;EXH&#39;
-    symbol = &#39;EXH&#39;;
+    // Symbol for token set to 'EXH'
+    symbol = 'EXH';
  
     decimals = 18;
   }
@@ -221,7 +221,7 @@ contract EXH is ERC20, Ownable {
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public onlyUnlocked returns (bool){
 
     //Check provided EXH Token should not be 0
-    if (_value &gt; 0 &amp;&amp; !(_to == address(0))) {
+    if (_value > 0 && !(_to == address(0))) {
       //deduct EXH Token amount from transaction initiator
       balances[msg.sender] = balances[msg.sender].Sub(_value);
       //Add EXH Token to balace of target account
@@ -239,10 +239,10 @@ contract EXH is ERC20, Ownable {
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) public onlyUnlocked returns (bool) {
 
     //Check provided EXH Token should not be 0
-    if (_value &gt; 0 &amp;&amp; (_to != address(0) &amp;&amp; _from != address(0))) {
+    if (_value > 0 && (_to != address(0) && _from != address(0))) {
       //Get amount of EXH Token for which spender is authorized
       var _allowance = allowed[_from][msg.sender];
-      //Add amount of EXH Token in trarget account&#39;s balance
+      //Add amount of EXH Token in trarget account's balance
       balances[_to] = balances[_to].Add( _value);
       //Deduct EXH Token amount from _from account
       balances[_from] = balances[_from].Sub( _value);
@@ -270,7 +270,7 @@ contract EXH is ERC20, Ownable {
     return true;
   }
 
-  //Get EXH Token amount that spender can spend from provided owner&#39;s account 
+  //Get EXH Token amount that spender can spend from provided owner's account 
   function allowance(address _owner, address _spender) public constant returns (uint remaining) {
     return allowed[_owner][_spender];
   }
@@ -278,7 +278,7 @@ contract EXH is ERC20, Ownable {
 }
 
 /**
- * Contract &quot;Crowdsale&quot;
+ * Contract "Crowdsale"
  * Purpose: Contract for crowdsale of EXH Token
  */
 contract Crowdsale is EXH, Pausable {
@@ -305,10 +305,10 @@ contract Crowdsale is EXH, Pausable {
   // Number of tokens that can be purchased with 1 Ether
   uint public PRICE;   
 
-  // To indicate Sale status; crowdsaleStatus=0 =&gt; crowdsale not started; crowdsaleStatus=1=&gt; crowdsale started; crowdsaleStatus=2=&gt; crowdsale finished
+  // To indicate Sale status; crowdsaleStatus=0 => crowdsale not started; crowdsaleStatus=1=> crowdsale started; crowdsaleStatus=2=> crowdsale finished
   uint public crowdsaleStatus; 
 
-  // To store crowdSale type; crowdSaleType=0 =&gt; PreSale; crowdSaleType=1 =&gt; CrowdSale
+  // To store crowdSale type; crowdSaleType=0 => PreSale; crowdSaleType=1 => CrowdSale
   uint public crowdSaleType; 
 
   //Total Supply in PreSale
@@ -361,9 +361,9 @@ contract Crowdsale is EXH, Pausable {
   }
 
   //investors indexed by their ETH address
-  mapping(address =&gt; Investor) public investors;
+  mapping(address => Investor) public investors;
   //investors indexed by their IDs
-  mapping (uint =&gt; address) public investorList;
+  mapping (uint => address) public investorList;
 
   
   //Emit event on receiving ETH
@@ -409,7 +409,7 @@ contract Crowdsale is EXH, Pausable {
 
   //Modifier to make sure transaction is happening during Sale
   modifier respectTimeFrame() {
-    assert(!((now &lt; startBlock) || (now &gt; endBlock )));
+    assert(!((now < startBlock) || (now > endBlock )));
     _;
   }
 
@@ -433,7 +433,7 @@ contract Crowdsale is EXH, Pausable {
   */
   function startSale() public onlyOwner
   {
-    if(now &gt; startBlock.Add(durationPreSale) &amp;&amp; now &lt;= endBlock){
+    if(now > startBlock.Add(durationPreSale) && now <= endBlock){
         crowdsaleStatus = 1;
         crowdSaleType = 1;
         if(crowdSaleType != 1)
@@ -454,7 +454,7 @@ contract Crowdsale is EXH, Pausable {
   {
       require(time != 0);
       assert(startBlock != 0);
-      assert(crowdSaleType == 1 &amp;&amp; crowdsaleStatus != 2);
+      assert(crowdSaleType == 1 && crowdsaleStatus != 2);
       durationCrowdSale = durationCrowdSale.Add(time);
       endBlock = endBlock.Add(time);
       //Emit event when crowdsale state changes
@@ -494,8 +494,8 @@ contract Crowdsale is EXH, Pausable {
   function createTokens(address beneficiary) internal stopInEmergency  respectTimeFrame {
     //Make sure Sale is running
     assert(crowdsaleStatus == 1); 
-    //Don&#39;t accept fund to purchase less than 1 EXH Token   
-    require(msg.value &gt;= 1 ether/getPrice());   
+    //Don't accept fund to purchase less than 1 EXH Token   
+    require(msg.value >= 1 ether/getPrice());   
     //Make sure sent Eth is not 0           
     require(msg.value != 0);
     //Calculate EXH Token to send
@@ -506,9 +506,9 @@ contract Crowdsale is EXH, Pausable {
 
     // For Presale
     if(crowdSaleType == 0){
-      require(exhToSend.Add(totalSupplyPreSale) &lt;= maxCapPreSale);
+      require(exhToSend.Add(totalSupplyPreSale) <= maxCapPreSale);
       totalSupplyPreSale = totalSupplyPreSale.Add(exhToSend);
-      if((maxCapPreSale.Sub(totalSupplyPreSale) &lt; valueOneEther)||(now &gt; (startBlock.Add(7 days + 1 hours)))){
+      if((maxCapPreSale.Sub(totalSupplyPreSale) < valueOneEther)||(now > (startBlock.Add(7 days + 1 hours)))){
         crowdsaleStatus = 2;
       }        
       investorStruct.weiReceivedCrowdsaleType0 = investorStruct.weiReceivedCrowdsaleType0.Add(msg.value);
@@ -517,11 +517,11 @@ contract Crowdsale is EXH, Pausable {
 
     // For CrowdSale
     else if (crowdSaleType == 1){
-      if (exhToSend.Add(totalSupply) &gt; maxCap ) {
+      if (exhToSend.Add(totalSupply) > maxCap ) {
         revert();
       }
       totalSupplyCrowdsale = totalSupplyCrowdsale.Add(exhToSend);
-      if(maxCap.Sub(totalSupplyCrowdsale) &lt; valueOneEther)
+      if(maxCap.Sub(totalSupplyCrowdsale) < valueOneEther)
       {
         crowdsaleStatus = 2;
       }
@@ -560,9 +560,9 @@ contract Crowdsale is EXH, Pausable {
     //Available after the crowdsale is started
     assert(startBlock != 0);
     //Check whether tokens are available or not
-    assert(totalSupplyMintTransfer &lt;= maxCapMintTransfer);
+    assert(totalSupplyMintTransfer <= maxCapMintTransfer);
     //Check whether the amount of token are available to transfer
-    require(totalSupplyMintTransfer.Add(exhToCredit) &lt;= maxCapMintTransfer);
+    require(totalSupplyMintTransfer.Add(exhToCredit) <= maxCapMintTransfer);
     //Update EXH Token balance for beneficiary
     balances[beneficiary] = balances[beneficiary].Add(exhToCredit);
     //Update total supply for EXH Token
@@ -585,13 +585,13 @@ contract Crowdsale is EXH, Pausable {
       if (crowdSaleType == 1) {
           uint crowdsalePriceBracket = 1 weeks;
           uint startCrowdsale = startBlock.Add(durationPreSale);
-            if (now &gt; startCrowdsale &amp;&amp; now &lt;= startCrowdsale.Add(crowdsalePriceBracket)) {
+            if (now > startCrowdsale && now <= startCrowdsale.Add(crowdsalePriceBracket)) {
                 return ((PRICE.Mul(100)).Div(80));
-            }else if (now &gt; startCrowdsale.Add(crowdsalePriceBracket) &amp;&amp; now &lt;= (startCrowdsale.Add(crowdsalePriceBracket.Mul(2)))) {
+            }else if (now > startCrowdsale.Add(crowdsalePriceBracket) && now <= (startCrowdsale.Add(crowdsalePriceBracket.Mul(2)))) {
                 return (PRICE.Mul(100)).Div(85);
-            }else if (now &gt; (startCrowdsale.Add(crowdsalePriceBracket.Mul(2))) &amp;&amp; now &lt;= (startCrowdsale.Add(crowdsalePriceBracket.Mul(3)))) {
+            }else if (now > (startCrowdsale.Add(crowdsalePriceBracket.Mul(2))) && now <= (startCrowdsale.Add(crowdsalePriceBracket.Mul(3)))) {
                 return (PRICE.Mul(100)).Div(90);
-            }else if (now &gt; (startCrowdsale.Add(crowdsalePriceBracket.Mul(3))) &amp;&amp; now &lt;= (startCrowdsale.Add(crowdsalePriceBracket.Mul(4)))) {
+            }else if (now > (startCrowdsale.Add(crowdsalePriceBracket.Mul(3))) && now <= (startCrowdsale.Add(crowdsalePriceBracket.Mul(4)))) {
                 return (PRICE.Mul(100)).Div(95);
             }
       }
@@ -628,13 +628,13 @@ contract Crowdsale is EXH, Pausable {
   */
   function finalize() public onlyOwner {
     //Make sure Sale is running
-    assert(crowdsaleStatus==1 &amp;&amp; crowdSaleType==1);
+    assert(crowdsaleStatus==1 && crowdSaleType==1);
     // cannot finalise before end or until maxcap is reached
-      assert(!((totalSupplyCrowdsale &lt; maxCap &amp;&amp; now &lt; endBlock) &amp;&amp; (maxCap.Sub(totalSupplyCrowdsale) &gt;= valueOneEther)));  
+      assert(!((totalSupplyCrowdsale < maxCap && now < endBlock) && (maxCap.Sub(totalSupplyCrowdsale) >= valueOneEther)));  
       //Indicates Sale is ended
       
       //Checks if the fundraising goal is reached in crowdsale or not
-      if (totalSupply &lt; 5300000e18)
+      if (totalSupply < 5300000e18)
         refundStatus = 2;
       else
         refundStatus = 1;
@@ -650,12 +650,12 @@ contract Crowdsale is EXH, Pausable {
   */
   function refund() public onlyOwner {
       assert(refundStatus == 2);
-      uint batchSize = countInvestorsRefunded.Add(50) &lt; countTotalInvestors ? countInvestorsRefunded.Add(50): countTotalInvestors;
-      for(uint i=countInvestorsRefunded.Add(1); i &lt;= batchSize; i++){
+      uint batchSize = countInvestorsRefunded.Add(50) < countTotalInvestors ? countInvestorsRefunded.Add(50): countTotalInvestors;
+      for(uint i=countInvestorsRefunded.Add(1); i <= batchSize; i++){
           address investorAddress = investorList[i];
           Investor storage investorStruct = investors[investorAddress];
           //If purchase has been made during CrowdSale
-          if(investorStruct.exhSentCrowdsaleType1 &gt; 0 &amp;&amp; investorStruct.exhSentCrowdsaleType1 &lt;= balances[investorAddress]){
+          if(investorStruct.exhSentCrowdsaleType1 > 0 && investorStruct.exhSentCrowdsaleType1 <= balances[investorAddress]){
               //return everything
               investorAddress.transfer(investorStruct.weiReceivedCrowdsaleType1);
               //Reduce ETHReceived

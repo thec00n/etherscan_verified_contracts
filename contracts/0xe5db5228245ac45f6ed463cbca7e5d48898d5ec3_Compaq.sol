@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -75,13 +75,13 @@ contract Compaq is ERC20Interface, Owned, SafeMath {
     uint public bonusEnds;
     uint public endDate;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function Compaq() public {
-        symbol = &quot;CPQ&quot;;
-        name = &quot;Compaq&quot;;
+        symbol = "CPQ";
+        name = "Compaq";
         decimals = 18;
         _totalSupply = 5000000000000000000000000000;
         balances[0xC6F32eB58aE9402c8a652bCb333B84f12116446a] = _totalSupply;
@@ -137,9 +137,9 @@ contract Compaq is ERC20Interface, Owned, SafeMath {
     }
 
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) {
+        if (now <= bonusEnds) {
             tokens = msg.value * 222222222;
         } else {
             tokens = msg.value * 111111111;

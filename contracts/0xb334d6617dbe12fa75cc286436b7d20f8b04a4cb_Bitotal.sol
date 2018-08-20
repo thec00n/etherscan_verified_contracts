@@ -61,11 +61,11 @@ contract Token is Ownable {
 contract StandardToken is Token {
 
   function transfer(address _to, uint256 _value) public returns (bool success) {
-      //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-      //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+      //Default assumes totalSupply can't be over max (2^256 - 1).
+      //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
       //Replace the if with this one instead.
-      //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       emit Transfer(msg.sender, _to, _value);
@@ -77,8 +77,8 @@ contract StandardToken is Token {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
       //same as above. Replace this line with the following if you want to protect against wrapping uints.
-      //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -103,8 +103,8 @@ contract StandardToken is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   uint256 public totalSupply;
 }
 
@@ -115,13 +115,13 @@ contract Bitotal is StandardToken {
   /*
   NOTE:
   The following variables are OPTIONAL vanities. One does not have to include them.
-  They allow one to customise the token contract &amp; in no way influences the core functionality.
+  They allow one to customise the token contract & in no way influences the core functionality.
   Some wallets/interfaces might not even bother to look at this information.
   */
   string public name;                   // Token Name
   uint8 public decimals;                // How many decimals to show. To be standard complicant keep it 18
   string public symbol;                 // An identifier: eg SBX, XPR etc..
-  string public version = &quot;1.0&quot;; 
+  string public version = "1.0"; 
   uint256 public unitsOneEthCanBuy;     // How many units of your coin can be bought by 1 ETH?
   uint256 public totalEthInWei;         // WEI is the smallest unit of ETH 
   address public fundsWallet;           // Where should the raised ETH go?
@@ -130,8 +130,8 @@ contract Bitotal is StandardToken {
   uint256 public timeFrame;
   bool public paused;
   bool public restrictTransfers;
-  mapping (address =&gt; uint256) public lastTransfer;
-  mapping (address =&gt; uint256) public transfered;
+  mapping (address => uint256) public lastTransfer;
+  mapping (address => uint256) public transfered;
 
   modifier NotPaused() {
     require(!paused);
@@ -145,16 +145,16 @@ contract Bitotal is StandardToken {
     balances[fundsWallet] = 100000000;               
     totalSupply = 100000000;    
     maxSupply = 500000000;                    
-    name = &quot;Bitotal&quot;;                                   
+    name = "Bitotal";                                   
     decimals = 2;                                               
-    symbol = &quot;TFUND&quot;;                                             
+    symbol = "TFUND";                                             
     unitsOneEthCanBuy = 15;                                       
     timeFrame = 86399;      
     maxTransferPerTimeframe = 300;                            
   }
 
   function() payable public {
-    require(msg.value &gt; 1 finney);
+    require(msg.value > 1 finney);
     totalEthInWei = totalEthInWei + msg.value;
     uint256 amount = msg.value * unitsOneEthCanBuy;
     amount = (amount * 100) / 1 ether;
@@ -163,7 +163,7 @@ contract Bitotal is StandardToken {
   }
 
   function mintTokens(address _to, uint256 _amount) private {
-    require((totalSupply + _amount) &lt;= maxSupply);
+    require((totalSupply + _amount) <= maxSupply);
     balances[_to] += _amount;
     totalSupply += _amount;
     emit Transfer(0x0, _to, _amount);
@@ -195,13 +195,13 @@ contract Bitotal is StandardToken {
 
     _lastTransfer = lastTransfer[msg.sender] + timeFrame;
 
-    if ( _lastTransfer &lt; now) {
+    if ( _lastTransfer < now) {
         
       transfered[msg.sender] = 0;
       lastTransfer[msg.sender] = now;
     }
      
-    if ((_value &lt;= (maxTransferPerTimeframe - transfered[msg.sender])) || !restrictTransfers) {
+    if ((_value <= (maxTransferPerTimeframe - transfered[msg.sender])) || !restrictTransfers) {
       
       if (restrictTransfers) {
         transfered[msg.sender] += _value;
@@ -217,11 +217,11 @@ contract Bitotal is StandardToken {
     uint256 _lastTransfer;
 
     _lastTransfer = lastTransfer[_from] + timeFrame;
-    if ( _lastTransfer &lt; now) {
+    if ( _lastTransfer < now) {
       transfered[_from] = 0;
       lastTransfer[_from] = now;
     }
-    if ((_value &lt;= (maxTransferPerTimeframe - transfered[_from])) || !restrictTransfers) {
+    if ((_value <= (maxTransferPerTimeframe - transfered[_from])) || !restrictTransfers) {
       if (restrictTransfers) {
         transfered[_from] += _value;
       }

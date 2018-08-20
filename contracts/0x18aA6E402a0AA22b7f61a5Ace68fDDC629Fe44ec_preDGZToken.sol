@@ -7,12 +7,12 @@ pragma solidity ^0.4.13;
 library SafeMath {
     function add(uint256 x, uint256 y) internal returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -28,7 +28,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -130,7 +130,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -177,7 +177,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -220,8 +220,8 @@ contract preDGZToken is StandardToken {
     using SafeMath for uint256;
 
     /*/ Public variables of the token /*/
-    string public constant name = &quot;Dogezer preDGZ Token&quot;;
-    string public constant symbol = &quot;preDGZ&quot;;
+    string public constant name = "Dogezer preDGZ Token";
+    string public constant symbol = "preDGZ";
     uint8 public decimals = 8;
     uint256 public totalSupply = 200000000000000;
 
@@ -236,7 +236,7 @@ contract preDGZToken is StandardToken {
 
 contract DogezerPreICOCrowdsale is Haltable{
     using SafeMath for uint;
-    string public name = &quot;Dogezer preITO&quot;;
+    string public name = "Dogezer preITO";
 
     address public beneficiary;
     uint public startTime;
@@ -248,7 +248,7 @@ contract DogezerPreICOCrowdsale is Haltable{
     uint public price; 
     preDGZToken public tokenReward;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event SaleFinished(uint finishAmountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -270,21 +270,21 @@ contract DogezerPreICOCrowdsale is Haltable{
     }
 
     modifier onlyAfterStart() {
-        require (now &gt;= startTime);
+        require (now >= startTime);
         _;
     }
 
     modifier onlyBeforeEnd() {
-        require (now &lt;= startTime + duration);
+        require (now <= startTime + duration);
         _;
     }
 
     /* The function without name is the default function that is called whenever anyone sends funds to a contract */
     function () payable stopInEmergency onlyAfterStart onlyBeforeEnd
     {
-		require (msg.value &gt;= 0.002 * 1 ether);
+		require (msg.value >= 0.002 * 1 ether);
         require (crowdsaleClosed == false);
-        require (fundingGoal &gt;= amountRaised + msg.value);
+        require (fundingGoal >= amountRaised + msg.value);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;  

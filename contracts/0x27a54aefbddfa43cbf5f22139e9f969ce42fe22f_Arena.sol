@@ -31,7 +31,7 @@ contract Arena {
     uint constant despawnTime = 2;
     
     address public emperor;
-    mapping (address =&gt; gladiate.Gladiator) public gladiators;
+    mapping (address => gladiate.Gladiator) public gladiators;
     
     struct Tile {
         uint coins;
@@ -85,7 +85,7 @@ contract Arena {
         
         uint8 lastX;
         uint8 lastY;
-        for (uint8 i=0; i&lt;3; i++) {
+        for (uint8 i=0; i<3; i++) {
             uint8 x = pseudoRandomUint8(10);
             uint8 y = pseudoRandomUint8(10);
             lastX = x;
@@ -96,7 +96,7 @@ contract Arena {
                 return true;
             }
         }
-        //Couldn&#39;t find a place for the gladiator. Let&#39;s take the money anyway and put it in the Arena.
+        //Couldn't find a place for the gladiator. Let's take the money anyway and put it in the Arena.
         //Ether is already in the contract unless we revert, so just have to put a coin somewhere
         addCoins(lastX, lastY, 1);
         return false;
@@ -106,7 +106,7 @@ contract Arena {
     external
     gladiatorExists(who)
     gladiatorInState(who, gladiate.GladiatorState.Incoming) {
-        require(gladiators[who].stateTransitionBlock &lt;= block.number);
+        require(gladiators[who].stateTransitionBlock <= block.number);
         
         gladiators[who].state = gladiate.GladiatorState.Active;
         gladiators[who].stateTransitionBlock = (uint(0) - 1);//max int
@@ -122,7 +122,7 @@ contract Arena {
     function getOut()
     external
     gladiatorInState(msg.sender, gladiate.GladiatorState.Outgoing) {
-        require(gladiators[msg.sender].stateTransitionBlock &lt;= block.number);
+        require(gladiators[msg.sender].stateTransitionBlock <= block.number);
         
         despawnGladiatorAndAwardCoins(msg.sender);
     }

@@ -10,10 +10,10 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {return a / b;}
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {assert(b &lt;= a); return a - b;}
+  function sub(uint256 a, uint256 b) internal pure returns (uint256) {assert(b <= a); return a - b;}
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,17 +74,17 @@ contract BlackChain {
         locked = false;
     }
 
-    mapping(uint256 =&gt; address[]) mirrors ;
+    mapping(uint256 => address[]) mirrors ;
 
     uint256[] public timestampList;
 
 
-    mapping(address =&gt; bool) public isPlayer;
-    mapping(address =&gt; bool) public hasConfirmed;
-    mapping(address =&gt; uint256[]) public betHistory;
-    mapping(address =&gt; uint256) public playerBets;
-    mapping(address =&gt; address) public referral;
-    mapping(address =&gt; uint256) public countReferral;
+    mapping(address => bool) public isPlayer;
+    mapping(address => bool) public hasConfirmed;
+    mapping(address => uint256[]) public betHistory;
+    mapping(address => uint256) public playerBets;
+    mapping(address => address) public referral;
+    mapping(address => uint256) public countReferral;
 
 
     event Bet(uint256 bets, address indexed player);
@@ -92,11 +92,11 @@ contract BlackChain {
     event Payreward(address indexed player, uint256 reward);
 
     function bet(uint256[] _timestamps, address _referral) payable public{
-        require(msg.value&gt;=costPerTicket.mul(_timestamps.length));
+        require(msg.value>=costPerTicket.mul(_timestamps.length));
         require(!announced);
 
-        if(now &lt; expireDate){
-            for(i=0; i&lt;_timestamps.length;i++){
+        if(now < expireDate){
+            for(i=0; i<_timestamps.length;i++){
                 timestampList.push(_timestamps[i]);
                 mirrors[_timestamps[i]].push(msg.sender);
 
@@ -115,16 +115,16 @@ contract BlackChain {
                 countReferral[_referral]+=1;
             }
 
-            if(playerBets[msg.sender]&gt;playerBets[leader] &amp;&amp; msg.sender!=leader){
+            if(playerBets[msg.sender]>playerBets[leader] && msg.sender!=leader){
                 if(msg.sender!=leader_2){
                     leader_3 = leader_2;
                 }
                 leader_2 = leader;
                 leader = msg.sender;
-            }else if(playerBets[msg.sender]&gt;playerBets[leader_2] &amp;&amp; msg.sender !=leader_2 &amp;&amp; msg.sender != leader){
+            }else if(playerBets[msg.sender]>playerBets[leader_2] && msg.sender !=leader_2 && msg.sender != leader){
                 leader_3 = leader_2;
                 leader_2 = msg.sender;
-            }else if(playerBets[msg.sender]&gt;playerBets[leader_3] &amp;&amp; msg.sender !=leader_2 &amp;&amp; msg.sender != leader &amp;&amp; msg.sender != leader_3){
+            }else if(playerBets[msg.sender]>playerBets[leader_3] && msg.sender !=leader_2 && msg.sender != leader && msg.sender != leader_3){
                 leader_3 = msg.sender;
             }
 
@@ -138,9 +138,9 @@ contract BlackChain {
             owner.transfer(msg.value);
         }
         // Increase Ticket Price every week
-        if(startDate.add(countWeek.mul(604800)) &lt; now ){
+        if(startDate.add(countWeek.mul(604800)) < now ){
             countWeek++;
-            if(costPerTicket &lt; maxCost){
+            if(costPerTicket < maxCost){
                 costPerTicket=costPerTicket.add(2500000000000000);
             }
         }
@@ -193,7 +193,7 @@ contract BlackChain {
         emit Confirm(msg.sender);
         emit Payreward(msg.sender, confirmreward);
 
-        if(countConfirmed&gt;=numOfConfirmationNeeded){
+        if(countConfirmed>=numOfConfirmationNeeded){
             confirmed=true;
         }
     }
@@ -204,7 +204,7 @@ contract BlackChain {
         // Send ETH(50%) to first prize winners
         share = rewardPool.div(2);
         share = share.div(countWinners);
-        for(i=0; i&lt;countWinners; i++){
+        for(i=0; i<countWinners; i++){
             mirrors[winnerTimestamp][i].transfer(share.mul(9).div(10));
             referral[mirrors[winnerTimestamp][i]].transfer(share.mul(1).div(10));
             emit Payreward(mirrors[winnerTimestamp][i], share);
@@ -213,7 +213,7 @@ contract BlackChain {
         // Send ETH(25%) to second Winners
         share = rewardPool.div(4);
         share = share.div(countSecondWinners);
-        for(i=0; i&lt;countSecondWinners; i++){
+        for(i=0; i<countSecondWinners; i++){
             mirrors[secondWinnerTimestamp][i].transfer(share.mul(9).div(10));
             referral[mirrors[secondWinnerTimestamp][i]].transfer(share.mul(1).div(10));
             emit Payreward(mirrors[secondWinnerTimestamp][i], share);

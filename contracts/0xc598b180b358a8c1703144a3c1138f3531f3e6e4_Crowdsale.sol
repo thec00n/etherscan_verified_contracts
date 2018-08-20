@@ -18,7 +18,7 @@ contract ETHPriceWatcher {
   function setEthPriceProvider(address provider) external;
 }
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -26,7 +26,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -39,7 +39,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -105,35 +105,35 @@ contract usingOraclize {
     networkID; // silence the warning and remain backwards compatible
   }
   function oraclize_setNetwork() internal returns(bool){
-    if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+    if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
       OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-      oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+      oraclize_setNetworkName("eth_mainnet");
       return true;
     }
-    if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+    if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
       OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-      oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+      oraclize_setNetworkName("eth_ropsten3");
       return true;
     }
-    if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+    if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
       OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-      oraclize_setNetworkName(&quot;eth_kovan&quot;);
+      oraclize_setNetworkName("eth_kovan");
       return true;
     }
-    if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+    if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
       OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-      oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+      oraclize_setNetworkName("eth_rinkeby");
       return true;
     }
-    if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+    if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
       OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
       return true;
     }
-    if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+    if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
       OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
       return true;
     }
-    if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+    if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
       OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
       return true;
     }
@@ -154,12 +154,12 @@ contract usingOraclize {
 
   function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
     uint price = oraclize.getPrice(datasource);
-    if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+    if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
     return oraclize.query.value(price)(timestamp, datasource, arg);
   }
   function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
     uint price = oraclize.getPrice(datasource, gaslimit);
-    if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+    if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
     return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
   }
 
@@ -189,8 +189,8 @@ contract usingOraclize {
     bytes memory bresult = bytes(_a);
     uint mint = 0;
     bool decimals = false;
-    for (uint i=0; i&lt;bresult.length; i++){
-      if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+    for (uint i=0; i<bresult.length; i++){
+      if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
         if (decimals){
           if (_b == 0) break;
           else _b--;
@@ -199,7 +199,7 @@ contract usingOraclize {
         mint += uint(bresult[i]) - 48;
       } else if (bresult[i] == 46) decimals = true;
     }
-    if (_b &gt; 0) mint *= 10**_b;
+    if (_b > 0) mint *= 10**_b;
     return mint;
   }
 
@@ -213,12 +213,12 @@ contract usingOraclize {
   }
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -331,7 +331,7 @@ contract BuildingStatus is Ownable {
  * Manager that stores permitted addresses 
  */
 contract PermissionManager is Ownable {
-    mapping (address =&gt; bool) permittedAddresses;
+    mapping (address => bool) permittedAddresses;
 
     function addAddress(address newAddress) public onlyOwner {
         permittedAddresses[newAddress] = true;
@@ -359,8 +359,8 @@ contract Registry is Ownable {
     uint quoteUSD;
     uint contributionRNTB;
   }
-  mapping(address =&gt; ContributorData) public contributorList;
-  mapping(uint =&gt; address) private contributorIndexes;
+  mapping(address => ContributorData) public contributorList;
+  mapping(uint => address) private contributorIndexes;
 
   uint private nextContributorIndex;
 
@@ -483,7 +483,7 @@ contract Registry is Ownable {
 contract OraclizeC is Ownable, usingOraclize {
   uint public updateInterval = 300; //5 minutes by default
   uint public gasLimit = 200000; // Oraclize Gas Limit
-  mapping (bytes32 =&gt; bool) validIds;
+  mapping (bytes32 => bool) validIds;
   string public url;
 
   enum State { New, Stopped, Active }
@@ -509,22 +509,22 @@ contract OraclizeC is Ownable, usingOraclize {
   }
 
   function setUpdateInterval(uint newInterval) external onlyOwner {
-    require(newInterval &gt; 0);
+    require(newInterval > 0);
     updateInterval = newInterval;
   }
 
   function setUrl(string newUrl) external onlyOwner {
-    require(bytes(newUrl).length &gt; 0);
+    require(bytes(newUrl).length > 0);
     url = newUrl;
   }
 
   function setGasLimit(uint _gasLimit) external onlyOwner {
-    require(_gasLimit &gt; 50000);
+    require(_gasLimit > 50000);
     gasLimit = _gasLimit;
   }
 
   function setGasPrice(uint gasPrice) external onlyOwner {
-    require(gasPrice &gt;= 1000000000); // 1 Gwei
+    require(gasPrice >= 1000000000); // 1 Gwei
     oraclize_setCustomGasPrice(gasPrice);
   }
 
@@ -535,7 +535,7 @@ contract OraclizeC is Ownable, usingOraclize {
     LogOraclizeAddrResolverI(__oar);
   }
 
-  //we need to get back our funds if we don&#39;t need this oracle anymore
+  //we need to get back our funds if we don't need this oracle anymore
   function withdraw(address receiver) external onlyOwner inStoppedState {
     require(receiver != 0x0);
     receiver.transfer(this.balance);
@@ -608,9 +608,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -618,7 +618,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -627,7 +627,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -674,7 +674,7 @@ contract ETHPriceProvider is OraclizeC {
   }
 
   function __callback(bytes32 myid, string result) public {
-    require(msg.sender == oraclize_cbAddress() &amp;&amp; validIds[myid]);
+    require(msg.sender == oraclize_cbAddress() && validIds[myid]);
     delete validIds[myid];
 
     uint newPrice = parseInt(result, 2);
@@ -683,7 +683,7 @@ contract ETHPriceProvider is OraclizeC {
       update(updateInterval);
     }
 
-    require(newPrice &gt; 0);
+    require(newPrice > 0);
 
     currentPrice = newPrice;
 
@@ -692,12 +692,12 @@ contract ETHPriceProvider is OraclizeC {
   }
 
   function update(uint delay) private {
-    if (oraclize_getPrice(&quot;URL&quot;) &gt; this.balance) {
-      //stop if we don&#39;t have enough funds anymore
+    if (oraclize_getPrice("URL") > this.balance) {
+      //stop if we don't have enough funds anymore
       state = State.Stopped;
-      LogOraclizeQuery(&quot;Oraclize query was NOT sent&quot;, this.balance,block.timestamp);
+      LogOraclizeQuery("Oraclize query was NOT sent", this.balance,block.timestamp);
     } else {
-      bytes32 queryId = oraclize_query(delay, &quot;URL&quot;, url, gasLimit);
+      bytes32 queryId = oraclize_query(delay, "URL", url, gasLimit);
       validIds[queryId] = true;
     }
   }
@@ -710,7 +710,7 @@ contract ETHPriceProvider is OraclizeC {
 
 contract ConvertQuote is ETHPriceProvider {
   //Encrypted Query
-  function ConvertQuote(uint _currentPrice) ETHPriceProvider(&quot;BIa/Nnj1+ipZBrrLIgpTsI6ukQTlTJMd1c0iC7zvxx+nZzq9ODgBSmCLo3Zc0sYZwD8mlruAi5DblQvt2cGsfVeCyqaxu+1lWD325kgN6o0LxrOUW9OQWn2COB3TzcRL51Q+ZLBsT955S1OJbOqsfQ4gg/l2awe2EFVuO3WTprvwKhAa8tjl2iPYU/AJ83TVP9Kpz+ugTJumlz2Y6SPBGMNcvBoRq3MlnrR2h/XdqPbh3S2bxjbSTLwyZzu2DAgVtybPO1oJETY=&quot;) payable public {
+  function ConvertQuote(uint _currentPrice) ETHPriceProvider("BIa/Nnj1+ipZBrrLIgpTsI6ukQTlTJMd1c0iC7zvxx+nZzq9ODgBSmCLo3Zc0sYZwD8mlruAi5DblQvt2cGsfVeCyqaxu+1lWD325kgN6o0LxrOUW9OQWn2COB3TzcRL51Q+ZLBsT955S1OJbOqsfQ4gg/l2awe2EFVuO3WTprvwKhAa8tjl2iPYU/AJ83TVP9Kpz+ugTJumlz2Y6SPBGMNcvBoRq3MlnrR2h/XdqPbh3S2bxjbSTLwyZzu2DAgVtybPO1oJETY=") payable public {
     currentPrice = _currentPrice;
   }
 
@@ -746,8 +746,8 @@ contract ERC223ReceivingContract {
     tkn.sender = _from;
     tkn.value = _value;
     tkn.data = _data;
-    if(_data.length &gt; 0) {
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+    if(_data.length > 0) {
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
     }
 
@@ -784,16 +784,16 @@ contract ERC223Interface {
 contract UnityToken is ERC223Interface {
   using SafeMath for uint;
 
-  string public constant name = &quot;Unity Token&quot;;
-  string public constant symbol = &quot;UNT&quot;;
+  string public constant name = "Unity Token";
+  string public constant symbol = "UNT";
   uint8 public constant decimals = 18;
 
 
   /* The supply is initially 100UNT to the precision of 18 decimals */
   uint public constant INITIAL_SUPPLY = 100000 * (10 ** uint(decimals));
 
-  mapping(address =&gt; uint) balances; // List of user balances.
-  mapping(address =&gt; bool) allowedAddresses;
+  mapping(address => uint) balances; // List of user balances.
+  mapping(address => bool) allowedAddresses;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -811,7 +811,7 @@ contract UnityToken is ERC223Interface {
 
   address public owner;
 
-  /* Constructor initializes the owner&#39;s balance and the supply  */
+  /* Constructor initializes the owner's balance and the supply  */
   function UnityToken() public {
     owner = msg.sender;
     totalSupply = INITIAL_SUPPLY;
@@ -826,7 +826,7 @@ contract UnityToken is ERC223Interface {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
     if (isContract(_to)) {
       require(allowedAddresses[_to]);
-      if (balanceOf(msg.sender) &lt; _value)
+      if (balanceOf(msg.sender) < _value)
         revert();
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -872,12 +872,12 @@ contract UnityToken is ERC223Interface {
     //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -888,7 +888,7 @@ contract UnityToken is ERC223Interface {
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
     require(allowedAddresses[_to]);
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -927,7 +927,7 @@ contract Hold is Ownable {
     uint nextContributorToTransferEth;
     address public observer;
     uint dateDeployed;
-    mapping(address =&gt; bool) private hasWithdrawedEth;
+    mapping(address => bool) private hasWithdrawedEth;
 
     event InitialBalanceChanged(uint balance);
     event EthReleased(uint ethreleased);
@@ -973,16 +973,16 @@ contract Hold is Ownable {
 
     function releaseAllETH() onlyPermitted public {
         uint balReleased = getBalanceReleased();
-        require(balReleased &gt; 0);
-        require(this.balance &gt;= balReleased);
+        require(balReleased > 0);
+        require(this.balance >= balReleased);
         multisig.transfer(balReleased);
         withdrawed += balReleased;
         EthReleased(balReleased);
     }
 
     function releaseETH(uint n) onlyPermitted public {
-        require(this.balance &gt;= n);
-        require(getBalanceReleased() &gt;= n);
+        require(this.balance >= n);
+        require(getBalanceReleased() >= n);
         multisig.transfer(n);
         withdrawed += n;
         EthReleased(n);
@@ -994,7 +994,7 @@ contract Hold is Ownable {
 
     function changeStageAndReleaseETH() public onlyObserver {
         uint8 newStage = currentStage + 1;
-        require(newStage &lt;= stages);
+        require(newStage <= stages);
         currentStage = newStage;
         StageChanged(newStage);
         releaseAllETH();
@@ -1002,7 +1002,7 @@ contract Hold is Ownable {
 
     function changeStage() public onlyObserver {
         uint8 newStage = currentStage + 1;
-        require(newStage &lt;= stages);
+        require(newStage <= stages);
         currentStage = newStage;
         StageChanged(newStage);
     }
@@ -1012,17 +1012,17 @@ contract Hold is Ownable {
     }
 
     function returnETHByOwner() public onlyOwner {
-        require(now &gt; dateDeployed + 183 days);
+        require(now > dateDeployed + 183 days);
         uint balance = getBalance();
         owner.transfer(getBalance());
         EthReturnedToOwner(owner, balance);
     }
 
     function refund(uint _numberOfReturns) public onlyOwner {
-        require(_numberOfReturns &gt; 0);
+        require(_numberOfReturns > 0);
         address currentParticipantAddress;
 
-        for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+        for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
             currentParticipantAddress = registry.getContributorByIndex(nextContributorToTransferEth);
             if (currentParticipantAddress == 0x0) 
                 return;
@@ -1098,8 +1098,8 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   uint private nextContributorToClaim;
   uint private nextContributorToTransferTokens;
 
-  mapping(address =&gt; bool) private hasWithdrawedTokens; //address who got a tokens
-  mapping(address =&gt; bool) private hasRefunded; //address who got a tokens
+  mapping(address => bool) private hasWithdrawedTokens; //address who got a tokens
+  mapping(address => bool) private hasRefunded; //address who got a tokens
 
   /* Events */
   event CrowdsaleStarted(uint blockNumber);
@@ -1174,7 +1174,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   }
 
   function setTokenUSDRate(uint _tokenUSDRate) public onlyOwner {
-    require(_tokenUSDRate &gt; 0);
+    require(_tokenUSDRate > 0);
     uint oldTokenUSDRate = tokenUSDRate;
     tokenUSDRate = _tokenUSDRate;
     ChangeTokenUSDRate(oldTokenUSDRate, _tokenUSDRate);
@@ -1185,7 +1185,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   }
 
   function receiveEthPrice(uint _ethUsdPrice) external onlyEthPriceProvider {
-    require(_ethUsdPrice &gt; 0);
+    require(_ethUsdPrice > 0);
     ethUsdPrice = _ethUsdPrice;
   }
 
@@ -1239,7 +1239,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   }
 
   function setHardCapToken(uint _hardCapToken) public onlyOwner {
-    require(_hardCapToken &gt; 1 ether); // &gt; 1 UNT
+    require(_hardCapToken > 1 ether); // > 1 UNT
     uint oldHardCapToken = _hardCapToken;
     hardCapToken = _hardCapToken;
     ChangeHardCapToken(oldHardCapToken, hardCapToken);
@@ -1248,8 +1248,8 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   /* The function without name is the default function that is called whenever anyone sends funds to a contract */
   function() whenNotPaused public payable {
     require(state == SaleState.SALE);
-    require(now &gt;= startDate);
-    require(msg.value &gt;= minimalContribution);
+    require(now >= startDate);
+    require(msg.value >= minimalContribution);
 
     bool ckeck = checkCrowdsaleState(msg.value);
 
@@ -1266,7 +1266,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
    */
   function checkCrowdsaleState(uint _amount) internal returns (bool) {
     uint usd = _amount.mul(ethUsdPrice);
-    if (usdRaised.add(usd) &gt;= hardCap) {
+    if (usdRaised.add(usd) >= hardCap) {
       state = SaleState.ENDED;
       statusI.setStatus(BuildingStatus.statusEnum.preparation_works);
       HardCapReached(block.number);
@@ -1274,8 +1274,8 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
       return true;
     }
 
-    if (now &gt; endDate) {
-      if (usdRaised.add(usd) &gt;= softCap) {
+    if (now > endDate) {
+      if (usdRaised.add(usd) >= softCap) {
         state = SaleState.ENDED;
         statusI.setStatus(BuildingStatus.statusEnum.preparation_works);
         CrowdsaleEnded(block.number);
@@ -1295,7 +1295,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
  */
   function processTransaction(address _contributor, uint _amount) internal {
 
-    require(msg.value &gt;= minimalContribution);
+    require(msg.value >= minimalContribution);
 
     uint maxContribution = calculateMaxContributionUsd();
     uint contributionAmountUsd = _amount.mul(ethUsdPrice);
@@ -1303,14 +1303,14 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
 
     uint returnAmountETH = 0;
 
-    if (maxContribution &lt; contributionAmountUsd) {
+    if (maxContribution < contributionAmountUsd) {
       contributionAmountUsd = maxContribution;
       uint returnAmountUsd = _amount.mul(ethUsdPrice) - maxContribution;
       returnAmountETH = contributionAmountETH - returnAmountUsd.div(ethUsdPrice);
       contributionAmountETH = contributionAmountETH.sub(returnAmountETH);
     }
 
-    if (usdRaised + contributionAmountUsd &gt;= softCap &amp;&amp; softCap &gt; usdRaised) {
+    if (usdRaised + contributionAmountUsd >= softCap && softCap > usdRaised) {
       SoftCapReached(block.number);
     }
 
@@ -1318,10 +1318,10 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
     // 1 ETH * 860 $ / 445 $ = 193258426966292160 wei = 1.93 UNT
     uint tokens = contributionAmountUsd.div(tokenUSDRate);
 
-    if(totalTokens + tokens &gt; hardCapToken) {
+    if(totalTokens + tokens > hardCapToken) {
       _contributor.transfer(_amount);
     } else {
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         registry.addContribution(_contributor, contributionAmountETH, contributionAmountUsd, tokens, ethUsdPrice);
         ethRaised += contributionAmountETH;
         totalTokens += tokens;
@@ -1399,10 +1399,10 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   }
 
   function getTokens() public whenNotPaused {
-    require((now &gt; endDate &amp;&amp; usdRaised &gt;= softCap ) || (usdRaised &gt;= hardCap)  );
+    require((now > endDate && usdRaised >= softCap ) || (usdRaised >= hardCap)  );
     require(state == SaleState.ENDED);
-    require(!hasWithdrawedTokens[msg.sender] &amp;&amp; registry.isActiveContributor(msg.sender));
-    require(getTokenBalance() &gt;= registry.getContributionTokens(msg.sender));
+    require(!hasWithdrawedTokens[msg.sender] && registry.isActiveContributor(msg.sender));
+    require(getTokenBalance() >= registry.getContributionTokens(msg.sender));
 
     uint numberOfUNT = registry.getContributionTokens(msg.sender);
 
@@ -1415,9 +1415,9 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
   }
 
   function getOverTokens() public onlyOwner {
-    require(checkBalanceContract() &gt; (totalTokens - withdrawedTokens));
+    require(checkBalanceContract() > (totalTokens - withdrawedTokens));
     uint balance = checkBalanceContract() - (totalTokens - withdrawedTokens);
-    if(balance &gt; 0) {
+    if(balance > 0) {
       if(token.transfer(msg.sender, balance)) {
         TokensTransfered(msg.sender,  balance);
       }
@@ -1443,7 +1443,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
    * @dev Manual start crowdsale.
    */
   function startCrowdsale() public onlyOwner {
-    require(now &gt; startDate &amp;&amp; now &lt;= endDate);
+    require(now > startDate && now <= endDate);
     require(state == SaleState.NEW);
 
     statusI.setStatus(BuildingStatus.statusEnum.crowdsale);
@@ -1453,7 +1453,7 @@ contract Crowdsale is Pausable, ETHPriceWatcher, ERC223ReceivingContract {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endDate || state == SaleState.ENDED;
+    return now > endDate || state == SaleState.ENDED;
   }
 
   function getTokenBalance() public constant returns (uint) {

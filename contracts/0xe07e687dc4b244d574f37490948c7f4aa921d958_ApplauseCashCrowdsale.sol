@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -147,7 +147,7 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -156,7 +156,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -188,7 +188,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -239,7 +239,7 @@ contract RefundVault is Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -249,8 +249,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -264,7 +264,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -306,7 +306,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -343,8 +343,8 @@ contract PausableToken is StandardToken, Pausable {
 
 
 contract ApplauseCashToken is StandardToken, PausableToken {
-    string public constant name = &quot;ApplauseCash&quot;;
-    string public constant symbol = &quot;APLC&quot;;
+    string public constant name = "ApplauseCash";
+    string public constant symbol = "APLC";
     uint8 public constant decimals = 4;
     uint256 public INITIAL_SUPPLY = 300000000 * 10000;
 
@@ -411,7 +411,7 @@ contract ApplauseCashCrowdsale is Ownable {
     Bonus[] public preIcoBonuses;
     Bonus[] public icoBonuses;
 
-    // Invstors can&#39;t invest less then specified numbers in wei
+    // Invstors can't invest less then specified numbers in wei
     uint256 public preIcoMinimumWei;
     uint256 public icoMinimumWei;
 
@@ -439,26 +439,26 @@ contract ApplauseCashCrowdsale is Ownable {
         address _wallet
     ) public {
 
-        //require(_softcap &gt; 0);
+        //require(_softcap > 0);
 
-        // can&#39;t start pre-sale in the past
-        require(_preIcoStartTime &gt;= now);
+        // can't start pre-sale in the past
+        require(_preIcoStartTime >= now);
 
-        // can&#39;t start main sale in the past
-        require(_icoStartTime &gt;= now);
+        // can't start main sale in the past
+        require(_icoStartTime >= now);
 
-        // can&#39;t start main sale before the end of pre-sale
-        require(_preIcoEndTime &lt; _icoStartTime);
+        // can't start main sale before the end of pre-sale
+        require(_preIcoEndTime < _icoStartTime);
 
-        // the end of pre-sale can&#39;t happen before it&#39;s start
-        require(_preIcoStartTime &lt; _preIcoEndTime);
+        // the end of pre-sale can't happen before it's start
+        require(_preIcoStartTime < _preIcoEndTime);
 
-        // the end of main sale can&#39;t happen before it&#39;s start
-        require(_icoStartTime &lt; _icoEndTime);
+        // the end of main sale can't happen before it's start
+        require(_icoStartTime < _icoEndTime);
 
-        require(_rate &gt; 0);
-        require(_preIcoHardcap &gt; 0);
-        require(_icoHardcap &gt; 0);
+        require(_rate > 0);
+        require(_preIcoHardcap > 0);
+        require(_icoHardcap > 0);
         require(_wallet != 0x0);
 
         preIcoMinimumWei = 20000000000000000;  // 0.02 Ether default minimum
@@ -539,8 +539,8 @@ contract ApplauseCashCrowdsale is Ownable {
         uint256 _preIcoMinimumWei
     ) public onlyOwner {
         require(!isFinalized);
-        require(_preIcoStartTime &lt; _preIcoEndTime);
-        require(_preIcoHardcap &gt; 0);
+        require(_preIcoStartTime < _preIcoEndTime);
+        require(_preIcoHardcap > 0);
         preIcoStartTime = _preIcoStartTime;
         preIcoEndTime = _preIcoEndTime;
         preIcoHardcap = _preIcoHardcap;
@@ -556,8 +556,8 @@ contract ApplauseCashCrowdsale is Ownable {
     ) public onlyOwner {
 
         require(!isFinalized);
-        require(_icoStartTime &lt; _icoEndTime);
-        require(_icoHardcap &gt; 0);
+        require(_icoStartTime < _icoEndTime);
+        require(_icoHardcap > 0);
         icoStartTime = _icoStartTime;
         icoEndTime = _icoEndTime;
         icoHardcap = _icoHardcap;
@@ -574,14 +574,14 @@ contract ApplauseCashCrowdsale is Ownable {
       // set new rate (emergency case)
     function setRate(uint256 _rate) public onlyOwner {
         require(!isFinalized);
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
         // set new softcap (emergency case)
     function setSoftcap(uint256 _softcap) public onlyOwner {
         require(!isFinalized);
-        require(_softcap &gt; 0);
+        require(_softcap > 0);
         softcap = _softcap;
     }
 
@@ -592,7 +592,7 @@ contract ApplauseCashCrowdsale is Ownable {
         token.pause();
     }
 
-    // unset token&#39;s pause
+    // unset token's pause
     function unpauseToken() external onlyOwner {
         token.unpause();
     }
@@ -604,12 +604,12 @@ contract ApplauseCashCrowdsale is Ownable {
 
     // @return true if main sale event has ended
     function icoHasEnded() external constant returns (bool) {
-        return now &gt; icoEndTime;
+        return now > icoEndTime;
     }
 
     // @return true if pre sale event has ended
     function preIcoHasEnded() external constant returns (bool) {
-        return now &gt; preIcoEndTime;
+        return now > preIcoEndTime;
     }
 
     // send ether to the fund collection wallet
@@ -619,24 +619,24 @@ contract ApplauseCashCrowdsale is Ownable {
     }
 
     // we want to be able to check all bonuses in already deployed contract
-    // that&#39;s why we pass currentTime as a parameter instead of using &quot;now&quot;
+    // that's why we pass currentTime as a parameter instead of using "now"
     function getBonusPercent(uint256 currentTime) public constant returns (uint256 percent) {
-      //require(currentTime &gt;= preIcoStartTime);
+      //require(currentTime >= preIcoStartTime);
         uint i = 0;
-        bool isPreIco = currentTime &gt;= preIcoStartTime &amp;&amp; currentTime &lt;= preIcoEndTime;
+        bool isPreIco = currentTime >= preIcoStartTime && currentTime <= preIcoEndTime;
         uint256 offset = 0;
         if (isPreIco) {
             uint256 preIcoDiffInSeconds = currentTime.sub(preIcoStartTime);
-            for (i = 0; i &lt; preIcoBonuses.length; i++) {
-                if (preIcoDiffInSeconds &lt;= preIcoBonuses[i].duration + offset) {
+            for (i = 0; i < preIcoBonuses.length; i++) {
+                if (preIcoDiffInSeconds <= preIcoBonuses[i].duration + offset) {
                     return preIcoBonuses[i].percent;
                 }
                 offset = offset.add(preIcoBonuses[i].duration);
             }
         } else {
             uint256 icoDiffInSeconds = currentTime.sub(icoStartTime);
-            for (i = 0; i &lt; icoBonuses.length; i++) {
-                if (icoDiffInSeconds &lt;= icoBonuses[i].duration + offset) {
+            for (i = 0; i < icoBonuses.length; i++) {
+                if (icoDiffInSeconds <= icoBonuses[i].duration + offset) {
                     return icoBonuses[i].percent;
                 }
                 offset = offset.add(icoBonuses[i].duration);
@@ -652,21 +652,21 @@ contract ApplauseCashCrowdsale is Ownable {
 
     function validateWithinPeriods() internal constant {
         // within pre-sale or main sale
-        require((now &gt;= preIcoStartTime &amp;&amp; now &lt;= preIcoEndTime) || (now &gt;= icoStartTime &amp;&amp; now &lt;= icoEndTime));
+        require((now >= preIcoStartTime && now <= preIcoEndTime) || (now >= icoStartTime && now <= icoEndTime));
     }
 
     function validateWithinCaps(uint256 tokensAmount, uint256 weiAmount) internal constant {
         uint256 expectedTokensInvested = tokensInvested.add(tokensAmount);
 
         // within pre-sale
-        if (now &gt;= preIcoStartTime &amp;&amp; now &lt;= preIcoEndTime) {
-            require(weiAmount &gt;= preIcoMinimumWei);
-            require(expectedTokensInvested &lt;= preIcoHardcap);
+        if (now >= preIcoStartTime && now <= preIcoEndTime) {
+            require(weiAmount >= preIcoMinimumWei);
+            require(expectedTokensInvested <= preIcoHardcap);
         }
 
         // within main sale
-        if (now &gt;= icoStartTime &amp;&amp; now &lt;= icoEndTime) {
-            require(expectedTokensInvested &lt;= icoHardcap);
+        if (now >= icoStartTime && now <= icoEndTime) {
+            require(expectedTokensInvested <= icoHardcap);
         }
     }
 
@@ -678,7 +678,7 @@ contract ApplauseCashCrowdsale is Ownable {
     }
 
     function softcapReached() public constant returns (bool) {
-        return tokensInvested &gt;= softcap;
+        return tokensInvested >= softcap;
     }
 
     // finish crowdsale

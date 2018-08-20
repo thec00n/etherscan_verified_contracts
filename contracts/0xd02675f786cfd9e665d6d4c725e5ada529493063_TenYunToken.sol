@@ -71,9 +71,9 @@ library DateTimeLib {
 
         // Month
         uint secondsInMonth;
-        for (i = 1; i &lt;= 12; i++) {
+        for (i = 1; i <= 12; i++) {
             secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-            if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+            if (secondsInMonth + secondsAccountedFor > timestamp) {
                 dt.month = i;
                 break;
             }
@@ -81,8 +81,8 @@ library DateTimeLib {
         }
 
         // Day
-        for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-            if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+        for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+            if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                 dt.day = i;
                 break;
             }
@@ -114,7 +114,7 @@ library DateTimeLib {
         secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
         secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-        while (secondsAccountedFor &gt; timestamp) {
+        while (secondsAccountedFor > timestamp) {
             if (isLeapYear(uint16(year - 1))) {
                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
             }
@@ -166,7 +166,7 @@ library DateTimeLib {
         uint16 i;
 
         // Year
-        for (i = ORIGIN_YEAR; i &lt; year; i++) {
+        for (i = ORIGIN_YEAR; i < year; i++) {
             if (isLeapYear(i)) {
                 timestamp += LEAP_YEAR_IN_SECONDS;
             }
@@ -195,7 +195,7 @@ library DateTimeLib {
         monthDayCounts[10] = 30;
         monthDayCounts[11] = 31;
 
-        for (i = 1; i &lt; month; i++) {
+        for (i = 1; i < month; i++) {
             timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
         }
 
@@ -224,20 +224,20 @@ library SafeMathLib {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -262,9 +262,9 @@ contract StandardToken is IERC20 {
 
     using SafeMathLib for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function StandardToken() public payable {
 
@@ -279,7 +279,7 @@ contract StandardToken is IERC20 {
     }
 
     function transferInternal(address _from, address _to, uint256 _value) internal returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; balances[_from] &gt;= _value);
+        require(_value > 0 && balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(_from, _to, _value);
@@ -287,7 +287,7 @@ contract StandardToken is IERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value);
+        require(_value > 0 && allowed[_from][msg.sender] >= _value && balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -311,9 +311,9 @@ contract StandardToken is IERC20 {
 
 contract LockableToken is StandardToken {
 
-    mapping(address =&gt; uint256) internal lockedBalance;
+    mapping(address => uint256) internal lockedBalance;
 
-    mapping(address =&gt; uint) internal timeRelease;
+    mapping(address => uint) internal timeRelease;
 
     address internal teamReservedHolder;
 
@@ -333,11 +333,11 @@ contract LockableToken is StandardToken {
 
     function teamReservedLimit() internal returns (uint256 balanceLimit) {
         uint time = now;
-        for (uint index = 0; index &lt; teamReservedFrozenDates.length; index++) {
+        for (uint index = 0; index < teamReservedFrozenDates.length; index++) {
             if (teamReservedFrozenDates[index] == 0x0) {
                 continue;
             }
-            if (time &gt; teamReservedFrozenDates[index]) {
+            if (time > teamReservedFrozenDates[index]) {
                 teamReservedFrozenDates[index] = 0x0;
             } else {
                 return teamReservedFrozenLimits[index];
@@ -351,21 +351,21 @@ contract LockableToken is StandardToken {
     }
 
     function transferInternal(address _from, address _to, uint256 _value) internal returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _value &gt; 0x0);
+        require(_to != 0x0 && _value > 0x0);
         if (_from == teamReservedHolder) {
             uint256 reservedLimit = teamReservedLimit();
-            require(balances[_from].sub(reservedLimit) &gt;= _value);
+            require(balances[_from].sub(reservedLimit) >= _value);
         }
         var (timeLimit, lockLimit) = lockInfo(_from);
-        if (timeLimit &lt;= now &amp;&amp; timeLimit != 0x0) {
+        if (timeLimit <= now && timeLimit != 0x0) {
             timeLimit = 0x0;
             timeRelease[_from] = 0x0;
             lockedBalance[_from] = 0x0;
             UnLock(_from, lockLimit);
             lockLimit = 0x0;
         }
-        if (timeLimit != 0x0 &amp;&amp; lockLimit &gt; 0x0) {
-            require(balances[_from].sub(lockLimit) &gt;= _value);
+        if (timeLimit != 0x0 && lockLimit > 0x0) {
+            require(balances[_from].sub(lockLimit) >= _value);
         }
         return super.transferInternal(_from, _to, _value);
     }
@@ -375,21 +375,21 @@ contract LockableToken is StandardToken {
     }
 
     function transferFromInternal(address _from, address _to, uint256 _value) internal returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _value &gt; 0x0);
+        require(_to != 0x0 && _value > 0x0);
         if (_from == teamReservedHolder) {
             uint256 reservedLimit = teamReservedLimit();
-            require(balances[_from].sub(reservedLimit) &gt;= _value);
+            require(balances[_from].sub(reservedLimit) >= _value);
         }
         var (timeLimit, lockLimit) = lockInfo(_from);
-        if (timeLimit &lt;= now &amp;&amp; timeLimit != 0x0) {
+        if (timeLimit <= now && timeLimit != 0x0) {
             timeLimit = 0x0;
             timeRelease[_from] = 0x0;
             lockedBalance[_from] = 0x0;
             UnLock(_from, lockLimit);
             lockLimit = 0x0;
         }
-        if (timeLimit != 0x0 &amp;&amp; lockLimit &gt; 0x0) {
-            require(balances[_from].sub(lockLimit) &gt;= _value);
+        if (timeLimit != 0x0 && lockLimit > 0x0) {
+            require(balances[_from].sub(lockLimit) >= _value);
         }
         return super.transferFrom(_from, _to, _value);
     }
@@ -415,11 +415,11 @@ contract TradeableToken is LockableToken {
     function buy(address _beneficiary, uint256 _weiAmount) internal {
         require(_beneficiary != 0x0);
         require(publicOfferingHolder != 0x0);
-        require(earlyEndTime != 0x0 &amp;&amp; baseExchangeRate != 0x0 &amp;&amp; earlyExchangeRate != 0x0);
+        require(earlyEndTime != 0x0 && baseExchangeRate != 0x0 && earlyExchangeRate != 0x0);
         require(_weiAmount != 0x0);
 
         uint256 rate = baseExchangeRate;
-        if (now &lt;= earlyEndTime) {
+        if (now <= earlyEndTime) {
             rate = earlyExchangeRate;
         }
         uint256 exchangeToken = _weiAmount.mul(rate);
@@ -455,9 +455,9 @@ contract OwnableToken is TradeableToken {
     }
 
     function lock(address _owner, uint256 _value, uint _releaseTime) public payable onlyOwner returns (uint releaseTime, uint256 limit) {
-        require(_owner != 0x0 &amp;&amp; _value &gt; 0x0 &amp;&amp; _releaseTime &gt;= now);
+        require(_owner != 0x0 && _value > 0x0 && _releaseTime >= now);
         _value = lockedBalance[_owner].add(_value);
-        _releaseTime = _releaseTime &gt;= timeRelease[_owner] ? _releaseTime : timeRelease[_owner];
+        _releaseTime = _releaseTime >= timeRelease[_owner] ? _releaseTime : timeRelease[_owner];
         lockedBalance[_owner] = _value;
         timeRelease[_owner] = _releaseTime;
         Lock(_owner, _value, _releaseTime);
@@ -475,9 +475,9 @@ contract OwnableToken is TradeableToken {
 
     function transferAndLock(address _to, uint256 _value, uint _releaseTime) public payable onlyOwner returns (bool success) {
         require(_to != 0x0);
-        require(_value &gt; 0);
-        require(_releaseTime &gt;= now);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_releaseTime >= now);
+        require(_value <= balances[msg.sender]);
 
         super.transfer(_to, _value);
         lock(_to, _value, _releaseTime);
@@ -485,29 +485,29 @@ contract OwnableToken is TradeableToken {
     }
 
     function setBaseExchangeRate(uint256 _baseExchangeRate) public payable onlyOwner returns (bool success) {
-        require(_baseExchangeRate &gt; 0x0);
+        require(_baseExchangeRate > 0x0);
         baseExchangeRate = _baseExchangeRate;
         BaseExchangeRateChanged(baseExchangeRate);
         return true;
     }
 
     function setEarlyExchangeRate(uint256 _earlyExchangeRate) public payable onlyOwner returns (bool success) {
-        require(_earlyExchangeRate &gt; 0x0);
+        require(_earlyExchangeRate > 0x0);
         earlyExchangeRate = _earlyExchangeRate;
         EarlyExchangeRateChanged(earlyExchangeRate);
         return true;
     }
 
     function setEarlyEndTime(uint256 _earlyEndTime) public payable onlyOwner returns (bool success) {
-        require(_earlyEndTime &gt; 0x0);
+        require(_earlyEndTime > 0x0);
         earlyEndTime = _earlyEndTime;
         EarlyEndTimeChanged(earlyEndTime);
         return true;
     }
 
     function burn(uint256 _value) public payable onlyOwner returns (bool success) {
-        require(_value &gt; 0x0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0x0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         _totalSupply = _totalSupply.sub(_value);
@@ -530,9 +530,9 @@ contract OwnableToken is TradeableToken {
 
 contract TenYunToken is OwnableToken {
 
-    string public constant symbol = &quot;TYC&quot;;
+    string public constant symbol = "TYC";
 
-    string public constant name = &quot;TenYun Coin&quot;;
+    string public constant name = "TenYun Coin";
 
     uint8 public constant decimals = 8;
 

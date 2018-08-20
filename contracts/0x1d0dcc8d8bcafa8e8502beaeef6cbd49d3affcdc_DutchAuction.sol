@@ -7,7 +7,7 @@ contract Token {
     function transferFrom(address from, address to, uint256 value) returns (bool success);
     function approve(address spender, uint256 value) returns (bool success);
 
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions.
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions.
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function allowance(address owner, address spender) constant returns (uint256 remaining);
@@ -18,7 +18,7 @@ contract Token {
 
 
 /// @title Dutch auction contract - distribution of Gnosis tokens using an auction.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="7c0f08191a1d12521b19130e1b193c1f13120f19120f050f52121908">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="7c0f08191a1d12521b19130e1b193c1f13120f19120f050f52121908">[email protected]</span>>
 contract DutchAuction {
 
     /*
@@ -44,7 +44,7 @@ contract DutchAuction {
     uint public endTime;
     uint public totalReceived;
     uint public finalPrice;
-    mapping (address =&gt; uint) public bids;
+    mapping (address => uint) public bids;
     Stages public stage;
 
     /*
@@ -83,15 +83,15 @@ contract DutchAuction {
     }
 
     modifier isValidPayload() {
-        if (msg.data.length != 4 &amp;&amp; msg.data.length != 36)
+        if (msg.data.length != 4 && msg.data.length != 36)
             throw;
         _;
     }
 
     modifier timedTransitions() {
-        if (stage == Stages.AuctionStarted &amp;&amp; calcTokenPrice() &lt;= calcStopPrice())
+        if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice())
             finalizeAuction();
-        if (stage == Stages.AuctionEnded &amp;&amp; now &gt; endTime + WAITING_PERIOD)
+        if (stage == Stages.AuctionEnded && now > endTime + WAITING_PERIOD)
             stage = Stages.TradingStarted;
         _;
     }
@@ -116,7 +116,7 @@ contract DutchAuction {
         stage = Stages.AuctionDeployed;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param _gnosisToken Gnosis token address.
     function setup(address _gnosisToken)
         public
@@ -194,10 +194,10 @@ contract DutchAuction {
         // Prevent that more than 90% of tokens are sold. Only relevant if cap not reached.
         uint maxWei = (MAX_TOKENS_SOLD / 10**18) * calcTokenPrice() - totalReceived;
         uint maxWeiBasedOnTotalReceived = ceiling - totalReceived;
-        if (maxWeiBasedOnTotalReceived &lt; maxWei)
+        if (maxWeiBasedOnTotalReceived < maxWei)
             maxWei = maxWeiBasedOnTotalReceived;
         // Only invest maximum possible amount.
-        if (amount &gt; maxWei) {
+        if (amount > maxWei) {
             amount = maxWei;
             // Send change back to receiver address. In case of a ShapeShift bid the user receives the change back directly.
             if (!receiver.send(msg.value - amount))

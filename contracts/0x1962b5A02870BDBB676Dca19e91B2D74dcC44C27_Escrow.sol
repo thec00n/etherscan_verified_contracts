@@ -6,8 +6,8 @@ contract Escrow{
         owner = msg.sender;
     }
 
-    mapping (address =&gt; mapping (bytes32 =&gt; uint128)) public balances;
-    mapping (bytes16 =&gt; Lock) public lockedMoney;
+    mapping (address => mapping (bytes32 => uint128)) public balances;
+    mapping (bytes16 => Lock) public lockedMoney;
     address public owner;
     
     struct Lock {
@@ -44,7 +44,7 @@ contract Escrow{
     function withdraw(uint128 amount, string currencyAndBank, uint32 event_id) 
         returns(bool success) {
             bytes32 cab = sha3(currencyAndBank);
-            require(balances[msg.sender][cab] &gt;= amount);
+            require(balances[msg.sender][cab] >= amount);
             balances[msg.sender][cab] -= amount;
             TxExecuted(event_id);
             return true;
@@ -53,7 +53,7 @@ contract Escrow{
     function lock(uint128 amount, string currencyAndBank, address executingBond, bytes16 lockID, uint32 event_id) 
         returns(bool success) {   
             bytes32 cab = sha3(currencyAndBank);
-            require(balances[msg.sender][cab] &gt;= amount);
+            require(balances[msg.sender][cab] >= amount);
             balances[msg.sender][cab] -= amount;
             lockedMoney[lockID].currencyAndBank = cab;
             lockedMoney[lockID].amount += amount;
@@ -83,7 +83,7 @@ contract Escrow{
     function pay(address to, uint128 amount, string currencyAndBank, uint32 event_id) 
         returns (bool success){
             bytes32 cab = sha3(currencyAndBank);
-            require(balances[msg.sender][cab] &gt;= amount);
+            require(balances[msg.sender][cab] >= amount);
             balances[msg.sender][cab] -= amount;
             balances[to][cab] += amount;
             TxExecuted(event_id);

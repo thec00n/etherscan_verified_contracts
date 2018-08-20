@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -50,7 +50,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -59,7 +59,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -128,7 +128,7 @@ contract TokenTimelock {
   uint64 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) public {
-    require(_releaseTime &gt; uint64(block.timestamp));
+    require(_releaseTime > uint64(block.timestamp));
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -138,10 +138,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(uint64(block.timestamp) &gt;= releaseTime);
+    require(uint64(block.timestamp) >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -156,7 +156,7 @@ contract TokenTimelock {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -167,8 +167,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -182,7 +182,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -242,8 +242,8 @@ contract Owned {
 }
 
 contract IungoToken is StandardToken, Owned {
-    string public constant name = &quot;IUNGO token&quot;;
-    string public constant symbol = &quot;ING&quot;;
+    string public constant name = "IUNGO token";
+    string public constant symbol = "ING";
     uint8 public constant decimals = 18;
 
     /// Maximum tokens to be allocated (100 million)
@@ -299,7 +299,7 @@ contract IungoToken is StandardToken, Owned {
     /// Base exchange rate is set to 1 ETH = 1000 ING
     uint256 public constant BASE_RATE = 1000;
 
-    /// no tokens can be ever issued when this is set to &quot;true&quot;
+    /// no tokens can be ever issued when this is set to "true"
     bool public tokenSaleClosed = false;
 
     /// Issue event index starting from 0.
@@ -310,9 +310,9 @@ contract IungoToken is StandardToken, Owned {
 
     /// Require that the buyers can still purchase
     modifier inProgress {
-        require(totalSupply &lt; TOKENS_SALE_HARD_CAP
-                &amp;&amp; !tokenSaleClosed
-                &amp;&amp; !saleDue());
+        require(totalSupply < TOKENS_SALE_HARD_CAP
+                && !tokenSaleClosed
+                && !saleDue());
         _;
     }
 
@@ -359,7 +359,7 @@ contract IungoToken is StandardToken, Owned {
     /// @param _beneficiary Address that newly issued token will be sent to.
     function purchaseTokens(address _beneficiary) public payable inProgress {
         // only accept a minimum amount of ETH?
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
 
         uint256 tokens = computeTokenAmount(msg.value);
         doIssueTokens(_beneficiary, tokens);
@@ -373,9 +373,9 @@ contract IungoToken is StandardToken, Owned {
     /// @param _addresses the amounts of tokens, with decimals expanded (full).
     function issueTokensMulti(address[] _addresses, uint256[] _tokens) public onlyOwner inProgress {
         require(_addresses.length == _tokens.length);
-        require(_addresses.length &lt;= 100);
+        require(_addresses.length <= 100);
 
-        for (uint256 i = 0; i &lt; _tokens.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _tokens.length; i = i.add(1)) {
             doIssueTokens(_addresses[i], _tokens[i]);
         }
     }
@@ -396,11 +396,11 @@ contract IungoToken is StandardToken, Owned {
         // compute without actually increasing it
         uint256 increasedTotalSupply = totalSupply.add(_tokensAmount);
         // roll back if hard cap reached
-        require(increasedTotalSupply &lt;= TOKENS_SALE_HARD_CAP);
+        require(increasedTotalSupply <= TOKENS_SALE_HARD_CAP);
 
         // increase token total supply
         totalSupply = increasedTotalSupply;
-        // update the buyer&#39;s balance to number of tokens sent
+        // update the buyer's balance to number of tokens sent
         balances[_beneficiary] = balances[_beneficiary].add(_tokensAmount);
         // event is fired when tokens issued
         Issue(
@@ -427,11 +427,11 @@ contract IungoToken is StandardToken, Owned {
     /// @return the index of the current sale tier.
     function currentTierDiscountPercentage() internal view returns (uint64) {
         uint64 _now = uint64(block.timestamp);
-        require(_now &lt;= date31Jan2018);
+        require(_now <= date31Jan2018);
 
-        if(_now &gt; date21Jan2018) return 0;
-        if(_now &gt; date12Jan2018) return 15;
-        if(_now &gt; date21Dec2017) return 35;
+        if(_now > date21Jan2018) return 0;
+        if(_now > date12Jan2018) return 15;
+        if(_now > date21Dec2017) return 35;
         return 50;
     }
 
@@ -528,7 +528,7 @@ contract IungoToken is StandardToken, Owned {
 
     /// @return if the token sale is finished
     function saleDue() public view returns (bool) {
-        return date31Jan2018 &lt; uint64(block.timestamp);
+        return date31Jan2018 < uint64(block.timestamp);
     }
 
     /// Transfer limited by the tradingOpen modifier (time is 01 Feb 2018 or later)

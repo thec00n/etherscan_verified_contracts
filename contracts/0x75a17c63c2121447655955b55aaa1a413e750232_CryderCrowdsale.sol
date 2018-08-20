@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev Transfer token for a specified address
@@ -91,7 +91,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -105,7 +105,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -119,7 +119,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -154,7 +154,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -311,7 +311,7 @@ contract CryderToken is StandardToken, Ownable, Pausable {
    * @dev Set the address of the minter
    * @param _minter address to be set as minter.
    *
-   * Note: We also need to implement &quot;mint&quot; method.
+   * Note: We also need to implement "mint" method.
    */
   function setMinter(address _minter) public onlyOwner {
       minter = _minter;
@@ -338,25 +338,25 @@ contract CryderToken is StandardToken, Ownable, Pausable {
    */
   function transfer(address _to, uint256 _value) public returns (bool) {
     // Check for paused with an exception of bounty manager and freeze team tokens for 1 year
-    require(msg.sender == bounty || (!paused &amp;&amp; msg.sender != owner) || (!paused &amp;&amp; msg.sender == owner &amp;&amp; now &gt; FREEZE_TIME));
+    require(msg.sender == bounty || (!paused && msg.sender != owner) || (!paused && msg.sender == owner && now > FREEZE_TIME));
     return super.transfer(_to, _value);
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     // Check for paused with an exception of bounty manager and freeze team tokens for 1 year with an additional _from check
-    require((msg.sender == bounty &amp;&amp; _from == bounty) || (!paused &amp;&amp; msg.sender != owner &amp;&amp; _from != owner) || (!paused &amp;&amp; msg.sender == owner &amp;&amp; now &gt; FREEZE_TIME));
+    require((msg.sender == bounty && _from == bounty) || (!paused && msg.sender != owner && _from != owner) || (!paused && msg.sender == owner && now > FREEZE_TIME));
     return super.transferFrom(_from, _to, _value);
   }
 
   /**
    * @dev Token meta-information
-   * @param name of the token as it&#39;s shown to user
+   * @param name of the token as it's shown to user
    * @param symbol of the token
    * @param decimals number
    * Number of indivisible tokens that make up 1 CRYDER = 10^{decimals}
    */
-  string public constant name = &quot;Cryder Token&quot;;
-  string public constant symbol = &quot;CRYDER&quot;;
+  string public constant name = "Cryder Token";
+  string public constant symbol = "CRYDER";
   uint8  public constant decimals = 18;
 }
 
@@ -388,7 +388,7 @@ contract CryderCrowdsale is Ownable {
     bool public isBountyAllocated = false;
     
     // Requested tokens array
-    mapping(address =&gt; bool) tokenRequests;
+    mapping(address => bool) tokenRequests;
 
     /**
      * @dev Variables
@@ -454,7 +454,7 @@ contract CryderCrowdsale is Ownable {
      * @param _close uint256 end of the sale.
      */
     function setTime(uint _start, uint _close) public onlyOwner {
-      require( _start &lt; _close );
+      require( _start < _close );
       START_TIME = _start;
       CLOSE_TIME = _close;
     }
@@ -464,30 +464,30 @@ contract CryderCrowdsale is Ownable {
      * @param _exchangeRate uint256 new exhange rate.
      */
     function setExchangeRate(uint256 _exchangeRate) public onlyOwner  {
-      require(now &lt; START_TIME);
+      require(now < START_TIME);
       exchangeRate = _exchangeRate;
     }
 
     /**
-     * @dev Buy tokens for all sent ether. Tokens will be added to beneficiary&#39;s account
+     * @dev Buy tokens for all sent ether. Tokens will be added to beneficiary's account
      * @param beneficiary address the owner of bought tokens.
      */
     function buyTokens(address beneficiary) payable public {
       uint256 total = token.totalSupply();
       uint256 amount = msg.value;
-      require(amount &gt; 0);
+      require(amount > 0);
 
       // Check that hardcap not reached, and sale-time.
-      require(total &lt; HARDCAP);
-      require(now &gt;= START_TIME);
-      require(now &lt; CLOSE_TIME);
+      require(total < HARDCAP);
+      require(now >= START_TIME);
+      require(now < CLOSE_TIME);
 
       // Override exchange rate for daily bonuses
-      if (now &lt; START_TIME + 3600 * 24 * 1) {
+      if (now < START_TIME + 3600 * 24 * 1) {
           exchangeRate = 3900;
-      } else if (now &lt; START_TIME + 3600 * 24 * 3) {
+      } else if (now < START_TIME + 3600 * 24 * 3) {
           exchangeRate = 3750;
-      } else if (now &lt; START_TIME + 3600 * 24 * 5) {
+      } else if (now < START_TIME + 3600 * 24 * 5) {
           exchangeRate = 3600;
       } else {
           exchangeRate = 3000;
@@ -513,7 +513,7 @@ contract CryderCrowdsale is Ownable {
      
      function allocateBounty() public returns (bool) {
          // Check for bounty manager and allocation state
-         require(msg.sender == bounty &amp;&amp; isBountyAllocated == false);
+         require(msg.sender == bounty && isBountyAllocated == false);
          // Mint bounty tokens to bounty managers address
          token.mint(bounty, 5000000000000000000000000);
          isBountyAllocated = true;
@@ -521,7 +521,7 @@ contract CryderCrowdsale is Ownable {
      }
      
      function requestTokens() public returns (bool) {
-         require(presaleToken.balanceOf(msg.sender) &gt; 0 &amp;&amp; tokenRequests[msg.sender] == false);
+         require(presaleToken.balanceOf(msg.sender) > 0 && tokenRequests[msg.sender] == false);
          token.mint(msg.sender, presaleToken.balanceOf(msg.sender));
          tokenRequests[msg.sender] = true;
          return true;

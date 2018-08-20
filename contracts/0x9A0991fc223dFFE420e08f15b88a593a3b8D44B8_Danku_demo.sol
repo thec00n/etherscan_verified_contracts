@@ -86,7 +86,7 @@ contract Danku_demo {
   function init1(bytes32[max_num_data_groups/partition_size] _hashed_data_groups, int accuracy_criteria, address organizer_refund_address) external {
     // Make sure contract is not terminated
     assert(contract_terminated == false);
-    // Make sure it&#39;s called in order
+    // Make sure it's called in order
     assert(init_level == 0);
     organizer = organizer_refund_address;
     init_level = 1;
@@ -95,9 +95,9 @@ contract Danku_demo {
     // Make sure there are in total 20 hashed data groups
     assert(_hashed_data_groups.length == max_num_data_groups/partition_size);
     hashed_data_groups = _hashed_data_groups;
-    // Accuracy criteria example: 85.9% =&gt; 8,590
-    // 100 % =&gt; 10,000
-    assert(accuracy_criteria &gt; 0);
+    // Accuracy criteria example: 85.9% => 8,590
+    // 100 % => 10,000
+    assert(accuracy_criteria > 0);
     model_accuracy_criteria = accuracy_criteria;
   }
 
@@ -106,19 +106,19 @@ contract Danku_demo {
     assert(contract_terminated == false);
     // Only allow calling it once, in order
     assert(init_level == 1);
-    // Make sure it&#39;s being called within 20 blocks on init1()
+    // Make sure it's being called within 20 blocks on init1()
     // to minimize organizer influence on random index selection
-    if (block.number &lt;= init1_block_height+20 &amp;&amp; block.number &gt; init1_block_height) {
-      // TODO: Also make sure it&#39;s being called 1 block after init1()
+    if (block.number <= init1_block_height+20 && block.number > init1_block_height) {
+      // TODO: Also make sure it's being called 1 block after init1()
       // Randomly select indexes
       uint[] memory index_array = new uint[](max_num_data_groups/partition_size);
-      for (uint i = 0; i &lt; max_num_data_groups/partition_size; i++) {
+      for (uint i = 0; i < max_num_data_groups/partition_size; i++) {
         index_array[i] = i;
       }
       randomly_select_index(index_array);
       init_level = 2;
     } else {
-      // Cancel the contract if init2() hasn&#39;t been called within 5
+      // Cancel the contract if init2() hasn't been called within 5
       // blocks of init1()
       cancel_contract();
     }
@@ -168,11 +168,11 @@ contract Danku_demo {
     int256[] biases) public {
       // Make sure contract is not terminated
       assert(contract_terminated == false);
-      // Make sure it&#39;s not the initialization stage anymore
+      // Make sure it's not the initialization stage anymore
       assert(init_level == 3);
-      // Make sure it&#39;s still within the submission stage
-      assert(block.number &lt; init3_block_height + submission_stage_block_size);
-      // Make sure that num of neurons in the input &amp; output layer matches
+      // Make sure it's still within the submission stage
+      assert(block.number < init3_block_height + submission_stage_block_size);
+      // Make sure that num of neurons in the input & output layer matches
       // the problem description
       assert(num_neurons_input_layer == datapoint_size - prediction_size);
       // Because we can encode binary output in two different ways, we check
@@ -199,7 +199,7 @@ contract Danku_demo {
     int[] weights,
     int256[] biases) public view returns (uint) {
       // Iterate over submission queue to get submission index ID
-      for (uint i = 0; i &lt; submission_queue.length; i++) {
+      for (uint i = 0; i < submission_queue.length; i++) {
         if (submission_queue[i].payment_address != paymentAddress) {
           continue;
         }
@@ -209,17 +209,17 @@ contract Danku_demo {
         if (submission_queue[i].num_neurons_output_layer != num_neurons_output_layer) {
           continue;
         }
-        for (uint j = 0; j &lt; num_neurons_hidden_layer.length; j++) {
+        for (uint j = 0; j < num_neurons_hidden_layer.length; j++) {
             if (submission_queue[i].num_neurons_hidden_layer[j] != num_neurons_hidden_layer[j]) {
               continue;
             }
         }
-        for (uint k = 0; k &lt; weights.length; k++) {
+        for (uint k = 0; k < weights.length; k++) {
             if (submission_queue[i].weights[k] != weights[k]) {
               continue;
             }
         }
-        for (uint l = 0; l &lt; biases.length; l++) {
+        for (uint l = 0; l < biases.length; l++) {
           if (submission_queue[i].biases[l] != biases[l]) {
             continue;
           }
@@ -234,12 +234,12 @@ contract Danku_demo {
     function reveal_test_data(int256[] _test_data_groups, int256 _test_data_group_nonces) external {
     // Make sure contract is not terminated
     assert(contract_terminated == false);
-    // Make sure it&#39;s not the initialization stage anymore
+    // Make sure it's not the initialization stage anymore
     assert(init_level == 3);
-    // Make sure it&#39;s revealed after the submission stage
-    assert(block.number &gt;= init3_block_height + submission_stage_block_size);
-    // Make sure it&#39;s revealed within the reveal stage
-    assert(block.number &lt; init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size);
+    // Make sure it's revealed after the submission stage
+    assert(block.number >= init3_block_height + submission_stage_block_size);
+    // Make sure it's revealed within the reveal stage
+    assert(block.number < init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size);
     // Verify data group and nonce lengths
     assert((_test_data_groups.length/partition_size)/datapoint_size == 1);
     // Verify data group hashes
@@ -253,17 +253,17 @@ contract Danku_demo {
   }
 
   function evaluate_model(uint submission_index) public {
-    // TODO: Make sure that if there&#39;s two same submission w/ same weights
+    // TODO: Make sure that if there's two same submission w/ same weights
     // and biases, the first one submitted should get the reward.
     // Make sure contract is not terminated
     assert(contract_terminated == false);
-    // Make sure it&#39;s not the initialization stage anymore
+    // Make sure it's not the initialization stage anymore
     assert(init_level == 3);
-    // Make sure it&#39;s evaluated after the reveal stage
-    assert(block.number &gt;= init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size);
-    // Make sure it&#39;s evaluated within the evaluation stage
-    assert(block.number &lt; init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size + evaluation_stage_block_size);
-    // Evaluates a submitted model &amp; keeps track of the best model
+    // Make sure it's evaluated after the reveal stage
+    assert(block.number >= init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size);
+    // Make sure it's evaluated within the evaluation stage
+    assert(block.number < init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size + evaluation_stage_block_size);
+    // Evaluates a submitted model & keeps track of the best model
     int256 submission_accuracy = 0;
     if (use_test_data == true) {
       submission_accuracy = model_accuracy(submission_index, test_data);
@@ -272,7 +272,7 @@ contract Danku_demo {
     }
 
     // Keep track of the most accurate model
-    if (submission_accuracy &gt; best_submission_accuracy) {
+    if (submission_accuracy > best_submission_accuracy) {
       best_submission_index = submission_index;
       best_submission_accuracy = submission_accuracy;
     }
@@ -282,7 +282,7 @@ contract Danku_demo {
     // Make sure contract is not already terminated
     assert(contract_terminated == false);
     // Contract can only be cancelled if initialization has failed.
-    assert(init_level &lt; 3);
+    assert(init_level < 3);
     // Refund remaining balance to organizer
     organizer.transfer(this.balance);
     // Terminate contract
@@ -292,14 +292,14 @@ contract Danku_demo {
   function finalize_contract() public {
     // Make sure contract is not terminated
     assert(contract_terminated == false);
-    // Make sure it&#39;s not the initialization stage anymore
+    // Make sure it's not the initialization stage anymore
     assert(init_level == 3);
     // Make sure the contract is finalized after the evaluation stage
-    assert(block.number &gt;= init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size + evaluation_stage_block_size);
+    assert(block.number >= init3_block_height + submission_stage_block_size + reveal_test_data_groups_block_size + evaluation_stage_block_size);
     // Get the best submission to compare it against the criteria
     Submission memory best_submission = submission_queue[best_submission_index];
     // If best submission passes criteria, payout to the submitter
-    if (best_submission_accuracy &gt;= model_accuracy_criteria) {
+    if (best_submission_accuracy >= model_accuracy_criteria) {
       best_submission.payment_address.transfer(this.balance);
     // If the best submission fails the criteria, refund the balance back to the organizer
     } else {
@@ -311,10 +311,10 @@ contract Danku_demo {
   function model_accuracy(uint submission_index, int256[datapoint_size][] data) public constant returns (int256){
     // Make sure contract is not terminated
     assert(contract_terminated == false);
-    // Make sure it&#39;s not the initialization stage anymore
+    // Make sure it's not the initialization stage anymore
     assert(init_level == 3);
     // Leave function public for offline error calculation
-    // Get&#39;s the sum error for the model
+    // Get's the sum error for the model
     Submission memory sub = submission_queue[submission_index];
     int256 true_prediction = 0;
     int256 false_prediction = 0;
@@ -330,9 +330,9 @@ contract Danku_demo {
       prediction = new int[](prediction_size);
       ground_truth = new int[](prediction_size);
     }
-    for (uint i = 0; i &lt; data.length; i++) {
+    for (uint i = 0; i < data.length; i++) {
       // Get ground truth
-      for (uint j = datapoint_size-prediction_size; j &lt; data[i].length; j++) {
+      for (uint j = datapoint_size-prediction_size; j < data[i].length; j++) {
         uint d_index = j - datapoint_size + prediction_size;
         // Only get prediction values
         if (one_hot == true) {
@@ -353,7 +353,7 @@ contract Danku_demo {
       // Get prediction
       prediction = get_prediction(sub, data[i]);
       // Get error for the output layer
-      for (uint k = 0; k &lt; ground_truth.length; k++) {
+      for (uint k = 0; k < ground_truth.length; k++) {
         if (ground_truth[k] == prediction[k]) {
           true_prediction += 1;
         } else {
@@ -380,7 +380,7 @@ contract Danku_demo {
   }
 
   function not_in_train_partition(uint[training_data_group_size/partition_size] partition, uint number) private pure returns (bool) {
-    for (uint i = 0; i &lt; partition.length; i++) {
+    for (uint i = 0; i < partition.length; i++) {
       if (number == partition[i]) {
         return false;
       }
@@ -393,7 +393,7 @@ contract Danku_demo {
     uint array_length = array.length;
     uint block_i = 0;
     // Randomly select training indexes
-    while(t_index &lt; training_partition.length) {
+    while(t_index < training_partition.length) {
       uint random_index = uint(sha256(block.blockhash(block.number-block_i))) % array_length;
       training_partition[t_index] = array[random_index];
       array[random_index] = array[array_length-1];
@@ -402,7 +402,7 @@ contract Danku_demo {
       t_index++;
     }
     t_index = 0;
-    while(t_index &lt; testing_partition.length) {
+    while(t_index < testing_partition.length) {
       testing_partition[t_index] = array[array_length-1];
       array_length--;
       t_index++;
@@ -419,7 +419,7 @@ contract Danku_demo {
     if (number_of_layers == 2) {
       ns_total = num_neurons_input_layer * num_neurons_output_layer;
     } else {
-      for(uint i = 0; i &lt; num_neurons_hidden_layer.length; i++) {
+      for(uint i = 0; i < num_neurons_hidden_layer.length; i++) {
         // Get weights between first hidden layer and input layer
         if (i==0){
           ns_total += num_neurons_input_layer * num_neurons_hidden_layer[i];
@@ -440,19 +440,19 @@ contract Danku_demo {
     function unpack_data_groups(int256[] _data_groups, bool is_train_data) private {
     int256[datapoint_size][] memory merged_data_group = new int256[datapoint_size][](_data_groups.length/datapoint_size);
 
-    for (uint i = 0; i &lt; _data_groups.length/datapoint_size; i++) {
-      for (uint j = 0; j &lt; datapoint_size; j++) {
+    for (uint i = 0; i < _data_groups.length/datapoint_size; i++) {
+      for (uint j = 0; j < datapoint_size; j++) {
         merged_data_group[i][j] = _data_groups[i*datapoint_size + j];
       }
     }
     if (is_train_data == true) {
       // Assign training data
-      for (uint k = 0; k &lt; merged_data_group.length; k++) {
+      for (uint k = 0; k < merged_data_group.length; k++) {
         train_data.push(merged_data_group[k]);
       }
     } else {
       // Assign testing data
-      for (uint l = 0; l &lt; merged_data_group.length; l++) {
+      for (uint l = 0; l < merged_data_group.length; l++) {
         test_data.push(merged_data_group[l]);
       }
     }
@@ -468,7 +468,7 @@ contract Danku_demo {
       uint256 iter_limit = start_index + total_size; */
       int256[] memory all_data_points = new int256[](total_size+1);
 
-      for (uint256 i = 0; i &lt; total_size; i++) {
+      for (uint256 i = 0; i < total_size; i++) {
         all_data_points[index_tracker] = data_group[i];
         index_tracker += 1;
       }
@@ -479,7 +479,7 @@ contract Danku_demo {
     }
 
   function relu_activation(int256 x) private pure returns (int256) {
-    if (x &lt; 0) {
+    if (x < 0) {
       return 0;
     } else {
       return x;
@@ -493,8 +493,8 @@ contract Danku_demo {
 
   function get_hidden_layers(uint[] l_nn) private pure returns (int256[]) {
     uint total_nn = 0;
-    // Skip first and last layer since they&#39;re not hidden layers
-    for (uint i = 1; i &lt; l_nn.length-1; i++) {
+    // Skip first and last layer since they're not hidden layers
+    for (uint i = 1; i < l_nn.length-1; i++) {
       total_nn += l_nn[i];
     }
     int256[] memory hidden_layers = new int256[](total_nn);
@@ -502,19 +502,19 @@ contract Danku_demo {
   }
 
   function access_hidden_layer(int256[] hls, uint[] l_nn, uint index) private pure returns (int256[]) {
-    // TODO: Bug is here, doesn&#39;t work for between last hidden and output layer
+    // TODO: Bug is here, doesn't work for between last hidden and output layer
     // Returns the hidden layer from the hidden layers array
     int256[] memory hidden_layer = new int256[](l_nn[index+1]);
     uint hidden_layer_index = 0;
     uint start = 0;
     uint end = 0;
-    for (uint i = 0; i &lt; index; i++) {
+    for (uint i = 0; i < index; i++) {
       start += l_nn[i+1];
     }
-    for (uint j = 0; j &lt; (index + 1); j++) {
+    for (uint j = 0; j < (index + 1); j++) {
       end += l_nn[j+1];
     }
-    for (uint h_i = start; h_i &lt; end; h_i++) {
+    for (uint h_i = start; h_i < end; h_i++) {
       hidden_layer[hidden_layer_index] = hls[h_i];
       hidden_layer_index += 1;
     }
@@ -524,7 +524,7 @@ contract Danku_demo {
   function get_prediction(Submission sub, int[datapoint_size] data_point) private pure returns(int256[]) {
     uint[] memory l_nn = new uint[](sub.num_neurons_hidden_layer.length + 2);
     l_nn[0] = sub.num_neurons_input_layer;
-    for (uint i = 0; i &lt; sub.num_neurons_hidden_layer.length; i++) {
+    for (uint i = 0; i < sub.num_neurons_hidden_layer.length; i++) {
       l_nn[i+1] = sub.num_neurons_hidden_layer[i];
     }
     l_nn[sub.num_neurons_hidden_layer.length+1] = sub.num_neurons_output_layer;
@@ -538,7 +538,7 @@ contract Danku_demo {
     int256[] memory output_layer = get_layer(l_nn[l_nn.length-1]);
 
     // load inputs from input layer
-    for (uint input_i = 0; input_i &lt; l_nn[0]; input_i++) {
+    for (uint input_i = 0; input_i < l_nn[0]; input_i++) {
       input_layer[input_i] = data_point[input_i];
     }
     return forward_pass2(l_nn, input_layer, hidden_layers, output_layer, weights, biases);
@@ -548,7 +548,7 @@ contract Danku_demo {
     // index_counter[0] is weight index
     // index_counter[1] is hidden_layer_index
     uint[] memory index_counter = new uint[](2);
-    for (uint layer_i = 0; layer_i &lt; (l_nn.length-1); layer_i++) {
+    for (uint layer_i = 0; layer_i < (l_nn.length-1); layer_i++) {
       int256[] memory current_layer;
       int256[] memory prev_layer;
       // If between input and first hidden layer
@@ -569,9 +569,9 @@ contract Danku_demo {
         current_layer = output_layer;
         prev_layer = input_layer;
       }
-      for (uint layer_neuron_i = 0; layer_neuron_i &lt; current_layer.length; layer_neuron_i++) {
+      for (uint layer_neuron_i = 0; layer_neuron_i < current_layer.length; layer_neuron_i++) {
         int total = 0;
-        for (uint prev_layer_neuron_i = 0; prev_layer_neuron_i &lt; prev_layer.length; prev_layer_neuron_i++) {
+        for (uint prev_layer_neuron_i = 0; prev_layer_neuron_i < prev_layer.length; prev_layer_neuron_i++) {
           total += prev_layer[prev_layer_neuron_i] * weights[index_counter[0]];
           index_counter[0]++;
         }

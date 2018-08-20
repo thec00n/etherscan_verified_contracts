@@ -9,7 +9,7 @@ contract RGE {
 
 contract RougeTGE {
     
-    string public version = &#39;v1.1&#39;;
+    string public version = 'v1.1';
     
     address owner; 
 
@@ -28,28 +28,28 @@ contract RougeTGE {
     uint public fundingEnd;
 
     modifier beforeTGE() {
-        require(fundingStart &gt; now);
+        require(fundingStart > now);
         _;
     }
 
     modifier TGEOpen() {
-        require(fundingStart &lt;= now &amp;&amp; now &lt; fundingEnd);
+        require(fundingStart <= now && now < fundingEnd);
         require(fundingActive);
         _;
     }
     
     modifier afterTGE() {
-        require(now &gt;= fundingEnd);
+        require(now >= fundingEnd);
         _;
     }
 
     function isFundingOpen() constant public returns (bool yes) {
-        return(fundingStart &lt;= now &amp;&amp; now &lt; fundingEnd &amp;&amp; fundingActive);
+        return(fundingStart <= now && now < fundingEnd && fundingActive);
     }
 
-    mapping (address =&gt; bool) public kyc;
-    mapping (address =&gt; uint256) public tokens;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public used;
+    mapping (address => bool) public kyc;
+    mapping (address => uint256) public tokens;
+    mapping (address => mapping (address => uint256)) public used;
 
     function tokensOf(address _who) public view returns (uint256 balance) {
         return tokens[_who];
@@ -118,7 +118,7 @@ contract RougeTGE {
             funding: msg.value / 1 finney, used: 0, tokens: 0, presale: false
         });
 
-        require(_sale.funding &gt;= minFunding);
+        require(_sale.funding >= minFunding);
 
         /* distribution with RGX discounts */
         
@@ -139,7 +139,7 @@ contract RougeTGE {
 
         /* standard tokens distribution */
         
-        if ( _sale.funding &gt; _sale.used ) {
+        if ( _sale.funding > _sale.used ) {
 
             uint256 _available = _sale.funding - _sale.used;
             _sale.used += _available;
@@ -149,7 +149,7 @@ contract RougeTGE {
         
         /* check if enough tokens and distribute tokens to buyer */
         
-        require(total_distribution &gt;= _sale.tokens); 
+        require(total_distribution >= _sale.tokens); 
 
         total_distribution -= _sale.tokens;
         tokens[msg.sender] += _sale.tokens;
@@ -163,11 +163,11 @@ contract RougeTGE {
 
         uint256 rgxBalance = _rgx.balanceOf(msg.sender);
 
-        if ( used[_a][msg.sender] &lt; rgxBalance &amp;&amp; _sale.funding &gt; _sale.used ) {
+        if ( used[_a][msg.sender] < rgxBalance && _sale.funding > _sale.used ) {
 
             uint256 _available = rgxBalance - used[_a][msg.sender];
 
-            if ( _available &gt; _sale.funding - _sale.used ) {
+            if ( _available > _sale.funding - _sale.used ) {
                 _available = _sale.funding - _sale.used;
             }
 
@@ -189,7 +189,7 @@ contract RougeTGE {
 
         uint256 rgxBalance = _rgx.balanceOf(msg.sender);
 
-        if ( used[_a][msg.sender] &lt; rgxBalance ) {
+        if ( used[_a][msg.sender] < rgxBalance ) {
 
             uint256 _available = rgxBalance - used[_a][msg.sender];
 
@@ -214,9 +214,9 @@ contract RougeTGE {
 
         require(msg.sender != owner); 
         
-        // no verification if enough tokens =&gt; done in payable already
+        // no verification if enough tokens => done in payable already
         
-        require(tokens[msg.sender] &gt; 0);
+        require(tokens[msg.sender] > 0);
         require(kyc[msg.sender]); 
         
         RGE _rge = RGE(rge);

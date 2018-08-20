@@ -6,7 +6,7 @@ contract TokenRequestStub{
 
 contract TokenReclaim{
     TokenRequestStub tokenAddress;
-    mapping (address=&gt;string) internal _ethToPubKey;
+    mapping (address=>string) internal _ethToPubKey;
     event AccountRegister (address ethAccount, string pubKey, uint holding);
 
     constructor() public{
@@ -14,7 +14,7 @@ contract TokenReclaim{
     }
 
     function register(string pubKey) public{
-        require(bytes(pubKey).length &lt;= 64 &amp;&amp; bytes(pubKey).length &gt;= 50 );
+        require(bytes(pubKey).length <= 64 && bytes(pubKey).length >= 50 );
         uint holding = tokenAddress.balanceOf(msg.sender);
         _ethToPubKey[msg.sender] = pubKey;
         emit AccountRegister(msg.sender, pubKey, holding);

@@ -17,7 +17,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -68,20 +68,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,11 +96,11 @@ contract WPPToken is ERC20, Ownable {
 	uint256  public  totalSupply = 5000000000 * 1 ether;
 
 
-	mapping  (address =&gt; uint256)             public          _balances;
-    mapping  (address =&gt; mapping (address =&gt; uint256)) public  _approvals;
+	mapping  (address => uint256)             public          _balances;
+    mapping  (address => mapping (address => uint256)) public  _approvals;
 
-    string   public  name = &quot;WPPTOKEN&quot;;
-    string   public  symbol = &quot;WPP&quot;;
+    string   public  name = "WPPTOKEN";
+    string   public  symbol = "WPP";
     uint256  public  decimals = 18;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -122,7 +122,7 @@ contract WPPToken is ERC20, Ownable {
     }
     
     function transfer(address dst, uint256 wad) public returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = _balances[msg.sender].sub(wad);
         _balances[dst] = _balances[dst].add(wad);
@@ -133,8 +133,8 @@ contract WPPToken is ERC20, Ownable {
     }
     
     function transferFrom(address src, address dst, uint256 wad) public returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
         
         _approvals[src][msg.sender] = _approvals[src][msg.sender].sub(wad);
         _balances[src] = _balances[src].sub(wad);

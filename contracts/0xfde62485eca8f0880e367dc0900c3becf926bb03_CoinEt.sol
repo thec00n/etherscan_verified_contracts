@@ -8,11 +8,11 @@ contract CoinEt // @eachvar
     address public account_address = 0xB3822a42212662C621CD8Ce442525ADE337431a9; // @eachvar 初始化后转入代币的地址
     
     // 定义账户余额
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     // solidity 会自动为 public 变量添加方法，有了下边这些变量，就能获得代币的基本信息了
-    string public name = &quot;ETIMChain&quot;; // @eachvar
-    string public symbol = &quot;ET&quot;; // @eachvar
+    string public name = "ETIMChain"; // @eachvar
+    string public symbol = "ET"; // @eachvar
     uint8 public decimals = 18; // @eachvar
     uint256 initSupply = 3000000000; // @eachvar
     uint256 public totalSupply = 0; // @eachvar
@@ -48,7 +48,7 @@ contract CoinEt // @eachvar
     returns (bool) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = sub(balances[msg.sender],_value);
 
@@ -61,7 +61,7 @@ contract CoinEt // @eachvar
 
     // ========= 授权转账相关逻辑 =============
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     event Approval(
         address indexed owner,
         address indexed spender,
@@ -77,8 +77,8 @@ contract CoinEt // @eachvar
     returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = sub(balances[_from], _value);
         
@@ -133,7 +133,7 @@ contract CoinEt // @eachvar
     {
         uint256 oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } 
         else 
@@ -174,7 +174,7 @@ contract CoinEt // @eachvar
     public
     admin_only
     {
-        require(address(this).balance &gt; 0);
+        require(address(this).balance > 0);
         admin_address.transfer(address(this).balance);
     }
         // ======================================
@@ -208,14 +208,14 @@ contract CoinEt // @eachvar
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) 
     {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 

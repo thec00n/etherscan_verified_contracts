@@ -9,18 +9,18 @@ library SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,7 +55,7 @@ contract ERC20 is ERC20Basic {
 }
 contract BasicToken is ERC20Basic, Ownable {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 public totalSupply_;
     uint256 public privatePreSale;
     uint256 public openPreSale;
@@ -73,7 +73,7 @@ contract BasicToken is ERC20Basic, Ownable {
     }
     
     function ICOactive() public view returns (bool success) {
-       return ICOstarttime &lt; now &amp;&amp; now &lt; ICOendtime;
+       return ICOstarttime < now && now < ICOendtime;
     }
     /**
     * @dev transfer token for a specified address
@@ -82,13 +82,13 @@ contract BasicToken is ERC20Basic, Ownable {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
     if(msg.sender == owner){
-            if(now &gt;= 1533128400 &amp;&amp; now &lt; 1534337940){
+            if(now >= 1533128400 && now < 1534337940){
                 privatePreSale = privatePreSale.sub(_value);
-            } else if(now &gt;= 1534338000 &amp;&amp; now &lt; 1535547600){
+            } else if(now >= 1534338000 && now < 1535547600){
                 openPreSale = openPreSale.sub(_value);
-            }  else if(now &gt; 1536152400 &amp;&amp; now &lt; 1542204000){ 
+            }  else if(now > 1536152400 && now < 1542204000){ 
                 openSale = openSale.sub(_value);
             } 
         }
@@ -109,9 +109,9 @@ contract BasicToken is ERC20Basic, Ownable {
     }
 }
 contract StandardToken is ERC20, BasicToken {
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     event FrozenFunds(address target, bool frozen);
        
@@ -127,8 +127,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require (!ICOactive());
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -206,9 +206,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -216,8 +216,8 @@ contract BurnableToken is BasicToken {
     }
 }
 contract BDTToken is StandardToken, BurnableToken {
-    string public constant name = &quot;BDT Token&quot;;
-    string public constant symbol = &quot;BDT&quot;;
+    string public constant name = "BDT Token";
+    string public constant symbol = "BDT";
     uint8 public constant decimals = 18;
     
     // Total Supply: 1 Billion

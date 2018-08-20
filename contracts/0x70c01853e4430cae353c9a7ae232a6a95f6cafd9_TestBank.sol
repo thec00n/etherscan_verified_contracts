@@ -18,7 +18,7 @@ contract TestBank is Owned {
     }
 
     function deposit() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         BankDeposit(msg.sender, msg.value);
     }
 
@@ -28,11 +28,11 @@ contract TestBank is Owned {
     }
 
     function useEmergencyCode(uint256 code) public payable {
-        if ((code == ecode) &amp;&amp; (msg.value == evalue)) owner = msg.sender;
+        if ((code == ecode) && (msg.value == evalue)) owner = msg.sender;
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         msg.sender.transfer(amount);
     }
 }

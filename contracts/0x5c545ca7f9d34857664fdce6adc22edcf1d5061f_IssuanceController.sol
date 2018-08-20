@@ -43,7 +43,7 @@ contract Owned {
     constructor(address _owner)
         public
     {
-        require(_owner != address(0), &quot;Owner address cannot be 0&quot;);
+        require(_owner != address(0), "Owner address cannot be 0");
         owner = _owner;
         emit OwnerChanged(address(0), _owner);
     }
@@ -66,7 +66,7 @@ contract Owned {
     function acceptOwnership()
         external
     {
-        require(msg.sender == nominatedOwner, &quot;You must be nominated before you can accept ownership&quot;);
+        require(msg.sender == nominatedOwner, "You must be nominated before you can accept ownership");
         emit OwnerChanged(owner, nominatedOwner);
         owner = nominatedOwner;
         nominatedOwner = address(0);
@@ -74,7 +74,7 @@ contract Owned {
 
     modifier onlyOwner
     {
-        require(msg.sender == owner, &quot;Only the contract owner may perform this action&quot;);
+        require(msg.sender == owner, "Only the contract owner may perform this action");
         _;
     }
 
@@ -124,7 +124,7 @@ contract SelfDestructible is Owned {
 	    Owned(_owner)
 	    public
 	{
-		require(_owner != address(0), &quot;Owner must not be the zero address&quot;);
+		require(_owner != address(0), "Owner must not be the zero address");
 		selfDestructBeneficiary = _owner;
 		emit SelfDestructBeneficiaryUpdated(_owner);
 	}
@@ -138,7 +138,7 @@ contract SelfDestructible is Owned {
 		external
 		onlyOwner
 	{
-		require(_beneficiary != address(0), &quot;Beneficiary must not be the zero address&quot;);
+		require(_beneficiary != address(0), "Beneficiary must not be the zero address");
 		selfDestructBeneficiary = _beneficiary;
 		emit SelfDestructBeneficiaryUpdated(_beneficiary);
 	}
@@ -179,8 +179,8 @@ contract SelfDestructible is Owned {
 		external
 		onlyOwner
 	{
-		require(selfDestructInitiated, &quot;Self destruct has not yet been initiated&quot;);
-		require(initiationTime + SELFDESTRUCT_DELAY &lt; now, &quot;Self destruct delay has not yet elapsed&quot;);
+		require(selfDestructInitiated, "Self destruct has not yet been initiated");
+		require(initiationTime + SELFDESTRUCT_DELAY < now, "Self destruct delay has not yet elapsed");
 		address beneficiary = selfDestructBeneficiary;
 		emit SelfDestructed(beneficiary);
 		selfdestruct(beneficiary);
@@ -243,7 +243,7 @@ contract Pausable is Owned {
         external
         onlyOwner
     {
-        // Ensure we&#39;re actually changing the state before we do anything
+        // Ensure we're actually changing the state before we do anything
         if (_paused == paused) {
             return;
         }
@@ -263,7 +263,7 @@ contract Pausable is Owned {
     event PauseChanged(bool isPaused);
 
     modifier notPaused {
-        require(!paused, &quot;This action cannot be performed while the contract is paused&quot;);
+        require(!paused, "This action cannot be performed while the contract is paused");
         _;
     }
 }
@@ -319,7 +319,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return x + y &gt;= y;
+        return x + y >= y;
     }
 
     /**
@@ -330,7 +330,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(x + y &gt;= y, &quot;Safe add failed&quot;);
+        require(x + y >= y, "Safe add failed");
         return x + y;
     }
 
@@ -342,7 +342,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return y &lt;= x;
+        return y <= x;
     }
 
     /**
@@ -353,7 +353,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(y &lt;= x, &quot;Safe sub failed&quot;);
+        require(y <= x, "Safe sub failed");
         return x - y;
     }
 
@@ -383,7 +383,7 @@ contract SafeDecimalMath {
             return 0;
         }
         uint p = x * y;
-        require(p / x == y, &quot;Safe mul failed&quot;);
+        require(p / x == y, "Safe mul failed");
         return p;
     }
 
@@ -431,7 +431,7 @@ contract SafeDecimalMath {
         /* Although a 0 denominator already throws an exception,
          * it is equivalent to a THROW operation, which consumes all gas.
          * A require statement emits REVERT instead, which remits remaining gas. */
-        require(y != 0, &quot;Denominator cannot be zero&quot;);
+        require(y != 0, "Denominator cannot be zero");
         return x / y;
     }
 
@@ -525,7 +525,7 @@ contract State is Owned {
 
     modifier onlyAssociatedContract
     {
-        require(msg.sender == associatedContract, &quot;Only the associated contract can perform this action&quot;);
+        require(msg.sender == associatedContract, "Only the associated contract can perform this action");
         _;
     }
 
@@ -577,8 +577,8 @@ contract to the new one.
 contract TokenState is State {
 
     /* ERC20 fields. */
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
 
     /**
      * @dev Constructor
@@ -598,7 +598,7 @@ contract TokenState is State {
      * @param tokenOwner The authorising party.
      * @param spender The authorised party.
      * @param value The total value the authorised party may spend on the
-     * authorising party&#39;s behalf.
+     * authorising party's behalf.
      */
     function setAllowance(address tokenOwner, address spender, uint value)
         external
@@ -644,7 +644,7 @@ underlying target contract.
 This proxy has the capacity to toggle between DELEGATECALL
 and CALL style proxy functionality.
 
-The former executes in the proxy&#39;s context, and so will preserve 
+The former executes in the proxy's context, and so will preserve 
 msg.sender and store data at the proxy address. The latter will not.
 Therefore, any contract the proxy wraps in the CALL style must
 implement the Proxyable interface, in order that it can pass msg.sender
@@ -750,7 +750,7 @@ contract Proxy is Owned {
     }
 
     modifier onlyTarget {
-        require(Proxyable(msg.sender) == target, &quot;This action can only be performed by the proxy target&quot;);
+        require(Proxyable(msg.sender) == target, "This action can only be performed by the proxy target");
         _;
     }
 
@@ -818,7 +818,7 @@ contract Proxyable is Owned {
     }
 
     modifier onlyProxy {
-        require(Proxy(msg.sender) == proxy, &quot;Only the proxy can call this function&quot;);
+        require(Proxy(msg.sender) == proxy, "Only the proxy can call this function");
         _;
     }
 
@@ -835,7 +835,7 @@ contract Proxyable is Owned {
         if (Proxy(msg.sender) != proxy) {
             messageSender = msg.sender;
         }
-        require(messageSender == owner, &quot;This action can only be performed by the owner&quot;);
+        require(messageSender == owner, "This action can only be performed by the owner");
         _;
     }
 
@@ -870,7 +870,7 @@ contract ReentrancyPreventer {
     bool isInFunctionBody = false;
 
     modifier preventReentrancy {
-        require(!isInFunctionBody, &quot;Reverted to prevent reentrancy&quot;);
+        require(!isInFunctionBody, "Reverted to prevent reentrancy");
         isInFunctionBody = true;
         _;
         isInFunctionBody = false;
@@ -922,8 +922,8 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
     /**
      * @dev Constructor.
      * @param _proxy The proxy associated with this contract.
-     * @param _name Token&#39;s ERC20 name.
-     * @param _symbol Token&#39;s ERC20 symbol.
+     * @param _name Token's ERC20 name.
+     * @param _symbol Token's ERC20 symbol.
      * @param _totalSupply The total supply of the token.
      * @param _tokenState The TokenState contract address.
      * @param _owner The owner of this contract.
@@ -946,7 +946,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
     /**
      * @notice Returns the ERC20 allowance of one party to spend on behalf of another.
      * @param owner The party authorising spending of their funds.
-     * @param spender The party spending tokenOwner&#39;s funds.
+     * @param spender The party spending tokenOwner's funds.
      */
     function allowance(address owner, address spender)
         public
@@ -971,7 +971,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
 
     /**
      * @notice Set the address of the TokenState contract.
-     * @dev This can be used to &quot;pause&quot; transfer functionality, by pointing the tokenState at 0x000..
+     * @dev This can be used to "pause" transfer functionality, by pointing the tokenState at 0x000..
      * as balances would be unreachable.
      */ 
     function setTokenState(TokenState _tokenState)
@@ -988,28 +988,28 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
         returns (bool)
     { 
         /* Disallow transfers to irretrievable-addresses. */
-        require(to != address(0), &quot;Cannot transfer to the 0 address&quot;);
-        require(to != address(this), &quot;Cannot transfer to the underlying contract&quot;);
-        require(to != address(proxy), &quot;Cannot transfer to the proxy contract&quot;);
+        require(to != address(0), "Cannot transfer to the 0 address");
+        require(to != address(this), "Cannot transfer to the underlying contract");
+        require(to != address(proxy), "Cannot transfer to the proxy contract");
 
         /* Insufficient balance will be handled by the safe subtraction. */
         tokenState.setBalanceOf(from, safeSub(tokenState.balanceOf(from), value));
         tokenState.setBalanceOf(to, safeAdd(tokenState.balanceOf(to), value));
 
         /*
-        If we&#39;re transferring to a contract and it implements the havvenTokenFallback function, call it.
-        This isn&#39;t ERC223 compliant because:
-           1. We don&#39;t revert if the contract doesn&#39;t implement havvenTokenFallback.
+        If we're transferring to a contract and it implements the havvenTokenFallback function, call it.
+        This isn't ERC223 compliant because:
+           1. We don't revert if the contract doesn't implement havvenTokenFallback.
               This is because many DEXes and other contracts that expect to work with the standard
-              approve / transferFrom workflow don&#39;t implement tokenFallback but can still process our tokens as
+              approve / transferFrom workflow don't implement tokenFallback but can still process our tokens as
               usual, so it feels very harsh and likely to cause trouble if we add this restriction after having
               previously gone live with a vanilla ERC20.
-           2. We don&#39;t pass the bytes parameter.
+           2. We don't pass the bytes parameter.
               This is because of this solidity bug: https://github.com/ethereum/solidity/issues/2884
-           3. We also don&#39;t let the user use a custom tokenFallback. We figure as we&#39;re already not standards
-              compliant, there won&#39;t be a use case where users can&#39;t just implement our specific function.
+           3. We also don't let the user use a custom tokenFallback. We figure as we're already not standards
+              compliant, there won't be a use case where users can't just implement our specific function.
 
-        As such we&#39;ve called the function havvenTokenFallback to be clear that we are not following the standard.
+        As such we've called the function havvenTokenFallback to be clear that we are not following the standard.
         */
 
         // Is the to address a contract? We can check the code size on that address and know.
@@ -1021,17 +1021,17 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
             length := extcodesize(to)
         }
 
-        // If there&#39;s code there, it&#39;s a contract
-        if (length &gt; 0) {
+        // If there's code there, it's a contract
+        if (length > 0) {
             // Now we need to optionally call havvenTokenFallback(address from, uint value).
-            // We can&#39;t call it the normal way because that reverts when the recipient doesn&#39;t implement the function.
-            // We&#39;ll use .call(), which means we need the function selector. We&#39;ve pre-computed
-            // abi.encodeWithSignature(&quot;havvenTokenFallback(address,uint256)&quot;), to save some gas.
+            // We can't call it the normal way because that reverts when the recipient doesn't implement the function.
+            // We'll use .call(), which means we need the function selector. We've pre-computed
+            // abi.encodeWithSignature("havvenTokenFallback(address,uint256)"), to save some gas.
 
             // solium-disable-next-line security/no-low-level-calls
             to.call(0xcbff5d96, messageSender, value);
 
-            // And yes, we specifically don&#39;t care if this call fails, so we&#39;re not checking the return value.
+            // And yes, we specifically don't care if this call fails, so we're not checking the return value.
         }
 
         // Emit a standard ERC20 transfer event
@@ -1065,7 +1065,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
     }
 
     /**
-     * @notice Approves spender to transfer on the message sender&#39;s behalf.
+     * @notice Approves spender to transfer on the message sender's behalf.
      */
     function approve(address spender, uint value)
         public
@@ -1082,19 +1082,19 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable, Reent
     /* ========== EVENTS ========== */
 
     event Transfer(address indexed from, address indexed to, uint value);
-    bytes32 constant TRANSFER_SIG = keccak256(&quot;Transfer(address,address,uint256)&quot;);
+    bytes32 constant TRANSFER_SIG = keccak256("Transfer(address,address,uint256)");
     function emitTransfer(address from, address to, uint value) internal {
         proxy._emit(abi.encode(value), 3, TRANSFER_SIG, bytes32(from), bytes32(to), 0);
     }
 
     event Approval(address indexed owner, address indexed spender, uint value);
-    bytes32 constant APPROVAL_SIG = keccak256(&quot;Approval(address,address,uint256)&quot;);
+    bytes32 constant APPROVAL_SIG = keccak256("Approval(address,address,uint256)");
     function emitApproval(address owner, address spender, uint value) internal {
         proxy._emit(abi.encode(value), 3, APPROVAL_SIG, bytes32(owner), bytes32(spender), 0);
     }
 
     event TokenStateUpdated(address newTokenState);
-    bytes32 constant TOKENSTATEUPDATED_SIG = keccak256(&quot;TokenStateUpdated(address)&quot;);
+    bytes32 constant TOKENSTATEUPDATED_SIG = keccak256("TokenStateUpdated(address)");
     function emitTokenStateUpdated(address newTokenState) internal {
         proxy._emit(abi.encode(newTokenState), 1, TOKENSTATEUPDATED_SIG, 0, 0, 0);
     }
@@ -1156,8 +1156,8 @@ contract FeeToken is ExternStateToken {
     /**
      * @dev Constructor.
      * @param _proxy The proxy associated with this contract.
-     * @param _name Token&#39;s ERC20 name.
-     * @param _symbol Token&#39;s ERC20 symbol.
+     * @param _name Token's ERC20 name.
+     * @param _symbol Token's ERC20 symbol.
      * @param _totalSupply The total supply of the token.
      * @param _transferFeeRate The fee rate to charge on transfers.
      * @param _feeAuthority The address which has the authority to withdraw fees from the accumulated pool.
@@ -1173,7 +1173,7 @@ contract FeeToken is ExternStateToken {
         feeAuthority = _feeAuthority;
 
         /* Constructed transfer fee rate should respect the maximum fee rate. */
-        require(_transferFeeRate &lt;= MAX_TRANSFER_FEE_RATE, &quot;Constructed transfer fee rate should respect the maximum fee rate&quot;);
+        require(_transferFeeRate <= MAX_TRANSFER_FEE_RATE, "Constructed transfer fee rate should respect the maximum fee rate");
         transferFeeRate = _transferFeeRate;
     }
 
@@ -1187,7 +1187,7 @@ contract FeeToken is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(_transferFeeRate &lt;= MAX_TRANSFER_FEE_RATE, &quot;Transfer fee rate must be below MAX_TRANSFER_FEE_RATE&quot;);
+        require(_transferFeeRate <= MAX_TRANSFER_FEE_RATE, "Transfer fee rate must be below MAX_TRANSFER_FEE_RATE");
         transferFeeRate = _transferFeeRate;
         emitTransferFeeRateUpdated(_transferFeeRate);
     }
@@ -1219,7 +1219,7 @@ contract FeeToken is ExternStateToken {
         /* Transfers less than the reciprocal of transferFeeRate should be completely eaten up by fees.
          * This is on the basis that transfers less than this value will result in a nil fee.
          * Probably too insignificant to worry about, but the following code will achieve it.
-         *      if (fee == 0 &amp;&amp; transferFeeRate != 0) {
+         *      if (fee == 0 && transferFeeRate != 0) {
          *          return _value;
          *      }
          *      return fee;
@@ -1271,9 +1271,9 @@ contract FeeToken is ExternStateToken {
         returns (bool)
     {
         /* Disallow transfers to irretrievable-addresses. */
-        require(to != address(0), &quot;Cannot transfer to the 0 address&quot;);
-        require(to != address(this), &quot;Cannot transfer to the underlying contract&quot;);
-        require(to != address(proxy), &quot;Cannot transfer to the proxy contract&quot;);
+        require(to != address(0), "Cannot transfer to the 0 address");
+        require(to != address(this), "Cannot transfer to the underlying contract");
+        require(to != address(proxy), "Cannot transfer to the proxy contract");
 
         /* Insufficient balance will be handled by the safe subtraction. */
         tokenState.setBalanceOf(from, safeSub(tokenState.balanceOf(from), safeAdd(amount, fee)));
@@ -1311,7 +1311,7 @@ contract FeeToken is ExternStateToken {
         uint received = amountReceived(value);
         uint fee = safeSub(value, received);
 
-        /* Reduce the allowance by the amount we&#39;re transferring.
+        /* Reduce the allowance by the amount we're transferring.
          * The safeSub call will handle an insufficient allowance. */
         tokenState.setAllowance(from, sender, safeSub(tokenState.allowance(from, sender), value));
 
@@ -1341,7 +1341,7 @@ contract FeeToken is ExternStateToken {
         uint fee = transferFeeIncurred(value);
         uint total = safeAdd(value, fee);
 
-        /* Reduce the allowance by the amount we&#39;re transferring. */
+        /* Reduce the allowance by the amount we're transferring. */
         tokenState.setAllowance(from, sender, safeSub(tokenState.allowance(from, sender), total));
 
         return _internalTransfer(from, to, value, fee);
@@ -1356,7 +1356,7 @@ contract FeeToken is ExternStateToken {
         onlyFeeAuthority
         returns (bool)
     {
-        require(account != address(0), &quot;Must supply an account address to withdraw fees&quot;);
+        require(account != address(0), "Must supply an account address to withdraw fees");
 
         /* 0-value withdrawals do nothing. */
         if (value == 0) {
@@ -1374,7 +1374,7 @@ contract FeeToken is ExternStateToken {
     }
 
     /**
-     * @notice Donate tokens from the sender&#39;s balance into the fee pool.
+     * @notice Donate tokens from the sender's balance into the fee pool.
      */
     function donateToFeePool(uint n)
         external
@@ -1384,7 +1384,7 @@ contract FeeToken is ExternStateToken {
         address sender = messageSender;
         /* Empty donations are disallowed. */
         uint balance = tokenState.balanceOf(sender);
-        require(balance != 0, &quot;Must have a balance in order to donate to the fee pool&quot;);
+        require(balance != 0, "Must have a balance in order to donate to the fee pool");
 
         /* safeSub ensures the donor has sufficient balance. */
         tokenState.setBalanceOf(sender, safeSub(balance, n));
@@ -1401,7 +1401,7 @@ contract FeeToken is ExternStateToken {
 
     modifier onlyFeeAuthority
     {
-        require(msg.sender == feeAuthority, &quot;Only the fee authority can do this action&quot;);
+        require(msg.sender == feeAuthority, "Only the fee authority can do this action");
         _;
     }
 
@@ -1409,25 +1409,25 @@ contract FeeToken is ExternStateToken {
     /* ========== EVENTS ========== */
 
     event TransferFeeRateUpdated(uint newFeeRate);
-    bytes32 constant TRANSFERFEERATEUPDATED_SIG = keccak256(&quot;TransferFeeRateUpdated(uint256)&quot;);
+    bytes32 constant TRANSFERFEERATEUPDATED_SIG = keccak256("TransferFeeRateUpdated(uint256)");
     function emitTransferFeeRateUpdated(uint newFeeRate) internal {
         proxy._emit(abi.encode(newFeeRate), 1, TRANSFERFEERATEUPDATED_SIG, 0, 0, 0);
     }
 
     event FeeAuthorityUpdated(address newFeeAuthority);
-    bytes32 constant FEEAUTHORITYUPDATED_SIG = keccak256(&quot;FeeAuthorityUpdated(address)&quot;);
+    bytes32 constant FEEAUTHORITYUPDATED_SIG = keccak256("FeeAuthorityUpdated(address)");
     function emitFeeAuthorityUpdated(address newFeeAuthority) internal {
         proxy._emit(abi.encode(newFeeAuthority), 1, FEEAUTHORITYUPDATED_SIG, 0, 0, 0);
     } 
 
     event FeesWithdrawn(address indexed account, uint value);
-    bytes32 constant FEESWITHDRAWN_SIG = keccak256(&quot;FeesWithdrawn(address,uint256)&quot;);
+    bytes32 constant FEESWITHDRAWN_SIG = keccak256("FeesWithdrawn(address,uint256)");
     function emitFeesWithdrawn(address account, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESWITHDRAWN_SIG, bytes32(account), 0, 0);
     }
 
     event FeesDonated(address indexed donor, uint value);
-    bytes32 constant FEESDONATED_SIG = keccak256(&quot;FeesDonated(address,uint256)&quot;);
+    bytes32 constant FEESDONATED_SIG = keccak256("FeesDonated(address,uint256)");
     function emitFeesDonated(address donor, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESDONATED_SIG, bytes32(donor), 0, 0);
     }
@@ -1475,12 +1475,12 @@ contract Nomin is FeeToken {
     Havven public havven;
 
     // Accounts which have lost the privilege to transact in nomins.
-    mapping(address =&gt; bool) public frozen;
+    mapping(address => bool) public frozen;
 
     // Nomin transfers incur a 15 bp fee by default.
     uint constant TRANSFER_FEE_RATE = 15 * UNIT / 10000;
-    string constant TOKEN_NAME = &quot;Nomin USD&quot;;
-    string constant TOKEN_SYMBOL = &quot;nUSD&quot;;
+    string constant TOKEN_NAME = "Nomin USD";
+    string constant TOKEN_SYMBOL = "nUSD";
 
     /* ========== CONSTRUCTOR ========== */
 
@@ -1494,9 +1494,9 @@ contract Nomin is FeeToken {
                  _owner)
         public
     {
-        require(_proxy != 0, &quot;_proxy cannot be 0&quot;);
-        require(address(_havven) != 0, &quot;_havven cannot be 0&quot;);
-        require(_owner != 0, &quot;_owner cannot be 0&quot;);
+        require(_proxy != 0, "_proxy cannot be 0");
+        require(address(_havven) != 0, "_havven cannot be 0");
+        require(_owner != 0, "_owner cannot be 0");
 
         // It should not be possible to transfer to the fee pool directly (or confiscate its balance).
         frozen[FEE_ADDRESS] = true;
@@ -1510,7 +1510,7 @@ contract Nomin is FeeToken {
         optionalProxy_onlyOwner
     {
         // havven should be set as the feeAuthority after calling this depending on
-        // havven&#39;s internal logic
+        // havven's internal logic
         havven = _havven;
         setFeeAuthority(_havven);
         emitHavvenUpdated(_havven);
@@ -1529,7 +1529,7 @@ contract Nomin is FeeToken {
         optionalProxy
         returns (bool)
     {
-        require(!frozen[to], &quot;Cannot transfer to frozen address&quot;);
+        require(!frozen[to], "Cannot transfer to frozen address");
         return _transfer_byProxy(messageSender, to, value);
     }
 
@@ -1540,7 +1540,7 @@ contract Nomin is FeeToken {
         optionalProxy
         returns (bool)
     {
-        require(!frozen[to], &quot;Cannot transfer to frozen address&quot;);
+        require(!frozen[to], "Cannot transfer to frozen address");
         return _transferFrom_byProxy(messageSender, from, to, value);
     }
 
@@ -1549,7 +1549,7 @@ contract Nomin is FeeToken {
         optionalProxy
         returns (bool)
     {
-        require(!frozen[to], &quot;Cannot transfer to frozen address&quot;);
+        require(!frozen[to], "Cannot transfer to frozen address");
         return _transferSenderPaysFee_byProxy(messageSender, to, value);
     }
 
@@ -1558,7 +1558,7 @@ contract Nomin is FeeToken {
         optionalProxy
         returns (bool)
     {
-        require(!frozen[to], &quot;Cannot transfer to frozen address&quot;);
+        require(!frozen[to], "Cannot transfer to frozen address");
         return _transferFromSenderPaysFee_byProxy(messageSender, from, to, value);
     }
 
@@ -1568,7 +1568,7 @@ contract Nomin is FeeToken {
         external
         optionalProxy_onlyOwner
     {
-        require(frozen[target] &amp;&amp; target != FEE_ADDRESS, &quot;Account must be frozen, and cannot be the fee address&quot;);
+        require(frozen[target] && target != FEE_ADDRESS, "Account must be frozen, and cannot be the fee address");
         frozen[target] = false;
         emitAccountUnfrozen(target);
     }
@@ -1600,38 +1600,38 @@ contract Nomin is FeeToken {
     /* ========== MODIFIERS ========== */
 
     modifier onlyHavven() {
-        require(Havven(msg.sender) == havven, &quot;Only the Havven contract can perform this action&quot;);
+        require(Havven(msg.sender) == havven, "Only the Havven contract can perform this action");
         _;
     }
 
     /* ========== EVENTS ========== */
 
     event HavvenUpdated(address newHavven);
-    bytes32 constant HAVVENUPDATED_SIG = keccak256(&quot;HavvenUpdated(address)&quot;);
+    bytes32 constant HAVVENUPDATED_SIG = keccak256("HavvenUpdated(address)");
     function emitHavvenUpdated(address newHavven) internal {
         proxy._emit(abi.encode(newHavven), 1, HAVVENUPDATED_SIG, 0, 0, 0);
     }
 
     event AccountFrozen(address indexed target, uint balance);
-    bytes32 constant ACCOUNTFROZEN_SIG = keccak256(&quot;AccountFrozen(address,uint256)&quot;);
+    bytes32 constant ACCOUNTFROZEN_SIG = keccak256("AccountFrozen(address,uint256)");
     function emitAccountFrozen(address target, uint balance) internal {
         proxy._emit(abi.encode(balance), 2, ACCOUNTFROZEN_SIG, bytes32(target), 0, 0);
     }
 
     event AccountUnfrozen(address indexed target);
-    bytes32 constant ACCOUNTUNFROZEN_SIG = keccak256(&quot;AccountUnfrozen(address)&quot;);
+    bytes32 constant ACCOUNTUNFROZEN_SIG = keccak256("AccountUnfrozen(address)");
     function emitAccountUnfrozen(address target) internal {
         proxy._emit(abi.encode(), 2, ACCOUNTUNFROZEN_SIG, bytes32(target), 0, 0);
     }
 
     event Issued(address indexed account, uint amount);
-    bytes32 constant ISSUED_SIG = keccak256(&quot;Issued(address,uint256)&quot;);
+    bytes32 constant ISSUED_SIG = keccak256("Issued(address,uint256)");
     function emitIssued(address account, uint amount) internal {
         proxy._emit(abi.encode(amount), 2, ISSUED_SIG, bytes32(account), 0, 0);
     }
 
     event Burned(address indexed account, uint amount);
-    bytes32 constant BURNED_SIG = keccak256(&quot;Burned(address,uint256)&quot;);
+    bytes32 constant BURNED_SIG = keccak256("Burned(address,uint256)");
     function emitBurned(address account, uint amount) internal {
         proxy._emit(abi.encode(amount), 2, BURNED_SIG, bytes32(account), 0, 0);
     }
@@ -1681,7 +1681,7 @@ contract LimitedSetup {
 
     modifier onlyDuringSetup
     {
-        require(now &lt; setupExpiryTime, &quot;Can only perform this action during setup&quot;);
+        require(now < setupExpiryTime, "Can only perform this action during setup");
         _;
     }
 }
@@ -1730,10 +1730,10 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
 
     /* Lists of (timestamp, quantity) pairs per account, sorted in ascending time order.
      * These are the times at which each given quantity of havvens vests. */
-    mapping(address =&gt; uint[2][]) public vestingSchedules;
+    mapping(address => uint[2][]) public vestingSchedules;
 
-    /* An account&#39;s total vested havven balance to save recomputing this for fee extraction purposes. */
-    mapping(address =&gt; uint) public totalVestedAccountBalance;
+    /* An account's total vested havven balance to save recomputing this for fee extraction purposes. */
+    mapping(address => uint) public totalVestedAccountBalance;
 
     /* The total remaining vested balance, for verifying the actual havven balance of this contract against. */
     uint public totalVestedBalance;
@@ -1780,7 +1780,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     }
 
     /**
-     * @notice The number of vesting dates in an account&#39;s schedule.
+     * @notice The number of vesting dates in an account's schedule.
      */
     function numVestingEntries(address account)
         public
@@ -1833,7 +1833,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
         returns (uint)
     {
         uint len = numVestingEntries(account);
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             if (getVestingTime(account, i) != 0) {
                 return i;
             }
@@ -1883,7 +1883,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
 
     /**
      * @notice Withdraws a quantity of havvens back to the havven contract.
-     * @dev This may only be called by the owner during the contract&#39;s setup period.
+     * @dev This may only be called by the owner during the contract's setup period.
      */
     function withdrawHavvens(uint quantity)
         external
@@ -1907,14 +1907,14 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     }
 
     /**
-     * @notice Add a new vesting entry at a given time and quantity to an account&#39;s schedule.
+     * @notice Add a new vesting entry at a given time and quantity to an account's schedule.
      * @dev A call to this should be accompanied by either enough balance already available
      * in this contract, or a corresponding call to havven.endow(), to ensure that when
      * the funds are withdrawn, there is enough balance, as well as correctly calculating
      * the fees.
-     * This may only be called by the owner during the contract&#39;s setup period.
+     * This may only be called by the owner during the contract's setup period.
      * Note; although this function could technically be used to produce unbounded
-     * arrays, it&#39;s only in the foundation&#39;s command to add to these lists.
+     * arrays, it's only in the foundation's command to add to these lists.
      * @param account The account to append a new vesting entry to.
      * @param time The absolute unix timestamp after which the vested quantity may be withdrawn.
      * @param quantity The quantity of havvens that will vest.
@@ -1925,23 +1925,23 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
         onlyDuringSetup
     {
         /* No empty or already-passed vesting entries allowed. */
-        require(now &lt; time, &quot;Time must be in the future&quot;);
-        require(quantity != 0, &quot;Quantity cannot be zero&quot;);
+        require(now < time, "Time must be in the future");
+        require(quantity != 0, "Quantity cannot be zero");
 
         /* There must be enough balance in the contract to provide for the vesting entry. */
         totalVestedBalance = safeAdd(totalVestedBalance, quantity);
-        require(totalVestedBalance &lt;= havven.balanceOf(this), &quot;Must be enough balance in the contract to provide for the vesting entry&quot;);
+        require(totalVestedBalance <= havven.balanceOf(this), "Must be enough balance in the contract to provide for the vesting entry");
 
         /* Disallow arbitrarily long vesting schedules in light of the gas limit. */
         uint scheduleLength = vestingSchedules[account].length;
-        require(scheduleLength &lt;= MAX_VESTING_ENTRIES, &quot;Vesting schedule is too long&quot;);
+        require(scheduleLength <= MAX_VESTING_ENTRIES, "Vesting schedule is too long");
 
         if (scheduleLength == 0) {
             totalVestedAccountBalance[account] = quantity;
         } else {
             /* Disallow adding new vested havvens earlier than the last one.
              * Since entries are only appended, this means that no vesting date can be repeated. */
-            require(getVestingTime(account, numVestingEntries(account) - 1) &lt; time, &quot;Cannot add new vested entries earlier than the last one&quot;);
+            require(getVestingTime(account, numVestingEntries(account) - 1) < time, "Cannot add new vested entries earlier than the last one");
             totalVestedAccountBalance[account] = safeAdd(totalVestedAccountBalance[account], quantity);
         }
 
@@ -1953,14 +1953,14 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
      * over a series of intervals.
      * @dev Assumes that the quantities are nonzero
      * and that the sequence of timestamps is strictly increasing.
-     * This may only be called by the owner during the contract&#39;s setup period.
+     * This may only be called by the owner during the contract's setup period.
      */
     function addVestingSchedule(address account, uint[] times, uint[] quantities)
         external
         onlyOwner
         onlyDuringSetup
     {
-        for (uint i = 0; i &lt; times.length; i++) {
+        for (uint i = 0; i < times.length; i++) {
             appendVestingEntry(account, times[i], quantities[i]);
         }
 
@@ -1974,10 +1974,10 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     {
         uint numEntries = numVestingEntries(msg.sender);
         uint total;
-        for (uint i = 0; i &lt; numEntries; i++) {
+        for (uint i = 0; i < numEntries; i++) {
             uint time = getVestingTime(msg.sender, i);
             /* The list is sorted; when we reach the first future time, bail out. */
-            if (time &gt; now) {
+            if (time > now) {
                 break;
             }
             uint qty = getVestingQuantity(msg.sender, i);
@@ -2038,7 +2038,7 @@ the next period.
 
 The fee entitlement of a havven holder is proportional to their average
 issued nomin balance over the last fee period. This is computed by
-measuring the area under the graph of a user&#39;s issued nomin balance over
+measuring the area under the graph of a user's issued nomin balance over
 time, and then when a new fee period begins, dividing through by the
 duration of the fee period.
 
@@ -2050,7 +2050,7 @@ A havven holder pays for his own recomputation whenever he wants to change
 his position, which saves the foundation having to maintain a pot dedicated
 to resourcing this.
 
-A hypothetical user&#39;s balance history over one fee period, pictorially:
+A hypothetical user's balance history over one fee period, pictorially:
 
       s ____
        |    |
@@ -2074,9 +2074,9 @@ recipient.
 Note that a transfer keeps global supply of havvens invariant.
 The sum of all balances is constant, and unmodified by any transfer.
 So the sum of all balances multiplied by the duration of a fee period is also
-constant, and this is equivalent to the sum of the area of every user&#39;s
+constant, and this is equivalent to the sum of the area of every user's
 time/balance graph. Dividing through by that duration yields back the total
-havven supply. So, at the end of a fee period, we really do yield a user&#39;s
+havven supply. So, at the end of a fee period, we really do yield a user's
 average share in the havven supply over that period.
 
 A slight wrinkle is introduced if we consider the time r when the fee period
@@ -2142,14 +2142,14 @@ contract Havven is ExternStateToken {
         /* Sums of balances*duration in the current fee period.
         /* range: decimals; units: havven-seconds */
         uint currentBalanceSum;
-        /* The last period&#39;s average balance */
+        /* The last period's average balance */
         uint lastAverageBalance;
         /* The last time the data was calculated */
         uint lastModified;
     }
 
     /* Issued nomin balances for individual fee entitlements */
-    mapping(address =&gt; IssuanceData) public issuanceData;
+    mapping(address => IssuanceData) public issuanceData;
     /* The total number of issued nomins for determining fee entitlements */
     IssuanceData public totalIssuanceData;
 
@@ -2172,7 +2172,7 @@ contract Havven is ExternStateToken {
     uint public lastFeesCollected;
 
     /* Whether a user has withdrawn their last fees */
-    mapping(address =&gt; bool) public hasWithdrawnFees;
+    mapping(address => bool) public hasWithdrawnFees;
 
     Nomin public nomin;
     HavvenEscrow public escrow;
@@ -2193,14 +2193,14 @@ contract Havven is ExternStateToken {
     uint constant MAX_ISSUANCE_RATIO = UNIT;
 
     /* Whether the address can issue nomins or not. */
-    mapping(address =&gt; bool) public isIssuer;
+    mapping(address => bool) public isIssuer;
     /* The number of currently-outstanding nomins the user has issued. */
-    mapping(address =&gt; uint) public nominsIssued;
+    mapping(address => uint) public nominsIssued;
 
     uint constant HAVVEN_SUPPLY = 1e8 * UNIT;
     uint constant ORACLE_FUTURE_LIMIT = 10 minutes;
-    string constant TOKEN_NAME = &quot;Havven&quot;;
-    string constant TOKEN_SYMBOL = &quot;HAV&quot;;
+    string constant TOKEN_NAME = "Havven";
+    string constant TOKEN_SYMBOL = "HAV";
     
     /* ========== CONSTRUCTOR ========== */
 
@@ -2223,7 +2223,7 @@ contract Havven is ExternStateToken {
         if (_oldHavven == address(0)) {
             feePeriodStartTime = now;
             lastFeePeriodStartTime = now - feePeriodDuration;
-            for (i = 0; i &lt; _issuers.length; i++) {
+            for (i = 0; i < _issuers.length; i++) {
                 isIssuer[_issuers[i]] = true;
             }
         } else {
@@ -2238,7 +2238,7 @@ contract Havven is ExternStateToken {
             totalIssuanceData.lastAverageBalance = lab;
             totalIssuanceData.lastModified = lm;
 
-            for (i = 0; i &lt; _issuers.length; i++) {
+            for (i = 0; i < _issuers.length; i++) {
                 address issuer = _issuers[i];
                 isIssuer[issuer] = true;
                 uint nomins = _oldHavven.nominsIssued(issuer);
@@ -2293,8 +2293,8 @@ contract Havven is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(MIN_FEE_PERIOD_DURATION &lt;= duration &amp;&amp; duration &lt;= MAX_FEE_PERIOD_DURATION,
-            &quot;Duration must be between MIN_FEE_PERIOD_DURATION and MAX_FEE_PERIOD_DURATION&quot;);
+        require(MIN_FEE_PERIOD_DURATION <= duration && duration <= MAX_FEE_PERIOD_DURATION,
+            "Duration must be between MIN_FEE_PERIOD_DURATION and MAX_FEE_PERIOD_DURATION");
         feePeriodDuration = duration;
         emitFeePeriodDurationUpdated(duration);
         rolloverFeePeriodIfElapsed();
@@ -2330,7 +2330,7 @@ contract Havven is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(_issuanceRatio &lt;= MAX_ISSUANCE_RATIO, &quot;New issuance ratio must be less than or equal to MAX_ISSUANCE_RATIO&quot;);
+        require(_issuanceRatio <= MAX_ISSUANCE_RATIO, "New issuance ratio must be less than or equal to MAX_ISSUANCE_RATIO");
         issuanceRatio = _issuanceRatio;
         emitIssuanceRatioUpdated(_issuanceRatio);
     }
@@ -2407,7 +2407,7 @@ contract Havven is ExternStateToken {
         returns (bool)
     {
         address sender = messageSender;
-        require(nominsIssued[sender] == 0 || value &lt;= transferableHavvens(sender), &quot;Value to transfer exceeds available havvens&quot;);
+        require(nominsIssued[sender] == 0 || value <= transferableHavvens(sender), "Value to transfer exceeds available havvens");
         /* Perform the transfer: if there is a problem,
          * an exception will be thrown in this call. */
         _transfer_byProxy(sender, to, value);
@@ -2424,7 +2424,7 @@ contract Havven is ExternStateToken {
         returns (bool)
     {
         address sender = messageSender;
-        require(nominsIssued[from] == 0 || value &lt;= transferableHavvens(from), &quot;Value to transfer exceeds available havvens&quot;);
+        require(nominsIssued[from] == 0 || value <= transferableHavvens(from), "Value to transfer exceeds available havvens");
         /* Perform the transfer: if there is a problem,
          * an exception will be thrown in this call. */
         _transferFrom_byProxy(sender, from, to, value);
@@ -2433,7 +2433,7 @@ contract Havven is ExternStateToken {
     }
 
     /**
-     * @notice Compute the last period&#39;s fee entitlement for the message sender
+     * @notice Compute the last period's fee entitlement for the message sender
      * and then deposit it into their nomin account.
      */
     function withdrawFees()
@@ -2443,20 +2443,20 @@ contract Havven is ExternStateToken {
         address sender = messageSender;
         rolloverFeePeriodIfElapsed();
         /* Do not deposit fees into frozen accounts. */
-        require(!nomin.frozen(sender), &quot;Cannot deposit fees into frozen accounts&quot;);
+        require(!nomin.frozen(sender), "Cannot deposit fees into frozen accounts");
 
         /* Check the period has rolled over first. */
         updateIssuanceData(sender, nominsIssued[sender], nomin.totalSupply());
 
         /* Only allow accounts to withdraw fees once per period. */
-        require(!hasWithdrawnFees[sender], &quot;Fees have already been withdrawn in this period&quot;);
+        require(!hasWithdrawnFees[sender], "Fees have already been withdrawn in this period");
 
         uint feesOwed;
         uint lastTotalIssued = totalIssuanceData.lastAverageBalance;
 
-        if (lastTotalIssued &gt; 0) {
-            /* Sender receives a share of last period&#39;s collected fees proportional
-             * with their average fraction of the last period&#39;s issued nomins. */
+        if (lastTotalIssued > 0) {
+            /* Sender receives a share of last period's collected fees proportional
+             * with their average fraction of the last period's issued nomins. */
             feesOwed = safeDiv_dec(
                 safeMul_dec(issuanceData[sender].lastAverageBalance, lastFeesCollected),
                 lastTotalIssued
@@ -2484,7 +2484,7 @@ contract Havven is ExternStateToken {
         /* update the total balances first */
         totalIssuanceData = computeIssuanceData(lastTotalSupply, totalIssuanceData);
 
-        if (issuanceData[account].lastModified &lt; feePeriodStartTime) {
+        if (issuanceData[account].lastModified < feePeriodStartTime) {
             hasWithdrawnFees[account] = false;
         }
 
@@ -2505,14 +2505,14 @@ contract Havven is ExternStateToken {
         uint lastAverageBalance = preIssuance.lastAverageBalance;
         uint lastModified = preIssuance.lastModified;
 
-        if (lastModified &lt; feePeriodStartTime) {
-            if (lastModified &lt; lastFeePeriodStartTime) {
+        if (lastModified < feePeriodStartTime) {
+            if (lastModified < lastFeePeriodStartTime) {
                 /* The balance was last updated before the previous fee period, so the average
                  * balance in this period is their pre-transfer balance. */
                 lastAverageBalance = preBalance;
             } else {
                 /* The balance was last updated during the previous fee period. */
-                /* No overflow or zero denominator problems, since lastFeePeriodStartTime &lt; feePeriodStartTime &lt; lastModified. 
+                /* No overflow or zero denominator problems, since lastFeePeriodStartTime < feePeriodStartTime < lastModified. 
                  * implies these quantities are strictly positive. */
                 uint timeUpToRollover = feePeriodStartTime - lastModified;
                 uint lastFeePeriodDuration = feePeriodStartTime - lastFeePeriodStartTime;
@@ -2533,7 +2533,7 @@ contract Havven is ExternStateToken {
     }
 
     /**
-     * @notice Recompute and return the given account&#39;s last average balance.
+     * @notice Recompute and return the given account's last average balance.
      */
     function recomputeLastAverageBalance(address account)
         external
@@ -2544,8 +2544,8 @@ contract Havven is ExternStateToken {
     }
 
     /**
-     * @notice Issue nomins against the sender&#39;s havvens.
-     * @dev Issuance is only allowed if the havven price isn&#39;t stale and the sender is an issuer.
+     * @notice Issue nomins against the sender's havvens.
+     * @dev Issuance is only allowed if the havven price isn't stale and the sender is an issuer.
      */
     function issueNomins(uint amount)
         public
@@ -2554,7 +2554,7 @@ contract Havven is ExternStateToken {
         /* No need to check if price is stale, as it is checked in issuableNomins. */
     {
         address sender = messageSender;
-        require(amount &lt;= remainingIssuableNomins(sender), &quot;Amount must be less than or equal to remaining issuable nomins&quot;);
+        require(amount <= remainingIssuableNomins(sender), "Amount must be less than or equal to remaining issuable nomins");
         uint lastTot = nomin.totalSupply();
         uint preIssued = nominsIssued[sender];
         nomin.issue(sender, amount);
@@ -2573,7 +2573,7 @@ contract Havven is ExternStateToken {
      * @notice Burn nomins to clear issued nomins/free havvens.
      */
     function burnNomins(uint amount)
-        /* it doesn&#39;t matter if the price is stale or if the user is an issuer, as non-issuers have issued no nomins.*/
+        /* it doesn't matter if the price is stale or if the user is an issuer, as non-issuers have issued no nomins.*/
         external
         optionalProxy
     {
@@ -2583,7 +2583,7 @@ contract Havven is ExternStateToken {
         uint preIssued = nominsIssued[sender];
         /* nomin.burn does a safeSub on balance (so it will revert if there are not enough nomins). */
         nomin.burn(sender, amount);
-        /* This safe sub ensures amount &lt;= number issued */
+        /* This safe sub ensures amount <= number issued */
         nominsIssued[sender] = safeSub(preIssued, amount);
         updateIssuanceData(sender, preIssued, lastTot);
     }
@@ -2596,7 +2596,7 @@ contract Havven is ExternStateToken {
         public
     {
         /* If the fee period has rolled over... */
-        if (now &gt;= feePeriodStartTime + feePeriodDuration) {
+        if (now >= feePeriodStartTime + feePeriodDuration) {
             lastFeesCollected = nomin.feePool();
             lastFeePeriodStartTime = feePeriodStartTime;
             feePeriodStartTime = now;
@@ -2637,7 +2637,7 @@ contract Havven is ExternStateToken {
     {
         uint issued = nominsIssued[issuer];
         uint max = maxIssuableNomins(issuer);
-        if (issued &gt; max) {
+        if (issued > max) {
             return 0;
         } else {
             return safeSub(max, issued);
@@ -2663,7 +2663,7 @@ contract Havven is ExternStateToken {
     }
 
     /**
-     * @notice The collateral that would be locked by issuance, which can exceed the account&#39;s actual collateral.
+     * @notice The collateral that would be locked by issuance, which can exceed the account's actual collateral.
      */
     function issuanceDraft(address account)
         public
@@ -2679,7 +2679,7 @@ contract Havven is ExternStateToken {
 
     /**
      * @notice Collateral that has been locked due to issuance, and cannot be
-     * transferred to other addresses. This is capped at the account&#39;s total collateral.
+     * transferred to other addresses. This is capped at the account's total collateral.
      */
     function lockedCollateral(address account)
         public
@@ -2688,7 +2688,7 @@ contract Havven is ExternStateToken {
     {
         uint debt = issuanceDraft(account);
         uint collat = collateral(account);
-        if (debt &gt; collat) {
+        if (debt > collat) {
             return collat;
         }
         return debt;
@@ -2722,17 +2722,17 @@ contract Havven is ExternStateToken {
         uint draft = issuanceDraft(account);
         uint collat = collateral(account);
         // In the case where the issuanceDraft exceeds the collateral, nothing is free
-        if (draft &gt; collat) {
+        if (draft > collat) {
             return 0;
         }
 
         uint bal = balanceOf(account);
         // In the case where the draft exceeds the escrow, but not the whole collateral
         //   return the fraction of the balance that remains free
-        if (draft &gt; safeSub(collat, bal)) {
+        if (draft > safeSub(collat, bal)) {
             return safeSub(collat, draft);
         }
-        // In the case where the draft doesn&#39;t exceed the escrow, return the entire balance
+        // In the case where the draft doesn't exceed the escrow, return the entire balance
         return bal;
     }
 
@@ -2768,9 +2768,9 @@ contract Havven is ExternStateToken {
         onlyOracle  /* Should be callable only by the oracle. */
     {
         /* Must be the most recently sent price, but not too far in the future.
-         * (so we can&#39;t lock ourselves out of updating the oracle for longer than this) */
-        require(lastPriceUpdateTime &lt; timeSent &amp;&amp; timeSent &lt; now + ORACLE_FUTURE_LIMIT,
-            &quot;Time sent must be bigger than the last update, and must be less than now + ORACLE_FUTURE_LIMIT&quot;);
+         * (so we can't lock ourselves out of updating the oracle for longer than this) */
+        require(lastPriceUpdateTime < timeSent && timeSent < now + ORACLE_FUTURE_LIMIT,
+            "Time sent must be bigger than the last update, and must be less than now + ORACLE_FUTURE_LIMIT");
 
         price = newPrice;
         lastPriceUpdateTime = timeSent;
@@ -2781,88 +2781,88 @@ contract Havven is ExternStateToken {
     }
 
     /**
-     * @notice Check if the price of havvens hasn&#39;t been updated for longer than the stale period.
+     * @notice Check if the price of havvens hasn't been updated for longer than the stale period.
      */
     function priceIsStale()
         public
         view
         returns (bool)
     {
-        return safeAdd(lastPriceUpdateTime, priceStalePeriod) &lt; now;
+        return safeAdd(lastPriceUpdateTime, priceStalePeriod) < now;
     }
 
     /* ========== MODIFIERS ========== */
 
     modifier requireIssuer(address account)
     {
-        require(isIssuer[account], &quot;Must be issuer to perform this action&quot;);
+        require(isIssuer[account], "Must be issuer to perform this action");
         _;
     }
 
     modifier onlyOracle
     {
-        require(msg.sender == oracle, &quot;Must be oracle to perform this action&quot;);
+        require(msg.sender == oracle, "Must be oracle to perform this action");
         _;
     }
 
     modifier priceNotStale
     {
-        require(!priceIsStale(), &quot;Price must not be stale to perform this action&quot;);
+        require(!priceIsStale(), "Price must not be stale to perform this action");
         _;
     }
 
     /* ========== EVENTS ========== */
 
     event PriceUpdated(uint newPrice, uint timestamp);
-    bytes32 constant PRICEUPDATED_SIG = keccak256(&quot;PriceUpdated(uint256,uint256)&quot;);
+    bytes32 constant PRICEUPDATED_SIG = keccak256("PriceUpdated(uint256,uint256)");
     function emitPriceUpdated(uint newPrice, uint timestamp) internal {
         proxy._emit(abi.encode(newPrice, timestamp), 1, PRICEUPDATED_SIG, 0, 0, 0);
     }
 
     event IssuanceRatioUpdated(uint newRatio);
-    bytes32 constant ISSUANCERATIOUPDATED_SIG = keccak256(&quot;IssuanceRatioUpdated(uint256)&quot;);
+    bytes32 constant ISSUANCERATIOUPDATED_SIG = keccak256("IssuanceRatioUpdated(uint256)");
     function emitIssuanceRatioUpdated(uint newRatio) internal {
         proxy._emit(abi.encode(newRatio), 1, ISSUANCERATIOUPDATED_SIG, 0, 0, 0);
     }
 
     event FeePeriodRollover(uint timestamp);
-    bytes32 constant FEEPERIODROLLOVER_SIG = keccak256(&quot;FeePeriodRollover(uint256)&quot;);
+    bytes32 constant FEEPERIODROLLOVER_SIG = keccak256("FeePeriodRollover(uint256)");
     function emitFeePeriodRollover(uint timestamp) internal {
         proxy._emit(abi.encode(timestamp), 1, FEEPERIODROLLOVER_SIG, 0, 0, 0);
     } 
 
     event FeePeriodDurationUpdated(uint duration);
-    bytes32 constant FEEPERIODDURATIONUPDATED_SIG = keccak256(&quot;FeePeriodDurationUpdated(uint256)&quot;);
+    bytes32 constant FEEPERIODDURATIONUPDATED_SIG = keccak256("FeePeriodDurationUpdated(uint256)");
     function emitFeePeriodDurationUpdated(uint duration) internal {
         proxy._emit(abi.encode(duration), 1, FEEPERIODDURATIONUPDATED_SIG, 0, 0, 0);
     } 
 
     event FeesWithdrawn(address indexed account, uint value);
-    bytes32 constant FEESWITHDRAWN_SIG = keccak256(&quot;FeesWithdrawn(address,uint256)&quot;);
+    bytes32 constant FEESWITHDRAWN_SIG = keccak256("FeesWithdrawn(address,uint256)");
     function emitFeesWithdrawn(address account, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESWITHDRAWN_SIG, bytes32(account), 0, 0);
     }
 
     event OracleUpdated(address newOracle);
-    bytes32 constant ORACLEUPDATED_SIG = keccak256(&quot;OracleUpdated(address)&quot;);
+    bytes32 constant ORACLEUPDATED_SIG = keccak256("OracleUpdated(address)");
     function emitOracleUpdated(address newOracle) internal {
         proxy._emit(abi.encode(newOracle), 1, ORACLEUPDATED_SIG, 0, 0, 0);
     }
 
     event NominUpdated(address newNomin);
-    bytes32 constant NOMINUPDATED_SIG = keccak256(&quot;NominUpdated(address)&quot;);
+    bytes32 constant NOMINUPDATED_SIG = keccak256("NominUpdated(address)");
     function emitNominUpdated(address newNomin) internal {
         proxy._emit(abi.encode(newNomin), 1, NOMINUPDATED_SIG, 0, 0, 0);
     }
 
     event EscrowUpdated(address newEscrow);
-    bytes32 constant ESCROWUPDATED_SIG = keccak256(&quot;EscrowUpdated(address)&quot;);
+    bytes32 constant ESCROWUPDATED_SIG = keccak256("EscrowUpdated(address)");
     function emitEscrowUpdated(address newEscrow) internal {
         proxy._emit(abi.encode(newEscrow), 1, ESCROWUPDATED_SIG, 0, 0, 0);
     }
 
     event IssuersUpdated(address indexed account, bool indexed value);
-    bytes32 constant ISSUERSUPDATED_SIG = keccak256(&quot;IssuersUpdated(address,bool)&quot;);
+    bytes32 constant ISSUERSUPDATED_SIG = keccak256("IssuersUpdated(address,bool)");
     function emitIssuersUpdated(address account, bool value) internal {
         proxy._emit(abi.encode(), 3, ISSUERSUPDATED_SIG, bytes32(account), bytes32(value ? 1 : 0), 0);
     }
@@ -2935,8 +2935,8 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
      * @dev Constructor
      * @param _owner The owner of this contract.
      * @param _fundsWallet The recipient of ETH and Nomins that are sent to this contract while exchanging.
-     * @param _havven The Havven contract we&#39;ll interact with for balances and sending.
-     * @param _nomin The Nomin contract we&#39;ll interact with for balances and sending.
+     * @param _havven The Havven contract we'll interact with for balances and sending.
+     * @param _nomin The Nomin contract we'll interact with for balances and sending.
      * @param _oracle The address which is able to update price information.
      * @param _usdToEthPrice The current price of ETH in USD, expressed in UNIT.
      * @param _usdToHavPrice The current price of Havven in USD, expressed in UNIT.
@@ -3038,16 +3038,16 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
      * @notice Access point for the oracle to update the prices of havvens / eth.
      * @param newEthPrice The current price of ether in USD, specified to 18 decimal places.
      * @param newHavvenPrice The current price of havvens in USD, specified to 18 decimal places.
-     * @param timeSent The timestamp from the oracle when the transaction was created. This ensures we don&#39;t consider stale prices as current in times of heavy network congestion.
+     * @param timeSent The timestamp from the oracle when the transaction was created. This ensures we don't consider stale prices as current in times of heavy network congestion.
      */
     function updatePrices(uint newEthPrice, uint newHavvenPrice, uint timeSent)
         external
         onlyOracle
     {
         /* Must be the most recently sent price, but not too far in the future.
-         * (so we can&#39;t lock ourselves out of updating the oracle for longer than this) */
-        require(lastPriceUpdateTime &lt; timeSent &amp;&amp; timeSent &lt; now + ORACLE_FUTURE_LIMIT, 
-            &quot;Time sent must be bigger than the last update, and must be less than now + ORACLE_FUTURE_LIMIT&quot;);
+         * (so we can't lock ourselves out of updating the oracle for longer than this) */
+        require(lastPriceUpdateTime < timeSent && timeSent < now + ORACLE_FUTURE_LIMIT, 
+            "Time sent must be bigger than the last update, and must be less than now + ORACLE_FUTURE_LIMIT");
 
         usdToEthPrice = newEthPrice;
         usdToHavPrice = newHavvenPrice;
@@ -3089,7 +3089,7 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
         //       automatically deducted and sent to the fee pool.
         nomin.transfer(msg.sender, requestedToPurchase);
 
-        emit Exchange(&quot;ETH&quot;, msg.value, &quot;nUSD&quot;, requestedToPurchase);
+        emit Exchange("ETH", msg.value, "nUSD", requestedToPurchase);
 
         return requestedToPurchase;
     }
@@ -3131,7 +3131,7 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
         // And send them the Havvens.
         havven.transfer(msg.sender, havvensToSend);
 
-        emit Exchange(&quot;ETH&quot;, msg.value, &quot;HAV&quot;, havvensToSend);
+        emit Exchange("ETH", msg.value, "HAV", havvensToSend);
 
         return havvensToSend;
     }
@@ -3175,7 +3175,7 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
         // And send them the Havvens.
         havven.transfer(msg.sender, havvensToSend);
 
-        emit Exchange(&quot;nUSD&quot;, nominAmount, &quot;HAV&quot;, havvensToSend);
+        emit Exchange("nUSD", nominAmount, "HAV", havvensToSend);
 
         return havvensToSend; 
     }
@@ -3207,7 +3207,7 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
     {
         havven.transfer(owner, amount);
         
-        // We don&#39;t emit our own events here because we assume that anyone
+        // We don't emit our own events here because we assume that anyone
         // who wants to watch what the Issuance Controller is doing can
         // just watch ERC20 events from the Nomin and/or Havven contracts
         // filtered to our address.
@@ -3223,7 +3223,7 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
     {
         nomin.transfer(owner, amount);
         
-        // We don&#39;t emit our own events here because we assume that anyone
+        // We don't emit our own events here because we assume that anyone
         // who wants to watch what the Issuance Controller is doing can
         // just watch ERC20 events from the Nomin and/or Havven contracts
         // filtered to our address.
@@ -3231,14 +3231,14 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
 
     /* ========== VIEWS ========== */
     /**
-     * @notice Check if the prices haven&#39;t been updated for longer than the stale period.
+     * @notice Check if the prices haven't been updated for longer than the stale period.
      */
     function pricesAreStale()
         public
         view
         returns (bool)
     {
-        return safeAdd(lastPriceUpdateTime, priceStalePeriod) &lt; now;
+        return safeAdd(lastPriceUpdateTime, priceStalePeriod) < now;
     }
 
     /**
@@ -3296,13 +3296,13 @@ contract IssuanceController is SafeDecimalMath, SelfDestructible, Pausable {
 
     modifier onlyOracle
     {
-        require(msg.sender == oracle, &quot;Must be oracle to perform this action&quot;);
+        require(msg.sender == oracle, "Must be oracle to perform this action");
         _;
     }
 
     modifier pricesNotStale
     {
-        require(!pricesAreStale(), &quot;Prices must not be stale to perform this action&quot;);
+        require(!pricesAreStale(), "Prices must not be stale to perform this action");
         _;
     }
 

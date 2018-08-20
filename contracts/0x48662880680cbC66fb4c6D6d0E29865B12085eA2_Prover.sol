@@ -8,13 +8,13 @@ contract Prover {
     // storage vars
     address owner;
     Sets.addressSet internal users;
-    mapping (address =&gt; UserAccount) internal ledger;
+    mapping (address => UserAccount) internal ledger;
     
     
     // structs
     struct UserAccount {
         Sets.bytes32Set hashes;
-        mapping (bytes32 =&gt; Entry) entries;
+        mapping (bytes32 => Entry) entries;
     }
 
     struct Entry {
@@ -37,7 +37,7 @@ contract Prover {
 
     // modifier to check if sender has an account
     modifier hasAccount() {
-        assert(ledger[msg.sender].hashes.length() &gt;= 1);
+        assert(ledger[msg.sender].hashes.length() >= 1);
         _;
     }
 
@@ -89,7 +89,7 @@ contract Prover {
     
     // allow owner to delete contract if no accounts exist
     function selfDestruct() {
-        if ((msg.sender == owner) &amp;&amp; (users.length() == 0)) {
+        if ((msg.sender == owner) && (users.length() == 0)) {
             selfdestruct(owner);
         }
     }
@@ -97,7 +97,7 @@ contract Prover {
 
     // internal functions
     function _addEntry(bytes32 dataHash) internal {
-        // ensure the entry doesn&#39;t exist
+        // ensure the entry doesn't exist
         assert(!ledger[msg.sender].hashes.contains(dataHash));
         // update UserAccount (hashes then entries)
         ledger[msg.sender].hashes.insert(dataHash);
@@ -114,10 +114,10 @@ contract Prover {
         ledger[msg.sender].hashes.remove(dataHash);
         delete ledger[msg.sender].entries[dataHash];
         // send the rebate
-        if (rebate &gt; 0) {
+        if (rebate > 0) {
             msg.sender.transfer(rebate);
         }
-        // delete from userlist if this was the user&#39;s last entry
+        // delete from userlist if this was the user's last entry
         if (ledger[msg.sender].hashes.length() == 0) {
             users.remove(msg.sender);
         }
@@ -138,8 +138,8 @@ library Sets {
     // address set
     struct addressSet {
         address[] members;
-        mapping (address =&gt; bool) memberExists;
-        mapping (address =&gt; uint) memberIndex;
+        mapping (address => bool) memberExists;
+        mapping (address => uint) memberIndex;
     }
 
     function insert(addressSet storage self, address other) {
@@ -174,8 +174,8 @@ library Sets {
     // uint set
     struct uintSet {
         uint[] members;
-        mapping (uint =&gt; bool) memberExists;
-        mapping (uint =&gt; uint) memberIndex;
+        mapping (uint => bool) memberExists;
+        mapping (uint => uint) memberIndex;
     }
 
     function insert(uintSet storage self, uint other) {
@@ -210,8 +210,8 @@ library Sets {
     // uint8 set
     struct uint8Set {
         uint8[] members;
-        mapping (uint8 =&gt; bool) memberExists;
-        mapping (uint8 =&gt; uint) memberIndex;
+        mapping (uint8 => bool) memberExists;
+        mapping (uint8 => uint) memberIndex;
     }
 
     function insert(uint8Set storage self, uint8 other) {
@@ -246,8 +246,8 @@ library Sets {
     // int set
     struct intSet {
         int[] members;
-        mapping (int =&gt; bool) memberExists;
-        mapping (int =&gt; uint) memberIndex;
+        mapping (int => bool) memberExists;
+        mapping (int => uint) memberIndex;
     }
 
     function insert(intSet storage self, int other) {
@@ -282,8 +282,8 @@ library Sets {
     // int8 set
     struct int8Set {
         int8[] members;
-        mapping (int8 =&gt; bool) memberExists;
-        mapping (int8 =&gt; uint) memberIndex;
+        mapping (int8 => bool) memberExists;
+        mapping (int8 => uint) memberIndex;
     }
 
     function insert(int8Set storage self, int8 other) {
@@ -318,8 +318,8 @@ library Sets {
     // byte set
     struct byteSet {
         byte[] members;
-        mapping (byte =&gt; bool) memberExists;
-        mapping (byte =&gt; uint) memberIndex;
+        mapping (byte => bool) memberExists;
+        mapping (byte => uint) memberIndex;
     }
 
     function insert(byteSet storage self, byte other) {
@@ -354,8 +354,8 @@ library Sets {
     // bytes32 set
     struct bytes32Set {
         bytes32[] members;
-        mapping (bytes32 =&gt; bool) memberExists;
-        mapping (bytes32 =&gt; uint) memberIndex;
+        mapping (bytes32 => bool) memberExists;
+        mapping (bytes32 => uint) memberIndex;
     }
 
     function insert(bytes32Set storage self, bytes32 other) {

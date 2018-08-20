@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -115,14 +115,14 @@ contract Token {
 contract FFC is Token, Owned {
     using SafeMath for uint256;
 
-    string public constant name    = &quot;Free Fair Chain Token&quot;;  //The Token&#39;s name
+    string public constant name    = "Free Fair Chain Token";  //The Token's name
     uint8 public constant decimals = 18;               //Number of decimals of the smallest unit
-    string public constant symbol  = &quot;FFC&quot;;            //An identifier    
+    string public constant symbol  = "FFC";            //An identifier    
 
     // packed to 256bit to save gas usage.
     struct Supplies {
-        // uint128&#39;s max value is about 3e38.
-        // it&#39;s enough to present amount of tokens
+        // uint128's max value is about 3e38.
+        // it's enough to present amount of tokens
         uint128 total;
     }
 
@@ -130,18 +130,18 @@ contract FFC is Token, Owned {
 
     // Packed to 256bit to save gas usage.    
     struct Account {
-        // uint112&#39;s max value is about 5e33.
-        // it&#39;s enough to present amount of tokens
+        // uint112's max value is about 5e33.
+        // it's enough to present amount of tokens
         uint112 balance;
         // safe to store timestamp
         uint32 lastMintedTimestamp;
     }
 
     // Balances for each account
-    mapping(address =&gt; Account) accounts;
+    mapping(address => Account) accounts;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
 	// 
@@ -177,12 +177,12 @@ contract FFC is Token, Owned {
         return accounts[_owner].balance;
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)public returns (bool success) {
         require(isSealed());
 		
-        // according to FFC&#39;s total supply, never overflow here
-        if ( accounts[msg.sender].balance &gt;= _amount &amp;&amp; _amount &gt; 0) {            
+        // according to FFC's total supply, never overflow here
+        if ( accounts[msg.sender].balance >= _amount && _amount > 0) {            
             accounts[msg.sender].balance -= uint112(_amount);
             accounts[_to].balance = _amount.add(accounts[_to].balance).toUINT112();
             emit Transfer(msg.sender, _to, _amount);
@@ -194,7 +194,7 @@ contract FFC is Token, Owned {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -205,10 +205,10 @@ contract FFC is Token, Owned {
     )public returns (bool success) {
         require(isSealed());
 
-        // according to FFC&#39;s total supply, never overflow here
-        if (accounts[_from].balance &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        // according to FFC's total supply, never overflow here
+        if (accounts[_from].balance >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
             accounts[_from].balance -= uint112(_amount);
             allowed[_from][msg.sender] -= _amount;
             accounts[_to].balance = _amount.add(accounts[_to].balance).toUINT112();
@@ -232,10 +232,10 @@ contract FFC is Token, Owned {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        //if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        //if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         ApprovalReceiver(_spender).receiveApproval(msg.sender, _value, this, _extraData);
         return true;
     }

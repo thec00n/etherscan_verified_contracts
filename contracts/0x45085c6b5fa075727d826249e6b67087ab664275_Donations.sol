@@ -12,7 +12,7 @@ contract Donations {
         uint256 Target;
         uint256 Current;
     }
-    mapping(uint16 =&gt; Project) public projects;
+    mapping(uint16 => Project) public projects;
     address owner;
     uint8 public projectsCount;
     
@@ -30,8 +30,8 @@ contract Donations {
     
     uint256 private toDistribute;
     uint256 private toDistributeHorse;
-    mapping(address =&gt; uint256) private _balances;
-    mapping(address =&gt; uint256) private _balancesHorse;
+    mapping(address => uint256) private _balances;
+    mapping(address => uint256) private _balancesHorse;
    
     constructor(address _queen, address _joker, address _knight, address _paladin) public {
         owner = msg.sender;
@@ -44,22 +44,22 @@ contract Donations {
     }
  /*   
     function changeAddressQueen(address newAddr) external {
-        require(msg.sender == queen,&quot;wrong role&quot;);
+        require(msg.sender == queen,"wrong role");
         _transferCeo(newAddr);
         queen = newAddr;
     }
     function changeAddressJoker(address newAddr) external {
-        require(msg.sender == joker,&quot;wrong role&quot;);
+        require(msg.sender == joker,"wrong role");
         _transferCeo(newAddr);
         joker = newAddr;
     }
     function changeAddressKnight(address newAddr) external {
-        require(msg.sender == knight,&quot;wrong role&quot;);
+        require(msg.sender == knight,"wrong role");
         _transferCeo(newAddr);
         knight = newAddr;
     }
     function changeAddressPaladin(address newAddr) external {
-        require(msg.sender == paladin,&quot;wrong role&quot;);
+        require(msg.sender == paladin,"wrong role");
         _transferCeo(newAddr);
         paladin = newAddr;
     }
@@ -76,8 +76,8 @@ contract Donations {
     }
     
     function donateToProject(uint16 id) external payable {
-        require(id &lt; projectsCount,&quot;project doesnt exist&quot;);
-        require(msg.value &gt; 0,&quot;non null donations only&quot;);
+        require(id < projectsCount,"project doesnt exist");
+        require(msg.value > 0,"non null donations only");
         projects[id].Current = projects[id].Current + msg.value;
         toDistribute = toDistribute + msg.value;
     }
@@ -89,16 +89,16 @@ contract Donations {
     function withdraw() external {
         //check for pure transfer ETH and HORSe donations
         _distributeRest();
-        if(toDistribute &gt; 0)
+        if(toDistribute > 0)
             _distribute();
-        if(toDistributeHorse &gt; 0)
+        if(toDistributeHorse > 0)
             _distributeHorse();
-        if(_balances[msg.sender] &gt; 0) {
+        if(_balances[msg.sender] > 0) {
             msg.sender.transfer(_balances[msg.sender]);
             _balances[msg.sender] = 0;
         }
 
-        if(_balancesHorse[msg.sender] &gt; 0) {
+        if(_balancesHorse[msg.sender] > 0) {
             horseToken.transfer(msg.sender,_balancesHorse[msg.sender]);
             _balancesHorse[msg.sender] = 0;
         }
@@ -116,12 +116,12 @@ contract Donations {
         - int(_balances[paladin]) 
         - int(_balances[queen]) 
         - int(toDistribute);
-        if(rest &gt; 0) {
+        if(rest > 0) {
             toDistribute = toDistribute + uint256(rest);
         }
 
         uint256 ownedHorse = horseToken.balanceOf(address(this));
-        if(ownedHorse &gt; 0) {
+        if(ownedHorse > 0) {
             int restHorse = int(ownedHorse)
             - int(_balancesHorse[joker]) 
             - int(_balancesHorse[knight]) 
@@ -129,7 +129,7 @@ contract Donations {
             - int(_balancesHorse[queen]) 
             - int(toDistributeHorse);
 
-            if(restHorse &gt; 0) {
+            if(restHorse > 0) {
                 toDistributeHorse = toDistributeHorse + uint256(restHorse);
             }
         }
@@ -166,7 +166,7 @@ contract Donations {
     function _transferCeo(address newAddr) internal
     unique(newAddr)
     {
-        require(newAddr != address(0),&quot;address is 0&quot;);
+        require(newAddr != address(0),"address is 0");
 
         _balances[newAddr] = _balances[msg.sender];
         _balances[msg.sender] = 0;
@@ -180,17 +180,17 @@ contract Donations {
     }
     
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;only owner&quot;);
+        require(msg.sender == owner, "only owner");
         _;
     }
     
     modifier onlyCeo() {
-        require(_isCeo(msg.sender), &quot;not ceo&quot;);
+        require(_isCeo(msg.sender), "not ceo");
         _;
     }
     
     modifier unique(address newAddr) {
-        require(!_isCeo(newAddr),&quot;not unique&quot;);
+        require(!_isCeo(newAddr),"not unique");
         _;
     }
 }

@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract DividendContract {
   uint256 totalDividendsAmount = 0;
   uint256 totalDividendsRounds = 0;
   uint256 totalUnPayedDividendsAmount = 0;
-  mapping(address =&gt; uint256) payedDividends;
+  mapping(address => uint256) payedDividends;
 
 
   function getTotalDividendsAmount() public constant returns (uint256) {
@@ -77,7 +77,7 @@ contract DividendContract {
   function claimDividends() payable public;
 
   function payDividends() payable public {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     totalDividendsAmount = totalDividendsAmount.add(msg.value);
     totalUnPayedDividendsAmount = totalUnPayedDividendsAmount.add(msg.value);
     totalDividendsRounds += 1;
@@ -116,8 +116,8 @@ contract ERC20 is ERC20Basic {
 
 contract ESlotsICOToken is ERC20, DividendContract {
 
-    string public constant name = &quot;Ethereum Slot Machine Token&quot;;
-    string public constant symbol = &quot;EST&quot;;
+    string public constant name = "Ethereum Slot Machine Token";
+    string public constant symbol = "EST";
     uint8 public constant decimals = 18;
 
     function maxTokensToSale() public view returns (uint256);
@@ -146,7 +146,7 @@ contract ESlotsICOTokenDeployed {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -204,7 +204,7 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
     // amount of raised money in wei
     uint256 public weiRaised;
 
-    mapping (address =&gt; uint256) public privateInvestors;
+    mapping (address => uint256) public privateInvestors;
 
     /**
    * event for token purchase logging
@@ -241,11 +241,11 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
         // calculate amount of tokens to be created
         uint256 tokens = getTokenAmount(weiAmount);
         uint256 av_tokens = icoContract.availableTokens();
-        require(av_tokens &gt;= tokens);
+        require(av_tokens >= tokens);
         if(state == State.PrivatePreSale) {
-            require(privateInvestors[beneficiary] &gt; 0);
+            require(privateInvestors[beneficiary] > 0);
             //restrict sales in private period
-            if(privateInvestors[beneficiary] &lt; tokens) {
+            if(privateInvestors[beneficiary] < tokens) {
                 tokens = privateInvestors[beneficiary];
             }
         }
@@ -276,8 +276,8 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
 
     function stopICO() public onlyOwner {
         require(state == State.ActiveICO);
-        require(icoContract.availableTokens() == 0 || (endTime &gt; 0 &amp;&amp; now &gt;= endTime));
-        require(weiRaised &gt; 0);
+        require(icoContract.availableTokens() == 0 || (endTime > 0 && now >= endTime));
+        require(weiRaised > 0);
         state = State.ICOComplete;
         endTime = now;
     }
@@ -285,13 +285,13 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
     // Allow getting slots bankroll after 60 days only
     function cleanup() public onlyOwner {
         require(state == State.ICOComplete);
-        require(now &gt;= (endTime + 60 days));
+        require(now >= (endTime + 60 days));
         wallet.transfer(this.balance);
     }
 
     // @return true if crowdsale ended
     function hasEnded() public view returns (bool) {
-        return state == State.ICOComplete || icoContract.availableTokens() == 0 || (endTime &gt; 0 &amp;&amp; now &gt;= endTime);
+        return state == State.ICOComplete || icoContract.availableTokens() == 0 || (endTime > 0 && now >= endTime);
     }
 
     // Calculate amount of tokens depending on crowdsale phase and time
@@ -302,10 +302,10 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
             //PreSale has 50% bonus!
             bonus = bonus.add(50);
         } else if(state == State.ActiveICO) {
-            if((now - startTime) &lt; 1 weeks) {
+            if((now - startTime) < 1 weeks) {
                 //30% first week
                 bonus = bonus.add(30);
-            } else if((now - startTime) &lt; 3 weeks) {
+            } else if((now - startTime) < 3 weeks) {
                 //15% second and third weeks
                 bonus = bonus.add(15);
             }
@@ -324,19 +324,19 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
     }
 
     function getLargeAmountBonus(uint256 weiAmount) internal pure returns(uint256) {
-        if(weiAmount &gt;= 1000 ether) {
+        if(weiAmount >= 1000 ether) {
             return 50;
         }
-        if(weiAmount &gt;= 500 ether) {
+        if(weiAmount >= 500 ether) {
             return 30;
         }
-        if(weiAmount &gt;= 100 ether) {
+        if(weiAmount >= 100 ether) {
             return 15;
         }
-        if(weiAmount &gt;= 50 ether) {
+        if(weiAmount >= 50 ether) {
             return 10;
         }
-        if(weiAmount &gt;= 10 ether) {
+        if(weiAmount >= 10 ether) {
             return 5;
         }
        return 0;
@@ -345,7 +345,7 @@ contract ESlotsCrowdsale is Ownable, ESlotsICOTokenDeployed {
     // return true if the transaction is suitable for buying tokens
     function validPurchase() internal view returns (bool) {
         bool nonZeroPurchase = msg.value != 0;
-        return hasEnded() == false &amp;&amp; nonZeroPurchase;
+        return hasEnded() == false && nonZeroPurchase;
     }
 
 }

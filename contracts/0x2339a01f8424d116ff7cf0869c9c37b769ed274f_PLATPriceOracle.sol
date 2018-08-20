@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 
 contract PLATPriceOracle {
 
-  mapping (address =&gt; bool) admins;
+  mapping (address => bool) admins;
   
   // How much Eth you get for 1 PLAT, multiplied by 10^18
   // Default value is the ICO price, make sure you update
@@ -15,7 +15,7 @@ contract PLATPriceOracle {
   }
 
   function updatePrice(uint256 _newPrice) public {
-    require(_newPrice &gt; 0);
+    require(_newPrice > 0);
     require(admins[msg.sender] == true);
     PLATprice = _newPrice;
     emit PLATPriceChanged(_newPrice);

@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,8 +74,8 @@ contract MigrationAgent {
 contract ForgeCDN is ERC20{
     using SafeMath for uint256;
 
-    string public constant name = &quot;ForgeCDN&quot;;
-    string public constant symbol = &quot;FORGE&quot;;
+    string public constant name = "ForgeCDN";
+    string public constant symbol = "FORGE";
     uint8 public constant decimals = 18;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -86,8 +86,8 @@ contract ForgeCDN is ERC20{
     event Unpause();
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     address public owner;
     address public pendingOwner;
@@ -167,7 +167,7 @@ contract ForgeCDN is ERC20{
     */
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -184,8 +184,8 @@ contract ForgeCDN is ERC20{
     */
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -233,7 +233,7 @@ contract ForgeCDN is ERC20{
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,7 +256,7 @@ contract ForgeCDN is ERC20{
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public onlyOwner {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

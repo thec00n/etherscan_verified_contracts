@@ -30,9 +30,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -49,7 +49,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,8 +94,8 @@ contract ERC20Interface {
 contract ERC20Standard is ERC20Interface {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -106,7 +106,7 @@ contract ERC20Standard is ERC20Interface {
   */
   function transfer(address _to, uint256 _value) external returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,8 +123,8 @@ contract ERC20Standard is ERC20Interface {
    */
   function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -138,7 +138,7 @@ contract ERC20Standard is ERC20Interface {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * 
    * To avoid this issue, allowances are only allowed to be changed between zero and non-zero.
@@ -207,7 +207,7 @@ contract ERC20Standard is ERC20Interface {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) external returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -267,7 +267,7 @@ contract ERC223ReceivingContract {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -344,7 +344,7 @@ contract ERC223Standard is ERC223Interface, ERC20Standard {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -354,7 +354,7 @@ contract ERC223Standard is ERC223Interface, ERC20Standard {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -371,7 +371,7 @@ contract ERC223Standard is ERC223Interface, ERC20Standard {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -441,7 +441,7 @@ contract MintableToken is ERC223Standard, Ownable {
  * @title DAICOVO standard ERC20, ERC223 compliant token
  * @dev Inherited ERC20 and ERC223 token functionalities.
  * @dev Extended with forceTransfer() function to support compatibility
- * @dev with exisiting apps which expects ERC20 token&#39;s transfer function berhavior.
+ * @dev with exisiting apps which expects ERC20 token's transfer function berhavior.
  */
 contract DaicovoStandardToken is ERC20Standard, ERC223Standard, MintableToken {
     string public name;
@@ -456,13 +456,13 @@ contract DaicovoStandardToken is ERC20Standard, ERC223Standard, MintableToken {
 
     /**
      * @dev It provides an ERC20 compatible transfer function without checking of
-     * @dev target address whether it&#39;s contract or EOA address.
+     * @dev target address whether it's contract or EOA address.
      * @param _to    Receiver address.
      * @param _value Amount of tokens that will be transferred.
      */
     function forceTransfer(address _to, uint _value) external returns(bool) {
         require(_to != address(0x0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -478,6 +478,6 @@ contract DaicovoStandardToken is ERC20Standard, ERC223Standard, MintableToken {
  * @dev ERC20, ERC223 compliant mintable token.
  */
 contract OVOToken is DaicovoStandardToken {
-    constructor () public DaicovoStandardToken(&quot;ICOVO&quot;, &quot;OVO&quot;, 9) {
+    constructor () public DaicovoStandardToken("ICOVO", "OVO", 9) {
     }
 }

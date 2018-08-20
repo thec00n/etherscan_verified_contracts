@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,7 +120,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -138,7 +138,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -168,7 +168,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -179,8 +179,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -268,9 +268,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.     
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -287,13 +287,13 @@ contract BurnableToken is BasicToken {
 */
 contract CYC is StandardToken, BurnableToken, Ownable {
     // Constants
-    string  public constant name = &quot;Candy Token&quot;;
-    string  public constant symbol = &quot;CYC&quot;;
+    string  public constant name = "Candy Token";
+    string  public constant symbol = "CYC";
     uint8   public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY      = 50000000000 * (10 ** uint256(decimals));
 
-    mapping(address =&gt; uint256) public balanceLocked;   //地址 - 锁定代币数量
-    mapping(address =&gt; uint256) public lockAtTime;      //地址 - 锁定起始时间点
+    mapping(address => uint256) public balanceLocked;   //地址 - 锁定代币数量
+    mapping(address => uint256) public lockAtTime;      //地址 - 锁定起始时间点
     
     uint public amountRaised;
     uint256 public buyPrice = 250000;
@@ -313,8 +313,8 @@ contract CYC is StandardToken, BurnableToken, Ownable {
     }
 
     function _transfer(address _from, address _to, uint _value) internal {     
-        require (balances[_from] &gt;= _value);               // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]); // Check for overflows
+        require (balances[_from] >= _value);               // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]); // Check for overflows
    
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the sender
         balances[_to] = balances[_to].add(_value);                            // Add the same to the recipient
@@ -346,15 +346,15 @@ contract CYC is StandardToken, BurnableToken, Ownable {
 
     /* Batch token transfer. Used by contract creator to distribute initial tokens to holders */
     function batchTransfer(address[] _recipients, uint[] _values) onlyOwner public returns (bool) {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require( _recipients.length > 0 && _recipients.length == _values.length);
 
         uint total = 0;
-        for(uint i = 0; i &lt; _values.length; i++){
+        for(uint i = 0; i < _values.length; i++){
             total = total.add(_values[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             Transfer(msg.sender, _recipients[j], _values[j]);
         }
@@ -390,24 +390,24 @@ contract CYC is StandardToken, BurnableToken, Ownable {
     //流程:
     //ICO 完成后,  调用此函数设置锁定地址, 然后调用 enableTransfer 函数允许转token
     function lockAddress( address[] _addr ) onlyOwner external  {
-        for (uint i = 0; i &lt; _addr.length; i++) {
+        for (uint i = 0; i < _addr.length; i++) {
           _lock(_addr[i]);
         }
     }
     
     // 解锁地址
     function unlockAddress( address[] _addr ) onlyOwner external  {
-        for (uint i = 0; i &lt; _addr.length; i++) {
+        for (uint i = 0; i < _addr.length; i++) {
           balanceLocked[_addr[i]] =  0;  
         }
     }
 
     // 传入地址, 返回当前可转币的数量
    function getFreeBalances( address _addr ) public view returns(uint)  {
-      if (balanceLocked[_addr] &gt; 0) {
-          if (now &gt; lockAtTime[_addr] + 180 days) {
+      if (balanceLocked[_addr] > 0) {
+          if (now > lockAtTime[_addr] + 180 days) {
               return balances[_addr];
-          } else if (now &gt; lockAtTime[_addr]  + 90 days)   {
+          } else if (now > lockAtTime[_addr]  + 90 days)   {
               return balances[_addr] - balanceLocked[_addr] / 10 * 4;
           } else {
               return balances[_addr] - balanceLocked[_addr] / 10 * 7 ;
@@ -418,13 +418,13 @@ contract CYC is StandardToken, BurnableToken, Ownable {
    }
 
    function checkLocked(address _addr, uint256 _value) internal view returns (bool) {
-      if (balanceLocked[_addr] &gt; 0) {   //address is locked
-         if (now &gt; lockAtTime[_addr] + 180 days) {  
+      if (balanceLocked[_addr] > 0) {   //address is locked
+         if (now > lockAtTime[_addr] + 180 days) {  
              return true;
-         } else if (now &gt; lockAtTime[_addr] + 90 days)   {
-             return (balances[_addr] - _value &gt;= balanceLocked[_addr] / 10 * 4);
+         } else if (now > lockAtTime[_addr] + 90 days)   {
+             return (balances[_addr] - _value >= balanceLocked[_addr] / 10 * 4);
          } else {
-             return (balances[_addr] - _value &gt;= balanceLocked[_addr] / 10 * 7 );   
+             return (balances[_addr] - _value >= balanceLocked[_addr] / 10 * 7 );   
          }  
       }
      

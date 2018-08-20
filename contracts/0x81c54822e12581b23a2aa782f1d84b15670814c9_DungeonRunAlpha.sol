@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -205,7 +205,7 @@ contract EDCoreInterface {
 
 
 /**
- * @title Core Contract of &quot;Dungeon Run&quot; event game of the ED (Ether Dungeon) Platform.
+ * @title Core Contract of "Dungeon Run" event game of the ED (Ether Dungeon) Platform.
  * @dev Dungeon Run is a single-player game mode added to the Ether Dungeon platform.
  *  The objective of Dungeon Run is to defeat as many monsters as possible.
  */
@@ -282,13 +282,13 @@ contract DungeonRunAlpha is Pausable, Destructible {
     =================================*/
 
     /// @dev A mapping from hero ID to the current run monster, a 0 value indicates no current run.
-    mapping(uint =&gt; Monster) public heroIdToMonster;
+    mapping(uint => Monster) public heroIdToMonster;
 
     /// @dev A mapping from hero ID to its current health.
-    mapping(uint =&gt; uint) public heroIdToHealth;
+    mapping(uint => uint) public heroIdToHealth;
 
     /// @dev A mapping from hero ID to the refunded fee.
-    mapping(uint =&gt; uint) public heroIdToRefundedFee;
+    mapping(uint => uint) public heroIdToRefundedFee;
 
 
     /*==============================
@@ -350,10 +350,10 @@ contract DungeonRunAlpha is Pausable, Destructible {
 
         // Dungeon run is ended if either hero is defeated (health exhausted),
         // or hero failed to damage a monster before it flee.
-        bool _dungeonRunEnded = monster.level &gt; 0 &amp;&amp; (
+        bool _dungeonRunEnded = monster.level > 0 && (
             _heroHealth == 0 ||
-            now &gt; _monsterCreationTime + monsterFleeTime * 2 ||
-            (monster.health == monster.initialHealth &amp;&amp; now &gt; monster.creationTime + monsterFleeTime)
+            now > _monsterCreationTime + monsterFleeTime * 2 ||
+            (monster.health == monster.initialHealth && now > monster.creationTime + monsterFleeTime)
         );
 
         // Calculate hero and monster stats based on different game state.
@@ -370,9 +370,9 @@ contract DungeonRunAlpha is Pausable, Destructible {
             _monsterInitialHealth = monster.initialHealth;
             _monsterHealth = monster.health;
             _gameState = 3;
-        } else if (now &gt; _monsterCreationTime + monsterFleeTime) {
+        } else if (now > _monsterCreationTime + monsterFleeTime) {
             // Previous monster just fled, new monster awaiting.
-            if (monster.level + monsterStrength &gt; _heroHealth) {
+            if (monster.level + monsterStrength > _heroHealth) {
                 _heroHealth = 0;
                 _monsterLevel = monster.level;
                 _monsterInitialHealth = monster.initialHealth;
@@ -423,7 +423,7 @@ contract DungeonRunAlpha is Pausable, Destructible {
         // To start a run, the player need to pay an entrance fee.
         if (currentLevel == 0) {
             // Throws if not enough fee, and any exceeding fee will be transferred back to the player.
-            require(msg.value &gt;= entranceFee);
+            require(msg.value >= entranceFee);
             entranceFeePool += entranceFee;
             
             // Create level 1 monster, initial health is 1 * monsterHealth.
@@ -435,17 +435,17 @@ contract DungeonRunAlpha is Pausable, Destructible {
             heroCurrentHealth = heroInitialHealth;
 
             // Refund exceeding fee.
-            if (msg.value &gt; entranceFee) {
+            if (msg.value > entranceFee) {
                 msg.sender.transfer(msg.value - entranceFee);
             }
         } else {
             // If the hero health is 0, the dungeon run ends.
-            require(heroCurrentHealth &gt; 0);
+            require(heroCurrentHealth > 0);
     
             // If a hero failed to damage a monster before it flee, the dungeon run ends,
             // regardless of the remaining hero health.
-            dungeonRunEnded = now &gt; monster.creationTime + monsterFleeTime * 2 ||
-                (monster.health == monster.initialHealth &amp;&amp; now &gt; monster.creationTime + monsterFleeTime);
+            dungeonRunEnded = now > monster.creationTime + monsterFleeTime * 2 ||
+                (monster.health == monster.initialHealth && now > monster.creationTime + monsterFleeTime);
 
             if (dungeonRunEnded) {
                 // Add the non-refunded fee to jackpot.
@@ -454,7 +454,7 @@ contract DungeonRunAlpha is Pausable, Destructible {
                 entranceFeePool -= addToJackpot;
 
                 // Sanity check.
-                assert(addToJackpot &lt;= entranceFee);
+                assert(addToJackpot <= entranceFee);
             }
             
             // Future attack do not require any fee, so refund all ether sent with the transaction.
@@ -495,13 +495,13 @@ contract DungeonRunAlpha is Pausable, Destructible {
         (heroPower,,,,) = edCoreContract.getHeroPower(_genes, dungeonDifficulty);
 
         // Determine if the monster has fled due to hero failed to attack within flee period.
-        if (now &gt; monster.creationTime + monsterFleeTime) {
+        if (now > monster.creationTime + monsterFleeTime) {
             // When a monster flees, the monster will attack the hero and flee.
             // The damage is calculated by monster level + monsterStrength.
             uint damageByMonster = currentLevel + monsterStrength;
 
             // Check if hero is defeated.
-            if (damageByMonster &gt;= _heroCurrentHealth) {
+            if (damageByMonster >= _heroCurrentHealth) {
                 // Hero is defeated, the dungeon run ends.
                 heroIdToHealth[_heroId] = 0;
 
@@ -511,9 +511,9 @@ contract DungeonRunAlpha is Pausable, Destructible {
                 entranceFeePool -= addToJackpot;
 
                 // Sanity check.
-                assert(addToJackpot &lt;= entranceFee);
+                assert(addToJackpot <= entranceFee);
             } else {
-                // Hero is damanged but didn&#39;t defeated, game continues with a new monster.
+                // Hero is damanged but didn't defeated, game continues with a new monster.
                 heroIdToHealth[_heroId] -= damageByMonster;
 
                 // Create next level monster, the health of a monster is level * monsterHealth.
@@ -527,7 +527,7 @@ contract DungeonRunAlpha is Pausable, Destructible {
         // The damage formula is [[strength / gas + power / (10 * rand)]],
         // where rand is a random integer from 1 to 5.
         uint damage = _heroStrength * 1e9 / tx.gasprice + heroPower / (10 * (1 + _getRandomNumber(5)));
-        bool isMonsterDefeated = damage &gt;= monster.health;
+        bool isMonsterDefeated = damage >= monster.health;
         uint rewards;
 
         if (isMonsterDefeated) {

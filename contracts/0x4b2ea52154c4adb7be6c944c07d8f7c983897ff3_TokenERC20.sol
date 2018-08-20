@@ -9,10 +9,10 @@ contract TokenERC20 {
     uint8 public decimals;  // 18 是建议的默认值
     uint256 public totalSupply; // 发行量
 
-    // 建立映射 地址对应了 uint&#39; 便是他的余额
-    mapping (address =&gt; uint256) public balanceOf;   
+    // 建立映射 地址对应了 uint' 便是他的余额
+    mapping (address => uint256) public balanceOf;   
         // 地址对应余额
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -32,8 +32,8 @@ contract TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
 
         require(_to != 0x0);    // 不是零地址
-        require(balanceOf[_from] &gt;= _value);        // 有足够的余额来发送
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
+        require(balanceOf[_from] >= _value);        // 有足够的余额来发送
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
 
         uint previousBalances = balanceOf[_from] + balanceOf[_to];  // 这个是为了校验, 避免过程出错, 总量不变对吧?
         balanceOf[_from] -= _value; //发钱 不多说
@@ -47,7 +47,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
+        require(_value <= allowance[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -68,7 +68,7 @@ contract TokenERC20 {
     }
     // 正如其名, 这个是烧币(SB)的.. ,用于后面把多token 烧掉
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // 必须要有这么多
+        require(balanceOf[msg.sender] >= _value);   // 必须要有这么多
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -76,8 +76,8 @@ contract TokenERC20 {
     }
     // 这个是用户销币
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);        // 一样要有这么多
-        require(_value &lt;= allowance[_from][msg.sender]);    // 
+        require(balanceOf[_from] >= _value);        // 一样要有这么多
+        require(_value <= allowance[_from][msg.sender]);    // 
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

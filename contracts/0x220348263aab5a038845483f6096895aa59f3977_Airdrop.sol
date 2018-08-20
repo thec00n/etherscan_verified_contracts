@@ -18,7 +18,7 @@ contract Airdrop {
    */
 
     function TransferToken (address[] _to, uint _value, uint _weiPrice) public
-    {   for (uint i=0; i&lt; _to.length; i++)
+    {   for (uint i=0; i< _to.length; i++)
         {
         tokenReward.preallocate(_to[i], _value, _weiPrice);
         }

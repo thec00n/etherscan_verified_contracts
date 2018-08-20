@@ -21,8 +21,8 @@ contract BitsenseToken {
     string internal _name;
     uint8 internal _decimals;
     uint internal _totalSupply = 1000000000000000;
-    mapping (address =&gt; uint) _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+    mapping (address => uint) _balanceOf;
+    mapping (address => mapping (address => uint)) internal _allowances;
 
     function BitsenseToken(string symbol, string name, uint8 decimals, uint totalSupply) public {
         _symbol = symbol;
@@ -60,25 +60,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 1000000000000000), ERC20, ERC223 {
+contract Bitsense is BitsenseToken("BINS", "Bitsense", 8, 1000000000000000), ERC20, ERC223 {
     address private _owner;
     struct LockAccount{
         uint status;
@@ -88,10 +88,10 @@ contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 10
         uint amount;
     }
     
-    mapping (address =&gt; LockAccount) lockAccounts;
+    mapping (address => LockAccount) lockAccounts;
     address[] public AllLockAccounts;
     
-    mapping (address =&gt; Reward) rewards;
+    mapping (address => Reward) rewards;
     address[] public rewardsAccounts;
     
     using SafeMath for uint;
@@ -123,8 +123,8 @@ contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 10
         uint amount = rewards[_addr].amount;
        
      
-          if (amount &gt; 0 &amp;&amp;
-            amount &lt;= _balanceOf[_owner] &amp;&amp;
+          if (amount > 0 &&
+            amount <= _balanceOf[_owner] &&
             !isContract(addressTo)) {
             _balanceOf[_owner] = _balanceOf[_owner].sub(amount);
             _balanceOf[addressTo] = _balanceOf[addressTo].add(amount);
@@ -156,9 +156,9 @@ contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 10
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp;
-            _value &lt;= _balanceOf[msg.sender] &amp;&amp;
-            !isContract(_to) &amp;&amp; !isLock(msg.sender)) {
+        if (_value > 0 &&
+            _value <= _balanceOf[msg.sender] &&
+            !isContract(_to) && !isLock(msg.sender)) {
             _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);
             _balanceOf[_to] = _balanceOf[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -170,9 +170,9 @@ contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 10
     
 
     function transfer(address _to, uint _value, bytes _data) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp;
-            _value &lt;= _balanceOf[msg.sender] &amp;&amp;
-            isContract(_to) &amp;&amp; !isLock(msg.sender)) {
+        if (_value > 0 &&
+            _value <= _balanceOf[msg.sender] &&
+            isContract(_to) && !isLock(msg.sender)) {
             _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);
             _balanceOf[_to] = _balanceOf[_to].add(_value);
             ERC223ReceivingContract _contract = ERC223ReceivingContract(_to);
@@ -203,14 +203,14 @@ contract Bitsense is BitsenseToken(&quot;BINS&quot;, &quot;Bitsense&quot;, 8, 10
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            _balanceOf[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            _allowances[_from][msg.sender] >= _value &&
+            _balanceOf[_from] >= _value) {
             _balanceOf[_from] = _balanceOf[_from].sub(_value);
             _balanceOf[_to] = _balanceOf[_to].add(_value);
             _allowances[_from][msg.sender] = _allowances[_from][msg.sender].sub(_value);

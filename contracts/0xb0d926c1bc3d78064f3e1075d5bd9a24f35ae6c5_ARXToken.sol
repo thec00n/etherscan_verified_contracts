@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 // -------------------------------------------------
 // 0.4.13+commit.0fb4cb1a
 // [Assistive Reality ARX token ERC20 contract]
-// [Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="384b4c595e5e78594a57565451565d165157">[email&#160;protected]</a> for any queries]
+// [Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="384b4c595e5e78594a57565451565d165157">[email protected]</a> for any queries]
 // [Join us in changing the world]
 // [aronline.io]
 // -------------------------------------------------
@@ -22,20 +22,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-      safeAssert(b &gt; 0);
+      safeAssert(b > 0);
       uint256 c = a / b;
       safeAssert(a == b * c + a % b);
       return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-      safeAssert(b &lt;= a);
+      safeAssert(b <= a);
       return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
       uint256 c = a + b;
-      safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+      safeAssert(c>=a && c>=b);
       return c;
   }
 
@@ -59,15 +59,15 @@ contract ERC20Interface is safeMath {
 
 contract ARXToken is safeMath, ERC20Interface {
   // token setup variables
-  string  public constant standard              = &quot;ARX&quot;;
-  string  public constant name                  = &quot;Assistive Reality ARX&quot;;
-  string  public constant symbol                = &quot;ARX&quot;;
+  string  public constant standard              = "ARX";
+  string  public constant name                  = "Assistive Reality ARX";
+  string  public constant symbol                = "ARX";
   uint8   public constant decimals              = 18;                             // matched to wei for practicality
   uint256 public constant totalSupply           = 318000000000000000000000000;    // 318000000000000000000000000 million + 18 decimals (presale maximum capped + ICO maximum capped + foundation 10%) static supply
 
   // token mappings
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   // ERC20 standard token possible events, matched to ICO and preSale contracts
   event Buy(address indexed _sender, uint256 _eth, uint256 _ARX);
@@ -82,9 +82,9 @@ contract ARXToken is safeMath, ERC20Interface {
   // ERC20 token transfer function with additional safety
   function transfer(address _to, uint256 _amount) returns (bool success) {
       require(!(_to == 0x0));
-      if ((balances[msg.sender] &gt;= _amount)
-      &amp;&amp; (_amount &gt; 0)
-      &amp;&amp; ((safeAdd(balances[_to],_amount) &gt; balances[_to]))) {
+      if ((balances[msg.sender] >= _amount)
+      && (_amount > 0)
+      && ((safeAdd(balances[_to],_amount) > balances[_to]))) {
           balances[msg.sender] = safeSub(balances[msg.sender], _amount);
           balances[_to] = safeAdd(balances[_to], _amount);
           Transfer(msg.sender, _to, _amount);
@@ -100,10 +100,10 @@ contract ARXToken is safeMath, ERC20Interface {
       address _to,
       uint256 _amount) returns (bool success) {
       require(!(_to == 0x0));
-      if ((balances[_from] &gt;= _amount)
-      &amp;&amp; (allowed[_from][msg.sender] &gt;= _amount)
-      &amp;&amp; (_amount &gt; 0)
-      &amp;&amp; (safeAdd(balances[_to],_amount) &gt; balances[_to])) {
+      if ((balances[_from] >= _amount)
+      && (allowed[_from][msg.sender] >= _amount)
+      && (_amount > 0)
+      && (safeAdd(balances[_to],_amount) > balances[_to])) {
           balances[_from] = safeSub(balances[_from], _amount);
           allowed[_from][msg.sender] = safeSub((allowed[_from][msg.sender]),_amount);
           balances[_to] = safeAdd(balances[_to], _amount);
@@ -143,7 +143,7 @@ contract ARXToken is safeMath, ERC20Interface {
   function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
       uint oldValue = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);

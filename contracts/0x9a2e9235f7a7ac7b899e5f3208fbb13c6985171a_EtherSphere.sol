@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 // Visit ethersphere.io for more information
 
 contract EtherSphere {
-    mapping(address =&gt; uint) bidPool;
+    mapping(address => uint) bidPool;
     address[] public bidders;
     address highestBidder;
     uint bidderArraySize;
@@ -16,7 +16,7 @@ contract EtherSphere {
     uint public previousRoundJackpot;
     uint public highestBid;
     uint public minBidMultiplier = 10;
-    //Jackpot triggers when todaysBidTotal &gt; rewardPool * 1.05
+    //Jackpot triggers when todaysBidTotal > rewardPool * 1.05
     uint public jackpotConditionPercent = 105;
     //Max bid as a proportion of reward pool pre-jackpot. Disabled by default
     uint public maxBidPercent; 
@@ -40,11 +40,11 @@ contract EtherSphere {
     }
     
     function addEtherToSphere() private{
-        if (msg.value &lt; minBid) throw;
+        if (msg.value < minBid) throw;
         if (triggerPreJackpotLimit()) throw;
         
         bidPool[msg.sender] += msg.value;
-        if (bidPool[msg.sender] &gt; highestBid) {
+        if (bidPool[msg.sender] > highestBid) {
             highestBid = bidPool[msg.sender];
             highestBidder = msg.sender;
         }
@@ -53,9 +53,9 @@ contract EtherSphere {
     
     function triggerPreJackpotLimit() private returns(bool){
         if (maxBidPercent == 100) return false;
-        bool willBidExceedPreJackpotLimit = rewardPool * maxBidPercent / 100 &lt; msg.value + bidPool[msg.sender];
-        bool willBePostJackpot = (todaysBidTotal + msg.value) &gt;= (rewardPool * jackpotConditionPercent / 100);
-        return willBidExceedPreJackpotLimit &amp;&amp; !willBePostJackpot;
+        bool willBidExceedPreJackpotLimit = rewardPool * maxBidPercent / 100 < msg.value + bidPool[msg.sender];
+        bool willBePostJackpot = (todaysBidTotal + msg.value) >= (rewardPool * jackpotConditionPercent / 100);
+        return willBidExceedPreJackpotLimit && !willBePostJackpot;
     }
     
     function () payable{
@@ -67,8 +67,8 @@ contract EtherSphere {
     function recordSenderIfNecessary() private{
        if (bidPool[msg.sender] == 0){
             setMinBid();
-            if (msg.value &lt; minBid) throw;
-            if (numBidders &gt;= bidderArraySize){
+            if (msg.value < minBid) throw;
+            if (numBidders >= bidderArraySize){
                 bidders.push(msg.sender);
                 numBidders++;
                 bidderArraySize++;
@@ -88,7 +88,7 @@ contract EtherSphere {
         else {
             previousRoundJackpot = 0;
         }
-        if (numBidders &gt; 0) {
+        if (numBidders > 0) {
             distributeReward();
             fees();
             endOfDay = endOfDay + interval;
@@ -105,18 +105,18 @@ contract EtherSphere {
         numBidders = 0;
     }
     
-    //Jackpot condition, happens when today&#39;s total bids is more than or equals to current pool * condition percent
+    //Jackpot condition, happens when today's total bids is more than or equals to current pool * condition percent
     function doTriggerJackpot() private constant returns (bool){
-        return numBidders &gt; 0 &amp;&amp; todaysBidTotal &gt; (rewardPool * jackpotConditionPercent / 100);
+        return numBidders > 0 && todaysBidTotal > (rewardPool * jackpotConditionPercent / 100);
     }
     
     //Reward all participants
     function distributeReward() private{
         uint portion = 0;
         uint distributed = 0;
-        for (uint i = 0; i &lt; numBidders; i++){
+        for (uint i = 0; i < numBidders; i++){
             address bidderAddress = bidders[i];
-            if (i &lt; numBidders - 1){
+            if (i < numBidders - 1){
                 portion = bidPool[bidderAddress] * rewardPool / todaysBidTotal;
             }
             else {
@@ -140,11 +140,11 @@ contract EtherSphere {
     }
     
     function shouldCompleteDay() private returns (bool){
-        return now &gt; endOfDay;
+        return now > endOfDay;
     }
     
     function containsSender() private constant returns (bool){
-        for (uint i = 0; i &lt; numBidders; i++){
+        for (uint i = 0; i < numBidders; i++){
             if (bidders[i] == msg.sender)
                 return true;
         }
@@ -154,21 +154,21 @@ contract EtherSphere {
     //Change minimum bids as more bidders enter. minBidMultiplier default = 10
     function setMinBid() private{
         uint bid = 0.001 ether;
-        if (numBidders &gt; 5){
+        if (numBidders > 5){
             bid = 0.01 ether;
-            if (numBidders &gt; 50){
+            if (numBidders > 50){
                 bid = 0.02 ether;
-                if (numBidders &gt; 100){
+                if (numBidders > 100){
                     bid = 0.05 ether;
-                    if (numBidders &gt; 150){
+                    if (numBidders > 150){
                         bid = 0.1 ether;
-                        if (numBidders &gt; 200){
+                        if (numBidders > 200){
                             bid = 0.5 ether;
-                            if (numBidders &gt; 250){
+                            if (numBidders > 250){
                                 bid = 2.5 ether;
-                                if (numBidders &gt; 300){
+                                if (numBidders > 300){
                                     bid = 5 ether;
-                                    if (numBidders &gt; 350){
+                                    if (numBidders > 350){
                                         bid = 10 ether;
                                     }
                                 }
@@ -219,7 +219,7 @@ contract EtherSphere {
     
     function end() ismain payable{
         //Allow for termination if game is inactive for more than 7 days
-        if (now &gt; endOfDay + 7 * interval &amp;&amp; msg.sender == etherSphereHost)
+        if (now > endOfDay + 7 * interval && msg.sender == etherSphereHost)
             suicide(etherSphereHost);
     }
 }

@@ -12,11 +12,11 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the &lt;organization&gt; nor the
+    * Neither the name of the <organization> nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL ETHERANDOM BE LIABLE FOR ANY
@@ -65,11 +65,11 @@ contract etherandomized {
   }
 
   function etherandomSetNetwork() internal returns (bool) {
-    if (getCodeSize(0x5be0372559e0275c0c415ab48eb0e211bc2f52a8)&gt;0){
+    if (getCodeSize(0x5be0372559e0275c0c415ab48eb0e211bc2f52a8)>0){
       EAR = EtherandomProxyI(0x5be0372559e0275c0c415ab48eb0e211bc2f52a8);
       return true;
     }
-    if (getCodeSize(0xf6d9979499491c1c0c9ef518860f4476c1cd551a)&gt;0){
+    if (getCodeSize(0xf6d9979499491c1c0c9ef518860f4476c1cd551a)>0){
       EAR = EtherandomProxyI(0xf6d9979499491c1c0c9ef518860f4476c1cd551a);
       return true;
     }
@@ -124,9 +124,9 @@ contract Dice is etherandomized {
 
   address owner;
   uint pendingAmount;
-  mapping (bytes32 =&gt; Roll) pendingSeed;
-  mapping (bytes32 =&gt; Roll) pendingExec;
-  mapping (bytes32 =&gt; bytes32) serverSeedHashes;
+  mapping (bytes32 => Roll) pendingSeed;
+  mapping (bytes32 => Roll) pendingExec;
+  mapping (bytes32 => bytes32) serverSeedHashes;
 
   function Dice() {
     owner = msg.sender;
@@ -137,11 +137,11 @@ contract Dice is etherandomized {
   }
 
   function roll() {
-    rollWithSeed(&quot;&quot;);
+    rollWithSeed("");
   }
 
   function rollWithSeed(bytes32 clientSeed) {
-    if ( (msg.value != 1) || (getAvailable() &lt; 2)) throw;
+    if ( (msg.value != 1) || (getAvailable() < 2)) throw;
     bytes32 _id = etherandomSeed();
     pendingSeed[_id] = Roll({bettor: msg.sender, clientSeed: clientSeed});
     pendingAmount = pendingAmount + 2;
@@ -164,7 +164,7 @@ contract Dice is etherandomized {
     pendingAmount = pendingAmount - 2;
 
     if (etherandomVerify(serverSeedHash, serverSeed, roll.clientSeed, 100, randomNumber)) {
-      if (randomNumber &lt; 50) roll.bettor.send(2);
+      if (randomNumber < 50) roll.bettor.send(2);
     } else {
       roll.bettor.send(1);
     }

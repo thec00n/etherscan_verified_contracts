@@ -68,8 +68,8 @@ contract MultiCertifier is Owned, Certifier {
 	function addDelegate(address _new) public only_owner { delegates[_new] = true; }
 	function removeDelegate(address _old) public only_owner { delete delegates[_old]; }
 
-	mapping (address =&gt; Certification) certs;
-	mapping (address =&gt; bool) delegates;
+	mapping (address => Certification) certs;
+	mapping (address => bool) delegates;
 
 	/// Unused interface methods.
 	function get(address, string) public constant returns (bytes32) {}

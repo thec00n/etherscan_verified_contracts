@@ -24,8 +24,8 @@ contract Token
 	string internal _name;
 	uint8 internal _decimals;	
     uint256 internal _totalSupply;
-   	mapping(address =&gt;uint) internal _balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint)) internal _allowances;
+   	mapping(address =>uint) internal _balanceOf;
+	mapping(address => mapping(address => uint)) internal _allowances;
 
     function Token(string symbol, string name, uint8 decimals, uint256 totalSupply) public{
 	    _symbol = symbol;
@@ -72,7 +72,7 @@ contract admined{
 	}
 }
 
-contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,50000000000000000000000000),ERC20,ERC223,admined
+contract MyToken is Token("TLT","TalentAgency Coin",8,50000000000000000000000000),ERC20,ERC223,admined
 {   
     uint256 public sellPrice;
     uint256 public buyPrice;
@@ -91,7 +91,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != 0x0);
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         uint previousBalances = _balanceOf[_from] + _balanceOf[_to];
         _balanceOf[_from] -= _value;
         _balanceOf[_to]+=_value;
@@ -107,7 +107,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
 	}
 	
 	function transferFrom(address _from, address _to, uint256 _value)public returns(bool){
-    	require(_allowances[_from][msg.sender] &gt;= _value);
+    	require(_allowances[_from][msg.sender] >= _value);
     	{
 			_allowances[_from][msg.sender] -= _value;
 			Transfer(_from, _to, _value);            
@@ -118,7 +118,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
 
 	function transfer(address _to, uint _value, bytes _data)public returns(bool)
 	{
-	    require(_value&gt;0 &amp;&amp; _value &lt;= _balanceOf[msg.sender]);
+	    require(_value>0 && _value <= _balanceOf[msg.sender]);
 		if(isContract(_to))
 		{
 			_balanceOf[msg.sender]-= _value;
@@ -137,7 +137,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
 		{
 		    codeLength := extcodesize(_addr)
 	    }
-		return codeLength &gt; 0;
+		return codeLength > 0;
 	}	
     
 	function approve(address _spender, uint _value) public returns (bool)
@@ -160,7 +160,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
     function buy () public payable
 	{
 		uint256 amount = (msg.value/(1 ether))/ buyPrice;
-		require(_balanceOf[this]&lt; amount);
+		require(_balanceOf[this]< amount);
 		_balanceOf[msg.sender]+=amount;
 		_balanceOf[this]-=amount;
 		Transfer(this,msg.sender,amount);
@@ -168,7 +168,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;TalentAgency Coin&quot;,8,500000
 
 	function sell(uint256 amount) public
 	{
-		require(_balanceOf[msg.sender]&lt;amount);
+		require(_balanceOf[msg.sender]<amount);
 		_balanceOf[this]+= amount;
 		_balanceOf[msg.sender]-=amount;
 		require(!msg.sender.send(amount*sellPrice * 1 ether));

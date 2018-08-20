@@ -15,7 +15,7 @@ contract SafeMath {
   //internals
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   function assert(bool assertion) internal {
@@ -26,7 +26,7 @@ contract SafeMath {
 contract Investment is SafeMath{
 	Crowdsale public ico;
 	address[] public investors;
-	mapping(address =&gt; uint) public balanceOf;
+	mapping(address => uint) public balanceOf;
 
 
 	/** constructs an investment contract for an ICO contract **/
@@ -44,7 +44,7 @@ contract Investment is SafeMath{
 
 	/** checks if the address already invested **/
 	function isInvestor(address who) returns (bool){
-		for(uint i = 0; i&lt; investors.length; i++)
+		for(uint i = 0; i< investors.length; i++)
 			if(investors[i] == who)
 				return true;
 		return false;
@@ -55,10 +55,10 @@ contract Investment is SafeMath{
 	*   This function will be called as soon as the ICO starts and as often as necessary, until all investments were made. **/
 	function buyTokens(uint from, uint to){
 		uint amount;
-		if(to&gt;investors.length)
+		if(to>investors.length)
 			to = investors.length;
-		for(uint i = from; i &lt; to; i++){
-			if(balanceOf[investors[i]]&gt;0){
+		for(uint i = from; i < to; i++){
+			if(balanceOf[investors[i]]>0){
 				amount = balanceOf[investors[i]];
 				delete balanceOf[investors[i]];
 				ico.invest.value(amount)(investors[i]);

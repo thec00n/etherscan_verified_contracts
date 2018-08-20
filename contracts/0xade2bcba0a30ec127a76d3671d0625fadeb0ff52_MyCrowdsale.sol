@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -56,7 +56,7 @@ contract owned {
 contract Crowdsale is owned {
 	    
 	    uint256 public totalSupply;
-	    mapping (address =&gt; uint256) public balanceOf;
+	    mapping (address => uint256) public balanceOf;
 
 
 	    event Transfer(address indexed from, address indexed to, uint256 value);
@@ -73,15 +73,15 @@ contract Crowdsale is owned {
 
 
 	    function () payable public {
-	        require(balanceOf[this] &gt; 0);
+	        require(balanceOf[this] > 0);
 	        uint256 tokensPerOneEther = 10000;
 	        uint256 tokens = tokensPerOneEther * msg.value / 1000000000000000000;
-	        if (tokens &gt; balanceOf[this]) {
+	        if (tokens > balanceOf[this]) {
 	            tokens = balanceOf[this];
 	            uint valueWei = tokens * 1000000000000000000 / tokensPerOneEther;
 	            msg.sender.transfer(msg.value - valueWei);
 	        }
-	        require(tokens &gt; 0);
+	        require(tokens > 0);
 	        balanceOf[msg.sender] += tokens;
 	        balanceOf[this] -= tokens;
 	        Transfer(this, msg.sender, tokens);
@@ -89,9 +89,9 @@ contract Crowdsale is owned {
 	}
 contract MyToken is Crowdsale {
 	    
-	    string  public standard    = &#39;Token 0.1&#39;;
-	    string  public name        = &#39;MARIO Fans Token&#39;;
-	    string  public symbol      = &quot;MARIO&quot;;
+	    string  public standard    = 'Token 0.1';
+	    string  public name        = 'MARIO Fans Token';
+	    string  public symbol      = "MARIO";
 	    uint8   public decimals    = 0;
 
 
@@ -99,7 +99,7 @@ contract MyToken is Crowdsale {
 
 
 	    function transfer(address _to, uint256 _value) public {
-	        require(balanceOf[msg.sender] &gt;= _value);
+	        require(balanceOf[msg.sender] >= _value);
 	        balanceOf[msg.sender] -= _value;
 	        balanceOf[_to] += _value;
 	        Transfer(msg.sender, _to, _value);

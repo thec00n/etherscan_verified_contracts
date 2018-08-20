@@ -36,20 +36,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -133,29 +133,29 @@ contract RusgasCrowdsale is Owned {
     }
 
     function doPurchase() payable {
-        require(now &gt;= startICO &amp;&amp; now &lt; endICO);
+        require(now >= startICO && now < endICO);
 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint sum = msg.value;
 
         uint tokensAmount;
 
-        if(now &lt; startICO + (21 days)) {
+        if(now < startICO + (21 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase1Price).div(1000000000000000000);//.mul(token.decimals);
-        } else if(now &gt; startICO + (21 days) &amp;&amp; now &lt; startICO + (28 days)) {
+        } else if(now > startICO + (21 days) && now < startICO + (28 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase2Price).div(1000000000000000000);//.mul(token.decimals);
-        } else if(now &gt; startICO + (28 days) &amp;&amp; now &lt; startICO + (35 days)) {
+        } else if(now > startICO + (28 days) && now < startICO + (35 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase3Price).div(1000000000000000000);//.mul(token.decimals);
-        }else if(now &gt; startICO + (35 days) &amp;&amp; now &lt; startICO + (42 days)) {
+        }else if(now > startICO + (35 days) && now < startICO + (42 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase4Price).div(1000000000000000000);//.mul(token.decimals);
-        }else if(now &gt; startICO + (42 days) &amp;&amp; now &lt; startICO + (49 days)) {
+        }else if(now > startICO + (42 days) && now < startICO + (49 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase5Price).div(1000000000000000000);//.mul(token.decimals);
-        }else if(now &gt; startICO + (49 days) &amp;&amp; now &lt; startICO + (56 days)) {
+        }else if(now > startICO + (49 days) && now < startICO + (56 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase6Price).div(1000000000000000000);//.mul(token.decimals);
-        }else if(now &gt; startICO + (56 days) &amp;&amp; now &lt; startICO + (63 days)) {
+        }else if(now > startICO + (56 days) && now < startICO + (63 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase7Price).div(1000000000000000000);//.mul(token.decimals);
-        }else if(now &gt; startICO + (63 days) &amp;&amp; now &lt; startICO + (70 days)) {
+        }else if(now > startICO + (63 days) && now < startICO + (70 days)) {
             tokensAmount = sum.mul(ETHUSD).mul(phase8Price).div(1000000000000000000);//.mul(token.decimals);
         }
         else
@@ -163,7 +163,7 @@ contract RusgasCrowdsale is Owned {
             tokensAmount = sum.mul(ETHUSD).mul(phase9Price).div(1000000000000000000);
         }
 
-        if(tokenBalance() &gt; tokensAmount){
+        if(tokenBalance() > tokensAmount){
             require(token.transfer(msg.sender, tokensAmount));
             multisig.transfer(msg.value);
         } else {

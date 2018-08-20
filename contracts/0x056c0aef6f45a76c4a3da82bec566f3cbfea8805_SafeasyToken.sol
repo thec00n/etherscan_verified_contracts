@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -101,15 +101,15 @@ contract Controlled is Ownable{
         _;
     }
 
-    mapping(address =&gt; bool) admins;
+    mapping(address => bool) admins;
 
     // Flag that determines if the token is transferable or not.
     bool public transferEnabled = false;
 
     // frozen account
-    mapping(address =&gt; bool) exclude;
-    mapping(address =&gt; bool) locked;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) exclude;
+    mapping(address => bool) locked;
+    mapping(address => bool) public frozenAccount;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -163,14 +163,14 @@ contract TokenERC20 is  ERC20, BurnableToken, Controlled {
     string public name;
     string public symbol;
     uint8 public decimals = 18;
-    string public version = &#39;v1.0&#39;;
+    string public version = 'v1.0';
 
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
 
     // This creates an array with all balanceOf
-    mapping (address =&gt; uint256)  public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256))  public allowance;
+    mapping (address => uint256)  public balanceOf;
+    mapping (address => mapping (address => uint256))  public allowance;
 
 
     function totalSupply() public view returns (uint supply){
@@ -194,9 +194,9 @@ contract TokenERC20 is  ERC20, BurnableToken, Controlled {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -231,7 +231,7 @@ contract TokenERC20 is  ERC20, BurnableToken, Controlled {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) transferAllowed(_from) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -278,7 +278,7 @@ contract TokenERC20 is  ERC20, BurnableToken, Controlled {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -294,10 +294,10 @@ contract TokenERC20 is  ERC20, BurnableToken, Controlled {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -321,12 +321,12 @@ contract AdvancedToken is  TokenERC20 {
     // @param _owners The owners list of the token
     // @param _values The value list of the token (value = _value * 10 ** decimals)
     function allocateTokens(address[] _owners, uint256[] _values) public onlyOwner {
-        require(allocateEndTime &gt; now);
+        require(allocateEndTime > now);
         require(_owners.length == _values.length);
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address to = _owners[i];
             uint256 value = _values[i] * 10 ** uint256(decimals);
-            require(totalSupply + value &gt; totalSupply &amp;&amp; balanceOf[to] + value &gt; balanceOf[to]) ;
+            require(totalSupply + value > totalSupply && balanceOf[to] + value > balanceOf[to]) ;
             totalSupply += value;
             balanceOf[to] += value;
         }
@@ -344,36 +344,36 @@ contract AdvancedToken is  TokenERC20 {
     bool enableAirdrop = false;
     uint256 public totalAirdrop;
     uint256 remainAirdrop;
-    mapping (address =&gt; bool) dropList;
+    mapping (address => bool) dropList;
     uint256 public airdropValue;
 
 
     modifier canEarlyStage() {
-        require(enableEarlyStage &amp;&amp; remainEarlyStage&gt;0 &amp;&amp; earlyStagePrice&gt;0 &amp;&amp; balanceOf[this]&gt;0);
+        require(enableEarlyStage && remainEarlyStage>0 && earlyStagePrice>0 && balanceOf[this]>0);
         _;
     }
 
     modifier canAirdrop() {
-        require(enableAirdrop &amp;&amp; remainAirdrop&gt;0);
+        require(enableAirdrop && remainAirdrop>0);
         _;
     }
 
     modifier canGetTokens() {
-        require(enableAirdrop &amp;&amp; remainAirdrop&gt;0 &amp;&amp;  airdropValue&gt;0);
+        require(enableAirdrop && remainAirdrop>0 &&  airdropValue>0);
         require(dropList[msg.sender] == false);
         _;
     }
 
     function setEarlyParams (bool isEarlyStage, uint256 _price, uint256 _earlyStageGiftRate) onlyOwner public {
         if(isEarlyStage){
-            require(_price&gt;0);
-            require(_earlyStageGiftRate&gt;=0 &amp;&amp; _earlyStageGiftRate&lt;= 10000 );
+            require(_price>0);
+            require(_earlyStageGiftRate>=0 && _earlyStageGiftRate<= 10000 );
         }
         enableEarlyStage = isEarlyStage;
-        if(_price&gt;0){
+        if(_price>0){
             earlyStagePrice = _price;
         }
-        if(_earlyStageGiftRate&gt;0){
+        if(_earlyStageGiftRate>0){
             earlyStageGiftRate = _earlyStageGiftRate;
         }
 
@@ -381,14 +381,14 @@ contract AdvancedToken is  TokenERC20 {
 
     function setAirdropParams (bool isAirdrop, uint256 _value) onlyAdmin public {
         if(isAirdrop){
-            require(_value&gt;0);
+            require(_value>0);
         }
         airdropValue = _value;
     }
 
 
     function setAirdorpList(address[] addresses, bool hasDrop) onlyAdmin public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             dropList[addresses[i]] = hasDrop;
         }
     }
@@ -401,12 +401,12 @@ contract AdvancedToken is  TokenERC20 {
 
     function _buy(uint256 value)  private returns(uint256){
         uint256 amount = 0;
-        if(value&gt;0){
+        if(value>0){
             amount = uint256(PRECISION).mul(value).div(earlyStagePrice).div(10**uint256(ETH_DECIMALS-decimals));    // calculates the amount
         }
-        if(amount&gt;0){
+        if(amount>0){
             _transfer(this, msg.sender, amount);
-            if(earlyStageGiftRate&gt;0){
+            if(earlyStageGiftRate>0){
                 _transfer(this, msg.sender, amount.mul(earlyStageGiftRate).div(10000));
             }
         }
@@ -415,25 +415,25 @@ contract AdvancedToken is  TokenERC20 {
 
 
     function () payable public {
-        if(msg.value&gt;0){
+        if(msg.value>0){
             _buy(msg.value);
         }
-        if( enableAirdrop &amp;&amp; remainAirdrop&gt;0  &amp;&amp;  airdropValue&gt;0 &amp;&amp; dropList[msg.sender] == false){
+        if( enableAirdrop && remainAirdrop>0  &&  airdropValue>0 && dropList[msg.sender] == false){
              _getTokens();
         }
     }
 
 
     function _airdrop(address _owner, uint256 _value)  canAirdrop private returns(bool) {
-        require(_value&gt;0);
+        require(_value>0);
         _transfer(this, _owner, _value);
         return true;
     }
 
      // drop token
     function airdrop(address[] _owners, uint256 _value) onlyAdmin canAirdrop public {
-         require(_value&gt;0 &amp;&amp; remainAirdrop&gt;= _value * _owners.length);
-         for(uint256 i = 0; i &lt; _owners.length ; i++){
+         require(_value>0 && remainAirdrop>= _value * _owners.length);
+         for(uint256 i = 0; i < _owners.length ; i++){
              _airdrop(_owners[i], _value);
         }
      }
@@ -442,7 +442,7 @@ contract AdvancedToken is  TokenERC20 {
     function _getTokens()  private returns(bool) {
         address investor = msg.sender;
         uint256 toGive = airdropValue;
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             _airdrop(investor, toGive);
             dropList[investor] = true;
         }
@@ -462,17 +462,17 @@ contract AdvancedToken is  TokenERC20 {
     */
     function transferProxy(address _from, address _to, uint256 _value, uint256 _feeProxy,
         uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){
-        require(_value + _feeProxy &gt;= _value);
-        require(balanceOf[_from] &gt;=_value  + _feeProxy);
+        require(_value + _feeProxy >= _value);
+        require(balanceOf[_from] >=_value  + _feeProxy);
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value,_feeProxy,nonce);
         require(_from == ecrecover(h,_v,_r,_s));
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-        require(balanceOf[msg.sender] + _feeProxy &gt; balanceOf[msg.sender]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
+        require(balanceOf[msg.sender] + _feeProxy > balanceOf[msg.sender]);
         balanceOf[_from] -= (_value  + _feeProxy);
         balanceOf[_to] += _value;
         Transfer(_from, _to, _value);
-        if(_feeProxy&gt;0){
+        if(_feeProxy>0){
             balanceOf[msg.sender] += _feeProxy;
             Transfer(_from, msg.sender, _feeProxy);
         }
@@ -504,7 +504,7 @@ contract AdvancedToken is  TokenERC20 {
 
 
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
     /*
      * Get the nonce
@@ -520,10 +520,10 @@ contract AdvancedToken is  TokenERC20 {
 contract SafeasyToken is AdvancedToken {
 
    function SafeasyToken() public{
-        name = &quot;Safeasy Token&quot;;
+        name = "Safeasy Token";
         decimals = 6;
-        symbol = &quot;SET&quot;;
-        version = &#39;v1.1&#39;;
+        symbol = "SET";
+        version = 'v1.1';
 
         uint256 initialSupply = uint256(2* 10 ** 9);
         totalSupply = initialSupply.mul( 10 ** uint256(decimals));

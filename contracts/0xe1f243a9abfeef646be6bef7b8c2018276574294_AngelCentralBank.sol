@@ -4,7 +4,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -54,20 +54,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,7 +95,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -144,7 +144,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -210,8 +210,8 @@ contract Manageable is Ownable {
 
   /* Storage */
 
-  mapping (address =&gt; bool) managerEnabled;  // hard switch for a manager - on/off
-  mapping (address =&gt; mapping (string =&gt; bool)) managerPermissions;  // detailed info about manager`s permissions
+  mapping (address => bool) managerEnabled;  // hard switch for a manager - on/off
+  mapping (address => mapping (string => bool)) managerPermissions;  // detailed info about manager`s permissions
 
 
   /* Events */
@@ -329,7 +329,7 @@ contract Manageable is Ownable {
     onlyValidPermissionName(_permissionName)
     returns (bool)
   {
-    return (managerEnabled[_manager] &amp;&amp; managerPermissions[_manager][_permissionName]);
+    return (managerEnabled[_manager] && managerPermissions[_manager][_permissionName]);
   }
 
 
@@ -368,7 +368,7 @@ contract Manageable is Ownable {
 /**
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract Pausable is Manageable {
@@ -407,7 +407,7 @@ contract Pausable is Manageable {
   /**
    * @dev called by the manager to pause, triggers stopped state
    */
-  function pauseContract() external onlyAllowedManager(&#39;pause_contract&#39;) whenContractNotPaused {
+  function pauseContract() external onlyAllowedManager('pause_contract') whenContractNotPaused {
     paused = true;
     PauseEvent();
   }
@@ -415,13 +415,13 @@ contract Pausable is Manageable {
   /**
    * @dev called by the manager to unpause, returns to normal state
    */
-  function unpauseContract() external onlyAllowedManager(&#39;unpause_contract&#39;) whenContractPaused {
+  function unpauseContract() external onlyAllowedManager('unpause_contract') whenContractPaused {
     paused = false;
     UnpauseEvent();
   }
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() external constant returns (bool) {
     return paused;
@@ -481,12 +481,12 @@ contract AngelToken is StandardToken, NamedToken, Pausable {
   /* Storage */
 
   address public centralBankAddress = 0x0;
-  mapping (address =&gt; uint) spendingBlocksNumber;
+  mapping (address => uint) spendingBlocksNumber;
 
 
   /* Constructor */
 
-  function AngelToken() public NamedToken(&#39;Angel Token&#39;, &#39;ANGL&#39;, 18) {
+  function AngelToken() public NamedToken('Angel Token', 'ANGL', 18) {
     centralBankAddress = msg.sender;
   }
 
@@ -500,7 +500,7 @@ contract AngelToken is StandardToken, NamedToken, Pausable {
     require(spendingBlocksNumber[msg.sender] == 0);
 
     bool result = super.transfer(_to, _value);
-    if (result == true &amp;&amp; _to == centralBankAddress) {
+    if (result == true && _to == centralBankAddress) {
       AngelCentralBank(centralBankAddress).angelBurn(msg.sender, _value);
     }
     return result;
@@ -514,32 +514,32 @@ contract AngelToken is StandardToken, NamedToken, Pausable {
     require(spendingBlocksNumber[_from] == 0);
 
     bool result = super.transferFrom(_from, _to, _value);
-    if (result == true &amp;&amp; _to == centralBankAddress) {
+    if (result == true && _to == centralBankAddress) {
       AngelCentralBank(centralBankAddress).angelBurn(_from, _value);
     }
     return result;
   }
 
 
-  function mint(address _account, uint _value) external onlyAllowedManager(&#39;mint_tokens&#39;) {
+  function mint(address _account, uint _value) external onlyAllowedManager('mint_tokens') {
     balances[_account] = balances[_account].add(_value);
     totalSupply = totalSupply.add(_value);
     MintEvent(_account, _value);
     Transfer(address(0x0), _account, _value); // required for blockexplorers
   }
 
-  function burn(uint _value) external onlyAllowedManager(&#39;burn_tokens&#39;) {
+  function burn(uint _value) external onlyAllowedManager('burn_tokens') {
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     BurnEvent(msg.sender, _value);
   }
 
-  function blockSpending(address _account) external onlyAllowedManager(&#39;block_spending&#39;) {
+  function blockSpending(address _account) external onlyAllowedManager('block_spending') {
     spendingBlocksNumber[_account] = spendingBlocksNumber[_account].add(1);
     SpendingBlockedEvent(_account);
   }
 
-  function unblockSpending(address _account) external onlyAllowedManager(&#39;unblock_spending&#39;) {
+  function unblockSpending(address _account) external onlyAllowedManager('unblock_spending') {
     spendingBlocksNumber[_account] = spendingBlocksNumber[_account].sub(1);
     SpendingUnblockedEvent(_account);
   }
@@ -599,8 +599,8 @@ contract AngelCentralBank {
 
   AngelToken public angelToken;
 
-  mapping (address =&gt; InvestmentRecord[]) public investments; // investorAddress =&gt; list of investments
-  mapping (address =&gt; bool) public investors;
+  mapping (address => InvestmentRecord[]) public investments; // investorAddress => list of investments
+  mapping (address => bool) public investors;
   uint public totalInvestors = 0;
   uint public totalTokensSold = 0;
 
@@ -619,9 +619,9 @@ contract AngelCentralBank {
   function AngelCentralBank() public {
     angelToken = new AngelToken();
     angelToken.enableManager(address(this));
-    angelToken.grantManagerPermission(address(this), &#39;mint_tokens&#39;);
-    angelToken.grantManagerPermission(address(this), &#39;burn_tokens&#39;);
-    angelToken.grantManagerPermission(address(this), &#39;unpause_contract&#39;);
+    angelToken.grantManagerPermission(address(this), 'mint_tokens');
+    angelToken.grantManagerPermission(address(this), 'burn_tokens');
+    angelToken.grantManagerPermission(address(this), 'unpause_contract');
     angelToken.transferOwnership(angelFoundationAddress);
   }
 
@@ -638,8 +638,8 @@ contract AngelCentralBank {
    * @dev Process new ETH investment and sends tokens back
    */
   function angelRaise() internal {
-    require(msg.value &gt; 0);
-    require(now &gt;= icoLaunchTimestamp &amp;&amp; now &lt; icoFinishTimestamp);
+    require(msg.value > 0);
+    require(now >= icoLaunchTimestamp && now < icoFinishTimestamp);
 
     // calculate amount of tokens for received ETH
     uint _purchasedTokensWei = 0;
@@ -668,12 +668,12 @@ contract AngelCentralBank {
     angelToken.mint(angelFoundationAddress,
                     _purchasedTokensWei * angelFoundationShareNumerator / (angelFoundationShareDenominator - angelFoundationShareNumerator));
     angelFoundationAddress.transfer(_actualInvestment * initialFundsReleaseNumerator / initialFundsReleaseDenominator);
-    if (_notProcessedEthWei &gt; 0) {
+    if (_notProcessedEthWei > 0) {
       msg.sender.transfer(_notProcessedEthWei);
     }
 
     // finish ICO if cap reached
-    if (totalTokensSold &gt;= icoCap) {
+    if (totalTokensSold >= icoCap) {
       icoFinishTimestamp = now;
 
       finishIco();
@@ -705,14 +705,14 @@ contract AngelCentralBank {
       // get landmark values
       _landmarkPrice = calculateLandmarkPrice(_totalTokensSoldBefore + _purchasedTokensWei);
       _maxLandmarkTokensWei = landmarkSize - ((_totalTokensSoldBefore + _purchasedTokensWei) % landmarkSize);
-      if (_totalTokensSoldBefore + _purchasedTokensWei + _maxLandmarkTokensWei &gt;= icoCap) {
+      if (_totalTokensSoldBefore + _purchasedTokensWei + _maxLandmarkTokensWei >= icoCap) {
         _maxLandmarkTokensWei = icoCap - _totalTokensSoldBefore - _purchasedTokensWei;
         _isCapReached = true;
       }
       _maxLandmarkEthWei = _maxLandmarkTokensWei * _landmarkPrice / (10 ** 18);
 
       // check investment against landmark values
-      if (_notProcessedEthWei &gt;= _maxLandmarkEthWei) {
+      if (_notProcessedEthWei >= _maxLandmarkEthWei) {
         _purchasedTokensWei += _maxLandmarkTokensWei;
         _notProcessedEthWei -= _maxLandmarkEthWei;
       }
@@ -721,9 +721,9 @@ contract AngelCentralBank {
         _notProcessedEthWei = 0;
       }
     }
-    while ((_notProcessedEthWei &gt; 0) &amp;&amp; (_isCapReached == false));
+    while ((_notProcessedEthWei > 0) && (_isCapReached == false));
 
-    assert(_purchasedTokensWei &gt; 0);
+    assert(_purchasedTokensWei > 0);
 
     return (_purchasedTokensWei, _notProcessedEthWei);
   }
@@ -738,7 +738,7 @@ contract AngelCentralBank {
     external returns (uint)
   {
     require(msg.sender == address(angelToken));
-    require(now &gt;= icoLaunchTimestamp &amp;&amp; now &lt; secondRefundRoundFinishTimestamp);
+    require(now >= icoLaunchTimestamp && now < secondRefundRoundFinishTimestamp);
 
     uint _notProcessedTokensWei = _returnedTokensWei;
     uint _refundedEthWei = 0;
@@ -749,9 +749,9 @@ contract AngelCentralBank {
     uint _tokensSoldWei = 0;
     uint _recordRefundedEthWei = 0;
     uint _recordNotProcessedTokensWei = 0;
-    for (uint _recordID = 0; _recordID &lt; _allRecordsNumber; _recordID += 1) {
-      if (investments[_investor][_recordID].purchasedTokensWei &lt;= investments[_investor][_recordID].returnedTokensWei ||
-          investments[_investor][_recordID].investedEthWei &lt;= investments[_investor][_recordID].refundedEthWei) {
+    for (uint _recordID = 0; _recordID < _allRecordsNumber; _recordID += 1) {
+      if (investments[_investor][_recordID].purchasedTokensWei <= investments[_investor][_recordID].returnedTokensWei ||
+          investments[_investor][_recordID].investedEthWei <= investments[_investor][_recordID].refundedEthWei) {
         // tokens already refunded
         continue;
       }
@@ -759,18 +759,18 @@ contract AngelCentralBank {
       // calculate amount of tokens to refund with this record
       _recordMaxReturnedTokensWei = investments[_investor][_recordID].purchasedTokensWei -
                                     investments[_investor][_recordID].returnedTokensWei;
-      _recordTokensWeiToProcess = (_notProcessedTokensWei &lt; _recordMaxReturnedTokensWei) ? _notProcessedTokensWei :
+      _recordTokensWeiToProcess = (_notProcessedTokensWei < _recordMaxReturnedTokensWei) ? _notProcessedTokensWei :
                                                                                            _recordMaxReturnedTokensWei;
-      assert(_recordTokensWeiToProcess &gt; 0);
+      assert(_recordTokensWeiToProcess > 0);
 
       // calculate amount of ETH to send back
       _tokensSoldWei = investments[_investor][_recordID].tokensSoldBeforeWei + investments[_investor][_recordID].returnedTokensWei;
       (_recordRefundedEthWei, _recordNotProcessedTokensWei) = calculateRefundedEth(_tokensSoldWei, _recordTokensWeiToProcess);
-      if (_recordRefundedEthWei &gt; (investments[_investor][_recordID].investedEthWei - investments[_investor][_recordID].refundedEthWei)) {
+      if (_recordRefundedEthWei > (investments[_investor][_recordID].investedEthWei - investments[_investor][_recordID].refundedEthWei)) {
         // this can happen due to rounding error
         _recordRefundedEthWei = (investments[_investor][_recordID].investedEthWei - investments[_investor][_recordID].refundedEthWei);
       }
-      assert(_recordRefundedEthWei &gt; 0);
+      assert(_recordRefundedEthWei > 0);
       assert(_recordNotProcessedTokensWei == 0);
 
       // persist changes to the storage
@@ -779,8 +779,8 @@ contract AngelCentralBank {
 
       investments[_investor][_recordID].refundedEthWei += _recordRefundedEthWei;
       investments[_investor][_recordID].returnedTokensWei += _recordTokensWeiToProcess;
-      assert(investments[_investor][_recordID].refundedEthWei &lt;= investments[_investor][_recordID].investedEthWei);
-      assert(investments[_investor][_recordID].returnedTokensWei &lt;= investments[_investor][_recordID].purchasedTokensWei);
+      assert(investments[_investor][_recordID].refundedEthWei <= investments[_investor][_recordID].investedEthWei);
+      assert(investments[_investor][_recordID].returnedTokensWei <= investments[_investor][_recordID].purchasedTokensWei);
 
       // stop if we already refunded all tokens
       if (_notProcessedTokensWei == 0) {
@@ -789,15 +789,15 @@ contract AngelCentralBank {
     }
 
     // throw if we do not have tokens to refund
-    require(_notProcessedTokensWei &lt; _returnedTokensWei);
-    require(_refundedEthWei &gt; 0);
+    require(_notProcessedTokensWei < _returnedTokensWei);
+    require(_refundedEthWei > 0);
 
     // calculate refund discount
     uint _refundedEthWeiWithDiscount = calculateRefundedEthWithDiscount(_refundedEthWei);
 
     // transfer ETH and remaining tokens
     angelToken.burn(_returnedTokensWei - _notProcessedTokensWei);
-    if (_notProcessedTokensWei &gt; 0) {
+    if (_notProcessedTokensWei > 0) {
       angelToken.transfer(_investor, _notProcessedTokensWei);
     }
     _investor.transfer(_refundedEthWeiWithDiscount);
@@ -816,7 +816,7 @@ contract AngelCentralBank {
   )
     public constant returns (uint)
   {
-    if (now &lt;= firstRefundRoundFinishTimestamp) {
+    if (now <= firstRefundRoundFinishTimestamp) {
       return (_refundedEthWei * firstRefundRoundRateNumerator / firstRefundRoundRateDenominator);
     }
     else {
@@ -848,14 +848,14 @@ contract AngelCentralBank {
       // get landmark values
       _landmarkPrice = calculateLandmarkPrice(_totalTokensSoldBefore + _refundedTokensWei);
       _maxLandmarkTokensWei = landmarkSize - ((_totalTokensSoldBefore + _refundedTokensWei) % landmarkSize);
-      if (_totalTokensSoldBefore + _refundedTokensWei + _maxLandmarkTokensWei &gt;= icoCap) {
+      if (_totalTokensSoldBefore + _refundedTokensWei + _maxLandmarkTokensWei >= icoCap) {
         _maxLandmarkTokensWei = icoCap - _totalTokensSoldBefore - _refundedTokensWei;
         _isCapReached = true;
       }
       _maxLandmarkEthWei = _maxLandmarkTokensWei * _landmarkPrice / (10 ** 18);
 
       // check investment against landmark values
-      if (_notProcessedTokensWei &gt; _maxLandmarkTokensWei) {
+      if (_notProcessedTokensWei > _maxLandmarkTokensWei) {
         _refundedEthWei += _maxLandmarkEthWei;
         _refundedTokensWei += _maxLandmarkTokensWei;
         _notProcessedTokensWei -= _maxLandmarkTokensWei;
@@ -866,9 +866,9 @@ contract AngelCentralBank {
         _notProcessedTokensWei = 0;
       }
     }
-    while ((_notProcessedTokensWei &gt; 0) &amp;&amp; (_isCapReached == false));
+    while ((_notProcessedTokensWei > 0) && (_isCapReached == false));
 
-    assert(_refundedEthWei &gt; 0);
+    assert(_refundedEthWei > 0);
 
     return (_refundedEthWei, _notProcessedTokensWei);
   }
@@ -891,7 +891,7 @@ contract AngelCentralBank {
   /* Lifecycle */
 
   function finishIco() public {
-    require(now &gt;= icoFinishTimestamp);
+    require(now >= icoFinishTimestamp);
     require(isIcoFinished == false);
 
     isIcoFinished = true;
@@ -900,9 +900,9 @@ contract AngelCentralBank {
   }
 
   function withdrawFoundationFunds() external {
-    require(now &gt; firstRefundRoundFinishTimestamp);
+    require(now > firstRefundRoundFinishTimestamp);
 
-    if (now &gt; firstRefundRoundFinishTimestamp &amp;&amp; now &lt;= secondRefundRoundFinishTimestamp) {
+    if (now > firstRefundRoundFinishTimestamp && now <= secondRefundRoundFinishTimestamp) {
       require(firstRefundRoundFundsWithdrawal == false);
 
       firstRefundRoundFundsWithdrawal = true;

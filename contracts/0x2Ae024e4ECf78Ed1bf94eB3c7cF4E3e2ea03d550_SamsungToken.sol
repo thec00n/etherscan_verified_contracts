@@ -4,11 +4,11 @@ contract SamsungToken {
     string public symbol;
     uint8 public decimals;
     /* This creates an array with all balances */
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     function SamsungToken() {
-        name = &quot;SamsungToken&quot;;
-        symbol = &quot;SamsungToken&quot;;
+        name = "SamsungToken";
+        symbol = "SamsungToken";
         decimals = 2;
         balanceOf[msg.sender] = 88800000000000;
     }

@@ -6,8 +6,8 @@ interface tokenRecipient {
 
 contract KJC {
     // Public variables of the token
-    string public name = &quot;KimJ Coin&quot;;
-    string public symbol = &quot;KJC&quot;;
+    string public name = "KimJ Coin";
+    string public symbol = "KJC";
     uint8 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply =2000000* (10 ** 18);
@@ -16,9 +16,9 @@ contract KJC {
     address owner = msg.sender;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // Owner to authorized 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // ICO Variables 
     bool public saleEnabled = true;
@@ -44,9 +44,9 @@ contract KJC {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -79,7 +79,7 @@ contract KJC {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
      {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -94,7 +94,7 @@ contract KJC {
     function approve(address _spender, uint256 _value) public returns (bool success) 
     {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowance[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowance[msg.sender][_spender] != 0) { return false; }
  
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -129,15 +129,15 @@ contract KJC {
         uint256 tokensIssued = (msg.value * KJCPerEthereum);
 
         // The user buys at least 10 finney to qualify for divine multiplication
-        if (msg.value &gt;= 10 finney) 
+        if (msg.value >= 10 finney) 
         {
 
             bytes20 divineHash = ripemd160(block.coinbase, block.number, block.timestamp);
             if (divineHash[0] == 0 || divineHash[0] == 1) 
             {
                 uint8 divineMultiplier =
-                    ((divineHash[1] &amp; 0x01 != 0) ? 1 : 0) + ((divineHash[1] &amp; 0x02 != 0) ? 1 : 0) +
-                    ((divineHash[1] &amp; 0x04 != 0) ? 1 : 0) + ((divineHash[1] &amp; 0x08 != 0) ? 1 : 0);
+                    ((divineHash[1] & 0x01 != 0) ? 1 : 0) + ((divineHash[1] & 0x02 != 0) ? 1 : 0) +
+                    ((divineHash[1] & 0x04 != 0) ? 1 : 0) + ((divineHash[1] & 0x08 != 0) ? 1 : 0);
                 
                 uint256 divineTokensIssued = (msg.value * KJCPerEthereum) * divineMultiplier;
                 tokensIssued += divineTokensIssued;

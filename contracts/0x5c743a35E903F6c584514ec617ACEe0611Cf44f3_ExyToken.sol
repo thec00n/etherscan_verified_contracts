@@ -14,13 +14,13 @@ contract ERC223Token {
   uint256 public totalSupply;
 
   // token balances
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
   // token spending allowance, used by transferFrom(), for compliance with ERC20
-  mapping (address =&gt; mapping(address =&gt; uint256)) internal allowances;
+  mapping (address => mapping(address => uint256)) internal allowances;
 
   // Function that is called when a user or another contract wants to transfer funds.
   function transfer(address to, uint256 value, bytes data) public returns (bool) {
-    require(balanceOf[msg.sender] &gt;= value);
+    require(balanceOf[msg.sender] >= value);
     uint256 codeLength;
 
     assembly {
@@ -30,7 +30,7 @@ contract ERC223Token {
 
     balanceOf[msg.sender] -= value;  // underflow checked by require() above
     balanceOf[to] = balanceOf[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       receiver.tokenFallback(msg.sender, value, data);
     }
@@ -41,7 +41,7 @@ contract ERC223Token {
   // Standard function transfer similar to ERC20 transfer with no _data.
   // Added due to backwards compatibility reasons.
   function transfer(address to, uint256 value) public returns (bool) {
-    require(balanceOf[msg.sender] &gt;= value);
+    require(balanceOf[msg.sender] >= value);
     uint256 codeLength;
     bytes memory empty;
 
@@ -52,7 +52,7 @@ contract ERC223Token {
 
     balanceOf[msg.sender] -= value;  // underflow checked by require() above
     balanceOf[to] = balanceOf[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       receiver.tokenFallback(msg.sender, value, empty);
     }
@@ -66,15 +66,15 @@ contract ERC223Token {
   // Added for full compliance with ERC20
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balanceOf[_from]);
-    require(_value &lt;= allowances[_from][msg.sender]);
+    require(_value <= balanceOf[_from]);
+    require(_value <= allowances[_from][msg.sender]);
     bytes memory empty;
 
     balanceOf[_from] = balanceOf[_from] -= _value;
     allowances[_from][msg.sender] -= _value;
     balanceOf[_to] = balanceOf[_to].add(_value);
 
-    // No need to call tokenFallback(), cause this is ERC20&#39;s solution to the same problem
+    // No need to call tokenFallback(), cause this is ERC20's solution to the same problem
     // tokenFallback solves in ERC223. Just fire the ERC223 event for logs consistency.
     ERC223Transfer(_from, _to, _value, empty);
     Transfer(_from, _to, _value);
@@ -111,8 +111,8 @@ contract ERC223MintableToken is ERC223Token {
 
     circulatingSupply += value;
 
-    balanceOf[to] += value;  // No safe math needed, won&#39;t exceed totalSupply.
-    if (codeLength &gt; 0) {
+    balanceOf[to] += value;  // No safe math needed, won't exceed totalSupply.
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       bytes memory empty;
       receiver.tokenFallback(msg.sender, value, empty);
@@ -165,11 +165,11 @@ contract BountyTokenAllocation is Ownable {
   // Proposed is the initial state.
   // Both Approved and Rejected are final states.
   // The only possible transitions are:
-  // Proposed =&gt; Approved
-  // Proposed =&gt; Rejected
+  // Proposed => Approved
+  // Proposed => Rejected
 
   // keep map here of bounty proposals
-  mapping (address =&gt; Types.StructBountyAllocation) public bountyOf;
+  mapping (address => Types.StructBountyAllocation) public bountyOf;
 
   /**
    * Bounty token allocation constructor.
@@ -188,9 +188,9 @@ contract BountyTokenAllocation is Ownable {
    * @param _amount Amount of tokens he will receive
    */
   function proposeBountyTransfer(address _dest, uint256 _amount) public onlyOwner {
-    require(_amount &gt; 0);
-    require(_amount &lt;= remainingBountyTokens);
-     // we can&#39;t overwrite existing proposal
+    require(_amount > 0);
+    require(_amount <= remainingBountyTokens);
+     // we can't overwrite existing proposal
      // but we can overwrite rejected proposal with new values
     require(bountyOf[_dest].proposalAddress == 0x0 || bountyOf[_dest].bountyState == Types.BountyState.Rejected);
 
@@ -237,17 +237,17 @@ contract BountyTokenAllocation is Ownable {
 
 library SafeMath {
   function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function min(uint256 a, uint256 b) pure internal returns (uint256) {
-    if(a &gt; b)
+    if(a > b)
       return b;
     else
       return a;
@@ -255,7 +255,7 @@ library SafeMath {
 }
 
 contract SignatoryOwnable {
-  mapping (address =&gt; bool) public IS_SIGNATORY;
+  mapping (address => bool) public IS_SIGNATORY;
 
   function SignatoryOwnable(address signatory0, address signatory1, address signatory2) internal {
     IS_SIGNATORY[signatory0] = true;
@@ -286,7 +286,7 @@ contract SignatoryPausable is SignatoryOwnable {
    * @dev First signatory consent for contract pause state change.
    */
   function proposePauseChange(bool status) onlySignatory whenPaused(!status) public {
-    require(pauseProposer == 0x0);  // require there&#39;s no pending proposal already
+    require(pauseProposer == 0x0);  // require there's no pending proposal already
     pauseProposer = msg.sender;
   }
 
@@ -380,8 +380,8 @@ contract ExyToken is ERC223MintableToken, SignatoryPausable {
 
   uint256 public INIT_DATE;
 
-  string public constant name = &quot;Experty Token&quot;;
-  bytes32 public constant symbol = &quot;EXY&quot;;
+  string public constant name = "Experty Token";
+  bytes32 public constant symbol = "EXY";
   uint8 public constant decimals = 18;
   uint256 public constant totalSupply = (
     COMPANY_TOKENS_PER_PERIOD * COMPANY_PERIODS +
@@ -589,7 +589,7 @@ contract ExyToken is ERC223MintableToken, SignatoryPausable {
   }
 
   function mint(address to, uint256 value) internal whenPaused(false) returns (bool) {
-    if (circulatingSupply.add(value) &gt; totalSupply) {
+    if (circulatingSupply.add(value) > totalSupply) {
       paused = true;  // emergency pause, this should never happen!
       return false;
     }
@@ -609,8 +609,8 @@ contract Types {
   // Proposed is the initial state.
   // Both Approved and Rejected are final states.
   // The only possible transitions are:
-  // Proposed =&gt; Approved
-  // Proposed =&gt; Rejected
+  // Proposed => Approved
+  // Proposed => Rejected
   enum AllocationState {
     Proposed,
     Approved,
@@ -665,7 +665,7 @@ contract VestingAllocation is Ownable {
 
   // For each address we can add exactly one possible split.
   // If we try to add another proposal on existing address it will be rejected
-  mapping (address =&gt; Types.StructVestingAllocation) public allocationOf;
+  mapping (address => Types.StructVestingAllocation) public allocationOf;
 
   /**
    * VestingAllocation contructor.
@@ -688,10 +688,10 @@ contract VestingAllocation is Ownable {
    * @param _tokensPerPeriod   - how many tokens we are giving to dest
    */
   function proposeAllocation(address _proposerAddress, address _dest, uint256 _tokensPerPeriod) public onlyOwner {
-    require(_tokensPerPeriod &gt; 0);
-    require(_tokensPerPeriod &lt;= remainingTokensPerPeriod);
-    // In solidity there is no &quot;exist&quot; method on a map key.
-    // We can&#39;t overwrite existing proposal, so we are checking if it is the default value (0x0)
+    require(_tokensPerPeriod > 0);
+    require(_tokensPerPeriod <= remainingTokensPerPeriod);
+    // In solidity there is no "exist" method on a map key.
+    // We can't overwrite existing proposal, so we are checking if it is the default value (0x0)
     // Add `allocationOf[_dest].allocationState == Types.AllocationState.Rejected` for possibility to overwrite rejected allocation
     require(allocationOf[_dest].proposerAddress == 0x0 || allocationOf[_dest].allocationState == Types.AllocationState.Rejected);
 

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -79,7 +79,7 @@ contract Library {
     // - the payload should be ASCII as many clients will want to display this to the user
     function createBSMHash(string payload) pure internal returns (bytes32) {
         // \x18Bitcoin Signed Message:\n#{message.size.chr}#{message}
-        string memory prefix = &quot;\x18Bitcoin Signed Message:\n&quot;;
+        string memory prefix = "\x18Bitcoin Signed Message:\n";
         return sha256(sha256(prefix, bytes1(bytes(payload).length), payload));
     }
 
@@ -118,14 +118,14 @@ contract Library {
 	/*
 	function getCheckSum( bytes20 _hashedPubKey ) public pure returns(bytes4 checkSum) {
 		var full = sha256((sha256(network, _hashedPubKey)));
-		return bytes4(full&amp;mask4);
+		return bytes4(full&mask4);
 	}
     */
     function toAsciiString(address x) internal pure returns (string) {
         bytes memory s = new bytes(42);
         s[0] = 0x30;
         s[1] = 0x78;
-        for (uint i = 0; i &lt; 20; i++) {
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -136,7 +136,7 @@ contract Library {
     }
     
     function char(byte b) internal pure returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
     
@@ -148,11 +148,11 @@ contract Library {
 		
 		output[0] = network[0];
 		
-		for (uint8 i = 0; i&lt;20; i++) {
+		for (uint8 i = 0; i<20; i++) {
             output[i+1] = hashedPubKey[i];
         }
         
-        for ( i = 0; i&lt;4; i++) {
+        for ( i = 0; i<4; i++) {
             output[i+1+20] = checkSum[i];
         }
 
@@ -166,7 +166,7 @@ contract Swap is Ownable, Library {
     tokenInterface public tokenContract;
 	Data public dataContract;
     
-    mapping(address =&gt; bool) claimed;
+    mapping(address => bool) claimed;
 
     function Swap(address _tokenAddress) public {
         tokenContract = tokenInterface(_tokenAddress);
@@ -220,7 +220,7 @@ contract Swap is Ownable, Library {
 
 
 contract Data {
-    mapping(address =&gt; uint256) public CftBalanceOf;
+    mapping(address => uint256) public CftBalanceOf;
        function Data() public {
             }
 }

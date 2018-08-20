@@ -22,21 +22,21 @@ pragma solidity ^0.4.21;
 *     ###                                                                                      
 *  
 *       ____
-*      /\&#39; .\    _____
+*      /\' .\    _____
 *     /: \___\  / .  /\
-*     \&#39; / . / /____/..\
-*      \/___/  \&#39;  &#39;\  /
-*               \&#39;__&#39;\/
+*     \' / . / /____/..\
+*      \/___/  \'  '\  /
+*               \'__'\/
 *
 * // Probably Unfair //
 *
 * //*** Developed By:
 *   _____       _         _         _ ___ _         
 *  |_   _|__ __| |_  _ _ (_)__ __ _| | _ (_)___ ___ 
-*    | |/ -_) _| &#39; \| &#39; \| / _/ _` | |   / (_-&lt;/ -_)
+*    | |/ -_) _| ' \| ' \| / _/ _` | |   / (_-</ -_)
 *    |_|\___\__|_||_|_||_|_\__\__,_|_|_|_\_/__/\___|
 *   
-*   &#169; 2018 TechnicalRise.  Written in March 2018.  
+*   © 2018 TechnicalRise.  Written in March 2018.  
 *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
 *   https://www.reddit.com/user/TechnicalRise/
 *  
@@ -54,12 +54,12 @@ contract PHXInterface {
 
 contract usingMathLibraries {
     function safeAdd(uint a, uint b) internal pure returns (uint) {
-        require(a + b &gt;= a);
+        require(a + b >= a);
         return a + b;
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     } 
 
@@ -73,8 +73,8 @@ contract usingMathLibraries {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -83,7 +83,7 @@ contract usingMathLibraries {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 }
@@ -94,7 +94,7 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
      * checks player profit, bet size and player number is within range
     */
     modifier betIsValid(uint _betSize, uint _playerNumber) {      
-        require(((((_betSize * (100-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize &lt; maxProfit &amp;&amp; _betSize &gt; minBet &amp;&amp; _playerNumber &gt; minNumber &amp;&amp; _playerNumber &lt; maxNumber);        
+        require(((((_betSize * (100-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize < maxProfit && _betSize > minBet && _playerNumber > minNumber && _playerNumber < maxNumber);        
 		_;
     }
 
@@ -157,17 +157,17 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
      * player vars
     */
     uint public rngId;
-    mapping (uint =&gt; address) playerAddress;
-    mapping (uint =&gt; uint) playerBetId;
-    mapping (uint =&gt; uint) playerBetValue;
-    mapping (uint =&gt; uint) playerDieResult;
-    mapping (uint =&gt; uint) playerNumber;
-    mapping (uint =&gt; uint) playerProfit;
+    mapping (uint => address) playerAddress;
+    mapping (uint => uint) playerBetId;
+    mapping (uint => uint) playerBetValue;
+    mapping (uint => uint) playerDieResult;
+    mapping (uint => uint) playerNumber;
+    mapping (uint => uint) playerProfit;
 
     /*
      * events
     */
-    /* log bets + output to web3 for precise &#39;payout on win&#39; field in UI */
+    /* log bets + output to web3 for precise 'payout on win' field in UI */
     event LogBet(uint indexed BetID, address indexed PlayerAddress, uint indexed RewardValue, uint ProfitValue, uint BetValue, uint PlayerNumber);      
     /* output to web3 UI on bet result*/
     /* Status: 0=lose, 1=win, 2=win + failed send, 3=refund, 4=refund + failed send*/
@@ -197,20 +197,20 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
     }
 
     // This is a supercheap psuedo-random number generator
-    // that relies on the fact that &quot;who&quot; will mine and &quot;when&quot; they will
-    // mine is random.  This is usually vulnerable to &quot;inside the block&quot;
+    // that relies on the fact that "who" will mine and "when" they will
+    // mine is random.  This is usually vulnerable to "inside the block"
     // attacks where someone writes a contract mined in the same block
-    // and calls this contract from it -- but we don&#39;t accept transactions
+    // and calls this contract from it -- but we don't accept transactions
     // from other contracts, lessening that risk.  It seems like someone
     // would therefore need to be able to predict the block miner and
     // block timestamp in advance to hack this.  
     // 
-    // &#175;\_(ツ)_/&#175; 
+    // ¯\_(ツ)_/¯ 
     // 
     uint seed3;
     function _pRand(uint _modulo) internal view returns (uint) {
-        require((1 &lt; _modulo) &amp;&amp; (_modulo &lt;= 1000));
-        uint seed1 = uint(block.coinbase); // Get Miner&#39;s Address
+        require((1 < _modulo) && (_modulo <= 1000));
+        uint seed1 = uint(block.coinbase); // Get Miner's Address
         uint seed2 = now; // Get the timestamp
         seed3++; // Make all pRand calls unique
         return uint(keccak256(seed1, seed2, seed3)) % _modulo;
@@ -219,14 +219,14 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
     /*
      * public function
      * player submit bet
-     * only if game is active &amp; bet is valid
+     * only if game is active & bet is valid
     */
     function _playerRollDice(uint _rollUnder, TKN _tkn) private 
         gameIsActive
         betIsValid(_tkn.value, _rollUnder)
 	{
         // Note that msg.sender is the Token Contract Address
-    	// and &quot;_from&quot; is the sender of the tokens
+    	// and "_from" is the sender of the tokens
     	require(_humanSender(_tkn.sender)); // Check that this is a non-contract sender
     	require(_phxToken(msg.sender)); // Check that this is a PHX Token Transfer
 	    
@@ -261,7 +261,7 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
         * update contract balance to calculate new max bet
         * send reward
         */
-        if(playerDieResult[rngId] &lt; playerNumber[rngId]){ 
+        if(playerDieResult[rngId] < playerNumber[rngId]){ 
             /* safely map player profit */   
             playerProfit[rngId] = ((((_tkn.value * (100-(safeSub(_rollUnder,1)))) / (safeSub(_rollUnder,1))+_tkn.value))*houseEdge/houseEdgeDivisor)-_tkn.value;
             
@@ -352,7 +352,7 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
 		onlyOwner
     {
         /* restrict each bet to a maximum profit of 1% contractBalance */
-        require(newMaxProfitAsPercent &lt;= 10000);
+        require(newMaxProfitAsPercent <= 10000);
         maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
         setMaxProfit();
     }
@@ -413,16 +413,16 @@ contract PHXroll is PHXReceivingContract, usingMathLibraries {
 	}    
 
     function _phxToken(address _tokenContract) private pure returns (bool) {
-        return _tokenContract == PHXTKNADDR; // Returns &quot;true&quot; of this is the PHX Token Contract
+        return _tokenContract == PHXTKNADDR; // Returns "true" of this is the PHX Token Contract
     }
     
-    // Determine if the &quot;_from&quot; address is a contract
+    // Determine if the "_from" address is a contract
     function _humanSender(address _from) private view returns (bool) {
       uint codeLength;
       assembly {
           codeLength := extcodesize(_from)
       }
-      return (codeLength == 0); // If this is &quot;true&quot; sender is most likely a Wallet
+      return (codeLength == 0); // If this is "true" sender is most likely a Wallet
     }
 
 }

@@ -40,7 +40,7 @@ contract Math {
   }
 
   function absDiff(uint v1, uint v2) public constant returns(uint) {
-    return v1 &gt; v2 ? v1 - v2 : v2 - v1;
+    return v1 > v2 ? v1 - v2 : v2 - v1;
   }
 
   function safeMul(uint a, uint b) public constant returns (uint) {
@@ -53,7 +53,7 @@ contract Math {
 
   function safeAdd(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
-    if (!(c&gt;=a &amp;&amp; c&gt;=b))
+    if (!(c>=a && c>=b))
       throw;
     return c;
   }
@@ -65,14 +65,14 @@ contract TimeSource {
 
   function currentTime() public constant returns (uint32) {
     // we do not support dates much into future (Sun, 07 Feb 2106 06:28:15 GMT)
-    if (block.timestamp &gt; 0xFFFFFFFF)
+    if (block.timestamp > 0xFFFFFFFF)
       throw;
-    return mockNow &gt; 0 ? mockNow : uint32(block.timestamp);
+    return mockNow > 0 ? mockNow : uint32(block.timestamp);
   }
 
   function mockTime(uint32 t) public {
     // no mocking on mainnet
-    if (block.number &gt; 3316029)
+    if (block.number > 3316029)
       throw;
     mockNow = t;
   }
@@ -138,7 +138,7 @@ contract ESOPTypes {
       // struct in storage is byte aligned
       assembly {
         // return memory aligned struct as array of words
-        // I just wonder when &#39;employee&#39; memory is deallocated
+        // I just wonder when 'employee' memory is deallocated
         // answer: memory is not deallocated until transaction ends
         emp := employee
       }
@@ -188,7 +188,7 @@ contract EmployeesList is ESOPTypes, Ownable, Destructable {
   event UpdateEmployee(address indexed e, uint32 poolOptions, uint32 extraOptions, uint16 idx);
   event ChangeEmployeeState(address indexed e, EmployeeState oldState, EmployeeState newState);
   event RemoveEmployee(address indexed e);
-  mapping (address =&gt; Employee) employees;
+  mapping (address => Employee) employees;
   // addresses in the mapping, ever
   address[] public addresses;
 
@@ -255,7 +255,7 @@ contract EmployeesList is ESOPTypes, Ownable, Destructable {
     returns (bool)
   {
     uint16 empIdx = employees[e].idx;
-    if (empIdx &gt; 0) {
+    if (empIdx > 0) {
         delete employees[e];
         delete addresses[empIdx-1];
         RemoveEmployee(e);
@@ -290,7 +290,7 @@ contract EmployeesList is ESOPTypes, Ownable, Destructable {
       Employee employee = employees[e];
       if (employee.idx == 0)
         throw;
-      // where is struct zip/unzip :&gt;
+      // where is struct zip/unzip :>
       return (employee.issueDate, employee.timeToSign, employee.terminatedAt, employee.fadeoutStarts,
         employee.poolOptions, employee.extraOptions, employee.suspendedAt, employee.state);
   }
@@ -321,25 +321,25 @@ contract ERC20OptionsConverter is BaseOptionsConverter, TimeSource, Math {
   address esopAddress;
   uint32 exercisePeriodDeadline;
   // balances for converted options
-  mapping(address =&gt; uint) internal balances;
+  mapping(address => uint) internal balances;
   // total supply
   uint public totalSupply;
 
-  // deadline for all options conversion including company&#39;s actions
+  // deadline for all options conversion including company's actions
   uint32 public optionsConversionDeadline;
 
   event Transfer(address indexed from, address indexed to, uint value);
 
   modifier converting() {
     // throw after deadline
-    if (currentTime() &gt;= exercisePeriodDeadline)
+    if (currentTime() >= exercisePeriodDeadline)
       throw;
     _;
   }
 
   modifier converted() {
     // throw before deadline
-    if (currentTime() &lt; optionsConversionDeadline)
+    if (currentTime() < optionsConversionDeadline)
       throw;
     _;
   }
@@ -367,7 +367,7 @@ contract ERC20OptionsConverter is BaseOptionsConverter, TimeSource, Math {
   }
 
   function transfer(address _to, uint _value) converted public {
-    if (balances[msg.sender] &lt; _value)
+    if (balances[msg.sender] < _value)
       throw;
     balances[msg.sender] -= _value;
     balances[_to] += _value;
@@ -455,7 +455,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
   BaseOptionsConverter public optionsConverter;
 
   // migration destinations per employee
-  mapping (address =&gt; ESOPMigration) private migrations;
+  mapping (address => ESOPMigration) private migrations;
 
   modifier hasEmployee(address e) {
     // will throw on unknown address
@@ -494,12 +494,12 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
   {
     // enumerate all employees that were offered poolOptions after than fromIdx -1 employee
     Employee memory emp;
-    for (uint i = idx; i &lt; employees.size(); i++) {
+    for (uint i = idx; i < employees.size(); i++) {
       address ea = employees.addresses(i);
       if (ea != 0) { // address(0) is deleted employee
         emp = _loademp(ea);
         // skip employees with no poolOptions and terminated employees
-        if (emp.poolOptions &gt; 0 &amp;&amp; ( emp.state == EmployeeState.WaitingForSignature || emp.state == EmployeeState.Employed) ) {
+        if (emp.poolOptions > 0 && ( emp.state == EmployeeState.WaitingForSignature || emp.state == EmployeeState.Employed) ) {
           uint newoptions = optionsCalculator.calcNewEmployeePoolOptions(distributedOptions);
           emp.poolOptions += uint32(newoptions);
           distributedOptions -= uint32(newoptions);
@@ -515,27 +515,27 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     isCurrentCode
     public
   {
-    // removes employees that didn&#39;t sign and sends their poolOptions back to the pool
+    // removes employees that didn't sign and sends their poolOptions back to the pool
     // computes fadeout for terminated employees and returns it to pool
     // we let anyone to call that method and spend gas on it
     Employee memory emp;
     uint32 ct = currentTime();
-    for (uint i = 0; i &lt; employees.size(); i++) {
+    for (uint i = 0; i < employees.size(); i++) {
       address ea = employees.addresses(i);
       if (ea != 0) { // address(0) is deleted employee
         var ser = employees.getSerializedEmployee(ea);
         emp = deserializeEmployee(ser);
         // remove employees with expired signatures
-        if (emp.state == EmployeeState.WaitingForSignature &amp;&amp; ct &gt; emp.timeToSign) {
+        if (emp.state == EmployeeState.WaitingForSignature && ct > emp.timeToSign) {
           remainingPoolOptions += distributeAndReturnToPool(emp.poolOptions, i+1);
           totalExtraOptions -= emp.extraOptions;
           // actually this just sets address to 0 so iterator can continue
           employees.removeEmployee(ea);
         }
         // return fadeout to pool
-        if (emp.state == EmployeeState.Terminated &amp;&amp; ct &gt; emp.fadeoutStarts) {
+        if (emp.state == EmployeeState.Terminated && ct > emp.fadeoutStarts) {
           var (returnedPoolOptions, returnedExtraOptions) = optionsCalculator.calculateFadeoutToPool(ct, ser);
-          if (returnedPoolOptions &gt; 0 || returnedExtraOptions &gt; 0) {
+          if (returnedPoolOptions > 0 || returnedExtraOptions > 0) {
             employees.setFadeoutStarts(ea, ct);
             // options from fadeout are not distributed to other employees but returned to pool
             remainingPoolOptions += returnedPoolOptions;
@@ -555,7 +555,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     returns (ReturnCodes)
   {
     // options are stored in unit32
-    if (pTotalPoolOptions &gt; 1100000 || pTotalPoolOptions &lt; 10000) {
+    if (pTotalPoolOptions > 1100000 || pTotalPoolOptions < 10000) {
       return _logerror(ReturnCodes.InvalidParameters);
     }
 
@@ -579,7 +579,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     if (employees.hasEmployee(e)) {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
-    if (timeToSign &lt; currentTime() + MINIMUM_MANUAL_SIGN_PERIOD) {
+    if (timeToSign < currentTime() + MINIMUM_MANUAL_SIGN_PERIOD) {
       return _logerror(ReturnCodes.TooLate);
     }
     if (poolCleanup) {
@@ -588,7 +588,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
       removeEmployeesWithExpiredSignaturesAndReturnFadeout();
     }
     uint poolOptions = optionsCalculator.calcNewEmployeePoolOptions(remainingPoolOptions);
-    if (poolOptions &gt; 0xFFFFFFFF)
+    if (poolOptions > 0xFFFFFFFF)
       throw;
     Employee memory emp = Employee({
       issueDate: issueDate, timeToSign: timeToSign, terminatedAt: 0, fadeoutStarts: 0, poolOptions: uint32(poolOptions),
@@ -616,7 +616,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     if (employees.hasEmployee(e)) {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
-    if (timeToSign &lt; currentTime() + MINIMUM_MANUAL_SIGN_PERIOD) {
+    if (timeToSign < currentTime() + MINIMUM_MANUAL_SIGN_PERIOD) {
       return _logerror(ReturnCodes.TooLate);
     }
     Employee memory emp = Employee({
@@ -638,7 +638,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     returns (ReturnCodes)
   {
     Employee memory emp = _loademp(e);
-    if (emp.state != EmployeeState.Employed &amp;&amp; emp.state != EmployeeState.WaitingForSignature) {
+    if (emp.state != EmployeeState.Employed && emp.state != EmployeeState.WaitingForSignature) {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
     emp.extraOptions += extraOptions;
@@ -660,7 +660,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
     uint32 t = currentTime();
-    if (t &gt; emp.timeToSign) {
+    if (t > emp.timeToSign) {
       remainingPoolOptions += distributeAndReturnToPool(emp.poolOptions, emp.idx);
       totalExtraOptions -= emp.extraOptions;
       employees.removeEmployee(msg.sender);
@@ -688,7 +688,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
       emp.suspendedAt = toggledAt;
       SuspendEmployee(e, toggledAt);
     } else {
-      if (emp.suspendedAt &gt; toggledAt) {
+      if (emp.suspendedAt > toggledAt) {
         return _logerror(ReturnCodes.TooLate);
       }
       uint32 suspendedPeriod = toggledAt - emp.suspendedAt;
@@ -713,7 +713,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     TerminationType termType = TerminationType(terminationType);
     Employee memory emp = _loademp(e);
     // todo: check termination time against issueDate
-    if (terminatedAt &lt; emp.issueDate) {
+    if (terminatedAt < emp.issueDate) {
       return _logerror(ReturnCodes.InvalidParameters);
     }
     if (emp.state == EmployeeState.WaitingForSignature)
@@ -726,7 +726,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     uint returnedExtraOptions;
     if (termType == TerminationType.Regular) {
       // regular termination, compute suspension
-      if (emp.suspendedAt &gt; 0 &amp;&amp; emp.suspendedAt &lt; terminatedAt)
+      if (emp.suspendedAt > 0 && emp.suspendedAt < terminatedAt)
         emp.issueDate += terminatedAt - emp.suspendedAt;
       // vesting applies
       returnedOptions = emp.poolOptions - optionsCalculator.calculateVestedOptions(terminatedAt, emp.issueDate, emp.poolOptions);
@@ -752,7 +752,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     returns (ReturnCodes)
   {
     uint32 offerMadeAt = currentTime();
-    if (converter.getExercisePeriodDeadline() - offerMadeAt &lt; MINIMUM_MANUAL_SIGN_PERIOD) {
+    if (converter.getExercisePeriodDeadline() - offerMadeAt < MINIMUM_MANUAL_SIGN_PERIOD) {
       return _logerror(ReturnCodes.TooLate);
     }
     // exerciseOptions must be callable by us
@@ -801,7 +801,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     returns (ReturnCodes)
   {
     uint32 ct = currentTime();
-    if (ct &gt; exerciseOptionsDeadline) {
+    if (ct > exerciseOptionsDeadline) {
       return _logerror(ReturnCodes.TooLate);
     }
     return exerciseOptionsInternal(ct, msg.sender, msg.sender, !agreeToAcceleratedVestingBonusConditions);
@@ -815,7 +815,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     returns (ReturnCodes)
   {
     uint32 ct = currentTime();
-    if (ct &gt; exerciseOptionsDeadline) {
+    if (ct > exerciseOptionsDeadline) {
       return _logerror(ReturnCodes.TooLate);
     }
     // burn the options by sending to 0
@@ -832,7 +832,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
   {
     // company can convert options for any employee that did not converted (after deadline)
     uint32 ct = currentTime();
-    if (ct &lt;= exerciseOptionsDeadline) {
+    if (ct <= exerciseOptionsDeadline) {
       return _logerror(ReturnCodes.TooEarly);
     }
     return exerciseOptionsInternal(ct, e, companyAddress, disableAcceleratedVesting);
@@ -850,7 +850,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
       throw;
     // only employed and terminated users may migrate
     Employee memory emp = _loademp(employee);
-    if (emp.state != EmployeeState.Employed &amp;&amp; emp.state != EmployeeState.Terminated) {
+    if (emp.state != EmployeeState.Employed && emp.state != EmployeeState.Terminated) {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
     migrations[employee] = migration; // can be cleared with 0 address
@@ -872,7 +872,7 @@ contract ESOP is ESOPTypes, CodeUpdateable, TimeSource {
     removeEmployeesWithExpiredSignaturesAndReturnFadeout();
     // only employed and terminated users may migrate
     Employee memory emp = _loademp(msg.sender);
-    if (emp.state != EmployeeState.Employed &amp;&amp; emp.state != EmployeeState.Terminated) {
+    if (emp.state != EmployeeState.Employed && emp.state != EmployeeState.Terminated) {
       return _logerror(ReturnCodes.InvalidEmployeeState);
     }
     // with accelerated vesting if possible - take out all possible options
@@ -979,7 +979,7 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
   // company address
   address public companyAddress;
   // checks if calculator i initialized
-  function hasParameters() public constant returns(bool) { return optionsPerShare &gt; 0; }
+  function hasParameters() public constant returns(bool) { return optionsPerShare > 0; }
 
   modifier onlyCompany() {
     if (companyAddress != msg.sender)
@@ -1000,15 +1000,15 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
     constant
     returns (uint)
   {
-    if (t &lt;= vestingStarts)
+    if (t <= vestingStarts)
       return 0;
     // apply vesting
     uint effectiveTime = t - vestingStarts;
     // if within cliff nothing is due
-    if (effectiveTime &lt; cliffPeriod)
+    if (effectiveTime < cliffPeriod)
       return 0;
     else
-      return  effectiveTime &lt; vestingPeriod ? divRound(options * effectiveTime, vestingPeriod) : options;
+      return  effectiveTime < vestingPeriod ? divRound(options * effectiveTime, vestingPeriod) : options;
   }
 
   function applyFadeoutToOptions(uint32 t, uint32 issueDate, uint32 terminatedAt, uint options, uint vestedOptions)
@@ -1016,17 +1016,17 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
     constant
     returns (uint)
   {
-    if (t &lt; terminatedAt)
+    if (t < terminatedAt)
       return vestedOptions;
     uint timefromTermination = t - terminatedAt;
     // fadeout duration equals to employment duration
     uint employmentPeriod = terminatedAt - issueDate;
-    // minimum value of options at the end of fadeout, it is a % of all employee&#39;s options
+    // minimum value of options at the end of fadeout, it is a % of all employee's options
     uint minFadeValue = divRound(options * (FP_SCALE - maxFadeoutPromille), FP_SCALE);
     // however employee cannot have more than options after fadeout than he was vested at termination
-    if (minFadeValue &gt;= vestedOptions)
+    if (minFadeValue >= vestedOptions)
       return vestedOptions;
-    return timefromTermination &gt; employmentPeriod ?
+    return timefromTermination > employmentPeriod ?
       minFadeValue  :
       (minFadeValue + divRound((vestedOptions - minFadeValue) * (employmentPeriod - timefromTermination), employmentPeriod));
   }
@@ -1043,25 +1043,25 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
     if (emp.state == EmployeeState.OptionsExercised || emp.state == EmployeeState.WaitingForSignature)
       return (0,0,0);
     // no options when esop is being converted and conversion deadline expired
-    bool isESOPConverted = conversionOfferedAt &gt; 0 &amp;&amp; calcAtTime &gt;= conversionOfferedAt; // this function time-travels
+    bool isESOPConverted = conversionOfferedAt > 0 && calcAtTime >= conversionOfferedAt; // this function time-travels
     uint issuedOptions = emp.poolOptions + emp.extraOptions;
     // employee with no options
     if (issuedOptions == 0)
       return (0,0,0);
     // if emp is terminated but we calc options before term, simulate employed again
-    if (calcAtTime &lt; emp.terminatedAt &amp;&amp; emp.terminatedAt &gt; 0)
+    if (calcAtTime < emp.terminatedAt && emp.terminatedAt > 0)
       emp.state = EmployeeState.Employed;
     uint vestedOptions = issuedOptions;
-    bool accelerateVesting = isESOPConverted &amp;&amp; emp.state == EmployeeState.Employed &amp;&amp; !disableAcceleratedVesting;
+    bool accelerateVesting = isESOPConverted && emp.state == EmployeeState.Employed && !disableAcceleratedVesting;
     if (!accelerateVesting) {
       // choose vesting time
       uint32 calcVestingAt = emp.state ==
         // if terminated then vesting calculated at termination
         EmployeeState.Terminated ? emp.terminatedAt :
         // if employee is supended then compute vesting at suspension time
-        (emp.suspendedAt &gt; 0 &amp;&amp; emp.suspendedAt &lt; calcAtTime ? emp.suspendedAt :
+        (emp.suspendedAt > 0 && emp.suspendedAt < calcAtTime ? emp.suspendedAt :
         // if conversion offer then vesting calucated at time the offer was made
-        conversionOfferedAt &gt; 0 ? conversionOfferedAt :
+        conversionOfferedAt > 0 ? conversionOfferedAt :
         // otherwise use current time
         calcAtTime);
       vestedOptions = calculateVestedOptions(calcVestingAt, emp.issueDate, issuedOptions);
@@ -1135,10 +1135,10 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
     external
     onlyCompany
   {
-    if (pResidualAmountPromille &gt; FP_SCALE || pBonusOptionsPromille &gt; FP_SCALE || pNewEmployeePoolPromille &gt; FP_SCALE
+    if (pResidualAmountPromille > FP_SCALE || pBonusOptionsPromille > FP_SCALE || pNewEmployeePoolPromille > FP_SCALE
      || pOptionsPerShare == 0)
       throw;
-    if (pCliffPeriod &gt; pVestingPeriod)
+    if (pCliffPeriod > pVestingPeriod)
       throw;
     // initialization cannot be called for a second time
     if (hasParameters())
@@ -1157,12 +1157,12 @@ contract OptionsCalculator is Ownable, Destructable, Math, ESOPTypes {
 }
 
 contract ProceedsOptionsConverter is Ownable, ERC20OptionsConverter {
-  mapping (address =&gt; uint) internal withdrawals;
+  mapping (address => uint) internal withdrawals;
   uint[] internal payouts;
 
   function makePayout() converted payable onlyOwner public {
     // it does not make sense to distribute less than ether
-    if (msg.value &lt; 1 ether)
+    if (msg.value < 1 ether)
       throw;
     payouts.push(msg.value);
   }
@@ -1177,7 +1177,7 @@ contract ProceedsOptionsConverter is Ownable, ERC20OptionsConverter {
     if (paymentId == payouts.length)
       return 0;
     uint payout = 0;
-    for (uint i = paymentId; i&lt;payouts.length; i++) {
+    for (uint i = paymentId; i<payouts.length; i++) {
       // it is safe to make payouts pro-rata: (1) token supply will not change - check converted/conversion modifiers
       // -- (2) balances will not change: check transfer override which limits transfer between accounts
       // NOTE: safeMul throws on overflow, can lock users out of their withdrawals if balance is very high
@@ -1187,11 +1187,11 @@ contract ProceedsOptionsConverter is Ownable, ERC20OptionsConverter {
     }
     // change now to prevent re-entry (not necessary due to low send() gas limit)
     withdrawals[msg.sender] = payouts.length;
-    if (payout &gt; 0) {
+    if (payout > 0) {
       // now modify payout within 1000 weis as we had rounding errors coming from pro-rata amounts
       // @remco maximum rounding error is (num_employees * num_payments) / 2 with the mean 0
       // --- 1000 wei is still nothing, please explain me what problem you see here
-      if ( absDiff(this.balance, payout) &lt; 1000 wei )
+      if ( absDiff(this.balance, payout) < 1000 wei )
         payout = this.balance; // send all
       //if(!msg.sender.call.value(payout)()) // re entry test
       //  throw;
@@ -1204,9 +1204,9 @@ contract ProceedsOptionsConverter is Ownable, ERC20OptionsConverter {
   function transfer(address _to, uint _value) public converted {
     // if anything was withdrawn then block transfer to prevent multiple withdrawals
     // todo: we could allow transfer to new account (no token balance)
-    // todo: we could allow transfer between account that fully withdrawn (but what&#39;s the point? -token has 0 value then)
-    // todo: there are a few other edge cases where there&#39;s transfer and no double spending
-    if (withdrawals[_to] &gt; 0 || withdrawals[msg.sender] &gt; 0)
+    // todo: we could allow transfer between account that fully withdrawn (but what's the point? -token has 0 value then)
+    // todo: there are a few other edge cases where there's transfer and no double spending
+    if (withdrawals[_to] > 0 || withdrawals[msg.sender] > 0)
       throw;
     ERC20OptionsConverter.transfer(_to, _value);
   }

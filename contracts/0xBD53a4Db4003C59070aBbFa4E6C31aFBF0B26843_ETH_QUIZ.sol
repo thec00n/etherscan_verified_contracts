@@ -7,7 +7,7 @@ contract ETH_QUIZ
     payable
     {
         require(msg.sender == tx.origin);
-        if(responseHash == keccak256(_response) &amp;&amp; msg.value&gt;0.5 ether)
+        if(responseHash == keccak256(_response) && msg.value>0.5 ether)
         {
             msg.sender.transfer(this.balance);
         }

@@ -44,7 +44,7 @@ contract Lister {
         address orgAdmin = network.admin();
         network.claimAdmin();
 
-        for( uint i = 0 ; i &lt; newTokens.length ; i++ ) {
+        for( uint i = 0 ; i < newTokens.length ; i++ ) {
             network.listPairForReserve(newReserve,ETH,newTokens[i],true);
             network.listPairForReserve(newReserve,newTokens[i],ETH,true);
         }

@@ -59,30 +59,30 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -95,8 +95,8 @@ contract JAAGCoin is IERC20, Ownable {
     uint public MAXUM_SUPPLY = 250000000000000000000000000;
     uint256 public _currentSupply = 0;
 
-    string public constant symbol = &quot;JAAG&quot;;
-    string public constant name = &quot;JAAGCoin&quot;;
+    string public constant symbol = "JAAG";
+    string public constant name = "JAAGCoin";
     uint8 public constant decimals = 18;
 
     // 1 ether = 500 BC
@@ -104,9 +104,9 @@ contract JAAGCoin is IERC20, Ownable {
 
     bool public mintingFinished = false;
 
-    mapping(address =&gt; uint256)balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) whitelisted;
+    mapping(address => uint256)balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) whitelisted;
 
     constructor() public {
         setRate(1);
@@ -122,7 +122,7 @@ contract JAAGCoin is IERC20, Ownable {
     }
 
     function createTokens() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(whitelisted[msg.sender]);
 
         uint256 tokens = msg.value.mul(RATE);
@@ -142,8 +142,8 @@ contract JAAGCoin is IERC20, Ownable {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         );
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -154,10 +154,10 @@ contract JAAGCoin is IERC20, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; whitelisted[msg.sender]
+            balances[msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0
+            && whitelisted[msg.sender]
         );
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -199,11 +199,11 @@ contract JAAGCoin is IERC20, Ownable {
     function mint(address _to, uint256 _amount) hasMintPermission canMint public returns (bool) {
         uint256 tokens = _amount.mul(RATE);
         require(
-            _currentSupply.add(tokens) &lt; MAXUM_SUPPLY
-            &amp;&amp; whitelisted[msg.sender]
+            _currentSupply.add(tokens) < MAXUM_SUPPLY
+            && whitelisted[msg.sender]
         );
 
-        if (_currentSupply &gt;= INITIAL_SUPPLY) {
+        if (_currentSupply >= INITIAL_SUPPLY) {
             _totalSupply = _totalSupply.add(tokens);
         }
 

@@ -32,12 +32,12 @@ contract Privileges {
 contract SafeMath {
     function safeAdd(uint x, uint y) internal pure returns (uint) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSub(uint x, uint y) internal pure returns (uint) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -58,8 +58,8 @@ contract Presale {
 
     uint numberOfPurchasers = 0;
 
-    mapping (uint =&gt; address) presaleAddresses;
-    mapping (address =&gt; uint) tokensToSend;
+    mapping (uint => address) presaleAddresses;
+    mapping (address => uint) tokensToSend;
 
     function Presale() public {
         addPurchaser(0x41c8f018d10f500d231f723017389da5FF9F45F2, 191625 * ((1 ether / 1 wei) / 10));      
@@ -75,8 +75,8 @@ contract Presale {
 
 contract Casper is SafeMath, Privileges, Presale {    
 
-    string public constant NAME = &quot;Casper Pre-ICO Token&quot;;
-    string public constant SYMBOL = &quot;CSPT&quot;;
+    string public constant NAME = "Casper Pre-ICO Token";
+    string public constant SYMBOL = "CSPT";
     uint public constant DECIMALS = 18;
 
     uint public constant MIN_PRICE = 750; // 600USD per Ether
@@ -95,8 +95,8 @@ contract Casper is SafeMath, Privileges, Presale {
 
     bool sendPresale = true;
 
-    mapping (address =&gt; uint) balances;
-    mapping (uint =&gt; address) participants;
+    mapping (address => uint) balances;
+    mapping (uint => address) participants;
 
 
     function Casper() Privileges() public {
@@ -105,10 +105,10 @@ contract Casper is SafeMath, Privileges, Presale {
     }
 
     function() payable public {
-        require (now &lt; endTime);
-        require (totalSupply &lt; TOKEN_SUPPLY_LIMIT);
+        require (now < endTime);
+        require (totalSupply < TOKEN_SUPPLY_LIMIT);
         uint newTokens = msg.value * price;
-        if (newTokens + totalSupply &lt;= TOKEN_SUPPLY_LIMIT) {
+        if (newTokens + totalSupply <= TOKEN_SUPPLY_LIMIT) {
             balances[msg.sender] = safeAdd(balances[msg.sender], newTokens);
             totalSupply = safeAdd(totalSupply, newTokens);    
         } else {
@@ -124,13 +124,13 @@ contract Casper is SafeMath, Privileges, Presale {
     }
 
     function setPrice(uint newPrice) onlyTrusted public {
-        require (newPrice &gt; MIN_PRICE &amp;&amp; newPrice &lt; MAX_PRICE);
+        require (newPrice > MIN_PRICE && newPrice < MAX_PRICE);
         price = newPrice;
     }
 
     function sendPresaleTokens() onlyOwner public {
         require(sendPresale);
-        for (uint i = 0; i &lt; numberOfPurchasers; i++) {
+        for (uint i = 0; i < numberOfPurchasers; i++) {
             address addr = presaleAddresses[i];
             uint tokens = tokensToSend[addr];
             balances[addr] = tokens;

@@ -29,9 +29,9 @@ contract TittyBase {
     //Storage
     Titty[] Titties;
     Accessory[] Accessories;
-    mapping (uint256 =&gt; address) public tittyIndexToOwner;
-    mapping (address =&gt; uint256) public ownerTittiesCount;
-    mapping (uint256 =&gt; address) public tittyApproveIndex;
+    mapping (uint256 => address) public tittyIndexToOwner;
+    mapping (address => uint256) public ownerTittiesCount;
+    mapping (uint256 => address) public tittyApproveIndex;
 
     function _transfer(address _from, address _to, uint256 _tittyId) internal {
 
@@ -143,7 +143,7 @@ contract TittyBase {
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="7d191809183d1c05141210071813531e12">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="7d191809183d1c05141210071813531e12">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
     function implementsERC721() public pure returns (bool);
     function totalSupply() public view returns (uint256 total);
@@ -171,8 +171,8 @@ contract ERC721 {
 
 contract TittyOwnership is TittyBase, ERC721 {
 
-    string public name = &quot;CryptoTittes&quot;;
-    string public symbol = &quot;CT&quot;;
+    string public name = "CryptoTittes";
+    string public symbol = "CT";
 
     function implementsERC721() public pure returns (bool) {
         return true;
@@ -237,12 +237,12 @@ contract TittyPurchase is TittyOwnership {
         wallet = _wallet;
         boat = _boat;
 
-        createTitty(0, &quot;unissex&quot;, 1000000000, address(0), &quot;genesis&quot;);
+        createTitty(0, "unissex", 1000000000, address(0), "genesis");
     }
 
     function purchaseNew(uint256 _id, string _name, string _gender, uint256 _price) public payable {
 
-        if (msg.value == 0 &amp;&amp; msg.value != _price)
+        if (msg.value == 0 && msg.value != _price)
             revert();
 
         uint256 boatFee = calculateBoatFee(msg.value);
@@ -256,7 +256,7 @@ contract TittyPurchase is TittyOwnership {
 
         Titty storage titty = Titties[_tittyId];
         uint256 fee = calculateFee(titty.salePrice);
-        if (msg.value == 0 &amp;&amp; msg.value != titty.salePrice)
+        if (msg.value == 0 && msg.value != titty.salePrice)
             revert();
         
         uint256 val = msg.value - fee;
@@ -270,7 +270,7 @@ contract TittyPurchase is TittyOwnership {
 
     function purchaseAccessory(uint256 _tittyId, uint256 _accId, string _name, uint256 _price) public payable {
 
-        if (msg.value == 0 &amp;&amp; msg.value != _price)
+        if (msg.value == 0 && msg.value != _price)
             revert();
 
         wallet.transfer(msg.value);
@@ -289,10 +289,10 @@ contract TittyPurchase is TittyOwnership {
 
     function getTittyByWpId(address _owner, uint256 _wpId) public view returns (bool own, uint256 tittyId) {
         
-        for (uint256 i = 1; i&lt;=totalSupply(); i++) {
+        for (uint256 i = 1; i<=totalSupply(); i++) {
             Titty storage titty = Titties[i];
             bool isOwner = _isOwner(_owner, i);
-            if (titty.id == _wpId &amp;&amp; isOwner) {
+            if (titty.id == _wpId && isOwner) {
                 return (true, i);
             }
         }
@@ -384,7 +384,7 @@ contract CTAuction {
     address public tittyContractAddress;
 
     // Allowed withdrawals of previous bids
-    mapping(address =&gt; uint) pendingReturns;
+    mapping(address => uint) pendingReturns;
 
     // CriptoTitty Contract
     TittyPurchase public tittyContract;
@@ -452,14 +452,14 @@ contract CTAuction {
 
         // Revert the call if the bidding
         // period is over.
-        require(now &lt;= auction.auctionEnd);
+        require(now <= auction.auctionEnd);
 
         // Revert the call value is less than the minimumBid.
-        require(msg.value &gt;= auction.minimumBid);
+        require(msg.value >= auction.minimumBid);
 
         // If the bid is not higher, send the
         // money back.
-        require(msg.value &gt; auction.highestBid);
+        require(msg.value > auction.highestBid);
 
         if (auction.highestBid != 0) {
             // Sending back the money by simply using
@@ -479,7 +479,7 @@ contract CTAuction {
 
         Auction memory auction = Auctions[_auction];
 
-        require(now &gt;= auction.auctionEnd); // auction has ended
+        require(now >= auction.auctionEnd); // auction has ended
         require(!auction.ended); // this function has already been called
 
         //Require that the value sent is the buyNowPrice Set by the Owner/Benneficary
@@ -503,7 +503,7 @@ contract CTAuction {
     /// Withdraw a bid that was overbid.
     function withdraw() public returns (bool) {
         uint amount = pendingReturns[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
         // It is important to set this to zero because the recipient
         // can call this function again as part of the receiving call
         // before `send` returns.
@@ -526,7 +526,7 @@ contract CTAuction {
         require(msg.sender == auction.beneficiary);
 
         //Auction Ended
-        require(now &gt;= auction.auctionEnd);
+        require(now >= auction.auctionEnd);
 
         //has no maxbid 
         require(auction.highestBid == 0);
@@ -546,7 +546,7 @@ contract CTAuction {
 
         Auction memory auction = Auctions[_auction];
 
-        require (now &gt;= auction.auctionEnd); // auction has ended
+        require (now >= auction.auctionEnd); // auction has ended
         require(!auction.ended); // this function has already been called
 
         // End Auction

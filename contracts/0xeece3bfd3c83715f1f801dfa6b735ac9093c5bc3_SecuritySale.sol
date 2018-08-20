@@ -8,10 +8,10 @@ contract ERC20Basic {
 }
 
 contract IInvestorList {
-    string public constant ROLE_REGD = &quot;regd&quot;;
-    string public constant ROLE_REGCF = &quot;regcf&quot;;
-    string public constant ROLE_REGS = &quot;regs&quot;;
-    string public constant ROLE_UNKNOWN = &quot;unknown&quot;;
+    string public constant ROLE_REGD = "regd";
+    string public constant ROLE_REGCF = "regcf";
+    string public constant ROLE_REGS = "regs";
+    string public constant ROLE_UNKNOWN = "unknown";
 
     function inList(address addr) public view returns (bool);
     function addAddress(address addr, string role) public;
@@ -63,10 +63,10 @@ contract InvestorList is Ownable, IInvestorList {
     event AddressAdded(address addr, string role);
     event AddressRemoved(address addr, string role);
 
-    mapping (address =&gt; string) internal investorList;
+    mapping (address => string) internal investorList;
 
     /**
-     * @dev Throws if called by any account that&#39;s not investorListed.
+     * @dev Throws if called by any account that's not investorListed.
      * @param role string
      */
     modifier validRole(string role) {
@@ -149,7 +149,7 @@ contract InvestorList is Ownable, IInvestorList {
         validRole(role)
         public
     {
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             addAddress(addrs[i], role);
         }
     }
@@ -165,7 +165,7 @@ contract InvestorList is Ownable, IInvestorList {
         // removeRole(addr, ROLE_WHITELISTED);
         require(inList(addr));
         string memory role = investorList[addr];
-        investorList[addr] = &quot;&quot;;
+        investorList[addr] = "";
         emit AddressRemoved(addr, role);
     }
 
@@ -177,7 +177,7 @@ contract InvestorList is Ownable, IInvestorList {
         onlyOwner
         public
     {
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             if (inList(addrs[i])) {
                 removeAddress(addrs[i]);
             }
@@ -217,11 +217,11 @@ contract SecuritySale is Ownable {
 
     // set liveness
     function setLive(bool newLiveness) public onlyOwner {
-        if(live &amp;&amp; !newLiveness) {
+        if(live && !newLiveness) {
             live = false;
             emit EndSale();
         }
-        else if(!live &amp;&amp; newLiveness) {
+        else if(!live && newLiveness) {
             live = true;
             emit StartSale();
         }
@@ -234,7 +234,7 @@ contract SecuritySale is Ownable {
 
     // withdraw some of the Ether to owner
     function withdrawSome(uint value) public onlyOwner {
-        require(value &lt;= address(this).balance);
+        require(value <= address(this).balance);
         msg.sender.transfer(value);
     }
 

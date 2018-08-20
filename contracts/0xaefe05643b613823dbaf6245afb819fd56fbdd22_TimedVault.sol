@@ -35,7 +35,7 @@ contract TimedVault {
     function () payable public {
     }
 
-    modifier afterDeadline() { if (now &gt;= releaseDate) _; }
+    modifier afterDeadline() { if (now >= releaseDate) _; }
 
     /**
      * Withdraw the funds

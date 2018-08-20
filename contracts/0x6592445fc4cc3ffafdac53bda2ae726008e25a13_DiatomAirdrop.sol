@@ -46,9 +46,9 @@ contract DiatomAirdrop is Ownable {
   event TokenDrop( address receiver, uint amount );
 
   function airDrop( address[] recipients, uint amount) onlyOwner public{
-    require( amount &gt; 0);
+    require( amount > 0);
 
-    for( uint i = 0 ; i &lt; recipients.length ; i++ ) {
+    for( uint i = 0 ; i < recipients.length ; i++ ) {
         myToken.transfer( recipients[i], amount);
         emit TokenDrop( recipients[i], amount );
     }

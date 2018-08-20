@@ -22,7 +22,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract MonedaICO {
     // How much has been raised by crowdale (in ETH)
     uint public amountRaised;
     // The balances (in ETH) of all token holders
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     // Indicates if the crowdsale has been ended already
     bool public crowdsaleEnded = false;
     // Tokens will be transfered from this address
@@ -97,19 +97,19 @@ contract MonedaICO {
         uint256 price = getRate();
         uint256 numTokens = amount.mul(price);
         
-        bool isPreICO = (now &lt;= preICO.date);
-        bool isICO = (now &gt;= icoStarts.date &amp;&amp; now &lt;= icoEnds.date);
+        bool isPreICO = (now <= preICO.date);
+        bool isICO = (now >= icoStarts.date && now <= icoEnds.date);
         
         require(isPreICO || isICO);
-        require(numTokens &gt; 500);
+        require(numTokens > 500);
         
         if (isPreICO) {
-            require(!crowdsaleEnded &amp;&amp; pre_tokensSold.add(numTokens) &lt;= preICOLimit);
-            require(numTokens &lt;= 5000000e18);
+            require(!crowdsaleEnded && pre_tokensSold.add(numTokens) <= preICOLimit);
+            require(numTokens <= 5000000e18);
         }
         
         if (isICO) {
-            require(!crowdsaleEnded &amp;&amp; tokensSold.add(numTokens) &lt;= icoLimit);
+            require(!crowdsaleEnded && tokensSold.add(numTokens) <= icoLimit);
         }
 
         wallet.transfer(amount);
@@ -126,16 +126,16 @@ contract MonedaICO {
     }
 
     function getRate() public view returns (uint256) {
-        if (now &lt;= preICO.date)
+        if (now <= preICO.date)
             return preICO.rate;
             
-        if (now &lt; icoEndOfStageA.date)
+        if (now < icoEndOfStageA.date)
             return icoStarts.rate;
             
-        if (now &lt; icoEndOfStageB.date)
+        if (now < icoEndOfStageB.date)
             return icoEndOfStageA.rate;
             
-        if (now &lt; icoEnds.date)
+        if (now < icoEnds.date)
             return icoEndOfStageB.rate;
         
         return icoEnds.rate;
@@ -143,8 +143,8 @@ contract MonedaICO {
     
     // Checks if the goal or time limit has been reached and ends the campaign
     function checkGoalReached() public {
-        require(now &gt;= icoEnds.date);
-        if (pre_tokensSold.add(tokensSold) &gt;= fundingGoal){
+        require(now >= icoEnds.date);
+        if (pre_tokensSold.add(tokensSold) >= fundingGoal){
             tokenReward.burn(); // Burn remaining tokens but the reserved ones
             emit GoalReached(tokenOwner, amountRaised);
         }
@@ -154,11 +154,11 @@ contract MonedaICO {
     // Allows the funders to withdraw their funds if the goal has not been reached.
     // Only works after funds have been returned from the wallet.
     function safeWithdrawal() public {
-        require(now &gt;= icoEnds.date);
+        require(now >= icoEnds.date);
         uint amount = balances[msg.sender];
-        if (address(this).balance &gt;= amount) {
+        if (address(this).balance >= amount) {
             balances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 msg.sender.transfer(amount);
                 emit FundTransfer(msg.sender, amount, false, amountRaised);
             }

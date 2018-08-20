@@ -77,19 +77,19 @@ library Math {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a - b) &lt;= a);
+    require((r = a - b) <= a);
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a + b) &gt;= a);
+    require((r = a + b) >= a);
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &lt;= y ? x : y;
+    return x <= y ? x : y;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &gt;= y ? x : y;
+    return x >= y ? x : y;
   }
 
   function mulDiv(uint256 value, uint256 m, uint256 d) internal pure returns (uint256 r) {
@@ -131,45 +131,45 @@ contract FsTKAllocation {
 
   function () external {
     require(
-      token.transfer(0x808b0730252DAA3a12CadC72f42E46E92a5e1bC8, VESTED_AMOUNT) &amp;&amp;                                true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp;                  token.transfer(0xdA01fAFaF5E49e9467f99f5969cab499a5759cC6, VESTED_AMOUNT) &amp;&amp;
-      token.transfer(0xddab6c29090E6111A490527614Ceac583D02C8De, VESTED_AMOUNT) &amp;&amp;                         true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp;                 token.transfer(0x5E6C9EC32b088c9FA1Fc0FEFa38A9B4De4169316, VESTED_AMOUNT) &amp;&amp;
-      true&amp;&amp;                                                                                            true &amp;&amp;                                                                                               true&amp;&amp;
-      true&amp;&amp;                                                                                          true &amp;&amp;                                                                                                 true&amp;&amp;
-      true&amp;&amp;                                                                                       true &amp;&amp;                                                                                                    true&amp;&amp;
-      true&amp;&amp;                                                                                     true &amp;&amp;                                                                                                      true&amp;&amp;
-      true&amp;&amp;                                                                                   true &amp;&amp;                                                                                                        true&amp;&amp;
-      true&amp;&amp;                                                                                  true &amp;&amp;                                                                                                         true&amp;&amp;
-      true&amp;&amp;                                                                                 true &amp;&amp;                                                                                                          true&amp;&amp;
-      true&amp;&amp;                                                                                 true &amp;&amp;                                                                                                          true&amp;&amp;
-      true&amp;&amp;                                                                                true &amp;&amp;                                                                                                           true&amp;&amp;
-      true&amp;&amp;                                                                                true &amp;&amp;                                                                                                           true&amp;&amp;
-      true&amp;&amp;                                                                                true &amp;&amp;                                                                                                           true&amp;&amp;
-      true&amp;&amp;                                                                                 true &amp;&amp;                                                                                                          true&amp;&amp;
-      true&amp;&amp;                                                                                  true &amp;&amp;                                                                                                         true&amp;&amp;
-      true&amp;&amp;                                                                                   true &amp;&amp;                                                                                                        true&amp;&amp;
-      token.transfer(0xFFB5d7C71e8680D0e9482e107F019a2b25D225B5,VESTED_AMOUNT)&amp;&amp;                true &amp;&amp;                                                                                                       true&amp;&amp;
-      token.transfer(0x91cE537b1a8118Aa20Ef7F3093697a7437a5Dc4B,VESTED_AMOUNT)&amp;&amp;                  true &amp;&amp;                                                                                                     true&amp;&amp;
-      true&amp;&amp;                                                                                         true &amp;&amp;                                                                                                  true&amp;&amp;
-      true&amp;&amp;                                                                                            block.timestamp &gt;= RELEASE_EPOCH &amp;&amp; true &amp;&amp;                                                           true&amp;&amp;
-      true&amp;&amp;                                                                                                   true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp;                                                        true&amp;&amp;
-      true&amp;&amp;                                                                                                                                     true &amp;&amp;                                                      true&amp;&amp;
-      true&amp;&amp;                                                                                                                                       true &amp;&amp;                                                    true&amp;&amp;
-      true&amp;&amp;                                                                                                                                          true &amp;&amp;                                                 true&amp;&amp;
-      true&amp;&amp;                                                                                                                                            true &amp;&amp;                                               true&amp;&amp;
-      true&amp;&amp;                                                                                                                                             true &amp;&amp;                                              true&amp;&amp;
-      true&amp;&amp;                                                                                                                                              true &amp;&amp;                                             true&amp;&amp;
-      true&amp;&amp;                                                                                                                                               true &amp;&amp;                                            true&amp;&amp;
-      true&amp;&amp;                                                                                                                                                true &amp;&amp;                                           true&amp;&amp;
-      true&amp;&amp;                                                                                                                                                true &amp;&amp;                                           true&amp;&amp;
-      true&amp;&amp;                                                                                                                                                true &amp;&amp;                                           true&amp;&amp;
-      true&amp;&amp;                                                                                                                                               true &amp;&amp;                                            true&amp;&amp;
-      true&amp;&amp;                                                                                                                                              true &amp;&amp;                                             true&amp;&amp;
-      true&amp;&amp;                                                                                                                                             true &amp;&amp;                                              true&amp;&amp;
-      true&amp;&amp;                                                                                                                                           true &amp;&amp;                                                true&amp;&amp;
-      true&amp;&amp;                                                                                                                                         true &amp;&amp;                                                  true&amp;&amp;
-      true&amp;&amp;                                                                                                                                       true &amp;&amp;                                                    true&amp;&amp;
-      true&amp;&amp;                                                                                             true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp;                                                      true&amp;&amp;
-      true&amp;&amp;                                                                                          true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp; true &amp;&amp;                                                          true
+      token.transfer(0x808b0730252DAA3a12CadC72f42E46E92a5e1bC8, VESTED_AMOUNT) &&                                true && true && true && true && true &&                  token.transfer(0xdA01fAFaF5E49e9467f99f5969cab499a5759cC6, VESTED_AMOUNT) &&
+      token.transfer(0xddab6c29090E6111A490527614Ceac583D02C8De, VESTED_AMOUNT) &&                         true && true && true && true && true && true &&                 token.transfer(0x5E6C9EC32b088c9FA1Fc0FEFa38A9B4De4169316, VESTED_AMOUNT) &&
+      true&&                                                                                            true &&                                                                                               true&&
+      true&&                                                                                          true &&                                                                                                 true&&
+      true&&                                                                                       true &&                                                                                                    true&&
+      true&&                                                                                     true &&                                                                                                      true&&
+      true&&                                                                                   true &&                                                                                                        true&&
+      true&&                                                                                  true &&                                                                                                         true&&
+      true&&                                                                                 true &&                                                                                                          true&&
+      true&&                                                                                 true &&                                                                                                          true&&
+      true&&                                                                                true &&                                                                                                           true&&
+      true&&                                                                                true &&                                                                                                           true&&
+      true&&                                                                                true &&                                                                                                           true&&
+      true&&                                                                                 true &&                                                                                                          true&&
+      true&&                                                                                  true &&                                                                                                         true&&
+      true&&                                                                                   true &&                                                                                                        true&&
+      token.transfer(0xFFB5d7C71e8680D0e9482e107F019a2b25D225B5,VESTED_AMOUNT)&&                true &&                                                                                                       true&&
+      token.transfer(0x91cE537b1a8118Aa20Ef7F3093697a7437a5Dc4B,VESTED_AMOUNT)&&                  true &&                                                                                                     true&&
+      true&&                                                                                         true &&                                                                                                  true&&
+      true&&                                                                                            block.timestamp >= RELEASE_EPOCH && true &&                                                           true&&
+      true&&                                                                                                   true && true && true && true && true &&                                                        true&&
+      true&&                                                                                                                                     true &&                                                      true&&
+      true&&                                                                                                                                       true &&                                                    true&&
+      true&&                                                                                                                                          true &&                                                 true&&
+      true&&                                                                                                                                            true &&                                               true&&
+      true&&                                                                                                                                             true &&                                              true&&
+      true&&                                                                                                                                              true &&                                             true&&
+      true&&                                                                                                                                               true &&                                            true&&
+      true&&                                                                                                                                                true &&                                           true&&
+      true&&                                                                                                                                                true &&                                           true&&
+      true&&                                                                                                                                                true &&                                           true&&
+      true&&                                                                                                                                               true &&                                            true&&
+      true&&                                                                                                                                              true &&                                             true&&
+      true&&                                                                                                                                             true &&                                              true&&
+      true&&                                                                                                                                           true &&                                                true&&
+      true&&                                                                                                                                         true &&                                                  true&&
+      true&&                                                                                                                                       true &&                                                    true&&
+      true&&                                                                                             true && true && true && true && true && true &&                                                      true&&
+      true&&                                                                                          true && true && true && true && true && true &&                                                          true
     );
   }
 }
@@ -213,8 +213,8 @@ contract AbstractToken is ERC20, FsTKToken {
 
   struct Account {
     uint256 balance;
-    mapping (address =&gt; uint256) allowances;
-    mapping (address =&gt; Subscription) subscriptions;
+    mapping (address => uint256) allowances;
+    mapping (address => Subscription) subscriptions;
   }
 
   modifier liquid {
@@ -224,7 +224,7 @@ contract AbstractToken is ERC20, FsTKToken {
 
   bool public isLiquid = true;
   bool public erc20ApproveChecking;
-  mapping(address =&gt; Account) internal accounts;
+  mapping(address => Account) internal accounts;
 
   // *************************
   // * ERC 20
@@ -240,7 +240,7 @@ contract AbstractToken is ERC20, FsTKToken {
 
   function transfer(address to, uint256 value) external liquid returns (bool) {
     Account storage senderAccount = accounts[msg.sender];
-    require(value &lt;= senderAccount.balance);
+    require(value <= senderAccount.balance);
 
     senderAccount.balance -= value;
     accounts[to].balance += value;
@@ -252,7 +252,7 @@ contract AbstractToken is ERC20, FsTKToken {
 
   function transferFrom(address from, address to, uint256 value) external liquid returns (bool) {
     Account storage fromAccount = accounts[from];
-    require(value &lt;= fromAccount.balance &amp;&amp; value &lt;= fromAccount.allowances[msg.sender]);
+    require(value <= fromAccount.balance && value <= fromAccount.allowances[msg.sender]);
 
     fromAccount.balance -= value;
     fromAccount.allowances[msg.sender] -= value;
@@ -280,7 +280,7 @@ contract AbstractToken is ERC20, FsTKToken {
 
   function transfer(address to, uint256 value, bytes data) external liquid returns (bool) {
     Account storage senderAccount = accounts[msg.sender];
-    require(value &lt;= senderAccount.balance);
+    require(value <= senderAccount.balance);
 
     senderAccount.balance -= value;
     accounts[to].balance += value;
@@ -305,10 +305,10 @@ contract AbstractToken is ERC20, FsTKToken {
 
   function transfer(uint256[] data) external liquid {
     Account storage senderAccount = accounts[msg.sender];
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address receiver = address(data[i] &gt;&gt; 96);
-      uint256 value = data[i] &amp; 0xffffffffffffffffffffffff;
-      require(value &lt;= senderAccount.balance);
+    for (uint256 i = 0; i < data.length; i++) {
+      address receiver = address(data[i] >> 96);
+      uint256 value = data[i] & 0xffffffffffffffffffffffff;
+      require(value <= senderAccount.balance);
 
       senderAccount.balance -= value;
       accounts[receiver].balance += value;
@@ -342,9 +342,9 @@ contract AbstractToken is ERC20, FsTKToken {
     Account storage fromAccount = accounts[from];
     Subscription storage info = fromAccount.subscriptions[msg.sender];
     uint256 epoch = (block.timestamp.sub(info.startTime)) / info.interval + 1;
-    require(info.amount &gt; 0 &amp;&amp; epoch &gt; info.epoch);
+    require(info.amount > 0 && epoch > info.epoch);
     uint256 totalAmount = (epoch - info.epoch).mul(info.amount);
-    if (totalAmount &gt; fromAccount.balance) {
+    if (totalAmount > fromAccount.balance) {
       delete fromAccount.subscriptions[msg.sender];
       CancelSubscription(from, msg.sender);
     } else {
@@ -358,14 +358,14 @@ contract AbstractToken is ERC20, FsTKToken {
   }
 
   function collect(address[] froms) external {
-    for (uint256 i = 0; i &lt; froms.length; i++) {
+    for (uint256 i = 0; i < froms.length; i++) {
       address from = froms[i];
       Account storage fromAccount = accounts[from];
       Subscription storage info = fromAccount.subscriptions[msg.sender];
       uint256 epoch = (block.timestamp.sub(info.startTime)) / info.interval + 1;
-      require(info.amount &gt; 0 &amp;&amp; epoch &gt; info.epoch);
+      require(info.amount > 0 && epoch > info.epoch);
       uint256 totalAmount = (epoch - info.epoch).mul(info.amount);
-      if (totalAmount &gt; fromAccount.balance) {
+      if (totalAmount > fromAccount.balance) {
         delete fromAccount.subscriptions[msg.sender];
         CancelSubscription(from, msg.sender);
       } else {
@@ -408,7 +408,7 @@ contract AbstractToken is ERC20, FsTKToken {
     Account storage senderAccount = accounts[msg.sender];
     uint256 currentValue = senderAccount.allowances[spender];
     uint256 newValue;
-    if (value &lt; currentValue) {
+    if (value < currentValue) {
       newValue = currentValue - value;
     }
     senderAccount.allowances[spender] = newValue;
@@ -426,8 +426,8 @@ contract AbstractToken is ERC20, FsTKToken {
 }
 
 contract FunderSmartToken is AbstractToken, Authorizable {
-  string public constant name = &quot;Funder Smart Token&quot;;
-  string public constant symbol = &quot;FST&quot;;
+  string public constant name = "Funder Smart Token";
+  string public constant symbol = "FST";
   uint256 public constant totalSupply = 330000000 * (10 ** 18);
   uint8 public constant decimals = 18;
 

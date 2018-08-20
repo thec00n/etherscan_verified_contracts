@@ -15,9 +15,9 @@ contract owned {
         owner = newOwner;
     }
     function isOwner()public{
-        if(msg.sender==owner)emit Log(&quot;Owner&quot;);
+        if(msg.sender==owner)emit Log("Owner");
         else{
-            emit Log(&quot;Not Owner&quot;);
+            emit Log("Not Owner");
         }
     }
 }
@@ -41,11 +41,11 @@ contract SisterToken is owned{
                             0x5A53D72E763b2D3e2f2f347ed774AAaE872861a4];
     address bounty = 0xAB90CB176709558bA5D2DDA8aeb1F65e24f2409f;
     address bank = owner;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public accountID;
-    mapping (uint256 =&gt; address) public accountFromID;
-    mapping (address =&gt; bool) public isRegistered;
-    mapping (address =&gt; bool) public isTrusted;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public accountID;
+    mapping (uint256 => address) public accountFromID;
+    mapping (address => bool) public isRegistered;
+    mapping (address => bool) public isTrusted;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event TransferNeo(address indexed from, address indexed to, uint256 value);
@@ -67,7 +67,7 @@ contract SisterToken is owned{
         _;
     }
     modifier isAfterRelease{
-        require(block.timestamp&gt;1525550400);
+        require(block.timestamp>1525550400);
         _;
     }
     function SisterToken(
@@ -79,7 +79,7 @@ contract SisterToken is owned{
         balanceOf[owner] = 85*totalSupply/100;
         balanceOf[bounty] = 5*totalSupply/100;
         uint i;
-        for(i=0;i&lt;9;i++){
+        for(i=0;i<9;i++){
             balanceOf[phonebook[i]] = totalSupply/90;
             registerAccount(phonebook[i]);
         }
@@ -92,16 +92,16 @@ contract SisterToken is owned{
     }
     function getMultiplier()public view returns(uint256){
         uint256 multiplier;
-        if(block.timestamp&gt;1525550400){
-            if(block.timestamp &lt; 1525636800){
+        if(block.timestamp>1525550400){
+            if(block.timestamp < 1525636800){
                 multiplier = 150;
-            }else if(block.timestamp &lt; 1526155200){
+            }else if(block.timestamp < 1526155200){
                 multiplier = 140;
-            }else if(block.timestamp &lt;1526760000){
+            }else if(block.timestamp <1526760000){
                 multiplier = 125;
-            }else if(block.timestamp &lt;1527364800){
+            }else if(block.timestamp <1527364800){
                 multiplier = 115;
-            }else if(block.timestamp &lt;1527969600){
+            }else if(block.timestamp <1527969600){
                 multiplier = 105;
             }
         }else{
@@ -125,8 +125,8 @@ contract SisterToken is owned{
 //-------------------------------------------------------------------INTERNAL FUNCTIONS--------------------------------------------------------------------------//
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -142,7 +142,7 @@ contract SisterToken is owned{
         }
     }
     function burnFrom(address _from, uint256 _value) internal returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         balanceOf[_from] -= _value;
         totalSupply -= _value;
         emit Burn(_from, _value);
@@ -152,7 +152,7 @@ contract SisterToken is owned{
         _transfer(owner,to,value);
     }
     function _buy(address user)external payable trusted isAfterRelease{
-        require(owner.balance &gt; 0);
+        require(owner.balance > 0);
         emit isTrusted(user,isTrusted[msg.sender]||msg.sender==user);
         uint256 amount = (getMultiplier()*2*msg.value/buyPrice)/100;
         emit Value(amount);

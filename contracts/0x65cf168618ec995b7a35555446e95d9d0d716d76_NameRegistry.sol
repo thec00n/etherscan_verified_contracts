@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract Ownable {
 // File: contracts/NameRegistry.sol
 
 contract NameRegistry is Ownable {
-  mapping(address =&gt; bool) registrar;
+  mapping(address => bool) registrar;
 
   // Index event by address, for reverse look up
   event NameSet(address indexed addr, string name);
@@ -74,9 +74,9 @@ contract NameRegistry is Ownable {
   event NameRemoved(address indexed addr, bytes32 namehash, bool forced);
 
   // lookup of address by name hash
-  mapping(bytes32 =&gt; address) public namehashAddresses;
+  mapping(bytes32 => address) public namehashAddresses;
 
-  mapping(bytes32 =&gt; bool) public namehashFinalized;
+  mapping(bytes32 => bool) public namehashFinalized;
 
   function registerName(address addr, string name) public onlyRegistrar {
     require(bytes(name).length != 0);

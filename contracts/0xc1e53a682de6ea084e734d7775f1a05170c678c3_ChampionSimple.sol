@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,9 +64,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,18 +113,18 @@ contract ChampionSimple is Ownable {
   }
 
   address [] public players;
-  mapping(address =&gt; Player) public playerInfo;
-  mapping(uint =&gt; uint) public numberOfChoice;
-  mapping(uint =&gt; mapping(address =&gt; bool)) public addressOfChoice;
-  mapping(address =&gt; bool) public withdrawRecord;
+  mapping(address => Player) public playerInfo;
+  mapping(uint => uint) public numberOfChoice;
+  mapping(uint => mapping(address => bool)) public addressOfChoice;
+  mapping(address => bool) public withdrawRecord;
  
   modifier beforeTimestamp(uint timestamp) {
-    require(now &lt; timestamp);
+    require(now < timestamp);
     _;
   }
 
   modifier afterTimestamp(uint timestamp) {
-    require(now &gt;= timestamp);
+    require(now >= timestamp);
     _;
   }
 
@@ -134,7 +134,7 @@ contract ChampionSimple is Ownable {
    * @param _minimumBet the minimum bet amount
    */
   function ChampionSimple(uint _startTime, uint _minimumBet) payable public {
-    require(_startTime &gt; now);
+    require(_startTime > now);
     deposit = msg.value;
     startTime = _startTime;
     minimumBet = _minimumBet;
@@ -156,9 +156,9 @@ contract ChampionSimple is Ownable {
    * @param choice the choice of the participant(actually team id)
    */
   function placeBet(uint choice) payable beforeTimestamp(startTime) public {
-    require(choice &gt; 0);
+    require(choice > 0);
     require(!checkPlayerExists(msg.sender));
-    require(msg.value &gt;= minimumBet);
+    require(msg.value >= minimumBet);
 
     playerInfo[msg.sender].betAmount = msg.value;
     playerInfo[msg.sender].choice = choice;
@@ -175,7 +175,7 @@ contract ChampionSimple is Ownable {
    * @param choice the choice of the participant(actually team id)
    */
   function modifyChoice(uint choice) beforeTimestamp(startTime) public {
-    require(choice &gt; 0);
+    require(choice > 0);
     require(checkPlayerExists(msg.sender));
 
     uint oldChoice = playerInfo[msg.sender].choice;
@@ -204,8 +204,8 @@ contract ChampionSimple is Ownable {
   function withdrawReward() public {
     require(betClosed);
     require(!withdrawRecord[msg.sender]);
-    require(winChoice &gt; 0);
-    require(winReward &gt; 0);
+    require(winChoice > 0);
+    require(winReward > 0);
     require(addressOfChoice[winChoice][msg.sender]);
 
     msg.sender.transfer(winReward);
@@ -241,7 +241,7 @@ contract ChampionSimple is Ownable {
    *      the bet will also cancel and refund every bet
    */
   function refund() onlyOwner public {
-    for (uint i = 0; i &lt; players.length; i++) {
+    for (uint i = 0; i < players.length; i++) {
       players[i].transfer(playerInfo[players[i]].betAmount);
       LogRefund(players[i], playerInfo[players[i]].betAmount);
     }

@@ -3,10 +3,10 @@ pragma solidity 0.4.24;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
       c = a + b;
-      require(c &gt;= a);
+      require(c >= a);
   }
   function sub(uint a, uint b) internal pure returns (uint c) {
-      require(b &lt;= a);
+      require(b <= a);
       c = a - b;
   }
   function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
       require(a == 0 || c / a == b);
   }
   function div(uint a, uint b) internal pure returns (uint c) {
-      require(b &gt; 0);
+      require(b > 0);
       c = a / b;
   }
 }
@@ -95,12 +95,12 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
   uint8 public decimals;
   uint _totalSupply;
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
   constructor() public {
-    symbol = &quot;OXY&quot;;
-    name = &quot;Oxycoin&quot;;
+    symbol = "OXY";
+    name = "Oxycoin";
     decimals = 18;
     _totalSupply = 1200000000 * 10 ** uint(decimals);
     balances[owner] = _totalSupply;
@@ -108,7 +108,7 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
   }
   
   modifier onlyPayloadSize(uint numWords) {
-    assert(msg.data.length &gt;= numWords * 32 + 4);
+    assert(msg.data.length >= numWords * 32 + 4);
     _;
   }
     
@@ -121,7 +121,7 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
       //retrieve the size of the code on target address, this needs assembly
         length := extcodesize(_address)
       }
-      return (length &gt; 0);
+      return (length > 0);
     }
     
   /**
@@ -161,8 +161,8 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
   */
   function transfer(address to, uint tokens) public whenNotPaused onlyPayloadSize(2) returns (bool success) {
     require(to != address(0));
-    require(tokens &gt; 0);
-    require(tokens &lt;= balances[msg.sender]);
+    require(tokens > 0);
+    require(tokens <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
     emit Transfer(msg.sender, to, tokens);
@@ -172,7 +172,7 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param spender The address which will spend the funds.
    * @param tokens The amount of tokens to be spent.
@@ -193,11 +193,11 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
 
 
     function transferFrom(address from, address to, uint tokens) public whenNotPaused onlyPayloadSize(3) returns (bool success) {
-        require(tokens &gt; 0);
+        require(tokens > 0);
         require(from != address(0));
         require(to != address(0));
-        require(allowed[from][msg.sender] &gt; 0);
-        require(balances[from]&gt;0);
+        require(allowed[from][msg.sender] > 0);
+        require(balances[from]>0);
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -211,7 +211,7 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
    * @param _value The amount of token to be burned.
    */
     function burn(uint _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         _totalSupply =_totalSupply.sub(_value);
         emit Burn(msg.sender, _value);
@@ -224,8 +224,8 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
    * @param _value uint256 The amount of token to be burned
    */
     function burnFrom(address from, uint _value) public returns (bool success) {
-        require(balances[from] &gt;= _value);
-        require(_value &lt;= allowed[from][msg.sender]);
+        require(balances[from] >= _value);
+        require(_value <= allowed[from][msg.sender]);
         balances[from] = balances[from].sub(_value);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(_value);
         _totalSupply = _totalSupply.sub(_value);
@@ -239,7 +239,7 @@ contract OxyCoin is ERC20Interface, Owned, Pausable {
    * @return A boolean that indicates if the operation was successful.
    */
     function mintToken(address target, uint mintedAmount) onlyOwner public  returns (bool) {
-        require(mintedAmount &gt; 0);
+        require(mintedAmount > 0);
         require(target != address(0));
         balances[target] = balances[target].add(mintedAmount);
         _totalSupply = _totalSupply.add(mintedAmount);

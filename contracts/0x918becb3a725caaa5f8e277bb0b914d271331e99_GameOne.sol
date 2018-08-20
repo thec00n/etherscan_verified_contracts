@@ -55,13 +55,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -83,9 +83,9 @@ contract Token is SafeMath, owned {
     string public symbol;
     uint public decimals = 8;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-    mapping (address =&gt; uint) limitAddress;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => uint) limitAddress;
 
     uint public totalSupply = 1 * 10000 * 10000 * 10 ** uint256(decimals);
 
@@ -125,8 +125,8 @@ contract Token is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -134,7 +134,7 @@ contract Token is SafeMath, owned {
     }
 
     function batchtransfer(address[] _to, uint256[] _amount) public returns(bool success) {
-        for(uint i = 0; i &lt; _to.length; i++){
+        for(uint i = 0; i < _to.length; i++){
             require(transfer(_to[i], _amount[i]));
         }
         return true;
@@ -156,9 +156,9 @@ contract Token is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -191,7 +191,7 @@ contract Token is SafeMath, owned {
 
         uint supply = _amount;
 
-        if(balanceOf[this] &lt; supply) {
+        if(balanceOf[this] < supply) {
             supply = balanceOf[this];
         }
         require(transferInner(_to, supply));
@@ -203,7 +203,7 @@ contract Token is SafeMath, owned {
         public
         onlyOwner
     {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         msg.sender.transfer(amount);
     }
 
@@ -249,7 +249,7 @@ contract GameOne is SafeMath, Random, owned {
     }
 
     modifier validEth {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.value &lt;= maxEth);
+        assert(msg.value >= minEth && msg.value <= maxEth);
         _;
     }
 
@@ -269,17 +269,17 @@ contract GameOne is SafeMath, Random, owned {
     }
 
     function setCut(uint newCut) public isOwner {
-        assert(newCut &gt; 0 &amp;&amp; newCut &lt;= 20);
+        assert(newCut > 0 && newCut <= 20);
         cut = newCut;
     }
 
     function setMinEth(uint newMinEth) public isOwner {
-        assert(newMinEth &gt;= 0.01 ether);
+        assert(newMinEth >= 0.01 ether);
         minEth = newMinEth;
     }
 
     function setMaxEth(uint newMaxEth) public isOwner {
-        assert(newMaxEth &gt;= 0.1 ether);
+        assert(newMaxEth >= 0.1 ether);
         maxEth = newMaxEth;
     }
 
@@ -341,7 +341,7 @@ contract GameOne is SafeMath, Random, owned {
 
         uint apercent = av * 10 ** 2 /bonus;
         uint rand = random(100);
-        if (rand&lt;=apercent) {
+        if (rand<=apercent) {
             win = a;
         } else {
             win = b;
@@ -357,7 +357,7 @@ contract GameOne is SafeMath, Random, owned {
         } else {
             lef = this.balance;
         }
-        require(lef &gt;= amount);
+        require(lef >= amount);
 
         msg.sender.transfer(amount);
     }
@@ -375,7 +375,7 @@ contract GameOne is SafeMath, Random, owned {
         private
         returns (bool success)
     {
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
         _to.transfer(_value);
         return true;
     }

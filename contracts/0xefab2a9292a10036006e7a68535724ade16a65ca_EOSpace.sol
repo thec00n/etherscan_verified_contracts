@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,12 +59,12 @@ contract EOSpace is ERC20 {
     address owner = msg.sender;
     address EOSContract = 0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;EOSpace&quot;;
-    string public constant symbol = &quot;EOP&quot;;
+    string public constant name = "EOSpace";
+    string public constant symbol = "EOP";
     uint public constant decimals = 18;
     
     uint256 public totalSupply = 10000000000e18;
@@ -110,13 +110,13 @@ contract EOSpace is ERC20 {
     }
     
     function enableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -135,51 +135,51 @@ contract EOSpace is ERC20 {
         Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function airdrop(address[] addresses) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(value &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(value <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(value &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(value <= totalRemaining);
             distr(addresses[i], value);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(amount &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(amount <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner canDistr public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalSupply) {
+            if (totalDistributed >= totalSupply) {
                 distributionFinished = true;
             }
         }
@@ -190,23 +190,23 @@ contract EOSpace is ERC20 {
     }
     
     function getTokens() payable canDistr onlyWhitelist public {
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
           value = totalRemaining;
         }
         
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
         address investor = msg.sender;
         EOSToken token = EOSToken(EOSContract);
         uint256 toGive = token.balanceOf(investor);
-        require(toGive &lt;= totalRemaining);
+        require(toGive <= totalRemaining);
         distr(investor, toGive);
 
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
           blacklist[investor] = true;
         }
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
           distributionFinished = true;
         }
 
@@ -219,14 +219,14 @@ contract EOSpace is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -237,8 +237,8 @@ contract EOSpace is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -249,7 +249,7 @@ contract EOSpace is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -271,9 +271,9 @@ contract EOSpace is ERC20 {
     }
     
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

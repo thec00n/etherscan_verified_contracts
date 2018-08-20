@@ -5,7 +5,7 @@ contract ConnectSix {
   Game[] public games;
 
   struct Game {
-      mapping(uint8 =&gt; mapping(uint8 =&gt; uint8)) board;
+      mapping(uint8 => mapping(uint8 => uint8)) board;
       uint8[] move_history;
       address[3] players;
       // 0 means game did not start yet
@@ -45,7 +45,7 @@ contract ConnectSix {
       throw;
     }
     g.players[2] = msg.sender;
-    // It&#39;s the second player&#39;s turn because the first player automatically makes a single move in the center
+    // It's the second player's turn because the first player automatically makes a single move in the center
     g.turn = 2;
     g.deadline = now + g.time_per_move;
     LogGameStarted(game_num);
@@ -68,7 +68,7 @@ contract ConnectSix {
   }
 
   function single_move(uint game_num, uint8 x, uint8 y) internal {
-    if (x &gt; board_size || y &gt; board_size) {
+    if (x > board_size || y > board_size) {
       throw;
     }
     Game g = games[game_num];
@@ -106,14 +106,14 @@ contract ConnectSix {
   function pay_winner(uint game_num) internal {
     Game g = games[game_num];
     uint amount = g.player_1_stake + g.player_2_stake;
-    if (amount &gt; 0 &amp;&amp; !g.players[g.winner].send(amount)) {
+    if (amount > 0 && !g.players[g.winner].send(amount)) {
       throw;
     }
   }
 
   function claim_time_victory(uint game_num) {
     Game g = games[game_num];
-    if (g.winner != 0 || g.deadline == 0 || now &lt;= g.deadline) {
+    if (g.winner != 0 || g.deadline == 0 || now <= g.deadline) {
       throw;
     }
     g.winner = 3 - g.turn;
@@ -123,18 +123,18 @@ contract ConnectSix {
 
   function claim_victory(uint game_num, uint8 x, uint8 y, uint8 dir) {
     Game g = games[game_num];
-    if (x &gt; board_size 
-        || y &gt; board_size
+    if (x > board_size 
+        || y > board_size
         || g.winner != 0
         || g.board[x][y] == 0
-        || dir &gt; 3) {
+        || dir > 3) {
       throw;
     }
-    // We don&#39;t have to worry about overflow and underflows here because all the values outside the 
+    // We don't have to worry about overflow and underflows here because all the values outside the 
     // 19 x 19 board are 0
     if (dir == 3) {
       // this is going diagonal (10:30pm)
-      for (uint8 j = 1; j &lt; 6; j++) {
+      for (uint8 j = 1; j < 6; j++) {
         if (g.board[x - j*dx][y + j*dy] != g.board[x][y]) {
           throw;
         }
@@ -153,7 +153,7 @@ contract ConnectSix {
         // 3 pm
         dx = 1;
       }
-      for (uint8 i = 1; i &lt; 6; i++) {
+      for (uint8 i = 1; i < 6; i++) {
         if (g.board[x + i*dx][y + i*dy] != g.board[x][y]) {
           throw;
         }

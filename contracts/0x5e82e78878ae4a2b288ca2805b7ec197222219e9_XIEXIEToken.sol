@@ -6,19 +6,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,7 +43,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -87,7 +87,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -99,7 +99,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -138,10 +138,10 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract XIEXIEToken is StandardToken {
-  string public name = &quot;PleaseChinaResumeICOWeLoveYouXieXie&quot;;
+  string public name = "PleaseChinaResumeICOWeLoveYouXieXie";
   uint8 public decimals = 18;
-  string public symbol = &quot;XIEXIE&quot;;
-  string public version = &quot;0.1&quot;;
+  string public symbol = "XIEXIE";
+  string public version = "0.1";
   address public wallet = 0xCDAe88d491030257265CD42226cF56b085aC58cf;
   address public tokensBank = 0x075768D0fB81282e1a62B1f05BAf5279Dc7B5dbe;
   uint256 public circulatingTokens = 0;
@@ -153,8 +153,8 @@ contract XIEXIEToken is StandardToken {
   }
 
   function dynasty() returns (uint256) {
-    if (circulatingTokens &lt;= 37799999999999997902848) return 1644;
-    if (circulatingTokens &lt;= 462000000000000054525952) return 1368;
+    if (circulatingTokens <= 37799999999999997902848) return 1644;
+    if (circulatingTokens <= 462000000000000054525952) return 1368;
     return 1271;
   }
 
@@ -162,15 +162,15 @@ contract XIEXIEToken is StandardToken {
     require(msg.sender != 0x0);                             //  \`*-.                                                  
     require(msg.value != 0);                                //   )  _`-.                                            
     require(msg.sender != tokensBank);                      //  .  : `. .                                                     
-    require(msg.sender != wallet);                          //  : _   &#39;  \                                                
-    require(msg.value &gt;= 10000000000000000); //0.01 eth     //  ; *` _.   `*-._                                                                
-    require(block.timestamp &gt;= STARTBLOCKTM);               //  `-.-&#39;          `-.                                                   
+    require(msg.sender != wallet);                          //  : _   '  \                                                
+    require(msg.value >= 10000000000000000); //0.01 eth     //  ; *` _.   `*-._                                                                
+    require(block.timestamp >= STARTBLOCKTM);               //  `-.-'          `-.                                                   
     uint256 tokens = msg.value.mul(dynasty());              //    ;       `       `.                                                  
     wallet.transfer(msg.value);                             //    :.       .        \                                  
-    require(circulatingTokens.add(tokens) &lt;= totalSupply);  //    . \  .   :   .-&#39;   .                                                            
-    circulatingTokens = circulatingTokens.add(tokens);      //    &#39;  `+.;  ;  &#39;      :                                                        
-    require(allowed[tokensBank][msg.sender] == 0);          //    :  &#39;  |    ;       ;-.                                                  
-    allowed[tokensBank][msg.sender] = tokens;               //    ; &#39;   : :`-:     _.`* ;                                            
-    transferFrom(tokensBank, msg.sender, tokens);           // .*&#39; /  .*&#39; ; .*`- +&#39;  `*&#39;                                                 
-  }                                                         // `*-*   `*-*  `*-*&#39;      
+    require(circulatingTokens.add(tokens) <= totalSupply);  //    . \  .   :   .-'   .                                                            
+    circulatingTokens = circulatingTokens.add(tokens);      //    '  `+.;  ;  '      :                                                        
+    require(allowed[tokensBank][msg.sender] == 0);          //    :  '  |    ;       ;-.                                                  
+    allowed[tokensBank][msg.sender] = tokens;               //    ; '   : :`-:     _.`* ;                                            
+    transferFrom(tokensBank, msg.sender, tokens);           // .*' /  .*' ; .*`- +'  `*'                                                 
+  }                                                         // `*-*   `*-*  `*-*'      
 }

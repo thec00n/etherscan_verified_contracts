@@ -18,9 +18,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -86,7 +86,7 @@ contract LandManagement {
     address public candyLandAddress;
     address public candyLandSaleAddress;
 
-    mapping(address =&gt; bool) unicornContracts;//address
+    mapping(address => bool) unicornContracts;//address
 
     bool public ethLandSaleOpen = true;
     bool public presaleOpen = true;
@@ -143,7 +143,7 @@ contract LandManagement {
 
 
     function init() onlyUnicornManagement whenPaused external {
-        for(uint i = 0; i &lt; initList.length; i++) {
+        for(uint i = 0; i < initList.length; i++) {
             LandInit(initList[i]).init();
         }
     }
@@ -154,7 +154,7 @@ contract LandManagement {
         bool exists;
     }
 
-    mapping (address =&gt; InitItem) private initItems;
+    mapping (address => InitItem) private initItems;
     address[] private initList;
 
     function registerInit(address _contract) external whenPaused {
@@ -170,7 +170,7 @@ contract LandManagement {
     }
 
     function unregisterInit(address _contract) external onlyOwner whenPaused {
-        require(initItems[_contract].exists &amp;&amp; initList.length &gt; 0);
+        require(initItems[_contract].exists && initList.length > 0);
         uint lastIdx = initList.length - 1;
         initItems[initList[lastIdx]].listIndex = initItems[_contract].listIndex;
         initList[initItems[_contract].listIndex] = initList[lastIdx];
@@ -181,7 +181,7 @@ contract LandManagement {
 
 
     function runInit() external onlyOwner whenPaused {
-        for(uint i = 0; i &lt; initList.length; i++) {
+        for(uint i = 0; i < initList.length; i++) {
             LandInit(initList[i]).init();
         }
     }

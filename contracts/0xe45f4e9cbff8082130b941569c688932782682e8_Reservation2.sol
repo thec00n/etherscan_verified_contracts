@@ -3,7 +3,7 @@
  * Investors may withdraw their funds anytime if they change their mind as long as the tokens have not yet been purchased.
  * Author: Julia Altenried
  * Internal audit: Alex Bazhanau, Andrej Ruckij
- * Audit: Blockchain &amp; Smart Contract Security Group
+ * Audit: Blockchain & Smart Contract Security Group
  **/
 
 pragma solidity ^0.4.15;
@@ -16,7 +16,7 @@ contract SafeMath {
 
 	function safeAdd(uint a, uint b) internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 
@@ -53,8 +53,8 @@ contract mortal is owned {
 contract Reservation2 is mortal, SafeMath {
 	ICO public ico;
 	address[] public investors;
-	mapping(address =&gt; uint) public balanceOf;
-	mapping(address =&gt; bool) invested;
+	mapping(address => uint) public balanceOf;
+	mapping(address => bool) invested;
 	uint public weiCap;
 
 
@@ -66,9 +66,9 @@ contract Reservation2 is mortal, SafeMath {
 
 	/** make an investment **/
 	function() payable {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
-		require(weiCap == 0 || this.balance &lt;= weiCap);
+		require(weiCap == 0 || this.balance <= weiCap);
 
 		if (!invested[msg.sender]) {
 			investors.push(msg.sender);
@@ -83,10 +83,10 @@ contract Reservation2 is mortal, SafeMath {
 	function buyTokens(uint _from, uint _to) onlyOwner {
 		require(address(ico)!=0x0);//would fail anyway below, but to be sure
 		uint amount;
-		if (_to &gt; investors.length)
+		if (_to > investors.length)
 			_to = investors.length;
-		for (uint i = _from; i &lt; _to; i++) {
-			if (balanceOf[investors[i]] &gt; 0) {
+		for (uint i = _from; i < _to; i++) {
+			if (balanceOf[investors[i]] > 0) {
 				amount = balanceOf[investors[i]];
 				delete balanceOf[investors[i]];
 				ico.invest.value(amount)(investors[i]);
@@ -98,7 +98,7 @@ contract Reservation2 is mortal, SafeMath {
 	 *   (only possible before tokens are bought) **/
 	function withdraw() {
 		uint amount = balanceOf[msg.sender];
-		require(amount &gt; 0);
+		require(amount > 0);
 		
 		balanceOf[msg.sender] = 0;
 		msg.sender.transfer(amount);

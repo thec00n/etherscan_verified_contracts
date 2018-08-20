@@ -20,13 +20,13 @@ contract Ownable {
 
 contract Withdrawable {
 
-    mapping (address =&gt; uint) public pendingWithdrawals;
+    mapping (address => uint) public pendingWithdrawals;
 
     function withdraw() public {
         uint amount = pendingWithdrawals[msg.sender];
         
-        require(amount &gt; 0);
-        require(this.balance &gt;= amount);
+        require(amount > 0);
+        require(this.balance >= amount);
 
         pendingWithdrawals[msg.sender] = 0;
         msg.sender.transfer(amount);
@@ -52,8 +52,8 @@ contract EthLottery is Withdrawable, Ownable {
         uint16 numTickets;
         uint16 winningTicket;
         
-        mapping (uint16 =&gt; address) tickets;
-        mapping (address =&gt; uint16) ticketsPerAddress;
+        mapping (uint16 => address) tickets;
+        mapping (address => uint16) ticketsPerAddress;
         
         address winner;
         
@@ -67,11 +67,11 @@ contract EthLottery is Withdrawable, Ownable {
         uint lastSaleTimestamp;
     }
 
-    mapping (uint32 =&gt; Lottery) lotteries;
+    mapping (uint32 => Lottery) lotteries;
     
     // Init Lottery. 
     function initLottery(uint16 numTickets, uint ticketPrice, uint8 ownerCut, bytes32 serverHash) onlyOwner public {
-        require(ownerCut &lt; 100);
+        require(ownerCut < 100);
                 
         lotteryId += 1;
 
@@ -119,26 +119,26 @@ contract EthLottery is Withdrawable, Ownable {
 
         // Checks on Lottery
         require(lotteries[lottId].winner == address(0));
-        require(lotteries[lottId].ticketsSold.length &lt; lotteries[lottId].numTickets);
+        require(lotteries[lottId].ticketsSold.length < lotteries[lottId].numTickets);
 
         // Checks on tickets
-        require(tickets.length &gt; 0);
-        require(tickets.length &lt;= lotteries[lottId].numTickets);
+        require(tickets.length > 0);
+        require(tickets.length <= lotteries[lottId].numTickets);
         require(tickets.length * lotteries[lottId].ticketPrice == msg.value);
 
-        for (uint16 i = 0; i &lt; tickets.length; i++) {
+        for (uint16 i = 0; i < tickets.length; i++) {
             
             uint16 ticket = tickets[i];
 
             // Check number is OK and not Sold
-            require(lotteries[lottId].numTickets &gt; ticket);
+            require(lotteries[lottId].numTickets > ticket);
             require(lotteries[lottId].tickets[ticket] == 0);
             
             // Ticket checks passed OK
             lotteries[lottId].ticketsSold.push(ticket);
             lotteries[lottId].ticketOwners.push(msg.sender);
 
-            // Save who&#39;s buying this ticket
+            // Save who's buying this ticket
             lotteries[lottId].tickets[ticket] = msg.sender;
         }
 
@@ -162,8 +162,8 @@ contract EthLottery is Withdrawable, Ownable {
         require(lotteries[lottId].winner == address(0));
         require(lotteries[lottId].ticketsSold.length == lotteries[lottId].numTickets);
 
-        // If it&#39;s been less than two hours from the sale of the last ticket.
-        require((lotteries[lottId].lastSaleTimestamp + 2 hours) &gt;= now);
+        // If it's been less than two hours from the sale of the last ticket.
+        require((lotteries[lottId].lastSaleTimestamp + 2 hours) >= now);
 
         // Check fairness of server roll here
         require(keccak256(serverSalt, serverRoll) == lotteries[lottId].serverHash);
@@ -192,11 +192,11 @@ contract EthLottery is Withdrawable, Ownable {
         require(lotteries[lottId].winner == address(0));
         require(lotteries[lottId].ticketsSold.length == lotteries[lottId].numTickets);
         
-        // If it&#39;s been more than two hours from the sale of the last ticket.
-        require((lotteries[lottId].lastSaleTimestamp + 2 hours) &lt; now);
+        // If it's been more than two hours from the sale of the last ticket.
+        require((lotteries[lottId].lastSaleTimestamp + 2 hours) < now);
             
         // Check caller hash bought tickets for this lottery
-        require(lotteries[lottId].ticketsPerAddress[msg.sender] &gt; 0);
+        require(lotteries[lottId].ticketsPerAddress[msg.sender] > 0);
 
         uint16 numTickets = lotteries[lottId].ticketsPerAddress[msg.sender];
 

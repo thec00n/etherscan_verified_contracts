@@ -4,7 +4,7 @@ contract TestSale {
 
   address public owner;
   bool public active;
-  mapping (address =&gt; uint256) public participation;
+  mapping (address => uint256) public participation;
 
   modifier ownerOnly() {
     require(msg.sender == owner);

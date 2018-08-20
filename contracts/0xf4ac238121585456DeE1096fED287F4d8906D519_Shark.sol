@@ -4,14 +4,14 @@ contract StandardToken
     string public symbol; 
     uint256 public decimals;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if( _value &gt; balanceOf[msg.sender] || (balanceOf[_to]+_value) &lt; balanceOf[_to]) return false;
+        if( _value > balanceOf[msg.sender] || (balanceOf[_to]+_value) < balanceOf[_to]) return false;
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -19,7 +19,7 @@ contract StandardToken
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if( _value &gt; balanceOf[_from] || _value &gt; allowance[_from][msg.sender] || (balanceOf[_to]+_value) &lt; balanceOf[_to] ) return false;
+        if( _value > balanceOf[_from] || _value > allowance[_from][msg.sender] || (balanceOf[_to]+_value) < balanceOf[_to] ) return false;
         balanceOf[_from] -=_value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -40,9 +40,9 @@ contract ExtendetdToken is StandardToken
         uint256 cnt = _receivers.length;
         uint256 amount = cnt * _value;
         if(amount == 0) return false;
-        if(balanceOf[msg.sender] &lt; amount) return false;
+        if(balanceOf[msg.sender] < amount) return false;
         balanceOf[msg.sender] -= amount;
-        for (uint i = 0; i &lt; cnt; i++) {
+        for (uint i = 0; i < cnt; i++) {
             balanceOf[_receivers[i]] += _value;
             Transfer(msg.sender, _receivers[i], _value);
             }
@@ -52,7 +52,7 @@ contract ExtendetdToken is StandardToken
 
 contract Traded is ExtendetdToken
 {
-    mapping (address=&gt;bool) public managers;
+    mapping (address=>bool) public managers;
     
     modifier onlyManager()
     {
@@ -64,8 +64,8 @@ contract Traded is ExtendetdToken
     
     function Trade(uint256 _qty, uint256 _price, bytes32 _data, address _seller, address _buyer) payable onlyManager
     {
-        if(balanceOf[_seller]&lt;_qty)return;
-        if(balanceOf[_buyer]+_qty&lt;balanceOf[_buyer])return;
+        if(balanceOf[_seller]<_qty)return;
+        if(balanceOf[_buyer]+_qty<balanceOf[_buyer])return;
         uint256 total = _qty*_price;
         _seller.transfer(total);
         balanceOf[_seller]-=_qty;
@@ -80,8 +80,8 @@ contract Shark is Traded
 {
     function Shark()
     {
-        name = &quot;SHARK TECH&quot;;
-        symbol = &quot;SKT&quot;;
+        name = "SHARK TECH";
+        symbol = "SKT";
         decimals = 18;
         totalSupply = 100000000000000000000000;
         balanceOf[msg.sender]=totalSupply;
@@ -107,7 +107,7 @@ contract Shark is Traded
     function changePrice(uint256 _newPrice)
     onlyOwner
     {
-        if(_newPrice&gt;price)
+        if(_newPrice>price)
         {
             price = _newPrice;
         }
@@ -117,23 +117,23 @@ contract Shark is Traded
     payable
     onlyHuman
     {
-        if(msg.value&lt;price*1 ether)throw;
-        this.Trade(msg.value/price,price,&quot;&quot;,owner,msg.sender); 
+        if(msg.value<price*1 ether)throw;
+        this.Trade(msg.value/price,price,"",owner,msg.sender); 
     }
     
     function Sell(uint256 _qty) 
     payable
     onlyHuman
     {
-        if(this.balance&lt;_qty*price)throw;
-        this.Trade(_qty,price,&quot;buyback&quot;,msg.sender,owner);
+        if(this.balance<_qty*price)throw;
+        this.Trade(_qty,price,"buyback",msg.sender,owner);
     }
     
     function airDrop(address[] _adr,uint256 _val)
     public
     payable
     {
-        if(msg.value &gt;= _adr.length * _val)
+        if(msg.value >= _adr.length * _val)
         {
             Buy();
             batchTransfer(_adr,_val);

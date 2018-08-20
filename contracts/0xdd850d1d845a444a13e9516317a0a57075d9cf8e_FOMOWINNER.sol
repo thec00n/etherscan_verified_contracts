@@ -47,10 +47,10 @@ contract TokenERC20 {
 
     // This creates an array with all balances
     // 创建一个map保存所有代币持有者的余额
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // 地址配额
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     // 这将在区块链上生成将通知客户的公共事件
@@ -89,11 +89,11 @@ contract TokenERC20 {
 
         // Check if the sender has enough
         // 检查转账者是否有足够token
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
         // 检查是否超过最大量
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -141,7 +141,7 @@ contract TokenERC20 {
      */
     function transferFrom( address _from, address _to, uint256 _value ) public returns (bool success) {
 
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance 检查从from地址中转移一定配额的token到to地址
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance 检查从from地址中转移一定配额的token到to地址
 
         allowance[_from][msg.sender] -= _value; //转入地址的数量减少
         _transfer(_from, _to, _value);
@@ -195,7 +195,7 @@ contract TokenERC20 {
      */
     function burn(uint256 _value) public returns (bool success) {
 
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough 检查销毁地址余额
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough 检查销毁地址余额
         balanceOf[msg.sender] -= _value;            // Subtract from the sender 账户里减少
         totalSupply -= _value;                      // Updates totalSupply 总供应量减少
         emit Burn(msg.sender, _value);              // 销毁
@@ -214,11 +214,11 @@ contract TokenERC20 {
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough 检查余额
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance 检查配额
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough 检查余额
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance 检查配额
 
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance 
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply 总供应量减少
         emit Burn(_from, _value);                           // 销毁
 
@@ -239,7 +239,7 @@ contract FOMOWINNER is owned, TokenERC20 {
     uint256 public buyPrice;
 
     // 定义冻结账户
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     // 冻结消息通知
@@ -254,8 +254,8 @@ contract FOMOWINNER is owned, TokenERC20 {
     function _transfer( address _from, address _to, uint _value  ) internal {
         
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead 检查转账地址格式
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough 检查转出地址余额
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows           检查转入金额不能为负
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough 检查转出地址余额
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows           检查转入金额不能为负
 
         require(!frozenAccount[_from]);                     // Check if sender is frozen  转出地址不在冻结账户中
         require(!frozenAccount[_to]);                       // Check if recipient is frozen 转入地址不在冻结账户中
@@ -277,7 +277,7 @@ contract FOMOWINNER is owned, TokenERC20 {
         emit Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     /// 冻结账户
@@ -309,8 +309,8 @@ contract FOMOWINNER is owned, TokenERC20 {
     /// 向合约卖出令牌
     function sell(uint256 amount) public {
         address myAddress = this;
-        require(myAddress.balance &gt;= amount * sellPrice); // checks if the contract has enough ether to buy 检查合约地址是否有足够的eth
+        require(myAddress.balance >= amount * sellPrice); // checks if the contract has enough ether to buy 检查合约地址是否有足够的eth
         _transfer(msg.sender, this, amount);              // makes the transfers  token转账
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks 向对方发送eth
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks 向对方发送eth
     }
 }

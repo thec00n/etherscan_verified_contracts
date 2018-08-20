@@ -11,8 +11,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
         return 0;
@@ -27,9 +27,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,7 +55,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -157,7 +157,7 @@ contract ERC223 {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
 
         /*
@@ -179,16 +179,16 @@ contract ERC223 {
 contract Ecoprotech is ERC223, Ownable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;EXEES_TBD&quot;;
-    string public constant symbol = &quot;EXE_TBD&quot;;
+    string public constant name = "EXEES_TBD";
+    string public constant symbol = "EXE_TBD";
     uint8 public constant decimals = 8;
     uint256 public constant totalSupply = 2000000000000 * 10 ** 8;
     bool public locked = true;
     address public marketor;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping(address =&gt; bool) public lockAccount;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping (address => uint256)) public allowance;
+    mapping(address => bool) public lockAccount;
 
     event ToggleLocked(bool _locked);
     event LockedAccount(address indexed _to);
@@ -231,7 +231,7 @@ contract Ecoprotech is ERC223, Ownable {
 
     // Check whether msg.sender can transfer token or not
     modifier validTransfer() {
-        if (locked &amp;&amp; lockAccount[msg.sender])
+        if (locked && lockAccount[msg.sender])
             revert();
         _;
     }
@@ -260,7 +260,7 @@ contract Ecoprotech is ERC223, Ownable {
      * @dev Standard function transfer based on ERC223
      */
     function transfer(address _to, uint _value, bytes _data) public validTransfer returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; _to != address(0));
+        require(_value > 0 && _to != address(0));
 
         setLockToAccount(msg.sender, _to);
 
@@ -276,7 +276,7 @@ contract Ecoprotech is ERC223, Ownable {
      *      Added due to backwards compatibility reasons
      */
     function transfer(address _to, uint _value) public validTransfer returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; _to != address(0));
+        require(_value > 0 && _to != address(0));
 
         setLockToAccount(msg.sender, _to);
 
@@ -295,12 +295,12 @@ contract Ecoprotech is ERC223, Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -310,7 +310,7 @@ contract Ecoprotech is ERC223, Ownable {
 
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -329,9 +329,9 @@ contract Ecoprotech is ERC223, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public validTransfer returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value);
+                && _value > 0
+                && balanceOf[_from] >= _value
+                && allowance[_from][msg.sender] >= _value);
 
         setLockToAccount(msg.sender, _to);
 

@@ -7,30 +7,30 @@ pragma solidity ^0.4.18;
 
   * `require` is used in these libraries for the following reasons:
   *   - overflows should not be checked in contract function bodies; DRY
-  *   - &quot;valid&quot; user input can cause overflows, which should not assert()
+  *   - "valid" user input can cause overflows, which should not assert()
   */
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
 
 library SafeMath64 {
   function sub(uint64 a, uint64 b) internal pure returns (uint64) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint64 a, uint64 b) internal pure returns (uint64) {
     uint64 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -112,13 +112,13 @@ contract DetailedERC20 is ERC20 {
   * - owner cut is determined at beginning of new period.
   * - member has 1 month to withdraw their dividend from the previous month.
   * - if member does not withdraw their dividend, their share will be given to owner.
-  * - mod can place a member on a 1 month &quot;timeout&quot;, whereby they won&#39;t be eligible for a dividend.
+  * - mod can place a member on a 1 month "timeout", whereby they won't be eligible for a dividend.
 
   * Eg: 10 eth is sent to the contract in January, owner cut is 30%. 
   * There are 70 token holders on Jan 31. At any time in February, each token holder can withdraw .1 eth for their January 
-  * dividend (unless they were given a &quot;timeout&quot; in January).
+  * dividend (unless they were given a "timeout" in January).
   */
-contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;, 0) {
+contract SolClub is Ownable, DetailedERC20("SolClub", "SOL", 0) {
   // SafeMath libs are responsible for checking overflow.
   using SafeMath for uint256;
   using SafeMath64 for uint64;
@@ -131,21 +131,21 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
   }
 
   // Manage members.
-  mapping(address =&gt; Member) public members;
-  mapping(bytes20 =&gt; address) public usernames;
+  mapping(address => Member) public members;
+  mapping(bytes20 => address) public usernames;
 
   // Manage dividend payments.
   uint256 public epoch; // Timestamp at start of new period.
   uint256 dividendPool; // Total amount of dividends to pay out for last period.
-  uint256 public dividend; // Per-member share of last period&#39;s dividend.
-  uint256 public ownerCut; // Percentage, in basis points, of owner cut of this period&#39;s payments.
+  uint256 public dividend; // Per-member share of last period's dividend.
+  uint256 public ownerCut; // Percentage, in basis points, of owner cut of this period's payments.
   uint64 public numMembers; // Number of members created before this period.
   uint64 public newMembers; // Number of members created during this period.
   uint16 public currentPeriod = 1;
 
   address public moderator;
 
-  mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => mapping (address => uint256)) internal allowed;
 
   event Mint(address indexed to, uint256 amount);
   event PeriodEnd(uint16 period, uint256 amount, uint64 members);
@@ -179,8 +179,8 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
   // Owner should call this on twice a month.
   // _ownerCut is new owner cut for new period.
   function newPeriod(uint256 _ownerCut) public onlyOwner {
-    require(now &gt;= epoch + 15 days);
-    require(_ownerCut &lt;= 10000);
+    require(now >= epoch + 15 days);
+    require(_ownerCut <= 10000);
 
     uint256 unclaimedDividend = dividendPool;
     uint256 ownerRake = (address(this).balance-unclaimedDividend) * ownerCut / 10000;
@@ -205,7 +205,7 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
     PeriodEnd(currentPeriod-1, this.balance, existingMembers);
   }
 
-  // Places member is a &quot;banished&quot; state whereby they are no longer a member,
+  // Places member is a "banished" state whereby they are no longer a member,
   // but their username remains active (preventing re-registration)
   function removeMember(address _addr, bytes32 _reason) public onlyOwner {
     require(members[_addr].birthPeriod != 0);
@@ -218,7 +218,7 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
       numMembers--;
     }
 
-    // &quot;Burns&quot; username, so user can&#39;t recreate.
+    // "Burns" username, so user can't recreate.
     usernames[m.username] = address(0x1);
 
     delete members[_addr];
@@ -248,7 +248,7 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
     Mint(_addr, _amount);
   }
 
-  // If a member has been bad, they won&#39;t be able to receive a dividend :(
+  // If a member has been bad, they won't be able to receive a dividend :(
   function timeout(address _addr) public onlyMod {
     require(members[_addr].canWithdrawPeriod != 0);
 
@@ -269,7 +269,7 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
   // Member can withdraw their share of donations from the previous month.
   function withdraw() public {
     require(members[msg.sender].canWithdrawPeriod != 0);
-    require(members[msg.sender].canWithdrawPeriod &lt; currentPeriod);
+    require(members[msg.sender].canWithdrawPeriod < currentPeriod);
 
     members[msg.sender].canWithdrawPeriod = currentPeriod;
     dividendPool -= dividend;
@@ -288,9 +288,9 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
   // Contrary to most ERC20 implementations, require that recipient is existing member.
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(members[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= members[msg.sender].karma);
+    require(_value <= members[msg.sender].karma);
 
-    // Type assertion to uint64 is safe because we require that _value is &lt; uint64 above.
+    // Type assertion to uint64 is safe because we require that _value is < uint64 above.
     members[msg.sender].karma = members[msg.sender].karma.sub(uint64(_value));
     members[_to].karma = members[_to].karma.add(uint64(_value));
     Transfer(msg.sender, _to, _value);
@@ -315,7 +315,7 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -327,8 +327,8 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
   // Contrary to most ERC20 implementations, require that recipient is existing member.
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(members[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= members[_from].karma);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= members[_from].karma);
+    require(_value <= allowed[_from][msg.sender]);
 
     members[_from].karma = members[_from].karma.sub(uint64(_value));
     members[_to].karma = members[_to].karma.add(uint64(_value));
@@ -341,8 +341,8 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
     * Private Functions
     */
 
-  // Ensures that username isn&#39;t taken, and account doesn&#39;t already exist for
-  // member&#39;s address.
+  // Ensures that username isn't taken, and account doesn't already exist for
+  // member's address.
   function newMember(address _addr, bytes20 _username, uint64 _endowment) private {
     require(usernames[_username] == address(0));
     require(members[_addr].canWithdrawPeriod == 0);
@@ -377,12 +377,12 @@ contract SolClub is Ownable, DetailedERC20(&quot;SolClub&quot;, &quot;SOL&quot;,
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);

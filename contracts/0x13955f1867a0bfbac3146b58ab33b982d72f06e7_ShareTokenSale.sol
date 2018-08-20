@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ contract ShareTokenSale is Ownable {
     uint256 public clearStartTime;
     uint256 public withdrawn;
     uint256 public proportion = 1 ether;
-    mapping(uint256 =&gt; uint256) public globalAmounts;    
+    mapping(uint256 => uint256) public globalAmounts;    
 
 
     struct Stage {
@@ -150,9 +150,9 @@ contract ShareTokenSale is Ownable {
     struct PurchaserInfo {
         bool withdrew;
         bool recorded;
-        mapping(uint256 =&gt; uint256) amounts;
+        mapping(uint256 => uint256) amounts;
     }
-    mapping(address =&gt; PurchaserInfo) public purchaserMapping;
+    mapping(address => PurchaserInfo) public purchaserMapping;
     address[] public purchaserList;
 
     modifier onlyOpenTime {
@@ -184,8 +184,8 @@ contract ShareTokenSale is Ownable {
     function ShareTokenSale(address _receiverAddr, address _tokenAddr, uint256 _totalSaleAmount, uint256 _startTime) public {
         require(_receiverAddr != address(0));
         require(_tokenAddr != address(0));
-        require(_totalSaleAmount &gt; 0);
-        require(_startTime &gt; 0);
+        require(_totalSaleAmount > 0);
+        require(_startTime > 0);
         receiverAddr = _receiverAddr;
         token = ERC20(_tokenAddr);
         totalSaleAmount = _totalSaleAmount;       
@@ -193,19 +193,19 @@ contract ShareTokenSale is Ownable {
     }
 
     function isStarted() public view returns(bool) {
-        return 0 &lt; startTime &amp;&amp; startTime &lt;= now &amp;&amp; endTime != 0;
+        return 0 < startTime && startTime <= now && endTime != 0;
     }   
 
     function isEnded() public view returns(bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     function isUserWithdrawalTime() public view returns(bool) {
-        return now &gt; userWithdrawalStartTime;
+        return now > userWithdrawalStartTime;
     }
 
     function isClearTime() public view returns(bool) {
-        return now &gt; clearStartTime;
+        return now > clearStartTime;
     }
     
     function startSale(uint256[] rates, uint256[] durations, uint256 userWithdrawalDelaySec, uint256 clearDelaySec) public onlyOwner {
@@ -213,7 +213,7 @@ contract ShareTokenSale is Ownable {
         require(durations.length == rates.length);
         delete stages;
         endTime = startTime;
-        for (uint256 i = 0; i &lt; durations.length; i++) {
+        for (uint256 i = 0; i < durations.length; i++) {
             uint256 rate = rates[i];
             uint256 duration = durations[i];            
             stages.push(Stage({rate: rate, duration: duration, startTime:endTime}));
@@ -224,8 +224,8 @@ contract ShareTokenSale is Ownable {
     }
     
     function getCurrentStage() public onlyOpenTime view returns(uint256) {
-        for (uint256 i = stages.length - 1; i &gt;= 0; i--) {
-            if (now &gt;= stages[i].startTime) {
+        for (uint256 i = stages.length - 1; i >= 0; i--) {
+            if (now >= stages[i].startTime) {
                 return i;
             }
         }
@@ -238,7 +238,7 @@ contract ShareTokenSale is Ownable {
 
 
     function _calcProportion() internal {
-        if (totalWannaBuyAmount == 0 || totalSaleAmount &gt;= totalWannaBuyAmount) {
+        if (totalWannaBuyAmount == 0 || totalSaleAmount >= totalWannaBuyAmount) {
             proportion = 1 ether;
             return;
         }
@@ -250,11 +250,11 @@ contract ShareTokenSale is Ownable {
         uint256 sendEther = 0;
         uint256 usedEther = 0;
         uint256 getToken = 0;        
-        for (uint256 i = 0; i &lt; stages.length; i++) {
+        for (uint256 i = 0; i < stages.length; i++) {
             sendEther = sendEther.add(pi.amounts[i]);
             uint256 stageUsedEther = pi.amounts[i].mul(proportion).div(1 ether);
             uint256 stageGetToken = stageUsedEther.mul(stages[i].rate);
-            if (stageGetToken &gt; 0) {         
+            if (stageGetToken > 0) {         
                 getToken = getToken.add(stageGetToken);
                 usedEther = usedEther.add(stageUsedEther);
             }
@@ -267,7 +267,7 @@ contract ShareTokenSale is Ownable {
     }
     
     function buy() payable public onlyOpenTime {
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
         uint256 stageIndex = getCurrentStage();
         uint256 amount = msg.value;
         PurchaserInfo storage pi = purchaserMapping[msg.sender];
@@ -290,10 +290,10 @@ contract ShareTokenSale is Ownable {
         pi.withdrew = true;
         withdrawn = withdrawn.add(1);
         var (sendEther, usedEther, getToken) = getSaleInfo(purchaser);
-        if (usedEther &gt; 0 &amp;&amp; getToken &gt; 0) {
+        if (usedEther > 0 && getToken > 0) {
             receiverAddr.transfer(usedEther);
             token.transfer(purchaser, getToken);
-            if (sendEther.sub(usedEther) &gt; 0) {                
+            if (sendEther.sub(usedEther) > 0) {                
                 purchaser.transfer(sendEther.sub(usedEther));   
             }           
         } else {
@@ -307,16 +307,16 @@ contract ShareTokenSale is Ownable {
     }
     
     function withdrawalFor(uint256 index, uint256 stop) payable public onlyAutoWithdrawalTime onlyOwner {
-        for (; index &lt; stop; index++) {
+        for (; index < stop; index++) {
             _withdrawal(purchaserList[index]);
         }
     }
     
     function clear(uint256 tokenAmount, uint256 etherAmount) payable public purchasersAllWithdrawn onlyClearTime onlyOwner {
-        if (tokenAmount &gt; 0) {
+        if (tokenAmount > 0) {
             token.transfer(receiverAddr, tokenAmount);
         }
-        if (etherAmount &gt; 0) {
+        if (etherAmount > 0) {
             receiverAddr.transfer(etherAmount);
         }        
     }

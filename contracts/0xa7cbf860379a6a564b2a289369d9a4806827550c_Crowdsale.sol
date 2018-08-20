@@ -29,20 +29,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 contract BasicToken is ERC20 {
 
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -84,7 +84,7 @@ contract BasicToken is ERC20 {
  */
 contract StandardToken is BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -94,7 +94,7 @@ contract StandardToken is BasicToken {
     function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
         uint _allowance = allowed[_from][msg.sender];
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -129,7 +129,7 @@ contract StandardToken is BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -200,8 +200,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract MultiLevelToken is MintableToken {
 
-    string public constant name = &quot;Multi-Marketing token&quot;;
-    string public constant symbol = &quot;MMT&quot;;
+    string public constant name = "Multi-Marketing token";
+    string public constant symbol = "MMT";
     uint32 public constant decimals = 18;
 }
 
@@ -227,8 +227,8 @@ contract Crowdsale is MultiLevelToken{
     uint parent;
     uint256 parentMoney;
     address public whom;
-    mapping (uint =&gt; mapping(address =&gt; uint)) tree;
-    mapping (uint =&gt; mapping(uint =&gt; address)) order;
+    mapping (uint => mapping(address => uint)) tree;
+    mapping (uint => mapping(uint => address)) order;
 
     function Crowdsale()public {
 
@@ -244,8 +244,8 @@ contract Crowdsale is MultiLevelToken{
 
     function distribute() public{
 
-        for (i=1;i&lt;=10;i++){
-            while (parent &gt;1){
+        for (i=1;i<=10;i++){
+            while (parent >1){
                 if (parent%3==0){
                     parent=parent.div(3);
                     whom = order[tier][parent];
@@ -266,13 +266,13 @@ contract Crowdsale is MultiLevelToken{
     }
 
     function createTokens()public  payable {
-        assert(msg.value &gt;= 50000000000000000);
+        assert(msg.value >= 50000000000000000);
         uint _multisig = msg.value.mul(multisigPercent).div(100);
         tokens = rate.mul(msg.value).div(1 ether);
         tokens = tokens.mul(55).div(100);
         parentMoney = msg.value.mul(35).div(10);
 
-        if (msg.value &gt;= 50000000000000000 &amp;&amp; msg.value &lt; 100000000000000000) { // 0.05 - 0.1 Ether
+        if (msg.value >= 50000000000000000 && msg.value < 100000000000000000) { // 0.05 - 0.1 Ether
             tier=1;
             tree[tier][msg.sender]=a;
             order[tier][a]=msg.sender;
@@ -280,7 +280,7 @@ contract Crowdsale is MultiLevelToken{
             a+=1;
             distribute();
         }
-        else if (msg.value &gt;= 100000000000000000 &amp;&amp; msg.value &lt; 500000000000000000) { // 0.1 - 0.5 ether
+        else if (msg.value >= 100000000000000000 && msg.value < 500000000000000000) { // 0.1 - 0.5 ether
             tier=2;
             tree[tier][msg.sender]=b;
             order[tier][b]=msg.sender;
@@ -288,7 +288,7 @@ contract Crowdsale is MultiLevelToken{
             b+=1;
             distribute();
         }
-        else if(msg.value &gt;= 500000000000000000) { // more than  0,5 ether
+        else if(msg.value >= 500000000000000000) { // more than  0,5 ether
             tier=3;
             tree[tier][msg.sender]=c;
             order[tier][c]=msg.sender;

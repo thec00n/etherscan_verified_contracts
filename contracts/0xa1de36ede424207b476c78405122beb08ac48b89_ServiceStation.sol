@@ -21,7 +21,7 @@ contract GameState{
     uint256 public Timestamp = 0;
     
     function Timer() internal view returns (bool){
-        if (block.timestamp &lt; Timestamp){
+        if (block.timestamp < Timestamp){
        //     StartedGame = false;
             return (true);
         }
@@ -58,7 +58,7 @@ contract GameState{
     
     // returns bit number n from uint. 
     //function GetByte(uint256 bt, uint256 n) public returns (uint256){
-    //    return ((bt &gt;&gt; n) &amp; (1));
+    //    return ((bt >> n) & (1));
    // }
     
 
@@ -141,7 +141,7 @@ contract ServiceStation is GameState{
             Start();
             Votes=0;
         }
-        if ((Votes+1)&gt;= VotesNecessary){
+        if ((Votes+1)>= VotesNecessary){
             GameStart();
         }
         else{
@@ -180,9 +180,9 @@ contract ServiceStation is GameState{
     
     // This stores if you are in low jackpot, high jackpot
     // It uses numbers to keep track how much items you have. 
-    mapping(address =&gt; bool) LowJackpot;
-    mapping(address =&gt; uint256) HighJackpot;
-    mapping(address =&gt; uint256) CurrentRound;
+    mapping(address => bool) LowJackpot;
+    mapping(address => uint256) HighJackpot;
+    mapping(address => uint256) CurrentRound;
     
     address public LowJackpotHolder;
     address public HighJackpotHolder;
@@ -199,7 +199,7 @@ contract ServiceStation is GameState{
         uint256 price;
     }
     
-    mapping(uint256 =&gt; Item) Market;
+    mapping(uint256 => Item) Market;
     
 
     // read jackpots 
@@ -217,7 +217,7 @@ contract ServiceStation is GameState{
     
 
     function BuyItem(uint256 ID) public payable NoContract OnlyState(1){
-        require(ID &lt;= MaxItems);
+        require(ID <= MaxItems);
         bool StillOpen = Timer();
         if (!StillOpen){
             revert();
@@ -229,19 +229,19 @@ contract ServiceStation is GameState{
         if (price == 0){
             price = StartPrice;
         }
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         // excess big goodbye back to owner.
-        if (msg.value &gt; price){
+        if (msg.value > price){
             msg.sender.transfer(msg.value-price);
         }
        
         
-        // fee -&gt; out 
+        // fee -> out 
         
         uint256 Fee = (price * (devFee))/10000;
         uint256 Left = price - Fee;
         
-        // send fee to fee address which is a contract. you can buy a dividend card to claim 10% of these funds, see above at &quot;address fee_address&quot;
+        // send fee to fee address which is a contract. you can buy a dividend card to claim 10% of these funds, see above at "address fee_address"
         fee_address.transfer(Fee);
         
         if (price != StartPrice){
@@ -251,7 +251,7 @@ contract ServiceStation is GameState{
             target.transfer (payment);
             
             if (target != msg.sender){
-                if (HighJackpot[target] &gt;= 1){
+                if (HighJackpot[target] >= 1){
                     // Keep track of how many high jackpot items we own. 
                     // Why? Because if someone else buys your thing you might have another card 
                     // Which still gives you right to do high jackpot. 
@@ -313,7 +313,7 @@ contract ServiceStation is GameState{
         }
         else{
             
-            if (HighJackpot[targ] &gt; 0){
+            if (HighJackpot[targ] > 0){
                 // play high jackpot 
                 return (true, true);
             }
@@ -365,7 +365,7 @@ contract ServiceStation is GameState{
        
        if (IsPremium){
            PotTarget = (AllPot * PotPaidHigh)/10000;
-           if (HighGasAmount == 0 || tx.gasprice &lt; HighGasAmount){
+           if (HighGasAmount == 0 || tx.gasprice < HighGasAmount){
                if (HighGasAmount == 0){
                    emit OutGassed(true, tx.gasprice, address(0x0), msg.sender);
                }
@@ -384,7 +384,7 @@ contract ServiceStation is GameState{
        else{
            PotTarget = (AllPot * (10000 - PotPaidHigh)) / 10000;
            
-            if (LowGasAmount == 0 || tx.gasprice &lt; LowGasAmount){
+            if (LowGasAmount == 0 || tx.gasprice < LowGasAmount){
                if (LowGasAmount == 0){
                     emit OutGassed(false, tx.gasprice, address(0x0), msg.sender);
                }
@@ -442,7 +442,7 @@ contract ServiceStation is GameState{
         
         // reset market prices. 
         uint8 id; 
-        for (id=0; id&lt;MaxItems; id++){
+        for (id=0; id<MaxItems; id++){
             Market[id].price=0;
         }
         

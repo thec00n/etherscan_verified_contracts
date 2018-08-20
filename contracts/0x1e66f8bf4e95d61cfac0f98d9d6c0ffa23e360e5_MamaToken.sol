@@ -3,10 +3,10 @@ pragma solidity ^0.4.23;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -14,7 +14,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -62,8 +62,8 @@ contract Owned {
 }
 
 contract MamaToken is ERC20Interface, Owned, SafeMath {
-    string public constant name = &quot;MamaMutua&quot;;
-    string public constant symbol = &quot;M2M&quot;;
+    string public constant name = "MamaMutua";
+    string public constant symbol = "M2M";
     uint32 public constant decimals = 18;
     uint public _rate = 600;
     uint256 public _totalSupply = 60000000 * (10 ** 18);
@@ -72,8 +72,8 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
     // amount of raised money in Wei
     uint256 public weiRaised;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     uint public openingTime = 1527638401; // 30 May 2018 00:01
     uint public closingTime = 1546214399; // 30 Dec 2018 23:59
@@ -86,7 +86,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
     }
 
     function burn(uint256 _amount) public onlyOwner returns (bool) {
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _amount);
         _totalSupply = safeSub(_totalSupply, _amount);
@@ -95,7 +95,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner returns (bool) {
-        require(_totalSupply + _amount &gt;= _totalSupply); // Overflow check
+        require(_totalSupply + _amount >= _totalSupply); // Overflow check
 
         _totalSupply = safeAdd(_totalSupply, _amount);
         balances[_to] = safeAdd(balances[_to], _amount);
@@ -113,9 +113,9 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
 
     function transfer(address to, uint256 tokens) public returns (bool success) {
         /* Check if sender has balance and for overflows */
-        require(balances[msg.sender] &gt;= tokens &amp;&amp; balances[to] + tokens &gt;= balances[to]);
+        require(balances[msg.sender] >= tokens && balances[to] + tokens >= balances[to]);
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { revert(); }
+        if(msg.data.length < (2 * 32) + 4) { revert(); }
 
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -125,7 +125,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
 
     function approve(address spender, uint tokens) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (tokens != 0 &amp;&amp; allowed[msg.sender][spender] != 0) { return false; }
+        if (tokens != 0 && allowed[msg.sender][spender] != 0) { return false; }
 
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
@@ -134,7 +134,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
 
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { revert(); }
+        if(msg.data.length < (3 * 32) + 4) { revert(); }
 
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
@@ -149,7 +149,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
 
     function () external payable {
         // Check ICO period
-        require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+        require(block.timestamp >= openingTime && block.timestamp <= closingTime);
         buyTokens(msg.sender);
     }
 
@@ -157,7 +157,7 @@ contract MamaToken is ERC20Interface, Owned, SafeMath {
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != address(0));
         require(beneficiary != 0x0);
-        require(msg.value &gt; 1 finney);
+        require(msg.value > 1 finney);
 
         uint256 weiAmount = msg.value;
 

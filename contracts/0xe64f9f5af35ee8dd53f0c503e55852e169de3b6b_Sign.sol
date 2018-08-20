@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 contract Sign {
 
 	address public AddAuthority;	
-	mapping (uint32 =&gt; bytes32) Cert;	
+	mapping (uint32 => bytes32) Cert;	
 	
 	event EventNotarise (address indexed Signer, bytes Donnees_Signature, bytes Donnees_Reste);
 
@@ -26,9 +26,9 @@ contract Sign {
  	// ====================================
 
 	function VerifSignature (bytes _Signature, bytes _Reste) returns (bool) {
-		// V&#233;rification de la signature _Signature
+		// Vérification de la signature _Signature
 		// _Reste : hash / Signer 
-		// D&#233;compose _Signature
+		// Décompose _Signature
 		bytes32 r;
 		bytes32 s;
 		uint8 v;
@@ -47,7 +47,7 @@ contract Sign {
 	
 	function VerifCert (uint32 _IndiceIndex, bool _log, bytes _Signature, bytes _Reste) returns (uint status) {					
 		status = 0;
-		// Test de la validit&#233; de Cert
+		// Test de la validité de Cert
 		if (Cert [_IndiceIndex] != 0) {
 			status = 1;
 			// Test de la signature
@@ -59,7 +59,7 @@ contract Sign {
 				// Cert valide mais signature invalide 
 				status = 2;							
 			}		
-			// Log si demand&#233;
+			// Log si demandé
 			if (_log) {
 				EventNotarise (Signer, _Signature, _Reste);
 				status = 3;							

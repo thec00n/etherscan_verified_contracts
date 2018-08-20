@@ -1,8 +1,8 @@
 pragma solidity ^0.4.14;
 
-/* &#169;The Extreme Coin (XT) SWAP for Yobit.net  contract
+/* ©The Extreme Coin (XT) SWAP for Yobit.net  contract
  +35796229192
- &#169;RomanLanskoj 2017
+ ©RomanLanskoj 2017
 There is no law stronger than the code
 */
 library SafeMath {
@@ -12,31 +12,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -78,11 +78,11 @@ contract newToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
 
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -98,11 +98,11 @@ contract newToken is ERC20Basic {
 }
 
 contract StandardToken is newToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -113,7 +113,7 @@ contract StandardToken is newToken, ERC20 {
     //  allowance to zero by calling approve(_spender, 0) if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -123,8 +123,8 @@ contract StandardToken is newToken, ERC20 {
 }
 
  contract Extreme is StandardToken, Ownable {
-  string public constant name = &quot;Extreme Coin&quot;;
-  string public constant symbol = &quot;XT&quot;;
+  string public constant name = "Extreme Coin";
+  string public constant symbol = "XT";
   uint public constant decimals = 2;
   uint256 public initialSupply;
     
@@ -140,13 +140,13 @@ contract ExtremeToken is Ownable, Extreme {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
    function ExtremeToken() Extreme () {}
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   
- mapping (address =&gt; uint256) public balanceOf;
+ mapping (address => uint256) public balanceOf;
   
   function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -156,7 +156,7 @@ contract ExtremeToken is Ownable, Extreme {
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -164,7 +164,7 @@ contract ExtremeToken is Ownable, Extreme {
   }
   function approve(address _spender, uint _value) {
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }

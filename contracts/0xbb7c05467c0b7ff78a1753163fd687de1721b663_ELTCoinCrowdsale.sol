@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -125,7 +125,7 @@ contract Crowdsale {
 
   function Crowdsale(
     address _contractAddress, uint256 _endTime, uint256 _startRate, uint256 _minThreshold, address _wallet) {
-    // require(_endTime &gt;= now);
+    // require(_endTime >= now);
     require(_wallet != 0x0);
 
     token = ELTCoinToken(_contractAddress);
@@ -149,16 +149,16 @@ contract Crowdsale {
 
     uint256 weiAmount = msg.value;
 
-    require(weiAmount &gt;= minThreshold);
+    require(weiAmount >= minThreshold);
 
     uint256 weiToAllocate = weiAmount;
 
     uint256 tokensTotal = 0;
 
-    while (weiToAllocate &gt; 0) {
+    while (weiToAllocate > 0) {
       currentRate = tokensSold.div(RATE_CHANGE_THRESHOLD).mul(startRate).add(startRate);
 
-      if (currentRate &gt; maxRate) {
+      if (currentRate > maxRate) {
         currentRate = maxRate;
       }
 
@@ -167,7 +167,7 @@ contract Crowdsale {
 
       uint256 remainingTokens = RATE_CHANGE_THRESHOLD.sub(tokensSold % RATE_CHANGE_THRESHOLD);
 
-      uint256 tokens = weiToAllocate.div(currentRate) &gt; remainingTokens ? remainingTokens : weiToAllocate.div(currentRate);
+      uint256 tokens = weiToAllocate.div(currentRate) > remainingTokens ? remainingTokens : weiToAllocate.div(currentRate);
 
       tokensTotal = tokensTotal.add(tokens);
       tokensSold = tokensSold.add(tokens);
@@ -191,14 +191,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal returns (bool) {
-    bool withinPeriod = now &lt;= endTime;
+    bool withinPeriod = now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 }
 
@@ -214,10 +214,10 @@ contract IndividualCappedCrowdsale is Crowdsale {
   // The maximum wei amount a user can spend during this sale
   uint256 public capPerAddress;
 
-  mapping(address=&gt;uint) public participated;
+  mapping(address=>uint) public participated;
 
   function IndividualCappedCrowdsale(uint256 _capPerAddress) {
-    // require(capPerAddress &gt; 0);
+    // require(capPerAddress > 0);
     capPerAddress = _capPerAddress;
   }
 
@@ -226,9 +226,9 @@ contract IndividualCappedCrowdsale is Crowdsale {
     * @return true if investors can buy at the moment
     */
   function validPurchase() internal returns (bool) {
-    require(tx.gasprice &lt;= GAS_LIMIT_IN_WEI);
+    require(tx.gasprice <= GAS_LIMIT_IN_WEI);
     participated[msg.sender] = participated[msg.sender].add(msg.value);
-    return super.validPurchase() &amp;&amp; participated[msg.sender] &lt;= capPerAddress;
+    return super.validPurchase() && participated[msg.sender] <= capPerAddress;
   }
 }
 
@@ -242,15 +242,15 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 }
 

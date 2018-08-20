@@ -5,10 +5,10 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -96,11 +96,11 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
     uint256 public totalSupply;
     uint256 internal totalSupplyStart;
     //
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping( address =&gt; bool) internal frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping( address => bool) internal frozenAccount;
     //
-    mapping(address =&gt; uint) private msgSndr;
+    mapping(address => uint) private msgSndr;
     //
     address internal tkn_addr; address internal ico_addr; address internal exchg_addr;
     address internal cs_addr;  
@@ -132,8 +132,8 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         balanceOf[msg.sender] = totalSupplyStart;    
         Transfer(address(0), msg.sender, totalSupplyStart);
         //                 
-        name = &quot;TokenMacroansyPower&quot;;  
-        symbol = &quot;$BEEPower&quot;;
+        name = "TokenMacroansyPower";  
+        symbol = "$BEEPower";
         //  
         allowedIndividualShare = uint(1)*totalSupplyStart/100; 
         allowedPublicShare = uint(20)* totalSupplyStart/100;     
@@ -200,8 +200,8 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         uint valtmp = _value;
         uint _valueA = valtmp;
         valtmp = 0;                       
-        require (balanceOf[_from] &gt;= _valueA);                       
-        require (balanceOf[_to] + _valueA &gt; balanceOf[_to]);                   
+        require (balanceOf[_from] >= _valueA);                       
+        require (balanceOf[_to] + _valueA > balanceOf[_to]);                   
         uint previousBalances = balanceOf[_from] + balanceOf[_to];                               
         balanceOf[_from] = safeSub(balanceOf[_from], _valueA);                                  
         balanceOf[_to] = safeAdd(balanceOf[_to], _valueA); 
@@ -219,7 +219,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         if(msg.sender != owner){
 	        bool sucsSlrLmt = _chkSellerLmts( msg.sender, _value);    
 	        bool sucsByrLmt = _chkBuyerLmts( _to, _value);
-	        require(sucsSlrLmt == true &amp;&amp; sucsByrLmt == true);
+	        require(sucsSlrLmt == true && sucsByrLmt == true);
         }
         //
         uint valtmp = _value;    
@@ -238,7 +238,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         uint valtmp = _value;
         uint _valueA = valtmp;
         valtmp = 0;
-        require(_valueA &lt;= allowance[_from][msg.sender]);     
+        require(_valueA <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _valueA);
         _transfer(_from, _to, _valueA);
         _valueA = 0;
@@ -254,7 +254,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         if(msg.sender != owner){
 	        bool sucsSlrLmt = _chkSellerLmts( msg.sender, _value);          
 	        bool sucsByrLmt = _chkBuyerLmts( _spender, _value);
-	        require(sucsSlrLmt == true &amp;&amp; sucsByrLmt == true);
+	        require(sucsSlrLmt == true && sucsByrLmt == true);
         }
         //
         uint valtmp = _value;
@@ -333,7 +333,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 
 	function buyCoinsCrowdSale(address buyer, uint payment, address crowdSaleContr) public returns(bool success, uint retPayment) { 
 		
-		require(crowdSaleOpen == true &amp;&amp; crowdSaleContr == _getCsAddr());
+		require(crowdSaleOpen == true && crowdSaleContr == _getCsAddr());
 
 		success = false;
 		(success , retPayment) = _buyCoins( buyer, payment);
@@ -348,7 +348,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 
         ICO ico = ICO(_getIcoAddr() );
 
-        require(  payment &gt; 0 );
+        require(  payment > 0 );
         
         bool icosuccess;  uint tknsBuyAppr;  
         (icosuccess, tknsBuyAppr, retPayment ) = ico.buy( payment, buyer, false);         
@@ -356,7 +356,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         
         if(crowdSaleOpen == false) {
         // return payment to buyer 
-	        if( retPayment &gt; 0 ) {
+	        if( retPayment > 0 ) {
 	                
 	          bool sucsTrPaymnt;
 	          sucsTrPaymnt = _safeTransferPaymnt( buyer, retPayment );
@@ -398,7 +398,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 
       require( icosuccess == true);  
 
-        require( _getIcoAddr().balance &gt;= safeAdd( ico.getMinBal() , redeemOrSellPaymentValue) );
+        require( _getIcoAddr().balance >= safeAdd( ico.getMinBal() , redeemOrSellPaymentValue) );
 
       bool sucsTrTk = false; bool pymActSucs = false;
       if(isPreview == false) {
@@ -426,7 +426,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
       ICO ico = ICO( _getIcoAddr() );
       uint seriesCapFactor = ico.getSCF();
       
-	      if( amountTkns &lt;= balanceOf[seller]  &amp;&amp;  balanceOf[seller] &lt;=  safeDiv(allowedIndividualShare*seriesCapFactor,10**18) ){
+	      if( amountTkns <= balanceOf[seller]  &&  balanceOf[seller] <=  safeDiv(allowedIndividualShare*seriesCapFactor,10**18) ){
 	        success = true;
 	      }
 
@@ -442,7 +442,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         ICO ico = ICO( _getIcoAddr() );
         uint seriesCapFactor = ico.getSCF();
 
-	        if( amountTkns &lt;= safeSub( safeDiv(allowedIndividualShare*seriesCapFactor,10**18), balanceOf[buyer] )) {
+	        if( amountTkns <= safeSub( safeDiv(allowedIndividualShare*seriesCapFactor,10**18), balanceOf[buyer] )) {
 	          success = true;
 	        } 
 
@@ -461,8 +461,8 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
       // buyer funds
        ICO ico = ICO( _getIcoAddr() );
        bool sucs2 = false;
-       if( buyer.balance &gt;=  safeAdd( safeMul(amountTkns , priceOfr) , ico.getMinBal() )  )  sucs2 = true;
-       if( sucs1 == true &amp;&amp; sucs2 == true)  success = true;   
+       if( buyer.balance >=  safeAdd( safeMul(amountTkns , priceOfr) , ico.getMinBal() )  )  sucs2 = true;
+       if( sucs1 == true && sucs2 == true)  success = true;   
 
        return success;
     }
@@ -478,7 +478,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         bool successByrlAFinl;
         (successByrlAFinl) = _chkBuyerLmtsAndFinl( buyer, amountTkns, priceOfr);
         
-        require( successSlrl == true &amp;&amp; successByrlAFinl == true);
+        require( successSlrl == true && successByrlAFinl == true);
 
         return true;
     }
@@ -599,11 +599,11 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 
 		// calc tokens that can be bought         
         uint tknsBuyAppr = 0;    
-        if( amountTkns &gt; 2 &amp;&amp;  payment &gt;=  (2 * priceOfr) &amp;&amp;  payment &lt;= (amountTkns * priceOfr) ) {
+        if( amountTkns > 2 &&  payment >=  (2 * priceOfr) &&  payment <= (amountTkns * priceOfr) ) {
 
         	tknsBuyAppr = safeDiv( payment , priceOfr );
         }
-        require(tknsBuyAppr &gt; 0);
+        require(tknsBuyAppr > 0);
 
       msgSndr[msg.sender] = amountTkns;
 
@@ -635,13 +635,13 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 		// calc tokens that can be bought         
         uint tknsBuyAppr = 0;  // this var as used as the indicator to update buyerbkg and seller update for ok or no txn.
 
-        if( amountTkns &gt; 2 &amp;&amp;  msg.value &gt;=  (2 * priceOfr) &amp;&amp;  msg.value &lt;= (amountTkns * priceOfr) ) {
+        if( amountTkns > 2 &&  msg.value >=  (2 * priceOfr) &&  msg.value <= (amountTkns * priceOfr) ) {
 
         	tknsBuyAppr = safeDiv( msg.value , priceOfr );
         }
         // calc return payment to buyer
         uint retPayment = 0;
-        if(  msg.value &gt; 0 ){
+        if(  msg.value > 0 ){
             retPayment = safeSub( msg.value , tknsBuyAppr * priceOfr);
         }
 
@@ -651,7 +651,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         Exchg em = Exchg(_getExchgAddr()); 
 
         bool sucsBkgChk = false;
-        if(tknsBuyAppr &gt; 0){
+        if(tknsBuyAppr > 0){
 	        sucsBkgChk = em.buy_Exchg_BkgChk(seller, amountTkns, priceOfr, msg.sender, msg.value); 
         }
         if(sucsBkgChk == false) tknsBuyAppr = 0;
@@ -664,7 +664,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
         	require( emUpdateSuccess == true );
         
         //
-        if(sucsBkgChk == true &amp;&amp; tknsBuyAppr &gt; 0){
+        if(sucsBkgChk == true && tknsBuyAppr > 0){
       
 	       // token transfer in this token contract
 
@@ -677,7 +677,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 	        require(sucsTrPaymnt == true );        
         }
     	// return payment to buyer 
-        if( retPayment &gt; 0 ) {
+        if( retPayment > 0 ) {
                 
           bool sucsTrRetPaymnt;
           sucsTrRetPaymnt = _safeTransferPaymnt( msg.sender, retPayment );
@@ -737,7 +737,7 @@ contract TokenMacroansyPower is TokenERC20Interface, SafeMath {
 				}
 				function endOfRewardsConfirmed(bool isEndNow) public onlyOwner{
 
-					if(isEndOk == true &amp;&amp; isEndNow == true) selfdestruct(owner);
+					if(isEndOk == true && isEndNow == true) selfdestruct(owner);
 				}
 */			
 //_______________________________________________________

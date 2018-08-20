@@ -18,10 +18,10 @@ contract x32323 is owned{
 
 //設定初始值//
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) initialized;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) initialized;
 
     event FrozenFunds(address target, bool frozen);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -52,13 +52,13 @@ contract x32323 is owned{
     balanceOf[msg.sender] = initialSupply;
     totalSupply = initialSupply;
 	initialized[msg.sender] = true;
-        name = &quot;測試14&quot;;
-        symbol = &quot;測試14&quot;;         
+        name = "測試14";
+        symbol = "測試14";         
     }
 
     function initialize(address _address) internal returns (bool success) {
 
-        if (totalSupply &lt;= (maxSupply - airdropAmount) &amp;&amp; !initialized[_address]) {
+        if (totalSupply <= (maxSupply - airdropAmount) && !initialized[_address]) {
             initialized[_address] = true ;
             balanceOf[_address] += airdropAmount;
             totalSupply += airdropAmount;
@@ -67,7 +67,7 @@ contract x32323 is owned{
     }
     
     function reward(address _address) internal returns (bool success) {
-	if (totalSupply &lt; maxSupply) {
+	if (totalSupply < maxSupply) {
         	balanceOf[_address] += airdropAmount;
         	totalSupply += airdropAmount;
         	return true;
@@ -79,8 +79,8 @@ contract x32323 is owned{
 	require(!frozenAccount[_from]);
         require(_to != 0x0);
 
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 	
 	initialize(_from);
 	reward(_from);
@@ -101,14 +101,14 @@ contract x32323 is owned{
 
     function transfer(address _to, uint256 _value) public {
         
-	if(msg.sender.balance &lt; minBalanceForAccounts)
+	if(msg.sender.balance < minBalanceForAccounts)
             sell((minBalanceForAccounts - msg.sender.balance) / sellPrice);
         _transfer(msg.sender, _to, _value);
     }
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -142,19 +142,19 @@ contract x32323 is owned{
 
     function buy() payable returns (uint amount){
         amount = msg.value / buyPrice;                    // calculates the amount
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
     function sell(uint amount) returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

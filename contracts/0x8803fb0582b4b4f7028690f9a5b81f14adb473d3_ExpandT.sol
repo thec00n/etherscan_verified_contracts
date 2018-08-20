@@ -2,15 +2,15 @@ pragma solidity ^0.4.11;
 
 contract ExpandT {
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name =  &#39;ExpandT&#39;;
-    string public symbol = &#39;ET&#39; ;
+    string public standard = 'ERC20';
+    string public name =  'ExpandT';
+    string public symbol = 'ET' ;
     uint8 public decimals = 8 ;
     uint256 public totalSupply = 1500000000000000;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);

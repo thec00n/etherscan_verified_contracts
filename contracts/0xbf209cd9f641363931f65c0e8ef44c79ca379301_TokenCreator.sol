@@ -1,18 +1,18 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.21;
 /// @title Utility Functions for address
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="2a4e4b44434f466a4645455a5843444d0445584d">[email&#160;protected]</span>&gt;
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="2a4e4b44434f466a4645455a5843444d0445584d">[email protected]</span>>
 library AddressUtil {
     function isContract(address addr)
         internal
@@ -24,49 +24,49 @@ library AddressUtil {
         } else {
             uint size;
             assembly { size := extcodesize(addr) }
-            return size &gt; 0;
+            return size > 0;
         }
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
     Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+    Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
     Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+    distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title ERC20 Token Interface
 /// @dev see https://github.com/ethereum/EIPs/issues/20
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="c0a4a1aea9a5ac80acafafb0b2a9aea7eeafb2a7">[email&#160;protected]</span>&gt;
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="c0a4a1aea9a5ac80acafafb0b2a9aea7eeafb2a7">[email protected]</span>>
 contract ERC20 {
     function balanceOf(address who) view public returns (uint256);
     function allowance(address owner, address spender) view public returns (uint256);
@@ -76,33 +76,33 @@ contract ERC20 {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Utility Functions for uint
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="690d0807000c0529050606191b00070e47061b0e">[email&#160;protected]</span>&gt;
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="690d0807000c0529050606191b00070e47061b0e">[email protected]</span>>
 library MathUint {
     function mul(uint a, uint b) internal pure returns (uint c) {
         c = a * b;
         require(a == 0 || c / a == b);
     }
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function tolerantSub(uint a, uint b) internal pure returns (uint c) {
-        return (a &gt;= b) ? a - b : 0;
+        return (a >= b) ? a - b : 0;
     }
     /// @dev calculate the square of Coefficient of Variation (CV)
     /// https://en.wikipedia.org/wiki/Coefficient_of_variation
@@ -115,10 +115,10 @@ library MathUint {
         returns (uint)
     {
         uint len = arr.length;
-        require(len &gt; 1);
-        require(scale &gt; 0);
+        require(len > 1);
+        require(scale > 0);
         uint avg = 0;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             avg += arr[i];
         }
         avg = avg / len;
@@ -128,9 +128,9 @@ library MathUint {
         uint cvs = 0;
         uint s;
         uint item;
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             item = arr[i];
-            s = item &gt; avg ? item - avg : avg - item;
+            s = item > avg ? item - avg : avg - item;
             cvs += mul(s, s);
         }
         return ((mul(mul(cvs, scale), scale) / avg) / avg) / (len - 1);
@@ -139,7 +139,7 @@ library MathUint {
 /// @title ERC20 Token Implementation
 /// @dev see https://github.com/ethereum/EIPs/issues/20
 ///      This ERC20 token will give the designated tokenTransferDelegate a max allowance.
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="264247484f434a664a494956544f484108495441">[email&#160;protected]</span>&gt;
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="264247484f434a664a494956544f484108495441">[email protected]</span>>
 contract ERC20Token is ERC20 {
     using MathUint for uint;
     using AddressUtil for address;
@@ -148,8 +148,8 @@ contract ERC20Token is ERC20 {
     uint8   public decimals;
     uint    public totalSupply_;
     address public tokenTransferDelegate;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     function ERC20Token(
@@ -162,9 +162,9 @@ contract ERC20Token is ERC20 {
         )
         public
     {
-        require(bytes(_name).length &gt; 0);
-        require(bytes(_symbol).length &gt; 0);
-        require(_totalSupply &gt; 0);
+        require(bytes(_name).length > 0);
+        require(bytes(_symbol).length > 0);
+        require(_totalSupply > 0);
         require(_firstHolder != 0x0);
         require(_tokenTransferDelegate.isContract());
         name = _name;
@@ -197,7 +197,7 @@ contract ERC20Token is ERC20 {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -231,8 +231,8 @@ contract ERC20Token is ERC20 {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -244,7 +244,7 @@ contract ERC20Token is ERC20 {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -318,7 +318,7 @@ contract ERC20Token is ERC20 {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -329,36 +329,36 @@ contract ERC20Token is ERC20 {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -366,7 +366,7 @@ contract ERC20Token is ERC20 {
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic
 ///      authorization control functions, this simplifies the implementation of
-///      &quot;user permissions&quot;.
+///      "user permissions".
 contract Ownable {
     address public owner;
     event OwnershipTransferred(
@@ -405,7 +405,7 @@ contract Claimable is Ownable {
     /// @dev Allows the current owner to set the pendingOwner address.
     /// @param newOwner The address to transfer ownership to.
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != 0x0 &amp;&amp; newOwner != owner);
+        require(newOwner != 0x0 && newOwner != owner);
         pendingOwner = newOwner;
     }
     /// @dev Allows the pendingOwner address to finalize the transfer.
@@ -417,20 +417,20 @@ contract Claimable is Ownable {
 }
 /// @title Token Register Contract
 /// @dev This contract maintains a list of tokens the Protocol supports.
-/// @author Kongliang Zhong - &lt;<span class="__cf_email__" data-cfemail="ec8783828b80858d828bac8083839c9e85828bc2839e8b">[email&#160;protected]</span>&gt;,
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="d5b1b4bbbcb0b995b9babaa5a7bcbbb2fbbaa7b2">[email&#160;protected]</span>&gt;.
+/// @author Kongliang Zhong - <<span class="__cf_email__" data-cfemail="ec8783828b80858d828bac8083839c9e85828bc2839e8b">[email protected]</span>>,
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="d5b1b4bbbcb0b995b9babaa5a7bcbbb2fbbaa7b2">[email protected]</span>>.
 contract TokenRegistry is Claimable {
     using AddressUtil for address;
     address tokenMintAddr;
     address[] public addresses;
-    mapping (address =&gt; TokenInfo) addressMap;
-    mapping (string =&gt; address) symbolMap;
+    mapping (address => TokenInfo) addressMap;
+    mapping (string => address) symbolMap;
     ////////////////////////////////////////////////////////////////////////////
     /// Structs                                                              ///
     ////////////////////////////////////////////////////////////////////////////
     struct TokenInfo {
-        uint   pos;      // 0 mens unregistered; if &gt; 0, pos + 1 is the
-                         // token&#39;s position in `addresses`.
+        uint   pos;      // 0 mens unregistered; if > 0, pos + 1 is the
+                         // token's position in `addresses`.
         string symbol;   // Symbol of the token
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -484,7 +484,7 @@ contract TokenRegistry is Claimable {
         // We will replace the token we need to unregister with the last token
         // Only the pos of the last token will need to be updated
         address lastToken = addresses[addresses.length - 1];
-        // Don&#39;t do anything if the last token is the one we want to delete
+        // Don't do anything if the last token is the one we want to delete
         if (addr != lastToken) {
             // Swap with the last token and update the pos
             addresses[pos - 1] = lastToken;
@@ -498,7 +498,7 @@ contract TokenRegistry is Claimable {
         view
         returns (bool)
     {
-        for (uint i = 0; i &lt; addressList.length; i++) {
+        for (uint i = 0; i < addressList.length; i++) {
             if (addressMap[addressList[i]].pos == 0) {
                 return false;
             }
@@ -535,18 +535,18 @@ contract TokenRegistry is Claimable {
         returns (address[] addressList)
     {
         uint num = addresses.length;
-        if (start &gt;= num) {
+        if (start >= num) {
             return;
         }
         uint end = start + count;
-        if (end &gt; num) {
+        if (end > num) {
             end = num;
         }
         if (start == num) {
             return;
         }
         addressList = new address[](end - start);
-        for (uint i = start; i &lt; end; i++) {
+        for (uint i = start; i < end; i++) {
             addressList[i - start] = addresses[i];
         }
     }
@@ -557,7 +557,7 @@ contract TokenRegistry is Claimable {
         internal
     {
         require(0x0 != addr);
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
         require(0x0 == symbolMap[symbol]);
         require(0 == addressMap[addr].pos);
         addresses.push(addr);
@@ -569,8 +569,8 @@ contract TokenRegistry is Claimable {
 /// @title ERC20 Token Mint
 /// @dev This contract deploys ERC20 token contract and registered the contract
 ///      so the token can be traded with Loopring Protocol.
-/// @author Kongliang Zhong - &lt;<span class="__cf_email__" data-cfemail="f19a9e9f969d98909f96b19d9e9e8183989f96df9e8396">[email&#160;protected]</span>&gt;,
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="c9ada8a7a0aca589a5a6a6b9bba0a7aee7a6bbae">[email&#160;protected]</span>&gt;.
+/// @author Kongliang Zhong - <<span class="__cf_email__" data-cfemail="f19a9e9f969d98909f96b19d9e9e8183989f96df9e8396">[email protected]</span>>,
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="c9ada8a7a0aca589a5a6a6b9bba0a7aee7a6bbae">[email protected]</span>>.
 contract TokenCreator {
     using AddressUtil for address;
     address[] public tokens;
@@ -598,13 +598,13 @@ contract TokenCreator {
         )
         public
     {
-        require(tokenRegistry == 0x0 &amp;&amp; _tokenRegistry.isContract());
+        require(tokenRegistry == 0x0 && _tokenRegistry.isContract());
         tokenRegistry = _tokenRegistry;
-        require(tokenTransferDelegate == 0x0 &amp;&amp; _tokenTransferDelegate.isContract());
+        require(tokenTransferDelegate == 0x0 && _tokenTransferDelegate.isContract());
         tokenTransferDelegate = _tokenTransferDelegate;
     }
     /// @dev Deploy an ERC20 token contract, register it with TokenRegistry,
-    ///      and returns the new token&#39;s address.
+    ///      and returns the new token's address.
     /// @param name The name of the token
     /// @param symbol The symbol of the token.
     /// @param decimals The decimals of the token.

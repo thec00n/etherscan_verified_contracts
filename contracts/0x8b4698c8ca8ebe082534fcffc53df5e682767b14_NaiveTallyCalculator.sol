@@ -29,7 +29,7 @@ contract Ownable {
 
 contract Proxied is Ownable {
     address public target;
-    mapping (address =&gt; bool) public initialized;
+    mapping (address => bool) public initialized;
 
     event EventUpgrade(address indexed newTarget, address indexed oldTarget, address indexed admin);
     event EventInitialized(address indexed target);
@@ -136,7 +136,7 @@ contract NaiveClaims is Upgradeable, Pausable, IClaims  {
 
     struct Claim {
         address[] voters;
-        mapping(address =&gt; Vote) votes;
+        mapping(address => Vote) votes;
         address claimantAddress;
         uint votingDeadline;
     }
@@ -149,7 +149,7 @@ contract NaiveClaims is Upgradeable, Pausable, IClaims  {
         bytes32 tokenHash;
     }
 
-    mapping (uint =&gt; Claim) public claims;
+    mapping (uint => Claim) public claims;
     event ClaimCreated(uint indexed claimId);
     uint256 public claimsCreated;
 
@@ -180,8 +180,8 @@ contract NaiveClaims is Upgradeable, Pausable, IClaims  {
         Claim storage claim = claims[_claimId];
         Vote storage vote = claim.votes[msg.sender];
 
-        require(vote.exists != true, &quot;Voters can only vote once&quot;);
-        require(now &lt; claim.votingDeadline, &quot;Cannot vote after the dealine has passed&quot;);
+        require(vote.exists != true, "Voters can only vote once");
+        require(now < claim.votingDeadline, "Cannot vote after the dealine has passed");
 
         claims[_claimId].votes[msg.sender] = Vote(_pType, _hash, _url, true, _tokenHash);
     }
@@ -209,14 +209,14 @@ contract NaiveClaims is Upgradeable, Pausable, IClaims  {
 
     function register(uint _claimId, uint _pType, bytes32 _hash, string _url,
     bytes32 _tokenHash) external {
-        revert(&quot;Unsupported operation&quot;);
+        revert("Unsupported operation");
     }
 }
 
 contract NaiveTallyCalculator {
     
-    bytes32 public yesHash = keccak256(&quot;YES&quot;);
-    bytes32 public noHash = keccak256(&quot;NO&quot;);
+    bytes32 public yesHash = keccak256("YES");
+    bytes32 public noHash = keccak256("NO");
 
     function calculateTally(address _claimsAddress, uint _claimId) constant returns (bool) {
         NaiveClaims claimsContract = NaiveClaims(_claimsAddress);
@@ -225,11 +225,11 @@ contract NaiveTallyCalculator {
         (,votingDeadline) = claimsContract.claims(_claimId);
 
         uint voterCount = claimsContract.getVoterCount(_claimId);
-        require(votingDeadline &lt; now);
+        require(votingDeadline < now);
 
         uint indorsements;
 
-        for (uint voterIndex = 0; voterIndex &lt; voterCount; voterIndex++) {
+        for (uint voterIndex = 0; voterIndex < voterCount; voterIndex++) {
             address voter = claimsContract.getVoter(_claimId, voterIndex);
             
             var (, hash,,voteExists,) = claimsContract.getVote(_claimId, voter);
@@ -241,6 +241,6 @@ contract NaiveTallyCalculator {
             }
         }
 
-        return indorsements &gt; 5;
+        return indorsements > 5;
     }
 }

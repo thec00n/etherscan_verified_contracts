@@ -1,5 +1,5 @@
 // AID tokensale smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="80e9eee6efc0f0e8e5eeefedaef4e5e1ed">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="80e9eee6efc0f0e8e5eeefedaef4e5e1ed">[email protected]</span>>
 
 pragma solidity ^ 0.4.15;
 
@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -40,8 +40,8 @@ library SafeMath {
  */
 contract ERC20 {
     uint256 public totalSupply = 0;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     function balanceOf(address _owner) public constant returns(uint256);
     function transfer(address _to, uint256 _value) public returns(bool);
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool);
@@ -53,7 +53,7 @@ contract ERC20 {
 
 /**
  *   @title AidaICO contract  - takes funds from users and issues tokens
- *   @dev AidaICO - it&#39;s the first ever contract for ICO which allows users to
+ *   @dev AidaICO - it's the first ever contract for ICO which allows users to
  *                  return their investments.
  */
 contract AidaICO {
@@ -100,13 +100,13 @@ contract AidaICO {
     StatusICO statusICO = StatusICO.Created;
 
     // Mappings
-    mapping(address =&gt; uint256) public ethPreIco; // Mapping for remembering eth of investors who paid at PreICO
-    mapping(address =&gt; uint256) public ethIco; // Mapping for remembering eth of investors who paid at ICO
-    mapping(address =&gt; bool) public used; // Users can return their funds one time
-    mapping(address =&gt; uint256) public tokensPreIco; // Mapping for remembering tokens of investors who paid at preICO in ether
-    mapping(address =&gt; uint256) public tokensIco; // Mapping for remembering tokens of investors who paid at ICO in ethre
-    mapping(address =&gt; uint256) public tokensPreIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at preICO in other crypto currencies
-    mapping(address =&gt; uint256) public tokensIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at ICO in other crypto currencies
+    mapping(address => uint256) public ethPreIco; // Mapping for remembering eth of investors who paid at PreICO
+    mapping(address => uint256) public ethIco; // Mapping for remembering eth of investors who paid at ICO
+    mapping(address => bool) public used; // Users can return their funds one time
+    mapping(address => uint256) public tokensPreIco; // Mapping for remembering tokens of investors who paid at preICO in ether
+    mapping(address => uint256) public tokensIco; // Mapping for remembering tokens of investors who paid at ICO in ethre
+    mapping(address => uint256) public tokensPreIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at preICO in other crypto currencies
+    mapping(address => uint256) public tokensIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at ICO in other crypto currencies
 
     // Events Log
     event LogStartPreICO();
@@ -257,7 +257,7 @@ contract AidaICO {
     *   @dev Freeze tokens(disable token transfers)
     */
     function disableTokensTransfer() external managerOnly {
-        require((statusICO != StatusICO.IcoFinished) || (now &lt;= finishTime + 21 days));
+        require((statusICO != StatusICO.IcoFinished) || (now <= finishTime + 21 days));
         AID.frostTokens();
     }
 
@@ -316,7 +316,7 @@ contract AidaICO {
    /**
     *   @dev Issues tokens for users who made purchases in other cryptocurrencies
     *   @param _investor     address the tokens will be issued to
-    *   @param _txHash       transaction hash of investor&#39;s payment
+    *   @param _txHash       transaction hash of investor's payment
     *   @param _aidValue     number of Aida tokens
     */
     function buyForInvestor(
@@ -337,7 +337,7 @@ contract AidaICO {
     *   @param _aidValue     number of Aida tokens
     */
     function createTokensForOtherCrypto(address _investor, uint256 _aidValue) internal {
-        require(_aidValue &gt; 0);
+        require(_aidValue > 0);
         uint256 bonus = getBonus(_aidValue);
         uint256 total = _aidValue.add(bonus);
         rememberTokensOtherCrypto(total, _investor);
@@ -350,7 +350,7 @@ contract AidaICO {
     *   @param _aidValue     number of Aida tokens
     */
     function createTokensForEth(address _investor, uint256 _aidValue) internal {
-        require(_aidValue &gt; 0);
+        require(_aidValue > 0);
         uint256 bonus = getBonus(_aidValue);
         uint256 total = _aidValue.add(bonus);
         rememberTokensEth(total, _investor);
@@ -401,14 +401,14 @@ contract AidaICO {
         uint256 eth = 0;
         uint256 tokens = 0;
         if (statusICO == StatusICO.PreIcoStarted) {
-            require(ethPreIco[msg.sender] &gt; 0);
+            require(ethPreIco[msg.sender] > 0);
             eth = ethPreIco[msg.sender];
             tokens = tokensPreIco[msg.sender];
             ethPreIco[msg.sender] = 0;
             tokensPreIco[msg.sender] = 0;
         }
         if (statusICO == StatusICO.IcoStarted) {
-            require(ethIco[msg.sender] &gt; 0);
+            require(ethIco[msg.sender] > 0);
             eth = ethIco[msg.sender];
             tokens = tokensIco[msg.sender];
             ethIco[msg.sender] = 0;
@@ -463,8 +463,8 @@ contract AidaICO {
  */
 contract AidaToken is ERC20 {
     using SafeMath for uint256;
-    string public name = &quot;Aida TOKEN&quot;;
-    string public symbol = &quot;AID&quot;;
+    string public name = "Aida TOKEN";
+    string public symbol = "AID";
     uint256 public decimals = 18;
 
     // Ico contract address
@@ -494,7 +494,7 @@ contract AidaToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint256 _value) external icoOnly {
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[_holder] = balances[_holder].add(_value);
         totalSupply = totalSupply.add(_value);
         Transfer(0x0, _holder, _value);
@@ -520,7 +520,7 @@ contract AidaToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _investor, uint256 _value) external icoOnly {
-        require(balances[_investor] &gt; 0);
+        require(balances[_investor] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_investor] = balances[_investor].sub(_value);
         Burn(_investor, _value);
@@ -528,7 +528,7 @@ contract AidaToken is ERC20 {
 
    /**
     *   @dev Get balance of investor
-    *   @param _owner        investor&#39;s address
+    *   @param _owner        investor's address
     *   @return              balance of investor
     */
     function balanceOf(address _owner) public constant returns(uint256) {

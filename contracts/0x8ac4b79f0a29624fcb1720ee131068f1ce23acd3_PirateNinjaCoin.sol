@@ -3,7 +3,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract PirateNinjaCoin {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -16,8 +16,8 @@ contract PirateNinjaCoin {
     uint256 maxBuyPrice;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -47,8 +47,8 @@ contract PirateNinjaCoin {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -74,9 +74,9 @@ contract PirateNinjaCoin {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -85,7 +85,7 @@ contract PirateNinjaCoin {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw;            // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         profit.transfer(((_value * (110000 - flame) / 100000) ) * sellPrice);
@@ -95,8 +95,8 @@ contract PirateNinjaCoin {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw;    // Check allowance
+        if (balanceOf[_from] < _value) throw;                // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw;    // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         totalSupply -= _value;                               // Updates totalSupply
         profit.transfer((_value * (110000 - flame) / 100000) * sellPrice); 
@@ -110,10 +110,10 @@ contract PirateNinjaCoin {
     event NewBuyPrice(uint256 value);
     
     function setSellPrice(){
-        if(totalSupply &gt; 0){
+        if(totalSupply > 0){
             sellPrice = this.balance / totalSupply;
-            if(buyPrice == maxBuyPrice &amp;&amp; sellPrice &gt; buyPrice) sellPrice = buyPrice;
-            if(sellPrice &gt; buyPrice) sellPrice = buyPrice * 99984 / 100000;
+            if(buyPrice == maxBuyPrice && sellPrice > buyPrice) sellPrice = buyPrice;
+            if(sellPrice > buyPrice) sellPrice = buyPrice * 99984 / 100000;
             NewSellPrice(sellPrice);
         }
     }
@@ -129,11 +129,11 @@ contract PirateNinjaCoin {
 
     function buy() payable {
         uint256 fee = (msg.value * 42 / 100000);
-        if(msg.value &lt; (buyPrice + fee)) throw; //check if enough ether was send
+        if(msg.value < (buyPrice + fee)) throw; //check if enough ether was send
         uint256 amount = (msg.value - fee) / buyPrice;
         
-        if (totalSupply + amount &lt; totalSupply) throw; //check for overflows
-        if (balanceOf[msg.sender] + amount &lt; balanceOf[msg.sender]) throw; //check for overflows
+        if (totalSupply + amount < totalSupply) throw; //check for overflows
+        if (balanceOf[msg.sender] + amount < balanceOf[msg.sender]) throw; //check for overflows
         balanceOf[msg.sender] += amount;
         
         profit.transfer(fee);
@@ -141,9 +141,9 @@ contract PirateNinjaCoin {
         
         totalSupply += amount; 
         
-        if(buyPrice &lt; maxBuyPrice){
+        if(buyPrice < maxBuyPrice){
             buyPrice = buyPrice * 100015 / 100000;
-            if(buyPrice &gt; maxBuyPrice) buyPrice = maxBuyPrice;
+            if(buyPrice > maxBuyPrice) buyPrice = maxBuyPrice;
             NewBuyPrice(buyPrice);
         }
         
@@ -151,7 +151,7 @@ contract PirateNinjaCoin {
     }
 
     function sell(uint256 _amount) {
-        if (balanceOf[msg.sender] &lt; _amount) throw;    
+        if (balanceOf[msg.sender] < _amount) throw;    
        
         uint256 ethAmount = sellPrice * _amount;
         uint256 fee = (ethAmount * 42 / 100000);

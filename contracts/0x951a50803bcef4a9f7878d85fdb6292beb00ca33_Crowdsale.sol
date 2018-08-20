@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ contract Crowdsale {
 
   token tokenReward;
 
-  // mapping (address =&gt; uint) public contributions;
+  // mapping (address => uint) public contributions;
   
 
 
@@ -82,8 +82,8 @@ contract Crowdsale {
     //see it has both lowecae and uppercase letters. we can now deploy it.
     // this is where you tell it which token we are using.
     //we will do ICO of GauravCoin now. 
-    //one trick here is that it will not work right now if we deployed. look at the address of coin, it doesn&#39;t have any uppercase letter, all lowecase
-    //means its not checksummed, let&#39;s copy the checksummed address
+    //one trick here is that it will not work right now if we deployed. look at the address of coin, it doesn't have any uppercase letter, all lowecase
+    //means its not checksummed, let's copy the checksummed address
     //for that we go to etherscan.io/address/youraddresswhichyouwantchecksummed
 
 
@@ -130,22 +130,22 @@ contract Crowdsale {
 
     // calculate token amount to be sent
     //here also we needed to cange, sorry I forgot to tell in the begining.
-    //let&#39;s try to understand this calculation.
+    //let's try to understand this calculation.
     //the buyer send some ETH 
     //1 ETH = 10**18 wei 
     //now here comes our token decimals
-    //if our token has 18 decimals then we don&#39;t want this 10**something
+    //if our token has 18 decimals then we don't want this 10**something
     //if our token has 8 decimals then we want 10**10
     //if our token has 16 decimals we will divide by 10**2 
     //how we calculate it? 
     //10**(18-tokenDecimals)
-    //our token has 18 decimals so it will be 10**(18-18) = 10**0 = 1 so we don&#39;t need to divide.
+    //our token has 18 decimals so it will be 10**(18-18) = 10**0 = 1 so we don't need to divide.
     uint256 tokens = (weiAmount) * price;//weiamount * price 
 
     // update state
     weiRaised = weiRaised.add(weiAmount);
     
-    // if(contributions[msg.sender].add(weiAmount)&gt;10*10**18) throw;
+    // if(contributions[msg.sender].add(weiAmount)>10*10**18) throw;
     // contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
 
     tokenReward.transfer(beneficiary, tokens);
@@ -166,7 +166,7 @@ contract Crowdsale {
   function validPurchase() internal constant returns (bool) {
     bool withinPeriod = started;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function withdrawTokens(uint256 _amount) {

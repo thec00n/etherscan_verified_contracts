@@ -22,7 +22,7 @@ contract ENS {
         uint64 ttl;
     }
 
-    mapping(bytes32=&gt;Record) records;
+    mapping(bytes32=>Record) records;
 
     // Permits modifications only by the owner of the specified node.
     modifier only_owner(bytes32 node) {
@@ -132,7 +132,7 @@ contract RegistrarInterface {
  * Users may register a subdomain by calling `register` with the name of the domain
  * they wish to register under, and the label hash of the subdomain they want to
  * register. They must also specify the new owner of the domain, and the referrer,
- * who is paid an optional finder&#39;s fee. The registrar then configures a simple
+ * who is paid an optional finder's fee. The registrar then configures a simple
  * default resolver, which resolves `addr` lookups to the new owner, and sets
  * the `owner` account as the owner of the subdomain in ENS.
  *
@@ -155,7 +155,7 @@ contract RegistrarInterface {
  * fail if this is not the case.
  */
 contract SubdomainRegistrar is RegistrarInterface {
-  // namehash(&#39;eth&#39;)
+  // namehash('eth')
   bytes32 constant public TLD_NODE = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
 
   ENS public ens;
@@ -167,7 +167,7 @@ contract SubdomainRegistrar is RegistrarInterface {
     uint referralFeePPM;
   }
 
-  mapping(bytes32=&gt;Domain) domains;
+  mapping(bytes32=>Domain) domains;
 
   function SubdomainRegistrar(ENS _ens) public {
     ens = _ens;
@@ -248,7 +248,7 @@ contract SubdomainRegistrar is RegistrarInterface {
     var domain = domains[label];
     DomainUnlisted(label);
 
-    domain.name = &#39;&#39;;
+    domain.name = '';
     domain.owner = owner(label);
     domain.price = 0;
     domain.referralFeePPM = 0;
@@ -269,7 +269,7 @@ contract SubdomainRegistrar is RegistrarInterface {
     var subnode = keccak256(node, keccak256(subdomain));
 
     if(ens.owner(subnode) != 0) {
-      return (&#39;&#39;, 0, 0, 0);
+      return ('', 0, 0, 0);
     }
 
     var data = domains[label];
@@ -296,23 +296,23 @@ contract SubdomainRegistrar is RegistrarInterface {
     require(keccak256(domain.name) == label);
 
     // User must have paid enough
-    require(msg.value &gt;= domain.price);
+    require(msg.value >= domain.price);
 
     // Send any extra back
-    if(msg.value &gt; domain.price) {
+    if(msg.value > domain.price) {
       msg.sender.transfer(msg.value - domain.price);
     }
 
     // Send any referral fee
     var total = domain.price;
-    if(domain.referralFeePPM * domain.price &gt; 0 &amp;&amp; referrer != 0 &amp;&amp; referrer != domain.owner) {
+    if(domain.referralFeePPM * domain.price > 0 && referrer != 0 && referrer != domain.owner) {
       var referralFee = (domain.price * domain.referralFeePPM) / 1000000;
       referrer.transfer(referralFee);
       total -= referralFee;
     }
 
     // Send the registration fee
-    if(total &gt; 0) {
+    if(total > 0) {
       domain.owner.transfer(total);
     }
 
@@ -330,7 +330,7 @@ contract SubdomainRegistrar is RegistrarInterface {
     ens.setSubnodeOwner(node, label, this);
 
     var subnode = keccak256(node, label);
-    // Set the subdomain&#39;s resolver
+    // Set the subdomain's resolver
     ens.setResolver(subnode, resolver);
 
     // Set the address record on the resolver

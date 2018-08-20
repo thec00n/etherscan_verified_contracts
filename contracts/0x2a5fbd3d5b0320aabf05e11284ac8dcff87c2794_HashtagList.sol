@@ -44,7 +44,7 @@ contract Ownable {
 }
 contract HashtagList is Ownable {
 
-    mapping (address =&gt; string) storedMap;
+    mapping (address => string) storedMap;
 
     function setBytesRaw(string x) {
         storedMap[msg.sender] = x;

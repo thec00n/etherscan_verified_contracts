@@ -58,9 +58,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -68,7 +68,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -77,7 +77,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,7 +116,7 @@ contract EthercraftFarm is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     // TODO: Could be private with getter only allowing senders balance lookup.
-    mapping (address =&gt; mapping (address =&gt; uint256)) public tokenBalanceOf;
+    mapping (address => mapping (address => uint256)) public tokenBalanceOf;
 
     function() payable public {
         //owner.transfer(msg.value);
@@ -126,11 +126,11 @@ contract EthercraftFarm is Ownable, ReentrancyGuard {
         require(_shop != address(0));
 
         uint8 _len = 1;
-        if (_iterations &gt; 1)
+        if (_iterations > 1)
             _len = _iterations;
 
         ShopInterface shop = ShopInterface(_shop);
-        for (uint8 i = 0; i &lt; _len * 100; i++) {
+        for (uint8 i = 0; i < _len * 100; i++) {
             shop.buyObject(this);
         }
 
@@ -141,7 +141,7 @@ contract EthercraftFarm is Ownable, ReentrancyGuard {
 
     function reap(address _object) nonReentrant external {
         require(_object != address(0));
-        require(tokenBalanceOf[msg.sender][_object] &gt; 0);
+        require(tokenBalanceOf[msg.sender][_object] > 0);
 
         // Retrieve any accumulated ETH.
         if (msg.sender == owner)

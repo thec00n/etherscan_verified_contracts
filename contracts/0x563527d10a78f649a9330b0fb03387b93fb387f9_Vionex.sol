@@ -4,12 +4,12 @@ contract Vionex {
     
     uint public constant _totalSupply = 10000000000000000;
     
-    string public constant symbol = &quot;VIOX&quot;;
-    string public constant name = &quot;Vionex&quot;;
+    string public constant symbol = "VIOX";
+    string public constant name = "Vionex";
     uint8 public constant decimals = 8;
     
-    mapping(address =&gt; uint)balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) approved;
+    mapping(address => uint)balances;
+    mapping(address => mapping(address => uint)) approved;
     
     
     uint supply;
@@ -31,7 +31,7 @@ contract Vionex {
     
     function transfer(address _to, uint _value) returns (bool success){
         
-        if(balances[msg.sender]&gt;=_value &amp;&amp; _value &gt; 0){
+        if(balances[msg.sender]>=_value && _value > 0){
             
             balances[msg.sender]-= _value;
             balances[_to] += _value;
@@ -48,7 +48,7 @@ contract Vionex {
     
     function approve(address _spender, uint _value) returns (bool success){
         
-        if(balances[msg.sender]&gt;=_value){
+        if(balances[msg.sender]>=_value){
             approved[msg.sender][_spender] = _value;
             return true;
         }
@@ -66,9 +66,9 @@ contract Vionex {
     
     function transferFrom(address _from, address _to, uint _value) returns (bool success){
         
-        if(balances[_from]&gt;=_value &amp;&amp;
-            approved[_from][msg.sender]&gt;=_value &amp;&amp;
-            _value &gt; 0){
+        if(balances[_from]>=_value &&
+            approved[_from][msg.sender]>=_value &&
+            _value > 0){
                
                
                 balances[_from] -= _value;

@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,14 +89,14 @@ contract Pausable is Ownable {
 contract CPTXToken is ERC20, Pausable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;Crypterra Token&quot;;
-  string public constant symbol = &quot;CPTX&quot;;
+  string public constant name = "Crypterra Token";
+  string public constant symbol = "CPTX";
   uint8 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 600000000 * (10 ** uint256(decimals));
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -117,8 +117,8 @@ contract CPTXToken is ERC20, Pausable {
 
   function transfer(address _to, uint256 _value) isRunning validAddress public returns (bool) {
     require(_to != address(0));
-    require(balances[msg.sender] &gt;= _value);
-    require(balances[_to] + _value &gt;= balances[_to]);
+    require(balances[msg.sender] >= _value);
+    require(balances[_to] + _value >= balances[_to]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -132,9 +132,9 @@ contract CPTXToken is ERC20, Pausable {
 
   function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress public returns (bool) {
     require(_to != address(0));
-    require(balances[_from] &gt;= _value);
-    require(allowed[_from][msg.sender] &gt;= _value);
-    require(balances[_to] + _value &gt;= balances[_to]);
+    require(balances[_from] >= _value);
+    require(allowed[_from][msg.sender] >= _value);
+    require(balances[_to] + _value >= balances[_to]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -154,7 +154,7 @@ contract CPTXToken is ERC20, Pausable {
   }
 
   function burn(uint256 _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     Burn(msg.sender, _value);

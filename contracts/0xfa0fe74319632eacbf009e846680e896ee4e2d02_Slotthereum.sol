@@ -34,7 +34,7 @@ contract Slotthereum is Mortal {
     }
 
     Game[] public games;                                // games
-    mapping (address =&gt; uint) private balances;         // balances per address
+    mapping (address => uint) private balances;         // balances per address
     uint public numberOfGames = 0;                      // number of games
     uint private minBetAmount = 100000000000000;        // minimum amount per bet
     uint private maxBetAmount = 1000000000000000000;    // maximum amount per bet
@@ -92,7 +92,7 @@ contract Slotthereum is Mortal {
     // }
 
     // function add(uint x, uint y) internal constant returns (uint z) {
-    //     assert((z = x + y) &gt;= x);
+    //     assert((z = x + y) >= x);
     // }
 
     function getNumber(bytes32 hash) onlyuser internal returns (uint8) {
@@ -126,21 +126,21 @@ contract Slotthereum is Mortal {
     }
 
     function placeBet(uint8 start, uint8 end) onlyuser public payable returns (bool) {
-        if (msg.value &lt; minBetAmount) {
+        if (msg.value < minBetAmount) {
             return false;
         }
 
-        if (msg.value &gt; maxBetAmount) {
+        if (msg.value > maxBetAmount) {
             return false;
         }
 
         uint8 counter = end - start + 1;
 
-        if (counter &gt; 7) {
+        if (counter > 7) {
             return false;
         }
 
-        if (counter &lt; 1) {
+        if (counter < 1) {
             return false;
         }
 
@@ -159,13 +159,13 @@ contract Slotthereum is Mortal {
         games[gameId].hash = 0x0;
         games[gameId].blockNumber = block.number;
 
-        if (gameId &gt; 0) {
+        if (gameId > 0) {
             uint lastGameId = gameId - 1;
             if (games[lastGameId].blockNumber != games[gameId].blockNumber) {
                 games[lastGameId].hash = block.blockhash(block.number - 1);
                 games[lastGameId].number = getNumber(games[lastGameId].hash);
 
-                if ((games[lastGameId].number &gt;= games[lastGameId].start) &amp;&amp; (games[lastGameId].number &lt;= games[lastGameId].end)) {
+                if ((games[lastGameId].number >= games[lastGameId].start) && (games[lastGameId].number <= games[lastGameId].end)) {
                     games[lastGameId].win = true;
                     uint dec = games[lastGameId].amount / 10;
                     uint parts = 10 - counter;
@@ -195,7 +195,7 @@ contract Slotthereum is Mortal {
     }
 
     function getBalance() public constant returns (uint) {
-        if ((balances[msg.sender] &gt; 0) &amp;&amp; (balances[msg.sender] &lt; this.balance)) {
+        if ((balances[msg.sender] > 0) && (balances[msg.sender] < this.balance)) {
             return balances[msg.sender];
         }
         return 0;
@@ -203,7 +203,7 @@ contract Slotthereum is Mortal {
 
     // function withdraw() onlyuser public returns (uint) {
     //     uint amount = getBalance();
-    //     if (amount &gt; 0) {
+    //     if (amount > 0) {
     //         balances[msg.sender] = 0;
     //         msg.sender.transfer(amount);
     //         return amount;
@@ -212,7 +212,7 @@ contract Slotthereum is Mortal {
     // }
 
     function ownerWithdraw(uint amount) onlyowner public returns (uint) {
-        if (amount &lt;= this.balance) {
+        if (amount <= this.balance) {
             msg.sender.transfer(amount);
             return amount;
         }
@@ -233,7 +233,7 @@ contract Slotthereum is Mortal {
 
     function getGameIds() public constant returns(uint[]) {
         uint[] memory ids = new uint[](games.length);
-        for (uint i = 0; i &lt; games.length; i++) {
+        for (uint i = 0; i < games.length; i++) {
             ids[i] = games[i].id;
         }
         return ids;

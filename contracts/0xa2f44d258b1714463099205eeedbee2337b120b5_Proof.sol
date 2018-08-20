@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the PROOF Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the PROOF Contract. If not, see <http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.0;
@@ -39,7 +39,7 @@ contract owned {
 contract Crowdsale is owned {
     
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     uint    public etherPrice;
     address public crowdsaleOwner;
@@ -67,8 +67,8 @@ contract Crowdsale is owned {
         uint256 amountTokens;
         uint    amountWei;
     }
-    mapping (address =&gt; Investor) public investors;
-    mapping (uint =&gt; address)     public investorsIter;
+    mapping (address => Investor) public investors;
+    mapping (uint => address)     public investorsIter;
     uint                          public numberOfInvestors;
     
     function () payable {
@@ -77,18 +77,18 @@ contract Crowdsale is owned {
         if (state == State.PreICO) {
             tokensPerUSD = 125;
         } else if (state == State.Crowdsale) {
-            if (now &lt; crowdsaleStartTime + 1 days) {
+            if (now < crowdsaleStartTime + 1 days) {
                 tokensPerUSD = 115;
-            } else if (now &lt; crowdsaleStartTime + 1 weeks) {
+            } else if (now < crowdsaleStartTime + 1 weeks) {
                 tokensPerUSD = 110;
             } else {
                 tokensPerUSD = 100;
             }
         }
-        if (tokensPerUSD &gt; 0) {
+        if (tokensPerUSD > 0) {
             uint valueWei = msg.value;
             uint valueUSD = valueWei * etherPrice / 1000000000000000000;
-            if (collectedUSD + valueUSD &gt; totalLimitUSD) { // don&#39;t need so much ether
+            if (collectedUSD + valueUSD > totalLimitUSD) { // don't need so much ether
                 valueUSD = totalLimitUSD - collectedUSD;
                 valueWei = valueUSD * 1000000000000000000 / etherPrice;
                 msg.sender.transfer(msg.value - valueWei);
@@ -97,8 +97,8 @@ contract Crowdsale is owned {
                 collectedUSD += valueUSD;
             }
             uint256 tokens = tokensPerUSD * valueUSD;
-            require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]); // overflow
-            require(tokens &gt; 0);
+            require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]); // overflow
+            require(tokens > 0);
             
             Investor storage inv = investors[msg.sender];
             if (inv.amountWei == 0) { // new investor
@@ -134,7 +134,7 @@ contract Crowdsale is owned {
     
     function timeToFinishTokensSale() public constant returns(uint t) {
         require(state == State.PreICO || state == State.Crowdsale);
-        if (now &gt; crowdsaleFinishTime) {
+        if (now > crowdsaleFinishTime) {
             t = 0;
         } else {
             t = crowdsaleFinishTime - now;
@@ -143,10 +143,10 @@ contract Crowdsale is owned {
     
     function finishTokensSale(uint _investorsToProcess) public {
         require(state == State.PreICO || state == State.Crowdsale);
-        require(now &gt;= crowdsaleFinishTime || collectedUSD == totalLimitUSD);
-        if (collectedUSD &lt; minimalSuccessUSD) {
+        require(now >= crowdsaleFinishTime || collectedUSD == totalLimitUSD);
+        if (collectedUSD < minimalSuccessUSD) {
             // Investors can get their ether calling withdrawBack() function
-            while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) {
+            while (_investorsToProcess > 0 && numberOfInvestors > 0) {
                 address addr = investorsIter[--numberOfInvestors];
                 Investor memory inv = investors[addr];
                 balanceOf[addr] -= inv.amountTokens;
@@ -154,7 +154,7 @@ contract Crowdsale is owned {
                 --_investorsToProcess;
                 delete investorsIter[numberOfInvestors];
             }
-            if (numberOfInvestors &gt; 0) {
+            if (numberOfInvestors > 0) {
                 return;
             }
             if (state == State.PreICO) {
@@ -163,13 +163,13 @@ contract Crowdsale is owned {
                 state = State.CompletePreICO;
             }
         } else {
-            while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) {
+            while (_investorsToProcess > 0 && numberOfInvestors > 0) {
                 --numberOfInvestors;
                 --_investorsToProcess;
                 delete investors[investorsIter[numberOfInvestors]];
                 delete investorsIter[numberOfInvestors];
             }
-            if (numberOfInvestors &gt; 0) {
+            if (numberOfInvestors > 0) {
                 return;
             }
             if (state == State.PreICO) {
@@ -190,7 +190,7 @@ contract Crowdsale is owned {
     function withdrawBack() public {
         require(state == State.Disabled || state == State.CompletePreICO);
         uint value = investors[msg.sender].amountWei;
-        if (value &gt; 0) {
+        if (value > 0) {
             delete investors[msg.sender];
             msg.sender.transfer(value);
         }
@@ -199,9 +199,9 @@ contract Crowdsale is owned {
 
 contract Token is Crowdsale {
     
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;PROOF&#39;;
-    string  public symbol      = &quot;PF&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'PROOF';
+    string  public symbol      = "PF";
     uint8   public decimals    = 0;
 
     modifier onlyTokenHolders {
@@ -209,7 +209,7 @@ contract Token is Crowdsale {
         _;
     }
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -217,17 +217,17 @@ contract Token is Crowdsale {
     function Token() payable Crowdsale() {}
 
     function transfer(address _to, uint256 _value) public enabledState {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public enabledState {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -263,7 +263,7 @@ contract TokenMigration is Token {
         require(state == State.Migration);
         require(migrationAgent != 0);
         require(_value != 0);
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         totalMigrated += _value;
@@ -296,11 +296,11 @@ contract ProofTeamVote is TokenMigration {
     uint public numberOfVotes;
     uint public yea;
     uint public nay;
-    mapping (address =&gt; Vote) public votes;
-    mapping (uint =&gt; address) public votesIter;
+    mapping (address => Vote) public votes;
+    mapping (uint => address) public votesIter;
 
     function startVoting(uint _weiReqFund) public enabledOrMigrationState onlyOwner {
-        require(weiReqFund == 0 &amp;&amp; _weiReqFund &gt; 0 &amp;&amp; _weiReqFund &lt;= this.balance);
+        require(weiReqFund == 0 && _weiReqFund > 0 && _weiReqFund <= this.balance);
         weiReqFund = _weiReqFund;
         votingDeadline = now + 7 days;
         delete yea;
@@ -311,7 +311,7 @@ contract ProofTeamVote is TokenMigration {
     function votingInfo() public constant enabledOrMigrationState
         returns(uint _weiReqFund, uint _timeToFinish) {
         _weiReqFund = weiReqFund;
-        if (votingDeadline &lt;= now) {
+        if (votingDeadline <= now) {
             _timeToFinish = 0;
         } else {
             _timeToFinish = votingDeadline - now;
@@ -321,7 +321,7 @@ contract ProofTeamVote is TokenMigration {
     function vote(bool _inSupport) public onlyTokenHolders enabledOrMigrationState
         returns (uint voteId) {
         require(votes[msg.sender].voted != true);
-        require(votingDeadline &gt; now);
+        require(votingDeadline > now);
         voteId = numberOfVotes++;
         votesIter[voteId] = msg.sender;
         votes[msg.sender] = Vote({inSupport: _inSupport, voted: true});
@@ -331,9 +331,9 @@ contract ProofTeamVote is TokenMigration {
 
     function finishVoting(uint _votesToProcess) public enabledOrMigrationState
         returns (bool _inSupport) {
-        require(now &gt;= votingDeadline);
+        require(now >= votingDeadline);
 
-        while (_votesToProcess &gt; 0 &amp;&amp; numberOfVotes &gt; 0) {
+        while (_votesToProcess > 0 && numberOfVotes > 0) {
             address voter = votesIter[--numberOfVotes];
             Vote memory v = votes[voter];
             uint voteWeight = balanceOf[voter];
@@ -346,12 +346,12 @@ contract ProofTeamVote is TokenMigration {
             delete votesIter[numberOfVotes];
             --_votesToProcess;
         }
-        if (numberOfVotes &gt; 0) {
+        if (numberOfVotes > 0) {
             _inSupport = false;
             return;
         }
 
-        _inSupport = (yea &gt; nay);
+        _inSupport = (yea > nay);
         uint weiForSend = weiReqFund;
         delete weiReqFund;
         delete votingDeadline;
@@ -384,15 +384,15 @@ contract ProofPublicVote is ProofTeamVote {
         uint   numberOfVotes;
         uint   yea;
         uint   nay;
-        mapping (address =&gt; Vote) votes;
-        mapping (uint =&gt; address) votesIter;
+        mapping (address => Vote) votes;
+        mapping (uint => address) votesIter;
     }
-    mapping (address =&gt; Project) public projects;
+    mapping (address => Project) public projects;
 
     function deployProject(uint _proofReqFund, string _urlInfo) public
         onlyTokenHolders enabledOrMigrationState {
-        require(_proofReqFund &gt; 0 &amp;&amp; _proofReqFund &lt;= balanceOf[this]);
-        require(_proofReqFund &lt;= balanceOf[msg.sender] * 1000);
+        require(_proofReqFund > 0 && _proofReqFund <= balanceOf[this]);
+        require(_proofReqFund <= balanceOf[msg.sender] * 1000);
         require(projects[msg.sender].proofReqFund == 0);
         projects[msg.sender].proofReqFund = _proofReqFund;
         projects[msg.sender].urlInfo = _urlInfo;
@@ -404,7 +404,7 @@ contract ProofPublicVote is ProofTeamVote {
         returns(uint _proofReqFund, string _urlInfo, uint _timeToFinish) {
         _proofReqFund = projects[_projectOwner].proofReqFund;
         _urlInfo = projects[_projectOwner].urlInfo;
-        if (projects[_projectOwner].votingDeadline &lt;= now) {
+        if (projects[_projectOwner].votingDeadline <= now) {
             _timeToFinish = 0;
         } else {
             _timeToFinish = projects[_projectOwner].votingDeadline - now;
@@ -414,9 +414,9 @@ contract ProofPublicVote is ProofTeamVote {
     function vote(address _projectOwner, bool _inSupport) public
         onlyTokenHolders enabledOrMigrationState returns (uint voteId) {
         Project storage p = projects[_projectOwner];
-        require(p.proofReqFund &gt; 0);
+        require(p.proofReqFund > 0);
         require(p.votes[msg.sender].voted != true);
-        require(p.votingDeadline &gt; now);
+        require(p.votingDeadline > now);
         voteId = p.numberOfVotes++;
         p.votesIter[voteId] = msg.sender;
         p.votes[msg.sender] = Vote({inSupport: _inSupport, voted: true});
@@ -427,10 +427,10 @@ contract ProofPublicVote is ProofTeamVote {
     function finishVoting(address _projectOwner, uint _votesToProcess) public
         enabledOrMigrationState returns (bool _inSupport) {
         Project storage p = projects[_projectOwner];
-        require(p.proofReqFund &gt; 0);
-        require(now &gt;= p.votingDeadline &amp;&amp; p.proofReqFund &lt;= balanceOf[this]);
+        require(p.proofReqFund > 0);
+        require(now >= p.votingDeadline && p.proofReqFund <= balanceOf[this]);
 
-        while (_votesToProcess &gt; 0 &amp;&amp; p.numberOfVotes &gt; 0) {
+        while (_votesToProcess > 0 && p.numberOfVotes > 0) {
             address voter = p.votesIter[--p.numberOfVotes];
             Vote memory v = p.votes[voter];
             uint voteWeight = balanceOf[voter];
@@ -443,18 +443,18 @@ contract ProofPublicVote is ProofTeamVote {
             delete p.votes[voter];
             --_votesToProcess;
         }
-        if (p.numberOfVotes &gt; 0) {
+        if (p.numberOfVotes > 0) {
             _inSupport = false;
             return;
         }
 
-        _inSupport = (p.yea &gt; p.nay);
+        _inSupport = (p.yea > p.nay);
 
         uint proofReqFund = p.proofReqFund;
         delete projects[_projectOwner];
 
         if (_inSupport) {
-            require(balanceOf[_projectOwner] + proofReqFund &gt;= balanceOf[_projectOwner]); // overflow
+            require(balanceOf[_projectOwner] + proofReqFund >= balanceOf[_projectOwner]); // overflow
             balanceOf[this] -= proofReqFund;
             balanceOf[_projectOwner] += proofReqFund;
             Transfer(this, _projectOwner, proofReqFund);
@@ -478,8 +478,8 @@ contract Proof is ProofPublicVote {
         address owner;
     }
 
-    mapping (address =&gt; Swype) public swypes;
-    mapping (bytes32 =&gt; Video) public videos;
+    mapping (address => Swype) public swypes;
+    mapping (bytes32 => Video) public videos;
 
     uint priceInTokens;
     uint teamFee;
@@ -487,7 +487,7 @@ contract Proof is ProofPublicVote {
     function Proof() payable ProofPublicVote() {}
 
     function setPrice(uint _priceInTokens) public onlyOwner {
-        require(_priceInTokens &gt;= 2);
+        require(_priceInTokens >= 2);
         teamFee = _priceInTokens / 10;
         if (teamFee == 0) {
             teamFee = 1;

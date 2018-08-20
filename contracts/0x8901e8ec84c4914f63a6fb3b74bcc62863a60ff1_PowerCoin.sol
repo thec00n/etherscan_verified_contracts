@@ -29,37 +29,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        sAssert(b &gt; 0);
+        sAssert(b > 0);
         uint c = a / b;
         sAssert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        sAssert(b &lt;= a);
+        sAssert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        sAssert(c&gt;=a &amp;&amp; c&gt;=b);
+        sAssert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function sAssert(bool assertion) internal {
@@ -83,8 +83,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transfer(address _to, uint _value) returns (bool success) {
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -120,8 +120,8 @@ contract StandardToken is ERC20, SafeMath {
 
 contract PowerCoin is Ownable, StandardToken {
 
-    string public name = &quot;CapricornCoin&quot;;
-    string public symbol = &quot;CCC&quot;;
+    string public name = "CapricornCoin";
+    string public symbol = "CCC";
     uint public decimals = 18;                  // token has 18 digit precision
 
     uint public totalSupply = 2 * (10 * (10**6) * (10**18));
@@ -140,7 +140,7 @@ contract PowerCoin is Ownable, StandardToken {
         balances[msg.sender] = totalSupply; // 80 percent goes to the public sale
     }
 
-    // Don&#39;t accept ethers - no payable modifier
+    // Don't accept ethers - no payable modifier
     function () payable{
     }
 

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -90,15 +90,15 @@ contract EmbiggenToken is ERC20 {
     uint lastCalculated;
   }
 
-  mapping(address =&gt; UserBalance) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => UserBalance) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
   // annualRate: percent * 10^18
   function EmbiggenToken(uint _initialSupply, uint annualRate, string _name, string _symbol, uint8 _decimals) {
     initialSupply = _initialSupply;
     initializedTime = (block.timestamp / 3600) * 3600;
     hourRate = annualRate / (365 * 24);
-    require(hourRate &lt;= 223872113856833); // This ensures that (earnedInterset * baseInterest) won&#39;t overflow a uint for any plausible time period
+    require(hourRate <= 223872113856833); // This ensures that (earnedInterset * baseInterest) won't overflow a uint for any plausible time period
     balances[msg.sender] = UserBalance({
       latestBalance: _initialSupply,
       lastCalculated: (block.timestamp / 3600) * 3600
@@ -118,7 +118,7 @@ contract EmbiggenToken is ERC20 {
     uint x = 1000000000000000000;
     uint base = 1000000000000000000 + hourRate;
     while(exp != 0) {
-      if(exp &amp; 1 != 0){
+      if(exp & 1 != 0){
         x = (x * base) / 1000000000000000000;
       }
       exp = exp / 2;
@@ -144,7 +144,7 @@ contract EmbiggenToken is ERC20 {
 
   function decBalance(address _owner, uint amount) private {
     uint priorBalance = balanceOf(_owner);
-    require(priorBalance &gt;= amount);
+    require(priorBalance >= amount);
     balances[_owner] = UserBalance({
       latestBalance: priorBalance.sub(amount),
       lastCalculated: (block.timestamp / 3600) * 3600 // Round down to the last hour
@@ -172,12 +172,12 @@ contract EmbiggenToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     decBalance(_from, _value);
     incBalance(_to, _value);
 
-    if(allowed[_from][msg.sender] &lt; MAX_UINT) {
+    if(allowed[_from][msg.sender] < MAX_UINT) {
       allowed[_from][msg.sender] -= _value;
     }
     Transfer(_from, _to, _value);

@@ -11,22 +11,22 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) 
   {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -118,14 +118,14 @@ contract CrowdsaleToken is Manageable
 {
   using SafeMath for uint256;
 
-  string public constant name     = &quot;EBCoin&quot;;
-  string public constant symbol   = &quot;EBC&quot;;
+  string public constant name     = "EBCoin";
+  string public constant symbol   = "EBC";
   uint8  public constant decimals = 18;
   
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping (address =&gt; uint256) public releaseTime;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping (address => uint256) public releaseTime;
   bool public released;
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -142,7 +142,7 @@ contract CrowdsaleToken is Manageable
   	}
   	else
   	{
-  		require(releaseTime[_from] &lt;= now);
+  		require(releaseTime[_from] <= now);
   	}
   	_;
   }
@@ -155,7 +155,7 @@ contract CrowdsaleToken is Manageable
   function transfer(address _to, uint256 _value) canTransfer(msg.sender) public returns (bool) 
   {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -173,8 +173,8 @@ contract CrowdsaleToken is Manageable
   function transferFrom(address _from, address _to, uint256 _value) canTransfer(_from) public returns (bool) 
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -192,8 +192,8 @@ contract CrowdsaleToken is Manageable
   	address pool = sale.pool();
 
     require(_investor != address(0));
-    require(_value &lt;= balances[pool]);
-    require(_value &lt;= allowed[pool][msg.sender]);
+    require(_value <= balances[pool]);
+    require(_value <= allowed[pool][msg.sender]);
 
     balances[pool] = balances[pool].sub(_value);
     balances[_investor] = balances[_investor].add(_value);
@@ -209,7 +209,7 @@ contract CrowdsaleToken is Manageable
   	address pool = sale.pool();
   	
     require(_investor != address(0));
-  	require(_value &lt;= balances[_investor]);
+  	require(_value <= balances[_investor]);
   	
   	balances[_investor] = balances[_investor].sub(_value);
   	balances[pool] = balances[pool].add(_value);
@@ -298,10 +298,10 @@ contract Crowdsale is Manageable
   enum State { Created, Active, Closed }
 
   uint256 public totalAllocated;
-  mapping (address =&gt; uint256) public allocated;
+  mapping (address => uint256) public allocated;
   
   uint256 public totalDeposited;
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
 
   State public state;
 
@@ -321,11 +321,11 @@ contract Crowdsale is Manageable
     require(state == State.Created);
   	require(_pool != address(0));
     require(_token != address(0));
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_endTime &gt;= now);
-    require(_rate &gt; 0);
-    require(_tokenSaleWeiCap &gt;= _tokenSaleWeiGoal);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_endTime >= now);
+    require(_rate > 0);
+    require(_tokenSaleWeiCap >= _tokenSaleWeiGoal);
     require(_wallet != 0x0);
     
     state = State.Active;
@@ -355,11 +355,11 @@ contract Crowdsale is Manageable
   function buyTokens(address _investor) public payable 
   {
     require(_investor != 0x0);
-    require(startTime &lt;= now &amp;&amp; now &lt;= endTime);
+    require(startTime <= now && now <= endTime);
     require(msg.value != 0);
     require(state == State.Active);
     
-    require(totalAllocated &lt;= tokenSaleWeiCap);
+    require(totalAllocated <= tokenSaleWeiCap);
     
     uint256 ethWeiAmount = msg.value;
     
@@ -367,8 +367,8 @@ contract Crowdsale is Manageable
     
     uint256 personTokenWeiAmount = allocated[_investor].add(tokenWeiAmount);
     
-    require(tokenSaleWeiMin &lt;= personTokenWeiAmount);
-    require(personTokenWeiAmount &lt;= tokenSaleWeiMax);
+    require(tokenSaleWeiMin <= personTokenWeiAmount);
+    require(personTokenWeiAmount <= tokenSaleWeiMax);
     
     totalAllocated = totalAllocated.add(tokenWeiAmount);
 
@@ -386,8 +386,8 @@ contract Crowdsale is Manageable
   function deallocate(address _investor, uint256 _value) onlyOwnerOrManager public 
   {
   	require(_investor != address(0));
-  	require(_value &gt; 0);
-    require(_value &lt;= allocated[_investor]);
+  	require(_value > 0);
+    require(_value <= allocated[_investor]);
 
 		totalAllocated = totalAllocated.sub(_value);
 		
@@ -400,13 +400,13 @@ contract Crowdsale is Manageable
 
   function goalReached() public constant returns (bool)
   {
-    return totalAllocated &gt;= tokenSaleWeiGoal;
+    return totalAllocated >= tokenSaleWeiGoal;
   }
 
   function hasEnded() public constant returns (bool) 
   {
-    bool capReached = (totalAllocated &gt;= tokenSaleWeiCap);
-    return (now &gt; endTime) || capReached;
+    bool capReached = (totalAllocated >= tokenSaleWeiCap);
+    return (now > endTime) || capReached;
   }
 
   function finalize() onlyOwnerOrManager public 
@@ -438,7 +438,7 @@ contract Crowdsale is Manageable
   	require(state == State.Closed);
   	
   	uint256 depositedValue = this.balance;
-  	if (depositedValue &gt; 0)
+  	if (depositedValue > 0)
   	{
   		wallet.transfer(depositedValue);
   	
@@ -582,10 +582,10 @@ contract CrowdsaleManager is Manageable
   
   function initSale3(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, uint256 _goal, uint256 _max, uint _min) onlyOwnerOrManager public
   {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
-    require(_cap &gt;= _goal);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
+    require(_cap >= _goal);
   
     uint256 startTime 				= _startTime;
     uint256 endTime   				= _endTime;

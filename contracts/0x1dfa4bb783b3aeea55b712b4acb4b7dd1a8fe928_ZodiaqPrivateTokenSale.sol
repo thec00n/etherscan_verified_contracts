@@ -23,20 +23,20 @@ library SafeMath {
 	}
 
 	/* function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	} */
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -44,11 +44,11 @@ library SafeMath {
 contract ERC20Token is ERC20 {
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	modifier onlyPayloadSize(uint size) {
-		require(msg.data.length &gt;= (size + 4));
+		require(msg.data.length >= (size + 4));
 		_;
 	}
 
@@ -73,7 +73,7 @@ contract ERC20Token is ERC20 {
 		return true;
 	}
 	function _transferFrom(address _from, address _to, uint256 _value) internal {
-		require(_value &gt; 0);
+		require(_value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(_from, _to, _value);
@@ -105,8 +105,8 @@ contract owned {
 }
 
 contract ZodiaqToken is ERC20Token, owned {
-	string public name = &#39;Zodiaq Token&#39;;
-	string public symbol = &#39;ZOD&#39;;
+	string public name = 'Zodiaq Token';
+	string public symbol = 'ZOD';
 	uint8 public decimals = 6;
 
 	uint256 public totalSupply = 50000000000000;		// 50000000 * 1000000(6 decimal)
@@ -180,7 +180,7 @@ contract ZodiaqICO is owned {
 	}
 
 	function active() public constant returns (bool yes){
-		return ((now &gt; saleStart) &amp;&amp; (now &lt; saleEnd));
+		return ((now > saleStart) && (now < saleEnd));
 	}
 
 	function canBuy() public constant returns (bool yes){
@@ -196,7 +196,7 @@ contract ZodiaqICO is owned {
 	}
 
 	function sendTokens(address _to, uint tokens) public onlyOwner {
-		require(active() &amp;&amp; token.transferFrom(token, _to, tokens));
+		require(active() && token.transferFrom(token, _to, tokens));
 	}
 }
 
@@ -208,7 +208,7 @@ contract ZodiaqPrivateTokenSale is ZodiaqICO {
 		// token = ZodiaqToken(tokenAddress);
 		token = ZodiaqToken(0x6488ab8f1DF285d5B70CCF57A489CD27888a4d14);
 
-		name = &#39;Private Token Sale&#39;;
+		name = 'Private Token Sale';
 		saleStart = 1511989200;		// 2017-11-30 00:00:00
 		saleEnd = 1519938000;		// 2018-03-02 00:00:00
 	}

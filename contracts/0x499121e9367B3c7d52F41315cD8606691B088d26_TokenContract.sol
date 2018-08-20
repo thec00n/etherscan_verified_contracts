@@ -20,7 +20,7 @@ library SafeMath
     function sub(uint256 a, uint256 b) internal pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -28,7 +28,7 @@ library SafeMath
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath
 /**
  * @title OwnableToken
  * @dev The OwnableToken contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableToken
 {
@@ -96,8 +96,8 @@ contract ERC20 is OwnableToken
     uint256 public price = 0 wei;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowance;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -133,9 +133,9 @@ contract ERC20 is OwnableToken
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to].add(_value) &gt; balances[_to]);
+        require(balances[_to].add(_value) > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from].add(balances[_to]);
         // Subtract from the sender
@@ -184,9 +184,9 @@ contract ERC20 is OwnableToken
     function transferFrom(address _from, address _to, uint256 _value) public
         returns (bool success)
     {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
-        if (allowance[_from][msg.sender] &lt; MAX_UINT256) {
+        if (allowance[_from][msg.sender] < MAX_UINT256) {
             allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         }
 
@@ -253,7 +253,7 @@ contract ERC20 is OwnableToken
     {
         uint oldValue = allowance[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -274,7 +274,7 @@ contract ERC20 is OwnableToken
     function burn(uint256 _value) public onlyOwner
         returns (bool success)
     {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
 
         balances[msg.sender] = balances[msg.sender].sub(_value);  // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
@@ -295,11 +295,11 @@ contract ERC20 is OwnableToken
     function burnFrom(address _from, uint256 _value) public onlyOwner
         returns (bool success)
     {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
 
         balances[_from] = balances[_from].sub(_value);    // Subtract from the targeted balance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);    // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);    // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);              // Update totalSupply
 
         Burn(_from, _value);
@@ -324,25 +324,25 @@ contract PausebleToken is ERC20
     function pause() public onlyOwner
     {
         paused = true;
-        EPause(owner, &#39;sale is paused&#39;);
+        EPause(owner, 'sale is paused');
     }
 
     function pauseInternal() internal
     {
         paused = true;
-        EPause(owner, &#39;sale is paused&#39;);
+        EPause(owner, 'sale is paused');
     }
 
     function unpause() public onlyOwner
     {
         paused = false;
-        EUnpause(owner, &#39;sale is unpaused&#39;);
+        EUnpause(owner, 'sale is unpaused');
     }
 
     function unpauseInternal() internal
     {
         paused = false;
-        EUnpause(owner, &#39;sale is unpaused&#39;);
+        EUnpause(owner, 'sale is unpaused');
     }
 }
 
@@ -396,7 +396,7 @@ contract CrowdsaleContract is PausebleToken
     function confirmSell(uint256 _amount) internal view
         returns(bool)
     {
-        if (Sales.tokens &lt; _amount) {
+        if (Sales.tokens < _amount) {
             return false;
         }
 
@@ -466,9 +466,9 @@ contract CrowdsaleContract is PausebleToken
             Sales.tokens = Sales.tokens.sub(_value);
             receivedEther = receivedEther.add(value);
 
-            if (now &gt;= Sales.endDate) {
+            if (now >= Sales.endDate) {
                 pauseInternal();
-                CrowdSaleFinished(owner, &#39;crowdsale is finished&#39;);
+                CrowdSaleFinished(owner, 'crowdsale is finished');
             }
 
         } else {
@@ -477,7 +477,7 @@ contract CrowdsaleContract is PausebleToken
             receivedEther = receivedEther.add(value);
 
             pauseInternal();
-            CrowdSaleFinished(owner, &#39;crowdsale is finished&#39;);
+            CrowdSaleFinished(owner, 'crowdsale is finished');
         }
     }
 
@@ -510,7 +510,7 @@ contract TokenContract is ERC20Extending, CrowdsaleContract
 {
     /* Constructor */
     function TokenContract() public
-        ERC20(10000000000, &quot;Debit Coin&quot;, &quot;DEBC&quot;) {}
+        ERC20(10000000000, "Debit Coin", "DEBC") {}
 
     /**
     * Function payments handler
@@ -518,8 +518,8 @@ contract TokenContract is ERC20Extending, CrowdsaleContract
     */
     function () public payable
     {
-        assert(msg.value &gt;= 1 ether / 100);
-        require(now &gt;= Sales.startDate);
+        assert(msg.value >= 1 ether / 100);
+        require(now >= Sales.startDate);
 
         if (paused == false) {
             paymentManager(msg.value);

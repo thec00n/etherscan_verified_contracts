@@ -11,7 +11,7 @@ contract Consents {
         string endDate;
     }
 
-    mapping (address =&gt; Action[]) consentHistoryByUser;
+    mapping (address => Action[]) consentHistoryByUser;
 
     function giveConsent(string inputDate, string endDate){
         address userId = msg.sender;
@@ -20,13 +20,13 @@ contract Consents {
 
     function revokeConsent(string inputDate){
         address userId = msg.sender;
-        consentHistoryByUser[userId].push(Action(ActionType.REVOKE, inputDate, &quot;&quot;));
+        consentHistoryByUser[userId].push(Action(ActionType.REVOKE, inputDate, ""));
     }
 
     function getLastAction(address userId) returns (ActionType, string, string) {
         Action[] memory history = consentHistoryByUser[userId];
-        if (history.length &lt; 1) {
-            return (ActionType.NONE, &quot;&quot;, &quot;&quot;);
+        if (history.length < 1) {
+            return (ActionType.NONE, "", "");
         }
         Action memory lastAction = history[history.length - 1];
         return (lastAction.actionType, lastAction.inputDate, lastAction.endDate);
@@ -46,20 +46,20 @@ contract Consents {
 
     function strActionType(ActionType actionType) internal constant returns (string) {
         if (actionType == ActionType.REVOKE) {
-            return &quot;REVOCATION&quot;;
+            return "REVOCATION";
         }
         else if (actionType == ActionType.CONSENT) {
-            return &quot;ACTIVATION&quot;;
+            return "ACTIVATION";
         }
         else {
-            return &quot;&quot;;
+            return "";
         }
     }
 
     function strConcatAction(string accumulator, Action action, bool firstItem) internal constant returns (string) {
 
-        string memory str_separator = &quot;, &quot;;
-        string memory str_link = &quot; &quot;;
+        string memory str_separator = ", ";
+        string memory str_link = " ";
 
         bytes memory bytes_separator = bytes(str_separator);
         bytes memory bytes_accumulator = bytes(accumulator);
@@ -80,23 +80,23 @@ contract Consents {
         bytes memory bytes_result = bytes(result);
         uint k = 0;
         uint i = 0;
-        for (i = 0; i &lt; bytes_accumulator.length; i++) bytes_result[k++] = bytes_accumulator[i];
+        for (i = 0; i < bytes_accumulator.length; i++) bytes_result[k++] = bytes_accumulator[i];
         if (!firstItem) {
-            for (i = 0; i &lt; bytes_separator.length; i++) bytes_result[k++] = bytes_separator[i];
+            for (i = 0; i < bytes_separator.length; i++) bytes_result[k++] = bytes_separator[i];
         }
-        for (i = 0; i &lt; bytes_date.length; i++) bytes_result[k++] = bytes_date[i];
-        for (i = 0; i &lt; bytes_link.length; i++) bytes_result[k++] = bytes_link[i];
-        for (i = 0; i &lt; bytes_action.length; i++) bytes_result[k++] = bytes_action[i];
+        for (i = 0; i < bytes_date.length; i++) bytes_result[k++] = bytes_date[i];
+        for (i = 0; i < bytes_link.length; i++) bytes_result[k++] = bytes_link[i];
+        for (i = 0; i < bytes_action.length; i++) bytes_result[k++] = bytes_action[i];
         return string(bytes_result);
 
     }
 
     function Restitution_Historique_Transactions(address userId) public constant returns (string) {
         Action[] memory history = consentHistoryByUser[userId];
-        string memory result = &quot;&quot;;
-        if (history.length &gt; 0) {
+        string memory result = "";
+        if (history.length > 0) {
             result = strConcatAction(result, history[0], true);
-            for (uint i = 1; i &lt; history.length; i++) {
+            for (uint i = 1; i < history.length; i++) {
                 result = strConcatAction(result, history[i], false);
             }
         }

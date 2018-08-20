@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -95,7 +95,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -236,10 +236,10 @@ contract Pausable is Ownable {
  
 contract SlotTicket is StandardToken, Ownable {
 
-  string public name = &quot;Slot Ticket&quot;;
+  string public name = "Slot Ticket";
   uint8 public decimals = 0;
-  string public symbol = &quot;SLOT&quot;;
-  string public version = &quot;0.1&quot;;
+  string public symbol = "SLOT";
+  string public version = "0.1";
 
   event Mint(address indexed to, uint256 amount);
 
@@ -267,7 +267,7 @@ contract Slot is Ownable, Pausable {
     // every participant has an account index, the winners are picked from here
     // all winners are picked in order from the single random int 
     // needs to be cleared after every game
-    mapping (uint =&gt; mapping (uint =&gt; address)) participants; // game number =&gt; counter =&gt; address
+    mapping (uint => mapping (uint => address)) participants; // game number => counter => address
     uint256[8] prizes = [4 ether, 
                         2 ether,
                         1 ether, 
@@ -312,7 +312,7 @@ contract Slot is Ownable, Pausable {
 
     function buyTicketsFor(address beneficiary) whenNotPaused() payable {
         require(beneficiary != 0x0);
-        require(msg.value &gt;= PRICE);
+        require(msg.value >= PRICE);
 
         // calculate number of tickets, issue tokens and add participant
         // every (PRICE) buys a ticket, the rest is returned
@@ -330,7 +330,7 @@ contract Slot is Ownable, Pausable {
     function addParticipant(address _participant, uint256 _numberOfTickets) private {
         // if number of tickets exceeds the size of the game, tickets are added to next game
 
-        for (uint256 i = 0; i &lt; _numberOfTickets; i++) {
+        for (uint256 i = 0; i < _numberOfTickets; i++) {
             // using gameNumber instead of counter/SIZE since games can be cancelled
             participants[gameNumber][counter%SIZE] = _participant; 
             ParticipantAdded(_participant, gameNumber, counter%SIZE);
@@ -350,7 +350,7 @@ contract Slot is Ownable, Pausable {
       // Providing random numbers within a deterministic system is, naturally, an impossible task.
       // However, we can approximate with pseudo-random numbers by utilising data which is generally unknowable
       // at the time of transacting. Such data might include the block’s hash.
-      // The last blockhash used should be random enough. Adding the rest of these deterministic factors doesn&#39;t change much.
+      // The last blockhash used should be random enough. Adding the rest of these deterministic factors doesn't change much.
 
         return uint256(keccak256(block.blockhash(block.number-1), block.blockhash(block.number-100)))%_size;
     }
@@ -361,12 +361,12 @@ contract Slot is Ownable, Pausable {
         bool jackpotWon = winnerIndex == rand(JACKPOT_SIZE); 
 
         // loop throught the prizes 
-        for (uint8 i = 0; i &lt; prizes.length; i++) {
-            if (jackpotWon &amp;&amp; i==0) {
+        for (uint8 i = 0; i < prizes.length; i++) {
+            if (jackpotWon && i==0) {
                 distributeJackpot(winnerIndex);
             }
             
-            participants[gameNumber][winnerIndex%SIZE].transfer(prizes[i]); // msg.sender pays the gas, he&#39;s refunded later, % to wrap around
+            participants[gameNumber][winnerIndex%SIZE].transfer(prizes[i]); // msg.sender pays the gas, he's refunded later, % to wrap around
             PrizeAwarded(gameNumber, participants[gameNumber][winnerIndex%SIZE], prizes[i]);
 
             // increment index to the next winner to receive the next prize
@@ -394,11 +394,11 @@ contract Slot is Ownable, Pausable {
     // public functions
 
     function refundGameAfterLongInactivity() {
-        require(block.number.sub(gameStarted) &gt;= INACTIVITY);
+        require(block.number.sub(gameStarted) >= INACTIVITY);
         require(counter%SIZE != 0); // nothing to refund
         // refunds for everybody can be requested after the game has gone (INACTIVITY) blocks without a conclusion
 
-        for (uint8 i = 0; i &lt; counter%SIZE; i++) { // not counter.size, but modulus of SIZE
+        for (uint8 i = 0; i < counter%SIZE; i++) { // not counter.size, but modulus of SIZE
             participants[gameNumber][i].transfer(PRICE);
         }
 
@@ -423,7 +423,7 @@ contract Slot is Ownable, Pausable {
 
     function makeUndestroyable() onlyOwner {
         undestroyable = true;
-        // can&#39;t be reversed, jackpot only claimable by actual win
+        // can't be reversed, jackpot only claimable by actual win
     }
 
 }

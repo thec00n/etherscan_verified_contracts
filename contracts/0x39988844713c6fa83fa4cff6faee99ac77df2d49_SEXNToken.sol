@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -87,8 +87,8 @@ contract StandardToken is ERC20 {
 
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
 
     /**
    * @dev Gets the balance of the specified address.
@@ -103,8 +103,8 @@ contract StandardToken is ERC20 {
    * Internal transfer, only can be called by this contract
    */
   function _transfer(address _from, address _to, uint _value) internal {
-    require(_value &gt; 0);
-    require(balances[_from] &gt;= _value);
+    require(_value > 0);
+    require(balances[_from] >= _value);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require (_value &lt;= allowed[_from][msg.sender]);
+    require (_value <= allowed[_from][msg.sender]);
 
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _transfer(_from, _to, _value);
@@ -171,8 +171,8 @@ contract StandardToken is ERC20 {
 contract SEXNToken is StandardToken, Ownable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;SexChain&quot;;
-  string public constant symbol = &quot;SEXN&quot;;
+  string public constant name = "SexChain";
+  string public constant symbol = "SEXN";
   uint8 public constant decimals = 18;
 
   struct lockInfo {
@@ -183,9 +183,9 @@ contract SEXNToken is StandardToken, Ownable {
     uint256 releaseCount;      // locking cycle.
   }
 
-  mapping(address =&gt; lockInfo) internal _lockInfo;
+  mapping(address => lockInfo) internal _lockInfo;
   // Query locked balance
-  mapping(address =&gt; uint256) internal _lockupBalances;
+  mapping(address => uint256) internal _lockupBalances;
 
   bool public preSaleFinished = false;
 
@@ -239,13 +239,13 @@ contract SEXNToken is StandardToken, Ownable {
 
   /* check presale is active */
   modifier beginSaleActive() {
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    require(now >= startTime && now <= endTime);
     _;
   }
 
   /* check presale is not active */
   modifier notpreSaleActive() {
-    require(now &lt;= startTime || now &gt;= endTime);
+    require(now <= startTime || now >= endTime);
     _;
   }
 
@@ -284,9 +284,9 @@ contract SEXNToken is StandardToken, Ownable {
    */
   function setSaleInfo(uint8 _round ,uint256 _startTime, uint256 _stopTime, uint256 _rate, uint256 _amount) external notpreSaleActive onlyOwner {
     require(_round == 1 || _round == 2 || _round == 3);
-    require(_startTime &lt; _stopTime);
-    require(_rate != 0 &amp;&amp; _amount &gt;= 0);
-    require(_startTime &gt; now); 
+    require(_startTime < _stopTime);
+    require(_rate != 0 && _amount >= 0);
+    require(_startTime > now); 
     require(!preSaleFinished);
 
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -352,7 +352,7 @@ contract SEXNToken is StandardToken, Ownable {
   /* Distribute tokens from presale address to an address. */
   function distribute(address _to, uint256 _amount, uint256 _lockCycle, uint256 _duration) public onlyOwner beginSaleActive {
     require(_to != 0x0);
-    require(_amount != 0 &amp;&amp; _lockCycle != 0 &amp;&amp; _duration != 0);
+    require(_amount != 0 && _lockCycle != 0 && _duration != 0);
     
     _distribute(_to, _amount,_lockCycle, _duration * DURATION);
     
@@ -374,7 +374,7 @@ contract SEXNToken is StandardToken, Ownable {
     // Total unlockable balance.
     uint256 amount = amountPerRelease.mul((time.sub(userLockInfo.start)).div(userLockInfo.duration));
 
-    if (amount &gt; userLockInfo.amount){
+    if (amount > userLockInfo.amount){
       amount = userLockInfo.amount;
     }
     // 
@@ -387,7 +387,7 @@ contract SEXNToken is StandardToken, Ownable {
   /* Unlock locked tokens */
   function relaseLock() internal returns(uint256){
     uint256 amount = _releasableAmount(msg.sender, now);
-    if (amount &gt; 0){
+    if (amount > 0){
       _lockInfo[msg.sender].transfered = _lockInfo[msg.sender].transfered.add(amount);
       balances[msg.sender] = balances[msg.sender].add(amount);
       _lockupBalances[msg.sender] = _lockupBalances[msg.sender].sub(amount);
@@ -446,17 +446,17 @@ contract SEXNToken is StandardToken, Ownable {
    *
    */
   function sellTokens() public payable beginSaleActive {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
     uint256 amount = msg.value;
     uint256 tokens = amount.mul(rate);
 
     // check there are tokens for sale;
-    require(tokens &lt;= balances[PRESALE_ADDRESS]);
+    require(tokens <= balances[PRESALE_ADDRESS]);
 
     if (saleAction == PresaleAction.FirstPresaleActivity){
       // The maximum amount of single users for presales in the first period is 20,000.
-      require (tokens &lt;= CAT_FIRST);
+      require (tokens <= CAT_FIRST);
     }
 
     // send tokens to buyer
@@ -485,7 +485,7 @@ contract SEXNToken is StandardToken, Ownable {
 
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    if (_lockupBalances[msg.sender] &gt; 0){
+    if (_lockupBalances[msg.sender] > 0){
       relaseLock();
     }
 

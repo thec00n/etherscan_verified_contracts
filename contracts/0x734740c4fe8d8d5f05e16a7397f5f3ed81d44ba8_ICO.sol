@@ -14,13 +14,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,10 +79,10 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   modifier onlyPayloadSize(uint size) {
-     if (msg.data.length &lt; size + 4) {
+     if (msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic, Ownable {
 
 contract StandardToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     /**
      * Transfers tokens from the account of the owner by an approved spender. 
@@ -123,7 +123,7 @@ contract StandardToken is BasicToken, ERC20 {
      * @param _amount The amount of tokens to transfer.
      * */
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -132,7 +132,7 @@ contract StandardToken is BasicToken, ERC20 {
 
     /**
      * Allows another account to spend a given amount of tokens on behalf of the 
-     * owner&#39;s account. If the owner has previously allowed a spender to spend
+     * owner's account. If the owner has previously allowed a spender to spend
      * tokens on his or her behalf and would like to change the approval amount,
      * he or she will first have to set the allowance back to 0 and then update
      * the allowance.
@@ -173,7 +173,7 @@ contract MintableToken is StandardToken {
   }
 
   /**
-   * Mints a given amount of tokens to the provided address. This function can only be called by the contract&#39;s
+   * Mints a given amount of tokens to the provided address. This function can only be called by the contract's
    * owner, which in this case is the ICO contract itself. From there, the founders of the ICO contract will be
    * able to invoke this function. 
    *
@@ -209,8 +209,8 @@ contract Ethercloud is MintableToken {
     function Ethercloud() public {
        totalSupply = 0;
        decimals = 18;
-       name = &quot;Ethercloud&quot;;
-       symbol = &quot;ETCL&quot;;
+       name = "Ethercloud";
+       symbol = "ETCL";
     }
 }
 
@@ -235,7 +235,7 @@ contract ICO is Ownable {
     uint256    public hardCap;
     uint256[3] public bonusStages;
 
-    mapping (address =&gt; uint256) investments;
+    mapping (address => uint256) investments;
 
     event TokensPurchased(address indexed by, uint256 amount);
     event RefundIssued(address indexed by, uint256 amount);
@@ -261,7 +261,7 @@ contract ICO is Ownable {
 
         bonusStages[0] = startTime.add(7 days);
 
-        for (uint i = 1; i &lt; bonusStages.length; i++) {
+        for (uint i = 1; i < bonusStages.length; i++) {
             bonusStages[i] = bonusStages[i - 1].add(7 days);
         }
     }
@@ -280,20 +280,20 @@ contract ICO is Ownable {
      * @param _beneficiary The address which will receive the tokens. 
      */
     function buyTokens(address _beneficiary) public payable {
-        require(_beneficiary != 0x0 &amp;&amp; validPurchase() &amp;&amp; this.balance.sub(msg.value) &lt; hardCap);
-        if (this.balance &gt;= softCap &amp;&amp; !success) {
+        require(_beneficiary != 0x0 && validPurchase() && this.balance.sub(msg.value) < hardCap);
+        if (this.balance >= softCap && !success) {
             success = true;
             IcoSuccess();
         }
         uint256 weiAmount = msg.value;
-        if (this.balance &gt; hardCap) {
+        if (this.balance > hardCap) {
             CapReached();
             uint256 toRefund = this.balance.sub(hardCap);
             msg.sender.transfer(toRefund);
             weiAmount = weiAmount.sub(toRefund);
         }
         uint256 tokens = weiAmount.mul(getCurrentRateWithBonus());
-        if (tokensSold.add(tokens) &gt; tokensForSale) {
+        if (tokensSold.add(tokens) > tokensForSale) {
             revert();
         }
         ETCL.mint(_beneficiary, tokens);
@@ -315,16 +315,16 @@ contract ICO is Ownable {
      */
     function getBonusPercentage() internal view returns (uint256 bonusPercentage) {
         uint256 timeStamp = now;
-        if (timeStamp &gt; bonusStages[2]) {
+        if (timeStamp > bonusStages[2]) {
             bonusPercentage = 0; 
         }
-        if (timeStamp &lt;= bonusStages[2]) {
+        if (timeStamp <= bonusStages[2]) {
             bonusPercentage = 5;
         }
-        if (timeStamp &lt;= bonusStages[1]) {
+        if (timeStamp <= bonusStages[1]) {
             bonusPercentage = 15;
         }
-        if (timeStamp &lt;= bonusStages[0]) {
+        if (timeStamp <= bonusStages[0]) {
             bonusPercentage = 30;
         } 
         return bonusPercentage;
@@ -338,7 +338,7 @@ contract ICO is Ownable {
      * @param _amount The total amount of tokens to be minted.
      */
     function issueTokens(address _beneficiary, uint256 _amount) public onlyOwner {
-        require(_beneficiary != 0x0 &amp;&amp; _amount &gt; 0 &amp;&amp; tokensSold.add(_amount) &lt;= tokensForSale); 
+        require(_beneficiary != 0x0 && _amount > 0 && tokensSold.add(_amount) <= tokensForSale); 
         ETCL.mint(_beneficiary, _amount);
         tokensSold = tokensSold.add(_amount);
         TokensPurchased(_beneficiary, _amount);
@@ -349,9 +349,9 @@ contract ICO is Ownable {
      * not execute.
      */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     /**
@@ -365,7 +365,7 @@ contract ICO is Ownable {
         if (_addr == 0x0) {
             _addr = msg.sender;
         }
-        require(!isSuccess() &amp;&amp; hasEnded() &amp;&amp; investments[_addr] &gt; 0);
+        require(!isSuccess() && hasEnded() && investments[_addr] > 0);
         uint256 toRefund = investments[_addr];
         investments[_addr] = 0;
         _addr.transfer(toRefund);
@@ -380,7 +380,7 @@ contract ICO is Ownable {
      * @param _amount The total amount of tokens that will be minted. 
      */
     function issueBounty(address _beneficiary, uint256 _amount) public onlyOwner {
-        require(bountiesIssued.add(_amount) &lt;= tokensForBounty &amp;&amp; _beneficiary != 0x0);
+        require(bountiesIssued.add(_amount) <= tokensForBounty && _beneficiary != 0x0);
         ETCL.mint(_beneficiary, _amount);
         bountiesIssued = bountiesIssued.add(_amount);
         BountyIssued(_beneficiary, _amount);
@@ -408,7 +408,7 @@ contract ICO is Ownable {
      * Returns true if the duration of the ICO has passed, false otherwise. 
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**

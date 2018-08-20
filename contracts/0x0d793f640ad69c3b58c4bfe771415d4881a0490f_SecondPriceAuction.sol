@@ -22,11 +22,11 @@ contract NotakeyVerifierForICOP {
     // address private callerIdentitySubject;
 
     uint public constant USA = 883423532389192164791648750371459257913741948437809479060803100646309888;
-        // USA is 240nd; blacklist: 1 &lt;&lt; (240-1)
+        // USA is 240nd; blacklist: 1 << (240-1)
     uint public constant CHINA = 8796093022208;
-        // China is 44th; blacklist: 1 &lt;&lt; (44-1)
+        // China is 44th; blacklist: 1 << (44-1)
     uint public constant SOUTH_KOREA = 83076749736557242056487941267521536;
-        // SK is 117th; blacklist: 1 &lt;&lt; (117-1)
+        // SK is 117th; blacklist: 1 << (117-1)
 
      event GotUnregisteredPaymentAddress(address indexed paymentAddress);
 
@@ -45,7 +45,7 @@ contract NotakeyVerifierForICOP {
     }
 
     function sanityCheck() public pure returns (string) {
-        return &quot;Hello Dashboard&quot;;
+        return "Hello Dashboard";
     }
 
     function isVerified(address subject, uint256 nationalityBlacklist) public constant onlyVerifiedSenders(subject, nationalityBlacklist) returns (bool) {
@@ -66,30 +66,30 @@ contract NotakeyVerifierForICOP {
 
         // Loop over all isued identities associated to this wallet adress and
         // throw if any match to blacklist
-        for (uint subjectIndex = 0 ; subjectIndex &lt; subjectCount ; subjectIndex++ ){
+        for (uint subjectIndex = 0 ; subjectIndex < subjectCount ; subjectIndex++ ){
             subject = claimRegistry.getSingleSubjectByAddress(paymentAddress, subjectIndex);
             claimCount = claimRegistry.getSubjectClaimSetSize(subject, ICO_CONTRIBUTOR_TYPE, NATIONALITY_INDEX);
             ignoredClaims = 0;
 
-            for (uint i = 0; i &lt; claimCount; ++i) {
+            for (uint i = 0; i < claimCount; ++i) {
                 var (issuer, url) = claimRegistry.getSubjectClaimSetEntryAt(subject, ICO_CONTRIBUTOR_TYPE, NATIONALITY_INDEX, i);
                 var countryMask = 2**(url-1);
 
                 if (issuer != trustedIssuerAddr) {
                     ignoredClaims += 1;
                 } else {
-                    if (((countryMask ^ nationalityBlacklist) &amp; countryMask) != countryMask) {
+                    if (((countryMask ^ nationalityBlacklist) & countryMask) != countryMask) {
                         return true;
                     }
                 }
             }
         }
 
-        // If the blacklist is empty (0), then that&#39;s fine for the V1 contract (where we validate the bundle);
+        // If the blacklist is empty (0), then that's fine for the V1 contract (where we validate the bundle);
         // For our own sale, however, this attribute is a proxy indicator for whether the address is verified.
         //
         // Account for ignored claims (issued by unrecognized issuers)
-        require((claimCount - ignoredClaims) &gt; 0);
+        require((claimCount - ignoredClaims) > 0);
 
         return false;
     }
@@ -105,7 +105,7 @@ contract NotakeyVerifierForICOP {
             // revert();
         // }
 
-        require(subjectCount &gt; 0);
+        require(subjectCount > 0);
 
         return subjectCount;
     }
@@ -122,11 +122,11 @@ contract NotakeyVerifierForICOP {
 
         // Loop over all isued identities associated to this wallet address and
         // exit loop any satisfy the business logic requirement
-        for (uint subjectIndex = 0 ; subjectIndex &lt; subjectCount ; subjectIndex++ ){
+        for (uint subjectIndex = 0 ; subjectIndex < subjectCount ; subjectIndex++ ){
             subject = claimRegistry.getSingleSubjectByAddress(paymentAddress, subjectIndex);
 
             var nationalityCount = claimRegistry.getSubjectClaimSetSize(subject, ICO_CONTRIBUTOR_TYPE, NATIONALITY_INDEX);
-            for (uint nationalityIndex = 0; nationalityIndex &lt; nationalityCount; ++nationalityIndex) {
+            for (uint nationalityIndex = 0; nationalityIndex < nationalityCount; ++nationalityIndex) {
                 var (nationalityIssuer,) = claimRegistry.getSubjectClaimSetEntryAt(subject, ICO_CONTRIBUTOR_TYPE, NATIONALITY_INDEX, nationalityIndex);
                 if (nationalityIssuer == trustedIssuerAddr) {
                     atLeastOneValidNationality = true;
@@ -135,7 +135,7 @@ contract NotakeyVerifierForICOP {
             }
 
             var reportCount = claimRegistry.getSubjectClaimSetSize(subject, ICO_CONTRIBUTOR_TYPE, REPORT_BUNDLE);
-            for (uint reportIndex = 0; reportIndex &lt; reportCount; ++reportIndex) {
+            for (uint reportIndex = 0; reportIndex < reportCount; ++reportIndex) {
                 var (reportIssuer,) = claimRegistry.getSubjectClaimSetEntryAt(subject, ICO_CONTRIBUTOR_TYPE, REPORT_BUNDLE, reportIndex);
                 if (reportIssuer == trustedIssuerAddr) {
                     atLeastOneValidReport = true;
@@ -144,7 +144,7 @@ contract NotakeyVerifierForICOP {
             }
         }
 
-        return atLeastOneValidNationality &amp;&amp; atLeastOneValidReport;
+        return atLeastOneValidNationality && atLeastOneValidReport;
     }
 }
 
@@ -198,7 +198,7 @@ contract SecondPriceAuction {
 	/// Simple constructor.
 	/// Token cap should take be in smallest divisible units.
 	/// 	NOTE: original SecondPriceAuction contract stipulates token cap must be given in whole tokens.
-	///		This does not seem correct, as only whole token values are transferred via transferFrom (which - in our wallet&#39;s case -
+	///		This does not seem correct, as only whole token values are transferred via transferFrom (which - in our wallet's case -
 	///     expects transfers in the smallest divisible amount)
 	function SecondPriceAuction(
 		address _trustedClaimIssuer,
@@ -245,14 +245,14 @@ contract SecondPriceAuction {
 		flushEra();
 
 		// Flush bonus period:
-		if (currentBonus &gt; 0) {
+		if (currentBonus > 0) {
 			// Bonus is currently active...
-			if (now &gt;= beginTime + BONUS_MIN_DURATION				// ...but outside the automatic bonus period
-				&amp;&amp; lastNewInterest + BONUS_LATCH &lt;= block.number	// ...and had no new interest for some blocks
+			if (now >= beginTime + BONUS_MIN_DURATION				// ...but outside the automatic bonus period
+				&& lastNewInterest + BONUS_LATCH <= block.number	// ...and had no new interest for some blocks
 			) {
 				currentBonus--;
 			}
-			if (now &gt;= beginTime + BONUS_MAX_DURATION) {
+			if (now >= beginTime + BONUS_MAX_DURATION) {
 				currentBonus = 0;
 			}
 			if (buyins[msg.sender].received == 0) {	// We have new interest
@@ -305,7 +305,7 @@ contract SecondPriceAuction {
 		when_ended
 		only_buyins(_who)
 	{
-		// end the auction if we&#39;re the first one to finalise.
+		// end the auction if we're the first one to finalise.
 		if (endPrice == 0) {
 			endPrice = totalAccounted / tokenCap;
 			Ended(endPrice);
@@ -330,7 +330,7 @@ contract SecondPriceAuction {
 	/// Ensure the era tracker is prepared in case the current changed.
 	function flushEra() private {
 		uint currentEra = (now - beginTime) / ERA_PERIOD;
-		if (currentEra &gt; eraIndex) {
+		if (currentEra > eraIndex) {
 			Ticked(eraIndex, totalReceived, totalAccounted);
 		}
 		eraIndex = currentEra;
@@ -354,7 +354,7 @@ contract SecondPriceAuction {
 	}
 
 	/// The current price for a single indivisible part of a token. If a buyin happens now, this is
-	/// the highest price per indivisible token part that the buyer will pay. This doesn&#39;t
+	/// the highest price per indivisible token part that the buyer will pay. This doesn't
 	/// include the discount which may be available.
 	function currentPrice() public constant when_active returns (uint weiPerIndivisibleTokenPart) {
 		return ((EURWEI * 184325000 / (now - beginTime + 5760) - EURWEI*5) / DIVISOR);
@@ -363,7 +363,7 @@ contract SecondPriceAuction {
 	/// Returns the total indivisible token parts available for purchase right now.
 	function tokensAvailable() public constant when_active returns (uint tokens) {
 		uint _currentCap = totalAccounted / currentPrice();
-		if (_currentCap &gt;= tokenCap) {
+		if (_currentCap >= tokenCap) {
 			return 0;
 		}
 		return tokenCap - _currentCap;
@@ -390,7 +390,7 @@ contract SecondPriceAuction {
 
 		uint available = tokensAvailable();
 		uint tokens = accounted / price;
-		refund = (tokens &gt; available);
+		refund = (tokens > available);
 	}
 
 	/// Any applicable bonus to `_value`.
@@ -404,10 +404,10 @@ contract SecondPriceAuction {
 	}
 
 	/// True if the sale is ongoing.
-	function isActive() public constant returns (bool) { return now &gt;= beginTime &amp;&amp; now &lt; endTime; }
+	function isActive() public constant returns (bool) { return now >= beginTime && now < endTime; }
 
 	/// True if all buyins have finalised.
-	function allFinalised() public constant returns (bool) { return now &gt;= endTime &amp;&amp; totalAccounted == totalFinalised; }
+	function allFinalised() public constant returns (bool) { return now >= endTime && totalAccounted == totalFinalised; }
 
 	/// Returns true if the sender of this transaction is a basic account.
 	function isBasicAccount(address _who) internal constant returns (bool) {
@@ -424,12 +424,12 @@ contract SecondPriceAuction {
 	modifier when_active { require (isActive()); _; }
 
 	/// Ensure the sale has not begun.
-	modifier before_beginning { require (now &lt; beginTime); _; }
+	modifier before_beginning { require (now < beginTime); _; }
 
 	/// Ensure the sale is ended.
-	modifier when_ended { require (now &gt;= endTime); _; }
+	modifier when_ended { require (now >= endTime); _; }
 
-	/// Ensure we&#39;re not halted.
+	/// Ensure we're not halted.
 	modifier when_not_halted { require (!halted); _; }
 
 	/// Ensure `_who` is a participant.
@@ -442,9 +442,9 @@ contract SecondPriceAuction {
 	/// the gas price is sufficiently low and the value is sufficiently high.
 	modifier only_eligible(address who) {
 		require (
-			verifier.isVerified(who, verifier.USA() | verifier.CHINA() | verifier.SOUTH_KOREA()) &amp;&amp;
-			isBasicAccount(who) &amp;&amp;
-			msg.value &gt;= DUST_LIMIT
+			verifier.isVerified(who, verifier.USA() | verifier.CHINA() | verifier.SOUTH_KOREA()) &&
+			isBasicAccount(who) &&
+			msg.value >= DUST_LIMIT
 		);
 		_;
 	}
@@ -455,17 +455,17 @@ contract SecondPriceAuction {
 	// State:
 
 	struct Account {
-		uint128 accounted;	// including bonus &amp; hit
-		uint128 received;	// just the amount received, without bonus &amp; hit
+		uint128 accounted;	// including bonus & hit
+		uint128 received;	// just the amount received, without bonus & hit
 	}
 
 	/// Those who have bought in to the auction.
-	mapping (address =&gt; Account) public buyins;
+	mapping (address => Account) public buyins;
 
-	/// Total amount of ether received, excluding phantom &quot;bonus&quot; ether.
+	/// Total amount of ether received, excluding phantom "bonus" ether.
 	uint public totalReceived = 0;
 
-	/// Total amount of ether accounted for, including phantom &quot;bonus&quot; ether.
+	/// Total amount of ether accounted for, including phantom "bonus" ether.
 	uint public totalAccounted = 0;
 
 	/// Total amount of ether which has been finalised.
@@ -522,7 +522,7 @@ contract SecondPriceAuction {
 
 	//# Statement to actually sign.
 	//# ```js
-	//# statement = function() { this.STATEMENT().map(s =&gt; s.substr(28)) }
+	//# statement = function() { this.STATEMENT().map(s => s.substr(28)) }
 	//# ```
 
 	/// Minimum duration after sale begins that bonus is active.

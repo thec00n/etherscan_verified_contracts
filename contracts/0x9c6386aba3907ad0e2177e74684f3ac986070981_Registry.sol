@@ -9,7 +9,7 @@ Anyone can find a mapped address by calling .addressOf(),
 which throws if the name is not registered to an address.
 
 Registry uses a doubly linked list to maintain an iterable
-list of name =&gt; address mappings. When a name is mapped to
+list of name => address mappings. When a name is mapped to
 the address 0, it is removed from the list.
 
 Methods:
@@ -29,7 +29,7 @@ contract Registry {
         bytes32 next;
         bytes32 prev;
     }
-    mapping (bytes32 =&gt; Entry) public entries;
+    mapping (bytes32 => Entry) public entries;
 
     // Used to determine if an entry is empty or not.
     address constant NO_ADDRESS = address(0);
@@ -58,7 +58,7 @@ contract Registry {
         fromOwner
         public
     {
-        require(_name != 0 &amp;&amp; _addr != 0);
+        require(_name != 0 && _addr != 0);
         Entry storage entry = entries[_name];
 
         // If new entry, replace first one with this one.
@@ -98,7 +98,7 @@ contract Registry {
         returns (uint _size)
     {
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -124,7 +124,7 @@ contract Registry {
     {
         Entry memory _curEntry = entries[0x0];
         Entry memory _nextEntry;
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _nextEntry = entries[_curEntry.next];
             if (_nextEntry.addr == _address){
                 return _curEntry.next;
@@ -147,7 +147,7 @@ contract Registry {
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
         Entry memory _nextEntry;
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _nextEntry = entries[_curEntry.next];
             _names[_i] = _curEntry.next;
             _addresses[_i] = _nextEntry.addr;

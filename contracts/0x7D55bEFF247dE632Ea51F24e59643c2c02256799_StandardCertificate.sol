@@ -25,7 +25,7 @@ contract StandardCertificate is owned{
     string public place;
     uint public hoursCount;
     
-    mapping (address =&gt; uint) certificates;
+    mapping (address => uint) certificates;
     
     function StandardCertificate (string _name, string _description, string _language, string _place, uint _hoursCount) {
         name = _name;
@@ -56,9 +56,9 @@ contract EWCertificationCenter is owned {
     string public description;
     string public place;
     
-    mapping (address =&gt; bool) public validCertificators;
+    mapping (address => bool) public validCertificators;
     
-    mapping (address =&gt; bool) public validCourses;
+    mapping (address => bool) public validCourses;
     
     modifier onlyValidCertificator {
         require(validCertificators[msg.sender]);

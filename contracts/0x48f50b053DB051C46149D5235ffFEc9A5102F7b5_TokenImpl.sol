@@ -16,20 +16,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -139,7 +139,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -148,7 +148,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     /**
@@ -181,8 +181,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -231,7 +231,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -282,8 +282,8 @@ contract TokenImpl is PausableToken {
     uint16 public exchangeRate;
 
     // the freeze token
-    mapping(address =&gt; uint256) frozenTokens;
-    mapping(address =&gt; uint16) preFrozenRate;
+    mapping(address => uint256) frozenTokens;
+    mapping(address => uint16) preFrozenRate;
     uint16 public frozenRate;
 
     bool public canBuy = true;
@@ -300,7 +300,7 @@ contract TokenImpl is PausableToken {
 
 
     function TokenImpl(string _name, string _symbol, uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         name = _name;
         symbol = _symbol;
         cap = _cap.mul(decimal_num);
@@ -314,12 +314,12 @@ contract TokenImpl is PausableToken {
 
     // low level token purchase function
     function buyTokens(address beneficiary) public payable {
-        require(canBuy &amp;&amp; msg.value &gt;= (0.00001 ether));
+        require(canBuy && msg.value >= (0.00001 ether));
         require(beneficiary != address(0));
 
         uint256 _amount = msg.value.mul(decimal_num).div(1 ether);
         totalSupply = totalSupply.add(_amount);
-        require(totalSupply &lt;= cap || projectFailed);
+        require(totalSupply <= cap || projectFailed);
         balances[beneficiary] = balances[beneficiary].add(_amount);
         TokenPurchase(msg.sender, beneficiary, _amount);
 
@@ -334,11 +334,11 @@ contract TokenImpl is PausableToken {
       * @dev exchange tokens of _exchanger.
       */
     function exchange(address _exchanger, uint256 _value) internal {
-        require(_value &gt; 0);
+        require(_value > 0);
         if (projectFailed) {
             _exchanger.transfer(_value.mul(1 ether).mul(backEthRatio).div(10000).div(decimal_num));
         } else {
-            require(targetToken != address(0) &amp;&amp; exchangeRate &gt; 0);
+            require(targetToken != address(0) && exchangeRate > 0);
             uint256 _tokens = _value.mul(exchangeRate).div(decimal_num);
             targetToken.transfer(_exchanger, _tokens);
         }
@@ -349,8 +349,8 @@ contract TokenImpl is PausableToken {
     returns (bool) {
         require(_to != address(0));
         updateFrozenToken(_from);
-        require(_value.add(frozenTokens[_from]) &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value.add(frozenTokens[_from]) <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         if (_to == address(this)) {
             updateFrozenToken(msg.sender);
             if (frozenRate == 0 || projectFailed) {
@@ -375,11 +375,11 @@ contract TokenImpl is PausableToken {
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
         updateFrozenToken(msg.sender);
-        require(_value.add(frozenTokens[msg.sender]) &lt;= balances[msg.sender]);
+        require(_value.add(frozenTokens[msg.sender]) <= balances[msg.sender]);
 
         uint256 tokens = _value;
         if (_to == address(this)) {
-            if (frozenRate &gt; 0 &amp;&amp; !projectFailed) {
+            if (frozenRate > 0 && !projectFailed) {
                 tokens = _value.mul(10000 - frozenRate).div(10000);
                 uint256 fTokens = _value.sub(tokens);
                 frozenTokens[msg.sender] = frozenTokens[msg.sender].add(fTokens);
@@ -391,14 +391,14 @@ contract TokenImpl is PausableToken {
 
     function updateFrozenToken(address _owner) internal {
         if (frozenRate == 0) {
-            if (frozenTokens[_owner] &gt; 0) {
+            if (frozenTokens[_owner] > 0) {
                 frozenTokens[_owner] = 0;
             }
-            if (preFrozenRate[_owner] &gt; 0) {
+            if (preFrozenRate[_owner] > 0) {
                 preFrozenRate[_owner] = 0;
             }
         }
-        if (preFrozenRate[_owner] &gt; frozenRate) {
+        if (preFrozenRate[_owner] > frozenRate) {
             uint16 preF = preFrozenRate[_owner];
             frozenTokens[_owner] = frozenTokens[_owner] * frozenRate * (10000 - preF) /
             preF / (10000 - frozenRate);
@@ -413,7 +413,7 @@ contract TokenImpl is PausableToken {
         if (frozenRate == 0) {
             return 0;
         }
-        if (preFrozenRate[_owner] &gt; frozenRate) {
+        if (preFrozenRate[_owner] > frozenRate) {
             uint16 preF = preFrozenRate[_owner];
             return frozenTokens[_owner] * frozenRate * (10000 - preF) / preF / (10000 - frozenRate);
         }
@@ -438,7 +438,7 @@ contract TokenImpl is PausableToken {
 
 
     function canExchangeNum() public view returns (uint256) {
-        if (targetToken != address(0) &amp;&amp; exchangeRate &gt; 0) {
+        if (targetToken != address(0) && exchangeRate > 0) {
             uint256 _tokens = targetToken.balanceOf(this);
             return decimal_num.mul(_tokens).div(exchangeRate);
         } else {
@@ -465,12 +465,12 @@ contract TokenImpl is PausableToken {
     // increase the amount of eth
     function increaseCap(int256 _cap_inc) onlyOwner public {
         require(_cap_inc != 0);
-        if (_cap_inc &gt; 0) {
+        if (_cap_inc > 0) {
             cap = cap.add(decimal_num.mul(uint256(_cap_inc)));
         } else {
             uint256 _dec = uint256(- 1 * _cap_inc);
             uint256 cap_dec = decimal_num.mul(_dec);
-            if (cap_dec &gt;= cap - totalSupply) {
+            if (cap_dec >= cap - totalSupply) {
                 cap = totalSupply;
             } else {
                 cap = cap.sub(cap_dec);
@@ -481,7 +481,7 @@ contract TokenImpl is PausableToken {
 
 
     function projectFailed(uint16 _fee) onlyOwner public {
-        require(!projectFailed &amp;&amp; _fee &gt;= 0 &amp;&amp; _fee &lt;= 10000);
+        require(!projectFailed && _fee >= 0 && _fee <= 10000);
         projectFailed = true;
         backEthRatio = 10000 - _fee;
         frozenRate = 0;
@@ -490,7 +490,7 @@ contract TokenImpl is PausableToken {
 
 
     function updateTargetToken(address _target, uint16 _exchangeRate, uint16 _freezeRate) onlyOwner public {
-        if (_exchangeRate &gt; 0) {
+        if (_exchangeRate > 0) {
             require(_target != address(0));
             exchangeRate = _exchangeRate;
             targetToken = ERC20Basic(_target);

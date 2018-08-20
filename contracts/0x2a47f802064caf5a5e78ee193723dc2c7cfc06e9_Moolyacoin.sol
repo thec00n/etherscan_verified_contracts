@@ -11,7 +11,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -20,7 +20,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -28,7 +28,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -94,7 +94,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -112,7 +112,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -156,7 +156,7 @@ contract ERC20 is ERC20Basic {
 */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -173,8 +173,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -257,7 +257,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -280,7 +280,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
     
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. . */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   modifier canTransfer(address _sender) {
     if(!released) {
@@ -297,7 +297,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner  public {
     require( addr != address(0));
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -341,8 +341,8 @@ contract ReleasableToken is ERC20, Ownable {
 * in the constructor.
 */
 contract Moolyacoin is StandardToken, Ownable, ReleasableToken{
-    string  public  constant name = &quot;moolyacoin&quot;;
-    string  public  constant symbol = &quot;moolya&quot;;
+    string  public  constant name = "moolyacoin";
+    string  public  constant symbol = "moolya";
     uint8   public  constant decimals = 18;
         
     constructor(uint _value) public{
@@ -354,7 +354,7 @@ contract Moolyacoin is StandardToken, Ownable, ReleasableToken{
     function allocate(address _investor, uint _amount) public onlyOwner returns (bool){
     require(_investor != address(0));
     uint256 amount = _amount * (10 ** uint256(decimals));
-    require(amount &lt;= balances[owner]);
+    require(amount <= balances[owner]);
     balances[owner] = balances[owner].sub(amount);
     balances[_investor] = balances[_investor].add(amount);
     return true;
@@ -368,7 +368,7 @@ contract Moolyacoin is StandardToken, Ownable, ReleasableToken{
 
     function burnReturn(address _addr, uint _value) public onlyOwner returns (bool) {
         require(_addr != address(0));
-        require(balances[_addr] &gt;= _value);
+        require(balances[_addr] >= _value);
         balances[_addr] = balances[_addr].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         return true;
@@ -377,7 +377,7 @@ contract Moolyacoin is StandardToken, Ownable, ReleasableToken{
 
     function burnDead(address _addr, uint _value) public onlyOwner returns (bool){
         require(_addr != address(0));
-        require(balances[_addr] &gt;= _value);
+        require(balances[_addr] >= _value);
         balances[_addr] = balances[_addr].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         return true;

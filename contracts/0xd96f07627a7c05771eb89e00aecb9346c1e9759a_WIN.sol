@@ -81,8 +81,8 @@ pragma solidity 0.4.15;
  contract WIN is ERC20Token {
     
 
-    string public constant symbol = &quot;WIN&quot;;
-    string public constant name = &quot;WIN&quot;;
+    string public constant symbol = "WIN";
+    string public constant name = "WIN";
 
     uint8 public constant decimals = 7;
     uint256 constant TOKEN = 10**7;
@@ -90,10 +90,10 @@ pragma solidity 0.4.15;
     uint256 public totalTokenSupply = 500 * MILLION * TOKEN;
 
     /** balances of each accounts */
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /** amount of tokens approved for transfer */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /** Triggered when `owner` destroys `amount` tokens */
     event Destroyed(address indexed owner, uint256 amount);
@@ -129,13 +129,13 @@ pragma solidity 0.4.15;
      * @return success - `true` if the transfer was succesful, `false` otherwise
      */
     function transfer (address to, uint256 amount)   returns (bool success) { 
-        if(balances[msg.sender] &lt; amount)
+        if(balances[msg.sender] < amount)
             return false;
 
-        if(amount &lt;= 0)
+        if(amount <= 0)
             return false;
 
-        if(balances[to] + amount &lt;= balances[to])
+        if(balances[to] + amount <= balances[to])
             return false;
 
         balances[msg.sender] -= amount;
@@ -153,16 +153,16 @@ pragma solidity 0.4.15;
      * @return success - `true` if the transfer was succesful, `false` otherwise
      */
     function transferFrom (address from, address to, uint256 amount)   returns (bool success) { 
-        if (balances[from] &lt; amount)
+        if (balances[from] < amount)
             return false;
 
-        if(allowed[from][msg.sender] &lt; amount)
+        if(allowed[from][msg.sender] < amount)
             return false;
 
         if(amount == 0)
             return false;
 
-        if(balances[to] + amount &lt;= balances[to])
+        if(balances[to] + amount <= balances[to])
             return false;
 
         balances[from] -= amount;
@@ -202,7 +202,7 @@ pragma solidity 0.4.15;
       */
     function destroy (uint256 amount)   returns (bool success) { 
         if(amount == 0) return false;
-        if(balances[msg.sender] &lt; amount) return false;
+        if(balances[msg.sender] < amount) return false;
         balances[msg.sender] -= amount;
         totalTokenSupply -= amount;
         Destroyed(msg.sender, amount);

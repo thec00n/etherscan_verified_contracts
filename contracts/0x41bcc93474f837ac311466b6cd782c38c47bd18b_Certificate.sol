@@ -60,13 +60,13 @@ contract Certificate is Ownable {
   }
 
   // Mapping of certificate authority address to the certificate authority
-  mapping(address =&gt; CertificateAuthority) private certificate_authority;
+  mapping(address => CertificateAuthority) private certificate_authority;
 
   // Mapping of Ethereum wallet address to mapping of certificate authority address to wallet certificate hash
-  mapping(address =&gt; mapping(address =&gt; bytes32)) private wallet_authority_certificate;
+  mapping(address => mapping(address => bytes32)) private wallet_authority_certificate;
 
   // Mapping of wallet certificate hash to wallet certificate meta data
-  mapping(bytes32 =&gt; CertificateMeta) private certificates;
+  mapping(bytes32 => CertificateMeta) private certificates;
 
   modifier onlyCA() {
     require(bytes(certificate_authority[msg.sender].lookup_api).length != 0);
@@ -93,9 +93,9 @@ contract Certificate is Ownable {
     require (ca_address != 0x0);
     require (ca_address != msg.sender);
     require (bytes(lookup_api).length != 0);
-    require (bytes(organization).length &gt; 3);
-    require (bytes(common_name).length &gt; 3);
-    require (bytes(country).length &gt; 1);
+    require (bytes(organization).length > 3);
+    require (bytes(common_name).length > 3);
+    require (bytes(country).length > 1);
 
     certificate_authority[ca_address] = CertificateAuthority(
       lookup_api,
@@ -135,7 +135,7 @@ contract Certificate is Ownable {
   /// @param sealed_hash hash of sealed portion of the certificate
   /// @param certificate_hash hash of public portion of the certificate
   function addNewCertificate(uint256 expires, bytes32 sealed_hash, bytes32 certificate_hash) public onlyCA {
-    require(expires &gt; now);
+    require(expires > now);
 
     CertificateMeta storage cert = certificates[certificate_hash];
     require(cert.expires == 0);
@@ -150,7 +150,7 @@ contract Certificate is Ownable {
   /// @param sealed_hash hash of sealed portion of the certificate
   /// @param certificate_hash hash of public portion of the certificate
   function addCertificateAndBind2Wallet(address wallet, uint256 expires, bytes32 sealed_hash, bytes32 certificate_hash) public onlyCA {
-    require(expires &gt; now);
+    require(expires > now);
 
     CertificateMeta storage cert = certificates[certificate_hash];
     require(cert.expires == 0);
@@ -166,7 +166,7 @@ contract Certificate is Ownable {
   /// @param certificate_hash hash of public portion of the certificate
   function bindCertificate2Wallet(address wallet, bytes32 certificate_hash) public {
     CertificateMeta storage cert = certificates[certificate_hash];
-    require(cert.expires &gt; now);
+    require(cert.expires > now);
 
     bytes32 sender_certificate_hash = wallet_authority_certificate[msg.sender][cert.ca_address];
 

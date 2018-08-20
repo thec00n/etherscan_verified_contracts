@@ -11,7 +11,7 @@ contract raffle {
     address creatorAddress;
     uint pricePerTicket;
     uint nextTicket;
-    mapping(uint =&gt; address) purchasers;
+    mapping(uint => address) purchasers;
 
     function raffle() {
         creatorAddress = msg.sender;
@@ -34,19 +34,19 @@ contract raffle {
     function buyTickets() payable public {
         uint moneySent = msg.value;
 
-        while (moneySent &gt;= pricePerTicket &amp;&amp; nextTicket &lt;= totalTickets) {
+        while (moneySent >= pricePerTicket && nextTicket <= totalTickets) {
             purchasers[nextTicket] = msg.sender;
             moneySent -= pricePerTicket;
             nextTicket++;
         }
 
         // Send back leftover money
-        if (moneySent &gt; 0) {
+        if (moneySent > 0) {
             msg.sender.transfer(moneySent);
         }
 
         // Choose winner if we sold all the tickets
-        if (nextTicket &gt; totalTickets) {
+        if (nextTicket > totalTickets) {
             chooseWinner();
         }
     }

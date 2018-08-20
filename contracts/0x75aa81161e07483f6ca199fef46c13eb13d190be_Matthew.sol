@@ -1,6 +1,6 @@
 pragma solidity ^0.4.6;
 
-// ## Matthew - a contract for increasing &quot;whaleth&quot;
+// ## Matthew - a contract for increasing "whaleth"
 // README: https://github.com/rolandkofler/matthew
 // MIT LICENSE 2016 Roland Kofler, thanks to Crul for testing
 
@@ -33,21 +33,21 @@ contract Matthew {
     /// The rich get richer, the whale get whaler
     function () payable{
     
-        if (block.number - period &gt;= blockheight){ // time is over, Matthew won
+        if (block.number - period >= blockheight){ // time is over, Matthew won
             bool isSuccess=false; //mutex against recursion attack
             var nextStake = stake * WINNERTAX_PRECENT/100;  // leave some money for the next round
             if (isSuccess == false) //check against recursion attack
                 isSuccess = whale.send(stake - nextStake); // pay out the stake
-            MatthewWon(&quot;Matthew won&quot;, whale, stake - nextStake, block.number);
+            MatthewWon("Matthew won", whale, stake - nextStake, block.number);
             setFacts();//reset the game
             if (mustBeDestroyed) selfdestruct(whale); 
             return;
             
         }else{ // top the stake
-            if (msg.value &lt; stake + DELTA) throw; // you must rise the stake by Delta
+            if (msg.value < stake + DELTA) throw; // you must rise the stake by Delta
             bool isOtherSuccess = msg.sender.send(stake); // give back the old stake
             setFacts(); //reset the game
-            StakeIncreased(&quot;stake increased&quot;, whale, stake, blockheight);
+            StakeIncreased("stake increased", whale, stake, blockheight);
         }
     }
     
@@ -75,7 +75,7 @@ contract Matthew {
     
     //how long until a Matthew wins?
     function getBlocksTillMatthew() public constant returns(uint){
-        if (blockheight + period &gt; block.number)
+        if (blockheight + period > block.number)
             return blockheight + period - block.number;
         else
             return 0;

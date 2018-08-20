@@ -40,7 +40,7 @@ contract Ownable {
     }
 
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != owner &amp;&amp; newOwner != address(0x0));
+        require(newOwner != owner && newOwner != address(0x0));
         address oldOwner = owner;
         owner = newOwner;
         OwnerChanged(oldOwner, newOwner);
@@ -89,7 +89,7 @@ contract CrowdSale is Ownable {
         uint amountTokenTaken;
         uint[] lockedToken;
     }
-    mapping(address =&gt; PurchaserInfo) public purchasers;
+    mapping(address => PurchaserInfo) public purchasers;
 
     address[] public purchaserList;
 
@@ -119,7 +119,7 @@ contract CrowdSale is Ownable {
         require(beneficiaryAddr != address(0));
         require(tokenHolderAddr != address(0));
         require(tokenAddr != address(0));
-        require(tokenRate &gt; 0);
+        require(tokenRate > 0);
 
         beneficiary = beneficiaryAddr;
         tokenHolder = tokenHolderAddr;
@@ -136,41 +136,41 @@ contract CrowdSale is Ownable {
     }
 
     function getLockedToken(address _purchaser, uint stageIdx) public view returns(uint) {
-        if(stageIdx &gt;= purchasers[_purchaser].lockedToken.length) {
+        if(stageIdx >= purchasers[_purchaser].lockedToken.length) {
             return 0;
         }
         return purchasers[_purchaser].lockedToken[stageIdx];
     }
 
     function canTokenUnlocked(uint stageIndex) public view returns(bool) {
-        if(0 &lt;= stageIndex &amp;&amp; stageIndex &lt; lockStages.length){
+        if(0 <= stageIndex && stageIndex < lockStages.length){
             uint stageEndTime = endTime;
-            for(uint i = 0; i &lt;= stageIndex; i++) {
+            for(uint i = 0; i <= stageIndex; i++) {
                 stageEndTime += lockStages[i].duration;
             }//for
-            return now &gt; stageEndTime;
+            return now > stageEndTime;
         }
         return false;
     }
 
     function isStarted() public view returns(bool) {
-        return 0 &lt; startTime &amp;&amp; startTime &lt;= now;
+        return 0 < startTime && startTime <= now;
     }
 
     function isReachedGoal() public view returns(bool) {
-        return amountRaised &gt;= amountGoal;
+        return amountRaised >= amountGoal;
     }
 
     function isEnded() public view returns(bool) {
-        return now &gt; endTime || isReachedGoal();
+        return now > endTime || isReachedGoal();
     }
 
     function getCurrentStage() public view returns(int) {
         int stageIdx = -1;
         uint stageEndTime = startTime;
-        for(uint i = 0; i &lt; icoStages.length; i++) {
+        for(uint i = 0; i < icoStages.length; i++) {
             stageEndTime += icoStages[i].duration;
-            if (now &lt;= stageEndTime) {
+            if (now <= stageEndTime) {
                 stageIdx = int(i);
                 break;
             }
@@ -187,7 +187,7 @@ contract CrowdSale is Ownable {
     function _addPurchaser(address purchaser) internal {
         require(purchaser != address(0));
 
-//        for (uint i = 0; i &lt; purchaserList.length; i++) {
+//        for (uint i = 0; i < purchaserList.length; i++) {
 //            if (purchaser == purchaserList[i]){
 //                return;
 //            }
@@ -197,13 +197,13 @@ contract CrowdSale is Ownable {
 
     function start(uint fundingGoalInEther) public onlyOwner {
         require(!isStarted());
-        require(fundingGoalInEther &gt; 0);
+        require(fundingGoalInEther > 0);
         amountGoal = fundingGoalInEther * 1 ether;
 
         startTime = now;
 
         uint duration = 0;
-        for(uint i = 0; i &lt; icoStages.length; i++){
+        for(uint i = 0; i < icoStages.length; i++){
             duration += icoStages[i].duration;
         }
 
@@ -216,7 +216,7 @@ contract CrowdSale is Ownable {
     }
 
     function () payable public onlyOpenTime {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint amount = msg.value;
         var (buyTokenCount, bonusTokenCount) = _getTokenCount(amount);
@@ -229,7 +229,7 @@ contract CrowdSale is Ownable {
             pi.lockedToken = new uint[](lockStages.length);
         }
 
-        for(uint i = 0; i &lt; lockStages.length; i++) {
+        for(uint i = 0; i < lockStages.length; i++) {
             Stage storage stage = lockStages[i];
             pi.lockedToken[i] += stage.rate * bonusTokenCount / 100;
         }
@@ -252,7 +252,7 @@ contract CrowdSale is Ownable {
         buyTokenCount = amountInWei * rate;
 
         int stageIdx = getCurrentStage();
-        assert(stageIdx &gt;= 0 &amp;&amp; uint(stageIdx) &lt; icoStages.length);
+        assert(stageIdx >= 0 && uint(stageIdx) < icoStages.length);
         bonusTokenCount = buyTokenCount * icoStages[uint(stageIdx)].rate / 100;
     }
 
@@ -264,15 +264,15 @@ contract CrowdSale is Ownable {
     }
 
     function unlockBonusTokens(uint stageIndex, uint purchaserStartIdx, uint purchaserEndIdx) public afterEnded onlyOwner {
-        require(0 &lt;= purchaserStartIdx &amp;&amp; purchaserStartIdx &lt; purchaserEndIdx &amp;&amp; purchaserEndIdx &lt;= purchaserList.length);
+        require(0 <= purchaserStartIdx && purchaserStartIdx < purchaserEndIdx && purchaserEndIdx <= purchaserList.length);
         require(canTokenUnlocked(stageIndex));
 
-        for (uint j = purchaserStartIdx; j &lt; purchaserEndIdx; j++) {
+        for (uint j = purchaserStartIdx; j < purchaserEndIdx; j++) {
             address purchaser = purchaserList[j];
             if(purchaser != address(0)){
                 PurchaserInfo storage pi = purchasers[purchaser];
                 uint unlockedToken = pi.lockedToken[stageIndex];
-                if (unlockedToken &gt; 0) {
+                if (unlockedToken > 0) {
                     pi.lockedToken[stageIndex] = 0;
                     pi.amountTokenTaken += unlockedToken;
 

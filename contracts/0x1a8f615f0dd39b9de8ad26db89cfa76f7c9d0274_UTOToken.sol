@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <span class="__cf_email__" data-cfemail="3d595c4b587d5c5652505f5c135e5250">[email&#160;protected]</span>
+// contact : <span class="__cf_email__" data-cfemail="3d595c4b587d5c5652505f5c135e5250">[email protected]</span>
 // released under Apache 2.0 licence
 library SafeMath {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -13,7 +13,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         assert(a == b * c);
         return c;
@@ -21,14 +21,14 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a - b;
-        assert(b &lt;= a);
+        assert(b <= a);
         assert(a == c + b);
         return c;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         assert(a == c - b);
         return c;
     }
@@ -37,15 +37,15 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract UTOToken {
     // Public variables of the token
-    string public name=&quot;UTour&quot;;
-    string public symbol=&quot;UTO&quot;;
+    string public name="UTour";
+    string public symbol="UTO";
     uint8 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply=3 * 10 ** 26;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -144,7 +144,7 @@ contract UTOToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = SafeMath.sub(oldValue, _subtractedValue);
@@ -180,7 +180,7 @@ contract UTOToken {
     function burnFrom(address _from, uint256 _value) public returns (bool success) {  
         // Subtract from the targeted balance
         balanceOf[_from] = SafeMath.sub(balanceOf[_from], _value);  
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] = SafeMath.sub(allowance[_from][msg.sender], _value);
         // Update totalSupply         
         totalSupply = SafeMath.sub(totalSupply, _value);                           

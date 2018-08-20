@@ -78,7 +78,7 @@ library SafeMath {
 	* @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -87,28 +87,28 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
 		c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
 
 
 /// @title StandardToken - Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
-/// @author Zerion - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af3f4f8f5e2dae0ffe8f3f5f4b4f3f5">[email&#160;protected]</a>&gt;
+/// @author Zerion - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af3f4f8f5e2dae0ffe8f3f5f4b4f3f5">[email protected]</a>>
 contract StandardToken is AbstractToken, Owned {
 	using SafeMath for uint256;
 
 	/*
 	 *  Data structures
 	 */
-	mapping (address =&gt; uint256) internal balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => uint256) internal balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	uint256 public totalSupply;
 
 	/*
 	 *  Read and write storage functions
 	 */
-	/// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+	/// @dev Transfers sender's tokens to a given address. Returns success.
 	/// @param _to Address of token receiver.
 	/// @param _value Number of tokens to transfer.
 	function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -120,7 +120,7 @@ contract StandardToken is AbstractToken, Owned {
 	/// @param _to Address to where tokens are sent.
 	/// @param _value Number of tokens to transfer.
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= allowed[_from][msg.sender]);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 		return _transfer(_from, _to, _value);
 	}
@@ -158,7 +158,7 @@ contract StandardToken is AbstractToken, Owned {
 	* @return success True if the transfer was successful, or throws.
 	*/
 	function _transfer(address _from, address _to, uint256 _value) private returns (bool success) {
-		require(_value &lt;= balances[_from]);
+		require(_value <= balances[_from]);
 		require(_to != address(0));
 
 		balances[_from] = balances[_from].sub(_value);
@@ -170,7 +170,7 @@ contract StandardToken is AbstractToken, Owned {
 
 
 /// @title BurnableToken contract - Implements burnable functionality of the ERC-20 token
-/// @author Zerion - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f76717d70675f657a6d767071317670">[email&#160;protected]</a>&gt;
+/// @author Zerion - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f76717d70675f657a6d767071317670">[email protected]</a>>
 contract BurnableToken is StandardToken {
 
 	address public burner;
@@ -194,7 +194,7 @@ contract BurnableToken is StandardToken {
 		public
 		onlyBurner
 	{
-		require(balanceOf(msg.sender) &gt;= amount);
+		require(balanceOf(msg.sender) >= amount);
 		balances[msg.sender] = balances[msg.sender].sub(amount);
 		totalSupply = totalSupply.sub(amount);
 		emit Transfer(msg.sender, address(0x0000000000000000000000000000000000000000), amount);
@@ -203,7 +203,7 @@ contract BurnableToken is StandardToken {
 
 
 /// @title Token contract - Implements Standard ERC20 with additional features.
-/// @author Zerion - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f232e39013b2433282e2f6f282e">[email&#160;protected]</a>&gt;
+/// @author Zerion - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f232e39013b2433282e2f6f282e">[email protected]</a>>
 contract Token is BurnableToken {
 
 	// Time of the contract creation
@@ -220,7 +220,7 @@ contract Token is BurnableToken {
 		onlyOwner
 		returns (bool success)
 	{
-		require(_token.balanceOf(address(this)) &gt;= _value);
+		require(_token.balanceOf(address(this)) >= _value);
 		uint256 receiverBalance = _token.balanceOf(_to);
 		require(_token.transfer(_to, _value));
 
@@ -240,7 +240,7 @@ contract Token is BurnableToken {
 	/// @dev Decreases approved amount of tokens for spender. Returns success.
 	function decreaseApproval(address _spender, uint256 _value) public returns (bool success) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_value &gt; oldValue) {
+		if (_value > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_value);
@@ -251,12 +251,12 @@ contract Token is BurnableToken {
 }
 
 /// @title Token contract - Implements Standard ERC20 Token for Inmediate project.
-/// @author Zerion - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="31585f535e49714b5443585e5f1f585e">[email&#160;protected]</a>&gt;
+/// @author Zerion - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="31585f535e49714b5443585e5f1f585e">[email protected]</a>>
 contract InmediateToken is Token {
 
 	/// TOKEN META DATA
-	string constant public name = &#39;Inmediate&#39;;
-	string constant public symbol = &#39;DIT&#39;;
+	string constant public name = 'Inmediate';
+	string constant public symbol = 'DIT';
 	uint8  constant public decimals = 8;
 
 
@@ -264,7 +264,7 @@ contract InmediateToken is Token {
 	// To calculate vesting periods we assume that 1 month is always equal to 30 days 
 
 
-	/*** Initial Investors&#39; tokens ***/
+	/*** Initial Investors' tokens ***/
 
 	// 400,000,000 (40%) tokens are distributed among initial investors
 	// These tokens will be distributed without vesting
@@ -426,13 +426,13 @@ contract InmediateToken is Token {
 				teamCliff, teamUnlockedAfterCliff,
 				teamPeriodLength, teamPeriodAmount, teamPeriodsNumber
 			);
-			spentTokens = balanceOf(teamAllocation) &lt; teamTotal ? teamTotal.sub(balanceOf(teamAllocation)) : 0;
+			spentTokens = balanceOf(teamAllocation) < teamTotal ? teamTotal.sub(balanceOf(teamAllocation)) : 0;
 		} else if (_owner == advisorsAllocation) {
 			unlockedTokens = _calculateUnlockedTokens(
 				advisorsCliff, advisorsUnlockedAfterCliff,
 				advisorsPeriodLength, advisorsPeriodAmount, advisorsPeriodsNumber
 			);
-			spentTokens = balanceOf(advisorsAllocation) &lt; advisorsTotal ? advisorsTotal.sub(balanceOf(advisorsAllocation)) : 0;
+			spentTokens = balanceOf(advisorsAllocation) < advisorsTotal ? advisorsTotal.sub(balanceOf(advisorsAllocation)) : 0;
 		} else {
 			return allowed[_owner][_spender];
 		}
@@ -445,10 +445,10 @@ contract InmediateToken is Token {
 		public
 		onlyPotentialOwner
 	{   
-		// Forbids the old owner to distribute investors&#39; tokens
+		// Forbids the old owner to distribute investors' tokens
 		allowed[investorsAllocation][owner] = 0;
 
-		// Allows the new owner to distribute investors&#39; tokens
+		// Allows the new owner to distribute investors' tokens
 		allowed[investorsAllocation][msg.sender] = balanceOf(investorsAllocation);
 
 		// Forbidsthe old owner to withdraw any tokens from the reserves
@@ -480,12 +480,12 @@ contract InmediateToken is Token {
 		returns (uint256) 
 	{
 		/* solium-disable-next-line security/no-block-members */
-		if (now &lt; creationTime.add(_cliff)) {
+		if (now < creationTime.add(_cliff)) {
 			return 0;
 		}
 		/* solium-disable-next-line security/no-block-members */
 		uint256 periods = now.sub(creationTime.add(_cliff)).div(_periodLength);
-		periods = periods &gt; _periodsNumber ? _periodsNumber : periods;
+		periods = periods > _periodsNumber ? _periodsNumber : periods;
 		return _unlockedAfterCliff.add(periods.mul(_periodAmount));
 	}
 }

@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -100,7 +100,7 @@ contract ContractReceiver {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
     }
 }
@@ -108,14 +108,14 @@ contract ContractReceiver {
 contract ASTERISK is ERC223, Pausable {
     using SafeMath for uint256;
 
-    string public name = &quot;asterisk&quot;;
-    string public symbol = &quot;ASTER&quot;;
+    string public name = "asterisk";
+    string public symbol = "ASTER";
     uint8 public decimals = 9;
     uint256 public totalSupply = 10e9 * 1e9;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => bool) public frozenAccount;
 
     event Freeze(address indexed target, uint256 value);
     event Unfreeze(address indexed target, uint256 value);
@@ -126,7 +126,7 @@ contract ASTERISK is ERC223, Pausable {
     struct ITEM {
         uint256 id;
         address owner;
-        mapping(address =&gt; uint256) holders;
+        mapping(address => uint256) holders;
         string name;
         uint256 price;
         uint256 itemTotalSupply;
@@ -141,11 +141,11 @@ contract ASTERISK is ERC223, Pausable {
         uint256 price;
     }
 
-    mapping(uint256 =&gt; ITEM) public items;
+    mapping(uint256 => ITEM) public items;
 
     uint256 public itemId = 1;
 
-    mapping(address =&gt; mapping(address =&gt; mapping(uint256 =&gt; ALLOWANCEITEM))) public allowanceItems;
+    mapping(address => mapping(address => mapping(uint256 => ALLOWANCEITEM))) public allowanceItems;
 
     constructor() public {
         owner = msg.sender;
@@ -166,10 +166,10 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) messageSenderNotFrozen whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[_to] == false);
 
         if (isContract(_to)) {
-            require(balanceOf[msg.sender] &gt;= _value);
+            require(balanceOf[msg.sender] >= _value);
 
             balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
@@ -186,7 +186,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value, bytes _data) messageSenderNotFrozen whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[_to] == false);
 
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
@@ -196,7 +196,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value) messageSenderNotFrozen whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[_to] == false);
 
         bytes memory empty;
 
@@ -221,10 +221,10 @@ contract ASTERISK is ERC223, Pausable {
 
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused public returns (bool _success) {
         require(_to != address(0)
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balanceOf[_from] &gt;= _value
-            &amp;&amp; allowance[_from][msg.sender] &gt;= _value
-            &amp;&amp; frozenAccount[_from] == false &amp;&amp; frozenAccount[_to] == false);
+            && _value > 0
+            && balanceOf[_from] >= _value
+            && allowance[_from][msg.sender] >= _value
+            && frozenAccount[_from] == false && frozenAccount[_to] == false);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -248,9 +248,9 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function freezeAccounts(address[] _targets) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_targets.length &gt; 0);
+        require(_targets.length > 0);
 
-        for (uint j = 0; j &lt; _targets.length; j++) {
+        for (uint j = 0; j < _targets.length; j++) {
             require(_targets[j] != 0x0);
 
             frozenAccount[_targets[j]] = true;
@@ -261,9 +261,9 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function unfreezeAccounts(address[] _targets) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_targets.length &gt; 0);
+        require(_targets.length > 0);
 
-        for (uint j = 0; j &lt; _targets.length; j++) {
+        for (uint j = 0; j < _targets.length; j++) {
             require(_targets[j] != 0x0);
 
             frozenAccount[_targets[j]] = false;
@@ -282,11 +282,11 @@ contract ASTERISK is ERC223, Pausable {
         assembly {
             length := extcodesize(_target)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool _success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -298,7 +298,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool _success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -312,7 +312,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function burn(address _from, uint256 _amount) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; balanceOf[_from] &gt;= _amount);
+        require(_amount > 0 && balanceOf[_from] >= _amount);
 
         balanceOf[_from] = balanceOf[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
@@ -323,15 +323,15 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function rain(address[] _addresses, uint256 _amount) messageSenderNotFrozen whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; _addresses.length &gt; 0);
+        require(_amount > 0 && _addresses.length > 0);
 
         uint256 totalAmount = _amount.mul(_addresses.length);
 
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(totalAmount);
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
+        for (uint j = 0; j < _addresses.length; j++) {
             require(_addresses[j] != address(0));
 
             balanceOf[_addresses[j]] = balanceOf[_addresses[j]].add(_amount);
@@ -344,14 +344,14 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function collectTokens(address[] _addresses, uint[] _amounts) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_addresses.length &gt; 0 &amp;&amp; _amounts.length &gt; 0
-            &amp;&amp; _addresses.length == _amounts.length);
+        require(_addresses.length > 0 && _amounts.length > 0
+            && _addresses.length == _amounts.length);
 
         uint256 totalAmount = 0;
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
-            require(_amounts[j] &gt; 0 &amp;&amp; _addresses[j] != address(0)
-                &amp;&amp; balanceOf[_addresses[j]] &gt;= _amounts[j]);
+        for (uint j = 0; j < _addresses.length; j++) {
+            require(_amounts[j] > 0 && _addresses[j] != address(0)
+                && balanceOf[_addresses[j]] >= _amounts[j]);
 
             balanceOf[_addresses[j]] = balanceOf[_addresses[j]].sub(_amounts[j]);
             totalAmount = totalAmount.add(_amounts[j]);
@@ -418,7 +418,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function setItemPrice(uint256 _id, uint256 _price) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
-        require(items[_id].owner == msg.sender &amp;&amp; _price &gt;= 0);
+        require(items[_id].owner == msg.sender && _price >= 0);
 
         items[_id].price = _price;
 
@@ -426,7 +426,7 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function setItemLimitHolding(uint256 _id, uint256 _limit) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
-        require(items[_id].owner == msg.sender &amp;&amp; _limit &gt; 0);
+        require(items[_id].owner == msg.sender && _limit > 0);
 
         items[_id].limitHolding = _limit;
 
@@ -435,16 +435,16 @@ contract ASTERISK is ERC223, Pausable {
 
     function buyItem(uint256 _id, uint256 _amount) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
         require(items[_id].approveForAll
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; items[_id].holders[items[_id].owner] &gt;= _amount);
+            && _amount > 0
+            && items[_id].holders[items[_id].owner] >= _amount);
 
         uint256 afterAmount = items[_id].holders[msg.sender].add(_amount);
 
-        require(items[_id].limitHolding &gt;= afterAmount);
+        require(items[_id].limitHolding >= afterAmount);
 
         uint256 value = items[_id].price.mul(_amount);
 
-        require(balanceOf[msg.sender] &gt;= value);
+        require(balanceOf[msg.sender] >= value);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);
         items[_id].holders[items[_id].owner] = items[_id].holders[items[_id].owner].sub(_amount);
@@ -455,10 +455,10 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function allowanceItem(uint256 _id, uint256 _amount, uint256 _price, address _to) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; _price &gt;= 0
-            &amp;&amp; _to != address(0)
-            &amp;&amp; items[_id].holders[msg.sender] &gt;= _amount
-            &amp;&amp; items[_id].transferable);
+        require(_amount > 0 && _price >= 0
+            && _to != address(0)
+            && items[_id].holders[msg.sender] >= _amount
+            && items[_id].transferable);
 
         ALLOWANCEITEM memory a;
         a.price = _price;
@@ -477,19 +477,19 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transferItemFrom(uint256 _id, address _from, uint256 _amount, uint256 _price) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; _price &gt;= 0 &amp;&amp; frozenAccount[_from] == false);
+        require(_amount > 0 && _price >= 0 && frozenAccount[_from] == false);
 
         uint256 value = _amount.mul(_price);
 
-        require(allowanceItems[_from][msg.sender][_id].amount &gt;= _amount
-            &amp;&amp; allowanceItems[_from][msg.sender][_id].price &gt;= _price
-            &amp;&amp; balanceOf[msg.sender] &gt;= value
-            &amp;&amp; items[_id].holders[_from] &gt;= _amount
-            &amp;&amp; items[_id].transferable);
+        require(allowanceItems[_from][msg.sender][_id].amount >= _amount
+            && allowanceItems[_from][msg.sender][_id].price >= _price
+            && balanceOf[msg.sender] >= value
+            && items[_id].holders[_from] >= _amount
+            && items[_id].transferable);
 
         uint256 afterAmount = items[_id].holders[msg.sender].add(_amount);
 
-        require(items[_id].limitHolding &gt;= afterAmount);
+        require(items[_id].limitHolding >= afterAmount);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);
         allowanceItems[_from][msg.sender][_id].amount = allowanceItems[_from][msg.sender][_id].amount.sub(_amount);
@@ -501,13 +501,13 @@ contract ASTERISK is ERC223, Pausable {
     }
 
     function transferItem(uint256 _id, address _to, uint256 _amount) messageSenderNotFrozen whenNotItemStopped whenNotPaused public returns (bool _success) {
-        require(frozenAccount[_to] == false &amp;&amp; _to != address(0)
-            &amp;&amp; _amount &gt; 0 &amp;&amp; items[_id].holders[msg.sender] &gt;= _amount
-            &amp;&amp; items[_id].transferable);
+        require(frozenAccount[_to] == false && _to != address(0)
+            && _amount > 0 && items[_id].holders[msg.sender] >= _amount
+            && items[_id].transferable);
 
         uint256 afterAmount = items[_id].holders[_to].add(_amount);
 
-        require(items[_id].limitHolding &gt;= afterAmount);
+        require(items[_id].limitHolding >= afterAmount);
 
         items[_id].holders[msg.sender] = items[_id].holders[msg.sender].sub(_amount);
         items[_id].holders[_to] = items[_id].holders[_to].add(_amount);

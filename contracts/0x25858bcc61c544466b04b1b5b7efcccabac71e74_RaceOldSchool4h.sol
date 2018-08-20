@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
  * address(web3.sha3(coin_symbol_in_upper_case))
  * 
  * Example for BTC:
- * web3.sha3(&#39;BTC&#39;) = 0xe98e2830be1a7e4156d656a7505e65d08c67660dc618072422e9c78053c261e9
+ * web3.sha3('BTC') = 0xe98e2830be1a7e4156d656a7505e65d08c67660dc618072422e9c78053c261e9
  * address(0xe98e2830be1a7e4156d656a7505e65d08c67660dc618072422e9c78053c261e9) = 0x505e65d08c67660dc618072422e9c78053c261e9
  */
 contract CoinLib {
@@ -71,20 +71,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -153,7 +153,7 @@ contract SuperOwners {
 
 contract MultiOwnable is SuperOwners {
 
-    mapping (address =&gt; bool) public ownerMap;
+    mapping (address => bool) public ownerMap;
     address[] public ownerHistory;
 
     event OwnerAddedEvent(address indexed _newOwner);
@@ -240,9 +240,9 @@ contract StandardToken is ERC20 {
     
     using SafeMath for uint;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
@@ -250,8 +250,8 @@ contract StandardToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -265,9 +265,9 @@ contract StandardToken is ERC20 {
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -299,7 +299,7 @@ contract CommonToken is StandardToken, MultiOwnable {
     string public symbol;
     uint256 public totalSupply;
     uint8 public decimals = 18;
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public seller;     // The main account that holds all tokens at the beginning and during tokensale.
 
@@ -326,8 +326,8 @@ contract CommonToken is StandardToken, MultiOwnable {
     ) MultiOwnable(_owner1, _owner2) public {
 
         require(_seller != address(0));
-        require(_totalSupplyNoDecimals &gt; 0);
-        require(_saleLimitNoDecimals &gt; 0);
+        require(_totalSupplyNoDecimals > 0);
+        require(_saleLimitNoDecimals > 0);
 
         seller = _seller;
         name = _name;
@@ -374,11 +374,11 @@ contract CommonToken is StandardToken, MultiOwnable {
     function sell(address _to, uint256 _value) onlyOwner public returns (bool) {
 
         // Check that we are not out of limit and still can sell tokens:
-        require(tokensSold.add(_value) &lt;= saleLimit);
+        require(tokensSold.add(_value) <= saleLimit);
 
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[seller]);
+        require(_value > 0);
+        require(_value <= balances[seller]);
 
         balances[seller] = balances[seller].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -392,22 +392,22 @@ contract CommonToken is StandardToken, MultiOwnable {
     }
     
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transfer(address _to, uint256 _value) ifUnlocked(msg.sender, _to) public returns (bool) {
         return super.transfer(_to, _value);
     }
 
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transferFrom(address _from, address _to, uint256 _value) ifUnlocked(_from, _to) public returns (bool) {
         return super.transferFrom(_from, _to, _value);
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value) ;
         totalSupply = totalSupply.sub(_value);
@@ -424,8 +424,8 @@ contract RaceToken is CommonToken {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         0x2821e1486D604566842FF27F626aF133FddD5f89, // __SELLER__
-        &#39;Coin Race&#39;,
-        &#39;RACE&#39;,
+        'Coin Race',
+        'RACE',
         100 * 1e6, // 100m tokens in total.
         70 * 1e6   // 70m tokens for sale.
     ) public {}
@@ -443,8 +443,8 @@ library RaceCalc {
         uint _finishTime   // Example: 1513537200 - 2017-12-17 19:00:00 UTC
     ) public pure returns (uint) {
         
-        require(_currentTime &gt; 0);
-        require(_currentTime &lt; _finishTime);
+        require(_currentTime > 0);
+        require(_currentTime < _finishTime);
         
         return _finishTime.sub(_currentTime);
     }
@@ -457,8 +457,8 @@ library RaceCalc {
         uint _finishRateToUsdE8 // Example: 456
     ) public pure returns (int) {
         
-        require(_startRateToUsdE8 &gt; 0);
-        require(_finishRateToUsdE8 &gt; 0);
+        require(_startRateToUsdE8 > 0);
+        require(_finishRateToUsdE8 > 0);
         
         int diff = int(_finishRateToUsdE8) - int(_startRateToUsdE8);
         return (diff * 1e8) / int(_startRateToUsdE8);
@@ -475,7 +475,7 @@ library RaceCalc {
         if (driverStake == 0) return 0;
         if (winningStake == driverStake) return totalTokens;
         
-        require(winningStake &gt; driverStake);
+        require(winningStake > driverStake);
         uint share = driverStake.mul(1e8).div(winningStake);
         return totalTokens.mul(share).div(1e8);
     }
@@ -519,7 +519,7 @@ contract CommonWallet is MultiOwnable {
         return token.burn(_value);
     }
     
-    /** Amount of tokens that players of CoinRace bet during the games and haven&#39;t claimed yet. */
+    /** Amount of tokens that players of CoinRace bet during the games and haven't claimed yet. */
     function balance() public view returns (uint256) {
         return token.balanceOf(this);
     }
@@ -572,8 +572,8 @@ library RaceLib {
             _race.tokensByCarAndDriver[_car][_driver].add(_tokensE18);
         
         uint stakeTime = bet.time;
-        if (bet.time &lt; _race.leftGraceTime &amp;&amp; _race.leftGraceTime &gt; 0) stakeTime = _race.leftGraceTime;
-        if (bet.time &gt; _race.rightGraceTime &amp;&amp; _race.rightGraceTime &gt; 0) stakeTime = _race.rightGraceTime;
+        if (bet.time < _race.leftGraceTime && _race.leftGraceTime > 0) stakeTime = _race.leftGraceTime;
+        if (bet.time > _race.rightGraceTime && _race.rightGraceTime > 0) stakeTime = _race.rightGraceTime;
         uint stake = RaceCalc.calcStake(stakeTime, _race.finishTime);
         _race.stakeByCar[_car] = _race.stakeByCar[_car].add(stake);
         _race.stakeByCarAndDriver[_car][_driver] = 
@@ -586,7 +586,7 @@ library RaceLib {
         Race storage _race, 
         address _driver
     ) public view returns (bool) {
-        return betCountByDriver(_race, _driver) &gt; 0;
+        return betCountByDriver(_race, _driver) > 0;
     }
     
     function betCountByDriver(
@@ -608,7 +608,7 @@ library RaceLib {
         address _car,
         uint _rateToUsdE8
     ) public {
-        require(_rateToUsdE8 &gt; 0);
+        require(_rateToUsdE8 > 0);
         require(_race.carRates[_car].startRateToUsdE8 == 0);
         _race.carRates[_car].startRateToUsdE8 = _rateToUsdE8;
     }
@@ -617,7 +617,7 @@ library RaceLib {
         Race storage _race
     ) public {
         require(!_race.finished);
-        require(now &gt;= _race.finishTime);
+        require(now >= _race.finishTime);
         _race.finished = true;
     }
     
@@ -651,40 +651,40 @@ library RaceLib {
         
         uint driverCount;
         
-        // num of driver =&gt; driver&#39;s address.
-        mapping (uint =&gt; address) drivers;
+        // num of driver => driver's address.
+        mapping (uint => address) drivers;
         
-        // car_address =&gt; total_drivers_that_made_bet_on_this_car
-        mapping (address =&gt; uint) driverCountByCar;
+        // car_address => total_drivers_that_made_bet_on_this_car
+        mapping (address => uint) driverCountByCar;
         
-        // driver_address =&gt; bets by driver
-        mapping (address =&gt; Bet[]) betsByDriver;
+        // driver_address => bets by driver
+        mapping (address => Bet[]) betsByDriver;
         
-        // car_address =&gt; bets on this car.
-        mapping (address =&gt; Bet[]) betsByCar;
+        // car_address => bets on this car.
+        mapping (address => Bet[]) betsByCar;
         
-        // car_address =&gt; total_tokens_bet_on_this_car
-        mapping (address =&gt; uint) tokensByCar;
+        // car_address => total_tokens_bet_on_this_car
+        mapping (address => uint) tokensByCar;
         
-        // car_address =&gt; driver_address =&gt; total_tokens_bet_on_this_car_by_this_driver
-        mapping (address =&gt; mapping (address =&gt; uint)) tokensByCarAndDriver;
+        // car_address => driver_address => total_tokens_bet_on_this_car_by_this_driver
+        mapping (address => mapping (address => uint)) tokensByCarAndDriver;
 
-        // car_address =&gt; stake_by_all_drivers
-        mapping (address =&gt; uint) stakeByCar;
+        // car_address => stake_by_all_drivers
+        mapping (address => uint) stakeByCar;
 
-        // car_address =&gt; driver_address =&gt; stake
-        mapping (address =&gt; mapping (address =&gt; uint)) stakeByCarAndDriver;
+        // car_address => driver_address => stake
+        mapping (address => mapping (address => uint)) stakeByCarAndDriver;
 
-        // car_address =&gt; its rates to USD.
-        mapping (address =&gt; CarRates) carRates;
+        // car_address => its rates to USD.
+        mapping (address => CarRates) carRates;
 
         // int because it can be negative value if finish rate is lower.
-        mapping (address =&gt; int) gainByCar;
+        mapping (address => int) gainByCar;
         
-        mapping (address =&gt; bool) isFinishedCar;
+        mapping (address => bool) isFinishedCar;
         
-        // driver_address =&gt; amount of tokens (e18) that have been claimed by driver.
-        mapping (address =&gt; uint) tokensClaimedByDriver;
+        // driver_address => amount of tokens (e18) that have been claimed by driver.
+        mapping (address => uint) tokensClaimedByDriver;
     }
     
     struct Bet {
@@ -712,13 +712,13 @@ contract CommonRace is MultiOwnable {
     
     address[] public cars;
     
-    mapping (address =&gt; bool) public isKnownCar;
+    mapping (address => bool) public isKnownCar;
     
     RaceLib.Race[] public races;
     
     address[] public drivers;
 
-    mapping (address =&gt; bool) public isKnownDriver;
+    mapping (address => bool) public isKnownDriver;
     
     modifier ifWalletDefined() {
         require(address(wallet) != address(0));
@@ -731,12 +731,12 @@ contract CommonRace is MultiOwnable {
         address[] _cars,
         string _name
     ) MultiOwnable(_owner1, _owner2) public {
-        require(_cars.length &gt; 0);
+        require(_cars.length > 0);
 
         name = _name;
         cars = _cars;
         
-        for (uint16 i = 0; i &lt; _cars.length; i++) {
+        for (uint16 i = 0; i < _cars.length; i++) {
             isKnownCar[_cars[i]] = true;
         }
     }
@@ -766,7 +766,7 @@ contract CommonRace is MultiOwnable {
     }
 
     function lastLapId() public view returns (uint) {
-        require(races.length &gt; 0);
+        require(races.length > 0);
         return races.length - 1;
     }
 
@@ -776,7 +776,7 @@ contract CommonRace is MultiOwnable {
     
     function getRace(uint _lapId) internal view returns (RaceLib.Race storage race) {
         race = races[_lapId];
-        require(race.startTime &gt; 0); // if startTime is &gt; 0 then race is real.
+        require(race.startTime > 0); // if startTime is > 0 then race is real.
     }
     
     /**
@@ -795,10 +795,10 @@ contract CommonRace is MultiOwnable {
     ) onlyOwner public {
         require(_newLapId == nextLapId());
         require(_carsAndRates.length == (cars.length * 2));
-        require(_durationSecs &gt; 0);
+        require(_durationSecs > 0);
         
-        if (_leftGraceSecs &gt; 0) require(_leftGraceSecs &lt;= _durationSecs);
-        if (_rightGraceSecs &gt; 0) require(_rightGraceSecs &lt;= _durationSecs);
+        if (_leftGraceSecs > 0) require(_leftGraceSecs <= _durationSecs);
+        if (_rightGraceSecs > 0) require(_rightGraceSecs <= _durationSecs);
         
         uint finishTime = now.add(_durationSecs);
         
@@ -817,7 +817,7 @@ contract CommonRace is MultiOwnable {
         RaceLib.Race storage race = races[_newLapId];
 
         uint8 j = 0;
-        for (uint8 i = 0; i &lt; _carsAndRates.length; i += 2) {
+        for (uint8 i = 0; i < _carsAndRates.length; i += 2) {
             address car = address(_carsAndRates[j++]);
             uint startRateToUsdE8 = _carsAndRates[j++];
             require(isKnownCar[car]);
@@ -843,7 +843,7 @@ contract CommonRace is MultiOwnable {
         address firstCar; // The first finished car.
         
         uint8 j = 0;
-        for (uint8 i = 0; i &lt; _carsAndRates.length; i += 2) {
+        for (uint8 i = 0; i < _carsAndRates.length; i += 2) {
             address car = address(_carsAndRates[j++]);
             uint finishRateToUsdE8 = _carsAndRates[j++];
             require(!isCarFinished(_lapId, car));
@@ -857,7 +857,7 @@ contract CommonRace is MultiOwnable {
             // Calc gain of car:
             int gain = RaceCalc.calcGainE8(rates.startRateToUsdE8, finishRateToUsdE8);
             race.gainByCar[car] = gain;
-            if (i == 0 || gain &gt; maxGain) {
+            if (i == 0 || gain > maxGain) {
                 maxGain = gain;
                 firstCar = car;
             }
@@ -894,8 +894,8 @@ contract CommonRace is MultiOwnable {
     //     uint _lapId
     // ) public view returns (bool) {
     //     RaceLib.Race storage lap = getRace(_lapId);
-    //     // &#39;now&#39; will not work for Ganache
-    //     return !lap.isFinished() &amp;&amp; now &gt;= lap.finishTime;
+    //     // 'now' will not work for Ganache
+    //     return !lap.isFinished() && now >= lap.finishTime;
     // }
     
     function lapStartTime(
@@ -941,7 +941,7 @@ contract CommonRace is MultiOwnable {
         address _driver
     ) public view returns (bool) {
         RaceLib.Race storage race = getRace(_lapId);
-        return race.tokensByCarAndDriver[race.firstCar][_driver] &gt; 0;
+        return race.tokensByCarAndDriver[race.firstCar][_driver] > 0;
     }
     
     /**
@@ -955,7 +955,7 @@ contract CommonRace is MultiOwnable {
     
     /** 
      * Calculate how much tokens a winning driver can claim once race is over.
-     * Claimed tokens will be added back to driver&#39;s token balance.
+     * Claimed tokens will be added back to driver's token balance.
      * Formula = share of all tokens based on bets made on winning car.
      * Tokens in format e18.
      */
@@ -966,14 +966,14 @@ contract CommonRace is MultiOwnable {
         RaceLib.Race storage race = getRace(_lapId);
         
         // if driver has claimed his tokens already.
-        if (race.tokensClaimedByDriver[_driver] &gt; 0) return 0;
+        if (race.tokensClaimedByDriver[_driver] > 0) return 0;
         
         if (!race.isFinished()) return 0;
         if (race.firstCar == 0) return 0;
         if (race.totalTokens == 0) return 0;
         if (race.stakeByCar[race.firstCar] == 0) return 0;
         
-        // Size of driver&#39;s stake on the first finished car.
+        // Size of driver's stake on the first finished car.
         uint driverStake = race.stakeByCarAndDriver[race.firstCar][_driver];
         if (driverStake == 0) return 0;
 
@@ -989,8 +989,8 @@ contract CommonRace is MultiOwnable {
     ) public ifWalletDefined {
         address driver = msg.sender;
         uint tokens = unclaimedTokens(_lapId, driver);
-        require(tokens &gt; 0);
-        // Transfer prize tokens from game wallet to driver&#39;s address:
+        require(tokens > 0);
+        // Transfer prize tokens from game wallet to driver's address:
         require(wallet.transfer(driver, tokens));
         getRace(_lapId).tokensClaimedByDriver[driver] = tokens;
     }
@@ -1031,7 +1031,7 @@ contract CommonRace is MultiOwnable {
         totals = new uint[](cars.length * 2);
         uint8 j = 0;
         address car;
-        for (uint8 i = 0; i &lt; cars.length; i++) {
+        for (uint8 i = 0; i < cars.length; i++) {
             car = cars[i];
             totals[j++] = uint(car);
             totals[j++] = race.tokensByCarAndDriver[car][msg.sender];
@@ -1075,7 +1075,7 @@ contract CommonRace is MultiOwnable {
         totals[j++] = int(race.firstCar);
         totals[j++] = int(_myUnclaimedTokens);
         
-        for (uint8 i = 0; i &lt; cars.length; i++) {
+        for (uint8 i = 0; i < cars.length; i++) {
             car = cars[i];
             totals[j++] = int(car);
             totals[j++] = int(race.carRates[car].startRateToUsdE8);
@@ -1094,7 +1094,7 @@ contract RaceOldSchool4h is CommonRace, CoinLib {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         oldSchool,
-        &#39;Old School&#39;
+        'Old School'
     ) public {}
 }
 
@@ -1104,7 +1104,7 @@ contract RaceBtcForks4h is CommonRace, CoinLib {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         btcForks,
-        &#39;Bitcoin Forks&#39;
+        'Bitcoin Forks'
     ) public {}
 }
 
@@ -1114,7 +1114,7 @@ contract RaceSmart4h is CommonRace, CoinLib {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         smart,
-        &#39;Smart Coins&#39;
+        'Smart Coins'
     ) public {}
 }
 
@@ -1124,6 +1124,6 @@ contract RaceAnons4h is CommonRace, CoinLib {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         anons,
-        &#39;Anonymouses&#39;
+        'Anonymouses'
     ) public {}
 }

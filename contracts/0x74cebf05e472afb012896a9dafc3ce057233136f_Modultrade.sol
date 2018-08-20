@@ -114,9 +114,9 @@ contract ModultradeStorage is Ownable, Deployer {
 
   bool private _doMigrate = true;
 
-  mapping (address =&gt; address[]) public sellerProposals;
+  mapping (address => address[]) public sellerProposals;
 
-  mapping (uint =&gt; address) public proposalListAddress;
+  mapping (uint => address) public proposalListAddress;
 
   address[] public proposals;
 
@@ -251,7 +251,7 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
 
   function purchase() public payable {
     require(currency == ModultradeLibrary.Currencies.ETH);
-    require(msg.value &gt;= total);
+    require(msg.value >= total);
     setPaid(msg.sender);
   }
 
@@ -265,14 +265,14 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
   }
 
   function paid(address _buyer) public onlyOracleOrOwner {
-    require(getBalance() &gt;= total);
+    require(getBalance() >= total);
     setPaid(_buyer);
   }
 
   function mtrTokenFallBack(address from, uint value) internal {
     require(currency == ModultradeLibrary.Currencies.MTR);
     require(msg.sender == address(mtrContract));
-    require(value &gt;= total);
+    require(value >= total);
     setPaid(from);
   }
 
@@ -310,14 +310,14 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
   }
 
   function closeEth() private {
-    if (fee &gt; 0) {
+    if (fee > 0) {
       feeAddress.transfer(fee);
     }
     seller.transfer(this.balance);
   }
 
   function closeMtr() private {
-    if (fee &gt; 0) {
+    if (fee > 0) {
       mtrContract.transfer(feeAddress, fee);
     }
     mtrContract.transfer(seller, getBalance());
@@ -327,7 +327,7 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
     require(state != ModultradeLibrary.ProposalStates.Closed);
     require(state != ModultradeLibrary.ProposalStates.Canceled);
     uint _balance = getBalance();
-    if (_balance &gt; 0) {
+    if (_balance > 0) {
       if (currency == ModultradeLibrary.Currencies.ETH) {
         cancelEth(cancelFee);
       }
@@ -342,11 +342,11 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
 
   function cancelEth(uint cancelFee) private {
     uint _fee = cancelFee;
-    if (cancelFee &gt; this.balance) {
+    if (cancelFee > this.balance) {
       _fee = this.balance;
     }
     feeAddress.transfer(_fee);
-    if (this.balance &gt; 0 &amp;&amp; buyer != address(0)) {
+    if (this.balance > 0 && buyer != address(0)) {
       buyer.transfer(this.balance);
     }
   }
@@ -354,12 +354,12 @@ contract ModultradeProposal is OracleOwnable, ContractReceiver {
   function cancelMtr(uint cancelFee) private {
     uint _fee = cancelFee;
     uint _balance = getBalance();
-    if (cancelFee &gt; _balance) {
+    if (cancelFee > _balance) {
       _fee = _balance;
     }
     mtrContract.transfer(feeAddress, _fee);
     _balance = getBalance();
-    if (_balance &gt; 0 &amp;&amp; buyer != address(0)) {
+    if (_balance > 0 && buyer != address(0)) {
       mtrContract.transfer(buyer, _balance);
     }
   }
@@ -410,7 +410,7 @@ contract Modultrade is OracleOwnable, Deployer {
   address feeAddress
   ) public onlyOracleOrOwner {
     ModultradeProposal proposal = new ModultradeProposal(address(this), seller, mtrContractAddress);
-    LogEvent (address(proposal), &#39;ModultradeProposal&#39;, 1);
+    LogEvent (address(proposal), 'ModultradeProposal', 1);
     proposal.setProposal(id, title, price, currency, units, total, validUntil);
     proposal.setFee(fee, feeAddress);
     proposal.setOracle(oracle);

@@ -10,7 +10,7 @@ contract PoolAllocations {
   ERC20Basic public token;
 
  // allocations map
-  mapping (address =&gt; lockEntry) public allocations;
+  mapping (address => lockEntry) public allocations;
 
   // lock entry
   struct lockEntry {
@@ -41,10 +41,10 @@ contract PoolAllocations {
    * @dev claims tokens held by time lock
    */
   function claim() public {
-    require(now &gt;= startDay);
+    require(now >= startDay);
 
      var elem = allocations[msg.sender];
-    require(elem.numPayoutCycles &gt; 0);
+    require(elem.numPayoutCycles > 0);
 
     uint256 tokens = 0;
     uint cycles = getPayoutCycles(elem.numPayoutCycles);
@@ -54,7 +54,7 @@ contract PoolAllocations {
       tokens += elem.firstReleaseAmount;
       tokens += elem.restOfTokens;
     } else {
-      require(cycles &gt; 0);
+      require(cycles > 0);
     }
 
     tokens += elem.nextRelease * cycles;
@@ -67,7 +67,7 @@ contract PoolAllocations {
   function getPayoutCycles(uint payoutCyclesLeft) private constant returns (uint) {
     uint cycles = uint((now - startDay) / payoutCycleInDays) + cyclesStartFrom;
 
-    if (cycles &gt; maxNumOfPayoutCycles) {
+    if (cycles > maxNumOfPayoutCycles) {
        cycles = maxNumOfPayoutCycles;
     }
 
@@ -219,20 +219,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -247,7 +247,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
@@ -289,7 +289,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -302,7 +302,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -343,8 +343,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract BlockvToken is StandardToken, Pausable {
 
-  string public constant name = &quot;BLOCKv Token&quot;; // Set the token name for display
-  string public constant symbol = &quot;VEE&quot;;        // Set the token symbol for display
+  string public constant name = "BLOCKv Token"; // Set the token name for display
+  string public constant symbol = "VEE";        // Set the token symbol for display
   uint8  public constant decimals = 18;         // Set the number of decimals for display
 
   PoolBLock public poolBLock;
@@ -437,7 +437,7 @@ contract BlockvToken is StandardToken, Pausable {
   function migrate(uint256 _value) external {
     require(migrationAgent != 0);
     require(_value != 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);

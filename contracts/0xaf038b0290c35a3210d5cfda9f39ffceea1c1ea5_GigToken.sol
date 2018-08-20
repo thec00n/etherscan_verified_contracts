@@ -4,12 +4,12 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,7 +66,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -84,7 +84,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -118,8 +118,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -133,7 +133,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -182,7 +182,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -199,7 +199,7 @@ contract Multivest is Ownable {
     using SafeMath for uint256;
 
     /* public variables */
-    mapping (address =&gt; bool) public allowedMultivests;
+    mapping (address => bool) public allowedMultivests;
 
     /* events */
     event MultivestSet(address multivest);
@@ -236,11 +236,11 @@ contract Multivest is Ownable {
         bytes32 _r,
         bytes32 _s
     ) public payable onlyAllowedMultivests(verify(keccak256(msg.sender), _v, _r, _s)) {
-        require(_address == msg.sender &amp;&amp; buy(msg.sender, msg.value) == true);
+        require(_address == msg.sender && buy(msg.sender, msg.value) == true);
     }
 
     function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) internal pure returns (address) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
         return ecrecover(keccak256(prefix, _hash), _v, _r, _s);
     }
@@ -268,9 +268,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -278,7 +278,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -287,7 +287,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -316,7 +316,7 @@ contract GigERC20 is StandardToken, Ownable {
         bool _transferAllSupplyToOwner,
         bool _locked
     ) public {
-        standard = &quot;ERC20 0.1&quot;;
+        standard = "ERC20 0.1";
         locked = _locked;
         totalSupply_ = _totalSupply;
 
@@ -385,7 +385,7 @@ contract MintingERC20 is GigERC20 {
     using SafeMath for uint256;
 
     //Variables
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     uint256 public maxSupply;
 
@@ -406,7 +406,7 @@ contract MintingERC20 is GigERC20 {
     )
         public GigERC20(_initialSupply, _tokenName, _decimals, _symbol, _transferAllSupplyToOwner, _locked)
     {
-        standard = &quot;MintingERC20 0.1&quot;;
+        standard = "MintingERC20 0.1";
         minters[msg.sender] = true;
         maxSupply = _maxSupply;
     }
@@ -428,7 +428,7 @@ contract MintingERC20 is GigERC20 {
             return uint256(0);
         }
 
-        if (totalSupply_.add(_amount) &gt; maxSupply) {
+        if (totalSupply_.add(_amount) > maxSupply) {
             return uint256(0);
         }
 
@@ -443,24 +443,24 @@ contract MintingERC20 is GigERC20 {
 
 
 contract GigToken is MintingERC20 {
-    SellableToken public crowdSale; // Pre ICO &amp; ICO
+    SellableToken public crowdSale; // Pre ICO & ICO
     SellableToken public privateSale;
 
     bool public transferFrozen = false;
 
     uint256 public crowdSaleEndTime;
 
-    mapping(address =&gt; uint256) public lockedBalancesReleasedAfterOneYear;
+    mapping(address => uint256) public lockedBalancesReleasedAfterOneYear;
 
     modifier onlyCrowdSale() {
-        require(crowdSale != address(0) &amp;&amp; msg.sender == address(crowdSale));
+        require(crowdSale != address(0) && msg.sender == address(crowdSale));
 
         _;
     }
 
     modifier onlySales() {
-        require((privateSale != address(0) &amp;&amp; msg.sender == address(privateSale)) ||
-            (crowdSale != address(0) &amp;&amp; msg.sender == address(crowdSale)));
+        require((privateSale != address(0) && msg.sender == address(privateSale)) ||
+            (crowdSale != address(0) && msg.sender == address(crowdSale)));
 
         _;
     }
@@ -468,9 +468,9 @@ contract GigToken is MintingERC20 {
     event MaxSupplyBurned(uint256 burnedTokens);
 
     function GigToken(bool _locked) public
-        MintingERC20(0, maxSupply, &quot;GigBit&quot;, 18, &quot;GBTC&quot;, false, _locked)
+        MintingERC20(0, maxSupply, "GigBit", 18, "GBTC", false, _locked)
     {
-        standard = &quot;GBTC 0.1&quot;;
+        standard = "GBTC 0.1";
 
         maxSupply = uint256(1000000000).mul(uint256(10) ** decimals);
     }
@@ -495,18 +495,18 @@ contract GigToken is MintingERC20 {
 
     function isTransferAllowed(address _from, uint256 _value) public view returns (bool status) {
         uint256 senderBalance = balanceOf(_from);
-        if (transferFrozen == true || senderBalance &lt; _value) {
+        if (transferFrozen == true || senderBalance < _value) {
             return false;
         }
 
         uint256 lockedBalance = lockedBalancesReleasedAfterOneYear[_from];
 
         // check if holder tries to transfer more than locked tokens
-    if (lockedBalance &gt; 0 &amp;&amp; senderBalance.sub(_value) &lt; lockedBalance) {
+    if (lockedBalance > 0 && senderBalance.sub(_value) < lockedBalance) {
             uint256 unlockTime = crowdSaleEndTime + 1 years;
 
             // fail if unlock time is not come
-            if (crowdSaleEndTime == 0 || block.timestamp &lt; unlockTime) {
+            if (crowdSaleEndTime == 0 || block.timestamp < unlockTime) {
                 return false;
             }
 
@@ -515,7 +515,7 @@ contract GigToken is MintingERC20 {
             // number of months over from unlock
             uint256 months = secsFromUnlock / 30 days;
 
-            if (months &gt; 12) {
+            if (months > 12) {
                 months = 12;
             }
 
@@ -525,13 +525,13 @@ contract GigToken is MintingERC20 {
 
             uint256 actualLockedBalance = lockedBalance.sub(unlockedBalance);
 
-            if (senderBalance.sub(_value) &lt; actualLockedBalance) {
+            if (senderBalance.sub(_value) < actualLockedBalance) {
                 return false;
             }
         }
 
-        if (block.timestamp &lt; crowdSaleEndTime &amp;&amp;
-            crowdSale != address(0) &amp;&amp;
+        if (block.timestamp < crowdSaleEndTime &&
+            crowdSale != address(0) &&
             crowdSale.isTransferAllowed(_from, _value) == false
         ) {
             return false;
@@ -548,32 +548,32 @@ contract GigToken is MintingERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
-        require((crowdSaleEndTime &lt;= block.timestamp) &amp;&amp; isTransferAllowed(_from, _value));
+        // transferFrom & approve are disabled before end of ICO
+        require((crowdSaleEndTime <= block.timestamp) && isTransferAllowed(_from, _value));
 
         return super.transferFrom(_from, _to, _value);
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.approve(_spender, _value);
     }
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.increaseApproval(_spender, _addedValue);
     }
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.decreaseApproval(_spender, _subtractedValue);
     }
@@ -588,9 +588,9 @@ contract GigToken is MintingERC20 {
         address _address,
         uint256 _amount
     ) public onlyCrowdSale returns (uint256) {
-        require(block.timestamp &gt; crowdSaleEndTime);
+        require(block.timestamp > crowdSaleEndTime);
 
-        require(_amount &lt;= balances[_address]);
+        require(_amount <= balances[_address]);
 
         balances[_address] = balances[_address].sub(_amount);
 
@@ -603,7 +603,7 @@ contract GigToken is MintingERC20 {
 
     // decrease max supply of tokens that are not sold
     function burnUnsoldTokens(uint256 _amount) public onlyCrowdSale {
-        require(block.timestamp &gt; crowdSaleEndTime);
+        require(block.timestamp > crowdSaleEndTime);
 
         maxSupply = maxSupply.sub(_amount);
 
@@ -637,7 +637,7 @@ contract SellableToken is Multivest {
     uint256 public etherPriceInUSD;
     uint256 public priceUpdateAt;
 
-    mapping(address =&gt; uint256) public etherBalances;
+    mapping(address => uint256) public etherBalances;
 
     Tier[] public tiers;
 
@@ -660,12 +660,12 @@ contract SellableToken is Multivest {
     )
     public Multivest()
     {
-        require(_token != address(0) &amp;&amp; _etherHolder != address(0));
+        require(_token != address(0) && _etherHolder != address(0));
         token = GigToken(_token);
 
-        require(_startTime &lt; _endTime);
+        require(_startTime < _endTime);
         etherHolder = _etherHolder;
-        require((_maxTokenSupply == uint256(0)) || (_maxTokenSupply &lt;= token.maxSupply()));
+        require((_maxTokenSupply == uint256(0)) || (_maxTokenSupply <= token.maxSupply()));
 
         startTime = _startTime;
         endTime = _endTime;
@@ -687,7 +687,7 @@ contract SellableToken is Multivest {
     }
 
     function setPurchaseLimits(uint256 _min, uint256 _max) public onlyOwner {
-        if (_min &lt; _max) {
+        if (_min < _max) {
             minPurchase = _min;
             maxPurchase = _max;
         }
@@ -725,7 +725,7 @@ contract SellableToken is Multivest {
 
         uint256 newPrice = uint256(10 ** 23).div(parseInt(_price, 5));
 
-        require(newPrice &gt; 0);
+        require(newPrice > 0);
 
         etherPriceInUSD = parseInt(_price, 5);
 
@@ -740,8 +740,8 @@ contract SellableToken is Multivest {
         require(mintedAmount == _tokenAmount);
 
         soldTokens = soldTokens.add(_tokenAmount);
-        if (maxTokenSupply &gt; 0) {
-            require(maxTokenSupply &gt;= soldTokens);
+        if (maxTokenSupply > 0) {
+            require(maxTokenSupply >= soldTokens);
         }
 
         return _tokenAmount;
@@ -753,8 +753,8 @@ contract SellableToken is Multivest {
         bytes memory bresult = bytes(_a);
         uint res = 0;
         bool decimals = false;
-        for (uint i = 0; i &lt; bresult.length; i++) {
-            if ((bresult[i] &gt;= 48) &amp;&amp; (bresult[i] &lt;= 57)) {
+        for (uint i = 0; i < bresult.length; i++) {
+            if ((bresult[i] >= 48) && (bresult[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) break;
                     else _b--;
@@ -763,7 +763,7 @@ contract SellableToken is Multivest {
                 res += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) res *= 10 ** _b;
+        if (_b > 0) res *= 10 ** _b;
         return res;
     }
 }
@@ -788,7 +788,7 @@ contract TokenAllocation is Ownable {
     address public vestingNathanChristian;
     address public vestingEdwinVanBerg;
 
-    mapping(address =&gt; bool) public tokenInited;
+    mapping(address => bool) public tokenInited;
     address[] public vestings;
 
     event VestingCreated(
@@ -808,10 +808,10 @@ contract TokenAllocation is Ownable {
     }
 
     function initVesting() public onlyOwner() {
-        require(vestingApplicature == address(0) &amp;&amp;
-        vestingSimonCocking == address(0) &amp;&amp;
-        vestingNathanChristian == address(0) &amp;&amp;
-        vestingEdwinVanBerg == address(0) &amp;&amp;
+        require(vestingApplicature == address(0) &&
+        vestingSimonCocking == address(0) &&
+        vestingNathanChristian == address(0) &&
+        vestingEdwinVanBerg == address(0) &&
         icoEndTime != 0
         );
 
@@ -917,8 +917,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -931,7 +931,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -947,7 +947,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -978,7 +978,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -993,9 +993,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -1023,9 +1023,9 @@ contract PeriodicTokenVesting is TokenVesting {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released[token]);
 
-        if (now &lt; cliff) {
+        if (now < cliff) {
             return 0;
-        } else if (now &gt;= start.add(duration * periods) || revoked[token]) {
+        } else if (now >= start.add(duration * periods) || revoked[token]) {
             return totalBalance;
         } else {
 
@@ -1033,7 +1033,7 @@ contract PeriodicTokenVesting is TokenVesting {
 
             uint256 periodsOver = now.sub(start).div(duration) + 1;
 
-            if (periodsOver &gt;= periods) {
+            if (periodsOver >= periods) {
                 return totalBalance;
             }
 
@@ -1069,7 +1069,7 @@ contract PrivateSale is SellableToken {
     }
 
     function changeSalePeriod(uint256 _start, uint256 _end) public onlyOwner {
-        if (_start != 0 &amp;&amp; _start &lt; _end) {
+        if (_start != 0 && _start < _end) {
             startTime = _start;
             endTime = _end;
         }
@@ -1084,7 +1084,7 @@ contract PrivateSale is SellableToken {
     }
 
     function withinPeriod() public view returns (bool) {
-        return block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt;= endTime;
+        return block.timestamp >= startTime && block.timestamp <= endTime;
     }
 
     function calculateTokensAmount(uint256 _value) public view returns (uint256 tokenAmount, uint256 usdAmount) {
@@ -1098,7 +1098,7 @@ contract PrivateSale is SellableToken {
 
         usdAmount = usdAmount.div(uint256(10) ** 18);
 
-        if (usdAmount &lt; minPurchase) {
+        if (usdAmount < minPurchase) {
             return (0, 0);
         }
     }
@@ -1111,7 +1111,7 @@ contract PrivateSale is SellableToken {
         usdAmount = _tokens.mul((price * (100 - discount) / 100));
         ethers = usdAmount.div(etherPriceInUSD);
 
-        if (ethers &lt; getMinEthersInvestment()) {
+        if (ethers < getMinEthersInvestment()) {
             return (0, 0);
         }
 
@@ -1144,7 +1144,7 @@ contract PrivateSale is SellableToken {
     }
 
     function moveUnsoldTokens() public onlyOwner {
-        require(address(crowdSale) != address(0) &amp;&amp; now &gt;= endTime &amp;&amp; !isActive() &amp;&amp; maxTokenSupply &gt; soldTokens);
+        require(address(crowdSale) != address(0) && now >= endTime && !isActive() && maxTokenSupply > soldTokens);
 
         crowdSale.updatePreICOMaxTokenSupply(maxTokenSupply.sub(soldTokens));
         maxTokenSupply = soldTokens;
@@ -1170,7 +1170,7 @@ contract PrivateSale is SellableToken {
 
         uint256 mintedAmount = mintInternal(_address, tokenAmount);
         collectedUSD = collectedUSD.add(usdAmount);
-        require(usdAmount &gt; 0 &amp;&amp; mintedAmount &gt; 0);
+        require(usdAmount > 0 && mintedAmount > 0);
 
         collectedEthers = collectedEthers.add(_value);
         etherBalances[_address] = etherBalances[_address].add(_value);

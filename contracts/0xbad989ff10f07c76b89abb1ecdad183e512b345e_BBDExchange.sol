@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,7 +97,7 @@ contract BBDExchange is Ownable {
 
     // Check if min cap was archived.
     modifier onlyWhenICOReachedCreationMinCap() {
-        require(bbdToken.totalSupply() &gt;= bbdToken.creationMinCap());
+        require(bbdToken.totalSupply() >= bbdToken.creationMinCap());
         _;
     }
 
@@ -130,24 +130,24 @@ contract BBDExchange is Ownable {
     // Check if sell is possible
     function checkSell(uint256 _valueBbd) constant returns (bool isPossible, uint256 valueInEthWei) {
         valueInEthWei = _valueBbd.div(exchangeRate());
-        isPossible = this.balance &gt;= valueInEthWei ? true : false;
+        isPossible = this.balance >= valueInEthWei ? true : false;
     }
 
     // Check if buy is possible
     function checkBuy(uint256 _valueInEthWei) constant returns (bool isPossible, uint256 valueBbd) {
         valueBbd = _valueInEthWei.mul(exchangeRate());
-        isPossible = exchangeBBDBalance() &gt;= valueBbd ? true : false;
+        isPossible = exchangeBBDBalance() >= valueBbd ? true : false;
     }
 
     // Sell BBD
     function sell(uint256 _valueBbd) onlyWhenICOReachedCreationMinCap external {
-        require(_valueBbd &gt; 0);
-        require(now &gt;= startTime);
-        require(now &lt;= endTime);
-        require(_valueBbd &lt;= bbdToken.balanceOf(msg.sender));
+        require(_valueBbd > 0);
+        require(now >= startTime);
+        require(now <= endTime);
+        require(_valueBbd <= bbdToken.balanceOf(msg.sender));
 
         uint256 checkedEth = _valueBbd.div(exchangeRate());
-        require(checkedEth &lt;= this.balance);
+        require(checkedEth <= this.balance);
 
         //Transfer BBD to exchange and ETH to user 
         require(bbdToken.transferToExchange(msg.sender, _valueBbd));
@@ -159,11 +159,11 @@ contract BBDExchange is Ownable {
     // Buy BBD
     function buy() onlyWhenICOReachedCreationMinCap payable external {
         require(msg.value != 0);
-        require(now &gt;= startTime);
-        require(now &lt;= endTime);
+        require(now >= startTime);
+        require(now <= endTime);
 
         uint256 checkedBBDTokens = msg.value.mul(exchangeRate());
-        require(checkedBBDTokens &lt;= exchangeBBDBalance());
+        require(checkedBBDTokens <= exchangeBBDBalance());
 
         //Transfer BBD to user. 
         require(bbdToken.transfer(msg.sender, checkedBBDTokens));
@@ -173,7 +173,7 @@ contract BBDExchange is Ownable {
 
     // Close Exchange
     function close() onlyOwner {
-        require(now &gt;= endTime);
+        require(now >= endTime);
 
         //Transfer BBD and ETH to owner
         require(bbdToken.transfer(owner, exchangeBBDBalance()));

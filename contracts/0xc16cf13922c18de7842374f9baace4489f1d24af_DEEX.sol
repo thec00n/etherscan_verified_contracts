@@ -6,13 +6,13 @@ pragma solidity ^0.4.15;
 *  implements [ERC-20 Token Standard](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md)
 *
 *  Style
-*  1) before start coding, run Python and type &#39;import this&#39; in Python console.
+*  1) before start coding, run Python and type 'import this' in Python console.
 *  2) we avoid using inheritance (contract B is A) as it makes code less clear for observer
-*  (&quot;Flat is better than nested&quot;, &quot;Readability counts&quot;)
+*  ("Flat is better than nested", "Readability counts")
 *  3) we avoid using -= ; =- ; +=; =+
 *  see: https://github.com/ether-camp/virtual-accelerator/issues/8
 *  https://www.ethnews.com/ethercamps-hkg-token-has-a-bug-and-needs-to-be-reissued
-*  4) always explicitly mark variables and functions visibility (&quot;Explicit is better than implicit&quot;)
+*  4) always explicitly mark variables and functions visibility ("Explicit is better than implicit")
 *  5) every function except constructor should trigger at leas one event.
 *  6) smart contracts have to be audited and reviewed, comment your code.
 *
@@ -20,12 +20,12 @@ pragma solidity ^0.4.15;
 */
 
 
-/* &quot;Interfaces&quot; */
+/* "Interfaces" */
 
 //  this is expected from another contracts
 //  if it wants to spend tokens of behalf of the token owner in our contract
 //  this can be used in many situations, for example to convert pre-ICO tokens to ICO tokens
-//  see &#39;approveAndCall&#39; function
+//  see 'approveAndCall' function
 contract allowanceRecipient {
     function receiveApproval(address _from, uint256 _value, address _inContract, bytes _extraData) returns (bool success);
 }
@@ -48,11 +48,11 @@ contract DEEX {
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#name
     // function name() constant returns (string name)
-    string public name = &quot;deex&quot;;
+    string public name = "deex";
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#symbol
     // function symbol() constant returns (string symbol)
-    string public symbol = &quot;deex&quot;;
+    string public symbol = "deex";
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#decimals
     // function decimals() constant returns (uint8 decimals)
@@ -65,11 +65,11 @@ contract DEEX {
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#balanceof
     // function balanceOf(address _owner) constant returns (uint256 balance)
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#allowance
     // function allowance(address _owner, address _spender) constant returns (uint256 remaining)
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* ----- For tokens sale */
 
@@ -97,7 +97,7 @@ contract DEEX {
     uint256 private priceMinWei = 0;
 
     // accounts holding tokens for for the team, for advisers and for the bounty campaign
-    mapping (address =&gt; bool) public isPreferredTokensAccount;
+    mapping (address => bool) public isPreferredTokensAccount;
 
     bool public contractInitialized = false;
 
@@ -200,13 +200,13 @@ contract DEEX {
         require(transfersBetweenSalesAllowed || salesCounter == maxSalesAllowed || msg.sender == owner || isPreferredTokensAccount[msg.sender]);
 
         // Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event (ERC-20)
-        require(_value &gt;= 0);
+        require(_value >= 0);
 
         // The function SHOULD throw unless the _from account has deliberately authorized the sender of the message via some mechanism
-        require(msg.sender == _from || _value &lt;= allowance[_from][msg.sender]);
+        require(msg.sender == _from || _value <= allowance[_from][msg.sender]);
 
         // check if _from account have required amount
-        require(_value &lt;= balanceOf[_from]);
+        require(_value <= balanceOf[_from]);
 
         // Subtract from the sender
         balanceOf[_from] = balanceOf[_from] - _value;
@@ -232,7 +232,7 @@ contract DEEX {
     // but this function is required by ERC-20
     function approve(address _spender, uint256 _value) public returns (bool success){
 
-        require(_value &gt;= 0);
+        require(_value >= 0);
 
         allowance[msg.sender][_spender] = _value;
 
@@ -246,24 +246,24 @@ contract DEEX {
 
     /* User can allow another smart contract to spend some shares in his behalf
     *  (this function should be called by user itself)
-    *  @param _spender another contract&#39;s address
+    *  @param _spender another contract's address
     *  @param _value number of tokens
     *  @param _extraData Data that can be sent from user to another contract to be processed
     *  bytes - dynamically-sized byte array,
     *  see http://solidity.readthedocs.io/en/v0.4.15/types.html#dynamically-sized-byte-array
-    *  see possible attack information in comments to function &#39;approve&#39;
-    *  &gt; this may be used to convert pre-ICO tokens to ICO tokens
+    *  see possible attack information in comments to function 'approve'
+    *  > this may be used to convert pre-ICO tokens to ICO tokens
     */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
 
         approve(_spender, _value);
 
-        // &#39;spender&#39; is another contract that implements code as prescribed in &#39;allowanceRecipient&#39; above
+        // 'spender' is another contract that implements code as prescribed in 'allowanceRecipient' above
         allowanceRecipient spender = allowanceRecipient(_spender);
 
-        // our contract calls &#39;receiveApproval&#39; function of another contract (&#39;allowanceRecipient&#39;) to send information about
+        // our contract calls 'receiveApproval' function of another contract ('allowanceRecipient') to send information about
         // allowance and data sent by user
-        // &#39;this&#39; is this (our) contract address
+        // 'this' is this (our) contract address
         if (spender.receiveApproval(msg.sender, _value, this, _extraData)) {
             DataSentToAnotherContract(msg.sender, _spender, _extraData);
             return true;
@@ -280,7 +280,7 @@ contract DEEX {
     * @param address _to - another smart contract address
     * @param uint256 _value - number of tokens
     * @param bytes _extraData - data to send to another contract
-    * &gt; this may be used to convert pre-ICO tokens to ICO tokens
+    * > this may be used to convert pre-ICO tokens to ICO tokens
     */
     function transferAndCall(address _to, uint256 _value, bytes _extraData) public returns (bool success){
 
@@ -323,8 +323,8 @@ contract DEEX {
     * @param uint256 startTime - time to start
     * @param uint256 endTime - time to end
     * should be taken into account that
-    * &quot;block.timestamp&quot; can be influenced by miners to a certain degree.
-    * That means that a miner can &quot;choose&quot; the block.timestamp, to a certain degree,
+    * "block.timestamp" can be influenced by miners to a certain degree.
+    * That means that a miner can "choose" the block.timestamp, to a certain degree,
     * to change the outcome of a transaction in the mined block.
     * see:
     * http://solidity.readthedocs.io/en/v0.4.15/frequently-asked-questions.html#are-timestamps-now-block-timestamp-reliable
@@ -332,19 +332,19 @@ contract DEEX {
 
     function startSale(uint256 _startUnixTime, uint256 _endUnixTime) public onlyBy(owner) returns (bool success){
 
-        require(balanceOf[this] &gt; 0);
-        require(salesCounter &lt; maxSalesAllowed);
+        require(balanceOf[this] > 0);
+        require(salesCounter < maxSalesAllowed);
 
         // time for sale can be set only if:
-        // this is first sale (saleStartUnixTime == 0 &amp;&amp; saleEndUnixTime == 0) , or:
+        // this is first sale (saleStartUnixTime == 0 && saleEndUnixTime == 0) , or:
         // previous sale finished ( saleIsFinished() )
         require(
-        (saleStartUnixTime == 0 &amp;&amp; saleEndUnixTime == 0) || saleIsFinished()
+        (saleStartUnixTime == 0 && saleEndUnixTime == 0) || saleIsFinished()
         );
         // time can be set only for future
-        require(_startUnixTime &gt; now &amp;&amp; _endUnixTime &gt; now);
+        require(_startUnixTime > now && _endUnixTime > now);
         // end time should be later than start time
-        require(_endUnixTime - _startUnixTime &gt; 0);
+        require(_endUnixTime - _startUnixTime > 0);
 
         saleStartUnixTime = _startUnixTime;
         saleEndUnixTime = _endUnixTime;
@@ -361,11 +361,11 @@ contract DEEX {
             return false;
         }
 
-        if (saleStartUnixTime == 0 &amp;&amp; saleEndUnixTime == 0) {
+        if (saleStartUnixTime == 0 && saleEndUnixTime == 0) {
             return false;
         }
 
-        if (now &gt; saleStartUnixTime &amp;&amp; now &lt; saleEndUnixTime) {
+        if (now > saleStartUnixTime && now < saleEndUnixTime) {
             return true;
         }
 
@@ -379,13 +379,13 @@ contract DEEX {
         }
 
         else if (
-        (saleStartUnixTime &gt; 0 &amp;&amp; saleEndUnixTime &gt; 0)
-        &amp;&amp; now &gt; saleEndUnixTime) {
+        (saleStartUnixTime > 0 && saleEndUnixTime > 0)
+        && now > saleEndUnixTime) {
 
             return true;
         }
 
-        // &lt;&lt;&lt;
+        // <<<
         return false;
     }
 
@@ -395,7 +395,7 @@ contract DEEX {
     }
 
     function setMinMaxPriceInWei(uint256 _priceMinWei, uint256 _priceMaxWei) public onlyBy(owner) returns (bool success){
-        require(_priceMinWei &gt;= 0 &amp;&amp; _priceMaxWei &gt;= 0);
+        require(_priceMinWei >= 0 && _priceMaxWei >= 0);
         priceMinWei = _priceMinWei;
         priceMaxWei = _priceMaxWei;
         return true;
@@ -404,13 +404,13 @@ contract DEEX {
 
     function setTokenPriceInWei(uint256 _priceInWei) public onlyBy(priceSetter) returns (bool success){
 
-        require(_priceInWei &gt;= 0);
+        require(_priceInWei >= 0);
 
         // if 0 - not set
-        if (priceMinWei != 0 &amp;&amp; _priceInWei &lt; priceMinWei) {
+        if (priceMinWei != 0 && _priceInWei < priceMinWei) {
             tokenPriceInWei = priceMinWei;
         }
-        else if (priceMaxWei != 0 &amp;&amp; _priceInWei &gt; priceMaxWei) {
+        else if (priceMaxWei != 0 && _priceInWei > priceMaxWei) {
             tokenPriceInWei = priceMaxWei;
         }
         else {
@@ -424,7 +424,7 @@ contract DEEX {
 
     // allows sending ether and receiving tokens just using contract address
     // warning:
-    // &#39;If the fallback function requires more than 2300 gas, the contract cannot receive Ether&#39;
+    // 'If the fallback function requires more than 2300 gas, the contract cannot receive Ether'
     // see:
     // https://ethereum.stackexchange.com/questions/21643/fallback-function-best-practices-when-registering-information
     function() public payable {
@@ -434,11 +434,11 @@ contract DEEX {
     //
     function buyTokens() public payable returns (bool success){
 
-        if (saleIsRunning() &amp;&amp; tokenPriceInWei &gt; 0) {
+        if (saleIsRunning() && tokenPriceInWei > 0) {
 
             uint256 numberOfTokens = msg.value / tokenPriceInWei;
 
-            if (numberOfTokens &lt;= balanceOf[this]) {
+            if (numberOfTokens <= balanceOf[this]) {
 
                 balanceOf[msg.sender] = balanceOf[msg.sender] + numberOfTokens;
                 balanceOf[this] = balanceOf[this] - numberOfTokens;
@@ -486,15 +486,15 @@ contract DEEX {
     // list of registered referrers
     // represented by keccak256(address) (returns bytes32)
     // ! referrers can not be removed !
-    mapping (bytes32 =&gt; bool) private isReferrer;
+    mapping (bytes32 => bool) private isReferrer;
 
     uint256 private referralBonus = 0;
 
     uint256 private referrerBonus = 0;
     // tokens owned by referrers:
-    mapping (bytes32 =&gt; uint256) public referrerBalanceOf;
+    mapping (bytes32 => uint256) public referrerBalanceOf;
 
-    mapping (bytes32 =&gt; uint) public referrerLinkedSales;
+    mapping (bytes32 => uint) public referrerLinkedSales;
 
     function addReferrer(bytes32 _referrer) public onlyBy(owner) returns (bool success){
         isReferrer[_referrer] = true;
@@ -508,7 +508,7 @@ contract DEEX {
 
     // bonuses are set in as integers (20%, 30%), initial 0%
     function setReferralBonuses(uint256 _referralBonus, uint256 _referrerBonus) public onlyBy(owner) returns (bool success){
-        require(_referralBonus &gt; 0 &amp;&amp; _referrerBonus &gt; 0);
+        require(_referralBonus > 0 && _referrerBonus > 0);
         referralBonus = _referralBonus;
         referrerBonus = _referrerBonus;
         return true;
@@ -518,13 +518,13 @@ contract DEEX {
 
         bytes32 referrer = keccak256(_referrer);
 
-        if (saleIsRunning() &amp;&amp; tokenPriceInWei &gt; 0) {
+        if (saleIsRunning() && tokenPriceInWei > 0) {
 
             if (isReferrer[referrer]) {
 
                 uint256 numberOfTokens = msg.value / tokenPriceInWei;
 
-                if (numberOfTokens &lt;= balanceOf[this]) {
+                if (numberOfTokens <= balanceOf[this]) {
 
                     referrerLinkedSales[referrer] = referrerLinkedSales[referrer] + numberOfTokens;
 

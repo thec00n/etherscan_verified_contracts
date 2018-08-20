@@ -2,8 +2,8 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract MyToken {
     uint8 public decimals;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function MyToken(
         uint256 initialSupply,
         string tokenName,
@@ -16,7 +16,7 @@ contract MyToken {
 }
 
 contract DTE {
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -26,9 +26,9 @@ contract DTE {
     uint public totalBuyOrders;
     uint public totalTokens;
     uint public totalDividendPayOuts;
-    string public solidityCompileVersion = &quot;v0.3.6-2016-09-08-acd334c&quot;;
-    string public takerFeePercent = &quot;1%&quot;;
-    string public tokenAddFee = &quot;0.1 ether&quot;;
+    string public solidityCompileVersion = "v0.3.6-2016-09-08-acd334c";
+    string public takerFeePercent = "1%";
+    string public tokenAddFee = "0.1 ether";
 
     struct sellOrder {
         bool isOpen;
@@ -50,21 +50,21 @@ contract DTE {
         uint256 boughtAmount;
     }
 
-    mapping (uint =&gt; MyToken) public tokensAddress;
-    mapping (address =&gt; uint) public tokenNoByAddress;
-    mapping (uint =&gt; sellOrder) public sellOrders;
-    mapping (uint =&gt; buyOrder) public buyOrders;
-    mapping (address =&gt; uint) public totalBuyOrdersOf;
-    mapping (address =&gt; uint) public totalSellOrdersOf;
-    mapping (address =&gt; mapping(uint =&gt; uint)) public BuyOrdersOf;
-    mapping (address =&gt; mapping(uint =&gt; uint)) public SellOrdersOf;
-    mapping (uint =&gt; uint256) public collectedFees;
-    mapping (address =&gt; mapping(uint =&gt; uint256)) public claimableFeesOf;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (uint =&gt; address) public shareHolderByNumber;
-    mapping (address =&gt; uint) public shareHolderByAddress;
-    mapping (address =&gt; bool) isHolder;
+    mapping (uint => MyToken) public tokensAddress;
+    mapping (address => uint) public tokenNoByAddress;
+    mapping (uint => sellOrder) public sellOrders;
+    mapping (uint => buyOrder) public buyOrders;
+    mapping (address => uint) public totalBuyOrdersOf;
+    mapping (address => uint) public totalSellOrdersOf;
+    mapping (address => mapping(uint => uint)) public BuyOrdersOf;
+    mapping (address => mapping(uint => uint)) public SellOrdersOf;
+    mapping (uint => uint256) public collectedFees;
+    mapping (address => mapping(uint => uint256)) public claimableFeesOf;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (uint => address) public shareHolderByNumber;
+    mapping (address => uint) public shareHolderByAddress;
+    mapping (address => bool) isHolder;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event SellOrder(uint indexed OrderNo, address indexed Seller, uint SoldTokenNo, uint256 SoldAmount, uint BoughtTokenNo, uint256 BoughtAmount);
@@ -75,14 +75,14 @@ contract DTE {
     event DividendDistribution(uint indexed TokenNumber, uint256 totalAmount);
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;
+        if (balanceOf[msg.sender] < _value) throw;
         if (_value == 0) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        if(isHolder[_to] &amp;&amp; balanceOf[msg.sender] == _value) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        if(isHolder[_to] && balanceOf[msg.sender] == _value) {
             isHolder[msg.sender] = false;
             shareHolderByAddress[_to] = shareHolderByAddress[msg.sender];
             shareHolderByNumber[shareHolderByAddress[_to]] = _to;
-        } else if(isHolder[_to] == false &amp;&amp; balanceOf[msg.sender] == _value) {
+        } else if(isHolder[_to] == false && balanceOf[msg.sender] == _value) {
             isHolder[msg.sender] = false;
             isHolder[_to] = true;
             shareHolderByAddress[_to] = shareHolderByAddress[msg.sender];
@@ -107,15 +107,15 @@ contract DTE {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;
+        if (balanceOf[_from] < _value) throw;
         if (_value == 0) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        if (_value &gt; allowance[_from][msg.sender]) throw;
-        if(isHolder[_to] &amp;&amp; balanceOf[_from] == _value) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
+        if(isHolder[_to] && balanceOf[_from] == _value) {
             isHolder[_from] = false;
             shareHolderByAddress[_to] = shareHolderByAddress[_from];
             shareHolderByNumber[shareHolderByAddress[_to]] = _to;
-        } else if(isHolder[_to] == false &amp;&amp; balanceOf[_from] == _value) {
+        } else if(isHolder[_to] == false && balanceOf[_from] == _value) {
             isHolder[_from] = false;
             isHolder[_to] = true;
             shareHolderByAddress[_to] = shareHolderByAddress[_from];
@@ -140,16 +140,16 @@ contract DTE {
         shareHolderByAddress[msg.sender] = amountOfHolders;
         isHolder[msg.sender] = true;
         totalSupply = 100000000000000000000;
-        name = &quot;DTE Shares&quot;;
-        symbol = &quot;%&quot;;
+        name = "DTE Shares";
+        symbol = "%";
         decimals = 18;
         tokensAddress[++totalTokens] = MyToken(this);
         tokenNoByAddress[address(this)] = totalTokens;
     }
 
     function DistributeDividends(uint token) {
-        if((collectedFees[token] / 100000000000000000000) &lt; 1) throw;
-        for(uint i = 1; i &lt; amountOfHolders+1; i++) {
+        if((collectedFees[token] / 100000000000000000000) < 1) throw;
+        for(uint i = 1; i < amountOfHolders+1; i++) {
             if(shareHolderByNumber[i] == address(this)) {
                 collectedFees[token] += (collectedFees[token] * balanceOf[shareHolderByNumber[i]]) / 100000000000000000000;
             } else {
@@ -172,11 +172,11 @@ contract DTE {
     }
 
     function () {
-        if(msg.value &gt; 0) collectedFees[0] += msg.value;
+        if(msg.value > 0) collectedFees[0] += msg.value;
     }
 
     function addToken(address tokenContractAddress) {
-        if(msg.value &lt; 100 finney) throw;
+        if(msg.value < 100 finney) throw;
         if(tokenNoByAddress[tokenContractAddress] != 0) throw;
         msg.sender.send(msg.value - 100 finney);
         collectedFees[0] += 100 finney;
@@ -210,7 +210,7 @@ contract DTE {
             uint256 soldAmount = sorder.soldAmount;
             uint256 wantedAmount = sorder.boughtAmount;
             if(wantedToken == 0) {
-                if(msg.value &gt; (amount + (amount / 100)) || msg.value &lt; amount || msg.value &lt; (amount + (amount / 100)) || amount &gt; wantedAmount) throw;
+                if(msg.value > (amount + (amount / 100)) || msg.value < amount || msg.value < (amount + (amount / 100)) || amount > wantedAmount) throw;
                 if(amount == wantedAmount) {
                     sorder.isTaken = true;
                     sorder.isOpen = false;
@@ -226,9 +226,9 @@ contract DTE {
                     tokensAddress[soldToken].transfer(msg.sender, transferAmount);
                 }
             } else {
-                if(msg.value &gt; 0) throw;
+                if(msg.value > 0) throw;
                 uint256 allowance = tokensAddress[wantedToken].allowance(msg.sender, this);
-                if(allowance &gt; (amount + (amount / 100)) || allowance &lt; amount || allowance &lt; (amount + (amount / 100)) || amount &gt; wantedAmount) throw;
+                if(allowance > (amount + (amount / 100)) || allowance < amount || allowance < (amount + (amount / 100)) || amount > wantedAmount) throw;
                 if(amount == wantedAmount) {
                     sorder.isTaken = true;
                     sorder.isOpen = false;
@@ -254,7 +254,7 @@ contract DTE {
             soldAmount = border.soldAmount;
             wantedAmount = border.boughtAmount;
             if(wantedToken == 0) {
-                if(msg.value &gt; (amount + (amount / 100)) || msg.value &lt; amount || msg.value &lt; (amount + (amount / 100)) || amount &gt; wantedAmount) throw;
+                if(msg.value > (amount + (amount / 100)) || msg.value < amount || msg.value < (amount + (amount / 100)) || amount > wantedAmount) throw;
                 if(amount == wantedAmount) {
                     border.isTaken = true;
                     border.isOpen = false;
@@ -270,9 +270,9 @@ contract DTE {
                     tokensAddress[soldToken].transfer(msg.sender, transferAmount);
                 }
             } else {
-                if(msg.value &gt; 0) throw;
+                if(msg.value > 0) throw;
                 allowance = tokensAddress[wantedToken].allowance(msg.sender, this);
-                if(allowance &gt; (amount + (amount / 100)) || allowance &lt; amount || allowance &lt; (amount + (amount / 100)) || amount &gt; wantedAmount) throw;
+                if(allowance > (amount + (amount / 100)) || allowance < amount || allowance < (amount + (amount / 100)) || amount > wantedAmount) throw;
                 if(amount == wantedAmount) {
                     border.isTaken = true;
                     border.isOpen = false;
@@ -304,7 +304,7 @@ contract DTE {
             if(soldTokenNo == 0) throw;
             MyToken token = tokensAddress[soldTokenNo];
             uint256 allowance = token.allowance(msg.sender, this);
-            if(soldTokenNo &gt; totalTokens || allowance &lt; soldAmount) throw;
+            if(soldTokenNo > totalTokens || allowance < soldAmount) throw;
             token.transferFrom(msg.sender, this, soldAmount);
             sellOrders[++totalSellOrders] = sellOrder({
                 isOpen: true,
@@ -319,14 +319,14 @@ contract DTE {
             SellOrder(totalSellOrders, msg.sender, soldTokenNo, soldAmount, boughtTokenNo, boughtAmount);
         } else {
             if(soldTokenNo == 0)  {
-                if(msg.value &gt; soldAmount) throw;
+                if(msg.value > soldAmount) throw;
                 allowance = msg.value;
-            } else if(soldTokenNo &gt; totalTokens) {
+            } else if(soldTokenNo > totalTokens) {
                 throw;
             } else {
                 token = tokensAddress[soldTokenNo];
                 allowance = token.allowance(msg.sender, this);
-                if(soldAmount &lt; allowance) throw;
+                if(soldAmount < allowance) throw;
                 token.transferFrom(msg.sender, this, soldAmount);
             }
             buyOrders[++totalBuyOrders] = buyOrder({

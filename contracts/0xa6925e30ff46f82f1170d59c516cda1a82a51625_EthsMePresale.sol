@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -81,13 +81,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -125,7 +125,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -138,7 +138,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -157,7 +157,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -187,8 +187,8 @@ contract StandardToken is BasicToken, ERC20 {
 
 contract EthsMePresale is StandardToken {
 
-    string public constant name = &quot;EthsMe Presale token&quot;;
-    string public constant symbol = &quot;ETME&quot;;
+    string public constant name = "EthsMe Presale token";
+    string public constant symbol = "ETME";
     uint256   public constant decimals = 18;
 
     uint256 public constant PRICE = 1000; // 1000 EthsMe per Ether
@@ -211,7 +211,7 @@ contract EthsMePresale is StandardToken {
     address public escrow;
     address public crowdsaleManager;
 
-    mapping (address =&gt; uint256) private balance;
+    mapping (address => uint256) private balance;
 
     modifier onlyTokenManager()     { if(msg.sender != tokenManager) throw; _; }
     modifier onlyCrowdsaleManager() { if(msg.sender != crowdsaleManager) throw; _; }
@@ -236,10 +236,10 @@ contract EthsMePresale is StandardToken {
 
         uint256 newEtherBalance = totalETHRaised.add(msg.value);
         if(currentPhase != Phase.Running) throw;
-		if (newEtherBalance &gt; SECURITY_ETHER_CAP) throw; 
+		if (newEtherBalance > SECURITY_ETHER_CAP) throw; 
         if(msg.value == 0) throw;
         uint newTokens = msg.value * PRICE;
-        if (totalSupply + newTokens &gt; TOKEN_SUPPLY_LIMIT) throw;
+        if (totalSupply + newTokens > TOKEN_SUPPLY_LIMIT) throw;
         balance[_buyer] += newTokens;
         totalSupply += newTokens;
         totalETHRaised = newEtherBalance;
@@ -272,16 +272,16 @@ contract EthsMePresale is StandardToken {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) throw;
         currentPhase = _nextPhase;
@@ -293,7 +293,7 @@ contract EthsMePresale is StandardToken {
         onlyTokenManager
     {
         // Available at any phase.
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             if(!escrow.send(this.balance)) throw;
         }
     }
@@ -302,7 +302,7 @@ contract EthsMePresale is StandardToken {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentPhase == Phase.Migrating) throw;
         crowdsaleManager = _mgr;
     }

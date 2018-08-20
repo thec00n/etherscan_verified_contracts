@@ -22,7 +22,7 @@ contract ERC20 {
 }
 
 contract CAVPlatform {
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
     function symbols(uint _idx) public constant returns (bytes32);
     function symbolsCount() public constant returns (uint);
 
@@ -169,7 +169,7 @@ contract CAVAssetProxy is ERC20 {
      */
     function transfer(address _to, uint _value) returns(bool) {
         if (_to != 0x0) {
-          return _transferWithReference(_to, _value, &quot;&quot;);
+          return _transferWithReference(_to, _value, "");
         }
         else {
             return false;
@@ -181,7 +181,7 @@ contract CAVAssetProxy is ERC20 {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      *
      * @return success.
      */
@@ -211,7 +211,7 @@ contract CAVAssetProxy is ERC20 {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -231,7 +231,7 @@ contract CAVAssetProxy is ERC20 {
      */
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
         if (_to != 0x0) {
-            return _getAsset().__transferFromWithReference(_from, _to, _value, &quot;&quot;, msg.sender);
+            return _getAsset().__transferFromWithReference(_from, _to, _value, "", msg.sender);
          }
          else {
              return false;
@@ -246,7 +246,7 @@ contract CAVAssetProxy is ERC20 {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -332,7 +332,7 @@ contract CAVAssetProxy is ERC20 {
 
     // Asset implementation contract address that user decided to stick with.
     // 0x0 means that user uses latest version.
-    mapping(address =&gt; address) userOptOutVersion;
+    mapping(address => address) userOptOutVersion;
 
     /**
      * Only asset implementation contract assigned to sender is allowed to call.
@@ -401,7 +401,7 @@ contract CAVAssetProxy is ERC20 {
         if (_newVersion == 0x0) {
             return false;
         }
-        // Don&#39;t apply freeze-time for the initial setup.
+        // Don't apply freeze-time for the initial setup.
         if (latestVersion == 0x0) {
             latestVersion = _newVersion;
             return true;
@@ -439,7 +439,7 @@ contract CAVAssetProxy is ERC20 {
         if (pendingVersion == 0x0) {
             return false;
         }
-        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME &gt; now) {
+        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME > now) {
             return false;
         }
         latestVersion = pendingVersion;

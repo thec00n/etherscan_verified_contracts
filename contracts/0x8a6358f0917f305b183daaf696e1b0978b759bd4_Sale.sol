@@ -26,9 +26,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -86,8 +86,8 @@ contract Sale {
 
     address public creator;
 
-    mapping (address =&gt; uint256) public heldTokens;
-    mapping (address =&gt; uint) public heldTimeline;
+    mapping (address => uint256) public heldTokens;
+    mapping (address => uint) public heldTimeline;
 
     event Contribution(address from, uint256 amount);
 
@@ -110,44 +110,44 @@ contract Sale {
     
     
     function buy() internal {
-        require(msg.value&gt;=minEthValue);
-        require(now &lt; saleEnd4); // main sale postponed
+        require(msg.value>=minEthValue);
+        require(now < saleEnd4); // main sale postponed
         
         uint256 amount;
         uint256 exchangeRate;
-        if(now &lt; preSaleEnd) {
+        if(now < preSaleEnd) {
             exchangeRate = saleExchangeRate1;
-        } else if(now &lt; saleEnd1) {
+        } else if(now < saleEnd1) {
             exchangeRate = saleExchangeRate2;
-        } else if(now &lt; saleEnd2) {
+        } else if(now < saleEnd2) {
             exchangeRate = saleExchangeRate3;
-        } else if(now &lt; eventSaleEnd) {
+        } else if(now < eventSaleEnd) {
             exchangeRate = saleExchangeRate4;
-        } else if(now &lt; saleEnd4) {
+        } else if(now < saleEnd4) {
             exchangeRate = saleExchangeRate5;
         }
         
         amount = msg.value.mul(exchangeRate).div(10 ** 10);
         
-        if(msg.value &gt;= volumeType7) {
+        if(msg.value >= volumeType7) {
             amount = amount * 180 / 100;
-        } else if(msg.value &gt;= volumeType6) {
+        } else if(msg.value >= volumeType6) {
             amount = amount * 160 / 100;
-        } else if(msg.value &gt;= volumeType5) {
+        } else if(msg.value >= volumeType5) {
             amount = amount * 140 / 100;
-        } else if(msg.value &gt;= volumeType4) {
+        } else if(msg.value >= volumeType4) {
             amount = amount * 130 / 100;
-        } else if(msg.value &gt;= volumeType3) {
+        } else if(msg.value >= volumeType3) {
             amount = amount * 120 / 100;
-        } else if(msg.value &gt;= volumeType2) {
+        } else if(msg.value >= volumeType2) {
             amount = amount * 110 / 100;
-        } else if(msg.value &gt;= volumeType1) {
+        } else if(msg.value >= volumeType1) {
             amount = amount * 105 / 100;
         }
         
         uint256 total = totalSaled + amount;
         
-        require(total&lt;=maxSale);
+        require(total<=maxSale);
         
         totalSaled = total;
         

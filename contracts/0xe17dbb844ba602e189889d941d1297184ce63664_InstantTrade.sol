@@ -31,13 +31,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -92,10 +92,10 @@ contract TokenStore is SafeMath, Ownable {
   uint public fee;
 
   // Mapping of token addresses to mapping of account balances (token 0 means Ether)
-  mapping (address =&gt; mapping (address =&gt; uint)) public tokens;
+  mapping (address => mapping (address => uint)) public tokens;
 
   // Mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
-  mapping (address =&gt; mapping (bytes32 =&gt; uint)) public orderFills;
+  mapping (address => mapping (bytes32 => uint)) public orderFills;
 
   // Address of a next and previous versions of the contract, also status of the contract
   // can be used for user-triggered fund migrations
@@ -154,7 +154,7 @@ contract TokenStore is SafeMath, Ownable {
 
   // Fee can only be decreased!
   function changeFee(uint _fee) onlyOwner {
-    require(_fee &lt;= fee);
+    require(_fee <= fee);
     fee = _fee;
   }
 
@@ -177,7 +177,7 @@ contract TokenStore is SafeMath, Ownable {
   }
 
   function withdraw(uint _amount) {
-    require(tokens[0][msg.sender] &gt;= _amount);
+    require(tokens[0][msg.sender] >= _amount);
     tokens[0][msg.sender] = safeSub(tokens[0][msg.sender], _amount);
     if (!msg.sender.call.value(_amount)()) {
       revert();
@@ -198,7 +198,7 @@ contract TokenStore is SafeMath, Ownable {
 
   function withdrawToken(address _token, uint _amount) {
     require(_token != 0);
-    require(tokens[_token][msg.sender] &gt;= _amount);
+    require(tokens[_token][msg.sender] >= _amount);
     tokens[_token][msg.sender] = safeSub(tokens[_token][msg.sender], _amount);
     if (!Token(_token).transfer(msg.sender, _amount)) {
       revert();
@@ -221,9 +221,9 @@ contract TokenStore is SafeMath, Ownable {
       uint _expires, uint _nonce, address _user, uint8 _v, bytes32 _r, bytes32 _s, uint _amount) {
     bytes32 hash = sha256(this, _tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce);
     // Check order signatures and expiration, also check if not fulfilled yet
-		if (ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), _v, _r, _s) != _user ||
-      block.number &gt; _expires ||
-      safeAdd(orderFills[_user][hash], _amount) &gt; _amountGet) {
+		if (ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash), _v, _r, _s) != _user ||
+      block.number > _expires ||
+      safeAdd(orderFills[_user][hash], _amount) > _amountGet) {
       revert();
     }
     tradeBalances(_tokenGet, _amountGet, _tokenGive, _amountGive, _user, msg.sender, _amount);
@@ -242,10 +242,10 @@ contract TokenStore is SafeMath, Ownable {
     if (accountModifiers != address(0)) {
       var (feeTakeDiscount, rebatePercentage) = AccountModifiersInterface(accountModifiers).tradeModifiers(_user, _caller);
       // Check that the discounts/rebates are never higher then 100%
-      if (feeTakeDiscount &gt; 100) {
+      if (feeTakeDiscount > 100) {
         feeTakeDiscount = 0;
       }
-      if (rebatePercentage &gt; 100) {
+      if (rebatePercentage > 100) {
         rebatePercentage = 0;
       }
       feeTakeValue = safeMul(feeTakeValue, 100 - feeTakeDiscount) / 100;  // discounted fee
@@ -265,8 +265,8 @@ contract TokenStore is SafeMath, Ownable {
 
   function testTrade(address _tokenGet, uint _amountGet, address _tokenGive, uint _amountGive, uint _expires,
       uint _nonce, address _user, uint8 _v, bytes32 _r, bytes32 _s, uint _amount, address _sender) constant returns(bool) {
-    if (tokens[_tokenGet][_sender] &lt; _amount ||
-      availableVolume(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _user, _v, _r, _s) &lt; _amount) {
+    if (tokens[_tokenGet][_sender] < _amount ||
+      availableVolume(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _user, _v, _r, _s) < _amount) {
       return false;
     }
     return true;
@@ -275,13 +275,13 @@ contract TokenStore is SafeMath, Ownable {
   function availableVolume(address _tokenGet, uint _amountGet, address _tokenGive, uint _amountGive, uint _expires,
       uint _nonce, address _user, uint8 _v, bytes32 _r, bytes32 _s) constant returns(uint) {
     bytes32 hash = sha256(this, _tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce);
-    if (ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), _v, _r, _s) != _user ||
-      block.number &gt; _expires) {
+    if (ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash), _v, _r, _s) != _user ||
+      block.number > _expires) {
       return 0;
     }
     uint available1 = safeSub(_amountGet, orderFills[_user][hash]);
     uint available2 = safeMul(tokens[_tokenGive][_user], _amountGet) / _amountGive;
-    if (available1 &lt; available2) return available1;
+    if (available1 < available2) return available1;
     return available2;
   }
 
@@ -294,7 +294,7 @@ contract TokenStore is SafeMath, Ownable {
   function cancelOrder(address _tokenGet, uint _amountGet, address _tokenGive, uint _amountGive, uint _expires,
       uint _nonce, uint8 _v, bytes32 _r, bytes32 _s) {
     bytes32 hash = sha256(this, _tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce);
-    if (!(ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), _v, _r, _s) == msg.sender)) {
+    if (!(ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash), _v, _r, _s) == msg.sender)) {
       revert();
     }
     orderFills[msg.sender][hash] = _amountGet;
@@ -307,13 +307,13 @@ contract TokenStore is SafeMath, Ownable {
 
   // User-triggered (!) fund migrations in case contract got updated
   // Similar to withdraw but we use a successor account instead
-  // As we don&#39;t store user tokens list on chain, it has to be passed from the outside
+  // As we don't store user tokens list on chain, it has to be passed from the outside
   function migrateFunds(address[] _tokens) {
 
     // Get the latest successor in the chain
     require(successor != address(0));
     TokenStore newExchange = TokenStore(successor);
-    for (uint16 n = 0; n &lt; 20; n++) {  // We will look past 20 contracts in the future
+    for (uint16 n = 0; n < 20; n++) {  // We will look past 20 contracts in the future
       address nextSuccessor = newExchange.successor();
       if (nextSuccessor == address(this)) {  // Circular succession
         revert();
@@ -326,13 +326,13 @@ contract TokenStore is SafeMath, Ownable {
 
     // Ether
     uint etherAmount = tokens[0][msg.sender];
-    if (etherAmount &gt; 0) {
+    if (etherAmount > 0) {
       tokens[0][msg.sender] = 0;
       newExchange.depositForUser.value(etherAmount)(msg.sender);
     }
 
     // Tokens
-    for (n = 0; n &lt; _tokens.length; n++) {
+    for (n = 0; n < _tokens.length; n++) {
       address token = _tokens[n];
       require(token != address(0)); // 0 = Ether, we handle it above
       uint tokenAmount = tokens[token][msg.sender];
@@ -356,18 +356,18 @@ contract TokenStore is SafeMath, Ownable {
   // previous exchange, but the user it was called for.
   function depositForUser(address _user) payable deprecable {
     require(_user != address(0));
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     TokenStore caller = TokenStore(msg.sender);
-    require(caller.version() &gt; 0); // Make sure it&#39;s an exchange account
+    require(caller.version() > 0); // Make sure it's an exchange account
     tokens[0][_user] = safeAdd(tokens[0][_user], msg.value);
   }
 
   function depositTokenForUser(address _token, uint _amount, address _user) deprecable {
     require(_token != address(0));
     require(_user != address(0));
-    require(_amount &gt; 0);
+    require(_amount > 0);
     TokenStore caller = TokenStore(msg.sender);
-    require(caller.version() &gt; 0); // Make sure it&#39;s an exchange account
+    require(caller.version() > 0); // Make sure it's an exchange account
     if (!Token(_token).transferFrom(msg.sender, this, _amount)) {
       revert();
     }
@@ -390,7 +390,7 @@ contract InstantTrade is SafeMath, Ownable {
     
     // Paying with Ethereum or token? Deposit to the actual store
     if (_tokenGet == address(0)) {
-      // Check amount of ether sent to make sure it&#39;s correct
+      // Check amount of ether sent to make sure it's correct
       if (msg.value != totalValue) {
         revert();
       }

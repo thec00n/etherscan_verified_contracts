@@ -11,8 +11,8 @@ contract Conteract {
 
     string public About;
     address public Creator;
-    mapping (address =&gt; uint256) public Donors;
-    mapping (address =&gt; string) public Suggestions;
+    mapping (address => uint256) public Donors;
+    mapping (address => string) public Suggestions;
 
     constructor(string about) public {
         Creator = msg.sender;

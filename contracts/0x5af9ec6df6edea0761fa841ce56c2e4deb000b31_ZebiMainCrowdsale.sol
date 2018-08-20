@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,9 +92,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -102,7 +102,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -111,7 +111,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -123,7 +123,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -141,7 +141,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -165,7 +165,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -176,8 +176,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -240,7 +240,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -342,8 +342,8 @@ return true;
 
   
 contract ZebiCoin is MintableToken {
-  string public constant name = &quot;Zebi Coin&quot;;
-  string public constant symbol = &quot;ZCO&quot;;
+  string public constant name = "Zebi Coin";
+  string public constant symbol = "ZCO";
   uint64 public constant decimals = 8;
 }
 
@@ -368,10 +368,10 @@ contract ZCrowdsale is Ownable{
   uint256 public mintedTokensCap; //max 87 million tokens in presale.
   
    //contribution
-  mapping(address =&gt; uint256) contribution;
+  mapping(address => uint256) contribution;
   
   //bad contributor
-  mapping(address =&gt; bool) cancelledList;
+  mapping(address => bool) cancelledList;
 
   // address where funds are collected
   address public wallet;
@@ -419,9 +419,9 @@ contract ZCrowdsale is Ownable{
 
   function ZCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _ETHtoZCOrate, address _wallet,uint256 _minTransAmount,uint256 _mintedTokensCap) public {
   
-	require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_ETHtoZCOrate &gt; 0);
+	require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_ETHtoZCOrate > 0);
     require(_wallet != address(0));
 	
 	token = new ZebiCoin();
@@ -541,16 +541,16 @@ contract ZCrowdsale is Ownable{
   
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
 	//Value(msg.value);
     //bool nonZeroPurchase = msg.value != 0;
-	bool validAmount = msg.value &gt;= minTransAmount;
-	bool withinmintedTokensCap = mintedTokensCap &gt;= (token.totalSupply() + getTokenAmount(msg.value));
-    return withinPeriod &amp;&amp; validAmount &amp;&amp; withinmintedTokensCap;
+	bool validAmount = msg.value >= minTransAmount;
+	bool withinmintedTokensCap = mintedTokensCap >= (token.totalSupply() + getTokenAmount(msg.value));
+    return withinPeriod && validAmount && withinmintedTokensCap;
   }
   
    function refund() external inCancelledList inRefundPeriod {                                                    
-        require((contribution[msg.sender] &gt; 0) &amp;&amp; token.balanceOf(msg.sender)&gt;0);
+        require((contribution[msg.sender] > 0) && token.balanceOf(msg.sender)>0);
        uint256 refundBalance = contribution[msg.sender];	   
        contribution[msg.sender] = 0;
 		token.burn(msg.sender);
@@ -560,7 +560,7 @@ contract ZCrowdsale is Ownable{
 	
 	function forcedRefund(address _from) external onlyOwner {
 	   require(cancelledList[_from]);
-	   require((contribution[_from] &gt; 0) &amp;&amp; token.balanceOf(_from)&gt;0);
+	   require((contribution[_from] > 0) && token.balanceOf(_from)>0);
        uint256 refundBalance = contribution[_from];	  
        contribution[_from] = 0;
 		token.burn(_from);
@@ -617,16 +617,16 @@ contract ZebiCoinTempMgr is Ownable{
   uint64 tokenDecimals;
    
   //bad contributor of presale
-  mapping(address =&gt; bool) preSaleCancelledList;
+  mapping(address => bool) preSaleCancelledList;
 
   // contains token value in zwei
-  mapping(address =&gt; uint256) noncsAllocations;
+  mapping(address => uint256) noncsAllocations;
   
   // check for refund period
   bool public withinRefundPeriod; 
   
   // amount refunded to each investor
-  mapping(address =&gt; uint256)  preSaleRefunds;
+  mapping(address => uint256)  preSaleRefunds;
   
   
   
@@ -715,7 +715,7 @@ contract ZebiCoinTempMgr is Ownable{
   }
   
   function refund() external inPreSaleCancelledList inRefundPeriod {                                                    
-    require((preSaleCSSC.viewContribution(msg.sender) &gt; 0) &amp;&amp; tsc.balanceOf(msg.sender)&gt;0);
+    require((preSaleCSSC.viewContribution(msg.sender) > 0) && tsc.balanceOf(msg.sender)>0);
     uint256 refundBalance = preSaleCSSC.viewContribution(msg.sender);	   
     preSaleRefunds[msg.sender] = refundBalance;
     tsc.burn(msg.sender);
@@ -725,7 +725,7 @@ contract ZebiCoinTempMgr is Ownable{
 	
   function forcedRefund(address _from) external onlyOwner {
 	require(preSaleCancelledList[_from]);
-	require((preSaleCSSC.viewContribution(_from) &gt; 0) &amp;&amp; tsc.balanceOf(_from)&gt;0);
+	require((preSaleCSSC.viewContribution(_from) > 0) && tsc.balanceOf(_from)>0);
     uint256 refundBalance = preSaleCSSC.viewContribution(_from);	  
     preSaleRefunds[_from] = refundBalance;
 	tsc.burn(_from);
@@ -817,10 +817,10 @@ contract ZebiMainCrowdsale is Ownable{
   uint256 public ethCap; 
   
   // Contribution of each investor in main crowdsale
-  mapping(address =&gt; uint256) mainContribution;
+  mapping(address => uint256) mainContribution;
     
   // Bad contributor
-  mapping(address =&gt; bool) mainCancelledList;
+  mapping(address => bool) mainCancelledList;
   
   // Gold Period Cap per address
   uint256 goldPeriodCap;
@@ -829,21 +829,21 @@ contract ZebiMainCrowdsale is Ownable{
   bool goldListPeriodFlag;
   
   //goldListPeriod Contribution TODO
-  mapping(address=&gt;uint256) goldListContribution;
+  mapping(address=>uint256) goldListContribution;
   // Gold List 
-  mapping(address =&gt; bool) goldList;
+  mapping(address => bool) goldList;
   //discounts mapping number of coins to percentage discount
-  // mapping(uint256 =&gt; uint256) discounts;
+  // mapping(uint256 => uint256) discounts;
   
   // KYC Accepted List 
-  mapping(address =&gt; bool) kycAcceptedList;
+  mapping(address => bool) kycAcceptedList;
   // Address where funds are collected
   address public wallet;
 
   bool public withinRefundPeriod; 
   
   // amount refunded to each investor 
-  mapping(address =&gt; uint256)  preSaleRefundsInMainSale;
+  mapping(address => uint256)  preSaleRefundsInMainSale;
   
   
   uint256 public tokens;
@@ -883,9 +883,9 @@ contract ZebiMainCrowdsale is Ownable{
 
   function ZebiMainCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _ETHtoZWeirate, address _wallet,uint256 _minTransAmount,uint256 _ethCap, address tokenAddress, address presaleAddress,address tempMngrAddress,uint256 _goldListPeriod,uint256 _postGoldPeriod,uint256 _goldPeriodCap,uint256 _vestedMintStartTime,uint256 _calenderYearStart) public {
   
-	require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_ETHtoZWeirate &gt; 0);
+	require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_ETHtoZWeirate > 0);
     require(_wallet != address(0));
 	
 	token = ZebiCoin(tokenAddress);	
@@ -992,7 +992,7 @@ contract ZebiMainCrowdsale is Ownable{
     }*/
     
     //for partial fulfilment feature : return extra ether transferred by investor
-    if((msg.value&gt;ethCap.sub(mainWeiRaised)) &amp;&amp; !goldListPeriodFlag){
+    if((msg.value>ethCap.sub(mainWeiRaised)) && !goldListPeriodFlag){
 		weiAmount=ethCap.sub(mainWeiRaised);
 		extraEth=(msg.value).sub(weiAmount);
 	 }
@@ -1012,7 +1012,7 @@ contract ZebiMainCrowdsale is Ownable{
     TokenPurchase(beneficiary, weiAmount, tokens);
 
     forwardFunds();
-    if(extraEth&gt;0){
+    if(extraEth>0){
         beneficiary.transfer(extraEth);
     }
     
@@ -1028,20 +1028,20 @@ contract ZebiMainCrowdsale is Ownable{
     uint256 number = SafeMath.div((weiAmount1.mul(ETHtoZWeirate)),(1 ether));
 	uint256 volumeBonus;
 	uint256 timeBonus;
-	if(number &gt;= 400000000000000)
+	if(number >= 400000000000000)
 	{
 	volumeBonus = SafeMath.div((number.mul(25)),100);
 	}
-	else if(number&gt;= 150000000000000) {
+	else if(number>= 150000000000000) {
 	volumeBonus = SafeMath.div((number.mul(20)),100);
 	    }
-	else if(number&gt;= 80000000000000) {
+	else if(number>= 80000000000000) {
 	volumeBonus = SafeMath.div((number.mul(15)),100);
 	    }
-	else if(number&gt;= 40000000000000) {
+	else if(number>= 40000000000000) {
 	volumeBonus = SafeMath.div((number.mul(10)),100);
 	    }
-	else if(number&gt;= 7500000000000) {
+	else if(number>= 7500000000000) {
 	volumeBonus = SafeMath.div((number.mul(5)),100);
 	    }
 	 else{
@@ -1051,7 +1051,7 @@ contract ZebiMainCrowdsale is Ownable{
 	if(goldListPeriodFlag){
 	    timeBonus = SafeMath.div((number.mul(15)),100);
 	}
-	else if(transStartTime &lt;= startTime + postGoldPeriod){
+	else if(transStartTime <= startTime + postGoldPeriod){
 	    timeBonus = SafeMath.div((number.mul(10)),100);
 	}
 	else{
@@ -1086,23 +1086,23 @@ contract ZebiMainCrowdsale is Ownable{
   // checks if the investor can buy tokens
   
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = transStartTime &gt;= startTime &amp;&amp; transStartTime &lt;= endTime;
-	bool validAmount = msg.value &gt;= minTransAmount;
-	//bool withinEthCap = ethCap &gt;= (msg.value + mainWeiRaised);
-	bool withinEthCap = ((ethCap.sub(mainWeiRaised))&gt;0);
+    bool withinPeriod = transStartTime >= startTime && transStartTime <= endTime;
+	bool validAmount = msg.value >= minTransAmount;
+	//bool withinEthCap = ethCap >= (msg.value + mainWeiRaised);
+	bool withinEthCap = ((ethCap.sub(mainWeiRaised))>0);
 	bool goldPeriodValid=true;
-	if(transStartTime &lt;= (startTime + goldListPeriod)){
-	    goldPeriodValid=(goldList[msg.sender])&amp;&amp;(goldListContribution[msg.sender]+msg.value &lt;= goldPeriodCap);
+	if(transStartTime <= (startTime + goldListPeriod)){
+	    goldPeriodValid=(goldList[msg.sender])&&(goldListContribution[msg.sender]+msg.value <= goldPeriodCap);
 	    goldListPeriodFlag=true;
 	    
 	}
-    return withinPeriod &amp;&amp; validAmount &amp;&amp; withinEthCap &amp;&amp; goldPeriodValid;
+    return withinPeriod && validAmount && withinEthCap && goldPeriodValid;
   }
   
   /*function mintLeftOverZCOToWallet() external onlyOwner returns (bool){
       //uint256 Zweitokens = amount;
       require(!remainingZCOAllocated);
-      require(now&gt;endTime);
+      require(now>endTime);
       
       //uint256 ETHtoZweiRate = ETHtoZWeirate.mul(10**tokenDecimals);
       //uint256 remainingCap=ethCap.sub(mainWeiRaised);
@@ -1116,30 +1116,30 @@ contract ZebiMainCrowdsale is Ownable{
       return true;
   }*/
   function mintAndAllocateZCO(address partnerAddress,uint256 amountInZWei) external onlyOwner returns(bool){
-      require((crowdsaleZCOCap.sub(token.totalSupply()))&gt;=amountInZWei);
+      require((crowdsaleZCOCap.sub(token.totalSupply()))>=amountInZWei);
       require(partnerAddress!=address(0));
-      //require(now&gt;endTime);
+      //require(now>endTime);
       //require(!remainingZCOAllocated);
       token.mint(partnerAddress,amountInZWei);
       return true;
   }
   
   function mintvestedTokens (address partnerAddress,uint256 zweitokens) external onlyOwner returns(bool){
-      require(zweitokens&lt;=zebiZCOShare &amp;&amp; zweitokens&gt;0);
+      require(zweitokens<=zebiZCOShare && zweitokens>0);
       
       require(partnerAddress!=address(0));
-      require(now&gt;=vestedMintStartTime);
+      require(now>=vestedMintStartTime);
       //year
       uint256 currentYearCounter=SafeMath.div((SafeMath.sub(now,calenderYearStart)),1 years);
-      //if(currentYearCounter&gt;calenderYearCounter){
-      if(now&gt;calenderYearEnd &amp;&amp; currentYearCounter&gt;=1){
+      //if(currentYearCounter>calenderYearCounter){
+      if(now>calenderYearEnd && currentYearCounter>=1){
           //calenderYearCounter=currentYearCounter;
           currentYearMinted=0;
           calenderYearStart=calenderYearEnd+((currentYearCounter-1)*1 years) +1;
           calenderYearEnd=(calenderYearStart+ 1 years )- 1;
       }
       
-      require(currentYearMinted+zweitokens&lt;=calenderYearMintCap);
+      require(currentYearMinted+zweitokens<=calenderYearMintCap);
       currentYearMinted=currentYearMinted+zweitokens;
       token.mint(partnerAddress,zweitokens);
       zebiZCOShare=zebiZCOShare.sub(zweitokens);
@@ -1149,7 +1149,7 @@ contract ZebiMainCrowdsale is Ownable{
   
   function refund() external inCancelledList inRefundPeriod {  
     require(mainCancelledList[msg.sender]);  
-    require((mainContribution[msg.sender] &gt; 0) &amp;&amp; token.balanceOf(msg.sender)&gt;0);
+    require((mainContribution[msg.sender] > 0) && token.balanceOf(msg.sender)>0);
 	uint256 presaleContribution = zcc.viewContribution(msg.sender);
     uint256 refundBalance = (mainContribution[msg.sender]).add(presaleContribution) ;
     uint256 preSaleRefundTemp= tempMngr.viewPreSaleRefunds(msg.sender);
@@ -1166,7 +1166,7 @@ contract ZebiMainCrowdsale is Ownable{
 	
   function forcedRefund(address _from) external onlyOwner {
 	require(mainCancelledList[_from]);
-	require((mainContribution[_from] &gt; 0) &amp;&amp; token.balanceOf(_from)&gt;0);
+	require((mainContribution[_from] > 0) && token.balanceOf(_from)>0);
 	uint256 presaleContribution = zcc.viewContribution(_from);
     uint256 refundBalance = (mainContribution[_from]).add(presaleContribution) ;
     uint256 preSaleRefundTemp= tempMngr.viewPreSaleRefunds(_from);

@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -117,7 +117,7 @@ contract ContractReceiver {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
     }
 }
@@ -130,16 +130,16 @@ contract FETCOIN is ERC223, Pausable {
         uint256 locktime;
     }
 
-    string public name = &quot;fetish coin&quot;;
-    string public symbol = &quot;FET&quot;;
+    string public name = "fetish coin";
+    string public symbol = "FET";
     uint8 public decimals = 6;
     uint256 public totalSupply = 10e10 * 1e6;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => bool) public frozenAccount;
 
-    mapping(address =&gt; mapping(address =&gt; Offering)) public offering;
+    mapping(address => mapping(address => Offering)) public offering;
 
     event Freeze(address indexed target, uint256 value);
     event Unfreeze(address indexed target, uint256 value);
@@ -160,10 +160,10 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[msg.sender] == false &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[msg.sender] == false && frozenAccount[_to] == false);
 
         if (isContract(_to)) {
-            require(balanceOf[msg.sender] &gt;= _value);
+            require(balanceOf[msg.sender] >= _value);
             balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -176,7 +176,7 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value, bytes _data) whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[msg.sender] == false &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[msg.sender] == false && frozenAccount[_to] == false);
 
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
@@ -186,7 +186,7 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function transfer(address _to, uint _value) whenNotPaused public returns (bool _success) {
-        require(_value &gt; 0 &amp;&amp; frozenAccount[msg.sender] == false &amp;&amp; frozenAccount[_to] == false);
+        require(_value > 0 && frozenAccount[msg.sender] == false && frozenAccount[_to] == false);
 
         bytes memory empty;
         if (isContract(_to)) {
@@ -210,10 +210,10 @@ contract FETCOIN is ERC223, Pausable {
 
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused public returns (bool _success) {
         require(_to != address(0)
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balanceOf[_from] &gt;= _value
-            &amp;&amp; allowance[_from][msg.sender] &gt;= _value
-            &amp;&amp; frozenAccount[_from] == false &amp;&amp; frozenAccount[_to] == false);
+            && _value > 0
+            && balanceOf[_from] >= _value
+            && allowance[_from][msg.sender] >= _value
+            && frozenAccount[_from] == false && frozenAccount[_to] == false);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -233,9 +233,9 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function freezeAccounts(address[] _targets) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_targets.length &gt; 0);
+        require(_targets.length > 0);
 
-        for (uint j = 0; j &lt; _targets.length; j++) {
+        for (uint j = 0; j < _targets.length; j++) {
             require(_targets[j] != 0x0);
             frozenAccount[_targets[j]] = true;
             Freeze(_targets[j], balanceOf[_targets[j]]);
@@ -244,9 +244,9 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function unfreezeAccounts(address[] _targets) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_targets.length &gt; 0);
+        require(_targets.length > 0);
 
-        for (uint j = 0; j &lt; _targets.length; j++) {
+        for (uint j = 0; j < _targets.length; j++) {
             require(_targets[j] != 0x0);
             frozenAccount[_targets[j]] = false;
             Unfreeze(_targets[j], balanceOf[_targets[j]]);
@@ -263,11 +263,11 @@ contract FETCOIN is ERC223, Pausable {
         assembly {
             length := extcodesize(_target)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool _success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         Transfer(msg.sender, _to, _value, _data);
@@ -276,7 +276,7 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool _success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -287,7 +287,7 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function burn(address _from, uint256 _amount) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; balanceOf[_from] &gt;= _amount);
+        require(_amount > 0 && balanceOf[_from] >= _amount);
         _amount = _amount.mul(1e6);
         balanceOf[_from] = balanceOf[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
@@ -296,16 +296,16 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function rain(address[] _addresses, uint256 _amount) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_amount &gt; 0 &amp;&amp; _addresses.length &gt; 0 &amp;&amp; frozenAccount[msg.sender] == false);
+        require(_amount > 0 && _addresses.length > 0 && frozenAccount[msg.sender] == false);
 
         _amount = _amount.mul(1e6);
         uint256 totalAmount = _amount.mul(_addresses.length);
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(totalAmount);
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
-            require(_addresses[j] != 0x0 &amp;&amp; frozenAccount[_addresses[j]] == false);
+        for (uint j = 0; j < _addresses.length; j++) {
+            require(_addresses[j] != 0x0 && frozenAccount[_addresses[j]] == false);
 
             balanceOf[_addresses[j]] = balanceOf[_addresses[j]].add(_amount);
             Transfer(msg.sender, _addresses[j], _amount);
@@ -315,14 +315,14 @@ contract FETCOIN is ERC223, Pausable {
     }
 
     function collectTokens(address[] _addresses, uint[] _amounts) onlyOwner whenNotPaused public returns (bool _success) {
-        require(_addresses.length &gt; 0 &amp;&amp; _addresses.length == _amounts.length);
+        require(_addresses.length > 0 && _addresses.length == _amounts.length);
 
         uint256 totalAmount = 0;
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
-            require(_amounts[j] &gt; 0 &amp;&amp; _addresses[j] != 0x0 &amp;&amp; frozenAccount[_addresses[j]] == false);
+        for (uint j = 0; j < _addresses.length; j++) {
+            require(_amounts[j] > 0 && _addresses[j] != 0x0 && frozenAccount[_addresses[j]] == false);
             _amounts[j] = _amounts[j].mul(1e6);
-            require(balanceOf[_addresses[j]] &gt;= _amounts[j]);
+            require(balanceOf[_addresses[j]] >= _amounts[j]);
             balanceOf[_addresses[j]] = balanceOf[_addresses[j]].sub(_amounts[j]);
             totalAmount = totalAmount.add(_amounts[j]);
             Transfer(_addresses[j], msg.sender, _amounts[j]);

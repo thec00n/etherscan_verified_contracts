@@ -6,8 +6,8 @@ contract ERC20 {
 }
 
 contract ENJ {
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public balances_for_refund;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public balances_for_refund;
   bool public bought_tokens;
   bool public token_set;
   uint256 public contract_eth_value;
@@ -67,7 +67,7 @@ contract ENJ {
     if (!bought_tokens) {
       balances[msg.sender] += msg.value;
       balances_for_refund[msg.sender] += msg.value;
-      if (this.balance &lt; eth_minimum) return;
+      if (this.balance < eth_minimum) return;
       if (kill_switch) return;
       require(sale != 0x0);
       bought_tokens = true;

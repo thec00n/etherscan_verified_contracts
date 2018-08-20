@@ -7,13 +7,13 @@ contract SafeMath {
     }
     
     function safeSub(uint a, uint b) internal returns (uint) {
-        safeassert(b &lt;= a);
+        safeassert(b <= a);
         return a - b;
     }
     
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        safeassert(c&gt;=a &amp;&amp; c&gt;=b);
+        safeassert(c>=a && c>=b);
         return c;
     }
     
@@ -35,14 +35,14 @@ contract COIN is SafeMath {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     
     /**
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4) ;
+        require(msg.data.length >= size + 4) ;
         _;
     }
     
@@ -83,9 +83,9 @@ contract COIN is SafeMath {
     }
     
     function () payable {
-        require(preicoEnd &gt; now);
+        require(preicoEnd > now);
         uint256 token_amount = safeMul(msg.value, rate);
-        require(safeAdd(tokenSold, token_amount) &lt;= _totalSupply);
+        require(safeAdd(tokenSold, token_amount) <= _totalSupply);
         
         tokenSold = safeAdd(tokenSold, token_amount);
         balances[msg.sender] = safeAdd(balances[msg.sender], token_amount);
@@ -94,9 +94,9 @@ contract COIN is SafeMath {
     }
  
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; safeAdd(balances[_to], _amount) &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && safeAdd(balances[_to], _amount) > balances[_to]) {
             balances[msg.sender] = safeSub(balances[msg.sender], _amount);
             balances[_to] = safeAdd(balances[_to], _amount);
             Transfer(msg.sender, _to, _amount);
@@ -111,10 +111,10 @@ contract COIN is SafeMath {
         address _to,
         uint256 _amount
     ) onlyPayloadSize(2 * 32) public returns (bool success) {
-        if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; safeAdd(balances[_to], _amount) &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && safeAdd(balances[_to], _amount) > balances[_to]) {
             balances[_from] = safeSub(balances[_from], _amount);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _amount);
             balances[_to] = safeAdd(balances[_to], _amount);

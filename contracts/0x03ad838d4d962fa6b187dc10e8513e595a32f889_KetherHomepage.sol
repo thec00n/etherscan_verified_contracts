@@ -89,8 +89,8 @@ contract KetherHomepage {
     /// Represents a 30x30 pixel ad at coordinates (50, 100)
     function buy(uint _x, uint _y, uint _width, uint _height) payable public returns (uint idx) {
         uint cost = _width * _height * pixelsPerCell * weiPixelPrice;
-        require(cost &gt; 0);
-        require(msg.value &gt;= cost);
+        require(cost > 0);
+        require(msg.value >= cost);
 
        idx = addAd(_x, _y, _width, _height);
         
@@ -113,8 +113,8 @@ contract KetherHomepage {
 
     function addAd(uint _x, uint _y, uint _width, uint _height)private returns(uint idx){
         // Loop over relevant grid entries
-        for(uint i=0; i&lt;_width; i++) {
-            for(uint j=0; j&lt;_height; j++) {
+        for(uint i=0; i<_width; i++) {
+            for(uint j=0; j<_height; j++) {
                 if (grid[_x+i][_y+j]) {
                     // Already taken, undo.
                     revert();
@@ -124,7 +124,7 @@ contract KetherHomepage {
         }
 
         // We reserved space in the grid, now make a placeholder entry.
-        Ad memory ad = Ad(msg.sender, _x, _y, _width, _height, &quot;&quot;, &quot;&quot;, &quot;&quot;, false, false);
+        Ad memory ad = Ad(msg.sender, _x, _y, _width, _height, "", "", "", false, false);
         idx = ads.push(ad) - 1;
         Buy(idx, msg.sender, _x, _y, _width, _height);
         return idx;

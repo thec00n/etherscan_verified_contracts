@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -113,7 +113,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -200,9 +200,9 @@ contract Ownable {
  */
 contract DatumGenesisToken is StandardToken, Ownable {
 
-  string public name = &quot;DAT Genesis Token&quot;;           //The Token&#39;s name: e.g. Dat Genesis Tokens
+  string public name = "DAT Genesis Token";           //The Token's name: e.g. Dat Genesis Tokens
   uint8 public decimals = 18;                         //Number of decimals of the smallest unit
-  string public symbol = &quot;DATG&quot;;                             //An identifier: e.g. REP
+  string public symbol = "DATG";                             //An identifier: e.g. REP
                                            
   uint256 public constant INITIAL_SUPPLY = 75000000 ether;
 
@@ -355,7 +355,7 @@ contract DatCrowdPreSale is Ownable {
   function transferTokensManual(address beneficiary, uint256 amount) onlyOwner {
     require(beneficiary != 0x0);
     require(amount != 0);
-    require(weiRaised.add(amount) &lt;= cap);
+    require(weiRaised.add(amount) <= cap);
 
     //transfer tokens
     token.transferFromContract(beneficiary, amount);
@@ -391,17 +391,17 @@ contract DatCrowdPreSale is Ownable {
   // @return true if the transaction can buy tokens
   // check for valid time period, min amount and within cap
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = startDate &lt;= now &amp;&amp; endDate &gt;= now;
+    bool withinPeriod = startDate <= now && endDate >= now;
     bool nonZeroPurchase = msg.value != 0;
-    bool minAmount = msg.value &gt;= minimumParticipationAmount;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
+    bool minAmount = msg.value >= minimumParticipationAmount;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
 
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; minAmount &amp;&amp; !isFinalized &amp;&amp; withinCap;
+    return withinPeriod && nonZeroPurchase && minAmount && !isFinalized && withinCap;
   }
 
     // @return true if the goal is reached
   function capReached() public constant returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   // @return true if crowdsale event has ended

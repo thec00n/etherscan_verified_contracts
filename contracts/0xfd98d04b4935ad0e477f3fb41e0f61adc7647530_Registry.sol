@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -45,7 +45,7 @@ contract Ownable {
  * Manager that stores permitted addresses 
  */
 contract PermissionManager is Ownable {
-    mapping (address =&gt; bool) permittedAddresses;
+    mapping (address => bool) permittedAddresses;
 
     function addAddress(address newAddress) public onlyOwner {
         permittedAddresses[newAddress] = true;
@@ -73,8 +73,8 @@ contract Registry is Ownable {
     uint quoteUSD;
     uint contributionRNTB;
   }
-  mapping(address =&gt; ContributorData) public contributorList;
-  mapping(uint =&gt; address) private contributorIndexes;
+  mapping(address => ContributorData) public contributorList;
+  mapping(uint => address) private contributorIndexes;
 
   uint private nextContributorIndex;
 

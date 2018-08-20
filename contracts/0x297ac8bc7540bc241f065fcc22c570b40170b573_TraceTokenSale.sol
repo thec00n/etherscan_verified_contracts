@@ -6,7 +6,7 @@
  pragma solidity ^0.4.18;
 
 /*************************************************************************
- * import &quot;./math/SafeMath.sol&quot; : start
+ * import "./math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -22,33 +22,33 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;./math/SafeMath.sol&quot; : end
+ * import "./math/SafeMath.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ownership/Ownable.sol&quot; : start
+ * import "./ownership/Ownable.sol" : start
  *************************************************************************/
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -77,29 +77,29 @@ contract Ownable {
   }
 
 }/*************************************************************************
- * import &quot;./ownership/Ownable.sol&quot; : end
+ * import "./ownership/Ownable.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./TraceToken.sol&quot; : start
+ * import "./TraceToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./token/MintableToken.sol&quot; : start
- *************************************************************************/
-
-
-/*************************************************************************
- * import &quot;./StandardToken.sol&quot; : start
+ * import "./token/MintableToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "./StandardToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./BasicToken.sol" : start
+ *************************************************************************/
+
+
+/*************************************************************************
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -115,7 +115,7 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 
 
@@ -127,7 +127,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -156,10 +156,10 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -177,7 +177,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 
@@ -190,7 +190,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -201,8 +201,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -254,7 +254,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -265,7 +265,7 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : end
+ * import "./StandardToken.sol" : end
  *************************************************************************/
 
 
@@ -315,13 +315,13 @@ contract MintableToken is StandardToken, Ownable {
   }
 }
 /*************************************************************************
- * import &quot;./token/MintableToken.sol&quot; : end
+ * import "./token/MintableToken.sol" : end
  *************************************************************************/
 
 contract TraceToken is MintableToken {
 
-    string public constant name = &#39;Trace Token&#39;;
-    string public constant symbol = &#39;TRACE&#39;;
+    string public constant name = 'Trace Token';
+    string public constant symbol = 'TRACE';
     uint8 public constant decimals = 18;
     bool public transferAllowed = false;
 
@@ -329,7 +329,7 @@ contract TraceToken is MintableToken {
     event TransferAllowed(bool transferIsAllowed);
 
     modifier canTransfer() {
-        require(mintingFinished &amp;&amp; transferAllowed);
+        require(mintingFinished && transferAllowed);
         _;        
     }
 
@@ -352,7 +352,7 @@ contract TraceToken is MintableToken {
     }
 }
 /*************************************************************************
- * import &quot;./TraceToken.sol&quot; : end
+ * import "./TraceToken.sol" : end
  *************************************************************************/
 
 contract TraceTokenSale is Ownable{
@@ -419,10 +419,10 @@ contract TraceTokenSale is Ownable{
   uint256 private constant weekInSeconds = 86400 * 7;
 
   // whitelist addresses and planned investment amounts
-  mapping(address =&gt; uint256) public whitelist;
+  mapping(address => uint256) public whitelist;
 
   // amount of ether received from token buyers
-  mapping(address =&gt; uint256) public etherBalances;
+  mapping(address => uint256) public etherBalances;
 
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event Whitelist(address indexed beneficiary, uint256 value);
@@ -430,7 +430,7 @@ contract TraceTokenSale is Ownable{
   event Finalized();
 
   function TraceTokenSale(uint256 _startTime, address traceTokenAddress, address _wallet, address _teamAndFoundersWallet, address _advisorsAndPreICO) public {
-    require(_startTime &gt;=  now);
+    require(_startTime >=  now);
     require(_wallet != 0x0);
     require(_teamAndFoundersWallet != 0x0);
     require(_advisorsAndPreICO != 0x0);
@@ -452,21 +452,21 @@ contract TraceTokenSale is Ownable{
 
      function calcAmount() internal view returns (uint256) {
 
-      if (totalEthers &gt;= presaleLimit || startTime + 2 * weekInSeconds  &lt; now ){
+      if (totalEthers >= presaleLimit || startTime + 2 * weekInSeconds  < now ){
         // presale has ended
         return msg.value.mul(token_per_wei);
         }else{
           // presale ongoing
-          require(msg.value &gt;= min_investment_presale_eth);
+          require(msg.value >= min_investment_presale_eth);
 
           /* discount 20 % in the first week - presale week 1 */
-          if (now &lt;= startTime + weekInSeconds) {
+          if (now <= startTime + weekInSeconds) {
             return msg.value.mul(token_per_wei.mul(100)).div(80);
 
           }
 
           /* discount 15 % in the second week - presale week 2 */
-          if ( startTime +  weekInSeconds  &lt; now ) {
+          if ( startTime +  weekInSeconds  < now ) {
            return msg.value.mul(token_per_wei.mul(100)).div(85);
          }
        }
@@ -483,7 +483,7 @@ contract TraceTokenSale is Ownable{
        require(validPurchase());
        require(checkWhitelist(contributor,msg.value));
        uint256 amount = calcAmount();
-       require((token.totalSupply() + amount) &lt;= TOTAL_NUM_TOKENS);
+       require((token.totalSupply() + amount) <= TOTAL_NUM_TOKENS);
        
        whitelist[contributor] = whitelist[contributor].sub(msg.value);
        etherBalances[contributor] = etherBalances[contributor].add(msg.value);
@@ -491,7 +491,7 @@ contract TraceTokenSale is Ownable{
        totalEthers = totalEthers.add(msg.value);
 
        token.mint(contributor, amount);
-       require(totalEthers &lt;= hardCap); 
+       require(totalEthers <= hardCap); 
        TokenPurchase(0x0, contributor, msg.value, amount);
      }
 
@@ -503,14 +503,14 @@ contract TraceTokenSale is Ownable{
 
     function checkWhitelist(address contributor, uint256 eth_amount) public view returns (bool) {
      require(contributor!=0x0);
-     require(eth_amount&gt;0);
-     return (whitelist[contributor] &gt;= eth_amount);
+     require(eth_amount>0);
+     return (whitelist[contributor] >= eth_amount);
    }
 
    function addWhitelist(address contributor, uint256 eth_amount) onlyOwner public returns (bool) {
      require(!hasEnded());
      require(contributor!=0x0);
-     require(eth_amount&gt;0);
+     require(eth_amount>0);
      Whitelist(contributor, eth_amount);
      whitelist[contributor] = eth_amount;
      return true;
@@ -522,7 +522,7 @@ contract TraceTokenSale is Ownable{
      uint256 amount;
      require(contributors.length == amounts.length);
 
-     for (uint i = 0; i &lt; contributors.length; i++) {
+     for (uint i = 0; i < contributors.length; i++) {
       contributor = contributors[i];
       amount = amounts[i];
       require(addWhitelist(contributor, amount));
@@ -533,32 +533,32 @@ contract TraceTokenSale is Ownable{
 
   function validPurchase() internal view returns (bool) {
 
-   bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-   bool withinPurchaseLimits = msg.value &gt;= min_investment_eth &amp;&amp; msg.value &lt;= max_investment_eth;
-   return withinPeriod &amp;&amp; withinPurchaseLimits;
+   bool withinPeriod = now >= startTime && now <= endTime;
+   bool withinPurchaseLimits = msg.value >= min_investment_eth && msg.value <= max_investment_eth;
+   return withinPeriod && withinPurchaseLimits;
  }
 
  function hasStarted() public view returns (bool) {
-  return now &gt;= startTime;
+  return now >= startTime;
 }
 
 function hasEnded() public view returns (bool) {
-  return now &gt; endTime || token.totalSupply() == TOTAL_NUM_TOKENS;
+  return now > endTime || token.totalSupply() == TOTAL_NUM_TOKENS;
 }
 
 
 function hardCapReached() public view returns (bool) {
-  return hardCap.mul(999).div(1000) &lt;= totalEthers; 
+  return hardCap.mul(999).div(1000) <= totalEthers; 
 }
 
 function softCapReached() public view returns(bool) {
-  return totalEthers &gt;= softCap;
+  return totalEthers >= softCap;
 }
 
 
 function withdraw() onlyOwner public {
   require(softCapReached());
-  require(this.balance &gt; 0);
+  require(this.balance > 0);
 
   wallet.transfer(this.balance);
 }
@@ -567,36 +567,36 @@ function withdrawTokenToFounders() onlyOwner public {
   require(softCapReached());
   require(hasEnded());
 
-  if (now &gt; startTime + 720 days &amp;&amp; founderAmounts[7]!=0){
+  if (now > startTime + 720 days && founderAmounts[7]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[7]);
     founderAmounts[7] = 0;
   }
 
-  if (now &gt; startTime + 630 days &amp;&amp; founderAmounts[6]!=0){
+  if (now > startTime + 630 days && founderAmounts[6]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[6]);
     founderAmounts[6] = 0;
   }
-  if (now &gt; startTime + 540 days &amp;&amp; founderAmounts[5]!=0){
+  if (now > startTime + 540 days && founderAmounts[5]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[5]);
     founderAmounts[5] = 0;
   }
-  if (now &gt; startTime + 450 days &amp;&amp; founderAmounts[4]!=0){
+  if (now > startTime + 450 days && founderAmounts[4]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[4]);
     founderAmounts[4] = 0;
   }
-  if (now &gt; startTime + 360 days&amp;&amp; founderAmounts[3]!=0){
+  if (now > startTime + 360 days&& founderAmounts[3]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[3]);
     founderAmounts[3] = 0;
   }
-  if (now &gt; startTime + 270 days &amp;&amp; founderAmounts[2]!=0){
+  if (now > startTime + 270 days && founderAmounts[2]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[2]);
     founderAmounts[2] = 0;
   }
-  if (now &gt; startTime + 180 days &amp;&amp; founderAmounts[1]!=0){
+  if (now > startTime + 180 days && founderAmounts[1]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[1]);
     founderAmounts[1] = 0;
   }
-  if (now &gt; startTime + 90 days &amp;&amp; founderAmounts[0]!=0){
+  if (now > startTime + 90 days && founderAmounts[0]!=0){
     token.transfer(teamAndFoundersWallet, founderAmounts[0]);
     founderAmounts[0] = 0;
   }
@@ -606,12 +606,12 @@ function withdrawTokensToAdvisors() onlyOwner public {
   require(softCapReached());
   require(hasEnded());
 
-  if (now &gt; startTime + 180 days &amp;&amp; preicoAndAdvisorsAmounts[1]!=0){
+  if (now > startTime + 180 days && preicoAndAdvisorsAmounts[1]!=0){
     token.transfer(advisorsAndPreICO, preicoAndAdvisorsAmounts[1]);
     preicoAndAdvisorsAmounts[1] = 0;
   }
 
-  if (now &gt; startTime + 90 days &amp;&amp; preicoAndAdvisorsAmounts[0]!=0){
+  if (now > startTime + 90 days && preicoAndAdvisorsAmounts[0]!=0){
     token.transfer(advisorsAndPreICO, preicoAndAdvisorsAmounts[0]);
     preicoAndAdvisorsAmounts[0] = 0;
   }
@@ -621,8 +621,8 @@ function refund() public {
   require(refundAllowed);
   require(hasEnded());
   require(!softCapReached());
-  require(etherBalances[msg.sender] &gt; 0);
-  require(token.balanceOf(msg.sender) &gt; 0);
+  require(etherBalances[msg.sender] > 0);
+  require(token.balanceOf(msg.sender) > 0);
 
   uint256 current_balance = etherBalances[msg.sender];
   etherBalances[msg.sender] = 0;

@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,9 +64,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,9 +91,9 @@ library SafeMath {
 contract Membership is Ownable {
   using SafeMath for uint;
 
-  mapping(address =&gt; bool) public isAdmin;
-  mapping(address =&gt; uint) public userToMemberIndex;
-  mapping(uint =&gt; uint[]) public tierToMemberIndexes;
+  mapping(address => bool) public isAdmin;
+  mapping(address => uint) public userToMemberIndex;
+  mapping(uint => uint[]) public tierToMemberIndexes;
 
   struct Member {
     address addr;
@@ -114,7 +114,7 @@ contract Membership is Ownable {
   }
 
   modifier isValidTier(uint _tier) {
-    require(_tier &gt;= 1 &amp;&amp; _tier &lt;= 4);
+    require(_tier >= 1 && _tier <= 4);
     _;
   }
 
@@ -182,7 +182,7 @@ contract Membership is Ownable {
   function addNewMember(address _user, uint _tier)
     internal
   {
-    // it&#39;s a new member
+    // it's a new member
     uint memberIndex = members.length; // + 1; // add 1 to keep index 0 unoccupied
     uint tierIndex = tierToMemberIndexes[_tier].length;
 
@@ -206,7 +206,7 @@ contract Membership is Ownable {
     uint tierIndex = existingMember.tierIndex;
     uint lastTierIndex = tierToMemberIndexes[oldTier].length - 1;
 
-    if (tierToMemberIndexes[oldTier].length &gt; 1 &amp;&amp; tierIndex != lastTierIndex) {
+    if (tierToMemberIndexes[oldTier].length > 1 && tierIndex != lastTierIndex) {
       Member storage lastMember = members[tierToMemberIndexes[oldTier][lastTierIndex]];
       tierToMemberIndexes[oldTier][tierIndex] = lastMember.memberIndex;
       lastMember.tierIndex = tierIndex;
@@ -232,7 +232,7 @@ contract Membership is Ownable {
     } else {
       uint currentTier = members[userToMemberIndex[_user]].tier;
       if (currentTier != _tier) {
-        // user&#39;s in tier 1 are lifetime tier 1 users
+        // user's in tier 1 are lifetime tier 1 users
         require(currentTier != 1);
 
         updateExistingMember(_user, _tier);
@@ -255,7 +255,7 @@ contract Membership is Ownable {
   {
     address[] memory addressesOfTier = new address[](tierToMemberIndexes[_tier].length);
 
-    for (uint i = 0; i &lt; tierToMemberIndexes[_tier].length; i++) {
+    for (uint i = 0; i < tierToMemberIndexes[_tier].length; i++) {
       addressesOfTier[i] = members[tierToMemberIndexes[_tier][i]].addr;
     }
 

@@ -1,42 +1,42 @@
 /*
- *      Welcome to the &#119812;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838; Smart-Contract!
- *      The &#119822;&#119821;&#119819;&#119832; decentralized, charitable blockchain lottery!
+ *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 Smart-Contract!
+ *      The 𝐎𝐍𝐋𝐘 decentralized, charitable blockchain lottery!
  *      
  *      ##########################################
  *      ##########################################
  *      ###                                    ###
- *      ###          &#119823;&#119845;&#119834;&#119858; &amp; &#119830;&#119842;&#119847; &#119812;&#119853;&#119841;&#119838;&#119851;          ###
+ *      ###          𝐏𝐥𝐚𝐲 & 𝐖𝐢𝐧 𝐄𝐭𝐡𝐞𝐫          ###
  *      ###                 at                 ###
- *      ###          &#119812;&#119827;&#119815;&#119812;&#119825;&#119808;&#119813;&#119813;&#119819;&#119812;.&#119810;&#119822;&#119820;          ###
+ *      ###          𝐄𝐓𝐇𝐄𝐑𝐀𝐅𝐅𝐋𝐄.𝐂𝐎𝐌          ###
  *      ###                                    ###
  *      ##########################################
  *      ##########################################
  *
- *      Etheraffle is designed to give &#119841;&#119854;&#119840;&#119838; &#119849;&#119851;&#119842;&#119859;&#119838;&#119852; to 
- *      players, sustainable &#119812;&#119827;&#119815; &#119837;&#119842;&#119855;&#119842;&#119837;&#119838;&#119847;&#119837;&#119852; to &#119819;&#119822;&#119827; token 
- *      holders, and &#119845;&#119842;&#119839;&#119838;-&#119836;&#119841;&#119834;&#119847;&#119840;&#119842;&#119847;&#119840; &#119839;&#119854;&#119847;&#119837;&#119842;&#119847;&#119840; to charities.
+ *      Etheraffle is designed to give 𝐡𝐮𝐠𝐞 𝐩𝐫𝐢𝐳𝐞𝐬 to 
+ *      players, sustainable 𝐄𝐓𝐇 𝐝𝐢𝐯𝐢𝐝𝐞𝐧𝐝𝐬 to 𝐋𝐎𝐓 token 
+ *      holders, and 𝐥𝐢𝐟𝐞-𝐜𝐡𝐚𝐧𝐠𝐢𝐧𝐠 𝐟𝐮𝐧𝐝𝐢𝐧𝐠 to charities.
  *
- *      Learn more &amp; get involved at &#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;.&#119836;&#119848;&#119846;/&#119816;&#119810;&#119822; to become a
- *      &#119819;&#119822;&#119827; token holder today! Holding &#119819;&#119822;&#119827; tokens automatically  
+ *      Learn more & get involved at 𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐈𝐂𝐎 to become a
+ *      𝐋𝐎𝐓 token holder today! Holding 𝐋𝐎𝐓 tokens automatically  
  *      makes you a part of the decentralized, autonomous organisation  
- *      that &#119822;&#119830;&#119821;&#119826; Etheraffle. Take your place in this decentralized, 
+ *      that 𝐎𝐖𝐍𝐒 Etheraffle. Take your place in this decentralized, 
  *      altruistic vision of the future!
  *
  *      If you want to chat to us you have loads of options:
- *      On &#119827;&#119838;&#119845;&#119838;&#119840;&#119851;&#119834;&#119846; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119853;.&#119846;&#119838;/&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;
- *      Or on &#119827;&#119856;&#119842;&#119853;&#119853;&#119838;&#119851; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119853;&#119856;&#119842;&#119853;&#119853;&#119838;&#119851;.&#119836;&#119848;&#119846;/&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;
- *      Or on &#119825;&#119838;&#119837;&#119837;&#119842;&#119853; @ &#119841;&#119853;&#119853;&#119849;&#119852;://&#119838;&#119853;&#119841;&#119838;&#119851;&#119834;&#119839;&#119839;&#119845;&#119838;.&#119851;&#119838;&#119837;&#119837;&#119842;&#119853;.&#119836;&#119848;&#119846;
+ *      On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
  *
  */
  
 pragma solidity^0.4.21;
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<span class="__cf_email__" data-cfemail="81e0f3e0e2e9efe8e5c1efeef5e5eef5afefe4f5">[email&#160;protected]</span>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<span class="__cf_email__" data-cfemail="81e0f3e0e2e9efe8e5c1efeef5e5eef5afefe4f5">[email protected]</span>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -44,11 +44,11 @@ pragma solidity^0.4.21;
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -63,7 +63,7 @@ pragma solidity^0.4.21;
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
  
@@ -77,7 +77,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -116,23 +116,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -168,7 +168,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -191,18 +191,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -230,12 +230,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -245,7 +245,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -284,18 +284,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -335,33 +335,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -385,7 +385,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -411,7 +411,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -440,7 +440,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -468,7 +468,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -495,8 +495,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -516,7 +516,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -533,8 +533,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -556,7 +556,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -678,7 +678,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -720,20 +720,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         var ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -742,7 +742,7 @@ library strings {
         return ret;
     }
 }
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -750,7 +750,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -763,7 +763,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -772,7 +772,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-//pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity &lt; 0.4.0
+//pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity < 0.4.0
 
 contract OraclizeI {
     address public cbAddress;
@@ -828,35 +828,35 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -883,65 +883,65 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -1089,25 +1089,25 @@ contract usingOraclize {
     }
     function oraclize_query(string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -1282,16 +1282,16 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -1301,15 +1301,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -1318,19 +1318,19 @@ contract usingOraclize {
     function indexOf(string _haystack, string _needle) internal returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }
@@ -1351,24 +1351,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -1381,8 +1381,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -1391,12 +1391,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
     function uint2str(uint i) internal returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -1418,7 +1418,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -1427,20 +1427,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -1460,7 +1460,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -1469,20 +1469,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -1507,7 +1507,7 @@ contract usingOraclize {
     }
 
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        if ((_nbytes == 0)||(_nbytes &gt; 32)) throw;
+        if ((_nbytes == 0)||(_nbytes > 32)) throw;
 	// Convert from seconds to ledger timer ticks
         _delay *= 10; 
         bytes memory nbytes = new bytes(1);
@@ -1530,7 +1530,7 @@ contract usingOraclize {
         copyBytes(delay, 24, 8, delay_bytes8, 0);
 
         bytes[4] memory args = [unonce, nbytes, sessionKeyHash, delay];
-        bytes32 queryId = oraclize_query(&quot;random&quot;, args, _customGasLimit);
+        bytes32 queryId = oraclize_query("random", args, _customGasLimit);
         
         bytes memory delay_bytes8_left = new bytes(8);
         
@@ -1555,8 +1555,8 @@ contract usingOraclize {
         oraclize_randomDS_args[queryId] = commitment;
     }
 
-    mapping(bytes32=&gt;bytes32) oraclize_randomDS_args;
-    mapping(bytes32=&gt;bool) oraclize_randomDS_sessionKeysHashVerified;
+    mapping(bytes32=>bytes32) oraclize_randomDS_args;
+    mapping(bytes32=>bool) oraclize_randomDS_sessionKeysHashVerified;
 
     function verifySig(bytes32 tosignh, bytes dersig, bytes pubkey) internal returns (bool){
         bool sigok;
@@ -1599,7 +1599,7 @@ contract usingOraclize {
         bytes memory tosign2 = new bytes(1+65+32);
         tosign2[0] = 1; //role
         copyBytes(proof, sig2offset-65, 65, tosign2, 1);
-        bytes memory CODEHASH = hex&quot;fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c&quot;;
+        bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1+65);
         sigok = verifySig(sha256(tosign2), sig2, appkey1_pubkey);
 
@@ -1607,7 +1607,7 @@ contract usingOraclize {
 
 
         // Step 7: verify the APPKEY1 provenance (must be signed by Ledger)
-        bytes memory LEDGERKEY = hex&quot;7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4&quot;;
+        bytes memory LEDGERKEY = hex"7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4";
 
         bytes memory tosign3 = new bytes(1+65);
         tosign3[0] = 0xFE;
@@ -1622,8 +1622,8 @@ contract usingOraclize {
     }
 
     modifier oraclize_randomDS_proofVerify(bytes32 _queryId, string _result, bytes _proof) {
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;)||(_proof[1] != &quot;P&quot;)||(_proof[2] != 1)) throw;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L")||(_proof[1] != "P")||(_proof[2] != 1)) throw;
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) throw;
@@ -1632,8 +1632,8 @@ contract usingOraclize {
     }
 
     function oraclize_randomDS_proofVerify__returnCode(bytes32 _queryId, string _result, bytes _proof) internal returns (uint8){
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;)||(_proof[1] != &quot;P&quot;)||(_proof[2] != 1)) return 1;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L")||(_proof[1] != "P")||(_proof[2] != 1)) return 1;
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) return 2;
@@ -1646,7 +1646,7 @@ contract usingOraclize {
 	
 	if (prefix.length != n_random_bytes) throw;
 	        
-        for (uint256 i=0; i&lt; n_random_bytes; i++) {
+        for (uint256 i=0; i< n_random_bytes; i++) {
             if (content[i] != prefix[i]) match_ = false;
         }
 
@@ -1664,7 +1664,7 @@ contract usingOraclize {
         bytes memory sig1 = new bytes(uint(proof[ledgerProofLength+(32+8+1+32)+1])+2);
         copyBytes(proof, ledgerProofLength+(32+8+1+32), sig1.length, sig1, 0);
 
-        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if &#39;result&#39; is the prefix of sha256(sig1)
+        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if 'result' is the prefix of sha256(sig1)
         if (!matchBytes32Prefix(sha256(sig1), result, uint(proof[ledgerProofLength+32+8]))) return false;
 
         // Step 4: commitment match verification, sha3(delay, nbytes, unonce, sessionKeyHash) == commitment in storage.
@@ -1687,7 +1687,7 @@ contract usingOraclize {
         copyBytes(proof, ledgerProofLength, 32+8+1+32, tosign1, 0);
         if (!verifySig(sha256(tosign1), sig1, sessionPubkey)) return false;
 
-        // verify if sessionPubkeyHash was verified already, if not.. let&#39;s do it!
+        // verify if sessionPubkeyHash was verified already, if not.. let's do it!
         if (oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] == false){
             oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] = oraclize_randomDS_proofVerify__sessionKeyValidity(proof, sig2offset);
         }
@@ -1700,7 +1700,7 @@ contract usingOraclize {
     function copyBytes(bytes from, uint fromOffset, uint length, bytes to, uint toOffset) internal returns (bytes) {
         uint minLength = length + toOffset;
 
-        if (to.length &lt; minLength) {
+        if (to.length < minLength) {
             // Buffer too small
             throw; // Should be a better way?
         }
@@ -1709,7 +1709,7 @@ contract usingOraclize {
         uint i = 32 + fromOffset;
         uint j = 32 + toOffset;
 
-        while (i &lt; (32 + fromOffset + length)) {
+        while (i < (32 + fromOffset + length)) {
             assembly {
                 let tmp := mload(add(from, i))
                 mstore(add(to, j), tmp)
@@ -1722,15 +1722,15 @@ contract usingOraclize {
     }
 
     // the following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
-        // FIXME: inline assembly can&#39;t access return values
+        // FIXME: inline assembly can't access return values
         bool ret;
         address addr;
 
@@ -1767,13 +1767,13 @@ contract usingOraclize {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -1782,17 +1782,17 @@ contract usingOraclize {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
           v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
     }
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 contract ReceiverInterface {
     function receiveEther() external payable {}
@@ -1831,18 +1831,18 @@ contract Etheraffle is usingOraclize {
     uint[]  public pctOfPool    = [520, 114, 47, 319]; // ppt...
     uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
     uint  constant WEEKDUR      = 604800;
-    uint  constant BIRTHDAY     = 1500249600;//Etheraffle&#39;s birthday &lt;3
+    uint  constant BIRTHDAY     = 1500249600;//Etheraffle's birthday <3
 
     FreeLOTInterface freeLOT;
 
-    string randomStr1 = &quot;[URL] [&#39;json(https://api.random.org/json-rpc/1/invoke).result.random[\&quot;data\&quot;, \&quot;serialNumber\&quot;]&#39;,&#39;\\n{\&quot;jsonrpc\&quot;: \&quot;2.0\&quot;,\&quot;method\&quot;:\&quot;generateSignedIntegers\&quot;,\&quot;id\&quot;:\&quot;&quot;;
-    string randomStr2 = &quot;\&quot;,\&quot;params\&quot;:{\&quot;n\&quot;:\&quot;6\&quot;,\&quot;min\&quot;:1,\&quot;max\&quot;:49,\&quot;replacement\&quot;:false,\&quot;base\&quot;:10,\&quot;apiKey\&quot;:${[decrypt] BIaCXRwykpLeDE9h1dQaAUi0LPTD4Jz0kwh6SVTftO+zromdgBhmdQhFwPsaLEGDHHn8bhQA8ksyjOZJpjDzKcVWlkBx5C07udHFtMnvG9g9VITYGxoMOhpFCTnoIKTBlIbNe5D1rIgl9OYUVX4ibTT8fCEE8TkWqQ==}}&#39;]&quot;;
-    string apiStr1    = &quot;[URL] [&#39;json(https://etheraffle.com/api/a).m&#39;,&#39;{\&quot;r\&quot;:\&quot;&quot;;
-    string apiStr2    = &quot;\&quot;,\&quot;k\&quot;:${[decrypt] BDzj/WPcHzGWYRL2cXvMNvInBxhutESn6Xj8pVzUUH+oEeWBoyycp23B7FSjqKJww6uH5AxvD4srlX0D/Rhl678YcKSNX2oMJJ47ciZrCnj6+28GHCLBV+XiA/1GDis9p5Q9NIKI}}&#39;]&quot;;
+    string randomStr1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\"";
+    string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BIaCXRwykpLeDE9h1dQaAUi0LPTD4Jz0kwh6SVTftO+zromdgBhmdQhFwPsaLEGDHHn8bhQA8ksyjOZJpjDzKcVWlkBx5C07udHFtMnvG9g9VITYGxoMOhpFCTnoIKTBlIbNe5D1rIgl9OYUVX4ibTT8fCEE8TkWqQ==}}']";
+    string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
+    string apiStr2    = "\",\"k\":${[decrypt] BDzj/WPcHzGWYRL2cXvMNvInBxhutESn6Xj8pVzUUH+oEeWBoyycp23B7FSjqKJww6uH5AxvD4srlX0D/Rhl678YcKSNX2oMJJ47ciZrCnj6+28GHCLBV+XiA/1GDis9p5Q9NIKI}}']";
 
-    mapping (uint =&gt; rafStruct) public raffle;
+    mapping (uint => rafStruct) public raffle;
     struct rafStruct {
-        mapping (address =&gt; uint[][]) entries;
+        mapping (address => uint[][]) entries;
         uint unclaimed;
         uint[] winNums;
         uint[] winAmts;
@@ -1852,7 +1852,7 @@ contract Etheraffle is usingOraclize {
         uint freeEntries;
     }
 
-    mapping (bytes32 =&gt; qIDStruct) public qID;
+    mapping (bytes32 => qIDStruct) public qID;
     struct qIDStruct {
         uint weekNo;
         bool isRandom;
@@ -1888,10 +1888,10 @@ contract Etheraffle is usingOraclize {
     event LogTicketBought(uint indexed forRaffle, uint indexed entryNumber, address indexed theEntrant, uint[] chosenNumbers, uint personalEntryNumber, uint tktCost, uint atTime, uint affiliateID);
     event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
     /**
-     * @dev   Constructor - sets the Etheraffle contract address &amp;
+     * @dev   Constructor - sets the Etheraffle contract address &
      *        the disbursal contract address for investors, calls
      *        the newRaffle() function with sets the current
-     *        raffle ID global var plus sets up the first raffle&#39;s
+     *        raffle ID global var plus sets up the first raffle's
      *        struct with correct time stamp. Sets the withdraw
      *        before time to a ten week period, and prepares the
      *        initial oraclize call which will begin the recursive
@@ -1910,18 +1910,18 @@ contract Etheraffle is usingOraclize {
         freeLOT      = FreeLOTInterface(_freeLOT);
         uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
         raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
-        bytes32 query = oraclize_query(delay, &quot;nested&quot;, strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
+        bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
         qID[query].weekNo = week;
         qID[query].isRandom = true;
         emit LogQuerySent(query, delay, now);
     }
     /**
-     * @dev   Function using Etheraffle&#39;s birthday to calculate the
+     * @dev   Function using Etheraffle's birthday to calculate the
      *        week number since then.
      */
     function getWeek() public constant returns (uint) {
         uint curWeek = (now - BIRTHDAY) / WEEKDUR;
-        if (now - ((curWeek * WEEKDUR) + BIRTHDAY) &gt; rafEnd) {
+        if (now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd) {
             curWeek++;
         }
         return curWeek;
@@ -1944,7 +1944,7 @@ contract Etheraffle is usingOraclize {
         }
     }
     /**
-     * @dev  To pause the contract&#39;s functions should the need arise. Internal.
+     * @dev  To pause the contract's functions should the need arise. Internal.
      *       Logs an event of the pausing.
      *
      * @param _id    A uint to identify the caller of this function.
@@ -1957,11 +1957,11 @@ contract Etheraffle is usingOraclize {
      * @dev  Function to enter the raffle. Requires the caller to send ether
      *       of amount greater than or equal to the ticket price.
      *
-     * @param _cNums    Ordered array of entrant&#39;s six selected numbers.
+     * @param _cNums    Ordered array of entrant's six selected numbers.
      * @param _affID    Affiliate ID of the source of this entry.
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(msg.value &gt;= tktPrice);
+        require(msg.value >= tktPrice);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -1969,22 +1969,22 @@ contract Etheraffle is usingOraclize {
      *       caller to send ether of amount greater than or equal to the ticket price.
      *       In the event of a win, only the onBehalfOf address can claim it.
      *
-     * @param _cNums        Ordered array of entrant&#39;s six selected numbers.
+     * @param _cNums        Ordered array of entrant's six selected numbers.
      * @param _affID        Affiliate ID of the source of this entry.
      * @param _onBehalfOf   The address to be entered on behalf of.
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(msg.value &gt;= tktPrice);
+        require(msg.value >= tktPrice);
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
-     * @dev  Function to enter the raffle for free. Requires the caller&#39;s
+     * @dev  Function to enter the raffle for free. Requires the caller's
      *       balance of the Etheraffle freeLOT token to be greater than
      *       zero. Function destroys one freeLOT token, increments the
      *       freeEntries variable in the raffle struct then purchases the
      *       ticket.
      *
-     * @param _cNums    Ordered array of entrant&#39;s six selected numbers.
+     * @param _cNums    Ordered array of entrant's six selected numbers.
      * @param _affID    Affiliate ID of the source of this entry.
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
@@ -1997,14 +1997,14 @@ contract Etheraffle is usingOraclize {
      *        array to be of length 6, requires the timestamp of the current
      *        raffle struct to have been set, and for this time this function
      *        is call to be before the end of the raffle. Then requires that
-     *        the chosen numbers are ordered lowest to highest &amp; bound between
+     *        the chosen numbers are ordered lowest to highest & bound between
      *        1 and 49. Function increments the total number of entries in the
-     *        current raffle&#39;s struct, increments the prize pool accordingly
+     *        current raffle's struct, increments the prize pool accordingly
      *        and pushes the chosen number array into the entries map and then
      *        logs the ticket purchase.
      *
      * @param _cNums       Array of users selected numbers.
-     * @param _entrant     Entrant&#39;s ethereum address.
+     * @param _entrant     Entrant's ethereum address.
      * @param _value       The ticket purchase price.
      * @param _affID       The affiliate ID of the source of this entry.
      */
@@ -2019,16 +2019,16 @@ contract Etheraffle is usingOraclize {
     {
         require
         (
-            _cNums.length == 6 &amp;&amp;
-            raffle[week].timeStamp &gt; 0 &amp;&amp;
-            now &lt; raffle[week].timeStamp + rafEnd &amp;&amp;
-            0         &lt; _cNums[0] &amp;&amp;
-            _cNums[0] &lt; _cNums[1] &amp;&amp;
-            _cNums[1] &lt; _cNums[2] &amp;&amp;
-            _cNums[2] &lt; _cNums[3] &amp;&amp;
-            _cNums[3] &lt; _cNums[4] &amp;&amp;
-            _cNums[4] &lt; _cNums[5] &amp;&amp;
-            _cNums[5] &lt;= 49
+            _cNums.length == 6 &&
+            raffle[week].timeStamp > 0 &&
+            now < raffle[week].timeStamp + rafEnd &&
+            0         < _cNums[0] &&
+            _cNums[0] < _cNums[1] &&
+            _cNums[1] < _cNums[2] &&
+            _cNums[2] < _cNums[3] &&
+            _cNums[3] < _cNums[4] &&
+            _cNums[4] < _cNums[5] &&
+            _cNums[5] <= 49
         );
         raffle[week].numEntries++;
         prizePool += _value;
@@ -2038,7 +2038,7 @@ contract Etheraffle is usingOraclize {
     /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw
      *      whatever winnings they are owed. Function can be paused via the modifier
-     *      function &quot;onlyIfNotPaused&quot;
+     *      function "onlyIfNotPaused"
      *
      * @param _week        Week number of the raffle the winning entry is from
      * @param _entryNum    The entrants entry number into this raffle
@@ -2046,22 +2046,22 @@ contract Etheraffle is usingOraclize {
     function withdrawWinnings(uint _week, uint _entryNum) onlyIfNotPaused external {
         require
         (
-            raffle[_week].timeStamp &gt; 0 &amp;&amp;
-            now - raffle[_week].timeStamp &gt; WEEKDUR - (WEEKDUR / 7) &amp;&amp;
-            now - raffle[_week].timeStamp &lt; wdrawBfr &amp;&amp;
-            raffle[_week].wdrawOpen == true &amp;&amp;
+            raffle[_week].timeStamp > 0 &&
+            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
+            now - raffle[_week].timeStamp < wdrawBfr &&
+            raffle[_week].wdrawOpen == true &&
             raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
         );
         uint matches = getMatches(_week, msg.sender, _entryNum);
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require
         (
-            matches &gt;= 3 &amp;&amp;
-            raffle[_week].winAmts[matches - 3] &gt; 0 &amp;&amp;
-            raffle[_week].winAmts[matches - 3] &lt;= this.balance
+            matches >= 3 &&
+            raffle[_week].winAmts[matches - 3] > 0 &&
+            raffle[_week].winAmts[matches - 3] <= this.balance
         );
         raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
-        if (raffle[_week].winAmts[matches - 3] &lt;= raffle[_week].unclaimed) {
+        if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
             raffle[_week].unclaimed = 0;
@@ -2094,17 +2094,17 @@ contract Etheraffle is usingOraclize {
      * @dev  Function totals up oraclize cost for the raffle, subtracts
      *       it from the prizepool (if less than, if greater than if
      *       pauses the contract and fires an event). Calculates profit
-     *       based on raffle&#39;s tickets sales and the take percentage,
+     *       based on raffle's tickets sales and the take percentage,
      *       then forwards that amount of ether to the disbursal contract.
      *
      * @param _week   The week number of the raffle in question.
      */
     function disburseFunds(uint _week) internal {
         uint oracTot = 2 * ((gasAmt * gasPrc) + oracCost);//2 queries per draw...
-        if (oracTot &gt; prizePool) return pauseContract(1);
+        if (oracTot > prizePool) return pauseContract(1);
         prizePool -= oracTot;
         uint profit;
-        if (raffle[_week].numEntries &gt; 0) {
+        if (raffle[_week].numEntries > 0) {
             profit = ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
             prizePool -= profit;
             uint half = profit / 2;
@@ -2129,7 +2129,7 @@ contract Etheraffle is usingOraclize {
      *        latter callback first sets up the new raffle struct, then
      *        sets the payouts based on the number of winners in each tier
      *        returned from the api call, then prepares the next oraclize
-     *        query for a week later to draw the next raffle&#39;s winning
+     *        query for a week later to draw the next raffle's winning
      *        numbers.
      *
      * @param _myID     bytes32 - Unique id oraclize provides with their
@@ -2144,7 +2144,7 @@ contract Etheraffle is usingOraclize {
             disburseFunds(qID[_myID].weekNo);
             setWinningNumbers(qID[_myID].weekNo, _result);
             if (qID[_myID].isManual == true) return;
-            bytes32 query = oraclize_query(matchesDelay, &quot;nested&quot;, strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
+            bytes32 query = oraclize_query(matchesDelay, "nested", strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
             qID[query].weekNo = qID[_myID].weekNo;
             emit LogQuerySent(query, matchesDelay + now, now);
         } else {
@@ -2152,7 +2152,7 @@ contract Etheraffle is usingOraclize {
             setPayOuts(qID[_myID].weekNo, _result);
             if (qID[_myID].isManual == true) return;
             uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-            query = oraclize_query(delay, &quot;nested&quot;, strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
+            query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
             qID[query].weekNo = getWeek();
             qID[query].isRandom = true;
             emit LogQuerySent(query, delay, now);
@@ -2166,9 +2166,9 @@ contract Etheraffle is usingOraclize {
      */
     function stringToArray(string _string) internal returns (string[]) {
         var str    = _string.toSlice();
-        var delim  = &quot;,&quot;.toSlice();
+        var delim  = ",".toSlice();
         var parts  = new string[](str.count(delim) + 1);
-        for (uint i = 0; i &lt; parts.length; i++) {
+        for (uint i = 0; i < parts.length; i++) {
             parts[i] = str.split(delim).toString();
         }
         return parts;
@@ -2177,7 +2177,7 @@ contract Etheraffle is usingOraclize {
      * @dev   Takes oraclize random.org api call result string and splits
      *        it at the commas into an array, parses those strings in that
      *        array as integers and pushes them into the winning numbers
-     *        array in the raffle&#39;s struct. Fires event logging the data,
+     *        array in the raffle's struct. Fires event logging the data,
      *        including the serial number of the random.org callback so
      *        its veracity can be proven.
      *
@@ -2186,7 +2186,7 @@ contract Etheraffle is usingOraclize {
      */
     function setWinningNumbers(uint _week, string _result) internal {
         string[] memory arr = stringToArray(_result);
-        for (uint i = 0; i &lt; arr.length; i++){
+        for (uint i = 0; i < arr.length; i++){
             raffle[_week].winNums.push(parseInt(arr[i]));
         }
         uint serialNo = parseInt(arr[6]);
@@ -2231,10 +2231,10 @@ contract Etheraffle is usingOraclize {
      * @dev   Takes the results of the oraclize Etheraffle api call back
      *        and uses them to calculate the prizes due to each tier
      *        (3 matches, 4 matches etc) then pushes them into the winning
-     *        amounts array in the raffle in question&#39;s struct. Calculates
+     *        amounts array in the raffle in question's struct. Calculates
      *        the total winnings of the raffle, subtracts it from the
-     *        global prize pool sequesters that amount into the raffle&#39;s
-     *        struct &quot;unclaimed&quot; variable, ∴ &quot;rolling over&quot; the unwon
+     *        global prize pool sequesters that amount into the raffle's
+     *        struct "unclaimed" variable, ∴ "rolling over" the unwon
      *        ether. Enables winner withdrawals by setting the withdraw
      *        open bool to true.
      *
@@ -2243,16 +2243,16 @@ contract Etheraffle is usingOraclize {
      */
     function setPayOuts(uint _week, string _result) internal {
         string[] memory numWinnersStr = stringToArray(_result);
-        if (numWinnersStr.length &lt; 4) return pauseContract(2);
+        if (numWinnersStr.length < 4) return pauseContract(2);
         uint[] memory numWinnersInt = new uint[](4);
-        for (uint i = 0; i &lt; 4; i++) {
+        for (uint i = 0; i < 4; i++) {
             numWinnersInt[i] = parseInt(numWinnersStr[i]);
         }
         uint[] memory payOuts = new uint[](4);
         uint total;
-        for (i = 0; i &lt; 4; i++) {
+        for (i = 0; i < 4; i++) {
             if (numWinnersInt[i] != 0) {
-                uint amt = oddsTotal(numWinnersInt[i], i) &lt;= splitsTotal(numWinnersInt[i], i) 
+                uint amt = oddsTotal(numWinnersInt[i], i) <= splitsTotal(numWinnersInt[i], i) 
                          ? oddsSingle(i) 
                          : splitsSingle(numWinnersInt[i], i); 
                 payOuts[i] = amt;
@@ -2260,27 +2260,27 @@ contract Etheraffle is usingOraclize {
             }
         }
         raffle[_week].unclaimed = total;
-        if (raffle[_week].unclaimed &gt; prizePool) return pauseContract(3);
+        if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
         prizePool -= raffle[_week].unclaimed;
-        for (i = 0; i &lt; payOuts.length; i++) {
+        for (i = 0; i < payOuts.length; i++) {
             raffle[_week].winAmts.push(payOuts[i]);
         }
         raffle[_week].wdrawOpen = true;
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
     /**
-     * @dev   Function compares array of entrant&#39;s 6 chosen numbers to
-      *       the raffle in question&#39;s winning numbers, counting how
+     * @dev   Function compares array of entrant's 6 chosen numbers to
+      *       the raffle in question's winning numbers, counting how
       *       many matches there are.
       *
       * @param _week         The week number of the Raffle in question
-      * @param _entrant      Entrant&#39;s ethereum address
-      * @param _entryNum     number of entrant&#39;s entry in question.
+      * @param _entrant      Entrant's ethereum address
+      * @param _entryNum     number of entrant's entry in question.
      */
     function getMatches(uint _week, address _entrant, uint _entryNum) constant internal returns (uint) {
         uint matches;
-        for (uint i = 0; i &lt; 6; i++) {
-            for (uint j = 0; j &lt; 6; j++) {
+        for (uint i = 0; i < 6; i++) {
+            for (uint j = 0; j < 6; j++) {
                 if (raffle[_week].entries[_entrant][_entryNum - 1][i] == raffle[_week].winNums[j]) {
                     matches++;
                     break;
@@ -2303,7 +2303,7 @@ contract Etheraffle is usingOraclize {
      * @param _isManual   The Oraclize call back is a recursive function in
      *                    which each call fires off another call in perpetuity.
      *                    This bool allows that recursiveness for this call to be
-     *                    turned on or off depending on caller&#39;s requirements.
+     *                    turned on or off depending on caller's requirements.
      */
     function manuallyMakeOraclizeCall
     (
@@ -2318,12 +2318,12 @@ contract Etheraffle is usingOraclize {
         paused = _status;
         string memory weekNumStr = uint2str(_week);
         if (_isRandom == true){
-            bytes32 query = oraclize_query(_delay, &quot;nested&quot;, strConcat(randomStr1, weekNumStr, randomStr2), gasAmt);
+            bytes32 query = oraclize_query(_delay, "nested", strConcat(randomStr1, weekNumStr, randomStr2), gasAmt);
             qID[query].weekNo   = _week;
             qID[query].isRandom = true;
             qID[query].isManual = _isManual;
         } else {
-            query = oraclize_query(_delay, &quot;nested&quot;, strConcat(apiStr1, weekNumStr, apiStr2), gasAmt);
+            query = oraclize_query(_delay, "nested", strConcat(apiStr1, weekNumStr, apiStr2), gasAmt);
             qID[query].weekNo   = _week;
             qID[query].isManual = _isManual;
         }
@@ -2383,7 +2383,7 @@ contract Etheraffle is usingOraclize {
      * @param _week         The week number of the raffle to set the payouts for.
      * @param _numMatches   Number of matches. Comma-separated STRING of 4
      *                      integers long, consisting of the number of 3 match
-     *                      winners, 4 match winners, 5 &amp; 6 match winners in
+     *                      winners, 4 match winners, 5 & 6 match winners in
      *                      that order.
      */
     function setPayouts(uint _week, string _numMatches) onlyEtheraffle external {
@@ -2466,7 +2466,7 @@ contract Etheraffle is usingOraclize {
         pctOfPool = _newPoP;
     }
     /**
-     * @dev     Get a entrant&#39;s number of entries into a specific raffle
+     * @dev     Get a entrant's number of entries into a specific raffle
      *
      * @param _week       The week number of the queried raffle.
      * @param _entrant    The entrant in question.
@@ -2478,15 +2478,15 @@ contract Etheraffle is usingOraclize {
      * @dev     Get chosen numbers of an entrant, for a specific raffle.
      *          Returns an array.
      *
-     * @param _entrant    The entrant in question&#39;s address.
+     * @param _entrant    The entrant in question's address.
      * @param _week       The week number of the queried raffle.
-     * @param _entryNum   The entrant&#39;s entry number in this raffle.
+     * @param _entryNum   The entrant's entry number in this raffle.
      */
     function getChosenNumbers(address _entrant, uint _week, uint _entryNum) constant external returns (uint[]) {
         return raffle[_week].entries[_entrant][_entryNum-1];
     }
     /**
-     * @dev     Get winning details of a raffle, ie, it&#39;s winning numbers
+     * @dev     Get winning details of a raffle, ie, it's winning numbers
      *          and the prize amounts. Returns two arrays.
      *
      * @param _week   The week number of the raffle in question.
@@ -2506,16 +2506,16 @@ contract Etheraffle is usingOraclize {
      * @param _newAddr   The new contract address.
      */
     function upgradeContract(address _newAddr) onlyEtheraffle external {
-        require(upgraded == 0 &amp;&amp; upgradeAddr == address(0));
+        require(upgraded == 0 && upgradeAddr == address(0));
         uint amt    = prizePool;
         upgradeAddr = _newAddr;
         upgraded    = now;
         week        = 0;
         prizePool   = 0;
         gasAmt      = 0;
-        apiStr1     = &quot;&quot;;
-        randomStr1  = &quot;&quot;;
-        require(this.balance &gt;= amt);
+        apiStr1     = "";
+        randomStr1  = "";
+        require(this.balance >= amt);
         EtheraffleUpgrade(_newAddr).addToPrizePool.value(amt)();
         emit LogUpgrade(_newAddr, amt, upgraded);
     }
@@ -2529,7 +2529,7 @@ contract Etheraffle is usingOraclize {
      *          frame.
      */
     function selfDestruct() onlyEtheraffle external {
-        require(now - upgraded &gt; WEEKDUR * 10);
+        require(now - upgraded > WEEKDUR * 10);
         selfdestruct(ethRelief);
     }
     /**
@@ -2537,7 +2537,7 @@ contract Etheraffle is usingOraclize {
      *          Requires the caller to send ether.
      */
     function addToPrizePool() payable external {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         prizePool += msg.value;
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }

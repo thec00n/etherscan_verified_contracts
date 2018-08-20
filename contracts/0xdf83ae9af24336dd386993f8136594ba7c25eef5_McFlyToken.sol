@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -226,11 +226,11 @@ contract MintableToken is StandardToken, Ownable {
 
 contract McFlyToken is MintableToken {
 
-    string public constant name = &#39;McFly&#39;;
-    string public constant symbol = &#39;MFL&#39;;
+    string public constant name = 'McFly';
+    string public constant symbol = 'MFL';
     uint8 public constant decimals = 18;
 
-    mapping(address=&gt;bool) whitelist;
+    mapping(address=>bool) whitelist;
 
     event Burn(address indexed from, uint256 value);
     event AllowTransfer(address from);
@@ -267,7 +267,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
     address public publisher;
 
 
@@ -422,7 +422,7 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
     modifier validPurchase() {
         bool nonZeroPurchase = msg.value != 0;
         
-        require(withinPeriod() &amp;&amp; nonZeroPurchase);
+        require(withinPeriod() && nonZeroPurchase);
 
         _;        
     }
@@ -439,8 +439,8 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         address _advisoryWallet,
         address _reservedWallet
     ) {
-        require(_startTimeTLP1 &gt;= block.timestamp);
-        require(_startTimeTLP2 &gt; _startTimeTLP1);
+        require(_startTimeTLP1 >= block.timestamp);
+        require(_startTimeTLP2 > _startTimeTLP1);
         require(_wallet != 0x0);
         require(_wavesAgent != 0x0);
         require(_fundMintingAgent != 0x0);
@@ -455,7 +455,7 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         startTimeTLP1 = _startTimeTLP1; 
         endTimeTLP1 = startTimeTLP1.add(daysTLP1);
 
-        require(endTimeTLP1 &lt; _startTimeTLP2);
+        require(endTimeTLP1 < _startTimeTLP2);
 
         startTimeTLP2 = _startTimeTLP2; 
         endTimeTLP2 = startTimeTLP2.add(daysTLP2);
@@ -476,46 +476,46 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
     }
 
     function withinPeriod() constant public returns (bool) {
-        bool withinPeriodTLP1 = (now &gt;= startTimeTLP1 &amp;&amp; now &lt;= endTimeTLP1);
-        bool withinPeriodTLP2 = (now &gt;= startTimeTLP2 &amp;&amp; now &lt;= endTimeTLP2);
+        bool withinPeriodTLP1 = (now >= startTimeTLP1 && now <= endTimeTLP1);
+        bool withinPeriodTLP2 = (now >= startTimeTLP2 && now <= endTimeTLP2);
         return withinPeriodTLP1 || withinPeriodTLP2;
     }
 
     // @return false if crowdsale event was ended
     function running() constant public returns (bool) {
-        return withinPeriod() &amp;&amp; !token.mintingFinished();
+        return withinPeriod() && !token.mintingFinished();
     }
 
     function teamTokens() constant public returns (uint256) {
-        if(_teamTokens &gt; 0) {
+        if(_teamTokens > 0) {
             return _teamTokens;
         }
         return token.totalSupply().mul(teamPercents).div(70);
     }
 
     function bountyOnlineTokens() constant public returns (uint256) {
-        if(_bountyOnlineTokens &gt; 0) {
+        if(_bountyOnlineTokens > 0) {
             return _bountyOnlineTokens;
         }
         return token.totalSupply().mul(bountyOnlinePercents).div(70);
     }
 
     function bountyOfflineTokens() constant public returns (uint256) {
-        if(_bountyOfflineTokens &gt; 0) {
+        if(_bountyOfflineTokens > 0) {
             return _bountyOfflineTokens;
         }
         return token.totalSupply().mul(bountyOfflinePercents).div(70);
     }
 
     function advisoryTokens() constant public returns (uint256) {
-        if(_advisoryTokens &gt; 0) {
+        if(_advisoryTokens > 0) {
             return _advisoryTokens;
         }
         return token.totalSupply().mul(advisoryPercents).div(70);
     }
 
     function reservedTokens() constant public returns (uint256) {
-        if(_reservedTokens &gt; 0) {
+        if(_reservedTokens > 0) {
             return _reservedTokens;
         }
         return token.totalSupply().mul(reservedPercents).div(70);
@@ -523,28 +523,28 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
 
     // @return current stage name
     function stageName() constant public returns (string) {
-        bool beforePeriodTLP1 = (now &lt; startTimeTLP1);
-        bool withinPeriodTLP1 = (now &gt;= startTimeTLP1 &amp;&amp; now &lt;= endTimeTLP1);
-        bool betweenPeriodTLP1andTLP2 = (now &gt;= endTimeTLP1 &amp;&amp; now &lt;= startTimeTLP2);
-        bool withinPeriodTLP2 = (now &gt;= startTimeTLP2 &amp;&amp; now &lt;= endTimeTLP2);
+        bool beforePeriodTLP1 = (now < startTimeTLP1);
+        bool withinPeriodTLP1 = (now >= startTimeTLP1 && now <= endTimeTLP1);
+        bool betweenPeriodTLP1andTLP2 = (now >= endTimeTLP1 && now <= startTimeTLP2);
+        bool withinPeriodTLP2 = (now >= startTimeTLP2 && now <= endTimeTLP2);
 
         if(beforePeriodTLP1) {
-            return &#39;Not started&#39;;
+            return 'Not started';
         }
 
         if(withinPeriodTLP1) {
-            return &#39;TLP1.1&#39;;
+            return 'TLP1.1';
         } 
 
         if(betweenPeriodTLP1andTLP2) {
-            return &#39;Between TLP1.1 and TLP1.2&#39;;
+            return 'Between TLP1.1 and TLP1.2';
         }
 
         if(withinPeriodTLP2) {
-            return &#39;TLP1.2&#39;;
+            return 'TLP1.2';
         }
 
-        return &#39;Finished&#39;;
+        return 'Finished';
     }
 
     /*
@@ -565,12 +565,12 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
 
     /*
      * @dev set TLP1.2 start date
-     * @param _at &#226; new start date
+     * @param _at â new start date
      */
     function setStartTimeTLP2(uint256 _at) onlyOwner {
-        require(block.timestamp &lt; startTimeTLP2); // forbid change time when TLP1.2 is active
-        require(block.timestamp &lt; _at); // should be great than current block timestamp
-        require(endTimeTLP1 &lt; _at); // should be great than end TLP1.1
+        require(block.timestamp < startTimeTLP2); // forbid change time when TLP1.2 is active
+        require(block.timestamp < _at); // should be great than current block timestamp
+        require(endTimeTLP1 < _at); // should be great than end TLP1.1
 
         startTimeTLP2 = _at;
         endTimeTLP2 = startTimeTLP2.add(daysTLP2);
@@ -582,8 +582,8 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
      * @param _at - new start date
      */
     function setStartTimeTLP1(uint256 _at) onlyOwner {
-        require(block.timestamp &lt; startTimeTLP1); // forbid change time when TLP1.1 is active
-        require(block.timestamp &lt; _at); // should be great than current block timestamp
+        require(block.timestamp < startTimeTLP1); // forbid change time when TLP1.1 is active
+        require(block.timestamp < _at); // should be great than current block timestamp
 
         startTimeTLP1 = _at;
         endTimeTLP1 = startTimeTLP1.add(daysTLP1);
@@ -597,9 +597,9 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
      */
     function fundMinting(address to, uint256 amount) stopInEmergency {
         require(msg.sender == fundMintingAgent || isOwner());
-        require(block.timestamp &lt;= startTimeTLP2);
-        require(fundTotalSupply + amount &lt;= fundTokens);
-        require(token.totalSupply() + amount &lt;= mintCapInTokens);
+        require(block.timestamp <= startTimeTLP2);
+        require(fundTotalSupply + amount <= fundTokens);
+        require(token.totalSupply() + amount <= mintCapInTokens);
 
         fundTotalSupply = fundTotalSupply.add(amount);
         FundMinting(to, amount);
@@ -623,70 +623,70 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         uint256 discount;
         uint256 price;
 
-        if(at &gt;= startTimeTLP1 &amp;&amp; at &lt;= endTimeTLP1) {
+        if(at >= startTimeTLP1 && at <= endTimeTLP1) {
             /*
-                35% 0.0650 | 1 ETH -&gt; 1 / (100-35) * 100 / 0.1 * 1000 = 15384.61538461538 MFL
-                30% 0.0700 | 1 ETH -&gt; 1 / (100-30) * 100 / 0.1 * 1000 = 14285.714287 MFL
-                15% 0.0850 | 1 ETH -&gt; 1 / (100-15) * 100 / 0.1 * 1000 = 11764.705882352941 MFL
-                 0% 0.1000 | 1 ETH -&gt; 1 / (100-0) * 100  / 0.1 * 1000 = 10000 MFL
+                35% 0.0650 | 1 ETH -> 1 / (100-35) * 100 / 0.1 * 1000 = 15384.61538461538 MFL
+                30% 0.0700 | 1 ETH -> 1 / (100-30) * 100 / 0.1 * 1000 = 14285.714287 MFL
+                15% 0.0850 | 1 ETH -> 1 / (100-15) * 100 / 0.1 * 1000 = 11764.705882352941 MFL
+                 0% 0.1000 | 1 ETH -> 1 / (100-0) * 100  / 0.1 * 1000 = 10000 MFL
             */
-            require(amount &gt;= minimalWeiTLP1);
+            require(amount >= minimalWeiTLP1);
 
             price = priceTLP1;
 
-            if(at &lt; startTimeTLP1 + 3 days) {
+            if(at < startTimeTLP1 + 3 days) {
                 discount = 65; //  100-35 = 0.065 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP1 + 6 days) {
+            } else if(at < startTimeTLP1 + 6 days) {
                 discount = 70; //  100-30 = 0.07 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP1 + 9 days) {
+            } else if(at < startTimeTLP1 + 9 days) {
                 discount = 85; //  100-15 = 0.085 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP1 + 12 days) {
+            } else if(at < startTimeTLP1 + 12 days) {
                 discount = 100; // 100 = 0.1 ETH per 1000 MFL
 
             } else {
                 revert();
             }
 
-        } else if(at &gt;= startTimeTLP2 &amp;&amp; at &lt;= endTimeTLP2) {
+        } else if(at >= startTimeTLP2 && at <= endTimeTLP2) {
             /*
-                 -40% 0.12 | 1 ETH -&gt; 1 / (100-40) * 100 / 0.2 * 1000 = 8333.3333333333 MFL
-                 -30% 0.14 | 1 ETH -&gt; 1 / (100-30) * 100 / 0.2 * 1000 = 7142.8571428571 MFL
-                 -20% 0.16 | 1 ETH -&gt; 1 / (100-20) * 100 / 0.2 * 1000 = 6250 MFL
-                 -10% 0.18 | 1 ETH -&gt; 1 / (100-10) * 100 / 0.2 * 1000 = 5555.5555555556 MFL
-                   0% 0.20 | 1 ETH -&gt; 1 / (100-0) * 100 / 0.2 * 1000  = 5000 MFL
-                  10% 0.22 | 1 ETH -&gt; 1 / (100+10) * 100 / 0.2 * 1000 = 4545.4545454545 MFL
-                  20% 0.24 | 1 ETH -&gt; 1 / (100+20) * 100 / 0.2 * 1000 = 4166.6666666667 MFL
-                  30% 0.26 | 1 ETH -&gt; 1 / (100+30) * 100 / 0.2 * 1000 = 3846.1538461538 MFL
+                 -40% 0.12 | 1 ETH -> 1 / (100-40) * 100 / 0.2 * 1000 = 8333.3333333333 MFL
+                 -30% 0.14 | 1 ETH -> 1 / (100-30) * 100 / 0.2 * 1000 = 7142.8571428571 MFL
+                 -20% 0.16 | 1 ETH -> 1 / (100-20) * 100 / 0.2 * 1000 = 6250 MFL
+                 -10% 0.18 | 1 ETH -> 1 / (100-10) * 100 / 0.2 * 1000 = 5555.5555555556 MFL
+                   0% 0.20 | 1 ETH -> 1 / (100-0) * 100 / 0.2 * 1000  = 5000 MFL
+                  10% 0.22 | 1 ETH -> 1 / (100+10) * 100 / 0.2 * 1000 = 4545.4545454545 MFL
+                  20% 0.24 | 1 ETH -> 1 / (100+20) * 100 / 0.2 * 1000 = 4166.6666666667 MFL
+                  30% 0.26 | 1 ETH -> 1 / (100+30) * 100 / 0.2 * 1000 = 3846.1538461538 MFL
             */
-            require(amount &gt;= minimalWeiTLP2);
+            require(amount >= minimalWeiTLP2);
 
             price = priceTLP2;
 
-            if(at &lt; startTimeTLP2 + 3 days) {
+            if(at < startTimeTLP2 + 3 days) {
                 discount = 60; // 100-40 = 0.12 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 6 days) {
+            } else if(at < startTimeTLP2 + 6 days) {
                 discount = 70; // 100-30 = 0.14 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 9 days) {
+            } else if(at < startTimeTLP2 + 9 days) {
                 discount = 80; // 100-20 = 0.16 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 12 days) {
+            } else if(at < startTimeTLP2 + 12 days) {
                 discount = 90; // 100-10 = 0.18 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 15 days) {
+            } else if(at < startTimeTLP2 + 15 days) {
                 discount = 100; // 100 = 0.2 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 18 days) {
+            } else if(at < startTimeTLP2 + 18 days) {
                 discount = 110; // 100+10 = 0.22 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 21 days) {
+            } else if(at < startTimeTLP2 + 21 days) {
                 discount = 120; // 100+20 = 0.24 ETH per 1000 MFL
 
-            } else if(at &lt; startTimeTLP2 + 24 days) {
+            } else if(at < startTimeTLP2 + 24 days) {
                 discount = 130; // 100+30 = 0.26 ETH per 1000 MFL
 
             } else {
@@ -699,7 +699,7 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         price = price.mul(discount).div(100);
         estimate = _totalSupply.add(amount.mul(1e18).div(price));
 
-        if(estimate &gt; mintCapInTokens) {
+        if(estimate > mintCapInTokens) {
             return (
                 mintCapInTokens.sub(_totalSupply),
                 estimate.sub(mintCapInTokens).mul(price).div(1e18)
@@ -720,7 +720,7 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         (amount, odd_ethers) = calcAmountAt(msg.value, block.timestamp, token.totalSupply());
   
         require(contributor != 0x0) ;
-        require(amount + token.totalSupply() &lt;= mintCapInTokens);
+        require(amount + token.totalSupply() <= mintCapInTokens);
 
         ethers = (msg.value - odd_ethers);
 
@@ -728,8 +728,8 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         TokenPurchase(contributor, ethers, amount);
         totalETH += ethers;
 
-        if(odd_ethers &gt; 0) {
-            require(odd_ethers &lt; msg.value);
+        if(odd_ethers > 0) {
+            require(odd_ethers < msg.value);
             TransferOddEther(contributor, odd_ethers);
             contributor.transfer(odd_ethers);
         }
@@ -742,12 +742,12 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
         require(msg.sender == teamWallet || isOwner());
 
         uint256 currentPeriod = (block.timestamp).sub(endTimeTLP2).div(teamVestingPeriodInSeconds);
-        if(currentPeriod &gt; teamVestingPeriodsCount) {
+        if(currentPeriod > teamVestingPeriodsCount) {
             currentPeriod = teamVestingPeriodsCount;
         }
         uint256 tokenAvailable = _teamTokens.mul(currentPeriod).div(teamVestingPeriodsCount).sub(teamTotalSupply);
 
-        require(teamTotalSupply + tokenAvailable &lt;= _teamTokens);
+        require(teamTotalSupply + tokenAvailable <= _teamTokens);
 
         teamTotalSupply = teamTotalSupply.add(tokenAvailable);
 
@@ -757,7 +757,7 @@ contract McFlyCrowdsale is MultiOwners, Haltable {
     }
 
     function finishCrowdsale() onlyOwner public {
-        require(now &gt; endTimeTLP2 || mintCapInTokens == token.totalSupply());
+        require(now > endTimeTLP2 || mintCapInTokens == token.totalSupply());
         require(!token.mintingFinished());
 
         uint256 _totalSupply = token.totalSupply();

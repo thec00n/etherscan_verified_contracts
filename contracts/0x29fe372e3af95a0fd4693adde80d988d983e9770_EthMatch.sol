@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract EthMatch is Ownable, ERC23Contract {
 
   // can be funded at init if desired
   function EthMatch(uint256 _startTime) public payable {
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
 
     startTime = _startTime;
     master = msg.sender; // initial
@@ -108,7 +108,7 @@ contract EthMatch is Ownable, ERC23Contract {
   modifier isValid(address _addr) {
     require(_addr != 0x0);
     require(!Lib.isContract(_addr)); // ban contracts
-    require(now &gt;= startTime);
+    require(now >= startTime);
 
    _;
   }
@@ -121,10 +121,10 @@ contract EthMatch is Ownable, ERC23Contract {
 
   // make a match (and specify payout address)
   function maker(address _addr) isValid(_addr) public payable {
-    require(msg.gas &gt;= gasReq); // require same gas every time (overages auto-returned)
+    require(msg.gas >= gasReq); // require same gas every time (overages auto-returned)
 
     uint256 weiPaid = msg.value;
-    require(weiPaid &gt; 0);
+    require(weiPaid > 0);
 
     uint256 balPrev = this.balance.sub(weiPaid);
 
@@ -161,10 +161,10 @@ contract EthMatch is Ownable, ERC23Contract {
   // become the new master (and specify payout address)
   function mastery(address _addr) isValid(_addr) public payable {
     uint256 weiPaid = msg.value;
-    require(weiPaid &gt;= MASTERY_THRESHOLD);
+    require(weiPaid >= MASTERY_THRESHOLD);
 
     uint256 balPrev = this.balance.sub(weiPaid);
-    require(balPrev &lt; MASTERY_THRESHOLD);
+    require(balPrev < MASTERY_THRESHOLD);
 
     pay(master, balPrev);
 
@@ -180,11 +180,11 @@ contract EthMatch is Ownable, ERC23Contract {
 
   // initial funding
   function fund() onlyOwner external payable {
-    require(now &lt; startTime); // otherwise can just call mastery()
+    require(now < startTime); // otherwise can just call mastery()
 
     // it is possible that funds can be forced in via selfdestruct, so
     // just ensure balance is enough, at least after receiving this call (msg.value)
-    require(this.balance &gt;= MASTERY_THRESHOLD);
+    require(this.balance >= MASTERY_THRESHOLD);
   }
 
   // explicit balance getter
@@ -201,6 +201,6 @@ library Lib {
     assembly {
       size := extcodesize(addr)
     }
-    return (size &gt; 1); // testing returned size &quot;1&quot; for non-contract accounts, so we&#39;re using that.
+    return (size > 1); // testing returned size "1" for non-contract accounts, so we're using that.
   }
 }

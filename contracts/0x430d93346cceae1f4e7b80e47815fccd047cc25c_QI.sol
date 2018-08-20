@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -40,7 +40,7 @@ contract QI {
     /*the name of the token*/
     string public name;
     
-    /*the token&#39;s symbol*/
+    /*the token's symbol*/
     string public symbol;
     /*the decimal of the token */
     
@@ -60,18 +60,18 @@ contract QI {
 	
 	address public burnAddress;
 	
-	mapping(address =&gt; bool) public isOwner;
+	mapping(address => bool) public isOwner;
 	
-	mapping (address =&gt; bool) public isFrezze;
+	mapping (address => bool) public isFrezze;
 	
 //	address public LockBinAddress;
 
-    /* The hot_balance of users , users&#39; totalBalance = balanceOf + freezeOf */
-    mapping (address =&gt; uint256) public balanceOf;
+    /* The hot_balance of users , users' totalBalance = balanceOf + freezeOf */
+    mapping (address => uint256) public balanceOf;
     /*the Lock-bin balance of users */
-//	mapping (address =&gt; uint256) public lockbinOf;
+//	mapping (address => uint256) public lockbinOf;
 	
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 value);
     
@@ -93,11 +93,11 @@ contract QI {
     }
     /*Let the contract keep from the short-address attack*/
     modifier onlyPayloadSize(uint size) {
-        assert((msg.data.length &gt;= size + 4));
+        assert((msg.data.length >= size + 4));
         _;
     }
     modifier onlyRuning {
-        require(isRunning, &quot;the contract has been stoped&quot;);
+        require(isRunning, "the contract has been stoped");
         _;
     }
     modifier onlyUnFrezze {
@@ -113,9 +113,9 @@ constructor() public {
        
         balanceOf[msg.sender] = totalSupply;
         
-        name = &quot;QIEX Credit Points&quot;;                                  
+        name = "QIEX Credit Points";                                  
         
-        symbol = &quot;QI&quot;;                               
+        symbol = "QI";                               
       
         decimals = 8;                            
 	
@@ -132,8 +132,8 @@ constructor() public {
     /* Send coins */
     function transfer(address _to, uint256 _value) public onlyRuning onlyUnFrezze onlyPayloadSize(32 * 2) returns (bool success){
         require(_to != 0x0);
-        require( balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require( balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]); 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);                     
         balanceOf[_to] = balanceOf[_to].add(_value);                            
         emit Transfer(msg.sender, _to, _value); 
@@ -151,8 +151,8 @@ constructor() public {
     
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnFrezze onlyRuning returns (bool success) {
             
-            assert(balanceOf[_from] &gt;= _value);
-            assert(allowance[_from][msg.sender] &gt;= _value);
+            assert(balanceOf[_from] >= _value);
+            assert(allowance[_from][msg.sender] >= _value);
             balanceOf[_from] = balanceOf[_from].sub(_value);
             allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
@@ -161,19 +161,19 @@ constructor() public {
     }
     
     function stopContract() public onlyOwnerable {
-        require(isRunning,&quot;the contract has been stoped&quot;);
+        require(isRunning,"the contract has been stoped");
         
         isRunning = false;
     }
     
     function startContract() public onlyOwnerable {
-        require(!isRunning,&quot;the contract has been started&quot;);
+        require(!isRunning,"the contract has been started");
         
         isRunning = true;
     }
     
     function freeze (address _option) public onlyOwnerable {
-        require(!isFrezze[_option],&quot;the account has been feezed&quot;);
+        require(!isFrezze[_option],"the account has been feezed");
        
         isFrezze[_option] = true;
        
@@ -182,7 +182,7 @@ constructor() public {
    
     function unFreeze(address _option) public onlyOwnerable {
         
-        require(isFrezze[_option],&quot;the account has been unFrezzed&quot;);
+        require(isFrezze[_option],"the account has been unFrezzed");
        
         isFrezze[_option] = false;
         
@@ -191,17 +191,17 @@ constructor() public {
 
     function setOwners(address[] _admin) public onlyOwner {
         uint len = _admin.length;
-        for(uint i= 0; i&lt; len; i++) {
-            require(!isContract(_admin[i]),&quot;not support contract address as owner&quot;);
-            require(!isOwner[_admin[i]],&quot;the address is admin already&quot;);
+        for(uint i= 0; i< len; i++) {
+            require(!isContract(_admin[i]),"not support contract address as owner");
+            require(!isOwner[_admin[i]],"the address is admin already");
             isOwner[_admin[i]] = true;
         }
     }
 
     function deletOwners(address[] _todel) public onlyOwner {
         uint len = _todel.length;
-        for(uint i= 0; i&lt; len; i++) {
-            require(isOwner[_todel[i]],&quot;the address is not a admin&quot;);
+        for(uint i= 0; i< len; i++) {
+            require(isOwner[_todel[i]],"the address is not a admin");
             isOwner[_todel[i]] = false;
         }
         
@@ -214,7 +214,7 @@ constructor() public {
     }
 
     function burn(uint256 _amount)  public onlyOwnerable {
-        require(balanceOf[burnAddress] &gt;= _amount,&quot;there is no enough money to burn&quot;);
+        require(balanceOf[burnAddress] >= _amount,"there is no enough money to burn");
         balanceOf[burnAddress] = balanceOf[burnAddress].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
         emit Burn(burnAddress, _amount);
@@ -227,6 +227,6 @@ constructor() public {
             /*:= reference external variable*/
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }

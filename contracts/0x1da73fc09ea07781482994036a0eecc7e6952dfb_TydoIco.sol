@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,8 +91,8 @@ contract TydoIco is Owned {
 
   uint256 public constant COINS_PER_ETH = 12000;
   //uint256 public constant bonus = 25;
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) ethBalances;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) ethBalances;
   uint256 public ethCollected;
   uint256 public tokenSold;
   uint256 constant tokenDecMult = 1 ether;
@@ -100,7 +100,7 @@ contract TydoIco is Owned {
                           // 1 - running
                           // 2 - closed mannually and not success
                           // 3 - closed and target reached success
-                          // 4 - success &amp; funds withdrawed
+                          // 4 - success & funds withdrawed
 
   //uint256 public bonusEnd_1 = 1530335295;
   uint256[] public bonuses;
@@ -116,11 +116,11 @@ contract TydoIco is Owned {
 
   constructor(address _coinToken, uint256[] _bonuses, uint256[] _bonusEnds) Owned() public {
     require(_bonuses.length == _bonusEnds.length);
-    for(uint8 i = 0; i &lt; _bonuses.length; i++) {
-      require(_bonuses[i] &gt; 0);
-      //require(_bonusEnds[i] &gt; block.timestamp);
-      if (i &gt; 0) {
-        //require(_bonusEnds[i] &gt; _bonusEnds[i - 1]);
+    for(uint8 i = 0; i < _bonuses.length; i++) {
+      require(_bonuses[i] > 0);
+      //require(_bonusEnds[i] > block.timestamp);
+      if (i > 0) {
+        //require(_bonusEnds[i] > _bonusEnds[i - 1]);
       }
     }
     bonuses = _bonuses;
@@ -135,9 +135,9 @@ contract TydoIco is Owned {
 
   function () payable public {
 
-    if ((state == 3 || state == 4) &amp;&amp; msg.value == 0) {
+    if ((state == 3 || state == 4) && msg.value == 0) {
       return withdrawTokens();
-    } else if (state == 2 &amp;&amp; msg.value == 0) {
+    } else if (state == 2 && msg.value == 0) {
       return refund();
     } else {
       return buy();
@@ -149,10 +149,10 @@ contract TydoIco is Owned {
     require (canBuy());
     uint amount = msg.value.mul(COINS_PER_ETH).div(1 ether).mul(tokenDecMult);
     amount = addBonus(amount);
-    //emit Debug(&quot;buy amount&quot;, amount);
-    require(amount &gt; 0, &#39;amount must be positive&#39;);
+    //emit Debug("buy amount", amount);
+    require(amount > 0, 'amount must be positive');
     token.transferFrom(address(owner), address(this), amount);
-    //emit Debug(&#39;transfered &#39;, amount);
+    //emit Debug('transfered ', amount);
     balances[msg.sender] = balances[msg.sender].add(amount);
     ethBalances[msg.sender] += msg.value;
     ethCollected = ethCollected.add(msg.value);
@@ -162,8 +162,8 @@ contract TydoIco is Owned {
   function getBonus() public view returns(uint256 _currentBonus) {
   
     uint256 curTime = block.timestamp;
-    for(uint8 i = 0; i &lt; bonuses.length; i++) {
-      if(bonusEnds[i] &gt; curTime) {
+    for(uint8 i = 0; i < bonuses.length; i++) {
+      if(bonusEnds[i] > curTime) {
         return bonuses[i];
       }
     }
@@ -174,7 +174,7 @@ contract TydoIco is Owned {
    
     uint256 bonus = getBonus();
     uint256 mult = bonus.add(100);
-    //emit Debug(&#39;mult &#39;, mult);
+    //emit Debug('mult ', mult);
     amount = amount.mul(mult).div(100);
     return amount;
   }
@@ -188,7 +188,7 @@ contract TydoIco is Owned {
     require(state == 2);
 
     uint256 tokenAmount = balances[msg.sender];
-    require(tokenAmount &gt; 0);
+    require(tokenAmount > 0);
     uint256 weiAmount = ethBalances[msg.sender];
 
     msg.sender.transfer(weiAmount);
@@ -208,7 +208,7 @@ contract TydoIco is Owned {
 
   function withdrawTokens() public {
     require(state == 3 || state ==4);
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
     token.transfer(msg.sender, balances[msg.sender]);
   }
 

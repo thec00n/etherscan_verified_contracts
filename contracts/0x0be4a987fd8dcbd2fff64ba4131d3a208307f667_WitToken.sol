@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
   
 //@title WitToken
-//@author(<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f130a10060a1e110e4d4c4c3f18121e1613511c1012">[email&#160;protected]</a>) 
+//@author(<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f130a10060a1e110e4d4c4c3f18121e1613511c1012">[email protected]</a>) 
 //@dev 该合约参考自openzeppelin的erc20实现
 //1.使用openzeppelin的SafeMath库防止运算溢出
 //2.使用openzeppelin的Ownable,Roles,RBAC来做权限控制,自定义了ceo,coo,cro等角色  
@@ -16,7 +16,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -62,7 +62,7 @@ contract Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -73,7 +73,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr) internal {
     role.bearer[addr] = false;
@@ -104,13 +104,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC is Ownable {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -118,11 +118,11 @@ contract RBAC is Ownable {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_CEO = &quot;ceo&quot;;
-  string public constant ROLE_COO = &quot;coo&quot;;//运营
-  string public constant ROLE_CRO = &quot;cro&quot;;//风控
-  string public constant ROLE_MANAGER = &quot;manager&quot;;//经办员
-  string public constant ROLE_REVIEWER = &quot;reviewer&quot;;//审核员
+  string public constant ROLE_CEO = "ceo";
+  string public constant ROLE_COO = "coo";//运营
+  string public constant ROLE_CRO = "cro";//风控
+  string public constant ROLE_MANAGER = "manager";//经办员
+  string public constant ROLE_REVIEWER = "reviewer";//审核员
   
   /**
    * @dev constructor. Sets msg.sender as ceo by default
@@ -275,20 +275,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -329,7 +329,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, RBAC {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   
@@ -351,10 +351,10 @@ contract BasicToken is ERC20Basic, RBAC {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     uint256 fee = (_value.mul(basisPointsRate)).div(10000);
-    if (fee &gt; maximumFee) {
+    if (fee > maximumFee) {
         fee = maximumFee;
     }
     uint256 sendAmount = _value.sub(fee);
@@ -362,7 +362,7 @@ contract BasicToken is ERC20Basic, RBAC {
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(sendAmount);
-    if (fee &gt; 0) {
+    if (fee > 0) {
         balances[assetOwner] = balances[assetOwner].add(fee);
         emit Transfer(msg.sender, assetOwner, fee);
     }
@@ -392,7 +392,7 @@ contract BasicToken is ERC20Basic, RBAC {
  */
 contract StandardToken is ERC20, BasicToken  {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -403,11 +403,11 @@ contract StandardToken is ERC20, BasicToken  {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     uint256 fee = (_value.mul(basisPointsRate)).div(10000);
-        if (fee &gt; maximumFee) {
+        if (fee > maximumFee) {
             fee = maximumFee;
         }
     uint256 sendAmount = _value.sub(fee);
@@ -415,7 +415,7 @@ contract StandardToken is ERC20, BasicToken  {
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(sendAmount);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
-    if (fee &gt; 0) {
+    if (fee > 0) {
             balances[assetOwner] = balances[assetOwner].add(fee);
             emit Transfer(_from, assetOwner, fee);
         }
@@ -428,7 +428,7 @@ contract StandardToken is ERC20, BasicToken  {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -477,7 +477,7 @@ contract StandardToken is ERC20, BasicToken  {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -571,7 +571,7 @@ contract BlackListToken is PausableToken  {
         return isBlackListed[_maker];
     }
 
-    mapping (address =&gt; bool) public isBlackListed;
+    mapping (address => bool) public isBlackListed;
     
     function addBlackList (address _evilUser) public onlyCRO {
         isBlackListed[_evilUser] = true;
@@ -619,11 +619,11 @@ contract TwoPhaseToken is BlackListToken{
         bool state;  //true表示经办人有提交数据,复核人执行成功后变为false
     }
     
-    mapping (string =&gt; MethodParam) params;
+    mapping (string => MethodParam) params;
     
     //方法名常量 
-    string public constant ISSUE_METHOD = &quot;issue&quot;;
-    string public constant REDEEM_METHOD = &quot;redeem&quot;;
+    string public constant ISSUE_METHOD = "issue";
+    string public constant REDEEM_METHOD = "redeem";
     
     
     //经办人提交增发数量
@@ -698,8 +698,8 @@ contract UpgradedStandardToken {
 
 
 contract WitToken is TwoPhaseToken {
-    string  public  constant name = &quot;Wealth in Token&quot;;
-    string  public  constant symbol = &quot;WIT&quot;;
+    string  public  constant name = "Wealth in Token";
+    string  public  constant symbol = "WIT";
     uint8   public  constant decimals = 18;
     address public upgradedAddress;
     bool public deprecated;

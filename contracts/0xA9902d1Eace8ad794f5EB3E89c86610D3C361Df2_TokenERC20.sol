@@ -28,14 +28,14 @@ contract TokenERC20 {
     uint256 public totalSupply;
     uint256 public MaxICOSellSupply;
     uint256 public CoinsRemainAfterICO;
-    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.
+    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.
     uint256 public unitsOneEthCanBuy;     // How many units of your coin can be bought by 1 ETH?
     address public fundsWallet;           // Where should the raised ETH go?
     uint public deadline;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -52,9 +52,9 @@ contract TokenERC20 {
         MaxICOSellSupply = 9000000 * 1 ether;
         CoinsRemainAfterICO = totalSupply - MaxICOSellSupply;
         balanceOf[msg.sender] = totalSupply;               // Give the creator all initial tokens. This is set to 1000 for example. If you want your initial tokens to be X and your decimal is 5, set this value to X * 100000. (CHANGE THIS)
-        name = &quot;Reference Line Coin&quot;;                                   // Set the name for display purposes (CHANGE THIS)
+        name = "Reference Line Coin";                                   // Set the name for display purposes (CHANGE THIS)
         decimals = 18;                                               // Amount of decimals for display purposes (CHANGE THIS)
-        symbol = &quot;RECO&quot;;                                             // Set the symbol for display purposes (CHANGE THIS)
+        symbol = "RECO";                                             // Set the symbol for display purposes (CHANGE THIS)
         unitsOneEthCanBuy = 10000;                                      // Set the price of your token for the ICO (CHANGE THIS)
         fundsWallet = msg.sender;                                    // The owner of the contract gets ETH
         deadline = now + 90000 * 1 minutes;  //ca 2 Monate ICO Periode
@@ -67,9 +67,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -103,7 +103,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -144,9 +144,9 @@ contract TokenERC20 {
 
     function() payable public{
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        require(now &lt; deadline);
-        require(balanceOf[fundsWallet] &gt; amount);
-        require(balanceOf[fundsWallet]-amount &gt; CoinsRemainAfterICO ); //Change CAD-KAS: do not sell CoinsRemainAfterICO tokens at the ICO
+        require(now < deadline);
+        require(balanceOf[fundsWallet] > amount);
+        require(balanceOf[fundsWallet]-amount > CoinsRemainAfterICO ); //Change CAD-KAS: do not sell CoinsRemainAfterICO tokens at the ICO
 
         totalEthInWei = totalEthInWei + msg.value;
 

@@ -43,8 +43,8 @@ contract ERC23 {
  
 contract ERC23Token is ERC23 {
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   string public name;
   string public symbol;
@@ -123,7 +123,7 @@ contract ERC23Token is ERC23 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -134,7 +134,7 @@ contract ERC23Token is ERC23 {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     var _allowance = allowed[_from][msg.sender];
     
-    if(_value &gt; _allowance) {
+    if(_value > _allowance) {
         throw;
     }
 

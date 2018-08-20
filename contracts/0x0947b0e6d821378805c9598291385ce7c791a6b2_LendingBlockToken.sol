@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -105,7 +105,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -147,9 +147,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -167,7 +167,7 @@ contract BurnableToken is BasicToken {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -178,8 +178,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,8 +262,8 @@ contract StandardToken is ERC20, BasicToken {
 * transferable time can be set
 */
 contract LendingBlockToken is StandardToken, BurnableToken, Ownable {
-	string public constant name = &quot;Lendingblock&quot;;
-	string public constant symbol = &quot;LND&quot;;
+	string public constant name = "Lendingblock";
+	string public constant symbol = "LND";
 	uint8 public constant decimals = 18;
 	uint256 public transferableTime = 1546300800;// 1/1/2019
 	address public tokenEventAddress;
@@ -273,7 +273,7 @@ contract LendingBlockToken is StandardToken, BurnableToken, Ownable {
 	* can transfer tokens
 	*/
 	modifier afterTransferableTime() {
-		if (now &lt;= transferableTime) {
+		if (now <= transferableTime) {
 			require(msg.sender == tokenEventAddress || msg.sender == owner);
 		}
 		_;
@@ -332,7 +332,7 @@ contract LendingBlockToken is StandardToken, BurnableToken, Ownable {
 		external
 		onlyOwner
 	{
-		require(_transferableTime &lt; transferableTime);
+		require(_transferableTime < transferableTime);
 		transferableTime = _transferableTime;
 	}
 }
@@ -363,9 +363,9 @@ contract LendingBlockTokenEvent is Ownable {
 	uint256 public maxCapPre;
 	uint256 public maxCapMain;
 	uint256 public weiTotal;
-	mapping(address =&gt; bool) public whitelistedAddressPre;
-	mapping(address =&gt; bool) public whitelistedAddressMain;
-	mapping(address =&gt; uint256) public contributedValue;
+	mapping(address => bool) public whitelistedAddressPre;
+	mapping(address => bool) public whitelistedAddressMain;
+	mapping(address => uint256) public contributedValue;
 
 	event TokenPre(address indexed participant, uint256 value, uint256 tokens);
 	event TokenMain(address indexed participant, uint256 value, uint256 tokens);
@@ -400,14 +400,14 @@ contract LendingBlockTokenEvent is Ownable {
 		payable
 		eventNotEnded
 	{
-		require(now &gt;= startTimePre);//after start time
-		require(now &lt;= endTimePre);//before end time
-		require(msg.value &gt;= minCapPre);//contribution is at least minimum
+		require(now >= startTimePre);//after start time
+		require(now <= endTimePre);//before end time
+		require(msg.value >= minCapPre);//contribution is at least minimum
 		require(whitelistedAddressPre[msg.sender] == true);//sender is whitelisted
 
 		uint256 weiValue = msg.value;
 		contributedValue[msg.sender] = contributedValue[msg.sender].add(weiValue);//store amount contributed
-		require(contributedValue[msg.sender] &lt;= maxCapPre);//total contribution not above maximum
+		require(contributedValue[msg.sender] <= maxCapPre);//total contribution not above maximum
 
 		uint256 tokens = weiValue.mul(ratePre);//find amount of tokens
 		weiTotal = weiTotal.add(weiValue);//store total collected eth
@@ -427,14 +427,14 @@ contract LendingBlockTokenEvent is Ownable {
 		payable
 		eventNotEnded
 	{
-		require(now &gt;= startTimeMain);//after start time
-		require(now &lt;= endTimeMain);//before end time
-		require(msg.value &gt;= minCapMain);//contribution is at least minimum
+		require(now >= startTimeMain);//after start time
+		require(now <= endTimeMain);//before end time
+		require(msg.value >= minCapMain);//contribution is at least minimum
 		require(whitelistedAddressMain[msg.sender] == true);//sender is whitelisted
 
 		uint256 weiValue = msg.value;
 		contributedValue[msg.sender] = contributedValue[msg.sender].add(weiValue);//store amount contributed
-		require(contributedValue[msg.sender] &lt;= maxCapMain);//total contribution not above maximum
+		require(contributedValue[msg.sender] <= maxCapMain);//total contribution not above maximum
 
 		uint256 tokens = weiValue.mul(rateMain);//find amount of tokens
 		weiTotal = weiTotal.add(weiValue);//store total collected eth
@@ -472,9 +472,9 @@ contract LendingBlockTokenEvent is Ownable {
 		onlyOwner
 		eventNotEnded
 	{
-		require(now &lt; _startTimePre);//start time must be in the future
-		require(_startTimePre &lt; _endTimePre);//end time must be later than start time
-		require(_minCapPre &lt;= _maxCapPre);//minimum must be smaller or equal to maximum
+		require(now < _startTimePre);//start time must be in the future
+		require(_startTimePre < _endTimePre);//end time must be later than start time
+		require(_minCapPre <= _maxCapPre);//minimum must be smaller or equal to maximum
 		startTimePre = _startTimePre;
 		endTimePre = _endTimePre;
 		minCapPre = _minCapPre;
@@ -503,10 +503,10 @@ contract LendingBlockTokenEvent is Ownable {
 		onlyOwner
 		eventNotEnded
 	{
-		require(now &lt; _startTimeMain);//start time must be in the future
-		require(_startTimeMain &lt; _endTimeMain);//end time must be later than start time
-		require(_minCapMain &lt;= _maxCapMain);//minimum must be smaller or equal to maximum
-		require(_startTimeMain &gt; endTimePre);//main round should be after pre round
+		require(now < _startTimeMain);//start time must be in the future
+		require(_startTimeMain < _endTimeMain);//end time must be later than start time
+		require(_minCapMain <= _maxCapMain);//minimum must be smaller or equal to maximum
+		require(_startTimeMain > endTimePre);//main round should be after pre round
 		startTimeMain = _startTimeMain;
 		endTimeMain = _endTimeMain;
 		minCapMain = _minCapMain;
@@ -526,7 +526,7 @@ contract LendingBlockTokenEvent is Ownable {
 		onlyOwner
 		eventNotEnded
 	{
-		for (uint256 i = 0; i &lt; whitelistedAddress.length; i++) {
+		for (uint256 i = 0; i < whitelistedAddress.length; i++) {
 			whitelistedAddressPre[whitelistedAddress[i]] = whitelistedStatus;
 			WhitelistPre(whitelistedAddress[i], whitelistedStatus);
 		}
@@ -543,7 +543,7 @@ contract LendingBlockTokenEvent is Ownable {
 		onlyOwner
 		eventNotEnded
 	{
-		for (uint256 i = 0; i &lt; whitelistedAddress.length; i++) {
+		for (uint256 i = 0; i < whitelistedAddress.length; i++) {
 			whitelistedAddressMain[whitelistedAddress[i]] = whitelistedStatus;
 			WhitelistMain(whitelistedAddress[i], whitelistedStatus);
 		}
@@ -559,10 +559,10 @@ contract LendingBlockTokenEvent is Ownable {
 		onlyOwner
 		eventNotEnded
 	{
-		require(now &gt; endTimeMain);//can only be called after end time
-		require(endTimeMain &gt; 0);//can only be called after end time has been set
+		require(now > endTimeMain);//can only be called after end time
+		require(endTimeMain > 0);//can only be called after end time has been set
 		uint256 leftTokens = token.balanceOf(this);//find if any tokens are left
-		if (leftTokens &gt; 0) {
+		if (leftTokens > 0) {
 			token.burn(leftTokens);//burn all remaining tokens
 		}
 		eventEnded = true;//deactivates all functions
@@ -573,9 +573,9 @@ contract LendingBlockTokenEvent is Ownable {
 	* main sale should start only after pre sale
 	*/
 	function () external payable {
-		if (now &lt;= endTimePre) {//call pre function if before pre sale end time
+		if (now <= endTimePre) {//call pre function if before pre sale end time
 			joinPre();
-		} else if (now &lt;= endTimeMain) {//call main function if before main sale end time
+		} else if (now <= endTimeMain) {//call main function if before main sale end time
 			joinMain();
 		} else {
 			revert();

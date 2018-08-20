@@ -3,12 +3,12 @@ pragma solidity ^0.4.17;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -51,7 +51,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -276,13 +276,13 @@ contract Realm is AccessControl, Enums, SafeMath {
         (,petSeries.currentPetTotal, petSeries.maxPetTotal) = petCardData.getPetCardSeries(_petCardSeriesId);
 
         
-        if (petSeries.currentPetTotal &gt;= petSeries.maxPetTotal) { revert ();}
+        if (petSeries.currentPetTotal >= petSeries.maxPetTotal) { revert ();}
         
         //timechecks - in case people try to interact with the contract directly and get pets before they are available
-        if (_petCardSeriesId &gt; 4) {revert();} //Pets higher than 4 come from battle, breeding, or marketplace. 
-        if ((_petCardSeriesId == 2) &amp;&amp; (now &lt; 1518348600)) {revert();}
-        if ((_petCardSeriesId == 3) &amp;&amp; (now &lt; 1520076600)) {revert();}
-        if ((_petCardSeriesId == 4) &amp;&amp; (now &lt; 1521804600)) {revert();}
+        if (_petCardSeriesId > 4) {revert();} //Pets higher than 4 come from battle, breeding, or marketplace. 
+        if ((_petCardSeriesId == 2) && (now < 1518348600)) {revert();}
+        if ((_petCardSeriesId == 3) && (now < 1520076600)) {revert();}
+        if ((_petCardSeriesId == 4) && (now < 1521804600)) {revert();}
          
         //first find pet luck
         uint8 _newLuck = getRandomNumber(19, 10, msg.sender);
@@ -304,12 +304,12 @@ contract Realm is AccessControl, Enums, SafeMath {
 
  //Create each mint of a Accessory card 
      function createAccessory(uint8 _accessorySeriesId) isContractActive external payable {
-        if (_accessorySeriesId &gt; 18) {revert();} 
+        if (_accessorySeriesId > 18) {revert();} 
     IAccessoryData AccessoryData = IAccessoryData(accessoryDataContract);
       AccessorySeries memory accessorySeries;
       (,accessorySeries.currentTotal, accessorySeries.maxTotal, accessorySeries.price) = AccessoryData.getAccessorySeries(_accessorySeriesId);
-    if (accessorySeries.currentTotal &gt;= accessorySeries.maxTotal) { revert ();}
-      if (msg.value &lt; accessorySeries.price) { revert();}
+    if (accessorySeries.currentTotal >= accessorySeries.maxTotal) { revert ();}
+      if (msg.value < accessorySeries.price) { revert();}
      uint64 accessoryId = AccessoryData.setAccessory(_accessorySeriesId, msg.sender);
      
      EventCreateAccessory(msg.sender, accessoryId);
@@ -322,17 +322,17 @@ contract Realm is AccessControl, Enums, SafeMath {
         AngelCardSeries memory series;
         (, series.currentAngelTotal, series.basePrice, series.maxAngelTotal,,series.baseBattlePower, series.lastSellTime, series.liveTime) = angelCardData.getAngelCardSeries(_angelCardSeriesId);
       
-      if ( _angelCardSeriesId &gt; 24) {revert();}
+      if ( _angelCardSeriesId > 24) {revert();}
         //Checked here and in angelCardData
-        if (series.currentAngelTotal &gt;= series.maxAngelTotal) { revert();}
-        if (_angelCardSeriesId &gt; 3) {
+        if (series.currentAngelTotal >= series.maxAngelTotal) { revert();}
+        if (_angelCardSeriesId > 3) {
             // check is it within the  release schedule
-            if (now &lt; series.liveTime) {
+            if (now < series.liveTime) {
             revert();
             }
         }
         // Verify the price paid for card is correct
-        if (series.basePrice &gt; msg.value) {revert(); }
+        if (series.basePrice > msg.value) {revert(); }
         
         // add angel
         uint64 angelId = angelCardData.setAngel(_angelCardSeriesId, msg.sender, msg.value, uint16(series.baseBattlePower+getRandomNumber(10,0,msg.sender)));

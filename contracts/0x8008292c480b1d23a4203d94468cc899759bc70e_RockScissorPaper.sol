@@ -1,6 +1,6 @@
 //  ___             _                         ___              _
 // | _ )  _  _   __| |  __ _    __ __  ___   | _ \  ___   ___ | |_
-// | _ \ | || | / _` | / _` |   \ V / (_-&lt;   |  _/ / -_) (_-&lt; |  _|
+// | _ \ | || | / _` | / _` |   \ V / (_-<   |  _/ / -_) (_-< |  _|
 // |___/  \_,_| \__,_| \__,_|    \_/  /__/   |_|   \___| /__/  \__|
 
 // Buda vs Pest
@@ -43,12 +43,12 @@ contract Ownable {
 library SafeMath {
         function add (uint256 a, uint256 b) internal pure returns (uint256) {
               uint256   c = a + b;
-              assert (c &gt;= a);
+              assert (c >= a);
               return c;
         }
 
         function sub (uint256 a, uint256 b) internal pure returns (uint256) {
-              assert (b &lt;= a);
+              assert (b <= a);
               return a - b;
         }
 
@@ -63,9 +63,9 @@ library SafeMath {
 
         // Solidty automatically throws
         // function div (uint256 a, uint256 b) internal pure returns (uint256) {
-        //       // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        //       // assert(b > 0); // Solidity automatically throws when dividing by 0
         //       uint256   c = a/b;
-        //       // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        //       // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         //       return c;
         // }
 }
@@ -98,7 +98,7 @@ contract StandardToken is ERC20 {
 
         // Basic
         uint256                             _tokenTotal;
-        mapping (address =&gt; uint256)        _tokenBalances;
+        mapping (address => uint256)        _tokenBalances;
 
         function totalSupply () public view returns (uint256) {
                 return _tokenTotal;
@@ -119,7 +119,7 @@ contract StandardToken is ERC20 {
 
         function transfer (address to, uint256 amount) public returns (bool) {
                 require (to != address (0));
-                require (amount &lt;= _tokenBalances[msg.sender]);     // should not be necessary, but double checks
+                require (amount <= _tokenBalances[msg.sender]);     // should not be necessary, but double checks
 
                 _transfer (to, amount);
                 return true;
@@ -127,7 +127,7 @@ contract StandardToken is ERC20 {
 
 
         // Additional
-        mapping (address =&gt; mapping (address =&gt; uint256)) internal  _tokenAllowance;
+        mapping (address => mapping (address => uint256)) internal  _tokenAllowance;
 
         function allowance (address tokenOwner, address spender) public view returns (uint256) {
                 return _tokenAllowance[tokenOwner][spender];
@@ -150,8 +150,8 @@ contract StandardToken is ERC20 {
 
         function transferFrom (address from, address to, uint256 amount) public returns (bool) {
                 require (to != address (0));
-                require (amount &lt;= _tokenBalances[from]);
-                require (amount &lt;= _tokenAllowance[from][msg.sender]);
+                require (amount <= _tokenBalances[from]);
+                require (amount <= _tokenAllowance[from][msg.sender]);
 
                 _transferFrom (from, to, amount);
 
@@ -164,7 +164,7 @@ contract StandardToken is ERC20 {
 
 //  ___             _                         ___              _
 // | _ )  _  _   __| |  __ _    __ __  ___   | _ \  ___   ___ | |_
-// | _ \ | || | / _` | / _` |   \ V / (_-&lt;   |  _/ / -_) (_-&lt; |  _|
+// | _ \ | || | / _` | / _` |   \ V / (_-<   |  _/ / -_) (_-< |  _|
 // |___/  \_,_| \__,_| \__,_|    \_/  /__/   |_|   \___| /__/  \__|
 
 // Buda vs Pest
@@ -187,8 +187,8 @@ contract RSPScienceInterface {
 contract RockScissorPaper is StandardToken, Ownable {
         using SafeMath for uint256;
 
-        string public   name                = &#39;RockScissorPaper&#39;;
-        string public   symbol              = &#39;RSP&#39;;
+        string public   name                = 'RockScissorPaper';
+        string public   symbol              = 'RSP';
         uint8 public    decimals            = 18;
 
         uint8 public    version             = 7;
@@ -225,12 +225,12 @@ contract RockScissorPaper is StandardToken, Ownable {
         }
 
 
-        mapping (address =&gt; uint256) public         weiInvested;
-        mapping (address =&gt; uint256) public         weiRefunded;
+        mapping (address => uint256) public         weiInvested;
+        mapping (address => uint256) public         weiRefunded;
 
-        mapping (address =&gt; address) public         referrals;
-        mapping (address =&gt; uint256) public         nRefs;
-        mapping (address =&gt; uint256) public         weiFromRefs;
+        mapping (address => address) public         referrals;
+        mapping (address => uint256) public         nRefs;
+        mapping (address => uint256) public         weiFromRefs;
 
         event TokenInvest (address indexed purchaser, uint256 nWeis, uint256 nTokens, address referral);
         event TokenRefund (address indexed purchaser, uint256 nWeis, uint256 nTokens);
@@ -261,12 +261,12 @@ contract RockScissorPaper is StandardToken, Ownable {
         function buyTokens (address referral) public payable {
                 // minimum buys: 1 token
                 uint256     amount      = msg.value.mul (5000);
-                require (amount &gt;= 1 * 10**uint(decimals));
+                require (amount >= 1 * 10**uint(decimals));
 
                 // _processPurchase, _deliverTokens using Minting
                 _mint (msg.sender, amount);
 
-                if ( referrals[msg.sender] == address(0) &amp;&amp;
+                if ( referrals[msg.sender] == address(0) &&
                      referral != msg.sender ) {
                         if (referral == address(0)) {
                                 referral    = owner;
@@ -312,7 +312,7 @@ contract RockScissorPaper is StandardToken, Ownable {
 
 
         GameRSP[]   games;
-        // mapping (address =&gt; uint256) public         lastGameId;
+        // mapping (address => uint256) public         lastGameId;
 
         function totalGames () public view returns (uint256) {
                 return games.length;
@@ -347,11 +347,11 @@ contract RockScissorPaper is StandardToken, Ownable {
 
         function createGame (uint256 amount, uint256 pose) public {
                 // Will check tokenBalance of sender in transfer ()
-                // require (_tokenBalances[msg.sender] &gt;= amount &amp;&amp; amount &gt;= 100 * 10**uint(decimals));
-                require (_tokenBalances[msg.sender] &gt;= amount);
+                // require (_tokenBalances[msg.sender] >= amount && amount >= 100 * 10**uint(decimals));
+                require (_tokenBalances[msg.sender] >= amount);
 
                 // We set 1 as the minimal token required, but 100 tokens probably is the minimum viable
-                require (amount &gt;= 1 * 10**uint(decimals));
+                require (amount >= 1 * 10**uint(decimals));
 
 
                 // escrew tokens;
@@ -371,7 +371,7 @@ contract RockScissorPaper is StandardToken, Ownable {
 
                 // lastGameId[msg.sender]      = gameId;
                 // Todo: Last GameId
-                // Let&#39;s be absolutely sure array don&#39;t hit its limits
+                // Let's be absolutely sure array don't hit its limits
                 require (gameId == uint256(uint32(gameId)));
                 GameCreated (msg.sender, gameId, pose);
         }
@@ -385,7 +385,7 @@ contract RockScissorPaper is StandardToken, Ownable {
 
                 uint256     nTokens = game.nTokens;
                 // Will check tokenBalance of sender in transfer ()
-                require (_tokenBalances[msg.sender] &gt;= nTokens);
+                require (_tokenBalances[msg.sender] >= nTokens);
 
                 // escrew tokens;
                 _transfer (this, nTokens);
@@ -415,31 +415,31 @@ contract RockScissorPaper is StandardToken, Ownable {
                 require (game.player != address (0));
                 uint256     nTokens     = game.nTokens;
 
-                require (_tokenBalances[this] &gt;= nTokens * 2);
+                require (_tokenBalances[this] >= nTokens * 2);
 
                 uint256     ownerFee            = nTokens * 2 * ownerCut / 100;
                 uint256     referralFee         = nTokens * 2 * referralCut / 100;
                 uint256     winnerPrize         = nTokens * 2 - ownerFee - referralFee - solFee;
                 uint256     drawPrize           = nTokens - solFee/2;
 
-                require (game.sek == 0 &amp;&amp; sek != 0);
+                require (game.sek == 0 && sek != 0);
                 game.sek        = sek;
 
                 address     referral;
-                // Let&#39;s start solving the game
+                // Let's start solving the game
                 uint256     posebits        = rspScience.calcPoseBits (sek, game.creatorPose, game.playerPose);
 
                 // RK, SC, PA,   RK, SC, PA
                 // 1,  2,  4,    8,  16, 32
                 if ((posebits % 9) == 0) {                                  // 9, 18 or 36
-                        require (drawPrize &gt;= 0);
+                        require (drawPrize >= 0);
 
-                        // draw (we don&#39;t take any fees - fair enough?)
+                        // draw (we don't take any fees - fair enough?)
                         _transferFrom (this, game.creator, drawPrize);
                         _transferFrom (this, game.player, drawPrize);
                 }
                 else if ((posebits % 17) == 0 || posebits == 12) {          // 12, 17, or 34
-                        require (winnerPrize &gt;= 0);
+                        require (winnerPrize >= 0);
 
                         referral            = referrals[game.creator];
                         if (referral == address(0)) {
@@ -454,7 +454,7 @@ contract RockScissorPaper is StandardToken, Ownable {
                         weiFromRefs[referral]     += referralFee;
                 }
                 else if ((posebits % 10) == 0 || posebits == 33) {          // 10, 20, or 33
-                        require (winnerPrize &gt;= 0);
+                        require (winnerPrize >= 0);
 
                         referral            = referrals[game.player];
                         if (referral == address(0)) {
@@ -469,7 +469,7 @@ contract RockScissorPaper is StandardToken, Ownable {
                         weiFromRefs[referral]     += referralFee;
                 }
 
-                if (solFee &gt; 0) {
+                if (solFee > 0) {
                         _transferFrom (this, msg.sender, solFee);
                 }
 
@@ -485,7 +485,7 @@ contract RockScissorPaper is StandardToken, Ownable {
         }
 
         // Or the game could be automatically solved a few moments later by the owner,
-        // charging a &#39;solverFee&#39;
+        // charging a 'solverFee'
         function autoSolveGame (uint256 gameId, uint256 sek, uint256 solFee) onlyOwner public {
                 _solveGame (gameId, sek, solFee);
         }

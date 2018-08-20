@@ -43,13 +43,13 @@ contract TwoXJackpot {
   uint256 public gameStartTime;
 
   // Total invested for a given address
-  mapping (address =&gt; uint256) public totalInvested;
+  mapping (address => uint256) public totalInvested;
 
   // Total value for a given address
-  mapping (address =&gt; uint256) public totalValue;
+  mapping (address => uint256) public totalValue;
 
   // Total paid out for a given address
-  mapping (address =&gt; uint256) public totalPaidOut;
+  mapping (address => uint256) public totalPaidOut;
 
   struct BuyIn {
     uint256 value;
@@ -62,7 +62,7 @@ contract TwoXJackpot {
   }
 
   modifier isStarted() {
-      require(now &gt;= gameStartTime);
+      require(now >= gameStartTime);
       _;
   }
 
@@ -77,7 +77,7 @@ contract TwoXJackpot {
 
   // return jackpot to contract creator if no purchases or claims in 30 days.
   function killme() public payable onlyContractOwner {
-    require(now &gt; lastAction + 30 days);
+    require(now > lastAction + 30 days);
     seedAmount = 0;
     jackpotBalance = 0;
     contractOwner.transfer(jackpotBalance);
@@ -91,8 +91,8 @@ contract TwoXJackpot {
 
   // Change the start time.
   function changeStartTime(uint256 _time) public payable onlyContractOwner {
-    require(now &lt; _time); // only allow changing it to something in the future.
-    require(now &lt; gameStartTime); // Only change a game that has not started, prevent abuse.
+    require(now < _time); // only allow changing it to something in the future.
+    require(now < gameStartTime); // Only change a game that has not started, prevent abuse.
     gameStartTime = _time;
   }
 
@@ -105,8 +105,8 @@ contract TwoXJackpot {
     uint256 purchaseMin = SafeMath.mul(msg.value, 20); // 5% Jackpot Min Purchase
     uint256 purchaseMax = SafeMath.mul(msg.value, 2); // 50% Jackpot Min Purchase
 
-    require(purchaseMin &gt;= jackpotBalance);
-    require(purchaseMax &lt;= jackpotBalance);
+    require(purchaseMin >= jackpotBalance);
+    require(purchaseMax <= jackpotBalance);
 
     // Take a 5% fee
     uint256 valueAfterTax = SafeMath.div(SafeMath.mul(msg.value, 95), 100);
@@ -125,10 +125,10 @@ contract TwoXJackpot {
     contractTotalInvested += msg.value;
     totalInvested[msg.sender] += msg.value;
 
-    while (index &lt; buyIns.length &amp;&amp; valueAfterTax &gt; 0) {
+    while (index < buyIns.length && valueAfterTax > 0) {
       BuyIn storage buyIn = buyIns[index];
 
-      if (valueAfterTax &lt; buyIn.value) {
+      if (valueAfterTax < buyIn.value) {
         buyIn.owner.transfer(valueAfterTax);
         totalPaidOut[buyIn.owner] += valueAfterTax;
         totalValue[buyIn.owner] -= valueAfterTax;
@@ -146,7 +146,7 @@ contract TwoXJackpot {
 
     // if buyins have been exhausted, return the remaining
     // funds back to the investor
-    if (valueAfterTax &gt; 0) {
+    if (valueAfterTax > 0) {
       msg.sender.transfer(valueAfterTax);
       valueMultiplied -= valueAfterTax;
       totalPaidOut[msg.sender] += valueAfterTax;
@@ -163,7 +163,7 @@ contract TwoXJackpot {
 
   // Send the jackpot if no activity in 24 hours and claimant was the last person to generate activity.
   function claim() public payable isStarted {
-    require(now &gt; lastAction + 6 hours);
+    require(now > lastAction + 6 hours);
 	require(jackpotLastQualified == msg.sender);
 
     uint256 seedPay = seedAmount;
@@ -178,7 +178,7 @@ contract TwoXJackpot {
 
   // Fallback, sending any ether will call purchase() while sending 0 will call claim()
   function () public payable {
-    if(msg.value &gt; 0) {
+    if(msg.value > 0) {
       purchase();
     } else {
       claim();
@@ -210,9 +210,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -220,7 +220,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -229,7 +229,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
   /**
   * @dev Gets the balance of the specified address.
@@ -81,7 +81,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
     
   /**
@@ -134,8 +134,8 @@ contract owned {
 }
 
 contract IonicCoin is StandardToken, owned {
-	string public constant name = &#39;IonicCoin&#39;;
-	string public constant symbol = &#39;INC&#39;;
+	string public constant name = 'IonicCoin';
+	string public constant symbol = 'INC';
 	uint public constant decimals = 18;
 	uint private constant INITIAL_SUPPLY =  50000000 * (10 ** uint256(decimals));
   uint private constant RESERVE =  20000000 * (10 ** uint256(decimals)); 
@@ -161,7 +161,7 @@ contract IonicCoin is StandardToken, owned {
     bool allowed;
   }
     
-  mapping (address =&gt; User) users;
+  mapping (address => User) users;
 	address[] public userAccounts;
 
 	function IonicCoin() {
@@ -179,10 +179,10 @@ contract IonicCoin is StandardToken, owned {
     function createTokens() payable {
         uint256 tokens = msg.value.mul(getTokeRate());
         // min - 0.1 ETH
-        require(msg.value &gt;= ((1 ether / 1 wei) / 10));
+        require(msg.value >= ((1 ether / 1 wei) / 10));
         require(
-            msg.value &gt; 0
-            &amp;&amp; tokens &lt;= totalSupply
+            msg.value > 0
+            && tokens <= totalSupply
         );
         userAccounts.push(msg.sender)-1;
          
@@ -239,12 +239,12 @@ contract IonicCoin is StandardToken, owned {
     
     function sell(uint256 amount) public {
       require (sellingAccepted == true); // selling accept when ICO is eneded
-      require (sellPrice &gt; 0);
+      require (sellPrice > 0);
       // min - 0.1 ETH
-      require(msg.value &gt;= ((1 ether / 1 wei) / 10));
-      require(balances[owner] &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+      require(msg.value >= ((1 ether / 1 wei) / 10));
+      require(balances[owner] >= amount * sellPrice);      // checks if the contract has enough ether to buy
       transferFrom(msg.sender, owner, amount);           // makes the transfers
-      msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+      msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     
     }
     
@@ -253,7 +253,7 @@ contract IonicCoin is StandardToken, owned {
     function withdrawEther(address ethFundDeposit) public onlyOwner
     { 
         uint256 amount = balances[owner];
-        if(amount &gt; 0) 
+        if(amount > 0) 
         {
             ethFundDeposit.transfer(amount);
         }
@@ -262,12 +262,12 @@ contract IonicCoin is StandardToken, owned {
     function transfer(address _to, uint256 _value) returns (bool success) {
         require (_to != 0x0); 
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         ); 
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
-            if(totalSupply &lt;= RESERVE){ // run out of token
+        if (balances[msg.sender] >= _value && _value > 0) {
+            if(totalSupply <= RESERVE){ // run out of token
                 return false;
             }
             
@@ -290,11 +290,11 @@ contract IonicCoin is StandardToken, owned {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     uint256 _allowance = allowed[_from][msg.sender];
     require (_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-	  require (_value &gt; 0); 
-    require (balances[_from] &gt; _value);                 // Check if the sender has enough
-    require (balances[_to] + _value &gt; balances[_to]);  // Check for overflows
+	  require (_value > 0); 
+    require (balances[_from] > _value);                 // Check if the sender has enough
+    require (balances[_to] + _value > balances[_to]);  // Check for overflows
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    require (_value &lt;= _allowance);
+    require (_value <= _allowance);
     
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);

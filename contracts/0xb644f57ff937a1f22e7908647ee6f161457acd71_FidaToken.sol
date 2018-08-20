@@ -169,9 +169,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -179,7 +179,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -188,7 +188,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -225,9 +225,9 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -262,7 +262,7 @@ contract BasicToken is ERC20Basic, ERC20 {
   function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
     require(_from != address(0));
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[_from] = balances[_from].sub(_value);
@@ -289,8 +289,8 @@ contract BasicToken is ERC20Basic, ERC20 {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(!locked);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -304,7 +304,7 @@ contract BasicToken is ERC20Basic, ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -357,7 +357,7 @@ contract BasicToken is ERC20Basic, ERC20 {
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     require(!locked);
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -483,7 +483,7 @@ contract BurnableToken is BurnableTokenInterface, MintableToken {
 
     require(depositAddress != address(0));
     require(_tokens != 0);
-    require(_tokens &lt;= balances[depositAddress]);
+    require(_tokens <= balances[depositAddress]);
 
     balances[depositAddress] = balances[depositAddress].sub(_tokens);
     totalSupply_ = totalSupply_.sub(_tokens);
@@ -500,8 +500,8 @@ contract BurnableToken is BurnableTokenInterface, MintableToken {
  * @notice Token contract for the fida token
  */
 contract FidaToken is BurnableToken {
-  string public name = &quot;fida&quot;;
-  string public symbol = &quot;fida&quot;;
+  string public name = "fida";
+  string public symbol = "fida";
   uint8 public decimals = 18;
   
   /**

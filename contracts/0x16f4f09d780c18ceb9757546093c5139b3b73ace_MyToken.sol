@@ -16,13 +16,13 @@ contract SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
      return a - b;
    }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
      uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
      return c;
    }
 }
@@ -41,12 +41,12 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-   mapping(address =&gt; uint256) balances;
-   mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+   mapping(address => uint256) balances;
+   mapping (address => mapping (address => uint256)) internal allowed;
 
    function transfer(address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender]);
+     require(_value <= balances[msg.sender]);
      balances[msg.sender] = sub(balances[msg.sender], _value);
      balances[_to] = add(balances[_to], _value);
      Transfer(msg.sender, _to, _value);
@@ -59,8 +59,8 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = sub(balances[_from], _value);
      balances[_to] = add(balances[_to], _value);
@@ -87,7 +87,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
      uint oldValue = allowed[msg.sender][_spender];
-     if (_subtractedValue &gt; oldValue) {
+     if (_subtractedValue > oldValue) {
        allowed[msg.sender][_spender] = 0;
      } else {
        allowed[msg.sender][_spender] = sub(oldValue, _subtractedValue);
@@ -99,8 +99,8 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract MyToken is StandardToken {
-   string public name = &#39;Spectre&#39;;
-   string public symbol = &#39;SPTR&#39;;
+   string public name = 'Spectre';
+   string public symbol = 'SPTR';
    uint public decimals = 18;
    uint public INITIAL_SUPPLY = 10000000000000000000000000000000;
 

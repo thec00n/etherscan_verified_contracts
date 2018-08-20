@@ -6,17 +6,17 @@ contract countGame {
     uint public endTime = 1504969200;
     
     function fund() payable {
-        require(now &lt;= endTime);
+        require(now <= endTime);
     }
     
     function (){
-        require(now&lt;=endTime &amp;&amp; count&lt;50);
+        require(now<=endTime && count<50);
         best_gamer = msg.sender;
         count++;
     }
     
     function endGame(){
-        require(now&gt;endTime || count == 50);
+        require(now>endTime || count == 50);
         best_gamer.transfer(this.balance);
     }
     

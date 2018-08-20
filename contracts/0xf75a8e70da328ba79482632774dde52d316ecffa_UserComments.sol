@@ -1,7 +1,7 @@
 pragma solidity 0.4.18;
 
 /// @title User Comments
-/// @author Mark Beylin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2944485b42074b4c50454047694a46475a4c475a505a07474c5d">[email&#160;protected]</a>&gt;
+/// @author Mark Beylin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2944485b42074b4c50454047694a46475a4c475a505a07474c5d">[email protected]</a>>
 
 contract UserComments {
     event CommentAdded(string _comment, address _from, address _to, uint _time);
@@ -18,7 +18,7 @@ contract UserComments {
     Comment[] public comments;
 
     modifier isValidCommentIndex(uint i){
-      require (i &lt; comments.length);
+      require (i < comments.length);
       _;
     }
 

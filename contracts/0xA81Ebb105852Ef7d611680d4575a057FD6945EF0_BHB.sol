@@ -11,9 +11,9 @@ contract BHB {
     uint256 public totalSupply;
 
     // Balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     // ----- Events -----
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -47,9 +47,9 @@ contract BHB {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -85,7 +85,7 @@ contract BHB {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);     // Check allowance
+        require(_value <= allowances[_from][msg.sender]);     // Check allowance
         allowances[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value);
     }
@@ -124,7 +124,7 @@ contract BHB {
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
         // Check for overflows
-        require(allowances[msg.sender][_spender] + _addedValue &gt; allowances[msg.sender][_spender]);
+        require(allowances[msg.sender][_spender] + _addedValue > allowances[msg.sender][_spender]);
 
         allowances[msg.sender][_spender] += _addedValue;
         Approval(msg.sender, _spender, allowances[msg.sender][_spender]);
@@ -133,7 +133,7 @@ contract BHB {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowances[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = oldValue - _subtractedValue;

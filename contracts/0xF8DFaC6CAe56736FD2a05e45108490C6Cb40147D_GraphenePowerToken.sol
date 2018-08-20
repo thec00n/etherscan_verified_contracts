@@ -35,7 +35,7 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 //*** Utils ***//
 contract Utils {
     
-	// validates an address - currently only checks that it isn&#39;t null
+	// validates an address - currently only checks that it isn't null
 	modifier validAddress(address _address) {
 		require(_address != 0x0);
 		_;
@@ -52,11 +52,11 @@ contract Utils {
 contract GraphenePowerToken is owned,Utils{
     
     //************** Token ************//
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
 
-	string public name = &#39;Graphene Power&#39;;
+	string public name = 'Graphene Power';
 
-	string public symbol = &#39;GRP&#39;;
+	string public symbol = 'GRP';
 
 	uint8 public decimals = 18;
 
@@ -98,10 +98,10 @@ contract GraphenePowerToken is owned,Utils{
     bool public transfersEnabled = false;
     
      //*** Balance ***//
-    mapping (address =&gt; uint256) balanceOf;
+    mapping (address => uint256) balanceOf;
     
     //*** Alowed ***//
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     //*** Tranfer ***//
     event Transfer(address from, address to, uint256 value);
@@ -148,7 +148,7 @@ contract GraphenePowerToken is owned,Utils{
 	
 	   //*** Payable ***//
     function() payable public {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         buyTokens(msg.sender);
 	}
 	
@@ -167,19 +167,19 @@ contract GraphenePowerToken is owned,Utils{
         else if(isIco()){
             wallet=icoAddress;
             
-            if((icoStart+(7*24*60*60)) &gt;= now){
+            if((icoStart+(7*24*60*60)) >= now){
                weiAmount=4000;
             }
-            else if((icoStart+(14*24*60*60)) &gt;= now){
+            else if((icoStart+(14*24*60*60)) >= now){
                  weiAmount=3750;
             }
-            else if((icoStart+(21*24*60*60)) &gt;= now){
+            else if((icoStart+(21*24*60*60)) >= now){
                  weiAmount=3500;
             }
-            else if((icoStart+(28*24*60*60)) &gt;= now){
+            else if((icoStart+(28*24*60*60)) >= now){
                  weiAmount=3250;
             }
-            else if((icoStart+(35*24*60*60)) &gt;= now){
+            else if((icoStart+(35*24*60*60)) >= now){
                  weiAmount=3000;
             }
             else{
@@ -220,7 +220,7 @@ contract GraphenePowerToken is owned,Utils{
 	
 	/* Send coins */
 	function transfer(address _to, uint256 _value) transfersAllowed public returns (bool success) {
-		require(balanceOf[_to] &gt;= _value);
+		require(balanceOf[_to] >= _value);
 		// Subtract from the sender
 		balanceOf[msg.sender] = (balanceOf[msg.sender] -_value);
 		balanceOf[_to] =(balanceOf[_to] + _value);
@@ -252,9 +252,9 @@ contract GraphenePowerToken is owned,Utils{
 	function transferFrom(address _from, address _to, uint256 _value) transfersAllowed public returns (bool success) {
 	    require(transfersEnabled);
 		// Check if the sender has enough
-		require(balanceOf[_from] &gt;= _value);
+		require(balanceOf[_from] >= _value);
 		// Check allowed
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		// Subtract from the sender
 		balanceOf[_from] = (balanceOf[_from] - _value);
@@ -284,7 +284,7 @@ contract GraphenePowerToken is owned,Utils{
 	//*** Destroy ***//
 	function destroy(address _from, uint256 _amount) public {
 	    require(msg.sender == _from);
-	    require(balanceOf[_from] &gt;= _amount);
+	    require(balanceOf[_from] >= _amount);
 		balanceOf[_from] =(balanceOf[_from] - _amount);
 		_totalSupply = (_totalSupply - _amount);
 		Transfer(_from, this, _amount);
@@ -293,8 +293,8 @@ contract GraphenePowerToken is owned,Utils{
 	
 	//Kill
 	function killBalance() onlyOwner public {
-		require(!enablePreSale &amp;&amp; !enableIco);
-		if(this.balance &gt; 0) {
+		require(!enablePreSale && !enableIco);
+		if(this.balance > 0) {
 			owner.transfer(this.balance);
 		}
 	}
@@ -336,7 +336,7 @@ contract GraphenePowerToken is owned,Utils{
 	
 	//*** Is ico closed ***//
     function isIco() constant public returns (bool closed) {
-		 bool result=((icoStart+(35*24*60*60)) &gt;= now);
+		 bool result=((icoStart+(35*24*60*60)) >= now);
 		 if(enableIco){
 		     return true;
 		 }
@@ -347,7 +347,7 @@ contract GraphenePowerToken is owned,Utils{
     
     //*** Is preSale closed ***//
     function isPreSale() constant public returns (bool closed) {
-		bool result=(preSaleEnd &gt;= now);
+		bool result=(preSaleEnd >= now);
 		if(enablePreSale){
 		    return true;
 		}

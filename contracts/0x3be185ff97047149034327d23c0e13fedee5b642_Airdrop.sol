@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,7 +88,7 @@ contract Airdrop is Ownable {
     }
 
     function airdrop(address[] _recipients, uint256 amountEach) external onlyOwner {
-        for (uint i=0; i &lt; _recipients.length; i++) {
+        for (uint i=0; i < _recipients.length; i++) {
             token.transfer(_recipients[i], amountEach);
         }
         emit Drop();

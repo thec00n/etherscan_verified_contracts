@@ -64,7 +64,7 @@ contract SmartRevshare is OfficialWebsite {
 
   function() {
     // 100 finey is minimum invest
-    if (msg.value &lt; 100 finney) throw;
+    if (msg.value < 100 finney) throw;
 
     invest();
     payout();
@@ -94,22 +94,22 @@ contract SmartRevshare is OfficialWebsite {
     uint payoutValue;
     uint currDay = getDay(); // store actual day
 
-    for (uint idx = payoutIdx; idx &lt; investors.length; idx += 1) {
+    for (uint idx = payoutIdx; idx < investors.length; idx += 1) {
       // calculate 1% of invested value
       payoutValue = investors[idx].value / 100;
 
-      if (balance &lt; payoutValue) {
+      if (balance < payoutValue) {
         // out of balance, do payuout next time
         break;
       }
 
-      if (investors[idx].lastDay &gt;= currDay) {
+      if (investors[idx].lastDay >= currDay) {
         // this investor was payed today
         // payout next one
         continue;
       }
 
-      if (investors[idx].leftPayDays &lt;= 0) {
+      if (investors[idx].leftPayDays <= 0) {
         // this investor is paidoff, check next one
         payoutIdx = idx;
       }
@@ -137,9 +137,9 @@ contract SmartRevshare is OfficialWebsite {
 
   // calculate ROI based on investor value
   function calculateROI() internal returns (uint8) {
-    if (msg.value &lt;=   1 ether) return 110; // 110%
-    if (msg.value &lt;=  10 ether) return 120; // 120%
-    if (msg.value &lt;= 100 ether) return 130; // 130%
+    if (msg.value <=   1 ether) return 110; // 110%
+    if (msg.value <=  10 ether) return 120; // 120%
+    if (msg.value <= 100 ether) return 130; // 130%
     return 0;
   }
 

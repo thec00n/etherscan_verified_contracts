@@ -17,8 +17,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -268,10 +268,10 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   
   bool private mErc20compatible;
   
-  mapping(address =&gt; uint) private mBalances;
-  mapping(address =&gt; lockedTokens) private mLockedBalances;
-  mapping(address =&gt; mapping(address =&gt; bool)) private mAuthorized;
-  mapping(address =&gt; mapping(address =&gt; uint256)) private mAllowed;
+  mapping(address => uint) private mBalances;
+  mapping(address => lockedTokens) private mLockedBalances;
+  mapping(address => mapping(address => bool)) private mAuthorized;
+  mapping(address => mapping(address => uint256)) private mAllowed;
   
   struct lockedTokens {
     uint amount;
@@ -294,18 +294,18 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     address _eip820RegistryAddr,
     address _owner
   )  public {
-    require(!_initialized, &quot;This contract has already been initialized. You can only do this once.&quot;);
+    require(!_initialized, "This contract has already been initialized. You can only do this once.");
     mName = _name;
     mSymbol = _symbol;
     mErc20compatible = true;
     setOwner(_owner);
-    require(_granularity &gt;= 1, &quot;The granularity must be &gt;= 1&quot;);
+    require(_granularity >= 1, "The granularity must be >= 1");
     mGranularity = _granularity;
     setIntrospectionRegistry(_eip820RegistryAddr);
-    setInterfaceImplementation(&quot;ERC20Token&quot;, this);
-    setInterfaceImplementation(&quot;ERC777Token&quot;, this);
-    setInterfaceImplementation(&quot;Lockable&quot;, this);
-    setInterfaceImplementation(&quot;Pausable&quot;, this);
+    setInterfaceImplementation("ERC20Token", this);
+    setInterfaceImplementation("ERC777Token", this);
+    setInterfaceImplementation("Lockable", this);
+    setInterfaceImplementation("Pausable", this);
     _initialized = true;
   }
 
@@ -346,9 +346,9 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       msg.sender, 
       _to, 
       _amount, 
-      &quot;&quot;, 
+      "", 
       msg.sender, 
-      &quot;&quot;, 
+      "", 
       true
     );
   }
@@ -363,15 +363,15 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       _amount, 
       _userData, 
       msg.sender, 
-      &quot;&quot;, 
+      "", 
       true
     );
   }
   
-  /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`&#39;s tokens.
+  /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
   /// @param _operator The operator that wants to be Authorized
   function authorizeOperator(address _operator) public whenNotPaused {
-    require(_operator != msg.sender, &quot;You cannot authorize yourself as an operator&quot;);
+    require(_operator != msg.sender, "You cannot authorize yourself as an operator");
     mAuthorized[_operator][msg.sender] = true;
     emit AuthorizedOperator(_operator, msg.sender);
   }
@@ -381,17 +381,17 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   /// @param _operator The address of the account able to transfer the tokens
   /// @param _amount The number of tokens to be approved for transfer
   /// @dev to revoke the operator of SOME allowance simply call it again as it will overwrite its previous allowance.
-  /// @return `true`, if the approve can&#39;t be done, it should fail.
+  /// @return `true`, if the approve can't be done, it should fail.
   function approveAndCall(address _operator, uint256 _amount, bytes _operatorData) public whenNotPaused returns (bool success) {
     uint balanceAvailable = getAmountOfUnlockedTokens(msg.sender);
-    require(balanceAvailable &gt;= _amount, &quot;The amount of unlocked tokens must be &gt;= the amount sent&quot;);
+    require(balanceAvailable >= _amount, "The amount of unlocked tokens must be >= the amount sent");
     mAllowed[msg.sender][_operator] = _amount;
     callOperator(
       _operator, 
       msg.sender, 
       _operator, 
       _amount, 
-      &quot;0x0&quot;, 
+      "0x0", 
       _operatorData, 
       true
     );
@@ -399,10 +399,10 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     return true;
   }
   
-  /// @notice Revoke a third party `_operator`&#39;s rights to manage (send) `msg.sender`&#39;s tokens.
+  /// @notice Revoke a third party `_operator`'s rights to manage (send) `msg.sender`'s tokens.
   /// @param _operator The operator that wants to be Revoked
   function revokeOperator(address _operator) public whenNotPaused {
-    require(_operator != msg.sender, &quot;You cannot authorize yourself as an operator&quot;);
+    require(_operator != msg.sender, "You cannot authorize yourself as an operator");
     mAuthorized[_operator][msg.sender] = false;
     emit RevokedOperator(_operator, msg.sender);
   }
@@ -428,7 +428,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     bytes _userData, 
     bytes _operatorData
   ) public whenNotPaused {
-    require(isOperatorFor(msg.sender, _from), &quot;Only an approved operator can use operatorSend&quot;);
+    require(isOperatorFor(msg.sender, _from), "Only an approved operator can use operatorSend");
     doSend(
       _from, 
       _to, 
@@ -457,7 +457,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       0x0, 
       _tokenHolder, 
       _amount, 
-      &quot;&quot;, 
+      "", 
       _operatorData, 
       true
     );
@@ -479,7 +479,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       msg.sender, 
       _amount, 
       _holderData, 
-      &quot;&quot;
+      ""
     );
   }
 
@@ -489,7 +489,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     bytes _holderData, 
     bytes _operatorData
   ) public whenNotPaused {
-    require(isOperatorFor(msg.sender, _tokenHolder), &quot;Only and approved operator can use operatorBurn&quot;);
+    require(isOperatorFor(msg.sender, _tokenHolder), "Only and approved operator can use operatorBurn");
     doBurn(
       msg.sender, 
       _tokenHolder, 
@@ -515,8 +515,8 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     requireMultiple(_amount);
     uint balanceAvailable = getAmountOfUnlockedTokens(_tokenHolder);
     require(
-      balanceAvailable &gt;= _amount, 
-      &quot;You can only burn tokens when you have a balance grater than or equal to the amount specified&quot;
+      balanceAvailable >= _amount, 
+      "You can only burn tokens when you have a balance grater than or equal to the amount specified"
     );
 
     mBalances[_tokenHolder] = mBalances[_tokenHolder].sub(_amount);
@@ -546,7 +546,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   ///  implemented only to maintain backwards compatibility. When the erc20
   ///  compatibility is disabled, this methods will fail.
   modifier erc20 () {
-    require(mErc20compatible, &quot;You can only use this function when the &#39;ERC20Token&#39; interface is enabled&quot;);
+    require(mErc20compatible, "You can only use this function when the 'ERC20Token' interface is enabled");
     _;
   }
   
@@ -554,14 +554,14 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   ///  by the owner.
   function disableERC20() public onlyOwner {
     mErc20compatible = false;
-    setInterfaceImplementation(&quot;ERC20Token&quot;, 0x0);
+    setInterfaceImplementation("ERC20Token", 0x0);
   }
   
   /// @notice Re enables the ERC20 interface. This function can only be called
   ///  by the owner.
   function enableERC20() public onlyOwner {
     mErc20compatible = true;
-    setInterfaceImplementation(&quot;ERC20Token&quot;, this);
+    setInterfaceImplementation("ERC20Token", this);
   }
   
   /// @notice For Backwards compatibility
@@ -571,15 +571,15 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   /// @notice ERC20 backwards compatible transfer.
   /// @param _to The address of the recipient
   /// @param _amount The number of tokens to be transferred
-  /// @return `true`, if the transfer can&#39;t be done, it should fail.
+  /// @return `true`, if the transfer can't be done, it should fail.
   function transfer(address _to, uint256 _amount) public whenNotPaused erc20 returns (bool success) {
     doSend(
       msg.sender, 
       _to, 
       _amount, 
-      &quot;&quot;, 
+      "", 
       msg.sender, 
-      &quot;&quot;, 
+      "", 
       false
     );
     return true;
@@ -589,16 +589,16 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   /// @param _from The address holding the tokens being transferred
   /// @param _to The address of the recipient
   /// @param _amount The number of tokens to be transferred
-  /// @return `true`, if the transfer can&#39;t be done, it should fail.
+  /// @return `true`, if the transfer can't be done, it should fail.
   function transferFrom(address _from, address _to, uint256 _amount) public whenNotPaused erc20 returns (bool success) {
     uint balanceAvailable = getAmountOfUnlockedTokens(_from);
     require(
-      balanceAvailable &gt;= _amount, 
-      &quot;You can only use transferFrom when you specify an amount of tokens &gt;= the &#39;_from&#39; address&#39;s amount of unlocked tokens&quot;
+      balanceAvailable >= _amount, 
+      "You can only use transferFrom when you specify an amount of tokens >= the '_from' address's amount of unlocked tokens"
     );
     require(
-      _amount &lt;= mAllowed[_from][msg.sender],
-      &quot;You can only use transferFrom with an amount less than or equal to the current &#39;mAllowed&#39; allowance.&quot;
+      _amount <= mAllowed[_from][msg.sender],
+      "You can only use transferFrom with an amount less than or equal to the current 'mAllowed' allowance."
     );
     
     // Cannot be after doSend because of tokensReceived re-entry
@@ -607,9 +607,9 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       _from, 
       _to, 
       _amount, 
-      &quot;&quot;, 
+      "", 
       msg.sender, 
-      &quot;&quot;, 
+      "", 
       false
     );
     return true;
@@ -619,12 +619,12 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   ///  `msg.sender` approves `_spender` to spend `_amount` tokens on its behalf.
   /// @param _spender The address of the account able to transfer the tokens
   /// @param _amount The number of tokens to be approved for transfer
-  /// @return `true`, if the approve can&#39;t be done, it should fail.
+  /// @return `true`, if the approve can't be done, it should fail.
   function approve(address _spender, uint256 _amount) public whenNotPaused erc20 returns (bool success) {
     uint balanceAvailable = getAmountOfUnlockedTokens(msg.sender);
     require(
-      balanceAvailable &gt;= _amount, 
-      &quot;You can only approve an amount &gt;= the amount of tokens currently unlocked for this account&quot;
+      balanceAvailable >= _amount, 
+      "You can only approve an amount >= the amount of tokens currently unlocked for this account"
     );
     mAllowed[msg.sender][_spender] = _amount;
     emit Approval(msg.sender, _spender, _amount);
@@ -644,11 +644,11 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   /* -- Helper Functions -- */
   //
   /// @notice Internal function that ensures `_amount` is multiple of the granularity
-  /// @param _amount The quantity that want&#39;s to be checked
+  /// @param _amount The quantity that want's to be checked
   function requireMultiple(uint256 _amount) internal view {
     require(
       _amount.div(mGranularity).mul(mGranularity) == _amount, 
-      &quot;You can only use tokens using the granularity currently set.&quot;
+      "You can only use tokens using the granularity currently set."
     );
   }
   
@@ -697,11 +697,11 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     
     require(
       _to != address(0), 
-      &quot;You cannot invoke doSend with a the burn address (0x0) as the recipient &#39;to&#39; address&quot;
+      "You cannot invoke doSend with a the burn address (0x0) as the recipient 'to' address"
     );          // forbid sending to 0x0 (=burning)
     require(
-      balanceAvailable &gt;= _amount, 
-      &quot;You can only invoke doSend when the &#39;from&#39; address has an unlocked balance &gt;= the &#39;_amount&#39; sent&quot;
+      balanceAvailable >= _amount, 
+      "You can only invoke doSend when the 'from' address has an unlocked balance >= the '_amount' sent"
     ); // ensure enough funds
     
     mBalances[_from] = mBalances[_from].sub(_amount);
@@ -750,7 +750,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     bytes _operatorData,
     bool _preventLocking
   ) private {
-    address recipientImplementation = interfaceAddr(_to, &quot;ERC777TokensRecipient&quot;);
+    address recipientImplementation = interfaceAddr(_to, "ERC777TokensRecipient");
     if (recipientImplementation != 0) {
       ERC777TokensRecipient(recipientImplementation).tokensReceived(
         _operator, 
@@ -763,7 +763,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     } else if (_preventLocking) {
       require(
         isRegularAddress(_to),
-        &quot;When &#39;_preventLocking&#39; is true, you cannot invoke &#39;callOperator&#39; to a contract address that does not support the &#39;ERC777TokensOperator&#39; interface&quot;
+        "When '_preventLocking' is true, you cannot invoke 'callOperator' to a contract address that does not support the 'ERC777TokensOperator' interface"
       );
     }
   }
@@ -786,7 +786,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     bytes _userData,
     bytes _operatorData
   ) private whenNotPaused {
-    address senderImplementation = interfaceAddr(_from, &quot;ERC777TokensSender&quot;);
+    address senderImplementation = interfaceAddr(_from, "ERC777TokensSender");
     if (senderImplementation != 0) {
       ERC777TokensSender(senderImplementation).tokensToSend(
         _operator, 
@@ -819,7 +819,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     bytes _operatorData,
     bool _preventLocking
   ) private {
-    address recipientImplementation = interfaceAddr(_to, &quot;ERC777TokensOperator&quot;);
+    address recipientImplementation = interfaceAddr(_to, "ERC777TokensOperator");
     if (recipientImplementation != 0) {
       ERC777TokensOperator(recipientImplementation).madeOperatorForTokens(
         _operator, 
@@ -832,7 +832,7 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
     } else if (_preventLocking) {
       require(
         isRegularAddress(_to),
-        &quot;When &#39;_preventLocking&#39; is true, you cannot invoke &#39;callOperator&#39; to a contract address that does not support the &#39;ERC777TokensOperator&#39; interface&quot;
+        "When '_preventLocking' is true, you cannot invoke 'callOperator' to a contract address that does not support the 'ERC777TokensOperator' interface"
       );
     }
   }
@@ -850,13 +850,13 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   ) public onlyOwner {
     requireMultiple(_amount);
     require(
-      _percentageToLock &lt;= 100 &amp;&amp; 
-      _percentageToLock &gt; 0, 
-      &quot;You can only lock a percentage between 0 and 100.&quot;
+      _percentageToLock <= 100 && 
+      _percentageToLock > 0, 
+      "You can only lock a percentage between 0 and 100."
     );
     require(
       mLockedBalances[_tokenHolder].amount == 0, 
-      &quot;You can only lock one amount of tokens for a given address. It is currently indicating that there are already locked tokens for this address.&quot;
+      "You can only lock one amount of tokens for a given address. It is currently indicating that there are already locked tokens for this address."
     );
     uint256 amountToLock = _amount.mul(_percentageToLock).div(100);
     mBalances[msg.sender] = mBalances[msg.sender].sub(_amount);
@@ -871,8 +871,8 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
       0x0, 
       _tokenHolder, 
       _amount, 
-      &quot;&quot;, 
-      &quot;&quot;, 
+      "", 
+      "", 
       true
     );
 
@@ -888,13 +888,13 @@ contract Basic777 is Pausable, ERC20Token, ERC777Token, Lockable, ERC820Implemen
   function getAmountOfUnlockedTokens(address _tokenOwner) public returns(uint) {
     uint balanceAvailable = mBalances[_tokenOwner];
     if (
-      mLockedBalances[_tokenOwner].amount != 0 &amp;&amp; 
-      mLockedBalances[_tokenOwner].timeLockedUntil &gt; block.timestamp //solium-disable-line security/no-block-members
+      mLockedBalances[_tokenOwner].amount != 0 && 
+      mLockedBalances[_tokenOwner].timeLockedUntil > block.timestamp //solium-disable-line security/no-block-members
     ){
       balanceAvailable = balanceAvailable.sub(mLockedBalances[_tokenOwner].amount);
     } else if (
-      mLockedBalances[_tokenOwner].amount != 0 &amp;&amp; 
-      mLockedBalances[_tokenOwner].timeLockedUntil &lt; block.timestamp //solium-disable-line security/no-block-members
+      mLockedBalances[_tokenOwner].amount != 0 && 
+      mLockedBalances[_tokenOwner].timeLockedUntil < block.timestamp //solium-disable-line security/no-block-members
     ) {
       mLockedBalances[_tokenOwner] = lockedTokens({
         amount: 0,

@@ -13,37 +13,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -77,10 +77,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -89,7 +89,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transfer(address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 1) {
+      if (_value < 1) {
           revert();
       }
       
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 1) {
+      if (_value < 1) {
           revert();
       }
       
@@ -124,7 +124,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -151,8 +151,8 @@ contract MintableToken is StandardToken {
     address public owner = msg.sender;		//Record the owner of the contract
 	uint256 public tokenAmount;
   
-    function name() constant returns (string) { return &quot;SEED&quot;; }
-    function symbol() constant returns (string) { return &quot;SEED&quot;; }
+    function name() constant returns (string) { return "SEED"; }
+    function symbol() constant returns (string) { return "SEED"; }
     function decimals() constant returns (uint8) { return 0; }
 	
 
@@ -163,11 +163,11 @@ contract MintableToken is StandardToken {
           revert();
       }
       
-      if (msg.value &lt;= 0) {                 //Extra precaution to contract attack
+      if (msg.value <= 0) {                 //Extra precaution to contract attack
           revert();
       }
       
-      if (amount &lt; 1) {                     //Extra precaution to contract attack
+      if (amount < 1) {                     //Extra precaution to contract attack
           revert();
       }
 
@@ -185,20 +185,20 @@ contract MintableToken is StandardToken {
 	//Even if 0 ether is sent.
 function () payable {
 	    
-	if (msg.value &lt;= 0) {		//If zero or less ether is sent, refund user. 
+	if (msg.value <= 0) {		//If zero or less ether is sent, refund user. 
 		revert();
 	}
 	
 		
-	tokenAmount = 0;								//set the &#39;amount&#39; var back to zero
+	tokenAmount = 0;								//set the 'amount' var back to zero
 	tokenAmount = ((msg.value*rate)/(1 ether));		//calculate the amount of tokens to give
 	
-	if (tokenAmount &lt; 1) {
+	if (tokenAmount < 1) {
         revert();
     }
       
 	mint(msg.sender, tokenAmount);
-	tokenAmount = 0;							//set the &#39;amount&#39; var back to zero
+	tokenAmount = 0;							//set the 'amount' var back to zero
 		
 		
 	owner.transfer(msg.value);					//Send the ETH to PoW Farm.

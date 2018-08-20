@@ -2,15 +2,15 @@ pragma solidity ^0.4.15;
 
 
 contract BMICOAffiliateProgramm {
-    mapping (string =&gt; address) partnersPromo;
-    mapping (address =&gt; uint256) referrals;
+    mapping (string => address) partnersPromo;
+    mapping (address => uint256) referrals;
 
     struct itemPartners {
         uint256 balance;
         string promo;
         bool create;
     }
-    mapping (address =&gt; itemPartners) partnersInfo;
+    mapping (address => itemPartners) partnersInfo;
 
     uint256 public ref_percent = 100; //1 = 0.01%, 10000 = 100%
 
@@ -20,7 +20,7 @@ contract BMICOAffiliateProgramm {
     address referral;
     uint256 amount_invest;
     }
-    mapping(address =&gt; itemHistory[]) history;
+    mapping(address => itemHistory[]) history;
 
     uint256 public amount_referral_invest;
 
@@ -47,7 +47,7 @@ contract BMICOAffiliateProgramm {
         }
         bytes memory bytesString = new bytes(32);
         uint256 charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(str) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -87,7 +87,7 @@ contract BMICOAffiliateProgramm {
     function setPromoToPartner(string promo) {
         assert(partnersPromo[promo]==address(0x0));
 
-        assert(str_length(promo)&gt;0 &amp;&amp; str_length(promo)&lt;=6);
+        assert(str_length(promo)>0 && str_length(promo)<=6);
 
         partnersPromo[promo] = msg.sender;
         partnersInfo[msg.sender].balance = 0;
@@ -101,27 +101,27 @@ contract BMICOAffiliateProgramm {
 
     function calc_partnerPercent(uint256 ref_amount_invest) constant internal returns(uint16 percent){
         percent = 0;
-        if(ref_amount_invest &gt; 0){
-            if(ref_amount_invest &lt; 2 ether){
+        if(ref_amount_invest > 0){
+            if(ref_amount_invest < 2 ether){
                 percent = 100; //1 = 0.01%, 10000 = 100%
             }
-            else if(ref_amount_invest &gt;= 2 ether &amp;&amp; ref_amount_invest &lt; 3 ether){
+            else if(ref_amount_invest >= 2 ether && ref_amount_invest < 3 ether){
                 percent = 200;
             }
-            else if(ref_amount_invest &gt;= 3 ether &amp;&amp; ref_amount_invest &lt; 4 ether){
+            else if(ref_amount_invest >= 3 ether && ref_amount_invest < 4 ether){
                 percent = 300;
             }
-            else if(ref_amount_invest &gt;= 4 ether &amp;&amp; ref_amount_invest &lt; 5 ether){
+            else if(ref_amount_invest >= 4 ether && ref_amount_invest < 5 ether){
                 percent = 400;
             }
-            else if(ref_amount_invest &gt;= 5 ether){
+            else if(ref_amount_invest >= 5 ether){
                 percent = 500;
             }
         }
     }
 
     function partnerInfo(address partner_address) constant internal returns(string promo, uint256 balance, uint256[] h_datetime, uint256[] h_invest, address[] h_referrals){
-        if(partner_address != address(0x0) &amp;&amp; partnersInfo[partner_address].create){
+        if(partner_address != address(0x0) && partnersInfo[partner_address].create){
             promo = partnersInfo[partner_address].promo;
             balance = partnersInfo[partner_address].balance;
 
@@ -129,14 +129,14 @@ contract BMICOAffiliateProgramm {
             h_invest = new uint256[](history[partner_address].length);
             h_referrals = new address[](history[partner_address].length);
 
-            for(var i=0; i&lt;history[partner_address].length; i++){
+            for(var i=0; i<history[partner_address].length; i++){
                 h_datetime[i] = history[partner_address][i].datetime;
                 h_invest[i] = history[partner_address][i].amount_invest;
                 h_referrals[i] = history[partner_address][i].referral;
             }
         }
         else{
-            promo = &#39;-1&#39;;
+            promo = '-1';
             balance = 0;
             h_datetime = new uint256[](0);
             h_invest = new uint256[](0);
@@ -158,7 +158,7 @@ contract BMICOAffiliateProgramm {
         p_referral = 0;
         partner = address(0x0);
         if (msg.sender == contractPreICO || msg.sender == contractICO){
-            if(partnersPromo[promo] != address(0x0) &amp;&amp; partnersPromo[promo] != referral){
+            if(partnersPromo[promo] != address(0x0) && partnersPromo[promo] != referral){
                 partner = partnersPromo[promo];
                 referrals[referral] += amount;
                 amount_referral_invest += amount;

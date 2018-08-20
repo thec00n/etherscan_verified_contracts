@@ -9,23 +9,23 @@ contract ITransferable {
 @title PLAY Token
 
 ERC20 Token with additional mint functionality.
-A &quot;controller&quot; (initialized to the contract creator) has exclusive permission to mint.
+A "controller" (initialized to the contract creator) has exclusive permission to mint.
 The controller address can be changed until locked.
 
 Implementation based on https://github.com/ConsenSys/Tokens
 */
 contract PlayToken {
     uint256 public totalSupply = 0;
-    string public name = &quot;PLAY&quot;;
+    string public name = "PLAY";
     uint8 public decimals = 18;
-    string public symbol = &quot;PLY&quot;;
-    string public version = &#39;1&#39;;
+    string public symbol = "PLY";
+    string public version = '1';
 
     address public controller;
     bool public controllerLocked = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -40,7 +40,7 @@ contract PlayToken {
         controller = _controller;
     }
 
-    /** Sets a new controller address if the current controller isn&#39;t locked */
+    /** Sets a new controller address if the current controller isn't locked */
     function setController(address _newController) onlyController {
         require(! controllerLocked);
         controller = _newController;
@@ -63,11 +63,11 @@ contract PlayToken {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        /* Additional Restriction: don&#39;t accept token payments to the contract itself and to address 0 in order to avoid most
+        /* Additional Restriction: don't accept token payments to the contract itself and to address 0 in order to avoid most
          token losses by mistake - as is discussed in https://github.com/ethereum/EIPs/issues/223 */
-        require((_to != 0) &amp;&amp; (_to != address(this)));
+        require((_to != 0) && (_to != address(this)));
 
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -75,7 +75,7 @@ contract PlayToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -102,10 +102,10 @@ contract PlayToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        /* call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        /* call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead. */
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
@@ -131,7 +131,7 @@ Donated Eth can be retrieved only after the donation rounds are over and the set
 In order to never own the funds, the contract owner can set and lock the receiver address beforehand.
 The receiver address can be an external account or a distribution contract.
 
-Note that there&#39;s no way for the owner to withdraw tokens assigned to donators which aren&#39;t withdrawn.
+Note that there's no way for the owner to withdraw tokens assigned to donators which aren't withdrawn.
 In case destroy() is invoked, they will effectively be burned.
 */
 contract P4PPool {
@@ -148,10 +148,10 @@ contract P4PPool {
 
     uint256 public tokenPerEth; // calculated after finishing donation rounds
 
-    mapping(address =&gt; uint256) round1Donations;
-    mapping(address =&gt; uint256) round2Donations;
+    mapping(address => uint256) round1Donations;
+    mapping(address => uint256) round2Donations;
 
-    // glitch: forgot to rename those from &quot;phase&quot; to &quot;round&quot; too
+    // glitch: forgot to rename those from "phase" to "round" too
     uint256 public totalPhase1Donations = 0;
     uint256 public totalPhase2Donations = 0;
 
@@ -179,7 +179,7 @@ contract P4PPool {
 
     modifier onlyIfPayoutUnlocked() {
         require(currentState == STATE_PAYOUT);
-        require(uint32(now) &gt;= donationUnlockTs);
+        require(uint32(now) >= donationUnlockTs);
         _;
     }
 
@@ -189,7 +189,7 @@ contract P4PPool {
         playToken = PlayToken(_tokenAddr);
     }
 
-    /** So called &quot;fallback function&quot; which handles incoming Ether payments
+    /** So called "fallback function" which handles incoming Ether payments
     Remembers which address payed how much, doubling round 1 contributions.
     */
     function () payable onlyDuringDonationRounds {
@@ -204,7 +204,7 @@ contract P4PPool {
     }
 
     function startNextPhase() onlyOwner {
-        require(currentState &lt;= STATE_PAYOUT);
+        require(currentState <= STATE_PAYOUT);
         currentState++;
         if(currentState == STATE_PAYOUT) {
             // donation ended. Calculate and persist the distribution key:
@@ -214,7 +214,7 @@ contract P4PPool {
     }
 
     function setDonationUnlockTs(uint32 _newTs) onlyOwner {
-        require(_newTs &gt; donationUnlockTs);
+        require(_newTs > donationUnlockTs);
         donationUnlockTs = _newTs;
     }
 
@@ -243,13 +243,13 @@ contract P4PPool {
     */
     function destroy() onlyOwner {
         require(currentState == STATE_PAYOUT);
-        require(now &gt; 1519862400);
+        require(now > 1519862400);
         selfdestruct(owner);
     }
 
     /** Allows donators to withdraw the share of tokens they are entitled to */
     function withdrawTokenShare() {
-        require(tokenPerEth &gt; 0); // this implies that donation rounds have closed
+        require(tokenPerEth > 0); // this implies that donation rounds have closed
         require(playToken.transfer(msg.sender, calcTokenShareOf(msg.sender)));
         round1Donations[msg.sender] = 0;
         round2Donations[msg.sender] = 0;
@@ -270,7 +270,7 @@ contract P4PPool {
     // Will throw if no donations were received.
     function calcTokenPerEth() constant internal returns(uint256) {
         var tokenBalance = playToken.balanceOf(this);
-        // the final + 1 makes sure we&#39;re not running out of tokens due to rounding artifacts.
+        // the final + 1 makes sure we're not running out of tokens due to rounding artifacts.
         // that would otherwise be (theoretically, if all tokens are withdrawn) possible,
         // because this number acts as divisor for the return value.
         var virtualEthBalance = (((totalPhase1Donations*2 + totalPhase2Donations) * 100) / (100 - ownerTokenSharePct) + 1);

@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    //   require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //   require(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    //   require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    //   require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract CrowdsaleBase {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // send ether to the fund collection wallet
@@ -85,9 +85,9 @@ contract CrowdsaleBase {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // internal token purchase function
@@ -126,8 +126,8 @@ contract Crowdsale is CrowdsaleBase {
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _controller) public
     CrowdsaleBase(_startTime, _wallet, _controller)
   {
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
 
     endTime = _endTime;
     rate = _rate;
@@ -145,13 +145,13 @@ contract TokenCappedCrowdsale is Crowdsale {
   uint256 public totalSupply;
 
   function TokenCappedCrowdsale(uint256 _tokenCap) public {
-      require(_tokenCap &gt; 0);
+      require(_tokenCap > 0);
       tokenCap = _tokenCap;
   }
 
   function setSupply(uint256 newSupply) internal constant returns (bool) {
     totalSupply = newSupply;
-    return tokenCap &gt;= totalSupply;
+    return tokenCap >= totalSupply;
   }
 
 }

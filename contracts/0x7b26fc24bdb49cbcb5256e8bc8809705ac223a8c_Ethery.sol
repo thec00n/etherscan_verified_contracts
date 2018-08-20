@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,7 +88,7 @@ contract Pausable is Ownable {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="4230272f212d0270">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="4230272f212d0270">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -135,8 +135,8 @@ contract Ethery is Pausable, ReentrancyGuard{
   
   Bet[] public bets;
   
-  mapping (uint =&gt; address) public betToOwner;
-  mapping (address =&gt; uint) ownerBetCount;
+  mapping (uint => address) public betToOwner;
+  mapping (address => uint) ownerBetCount;
   
   uint resolverFee = 0.1 finney;
   uint maxPayout = 1 ether;
@@ -159,7 +159,7 @@ contract Ethery is Pausable, ReentrancyGuard{
   }
   
   function withDraw(uint _amount) external onlyOwner {
-    require(_amount &lt; this.balance - pendingPay);
+    require(_amount < this.balance - pendingPay);
     msg.sender.transfer(_amount);
   }
   
@@ -167,11 +167,11 @@ contract Ethery is Pausable, ReentrancyGuard{
   
   function createBet(uint _digits, bytes32 _guess, uint _targetBlock) public payable whenNotPaused {
     require(
-      msg.value &gt;= resolverFee &amp;&amp;
-      _targetBlock &gt; block.number &amp;&amp;
-      block.number + 256 &gt;= _targetBlock &amp;&amp;
-      payout(msg.value, _digits) &lt;= maxPayout &amp;&amp;
-      payout(msg.value, _digits) &lt;= this.balance - pendingPay
+      msg.value >= resolverFee &&
+      _targetBlock > block.number &&
+      block.number + 256 >= _targetBlock &&
+      payout(msg.value, _digits) <= maxPayout &&
+      payout(msg.value, _digits) <= this.balance - pendingPay
     );
     uint id = bets.push(Bet(msg.sender, msg.value, _digits, _guess, BetStatus.Pending, _targetBlock)) - 1;
     betToOwner[id] = msg.sender;
@@ -183,13 +183,13 @@ contract Ethery is Pausable, ReentrancyGuard{
   function resolveBet(uint _betId) public nonReentrant {
     Bet storage myBet = bets[_betId];  
     require(
-      myBet.status == BetStatus.Pending &amp;&amp;    // only resolve pending bets
-      myBet.targetBlock &lt; block.number        // only resolve targetBlock &gt; current block
+      myBet.status == BetStatus.Pending &&    // only resolve pending bets
+      myBet.targetBlock < block.number        // only resolve targetBlock > current block
     );
     
     pendingPay -= payout(myBet.wager, uint(myBet.digits));
     
-    if (myBet.targetBlock + 255 &lt; block.number) {    // too late to determine out come issue refund
+    if (myBet.targetBlock + 255 < block.number) {    // too late to determine out come issue refund
       myBet.status = BetStatus.Refunded;
       betToOwner[_betId].transfer(myBet.wager);
     } else {
@@ -206,12 +206,12 @@ contract Ethery is Pausable, ReentrancyGuard{
   }
   
   function isCorrectGuess(bytes32 _blockHash, bytes32 _guess, uint _digits) public pure returns (bool) {
-    for (uint i = 0; i &lt; uint(_digits); i++) {
-      if (byteMask &amp; _guess != _blockHash &amp; byteMask) {
+    for (uint i = 0; i < uint(_digits); i++) {
+      if (byteMask & _guess != _blockHash & byteMask) {
         return false;
       }
-      _blockHash = _blockHash &gt;&gt; 4;
-      _guess = _guess &gt;&gt; 4;
+      _blockHash = _blockHash >> 4;
+      _guess = _guess >> 4;
     }
     return true;
   }
@@ -222,7 +222,7 @@ contract Ethery is Pausable, ReentrancyGuard{
   }
   
   function houseFee(uint _digits) public pure returns (uint) {    // in percent
-    require(0 &lt; _digits &amp;&amp; _digits &lt;= 4);
+    require(0 < _digits && _digits <= 4);
     if (_digits == 1) { return 2; }
     else if(_digits == 2) { return 3; }
     else if(_digits == 3) { return 4; }
@@ -240,7 +240,7 @@ contract Ethery is Pausable, ReentrancyGuard{
   function getBetsByOwner(address _owner) private view returns(uint[]) {
     uint[] memory result = new uint[](ownerBetCount[_owner]);
     uint counter = 0;
-    for (uint i = 0; i &lt; bets.length; i++) {
+    for (uint i = 0; i < bets.length; i++) {
       if (betToOwner[i] == _owner) {
         result[counter] = i;
         counter++;
@@ -251,7 +251,7 @@ contract Ethery is Pausable, ReentrancyGuard{
   
   function getTotalWins() external view returns(uint) {
     uint pays = 0;
-    for (uint i = 0; i &lt; bets.length; i++) {
+    for (uint i = 0; i < bets.length; i++) {
       if (bets[i].status == BetStatus.PlayerWon) {
         pays += payout(bets[i].wager, bets[i].digits);
       }
@@ -264,7 +264,7 @@ contract Ethery is Pausable, ReentrancyGuard{
     uint[] memory result = new uint[](len);
     uint counter = 0;
 
-    for (uint i = 1; i &lt;= bets.length &amp;&amp; counter &lt; len; i++) {
+    for (uint i = 1; i <= bets.length && counter < len; i++) {
       if (bets[bets.length - i].status == BetStatus.PlayerWon) {
         result[counter] = bets.length - i;
         counter++;

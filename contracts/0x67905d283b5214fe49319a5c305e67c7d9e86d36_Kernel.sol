@@ -26,20 +26,20 @@ pragma solidity 0.4.18;
 
 
 contract KernelConstants {
-    bytes32 constant public CORE_NAMESPACE = keccak256(&quot;core&quot;);
-    bytes32 constant public APP_BASES_NAMESPACE = keccak256(&quot;base&quot;);
-    bytes32 constant public APP_ADDR_NAMESPACE = keccak256(&quot;app&quot;);
+    bytes32 constant public CORE_NAMESPACE = keccak256("core");
+    bytes32 constant public APP_BASES_NAMESPACE = keccak256("base");
+    bytes32 constant public APP_ADDR_NAMESPACE = keccak256("app");
 
-    bytes32 constant public KERNEL_APP_ID = keccak256(&quot;kernel.aragonpm.eth&quot;);
+    bytes32 constant public KERNEL_APP_ID = keccak256("kernel.aragonpm.eth");
     bytes32 constant public KERNEL_APP = keccak256(CORE_NAMESPACE, KERNEL_APP_ID);
 
-    bytes32 constant public ACL_APP_ID = keccak256(&quot;acl.aragonpm.eth&quot;);
+    bytes32 constant public ACL_APP_ID = keccak256("acl.aragonpm.eth");
     bytes32 constant public ACL_APP = keccak256(APP_ADDR_NAMESPACE, ACL_APP_ID);
 }
 
 
 contract KernelStorage is KernelConstants {
-    mapping (bytes32 =&gt; address) public apps;
+    mapping (bytes32 => address) public apps;
 }
 
 //File: contracts/acl/ACLSyntaxSugar.sol
@@ -124,17 +124,17 @@ contract ACLSyntaxSugar {
 
 contract ACLHelpers {
     function decodeParamOp(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 30));
+        return uint8(_x >> (8 * 30));
     }
 
     function decodeParamId(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 31));
+        return uint8(_x >> (8 * 31));
     }
 
     function decodeParamsList(uint256 _x) internal pure returns (uint32 a, uint32 b, uint32 c) {
         a = uint32(_x);
-        b = uint32(_x &gt;&gt; (8 * 4));
-        c = uint32(_x &gt;&gt; (8 * 8));
+        b = uint32(_x >> (8 * 4));
+        c = uint32(_x >> (8 * 8));
     }
 }
 
@@ -226,7 +226,7 @@ contract DelegateProxy {
     function isContract(address _target) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(_target) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -251,13 +251,13 @@ contract AppProxyBase is IAppProxy, AppStorage, DelegateProxy, KernelConstants {
         appId = _appId;
 
         // Implicit check that kernel is actually a Kernel
-        // The EVM doesn&#39;t actually provide a way for us to make sure, but we can force a revert to
+        // The EVM doesn't actually provide a way for us to make sure, but we can force a revert to
         // occur if the kernel is set to 0x0 or a non-code address when we try to call a method on
         // it.
         address appCode = getAppBase(appId);
 
         // If initialize payload is provided, it will be executed
-        if (_initializePayload.length &gt; 0) {
+        if (_initializePayload.length > 0) {
             require(isContract(appCode));
             // Cannot make delegatecall as a delegateproxy.delegatedFwd as it
             // returns ending execution context and halts contract deployment
@@ -271,7 +271,7 @@ contract AppProxyBase is IAppProxy, AppStorage, DelegateProxy, KernelConstants {
 
     function () payable public {
         address target = getCode();
-        require(target != 0); // if app code hasn&#39;t been set yet, don&#39;t call
+        require(target != 0); // if app code hasn't been set yet, don't call
         delegatedFwd(target, msg.data);
     }
 }
@@ -380,7 +380,7 @@ pragma solidity 0.4.18;
 
 
 contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSyntaxSugar {
-    bytes32 constant public APP_MANAGER_ROLE = keccak256(&quot;APP_MANAGER_ROLE&quot;);
+    bytes32 constant public APP_MANAGER_ROLE = keccak256("APP_MANAGER_ROLE");
 
     /**
     * @dev Initialize can only be called once. It saves the block number in which it was initialized.
@@ -403,7 +403,7 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
     * @dev Create a new instance of an app linked to this kernel and set its base
     *      implementation if it was not already set
     * @param _name Name of the app
-    * @param _appBase Address of the app&#39;s base implementation
+    * @param _appBase Address of the app's base implementation
     * @return AppProxy instance
     */
     function newAppInstance(bytes32 _name, address _appBase) auth(APP_MANAGER_ROLE, arr(APP_BASES_NAMESPACE, _name)) public returns (IAppProxy appProxy) {
@@ -415,7 +415,7 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
     * @dev Create a new pinned instance of an app linked to this kernel and set
     *      its base implementation if it was not already set
     * @param _name Name of the app
-    * @param _appBase Address of the app&#39;s base implementation
+    * @param _appBase Address of the app's base implementation
     * @return AppProxy instance
     */
     function newPinnedAppInstance(bytes32 _name, address _appBase) auth(APP_MANAGER_ROLE, arr(APP_BASES_NAMESPACE, _name)) public returns (IAppProxy appProxy) {
@@ -500,6 +500,6 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
         address kernel = getApp(KERNEL_APP);
         uint256 size;
         assembly { size := extcodesize(kernel) }
-        require(size &gt; 0);
+        require(size > 0);
     }
 }

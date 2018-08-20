@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
     address public owner;
@@ -95,7 +95,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -126,7 +126,7 @@ contract BasicToken is ERC20Basic, Ownable {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -138,7 +138,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -182,8 +182,8 @@ contract StandardToken is ERC20, BasicToken {
 contract TKRPToken is StandardToken {
     event Destroy(address indexed _from);
 
-    string public name = &quot;TKRPToken&quot;;
-    string public symbol = &quot;TKRP&quot;;
+    string public name = "TKRPToken";
+    string public symbol = "TKRP";
     uint256 public decimals = 18;
     uint256 public initialSupply = 500000;
 
@@ -201,7 +201,7 @@ contract TKRPToken is StandardToken {
     */
     function destroyFrom(address _from) onlyOwner returns (bool) {
         uint256 balance = balanceOf(_from);
-        require(balance &gt; 0);
+        require(balance > 0);
 
         balances[_from] = 0;
         totalSupply = totalSupply.sub(balance);
@@ -219,8 +219,8 @@ contract TKRPToken is StandardToken {
 contract TKRToken is StandardToken {
     event Destroy(address indexed _from, address indexed _to, uint256 _value);
 
-    string public name = &quot;TKRToken&quot;;
-    string public symbol = &quot;TKR&quot;;
+    string public name = "TKRToken";
+    string public symbol = "TKR";
     uint256 public decimals = 18;
     uint256 public initialSupply = 65500000 * 10 ** 18;
 
@@ -261,7 +261,7 @@ contract Crowdsale is Ownable {
     }
 
     /* Backers are keyed by their address containing a Contributor struct */
-    mapping(address =&gt; Contributor) public contributors;
+    mapping(address => Contributor) public contributors;
 
     /* Events to emit when a contribution has successfully processed */
     event TokensSent(address indexed to, uint256 value);
@@ -285,7 +285,7 @@ contract Crowdsale is Ownable {
 
     /* Modifier to check whether the crowdsale is running */
     modifier crowdsaleRunning() {
-        require(now &lt; crowdsaleEndTime &amp;&amp; crowdsaleStartTime != 0);
+        require(now < crowdsaleEndTime && crowdsaleStartTime != 0);
         _;
     }
 
@@ -328,10 +328,10 @@ contract Crowdsale is Ownable {
     * @dev Finalizes the crowdsale and sends funds
     */
     function finalize() onlyOwner {
-        require((crowdsaleStartTime != 0 &amp;&amp; now &gt; crowdsaleEndTime) || tokensSent == TOKEN_CAP);
+        require((crowdsaleStartTime != 0 && now > crowdsaleEndTime) || tokensSent == TOKEN_CAP);
 
         uint256 remainingBalance = token.balanceOf(this);
-        if (remainingBalance &gt; 0) token.destroy(remainingBalance);
+        if (remainingBalance > 0) token.destroy(remainingBalance);
 
         assert(crowdsaleOwner.send(this.balance));
     }
@@ -354,11 +354,11 @@ contract Crowdsale is Ownable {
     * @param sender The address of the contributor
     */
     function processContribution(address sender) internal {
-        require(msg.value &gt;= MINIMUM_CONTRIBUTION);
+        require(msg.value >= MINIMUM_CONTRIBUTION);
 
         // // /* Calculate total (+bonus) amount to send, throw if it exceeds cap*/
         uint256 contributionInTokens = bonus(msg.value.mul(TOKENS_PER_ETHER).div(1 ether));
-        require(contributionInTokens.add(tokensSent) &lt;= TOKEN_CAP);
+        require(contributionInTokens.add(tokensSent) <= TOKEN_CAP);
 
         /* Send the tokens */
         token.transfer(sender, contributionInTokens);
@@ -383,13 +383,13 @@ contract Crowdsale is Ownable {
     */
     function bonus(uint256 amount) internal constant returns (uint256) {
         /* This adds a bonus 20% such as 100 + 100/5 = 120 */
-        if (now &lt; crowdsaleStartTime.add(2 days)) return amount.add(amount.div(5));
+        if (now < crowdsaleStartTime.add(2 days)) return amount.add(amount.div(5));
 
         /* This adds a bonus 10% such as 100 + 100/10 = 110 */
-        if (now &lt; crowdsaleStartTime.add(14 days)) return amount.add(amount.div(10));
+        if (now < crowdsaleStartTime.add(14 days)) return amount.add(amount.div(10));
 
         /* This adds a bonus 5% such as 100 + 100/20 = 105 */
-        if (now &lt; crowdsaleStartTime.add(21 days)) return amount.add(amount.div(20));
+        if (now < crowdsaleStartTime.add(21 days)) return amount.add(amount.div(20));
 
         /* No bonus is given */
         return amount;

@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,14 +44,14 @@ contract Ownable {
 
 contract DataCentre is Ownable {
     struct Container {
-        mapping(bytes32 =&gt; uint256) values;
-        mapping(bytes32 =&gt; address) addresses;
-        mapping(bytes32 =&gt; bool) switches;
-        mapping(address =&gt; uint256) balances;
-        mapping(address =&gt; mapping (address =&gt; uint)) constraints;
+        mapping(bytes32 => uint256) values;
+        mapping(bytes32 => address) addresses;
+        mapping(bytes32 => bool) switches;
+        mapping(address => uint256) balances;
+        mapping(address => mapping (address => uint)) constraints;
     }
 
-    mapping(bytes32 =&gt; Container) containers;
+    mapping(bytes32 => Container) containers;
 
     // Owner Functions
     function setValue(bytes32 _container, bytes32 _key, uint256 _value) onlyOwner {

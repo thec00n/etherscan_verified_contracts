@@ -47,7 +47,7 @@ contract LimitedSetup {
 
     modifier setupFunction
     {
-        require(now &lt; constructionTime + setupDuration);
+        require(now < constructionTime + setupDuration);
         _;
     }
 }
@@ -265,7 +265,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return x + y &gt;= y;
+        return x + y >= y;
     }
 
     /* Return the result of adding x and y, throwing an exception in case of overflow. */
@@ -274,7 +274,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(x + y &gt;= y);
+        require(x + y >= y);
         return x + y;
     }
 
@@ -284,7 +284,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return y &lt;= x;
+        return y <= x;
     }
 
     /* Return the result of subtracting y from x, throwing an exception in case of overflow. */
@@ -293,7 +293,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(y &lt;= x);
+        require(y <= x);
         return x - y;
     }
 
@@ -396,7 +396,7 @@ CONTRACT DESCRIPTION
 
 This court provides the nomin contract with a confiscation
 facility, if enough havven owners vote to confiscate a target
-account&#39;s nomins.
+account's nomins.
 
 This is designed to provide a mechanism to respond to abusive
 contracts such as nomin wrappers, which would allow users to
@@ -414,16 +414,16 @@ The foundation, or any user with a sufficient havven balance may bring a
 confiscation motion.
 A motion lasts for a default period of one week, with a further confirmation
 period in which the foundation approves the result.
-The latter period may conclude early upon the foundation&#39;s decision to either
+The latter period may conclude early upon the foundation's decision to either
 veto or approve the mooted confiscation motion.
 If the confirmation period elapses without the foundation making a decision,
 the motion fails.
 
-The weight of a havven holder&#39;s vote is determined by examining their
+The weight of a havven holder's vote is determined by examining their
 average balance over the last completed fee period prior to the
 beginning of a given motion.
 Thus, since a fee period can roll over in the middle of a motion, we must
-also track a user&#39;s average balance of the last two periods.
+also track a user's average balance of the last two periods.
 This system is designed such that it cannot be attacked by users transferring
 funds between themselves, while also not requiring them to lock their havvens
 for the duration of the vote. This is possible since any transfer that increases
@@ -532,11 +532,11 @@ contract Court is Owned, SafeDecimalMath {
     uint nextMotionID = 1;
 
     // Mapping from motion IDs to target addresses.
-    mapping(uint =&gt; address) public motionTarget;
+    mapping(uint => address) public motionTarget;
 
     // The ID a motion on an address is currently operating at.
     // Zero if no such motion is running.
-    mapping(address =&gt; uint) public targetMotionID;
+    mapping(address => uint) public targetMotionID;
 
     // The timestamp at which a motion began. This is used to determine
     // whether a motion is: running, in the confirmation period,
@@ -544,13 +544,13 @@ contract Court is Owned, SafeDecimalMath {
     // A motion runs from its start time t until (t + votingPeriod),
     // and then the confirmation period terminates no later than
     // (t + votingPeriod + confirmationPeriod).
-    mapping(uint =&gt; uint) public motionStartTime;
+    mapping(uint => uint) public motionStartTime;
 
     // The tallies for and against confiscation of a given balance.
     // These are set to zero at the start of a motion, and also on conclusion,
     // just to keep the state clean.
-    mapping(uint =&gt; uint) public votesFor;
-    mapping(uint =&gt; uint) public votesAgainst;
+    mapping(uint => uint) public votesFor;
+    mapping(uint => uint) public votesAgainst;
 
     // The last/penultimate average balance of a user at the time they voted
     // in a particular motion.
@@ -558,7 +558,7 @@ contract Court is Owned, SafeDecimalMath {
     // disallow transfers into an account lest it cancel a vote
     // with greater weight than that with which it originally voted,
     // and the fee period rolled over in between.
-    mapping(address =&gt; mapping(uint =&gt; uint)) voteWeight;
+    mapping(address => mapping(uint => uint)) voteWeight;
 
     // The possible vote types.
     // Abstention: not participating in a motion; This is the default value.
@@ -566,9 +566,9 @@ contract Court is Owned, SafeDecimalMath {
     // Nay: voting against a motion.
     enum Vote {Abstention, Yea, Nay}
 
-    // A given account&#39;s vote in some confiscation motion.
+    // A given account's vote in some confiscation motion.
     // This requires the default value of the Vote enum to correspond to an abstention.
-    mapping(address =&gt; mapping(uint =&gt; Vote)) public vote;
+    mapping(address => mapping(uint => Vote)) public vote;
 
     /* ========== CONSTRUCTOR ========== */
 
@@ -597,11 +597,11 @@ contract Court is Owned, SafeDecimalMath {
         external
         onlyOwner
     {
-        require(MIN_VOTING_PERIOD &lt;= duration &amp;&amp;
-                duration &lt;= MAX_VOTING_PERIOD);
+        require(MIN_VOTING_PERIOD <= duration &&
+                duration <= MAX_VOTING_PERIOD);
         // Require that the voting period is no longer than a single fee period,
         // So that a single vote can span at most two fee periods.
-        require(duration &lt;= havven.targetFeePeriodDurationSeconds());
+        require(duration <= havven.targetFeePeriodDurationSeconds());
         votingPeriod = duration;
     }
 
@@ -609,8 +609,8 @@ contract Court is Owned, SafeDecimalMath {
         external
         onlyOwner
     {
-        require(MIN_CONFIRMATION_PERIOD &lt;= duration &amp;&amp;
-                duration &lt;= MAX_CONFIRMATION_PERIOD);
+        require(MIN_CONFIRMATION_PERIOD <= duration &&
+                duration <= MAX_CONFIRMATION_PERIOD);
         confirmationPeriod = duration;
     }
 
@@ -618,7 +618,7 @@ contract Court is Owned, SafeDecimalMath {
         external
         onlyOwner
     {
-        require(MIN_REQUIRED_PARTICIPATION &lt;= fraction);
+        require(MIN_REQUIRED_PARTICIPATION <= fraction);
         requiredParticipation = fraction;
     }
 
@@ -626,7 +626,7 @@ contract Court is Owned, SafeDecimalMath {
         external
         onlyOwner
     {
-        require(MIN_REQUIRED_MAJORITY &lt;= fraction);
+        require(MIN_REQUIRED_MAJORITY <= fraction);
         requiredMajority = fraction;
     }
 
@@ -640,11 +640,11 @@ contract Court is Owned, SafeDecimalMath {
         view
         returns (bool)
     {
-        // No need to check (startTime &lt; now) as there is no way
+        // No need to check (startTime < now) as there is no way
         // to set future start times for votes.
         // These values are timestamps, they will not overflow
         // as they can only ever be initialised to relatively small values.
-        return now &lt; motionStartTime[motionID] + votingPeriod;
+        return now < motionStartTime[motionID] + votingPeriod;
     }
 
     /* A vote on the target account has concluded, but the motion
@@ -657,8 +657,8 @@ contract Court is Owned, SafeDecimalMath {
         // These values are timestamps, they will not overflow
         // as they can only ever be initialised to relatively small values.
         uint startTime = motionStartTime[motionID];
-        return startTime + votingPeriod &lt;= now &amp;&amp;
-               now &lt; startTime + votingPeriod + confirmationPeriod;
+        return startTime + votingPeriod <= now &&
+               now < startTime + votingPeriod + confirmationPeriod;
     }
 
     /* A vote motion either not begun, or it has completely terminated. */
@@ -669,7 +669,7 @@ contract Court is Owned, SafeDecimalMath {
     {
         // These values are timestamps, they will not overflow
         // as they can only ever be initialised to relatively small values.
-        return motionStartTime[motionID] + votingPeriod + confirmationPeriod &lt;= now;
+        return motionStartTime[motionID] + votingPeriod + confirmationPeriod <= now;
     }
 
     /* If the motion was to terminate at this instant, it would pass.
@@ -691,9 +691,9 @@ contract Court is Owned, SafeDecimalMath {
         uint fractionInFavour = safeDiv_dec(yeas, totalVotes);
 
         // We require the result to be strictly greater than the requirement
-        // to enforce a majority being &quot;50% + 1&quot;, and so on.
-        return participation &gt; requiredParticipation &amp;&amp;
-               fractionInFavour &gt; requiredMajority;
+        // to enforce a majority being "50% + 1", and so on.
+        return participation > requiredParticipation &&
+               fractionInFavour > requiredMajority;
     }
 
     function hasVoted(address account, uint motionID)
@@ -716,12 +716,12 @@ contract Court is Owned, SafeDecimalMath {
         returns (uint)
     {
         // A confiscation motion must be mooted by someone with standing.
-        require((havven.balanceOf(msg.sender) &gt;= minStandingBalance) ||
+        require((havven.balanceOf(msg.sender) >= minStandingBalance) ||
                 msg.sender == owner);
 
         // Require that the voting period is longer than a single fee period,
         // So that a single vote can span at most two fee periods.
-        require(votingPeriod &lt;= havven.targetFeePeriodDurationSeconds());
+        require(votingPeriod <= havven.targetFeePeriodDurationSeconds());
 
         // There must be no confiscation motion already running for this account.
         require(targetMotionID[target] == 0);
@@ -740,7 +740,7 @@ contract Court is Owned, SafeDecimalMath {
     }
 
     /* Shared vote setup function between voteFor and voteAgainst.
-     * Returns the voter&#39;s vote weight. */
+     * Returns the voter's vote weight. */
     function setupVote(uint motionID)
         internal
         returns (uint)
@@ -755,21 +755,21 @@ contract Court is Owned, SafeDecimalMath {
         // The voter may not cast votes on themselves.
         require(msg.sender != motionTarget[motionID]);
 
-        // Ensure the voter&#39;s vote weight is current.
+        // Ensure the voter's vote weight is current.
         havven.recomputeAccountLastAverageBalance(msg.sender);
 
         uint weight;
         // We use a fee period guaranteed to have terminated before
         // the start of the vote. Select the right period if
         // a fee period rolls over in the middle of the vote.
-        if (motionStartTime[motionID] &lt; havven.feePeriodStartTime()) {
+        if (motionStartTime[motionID] < havven.feePeriodStartTime()) {
             weight = havven.penultimateAverageBalance(msg.sender);
         } else {
             weight = havven.lastAverageBalance(msg.sender);
         }
 
         // Users must have a nonzero voting weight to vote.
-        require(weight &gt; 0);
+        require(weight > 0);
 
         voteWeight[msg.sender][motionID] = weight;
 
@@ -777,7 +777,7 @@ contract Court is Owned, SafeDecimalMath {
     }
 
     /* The sender casts a vote in favour of confiscation of the
-     * target account&#39;s nomin balance. */
+     * target account's nomin balance. */
     function voteFor(uint motionID)
         external
     {
@@ -788,7 +788,7 @@ contract Court is Owned, SafeDecimalMath {
     }
 
     /* The sender casts a vote against confiscation of the
-     * target account&#39;s nomin balance. */
+     * target account's nomin balance. */
     function voteAgainst(uint motionID)
         external
     {
@@ -847,7 +847,7 @@ contract Court is Owned, SafeDecimalMath {
     function closeMotion(uint motionID)
         external
     {
-        require((motionConfirming(motionID) &amp;&amp; !motionPasses(motionID)) || motionWaiting(motionID));
+        require((motionConfirming(motionID) && !motionPasses(motionID)) || motionWaiting(motionID));
         _closeMotion(motionID);
     }
 
@@ -857,7 +857,7 @@ contract Court is Owned, SafeDecimalMath {
         external
         onlyOwner
     {
-        require(motionConfirming(motionID) &amp;&amp; motionPasses(motionID));
+        require(motionConfirming(motionID) && motionPasses(motionID));
         address target = motionTarget[motionID];
         nomin.confiscateBalance(target);
         _closeMotion(motionID);
@@ -957,7 +957,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
         external
         optionalProxy_onlyOwner
     {
-        require(_transferFeeRate &lt;= MAX_TRANSFER_FEE_RATE);
+        require(_transferFeeRate <= MAX_TRANSFER_FEE_RATE);
         transferFeeRate = _transferFeeRate;
         emit TransferFeeRateUpdated(_transferFeeRate);
     }
@@ -1006,7 +1006,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
         // Transfers less than the reciprocal of transferFeeRate should be completely eaten up by fees.
         // This is on the basis that transfers less than this value will result in a nil fee.
         // Probably too insignificant to worry about, but the following code will achieve it.
-        //      if (fee == 0 &amp;&amp; transferFeeRate != 0) {
+        //      if (fee == 0 && transferFeeRate != 0) {
         //          return _value;
         //      }
         //      return fee;
@@ -1052,7 +1052,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
     {
         require(to != address(0));
 
-        // The fee is deducted from the sender&#39;s balance, in addition to
+        // The fee is deducted from the sender's balance, in addition to
         // the transferred quantity.
         uint fee = transferFeeIncurred(value);
         uint totalCharge = safeAdd(value, fee);
@@ -1077,7 +1077,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
     {
         require(to != address(0));
 
-        // The fee is deducted from the sender&#39;s balance, in addition to
+        // The fee is deducted from the sender's balance, in addition to
         // the transferred quantity.
         uint fee = transferFeeIncurred(value);
         uint totalCharge = safeAdd(value, fee);
@@ -1113,7 +1113,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
         external
         returns (bool)
     {
-        require(msg.sender == feeAuthority &amp;&amp; account != address(0));
+        require(msg.sender == feeAuthority && account != address(0));
         
         // 0-value withdrawals do nothing.
         if (value == 0) {
@@ -1130,7 +1130,7 @@ contract ExternStateProxyFeeToken is Proxyable, SafeDecimalMath {
         return true;
     }
 
-    /* Donate tokens from the sender&#39;s balance into the fee pool. */
+    /* Donate tokens from the sender's balance into the fee pool. */
     function donateToFeePool(uint n)
         external
         optionalProxy
@@ -1197,14 +1197,14 @@ fee period.
 
 Ether price is continually updated by an external oracle, and the value
 of the backing is computed on this basis. To ensure the integrity of
-this system, if the contract&#39;s price has not been updated recently enough,
+this system, if the contract's price has not been updated recently enough,
 it will temporarily disable itself until it receives more price information.
 
 The contract owner may at any time initiate contract liquidation.
 During the liquidation period, most contract functions will be deactivated.
 No new nomins may be issued or bought, but users may sell nomins back
 to the system.
-If the system&#39;s collateral falls below a specified level, then anyone
+If the system's collateral falls below a specified level, then anyone
 may initiate liquidation.
 
 After the liquidation period has elapsed, which is initially 90 days,
@@ -1268,7 +1268,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
     uint public stalePeriod = 2 days;
 
     // Accounts which have lost the privilege to transact in nomins.
-    mapping(address =&gt; bool) public frozen;
+    mapping(address => bool) public frozen;
 
 
     /* ========== CONSTRUCTOR ========== */
@@ -1277,7 +1277,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
                         address _beneficiary,
                         uint initialEtherPrice,
                         address _owner, TokenState initialState)
-        ExternStateProxyFeeToken(&quot;Ether-Backed USD Nomins&quot;, &quot;eUSD&quot;,
+        ExternStateProxyFeeToken("Ether-Backed USD Nomins", "eUSD",
                                  15 * UNIT / 10000, // nomin transfers incur a 15 bp fee
                                  _havven, // the havven contract is the fee authority
                                  initialState,
@@ -1326,7 +1326,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         external
         optionalProxy_onlyOwner
     {
-        require(_poolFeeRate &lt;= UNIT);
+        require(_poolFeeRate <= UNIT);
         poolFeeRate = _poolFeeRate;
         emit PoolFeeRateUpdated(_poolFeeRate);
     }
@@ -1354,7 +1354,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         return safeMul_dec(eth, etherPrice);
     }
 
-    /* Return the current fiat value of the contract&#39;s balance.
+    /* Return the current fiat value of the contract's balance.
      * Reverts if the price is stale. */
     function fiatBalance()
         public
@@ -1474,7 +1474,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         view
         returns (bool)
     {
-        return safeAdd(lastPriceUpdate, stalePeriod) &lt; now;
+        return safeAdd(lastPriceUpdate, stalePeriod) < now;
     }
 
     function isLiquidating()
@@ -1482,7 +1482,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         view
         returns (bool)
     {
-        return liquidationTimestamp &lt;= now;
+        return liquidationTimestamp <= now;
     }
 
     /* True if the contract is self-destructible. 
@@ -1497,13 +1497,13 @@ contract EtherNomin is ExternStateProxyFeeToken {
         returns (bool)
     {
         // Not being in liquidation implies the timestamp is uint max, so it would roll over.
-        // We need to check whether we&#39;re in liquidation first.
+        // We need to check whether we're in liquidation first.
         if (isLiquidating()) {
             // These timestamps and durations have values clamped within reasonable values and
             // cannot overflow.
-            bool totalPeriodElapsed = liquidationTimestamp + liquidationPeriod &lt; now;
+            bool totalPeriodElapsed = liquidationTimestamp + liquidationPeriod < now;
             // Total supply of 0 means all tokens have returned to the pool.
-            bool allTokensReturned = (liquidationTimestamp + 1 weeks &lt; now) &amp;&amp; (totalSupply == 0);
+            bool allTokensReturned = (liquidationTimestamp + 1 weeks < now) && (totalSupply == 0);
             return totalPeriodElapsed || allTokensReturned;
         }
         return false;
@@ -1539,7 +1539,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
 
     /* Update the current ether price and update the last updated time,
      * refreshing the price staleness.
-     * Also checks whether the contract&#39;s collateral levels have fallen to low,
+     * Also checks whether the contract's collateral levels have fallen to low,
      * and initiates liquidation if that is the case.
      * Exceptional conditions:
      *     Not called by the oracle.
@@ -1551,8 +1551,8 @@ contract EtherNomin is ExternStateProxyFeeToken {
         // Should be callable only by the oracle.
         require(msg.sender == oracle);
         // Must be the most recently sent price, but not too far in the future.
-        // (so we can&#39;t lock ourselves out of updating the oracle for longer than this)
-        require(lastPriceUpdate &lt; timeSent &amp;&amp; timeSent &lt; now + 10 minutes);
+        // (so we can't lock ourselves out of updating the oracle for longer than this)
+        require(lastPriceUpdate < timeSent && timeSent < now + 10 minutes);
 
         etherPrice = price;
         lastPriceUpdate = timeSent;
@@ -1574,7 +1574,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         // Price staleness check occurs inside the call to fiatBalance.
         // Safe additions are unnecessary here, as either the addition is checked on the following line
         // or the overflow would cause the requirement not to be satisfied.
-        require(fiatBalance() &gt;= safeMul_dec(safeAdd(_nominCap(), n), MINIMUM_ISSUANCE_RATIO));
+        require(fiatBalance() >= safeMul_dec(safeAdd(_nominCap(), n), MINIMUM_ISSUANCE_RATIO));
         nominPool = safeAdd(nominPool, n);
         emit PoolReplenished(n, msg.value);
     }
@@ -1588,7 +1588,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         optionalProxy_onlyOwner
     {
         // Require that there are enough nomins in the accessible pool to burn
-        require(nominPool &gt;= n);
+        require(nominPool >= n);
         nominPool = safeSub(nominPool, n);
         emit PoolDiminished(n);
     }
@@ -1608,10 +1608,10 @@ contract EtherNomin is ExternStateProxyFeeToken {
         optionalProxy
     {
         // Price staleness check occurs inside the call to purchaseEtherCost.
-        require(n &gt;= MINIMUM_PURCHASE &amp;&amp;
+        require(n >= MINIMUM_PURCHASE &&
                 msg.value == purchaseCostEther(n));
         address sender = messageSender;
-        // sub requires that nominPool &gt;= n
+        // sub requires that nominPool >= n
         nominPool = safeSub(nominPool, n);
         state.setBalanceOf(sender, safeAdd(state.balanceOf(sender), n));
         emit Purchased(sender, sender, n, msg.value);
@@ -1622,7 +1622,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
     /* Sends n nomins to the pool from the sender, in exchange for
      * $n minus the fee worth of ether.
      * Exceptional conditions:
-     *     Insufficient nomins in sender&#39;s wallet.
+     *     Insufficient nomins in sender's wallet.
      *     Insufficient funds in the pool to pay sender.
      *     Price is stale if not in liquidation. */
     function sell(uint n)
@@ -1632,7 +1632,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
 
         // Price staleness check occurs inside the call to saleProceedsEther,
         // but we allow people to sell their nomins back to the system
-        // if we&#39;re in liquidation, regardless.
+        // if we're in liquidation, regardless.
         uint proceeds;
         if (isLiquidating()) {
             proceeds = saleProceedsEtherAllowStale(n);
@@ -1640,7 +1640,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
             proceeds = saleProceedsEther(n);
         }
 
-        require(address(this).balance &gt;= proceeds);
+        require(address(this).balance >= proceeds);
 
         address sender = messageSender;
         // sub requires that the balance is greater than n
@@ -1683,7 +1683,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
     {
         require(isLiquidating());
         uint sum = safeAdd(liquidationPeriod, extension);
-        require(sum &lt;= MAX_LIQUIDATION_PERIOD);
+        require(sum <= MAX_LIQUIDATION_PERIOD);
         liquidationPeriod = sum;
         emit LiquidationExtended(extension);
     }
@@ -1699,7 +1699,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         optionalProxy_onlyOwner
     {
         require(isLiquidating());
-        require(_nominCap() == 0 || collateralisationRatio() &gt;= AUTO_LIQUIDATION_RATIO);
+        require(_nominCap() == 0 || collateralisationRatio() >= AUTO_LIQUIDATION_RATIO);
         liquidationTimestamp = ~uint(0);
         liquidationPeriod = DEFAULT_LIQUIDATION_PERIOD;
         emit LiquidationTerminated();
@@ -1719,7 +1719,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
     }
 
     /* If a confiscation court motion has passed and reached the confirmation
-     * state, the court may transfer the target account&#39;s balance to the fee pool
+     * state, the court may transfer the target account's balance to the fee pool
      * and freeze its participation in further transactions. */
     function confiscateBalance(address target)
         external
@@ -1753,7 +1753,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
         external
         optionalProxy_onlyOwner
     {
-        if (frozen[target] &amp;&amp; EtherNomin(target) != this) {
+        if (frozen[target] && EtherNomin(target) != this) {
             frozen[target] = false;
             emit AccountUnfrozen(target, target);
         }
@@ -1790,7 +1790,7 @@ contract EtherNomin is ExternStateProxyFeeToken {
     modifier postCheckAutoLiquidate
     {
         _;
-        if (!isLiquidating() &amp;&amp; _nominCap() != 0 &amp;&amp; collateralisationRatio() &lt; AUTO_LIQUIDATION_RATIO) {
+        if (!isLiquidating() && _nominCap() != 0 && collateralisationRatio() < AUTO_LIQUIDATION_RATIO) {
             beginLiquidation();
         }
     }
@@ -1870,7 +1870,7 @@ contract ExternStateProxyToken is SafeDecimalMath, Proxyable {
         symbol = _symbol;
         totalSupply = initialSupply;
 
-        // if the state isn&#39;t set, create a new one
+        // if the state isn't set, create a new one
         if (_state == TokenState(0)) {
             state = new TokenState(_owner, address(this));
             state.setBalanceOf(initialBeneficiary, totalSupply);
@@ -1929,7 +1929,7 @@ contract ExternStateProxyToken is SafeDecimalMath, Proxyable {
         internal
         returns (bool)
     {
-        require(from != address(0) &amp;&amp; to != address(0));
+        require(from != address(0) && to != address(0));
 
         // Insufficient balance will be handled by the safe subtraction.
         state.setBalanceOf(from, safeSub(state.balanceOf(from), value));
@@ -1989,10 +1989,10 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
 
     // Lists of (timestamp, quantity) pairs per account, sorted in ascending time order.
     // These are the times at which each given quantity of havvens vests.
-    mapping(address =&gt; uint[2][]) public vestingSchedules;
+    mapping(address => uint[2][]) public vestingSchedules;
 
-    // An account&#39;s total vested havven balance to save recomputing this for fee extraction purposes.
-    mapping(address =&gt; uint) public totalVestedAccountBalance;
+    // An account's total vested havven balance to save recomputing this for fee extraction purposes.
+    mapping(address => uint) public totalVestedAccountBalance;
 
     // The total remaining vested balance, for verifying the actual havven balance of this contract against.
     uint public totalVestedBalance;
@@ -2030,7 +2030,7 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
         return totalVestedAccountBalance[account];
     }
 
-    /* The number of vesting dates in an account&#39;s schedule. */
+    /* The number of vesting dates in an account's schedule. */
     function numVestingEntries(address account)
         public
         view
@@ -2074,7 +2074,7 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
         returns (uint)
     {
         uint len = numVestingEntries(account);
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             if (getVestingTime(account, i) != 0) {
                 return i;
             }
@@ -2145,30 +2145,30 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
         delete totalVestedAccountBalance[account];
     }
 
-    /* Add a new vesting entry at a given time and quantity to an account&#39;s schedule.
+    /* Add a new vesting entry at a given time and quantity to an account's schedule.
      * A call to this should be accompanied by either enough balance already available
      * in this contract, or a corresponding call to havven.endow(), to ensure that when
      * the funds are withdrawn, there is enough balance, as well as correctly calculating
      * the fees.
      * Note; although this function could technically be used to produce unbounded
-     * arrays, it&#39;s only in the foundation&#39;s command to add to these lists. */
+     * arrays, it's only in the foundation's command to add to these lists. */
     function appendVestingEntry(address account, uint time, uint quantity)
         public
         onlyOwner
         setupFunction
     {
         // No empty or already-passed vesting entries allowed.
-        require(now &lt; time);
+        require(now < time);
         require(quantity != 0);
         totalVestedBalance = safeAdd(totalVestedBalance, quantity);
-        require(totalVestedBalance &lt;= havven.balanceOf(this));
+        require(totalVestedBalance <= havven.balanceOf(this));
 
         if (vestingSchedules[account].length == 0) {
             totalVestedAccountBalance[account] = quantity;
         } else {
             // Disallow adding new vested havvens earlier than the last one.
             // Since entries are only appended, this means that no vesting date can be repeated.
-            require(getVestingTime(account, numVestingEntries(account) - 1) &lt; time);
+            require(getVestingTime(account, numVestingEntries(account) - 1) < time);
             totalVestedAccountBalance[account] = safeAdd(totalVestedAccountBalance[account], quantity);
         }
 
@@ -2183,7 +2183,7 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
         onlyOwner
         setupFunction
     {
-        for (uint i = 0; i &lt; times.length; i++) {
+        for (uint i = 0; i < times.length; i++) {
             appendVestingEntry(account, times[i], quantities[i]);
         }
 
@@ -2194,10 +2194,10 @@ contract HavvenEscrow is Owned, LimitedSetup(8 weeks), SafeDecimalMath {
         external
     {
         uint total;
-        for (uint i = 0; i &lt; numVestingEntries(msg.sender); i++) {
+        for (uint i = 0; i < numVestingEntries(msg.sender); i++) {
             uint time = getVestingTime(msg.sender, i);
             // The list is sorted; when we reach the first future time, bail out.
-            if (time &gt; now) {
+            if (time > now) {
                 break;
             }
             uint qty = getVestingQuantity(msg.sender, i);
@@ -2279,7 +2279,7 @@ contract SelfDestructible is Owned {
 		external
 		onlyOwner
 	{
-		require(initiationTime + SD_DURATION &lt; now);
+		require(initiationTime + SD_DURATION < now);
 		emit SelfDestructed(beneficiary);
 		selfdestruct(beneficiary);
 	}
@@ -2312,7 +2312,7 @@ Any unclaimed fees roll over into the common pot for the next period.
 
 The fee entitlement of a havven holder is proportional to their average
 havven balance over the last fee period. This is computed by measuring the
-area under the graph of a user&#39;s balance over time, and then when fees are
+area under the graph of a user's balance over time, and then when fees are
 distributed, dividing through by the duration of the fee period.
 
 We need only update fee entitlement on transfer when the havven balances of the sender
@@ -2321,7 +2321,7 @@ trading in the havven market. A havven holder pays for his own recomputation whe
 he wants to change his position, which saves the foundation having to maintain a pot
 dedicated to resourcing this.
 
-A hypothetical user&#39;s balance history over one fee period, pictorially:
+A hypothetical user's balance history over one fee period, pictorially:
 
       s ____
        |    |
@@ -2345,9 +2345,9 @@ recipient.
 Note that a transfer keeps global supply of havvens invariant.
 The sum of all balances is constant, and unmodified by any transfer.
 So the sum of all balances multiplied by the duration of a fee period is also
-constant, and this is equivalent to the sum of the area of every user&#39;s
+constant, and this is equivalent to the sum of the area of every user's
 time/balance graph. Dividing through by that duration yields back the total
-havven supply. So, at the end of a fee period, we really do yield a user&#39;s
+havven supply. So, at the end of a fee period, we really do yield a user's
 average share in the havven supply over that period.
 
 A slight wrinkle is introduced if we consider the time r when the fee period
@@ -2387,34 +2387,34 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
 
     // Sums of balances*duration in the current fee period.
     // range: decimals; units: havven-seconds
-    mapping(address =&gt; uint) public currentBalanceSum;
+    mapping(address => uint) public currentBalanceSum;
 
     // Average account balances in the last completed fee period. This is proportional
-    // to that account&#39;s last period fee entitlement.
+    // to that account's last period fee entitlement.
     // (i.e. currentBalanceSum for the previous period divided through by duration)
     // WARNING: This may not have been updated for the latest fee period at the
     //          time it is queried.
     // range: decimals; units: havvens
-    mapping(address =&gt; uint) public lastAverageBalance;
+    mapping(address => uint) public lastAverageBalance;
 
     // The average account balances in the period before the last completed fee period.
-    // This is used as a person&#39;s weight in a confiscation vote, so it implies that
+    // This is used as a person's weight in a confiscation vote, so it implies that
     // the vote duration must be no longer than the fee period in order to guarantee that 
     // no portion of a fee period used for determining vote weights falls within the
     // duration of a vote it contributes to.
     // WARNING: This may not have been updated for the latest fee period at the
     //          time it is queried.
-    mapping(address =&gt; uint) public penultimateAverageBalance;
+    mapping(address => uint) public penultimateAverageBalance;
 
     // The time an account last made a transfer.
     // range: naturals
-    mapping(address =&gt; uint) public lastTransferTimestamp;
+    mapping(address => uint) public lastTransferTimestamp;
 
     // The time the current fee period began.
     uint public feePeriodStartTime = 3;
     // The actual start of the last fee period (seconds).
     // This, and the penultimate fee period can be initially set to any value
-    //   0 &lt; val &lt; now, as everyone&#39;s individual lastTransferTime will be 0
+    //   0 < val < now, as everyone's individual lastTransferTime will be 0
     //   and as such, their lastAvgBal/penultimateAvgBal will be set to that value
     //   apart from the contract, which will have totalSupply
     uint public lastFeePeriodStartTime = 2;
@@ -2432,7 +2432,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
     // of the last fee rollover (feePeriodStartTime).
     uint public lastFeesCollected;
 
-    mapping(address =&gt; bool) public hasWithdrawnLastPeriodFees;
+    mapping(address => bool) public hasWithdrawnLastPeriodFees;
 
     EtherNomin public nomin;
     HavvenEscrow public escrow;
@@ -2441,7 +2441,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
     /* ========== CONSTRUCTOR ========== */
 
     function Havven(TokenState initialState, address _owner)
-        ExternStateProxyToken(&quot;Havven&quot;, &quot;HAV&quot;, 1e8 * UNIT, address(this), initialState, _owner)
+        ExternStateProxyToken("Havven", "HAV", 1e8 * UNIT, address(this), initialState, _owner)
         SelfDestructible(_owner, _owner)
         // Owned is initialised in ExternStateProxyToken
         public
@@ -2474,8 +2474,8 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         postCheckFeePeriodRollover
         optionalProxy_onlyOwner
     {
-        require(MIN_FEE_PERIOD_DURATION_SECONDS &lt;= duration &amp;&amp;
-                duration &lt;= MAX_FEE_PERIOD_DURATION_SECONDS);
+        require(MIN_FEE_PERIOD_DURATION_SECONDS <= duration &&
+                duration <= MAX_FEE_PERIOD_DURATION_SECONDS);
         targetFeePeriodDurationSeconds = duration;
         emit FeePeriodDurationUpdated(duration);
     }
@@ -2494,7 +2494,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         returns (bool)
     {
 
-        // Use &quot;this&quot; in order that the havven account is the sender.
+        // Use "this" in order that the havven account is the sender.
         // That this is an explicit transfer also initialises fee entitlement information.
         return _transfer(this, account, value);
     }
@@ -2505,7 +2505,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         external
         onlyOwner
     {
-        for (uint i = 0; i &lt; recipients.length; ++i) {
+        for (uint i = 0; i < recipients.length; ++i) {
             emit Transfer(sender, recipients[i], values[i]);
         }
     }
@@ -2565,7 +2565,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         return true;
     }
 
-    /* Compute the last period&#39;s fee entitlement for the message sender
+    /* Compute the last period's fee entitlement for the message sender
      * and then deposit it into their nomin account. */
     function withdrawFeeEntitlement()
         public
@@ -2615,11 +2615,11 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
             safeMul(preBalance, now - lastTransferTimestamp[account])
         );
 
-        // Update the last time this user&#39;s balance changed.
+        // Update the last time this user's balance changed.
         lastTransferTimestamp[account] = now;
     }
 
-    /* Update the given account&#39;s previous period fee entitlement value.
+    /* Update the given account's previous period fee entitlement value.
      * Do nothing if the last transfer occurred since the fee period rolled over.
      * If the entitlement was updated, also update the last transfer time to be
      * at the timestamp of the rollover, so if this should do nothing if called more
@@ -2645,16 +2645,16 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
     function rolloverFee(address account, uint lastTransferTime, uint preBalance)
         internal
     {
-        if (lastTransferTime &lt; feePeriodStartTime) {
-            if (lastTransferTime &lt; lastFeePeriodStartTime) {
+        if (lastTransferTime < feePeriodStartTime) {
+            if (lastTransferTime < lastFeePeriodStartTime) {
                 // The last transfer predated the previous two fee periods.
-                if (lastTransferTime &lt; penultimateFeePeriodStartTime) {
+                if (lastTransferTime < penultimateFeePeriodStartTime) {
                     // The balance did nothing in the penultimate fee period, so the average balance
                     // in this period is their pre-transfer balance.
                     penultimateAverageBalance[account] = preBalance;
                 // The last transfer occurred within the one-before-the-last fee period.
                 } else {
-                    // No overflow risk here: the failed guard implies (penultimateFeePeriodStartTime &lt;= lastTransferTime).
+                    // No overflow risk here: the failed guard implies (penultimateFeePeriodStartTime <= lastTransferTime).
                     penultimateAverageBalance[account] = safeDiv(
                         safeAdd(currentBalanceSum[account], safeMul(preBalance, (lastFeePeriodStartTime - lastTransferTime))),
                         (lastFeePeriodStartTime - penultimateFeePeriodStartTime)
@@ -2670,7 +2670,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
                 // The previously-last average balance becomes the penultimate balance.
                 penultimateAverageBalance[account] = lastAverageBalance[account];
 
-                // No overflow risk here: the failed guard implies (lastFeePeriodStartTime &lt;= lastTransferTime).
+                // No overflow risk here: the failed guard implies (lastFeePeriodStartTime <= lastTransferTime).
                 lastAverageBalance[account] = safeDiv(
                     safeAdd(currentBalanceSum[account], safeMul(preBalance, (feePeriodStartTime - lastTransferTime))),
                     (feePeriodStartTime - lastFeePeriodStartTime)
@@ -2684,9 +2684,9 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         }
     }
 
-    /* Recompute and return the given account&#39;s average balance information.
+    /* Recompute and return the given account's average balance information.
      * This also rolls over the fee period if necessary, and brings
-     * the account&#39;s current balance sum up to date. */
+     * the account's current balance sum up to date. */
     function _recomputeAccountLastAverageBalance(address account)
         internal
         preCheckFeePeriodRollover
@@ -2696,7 +2696,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         return lastAverageBalance[account];
     }
 
-    /* Recompute and return the sender&#39;s average balance information. */
+    /* Recompute and return the sender's average balance information. */
     function recomputeLastAverageBalance()
         external
         optionalProxy
@@ -2705,7 +2705,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         return _recomputeAccountLastAverageBalance(messageSender);
     }
 
-    /* Recompute and return the given account&#39;s average balance information. */
+    /* Recompute and return the given account's average balance information. */
     function recomputeAccountLastAverageBalance(address account)
         external
         returns (uint)
@@ -2730,7 +2730,7 @@ contract Havven is ExternStateProxyToken, SelfDestructible {
         internal
     {
         // If the fee period has rolled over...
-        if (feePeriodStartTime + targetFeePeriodDurationSeconds &lt;= now) {
+        if (feePeriodStartTime + targetFeePeriodDurationSeconds <= now) {
             lastFeesCollected = nomin.feePool();
 
             // Shift the three period start times back one place
@@ -2794,8 +2794,8 @@ contract TokenState is Owned {
     address public associatedContract;
 
     // ERC20 fields.
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     function TokenState(address _owner, address _associatedContract)
         Owned(_owner)
@@ -2850,7 +2850,7 @@ MIT License
 Copyright (c) 2018 Havven
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -2859,7 +2859,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER

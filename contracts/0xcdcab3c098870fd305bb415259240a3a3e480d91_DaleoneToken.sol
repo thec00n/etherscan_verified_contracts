@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 
 // ----------------------------------------------------------------------------
-// DLE &#39;Daleone&#39; token contract
+// DLE 'Daleone' token contract
 //
 // Potential buyers of this token are encouraged to perform their due diligence
 // on the business proposition and individuals behind this token
@@ -94,7 +94,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -102,7 +102,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -117,8 +117,8 @@ contract DaleoneToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Token parameters
     // ------------------------------------------------------------------------
-    string public constant symbol = &quot;DLE&quot;;
-    string public constant name = &quot;Daleone&quot;;
+    string public constant symbol = "DLE";
+    string public constant name = "Daleone";
     uint8 public constant decimals = 18;
 
     uint public constant totalSupply = 10 * 10**6 * 10**18;
@@ -126,12 +126,12 @@ contract DaleoneToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
@@ -151,12 +151,12 @@ contract DaleoneToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount             // User has balance
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[msg.sender] >= _amount             // User has balance
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[msg.sender] = balances[msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -184,7 +184,7 @@ contract DaleoneToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
@@ -193,10 +193,10 @@ contract DaleoneToken is ERC20Interface, Owned {
         address _to,
         uint _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -211,7 +211,7 @@ contract DaleoneToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner,
@@ -222,7 +222,7 @@ contract DaleoneToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers - no payable modifier
+    // Don't accept ethers - no payable modifier
     // ------------------------------------------------------------------------
     function () {
     }

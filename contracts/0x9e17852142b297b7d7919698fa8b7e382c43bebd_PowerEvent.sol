@@ -13,7 +13,7 @@ contract Controller {
 
   modifier onlyAdmins() {
     bool isAdmin = false;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (msg.sender == admins[i]) {
         isAdmin = true;
       }
@@ -23,23 +23,23 @@ contract Controller {
   }
 
   function addAdmin(address _admin) public onlyAdmins {
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       require(_admin != admins[i]);
     }
-    require(admins.length &lt; 10);
+    require(admins.length < 10);
     admins[admins.length++] = _admin;
   }
 
   function removeAdmin(address _admin) public onlyAdmins {
     uint256 pos = admins.length;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (_admin == admins[i]) {
         pos = i;
       }
     }
-    require(pos &lt; admins.length);
+    require(pos < admins.length);
     // if not last element, switch with last
-    if (pos &lt; admins.length - 1) {
+    if (pos < admins.length - 1) {
       admins[pos] = admins[admins.length - 1];
     }
     // then cut off the tail
@@ -109,20 +109,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -193,8 +193,8 @@ contract PowerEvent {
 
   function PowerEvent(address _controllerAddr, uint256 _startTime, uint256 _minDuration, uint256 _maxDuration, uint256 _softCap, uint256 _hardCap, uint256 _discount, uint256 _amountPower, address[] _milestoneRecipients, uint256[] _milestoneShares)
   areValidMileStones(_milestoneRecipients, _milestoneShares) {
-    require(_minDuration &lt;= _maxDuration);
-    require(_softCap &lt;= _hardCap);
+    require(_minDuration <= _maxDuration);
+    require(_softCap <= _hardCap);
     controllerAddr = _controllerAddr;
     startTime = _startTime;
     minDuration = _minDuration;
@@ -219,13 +219,13 @@ contract PowerEvent {
   }
 
   function checkMilestones(address[] _milestoneRecipients, uint256[] _milestoneShares) internal returns (bool) {
-    require(_milestoneRecipients.length == _milestoneShares.length &amp;&amp; _milestoneShares.length &lt;= 4);
+    require(_milestoneRecipients.length == _milestoneShares.length && _milestoneShares.length <= 4);
     uint256 totalPercentage;
-    for(uint8 i = 0; i &lt; _milestoneShares.length; i++) {
-      require(_milestoneShares[i] &gt;= 0 &amp;&amp; _milestoneShares[i] &lt;= 1000000);
+    for(uint8 i = 0; i < _milestoneShares.length; i++) {
+      require(_milestoneShares[i] >= 0 && _milestoneShares[i] <= 1000000);
       totalPercentage = totalPercentage.add(_milestoneShares[i]);
     }
-    require(totalPercentage &gt;= 0 &amp;&amp; totalPercentage &lt;= 1000000);
+    require(totalPercentage >= 0 && totalPercentage <= 1000000);
     return true;
   }
 
@@ -245,8 +245,8 @@ contract PowerEvent {
 
   function startCollection() isState(EventState.Waiting) {
     // check time
-    require(now &gt; startTime);
-    // assert(now &lt; startTime.add(minDuration));
+    require(now > startTime);
+    // assert(now < startTime.add(minDuration));
     // read initial values
     var contr = Controller(controllerAddr);
     powerAddr = contr.powerAddr();
@@ -263,8 +263,8 @@ contract PowerEvent {
 
   function stopCollection() isState(EventState.Collecting) {
     uint256 collected = nutzAddr.balance.sub(initialReserve);
-    if (now &gt; startTime.add(maxDuration)) {
-      if (collected &gt;= softCap) {
+    if (now > startTime.add(maxDuration)) {
+      if (collected >= softCap) {
         // softCap reached, close
         state = EventState.Closed;
         return;
@@ -273,8 +273,8 @@ contract PowerEvent {
         state = EventState.Failed;
         return;
       }
-    } else if (now &gt; startTime.add(minDuration)) {
-      if (collected &gt;= hardCap) {
+    } else if (now > startTime.add(minDuration)) {
+      if (collected >= hardCap) {
         // hardCap reached, close
         state = EventState.Closed;
         return;
@@ -314,7 +314,7 @@ contract PowerEvent {
     contr.setMaxPower(authorizedPower);
     // pay out milestone
     uint256 collected = nutzAddr.balance.sub(initialReserve);
-    for (uint256 i = 0; i &lt; milestoneRecipients.length; i++) {
+    for (uint256 i = 0; i < milestoneRecipients.length; i++) {
       uint256 payoutAmount = collected.mul(milestoneShares[i]).div(RATE_FACTOR);
       contr.allocateEther(payoutAmount, milestoneRecipients[i]);
     }

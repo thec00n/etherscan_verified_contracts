@@ -9,20 +9,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 	
 	function safeSub(uint a, uint b) internal returns (uint) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   }
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
     	uint c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   }
 	function assert(bool assertion) internal {
@@ -50,7 +50,7 @@ contract ERC20{
 
 contract Snbtoken is ERC20, SafeMath{
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 public totalSupply;
 
@@ -66,7 +66,7 @@ contract Snbtoken is ERC20, SafeMath{
 	    return true;
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
@@ -87,8 +87,8 @@ contract Snbtoken is ERC20, SafeMath{
 	function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
 	    return allowed[_owner][_spender];
 	}
-	string 	public name = &quot;SNB - Network for the Blind&quot;;
-	string 	public symbol = &quot;SNB&quot;;
+	string 	public name = "SNB - Network for the Blind";
+	string 	public symbol = "SNB";
 	uint 	public decimals = 0;
 	uint 	public INITIAL_SUPPLY = 70000000;
 
@@ -101,7 +101,7 @@ contract Snbtoken is ERC20, SafeMath{
 contract SnbtokenICO is ERC20, SafeMath{
 
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 public totalSupply;
 
@@ -117,7 +117,7 @@ contract SnbtokenICO is ERC20, SafeMath{
 	    return true;
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
@@ -149,23 +149,23 @@ contract SnbtokenICO is ERC20, SafeMath{
 
 	    
 	    
-	    if(now&gt;1513911600)
+	    if(now>1513911600)
 		{
 				price 	= 2231;
 		}
-		else if(now&gt;1513306800)
+		else if(now>1513306800)
 		{
 		    	price 	= 2491;
 		}
-		else if(now&gt;1512702000)
+		else if(now>1512702000)
 		{
 		    	price 	= 2708;
 		}
-		else if(now&gt;1512025200)
+		else if(now>1512025200)
 		{
 		    	price 	= 3032;
 		}
-        else if(now&gt;1511589600) ///1511589600 ///1511938800
+        else if(now>1511589600) ///1511589600 ///1511938800
 		{
 		    	price 	= 3249;
 		}
@@ -176,7 +176,7 @@ contract SnbtokenICO is ERC20, SafeMath{
 	    
 	    
 	    
-		if (now &gt;= endTime){
+		if (now >= endTime){
 			throw;
 		}else{
 			_;
@@ -206,8 +206,8 @@ contract SnbtokenICO is ERC20, SafeMath{
 
 
 
-	string 	public name = &quot;SNB - Network for the Blind&quot;;
-	string 	public symbol = &quot;SNB&quot;;
+	string 	public name = "SNB - Network for the Blind";
+	string 	public symbol = "SNB";
 	uint 	public decimals = 0;
 	uint256 public INITIAL_SUPPLY = 70000000;
 	uint256 public SALES_SUPPLY = 130000000;

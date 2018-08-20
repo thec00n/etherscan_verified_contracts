@@ -5,7 +5,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,9 +107,9 @@ contract TakeBack is Ownable{
 
     uint256 public networkId;
 
-    mapping (address =&gt; uint256) public userToNonce;
+    mapping (address => uint256) public userToNonce;
 
-    // used for old&amp;new users to claim their ring out
+    // used for old&new users to claim their ring out
     event TakedBack(address indexed _user, uint indexed _nonce, uint256 _value);
     // used for supervisor to claim all kind of token
     event ClaimedTokens(address indexed _token, address indexed _controller, uint _amount);
@@ -121,8 +121,8 @@ contract TakeBack is Ownable{
         networkId = _networkId;
     }
 
-    // _hashmessage = hash(&quot;${_user}${_nonce}${_value}&quot;)
-    // _v, _r, _s are from supervisor&#39;s signature on _hashmessage
+    // _hashmessage = hash("${_user}${_nonce}${_value}")
+    // _v, _r, _s are from supervisor's signature on _hashmessage
     // claimRing(...) is invoked by the user who want to claim rings
     // while the _hashmessage is signed by supervisor
     function takeBack(uint256 _nonce, uint256 _value, bytes32 _hashmessage, uint8 _v, bytes32 _r, bytes32 _s) public {
@@ -147,7 +147,7 @@ contract TakeBack is Ownable{
     }
 
     function verify(bytes32 _hashmessage, uint8 _v, bytes32 _r, bytes32 _s) internal pure returns (address) {
-        bytes memory prefix = &quot;\x19EvolutionLand Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19EvolutionLand Signed Message:\n32";
         bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _hashmessage));
         address signer = ecrecover(prefixedHash, _v, _r, _s);
         return signer;

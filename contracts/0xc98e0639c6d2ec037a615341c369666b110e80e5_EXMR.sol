@@ -1,6 +1,6 @@
 pragma solidity ^0.4.17;
 
-/* EXMR &#39;eXMR eMonero is tokenized (ERC20) Monero on the Ethereum blockchain&#39; contract Version 2.0
+/* EXMR 'eXMR eMonero is tokenized (ERC20) Monero on the Ethereum blockchain' contract Version 2.0
 *Airdrop 100% Free for different tasks and support
 *Refer to our Official Sites and your Community: 
 *http://www.e-XMR.io/
@@ -50,20 +50,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,7 +78,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 
@@ -134,7 +134,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) returns (bool success) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -146,8 +146,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract EXMR is StandardToken, Ownable {
-  string public constant name = &quot;EXMR&quot;;
-  string public constant symbol = &quot;EXMR&quot;;
+  string public constant name = "EXMR";
+  string public constant symbol = "EXMR";
   uint8 public constant decimals = 8;
   uint256 public constant INITIAL_SUPPLY = 15 * 10**6 * 10**8;
 
@@ -157,7 +157,7 @@ contract EXMR is StandardToken, Ownable {
   }
 
   function airdrop(uint256 amount, address[] addresses) onlyOwner {
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
       balances[owner].sub(amount);
       balances[addresses[i]].add(amount);
       Transfer(owner, addresses[i], amount);

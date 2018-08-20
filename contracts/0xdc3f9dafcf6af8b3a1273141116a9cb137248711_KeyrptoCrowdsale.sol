@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -327,9 +327,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -378,14 +378,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -407,7 +407,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -477,8 +477,8 @@ contract Pausable is Ownable {
 // File: contracts/KeyrptoToken.sol
 
 contract KeyrptoToken is MintableToken, Pausable {
-  string public constant name = &quot;Keyrpto Token&quot;;
-  string public constant symbol = &quot;KYT&quot;;
+  string public constant name = "Keyrpto Token";
+  string public constant symbol = "KYT";
   uint8 public constant decimals = 18;
   uint256 internal constant MILLION_TOKENS = 1e6 * 1e18;
 
@@ -546,7 +546,7 @@ contract KeyrptoToken is MintableToken, Pausable {
     }
 
     uint256 balanceAfterTransfer = balanceOf(_from).sub(_amount);
-    return balanceAfterTransfer &gt;= minimumTeamWalletBalance();
+    return balanceAfterTransfer >= minimumTeamWalletBalance();
   }
 
   /*
@@ -554,9 +554,9 @@ contract KeyrptoToken is MintableToken, Pausable {
    * 200M tokens in teamWallet are locked for 12 months
    */
   function minimumTeamWalletBalance() internal view returns (uint256) {
-    if (now &lt; circulationStartTime + 26 weeks) {
+    if (now < circulationStartTime + 26 weeks) {
       return 300 * MILLION_TOKENS;
-    } else if (now &lt; circulationStartTime + 1 years) {
+    } else if (now < circulationStartTime + 1 years) {
       return 200 * MILLION_TOKENS;
     } else {
       return 0;
@@ -569,7 +569,7 @@ contract KeyrptoToken is MintableToken, Pausable {
    * - only allow owner to burn tokens and burn from given address, not msg.sender
    */
   function burn(address _from, uint256 _value) external onlyOwner {
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -586,7 +586,7 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
   uint256 internal constant MAIN_SALE_TOKEN_CAP = 510 * MILLION_TOKENS;
   uint256 internal constant MINIMUM_CONTRIBUTION_IN_WEI = 100 finney;
 
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   uint256 public mainStartTime;
   uint256 public extraTokensMintedDuringPresale;
@@ -599,7 +599,7 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
                   address _wallet) public
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
-    require(_startTime &lt; _mainStartTime &amp;&amp; _mainStartTime &lt; _endTime);
+    require(_startTime < _mainStartTime && _mainStartTime < _endTime);
 
     mainStartTime = _mainStartTime;
 
@@ -611,8 +611,8 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
   }
 
   function updateRate(uint256 _rate) external onlyOwner {
-    require(_rate &gt; 0);
-    require(now &lt; endTime);
+    require(_rate > 0);
+    require(now < endTime);
 
     rate = _rate;
   }
@@ -643,7 +643,7 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
       setExtraTokensMintedDuringPresaleIfNotYetSet();
     }
 
-    if (extraTokensMintedDuringPresale == 0 &amp;&amp; !presale()) {
+    if (extraTokensMintedDuringPresale == 0 && !presale()) {
       extraTokensMintedDuringPresale = token.totalSupply() / 5;
     }
 
@@ -668,17 +668,17 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
     uint256 totalSupplyAfterTransaction = token.totalSupply() + _tokens;
 
     if (presale()) {
-      bool withinPerAddressLimit = (token.balanceOf(_beneficiary) + _tokens) &lt;= getRate().mul(20 ether);
-      bool withinTotalSupplyLimit = totalSupplyAfterTransaction &lt;= PRESALE_TOKEN_CAP;
+      bool withinPerAddressLimit = (token.balanceOf(_beneficiary) + _tokens) <= getRate().mul(20 ether);
+      bool withinTotalSupplyLimit = totalSupplyAfterTransaction <= PRESALE_TOKEN_CAP;
       if (!withinPerAddressLimit || !withinTotalSupplyLimit) {
         return false;
       }
     }
 
-    bool aboveMinContribution = msg.value &gt;= MINIMUM_CONTRIBUTION_IN_WEI;
+    bool aboveMinContribution = msg.value >= MINIMUM_CONTRIBUTION_IN_WEI;
     bool whitelistedSender = whitelisted(msg.sender);
-    bool withinCap = totalSupplyAfterTransaction &lt;= tokenSupplyCap();
-    return aboveMinContribution &amp;&amp; whitelistedSender &amp;&amp; withinCap &amp;&amp; super.validPurchase();
+    bool withinCap = totalSupplyAfterTransaction <= tokenSupplyCap();
+    return aboveMinContribution && whitelistedSender && withinCap && super.validPurchase();
   }
 
   function whitelisted(address _address) public view returns (bool) {
@@ -690,7 +690,7 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
   }
 
   function presale() internal view returns (bool) {
-    return now &lt; mainStartTime;
+    return now < mainStartTime;
   }
 
   /*
@@ -699,7 +699,7 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
    * - Added token cap logic based on token supply
    */
   function hasEnded() public view returns (bool) {
-    bool capReached = token.totalSupply() &gt;= tokenSupplyCap();
+    bool capReached = token.totalSupply() >= tokenSupplyCap();
     return capReached || super.hasEnded();
   }
 
@@ -727,6 +727,6 @@ contract KeyrptoCrowdsale is FinalizableCrowdsale {
     }
 
     uint256 minPurchaseInTokens = MINIMUM_CONTRIBUTION_IN_WEI.mul(getRate());
-    return token.totalSupply() + minPurchaseInTokens &gt; PRESALE_TOKEN_CAP;
+    return token.totalSupply() + minPurchaseInTokens > PRESALE_TOKEN_CAP;
   }
 }

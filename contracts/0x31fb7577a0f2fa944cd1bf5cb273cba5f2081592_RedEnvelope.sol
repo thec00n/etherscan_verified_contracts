@@ -16,7 +16,7 @@ contract RedEnvelope {
         uint256 remainingNumber;
         uint256 willExpireAfter;
         bool random;
-        mapping(address =&gt; bool) tooks;
+        mapping(address => bool) tooks;
     }
 
     struct Settings {
@@ -55,9 +55,9 @@ contract RedEnvelope {
     address public owner;
     uint256 public balanceOfEnvelopes;
     
-    mapping (address =&gt; uint256) public envelopeCounts;
-    mapping (uint256 =&gt; EnvelopeType) public envelopeTypes;
-    mapping (uint256 =&gt; Envelope) public envelopes;
+    mapping (address => uint256) public envelopeCounts;
+    mapping (uint256 => EnvelopeType) public envelopeTypes;
+    mapping (uint256 => Envelope) public envelopes;
 
     modifier onlyOwner {
         require(owner == msg.sender);
@@ -115,11 +115,11 @@ contract RedEnvelope {
             revert();
         }
         EnvelopeType memory envelopeType = envelopeTypes[_data[0]];
-        if (envelopeType.maxNumber &lt; _data[1]) { // quantity过大
+        if (envelopeType.maxNumber < _data[1]) { // quantity过大
             revert();
         }
         uint256 total = ( msg.value * 1000 ) / ( envelopeType.feeRate + 1000 );
-        if (total / _data[1] &lt; settings.minValue) { // value过小
+        if (total / _data[1] < settings.minValue) { // value过小
             revert();
         }
         Envelope memory envelope = Envelope(
@@ -130,7 +130,7 @@ contract RedEnvelope {
             total,                          // remainingValue
             _data[1],                       // remainingNumber
             block.timestamp + _data[2],     // willExpireAfter
-            _data[3] &gt; 0                    // random
+            _data[3] > 0                    // random
         );
         
         envelopes[_envelopeId] = envelope;
@@ -162,7 +162,7 @@ contract RedEnvelope {
     function take(uint256 _envelopeId, uint256[4] _data) external {
         // 验证红包
         Envelope storage envelope = envelopes[_envelopeId];
-        if (envelope.willExpireAfter &lt; block.timestamp) { // 红包过期
+        if (envelope.willExpireAfter < block.timestamp) { // 红包过期
             revert();
         }
         if (envelope.remainingNumber == 0) { // 抢完了
@@ -172,7 +172,7 @@ contract RedEnvelope {
             revert();
         }
         // 验证arbiter的签名
-        if (_data[0] &lt; block.timestamp) { // 签名过期
+        if (_data[0] < block.timestamp) { // 签名过期
             revert();
         }
         if (envelope.arbiter != ecrecover(keccak256(_envelopeId, _data[0], msg.sender), uint8(_data[1]), bytes32(_data[2]), bytes32(_data[3]))) { // 签名错误
@@ -188,8 +188,8 @@ contract RedEnvelope {
             } else {
                 uint256 maxValue = envelope.remainingValue - (envelope.remainingNumber - 1) * envelope.minValue;
                 uint256 avgValue = envelope.remainingValue / envelope.remainingNumber * 2;
-                value = avgValue &lt; maxValue ? avgValue * random() / 100 : maxValue * random() / 100;
-                value = value &lt; envelope.minValue ? envelope.minValue : value;
+                value = avgValue < maxValue ? avgValue * random() / 100 : maxValue * random() / 100;
+                value = value < envelope.minValue ? envelope.minValue : value;
             }
         }
 
@@ -212,7 +212,7 @@ contract RedEnvelope {
      */
     function redeem(uint256 _envelopeId) external {
         Envelope storage envelope = envelopes[_envelopeId];
-        if (envelope.willExpireAfter &gt;= block.timestamp) { // 尚未失效
+        if (envelope.willExpireAfter >= block.timestamp) { // 尚未失效
             revert();
         }
         if (envelope.remainingValue == 0) { // 没钱
@@ -238,7 +238,7 @@ contract RedEnvelope {
 
     function getPaid(uint256 amount) onlyOwner external {
         uint256 maxAmount = this.balance - balanceOfEnvelopes;
-        msg.sender.transfer(amount &lt; maxAmount ? amount : maxAmount);
+        msg.sender.transfer(amount < maxAmount ? amount : maxAmount);
     }
 
     function sayGoodBye() onlyOwner external {

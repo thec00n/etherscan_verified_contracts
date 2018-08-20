@@ -26,8 +26,8 @@ contract Owned {
 
 contract Callable is Owned {
 
-    //sender =&gt; _allowed
-    mapping(address =&gt; bool) public callers;
+    //sender => _allowed
+    mapping(address => bool) public callers;
 
     //modifiers
     modifier onlyCaller {
@@ -43,12 +43,12 @@ contract Callable is Owned {
 
 contract EternalStorage is Callable {
 
-    mapping(bytes32 =&gt; uint) uIntStorage;
-    mapping(bytes32 =&gt; string) stringStorage;
-    mapping(bytes32 =&gt; address) addressStorage;
-    mapping(bytes32 =&gt; bytes) bytesStorage;
-    mapping(bytes32 =&gt; bool) boolStorage;
-    mapping(bytes32 =&gt; int) intStorage;
+    mapping(bytes32 => uint) uIntStorage;
+    mapping(bytes32 => string) stringStorage;
+    mapping(bytes32 => address) addressStorage;
+    mapping(bytes32 => bytes) bytesStorage;
+    mapping(bytes32 => bool) boolStorage;
+    mapping(bytes32 => int) intStorage;
 
     // *** Getter Methods ***
     function getUint(bytes32 _key) external view returns (uint) {

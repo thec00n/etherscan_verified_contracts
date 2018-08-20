@@ -58,7 +58,7 @@ contract BlockVentureCoin is ERC20 {
 
 
 
-    string public standard = &#39;BVC 1.1&#39;;
+    string public standard = 'BVC 1.1';
 
     string public name;
 
@@ -76,15 +76,15 @@ contract BlockVentureCoin is ERC20 {
 
    
 
-    mapping( address =&gt; uint256) public balanceOf;
+    mapping( address => uint256) public balanceOf;
 
-    mapping( uint =&gt; address) public accountIndex;
+    mapping( uint => address) public accountIndex;
 
     uint accountCount;
 
     
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
    
 
@@ -118,9 +118,9 @@ contract BlockVentureCoin is ERC20 {
 
         totalSupply = supply; 
 
-        name = &quot;BlockVentureCoin&quot;; 
+        name = "BlockVentureCoin"; 
 
-        symbol = &quot;BVC&quot;; 
+        symbol = "BVC"; 
 
         decimals = 8; 
 
@@ -210,9 +210,9 @@ contract BlockVentureCoin is ERC20 {
 
         if (_to == 0x0) throw; 
 
-        if (balanceOf[msg.sender] &lt; _value) throw; 
+        if (balanceOf[msg.sender] < _value) throw; 
 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 
         
 
@@ -282,11 +282,11 @@ contract BlockVentureCoin is ERC20 {
 
         if (_to == 0x0) throw;  
 
-        if (balanceOf[_from] &lt; _value) throw;  
+        if (balanceOf[_from] < _value) throw;  
 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
 
         appendTokenHolders(_to);
 
@@ -308,7 +308,7 @@ contract BlockVentureCoin is ERC20 {
 
     function burn(uint256 _value) returns(bool success) {
 
-        if (balanceOf[msg.sender] &lt; _value) throw; 
+        if (balanceOf[msg.sender] < _value) throw; 
 
         balanceOf[msg.sender] -= _value; 
 
@@ -326,9 +326,9 @@ contract BlockVentureCoin is ERC20 {
 
     
 
-        if (balanceOf[_from] &lt; _value) throw; 
+        if (balanceOf[_from] < _value) throw; 
 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
 
         allowance[_from][msg.sender] -= _value; 
 

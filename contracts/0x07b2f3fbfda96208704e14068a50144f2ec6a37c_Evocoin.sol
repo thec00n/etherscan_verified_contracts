@@ -2,8 +2,8 @@ pragma solidity ^0.4.2;
 
 contract Evocoin{
 
-  string public constant name = &quot;Evocoin transit&quot;;
-  string public constant symbol = &quot;EVCTS&quot;;
+  string public constant name = "Evocoin transit";
+  string public constant symbol = "EVCTS";
   uint8 public constant decimals = 5;
   uint public constant totalSupply = 7500000000*10**5;
   uint userIndex = 0;
@@ -14,9 +14,9 @@ contract Evocoin{
     uint _value;
   }
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-  mapping (address =&gt; uint) balances;
-  mapping (uint =&gt; user) users;
+  mapping (address => mapping (address => uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (uint => user) users;
     
   function Evocoin() public {
     balances[owner] = totalSupply;
@@ -24,7 +24,7 @@ contract Evocoin{
   }
 
   function transferFrom(address _from, address _to, uint _value) public {
-    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+    require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
     require(_to != address(0x0));
     
     balances[_to] +=_value;
@@ -44,7 +44,7 @@ contract Evocoin{
   }
 
   function transfer(address _to, uint _value) public {
-    require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+    require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
     require(_to != address(0x0));
     
     balances[msg.sender] -= _value;
@@ -58,7 +58,7 @@ contract Evocoin{
   
   function buyout() public { 
     require(msg.sender!=owner);
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
     
     uint _value = balances[msg.sender];
     balances[msg.sender] = 0;
@@ -77,7 +77,7 @@ contract Evocoin{
   
   function isTransferedUser(address _adress) public view returns(bool){
     uint i;
-    for(i=0; i&lt;userIndex; i++){
+    for(i=0; i<userIndex; i++){
         if (users[i]._adress == _adress)
             return true;
     }

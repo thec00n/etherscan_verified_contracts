@@ -9,13 +9,13 @@ contract TokenInterface {
     bool locked;
     uint256 balance;
     uint256 badges;
-    mapping (address =&gt; uint256) allowed;
+    mapping (address => uint256) allowed;
   }
 
-  mapping (address =&gt; User) users;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; bool) seller;
+  mapping (address => User) users;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => bool) seller;
 
   address config;
   address owner;
@@ -104,12 +104,12 @@ contract swap{
     
     // This function is called every time some one sends ether to this contract
     function(){
-        if (now &gt;= expiryDate) throw;
+        if (now >= expiryDate) throw;
         // Dividing by Billion here to cater for the decimal places
         var tokens_to_send = (msg.value * BILLION) / price_token;
         uint balance = tokenObj.balanceOf(this);
         address payee = msg.sender;
-        if (balance &gt;= tokens_to_send){
+        if (balance >= tokens_to_send){
             tokenObj.transfer(msg.sender, tokens_to_send);
             beneficiary.send(msg.value);    
         } else {
@@ -120,7 +120,7 @@ contract swap{
         }
     }
     
-    modifier afterExpiry() { if (now &gt;= expiryDate) _ }
+    modifier afterExpiry() { if (now >= expiryDate) _ }
     
     //This function checks if the expiry date has passed and if it has, then returns the tokens to the beneficiary
     function checkExpiry() afterExpiry{

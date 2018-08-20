@@ -64,8 +64,8 @@ contract CpData is Ownable {
 
     Girl[] girls;
 
-    mapping (uint256 =&gt; address) public girlIdToOwner;
-    mapping (uint256 =&gt; Auction) public girlIdToAuction;
+    mapping (uint256 => address) public girlIdToOwner;
+    mapping (uint256 => Auction) public girlIdToAuction;
     
 }
 
@@ -78,9 +78,9 @@ contract CpInternals is CpData {
     }
 
     function _createGirl(uint256 _sourceGirlId1, uint256 _sourceGirlId2, uint256 _gen, uint256 _dna, address _owner) internal returns (uint) {
-        require(_sourceGirlId1 &lt; girls.length || _sourceGirlId1 == 0);
-        require(_sourceGirlId2 &lt; girls.length || _sourceGirlId2 == 0);
-        require(_gen &lt; 65535);
+        require(_sourceGirlId1 < girls.length || _sourceGirlId1 == 0);
+        require(_sourceGirlId2 < girls.length || _sourceGirlId2 == 0);
+        require(_gen < 65535);
 
         Girl memory _girl = Girl({
             dna: _dna,
@@ -102,7 +102,7 @@ contract CpInternals is CpData {
      function _combineGirls(Girl storage _sourceGirl1, Girl storage _sourceGirl2, uint256 _girl1Id, uint256 _girl2Id, address _owner) internal returns(uint256) {
         uint16 maxGen = _sourceGirl1.gen;
 
-        if (_sourceGirl2.gen &gt; _sourceGirl1.gen) {
+        if (_sourceGirl2.gen > _sourceGirl1.gen) {
             maxGen = _sourceGirl2.gen;
         }
 
@@ -120,13 +120,13 @@ contract CpInternals is CpData {
     function _getAuctionPrice(Auction storage _auction) internal view returns (uint256) {
         uint256 secondsPassed = 0;
 
-        if (now &gt; _auction.creationTime) {
+        if (now > _auction.creationTime) {
             secondsPassed = now - _auction.creationTime;
         }
 
         uint256 price = _auction.endingPriceWei;
 
-        if (secondsPassed &lt; _auction.duration) {
+        if (secondsPassed < _auction.duration) {
             uint256 priceSpread = _auction.startingPriceWei - _auction.endingPriceWei;
             uint256 deltaPrice = priceSpread * secondsPassed / _auction.duration;
             price = _auction.startingPriceWei - deltaPrice;
@@ -152,14 +152,14 @@ contract CpApis is CpInternals {
     }
 
     function createPromoGirl(uint256 _dna) external onlyOwner {
-        require(promoCreatedCount &lt; MAX_PROMO_GIRLS);
+        require(promoCreatedCount < MAX_PROMO_GIRLS);
 
         promoCreatedCount++;
         _createGirl(0, 0, 0, _dna, owner);
     }
 
     function createGen0(uint256 _dna) external onlyOwner {
-        require(gen0CreatedCount &lt; MAX_GEN0_GIRLS);
+        require(gen0CreatedCount < MAX_GEN0_GIRLS);
 
         gen0CreatedCount++;
         _createGirl(0, 0, 0, _dna, owner);
@@ -184,8 +184,8 @@ contract CpApis is CpInternals {
     }
     
     function createAuction(uint256 _girlId, uint256 _startingPriceWei, uint256 _endingPriceWei, uint256 _duration, bool _isCombine) external {
-        require(_startingPriceWei &gt; _endingPriceWei);
-        require(_startingPriceWei &gt; 0);
+        require(_startingPriceWei > _endingPriceWei);
+        require(_startingPriceWei > 0);
         require(_startingPriceWei == uint256(uint128(_startingPriceWei)));
         require(_endingPriceWei == uint256(uint128(_endingPriceWei)));
         require(_duration == uint256(uint64(_duration)));
@@ -193,8 +193,8 @@ contract CpApis is CpInternals {
 
         if (_isCombine) {
             Girl storage girl = girls[_girlId];
-            require(girl.combinesLeft &gt; 0);
-            require(girl.combineCooledDown &lt; now);
+            require(girl.combinesLeft > 0);
+            require(girl.combineCooledDown < now);
         }
 
         Auction memory auction = Auction(
@@ -214,27 +214,27 @@ contract CpApis is CpInternals {
     function bid(uint256 _girlId, uint256 _myGirl) external payable {
         Auction storage auction = girlIdToAuction[_girlId];
 
-        require(auction.startingPriceWei &gt; 0);
-        require(!auction.isCombine || (auction.isCombine &amp;&amp; _girlId &gt; 0));
+        require(auction.startingPriceWei > 0);
+        require(!auction.isCombine || (auction.isCombine && _girlId > 0));
 
         uint256 price = _getAuctionPrice(auction);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         bool isCombine = auction.isCombine;
 
         if (isCombine) {
             Girl storage sourceGirl1 = girls[_girlId];
             Girl storage sourceGirl2 = girls[_myGirl];
     
-            require(sourceGirl1.combinesLeft &gt; 0);
-            require(sourceGirl2.combinesLeft &gt; 0);
-            require(sourceGirl1.combineCooledDown &lt; now);
-            require(sourceGirl2.combineCooledDown &lt; now);
+            require(sourceGirl1.combinesLeft > 0);
+            require(sourceGirl2.combinesLeft > 0);
+            require(sourceGirl1.combineCooledDown < now);
+            require(sourceGirl2.combineCooledDown < now);
         }
 
         address seller = auction.seller;
         delete girlIdToAuction[_girlId];
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 cut = price * (OWNERS_AUCTION_CUT / 10000);
             seller.transfer(price - cut);
         }
@@ -258,17 +258,17 @@ contract CpApis is CpInternals {
         Girl storage sourceGirl1 = girls[_girlId1];
         Girl storage sourceGirl2 = girls[_girlId2];
 
-        require(sourceGirl1.combinesLeft &gt; 0);
-        require(sourceGirl2.combinesLeft &gt; 0);
-        require(sourceGirl1.combineCooledDown &lt; now);
-        require(sourceGirl2.combineCooledDown &lt; now);
+        require(sourceGirl1.combinesLeft > 0);
+        require(sourceGirl2.combinesLeft > 0);
+        require(sourceGirl1.combineCooledDown < now);
+        require(sourceGirl2.combineCooledDown < now);
 
         _combineGirls(sourceGirl1, sourceGirl2, _girlId1, _girlId2, msg.sender);
     }
 
     function cancelAuction(uint256 _girlId) external {
         Auction storage auction = girlIdToAuction[_girlId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         require(msg.sender == auction.seller);
         delete girlIdToAuction[_girlId];
@@ -277,14 +277,14 @@ contract CpApis is CpInternals {
     
     function getAuction(uint256 _girlId) external view returns(address seller, uint256 startingPriceWei, uint256 endingPriceWei, uint256 duration, uint256 startedAt, bool isCombine) {
         Auction storage auction = girlIdToAuction[_girlId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         return (auction.seller, auction.startingPriceWei, auction.endingPriceWei, auction.duration, auction.creationTime, auction.isCombine);
     }
 
     function getGirlsAuctionPrice(uint256 _girlId) external view returns (uint256) {
         Auction storage auction = girlIdToAuction[_girlId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         return _getAuctionPrice(auction);
     }

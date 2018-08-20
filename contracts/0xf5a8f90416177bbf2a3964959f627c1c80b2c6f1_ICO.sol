@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -257,8 +257,8 @@ contract PausableToken is StandardToken, Pausable {
 
 contract UNLB is PausableToken {
 
-  string public constant name = &quot;UnolaboToken&quot;;
-  string public constant symbol = &quot;UNLB&quot;;
+  string public constant name = "UnolaboToken";
+  string public constant symbol = "UNLB";
   uint256 public constant decimals = 18;
 
   function UNLB() {
@@ -294,30 +294,30 @@ contract ICO is Pausable {
   }
 
   function pricePerWei() public constant returns(uint) {
-    if     (now &lt; /*2017-11-28 00:17:00+8*/ 1511799420) return 800.0 * 1 ether;
-    else if(now &lt; /*2017-11-29 00:17:00+8*/ 1511885820) return 750.0 * 1 ether;
-    else if(now &lt; /*2017-12-14 00:17:00+8*/ 1513181820) return 675.0 * 1 ether;
-    else if(now &lt; /*2018-01-10 00:17:00+8*/ 1515514620) return 575.0 * 1 ether;
-    else if(now &lt; /*2018-01-18 00:17:00+8*/ 1516205820) return 537.5 * 1 ether;
+    if     (now < /*2017-11-28 00:17:00+8*/ 1511799420) return 800.0 * 1 ether;
+    else if(now < /*2017-11-29 00:17:00+8*/ 1511885820) return 750.0 * 1 ether;
+    else if(now < /*2017-12-14 00:17:00+8*/ 1513181820) return 675.0 * 1 ether;
+    else if(now < /*2018-01-10 00:17:00+8*/ 1515514620) return 575.0 * 1 ether;
+    else if(now < /*2018-01-18 00:17:00+8*/ 1516205820) return 537.5 * 1 ether;
     else                                                return 500.0 * 1 ether;
   }
 
 
   function() public payable {
-    require(!paused &amp;&amp; now &gt;= ICO_START_DATE &amp;&amp; now &lt; ICO_END_DATE);
+    require(!paused && now >= ICO_START_DATE && now < ICO_END_DATE);
     uint _tokenVal = (msg.value * pricePerWei()) / 1 ether;
     unlb.mint(msg.sender, _tokenVal);
   }
 
   function foreignBuy(address _investor, uint _unlbValue, string _txHash) external onlyOwner {
-    require(!paused &amp;&amp; now &gt;= ICO_START_DATE &amp;&amp; now &lt; ICO_END_DATE);
-    require(_unlbValue &gt; 0);
+    require(!paused && now >= ICO_START_DATE && now < ICO_END_DATE);
+    require(_unlbValue > 0);
     unlb.mint(_investor, _unlbValue);
     ForeignBuy(_investor, _unlbValue, _txHash);
   }
   
   function finish(address _team, address _fund, address _bounty, address _backers) external onlyOwner {
-    require(now &gt;= ICO_END_DATE &amp;&amp; !isFinished);
+    require(now >= ICO_END_DATE && !isFinished);
     unlb.unpause();
     isFinished = true;
 

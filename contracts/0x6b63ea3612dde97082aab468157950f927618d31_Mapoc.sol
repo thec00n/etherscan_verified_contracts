@@ -2,7 +2,7 @@ contract Mapoc {
     address _owner;
     address _filiate;
 
-    mapping (string =&gt; uint) private mapExecs;
+    mapping (string => uint) private mapExecs;
     Execution[] private executions;
     event Executed(string Hash);
     event Validated(string Hash);
@@ -28,13 +28,13 @@ contract Mapoc {
     /* MAPPING */
     function map(string hash) internal returns(uint) {
         uint ret = mapExecs[hash];
-        if(ret &gt;= executions.length || !strEqual(executions[ret].hash, hash)) throw;
+        if(ret >= executions.length || !strEqual(executions[ret].hash, hash)) throw;
         return ret;
     }
     
     /* MODIFIERS */
     modifier bothAllowed() {
-        if(msg.sender != _owner &amp;&amp; msg.sender != _filiate) throw;
+        if(msg.sender != _owner && msg.sender != _filiate) throw;
         _;
     }
     
@@ -50,7 +50,7 @@ contract Mapoc {
     
     modifier notYetExist(string hash) {
         uint num = mapExecs[hash];
-        if(num &lt; executions.length &amp;&amp; strEqual(executions[num].hash, hash)) throw;
+        if(num < executions.length && strEqual(executions[num].hash, hash)) throw;
         _;
     }
     
@@ -85,7 +85,7 @@ contract Mapoc {
     
     function CheckExecution(string Hash) public bothAllowed() constant returns(bool IsExist, uint DateCreated, bool Validated, uint DateValidated){
         uint ret = mapExecs[Hash];
-        if(ret &gt;= executions.length || !strEqual(executions[ret].hash, Hash)) return (false, 0, false, 0);
+        if(ret >= executions.length || !strEqual(executions[ret].hash, Hash)) return (false, 0, false, 0);
         Execution e = executions[ret];
         return (true, e.dateCreated, e.validated, e.dateValidated);
     }
@@ -97,13 +97,13 @@ contract Mapoc {
     
     function LastExecuted() public bothAllowed() constant returns(string Hash, uint DateCreated) {
         DateCreated = 0;
-        if(executions.length &gt; 0) {
+        if(executions.length > 0) {
             if(!executions[0].validated) {
                 Hash = executions[0].hash;
                 DateCreated = executions[0].dateCreated;
             }
-            for(uint i = executions.length - 1; i &gt; 0; i--) {
-                if(!executions[i].validated &amp;&amp; executions[i].dateCreated &gt; DateCreated) {
+            for(uint i = executions.length - 1; i > 0; i--) {
+                if(!executions[i].validated && executions[i].dateCreated > DateCreated) {
                     Hash = executions[i].hash;
                     DateCreated = executions[i].dateCreated;
                     break;
@@ -115,8 +115,8 @@ contract Mapoc {
     
     function LastValidated() public bothAllowed() constant returns(string Hash, uint DateValidated) {
         DateValidated = 0;
-        for(uint i = 0; i &lt; executions.length; i++) {
-            if(executions[i].validated &amp;&amp; executions[i].dateValidated &gt; DateValidated) {
+        for(uint i = 0; i < executions.length; i++) {
+            if(executions[i].validated && executions[i].dateValidated > DateValidated) {
                 Hash = executions[i].hash;
                 DateValidated = executions[i].dateValidated;
             }
@@ -126,7 +126,7 @@ contract Mapoc {
     
     function CountExecs() public bothAllowed() constant returns(uint Total, uint NotVal) {
         uint nbNotVal = 0;
-        for(uint i = 0; i &lt; executions.length; i++) {
+        for(uint i = 0; i < executions.length; i++) {
             if(!executions[i].validated) nbNotVal++;
         }
         return (executions.length, nbNotVal);
@@ -136,14 +136,14 @@ contract Mapoc {
         Count = 0;
         DateFirst = now;
         DateLast = 0;
-        for(uint i = 0; i &lt; executions.length; i++) {
-            if(!executions[i].validated &amp;&amp; executions[i].dateCreated &gt;= timestampFrom) {
+        for(uint i = 0; i < executions.length; i++) {
+            if(!executions[i].validated && executions[i].dateCreated >= timestampFrom) {
                 Count++;
-                if(executions[i].dateCreated &lt; DateFirst) {
+                if(executions[i].dateCreated < DateFirst) {
                     First = executions[i].hash;
                     DateFirst = executions[i].dateCreated;
                 }
-                else if(executions[i].dateCreated &gt; DateLast) {
+                else if(executions[i].dateCreated > DateLast) {
                     Last = executions[i].hash;
                     DateLast = executions[i].dateCreated;
                 }
@@ -154,13 +154,13 @@ contract Mapoc {
     
     function ListNotValSince(uint timestampFrom) public bothAllowed() constant returns(uint Count, string List, uint OldestTime) {
         Count = 0;
-        List = &quot;\n&quot;;
+        List = "\n";
         OldestTime = now;
-        for(uint i = 0; i &lt; executions.length; i++) {
-            if(!executions[i].validated &amp;&amp; executions[i].dateCreated &gt;= timestampFrom) {
+        for(uint i = 0; i < executions.length; i++) {
+            if(!executions[i].validated && executions[i].dateCreated >= timestampFrom) {
                 Count++;
-                List = strConcat(List, executions[i].hash, &quot; ;\n&quot;);
-                if(executions[i].dateCreated &lt; OldestTime)
+                List = strConcat(List, executions[i].hash, " ;\n");
+                if(executions[i].dateCreated < OldestTime)
                     OldestTime = executions[i].dateCreated;
             }
         }
@@ -168,15 +168,15 @@ contract Mapoc {
     }
     
     function ListAllSince(uint timestampFrom) public bothAllowed() constant returns(uint Count, string List) {
-        List = &quot;\n&quot;;
-        for(uint i = 0; i &lt; executions.length; i++) {
+        List = "\n";
+        for(uint i = 0; i < executions.length; i++) {
             string memory val;
             if(executions[i].validated)
-                val = &quot;confirmed\n&quot;;
+                val = "confirmed\n";
             else
-                val = &quot;published\n&quot;;
+                val = "published\n";
                 
-            List = strConcat(List, executions[i].hash, &quot; : &quot;, val);
+            List = strConcat(List, executions[i].hash, " : ", val);
         }
         return (executions.length, List);
     }
@@ -188,7 +188,7 @@ contract Mapoc {
 		if (a.length != b.length)
 			return false;
 
-		for (uint i = 0; i &lt; a.length; i ++)
+		for (uint i = 0; i < a.length; i ++)
 			if (a[i] != b[i])
 				return false;
 		return true;
@@ -203,24 +203,24 @@ contract Mapoc {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns(string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
     
     function strConcat(string _a, string _b, string _c) internal returns(string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
     
     function strConcat(string _a, string _b) internal returns(string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
     
 }

@@ -26,7 +26,7 @@ contract Better{
     address public creatorAddr;
     
     
-    mapping (address =&gt; mapping (uint =&gt; uint)) private _bets;
+    mapping (address => mapping (uint => uint)) private _bets;
     
     function Better(uint passDevTaxDivisor, uint passStartTime, uint passEndTime) public {
         creatorAddr=msg.sender;
@@ -38,7 +38,7 @@ contract Better{
 
         _totalPrize=0;
         _numberBets=0;
-        for(uint i =0; i&lt;33; i++)_pools[i]=0; //set all pool to 0
+        for(uint i =0; i<33; i++)_pools[i]=0; //set all pool to 0
     }
     
     
@@ -58,12 +58,12 @@ contract Better{
     }
     
     modifier onlyAfterEndTime() {
-        require(now &gt;= _endTime);
+        require(now >= _endTime);
         _;
     }
     
     modifier onlyBeforeStartTime() {
-        require(now &lt;= _startTime);
+        require(now <= _startTime);
         _;
     }
 
@@ -81,13 +81,13 @@ contract Better{
     }
     
     function bet(uint team) public onlyBeforeWinner onlyBeforeStartTime payable returns (bool)  {
-        require(msg.value&gt;0);
-        require(team &gt;0);
+        require(msg.value>0);
+        require(team >0);
         
         uint devTax= SafeMath.div(msg.value,DEV_TAX_DIVISOR);
         uint finalValue=SafeMath.sub(msg.value,devTax);
         
-        assert(finalValue&gt;0 &amp;&amp; devTax&gt;0);
+        assert(finalValue>0 && devTax>0);
         
         creatorAddr.transfer(devTax);
         
@@ -102,7 +102,7 @@ contract Better{
     
     function claim() public onlyAfterWinner onlyAfterEndTime returns (bool){
         uint moneyInvested= _bets[msg.sender][_winnerTeam];
-        require(moneyInvested&gt;0);
+        require(moneyInvested>0);
         
         uint moneyTeam= _pools[_winnerTeam];
         
@@ -139,13 +139,13 @@ contract Better{
     
 
     function getState() public constant returns (uint state){
-        if(now&lt;_startTime)return STATE_BET_ENABLED;
-        if(now&lt;_endTime)return STATE_BET_DISABLED;
+        if(now<_startTime)return STATE_BET_ENABLED;
+        if(now<_endTime)return STATE_BET_DISABLED;
         else return STATE_CLAIM_ENABLED;
     }
     
     function getDev() public constant returns (string signature){
-        return &#39;chelinho139&#39;;
+        return 'chelinho139';
     }
     function () public payable {
         throw;
@@ -205,9 +205,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -215,7 +215,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -224,7 +224,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

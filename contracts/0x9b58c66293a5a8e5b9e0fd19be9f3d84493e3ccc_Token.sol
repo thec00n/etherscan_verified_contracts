@@ -15,12 +15,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,9 +54,9 @@ contract TokenERC20 is Ownable, MintableToken {
     uint256 public totalSupply;
     bool public isEnabled = true;
 
-    mapping (address =&gt; bool) public saleAgents;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => bool) public saleAgents;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -72,8 +72,8 @@ contract TokenERC20 is Ownable, MintableToken {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != 0x0);
-        require(_value &lt;= balanceOf[_from]);
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(_value <= balanceOf[_from]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         require(isEnabled);
 
         uint256 previousBalances = balanceOf[_from].add(balanceOf[_to]);
@@ -89,7 +89,7 @@ contract TokenERC20 is Ownable, MintableToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
          _transfer(_from, _to, _value);
@@ -114,7 +114,7 @@ contract TokenERC20 is Ownable, MintableToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -142,7 +142,7 @@ contract TokenERC20 is Ownable, MintableToken {
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Проверяем, достаточно ли средств у сжигателя
+        require(balanceOf[msg.sender] >= _value);   // Проверяем, достаточно ли средств у сжигателя
 
         address burner = msg.sender;
         balanceOf[burner] = balanceOf[burner].sub(_value);  // Списываем с баланса сжигателя
@@ -167,6 +167,6 @@ contract TokenERC20 is Ownable, MintableToken {
 }
 
 contract Token is TokenERC20 {
-    function Token() public TokenERC20(&quot;Ideal Digital Memory&quot;, &quot;IDM&quot;) {}
+    function Token() public TokenERC20("Ideal Digital Memory", "IDM") {}
 
 }

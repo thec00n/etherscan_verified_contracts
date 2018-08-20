@@ -35,18 +35,18 @@ contract Targeted is Owned {
 }
 contract CatHODL is Targeted {
     uint public releaseDate;
-    mapping (uint =&gt; address) public catOwners;
+    mapping (uint => address) public catOwners;
     function CatHODL () public {
         releaseDate = now + 1 years;
     }
     function bringCat (uint catId) public {
-        require(now &lt; releaseDate ); // If you can get it anytime, its not forced HODL!
+        require(now < releaseDate ); // If you can get it anytime, its not forced HODL!
         catOwners[catId] = msg.sender; // Set the user as owner.
         target.transferFrom(msg.sender, this, catId); // Get the cat, throws if fails
     }
     function getCat (uint catId) public {
         require(catOwners[catId] == msg.sender);
-        require(now &gt;= releaseDate);
+        require(now >= releaseDate);
         catOwners[catId] = 0x0;
         target.transfer(msg.sender, catId);
     }

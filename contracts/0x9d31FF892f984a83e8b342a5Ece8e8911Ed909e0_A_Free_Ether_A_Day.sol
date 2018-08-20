@@ -7,12 +7,12 @@ contract A_Free_Ether_A_Day {
    //
    // // only while stocks last! //
    //
-   //  But make sure you understand, read and test the code before using it. I am not refunding any &quot;swallowed&quot; funds, I keep those &gt;:)
+   //  But make sure you understand, read and test the code before using it. I am not refunding any "swallowed" funds, I keep those >:)
    //  (e.g. make sure you send funds to the right function!)
    //
      
     address the_stupid_guy;                     // thats me
-    uint256 public minimum_cash_proof_amount;   // to prove you are a true &quot;Ether-ian&quot;
+    uint256 public minimum_cash_proof_amount;   // to prove you are a true "Ether-ian"
     
     // The Contract Builder
     
@@ -26,7 +26,7 @@ contract A_Free_Ether_A_Day {
     // ************************************************************************************** //
     //   show_me_the_money ()    This function allows you to claim your special bonus ether.
     //
-    //   Send any amount &gt; minimum_cash_proof_amount to this function, and receive a special bonus ether back.
+    //   Send any amount > minimum_cash_proof_amount to this function, and receive a special bonus ether back.
 	//
     //   You can also call this function from a client by pasting the following transaction data in the data field:
     //   0xc567e43a
@@ -35,9 +35,9 @@ contract A_Free_Ether_A_Day {
     
     function show_me_the_money ()  payable  returns (uint256)  {
         
-        // ==&gt; You have to show me that you already have some ether, as I am not giving any ether to non-ether-ians
+        // ==> You have to show me that you already have some ether, as I am not giving any ether to non-ether-ians
     
-        if ( msg.value &lt; minimum_cash_proof_amount ) throw; // nope, you don&#39;t have the cash.. go get some ether first
+        if ( msg.value < minimum_cash_proof_amount ) throw; // nope, you don't have the cash.. go get some ether first
 
         uint256 received_amount = msg.value;    // remember what you have sent
         uint256 bonus = 1 ether;                // the bonus ether
@@ -55,7 +55,7 @@ contract A_Free_Ether_A_Day {
         
         payout = received_amount + bonus; // calculate total payout
         
-        if (payout &gt; this.balance) throw; // nope, I dont have enough to give you a free ether, so roll back the lot
+        if (payout > this.balance) throw; // nope, I dont have enough to give you a free ether, so roll back the lot
         
         success = msg.sender.send(payout); 
         
@@ -75,7 +75,7 @@ contract A_Free_Ether_A_Day {
     }
     
    // I may increase the cash proof amount lateron, so make sure you check the global variable minimum_cash_proof_amount
-   //     ==&gt; but don&#39;t worry, if you dont send enough, it just rolls back the transaction via a throw
+   //     ==> but don't worry, if you dont send enough, it just rolls back the transaction via a throw
 
     function Update_Cash_Proof_amount(uint256 new_cash_limit){
         if ( msg.sender != the_stupid_guy ) throw;

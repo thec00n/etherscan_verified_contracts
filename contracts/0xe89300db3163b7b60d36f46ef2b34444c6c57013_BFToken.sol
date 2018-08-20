@@ -21,9 +21,9 @@ contract ERC20Interface
 contract BFToken is ERC20Interface
 {
 
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   //init
   function BFToken(string _name,string _symbol,uint8 _decimals,uint _totalSupply) public
@@ -38,8 +38,8 @@ contract BFToken is ERC20Interface
   function transfer(address _to, uint256 _value) public returns (bool success)
   {
       require(_to != address(0));
-      require(balanceOf[msg.sender] &gt;= _value);
-      require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+      require(balanceOf[msg.sender] >= _value);
+      require(balanceOf[_to] + _value >= balanceOf[_to]);
 
 
       balanceOf[msg.sender] -= _value;
@@ -51,9 +51,9 @@ contract BFToken is ERC20Interface
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
   {
       require(_to != address(0));
-      require(balanceOf[_from] &gt;= _value);
-      require(allowed[_from][msg.sender] &gt;= _value);
-      require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+      require(balanceOf[_from] >= _value);
+      require(allowed[_from][msg.sender] >= _value);
+      require(balanceOf[_to] + _value >= balanceOf[_to]);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;

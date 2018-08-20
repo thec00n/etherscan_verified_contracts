@@ -7,14 +7,14 @@ pragma solidity ^0.4.15;
  * Based on code by FirstBlood:
  * https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  *
- * This is the token contract for Dealbox. It utilizes Majoolr&#39;s TokenLib library
+ * This is the token contract for Dealbox. It utilizes Majoolr's TokenLib library
  * to reduce custom source code surface area and increase overall security.
  * Majoolr provides smart contract services and security reviews for contract
  * deployments in addition to working on open source projects in the Ethereum
  * Community.
  * For further information: dlbx.io, majoolr.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -104,8 +104,8 @@ library TokenLib {
   using BasicMathLib for uint256;
 
   struct TokenStorage {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     string name;
     string symbol;
@@ -148,7 +148,7 @@ library TokenLib {
     self.balances[_owner] = _initial_supply;
   }
 
-  /// @dev Transfer tokens from caller&#39;s account to another account.
+  /// @dev Transfer tokens from caller's account to another account.
   /// @param self Stored token from token contract
   /// @param _to Address to send tokens
   /// @param _value Number of tokens to send
@@ -160,7 +160,7 @@ library TokenLib {
     (err,balance) = self.balances[msg.sender].minus(_value);
     require(!err);
     self.balances[msg.sender] = balance;
-    //It&#39;s not possible to overflow token supply
+    //It's not possible to overflow token supply
     self.balances[_to] = self.balances[_to] + _value;
     Transfer(msg.sender, _to, _value);
     return true;
@@ -205,7 +205,7 @@ library TokenLib {
     return self.balances[_owner];
   }
 
-  /// @dev Authorize an account to send tokens on caller&#39;s behalf
+  /// @dev Authorize an account to send tokens on caller's behalf
   /// @param self Stored token from token contract
   /// @param _spender Address to authorize
   /// @param _value Number of tokens authorized account may send
@@ -220,7 +220,7 @@ library TokenLib {
   /// @param self Stored token from token contract
   /// @param _owner Address of token holder
   /// @param _spender Address of authorized spender
-  /// @return remaining Number of tokens spender has left in owner&#39;s account
+  /// @return remaining Number of tokens spender has left in owner's account
   function allowance(TokenStorage storage self, address _owner, address _spender) constant returns (uint256 remaining) {
     return self.allowed[_owner][_spender];
   }
@@ -243,7 +243,7 @@ library TokenLib {
 
       self.allowed[msg.sender][_spender] = _newAllowed;
     } else {
-      if (_valueChange &gt; self.allowed[msg.sender][_spender]) {
+      if (_valueChange > self.allowed[msg.sender][_spender]) {
         self.allowed[msg.sender][_spender] = 0;
       } else {
         _newAllowed = self.allowed[msg.sender][_spender] - _valueChange;
@@ -260,7 +260,7 @@ library TokenLib {
   /// @param _newOwner Address for the new owner
   /// @return True if completed
   function changeOwner(TokenStorage storage self, address _newOwner) returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; (_newOwner &gt; 0));
+    require((self.owner == msg.sender) && (_newOwner > 0));
 
     self.owner = _newOwner;
     OwnerChange(msg.sender, _newOwner);
@@ -272,7 +272,7 @@ library TokenLib {
   /// @param _amount Number of tokens to mint
   /// @return True if completed
   function mintToken(TokenStorage storage self, uint256 _amount) returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; self.stillMinting);
+    require((self.owner == msg.sender) && self.stillMinting);
     uint256 _newAmount;
     bool err;
 
@@ -334,7 +334,7 @@ library BasicMathLib {
       }
     }
     if (err)
-      Err(&quot;times func overflow&quot;);
+      Err("times func overflow");
   }
 
   /// @dev Divides two numbers but checks for 0 in the divisor first.
@@ -352,7 +352,7 @@ library BasicMathLib {
         return(mload(0x40),0x40)
       }
     }
-    Err(&quot;tried to divide by zero&quot;);
+    Err("tried to divide by zero");
     return (true, 0);
   }
 
@@ -372,7 +372,7 @@ library BasicMathLib {
       }
     }
     if (err)
-      Err(&quot;plus func overflow&quot;);
+      Err("plus func overflow");
   }
 
   /// @dev Subtracts two numbers and checks for underflow before returning.
@@ -391,6 +391,6 @@ library BasicMathLib {
       }
     }
     if (err)
-      Err(&quot;minus func underflow&quot;);
+      Err("minus func underflow");
   }
 }

@@ -17,7 +17,7 @@ interface SaleClockAuction {
     
 }
 
-// ERC721 token standard is used for non-fungible assets, like Sprites (non-fungible because they can&#39;t be split into pieces and don&#39;t have equal value). Technically this contract will also be ERC20 compliant.
+// ERC721 token standard is used for non-fungible assets, like Sprites (non-fungible because they can't be split into pieces and don't have equal value). Technically this contract will also be ERC20 compliant.
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -64,7 +64,7 @@ contract CryptoSprites is ERC721 {
     
     uint public featurePrice = 10**16; // 0.01 Ether to feature a sprite
     
-    // With the below the default price of a Sprite of a kitty would be only 10% of the kitties price. If for example priceMultiplier = 15 and priceDivider = 10, then the default price of a sprite would be 1.5 times the price of its kitty. Since Solidity doesn&#39;t allow decimals, two numbers are needed for  flexibility in setting the default price a sprite would be in relation to the price of its kitten, in case that&#39;s needed later (owner of this contract can change the default price of Sprites anytime). 
+    // With the below the default price of a Sprite of a kitty would be only 10% of the kitties price. If for example priceMultiplier = 15 and priceDivider = 10, then the default price of a sprite would be 1.5 times the price of its kitty. Since Solidity doesn't allow decimals, two numbers are needed for  flexibility in setting the default price a sprite would be in relation to the price of its kitten, in case that's needed later (owner of this contract can change the default price of Sprites anytime). 
     // The default price of a Sprite may easily increase later to be more than 10%
     uint public priceMultiplier = 1;
     uint public priceDivider = 10;
@@ -94,26 +94,26 @@ contract CryptoSprites is ERC721 {
         bool featured;
     }
     
-    mapping (uint =&gt; BroughtSprites) public broughtSprites;
+    mapping (uint => BroughtSprites) public broughtSprites;
     
-    // This may include Sprites the user previously owned but doesn&#39;t anymore
-    mapping (address =&gt; uint[]) public spriteOwningHistory;
+    // This may include Sprites the user previously owned but doesn't anymore
+    mapping (address => uint[]) public spriteOwningHistory;
     
-    mapping (address =&gt; uint) public numberOfSpritesOwnedByUser;
+    mapping (address => uint) public numberOfSpritesOwnedByUser;
     
-    mapping (address =&gt; mapping(address =&gt; mapping(uint256 =&gt; bool))) public addressToReceiverToAllowedSprite;
+    mapping (address => mapping(address => mapping(uint256 => bool))) public addressToReceiverToAllowedSprite;
     
-    mapping (address =&gt; mapping(address =&gt; uint256)) public addressToReceiverToAmountAllowed;
+    mapping (address => mapping(address => uint256)) public addressToReceiverToAmountAllowed;
     
-    bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256('supportsInterface(bytes4)'));
     
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;));
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)'));
 
     function() payable {
         etherForOwner += msg.value / 2;
@@ -121,20 +121,20 @@ contract CryptoSprites is ERC721 {
     }
     
     function adjustDefaultSpritePrice (uint _priceMultiplier, uint _priceDivider) onlyOwner {
-        require (_priceMultiplier &gt; 0);
-        require (_priceDivider &gt; 0);
+        require (_priceMultiplier > 0);
+        require (_priceDivider > 0);
         priceMultiplier = _priceMultiplier;
         priceDivider = _priceDivider;
     }
     
     function adjustCut (uint _ownerCut, uint _charityCut) onlyOwner {
-        require (_ownerCut + _charityCut &lt; 51); // Keep this contract honest by allowing the maximum combined cut to be no more than 5% (50/1000) of sales
+        require (_ownerCut + _charityCut < 51); // Keep this contract honest by allowing the maximum combined cut to be no more than 5% (50/1000) of sales
         ownerCut = _ownerCut;
         charityCut = _charityCut;
     }
     
     function adjustFeaturePrice (uint _featurePrice) onlyOwner {
-        require (_featurePrice &gt; 0);
+        require (_featurePrice > 0);
         featurePrice = _featurePrice;
     }
     
@@ -159,8 +159,8 @@ contract CryptoSprites is ERC721 {
             address kittyOwner = KittyCore(KittyCoreAddress).ownerOf(spriteId);
             uint priceIfAny = SaleClockAuction(SaleClockAuctionAddress).getCurrentPrice(spriteId);
             
-            // When featuring a Sprite that hasn&#39;t been traded before, if the original Kitty is for sale, update this Sprite with a price and set forSale = true - as long as msg.sender is the owner of the Kitty. Otherwise it could be that the owner of the Kitty removed the Sprite for sale and a different user could feature the Sprite and have it listed for sale
-            if (priceIfAny &gt; 0 &amp;&amp; msg.sender == kittyOwner) {
+            // When featuring a Sprite that hasn't been traded before, if the original Kitty is for sale, update this Sprite with a price and set forSale = true - as long as msg.sender is the owner of the Kitty. Otherwise it could be that the owner of the Kitty removed the Sprite for sale and a different user could feature the Sprite and have it listed for sale
+            if (priceIfAny > 0 && msg.sender == kittyOwner) {
                 broughtSprites[spriteId].price = priceIfAny * priceMultiplier / priceDivider;
                 broughtSprites[spriteId].forSale = true;
             }
@@ -219,17 +219,17 @@ contract CryptoSprites is ERC721 {
             require (broughtSprites[spriteId].timesTraded == 0);
             require (broughtSprites[spriteId].price == 0);
             
-            // Here we are looking up the price of the Sprite&#39;s corresponding Kitty
+            // Here we are looking up the price of the Sprite's corresponding Kitty
             
             uint priceIfAny = SaleClockAuction(SaleClockAuctionAddress).getCurrentPrice(spriteId);
-            require (priceIfAny &gt; 0); // If the kitten in the CryptoKitties contract isn&#39;t for sale, a Sprite for it won&#39;t be for sale either
+            require (priceIfAny > 0); // If the kitten in the CryptoKitties contract isn't for sale, a Sprite for it won't be for sale either
             
             _ownerCut = ((priceIfAny / 1000) * ownerCut) * priceMultiplier / priceDivider;
             _charityCut = ((priceIfAny / 1000) * charityCut) * priceMultiplier / priceDivider;
             
-            // Crypto Kitty prices decrease every few seconds by a fractional amount, so use &gt;=
+            // Crypto Kitty prices decrease every few seconds by a fractional amount, so use >=
             
-            require (msg.value &gt;= (priceIfAny * priceMultiplier / priceDivider) + _ownerCut + _charityCut);
+            require (msg.value >= (priceIfAny * priceMultiplier / priceDivider) + _ownerCut + _charityCut);
             
             // Get the owner of the Kitty for sale
             
@@ -262,7 +262,7 @@ contract CryptoSprites is ERC721 {
     
     // Also used to adjust price if already for sale
     function listSpriteForSale (uint spriteId, uint price) {
-        require (price &gt; 0);
+        require (price > 0);
         if (broughtSprites[spriteId].owner != msg.sender) {
             require (broughtSprites[spriteId].timesTraded == 0);
             
@@ -282,12 +282,12 @@ contract CryptoSprites is ERC721 {
             require (broughtSprites[spriteId].timesTraded == 0);
             address kittyOwner = KittyCore(KittyCoreAddress).ownerOf(spriteId);
             require (kittyOwner == msg.sender);
-            broughtSprites[spriteId].price = 1; // When a user buys a Sprite Id that isn&#39;t for sale in the buySprite() function (ie. would be a Sprite that&#39;s never been brought before, for a Crypto Kitty that&#39;s for sale), one of the requirements is broughtSprites[spriteId].price == 0, which will be the case by default. By making the price = 1 this will throw and the Sprite won&#39;t be able to be brought
+            broughtSprites[spriteId].price = 1; // When a user buys a Sprite Id that isn't for sale in the buySprite() function (ie. would be a Sprite that's never been brought before, for a Crypto Kitty that's for sale), one of the requirements is broughtSprites[spriteId].price == 0, which will be the case by default. By making the price = 1 this will throw and the Sprite won't be able to be brought
         } 
         broughtSprites[spriteId].forSale = false;
     }
     
-    // The following functions are in case a different contract wants to pull this data, which requires a function returning it (even if the variables are public) since solidity contracts can&#39;t directly pull storage of another contract
+    // The following functions are in case a different contract wants to pull this data, which requires a function returning it (even if the variables are public) since solidity contracts can't directly pull storage of another contract
     
     function featuredSpritesLength() view external returns (uint) {
         return featuredSprites.length;
@@ -309,7 +309,7 @@ contract CryptoSprites is ERC721 {
         return allPurchasedSprites[_index];
     }
     
-    // Will call SaleClockAuction to get the owner of a kitten and check its price (if it&#39;s for sale). We&#39;re calling the getAuction() function in the SaleClockAuction to get the kitty owner (that function returns 5 variables, we only want the owner). ownerOf() in the KittyCore contract won&#39;t return the kitty owner if the kitty is for sale, and this probably won&#39;t be used (including it in case it&#39;s needed to lookup an owner of a kitty not for sale later for any reason)
+    // Will call SaleClockAuction to get the owner of a kitten and check its price (if it's for sale). We're calling the getAuction() function in the SaleClockAuction to get the kitty owner (that function returns 5 variables, we only want the owner). ownerOf() in the KittyCore contract won't return the kitty owner if the kitty is for sale, and this probably won't be used (including it in case it's needed to lookup an owner of a kitty not for sale later for any reason)
     
     function lookupKitty (uint kittyId) view returns (address, uint, address) {
         
@@ -343,9 +343,9 @@ contract CryptoSprites is ERC721 {
     
     // ERC-721 required functions below
     
-    string public name = &#39;Crypto Sprites&#39;;
-    string public symbol = &#39;CRS&#39;;
-    uint8 public decimals = 0; // Sprites are non-fungible, ie. can&#39;t be divided into pieces
+    string public name = 'Crypto Sprites';
+    string public symbol = 'CRS';
+    uint8 public decimals = 0; // Sprites are non-fungible, ie. can't be divided into pieces
     
     function name() public view returns (string) {
         return name;

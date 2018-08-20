@@ -27,20 +27,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -178,21 +178,21 @@ contract ZpoCrowdsaleA {
     // Low level token purchase function
     function buyTokens(address _beneficiary) public payable {
         require(_beneficiary != address(0));
-        require(stage &lt;= NUM_STAGES);
+        require(stage <= NUM_STAGES);
         require(validPurchase());
-        require(now &lt;= ICO_END);
-        require(weiRaised &lt; ICO_CAP4);
-        require(msg.value &gt;= (10 ** 17));
-        require(msg.value &lt;= (1000 ** 18));
+        require(now <= ICO_END);
+        require(weiRaised < ICO_CAP4);
+        require(msg.value >= (10 ** 17));
+        require(msg.value <= (1000 ** 18));
 
         determineCurrentStage();
-        require(stage &gt;= 1 &amp;&amp; stage &lt;= NUM_STAGES);
+        require(stage >= 1 && stage <= NUM_STAGES);
 
         uint256 weiAmount = msg.value;
 
         // calculate token amount to be created
         uint256 tokens = getTokenAmount(weiAmount);
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         // Update totals
         weiRaised = weiRaised.add(weiAmount);
@@ -212,22 +212,22 @@ contract ZpoCrowdsaleA {
         uint256 prevStage = stage;
         checkCap();
 
-        if (stage &lt; 4 &amp;&amp; now &gt;= ICO_START4) {
+        if (stage < 4 && now >= ICO_START4) {
             stage = 4;
             checkNewPeriod(prevStage);
             return;
         }
-        if (stage &lt; 3 &amp;&amp; now &gt;= ICO_START3) {
+        if (stage < 3 && now >= ICO_START3) {
             stage = 3;
             checkNewPeriod(prevStage);
             return;
         }
-        if (stage &lt; 2 &amp;&amp; now &gt;= ICO_START2) {
+        if (stage < 2 && now >= ICO_START2) {
             stage = 2;
             checkNewPeriod(prevStage);
             return;
         }
-        if (stage &lt; 1 &amp;&amp; now &gt;= ICO_START1) {
+        if (stage < 1 && now >= ICO_START1) {
             stage = 1;
             checkNewPeriod(prevStage);
             return;
@@ -235,13 +235,13 @@ contract ZpoCrowdsaleA {
     }
 
     function checkCap() internal {
-        if (weiRaised &gt;= ICO_CAP3) {
+        if (weiRaised >= ICO_CAP3) {
             stage = 4;
         }
-        else if (weiRaised &gt;= ICO_CAP2) {
+        else if (weiRaised >= ICO_CAP2) {
             stage = 3;
         }
-        else if (weiRaised &gt;= ICO_CAP1) {
+        else if (weiRaised >= ICO_CAP1) {
             stage = 2;
         }
     }
@@ -270,9 +270,9 @@ contract ZpoCrowdsaleA {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= ICO_START1 &amp;&amp; now &lt;= ICO_END;
+        bool withinPeriod = now >= ICO_START1 && now <= ICO_END;
         bool nonZeroPurchase = msg.value != 0;
 
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 }

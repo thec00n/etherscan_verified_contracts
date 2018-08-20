@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,12 +47,12 @@ contract Dox {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     constructor() public {
-        symbol = &#39;DOX&#39;;
-        name = &#39;DOX Token&#39;;
+        symbol = 'DOX';
+        name = 'DOX Token';
         decimals = 18;
         totalSupply = 1000000000 * 10**uint(decimals);
         balances[msg.sender] = totalSupply;

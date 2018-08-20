@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -100,16 +100,16 @@ contract StandardToken is ERC20Protocol {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -119,8 +119,8 @@ contract StandardToken is ERC20Protocol {
 
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -149,19 +149,19 @@ contract StandardToken is ERC20Protocol {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 }
 
 /// @title Wanchain Token Contract
 /// For more information about this token sale, please visit https://wanchain.org
-/// @author Cathy - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731012071b0a3304121d101b121a1d5d1c0114">[email&#160;protected]</a>&gt;
+/// @author Cathy - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731012071b0a3304121d101b121a1d5d1c0114">[email protected]</a>>
 contract WanToken is StandardToken {
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public constant name = &quot;WanCoin&quot;;
-    string public constant symbol = &quot;WAN&quot;;
+    string public constant name = "WanCoin";
+    string public constant symbol = "WAN";
     uint public constant decimals = 18;
 
     /// Wanchain total tokens supply
@@ -176,7 +176,7 @@ contract WanToken is StandardToken {
     uint public endTime;
 
     /// Fields that can be changed by functions
-    mapping (address =&gt; uint) public lockedBalances;
+    mapping (address => uint) public lockedBalances;
     /*
      * MODIFIERS
      */
@@ -187,12 +187,12 @@ contract WanToken is StandardToken {
     }
 
     modifier isLaterThan (uint x){
-        assert(now &gt; x);
+        assert(now > x);
         _;
     }
 
     modifier maxWanTokenAmountNotReached (uint amount){
-        assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+        assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
         _;
     }
 
@@ -224,7 +224,7 @@ contract WanToken is StandardToken {
         maxWanTokenAmountNotReached(amount)
         returns (bool)
     {
-        require(now &lt;= endTime);
+        require(now <= endTime);
         lockedBalances[receipent] = lockedBalances[receipent].add(amount);
         totalSupply = totalSupply.add(amount);
         return true;

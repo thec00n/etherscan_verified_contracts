@@ -5,8 +5,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -143,11 +143,11 @@ contract ListingsERC20 is Ownable {
     event ListingCancelled(bytes32 indexed listingId, uint256 dateCancelled);
     event ListingBought(bytes32 indexed listingId, address tokenContractAddress, uint256 price, uint256 amount, uint256 dateBought, address buyer);
 
-    string constant public VERSION = &quot;2.0.0&quot;;
+    string constant public VERSION = "2.0.0";
     uint16 constant public GAS_LIMIT = 4999;
     uint256 public ownerPercentage;
-    mapping (bytes32 =&gt; Listing) public listings;
-    mapping (bytes32 =&gt; uint256) public sold;
+    mapping (bytes32 => Listing) public listings;
+    mapping (bytes32 => uint256) public sold;
     constructor (uint256 percentage) public {
         ownerPercentage = percentage;
     }
@@ -183,10 +183,10 @@ contract ListingsERC20 is Ownable {
     }
 
     function createListing(address tokenContractAddress, uint256 price, uint256 allowance, uint256 dateEnds, uint256 salt) external {
-        require(price &gt; 0, &quot;price less than zero&quot;);
-        require(allowance &gt; 0, &quot;allowance less than zero&quot;);
-        require(dateEnds &gt; 0, &quot;dateEnds less than zero&quot;);
-        require(getBalance(tokenContractAddress, msg.sender) &gt;= allowance, &quot;balance less than allowance&quot;);
+        require(price > 0, "price less than zero");
+        require(allowance > 0, "allowance less than zero");
+        require(dateEnds > 0, "dateEnds less than zero");
+        require(getBalance(tokenContractAddress, msg.sender) >= allowance, "balance less than allowance");
         bytes32 listingId = getHashInternal(tokenContractAddress, price, allowance, dateEnds, salt);
         Listing memory listing = Listing(msg.sender, tokenContractAddress, price, allowance, now, dateEnds);
         listings[listingId] = listing;
@@ -208,24 +208,24 @@ contract ListingsERC20 is Ownable {
         uint256 decimals = getDecimals(listing.tokenContractAddress);
         uint256 factor = 10 ** decimals;
         uint256 sale;
-        if (decimals &gt; 0) {
+        if (decimals > 0) {
             sale = price.mul(amount).div(factor);
         } else {
             sale = price.mul(amount);
         } 
         uint256 allowance = listing.allowance;
         //make sure listing is still available
-        require(now &lt;= listing.dateEnds);
+        require(now <= listing.dateEnds);
         //make sure there are still enough to sell from this listing
-        require(allowance - sold[listingId] &gt;= amount);
+        require(allowance - sold[listingId] >= amount);
         //make sure that the seller still has that amount to sell
-        require(getBalance(contractAddress, seller) &gt;= amount);
+        require(getBalance(contractAddress, seller) >= amount);
         //make sure that the seller still will allow that amount to be sold
-        require(getAllowance(contractAddress, seller, this) &gt;= amount);
+        require(getAllowance(contractAddress, seller, this) >= amount);
         require(msg.value == sale);
         DetailedERC20 tokenContract = DetailedERC20(contractAddress);
         require(tokenContract.transferFrom(seller, msg.sender, amount));
-        if (ownerPercentage &gt; 0) {
+        if (ownerPercentage > 0) {
             seller.transfer(sale - (sale.mul(ownerPercentage).div(10000)));
         } else {
             seller.transfer(sale);

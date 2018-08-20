@@ -68,7 +68,7 @@ contract Admined is Owned {
     // ------------------------------------------------------------------------
     // Mapping of administrators
     // ------------------------------------------------------------------------
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 
     // ------------------------------------------------------------------------
     // Add and delete adminstrator events
@@ -118,7 +118,7 @@ contract DeveryPresaleWhitelist is Admined {
     // ------------------------------------------------------------------------
     // The whitelist of accounts and max contribution
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint) public whitelist;
+    mapping(address => uint) public whitelist;
 
     // ------------------------------------------------------------------------
     // Events
@@ -151,7 +151,7 @@ contract DeveryPresaleWhitelist is Admined {
         require(!sealed);
         require(addresses.length != 0);
         require(addresses.length == max.length);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(addresses[i] != 0x0);
             whitelist[addresses[i]] = max[i];
             Whitelisted(addresses[i], max[i]);
@@ -169,7 +169,7 @@ contract DeveryPresaleWhitelist is Admined {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers - no payable modifier
+    // Don't accept ethers - no payable modifier
     // ------------------------------------------------------------------------
     function () public {
     }

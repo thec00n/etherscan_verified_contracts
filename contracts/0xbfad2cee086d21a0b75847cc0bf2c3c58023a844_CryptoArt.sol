@@ -64,7 +64,7 @@ You acknowledge and agree that in order to withdraw the Reward you first need to
 *
 * 5. Disclaimers
 *
-* A. YOU EXPRESSLY UNDERSTAND AND AGREE THAT YOUR ACCESS TO AND USE OF THE APP IS AT YOUR SOLE RISK, AND THAT THE APP IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMISSIBLE PURSUANT TO APPLICABLE LAW, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS MAKE NO EXPRESS WARRANTIES AND HEREBY DISCLAIM ALL IMPLIED WARRANTIES REGARDING THE APP AND ANY PART OF IT (INCLUDING, WITHOUT LIMITATION, THE SITE, ANY SMART CONTRACT, OR ANY EXTERNAL WEBSITES), INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, CORRECTNESS, ACCURACY, OR RELIABILITY. WITHOUT LIMITING THE GENERALITY OF THE FOREGOING, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS DO NOT REPRESENT OR WARRANT TO YOU THAT: (I) YOUR ACCESS TO OR USE OF THE APP WILL MEET YOUR REQUIREMENTS, (II) YOUR ACCESS TO OR USE OF THE APP WILL BE UNINTERRUPTED, TIMELY, SECURE OR FREE FROM ERROR, (III) USAGE DATA PROVIDED THROUGH THE APP WILL BE ACCURATE, (III) THE APP OR ANY CONTENT, SERVICES, OR FEATURES MADE AVAILABLE ON OR THROUGH THE APP ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS, OR (IV) THAT ANY DATA THAT YOU DISCLOSE WHEN YOU USE THE APP WILL BE SECURE. SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED WARRANTIES IN CONTRACTS WITH CONSUMERS, SO SOME OR ALL OF THE ABOVE EXCLUSIONS MAY NOT APPLY TO YOU.
+* A. YOU EXPRESSLY UNDERSTAND AND AGREE THAT YOUR ACCESS TO AND USE OF THE APP IS AT YOUR SOLE RISK, AND THAT THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMISSIBLE PURSUANT TO APPLICABLE LAW, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS MAKE NO EXPRESS WARRANTIES AND HEREBY DISCLAIM ALL IMPLIED WARRANTIES REGARDING THE APP AND ANY PART OF IT (INCLUDING, WITHOUT LIMITATION, THE SITE, ANY SMART CONTRACT, OR ANY EXTERNAL WEBSITES), INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, CORRECTNESS, ACCURACY, OR RELIABILITY. WITHOUT LIMITING THE GENERALITY OF THE FOREGOING, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS DO NOT REPRESENT OR WARRANT TO YOU THAT: (I) YOUR ACCESS TO OR USE OF THE APP WILL MEET YOUR REQUIREMENTS, (II) YOUR ACCESS TO OR USE OF THE APP WILL BE UNINTERRUPTED, TIMELY, SECURE OR FREE FROM ERROR, (III) USAGE DATA PROVIDED THROUGH THE APP WILL BE ACCURATE, (III) THE APP OR ANY CONTENT, SERVICES, OR FEATURES MADE AVAILABLE ON OR THROUGH THE APP ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS, OR (IV) THAT ANY DATA THAT YOU DISCLOSE WHEN YOU USE THE APP WILL BE SECURE. SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED WARRANTIES IN CONTRACTS WITH CONSUMERS, SO SOME OR ALL OF THE ABOVE EXCLUSIONS MAY NOT APPLY TO YOU.
 *
 * B. YOU ACCEPT THE INHERENT SECURITY RISKS OF PROVIDING INFORMATION AND DEALING ONLINE OVER THE INTERNET, AND AGREE THAT WE HAVE NO LIABILITY OR RESPONSIBILITY FOR ANY BREACH OF SECURITY UNLESS IT IS DUE TO OUR GROSS NEGLIGENCE.
 *
@@ -81,7 +81,7 @@ You acknowledge and agree that in order to withdraw the Reward you first need to
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -138,7 +138,7 @@ contract TimeAware is Ownable {
  */
 contract Withdrawable {
 
-    mapping(address =&gt; uint) private pendingWithdrawals;
+    mapping(address => uint) private pendingWithdrawals;
 
     event Withdrawal(address indexed receiver, uint amount);
     event BalanceChanged(address indexed _address, uint oldBalance, uint newBalance);
@@ -167,7 +167,7 @@ contract Withdrawable {
     */
     function withdraw() external {
         uint amount = getPendingWithdrawal(msg.sender);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         pendingWithdrawals[msg.sender] = 0;
         msg.sender.transfer(amount);
@@ -195,7 +195,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
 
     uint8 public constant WIDTH = 48;
     uint8 public constant HEIGHT = 48;
-    uint32 public constant PIXEL_COUNT = 2304; //WIDTH * HEIGHT doesn&#39;t work for some reason
+    uint32 public constant PIXEL_COUNT = 2304; //WIDTH * HEIGHT doesn't work for some reason
 
     uint32 public constant MAX_CANVAS_COUNT = 1000;
     uint8 public constant MAX_ACTIVE_CANVAS = 12;
@@ -220,13 +220,13 @@ contract CanvasFactory is TimeAware, Withdrawable {
     }
 
     modifier validPixelIndex(uint32 _pixelIndex) {
-        require(_pixelIndex &lt; PIXEL_COUNT);
+        require(_pixelIndex < PIXEL_COUNT);
         _;
     }
 
     /**
-    * @notice   Creates new canvas. There can&#39;t be more canvases then MAX_CANVAS_COUNT.
-    *           There can&#39;t be more unfinished canvases than MAX_ACTIVE_CANVAS.
+    * @notice   Creates new canvas. There can't be more canvases then MAX_CANVAS_COUNT.
+    *           There can't be more unfinished canvases than MAX_ACTIVE_CANVAS.
     */
     function createCanvas() external returns (uint canvasId) {
         return _createCanvasInternal(0x0);
@@ -249,7 +249,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
     }
 
     /**
-    * @notice   Sets pixel. Given canvas can&#39;t be yet finished.
+    * @notice   Sets pixel. Given canvas can't be yet finished.
     */
     function setPixel(uint32 _canvasId, uint32 _index, uint8 _color) external {
         Canvas storage _canvas = _getCanvas(_canvasId);
@@ -269,7 +269,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
         Canvas storage _canvas = _getCanvas(_canvasId);
 
         bool anySet = false;
-        for (uint32 i = 0; i &lt; _indexes.length; i++) {
+        for (uint32 i = 0; i < _indexes.length; i++) {
             Pixel storage _pixel = _canvas.pixels[_indexes[i]];
             if (_pixel.painter == 0x0) {
                 //only allow when pixel is not set
@@ -279,7 +279,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
         }
 
         if (!anySet) {
-            //If didn&#39;t set any pixels - revert to show that transaction failed
+            //If didn't set any pixels - revert to show that transaction failed
             revert();
         }
 
@@ -293,7 +293,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
         Canvas storage canvas = _getCanvas(_canvasId);
         uint8[] memory result = new uint8[](PIXEL_COUNT);
 
-        for (uint32 i = 0; i &lt; PIXEL_COUNT; i++) {
+        for (uint32 i = 0; i < PIXEL_COUNT; i++) {
             result[i] = canvas.pixels[i].color;
         }
 
@@ -345,15 +345,15 @@ contract CanvasFactory is TimeAware, Withdrawable {
     }
 
     function _getCanvas(uint32 _canvasId) internal view returns (Canvas storage) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         return canvases[_canvasId];
     }
 
     function _createCanvasInternal(address _bookedFor) private returns (uint canvasId) {
-        require(canvases.length &lt; MAX_CANVAS_COUNT);
-        require(activeCanvasCount &lt; MAX_ACTIVE_CANVAS);
+        require(canvases.length < MAX_CANVAS_COUNT);
+        require(activeCanvasCount < MAX_ACTIVE_CANVAS);
 
-        uint id = canvases.push(Canvas(STATE_NOT_FINISHED, 0x0, _bookedFor, &quot;&quot;, 0, 0, false)) - 1;
+        uint id = canvases.push(Canvas(STATE_NOT_FINISHED, 0x0, _bookedFor, "", 0, 0, false)) - 1;
 
         emit CanvasCreated(id, _bookedFor);
         activeCanvasCount++;
@@ -372,7 +372,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
     private
     notFinished(_canvasId)
     validPixelIndex(_index) {
-        require(_color &gt; 0);
+        require(_color > 0);
         require(_canvas.bookedFor == 0x0 || _canvas.bookedFor == msg.sender);
         if (_canvas.pixels[_index].painter != 0x0) {
             //it means this pixel has been already set!
@@ -407,12 +407,12 @@ contract CanvasFactory is TimeAware, Withdrawable {
         /**
         * Map of all pixels.
         */
-        mapping(uint32 =&gt; Pixel) pixels;
+        mapping(uint32 => Pixel) pixels;
 
         uint8 state;
 
         /**
-        * Owner of canvas. Canvas doesn&#39;t have an owner until initial bidding ends.
+        * Owner of canvas. Canvas doesn't have an owner until initial bidding ends.
         */
         address owner;
 
@@ -430,7 +430,7 @@ contract CanvasFactory is TimeAware, Withdrawable {
         */
         uint32 paintedPixelsCount;
 
-        mapping(address =&gt; uint32) addressToCount;
+        mapping(address => uint32) addressToCount;
 
 
         /**
@@ -446,12 +446,12 @@ contract CanvasFactory is TimeAware, Withdrawable {
         /**
         * @dev if address has been paid a reward for drawing.
         */
-        mapping(address =&gt; bool) isAddressPaid;
+        mapping(address => bool) isAddressPaid;
     }
 }
 
 /**
-* @notice   Useful methods to manage canvas&#39; state.
+* @notice   Useful methods to manage canvas' state.
 */
 contract CanvasState is CanvasFactory {
 
@@ -466,13 +466,13 @@ contract CanvasState is CanvasFactory {
     }
 
     /**
-    * Ensures that canvas&#39;s saved state is STATE_OWNED.
+    * Ensures that canvas's saved state is STATE_OWNED.
     *
     * Because initial bidding is based on current time, we had to find a way to
     * trigger saving new canvas state. Every transaction (not a call) that
     * requires state owned should use it modifier as a last one.
     *
-    * Thank&#39;s to that, we can make sure, that canvas state gets updated.
+    * Thank's to that, we can make sure, that canvas state gets updated.
     */
     modifier forceOwned(uint32 _canvasId) {
         Canvas storage canvas = _getCanvas(_canvasId);
@@ -489,16 +489,16 @@ contract CanvasState is CanvasFactory {
         Canvas storage canvas = _getCanvas(_canvasId);
         if (canvas.state != STATE_INITIAL_BIDDING) {
             //if state is set to owned, or not finished
-            //it means it doesn&#39;t depend on current time -
-            //we don&#39;t have to double check
+            //it means it doesn't depend on current time -
+            //we don't have to double check
             return canvas.state;
         }
 
         //state initial bidding - as that state depends on
         //current time, we have to double check if initial bidding
-        //hasn&#39;t finish yet
+        //hasn't finish yet
         uint finishTime = canvas.initialBiddingFinishTime;
-        if (finishTime == 0 || finishTime &gt; getTime()) {
+        if (finishTime == 0 || finishTime > getTime()) {
             return STATE_INITIAL_BIDDING;
 
         } else {
@@ -507,7 +507,7 @@ contract CanvasState is CanvasFactory {
     }
 
     /**
-    * @notice   Returns all canvas&#39; id for a given state.
+    * @notice   Returns all canvas' id for a given state.
     */
     function getCanvasByState(uint8 _state) external view returns (uint32[]) {
         uint size;
@@ -520,7 +520,7 @@ contract CanvasState is CanvasFactory {
         uint32[] memory result = new uint32[](size);
         uint currentIndex = 0;
 
-        for (uint32 i = 0; i &lt; canvases.length; i++) {
+        for (uint32 i = 0; i < canvases.length; i++) {
             if (getCanvasState(i) == _state) {
                 result[currentIndex] = i;
                 currentIndex++;
@@ -539,7 +539,7 @@ contract CanvasState is CanvasFactory {
     forceOwned(_canvasId)
     {
         bytes memory _strBytes = bytes(_name);
-        require(_strBytes.length &lt;= MAX_CANVAS_NAME_LENGTH);
+        require(_strBytes.length <= MAX_CANVAS_NAME_LENGTH);
 
         Canvas storage _canvas = _getCanvas(_canvasId);
         require(msg.sender == _canvas.owner);
@@ -550,19 +550,19 @@ contract CanvasState is CanvasFactory {
 
     /**
     * @dev  Slices array from start (inclusive) to end (exclusive).
-    *       Doesn&#39;t modify input array.
+    *       Doesn't modify input array.
     */
     function _slice(uint32[] memory _array, uint _start, uint _end) internal pure returns (uint32[]) {
-        require(_start &lt;= _end);
+        require(_start <= _end);
 
-        if (_start == 0 &amp;&amp; _end == _array.length) {
+        if (_start == 0 && _end == _array.length) {
             return _array;
         }
 
         uint size = _end - _start;
         uint32[] memory sliced = new uint32[](size);
 
-        for (uint i = 0; i &lt; size; i++) {
+        for (uint i = 0; i < size; i++) {
             sliced[i] = _array[i + _start];
         }
 
@@ -579,10 +579,10 @@ contract CanvasState is CanvasFactory {
 contract RewardableCanvas is CanvasState {
 
     /**
-    * As it&#39;s hard to operate on floating numbers, each fee will be calculated like this:
-    * PRICE * COMMISSION / COMMISSION_DIVIDER. It&#39;s impossible to keep float number here.
+    * As it's hard to operate on floating numbers, each fee will be calculated like this:
+    * PRICE * COMMISSION / COMMISSION_DIVIDER. It's impossible to keep float number here.
     *
-    * ufixed COMMISSION = 0.039; may seem useful, but it&#39;s not possible to multiply ufixed * uint.
+    * ufixed COMMISSION = 0.039; may seem useful, but it's not possible to multiply ufixed * uint.
     */
     uint public constant COMMISSION = 39;
     uint public constant TRADE_REWARD = 61;
@@ -592,10 +592,10 @@ contract RewardableCanvas is CanvasState {
     event CommissionAddedToWithdrawals(uint32 indexed canvasId, uint amount);
     event FeesUpdated(uint32 indexed canvasId, uint totalCommissions, uint totalReward);
 
-    mapping(uint =&gt; FeeHistory) private canvasToFeeHistory;
+    mapping(uint => FeeHistory) private canvasToFeeHistory;
 
     /**
-    * @notice   Adds all unpaid commission to the owner&#39;s pending withdrawals.
+    * @notice   Adds all unpaid commission to the owner's pending withdrawals.
     *           Ethers to withdraw has to be greater that 0, otherwise transaction
     *           will be rejected.
     *           Can be called only by the owner.
@@ -608,7 +608,7 @@ contract RewardableCanvas is CanvasState {
         FeeHistory storage _history = _getFeeHistory(_canvasId);
         uint _toWithdraw = calculateCommissionToWithdraw(_canvasId);
         uint _lastIndex = _history.commissionCumulative.length - 1;
-        require(_toWithdraw &gt; 0);
+        require(_toWithdraw > 0);
 
         _history.paidCommissionIndex = _lastIndex;
         addPendingWithdrawal(owner, _toWithdraw);
@@ -629,7 +629,7 @@ contract RewardableCanvas is CanvasState {
         uint _toWithdraw;
         (_toWithdraw,) = calculateRewardToWithdraw(_canvasId, msg.sender);
         uint _lastIndex = _history.rewardsCumulative.length - 1;
-        require(_toWithdraw &gt; 0);
+        require(_toWithdraw > 0);
 
         _history.addressToPaidRewardIndex[msg.sender] = _lastIndex;
         addPendingWithdrawal(msg.sender, _toWithdraw);
@@ -650,8 +650,8 @@ contract RewardableCanvas is CanvasState {
         uint _lastIndex = _history.commissionCumulative.length - 1;
         uint _lastPaidIndex = _history.paidCommissionIndex;
 
-        if (_lastIndex &lt; 0) {
-            //means that FeeHistory hasn&#39;t been created yet
+        if (_lastIndex < 0) {
+            //means that FeeHistory hasn't been created yet
             return 0;
         }
 
@@ -659,7 +659,7 @@ contract RewardableCanvas is CanvasState {
         uint _lastWithdrawn = _history.commissionCumulative[_lastPaidIndex];
 
         uint _toWithdraw = _commissionSum - _lastWithdrawn;
-        require(_toWithdraw &lt;= _commissionSum);
+        require(_toWithdraw <= _commissionSum);
 
         return _toWithdraw;
     }
@@ -682,8 +682,8 @@ contract RewardableCanvas is CanvasState {
         uint _lastPaidIndex = _history.addressToPaidRewardIndex[_address];
         uint _pixelsOwned = getPaintedPixelsCountByAddress(_address, _canvasId);
 
-        if (_lastIndex &lt; 0) {
-            //means that FeeHistory hasn&#39;t been created yet
+        if (_lastIndex < 0) {
+            //means that FeeHistory hasn't been created yet
             return (0, _pixelsOwned);
         }
 
@@ -701,12 +701,12 @@ contract RewardableCanvas is CanvasState {
     *           It is not a commission to be withdrawn!
     */
     function getTotalCommission(uint32 _canvasId) external view returns (uint) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         FeeHistory storage _history = canvasToFeeHistory[_canvasId];
         uint _lastIndex = _history.commissionCumulative.length - 1;
 
-        if (_lastIndex &lt; 0) {
-            //means that FeeHistory hasn&#39;t been created yet
+        if (_lastIndex < 0) {
+            //means that FeeHistory hasn't been created yet
             return 0;
         }
 
@@ -718,7 +718,7 @@ contract RewardableCanvas is CanvasState {
     *           paid (added to pending withdrawals).
     */
     function getCommissionWithdrawn(uint32 _canvasId) external view returns (uint) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         FeeHistory storage _history = canvasToFeeHistory[_canvasId];
         uint _index = _history.paidCommissionIndex;
 
@@ -729,12 +729,12 @@ contract RewardableCanvas is CanvasState {
     * @notice   Returns all rewards charged for the given canvas.
     */
     function getTotalRewards(uint32 _canvasId) external view returns (uint) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         FeeHistory storage _history = canvasToFeeHistory[_canvasId];
         uint _lastIndex = _history.rewardsCumulative.length - 1;
 
-        if (_lastIndex &lt; 0) {
-            //means that FeeHistory hasn&#39;t been created yet
+        if (_lastIndex < 0) {
+            //means that FeeHistory hasn't been created yet
             return 0;
         }
 
@@ -746,7 +746,7 @@ contract RewardableCanvas is CanvasState {
     *           paid (added to pending withdrawals) by a given address.
     */
     function getRewardsWithdrawn(uint32 _canvasId, address _address) external view returns (uint) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         FeeHistory storage _history = canvasToFeeHistory[_canvasId];
         uint _index = _history.addressToPaidRewardIndex[_address];
         uint _pixelsOwned = getPaintedPixelsCountByAddress(_address, _canvasId);
@@ -777,7 +777,7 @@ contract RewardableCanvas is CanvasState {
     /**
     * @notice   Calculates how the money from selling canvas will be split.
     *
-    * @return  Commission, sum of painters&#39; rewards and a seller&#39;s profit.
+    * @return  Commission, sum of painters' rewards and a seller's profit.
     */
     function splitTrade(uint _amount) public pure returns (
         uint commission,
@@ -794,13 +794,13 @@ contract RewardableCanvas is CanvasState {
         uint _sellerProfit = _amount - _commission - _paintersReward;
 
         //check for the underflow
-        require(_sellerProfit &lt; _amount);
+        require(_sellerProfit < _amount);
 
         return (_commission, _paintersReward, _sellerProfit);
     }
 
     /**
-    * @notice   Adds a bid to fee history. Doesn&#39;t perform any checks if the bid is valid!
+    * @notice   Adds a bid to fee history. Doesn't perform any checks if the bid is valid!
     * @return  Returns how the bid was split. Same value as _splitBid function.
     */
     function _registerBid(uint32 _canvasId, uint _amount) internal stateBidding(_canvasId) returns (
@@ -813,7 +813,7 @@ contract RewardableCanvas is CanvasState {
 
         FeeHistory storage _history = _getFeeHistory(_canvasId);
         // We have to save the difference between new bid and a previous one.
-        // Because we save data as cumulative sum, it&#39;s enough to save
+        // Because we save data as cumulative sum, it's enough to save
         // only the new value.
 
         _history.commissionCumulative.push(_commission);
@@ -823,7 +823,7 @@ contract RewardableCanvas is CanvasState {
     }
 
     /**
-    * @notice   Adds a bid to fee history. Doesn&#39;t perform any checks if the bid is valid!
+    * @notice   Adds a bid to fee history. Doesn't perform any checks if the bid is valid!
     * @return  Returns how the trade ethers were split. Same value as splitTrade function.
     */
     function _registerTrade(uint32 _canvasId, uint _amount)
@@ -856,7 +856,7 @@ contract RewardableCanvas is CanvasState {
     * @notice   Gets a fee history of a canvas.
     */
     function _getFeeHistory(uint32 _canvasId) private view returns (FeeHistory storage) {
-        require(_canvasId &lt; canvases.length);
+        require(_canvasId < canvases.length);
         //fee history entry is created in onCanvasCreated() method.
 
         FeeHistory storage _history = canvasToFeeHistory[_canvasId];
@@ -867,7 +867,7 @@ contract RewardableCanvas is CanvasState {
         uint _lastValue = _array[_array.length - 1];
         uint _newValue = _lastValue + _value;
         //overflow protection
-        require(_newValue &gt;= _lastValue);
+        require(_newValue >= _lastValue);
         return _array.push(_newValue);
     }
 
@@ -898,7 +898,7 @@ contract RewardableCanvas is CanvasState {
         /**
         * Mapping showing what rewards has been already paid.
         */
-        mapping(address =&gt; uint) addressToPaidRewardIndex;
+        mapping(address => uint) addressToPaidRewardIndex;
 
     }
 
@@ -911,8 +911,8 @@ contract BiddableCanvas is RewardableCanvas {
 
     uint public constant BIDDING_DURATION = 48 hours;
 
-    mapping(uint32 =&gt; Bid) bids;
-    mapping(address =&gt; uint32) addressToCount;
+    mapping(uint32 => Bid) bids;
+    mapping(address => uint32) addressToCount;
 
     uint public minimumBidAmount = 0.1 ether;
 
@@ -926,11 +926,11 @@ contract BiddableCanvas is RewardableCanvas {
         Canvas storage canvas = _getCanvas(_canvasId);
         Bid storage oldBid = bids[_canvasId];
 
-        if (msg.value &lt; minimumBidAmount || msg.value &lt;= oldBid.amount) {
+        if (msg.value < minimumBidAmount || msg.value <= oldBid.amount) {
             revert();
         }
 
-        if (oldBid.bidder != 0x0 &amp;&amp; oldBid.amount &gt; 0) {
+        if (oldBid.bidder != 0x0 && oldBid.amount > 0) {
             //return old bidder his money
             addPendingWithdrawal(oldBid.bidder, oldBid.amount);
         }
@@ -996,8 +996,8 @@ contract BiddableCanvas is RewardableCanvas {
 */
 contract CanvasMarket is BiddableCanvas {
 
-    mapping(uint32 =&gt; SellOffer) canvasForSale;
-    mapping(uint32 =&gt; BuyOffer) buyOffers;
+    mapping(uint32 => SellOffer) canvasForSale;
+    mapping(uint32 => BuyOffer) buyOffers;
 
     event CanvasOfferedForSale(uint32 indexed canvasId, uint minPrice, address indexed from, address indexed to);
     event SellOfferCancelled(uint32 indexed canvasId, uint minPrice, address indexed from, address indexed to);
@@ -1032,9 +1032,9 @@ contract CanvasMarket is BiddableCanvas {
         SellOffer memory sellOffer = canvasForSale[_canvasId];
 
         require(msg.sender != canvas.owner);
-        //don&#39;t sell for the owner
+        //don't sell for the owner
         require(sellOffer.isForSale);
-        require(msg.value &gt;= sellOffer.minPrice);
+        require(msg.value >= sellOffer.minPrice);
         require(sellOffer.seller == canvas.owner);
         //seller is no longer owner
         require(sellOffer.onlySellTo == 0x0 || sellOffer.onlySellTo == msg.sender);
@@ -1057,7 +1057,7 @@ contract CanvasMarket is BiddableCanvas {
         BuyOffer memory offer = buyOffers[_canvasId];
         if (offer.buyer == msg.sender) {
             buyOffers[_canvasId] = BuyOffer(false, 0x0, 0);
-            if (offer.amount &gt; 0) {
+            if (offer.amount > 0) {
                 //refund offer
                 addPendingWithdrawal(offer.buyer, offer.amount);
             }
@@ -1102,9 +1102,9 @@ contract CanvasMarket is BiddableCanvas {
 
         require(canvas.owner != msg.sender);
         require(canvas.owner != 0x0);
-        require(msg.value &gt; existing.amount);
+        require(msg.value > existing.amount);
 
-        if (existing.amount &gt; 0) {
+        if (existing.amount > 0) {
             //refund previous buy offer.
             addPendingWithdrawal(existing.buyer, existing.amount);
         }
@@ -1122,7 +1122,7 @@ contract CanvasMarket is BiddableCanvas {
         require(offer.buyer == msg.sender);
 
         buyOffers[_canvasId] = BuyOffer(false, 0x0, 0);
-        if (offer.amount &gt; 0) {
+        if (offer.amount > 0) {
             //refund offer
             addPendingWithdrawal(offer.buyer, offer.amount);
         }
@@ -1141,9 +1141,9 @@ contract CanvasMarket is BiddableCanvas {
 
         BuyOffer memory offer = buyOffers[_canvasId];
         require(offer.hasOffer);
-        require(offer.amount &gt; 0);
+        require(offer.amount > 0);
         require(offer.buyer != 0x0);
-        require(offer.amount &gt;= _minPrice);
+        require(offer.amount >= _minPrice);
 
         uint toTransfer;
         (, ,toTransfer) = _registerTrade(_canvasId, offer.amount);
@@ -1206,7 +1206,7 @@ contract CanvasMarket is BiddableCanvas {
 
         require(canvas.owner == msg.sender);
         require(oldOffer.isForSale);
-        //don&#39;t allow to cancel if there is no offer
+        //don't allow to cancel if there is no offer
 
         canvasForSale[_canvasId] = SellOffer(false, msg.sender, 0, 0x0);
 
@@ -1238,7 +1238,7 @@ contract CryptoArt is CanvasMarket {
         uint32[] memory result = new uint32[](canvases.length);
         uint currentIndex = 0;
 
-        for (uint32 i = 0; i &lt; canvases.length; i++) {
+        for (uint32 i = 0; i < canvases.length; i++) {
             if (getCanvasState(i) == STATE_OWNED) {
                 Canvas storage canvas = _getCanvas(i);
                 if (canvas.owner == _owner) {
@@ -1252,7 +1252,7 @@ contract CryptoArt is CanvasMarket {
     }
 
     /**
-    * @notice   Returns array of canvas&#39;s ids. Returned canvases have sell offer.
+    * @notice   Returns array of canvas's ids. Returned canvases have sell offer.
     *           If includePrivateOffers is true, includes offers that are targeted
     *           only to one specified address.
     */
@@ -1260,9 +1260,9 @@ contract CryptoArt is CanvasMarket {
         uint32[] memory result = new uint32[](canvases.length);
         uint currentIndex = 0;
 
-        for (uint32 i = 0; i &lt; canvases.length; i++) {
+        for (uint32 i = 0; i < canvases.length; i++) {
             SellOffer storage offer = canvasForSale[i];
-            if (offer.isForSale &amp;&amp; (includePrivateOffers || offer.onlySellTo == 0x0)) {
+            if (offer.isForSale && (includePrivateOffers || offer.onlySellTo == 0x0)) {
                 result[currentIndex] = i;
                 currentIndex++;
             }
@@ -1272,14 +1272,14 @@ contract CryptoArt is CanvasMarket {
     }
 
     /**
-    * @notice   Returns array of all the owners of all of pixels. If some pixel hasn&#39;t
+    * @notice   Returns array of all the owners of all of pixels. If some pixel hasn't
     *           been painted yet, 0x0 address will be returned.
     */
     function getCanvasPainters(uint32 _canvasId) external view returns (address[]) {
         Canvas storage canvas = _getCanvas(_canvasId);
         address[] memory result = new address[](PIXEL_COUNT);
 
-        for (uint32 i = 0; i &lt; PIXEL_COUNT; i++) {
+        for (uint32 i = 0; i < PIXEL_COUNT; i++) {
             result[i] = canvas.pixels[i].painter;
         }
 

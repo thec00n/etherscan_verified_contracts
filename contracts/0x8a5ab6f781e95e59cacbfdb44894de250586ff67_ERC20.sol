@@ -8,8 +8,8 @@ contract ERC20 {
     uint8 public decimals = 2;
     uint256 public totalSupply;
     address public owner;
-    mapping (address =&gt; uint256) public balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -30,8 +30,8 @@ contract ERC20 {
 
     function _transfer (address _from, address _to, uint256 _value) internal {
         require(_to != 0x0);
-        require(balance[_from] &gt;= _value);
-        require(balance[_to] + _value &gt; balance[_to]);
+        require(balance[_from] >= _value);
+        require(balance[_to] + _value > balance[_to]);
         uint prev_balances = balance[_from] + balance[_to];
         balance[_from] -= _value;
         balance[_to] += _value;
@@ -50,14 +50,14 @@ contract ERC20 {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
     }
     
     function burn(uint256 _value) public returns (bool success) {
-        require(balance[msg.sender] &gt;= _value); 
+        require(balance[msg.sender] >= _value); 
         balance[msg.sender] -= _value;
         totalSupply -= _value; 
         Burn(msg.sender, _value);
@@ -65,8 +65,8 @@ contract ERC20 {
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balance[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]); 
+        require(balance[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]); 
         balance[_from] -= _value;
         allowance[_from][msg.sender] -= _value; 
         totalSupply -= _value; 

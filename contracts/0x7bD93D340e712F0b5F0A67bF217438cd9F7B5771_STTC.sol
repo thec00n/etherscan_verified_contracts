@@ -39,8 +39,8 @@ contract TokenDemo is Token,owned {
     string public name;                  
     uint8 public decimals;              
     string public symbol;            
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     constructor(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) public {
     totalSupply = _initialAmount * 10 ** uint256(_decimalUnits);        
@@ -52,7 +52,7 @@ contract TokenDemo is Token,owned {
     }
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         require(_to != 0x0);
         uint previousBalances = balances[msg.sender] + balances[_to];
         balances[msg.sender] -= _value;
@@ -65,7 +65,7 @@ contract TokenDemo is Token,owned {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns 
     (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
@@ -92,7 +92,7 @@ contract TokenDemo is Token,owned {
 
 
 contract STTC is TokenDemo{
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     event FrozenFunds(address target, bool frozen);
     event Burn(address indexed from, uint256 value);
@@ -104,7 +104,7 @@ contract STTC is TokenDemo{
       string tokenSymbol
     ) TokenDemo (initialSupply, tokenName, decimalUnits,tokenSymbol) public {}
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         require(_to != 0x0);
         require(!frozenAccount[msg.sender]);
         require(!frozenAccount[_to]);

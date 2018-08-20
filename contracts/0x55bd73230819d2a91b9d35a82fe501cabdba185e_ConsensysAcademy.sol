@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 contract ConsensysAcademy{
-    mapping(address=&gt;bytes32) public names;
+    mapping(address=>bytes32) public names;
     address[] public addresses;
     
     modifier onlyUnique(){

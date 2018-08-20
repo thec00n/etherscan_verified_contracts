@@ -12,20 +12,20 @@ library SafeMath {
   }
   
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,16 +55,16 @@ contract Token {
 contract ALLYToken is Token {
 
     /* total tokens */
-    string  public name = &quot;ALLY&quot;;
-    string  public symbol = &quot;ALLY&quot;;
+    string  public name = "ALLY";
+    string  public symbol = "ALLY";
     uint8   public decimals = 18;
     uint256 public totalSupply = 990000000 * 10 ** uint256(decimals);
     address public owner;
 
     /*  balance collections  */
-    mapping (address =&gt; uint256)  balances;
+    mapping (address => uint256)  balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256))  public allowance;
+    mapping (address => mapping (address => uint256))  public allowance;
 
     function ALLYToken() public {
         owner = msg.sender;
@@ -82,7 +82,7 @@ contract ALLYToken is Token {
 
     /* transfer token from _from to  _to */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(allowance[_from][msg.sender] >= _value);
         _transfer(_from, _to, _value);
         allowance[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
@@ -90,12 +90,12 @@ contract ALLYToken is Token {
     }
 
     /**
-     * transfer value token to &quot;_to&quot;
+     * transfer value token to "_to"
      */
     function _transfer(address _from, address _to, uint256 _value) internal {
-       require(_value &gt; 0x0);
-       require(balances[_from] &gt;= _value);
-       require(balances[_to] + _value &gt; balances[_to]);
+       require(_value > 0x0);
+       require(balances[_from] >= _value);
+       require(balances[_to] + _value > balances[_to]);
        uint previousBalances = SafeMath.add(balances[_from], balances[_to]);
        balances[_from] = SafeMath.sub(balances[_from], _value);                   
        balances[_to] = SafeMath.add(balances[_to], _value); 

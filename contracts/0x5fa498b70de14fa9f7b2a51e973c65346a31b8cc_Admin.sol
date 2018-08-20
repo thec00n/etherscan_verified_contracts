@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 contract Admin {
 
     address public owner;
-    mapping(address =&gt; bool) public AdminList;
+    mapping(address => bool) public AdminList;
     
     function Test() public returns (uint256 _balance) {
             

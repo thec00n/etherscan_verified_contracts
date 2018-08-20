@@ -1,13 +1,13 @@
 pragma solidity ^0.4.8;
 
-///address -&gt; uint256 mapping.
+///address -> uint256 mapping.
 library IterableMapping
 {
     struct IndexValue { uint keyIndex; uint value; }
     struct KeyFlag { address key; bool deleted; }
     struct itmap
     {
-        mapping(address =&gt; IndexValue) data;
+        mapping(address => IndexValue) data;
         KeyFlag[] keys;
         uint size;
     }
@@ -16,7 +16,7 @@ library IterableMapping
     {
         uint keyIndex = self.data[key].keyIndex;
         self.data[key].value = value;
-        if (keyIndex &gt; 0)
+        if (keyIndex > 0)
             return true;
         else
         {
@@ -38,7 +38,7 @@ library IterableMapping
     }
     function contains(itmap storage self, address key) internal returns (bool)
     {
-        return self.data[key].keyIndex &gt; 0;
+        return self.data[key].keyIndex > 0;
     }
     function iterate_start(itmap storage self) internal returns (uint keyIndex)
     {
@@ -46,12 +46,12 @@ library IterableMapping
     }
     function iterate_valid(itmap storage self, uint keyIndex) internal returns (bool)
     {
-        return keyIndex &lt; self.keys.length;
+        return keyIndex < self.keys.length;
     }
     function iterate_next(itmap storage self, uint keyIndex) internal returns (uint r_keyIndex)
     {
         keyIndex++;
-        while (keyIndex &lt; self.keys.length &amp;&amp; self.keys[keyIndex].deleted)
+        while (keyIndex < self.keys.length && self.keys[keyIndex].deleted)
             keyIndex++;
         return keyIndex;
     }
@@ -73,37 +73,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        //assert(b &gt; 0); //Solidity automatically throws when dividing by 0
+        //assert(b > 0); //Solidity automatically throws when dividing by 0
         uint c = a/b;
-        // assert(a == b * c + a% b); //There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a% b); //There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b&lt;=a);
+        assert(b<=a);
         return a-b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
     * dev Fix for eht ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4){
+        if(msg.data.length < size + 4){
             throw;
         }
         _;
@@ -165,7 +165,7 @@ contract ERC20 is ERC20Basic {
 * dev Based on code by FirstBlood:http://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
 **/
 contract StandardToken is BasicToken, ERC20{
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
     event TransShare(address from, address to, uint value);
     event TransferFrom(address from, uint value);
     event Dividends(address from, address to, uint value);
@@ -180,7 +180,7 @@ contract StandardToken is BasicToken, ERC20{
         // allowance to zero by calling approve(_spender, 0) if if it not
         // already 0 to mitigate the race condition described here:
         // https://github.com/ethereum/EIPs/issues/20#issuscomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -219,26 +219,26 @@ contract Ownable {
 
 contract GlobalCoin is Ownable, StandardToken{
     uint256 public decimals = 8;
-    string public name = &quot;GlobalCoin&quot;;
-    string public symbol = &quot;GBC&quot;;
+    string public name = "GlobalCoin";
+    string public symbol = "GBC";
     uint public totalSupply = 1000000000000000;//decimals is 8, so total 1000,0000 e8
     address public dividendAddress = 0x5f21a710b79f9dc41642e68092d487307b34e8ab;//dividend address
     address public burnAddress = 0x58af44aeddf2100a9d0257cbaa670cd3b32b7b3e; //destory address
     uint256 private globalShares = 0;
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; uint256) private vips;
+    mapping (address => uint256) private balances;
+    mapping (address => uint256) private vips;
     using IterableMapping for IterableMapping.itmap;
     IterableMapping.itmap public data;
     using SafeMath for uint256;
 
     modifier noEth() {
-        if (msg.value &lt; 0) {
+        if (msg.value < 0) {
             throw;
         }
         _;
     }
     function() {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             TransferFrom(msg.sender, msg.value);
     }
 
@@ -285,8 +285,8 @@ contract GlobalCoin is Ownable, StandardToken{
     //internal func
     function burn (uint256 amount) internal
     {
-        SafeMath.assert(amount &gt;= 100000000000);
-        if (amount &gt;= 100000000000) {
+        SafeMath.assert(amount >= 100000000000);
+        if (amount >= 100000000000) {
             uint256 _value = amount / 100000000000;
             uint256 _tmp = _value * 100000000000;
             SafeMath.assert(_tmp == amount);
@@ -305,7 +305,7 @@ contract GlobalCoin is Ownable, StandardToken{
     }
     //transfer shares
     function transferShares(address _to, uint _value){
-        SafeMath.assert(vips[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        SafeMath.assert(vips[msg.sender] >= _value && _value > 0);
         var _skey = msg.sender;
         uint _svalue = 0;
         var _tkey = _to;

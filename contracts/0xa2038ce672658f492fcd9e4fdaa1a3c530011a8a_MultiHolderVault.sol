@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -104,7 +104,7 @@ contract ERC20Basic {
 
 /**
  * @title HolderBase
- * @notice HolderBase handles data &amp; funcitons for token or ether holders.
+ * @notice HolderBase handles data & funcitons for token or ether holders.
  * HolderBase contract can distribute only one of ether or token.
  */
 contract HolderBase is Ownable {
@@ -137,21 +137,21 @@ contract HolderBase is Ownable {
     require(!initialized);
     require(holders.length == 0);
     require(_addrs.length != 0);
-    require(_addrs.length &lt;= MAX_HOLDERS);
+    require(_addrs.length <= MAX_HOLDERS);
     require(_addrs.length == _ratios.length);
 
     uint256 accRatio;
 
-    for(uint8 i = 0; i &lt; _addrs.length; i++) {
+    for(uint8 i = 0; i < _addrs.length; i++) {
       if (_addrs[i] != address(0)) {
-        // address will be 0x00 in case of &quot;crowdsale&quot;.
+        // address will be 0x00 in case of "crowdsale".
         holders.push(Holder(_addrs[i], _ratios[i]));
       }
 
       accRatio = accRatio.add(uint256(_ratios[i]));
     }
 
-    require(accRatio &lt;= coeff);
+    require(accRatio <= coeff);
 
     initialized = true;
   }
@@ -162,13 +162,13 @@ contract HolderBase is Ownable {
    * function of RefundVault contract.
    */
   function distribute() internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     uint256 balance = this.balance;
 
-    require(balance &gt; 0, &quot;No ether to distribute&quot;);
+    require(balance > 0, "No ether to distribute");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = balance.mul(uint256(holders[i].ratio)).div(coeff);
 
       holders[i].addr.transfer(holderAmount);
@@ -181,10 +181,10 @@ contract HolderBase is Ownable {
    * @dev Distribute ERC20 token to `holder`s according to ratio.
    */
   function distributeToken(ERC20Basic _token, uint256 _targetTotalSupply) internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = _targetTotalSupply.mul(uint256(holders[i].ratio)).div(coeff);
       deliverTokens(_token, holders[i].addr, holderAmount);
     }
@@ -208,7 +208,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 

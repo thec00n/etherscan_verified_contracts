@@ -58,10 +58,10 @@ contract Token is Owned, Mutex {
     bool live = false;
     address club;
     uint lockedSupply = 0;
-    string public name = &quot;Legends&quot;;
+    string public name = "Legends";
     uint8 public decimals = 8;
-    string public symbol = &quot;LGD&quot;;
-    string public version = &#39;1.1&#39;;
+    string public symbol = "LGD";
+    string public version = '1.1';
     bool transfersOn = false;
 
     modifier onlyInputWords(uint n) {
@@ -90,7 +90,7 @@ contract Token is Owned, Mutex {
     }
 
     function safeAdd(uint a, uint b) returns (uint) {
-        if ((a + b) &lt; a) throw;
+        if ((a + b) < a) throw;
         return (a + b);
     }
 
@@ -112,7 +112,7 @@ contract Token is Owned, Mutex {
     }
 
     /*
-    * Locking is a feature that turns a user&#39;s balances into
+    * Locking is a feature that turns a user's balances into
     * un-issued tokens, taking them out of an account and reducing the supply.
     * Diluting is so named to remind the caller that they are changing the money supply.
         */
@@ -127,7 +127,7 @@ contract Token is Owned, Mutex {
     event Dilution(address, uint);
 
     function dilute(address _destAddr, uint amount) onlyOwner {
-        if (amount &gt; lockedSupply) throw;
+        if (amount > lockedSupply) throw;
 
         Dilution(_destAddr, amount);
 
@@ -164,13 +164,13 @@ contract Token is Owned, Mutex {
     */
 
     function rentOut(uint num) {
-        if (ledger.balanceOf(msg.sender) &lt; num) throw;
+        if (ledger.balanceOf(msg.sender) < num) throw;
         rentalContract.offer(msg.sender, num);
         ledger.tokenTransfer(msg.sender, rentalContract, num);
     }
 
     function claimUnrented() {
-        uint amount = rentalContract.claimBalance(msg.sender); // this should reduce sender&#39;s claimableBalance to 0
+        uint amount = rentalContract.claimBalance(msg.sender); // this should reduce sender's claimableBalance to 0
 
         ledger.tokenTransfer(rentalContract, msg.sender, amount);
     }
@@ -182,7 +182,7 @@ contract Token is Owned, Mutex {
 
     function burn(uint _amount) {
         uint balance = ledger.balanceOf(msg.sender);
-        if (_amount &gt; balance) throw;
+        if (_amount > balance) throw;
 
         ledger.setBalance(msg.sender, balance - _amount);
     }
@@ -192,7 +192,7 @@ contract Token is Owned, Mutex {
     */
     function checkIn(uint _numCheckins) returns(bool) {
         int needed = int(price * ONE* _numCheckins);
-        if (int(ledger.balanceOf(msg.sender)) &gt; needed) {
+        if (int(ledger.balanceOf(msg.sender)) > needed) {
             ledger.changeUsed(msg.sender, needed);
             return true;
         }
@@ -210,7 +210,7 @@ contract Token is Owned, Mutex {
     }
 
     function transfer(address _to, uint _amount) onlyInputWords(2) returns(bool) {
-        if (!transfersOn &amp;&amp; msg.sender != owner) return false;
+        if (!transfersOn && msg.sender != owner) return false;
         if (!ledger.tokenTransfer(msg.sender, _to, _amount)) { return false; }
 
         Transfer(msg.sender, _to, _amount);
@@ -218,7 +218,7 @@ contract Token is Owned, Mutex {
     }
 
     function transferFrom(address _from, address _to, uint _amount) onlyInputWords(3) returns (bool) {
-        if (!transfersOn &amp;&amp; msg.sender != owner) return false;
+        if (!transfersOn && msg.sender != owner) return false;
         if (! ledger.tokenTransferFrom(msg.sender, _from, _to, _amount) ) { return false;}
 
         Transfer(msg.sender, _to, _amount);
@@ -245,13 +245,13 @@ contract Token is Owned, Mutex {
 contract Ledger is Owned {
     uint ONE = 10**8;
     uint preMined = 30000000;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; uint) usedToday;
+    mapping (address => uint) balances;
+    mapping (address => uint) usedToday;
 
-    mapping (address =&gt; bool) seenHere;
+    mapping (address => bool) seenHere;
     address[] public seenHereA;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     address token;
     uint public totalSupply = 0;
 
@@ -270,13 +270,13 @@ contract Ledger is Owned {
     }
 
     modifier onlyTokenOrOwner {
-        if (msg.sender != token &amp;&amp; msg.sender != owner) throw;
+        if (msg.sender != token && msg.sender != owner) throw;
         _;
     }
 
     function tokenTransfer(address _from, address _to, uint amount) onlyToken returns(bool) {
-        if (amount &gt; balances[_from]) return false;
-        if ((balances[_to] + amount) &lt; balances[_to]) return false;
+        if (amount > balances[_from]) return false;
+        if ((balances[_to] + amount) < balances[_to]) return false;
         if (amount == 0) { return false; }
 
         balances[_from] -= amount;
@@ -291,11 +291,11 @@ contract Ledger is Owned {
     }
 
     function tokenTransferFrom(address _sender, address _from, address _to, uint amount) onlyToken returns(bool) {
-        if (allowed[_from][_sender] &lt;= amount) return false;
-        if (amount &gt; balanceOf(_from)) return false;
+        if (allowed[_from][_sender] <= amount) return false;
+        if (amount > balanceOf(_from)) return false;
         if (amount == 0) return false;
 
-        if ((balances[_to] + amount) &lt; amount) return false;
+        if ((balances[_to] + amount) < amount) return false;
 
         balances[_from] -= amount;
         balances[_to] += amount;
@@ -317,7 +317,7 @@ contract Ledger is Owned {
 
     function resetUsedToday(uint8 startI, uint8 numTimes) onlyTokenOrOwner returns(uint8) {
         uint8 numDeleted;
-        for (uint i = 0; i &lt; numTimes &amp;&amp; i + startI &lt; seenHereA.length; i++) {
+        for (uint i = 0; i < numTimes && i + startI < seenHereA.length; i++) {
             if (usedToday[seenHereA[i+startI]] != 0) {
                 delete usedToday[seenHereA[i+startI]];
                 numDeleted++;
@@ -327,8 +327,8 @@ contract Ledger is Owned {
     }
 
     function balanceOf(address _addr) constant returns (uint) {
-        // don&#39;t forget to subtract usedToday
-        if (usedToday[_addr] &gt;= balances[_addr]) { return 0;}
+        // don't forget to subtract usedToday
+        if (usedToday[_addr] >= balances[_addr]) { return 0;}
         return balances[_addr] - usedToday[_addr];
     }
 
@@ -349,14 +349,14 @@ contract Ledger is Owned {
     }
 
     function reduceTotalSupply(uint amount) onlyToken {
-        if (amount &gt; totalSupply) throw;
+        if (amount > totalSupply) throw;
 
         totalSupply -= amount;
     }
 
     function setBalance(address _addr, uint amount) onlyTokenOrOwner {
         if (balances[_addr] == amount) { return; }
-        if (balances[_addr] &lt; amount) {
+        if (balances[_addr] < amount) {
             // increasing totalSupply
             uint increase = amount - balances[_addr];
             totalSupply += increase;

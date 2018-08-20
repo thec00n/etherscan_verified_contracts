@@ -28,7 +28,7 @@ contract StackyGame {
     
     function enter() {
         // Maximum of 1 ether allowed
-        if (msg.value &gt; 1 ether) {
+        if (msg.value > 1 ether) {
             msg.sender.send(msg.value);
             return;
         }
@@ -50,7 +50,7 @@ contract StackyGame {
         }
 
 	    // if there are enough ether on the balance we can pay out to an earlier participant
-        if (balance &gt; participants[payoutIdx].amount * 2) {
+        if (balance > participants[payoutIdx].amount * 2) {
             uint transactionAmount = 2 * (participants[payoutIdx].amount - participants[payoutIdx].amount / 20);
             participants[payoutIdx].etherAddress.send(transactionAmount);
 

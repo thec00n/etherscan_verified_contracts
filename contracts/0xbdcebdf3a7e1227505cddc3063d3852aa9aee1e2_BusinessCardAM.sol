@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 
 contract BusinessCardAM {
     
-    mapping (bytes32 =&gt; string) variables;
+    mapping (bytes32 => string) variables;
     
     function setVar(string key, string value) {
         variables[sha3(key)] = value;

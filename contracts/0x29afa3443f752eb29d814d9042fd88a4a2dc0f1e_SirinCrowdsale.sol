@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -148,7 +148,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -199,7 +199,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -244,7 +244,7 @@ contract LimitedTransferToken is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -255,8 +255,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -270,7 +270,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -305,7 +305,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -477,7 +477,7 @@ contract LimitedTransferBancorSmartToken is MintableToken, ISmartToken, LimitedT
 
 
 /**
-  A Token which is &#39;Bancor&#39; compatible and can mint new tokens and pause token-transfer functionality
+  A Token which is 'Bancor' compatible and can mint new tokens and pause token-transfer functionality
 */
 contract SirinSmartToken is LimitedTransferBancorSmartToken {
 
@@ -485,9 +485,9 @@ contract SirinSmartToken is LimitedTransferBancorSmartToken {
     //                                         Members
     // =================================================================================================================
 
-    string public name = &quot;SIRIN&quot;;
+    string public name = "SIRIN";
 
-    string public symbol = &quot;SRN&quot;;
+    string public symbol = "SRN";
 
     uint8 public decimals = 18;
 
@@ -496,7 +496,7 @@ contract SirinSmartToken is LimitedTransferBancorSmartToken {
     // =================================================================================================================
 
     function SirinSmartToken() public {
-        //Apart of &#39;Bancor&#39; computability - triggered when a smart token is deployed
+        //Apart of 'Bancor' computability - triggered when a smart token is deployed
         NewSmartToken(address(this));
     }
 }
@@ -524,8 +524,8 @@ contract RefundVault is Claimable {
     // Refund time frame
     uint256 public constant REFUND_TIME_FRAME = 60 days;
 
-    mapping (address =&gt; uint256) public depositedETH;
-    mapping (address =&gt; uint256) public depositedToken;
+    mapping (address => uint256) public depositedETH;
+    mapping (address => uint256) public depositedToken;
 
     address public etherWallet;
     SirinSmartToken public token;
@@ -568,12 +568,12 @@ contract RefundVault is Claimable {
     }
 
     modifier  isInRefundTimeFrame() {
-        require(refundStartTime &lt;= now &amp;&amp; refundStartTime + REFUND_TIME_FRAME &gt; now);
+        require(refundStartTime <= now && refundStartTime + REFUND_TIME_FRAME > now);
         _;
     }
 
     modifier isRefundTimeFrameExceeded() {
-        require(refundStartTime + REFUND_TIME_FRAME &lt; now);
+        require(refundStartTime + REFUND_TIME_FRAME < now);
         _;
     }
     
@@ -625,11 +625,11 @@ contract RefundVault is Claimable {
         uint256 depositedTokenValue = depositedToken[msg.sender];
         uint256 depositedETHValue = depositedETH[msg.sender];
 
-        require(ETHToRefundAmountWei &lt;= depositedETHValue);
+        require(ETHToRefundAmountWei <= depositedETHValue);
 
         uint256 refundTokens = ETHToRefundAmountWei.mul(depositedTokenValue).div(depositedETHValue);
 
-        assert(refundTokens &gt; 0);
+        assert(refundTokens > 0);
 
         depositedETH[msg.sender] = depositedETHValue.sub(ETHToRefundAmountWei);
         depositedToken[msg.sender] = depositedTokenValue.sub(refundTokens);
@@ -647,16 +647,16 @@ contract RefundVault is Claimable {
         require(tokensToClaim != 0);
         
         address investor = msg.sender;
-        require(depositedToken[investor] &gt; 0);
+        require(depositedToken[investor] > 0);
         
         uint256 depositedTokenValue = depositedToken[investor];
         uint256 depositedETHValue = depositedETH[investor];
 
-        require(tokensToClaim &lt;= depositedTokenValue);
+        require(tokensToClaim <= depositedTokenValue);
 
         uint256 claimedETH = tokensToClaim.mul(depositedETHValue).div(depositedTokenValue);
 
-        assert(claimedETH &gt; 0);
+        assert(claimedETH > 0);
 
         depositedETH[investor] = depositedETHValue.sub(claimedETH);
         depositedToken[investor] = depositedTokenValue.sub(tokensToClaim);
@@ -719,9 +719,9 @@ contract Crowdsale {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, SirinSmartToken _token) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
         require(_token != address(0));
 
@@ -764,14 +764,14 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // @return the crowdsale rate
@@ -797,7 +797,7 @@ contract FinalizableCrowdsale is Crowdsale, Claimable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -826,7 +826,7 @@ contract SirinCrowdsale is FinalizableCrowdsale {
     // =================================================================================================================
     //                                      Constants
     // =================================================================================================================
-    // Max amount of known addresses of which will get SRN by &#39;Grant&#39; method.
+    // Max amount of known addresses of which will get SRN by 'Grant' method.
     //
     // grantees addresses will be SirinLabs wallets addresses.
     // these wallets will contain SRN tokens that will be used for 2 purposes only -
@@ -869,7 +869,7 @@ contract SirinCrowdsale is FinalizableCrowdsale {
 
     //Grantees - used for non-ether and presale bonus token generation
     address[] public presaleGranteesMapKeys;
-    mapping (address =&gt; uint256) public presaleGranteesMap;  //address=&gt;wei token amount
+    mapping (address => uint256) public presaleGranteesMap;  //address=>wei token amount
 
     // The refund vault
     RefundVault public refundVault;
@@ -925,19 +925,19 @@ contract SirinCrowdsale is FinalizableCrowdsale {
     // @return the rate in SRN per 1 ETH according to the time of the tx and the SRN pricing program.
     // @Override
     function getRate() public view returns (uint256) {
-        if (now &lt; (startTime.add(24 hours))) {return 1000;}
-        if (now &lt; (startTime.add(2 days))) {return 950;}
-        if (now &lt; (startTime.add(3 days))) {return 900;}
-        if (now &lt; (startTime.add(4 days))) {return 855;}
-        if (now &lt; (startTime.add(5 days))) {return 810;}
-        if (now &lt; (startTime.add(6 days))) {return 770;}
-        if (now &lt; (startTime.add(7 days))) {return 730;}
-        if (now &lt; (startTime.add(8 days))) {return 690;}
-        if (now &lt; (startTime.add(9 days))) {return 650;}
-        if (now &lt; (startTime.add(10 days))) {return 615;}
-        if (now &lt; (startTime.add(11 days))) {return 580;}
-        if (now &lt; (startTime.add(12 days))) {return 550;}
-        if (now &lt; (startTime.add(13 days))) {return 525;}
+        if (now < (startTime.add(24 hours))) {return 1000;}
+        if (now < (startTime.add(2 days))) {return 950;}
+        if (now < (startTime.add(3 days))) {return 900;}
+        if (now < (startTime.add(4 days))) {return 855;}
+        if (now < (startTime.add(5 days))) {return 810;}
+        if (now < (startTime.add(6 days))) {return 770;}
+        if (now < (startTime.add(7 days))) {return 730;}
+        if (now < (startTime.add(8 days))) {return 690;}
+        if (now < (startTime.add(9 days))) {return 650;}
+        if (now < (startTime.add(10 days))) {return 615;}
+        if (now < (startTime.add(11 days))) {return 580;}
+        if (now < (startTime.add(12 days))) {return 550;}
+        if (now < (startTime.add(13 days))) {return 525;}
 
         return rate;
     }
@@ -951,7 +951,7 @@ contract SirinCrowdsale is FinalizableCrowdsale {
         super.finalization();
 
         // granting bonuses for the pre crowdsale grantees:
-        for (uint256 i = 0; i &lt; presaleGranteesMapKeys.length; i++) {
+        for (uint256 i = 0; i < presaleGranteesMapKeys.length; i++) {
             token.issue(presaleGranteesMapKeys[i], presaleGranteesMap[presaleGranteesMapKeys[i]]);
         }
 
@@ -999,7 +999,7 @@ contract SirinCrowdsale is FinalizableCrowdsale {
 
     // @return true if the crowdsale is active, hence users can buy tokens
     function isActive() public view returns (bool) {
-        return now &gt;= startTime &amp;&amp; now &lt; endTime;
+        return now >= startTime && now < endTime;
     }
 
     // =================================================================================================================
@@ -1011,11 +1011,11 @@ contract SirinCrowdsale is FinalizableCrowdsale {
     // @param _value uint256 The value of the grant in wei token.
     function addUpdateGrantee(address _grantee, uint256 _value) external onlyOwner onlyWhileSale{
         require(_grantee != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Adding new key if not present:
         if (presaleGranteesMap[_grantee] == 0) {
-            require(presaleGranteesMapKeys.length &lt; MAX_TOKEN_GRANTEES);
+            require(presaleGranteesMapKeys.length < MAX_TOKEN_GRANTEES);
             presaleGranteesMapKeys.push(_grantee);
             GrantAdded(_grantee, _value);
         }
@@ -1037,7 +1037,7 @@ contract SirinCrowdsale is FinalizableCrowdsale {
 
         //delete from the array (keys):
         uint256 index;
-        for (uint256 i = 0; i &lt; presaleGranteesMapKeys.length; i++) {
+        for (uint256 i = 0; i < presaleGranteesMapKeys.length; i++) {
             if (presaleGranteesMapKeys[i] == _grantee) {
                 index = i;
                 break;

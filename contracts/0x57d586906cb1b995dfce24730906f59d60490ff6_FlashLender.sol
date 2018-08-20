@@ -24,7 +24,7 @@ contract IBank {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a180f0709052a58">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a180f0709052a58">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -63,8 +63,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -79,9 +79,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -89,7 +89,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -98,7 +98,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,7 +107,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -201,14 +201,14 @@ contract ERC20 is ERC20Basic {
 
   Copyright 2018 Contra Labs Inc.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -218,11 +218,11 @@ contract ERC20 is ERC20Basic {
 pragma solidity 0.4.24;
 
 // @title FlashLender: Borrow from the bank and enforce repayment by the end of transaction execution.
-// @author Rich McAteer &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="57253e343f173a3625353b3279382530">[email&#160;protected]</a>&gt;, Max Wolff &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c9c5dce4c9c5d6c6c8c18acbd6c3">[email&#160;protected]</a>&gt;
+// @author Rich McAteer <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="57253e343f173a3625353b3279382530">[email protected]</a>>, Max Wolff <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c9c5dce4c9c5d6c6c8c18acbd6c3">[email protected]</a>>
 contract FlashLender is ReentrancyGuard, Ownable {
     using SafeMath for uint256;
 
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
     address public bank;
     uint256 public fee;
     
@@ -235,7 +235,7 @@ contract FlashLender is ReentrancyGuard, Ownable {
         uint256 balance = IBank(bank).totalSupplyOf(token);
         uint256 feeAmount = amount.mul(fee).div(10 ** 18); 
         _;
-        require(IBank(bank).totalSupplyOf(token) &gt;= (balance.add(feeAmount)));
+        require(IBank(bank).totalSupplyOf(token) >= (balance.add(feeAmount)));
     }
 
     constructor(address _bank, uint256 _fee) public {
@@ -244,7 +244,7 @@ contract FlashLender is ReentrancyGuard, Ownable {
     }
 
     /**
-    * @dev Borrow from the bank on behalf of an arbitrage contract and execute the arbitrage contract&#39;s callback function.
+    * @dev Borrow from the bank on behalf of an arbitrage contract and execute the arbitrage contract's callback function.
     * @param token Address of the token to borrow. 0x0 for Ether.
     * @param amount Amount to borrow.
     * @param dest Address of the account to receive arbitrage profits.
@@ -263,7 +263,7 @@ contract FlashLender is ReentrancyGuard, Ownable {
     {
         // Borrow from the bank and send to the arbitrageur.
         IBank(bank).borrowFor(token, msg.sender, amount);
-        // Call the arbitrageur&#39;s execute arbitrage method.
+        // Call the arbitrageur's execute arbitrage method.
         return IArbitrage(msg.sender).executeArbitrage(token, amount, dest, data);
     }
 

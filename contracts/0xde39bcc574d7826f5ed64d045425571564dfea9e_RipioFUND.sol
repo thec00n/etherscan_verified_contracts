@@ -18,12 +18,12 @@ contract ERC20 {
 
 contract RipioFUND {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
   // Store the number of times the voters individually voted.
-  mapping (address =&gt; bool) public voters;
-  // Keep track of the &quot;for&quot; votes for the address
+  mapping (address => bool) public voters;
+  // Keep track of the "for" votes for the address
   uint256 public for_votes = 0;
-  // Keep track of the &quot;agaisnt&quot; votes for the address
+  // Keep track of the "agaisnt" votes for the address
   uint256 public agaisnt_votes = 0;
 
 
@@ -48,10 +48,10 @@ contract RipioFUND {
   address constant public creator = 0x9C728ff3Ef531CD2E46aF97c59a809761Ad5c987;
   
   // Allows any user to withdraw his tokens.
-  // Takes the token&#39;s ERC20 address as argument as it is unknown at the time of contract deployment.
+  // Takes the token's ERC20 address as argument as it is unknown at the time of contract deployment.
   //When the devs will send the tokens, you will have to call this function and pass the ERC20 token address of AMBROSUS
   function perform_withdraw(address tokenAddress) {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     
     // Retrieve current token balance of contract.
@@ -61,13 +61,13 @@ contract RipioFUND {
     // Disallow token withdrawals if there are no tokens to withdraw.
     require(contract_token_balance != 0);
       
-    // Store the user&#39;s token balance in a temporary variable.
+    // Store the user's token balance in a temporary variable.
     uint256 tokens_to_withdraw = (balances[msg.sender] * contract_token_balance) / contract_eth_value;
       
     // Update the value of tokens currently held by the contract.
     contract_eth_value -= balances[msg.sender];
       
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
 
     // Send the funds.  Throws on failure to prevent loss of funds.
@@ -78,13 +78,13 @@ contract RipioFUND {
   function refund_me() {
     require(!bought_tokens);
 
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint256 eth_to_withdraw = balances[msg.sender];
       
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
       
-    // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+    // Return the user's funds.  Throws on failure to prevent loss of funds.
     msg.sender.transfer(eth_to_withdraw);
   }
   
@@ -95,18 +95,18 @@ contract RipioFUND {
 
     require(hash_pwd == keccak256(password));
     // We need at least 51% of the votes for the proposed sale address in order to buy
-    require (for_votes &gt; agaisnt_votes);
-    // Throw if the contract balance isn&#39;t between these two limits
-    require(this.balance &gt;= min_required_amount);
-    require(this.balance &lt;= max_amount);
+    require (for_votes > agaisnt_votes);
+    // Throw if the contract balance isn't between these two limits
+    require(this.balance >= min_required_amount);
+    require(this.balance <= max_amount);
 
-    // Disallow buying in if the developer hasn&#39;t set the sale address yet.
+    // Disallow buying in if the developer hasn't set the sale address yet.
     require(sale != 0x0);
     
     // Record that the contract has bought the tokens.
     bought_tokens = true;
     
-    // Record the amount of ETH sent as the contract&#39;s current value.
+    // Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance;
 
     // Transfer all the funds to the crowdsale address.
@@ -124,16 +124,16 @@ contract RipioFUND {
 
   function vote_proposed_address(string string_vote) {
     require(!bought_tokens);
-    // The voter musn&#39;t have voted before
+    // The voter musn't have voted before
     require(!voters[msg.sender]);
-    // Disallow voting for the &quot;void&quot; address
+    // Disallow voting for the "void" address
     require(sale != 0x0);
     // Store the fact that the addy voted
     voters[msg.sender] = true;
-    if (keccak256(string_vote) == keccak256(&quot;yes&quot;)){
+    if (keccak256(string_vote) == keccak256("yes")){
       for_votes += 1;
     }
-    if (keccak256(string_vote) == keccak256(&quot;no&quot;)){
+    if (keccak256(string_vote) == keccak256("no")){
       agaisnt_votes += 1;
     }
   }

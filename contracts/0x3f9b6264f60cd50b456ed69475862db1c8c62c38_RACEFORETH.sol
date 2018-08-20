@@ -12,9 +12,9 @@ contract RACEFORETH {
     // Prevents people from going too fast!
     uint256 public speed_limit = 500 finney;
     
-    // Keep track of everyone&#39;s score
-    mapping (address =&gt; uint256) racerScore;
-    mapping (address =&gt; uint256) racerSpeedLimit;
+    // Keep track of everyone's score
+    mapping (address => uint256) racerScore;
+    mapping (address => uint256) racerSpeedLimit;
     
     uint256 latestTimestamp;
     address owner;
@@ -26,7 +26,7 @@ contract RACEFORETH {
     
     function race() public payable {
         if (racerSpeedLimit[msg.sender] == 0) { racerSpeedLimit[msg.sender] = speed_limit; }
-        require(msg.value &lt;= racerSpeedLimit[msg.sender] &amp;&amp; msg.value &gt; 1 wei);
+        require(msg.value <= racerSpeedLimit[msg.sender] && msg.value > 1 wei);
         
         racerScore[msg.sender] += msg.value;
         racerSpeedLimit[msg.sender] = (racerSpeedLimit[msg.sender] / 2);
@@ -34,7 +34,7 @@ contract RACEFORETH {
         latestTimestamp = now;
     
         // YOU WON
-        if (racerScore[msg.sender] &gt;= SCORE_TO_WIN) {
+        if (racerScore[msg.sender] >= SCORE_TO_WIN) {
             msg.sender.transfer(this.balance);
         }
     }
@@ -46,7 +46,7 @@ contract RACEFORETH {
     // Pull the prize if no one has raced in 3 days :(
     function endRace() public {
         require(msg.sender == owner);
-        require(now &gt; latestTimestamp + 3 days);
+        require(now > latestTimestamp + 3 days);
         
         msg.sender.transfer(this.balance);
     }

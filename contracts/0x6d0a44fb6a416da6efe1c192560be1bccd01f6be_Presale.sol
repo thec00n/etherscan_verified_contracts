@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/ownership/Ownable.sol
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * license: MIT
  */
 contract OwnableSimple {
@@ -43,7 +43,7 @@ contract RandomApi {
     uint64 _seed = 0;
 
     function random(uint64 maxExclusive) public returns (uint64 randomNumber) {
-        // the blockhash of the current block (and future block) is 0 because it doesn&#39;t exist
+        // the blockhash of the current block (and future block) is 0 because it doesn't exist
         _seed = uint64(keccak256(keccak256(block.blockhash(block.number - 1), _seed), block.timestamp));
         return _seed % maxExclusive;
     }
@@ -92,7 +92,7 @@ contract ERC721 is ERC165 {
     function tokenMetadata(uint256 _tokenId) external view returns (string infoUrl);
 }
 
-// Based on strings library by Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4f5c4f4d4640474a6e40415a4a415a00404b5a">[email&#160;protected]</a>&gt;
+// Based on strings library by Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4f5c4f4d4640474a6e40415a4a415a00404b5a">[email protected]</a>>
 // Apache license
 // https://github.com/Arachnid/solidity-stringutils
 library strings {
@@ -103,7 +103,7 @@ library strings {
     
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -141,18 +141,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -164,23 +164,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -252,7 +252,7 @@ contract PausableSimple is OwnableSimple {
 
 // heavily modified from https://github.com/dob/auctionhouse/blob/master/contracts/AuctionHouse.sol
 // license: MIT
-// original author: Doug Petkanics (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b1b0e1f000a050208182b0c060a020745080406">[email&#160;protected]</a>) https://github.com/dob
+// original author: Doug Petkanics (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b1b0e1f000a050208182b0c060a020745080406">[email protected]</a>) https://github.com/dob
 contract PresaleMarket is PausableSimple {
     struct Auction {
         address seller;
@@ -260,7 +260,7 @@ contract PresaleMarket is PausableSimple {
     }
 
     ERC721 public artworkContract;
-    mapping (uint256 =&gt; Auction) artworkIdToAuction;
+    mapping (uint256 => Auction) artworkIdToAuction;
 
     //      0 means everything goes to the seller
     //   1000 means 1%
@@ -275,7 +275,7 @@ contract PresaleMarket is PausableSimple {
     event AuctionConcluded(uint256 _artworkId, uint256 _price, address _buyer);
     event AuctionCancelled(uint256 _artworkId);
 
-    // mapping(address =&gt; uint256[]) public auctionsRunByUser;
+    // mapping(address => uint256[]) public auctionsRunByUser;
     // No need to have a dedicated variable
     // Can be found by
     //  iterate all artwork ids owned by this auction contract
@@ -288,7 +288,7 @@ contract PresaleMarket is PausableSimple {
 
         uint256 artworkCount = 0;
         uint256[] memory allArtworkIds = new uint256[](allArtworkCount);
-        for(uint256 i = 0; i &lt; allArtworkCount; i++) {
+        for(uint256 i = 0; i < allArtworkCount; i++) {
             uint256 artworkId = artworkContract.tokenOfOwnerByIndex(this, i);
             Auction storage auction = artworkIdToAuction[artworkId];
             if(auction.seller == _address) {
@@ -297,7 +297,7 @@ contract PresaleMarket is PausableSimple {
         }
 
         uint256[] memory result = new uint256[](artworkCount);
-        for(i = 0; i &lt; artworkCount; i++) {
+        for(i = 0; i < artworkCount; i++) {
             result[i] = allArtworkIds[i];
         }
 
@@ -319,7 +319,7 @@ contract PresaleMarket is PausableSimple {
         address seller = auction.seller;
         delete artworkIdToAuction[_artworkId];
 
-        if(price &gt; 0) {
+        if(price > 0) {
             uint256 myCut =  price * distributionCut / 100000;
             uint256 sellerCut = price - myCut;
             seller.transfer(sellerCut);
@@ -401,9 +401,9 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     // A batch is a set of artworks and
     // we plan to release batches monthly.
     uint256 public batchCount;
-    mapping(uint256 =&gt; uint256) public prices;
-    mapping(uint256 =&gt; uint256) public supplies;
-    mapping(uint256 =&gt; uint256) public sold;
+    mapping(uint256 => uint256) public prices;
+    mapping(uint256 => uint256) public supplies;
+    mapping(uint256 => uint256) public sold;
 
     // Before each batch is released on the main contract,
     // we will disable transfers (including trading)
@@ -411,43 +411,43 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     // This is to prevent someone selling an artwork
     // on the presale contract when we are migrating
     // the artworks to the main contract.
-    mapping(uint256 =&gt; bool) public isTransferDisabled;
+    mapping(uint256 => bool) public isTransferDisabled;
 
     uint256[] public dnas;
-    mapping(address =&gt; uint256) public ownerToTokenCount;
-    mapping (uint256 =&gt; address) public artworkIdToOwner;
-    mapping (uint256 =&gt; address) public artworkIdToTransferApproved;
+    mapping(address => uint256) public ownerToTokenCount;
+    mapping (uint256 => address) public artworkIdToOwner;
+    mapping (uint256 => address) public artworkIdToTransferApproved;
 
     PresaleMarket public presaleMarket;
 
-    bytes4 constant ERC165Signature_ERC165 = bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4 constant ERC165Signature_ERC165 = bytes4(keccak256('supportsInterface(bytes4)'));
 
     // Latest version of ERC721 perhaps
     bytes4 constant ERC165Signature_ERC721A =
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-    bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('tokensOfOwner(address)')) ^
+    bytes4(keccak256('tokenMetadata(uint256,string)'));
 
     // as described in https://github.com/ethereum/eips/issues/721
     // as of January 23, 2018
     bytes4 constant ERC165Signature_ERC721B =
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;takeOwnership(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokenMetadata(uint256)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('takeOwnership(uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+    bytes4(keccak256('tokenMetadata(uint256)'));
 
     function Presale() public {
         // Artworks are released in batches, which we plan to release
@@ -482,23 +482,23 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
         // Note that because of mining uncertainties we cannot guarantee any
         // specific timings.
 
-        // public release initial sales price &gt;= 0.1 ether
+        // public release initial sales price >= 0.1 ether
         _addPresale(0.05 ether, 450);
 
-        // public release initial sales price &gt;= 0.24 ether
+        // public release initial sales price >= 0.24 ether
         _addPresale(0.12 ether, 325);
 
-        // public release initial sales price &gt;= 0.7 ether
+        // public release initial sales price >= 0.7 ether
         _addPresale(0.35 ether, 150);
 
-        // public release initial sales price &gt;= 2.0 ether
+        // public release initial sales price >= 2.0 ether
         _addPresale(1.0 ether, 75);
     }
 
     function buy(uint256 _batch) public payable {
-        require(_batch &lt; batchCount);
-        require(msg.value == prices[_batch]); // we don&#39;t want to deal with refunds
-        require(sold[_batch] &lt; supplies[_batch]);
+        require(_batch < batchCount);
+        require(msg.value == prices[_batch]); // we don't want to deal with refunds
+        require(sold[_batch] < supplies[_batch]);
 
         sold[_batch]++;
         uint256 dna = _generateRandomDna(_batch);
@@ -512,7 +512,7 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
 
     function getArtworkInfo(uint256 _id) external view returns (
         uint256 dna, address owner) {
-        require(_id &lt; totalSupply());
+        require(_id < totalSupply());
 
         dna = dnas[_id];
         owner = artworkIdToOwner[_id];
@@ -523,13 +523,13 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     }
 
     function getBatchInfo(uint256 _batch) external view returns(uint256 price, uint256 supply, uint256 soldAmount) {
-        require(_batch &lt; batchCount);
+        require(_batch < batchCount);
 
         return (prices[_batch], supplies[_batch], sold[_batch]);
     }
 
     function setTransferDisabled(uint256 _batch, bool _isDisabled) external onlyOwner {
-        require(_batch &lt; batchCount);
+        require(_batch < batchCount);
 
         isTransferDisabled[_batch] = _isDisabled;
     }
@@ -605,12 +605,12 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     }
 
     function _tokenMetadata(uint256 _tokenId, string _preferredTransport) internal view returns (string infoUrl) {
-        _preferredTransport; // we don&#39;t use this parameter
+        _preferredTransport; // we don't use this parameter
 
-        require(_tokenId &lt; totalSupply());
+        require(_tokenId < totalSupply());
 
         strings.slice memory tokenIdSlice = _uintToBytes(_tokenId).toSliceB32();
-        return &quot;/http/etherwaifu.com/presale/artwork/&quot;.toSlice().concat(tokenIdSlice);
+        return "/http/etherwaifu.com/presale/artwork/".toSlice().concat(tokenIdSlice);
     }
 
     // Author: pipermerriam
@@ -618,10 +618,10 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     // https://github.com/pipermerriam/ethereum-string-utils
     function _uintToBytes(uint256 v) internal pure returns(bytes32 ret) {
         if (v == 0) {
-            ret = &#39;0&#39;;
+            ret = '0';
         }
         else {
-            while (v &gt; 0) {
+            while (v > 0) {
                 ret = bytes32(uint256(ret) / (2 ** 8));
                 ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
                 v /= 10;
@@ -660,9 +660,9 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
         address prevApprovedAddress = artworkIdToTransferApproved[_tokenId];
         _approveTransfer(_tokenId, _to);
 
-        // Don&#39;t send Approval event if it is just
+        // Don't send Approval event if it is just
         // reaffirming that there is no one approved
-        if(!(prevApprovedAddress == address(0) &amp;&amp; _to == address(0))) {
+        if(!(prevApprovedAddress == address(0) && _to == address(0))) {
             Approval(msg.sender, _to, _tokenId);
         }
     }
@@ -700,7 +700,7 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
         uint256 allArtworkCount = totalSupply();
         uint256 i = 0;
 
-        for(uint256 artworkId = 1; artworkId &lt;= allArtworkCount &amp;&amp; i &lt; count; artworkId++) {
+        for(uint256 artworkId = 1; artworkId <= allArtworkCount && i < count; artworkId++) {
             if(artworkIdToOwner[artworkId] == _owner) {
                 res[i++] = artworkId;
             }
@@ -714,14 +714,14 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     }
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256 tokenId) {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
 
         // not strictly needed because if the state is consistent then
         // a match will be found
         uint256 allArtworkCount = totalSupply();
 
         uint256 i = 0;
-        for(uint256 artworkId = 0; artworkId &lt; allArtworkCount; artworkId++) {
+        for(uint256 artworkId = 0; artworkId < allArtworkCount; artworkId++) {
             if(artworkIdToOwner[artworkId] == _owner) {
                 if(i == _index) {
                     return artworkId;
@@ -734,7 +734,7 @@ contract Presale is OwnableSimple, RandomApi, ERC721 {
     }
 
     function tokenMetadata(uint256 _tokenId) external view returns (string infoUrl) {
-        return _tokenMetadata(_tokenId, &quot;http&quot;);
+        return _tokenMetadata(_tokenId, "http");
     }
 
     // ERC-165 Standard interface detection (required)

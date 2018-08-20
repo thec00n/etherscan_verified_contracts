@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -46,7 +46,7 @@ contract Token {
 
 contract Auth {
     address public owner = 0x00;
-    mapping (address =&gt; bool) public founders;
+    mapping (address => bool) public founders;
     struct ProposeOwner {
         address owner;
         bool active;
@@ -105,13 +105,13 @@ contract Stop is Auth {
 
 contract StandardToken is Token, Stop {
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public stoppable returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[msg.sender]);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_value <= balanceOf[msg.sender]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -120,9 +120,9 @@ contract StandardToken is Token, Stop {
 
     function transferFrom(address _from, address _to, uint256 _value) public stoppable returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);
         allowed[_from][msg.sender] = SafeMath.safeSub(allowed[_from][msg.sender], _value);
@@ -151,10 +151,10 @@ contract BSE is StandardToken {
         revert();
     }
 
-    string public name = &quot;BiSale&quot;;
+    string public name = "BiSale";
     uint8 public decimals = 18;
-    string public symbol = &quot;BSE&quot;;
-    string public version = &#39;v0.1&#39;;
+    string public symbol = "BSE";
+    string public version = 'v0.1';
     uint256 public totalSupply = 0;
 
     function BSE () {
@@ -165,14 +165,14 @@ contract BSE is StandardToken {
 
     function mint(address _target, uint256 _value) auth stoppable {
         require(_target != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         balanceOf[_target] = SafeMath.safeAdd(balanceOf[_target], _value);
         totalSupply = SafeMath.safeAdd(totalSupply, _value);
     }
 
     function burn(uint256 _value) auth stoppable {
-        require(_value &gt; 0);
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(_value > 0);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);
         totalSupply = SafeMath.safeSub(totalSupply, _value);

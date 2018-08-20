@@ -14,12 +14,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c&gt;= a);
+        assert(c>= a);
         return c;
     }
 }
@@ -39,8 +39,8 @@ contract ERC721 {
 
 contract AthleteTestToken is ERC721 {
     /****  CONSTANTS ****/
-    string public constant NAME = &quot;CryptoFantasy&quot;;
-    string public constant SYMBOL = &quot;Athlete&quot;;
+    string public constant NAME = "CryptoFantasy";
+    string public constant SYMBOL = "Athlete";
 
     uint256 private constant initPrice = 0.001 ether;
     uint256 private constant PROMO_CREATION_LIMIT = 50000;
@@ -52,33 +52,33 @@ contract AthleteTestToken is ERC721 {
 
     /*** STORAGE */
     // A mapping from athlete IDs to the address that owns them. All athletes have some valid owner address.
-    mapping (uint256 =&gt; address) public athleteIndexToOwner;
+    mapping (uint256 => address) public athleteIndexToOwner;
 
     // A mapping from owner address to count of tokens that address owns.
     // Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     /**
         *** A mapping from athleteIDs to an address that has been approved to call transferFrom(). 
         *** Each athlete can only have one approved address for transfer at any time.
         *** A ZERO value means no approval is outstanding.
      */
-    mapping (uint256 =&gt; address) public athleteIndexToApproved;
+    mapping (uint256 => address) public athleteIndexToApproved;
 
     // A mapping from athleteIDs to the price of the token.
-    mapping (uint256 =&gt; uint256) private athleteIndexToPrice;
+    mapping (uint256 => uint256) private athleteIndexToPrice;
 
     // A mapping from athleteIDs to the actual fee of the token.
-    mapping (uint256 =&gt; uint256) private athleteIndexToActualFee;
+    mapping (uint256 => uint256) private athleteIndexToActualFee;
 
     // A mapping from athleteIDs to the site fee of the token.
-    mapping (uint256 =&gt; uint256) private athleteIndexToSiteFee;
+    mapping (uint256 => uint256) private athleteIndexToSiteFee;
 
     // A mapping from athleteIDs to the actual wallet address of the token
-    mapping (uint256 =&gt; address) private athleteIndexToActualWalletId;
+    mapping (uint256 => address) private athleteIndexToActualWalletId;
 
     // A mapping of athleteIDs
-    mapping (uint256 =&gt; string) private athleteIndexToAthleteID;
+    mapping (uint256 => string) private athleteIndexToAthleteID;
 
 
     // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -97,7 +97,7 @@ contract AthleteTestToken is ERC721 {
     }
     Athlete[] private athletes;
 
-    mapping (uint256 =&gt; Athlete) private athleteIndexToAthlete;
+    mapping (uint256 => Athlete) private athleteIndexToAthlete;
 
     modifier onlyCEO() {
         require(msg.sender == ceoAddress);
@@ -131,13 +131,13 @@ contract AthleteTestToken is ERC721 {
 
 
     function createPromoAthlete(address _owner, string _athleteId, address _actualAddress, uint256 _actualFee, uint256 _siteFee, uint _sellPrice) public onlyCOO {
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         address athleteOwner = _owner;
         if ( athleteOwner == address(0) ) {
             athleteOwner = cooAddress;
         }
-        if ( _sellPrice &lt;= 0 ) {
+        if ( _sellPrice <= 0 ) {
             _sellPrice = initPrice;
         }
         promoCreatedCount++;
@@ -185,7 +185,7 @@ contract AthleteTestToken is ERC721 {
         require(_addressNotNull(buyOwner));
 
         //make sure sent amount is greater than or equal to the sellPrice
-        require(msg.value &gt;= sellPrice);
+        require(msg.value >= sellPrice);
 
         uint256 actualFee = uint256(SafeMath.div(SafeMath.mul(sellPrice, athleteIndexToActualFee[_tokenId]), 100)); // calculate actual fee
         uint256 siteFee   = uint256(SafeMath.div(SafeMath.mul(sellPrice, athleteIndexToSiteFee[_tokenId]), 100));   // calculate site fee
@@ -242,7 +242,7 @@ contract AthleteTestToken is ERC721 {
             uint256 resultIndex = 0;
             uint256 athleteId;
 
-            for(athleteId = 0; athleteId &lt;= totalAthletes; athleteId++) {
+            for(athleteId = 0; athleteId <= totalAthletes; athleteId++) {
                 if (athleteIndexToOwner[athleteId] == _owner) {
                     result[resultIndex] = athleteId;
                     resultIndex++;
@@ -286,7 +286,7 @@ contract AthleteTestToken is ERC721 {
         
         uint256 newAthleteId = athletes.push(_athlete) - 1;
  
-        if ( _sellPrice &lt;= 0 ) {
+        if ( _sellPrice <= 0 ) {
             _sellPrice = initPrice;
         }
         require(newAthleteId == uint256(uint32(newAthleteId)));

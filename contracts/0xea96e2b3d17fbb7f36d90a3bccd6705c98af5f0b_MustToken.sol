@@ -18,8 +18,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,7 +81,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -168,8 +168,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -183,7 +183,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -252,7 +252,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -266,7 +266,7 @@ contract StandardToken is ERC20, BasicToken {
 // File: contracts/mixins/ERC223Mixin.sol
 
 /// @title Custom implementation of ERC223 
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="51303d34237f2b303c21383d3d3e11363c30383d7f323e3c">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="51303d34237f2b303c21383d3d3e11363c30383d7f323e3c">[email protected]</a>>
 contract ERC223Mixin is StandardToken {
   event Transfer(address indexed from, address indexed to, uint256 value, bytes data);
 
@@ -291,7 +291,7 @@ contract ERC223Mixin is StandardToken {
     bytes _data
   ) public returns (bool)
   {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     if (isContract(_to)) {
       return transferToContract(
@@ -336,11 +336,11 @@ contract ERC223Mixin is StandardToken {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }  
-    return (length&gt;0);
+    return (length>0);
   }
 
   function moveTokens(address _from, address _to, uint256 _value) internal returns (bool success) {
-    if (balanceOf(_from) &lt; _value) {
+    if (balanceOf(_from) < _value) {
       revert();
     }
     balances[_from] = balanceOf(_from).sub(_value);
@@ -381,15 +381,15 @@ contract ERC223Mixin is StandardToken {
 // File: contracts/mixins/RBACMixin.sol
 
 /// @title Role based access control mixin for MUST Platform
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55343930277b2f3438253c39393a153238343c397b363a38">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55343930277b2f3438253c39393a153238343c397b363a38">[email protected]</a>>
 /// @dev Ignore DRY approach to achieve readability
 contract RBACMixin {
   /// @notice Constant string message to throw on lack of access
-  string constant FORBIDDEN = &quot;Haven&#39;t enough right to access&quot;;
+  string constant FORBIDDEN = "Haven't enough right to access";
   /// @notice Public map of owners
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
   /// @notice Public map of minters
-  mapping (address =&gt; bool) public minters;
+  mapping (address => bool) public minters;
 
   /// @notice The event indicates the addition of a new owner
   /// @param who is address of added owner
@@ -501,13 +501,13 @@ contract RBACMixin {
 // File: contracts/mixins/RBACERC223TokenFinalization.sol
 
 /// @title Role based token finalization mixin
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b0bdb4a3ffabb0bca1b8bdbdbe91b6bcb0b8bdffb2bebc">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b0bdb4a3ffabb0bca1b8bdbdbe91b6bcb0b8bdffb2bebc">[email protected]</a>>
 contract RBACERC223TokenFinalization is ERC223Mixin, RBACMixin {
   event Finalize();
   /// @notice Public field inicates the finalization state of smart-contract
   bool public finalized;
 
-  /// @notice The functional modifier rejects the interaction if contract isn&#39;t finalized
+  /// @notice The functional modifier rejects the interaction if contract isn't finalized
   modifier isFinalized() {
     require(finalized);
     _;
@@ -630,9 +630,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -655,7 +655,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
    * @param _value uint256 The amount of token to be burned
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
     // this function needs to emit an event with the updated approval.
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -666,14 +666,14 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
 // File: contracts/MustToken.sol
 
 /// @title MUST Platform token implementation
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="73121f16015d09121e031a1f1f1c33141e121a1f5d101c1e">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="73121f16015d09121e031a1f1f1c33141e121a1f5d101c1e">[email protected]</a>>
 /// @dev Implements ERC20, ERC223 and MintableToken interfaces as well as capped and finalization logic
 contract MustToken is StandardBurnableToken, RBACERC223TokenFinalization, RBACMintableTokenMixin {
   /// @notice Constant field with token full name
   // solium-disable-next-line uppercase
-  string constant public name = &quot;Main Universal Standard of Tokenization&quot;; 
+  string constant public name = "Main Universal Standard of Tokenization"; 
   /// @notice Constant field with token symbol
-  string constant public symbol = &quot;MUST&quot;; // solium-disable-line uppercase
+  string constant public symbol = "MUST"; // solium-disable-line uppercase
   /// @notice Constant field with token precision depth
   uint256 constant public decimals = 8; // solium-disable-line uppercase
   /// @notice Constant field with token cap (total supply limit)
@@ -690,7 +690,7 @@ contract MustToken is StandardBurnableToken, RBACERC223TokenFinalization, RBACMi
     public
     returns (bool) 
   {
-    require(totalSupply().add(_amount) &lt;= cap);
+    require(totalSupply().add(_amount) <= cap);
     return super.mint(_to, _amount);
   }
 

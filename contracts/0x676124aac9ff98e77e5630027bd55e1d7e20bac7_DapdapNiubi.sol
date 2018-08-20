@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 *   __                        __                                     
 *  /\ \                      /\ \                       __           
 *  \_\ \     __     _____    \_\ \     __     _____    /\_\    ___   
-*  /&#39;_` \  /&#39;__`\  /\ &#39;__`\  /&#39;_` \  /&#39;__`\  /\ &#39;__`\  \/\ \  / __`\ 
+*  /'_` \  /'__`\  /\ '__`\  /'_` \  /'__`\  /\ '__`\  \/\ \  / __`\ 
 * /\ \L\ \/\ \L\.\_\ \ \L\ \/\ \L\ \/\ \L\.\_\ \ \L\ \__\ \ \/\ \L\ \
 * \ \___,_\ \__/.\_\\ \ ,__/\ \___,_\ \__/.\_\\ \ ,__/\_\\ \_\ \____/
 *  \/__,_ /\/__/\/_/ \ \ \/  \/__,_ /\/__/\/_/ \ \ \/\/_/ \/_/\/___/ 
@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,24 +52,24 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max(uint a, uint b) internal pure returns (uint) {
-    if (a &gt; b) return a;
+    if (a > b) return a;
     else return b;
   }
 
   function min(uint a, uint b) internal pure returns (uint) {
-    if (a &lt; b) return a;
+    if (a < b) return a;
     else return b;
   }
 }
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4a4b5a4b6e4f56474143544b40004d41">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4a4b5a4b6e4f56474143544b40004d41">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -102,9 +102,9 @@ contract DapdapNiubi is ERC721{
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
   address private owner;
-  mapping (address=&gt;bool) admins;
-  mapping (uint =&gt; address) public mapOwnerOfMedal;
-  mapping (uint256 =&gt; address) public approvedOfItem;
+  mapping (address=>bool) admins;
+  mapping (uint => address) public mapOwnerOfMedal;
+  mapping (uint256 => address) public approvedOfItem;
 
   // typeId 
   // 0 for bronze 
@@ -151,7 +151,7 @@ contract DapdapNiubi is ERC721{
   }
 
   function getMedalInfo(uint medalId) public view returns(uint, uint, address) {
-      require(medalId&lt;listedMedal.length);
+      require(medalId<listedMedal.length);
       Medal memory medal = listedMedal[medalId];
       return (medal.medalId, medal.typeId, medal.owner);
   }
@@ -164,22 +164,22 @@ contract DapdapNiubi is ERC721{
     }
     
     function issueSuperMetal(address userAddress, uint typeId) public onlyOwner {
-        require(typeId&lt;=5);
+        require(typeId<=5);
         Medal memory medal = Medal(listedMedal.length, typeId, userAddress);
         mapOwnerOfMedal[listedMedal.length] = userAddress;
         listedMedal.push(medal);
     }
 
   function mergeMedal(uint medalId1, uint medalId2) public {
-      require(medalId1 &lt; listedMedal.length);
-      require(medalId2 &lt; listedMedal.length);
+      require(medalId1 < listedMedal.length);
+      require(medalId2 < listedMedal.length);
       require(listedMedal[medalId1].owner == msg.sender);
       require(listedMedal[medalId2].owner == msg.sender);
       require(listedMedal[medalId1].typeId == listedMedal[medalId2].typeId);
-      require(listedMedal[medalId1].typeId &lt;= 4);
+      require(listedMedal[medalId1].typeId <= 4);
       
       uint newTypeId = listedMedal[medalId1].typeId + 1;
-      require(newTypeId &lt;= 5);
+      require(newTypeId <= 5);
       // generate medal
       listedMedal[medalId1].owner = address(0);
       listedMedal[medalId2].owner = address(0);
@@ -196,7 +196,7 @@ contract DapdapNiubi is ERC721{
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -211,11 +211,11 @@ contract DapdapNiubi is ERC721{
   /* ERC721 */
 
   function name() public pure returns (string) {
-    return &quot;dapdap.io&quot;;
+    return "dapdap.io";
   }
 
   function symbol() public pure returns (string) {
-    return &quot;DAPDAP&quot;;
+    return "DAPDAP";
   }
 
   function totalSupply() public view returns (uint256) {
@@ -225,7 +225,7 @@ contract DapdapNiubi is ERC721{
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint counter = 0;
 
-    for (uint i = 0; i &lt; listedMedal.length; i++) {
+    for (uint i = 0; i < listedMedal.length; i++) {
       if (ownerOf(listedMedal[i].medalId) == _owner) {
         counter++;
       }
@@ -242,7 +242,7 @@ contract DapdapNiubi is ERC721{
     uint[] memory result = new uint[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedMedal.length; i++) {
+    for (uint256 i = 0; i < listedMedal.length; i++) {
       if (ownerOf(i) == _owner) {
         result[itemCounter] = listedMedal[i].medalId;
         itemCounter += 1;
@@ -308,7 +308,7 @@ contract DapdapNiubi is ERC721{
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }
 

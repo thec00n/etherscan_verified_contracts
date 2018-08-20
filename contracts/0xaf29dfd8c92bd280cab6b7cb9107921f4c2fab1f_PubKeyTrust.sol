@@ -6,7 +6,7 @@ contract PubKeyTrust {
 	address owner;
 
 	uint8[] public allHashTypes;
-	mapping(uint8 =&gt; string) public hashTypes;
+	mapping(uint8 => string) public hashTypes;
 
 	struct HashInfo {
 		bytes pubKeyHash;
@@ -14,10 +14,10 @@ contract PubKeyTrust {
 		uint blockNumber;
 	}
 	struct UserHashes {
-		mapping(uint8 =&gt; HashInfo) hashes;
+		mapping(uint8 => HashInfo) hashes;
 		bool initialized;
 	}
-	mapping(bytes20 =&gt; UserHashes) hashes;
+	mapping(bytes20 => UserHashes) hashes;
 
 	event UserAdded(bytes20 indexed userID);
 	event PubKeyHashAdded(bytes20 indexed userID, uint8 indexed hashType);
@@ -45,7 +45,7 @@ contract PubKeyTrust {
 		// Strings must be non-empty
 		if (hashType == 0) require(false);
 		if (bytes(description).length == 0) require(false);
-		if (bytes(description).length &gt; 64) require(false);
+		if (bytes(description).length > 64) require(false);
 
 		string storage prvDescription = hashTypes[hashType];
 		if (bytes(prvDescription).length == 0)
@@ -59,7 +59,7 @@ contract PubKeyTrust {
 	function isValidHashType(uint8 hashType) public view returns (bool) {
 
 		string storage description = hashTypes[hashType];
-		return (bytes(description).length &gt; 0);
+		return (bytes(description).length > 0);
 	}
 
 	function addPubKeyHash(bytes20 userID, uint8 hashType, bytes pubKeyHash, bytes keyID) public onlyByOwner {

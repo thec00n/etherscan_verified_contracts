@@ -3,14 +3,14 @@ pragma solidity ^0.4.16;
 contract FatoToken {
 
     // Public variables of the token
-      string public constant name = &quot;Father Of All Coins&quot;;
-  string public constant symbol = &quot;FATO&quot;;
+      string public constant name = "Father Of All Coins";
+  string public constant symbol = "FATO";
     uint8 public decimals = 0;
     // Total supply of tokens
 	uint256 _totalSupply = 1000000000;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
    
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -34,9 +34,9 @@ contract FatoToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

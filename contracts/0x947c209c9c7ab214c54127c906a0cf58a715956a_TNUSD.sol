@@ -1,15 +1,15 @@
 pragma solidity ^0.4.18;
 
 contract TNUSD {
-    string public standard = &#39;https://www.tntoo.com&#39;;
-    string public name = &#39;Transaction Network USD&#39;;
-    string public symbol = &#39;TNUSD&#39;;
+    string public standard = 'https://www.tntoo.com';
+    string public name = 'Transaction Network USD';
+    string public symbol = 'TNUSD';
     uint8 public decimals = 18;
     // 200w  2000000 * 1000000000000000000
     uint public totalSupply = 2000000000000000000000000;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -19,8 +19,8 @@ contract TNUSD {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -33,7 +33,7 @@ contract TNUSD {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);  
+        require(_value <= allowance[_from][msg.sender]);  
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

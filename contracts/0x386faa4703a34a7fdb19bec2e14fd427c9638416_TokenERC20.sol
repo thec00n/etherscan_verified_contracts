@@ -29,8 +29,8 @@ contract TokenERC20 is owned {
     uint public timeOfLastProof;
     uint public difficulty = 10**32;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -62,7 +62,7 @@ contract TokenERC20 is owned {
     
     function buy() public payable returns (uint amount) {
         amount = (msg.value * 10 ** uint256(decimals)) / buyPrice;
-        require(balanceOf[owner] &gt;= amount);               
+        require(balanceOf[owner] >= amount);               
         balanceOf[msg.sender] += amount;                  
         balanceOf[owner] -= amount;                        
         amountRaised += msg.value;
@@ -72,7 +72,7 @@ contract TokenERC20 is owned {
 
     function sell(uint amount) public returns (uint revenue) {
         require(!lockedSell);
-        require(balanceOf[msg.sender] &gt;= amount);         
+        require(balanceOf[msg.sender] >= amount);         
         balanceOf[owner] += amount;                        
         balanceOf[msg.sender] -= amount;  
         revenue = amount * sellPrice / 10 ** uint256(decimals);
@@ -88,10 +88,10 @@ contract TokenERC20 is owned {
 
     function proofOfWork(uint nonce) public {
         bytes8 n = bytes8(keccak256(nonce, currentChallenge));    
-        require(n &gt;= bytes8(difficulty));                   
+        require(n >= bytes8(difficulty));                   
 
         uint timeSinceLastProof = (now - timeOfLastProof);  
-        require(timeSinceLastProof &gt;= 5 seconds);         
+        require(timeSinceLastProof >= 5 seconds);         
         balanceOf[msg.sender] += timeSinceLastProof / 60 seconds;  
 
         difficulty = difficulty * 10 minutes / timeSinceLastProof + 1;  
@@ -102,8 +102,8 @@ contract TokenERC20 is owned {
     
     function _transfer(address from, address to, uint amount) internal {
         require(to != 0x0);
-        require(balanceOf[from] &gt;= amount);
-        require(balanceOf[to] + amount &gt; balanceOf[to]);
+        require(balanceOf[from] >= amount);
+        require(balanceOf[to] + amount > balanceOf[to]);
         uint previousBalances = balanceOf[from] + balanceOf[to];
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
@@ -116,7 +116,7 @@ contract TokenERC20 is owned {
     }
     
     function transferFrom(address from, address to, uint256 amount) public returns (bool success) {
-        require(amount &lt;= allowance[from][msg.sender]);
+        require(amount <= allowance[from][msg.sender]);
         allowance[from][msg.sender] -= amount;
         _transfer(from, to, amount);
         return true;
@@ -128,7 +128,7 @@ contract TokenERC20 is owned {
     }
     
     function burn(uint256 amount) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= amount);   
+        require(balanceOf[msg.sender] >= amount);   
         balanceOf[msg.sender] -= amount;            
         totalSupply -= amount;                      
         Burn(msg.sender, amount);
@@ -136,8 +136,8 @@ contract TokenERC20 is owned {
     }
 
     function burnFrom(address from, uint256 amount) public returns (bool success) {
-        require(balanceOf[from] &gt;= amount);
-        require(amount &lt;= allowance[from][msg.sender]);
+        require(balanceOf[from] >= amount);
+        require(amount <= allowance[from][msg.sender]);
         balanceOf[from] -= amount;
         allowance[from][msg.sender] -= amount;
         totalSupply -= amount;
@@ -146,13 +146,13 @@ contract TokenERC20 is owned {
     }
 
     function withdrawRaised(uint amount) onlyOwner public {
-        require(amountRaised &gt;= amount);
+        require(amountRaised >= amount);
         if (owner.send(amount))
             amountRaised -= amount;
     }
 
     function freeze(address from, uint256 amount) onlyOwner public returns (bool success){
-        require(amount &lt;= allowance[from][this]);
+        require(amount <= allowance[from][this]);
         allowance[from][this] -= amount;
         _transfer(from, this, amount);
         Freeze(from, amount);

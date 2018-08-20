@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 contract safeMath {
 
     function add( uint256 x, uint256 y ) internal pure returns ( uint256 z ) {
-        assert( ( z = x + y ) &gt;= x );
+        assert( ( z = x + y ) >= x );
     }
 
     function sub( uint256 x, uint256 y ) internal pure returns ( uint256 z ) {
-        assert( ( z = x - y ) &lt;= x );
+        assert( ( z = x - y ) <= x );
     }
 }
 
@@ -30,8 +30,8 @@ contract    baseToken is ERC20, safeMath {
     string          _symbol;
     uint8           _decimals;
 
-    mapping ( address =&gt; uint256 )                          _balanceOf;
-    mapping ( address =&gt; mapping ( address =&gt; uint256 ) )   _allowance;
+    mapping ( address => uint256 )                          _balanceOf;
+    mapping ( address => mapping ( address => uint256 ) )   _allowance;
 
     event Burn( address indexed from, uint256 value );
 
@@ -39,8 +39,8 @@ contract    baseToken is ERC20, safeMath {
         uint256     balance;
 
         balance = 50000;
-        _name = &quot;Onkostop&quot;;
-        _symbol = &quot;OSC&quot;;
+        _name = "Onkostop";
+        _symbol = "OSC";
         _balanceOf[msg.sender] = balance;
         _totalSupply = balance;
         _decimals = 0;
@@ -59,7 +59,7 @@ contract    baseToken is ERC20, safeMath {
     }
 
     function    transfer( address to, uint amount ) public returns ( bool ) {
-        assert(_balanceOf[msg.sender] &gt;= amount);
+        assert(_balanceOf[msg.sender] >= amount);
         _balanceOf[msg.sender] = sub( _balanceOf[msg.sender], amount );
         _balanceOf[to] = add( _balanceOf[to], amount );
         Transfer( msg.sender, to, amount );
@@ -67,8 +67,8 @@ contract    baseToken is ERC20, safeMath {
     }
 
     function    transferFrom( address from, address to, uint amount ) public returns ( bool ) {
-        assert( _balanceOf[from] &gt;= amount );
-        assert( _allowance[from][msg.sender] &gt;= amount );
+        assert( _balanceOf[from] >= amount );
+        assert( _allowance[from][msg.sender] >= amount );
         _allowance[from][msg.sender] = sub( _allowance[from][msg.sender], amount );
         _balanceOf[from] = sub( _balanceOf[from], amount );
         _balanceOf[to] = add( _balanceOf[to], amount );
@@ -83,7 +83,7 @@ contract    baseToken is ERC20, safeMath {
     }
 
     function    burn( uint256 value ) public returns ( bool success ) {
-        assert( _balanceOf[msg.sender] &gt;= value );  // Check if the sender has enough
+        assert( _balanceOf[msg.sender] >= value );  // Check if the sender has enough
         _balanceOf[msg.sender] -= value;            // Subtract from the sender
         _totalSupply -= value;                      // Updates _totalSupply
         Burn( msg.sender, value );

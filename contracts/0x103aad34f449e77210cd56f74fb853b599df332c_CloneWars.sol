@@ -1,12 +1,12 @@
 pragma solidity ^0.4.24;
 
-/* You&#39;ve seen all of this before. Here are the differences.
+/* You've seen all of this before. Here are the differences.
 
-// A. A quarter of your clones die when you sell ideas. Market saturation, y&#39;see?
-// B. You can &quot;become&quot; Norsefire and take the dev fees, since he&#39;s involved in everything.
+// A. A quarter of your clones die when you sell ideas. Market saturation, y'see?
+// B. You can "become" Norsefire and take the dev fees, since he's involved in everything.
 // B. 1. The Norsefire boon is a hot potato. If someone else buys it off you, you profit.
 // B. 2. When Norsefire flips, we actually send him 5% of the increase. You receive 50%, the contract receives the other 45%.
-// C. You get your &#39;free&#39; clones for 0.00232 Ether, because throwbaaaaaack.
+// C. You get your 'free' clones for 0.00232 Ether, because throwbaaaaaack.
 // D. Referral rates have been dropped to 5% instead of 20%. The referral target must have bought in.
 // E. The generation rate of ideas have been halved, as a sign of my opinion of the community at large.
 // F. God knows this will probably be successful in spite of myself.
@@ -56,10 +56,10 @@ contract CloneWars {
     uint256 public norsefirePrice;
     bool    public initialized;
     address public currentNorsefire;
-    mapping (address =&gt; uint256) public arrayOfClones;
-    mapping (address =&gt; uint256) public claimedIdeas;
-    mapping (address =&gt; uint256) public lastDeploy;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public arrayOfClones;
+    mapping (address => uint256) public claimedIdeas;
+    mapping (address => uint256) public lastDeploy;
+    mapping (address => address) public referrals;
     
     constructor () public {
         initialized      = false;
@@ -73,7 +73,7 @@ contract CloneWars {
         uint oldNorsePrice   = norsefirePrice;
         
         // Did you actually send enough?
-        require(msg.value &gt;= norsefirePrice);
+        require(msg.value >= norsefirePrice);
         
         uint excess          = msg.value.sub(oldNorsePrice);
         norsefirePrice       = oldNorsePrice.add(oldNorsePrice.div(10));
@@ -100,7 +100,7 @@ contract CloneWars {
         
         address _deployer = msg.sender;
         
-        if(referrals[_deployer] == 0 &amp;&amp; referrals[_deployer] != _deployer){
+        if(referrals[_deployer] == 0 && referrals[_deployer] != _deployer){
             referrals[_deployer]=ref;
         }
         
@@ -111,7 +111,7 @@ contract CloneWars {
         lastDeploy[_deployer]    = now;
         
         // Send referral ideas: dropped to 5% instead of 20% to reduce inflation.
-        if (arrayOfClones[referrals[_deployer]] &gt; 0) 
+        if (arrayOfClones[referrals[_deployer]] > 0) 
         {
             claimedIdeas[referrals[_deployer]] = claimedIdeas[referrals[_deployer]].add(myIdeas.div(20));
         }
@@ -129,7 +129,7 @@ contract CloneWars {
         uint256 hasIdeas        = getMyIdeas();
         uint256 ideaValue       = calculateIdeaSell(hasIdeas);
         uint256 fee             = devFee(ideaValue);
-        // Destroy a quarter the owner&#39;s clones when selling ideas thanks to market saturation.
+        // Destroy a quarter the owner's clones when selling ideas thanks to market saturation.
         arrayOfClones[_caller]  = (arrayOfClones[msg.sender].div(4)).mul(3);
         claimedIdeas[_caller]   = 0;
         lastDeploy[_caller]     = now;
@@ -209,7 +209,7 @@ contract CloneWars {
         return secondsPassed.mul(arrayOfClones[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -231,9 +231,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -241,7 +241,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -250,7 +250,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

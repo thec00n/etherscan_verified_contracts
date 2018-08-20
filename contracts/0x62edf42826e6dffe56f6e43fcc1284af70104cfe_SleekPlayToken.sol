@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -107,8 +107,8 @@ contract ERC20 {
 contract TokenBase is ERC20, Pausable {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -135,7 +135,7 @@ contract TokenBase is ERC20, Pausable {
 
   function transfer(address _to, uint256 _value) public whenNotPaused isValidDestination(_to) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -145,8 +145,8 @@ contract TokenBase is ERC20, Pausable {
 
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused isValidDestination(_to) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -169,7 +169,7 @@ contract TokenBase is ERC20, Pausable {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns (bool) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -216,7 +216,7 @@ contract BurnableToken is MintableToken {
 
 
   function burn(uint256 _value) external {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -228,8 +228,8 @@ contract BurnableToken is MintableToken {
 
 
 contract SleekPlayToken is BurnableToken {
-  string public constant name = &quot;SleekPlay Token&quot;;
-  string public constant symbol = &quot;SKP&quot;;
+  string public constant name = "SleekPlay Token";
+  string public constant symbol = "SKP";
   uint8 public constant decimals = 18;
 
 
@@ -243,7 +243,7 @@ contract SleekPlayToken is BurnableToken {
   }
 
   /**
-  * @dev &#39;tokenFallback&#39; function in accordance to the ERC223 standard. Rejects all incoming ERC223 token transfers.
+  * @dev 'tokenFallback' function in accordance to the ERC223 standard. Rejects all incoming ERC223 token transfers.
   */
   function tokenFallback(address from_, uint256 value_, bytes data_) public {
     from_; value_; data_;
@@ -251,7 +251,7 @@ contract SleekPlayToken is BurnableToken {
   }
 
   function() external payable {
-      revert(&quot;This contract does not accept Ethereum!&quot;);
+      revert("This contract does not accept Ethereum!");
     }
 
 }

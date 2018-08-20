@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -94,7 +94,7 @@ contract Vault is Ownable {
 
     enum State { Active, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -196,7 +196,7 @@ contract MIOTCrowdsales is Ownable{
     }
     
     modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
     
@@ -227,10 +227,10 @@ contract MIOTCrowdsales is Ownable{
         require(!salesActive);
 
         // Contract should have enough Parsec credits
-        require(token.balanceOf(this) &gt;= crowdSaleHardCap);
+        require(token.balanceOf(this) >= crowdSaleHardCap);
         
         //check whether tier information has been entered
-        require(noOfTiers&gt;0 &amp;&amp; tiers.length==noOfTiers);
+        require(noOfTiers>0 && tiers.length==noOfTiers);
       
         //activate the sale process
         salesActive=true;
@@ -248,7 +248,7 @@ contract MIOTCrowdsales is Ownable{
     
     /**
    * @dev Must be called after sale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
     function finalize()public onlyOwner _saleActive{
         require(saleTimeOver());
@@ -265,7 +265,7 @@ contract MIOTCrowdsales is Ownable{
           return false;
       }
       //If last tier has ended, it mean all tiers are finished
-    return now &gt; tiers[noOfTiers-1].endTime;
+    return now > tiers[noOfTiers-1].endTime;
   }
   
     //if crowdsales is over, the money rasied should be transferred to the wallet address
@@ -288,7 +288,7 @@ contract MIOTCrowdsales is Ownable{
   function setTiersInfo(uint8 _noOfTiers, uint256[] _startTimes, uint256[] _endTimes, uint256[] _hardCaps, uint256[] _rates, uint8[] _bonusPercentages)public onlyOwner tiersEmpty{
     
     //Minimu number of tiers should be 1 and less than or equal to 5
-    require(_noOfTiers&gt;=1 &amp;&amp; _noOfTiers&lt;=5);
+    require(_noOfTiers>=1 && _noOfTiers<=5);
     
     //Each array should contain info about each tier
     require(_startTimes.length == _noOfTiers);
@@ -299,18 +299,18 @@ contract MIOTCrowdsales is Ownable{
     
     noOfTiers = _noOfTiers;
     
-    for(uint8 i=0;i&lt;noOfTiers;i++){
-        require(_hardCaps[i]&gt;0);
-        require(_endTimes[i]&gt;_startTimes[i]);
-        require(_rates[i]&gt;0);
-        require(_bonusPercentages[i]&gt;0);
-        if(i&gt;0){
+    for(uint8 i=0;i<noOfTiers;i++){
+        require(_hardCaps[i]>0);
+        require(_endTimes[i]>_startTimes[i]);
+        require(_rates[i]>0);
+        require(_bonusPercentages[i]>0);
+        if(i>0){
             
             //check hard cap for this tier should be greater than the previous tier
-            require(_hardCaps[i] &gt; _hardCaps[i-1]);
+            require(_hardCaps[i] > _hardCaps[i-1]);
             
             //start time of this tier should be greater than previous tier
-            require(_startTimes[i]&gt;_endTimes[i-1]);
+            require(_startTimes[i]>_endTimes[i-1]);
             
             tiers.push(TierInfo({
                 hardcap:_hardCaps[i].mul( 10 ** uint256(token.decimals())),
@@ -323,7 +323,7 @@ contract MIOTCrowdsales is Ownable{
         }
         else{
             //start time of tier1 should be greater than current time
-            require(_startTimes[i]&gt;now);
+            require(_startTimes[i]>now);
           
             tiers.push(TierInfo({
                 hardcap:_hardCaps[i].mul( 10 ** uint256(token.decimals())), //multiplying with decimal places. So if hard cap is set to 1 it is actually set to 1 * 10^decimals
@@ -360,12 +360,12 @@ contract MIOTCrowdsales is Ownable{
    function buyTokens(address beneficiary)public _saleActive nonZeroEth nonZeroAddress(beneficiary) payable returns(bool){
        
        int8 currentTierIndex = getCurrentlyRunningTier();
-       assert(currentTierIndex&gt;=0);
+       assert(currentTierIndex>=0);
        
        TierInfo storage currentlyRunningTier = tiers[uint256(currentTierIndex)];
        
        //hard cap for this tier has not been reached
-       require(tokensSold &lt; currentlyRunningTier.hardcap);
+       require(tokensSold < currentlyRunningTier.hardcap);
        
        uint256 weiAmount = msg.value;
        
@@ -374,7 +374,7 @@ contract MIOTCrowdsales is Ownable{
        uint256 bonusedTokens = applyBonus(tokens, currentlyRunningTier.bonusPercentage);
        
        //Total tokens sold including current sale should be less than hard cap of this tier
-       assert(tokensSold.add(bonusedTokens) &lt;= currentlyRunningTier.hardcap);
+       assert(tokensSold.add(bonusedTokens) <= currentlyRunningTier.hardcap);
        
        tokensSold = tokensSold.add(bonusedTokens);
        
@@ -397,8 +397,8 @@ contract MIOTCrowdsales is Ownable{
     * Return -1 if no tier is running currently
     * */
    function getCurrentlyRunningTier()public view returns(int8){
-      for(uint8 i=0;i&lt;noOfTiers;i++){
-          if(now&gt;=tiers[i].startTime &amp;&amp; now&lt;tiers[i].endTime){
+      for(uint8 i=0;i<noOfTiers;i++){
+          if(now>=tiers[i].startTime && now<tiers[i].endTime){
               return int8(i);
           }
       }   

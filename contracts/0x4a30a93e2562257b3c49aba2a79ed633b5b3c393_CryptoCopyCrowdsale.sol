@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,10 +78,10 @@ contract CryptoCopyCrowdsale {
     uint256 public bonusOver100ETH = 40;
 
     // Balances
-    mapping (address =&gt; uint256) balancesETH;
-    mapping (address =&gt; uint256) balancesETHWithBonuses;
-    mapping (address =&gt; uint256) balancesETHForSubscriptionBonus;
-    mapping (address =&gt; uint256) tokenBalances;
+    mapping (address => uint256) balancesETH;
+    mapping (address => uint256) balancesETHWithBonuses;
+    mapping (address => uint256) balancesETHForSubscriptionBonus;
+    mapping (address => uint256) tokenBalances;
     
     uint256 public totalInvested;
     uint256 public totalInvestedWithBonuses;
@@ -221,12 +221,12 @@ contract CryptoCopyCrowdsale {
     function updateState() {
         uint256 timeBehind = now - start;
 
-        if (totalInvested &gt;= hardCap || now &gt; end) {
+        if (totalInvested >= hardCap || now > end) {
             stage = Stages.Ended;
             return;
         }
         
-        if (now &lt; start) {
+        if (now < start) {
             stage = Stages.Countdown;
             return;
         }
@@ -294,29 +294,29 @@ contract CryptoCopyCrowdsale {
         uint256 receivedEth = msg.value;
         uint256 totalBonuses = 0;
 
-        if (receivedEth &lt; minAcceptedEthAmount) {
+        if (receivedEth < minAcceptedEthAmount) {
             throw;
         }
         
-        if (now &lt; start + bonusFirstTwoDaysPeriod) {
+        if (now < start + bonusFirstTwoDaysPeriod) {
             totalBonuses += bonusFirstTwoDays;
-        } else if (now &lt; start + bonusFirstWeekPeriod) {
+        } else if (now < start + bonusFirstWeekPeriod) {
             totalBonuses += bonusFirstWeek;
-        } else if (now &lt; start + bonusSecondWeekPeriod) {
+        } else if (now < start + bonusSecondWeekPeriod) {
             totalBonuses += bonusSecondWeek;
-        } else if (now &lt; start + bonusThirdWeekPeriod) {
+        } else if (now < start + bonusThirdWeekPeriod) {
             totalBonuses += bonusThirdWeek;
-        } else if (now &lt; start + bonusFourthWeekPeriod) {
+        } else if (now < start + bonusFourthWeekPeriod) {
             totalBonuses += bonusFourthWeek;
         }
         
-        if (receivedEth &gt;= 100 ether) {
+        if (receivedEth >= 100 ether) {
             totalBonuses += bonusOver100ETH;
-        } else if (receivedEth &gt;= 30 ether) {
+        } else if (receivedEth >= 30 ether) {
             totalBonuses += bonusOver30ETH;
-        } else if (receivedEth &gt;= 10 ether) {
+        } else if (receivedEth >= 10 ether) {
             totalBonuses += bonusOver10ETH;
-        } else if (receivedEth &gt;= 3 ether) {
+        } else if (receivedEth >= 3 ether) {
             totalBonuses += bonusOver3ETH;
         }
         

@@ -48,8 +48,8 @@ contract StandardToken is Token {
     /*
      *  Storage
     */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
 
     /*
      *  Public functions
@@ -57,8 +57,8 @@ contract StandardToken is Token {
 
     function transfer(address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[msg.sender] < value)
             revert();  // Balance too low
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -68,8 +68,8 @@ contract StandardToken is Token {
 
     function transferFrom(address from, address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[from] &lt; value || allowances[from][msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[from] < value || allowances[from][msg.sender] < value)
             revert(); // Balance or allowance too low
         balances[to] += value;
         balances[from] -= value;
@@ -101,20 +101,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }
@@ -126,8 +126,8 @@ contract GMToken is StandardToken {
     /*
     *  Metadata
     */
-    string public constant name = &quot;Global Messaging Token&quot;;
-    string public constant symbol = &quot;GMT&quot;;
+    string public constant name = "Global Messaging Token";
+    string public constant symbol = "GMT";
     uint8 public constant decimals = 18;
     uint256 public constant tokenUnit = 10 ** uint256(decimals);
 
@@ -145,14 +145,14 @@ contract GMToken is StandardToken {
     /*
     *  List of registered participants
     */
-    mapping (address =&gt; bool) public registered;
+    mapping (address => bool) public registered;
 
     /*
     *  List of token purchases per address
     *  Same as balances[], except used for individual cap calculations, 
     *  because users can transfer tokens out during sale and reset token count in balances.
     */
-    mapping (address =&gt; uint) public purchases;
+    mapping (address => uint) public purchases;
 
     /*
     *  Crowdsale parameters
@@ -194,27 +194,27 @@ contract GMToken is StandardToken {
     }
 
     modifier minCapReached() {
-        require(assignedSupply &gt;= minCap);
+        require(assignedSupply >= minCap);
         _;
     }
 
     modifier minCapNotReached() {
-        require(assignedSupply &lt; minCap);
+        require(assignedSupply < minCap);
         _;
     }
 
     modifier respectTimeFrame() {
-        require(block.number &gt;= startBlock &amp;&amp; block.number &lt; endBlock);
+        require(block.number >= startBlock && block.number < endBlock);
         _;
     }
 
     modifier salePeriodCompleted() {
-        require(block.number &gt;= endBlock || assignedSupply.add(gmtFund) == totalSupply);
+        require(block.number >= endBlock || assignedSupply.add(gmtFund) == totalSupply);
         _;
     }
 
     modifier isValidState() {
-        require(!isFinalized &amp;&amp; !isStopped);
+        require(!isFinalized && !isStopped);
         _;
     }
 
@@ -231,7 +231,7 @@ contract GMToken is StandardToken {
     {
         require(_gmtFundAddress != 0x0);
         require(_ethFundAddress != 0x0);
-        require(_startBlock &lt; _endBlock &amp;&amp; _startBlock &gt; block.number);
+        require(_startBlock < _endBlock && _startBlock > block.number);
 
         owner = msg.sender; // Creator of contract is owner
         isFinalized = false; // Controls pre-sale state through crowdsale state
@@ -268,17 +268,17 @@ contract GMToken is StandardToken {
     /// @notice Create `msg.value` ETH worth of GMT
     /// @dev Only allowed to be called within the timeframe of the sale period
     function claimTokens() respectTimeFrame registeredUser isValidState payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint256 tokens = msg.value.mul(tokenExchangeRate);
 
         require(isWithinCap(tokens));
 
-        // Check that we&#39;re not over totals
+        // Check that we're not over totals
         uint256 checkedSupply = assignedSupply.add(tokens);
 
-        // Return money if we&#39;re over total token supply
-        require(checkedSupply.add(gmtFund) &lt;= totalSupply); 
+        // Return money if we're over total token supply
+        require(checkedSupply.add(gmtFund) <= totalSupply); 
 
         balances[msg.sender] = balances[msg.sender].add(tokens);
         purchases[msg.sender] = purchases[msg.sender].add(tokens);
@@ -292,19 +292,19 @@ contract GMToken is StandardToken {
 
     /// @dev Checks if transaction meets individual cap requirements
     function isWithinCap(uint256 tokens) internal view returns (bool) {
-        // Return true if we&#39;ve passed the cap period
-        if (block.number &gt;= secondCapEndingBlock) {
+        // Return true if we've passed the cap period
+        if (block.number >= secondCapEndingBlock) {
             return true;
         }
 
         // Ensure user is under gas limit
-        require(tx.gasprice &lt;= gasLimitInWei);
+        require(tx.gasprice <= gasLimitInWei);
         
         // Ensure user is not purchasing more tokens than allowed
-        if (block.number &lt; firstCapEndingBlock) {
-            return purchases[msg.sender].add(tokens) &lt;= baseTokenCapPerAddress;
+        if (block.number < firstCapEndingBlock) {
+            return purchases[msg.sender].add(tokens) <= baseTokenCapPerAddress;
         } else {
-            return purchases[msg.sender].add(tokens) &lt;= baseTokenCapPerAddress.mul(4);
+            return purchases[msg.sender].add(tokens) <= baseTokenCapPerAddress.mul(4);
         }
     }
 
@@ -320,7 +320,7 @@ contract GMToken is StandardToken {
     /// @param targets Addresses that will be registered or deregistered
     /// @param isRegistered New registration status of addresses
     function changeRegistrationStatuses(address[] targets, bool isRegistered) public onlyBy(owner) {
-        for (uint i = 0; i &lt; targets.length; i++) {
+        for (uint i = 0; i < targets.length; i++) {
             changeRegistrationStatus(targets[i], isRegistered);
         }
     }
@@ -336,7 +336,7 @@ contract GMToken is StandardToken {
         // In the case where not all 500M GMT allocated to crowdfund participants
         // is sold, send the remaining unassigned supply to GMT fund address,
         // which will then be used to fund the user growth pool.
-        if (assignedSupply &lt; totalSupply) {
+        if (assignedSupply < totalSupply) {
             uint256 unassignedSupply = totalSupply.sub(assignedSupply);
             balances[gmtFundAddress] = balances[gmtFundAddress].add(unassignedSupply);
             assignedSupply = assignedSupply.add(unassignedSupply);
@@ -357,7 +357,7 @@ contract GMToken is StandardToken {
         require(msg.sender != gmtFundAddress);  // Radical App International not entitled to a refund
 
         uint256 gmtVal = balances[msg.sender];
-        require(gmtVal &gt; 0); // Prevent refund if sender GMT balance is 0
+        require(gmtVal > 0); // Prevent refund if sender GMT balance is 0
 
         balances[msg.sender] = balances[msg.sender].sub(gmtVal);
         assignedSupply = assignedSupply.sub(gmtVal); // Adjust assigned supply to account for refunded amount

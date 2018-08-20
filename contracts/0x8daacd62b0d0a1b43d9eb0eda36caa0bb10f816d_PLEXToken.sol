@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -41,8 +41,8 @@ contract ERC20Interface {
 
 contract PLEXToken is ERC20Interface {
 	using SafeMath for uint;
-    mapping(address =&gt; uint) public balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) public balances;
+	mapping(address => mapping(address => uint)) public allowed;
 	
 	string public name;
 	string public symbol;
@@ -62,8 +62,8 @@ contract PLEXToken is ERC20Interface {
 	address public contractOwner;
 
     constructor() public {
-		name = &quot;PLEX&quot;;
-		symbol = &quot;PLEX&quot;;
+		name = "PLEX";
+		symbol = "PLEX";
 		decimals = 2;
 		totalSupply = 0;
 		maximumSupply = 10000000000;
@@ -170,35 +170,35 @@ contract PLEXToken is ERC20Interface {
 	}
     
     function() public payable {
-        require((now &lt;= preSaleEnd) || (now &gt;= mainSaleStart &amp;&amp; now &lt;= mainSaleEnd));
-		if (now &lt;= preSaleEnd) {
-			require((msg.value &gt;= 0.01 ether &amp;&amp; msg.value &lt;= 15 ether) &amp;&amp; (preSaleSupply &gt;= (msg.value / preSaleRate) * 100));
+        require((now <= preSaleEnd) || (now >= mainSaleStart && now <= mainSaleEnd));
+		if (now <= preSaleEnd) {
+			require((msg.value >= 0.01 ether && msg.value <= 15 ether) && (preSaleSupply >= (msg.value / preSaleRate) * 100));
 			preSaleSupply = preSaleSupply.sub((msg.value / preSaleRate) * 100);
 			totalSupply = totalSupply.add((msg.value / preSaleRate) * 100);
 			balances[msg.sender] = balances[msg.sender].add((msg.value / preSaleRate) * 100);
 			emit Transfer(0, msg.sender, (msg.value / preSaleRate) * 100);
 		}
-		if (now &gt;= mainSaleStart &amp;&amp; now &lt;= mainSaleEnd) {
-			require((msg.value &gt;= 0.01 ether &amp;&amp; msg.value &lt;= 15 ether) &amp;&amp; (mainSaleSupply &gt;= (msg.value / mainSaleRateP1) * 100));
-			if (mainSaleSupply &lt;= 4000000000 &amp;&amp; mainSaleSupply &gt; 3000000000) {
+		if (now >= mainSaleStart && now <= mainSaleEnd) {
+			require((msg.value >= 0.01 ether && msg.value <= 15 ether) && (mainSaleSupply >= (msg.value / mainSaleRateP1) * 100));
+			if (mainSaleSupply <= 4000000000 && mainSaleSupply > 3000000000) {
 				mainSaleSupply = mainSaleSupply.sub((msg.value / mainSaleRateP1) * 100);
 				totalSupply = totalSupply.add((msg.value / mainSaleRateP1) * 100);
 				balances[msg.sender] = balances[msg.sender].add((msg.value / mainSaleRateP1) * 100);
 				emit Transfer(0, msg.sender, (msg.value / mainSaleRateP1) * 100);
 			}
-			if (mainSaleSupply &lt;= 3000000000 &amp;&amp; mainSaleSupply &gt; 2000000000) {
+			if (mainSaleSupply <= 3000000000 && mainSaleSupply > 2000000000) {
 				mainSaleSupply = mainSaleSupply.sub((msg.value / mainSaleRateP2) * 100);
 				totalSupply = totalSupply.add((msg.value / mainSaleRateP2) * 100);
 				balances[msg.sender] = balances[msg.sender].add((msg.value / mainSaleRateP2) * 100);
 				emit Transfer(0, msg.sender, (msg.value / mainSaleRateP2) * 100);
 			}
-			if (mainSaleSupply &lt;= 2000000000 &amp;&amp; mainSaleSupply &gt; 1000000000) {
+			if (mainSaleSupply <= 2000000000 && mainSaleSupply > 1000000000) {
 				mainSaleSupply = mainSaleSupply.sub((msg.value / mainSaleRateP3) * 100);
 				totalSupply = totalSupply.add((msg.value / mainSaleRateP3) * 100);
 				balances[msg.sender] = balances[msg.sender].add((msg.value / mainSaleRateP3) * 100);
 				emit Transfer(0, msg.sender, (msg.value / mainSaleRateP3) * 100);
 			}
-			if (mainSaleSupply &lt;= 1000000000) {
+			if (mainSaleSupply <= 1000000000) {
 				mainSaleSupply = mainSaleSupply.sub((msg.value / mainSaleRateP4) * 100);
 				totalSupply = totalSupply.add((msg.value / mainSaleRateP4) * 100);
 				balances[msg.sender] = balances[msg.sender].add((msg.value / mainSaleRateP4) * 100);

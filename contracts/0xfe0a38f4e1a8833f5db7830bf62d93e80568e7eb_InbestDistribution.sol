@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,7 +123,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -134,8 +134,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -198,7 +198,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -217,8 +217,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract InbestToken is StandardToken {
 
-  string public constant name = &quot;Inbest Token&quot;;
-  string public constant symbol = &quot;IBST&quot;;
+  string public constant name = "Inbest Token";
+  string public constant symbol = "IBST";
   uint8 public constant decimals = 18;
 
   // TBD
@@ -238,7 +238,7 @@ contract InbestToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -278,7 +278,7 @@ contract Ownable {
 /**
  * @title Inbest Token initial distribution
  *
- * @dev Distribute Investors&#39; and Company&#39;s tokens
+ * @dev Distribute Investors' and Company's tokens
  */
 contract InbestDistribution is Ownable {
   using SafeMath for uint256;
@@ -287,7 +287,7 @@ contract InbestDistribution is Ownable {
   InbestToken public IBST;
 
   // Status of admins
-  mapping (address =&gt; bool) public admins;
+  mapping (address => bool) public admins;
 
   // Number of decimal places for tokens
   uint256 private constant DECIMALFACTOR = 10**uint256(18);
@@ -325,7 +325,7 @@ contract InbestDistribution is Ownable {
     uint256 totalAllocated; // Total tokens allocated
     uint256 amountClaimed;  // Total tokens claimed
   }
-  mapping (address =&gt; Allocation) public allocations;
+  mapping (address => Allocation) public allocations;
 
   // Modifier to control who executes functions
   modifier onlyOwnerOrAdmin() {
@@ -349,7 +349,7 @@ contract InbestDistribution is Ownable {
     */
   function InbestDistribution(uint256 _startTime, address _companyWallet) public {
     require(_companyWallet != address(0));
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(AVAILABLE_TOTAL_SUPPLY == AVAILABLE_PRESALE_SUPPLY.add(AVAILABLE_COMPANY_SUPPLY));
     startTime = _startTime;
     companyWallet = _companyWallet;
@@ -371,10 +371,10 @@ contract InbestDistribution is Ownable {
     */
   function setAllocation (address _recipient, uint256 _totalAllocated) public onlyOwnerOrAdmin {
     require(_recipient != address(0));
-    require(startTime &gt; now); //Allocations are allowed only before starTime
-    require(AVAILABLE_PRESALE_SUPPLY &gt;= _totalAllocated); //Current allocation must be less than remaining presale supply
-    require(allocations[_recipient].totalAllocated == 0 &amp;&amp; _totalAllocated &gt; 0); // Must be the first and only allocation for this recipient
-    require(_recipient != companyWallet); // Receipient of presale allocation can&#39;t be company wallet
+    require(startTime > now); //Allocations are allowed only before starTime
+    require(AVAILABLE_PRESALE_SUPPLY >= _totalAllocated); //Current allocation must be less than remaining presale supply
+    require(allocations[_recipient].totalAllocated == 0 && _totalAllocated > 0); // Must be the first and only allocation for this recipient
+    require(_recipient != companyWallet); // Receipient of presale allocation can't be company wallet
 
     // Allocate
     AVAILABLE_PRESALE_SUPPLY = AVAILABLE_PRESALE_SUPPLY.sub(_totalAllocated);
@@ -389,14 +389,14 @@ contract InbestDistribution is Ownable {
    */
  function transferTokens (address _recipient) public {
    require(_recipient != address(0));
-   require(now &gt;= startTime); //Tokens can&#39;t be transfered until start date
-   require(_recipient != companyWallet); // Tokens allocated to COMPANY can&#39;t be withdrawn.
-   require(now &gt;= allocations[_recipient].endCliff); // Cliff period must be ended
-   // Receipient can&#39;t claim more IBST tokens than allocated
-   require(allocations[_recipient].amountClaimed &lt; allocations[_recipient].totalAllocated);
+   require(now >= startTime); //Tokens can't be transfered until start date
+   require(_recipient != companyWallet); // Tokens allocated to COMPANY can't be withdrawn.
+   require(now >= allocations[_recipient].endCliff); // Cliff period must be ended
+   // Receipient can't claim more IBST tokens than allocated
+   require(allocations[_recipient].amountClaimed < allocations[_recipient].totalAllocated);
 
    uint256 newAmountClaimed;
-   if (allocations[_recipient].endVesting &gt; now) {
+   if (allocations[_recipient].endVesting > now) {
      // Transfer available amount based on vesting schedule and allocation
      newAmountClaimed = allocations[_recipient].totalAllocated.mul(now.sub(allocations[_recipient].endCliff)).div(allocations[_recipient].endVesting.sub(allocations[_recipient].endCliff));
    } else {
@@ -419,11 +419,11 @@ contract InbestDistribution is Ownable {
   */
  function manualContribution(address _recipient, uint256 _tokensToTransfer) public onlyOwnerOrAdmin {
    require(_recipient != address(0));
-   require(_recipient != companyWallet); // Company can&#39;t withdraw tokens for itself
-   require(_tokensToTransfer &gt; 0); // The amount must be valid
-   require(now &gt;= startTime); // Tokens cant&#39;t be transfered until start date
-   //Company can&#39;t trasnfer more tokens than allocated
-   require(allocations[companyWallet].amountClaimed.add(_tokensToTransfer) &lt;= allocations[companyWallet].totalAllocated);
+   require(_recipient != companyWallet); // Company can't withdraw tokens for itself
+   require(_tokensToTransfer > 0); // The amount must be valid
+   require(now >= startTime); // Tokens cant't be transfered until start date
+   //Company can't trasnfer more tokens than allocated
+   require(allocations[companyWallet].amountClaimed.add(_tokensToTransfer) <= allocations[companyWallet].totalAllocated);
 
    //Transfer
    allocations[companyWallet].amountClaimed = allocations[companyWallet].amountClaimed.add(_tokensToTransfer);

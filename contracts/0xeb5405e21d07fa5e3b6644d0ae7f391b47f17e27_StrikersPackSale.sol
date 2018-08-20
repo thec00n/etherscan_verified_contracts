@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -151,7 +151,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -181,9 +181,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -191,7 +191,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -200,7 +200,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -229,7 +229,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -244,21 +244,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -382,7 +382,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -398,14 +398,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -540,19 +540,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -595,7 +595,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -614,7 +614,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -718,9 +718,9 @@ contract StrikersPlayerList is Ownable {
   // We only use playerIds in StrikersChecklist.sol (to
   // indicate which player features on instances of a
   // given ChecklistItem), and nowhere else in the app.
-  // While it&#39;s not explictly necessary for any of our
+  // While it's not explictly necessary for any of our
   // contracts to know that playerId 0 corresponds to
-  // Lionel Messi, we think that it&#39;s nice to have
+  // Lionel Messi, we think that it's nice to have
   // a canonical source of truth for who the playerIds
   // actually refer to. Storing strings (player names)
   // is expensive, so we just use Events to prove that,
@@ -729,8 +729,8 @@ contract StrikersPlayerList is Ownable {
   /// @dev The event we fire when we add a player.
   event PlayerAdded(uint8 indexed id, string name);
 
-  /// @dev How many players we&#39;ve added so far
-  ///   (max 255, though we don&#39;t plan on getting close)
+  /// @dev How many players we've added so far
+  ///   (max 255, though we don't plan on getting close)
   uint8 public playerCount;
 
   /// @dev Here we add the players we are launching with on Day 1.
@@ -738,114 +738,114 @@ contract StrikersPlayerList is Ownable {
   ///   number of Instagram followers, and opinions of CryptoStrikers
   ///   team members. Feel free to yell at us on Twitter.
   constructor() public {
-    addPlayer(&quot;Lionel Messi&quot;); // 0
-    addPlayer(&quot;Cristiano Ronaldo&quot;); // 1
-    addPlayer(&quot;Neymar&quot;); // 2
-    addPlayer(&quot;Mohamed Salah&quot;); // 3
-    addPlayer(&quot;Robert Lewandowski&quot;); // 4
-    addPlayer(&quot;Kevin De Bruyne&quot;); // 5
-    addPlayer(&quot;Luka Modrić&quot;); // 6
-    addPlayer(&quot;Eden Hazard&quot;); // 7
-    addPlayer(&quot;Sergio Ramos&quot;); // 8
-    addPlayer(&quot;Toni Kroos&quot;); // 9
-    addPlayer(&quot;Luis Su&#225;rez&quot;); // 10
-    addPlayer(&quot;Harry Kane&quot;); // 11
-    addPlayer(&quot;Sergio Ag&#252;ero&quot;); // 12
-    addPlayer(&quot;Kylian Mbapp&#233;&quot;); // 13
-    addPlayer(&quot;Gonzalo Higua&#237;n&quot;); // 14
-    addPlayer(&quot;David de Gea&quot;); // 15
-    addPlayer(&quot;Antoine Griezmann&quot;); // 16
-    addPlayer(&quot;N&#39;Golo Kant&#233;&quot;); // 17
-    addPlayer(&quot;Edinson Cavani&quot;); // 18
-    addPlayer(&quot;Paul Pogba&quot;); // 19
-    addPlayer(&quot;Isco&quot;); // 20
-    addPlayer(&quot;Marcelo&quot;); // 21
-    addPlayer(&quot;Manuel Neuer&quot;); // 22
-    addPlayer(&quot;Dries Mertens&quot;); // 23
-    addPlayer(&quot;James Rodr&#237;guez&quot;); // 24
-    addPlayer(&quot;Paulo Dybala&quot;); // 25
-    addPlayer(&quot;Christian Eriksen&quot;); // 26
-    addPlayer(&quot;David Silva&quot;); // 27
-    addPlayer(&quot;Gabriel Jesus&quot;); // 28
-    addPlayer(&quot;Thiago&quot;); // 29
-    addPlayer(&quot;Thibaut Courtois&quot;); // 30
-    addPlayer(&quot;Philippe Coutinho&quot;); // 31
-    addPlayer(&quot;Andr&#233;s Iniesta&quot;); // 32
-    addPlayer(&quot;Casemiro&quot;); // 33
-    addPlayer(&quot;Romelu Lukaku&quot;); // 34
-    addPlayer(&quot;Gerard Piqu&#233;&quot;); // 35
-    addPlayer(&quot;Mats Hummels&quot;); // 36
-    addPlayer(&quot;Diego God&#237;n&quot;); // 37
-    addPlayer(&quot;Mesut &#214;zil&quot;); // 38
-    addPlayer(&quot;Son Heung-min&quot;); // 39
-    addPlayer(&quot;Raheem Sterling&quot;); // 40
-    addPlayer(&quot;Hugo Lloris&quot;); // 41
-    addPlayer(&quot;Radamel Falcao&quot;); // 42
-    addPlayer(&quot;Ivan Rakitić&quot;); // 43
-    addPlayer(&quot;Leroy San&#233;&quot;); // 44
-    addPlayer(&quot;Roberto Firmino&quot;); // 45
-    addPlayer(&quot;Sadio Man&#233;&quot;); // 46
-    addPlayer(&quot;Thomas M&#252;ller&quot;); // 47
-    addPlayer(&quot;Dele Alli&quot;); // 48
-    addPlayer(&quot;Keylor Navas&quot;); // 49
-    addPlayer(&quot;Thiago Silva&quot;); // 50
-    addPlayer(&quot;Rapha&#235;l Varane&quot;); // 51
-    addPlayer(&quot;&#193;ngel Di Mar&#237;a&quot;); // 52
-    addPlayer(&quot;Jordi Alba&quot;); // 53
-    addPlayer(&quot;Medhi Benatia&quot;); // 54
-    addPlayer(&quot;Timo Werner&quot;); // 55
-    addPlayer(&quot;Gylfi Sigur&#240;sson&quot;); // 56
-    addPlayer(&quot;Nemanja Matić&quot;); // 57
-    addPlayer(&quot;Kalidou Koulibaly&quot;); // 58
-    addPlayer(&quot;Bernardo Silva&quot;); // 59
-    addPlayer(&quot;Vincent Kompany&quot;); // 60
-    addPlayer(&quot;Jo&#227;o Moutinho&quot;); // 61
-    addPlayer(&quot;Toby Alderweireld&quot;); // 62
-    addPlayer(&quot;Emil Forsberg&quot;); // 63
-    addPlayer(&quot;Mario Mandžukić&quot;); // 64
-    addPlayer(&quot;Sergej Milinković-Savić&quot;); // 65
-    addPlayer(&quot;Shinji Kagawa&quot;); // 66
-    addPlayer(&quot;Granit Xhaka&quot;); // 67
-    addPlayer(&quot;Andreas Christensen&quot;); // 68
-    addPlayer(&quot;Piotr Zieliński&quot;); // 69
-    addPlayer(&quot;Fyodor Smolov&quot;); // 70
-    addPlayer(&quot;Xherdan Shaqiri&quot;); // 71
-    addPlayer(&quot;Marcus Rashford&quot;); // 72
-    addPlayer(&quot;Javier Hern&#225;ndez&quot;); // 73
-    addPlayer(&quot;Hirving Lozano&quot;); // 74
-    addPlayer(&quot;Hakim Ziyech&quot;); // 75
-    addPlayer(&quot;Victor Moses&quot;); // 76
-    addPlayer(&quot;Jefferson Farf&#225;n&quot;); // 77
-    addPlayer(&quot;Mohamed Elneny&quot;); // 78
-    addPlayer(&quot;Marcus Berg&quot;); // 79
-    addPlayer(&quot;Guillermo Ochoa&quot;); // 80
-    addPlayer(&quot;Igor Akinfeev&quot;); // 81
-    addPlayer(&quot;Sardar Azmoun&quot;); // 82
-    addPlayer(&quot;Christian Cueva&quot;); // 83
-    addPlayer(&quot;Wahbi Khazri&quot;); // 84
-    addPlayer(&quot;Keisuke Honda&quot;); // 85
-    addPlayer(&quot;Tim Cahill&quot;); // 86
-    addPlayer(&quot;John Obi Mikel&quot;); // 87
-    addPlayer(&quot;Ki Sung-yueng&quot;); // 88
-    addPlayer(&quot;Bryan Ruiz&quot;); // 89
-    addPlayer(&quot;Maya Yoshida&quot;); // 90
-    addPlayer(&quot;Nawaf Al Abed&quot;); // 91
-    addPlayer(&quot;Lee Chung-yong&quot;); // 92
-    addPlayer(&quot;Gabriel G&#243;mez&quot;); // 93
-    addPlayer(&quot;Na&#239;m Sliti&quot;); // 94
-    addPlayer(&quot;Reza Ghoochannejhad&quot;); // 95
-    addPlayer(&quot;Mile Jedinak&quot;); // 96
-    addPlayer(&quot;Mohammad Al-Sahlawi&quot;); // 97
-    addPlayer(&quot;Aron Gunnarsson&quot;); // 98
-    addPlayer(&quot;Blas P&#233;rez&quot;); // 99
-    addPlayer(&quot;Dani Alves&quot;); // 100
-    addPlayer(&quot;Zlatan Ibrahimović&quot;); // 101
+    addPlayer("Lionel Messi"); // 0
+    addPlayer("Cristiano Ronaldo"); // 1
+    addPlayer("Neymar"); // 2
+    addPlayer("Mohamed Salah"); // 3
+    addPlayer("Robert Lewandowski"); // 4
+    addPlayer("Kevin De Bruyne"); // 5
+    addPlayer("Luka Modrić"); // 6
+    addPlayer("Eden Hazard"); // 7
+    addPlayer("Sergio Ramos"); // 8
+    addPlayer("Toni Kroos"); // 9
+    addPlayer("Luis Suárez"); // 10
+    addPlayer("Harry Kane"); // 11
+    addPlayer("Sergio Agüero"); // 12
+    addPlayer("Kylian Mbappé"); // 13
+    addPlayer("Gonzalo Higuaín"); // 14
+    addPlayer("David de Gea"); // 15
+    addPlayer("Antoine Griezmann"); // 16
+    addPlayer("N'Golo Kanté"); // 17
+    addPlayer("Edinson Cavani"); // 18
+    addPlayer("Paul Pogba"); // 19
+    addPlayer("Isco"); // 20
+    addPlayer("Marcelo"); // 21
+    addPlayer("Manuel Neuer"); // 22
+    addPlayer("Dries Mertens"); // 23
+    addPlayer("James Rodríguez"); // 24
+    addPlayer("Paulo Dybala"); // 25
+    addPlayer("Christian Eriksen"); // 26
+    addPlayer("David Silva"); // 27
+    addPlayer("Gabriel Jesus"); // 28
+    addPlayer("Thiago"); // 29
+    addPlayer("Thibaut Courtois"); // 30
+    addPlayer("Philippe Coutinho"); // 31
+    addPlayer("Andrés Iniesta"); // 32
+    addPlayer("Casemiro"); // 33
+    addPlayer("Romelu Lukaku"); // 34
+    addPlayer("Gerard Piqué"); // 35
+    addPlayer("Mats Hummels"); // 36
+    addPlayer("Diego Godín"); // 37
+    addPlayer("Mesut Özil"); // 38
+    addPlayer("Son Heung-min"); // 39
+    addPlayer("Raheem Sterling"); // 40
+    addPlayer("Hugo Lloris"); // 41
+    addPlayer("Radamel Falcao"); // 42
+    addPlayer("Ivan Rakitić"); // 43
+    addPlayer("Leroy Sané"); // 44
+    addPlayer("Roberto Firmino"); // 45
+    addPlayer("Sadio Mané"); // 46
+    addPlayer("Thomas Müller"); // 47
+    addPlayer("Dele Alli"); // 48
+    addPlayer("Keylor Navas"); // 49
+    addPlayer("Thiago Silva"); // 50
+    addPlayer("Raphaël Varane"); // 51
+    addPlayer("Ángel Di María"); // 52
+    addPlayer("Jordi Alba"); // 53
+    addPlayer("Medhi Benatia"); // 54
+    addPlayer("Timo Werner"); // 55
+    addPlayer("Gylfi Sigurðsson"); // 56
+    addPlayer("Nemanja Matić"); // 57
+    addPlayer("Kalidou Koulibaly"); // 58
+    addPlayer("Bernardo Silva"); // 59
+    addPlayer("Vincent Kompany"); // 60
+    addPlayer("João Moutinho"); // 61
+    addPlayer("Toby Alderweireld"); // 62
+    addPlayer("Emil Forsberg"); // 63
+    addPlayer("Mario Mandžukić"); // 64
+    addPlayer("Sergej Milinković-Savić"); // 65
+    addPlayer("Shinji Kagawa"); // 66
+    addPlayer("Granit Xhaka"); // 67
+    addPlayer("Andreas Christensen"); // 68
+    addPlayer("Piotr Zieliński"); // 69
+    addPlayer("Fyodor Smolov"); // 70
+    addPlayer("Xherdan Shaqiri"); // 71
+    addPlayer("Marcus Rashford"); // 72
+    addPlayer("Javier Hernández"); // 73
+    addPlayer("Hirving Lozano"); // 74
+    addPlayer("Hakim Ziyech"); // 75
+    addPlayer("Victor Moses"); // 76
+    addPlayer("Jefferson Farfán"); // 77
+    addPlayer("Mohamed Elneny"); // 78
+    addPlayer("Marcus Berg"); // 79
+    addPlayer("Guillermo Ochoa"); // 80
+    addPlayer("Igor Akinfeev"); // 81
+    addPlayer("Sardar Azmoun"); // 82
+    addPlayer("Christian Cueva"); // 83
+    addPlayer("Wahbi Khazri"); // 84
+    addPlayer("Keisuke Honda"); // 85
+    addPlayer("Tim Cahill"); // 86
+    addPlayer("John Obi Mikel"); // 87
+    addPlayer("Ki Sung-yueng"); // 88
+    addPlayer("Bryan Ruiz"); // 89
+    addPlayer("Maya Yoshida"); // 90
+    addPlayer("Nawaf Al Abed"); // 91
+    addPlayer("Lee Chung-yong"); // 92
+    addPlayer("Gabriel Gómez"); // 93
+    addPlayer("Naïm Sliti"); // 94
+    addPlayer("Reza Ghoochannejhad"); // 95
+    addPlayer("Mile Jedinak"); // 96
+    addPlayer("Mohammad Al-Sahlawi"); // 97
+    addPlayer("Aron Gunnarsson"); // 98
+    addPlayer("Blas Pérez"); // 99
+    addPlayer("Dani Alves"); // 100
+    addPlayer("Zlatan Ibrahimović"); // 101
   }
 
   /// @dev Fires an event, proving that we said a player corresponds to a given ID.
   /// @param _name The name of the player we are adding.
   function addPlayer(string _name) public onlyOwner {
-    require(playerCount &lt; 255, &quot;You&#39;ve already added the maximum amount of players.&quot;);
+    require(playerCount < 255, "You've already added the maximum amount of players.");
     emit PlayerAdded(playerCount, _name);
     playerCount++;
   }
@@ -863,7 +863,7 @@ contract StrikersChecklist is StrikersPlayerList {
   //  - RarityTier tier (more info below)
   //
   // Two things to note: the checklistId is not explicitly stored
-  // on the checklistItem struct, and it&#39;s composed of two parts.
+  // on the checklistItem struct, and it's composed of two parts.
   // (For the following, assume it is left padded with zeros to reach
   // three digits, such that checklistId 0 becomes 000)
   //  - the first digit represents the setId
@@ -877,9 +877,9 @@ contract StrikersChecklist is StrikersPlayerList {
   //  digits = 00 = first index of array)
   //
   // Because checklistId is represented as a uint8 throughout the app, the highest
-  // value it can take is 255, which means we can&#39;t add more than 56 items to our
-  // Unreleased Set&#39;s unreleasedChecklistItems array (setId 2). Also, once we&#39;ve initialized
-  // this contract, it&#39;s impossible for us to add more checklist items to the Originals
+  // value it can take is 255, which means we can't add more than 56 items to our
+  // Unreleased Set's unreleasedChecklistItems array (setId 2). Also, once we've initialized
+  // this contract, it's impossible for us to add more checklist items to the Originals
   // and Iconics set -- what you see here is what you get.
   //
   // Simple enough right?
@@ -895,7 +895,7 @@ contract StrikersChecklist is StrikersPlayerList {
   }
 
   /// @dev Enum containing all our rarity tiers, just because
-  ///   it&#39;s cleaner dealing with these values than with uint8s.
+  ///   it's cleaner dealing with these values than with uint8s.
   enum RarityTier {
     IconicReferral,
     IconicInsert,
@@ -912,7 +912,7 @@ contract StrikersChecklist is StrikersPlayerList {
   ///   we give away as part of our referral program.
   uint16[] public tierLimits = [
     0,    // Iconic - Referral Bonus (uncapped)
-    100,  // Iconic Inserts (&quot;Card of the Day&quot;)
+    100,  // Iconic Inserts ("Card of the Day")
     1000, // Diamond
     1664, // Gold
     3328, // Silver
@@ -928,7 +928,7 @@ contract StrikersChecklist is StrikersPlayerList {
     RarityTier tier;
   }
 
-  /// @dev The deploy step we&#39;re at. Defaults to WaitingForStepOne.
+  /// @dev The deploy step we're at. Defaults to WaitingForStepOne.
   DeployStep public deployStep;
 
   /// @dev Array containing all the Originals checklist items (000 - 099)
@@ -942,7 +942,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Internal function to add a checklist item to the Originals set.
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function _addOriginalChecklistItem(uint8 _playerId, RarityTier _tier) internal {
     originalChecklistItems.push(ChecklistItem({
       playerId: _playerId,
@@ -952,7 +952,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Internal function to add a checklist item to the Iconics set.
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function _addIconicChecklistItem(uint8 _playerId, RarityTier _tier) internal {
     iconicChecklistItems.push(ChecklistItem({
       playerId: _playerId,
@@ -961,30 +961,30 @@ contract StrikersChecklist is StrikersPlayerList {
   }
 
   /// @dev External function to add a checklist item to our mystery set.
-  ///   Must have completed initial deploy, and can&#39;t add more than 56 items (because checklistId is a uint8).
+  ///   Must have completed initial deploy, and can't add more than 56 items (because checklistId is a uint8).
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function addUnreleasedChecklistItem(uint8 _playerId, RarityTier _tier) external onlyOwner {
-    require(deployStep == DeployStep.DoneInitialDeploy, &quot;Finish deploying the Originals and Iconics sets first.&quot;);
-    require(unreleasedCount() &lt; 56, &quot;You can&#39;t add any more checklist items.&quot;);
-    require(_playerId &lt; playerCount, &quot;This player doesn&#39;t exist in our player list.&quot;);
+    require(deployStep == DeployStep.DoneInitialDeploy, "Finish deploying the Originals and Iconics sets first.");
+    require(unreleasedCount() < 56, "You can't add any more checklist items.");
+    require(_playerId < playerCount, "This player doesn't exist in our player list.");
     unreleasedChecklistItems.push(ChecklistItem({
       playerId: _playerId,
       tier: _tier
     }));
   }
 
-  /// @dev Returns how many Original checklist items we&#39;ve added.
+  /// @dev Returns how many Original checklist items we've added.
   function originalsCount() external view returns (uint256) {
     return originalChecklistItems.length;
   }
 
-  /// @dev Returns how many Iconic checklist items we&#39;ve added.
+  /// @dev Returns how many Iconic checklist items we've added.
   function iconicsCount() public view returns (uint256) {
     return iconicChecklistItems.length;
   }
 
-  /// @dev Returns how many Unreleased checklist items we&#39;ve added.
+  /// @dev Returns how many Unreleased checklist items we've added.
   function unreleasedCount() public view returns (uint256) {
     return unreleasedChecklistItems.length;
   }
@@ -1004,7 +1004,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #000 through #032.
   function deployStepOne() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepOne, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepOne, "You're not following the steps in order...");
 
     /* ORIGINALS - DIAMOND */
     _addOriginalChecklistItem(0, RarityTier.Diamond); // 000 Messi
@@ -1019,14 +1019,14 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(7, RarityTier.Gold); // 007 Hazard
     _addOriginalChecklistItem(8, RarityTier.Gold); // 008 Ramos
     _addOriginalChecklistItem(9, RarityTier.Gold); // 009 Kroos
-    _addOriginalChecklistItem(10, RarityTier.Gold); // 010 Su&#225;rez
+    _addOriginalChecklistItem(10, RarityTier.Gold); // 010 Suárez
     _addOriginalChecklistItem(11, RarityTier.Gold); // 011 Kane
-    _addOriginalChecklistItem(12, RarityTier.Gold); // 012 Ag&#252;ero
-    _addOriginalChecklistItem(13, RarityTier.Gold); // 013 Mbapp&#233;
-    _addOriginalChecklistItem(14, RarityTier.Gold); // 014 Higua&#237;n
+    _addOriginalChecklistItem(12, RarityTier.Gold); // 012 Agüero
+    _addOriginalChecklistItem(13, RarityTier.Gold); // 013 Mbappé
+    _addOriginalChecklistItem(14, RarityTier.Gold); // 014 Higuaín
     _addOriginalChecklistItem(15, RarityTier.Gold); // 015 de Gea
     _addOriginalChecklistItem(16, RarityTier.Gold); // 016 Griezmann
-    _addOriginalChecklistItem(17, RarityTier.Gold); // 017 Kant&#233;
+    _addOriginalChecklistItem(17, RarityTier.Gold); // 017 Kanté
     _addOriginalChecklistItem(18, RarityTier.Gold); // 018 Cavani
     _addOriginalChecklistItem(19, RarityTier.Gold); // 019 Pogba
 
@@ -1051,35 +1051,35 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #033 through #065.
   function deployStepTwo() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepTwo, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepTwo, "You're not following the steps in order...");
 
     /* ORIGINALS - SILVER (033 to 049) */
     _addOriginalChecklistItem(33, RarityTier.Silver); // 033 Casemiro
     _addOriginalChecklistItem(34, RarityTier.Silver); // 034 Lukaku
-    _addOriginalChecklistItem(35, RarityTier.Silver); // 035 Piqu&#233;
+    _addOriginalChecklistItem(35, RarityTier.Silver); // 035 Piqué
     _addOriginalChecklistItem(36, RarityTier.Silver); // 036 Hummels
-    _addOriginalChecklistItem(37, RarityTier.Silver); // 037 God&#237;n
-    _addOriginalChecklistItem(38, RarityTier.Silver); // 038 &#214;zil
+    _addOriginalChecklistItem(37, RarityTier.Silver); // 037 Godín
+    _addOriginalChecklistItem(38, RarityTier.Silver); // 038 Özil
     _addOriginalChecklistItem(39, RarityTier.Silver); // 039 Son
     _addOriginalChecklistItem(40, RarityTier.Silver); // 040 Sterling
     _addOriginalChecklistItem(41, RarityTier.Silver); // 041 Lloris
     _addOriginalChecklistItem(42, RarityTier.Silver); // 042 Falcao
     _addOriginalChecklistItem(43, RarityTier.Silver); // 043 Rakitić
-    _addOriginalChecklistItem(44, RarityTier.Silver); // 044 San&#233;
+    _addOriginalChecklistItem(44, RarityTier.Silver); // 044 Sané
     _addOriginalChecklistItem(45, RarityTier.Silver); // 045 Firmino
-    _addOriginalChecklistItem(46, RarityTier.Silver); // 046 Man&#233;
-    _addOriginalChecklistItem(47, RarityTier.Silver); // 047 M&#252;ller
+    _addOriginalChecklistItem(46, RarityTier.Silver); // 046 Mané
+    _addOriginalChecklistItem(47, RarityTier.Silver); // 047 Müller
     _addOriginalChecklistItem(48, RarityTier.Silver); // 048 Alli
     _addOriginalChecklistItem(49, RarityTier.Silver); // 049 Navas
 
     /* ORIGINALS - BRONZE (050 to 065) */
     _addOriginalChecklistItem(50, RarityTier.Bronze); // 050 Thiago Silva
     _addOriginalChecklistItem(51, RarityTier.Bronze); // 051 Varane
-    _addOriginalChecklistItem(52, RarityTier.Bronze); // 052 Di Mar&#237;a
+    _addOriginalChecklistItem(52, RarityTier.Bronze); // 052 Di María
     _addOriginalChecklistItem(53, RarityTier.Bronze); // 053 Alba
     _addOriginalChecklistItem(54, RarityTier.Bronze); // 054 Benatia
     _addOriginalChecklistItem(55, RarityTier.Bronze); // 055 Werner
-    _addOriginalChecklistItem(56, RarityTier.Bronze); // 056 Sigur&#240;sson
+    _addOriginalChecklistItem(56, RarityTier.Bronze); // 056 Sigurðsson
     _addOriginalChecklistItem(57, RarityTier.Bronze); // 057 Matić
     _addOriginalChecklistItem(58, RarityTier.Bronze); // 058 Koulibaly
     _addOriginalChecklistItem(59, RarityTier.Bronze); // 059 Bernardo Silva
@@ -1096,7 +1096,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #066 through #099.
   function deployStepThree() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepThree, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepThree, "You're not following the steps in order...");
 
     /* ORIGINALS - BRONZE (066 to 099) */
     _addOriginalChecklistItem(66, RarityTier.Bronze); // 066 Kagawa
@@ -1106,11 +1106,11 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(70, RarityTier.Bronze); // 070 Smolov
     _addOriginalChecklistItem(71, RarityTier.Bronze); // 071 Shaqiri
     _addOriginalChecklistItem(72, RarityTier.Bronze); // 072 Rashford
-    _addOriginalChecklistItem(73, RarityTier.Bronze); // 073 Hern&#225;ndez
+    _addOriginalChecklistItem(73, RarityTier.Bronze); // 073 Hernández
     _addOriginalChecklistItem(74, RarityTier.Bronze); // 074 Lozano
     _addOriginalChecklistItem(75, RarityTier.Bronze); // 075 Ziyech
     _addOriginalChecklistItem(76, RarityTier.Bronze); // 076 Moses
-    _addOriginalChecklistItem(77, RarityTier.Bronze); // 077 Farf&#225;n
+    _addOriginalChecklistItem(77, RarityTier.Bronze); // 077 Farfán
     _addOriginalChecklistItem(78, RarityTier.Bronze); // 078 Elneny
     _addOriginalChecklistItem(79, RarityTier.Bronze); // 079 Berg
     _addOriginalChecklistItem(80, RarityTier.Bronze); // 080 Ochoa
@@ -1126,13 +1126,13 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(90, RarityTier.Bronze); // 090 Yoshida
     _addOriginalChecklistItem(91, RarityTier.Bronze); // 091 Al Abed
     _addOriginalChecklistItem(92, RarityTier.Bronze); // 092 Chung-yong
-    _addOriginalChecklistItem(93, RarityTier.Bronze); // 093 G&#243;mez
+    _addOriginalChecklistItem(93, RarityTier.Bronze); // 093 Gómez
     _addOriginalChecklistItem(94, RarityTier.Bronze); // 094 Sliti
     _addOriginalChecklistItem(95, RarityTier.Bronze); // 095 Ghoochannejhad
     _addOriginalChecklistItem(96, RarityTier.Bronze); // 096 Jedinak
     _addOriginalChecklistItem(97, RarityTier.Bronze); // 097 Al-Sahlawi
     _addOriginalChecklistItem(98, RarityTier.Bronze); // 098 Gunnarsson
-    _addOriginalChecklistItem(99, RarityTier.Bronze); // 099 P&#233;rez
+    _addOriginalChecklistItem(99, RarityTier.Bronze); // 099 Pérez
 
     // Move to the next deploy step.
     deployStep = DeployStep.WaitingForStepFour;
@@ -1140,7 +1140,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys all Iconics and marks the deploy as complete!
   function deployStepFour() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepFour, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepFour, "You're not following the steps in order...");
 
     /* ICONICS */
     _addIconicChecklistItem(0, RarityTier.IconicInsert); // 100 Messi
@@ -1153,12 +1153,12 @@ contract StrikersChecklist is StrikersPlayerList {
     _addIconicChecklistItem(7, RarityTier.IconicInsert); // 107 Hazard
     _addIconicChecklistItem(8, RarityTier.IconicInsert); // 108 Ramos
     _addIconicChecklistItem(9, RarityTier.IconicInsert); // 109 Kroos
-    _addIconicChecklistItem(10, RarityTier.IconicInsert); // 110 Su&#225;rez
+    _addIconicChecklistItem(10, RarityTier.IconicInsert); // 110 Suárez
     _addIconicChecklistItem(11, RarityTier.IconicInsert); // 111 Kane
-    _addIconicChecklistItem(12, RarityTier.IconicInsert); // 112 Ag&#252;ero
+    _addIconicChecklistItem(12, RarityTier.IconicInsert); // 112 Agüero
     _addIconicChecklistItem(15, RarityTier.IconicInsert); // 113 de Gea
     _addIconicChecklistItem(16, RarityTier.IconicInsert); // 114 Griezmann
-    _addIconicChecklistItem(17, RarityTier.IconicReferral); // 115 Kant&#233;
+    _addIconicChecklistItem(17, RarityTier.IconicReferral); // 115 Kanté
     _addIconicChecklistItem(18, RarityTier.IconicReferral); // 116 Cavani
     _addIconicChecklistItem(19, RarityTier.IconicInsert); // 117 Pogba
     _addIconicChecklistItem(21, RarityTier.IconicInsert); // 118 Marcelo
@@ -1166,12 +1166,12 @@ contract StrikersChecklist is StrikersPlayerList {
     _addIconicChecklistItem(26, RarityTier.IconicInsert); // 120 Eriksen
     _addIconicChecklistItem(29, RarityTier.IconicReferral); // 121 Thiago
     _addIconicChecklistItem(36, RarityTier.IconicReferral); // 122 Hummels
-    _addIconicChecklistItem(38, RarityTier.IconicReferral); // 123 &#214;zil
+    _addIconicChecklistItem(38, RarityTier.IconicReferral); // 123 Özil
     _addIconicChecklistItem(39, RarityTier.IconicInsert); // 124 Son
-    _addIconicChecklistItem(46, RarityTier.IconicInsert); // 125 Man&#233;
+    _addIconicChecklistItem(46, RarityTier.IconicInsert); // 125 Mané
     _addIconicChecklistItem(48, RarityTier.IconicInsert); // 126 Alli
     _addIconicChecklistItem(49, RarityTier.IconicReferral); // 127 Navas
-    _addIconicChecklistItem(73, RarityTier.IconicInsert); // 128 Hern&#225;ndez
+    _addIconicChecklistItem(73, RarityTier.IconicInsert); // 128 Hernández
     _addIconicChecklistItem(85, RarityTier.IconicInsert); // 129 Honda
     _addIconicChecklistItem(100, RarityTier.IconicReferral); // 130 Alves
     _addIconicChecklistItem(101, RarityTier.IconicReferral); // 131 Zlatan
@@ -1186,15 +1186,15 @@ contract StrikersChecklist is StrikersPlayerList {
   function limitForChecklistId(uint8 _checklistId) external view returns (uint16) {
     RarityTier rarityTier;
     uint8 index;
-    if (_checklistId &lt; 100) { // Originals = #000 to #099
+    if (_checklistId < 100) { // Originals = #000 to #099
       rarityTier = originalChecklistItems[_checklistId].tier;
-    } else if (_checklistId &lt; 200) { // Iconics = #100 to #131
+    } else if (_checklistId < 200) { // Iconics = #100 to #131
       index = _checklistId - 100;
-      require(index &lt; iconicsCount(), &quot;This Iconics checklist item doesn&#39;t exist.&quot;);
+      require(index < iconicsCount(), "This Iconics checklist item doesn't exist.");
       rarityTier = iconicChecklistItems[index].tier;
     } else { // Unreleased = #200 to max #255
       index = _checklistId - 200;
-      require(index &lt; unreleasedCount(), &quot;This Unreleased checklist item doesn&#39;t exist.&quot;);
+      require(index < unreleasedCount(), "This Unreleased checklist item doesn't exist.");
       rarityTier = unreleasedChecklistItems[index].tier;
     }
     return tierLimits[uint8(rarityTier)];
@@ -1204,12 +1204,12 @@ contract StrikersChecklist is StrikersPlayerList {
 
 /// @title Base contract for CryptoStrikers. Defines what a card is and how to mint one.
 /// @author The CryptoStrikers Team
-contract StrikersBase is ERC721Token(&quot;CryptoStrikers&quot;, &quot;STRK&quot;) {
+contract StrikersBase is ERC721Token("CryptoStrikers", "STRK") {
 
   /// @dev Emit this event whenever we mint a new card (see _mintCard below)
   event CardMinted(uint256 cardId);
 
-  /// @dev The struct representing the game&#39;s main object, a sports trading card.
+  /// @dev The struct representing the game's main object, a sports trading card.
   struct Card {
     // The timestamp at which this card was minted.
     // With uint32 we are good until 2106, by which point we will have not minted
@@ -1231,10 +1231,10 @@ contract StrikersBase is ERC721Token(&quot;CryptoStrikers&quot;, &quot;STRK&quot
   Card[] public cards;
 
   /// @dev Keeps track of how many cards we have minted for a given checklist item
-  ///   to make sure we don&#39;t go over the limit for it.
+  ///   to make sure we don't go over the limit for it.
   ///   NB: uint16 has a capacity of 65,535, but we are not minting more than
   ///   4,352 of any given checklist item.
-  mapping (uint8 =&gt; uint16) public mintedCountForChecklistId;
+  mapping (uint8 => uint16) public mintedCountForChecklistId;
 
   /// @dev A reference to our checklist contract, which contains all the minting limits.
   StrikersChecklist public strikersChecklist;
@@ -1250,7 +1250,7 @@ contract StrikersBase is ERC721Token(&quot;CryptoStrikers&quot;, &quot;STRK&quot
     uint256 cardCount = cardIds.length;
     uint8[] memory checklistIds = new uint8[](cardCount);
 
-    for (uint256 i = 0; i &lt; cardCount; i++) {
+    for (uint256 i = 0; i < cardCount; i++) {
       uint256 cardId = cardIds[i];
       checklistIds[i] = cards[cardId].checklistId;
     }
@@ -1261,7 +1261,7 @@ contract StrikersBase is ERC721Token(&quot;CryptoStrikers&quot;, &quot;STRK&quot
   /// @dev An internal method that creates a new card and stores it.
   ///  Emits both a CardMinted and a Transfer event.
   /// @param _checklistId The ID of the checklistItem represented by the card (see Checklist.sol)
-  /// @param _owner The card&#39;s first owner!
+  /// @param _owner The card's first owner!
   function _mintCard(
     uint8 _checklistId,
     address _owner
@@ -1270,7 +1270,7 @@ contract StrikersBase is ERC721Token(&quot;CryptoStrikers&quot;, &quot;STRK&quot
     returns (uint256)
   {
     uint16 mintLimit = strikersChecklist.limitForChecklistId(_checklistId);
-    require(mintLimit == 0 || mintedCountForChecklistId[_checklistId] &lt; mintLimit, &quot;Can&#39;t mint any more of this card!&quot;);
+    require(mintLimit == 0 || mintedCountForChecklistId[_checklistId] < mintLimit, "Can't mint any more of this card!");
     uint16 serialNumber = ++mintedCountForChecklistId[_checklistId];
     Card memory newCard = Card({
       mintTime: uint32(now),
@@ -1343,7 +1343,7 @@ contract StrikersMinting is StrikersBase, Pausable {
   event PulledFromCirculation(uint8 checklistId);
 
   /// @dev If the value for a checklistId is true, we can no longer mint it.
-  mapping (uint8 =&gt; bool) public outOfCirculation;
+  mapping (uint8 => bool) public outOfCirculation;
 
   /// @dev The address of the contract that manages the pack sale.
   address public packSaleAddress;
@@ -1356,20 +1356,20 @@ contract StrikersMinting is StrikersBase, Pausable {
 
   /// @dev Allows the contract at packSaleAddress to mint cards.
   /// @param _checklistId The checklist item represented by this new card.
-  /// @param _owner The card&#39;s first owner!
-  /// @return The new card&#39;s ID.
+  /// @param _owner The card's first owner!
+  /// @return The new card's ID.
   function mintPackSaleCard(uint8 _checklistId, address _owner) external returns (uint256) {
-    require(msg.sender == packSaleAddress, &quot;Only the pack sale contract can mint here.&quot;);
-    require(!outOfCirculation[_checklistId], &quot;Can&#39;t mint any more of this checklist item...&quot;);
+    require(msg.sender == packSaleAddress, "Only the pack sale contract can mint here.");
+    require(!outOfCirculation[_checklistId], "Can't mint any more of this checklist item...");
     return _mintCard(_checklistId, _owner);
   }
 
   /// @dev Allows the owner to mint cards from our Unreleased Set.
-  /// @param _checklistId The checklist item represented by this new card. Must be &gt;= 200.
-  /// @param _owner The card&#39;s first owner!
+  /// @param _checklistId The checklist item represented by this new card. Must be >= 200.
+  /// @param _owner The card's first owner!
   function mintUnreleasedCard(uint8 _checklistId, address _owner) external onlyOwner {
-    require(_checklistId &gt;= 200, &quot;You can only use this to mint unreleased cards.&quot;);
-    require(!outOfCirculation[_checklistId], &quot;Can&#39;t mint any more of this checklist item...&quot;);
+    require(_checklistId >= 200, "You can only use this to mint unreleased cards.");
+    require(!outOfCirculation[_checklistId], "Can't mint any more of this checklist item...");
     _mintCard(_checklistId, _owner);
   }
 
@@ -1377,8 +1377,8 @@ contract StrikersMinting is StrikersBase, Pausable {
   /// @param _checklistId The Iconic or Unreleased card we want to remove from circulation.
   function pullFromCirculation(uint8 _checklistId) external {
     bool ownerOrPackSale = (msg.sender == owner) || (msg.sender == packSaleAddress);
-    require(ownerOrPackSale, &quot;Only the owner or pack sale can take checklist items out of circulation.&quot;);
-    require(_checklistId &gt;= 100, &quot;This function is reserved for Iconics and Unreleased sets.&quot;);
+    require(ownerOrPackSale, "Only the owner or pack sale can take checklist items out of circulation.");
+    require(_checklistId >= 100, "This function is reserved for Iconics and Unreleased sets.");
     outOfCirculation[_checklistId] = true;
     emit PulledFromCirculation(_checklistId);
   }
@@ -1391,10 +1391,10 @@ contract StrikersMinting is StrikersBase, Pausable {
 contract StrikersPackFactory is Pausable {
 
   /*** IMPORTANT ***/
-  // Given the imperfect nature of on-chain &quot;randomness&quot;, we have found that, for this game, the best tradeoff
+  // Given the imperfect nature of on-chain "randomness", we have found that, for this game, the best tradeoff
   // is to generate the PACKS (each containing 4 random CARDS) off-chain and push them to a SALE in the smart
   // contract. Users can then buy a pack, which will be drawn pseudorandomly from the packs we have pre-loaded.
-  // It&#39;s obviously not perfect, but we think it&#39;s a fair tradeoff and tough enough to game, as the packs array is
+  // It's obviously not perfect, but we think it's a fair tradeoff and tough enough to game, as the packs array is
   // constantly getting re-shuffled as other users buy packs.
   //
   // To save on storage, we use uint32 to represent a pack, with each of the 4 groups of 8 bits representing a checklistId (see Checklist contract).
@@ -1425,7 +1425,7 @@ contract StrikersPackFactory is Pausable {
   /// @dev Emit this event when the owner starts a sale.
   event SaleStarted(uint8 saleId, uint256 packPrice, uint8 featuredChecklistItem);
 
-  /// @dev Emit this event when the owner changes the standard sale&#39;s packPrice.
+  /// @dev Emit this event when the owner changes the standard sale's packPrice.
   event StandardPackPriceChanged(uint256 packPrice);
 
   /*** CONSTANTS ***/
@@ -1443,10 +1443,10 @@ contract StrikersPackFactory is Pausable {
 
   /// @dev The struct representing a PackSale from which packs are dispensed.
   struct PackSale {
-    // A unique identifier for this sale. Based on saleCount at the time of this sale&#39;s creation.
+    // A unique identifier for this sale. Based on saleCount at the time of this sale's creation.
     uint8 id;
 
-    // The card of the day, if it&#39;s a Premium sale. Once that sale ends, we can never mint this card again.
+    // The card of the day, if it's a Premium sale. Once that sale ends, we can never mint this card again.
     uint8 featuredChecklistItem;
 
     // The price, in wei, for 1 pack of cards. The only case where this is 0 is when the struct is null, so
@@ -1457,7 +1457,7 @@ contract StrikersPackFactory is Pausable {
     uint32[] packs;
 
     // The number of packs loaded so far in this sale. Because people will be buying from the Standard sale as
-    // we keep loading packs in, we need this counter to make sure we don&#39;t go over MAX_STANDARD_SALE_PACKS.
+    // we keep loading packs in, we need this counter to make sure we don't go over MAX_STANDARD_SALE_PACKS.
     uint32 packsLoaded;
 
     // The number of packs sold so far in this sale.
@@ -1478,13 +1478,13 @@ contract StrikersPackFactory is Pausable {
   /// @dev We stage the next Premium sale here before we push it live with startNextPremiumSale().
   PackSale public nextPremiumSale;
 
-  /// @dev How many sales we&#39;ve ran so far. Max is 25 (1 Standard + 24 Premium).
+  /// @dev How many sales we've ran so far. Max is 25 (1 Standard + 24 Premium).
   uint8 public saleCount;
 
   /*** MODIFIERS  ***/
 
   modifier nonZeroPackPrice(uint256 _packPrice) {
-    require(_packPrice &gt; 0, &quot;Free packs are only available through the whitelist.&quot;);
+    require(_packPrice > 0, "Free packs are only available through the whitelist.");
     _;
   }
 
@@ -1498,13 +1498,13 @@ contract StrikersPackFactory is Pausable {
     saleCount++;
   }
 
-  /*** SHARED FUNCTIONS (STANDARD &amp; PREMIUM) ***/
+  /*** SHARED FUNCTIONS (STANDARD & PREMIUM) ***/
 
-  /// @dev Internal function to push a bunch of packs to a PackSale&#39;s packs array.
+  /// @dev Internal function to push a bunch of packs to a PackSale's packs array.
   /// @param _newPacks An array of 32 bit integers, each representing a shuffled pack.
   /// @param _sale The PackSale we are pushing to.
   function _addPacksToSale(uint32[] _newPacks, PackSale storage _sale) internal {
-    for (uint256 i = 0; i &lt; _newPacks.length; i++) {
+    for (uint256 i = 0; i < _newPacks.length; i++) {
       _sale.packs.push(_newPacks[i]);
     }
     _sale.packsLoaded += uint32(_newPacks.length);
@@ -1516,14 +1516,14 @@ contract StrikersPackFactory is Pausable {
   /// @dev Load some shuffled packs into the Standard sale.
   /// @param _newPacks The new packs to load.
   function addPacksToStandardSale(uint32[] _newPacks) external onlyOwner {
-    bool tooManyPacks = standardSale.packsLoaded + _newPacks.length &gt; MAX_STANDARD_SALE_PACKS;
-    require(!tooManyPacks, &quot;You can&#39;t add more than 75,616 packs to the Standard sale.&quot;);
+    bool tooManyPacks = standardSale.packsLoaded + _newPacks.length > MAX_STANDARD_SALE_PACKS;
+    require(!tooManyPacks, "You can't add more than 75,616 packs to the Standard sale.");
     _addPacksToSale(_newPacks, standardSale);
   }
 
   /// @dev After seeding the Standard sale with a few loads of packs, kick off the sale here.
   function startStandardSale() external onlyOwner {
-    require(standardSale.packsLoaded &gt; 0, &quot;You must first load some packs into the Standard sale.&quot;);
+    require(standardSale.packsLoaded > 0, "You must first load some packs into the Standard sale.");
     unpause();
     emit SaleStarted(standardSale.id, standardSale.packPrice, standardSale.featuredChecklistItem);
   }
@@ -1542,9 +1542,9 @@ contract StrikersPackFactory is Pausable {
   /// @param _featuredChecklistItem The card of the day, which we will take out of circulation once the sale ends.
   /// @param _packPrice The price of packs for this sale, in wei. Must be greater than zero.
   function createNextPremiumSale(uint8 _featuredChecklistItem, uint256 _packPrice) external onlyOwner nonZeroPackPrice(_packPrice) {
-    require(nextPremiumSale.packPrice == 0, &quot;Next Premium Sale already exists.&quot;);
-    require(_featuredChecklistItem &gt;= 100, &quot;You can&#39;t have an Originals as a featured checklist item.&quot;);
-    require(saleCount &lt;= MAX_NUMBER_OF_PREMIUM_SALES, &quot;You can only run 24 total Premium sales.&quot;);
+    require(nextPremiumSale.packPrice == 0, "Next Premium Sale already exists.");
+    require(_featuredChecklistItem >= 100, "You can't have an Originals as a featured checklist item.");
+    require(saleCount <= MAX_NUMBER_OF_PREMIUM_SALES, "You can only run 24 total Premium sales.");
     nextPremiumSale.id = saleCount;
     nextPremiumSale.featuredChecklistItem = _featuredChecklistItem;
     nextPremiumSale.packPrice = _packPrice;
@@ -1554,16 +1554,16 @@ contract StrikersPackFactory is Pausable {
   /// @dev Load some shuffled packs into the next Premium sale that we created.
   /// @param _newPacks The new packs to load.
   function addPacksToNextPremiumSale(uint32[] _newPacks) external onlyOwner {
-    require(nextPremiumSale.packPrice &gt; 0, &quot;You must first create a nextPremiumSale.&quot;);
-    require(nextPremiumSale.packsLoaded + _newPacks.length &lt;= PREMIUM_SALE_PACK_COUNT, &quot;You can&#39;t add more than 500 packs to a Premium sale.&quot;);
+    require(nextPremiumSale.packPrice > 0, "You must first create a nextPremiumSale.");
+    require(nextPremiumSale.packsLoaded + _newPacks.length <= PREMIUM_SALE_PACK_COUNT, "You can't add more than 500 packs to a Premium sale.");
     _addPacksToSale(_newPacks, nextPremiumSale);
   }
 
   /// @dev Moves the sale we staged in nextPremiumSale over to the currentPremiumSale variable, and clears nextPremiumSale.
-  ///   Also removes currentPremiumSale&#39;s featuredChecklistItem from circulation.
+  ///   Also removes currentPremiumSale's featuredChecklistItem from circulation.
   function startNextPremiumSale() external onlyOwner {
-    require(nextPremiumSale.packsLoaded == PREMIUM_SALE_PACK_COUNT, &quot;You must add exactly 500 packs before starting this Premium sale.&quot;);
-    if (currentPremiumSale.featuredChecklistItem &gt;= 100) {
+    require(nextPremiumSale.packsLoaded == PREMIUM_SALE_PACK_COUNT, "You must add exactly 500 packs before starting this Premium sale.");
+    if (currentPremiumSale.featuredChecklistItem >= 100) {
       mintingContract.pullFromCirculation(currentPremiumSale.featuredChecklistItem);
     }
     currentPremiumSale = nextPremiumSale;
@@ -1574,7 +1574,7 @@ contract StrikersPackFactory is Pausable {
   /// @param _featuredChecklistItem The card of the day, which we will take out of circulation once the sale ends.
   /// @param _packPrice The price of packs for this sale, in wei. Must be greater than zero.
   function modifyNextPremiumSale(uint8 _featuredChecklistItem, uint256 _packPrice) external onlyOwner nonZeroPackPrice(_packPrice) {
-    require(nextPremiumSale.packPrice &gt; 0, &quot;You must first create a nextPremiumSale.&quot;);
+    require(nextPremiumSale.packPrice > 0, "You must first create a nextPremiumSale.");
     nextPremiumSale.featuredChecklistItem = _featuredChecklistItem;
     nextPremiumSale.packPrice = _packPrice;
   }
@@ -1597,8 +1597,8 @@ contract StrikersPackSaleInternal is StrikersPackFactory {
   /// @dev Function shared by all 3 ways of buying a pack (ETH, kitty burn, whitelist).
   /// @param _sale The sale we are buying from.
   function _buyPack(PackSale storage _sale) internal whenNotPaused {
-    require(msg.sender == tx.origin, &quot;Only EOAs are allowed to buy from the pack sale.&quot;);
-    require(_sale.packs.length &gt; 0, &quot;The sale has no packs available for sale.&quot;);
+    require(msg.sender == tx.origin, "Only EOAs are allowed to buy from the pack sale.");
+    require(_sale.packs.length > 0, "The sale has no packs available for sale.");
     uint32 pack = _removeRandomPack(_sale.packs);
     uint256[] memory cards = _mintCards(pack);
     _sale.packsSold++;
@@ -1612,10 +1612,10 @@ contract StrikersPackSaleInternal is StrikersPackFactory {
     uint8 mask = 255;
     uint256[] memory newCards = new uint256[](PACK_SIZE);
 
-    for (uint8 i = 1; i &lt;= PACK_SIZE; i++) {
-      // Can&#39;t underflow because PACK_SIZE is 4.
+    for (uint8 i = 1; i <= PACK_SIZE; i++) {
+      // Can't underflow because PACK_SIZE is 4.
       uint8 shift = 32 - (i * 8);
-      uint8 checklistId = uint8((_pack &gt;&gt; shift) &amp; mask);
+      uint8 checklistId = uint8((_pack >> shift) & mask);
       uint256 cardId = mintingContract.mintPackSaleCard(checklistId, msg.sender);
       newCards[i-1] = cardId;
     }
@@ -1638,9 +1638,9 @@ contract StrikersPackSaleInternal is StrikersPackFactory {
   /// @param _packs The array of uint32s we will be mutating.
   /// @return The uint32 we removed from position _index.
   function _removePackAtIndex(uint256 _index, uint32[] storage _packs) internal returns (uint32) {
-    // Can&#39;t underflow because we do require(_sale.packs.length &gt; 0) in _buyPack().
+    // Can't underflow because we do require(_sale.packs.length > 0) in _buyPack().
     uint256 lastIndex = _packs.length - 1;
-    require(_index &lt;= lastIndex);
+    require(_index <= lastIndex);
     uint32 pack = _packs[_index];
     _packs[_index] = _packs[lastIndex];
     _packs.length--;
@@ -1653,7 +1653,7 @@ contract StrikersPackSaleInternal is StrikersPackFactory {
 /// @author The CryptoStrikers Team
 contract StrikersWhitelist is StrikersPackSaleInternal {
 
-  /// @dev Emit this when the contract owner increases a user&#39;s whitelist allocation.
+  /// @dev Emit this when the contract owner increases a user's whitelist allocation.
   event WhitelistAllocationIncreased(address indexed user, uint16 amount, bool premium);
 
   /// @dev Emit this whenever someone gets a pack using their whitelist allocation.
@@ -1665,19 +1665,19 @@ contract StrikersWhitelist is StrikersPackSaleInternal {
     500 // Premium
   ];
 
-  /// @dev Keep track of the allocation for each whitelist so we don&#39;t go over the limit.
+  /// @dev Keep track of the allocation for each whitelist so we don't go over the limit.
   uint16[2] public currentWhitelistCounts;
 
   /// @dev Index 0 is the Standard whitelist, index 1 is the Premium whitelist. Maps addresses to free pack allocation.
-  mapping (address =&gt; uint8)[2] public whitelists;
+  mapping (address => uint8)[2] public whitelists;
 
   /// @dev Allows the owner to allocate free packs (either Standard or Premium) to a given address.
   /// @param _premium True for Premium whitelist, false for Standard whitelist.
   /// @param _addr Address of the user who is getting the free packs.
-  /// @param _additionalPacks How many packs we are adding to this user&#39;s allocation.
+  /// @param _additionalPacks How many packs we are adding to this user's allocation.
   function addToWhitelistAllocation(bool _premium, address _addr, uint8 _additionalPacks) public onlyOwner {
     uint8 listIndex = _premium ? 1 : 0;
-    require(currentWhitelistCounts[listIndex] + _additionalPacks &lt;= whitelistLimits[listIndex]);
+    require(currentWhitelistCounts[listIndex] + _additionalPacks <= whitelistLimits[listIndex]);
     currentWhitelistCounts[listIndex] += _additionalPacks;
     whitelists[listIndex][_addr] += _additionalPacks;
     emit WhitelistAllocationIncreased(_addr, _additionalPacks, _premium);
@@ -1687,7 +1687,7 @@ contract StrikersWhitelist is StrikersPackSaleInternal {
   /// @param _premium True for Premium whitelist, false for Standard whitelist.
   /// @param _addrs Addresses of the users who are getting the free packs.
   function addAddressesToWhitelist(bool _premium, address[] _addrs) external onlyOwner {
-    for (uint256 i = 0; i &lt; _addrs.length; i++) {
+    for (uint256 i = 0; i < _addrs.length; i++) {
       addToWhitelistAllocation(_premium, _addrs[i], 1);
     }
   }
@@ -1696,8 +1696,8 @@ contract StrikersWhitelist is StrikersPackSaleInternal {
   /// @param _premium True for the Premium sale, false for the Standard sale.
   function claimWhitelistPack(bool _premium) external {
     uint8 listIndex = _premium ? 1 : 0;
-    require(whitelists[listIndex][msg.sender] &gt; 0, &quot;You have no whitelist allocation.&quot;);
-    // Can&#39;t underflow because of require() check above.
+    require(whitelists[listIndex][msg.sender] > 0, "You have no whitelist allocation.");
+    // Can't underflow because of require() check above.
     whitelists[listIndex][msg.sender]--;
     PackSale storage sale = _premium ? currentPremiumSale : standardSale;
     _buyPack(sale);
@@ -1718,12 +1718,12 @@ contract StrikersReferral is StrikersWhitelist {
 
   /// @dev The 8 bonus cards that you get for your first 8 referrals, in order.
   uint8[] public bonusCards = [
-    115, // Kant&#233;
+    115, // Kanté
     127, // Navas
     122, // Hummels
     130, // Alves
     116, // Cavani
-    123, // &#214;zil
+    123, // Özil
     121, // Thiago
     131 // Zlatan
   ];
@@ -1732,33 +1732,33 @@ contract StrikersReferral is StrikersWhitelist {
   event SaleAttributed(address indexed referrer, address buyer, uint256 amount);
 
   /// @dev How much many of the 8 bonus cards this referrer has claimed.
-  mapping (address =&gt; uint8) public bonusCardsClaimed;
+  mapping (address => uint8) public bonusCardsClaimed;
 
   /// @dev Use this to track whether or not a user has bought at least one pack, to avoid people gaming our referral program.
-  mapping (address =&gt; uint16) public packsBought;
+  mapping (address => uint16) public packsBought;
 
-  /// @dev Keep track of this to make sure we don&#39;t go over MAX_FREE_REFERRAL_PACKS.
+  /// @dev Keep track of this to make sure we don't go over MAX_FREE_REFERRAL_PACKS.
   uint16 public freeReferralPacksClaimed;
 
   /// @dev Tracks whether or not a user has already claimed their free referral pack.
-  mapping (address =&gt; bool) public hasClaimedFreeReferralPack;
+  mapping (address => bool) public hasClaimedFreeReferralPack;
 
   /// @dev How much referral income a given referrer has claimed.
-  mapping (address =&gt; uint256) public referralCommissionClaimed;
+  mapping (address => uint256) public referralCommissionClaimed;
 
   /// @dev How much referral income a given referrer has earned.
-  mapping (address =&gt; uint256) public referralCommissionEarned;
+  mapping (address => uint256) public referralCommissionEarned;
 
   /// @dev Tracks how many sales have been attributed to a given referrer.
-  mapping (address =&gt; uint16) public referralSaleCount;
+  mapping (address => uint16) public referralSaleCount;
 
   /// @dev A mapping to keep track of who referred a given user.
-  mapping (address =&gt; address) public referrers;
+  mapping (address => address) public referrers;
 
-  /// @dev How much ETH is owed to referrers, so we don&#39;t touch it when we withdraw our take from the contract.
+  /// @dev How much ETH is owed to referrers, so we don't touch it when we withdraw our take from the contract.
   uint256 public totalCommissionOwed;
 
-  /// @dev After a pack is bought with ETH, we call this to attribute the sale to the buyer&#39;s referrer.
+  /// @dev After a pack is bought with ETH, we call this to attribute the sale to the buyer's referrer.
   /// @param _buyer The user who bought the pack.
   /// @param _amount The price of the pack bought, in wei.
   function _attributeSale(address _buyer, uint256 _amount) internal {
@@ -1774,7 +1774,7 @@ contract StrikersReferral is StrikersWhitelist {
 
     // The first 8 referral sales each unlock a bonus card.
     // Any sales past the first 8 generate referral commission.
-    if (referralSaleCount[referrer] &gt; bonusCards.length) {
+    if (referralSaleCount[referrer] > bonusCards.length) {
       uint256 commission = _amount * PERCENT_COMMISSION / 100;
       totalCommissionOwed += commission;
       referralCommissionEarned[referrer] += commission;
@@ -1787,8 +1787,8 @@ contract StrikersReferral is StrikersWhitelist {
   function claimBonusCard() external {
     uint16 attributedSales = referralSaleCount[msg.sender];
     uint8 cardsClaimed = bonusCardsClaimed[msg.sender];
-    require(attributedSales &gt; cardsClaimed, &quot;You have no unclaimed bonus cards.&quot;);
-    require(cardsClaimed &lt; bonusCards.length, &quot;You have claimed all the bonus cards.&quot;);
+    require(attributedSales > cardsClaimed, "You have no unclaimed bonus cards.");
+    require(cardsClaimed < bonusCards.length, "You have claimed all the bonus cards.");
     bonusCardsClaimed[msg.sender]++;
     uint8 bonusCardChecklistId = bonusCards[cardsClaimed];
     mintingContract.mintPackSaleCard(bonusCardChecklistId, msg.sender);
@@ -1796,8 +1796,8 @@ contract StrikersReferral is StrikersWhitelist {
 
   /// @dev A user who was referred to CryptoStrikers can call this once to claim their free pack (must have bought a pack first).
   function claimFreeReferralPack() external {
-    require(isOwedFreeReferralPack(msg.sender), &quot;You are not eligible for a free referral pack.&quot;);
-    require(freeReferralPacksClaimed &lt; MAX_FREE_REFERRAL_PACKS, &quot;We&#39;ve already given away all the free referral packs...&quot;);
+    require(isOwedFreeReferralPack(msg.sender), "You are not eligible for a free referral pack.");
+    require(freeReferralPacksClaimed < MAX_FREE_REFERRAL_PACKS, "We've already given away all the free referral packs...");
     freeReferralPacksClaimed++;
     hasClaimedFreeReferralPack[msg.sender] = true;
     _buyPack(standardSale);
@@ -1807,20 +1807,20 @@ contract StrikersReferral is StrikersWhitelist {
   /// @param _addr The address of the user we are inquiring about.
   /// @return True if user can call claimFreeReferralPack(), false otherwise.
   function isOwedFreeReferralPack(address _addr) public view returns (bool) {
-    // _addr will only have a referrer if they&#39;ve already bought a pack (see buyFirstPackFromReferral())
+    // _addr will only have a referrer if they've already bought a pack (see buyFirstPackFromReferral())
     address referrer = referrers[_addr];
 
     // To prevent abuse, require that the referrer has bought at least one pack.
-    // Guaranteed to evaluate to false if referrer is address(0), so don&#39;t even check for that.
-    bool referrerHasBoughtPack = packsBought[referrer] &gt; 0;
+    // Guaranteed to evaluate to false if referrer is address(0), so don't even check for that.
+    bool referrerHasBoughtPack = packsBought[referrer] > 0;
 
-    // Lastly, check to make sure _addr hasn&#39;t already claimed a free pack.
-    return referrerHasBoughtPack &amp;&amp; !hasClaimedFreeReferralPack[_addr];
+    // Lastly, check to make sure _addr hasn't already claimed a free pack.
+    return referrerHasBoughtPack && !hasClaimedFreeReferralPack[_addr];
   }
 
-  /// @dev Allows the contract owner to manually set the referrer for a given user, in case this wasn&#39;t properly attributed.
+  /// @dev Allows the contract owner to manually set the referrer for a given user, in case this wasn't properly attributed.
   /// @param _for The user we want to set the referrer for.
-  /// @param _referrer The user who will now get credit for _for&#39;s future purchases.
+  /// @param _referrer The user who will now get credit for _for's future purchases.
   function setReferrer(address _for, address _referrer) external onlyOwner {
     referrers[_for] = _referrer;
   }
@@ -1828,7 +1828,7 @@ contract StrikersReferral is StrikersWhitelist {
   /// @dev Allows a user to withdraw the referral commission they are owed.
   function withdrawCommission() external {
     uint256 commission = referralCommissionEarned[msg.sender] - referralCommissionClaimed[msg.sender];
-    require(commission &gt; 0, &quot;You are not owed any referral commission.&quot;);
+    require(commission > 0, "You are not owed any referral commission.");
     totalCommissionOwed -= commission;
     referralCommissionClaimed[msg.sender] += commission;
     msg.sender.transfer(commission);
@@ -1848,18 +1848,18 @@ contract StrikersPackSale is StrikersReferral {
   event KittyBurned(address user, uint256 kittyId);
 
   /// @dev Users are only allowed to burn 1 cat each, so keep track of that here.
-  mapping (address =&gt; bool) public hasBurnedKitty;
+  mapping (address => bool) public hasBurnedKitty;
 
   /// @dev A reference to the CryptoKitties contract so we can transfer cats
   ERC721Basic public kittiesContract;
 
-  /// @dev How many kitties we have burned so far. Think of the cats, make sure we don&#39;t go over KITTY_BURN_LIMIT!
+  /// @dev How many kitties we have burned so far. Think of the cats, make sure we don't go over KITTY_BURN_LIMIT!
   uint16 public totalKittiesBurned;
 
   /// @dev Keeps track of our sale volume, in wei.
   uint256 public totalWeiRaised;
 
-  /// @dev Constructor. Can&#39;t change minting and kitties contracts once they&#39;ve been initialized.
+  /// @dev Constructor. Can't change minting and kitties contracts once they've been initialized.
   constructor(
     uint256 _standardPackPrice,
     address _kittiesContractAddress,
@@ -1874,19 +1874,19 @@ contract StrikersPackSale is StrikersReferral {
 
   /// @dev For a user who was referred, use this function to buy your first back so we can attribute the referral.
   /// @param _referrer The user who invited msg.sender to CryptoStrikers.
-  /// @param _premium True if we&#39;re buying from Premium sale, false if we&#39;re buying from Standard sale.
+  /// @param _premium True if we're buying from Premium sale, false if we're buying from Standard sale.
   function buyFirstPackFromReferral(address _referrer, bool _premium) external payable {
-    require(packsBought[msg.sender] == 0, &quot;Only assign a referrer on a user&#39;s first purchase.&quot;);
+    require(packsBought[msg.sender] == 0, "Only assign a referrer on a user's first purchase.");
     referrers[msg.sender] = _referrer;
     buyPackWithETH(_premium);
   }
 
   /// @dev Allows a user to buy a pack of cards with enough ETH to cover the packPrice.
-  /// @param _premium True if we&#39;re buying from Premium sale, false if we&#39;re buying from Standard sale.
+  /// @param _premium True if we're buying from Premium sale, false if we're buying from Standard sale.
   function buyPackWithETH(bool _premium) public payable {
     PackSale storage sale = _premium ? currentPremiumSale : standardSale;
     uint256 packPrice = sale.packPrice;
-    require(msg.value &gt;= packPrice, &quot;Insufficient ETH sent to buy this pack.&quot;);
+    require(msg.value >= packPrice, "Insufficient ETH sent to buy this pack.");
     _buyPack(sale);
     packsBought[msg.sender]++;
     totalWeiRaised += packPrice;
@@ -1901,13 +1901,13 @@ contract StrikersPackSale is StrikersReferral {
   ///   calling approve(address(this), _kittyId) on the CK contract.
   ///   Otherwise, buyPackWithKitty() throws on transferFrom().
   function buyPackWithKitty(uint256 _kittyId) external {
-    require(totalKittiesBurned &lt; KITTY_BURN_LIMIT, &quot;Stop! Think of the cats!&quot;);
-    require(!hasBurnedKitty[msg.sender], &quot;You&#39;ve already burned a kitty.&quot;);
+    require(totalKittiesBurned < KITTY_BURN_LIMIT, "Stop! Think of the cats!");
+    require(!hasBurnedKitty[msg.sender], "You've already burned a kitty.");
     totalKittiesBurned++;
     hasBurnedKitty[msg.sender] = true;
-    // Will throw/revert if this contract hasn&#39;t been given approval first.
+    // Will throw/revert if this contract hasn't been given approval first.
     // Also, with no way of retrieving kitties from this contract,
-    // transferring to &quot;this&quot; burns the cat! (desired behaviour)
+    // transferring to "this" burns the cat! (desired behaviour)
     kittiesContract.transferFrom(msg.sender, this, _kittyId);
     _buyPack(standardSale);
     emit KittyBurned(msg.sender, _kittyId);
@@ -1916,7 +1916,7 @@ contract StrikersPackSale is StrikersReferral {
   /// @dev Allows the contract owner to withdraw the ETH raised from selling packs.
   function withdrawBalance() external onlyOwner {
     uint256 totalBalance = address(this).balance;
-    require(totalBalance &gt; totalCommissionOwed, &quot;There is no ETH for the owner to claim.&quot;);
+    require(totalBalance > totalCommissionOwed, "There is no ETH for the owner to claim.");
     owner.transfer(totalBalance - totalCommissionOwed);
   }
 }

@@ -35,12 +35,12 @@ contract CryptoBabyName {
     address public owner;
     address public beneficiary;
 
-    mapping(bytes10 =&gt; uint) leaderboard;
-    mapping(address =&gt; mapping(bytes10 =&gt; uint)) voters;
+    mapping(bytes10 => uint) leaderboard;
+    mapping(address => mapping(bytes10 => uint)) voters;
 
     uint[100] allNames;
 
-    mapping(string =&gt; string) metadata;
+    mapping(string => string) metadata;
 
 
     uint babyName;
@@ -67,7 +67,7 @@ contract CryptoBabyName {
     }
 
     function () public payable{
-        if (msg.data.length &gt;= 2 &amp;&amp; msg.data.length &lt;= 10) {
+        if (msg.data.length >= 2 && msg.data.length <= 10) {
             _vote(string(msg.data), msg.value, msg.sender);
         }
     }
@@ -112,15 +112,15 @@ contract CryptoBabyName {
             uint bottomIndex;
             (currentBottom, bottomIndex) = bottomName();
 
-            if (updated &gt; currentBottom) {
+            if (updated > currentBottom) {
                 //remove old score
-                if (getPart(currentBottom, S_SCORE_POS, S_SCORE_SIZE) &gt; 0) {
+                if (getPart(currentBottom, S_SCORE_POS, S_SCORE_SIZE) > 0) {
                     currentBottom = currentBottom | uint(0xFFFF);//remove index
                     bytes10 bottomName10 = bytes10(getPart(currentBottom, S_NAME_POS, S_NAME_SIZE));
                     leaderboard[bottomName10] = currentBottom;
                 }
                 //update the new one
-                updated = (updated &amp; ~uint(0xFFFF)) | bottomIndex;
+                updated = (updated & ~uint(0xFFFF)) | bottomIndex;
                 allNames[bottomIndex] = updated;
             }
         } else {
@@ -131,16 +131,16 @@ contract CryptoBabyName {
 
     function getPart(uint val, uint8 pos, uint8 sizeBytes) private pure returns(uint result){
         uint mask = makeMask(sizeBytes);
-        result = (val &gt;&gt; ((32 - (pos + sizeBytes)) * 8)) &amp; mask;
+        result = (val >> ((32 - (pos + sizeBytes)) * 8)) & mask;
     }
 
     function makeMask(uint8 size) pure private returns(uint mask){
-        mask = (uint(1) &lt;&lt; (size * 8)) - 1;
+        mask = (uint(1) << (size * 8)) - 1;
     }
 
     function setPart(uint val, uint8 pos, uint8 sizeBytes, uint newValue) private pure returns(uint result){
         uint mask = makeMask(sizeBytes);
-        result = (val &amp; ~(mask &lt;&lt; (((32 - (pos + sizeBytes)) * 8)))) | ((newValue &amp; mask) &lt;&lt; (((32 - (pos + sizeBytes)) * 8)));
+        result = (val & ~(mask << (((32 - (pos + sizeBytes)) * 8)))) | ((newValue & mask) << (((32 - (pos + sizeBytes)) * 8)));
     }
 
     function addToPart(uint val, uint8 pos, uint8 sizeBytes, uint value) private pure returns(uint result){
@@ -155,9 +155,9 @@ contract CryptoBabyName {
         uint j = 0;
         name = allNames[0];
         index = 0;
-        for (j = 1; j &lt; n; j++) {
+        for (j = 1; j < n; j++) {
             uint t = allNames[j];
-            if (t &lt; name) {
+            if (t < name) {
                 name = t;
                 index = j;
             }
@@ -166,20 +166,20 @@ contract CryptoBabyName {
 
     function getTopN(uint nn) public view returns(uint[] top){
         uint n = nn;
-        if (n &gt; allNames.length) {
+        if (n > allNames.length) {
             n = allNames.length;
         }
         top = new uint[](n);
         uint cnt = allNames.length;
         uint usedNames;
 
-        for (uint j = 0; j &lt; n; j++ ) {
+        for (uint j = 0; j < n; j++ ) {
             uint maxI = 0;
             uint maxScore = 0;
             bool found = false;
-            for (uint i = 0; i &lt; cnt; i++ ) {
-                if (allNames[i] &gt; maxScore) {
-                    if ((usedNames &amp; (uint(1) &lt;&lt; i)) == 0) {
+            for (uint i = 0; i < cnt; i++ ) {
+                if (allNames[i] > maxScore) {
+                    if ((usedNames & (uint(1) << i)) == 0) {
                         maxScore = allNames[i];
                         maxI = i;
                         found = true;
@@ -187,7 +187,7 @@ contract CryptoBabyName {
                 }
             }
             if (found) {
-                usedNames |= uint(1) &lt;&lt; maxI;
+                usedNames |= uint(1) << maxI;
                 top[j] = maxScore;
             } else {
                 break;
@@ -252,13 +252,13 @@ contract CryptoBabyName {
 
 
     function normalizeAndCheckName(bytes name) private pure returns(bytes10 name10){
-        require(name.length &lt;= 10);
-        require(name.length &gt;= 2);
-        for (uint8 i = 0; i &lt; name.length; i++ ) {
-            bytes1 chr = name[i] &amp; ~0x20;//UPERCASE
-            require(chr &gt;= 0x41 &amp;&amp; chr &lt;= 0x5A);//only A-Z
+        require(name.length <= 10);
+        require(name.length >= 2);
+        for (uint8 i = 0; i < name.length; i++ ) {
+            bytes1 chr = name[i] & ~0x20;//UPERCASE
+            require(chr >= 0x41 && chr <= 0x5A);//only A-Z
             name[i] = chr;
-            name10 |= bytes10(chr) &gt;&gt; (8 * i);
+            name10 |= bytes10(chr) >> (8 * i);
         }
     }
 

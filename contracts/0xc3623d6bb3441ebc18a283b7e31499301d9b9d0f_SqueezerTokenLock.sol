@@ -125,12 +125,12 @@ contract SqueezerTokenLock {
     function unlock() public returns(bool) {
         uint8 step = unlockStep;
         bool success = false;
-        while (step &lt; TOTAL_LOCKS) {
+        while (step < TOTAL_LOCKS) {
             Lock memory lock = locks[step];
-            if (now &lt; lock.releaseDate) {
+            if (now < lock.releaseDate) {
                 break;
             }
-            require(SQR_TOKEN.transfer(lock.receiver, lock.amount), &#39;Transfer failed&#39;);
+            require(SQR_TOKEN.transfer(lock.receiver, lock.amount), 'Transfer failed');
             delete locks[step];
             emit Released(step, lock.releaseDate, lock.receiver, lock.amount);
             success = true;
@@ -145,8 +145,8 @@ contract SqueezerTokenLock {
     }
 
     function recoverTokens(ERC20Interface _token) public returns(bool) {
-        // Don&#39;t allow recovering SQR Token till the end of lock.
-        if (_token == SQR_TOKEN &amp;&amp; (now &lt; JUL_15_2020 || unlockStep != TOTAL_LOCKS)) {
+        // Don't allow recovering SQR Token till the end of lock.
+        if (_token == SQR_TOKEN && (now < JUL_15_2020 || unlockStep != TOTAL_LOCKS)) {
             return false;
         }
         return _token.transfer(PLATFORM_WALLET, _token.balanceOf(this));

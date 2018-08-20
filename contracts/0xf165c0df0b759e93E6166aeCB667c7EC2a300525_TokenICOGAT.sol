@@ -18,9 +18,9 @@ contract tokenGAT {
 
 /*  ERC 20 token this funtion are also call when somebody or contract want transfer, send, u operate wiht our tokens*/
 contract StandarTokentokenGAT is tokenGAT{
-mapping (address =&gt; uint256) balances; //asociative array for associate address and its balance like a hashmapp in java
-mapping (address =&gt; uint256 ) weirecives; //asociative array for associate address and its balance like a hashmapp in java
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed; // this store addres that are allowed for operate in this contract
+mapping (address => uint256) balances; //asociative array for associate address and its balance like a hashmapp in java
+mapping (address => uint256 ) weirecives; //asociative array for associate address and its balance like a hashmapp in java
+mapping (address => mapping (address => uint256)) allowed; // this store addres that are allowed for operate in this contract
 
 	
 function allowance(address _owner, address _spender) constant returns (uint256) {
@@ -32,8 +32,8 @@ function balanceOf(address _owner) constant returns (uint256 balance) {
 }
 	
 function transfer(address _to, uint256 _value) returns (bool success) { 
-   	if(msg.data.length &lt; (2 * 32) + 4) { revert();} 	// mitigates the ERC20 short address attack
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0){ 
+   	if(msg.data.length < (2 * 32) + 4) { revert();} 	// mitigates the ERC20 short address attack
+    if (balances[msg.sender] >= _value && _value >= 0){ 
 		balances[msg.sender] -= _value; //substract balance from user that is transfering (who deploy or who executed it)
 		balances[_to] += _value;  //add balance from user that is transfering (who deploy or who executed it)
 		Transfer(msg.sender, _to, _value);    //login
@@ -43,8 +43,8 @@ function transfer(address _to, uint256 _value) returns (bool success) {
      }
 	
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-     	if(msg.data.length &lt; (3 * 32) + 4) { revert(); } // mitigates the ERC20 short address attack
-       if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0){		
+     	if(msg.data.length < (3 * 32) + 4) { revert(); } // mitigates the ERC20 short address attack
+       if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value >= 0){		
          //add balance to destinate address
           balances[_to] += _value;
 		   //substract balance from source address
@@ -59,7 +59,7 @@ function transfer(address _to, uint256 _value) returns (bool success) {
 //put the addres in allowed mapping	
  function approve(address _spender, uint256 _value) returns (bool success) {
    // mitigates the ERC20 spend/approval race condition
-	if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }    	
+	if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }    	
    	allowed[msg.sender][_spender] = _value;    	
     	Approval(msg.sender, _spender, _value);
     	return true;
@@ -71,8 +71,8 @@ contract TokenICOGAT is StandarTokentokenGAT{
 	address owner = msg.sender;
 	
 	//Token Metadata
-	function name() constant returns (string) { return &quot;General Advertising Token&quot;; }
-	function symbol() constant returns (string) { return &quot;GAT&quot;; }
+	function name() constant returns (string) { return "General Advertising Token"; }
+	function symbol() constant returns (string) { return "GAT"; }
 	uint256 public constant decimals = 18;
 	
     //ICO Parameters
@@ -103,16 +103,16 @@ contract TokenICOGAT is StandarTokentokenGAT{
   
  function bonusCalculate(uint256 amount) internal returns(uint256){
  	uint256 amounttmp = 0;
-	if (transactionCounter &gt; 0 &amp;&amp; transactionCounter &lt;= 1000){
+	if (transactionCounter > 0 && transactionCounter <= 1000){
     	return  amount / 2   ;   // bonus 50%
 	}
-	if (transactionCounter &gt; 1000 &amp;&amp; transactionCounter &lt;= 2000){
+	if (transactionCounter > 1000 && transactionCounter <= 2000){
     return	 amount / 5 ;   // bonus 20%
 	}
-	if (transactionCounter &gt; 2000 &amp;&amp; transactionCounter &lt;= 3000){
+	if (transactionCounter > 2000 && transactionCounter <= 3000){
      return	amount / 10;   // bonus 10%
 	}
-	if (transactionCounter &gt; 3000 &amp;&amp; transactionCounter &lt;= 5000){
+	if (transactionCounter > 3000 && transactionCounter <= 5000){
      return	amount / 20;   // bonus 5%
 	}
  	return amounttmp;
@@ -137,7 +137,7 @@ contract TokenICOGAT is StandarTokentokenGAT{
 	// recive ethers funtion witout name is call every some body send ether
 	function() payable {
     	if (!purchasingAllowed) { revert(); }   
-        if ((tokenCreationCap - (totalSupply + gatFund)) &lt;= 0) { revert();}  
+        if ((tokenCreationCap - (totalSupply + gatFund)) <= 0) { revert();}  
     	if (msg.value == 0) { return; }
 	transactionCounter +=1;
     	totalContribution += msg.value;
@@ -157,7 +157,7 @@ contract TokenICOGAT is StandarTokentokenGAT{
     	if (purchasingAllowed) { revert(); } 	
      	if (msg.sender != owner) { revert();}
     	uint256 excess = tokenCreationCap - (totalSupply + gatFund);
-	if(excess &lt;= 0){revert();}
+	if(excess <= 0){revert();}
     	balances[gatFoundDeposit] += excess;  	
     	Transfer(address(this), gatFoundDeposit, excess);
    }
@@ -176,15 +176,15 @@ contract TokenICOGAT is StandarTokentokenGAT{
 	
 	/* 
      * When tokenSaleMin is not reach:
-     * 1) donors call the &quot;refund&quot; function of the GATCrowdFundingToken contract 
+     * 1) donors call the "refund" function of the GATCrowdFundingToken contract 
 	 */
 	function refund() public {
 	if(purchasingAllowed){revert();} // only refund after ico end
-	if(now &gt;= refundDeadLine ){revert();} // only refund are available before ico end + 30 days
-	if((totalSupply - totalBonusTokensIssued) &gt;= tokenSaleMin){revert();} // if we sould enough, no refund allow
+	if(now >= refundDeadLine ){revert();} // only refund are available before ico end + 30 days
+	if((totalSupply - totalBonusTokensIssued) >= tokenSaleMin){revert();} // if we sould enough, no refund allow
 	if(msg.sender == ethFoundDeposit){revert();}	// OurNet not entitled to a refund
 	uint256 gatVal= balances[msg.sender]; // get balance of who is getting from balances mapping
-	if(gatVal &lt;=0) {revert();} //if dont have balnace sent no refund
+	if(gatVal <=0) {revert();} //if dont have balnace sent no refund
 	// balances[msg.sender] = 0;//since donor can hold the tokes as souvenir do not update balance of who is getting refund in gatcontract
         uint256 ethVal = weirecives[msg.sender]; //extract amount contribuited by sender without tokenbonus        
 	LogTransaction(msg.sender,ethVal);//loggin transaction

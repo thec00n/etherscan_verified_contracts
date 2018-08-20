@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,15 +69,15 @@ interface tokenRecipient {
 
 contract ParsecTokenERC20 {
     // Public variables of the token
-    string public constant name = &quot;Parsec Credits&quot;;
-    string public constant symbol = &quot;PRSC&quot;;
+    string public constant name = "Parsec Credits";
+    string public constant symbol = "PRSC";
     uint8 public decimals = 6;
     uint256 public initialSupply = 30856775800;
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -106,10 +106,10 @@ contract ParsecTokenERC20 {
         require(_to != 0x0);
 
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -148,7 +148,7 @@ contract ParsecTokenERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -195,7 +195,7 @@ contract ParsecTokenERC20 {
      */
     function burn(uint256 _value) public returns (bool success) {
         // Check if the sender has enough
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
@@ -219,15 +219,15 @@ contract ParsecTokenERC20 {
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
         // Check if the targeted balance is enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         // Subtract from the targeted balance
         balanceOf[_from] -= _value;
 
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
 
         // Update totalSupply
@@ -242,7 +242,7 @@ contract ParsecTokenERC20 {
 
 
 contract ParsecPresale is owned {
-    // Use OpenZeppelin&#39;s SafeMath
+    // Use OpenZeppelin's SafeMath
     using SafeMath for uint256;
 
     // Minimum and maximum goals of the presale
@@ -326,13 +326,13 @@ contract ParsecPresale is owned {
     ///         preallocation and public phases
     /// @dev Name complies with ERC20 token standard, etherscan for example will recognize
     ///      this and show the balances of the address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /// @notice Keep track of Parsec credits to be granted to participants.
-    mapping (address =&gt; uint256) public creditBalanceOf;
+    mapping (address => uint256) public creditBalanceOf;
 
     /// @notice Define whitelisted addresses and sums for the first 2 days of pre-sale.
-    mapping (address =&gt; uint256) public whitelist;
+    mapping (address => uint256) public whitelist;
 
     /// @notice Log an event for each funding contributed during the public phase
     /// @notice Events are not logged when the constructor is being executed during
@@ -347,45 +347,45 @@ contract ParsecPresale is owned {
         parsecToken = ParsecTokenERC20(tokenAddress);
     }
 
-    /// @notice A participant sends a contribution to the contract&#39;s address
+    /// @notice A participant sends a contribution to the contract's address
     ///         between the PRESALE_START_DATE and the PRESALE_END_DATE
     /// @notice Only contributions above the MINIMUM_PARTICIPATION_AMOUNT are accepted.
     ///         Otherwise the transaction is rejected and contributed amount is returned
-    ///         to the participant&#39;s account
-    /// @notice A participant&#39;s contribution will be rejected if the presale
+    ///         to the participant's account
+    /// @notice A participant's contribution will be rejected if the presale
     ///         has been funded to the maximum amount
     function () public payable {
         // Contract should be powered up
         require(contractPoweredUp);
 
         // A participant cannot send funds before the presale start date
-        require(now &gt;= PRESALE_START_DATE);
+        require(now >= PRESALE_START_DATE);
 
         // A participant cannot send funds after the presale end date
-        require(now &lt; PRESALE_END_DATE);
+        require(now < PRESALE_END_DATE);
 
         // A participant cannot send less than the minimum amount
-        require(msg.value &gt;= MINIMUM_PARTICIPATION_AMOUNT);
+        require(msg.value >= MINIMUM_PARTICIPATION_AMOUNT);
 
         // Contract logic for transfers relies on current date and time.
-        if (now &gt;= PRESALE_START_DATE &amp;&amp; now &lt; PRESALE_SECOND_DAY_START) {
+        if (now >= PRESALE_START_DATE && now < PRESALE_SECOND_DAY_START) {
             // Trasfer logic for the 1st day of pre-sale.
             // Allow to transfer exact whitelisted sum for whitelisted addresses.
             require(whitelist[msg.sender] == msg.value);
             require(balanceOf[msg.sender] == 0);
-        } else if (now &gt;= PRESALE_SECOND_DAY_START &amp;&amp; now &lt; PRESALE_THIRD_DAY_START) {
+        } else if (now >= PRESALE_SECOND_DAY_START && now < PRESALE_THIRD_DAY_START) {
             // Trasfer logic for the 2nd day of pre-sale.
             // Allow to transfer any sum within contract max cap for whitelisted addresses.
             require(whitelist[msg.sender] != 0);
         }
 
         // A participant cannot send funds if the presale has been reached the maximum funding amount
-        require(totalFunding.add(msg.value) &lt;= PRESALE_MAXIMUM_FUNDING);
+        require(totalFunding.add(msg.value) <= PRESALE_MAXIMUM_FUNDING);
 
-        // Register the participant&#39;s contribution
+        // Register the participant's contribution
         addBalance(msg.sender, msg.value);
 
-        // Grant Parsec credits according to participant&#39;s contribution
+        // Grant Parsec credits according to participant's contribution
         grantCreditsForParticipation(msg.sender, msg.value);
     }
 
@@ -774,7 +774,7 @@ contract ParsecPresale is owned {
         require(!contractPoweredUp);
 
         // Contract should have enough Parsec credits
-        require(parsecToken.balanceOf(this) &gt;= PARSEC_CREDITS_MINIMAL_AMOUNT);
+        require(parsecToken.balanceOf(this) >= PARSEC_CREDITS_MINIMAL_AMOUNT);
 
         // Raise contract power-up flag
         contractPoweredUp = true;
@@ -784,10 +784,10 @@ contract ParsecPresale is owned {
     //          and pre-sale is over
     function ownerWithdraw() external onlyOwner {
         // The owner cannot withdraw until pre-sale ends
-        require(now &gt;= PRESALE_END_DATE);
+        require(now >= PRESALE_END_DATE);
 
         // The owner cannot withdraw if the presale did not reach the minimum funding amount
-        require(totalFunding &gt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding >= PRESALE_MINIMUM_FUNDING);
 
         // Withdraw the total funding amount
         owner.transfer(totalFunding);
@@ -797,13 +797,13 @@ contract ParsecPresale is owned {
     ///         reached and pre-sale is over
     function ownerWithdrawUnspentCredits() external onlyOwner {
         // The owner cannot withdraw unspent Parsec credits until pre-sale ends
-        require(now &gt;= PRESALE_END_DATE);
+        require(now >= PRESALE_END_DATE);
 
         // The owner cannot withdraw unspent Parsec credits if token withdrawal period started
-        require(now &lt; TOKEN_WITHDRAWAL_START_DATE);
+        require(now < TOKEN_WITHDRAWAL_START_DATE);
 
         // The owner cannot withdraw if the pre-sale did not reach the minimum funding amount
-        require(totalFunding &gt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding >= PRESALE_MINIMUM_FUNDING);
 
         // The owner cannot withdraw unspent Parsec credits more than once
         require(!unspentCreditsWithdrawn);
@@ -817,10 +817,10 @@ contract ParsecPresale is owned {
 
     function ownerWithdrawUnclaimedCredits() external onlyOwner {
         // The owner cannot withdraw unclaimed Parsec credits until token withdrawal period ends
-        require(now &gt;= TOKEN_WITHDRAWAL_END_DATE);
+        require(now >= TOKEN_WITHDRAWAL_END_DATE);
 
         // The owner cannot withdraw if the presale did not reach the minimum funding amount
-        require(totalFunding &gt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding >= PRESALE_MINIMUM_FUNDING);
 
         // The owner cannot withdraw unclaimed Parsec credits more than once
         require(!unclaimedCreditsWithdrawn);
@@ -834,14 +834,14 @@ contract ParsecPresale is owned {
     ///         was reached and date between TOKEN_WITHDRAWAL_START_DATE and TOKEN_WITHDRAWAL_END_DATE
     function participantClaimCredits() external {
         // Participant can withdraw Parsec credits only during token withdrawal period
-        require(now &gt;= TOKEN_WITHDRAWAL_START_DATE);
-        require(now &lt; TOKEN_WITHDRAWAL_END_DATE);
+        require(now >= TOKEN_WITHDRAWAL_START_DATE);
+        require(now < TOKEN_WITHDRAWAL_END_DATE);
 
         // Participant cannot withdraw Parsec credits if the minimum funding amount has not been reached
-        require(totalFunding &gt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding >= PRESALE_MINIMUM_FUNDING);
 
         // Participant can only withdraw Parsec credits if granted amount exceeds zero
-        require(creditBalanceOf[msg.sender] &gt; 0);
+        require(creditBalanceOf[msg.sender] > 0);
 
         // Get amount of tokens to approve
         var tokensToApprove = creditBalanceOf[msg.sender];
@@ -849,7 +849,7 @@ contract ParsecPresale is owned {
         // Update amount of Parsec credits spent
         spentParsecCredits = spentParsecCredits.add(tokensToApprove);
 
-        // Participant&#39;s Parsec credit balance is reduced to zero
+        // Participant's Parsec credit balance is reduced to zero
         creditBalanceOf[msg.sender] = 0;
 
         // Give allowance for participant to withdraw certain amount of Parsec credits
@@ -860,21 +860,21 @@ contract ParsecPresale is owned {
     ///         the presale has not achieved the minimum funding level
     function participantWithdrawIfMinimumFundingNotReached(uint256 value) external {
         // Participant cannot withdraw before the presale ends
-        require(now &gt;= PRESALE_END_DATE);
+        require(now >= PRESALE_END_DATE);
 
         // Participant cannot withdraw if the minimum funding amount has been reached
-        require(totalFunding &lt; PRESALE_MINIMUM_FUNDING);
+        require(totalFunding < PRESALE_MINIMUM_FUNDING);
 
         // Get sender balance
         uint256 senderBalance = balanceOf[msg.sender];
 
         // Participant can only withdraw an amount up to their contributed balance
-        require(senderBalance &gt;= value);
+        require(senderBalance >= value);
 
-        // Participant&#39;s balance is reduced by the claimed amount.
+        // Participant's balance is reduced by the claimed amount.
         balanceOf[msg.sender] = senderBalance.sub(value);
 
-        // Send ethers back to the participant&#39;s account
+        // Send ethers back to the participant's account
         msg.sender.transfer(value);
     }
 
@@ -883,10 +883,10 @@ contract ParsecPresale is owned {
     ///         if the minimum funding level is not reached
     function ownerClawback() external onlyOwner {
         // Minimum funding amount has not been reached
-        require(totalFunding &lt; PRESALE_MINIMUM_FUNDING);
+        require(totalFunding < PRESALE_MINIMUM_FUNDING);
 
         // The owner cannot withdraw before the clawback date
-        require(now &gt;= OWNER_CLAWBACK_DATE);
+        require(now >= OWNER_CLAWBACK_DATE);
 
         // Send remaining funds back to the owner
         owner.transfer(this.balance);
@@ -897,10 +897,10 @@ contract ParsecPresale is owned {
     ///         if the minimum funding level is not reached
     function ownerClawbackCredits() external onlyOwner {
         // Minimum funding amount has not been reached
-        require(totalFunding &lt; PRESALE_MINIMUM_FUNDING);
+        require(totalFunding < PRESALE_MINIMUM_FUNDING);
 
         // The owner cannot withdraw before the clawback date
-        require(now &gt;= OWNER_CLAWBACK_DATE);
+        require(now >= OWNER_CLAWBACK_DATE);
 
         // The owner cannot clawback unclaimed Parsec credits more than once
         require(!creditsClawbacked);
@@ -912,13 +912,13 @@ contract ParsecPresale is owned {
 
     /// @dev Keep track of participants contributions and the total funding amount
     function addBalance(address participant, uint256 value) private {
-        // Participant&#39;s balance is increased by the sent amount
+        // Participant's balance is increased by the sent amount
         balanceOf[participant] = balanceOf[participant].add(value);
 
         // Keep track of the total funding amount
         totalFunding = totalFunding.add(value); 
 
-        // Log an event of the participant&#39;s contribution
+        // Log an event of the participant's contribution
         LogParticipation(participant, value, now);
     }
 
@@ -929,7 +929,7 @@ contract ParsecPresale is owned {
     
     /// @dev Keep track of whitelisted participants contributions
     function addToWhitelist(address participant, uint256 value) private {
-        // Participant&#39;s balance is increased by the sent amount
+        // Participant's balance is increased by the sent amount
         whitelist[participant] = whitelist[participant].add(value);
 
         // Keep track of the total whitelisted funding amount
@@ -938,7 +938,7 @@ contract ParsecPresale is owned {
 
     function grantCreditsForParticipation(address participant, uint256 etherAmount) private {
         // Add bonus 5% if contributed amount is greater or equal to bonus threshold
-        uint256 dividend = etherAmount &gt;= BONUS_THRESHOLD ? 105 : 100;
+        uint256 dividend = etherAmount >= BONUS_THRESHOLD ? 105 : 100;
         dividend = dividend.mul(etherAmount);
         dividend = dividend.mul(PARSEC_CREDITS_PER_ETHER);
         uint256 divisor = 100;
@@ -950,9 +950,9 @@ contract ParsecPresale is owned {
         // Check if contract has enough Parsec credits
         uint256 currentBalanceInCredits = parsecToken.balanceOf(this);
         uint256 availableCredits = currentBalanceInCredits.sub(grantedParsecCredits);
-        require(availableCredits &gt;= creditsToGrant);
+        require(availableCredits >= creditsToGrant);
 
-        // Add Parsec credits amount to participant&#39;s credit balance
+        // Add Parsec credits amount to participant's credit balance
         creditBalanceOf[participant] = creditBalanceOf[participant].add(creditsToGrant);
 
         // Add Parsec credits amount to total granted credits

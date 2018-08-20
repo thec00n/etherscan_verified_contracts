@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 // Updates since last contract 
 // Price increase is now max 200% from 100% 
 // min Price is now 1 szabo from 1 finney. This price is not recommended due to gas. 
-// If you start a new game (amount in pot is 0, and timer hasn&#39;t started) then you will pay NO fees
+// If you start a new game (amount in pot is 0, and timer hasn't started) then you will pay NO fees
 // This means that you can always start a game without any risk. 
 // If no one decides to buy, then you can pay out back, and you will get the pot, which is 100% of your payment back!!
 
@@ -47,7 +47,7 @@ contract ItemMarket{
 		string name;
 	} 
 
-	mapping (uint256 =&gt; Item) public Items;
+	mapping (uint256 => Item) public Items;
 
 	uint256 public next_item_index = 0;
 
@@ -74,35 +74,35 @@ contract ItemMarket{
         require(msg.sender == owner);
         require(IS_STARTED==0);
         IS_STARTED = 1;
-        AddItemExtra(600, 1500, 1 finney, 0, 3000, &quot;Battery&quot;, msg.sender);
-    	AddItemExtra(600, 150, 4 finney, 0, 5000, &quot;Twig&quot;, msg.sender);
-    	AddItemExtra(3600, 2000, 10 finney, 0, 4000, &quot;Solar Panel&quot;, msg.sender);
-    	AddItemExtra(3600*24, 5000, 10 finney, 0, 5000, &quot;Moon&quot;, msg.sender);
-    	AddItemExtra(3600*24*7, 7500, 50 finney, 0, 7000, &quot;Ethereum&quot;, msg.sender);
+        AddItemExtra(600, 1500, 1 finney, 0, 3000, "Battery", msg.sender);
+    	AddItemExtra(600, 150, 4 finney, 0, 5000, "Twig", msg.sender);
+    	AddItemExtra(3600, 2000, 10 finney, 0, 4000, "Solar Panel", msg.sender);
+    	AddItemExtra(3600*24, 5000, 10 finney, 0, 5000, "Moon", msg.sender);
+    	AddItemExtra(3600*24*7, 7500, 50 finney, 0, 7000, "Ethereum", msg.sender);
     	
     	// Previous contract had items. Recreate those
     	
-        AddItemExtra(2000, 10000, 1000000000000000, 500, 2000, &quot;segfault&#39;s ego&quot;, 0xef764BAC8a438E7E498c2E5fcCf0f174c3E3F8dB);
-        AddItemExtra(300, 10000, 10000000000000000, 500, 2500, &quot;Hellina&quot;, 0x83c0Efc6d8B16D87BFe1335AB6BcAb3Ed3960285);
-        AddItemExtra(600, 10000, 100000000000000000, 500, 2000, &quot;nightman&#39;s gambit&quot;, 0x5C035Bb4Cb7dacbfeE076A5e61AA39a10da2E956);
-        AddItemExtra(360000, 10000, 5000000000000000, 200, 1800, &quot;BOHLISH&quot;, 0xC84c18A88789dBa5B0cA9C13973435BbcE7e961d);
-        AddItemExtra(900, 2000, 20000000000000000, 1000, 2000, &quot;Phil&#39;s labyrinth&quot;, 0x457dEA5F9c185419EA47ff80f896d98aadf1c727);
-        AddItemExtra(420, 6899, 4200000000000000, 500, 4000, &quot;69,420 (Nice)&quot;, 0x477cCD47d62a4929DD11651ab835E132c8eab3B8);
+        AddItemExtra(2000, 10000, 1000000000000000, 500, 2000, "segfault's ego", 0xef764BAC8a438E7E498c2E5fcCf0f174c3E3F8dB);
+        AddItemExtra(300, 10000, 10000000000000000, 500, 2500, "Hellina", 0x83c0Efc6d8B16D87BFe1335AB6BcAb3Ed3960285);
+        AddItemExtra(600, 10000, 100000000000000000, 500, 2000, "nightman's gambit", 0x5C035Bb4Cb7dacbfeE076A5e61AA39a10da2E956);
+        AddItemExtra(360000, 10000, 5000000000000000, 200, 1800, "BOHLISH", 0xC84c18A88789dBa5B0cA9C13973435BbcE7e961d);
+        AddItemExtra(900, 2000, 20000000000000000, 1000, 2000, "Phil's labyrinth", 0x457dEA5F9c185419EA47ff80f896d98aadf1c727);
+        AddItemExtra(420, 6899, 4200000000000000, 500, 4000, "69,420 (Nice)", 0x477cCD47d62a4929DD11651ab835E132c8eab3B8);
         next_item_index = next_item_index + 2; // this was an item I created. We skip this item. Item after this too, to check if != devs could create 
         // apparently people created wrong settings which got reverted by the add item function. it looked like system was wrong
         
         // tfw next item 
         // i didnt create this name lol 
         
-        AddItemExtra(600, 10000, 5000000000000000, 2500, 7000, &quot;HELLINA IS A RETARDED DEGENERATE GAMBLER AND A FUCKING FUD QUEEN&quot;, 0x26581d1983ced8955C170eB4d3222DCd3845a092);
+        AddItemExtra(600, 10000, 5000000000000000, 2500, 7000, "HELLINA IS A RETARDED DEGENERATE GAMBLER AND A FUCKING FUD QUEEN", 0x26581d1983ced8955C170eB4d3222DCd3845a092);
         
         // created this, nice hot potato 
         
-        AddItemExtra(1800, 9700, 2000000000000000, 0, 2500, &quot;Hot Potato&quot;, msg.sender);
+        AddItemExtra(1800, 9700, 2000000000000000, 0, 2500, "Hot Potato", msg.sender);
     }
 
     function ChangeFee(uint16 _fee) public onlyOwner{
-    	require(_fee &lt;= 500);
+    	require(_fee <= 500);
     	devFee = _fee;
     }
 
@@ -114,7 +114,7 @@ contract ItemMarket{
     
     function AddItemExtra(uint32 timer, uint16 priceIncrease, uint256 minPrice, uint16 creatorFee, uint16 potFee, string name, address own) internal {
     	uint16 previousFee = 10000 - devFee - potFee - creatorFee;
-    	var NewItem = Item(timer, 0, priceIncrease, minPrice, 0, minPrice, creatorFee, previousFee, potFee, own, address(0), &quot;&quot;, name);
+    	var NewItem = Item(timer, 0, priceIncrease, minPrice, 0, minPrice, creatorFee, previousFee, potFee, own, address(0), "", name);
 
     	Items[next_item_index] = NewItem;
 
@@ -124,31 +124,31 @@ contract ItemMarket{
     }
 
     function AddItem(uint32 timer, uint16 priceIncrease, uint256 minPrice, uint16 creatorFee, uint16 potFee, string name) public payable {
-    	require (timer &gt;= 300);
-    	require (timer &lt; 31622400);
+    	require (timer >= 300);
+    	require (timer < 31622400);
 
-    	require(priceIncrease &lt;= 20000);
-    	require(minPrice &gt;= (1 szabo) &amp;&amp; minPrice &lt;= (1 ether));
-    	require(creatorFee &lt;= 2500);
-    	require(potFee &lt;= 10000);
-    	require(add(add(creatorFee, potFee), devFee) &lt;= 10000);
+    	require(priceIncrease <= 20000);
+    	require(minPrice >= (1 szabo) && minPrice <= (1 ether));
+    	require(creatorFee <= 2500);
+    	require(potFee <= 10000);
+    	require(add(add(creatorFee, potFee), devFee) <= 10000);
 
 
 
     	if (msg.sender == owner){
     		require(creatorFee == 0);
-    		if (msg.value &gt; 0){
+    		if (msg.value > 0){
     			owner.transfer(msg.value);
     		}
     	}
     	else{
     		uint256 left = 0;
-    		if (msg.value &gt; ItemCreatePrice){
+    		if (msg.value > ItemCreatePrice){
     			left = sub(msg.value, ItemCreatePrice);
     			msg.sender.transfer(left);
     		}
     		else{
-    			if (msg.value &lt; ItemCreatePrice){
+    			if (msg.value < ItemCreatePrice){
 
     				revert();
     			}
@@ -158,10 +158,10 @@ contract ItemMarket{
     	}
 
 
-        require (devFee + potFee + creatorFee &lt;= 10000);
+        require (devFee + potFee + creatorFee <= 10000);
         
     	uint16 previousFee = 10000 - devFee - potFee - creatorFee;
-    	var NewItem = Item(timer, 0, priceIncrease, minPrice, 0, minPrice, creatorFee, previousFee, potFee, msg.sender, address(0), &quot;&quot;, name);
+    	var NewItem = Item(timer, 0, priceIncrease, minPrice, 0, minPrice, creatorFee, previousFee, potFee, msg.sender, address(0), "", name);
 
     	Items[next_item_index] = NewItem;
 
@@ -188,12 +188,12 @@ contract ItemMarket{
 
 
     function TakePrize(uint256 id) public {
-    	require(id &lt; next_item_index);
+    	require(id < next_item_index);
     	var UsedItem = Items[id];
     	require(UsedItem.owner != address(0));
     	uint256 TimingTarget = add(UsedItem.timer, UsedItem.timestamp);
 
-    	if (block.timestamp &gt; TimingTarget){
+    	if (block.timestamp > TimingTarget){
     		Payout(id);
     		return;
     	}
@@ -206,19 +206,19 @@ contract ItemMarket{
 
 
     function BuyItem(uint256 id, string quote) public payable{
-    	require(id &lt; next_item_index);
+    	require(id < next_item_index);
     	var UsedItem = Items[id];
 
 
-    	if (UsedItem.owner != address(0) &amp;&amp; block.timestamp &gt; (add(UsedItem.timestamp, UsedItem.timer))){
+    	if (UsedItem.owner != address(0) && block.timestamp > (add(UsedItem.timestamp, UsedItem.timer))){
     		Payout(id);
-    		if (msg.value &gt; 0){
+    		if (msg.value > 0){
     			msg.sender.transfer(msg.value);
     		}
     		return;
     	}
 
-    	require(msg.value &gt;= UsedItem.price);
+    	require(msg.value >= UsedItem.price);
     	require(msg.sender != owner);
     	//require(msg.sender != UsedItem.creator); 
     	require(msg.sender != UsedItem.owner);
@@ -248,7 +248,7 @@ contract ItemMarket{
    			owner.transfer(devFee_used);
    		}
    		
-   		if (msg.value &gt; UsedItem.price){
+   		if (msg.value > UsedItem.price){
    		    msg.sender.transfer(sub(msg.value, UsedItem.price));
    		}
 
@@ -265,7 +265,7 @@ contract ItemMarket{
     
 	function () payable public {
 		// msg.value is the amount of Ether sent by the transaction.
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			msg.sender.transfer(msg.value);
 		}
 	}
@@ -285,20 +285,20 @@ contract ItemMarket{
    }
 
    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
    }
 
    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
 

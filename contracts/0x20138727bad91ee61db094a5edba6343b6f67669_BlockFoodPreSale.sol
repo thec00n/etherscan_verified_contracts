@@ -29,7 +29,7 @@ contract BlockFoodPreSale {
     /*
         Set by functions
     */
-    mapping(address =&gt; Application) public applications;
+    mapping(address => Application) public applications;
     Applicant[] public applicants;
     uint public contributionPending;
     uint public contributionRejected;
@@ -50,17 +50,17 @@ contract BlockFoodPreSale {
         Modifiers
     */
     modifier onlyBeforeEnd() {
-        require(now &lt;= endDate);
+        require(now <= endDate);
         _;
     }
 
     modifier onlyMoreThanMinContribution() {
-        require(msg.value &gt;= minContribution);
+        require(msg.value >= minContribution);
         _;
     }
 
     modifier onlyMaxCapNotReached() {
-        require((contributionAccepted + msg.value) &lt;= maxCap);
+        require((contributionAccepted + msg.value) <= maxCap);
         _;
     }
 
@@ -75,24 +75,24 @@ contract BlockFoodPreSale {
     }
 
     modifier onlyPendingApplication(address applicant) {
-        require(applications[applicant].contribution &gt; 0);
+        require(applications[applicant].contribution > 0);
         require(applications[applicant].state == ApplicationState.Pending);
         _;
     }
 
     modifier onlyMinCapReached() {
-        require(contributionAccepted &gt;= minCap);
+        require(contributionAccepted >= minCap);
         _;
     }
 
     modifier onlyNotWithdrawn(uint amount) {
-        require(withdrawn + amount &lt;= contributionAccepted);
+        require(withdrawn + amount <= contributionAccepted);
         _;
     }
 
     modifier onlyFailedPreSale() {
-        require(now &gt;= endDate);
-        require(contributionAccepted + contributionPending &lt; minCap);
+        require(now >= endDate);
+        require(contributionAccepted + contributionPending < minCap);
         _;
     }
 
@@ -102,7 +102,7 @@ contract BlockFoodPreSale {
     }
 
     modifier onlyAfterTwoMonthsAfterTheEnd() {
-        require(now &gt; (endDate + 60 days));
+        require(now > (endDate + 60 days));
         _;
     }
 

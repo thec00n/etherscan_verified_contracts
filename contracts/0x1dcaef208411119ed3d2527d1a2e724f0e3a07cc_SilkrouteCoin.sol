@@ -16,13 +16,13 @@ library SafeMath {
 	}
 	
 	function ssub(uint256 a, uint256 b) internal pure returns (uint256) {
-		require( b &lt;= a);
+		require( b <= a);
 		return a-b;
 	}
 
 	function sadd(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		require(c &gt;= a);
+		require(c >= a);
 		return c;
 	}
 }
@@ -44,7 +44,7 @@ library SafeMath {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
 
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -64,15 +64,15 @@ contract SilkrouteCoin {
     
     using SafeMath for uint256;
 
-    string public name 			= &quot;SilkrouteCoin&quot;;
-    string public symbol 		= &quot;XRT&quot;;
+    string public name 			= "SilkrouteCoin";
+    string public symbol 		= "XRT";
     uint8 public decimals 		= 18;
     uint256 public totalSupply  = 1000000000000 * 10**18;
 	bool public tokenCreated 	= false;
 
     address public owner;  
-    mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping(address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -84,7 +84,7 @@ contract SilkrouteCoin {
         tokenCreated = true;
         owner = msg.sender;
         balances[owner] = totalSupply;
-        require(balances[owner] &gt; 0);
+        require(balances[owner] > 0);
     }
 
     modifier onlyOwner() {
@@ -131,11 +131,11 @@ contract SilkrouteCoin {
         assembly {
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) {
+        if (balanceOf(msg.sender) < _value) {
             revert();
         }
         balances[msg.sender] = balanceOf(msg.sender).ssub(_value);
@@ -145,7 +145,7 @@ contract SilkrouteCoin {
     }
 
    function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) {
+        if (balanceOf(msg.sender) < _value) {
             revert();
         }
         balances[msg.sender] = balanceOf(msg.sender).ssub(_value);
@@ -162,9 +162,9 @@ contract SilkrouteCoin {
    
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
        
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = balanceOf(_to).ssub(_value);
         balances[_from] = balanceOf(_from).sadd(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].ssub(_value);
@@ -183,7 +183,7 @@ contract SilkrouteCoin {
     }
     
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         address burner = msg.sender;
         balances[burner] = balances[burner].ssub(_value);
@@ -192,7 +192,7 @@ contract SilkrouteCoin {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender].ssub(_value);
         totalSupply.ssub(_value);
         Burn(_from, _value);

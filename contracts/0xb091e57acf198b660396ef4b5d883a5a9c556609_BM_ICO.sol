@@ -34,12 +34,12 @@ contract BM_ICO
     address public owner;
     address public exchangesOwner;
 
-    mapping (uint8 =&gt; uint256)                       public holdersBonus;
-    mapping (address =&gt; bool)                        public claimedMK;
-    mapping (address =&gt; bool)                        public claimedPreICO;
+    mapping (uint8 => uint256)                       public holdersBonus;
+    mapping (address => bool)                        public claimedMK;
+    mapping (address => bool)                        public claimedPreICO;
 
-    mapping (uint8 =&gt; uint256)                       public partnerBonus;
-    mapping (address =&gt; bool)                        public claimedPartnerPreICO;
+    mapping (uint8 => uint256)                       public partnerBonus;
+    mapping (address => bool)                        public claimedPartnerPreICO;
 
     uint256 public startDate      = 1505001600; //10.09.2017 00:00 GMT
     uint256 public endDate        = 1507593600; //10.10.2017 00:00 GMT
@@ -48,9 +48,9 @@ contract BM_ICO
 
     uint256 public icoTokenSupply = 7*(10**26);
 
-    mapping (uint8 =&gt; uint256) public priceRound;
+    mapping (uint8 => uint256) public priceRound;
 
-    mapping(address =&gt; bool) exchanges;
+    mapping(address => bool) exchanges;
 
     function BM_ICO()
     {
@@ -106,16 +106,16 @@ contract BM_ICO
     }
 
     function periodNow() constant returns (uint8 period) {
-        if(now &gt;= 1505001600 &amp;&amp; now &lt; 1505865600){
+        if(now >= 1505001600 && now < 1505865600){
             period = 2;
         }
-        else if(now &gt;= 1505865600 &amp;&amp; now &lt; 1506297600){
+        else if(now >= 1505865600 && now < 1506297600){
             period = 3;
         }
-        else if(now &gt;= 1506297600 &amp;&amp; now &lt; 1506729600){
+        else if(now >= 1506297600 && now < 1506729600){
             period = 4;
         }
-        else if(now &gt;= 1506729600 &amp;&amp; now &lt; 1507593600){
+        else if(now >= 1506729600 && now < 1507593600){
             period = 5;
         }
         else {
@@ -141,7 +141,7 @@ contract BM_ICO
             claimedPreICO[holder] = true;
         }
 
-        assert(reward&gt;0);
+        assert(reward>0);
 
         if(exchanges[holder] == true)
         {
@@ -158,7 +158,7 @@ contract BM_ICO
         assert(claimedPartnerPreICO[partner]==false);
         uint256 reward = etherToTokens(contractAffiliate.partnerPreICOBonus(partner), priceRound[1]);
 
-        assert(reward&gt;0);
+        assert(reward>0);
 
         contractTokens.mintTokens(partner, reward);
         claimedPartnerPreICO[partner] = true;
@@ -168,18 +168,18 @@ contract BM_ICO
     {
         uint8 period_number = periodNow();
         assert(exchanges[msg.sender]==false);
-        assert(period_number &gt;= 2 &amp;&amp; period_number &lt;= 5);
-        assert(icoTokenSupply &gt; 0);
-        assert(msg.value &gt;= 0.1 ether);
+        assert(period_number >= 2 && period_number <= 5);
+        assert(icoTokenSupply > 0);
+        assert(msg.value >= 0.1 ether);
 
         uint256 amount_invest = msg.value;
         uint256 reward = etherToTokens(amount_invest, priceRound[period_number]);
 
-        if(reward &gt; icoTokenSupply)
+        if(reward > icoTokenSupply)
         {
             reward = icoTokenSupply;
             amount_invest = tokensToEther(reward, priceRound[period_number]);
-            assert(msg.value &gt; amount_invest);
+            assert(msg.value > amount_invest);
             msg.sender.transfer(msg.value - amount_invest);
         }
 
@@ -187,14 +187,14 @@ contract BM_ICO
 
         var (partner_address, partner_bonus, referral_bonus) = contractAffiliate.add_referral(msg.sender, promo, amount_invest);
 
-        if(partner_bonus &gt; 0 &amp;&amp; partner_address != address(0x0))
+        if(partner_bonus > 0 && partner_address != address(0x0))
         {
             uint256 p_bonus = etherToTokens(partner_bonus, priceRound[period_number]);
             partnerBonus[period_number] += p_bonus;
             contractTokens.mintTokens(partner_address, p_bonus);
         }
 
-        if(referral_bonus &gt; 0)
+        if(referral_bonus > 0)
         {
             uint256 bonus = etherToTokens(referral_bonus, priceRound[period_number]);
             holdersBonus[period_number] += bonus;
@@ -205,18 +205,18 @@ contract BM_ICO
 
     function () payable
     {
-        buy(&#39;&#39;);
+        buy('');
     }
 
     function collect() isOwner
     {
-        assert(this.balance &gt; 0);
+        assert(this.balance > 0);
         msg.sender.transfer(this.balance);
     }
 
     function ownerEmit() isOwner
     {
-        assert(now &gt; endDate);
+        assert(now > endDate);
         assert(isOwnerEmit==false);
 
         uint256 users_emit = ((7*(10**26))-icoTokenSupply); // 700 000 000

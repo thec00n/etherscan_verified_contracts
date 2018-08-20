@@ -97,7 +97,7 @@ contract OTC is Pausable {
     function swap(uint256 id) external whenNotPaused {
         Swap storage swap = swaps[id];
 
-        require(swap.expires &gt;= now);
+        require(swap.expires >= now);
         require(canSwap(id, msg.sender));
         require(ERC20(swap.tokenGive).transferFrom(swap.buyer, msg.sender, swap.amountGive));
         require(ERC20(swap.tokenGet).transferFrom(msg.sender, swap.buyer, swap.amountGet));
@@ -110,7 +110,7 @@ contract OTC is Pausable {
     function canSwap(uint256 id, address seller) public constant returns (bool) {
         Swap storage swap = swaps[id];
 
-        if (swap.seller != 0x0 &amp;&amp; seller != swap.seller) {
+        if (swap.seller != 0x0 && seller != swap.seller) {
             return false;
         }
 
@@ -120,7 +120,7 @@ contract OTC is Pausable {
     function swapsFor(address _owner) public constant returns (uint[]) {
         uint[] memory swapsForOwner;
 
-        for (uint256 i = 0; i &lt; swaps.length; i++) {
+        for (uint256 i = 0; i < swaps.length; i++) {
             if (swaps[i].buyer == _owner) {
                 swapsForOwner[swapsForOwner.length] = i;
             }

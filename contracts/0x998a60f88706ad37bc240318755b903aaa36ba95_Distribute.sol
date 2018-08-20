@@ -114,7 +114,7 @@ contract Distribute {
 	// Check if user is whitelisted admin
 	modifier onlyAdmins() {
 		uint8 isAdmin = 0;
-		for (uint8 i = 0; i &lt; admins.length; i++) {
+		for (uint8 i = 0; i < admins.length; i++) {
 			if (admins[i] == msg.sender)
         isAdmin = isAdmin | 1;
 		}
@@ -134,12 +134,12 @@ contract Distribute {
 
     // Individual withdraw function -- Send 0 ETH from contribution address to withdraw tokens
 	function () payable {
-		for (uint i = 0; i &lt; payees.length; i++) {
+		for (uint i = 0; i < payees.length; i++) {
 			uint _tokensDue = tokensDue(payees[i].contributionWei);
 			if (payees[i].addr == msg.sender) {
 				require(!payees[i].paid);
-				require(_tokensDue &gt;= withhold);
-				require(token.balanceOf(address(this)) &gt;= _tokensDue*tokenMultiplier);
+				require(_tokensDue >= withhold);
+				require(token.balanceOf(address(this)) >= _tokensDue*tokenMultiplier);
 				// Withhold tokens to cover gas cost
 				uint tokensToSend = _tokensDue - withhold;
 				// Send tokens to payee
@@ -158,9 +158,9 @@ contract Distribute {
 		require(validate());
 		withdrawalDeployed = true;
 		// Send all tokens
-		for (uint i = 0; i &lt; payees.length; i++) {
+		for (uint i = 0; i < payees.length; i++) {
 			// Confirm that contributor has not yet been paid is owed more than gas withhold
-			if (payees[i].paid == false &amp;&amp; tokensDue(payees[i].contributionWei) &gt;= withhold) {
+			if (payees[i].paid == false && tokensDue(payees[i].contributionWei) >= withhold) {
 				// Withhold tokens to cover gas cost
 				uint tokensToSend = tokensDue(payees[i].contributionWei) - withhold;
 				// Send tokens to payee
@@ -175,13 +175,13 @@ contract Distribute {
   function validate() public view returns (bool) {
 		// Calculate total tokens due to all contributors
 		uint totalTokensDue = 0;
-		for (uint i = 0; i &lt; payees.length; i++) {
+		for (uint i = 0; i < payees.length; i++) {
 			if (!payees[i].paid) {
 				// Calculate tokens based on ETH contribution
 				totalTokensDue += tokensDue(payees[i].contributionWei);
 			}
 		}
-		return token.balanceOf(address(this)) &gt;= totalTokensDue*tokenMultiplier;
+		return token.balanceOf(address(this)) >= totalTokensDue*tokenMultiplier;
   }
 
 	// Test - Token transfer -- Try 1 token first

@@ -21,7 +21,7 @@ contract DSPLT_A {
 //  data storage                                                                                                                                                                                                   
 // ----------------------------------------                                                                                                                                                                        
         address public owner;                                // deployer executor                                                                                                                                  
-        mapping (uint =&gt; partnerAccount) partnerAccounts;    // accounts by index                                                                                                                                  
+        mapping (uint => partnerAccount) partnerAccounts;    // accounts by index                                                                                                                                  
         uint public numAccounts;                             // how many accounts exist                                                                                                                            
         uint public holdoverBalance;                         // amount yet to be distributed                                                                                                                       
         uint public totalFundsReceived;                      // amount received since begin of time                                                                                                                
@@ -49,15 +49,15 @@ contract DSPLT_A {
         // -----------------------------------
         function lock() {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 if (settingsState == SettingStateValue.locked) {
-                        StatEvent(&quot;err: locked&quot;);
+                        StatEvent("err: locked");
                         return;
                 }
                 settingsState = SettingStateValue.locked;
-                StatEvent(&quot;ok: contract locked&quot;);
+                StatEvent("ok: contract locked");
         }
 
 
@@ -69,21 +69,21 @@ contract DSPLT_A {
         // -----------------------------------
         function reset() {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 if (settingsState == SettingStateValue.locked) {
-                        StatEvent(&quot;err: locked&quot;);
+                        StatEvent("err: locked");
                         return;
                 }
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         holdoverBalance += partnerAccounts[i].balance;
                 }
                 totalFundsReceived = holdoverBalance;
                 totalFundsDistributed = 0;
                 totalFundsWithdrawn = 0;
                 numAccounts = 0;
-                StatEvent(&quot;ok: all accts reset&quot;);
+                StatEvent("ok: all accts reset");
         }
 
 
@@ -92,15 +92,15 @@ contract DSPLT_A {
         // -----------------------------------
         function setEvenDistThresh(uint256 _thresh) {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 if (settingsState == SettingStateValue.locked) {
-                        StatEvent(&quot;err: locked&quot;);
+                        StatEvent("err: locked");
                         return;
                 }
                 evenDistThresh = (_thresh / TENHUNDWEI) * TENHUNDWEI;
-                StatEventI(&quot;ok: threshold set&quot;, evenDistThresh);
+                StatEventI("ok: threshold set", evenDistThresh);
         }
 
 
@@ -109,11 +109,11 @@ contract DSPLT_A {
         // -----------------------------------
         function setWitdrawGas(uint256 _withdrawGas) {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 withdrawGas = _withdrawGas;
-                StatEventI(&quot;ok: withdraw gas set&quot;, withdrawGas);
+                StatEventI("ok: withdraw gas set", withdrawGas);
         }
 
 
@@ -122,15 +122,15 @@ contract DSPLT_A {
         // ---------------------------------------------------
         function addAccount(address _addr, uint256 _pctx10, bool _evenStart) {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 if (settingsState == SettingStateValue.locked) {
-                        StatEvent(&quot;err: locked&quot;);
+                        StatEvent("err: locked");
                         return;
                 }
-                if (numAccounts &gt;= MAX_ACCOUNTS) {
-                        StatEvent(&quot;err: max accounts&quot;);
+                if (numAccounts >= MAX_ACCOUNTS) {
+                        StatEvent("err: max accounts");
                         return;
                 }
                 partnerAccounts[numAccounts].addr = _addr;
@@ -139,7 +139,7 @@ contract DSPLT_A {
                 partnerAccounts[numAccounts].credited = 0;
                 partnerAccounts[numAccounts].balance = 0;
                 ++numAccounts;
-                StatEvent(&quot;ok: acct added&quot;);
+                StatEvent("ok: acct added");
         }
 
 
@@ -147,7 +147,7 @@ contract DSPLT_A {
         // get acct info
         // ----------------------------
         function getAccountInfo(address _addr) constant returns(uint _idx, uint _pctx10, bool _evenStart, uint _credited, uint _balance) {
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         address addr = partnerAccounts[i].addr;
                         if (addr == _addr) {
                                 _idx = i;
@@ -155,11 +155,11 @@ contract DSPLT_A {
                                 _evenStart = partnerAccounts[i].evenStart;
                                 _credited = partnerAccounts[i].credited;
                                 _balance = partnerAccounts[i].balance;
-                                StatEvent(&quot;ok: found acct&quot;);
+                                StatEvent("ok: found acct");
                                 return;
                         }
                 }
-                StatEvent(&quot;err: acct not found&quot;);
+                StatEvent("err: acct not found");
         }
 
 
@@ -168,10 +168,10 @@ contract DSPLT_A {
         // ----------------------------
         function getTotalPctx10() constant returns(uint _totalPctx10) {
                 _totalPctx10 = 0;
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         _totalPctx10 += partnerAccounts[i].pctx10;
                 }
-                StatEventI(&quot;ok: total pctx10&quot;, _totalPctx10);
+                StatEventI("ok: total pctx10", _totalPctx10);
         }
 
 
@@ -180,12 +180,12 @@ contract DSPLT_A {
         // ----------------------------
         function getNumEvenSplits() constant returns(uint _numEvenSplits) {
                 _numEvenSplits = 0;
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         if (partnerAccounts[i].evenStart) {
                                 ++_numEvenSplits;
                         }
                 }
-                StatEventI(&quot;ok: even splits&quot;, _numEvenSplits);
+                StatEventI("ok: even splits", _numEvenSplits);
         }
 
 
@@ -197,7 +197,7 @@ contract DSPLT_A {
         function () payable {
                 totalFundsReceived += msg.value;
                 holdoverBalance += msg.value;
-                StatEventI(&quot;ok: incoming&quot;, msg.value);
+                StatEventI("ok: incoming", msg.value);
         }
 
 
@@ -206,7 +206,7 @@ contract DSPLT_A {
         // ----------------------------
         function distribute() {
                 //only payout if we have more than 1000 wei
-                if (holdoverBalance &lt; TENHUNDWEI) {
+                if (holdoverBalance < TENHUNDWEI) {
                         return;
                 }
                 //first pay accounts that are not constrained by even distribution
@@ -216,7 +216,7 @@ contract DSPLT_A {
                 uint acctDist;
                 uint maxAcctDist;
                 uint numEvenSplits = 0;
-                for (i = 0; i &lt; numAccounts; i++ ) {
+                for (i = 0; i < numAccounts; i++ ) {
                         if (partnerAccounts[i].evenStart) {
                                 ++numEvenSplits;
                         } else {
@@ -226,9 +226,9 @@ contract DSPLT_A {
                                 //total amount due to this acct. note: this check is necessary, cuz here we
                                 //might not distribute the full holdover amount during each pass.
                                 maxAcctDist = totalFundsReceived * pctx10 / TENHUNDWEI;
-                                if (partnerAccounts[i].credited &gt;= maxAcctDist) {
+                                if (partnerAccounts[i].credited >= maxAcctDist) {
                                         acctDist = 0;
-                                } else if (partnerAccounts[i].credited + acctDist &gt; maxAcctDist) {
+                                } else if (partnerAccounts[i].credited + acctDist > maxAcctDist) {
                                         acctDist = maxAcctDist - partnerAccounts[i].credited;
                                 }
                                 partnerAccounts[i].credited += acctDist;
@@ -240,20 +240,20 @@ contract DSPLT_A {
                 //now pay accounts that are constrained by even distribution. we split whatever is
                 //left of the holdover evenly.
                 uint distAmount = holdoverBalance;
-                if (totalFundsDistributed &lt; evenDistThresh) {
-                        for (i = 0; i &lt; numAccounts; i++ ) {
+                if (totalFundsDistributed < evenDistThresh) {
+                        for (i = 0; i < numAccounts; i++ ) {
                                 if (partnerAccounts[i].evenStart) {
                                         acctDist = distAmount / numEvenSplits;
                                         //we also double check to ensure that the amount awarded cannot exceed the
                                         //total amount due to this acct. note: this check is necessary, cuz here we
                                         //might not distribute the full holdover amount during each pass.
                                         uint fundLimit = totalFundsReceived;
-                                        if (fundLimit &gt; evenDistThresh)
+                                        if (fundLimit > evenDistThresh)
                                                 fundLimit = evenDistThresh;
                                         maxAcctDist = fundLimit / numEvenSplits;
-                                        if (partnerAccounts[i].credited &gt;= maxAcctDist) {
+                                        if (partnerAccounts[i].credited >= maxAcctDist) {
                                                 acctDist = 0;
-                                        } else if (partnerAccounts[i].credited + acctDist &gt; maxAcctDist) {
+                                        } else if (partnerAccounts[i].credited + acctDist > maxAcctDist) {
                                                 acctDist = maxAcctDist - partnerAccounts[i].credited;
                                         }
                                         partnerAccounts[i].credited += acctDist;
@@ -265,29 +265,29 @@ contract DSPLT_A {
                 }
                 //now, if there are any funds left then it means that we have either exceeded the even distribution threshold,
                 //or there is a remainder in the even split. in that case distribute all the remmaing funds to partners who have
-                //not yet exceeded their allotment, according to their &quot;effective&quot; percentages. note that this must be done here,
-                //even if we haven&#39;t passed the even distribution threshold, to ensure that we don&#39;t get stuck with a remainder
+                //not yet exceeded their allotment, according to their "effective" percentages. note that this must be done here,
+                //even if we haven't passed the even distribution threshold, to ensure that we don't get stuck with a remainder
                 //amount that cannot be distributed.
                 distAmount = holdoverBalance;
-                if (distAmount &gt; 0) {
+                if (distAmount > 0) {
                         uint totalDistPctx10 = 0;
-                        for (i = 0; i &lt; numAccounts; i++ ) {
+                        for (i = 0; i < numAccounts; i++ ) {
                                 pctx10 = partnerAccounts[i].pctx10;
                                 maxAcctDist = totalFundsReceived * pctx10 / TENHUNDWEI;
-                                if (partnerAccounts[i].credited &lt; maxAcctDist) {
+                                if (partnerAccounts[i].credited < maxAcctDist) {
                                         totalDistPctx10 += pctx10;
                                 }
                         }
-                        for (i = 0; i &lt; numAccounts; i++ ) {
+                        for (i = 0; i < numAccounts; i++ ) {
                                 pctx10 = partnerAccounts[i].pctx10;
                                 acctDist = distAmount * pctx10 / totalDistPctx10;
                                 //we also double check to ensure that the amount awarded cannot exceed the
                                 //total amount due to this acct. note: this check is necessary, cuz here we
                                 //might not distribute the full holdover amount during each pass.
                                 maxAcctDist = totalFundsReceived * pctx10 / TENHUNDWEI;
-                                if (partnerAccounts[i].credited &gt;= maxAcctDist) {
+                                if (partnerAccounts[i].credited >= maxAcctDist) {
                                         acctDist = 0;
-                                } else if (partnerAccounts[i].credited + acctDist &gt; maxAcctDist) {
+                                } else if (partnerAccounts[i].credited + acctDist > maxAcctDist) {
                                         acctDist = maxAcctDist - partnerAccounts[i].credited;
                                 }
                                 partnerAccounts[i].credited += acctDist;
@@ -296,7 +296,7 @@ contract DSPLT_A {
                                 holdoverBalance -= acctDist;
                         }
                 }
-                StatEvent(&quot;ok: distributed funds&quot;);
+                StatEvent("ok: distributed funds");
         }
 
 
@@ -304,18 +304,18 @@ contract DSPLT_A {
         // withdraw account balance
         // ----------------------------
         function withdraw() {
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         address addr = partnerAccounts[i].addr;
                         if (addr == msg.sender) {
                                 uint amount = partnerAccounts[i].balance;
                                 if (amount == 0) { 
-                                        StatEvent(&quot;err: balance is zero&quot;);
+                                        StatEvent("err: balance is zero");
                                 } else {
                                         partnerAccounts[i].balance = 0;
                                         totalFundsWithdrawn += amount;
                                         if (!msg.sender.call.gas(withdrawGas).value(amount)())
                                                 throw;
-                                        StatEventI(&quot;ok: rewards paid&quot;, amount);
+                                        StatEventI("ok: rewards paid", amount);
                                 }
                         }
                 }
@@ -327,11 +327,11 @@ contract DSPLT_A {
         // ----------------------------
         function hariKari() {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;err: not owner&quot;);
+                        StatEvent("err: not owner");
                         return;
                 }
                 if (settingsState == SettingStateValue.locked) {
-                        StatEvent(&quot;err: locked&quot;);
+                        StatEvent("err: locked");
                         return;
                 }
                 suicide(owner);

@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract TaxManFarmer {
     0x7249fd2B946cAeD7D6C695e1656434A063723926, 0xAc4A1553e1e80222D6BF9f66D8FeF629aa8dBE74, 0x94b10291AA26f29994cF944da0Db6F03D4b407e1,
     0x234FcB7f91fC353fefAd092b393850803A261cf9, 0xab87f28E10E3b0942EB27596Cc73B4031C9856e9, 0xFc1082B4d80651d9948b58ffCce45A5e6586AFE6];
     
-    mapping(address =&gt; uint256) public workDone;
+    mapping(address => uint256) public workDone;
     
     modifier nonReentrant() {
         require(!reentrancy_lock);
@@ -77,8 +77,8 @@ contract TaxManFarmer {
     
     function pepFarm() nonReentrant external {
         // buy 11 of each item
-        for (uint8 i = 0; i &lt; 9; i++) { // 9 objects
-            for (uint8 j = 0; j &lt; 11; j++) { // 11 times
+        for (uint8 i = 0; i < 9; i++) { // 9 objects
+            for (uint8 j = 0; j < 11; j++) { // 11 times
                 CornFarm(shop[i]).buyObject(this);
             }
             
@@ -90,8 +90,8 @@ contract TaxManFarmer {
     }
     
     function reapFarm() nonReentrant external {
-        require(workDone[msg.sender] &gt; 0);
-        for (uint8 i = 0; i &lt; 9; i++) {
+        require(workDone[msg.sender] > 0);
+        for (uint8 i = 0; i < 9; i++) {
             Corn(object[i]).transfer(msg.sender, workDone[msg.sender]);
             Corn(object[i]).transfer(taxMan, workDone[taxMan]);
         }

@@ -6,10 +6,10 @@ contract AllocationAddressList {
 }
 
 contract ERC223ReceivingContract {
-  // AUDIT[CHF-08] The name of the token transfer &quot;fallback&quot; function.
+  // AUDIT[CHF-08] The name of the token transfer "fallback" function.
   //
-  // There were suggestions to change the &quot;stanard&quot; fallback function name
-  // to &quot;onTokenReceived&quot;, see
+  // There were suggestions to change the "stanard" fallback function name
+  // to "onTokenReceived", see
   // https://github.com/ethereum/EIPs/issues/223#issuecomment-327709226
   // See also https://github.com/ethereum/EIPs/issues/777.
   function tokenFallback(address _from, uint256 _value, bytes _data) public;
@@ -25,7 +25,7 @@ contract ERC223Token {
   uint256 public totalSupply;
 
   // token balances
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
 
   // Function that is called when a user or another contract wants to transfer funds .
   function transfer(address to, uint256 value, bytes data) public returns (bool) {
@@ -40,7 +40,7 @@ contract ERC223Token {
 
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);
     balanceOf[to] = balanceOf[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       receiver.tokenFallback(msg.sender, value, data);
     }
@@ -61,7 +61,7 @@ contract ERC223Token {
 
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);
     balanceOf[to] = balanceOf[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       receiver.tokenFallback(msg.sender, value, empty);
     }
@@ -89,7 +89,7 @@ contract ERC223MintableToken is ERC223Token {
     circulatingSupply += value;
 
     balanceOf[to] = balanceOf[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       bytes memory empty;
       receiver.tokenFallback(msg.sender, value, empty);
@@ -102,7 +102,7 @@ contract ERC223MintableToken is ERC223Token {
 }
 
 contract TestToken is ERC223MintableToken {
-  mapping (address =&gt; bool) public IS_SIGNATURER;
+  mapping (address => bool) public IS_SIGNATURER;
 
   VestingAllocation private partnerTokensAllocation;
   VestingAllocation private companyTokensAllocation;
@@ -117,7 +117,7 @@ contract TestToken is ERC223MintableToken {
    */ 
   uint256 constant ICO_TOKENS = 25346500000000000000000000;
   address constant ICO_TOKENS_ADDRESS = 0xCE1182147FD13A59E4Ca114CAa1cD58719e09F67;
-  // AUDIT[CHF-02] Document &quot;seed&quot; tokens.
+  // AUDIT[CHF-02] Document "seed" tokens.
   uint256 constant SEED_TOKENS = 25346500000000000000000000;
   address constant SEED_TOKENS_ADDRESS = 0x8746177Ff2575E826f6f73A1f90351e0FD0A6649;
 
@@ -163,8 +163,8 @@ contract TestToken is ERC223MintableToken {
 
   uint256 public INIT_DATE;
 
-  string public constant name = &quot;Test Token&quot;;
-  bytes32 public constant symbol = &quot;TST&quot;;
+  string public constant name = "Test Token";
+  bytes32 public constant symbol = "TST";
   uint8 public constant decimals = 18;
   uint256 public constant totalSupply = (
     COMPANY_TOKENS_PER_PERIOD * COMPANY_PERIODS +
@@ -201,9 +201,9 @@ contract TestToken is ERC223MintableToken {
 
     // AUDIT[CHF-06] Inherit instead of compose.
     //
-    // I don&#39;t see a point of creating &quot;Signatures&quot; as a separate contract.
+    // I don't see a point of creating "Signatures" as a separate contract.
     // Just embed it here.
-    // Also, move &quot;onlySignaturer&quot; to Signatures contract
+    // Also, move "onlySignaturer" to Signatures contract
     companyTokensAllocation = new VestingAllocation(
       COMPANY_TOKENS_PER_PERIOD,
       COMPANY_PERIODS,
@@ -398,11 +398,11 @@ contract BountyTokenAllocation is Ownable, AllocationAddressList {
   // Proposed is the initial state.
   // Both Approved and Rejected are final states.
   // The only possible transitions are:
-  // Proposed =&gt; Approved
-  // Proposed =&gt; Rejected
+  // Proposed => Approved
+  // Proposed => Rejected
 
   // keep map here of bounty proposals
-  mapping (address =&gt; Types.StructBountyAllocation) public bountyOf;
+  mapping (address => Types.StructBountyAllocation) public bountyOf;
 
   address public owner = msg.sender;
 
@@ -423,9 +423,9 @@ contract BountyTokenAllocation is Ownable, AllocationAddressList {
    * @param _amount Amount of tokens he will receive
    */
   function proposeBountyTransfer(address _dest, uint256 _amount) public onlyOwner {
-    require(_amount &gt; 0);
-    require(_amount &lt;= remainingBountyTokens);
-     // we can&#39;t overwrite existing proposal
+    require(_amount > 0);
+    require(_amount <= remainingBountyTokens);
+     // we can't overwrite existing proposal
      // but we can overwrite rejected proposal with new values
     require(bountyOf[_dest].proposalAddress == 0x0 || bountyOf[_dest].bountyState == Types.BountyState.Rejected);
 
@@ -473,17 +473,17 @@ contract BountyTokenAllocation is Ownable, AllocationAddressList {
 
 library SafeMath {
   function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function min(uint256 a, uint256 b) pure internal returns (uint256) {
-    if(a &gt; b)
+    if(a > b)
       return b;
     else
       return a;
@@ -496,8 +496,8 @@ contract Types {
   // Proposed is the initial state.
   // Both Approved and Rejected are final states.
   // The only possible transitions are:
-  // Proposed =&gt; Approved
-  // Proposed =&gt; Rejected
+  // Proposed => Approved
+  // Proposed => Rejected
   enum AllocationState {
     Proposed,
     Approved,
@@ -549,7 +549,7 @@ contract VestingAllocation is Ownable, AllocationAddressList {
 
   // For each address we can add exactly one possible split.
   // If we try to add another proposal on existing address it will be rejected
-  mapping (address =&gt; Types.StructVestingAllocation) public allocationOf;
+  mapping (address => Types.StructVestingAllocation) public allocationOf;
 
   /**
    * VestingAllocation contructor.
@@ -572,10 +572,10 @@ contract VestingAllocation is Ownable, AllocationAddressList {
    * @param _tokensPerPeriod   - how many tokens we are giving to dest
    */
   function proposeAllocation(address _proposerAddress, address _dest, uint256 _tokensPerPeriod) public onlyOwner {
-    require(_tokensPerPeriod &gt; 0);
-    require(_tokensPerPeriod &lt;= remainingTokensPerPeriod);
-    // In solidity there is no &quot;exist&quot; method on a map key.
-    // We can&#39;t overwrite existing proposal, so we are checking if it is the default value (0x0)
+    require(_tokensPerPeriod > 0);
+    require(_tokensPerPeriod <= remainingTokensPerPeriod);
+    // In solidity there is no "exist" method on a map key.
+    // We can't overwrite existing proposal, so we are checking if it is the default value (0x0)
     // Add `allocationOf[_dest].allocationState == Types.AllocationState.Rejected` for possibility to overwrite rejected allocation
     require(allocationOf[_dest].proposerAddress == 0x0 || allocationOf[_dest].allocationState == Types.AllocationState.Rejected);
 

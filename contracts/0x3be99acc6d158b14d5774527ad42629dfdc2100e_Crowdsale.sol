@@ -46,13 +46,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,7 +60,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -70,7 +70,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     function transferFrom(
@@ -107,8 +107,8 @@ contract StandardToken is ERC20, BasicToken {
       returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
       returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -171,8 +171,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract GoldenUnitToken is StandardToken {
-    string public constant name = &quot;Golden Unite Token&quot;;
-    string public constant symbol = &quot;GUT&quot;;
+    string public constant name = "Golden Unite Token";
+    string public constant symbol = "GUT";
     uint32 public constant decimals = 18;
     uint256 public INITIAL_SUPPLY = 50000 * 1 ether;
     address public CrowdsaleAddress;
@@ -192,7 +192,7 @@ contract GoldenUnitToken is StandardToken {
     }
 
     function acceptTokens(address _from, uint256 _value) public onlyOwner returns (bool){
-        require (balances[_from] &gt;= _value);
+        require (balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[CrowdsaleAddress] = balances[CrowdsaleAddress].add(_value);
         emit Transfer(_from, CrowdsaleAddress, _value);
@@ -266,7 +266,7 @@ contract Crowdsale is Ownable {
     function mintTokens(uint256 _amount) public onlyOwner returns (bool){
         //_amount in tokens. 1 = 1 token
         uint256 amount = _amount;
-        require (amount &lt;= 1000000);
+        require (amount <= 1000000);
         amount = amount.mul(1 ether);
         token.mint(amount);
         return true;
@@ -278,7 +278,7 @@ contract Crowdsale is Ownable {
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
         require (_newInvestor != address(0));
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
         token.transfer(_newInvestor, value);
     }  
@@ -288,7 +288,7 @@ contract Crowdsale is Ownable {
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
         require (_Investor != address(0));
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
         token.acceptTokens(_Investor, value);    
     }  
@@ -317,16 +317,16 @@ contract Crowdsale is Ownable {
         // function purchase tokens and send ether to sender
         address profitOwner = msg.sender;
         require(profitOwner != address(0));
-        require(_valueTokens &gt; 0);
+        require(_valueTokens > 0);
         uint256 valueTokens = _valueTokens;
         valueTokens = valueTokens.mul(1 ether);
         // check client tokens balance
-        require (token.balanceOf(profitOwner) &gt;= valueTokens);
+        require (token.balanceOf(profitOwner) >= valueTokens);
         // calc amount of ether
-        require (purchaseRate&gt;0);
+        require (purchaseRate>0);
         uint256 valueEther = valueTokens.div(purchaseRate);
         // check balance contract
-        require (myAddress.balance &gt;= valueEther);
+        require (myAddress.balance >= valueEther);
         // transfer tokens
         if (token.acceptTokens(msg.sender, valueTokens)){
         // transfer ether
@@ -336,14 +336,14 @@ contract Crowdsale is Ownable {
   
     function WithdrawProfit (address _to, uint256 _value) public onlyOwner payable {
         // function withdraw prohit
-        require (myAddress.balance &gt;= _value);
+        require (myAddress.balance >= _value);
         require(_to != address(0));
         _to.transfer(_value);
         emit Withdraw(msg.sender, _to, _value);
     }
  
     function saleTokens() internal {
-        require (msg.value &gt;= 1 ether);  //minimum 1 ether
+        require (msg.value >= 1 ether);  //minimum 1 ether
         uint tokens = saleRate.mul(msg.value);
         token.transfer(msg.sender, tokens);
     }

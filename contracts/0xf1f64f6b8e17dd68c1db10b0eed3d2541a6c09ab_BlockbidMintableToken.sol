@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -167,7 +167,7 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
   bool public paused = false;
   uint public constant weeklength = 604800;
 
-  mapping(address =&gt; uint) public weiContributed;
+  mapping(address => uint) public weiContributed;
   address[] public contributors;
 
   event LogClaimRefund(address _address, uint _value);
@@ -181,8 +181,8 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
 
   function BlockbidCrowdsale(uint _goal, uint _cap, uint _startTime, uint _endTime, uint _rate, uint _earlyBonus, address _wallet)
   Crowdsale(_startTime, _endTime, _rate, _wallet) public {
-    require(_cap &gt; 0);
-    require(_goal &gt; 0);
+    require(_cap > 0);
+    require(_goal > 0);
 
     standardrate = _rate;
     earlybonus = _earlyBonus;
@@ -193,7 +193,7 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
   // @return true if the transaction can buy tokens
   /*
   Added: - Must be under Cap
-         - Requires user to send atleast 1 token&#39;s worth of ether
+         - Requires user to send atleast 1 token's worth of ether
          - Needs to call updateRate() function to validate how much ether = 1 token
          -
   */
@@ -201,10 +201,10 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
 
     updateRate();
 
-    bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime);
-    bool withinPurchaseLimit = (msg.value &gt;= 0.1 ether &amp;&amp; msg.value &lt;= 100 ether);
-    bool withinCap = (token.totalSupply() &lt;= cap);
-    return withinPeriod &amp;&amp; withinPurchaseLimit &amp;&amp; withinCap;
+    bool withinPeriod = (now >= startTime && now <= endTime);
+    bool withinPurchaseLimit = (msg.value >= 0.1 ether && msg.value <= 100 ether);
+    bool withinCap = (token.totalSupply() <= cap);
+    return withinPeriod && withinPurchaseLimit && withinCap;
   }
 
   // function that will determine how many tokens have been created
@@ -220,16 +220,16 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
   */
   function updateRate() internal returns (bool) {
 
-    if (now &gt;= startTime.add(weeklength.mul(4))) {
+    if (now >= startTime.add(weeklength.mul(4))) {
       rate = 200;
     }
-    else if (now &gt;= startTime.add(weeklength.mul(3))) {
+    else if (now >= startTime.add(weeklength.mul(3))) {
       rate = standardrate;
     }
-    else if (now &gt;= startTime.add(weeklength.mul(2))) {
+    else if (now >= startTime.add(weeklength.mul(2))) {
       rate = standardrate.add(earlybonus.sub(40));
     }
-    else if (now &gt;= startTime.add(weeklength)) {
+    else if (now >= startTime.add(weeklength)) {
       rate = standardrate.add(earlybonus.sub(20));
     }
     else {
@@ -256,7 +256,7 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
     weiRaised = weiRaised.add(msg.value);
 
     // if user already a contributor
-    if (weiContributed[beneficiary] &gt; 0) {
+    if (weiContributed[beneficiary] > 0) {
       weiContributed[beneficiary] = weiContributed[beneficiary].add(msg.value);
     }
     // new contributor
@@ -270,11 +270,11 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
     TokenPurchase(msg.sender, beneficiary, msg.value, tokensPurchased());
     token.mint(wallet, (tokensPurchased().div(4)));
 
-    if (token.totalSupply() &gt; goal) {
+    if (token.totalSupply() > goal) {
       goalReached = true;
     }
 
-    // don&#39;t forward funds if wallet belongs to owner
+    // don't forward funds if wallet belongs to owner
     if (msg.sender != wallet) {
       forwardFunds();
     }
@@ -289,7 +289,7 @@ contract BlockbidCrowdsale is Crowdsale, Ownable {
     require(!goalReached);
     require(hasEnded());
     uint contributedAmt = weiContributed[msg.sender];
-    require(contributedAmt &gt; 0);
+    require(contributedAmt > 0);
     weiContributed[msg.sender] = 0;
     msg.sender.transfer(contributedAmt);
     LogClaimRefund(msg.sender, contributedAmt);
@@ -326,7 +326,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -363,7 +363,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -378,7 +378,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -392,7 +392,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -429,7 +429,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -479,8 +479,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract BlockbidMintableToken is MintableToken {
 
-  string public constant name = &quot;Blockbid Token&quot;;
-  string public constant symbol = &quot;BID&quot;;
+  string public constant name = "Blockbid Token";
+  string public constant symbol = "BID";
   uint8 public constant decimals = 8;
 
 }

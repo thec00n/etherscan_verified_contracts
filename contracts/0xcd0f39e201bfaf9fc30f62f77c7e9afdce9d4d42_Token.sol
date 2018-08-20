@@ -18,13 +18,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -50,7 +50,7 @@ contract Ownable {
 contract Withdrawable is Ownable {
     function withdrawEther(address _to, uint _value) onlyOwner public returns(bool) {
         require(_to != address(0));
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
 
         _to.transfer(_value);
 
@@ -104,8 +104,8 @@ contract StandardToken is ERC20 {
     string public symbol;
     uint8 public decimals;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function StandardToken(string _name, string _symbol, uint8 _decimals) public {
         name = _name;
@@ -119,7 +119,7 @@ contract StandardToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20 {
     function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         require(_to.length == _value.length);
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             transfer(_to[i], _value[i]);
         }
 
@@ -141,8 +141,8 @@ contract StandardToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -219,7 +219,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
 
@@ -234,7 +234,7 @@ contract BurnableToken is StandardToken {
     ADGEX Limited
 */
 contract Token is MintableToken, BurnableToken, Withdrawable {
-    function Token() StandardToken(&quot;ADGEX Limited&quot;, &quot;AGE&quot;, 8) public {
+    function Token() StandardToken("ADGEX Limited", "AGE", 8) public {
         
     }
 }
@@ -286,17 +286,17 @@ contract Crowdsale is Withdrawable, Pausable {
     
     function purchase() whenNotPaused payable public {
         require(!crowdsaleClosed);
-        require(msg.value &gt;= 0.0001 ether);
+        require(msg.value >= 0.0001 ether);
 
         Step memory step = steps[currentStep];
 
-        require(step.tokensSold &lt; step.tokensForSale);
+        require(step.tokensSold < step.tokensForSale);
 
         uint sum = msg.value;
         uint amount = sum.mul(1 ether).div(step.priceTokenWei).div(1e10);
         uint retSum = 0;
         
-        if(step.tokensSold.add(amount) &gt; step.tokensForSale) {
+        if(step.tokensSold.add(amount) > step.tokensForSale) {
             uint retAmount = step.tokensSold.add(amount).sub(step.tokensForSale);
             retSum = retAmount.mul(step.priceTokenWei).mul(1e10).div(1 ether);
 
@@ -311,7 +311,7 @@ contract Crowdsale is Withdrawable, Pausable {
         beneficiary2.transfer(sum.sub(sum.div(100).mul(16)));
         token.mint(msg.sender, amount);
 
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
 
@@ -320,7 +320,7 @@ contract Crowdsale is Withdrawable, Pausable {
 
     function nextStep() onlyOwner public {
         require(!crowdsaleClosed);
-        require(steps.length - 1 &gt; currentStep);
+        require(steps.length - 1 > currentStep);
         
         currentStep += 1;
 

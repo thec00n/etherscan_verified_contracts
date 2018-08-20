@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -31,9 +31,9 @@ contract ERC20Interface is SafeMath {
     address public owner;
     
     // Store the token balance for each user
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function ERC20Interface()
     {
@@ -44,7 +44,7 @@ contract ERC20Interface is SafeMath {
     function transfer(address _to, uint256 _value)
         returns (bool success)
     {
-        assert(balances[msg.sender] &gt;= _value);
+        assert(balances[msg.sender] >= _value);
         balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -54,7 +54,7 @@ contract ERC20Interface is SafeMath {
     function transferFrom(address _from, address _to, uint256 _value)
         returns (bool success)
     {
-        assert(allowance(msg.sender, _from) &gt;= _value);
+        assert(allowance(msg.sender, _from) >= _value);
         balances[_from] = safeSubtract(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         allowed[msg.sender][_from] = safeSubtract(allowed[msg.sender][_from], _value);
@@ -71,7 +71,7 @@ contract ERC20Interface is SafeMath {
     function approve(address _spender, uint256 _value) 
         returns (bool success)
     {
-        assert(balances[msg.sender] &gt;= _value);
+        assert(balances[msg.sender] >= _value);
         allowed[_spender][msg.sender] = safeAdd(allowed[_spender][msg.sender], _value);
         return true;
     }
@@ -90,9 +90,9 @@ contract ERC20Interface is SafeMath {
 }
 
 contract Iou is ERC20Interface {
-    string public constant symbol = &quot;IOU&quot;;
-    string public constant name = &quot;I owe you&quot;;
-    string public constant longDescription = &quot;Buy or trade IOUs from Connor&quot;;
+    string public constant symbol = "IOU";
+    string public constant name = "I owe you";
+    string public constant longDescription = "Buy or trade IOUs from Connor";
 
     // Basically a decorator _; is were the main function will go
     modifier onlyOwner() 

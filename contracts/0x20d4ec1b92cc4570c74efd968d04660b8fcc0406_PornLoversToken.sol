@@ -61,13 +61,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,8 +97,8 @@ contract AbstractToken is Token {
 
     function transfer (address _to, uint256 _value) public returns (bool success) {
         uint256 fromBalance = accounts[msg.sender];
-        if (fromBalance &lt; _value) return false;
-        if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+        if (fromBalance < _value) return false;
+        if (_value > 0 && msg.sender != _to) {
             accounts[msg.sender] = fromBalance.sub(_value);
             accounts[_to] = accounts[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -108,13 +108,13 @@ contract AbstractToken is Token {
 
     function transferFrom (address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 spenderAllowance = allowances[_from][msg.sender];
-        if (spenderAllowance &lt; _value) return false;
+        if (spenderAllowance < _value) return false;
         uint256 fromBalance = accounts[_from];
-        if (fromBalance &lt; _value) return false;
+        if (fromBalance < _value) return false;
 
         allowances[_from][msg.sender] = spenderAllowance.sub(_value);
 
-        if (_value &gt; 0 &amp;&amp; _from != _to) {
+        if (_value > 0 && _from != _to) {
             accounts[_from] = fromBalance.sub(_value);
             accounts[_to] = accounts[_to].add(_value);
             Transfer(_from, _to, _value);
@@ -133,9 +133,9 @@ contract AbstractToken is Token {
         return allowances[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) accounts;
+    mapping (address => uint256) accounts;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+    mapping (address => mapping (address => uint256)) private allowances;
 }
 
 contract AbstractVirtualToken is AbstractToken {
@@ -156,11 +156,11 @@ contract AbstractVirtualToken is AbstractToken {
     }
 
     function balanceOf (address _owner) constant public returns (uint256 balance) { 
-        return (accounts[_owner] &amp; BALANCE_MASK).add(getVirtualBalance(_owner));
+        return (accounts[_owner] & BALANCE_MASK).add(getVirtualBalance(_owner));
     }
 
     function transfer (address _to, uint256 _value) public returns (bool success) {
-        if (_value &gt; balanceOf(msg.sender)) return false;
+        if (_value > balanceOf(msg.sender)) return false;
         else {
             materializeBalanceIfNeeded(msg.sender, _value);
             return AbstractToken.transfer(_to, _value);
@@ -168,8 +168,8 @@ contract AbstractVirtualToken is AbstractToken {
     }
 
     function transferFrom (address _from, address _to, uint256 _value) public returns (bool success) {
-        if (_value &gt; allowance(_from, msg.sender)) return false;
-        if (_value &gt; balanceOf(_from)) return false;
+        if (_value > allowance(_from, msg.sender)) return false;
+        if (_value > balanceOf(_from)) return false;
         else {
             materializeBalanceIfNeeded(_from, _value);
             return AbstractToken.transferFrom(_from, _to, _value);
@@ -179,21 +179,21 @@ contract AbstractVirtualToken is AbstractToken {
     function virtualBalanceOf (address _owner) internal view returns (uint256 _virtualBalance);
 
     function getVirtualBalance (address _owner) private view returns (uint256 _virtualBalance) {
-        if (accounts [_owner] &amp; MATERIALIZED_FLAG_MASK != 0) return 0;
+        if (accounts [_owner] & MATERIALIZED_FLAG_MASK != 0) return 0;
         else {
             _virtualBalance = virtualBalanceOf(_owner);
             uint256 maxVirtualBalance = MAXIMUM_TOKENS_COUNT.sub(tokensCount);
-            if (_virtualBalance &gt; maxVirtualBalance)
+            if (_virtualBalance > maxVirtualBalance)
                 _virtualBalance = maxVirtualBalance;
         }
     }
 
     function materializeBalanceIfNeeded (address _owner, uint256 _value) private {
         uint256 storedBalance = accounts[_owner];
-        if (storedBalance &amp; MATERIALIZED_FLAG_MASK == 0) {
-            if (_value &gt; storedBalance) {
+        if (storedBalance & MATERIALIZED_FLAG_MASK == 0) {
+            if (_value > storedBalance) {
                 uint256 virtualBalance = getVirtualBalance(_owner);
-                require (_value.sub(storedBalance) &lt;= virtualBalance);
+                require (_value.sub(storedBalance) <= virtualBalance);
                 accounts[_owner] = MATERIALIZED_FLAG_MASK | storedBalance.add(virtualBalance);
                 tokensCount = tokensCount.add(virtualBalance);
             }
@@ -211,15 +211,15 @@ contract PornLoversToken is HasNoTokens, AbstractVirtualToken {
     event LogBonusSet(address indexed _address, uint256 _amount);
 
     function virtualBalanceOf(address _owner) internal view returns (uint256) {
-        return _owner.balance &gt;= VIRTUAL_THRESHOLD ? VIRTUAL_COUNT : 0;
+        return _owner.balance >= VIRTUAL_THRESHOLD ? VIRTUAL_COUNT : 0;
     }
 
     function name() public pure returns (string result) {
-        return &quot;91porn.com&quot;;
+        return "91porn.com";
     }
 
     function symbol() public pure returns (string result) {
-        return &quot;91porn&quot;;
+        return "91porn";
     }
 
     function decimals() public pure returns (uint8 result) {
@@ -238,7 +238,7 @@ contract PornLoversToken is HasNoTokens, AbstractVirtualToken {
     }
 
     function massNotify(address[] _owners) public onlyOwner {
-        for (uint256 i = 0; i &lt; _owners.length; i++) {
+        for (uint256 i = 0; i < _owners.length; i++) {
             Transfer(address(0), _owners[i], VIRTUAL_COUNT);
         }
     }

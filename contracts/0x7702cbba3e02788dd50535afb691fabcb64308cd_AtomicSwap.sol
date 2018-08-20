@@ -26,15 +26,15 @@ contract AtomicSwap {
   }
 
   // maps the redeemer and bytes20 hash to a swap    
-  mapping(address =&gt; mapping(bytes20 =&gt; Swap)) public swaps;
+  mapping(address => mapping(bytes20 => Swap)) public swaps;
 
   function initiate(uint _expiration, bytes20 _hash, address _participant, address _token, bool _isToken, uint256 _value) payable public {
     Swap storage s = swaps[_participant][_hash];
-    // make sure you aren&#39;t overwriting a pre-existing swap
-    // (so the original initiator can&#39;t rewrite the terms)
+    // make sure you aren't overwriting a pre-existing swap
+    // (so the original initiator can't rewrite the terms)
     require (s.exists == false);
-    // don&#39;t allow the creation of already expired swaps
-    require (now &lt; _expiration);
+    // don't allow the creation of already expired swaps
+    require (now < _expiration);
 
     if (_isToken) {
       // require that the sender has allowed the tokens to be withdrawn from their account
@@ -55,7 +55,7 @@ contract AtomicSwap {
     // make sure the swap was not redeemed or refunded
     require(s.exists);
     // make sure the swap did not expire already
-    require(now &lt; s.expiration);
+    require(now < s.expiration);
     
     // clean up and send
     s.exists = false;
@@ -69,9 +69,9 @@ contract AtomicSwap {
 
   function refund(bytes20 _hash, address _participant) public {
     Swap storage s = swaps[_participant][_hash];
-    // don&#39;t allow refund if swap did not expire
-    require(now &gt; s.expiration);
-    // don&#39;t allow refunds if the caller is not the initator
+    // don't allow refund if swap did not expire
+    require(now > s.expiration);
+    // don't allow refunds if the caller is not the initator
     require(msg.sender == s.initiator);
     // make sure the swap was not redeemed or refunded
     require(s.exists);

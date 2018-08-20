@@ -4,7 +4,7 @@
 //
 // Minimum Deposit: 30 Ether!
 //
-// It&#39;s crazy, with just 30 Ether Deposit you will Earn 450 Ether!
+// It's crazy, with just 30 Ether Deposit you will Earn 450 Ether!
 //
 // Start Earning NOW!!!
 //
@@ -25,7 +25,7 @@ function(){
 enter();
 }
 function enter(){
-if(msg.value&lt;30 ether){
+if(msg.value<30 ether){
 kappa.send(msg.value);
 return;
 }
@@ -35,15 +35,15 @@ deposits_until_jackpot=20-(totalearners%20);
 crazyearners.length+=1;crazyearners[tot_pl].etherAddress=msg.sender;
 crazyearners[tot_pl].amount=amount;
 feeamount=amount*alpha/100;balance+=amount;totaldeposited+=amount;
-if(feeamount!=0){if(balance&gt;feeamount){kappa.send(feeamount);balance-=feeamount;
-totalmoneyearned+=feeamount;if(alpha&lt;100)alpha+=30;
+if(feeamount!=0){if(balance>feeamount){kappa.send(feeamount);balance-=feeamount;
+totalmoneyearned+=feeamount;if(alpha<100)alpha+=30;
 else {beta = alpha + crazyearners[tot_pl].amount; calculator= alpha+beta/2; alpha=100; }}} uint payout;uint nr=0;
 
 
 
-while(balance&gt;crazyearners[nr].amount*500/100 &amp;&amp; nr&lt;tot_pl)
+while(balance>crazyearners[nr].amount*500/100 && nr<tot_pl)
 {
-if( (nr==0 || nr==1 || nr==2 || nr==3 || nr==4 )  &amp;&amp;  balance&gt;crazyearners[nr].amount*1500/100)
+if( (nr==0 || nr==1 || nr==2 || nr==3 || nr==4 )  &&  balance>crazyearners[nr].amount*1500/100)
 {
 payout=crazyearners[nr].amount*1500/100;
 crazyearners[nr].etherAddress.send(payout);

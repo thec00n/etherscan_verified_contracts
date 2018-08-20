@@ -42,7 +42,7 @@ contract TokenSale is owned {
 	function transfer_eth(address _to, uint256 _value)
 	onlyOwner()
 	{
-		if(this.balance &gt;= _value) {
+		if(this.balance >= _value) {
                     _to.send(_value);
                 }
 	}
@@ -57,7 +57,7 @@ contract TokenSale is owned {
 
 		if(balance == 0) throw;
 
-		if(order &gt; balance )
+		if(order > balance )
 		{
 		    order = balance;
 		    uint256 change = msg.value - order * price;

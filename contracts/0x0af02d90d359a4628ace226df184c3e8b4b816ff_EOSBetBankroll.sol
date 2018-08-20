@@ -1,5 +1,5 @@
 // WELCOME TO THE EOSBET.IO BUG BOUNTY CONTRACTS!
-// GOOD LUCK... YOU&#39;LL NEED IT!
+// GOOD LUCK... YOU'LL NEED IT!
 
 pragma solidity ^0.4.21;
 
@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -90,31 +90,31 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 	// to the bankroll contract, and when players win, they will request the bankroll contract 
 	// to send these players their winnings.
 	// Feel free to audit these contracts on etherscan...
-	mapping(address =&gt; bool) public TRUSTEDADDRESSES;
+	mapping(address => bool) public TRUSTEDADDRESSES;
 
 	address public DICE;
 	address public SLOTS;
 
 	// mapping to log the last time a user contributed to the bankroll 
-	mapping(address =&gt; uint256) contributionTime;
+	mapping(address => uint256) contributionTime;
 
 	// constants for ERC20 standard
-	string public constant name = &quot;EOSBet Stake Tokens&quot;;
-	string public constant symbol = &quot;EOSBETST&quot;;
+	string public constant name = "EOSBet Stake Tokens";
+	string public constant symbol = "EOSBETST";
 	uint8 public constant decimals = 18;
 	// variable total supply
 	uint256 public totalSupply;
 
 	// mapping to store tokens
-	mapping(address =&gt; uint256) public balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+	mapping(address => uint256) public balances;
+	mapping(address => mapping(address => uint256)) public allowed;
 
 	// events
 	event FundBankroll(address contributor, uint256 etherContributed, uint256 tokensReceived);
 	event CashOut(address contributor, uint256 etherWithdrawn, uint256 tokensCashedIn);
 	event FailedSend(address sendTo, uint256 amt);
 
-	// checks that an address is a &quot;trusted address of a legitimate EOSBet game&quot;
+	// checks that an address is a "trusted address of a legitimate EOSBet game"
 	modifier addressInTrustedAddresses(address thisAddress){
 
 		require(TRUSTEDADDRESSES[thisAddress]);
@@ -123,9 +123,9 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 
 	// initialization function 
 	function EOSBetBankroll(address dice, address slots) public payable {
-		// function is payable, owner of contract MUST &quot;seed&quot; contract with some ether, 
+		// function is payable, owner of contract MUST "seed" contract with some ether, 
 		// so that the ratios are correct when tokens are being minted
-		require (msg.value &gt; 0);
+		require (msg.value > 0);
 
 		OWNER = msg.sender;
 
@@ -165,7 +165,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 	}
 
 	///////////////////////////////////////////////
-	// BANKROLL CONTRACT &lt;-&gt; GAME CONTRACTS functions
+	// BANKROLL CONTRACT <-> GAME CONTRACTS functions
 	/////////////////////////////////////////////// 
 
 	function payEtherToWinner(uint256 amtEther, address winner) public addressInTrustedAddresses(msg.sender){
@@ -213,7 +213,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		uint256 currentTotalBankroll = SafeMath.sub(getBankroll(), msg.value);
 		uint256 maxInvestmentsAllowed = MAXIMUMINVESTMENTSALLOWED;
 
-		require(currentTotalBankroll &lt; maxInvestmentsAllowed &amp;&amp; msg.value != 0);
+		require(currentTotalBankroll < maxInvestmentsAllowed && msg.value != 0);
 
 		uint256 currentSupplyOfTokens = totalSupply;
 		uint256 contributedEther;
@@ -223,7 +223,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 
 		uint256 creditedTokens;
 
-		if (SafeMath.add(currentTotalBankroll, msg.value) &gt; maxInvestmentsAllowed){
+		if (SafeMath.add(currentTotalBankroll, msg.value) > maxInvestmentsAllowed){
 			// allow the bankroller to contribute up to the allowed amount of ether, and refund the rest.
 			contributionTakesBankrollOverLimit = true;
 			// set contributed ether as (MAXIMUMINVESTMENTSALLOWED - BANKROLL)
@@ -242,7 +242,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		else {
 			// edge case where ALL money was cashed out from bankroll
 			// so currentSupplyOfTokens == 0
-			// currentTotalBankroll can == 0 or not, if someone mines/selfdestruct&#39;s to the contract
+			// currentTotalBankroll can == 0 or not, if someone mines/selfdestruct's to the contract
 			// but either way, give all the bankroll to person who deposits ether
 			creditedTokens = SafeMath.mul(contributedEther, 100);
 		}
@@ -271,18 +271,18 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 
 	function cashoutEOSBetStakeTokens(uint256 _amountTokens) public {
 		// In effect, this function is the OPPOSITE of the un-named payable function above^^^
-		// this allows bankrollers to &quot;cash out&quot; at any time, and receive the ether that they contributed, PLUS
-		// a proportion of any ether that was earned by the smart contact when their ether was &quot;staking&quot;, However
+		// this allows bankrollers to "cash out" at any time, and receive the ether that they contributed, PLUS
+		// a proportion of any ether that was earned by the smart contact when their ether was "staking", However
 		// this works in reverse as well. Any net losses of the smart contract will be absorbed by the player in like manner.
 		// Of course, due to the constant house edge, a bankroller that leaves their ether in the contract long enough
-		// is effectively guaranteed to withdraw more ether than they originally &quot;staked&quot;
+		// is effectively guaranteed to withdraw more ether than they originally "staked"
 
 		// save in memory for cheap access.
 		uint256 tokenBalance = balances[msg.sender];
 		// verify that the contributor has enough tokens to cash out this many, and has waited the required time.
-		require(_amountTokens &lt;= tokenBalance 
-			&amp;&amp; contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER &lt;= block.timestamp
-			&amp;&amp; _amountTokens &gt; 0);
+		require(_amountTokens <= tokenBalance 
+			&& contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
+			&& _amountTokens > 0);
 
 		// save in memory for cheap access.
 		// again, represents the total balance of the contract before the function was called.
@@ -296,7 +296,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		uint256 developersCut = withdrawEther / 100;
 		uint256 contributorAmount = SafeMath.sub(withdrawEther, developersCut);
 
-		// now update the total supply of tokens by subtracting the tokens that are being &quot;cashed in&quot;
+		// now update the total supply of tokens by subtracting the tokens that are being "cashed in"
 		totalSupply = SafeMath.sub(currentSupplyOfTokens, _amountTokens);
 
 		// and update the users supply of tokens 
@@ -334,9 +334,9 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		// 		in higher dividends for the bankrollers
 		// 3. The owner can freeze payouts to bettors. This will be used in case of an emergency, and the contract will reject all
 		//		new bets as well. This does not mean that bettors will lose their money without recompense. They will be allowed to call the 
-		// 		&quot;refund&quot; function in the respective game smart contract once payouts are un-frozen.
+		// 		"refund" function in the respective game smart contract once payouts are un-frozen.
 		// 4. Finally, the owner can modify and withdraw the developers reward, which will fund future development, including new games, a sexier frontend,
-		// 		and TRUE DAO governance so that onlyOwner functions don&#39;t have to exist anymore ;) and in order to effectively react to changes 
+		// 		and TRUE DAO governance so that onlyOwner functions don't have to exist anymore ;) and in order to effectively react to changes 
 		// 		in the market (lower the percentage because of increased competition in the blockchain casino space, etc.)
 
 	function transferOwnership(address newOwner) public {
@@ -347,7 +347,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 
 	function changeWaitTimeUntilWithdrawOrTransfer(uint256 waitTime) public {
 		// waitTime MUST be less than or equal to 10 weeks
-		require (msg.sender == OWNER &amp;&amp; waitTime &lt;= 6048000);
+		require (msg.sender == OWNER && waitTime <= 6048000);
 
 		WAITTIMEUNTILWITHDRAWORTRANSFER = waitTime;
 	}
@@ -395,13 +395,13 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		return balances[_owner];
 	}
 
-	// don&#39;t allow transfers before the required wait-time
-	// and don&#39;t allow transfers to this contract addr, it&#39;ll just kill tokens
+	// don't allow transfers before the required wait-time
+	// and don't allow transfers to this contract addr, it'll just kill tokens
 	function transfer(address _to, uint256 _value) public returns (bool success){
-		if (balances[msg.sender] &gt;= _value 
-			&amp;&amp; _value &gt; 0 
-			&amp;&amp; contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER &lt;= block.timestamp
-			&amp;&amp; _to != address(this)){
+		if (balances[msg.sender] >= _value 
+			&& _value > 0 
+			&& contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
+			&& _to != address(this)){
 
 			// safely subtract
 			balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
@@ -416,14 +416,14 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 		}
 	}
 
-	// don&#39;t allow transfers before the required wait-time
-	// and don&#39;t allow transfers to the contract addr, it&#39;ll just kill tokens
+	// don't allow transfers before the required wait-time
+	// and don't allow transfers to the contract addr, it'll just kill tokens
 	function transferFrom(address _from, address _to, uint _value) public returns(bool){
-		if (allowed[_from][msg.sender] &gt;= _value 
-			&amp;&amp; balances[_from] &gt;= _value 
-			&amp;&amp; _value &gt; 0 
-			&amp;&amp; contributionTime[_from] + WAITTIMEUNTILWITHDRAWORTRANSFER &lt;= block.timestamp
-			&amp;&amp; _to != address(this)){
+		if (allowed[_from][msg.sender] >= _value 
+			&& balances[_from] >= _value 
+			&& _value > 0 
+			&& contributionTime[_from] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
+			&& _to != address(this)){
 
 			// safely add to _to and subtract from _from, and subtract from allowed balances.
 			balances[_to] = SafeMath.add(balances[_to], _value);
@@ -440,7 +440,7 @@ contract EOSBetBankroll is ERC20, EOSBetBankrollInterface {
 	}
 	
 	function approve(address _spender, uint _value) public returns(bool){
-		if(_value &gt; 0){
+		if(_value > 0){
 
 			allowed[msg.sender][_spender] = _value;
 			emit Approval(msg.sender, _spender, _value);

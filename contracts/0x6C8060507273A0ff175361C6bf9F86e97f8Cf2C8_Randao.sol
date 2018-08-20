@@ -25,8 +25,8 @@ contract Randao {
       uint32    commitNum;
       uint32    revealsNum;
 
-      mapping (address =&gt; Consumer) consumers;
-      mapping (address =&gt; Participant) participants;
+      mapping (address => Consumer) consumers;
+      mapping (address => Participant) participants;
   }
 
   uint256 public numCampaigns;
@@ -36,17 +36,17 @@ contract Randao {
   uint256 public bounty          = 1 ether;
 
   // Prevents methods from perfoming any value transfer
-  modifier noEther() { if (msg.value &gt; 0) throw; _}
+  modifier noEther() { if (msg.value > 0) throw; _}
 
   modifier blankAddress(address _n) { if (_n != 0) throw; _}
 
-  modifier checkBounty { if (msg.value &lt; bounty) throw; _}
+  modifier checkBounty { if (msg.value < bounty) throw; _}
 
-  modifier moreThanZero(uint256 _deposit) { if (_deposit &lt;= 0) throw; _}
+  modifier moreThanZero(uint256 _deposit) { if (_deposit <= 0) throw; _}
 
-  modifier notBeBlank(bytes32 _s) { if (_s == &quot;&quot;) throw;  _}
+  modifier notBeBlank(bytes32 _s) { if (_s == "") throw;  _}
 
-  modifier beBlank(bytes32 _s) { if (_s != &quot;&quot;) throw; _}
+  modifier beBlank(bytes32 _s) { if (_s != "") throw; _}
 
   modifier beFalse(bool _t) { if (_t) throw; _}
 
@@ -63,11 +63,11 @@ contract Randao {
                       uint256 bountypot);
 
   modifier timeLineCheck(uint32 _bnum, uint16 _commitBalkline, uint16 _commitDeadline) {
-      if (block.number &gt;= _bnum) throw;
-      if (_commitBalkline &lt;= 0) throw;
-      if (_commitDeadline &lt;= 0) throw;
-      if (_commitDeadline &gt;= _commitBalkline) throw;
-      if (block.number &gt;= _bnum - _commitBalkline) throw;
+      if (block.number >= _bnum) throw;
+      if (_commitBalkline <= 0) throw;
+      if (_commitDeadline <= 0) throw;
+      if (_commitDeadline >= _commitBalkline) throw;
+      if (block.number >= _bnum - _commitBalkline) throw;
       _
   }
 
@@ -100,7 +100,7 @@ contract Randao {
   }
 
   modifier checkFollowPhase(uint256 _bnum, uint16 _commitDeadline) {
-      if (block.number &gt; _bnum - _commitDeadline) throw;
+      if (block.number > _bnum - _commitDeadline) throw;
       _
   }
 
@@ -126,8 +126,8 @@ contract Randao {
   modifier checkDeposit(uint256 _deposit) { if (msg.value != _deposit) throw; _}
 
   modifier checkCommitPhase(uint256 _bnum, uint16 _commitBalkline, uint16 _commitDeadline) {
-      if (block.number &lt; _bnum - _commitBalkline) throw;
-      if (block.number &gt; _bnum - _commitDeadline) throw;
+      if (block.number < _bnum - _commitBalkline) throw;
+      if (block.number > _bnum - _commitDeadline) throw;
       _
   }
 
@@ -159,8 +159,8 @@ contract Randao {
   }
 
   modifier checkRevealPhase(uint256 _bnum, uint16 _commitDeadline) {
-      if (block.number &lt;= _bnum - _commitDeadline) throw;
-      if (block.number &gt;= _bnum) throw;
+      if (block.number <= _bnum - _commitDeadline) throw;
+      if (block.number >= _bnum) throw;
       _
   }
 
@@ -184,7 +184,7 @@ contract Randao {
       Reveal(_campaignID, msg.sender, _s);
   }
 
-  modifier bountyPhase(uint256 _bnum){ if (block.number &lt; _bnum) throw; _}
+  modifier bountyPhase(uint256 _bnum){ if (block.number < _bnum) throw; _}
 
   function getRandom(uint256 _campaignID) noEther external returns (uint256) {
       Campaign c = campaigns[_campaignID];
@@ -214,7 +214,7 @@ contract Randao {
       Participant storage p
     ) bountyPhase(c.bnum)
       beFalse(p.rewarded) internal {
-      if (c.revealsNum &gt; 0) {
+      if (c.revealsNum > 0) {
           if (p.revealed) {
               uint256 share = calculateShare(c);
               returnReward(share, c, p);
@@ -227,7 +227,7 @@ contract Randao {
 
   function calculateShare(Campaign c) internal returns (uint256 _share) {
       // Someone does not reveal. Campaign fails.
-      if (c.commitNum &gt; c.revealsNum) {
+      if (c.commitNum > c.revealsNum) {
           _share = fines(c) / c.revealsNum;
       // Campaign succeeds.
       } else {
@@ -259,7 +259,7 @@ contract Randao {
   }
 
   modifier campaignFailed(uint32 _commitNum, uint32 _revealsNum) {
-      if (_commitNum == _revealsNum &amp;&amp; _commitNum != 0) throw;
+      if (_commitNum == _revealsNum && _commitNum != 0) throw;
       _
   }
 

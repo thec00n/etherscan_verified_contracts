@@ -32,12 +32,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -79,22 +79,22 @@ library ChannelLibrary {
     }
 
     modifier notSettledButClosed(Data storage self) {
-        require(self.settled &lt;= 0 &amp;&amp; self.closed &gt; 0);
+        require(self.settled <= 0 && self.closed > 0);
         _;
     }
 
     modifier notAuditedButClosed(Data storage self) {
-        require(self.audited &lt;= 0 &amp;&amp; self.closed &gt; 0);
+        require(self.audited <= 0 && self.closed > 0);
         _;
     }
 
     modifier stillTimeout(Data storage self) {
-        require(self.closed + self.settle_timeout &gt;= block.number);
+        require(self.closed + self.settle_timeout >= block.number);
         _;
     }
 
     modifier timeoutOver(Data storage self) {
-        require(self.closed + self.settle_timeout &lt;= block.number);
+        require(self.closed + self.settle_timeout <= block.number);
         _;
     }
 
@@ -122,12 +122,12 @@ library ChannelLibrary {
     senderOnly(self)
     returns (bool success, uint256 balance)
     {
-        require(self.opened &gt; 0);
+        require(self.opened > 0);
         require(self.closed == 0);
 
         StandardToken token = self.manager.token();
 
-        require (token.balanceOf(msg.sender) &gt;= amount);
+        require (token.balanceOf(msg.sender) >= amount);
 
         success = token.transferFrom(msg.sender, this, amount);
     
@@ -156,13 +156,13 @@ library ChannelLibrary {
         bytes signature
     )
     {
-        if (self.close_timeout &gt; 0) {
-            require(self.close_requested &gt; 0);
-            require(block.number - self.close_requested &gt;= self.close_timeout);
+        if (self.close_timeout > 0) {
+            require(self.close_requested > 0);
+            require(block.number - self.close_requested >= self.close_timeout);
         }
-        require(nonce &gt; self.nonce);
-        require(completed_transfers &gt;= self.completed_transfers);
-        require(completed_transfers &lt;= self.balance);
+        require(nonce > self.nonce);
+        require(completed_transfers >= self.completed_transfers);
+        require(completed_transfers <= self.balance);
     
         if (msg.sender != self.sender) {
             //checking signature
@@ -205,11 +205,11 @@ library ChannelLibrary {
     {
         StandardToken token = self.manager.token();
         
-        if (self.completed_transfers &gt; 0) {
+        if (self.completed_transfers > 0) {
             require(token.transfer(self.receiver, self.completed_transfers));
         }
 
-        if (self.completed_transfers &lt; self.balance) {
+        if (self.completed_transfers < self.balance) {
             require(token.transfer(self.sender, self.balance - self.completed_transfers));
         }
 
@@ -219,7 +219,7 @@ library ChannelLibrary {
     function audit(Data storage self, address auditor)
         notAuditedButClosed(self) {
         require(self.auditor == auditor);
-        require(block.number &lt;= self.closed + self.audit_timeout);
+        require(block.number <= self.closed + self.audit_timeout);
         self.audited = block.number;
     }
 
@@ -249,7 +249,7 @@ library ChannelLibrary {
         bytes lock_data,
         uint sum
     ) returns (bytes32) {
-        if (lock_data.length &gt; 0) {
+        if (lock_data.length > 0) {
             return sha3 (
                 transfer_id,
                 channel_address,
@@ -300,20 +300,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -332,7 +332,7 @@ contract StandardToken is ERC20 {
   /// @return A boolean that indicates if the operation was successful.
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -346,8 +346,8 @@ contract StandardToken is ERC20 {
   /// @return A boolean that indicates if the operation was successful.
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowances[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowances[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);
@@ -358,7 +358,7 @@ contract StandardToken is ERC20 {
   /// @dev Approves the specified address to spend the specified amount of tokens on behalf of msg.sender.
   /// Beware that changing an allowance with this method brings the risk that someone may use both the old
   /// and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-  /// race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+  /// race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
   /// https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
   /// @param _spender The address which will spend tokens.
   /// @param _value The amount of tokens to be spent.
@@ -386,8 +386,8 @@ contract StandardToken is ERC20 {
 
   // FIELDS
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
 }
 
 
@@ -430,9 +430,9 @@ contract ChannelContract {
         require(msg.sender == manager_address);
         require (sender != receiver);
         require (client != receiver);
-        require (audit_timeout &gt;= 0);
-        require (settle_timeout &gt; 0);
-        require (close_timeout &gt;= 0);
+        require (audit_timeout >= 0);
+        require (settle_timeout > 0);
+        require (close_timeout >= 0);
 
         data.sender = sender;
         data.client = client;
@@ -510,8 +510,8 @@ contract ChannelContract {
     }
 
     function destroy() onlyManager {
-        require(data.settled &gt; 0);
-        require(data.audited &gt; 0 || block.number &gt; data.closed + data.audit_timeout);
+        require(data.settled > 0);
+        require(data.audited > 0 || block.number > data.closed + data.audit_timeout);
         selfdestruct(0);
     }
 

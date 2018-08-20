@@ -13,13 +13,13 @@ pragma solidity ^0.4.15;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="29484d5b4048694a464d4c4a46475d4c515d074046">[email&#160;protected]</a>&gt;
+/// @author Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="29484d5b4048694a464d4c4a46475d4c515d074046">[email protected]</a>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -105,7 +105,7 @@ contract Owned {
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -140,7 +140,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) constant public returns (bool) {
         return !escapeBlacklist[_token];
@@ -220,7 +220,7 @@ contract FundForwarder is Escapable {
         beneficiary = _beneficiary;
     }
 
-    /// @dev The &quot;fallback function&quot; forwards ether to `beneficiary` and the 
+    /// @dev The "fallback function" forwards ether to `beneficiary` and the 
     ///  `msg.sender` is rewarded with Campaign tokens; this contract may have a
     ///  high gasLimit requirement dependent on beneficiary
     function () payable {
@@ -250,7 +250,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner

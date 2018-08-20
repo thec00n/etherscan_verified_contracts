@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -114,20 +114,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -150,13 +150,13 @@ contract GlobalSharingEconomyCoin is Pausable, ERC20 {
   string public symbol;
   uint8 public decimals;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping (address =&gt; bool) allowedBatchTransfers;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping (address => bool) allowedBatchTransfers;
 
   constructor() public {
-    name = &quot;GlobalSharingEconomyCoin&quot;;
-    symbol = &quot;GSE&quot;;
+    name = "GlobalSharingEconomyCoin";
+    symbol = "GSE";
     decimals = 8;
     totalSupply = 10000000000 * 10 ** uint256(decimals);
     balances[msg.sender] = totalSupply;
@@ -165,7 +165,7 @@ contract GlobalSharingEconomyCoin is Pausable, ERC20 {
 
   function transfer(address _to, uint256 _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -187,15 +187,15 @@ contract GlobalSharingEconomyCoin is Pausable, ERC20 {
     require(allowedBatchTransfers[msg.sender]);
     uint256 fundslen = _funds.length;
     uint256 amountslen = _amounts.length;
-    require(fundslen == amountslen &amp;&amp; fundslen &gt; 0 &amp;&amp; fundslen &lt; 10000);
+    require(fundslen == amountslen && fundslen > 0 && fundslen < 10000);
 
     uint256 totalAmount = 0;
-    for (uint i = 0; i &lt; amountslen; ++i){
+    for (uint i = 0; i < amountslen; ++i){
       totalAmount = totalAmount.add(_amounts[i]);
     }
 
-    require(balances[msg.sender] &gt;= totalAmount);
-    for (uint j = 0; j &lt; amountslen; ++j) {
+    require(balances[msg.sender] >= totalAmount);
+    for (uint j = 0; j < amountslen; ++j) {
       balances[_funds[j]] = balances[_funds[j]].add(_amounts[j]);
       emit Transfer(msg.sender, _funds[j], _amounts[j]);
     }
@@ -209,8 +209,8 @@ contract GlobalSharingEconomyCoin is Pausable, ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);

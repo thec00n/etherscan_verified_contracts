@@ -5,10 +5,10 @@ pragma solidity ^0.4.24;
  library SafeMath {
      function add(uint a, uint b) internal pure returns (uint c) {
          c = a + b;
-         require(c &gt;= a);
+         require(c >= a);
      }
      function sub(uint a, uint b) internal pure returns (uint c) {
-         require(b &lt;= a);
+         require(b <= a);
          c = a - b;
      }
      function mul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ pragma solidity ^0.4.24;
          require(a == 0 || c / a == b);
      }
      function div(uint a, uint b) internal pure returns (uint c) {
-         require(b &gt; 0);
+         require(b > 0);
          c = a / b;
      }
  }
@@ -92,16 +92,16 @@ pragma solidity ^0.4.24;
      uint8 public decimals;
      uint _totalSupply;
  
-     mapping(address =&gt; uint) balances;
-     mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-     mapping (address =&gt; uint256) public frozenAccount;
+     mapping(address => uint) balances;
+     mapping(address => mapping(address => uint)) allowed;
+     mapping (address => uint256) public frozenAccount;
  
      // ------------------------------------------------------------------------
      // Constructor
      // ------------------------------------------------------------------------
      constructor() public {
-         symbol = &quot;WFCT&quot;;
-         name = &quot;WFchain Token&quot;;
+         symbol = "WFCT";
+         name = "WFchain Token";
          decimals = 8;
          _totalSupply = 10000000000 * 10**uint(decimals);
          balances[0xfd76e9d8b164f92fdd7dee579cf8ab94c7bf79c0] =  _totalSupply.mul(65).div(100);
@@ -126,12 +126,12 @@ pragma solidity ^0.4.24;
  
  
      // ------------------------------------------------------------------------
-     // Transfer the balance from token owner&#39;s account to `to` account
-     // - Owner&#39;s account must have sufficient balance to transfer
+     // Transfer the balance from token owner's account to `to` account
+     // - Owner's account must have sufficient balance to transfer
      // - 0 value transfers are allowed
      // ------------------------------------------------------------------------
      function transfer(address to, uint tokens) public returns (bool success) {
-         require(frozenAccount[msg.sender] &lt; now );
+         require(frozenAccount[msg.sender] < now );
          balances[msg.sender] = balances[msg.sender].sub(tokens);
          balances[to] = balances[to].add(tokens);
          emit Transfer(msg.sender, to, tokens);
@@ -141,7 +141,7 @@ pragma solidity ^0.4.24;
  
      // ------------------------------------------------------------------------
      // Token owner can approve for `spender` to transferFrom(...) `tokens`
-     // from the token owner&#39;s account
+     // from the token owner's account
      //
      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
      // recommends that there are no checks for the approval double-spend attack
@@ -174,7 +174,7 @@ pragma solidity ^0.4.24;
  
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -183,7 +183,7 @@ pragma solidity ^0.4.24;
  
      // ------------------------------------------------------------------------
      // Token owner can approve for `spender` to transferFrom(...) `tokens`
-     // from the token owner&#39;s account. The `spender` contract function
+     // from the token owner's account. The `spender` contract function
      // `receiveApproval(...)` is then executed
      // ------------------------------------------------------------------------
      function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -195,7 +195,7 @@ pragma solidity ^0.4.24;
  
  
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -219,9 +219,9 @@ pragma solidity ^0.4.24;
      //multi freeze account
     function multiFreezeWithTimestamp(address[] targets,uint256[] timestamps)public onlyOwner returns (bool) {
         uint256 len = targets.length;
-        require(len &gt; 0);
+        require(len > 0);
         require(len == timestamps.length);
-        for (uint256 i = 0; i &lt; len; i = i.add(1)) {
+        for (uint256 i = 0; i < len; i = i.add(1)) {
             frozenAccount[targets[i]] = timestamps[i];
         }
         return true;

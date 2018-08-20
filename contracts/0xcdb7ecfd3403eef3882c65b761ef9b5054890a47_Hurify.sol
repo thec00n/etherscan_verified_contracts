@@ -1,16 +1,16 @@
 pragma solidity ^0.4.18;
 contract Hurify {
 /* Public variables of the token */
-string public name = &quot;Hurify Token&quot;;                  // Token Name
-string public symbol = &quot;HUR&quot;;                         // Token symbol
+string public name = "Hurify Token";                  // Token Name
+string public symbol = "HUR";                         // Token symbol
 uint public decimals = 18;                            // Token Decimal Point
 address public owner;                                 // Owner of the Token Contract
 uint256 totalHurify;                                  // Total Token for the Crowdsale
 uint256 totalToken;                                   // The current total token supply.
 bool public hault = false;                            // Crowdsale State
  /* This creates an array with all balances */
-mapping (address =&gt; uint256) balances;
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping (address => uint256) balances;
+mapping (address => mapping (address => uint256)) allowed;
 /* This generates a public event on the blockchain that will notify clients */
 event Transfer(address indexed from, address indexed to, uint256 value);
 /* This notifies clients about the refund amount */
@@ -26,17 +26,17 @@ function Hurify (
    balances[_hurclan] = safeAdd(balances[_hurclan], 53125000 * (10 ** decimals));
 }
 function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 modifier onlyPayloadSize(uint size) {
-   require(msg.data.length &gt;= size + 4) ;
+   require(msg.data.length >= size + 4) ;
    _;
 }
 modifier onlyowner {
@@ -51,7 +51,7 @@ function tokensup(uint256 _value) onlyowner public{
 ///@notice Transfer tokens based on type
 function hurifymint( address _client, uint _value, uint _type) onlyowner public {
   uint numHur;
-  require(totalToken &lt;= totalHurify);
+  require(totalToken <= totalHurify);
   if(_type == 1){
       numHur = _value * 6000 * (10 ** decimals);
   }
@@ -65,26 +65,26 @@ function hurifymint( address _client, uint _value, uint _type) onlyowner public 
 }
 ///@notice Transfer token with only value
 function hurmint( address _client, uint256 _value) onlyowner public {
-  require(totalToken &lt;= totalHurify);
+  require(totalToken <= totalHurify);
   uint256 numHur = _value * ( 10 ** decimals);
   balances[owner] = safeSub(balances[owner], numHur);
   balances[_client] = safeAdd(balances[_client], numHur);
   totalToken = safeAdd(totalToken, numHur);
   Transfer(owner, _client, numHur);
 }
-//Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check requireit doesn&#39;t wrap.
+//Default assumes totalSupply can't be over max (2^256 - 1).
+//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check requireit doesn't wrap.
 //Replace the if with this one instead.
 function transfer(address _to, uint256 _value) public returns (bool success) {
     require(!hault);
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = safeSub(balances[msg.sender],_value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value);
     return true;
 }
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+      if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
           // Balance or allowance too low
           revert();
       }
@@ -139,7 +139,7 @@ function unpause() public onlyowner {
 
 /// @notice Remove `_value` tokens from the system irreversibly
 function burn(uint256 _value) onlyowner public returns (bool success) {
-    require (balances[msg.sender] &gt;= _value);                                          // Check if the sender has enough
+    require (balances[msg.sender] >= _value);                                          // Check if the sender has enough
     balances[msg.sender] = safeSub(balances[msg.sender], _value);                      // Subtract from the sender
     totalHurify = safeSub(totalHurify, _value);                                        // Updates totalSupply
     Burn(msg.sender, _value);

@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,9 +80,9 @@ contract StandardToken is ERC20 {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -91,7 +91,7 @@ contract StandardToken is ERC20 {
   */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -117,8 +117,8 @@ contract StandardToken is ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20 {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -167,7 +167,7 @@ contract StandardToken is ERC20 {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -194,8 +194,8 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -209,7 +209,7 @@ contract BurnableToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * Based on OpenZeppelin
  */
 contract Ownable {
@@ -301,7 +301,7 @@ contract ReleasableToken is ERC20, Claimable {
     bool public released = false;
 
     /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-    mapping (address =&gt; bool) public transferAgents;
+    mapping (address => bool) public transferAgents;
 
     /**
      * Limit token transfer until the crowdsale is over.
@@ -321,7 +321,7 @@ contract ReleasableToken is ERC20, Claimable {
      */
     function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
         require(addr != 0x0);
-        // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+        // We don't do interface check here as we might want to a normal wallet address to act as a release agent
         releaseAgent = addr;
     }
 
@@ -491,7 +491,7 @@ contract InvestmentPolicyCrowdsale is Pausable {
      */
     function buyWithSignedAddress(uint128 customerId, uint8 v, bytes32 r, bytes32 s) external payable {
         require(requiredSignedAddress);
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 hash = sha3(prefix, sha3(msg.sender));
         assert(ecrecover(hash, v, r, s) == signerAddress);
         require(customerId != 0);  // UUIDv4 sanity check
@@ -564,7 +564,7 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
     /* tokens will be transfered from this address */
     address public multisigWallet;
 
-    /* The party who holds the full token pool and has approve()&#39;ed tokens for this crowdsale */
+    /* The party who holds the full token pool and has approve()'ed tokens for this crowdsale */
     address public beneficiary;
 
     /* the UNIX timestamp start date of the presale */
@@ -607,13 +607,13 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
     bool private isPreallocated = false;
 
     /** How much ETH each address has invested to this crowdsale */
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     /** How much tokens this crowdsale has credited for each investor address */
-    mapping (address =&gt; uint256) public tokenAmountOf;
+    mapping (address => uint256) public tokenAmountOf;
 
     /** Addresses and amount in weis that are allowed to invest even before ICO official opens. */
-    mapping (address =&gt; uint) public earlyParticipantWhitelist;
+    mapping (address => uint) public earlyParticipantWhitelist;
 
     /** State machine
      *
@@ -653,12 +653,12 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
         startsAt = _start;
         endsAt = _end;
 
-        require(now &lt; presaleStartsAt &amp;&amp; presaleStartsAt &lt;= startsAt &amp;&amp; startsAt &lt; endsAt);
+        require(now < presaleStartsAt && presaleStartsAt <= startsAt && startsAt < endsAt);
 
         setPricingStrategy(_pricingStrategy);
         setMultisigWallet(_multisigWallet);
 
-        require(beneficiary != 0x0 &amp;&amp; address(token) != 0x0);
+        require(beneficiary != 0x0 && address(token) != 0x0);
         assert(token.balanceOf(beneficiary) == token.totalSupply());
 
     }
@@ -686,29 +686,29 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
     }
 
     function setPresaleStartsAt(uint presaleStart) inState(State.Preparing) onlyOwner external {
-        require(presaleStart &lt;= startsAt &amp;&amp; presaleStart &lt; endsAt);
+        require(presaleStart <= startsAt && presaleStart < endsAt);
         presaleStartsAt = presaleStart;
-        TimeBoundaryChanged(&#39;presaleStartsAt&#39;, presaleStartsAt);
+        TimeBoundaryChanged('presaleStartsAt', presaleStartsAt);
     }
 
     function setStartsAt(uint start) onlyOwner external {
-        require(presaleStartsAt &lt; start &amp;&amp; start &lt; endsAt);
+        require(presaleStartsAt < start && start < endsAt);
         State state = getState();
         assert(state == State.Preparing || state == State.PreFunding);
         startsAt = start;
-        TimeBoundaryChanged(&#39;startsAt&#39;, startsAt);
+        TimeBoundaryChanged('startsAt', startsAt);
     }
 
     function setEndsAt(uint end) onlyOwner external {
-        require(end &gt; startsAt &amp;&amp; end &gt; presaleStartsAt);
+        require(end > startsAt && end > presaleStartsAt);
         endsAt = end;
-        TimeBoundaryChanged(&#39;endsAt&#39;, endsAt);
+        TimeBoundaryChanged('endsAt', endsAt);
     }
 
     function loadEarlyParticipantsWhitelist(address[] participantsArray, uint[] valuesArray) onlyOwner external {
         address participant = 0x0;
         uint value = 0;
-        for (uint i = 0; i &lt; participantsArray.length; i++) {
+        for (uint i = 0; i < participantsArray.length; i++) {
             participant = participantsArray[i];
             value = valuesArray[i];
             setEarlyParticipantWhitelist(participant, value);
@@ -756,15 +756,15 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
 
     function setMultisigWallet(address wallet) onlyOwner public {
         require(wallet != 0x0);
-        require(investorCount &lt;= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
+        require(investorCount <= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
         multisigWallet = wallet;
     }
 
     function setEarlyParticipantWhitelist(address participant, uint value) onlyOwner public {
-        require(value != 0 &amp;&amp; participant != 0x0);
-        require(value &lt;= pricingStrategy.getPresaleMaxValue());
+        require(value != 0 && participant != 0x0);
+        require(value <= pricingStrategy.getPresaleMaxValue());
         assert(!pricingStrategy.isPresaleFull(whitelistWeiRaised));
-        if(earlyParticipantWhitelist[participant] &gt; 0) {
+        if(earlyParticipantWhitelist[participant] > 0) {
             whitelistWeiRaised = whitelistWeiRaised.sub(earlyParticipantWhitelist[participant]);
         }
         earlyParticipantWhitelist[participant] = value;
@@ -784,12 +784,12 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
         if(finalized) return State.Finalized;
         else if (!isPreallocated) return State.Preparing;
         else if (address(finalizeAgent) == 0) return State.Preparing;
-        else if (block.timestamp &lt; presaleStartsAt) return State.Preparing;
-        else if (block.timestamp &gt;= presaleStartsAt &amp;&amp; block.timestamp &lt; startsAt) return State.PreFunding;
-        else if (block.timestamp &lt;= endsAt &amp;&amp; block.timestamp &gt;= startsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
-        else if (!allowRefund &amp;&amp; isCrowdsaleFull()) return State.Success;
-        else if (!allowRefund &amp;&amp; block.timestamp &gt; endsAt) return State.Success;
-        else if (allowRefund &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+        else if (block.timestamp < presaleStartsAt) return State.Preparing;
+        else if (block.timestamp >= presaleStartsAt && block.timestamp < startsAt) return State.PreFunding;
+        else if (block.timestamp <= endsAt && block.timestamp >= startsAt && !isCrowdsaleFull()) return State.Funding;
+        else if (!allowRefund && isCrowdsaleFull()) return State.Success;
+        else if (!allowRefund && block.timestamp > endsAt) return State.Success;
+        else if (allowRefund && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
         else return State.Failure;
     }
 
@@ -798,11 +798,11 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
      */
     function isAllTokensApproved() private constant returns (bool) {
         return getTokensLeft() == token.totalSupply() - tokensSold
-                &amp;&amp; token.transferAgents(beneficiary);
+                && token.transferAgents(beneficiary);
     }
 
     function isBreakingCap(uint tokenAmount) private constant returns (bool limitBroken) {
-        return tokenAmount &gt; getTokensLeft();
+        return tokenAmount > getTokensLeft();
     }
 
     function investInternal(address receiver, uint128 customerId) whenNotPaused internal{
@@ -813,13 +813,13 @@ contract AlgoryCrowdsale is InvestmentPolicyCrowdsale {
 
 
         if (state == State.PreFunding) {
-            require(earlyParticipantWhitelist[receiver] &gt; 0);
-            require(weiAmount &lt;= earlyParticipantWhitelist[receiver]);
+            require(earlyParticipantWhitelist[receiver] > 0);
+            require(weiAmount <= earlyParticipantWhitelist[receiver]);
             assert(!pricingStrategy.isPresaleFull(presaleWeiRaised));
         }
 
         tokenAmount = pricingStrategy.getAmountOfTokens(weiAmount, weiRaised);
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
         if (investedAmountOf[receiver] == 0) {
             investorCount++;
         }

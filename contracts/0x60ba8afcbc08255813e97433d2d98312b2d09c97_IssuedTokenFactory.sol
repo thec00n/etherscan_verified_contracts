@@ -9,7 +9,7 @@ There is a freezePeriod option on transfers, if need be. There is also an date o
 last issuance setting, if set, no more tokens can be issued past that time.
 
 The token uses the a standard token API as much as possible, and overrides the transfer
-and transferFrom methods. This way, we dont need special API&#39;s to issue this token.
+and transferFrom methods. This way, we dont need special API's to issue this token.
 We can retain the original StandardToken api, but add additional features.
 
 Upon construction, initial token holders can be specified with their values.
@@ -29,7 +29,7 @@ A common Owned contract that contains properties for contract ownership.
 
 
 /// @title A single owned campaign contract for instantiating ownership properties.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="305e59535b1e545f54435f5e70535f5e43555e4349431e5e5544">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="305e59535b1e545f54435f5e70535f5e43555e4349431e5e5544">[email protected]</a>>
 contract Owned {
   // only the owner can use this method
   modifier onlyowner() {
@@ -53,7 +53,7 @@ This file is part of WeiFund.
 This implements ONLY the standard functions and NOTHING else.
 For a token like you would want to deploy in something like Mist, see HumanStandardToken.sol.
 
-If you deploy this, you won&#39;t have anything useful.
+If you deploy this, you won't have anything useful.
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -103,11 +103,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -117,8 +117,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -141,8 +141,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -158,7 +158,7 @@ Used for contracts that have an issuer.
 
 
 /// @title Issued - interface used for build issued asset contracts
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234d4a40480d474c47504c4d63404c4d50464d505a500d4d4657">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234d4a40480d474c47504c4d63404c4d50464d505a500d4d4657">[email protected]</a>>
 contract Issued {
   /// @notice will set the asset issuer address
   /// @param _issuer The address of the issuer
@@ -168,13 +168,13 @@ contract Issued {
 
 
 /// @title Issued token contract allows new tokens to be issued by an issuer.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16787f757d3872797265797856757978657378656f6538787362">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16787f757d3872797265797856757978657378656f6538787362">[email protected]</a>>
 contract IssuedToken is Owned, Issued, StandardToken {
   function transfer(address _to, uint256 _value) public returns (bool) {
     // if the issuer is attempting transfer
     // then mint new coins to address of transfer
     // by using transfer, we dont need to switch StandardToken API method
-    if (msg.sender == issuer &amp;&amp; (lastIssuance == 0 || block.number &lt; lastIssuance)) {
+    if (msg.sender == issuer && (lastIssuance == 0 || block.number < lastIssuance)) {
       // increase the balance of user by transfer amount
       balances[_to] += _value;
 
@@ -184,7 +184,7 @@ contract IssuedToken is Owned, Issued, StandardToken {
       // return required true value for transfer
       return true;
     } else {
-      if (freezePeriod == 0 || block.number &gt; freezePeriod) {
+      if (freezePeriod == 0 || block.number > freezePeriod) {
         // continue with a normal transfer
         return super.transfer(_to, _value);
       }
@@ -195,7 +195,7 @@ contract IssuedToken is Owned, Issued, StandardToken {
     public
     returns (bool success) {
     // if we are passed the free period, then transferFrom
-    if (freezePeriod == 0 || block.number &gt; freezePeriod) {
+    if (freezePeriod == 0 || block.number > freezePeriod) {
       // return transferFrom
       return super.transferFrom(_from, _to, _value);
     }
@@ -220,7 +220,7 @@ contract IssuedToken is Owned, Issued, StandardToken {
     uint8 _decimals,
     string _symbol) {
     // issue the initial tokens, if any
-    for (uint256 i = 0; i &lt; _addrs.length; i ++) {
+    for (uint256 i = 0; i < _addrs.length; i ++) {
       // increase balance of that address
       balances[_addrs[i]] += _amounts[i];
 
@@ -266,19 +266,19 @@ contract IssuedToken is Owned, Issued, StandardToken {
   string public symbol;
 
   // verison
-  string public version = &quot;WFIT1.0&quot;;
+  string public version = "WFIT1.0";
 }
 
 
 /// @title Private Service Registry - used to register generated service contracts.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="046a6d676f2a606b60776b6a44676b6a77616a777d772a6a6170">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="046a6d676f2a606b60776b6a44676b6a77616a777d772a6a6170">[email protected]</a>>
 contract PrivateServiceRegistryInterface {
-  /// @notice register the service &#39;_service&#39; with the private service registry
+  /// @notice register the service '_service' with the private service registry
   /// @param _service the service contract to be registered
-  /// @return the service ID &#39;serviceId&#39;
+  /// @return the service ID 'serviceId'
   function register(address _service) internal returns (uint256 serviceId) {}
 
-  /// @notice is the service in question &#39;_service&#39; a registered service with this registry
+  /// @notice is the service in question '_service' a registered service with this registry
   /// @param _service the service contract address
   /// @return either yes (true) the service is registered or no (false) the service is not
   function isService(address _service) public constant returns (bool) {}
@@ -300,15 +300,15 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
 
   modifier isRegisteredService(address _service) {
     // does the service exist in the registry, is the service address not empty
-    if (services.length &gt; 0) {
-      if (services[ids[_service]] == _service &amp;&amp; _service != address(0)) {
+    if (services.length > 0) {
+      if (services[ids[_service]] == _service && _service != address(0)) {
         _;
       }
     }
   }
 
   modifier isNotRegisteredService(address _service) {
-    // if the service &#39;_service&#39; is not a registered service
+    // if the service '_service' is not a registered service
     if (!isService(_service)) {
       _;
     }
@@ -321,13 +321,13 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
     // create service ID by increasing services length
     serviceId = services.length++;
 
-    // set the new service ID to the &#39;_service&#39; address
+    // set the new service ID to the '_service' address
     services[serviceId] = _service;
 
-    // set the ids store to link to the &#39;serviceId&#39; created
+    // set the ids store to link to the 'serviceId' created
     ids[_service] = serviceId;
 
-    // fire the &#39;ServiceRegistered&#39; event
+    // fire the 'ServiceRegistered' event
     ServiceRegistered(msg.sender, _service);
   }
 
@@ -340,11 +340,11 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
   }
 
   address[] public services;
-  mapping(address =&gt; uint256) public ids;
+  mapping(address => uint256) public ids;
 }
 
 /// @title Issued Token Factory - used to generate and register IssuedToken contracts
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e886818b83c68c878c9b8786a88b87869b8d869b919bc6868d9c">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e886818b83c68c878c9b8786a88b87869b8d869b919bc6868d9c">[email protected]</a>>
 contract IssuedTokenFactory is PrivateServiceRegistry {
   function createIssuedToken(
     address[] _addrs,

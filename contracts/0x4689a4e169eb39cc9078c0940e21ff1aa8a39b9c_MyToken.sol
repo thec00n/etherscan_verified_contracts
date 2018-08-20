@@ -10,20 +10,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -58,8 +58,8 @@ contract TokenERC20 is SafeMath {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -75,8 +75,8 @@ contract TokenERC20 is SafeMath {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); 
-        require(balanceOf[_from] &gt;= _value); 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require(balanceOf[_from] >= _value); 
+        require(balanceOf[_to] + _value > balanceOf[_to]); 
         uint previousBalances = SafeMath.safeAdd(balanceOf[_from],balanceOf[_to]); 
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value); 
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value); 
@@ -90,7 +90,7 @@ contract TokenERC20 is SafeMath {
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender],_value);
         _transfer(_from, _to, _value);
         return true;
@@ -119,8 +119,8 @@ contract TokenERC20 is SafeMath {
 contract MyToken is owned, TokenERC20 {
 
  
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint256) public freezeOf;
 
     event FrozenFunds(address target, bool frozen);
     event Burn(address indexed from, uint256 value);
@@ -134,8 +134,8 @@ contract MyToken is owned, TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt;= _value);              
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] >= _value);              
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         require(!frozenAccount[_from]);                     
         require(!frozenAccount[_to]);                       
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);                         
@@ -144,8 +144,8 @@ contract MyToken is owned, TokenERC20 {
     }
     
         function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);         
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value);   
         totalSupply = SafeMath.safeSub(totalSupply, _value);                             
@@ -154,7 +154,7 @@ contract MyToken is owned, TokenERC20 {
     }
     
         function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);  
+        require(balanceOf[msg.sender] >= _value);  
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);          
         totalSupply = SafeMath.safeSub(totalSupply, _value);                     
         Burn(msg.sender, _value);

@@ -10,18 +10,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -29,8 +29,8 @@ contract EthereumTrustFund {
     
     using SafeMath for uint256;
     
-    string public constant name   	= &quot;Ethereum Trust Fund&quot;;
-    string public constant symbol 	= &quot;ETRUST&quot;;
+    string public constant name   	= "Ethereum Trust Fund";
+    string public constant symbol 	= "ETRUST";
     uint8  public constant decimals = 18;
     uint256 public rate = 10;
     // todo
@@ -38,8 +38,8 @@ contract EthereumTrustFund {
     uint256 public 		_totalSupplyLeft = 1000000000000;
     uint256 tokens                       = 0;
     // vars
-    mapping(address =&gt; uint256) balances; 
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowedToSpend;
+    mapping(address => uint256) balances; 
+    mapping(address => mapping(address => uint256)) allowedToSpend;
     address public contract_owner;
     uint256 currentBlock = 0;
     uint256 lastblock    = 0;
@@ -62,8 +62,8 @@ contract EthereumTrustFund {
     // Send _value amount of tokens to address _to
     function transfer(address _to, uint256 _value) public returns (bool success){
     	require(
-    		balances[msg.sender] &gt;= _value
-    		&amp;&amp; _value &gt; 0);
+    		balances[msg.sender] >= _value
+    		&& _value > 0);
     	balances[msg.sender] = balances[msg.sender].sub(_value);
     	balances[_to]      	 = balances[_to].add(_value);
     	Transfer(msg.sender, _to,_value);
@@ -72,9 +72,9 @@ contract EthereumTrustFund {
     // Send _value amount of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
     	require(
-    		allowedToSpend[_from][msg.sender] &gt;= _value
-    		&amp;&amp; balances[_from] &gt;= _value
-    		&amp;&amp; _value &gt; 0);
+    		allowedToSpend[_from][msg.sender] >= _value
+    		&& balances[_from] >= _value
+    		&& _value > 0);
     	balances[_from] = balances[_from].sub(_value);
     	balances[_to]   = balances[_to].add(_value);
     	allowedToSpend[_from][msg.sender] = allowedToSpend[_from][msg.sender].sub(_value);
@@ -101,10 +101,10 @@ contract EthereumTrustFund {
     // ## ERC20 standards end ##
     // ## Custom functions ###
     function() public payable {
-    	require(msg.value &gt; 0);
+    	require(msg.value > 0);
     	tokens 		 = msg.value.mul(rate);
     	currentBlock = block.number;
-    	if(rate &gt; 1 &amp;&amp; currentBlock.sub(lastblock) &gt; 3000){
+    	if(rate > 1 && currentBlock.sub(lastblock) > 3000){
     		rate = rate.sub(1);
     		RateChange(rate);
     		lastblock 		 = currentBlock;

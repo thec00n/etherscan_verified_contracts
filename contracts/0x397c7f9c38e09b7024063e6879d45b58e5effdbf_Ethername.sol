@@ -20,7 +20,7 @@ contract Managed {
   /* FUNCTION */
 
   function setCommission(uint256 _commission) external {
-    require(_commission &lt; 10000);
+    require(_commission < 10000);
     commission = _commission;
 
     emit Commission(commission);
@@ -88,17 +88,17 @@ contract EthernameRaw is Managed {
   struct Record {
     address owner;
     uint256 price;
-    mapping (bytes32 =&gt; bytes) attrs;
+    mapping (bytes32 => bytes) attrs;
   }
 
   /* STORAGE */
 
-  string public constant name = &quot;Ethername&quot;;
-  string public constant symbol = &quot;ENM&quot;;
+  string public constant name = "Ethername";
+  string public constant symbol = "ENM";
 
-  mapping (address =&gt; bytes32) public ownerToName;
-  mapping (bytes32 =&gt; Record) public nameToRecord;
-  mapping (bytes32 =&gt; address) public nameToApproved;
+  mapping (address => bytes32) public ownerToName;
+  mapping (bytes32 => Record) public nameToRecord;
+  mapping (bytes32 => address) public nameToApproved;
 
   /* FUNCTION */
 
@@ -140,9 +140,9 @@ contract EthernameRaw is Managed {
 
   function rawBuy(bytes32 _name) public payable {
     Record memory _record = nameToRecord[_name];
-    require(_record.price &gt; 0);
+    require(_record.price > 0);
     uint256 _price = _computePrice(_record.price);
-    require(msg.value &gt;= _price);
+    require(msg.value >= _price);
 
     _record.owner.transfer(_record.price);
     _transfer(_record.owner, msg.sender, _name);
@@ -168,8 +168,8 @@ contract EthernameRaw is Managed {
     public
     onlyOwner(msg.sender, _name)
   {
-    mapping (bytes32 =&gt; bytes) attrs = nameToRecord[_name].attrs;
-		for (uint i = 0; i &lt; _keys.length; i++) {
+    mapping (bytes32 => bytes) attrs = nameToRecord[_name].attrs;
+		for (uint i = 0; i < _keys.length; i++) {
       delete attrs[_keys[i]];
 
       emit Attribute(_name, _keys[i]);
@@ -178,8 +178,8 @@ contract EthernameRaw is Managed {
 
   function rawSendEther(bytes32 _name) public payable returns (bool _result) {
     address _to = nameToRecord[_name].owner;
-    _result = (_name != bytes32(0)) &amp;&amp;
-      (_to != address(0)) &amp;&amp;
+    _result = (_name != bytes32(0)) &&
+      (_to != address(0)) &&
       _to.send(msg.value);
     if (_result) {
       emit SendEther(
@@ -216,10 +216,10 @@ contract EthernameRaw is Managed {
 
   function _register(bytes32 _name, address _to) internal {
     require(nameToRecord[_name].owner == address(0));
-		for (uint i = 0; i &lt; _name.length; i++) {
+		for (uint i = 0; i < _name.length; i++) {
 		 	require((_name[i] == 0) ||
-              (_name[i] &gt; 96 &amp;&amp; _name[i] &lt; 123) ||
-              (_name[i] &gt; 47 &amp;&amp; _name[i] &lt; 58));
+              (_name[i] > 96 && _name[i] < 123) ||
+              (_name[i] > 47 && _name[i] < 58));
 		}
 
     _transfer(0, _to, _name);
@@ -268,7 +268,7 @@ contract EthernameRaw is Managed {
     pure
     returns (bytes32 _bytes32)
   {
-    require(bytes(_string).length &lt; 33);
+    require(bytes(_string).length < 33);
     assembly {
       _bytes32 := mload(add(_string, 0x20))
     }
@@ -315,11 +315,11 @@ contract Ethername is EthernameRaw {
     commission = 200;
 
     // reserved word
-    nameToRecord[bytes32(&#39;&#39;)] = Record(this, 0);
+    nameToRecord[bytes32('')] = Record(this, 0);
 
     // initial register
-    _register(bytes32(&#39;ethername&#39;), this);
-    _register(bytes32(&#39;root&#39;), msg.sender);
+    _register(bytes32('ethername'), this);
+    _register(bytes32('root'), msg.sender);
   }
 
 

@@ -1,6 +1,6 @@
 /**
  *  @title Griefing
- *  @author Cl&#233;ment Lesaege - &lt;<span class="__cf_email__" data-cfemail="72111e171f171c06321e1701131715175c111d1f">[email&#160;protected]</span>&gt;
+ *  @author Clément Lesaege - <<span class="__cf_email__" data-cfemail="72111e171f171c06321e1701131715175c111d1f">[email protected]</span>>
  *  This is a contract to illustrate griefing opportunities.
  *  If someone sends griefCost to the contract, the ether in it will be burnt.
  *  The owner can get the ether back if no one burnt his ethers.

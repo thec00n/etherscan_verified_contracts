@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /******************************************/
 /*       Netkiller ADVANCED TOKEN         */
 /******************************************/
-/* Author netkiller &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274942534c4e4b4b4255674a54490944484a">[email&#160;protected]</a>&gt;   */
+/* Author netkiller <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274942534c4e4b4b4255674a54490944484a">[email protected]</a>>   */
 /* Home http://www.netkiller.cn           */
 /* Version 2018-07-25 - batchTransfer     */
 /******************************************/
@@ -23,13 +23,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -47,8 +47,8 @@ contract NetkillerAdvancedToken {
     uint256 public totalSupply;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -57,7 +57,7 @@ contract NetkillerAdvancedToken {
     event Burn(address indexed from, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address indexed target, bool frozen);
@@ -110,8 +110,8 @@ contract NetkillerAdvancedToken {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) isLock internal {
         require (_to != address(0));                        // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balances[_from] = balances[_from].sub(_value);      // Subtract from the sender
@@ -142,8 +142,8 @@ contract NetkillerAdvancedToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -194,7 +194,7 @@ contract NetkillerAdvancedToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -211,7 +211,7 @@ contract NetkillerAdvancedToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);                    // Check if the sender has enough
+        require(balances[msg.sender] >= _value);                    // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);    // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -227,10 +227,10 @@ contract NetkillerAdvancedToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);                                      // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);                           // Check allowance
+        require(balances[_from] >= _value);                                      // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);                           // Check allowance
         balances[_from] = balances[_from].sub(_value);                           // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);     // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);     // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                                   // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -246,7 +246,7 @@ contract NetkillerAdvancedToken {
         emit Transfer(this, _to, amount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -255,7 +255,7 @@ contract NetkillerAdvancedToken {
     }
 
     function airdrop(address[] _to, uint256 _value) public returns (bool success) {
-        for (uint i=0; i&lt;_to.length; i++) {
+        for (uint i=0; i<_to.length; i++) {
             _transfer(msg.sender, _to[i], _value);
         }
         return true;
@@ -265,13 +265,13 @@ contract NetkillerAdvancedToken {
         require(_to.length == _value.length);
 
         uint256 amount = 0;
-        for(uint n=0;n&lt;_value.length;n++){
+        for(uint n=0;n<_value.length;n++){
             amount += _value[n];
         }
         
-        require(amount &gt; 0 &amp;&amp; balanceOf(msg.sender) &gt;= amount);
+        require(amount > 0 && balanceOf(msg.sender) >= amount);
         
-        for (uint i=0; i&lt;_to.length; i++) {
+        for (uint i=0; i<_to.length; i++) {
             transfer(_to[i], _value[i]);
         }
         return true;

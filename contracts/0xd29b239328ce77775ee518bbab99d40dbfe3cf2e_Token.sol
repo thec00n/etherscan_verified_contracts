@@ -81,20 +81,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&amp;#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -121,7 +121,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -130,7 +130,7 @@ contract BasicToken is ERC20Basic {
   */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -171,7 +171,7 @@ contract ERC20 is ERC20Basic {
  
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -191,8 +191,8 @@ contract StandardToken is ERC20, BasicToken {
    */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&amp;#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -241,7 +241,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -287,15 +287,15 @@ contract AdditionalToken is MintableToken {
     uint256 public lockedYears;
     uint256 public initTime;
 
-    mapping(uint256 =&gt; uint256) public records;
-    mapping(uint256 =&gt; uint256) public maxAmountPer;
+    mapping(uint256 => uint256) public records;
+    mapping(uint256 => uint256) public maxAmountPer;
     
     event MintRequest(uint256 _curTimes, uint256 _maxAmountPer, uint256 _curAmount);
 
 
     constructor(uint256 _maxProportion, uint256 _lockedYears) public {
-        require(_maxProportion &gt;= 0);
-        require(_lockedYears &gt;= 0);
+        require(_maxProportion >= 0);
+        require(_lockedYears >= 0);
         
         maxProportion = _maxProportion;
         lockedYears = _lockedYears;
@@ -312,14 +312,14 @@ contract AdditionalToken is MintableToken {
         uint256 curTime = block.timestamp;
         uint256 curTimes = curTime.sub(initTime)/(31536000);
         
-        require(curTimes &gt;= lockedYears);
+        require(curTimes >= lockedYears);
         
         uint256 _maxAmountPer;
         if(maxAmountPer[curTimes] == 0) {
             maxAmountPer[curTimes] = totalSupply.mul(maxProportion).div(100);
         }
         _maxAmountPer = maxAmountPer[curTimes];
-        require(records[curTimes].add(_amount) &lt;= _maxAmountPer);
+        require(records[curTimes].add(_amount) <= _maxAmountPer);
         records[curTimes] = records[curTimes].add(_amount);
         emit MintRequest(curTimes, _maxAmountPer, records[curTimes]);        
         return(super.mint(_to, _amount));
@@ -413,14 +413,14 @@ contract Token is AdditionalToken, PausableToken {
     string public symbol;
     uint256 public decimals;
 
-    mapping(address =&gt; bool) public singleLockFinished;
+    mapping(address => bool) public singleLockFinished;
     
     struct lockToken {
         uint256 amount;
         uint256 validity;
     }
 
-    mapping(address =&gt; lockToken[]) public locked;
+    mapping(address => lockToken[]) public locked;
     
     
     event Lock(
@@ -461,11 +461,11 @@ contract Token is AdditionalToken, PausableToken {
         uint256 len = _time.length;
         uint256 totalAmount = 0;
         uint256 i = 0;
-        for(i = 0; i&lt;len; i++) {
+        for(i = 0; i<len; i++) {
             totalAmount = totalAmount.add(_amountWithoutDecimal[i]*(10 ** decimals));
         }
-        require(balances[_address] &gt;= totalAmount);
-        for(i = 0; i &lt; len; i++) {
+        require(balances[_address] >= totalAmount);
+        for(i = 0; i < len; i++) {
             locked[_address].push(lockToken(_amountWithoutDecimal[i]*(10 ** decimals), block.timestamp.add(_time[i])));
             emit Lock(_address, _amountWithoutDecimal[i]*(10 ** decimals), block.timestamp.add(_time[i]));
         }
@@ -488,9 +488,9 @@ contract Token is AdditionalToken, PausableToken {
         view
         returns (uint256 amount)
     {
-        for(uint256 i = 0;i &lt; locked[_of].length;i++)
+        for(uint256 i = 0;i < locked[_of].length;i++)
         {
-            if(locked[_of][i].validity&gt;_time)
+            if(locked[_of][i].validity>_time)
                 amount += locked[_of][i].amount;
         }
     }
@@ -510,12 +510,12 @@ contract Token is AdditionalToken, PausableToken {
     }
     
     function transfer(address _to, uint256 _value) public  returns (bool) {
-        require(_value &lt;= transferableBalanceOf(msg.sender));
+        require(_value <= transferableBalanceOf(msg.sender));
         return super.transfer(_to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public  returns (bool) {
-        require(_value &lt;= transferableBalanceOf(_from));
+        require(_value <= transferableBalanceOf(_from));
         return super.transferFrom(_from, _to, _value);
     }
     

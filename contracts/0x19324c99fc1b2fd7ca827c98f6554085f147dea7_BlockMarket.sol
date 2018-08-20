@@ -55,9 +55,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,7 +98,7 @@ contract BlockMarket is Ownable {
 
   Stock[] public stocks;
   Share[] public shares;
-  mapping (uint256 =&gt; uint256[]) public stockShares;
+  mapping (uint256 => uint256[]) public stockShares;
 
   event CompanyListed(string company, uint256 basePrice);
   event DividendPaid(address shareholder, uint256 amount);
@@ -112,14 +112,14 @@ contract BlockMarket is Ownable {
   );
 
   /**
-   * @dev A fallback function to catch, uh... let&#39;s call them gifts.
+   * @dev A fallback function to catch, uh... let's call them gifts.
    */
   function () payable public { }
 
   /**
    * @dev Adds a new stock to the game
-   * @param _name the name of the stock (e.g. &quot;Kodak&quot;)
-   * @param _initialPrice the original cost of the stock&#39;s shares (in Wei)
+   * @param _name the name of the stock (e.g. "Kodak")
+   * @param _initialPrice the original cost of the stock's shares (in Wei)
    * @param _priceIncrease the amount by which the shares should increase upon sale (i.e. 120 = 20% increase)
    * @param _dividendAmount the amount of each purchase that should be split among dividend recipients
    * @param _numShares the number of shares of this stock available for purchase
@@ -143,7 +143,7 @@ contract BlockMarket is Ownable {
       )
     );
 
-    for(uint8 i = 0; i &lt; _numShares; i++) {
+    for(uint8 i = 0; i < _numShares; i++) {
       stockShares[stockId].push(shares.length);
       shares.push(Share(owner, _initialPrice));
     }
@@ -157,14 +157,14 @@ contract BlockMarket is Ownable {
    * @param _shareId the ID of the specific share to purchase
    */
   function purchase(uint256 _stockId, uint256 _shareId) public payable {
-    require(_stockId &lt; stocks.length &amp;&amp; _shareId &lt; shares.length);
+    require(_stockId < stocks.length && _shareId < shares.length);
 
     // look up the assets
     Stock storage stock = stocks[_stockId];
     uint256[] storage sharesForStock = stockShares[_stockId];
     Share storage share = shares[sharesForStock[_shareId]];
 
-    // look up the share&#39;s current holder
+    // look up the share's current holder
     address previousHolder = share.holder;
 
     // determine the current price for the share
@@ -172,21 +172,21 @@ contract BlockMarket is Ownable {
       share.purchasePrice,
       stock.priceIncrease
     );
-    require(msg.value &gt;= currentPrice);
+    require(msg.value >= currentPrice);
 
     // return any excess payment
-    if (msg.value &gt; currentPrice) {
+    if (msg.value > currentPrice) {
       msg.sender.transfer(SafeMath.sub(msg.value, currentPrice));
     }
 
-    // calculate dividend holders&#39; shares
+    // calculate dividend holders' shares
     uint256 dividendPerRecipient = getDividendPayout(
       currentPrice,
       stock.dividendAmount,
       sharesForStock.length - 1
     );
 
-    // calculate the previous owner&#39;s share
+    // calculate the previous owner's share
     uint256 previousHolderShare = SafeMath.sub(
       currentPrice,
       SafeMath.mul(dividendPerRecipient, sharesForStock.length - 1)
@@ -200,7 +200,7 @@ contract BlockMarket is Ownable {
     previousHolder.transfer(SafeMath.sub(previousHolderShare, fee));
 
     // payout the dividends
-    for(uint8 i = 0; i &lt; sharesForStock.length; i++) {
+    for(uint8 i = 0; i < sharesForStock.length; i++) {
       if (i != _shareId) {
         shares[sharesForStock[i]].holder.transfer(dividendPerRecipient);
         stock.dividendsPaid = SafeMath.add(stock.dividendsPaid, dividendPerRecipient);
@@ -235,7 +235,7 @@ contract BlockMarket is Ownable {
     uint256 _stockId,
     uint256 _shareId
   ) public view returns (uint256 currentPrice) {
-    require(_stockId &lt; stocks.length &amp;&amp; _shareId &lt; shares.length);
+    require(_stockId < stocks.length && _shareId < shares.length);
     currentPrice = SafeMath.div(
       SafeMath.mul(stocks[_stockId].priceIncrease, shares[_shareId].purchasePrice),
       100
@@ -243,7 +243,7 @@ contract BlockMarket is Ownable {
   }
 
   /**
-   * @dev Calculates the current token owner&#39;s payout amount if the token sells
+   * @dev Calculates the current token owner's payout amount if the token sells
    * @param _currentPrice the current total sale price of the asset
    * @param _priceIncrease the percentage of price increase per sale
    */
@@ -296,7 +296,7 @@ contract BlockMarket is Ownable {
    */
   function withdraw(uint256 _amount, address _destination) public onlyOwner {
     require(_destination != address(0));
-    require(_amount &lt;= this.balance);
+    require(_amount <= this.balance);
     _destination.transfer(_amount == 0 ? this.balance : _amount);
   }
 }

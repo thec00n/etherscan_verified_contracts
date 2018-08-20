@@ -34,8 +34,8 @@ contract PlaceToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoPlaces&quot;;
-  string public constant SYMBOL = &quot;PlaceToken&quot;;
+  string public constant NAME = "CryptoPlaces";
+  string public constant SYMBOL = "PlaceToken";
 
   uint256 private startingPrice = 0.01 ether;
   uint256 private firstStepLimit =  0.8 ether;
@@ -45,19 +45,19 @@ contract PlaceToken is ERC721 {
 
   /// @dev A mapping from place IDs to the address that owns them. All places have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public placeIndexToOwner;
+  mapping (uint256 => address) public placeIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PlaceIDs to an address that has been approved to call
   ///  transferFrom(). Each Place can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public placeIndexToApproved;
+  mapping (uint256 => address) public placeIndexToApproved;
 
   // @dev A mapping from PlaceIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private placeIndexToPrice;
+  mapping (uint256 => uint256) private placeIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -173,16 +173,16 @@ contract PlaceToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 90), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       placeIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 90);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       placeIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 130), 90);
     } else {
@@ -295,12 +295,12 @@ contract PlaceToken is ERC721 {
     Place memory _place = Place({
       name: _name,
       country: _country,
-      owner_name: &quot;None&quot;
+      owner_name: "None"
     });
     uint256 newPlaceId = places.push(_place) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPlaceId == uint256(uint32(newPlaceId)));
 
     Birth(newPlaceId, _name, _owner);
@@ -328,12 +328,12 @@ contract PlaceToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Place to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of places is capped to 2^32 we can&#39;t overflow this
+    // Since the number of places is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     placeIndexToOwner[_tokenId] = _to;
 
-    // When creating new places _from is 0x0, but we can&#39;t account that address.
+    // When creating new places _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -362,9 +362,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -372,7 +372,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -381,7 +381,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

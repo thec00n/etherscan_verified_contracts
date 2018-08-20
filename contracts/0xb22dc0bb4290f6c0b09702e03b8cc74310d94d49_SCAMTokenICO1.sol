@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -67,9 +67,9 @@ contract SCAMTokenICO1 {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         tokenReward.transferFrom(owner, msg.sender, amount);
         FundTransfer(msg.sender, amount, true);

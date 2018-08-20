@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -90,13 +90,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -149,7 +149,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -168,7 +168,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -189,14 +189,14 @@ contract StandardToken is BasicToken, ERC20 {
 
   Copyright 2017 Bitnan.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -206,8 +206,8 @@ contract StandardToken is BasicToken, ERC20 {
 
 contract BitnanRewardToken is StandardToken {
     /* constants */
-    string public constant NAME = &quot;BitnanRewardToken&quot;;
-    string public constant SYMBOL = &quot;BRT&quot;;
+    string public constant NAME = "BitnanRewardToken";
+    string public constant SYMBOL = "BRT";
     uint public constant DECIMALS = 18;
     uint256 public constant ETH_MIN_GOAL = 3000 ether;
     uint256 public constant ETH_MAX_GOAL = 6000 ether;
@@ -256,16 +256,16 @@ contract BitnanRewardToken is StandardToken {
         _;
       }
       else {
-        CommonError(&#39;Sale has not started!&#39;);
+        CommonError('Sale has not started!');
         revert();
       }
     }
     modifier inSale {
-      if(saleInProgress() &amp;&amp; !saleOver()) {
+      if(saleInProgress() && !saleOver()) {
         _;
       }
       else {
-        CommonError(&#39;Token is not in sale!&#39;);
+        CommonError('Token is not in sale!');
         revert();
       }
     }
@@ -274,7 +274,7 @@ contract BitnanRewardToken is StandardToken {
         _;
       }
       else {
-        CommonError(&#39;Sale is not over!&#39;);
+        CommonError('Sale is not over!');
         revert();
       }
     }
@@ -283,7 +283,7 @@ contract BitnanRewardToken is StandardToken {
       issueToken(msg.sender);
     }
     function issueToken(address recipient) payable inSale {
-      assert(msg.value &gt;= 0.01 ether);
+      assert(msg.value >= 0.01 ether);
       uint tokenAmount = generateTokenAmount(msg.value);
       totalEthAmount = totalEthAmount.add(msg.value);
       totalSupply = totalSupply.add(tokenAmount);
@@ -296,10 +296,10 @@ contract BitnanRewardToken is StandardToken {
     }
     function issueLeftToken() internal {
       if(isLeftTokenIssued) {
-        CommonError(&quot;Left tokens has been issued!&quot;);
+        CommonError("Left tokens has been issued!");
       }
       else {
-        require(totalEthAmount &gt;= ETH_MIN_GOAL);
+        require(totalEthAmount >= ETH_MIN_GOAL);
         uint leftTokenAmount = totalSupply.mul(UNSOLD_SOLD_RATIO).div(100);
         totalSupply = totalSupply.add(leftTokenAmount);
         balances[owner] = balances[owner].add(leftTokenAmount);
@@ -315,7 +315,7 @@ contract BitnanRewardToken is StandardToken {
       TokenSaleStart();
     }
     function close() public onlyOwner afterSale {
-      if(totalEthAmount &lt; ETH_MIN_GOAL) {
+      if(totalEthAmount < ETH_MIN_GOAL) {
         TokenSaleFail();
       }
       else {
@@ -325,7 +325,7 @@ contract BitnanRewardToken is StandardToken {
     }
     function generateTokenAmount(uint ethAmount) internal constant returns (uint tokenAmount) {
       uint phase = (block.number - startBlock).div(BLOCKS_PER_PHASE);
-      if(phase &gt;= bonusPercents.length) {
+      if(phase >= bonusPercents.length) {
         phase = bonusPercents.length - 1;
       }
       uint originTokenAmount = ethAmount.mul(ORIGIN_ETH_BRT_RATIO);
@@ -334,15 +334,15 @@ contract BitnanRewardToken is StandardToken {
     }
     /* constant functions */
     function saleInProgress() constant returns (bool) {
-      return (startBlock &gt; 0 &amp;&amp; block.number &gt;= startBlock);
+      return (startBlock > 0 && block.number >= startBlock);
     }
     function saleOver() constant returns (bool) {
-      return startBlock &gt; 0 &amp;&amp; (saleOverInTime() || saleOverReachMaxETH());
+      return startBlock > 0 && (saleOverInTime() || saleOverReachMaxETH());
     }
     function saleOverInTime() constant returns (bool) {
-      return block.number &gt;= startBlock + BLOCKS_PER_PHASE * PHASE_NUMBER;
+      return block.number >= startBlock + BLOCKS_PER_PHASE * PHASE_NUMBER;
     }
     function saleOverReachMaxETH() constant returns (bool) {
-      return totalEthAmount &gt;= ETH_MAX_GOAL;
+      return totalEthAmount >= ETH_MAX_GOAL;
     }
 }

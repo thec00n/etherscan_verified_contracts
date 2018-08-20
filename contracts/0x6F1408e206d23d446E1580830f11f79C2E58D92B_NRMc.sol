@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
  
 contract NRMc {
-    string public symbol = &quot;NRMc&quot;;
-    string public name = &quot;NRMc Closed ICO&quot;;
+    string public symbol = "NRMc";
+    string public name = "NRMc Closed ICO";
     uint8 public constant decimals = 18;
     uint256 _totalSupply = 20000000000000000000000000;
     uint256 perReserve   =  2000000000000000000000000;
@@ -37,14 +37,14 @@ contract NRMc {
     uint public rate = 45000;
     uint public onefive = 0;
     uint _durationInMinutes = 0;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
  
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
  
     function NRMc(address adr) {
         if (startDone == false) {
@@ -54,7 +54,7 @@ contract NRMc {
     
     function StartICO(uint256 durationInMinutes) {
         if (msg.sender == owner 
-        &amp;&amp; startDone == false)
+        && startDone == false)
         {
             balances[owner] = _totalSupply;
             _durationInMinutes = durationInMinutes;
@@ -65,12 +65,12 @@ contract NRMc {
     
     function SendPreReserved1() {
             if (msg.sender == owner 
-            &amp;&amp; prereserved1Done == false
-            &amp;&amp; balances[owner] &gt;= perReserve
-            &amp;&amp; balances[reserve1] + perReserve &gt; balances[reserve1]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) 
+            && prereserved1Done == false
+            && balances[owner] >= perReserve
+            && balances[reserve1] + perReserve > balances[reserve1]
+            && now <= deadline
+            && !finishDone 
+            && startDone) 
             {
                 balances[owner] -= perReserve;
                 balances[reserve1] += perReserve;
@@ -82,12 +82,12 @@ contract NRMc {
     
     function SendPreReserved2() {
             if (msg.sender == owner 
-            &amp;&amp; prereserved2Done == false
-            &amp;&amp; balances[owner] &gt;= perReserve
-            &amp;&amp; balances[reserve2] + perReserve &gt; balances[reserve2]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) 
+            && prereserved2Done == false
+            && balances[owner] >= perReserve
+            && balances[reserve2] + perReserve > balances[reserve2]
+            && now <= deadline
+            && !finishDone 
+            && startDone) 
             {
                 balances[owner] -= perReserve;
                 balances[reserve2] += perReserve;
@@ -99,12 +99,12 @@ contract NRMc {
 
     function SendPreReserved3() {
             if (msg.sender == owner 
-            &amp;&amp; prereserved3Done == false
-            &amp;&amp; balances[owner] &gt;= perReserve
-            &amp;&amp; balances[reserve3] + perReserve &gt; balances[reserve3]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) 
+            && prereserved3Done == false
+            && balances[owner] >= perReserve
+            && balances[reserve3] + perReserve > balances[reserve3]
+            && now <= deadline
+            && !finishDone 
+            && startDone) 
             {
                 balances[owner] -= perReserve;
                 balances[reserve3] += perReserve;
@@ -116,12 +116,12 @@ contract NRMc {
     
     function SendPreReserved4() {
             if (msg.sender == owner 
-            &amp;&amp; prereserved4Done == false
-            &amp;&amp; balances[owner] &gt;= perReserve
-            &amp;&amp; balances[reserve4] + perReserve &gt; balances[reserve4]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) 
+            && prereserved4Done == false
+            && balances[owner] >= perReserve
+            && balances[reserve4] + perReserve > balances[reserve4]
+            && now <= deadline
+            && !finishDone 
+            && startDone) 
             {
                 balances[owner] -= perReserve;
                 balances[reserve4] += perReserve;
@@ -133,12 +133,12 @@ contract NRMc {
     
     function SendPreReserved5() {
             if (msg.sender == owner 
-            &amp;&amp; prereserved5Done == false
-            &amp;&amp; balances[owner] &gt;= perReserve
-            &amp;&amp; balances[reserve5] + perReserve &gt; balances[reserve5]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) 
+            && prereserved5Done == false
+            && balances[owner] >= perReserve
+            && balances[reserve5] + perReserve > balances[reserve5]
+            && now <= deadline
+            && !finishDone 
+            && startDone) 
             {
                 balances[owner] -= perReserve;
                 balances[reserve5] += perReserve;
@@ -157,9 +157,9 @@ contract NRMc {
     }
  
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount 
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -174,10 +174,10 @@ contract NRMc {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -191,12 +191,12 @@ contract NRMc {
     function () payable {
         uint _amount = msg.value * rate;
         uint amount = msg.value;
-        if (balances[owner] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[msg.sender] + _amount &gt; balances[msg.sender]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !finishDone 
-            &amp;&amp; startDone) {
+        if (balances[owner] >= _amount
+            && _amount > 0
+            && balances[msg.sender] + _amount > balances[msg.sender]
+            && now <= deadline
+            && !finishDone 
+            && startDone) {
         backers += 1;
         balances[msg.sender] += _amount;
         balances[owner] -= _amount;
@@ -219,7 +219,7 @@ contract NRMc {
         return allowed[_owner][_spender];
     }
     
-    modifier afterDeadline() { if (now &gt; deadline || balances[owner] == 0) _; }
+    modifier afterDeadline() { if (now > deadline || balances[owner] == 0) _; }
 
     function safeWithdrawal() afterDeadline {
         
@@ -228,31 +228,31 @@ contract NRMc {
         onefiveDone = true;
     }
 
-    if (out1 == msg.sender &amp;&amp; !out1Done) {
+    if (out1 == msg.sender && !out1Done) {
         if (out1.send(onefive)) {
            out1Done = true;
         } 
     }
         
-    if (out2 == msg.sender &amp;&amp; !out2Done) {
+    if (out2 == msg.sender && !out2Done) {
         if (out2.send(onefive)) {
            out2Done = true;
         } 
     }  
         
-    if (out3 == msg.sender &amp;&amp; !out3Done) {
+    if (out3 == msg.sender && !out3Done) {
         if (out3.send(onefive)) {
            out3Done = true;
         } 
     }
     
-    if (out4 == msg.sender &amp;&amp; !out4Done) {
+    if (out4 == msg.sender && !out4Done) {
         if (out4.send(onefive)) {
            out4Done = true;
         } 
     }
     
-    if (out5 == msg.sender &amp;&amp; !out5Done) {
+    if (out5 == msg.sender && !out5Done) {
         if (out5.send(onefive)) {
            out5Done = true;
         } 

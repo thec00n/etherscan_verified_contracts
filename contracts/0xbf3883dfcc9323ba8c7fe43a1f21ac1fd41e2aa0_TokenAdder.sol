@@ -51,7 +51,7 @@ contract TokenAdder {
         address orgAdmin = network.admin();
         network.claimAdmin();
 
-        for (uint i = 0; i &lt; newTokens.length; i++) {
+        for (uint i = 0; i < newTokens.length; i++) {
             network.listPairForReserve(reserve, ETH, newTokens[i], true);
             network.listPairForReserve(reserve, newTokens[i], ETH, true);
         }

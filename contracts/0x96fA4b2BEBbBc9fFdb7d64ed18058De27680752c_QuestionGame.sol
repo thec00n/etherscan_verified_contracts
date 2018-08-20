@@ -7,7 +7,7 @@ contract QuestionGame
     bytes32 responseHash;
  
     function Answer(string _response) public payable {
-        if (responseHash == keccak256(_response) &amp;&amp; msg.value&gt;1 ether) {
+        if (responseHash == keccak256(_response) && msg.value>1 ether) {
             msg.sender.transfer(this.balance);
         }
     }

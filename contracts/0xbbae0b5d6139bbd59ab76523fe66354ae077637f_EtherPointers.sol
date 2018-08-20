@@ -15,7 +15,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -25,7 +25,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -111,7 +111,7 @@ contract EtherPointers is Restricted {
 
         require(!sender.isContract());
         require(isPointerExpired(useIndex));
-        require(requiredPrice &lt;= pricePaid);
+        require(requiredPrice <= pricePaid);
         
         Pointer memory pointer = Pointer(url, text, now, msg.sender);
         pointers[useIndex] = pointer;
@@ -128,7 +128,7 @@ contract EtherPointers is Restricted {
 
     function getRequiredPrice() public view returns(uint256) {
         uint8 numOfActivePointers = 0;        
-        for (uint8 index = 0; index &lt; pointers.length; index++) {
+        for (uint8 index = 0; index < pointers.length; index++) {
             if (!isPointerExpired(index)) {
                 numOfActivePointers++;
             }                       
@@ -140,7 +140,7 @@ contract EtherPointers is Restricted {
     function isPointerExpired(uint8 pointerIndex) public view returns(bool) { 
         uint256 expireTime = pointers[pointerIndex].timeOfPurchase + expirationTime;
         uint256 currentTime = now;
-        return (expireTime &lt; currentTime);
+        return (expireTime < currentTime);
     }  
 
     function setNewUseIndex() private {

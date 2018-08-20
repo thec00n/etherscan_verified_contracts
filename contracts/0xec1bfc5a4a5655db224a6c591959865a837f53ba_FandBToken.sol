@@ -3,8 +3,8 @@ contract Token {
     string internal _name;
     uint8 internal _decimals;
     uint internal _totalSupply = 1000;
-    mapping (address =&gt; uint) internal _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+    mapping (address => uint) internal _balanceOf;
+    mapping (address => mapping (address => uint)) internal _allowances;
     
     function Token(string symbol, string name, uint8 decimals, uint totalSupply) public {
         _symbol = symbol;
@@ -50,7 +50,7 @@ contract ERC223ReceivingContract {
     function tokenFallback(address _from, uint _value, bytes _data) public;
 }
 
-contract FandBToken is Token(&quot;FAB&quot;, &quot;F&amp;BCoin&quot;, 0, 10000), ERC20, ERC223 {
+contract FandBToken is Token("FAB", "F&BCoin", 0, 10000), ERC20, ERC223 {
 
     function FandBToken() public {
         _balanceOf[msg.sender] = _totalSupply;
@@ -65,8 +65,8 @@ contract FandBToken is Token(&quot;FAB&quot;, &quot;F&amp;BCoin&quot;, 0, 10000)
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; 
-            _value &lt;= _balanceOf[msg.sender] &amp;&amp;
+        if (_value > 0 && 
+            _value <= _balanceOf[msg.sender] &&
             !isContract(_to)) {
             _balanceOf[msg.sender] -= _value;
             _balanceOf[_to] += _value;
@@ -77,8 +77,8 @@ contract FandBToken is Token(&quot;FAB&quot;, &quot;F&amp;BCoin&quot;, 0, 10000)
     }
 
     function transfer(address _to, uint _value, bytes _data) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; 
-            _value &lt;= _balanceOf[msg.sender] &amp;&amp;
+        if (_value > 0 && 
+            _value <= _balanceOf[msg.sender] &&
             isContract(_to)) {
             _balanceOf[msg.sender] -= _value;
             _balanceOf[_to] += _value;
@@ -95,14 +95,14 @@ contract FandBToken is Token(&quot;FAB&quot;, &quot;F&amp;BCoin&quot;, 0, 10000)
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            _balanceOf[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            _allowances[_from][msg.sender] >= _value &&
+            _balanceOf[_from] >= _value) {
             _balanceOf[_from] -= _value;
             _balanceOf[_to] += _value;
             _allowances[_from][msg.sender] -= _value;

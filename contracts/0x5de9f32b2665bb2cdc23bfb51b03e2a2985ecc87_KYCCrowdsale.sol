@@ -22,8 +22,8 @@ library BytesDeserializer {
   function slice32(bytes b, uint offset) public pure returns (bytes32) {
     bytes32 out;
 
-    for (uint i = 0; i &lt; 32; i++) {
-      out |= bytes32(b[offset + i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 32; i++) {
+      out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
     }
     return out;
   }
@@ -34,8 +34,8 @@ library BytesDeserializer {
   function sliceAddress(bytes b, uint offset) public pure returns (address) {
     bytes32 out;
 
-    for (uint i = 0; i &lt; 20; i++) {
-      out |= bytes32(b[offset + i] &amp; 0xFF) &gt;&gt; ((i+12) * 8);
+    for (uint i = 0; i < 20; i++) {
+      out |= bytes32(b[offset + i] & 0xFF) >> ((i+12) * 8);
     }
     return address(uint(out));
   }
@@ -46,8 +46,8 @@ library BytesDeserializer {
   function slice16(bytes b, uint offset) public pure returns (bytes16) {
     bytes16 out;
 
-    for (uint i = 0; i &lt; 16; i++) {
-      out |= bytes16(b[offset + i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 16; i++) {
+      out |= bytes16(b[offset + i] & 0xFF) >> (i * 8);
     }
     return out;
   }
@@ -58,8 +58,8 @@ library BytesDeserializer {
   function slice4(bytes b, uint offset) public pure returns (bytes4) {
     bytes4 out;
 
-    for (uint i = 0; i &lt; 4; i++) {
-      out |= bytes4(b[offset + i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 4; i++) {
+      out |= bytes4(b[offset + i] & 0xFF) >> (i * 8);
     }
     return out;
   }
@@ -70,8 +70,8 @@ library BytesDeserializer {
   function slice2(bytes b, uint offset) public pure returns (bytes2) {
     bytes2 out;
 
-    for (uint i = 0; i &lt; 2; i++) {
-      out |= bytes2(b[offset + i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 2; i++) {
+      out |= bytes2(b[offset + i] & 0xFF) >> (i * 8);
     }
     return out;
   }
@@ -117,7 +117,7 @@ contract KYCPayloadDeserializer {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -184,20 +184,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -211,7 +211,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -220,7 +220,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -264,7 +264,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -275,8 +275,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -290,7 +290,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -325,7 +325,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -363,7 +363,7 @@ contract ReleasableToken is StandardToken, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -385,7 +385,7 @@ contract ReleasableToken is StandardToken, Ownable {
    */
   function setReleaseAgent() onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = owner;
   }
 
@@ -545,8 +545,8 @@ contract AMLToken is MintableToken {
 
 
 contract PickToken is AMLToken {
-  string public name = &quot;AX1 Mining token&quot;;
-  string public symbol = &quot;AX1&quot;;
+  string public name = "AX1 Mining token";
+  string public symbol = "AX1";
   uint8 public decimals = 5;
 }
 
@@ -610,10 +610,10 @@ contract Crowdsale is Stoppable {
   uint256 public tokensSent;
 
   // These store balances of participants by ID, address and in wei, pre-sale wei and tokens
-  mapping(uint128 =&gt; uint256) public balancePerID;
-  mapping(address =&gt; uint256) public balanceOf;
-  mapping(address =&gt; uint256) public presaleBalanceOf;
-  mapping(address =&gt; uint256) public tokenBalanceOf;
+  mapping(uint128 => uint256) public balancePerID;
+  mapping(address => uint256) public balanceOf;
+  mapping(address => uint256) public presaleBalanceOf;
+  mapping(address => uint256) public tokenBalanceOf;
 
   /**
    * event for token purchase logging
@@ -630,9 +630,9 @@ contract Crowdsale is Stoppable {
    * It transfers ownership of this token to the chosen beneficiary 
   */
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, PickToken _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = _token;
@@ -701,14 +701,14 @@ contract Crowdsale is Stoppable {
   // Receives tokens to send as variable for custom stage implementation
   // Has an unused variable _tokens which is necessary for capped sale implementation
   function validPurchase(uint256 _tokens) internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 }
 
@@ -734,7 +734,7 @@ contract CappedCrowdsale is Crowdsale {
     Crowdsale(_startTime, _endTime, _rate, _wallet, _token)
       public {
 
-    require(_hardCap &gt; 0 &amp;&amp; _softCap &gt; 0 &amp;&amp; _softCap &lt; _hardCap);
+    require(_hardCap > 0 && _softCap > 0 && _softCap < _hardCap);
 
     softCap = _softCap;
     hardCap = _hardCap;
@@ -746,14 +746,14 @@ contract CappedCrowdsale is Crowdsale {
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase(uint256 _tokens) internal view returns (bool) {
-    bool withinCap = tokensSent.add(_tokens) &lt;= hardCap;
-    return super.validPurchase(_tokens) &amp;&amp; withinCap;
+    bool withinCap = tokensSent.add(_tokens) <= hardCap;
+    return super.validPurchase(_tokens) && withinCap;
   }
   
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = tokensSent &gt;= hardCap;
+    bool capReached = tokensSent >= hardCap;
     return super.hasEnded() || capReached;
   }
 
@@ -764,7 +764,7 @@ contract CappedCrowdsale is Crowdsale {
     require(hasEnded());
     // This is used for extra functionality if necessary, i.e. KYC checks
     require(canWithdraw);
-    require(tokensSent &gt; softCap);
+    require(tokensSent > softCap);
 
     uint256 withdrawalAmount = weiRaised.sub(withdrawn);
 
@@ -780,7 +780,7 @@ contract CappedCrowdsale is Crowdsale {
 // File: contracts/SaleStagesLib.sol
 
 /*
- * SaleStagesLib is a part of Pickeringware ltd&#39;s smart contracts
+ * SaleStagesLib is a part of Pickeringware ltd's smart contracts
  * Its intended use is to abstract the implementation of stages away from a contract to ease deployment and codel length
  * It uses a stage struct to store specific details about each stage
  * It has several functions which are used to get/change this data
@@ -801,7 +801,7 @@ library SaleStagesLib {
 	// The struct that is stored by the contract
 	// Contains counter to iterate through map of stages
 	struct StageStorage {
- 		mapping(uint8 =&gt; Stage) stages;
+ 		mapping(uint8 => Stage) stages;
  		uint8 stageCount;
 	}
 
@@ -821,7 +821,7 @@ library SaleStagesLib {
 	) internal {
         // Ensures stages cannot overlap each other
         uint8 prevStage = _stage - 1;
-        require(self.stages[prevStage].deadline &lt; _deadline);
+        require(self.stages[prevStage].deadline < _deadline);
 		
         self.stages[_stage].deadline = _deadline;
 		self.stages[_stage].tokenPrice = _price;
@@ -840,8 +840,8 @@ library SaleStagesLib {
     function getStage(StageStorage storage self) public view returns (uint8 stage) {
         uint8 thisStage = self.stageCount + 1;
 
-        for (uint8 i = 0; i &lt; thisStage; i++) {
-            if(now &lt;= self.stages[i].deadline){
+        for (uint8 i = 0; i < thisStage; i++) {
+            if(now <= self.stages[i].deadline){
                 return i;
             }
         }
@@ -850,9 +850,9 @@ library SaleStagesLib {
     }
 
     // Both of the below are checked on the overridden validPurchase() function
-    // Check to see if the tokens they&#39;re about to purchase is above the minimum for this stage
+    // Check to see if the tokens they're about to purchase is above the minimum for this stage
     function checkMinimum(StageStorage storage self, uint8 _stage, uint256 _tokens) internal view returns (bool isValid) {
-    	if(_tokens &lt; self.stages[_stage].minimumBuy){
+    	if(_tokens < self.stages[_stage].minimumBuy){
     		return false;
     	} else {
     		return true;
@@ -860,17 +860,17 @@ library SaleStagesLib {
     }
 
     // Both of the below are checked on the overridden validPurchase() function
-    // Check to see if the tokens they&#39;re about to purchase is above the minimum for this stage
+    // Check to see if the tokens they're about to purchase is above the minimum for this stage
     function changeDeadline(StageStorage storage self, uint8 _stage, uint256 _deadline) internal {
-        require(self.stages[_stage].deadline &gt; now);
+        require(self.stages[_stage].deadline > now);
         self.stages[_stage].deadline = _deadline;
     }
 
-    // Checks to see if the tokens they&#39;re about to purchase is below the cap for this stage
+    // Checks to see if the tokens they're about to purchase is below the cap for this stage
     function checkCap(StageStorage storage self, uint8 _stage, uint256 _tokens) internal view returns (bool isValid) {
     	uint256 totalTokens = self.stages[_stage].tokensSold.add(_tokens);
 
-    	if(totalTokens &gt; self.stages[_stage].cap){
+    	if(totalTokens > self.stages[_stage].cap){
     		return false;
     	} else {
     		return true;
@@ -886,9 +886,9 @@ library SaleStagesLib {
     }
     
 	// Both of the below are checked on the overridden validPurchase() function
-    // Check to see if the tokens they&#39;re about to purchase is above the minimum for this stage
+    // Check to see if the tokens they're about to purchase is above the minimum for this stage
     function changePrice(StageStorage storage self, uint8 _stage, uint256 _tokenPrice) internal {
-        require(self.stages[_stage].deadline &gt; now);
+        require(self.stages[_stage].deadline > now);
 
         self.stages[_stage].tokenPrice = _tokenPrice;
     }
@@ -897,8 +897,8 @@ library SaleStagesLib {
 // File: contracts/PickCrowdsale.sol
 
 /*
- * PickCrowdsale and PickToken are a part of Pickeringware ltd&#39;s smart contracts
- * This uses the SaleStageLib which is also a part of Pickeringware ltd&#39;s smart contracts
+ * PickCrowdsale and PickToken are a part of Pickeringware ltd's smart contracts
+ * This uses the SaleStageLib which is also a part of Pickeringware ltd's smart contracts
  * We create the stages initially in the constructor such that stages cannot be added after the sale has started
  * We then pre-allocate necessary accounts prior to the sale starting
  * This contract implements the stages lib functionality with overriding functions for stages implementation
@@ -995,9 +995,9 @@ contract PickCrowdsale is CappedCrowdsale {
 
   // This is used for extending the sales start time (and the deadlines of each stage) accordingly
   function extendStart(uint256 _newStart) external onlyOwner {
-    require(_newStart &gt; startTime);
-    require(_newStart &gt; now); 
-    require(now &lt; startTime);
+    require(_newStart > startTime);
+    require(_newStart > now); 
+    require(now < startTime);
 
     uint256 difference = _newStart - startTime;
     uint256 oldStart = startTime;
@@ -1005,7 +1005,7 @@ contract PickCrowdsale is CappedCrowdsale {
     endTime = endTime + difference;
 
     // Loop through every stage in the sale
-    for (uint8 i = 0; i &lt; 4; i++) {
+    for (uint8 i = 0; i < 4; i++) {
       // Extend that stages deadline accordingly
       uint256 temp = stages.stages[i].deadline;
       temp = temp + difference;
@@ -1031,11 +1031,11 @@ contract PickCrowdsale is CappedCrowdsale {
     bool isValid = false;
     uint8 stage = getStage();
 
-    if(stages.checkMinimum(stage, _tokens) &amp;&amp; stages.checkCap(stage, _tokens)){
+    if(stages.checkMinimum(stage, _tokens) && stages.checkCap(stage, _tokens)){
       isValid = true;
     }
 
-    return super.validPurchase(_tokens) &amp;&amp; isValid;
+    return super.validPurchase(_tokens) && isValid;
   }
 
   // Override crowdsale finalizeSale function to log balance change plus tokens sold in that stage
@@ -1073,8 +1073,8 @@ contract PickCrowdsale is CappedCrowdsale {
   // If the sale is unsuccessful (has halted or reached deadline and didnt reach softcap)
   // Allows participants to withdraw their balance
   function unsuccessfulWithdrawal() external {
-      require(balanceOf[msg.sender] &gt; 0);
-      require(hasEnded() &amp;&amp; tokensSent &lt; softCap || hasHalted());
+      require(balanceOf[msg.sender] > 0);
+      require(hasEnded() && tokensSent < softCap || hasHalted());
       uint256 withdrawalAmount;
 
       withdrawalAmount = balanceOf[msg.sender];
@@ -1089,8 +1089,8 @@ contract PickCrowdsale is CappedCrowdsale {
   // Burn the percentage of tokens not sold from the founders and bounty wallets
   // Must do it this way as solidity doesnt deal with decimals
   function burnFoundersTokens(uint256 _bounty, uint256 _founders) internal {
-      require(_founders &lt; 177777700000);
-      require(_bounty &lt; 44444500000);
+      require(_founders < 177777700000);
+      require(_bounty < 44444500000);
 
       // Calculate the number of tokens to burn from founders and bounty wallet
       burntFounder = _founders;
@@ -1122,9 +1122,9 @@ contract KYCCrowdsale is KYCPayloadDeserializer, PickCrowdsale {
 
   /* Server holds the private key to this address to decide if the AML payload is valid or not. */
   address public signerAddress;
-  mapping(address =&gt; uint256) public refundable;
-  mapping(address =&gt; bool) public refunded;
-  mapping(address =&gt; bool) public blacklist;
+  mapping(address => uint256) public refundable;
+  mapping(address => bool) public refunded;
+  mapping(address => bool) public blacklist;
 
   /* A new server-side signer key was set to be effective */
   event SignerChanged(address signer);
@@ -1156,11 +1156,11 @@ contract KYCCrowdsale is KYCPayloadDeserializer, PickCrowdsale {
   * Reclaims the users tokens and burns them
   * Blacklists the user to prevent them from buying any more tokens
   *
-  * Stage 1, 2, 3, &amp; 4 are all collected from the database prior to calling this function
+  * Stage 1, 2, 3, & 4 are all collected from the database prior to calling this function
   * It allows us to calculate how many tokens need to be taken from each individual stage
   */
   function refundParticipant(address participant, uint256 _stage1, uint256 _stage2, uint256 _stage3, uint256 _stage4) external onlyOwner {
-    require(balanceOf[participant] &gt; 0);
+    require(balanceOf[participant] > 0);
 
     uint256 balance = balanceOf[participant];
     uint256 tokens = tokenBalanceOf[participant];
@@ -1192,8 +1192,8 @@ contract KYCCrowdsale is KYCPayloadDeserializer, PickCrowdsale {
   // therefore, the owner essentially gives permission for the contract to release tokens
   function releaseTokens(uint256 _bounty, uint256 _founders) onlyOwner external {
       // Unless the hardcap was reached, theremust be tokens to burn
-      require(_bounty &gt; 0 || tokensSent == hardCap);
-      require(_founders &gt; 0 || tokensSent == hardCap);
+      require(_bounty > 0 || tokensSent == hardCap);
+      require(_founders > 0 || tokensSent == hardCap);
 
       burnFoundersTokens(_bounty, _founders);
 
@@ -1214,12 +1214,12 @@ contract KYCCrowdsale is KYCPayloadDeserializer, PickCrowdsale {
     } else {
       onBlackList = false;
     }
-    return super.validPurchase(_tokens) &amp;&amp; !onBlackList;
+    return super.validPurchase(_tokens) && !onBlackList;
   }
 
   // This is necessary for the blacklisted user to pull his ether from the contract upon being refunded
   function collectRefund() external {
-    require(refundable[msg.sender] &gt; 0);
+    require(refundable[msg.sender] > 0);
     require(refunded[msg.sender] == false);
 
     uint256 theirwei = refundable[msg.sender];
@@ -1261,14 +1261,14 @@ contract KYCCrowdsale is KYCPayloadDeserializer, PickCrowdsale {
       uint256 max = maxETH;
       uint256 min = minETH;
 
-      require(weiAmount &lt; (max * 1 ether));
-      require(weiAmount &gt; (min * 1 ether));
+      require(weiAmount < (max * 1 ether));
+      require(weiAmount > (min * 1 ether));
 
       buyTokens(customerId);
   }  
 
   /// @dev This function can set the server side address
-  /// @param _signerAddress The address derived from server&#39;s private key
+  /// @param _signerAddress The address derived from server's private key
   function setSignerAddress(address _signerAddress) external onlyOwner {
     // EC rcover returns 0 in case of error therefore, this CANNOT be 0.
     require(_signerAddress != 0);

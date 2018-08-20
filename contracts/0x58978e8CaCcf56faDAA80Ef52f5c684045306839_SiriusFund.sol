@@ -2,7 +2,7 @@ contract Base
 {
     function add(uint256 x, uint256 y) internal returns (uint256) {
         uint256 z = x + y;
-        if((z &gt;= x) &amp;&amp; (z &gt;= y))
+        if((z >= x) && (z >= y))
         {
           return z;
         }
@@ -14,7 +14,7 @@ contract Base
     }
 
     function sub(uint256 x, uint256 y) internal returns (uint256) {
-        if(x &gt;= y)
+        if(x >= y)
         {
            uint256 z = x - y;
            return z;
@@ -56,7 +56,7 @@ contract SiriusFund is Base
     uint public TotalInvested;
     uint public Available;
     uint public InvestorsQty;
-    mapping (address =&gt; uint) public Investors;
+    mapping (address => uint) public Investors;
     address Owner_0l;
     address Owner_02;
     address Owner_03;
@@ -83,7 +83,7 @@ contract SiriusFund is Base
     
     function DepositFund() public
     {
-        if(msg.value&gt;= 1 ether)
+        if(msg.value>= 1 ether)
         {
             if(Investors[msg.sender]==0)InvestorsQty++;
             Investors[msg.sender]+=msg.value;
@@ -105,7 +105,7 @@ contract SiriusFund is Base
     
     modifier anyOwner()
     {
-        if ( msg.sender != Owner_01 &amp;&amp; msg.sender != Owner_02 &amp;&amp; msg.sender != Owner_03)throw;
+        if ( msg.sender != Owner_01 && msg.sender != Owner_02 && msg.sender != Owner_03)throw;
         _
     }
 }

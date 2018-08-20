@@ -5,7 +5,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -104,20 +104,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -126,7 +126,7 @@ library SafeMath {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="2b594e4648446b19">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="2b594e4648446b19">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -177,14 +177,14 @@ contract AxiePresale is HasNoEther, Pausable {
   uint256 constant public INITIAL_PRICE = INITIAL_PRICE_INCREMENT;
   uint256 constant public REF_CREDITS_PER_AXIE = 5;
 
-  mapping (uint8 =&gt; uint256) public currentPrices;
-  mapping (uint8 =&gt; uint256) public priceIncrements;
+  mapping (uint8 => uint256) public currentPrices;
+  mapping (uint8 => uint256) public priceIncrements;
 
-  mapping (uint8 =&gt; uint256) public totalAxiesAdopted;
-  mapping (address =&gt; mapping (uint8 =&gt; uint256)) public axiesAdopted;
+  mapping (uint8 => uint256) public totalAxiesAdopted;
+  mapping (address => mapping (uint8 => uint256)) public axiesAdopted;
 
-  mapping (address =&gt; uint256) public referralCredits;
-  mapping (address =&gt; uint256) public axiesRewarded;
+  mapping (address => uint256) public referralCredits;
+  mapping (address => uint256) public axiesRewarded;
   uint256 public totalAxiesRewarded;
 
   event AxiesAdopted(
@@ -238,11 +238,11 @@ contract AxiePresale is HasNoEther, Pausable {
     payable
     whenNotPaused
   {
-    require(now &lt;= PRESALE_END_TIMESTAMP);
+    require(now <= PRESALE_END_TIMESTAMP);
 
-    require(beastQuantity &lt;= 3);
-    require(aquaticQuantity &lt;= 3);
-    require(plantQuantity &lt;= 3);
+    require(beastQuantity <= 3);
+    require(aquaticQuantity <= 3);
+    require(plantQuantity <= 3);
 
     address adopter = msg.sender;
     address actualReferrer = 0x0;
@@ -255,7 +255,7 @@ contract AxiePresale is HasNoEther, Pausable {
     uint256 value = msg.value;
     uint256 price;
 
-    if (beastQuantity &gt; 0) {
+    if (beastQuantity > 0) {
       price = _adoptAxies(
         adopter,
         CLASS_BEAST,
@@ -263,11 +263,11 @@ contract AxiePresale is HasNoEther, Pausable {
         actualReferrer
       );
 
-      require(value &gt;= price);
+      require(value >= price);
       value -= price;
     }
 
-    if (aquaticQuantity &gt; 0) {
+    if (aquaticQuantity > 0) {
       price = _adoptAxies(
         adopter,
         CLASS_AQUATIC,
@@ -275,11 +275,11 @@ contract AxiePresale is HasNoEther, Pausable {
         actualReferrer
       );
 
-      require(value &gt;= price);
+      require(value >= price);
       value -= price;
     }
 
-    if (plantQuantity &gt; 0) {
+    if (plantQuantity > 0) {
       price = _adoptAxies(
         adopter,
         CLASS_PLANT,
@@ -287,13 +287,13 @@ contract AxiePresale is HasNoEther, Pausable {
         actualReferrer
       );
 
-      require(value &gt;= price);
+      require(value >= price);
       value -= price;
     }
 
     msg.sender.transfer(value);
 
-    // The current referral is ignored if the referrer&#39;s address is 0x0.
+    // The current referral is ignored if the referrer's address is 0x0.
     if (actualReferrer != 0x0) {
       uint256 numCredit = referralCredits[actualReferrer]
         .add(beastQuantity)
@@ -302,7 +302,7 @@ contract AxiePresale is HasNoEther, Pausable {
 
       uint256 numReward = numCredit / REF_CREDITS_PER_AXIE;
 
-      if (numReward &gt; 0) {
+      if (numReward > 0) {
         referralCredits[actualReferrer] = numCredit % REF_CREDITS_PER_AXIE;
         axiesRewarded[actualReferrer] = axiesRewarded[actualReferrer].add(numReward);
         totalAxiesRewarded = totalAxiesRewarded.add(numReward);
@@ -344,9 +344,9 @@ contract AxiePresale is HasNoEther, Pausable {
   {
     remainingQuantity = axiesRewarded[receiver] = axiesRewarded[receiver].sub(quantity);
 
-    if (quantity &gt; 0) {
+    if (quantity > 0) {
       // This requires that rewarded Axies are always included in the total
-      // to make sure overflow won&#39;t happen.
+      // to make sure overflow won't happen.
       totalAxiesRewarded -= quantity;
 
       RewardedAxiesRedeemed(receiver, quantity);
@@ -371,12 +371,12 @@ contract AxiePresale is HasNoEther, Pausable {
 
     uint256 nextPrice;
 
-    for (uint256 i = 0; i &lt; quantity; i++) {
+    for (uint256 i = 0; i < quantity; i++) {
       totalPrice = totalPrice.add(currentPrice);
       nextPrice = currentPrice.add(priceIncrement);
 
       if (nextPrice / 100 finney != currentPrice / 100 finney) {
-        priceIncrement &gt;&gt;= 1;
+        priceIncrement >>= 1;
       }
 
       currentPrice = nextPrice;
@@ -428,9 +428,9 @@ contract AxiePresale is HasNoEther, Pausable {
   {
     remainingQuantity = axiesAdopted[receiver][clazz] = axiesAdopted[receiver][clazz].sub(quantity);
 
-    if (quantity &gt; 0) {
+    if (quantity > 0) {
       // This requires that adopted Axies are always included in the total
-      // to make sure overflow won&#39;t happen.
+      // to make sure overflow won't happen.
       totalAxiesAdopted[clazz] -= quantity;
 
       AdoptedAxiesRedeemed(receiver, clazz, quantity);
@@ -442,7 +442,7 @@ contract AxiePresale is HasNoEther, Pausable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="85f7e0e8e6eac5b7">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="85f7e0e8e6eac5b7">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -483,22 +483,22 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
   AxiePresale public presaleContract;
   address public redemptionAddress;
 
-  mapping (uint8 =&gt; uint256) public currentPrice;
-  mapping (uint8 =&gt; uint256) public priceIncrement;
+  mapping (uint8 => uint256) public currentPrice;
+  mapping (uint8 => uint256) public priceIncrement;
 
-  mapping (uint8 =&gt; uint256) private _totalAdoptedAxies;
-  mapping (uint8 =&gt; uint256) private _totalDeductedAdoptedAxies;
-  mapping (address =&gt; mapping (uint8 =&gt; uint256)) private _numAdoptedAxies;
-  mapping (address =&gt; mapping (uint8 =&gt; uint256)) private _numDeductedAdoptedAxies;
+  mapping (uint8 => uint256) private _totalAdoptedAxies;
+  mapping (uint8 => uint256) private _totalDeductedAdoptedAxies;
+  mapping (address => mapping (uint8 => uint256)) private _numAdoptedAxies;
+  mapping (address => mapping (uint8 => uint256)) private _numDeductedAdoptedAxies;
 
-  mapping (address =&gt; uint256) private _numRefCredits;
-  mapping (address =&gt; uint256) private _numDeductedRefCredits;
+  mapping (address => uint256) private _numRefCredits;
+  mapping (address => uint256) private _numDeductedRefCredits;
   uint256 public numBountyCredits;
 
   uint256 private _totalRewardedAxies;
   uint256 private _totalDeductedRewardedAxies;
-  mapping (address =&gt; uint256) private _numRewardedAxies;
-  mapping (address =&gt; uint256) private _numDeductedRewardedAxies;
+  mapping (address => uint256) private _numRewardedAxies;
+  mapping (address => uint256) private _numDeductedRewardedAxies;
 
   event AxiesAdopted(
     address indexed _adopter,
@@ -689,8 +689,8 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
     whenInitialized
     whenNotPaused
   {
-    require(now &lt;= PRESALE_END_TIMESTAMP);
-    require(_beastQuantity &lt;= 3 &amp;&amp; _aquaticQuantity &lt;= 3 &amp;&amp; _plantQuantity &lt;= 3);
+    require(now <= PRESALE_END_TIMESTAMP);
+    require(_beastQuantity <= 3 && _aquaticQuantity <= 3 && _plantQuantity <= 3);
 
     uint256 _totalAdopted = this.totalAdoptedAxies(CLASS_BEAST, false)
       .add(this.totalAdoptedAxies(CLASS_AQUATIC, false))
@@ -699,7 +699,7 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
       .add(_aquaticQuantity)
       .add(_plantQuantity);
 
-    require(_totalAdopted &lt;= MAX_TOTAL_ADOPTED_AXIES);
+    require(_totalAdopted <= MAX_TOTAL_ADOPTED_AXIES);
 
     address _adopter = msg.sender;
     address _actualReferrer = 0x0;
@@ -712,7 +712,7 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
     uint256 _value = msg.value;
     uint256 _price;
 
-    if (_beastQuantity &gt; 0) {
+    if (_beastQuantity > 0) {
       _price = _adoptSameClassAxies(
         _adopter,
         CLASS_BEAST,
@@ -720,11 +720,11 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
         _actualReferrer
       );
 
-      require(_value &gt;= _price);
+      require(_value >= _price);
       _value -= _price;
     }
 
-    if (_aquaticQuantity &gt; 0) {
+    if (_aquaticQuantity > 0) {
       _price = _adoptSameClassAxies(
         _adopter,
         CLASS_AQUATIC,
@@ -732,11 +732,11 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
         _actualReferrer
       );
 
-      require(_value &gt;= _price);
+      require(_value >= _price);
       _value -= _price;
     }
 
-    if (_plantQuantity &gt; 0) {
+    if (_plantQuantity > 0) {
       _price = _adoptSameClassAxies(
         _adopter,
         CLASS_PLANT,
@@ -744,13 +744,13 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
         _actualReferrer
       );
 
-      require(_value &gt;= _price);
+      require(_value >= _price);
       _value -= _price;
     }
 
     msg.sender.transfer(_value);
 
-    // The current referral is ignored if the referrer&#39;s address is 0x0.
+    // The current referral is ignored if the referrer's address is 0x0.
     if (_actualReferrer != 0x0) {
       _applyRefCredits(
         _actualReferrer,
@@ -808,7 +808,7 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
   {
     _remainingQuantity = this.numRewardedAxies(_receiver, true).sub(_quantity);
 
-    if (_quantity &gt; 0) {
+    if (_quantity > 0) {
       _numDeductedRewardedAxies[_receiver] = _numDeductedRewardedAxies[_receiver].add(_quantity);
       _totalDeductedRewardedAxies = _totalDeductedRewardedAxies.add(_quantity);
 
@@ -838,12 +838,12 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
 
     uint256 _nextPrice;
 
-    for (uint256 i = 0; i &lt; _quantity; i++) {
+    for (uint256 i = 0; i < _quantity; i++) {
       _totalPrice = _totalPrice.add(_currentPrice);
       _nextPrice = _currentPrice.add(_currentIncrement);
 
       if (_nextPrice / 100 finney != _currentPrice / 100 finney) {
-        _currentIncrement &gt;&gt;= 1;
+        _currentIncrement >>= 1;
       }
 
       _currentPrice = _nextPrice;
@@ -886,7 +886,7 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
     uint256 _numCredits = this.numRefCredits(_receiver, true);
     uint256 _numRewards = _numCredits / REF_CREDITS_PER_AXIE;
 
-    if (_numRewards &gt; 0) {
+    if (_numRewards > 0) {
       _numDeductedRefCredits[_receiver] = _numDeductedRefCredits[_receiver]
         .add(_numRewards.mul(REF_CREDITS_PER_AXIE));
 
@@ -914,7 +914,7 @@ contract AxiePresaleExtended is HasNoContracts, Pausable {
   {
     _remainingQuantity = this.numAdoptedAxies(_receiver, _class, true).sub(_quantity);
 
-    if (_quantity &gt; 0) {
+    if (_quantity > 0) {
       _numDeductedAdoptedAxies[_receiver][_class] = _numDeductedAdoptedAxies[_receiver][_class].add(_quantity);
       _totalDeductedAdoptedAxies[_class] = _totalDeductedAdoptedAxies[_class].add(_quantity);
 

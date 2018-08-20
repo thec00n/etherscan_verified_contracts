@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 // similar as shrimpfarmer, with three changes:
 // A. one third of your snails die when you sell eggs
 // B. you can transfer ownership of the devfee through sacrificing snails
-// C. the &quot;free&quot; 300 snails cost 0.001 eth (in line with the mining fee)
+// C. the "free" 300 snails cost 0.001 eth (in line with the mining fee)
 // bots should have a harder time, and whales can compete for the devfee
 
 contract SpermLabs{
@@ -14,10 +14,10 @@ contract SpermLabs{
     uint256 PSNH=5000;
     bool public initialized=false;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryShrimp;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryShrimp;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
     uint256 public snailmasterReq=100000;
     function SpermLabs() public{
@@ -25,14 +25,14 @@ contract SpermLabs{
     }
     function becomeSnailmaster() public{
         require(initialized);
-        require(hatcheryShrimp[msg.sender]&gt;=snailmasterReq);
+        require(hatcheryShrimp[msg.sender]>=snailmasterReq);
         hatcheryShrimp[msg.sender]=SafeMath.sub(hatcheryShrimp[msg.sender],snailmasterReq);
         snailmasterReq=SafeMath.add(snailmasterReq,100000);//+100k shrimps each time
         ceoAddress=msg.sender;
     }
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -52,7 +52,7 @@ contract SpermLabs{
         uint256 hasEggs=getMyEggs();
         uint256 eggValue=calculateEggSell(hasEggs);
         uint256 fee=devFee(eggValue);
-        // kill one third of the owner&#39;s snails on egg sale
+        // kill one third of the owner's snails on egg sale
         hatcheryShrimp[msg.sender]=SafeMath.mul(SafeMath.div(hatcheryShrimp[msg.sender],3),2);
         claimedEggs[msg.sender]=0;
         lastHatch[msg.sender]=now;
@@ -114,7 +114,7 @@ contract SpermLabs{
         return SafeMath.mul(secondsPassed,hatcheryShrimp[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -136,9 +136,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -146,7 +146,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -155,7 +155,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

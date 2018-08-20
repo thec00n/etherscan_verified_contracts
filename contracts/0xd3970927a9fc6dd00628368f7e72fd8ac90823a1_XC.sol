@@ -18,9 +18,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -46,9 +46,9 @@ contract ERC20 {
 
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -63,7 +63,7 @@ contract ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(allowance[_from][msg.sender] >= _value);
 
         allowance[_from][msg.sender] = SafeMath.sub(allowance[_from][msg.sender], _value);
 
@@ -89,9 +89,9 @@ contract ERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
-        require(SafeMath.add(balanceOf[_to], _value) &gt;= balanceOf[_to]);
+        require(SafeMath.add(balanceOf[_to], _value) >= balanceOf[_to]);
 
         balanceOf[_from] = SafeMath.sub(balanceOf[_from], _value);
 
@@ -107,9 +107,9 @@ contract Token is ERC20 {
 
     uint256 public constant initialSupply = 10 * (10 ** 8) * (10 ** uint256(decimals));
 
-    string public constant name = &#39;INK Coin&#39;;
+    string public constant name = 'INK Coin';
 
-    string public constant symbol = &#39;INK&#39;;
+    string public constant symbol = 'INK';
 
 
     function() public {
@@ -128,7 +128,7 @@ contract Token is ERC20 {
 
         if (approve(_spender, _value)) {
 
-            if (!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+            if (!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
 
                 revert();
             }
@@ -197,7 +197,7 @@ interface XCInterface {
 
     /**
      * Set the comparison symbol in the contract.
-     * @param symbol comparison symbol ({&quot;-=&quot; : &quot;&gt;&quot; , &quot;+=&quot; : &quot;&gt;=&quot; }).
+     * @param symbol comparison symbol ({"-=" : ">" , "+=" : ">=" }).
      */
     function setCompare(bytes2 symbol) external;
 
@@ -290,11 +290,11 @@ contract XC is XCInterface {
         // Admin {status | platformName | tokenSymbol | compareSymbol | account}
         admin.status = 3;
 
-        admin.platformName = &quot;ETH&quot;;
+        admin.platformName = "ETH";
 
-        admin.tokenSymbol = &quot;INK&quot;;
+        admin.tokenSymbol = "INK";
 
-        admin.compareSymbol = &quot;+=&quot;;
+        admin.compareSymbol = "+=";
 
         admin.account = msg.sender;
 
@@ -379,7 +379,7 @@ contract XC is XCInterface {
 
         require(admin.account == msg.sender);
 
-        require(symbol == &quot;+=&quot; || symbol == &quot;-=&quot;);
+        require(symbol == "+=" || symbol == "-=");
 
         if (admin.compareSymbol != symbol) {
 
@@ -404,8 +404,8 @@ contract XC is XCInterface {
 
         require(toAccount != address(0));
 
-        // require(token.totalSupply &gt;= value &amp;&amp; value &gt; 0);
-        require(value &gt; 0);
+        // require(token.totalSupply >= value && value > 0);
+        require(value > 0);
 
         //get user approve the contract quota
         uint allowance = token.allowance(msg.sender, this);
@@ -419,7 +419,7 @@ contract XC is XCInterface {
 
         //record the amount of local platform turn out
         lockBalance = SafeMath.add(lockBalance, value);
-        // require(token.totalSupply &gt;= lockBalance);
+        // require(token.totalSupply >= lockBalance);
 
         //trigger Lock
         emit Lock(toPlatform, toAccount, bytes32(value), admin.tokenSymbol);
@@ -435,8 +435,8 @@ contract XC is XCInterface {
 
         require(toAccount != address(0));
 
-        // require(token.totalSupply &gt;= value &amp;&amp; value &gt; 0);
-        require(value &gt; 0);
+        // require(token.totalSupply >= value && value > 0);
+        require(value > 0);
 
         //verify args by function xcPlugin.verify
         bool complete;
@@ -445,7 +445,7 @@ contract XC is XCInterface {
 
         (complete, verify) = xcPlugin.verifyProposal(fromPlatform, fromAccount, toAccount, value, admin.tokenSymbol, txid);
 
-        require(verify &amp;&amp; !complete);
+        require(verify && !complete);
 
         //get contracts balance
         uint balance = token.balanceOf(this);
@@ -468,8 +468,8 @@ contract XC is XCInterface {
 
         require(account != address(0));
 
-        // require(token.totalSupply &gt;= value &amp;&amp; value &gt; 0);
-        require(value &gt; 0);
+        // require(token.totalSupply >= value && value > 0);
+        require(value > 0);
 
         uint balance = token.balanceOf(this);
 
@@ -486,7 +486,7 @@ contract XC is XCInterface {
 
         require(account != address(0));
 
-        require(value &gt; 0 &amp;&amp; value &gt;= address(this).balance);
+        require(value > 0 && value >= address(this).balance);
 
         this.transfer(account, value);
     }
@@ -504,12 +504,12 @@ contract XC is XCInterface {
 
     function toCompare(uint f, uint s) internal view returns (bool) {
 
-        if (admin.compareSymbol == &quot;-=&quot;) {
+        if (admin.compareSymbol == "-=") {
 
-            return f &gt; s;
-        } else if (admin.compareSymbol == &quot;+=&quot;) {
+            return f > s;
+        } else if (admin.compareSymbol == "+=") {
 
-            return f &gt;= s;
+            return f >= s;
         } else {
 
             return false;
@@ -766,14 +766,14 @@ contract XCPlugin is XCPluginInterface {
 
         address[] publicKeys;
 
-        mapping(string =&gt; Proposal) proposals;
+        mapping(string => Proposal) proposals;
     }
 
     Admin private admin;
 
     address[] private callers;
 
-    mapping(bytes32 =&gt; Platform) private platforms;
+    mapping(bytes32 => Platform) private platforms;
 
     function XCPlugin() public {
 
@@ -784,13 +784,13 @@ contract XCPlugin is XCPluginInterface {
         // Admin { status | platformName | tokenSymbol | account}
         admin.status = true;
 
-        admin.platformName = &quot;ETH&quot;;
+        admin.platformName = "ETH";
 
-        admin.tokenSymbol = &quot;INK&quot;;
+        admin.tokenSymbol = "INK";
 
         admin.account = msg.sender;
 
-        bytes32 platformName = &quot;INK&quot;;
+        bytes32 platformName = "INK";
 
         platforms[platformName].status = true;
 
@@ -866,7 +866,7 @@ contract XCPlugin is XCPluginInterface {
 
             bool exist;
 
-            for (uint i = 0; i &lt;= callers.length; i++) {
+            for (uint i = 0; i <= callers.length; i++) {
 
                 if (exist) {
 
@@ -904,7 +904,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(admin.account == msg.sender);
 
-        require(name != &quot;&quot;);
+        require(name != "");
 
         require(name != admin.platformName);
 
@@ -942,7 +942,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(_existPlatform(platformName));
 
-        require(weight &gt; 0);
+        require(weight > 0);
 
         if (platforms[platformName].weight != weight) {
 
@@ -969,7 +969,7 @@ contract XCPlugin is XCPluginInterface {
 
         address[] storage listOfPublicKey = platforms[platformName].publicKeys;
 
-        for (uint i; i &lt; listOfPublicKey.length; i++) {
+        for (uint i; i < listOfPublicKey.length; i++) {
 
             if (publicKey == listOfPublicKey[i]) {
 
@@ -990,7 +990,7 @@ contract XCPlugin is XCPluginInterface {
 
         bool exist;
 
-        for (uint i = 0; i &lt;= listOfPublicKey.length; i++) {
+        for (uint i = 0; i <= listOfPublicKey.length; i++) {
 
             if (exist) {
                 if (i == listOfPublicKey.length) {
@@ -1060,7 +1060,7 @@ contract XCPlugin is XCPluginInterface {
             proposal.tokenSymbol = tokenSymbol;
         } else {
 
-            require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value &amp;&amp; proposal.tokenSymbol == tokenSymbol);
+            require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value && proposal.tokenSymbol == tokenSymbol);
         }
 
         changeVoters(fromPlatform, publicKey, txid);
@@ -1076,7 +1076,7 @@ contract XCPlugin is XCPluginInterface {
 
         if (proposal.status) {
 
-            return (true, (proposal.voters.length &gt;= proposal.weight));
+            return (true, (proposal.voters.length >= proposal.weight));
         }
 
         if (proposal.value == 0) {
@@ -1084,9 +1084,9 @@ contract XCPlugin is XCPluginInterface {
             return (false, false);
         }
 
-        require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value &amp;&amp; proposal.tokenSymbol == tokenSymbol);
+        require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value && proposal.tokenSymbol == tokenSymbol);
 
-        return (false, (proposal.voters.length &gt;= platforms[fromPlatform].weight));
+        return (false, (proposal.voters.length >= platforms[fromPlatform].weight));
     }
 
     function commitProposal(bytes32 platformName, string txid) external returns (bool) {
@@ -1142,7 +1142,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(account != address(0));
 
-        require(value &gt; 0 &amp;&amp; value &gt;= address(this).balance);
+        require(value > 0 && value >= address(this).balance);
 
         this.transfer(account, value);
     }
@@ -1155,7 +1155,7 @@ contract XCPlugin is XCPluginInterface {
 
     function hashMsg(bytes32 fromPlatform, address fromAccount, bytes32 toPlatform, address toAccount, uint value, bytes32 tokenSymbol, string txid) internal pure returns (bytes32) {
 
-        return sha256(bytes32ToStr(fromPlatform), &quot;:0x&quot;, uintToStr(uint160(fromAccount), 16), &quot;:&quot;, bytes32ToStr(toPlatform), &quot;:0x&quot;, uintToStr(uint160(toAccount), 16), &quot;:&quot;, uintToStr(value, 10), &quot;:&quot;, bytes32ToStr(tokenSymbol), &quot;:&quot;, txid);
+        return sha256(bytes32ToStr(fromPlatform), ":0x", uintToStr(uint160(fromAccount), 16), ":", bytes32ToStr(toPlatform), ":0x", uintToStr(uint160(toAccount), 16), ":", uintToStr(value, 10), ":", bytes32ToStr(tokenSymbol), ":", txid);
     }
 
     function changeVoters(bytes32 platformName, address publicKey, string txid) internal {
@@ -1164,7 +1164,7 @@ contract XCPlugin is XCPluginInterface {
 
         bool change = true;
 
-        for (uint i = 0; i &lt; voters.length; i++) {
+        for (uint i = 0; i < voters.length; i++) {
 
             if (voters[i] == publicKey) {
 
@@ -1182,9 +1182,9 @@ contract XCPlugin is XCPluginInterface {
 
         uint length = b.length;
 
-        for (uint i = 0; i &lt; b.length; i++) {
+        for (uint i = 0; i < b.length; i++) {
 
-            if (b[b.length - 1 - i] == &quot;&quot;) {
+            if (b[b.length - 1 - i] == "") {
 
                 length -= 1;
             } else {
@@ -1195,7 +1195,7 @@ contract XCPlugin is XCPluginInterface {
 
         bytes memory bs = new bytes(length);
 
-        for (uint j = 0; j &lt; length; j++) {
+        for (uint j = 0; j < length; j++) {
 
             bs[j] = b[j];
         }
@@ -1209,11 +1209,11 @@ contract XCPlugin is XCPluginInterface {
 
         uint length = 0;
 
-        bytes16 tenStr = &quot;0123456789abcdef&quot;;
+        bytes16 tenStr = "0123456789abcdef";
 
         while (true) {
 
-            if (_value &gt; 0) {
+            if (_value > 0) {
 
                 length ++;
 
@@ -1230,7 +1230,7 @@ contract XCPlugin is XCPluginInterface {
 
         bytes memory bs = new bytes(length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
 
             bs[length - 1 - i] = tenStr[value % base];
 
@@ -1242,7 +1242,7 @@ contract XCPlugin is XCPluginInterface {
 
     function _existCaller(address caller) internal view returns (bool) {
 
-        for (uint i = 0; i &lt; callers.length; i++) {
+        for (uint i = 0; i < callers.length; i++) {
 
             if (callers[i] == caller) {
 
@@ -1263,7 +1263,7 @@ contract XCPlugin is XCPluginInterface {
 
         address[] memory listOfPublicKey = platforms[platformName].publicKeys;
 
-        for (uint i = 0; i &lt; listOfPublicKey.length; i++) {
+        for (uint i = 0; i < listOfPublicKey.length; i++) {
 
             if (listOfPublicKey[i] == publicKey) {
 
@@ -1291,7 +1291,7 @@ contract XCPlugin is XCPluginInterface {
             v := byte(0, mload(add(sig, 96)))
         }
 
-        if (v &lt; 27) {
+        if (v < 27) {
 
             v += 27;
         }

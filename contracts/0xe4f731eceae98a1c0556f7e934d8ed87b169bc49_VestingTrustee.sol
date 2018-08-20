@@ -2,8 +2,8 @@ pragma solidity 0.4.18;
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions,
-/// this simplifies the implementation of &quot;user permissions&quot;.
-/// @dev Based on OpenZeppelin&#39;s Ownable.
+/// this simplifies the implementation of "user permissions".
+/// @dev Based on OpenZeppelin's Ownable.
 
 contract Ownable {
     address public owner;
@@ -58,37 +58,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function toPower2(uint256 a) internal pure returns (uint256) {
@@ -98,7 +98,7 @@ library SafeMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         uint256 c = (a + 1) / 2;
         uint256 b = a;
-        while (c &lt; b) {
+        while (c < b) {
             b = c;
             c = (a / c + c) / 2;
         }
@@ -137,13 +137,13 @@ contract ERC223Receiver {
 
 
 /// @title Basic ERC20 token contract implementation.
-/// @dev Based on OpenZeppelin&#39;s StandardToken.
+/// @dev Based on OpenZeppelin's StandardToken.
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -153,7 +153,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md#approve (see NOTE)
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -250,7 +250,7 @@ contract Standard677Token is ERC677, BasicToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
@@ -278,8 +278,8 @@ contract TokenHolder is Ownable {
 contract ColuLocalNetwork is Ownable, Standard677Token, TokenHolder {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Colu Local Network&quot;;
-    string public constant symbol = &quot;CLN&quot;;
+    string public constant name = "Colu Local Network";
+    string public constant symbol = "CLN";
 
     // Using same decimals value as ETH (makes ETH-CLN conversion much easier).
     uint8 public constant decimals = 18;
@@ -411,7 +411,7 @@ contract TokenOwnable is Standard223Receiver, Ownable {
 
 
 /// @title Vesting trustee contract for Colu Local Network.
-/// @dev This Contract can&#39;t be TokenHolder, since it will allow its owner to drain its vested tokens.
+/// @dev This Contract can't be TokenHolder, since it will allow its owner to drain its vested tokens.
 /// @dev This means that any token sent to it different than ColuLocalNetwork is basicly stucked here forever.
 /// @dev ColuLocalNetwork that sent here (by mistake) can withdrawn using the grant method.
 contract VestingTrustee is TokenOwnable {
@@ -432,7 +432,7 @@ contract VestingTrustee is TokenOwnable {
     }
 
     // Holder to grant information mapping.
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     // Total tokens vested.
     uint256 public totalVesting;
@@ -478,19 +478,19 @@ contract VestingTrustee is TokenOwnable {
 
         uint256 value = tkn.value;
 
-        require(value &gt; 0);
+        require(value > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(value) &lt;= cln.balanceOf(address(this)));
+        require(totalVesting.add(value) <= cln.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -523,19 +523,19 @@ contract VestingTrustee is TokenOwnable {
 
         require(_to != address(0));
         require(_to != address(this)); // Protect this contract from receiving a grant.
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(_value) &lt;= cln.balanceOf(address(this)));
+        require(totalVesting.add(_value) <= cln.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -555,7 +555,7 @@ contract VestingTrustee is TokenOwnable {
     }
 
     /// @dev Revoke the grant of tokens of a specifed address.
-    /// @dev Unlocked tokens will be sent to the grantee, the rest is transferred to the trustee&#39;s owner.
+    /// @dev Unlocked tokens will be sent to the grantee, the rest is transferred to the trustee's owner.
     /// @param _holder The address which will have its tokens revoked.
     function revoke(address _holder) public onlyOwner {
         Grant memory grant = grants[_holder];
@@ -569,7 +569,7 @@ contract VestingTrustee is TokenOwnable {
         // Calculate the untransferred vested tokens.
         uint256 transferable = vested.sub(grant.transferred);
 
-        if (transferable &gt; 0) {
+        if (transferable > 0) {
             // Update transferred and total vesting amount, then transfer remaining vested funds to holder.
             grant.transferred = grant.transferred.add(transferable);
             totalVesting = totalVesting.sub(transferable);
@@ -593,7 +593,7 @@ contract VestingTrustee is TokenOwnable {
 
     /// @dev Calculate the amount of ready tokens of a holder.
     /// @param _holder address The address of the holder.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function readyTokens(address _holder) public constant returns (uint256) {
         Grant memory grant = grants[_holder];
 
@@ -613,7 +613,7 @@ contract VestingTrustee is TokenOwnable {
     /// @dev Calculate the total amount of vested tokens of a holder at a given time.
     /// @param _holder address The address of the holder.
     /// @param _time uint256 The specific time to calculate against.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function vestedTokens(address _holder, uint256 _time) public constant returns (uint256) {
         Grant memory grant = grants[_holder];
         if (grant.value == 0) {
@@ -628,13 +628,13 @@ contract VestingTrustee is TokenOwnable {
     /// @param _time uint256 The time to be checked
     /// @return An uint256 Representing the amount of vested tokens of a specific grant.
     function calculateVestedTokens(Grant _grant, uint256 _time) private pure returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return 0;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested.
-        if (_time &gt;= _grant.end) {
+        // If we're after the end of the vesting period - everything is vested.
+        if (_time >= _grant.end) {
             return _grant.value;
         }
 
@@ -675,7 +675,7 @@ contract VestingTrustee is TokenOwnable {
             return ERR_INVALID_VESTED;
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             Error(_grantee, ERR_INVALID_TRANSFERABLE);
@@ -695,7 +695,7 @@ contract VestingTrustee is TokenOwnable {
     /// @param _grantees address[] The addresses of the grantees.
     /// @return a boo if success.
     function batchUnlockVestedTokens(address[] _grantees) external onlyOwner returns (bool success) {
-        for (uint i = 0; i&lt;_grantees.length; i++) {
+        for (uint i = 0; i<_grantees.length; i++) {
             unlockVestedTokens(_grantees[i]);
         }
         return true;
@@ -708,7 +708,7 @@ contract VestingTrustee is TokenOwnable {
         if (_tokenAddress == address(cln)) {
             // If the token is cln, allow to withdraw only non vested tokens.
             uint256 availableCLN = cln.balanceOf(this).sub(totalVesting);
-            require(_amount &lt;= availableCLN);
+            require(_amount <= availableCLN);
         }
         return ERC20(_tokenAddress).transfer(owner, _amount);
     }

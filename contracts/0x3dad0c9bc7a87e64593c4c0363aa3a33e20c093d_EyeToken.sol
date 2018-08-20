@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -69,7 +69,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;Invalid owner&quot;);
+        require(msg.sender == owner, "Invalid owner");
         _;
     }
 
@@ -78,7 +78,7 @@ contract Ownable {
      * @param newOwner The address to transfer ownership to.
      */
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), &quot;Zero address&quot;);
+        require(newOwner != address(0), "Zero address");
         emit OwnershipTransferred(owner, newOwner);  
         owner = newOwner;
     }
@@ -119,13 +119,13 @@ contract EyeToken is ERC20, Ownable {
         uint until;
     }
 
-    string public name = &quot;EyeCoin&quot;;
-    string public symbol = &quot;EYE&quot;;
+    string public name = "EyeCoin";
+    string public symbol = "EYE";
     uint8 public decimals = 18;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; Frozen) public frozenAccounts;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => Frozen) public frozenAccounts;
     uint256 internal totalSupplyTokens;
     bool internal isICO;
     address public wallet;
@@ -165,7 +165,7 @@ contract EyeToken is ERC20, Ownable {
      * @param _until Time until
      */
     function freeze(address _account, uint _until) public onlyOwner {
-        if (_until == 0 || (_until != 0 &amp;&amp; _until &gt; now)) {
+        if (_until == 0 || (_until != 0 && _until > now)) {
             frozenAccounts[_account] = Frozen(true, _until);
         }
     }
@@ -187,7 +187,7 @@ contract EyeToken is ERC20, Ownable {
     modifier allowTransfer(address _from) {
         assert(!isICO);
         if (frozenAccounts[_from].frozen) {
-            require(frozenAccounts[_from].until != 0 &amp;&amp; frozenAccounts[_from].until &lt; now, &quot;Frozen account&quot;);
+            require(frozenAccounts[_from].until != 0 && frozenAccounts[_from].until < now, "Frozen account");
             delete frozenAccounts[_from];
         }
         _;
@@ -211,8 +211,8 @@ contract EyeToken is ERC20, Ownable {
     */
     function transferICO(address _to, uint256 _value) public onlyOwner returns (bool) {
         assert(isICO);
-        require(_to != address(0), &quot;Zero address &#39;To&#39;&quot;);
-        require(_value &lt;= balances[wallet], &quot;Not enought balance&quot;);
+        require(_to != address(0), "Zero address 'To'");
+        require(_value <= balances[wallet], "Not enought balance");
         balances[wallet] = balances[wallet].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(wallet, _to, _value);  
@@ -235,7 +235,7 @@ contract EyeToken is ERC20, Ownable {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) public allowTransfer(_from) returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender], &quot;Not enought allowance&quot;);
+        require(_value <= allowed[_from][msg.sender], "Not enought allowance");
         bool result = _transfer(_from, _to, _value);
         if (result) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -249,7 +249,7 @@ contract EyeToken is ERC20, Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -298,7 +298,7 @@ contract EyeToken is ERC20, Ownable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -314,9 +314,9 @@ contract EyeToken is ERC20, Ownable {
      * @param _value The amount to be transferred.
      */
     function _transfer(address _from, address _to, uint256 _value) internal allowTransfer(_from) returns (bool) {
-        require(_to != address(0), &quot;Zero address &#39;To&#39;&quot;);
-        require(_from != address(0), &quot;Zero address &#39;From&#39;&quot;);
-        require(_value &lt;= balances[_from], &quot;Not enought balance&quot;);
+        require(_to != address(0), "Zero address 'To'");
+        require(_from != address(0), "Zero address 'From'");
+        require(_value <= balances[_from], "Not enought balance");
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         return true;

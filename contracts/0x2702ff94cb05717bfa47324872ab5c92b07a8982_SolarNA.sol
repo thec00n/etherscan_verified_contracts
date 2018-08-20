@@ -7,7 +7,7 @@ contract Token {
     function transferFrom(address from, address to, uint256 value) public returns (bool success);
     function approve(address spender, uint256 value) public returns (bool success);
 
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions.
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions.
     function totalSupply() public constant returns (uint256 supply);
     function balanceOf(address owner) public constant returns (uint256 balance);
     function allowance(address owner, address spender) public constant returns (uint256 remaining);
@@ -23,14 +23,14 @@ contract StandardToken is Token {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public maxSupply;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
@@ -38,7 +38,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             // Balance too low
             revert();
         }
@@ -57,7 +57,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             // Balance or allowance too low
             revert();
         }
@@ -115,8 +115,8 @@ contract SolarNA is StandardToken {
     /*
      *  Token meta data
      */
-    string constant public name = &quot;SolarNA Token&quot;;
-    string constant public symbol = &quot;SOLA&quot;;
+    string constant public name = "SolarNA Token";
+    string constant public symbol = "SOLA";
     uint8 constant public decimals = 3;
     address public owner;
     uint remaining;
@@ -135,7 +135,7 @@ contract SolarNA is StandardToken {
         uint assignedTokens;
         owner = msg.sender;
         maxSupply = 500000 * 10**3;
-        for (uint i=0; i&lt;presale_addresses.length; i++) {
+        for (uint i=0; i<presale_addresses.length; i++) {
             if (presale_addresses[i] == 0) {
                 // Address should not be null.
                 revert();
@@ -144,7 +144,7 @@ contract SolarNA is StandardToken {
             assignedTokens += tokens[i];
             emit Transfer(0, presale_addresses[i], tokens[i]); // emit an event
         }
-        /// If presale_addresses &gt; 4 =&gt; The maxSupply will increase
+        /// If presale_addresses > 4 => The maxSupply will increase
         remaining = maxSupply - assignedTokens;
         assignedTokens += remaining;
         if (assignedTokens != maxSupply) {
@@ -162,9 +162,9 @@ contract SolarNA is StandardToken {
     }
 
     function () public payable {
-        /// Required msg.value &gt; 0 and still remaining tokens
+        /// Required msg.value > 0 and still remaining tokens
         uint value = msg.value / uint(divPrice);
-        require(remaining &gt;= value &amp;&amp; value != 0);
+        require(remaining >= value && value != 0);
         balances[msg.sender] += value;
         remaining -= value;
         emit Transfer(address(0), msg.sender, value);

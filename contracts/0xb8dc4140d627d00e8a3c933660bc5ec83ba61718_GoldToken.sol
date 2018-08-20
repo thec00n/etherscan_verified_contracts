@@ -3,13 +3,13 @@ pragma solidity 0.4.21;
 library SafeMath {
     //internals
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 }
@@ -34,15 +34,15 @@ contract SimpleToken is Owned {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     // This creates a mapping with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // Another array with spending allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     // The total supply of the token
     uint256 public totalSupply;
 
     // Some variables for nice wallet integration
-    string public name = &quot;CryptoGold&quot;;          // Set the name for display purposes
-    string public symbol = &quot;CGC&quot; ;             // Set the symbol for display purposes
+    string public name = "CryptoGold";          // Set the name for display purposes
+    string public symbol = "CGC" ;             // Set the symbol for display purposes
     uint8 public decimals = 6;                // Amount of decimals for display purposes
 
     // Send coins
@@ -78,7 +78,7 @@ contract SimpleToken is Owned {
     
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -90,7 +90,7 @@ contract SimpleToken is Owned {
 }
 
 /// @title Multisignature Mintable Token - Allows minting of Tokens by a 2-2-Multisignature
-/// @author Henning Kopp - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a51554a4a7a585655595159525b535417585f485b4e4f545d145e5f">[email&#160;protected]</a>&gt;
+/// @author Henning Kopp - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a51554a4a7a585655595159525b535417585f485b4e4f545d145e5f">[email protected]</a>>
 contract MultiSigMint is SimpleToken {
 
     // Address change event
@@ -123,7 +123,7 @@ contract MultiSigMint is SimpleToken {
      * tokenamount is the amount of tokens to be minted.
      */
     function proposeMinting(uint256 _tokenamount) external onlyOwner returns (bool) {
-        require(_tokenamount &gt; 0);
+        require(_tokenamount > 0);
         proposedMintAmnt = _tokenamount;
         return true;
     }
@@ -149,7 +149,7 @@ contract MultiSigMint is SimpleToken {
      * tokenamount is the amount of tokens to be burned.
      */
     function proposeBurning(uint256 _tokenamount) external onlyOwner returns (bool) {
-        require(_tokenamount &gt; 0);
+        require(_tokenamount > 0);
         proposedBurnAmnt = _tokenamount;
         return true;
     }
@@ -178,7 +178,7 @@ contract MultiSigMint is SimpleToken {
         proposeOwner = _newAddress;
     }
     function confirmNewOwner(address _newAddress) external onlyNotary returns (bool) {
-        if (proposeOwner == _newAddress &amp;&amp; _newAddress != 0x0 &amp;&amp; _newAddress != notary) {
+        if (proposeOwner == _newAddress && _newAddress != 0x0 && _newAddress != notary) {
             proposeOwner = 0x0;
             emit newOwner(owner, _newAddress);
             owner = _newAddress;
@@ -196,7 +196,7 @@ contract MultiSigMint is SimpleToken {
         proposeNotary = _newAddress;
     }
     function confirmNewNotary(address _newAddress) external onlyNotary returns (bool) {
-        if (proposeNotary == _newAddress &amp;&amp; _newAddress != 0x0 &amp;&amp; _newAddress != owner) {
+        if (proposeNotary == _newAddress && _newAddress != 0x0 && _newAddress != owner) {
             proposeNotary = 0x0;
             emit newNotary(notary, _newAddress);
             notary = _newAddress;
@@ -209,7 +209,7 @@ contract MultiSigMint is SimpleToken {
 }
 
 /// @title Contract with fixed parameters for deployment
-/// @author Henning Kopp - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c9cdd2d2e2c0cecdc1c9c1cac3cbcc8fc0c7d0c3d6d7ccc58cc6c7">[email&#160;protected]</a>&gt;
+/// @author Henning Kopp - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c9cdd2d2e2c0cecdc1c9c1cac3cbcc8fc0c7d0c3d6d7ccc58cc6c7">[email protected]</a>>
 contract GoldToken is MultiSigMint {
     function GoldToken(address _notary) public MultiSigMint(_notary) {}
 }

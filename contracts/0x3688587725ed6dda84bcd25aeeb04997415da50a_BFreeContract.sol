@@ -53,8 +53,8 @@ pragma solidity ^0.4.16;
 
 contract BFreeContract is ERC20Interface, owned{
 
-	string public constant name = &quot;BFree&quot;;
-	string public constant symbol = &quot;BFR&quot;;
+	string public constant name = "BFree";
+	string public constant symbol = "BFR";
 	uint public constant decimals = 0;
 	uint256 public _totalSupply = 2240000;
 	uint256 public icoMin = 300000;					// = 300000; amount is in Tokens, 1.800.000
@@ -74,13 +74,13 @@ contract BFreeContract is ERC20Interface, owned{
 	
 
 	//Balances for each account
-	mapping (address =&gt; uint256) public tokenBalanceOf;
+	mapping (address => uint256) public tokenBalanceOf;
 
 	// Owner of account approves the transfer of an amount to another account
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => mapping (address => uint256)) allowed;
 	
 	//list with information about frozen accounts
-	mapping(address =&gt; bool) frozenAccount;
+	mapping(address => bool) frozenAccount;
 	
 	//this generate a public event on a blockchain that will notify clients
 	event FrozenFunds(address initiator, address account, string status);
@@ -133,7 +133,7 @@ contract BFreeContract is ERC20Interface, owned{
 
 	function () payable {
 		require(!frozenAccount[msg.sender]);
-		if(msg.value &gt; 0 &amp;&amp; !frozenAccount[msg.sender]) {
+		if(msg.value > 0 && !frozenAccount[msg.sender]) {
 			buyToken();
 		}
 	}
@@ -156,7 +156,7 @@ contract BFreeContract is ERC20Interface, owned{
 	/// @notice Calculates amount of weis needed to buy more than one token
 	/// @param howManyTokenToBuy - Amount of tokens to calculate
 	function calculateTheEndPrice(uint256 howManyTokenToBuy) constant returns (uint256 summarizedPriceInWeis) {
-		if(howManyTokenToBuy &gt; 0) {
+		if(howManyTokenToBuy > 0) {
 			summarizedPriceInWeis = howManyTokenToBuy * currentTokenPrice;
 		}else {
 			summarizedPriceInWeis = 0;
@@ -172,28 +172,28 @@ contract BFreeContract is ERC20Interface, owned{
 	/// @notice Buy tokens from contract by sending ether
 	function buy() payable public {
 		require(!frozenAccount[msg.sender]);
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		buyToken();
 	}
 
 	/// @notice Sell tokens and receive ether from contract
 	function sell(uint256 amount) {
 		require(!frozenAccount[msg.sender]);
-		require(tokenBalanceOf[msg.sender] &gt;= amount);         	// checks if the sender has enough to sell
-		require(amount &gt; 0);
-		require(sellPrice &gt; 0);
+		require(tokenBalanceOf[msg.sender] >= amount);         	// checks if the sender has enough to sell
+		require(amount > 0);
+		require(sellPrice > 0);
 		_transfer(msg.sender, this, amount);
 		uint256 revenue = amount * sellPrice;
-		require(this.balance &gt;= revenue);
-		msg.sender.transfer(revenue);                		// sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+		require(this.balance >= revenue);
+		msg.sender.transfer(revenue);                		// sends ether to the seller: it's important to do this last to prevent recursion attacks
 	}
 	
 	/// @notice Allow user to sell maximum possible amount of tokens, depend on ether amount on contract
 	function sellMaximumPossibleAmountOfTokens() {
 		require(!frozenAccount[msg.sender]);
-		require(tokenBalanceOf[msg.sender] &gt; 0);
-		require(this.balance &gt; sellPrice);
-		if(tokenBalanceOf[msg.sender] * sellPrice &lt;= this.balance) {
+		require(tokenBalanceOf[msg.sender] > 0);
+		require(this.balance > sellPrice);
+		if(tokenBalanceOf[msg.sender] * sellPrice <= this.balance) {
 			sell(tokenBalanceOf[msg.sender]);
 		}else {
 			sell(this.balance / sellPrice);
@@ -206,17 +206,17 @@ contract BFreeContract is ERC20Interface, owned{
 		assert(_to != address(0));
 		require(!frozenAccount[msg.sender]);
 		require(!frozenAccount[_to]);
-		require(tokenBalanceOf[msg.sender] &gt;= _value);
-		require(tokenBalanceOf[msg.sender] - _value &lt; tokenBalanceOf[msg.sender]);
-		require(tokenBalanceOf[_to] + _value &gt; tokenBalanceOf[_to]);
-		require(_value &gt; 0);
+		require(tokenBalanceOf[msg.sender] >= _value);
+		require(tokenBalanceOf[msg.sender] - _value < tokenBalanceOf[msg.sender]);
+		require(tokenBalanceOf[_to] + _value > tokenBalanceOf[_to]);
+		require(_value > 0);
 		_transfer(msg.sender, _to, _value);
 		return true;
 	}
 
 	/// @notice  Send _value amount of tokens from address _from to address _to
 	/// @notice  The transferFrom method is used for a withdraw workflow, allowing contracts to send
-	/// @notice  tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+	/// @notice  tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 	/// @notice  fees in sub-currencies; the command should fail unless the _from account has
 	/// @notice  deliberately authorized the sender of the message via some mechanism; we propose
 	/// @notice  these standardized APIs for approval:
@@ -227,12 +227,12 @@ contract BFreeContract is ERC20Interface, owned{
 		require(!frozenAccount[msg.sender]);
 		require(!frozenAccount[_from]);
 		require(!frozenAccount[_to]);
-		require(tokenBalanceOf[_from] &gt;= _value);
-		require(allowed[_from][msg.sender] &gt;= _value);
-		require(tokenBalanceOf[_from] - _value &lt; tokenBalanceOf[_from]);
-		require(tokenBalanceOf[_to] + _value &gt; tokenBalanceOf[_to]);
-		require(_value &gt; 0);
-		orderToTransfer(msg.sender, _from, _to, _value, &quot;Order to transfer tokens from allowed account&quot;);
+		require(tokenBalanceOf[_from] >= _value);
+		require(allowed[_from][msg.sender] >= _value);
+		require(tokenBalanceOf[_from] - _value < tokenBalanceOf[_from]);
+		require(tokenBalanceOf[_to] + _value > tokenBalanceOf[_to]);
+		require(_value > 0);
+		orderToTransfer(msg.sender, _from, _to, _value, "Order to transfer tokens from allowed account");
 		_transfer(_from, _to, _value);
 		allowed[_from][msg.sender] -= _value;
 		return true;
@@ -243,24 +243,24 @@ contract BFreeContract is ERC20Interface, owned{
 	function approve(address _spender, uint256 _value) returns (bool success) {
 		require(!frozenAccount[msg.sender]);
 		assert(_spender != address(0));
-		require(_value &gt;= 0);
+		require(_value >= 0);
 		allowed[msg.sender][_spender] = _value;
 		return true;
 	}
 
 	/// @notice Check if minimal goal of ICO is reached
 	function checkMinimalGoal() internal {
-		if(tokenBalanceOf[this] &lt;= _totalSupply - icoMin) {
+		if(tokenBalanceOf[this] <= _totalSupply - icoMin) {
 			minimalGoalReached = true;
-			minGoalReached(icoMin, &quot;Minimal goal of ICO is reached!&quot;);
+			minGoalReached(icoMin, "Minimal goal of ICO is reached!");
 		}
 	}
 
 	/// @notice Check if preICO is ended
 	function checkPreIcoStatus() internal {
-		if(tokenBalanceOf[this] &lt;= _totalSupply - preIcoLimit) {
+		if(tokenBalanceOf[this] <= _totalSupply - preIcoLimit) {
 			preIcoIsRunning = false;
-			preIcoEnded(preIcoLimit, &quot;Token amount for preICO sold!&quot;);
+			preIcoEnded(preIcoLimit, "Token amount for preICO sold!");
 		}
 	}
 
@@ -270,18 +270,18 @@ contract BFreeContract is ERC20Interface, owned{
 		address sender = msg.sender;
 		require(!icoIsClosed);
 		require(!frozenAccount[sender]);
-		require(value &gt; 0);
-		require(currentTokenPrice &gt; 0);
+		require(value > 0);
+		require(currentTokenPrice > 0);
 		uint256 amount = value / currentTokenPrice;			// calculates amount of tokens
 		uint256 moneyBack = value - (amount * currentTokenPrice);
-		require(tokenBalanceOf[this] &gt;= amount);              		// checks if contract has enough to sell
+		require(tokenBalanceOf[this] >= amount);              		// checks if contract has enough to sell
 		amountOfInvestments = amountOfInvestments + (value - moneyBack);
 		updatePrices();
 		_transfer(this, sender, amount);
 		if(!minimalGoalReached) {
 			checkMinimalGoal();
 		}
-		if(moneyBack &gt; 0) {
+		if(moneyBack > 0) {
 			sender.transfer(moneyBack);
 		}
 	}
@@ -290,9 +290,9 @@ contract BFreeContract is ERC20Interface, owned{
 	function _transfer(address _from, address _to, uint256 _value) internal {
 		assert(_from != address(0));
 		assert(_to != address(0));
-		require(_value &gt; 0);
-		require(tokenBalanceOf[_from] &gt;= _value);
-		require(tokenBalanceOf[_to] + _value &gt; tokenBalanceOf[_to]);
+		require(_value > 0);
+		require(tokenBalanceOf[_from] >= _value);
+		require(tokenBalanceOf[_to] + _value > tokenBalanceOf[_to]);
 		require(!frozenAccount[_from]);
 		require(!frozenAccount[_to]);
 		if(tokenBalanceOf[_to] == 0){
@@ -321,14 +321,14 @@ contract BFreeContract is ERC20Interface, owned{
 		}
 		
 		if(oldPrice != currentTokenPrice) {
-			priceUpdated(oldPrice, currentTokenPrice, &quot;Token price updated!&quot;);
+			priceUpdated(oldPrice, currentTokenPrice, "Token price updated!");
 		}
 	}
 
 	/// @notice Set current preICO price in wei for one token
 	/// @param priceForPreIcoInWei - is the amount in wei for one token
 	function setPreICOPrice(uint256 priceForPreIcoInWei) isOwner {
-		require(priceForPreIcoInWei &gt; 0);
+		require(priceForPreIcoInWei > 0);
 		require(preICOprice != priceForPreIcoInWei);
 		preICOprice = priceForPreIcoInWei;
 		updatePrices();
@@ -337,7 +337,7 @@ contract BFreeContract is ERC20Interface, owned{
 	/// @notice Set current ICO price in wei for one token
 	/// @param priceForIcoInWei - is the amount in wei for one token
 	function setICOPrice(uint256 priceForIcoInWei) isOwner {
-		require(priceForIcoInWei &gt; 0);
+		require(priceForIcoInWei > 0);
 		require(ICOprice != priceForIcoInWei);
 		ICOprice = priceForIcoInWei;
 		updatePrices();
@@ -347,8 +347,8 @@ contract BFreeContract is ERC20Interface, owned{
 	/// @param priceForPreIcoInWei - Price of the token in pre ICO
 	/// @param priceForIcoInWei - Price of the token in ICO
 	function setPrices(uint256 priceForPreIcoInWei, uint256 priceForIcoInWei) isOwner {
-		require(priceForPreIcoInWei &gt; 0);
-		require(priceForIcoInWei &gt; 0);
+		require(priceForPreIcoInWei > 0);
+		require(priceForIcoInWei > 0);
 		preICOprice = priceForPreIcoInWei;
 		ICOprice = priceForIcoInWei;
 		updatePrices();
@@ -357,11 +357,11 @@ contract BFreeContract is ERC20Interface, owned{
 	/// @notice Set the current sell price in wei for one token
 	/// @param priceInWei - is the amount in wei for one token
 	function setSellPrice(uint256 priceInWei) isOwner {
-		require(priceInWei &gt;= 0);
+		require(priceInWei >= 0);
 		sellPrice = priceInWei;
 	}
 
-	/// @notice &#39;freeze? Prevent | Allow&#39; &#39;account&#39; from sending and receiving tokens
+	/// @notice 'freeze? Prevent | Allow' 'account' from sending and receiving tokens
 	/// @param account - address to be frozen
 	/// @param freeze - select is the account frozen or not
 	function freezeAccount(address account, bool freeze) isOwner {
@@ -369,39 +369,39 @@ contract BFreeContract is ERC20Interface, owned{
 		require(account != supervisor);
 		frozenAccount[account] = freeze;
 		if(freeze) {
-			FrozenFunds(msg.sender, account, &quot;Account set frozen!&quot;);
+			FrozenFunds(msg.sender, account, "Account set frozen!");
 		}else {
-			FrozenFunds(msg.sender, account, &quot;Account set free for use!&quot;);
+			FrozenFunds(msg.sender, account, "Account set free for use!");
 		}
 	}
 
 	/// @notice Create an amount of token
 	/// @param amount - token to create
 	function mintToken(uint256 amount) isOwner {
-		require(amount &gt; 0);
-		require(tokenBalanceOf[this] &lt;= icoMin);	// owner can create token only if the initial amount is strongly not enough to supply and demand ICO
-		require(_totalSupply + amount &gt; _totalSupply);
-		require(tokenBalanceOf[this] + amount &gt; tokenBalanceOf[this]);
+		require(amount > 0);
+		require(tokenBalanceOf[this] <= icoMin);	// owner can create token only if the initial amount is strongly not enough to supply and demand ICO
+		require(_totalSupply + amount > _totalSupply);
+		require(tokenBalanceOf[this] + amount > tokenBalanceOf[this]);
 		_totalSupply += amount;
 		tokenBalanceOf[this] += amount;
 		allowed[this][owner] = tokenBalanceOf[this];
 		allowed[this][supervisor] = tokenBalanceOf[this];
-		tokenCreated(msg.sender, amount, &quot;Additional tokens created!&quot;);
+		tokenCreated(msg.sender, amount, "Additional tokens created!");
 	}
 
 	/// @notice Destroy an amount of token
 	/// @param amount - token to destroy
 	function destroyToken(uint256 amount) isOwner {
-		require(amount &gt; 0);
-		require(tokenBalanceOf[this] &gt;= amount);
-		require(_totalSupply &gt;= amount);
-		require(tokenBalanceOf[this] - amount &gt;= 0);
-		require(_totalSupply - amount &gt;= 0);
+		require(amount > 0);
+		require(tokenBalanceOf[this] >= amount);
+		require(_totalSupply >= amount);
+		require(tokenBalanceOf[this] - amount >= 0);
+		require(_totalSupply - amount >= 0);
 		tokenBalanceOf[this] -= amount;
 		_totalSupply -= amount;
 		allowed[this][owner] = tokenBalanceOf[this];
 		allowed[this][supervisor] = tokenBalanceOf[this];
-		tokenDestroyed(msg.sender, amount, &quot;An amount of tokens destroyed!&quot;);
+		tokenDestroyed(msg.sender, amount, "An amount of tokens destroyed!");
 	}
 
 	/// @notice Transfer the ownership to another account
@@ -417,7 +417,7 @@ contract BFreeContract is ERC20Interface, owned{
 
 	/// @notice Transfer ether from smartcontract to owner
 	function collect() isOwner {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
 		require(minimalGoalReached);	// Owner can get funds only if minimal fundrising is reached
 		withdraw(this.balance);
     }
@@ -427,17 +427,17 @@ contract BFreeContract is ERC20Interface, owned{
 	function withdraw(uint256 summeInWei) isOwner {
 		uint256 contractbalance = this.balance;
 		address sender = msg.sender;
-		require(contractbalance &gt;= summeInWei);
+		require(contractbalance >= summeInWei);
 		require(minimalGoalReached);	// Owner can get funds only if minimal fundrising is reached
-		withdrawed(sender, summeInWei, &quot;wei withdrawed&quot;);
+		withdrawed(sender, summeInWei, "wei withdrawed");
         sender.transfer(summeInWei);
 	}
 
 	/// @notice Deposit an amount of ether
 	function deposit() payable isOwner {
-		require(msg.value &gt; 0);
-		require(msg.sender.balance &gt;= msg.value);
-		deposited(msg.sender, msg.value, &quot;wei deposited&quot;);
+		require(msg.value > 0);
+		require(msg.sender.balance >= msg.value);
+		deposited(msg.sender, msg.value, "wei deposited");
 	}
 
 	/// @notice Allow user to exit ICO
@@ -453,9 +453,9 @@ contract BFreeContract is ERC20Interface, owned{
 		require(icoIsClosed != icoIsStopped);
 		icoIsClosed = icoIsStopped;
 		if(icoIsStopped) {
-			icoStatusUpdated(msg.sender, &quot;Coin offering was stopped!&quot;);
+			icoStatusUpdated(msg.sender, "Coin offering was stopped!");
 		}else {
-			icoStatusUpdated(msg.sender, &quot;Coin offering is running!&quot;);
+			icoStatusUpdated(msg.sender, "Coin offering is running!");
 		}
 	}
 
@@ -463,24 +463,24 @@ contract BFreeContract is ERC20Interface, owned{
 	function exitThisIcoForHalfOfTokenPrice() {
 		require(icoExitIsPossible);
 		require(!frozenAccount[msg.sender]);
-		require(tokenBalanceOf[msg.sender] &gt; 0);         	// checks if the sender has enough to sell
-		require(currentTokenPrice &gt; 1);
+		require(tokenBalanceOf[msg.sender] > 0);         	// checks if the sender has enough to sell
+		require(currentTokenPrice > 1);
 		uint256 amount = tokenBalanceOf[msg.sender] ;
 		uint256 revenue = amount * currentTokenPrice / 2;
-		require(this.balance &gt;= revenue);
+		require(this.balance >= revenue);
 		_transfer(msg.sender, this, amount);
-		msg.sender.transfer(revenue);                	// sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+		msg.sender.transfer(revenue);                	// sends ether to the seller: it's important to do this last to prevent recursion attacks
 	}
 
 	/// @notice Sell all of tokens for all ether of this smartcontract
 	function getAllMyTokensForAllEtherOnContract() {
 		require(icoExitIsPossible);
 		require(!frozenAccount[msg.sender]);
-		require(tokenBalanceOf[msg.sender] &gt; 0);         	// checks if the sender has enough to sell
-		require(currentTokenPrice &gt; 1);
+		require(tokenBalanceOf[msg.sender] > 0);         	// checks if the sender has enough to sell
+		require(currentTokenPrice > 1);
 		uint256 amount = tokenBalanceOf[msg.sender] ;
 		uint256 revenue = amount * currentTokenPrice / 2;
-		require(this.balance &lt;= revenue);
+		require(this.balance <= revenue);
 		_transfer(msg.sender, this, amount);
 		msg.sender.transfer(this.balance); 
 	}

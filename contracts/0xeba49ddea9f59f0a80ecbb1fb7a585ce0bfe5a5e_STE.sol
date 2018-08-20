@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 contract owned {
-    // Owner&#39;s address
+    // Owner's address
     address public owner;
 
     // Hardcoded address of super owner (for security reasons)
@@ -20,13 +20,13 @@ contract owned {
         owner = msg.sender;
     }
 
-    // Modifier for owner&#39;s functions of the contract
+    // Modifier for owner's functions of the contract
     modifier onlyOwner {
-        if ((msg.sender != owner) &amp;&amp; (msg.sender != super_owner)) revert();
+        if ((msg.sender != owner) && (msg.sender != super_owner)) revert();
         _;
     }
 
-    // Modifier for super-owner&#39;s functions of the contract
+    // Modifier for super-owner's functions of the contract
     modifier onlySuperOwner {
         if (msg.sender != super_owner) revert();
         _;
@@ -52,7 +52,7 @@ contract tokenRecipient {
 
 contract STE is owned {
 	// ERC 20 variables
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -93,17 +93,17 @@ contract STE is owned {
     uint32 public percentToFoundersAfterICO; // in % * 100, example 30% = 3000
 
     bool public allowTransfers; // if true then allow coin transfers
-    mapping (address =&gt; bool) public transferFromWhiteList;
+    mapping (address => bool) public transferFromWhiteList;
 
     /* Array with all balances */
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /* Presale investors list */
-    mapping (address =&gt; uint256) public presaleInvestorsETH;
-    mapping (address =&gt; uint256) public presaleInvestors;
+    mapping (address => uint256) public presaleInvestorsETH;
+    mapping (address => uint256) public presaleInvestors;
 
     /* Ico Investors list */
-    mapping (address =&gt; uint256) public icoInvestors;
+    mapping (address => uint256) public icoInvestors;
 
     // Dividends variables
     uint32 public dividendsRound; // round number of dividends    
@@ -111,10 +111,10 @@ contract STE is owned {
     uint256 public dividendsBuffer; // sum for dividends in current round (in wei)
 
     /* Paid dividends */
-    mapping(address =&gt; mapping(uint32 =&gt; uint256)) public paidDividends;
+    mapping(address => mapping(uint32 => uint256)) public paidDividends;
 	
 	/* Trusted accounts list */
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
         
     /* Events of token */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -167,28 +167,28 @@ contract STE is owned {
     /* Transfer coins */
     function transfer(address _to, uint256 _value) public {
         if (_to == 0x0) revert();
-        if (balanceOf[msg.sender] &lt; _value) revert(); // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert(); // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         // Cancel transfer transactions before ICO was finished
-        if ((!icoFinished) &amp;&amp; (msg.sender != bountyAddr) &amp;&amp; (!allowTransfers)) revert();
+        if ((!icoFinished) && (msg.sender != bountyAddr) && (!allowTransfers)) revert();
         // Calc dividends for _from and for _to addresses
         uint256 divAmount_from = 0;
         uint256 divAmount_to = 0;
-        if ((dividendsRound != 0) &amp;&amp; (dividendsBuffer &gt; 0)) {
+        if ((dividendsRound != 0) && (dividendsBuffer > 0)) {
             divAmount_from = calcDividendsSum(msg.sender);
-            if ((divAmount_from == 0) &amp;&amp; (paidDividends[msg.sender][dividendsRound] == 0)) paidDividends[msg.sender][dividendsRound] = 1;
+            if ((divAmount_from == 0) && (paidDividends[msg.sender][dividendsRound] == 0)) paidDividends[msg.sender][dividendsRound] = 1;
             divAmount_to = calcDividendsSum(_to);
-            if ((divAmount_to == 0) &amp;&amp; (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
+            if ((divAmount_to == 0) && (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
         }
         // End of calc dividends
 
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
 
-        if (divAmount_from &gt; 0) {
+        if (divAmount_from > 0) {
             if (!msg.sender.send(divAmount_from)) revert();
         }
-        if (divAmount_to &gt; 0) {
+        if (divAmount_to > 0) {
             if (!_to.send(divAmount_to)) revert();
         }
 
@@ -219,11 +219,11 @@ contract STE is owned {
         uint256 divAmount = 0;
         divAmount = (dividendsSum * ((balanceOf[_for] * 10000000000000000) / totalSupply)) / 10000000000000000;
         // Do not calc dividends less or equal than 0.0001 ETH
-        if (divAmount &lt; 100000000000000) {
+        if (divAmount < 100000000000000) {
             paidDividends[_for][dividendsRound] = 1;
             return 0;
         }
-        if (divAmount &gt; dividendsBuffer) {
+        if (divAmount > dividendsBuffer) {
             divAmount = dividendsBuffer;
             dividendsBuffer = 0;
         } else dividendsBuffer -= divAmount;
@@ -234,20 +234,20 @@ contract STE is owned {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert(); // Check if the sender has enough
-        if ((balanceOf[_to] + _value) &lt; balanceOf[_to]) revert(); // Check for overflows        
-        if (_value &gt; allowance[_from][msg.sender]) revert(); // Check allowance
+        if (balanceOf[_from] < _value) revert(); // Check if the sender has enough
+        if ((balanceOf[_to] + _value) < balanceOf[_to]) revert(); // Check for overflows        
+        if (_value > allowance[_from][msg.sender]) revert(); // Check allowance
         // Cancel transfer transactions before Ico and gracePeriod was finished
-        if ((!icoFinished) &amp;&amp; (_from != bountyAddr) &amp;&amp; (!transferFromWhiteList[_from]) &amp;&amp; (!allowTransfers)) revert();
+        if ((!icoFinished) && (_from != bountyAddr) && (!transferFromWhiteList[_from]) && (!allowTransfers)) revert();
 
         // Calc dividends for _from and for _to addresses
         uint256 divAmount_from = 0;
         uint256 divAmount_to = 0;
-        if ((dividendsRound != 0) &amp;&amp; (dividendsBuffer &gt; 0)) {
+        if ((dividendsRound != 0) && (dividendsBuffer > 0)) {
             divAmount_from = calcDividendsSum(_from);
-            if ((divAmount_from == 0) &amp;&amp; (paidDividends[_from][dividendsRound] == 0)) paidDividends[_from][dividendsRound] = 1;
+            if ((divAmount_from == 0) && (paidDividends[_from][dividendsRound] == 0)) paidDividends[_from][dividendsRound] = 1;
             divAmount_to = calcDividendsSum(_to);
-            if ((divAmount_to == 0) &amp;&amp; (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
+            if ((divAmount_to == 0) && (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
         }
         // End of calc dividends
 
@@ -255,10 +255,10 @@ contract STE is owned {
         balanceOf[_to] += _value; // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
 
-        if (divAmount_from &gt; 0) {
+        if (divAmount_from > 0) {
             if (!_from.send(divAmount_from)) revert();
         }
-        if (divAmount_to &gt; 0) {
+        if (divAmount_to > 0) {
             if (!_to.send(divAmount_to)) revert();
         }
 
@@ -269,27 +269,27 @@ contract STE is owned {
     /* Admin function for transfer coins */
     function transferFromAdmin(address _from, address _to, uint256 _value) public onlyOwner returns(bool success) {
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert(); // Check if the sender has enough
-        if ((balanceOf[_to] + _value) &lt; balanceOf[_to]) revert(); // Check for overflows        
+        if (balanceOf[_from] < _value) revert(); // Check if the sender has enough
+        if ((balanceOf[_to] + _value) < balanceOf[_to]) revert(); // Check for overflows        
 
         // Calc dividends for _from and for _to addresses
         uint256 divAmount_from = 0;
         uint256 divAmount_to = 0;
-        if ((dividendsRound != 0) &amp;&amp; (dividendsBuffer &gt; 0)) {
+        if ((dividendsRound != 0) && (dividendsBuffer > 0)) {
             divAmount_from = calcDividendsSum(_from);
-            if ((divAmount_from == 0) &amp;&amp; (paidDividends[_from][dividendsRound] == 0)) paidDividends[_from][dividendsRound] = 1;
+            if ((divAmount_from == 0) && (paidDividends[_from][dividendsRound] == 0)) paidDividends[_from][dividendsRound] = 1;
             divAmount_to = calcDividendsSum(_to);
-            if ((divAmount_to == 0) &amp;&amp; (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
+            if ((divAmount_to == 0) && (paidDividends[_to][dividendsRound] == 0)) paidDividends[_to][dividendsRound] = 1;
         }
         // End of calc dividends
 
         balanceOf[_from] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
 
-        if (divAmount_from &gt; 0) {
+        if (divAmount_from > 0) {
             if (!_from.send(divAmount_from)) revert();
         }
-        if (divAmount_to &gt; 0) {
+        if (divAmount_to > 0) {
             if (!_to.send(divAmount_to)) revert();
         }
 
@@ -308,8 +308,8 @@ contract STE is owned {
             uint256 amountToPresaleInvestor = 0;
 
             // GracePeriod if current timestamp between gracePeriodStartBlock and gracePeriodStopBlock
-            if ( (block.number &gt;= gracePeriodStartBlock) &amp;&amp; (block.number &lt;= gracePeriodStopBlock) ) {
-                if ( (msg.value &lt; gracePeriodMinTran) || (gracePeriodAmount &gt; gracePeriodMaxTarget) ) revert();
+            if ( (block.number >= gracePeriodStartBlock) && (block.number <= gracePeriodStopBlock) ) {
+                if ( (msg.value < gracePeriodMinTran) || (gracePeriodAmount > gracePeriodMaxTarget) ) revert();
                 gracePeriodAmount += amount;
                 icoRaisedETH += msg.value;
                 icoInvestors[msg.sender] += amount;
@@ -318,9 +318,9 @@ contract STE is owned {
                 soldedSupply += amount + amount * 10 / 100;
 
             // Payment to presellers when ICO was finished
-	        } else if ((icoFinished) &amp;&amp; (presaleInvestorsETH[msg.sender] &gt; 0) &amp;&amp; (weiToPresalersFromICO &gt; 0)) {
+	        } else if ((icoFinished) && (presaleInvestorsETH[msg.sender] > 0) && (weiToPresalersFromICO > 0)) {
                 amountToPresaleInvestor = msg.value + (presaleInvestorsETH[msg.sender] * 100000000 / presaleAmountETH) * icoRaisedETH * percentToPresalersFromICO / (100000000 * 10000);
-                if (amountToPresaleInvestor &gt; weiToPresalersFromICO) {
+                if (amountToPresaleInvestor > weiToPresalersFromICO) {
                     amountToPresaleInvestor = weiToPresalersFromICO;
                     weiToPresalersFromICO = 0;
                 } else {
@@ -328,13 +328,13 @@ contract STE is owned {
                 }
             }
 
-			if (buyPrice &gt; 0) {
-				if (balanceOf[this] &lt; amount) revert();				// checks if it has enough to sell
+			if (buyPrice > 0) {
+				if (balanceOf[this] < amount) revert();				// checks if it has enough to sell
 				balanceOf[this] -= amount;							// subtracts amount from token balance    		    
-				balanceOf[msg.sender] += amount;					// adds the amount to buyer&#39;s balance    		    
+				balanceOf[msg.sender] += amount;					// adds the amount to buyer's balance    		    
 			} else if ( amountToPresaleInvestor == 0 ) revert();	// Revert if buyPrice = 0 and b
 			
-			if (amountToPresaleInvestor &gt; 0) {
+			if (amountToPresaleInvestor > 0) {
 				presaleInvestorsETH[msg.sender] = 0;
 				if ( !msg.sender.send(amountToPresaleInvestor) ) revert(); // Send amountToPresaleInvestor to presaleer after Ico
 			}
@@ -344,9 +344,9 @@ contract STE is owned {
 
     function sell(uint256 amount) public {
         if (sellPrice == 0) revert();
-        if (balanceOf[msg.sender] &lt; amount) revert();	// checks if the sender has enough to sell
+        if (balanceOf[msg.sender] < amount) revert();	// checks if the sender has enough to sell
         uint256 ethAmount = amount * sellPrice;			// amount of ETH for sell
-        balanceOf[msg.sender] -= amount;				// subtracts the amount from seller&#39;s balance
+        balanceOf[msg.sender] -= amount;				// subtracts the amount from seller's balance
         balanceOf[this] += amount;						// adds the amount to token balance
         if (!msg.sender.send(ethAmount)) revert();		// sends ether to the seller.
         Transfer(msg.sender, this, amount);
@@ -375,8 +375,8 @@ contract STE is owned {
     // Initiate dividends round ( owner can transfer ETH to contract and initiate dividends round )
     // aDividendsRound - is integer value of dividends period such as YYYYMM example 201712 (year 2017, month 12)
     function setDividends(uint32 _dividendsRound) public payable onlyOwner {
-        if (_dividendsRound &gt; 0) {
-            if (msg.value &lt; 1000000000000000) revert();
+        if (_dividendsRound > 0) {
+            if (msg.value < 1000000000000000) revert();
             dividendsSum = msg.value;
             dividendsBuffer = msg.value;
         } else {
@@ -392,7 +392,7 @@ contract STE is owned {
         if (balanceOf[msg.sender] == 0) revert();
         if (paidDividends[msg.sender][dividendsRound] != 0) revert();
         uint256 divAmount = calcDividendsSum(msg.sender);
-        if (divAmount &gt;= 100000000000000) {
+        if (divAmount >= 100000000000000) {
             if (!msg.sender.send(divAmount)) revert();
         }
     }
@@ -418,13 +418,13 @@ contract STE is owned {
 
     // Stop ICO
     function stopICO() public onlyOwner {
-        if ( gracePeriodStopBlock &gt; block.number ) gracePeriodStopBlock = block.number;
+        if ( gracePeriodStopBlock > block.number ) gracePeriodStopBlock = block.number;
         
         icoFinished = true;
 
         weiToPresalersFromICO = icoRaisedETH * percentToPresalersFromICO / 10000;
 
-        if (soldedSupply &gt;= (burnAfterSoldAmount * 100000000)) {
+        if (soldedSupply >= (burnAfterSoldAmount * 100000000)) {
 
             uint256 companyCost = soldedSupply * 1000000 * 10000;
             companyCost = companyCost / (10000 - percentToFoundersAfterICO) / 1000000;
@@ -432,7 +432,7 @@ contract STE is owned {
             uint256 amountToFounders = companyCost - soldedSupply;
 
             // Burn extra coins if current balance of token greater than amountToFounders 
-            if (balanceOf[this] &gt; amountToFounders) {
+            if (balanceOf[this] > amountToFounders) {
                 Burn(this, (balanceOf[this]-amountToFounders));
                 balanceOf[this] = 0;
                 totalSupply = companyCost;
@@ -453,12 +453,12 @@ contract STE is owned {
     // Withdraw ETH to founders 
     function withdrawToFounders(uint256 amount) public onlyOwner {
     	uint256 amount_to_withdraw = amount * 1000000000000000; // 0.001 ETH
-        if ((this.balance - weiToPresalersFromICO) &lt; amount_to_withdraw) revert();
+        if ((this.balance - weiToPresalersFromICO) < amount_to_withdraw) revert();
         amount_to_withdraw = amount_to_withdraw / foundersAddresses.length;
         uint8 i = 0;
         uint8 errors = 0;
         
-        for (i = 0; i &lt; foundersAddresses.length; i++) {
+        for (i = 0; i < foundersAddresses.length; i++) {
 			if (!foundersAddresses[i].send(amount_to_withdraw)) {
 				errors++;
 			}
@@ -482,7 +482,7 @@ contract STE is owned {
 	    balanceOf[this] -= _amountSTE;
 		balanceOf[_addr] += _amountSTE;
 	    
-	    if ( _amountETH &gt; 0 ) {
+	    if ( _amountETH > 0 ) {
 	    	presaleInvestorsETH[_addr] += _amountETH;
 			balanceOf[this] -= _amountSTE / 10;
 			balanceOf[bountyAddr] += _amountSTE / 10;
@@ -496,7 +496,7 @@ contract STE is owned {
         
     // BURN coins in HELL! (sender balance)
     function burn(uint256 amount) public {
-        if (balanceOf[msg.sender] &lt; amount) revert(); // Check if the sender has enough
+        if (balanceOf[msg.sender] < amount) revert(); // Check if the sender has enough
         balanceOf[msg.sender] -= amount; // Subtract from the sender
         totalSupply -= amount; // Updates totalSupply
         Burn(msg.sender, amount);
@@ -504,7 +504,7 @@ contract STE is owned {
 
     // BURN coins of token in HELL!
     function burnContractCoins(uint256 amount) public onlySuperOwner {
-        if (balanceOf[this] &lt; amount) revert(); // Check if the sender has enough
+        if (balanceOf[this] < amount) revert(); // Check if the sender has enough
         balanceOf[this] -= amount; // Subtract from the contract balance
         totalSupply -= amount; // Updates totalSupply
         Burn(this, amount);

@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <span class="__cf_email__" data-cfemail="d6b5b9b8a2b7b5a296a5bbb7a4a2b3a2bef8b5b9">[email&#160;protected]</span>
+ * <span class="__cf_email__" data-cfemail="d6b5b9b8a2b7b5a296a5bbb7a4a2b3a2bef8b5b9">[email protected]</span>
  */
 
 /**
@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -222,8 +222,8 @@ contract UTP_ICO is Pausable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
-    require(_weiAmount &gt;= minInvest);
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(_weiAmount >= minInvest);
+    require(now >= openingTime && now <= closingTime);
   }
 
   /**
@@ -265,7 +265,7 @@ contract UTP_ICO is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**

@@ -34,7 +34,7 @@ contract TrustWallet {
     }
 
     Transaction[] public transactions;
-    mapping (address =&gt; User) public users;
+    mapping (address => User) public users;
     address[] public userAddresses;
 
     modifier onlyActiveUsersAllowed() {
@@ -56,7 +56,7 @@ contract TrustWallet {
     // Returns true if there is a transaction pending.
     function isTransactionPending() internal constant returns (bool) {
         if (transactions.length == 0) return false;
-        return transactions[transactions.length - 1].time_initiated &gt; 0 &amp;&amp;
+        return transactions[transactions.length - 1].time_initiated > 0 &&
             transactions[transactions.length - 1].time_finalized == 0;
     }
 
@@ -102,7 +102,7 @@ contract TrustWallet {
         transactionMustBePending()
     {
         Transaction storage transaction = transactions[transactions.length - 1];
-        require(now &gt; transaction.time_initiated + users[transaction.initiated_by].delay);
+        require(now > transaction.time_initiated + users[transaction.initiated_by].delay);
         transaction.is_executed = true;
         transaction.time_finalized = now;
         transaction.finalized_by = msg.sender;
@@ -120,9 +120,9 @@ contract TrustWallet {
         Transaction storage transaction = transactions[transactions.length - 1];
         // Either the sender is a higher priority user, or twice the waiting time of
         // the user trying to cancel has passed. This is to prevent transactions from
-        // getting &quot;stuck&quot; if the call() fails when trying to execute the transaction.
-        require(users[msg.sender].delay &lt;= users[transaction.initiated_by].delay ||
-            now - transaction.time_initiated &gt; users[msg.sender].delay * 2);
+        // getting "stuck" if the call() fails when trying to execute the transaction.
+        require(users[msg.sender].delay <= users[transaction.initiated_by].delay ||
+            now - transaction.time_initiated > users[msg.sender].delay * 2);
         transaction.time_finalized = now;
         transaction.finalized_by = msg.sender;
     }
@@ -139,8 +139,8 @@ contract TrustWallet {
         require(users[new_user].time_removed == 0);
 
         User storage sender = users[msg.sender];
-        require(now &gt; sender.delay + sender.time_added_another_user);
-        require(new_user_time &gt;= sender.delay);
+        require(now > sender.delay + sender.time_added_another_user);
+        require(new_user_time >= sender.delay);
 
         sender.time_added_another_user = now;
         users[new_user] = User({
@@ -166,7 +166,7 @@ contract TrustWallet {
         require(users[userAddr].time_removed == 0);
 
         User storage sender = users[msg.sender];
-        require(sender.delay &lt;= users[userAddr].delay);
+        require(sender.delay <= users[userAddr].delay);
 
         users[userAddr].removed_by = msg.sender;
         users[userAddr].time_removed = now;

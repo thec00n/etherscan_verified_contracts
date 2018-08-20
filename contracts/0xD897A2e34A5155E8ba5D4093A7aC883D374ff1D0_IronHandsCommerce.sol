@@ -14,13 +14,13 @@ contract IronHandsCommerce {
     =================================*/
     // only people with tokens
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends() &gt; 0);
+        require(myDividends() > 0);
         _;
     }
     
@@ -31,7 +31,7 @@ contract IronHandsCommerce {
         _;
     }
     
-    //don&#39;t allow smart contracts to play
+    //don't allow smart contracts to play
     modifier noContracts {
         require(msg.sender == tx.origin);
         _;
@@ -39,18 +39,18 @@ contract IronHandsCommerce {
     
     //wait for game to start
     modifier isStarted {
-        require(now &gt;= disableTime);
+        require(now >= disableTime);
         _;
     }
     
     // administrators can:
-    // -&gt; change the name of the contract
-    // -&gt; change the name of the token
+    // -> change the name of the contract
+    // -> change the name of the token
     // they CANNOT:
-    // -&gt; take funds
-    // -&gt; disable withdrawals
-    // -&gt; kill the contract
-    // -&gt; change the price of tokens
+    // -> take funds
+    // -> disable withdrawals
+    // -> kill the contract
+    // -> change the price of tokens
     modifier onlyAdministrator() {
         address _customerAddress = msg.sender;
         require(administrators[_customerAddress]);
@@ -75,10 +75,10 @@ contract IronHandsCommerce {
             if( onlyAmbassadors ){
                 require(
                     // is the customer in the ambassador list?
-                    ambassadors_[_customerAddress] == true &amp;&amp;
+                    ambassadors_[_customerAddress] == true &&
      
                     // does the customer purchase exceed the max ambassador quota?
-                    (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= ambassadorMaxPurchase_
+                    (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= ambassadorMaxPurchase_
      
                 );
      
@@ -126,10 +126,10 @@ contract IronHandsCommerce {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;IronHandsCommerce&quot;;
-    string public symbol = &quot;IHC&quot;;
+    string public name = "IronHandsCommerce";
+    string public symbol = "IHC";
     uint8 constant public decimals = 18;
-    mapping(address =&gt; uint256) internal tarif; //valid tarifs are in [5, 45] interval
+    mapping(address => uint256) internal tarif; //valid tarifs are in [5, 45] interval
     uint256 constant internal tarifMin = 5;
     uint256 constant internal tarifMax = 45;
     uint256 constant internal tarifDiff = 50;
@@ -138,7 +138,7 @@ contract IronHandsCommerce {
     uint256 constant internal magnitude = 2**64;
     
     // ambassador program
-    mapping(address =&gt; bool) internal ambassadors_;
+    mapping(address => bool) internal ambassadors_;
     uint256 constant internal ambassadorMaxPurchase_ = 0.1 ether;
     uint256 constant internal timeToStart = 300 seconds;
     uint256 public disableTime = 0;
@@ -149,14 +149,14 @@ contract IronHandsCommerce {
     =            DATASETS            =
     ================================*/
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal ambassadorAccumulatedQuota_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal ambassadorAccumulatedQuota_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
  
     // administrator list (see above on what they can do)
-    mapping(address =&gt; bool) public administrators;
+    mapping(address => bool) public administrators;
  
     // when this is set to true, only ambassadors can purchase tokens (this prevents a whale premine, it ensures a fairly distributed upper pyramid)
     bool public onlyAmbassadors = true;
@@ -189,7 +189,7 @@ contract IronHandsCommerce {
         returns(uint256)
     {
         address _customerAddress = msg.sender;
-        require(newTarif &gt;= tarifMin &amp;&amp; newTarif &lt;= tarifMax);
+        require(newTarif >= tarifMin && newTarif <= tarifMax);
         if(myTokens() == 0) {
             tarif[_customerAddress] = newTarif;
         }
@@ -214,7 +214,7 @@ contract IronHandsCommerce {
     }
     
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
     */
     function reinvest()
         noContracts()
@@ -229,7 +229,7 @@ contract IronHandsCommerce {
         address _customerAddress = msg.sender;
         payoutsTo_[_customerAddress] += (int256) (_dividends * magnitude);
  
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends);
  
         // fire event
@@ -244,10 +244,10 @@ contract IronHandsCommerce {
         isStarted()
         public
     {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
  
         // lambo delivery service
         withdraw();
@@ -288,7 +288,7 @@ contract IronHandsCommerce {
         // setup data
         address _customerAddress = msg.sender;
         // russian hackers BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 dividendFee_ = SafeMath.sub(tarifDiff, tarif[_customerAddress]);
@@ -304,7 +304,7 @@ contract IronHandsCommerce {
         payoutsTo_[_customerAddress] -= _updatedPayouts;
  
         // dividing by zero is a bad idea
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -528,7 +528,7 @@ contract IronHandsCommerce {
         returns(uint256)
     {
         address _customerAddress = msg.sender;
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 dividendFee_ = SafeMath.sub(tarifDiff, tarif[_customerAddress]);
         uint256 _dividends = SafeMath.div(SafeMath.mul(_ethereum, dividendFee_), 100);
@@ -557,11 +557,11 @@ contract IronHandsCommerce {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply_ &gt; 0){
+        // we can't give people infinite ethereum
+        if(tokenSupply_ > 0){
  
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -577,11 +577,11 @@ contract IronHandsCommerce {
             tokenSupply_ = _amountOfTokens;
         }
  
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
  
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int256 _updatedPayouts = (int256) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
  
@@ -593,7 +593,7 @@ contract IronHandsCommerce {
  
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum)
@@ -628,7 +628,7 @@ contract IronHandsCommerce {
  
     /**
      * Calculate token sell value.
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
      function tokensToEthereum_(uint256 _tokens)
@@ -661,7 +661,7 @@ contract IronHandsCommerce {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -690,9 +690,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
  
@@ -700,7 +700,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
  
@@ -709,7 +709,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -135,7 +135,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,7 +151,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -195,13 +195,13 @@ contract RewardToken is StandardToken, Ownable {
     }
 
     Payment[] public repayments;
-    mapping(address =&gt; Payment[]) public rewards;
+    mapping(address => Payment[]) public rewards;
 
     event Repayment(uint256 amount);
     event Reward(address indexed to, uint256 amount);
 
     function repayment(uint amount) onlyOwner {
-        require(amount &gt;= 1000);
+        require(amount >= 1000);
 
         repayments.push(Payment({time : now, amount : amount * 1 ether, total : totalSupply}));
 
@@ -209,15 +209,15 @@ contract RewardToken is StandardToken, Ownable {
     }
 
     function _reward(address _to) private returns(bool) {
-        if(rewards[_to].length &lt; repayments.length) {
+        if(rewards[_to].length < repayments.length) {
             uint sum = 0;
-            for(uint i = rewards[_to].length; i &lt; repayments.length; i++) {
-                uint amount = balances[_to] &gt; 0 ? (repayments[i].amount * balances[_to] / repayments[i].total) : 0;
+            for(uint i = rewards[_to].length; i < repayments.length; i++) {
+                uint amount = balances[_to] > 0 ? (repayments[i].amount * balances[_to] / repayments[i].total) : 0;
                 rewards[_to].push(Payment({time : now, amount : amount, total : repayments[i].total}));
                 sum += amount;
             }
 
-            if(sum &gt; 0) {
+            if(sum > 0) {
                 totalSupply = totalSupply.add(sum);
                 balances[_to] = balances[_to].add(sum);
                 
@@ -261,8 +261,8 @@ contract RewardToken is StandardToken, Ownable {
     - Чтобы забрать дивиденды держателю токенов необходимо вызвать у Token функцию `reward()`
 */
 contract Token is RewardToken, MintableToken, BurnableToken {
-    string public name = &quot;Mining Data Center Coin&quot;;
-    string public symbol = &quot;MDCC&quot;;
+    string public name = "Mining Data Center Coin";
+    string public symbol = "MDCC";
     uint256 public decimals = 18;
 
     function Token() {
@@ -297,12 +297,12 @@ contract Crowdsale is Pausable {
     
     function purchase() whenNotPaused payable {
         require(!crowdsaleFinished);
-        require((now &gt;= piStartTime &amp;&amp; now &lt; piEndTime) || (now &gt;= startTime &amp;&amp; now &lt; endTime));
-        require(msg.value &gt;= 0.001 * 1 ether &amp;&amp; msg.value &lt;= 100 * 1 ether);
-        require(collectedWei.mul(350) &lt; 22000000 * 1 ether);
+        require((now >= piStartTime && now < piEndTime) || (now >= startTime && now < endTime));
+        require(msg.value >= 0.001 * 1 ether && msg.value <= 100 * 1 ether);
+        require(collectedWei.mul(350) < 22000000 * 1 ether);
 
         uint sum = msg.value;
-        uint amount = sum.mul(now &lt; piEndTime ? 634 : 317);
+        uint amount = sum.mul(now < piEndTime ? 634 : 317);
 
         tokensSold = tokensSold.add(amount);
         collectedWei = collectedWei.add(sum);

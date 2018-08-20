@@ -62,13 +62,13 @@ contract RobotCoinSeller is Ownable{
     }
 
     function() external payable { 
-        require(now &gt; start &amp;&amp; now &lt; start + period*24*60*60);
+        require(now > start && now < start + period*24*60*60);
         require(saleIsOn);
         robotCoin.serviceTransfer(msg.sender, msg.value * 1000 / salePrice );
     }
 
     function transferEther(uint256 etherAmmount) public onlyOwner{ 
-        require(this.balance &gt;= etherAmmount); 
+        require(this.balance >= etherAmmount); 
         owner.transfer(etherAmmount); 
     }
 

@@ -103,12 +103,12 @@ contract ARPHoldingWallet {
 
     function depositOrWithdraw(address _holding) private {
         uint256 amount = arpToken.balanceOf(address(this));
-        if (amount &gt; 0) {
+        if (amount > 0) {
             arpToken.safeApprove(_holding, amount);
         }
         require(_holding.call.gas(GAS_LIMIT)());
         amount = arpToken.balanceOf(address(this));
-        if (amount &gt; 0) {
+        if (amount > 0) {
             arpToken.safeTransfer(msg.sender, amount);
         }
         msg.sender.transfer(msg.value);
@@ -117,7 +117,7 @@ contract ARPHoldingWallet {
     /// Drains ARP.
     function drain() private {
         uint256 amount = arpToken.balanceOf(address(this));
-        require(amount &gt; 0);
+        require(amount > 0);
 
         arpToken.safeTransfer(owner, amount);
     }
@@ -129,7 +129,7 @@ contract ARPHoldingWalletCreator {
      */
     event Created(address indexed _owner, address _wallet);
 
-    mapping (address =&gt; address) public wallets;
+    mapping (address => address) public wallets;
     ERC20 public arpToken;
     address public midTermHolding;
     address public longTermHolding;

@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,10 +58,10 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
  
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(this) &amp;&amp; _to != address(0)); 
+    require (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0 && _to != address(this) && _to != address(0)); 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -75,10 +75,10 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(this) &amp;&amp; _to != address(0));
+    require (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0 && _to != address(this) && _to != address(0));
     uint _allowance = allowed[_from][msg.sender];
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -88,7 +88,7 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function approve(address _spender, uint256 _value) public returns (bool) {
-      require (((_value == 0) || (allowed[msg.sender][_spender] == 0)) &amp;&amp; _spender != address(this) &amp;&amp; _spender != address(0));
+      require (((_value == 0) || (allowed[msg.sender][_spender] == 0)) && _spender != address(this) && _spender != address(0));
       allowed[msg.sender][_spender] = _value;
       Approval(msg.sender, _spender, _value);
       return true;
@@ -102,8 +102,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract UNICToken is owned, StandardToken {
     
-  string public constant name = &#39;UNIC Token&#39;;
-  string public constant symbol = &#39;UNIC&#39;;
+  string public constant name = 'UNIC Token';
+  string public constant symbol = 'UNIC';
   uint8 public constant decimals = 18;
   uint256 public constant initialSupply = 250000000 * 10 ** uint256(decimals);
 
@@ -173,12 +173,12 @@ contract Crowdsale is owned, UNICToken {
 
   address public icoManager;
     
-  mapping (address =&gt; bool) public WhiteList;
-  mapping (address =&gt; bool) public Females;
+  mapping (address => bool) public WhiteList;
+  mapping (address => bool) public Females;
 
-  mapping (address =&gt; bool) public KYC1;
-  mapping (address =&gt; bool) public KYC2;
-  mapping (address =&gt; uint256) public KYCLimit;
+  mapping (address => bool) public KYC1;
+  mapping (address => bool) public KYC2;
+  mapping (address => uint256) public KYCLimit;
   uint256 public constant KYCLimitValue = 1.5 ether;
 
   modifier onlyManager() {
@@ -195,7 +195,7 @@ contract Crowdsale is owned, UNICToken {
   function massPay(address[] dests, uint256 value) public onlyOwner returns (bool) {
     uint256 i = 0;
     uint256 toSend = value * 10 ** uint256(decimals);
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
       if(dests[i] != address(0)){
         transfer(dests[i], toSend);
       }
@@ -212,7 +212,7 @@ contract Crowdsale is owned, UNICToken {
 
   function setParams(address[] dests, uint _type) internal {
     uint256 i = 0;
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
       if(dests[i] != address(0)){
         if(_type==1){
           WhiteList[dests[i]] = true;
@@ -246,15 +246,15 @@ contract Crowdsale is owned, UNICToken {
   }
 
   function isPresale() internal view returns (bool) {
-    return now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd;
+    return now >= presaleStart && now <= presaleEnd;
   }
 
   function isFirstRound() internal view returns (bool) {
-    return now &gt;= firstRoundICOStart &amp;&amp; now &lt;= firstRoundICOEnd;
+    return now >= firstRoundICOStart && now <= firstRoundICOEnd;
   }
 
   function isSecondRound() internal view returns (bool) {
-    return now &gt;= secondRoundICOStart &amp;&amp; now &lt;= secondRoundICOEnd;
+    return now >= secondRoundICOStart && now <= secondRoundICOEnd;
   }
 
   modifier saleIsOn() {
@@ -263,29 +263,29 @@ contract Crowdsale is owned, UNICToken {
   }
 
   function isFemaleSale() internal view returns (bool) {
-    return now &gt;= presaleFemaleStart &amp;&amp; now &lt;= presaleFemaleEnd;
+    return now >= presaleFemaleStart && now <= presaleFemaleEnd;
   }
 
   function isPiSale() internal view returns (bool) {
-    return now &gt;= presalePiStart &amp;&amp; now &lt;= presalePiEnd;
+    return now >= presalePiStart && now <= presalePiEnd;
   }
 
   function isWMSale() internal view returns (bool) {
-    return now &gt;= firstRoundWMStart &amp;&amp; now &lt;= firstRoundWMEnd;
+    return now >= firstRoundWMStart && now <= firstRoundWMEnd;
   }
 
   function isCosmosSale() internal view returns (bool) {
-    return now &gt;= firstRoundCosmosStart &amp;&amp; now &lt;= firstRoundCosmosEnd;
+    return now >= firstRoundCosmosStart && now <= firstRoundCosmosEnd;
   }
 
   function isMaySale() internal view returns (bool) {
-    return now &gt;= secondRoundMayStart &amp;&amp; now &lt;= secondRoundMayEnd;
+    return now >= secondRoundMayStart && now <= secondRoundMayEnd;
   }
 
   function discount(uint _discount, uint _limit, uint _saleLimit, uint _value, uint _defultDiscount) internal pure returns(uint){
     uint tmpDiscount = _value.mul(_discount).div(100);
     uint newValue = _value.add(tmpDiscount);
-    if(_limit &gt;= newValue &amp;&amp; _saleLimit &gt;= newValue) {
+    if(_limit >= newValue && _saleLimit >= newValue) {
       return tmpDiscount;
     }else{
       return _defultDiscount;
@@ -297,8 +297,8 @@ contract Crowdsale is owned, UNICToken {
   }
 
   function buyTokens(address _buyer) saleIsOn public payable {
-    assert((_buyer != address(0) &amp;&amp; msg.value &gt; 0 &amp;&amp; ((KYC1[_buyer] &amp;&amp; msg.value &lt; KYCLimitValue) || KYC2[_buyer])));
-    assert((KYC2[_buyer] || (KYC1[_buyer] &amp;&amp; msg.value &lt; KYCLimit[_buyer])));
+    assert((_buyer != address(0) && msg.value > 0 && ((KYC1[_buyer] && msg.value < KYCLimitValue) || KYC2[_buyer])));
+    assert((KYC2[_buyer] || (KYC1[_buyer] && msg.value < KYCLimit[_buyer])));
 
     uint tokens = rate.mul(msg.value);
     uint discountTokens = 0;
@@ -307,7 +307,7 @@ contract Crowdsale is owned, UNICToken {
 
       discountTokens = discount(presaleDiscount, presaleTokensLimit, presaleTokensLimit, tokens, discountTokens);
 
-      if(isFemaleSale() &amp;&amp; Females[_buyer]) {
+      if(isFemaleSale() && Females[_buyer]) {
         discountTokens = discount(presaleFemaleDiscount, presaleFemaleTokensLimit, presaleTokensLimit, tokens, discountTokens);
       }
       if(WhiteList[_buyer]) {
@@ -340,9 +340,9 @@ contract Crowdsale is owned, UNICToken {
         
     uint tokensWithBonus = tokens.add(discountTokens);
       
-    if((isPresale() &amp;&amp; presaleTokensLimit &gt;= tokensWithBonus) ||
-      (isFirstRound() &amp;&amp; firstRoundICOTokensLimit &gt;=  tokensWithBonus) ||
-      (isSecondRound() &amp;&amp; secondRoundICOTokensLimit &gt;= tokensWithBonus)){
+    if((isPresale() && presaleTokensLimit >= tokensWithBonus) ||
+      (isFirstRound() && firstRoundICOTokensLimit >=  tokensWithBonus) ||
+      (isSecondRound() && secondRoundICOTokensLimit >= tokensWithBonus)){
       
       multisig.transfer(msg.value);
       etherRaised = etherRaised.add(msg.value);
@@ -361,7 +361,7 @@ contract Crowdsale is owned, UNICToken {
           presaleWhitelistTokensLimit = presaleWhitelistTokensLimit.sub(tokensWithBonus);
         }
       
-        if(isFemaleSale() &amp;&amp; Females[_buyer]) {
+        if(isFemaleSale() && Females[_buyer]) {
           presaleFemaleTokensLimit = presaleFemaleTokensLimit.sub(tokensWithBonus);
         }
 

@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,7 +120,7 @@ contract CrowdsaleConfig {
     // Approx 33%
     uint256 public constant COMMUNITY_POOL_TOKENS = 1980000000 * MIN_TOKEN_UNIT;
 
-    // Founders&#39; distribution. Total = 16.5%
+    // Founders' distribution. Total = 16.5%
     uint256 public constant FOUNDERS_TOKENS = 330000000 * MIN_TOKEN_UNIT;
     uint256 public constant FOUNDERS_TOKENS_VESTED_1 = 330000000 * MIN_TOKEN_UNIT;
     uint256 public constant FOUNDERS_TOKENS_VESTED_2 = 330000000 * MIN_TOKEN_UNIT;
@@ -150,7 +150,7 @@ contract CrowdsaleConfig {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -210,7 +210,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -219,7 +219,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -251,7 +251,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -262,8 +262,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -277,7 +277,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -326,7 +326,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -400,8 +400,8 @@ contract MintableToken is StandardToken, Ownable {
  * @dev SelfKey Token implementation.
  */
 contract SelfKeyToken is MintableToken {
-    string public constant name = &#39;SelfKey&#39;; //solhint-disable-line const-name-snakecase
-    string public constant symbol = &#39;KEY&#39;; //solhint-disable-line const-name-snakecase
+    string public constant name = 'SelfKey'; //solhint-disable-line const-name-snakecase
+    string public constant symbol = 'KEY'; //solhint-disable-line const-name-snakecase
     uint256 public constant decimals = 18; //solhint-disable-line const-name-snakecase
 
     uint256 public cap;
@@ -434,7 +434,7 @@ contract SelfKeyToken is MintableToken {
      * @param _value — The number of tokens to mint
      */
     function mint(address _to, uint256 _value) public onlyOwner canMint returns (bool) {
-        require(totalSupply.add(_value) &lt;= cap);
+        require(totalSupply.add(_value) <= cap);
         return super.mint(_to, _value);
     }
 
@@ -474,7 +474,7 @@ contract SelfKeyToken is MintableToken {
     * @param _value — The number of tokens to be burned.
     */
     function burn(uint256 _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -512,7 +512,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -522,10 +522,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -547,7 +547,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -600,7 +600,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
     using SafeERC20 for SelfKeyToken;
 
     // whitelist of addresses that can perform precommitments and KYC verifications
-    mapping(address =&gt; bool) public isVerifier;
+    mapping(address => bool) public isVerifier;
 
     // Token contract
     SelfKeyToken public token;
@@ -620,11 +620,11 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
     // Total amount of tokens purchased, including pre-sale
     uint256 public totalPurchased = 0;
 
-    mapping(address =&gt; bool) public kycVerified;
-    mapping(address =&gt; uint256) public tokensPurchased;
+    mapping(address => bool) public kycVerified;
+    mapping(address => uint256) public tokensPurchased;
 
     // a mapping of dynamically instantiated token timelocks for each pre-commitment beneficiary
-    mapping(address =&gt; address) public vestedTokens;
+    mapping(address => address) public vestedTokens;
 
     bool public isFinalized = false;
 
@@ -670,7 +670,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
         uint256 _goal
     ) public
     {
-        require(_endTime &gt; _startTime);
+        require(_endTime > _startTime);
 
         // sets contract owner as a verifier
         isVerifier[msg.sender] = true;
@@ -711,7 +711,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
 
     /**
      * @dev Fallback function is used to buy tokens.
-     *      It&#39;s the only entry point since `buyTokens` is internal
+     *      It's the only entry point since `buyTokens` is internal
      */
     function () public payable {
         buyTokens(msg.sender);
@@ -734,36 +734,36 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
     }
 
     /**
-     * @dev Sets a new start date as long as token hasn&#39;t started yet
+     * @dev Sets a new start date as long as token hasn't started yet
      * @param _startTime - unix timestamp of the new start time
      */
     function setStartTime (uint64 _startTime) public onlyOwner {
-        require(now &lt; startTime);
-        require(_startTime &gt; now);
-        require(_startTime &lt; endTime);
+        require(now < startTime);
+        require(_startTime > now);
+        require(_startTime < endTime);
 
         startTime = _startTime;
     }
 
     /**
-     * @dev Sets a new end date as long as end date hasn&#39;t been reached
+     * @dev Sets a new end date as long as end date hasn't been reached
      * @param _endTime - unix timestamp of the new end time
      */
     function setEndTime (uint64 _endTime) public onlyOwner {
-        require(now &lt; endTime);
-        require(_endTime &gt; now);
-        require(_endTime &gt; startTime);
+        require(now < endTime);
+        require(_endTime > now);
+        require(_endTime > startTime);
 
         endTime = _endTime;
     }
 
     /**
-     * @dev Updates the ETH/USD conversion rate as long as the public sale hasn&#39;t started
+     * @dev Updates the ETH/USD conversion rate as long as the public sale hasn't started
      * @param _ethPrice - Updated conversion rate
      */
     function setEthPrice(uint256 _ethPrice) public onlyOwner {
-        require(now &lt; startTime);
-        require(_ethPrice &gt; 0);
+        require(now < startTime);
+        require(_ethPrice > 0);
 
         ethPrice = _ethPrice;
         rate = ethPrice.mul(1000).div(TOKEN_PRICE_THOUSANDTH);
@@ -771,10 +771,10 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     *      work. Calls the contract&#39;s finalization function.
+     *      work. Calls the contract's finalization function.
      */
     function finalize() public onlyOwner {
-        require(now &gt; startTime);
+        require(now > startTime);
         require(!isFinalized);
 
         finalization();
@@ -798,7 +798,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
      * @dev If crowdsale is unsuccessful, participants can claim refunds
      */
     function goalReached() public constant returns (bool) {
-        return totalPurchased &gt;= goal;
+        return totalPurchased >= goal;
     }
 
     /**
@@ -849,7 +849,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
     ) public verifierOnly
     {
         // requires to be on pre-sale
-        require(now &lt; startTime); // solhint-disable-line not-rely-on-time
+        require(now < startTime); // solhint-disable-line not-rely-on-time
 
         kycVerified[beneficiary] = true;
 
@@ -875,7 +875,7 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
             token.safeTransfer(beneficiary, half);
             token.safeTransfer(timelock, tokens.sub(half));
         } else {
-            // all tokens are sent to the participant&#39;s address
+            // all tokens are sent to the participant's address
             token.safeTransfer(beneficiary, tokens);
         }
 
@@ -904,8 +904,8 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
      */
     function buyTokens(address participant) internal {
         require(kycVerified[participant]);
-        require(now &gt;= startTime);
-        require(now &lt; endTime);
+        require(now >= startTime);
+        require(now < endTime);
         require(!isFinalized);
         require(msg.value != 0);
 
@@ -917,14 +917,14 @@ contract SelfKeyCrowdsale is Ownable, CrowdsaleConfig {
         tokensPurchased[participant] = tokensPurchased[participant].add(tokens);
         totalPurchased = totalPurchased.add(tokens);
 
-        require(totalPurchased &lt;= SALE_CAP);
-        require(tokensPurchased[participant] &gt;= PURCHASER_MIN_TOKEN_CAP);
+        require(totalPurchased <= SALE_CAP);
+        require(tokensPurchased[participant] >= PURCHASER_MIN_TOKEN_CAP);
 
-        if (now &lt; startTime + 86400) {
+        if (now < startTime + 86400) {
             // if still during the first day of token sale, apply different max cap
-            require(tokensPurchased[participant] &lt;= PURCHASER_MAX_TOKEN_CAP_DAY1);
+            require(tokensPurchased[participant] <= PURCHASER_MAX_TOKEN_CAP_DAY1);
         } else {
-            require(tokensPurchased[participant] &lt;= PURCHASER_MAX_TOKEN_CAP);
+            require(tokensPurchased[participant] <= PURCHASER_MAX_TOKEN_CAP);
         }
 
         // Sends ETH contribution to the RefundVault and tokens to participant

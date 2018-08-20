@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="691b0c040a06295b">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="691b0c040a06295b">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -40,8 +40,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -56,9 +56,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -75,7 +75,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -189,7 +189,7 @@ contract JobsBounty is Ownable, ReentrancyGuard {
         uint256 amountCandidate = (ERC20(INDToken).balanceOf(this) / 100) * 50;
         uint256 amountReferrer = (ERC20(INDToken).balanceOf(this) / 100) * 50;
         
-        assert(block.timestamp &gt;= endDate);
+        assert(block.timestamp >= endDate);
         // Tranferring to the candidate first
         assert(ERC20(INDToken).transfer(_candidateAddress, amountCandidate));
         assert(ERC20(INDToken).transfer(_referrerAddress, amountReferrer));
@@ -198,10 +198,10 @@ contract JobsBounty is Ownable, ReentrancyGuard {
     
     //This function can be used in 2 instances - 
     // 1st one if to withdraw tokens that are accidentally send to this Contract
-    // 2nd is to actually withdraw the tokens and return it to the company in case they don&#39;t find a candidate
+    // 2nd is to actually withdraw the tokens and return it to the company in case they don't find a candidate
     function withdrawERC20Token(address anyToken) public onlyOwner nonReentrant returns(bool){
         if( anyToken != address(0x0) ) {
-            assert(block.timestamp &gt;= endDate);
+            assert(block.timestamp >= endDate);
             assert(ERC20(anyToken).transfer(owner, ERC20(anyToken).balanceOf(this)));        
             return true;
         }
@@ -211,7 +211,7 @@ contract JobsBounty is Ownable, ReentrancyGuard {
     //ETH cannot get locked in this contract. If it does, this can be used to withdraw
     //the locked ether.
     function withdrawEther() public nonReentrant returns(bool){
-        if(address(this).balance &gt; 0){
+        if(address(this).balance > 0){
             owner.transfer(address(this).balance);
         }        
         return true;

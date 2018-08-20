@@ -9,13 +9,13 @@ library SafeMath {
 
 
     function sub(uint a, uint b) pure internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -123,7 +123,7 @@ contract Crowdsale is Pausable {
     uint public totalRefunded; // total amount of refunds    
     uint public tokenPriceWei;
 
-    mapping(address =&gt; Backer) public backers; //backer list
+    mapping(address => Backer) public backers; //backer list
     address[] public backersIndex; // to be able to itarate through backers for verification.  
 
 
@@ -136,14 +136,14 @@ contract Crowdsale is Pausable {
 
     // @notice to verify if action is not performed out of the campaing range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) 
+        if ((block.number < startBlock) || (block.number > endBlock)) 
             revert();
         _;
     }
 
 
     modifier minCapNotReached() {
-        if (ethReceivedPresale.add(ethReceivedMain) &gt;= minCap) 
+        if (ethReceivedPresale.add(ethReceivedMain) >= minCap) 
             revert();
         _;
     }
@@ -229,7 +229,7 @@ contract Crowdsale is Pausable {
     // @notice It will be called by owner to start the sale    
     function start(uint _block) external onlyOwner() {   
 
-        require(_block &lt; 216000);  // 2.5*60*24*60 days = 216000     
+        require(_block < 216000);  // 2.5*60*24*60 days = 216000     
         startBlock = block.number;
         endBlock = startBlock.add(_block); 
     }
@@ -238,8 +238,8 @@ contract Crowdsale is Pausable {
     // this function will allow on adjusting duration of campaign closer to the end 
     function adjustDuration(uint _block) external onlyOwner() {
 
-        require(_block &lt; 288000);  // 2.5*60*24*80 days = 288000     
-        require(_block &gt; block.number.sub(startBlock)); // ensure that endBlock is not set in the past
+        require(_block < 288000);  // 2.5*60*24*80 days = 288000     
+        require(_block > block.number.sub(startBlock)); // ensure that endBlock is not set in the past
         endBlock = startBlock.add(_block); 
     }
 
@@ -278,7 +278,7 @@ contract Crowdsale is Pausable {
 
     function validPurchase() constant internal returns (uint) {
        
-        require (msg.value &gt;= minInvestETH);   // ensure that min contributions amount is met
+        require (msg.value >= minInvestETH);   // ensure that min contributions amount is met
 
         // calculate amount of tokens to send  (add 18 0s first)   
         uint tokensToSend = msg.value.mul(1e18) / tokenPriceWei;  // basic nmumber of tokens to send
@@ -288,7 +288,7 @@ contract Crowdsale is Pausable {
         else                                         // calculate number of tokens for presale with 50% bonus
             tokensToSend = tokensToSend.add(tokensToSend.mul(50) / 100);
           
-        require(totalTokensSent.add(tokensToSend) &lt; maxCap); // Ensure that max cap hasn&#39;t been reached  
+        require(totalTokensSent.add(tokensToSend) < maxCap); // Ensure that max cap hasn't been reached  
 
         return tokensToSend;
     }
@@ -298,15 +298,15 @@ contract Crowdsale is Pausable {
     // @return tokensToPurchase {uint} value of tokens to purchase
     function calculateNoOfTokensToSend(uint _amount) internal constant returns(uint) {
    
-        if (ethReceivedMain &lt;= 1500 ether)        // First 1500 ETH: 25%
+        if (ethReceivedMain <= 1500 ether)        // First 1500 ETH: 25%
             return _amount.add(_amount.mul(25) / 100);
-        else if (ethReceivedMain &lt;= 2500 ether)   // 1501 to 2500 ETH: 15%              
+        else if (ethReceivedMain <= 2500 ether)   // 1501 to 2500 ETH: 15%              
             return _amount.add(_amount.mul(15) / 100);
-        else if (ethReceivedMain &lt; 3000 ether)   // 2501 to 3000 ETH: 10%
+        else if (ethReceivedMain < 3000 ether)   // 2501 to 3000 ETH: 10%
             return _amount.add(_amount.mul(10) / 100);
-        else if (ethReceivedMain &lt;= 4000 ether)  // 3001 to 4000 ETH: 5%
+        else if (ethReceivedMain <= 4000 ether)  // 3001 to 4000 ETH: 5%
             return _amount.add(_amount.mul(5) / 100);
-        else if (ethReceivedMain &lt;= 5000 ether)  // 4001 to 5000 ETH : 2%
+        else if (ethReceivedMain <= 5000 ether)  // 4001 to 5000 ETH : 2%
             return _amount.add(_amount.mul(2) / 100);
         else                                 // 5000+ No bonus after that
             return _amount;
@@ -328,10 +328,10 @@ contract Crowdsale is Pausable {
         require(!crowdsaleClosed);        
         // purchasing precise number of tokens might be impractical, thus subtract 100 tokens so finalizition is possible
         // near the end 
-        require (block.number &gt;= endBlock || totalTokensSent &gt;= maxCap.sub(100)); 
-        require(totalEtherReceived &gt;= minCap &amp;&amp; block.number &gt;= endBlock);             
+        require (block.number >= endBlock || totalTokensSent >= maxCap.sub(100)); 
+        require(totalEtherReceived >= minCap && block.number >= endBlock);             
 
-        if (totalTokensSent &gt;= minCap) {           
+        if (totalTokensSent >= minCap) {           
             if (!token.transfer(team, 6300000e18)) // transfer tokens for the team/dev/advisors
                 revert();
             if (!token.transfer(lottery, token.balanceOf(this) / 2)) 
@@ -354,7 +354,7 @@ contract Crowdsale is Pausable {
 
     // @notice Failsafe token transfer
     function tokenDrian() external onlyOwner() {
-       if (block.number &gt; endBlock) {
+       if (block.number > endBlock) {
         if (!token.transfer(team, token.balanceOf(this))) 
                 revert();
         }
@@ -364,8 +364,8 @@ contract Crowdsale is Pausable {
 
     function refund()  external stopInEmergency returns (bool) {
 
-        require(totalTokensSent &lt; minCap); 
-        require(this.balance &gt; 0);  // contract will hold 0 ether at the end of campaign.                                  
+        require(totalTokensSent < minCap); 
+        require(this.balance > 0);  // contract will hold 0 ether at the end of campaign.                                  
                                     // contract needs to be funded through fundContract() 
 
         Backer storage backer = backers[msg.sender];
@@ -396,19 +396,19 @@ contract Token is ERC20,  Ownable {
     string public name;
     string public symbol;
     uint8 public decimals; // How many decimals to show.
-    string public version = &quot;v0.1&quot;;       
+    string public version = "v0.1";       
     uint public totalSupply;
     bool public locked;
     address public crowdSaleAddress;
     
 
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // tokens are locked during the ICO. Allow transfer of tokens after ICO. 
     modifier onlyUnlocked() {
-        if (msg.sender != crowdSaleAddress &amp;&amp; locked) 
+        if (msg.sender != crowdSaleAddress && locked) 
             revert();
         _;
     }
@@ -416,7 +416,7 @@ contract Token is ERC20,  Ownable {
 
     // allow burning of tokens only by authorized users 
     modifier onlyAuthorized() {
-        if (msg.sender != owner &amp;&amp; msg.sender != crowdSaleAddress ) 
+        if (msg.sender != owner && msg.sender != crowdSaleAddress ) 
             revert();
         _;
     }
@@ -427,8 +427,8 @@ contract Token is ERC20,  Ownable {
         
         locked = true;  // Lock the transfCrowdsaleer function during the crowdsale
         totalSupply = 21000000e18; 
-        name = &quot;Lottery Token&quot;; // Set the name for display purposes
-        symbol = &quot;ETHD&quot;; // Set the symbol for display purposes
+        name = "Lottery Token"; // Set the name for display purposes
+        symbol = "ETHD"; // Set the symbol for display purposes
         decimals = 18; // Amount of decimals for display purposes
         crowdSaleAddress = _crowdSaleAddress;                                  
         balances[crowdSaleAddress] = totalSupply;
@@ -459,8 +459,8 @@ contract Token is ERC20,  Ownable {
 
     
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnlocked returns(bool success) {
-        require (balances[_from] &gt;= _value); // Check if the sender has enough                            
-        require (_value &lt;= allowed[_from][msg.sender]); // Check if allowed is greater or equal        
+        require (balances[_from] >= _value); // Check if the sender has enough                            
+        require (_value <= allowed[_from][msg.sender]); // Check if allowed is greater or equal        
         balances[_from] = balances[_from].sub(_value); // Subtract from the sender
         balances[_to] = balances[_to].add(_value); // Add the same to the recipient
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -478,7 +478,7 @@ contract Token is ERC20,  Ownable {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -508,7 +508,7 @@ contract Token is ERC20,  Ownable {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

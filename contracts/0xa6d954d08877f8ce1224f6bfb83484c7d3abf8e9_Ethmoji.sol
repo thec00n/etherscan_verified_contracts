@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -94,7 +94,7 @@ contract Ownable {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -105,7 +105,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -197,16 +197,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -410,16 +410,16 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     uint256 public minCompositionFee = 0.001 ether;
 
     // Mapping from token ID to composition price
-    mapping (uint256 =&gt; uint256) public tokenIdToCompositionPrice;
+    mapping (uint256 => uint256) public tokenIdToCompositionPrice;
     
     // Mapping from token ID to layers representing it
-    mapping (uint256 =&gt; uint256[]) public tokenIdToLayers;
+    mapping (uint256 => uint256[]) public tokenIdToLayers;
 
     // Hash of all layers to track uniqueness of ethmojis
-    mapping (bytes32 =&gt; bool) public compositions;
+    mapping (bytes32 => bool) public compositions;
 
     // Image hashes to track uniquenes of ethmoji images.
-    mapping (uint256 =&gt; uint256) public imageHashes;
+    mapping (uint256 => uint256) public imageHashes;
 
     // Event for emitting new base token created 
     event BaseTokenCreated(uint256 tokenId);
@@ -457,23 +457,23 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     */
     function compose(uint256[] _tokenIds,  uint256 _imageHash) public payable whenNotPaused {
         uint256 price = getTotalCompositionPrice(_tokenIds);
-        require(msg.sender != address(0) &amp;&amp; msg.value &gt;= price);
-        require(_tokenIds.length &lt;= MAX_LAYERS);
+        require(msg.sender != address(0) && msg.value >= price);
+        require(_tokenIds.length <= MAX_LAYERS);
 
         uint256[] memory layers = new uint256[](MAX_LAYERS);
         uint actualSize = 0; 
 
-        for (uint i = 0; i &lt; _tokenIds.length; i++) { 
+        for (uint i = 0; i < _tokenIds.length; i++) { 
             uint256 compositionLayerId = _tokenIds[i];
             require(_tokenLayersExist(compositionLayerId));
             uint256[] memory inheritedLayers = tokenIdToLayers[compositionLayerId];
             if (isCompositionOnlyWithBaseLayers) { 
                 require(inheritedLayers.length == 1);
             }
-            require(inheritedLayers.length &lt; MAX_LAYERS);
-            for (uint j = 0; j &lt; inheritedLayers.length; j++) { 
-                require(actualSize &lt; MAX_LAYERS);
-                for (uint k = 0; k &lt; layers.length; k++) { 
+            require(inheritedLayers.length < MAX_LAYERS);
+            for (uint j = 0; j < inheritedLayers.length; j++) { 
+                require(actualSize < MAX_LAYERS);
+                for (uint k = 0; k < layers.length; k++) { 
                     require(layers[k] != inheritedLayers[j]);
                     if (layers[k] == 0) { 
                         break;
@@ -495,7 +495,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     
         _mint(msg.sender, newTokenIndex);
 
-        if (msg.value &gt; price) {
+        if (msg.value > price) {
             uint256 purchaseExcess = SafeMath.sub(msg.value, price);
             msg.sender.transfer(purchaseExcess);          
         }
@@ -546,7 +546,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     */
     function getTotalCompositionPrice(uint256[] _tokenIds) public view returns(uint256) {
         uint256 totalCompositionPrice = 0;
-        for (uint i = 0; i &lt; _tokenIds.length; i++) {
+        for (uint i = 0; i < _tokenIds.length; i++) {
             require(_tokenLayersExist(_tokenIds[i]));
             totalCompositionPrice = SafeMath.add(totalCompositionPrice, tokenIdToCompositionPrice[_tokenIds[i]]);
         }
@@ -576,10 +576,10 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     * @return bool whether or not the composition is unique
     */
     function _isValidBaseLayersOnly(uint256[] _tokenIds, uint256 _imageHash) private view returns (bool) { 
-        require(_tokenIds.length &lt;= MAX_LAYERS);
+        require(_tokenIds.length <= MAX_LAYERS);
         uint256[] memory layers = new uint256[](_tokenIds.length);
 
-        for (uint i = 0; i &lt; _tokenIds.length; i++) { 
+        for (uint i = 0; i < _tokenIds.length; i++) { 
             if (!_tokenLayersExist(_tokenIds[i])) {
                 return false;
             }
@@ -588,7 +588,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
                 return false;
             }
 
-            for (uint k = 0; k &lt; layers.length; k++) { 
+            for (uint k = 0; k < layers.length; k++) { 
                 if (layers[k] == tokenIdToLayers[_tokenIds[i]][0]) {
                     return false;
                 }
@@ -612,20 +612,20 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     function _isValidWithCompositions(uint256[] _tokenIds, uint256 _imageHash) private view returns (bool) { 
         uint256[] memory layers = new uint256[](MAX_LAYERS);
         uint actualSize = 0; 
-        if (_tokenIds.length &gt; MAX_LAYERS) { 
+        if (_tokenIds.length > MAX_LAYERS) { 
             return false;
         }
 
-        for (uint i = 0; i &lt; _tokenIds.length; i++) { 
+        for (uint i = 0; i < _tokenIds.length; i++) { 
             uint256 compositionLayerId = _tokenIds[i];
             if (!_tokenLayersExist(compositionLayerId)) { 
                 return false;
             }
             uint256[] memory inheritedLayers = tokenIdToLayers[compositionLayerId];
-            require(inheritedLayers.length &lt; MAX_LAYERS);
-            for (uint j = 0; j &lt; inheritedLayers.length; j++) { 
-                require(actualSize &lt; MAX_LAYERS);
-                for (uint k = 0; k &lt; layers.length; k++) { 
+            require(inheritedLayers.length < MAX_LAYERS);
+            for (uint j = 0; j < inheritedLayers.length; j++) { 
+                require(actualSize < MAX_LAYERS);
+                for (uint k = 0; k < layers.length; k++) { 
                     if (layers[k] == inheritedLayers[j]) {
                         return false;
                     }
@@ -648,7 +648,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     */
     function _trim(uint256[] _layers, uint _size) private pure returns(uint256[]) { 
         uint256[] memory trimmedLayers = new uint256[](_size);
-        for (uint i = 0; i &lt; _size; i++) { 
+        for (uint i = 0; i < _size; i++) { 
             trimmedLayers[i] = _layers[i];
         }
 
@@ -670,7 +670,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     * @param _price uint256 new composition price
     */
     function _setCompositionPrice(uint256 _tokenId, uint256 _price) private {
-        require(_price &gt;= minCompositionFee);
+        require(_price >= minCompositionFee);
         tokenIdToCompositionPrice[_tokenId] = _price;
         CompositionPriceChanged(_tokenId, _price, msg.sender);
     }
@@ -691,7 +691,7 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
     * @return bool whether or not the composition is unique
     */
     function _isUnique(uint256[] _layers, uint256 _imageHash) private view returns (bool) { 
-        return compositions[keccak256(_layers)] == false &amp;&amp; imageHashes[_imageHash] == 0;
+        return compositions[keccak256(_layers)] == false && imageHashes[_imageHash] == 0;
     }
 
 // ----- ONLY OWNER FUNCTIONS ---------------------------------------------------------------------
@@ -717,11 +717,11 @@ contract Composable is ERC721Token, Ownable, PullPayment, Pausable {
 contract Ethmoji is Composable {
     using SafeMath for uint256;
 
-    string public constant NAME = &quot;Ethmoji&quot;;
-    string public constant SYMBOL = &quot;EMJ&quot;;
+    string public constant NAME = "Ethmoji";
+    string public constant SYMBOL = "EMJ";
 
     // Mapping from address to emoji representing avatar
-    mapping (address =&gt; uint256) public addressToAvatar;
+    mapping (address => uint256) public addressToAvatar;
 
     function Ethmoji() public { 
         isCompositionOnlyWithBaseLayers = true;
@@ -747,7 +747,7 @@ contract Ethmoji is Composable {
 
 
         // Immediately pay out to layer owners
-        for (uint8 i = 0; i &lt; _tokenIds.length; i++) {
+        for (uint8 i = 0; i < _tokenIds.length; i++) {
             _withdrawTo(ownerOf(_tokenIds[i]));
         }
     }
@@ -793,7 +793,7 @@ contract Ethmoji is Composable {
     * @param _tokenId uint256 the ID of the token being transferred
     */
     function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) whenNotPaused {
-        // If the transferred token was previous owner&#39;s avatar, remove it
+        // If the transferred token was previous owner's avatar, remove it
         if (addressToAvatar[msg.sender] == _tokenId) {
             _removeAvatar(msg.sender);
         }
@@ -829,7 +829,7 @@ contract Ethmoji is Composable {
     function _withdrawTo(address _payee) private {
         uint256 payment = payments[_payee];
 
-        if (payment != 0 &amp;&amp; this.balance &gt;= payment) {
+        if (payment != 0 && this.balance >= payment) {
             totalPayments = totalPayments.sub(payment);
             payments[_payee] = 0;
 

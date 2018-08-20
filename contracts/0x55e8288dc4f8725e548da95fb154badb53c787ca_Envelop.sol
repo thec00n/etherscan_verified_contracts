@@ -15,7 +15,7 @@ contract Envelop {
         owner = msg.sender;
     }
     
-    mapping(address =&gt; uint) public accounts;
+    mapping(address => uint) public accounts;
     bytes32 public hashKey;
      
     function start(string _key) public onlyOwner{
@@ -23,7 +23,7 @@ contract Envelop {
     }
     
     function bid(string _key) public {
-        if (sha3(_key) == hashKey &amp;&amp; accounts[msg.sender] != 1) {
+        if (sha3(_key) == hashKey && accounts[msg.sender] != 1) {
             accounts[msg.sender] = 1;
             msg.sender.transfer(1e16);
         }

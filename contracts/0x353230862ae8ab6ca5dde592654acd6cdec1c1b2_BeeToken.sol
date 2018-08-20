@@ -9,8 +9,8 @@ pragma solidity ^0.4.19;
 /// 
 
 contract BeeToken {
-    string public name = &quot;Beetoken&quot;;
-    string public symbol = &quot;BEE&quot;;
+    string public name = "Beetoken";
+    string public symbol = "BEE";
     uint8 public constant decimals = 18;  
     address public owner;
 
@@ -24,8 +24,8 @@ contract BeeToken {
     // The current total token supply.
     uint256 totalTokens = 1000;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
@@ -39,7 +39,7 @@ contract BeeToken {
 
     function changeNameSymbol(string _name, string _symbol) payable external
     {
-        if (msg.sender==owner || msg.value &gt;=howManyEtherInWeiToChangeSymbolName)
+        if (msg.sender==owner || msg.value >=howManyEtherInWeiToChangeSymbolName)
         {
             name = _name;
             symbol = _symbol;
@@ -49,7 +49,7 @@ contract BeeToken {
     
     function changeOwner (address _newowner) payable external
     {
-        if (msg.value&gt;=howManyEtherInWeiToBecomeOwner)
+        if (msg.value>=howManyEtherInWeiToBecomeOwner)
         {
             owner.transfer(msg.value);
             owner.transfer(this.balance);
@@ -59,12 +59,12 @@ contract BeeToken {
 
     function killContract () payable external
     {
-        if (msg.sender==owner || msg.value &gt;=howManyEtherInWeiToKillContract)
+        if (msg.sender==owner || msg.value >=howManyEtherInWeiToKillContract)
         {
             selfdestruct(owner);
         }
     }
-    /// @notice Transfer `_value` tokens from sender&#39;s account
+    /// @notice Transfer `_value` tokens from sender's account
     /// `msg.sender` to provided account address `_to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Operational
@@ -75,7 +75,7 @@ contract BeeToken {
         // Abort if not in Operational state.
         
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -108,10 +108,10 @@ contract BeeToken {
          address _to,
          uint256 _amount
      ) public returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -131,7 +131,7 @@ contract BeeToken {
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding Active
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function () payable external {
         // Abort if not in Funding Active state.
         // The checks are split (instead of using or operator) because it is

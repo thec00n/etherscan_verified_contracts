@@ -8,31 +8,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal pure returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal  pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal  pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -56,7 +56,7 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   function transfer(address _to, uint _value) public{
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -71,7 +71,7 @@ contract BasicToken is ERC20Basic {
 
 
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) public {
     balances[_to] = balances[_to].add(_value);
@@ -114,8 +114,8 @@ contract Ownable {
  *  TTC token contract. Implements
  */
 contract TTC is StandardToken, Ownable {
-  string public constant name = &quot;TTC&quot;;
-  string public constant symbol = &quot;TTC&quot;;
+  string public constant name = "TTC";
+  string public constant symbol = "TTC";
   uint public constant decimals = 18;
 
 

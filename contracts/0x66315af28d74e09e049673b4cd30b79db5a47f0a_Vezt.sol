@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -62,12 +62,12 @@ contract Vezt is Owned {
     bool        public  tokenMintingEnabled;
     bool        public  contractLaunched;
 
-    mapping (address =&gt; mapping (address =&gt; uint256))   public allowance;
-    mapping (address =&gt; uint256)                        public balances;
-    mapping (address =&gt; uint256)                        public royaltyTracking;
-    mapping (address =&gt; uint256)                        public icoBalances;
-    mapping (address =&gt; uint256)                        public veztUserArrayIdentifier;
-    mapping (address =&gt; bool)                           public veztUserRegistered;
+    mapping (address => mapping (address => uint256))   public allowance;
+    mapping (address => uint256)                        public balances;
+    mapping (address => uint256)                        public royaltyTracking;
+    mapping (address => uint256)                        public icoBalances;
+    mapping (address => uint256)                        public veztUserArrayIdentifier;
+    mapping (address => bool)                           public veztUserRegistered;
 
     event Transfer(address indexed _sender, address indexed _recipient, uint256 _amount);
     event Approve(address indexed _owner, address indexed _spender, uint256 _amount);
@@ -79,8 +79,8 @@ contract Vezt is Owned {
     event TokenMintingEnabled(address indexed _invoker, bool indexed _enabled);
 
     function Vezt() {
-        name = &quot;Vezt&quot;;
-        symbol = &quot;VZT&quot;;
+        name = "Vezt";
+        symbol = "VZT";
         decimals = 18;
         //125 million in wei 
         totalSupply = 125000000000000000000000000;
@@ -103,8 +103,8 @@ contract Vezt is Owned {
             veztUsers.push(_receiver);
             veztUserRegistered[_receiver] = true;
         }
-        require(royaltyTracking[_receiver].add(_amount) &gt; 0);
-        require(royaltyTracking[_receiver].add(_amount) &gt; royaltyTracking[_receiver]);
+        require(royaltyTracking[_receiver].add(_amount) > 0);
+        require(royaltyTracking[_receiver].add(_amount) > royaltyTracking[_receiver]);
         royaltyTracking[_receiver] = royaltyTracking[_receiver].add(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_receiver] = balances[_receiver].add(_amount);
@@ -179,7 +179,7 @@ contract Vezt is Owned {
         public 
         returns (bool success)
     {
-        require(allowance[_owner][msg.sender] &gt;= _amount);
+        require(allowance[_owner][msg.sender] >= _amount);
         require(transferCheck(_owner, _receiver, _amount));
         allowance[_owner][msg.sender] = allowance[_owner][msg.sender].sub(_amount);
         balances[_owner] =  balances[_owner].sub(_amount);
@@ -195,8 +195,8 @@ contract Vezt is Owned {
         public
         returns (bool approved)
     {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt;= _amount);
+        require(_amount > 0);
+        require(balances[msg.sender] >= _amount);
         allowance[msg.sender][_spender] = allowance[msg.sender][_spender].add(_amount);
         return true;
     }
@@ -207,10 +207,10 @@ contract Vezt is Owned {
         onlyOwner
         returns (bool burned)
     {
-        require(_amount &gt; 0);
-        require(totalSupply.sub(_amount) &gt; 0);
-        require(balances[msg.sender] &gt; _amount);
-        require(balances[msg.sender].sub(_amount) &gt; 0);
+        require(_amount > 0);
+        require(totalSupply.sub(_amount) > 0);
+        require(balances[msg.sender] > _amount);
+        require(balances[msg.sender].sub(_amount) > 0);
         totalSupply = totalSupply.sub(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         Transfer(msg.sender, 0, _amount);
@@ -224,11 +224,11 @@ contract Vezt is Owned {
         returns (bool minted)
     {
         require(tokenMintingEnabled);
-        require(_amount &gt; 0);
-        require(totalSupply.add(_amount) &gt; 0);
-        require(totalSupply.add(_amount) &gt; totalSupply);
-        require(balances[owner].add(_amount) &gt; 0);
-        require(balances[owner].add(_amount) &gt; balances[owner]);
+        require(_amount > 0);
+        require(totalSupply.add(_amount) > 0);
+        require(totalSupply.add(_amount) > totalSupply);
+        require(balances[owner].add(_amount) > 0);
+        require(balances[owner].add(_amount) > balances[owner]);
         return true;
     }
     /// @notice Used to create new tokens and increase total supply
@@ -261,11 +261,11 @@ contract Vezt is Owned {
         returns (bool success)
     {
         require(!tokenTransfersFrozen);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_receiver != address(0));
-        require(balances[_sender].sub(_amount) &gt;= 0);
-        require(balances[_receiver].add(_amount) &gt; 0);
-        require(balances[_receiver].add(_amount) &gt; balances[_receiver]);
+        require(balances[_sender].sub(_amount) >= 0);
+        require(balances[_receiver].add(_amount) > 0);
+        require(balances[_receiver].add(_amount) > balances[_receiver]);
         return true;
     }
 

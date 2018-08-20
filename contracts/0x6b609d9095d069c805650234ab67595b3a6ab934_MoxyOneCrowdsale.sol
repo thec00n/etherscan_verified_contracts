@@ -278,7 +278,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -344,7 +344,7 @@ interface IAuthenticationManager {
 /**
  * IWingsAdapter
  * 
- * WINGS DAO Price Discovery &amp; Promotion Pre-Beta https://www.wings.ai
+ * WINGS DAO Price Discovery & Promotion Pre-Beta https://www.wings.ai
  *
  * #created 04/10/2017
  * #author Frank Bonnet
@@ -374,7 +374,7 @@ interface IPersonalCrowdsaleProxy {
     /**
      * Receive ether and issue tokens
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -411,7 +411,7 @@ contract PersonalCrowdsaleProxy is IPersonalCrowdsaleProxy {
     /**
      * Receive contribution and forward to the target crowdsale
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      */
@@ -432,7 +432,7 @@ interface ICrowdsaleProxy {
     /**
      * Receive ether and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -486,7 +486,7 @@ contract CrowdsaleProxy is ICrowdsaleProxy {
     /**
      * Receive contribution and forward to the crowdsale
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      */
@@ -605,7 +605,7 @@ interface ICrowdsale {
     /**
      * Receive ether and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -730,14 +730,14 @@ contract Crowdsale is ICrowdsale, Ownership {
     IManagedToken public token;
 
     // Invested balances
-    mapping (address =&gt; uint) private balances;
+    mapping (address => uint) private balances;
 
     // Alocated balances
-    mapping (address =&gt; mapping(uint =&gt; Balance)) private allocated;
-    mapping(address =&gt; uint[]) private allocatedIndex;
+    mapping (address => mapping(uint => Balance)) private allocated;
+    mapping(address => uint[]) private allocatedIndex;
 
     // Stakeholders
-    mapping (address =&gt; Percentage) private stakeholderPercentages;
+    mapping (address => Percentage) private stakeholderPercentages;
     address[] private stakeholderPercentagesIndex;
     Payout[] private stakeholdersPayouts;
 
@@ -745,7 +745,7 @@ contract Crowdsale is ICrowdsale, Ownership {
     Phase[] private phases;
 
     // Volume multipliers
-    mapping (uint =&gt; VolumeMultiplier) private volumeMultipliers;
+    mapping (uint => VolumeMultiplier) private volumeMultipliers;
     uint[] private volumeMultiplierThresholds;
 
     
@@ -766,7 +766,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @param _time Time to pass
      */
     modifier only_after(uint _time) {
-        require(now &gt; crowdsaleEnd + _time);
+        require(now > crowdsaleEnd + _time);
         _;
     }
 
@@ -775,7 +775,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * Only after crowdsale
      */
     modifier only_after_crowdsale() {
-        require(now &gt; crowdsaleEnd);
+        require(now > crowdsaleEnd);
         _;
     }
 
@@ -839,13 +839,13 @@ contract Crowdsale is ICrowdsale, Ownership {
         presaleEnd = start + _phasePeriods[0]; // First phase is expected to be the presale phase
         crowdsaleEnd = start; // Plus the sum of the rate phases
 
-        for (uint i = 0; i &lt; _phaseRates.length; i++) {
+        for (uint i = 0; i < _phaseRates.length; i++) {
             crowdsaleEnd += _phasePeriods[i];
             phases.push(Phase(_phaseRates[i], crowdsaleEnd, 0, _phaseUsesVolumeMultiplier[i]));
         }
 
-        for (uint ii = 0; ii &lt; _phaseRates.length; ii++) {
-            if (_phaseBonusLockupPeriods[ii] &gt; 0) {
+        for (uint ii = 0; ii < _phaseRates.length; ii++) {
+            if (_phaseBonusLockupPeriods[ii] > 0) {
                 phases[ii].bonusReleaseDate = crowdsaleEnd + _phaseBonusLockupPeriods[ii];
             }
         }
@@ -865,7 +865,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function setupStakeholders(address[] _stakeholders, uint[] _stakeholderEthPercentages, uint[] _stakeholderTokenPercentages, bool[] _stakeholderTokenPayoutOverwriteReleaseDates, uint[] _stakeholderTokenPayoutFixedReleaseDates, uint[] _stakeholderTokenPayoutPercentages, uint[] _stakeholderTokenPayoutVestingPeriods) public only_owner at_stage(Stages.Deploying) {
         beneficiary = _stakeholders[0]; // First stakeholder is expected to be the beneficiary
-        for (uint i = 0; i &lt; _stakeholders.length; i++) {
+        for (uint i = 0; i < _stakeholders.length; i++) {
             stakeholderPercentagesIndex.push(_stakeholders[i]);
             stakeholderPercentages[_stakeholders[i]] = Percentage(
                 _stakeholderEthPercentages[i], 
@@ -875,7 +875,7 @@ contract Crowdsale is ICrowdsale, Ownership {
         }
 
         // Percentages add up to 100
-        for (uint ii = 0; ii &lt; _stakeholderTokenPayoutPercentages.length; ii++) {
+        for (uint ii = 0; ii < _stakeholderTokenPayoutPercentages.length; ii++) {
             stakeholdersPayouts.push(Payout(_stakeholderTokenPayoutPercentages[ii], _stakeholderTokenPayoutVestingPeriods[ii]));
         }
     }
@@ -889,9 +889,9 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @param _volumeMultiplierThresholds The volume thresholds for each respective multiplier
      */
     function setupVolumeMultipliers(uint[] _volumeMultiplierRates, uint[] _volumeMultiplierLockupPeriods, uint[] _volumeMultiplierThresholds) public only_owner at_stage(Stages.Deploying) {
-        require(phases.length &gt; 0);
+        require(phases.length > 0);
         volumeMultiplierThresholds = _volumeMultiplierThresholds;
-        for (uint i = 0; i &lt; volumeMultiplierThresholds.length; i++) {
+        for (uint i = 0; i < volumeMultiplierThresholds.length; i++) {
             volumeMultipliers[volumeMultiplierThresholds[i]] = VolumeMultiplier(_volumeMultiplierRates[i], _volumeMultiplierLockupPeriods[i]);
         }
     }
@@ -902,8 +902,8 @@ contract Crowdsale is ICrowdsale, Ownership {
      * rules become immutable 
      */
     function deploy() public only_owner at_stage(Stages.Deploying) {
-        require(phases.length &gt; 0);
-        require(stakeholderPercentagesIndex.length &gt; 0);
+        require(phases.length > 0);
+        require(stakeholderPercentagesIndex.length > 0);
         stage = Stages.Deployed;
     }
 
@@ -923,7 +923,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return True if in presale phase
      */
     function isInPresalePhase() public view returns (bool) {
-        return stage == Stages.InProgress &amp;&amp; now &gt;= start &amp;&amp; now &lt;= presaleEnd;
+        return stage == Stages.InProgress && now >= start && now <= presaleEnd;
     }
 
 
@@ -945,7 +945,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return True if there is a balance that belongs to `_beneficiary`
      */
     function hasBalance(address _beneficiary, uint _releaseDate) public view returns (bool) {
-        return allocatedIndex[_beneficiary].length &gt; 0 &amp;&amp; _releaseDate == allocatedIndex[_beneficiary][allocated[_beneficiary][_releaseDate].index];
+        return allocatedIndex[_beneficiary].length > 0 && _releaseDate == allocatedIndex[_beneficiary][allocated[_beneficiary][_releaseDate].index];
     }
 
 
@@ -957,7 +957,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function balanceOf(address _owner) public view returns (uint) {
         uint sum = 0;
-        for (uint i = 0; i &lt; allocatedIndex[_owner].length; i++) {
+        for (uint i = 0; i < allocatedIndex[_owner].length; i++) {
             sum += allocated[_owner][allocatedIndex[_owner][i]].tokens;
         }
 
@@ -973,7 +973,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function ethBalanceOf(address _owner) public view returns (uint) {
         uint sum = 0;
-        for (uint i = 0; i &lt; allocatedIndex[_owner].length; i++) {
+        for (uint i = 0; i < allocatedIndex[_owner].length; i++) {
             sum += allocated[_owner][allocatedIndex[_owner][i]].eth;
         }
 
@@ -988,7 +988,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return The invested refundable balance
      */
     function refundableEthBalanceOf(address _owner) public view returns (uint) {
-        return now &gt; crowdsaleEnd &amp;&amp; raised &lt; minAmount ? balances[_owner] : 0;
+        return now > crowdsaleEnd && raised < minAmount ? balances[_owner] : 0;
     }
 
 
@@ -998,8 +998,8 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return The index of the current phase
      */
     function getCurrentPhase() public view returns (uint) {
-        for (uint i = 0; i &lt; phases.length; i++) {
-            if (now &lt;= phases[i].end) {
+        for (uint i = 0; i < phases.length; i++) {
+            if (now <= phases[i].end) {
                 return i;
                 break;
             }
@@ -1018,14 +1018,14 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function getRate(uint _phase, uint _volume) public view returns (uint) {
         uint rate = 0;
-        if (stage == Stages.InProgress &amp;&amp; now &gt;= start) {
+        if (stage == Stages.InProgress && now >= start) {
             Phase storage phase = phases[_phase];
             rate = phase.rate;
 
             // Find volume multiplier
-            if (phase.useVolumeMultiplier &amp;&amp; volumeMultiplierThresholds.length &gt; 0 &amp;&amp; _volume &gt;= volumeMultiplierThresholds[0]) {
-                for (uint i = volumeMultiplierThresholds.length; i &gt; 0; i--) {
-                    if (_volume &gt;= volumeMultiplierThresholds[i - 1]) {
+            if (phase.useVolumeMultiplier && volumeMultiplierThresholds.length > 0 && _volume >= volumeMultiplierThresholds[0]) {
+                for (uint i = volumeMultiplierThresholds.length; i > 0; i--) {
+                    if (_volume >= volumeMultiplierThresholds[i - 1]) {
                         VolumeMultiplier storage multiplier = volumeMultipliers[volumeMultiplierThresholds[i - 1]];
                         rate += phase.rate * multiplier.rateMultiplier / percentageDenominator;
                         break;
@@ -1055,10 +1055,10 @@ contract Crowdsale is ICrowdsale, Ownership {
         uint[] memory releaseDates = new uint[](1);
 
         // Find volume multipliers
-        if (phase.useVolumeMultiplier &amp;&amp; volumeMultiplierThresholds.length &gt; 0 &amp;&amp; _volume &gt;= volumeMultiplierThresholds[0]) {
+        if (phase.useVolumeMultiplier && volumeMultiplierThresholds.length > 0 && _volume >= volumeMultiplierThresholds[0]) {
             uint phaseReleasePeriod = phase.bonusReleaseDate - crowdsaleEnd;
-            for (uint i = volumeMultiplierThresholds.length; i &gt; 0; i--) {
-                if (_volume &gt;= volumeMultiplierThresholds[i - 1]) {
+            for (uint i = volumeMultiplierThresholds.length; i > 0; i--) {
+                if (_volume >= volumeMultiplierThresholds[i - 1]) {
                     if (!usingMultiplier) {
                         volumes = new uint[](i + 1);
                         releaseDates = new uint[](i + 1);
@@ -1102,7 +1102,7 @@ contract Crowdsale is ICrowdsale, Ownership {
     /**
      * Receive Eth and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -1140,8 +1140,8 @@ contract Crowdsale is ICrowdsale, Ownership {
      * the stage to Ended
      */
     function endCrowdsale() public at_stage(Stages.InProgress) {
-        require(now &gt; crowdsaleEnd || raised &gt;= maxAmount);
-        require(raised &gt;= minAmount);
+        require(now > crowdsaleEnd || raised >= maxAmount);
+        require(raised >= minAmount);
         stage = Stages.Ended;
 
         // Unlock token
@@ -1151,7 +1151,7 @@ contract Crowdsale is ICrowdsale, Ownership {
 
         // Allocate tokens (no allocation can be done after this period)
         uint totalTokenSupply = IToken(token).totalSupply() + allocatedTokens;
-        for (uint i = 0; i &lt; stakeholdersPayouts.length; i++) {
+        for (uint i = 0; i < stakeholdersPayouts.length; i++) {
             Payout storage p = stakeholdersPayouts[i];
             _allocateStakeholdersTokens(totalTokenSupply * p.percentage / percentageDenominator, now + p.vestingPeriod);
         }
@@ -1176,16 +1176,16 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function withdrawTokensTo(address _beneficiary) public {
         uint tokensToSend = 0;
-        for (uint i = 0; i &lt; allocatedIndex[msg.sender].length; i++) {
+        for (uint i = 0; i < allocatedIndex[msg.sender].length; i++) {
             uint releaseDate = allocatedIndex[msg.sender][i];
-            if (releaseDate &lt;= now) {
+            if (releaseDate <= now) {
                 Balance storage b = allocated[msg.sender][releaseDate];
                 tokensToSend += b.tokens;
                 b.tokens = 0;
             }
         }
 
-        if (tokensToSend &gt; 0) {
+        if (tokensToSend > 0) {
             allocatedTokens -= tokensToSend;
             if (!token.issue(_beneficiary, tokensToSend)) {
                 revert();
@@ -1209,16 +1209,16 @@ contract Crowdsale is ICrowdsale, Ownership {
      */
     function withdrawEtherTo(address _beneficiary) public {
         uint ethToSend = 0;
-        for (uint i = 0; i &lt; allocatedIndex[msg.sender].length; i++) {
+        for (uint i = 0; i < allocatedIndex[msg.sender].length; i++) {
             uint releaseDate = allocatedIndex[msg.sender][i];
-            if (releaseDate &lt;= now) {
+            if (releaseDate <= now) {
                 Balance storage b = allocated[msg.sender][releaseDate];
                 ethToSend += b.eth;
                 b.eth = 0;
             }
         }
 
-        if (ethToSend &gt; 0) {
+        if (ethToSend > 0) {
             allocatedEth -= ethToSend;
             if (!_beneficiary.send(ethToSend)) {
                 revert();
@@ -1245,12 +1245,12 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @param _beneficiary Address to send to
      */
     function refundTo(address _beneficiary) public only_after_crowdsale at_stage(Stages.InProgress) {
-        require(raised &lt; minAmount);
+        require(raised < minAmount);
 
         uint receivedAmount = balances[msg.sender];
         balances[msg.sender] = 0;
 
-        if (receivedAmount &gt; 0 &amp;&amp; !_beneficiary.send(receivedAmount)) {
+        if (receivedAmount > 0 && !_beneficiary.send(receivedAmount)) {
             balances[msg.sender] = receivedAmount;
         }
     }
@@ -1272,7 +1272,7 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return The accepted ether amount
      */
     function _handleTransaction(address _beneficiary, uint _received) internal at_stage(Stages.InProgress) returns (uint) {
-        require(now &gt;= start &amp;&amp; now &lt;= crowdsaleEnd);
+        require(now >= start && now <= crowdsaleEnd);
         require(isAcceptingContributions());
         require(isAcceptedContributor(_beneficiary));
 
@@ -1294,11 +1294,11 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return The accepted ether amount
      */
     function _handlePresaleTransaction(address _beneficiary, uint _received) private returns (uint) {
-        require(_received &gt;= minAcceptedAmountPresale);
-        require(raised &lt; maxAmountPresale);
+        require(_received >= minAcceptedAmountPresale);
+        require(raised < maxAmountPresale);
 
         uint acceptedAmount;
-        if (raised + _received &gt; maxAmountPresale) {
+        if (raised + _received > maxAmountPresale) {
             acceptedAmount = maxAmountPresale - raised;
         } else {
             acceptedAmount = _received;
@@ -1323,12 +1323,12 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @return The accepted ether amount
      */
     function _handlePublicsaleTransaction(address _beneficiary, uint _received) private returns (uint) {
-        require(_received &gt;= minAcceptedAmount);
-        require(raised &gt;= minAmountPresale);
-        require(raised &lt; maxAmount);
+        require(_received >= minAcceptedAmount);
+        require(raised >= minAmountPresale);
+        require(raised < maxAmount);
 
         uint acceptedAmount;
-        if (raised + _received &gt; maxAmount) {
+        if (raised + _received > maxAmount) {
             acceptedAmount = maxAmount - raised;
         } else {
             acceptedAmount = _received;
@@ -1368,9 +1368,9 @@ contract Crowdsale is ICrowdsale, Ownership {
             phase, _acceptedAmount);
         
         // Allocate tokens
-        for (uint i = 0; i &lt; volumes.length; i++) {
+        for (uint i = 0; i < volumes.length; i++) {
             var tokensAtCurrentRate = toTokens(volumes[i], rate);
-            if (rate &gt; baseRate &amp;&amp; releaseDates[i] &gt; now) {
+            if (rate > baseRate && releaseDates[i] > now) {
                 uint bonusTokens = tokensAtCurrentRate * (rate - baseRate) / rate;
                 _allocateTokens(_beneficiary, bonusTokens, releaseDates[i]);
 
@@ -1381,12 +1381,12 @@ contract Crowdsale is ICrowdsale, Ownership {
         }
 
         // Issue tokens
-        if (tokensToIssue &gt; 0 &amp;&amp; !token.issue(_beneficiary, tokensToIssue)) {
+        if (tokensToIssue > 0 && !token.issue(_beneficiary, tokensToIssue)) {
             revert();
         }
 
         // Refund due to max cap hit
-        if (_received - _acceptedAmount &gt; 0 &amp;&amp; !_beneficiary.send(_received - _acceptedAmount)) {
+        if (_received - _acceptedAmount > 0 && !_beneficiary.send(_received - _acceptedAmount)) {
             revert();
         }
     }
@@ -1437,9 +1437,9 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @param _releaseDate The date after which the eth can be withdrawn
      */    
     function _allocateStakeholdersEth(uint _amount, uint _releaseDate) internal {
-        for (uint i = 0; i &lt; stakeholderPercentagesIndex.length; i++) {
+        for (uint i = 0; i < stakeholderPercentagesIndex.length; i++) {
             Percentage storage p = stakeholderPercentages[stakeholderPercentagesIndex[i]];
-            if (p.eth &gt; 0) {
+            if (p.eth > 0) {
                 _allocateEth(stakeholderPercentagesIndex[i], _amount * p.eth / percentageDenominator, _releaseDate);
             }
         }
@@ -1453,9 +1453,9 @@ contract Crowdsale is ICrowdsale, Ownership {
      * @param _releaseDate The date after which the tokens can be withdrawn (unless overwitten)
      */    
     function _allocateStakeholdersTokens(uint _amount, uint _releaseDate) internal {
-        for (uint i = 0; i &lt; stakeholderPercentagesIndex.length; i++) {
+        for (uint i = 0; i < stakeholderPercentagesIndex.length; i++) {
             Percentage storage p = stakeholderPercentages[stakeholderPercentagesIndex[i]];
-            if (p.tokens &gt; 0) {
+            if (p.tokens > 0) {
                 _allocateTokens(
                     stakeholderPercentagesIndex[i], 
                     _amount * p.tokens / percentageDenominator, 

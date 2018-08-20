@@ -12,17 +12,17 @@ contract Clockmaking {
 	}
 
 	modifier onlyClockmaker() {
-		require(msg.sender == clockmaker, &quot;msg.sender == clockmaker&quot;);
+		require(msg.sender == clockmaker, "msg.sender == clockmaker");
 		_;
 	}
 
 	function transferClockmaker(address _newClockmaker) public onlyClockmaker {
-		require(address(0) != _newClockmaker, &quot;address(0) != _newClockmaker&quot;);
+		require(address(0) != _newClockmaker, "address(0) != _newClockmaker");
 		newClockmaker = _newClockmaker;
 	}
 
 	function acceptClockmaker() public {
-		require(msg.sender == newClockmaker, &quot;msg.sender == newClockmaker&quot;);
+		require(msg.sender == newClockmaker, "msg.sender == newClockmaker");
 		emit ClockmakingTransferred(clockmaker, msg.sender);
 		clockmaker = msg.sender;
 		newClockmaker = address(0);
@@ -41,17 +41,17 @@ contract Ownable {
 	}
 
 	modifier onlyOwner() {
-		require(msg.sender == owner, &quot;msg.sender == owner&quot;);
+		require(msg.sender == owner, "msg.sender == owner");
 		_;
 	}
 
 	function transferOwnership(address _newOwner) public onlyOwner {
-		require(address(0) != _newOwner, &quot;address(0) != _newOwner&quot;);
+		require(address(0) != _newOwner, "address(0) != _newOwner");
 		newOwner = _newOwner;
 	}
 
 	function acceptOwnership() public {
-		require(msg.sender == newOwner, &quot;msg.sender == newOwner&quot;);
+		require(msg.sender == newOwner, "msg.sender == newOwner");
 		emit OwnershipTransferred(owner, msg.sender);
 		owner = msg.sender;
 		newOwner = address(0);
@@ -80,7 +80,7 @@ contract TokenTimelock is Ownable, Clockmaking {
   uint64 public releaseTime; // timestamp when token claim is enabled
 
   constructor(ERC20Basic _token, uint64 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     owner = msg.sender;
     clockmaker = msg.sender;
@@ -91,10 +91,10 @@ contract TokenTimelock is Ownable, Clockmaking {
    * @notice Transfers tokens held by timelock to owner.
    */
   function claim() public onlyOwner {
-    require(now &gt;= releaseTime, &quot;now &gt;= releaseTime&quot;);
+    require(now >= releaseTime, "now >= releaseTime");
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0, &quot;amount &gt; 0&quot;);
+    require(amount > 0, "amount > 0");
 
     token.safeTransfer(owner, amount);
   }

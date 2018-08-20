@@ -12,7 +12,7 @@ contract AddressProxy {
     }
 
     address public owner;
-    mapping(bytes32 =&gt; ContractAddress) private contractsAddress;
+    mapping(bytes32 => ContractAddress) private contractsAddress;
     bytes32[] public availableIds;
 
     modifier onlyOwner() {

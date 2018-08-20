@@ -6,15 +6,15 @@
  pragma solidity ^0.4.10;
 
 /*************************************************************************
- * import &quot;../token/ITokenPool.sol&quot; : start
+ * import "../token/ITokenPool.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : start
+ * import "./ERC20StandardToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : start
+ * import "./IERC20Token.sol" : start
  *************************************************************************/
 
 /**@dev ERC20 compliant token interface. 
@@ -22,7 +22,7 @@ https://theethereum.wiki/w/index.php/ERC20_Token_Standard
 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md */
 contract IERC20Token {
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external    
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external    
     function name() public constant returns (string _name) { _name; }
     function symbol() public constant returns (string _symbol) { _symbol; }
     function decimals() public constant returns (uint8 _decimals) { _decimals; }
@@ -40,10 +40,10 @@ contract IERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : end
+ * import "./IERC20Token.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : start
+ * import "../common/SafeMath.sol" : start
  *************************************************************************/
 
 /**dev Utility methods for overflow-proof arithmetic operations 
@@ -53,14 +53,14 @@ contract SafeMath {
     /**dev Returns the sum of a and b. Throws an exception if it exceeds uint256 limits*/
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {        
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
 
     /**dev Returns the difference of a and b. Throws an exception if a is less than b*/
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
@@ -76,7 +76,7 @@ contract SafeMath {
         return x / y;
     }
 }/*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : end
+ * import "../common/SafeMath.sol" : end
  *************************************************************************/
 
 /**@dev Standard ERC20 compliant token implementation */
@@ -88,9 +88,9 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
     //tokens already issued
     uint256 tokensIssued;
     //balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     //one account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function ERC20StandardToken() {
      
@@ -155,7 +155,7 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
         balances[_to] = safeAdd(balances[_to], _value);
     }
 }/*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : end
+ * import "./ERC20StandardToken.sol" : end
  *************************************************************************/
 
 /**@dev Token pool that manages its tokens by designating trustees */
@@ -167,22 +167,22 @@ contract ITokenPool {
     /**@dev Changes trustee state */
     function setTrustee(address trustee, bool state);
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     /**@dev Returns remaining token amount */
     function getTokenAmount() constant returns (uint256 tokens) {tokens;}
 }/*************************************************************************
- * import &quot;../token/ITokenPool.sol&quot; : end
+ * import "../token/ITokenPool.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/ReturnTokenAgent.sol&quot; : start
- *************************************************************************/
-
-/*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : start
+ * import "../token/ReturnTokenAgent.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Manageable.sol" : start
+ *************************************************************************/
+
+/*************************************************************************
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 
@@ -206,7 +206,7 @@ contract Owned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 
 ///A token that have an owner and a list of managers that can perform some operations
@@ -215,7 +215,7 @@ contract Manageable is Owned {
 
     event ManagerSet(address manager, bool state);
 
-    mapping (address =&gt; bool) public managers;
+    mapping (address => bool) public managers;
 
     function Manageable() Owned() {
         managers[owner] = true;
@@ -239,10 +239,10 @@ contract Manageable is Owned {
         ManagerSet(manager, state);
     }
 }/*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : end
+ * import "../common/Manageable.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/ReturnableToken.sol&quot; : start
+ * import "../token/ReturnableToken.sol" : start
  *************************************************************************/
 
 
@@ -253,7 +253,7 @@ contract Manageable is Owned {
 contract ReturnableToken is Manageable, ERC20StandardToken {
 
     /**@dev List of return agents */
-    mapping (address =&gt; bool) public returnAgents;
+    mapping (address => bool) public returnAgents;
 
     function ReturnableToken() {}    
     
@@ -274,15 +274,15 @@ contract ReturnableToken is Manageable, ERC20StandardToken {
         }
     }
 }/*************************************************************************
- * import &quot;../token/ReturnableToken.sol&quot; : end
+ * import "../token/ReturnableToken.sol" : end
  *************************************************************************/
 
 ///Returnable tokens receiver
 contract ReturnTokenAgent is Manageable {
     //ReturnableToken public returnableToken;
 
-    /**@dev List of returnable tokens in format token-&gt;flag  */
-    mapping (address =&gt; bool) public returnableTokens;
+    /**@dev List of returnable tokens in format token->flag  */
+    mapping (address => bool) public returnableTokens;
 
     /**@dev Allows only token to execute method */
     //modifier returnableTokenOnly {require(msg.sender == address(returnableToken)); _;}
@@ -301,12 +301,12 @@ contract ReturnTokenAgent is Manageable {
         returnableTokens[address(token)] = false;
     }
 }/*************************************************************************
- * import &quot;../token/ReturnTokenAgent.sol&quot; : end
+ * import "../token/ReturnTokenAgent.sol" : end
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./IInvestRestrictions.sol&quot; : start
+ * import "./IInvestRestrictions.sol" : start
  *************************************************************************/
 
 
@@ -321,10 +321,10 @@ contract IInvestRestrictions is Manageable {
     /**@dev Called when investment was made */
     function investHappened(address investor, uint amount) managerOnly {}    
 }/*************************************************************************
- * import &quot;./IInvestRestrictions.sol&quot; : end
+ * import "./IInvestRestrictions.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ICrowdsaleFormula.sol&quot; : start
+ * import "./ICrowdsaleFormula.sol" : start
  *************************************************************************/
 
 /**@dev Abstraction of crowdsale token calculation function */
@@ -338,7 +338,7 @@ contract ICrowdsaleFormula {
     /**@dev Returns how many tokens left for sale */
     function tokensLeft() constant returns(uint256 _left) { _left;}    
 }/*************************************************************************
- * import &quot;./ICrowdsaleFormula.sol&quot; : end
+ * import "./ICrowdsaleFormula.sol" : end
  *************************************************************************/
 
 /**@dev Crowdsale base contract, used for PRE-TGE and TGE stages
@@ -363,9 +363,9 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
 
     bool public failure; //true if some error occurred during crowdsale
 
-    mapping (address =&gt; uint256) public investedFrom; //how many wei specific address invested
-    mapping (address =&gt; uint256) public tokensSoldTo; //how many tokens sold to specific addreess
-    mapping (address =&gt; uint256) public overpays;     //overpays for send value excesses
+    mapping (address => uint256) public investedFrom; //how many wei specific address invested
+    mapping (address => uint256) public tokensSoldTo; //how many tokens sold to specific addreess
+    mapping (address => uint256) public overpays;     //overpays for send value excesses
 
     // A new investment was made
     event Invested(address investor, uint weiAmount, uint tokenAmount);
@@ -375,7 +375,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
     event OverpayRefund(address investor, uint weiAmount);
 
     /**@dev Crowdsale constructor, can specify startTime as 0 to start crowdsale immediately 
-    _tokensForOneEther - doesn&#39;t depend on token decimals   */ 
+    _tokensForOneEther - doesn't depend on token decimals   */ 
     function BCSCrowdsale(        
         ITokenPool _tokenPool,
         IInvestRestrictions _restrictions,
@@ -388,8 +388,8 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
     {
         require(_beneficiary != 0x0);
         require(address(_tokenPool) != 0x0);
-        require(_durationInHours &gt; 0);
-        require(_tokensForOneEther &gt; 0); 
+        require(_durationInHours > 0);
+        require(_tokensForOneEther > 0); 
         
         tokenPool = _tokenPool;
         beneficiary = _beneficiary;
@@ -426,9 +426,9 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
         uint256 tokensToBuy;
         (tokensToBuy, excess) = howManyTokensForEther(weiPaid);
 
-        require(tokensToBuy &lt;= tokensLeft() &amp;&amp; tokensToBuy &gt; 0);
+        require(tokensToBuy <= tokensLeft() && tokensToBuy > 0);
 
-        if (excess &gt; 0) {
+        if (excess > 0) {
             overpays[msg.sender] = safeAdd(overpays[msg.sender], excess);
             weiPaid = safeSub(weiPaid, excess);
         }
@@ -450,7 +450,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
 
     /**@dev Returns true if it is possible to invest */
     function canInvest(address investor, uint256 amount) constant returns(bool) {
-        return getState() == State.Active &amp;&amp;
+        return getState() == State.Active &&
                     (address(restrictions) == 0x0 || 
                     restrictions.canInvest(investor, amount, tokensLeft()));
     }
@@ -461,7 +461,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
         uint256 maxTokens = (tokensLeft() * 100) / (100 + bpct);
 
         tokens = weiAmount * realAmountForOneEther / 1 ether;
-        if (tokens &gt; maxTokens) {
+        if (tokens > maxTokens) {
             tokens = maxTokens;
         }
 
@@ -491,11 +491,11 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
             return State.FinishedFailure;
         }
         
-        if (now &lt; startTime) {
+        if (now < startTime) {
             return State.BeforeStart;
-        } else if (now &lt; endTime &amp;&amp; tokensLeft() &gt; 0) {
+        } else if (now < endTime && tokensLeft() > 0) {
             return State.Active;
-        } else if (weiCollected &gt;= minimumGoalInWei || tokensLeft() &lt;= 0) {
+        } else if (weiCollected >= minimumGoalInWei || tokensLeft() <= 0) {
             return State.FinishedSuccess;
         } else {
             return State.FinishedFailure;
@@ -508,7 +508,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
 
         uint amount = investedFrom[msg.sender];        
 
-        if (amount &gt; 0) {
+        if (amount > 0) {
             investedFrom[msg.sender] = 0;
             weiCollected = safeSub(weiCollected, amount);            
             msg.sender.transfer(amount);
@@ -522,7 +522,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
         uint amount = overpays[msg.sender];
         overpays[msg.sender] = 0;        
 
-        if (amount &gt; 0) {
+        if (amount > 0) {
             if (msg.sender.send(amount)) {
                 OverpayRefund(msg.sender, amount);
             } else {
@@ -533,7 +533,7 @@ contract BCSCrowdsale is ICrowdsaleFormula, Manageable, SafeMath {
 
     /**@dev Transfers all collected funds to beneficiary*/
     function transferToBeneficiary() {
-        require(getState() == State.FinishedSuccess &amp;&amp; !withdrew);
+        require(getState() == State.FinishedSuccess && !withdrew);
         
         withdrew = true;
         uint256 amount = amountToBeneficiary();

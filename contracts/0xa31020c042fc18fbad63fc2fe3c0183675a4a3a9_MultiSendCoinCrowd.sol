@@ -43,7 +43,7 @@ contract MultiSendCoinCrowd is Ownable {
 	
     function multisend(address[] _dests, uint256[] _values) public onlyOwner returns(uint256) {
         uint256 i = 0;
-        while (i &lt; _dests.length) {
+        while (i < _dests.length) {
            tokenInterface(tokenAddress).originTransfer(_dests[i], _values[i]);
            i += 1;
         }
@@ -52,7 +52,7 @@ contract MultiSendCoinCrowd is Ownable {
 	
 	function airdrop( uint256 _value, address[] _dests ) public onlyOwner returns(uint256) {
         uint256 i = 0;
-        while (i &lt; _dests.length) {
+        while (i < _dests.length) {
            tokenInterface(tokenAddress).originTransfer(_dests[i], _value);
            i += 1;
         }

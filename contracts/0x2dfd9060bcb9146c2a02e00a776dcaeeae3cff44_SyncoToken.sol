@@ -5,7 +5,7 @@ pragma solidity ^0.4.22;
  * Copyright (c) 2018 Hexlant, Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@ pragma solidity ^0.4.22;
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -30,7 +30,7 @@ pragma solidity ^0.4.22;
  *    https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/LICENSE
  *
  * 
- * Contact Us : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2e2223392c2e390d252835212c2339632e2220">[email&#160;protected]</a>
+ * Contact Us : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2e2223392c2e390d252835212c2339632e2220">[email protected]</a>
  * Website    : http://hexlant.com
  * Medium Blog: https://medium.com/hexlant
  */
@@ -47,20 +47,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;       
     }       
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -161,11 +161,11 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     uint256 internal initialSupply;
     uint256 internal totalSupply_;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; bool) internal locks;
-    mapping(address =&gt; bool) public frozen;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; LockupInfo[]) internal lockupInfo;
+    mapping(address => uint256) internal balances;
+    mapping(address => bool) internal locks;
+    mapping(address => bool) public frozen;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => LockupInfo[]) internal lockupInfo;
 
     event Lock(address indexed holder, uint256 value);
     event Unlock(address indexed holder, uint256 value);
@@ -180,8 +180,8 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     }
 
     constructor() public {
-        name = &quot;SYNCO Token&quot;;
-        symbol = &quot;SYNCO&quot;;
+        name = "SYNCO Token";
+        symbol = "SYNCO";
         initialSupply = 13000000000;
         totalSupply_ = initialSupply * 10 ** uint(decimals);
         balances[owner] = totalSupply_;
@@ -201,7 +201,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
             autoUnlock(msg.sender);            
         }
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -214,7 +214,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     function balanceOf(address _holder) public view returns (uint256 balance) {
         uint256 lockedBalance = 0;
         if(locks[_holder]) {
-            for(uint256 idx = 0; idx &lt; lockupInfo[_holder].length ; idx++ ) {
+            for(uint256 idx = 0; idx < lockupInfo[_holder].length ; idx++ ) {
                 lockedBalance = lockedBalance.add(lockupInfo[_holder][idx].lockupBalance);
             }
         }
@@ -226,8 +226,8 @@ contract SyncoToken is ERC20, Ownable, Pausable {
             autoUnlock(_from);            
         }
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
 
         balances[_from] = balances[_from].sub(_value);
@@ -257,7 +257,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     }
 
     function lock(address _holder, uint256 _amount, uint256 _releaseStart, uint256 _termOfRound, uint256 _releaseRate) public onlyOwner returns (bool) {
-        require(balances[_holder] &gt;= _amount);
+        require(balances[_holder] >= _amount);
         if(_termOfRound==0 ) {
             _termOfRound = 1;
         }
@@ -275,7 +275,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
 
     function unlock(address _holder, uint256 _idx) public onlyOwner returns (bool) {
         require(locks[_holder]);
-        require(_idx &lt; lockupInfo[_holder].length);
+        require(_idx < lockupInfo[_holder].length);
         LockupInfo storage lockupinfo = lockupInfo[_holder][_idx];
         uint256 releaseAmount = lockupinfo.lockupBalance;
 
@@ -332,7 +332,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     
     function distribute(address _to, uint256 _value) public onlyOwner returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         balances[owner] = balances[owner].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -352,7 +352,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     }
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -371,16 +371,16 @@ contract SyncoToken is ERC20, Ownable, Pausable {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly{size := extcodesize(addr)}
-        return size &gt; 0;
+        return size > 0;
     }
 
     function autoUnlock(address _holder) internal returns (bool) {
 
-        for(uint256 idx =0; idx &lt; lockupInfo[_holder].length ; idx++ ) {
+        for(uint256 idx =0; idx < lockupInfo[_holder].length ; idx++ ) {
             if(locks[_holder]==false) {
                 return true;
             }
-            if (lockupInfo[_holder][idx].releaseTime &lt;= now) {
+            if (lockupInfo[_holder][idx].releaseTime <= now) {
                 // If lockupinfo was deleted, loop restart at same position.
                 if( releaseTimeLock(_holder, idx) ) {
                     idx -=1;
@@ -392,7 +392,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
 
     function releaseTimeLock(address _holder, uint256 _idx) internal returns(bool) {
         require(locks[_holder]);
-        require(_idx &lt; lockupInfo[_holder].length);
+        require(_idx < lockupInfo[_holder].length);
 
         // If lock status of holder is finished, delete lockup info. 
         LockupInfo storage info = lockupInfo[_holder][_idx];
@@ -401,7 +401,7 @@ contract SyncoToken is ERC20, Ownable, Pausable {
         uint256 sinceRound = sinceFrom.div(info.termOfRound);
         releaseAmount = releaseAmount.add( sinceRound.mul(info.unlockAmountPerRound) );
 
-        if(releaseAmount &gt;= info.lockupBalance) {            
+        if(releaseAmount >= info.lockupBalance) {            
             releaseAmount = info.lockupBalance;
 
             delete lockupInfo[_holder][_idx];

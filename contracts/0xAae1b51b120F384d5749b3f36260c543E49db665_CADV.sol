@@ -16,20 +16,20 @@ library SafeMath {
     }
     
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -55,13 +55,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     /**
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
     
@@ -72,7 +72,7 @@ contract BasicToken is ERC20Basic {
      */
     function transfer(address _to, uint256 _value) public onlyPayloadSize(32*2) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -149,7 +149,7 @@ contract BurnableCADVToken is ERC20 {
  */
 contract CADV is BurnableCADVToken, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     
     function CADV (string _name, string _symbol, uint256 _totalSupply) public {
@@ -168,8 +168,8 @@ contract CADV is BurnableCADVToken, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -221,7 +221,7 @@ contract CADV is BurnableCADVToken, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -237,7 +237,7 @@ contract CADV is BurnableCADVToken, BasicToken {
      */
     function burn(uint256 _value) public {
         address burner = msg.sender;
-        if (_value &gt; balances[burner]) {
+        if (_value > balances[burner]) {
             _value = balances[burner];
         }
         balances[burner] = balances[burner].sub(_value);
@@ -254,8 +254,8 @@ contract CADV is BurnableCADVToken, BasicToken {
      * @return true is all the tranfers were successful, false otherwise.
      */
     function multipleTransfer(address[] _tos, uint256 _value) public returns (bool) {
-        require(_tos.length * _value &lt;= balances[msg.sender]);
-        for (uint256 i=0; i&lt;_tos.length; i++) {
+        require(_tos.length * _value <= balances[msg.sender]);
+        for (uint256 i=0; i<_tos.length; i++) {
             if(!transfer(_tos[i], _value)) {
                 revert();
             }

@@ -22,9 +22,9 @@ contract token {
     uint256 public totalSupply; // Total of tokens created.
 
     // Array containing the balance foreach address.
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // Array containing foreach address, an array containing each approved address and the amount of tokens it can spend.
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify about a transfer done. */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -41,8 +41,8 @@ contract token {
     /* Internal transfer, only can be called by this contract. */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address.
-        require(balanceOf[_from] &gt; _value); // Check if the sender has enough.
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows.
+        require(balanceOf[_from] > _value); // Check if the sender has enough.
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows.
         balanceOf[_from] -= _value; // Subtract from the sender.
         balanceOf[_to]   += _value; // Add the same to the recipient.
         Transfer(_from, _to, _value); // Notifies the blockchain about the transfer.
@@ -60,7 +60,7 @@ contract token {
     /// @param _to The address of the recipient.
     /// @param _value The amount to send.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance.
+        require(_value <= allowance[_from][msg.sender]); // Check allowance.
         allowance[_from][msg.sender] -= _value; // Update the allowance array, substracting the amount sent.
         _transfer(_from, _to, _value); // Makes the transfer.
         return true;
@@ -82,7 +82,7 @@ contract GFCToken is owned, token {
     bool public closeBuy = false; // If true, nobody will be able to buy.
     bool public closeSell = false; // If true, nobody will be able to sell.
     address public commissionGetter = 0xCd8bf69ad65c5158F0cfAA599bBF90d7f4b52Bb0; // The address that gets the commissions paid.
-    mapping (address =&gt; bool) public frozenAccount; // Array containing foreach address if it&#39;s frozen or not.
+    mapping (address => bool) public frozenAccount; // Array containing foreach address if it's frozen or not.
 
     /* This generates a public event on the blockchain that will notify about an address being freezed. */
     event FrozenFunds(address target, bool frozen);
@@ -97,8 +97,8 @@ contract GFCToken is owned, token {
     /* Overrides Internal transfer due to frozen accounts check */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address.
-        require(balanceOf[_from] &gt;= _value); // Check if the sender has enough.
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows.
+        require(balanceOf[_from] >= _value); // Check if the sender has enough.
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows.
         require(!frozenAccount[_from]); // Check if sender is frozen.
         require(!frozenAccount[_to]); // Check if recipient is frozen.
 		balanceOf[_from] -= _value; // Subtracts _value tokens from the sender.
@@ -115,34 +115,34 @@ contract GFCToken is owned, token {
     function transfer(address _to, uint256 _value) public {
         uint market_value = _value * sellPrice; //Market value for this amount
         uint commission = market_value * 1 / 100; //Calculates the commission for this transaction
-        require(this.balance &gt;= commission); // The smart-contract pays commission, else the transfer is not possible.
+        require(this.balance >= commission); // The smart-contract pays commission, else the transfer is not possible.
         commissionGetter.transfer(commission); // Transfers commission to the commissionGetter.
         _transfer(msg.sender, _to, _value); // Makes the transfer of tokens.
     }
 
     /* Overrides basic transferFrom function due to commission value */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance.
+        require(_value <= allowance[_from][msg.sender]); // Check allowance.
         uint market_value = _value * sellPrice; //Market value for this amount
         uint commission = market_value * 1 / 100; //Calculates the commission for this transaction
-        require(this.balance &gt;= commission); // The smart-contract pays commission, else the transfer is not possible.
+        require(this.balance >= commission); // The smart-contract pays commission, else the transfer is not possible.
         commissionGetter.transfer(commission); // Transfers commission to the commissionGetter.
         allowance[_from][msg.sender] -= _value; // Update the allowance array, substracting the amount sent.
         _transfer(_from, _to, _value); // Makes the transfer of tokens.
         return true;
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens.
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens.
     /// @param target Address to be frozen.
     /// @param freeze Either to freeze target or not.
     function freezeAccount(address target, bool freeze) onlyOwner public {
-        frozenAccount[target] = freeze; // Sets the target status. True if it&#39;s frozen, False if it&#39;s not.
+        frozenAccount[target] = freeze; // Sets the target status. True if it's frozen, False if it's not.
         FrozenFunds(target, freeze); // Notifies the blockchain about the change of state.
     }
 
     /// @notice Allow addresses to pay `newBuyPrice`ETH when buying and receive `newSellPrice`ETH when selling, foreach token bought/sold.
-    /// @param newSellPrice Price applied when an address sells its tokens, amount in WEI (1ETH = 10&#185;⁸WEI).
-    /// @param newBuyPrice Price applied when an address buys tokens, amount in WEI (1ETH = 10&#185;⁸WEI).
+    /// @param newSellPrice Price applied when an address sells its tokens, amount in WEI (1ETH = 10¹⁸WEI).
+    /// @param newBuyPrice Price applied when an address buys tokens, amount in WEI (1ETH = 10¹⁸WEI).
     function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner public {
         sellPrice = newSellPrice; // Update the buying price.
         buyPrice = newBuyPrice; // Update the selling price.
@@ -158,7 +158,7 @@ contract GFCToken is owned, token {
 
     /// @notice Deposits Ether to the contract
     function deposit() payable public returns(bool success) {
-        require((this.balance + msg.value) &gt; this.balance); // Checks for overflows.
+        require((this.balance + msg.value) > this.balance); // Checks for overflows.
         LogDeposit(msg.sender, msg.value); // Notifies the blockchain about the Ether received.
         return true;
     }
@@ -176,7 +176,7 @@ contract GFCToken is owned, token {
         uint amount = msg.value / buyPrice; //Calculates the amount of tokens to be sent
         uint market_value = amount * buyPrice; //Market value for this amount
         uint commission = market_value * 1 / 100; //Calculates the commission for this transaction
-        require(this.balance &gt;= commission); //The token smart-contract pays commission, else the operation is not possible.
+        require(this.balance >= commission); //The token smart-contract pays commission, else the operation is not possible.
         commissionGetter.transfer(commission); //Transfers commission to the commissionGetter.
         _transfer(this, msg.sender, amount); //Makes the transfer of tokens.
     }
@@ -188,7 +188,7 @@ contract GFCToken is owned, token {
         uint market_value = amount * sellPrice; //Market value for this amount
         uint commission = market_value * 1 / 100; //Calculates the commission for this transaction
         uint amount_weis = market_value + commission; //Total in weis that must be paid
-        require(this.balance &gt;= amount_weis); //Contract must have enough weis
+        require(this.balance >= amount_weis); //Contract must have enough weis
         commissionGetter.transfer(commission); //Transfers commission to the commissionGetter
         _transfer(msg.sender, this, amount); //Makes the transfer of tokens, the contract receives the tokens.
         msg.sender.transfer(market_value); //Sends Ether to the seller.

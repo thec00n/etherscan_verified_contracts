@@ -46,11 +46,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -60,8 +60,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -84,8 +84,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract HumanStandardToken is StandardToken {
 
@@ -94,13 +94,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -120,10 +120,10 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }
@@ -154,9 +154,9 @@ contract StandardBounties {
 
   Bounty[] public bounties;
 
-  mapping(uint=&gt;Fulfillment[]) fulfillments;
-  mapping(uint=&gt;uint) numAccepted;
-  mapping(uint=&gt;HumanStandardToken) tokenContracts;
+  mapping(uint=>Fulfillment[]) fulfillments;
+  mapping(uint=>uint) numAccepted;
+  mapping(uint=>HumanStandardToken) tokenContracts;
 
   /*
    * Enums
@@ -194,17 +194,17 @@ contract StandardBounties {
    */
 
   modifier validateNotTooManyBounties(){
-    require((bounties.length + 1) &gt; bounties.length);
+    require((bounties.length + 1) > bounties.length);
     _;
   }
 
   modifier validateNotTooManyFulfillments(uint _bountyId){
-    require((fulfillments[_bountyId].length + 1) &gt; fulfillments[_bountyId].length);
+    require((fulfillments[_bountyId].length + 1) > fulfillments[_bountyId].length);
     _;
   }
 
   modifier validateBountyArrayIndex(uint _bountyId){
-    require(_bountyId &lt; bounties.length);
+    require(_bountyId < bounties.length);
     _;
   }
 
@@ -239,12 +239,12 @@ contract StandardBounties {
   }
 
   modifier isBeforeDeadline(uint _bountyId) {
-      require(now &lt; bounties[_bountyId].deadline);
+      require(now < bounties[_bountyId].deadline);
       _;
   }
 
   modifier validateDeadline(uint _newDeadline) {
-      require(_newDeadline &gt; now);
+      require(_newDeadline > now);
       _;
   }
 
@@ -254,7 +254,7 @@ contract StandardBounties {
   }
 
   modifier validateFulfillmentArrayIndex(uint _bountyId, uint _index) {
-      require(_index &lt; fulfillments[_bountyId].length);
+      require(_index < fulfillments[_bountyId].length);
       _;
   }
 
@@ -334,7 +334,7 @@ contract StandardBounties {
       validateNotTooManyBounties
       returns (uint)
   {
-      require (_value &gt;= _fulfillmentAmount);
+      require (_value >= _fulfillmentAmount);
       if (_paysTokens){
         require(msg.value == 0);
         tokenContracts[bounties.length] = HumanStandardToken(_tokenContract);
@@ -362,8 +362,8 @@ contract StandardBounties {
   }
 
   /// @dev contribute(): a function allowing anyone to contribute tokens to a
-  /// bounty, as long as it is still before its deadline. Shouldn&#39;t keep
-  /// them by accident (hence &#39;value&#39;).
+  /// bounty, as long as it is still before its deadline. Shouldn't keep
+  /// them by accident (hence 'value').
   /// @param _bountyId the index of the bounty
   /// @param _value the amount being contributed in ether to prevent accidental deposits
   /// @notice Please note you funds will be at the mercy of the issuer
@@ -396,7 +396,7 @@ contract StandardBounties {
       transferredAmountEqualsValue(_bountyId, _value)
   {
       bounties[_bountyId].balance += _value;
-      require (bounties[_bountyId].balance &gt;= bounties[_bountyId].fulfillmentAmount);
+      require (bounties[_bountyId].balance >= bounties[_bountyId].fulfillmentAmount);
       transitionToState(_bountyId, BountyStages.Active);
 
       ContributionAdded(_bountyId, msg.sender, _value);
@@ -404,7 +404,7 @@ contract StandardBounties {
   }
 
   modifier notIssuerOrArbiter(uint _bountyId) {
-      require(msg.sender != bounties[_bountyId].issuer &amp;&amp; msg.sender != bounties[_bountyId].arbiter);
+      require(msg.sender != bounties[_bountyId].issuer && msg.sender != bounties[_bountyId].arbiter);
       _;
   }
 
@@ -441,7 +441,7 @@ contract StandardBounties {
 
   modifier onlyIssuerOrArbiter(uint _bountyId) {
       require(msg.sender == bounties[_bountyId].issuer ||
-         (msg.sender == bounties[_bountyId].arbiter &amp;&amp; bounties[_bountyId].arbiter != address(0)));
+         (msg.sender == bounties[_bountyId].arbiter && bounties[_bountyId].arbiter != address(0)));
       _;
   }
 
@@ -451,7 +451,7 @@ contract StandardBounties {
   }
 
   modifier enoughFundsToPay(uint _bountyId) {
-      require(bounties[_bountyId].balance &gt;= bounties[_bountyId].fulfillmentAmount);
+      require(bounties[_bountyId].balance >= bounties[_bountyId].fulfillmentAmount);
       _;
   }
 
@@ -478,7 +478,7 @@ contract StandardBounties {
       FulfillmentAccepted(_bountyId, msg.sender, _fulfillmentId);
   }
 
-  /// @dev killBounty(): drains the contract of it&#39;s remaining
+  /// @dev killBounty(): drains the contract of it's remaining
   /// funds, and moves the bounty into stage 3 (dead) since it was
   /// either killed in draft stage, or never accepted any fulfillments
   /// @param _bountyId the index of the bounty
@@ -490,7 +490,7 @@ contract StandardBounties {
       transitionToState(_bountyId, BountyStages.Dead);
       uint oldBalance = bounties[_bountyId].balance;
       bounties[_bountyId].balance = 0;
-      if (oldBalance &gt; 0){
+      if (oldBalance > 0){
         if (bounties[_bountyId].paysTokens){
           require(tokenContracts[_bountyId].transfer(bounties[_bountyId].issuer, oldBalance));
         } else {
@@ -501,7 +501,7 @@ contract StandardBounties {
   }
 
   modifier newDeadlineIsValid(uint _bountyId, uint _newDeadline) {
-      require(_newDeadline &gt; bounties[_bountyId].deadline);
+      require(_newDeadline > bounties[_bountyId].deadline);
       _;
   }
 
@@ -534,7 +534,7 @@ contract StandardBounties {
   }
 
 
-  /// @dev changeBountyDeadline(): allows the issuer to change a bounty&#39;s deadline
+  /// @dev changeBountyDeadline(): allows the issuer to change a bounty's deadline
   /// @param _bountyId the index of the bounty
   /// @param _newDeadline the new deadline for the bounty
   function changeBountyDeadline(uint _bountyId, uint _newDeadline)
@@ -548,7 +548,7 @@ contract StandardBounties {
       BountyChanged(_bountyId);
   }
 
-  /// @dev changeData(): allows the issuer to change a bounty&#39;s data
+  /// @dev changeData(): allows the issuer to change a bounty's data
   /// @param _bountyId the index of the bounty
   /// @param _newData the new requirements of the bounty
   function changeBountyData(uint _bountyId, string _newData)
@@ -561,7 +561,7 @@ contract StandardBounties {
       BountyChanged(_bountyId);
   }
 
-  /// @dev changeBountyfulfillmentAmount(): allows the issuer to change a bounty&#39;s fulfillment amount
+  /// @dev changeBountyfulfillmentAmount(): allows the issuer to change a bounty's fulfillment amount
   /// @param _bountyId the index of the bounty
   /// @param _newFulfillmentAmount the new fulfillment amount
   function changeBountyFulfillmentAmount(uint _bountyId, uint _newFulfillmentAmount)
@@ -574,7 +574,7 @@ contract StandardBounties {
       BountyChanged(_bountyId);
   }
 
-  /// @dev changeBountyArbiter(): allows the issuer to change a bounty&#39;s arbiter
+  /// @dev changeBountyArbiter(): allows the issuer to change a bounty's arbiter
   /// @param _bountyId the index of the bounty
   /// @param _newArbiter the new address of the arbiter
   function changeBountyArbiter(uint _bountyId, address _newArbiter)
@@ -588,7 +588,7 @@ contract StandardBounties {
   }
 
   modifier newFulfillmentAmountIsIncrease(uint _bountyId, uint _newFulfillmentAmount) {
-      require(bounties[_bountyId].fulfillmentAmount &lt; _newFulfillmentAmount);
+      require(bounties[_bountyId].fulfillmentAmount < _newFulfillmentAmount);
       _;
   }
 
@@ -606,7 +606,7 @@ contract StandardBounties {
       transferredAmountEqualsValue(_bountyId, _value)
   {
       bounties[_bountyId].balance += _value;
-      require(bounties[_bountyId].balance &gt;= _newFulfillmentAmount);
+      require(bounties[_bountyId].balance >= _newFulfillmentAmount);
       bounties[_bountyId].fulfillmentAmount = _newFulfillmentAmount;
       PayoutIncreased(_bountyId, _newFulfillmentAmount);
   }

@@ -31,14 +31,14 @@ library SafeMath {
 
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -58,7 +58,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -84,13 +84,13 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -131,8 +131,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract EnkronosToken is StandardToken {
 
-	string public name = &#39;EnkronosToken&#39;;
-	string public symbol = &#39;ENK&#39;;
+	string public name = 'EnkronosToken';
+	string public symbol = 'ENK';
 	uint8 public decimals = 18;
 	uint public INITIAL_SUPPLY = 500000000000000000000000000;
 
@@ -174,7 +174,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -329,7 +329,7 @@ contract Ownable {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -352,7 +352,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -381,7 +381,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -449,7 +449,7 @@ contract EnkronosCrowdsale is WhitelistedCrowdsale {
     Crowdsale(_rate, _wallet, _token)
     WhitelistedCrowdsale() {
 
-      require(_goal &gt; 0);
+      require(_goal > 0);
       vault = new RefundVault(wallet);
       goal = _goal;
 
@@ -471,7 +471,7 @@ contract EnkronosCrowdsale is WhitelistedCrowdsale {
      * @return Whether funding goal was reached
      */
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
 
@@ -479,7 +479,7 @@ contract EnkronosCrowdsale is WhitelistedCrowdsale {
     event Finalized();
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -515,7 +515,7 @@ contract EnkronosCrowdsale is WhitelistedCrowdsale {
     }
     //
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal isWhitelisted(_beneficiary) {
-        require(_weiAmount &gt;= minBuy);
+        require(_weiAmount >= minBuy);
         super._preValidatePurchase(_beneficiary, _weiAmount);
     }
     //

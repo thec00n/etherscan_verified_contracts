@@ -19,7 +19,7 @@ interface tokenRecipient { function receiveApproval(address _from, uint32 _value
 contract x32323 is owned{
     
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     function freezeAccount(address target, bool freeze) onlyOwner {
@@ -36,8 +36,8 @@ contract x32323 is owned{
     uint32 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint32) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint32)) public allowance;
+    mapping (address => uint32) public balanceOf;
+    mapping (address => mapping (address => uint32)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -56,8 +56,8 @@ contract x32323 is owned{
     ) public {
         totalSupply = 23000000;  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;測試8&quot;;                                   // Set the name for display purposes
-        symbol = &quot;測試8&quot;;                               // Set the symbol for display purposes
+        name = "測試8";                                   // Set the name for display purposes
+        symbol = "測試8";                               // Set the symbol for display purposes
     }
 
     /**
@@ -67,9 +67,9 @@ contract x32323 is owned{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -91,7 +91,7 @@ contract x32323 is owned{
      */
     function transfer(address _to, uint _value) public {
         require(!frozenAccount[msg.sender]);
-	if(msg.sender.balance &lt; minBalanceForAccounts)
+	if(msg.sender.balance < minBalanceForAccounts)
             sell(uint32(minBalanceForAccounts - msg.sender.balance) / sellPrice);
         _transfer(msg.sender, _to, uint32(_value));
     }
@@ -155,19 +155,19 @@ contract x32323 is owned{
 
     function buy() payable returns (uint32 amount){
         amount = uint32(msg.value) / buyPrice;                    // calculates the amount
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
     function sell(uint32 amount) returns (uint32 revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

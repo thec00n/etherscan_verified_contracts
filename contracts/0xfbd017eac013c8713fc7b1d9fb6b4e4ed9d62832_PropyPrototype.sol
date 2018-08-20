@@ -57,11 +57,11 @@ contract PropyPrototype is Owned {
         string metadata;
     }
 
-    mapping(address =&gt; IdentityProvider) identityProviders;
-    mapping(bytes32 =&gt; Owner) owners;
-    mapping(bytes32 =&gt; Title) titles;
+    mapping(address => IdentityProvider) identityProviders;
+    mapping(bytes32 => Owner) owners;
+    mapping(bytes32 => Title) titles;
     bytes32[] public titleIds;
-    mapping(bytes32 =&gt; Deed) deeds;
+    mapping(bytes32 => Deed) deeds;
     bytes32[] public deedIds;
 
     function putIdentityProvider(address _address, string _metadata) onlyContractOwner() returns(bool success) {
@@ -83,7 +83,7 @@ contract PropyPrototype is Owned {
         return (
             owner.identityVerificationId,
             getIdentityProvider(owner.identityVerificationProvider),
-            owner.status ? &quot;Verified&quot; : &quot;Unverified&quot;,
+            owner.status ? "Verified" : "Unverified",
             owner.metadata
         );
     }
@@ -110,7 +110,7 @@ contract PropyPrototype is Owned {
             owners[title.ownerId].metadata,
             title.lastDeedId,
             deeds[title.lastDeedId].metadata,
-            title.status ? &quot;Executed&quot; : &quot;Pending&quot;,
+            title.status ? "Executed" : "Pending",
             title.metadata
         );
     }
@@ -129,7 +129,7 @@ contract PropyPrototype is Owned {
         if (owners[_sellerId].identityVerificationProvider == 0x0) {
             return false;
         }
-        if (_status &gt; 2) {
+        if (_status > 2) {
             return false;
         }
         bytes32 id = getDeedId(_titleId, _index);
@@ -149,8 +149,8 @@ contract PropyPrototype is Owned {
             owners[deed.buyerId].metadata,
             deed.sellerId,
             owners[deed.sellerId].metadata,
-            deed.status == 0 ? &quot;In Progress&quot; :
-                deed.status == 1 ? &quot;Notarized&quot; : &quot;Cancelled&quot;,
+            deed.status == 0 ? "In Progress" :
+                deed.status == 1 ? "Notarized" : "Cancelled",
             deed.metadata
         );
     }
@@ -162,7 +162,7 @@ contract PropyPrototype is Owned {
             deedsCount++;
         }
         bytes32[] memory result = new bytes32[](deedsCount);
-        for (uint i = 0; i &lt; deedsCount; i++) {
+        for (uint i = 0; i < deedsCount; i++) {
             result[i] = getDeedId(_titleId, i);
         }
         return result;

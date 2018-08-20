@@ -24,7 +24,7 @@ contract EthMultiplier {
   uint payout;
   bool paidOut;
  }
- mapping (uint16 =&gt; Investor) public investors;
+ mapping (uint16 => Investor) public investors;
 
  uint8 public feePercentage = 10;
  uint8 public payOutPercentage = 25;
@@ -51,8 +51,8 @@ contract EthMultiplier {
  payable {
   // Please be aware: 
   // depositing MORE then the price of the smart contract in one transaction 
-  // will call the &#39;buySmartContract&#39; function, and will make you the owner.
-  msg.value &gt;= priceOfSmartContract? 
+  // will call the 'buySmartContract' function, and will make you the owner.
+  msg.value >= priceOfSmartContract? 
    buySmartContract(): 
    invest();
  }
@@ -72,7 +72,7 @@ contract EthMultiplier {
  event lastInvestorPaidOut(uint payoutIdx);
 
  modifier entryCosts(uint min, uint max) {
-  if (msg.value &lt; min || msg.value &gt; max) throw;
+  if (msg.value < min || msg.value > max) throw;
   _;
  }
 
@@ -80,15 +80,15 @@ contract EthMultiplier {
  payable
  entryCosts(1 finney, 10 ether) {
   // Warning! the creator of this smart contract is in no way
-  // responsible for any losses or gains in both the &#39;invest&#39; function nor 
-  // the &#39;buySmartContract&#39; function.
+  // responsible for any losses or gains in both the 'invest' function nor 
+  // the 'buySmartContract' function.
   
   investors[id].addr = msg.sender;
   investors[id].payout = msg.value * (100 + payOutPercentage) / 100;
 
   owner.transfer(msg.value * feePercentage / 100);
 
-  while (this.balance &gt;= investors[payoutIdx].payout) {
+  while (this.balance >= investors[payoutIdx].payout) {
    investors[payoutIdx].addr.transfer(investors[payoutIdx].payout);
    investors[payoutIdx++].paidOut = true;
   }
@@ -111,14 +111,14 @@ contract EthMultiplier {
  event manualCheckInvestmentRequired(uint id, uint investmentRequired);
 
  modifier awaitingPayOut(uint16 _investorId, bool _manual) {
-  if (_manual &amp;&amp; (_investorId &gt; id || _investorId &lt; payoutIdx)) throw;
+  if (_manual && (_investorId > id || _investorId < payoutIdx)) throw;
   _;
  }
 
  function checkInvestmentRequired(uint16 _investorId, bool _clickYes)
  awaitingPayOut(_investorId, _clickYes)
  returns(uint amount) {
-  for (uint16 iPayoutIdx = payoutIdx; iPayoutIdx &lt;= _investorId; iPayoutIdx++) {
+  for (uint16 iPayoutIdx = payoutIdx; iPayoutIdx <= _investorId; iPayoutIdx++) {
    amount += investors[iPayoutIdx].payout;
   }
 
@@ -136,10 +136,10 @@ contract EthMultiplier {
 
  modifier isForSale() {
   if (!smartContactForSale 
-  || msg.value &lt; priceOfSmartContract 
+  || msg.value < priceOfSmartContract 
   || msg.sender == owner) throw;
   _;
-  if (msg.value &gt; priceOfSmartContract)
+  if (msg.value > priceOfSmartContract)
    msg.sender.transfer(msg.value - priceOfSmartContract);
  }
 
@@ -147,8 +147,8 @@ contract EthMultiplier {
  payable
  isForSale {
   // Warning! the creator of this smart contract is in no way
-  // responsible for any losses or gains in both the &#39;invest&#39; function nor 
-  // the &#39;buySmartContract&#39; function.
+  // responsible for any losses or gains in both the 'invest' function nor 
+  // the 'buySmartContract' function.
 
   // Always correctly identify the risk related before using this function.
   owner.transfer(priceOfSmartContract);
@@ -176,7 +176,7 @@ contract EthMultiplier {
 
  modifier FPLimits(uint8 _percentage) {
   // fee percentage cannot be higher than 25
-  if (_percentage &gt; 25) throw;
+  if (_percentage > 25) throw;
   _;
  }
 
@@ -197,7 +197,7 @@ contract EthMultiplier {
  modifier POTODLimits(uint8 _percentage) {
   // pay out percentage cannot be higher than 100 (so double the investment)
   // it also cannot be lower than the fee percentage
-  if (_percentage &gt; 100 || _percentage &lt; feePercentage) throw;
+  if (_percentage > 100 || _percentage < feePercentage) throw;
   _;
  }
 
@@ -233,7 +233,7 @@ contract EthMultiplier {
 
  modifier SCPLimits(uint _price) {
   // smart contract price cannot be lower or equal than 10 ether
-  if (_price &lt;= 10 ether) throw;
+  if (_price <= 10 ether) throw;
   _;
  }
 

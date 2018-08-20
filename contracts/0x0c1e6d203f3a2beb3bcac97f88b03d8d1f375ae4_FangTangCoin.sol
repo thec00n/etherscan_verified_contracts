@@ -14,14 +14,14 @@ contract FangTangCoin {
     uint public rate;
     uint public freeCount;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint8) public buyCountOf;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint8) public buyCountOf;
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     // buy token 
     function () public payable {
         require(autoSend);
-        require(now &gt;= start &amp;&amp; now &lt;= end);
+        require(now >= start && now <= end);
         
         uint256 weiAmount = msg.value;
         uint256 tokens;
@@ -30,19 +30,19 @@ contract FangTangCoin {
         else 
             tokens = (weiAmount/1000000000000000000)*rate;
         
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
         // 不要自己提到自己账户
         require(creator != msg.sender);
 
         // 首先检查发token的账户是否拥有对应数量的代币 
-        require(balanceOf[creator] &gt;= tokens);
+        require(balanceOf[creator] >= tokens);
         
 
 
         // 当 rate 为 0 时，检查是否已经领取过
         if (rate == 0)
-            require(buyCountOf[msg.sender] &lt; 1);
+            require(buyCountOf[msg.sender] < 1);
             
         // 开始转移代币
         uint previousBalances = balanceOf[msg.sender] + balanceOf[creator];
@@ -59,7 +59,7 @@ contract FangTangCoin {
     }
     
     function getETH() public {
-        require(address(this).balance &gt; 0 &amp;&amp; msg.sender == creator);
+        require(address(this).balance > 0 && msg.sender == creator);
         creator.transfer(address(this).balance);
     }
     
@@ -99,8 +99,8 @@ contract FangTangCoin {
         require(_to != 0x0);
         require(msg.sender != _to);
         
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[msg.sender] + balanceOf[_to];
         balanceOf[msg.sender] -= _value;

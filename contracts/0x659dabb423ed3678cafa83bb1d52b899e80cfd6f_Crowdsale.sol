@@ -26,11 +26,11 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
 
     uint256 c = a / b;
 
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
     return c;
 
@@ -40,7 +40,7 @@ library SafeMath {
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    assert(b &lt;= a);
+    assert(b <= a);
 
     return a - b;
 
@@ -52,7 +52,7 @@ library SafeMath {
 
     uint256 c = a + b;
 
-    assert(c &gt;= a);
+    assert(c >= a);
 
     return c;
 
@@ -242,7 +242,7 @@ contract Crowdsale {
 
     
 
-    // if(contributions[msg.sender].add(weiAmount)&gt;10*10**18) throw;
+    // if(contributions[msg.sender].add(weiAmount)>10*10**18) throw;
 
     // contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
 
@@ -284,7 +284,7 @@ contract Crowdsale {
 
     bool nonZeroPurchase = msg.value != 0;
 
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
 
   }
 

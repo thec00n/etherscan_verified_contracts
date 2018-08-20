@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -146,7 +146,7 @@ contract Crowdsale is Ownable{
 
   //check is now preICO
   function isPreIco(uint _time) constant public returns (bool){
-    if((preIcoStart &lt;= _time) &amp;&amp; (_time &lt;= preIcoFinish)){
+    if((preIcoStart <= _time) && (_time <= preIcoFinish)){
       return true;
     }
     return false;
@@ -154,7 +154,7 @@ contract Crowdsale is Ownable{
 
   //check is now ICO
   function isIco(uint _time) constant public returns (bool){
-    if((icoStart &lt;= _time) &amp;&amp; (_time &lt;= icoFinish)){
+    if((icoStart <= _time) && (_time <= icoFinish)){
       return true;
     }
     return false;
@@ -166,8 +166,8 @@ contract Crowdsale is Ownable{
   uint public tokensSold = 0;
   uint public ethCollected = 0;
 
-  //Ethereum investor balances (how much Eth they&#39;re donate to ICO)
-  mapping (address =&gt; uint) public investorBalances;
+  //Ethereum investor balances (how much Eth they're donate to ICO)
+  mapping (address => uint) public investorBalances;
 
   //function calculate how many tokens will be send to investor in preIco
   function  buyIfPreIcoDiscount (uint _value) internal returns(uint,uint) {
@@ -176,14 +176,14 @@ contract Crowdsale is Ownable{
     uint bufferValue = _value;
     uint res = 0;
 
-    for (uint i = 0; i&lt;structurePreIco.length; i++){
+    for (uint i = 0; i<structurePreIco.length; i++){
       res = _value/(tokenPrice*structurePreIco[i].bonus/100000000000);
 
       //Purchase over 5,000 VGC and get extra 10% bonus
-      if(res &gt;= (uint)(5000).mul(pow(10,decimals))){
+      if(res >= (uint)(5000).mul(pow(10,decimals))){
         res = res.add(res/10);
       }
-      if (res&lt;=structurePreIco[i].balance){
+      if (res<=structurePreIco[i].balance){
         //   bufferEth = bufferEth+_value;
         structurePreIco[i].balance = structurePreIco[i].balance.sub(res);
         buffer = res.add(buffer);
@@ -206,14 +206,14 @@ contract Crowdsale is Ownable{
     uint bufferValue = _value;
     uint res = 0;
 
-    for (uint i = 0; i&lt;structureIco.length; i++){
+    for (uint i = 0; i<structureIco.length; i++){
       res = _value/(tokenPrice*structureIco[i].bonus/100000000000);
 
       //Purchase over 5,000 VGC and get extra 10% bonus
-      if(res &gt;= (uint)(5000).mul(pow(10,decimals))){
+      if(res >= (uint)(5000).mul(pow(10,decimals))){
         res = res.add(res/10);
       }
-        if (res&lt;=structureIco[i].balance){
+        if (res<=structureIco[i].balance){
           bufferEth = bufferEth+_value;
           structureIco[i].balance = structureIco[i].balance.sub(res);
           buffer = res.add(buffer);
@@ -230,7 +230,7 @@ contract Crowdsale is Ownable{
 
   //fallback function (when investor send ether to contract)
   function() public payable{
-    require(msg.value &gt;= minDeposit);
+    require(msg.value >= minDeposit);
     require(isIco(now) || isPreIco(now));
     require(buy(msg.sender,msg.value,now,false)); //redirect to func buy
   }
@@ -242,26 +242,26 @@ contract Crowdsale is Ownable{
     uint etherForSend;
     if (isPreIco(_time)){
       (tokensForSend,etherForSend) = buyIfPreIcoDiscount(_value);
-      assert (tokensForSend &gt;= 50*pow(10,decimals));
+      assert (tokensForSend >= 50*pow(10,decimals));
       preIcoTokensSold += tokensForSend;
-      if (etherForSend!=0 &amp;&amp; !dashboard){
+      if (etherForSend!=0 && !dashboard){
         _address.transfer(etherForSend);
       }
       owner.transfer(this.balance);
     }
     if (isIco(_time)){
       if(!preIcoEnded){
-        for (uint i = 0; i&lt;structurePreIco.length; i++){
+        for (uint i = 0; i<structurePreIco.length; i++){
           structureIco[structureIco.length-1].balance = structureIco[structureIco.length-1].balance.add(structurePreIco[i].balance);
           structurePreIco[i].balance = 0;
         }
        preIcoEnded = true;
       }
       (tokensForSend,etherForSend) = buyIfIcoDiscount(_value);
-      assert (tokensForSend &gt;= 50*pow(10,decimals));
+      assert (tokensForSend >= 50*pow(10,decimals));
       iCoTokensSold += tokensForSend;
 
-      if (etherForSend!=0 &amp;&amp; !dashboard){
+      if (etherForSend!=0 && !dashboard){
         _address.transfer(etherForSend);
       }
       investorBalances[_address] += _value.sub(etherForSend);
@@ -282,12 +282,12 @@ contract Crowdsale is Ownable{
 
   //someone can end ICO using this function (require 3 days after ICO end)
   function finishIco() public {
-    require (now &gt; icoFinish + 3 days);
+    require (now > icoFinish + 3 days);
     require (token.getRefBalSended());
-    for (uint i = 0; i&lt;structureIco.length; i++){
+    for (uint i = 0; i<structureIco.length; i++){
       structureIco[i].balance = 0;
     }
-    for (i = 0; i&lt;structurePreIco.length; i++){
+    for (i = 0; i<structurePreIco.length; i++){
       structurePreIco[i].balance = 0;
     }
     token.finishIco();
@@ -295,7 +295,7 @@ contract Crowdsale is Ownable{
 
   //function check is ICO complete (minCap exceeded)
   function isIcoTrue() public constant returns (bool){
-    if (tokensSold &gt;= icoMinCap){
+    if (tokensSold >= icoMinCap){
       return true;
     }
     return false;
@@ -304,7 +304,7 @@ contract Crowdsale is Ownable{
   //if ICO failed and now = ICO finished date +3 days then investor can withdrow his ether
   function refund() public{
     require (!isIcoTrue());
-    require (icoFinish + 3 days &lt;= now);
+    require (icoFinish + 3 days <= now);
 
     token.burnTokens(msg.sender);
     msg.sender.transfer(investorBalances[msg.sender]);

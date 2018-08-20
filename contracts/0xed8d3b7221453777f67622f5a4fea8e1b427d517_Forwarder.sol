@@ -16,13 +16,13 @@ library SafeMath {
   	}
 
 	function sub(uint256 a, uint256 b) internal returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal returns (uint256) {
 		 uint256 c = a + b;
-		 assert(c &gt;= a);
+		 assert(c >= a);
 		 return c;
 	}
 }
@@ -50,7 +50,7 @@ contract Forwarder  {
 	* Default function; Gets called when Ether is deposited, and forwards it to destination addresses
 	**/
 	function () payable {
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			uint256 totalAmount = msg.value;
 			uint256 tokenValueAmount = totalAmount.div(5);
 			uint256 restAmount = totalAmount.sub(tokenValueAmount);

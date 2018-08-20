@@ -25,7 +25,7 @@ contract Universe{
     uint256[5] raisePrice = [100, 35, 25, 17, 15];
     
     
-    mapping (uint256 =&gt; Item) public ItemList;
+    mapping (uint256 => Item) public ItemList;
     uint256 public current_item_index=1;
     
     address owner;
@@ -36,17 +36,17 @@ contract Universe{
 
     function Universe() public{
         owner=msg.sender;
-        AddItem(&quot;Sun&quot;, 1 finney, 0);
-        AddItem(&quot;Mercury&quot;, 1 finney, 1);
-        AddItem(&quot;Venus&quot;, 1 finney, 1);
-        AddItem(&quot;Earth&quot;, 1 finney, 1);
-        AddItem(&quot;Mars&quot;, 1 finney, 1);
-        AddItem(&quot;Jupiter&quot;, 1 finney, 1);
-        AddItem(&quot;Saturn&quot;, 1 finney, 1);
-        AddItem(&quot;Uranus&quot;, 1 finney, 1);
-        AddItem(&quot;Neptune&quot;, 1  finney, 1);
-        AddItem(&quot;Pluto&quot;, 1 finney, 1);
-        AddItem(&quot;Moon&quot;, 1 finney, 4);
+        AddItem("Sun", 1 finney, 0);
+        AddItem("Mercury", 1 finney, 1);
+        AddItem("Venus", 1 finney, 1);
+        AddItem("Earth", 1 finney, 1);
+        AddItem("Mars", 1 finney, 1);
+        AddItem("Jupiter", 1 finney, 1);
+        AddItem("Saturn", 1 finney, 1);
+        AddItem("Uranus", 1 finney, 1);
+        AddItem("Neptune", 1  finney, 1);
+        AddItem("Pluto", 1 finney, 1);
+        AddItem("Moon", 1 finney, 4);
     }
     
     function CheckItemExists(uint256 _id) internal returns (bool boolean){
@@ -60,7 +60,7 @@ contract Universe{
  //   function AddItem(string _name, uint256 _price, uint256 _id_owner) public {
     function AddItem(string _name, uint256 _price, uint256 _id_owner) public onlyOwner {
 //if (TESTMODE){
-//if (_price &lt; (1 finney)){
+//if (_price < (1 finney)){
   //              _price = (1 finney);
     //        }
 //}
@@ -69,9 +69,9 @@ contract Universe{
         uint256 _id = current_item_index;
 
         require(_id_owner != _id);
-        require(_id_owner &lt; _id);
+        require(_id_owner < _id);
 
-        require(_price &gt;= (1 finney));
+        require(_price >= (1 finney));
         require(_id_owner == 0 || CheckItemExists(_id_owner));
         require(CheckItemExists(_id) != true);
         
@@ -87,10 +87,10 @@ contract Universe{
             current_id_owner = ItemList[current_id_owner].id_owner;
             
           
-            for(uint256 c=0; c&lt;mem_owner.length; c++){
+            for(uint256 c=0; c<mem_owner.length; c++){
                if(c != (mem_owner.length-1)){
                    if(mem_owner[c] == current_id_owner){
-                        pushstr(&quot;false&quot;);
+                        pushstr("false");
                         return;
                     }
                 }
@@ -106,10 +106,10 @@ contract Universe{
     
     function ChangeItemOwnerID(uint256 _id, uint256 _new_owner) public onlyOwner {
         require(_new_owner != _id);
-        require(_id &lt;= (current_item_index-1));
+        require(_id <= (current_item_index-1));
         require(_id != 0);
         require(_new_owner != 0);
-        require(_new_owner &lt;= (current_item_index-1));
+        require(_new_owner <= (current_item_index-1));
         require(ItemList[_id].id_owner == 0);
        
         uint256 current_id_owner = _new_owner;
@@ -121,10 +121,10 @@ contract Universe{
             current_id_owner = ItemList[current_id_owner].id_owner;
             
           
-            for(uint256 c=0; c&lt;mem_owner.length; c++){
+            for(uint256 c=0; c<mem_owner.length; c++){
                if(c != (mem_owner.length-1)){
                    if(mem_owner[c] == current_id_owner || mem_owner[c] == _new_owner || mem_owner[c] == _id){
-//pushstr(&quot;false&quot;);
+//pushstr("false");
                         return;
                     }
                 }
@@ -147,7 +147,7 @@ contract Universe{
         
             uint256 total_sum = 0;
         
-            for (uint256 c2=0; c2&lt;pow; c2++){
+            for (uint256 c2=0; c2<pow; c2++){
                 total_sum = total_sum + 2**c2;
             }
         
@@ -177,16 +177,16 @@ contract Universe{
     }    
     
     function BuyItem(uint256 _id) public payable{
-        require(_id &gt; 0 &amp;&amp; _id &lt; current_item_index);
+        require(_id > 0 && _id < current_item_index);
         var TheItem = ItemList[_id];
         require(TheItem.owner != msg.sender);
-        require(msg.value &gt;= TheItem.price);
+        require(msg.value >= TheItem.price);
     
         uint256 index=0;
         
-        for (uint256 c=0; c&lt;LevelLimits.length; c++){
+        for (uint256 c=0; c<LevelLimits.length; c++){
             uint256 value = LevelLimits[c];
-            if (TheItem.price &lt; value){
+            if (TheItem.price < value){
                 break;
             }
             index++;
@@ -205,7 +205,7 @@ contract Universe{
         
         owner.transfer(valueDevFee);
         
-      //  pushstr(&quot;dev&quot;);
+      //  pushstr("dev");
       //  pushuint(valueDevFee);
         
         
@@ -213,11 +213,11 @@ contract Universe{
         
         uint256 totalBack = sub(sub(sub(msg.value, totalToOwner), valueDevFee), totalShareFee);
         
-        if (totalBack &gt; 0){
+        if (totalBack > 0){
             msg.sender.transfer(totalBack);
         }
         
-       // pushstr(&quot;owner transfer&quot;);
+       // pushstr("owner transfer");
        // pushuint(totalToOwner);
         TheItem.owner.transfer(totalToOwner);
         
@@ -235,20 +235,20 @@ contract Universe{
    }
 
    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
    }
 
    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
     

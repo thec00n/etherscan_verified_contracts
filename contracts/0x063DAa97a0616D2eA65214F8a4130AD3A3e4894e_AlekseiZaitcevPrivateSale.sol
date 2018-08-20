@@ -4,7 +4,7 @@ pragma solidity ^0.4.20;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 	
@@ -61,7 +61,7 @@ contract AlekseiZaitcevPrivateSale {
 		require(!purchaseHalted);
 		require(weiToReceive == msg.value);
 		require(buyerAddress == msg.sender);
-		require(now &lt;= timeLimit);
+		require(now <= timeLimit);
 		
 		uint256 currentPurchase = msg.value.mul(pricePerEther);
 		amountPurchasedWithDecimals = amountPurchasedWithDecimals.add(currentPurchase);

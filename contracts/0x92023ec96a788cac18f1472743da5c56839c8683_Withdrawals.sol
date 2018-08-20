@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -115,7 +115,7 @@ contract Withdrawals is Claimable {
     address public withdrawCreator;
 
     /**
-    * @dev if it&#39;s token transfer the tokenAddress will be 0x0000... 
+    * @dev if it's token transfer the tokenAddress will be 0x0000... 
     * @param _destination receiver of token or eth
     * @param _amount amount of ETH or Tokens
     * @param _tokenAddress actual token address or 0x000.. in case of eth transfer
@@ -147,15 +147,15 @@ contract Withdrawals is Claimable {
     * @param _tokenAddresses what token to be transfered in case of eth just leave the 0x address
     */
     function withdraw(address[] _destinations, uint[] _amounts, address[] _tokenAddresses) public onlyOwnerOrWithdrawCreator {
-        require(_destinations.length == _amounts.length &amp;&amp; _amounts.length == _tokenAddresses.length);
+        require(_destinations.length == _amounts.length && _amounts.length == _tokenAddresses.length);
         // itterate in receivers
-        for (uint i = 0; i &lt; _destinations.length; i++) {
+        for (uint i = 0; i < _destinations.length; i++) {
             address tokenAddress = _tokenAddresses[i];
             uint amount = _amounts[i];
             address destination = _destinations[i];
             // eth transfer
             if (tokenAddress == address(0)) {
-                if (this.balance &lt; amount) {
+                if (this.balance < amount) {
                     continue;
                 }
                 if (!destination.call.gas(70000).value(amount)()) {
@@ -164,7 +164,7 @@ contract Withdrawals is Claimable {
                 
             }else {
             // erc 20 transfer
-                if (ERC20(tokenAddress).balanceOf(this) &lt; amount) {
+                if (ERC20(tokenAddress).balanceOf(this) < amount) {
                     continue;
                 }
                 ERC20(tokenAddress).transfer(destination, amount);

@@ -18,23 +18,23 @@
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     }
     contract  Helex{
     
 	
-	string public standard = &#39;Helex 7.0&#39;;
+	string public standard = 'Helex 7.0';
     using SafeMath for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -48,7 +48,7 @@
     function  Helex() 
     {
         totalSupply = 2100000000000;
-        symbol = &#39;HLX&#39;;
+        symbol = 'HLX';
         owner = 0x27d5DacEDc4F1C98B56723174eEab8E4EFc9AbA6;
         balances[owner] = 2100000000000;
         decimals = 5;

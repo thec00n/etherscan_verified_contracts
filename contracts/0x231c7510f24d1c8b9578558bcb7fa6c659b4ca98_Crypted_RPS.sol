@@ -1,12 +1,12 @@
-//                       , ; ,   .-&#39;&quot;&quot;&quot;&#39;-.   , ; ,
-//                       \\|/  .&#39;          &#39;.  \|//
+//                       , ; ,   .-'"""'-.   , ; ,
+//                       \\|/  .'          '.  \|//
 //                        \-;-/   ()   ()   \-;-/
 //                        // ;               ; \\
 //                       //__; :.         .; ;__\\
-//                      `-----\&#39;.&#39;-.....-&#39;.&#39;/-----&#39;
-//                             &#39;.&#39;.-.-,_.&#39;.&#39;
-//                               &#39;(  (..-&#39;
-//                                 &#39;-&#39;
+//                      `-----\'.'-.....-'.'/-----'
+//                             '.'.-.-,_.'.'
+//                               '(  (..-'
+//                                 '-'
 //   WHYSOS3RIOUS   PRESENTS :                          
 //                                                                
 //   ROCK PAPER SCISSORS
@@ -22,12 +22,12 @@
 //          DRAW : Full refund
 //          WIN : 0.198 ETH (house : 0.002)
 //          EXPIRATION TIME : 1hour after duel starts (refreshed when one player reveals)
-//          If only one player reveals, he wins after 1 hour if the other doesn&#39;t reveal
+//          If only one player reveals, he wins after 1 hour if the other doesn't reveal
 //          he will be paid automatically when other ppl play the game.
-//          If both player don&#39;t reveal and forget the bet, it is refunded (-house)
+//          If both player don't reveal and forget the bet, it is refunded (-house)
 
 //         HOW TO PLAY ?
-//         1- Send a encrypted Hand (generated on the game&#39;s website or by yourself)
+//         1- Send a encrypted Hand (generated on the game's website or by yourself)
 //         2- Wait for opponent (can cancel if you wish)
 //         3- Once matched, reveal your hand with the appropriate function and your secret
 //         4- Wait for your duel to resolve and the automatic payout
@@ -36,12 +36,12 @@
 //         Encrypt your hands on the website or
 //         directly with web3.js :  web3.sha3(secret+hand)
 
-// exemple results with secret = &quot;testing&quot;
-//hand = &quot;rock&quot; :  web3.sha3(&quot;testing&quot;+&quot;rock&quot;)
+// exemple results with secret = "testing"
+//hand = "rock" :  web3.sha3("testing"+"rock")
 // 0x8935dc293ca2ee08e33bad4f4061699a8f59ec637081944145ca19cbc8b39473
-//hand = &quot;paper&quot; : 
+//hand = "paper" : 
 // 0x859743aa01286a6a1eba5dbbcc4cf8eeaf1cc953a3118799ba290afff7125501
-//hand = &quot;scissors&quot; : 
+//hand = "scissors" : 
 //0x35ccbb689808295e5c51510ed28a96a729e963a12d09c4a7a4ba000c9777e897
 
 contract Crypted_RPS
@@ -52,7 +52,7 @@ contract Crypted_RPS
     uint256 house;
     uint256 houseTotal;
     modifier noEthSent(){
-        if (msg.value&gt;0) msg.sender.send(msg.value);
+        if (msg.value>0) msg.sender.send(msg.value);
         _
     }
     modifier onlyOwner() {
@@ -60,8 +60,8 @@ contract Crypted_RPS
 	    _
     }
     modifier equalGambleValue() {
-	if (msg.value &lt; gambleValue) throw;
-        if (msg.value &gt; gambleValue) msg.sender.send(msg.value-gambleValue);
+	if (msg.value < gambleValue) throw;
+        if (msg.value > gambleValue) msg.sender.send(msg.value-gambleValue);
 	_
     }
 
@@ -108,10 +108,10 @@ contract Crypted_RPS
     Result[] results;
 
 
-    mapping (address =&gt; uint) player_progress;
+    mapping (address => uint) player_progress;
     // 0 not here, 1 waiting, 2 2crypted, 3 1crypted
-    mapping (address =&gt; uint) player_bet_id;
-    mapping (address =&gt; uint) player_bet_position;
+    mapping (address => uint) player_bet_id;
+    mapping (address => uint) player_bet_position;
 
     function getPlayerStatus(address player, uint option) constant returns (uint result)
     {
@@ -122,7 +122,7 @@ contract Crypted_RPS
     }
 
 
-    mapping (string =&gt; mapping(string =&gt; int)) payoffMatrix;
+    mapping (string => mapping(string => int)) payoffMatrix;
     //constructor
     function Crypted_RPS()
     {
@@ -130,21 +130,21 @@ contract Crypted_RPS
 	gambleValue = 100000 szabo;
         house = 1000 szabo;
         expirationTime = 7200;   //2 hour
-        payoffMatrix[&quot;rock&quot;][&quot;rock&quot;] = 0;
-        payoffMatrix[&quot;rock&quot;][&quot;paper&quot;] = 2;
-        payoffMatrix[&quot;rock&quot;][&quot;scissors&quot;] = 1;
-        payoffMatrix[&quot;paper&quot;][&quot;rock&quot;] = 1;
-        payoffMatrix[&quot;paper&quot;][&quot;paper&quot;] = 0;
-        payoffMatrix[&quot;paper&quot;][&quot;scissors&quot;] = 2;
-        payoffMatrix[&quot;scissors&quot;][&quot;rock&quot;] = 2;
-        payoffMatrix[&quot;scissors&quot;][&quot;paper&quot;] = 1;
-        payoffMatrix[&quot;scissors&quot;][&quot;scissors&quot;] = 0;
+        payoffMatrix["rock"]["rock"] = 0;
+        payoffMatrix["rock"]["paper"] = 2;
+        payoffMatrix["rock"]["scissors"] = 1;
+        payoffMatrix["paper"]["rock"] = 1;
+        payoffMatrix["paper"]["paper"] = 0;
+        payoffMatrix["paper"]["scissors"] = 2;
+        payoffMatrix["scissors"]["rock"] = 2;
+        payoffMatrix["scissors"]["paper"] = 1;
+        payoffMatrix["scissors"]["scissors"] = 0;
     }
 
     function () {throw;} //no callback, use the functions to play
 
     modifier payexpired2Duel{
-        if (duels2Decrypt.length&gt;firstActiveDuel2 &amp;&amp; duels2Decrypt[firstActiveDuel2].timeStamp + expirationTime &lt;= now) {
+        if (duels2Decrypt.length>firstActiveDuel2 && duels2Decrypt[firstActiveDuel2].timeStamp + expirationTime <= now) {
             duels2Decrypt[firstActiveDuel2].player_1.send(gambleValue-house);
             duels2Decrypt[firstActiveDuel2].player_2.send(gambleValue-house);
             houseTotal+=2*house;
@@ -157,13 +157,13 @@ contract Crypted_RPS
     }
 
     modifier payexpired1Duel{
-        if (duels1Decrypt.length&gt;firstActiveDuel1 &amp;&amp; (duels1Decrypt[firstActiveDuel1].timeStamp + expirationTime) &lt; now) {
+        if (duels1Decrypt.length>firstActiveDuel1 && (duels1Decrypt[firstActiveDuel1].timeStamp + expirationTime) < now) {
             duels1Decrypt[firstActiveDuel1].player_1.send(2*(gambleValue-house));
             houseTotal+=2*house;
             duels1Decrypt[firstActiveDuel1].decrypted = true;
             player_progress[duels1Decrypt[firstActiveDuel1].player_1]=0;
             player_progress[duels1Decrypt[firstActiveDuel1].player_2]=0;
-            results.push(Result(duels1Decrypt[firstActiveDuel1].player_1, duels1Decrypt[firstActiveDuel1].hand_1, duels1Decrypt[firstActiveDuel1].player_2,&quot;expired&quot;, 1));
+            results.push(Result(duels1Decrypt[firstActiveDuel1].player_1, duels1Decrypt[firstActiveDuel1].hand_1, duels1Decrypt[firstActiveDuel1].player_2,"expired", 1));
             updateFirstDuel1(firstActiveDuel1);
            
         }
@@ -173,7 +173,7 @@ contract Crypted_RPS
 
     function cancelWaitingForOpponent()
     noEthSent {
-        if (msg.sender==playerWaiting.player &amp;&amp; playerWaiting.full)
+        if (msg.sender==playerWaiting.player && playerWaiting.full)
         {
              msg.sender.send(gambleValue);
              playerWaiting.full=false;
@@ -191,7 +191,7 @@ contract Crypted_RPS
           uint progress = player_progress[msg.sender];
           uint position = player_bet_position[msg.sender];
           //one not resolved duel per player only
-          if ( progress==3 &amp;&amp; position==1 )throw;
+          if ( progress==3 && position==1 )throw;
           if (progress == 2 ) throw; 
           if (progress ==  1 ) throw; //no selfdueling
           if (!playerWaiting.full) 
@@ -218,18 +218,18 @@ contract Crypted_RPS
 
     function revealRock(string secret)
     {
-        bytes32 hashRevealed = sha3(secret, &quot;rock&quot;);
-        reveal(hashRevealed, &quot;rock&quot;);
+        bytes32 hashRevealed = sha3(secret, "rock");
+        reveal(hashRevealed, "rock");
     }
     function revealPaper(string secret)
     {
-        bytes32 hashRevealed = sha3(secret, &quot;paper&quot;);
-        reveal(hashRevealed, &quot;paper&quot;);
+        bytes32 hashRevealed = sha3(secret, "paper");
+        reveal(hashRevealed, "paper");
     }
     function revealScissors(string secret)
     {
-        bytes32 hashRevealed = sha3(secret, &quot;scissors&quot;);
-        reveal(hashRevealed, &quot;scissors&quot;);
+        bytes32 hashRevealed = sha3(secret, "scissors");
+        reveal(hashRevealed, "scissors");
     }
 
     function reveal(bytes32 hashRevealed, string hand) private
@@ -253,7 +253,7 @@ contract Crypted_RPS
                  hashStored = duels2Decrypt[bet_id].cryptedHand_2;
             }
         }
-        else if (progress==3 &amp;&amp; position==1) //duel half revealed already
+        else if (progress==3 && position==1) //duel half revealed already
         { 
                 hashStored = duels1Decrypt[bet_id].cryptedHand_2;
         }
@@ -299,7 +299,7 @@ contract Crypted_RPS
               player_bet_position[op_add]=1;
 
          }
-         else if (progress==3 &amp;&amp; position==1)
+         else if (progress==3 && position==1)
          {
               op_add = duels1Decrypt[bet_id].player_1;
               string op_h = duels1Decrypt[bet_id].hand_1;
@@ -318,7 +318,7 @@ contract Crypted_RPS
          {   
               uint index;
               while (true) {
-                 if (index&lt;duels2Decrypt.length &amp;&amp; duels2Decrypt[index].decrypted){
+                 if (index<duels2Decrypt.length && duels2Decrypt[index].decrypted){
                      index=index+1;
                  }
                  else {break; }
@@ -334,7 +334,7 @@ contract Crypted_RPS
          {   
               uint index;
               while (true) {
-                 if (index&lt;duels1Decrypt.length &amp;&amp; duels1Decrypt[index].decrypted){
+                 if (index<duels1Decrypt.length && duels1Decrypt[index].decrypted){
                      index=index+1;
                  }
                  else {break; }

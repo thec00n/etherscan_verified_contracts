@@ -27,7 +27,7 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeDiv(uint a, uint b) internal returns (uint) {
-	    assert(b &gt; 0);
+	    assert(b > 0);
 	    uint c = a / b;
 	    assert(a == b * c + a % b);
 	    return c;
@@ -35,35 +35,35 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeSub(uint a, uint b) internal returns (uint) {
-	    assert(b &lt;= a);
+	    assert(b <= a);
 	    return a - b;
 	  }
 	
 
 	  function safeAdd(uint a, uint b) internal returns (uint) {
 	    uint c = a + b;
-	    assert(c&gt;=a &amp;&amp; c&gt;=b);
+	    assert(c>=a && c>=b);
 	    return c;
 	  }
 	
 
 	  function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	
 
 	  function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	
 
@@ -78,11 +78,11 @@ pragma solidity ^0.4.18;
 	
 
 	  /* Actual balances of token holders */
-	  mapping(address =&gt; uint) balances;
+	  mapping(address => uint) balances;
 	
 
 	  /* approve() allowances */
-	  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	  mapping (address => mapping (address => uint)) allowed;
 	
 
 	  /* Interface declaration */
@@ -144,8 +144,8 @@ pragma solidity ^0.4.18;
 	contract VirtualExchange is StandardToken {
 	
 
-	    string public name = &quot;Virtual Exchange&quot;;
-	    string public symbol = &quot;VEX&quot;;
+	    string public name = "Virtual Exchange";
+	    string public symbol = "VEX";
 	    uint public decimals = 18;
 	    uint data1 = 1;
 	    uint data2 = 1;
@@ -245,15 +245,15 @@ pragma solidity ^0.4.18;
 	        // Buy allowed if contract is not on halt
 	        require(!halted);
 	        // Amount of wei should be more that 0
-	        require(msg.value&gt;0);
+	        require(msg.value>0);
 	
 
 	        // Count expected tokens price
 	        uint tokens = msg.value * 10**18 / price();
 	
 
-	        // Total tokens should be more than user want&#39;s to buy
-	        require(balances[owner]&gt;tokens);
+	        // Total tokens should be more than user want's to buy
+	        require(balances[owner]>tokens);
 	
 
 	        // Give +25% of tokens on stage three is enabled
@@ -280,7 +280,7 @@ pragma solidity ^0.4.18;
 	            tokens = tokens + ((tokens / 4) * 3);
 	        }
 			
-	        // Give +100% of tokents on Pre-TGE (data1 value default to &quot;1&quot;)
+	        // Give +100% of tokents on Pre-TGE (data1 value default to "1")
 	        if (preTge) {
 	            stageOne = false;
 	            stageTwo = false;
@@ -292,10 +292,10 @@ pragma solidity ^0.4.18;
 	        // Check how much tokens already sold
 	        if (preTge) {
 	            // Check that required tokens count are less than tokens already sold on Pre-TGE
-	            require(safeAdd(presaleTokenSupply, tokens) &lt; preTgeCap);
+	            require(safeAdd(presaleTokenSupply, tokens) < preTgeCap);
 	        } else {
 	            // Check that required tokens count are less than tokens already sold on tge sub Pre-TGE
-	            require(safeAdd(presaleTokenSupply, tokens) &lt; safeSub(tgeCap, preTgeTokenSupply));
+	            require(safeAdd(presaleTokenSupply, tokens) < safeSub(tgeCap, preTgeTokenSupply));
 	        }
 	
 
@@ -429,13 +429,13 @@ pragma solidity ^0.4.18;
 	
 
 	    modifier isAvailable() {
-	        require(!halted &amp;&amp; !freeze);
+	        require(!halted && !freeze);
 	        _;
 	    }
 	
 
 	    /**
-	     * Just being sent some cash? Let&#39;s buy tokens
+	     * Just being sent some cash? Let's buy tokens
 	     */
 	    function() payable {
 	        buy();

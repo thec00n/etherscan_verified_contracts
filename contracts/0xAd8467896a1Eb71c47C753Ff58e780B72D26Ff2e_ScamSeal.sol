@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 
 /*
-[{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;name&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalSupply&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;decimals&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint8&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;balanceOf&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;balance&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;symbol&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transfer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transferBack&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_totalSupply&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Transfer&quot;,&quot;type&quot;:&quot;event&quot;}]
+[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transferBack","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"inputs":[{"name":"_totalSupply","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"}]
 */
 contract ScamSealToken {
     //The Scam Seal Token is intended to mark an address as SCAM.
@@ -10,8 +10,8 @@ contract ScamSealToken {
     //a false ERC20 token, where transfers can be done only by 
     //the creator of the token.
 
-    string public constant name = &quot;SCAM Seal Token&quot;;
-    string public constant symbol = &quot;SCAMSEAL&quot;;
+    string public constant name = "SCAM Seal Token";
+    string public constant symbol = "SCAMSEAL";
     uint8 public constant decimals = 0;
     uint256 public totalSupply;
 
@@ -22,7 +22,7 @@ contract ScamSealToken {
         _;
     }
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     function balanceOf(address _owner) constant returns (uint balance){
@@ -31,11 +31,11 @@ contract ScamSealToken {
     //Only the owner of the token can transfer.
     //tokens are being generated on the fly,
     //tokenSupply increases with double the amount that is required to be transfered 
-    //if the amount isn&#39;t available to transfer
+    //if the amount isn't available to transfer
     //newly generated tokens are never burned.
     function transfer(address _to, uint256 _amount) onlyOwner returns (bool success){
-        if(_amount &gt;= 0){
-            if(balances[msg.sender] &gt;= _amount){
+        if(_amount >= 0){
+            if(balances[msg.sender] >= _amount){
                 balances[msg.sender] -= _amount;
                 balances[_to] += _amount;
                 Transfer(msg.sender, _to, _amount);
@@ -51,8 +51,8 @@ contract ScamSealToken {
             }
     }
     function transferBack(address _from, uint256 _amount) onlyOwner returns (bool success){
-        if(_amount &gt;= 0){
-            if(balances[_from] &gt;= _amount){
+        if(_amount >= 0){
+            if(balances[_from] >= _amount){
                 balances[_from] -= _amount;
                 balances[owner] += _amount;
                 Transfer(_from, owner, _amount);
@@ -80,7 +80,7 @@ contract ScamSealToken {
 
 /*
 
-[{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalRepaidQuantity&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalNumberOfScammers&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;scamFlags&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;reliefRatio&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;markAsScam&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;totalScammedRepaid&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;totalScammed&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;forgiveMeOnBehalfOf&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;scamSealTokenAddress&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;forgiveIt&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;forgiveMe&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;success&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;contractFeePercentage&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;pricePerUnit&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;donate&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalScammedQuantity&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;totalAvailableSupply&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:true,&quot;type&quot;:&quot;fallback&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;by&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;MarkedAsScam&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;by&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Forgived&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;scammer&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;by&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;PartiallyForgived&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;by&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;DonationReceived&quot;,&quot;type&quot;:&quot;event&quot;}]
+[{"constant":true,"inputs":[],"name":"totalRepaidQuantity","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalNumberOfScammers","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"scamFlags","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"reliefRatio","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"scammer","type":"address"}],"name":"markAsScam","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"totalScammedRepaid","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"totalScammed","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"scammer","type":"address"}],"name":"forgiveMeOnBehalfOf","outputs":[{"name":"success","type":"bool"}],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"scamSealTokenAddress","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"scammer","type":"address"}],"name":"forgiveIt","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"forgiveMe","outputs":[{"name":"success","type":"bool"}],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"contractFeePercentage","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"pricePerUnit","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"donate","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"totalScammedQuantity","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"totalAvailableSupply","type":"uint256"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"scammer","type":"address"},{"indexed":false,"name":"by","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"MarkedAsScam","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"scammer","type":"address"},{"indexed":false,"name":"by","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Forgived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"scammer","type":"address"},{"indexed":false,"name":"by","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"PartiallyForgived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"by","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"DonationReceived","type":"event"}]
 */
 
 contract ScamSeal{
@@ -90,7 +90,7 @@ modifier onlyOwner(){
     _;
 }
 modifier hasMinimumAmountToFlag(){
-    require(msg.value &gt;= pricePerUnit);
+    require(msg.value >= pricePerUnit);
     _;
 }
 
@@ -101,20 +101,20 @@ return c;
 }
 
 function div(uint a, uint b) internal returns (uint) {
-require(b &gt; 0);
+require(b > 0);
 uint c = a / b;
 require(a == b * c + a % b);
 return c;
 }
 
 function sub(uint a, uint b) internal returns (uint) {
-require(b &lt;= a);
+require(b <= a);
 return a - b;
 }
 
 function add(uint a, uint b) internal returns (uint) {
 uint c = a + b;
-require(c &gt;= a);
+require(c >= a);
 return c;
 }
 
@@ -135,25 +135,25 @@ uint256 public pricePerUnit = 1 finney;
 //for each 1 token that it holds it must pay 10 finney to make the token dissapear from they account
 uint256 public reliefRatio = 10;
 //how many times an address has been marked as SCAM
-mapping (address =&gt; uint256) public scamFlags;
+mapping (address => uint256) public scamFlags;
 //contract statistics.
 uint public totalNumberOfScammers = 0;
 uint public totalScammedQuantity = 0;
 uint public totalRepaidQuantity = 0;
 
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggedQuantity;
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggedRepaid;
+mapping (address => mapping(address => uint256)) flaggedQuantity;
+mapping (address => mapping(address => uint256)) flaggedRepaid;
 //the address that is flagging an address as scam has an issurance
 //when the scammer repays the scammed amount, the insurance will be sent
 //to the owner of the contract
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggerInsurance;
+mapping (address => mapping(address => uint256)) flaggerInsurance;
 
-mapping (address =&gt; mapping(address =&gt; uint256)) contractsInsuranceFee;
-mapping (address =&gt; address[]) flaggedIndex;
+mapping (address => mapping(address => uint256)) contractsInsuranceFee;
+mapping (address => address[]) flaggedIndex;
 //how much wei was the scammer been marked for.
-mapping (address =&gt; uint256) public totalScammed;
+mapping (address => uint256) public totalScammed;
 //how much wei did the scammer repaid
-mapping (address =&gt; uint256) public totalScammedRepaid;
+mapping (address => uint256) public totalScammedRepaid;
 
 function ScamSeal() {
 owner = msg.sender;
@@ -185,7 +185,7 @@ function markAsScam(address scammer) payable hasMinimumAmountToFlag{
 //unless the scammer already started to pay its debt
 
 function forgiveIt(address scammer) {
-    if(flaggerInsurance[msg.sender][scammer] &gt; 0){
+    if(flaggerInsurance[msg.sender][scammer] > 0){
         uint256 insurance = flaggerInsurance[msg.sender][scammer];
         uint256 hadFee = contractsInsuranceFee[msg.sender][scammer];
         uint256 numberOfTokensToForgive = div( insurance + hadFee ,  pricePerUnit);
@@ -217,7 +217,7 @@ function updateFlagCount(address from, address scammer, uint256 quantity) privat
 
 function addAddressToIndex(address scammer, address theAddressToIndex) private returns(bool success){
     bool addressFound = false;
-    for(uint i = 0; i &lt; flaggedIndex[scammer].length; i++){
+    for(uint i = 0; i < flaggedIndex[scammer].length; i++){
         if(flaggedIndex[scammer][i] == theAddressToIndex){
             addressFound = true;
             break;
@@ -229,11 +229,11 @@ function addAddressToIndex(address scammer, address theAddressToIndex) private r
     return true;
 }
 modifier toBeAScammer(){
-    require(totalScammed[msg.sender] - totalScammedRepaid[msg.sender] &gt; 0);
+    require(totalScammed[msg.sender] - totalScammedRepaid[msg.sender] > 0);
     _;
 }
 modifier addressToBeAScammer(address scammer){
-    require(totalScammed[scammer] - totalScammedRepaid[scammer] &gt; 0);
+    require(totalScammed[scammer] - totalScammedRepaid[scammer] > 0);
     _;
 }
 event Forgived(address scammer, address by, uint256 amount);
@@ -259,11 +259,11 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
         uint256 contractFeeAmount =  div(mul(forgivenessAmount, contractFeePercentage), 100); 
         uint256 numberOfTotalTokensToForgive = div(div(forgivenessAmount, reliefRatio), pricePerUnit);
         forgivenessAmount = forgivenessAmount - contractFeeAmount;
-        for(uint128 i = 0; i &lt; flaggedIndex[scammer].length; i++){
+        for(uint128 i = 0; i < flaggedIndex[scammer].length; i++){
             address forgivedBy = flaggedIndex[scammer][i];
             uint256 toForgive = flaggedQuantity[scammer][forgivedBy] - flaggedRepaid[scammer][forgivedBy];
-            if(toForgive &gt; 0){
-                if(toForgive &gt;= forgivenessAmount){
+            if(toForgive > 0){
+                if(toForgive >= forgivenessAmount){
                     flaggedRepaid[scammer][forgivedBy] += forgivenessAmount;
                     totalRepaidQuantity += forgivenessAmount;
                     totalScammedRepaid[scammer] += forgivenessAmount;
@@ -279,7 +279,7 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
                     forgivedBy.transfer(toForgive);
                     Forgived(scammer, forgivedBy, toForgive);
                 }
-                if(flaggerInsurance[forgivedBy][scammer] &gt; 0){
+                if(flaggerInsurance[forgivedBy][scammer] > 0){
                     uint256 insurance = flaggerInsurance[forgivedBy][scammer];
                     contractFeeAmount += insurance;
                     flaggerInsurance[forgivedBy][scammer] = 0;
@@ -290,7 +290,7 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
         owner.transfer(contractFeeAmount);
         theScamSealToken.transferBack(scammer, numberOfTotalTokensToForgive);
 
-        if(forgivenessAmount &gt; 0){
+        if(forgivenessAmount > 0){
             msg.sender.transfer(forgivenessAmount);
         }
         return true;

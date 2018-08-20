@@ -115,8 +115,8 @@ contract SCardLong is modularLong {
 
     address public ceo;
     address public cfo; 
-    string constant public name = &quot;SCard&quot;;
-    string constant public symbol = &quot;SCARD&quot;;
+    string constant public name = "SCard";
+    string constant public symbol = "SCARD";
     uint256 private rndExtra_ = 30 seconds;       
     uint256 private rndGap_ = 30 seconds;         
     uint256 constant private rndInit_ = 24 hours;                // 初始时间
@@ -127,17 +127,17 @@ contract SCardLong is modularLong {
     uint256 public airDropTracker_ = 0;     
     uint256 public rID_;  
 
-    mapping (address =&gt; uint256) public pIDxAddr_;          // 玩家地址 =》 玩家ID
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // 玩家用户名=》 玩家ID
-    mapping (uint256 =&gt; F3Ddatasets.Player) public plyr_;   // 玩家ID =》 玩家数据
-    mapping (uint256 =&gt; mapping (uint256 =&gt; F3Ddatasets.PlayerRounds)) public plyrRnds_;    // 玩家ID =》 第几轮 =》 玩家当轮数据
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // 玩家ID =》 玩家用户名 =》 True/False
+    mapping (address => uint256) public pIDxAddr_;          // 玩家地址 =》 玩家ID
+    mapping (bytes32 => uint256) public pIDxName_;          // 玩家用户名=》 玩家ID
+    mapping (uint256 => F3Ddatasets.Player) public plyr_;   // 玩家ID =》 玩家数据
+    mapping (uint256 => mapping (uint256 => F3Ddatasets.PlayerRounds)) public plyrRnds_;    // 玩家ID =》 第几轮 =》 玩家当轮数据
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // 玩家ID =》 玩家用户名 =》 True/False
 
-    mapping (uint256 =&gt; F3Ddatasets.Round) public round_;   // 第几轮 =》 本轮数据
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // 第几轮=》TeamID=&gt;该组数据
+    mapping (uint256 => F3Ddatasets.Round) public round_;   // 第几轮 =》 本轮数据
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // 第几轮=》TeamID=>该组数据
 
-    mapping (uint256 =&gt; F3Ddatasets.TeamFee) public fees_;          // TeamID =&gt; 购买分发比例配置
-    mapping (uint256 =&gt; F3Ddatasets.PotSplit) public potSplit_;     // TeamID =&gt; 结束分发比例配置
+    mapping (uint256 => F3Ddatasets.TeamFee) public fees_;          // TeamID => 购买分发比例配置
+    mapping (uint256 => F3Ddatasets.PotSplit) public potSplit_;     // TeamID => 结束分发比例配置
 
 
     constructor()
@@ -154,18 +154,18 @@ contract SCardLong is modularLong {
         //  玄武 奖池 40%, 所有持KEY玩家 -40%, 推荐 - 10%, 开发团队 - 5%, 空投 - 5%
         fees_[3] = F3Ddatasets.TeamFee(40,0);   
         
-        // 青龙 55 - 大赢家 25 -&gt; 所有持KEY玩家 15-&gt; 下一轮 5-&gt; 开发团队
+        // 青龙 55 - 大赢家 25 -> 所有持KEY玩家 15-> 下一轮 5-> 开发团队
         potSplit_[0] = F3Ddatasets.PotSplit(25,0); 
-        // 白虎 55 - 大赢家 30 -&gt; 所有持KEY玩家 10-&gt; 下一轮 5-&gt; 开发团队
+        // 白虎 55 - 大赢家 30 -> 所有持KEY玩家 10-> 下一轮 5-> 开发团队
         potSplit_[1] = F3Ddatasets.PotSplit(30,0);  
-        // 朱雀 55 - 大赢家 10 -&gt; 所有持KEY玩家 30-&gt; 下一轮 5-&gt; 开发团队
+        // 朱雀 55 - 大赢家 10 -> 所有持KEY玩家 30-> 下一轮 5-> 开发团队
         potSplit_[2] = F3Ddatasets.PotSplit(10,0);  
-        // 玄武 55 - 大赢家 20 -&gt; 所有持KEY玩家 20-&gt; 下一轮 5-&gt; 开发团队
+        // 玄武 55 - 大赢家 20 -> 所有持KEY玩家 20-> 下一轮 5-> 开发团队
         potSplit_[3] = F3Ddatasets.PotSplit(20,0);  
 	}
 
     modifier isActivated() {
-        require(activated_ == true, &quot;Not Active!&quot;); 
+        require(activated_ == true, "Not Active!"); 
         _;
     }
 
@@ -175,13 +175,13 @@ contract SCardLong is modularLong {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;Not Human&quot;);
+        require(_codeLength == 0, "Not Human");
         _;
     }
 
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000, &quot;Too Less&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;Too More&quot;);
+        require(_eth >= 1000000000, "Too Less");
+        require(_eth <= 100000000000000000000000, "Too More");
         _;    
     }
     
@@ -202,8 +202,8 @@ contract SCardLong is modularLong {
         isHuman() 
         public
     {
-        require(address(0) != newCEO, &quot;CEO Can not be 0&quot;);
-        require(ceo == msg.sender, &quot;only ceo can modify ceo&quot;);
+        require(address(0) != newCEO, "CEO Can not be 0");
+        require(ceo == msg.sender, "only ceo can modify ceo");
         ceo = newCEO;
     }
 
@@ -211,8 +211,8 @@ contract SCardLong is modularLong {
         isHuman() 
         public
     {
-        require(address(0) != newCFO, &quot;CFO Can not be 0&quot;);
-        require(cfo == msg.sender, &quot;only cfo can modify cfo&quot;);
+        require(address(0) != newCFO, "CFO Can not be 0");
+        require(cfo == msg.sender, "only cfo can modify cfo");
         cfo = newCFO;
     }
     
@@ -280,7 +280,7 @@ contract SCardLong is modularLong {
         
         uint256 _pID = pIDxAddr_[msg.sender];
         uint256 _affID;
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             _affID = plyr_[_pID].laff;
         } 
@@ -358,7 +358,7 @@ contract SCardLong is modularLong {
         
         uint256 _pID = pIDxAddr_[msg.sender];
         uint256 _affID;
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             _affID = plyr_[_pID].laff;
         } 
@@ -387,13 +387,13 @@ contract SCardLong is modularLong {
         uint256 _eth;
         
         // 是否触发结束
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             F3Ddatasets.EventReturns memory _eventData_;
         	round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
             _eth = withdrawEarnings(_pID);
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);    
         
             _eventData_.compressedData = _eventData_.compressedData + (_now * 1000000000000000000);
@@ -417,7 +417,7 @@ contract SCardLong is modularLong {
         else 
         {
             _eth = withdrawEarnings(_pID);
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
             emit F3Devents.onWithdraw(_pID, msg.sender, plyr_[_pID].name, _eth, _now);
         }
@@ -480,7 +480,7 @@ contract SCardLong is modularLong {
         
         uint256 _rID = rID_;
         uint256 _now = now;
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else 
             return ( 7500000000000000 );
@@ -495,8 +495,8 @@ contract SCardLong is modularLong {
         uint256 _rID = rID_;
         uint256 _now = now;
         
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt + rndGap_)
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt + rndGap_).sub(_now) );
@@ -513,7 +513,7 @@ contract SCardLong is modularLong {
         
         uint256 _rID = rID_;
         
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             if (round_[_rID].plyr == _pID)
             {
@@ -610,14 +610,14 @@ contract SCardLong is modularLong {
         uint256 _now = now;
         
         // 未结束
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) 
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) 
         {
             core(_rID, _pID, msg.value, _affID, _team, _eventData_);    
         } 
         else 
         {
             // 已结束但未执行
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) 
+            if (_now > round_[_rID].end && round_[_rID].ended == false) 
             {
                 round_[_rID].ended = true;
                 _eventData_ = endRound(_eventData_);
@@ -655,14 +655,14 @@ contract SCardLong is modularLong {
         uint256 _now = now;
         
         // 未结束
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) 
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) 
         {
             // 取出玩家小金库
             plyr_[_pID].gen = withdrawEarnings(_pID).sub(_eth);
             core(_rID, _pID, _eth, _affID, _team, _eventData_);
         } 
         // 已结束但未执行
-        else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) 
+        else if (_now > round_[_rID].end && round_[_rID].ended == false) 
         {
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
@@ -694,7 +694,7 @@ contract SCardLong is modularLong {
             _eventData_ = managePlayer(_pID, _eventData_);
         
         // 前期购买限制
-        if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 1000000000000000000)
+        if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 1000000000000000000)
         {
             uint256 _availableLimit = (1000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
             uint256 _refund = _eth.sub(_availableLimit);
@@ -703,12 +703,12 @@ contract SCardLong is modularLong {
         }
         
         // 最少数额
-        if (_eth &gt; 1000000000) 
+        if (_eth > 1000000000) 
         {
             // 购买的KEY数量
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
             // 至少要有一个KEY才可以领头
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
                 updateTimer(_keys, _rID);
                 if (round_[_rID].plyr != _pID)
@@ -719,27 +719,27 @@ contract SCardLong is modularLong {
             }
             
             // 判断空投
-            if (_eth &gt;= 100000000000000000)
+            if (_eth >= 100000000000000000)
             {
                 airDropTracker_++;
                 if (airdrop() == true)
                 {
                     uint256 _prize;
-                    if (_eth &gt;= 10000000000000000000)
+                    if (_eth >= 10000000000000000000)
                     {
                         _prize = ((airDropPot_).mul(75)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
                         airDropPot_ = (airDropPot_).sub(_prize);
                         _eventData_.compressedData += 300000000000000000000000000000000;
                     } 
-                    else if (_eth &gt;= 1000000000000000000 &amp;&amp; _eth &lt; 10000000000000000000) 
+                    else if (_eth >= 1000000000000000000 && _eth < 10000000000000000000) 
                     {
                         _prize = ((airDropPot_).mul(50)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
                         airDropPot_ = (airDropPot_).sub(_prize);
                         _eventData_.compressedData += 200000000000000000000000000000000;
                     } 
-                    else if (_eth &gt;= 100000000000000000 &amp;&amp; _eth &lt; 1000000000000000000) 
+                    else if (_eth >= 100000000000000000 && _eth < 1000000000000000000) 
                     {
                         _prize = ((airDropPot_).mul(25)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
@@ -784,7 +784,7 @@ contract SCardLong is modularLong {
         returns(uint256)
     {
         uint256 _now = now;
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else
             return ( (_eth).keys() );
@@ -798,7 +798,7 @@ contract SCardLong is modularLong {
     {
         uint256 _rID = rID_;
         uint256 _now = now;
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else 
             return ( (_keys).eth() );
@@ -810,8 +810,8 @@ contract SCardLong is modularLong {
         isHuman()
         public
     {
-        require((extraSecond &gt; 0 &amp;&amp; extraSecond &lt;= 86400), &quot;TIME Out Of Range&quot;);
-        require( ceo == msg.sender, &quot;only ceo can setEnd&quot; );
+        require((extraSecond > 0 && extraSecond <= 86400), "TIME Out Of Range");
+        require( ceo == msg.sender, "only ceo can setEnd" );
         round_[rID_].end = now + extraSecond;
     }
     */
@@ -819,7 +819,7 @@ contract SCardLong is modularLong {
     function receivePlayerInfo(uint256 _pID, address _addr, bytes32 _name, uint256 _laff)
         external
     {
-        require (msg.sender == address(PlayerBook), &quot;your not playerNames contract... hmmm..&quot;);
+        require (msg.sender == address(PlayerBook), "your not playerNames contract... hmmm..");
         if (pIDxAddr_[_addr] != _pID)
             pIDxAddr_[_addr] = _pID;
         if (pIDxName_[_name] != _pID)
@@ -837,7 +837,7 @@ contract SCardLong is modularLong {
     function receivePlayerNameList(uint256 _pID, bytes32 _name)
         external
     {
-        require (msg.sender == address(PlayerBook), &quot;your not playerNames contract... hmmm..&quot;);
+        require (msg.sender == address(PlayerBook), "your not playerNames contract... hmmm..");
         if(plyrNames_[_pID][_name] == false)
             plyrNames_[_pID][_name] = true;
     }   
@@ -857,14 +857,14 @@ contract SCardLong is modularLong {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
             
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
             
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
 
             _eventData_.compressedData = _eventData_.compressedData + 1;
@@ -877,7 +877,7 @@ contract SCardLong is modularLong {
         pure
         returns (uint256)
     {
-        if (_team &lt; 0 || _team &gt; 3)
+        if (_team < 0 || _team > 3)
             return(2);
         else
             return(_team);
@@ -919,7 +919,7 @@ contract SCardLong is modularLong {
         
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -955,7 +955,7 @@ contract SCardLong is modularLong {
         private 
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
             plyrRnds_[_pID][_rIDlast].mask = _earnings.add(plyrRnds_[_pID][_rIDlast].mask);
@@ -968,12 +968,12 @@ contract SCardLong is modularLong {
     {
         uint256 _now = now;
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
         
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -995,7 +995,7 @@ contract SCardLong is modularLong {
             (block.number)
             
         )));
-        if((seed - ((seed / 1000) * 1000)) &lt; airDropTracker_)
+        if((seed - ((seed / 1000) * 1000)) < airDropTracker_)
             return(true);
         else
             return(false);
@@ -1015,8 +1015,8 @@ contract SCardLong is modularLong {
             _aff = _eth.mul(30) / 100;
         }
         
-        // MODIFY 如果推荐人不存在 10% -&gt; _com
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        // MODIFY 如果推荐人不存在 10% -> _com
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit F3Devents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
         } else {
@@ -1046,7 +1046,7 @@ contract SCardLong is modularLong {
         uint256 _pot = _eth.sub(_gen);
         
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
         
         round_[_rID].pot = _pot.add(_dust).add(round_[_rID].pot);
@@ -1080,7 +1080,7 @@ contract SCardLong is modularLong {
         updateGenVault(_pID, plyr_[_pID].lrnd);
         
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1119,8 +1119,8 @@ contract SCardLong is modularLong {
     function activate()
         public
     {
-        require( msg.sender == ceo, &quot;ONLY ceo CAN activate&quot; );
-        require(activated_ == false, &quot;Already Activated&quot;);
+        require( msg.sender == ceo, "ONLY ceo CAN activate" );
+        require(activated_ == false, "Already Activated");
         
         activated_ = true;
         
@@ -1132,7 +1132,7 @@ contract SCardLong is modularLong {
     function disable()
         public
     {
-        require( msg.sender == ceo, &quot;ONLY ceo&quot; );
+        require( msg.sender == ceo, "ONLY ceo" );
         selfdestruct(ceo);
     }
 }
@@ -1247,20 +1247,20 @@ library NameFilter {
         bytes memory _temp = bytes(_input);
         uint256 _length = _temp.length;
         
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;Invalid Length&quot;);
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;Can NOT start with SPACE&quot;);
+        require (_length <= 32 && _length > 0, "Invalid Length");
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "Can NOT start with SPACE");
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;CAN NOT Start With 0x&quot;);
-            require(_temp[1] != 0x58, &quot;CAN NOT Start With 0X&quot;);
+            require(_temp[1] != 0x78, "CAN NOT Start With 0x");
+            require(_temp[1] != 0x58, "CAN NOT Start With 0X");
         }
         
         bool _hasNonNumber;
         
-        for (uint256 i = 0; i &lt; _length; i++)
+        for (uint256 i = 0; i < _length; i++)
         {
             // 大写转小写
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 _temp[i] = byte(uint(_temp[i]) + 32);
                 if (_hasNonNumber == false)
@@ -1269,20 +1269,20 @@ library NameFilter {
                 require
                 (
                     _temp[i] == 0x20 || 
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;Include Illegal Characters!&quot;
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "Include Illegal Characters!"
                 );
                 if (_temp[i] == 0x20)
                     require( _temp[i+1] != 0x20, 
-                    &quot;ONLY One Space Allowed&quot;);
+                    "ONLY One Space Allowed");
                 
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;    
             }
         }
         
-        require(_hasNonNumber == true, &quot;All Numbers Not Allowed&quot;);
+        require(_hasNonNumber == true, "All Numbers Not Allowed");
         
         bytes32 _ret;
         assembly {
@@ -1302,7 +1302,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;Mul Failed&quot;);
+        require(c / a == b, "Mul Failed");
         return c;
     }
     function sub(uint256 a, uint256 b)
@@ -1310,7 +1310,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;Sub Failed&quot;);
+        require(b <= a, "Sub Failed");
         return a - b;
     }
 
@@ -1320,7 +1320,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;Add Failed&quot;);
+        require(c >= a, "Add Failed");
         return c;
     }
     
@@ -1331,7 +1331,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);

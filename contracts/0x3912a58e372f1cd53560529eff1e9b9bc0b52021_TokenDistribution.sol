@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,10 +61,10 @@ contract StandardToken is ERC20 {
   using SafeMath for uint;
 
   /* Actual balances of token holders */
-  mapping (address =&gt; uint) balances;
+  mapping (address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool) {
@@ -78,7 +78,7 @@ contract StandardToken is ERC20 {
    * http://vessenes.com/the-erc20-short-address-attack-explained/
    */
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -88,7 +88,7 @@ contract StandardToken is ERC20 {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -102,7 +102,7 @@ contract StandardToken is ERC20 {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool) {
-    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][_to] &gt;= _value);
+    require(balances[_from] >= _value && allowed[_from][_to] >= _value);
     allowed[_from][_to] = allowed[_from][_to].sub(_value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner = msg.sender;
@@ -184,7 +184,7 @@ contract EmeraldToken is StandardToken, Ownable {
   string public symbol;
   uint public decimals;
 
-  mapping (address =&gt; bool) public producers;
+  mapping (address => bool) public producers;
 
   bool public released = false;
 
@@ -212,7 +212,7 @@ contract EmeraldToken is StandardToken, Ownable {
   }
 
   function EmeraldToken(string _name, string _symbol, uint _decimals) {
-    require(_decimals &gt; 0);
+    require(_decimals > 0);
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -222,7 +222,7 @@ contract EmeraldToken is StandardToken, Ownable {
   }
 
   /*
-  * Sets a producer&#39;s status
+  * Sets a producer's status
   * Distribution contract can be a producer
   */
   function setProducer(address _addr, bool _status) onlyOwner {
@@ -313,8 +313,8 @@ contract TokenDistribution is Haltable {
   uint public tokensSold = 0;           // tokens sold
   uint public loadedRefund = 0;         // wei amount for refund
   uint public weiRefunded = 0;          // wei amount refunded
-  mapping (address =&gt; uint) public contributors;        // list of contributors
-  mapping (address =&gt; uint) public presale;             // list of presale contributors
+  mapping (address => uint) public contributors;        // list of contributors
+  mapping (address => uint) public presale;             // list of presale contributors
 
   enum States {Preparing, Presale, Waiting, Distribution, Success, Failure, Refunding}
 
@@ -331,8 +331,8 @@ contract TokenDistribution is Haltable {
   function TokenDistribution(EmeraldToken _token, address _wallet, uint _presaleStart, uint _start, uint _end, 
     uint _ethPresaleMaxNoDecimals, uint _ethGoalNoDecimals, uint _maxTokenCapNoDecimals) {
     
-    require(_token != address(0) &amp;&amp; _wallet != address(0) &amp;&amp; _presaleStart &gt; 0 &amp;&amp; _start &gt; _presaleStart &amp;&amp; _end &gt; _start &amp;&amp; _ethPresaleMaxNoDecimals &gt; 0 
-      &amp;&amp; _ethGoalNoDecimals &gt; _ethPresaleMaxNoDecimals &amp;&amp; _maxTokenCapNoDecimals &gt; 0);
+    require(_token != address(0) && _wallet != address(0) && _presaleStart > 0 && _start > _presaleStart && _end > _start && _ethPresaleMaxNoDecimals > 0 
+      && _ethGoalNoDecimals > _ethPresaleMaxNoDecimals && _maxTokenCapNoDecimals > 0);
     require(_token.isToken());
 
     token = _token;
@@ -354,7 +354,7 @@ contract TokenDistribution is Haltable {
   */
   function buy() payable stopInEmergency {
     require(getState() == States.Presale || getState() == States.Distribution);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     if (getState() == States.Presale)
       presale[msg.sender] = presale[msg.sender].add(msg.value);
     else {
@@ -368,7 +368,7 @@ contract TokenDistribution is Haltable {
   * Preallocate tokens for reserve, bounties etc.
   */
   function preallocate(address _receiver, uint _tokenAmountNoDecimals) onlyOwner stopInEmergency {
-    require(getState() != States.Failure &amp;&amp; getState() != States.Refunding &amp;&amp; !token.released());
+    require(getState() != States.Failure && getState() != States.Refunding && !token.released());
     uint tokenAmount = _tokenAmountNoDecimals * 10 ** token.decimals();
     contributeInternal(_receiver, 0, tokenAmount);
   }
@@ -378,7 +378,7 @@ contract TokenDistribution is Haltable {
    */
   function loadRefund() payable {
     require(getState() == States.Failure || getState() == States.Refunding);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     loadedRefund = loadedRefund.add(msg.value);
     LoadedRefund(msg.sender, msg.value);
   }
@@ -387,7 +387,7 @@ contract TokenDistribution is Haltable {
   * Changes dates of token distribution event
   */
   function setDates(uint _presaleStart, uint _start, uint _end) onlyOwner {
-    require(_presaleStart &gt; 0 &amp;&amp; _start &gt; _presaleStart &amp;&amp; _end &gt; _start);
+    require(_presaleStart > 0 && _start > _presaleStart && _end > _start);
     presaleStart = _presaleStart;
     start = _start;
     end = _end;
@@ -397,9 +397,9 @@ contract TokenDistribution is Haltable {
   * Internal function that creates and distributes tokens
   */
   function contributeInternal(address _receiver, uint _weiAmount, uint _tokenAmount) internal {
-    require(token.totalSupply().add(_tokenAmount) &lt;= maxCap);
+    require(token.totalSupply().add(_tokenAmount) <= maxCap);
     token.produceEmeralds(_receiver, _tokenAmount);
-    if (_weiAmount &gt; 0) 
+    if (_weiAmount > 0) 
       wallet.transfer(_weiAmount);
     if (contributors[_receiver] == 0) contributorsCount++;
     tokensSold = tokensSold.add(_tokenAmount);
@@ -412,7 +412,7 @@ contract TokenDistribution is Haltable {
    */
   function refund() inState(States.Refunding) {
     uint weiValue = contributors[msg.sender];
-    require(weiValue &lt;= loadedRefund &amp;&amp; weiValue &lt;= this.balance);
+    require(weiValue <= loadedRefund && weiValue <= this.balance);
     msg.sender.transfer(weiValue);
     contributors[msg.sender] = 0;
     weiRefunded = weiRefunded.add(weiValue);
@@ -424,13 +424,13 @@ contract TokenDistribution is Haltable {
   * State machine
   */
   function getState() constant returns (States) {
-    if (now &lt; presaleStart) return States.Preparing;
-    if (now &gt;= presaleStart &amp;&amp; now &lt; start &amp;&amp; weiTotal &lt; weiPresaleMax) return States.Presale;
-    if (now &lt; start &amp;&amp; weiTotal &gt;= weiPresaleMax) return States.Waiting;
-    if (now &gt;= start &amp;&amp; now &lt; end) return States.Distribution;
-    if (weiTotal &gt;= weiGoal) return States.Success;
-    if (now &gt;= end &amp;&amp; weiTotal &lt; weiGoal &amp;&amp; loadedRefund == 0) return States.Failure;
-    if (loadedRefund &gt; 0) return States.Refunding;
+    if (now < presaleStart) return States.Preparing;
+    if (now >= presaleStart && now < start && weiTotal < weiPresaleMax) return States.Presale;
+    if (now < start && weiTotal >= weiPresaleMax) return States.Waiting;
+    if (now >= start && now < end) return States.Distribution;
+    if (weiTotal >= weiGoal) return States.Success;
+    if (now >= end && weiTotal < weiGoal && loadedRefund == 0) return States.Failure;
+    if (loadedRefund > 0) return States.Refunding;
   }
 
   /*

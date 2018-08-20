@@ -11,10 +11,10 @@ contract Switch
         blink_block=block.number;
     }
     function blink() payable {
-        if(msg.value&gt;0)blink_block=block.number;
+        if(msg.value>0)blink_block=block.number;
     }
     function () payable {
-        if(msg.value&gt;0)on_block=block.number;
+        if(msg.value>0)on_block=block.number;
     }
     function kill() {
     if (msg.sender==owner) selfdestruct(owner);

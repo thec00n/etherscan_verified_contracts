@@ -9,8 +9,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -149,7 +149,7 @@ contract Token {
 contract StandardToken is Token {
  
     function transfer(address _to, uint256 _value) public returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -160,7 +160,7 @@ contract StandardToken is Token {
     }
  
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -186,8 +186,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
  
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract BurnableToken is StandardToken, Ownable {
@@ -199,10 +199,10 @@ contract BurnableToken is StandardToken, Ownable {
     * @param _amount The amount of token to be burned.
     */
     function burn(uint256 _amount) public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[msg.sender]);
-        // no need to require _amount &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_amount > 0);
+        require(_amount <= balances[msg.sender]);
+        // no need to require _amount <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = SafeMath.sub(balances[burner],_amount);
@@ -218,8 +218,8 @@ contract BurnableToken is StandardToken, Ownable {
     */
     function burnFrom(address _from, uint256 _amount) onlyOwner public {
         require(_from != address(0));
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[_from]);
+        require(_amount > 0);
+        require(_amount <= balances[_from]);
         balances[_from] = SafeMath.sub(balances[_from],_amount);
         totalSupply = SafeMath.sub(totalSupply,_amount);
         emit Transfer(_from, address(0), _amount);
@@ -248,8 +248,8 @@ contract AxpirePausableToken is StandardToken, Pausable,BurnableToken {
 contract AxpireToken is AxpirePausableToken {
  using SafeMath for uint;
     // metadata
-    string public constant name = &quot;aXpire&quot;;
-    string public constant symbol = &quot;AXPR&quot;;
+    string public constant name = "aXpire";
+    string public constant symbol = "AXPR";
     uint256 public constant decimals = 18;
     
    	address private ethFundDeposit;       
@@ -302,12 +302,12 @@ contract AxpireToken is AxpirePausableToken {
         revert();
         
       uint256 tokens;
-      tokens = SafeMath.mul(msg.value, icoTokenExchangeRate); // check that we&#39;re not over totals
+      tokens = SafeMath.mul(msg.value, icoTokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
  
       // return money if something goes wrong
-      if (tokenCreationCap &lt; checkedSupply) 
-        revert();  // odd fractions won&#39;t be found
+      if (tokenCreationCap < checkedSupply) 
+        revert();  // odd fractions won't be found
  
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here

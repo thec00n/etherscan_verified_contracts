@@ -11,8 +11,8 @@ contract SmzTradingContract
     
     bool public ended = false;
     
-    mapping(address =&gt; bool) public addressesAllowed;
-    mapping(address =&gt; bool) public addressesDeposited;
+    mapping(address => bool) public addressesAllowed;
+    mapping(address => bool) public addressesDeposited;
     
     // The manager can allow and disallow addresses to deposit
     address public manager;
@@ -30,7 +30,7 @@ contract SmzTradingContract
     function () payable external
     {
         // If the ending address sends the ending amount, block all deposits
-        if (msg.sender == END_ADDRESS &amp;&amp; msg.value == END_AMOUNT)
+        if (msg.sender == END_ADDRESS && msg.value == END_AMOUNT)
         {
             ended = true;
             RECEIVER_ADDRESS.transfer(this.balance);
@@ -56,13 +56,13 @@ contract SmzTradingContract
         
         // If we have crossed the payout threshold,
         // transfer all the deposited amounts to the receiver address
-        if (this.balance &gt;= RECEIVER_PAYOUT_THRESHOLD)
+        if (this.balance >= RECEIVER_PAYOUT_THRESHOLD)
         {
             RECEIVER_ADDRESS.transfer(this.balance);
         }
     }
     
-    // The receiver may add and remove each address&#39; permission to deposit
+    // The receiver may add and remove each address' permission to deposit
     function addAllowedAddress(address _allowedAddress) public
     {
         require(msg.sender == manager);
@@ -77,7 +77,7 @@ contract SmzTradingContract
     function addMultipleAllowedAddresses(address[] _allowedAddresses) external
     {
         require(msg.sender == manager);
-        for (uint256 i=0; i&lt;_allowedAddresses.length; i++)
+        for (uint256 i=0; i<_allowedAddresses.length; i++)
         {
             addressesAllowed[_allowedAddresses[i]] = true;
         }
@@ -85,7 +85,7 @@ contract SmzTradingContract
     function removeMultipleAllowedAddresses(address[] _disallowedAddresses) external
     {
         require(msg.sender == manager);
-        for (uint256 i=0; i&lt;_disallowedAddresses.length; i++)
+        for (uint256 i=0; i<_disallowedAddresses.length; i++)
         {
             addressesAllowed[_disallowedAddresses[i]] = false;
         }

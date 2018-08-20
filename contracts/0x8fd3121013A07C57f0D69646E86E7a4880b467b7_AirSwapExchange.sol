@@ -56,7 +56,7 @@ contract Token {
 contract ERC20 is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -64,7 +64,7 @@ contract ERC20 is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -86,8 +86,8 @@ contract ERC20 is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) public balances; // *added public
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed; // *added public
+    mapping (address => uint256) public balances; // *added public
+    mapping (address => mapping (address => uint256)) public allowed; // *added public
 }
 
 /** @title AirSwap exchange contract.
@@ -96,7 +96,7 @@ contract ERC20 is Token {
 contract AirSwapExchange {
 
     // Mapping of order hash to bool (true = already filled).
-    mapping (bytes32 =&gt; bool) public fills;
+    mapping (bytes32 => bool) public fills;
 
     // Events that are emitted in different scenarios.
     event Filled(address indexed makerAddress, uint makerAmount, address indexed makerToken, address takerAddress, uint takerAmount, address indexed takerToken, uint256 expiration, uint256 nonce);
@@ -104,13 +104,13 @@ contract AirSwapExchange {
 
     /** Event thrown when a trade fails
       * Error codes:
-      * 1 -&gt; &#39;The makeAddress and takerAddress must be different&#39;,
-      * 2 -&gt; &#39;The order has expired&#39;,
-      * 3 -&gt; &#39;This order has already been filled&#39;,
-      * 4 -&gt; &#39;The ether sent with this transaction does not match takerAmount&#39;,
-      * 5 -&gt; &#39;No ether is required for a trade between tokens&#39;,
-      * 6 -&gt; &#39;The sender of this transaction must match the takerAddress&#39;,
-      * 7 -&gt; &#39;Order has already been cancelled or filled&#39;
+      * 1 -> 'The makeAddress and takerAddress must be different',
+      * 2 -> 'The order has expired',
+      * 3 -> 'This order has already been filled',
+      * 4 -> 'The ether sent with this transaction does not match takerAmount',
+      * 5 -> 'No ether is required for a trade between tokens',
+      * 6 -> 'The sender of this transaction must match the takerAddress',
+      * 7 -> 'Order has already been cancelled or filled'
       */
     event Failed(uint code, address indexed makerAddress, uint makerAmount, address indexed makerToken, address takerAddress, uint takerAmount, address indexed takerToken, uint256 expiration, uint256 nonce);
 
@@ -131,7 +131,7 @@ contract AirSwapExchange {
         }
 
         // Check if this order has expired
-        if (expiration &lt; now) {
+        if (expiration < now) {
             msg.sender.transfer(msg.value);
             Failed(2,
                 makerAddress, makerAmount, makerToken,
@@ -165,7 +165,7 @@ contract AirSwapExchange {
                 fills[hash] = true;
 
                 // Perform the trade between makerAddress and takerAddress.
-                // The transfer will throw if there&#39;s a problem.
+                // The transfer will throw if there's a problem.
                 assert(transfer(makerAddress, takerAddress, makerAmount, makerToken));
 
                 // Transfer the ether received from sender to makerAddress.
@@ -202,7 +202,7 @@ contract AirSwapExchange {
                 fills[hash] = true;
 
                 // Perform the trade between makerAddress and takerAddress.
-                // The transfer will throw if there&#39;s a problem.
+                // The transfer will throw if there's a problem.
                 // Assert should never fail
                 assert(trade(makerAddress, makerAmount, makerToken,
                     takerAddress, takerAmount, takerToken));
@@ -266,7 +266,7 @@ contract AirSwapExchange {
       */
     function trade(address makerAddress, uint makerAmount, address makerToken,
                    address takerAddress, uint takerAmount, address takerToken) private returns (bool) {
-        return (transfer(makerAddress, takerAddress, makerAmount, makerToken) &amp;&amp;
+        return (transfer(makerAddress, takerAddress, makerAmount, makerToken) &&
         transfer(takerAddress, makerAddress, takerAmount, takerToken));
     }
 
@@ -291,7 +291,7 @@ contract AirSwapExchange {
             takerAddress, takerAmount, takerToken,
             expiration, nonce);
 
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = sha3(prefix, hashV);
 
         require(ecrecover(prefixedHash, v, r, s) == makerAddress);

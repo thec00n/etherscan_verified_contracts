@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,8 +149,8 @@ contract TokenSale is Pausable {
     uint256 _startBlock,
     uint256 _endBlock) {
     require(_tokenAddress != 0x0);
-    require(_startBlock &gt; 0);
-    require(_endBlock &gt; _startBlock);
+    require(_startBlock > 0);
+    require(_endBlock > _startBlock);
 
     startBlock = _startBlock;
     endBlock = _endBlock;
@@ -196,11 +196,11 @@ contract TokenSale is Pausable {
 
     uint256 price;
 
-    if (weiRaised &lt; firstCheckpoint) {
+    if (weiRaised < firstCheckpoint) {
       price = firstCheckpointPrice;
-    } else if (weiRaised &lt; secondCheckpoint) {
+    } else if (weiRaised < secondCheckpoint) {
       price = secondCheckpointPrice;
-    } else if (weiRaised &lt; thirdCheckpoint) {
+    } else if (weiRaised < thirdCheckpoint) {
       price = thirdCheckpointPrice;
     } else {
       price = BASE_PRICE_IN_WEI;
@@ -223,12 +223,12 @@ contract TokenSale is Pausable {
   */
   function validPurchase() internal returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     uint256 weiAmount = weiRaised.add(msg.value);
     bool nonZeroPurchase = msg.value != 0;
-    bool withinCap = cap.mul(BASE_PRICE_IN_WEI) &gt;= weiAmount;
+    bool withinCap = cap.mul(BASE_PRICE_IN_WEI) >= weiAmount;
 
-    return withinCap &amp;&amp; nonZeroPurchase &amp;&amp; withinPeriod;
+    return withinCap && nonZeroPurchase && withinPeriod;
   }
 
   /**

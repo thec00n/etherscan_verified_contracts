@@ -41,11 +41,11 @@ contract Honestgamble {
     //--initiated function
     function init() private {
         //------ Verifications on this new deposit ------
-        if (msg.value &lt; deposit) { 
+        if (msg.value < deposit) { 
             msg.sender.send(msg.value);
             return;
         }
-        if(msg.value &gt; deposit){
+        if(msg.value > deposit){
             msg.sender.send(msg.value-deposit);
         }
         
@@ -108,8 +108,8 @@ contract Honestgamble {
     function CancelRoundAndRefundAll() { //refund every participants, anyone can call this !
         if(number_of_players==0) return;
         
-        if (last_time + time_max &lt; block.timestamp) {
-            for(uint i=Payout_id; i&lt;(Payout_id+number_of_players); i++){
+        if (last_time + time_max < block.timestamp) {
+            for(uint i=Payout_id; i<(Payout_id+number_of_players); i++){
                 players[i].addr.send((deposit * (1000 - feeFrac )) / 1000 );
                 players[i].paid=true;
                 players[i].payout=(deposit * (1000 - feeFrac )) / 1000; //everyone is refunded minus the fee, yeah i am evil.
@@ -124,11 +124,11 @@ contract Honestgamble {
     
     function WatchBalance() constant returns(uint TotalBalance, string info) {
         TotalBalance = Balance /  1 finney;
-        info =&#39;Balance in finney&#39;;
+        info ='Balance in finney';
     }
     
     function PlayerInfo(uint id) constant returns(address Address, uint Payout, bool UserPaid) {
-        if (id &lt;= players.length) {
+        if (id <= players.length) {
             Address = players[id].addr;
             Payout = (players[id].payout) / 1 finney;
             UserPaid=players[id].paid;

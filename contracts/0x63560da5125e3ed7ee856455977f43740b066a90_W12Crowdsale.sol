@@ -86,7 +86,7 @@ contract Pausable is Ownable {
 
     bool public paused = false;
     
-    mapping (address=&gt;bool) private whiteList;
+    mapping (address=>bool) private whiteList;
 
     /**
     * @dev Modifier to make a function callable only when the contract is not paused.
@@ -125,9 +125,9 @@ contract Pausable is Ownable {
     }
 
     function addToWhiteList(address[] _whiteList) external onlyOwner {
-        require(_whiteList.length &gt; 0);
+        require(_whiteList.length > 0);
 
-        for(uint8 i = 0; i &lt; _whiteList.length; i++) {
+        for(uint8 i = 0; i < _whiteList.length; i++) {
             assert(_whiteList[i] != address(0));
 
             whiteList[_whiteList[i]] = true;
@@ -135,9 +135,9 @@ contract Pausable is Ownable {
     }
 
     function removeFromWhiteList(address[] _blackList) external onlyOwner {
-        require(_blackList.length &gt; 0);
+        require(_blackList.length > 0);
 
-        for(uint8 i = 0; i &lt; _blackList.length; i++) {
+        for(uint8 i = 0; i < _blackList.length; i++) {
             assert(_blackList[i] != address(0));
 
             whiteList[_blackList[i]] = true;
@@ -148,7 +148,7 @@ contract Pausable is Ownable {
 contract W12TokenDistributor is Ownable {
     W12Token public token;
 
-    mapping(uint32 =&gt; bool) public processedTransactions;
+    mapping(uint32 => bool) public processedTransactions;
 
     constructor() public {
         token = new W12Token();
@@ -184,7 +184,7 @@ contract TokenTimelock {
 
     constructor (ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
         // solium-disable-next-line security/no-block-members
-        require(_releaseTime &gt; block.timestamp);
+        require(_releaseTime > block.timestamp);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -195,10 +195,10 @@ contract TokenTimelock {
     */
     function release() public {
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp &gt;= releaseTime);
+        require(block.timestamp >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -288,15 +288,15 @@ contract W12Crowdsale is W12TokenDistributor, ReentrancyGuard {
     }
 
     function getStage() public view returns (Stage) {
-        if(now &gt;= crowdsaleStartDate &amp;&amp; now &lt; crowdsaleEndDate) {
+        if(now >= crowdsaleStartDate && now < crowdsaleEndDate) {
             return Stage.Crowdsale;
         }
 
-        if(now &gt;= presaleStartDate) {
-            if(now &lt; presaleStartDate + 1 days)
+        if(now >= presaleStartDate) {
+            if(now < presaleStartDate + 1 days)
                 return Stage.FlashSale;
 
-            if(now &lt; presaleEndDate)
+            if(now < presaleEndDate)
                 return Stage.Presale;
         }
 
@@ -308,7 +308,7 @@ contract W12Crowdsale is W12TokenDistributor, ReentrancyGuard {
 
         bool success = false;
 
-        for (uint i = 0; i &lt; _receivers.length; i++) {
+        for (uint i = 0; i < _receivers.length; i++) {
             if (!processedTransactions[_payment_ids[i]]) {
                 success = token.transfer(_receivers[i], _amounts[i]);
                 processedTransactions[_payment_ids[i]] = success;
@@ -327,7 +327,7 @@ contract W12Crowdsale is W12TokenDistributor, ReentrancyGuard {
 
     function advanceStage(uint tokensBought, Stage currentStage) internal {
         if(currentStage == Stage.Presale || currentStage == Stage.FlashSale) {
-            if(tokensBought &lt;= presaleTokenBalance)
+            if(tokensBought <= presaleTokenBalance)
             {
                 presaleTokenBalance -= tokensBought;
                 return;
@@ -335,7 +335,7 @@ contract W12Crowdsale is W12TokenDistributor, ReentrancyGuard {
         }
         
         if(currentStage == Stage.Crowdsale) {
-            if(tokensBought &lt;= crowdsaleTokenBalance)
+            if(tokensBought <= crowdsaleTokenBalance)
             {
                 crowdsaleTokenBalance -= tokensBought;
                 return;
@@ -384,7 +384,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -402,7 +402,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender] - _value;
         balances[_to] = balances[_to] + _value;
@@ -423,7 +423,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -434,8 +434,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
@@ -449,7 +449,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -500,7 +500,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -593,7 +593,7 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
 
         cap = _cap;
     }
@@ -605,7 +605,7 @@ contract CappedToken is MintableToken {
     * @return A boolean that indicates if the operation was successful.
     */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(totalSupply_ + _amount &lt;= cap);
+        require(totalSupply_ + _amount <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -624,9 +624,9 @@ contract BurnableToken is BasicToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = balances[_who] - _value;
         totalSupply_ = totalSupply_ - _value;
@@ -643,7 +643,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
     * @param _value uint256 The amount of token to be burned
     */
     function burnFrom(address _from, uint256 _value) public {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
         // this function needs to emit an event with the updated approval.
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
@@ -652,5 +652,5 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
 }
 
 contract W12Token is StandardBurnableToken, CappedToken, DetailedERC20, PausableToken  {
-    constructor() CappedToken(400*(10**24)) DetailedERC20(&quot;W12 Token&quot;, &quot;W12&quot;, 18) public { }
+    constructor() CappedToken(400*(10**24)) DetailedERC20("W12 Token", "W12", 18) public { }
 }

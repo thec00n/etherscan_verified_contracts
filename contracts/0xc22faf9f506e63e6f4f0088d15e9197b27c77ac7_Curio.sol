@@ -61,20 +61,20 @@ contract Curio is ERC721 {
   }
 
   // Name and symbol of ERC721 token
-  string public constant NAME = &quot;Curio&quot;;
-  string public constant SYMBOL = &quot;CUR&quot;;
+  string public constant NAME = "Curio";
+  string public constant SYMBOL = "CUR";
 
-  // Array of token&#39;s data
+  // Array of token's data
   Token[] tokens;
 
   // A mapping from token IDs to the address that owns them
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
 
   // A mapping from owner address to count of tokens that address owns
-  mapping (address =&gt; uint256) ownershipTokenCount;
+  mapping (address => uint256) ownershipTokenCount;
 
   // A mapping from token IDs to an address that has been approved
-  mapping (uint256 =&gt; address) public tokenIndexToApproved;
+  mapping (uint256 => address) public tokenIndexToApproved;
 
   address public ownerAddress;
   address public adminAddress;
@@ -162,7 +162,7 @@ contract Curio is ERC721 {
   }
 
   /**
-   * @dev Default payable function rejects all Ether from being sent here, unless it&#39;s from auction contract.
+   * @dev Default payable function rejects all Ether from being sent here, unless it's from auction contract.
    */
   function() external payable {
     require(msg.sender == address(auction));
@@ -259,7 +259,7 @@ contract Curio is ERC721 {
    * @dev Unpause the contract. Can only be called by owner, since
    *      one reason we may pause the contract is when admin account is
    *      compromised. Requires auction contract addresses
-   *      to be set before contract can be unpaused. Also, we can&#39;t have
+   *      to be set before contract can be unpaused. Also, we can't have
    *      newContractAddress set either, because then the contract was upgraded.
    */
   function unpause() onlyOwner whenPaused public {
@@ -360,7 +360,7 @@ contract Curio is ERC721 {
   /**
    * @dev Returns a list of all tokens assigned to an address.
    * @param _owner The owner whose tokens we are interested in
-   * @notice This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+   * @notice This method MUST NEVER be called by smart contract code. First, it's fairly
    *         expensive (it walks the entire token array looking for tokens belonging to owner),
    *         but it also returns a dynamic array, which is only supported for web3 calls, and
    *         not contract-to-contract calls.
@@ -378,7 +378,7 @@ contract Curio is ERC721 {
 
       uint256 tokenId;
 
-      for (tokenId = 0; tokenId &lt;= totalTokens; tokenId++) {
+      for (tokenId = 0; tokenId <= totalTokens; tokenId++) {
         if (tokenIndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;
           resultIndex++;
@@ -459,7 +459,7 @@ contract Curio is ERC721 {
     external
   {
     // Check release tokens limit
-    require(releaseCreatedCount &lt; TOTAL_SUPPLY_LIMIT);
+    require(releaseCreatedCount < TOTAL_SUPPLY_LIMIT);
 
     // Create token and tranfer ownership to this contract
     uint256 tokenId = _createToken(_name, address(this));
@@ -496,7 +496,7 @@ contract Curio is ERC721 {
     require(_to != address(auction));
 
     // Check release tokens limit
-    require(releaseCreatedCount &lt; TOTAL_SUPPLY_LIMIT);
+    require(releaseCreatedCount < TOTAL_SUPPLY_LIMIT);
 
     // Create token and transfer to owner
     _createToken(_name, _to);
@@ -542,7 +542,7 @@ contract Curio is ERC721 {
   /**
    * @dev Check claimant address as token owner.
    * @param _claimant The address we are validating against
-   * @param _tokenId Token id, only valid when &gt; 0
+   * @param _tokenId Token id, only valid when > 0
    */
   function _owns(
     address _claimant,
@@ -558,7 +558,7 @@ contract Curio is ERC721 {
   /**
    * @dev Check if a given address currently has transferApproval for a particular token.
    * @param _claimant The address we are confirming token is approved for
-   * @param _tokenId Token id, only valid when &gt; 0
+   * @param _tokenId Token id, only valid when > 0
    */
   function _approvedFor(
     address _claimant,
@@ -602,7 +602,7 @@ contract Curio is ERC721 {
     // Transfer ownership
     tokenIndexToOwner[_tokenId] = _to;
 
-    // When creating new token _from is 0x0, but we can&#39;t account that address
+    // When creating new token _from is 0x0, but we can't account that address
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
 

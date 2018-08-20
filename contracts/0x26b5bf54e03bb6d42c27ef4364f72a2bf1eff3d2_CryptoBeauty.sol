@@ -12,7 +12,7 @@ contract AccessControl {
     modifier onlyAdmins {
         bool found = false;
 
-        for (uint i = 0; i &lt; admins.length; i++) {
+        for (uint i = 0; i < admins.length; i++) {
             if (admins[i] == msg.sender) {
                 found = true;
                 break;
@@ -67,8 +67,8 @@ contract CryptoBeauty is AccessControl, ERC721 {
     // Event fired when charities are modified
     event Charity(uint256 charityId, address charity);
 
-    string public constant NAME = &quot;Crypto Beauty&quot;; 
-    string public constant SYMBOL = &quot;BEAUTY&quot;; 
+    string public constant NAME = "Crypto Beauty"; 
+    string public constant SYMBOL = "BEAUTY"; 
 
     // Initial price of card
     uint256 private startingPrice = 0.005 ether;
@@ -95,9 +95,9 @@ contract CryptoBeauty is AccessControl, ERC721 {
 
     address[] public charities;
     
-    mapping (uint256 =&gt; address) public beautyToOwner;
-    mapping (address =&gt; uint256) public beautyOwnershipCount;
-    mapping (uint256 =&gt; address) public beautyToApproved;
+    mapping (uint256 => address) public beautyToOwner;
+    mapping (address => uint256) public beautyOwnershipCount;
+    mapping (uint256 => address) public beautyToApproved;
 
     function CryptoBeauty() public {
         owner = msg.sender;
@@ -167,7 +167,7 @@ contract CryptoBeauty is AccessControl, ERC721 {
     }
 
     function createBeauty(string _name, address _owner, uint256 _price) public onlyAdmins {
-        if (_price &lt;= 0.005 ether) {
+        if (_price <= 0.005 ether) {
             _price = startingPrice;
         }
         
@@ -213,18 +213,18 @@ contract CryptoBeauty is AccessControl, ERC721 {
         
         require(oldOwner != newOwner);
         require(newOwner != address(0));
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
         
         uint256 devCut;
         uint256 nextPrice;
 
-        if (sellingPrice &lt; increaseLimit1) {
+        if (sellingPrice < increaseLimit1) {
           devCut = SafeMath.div(SafeMath.mul(sellingPrice, 5), 100); // 5%
           nextPrice = SafeMath.div(SafeMath.mul(sellingPrice, 200), 95);
-        } else if (sellingPrice &lt; increaseLimit2) {
+        } else if (sellingPrice < increaseLimit2) {
           devCut = SafeMath.div(SafeMath.mul(sellingPrice, 4), 100); // 4%
           nextPrice = SafeMath.div(SafeMath.mul(sellingPrice, 135), 96);
-        } else if (sellingPrice &lt; increaseLimit3) {
+        } else if (sellingPrice < increaseLimit3) {
           devCut = SafeMath.div(SafeMath.mul(sellingPrice, 3), 100); // 3%
           nextPrice = SafeMath.div(SafeMath.mul(sellingPrice, 125), 97);
         } else {
@@ -268,7 +268,7 @@ contract CryptoBeauty is AccessControl, ERC721 {
         Purchase(_tokenId, sellingPrice, beauties[_tokenId].price, oldOwner, newOwner, _charityId);
         
         // transfer excess back to buyer
-        if (excess &gt; 0) {
+        if (excess > 0) {
             newOwner.transfer(excess);
         }  
     }
@@ -279,7 +279,7 @@ contract CryptoBeauty is AccessControl, ERC721 {
         require(beautyToOwner[_tokenId] == msg.sender);
 
         // price cannot be higher than maximum price
-        require(beauties[_tokenId].maxPrice &gt;= _price);
+        require(beauties[_tokenId].maxPrice >= _price);
 
         // set new price
         beauties[_tokenId].price = _price;
@@ -299,7 +299,7 @@ contract CryptoBeauty is AccessControl, ERC721 {
         uint256 total = totalSupply();
         uint256 resultIndex = 0;
 
-        for(uint256 i = 0; i &lt;= total; i++) {
+        for(uint256 i = 0; i <= total; i++) {
             if (beautyToOwner[i] == _owner) {
                 result[resultIndex] = i;
                 resultIndex++;
@@ -363,9 +363,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -373,7 +373,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -382,7 +382,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

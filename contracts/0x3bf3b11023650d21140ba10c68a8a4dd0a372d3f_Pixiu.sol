@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -72,13 +72,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     require(!(msg.data.length &lt; size + 4));
+     require(!(msg.data.length < size + 4));
      _;
   }
 
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -126,7 +126,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -145,7 +145,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) );
+    require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)) );
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -190,7 +190,7 @@ contract Pixiu is StandardToken {
     
     exchangeRate[] public exchangeRateArray;  
 
-	mapping (address =&gt; Member) public members; 
+	mapping (address => Member) public members; 
     address[] public adminArray;   
     address[] public memberArray;
     
@@ -208,8 +208,8 @@ contract Pixiu is StandardToken {
     * 當 BYTE19 = 00  12-18 為商家自訂
     *20 檢查碼 
     */
-    mapping (address =&gt; uint) public shopStoreId; 
-    mapping (uint =&gt; address) public shopStoreAddress; 
+    mapping (address => uint) public shopStoreId; 
+    mapping (uint => address) public shopStoreAddress; 
     uint256 public shopStorePrice = 1*10**6;
     uint256 public shopStoreNextId = 0;
     address public Apply_Store_Id_Fee;
@@ -232,7 +232,7 @@ contract Pixiu is StandardToken {
     function get_orderAddress(address _address,uint _expire_day,uint _userdata,uint _pixiu, uint _wei) constant returns (address){
         
         uint256 storeid = shopStoreId[_address];
-        uint160 result = uint152(0xffffffff&lt;&lt;120) + uint120((_expire_day * 86400 + now)&lt;&lt;88) + uint88(storeid&lt;&lt;64); 
+        uint160 result = uint152(0xffffffff<<120) + uint120((_expire_day * 86400 + now)<<88) + uint88(storeid<<64); 
         uint _zero = 0;
         uint256 _amount2 = _pixiu * 10 ** 6 + _wei;
         uint256 _amount = _amount2;
@@ -243,17 +243,17 @@ contract Pixiu is StandardToken {
             
         }
         
-        _userdata = _userdata&lt;&lt;24;
+        _userdata = _userdata<<24;
         _userdata += _amount;
         
-        result += uint64(_userdata&lt;&lt;8);
+        result += uint64(_userdata<<8);
         result += uint8(0x30+_zero);
         uint8 crc = uint8(sha256(uint152(result) ));
-        return address((result &lt;&lt; 8) + crc);
+        return address((result << 8) + crc);
     }
     
     function isLeading4FF(address _sender ) private  returns(bool){
-        uint32 ff4= uint32(uint256(_sender) &gt;&gt; 128);
+        uint32 ff4= uint32(uint256(_sender) >> 128);
         return (ff4 == 0xffffffff);
     }
     
@@ -290,7 +290,7 @@ contract Pixiu is StandardToken {
         
         bool ok = false;
         
-        for (uint i = 0; i &lt; adminArray.length; i++) {
+        for (uint i = 0; i < adminArray.length; i++) {
             if (admin == adminArray[i]) {
                 ok = true;
                 break;
@@ -330,7 +330,7 @@ contract Pixiu is StandardToken {
         int xWei = _Eth * 10 ** 18 + _Wei;
 		bool is_add = true;
 
-        if(xWei &gt; 0){
+        if(xWei > 0){
             
             dividend_amount += uint256(xWei);
             
@@ -347,14 +347,14 @@ contract Pixiu is StandardToken {
         address _member;
         
 		uint total_balance_dividened=0;
-        for( i = 0; i &lt; len; i++){            
+        for( i = 0; i < len; i++){            
             _member = memberArray[i];
 			if(members[_member].isDividend){
 				total_balance_dividened += balances[_member]; 
 			}            
         }
             
-        for( i = 0; i &lt; len; i++){            
+        for( i = 0; i < len; i++){            
             _member = memberArray[i];
 			if(members[_member].isDividend){
 				uint256 thisWei = balances[_member] * uint256(xWei) / total_balance_dividened;
@@ -375,7 +375,7 @@ contract Pixiu is StandardToken {
         uint len = exchangeRates.length;
         exchangeRateArray.length = 0;
         
-        for(uint i = 0; i &lt; len; i += 3){
+        for(uint i = 0; i < len; i += 3){
             
             uint time1 = exchangeRates[i];
             uint time2 = exchangeRates[i + 1];
@@ -402,13 +402,13 @@ contract Pixiu is StandardToken {
 
 		uint len = exchangeRateArray.length;  
 		uint nowTime = block.timestamp;
-        for(uint i = 0; i &lt; len; i += 3){
+        for(uint i = 0; i < len; i += 3){
             
 			exchangeRate memory rate = exchangeRateArray[i];
             uint time1 = rate.time1;
             uint time2 = rate.time2;
             uint value = rate.value;
-			if (nowTime&gt;= time1 &amp;&amp; nowTime&lt;=time2) {
+			if (nowTime>= time1 && nowTime<=time2) {
 				tokenExchangeRateInWei = value;
 				return value;
 			}
@@ -419,7 +419,7 @@ contract Pixiu is StandardToken {
 	
 	function admin_set_min_pay(uint256 _min_pay) onlyAdmin{
 	    
-	    require(_min_pay &gt;= 0);
+	    require(_min_pay >= 0);
 	    min_pay_wei = _min_pay;
 	    
 	}
@@ -438,7 +438,7 @@ contract Pixiu is StandardToken {
     
     function admin_del(address admin) onlyAdmin adminExists(admin){
         
-        for (uint i = 0; i &lt; adminArray.length - 1; i++)
+        for (uint i = 0; i < adminArray.length - 1; i++)
             if (adminArray[i] == admin) {
                 adminArray[i] = adminArray[adminArray.length - 1];
                 break;
@@ -504,7 +504,7 @@ contract Pixiu is StandardToken {
     function withdraw() isMember {
         
         uint256 _remain = members[msg.sender].dividend - members[msg.sender].withdraw;
-        require(_remain &gt; 0);
+        require(_remain > 0);
         require(isWithdrawable);
         require(members[msg.sender].isWithdraw);
         msg.sender.transfer(_remain);
@@ -518,7 +518,7 @@ contract Pixiu is StandardToken {
         uint256 _withdraw = xWei;
 		require( msg.sender == Apply_Store_Id_Fee );
 
-		require(this.balance &gt; _withdraw);
+		require(this.balance > _withdraw);
 		msg.sender.transfer(_withdraw);
 
         withdraw_amount += _withdraw;  
@@ -541,7 +541,7 @@ contract Pixiu is StandardToken {
     function admin_transfer(address _to, uint256 _value) onlyAdmin onlyPayloadSize(2 * 32)     {
         
         require(_to != Apply_Store_Id_Fee);
-        require(total_tokenwei &lt;= totalSupply - _value);
+        require(total_tokenwei <= totalSupply - _value);
         balances[_to] = balances[_to].add(_value);
         
         total_tokenwei += _value;
@@ -573,23 +573,23 @@ contract Pixiu is StandardToken {
 		    if(isLeading4FF(_to)){
 		    
     		    uint256 to256 = uint256(_to);
-                uint32 expire = uint32(to256&gt;&gt;96);
-                uint32 storeid = uint24(to256&gt;&gt;72);
-                uint8 byte19_1 = uint8(uint8(to256&gt;&gt;8)&gt;&gt;4);
-                uint8 byte19_2 = uint8(uint8(to256&gt;&gt;8)&lt;&lt;4);
-                byte19_2 = byte19_2&gt;&gt;4;
-                uint24 byte1618 = uint24(to256&gt;&gt;16);
+                uint32 expire = uint32(to256>>96);
+                uint32 storeid = uint24(to256>>72);
+                uint8 byte19_1 = uint8(uint8(to256>>8)>>4);
+                uint8 byte19_2 = uint8(uint8(to256>>8)<<4);
+                byte19_2 = byte19_2>>4;
+                uint24 byte1618 = uint24(to256>>16);
                 
-                require(uint32(now)&lt;expire || expire==0);
+                require(uint32(now)<expire || expire==0);
                 
-                require(uint8(sha256(uint152(to256&gt;&gt;8)))==uint8(to256));
+                require(uint8(sha256(uint152(to256>>8)))==uint8(to256));
                 
                 _to = shopStoreAddress[uint(storeid)];
-                require(uint(_to)&gt;0);
+                require(uint(_to)>0);
     
                 if(byte19_1 == 3){
                 
-                    for(int i = 0; i &lt; byte19_2; i++){
+                    for(int i = 0; i < byte19_2; i++){
                         byte1618 *= 10;
                     }
                     
@@ -617,7 +617,7 @@ contract Pixiu is StandardToken {
 		require(_from != Apply_Store_Id_Fee);
         require(isPayable);
 		var _allowance = allowed[_from][msg.sender]; 
-		require(_allowance &gt;= _value);
+		require(_allowance >= _value);
 
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
@@ -642,7 +642,7 @@ contract Pixiu is StandardToken {
     function pay() public payable  returns (bool) {
         
         require(!isLeading4FF(msg.sender));
-        require(msg.value &gt; min_pay_wei);
+        require(msg.value > min_pay_wei);
         require(isPayable);
         
         if(msg.sender == Apply_Store_Id_Fee){
@@ -656,7 +656,7 @@ contract Pixiu is StandardToken {
     		uint256 exchangeWei = get_exchange_wei();
     		uint256 thisTokenWei = exchangeWei * msg.value / 10**18 ;
     		
-    		require(total_tokenwei &lt;= totalSupply - thisTokenWei);
+    		require(total_tokenwei <= totalSupply - thisTokenWei);
         
             if (members[msg.sender].isExists != true) {
                 

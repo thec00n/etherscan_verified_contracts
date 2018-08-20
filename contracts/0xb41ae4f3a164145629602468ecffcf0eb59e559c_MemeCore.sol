@@ -31,18 +31,18 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       /* prefix might be needed for geth only
       * https://github.com/ethereum/go-ethereum/issues/3731
       */
-      bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+      bytes memory prefix = "\x19Ethereum Signed Message:\n32";
       hash = sha3(prefix, hash);
       return ecrecover(hash, v, r, s);
     }
@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ library SafeMath {
 /**
  * title Ownable
  * The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -131,7 +131,7 @@ contract MemeCore is Ownable {
     using ECRecovery for bytes32;
 
     /* Мапа адрес получателя - nonce, нужно для того, чтобы нельзя было повторно запросить withdraw */
-    mapping (address =&gt; uint) withdrawalsNonce;
+    mapping (address => uint) withdrawalsNonce;
 
     event Withdraw(address receiver, uint weiAmount);
     event WithdrawCanceled(address receiver);
@@ -173,7 +173,7 @@ contract MemeCore is Ownable {
         WithdrawCanceled(msg.sender);
     }
 
-    /* Доступна только owner&#39;у, используется в случае, если бэкенд делает withdraw */
+    /* Доступна только owner'у, используется в случае, если бэкенд делает withdraw */
     function backendWithdraw(address toAddress, uint weiAmount) external onlyOwner {
         require(toAddress != 0);
 

@@ -30,7 +30,7 @@ contract EthAirdrop is Ownable {
   }
 
   function sendEth(address[] addresses) onlyOwner public {
-    for (uint256 i = 0; i &lt; addresses.length; i++) {
+    for (uint256 i = 0; i < addresses.length; i++) {
       addresses[i].transfer(amountToSend);
       emit TransferEth(addresses[i], amountToSend);
     }

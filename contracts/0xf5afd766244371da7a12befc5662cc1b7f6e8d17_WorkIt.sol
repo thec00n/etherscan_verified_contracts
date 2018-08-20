@@ -15,11 +15,11 @@ contract ERC20Interface {
 contract WorkIt is ERC20Interface {
 
   // non-fixed supply ERC20 implementation
-  string public constant name = &quot;WorkIt Token&quot;;
-  string public constant symbol = &quot;WIT&quot;;
+  string public constant name = "WorkIt Token";
+  string public constant symbol = "WIT";
   uint _totalSupply = 0;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowances;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowances;
 
   function totalSupply() public constant returns (uint) {
     return _totalSupply;
@@ -34,7 +34,7 @@ contract WorkIt is ERC20Interface {
   }
 
   function transfer(address to, uint tokens) public returns (bool success) {
-    require(balances[msg.sender] &gt;= tokens);
+    require(balances[msg.sender] >= tokens);
     balances[msg.sender] = balances[msg.sender] - tokens;
     balances[to] = balances[to] + tokens;
     emit Transfer(msg.sender, to, tokens);
@@ -48,8 +48,8 @@ contract WorkIt is ERC20Interface {
   }
 
   function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-    require(allowances[from][msg.sender] &gt;= tokens);
-    require(balances[from] &gt;= tokens);
+    require(allowances[from][msg.sender] >= tokens);
+    require(balances[from] >= tokens);
     allowances[from][msg.sender] = allowances[from][msg.sender] - tokens;
     balances[from] = balances[from] - tokens;
     balances[to] = balances[to] + tokens;
@@ -62,7 +62,7 @@ contract WorkIt is ERC20Interface {
   struct WeekCommittment {
     uint daysCompleted;
     uint daysCommitted;
-    mapping(uint =&gt; uint) workoutProofs;
+    mapping(uint => uint) workoutProofs;
     uint tokensCommitted;
     uint tokensEarned;
     bool tokensPaid;
@@ -82,10 +82,10 @@ contract WorkIt is ERC20Interface {
   uint secondsPerDay = 86400;
   uint daysPerWeek = 7;
 
-  mapping(uint =&gt; WeekData) public dataPerWeek;
-  mapping (address =&gt; mapping(uint =&gt; WeekCommittment)) public commitments;
+  mapping(uint => WeekData) public dataPerWeek;
+  mapping (address => mapping(uint => WeekCommittment)) public commitments;
 
-  mapping(uint =&gt; string) imageHashes;
+  mapping(uint => string) imageHashes;
   uint imageHashCount;
 
   uint public startDate;
@@ -106,7 +106,7 @@ contract WorkIt is ERC20Interface {
 
   // Buy tokens
   function buyTokens(uint tokens) public payable {
-    require(msg.value &gt;= tokens * weiPerToken);
+    require(msg.value >= tokens * weiPerToken);
     balances[msg.sender] += tokens;
     _totalSupply += tokens;
   }
@@ -114,27 +114,27 @@ contract WorkIt is ERC20Interface {
   // Commit to exercising this week
   function commitToWeek(uint tokens, uint _days) public {
     // Need at least 10 tokens to participate
-    if (balances[msg.sender] &lt; tokens || tokens &lt; 10) {
-      emit Log(&quot;You need to bet at least 10 tokens to commit&quot;);
+    if (balances[msg.sender] < tokens || tokens < 10) {
+      emit Log("You need to bet at least 10 tokens to commit");
       require(false);
     }
     if (_days == 0) {
-      emit Log(&quot;You cannot register for 0 days of activity&quot;);
+      emit Log("You cannot register for 0 days of activity");
       require(false);
     }
-    if (_days &gt; daysPerWeek) {
-      emit Log(&quot;You cannot register for more than 7 days per week&quot;);
+    if (_days > daysPerWeek) {
+      emit Log("You cannot register for more than 7 days per week");
       require(false);
     }
-    if (_days &gt; daysPerWeek - currentDayOfWeek()) {
-      emit Log(&quot;It is too late in the week for you to register&quot;);
+    if (_days > daysPerWeek - currentDayOfWeek()) {
+      emit Log("It is too late in the week for you to register");
       require(false);
     }
 
     WeekCommittment storage commitment = commitments[msg.sender][currentWeek()];
 
     if (commitment.tokensCommitted != 0) {
-      emit Log(&quot;You have already committed to this week&quot;);
+      emit Log("You have already committed to this week");
       require(false);
     }
     balances[0x0] = balances[0x0] + tokens;
@@ -156,7 +156,7 @@ contract WorkIt is ERC20Interface {
 
   // Payout your available balance based on your activity in previous weeks
   function payout() public {
-    require(currentWeek() &gt; 0);
+    require(currentWeek() > 0);
     for (uint activeWeek = currentWeek() - 1; true; activeWeek--) {
       WeekCommittment storage committment = commitments[msg.sender][activeWeek];
       if (committment.tokensPaid) {
@@ -200,20 +200,20 @@ contract WorkIt is ERC20Interface {
   // TODO: If not committed for this week use last weeks tokens and days (if it exists)
   function postProof(string proofHash) public {
     WeekCommittment storage committment = commitments[msg.sender][currentWeek()];
-    if (committment.daysCompleted &gt; currentDayOfWeek()) {
-      emit Log(&quot;You have already uploaded proof for today&quot;);
+    if (committment.daysCompleted > currentDayOfWeek()) {
+      emit Log("You have already uploaded proof for today");
       require(false);
     }
     if (committment.tokensCommitted == 0) {
-      emit Log(&quot;You have not committed to this week yet&quot;);
+      emit Log("You have not committed to this week yet");
       require(false);
     }
     if (committment.workoutProofs[currentDayOfWeek()] != 0) {
-      emit Log(&quot;Proof has already been stored for this day&quot;);
+      emit Log("Proof has already been stored for this day");
       require(false);
     }
-    if (committment.daysCompleted &gt;= committment.daysCommitted) {
-      // Don&#39;t allow us to go over our committed days
+    if (committment.daysCompleted >= committment.daysCommitted) {
+      // Don't allow us to go over our committed days
       return;
     }
     committment.workoutProofs[currentDayOfWeek()] = storeImageString(proofHash);
@@ -223,16 +223,16 @@ contract WorkIt is ERC20Interface {
     WeekData storage week = dataPerWeek[currentWeek()];
     week.totalDaysCompleted++;
     week.totalTokensCompleted = week.totalTokens * week.totalDaysCompleted / week.totalDaysCommitted;
-    if (committment.daysCompleted &gt;= committment.daysCommitted) {
+    if (committment.daysCompleted >= committment.daysCommitted) {
       week.totalPeopleCompleted++;
     }
   }
 
   // Withdraw tokens to eth
   function withdraw(uint tokens) public returns (bool success) {
-    require(balances[msg.sender] &gt;= tokens);
+    require(balances[msg.sender] >= tokens);
     uint weiToSend = tokens * weiPerToken;
-    require(address(this).balance &gt;= weiToSend);
+    require(address(this).balance >= weiToSend);
     balances[msg.sender] = balances[msg.sender] - tokens;
     _totalSupply -= tokens;
     return msg.sender.send(tokens * weiPerToken);

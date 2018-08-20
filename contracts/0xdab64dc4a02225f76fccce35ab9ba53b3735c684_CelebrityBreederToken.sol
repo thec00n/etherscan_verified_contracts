@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caaeafbeaf8aabb2a3a5a7b0afa4e4a9a5">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caaeafbeaf8aabb2a3a5a7b0afa4e4a9a5">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -43,8 +43,8 @@ contract CelebrityToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoCelebrities&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CelebrityToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoCelebrities"; // solhint-disable-line
+  string public constant SYMBOL = "CelebrityToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -55,19 +55,19 @@ contract CelebrityToken is ERC721 {
 
   /// @dev A mapping from person IDs to the address that owns them. All persons have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public personIndexToOwner;
+  mapping (uint256 => address) public personIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PersonIDs to an address that has been approved to call
   ///  transferFrom(). Each Person can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public personIndexToApproved;
+  mapping (uint256 => address) public personIndexToApproved;
 
   // @dev A mapping from PersonIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private personIndexToPrice;
+  mapping (uint256 => uint256) private personIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -137,14 +137,14 @@ contract CelebrityToken is ERC721 {
 
   /// @dev Creates a new promo Person with the given name, with given _price and assignes it to an address.
   function createPromoPerson(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address personOwner = _owner;
     if (personOwner == address(0)) {
       personOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -209,16 +209,16 @@ contract CelebrityToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       personIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       personIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
@@ -280,7 +280,7 @@ contract CelebrityToken is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -295,7 +295,7 @@ contract CelebrityToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 personId;
-      for (personId = 0; personId &lt;= totalPersons; personId++) {
+      for (personId = 0; personId <= totalPersons; personId++) {
         if (personIndexToOwner[personId] == _owner) {
           result[resultIndex] = personId;
           resultIndex++;
@@ -360,8 +360,8 @@ contract CelebrityToken is ERC721 {
     });
     uint256 newPersonId = persons.push(_person) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPersonId == uint256(uint32(newPersonId)));
 
     Birth(newPersonId, _name, _owner);
@@ -389,12 +389,12 @@ contract CelebrityToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Person to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of persons is capped to 2^32 we can&#39;t overflow this
+    // Since the number of persons is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     personIndexToOwner[_tokenId] = _to;
 
-    // When creating new persons _from is 0x0, but we can&#39;t account that address.
+    // When creating new persons _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -423,9 +423,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -433,7 +433,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -442,12 +442,12 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-/// @author Artyom Harutyunyan &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3c2f29243230353c2f2829242833243c332e1d3a303c3431733e3230">[email&#160;protected]</a>&gt;
+/// @author Artyom Harutyunyan <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3c2f29243230353c2f2829242833243c332e1d3a303c3431733e3230">[email protected]</a>>
 
 contract CelebrityBreederToken is ERC721 {
   
@@ -468,8 +468,8 @@ contract CelebrityBreederToken is ERC721 {
   
   CelebrityToken private CelGen0=CelebrityToken(0xbb5Ed1EdeB5149AF3ab43ea9c7a6963b3C1374F7); //@Artyom Pointing to original CC
   
-  string public constant NAME = &quot;CryptoCelebrityBreederCards&quot;; 
-  string public constant SYMBOL = &quot;CeleBreedCard&quot;; 
+  string public constant NAME = "CryptoCelebrityBreederCards"; 
+  string public constant SYMBOL = "CeleBreedCard"; 
 
   uint256 public breedingFee = 0.01 ether;
   uint256 public initialTraining = 0.00001 ether;
@@ -478,14 +478,14 @@ contract CelebrityBreederToken is ERC721 {
   uint256 private constant CreationLimitGen1 = 2500000;
   uint256 public constant MaxValue =  100000000 ether;
   
-  mapping (uint256 =&gt; address) public personIndexToOwnerGen1;
-  mapping (address =&gt; uint256) private ownershipTokenCountGen1;
-  mapping (uint256 =&gt; address) public personIndexToApprovedGen1;
-  mapping (uint256 =&gt; uint256) private personIndexToPriceGen1;
-  mapping (uint256 =&gt; address) public ExternalAllowdContractGen0;
-  mapping (uint256 =&gt; address) public ExternalAllowdContractGen1; 
-  mapping (uint256 =&gt; uint256) public personIndexToSiringPrice0;
-  mapping (uint256 =&gt; uint256) public personIndexToSiringPrice1;
+  mapping (uint256 => address) public personIndexToOwnerGen1;
+  mapping (address => uint256) private ownershipTokenCountGen1;
+  mapping (uint256 => address) public personIndexToApprovedGen1;
+  mapping (uint256 => uint256) private personIndexToPriceGen1;
+  mapping (uint256 => address) public ExternalAllowdContractGen0;
+  mapping (uint256 => address) public ExternalAllowdContractGen1; 
+  mapping (uint256 => uint256) public personIndexToSiringPrice0;
+  mapping (uint256 => uint256) public personIndexToSiringPrice1;
   address public CeoAddress; 
   address public DevAddress;
   
@@ -519,7 +519,7 @@ contract CelebrityBreederToken is ERC721 {
   }
   
    modifier onlyPlayers() {
-    require(ownershipTokenCountGen1[msg.sender]&gt;0 || CelGen0.balanceOf(msg.sender)&gt;0);
+    require(ownershipTokenCountGen1[msg.sender]>0 || CelGen0.balanceOf(msg.sender)>0);
     _;
   }
 
@@ -644,7 +644,7 @@ contract CelebrityBreederToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
    // uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
@@ -678,7 +678,7 @@ contract CelebrityBreederToken is ERC721 {
  //@Artyom only gen1
  function setprice(uint256 _tokenId, uint256 _price) public {
     require(_owns(msg.sender, _tokenId, true));
-    if(_price&lt;=0 || _price&gt;=MaxValue) {
+    if(_price<=0 || _price>=MaxValue) {
         personIndexToPriceGen1[_tokenId]=MaxValue;
     }
     else {
@@ -727,7 +727,7 @@ contract CelebrityBreederToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 personId;
-      for (personId = 0; personId &lt;= totalPersons; personId++) {
+      for (personId = 0; personId <= totalPersons; personId++) {
         if (personIndexToOwnerGen1[personId] == _owner) {
           result[resultIndex] = personId;
           resultIndex++;
@@ -776,7 +776,7 @@ contract CelebrityBreederToken is ERC721 {
   }
   function SetGene(uint256 tokenId,bool generation, uint64 newgene) public {
      require(_owns(msg.sender, tokenId, generation) || msg.sender==CeoAddress);
-     require(newgene&lt;=9999999999 &amp;&amp; newgene&gt;=10);
+     require(newgene<=9999999999 && newgene>=10);
      Person person; //@Artyom reference
     if (generation==false) { 
         person = PersonsGen0[tokenId];
@@ -784,13 +784,13 @@ contract CelebrityBreederToken is ERC721 {
     else {
         person = PersonsGen1[tokenId];
     }
-    require(person.genes&lt;=90);
+    require(person.genes<=90);
      
     uint64 _gene=newgene;
     uint64 _pointCount=0;
    
    
-      for(uint i=0;i&lt;10;i++) {
+      for(uint i=0;i<10;i++) {
            _pointCount+=_gene%10;
            _gene=_gene/10;
       }
@@ -803,7 +803,7 @@ contract CelebrityBreederToken is ERC721 {
  
    function breed(uint256 _mypersonid, bool _mypersongeneration, uint256 _withpersonid, bool  _withpersongeneration, string _boyname, string _girlname) public payable { //@Artyom mother
        require(_owns(msg.sender, _mypersonid, _mypersongeneration));
-       require(CreationLimitGen1&gt;totalSupply()+1);
+       require(CreationLimitGen1>totalSupply()+1);
     
     //Mother
     Person person; //@Artyom reference
@@ -815,7 +815,7 @@ contract CelebrityBreederToken is ERC721 {
         require(person.gender==false); //@Artyom checking gender for gen1 to be mother in this case
     }
 
-    require(person.genes&gt;90);//@Artyom if its unlocked
+    require(person.genes>90);//@Artyom if its unlocked
     
     uint64 genes1=person.genes;
     //Father
@@ -829,7 +829,7 @@ contract CelebrityBreederToken is ERC721 {
      
    
      require(readyTobreed(_mypersonid, _mypersongeneration, _withpersonid,  _withpersongeneration));
-     require(breedingFee&lt;=msg.value);
+     require(breedingFee<=msg.value);
    
     
     delete person.readyToBreedWithId;
@@ -856,9 +856,9 @@ contract CelebrityBreederToken is ERC721 {
   
     function breedOnAuction(uint256 _mypersonid, bool _mypersongeneration, uint256 _withpersonid, bool  _withpersongeneration, string _boyname, string _girlname) public payable { //@Artyom mother
        require(_owns(msg.sender, _mypersonid, _mypersongeneration));
-       require(CreationLimitGen1&gt;totalSupply()+1);
-       require(!(_mypersonid==_withpersonid &amp;&amp; _mypersongeneration==_withpersongeneration));// @Artyom not to breed with self
-       require(!((_mypersonid==0 &amp;&amp; _mypersongeneration==false) || (_withpersonid==0 &amp;&amp; _withpersongeneration==false))); //Not to touch Satoshi
+       require(CreationLimitGen1>totalSupply()+1);
+       require(!(_mypersonid==_withpersonid && _mypersongeneration==_withpersongeneration));// @Artyom not to breed with self
+       require(!((_mypersonid==0 && _mypersongeneration==false) || (_withpersonid==0 && _withpersongeneration==false))); //Not to touch Satoshi
     //Mother
     Person person; //@Artyom reference
     if(_mypersongeneration==false) { 
@@ -869,7 +869,7 @@ contract CelebrityBreederToken is ERC721 {
         require(person.gender==false); //@Artyom checking gender for gen1 to be mother in this case
     }
     
-    require(person.genes&gt;90);//@Artyom if its unlocked
+    require(person.genes>90);//@Artyom if its unlocked
     
     address owneroffather;
     uint256 _siringprice;
@@ -886,8 +886,8 @@ contract CelebrityBreederToken is ERC721 {
         owneroffather= personIndexToOwnerGen1[_withpersonid];
     }
      
-   require(_siringprice&gt;0 &amp;&amp; _siringprice&lt;MaxValue);
-   require((breedingFee+_siringprice)&lt;=msg.value);
+   require(_siringprice>0 && _siringprice<MaxValue);
+   require((breedingFee+_siringprice)<=msg.value);
     
     
 //    uint64 genes2=;
@@ -926,7 +926,7 @@ contract CelebrityBreederToken is ERC721 {
         require(person.gender==true);//@Artyom for gen1 checking genders to be male
         personIndexToSiringPrice1[_mypersonid]=_siringprice;
     }
-      require(person.genes&gt;90);//@Artyom if its unlocked
+      require(person.genes>90);//@Artyom if its unlocked
 
        person.readyToBreedWithId=uint32(_withpersonid); 
        person.readyToBreedWithGen=_withpersongeneration;
@@ -936,10 +936,10 @@ contract CelebrityBreederToken is ERC721 {
   
   function readyTobreed(uint256 _mypersonid, bool _mypersongeneration, uint256 _withpersonid, bool _withpersongeneration) public view returns(bool) {
 
-if (_mypersonid==_withpersonid &amp;&amp; _mypersongeneration==_withpersongeneration) //Not to fuck Themselves 
+if (_mypersonid==_withpersonid && _mypersongeneration==_withpersongeneration) //Not to fuck Themselves 
 return false;
 
-if((_mypersonid==0 &amp;&amp; _mypersongeneration==false) || (_withpersonid==0 &amp;&amp; _withpersongeneration==false)) //Not to touch Satoshi
+if((_mypersonid==0 && _mypersongeneration==false) || (_withpersonid==0 && _withpersongeneration==false)) //Not to touch Satoshi
 return false;
 
     Person withperson; //@Artyom reference
@@ -1004,51 +1004,51 @@ return false;
        uint256 _finalGene=0;
        bool gender=false;
 
-       for(uint i=0;i&lt;10;i++) {
+       for(uint i=0;i<10;i++) {
            _gene1 =_genes1%10;
            _gene2=_genes2%10;
            _genes1=_genes1/10;
            _genes2=_genes2/10;
            _rand=uint64(keccak256(block.blockhash(block.number), i, now,_mypersonid,_withpersonid))%10000;
            
-           if(_gene1&gt;=_gene2) {
+           if(_gene1>=_gene2) {
                _gene=_gene1-_gene2;
            }
            else {
                _gene=_gene2-_gene1;
            }
            
-           if(_rand&lt;26) {
+           if(_rand<26) {
                _gene-=3;
            }
-            else if(_rand&lt;455) {
+            else if(_rand<455) {
                 _gene-=2;
            }
-            else if(_rand&lt;3173) {
+            else if(_rand<3173) {
                 _gene-=1;
            }
-            else if(_rand&lt;6827) {
+            else if(_rand<6827) {
                 
            }
-            else if(_rand&lt;9545) {
+            else if(_rand<9545) {
                 _gene+=1;
            }
-            else if(_rand&lt;9974) {
+            else if(_rand<9974) {
                 _gene+=2;
            }
-            else if(_rand&lt;1000) {
+            else if(_rand<1000) {
                 _gene+=3;
            }
            
-           if(_gene&gt;12) //@Artyom to avoid negative overflow
+           if(_gene>12) //@Artyom to avoid negative overflow
            _gene=0;
-           if(_gene&gt;9)
+           if(_gene>9)
            _gene=9;
            
            _finalGene+=(uint(10)**i)*_gene;
        }
       
-      if(uint64(keccak256(block.blockhash(block.number), 11, now,_mypersonid,_withpersonid))%2&gt;0)
+      if(uint64(keccak256(block.blockhash(block.number), 11, now,_mypersonid,_withpersonid))%2>0)
       gender=true;
       
       return(uint64(_finalGene),gender);  
@@ -1070,12 +1070,12 @@ return false;
    // @Artyom Required for ERC-721 compliance.
    //@Artyom only gen1
    function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of persons is capped to 2^32 we can&#39;t overflow this
+    // Since the number of persons is capped to 2^32 we can't overflow this
     ownershipTokenCountGen1[_to]++;
     //transfer ownership
     personIndexToOwnerGen1[_tokenId] = _to;
 
-    // When creating new persons _from is 0x0, but we can&#39;t account that address.
+    // When creating new persons _from is 0x0, but we can't account that address.
     if (_addressNotNull(_from)) {
       ownershipTokenCountGen1[_from]--;
       // clear any previously approved ownership exchange
@@ -1103,9 +1103,9 @@ return false;
   }
     function train(uint256 personid, bool persongeneration, uint8 gene) external payable onlyPlayers {
         
-        require(gene&gt;=0 &amp;&amp; gene&lt;10);
+        require(gene>=0 && gene<10);
         uint256 trainingPrice=checkTrainingPrice(personid,persongeneration);
-        require(msg.value &gt;= trainingPrice);
+        require(msg.value >= trainingPrice);
          Person person; 
     if(persongeneration==false) {
         person = PersonsGen0[personid];
@@ -1114,10 +1114,10 @@ return false;
         person = PersonsGen1[personid];
     }
     
-     require(person.genes&gt;90);//@Artyom if its unlocked
+     require(person.genes>90);//@Artyom if its unlocked
      uint gensolo=person.genes/(uint(10)**gene);
     gensolo=gensolo%10;
-    require(gensolo&lt;9); //@Artyom not to train after 9
+    require(gensolo<9); //@Artyom not to train after 9
     
           person.genes+=uint64(10)**gene;
           person.trainedcount++;
@@ -1129,9 +1129,9 @@ return false;
     }
     
      function beat(uint256 personid, bool persongeneration, uint8 gene) external payable onlyPlayers {
-        require(gene&gt;=0 &amp;&amp; gene&lt;10);
+        require(gene>=0 && gene<10);
         uint256 beatingPrice=checkBeatingPrice(personid,persongeneration);
-        require(msg.value &gt;= beatingPrice);
+        require(msg.value >= beatingPrice);
          Person person; 
     if(persongeneration==false) {
         person = PersonsGen0[personid];
@@ -1140,10 +1140,10 @@ return false;
         person = PersonsGen1[personid];
     }
     
-    require(person.genes&gt;90);//@Artyom if its unlocked
+    require(person.genes>90);//@Artyom if its unlocked
     uint gensolo=person.genes/(uint(10)**gene);
     gensolo=gensolo%10;
-    require(gensolo&gt;0);
+    require(gensolo>0);
           person.genes-=uint64(10)**gene;
           person.beatencount++;
 
@@ -1164,7 +1164,7 @@ return false;
     }
     
     uint256 _trainingprice= (uint(2)**person.trainedcount) * initialTraining;
-    if (_trainingprice &gt; 5 ether)
+    if (_trainingprice > 5 ether)
     _trainingprice=5 ether;
     
     return _trainingprice;
@@ -1178,7 +1178,7 @@ return false;
         person = PersonsGen1[personid];
     }
     uint256 _beatingprice=(uint(2)**person.beatencount) * initialBeating;
-     if (_beatingprice &gt; 7 ether)
+     if (_beatingprice > 7 ether)
     _beatingprice=7 ether;
     return _beatingprice;
     } 

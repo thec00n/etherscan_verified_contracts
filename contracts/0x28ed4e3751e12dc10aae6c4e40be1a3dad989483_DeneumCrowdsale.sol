@@ -29,9 +29,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ library SafeMath {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -75,7 +75,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -116,13 +116,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -130,7 +130,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -270,7 +270,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -288,7 +288,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -318,7 +318,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -329,8 +329,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -344,7 +344,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -393,7 +393,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -406,12 +406,12 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract DeneumToken is StandardToken {
-    string public name = &quot;Deneum&quot;;
-    string public symbol = &quot;DNM&quot;;
+    string public name = "Deneum";
+    string public symbol = "DNM";
     uint8 public decimals = 2;
     bool public mintingFinished = false;
-    mapping (address =&gt; bool) owners;
-    mapping (address =&gt; bool) minters;
+    mapping (address => bool) owners;
+    mapping (address => bool) minters;
 
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
@@ -456,9 +456,9 @@ contract DeneumToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -596,7 +596,7 @@ contract DeneumCrowdsale is RBAC {
     }
 
     /**
-     * @dev fallback function receiving investor&#39;s ethers
+     * @dev fallback function receiving investor's ethers
      *      It calculates deposit USD value and corresponding token amount,
      *      runs some checks (if phase cap not exceeded, value and addresses are not null),
      *      then mints corresponding amount of tokens, increments state variables.
@@ -611,7 +611,7 @@ contract DeneumCrowdsale is RBAC {
         uint256 tokens = valueUSDc.mul(100).div(phases[currentPhaseIndex].priceUSDcDNM);
         require(beneficiary != address(0));
         require(weiAmount != 0);
-        require(phases[currentPhaseIndex].tokensIssued.add(tokens) &lt; phases[currentPhaseIndex].tokensCap);
+        require(phases[currentPhaseIndex].tokensIssued.add(tokens) < phases[currentPhaseIndex].tokensCap);
         weiRaised = weiRaised.add(weiAmount);
         phases[currentPhaseIndex].tokensIssued = phases[currentPhaseIndex].tokensIssued.add(tokens);
         tokensIssued = tokensIssued.add(tokens);
@@ -625,7 +625,7 @@ contract DeneumCrowdsale is RBAC {
      * @return ETH price in USD cents
      */
     function getPriceUSDcETH() public view returns(uint256) {
-        require(oracle.priceUSDcETH() &gt; 0);
+        require(oracle.priceUSDcETH() > 0);
         return oracle.priceUSDcETH();
     }
 
@@ -634,7 +634,7 @@ contract DeneumCrowdsale is RBAC {
      * @param _oracle ETH price oracle where we get actual exchange rate
      */
     function setOracle(PriceOracle _oracle) public onlyAdmin {
-        require(oracle.priceUSDcETH() &gt; 0);
+        require(oracle.priceUSDcETH() > 0);
         oracle = _oracle;
         OracleChanged(oracle);
     }
@@ -646,14 +646,14 @@ contract DeneumCrowdsale is RBAC {
      * @return true if provided dates valid
      */
     function validatePhaseDates(uint256 _startDate, uint256 _endDate) view public returns (bool) {
-        if (_endDate &lt;= _startDate) {
+        if (_endDate <= _startDate) {
             return false;
         }
-        for (uint i = 0; i &lt; phases.length; i++) {
-            if (_startDate &gt;= phases[i].startDate &amp;&amp; _startDate &lt;= phases[i].endDate) {
+        for (uint i = 0; i < phases.length; i++) {
+            if (_startDate >= phases[i].startDate && _startDate <= phases[i].endDate) {
                 return false;
             }
-            if (_endDate &gt;= phases[i].startDate &amp;&amp; _endDate &lt;= phases[i].endDate) {
+            if (_endDate >= phases[i].startDate && _endDate <= phases[i].endDate) {
                 return false;
             }
         }
@@ -669,8 +669,8 @@ contract DeneumCrowdsale is RBAC {
      */
     function addPhase(uint256 _startDate, uint256 _endDate, uint256 _priceUSDcDNM, uint256 _tokensCap) public onlyAdmin {
         require(validatePhaseDates(_startDate, _endDate));
-        require(_priceUSDcDNM &gt; 0);
-        require(_tokensCap &gt; 0);
+        require(_priceUSDcDNM > 0);
+        require(_tokensCap > 0);
         phases.push(Phase(_startDate, _endDate, _priceUSDcDNM, 0, _tokensCap));
         uint256 index = phases.length - 1;
         PhaseAdded(msg.sender, index, _startDate, _endDate, _priceUSDcDNM, _tokensCap);
@@ -681,9 +681,9 @@ contract DeneumCrowdsale is RBAC {
      * @param index Index of the phase
      */
     function delPhase(uint256 index) public onlyAdmin {
-        if (index &gt;= phases.length) return;
+        if (index >= phases.length) return;
 
-        for (uint i = index; i&lt;phases.length-1; i++){
+        for (uint i = index; i<phases.length-1; i++){
             phases[i] = phases[i+1];
         }
         phases.length--;
@@ -695,8 +695,8 @@ contract DeneumCrowdsale is RBAC {
      * @return current phase id
      */
     function getCurrentPhaseIndex() view public returns (uint256) {
-        for (uint i = 0; i &lt; phases.length; i++) {
-            if (phases[i].startDate &lt;= now &amp;&amp; now &lt;= phases[i].endDate) {
+        for (uint i = 0; i < phases.length; i++) {
+            if (phases[i].startDate <= now && now <= phases[i].endDate) {
                 return i;
             }
         }

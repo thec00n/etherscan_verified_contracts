@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableExtended {
   address public owner;
@@ -69,20 +69,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,17 +127,17 @@ contract Ottolotto is OwnableExtended {
 
     iChampion public champion;
 
-    mapping(address =&gt; mapping(uint256 =&gt; TicketBet[])) tickets;
-    mapping(uint256 =&gt; Bet[]) gameBets;
-    mapping(uint256 =&gt; Winner[]) winners;
-    mapping(uint256 =&gt; uint256) weiRaised;
-    mapping(uint256 =&gt; uint256) gameStartBlock;
-    mapping(uint256 =&gt; uint32[7]) gameStats;
-    mapping(uint256 =&gt; bool) gameCalculated;
-    mapping(uint256 =&gt; uint256) gameCalculationProgress;
-    mapping(uint8 =&gt; uint8) percents;
-    mapping(address =&gt; address) partner;
-    mapping(address =&gt; address[]) partners;
+    mapping(address => mapping(uint256 => TicketBet[])) tickets;
+    mapping(uint256 => Bet[]) gameBets;
+    mapping(uint256 => Winner[]) winners;
+    mapping(uint256 => uint256) weiRaised;
+    mapping(uint256 => uint256) gameStartBlock;
+    mapping(uint256 => uint32[7]) gameStats;
+    mapping(uint256 => bool) gameCalculated;
+    mapping(uint256 => uint256) gameCalculationProgress;
+    mapping(uint8 => uint8) percents;
+    mapping(address => address) partner;
+    mapping(address => address[]) partners;
 
     uint256[] public allGames;
 
@@ -170,7 +170,7 @@ contract Ottolotto is OwnableExtended {
 
     function getLastGames() constant returns (uint256[10] lastGames) {
         uint256 j = 0;
-        for (uint256 i = allGames.length - 11; i &lt; allGames.length; i++) {
+        for (uint256 i = allGames.length - 11; i < allGames.length; i++) {
             lastGames[j] = allGames[i];
             j++;
         }
@@ -215,7 +215,7 @@ contract Ottolotto is OwnableExtended {
     function getBet(address _player, uint256 _game) 
         constant returns (bytes3[]) {
         bytes3[] memory bets = new bytes3[](tickets[_player][_game].length);
-        for (uint32 i = 0; i &lt; tickets[_player][_game].length; i++) {
+        for (uint32 i = 0; i < tickets[_player][_game].length; i++) {
             bets[i] = tickets[_player][_game][i].bet;
         }        
         return bets;
@@ -224,7 +224,7 @@ contract Ottolotto is OwnableExtended {
     function getWinners(uint256 _game) 
             constant returns (address[]) {
         address[] memory _winners = new address[](winners[_game].length);
-        for (uint32 i = 0; i &lt; winners[_game].length; i++) {
+        for (uint32 i = 0; i < winners[_game].length; i++) {
             _winners[i] = winners[_game][i].player;
         }
         return _winners;
@@ -232,10 +232,10 @@ contract Ottolotto is OwnableExtended {
 
     function betsArePayed(address _player, uint256 _game) constant returns (bool) {
         uint256 startBlock = getGameStartBlock(_game);
-        for (uint16 i = 0; i &lt; tickets[_player][_game].length; i++) {
+        for (uint16 i = 0; i < tickets[_player][_game].length; i++) {
             if (tickets[_player][_game][i].isPayed == false) {
                 uint8 matches = getMatches(startBlock, tickets[_player][_game][i].bet);
-                if (matches &gt; 0) {
+                if (matches > 0) {
                     return false;
                 }
             }
@@ -248,7 +248,7 @@ contract Ottolotto is OwnableExtended {
         uint256 startBlock = getGameStartBlock(_game);
         bytes32[] memory blocks = new bytes32[](6);
         uint8 num = 0;
-        for (startBlock; startBlock + num &lt;= startBlock + gameDuration - 1; num++) {
+        for (startBlock; startBlock + num <= startBlock + gameDuration - 1; num++) {
             blocks[num] = block.blockhash(startBlock + num);
         }
         
@@ -262,12 +262,12 @@ contract Ottolotto is OwnableExtended {
     
     function modifyBet(bytes32 _bet, uint256 _step) 
             internal constant returns (bytes32) {
-        return _bet &gt;&gt; (232 + (_step * 4 - 4)) &lt;&lt; 252 &gt;&gt; 252;
+        return _bet >> (232 + (_step * 4 - 4)) << 252 >> 252;
     }
 
     function modifyBlock(uint256 _blockNumber) 
             internal constant returns (bytes32) {
-        return block.blockhash(_blockNumber) &lt;&lt; 252 &gt;&gt; 252;
+        return block.blockhash(_blockNumber) << 252 >> 252;
     }
     
     function equalNumber(bytes32 _bet, uint256 _game, uint256 _endBlock) 
@@ -297,7 +297,7 @@ contract Ottolotto is OwnableExtended {
 
         champion.buyTicket(msg.sender);
 
-        if (_partner != 0x0 &amp;&amp; partner[msg.sender] == 0x0) {
+        if (_partner != 0x0 && partner[msg.sender] == 0x0) {
             addPartner(_partner, msg.sender);
         }
 
@@ -328,7 +328,7 @@ contract Ottolotto is OwnableExtended {
         bytes32 bet = bytes32(_bet);
         uint256 endBlock = _game + gameDuration;
         uint8 matches = 0;
-        for (; endBlock &gt; _game; _game++) {
+        for (; endBlock > _game; _game++) {
             if (equalNumber(bet, _game, endBlock)) {
                 matches++;
                 continue;
@@ -343,7 +343,7 @@ contract Ottolotto is OwnableExtended {
             constant returns (uint256[]) {
         uint256 startBlock = getGameStartBlock(_game);
         uint256[] memory matches = new uint256[](7);
-        for (uint32 i = 0; i &lt; gameBets[_game].length; i++) {
+        for (uint32 i = 0; i < gameBets[_game].length; i++) {
             Bet memory bet = gameBets[_game][i];
             uint8 matched = getMatches(startBlock, bet.bet);
             if (matched == 0) {
@@ -366,7 +366,7 @@ contract Ottolotto is OwnableExtended {
             return false;
         }
 
-        return (gameStartBlock[_game] + gameDuration - 1) &lt; block.number;   
+        return (gameStartBlock[_game] + gameDuration - 1) < block.number;   
     }
 
     function gameIsCalculated(uint256 _game)
@@ -395,14 +395,14 @@ contract Ottolotto is OwnableExtended {
         } 
 
         uint256 steps = calculationStep;
-        if (gameCalculationProgress[_game] + steps &gt; gameBets[_game].length) {
+        if (gameCalculationProgress[_game] + steps > gameBets[_game].length) {
             steps -= gameCalculationProgress[_game] + steps - gameBets[_game].length;
         }
     
         uint32[] memory matches = new uint32[](7);
         uint256 to = gameCalculationProgress[_game] + steps;
         uint256 startBlock = getGameStartBlock(_game);
-        for (; gameCalculationProgress[_game] &lt; to; gameCalculationProgress[_game]++) {
+        for (; gameCalculationProgress[_game] < to; gameCalculationProgress[_game]++) {
             Bet memory bet = gameBets[_game][gameCalculationProgress[_game]];
             uint8 matched = getMatches(startBlock, bet.bet);
             if (matched == 0) {
@@ -416,7 +416,7 @@ contract Ottolotto is OwnableExtended {
             (matched == 6) ? matches[6] += 1 : gameStats[_game][6];
         }
 
-        for (uint8 i = 1; i &lt;= 6; i++) {
+        for (uint8 i = 1; i <= 6; i++) {
             gameStats[_game][i] += matches[i];
         }
 
@@ -431,7 +431,7 @@ contract Ottolotto is OwnableExtended {
     }
 
     function distributeRaisedWeiToJackpot(uint256 _game) internal {
-        for (uint8 i = 1; i &lt;= 5; i ++) {
+        for (uint8 i = 1; i <= 5; i ++) {
             if (gameStats[_game][i] == 0) {
                 jackpot += weiRaised[_game].mul(percents[i]).div(100);
             }

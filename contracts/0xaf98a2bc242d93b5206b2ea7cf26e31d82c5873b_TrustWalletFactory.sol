@@ -36,7 +36,7 @@ contract TrustWallet {
     }
 
     Transaction[] public transactions;
-    mapping (address =&gt; User) public users;
+    mapping (address => User) public users;
     address[] public userAddresses;
 
     modifier onlyActiveUsersAllowed() {
@@ -58,7 +58,7 @@ contract TrustWallet {
     // Returns true if there is a transaction pending.
     function isTransactionPending() public constant returns (bool) {
         if (transactions.length == 0) return false;
-        return transactions[transactions.length - 1].time_initiated &gt; 0 &amp;&amp;
+        return transactions[transactions.length - 1].time_initiated > 0 &&
             transactions[transactions.length - 1].time_finalized == 0;
     }
 
@@ -115,7 +115,7 @@ contract TrustWallet {
         transactionMustBePending()
     {
         Transaction storage transaction = transactions[transactions.length - 1];
-        require(now &gt; transaction.time_initiated + users[transaction.initiated_by].waiting_time);
+        require(now > transaction.time_initiated + users[transaction.initiated_by].waiting_time);
         transaction.is_executed = true;
         transaction.time_finalized = now;
         transaction.finalized_by = msg.sender;
@@ -134,7 +134,7 @@ contract TrustWallet {
         // Users with a higher priority can do this
         Transaction storage transaction = transactions[transactions.length - 1];
         // Either the sender is a higher priority user
-        require(users[msg.sender].waiting_time &lt;=
+        require(users[msg.sender].waiting_time <=
             users[transaction.initiated_by].waiting_time);
         transaction.time_finalized = now;
         transaction.finalized_by = msg.sender;
@@ -152,8 +152,8 @@ contract TrustWallet {
         require(users[new_user].time_removed == 0);
 
         User storage sender = users[msg.sender];
-        require(now &gt; sender.waiting_time + sender.time_added_another_user);
-        require(new_user_time &gt;= sender.waiting_time);
+        require(now > sender.waiting_time + sender.time_added_another_user);
+        require(new_user_time >= sender.waiting_time);
 
         sender.time_added_another_user = now;
         users[new_user] = User({
@@ -179,7 +179,7 @@ contract TrustWallet {
         require(users[userAddr].time_added != 0);
 
         User storage sender = users[msg.sender];
-        require(sender.waiting_time &lt;= users[userAddr].waiting_time);
+        require(sender.waiting_time <= users[userAddr].waiting_time);
 
         users[userAddr].removed_by = msg.sender;
         users[userAddr].time_removed = now;
@@ -187,7 +187,7 @@ contract TrustWallet {
 }
 
 contract TrustWalletFactory {
-    mapping (address =&gt; TrustWallet[]) public wallets;
+    mapping (address => TrustWallet[]) public wallets;
 
     function createWallet() public {
         wallets[msg.sender].push(new TrustWallet(msg.sender));

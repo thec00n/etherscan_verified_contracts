@@ -4,12 +4,12 @@ contract SafeMath {
  
    function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
  
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -38,7 +38,7 @@ contract Token {
 contract StandardToken is Token {
  
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is Token {
     }
  
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -75,22 +75,22 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
  
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
  
 contract KWHToken is StandardToken, SafeMath {
  
     // metadata
-    string public constant name = &quot;KWHCoin&quot;;
-    string public constant symbol = &quot;KWH&quot;;
+    string public constant name = "KWHCoin";
+    string public constant symbol = "KWH";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
  
     // contracts
     address private ethFundDeposit;      // deposit address for ETH for KWH
     address private kwhFundDeposit;      // deposit address for KWH use and KWH User Fund
-    address private kwhDeployer; //controls ico &amp; presale
+    address private kwhDeployer; //controls ico & presale
  
     // crowdsale parameters
     bool public isFinalized;              // switched to true in operational state
@@ -128,15 +128,15 @@ contract KWHToken is StandardToken, SafeMath {
       uint256 tokens;
       if(isIco)
         {
-            tokens = safeMult(msg.value, icoTokenExchangeRate); // check that we&#39;re not over totals
+            tokens = safeMult(msg.value, icoTokenExchangeRate); // check that we're not over totals
         } else {
-            tokens = safeMult(msg.value, preSaleTokenExchangeRate); // check that we&#39;re not over totals
+            tokens = safeMult(msg.value, preSaleTokenExchangeRate); // check that we're not over totals
         }
     
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
  
       // return money if something goes wrong
-      if (tokenCreationCap &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
+      if (tokenCreationCap < checkedSupply) throw;  // odd fractions won't be found
  
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here

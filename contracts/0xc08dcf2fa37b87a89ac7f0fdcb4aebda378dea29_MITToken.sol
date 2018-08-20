@@ -13,19 +13,19 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,10 +40,10 @@ contract MITToken is SafeMath{
     address public owner;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
-    mapping(uint =&gt; Holder) public lockholders;
+    mapping(uint => Holder) public lockholders;
     uint public lockholderNumber;
     struct Holder {
           address eth_address;
@@ -65,8 +65,8 @@ contract MITToken is SafeMath{
   constructor () public {
         totalSupply = 10000000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;Mundellian Infrastructure Technology&quot;;                                   // Set the name for display purposes
-        symbol = &quot;MIT&quot;;                               // Set the symbol for display purposes
+        name = "Mundellian Infrastructure Technology";                                   // Set the name for display purposes
+        symbol = "MIT";                               // Set the symbol for display purposes
         
          owner = msg.sender;
     }
@@ -81,10 +81,10 @@ contract MITToken is SafeMath{
         require(validHolder(_from));
         
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] &lt;= MAX_UINT256 - _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] <= MAX_UINT256 - _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -118,7 +118,7 @@ contract MITToken is SafeMath{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -165,7 +165,7 @@ contract MITToken is SafeMath{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -181,10 +181,10 @@ contract MITToken is SafeMath{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -192,7 +192,7 @@ contract MITToken is SafeMath{
     
 function _lockToken(address addr,uint expireTime) public payable returns (bool) {
     require(msg.sender == owner);
-    for(uint i = 0; i &lt; lockholderNumber; i++) {
+    for(uint i = 0; i < lockholderNumber; i++) {
       if (lockholders[i].eth_address == addr) {
           lockholders[i].exp_time = expireTime;
         return true;
@@ -205,7 +205,7 @@ function _lockToken(address addr,uint expireTime) public payable returns (bool) 
   
 function _unlockToken(address addr) public payable returns (bool){
     require(msg.sender == owner);
-    for(uint i = 0; i &lt; lockholderNumber; i++) {
+    for(uint i = 0; i < lockholderNumber; i++) {
       if (lockholders[i].eth_address == addr) {
           delete lockholders[i];
         return true;
@@ -215,8 +215,8 @@ function _unlockToken(address addr) public payable returns (bool){
   }
   
   function validHolder(address addr) public constant returns (bool) {
-    for(uint i = 0; i &lt; lockholderNumber; i++) {
-      if (lockholders[i].eth_address == addr &amp;&amp; now &lt;lockholders[i].exp_time) {
+    for(uint i = 0; i < lockholderNumber; i++) {
+      if (lockholders[i].eth_address == addr && now <lockholders[i].exp_time) {
         return false;
       }
     }

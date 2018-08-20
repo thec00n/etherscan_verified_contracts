@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 contract Risk
 {
     address owner;
-    mapping (address =&gt; uint8 []) playerCountries;
+    mapping (address => uint8 []) playerCountries;
     address[178] ownerofCountry; // size must be fixed
     address[] playerList;
     uint256 totalmoney=0;
@@ -49,61 +49,61 @@ contract Risk
         uint a=playerCountries[attacker].length;
         uint b=playerCountries[defender].length;
         
-        if(a&lt;=1)
+        if(a<=1)
             a=1;
-        else if(a&lt;=4)
+        else if(a<=4)
             a=2;
-        else if(a&lt;=9)
+        else if(a<=9)
             a=3;
-        else if(a&lt;=16)
+        else if(a<=16)
             a=4;
-        else if(a&lt;=25)
+        else if(a<=25)
             a=5;
-        else if(a&lt;=36)
+        else if(a<=36)
             a=6;
-        else if(a&lt;=49)
+        else if(a<=49)
             a=7;
-        else if(a&lt;=64)
+        else if(a<=64)
             a=8;
-        else if(a&lt;=81)
+        else if(a<=81)
             a=9;
         else
             a=10;
         
-        if(b&lt;=1)
+        if(b<=1)
             b=1;
-        else if(b&lt;=4)
+        else if(b<=4)
             b=2;
-        else if(b&lt;=9)
+        else if(b<=9)
             b=3;
-        else if(b&lt;=16)
+        else if(b<=16)
             b=4;
-        else if(b&lt;=25)
+        else if(b<=25)
             b=5;
-        else if(b&lt;=36)
+        else if(b<=36)
             b=6;
-        else if(b&lt;=49)
+        else if(b<=49)
             b=7;
-        else if(b&lt;=64)
+        else if(b<=64)
             b=8;
-        else if(b&lt;=81)
+        else if(b<=81)
             b=9;
         else
             b=10;
 
-        for(uint256 i=14;i&gt;=11;i--)
+        for(uint256 i=14;i>=11;i--)
             winnerloser[i]=winnerloser[i-1];
-        for(i=9;i&gt;=6;i--)
+        for(i=9;i>=6;i--)
             winnerloser[i]=winnerloser[i-1];
-        for(i=4;i&gt;=1;i--)
+        for(i=4;i>=1;i--)
             winnerloser[i]=winnerloser[i-1];
         
         uint256 loopcount=0;
         lastR=uint256(block.blockhash(block.number-1))%(a+b);
-        if(lastR&lt;a) //attacker win
+        if(lastR<a) //attacker win
         {
             loopcount=playerCountries[defender].length;
-            for (i=0;i&lt;loopcount;i++)
+            for (i=0;i<loopcount;i++)
             {
                 playerCountries[attacker].push(playerCountries[defender][i]);
                 ownerofCountry[playerCountries[defender][i]]=attacker;
@@ -116,7 +116,7 @@ contract Risk
         else //defender win
         {
             loopcount=playerCountries[attacker].length;
-            for (i=0;i&lt;loopcount;i++)
+            for (i=0;i<loopcount;i++)
             {
                 playerCountries[defender].push(playerCountries[attacker][i]);
                 ownerofCountry[playerCountries[attacker][i]]=defender;
@@ -136,9 +136,9 @@ contract Risk
         
         //require 15 country ownership for testing
         bool del=false;
-        for (uint8 i=0; i&lt;loopcount;i++)
+        for (uint8 i=0; i<loopcount;i++)
         {
-            if(playerCountries[playerList[i]].length&gt;=winnerLimit) //iswinner
+            if(playerCountries[playerList[i]].length>=winnerLimit) //iswinner
             {
                 winner=playerList[i];
                 del=true;
@@ -153,13 +153,13 @@ contract Risk
             owner.transfer(totalmoney/10);
             totalmoney=0;
             lastgameendWinner=winner;
-            for (i=0;i&lt;178;i++)
+            for (i=0;i<178;i++)
             {
                 playerCountries[ownerofCountry[i]].length=0;
                 ownerofCountry[i]=0;
             }
             playerList.length=0;
-            for(i=0;i&lt;10;i++)
+            for(i=0;i<10;i++)
                 winnerloser[i]=address(0);
         }
     }

@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -84,7 +84,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -118,9 +118,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -132,7 +132,7 @@ contract BurnableToken is BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -172,8 +172,8 @@ contract Ownable {
 contract UBOCOIN is BurnableToken, Ownable
 {
     // ERC20 token parameters
-    string public constant name = &quot;UBOCOIN&quot;;
-    string public constant symbol = &quot;UBO&quot;;
+    string public constant name = "UBOCOIN";
+    string public constant symbol = "UBO";
     uint8 public constant decimals = 18;
     
     
@@ -234,23 +234,23 @@ contract UBOCOIN is BurnableToken, Ownable
     
     // Keep track of all participants, how much they bought and how much they spent.
     address[] public allParticipants;
-    mapping(address =&gt; uint256) public participantToEtherSpent;
-    mapping(address =&gt; uint256) public participantToUBObought;
+    mapping(address => uint256) public participantToEtherSpent;
+    mapping(address => uint256) public participantToUBObought;
     
     
     function crowdsaleTargetReached() public view returns (bool)
     {
-        return amountOfUBOsold() &gt;= crowdsaleTargetUBO;
+        return amountOfUBOsold() >= crowdsaleTargetUBO;
     }
     
     function crowdsaleStarted() public view returns (bool)
     {
-        return pre_ICO_start_timestamp &gt; 0 &amp;&amp; now &gt;= pre_ICO_start_timestamp;
+        return pre_ICO_start_timestamp > 0 && now >= pre_ICO_start_timestamp;
     }
     
     function crowdsaleFinished() public view returns (bool)
     {
-        return pre_ICO_start_timestamp &gt; 0 &amp;&amp; now &gt;= crowdsale_end_timestamp;
+        return pre_ICO_start_timestamp > 0 && now >= crowdsale_end_timestamp;
     }
     
     function amountOfParticipants() external view returns (uint256)
@@ -264,12 +264,12 @@ contract UBOCOIN is BurnableToken, Ownable
     }
     
     // If the crowdsale target has not been reached, or the crowdsale has not finished,
-    // don&#39;t allow the transfer of tokens purchased in the crowdsale.
+    // don't allow the transfer of tokens purchased in the crowdsale.
     function transfer(address _to, uint256 _amount) public returns (bool)
     {
         if (!crowdsaleTargetReached() || !crowdsaleFinished())
         {
-            require(balances[msg.sender] - participantToUBObought[msg.sender] &gt;= _amount);
+            require(balances[msg.sender] - participantToUBObought[msg.sender] >= _amount);
         }
         
         return super.transfer(_to, _amount);
@@ -295,7 +295,7 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function setPreICOStartTime(uint256 _timestamp) public onlyOwner
     {
-        // If the crowdsale has already started, don&#39;t allow re-scheduling it.
+        // If the crowdsale has already started, don't allow re-scheduling it.
         require(!crowdsaleStarted());
         
         pre_ICO_start_timestamp = _timestamp;
@@ -314,7 +314,7 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function destroyUnsoldTokens() external
     {
-        require(crowdsaleStarted() &amp;&amp; crowdsaleFinished());
+        require(crowdsaleStarted() && crowdsaleFinished());
         
         uint256 amountToBurn = crowdsaleAmountLeft;
         crowdsaleAmountLeft = 0;
@@ -336,49 +336,49 @@ contract UBOCOIN is BurnableToken, Ownable
         require(crowdsaleStarted());
         require(!crowdsaleFinished());
         
-        // If the pre-ICO hasn&#39;t started yet, cancel the transaction
-        if (now &lt; pre_ICO_start_timestamp)
+        // If the pre-ICO hasn't started yet, cancel the transaction
+        if (now < pre_ICO_start_timestamp)
         {
             revert();
         }
         
         // If we are in the pre-ICO...
-        else if (now &gt;= pre_ICO_start_timestamp &amp;&amp; now &lt; first_bonus_sale_start_timestamp)
+        else if (now >= pre_ICO_start_timestamp && now < first_bonus_sale_start_timestamp)
         {
             // If they purchased enough to be eligible for the pre-ICO bonus,
             // then give them the bonus
-            if (amountOfUBOpurchased &gt;= pre_ICO_bonus_minimum_purchased_UBO)
+            if (amountOfUBOpurchased >= pre_ICO_bonus_minimum_purchased_UBO)
             {
                 amountOfUBOpurchased = amountOfUBOpurchased * (100 + pre_ICO_bonus_percentage) / 100;
             }
         }
         
         // If we are in the first bonus sale...
-        else if (now &gt;= first_bonus_sale_start_timestamp &amp;&amp; now &lt; second_bonus_sale_start_timestamp)
+        else if (now >= first_bonus_sale_start_timestamp && now < second_bonus_sale_start_timestamp)
         {
             amountOfUBOpurchased = amountOfUBOpurchased * (100 + first_bonus_sale_bonus) / 100;
         }
         
         // If we are in the second bonus sale...
-        else if (now &gt;= second_bonus_sale_start_timestamp &amp;&amp; now &lt; third_bonus_sale_start_timestamp)
+        else if (now >= second_bonus_sale_start_timestamp && now < third_bonus_sale_start_timestamp)
         {
             amountOfUBOpurchased = amountOfUBOpurchased * (100 + second_bonus_sale_bonus) / 100;
         }
         
         // If we are in the third bonus sale...
-        else if (now &gt;= third_bonus_sale_start_timestamp &amp;&amp; now &lt; fourth_bonus_sale_start_timestamp)
+        else if (now >= third_bonus_sale_start_timestamp && now < fourth_bonus_sale_start_timestamp)
         {
             amountOfUBOpurchased = amountOfUBOpurchased * (100 + third_bonus_sale_bonus) / 100;
         }
         
         // If we are in the fourth bonus sale...
-        else if (now &gt;= fourth_bonus_sale_start_timestamp &amp;&amp; now &lt; final_sale_start_timestamp)
+        else if (now >= fourth_bonus_sale_start_timestamp && now < final_sale_start_timestamp)
         {
             amountOfUBOpurchased = amountOfUBOpurchased * (100 + fourth_bonus_sale_bonus) / 100;
         }
         
         // If we are in the final sale...
-        else if (now &gt;= final_sale_start_timestamp &amp;&amp; now &lt; crowdsale_end_timestamp)
+        else if (now >= final_sale_start_timestamp && now < crowdsale_end_timestamp)
         {
             // No bonus
         }
@@ -390,7 +390,7 @@ contract UBOCOIN is BurnableToken, Ownable
         }
         
         // Make sure the crowdsale has enough UBO left
-        require(amountOfUBOpurchased &lt;= crowdsaleAmountLeft);
+        require(amountOfUBOpurchased <= crowdsaleAmountLeft);
         
         // Remove the tokens from this contract and the crowdsale tokens,
         // add them to the buyer
@@ -410,13 +410,13 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function refund() external
     {
-        // If the crowdsale has not started yet, don&#39;t allow refund
+        // If the crowdsale has not started yet, don't allow refund
         require(crowdsaleStarted());
         
-        // If the crowdsale has not finished yet, don&#39;t allow refund
+        // If the crowdsale has not finished yet, don't allow refund
         require(crowdsaleFinished());
         
-        // If the target was reached, don&#39;t allow refund
+        // If the target was reached, don't allow refund
         require(!crowdsaleTargetReached());
         
         _refundParticipant(msg.sender);
@@ -424,16 +424,16 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function refundMany(uint256 _startIndex, uint256 _endIndex) external
     {
-        // If the crowdsale has not started yet, don&#39;t allow refund
+        // If the crowdsale has not started yet, don't allow refund
         require(crowdsaleStarted());
         
-        // If the crowdsale has not finished yet, don&#39;t allow refund
+        // If the crowdsale has not finished yet, don't allow refund
         require(crowdsaleFinished());
         
-        // If the target was reached, don&#39;t allow refund
+        // If the target was reached, don't allow refund
         require(!crowdsaleTargetReached());
         
-        for (uint256 i=_startIndex; i&lt;=_endIndex &amp;&amp; i&lt;allParticipants.length; i++)
+        for (uint256 i=_startIndex; i<=_endIndex && i<allParticipants.length; i++)
         {
             _refundParticipant(allParticipants[i]);
         }
@@ -441,7 +441,7 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function _refundParticipant(address _participant) internal
     {
-        if (participantToEtherSpent[_participant] &gt; 0)
+        if (participantToEtherSpent[_participant] > 0)
         {
             // Return the UBO they bought into the crowdsale funds
             uint256 refundUBO = participantToUBObought[_participant];
@@ -460,42 +460,42 @@ contract UBOCOIN is BurnableToken, Ownable
     
     function distributeFounderTokens(address _founderAddress, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= foundersAmountLeft);
+        require(_amount <= foundersAmountLeft);
         foundersAmountLeft -= _amount;
         this.transfer(_founderAddress, _amount);
     }
     
     function distributeEarlyBackerTokens(address _earlyBackerAddress, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= earlyBackersAmountLeft);
+        require(_amount <= earlyBackersAmountLeft);
         earlyBackersAmountLeft -= _amount;
         this.transfer(_earlyBackerAddress, _amount);
     }
     
     function distributeTeamTokens(address _teamMemberAddress, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= teamAmountLeft);
+        require(_amount <= teamAmountLeft);
         teamAmountLeft -= _amount;
         this.transfer(_teamMemberAddress, _amount);
     }
     
     function distributeBountyTokens(address _bountyReceiverAddress, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= bountyAmountLeft);
+        require(_amount <= bountyAmountLeft);
         bountyAmountLeft -= _amount;
         this.transfer(_bountyReceiverAddress, _amount);
     }
     
     function distributeReservedTokens(address _to, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= reservedFundLeft);
+        require(_amount <= reservedFundLeft);
         reservedFundLeft -= _amount;
         this.transfer(_to, _amount);
     }
     
     function distributeCrowdsaleTokens(address _to, uint256 _amount) external onlyOwner
     {
-        require(_amount &lt;= crowdsaleAmountLeft);
+        require(_amount <= crowdsaleAmountLeft);
         crowdsaleAmountLeft -= _amount;
         this.transfer(_to, _amount);
     }

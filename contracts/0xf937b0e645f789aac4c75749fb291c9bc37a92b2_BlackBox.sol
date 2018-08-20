@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-// BlackBox2.0 - Secure Ether &amp; Token Storage
+// BlackBox2.0 - Secure Ether & Token Storage
 // Rinkeby test contract: 0x21ED89693fF7e91c757DbDD9Aa30448415aa8156
 
 // token interface
@@ -72,7 +72,7 @@ contract Encoder {
         address tokenAddress,
         Algorithm algorithm
     ) pure internal returns(bytes32 index, bytes32 operator, bytes32 check) {
-        require(caller != receiver &amp;&amp; caller != 0);
+        require(caller != receiver && caller != 0);
         bytes32 x = hash_seed(seed, algorithm);
         if (algorithm == Algorithm.sha) {
             index = sha256(x, caller);
@@ -128,9 +128,9 @@ contract BlackBox is Owned, Encoder {
     }
     
     // mappings
-    mapping(bytes32 =&gt; Proof) public proofs;
-    mapping(bytes32 =&gt; bool) public used;
-    mapping(address =&gt; uint) private deposits;
+    mapping(bytes32 => Proof) public proofs;
+    mapping(bytes32 => bool) public used;
+    mapping(address => uint) private deposits;
 
     // events
     event ProofVerified(string _key, address _prover, uint _value);
@@ -149,8 +149,8 @@ contract BlackBox is Owned, Encoder {
         bytes32 _check
     ) public payable {
         // protect invalid entries on value transfer
-        if (msg.value &gt; 0) {
-            require(_hash != 0 &amp;&amp; _operator != 0 &amp;&amp; _check != 0);
+        if (msg.value > 0) {
+            require(_hash != 0 && _operator != 0 && _check != 0);
         }
         // check existence
         require(!used[_hash]);
@@ -194,9 +194,9 @@ contract BlackBox is Owned, Encoder {
             uint tokenBalance = token.balanceOf(msg.sender);
             uint allowance = token.allowance(msg.sender, this);
             // check the balance to send to the receiver
-            if (_value == 0 || _value &gt; tokenBalance) _value = tokenBalance;
-            if (allowance &gt; 0 &amp;&amp; _value &gt; 0) {
-                if (_value &gt; allowance) _value = allowance;
+            if (_value == 0 || _value > tokenBalance) _value = tokenBalance;
+            if (allowance > 0 && _value > 0) {
+                if (_value > allowance) _value = allowance;
                 TokenTransfer(_token, msg.sender, receiver, _value);
                 require(token.transferFrom(msg.sender, receiver, _value));
             }
@@ -217,8 +217,8 @@ contract BlackBox is Owned, Encoder {
     /// @param _value Value of proof balance
     function clearDeposits(address _for, uint _value) internal {
         uint deposit = deposits[msg.sender];
-        if (deposit &gt; 0) delete deposits[msg.sender];
-        if (deposit + _value &gt; 0) {
+        if (deposit > 0) delete deposits[msg.sender];
+        if (deposit + _value > 0) {
             if (!_for.send(deposit+_value)) {
                 require(msg.sender.send(deposit+_value));
             }
@@ -233,7 +233,7 @@ contract BlackBox is Owned, Encoder {
     
     // store deposits for msg.sender
     function() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         deposits[msg.sender] += msg.value;
     }
     

@@ -2,13 +2,13 @@ pragma solidity ^0.4.11;
 
 contract SwiftDex {
 
-    string public name = &quot;SwiftDex&quot;;      //  token name
-    string public symbol = &quot;SWIFD&quot;;           //  token symbol
+    string public name = "SwiftDex";      //  token name
+    string public symbol = "SWIFD";           //  token symbol
     uint256 public decimals = 18;            //  token digit
     uint256 public price = 360000000000000;
-    string public version=&quot;test-5.0&quot;;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    string public version="test-5.0";
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     //000000000000000000
@@ -49,8 +49,8 @@ contract SwiftDex {
     }
 
     function transfer(address _to, uint256 _value) public isRunning validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -58,9 +58,9 @@ contract SwiftDex {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public isRunning validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -77,16 +77,16 @@ contract SwiftDex {
 
     function buy() public isRunning payable returns (uint amount){
         amount = msg.value * decimalFactor / price;                    // calculates the amount
-        require(balanceOf[address_ico] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[address_ico] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[address_ico] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[address_ico] -= amount;                        // subtracts amount from seller's balance
         address_ico.transfer(msg.value);
         emit Transfer(address_ico, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
     function deployTokens(address[] _recipient, uint256[] _values) public isOwner {
-        for(uint i = 0; i&lt; _recipient.length; i++)
+        for(uint i = 0; i< _recipient.length; i++)
         {
               balanceOf[_recipient[i]] += _values[i] * decimalFactor;
               balanceOf[address_ico] -= _values[i] * decimalFactor;

@@ -21,9 +21,9 @@ contract WinnerTakesAll {
             bytes32 best = 0;
             bytes32[requiredPlayers] memory scores;
             address winner = 0;
-            for (uint x = 0 ; x &lt; requiredPlayers ; x++) {
+            for (uint x = 0 ; x < requiredPlayers ; x++) {
                 scores[x] = keccak256(now,players[x]);
-                if (scores[x] &gt; best ){
+                if (scores[x] > best ){
                     best = scores[x];
                     winner = players[x];
                 }

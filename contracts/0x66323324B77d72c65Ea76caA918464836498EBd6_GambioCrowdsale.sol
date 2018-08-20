@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -154,7 +154,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -223,8 +223,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -307,7 +307,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -387,7 +387,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -406,7 +406,7 @@ contract CappedToken is MintableToken {
     public
     returns (bool)
   {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -420,8 +420,8 @@ contract GambioToken is CappedToken {
 
   using SafeMath for uint256;
 
-  string public name = &quot;GMB&quot;;
-  string public symbol = &quot;GMB&quot;;
+  string public name = "GMB";
+  string public symbol = "GMB";
   uint8 public decimals = 18;
 
   event Burn(address indexed burner, uint256 value);
@@ -445,7 +445,7 @@ contract GambioToken is CappedToken {
   }
 
   function burn(uint256 _value) public onlyBurner {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     emit Burn(msg.sender, _value);
@@ -484,11 +484,11 @@ contract Crowdsale {
     address _wallet,
     uint256 _initialWeiRaised,
     uint256 _tokenCap) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_wallet != address(0));
-    require(_rate &gt; 0);
-    require(_tokenCap &gt; 0);
+    require(_rate > 0);
+    require(_tokenCap > 0);
 
     token = new GambioToken(_wallet, _tokenCap);
     startTime = _startTime;
@@ -500,7 +500,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 }
 
@@ -566,8 +566,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -589,7 +589,7 @@ contract TokenVesting is Ownable {
     public
   {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -605,7 +605,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -636,7 +636,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -651,9 +651,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (block.timestamp &lt; cliff) {
+    if (block.timestamp < cliff) {
       return 0;
-    } else if (block.timestamp &gt;= start.add(duration) || revoked[token]) {
+    } else if (block.timestamp >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(block.timestamp.sub(start)).div(duration);
@@ -674,7 +674,7 @@ contract GambioVesting is TokenVesting {
   constructor(uint256 _period, address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable)
   public
   TokenVesting(_beneficiary, _start, _cliff, _duration, _revocable) {
-    //require(period &gt; 0);
+    //require(period > 0);
 
     period = _period;
     previousRelease = now;
@@ -682,11 +682,11 @@ contract GambioVesting is TokenVesting {
 
   //overriding release function
   function release(ERC20Basic token) public {
-    require(now &gt;= previousRelease.add(period));
+    require(now >= previousRelease.add(period));
 
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -728,10 +728,10 @@ contract CappedCrowdsale is Crowdsale, Ownable {
   public {
 
     require(_vestingData.length == 3);
-    require(_hardCap &gt; 0);
-    require(_vestingData[0] &gt; 0);
-    require(_vestingData[1] &gt; 0);
-    require(_vestingData[2] &gt; 0);
+    require(_hardCap > 0);
+    require(_vestingData[0] > 0);
+    require(_vestingData[1] > 0);
+    require(_vestingData[2] > 0);
     require(_beneficiary != address(0));
 
     hardCap = _hardCap;
@@ -743,7 +743,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
 
   /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
   function finalize() public onlyOwner {
     require(!isFinalized);
@@ -767,7 +767,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
   function mint(address beneficiary, uint256 amount) public onlyOwner {
     require(!token.mintingFinished());
     require(isFinalized);
-    require(amount &gt; 0);
+    require(amount > 0);
     require(beneficiary != address(0));
     token.mint(beneficiary, amount);
 
@@ -777,7 +777,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= hardCap;
+    bool capReached = weiRaised >= hardCap;
     return super.hasEnded() || capReached || isFinalized;
   }
 
@@ -790,8 +790,8 @@ contract OnlyWhiteListedAddresses is Ownable {
 
   using SafeMath for uint256;
   address utilityAccount;
-  mapping(address =&gt; bool) whitelist;
-  mapping(address =&gt; address) public referrals;
+  mapping(address => bool) whitelist;
+  mapping(address => address) public referrals;
 
   modifier onlyOwnerOrUtility() {
     require(msg.sender == owner || msg.sender == utilityAccount);
@@ -812,7 +812,7 @@ contract OnlyWhiteListedAddresses is Ownable {
   }
 
   function whitelistAddress(address[] users) public onlyOwnerOrUtility {
-    for (uint i = 0; i &lt; users.length; i++) {
+    for (uint i = 0; i < users.length; i++) {
       whitelist[users[i]] = true;
     }
     emit WhitelistedAddresses(users);
@@ -820,7 +820,7 @@ contract OnlyWhiteListedAddresses is Ownable {
 
   function addAddressReferrals(address[] users, address[] _referrals) public onlyOwnerOrUtility {
     require(users.length == _referrals.length);
-    for (uint i = 0; i &lt; users.length; i++) {
+    for (uint i = 0; i < users.length; i++) {
       require(isWhiteListedAddress(users[i]));
 
       referrals[users[i]] = _referrals[i];
@@ -846,9 +846,9 @@ contract GambioCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
 
   uint256 transactionId = 1;
 
-  mapping(uint256 =&gt; TokenPurchaseRecord) pendingTransactions;
+  mapping(uint256 => TokenPurchaseRecord) pendingTransactions;
 
-  mapping(uint256 =&gt; bool) completedTransactions;
+  mapping(uint256 => bool) completedTransactions;
 
   uint256 public referralPercentage;
 
@@ -913,7 +913,7 @@ contract GambioCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
     require(!isFinalized);
     require(beneficiary == msg.sender);
     require(msg.value != 0);
-    require(msg.value &gt;= individualCap);
+    require(msg.value >= individualCap);
 
     uint256 weiAmount = msg.value;
     require(isWhiteListedAddress(beneficiary));
@@ -935,26 +935,26 @@ contract GambioCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
 
   function delayIcoEnd(uint256 newDate) public onlyOwner {
     require(newDate != 0);
-    require(newDate &gt; now);
+    require(newDate > now);
     require(!hasEnded());
-    require(newDate &gt; endTime);
+    require(newDate > endTime);
 
     endTime = newDate;
   }
 
   function increaseWeiRaised(uint256 amount) public onlyOwner {
-    require(now &lt; startTime);
-    require(amount &gt; 0);
-    require(weiRaised.add(amount) &lt;= hardCap);
+    require(now < startTime);
+    require(amount > 0);
+    require(weiRaised.add(amount) <= hardCap);
 
     weiRaised = weiRaised.add(amount);
   }
 
   function decreaseWeiRaised(uint256 amount) public onlyOwner {
-    require(now &lt; startTime);
-    require(amount &gt; 0);
-    require(weiRaised &gt; 0);
-    require(weiRaised &gt;= amount);
+    require(now < startTime);
+    require(amount > 0);
+    require(weiRaised > 0);
+    require(weiRaised >= amount);
 
     weiRaised = weiRaised.sub(amount);
   }
@@ -962,7 +962,7 @@ contract GambioCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
   function issueTokensMultiple(uint256[] _transactionIds, uint256[] bonusTokensAmounts) public onlyOwner {
     require(isFinalized);
     require(_transactionIds.length == bonusTokensAmounts.length);
-    for (uint i = 0; i &lt; _transactionIds.length; i++) {
+    for (uint i = 0; i < _transactionIds.length; i++) {
       issueTokens(_transactionIds[i], bonusTokensAmounts[i]);
     }
   }
@@ -994,9 +994,9 @@ contract GambioCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
   }
 
   function validPurchase(uint256 weiAmount) internal view returns (bool) {
-    bool withinCap = weiRaised.add(weiAmount) &lt;= hardCap;
-    bool withinCrowdsaleInterval = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-    return withinCrowdsaleInterval &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(weiAmount) <= hardCap;
+    bool withinCrowdsaleInterval = now >= startTime && now <= endTime;
+    return withinCrowdsaleInterval && withinCap;
   }
 
   function forwardFunds() internal {

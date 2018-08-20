@@ -1,4 +1,4 @@
-/* Author: Victor Mezrin  <span class="__cf_email__" data-cfemail="0e78676d7a617c4e636b747c6760206d6163">[email&#160;protected]</span> */
+/* Author: Victor Mezrin  <span class="__cf_email__" data-cfemail="0e78676d7a617c4e636b747c6760206d6163">[email protected]</span> */
 
 pragma solidity ^0.4.18;
 
@@ -43,7 +43,7 @@ contract CommonModifiers is CommonModifiersInterface {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_targetAddress)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 }
 
@@ -76,7 +76,7 @@ contract AssetID is AssetIDInterface {
   /* Constructor */
 
   function AssetID(string _assetID) public {
-    require(bytes(_assetID).length &gt; 0);
+    require(bytes(_assetID).length > 0);
 
     assetID = _assetID;
   }
@@ -98,12 +98,12 @@ contract AssetID is AssetIDInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableInterface {
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address);
 
@@ -121,7 +121,7 @@ contract OwnableInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable is OwnableInterface {
 
@@ -196,14 +196,14 @@ contract Ownable is OwnableInterface {
 
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address) {
     return owner;
   }
 
   /**
-   * @dev The getter for &quot;proposedOwner&quot; contract variable
+   * @dev The getter for "proposedOwner" contract variable
    */
   function getProposedOwner() public constant returns (address) {
     return proposedOwner;
@@ -246,8 +246,8 @@ contract Manageable is OwnableInterface,
 
   /* Storage */
 
-  mapping (address =&gt; bool) managerEnabled;  // hard switch for a manager - on/off
-  mapping (address =&gt; mapping (string =&gt; bool)) managerPermissions;  // detailed info about manager`s permissions
+  mapping (address => bool) managerEnabled;  // hard switch for a manager - on/off
+  mapping (address => mapping (string => bool)) managerPermissions;  // detailed info about manager`s permissions
 
 
   /* Events */
@@ -372,7 +372,7 @@ contract Manageable is OwnableInterface,
     onlyValidPermissionName(_permissionName)
     returns (bool)
   {
-    return (managerEnabled[_manager] &amp;&amp; managerPermissions[_manager][_permissionName]);
+    return (managerEnabled[_manager] && managerPermissions[_manager][_permissionName]);
   }
 
 
@@ -400,7 +400,7 @@ contract Manageable is OwnableInterface,
 /**
  * @title PausableInterface
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract PausableInterface {
@@ -424,7 +424,7 @@ contract PausableInterface {
   function unpauseContract() public;
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool);
 
@@ -451,7 +451,7 @@ contract PausableInterface {
 /**
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract Pausable is ManageableInterface,
@@ -467,7 +467,7 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to pause, triggers stopped state
    */
-  function pauseContract() public onlyAllowedManager(&#39;pause_contract&#39;) whenContractNotPaused {
+  function pauseContract() public onlyAllowedManager('pause_contract') whenContractNotPaused {
     paused = true;
     PauseEvent();
   }
@@ -475,13 +475,13 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to unpause, returns to normal state
    */
-  function unpauseContract() public onlyAllowedManager(&#39;unpause_contract&#39;) whenContractPaused {
+  function unpauseContract() public onlyAllowedManager('unpause_contract') whenContractPaused {
     paused = false;
     UnpauseEvent();
   }
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool) {
     return paused;
@@ -538,7 +538,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_call&#39;)
+    onlyAllowedManager('execute_call')
   {
     require(underExecution == false);
 
@@ -555,7 +555,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_delegatecall&#39;)
+    onlyAllowedManager('execute_delegatecall')
   {
     require(underExecution == false);
 
@@ -619,13 +619,13 @@ contract CrydrViewBase is CommonModifiersInterface,
   /* Storage */
 
   address crydrController = address(0x0);
-  string crydrViewStandardName = &#39;&#39;;
+  string crydrViewStandardName = '';
 
 
   /* Constructor */
 
   function CrydrViewBase(string _crydrViewStandardName) public {
-    require(bytes(_crydrViewStandardName).length &gt; 0);
+    require(bytes(_crydrViewStandardName).length > 0);
 
     crydrViewStandardName = _crydrViewStandardName;
   }
@@ -638,7 +638,7 @@ contract CrydrViewBase is CommonModifiersInterface,
   )
     external
     onlyContractAddress(_crydrController)
-    onlyAllowedManager(&#39;set_crydr_controller&#39;)
+    onlyAllowedManager('set_crydr_controller')
     whenContractPaused
   {
     require(crydrController != _crydrController);
@@ -889,16 +889,16 @@ contract CrydrViewERC20Named is ManageableInterface,
 
   /* Storage */
 
-  string tokenName = &#39;&#39;;
-  string tokenSymbol = &#39;&#39;;
+  string tokenName = '';
+  string tokenSymbol = '';
   uint8 tokenDecimals = 0;
 
 
   /* Constructor */
 
   function CrydrViewERC20Named(string _name, string _symbol, uint8 _decimals) public {
-    require(bytes(_name).length &gt; 0);
-    require(bytes(_symbol).length &gt; 0);
+    require(bytes(_name).length > 0);
+    require(bytes(_symbol).length > 0);
 
     tokenName = _name;
     tokenSymbol = _symbol;
@@ -935,9 +935,9 @@ contract CrydrViewERC20Named is ManageableInterface,
   )
     external
     whenContractPaused
-    onlyAllowedManager(&#39;set_crydr_name&#39;)
+    onlyAllowedManager('set_crydr_name')
   {
-    require(bytes(_name).length &gt; 0);
+    require(bytes(_name).length > 0);
 
     tokenName = _name;
   }
@@ -947,9 +947,9 @@ contract CrydrViewERC20Named is ManageableInterface,
   )
     external
     whenContractPaused
-    onlyAllowedManager(&#39;set_crydr_symbol&#39;)
+    onlyAllowedManager('set_crydr_symbol')
   {
-    require(bytes(_symbol).length &gt; 0);
+    require(bytes(_symbol).length > 0);
 
     tokenSymbol = _symbol;
   }
@@ -959,7 +959,7 @@ contract CrydrViewERC20Named is ManageableInterface,
   )
     external
     whenContractPaused
-    onlyAllowedManager(&#39;set_crydr_decimals&#39;)
+    onlyAllowedManager('set_crydr_decimals')
   {
     tokenDecimals = _decimals;
   }
@@ -982,7 +982,7 @@ contract JCashCrydrViewERC20 is CommonModifiers,
   function JCashCrydrViewERC20(string _assetID, string _name, string _symbol, uint8 _decimals)
     public
     AssetID(_assetID)
-    CrydrViewBase(&#39;erc20&#39;)
+    CrydrViewBase('erc20')
     CrydrViewERC20Named(_name, _symbol, _decimals)
   { }
 }
@@ -990,5 +990,5 @@ contract JCashCrydrViewERC20 is CommonModifiers,
 
 
 contract JNTViewERC20 is JCashCrydrViewERC20 {
-  function JNTViewERC20() public JCashCrydrViewERC20(&#39;JNT&#39;, &#39;Jibrel Network Token&#39;, &#39;JNT&#39;, 18) {}
+  function JNTViewERC20() public JCashCrydrViewERC20('JNT', 'Jibrel Network Token', 'JNT', 18) {}
 }

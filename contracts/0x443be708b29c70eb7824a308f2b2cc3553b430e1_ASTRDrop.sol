@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {  //was constant
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ contract ASTRDrop is Ownable {
     token           = ERC20(0x80E7a4d750aDe616Da896C49049B7EdE9e04C191); //  
 
       uint256 i = 0;
-      while (i &lt; dests.length) { // probably want to keep this to only 20 or 30 addresses at a time
+      while (i < dests.length) { // probably want to keep this to only 20 or 30 addresses at a time
         token.transferFrom(ownerAddress, dests[i], AIRDROP_AMOUNT);
          i += 1;
       }
@@ -89,7 +89,7 @@ contract ASTRDrop is Ownable {
 
   // Change the airdrop rate
   function setAirdropAmount(uint256 _astrAirdrop) onlyOwner public {
-    if( _astrAirdrop &gt; 0 ) {
+    if( _astrAirdrop > 0 ) {
         AIRDROP_AMOUNT = _astrAirdrop * decimalsConversion;
     }
   }

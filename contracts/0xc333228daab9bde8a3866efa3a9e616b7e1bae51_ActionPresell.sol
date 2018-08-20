@@ -125,22 +125,22 @@ contract WarToken is ERC721, AccessAdmin {
     uint256 destroyFashionCount;
 
     /// @dev Equipment token ID vs owner address
-    mapping (uint256 =&gt; address) fashionIdToOwner;
+    mapping (uint256 => address) fashionIdToOwner;
 
     /// @dev Equipments owner by the owner (array)
-    mapping (address =&gt; uint256[]) ownerToFashionArray;
+    mapping (address => uint256[]) ownerToFashionArray;
 
     /// @dev Equipment token ID search in owner array
-    mapping (uint256 =&gt; uint256) fashionIdToOwnerIndex;
+    mapping (uint256 => uint256) fashionIdToOwnerIndex;
 
     /// @dev The authorized address for each WAR
-    mapping (uint256 =&gt; address) fashionIdToApprovals;
+    mapping (uint256 => address) fashionIdToApprovals;
 
     /// @dev The authorized operators for each address
-    mapping (address =&gt; mapping (address =&gt; bool)) operatorToApprovals;
+    mapping (address => mapping (address => bool)) operatorToApprovals;
 
     /// @dev Trust contract
-    mapping (address =&gt; bool) actionContracts;
+    mapping (address => bool) actionContracts;
 
     function setActionContract(address _actionAddr, bool _useful) external onlyAdmin {
         actionContracts[_actionAddr] = _useful;
@@ -162,7 +162,7 @@ contract WarToken is ERC721, AccessAdmin {
     /// @dev This emits when the equipment created
     event CreateFashion(address indexed owner, uint256 tokenId, uint16 protoId, uint16 quality, uint16 pos, uint16 createType);
 
-    /// @dev This emits when the equipment&#39;s attributes changed
+    /// @dev This emits when the equipment's attributes changed
     event ChangeFashion(address indexed owner, uint256 tokenId, uint16 changeType);
 
     /// @dev This emits when the equipment destroyed
@@ -176,7 +176,7 @@ contract WarToken is ERC721, AccessAdmin {
     // modifier
     /// @dev Check if token ID is valid
     modifier isValidToken(uint256 _tokenId) {
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= fashionArray.length);
+        require(_tokenId >= 1 && _tokenId <= fashionArray.length);
         require(fashionIdToOwner[_tokenId] != address(0)); 
         _;
     }
@@ -190,15 +190,15 @@ contract WarToken is ERC721, AccessAdmin {
     // ERC721
     function supportsInterface(bytes4 _interfaceId) external view returns(bool) {
         // ERC165 || ERC721 || ERC165^ERC721
-        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) &amp;&amp; (_interfaceId != 0xffffffff);
+        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) && (_interfaceId != 0xffffffff);
     }
         
     function name() public pure returns(string) {
-        return &quot;WAR Token&quot;;
+        return "WAR Token";
     }
 
     function symbol() public pure returns(string) {
-        return &quot;WAR&quot;;
+        return "WAR";
     }
 
     /// @dev Search for token quantity address
@@ -236,10 +236,10 @@ contract WarToken is ERC721, AccessAdmin {
         external
         whenNotPaused
     {
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
-    /// @dev Transfer ownership of an WAR, &#39;_to&#39; must be a vaild address, or the WAR will lost
+    /// @dev Transfer ownership of an WAR, '_to' must be a vaild address, or the WAR will lost
     /// @param _from The current owner of the WAR
     /// @param _to The new owner
     /// @param _tokenId The WAR to transfer
@@ -272,7 +272,7 @@ contract WarToken is ERC721, AccessAdmin {
         Approval(owner, _approved, _tokenId);
     }
 
-    /// @dev Enable or disable approval for a third party (&quot;operator&quot;) to manage all your asset.
+    /// @dev Enable or disable approval for a third party ("operator") to manage all your asset.
     /// @param _operator Address to add to the set of authorized operators.
     /// @param _approved True if the operators is approved, false to revoke approval
     function setApprovalForAll(address _operator, bool _approved) 
@@ -328,7 +328,7 @@ contract WarToken is ERC721, AccessAdmin {
             }      
         }
 
-        // Give the WAR to &#39;_to&#39;
+        // Give the WAR to '_to'
         fashionIdToOwner[_tokenId] = _to;
         ownerToFashionArray[_to].push(_tokenId);
         fashionIdToOwnerIndex[_tokenId] = ownerToFashionArray[_to].length - 1;
@@ -356,7 +356,7 @@ contract WarToken is ERC721, AccessAdmin {
             return;
         }
         bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
-        // bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)) = 0xf0b9e5ba;
+        // bytes4(keccak256("onERC721Received(address,uint256,bytes)")) = 0xf0b9e5ba;
         require(retval == 0xf0b9e5ba);
     }
 
@@ -375,7 +375,7 @@ contract WarToken is ERC721, AccessAdmin {
         require(_owner != address(0));
 
         uint256 newFashionId = fashionArray.length;
-        require(newFashionId &lt; 4294967296);
+        require(newFashionId < 4294967296);
 
         fashionArray.length += 1;
         Fashion storage fs = fashionArray[newFashionId];
@@ -442,19 +442,19 @@ contract WarToken is ERC721, AccessAdmin {
         require(actionContracts[msg.sender]);
 
         Fashion storage fs = fashionArray[_tokenId];
-        if (_idxArray[0] &gt; 0) {
+        if (_idxArray[0] > 0) {
             _changeAttrByIndex(fs, _idxArray[0], _params[0]);
         }
 
-        if (_idxArray[1] &gt; 0) {
+        if (_idxArray[1] > 0) {
             _changeAttrByIndex(fs, _idxArray[1], _params[1]);
         }
 
-        if (_idxArray[2] &gt; 0) {
+        if (_idxArray[2] > 0) {
             _changeAttrByIndex(fs, _idxArray[2], _params[2]);
         }
 
-        if (_idxArray[3] &gt; 0) {
+        if (_idxArray[3] > 0) {
             _changeAttrByIndex(fs, _idxArray[3], _params[3]);
         }
 
@@ -499,7 +499,7 @@ contract WarToken is ERC721, AccessAdmin {
     {
         require(actionContracts[msg.sender]);
 
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= fashionArray.length);
+        require(_tokenId >= 1 && _tokenId <= fashionArray.length);
         address owner = fashionIdToOwner[_tokenId];
         require(owner != address(0));
         require(_to != address(0));
@@ -534,7 +534,7 @@ contract WarToken is ERC721, AccessAdmin {
         uint256 length = fsArray.length;
         tokens = new uint256[](length);
         flags = new uint32[](length);
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokens[i] = fsArray[i];
             Fashion storage fs = fashionArray[fsArray[i]];
             flags[i] = uint32(uint32(fs.protoId) * 100 + uint32(fs.quality) * 10 + fs.pos);
@@ -544,11 +544,11 @@ contract WarToken is ERC721, AccessAdmin {
     /// @dev WAR token info returned based on Token ID transfered (64 at most)
     function getFashionsAttrs(uint256[] _tokens) external view returns(uint16[] attrs) {
         uint256 length = _tokens.length;
-        require(length &lt;= 64);
+        require(length <= 64);
         attrs = new uint16[](length * 11);
         uint256 tokenId;
         uint256 index;
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokenId = _tokens[i];
             if (fashionIdToOwner[tokenId] != address(0)) {
                 index = i * 11;
@@ -569,8 +569,8 @@ contract WarToken is ERC721, AccessAdmin {
 
 contract ActionPresell is AccessService {
     WarToken tokenContract;
-    mapping (uint16 =&gt; uint16) petPresellCounter;
-    mapping (address =&gt; uint16[]) presellLimit;
+    mapping (uint16 => uint16) petPresellCounter;
+    mapping (address => uint16[]) presellLimit;
 
     event PetPreSelled(address indexed buyer, uint16 protoId);
 
@@ -602,38 +602,38 @@ contract ActionPresell is AccessService {
         whenNotPaused 
     {
         uint16 curSupply = petPresellCounter[_protoId];
-        require(curSupply &gt; 0);
+        require(curSupply > 0);
         uint16[] storage buyArray = presellLimit[msg.sender];
         uint256 curBuyCnt = buyArray.length;
-        require(curBuyCnt &lt; 10);
+        require(curBuyCnt < 10);
 
         uint256 payBack = 0;
         if (_protoId == 10001) {
-            require(msg.value &gt;= 0.66 ether);
+            require(msg.value >= 0.66 ether);
             payBack = (msg.value - 0.66 ether);
             uint16[9] memory param1 = [10001, 5, 9, 40, 0, 0, 0, 0, 1];       // hp +40%
             tokenContract.createFashion(msg.sender, param1, 1);
             buyArray.push(10001);
         } else if(_protoId == 10002) {
-            require(msg.value &gt;= 0.99 ether);
+            require(msg.value >= 0.99 ether);
             payBack = (msg.value - 0.99 ether);
             uint16[9] memory param2 = [10002, 5, 9, 0, 30, 30, 0, 0, 1];       // atk +30%
             tokenContract.createFashion(msg.sender, param2, 1);
             buyArray.push(10002);
         } else if(_protoId == 10003) {
-            require(msg.value &gt;= 0.66 ether);
+            require(msg.value >= 0.66 ether);
             payBack = (msg.value - 0.66 ether);
             uint16[9] memory param3 = [10003, 5, 9, 0, 0, 0, 40, 0, 1];        // def +40%
             tokenContract.createFashion(msg.sender, param3, 1);
             buyArray.push(10003);
         } else if(_protoId == 10004) {
-            require(msg.value &gt;= 0.99 ether);
+            require(msg.value >= 0.99 ether);
             payBack = (msg.value - 0.99 ether);
             uint16[9] memory param4 = [10004, 5, 9, 0, 0, 0, 0, 30, 1];        // crit +50%
             tokenContract.createFashion(msg.sender, param4, 1);
             buyArray.push(10004);
         } else {
-            require(msg.value &gt;= 0.99 ether);
+            require(msg.value >= 0.99 ether);
             payBack = (msg.value - 0.99 ether);
             uint16[9] memory param5 = [10005, 5, 9, 20, 10, 10, 20, 0, 1];      // hp +20%, atk +10%, def +20%
             tokenContract.createFashion(msg.sender, param5, 1);
@@ -645,7 +645,7 @@ contract ActionPresell is AccessService {
         PetPreSelled(msg.sender, _protoId);
 
         addrFinance.transfer(msg.value - payBack);        // need 2300 gas -_-!
-        if (payBack &gt; 0) {
+        if (payBack > 0) {
             msg.sender.transfer(payBack);
         }
     }

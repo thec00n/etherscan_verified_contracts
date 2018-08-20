@@ -12,7 +12,7 @@ contract BTC666 {
     }
 
     address chairperson;
-    mapping(address =&gt; Voter) voters;
+    mapping(address => Voter) voters;
     Proposal[] proposals;
 
     /// Create a new ballot with $(_numProposals) different proposals.
@@ -33,7 +33,7 @@ contract BTC666 {
     function delegate(address to) public {
         Voter storage sender = voters[msg.sender]; // assigns reference
         if (sender.voted) return;
-        while (voters[to].delegate != address(0) &amp;&amp; voters[to].delegate != msg.sender)
+        while (voters[to].delegate != address(0) && voters[to].delegate != msg.sender)
             to = voters[to].delegate;
         if (to == msg.sender) return;
         sender.voted = true;
@@ -48,7 +48,7 @@ contract BTC666 {
     /// Give a single vote to proposal $(toProposal).
     function vote(uint8 toProposal) public {
         Voter storage sender = voters[msg.sender];
-        if (sender.voted || toProposal &gt;= proposals.length) return;
+        if (sender.voted || toProposal >= proposals.length) return;
         sender.voted = true;
         sender.vote = toProposal;
         proposals[toProposal].voteCount += sender.weight;
@@ -56,8 +56,8 @@ contract BTC666 {
 
     function winningProposal() public constant returns (uint8 _winningProposal) {
         uint256 winningVoteCount = 0;
-        for (uint8 prop = 0; prop &lt; proposals.length; prop++)
-            if (proposals[prop].voteCount &gt; winningVoteCount) {
+        for (uint8 prop = 0; prop < proposals.length; prop++)
+            if (proposals[prop].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[prop].voteCount;
                 _winningProposal = prop;
             }

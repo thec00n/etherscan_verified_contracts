@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,13 +44,13 @@ contract UBlockChain is ERC20 {
     address owner1 = msg.sender; 
     address owner2; 
 
-    mapping (address =&gt; uint256) balances; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances; 
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;UBlockChain&quot;;
-    string public constant symbol = &quot;UBCoin&quot;;
+    string public constant name = "UBlockChain";
+    string public constant symbol = "UBCoin";
     uint public constant decimals = 18;
     
     uint256 public totalSupply = 32000000000e18;
@@ -72,7 +72,7 @@ contract UBlockChain is ERC20 {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -83,7 +83,7 @@ contract UBlockChain is ERC20 {
     }
 
     function transferOwnership(address newOwner) onlyOwner public {
-        if (newOwner != address(0) &amp;&amp; newOwner != owner1 &amp;&amp; newOwner != owner2) {
+        if (newOwner != address(0) && newOwner != owner1 && newOwner != owner2) {
             if(msg.sender == owner1){
              owner1 = newOwner;   
             }
@@ -104,10 +104,10 @@ contract UBlockChain is ERC20 {
         totalRemaining = totalRemaining.sub(_amount);
         balances[_to] = balances[_to].add(_amount);
 
-        if (_amount &gt; 0) {
+        if (_amount > 0) {
             blacklist[_to] = true;
         }
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionClosed = true;
         }        
         Distr(_to, _amount);
@@ -119,22 +119,22 @@ contract UBlockChain is ERC20 {
 
     function airdrop(address[] addresses) onlyOwner public {
         
-        require(addresses.length &lt;= 255);
-        require(value &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(value <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(value &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(value <= totalRemaining);
             distr(addresses[i], value);
         }
     }
  
     function distribute(address[] addresses, uint256[] amounts) onlyOwner public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
         }
     }
@@ -145,12 +145,12 @@ contract UBlockChain is ERC20 {
 
     function getTokens() payable public {
         if(!distributionClosed){
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
         address investor = msg.sender;
         uint256 toGive = value;
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
         if(!blacklist[investor]){
           distr(investor, toGive);   
@@ -160,9 +160,9 @@ contract UBlockChain is ERC20 {
     //
     function freeze(address[] addresses,bool locked) onlyOwner public {
         
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             freezeAccount(addresses[i], locked);
         }
     }
@@ -179,7 +179,7 @@ contract UBlockChain is ERC20 {
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);                     
         require(!frozenAccount[_to]);                      
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -191,8 +191,8 @@ contract UBlockChain is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -202,7 +202,7 @@ contract UBlockChain is ERC20 {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;

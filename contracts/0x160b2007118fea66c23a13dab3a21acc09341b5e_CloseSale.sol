@@ -14,12 +14,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ contract CloseSale is Ownable {
   
   address reserve = 0x34bef601666D7b2E719Ff919A04266dD07706a79; // 15% all
   
-  mapping(address=&gt;bool) public whitelist;
+  mapping(address=>bool) public whitelist;
   
   uint256 public startCloseSale = 1527638401; // Wednesday, 30-May-18 00:00:01 UTC
   
@@ -116,7 +116,7 @@ contract CloseSale is Ownable {
   }
   
   /*******************************************************************************
-   * Whitelist&#39;s section */
+   * Whitelist's section */
   
   
   function authorize(address wlCandidate) public backEnd  {
@@ -140,11 +140,11 @@ contract CloseSale is Ownable {
   }
   
   /*******************************************************************************
-   * Payable&#39;s section */
+   * Payable's section */
   
   
   function isCloseSale() public constant returns(bool) {
-    return now &gt;= startCloseSale &amp;&amp; now &lt;= endCloseSale;
+    return now >= startCloseSale && now <= endCloseSale;
   }
   
   

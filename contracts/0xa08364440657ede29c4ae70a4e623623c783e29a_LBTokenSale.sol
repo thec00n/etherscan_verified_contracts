@@ -33,13 +33,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -59,8 +59,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
@@ -99,8 +99,8 @@ contract StandardToken is ERC20 {
 }
 
 contract LBToken is StandardToken {
-	string public constant name = &quot;LB Token&quot;;
-    string public constant symbol = &quot;LB&quot;;
+	string public constant name = "LB Token";
+    string public constant symbol = "LB";
     uint8  public constant decimals = 18;
 
 	address public minter; 
@@ -112,7 +112,7 @@ contract LBToken is StandardToken {
 	}
 
 	modifier whenMintable {
-		require (now &lt;= tokenSaleEndTime);
+		require (now <= tokenSaleEndTime);
 		_;
 	}
 
@@ -199,11 +199,11 @@ contract LBTokenSale is Ownable {
 	uint256 public totalLBSold_GENERAL_2;
 	uint256 public totalLBSold_GENERAL_3;
     uint256 public weiRaised;
-	mapping(address=&gt;uint256) public weiContributions;
+	mapping(address=>uint256) public weiContributions;
 
 	// whitelisting
-	mapping(address=&gt;bool) public whitelisted_Private;
-	mapping(address=&gt;bool) public whitelisted_Cornerstone;
+	mapping(address=>bool) public whitelisted_Private;
+	mapping(address=>bool) public whitelisted_Cornerstone;
 	event WhitelistedPrivateStatusChanged(address target, bool isWhitelisted);
 	event WhitelistedCornerstoneStatusChanged(address target, bool isWhitelisted);
 
@@ -234,7 +234,7 @@ contract LBTokenSale is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeWhitelistPrivateStatus(_targets[i], _isWhitelisted);
         }
     }
@@ -251,7 +251,7 @@ contract LBTokenSale is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeWhitelistCornerstoneStatus(_targets[i], _isWhitelisted);
         }
     }
@@ -261,13 +261,13 @@ contract LBTokenSale is Ownable {
         returns(bool) 
     {
 		bool nonZeroPurchase = msg.value != 0;
-		bool withinSalePeriod = now &gt;= presaleStartTime &amp;&amp; now &lt;= publicEndTime;
-        bool withinPublicPeriod = now &gt;= publicStartTime &amp;&amp; now &lt;= publicEndTime;
+		bool withinSalePeriod = now >= presaleStartTime && now <= publicEndTime;
+        bool withinPublicPeriod = now >= publicStartTime && now <= publicEndTime;
 
 		bool whitelisted = whitelisted_Cornerstone[msg.sender] || whitelisted_Private[msg.sender];
-		bool whitelistedCanBuy = whitelisted &amp;&amp; withinSalePeriod;
+		bool whitelistedCanBuy = whitelisted && withinSalePeriod;
         
-        return nonZeroPurchase &amp;&amp; (whitelistedCanBuy || withinPublicPeriod);
+        return nonZeroPurchase && (whitelistedCanBuy || withinPublicPeriod);
     }
 
     function () 
@@ -288,17 +288,17 @@ contract LBTokenSale is Ownable {
 		
 		if (whitelisted_Cornerstone[investor]) {
 			purchaseTokens = weiInvested.mul(RATE_CORNERSTONE); 
-			require(ALLOC_SALE_CORNERSTONE - totalLBSold_CORNERSTONE &gt;= purchaseTokens); // buy only if enough supply
+			require(ALLOC_SALE_CORNERSTONE - totalLBSold_CORNERSTONE >= purchaseTokens); // buy only if enough supply
 			require(lbToken.createToken(investor, purchaseTokens));
 			totalLBSold_CORNERSTONE = totalLBSold_CORNERSTONE.add(purchaseTokens); 
 		} else if (whitelisted_Private[investor]) {
 			purchaseTokens = weiInvested.mul(RATE_PRIVATE); 
-			require(ALLOC_SALE_PRIVATE - totalLBSold_PRIVATE &gt;= purchaseTokens); // buy only if enough supply
+			require(ALLOC_SALE_PRIVATE - totalLBSold_PRIVATE >= purchaseTokens); // buy only if enough supply
 			require(lbToken.createToken(investor, purchaseTokens));
 			totalLBSold_PRIVATE = totalLBSold_PRIVATE.add(purchaseTokens); 
 		} else {
 			purchaseTokens = _getPurchaseToken(investor, weiInvested);
-			require(purchaseTokens &gt; 0);
+			require(purchaseTokens > 0);
 			require(lbToken.createToken(investor, purchaseTokens));
 		}
 
@@ -315,10 +315,10 @@ contract LBTokenSale is Ownable {
 	{
 		uint256 tokenRemain1 = ALLOC_SALE_GENERAL_1 - totalLBSold_GENERAL_1;
 		uint256 tokenToPurchase1 = weiInvested.mul(RATE_CROWDSALE_S1);
-		if (tokenRemain1 &gt;= tokenToPurchase1) {
+		if (tokenRemain1 >= tokenToPurchase1) {
 			totalLBSold_GENERAL_1 = totalLBSold_GENERAL_1.add(tokenToPurchase1);
 			return tokenToPurchase1;
-		} else if (tokenRemain1 &gt; 0) {
+		} else if (tokenRemain1 > 0) {
 			uint256 weiRemain = weiInvested - tokenRemain1.div(RATE_CROWDSALE_S1); 
 			uint256 tokenToPurchase2 = weiRemain.mul(RATE_CROWDSALE_S2);
 			totalLBSold_GENERAL_1 = totalLBSold_GENERAL_1.add(tokenRemain1);
@@ -328,10 +328,10 @@ contract LBTokenSale is Ownable {
 
 		uint256 tokenRemain2 = ALLOC_SALE_GENERAL_2 - totalLBSold_GENERAL_2;
 		tokenToPurchase2 = weiInvested.mul(RATE_CROWDSALE_S2);
-		if (tokenRemain2 &gt;= tokenToPurchase2) {
+		if (tokenRemain2 >= tokenToPurchase2) {
 			totalLBSold_GENERAL_2 = totalLBSold_GENERAL_2.add(tokenToPurchase2);
 			return tokenToPurchase2;
-		} else if (tokenRemain2 &gt; 0) {
+		} else if (tokenRemain2 > 0) {
 			weiRemain = weiInvested - tokenRemain2.div(RATE_CROWDSALE_S2); 
 			uint256 tokenToPurchase3 = weiRemain.mul(RATE_CROWDSALE_S3);
 			totalLBSold_GENERAL_2 = totalLBSold_GENERAL_2.add(tokenRemain2);
@@ -341,7 +341,7 @@ contract LBTokenSale is Ownable {
 
 		uint256 tokenRemain3 = ALLOC_SALE_GENERAL_3 - totalLBSold_GENERAL_3;
 		tokenToPurchase3 = weiInvested.mul(RATE_CROWDSALE_S3);
-		if (tokenRemain3 &gt;= tokenToPurchase3) {
+		if (tokenRemain3 >= tokenToPurchase3) {
 			totalLBSold_GENERAL_3 = totalLBSold_GENERAL_3.add(tokenToPurchase3);
 			return tokenToPurchase3;
 		}
@@ -361,7 +361,7 @@ contract LBTokenSale is Ownable {
         constant 
         returns(bool) 
     {
-        return now &gt; publicEndTime;
+        return now > publicEndTime;
     }
 
 	function toggleHalt(bool _halted)

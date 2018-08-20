@@ -1,9 +1,9 @@
 pragma solidity ^0.4.0;
 //WP27080956Concordia
 contract AbuddinElection2018 {
-    string[7] candidates  = [&quot;Abstain&quot;,&quot;Conservative&quot;, &quot;Liberal&quot;, &quot;Socialist&quot;, &quot;Communist&quot;, &quot;Fascist&quot;,&quot;Libertarian&quot;];
-    mapping(bytes32 =&gt; bool) validShaHashes;
-    mapping(uint8 =&gt; uint) tallies; 
+    string[7] candidates  = ["Abstain","Conservative", "Liberal", "Socialist", "Communist", "Fascist","Libertarian"];
+    mapping(bytes32 => bool) validShaHashes;
+    mapping(uint8 => uint) tallies; 
     
     function addAllValidShaHashes() private{
      validShaHashes[0x04BF3170DE8C838DE8C45640365200AE34F570C2E24C79791DC6302A3BF14476] = true;
@@ -18,9 +18,9 @@ contract AbuddinElection2018 {
      validShaHashes[0xBE65EFC4DA245C5D8A6891F835E1E7777F72D524BA5CB15178DFB2541B40EB32] = true;
      validShaHashes[0x6060BA9AD6C059690EB7827DA7132A92532336323F160706A967C54B0A6379EF] = true;
    }
-    //Does the validShaHashes mapping have an entry accescodeHash =&gt; true
+    //Does the validShaHashes mapping have an entry accescodeHash => true
     //If no entry appears, then the accescodeHash is not valid and the voter provided an incorrect accescode
-    //if an entry appears but it is: accescodeHash =&gt; true, then this voter has already voted and is no longer elligible
+    //if an entry appears but it is: accescodeHash => true, then this voter has already voted and is no longer elligible
     function isHashValid(bytes32 accescodeHash) private view returns(bool){
         bool accescodeHashExists = validShaHashes[accescodeHash];
         return accescodeHashExists;
@@ -40,7 +40,7 @@ contract AbuddinElection2018 {
        if(isHashValid(accescodeHash)){
             _vote(accescodeHash, indexOfCandidate);
        } else {
-           revert(&quot;accesscode is invalid, or you already voted&quot;);
+           revert("accesscode is invalid, or you already voted");
        }
    }
    constructor() public {

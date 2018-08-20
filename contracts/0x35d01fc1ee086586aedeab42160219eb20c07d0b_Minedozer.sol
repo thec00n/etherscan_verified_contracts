@@ -19,7 +19,7 @@ pragma solidity ^0.4.16;
 	contract Crowdsale is owned {
     
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -29,15 +29,15 @@ pragma solidity ^0.4.16;
     }
 
     function () payable {
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         uint256 tokens = 1000000 * msg.value / 1000000000000000000;
-        if (tokens &gt; balanceOf[this]) {
+        if (tokens > balanceOf[this]) {
             tokens = balanceOf[this];
             uint valueWei = tokens * 1000000000000000000 / 1000000;
             msg.sender.transfer(msg.value - valueWei);
         }
-        require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]); // overflow
+        require(tokens > 0);
         balanceOf[msg.sender] += tokens;
         balanceOf[this] -= tokens;
         Transfer(this, msg.sender, tokens);
@@ -47,11 +47,11 @@ pragma solidity ^0.4.16;
 contract Token is Crowdsale {
     
    
-    string  public name        = &#39;Minedozer&#39;;
-    string  public symbol      = &quot;MDZ&quot;;
+    string  public name        = 'Minedozer';
+    string  public symbol      = "MDZ";
     uint8   public decimals    = 0;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Burned(address indexed owner, uint256 value);
@@ -59,17 +59,17 @@ contract Token is Crowdsale {
     function Token() payable Crowdsale() {}
 
     function transfer(address _to, uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -87,7 +87,7 @@ contract Token is Crowdsale {
     }
     
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burned(msg.sender, _value);
@@ -110,7 +110,7 @@ contract TokenMigration is Token {
     function migrate(uint256 _value) external {
         require(migrationAgent != 0);
         require(_value != 0);
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         totalMigrated += _value;

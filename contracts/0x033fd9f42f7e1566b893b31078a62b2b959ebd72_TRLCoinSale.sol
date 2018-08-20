@@ -68,7 +68,7 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     
     
     // pair fo variables one for mapping one for iteration
-    mapping(address =&gt; TotalContribution) public payments; // Track contributions by each address 
+    mapping(address => TotalContribution) public payments; // Track contributions by each address 
     address[] public paymentAddresses;
 
     bool private hasStarted; // Has the crowdsale started?
@@ -87,9 +87,9 @@ contract TRLCoinSale is ApproveAndCallFallBack {
 
     function addContribution(address from, uint weiContributed, uint tokensReceived) private returns(bool) {
         //new contibutor
-        require(weiContributed &gt; 0);
-        require(tokensReceived &gt; 0);
-        require(tokensRemainingForSale &gt;= tokensReceived);
+        require(weiContributed > 0);
+        require(tokensReceived > 0);
+        require(tokensRemainingForSale >= tokensReceived);
         
         PaymentContribution memory newContribution;
         newContribution.timeContribution = block.timestamp;
@@ -160,7 +160,7 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         require(tokenWallet.totalSupply() == TOTAL_TOKENS_AVAILABLE);
 
         // Make sure the owner actually controls all the tokens
-        require(tokenWallet.balanceOf(owner) &gt;= TOTAL_TOKENS_TO_DISTRIBUTE);
+        require(tokenWallet.balanceOf(owner) >= TOTAL_TOKENS_TO_DISTRIBUTE);
 
         // The multiplier necessary to change a coin amount to the token amount
         uint coinToTokenFactor = 10 ** TRLCOIN_DECIMALS;
@@ -191,8 +191,8 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         require(msg.sender == owner); 
         // Cannot change if already started
         require(hasStarted == false);
-        //insanity check start &lt; stop and stop resale &lt; start of sale
-        require(startDate &lt; stopDate &amp;&amp; stopDate &lt; sale.start);
+        //insanity check start < stop and stop resale < start of sale
+        require(startDate < stopDate && stopDate < sale.start);
         
         preSale.start = startDate;
         preSale.end = stopDate;
@@ -204,8 +204,8 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         require(msg.sender == owner); 
         // Cannot change if already started
         require(hasStarted == false);
-        //insanity check start &lt; stop and stop resale &lt; start of sale
-        require(preSale.start &lt;= bonusStopTime &amp;&amp; bonusStopTime &lt;= preSale.end);
+        //insanity check start < stop and stop resale < start of sale
+        require(preSale.start <= bonusStopTime && bonusStopTime <= preSale.end);
         
         largeBonusStopTime = bonusStopTime;
     }
@@ -216,10 +216,10 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         require(msg.sender == owner); 
         // Cannot change if already started
         require(hasStarted == false);
-        // insanity check start &lt; stop and stop resale &lt; start of sale
-        require(startDate &lt; stopDate &amp;&amp; startDate &gt; preSale.end);
-        // insanity check sale.end &lt; distirbution token time
-        require(sale.end &lt; distributionTime);
+        // insanity check start < stop and stop resale < start of sale
+        require(startDate < stopDate && startDate > preSale.end);
+        // insanity check sale.end < distirbution token time
+        require(sale.end < distributionTime);
         
         sale.start = startDate;
         sale.end = stopDate;
@@ -231,8 +231,8 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         require(msg.sender == owner); 
         // Cannot change if already started
         require(hasStarted == false);
-        // insanity check sale.end &lt; distirbution token time
-        require(sale.end &lt; timeOfDistribution);
+        // insanity check sale.end < distirbution token time
+        require(sale.end < timeOfDistribution);
         
         distributionTime = timeOfDistribution;
     }
@@ -245,7 +245,7 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         //contract must be not active
         require(hasStarted == false);
         // all entried must be added before presale started
-        require(block.timestamp &lt; preSale.start);
+        require(block.timestamp < preSale.start);
         // contract mush have total == TOTAL_TOKENS_TO_DISTRIBUTE
         require((tokensRemainingForSale + tokensAwardedForSale) == TOTAL_TOKENS_TO_DISTRIBUTE);
         
@@ -264,10 +264,10 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         // Cannot start if already started
         require(hasStarted == false);
         // Make sure the timestamps all make sense
-        require(preSale.end &gt; preSale.start);
-        require(sale.end &gt; sale.start);
-        require(sale.start &gt; preSale.end);
-        require(distributionTime &gt; sale.end);
+        require(preSale.end > preSale.start);
+        require(sale.end > sale.start);
+        require(sale.start > preSale.end);
+        require(distributionTime > sale.end);
 
         // Make sure the owner actually controls all the tokens for sales
         require(tokenWallet.balanceOf(address(this)) == TOTAL_TOKENS_TO_DISTRIBUTE);
@@ -294,7 +294,7 @@ contract TRLCoinSale is ApproveAndCallFallBack {
 
     function preSaleFinishedProcess( uint timeOfRequest) private returns(bool) {
         // if we have Sales event and tokens of presale is not 0 move them to sales
-        require(timeOfRequest &gt;= sale.start &amp;&amp; timeOfRequest &lt;= sale.end);
+        require(timeOfRequest >= sale.start && timeOfRequest <= sale.end);
         if (preSale.tokens != 0) {
             uint savePreSaleTomens = preSale.tokens;
             preSale.tokens = 0;
@@ -311,13 +311,13 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         bonus = 0;
                  
         // checking what period are we
-        if (timeOfRequest &lt;= preSale.end) {
+        if (timeOfRequest <= preSale.end) {
             // Return the amount of tokens that can be purchased
             // And the amount of wei that would be left over
             tokenAmount = weiContribution / preSale.priceInWei;
             weiRemainder = weiContribution % preSale.priceInWei;
             // if presale - checking bonuses
-            if (timeOfRequest &lt; largeBonusStopTime) {
+            if (timeOfRequest < largeBonusStopTime) {
                 bonus = ( tokenAmount * largeBonus ) / 100;
             } else {
                 bonus = ( tokenAmount * smallBonus ) / 100;
@@ -334,15 +334,15 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     }
     
     function()public payable {
-        // Cannot contribute if the sale hasn&#39;t started
+        // Cannot contribute if the sale hasn't started
         require(hasStarted == true);
         // Cannot contribute if sale is not in this time range
-        require((block.timestamp &gt;= preSale.start &amp;&amp; block.timestamp &lt;= preSale.end)
-            || (block.timestamp &gt;= sale.start &amp;&amp; block.timestamp &lt;= sale.end)
+        require((block.timestamp >= preSale.start && block.timestamp <= preSale.end)
+            || (block.timestamp >= sale.start && block.timestamp <= sale.end)
         ); 
 
         // Cannot contribute if amount of money send is les then 0.1 ETH
-        require(msg.value &gt;= 100 finney);
+        require(msg.value >= 100 finney);
         
         uint timeOfRequest;
         uint tokenAmount;
@@ -352,22 +352,22 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         (timeOfRequest, tokenAmount, weiRemainder, bonus) = getTokensForContribution(msg.value);
 
         // Make sure there are enough tokens left to buy
-        require(tokensRemainingForSale &gt;= tokenAmount + bonus);
+        require(tokensRemainingForSale >= tokenAmount + bonus);
         
         // Need to contribute enough for at least 1 token
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
         
         // Sanity check: make sure the remainder is less or equal to what was sent to us
-        require(weiRemainder &lt;= msg.value);
+        require(weiRemainder <= msg.value);
 
         // Check whether in presale or sale
-        if (timeOfRequest &lt;= preSale.end) {
-            require(tokenAmount &lt;= preSale.tokens);
-            require(bonus &lt;= sale.tokens);
+        if (timeOfRequest <= preSale.end) {
+            require(tokenAmount <= preSale.tokens);
+            require(bonus <= sale.tokens);
             preSale.tokens -= tokenAmount;
             sale.tokens -= bonus;
         } else {
-            require(tokenAmount &lt;= sale.tokens);
+            require(tokenAmount <= sale.tokens);
             // there should be no bonus available after presale
             require(bonus == 0); 
             sale.tokens -= tokenAmount;
@@ -395,7 +395,7 @@ contract TRLCoinSale is ApproveAndCallFallBack {
         // Only the owner can do this
         require(msg.sender == owner);
         // The crowsale must be over to perform this operation
-        require(block.timestamp &gt; sale.end);
+        require(block.timestamp > sale.end);
         // Get the remaining tokens owned by the crowdsale
         uint tokenToSend = tokensRemainingForSale;
         // Set available tokens to Zero
@@ -410,12 +410,12 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     }
 
     // Allow the owner to withdraw all ether from the contract after the crowdsale is over.
-    // We don&#39;t need this function( we transfer ether immediately to owner - just in case
+    // We don't need this function( we transfer ether immediately to owner - just in case
     function withdrawEtherRemaining() public returns (bool) {
         // Only the owner can do this
         require(msg.sender == owner);
         // The crowsale must be over to perform this operation
-        require(block.timestamp &gt; sale.end);
+        require(block.timestamp > sale.end);
 
         // Transfer them all to the owner
         owner.transfer(this.balance);
@@ -424,13 +424,13 @@ contract TRLCoinSale is ApproveAndCallFallBack {
 
     // this function is intentionally internal because we do not check conditions here
     function transferTokensToContributor(uint idx) private returns (bool) {
-        if (payments[paymentAddresses[idx]].totalReceiveTokens &gt; 0) {
+        if (payments[paymentAddresses[idx]].totalReceiveTokens > 0) {
             // this is for race conditions               
             uint tokenToSend = payments[paymentAddresses[idx]].totalReceiveTokens;
             payments[paymentAddresses[idx]].totalReceiveTokens = 0;
             
             //decrement awarded token
-            require(tokensAwardedForSale &gt;= tokenToSend);
+            require(tokensAwardedForSale >= tokenToSend);
             tokensAwardedForSale -= tokenToSend;
             // Transfer them all to the owner
             bool result = tokenWallet.transfer(paymentAddresses[idx], tokenToSend);
@@ -451,8 +451,8 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     function distributeTokensToContributorByIndex( uint indexVal) public returns (bool) {
         // this is regular check for this function
         require(msg.sender == owner);
-        require(block.timestamp &gt;= distributionTime);
-        require(indexVal &lt; paymentAddresses.length);
+        require(block.timestamp >= distributionTime);
+        require(indexVal < paymentAddresses.length);
         
         transferTokensToContributor(indexVal);                    
         return true;        
@@ -461,11 +461,11 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     function distributeTokensToContributor( uint startIndex, uint numberOfContributors )public returns (bool) {
         // this is regular check for this function
         require(msg.sender == owner);
-        require(block.timestamp &gt;= distributionTime);
-        require(startIndex &lt; paymentAddresses.length);
+        require(block.timestamp >= distributionTime);
+        require(startIndex < paymentAddresses.length);
         
-        uint len = paymentAddresses.length &lt; startIndex + numberOfContributors? paymentAddresses.length : startIndex + numberOfContributors;
-        for (uint i = startIndex; i &lt; len; i++) {
+        uint len = paymentAddresses.length < startIndex + numberOfContributors? paymentAddresses.length : startIndex + numberOfContributors;
+        for (uint i = startIndex; i < len; i++) {
             transferTokensToContributor(i);                    
         }
         return true;        
@@ -474,9 +474,9 @@ contract TRLCoinSale is ApproveAndCallFallBack {
     function distributeAllTokensToContributor( )public returns (bool) {
         // this is regular check for this function
         require(msg.sender == owner);
-        require(block.timestamp &gt;= distributionTime);
+        require(block.timestamp >= distributionTime);
         
-        for (uint i = 0; i &lt; paymentAddresses.length; i++) {
+        for (uint i = 0; i < paymentAddresses.length; i++) {
             transferTokensToContributor(i); 
         }
         return true;        

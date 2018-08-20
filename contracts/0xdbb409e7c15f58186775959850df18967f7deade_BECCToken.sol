@@ -36,13 +36,13 @@ library SafeMath {
   }
 
   function sub(uint _a, uint _b) internal pure returns (uint) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
   function add(uint _a, uint _b) internal pure returns (uint c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -125,8 +125,8 @@ contract BECCToken is ERC20, Owned {
     uint private _allocated = 0;
     uint private _startTime = 1534233600 + 180 days;    //release start time:2018-08-15 00:00:00(UTC) + 180 days
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ************************************************************************
     // Modifier to make a function callable only when the contract is not paused.
@@ -148,8 +148,8 @@ contract BECCToken is ERC20, Owned {
     // Constructor
     // ************************************************************************
     constructor() public {
-        symbol = &quot;BECC&quot;;
-        name = &quot;Beechain Exchange Cross-chain Coin&quot;;
+        symbol = "BECC";
+        name = "Beechain Exchange Cross-chain Coin";
         decimals = 18;
         _totalSupply = 500000000 * 10**uint(decimals);
         _initialRelease = _totalSupply * 7 / 10;
@@ -173,12 +173,12 @@ contract BECCToken is ERC20, Owned {
     }
 
     // ************************************************************************
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ************************************************************************
     function transfer(address to, uint tokens) public whenNotPaused returns (bool success) {
-        require(address(0) != to &amp;&amp; tokens &lt;= balances[msg.sender] &amp;&amp; 0 &lt;= tokens);
+        require(address(0) != to && tokens <= balances[msg.sender] && 0 <= tokens);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender, to, tokens);
@@ -187,10 +187,10 @@ contract BECCToken is ERC20, Owned {
 
     // ************************************************************************
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ************************************************************************
     function approve(address spender, uint tokens) public whenNotPaused returns (bool success) {
-        require(address(0) != spender &amp;&amp; 0 &lt;= tokens);
+        require(address(0) != spender && 0 <= tokens);
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
         return true;
@@ -207,7 +207,7 @@ contract BECCToken is ERC20, Owned {
     // - 0 value transfers are allowed
     // ************************************************************************
     function transferFrom(address from, address to, uint tokens) public whenNotPaused returns (bool success) {
-        require(address(0) != to &amp;&amp; tokens &lt;= balances[from] &amp;&amp; tokens &lt;= allowed[from][msg.sender] &amp;&amp; 0 &lt;= tokens);
+        require(address(0) != to && tokens <= balances[from] && tokens <= allowed[from][msg.sender] && 0 <= tokens);
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -218,7 +218,7 @@ contract BECCToken is ERC20, Owned {
 
     // ************************************************************************
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ************************************************************************
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -226,7 +226,7 @@ contract BECCToken is ERC20, Owned {
 
     // ************************************************************************
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ************************************************************************
     function approveAndCall(address spender, uint tokens, bytes data) public whenNotPaused returns (bool success) {
@@ -237,7 +237,7 @@ contract BECCToken is ERC20, Owned {
     }
 
     // ************************************************************************
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ************************************************************************
     function () public payable {
         revert();
@@ -291,10 +291,10 @@ contract BECCToken is ERC20, Owned {
     // calculate released Tokens by the owner
     // ************************************************************************
     function calculateReleased() public onlyOwner returns (uint tokens) {
-        require(now &gt; _startTime);
+        require(now > _startTime);
         uint _monthDiff = (now.sub(_startTime)).div(30 days);
 
-        if (_monthDiff &gt;= 10 ) {
+        if (_monthDiff >= 10 ) {
             _released = _locked;
         } else {
             _released = _monthDiff.mul(_locked.div(10));
@@ -307,7 +307,7 @@ contract BECCToken is ERC20, Owned {
     // called by the owner to alloc the released tokens
     // ************************************************************************     
     function allocateTokens(address to, uint tokens) public onlyOwner returns (bool success){
-        require(address(0) != to &amp;&amp; 0 &lt;= tokens &amp;&amp; tokens &lt;= _released.sub(_allocated));
+        require(address(0) != to && 0 <= tokens && tokens <= _released.sub(_allocated));
         balances[to] = balances[to].add(tokens);
         _allocated = _allocated.add(tokens);
         emit AllocateTokens(to, tokens);

@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 // TOKENMOM Token(TM) Smart contract V.10
 // 토큰맘 탈중앙화거래소 토큰 스마트 컨트랙트 버전 1.0
 // Exchange URL : https://tokenmom.com
-// Ethereum based Decentralized Exchange(DEX) &amp; CEX Smart Contract V1.0
+// Ethereum based Decentralized Exchange(DEX) & CEX Smart Contract V1.0
 // Trading FEE  : 0.00% Event (Maker and Taker)
 // Symbol       : TM
 // Name         : TOKENMOM Token
@@ -53,19 +53,19 @@ contract Ownable {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -81,20 +81,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,7 +104,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -125,7 +125,7 @@ contract ReentrancyGuard {
 contract BasicToken is ERC20Basic, ReentrancyGuard  {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic, ReentrancyGuard  {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -192,12 +192,12 @@ library SafeERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -224,7 +224,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -271,7 +271,7 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -321,7 +321,7 @@ contract TokenTimelock {
 
   constructor(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime &gt; block.timestamp);
+    require(_releaseTime > block.timestamp);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -332,10 +332,10 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= releaseTime);
+    require(block.timestamp >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -357,8 +357,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
 
   constructor(
@@ -371,7 +371,7 @@ contract TokenVesting is Ownable {
     public
   {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -383,7 +383,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -416,9 +416,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (block.timestamp &lt; cliff) {
+    if (block.timestamp < cliff) {
       return 0;
-    } else if (block.timestamp &gt;= start.add(duration) || revoked[token]) {
+    } else if (block.timestamp >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(block.timestamp.sub(start)).div(duration);
@@ -434,7 +434,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken  {
    * @param _value uint256 The amount of token to be burned
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
     // this function needs to emit an event with the updated approval.
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -444,11 +444,11 @@ contract StandardBurnableToken is BurnableToken, StandardToken  {
 
 contract TMToken is StandardBurnableToken, MintableToken, Pausable {
 
-  string public constant name = &quot;Tokenmom&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;TM&quot;; // solium-disable-line uppercase
+  string public constant name = "Tokenmom"; // solium-disable-line uppercase
+  string public constant symbol = "TM"; // solium-disable-line uppercase
   uint8 public constant decimals = 8;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping(address => uint256)) allowed;
   event Burn(address indexed from, uint256 value);
   event Pause(address indexed from, uint256 value);
   event Mint(address indexed to, uint256 amount);

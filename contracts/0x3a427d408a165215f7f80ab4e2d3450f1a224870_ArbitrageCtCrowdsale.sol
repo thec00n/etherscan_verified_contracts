@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -135,9 +135,9 @@ contract ArbitrageCtCrowdsale is Owned {
     }
 
     function doPurchase() payable {
-        require(now &gt;= startICO &amp;&amp; now &lt; endICO);
+        require(now >= startICO && now < endICO);
 
-        require(msg.value &gt;= 10000000000000000); // &gt; 0.01 ETH
+        require(msg.value >= 10000000000000000); // > 0.01 ETH
         
         uint sum = msg.value;
         
@@ -147,31 +147,31 @@ contract ArbitrageCtCrowdsale is Owned {
 
         
         //Bonus
-        if(sum &gt;= 100 * 1000000000000000000){
+        if(sum >= 100 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(110).div(100);
-        } else if(sum &gt;= 50 * 1000000000000000000){
+        } else if(sum >= 50 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(109).div(100);
-        } else if(sum &gt;= 30 * 1000000000000000000){
+        } else if(sum >= 30 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(108).div(100);
-        } else if(sum &gt;= 20 * 1000000000000000000){
+        } else if(sum >= 20 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(107).div(100);
-        } else if(sum &gt;= 10 * 1000000000000000000){
+        } else if(sum >= 10 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(106).div(100);
-        } else if(sum &gt;= 7 * 1000000000000000000){
+        } else if(sum >= 7 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(105).div(100);
-        } else if(sum &gt;= 5 * 1000000000000000000){
+        } else if(sum >= 5 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(104).div(100);
-        } else if(sum &gt;= 3 * 1000000000000000000){
+        } else if(sum >= 3 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(103).div(100);
-        } else if(sum &gt;= 2 * 1000000000000000000){
+        } else if(sum >= 2 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(102).div(100);
-        } else if(sum &gt;= 1 * 1000000000000000000){
+        } else if(sum >= 1 * 1000000000000000000){
            tokensAmount = tokensAmount.mul(101).div(100);
-        } else if(sum &gt;=  500000000000000000){
+        } else if(sum >=  500000000000000000){
            tokensAmount = tokensAmount.mul(1005).div(1000);
         }
 
-        require(tokenBalance() &gt; tokensAmount);
+        require(tokenBalance() > tokensAmount);
         
         require(token.transfer(msg.sender, tokensAmount));
         multisig.transfer(msg.value);

@@ -11,12 +11,12 @@ contract Escrow {
     }
     
     function finalize() {
-        if (msg.sender != buyer &amp;&amp; msg.sender != arbiter) throw;
+        if (msg.sender != buyer && msg.sender != arbiter) throw;
         seller.send(this.balance);
     }
     
     function refund() {
-        if (msg.sender != seller &amp;&amp; msg.sender != arbiter) throw;
+        if (msg.sender != seller && msg.sender != arbiter) throw;
         buyer.send(this.balance);        
     }
 }

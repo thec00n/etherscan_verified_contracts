@@ -24,7 +24,7 @@ contract SPARCPresale {
     }
     
     function withdrawEther(uint256 amount) onlyOwner {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         
         if(!beneficiary.send(this.balance)){
             throw;
@@ -51,9 +51,9 @@ contract SPARCPresale {
     //   - SPARCs are for the purpose of reserving future network power.
     function () payable {
         assert(funding);
-        assert(etherRaised &lt; maxEther);
+        assert(etherRaised < maxEther);
         require(msg.value != 0);
-        require(etherRaised + msg.value &lt;= maxEther);
+        require(etherRaised + msg.value <= maxEther);
         
         etherRaised  += msg.value;
         

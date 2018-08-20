@@ -1,5 +1,5 @@
-//params: 100,&quot;MJ comeback&quot;, 1603152000, 0, &quot;21/10/2020&quot;, &quot;MGM grand&quot;, &quot;MJC&quot;, 100000000, 10
-// &quot;0x000000000000000000000000000000000000000000000000016a6075a7170002&quot;, 27, &quot;0xE26D930533CF5E36051C576E1988D096727F28A4AB638DBE7729BCC067BD06C8&quot;, &quot;0x76EBAA64A541D1DE054F4B63B586E7FEB485C1B3E85EA463F873CA69307EEEAA&quot;
+//params: 100,"MJ comeback", 1603152000, 0, "21/10/2020", "MGM grand", "MJC", 100000000, 10
+// "0x000000000000000000000000000000000000000000000000016a6075a7170002", 27, "0xE26D930533CF5E36051C576E1988D096727F28A4AB638DBE7729BCC067BD06C8", "0x76EBAA64A541D1DE054F4B63B586E7FEB485C1B3E85EA463F873CA69307EEEAA"
 pragma solidity ^0.4.17;
 
 contract ERC20
@@ -19,7 +19,7 @@ contract TicketPro is ERC20
     //erc20 wiki: https://theethereum.wiki/w/index.php/ERC20_Token_Standard
     //maybe allow tickets to be purchased through contract??
     uint totalTickets;
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     uint expiryTimeStamp;
     address admin;
     uint transferFee;
@@ -39,7 +39,7 @@ contract TicketPro is ERC20
     modifier eventNotExpired()
     {
         //not perfect but probably good enough
-        if(block.timestamp &gt; expiryTimeStamp)
+        if(block.timestamp > expiryTimeStamp)
         {
             revert();
         }
@@ -99,14 +99,14 @@ contract TicketPro is ERC20
         return limitOfStartTickets;
     }
 
-    //buyer pays all the fees, seller doesn&#39;t even need to have ether to do trade
+    //buyer pays all the fees, seller doesn't even need to have ether to do trade
     function deliveryVSpayment(bytes32 offer, uint8 v, bytes32 r,
         bytes32 s) public payable returns(bool)
     {
 	    var (seller, quantity, price, agreementIsValid) = recover(offer, v, r, s);
         //if the agreement hash matches then the trade can take place
         uint cost = price * quantity;
-        if(agreementIsValid &amp;&amp; msg.value == cost)
+        if(agreementIsValid && msg.value == cost)
         {
             //send over ether and tokens
             balances[msg.sender] += uint(quantity);
@@ -124,7 +124,7 @@ contract TicketPro is ERC20
     // to test: suppose the offer is to sell 2 tickets at 0.102ETH
     // which is 0x16A6075A7170000 WEI
     // the parameters are:
-    // &quot;0x000000000000000000000000000000000000000000000000016a6075a7170002&quot;, 27, &quot;0x0071d8bc2f3c9b8102bc03660d525ab872070eb036cd75f0c503bdba8a9406d8&quot;,&quot;0xb1649086e9df334e9831dc7d57cb61808f7c07d1422ef150a43f9df92c48665c&quot;
+    // "0x000000000000000000000000000000000000000000000000016a6075a7170002", 27, "0x0071d8bc2f3c9b8102bc03660d525ab872070eb036cd75f0c503bdba8a9406d8","0xb1649086e9df334e9831dc7d57cb61808f7c07d1422ef150a43f9df92c48665c"
     // I generated the test parameter with this:
 /*
 #!/usr/bin/python3
@@ -134,19 +134,19 @@ import ecdsa, binascii
 secexp = 0xc64031ec35f5fc700264f6bb2d6342f63e020673f79ed70dbbd56fb8d46351ed
 sk = ecdsa.SigningKey.from_secret_exponent(secexp, curve=ecdsa.SECP256k1)
 # 1 tickets at the price of 2 wei
-offer = b&#39;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x6A\x60\x75\xA7\x17\x00\x02&#39;
+offer = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x6A\x60\x75\xA7\x17\x00\x02'
 r, s = sk.sign_digest(offer, sigencode=ecdsa.util.sigencode_strings)
 ## 27 can be any of 27, 28, 29, 30. Use proper algorithm in production
-print(&#39;&quot;0x{}&quot;, {}, &quot;0x{}&quot;,&quot;0x{}&quot;&#39;.format(
-    binascii.hexlify(offer).decode(&quot;ascii&quot;), 27,
-    binascii.hexlify(r).decode(&quot;ascii&quot;), binascii.hexlify(s).decode(&quot;ascii&quot;)))
+print('"0x{}", {}, "0x{}","0x{}"'.format(
+    binascii.hexlify(offer).decode("ascii"), 27,
+    binascii.hexlify(r).decode("ascii"), binascii.hexlify(s).decode("ascii")))
 */
     function recover(bytes32 offer, uint8 v, bytes32 r, bytes32 s) public view
         returns (address seller, uint16 quantity, uint256 price, bool agreementIsValid) {
-        quantity = uint16(offer &amp; 0xffff);
-        price = uint256(offer &gt;&gt; 16 &lt;&lt; 16);
+        quantity = uint16(offer & 0xffff);
+        price = uint256(offer >> 16 << 16);
         seller = ecrecover(offer, v, r, s);
-        agreementIsValid = balances[seller] &gt;= quantity;
+        agreementIsValid = balances[seller] >= quantity;
     }
 
     function totalSupply() public constant returns(uint)
@@ -176,7 +176,7 @@ print(&#39;&quot;0x{}&quot;, {}, &quot;0x{}&quot;,&quot;0x{}&quot;&#39;.format(
 
     function isContractExpired() public view returns (bool)
     {
-        if(block.timestamp &gt; expiryTimeStamp)
+        if(block.timestamp > expiryTimeStamp)
         {
             return true;
         }
@@ -191,7 +191,7 @@ print(&#39;&quot;0x{}&quot;, {}, &quot;0x{}&quot;,&quot;0x{}&quot;&#39;.format(
     //transfers can be free but at the users own risk
     function transfer(address _to, uint _value) public returns(bool)
     {
-        if(balances[msg.sender] &lt; _value) revert();
+        if(balances[msg.sender] < _value) revert();
         balances[_to] += _value;
         balances[msg.sender] -= _value;
         numOfTransfers++;
@@ -202,7 +202,7 @@ print(&#39;&quot;0x{}&quot;, {}, &quot;0x{}&quot;,&quot;0x{}&quot;&#39;.format(
     function transferFrom(address _from, address _to, uint _value)
         adminOnly public returns (bool)
     {
-        if(balances[_from] &gt;= _value)
+        if(balances[_from] >= _value)
         {
             balances[_from] -= _value;
             balances[_to] += _value;

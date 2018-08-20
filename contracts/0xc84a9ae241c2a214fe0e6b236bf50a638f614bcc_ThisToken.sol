@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,7 +127,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -173,7 +173,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -184,8 +184,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -261,7 +261,7 @@ contract StandardToken is ERC20, BasicToken {
 
 contract ParticipantToken is StandardToken, Pausable {
   uint16 public totalParticipants = 0;
-  mapping(address =&gt; bool) internal participants;
+  mapping(address => bool) internal participants;
 
   modifier onlyParticipant() {
     require(isParticipant(msg.sender));
@@ -312,8 +312,8 @@ contract DistributionToken is ParticipantToken {
   uint256 public tokenDistributionEndTime;
   address public tokenDistributionPool;
   
-  mapping(address =&gt; uint256) private unclaimedTokens;
-  mapping(address =&gt; uint256) private lastUnclaimedTokenUpdates;
+  mapping(address => uint256) private unclaimedTokens;
+  mapping(address => uint256) private lastUnclaimedTokenUpdates;
   
   event TokenDistribution(address participant, uint256 value);
   
@@ -322,21 +322,21 @@ contract DistributionToken is ParticipantToken {
   }
   
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require((_to != tokenDistributionPool &amp;&amp; msg.sender != tokenDistributionPool) || now &gt;= tokenDistributionEndTime);
+    require((_to != tokenDistributionPool && msg.sender != tokenDistributionPool) || now >= tokenDistributionEndTime);
     
     super.transfer(_to, _value);
   }
   
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require((_to != tokenDistributionPool &amp;&amp; _from != tokenDistributionPool) || now &gt;= tokenDistributionEndTime);
+    require((_to != tokenDistributionPool && _from != tokenDistributionPool) || now >= tokenDistributionEndTime);
     
     super.transferFrom(_from, _to, _value);
   }
   
   function claimTokens() public onlyParticipant whenNotPaused returns (bool) {
-    require(tokenDistributionEndTime &gt; 0 &amp;&amp; now &lt; tokenDistributionEndTime);
+    require(tokenDistributionEndTime > 0 && now < tokenDistributionEndTime);
     require(msg.sender != tokenDistributionPool);
-    require(lastUnclaimedTokenUpdates[msg.sender] &lt; tokenDistributionStartTime);
+    require(lastUnclaimedTokenUpdates[msg.sender] < tokenDistributionStartTime);
     
     unclaimedTokens[msg.sender] = calcClaimableTokens();
     lastUnclaimedTokenUpdates[msg.sender] = now;
@@ -351,7 +351,7 @@ contract DistributionToken is ParticipantToken {
   }
   
   function claimableTokens() public view onlyParticipant returns (uint256) {
-    if (lastUnclaimedTokenUpdates[msg.sender] &gt;= tokenDistributionStartTime) {
+    if (lastUnclaimedTokenUpdates[msg.sender] >= tokenDistributionStartTime) {
       return unclaimedTokens[msg.sender];
     }
     
@@ -359,7 +359,7 @@ contract DistributionToken is ParticipantToken {
   }
   
   function setTokenDistributionPool(address _tokenDistributionPool) public onlyOwner whenNotPaused returns (bool) {
-    require(tokenDistributionEndTime &lt; now);
+    require(tokenDistributionEndTime < now);
     require(isParticipant(_tokenDistributionPool));
     
     tokenDistributionPool = _tokenDistributionPool;
@@ -367,8 +367,8 @@ contract DistributionToken is ParticipantToken {
   }
   
   function startTokenDistribution() public onlyOwner whenNotPaused returns(bool) {
-    require(tokenDistributionEndTime &lt; now);
-    require(balanceOf(tokenDistributionPool) &gt; 0);
+    require(tokenDistributionEndTime < now);
+    require(balanceOf(tokenDistributionPool) > 0);
     
     currentDistributionAmount = balanceOf(tokenDistributionPool);
     tokenDistributionEndTime = now.add(tokenDistributionDuration);
@@ -388,10 +388,10 @@ contract DividendToken is DistributionToken {
   uint256 public dividendDistributionEndTime;
   address public dividendDistributionPool;
   
-  mapping(address =&gt; uint256) private unclaimedDividends;
-  mapping(address =&gt; uint256) private lastUnclaimedDividendUpdates;
-  mapping(address =&gt; uint256) private unclaimedOCDividends;
-  mapping(address =&gt; uint256) private lastUnclaimedOCDividendUpdates;
+  mapping(address => uint256) private unclaimedDividends;
+  mapping(address => uint256) private lastUnclaimedDividendUpdates;
+  mapping(address => uint256) private unclaimedOCDividends;
+  mapping(address => uint256) private lastUnclaimedOCDividendUpdates;
   
   event DividendDistribution(address participant, uint256 value);
   event OCDividendClaim(address participant, uint256 value);
@@ -402,19 +402,19 @@ contract DividendToken is DistributionToken {
   }
   
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require((_to != dividendDistributionPool &amp;&amp; msg.sender != dividendDistributionPool) || now &gt;= dividendDistributionEndTime);
+    require((_to != dividendDistributionPool && msg.sender != dividendDistributionPool) || now >= dividendDistributionEndTime);
     
     super.transfer(_to, _value);
   }
   
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require((_to != dividendDistributionPool &amp;&amp; _from != dividendDistributionPool) || now &gt;= dividendDistributionEndTime);
+    require((_to != dividendDistributionPool && _from != dividendDistributionPool) || now >= dividendDistributionEndTime);
     
     super.transferFrom(_from, _to, _value);
   }
   
   function claimDividend() public onlyParticipant whenNotPaused returns (bool) {
-    require(dividendDistributionEndTime &gt; 0 &amp;&amp; now &lt; dividendDistributionEndTime);
+    require(dividendDistributionEndTime > 0 && now < dividendDistributionEndTime);
     require(msg.sender != dividendDistributionPool);
     
     updateUnclaimedDividend();
@@ -429,7 +429,7 @@ contract DividendToken is DistributionToken {
   }
   
   function claimableDividend() public view onlyParticipant returns (uint256) {
-    if (lastUnclaimedDividendUpdates[msg.sender] &gt;= dividendDistributionStartTime) {
+    if (lastUnclaimedDividendUpdates[msg.sender] >= dividendDistributionStartTime) {
       return unclaimedDividends[msg.sender];
     }
     
@@ -437,7 +437,7 @@ contract DividendToken is DistributionToken {
   }
   
   function claimOCDividend() public onlyParticipant whenNotPaused returns (bool) {
-    require(dividendDistributionEndTime &gt; 0 &amp;&amp; now &lt; dividendDistributionEndTime);
+    require(dividendDistributionEndTime > 0 && now < dividendDistributionEndTime);
     require(msg.sender != dividendDistributionPool);
     
     updateUnclaimedDividend();
@@ -459,11 +459,11 @@ contract DividendToken is DistributionToken {
       return 0;
     }
     
-    if (dividendDistributionEndTime &lt;= 0 || now &gt;= dividendDistributionEndTime) {
+    if (dividendDistributionEndTime <= 0 || now >= dividendDistributionEndTime) {
       return 0;
     }
     
-    if (lastUnclaimedOCDividendUpdates[_address] &lt; dividendDistributionStartTime) {
+    if (lastUnclaimedOCDividendUpdates[_address] < dividendDistributionStartTime) {
       return 0;
     }
     
@@ -472,8 +472,8 @@ contract DividendToken is DistributionToken {
   
   function payoutOCDividend(address _address) public onlyOwner whenNotPaused returns (bool) {
     require(isParticipant(_address));
-    require(dividendDistributionEndTime &gt; 0 &amp;&amp; now &lt; dividendDistributionEndTime);
-    require(unclaimedOCDividends[_address] &gt; 0);
+    require(dividendDistributionEndTime > 0 && now < dividendDistributionEndTime);
+    require(unclaimedOCDividends[_address] > 0);
     
     uint256 value = unclaimedOCDividends[_address];
     unclaimedOCDividends[_address] = 0;
@@ -482,7 +482,7 @@ contract DividendToken is DistributionToken {
   }
   
   function setDividendDistributionPool(address _dividendDistributionPool) public onlyOwner whenNotPaused returns (bool) {
-    require(dividendDistributionEndTime &lt; now);
+    require(dividendDistributionEndTime < now);
     require(isParticipant(_dividendDistributionPool));
     
     dividendDistributionPool = _dividendDistributionPool;
@@ -490,8 +490,8 @@ contract DividendToken is DistributionToken {
   }
   
   function startDividendDistribution() public onlyOwner whenNotPaused returns(bool) {
-    require(dividendDistributionEndTime &lt; now);
-    require(balanceOf(dividendDistributionPool) &gt; 0);
+    require(dividendDistributionEndTime < now);
+    require(balanceOf(dividendDistributionPool) > 0);
     
     currentDividendAmount = balanceOf(dividendDistributionPool);
     dividendDistributionEndTime = now.add(dividendDistributionDuration);
@@ -504,7 +504,7 @@ contract DividendToken is DistributionToken {
   }
   
   function updateUnclaimedDividend() private whenNotPaused {
-    require(lastUnclaimedDividendUpdates[msg.sender] &lt; dividendDistributionStartTime);
+    require(lastUnclaimedDividendUpdates[msg.sender] < dividendDistributionStartTime);
     
     unclaimedDividends[msg.sender] = calcDividend();
     lastUnclaimedDividendUpdates[msg.sender] = now;
@@ -512,8 +512,8 @@ contract DividendToken is DistributionToken {
 }
 
 contract ThisToken is DividendToken {
-  string public name = &quot;ThisToken&quot;;
-  string public symbol = &quot;THIS&quot;;
+  string public name = "ThisToken";
+  string public symbol = "THIS";
   uint8 public decimals = 18;
 
   function setTotalSupply(uint256 _totalSupply) public onlyOwner whenNotPaused {
@@ -521,7 +521,7 @@ contract ThisToken is DividendToken {
 
     uint256 diff;
 
-    if (_totalSupply &lt; totalSupply_) {
+    if (_totalSupply < totalSupply_) {
       diff = totalSupply_.sub(_totalSupply);
       balances[owner] = balances[owner].sub(diff);
     } else {

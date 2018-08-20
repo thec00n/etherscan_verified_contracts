@@ -4,15 +4,15 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenERC20 {
 /*********Token的属性说明************/
-    string public name = &#39;data base token&#39;;
-    string public symbol = &#39;DBT&#39;;
+    string public name = 'data base token';
+    string public symbol = 'DBT';
     uint8 public decimals = 8;  // 18 是建议的默认值
     uint256 public totalSupply; // 发行量
 
-    // 建立映射 地址对应了 uint&#39; 便是他的余额
-    mapping (address =&gt; uint256) public balanceOf;   
+    // 建立映射 地址对应了 uint' 便是他的余额
+    mapping (address => uint256) public balanceOf;   
     // 地址对应余额
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
      // 事件，用来通知客户端Token交易发生
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -34,8 +34,8 @@ contract TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
 
         require(_to != 0x0);    // 不是零地址
-        require(balanceOf[_from] &gt;= _value);        // 有足够的余额来发送
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
+        require(balanceOf[_from] >= _value);        // 有足够的余额来发送
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
 
         uint previousBalances = balanceOf[_from] + balanceOf[_to];  // 这个是为了校验, 避免过程出错, 总量不变对吧?
         balanceOf[_from] -= _value; //发钱 不多说
@@ -49,7 +49,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
+        require(_value <= allowance[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

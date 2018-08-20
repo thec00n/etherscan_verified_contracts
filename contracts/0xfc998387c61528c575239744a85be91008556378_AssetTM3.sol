@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 * @notice Temple3 TOKEN CONTRACT
 * Token for the construction for future Third Temple in Jerusalem
 * @dev ERC-20 Token Standar Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="22440c434c564d4c4b4d0c4349474e62454f434b4e0c414d4f">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="22440c434c564d4c4b4d0c4349474e62454f434b4e0c414d4f">[email protected]</span>
 */
 
 /**
@@ -13,13 +13,13 @@ pragma solidity ^0.4.16;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -51,8 +51,8 @@ contract ERC20TokenInterface {
 */
 contract ERC20Token is ERC20TokenInterface { //Standar definition of an ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
     uint256 public totalSupply;
     
     /**
@@ -71,7 +71,7 @@ contract ERC20Token is ERC20TokenInterface { //Standar definition of an ERC20Tok
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -87,7 +87,7 @@ contract ERC20Token is ERC20TokenInterface { //Standar definition of an ERC20Tok
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -131,10 +131,10 @@ contract ERC20Token is ERC20TokenInterface { //Standar definition of an ERC20Tok
 * @dev TM3 is an ERC20 Token
 */
 contract AssetTM3 is ERC20Token {
-    string public name = &#39;Temple3&#39;;
+    string public name = 'Temple3';
     uint256 public decimals = 18;
-    string public symbol = &#39;TM3&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'TM3';
+    string public version = '1';
     
     /**
     * @notice TM3 token contructor.

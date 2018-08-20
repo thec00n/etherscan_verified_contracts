@@ -35,7 +35,7 @@ contract NanoPyramid {
     
     function enter() {
         // Check if amount is too small
-        if (msg.value &lt; minAmount) {
+        if (msg.value < minAmount) {
             // Amount is too small, no need to think about refund
             collectedFees += msg.value;
             return;
@@ -43,9 +43,9 @@ contract NanoPyramid {
         
         // Check if amount is too high
         uint amount;
-        if (msg.value &gt; maxAmount) {
+        if (msg.value > maxAmount) {
             uint amountToRefund =  msg.value - maxAmount;
-            if (amountToRefund &gt;= minAmount) {
+            if (amountToRefund >= minAmount) {
             	if (!msg.sender.send(amountToRefund)) {
             	    throw;
             	}
@@ -67,7 +67,7 @@ contract NanoPyramid {
         collectedFees += (amount * fee) / 100;
         
         //Pays earlier participiants if balance sufficient
-        while (balance &gt; participants[payoutOrder].payout) {
+        while (balance > participants[payoutOrder].payout) {
             uint payoutToSend = participants[payoutOrder].payout;
             participants[payoutOrder].etherAddress.send(payoutToSend);
             balance -= payoutToSend;
@@ -75,7 +75,7 @@ contract NanoPyramid {
         }
         
         // Collect fees
-        if (collectedFees &gt;= minFeePayout) {
+        if (collectedFees >= minFeePayout) {
             if (!owner.send(collectedFees)) {
                 // Potentially sending money to a contract that
                 // has a fallback function.  So instead, try
@@ -101,7 +101,7 @@ contract NanoPyramid {
     function outstandingBalance() constant returns (uint amount) {
         uint payout = 0;
         uint idx;
-        for (idx = payoutOrder; idx &lt; participants.length; idx++) {
+        for (idx = payoutOrder; idx < participants.length; idx++) {
             payout += participants[idx].payout;
         }
         amount = payout - balance;

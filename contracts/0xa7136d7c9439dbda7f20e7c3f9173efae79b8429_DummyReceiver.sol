@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 // Dummy Receiver to satisfy Sales contract need for 3 receivers
 contract DummyReceiver {

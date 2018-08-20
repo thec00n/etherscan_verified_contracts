@@ -1,4 +1,4 @@
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -6,7 +6,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -19,7 +19,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -90,35 +90,35 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork() internal returns (bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed) &gt; 0) {//mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed) > 0) {//mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1) &gt; 0) {//ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1) > 0) {//ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e) &gt; 0) {//kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e) > 0) {//kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48) &gt; 0) {//rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48) > 0) {//rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475) &gt; 0) {//ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475) > 0) {//ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF) &gt; 0) {//ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF) > 0) {//ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA) &gt; 0) {//browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA) > 0) {//browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -147,63 +147,63 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
 
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
 
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
 
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
 
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
 
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
 
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
 
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
 
     function oraclize_query(string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
@@ -211,7 +211,7 @@ contract usingOraclize {
 
     function oraclize_query(uint timestamp, string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
@@ -219,7 +219,7 @@ contract usingOraclize {
 
     function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
@@ -227,7 +227,7 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
@@ -395,7 +395,7 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
@@ -403,7 +403,7 @@ contract usingOraclize {
 
     function oraclize_query(uint timestamp, string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice * 200000) return 0;
+        if (price > 1 ether + tx.gasprice * 200000) return 0;
         // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
@@ -411,7 +411,7 @@ contract usingOraclize {
 
     function oraclize_query(uint timestamp, string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
@@ -419,7 +419,7 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice * gaslimit) return 0;
+        if (price > 1 ether + tx.gasprice * gaslimit) return 0;
         // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
@@ -616,24 +616,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -646,8 +646,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i = 0; i &lt; bresult.length; i++) {
-            if ((bresult[i] &gt;= 48) &amp;&amp; (bresult[i] &lt;= 57)) {
+        for (uint i = 0; i < bresult.length; i++) {
+            if ((bresult[i] >= 48) && (bresult[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) break;
                     else _b--;
@@ -656,7 +656,7 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10 ** _b;
+        if (_b > 0) mint *= 10 ** _b;
         return mint;
     }
 
@@ -666,7 +666,7 @@ contract usingOraclize {
         // get correct cbor output length
         uint outputlen = 0;
         bytes[] memory elemArray = new bytes[](arrlen);
-        for (uint i = 0; i &lt; arrlen; i++) {
+        for (uint i = 0; i < arrlen; i++) {
             elemArray[i] = (bytes(arr[i]));
             outputlen += elemArray[i].length + (elemArray[i].length - 1) / 23 + 3;
             //+3 accounts for paired identifier types
@@ -676,20 +676,20 @@ contract usingOraclize {
         outputlen += byte(cborlen).length;
         bytes memory res = new bytes(outputlen);
 
-        while (byte(cborlen).length &gt; ctr) {
+        while (byte(cborlen).length > ctr) {
             res[ctr] = byte(cborlen)[ctr];
             ctr++;
         }
-        for (i = 0; i &lt; arrlen; i++) {
+        for (i = 0; i < arrlen; i++) {
             res[ctr] = 0x5F;
             ctr++;
-            for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                // if there&#39;s a bug with larger strings, this may be the culprit
+            for (uint x = 0; x < elemArray[i].length; x++) {
+                // if there's a bug with larger strings, this may be the culprit
                 if (x % 23 == 0) {
-                    uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                    uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                     elemcborlen += 0x40;
                     uint lctr = ctr;
-                    while (byte(elemcborlen).length &gt; ctr - lctr) {
+                    while (byte(elemcborlen).length > ctr - lctr) {
                         res[ctr] = byte(elemcborlen)[ctr - lctr];
                         ctr++;
                     }
@@ -709,7 +709,7 @@ contract usingOraclize {
         // get correct cbor output length
         uint outputlen = 0;
         bytes[] memory elemArray = new bytes[](arrlen);
-        for (uint i = 0; i &lt; arrlen; i++) {
+        for (uint i = 0; i < arrlen; i++) {
             elemArray[i] = (bytes(arr[i]));
             outputlen += elemArray[i].length + (elemArray[i].length - 1) / 23 + 3;
             //+3 accounts for paired identifier types
@@ -719,20 +719,20 @@ contract usingOraclize {
         outputlen += byte(cborlen).length;
         bytes memory res = new bytes(outputlen);
 
-        while (byte(cborlen).length &gt; ctr) {
+        while (byte(cborlen).length > ctr) {
             res[ctr] = byte(cborlen)[ctr];
             ctr++;
         }
-        for (i = 0; i &lt; arrlen; i++) {
+        for (i = 0; i < arrlen; i++) {
             res[ctr] = 0x5F;
             ctr++;
-            for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                // if there&#39;s a bug with larger strings, this may be the culprit
+            for (uint x = 0; x < elemArray[i].length; x++) {
+                // if there's a bug with larger strings, this may be the culprit
                 if (x % 23 == 0) {
-                    uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                    uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                     elemcborlen += 0x40;
                     uint lctr = ctr;
-                    while (byte(elemcborlen).length &gt; ctr - lctr) {
+                    while (byte(elemcborlen).length > ctr - lctr) {
                         res[ctr] = byte(elemcborlen)[ctr - lctr];
                         ctr++;
                     }
@@ -758,7 +758,7 @@ contract usingOraclize {
     }
 
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        require((_nbytes &gt; 0) &amp;&amp; (_nbytes &lt;= 32));
+        require((_nbytes > 0) && (_nbytes <= 32));
         bytes memory nbytes = new bytes(1);
         nbytes[0] = byte(_nbytes);
         bytes memory unonce = new bytes(32);
@@ -771,7 +771,7 @@ contract usingOraclize {
             mstore(add(sessionKeyHash, 0x20), sessionKeyHash_bytes32)
         }
         bytes[3] memory args = [unonce, nbytes, sessionKeyHash];
-        bytes32 queryId = oraclize_query(_delay, &quot;random&quot;, args, _customGasLimit);
+        bytes32 queryId = oraclize_query(_delay, "random", args, _customGasLimit);
         oraclize_randomDS_setCommitment(queryId, keccak256(bytes8(_delay), args[1], sha256(args[0]), args[2]));
         return queryId;
     }
@@ -780,8 +780,8 @@ contract usingOraclize {
         oraclize_randomDS_args[queryId] = commitment;
     }
 
-    mapping(bytes32 =&gt; bytes32) oraclize_randomDS_args;
-    mapping(bytes32 =&gt; bool) oraclize_randomDS_sessionKeysHashVerified;
+    mapping(bytes32 => bytes32) oraclize_randomDS_args;
+    mapping(bytes32 => bool) oraclize_randomDS_sessionKeysHashVerified;
 
     function verifySig(bytes32 tosignh, bytes dersig, bytes pubkey) internal returns (bool){
         bool sigok;
@@ -825,7 +825,7 @@ contract usingOraclize {
         tosign2[0] = byte(1);
         //role
         copyBytes(proof, sig2offset - 65, 65, tosign2, 1);
-        bytes memory CODEHASH = hex&quot;fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c&quot;;
+        bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1 + 65);
         sigok = verifySig(sha256(tosign2), sig2, appkey1_pubkey);
 
@@ -833,7 +833,7 @@ contract usingOraclize {
 
 
         // Step 7: verify the APPKEY1 provenance (must be signed by Ledger)
-        bytes memory LEDGERKEY = hex&quot;7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4&quot;;
+        bytes memory LEDGERKEY = hex"7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4";
 
         bytes memory tosign3 = new bytes(1 + 65);
         tosign3[0] = 0xFE;
@@ -848,8 +848,8 @@ contract usingOraclize {
     }
 
     modifier oraclize_randomDS_proofVerify(bytes32 _queryId, string _result, bytes _proof) {
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        require((_proof[0] == &quot;L&quot;) &amp;&amp; (_proof[1] == &quot;P&quot;) &amp;&amp; (_proof[2] == 1));
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        require((_proof[0] == "L") && (_proof[1] == "P") && (_proof[2] == 1));
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         require(proofVerified);
@@ -858,8 +858,8 @@ contract usingOraclize {
     }
 
     function oraclize_randomDS_proofVerify__returnCode(bytes32 _queryId, string _result, bytes _proof) internal returns (uint8){
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;) || (_proof[1] != &quot;P&quot;) || (_proof[2] != 1)) return 1;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L") || (_proof[1] != "P") || (_proof[2] != 1)) return 1;
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) return 2;
@@ -870,7 +870,7 @@ contract usingOraclize {
     function matchBytes32Prefix(bytes32 content, bytes prefix) internal pure returns (bool){
         bool match_ = true;
 
-        for (uint256 i = 0; i &lt; prefix.length; i++) {
+        for (uint256 i = 0; i < prefix.length; i++) {
             if (content[i] != prefix[i]) match_ = false;
         }
 
@@ -892,7 +892,7 @@ contract usingOraclize {
         copyBytes(proof, ledgerProofLength + (32 + 8 + 1 + 32), sig1.length, sig1, 0);
 
 
-        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if &#39;result&#39; is the prefix of sha256(sig1)
+        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if 'result' is the prefix of sha256(sig1)
         checkok = matchBytes32Prefix(sha256(sig1), result);
         if (checkok == false) return false;
 
@@ -918,7 +918,7 @@ contract usingOraclize {
         checkok = verifySig(sha256(tosign1), sig1, sessionPubkey);
         if (checkok == false) return false;
 
-        // verify if sessionPubkeyHash was verified already, if not.. let&#39;s do it!
+        // verify if sessionPubkeyHash was verified already, if not.. let's do it!
         if (oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] == false) {
             oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] = oraclize_randomDS_proofVerify__sessionKeyValidity(proof, sig2offset);
         }
@@ -932,14 +932,14 @@ contract usingOraclize {
         uint minLength = length + toOffset;
 
         // Buffer too small
-        require(to.length &gt;= minLength);
+        require(to.length >= minLength);
         // Should be a better way?
 
         // NOTE: the offset 32 is added to skip the `size` field of both bytes variables
         uint i = 32 + fromOffset;
         uint j = 32 + toOffset;
 
-        while (i &lt; (32 + fromOffset + length)) {
+        while (i < (32 + fromOffset + length)) {
             assembly {
                 let tmp := mload(add(from, i))
                 mstore(add(to, j), tmp)
@@ -952,7 +952,7 @@ contract usingOraclize {
     }
 
     // the following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         bool ret;
         address addr;
@@ -990,13 +990,13 @@ contract usingOraclize {
             s := mload(add(sig, 64))
 
         // Here we are loading the last 32 bytes. We exploit the fact that
-        // &#39;mload&#39; will pad with zeroes if we overread.
-        // There is no &#39;mload8&#39; to do this, but that would be nicer.
+        // 'mload' will pad with zeroes if we overread.
+        // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
         // Alternative solution:
-        // &#39;byte&#39; is not working due to the Solidity parser, so lets
-        // use the second best option, &#39;and&#39;
+        // 'byte' is not working due to the Solidity parser, so lets
+        // use the second best option, 'and'
         // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -1005,22 +1005,22 @@ contract usingOraclize {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
             v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
     }
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="75140714161d1b1c11351b1a01111a015b1b1001">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="75140714161d1b1c11351b1a01111a015b1b1001">[email protected]</a>>
  */
 
 pragma solidity ^0.4.14;
@@ -1033,7 +1033,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -1072,7 +1072,7 @@ library strings {
     }
     
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -1095,7 +1095,7 @@ library strings {
     }
 
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -1122,8 +1122,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -1143,7 +1143,7 @@ library strings {
                 bytes32 hash;
                 assembly {hash := sha3(needleptr, needlelen)}
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly {testHash := sha3(ptr, needlelen)}
                     if (hash == testHash)
@@ -1192,8 +1192,8 @@ contract CryptoLotto is usingOraclize {
     uint8 public constant ownerShareInPercent = 1;
     uint8 public constant numTurnsToRevolve = 10;
 
-    string constant oraclizedQuery = &quot;Sort[randomsample [range [1, 15], 7]], randomsample [range [0, 6], 1]&quot;;
-    string constant oraclizedQuerySource = &quot;WolframAlpha&quot;;
+    string constant oraclizedQuery = "Sort[randomsample [range [1, 15], 7]], randomsample [range [0, 6], 1]";
+    string constant oraclizedQuerySource = "WolframAlpha";
 
     bool public isLottoStarted = false;
     uint32 public turn = 0;
@@ -1206,7 +1206,7 @@ contract CryptoLotto is usingOraclize {
     uint256 public finishWhen;
     uint256[] bettings;
     uint256[] accNumBettings;
-    mapping(address =&gt; mapping(uint32 =&gt; uint64[])) tickets;
+    mapping(address => mapping(uint32 => uint64[])) tickets;
 
     uint256[] public raisedAmounts;
     uint256[] public untakenPrizeAmounts;
@@ -1257,7 +1257,7 @@ contract CryptoLotto is usingOraclize {
 
     // Emergency function to call only when the turn missed oraclized_query becaused of gas management failure and no chance to resume by itself.
     function resumeLotto() onlyOwner {
-        require(finishWhen &lt; now);
+        require(finishWhen < now);
         oracleCallbackId = oraclize_query(oraclizedQuerySource, oraclizedQuery, gasForOraclizedQuery);
     }
 
@@ -1268,7 +1268,7 @@ contract CryptoLotto is usingOraclize {
     function __callback(bytes32 myid, string result) onlyOracle {
         require(myid == oracleCallbackId);
         
-        if (turn &gt; 0)
+        if (turn > 0)
             _finishLotto();
         _setLottoNumbers(result);
         _startLotto();
@@ -1296,25 +1296,25 @@ contract CryptoLotto is usingOraclize {
         uint8[] memory _lottoNumbers = new uint8[](lottoLength);
         uint8 _bonusNumber;
         var slicedString = _strData.toSlice();
-        slicedString.beyond(&quot;{{&quot;.toSlice()).until(&quot;}&quot;.toSlice());
-        var _strLottoNumbers = slicedString.split(&#39;}, {&#39;.toSlice());
+        slicedString.beyond("{{".toSlice()).until("}".toSlice());
+        var _strLottoNumbers = slicedString.split('}, {'.toSlice());
 
         var _bonusNumberIndex = uint8(parseInt(slicedString.toString()));
         uint8 _lottoLowestNumber = lottoLowestNumber;
         uint8 _lottoHighestNumber = lottoHighestNumber;
         uint8 _nonce = 0;
 
-        for (uint8 _index = 0; _index &lt; lottoLength + 1; _index++) {
-            var splited = _strLottoNumbers.split(&#39;, &#39;.toSlice());
+        for (uint8 _index = 0; _index < lottoLength + 1; _index++) {
+            var splited = _strLottoNumbers.split(', '.toSlice());
             if (_index == _bonusNumberIndex) {
                 bonusNumber = uint8(parseInt(splited.toString()));
                 _nonce = 1;
                 continue;
             }
             _lottoNumbers[_index - _nonce] = uint8(parseInt(splited.toString()));
-            require(_lottoNumbers[_index - _nonce] &gt;= _lottoLowestNumber &amp;&amp; _lottoNumbers[_index - _nonce] &lt;= _lottoHighestNumber);
-            if (_index - _nonce &gt; 0)
-                require(_lottoNumbers[_index - _nonce - 1] &lt; _lottoNumbers[_index - _nonce]);
+            require(_lottoNumbers[_index - _nonce] >= _lottoLowestNumber && _lottoNumbers[_index - _nonce] <= _lottoHighestNumber);
+            if (_index - _nonce > 0)
+                require(_lottoNumbers[_index - _nonce - 1] < _lottoNumbers[_index - _nonce]);
             lottoNumbers[_index - _nonce] = _lottoNumbers[_index - _nonce];
         }
     }
@@ -1324,22 +1324,22 @@ contract CryptoLotto is usingOraclize {
         var _raisedAmount = raisedAmount;
 
         // lottoNumbers[6]          24 bits  [0..23]
-        for (uint8 _index = 0; _index &lt; lottoNumbers.length; _index++) {
-            _encodedLottoResult |= uint32(lottoNumbers[_index]) &lt;&lt; (_index * 4);
+        for (uint8 _index = 0; _index < lottoNumbers.length; _index++) {
+            _encodedLottoResult |= uint32(lottoNumbers[_index]) << (_index * 4);
         }
 
         // bonusNumber               4 bits  [24..27]
-        _encodedLottoResult |= uint32(bonusNumber) &lt;&lt; (24);
+        _encodedLottoResult |= uint32(bonusNumber) << (24);
 
         uint256 _totalPrizeAmount = 0;
 
-        if (numFiveMatchWinners[turn - 1] &gt; 0)
+        if (numFiveMatchWinners[turn - 1] > 0)
             _totalPrizeAmount += _raisedAmount * fiveMatchPayoutInPercent / 100;
 
-        if (numBonusMatchWinners[turn - 1] &gt; 0)
+        if (numBonusMatchWinners[turn - 1] > 0)
             _totalPrizeAmount += _raisedAmount * bonusMatchPayoutInPercent / 100;
 
-        if (numSixMatchWinners[turn - 1] &gt; 0)
+        if (numSixMatchWinners[turn - 1] > 0)
             _totalPrizeAmount += _raisedAmount * sixMatchPayoutInPercent / 100;
 
         raisedAmounts.push(_raisedAmount);
@@ -1353,46 +1353,46 @@ contract CryptoLotto is usingOraclize {
 
         uint32 _numTurnsToRevolve = uint32(numTurnsToRevolve);
         uint256 _amountToCarryOver = 0;
-        if (turn &gt; _numTurnsToRevolve)
+        if (turn > _numTurnsToRevolve)
             _amountToCarryOver = untakenPrizeAmounts[turn - _numTurnsToRevolve - 1];
         raisedAmount = _raisedAmount - _totalPrizeAmount - _ownerShare + _amountToCarryOver;
     }
 
     function getLottoResult(uint256 _turn) constant returns (uint256, uint256, uint32, uint32, uint32) {
-        require(_turn &lt; turn &amp;&amp; _turn &gt; 0);
+        require(_turn < turn && _turn > 0);
         return (raisedAmounts[_turn - 1], untakenPrizeAmounts[_turn - 1], numFiveMatchWinners[_turn - 1], numBonusMatchWinners[_turn - 1], numSixMatchWinners[_turn - 1]);
     }
 
     function getLottoNumbers(uint256 _turn) constant returns (uint8[], uint8) {
-        require(_turn &lt; turn &amp;&amp; _turn &gt; 0);
+        require(_turn < turn && _turn > 0);
         var _encodedLottoResult = encodedLottoResults[_turn - 1];
         uint8[] memory _lottoNumbers = new uint8[](lottoLength);
         uint8 _bonusNumber;
 
-        for (uint8 _index = 0; _index &lt; _lottoNumbers.length; _index++) {
-            _lottoNumbers[_index] = uint8((_encodedLottoResult &gt;&gt; (_index * 4)) &amp; (2 ** 4 - 1));
+        for (uint8 _index = 0; _index < _lottoNumbers.length; _index++) {
+            _lottoNumbers[_index] = uint8((_encodedLottoResult >> (_index * 4)) & (2 ** 4 - 1));
         }
-        _bonusNumber = uint8((_encodedLottoResult &gt;&gt; 24) &amp; (2 ** 4 - 1));
+        _bonusNumber = uint8((_encodedLottoResult >> 24) & (2 ** 4 - 1));
         return (_lottoNumbers, _bonusNumber);
     }
 
     function buyTickets(uint _numTickets, uint8[] _betNumbersList, bool _isAutoGenerated) payable onlyWhenLottoStarted {
-        require(finishWhen &gt; now);
+        require(finishWhen > now);
         var _lottoLength = lottoLength;
         require(_betNumbersList.length == _numTickets * _lottoLength);
         uint _totalPrice = _numTickets * lottoPrice;
-        require(msg.value &gt;= _totalPrice);
+        require(msg.value >= _totalPrice);
 
-        for (uint j = 0; j &lt; _numTickets; j++) {
-            require(_betNumbersList[j * _lottoLength] &gt;= lottoLowestNumber &amp;&amp; _betNumbersList[(j + 1) * _lottoLength - 1] &lt;= lottoHighestNumber);
-            for (uint _index = 0; _index &lt; _lottoLength - 1; _index++) {
-                require(_betNumbersList[_index + j * _lottoLength] &lt; _betNumbersList[_index + 1 + j * _lottoLength]);
+        for (uint j = 0; j < _numTickets; j++) {
+            require(_betNumbersList[j * _lottoLength] >= lottoLowestNumber && _betNumbersList[(j + 1) * _lottoLength - 1] <= lottoHighestNumber);
+            for (uint _index = 0; _index < _lottoLength - 1; _index++) {
+                require(_betNumbersList[_index + j * _lottoLength] < _betNumbersList[_index + 1 + j * _lottoLength]);
             }
         }
 
         uint8[] memory _betNumbers = new uint8[](lottoLength);
-        for (j = 0; j &lt; _numTickets; j++) {
-            for (_index = 0; _index &lt; _lottoLength - 1; _index++) {
+        for (j = 0; j < _numTickets; j++) {
+            for (_index = 0; _index < _lottoLength - 1; _index++) {
                 _betNumbers[_index] = _betNumbersList[_index + j * _lottoLength];
             }
             _betNumbers[_index] = _betNumbersList[_index + j * _lottoLength];
@@ -1411,20 +1411,20 @@ contract CryptoLotto is usingOraclize {
         uint8 _indexBet = 0;
         uint8 _numMatch = 0;
 
-        for (uint8 i = 0; i &lt; _lottoLength; i++) {
+        for (uint8 i = 0; i < _lottoLength; i++) {
             _lottoNumbers[i] = lottoNumbers[i];
         }
 
-        while (_indexLotto &lt; _lottoLength &amp;&amp; _indexBet &lt; _lottoLength) {
+        while (_indexLotto < _lottoLength && _indexBet < _lottoLength) {
             if (_betNumbers[_indexBet] == _lottoNumbers[_indexLotto]) {
                 _numMatch++;
                 _indexBet++;
                 _indexLotto++;
-                if (_numMatch &gt; 4)
-                    for (uint8 _burner = 0; _burner &lt; 6; _burner++) {}
+                if (_numMatch > 4)
+                    for (uint8 _burner = 0; _burner < 6; _burner++) {}
                 continue;
             }
-            else if (_betNumbers[_indexBet] &lt; _lottoNumbers[_indexLotto]) {
+            else if (_betNumbers[_indexBet] < _lottoNumbers[_indexLotto]) {
                 _indexBet++;
                 continue;
             }
@@ -1437,16 +1437,16 @@ contract CryptoLotto is usingOraclize {
 
         if (_numMatch == _lottoLength - 1) {
             uint8 _bonusNumber = bonusNumber;
-            for (uint8 _index = 0; _index &lt; lottoLength; _index++) {
+            for (uint8 _index = 0; _index < lottoLength; _index++) {
                 if (_betNumbers[_index] == _bonusNumber) {
-                    for (_burner = 0; _burner &lt; 6; _burner++) {}
+                    for (_burner = 0; _burner < 6; _burner++) {}
                     return lottoRank.BONUS_MATCH;
                 }
             }
             return lottoRank.FIVE_MATCH;
         }
         else if (_numMatch == _lottoLength) {
-            for (_burner = 0; _burner &lt; 12; _burner++) {}
+            for (_burner = 0; _burner < 12; _burner++) {}
             return lottoRank.SIX_MATCH;
         }
 
@@ -1454,7 +1454,7 @@ contract CryptoLotto is usingOraclize {
     }
 
     function _saveBettingAndTicket(uint8[] _betNumbers, bool _isAutoGenerated) internal onlyWhenLottoStarted {
-        require(_betNumbers.length == 6 &amp;&amp; lottoHighestNumber &lt;= 16);
+        require(_betNumbers.length == 6 && lottoHighestNumber <= 16);
         uint256 _encodedBetting = 0;
         uint64 _encodedTicket = 0;
         uint256 _nonce256 = 0;
@@ -1471,13 +1471,13 @@ contract CryptoLotto is usingOraclize {
 
         // isAutoGenerated
         if (_isAutoGenerated) {
-            _encodedBetting |= uint256(1) &lt;&lt; 1;
-            _encodedTicket |= uint64(1) &lt;&lt; 1;
+            _encodedBetting |= uint256(1) << 1;
+            _encodedTicket |= uint64(1) << 1;
         }
 
         // betNumbers[6]
-        for (uint8 _index = 0; _index &lt; _betNumbers.length; _index++) {
-            uint256 _betNumber = uint256(_betNumbers[_index]) &lt;&lt; (_index * 4 + 2);
+        for (uint8 _index = 0; _index < _betNumbers.length; _index++) {
+            uint256 _betNumber = uint256(_betNumbers[_index]) << (_index * 4 + 2);
             _encodedBetting |= _betNumber;
             _encodedTicket |= uint64(_betNumber);
         }
@@ -1486,30 +1486,30 @@ contract CryptoLotto is usingOraclize {
         lottoRank _lottoRank = _getLottoRank(_betNumbers);
         if (_lottoRank == lottoRank.FIVE_MATCH) {
             numFiveMatchWinners[turn - 1]++;
-            _encodedBetting |= uint256(1) &lt;&lt; 26;
-            _encodedTicket |= uint64(1) &lt;&lt; 26;
+            _encodedBetting |= uint256(1) << 26;
+            _encodedTicket |= uint64(1) << 26;
         }
         else if (_lottoRank == lottoRank.BONUS_MATCH) {
             numBonusMatchWinners[turn - 1]++;
-            _encodedBetting |= uint256(1) &lt;&lt; 27;
-            _encodedTicket |= uint64(1) &lt;&lt; 27;
+            _encodedBetting |= uint256(1) << 27;
+            _encodedTicket |= uint64(1) << 27;
         }
         else if (_lottoRank == lottoRank.SIX_MATCH) {
             numSixMatchWinners[turn - 1]++;
-            _encodedBetting |= uint256(1) &lt;&lt; 28;
-            _encodedTicket |= uint64(1) &lt;&lt; 28;
+            _encodedBetting |= uint256(1) << 28;
+            _encodedTicket |= uint64(1) << 28;
         } else {
             nonces[turn - 1]++;
-            _nonce256 |= uint256(1) &lt;&lt; 29;
-            _nonce64 |= uint64(1) &lt;&lt; 29;
+            _nonce256 |= uint256(1) << 29;
+            _nonce64 |= uint64(1) << 29;
         }
 
         // sender address
-        _encodedBetting |= uint256(msg.sender) &lt;&lt; 29;
+        _encodedBetting |= uint256(msg.sender) << 29;
 
         // timestamp
-        _encodedBetting |= now &lt;&lt; 189;
-        _encodedTicket |= uint64(now) &lt;&lt; 29;
+        _encodedBetting |= now << 189;
+        _encodedTicket |= uint64(now) << 29;
 
         // push ticket
         tickets[msg.sender][turn].push(_encodedTicket);
@@ -1523,31 +1523,31 @@ contract CryptoLotto is usingOraclize {
 
     function getTurn(uint256 _bettingId) constant returns (uint32) {
         uint32 _turn = turn;
-        require(_turn &gt; 0);
-        require(_bettingId &lt; bettings.length);
+        require(_turn > 0);
+        require(_bettingId < bettings.length);
 
-        if (_turn == 1 || _bettingId &lt; accNumBettings[0])
+        if (_turn == 1 || _bettingId < accNumBettings[0])
             return 1;
-        if (_bettingId &gt;= accNumBettings[_turn - 2])
+        if (_bettingId >= accNumBettings[_turn - 2])
             return _turn;
 
         uint32 i = 0;
         uint32 j = _turn - 1;
         uint32 mid = 0;
 
-        while (i &lt; j) {
+        while (i < j) {
             mid = (i + j) / 2;
 
             if (accNumBettings[mid] == _bettingId)
                 return mid + 2;
 
-            if (_bettingId &lt; accNumBettings[mid]) {
-                if (mid &gt; 0 &amp;&amp; _bettingId &gt; accNumBettings[mid - 1])
+            if (_bettingId < accNumBettings[mid]) {
+                if (mid > 0 && _bettingId > accNumBettings[mid - 1])
                     return mid + 1;
                 j = mid;
             }
             else {
-                if (mid &lt; _turn - 2 &amp;&amp; _bettingId &lt; accNumBettings[mid + 1])
+                if (mid < _turn - 2 && _bettingId < accNumBettings[mid + 1])
                     return mid + 2;
                 i = mid + 1;
             }
@@ -1556,64 +1556,64 @@ contract CryptoLotto is usingOraclize {
     }
 
     function getBetting(uint256 i) constant returns (bool, bool, uint8[], lottoRank, uint32){
-        require(i &lt; bettings.length);
+        require(i < bettings.length);
         uint256 _betting = bettings[i];
 
         // isTaken                      1 bit      [0]
         bool _isTaken;
-        if (_betting &amp; 1 == 1)
+        if (_betting & 1 == 1)
             _isTaken = true;
         else
             _isAutoGenerated = false;
 
         // _isAutoGenerated             1 bit      [1]
         bool _isAutoGenerated;
-        if ((_betting &gt;&gt; 1) &amp; 1 == 1)
+        if ((_betting >> 1) & 1 == 1)
             _isAutoGenerated = true;
         else
             _isAutoGenerated = false;
 
         // 6 betNumbers                24 bits     [2..25]
         uint8[] memory _betNumbers = new uint8[](lottoLength);
-        for (uint8 _index = 0; _index &lt; lottoLength; _index++) {
-            _betNumbers[_index] = uint8((_betting &gt;&gt; (_index * 4 + 2)) &amp; (2 ** 4 - 1));
+        for (uint8 _index = 0; _index < lottoLength; _index++) {
+            _betNumbers[_index] = uint8((_betting >> (_index * 4 + 2)) & (2 ** 4 - 1));
         }
 
         //  _timestamp                   bits     [189..255]
         uint128 _timestamp;
-        _timestamp = uint128((_betting &gt;&gt; 189) &amp; (2 ** 67 - 1));
+        _timestamp = uint128((_betting >> 189) & (2 ** 67 - 1));
 
         uint32 _turn = getTurn(i);
-        if (_turn == turn &amp;&amp; isLottoStarted)
+        if (_turn == turn && isLottoStarted)
             return (_isTaken, _isAutoGenerated, _betNumbers, lottoRank.NONCE, _turn);
 
         // return lottoRank only when the turn is finished
         // lottoRank                    3 bits     [26..28]
         lottoRank _lottoRank = lottoRank.DEFAULT;
-        if ((_betting &gt;&gt; 26) &amp; 1 == 1)
+        if ((_betting >> 26) & 1 == 1)
             _lottoRank = lottoRank.FIVE_MATCH;
-        if ((_betting &gt;&gt; 27) &amp; 1 == 1)
+        if ((_betting >> 27) & 1 == 1)
             _lottoRank = lottoRank.BONUS_MATCH;
-        if ((_betting &gt;&gt; 28) &amp; 1 == 1)
+        if ((_betting >> 28) & 1 == 1)
             _lottoRank = lottoRank.SIX_MATCH;
 
         return (_isTaken, _isAutoGenerated, _betNumbers, _lottoRank, _turn);
     }
 
     function getBettingExtra(uint256 i) constant returns (address, uint128){
-        require(i &lt; bettings.length);
+        require(i < bettings.length);
         uint256 _betting = bettings[i];
-        uint128 _timestamp = uint128((_betting &gt;&gt; 189) &amp; (2 ** 67 - 1));
-        address _beneficiary = address((_betting &gt;&gt; 29) &amp; (2 ** 160 - 1));
+        uint128 _timestamp = uint128((_betting >> 189) & (2 ** 67 - 1));
+        address _beneficiary = address((_betting >> 29) & (2 ** 160 - 1));
         return (_beneficiary, _timestamp);
     }
 
     function getMyResult(uint32 _turn) constant returns (uint256, uint32, uint32, uint32, uint256) {
-        require(_turn &gt; 0);
+        require(_turn > 0);
         if (_turn == turn)
             require(!isLottoStarted);
         else
-            require(_turn &lt; turn);
+            require(_turn < turn);
 
         uint256 _numMyTickets = tickets[msg.sender][_turn].length;
         uint256 _totalPrizeAmount = 0;
@@ -1626,17 +1626,17 @@ contract CryptoLotto is usingOraclize {
             return (0, 0, 0, 0, 0);
         }
 
-        for (uint256 _index = 0; _index &lt; _numMyTickets; _index++) {
+        for (uint256 _index = 0; _index < _numMyTickets; _index++) {
             _ticket = tickets[msg.sender][_turn][_index];
-            if ((_ticket &gt;&gt; 26) &amp; 1 == 1) {
+            if ((_ticket >> 26) & 1 == 1) {
                 _numFiveMatchPrizes++;
                 _totalPrizeAmount += _getFiveMatchPrizeAmount(_turn);
             }
-            else if ((_ticket &gt;&gt; 27) &amp; 1 == 1) {
+            else if ((_ticket >> 27) & 1 == 1) {
                 _numBonusMatchPrizes++;
                 _totalPrizeAmount += _getBonusMatchPrizeAmount(_turn);
             }
-            else if ((_ticket &gt;&gt; 28) &amp; 1 == 1) {
+            else if ((_ticket >> 28) & 1 == 1) {
                 _numSixMatchPrizes++;
                 _totalPrizeAmount += _getSixMatchPrizeAmount(_turn);
             }
@@ -1645,33 +1645,33 @@ contract CryptoLotto is usingOraclize {
     }
 
     function getNumMyTickets(uint32 _turn) constant returns (uint256) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt;= turn);
+        require(_turn > 0 && _turn <= turn);
         return tickets[msg.sender][_turn].length;
     }
 
     function getMyTicket(uint32 _turn, uint256 i) constant returns (bool, bool, uint8[], lottoRank, uint64){
-        require(_turn &lt;= turn);
-        require(i &lt; tickets[msg.sender][_turn].length);
+        require(_turn <= turn);
+        require(i < tickets[msg.sender][_turn].length);
         uint64 _ticket = tickets[msg.sender][_turn][i];
 
         // isTaken                   1 bit      ticket[0]
         bool _isTaken = false;
-        if ((_ticket &amp; 1) == 1)
+        if ((_ticket & 1) == 1)
             _isTaken = true;
 
         // isAutoGenerated           1 bit      ticket[1]
         bool _isAutoGenerated = false;
-        if ((_ticket &gt;&gt; 1) &amp; 1 == 1)
+        if ((_ticket >> 1) & 1 == 1)
             _isAutoGenerated = true;
 
         // betNumbers[6]            24 bits     ticket[2..25]
         uint8[] memory _betNumbers = new uint8[](lottoLength);
-        for (uint8 _index = 0; _index &lt; lottoLength; _index++) {
-            _betNumbers[_index] = uint8((_ticket &gt;&gt; (_index * 4 + 2)) &amp; (2 ** 4 - 1));
+        for (uint8 _index = 0; _index < lottoLength; _index++) {
+            _betNumbers[_index] = uint8((_ticket >> (_index * 4 + 2)) & (2 ** 4 - 1));
         }
 
         // timestamp                36 bits     ticket[29..64]
-        uint64 _timestamp = uint64((_ticket &gt;&gt; 29) &amp; (2 ** 36 - 1));
+        uint64 _timestamp = uint64((_ticket >> 29) & (2 ** 36 - 1));
 
         if (_turn == turn)
             return (_isTaken, _isAutoGenerated, _betNumbers, lottoRank.NONCE, _timestamp);
@@ -1682,74 +1682,74 @@ contract CryptoLotto is usingOraclize {
         // lottoRank.BONUS_MATCH     1 bit      ticket[27]
         // lottoRank.SIX_MATCH       1 bit      ticket[28]
         lottoRank _lottoRank = lottoRank.DEFAULT;
-        if ((_ticket &gt;&gt; 26) &amp; 1 == 1)
+        if ((_ticket >> 26) & 1 == 1)
             _lottoRank = lottoRank.FIVE_MATCH;
-        if ((_ticket &gt;&gt; 27) &amp; 1 == 1)
+        if ((_ticket >> 27) & 1 == 1)
             _lottoRank = lottoRank.BONUS_MATCH;
-        if ((_ticket &gt;&gt; 28) &amp; 1 == 1)
+        if ((_ticket >> 28) & 1 == 1)
             _lottoRank = lottoRank.SIX_MATCH;
 
         return (_isTaken, _isAutoGenerated, _betNumbers, _lottoRank, _timestamp);
     }
 
     function getMyUntakenPrizes(uint32 _turn) constant returns (uint32[]) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt; turn);
+        require(_turn > 0 && _turn < turn);
         uint256 _numMyTickets = tickets[msg.sender][_turn].length;
 
         uint32[] memory _prizes = new uint32[](50);
         uint256 _indexPrizes = 0;
 
-        for (uint16 _index; _index &lt; _numMyTickets; _index++) {
+        for (uint16 _index; _index < _numMyTickets; _index++) {
             uint64 _ticket = tickets[msg.sender][_turn][_index];
-            if (((_ticket &gt;&gt; 26) &amp; 1 == 1) &amp;&amp; (_ticket &amp; 1 == 0))
+            if (((_ticket >> 26) & 1 == 1) && (_ticket & 1 == 0))
                 _prizes[_indexPrizes++] = _index;
-            else if (((_ticket &gt;&gt; 27) &amp; 1 == 1) &amp;&amp; (_ticket &amp; 1 == 0))
+            else if (((_ticket >> 27) & 1 == 1) && (_ticket & 1 == 0))
                 _prizes[_indexPrizes++] = _index;
-            else if (((_ticket &gt;&gt; 28) &amp; 1 == 1) &amp;&amp; (_ticket &amp; 1 == 0))
+            else if (((_ticket >> 28) & 1 == 1) && (_ticket & 1 == 0))
                 _prizes[_indexPrizes++] = _index;
-            if (_indexPrizes &gt;= 50) {
+            if (_indexPrizes >= 50) {
                 break;
             }
         }
         uint32[] memory _retPrizes = new uint32[](_indexPrizes);
 
-        for (_index = 0; _index &lt; _indexPrizes; _index++) {
+        for (_index = 0; _index < _indexPrizes; _index++) {
             _retPrizes[_index] = _prizes[_index];
         }
         return (_retPrizes);
     }
 
     function takePrize(uint32 _turn, uint256 i) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt; turn);
-        if (turn &gt; numTurnsToRevolve)
-            require(_turn &gt;= turn - numTurnsToRevolve);
+        require(_turn > 0 && _turn < turn);
+        if (turn > numTurnsToRevolve)
+            require(_turn >= turn - numTurnsToRevolve);
 
-        require(i &lt; tickets[msg.sender][_turn].length);
+        require(i < tickets[msg.sender][_turn].length);
         var _ticket = tickets[msg.sender][_turn][i];
 
         // isTaken must be false
-        require((_ticket &amp; 1) == 0);
+        require((_ticket & 1) == 0);
 
         // lottoRank.FIVE_MATCH      1 bit   [26]
         // lottoRank.BONUS_MATCH     1 bit   [27]
         // lottoRank.SIX_MATCH       1 bit   [28]
-        if ((_ticket &gt;&gt; 26) &amp; 1 == 1) {
+        if ((_ticket >> 26) & 1 == 1) {
             uint256 _prizeAmount = _getFiveMatchPrizeAmount(_turn);
-            require(_prizeAmount &gt; 0);
+            require(_prizeAmount > 0);
             msg.sender.transfer(_prizeAmount);
             FiveMatchPrizeTaken(msg.sender, _prizeAmount);
             tickets[msg.sender][_turn][i] |= 1;
             untakenPrizeAmounts[_turn - 1] -= _prizeAmount;
-        } else if ((_ticket &gt;&gt; 27) &amp; 1 == 1) {
+        } else if ((_ticket >> 27) & 1 == 1) {
             _prizeAmount = _getBonusMatchPrizeAmount(_turn);
-            require(_prizeAmount &gt; 0);
+            require(_prizeAmount > 0);
             msg.sender.transfer(_prizeAmount);
             BonusMatchPrizeTaken(msg.sender, _prizeAmount);
             tickets[msg.sender][_turn][i] |= 1;
             untakenPrizeAmounts[_turn - 1] -= _prizeAmount;
-        } else if ((_ticket &gt;&gt; 28) &amp; 1 == 1) {
+        } else if ((_ticket >> 28) & 1 == 1) {
             _prizeAmount = _getSixMatchPrizeAmount(_turn);
-            require(_prizeAmount &gt; 0);
+            require(_prizeAmount > 0);
             msg.sender.transfer(_prizeAmount);
             SixMatchPrizeTaken(msg.sender, _prizeAmount);
             tickets[msg.sender][_turn][i] |= 1;
@@ -1758,7 +1758,7 @@ contract CryptoLotto is usingOraclize {
     }
 
     function _getFiveMatchPrizeAmount(uint256 _turn) internal constant returns (uint256) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt; turn);
+        require(_turn > 0 && _turn < turn);
         uint256 _numFiveMatchWinners = uint256(numFiveMatchWinners[_turn - 1]);
         if (_numFiveMatchWinners == 0)
             return 0;
@@ -1766,7 +1766,7 @@ contract CryptoLotto is usingOraclize {
     }
 
     function _getBonusMatchPrizeAmount(uint256 _turn) internal constant returns (uint256) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt; turn);
+        require(_turn > 0 && _turn < turn);
         uint256 _numBonusMatchWinners = uint256(numBonusMatchWinners[_turn - 1]);
         if (_numBonusMatchWinners == 0)
             return 0;
@@ -1774,7 +1774,7 @@ contract CryptoLotto is usingOraclize {
     }
 
     function _getSixMatchPrizeAmount(uint256 _turn) internal constant returns (uint256) {
-        require(_turn &gt; 0 &amp;&amp; _turn &lt; turn);
+        require(_turn > 0 && _turn < turn);
         uint256 _numSixMatchWinners = uint256(numSixMatchWinners[_turn - 1]);
         if (_numSixMatchWinners == 0)
             return 0;

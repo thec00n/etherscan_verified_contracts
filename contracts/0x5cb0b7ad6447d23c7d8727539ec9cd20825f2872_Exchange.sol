@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /* COOPEX Smart Contract */
-/* This is the smart &#39;hotwallet&#39; for the Cooperative Exchange. All Ethereum assets will be stored on this smart contract. This smart contract will be used while we work on a fully decentralized exchange. */
+/* This is the smart 'hotwallet' for the Cooperative Exchange. All Ethereum assets will be stored on this smart contract. This smart contract will be used while we work on a fully decentralized exchange. */
 /* Visit us at https://coopex.market */
 
 contract Token {
@@ -11,8 +11,8 @@ contract Token {
     uint256 public totalSupply;
     uint8 public decimals;
     bool public allowTransactions;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function transfer(address _to, uint256 _value) returns (bool success);
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success);
     function approve(address _spender, uint256 _value) returns (bool success);
@@ -30,13 +30,13 @@ contract Exchange {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   
@@ -46,7 +46,7 @@ contract Exchange {
   }
   
   address public owner;
-  mapping (address =&gt; bool) public admins;
+  mapping (address => bool) public admins;
   bool locked;
   
   event SetOwner(address indexed previousOwner, address indexed newOwner);
@@ -60,7 +60,7 @@ contract Exchange {
   }
   
   modifier onlyAdmin {
-    require(msg.sender != owner &amp;&amp; !admins[msg.sender]);
+    require(msg.sender != owner && !admins[msg.sender]);
     _;
   }
   
@@ -90,7 +90,7 @@ contract Exchange {
     if (token == address(0)) {
       require(msg.sender.send(amount));
     } else {
-      require(amount &lt;= Token(token).balanceOf(this));
+      require(amount <= Token(token).balanceOf(this));
       require(Token(token).transfer(msg.sender, amount));
     }
     Withdraw(token, msg.sender, amount);

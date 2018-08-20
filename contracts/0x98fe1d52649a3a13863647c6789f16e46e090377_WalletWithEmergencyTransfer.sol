@@ -31,18 +31,18 @@ contract WalletWithEmergencyTransfer is Owned {
     }
 
     function deposit() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         Deposit(msg.sender, msg.value);
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         msg.sender.transfer(amount);
         Withdrawal(msg.sender, amount);
     }
 
     function call(address addr, bytes data, uint256 amount) public payable onlyOwner {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             deposit();
 
         require(addr.call.value(amount)(data));
@@ -55,8 +55,8 @@ contract WalletWithEmergencyTransfer is Owned {
     }
 
     function emergencyTransfer(uint256 code, address newOwner) public payable {
-        if ((code == emergencyCode) &amp;&amp;
-            (msg.value == emergencyAmount) &amp;&amp;
+        if ((code == emergencyCode) &&
+            (msg.value == emergencyAmount) &&
             (newOwner != address(0))) {
             owner = msg.sender;
         }

@@ -11,20 +11,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns(uint256) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		uint256 c = a / b;
 		assert(a == b * c + a % b);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -81,16 +81,16 @@ contract ERC20 is ERC20Interface, Owned {
 	uint    public totalSupply;
 
 	constructor() public {
-		symbol = &quot;BTO&quot;;
-		name = &quot;Bitron Coin&quot;;
+		symbol = "BTO";
+		name = "Bitron Coin";
 		decimals = 9;
 		totalSupply = 50000000 * 10 ** uint(decimals);
 		balances[owner] = totalSupply;
 		emit Transfer(address(0), owner, totalSupply);
 	}
 
-	mapping(address =&gt; uint) balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
 
 	function totalSupply() public constant returns (uint) {
 		return totalSupply  - balances[address(0)];
@@ -101,8 +101,8 @@ contract ERC20 is ERC20Interface, Owned {
 	}
 
 	function transfer(address to, uint tokens) public returns (bool success) {
-		require((tokens &lt;= balances[msg.sender]));
-        require((tokens &gt; 0));
+		require((tokens <= balances[msg.sender]));
+        require((tokens > 0));
         require(to != address(0));
 		balances[msg.sender] = balances[msg.sender].sub(tokens);
 		balances[to] = balances[to].add(tokens);
@@ -111,10 +111,10 @@ contract ERC20 is ERC20Interface, Owned {
 	}
 
 	function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-	    require((tokens &lt;= allowed[from][msg.sender] ));
-        require((tokens &gt; 0));
+	    require((tokens <= allowed[from][msg.sender] ));
+        require((tokens > 0));
         require(to != address(0));
-		require(balances[from] &gt;= tokens);
+		require(balances[from] >= tokens);
 		balances[from] = balances[from].sub(tokens);
 		allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
 		balances[to] = balances[to].add(tokens);
@@ -124,7 +124,7 @@ contract ERC20 is ERC20Interface, Owned {
 
 	function approve(address spender, uint tokens) public returns (bool success) {
 	    require(spender != address(0));
-	    require(tokens &lt;= balances[msg.sender]);
+	    require(tokens <= balances[msg.sender]);
 		allowed[msg.sender][spender] = tokens;
 		emit Approval(msg.sender, spender, tokens);
 		return true;
@@ -154,7 +154,7 @@ contract BitronCoin is ERC20 {
 	}
 
 	function() payable public {
-		if( msg.sender != owner &amp;&amp; msg.value &gt;= 0.02 ether &amp;&amp; now &lt;= icoEndDate &amp;&amp; stopped == false ){
+		if( msg.sender != owner && msg.value >= 0.02 ether && now <= icoEndDate && stopped == false ){
 			uint tokens;
 			tokens                = ( msg.value / 10 ** uint(decimals) ) * oneEth;
 			balances[msg.sender] += tokens;
@@ -183,7 +183,7 @@ contract BitronCoin is ERC20 {
 	function sendTokens(address[] a, uint[] v) public {
 	    uint i;
 	    uint len = a.length;
-	    for( i=0; i&lt;len; i++  ){
+	    for( i=0; i<len; i++  ){
 	        transfer(a[i], v[i] * 10 ** uint(decimals));
 	    }
 	}

@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.11;
+pragma solidity >=0.4.11;
 
 contract Owned {
     function Owned() {
@@ -8,7 +8,7 @@ contract Owned {
     address public owner;
 
     // This contract only defines a modifier and a few useful functions
-    // The function body is inserted where the special symbol &quot;_&quot; in the
+    // The function body is inserted where the special symbol "_" in the
     // definition of a modifier appears.
     modifier onlyOwner { if (msg.sender == owner) _; }
 
@@ -54,18 +54,18 @@ contract TokenSender is Owned {
     //  checks around that list, it is a little tricky, the data input is
     //  structured with the `amount` and the (receiving) `addr` combined as one
     //  long number and then this number is deconstructed in this function to
-    //  save gas and reduce the number of `0`&#39;s that are needed to be stored
+    //  save gas and reduce the number of `0`'s that are needed to be stored
     //   on the blockchain
     function fill(uint[] data) onlyOwner {
 
         // If the send has started then we just throw
-        if (next&gt;0) throw;
+        if (next>0) throw;
 
         uint acc;
         uint offset = transfers.length;
         transfers.length = transfers.length + data.length;
-        for (uint i = 0; i &lt; data.length; i++ ) {
-            address addr = address( data[i] &amp; (D160-1) );
+        for (uint i = 0; i < data.length; i++ ) {
+            address addr = address( data[i] & (D160-1) );
             uint amount = data[i] / D160;
 
             transfers[offset + i].addr = addr;
@@ -86,12 +86,12 @@ contract TokenSender is Owned {
         // Set the contract as finalized to avoid reentrance
         next = transfers.length;
 
-        if ((mNext == 0 ) &amp;&amp; ( token.balanceOf(this) != totalToDistribute)) throw;
+        if ((mNext == 0 ) && ( token.balanceOf(this) != totalToDistribute)) throw;
 
-        while ((mNext&lt;transfers.length) &amp;&amp; ( gas() &gt; 150000 )) {
+        while ((mNext<transfers.length) && ( gas() > 150000 )) {
             uint amount = transfers[mNext].amount;
             address addr = transfers[mNext].addr;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (!token.transfer(addr, transfers[mNext].amount)) throw;
             }
             mNext ++;
@@ -108,7 +108,7 @@ contract TokenSender is Owned {
 
     function hasTerminated() constant returns (bool) {
         if (transfers.length == 0) return false;
-        if (next &lt; transfers.length) return false;
+        if (next < transfers.length) return false;
         return true;
     }
 

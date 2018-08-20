@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract owned {
     address public Owner; 
@@ -54,9 +54,9 @@ contract ZegartToken is owned {
     bool tradable;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccounts;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -79,16 +79,16 @@ contract ZegartToken is owned {
     }
     
     function withdrawal(address _to, uint256 Ether, uint256 Token) onlyOwner public {
-        require(this.balance &gt;= Ether &amp;&amp; balances[this] &gt;= Token );
+        require(this.balance >= Ether && balances[this] >= Token );
         
-        if(Ether &gt;0){
+        if(Ether >0){
             _to.transfer(Ether);
             WithdrawEth(_to, Ether);
         }
         
-        if(Token &gt; 0)
+        if(Token > 0)
 		{
-			require(balances[_to] + Token &gt; balances[_to]);
+			require(balances[_to] + Token > balances[_to]);
 			balances[this] -= Token;
 			balances[_to] += Token;
 			Transfer(this, _to, Token);
@@ -123,9 +123,9 @@ contract ZegartToken is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Check if sender is frozen
         require(!frozenAccounts[_from]); 
         // Check if recipient is frozen                    
@@ -145,7 +145,7 @@ contract ZegartToken is owned {
     /// @param _customer Address of account which will receive tokens
     /// @param _value uint256 the amount to be transferred.
     function GrantToken(address _customer, uint256 _value, string note) onlyOwner public {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_customer] + _value &gt; balances[_customer]);
+        require(balances[msg.sender] >= _value && balances[_customer] + _value > balances[_customer]);
         
         BonusToken( _customer,  _value,  note);
         balances[msg.sender] -= _value;
@@ -157,7 +157,7 @@ contract ZegartToken is owned {
     /// @param _buyer Address of account which will receive tokens
     /// @param _value uint256 the amount to be transferred.
     function BuyToken(address _buyer, uint256 _value, string note) onlyOwner public {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_buyer] + _value &gt; balances[_buyer]);
+        require(balances[msg.sender] >= _value && balances[_buyer] + _value > balances[_buyer]);
         
         SoldToken( _buyer,  _value,  note);
         balances[msg.sender] -= _value;
@@ -165,11 +165,11 @@ contract ZegartToken is owned {
         Transfer(msg.sender, _buyer, _value);
     }
 
-    /// @notice forbid specified address from sending &amp; receiving tokens
+    /// @notice forbid specified address from sending & receiving tokens
     function FreezeAccount(address toFreeze) onlyOwner public {
         frozenAccounts[toFreeze] = true;
     }
-    /// @notice allow specified address sending &amp; receiving tokens
+    /// @notice allow specified address sending & receiving tokens
     function UnfreezeAccount(address toUnfreeze) onlyOwner public {
         delete frozenAccounts[toUnfreeze];
     }
@@ -187,12 +187,12 @@ contract ZegartToken is owned {
        _;
     }
     
-    /// @notice transfers sender&#39;s tokens to a specified address. 
+    /// @notice transfers sender's tokens to a specified address. 
     /// @param _to The address of the recipient.
     /// @param _value The amount to be transferred.
     function transfer(address _to, uint256 _value) public notFrozen returns (bool success) {
         require(tradable);
-         if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
              balances[msg.sender] -= _value;
              balances[_to] += _value;
              Transfer( msg.sender, _to,  _value);
@@ -208,9 +208,9 @@ contract ZegartToken is owned {
     /// @param _to address The address tokens are sending to.
     /// @param _value the amount of tokens to be transferred. 
     function transferFrom(address _from, address _to, uint256 _value) public notFrozen returns (bool success) {
-        require(!frozenAccounts[_from] &amp;&amp; !frozenAccounts[_to]);
+        require(!frozenAccounts[_from] && !frozenAccounts[_to]);
         require(tradable);
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value;
             allowed[_from][msg.sender] -= _value;
@@ -263,7 +263,7 @@ contract ZegartToken is owned {
     /// @param _value the amount of money to burn
     /// @return True if the transfer was successful
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -276,10 +276,10 @@ contract ZegartToken is owned {
     /// @param _value the amount of money to burn
     /// @return True if the transfer was successful
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

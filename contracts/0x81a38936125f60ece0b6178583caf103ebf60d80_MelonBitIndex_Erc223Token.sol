@@ -5,18 +5,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
@@ -59,10 +59,10 @@ contract MelonBitIndex_Erc223Token is SafeMath, Owned {
     //event Transfer(address indexed from, address indexed to, uint tokens);
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
-    string public name    = &quot;MelonBit Market Index Erc223Token&quot;;
-    string public symbol  = &quot;MMX&quot;;
+    string public name    = "MelonBit Market Index Erc223Token";
+    string public symbol  = "MMX";
     uint8 public decimals = 8;
     uint256 public totalSupply;
     
@@ -86,7 +86,7 @@ contract MelonBitIndex_Erc223Token is SafeMath, Owned {
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) returns (bool success) {       
         if(isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) revert();
+            if (balanceOf(msg.sender) < _value) revert();
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
             balances[_to] = safeAdd(balanceOf(_to), _value);
             assert(_to.call.value(0)(bytes4(sha3(_custom_fallback)), msg.sender, _value, _data));
@@ -129,12 +129,12 @@ contract MelonBitIndex_Erc223Token is SafeMath, Owned {
                 //retrieve the size of the code on target address, this needs assembly
                 length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         Transfer(msg.sender, _to, _value, _data);
@@ -143,7 +143,7 @@ contract MelonBitIndex_Erc223Token is SafeMath, Owned {
     
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);

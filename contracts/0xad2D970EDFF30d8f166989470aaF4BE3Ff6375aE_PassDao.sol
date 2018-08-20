@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with Pass DAO.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with Pass DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -48,7 +48,7 @@ contract PassDao {
     project[] public projects;
 
     // Map with the indexes of the projects
-    mapping (address =&gt; uint) projectID;
+    mapping (address => uint) projectID;
     
     // The address of the meta project
     address metaProject;
@@ -84,7 +84,7 @@ contract PassDao {
 // modifiers
 
     modifier onlyPassCommitteeRoom {if (msg.sender != revisions[0].committeeRoom  
-        &amp;&amp; revisions[0].committeeRoom != 0) throw; _;}
+        && revisions[0].committeeRoom != 0) throw; _;}
     
 // Constructor function
 

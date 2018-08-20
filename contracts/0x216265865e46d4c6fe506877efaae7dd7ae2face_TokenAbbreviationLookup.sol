@@ -9,7 +9,7 @@ contract owned {
     event OwnerChanged(address newOwner);
 
     modifier only_owner() {
-        require(msg.sender == owner, &quot;only_owner: forbidden&quot;);
+        require(msg.sender == owner, "only_owner: forbidden");
         _;
     }
 
@@ -24,7 +24,7 @@ contract owned {
 }
 
 contract hasAdmins is owned {
-    mapping (uint =&gt; mapping (address =&gt; bool)) admins;
+    mapping (uint => mapping (address => bool)) admins;
     uint public currAdminEpoch = 0;
     bool public adminsDisabledForever = false;
     address[] adminLog;
@@ -35,8 +35,8 @@ contract hasAdmins is owned {
     event AdminDisabledForever();
 
     modifier only_admin() {
-        require(adminsDisabledForever == false, &quot;admins must not be disabled&quot;);
-        require(isAdmin(msg.sender), &quot;only_admin: forbidden&quot;);
+        require(adminsDisabledForever == false, "admins must not be disabled");
+        require(isAdmin(msg.sender), "only_admin: forbidden");
         _;
     }
 
@@ -58,13 +58,13 @@ contract hasAdmins is owned {
 
     function upgradeMeAdmin(address newAdmin) only_admin() external {
         // note: already checked msg.sender has admin with `only_admin` modifier
-        require(msg.sender != owner, &quot;owner cannot upgrade self&quot;);
+        require(msg.sender != owner, "owner cannot upgrade self");
         _setAdmin(msg.sender, false);
         _setAdmin(newAdmin, true);
     }
 
     function setAdmin(address a, bool _givePerms) only_admin() external {
-        require(a != msg.sender &amp;&amp; a != owner, &quot;cannot change your own (or owner&#39;s) permissions&quot;);
+        require(a != msg.sender && a != owner, "cannot change your own (or owner's) permissions");
         _setAdmin(a, _givePerms);
     }
 
@@ -108,7 +108,7 @@ contract TokenAbbreviationLookup is hasAdmins {
         uint timestamp;
     }
 
-    mapping (bytes32 =&gt; Record) public lookup;
+    mapping (bytes32 => Record) public lookup;
 
     EditRec[] public edits;
 
@@ -118,8 +118,8 @@ contract TokenAbbreviationLookup is hasAdmins {
 
     function lookupAllSince(uint pastTs) external view returns (bytes32[] memory abrvs, bytes32[] memory democHashes, bool[] memory hiddens) {
         bytes32 abrv;
-        for (uint i = 0; i &lt; edits.length; i++) {
-            if (edits[i].timestamp &gt;= pastTs) {
+        for (uint i = 0; i < edits.length; i++) {
+            if (edits[i].timestamp >= pastTs) {
                 abrv = edits[i].abbreviation;
                 Record storage r = lookup[abrv];
                 abrvs = MemArrApp.appendBytes32(abrvs, abrv);
@@ -144,7 +144,7 @@ library MemArrApp {
     function appendUint256(uint256[] memory arr, uint256 val) internal pure returns (uint256[] memory toRet) {
         toRet = new uint256[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -154,7 +154,7 @@ library MemArrApp {
     function appendUint128(uint128[] memory arr, uint128 val) internal pure returns (uint128[] memory toRet) {
         toRet = new uint128[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -164,7 +164,7 @@ library MemArrApp {
     function appendUint64(uint64[] memory arr, uint64 val) internal pure returns (uint64[] memory toRet) {
         toRet = new uint64[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -174,7 +174,7 @@ library MemArrApp {
     function appendUint32(uint32[] memory arr, uint32 val) internal pure returns (uint32[] memory toRet) {
         toRet = new uint32[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -184,7 +184,7 @@ library MemArrApp {
     function appendUint16(uint16[] memory arr, uint16 val) internal pure returns (uint16[] memory toRet) {
         toRet = new uint16[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -194,7 +194,7 @@ library MemArrApp {
     function appendBool(bool[] memory arr, bool val) internal pure returns (bool[] memory toRet) {
         toRet = new bool[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -204,7 +204,7 @@ library MemArrApp {
     function appendBytes32(bytes32[] memory arr, bytes32 val) internal pure returns (bytes32[] memory toRet) {
         toRet = new bytes32[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -214,7 +214,7 @@ library MemArrApp {
     function appendBytes32Pair(bytes32[2][] memory arr, bytes32[2] val) internal pure returns (bytes32[2][] memory toRet) {
         toRet = new bytes32[2][](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -224,7 +224,7 @@ library MemArrApp {
     function appendBytes(bytes[] memory arr, bytes val) internal pure returns (bytes[] memory toRet) {
         toRet = new bytes[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -234,7 +234,7 @@ library MemArrApp {
     function appendAddress(address[] memory arr, address val) internal pure returns (address[] memory toRet) {
         toRet = new address[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 

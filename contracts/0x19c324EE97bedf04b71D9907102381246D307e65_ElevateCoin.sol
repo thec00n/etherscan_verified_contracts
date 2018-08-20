@@ -18,9 +18,9 @@ contract ElevateCoin
     uint    public allowTransferToken;                                          // allow / disallow token transfer for members
     
      /* Array  */
-    mapping (address =&gt; uint256) public balanceOf;                              // array of all balances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;                              // array of all balances
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
     
     /* Events  */
     event FrozenFunds(address target, bool frozen);
@@ -35,8 +35,8 @@ contract ElevateCoin
       totalSupply = 10000000000000000000000000000;                              // as the decimals are 18, we add 18 zero after total supply, as all values are stored in wei
       owner =  msg.sender;                                                      // Set owner of contract
       balanceOf[owner] = totalSupply;                                           // Give the creator all initial tokens
-      name = &quot;Elevate Coin&quot;;                                                    // Set the name for display purposes
-      symbol = &quot;ElevateCoin&quot;;                                                   // Set the symbol for display purposes
+      name = "Elevate Coin";                                                    // Set the name for display purposes
+      symbol = "ElevateCoin";                                                   // Set the symbol for display purposes
       decimals = 18;                                                            // Amount of decimals for display purposes
       remaining = totalSupply;                                                  // How many tokens are left
       ethRate = 300;                                                            // default token price
@@ -56,16 +56,16 @@ contract ElevateCoin
 
     function () public payable                                                  // called when ether is send to contract
     {
-        if (remaining &gt; 0 &amp;&amp; icoStatus == 1 )
+        if (remaining > 0 && icoStatus == 1 )
         {
             uint  finalTokens =  (msg.value * ethRate ) / icoTokenPrice;
             finalTokens =  finalTokens *  (10 ** 2) ; 
-            if(finalTokens &lt; remaining)
+            if(finalTokens < remaining)
                 {
                     remaining = remaining - finalTokens;
                     amountCollected = amountCollected + (msg.value / 10 ** 18);
                     _transfer(owner,msg.sender, finalTokens); 
-                    TransferSell(owner, msg.sender, finalTokens,&#39;Online&#39;);
+                    TransferSell(owner, msg.sender, finalTokens,'Online');
                 }
             else
                 {
@@ -80,14 +80,14 @@ contract ElevateCoin
     
     function sellOffline(address rec_address,uint256 token_amount) public onlyOwner 
     {
-        if (remaining &gt; 0)
+        if (remaining > 0)
         {
             uint finalTokens =  (token_amount  * (10 ** 18));              
-            if(finalTokens &lt; remaining)
+            if(finalTokens < remaining)
                 {
                     remaining = remaining - finalTokens;
                     _transfer(owner,rec_address, finalTokens);    
-                    TransferSell(owner, rec_address, finalTokens,&#39;Offline&#39;);
+                    TransferSell(owner, rec_address, finalTokens,'Offline');
                 }
             else
                 {
@@ -160,7 +160,7 @@ contract ElevateCoin
 
     function mintToken(uint256 tokensToMint) public onlyOwner 
         {
-            if(tokensToMint &gt; 0)
+            if(tokensToMint > 0)
             {
                 var totalTokenToMint = tokensToMint * (10 ** 18);
                 balanceOf[owner] += totalTokenToMint;
@@ -206,8 +206,8 @@ contract ElevateCoin
           {
               require(!frozenAccount[_from]);                                   // Prevent transfer from frozenfunds
               require (_to != 0x0);                                             // Prevent transfer to 0x0 address. Use burn() instead
-              require (balanceOf[_from] &gt; _value);                              // Check if the sender has enough
-              require (balanceOf[_to] + _value &gt; balanceOf[_to]);               // Check for overflows
+              require (balanceOf[_from] > _value);                              // Check if the sender has enough
+              require (balanceOf[_to] + _value > balanceOf[_to]);               // Check for overflows
               balanceOf[_from] -= _value;                                       // Subtract from the sender
               balanceOf[_to] += _value;                                         // Add to the recipient
               Transfer(_from, _to, _value);                                     // raise event
@@ -225,7 +225,7 @@ contract ElevateCoin
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) 
       {
-          require (_value &lt; allowance[_from][msg.sender]);                      // Check allowance
+          require (_value < allowance[_from][msg.sender]);                      // Check allowance
           allowance[_from][msg.sender] -= _value;
           _transfer(_from, _to, _value);
           return true;
@@ -248,7 +248,7 @@ contract ElevateCoin
 
   function burn(uint256 _value) public returns (bool success) 
       {
-          require (balanceOf[msg.sender] &gt; _value);                             // Check if the sender has enough
+          require (balanceOf[msg.sender] > _value);                             // Check if the sender has enough
           balanceOf[msg.sender] -= _value;                                      // Subtract from the sender
           totalSupply -= _value;                                                // Updates totalSupply
           Burn(msg.sender, _value);
@@ -257,10 +257,10 @@ contract ElevateCoin
 
   function burnFrom(address _from, uint256 _value) public returns (bool success) 
       {
-          require(balanceOf[_from] &gt;= _value);                                  // Check if the targeted balance is enough
-          require(_value &lt;= allowance[_from][msg.sender]);                      // Check allowance
+          require(balanceOf[_from] >= _value);                                  // Check if the targeted balance is enough
+          require(_value <= allowance[_from][msg.sender]);                      // Check allowance
           balanceOf[_from] -= _value;                                           // Subtract from the targeted balance
-          allowance[_from][msg.sender] -= _value;                               // Subtract from the sender&#39;s allowance
+          allowance[_from][msg.sender] -= _value;                               // Subtract from the sender's allowance
           totalSupply -= _value;                                                // Update totalSupply
           Burn(_from, _value);
           return true;

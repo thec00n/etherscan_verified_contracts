@@ -15,27 +15,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ interface TokenInterface {
   }
   
   event usersAwaitingTokens(address[] users);
-  mapping(address=&gt;userInformation) usersBuyingInformation;
+  mapping(address=>userInformation) usersBuyingInformation;
   address[] allUsers;
   address[] u;
   userInformation info;
@@ -153,10 +153,10 @@ interface TokenInterface {
   constructor(uint256 _startTime, address _wallet, address _tokenAddress) public 
   {
     require(_wallet != 0x0);
-    require(_startTime &gt;=now);
+    require(_startTime >=now);
     startTime = _startTime;  
     endTime = startTime + totalDurationInDays;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
    
     owner = _wallet;
     
@@ -189,50 +189,50 @@ interface TokenInterface {
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
         
         //phase 1 (16 days)
-        if (timeElapsedInDays &lt;16)
+        if (timeElapsedInDays <16)
         {
-            require(ethersSent&gt;=minimumContributionPhase1);
+            require(ethersSent>=minimumContributionPhase1);
             bonus = tokens.mul(bonusInPhase1); 
             bonus = bonus.div(100);
         }
         //phase 2 (31 days)
-        else if (timeElapsedInDays &gt;=16 &amp;&amp; timeElapsedInDays &lt;47)
+        else if (timeElapsedInDays >=16 && timeElapsedInDays <47)
         {
-            require(ethersSent&gt;=minimumContributionPhase2);
+            require(ethersSent>=minimumContributionPhase2);
             bonus = tokens.mul(bonusInPhase2); 
             bonus = bonus.div(100);
         }
          //phase 3 (15 days)
-        else if (timeElapsedInDays &gt;=47 &amp;&amp; timeElapsedInDays &lt;62)
+        else if (timeElapsedInDays >=47 && timeElapsedInDays <62)
         {
-            require(ethersSent&gt;=minimumContributionPhase3);
+            require(ethersSent>=minimumContributionPhase3);
             bonus = tokens.mul(bonusInPhase3); 
             bonus = bonus.div(100);
         }
         //(16 days) -- break
-        else if (timeElapsedInDays &gt;=62 &amp;&amp; timeElapsedInDays &lt;78)
+        else if (timeElapsedInDays >=62 && timeElapsedInDays <78)
         {
            revert();
         }
         //phase 5 (15 days) 
-        else if (timeElapsedInDays &gt;=78 &amp;&amp; timeElapsedInDays &lt;93)
+        else if (timeElapsedInDays >=78 && timeElapsedInDays <93)
         {
-            require(ethersSent&gt;=minimumContributionPhase4);
+            require(ethersSent>=minimumContributionPhase4);
             bonus = tokens.mul(bonusInPhase4); 
             bonus = bonus.div(100);
         }
         //phase 6 (15 days)
-        else if (timeElapsedInDays &gt;=93 &amp;&amp; timeElapsedInDays &lt;108)
+        else if (timeElapsedInDays >=93 && timeElapsedInDays <108)
         {
-            require(ethersSent&gt;=minimumContributionPhase5);
+            require(ethersSent>=minimumContributionPhase5);
             bonus = tokens.mul(bonusInPhase5); 
             bonus = bonus.div(10);  //to cater for the 7.5 figure
             bonus = bonus.div(100);
         }
          //phase 7 (15 days) 
-        else if (timeElapsedInDays &gt;=108 &amp;&amp; timeElapsedInDays &lt;123)
+        else if (timeElapsedInDays >=108 && timeElapsedInDays <123)
         {
-            require(ethersSent&gt;=minimumContributionPhase6);
+            require(ethersSent>=minimumContributionPhase6);
             bonus = tokens.mul(bonusInPhase6); 
             bonus = bonus.div(100);
         }
@@ -278,14 +278,14 @@ interface TokenInterface {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
     /**
@@ -294,9 +294,9 @@ interface TokenInterface {
     **/
     function changeStartAndEndDate (uint256 startTimeUnixTimestamp, uint256 endTimeUnixTimestamp) public onlyOwner
     {
-        require (startTimeUnixTimestamp!=0 &amp;&amp; endTimeUnixTimestamp!=0);
-        require(endTimeUnixTimestamp&gt;startTimeUnixTimestamp);
-        require(endTimeUnixTimestamp.sub(startTimeUnixTimestamp) &gt;=totalDurationInDays);
+        require (startTimeUnixTimestamp!=0 && endTimeUnixTimestamp!=0);
+        require(endTimeUnixTimestamp>startTimeUnixTimestamp);
+        require(endTimeUnixTimestamp.sub(startTimeUnixTimestamp) >=totalDurationInDays);
         startTime = startTimeUnixTimestamp;
         endTime = endTimeUnixTimestamp;
     }
@@ -368,7 +368,7 @@ interface TokenInterface {
       **/
      function approveMultipleUsers(address[] users) public onlyOwner {
          
-         for (uint i=0;i&lt;users.length;i++)
+         for (uint i=0;i<users.length;i++)
          {
             usersBuyingInformation[users[i]].isKYCApproved = true;    
          }
@@ -379,14 +379,14 @@ interface TokenInterface {
       * can only be called by the owner
       **/
      function distributeTokensToApprovedUsers() public onlyOwner {
-        for(uint i=0;i&lt;allUsers.length;i++)
+        for(uint i=0;i<allUsers.length;i++)
         {
-            if (usersBuyingInformation[allUsers[i]].isKYCApproved == true &amp;&amp; usersBuyingInformation[allUsers[i]].tokensToBeSent&gt;0)
+            if (usersBuyingInformation[allUsers[i]].isKYCApproved == true && usersBuyingInformation[allUsers[i]].tokensToBeSent>0)
             {
                 address to = allUsers[i];
                 uint tokens = usersBuyingInformation[to].tokensToBeSent;
                 token.transfer(to,tokens);
-                if (usersBuyingInformation[allUsers[i]].ethersToBeSent&gt;0)
+                if (usersBuyingInformation[allUsers[i]].ethersToBeSent>0)
                     owner.transfer(usersBuyingInformation[allUsers[i]].ethersToBeSent);
                 TOKENS_SOLD = TOKENS_SOLD.add(usersBuyingInformation[allUsers[i]].tokensToBeSent);
                 weiRaised = weiRaised.add(usersBuyingInformation[allUsers[i]].ethersToBeSent);
@@ -401,14 +401,14 @@ interface TokenInterface {
       * can only be called by the owner
       **/
      function distributeTokensToAllUsers() public onlyOwner {
-        for(uint i=0;i&lt;allUsers.length;i++)
+        for(uint i=0;i<allUsers.length;i++)
         {
-            if (usersBuyingInformation[allUsers[i]].tokensToBeSent&gt;0)
+            if (usersBuyingInformation[allUsers[i]].tokensToBeSent>0)
             {
                 address to = allUsers[i];
                 uint tokens = usersBuyingInformation[to].tokensToBeSent;
                 token.transfer(to,tokens);
-                if (usersBuyingInformation[allUsers[i]].ethersToBeSent&gt;0)
+                if (usersBuyingInformation[allUsers[i]].ethersToBeSent>0)
                     owner.transfer(usersBuyingInformation[allUsers[i]].ethersToBeSent);
                 TOKENS_SOLD = TOKENS_SOLD.add(usersBuyingInformation[allUsers[i]].tokensToBeSent);
                 weiRaised = weiRaised.add(usersBuyingInformation[allUsers[i]].ethersToBeSent);
@@ -423,7 +423,7 @@ interface TokenInterface {
       * can only be called by the owner
       **/
      function refundSingleUser(address user) public onlyOwner {
-         require(usersBuyingInformation[user].ethersToBeSent &gt; 0 );
+         require(usersBuyingInformation[user].ethersToBeSent > 0 );
          user.transfer(usersBuyingInformation[user].ethersToBeSent);
          usersBuyingInformation[user].tokensToBeSent = 0;
          usersBuyingInformation[user].ethersToBeSent = 0;
@@ -434,9 +434,9 @@ interface TokenInterface {
       * can only be called by the owner
       **/
      function refundMultipleUsers(address[] users) public onlyOwner {
-         for (uint i=0;i&lt;users.length;i++)
+         for (uint i=0;i<users.length;i++)
          {
-            require(usersBuyingInformation[users[i]].ethersToBeSent &gt;0);
+            require(usersBuyingInformation[users[i]].ethersToBeSent >0);
             users[i].transfer(usersBuyingInformation[users[i]].ethersToBeSent);
             usersBuyingInformation[users[i]].tokensToBeSent = 0;
             usersBuyingInformation[users[i]].ethersToBeSent = 0;
@@ -460,9 +460,9 @@ interface TokenInterface {
      function getUsersAwaitingForTokensTop150(bool fetch) public constant returns (address[150])  {
           address[150] memory awaiting;
          uint k = 0;
-         for (uint i=0;i&lt;allUsers.length;i++)
+         for (uint i=0;i<allUsers.length;i++)
          {
-             if (usersBuyingInformation[allUsers[i]].isKYCApproved == true &amp;&amp; usersBuyingInformation[allUsers[i]].tokensToBeSent&gt;0)
+             if (usersBuyingInformation[allUsers[i]].isKYCApproved == true && usersBuyingInformation[allUsers[i]].tokensToBeSent>0)
              {
                  awaiting[k] = allUsers[i];
                  k = k.add(1);
@@ -480,9 +480,9 @@ interface TokenInterface {
       **/ 
      function getUsersAwaitingForTokens() public onlyOwner returns (address[])  {
          delete u;
-         for (uint i=0;i&lt;allUsers.length;i++)
+         for (uint i=0;i<allUsers.length;i++)
          {
-             if (usersBuyingInformation[allUsers[i]].isKYCApproved == true &amp;&amp; usersBuyingInformation[allUsers[i]].tokensToBeSent&gt;0)
+             if (usersBuyingInformation[allUsers[i]].isKYCApproved == true && usersBuyingInformation[allUsers[i]].tokensToBeSent>0)
              {
                  u.push(allUsers[i]);
              }
@@ -528,7 +528,7 @@ interface TokenInterface {
       {
          address[150] memory unapprove;
          uint k = 0;
-         for (uint i=0;i&lt;allUsers.length;i++)
+         for (uint i=0;i<allUsers.length;i++)
          {
              if (usersBuyingInformation[allUsers[i]].isKYCApproved == false)
              {
@@ -549,7 +549,7 @@ interface TokenInterface {
       function getUnapprovedUsers() public onlyOwner returns (address[]) 
       {
          delete u;
-         for (uint i=0;i&lt;allUsers.length;i++)
+         for (uint i=0;i<allUsers.length;i++)
          {
              if (usersBuyingInformation[allUsers[i]].isKYCApproved == false)
              {
@@ -577,7 +577,7 @@ interface TokenInterface {
       function changeUserEthAddress(address oldEthAddress, address newEthAddress) public onlyOwner 
       {
           usersBuyingInformation[newEthAddress] = usersBuyingInformation[oldEthAddress];
-          for (uint i=0;i&lt;allUsers.length;i++)
+          for (uint i=0;i<allUsers.length;i++)
           {
               if (allUsers[i] == oldEthAddress)
                 allUsers[i] = newEthAddress;

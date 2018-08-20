@@ -21,7 +21,7 @@ contract PREICO is owned {
 
   uint public totalSupply_;
   address[] holders_;
-  mapping( address =&gt; uint ) public balances_;
+  mapping( address => uint ) public balances_;
 
   function PREICO() public {
     totalSupply_ = uint(0);
@@ -40,7 +40,7 @@ contract PREICO is owned {
   function add( address holder, uint amount ) onlyOwner public
   {
     require( holder != address(0) );
-    require( balances_[holder] + amount &gt; balances_[holder] ); // overflow
+    require( balances_[holder] + amount > balances_[holder] ); // overflow
 
     balances_[holder] += amount;
     totalSupply_ += amount;
@@ -54,7 +54,7 @@ contract PREICO is owned {
 
   function sub( address holder, uint amount ) onlyOwner public
   {
-    require( holder != address(0) &amp;&amp; balances_[holder] &gt;= amount );
+    require( holder != address(0) && balances_[holder] >= amount );
 
     balances_[holder] -= amount;
     totalSupply_ -= amount;
@@ -62,7 +62,7 @@ contract PREICO is owned {
 
   function isHolder( address who ) internal constant returns (bool)
   {
-    for( uint ii = 0; ii &lt; holders_.length; ii++ )
+    for( uint ii = 0; ii < holders_.length; ii++ )
       if (holders_[ii] == who) return true;
 
     return false;

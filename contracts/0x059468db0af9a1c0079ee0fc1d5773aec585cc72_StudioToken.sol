@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
        
        using SafeMath for uint256;
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -50,11 +50,11 @@ library SafeMath {
     
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping ( uint =&gt; address ) public accountIndex;
+    mapping (address => uint256) public balanceOf;
+    mapping ( uint => address ) public accountIndex;
     uint accountCount;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -71,8 +71,8 @@ library SafeMath {
         appendTokenHolders ( msg.sender );    
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
-        name = &quot;Studio&quot;;                                   // Set the name for display purposes
-        symbol = &quot;STDO&quot;;                               // Set the symbol for display purposes
+        name = "Studio";                                   // Set the name for display purposes
+        symbol = "STDO";                               // Set the symbol for display purposes
         decimals = decimalUnits;                            // Amount of decimals for display purposes
         
         owner = msg.sender;
@@ -113,8 +113,8 @@ library SafeMath {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         if (  pauseForDividend == true ) throw;// Check for overflows
         appendTokenHolders ( _to);
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
@@ -142,9 +142,9 @@ library SafeMath {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         if (  pauseForDividend == true ) throw;// Check for overflows
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
@@ -154,7 +154,7 @@ library SafeMath {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw;            // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -162,8 +162,8 @@ library SafeMath {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw;    // Check allowance
+        if (balanceOf[_from] < _value) throw;                // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw;    // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         totalSupply -= _value;                               // Updates totalSupply
         Burn(_from, _value);
@@ -219,7 +219,7 @@ contract Dividend {
     
     
     
-     mapping (address =&gt; uint256) public balanceOf;
+     mapping (address => uint256) public balanceOf;
     
     
     event Message(uint256 holder_profit);
@@ -255,7 +255,7 @@ contract Dividend {
         
         if (msg.sender == owner) {
             
-            for ( uint i=0; i &lt; accountCount ; i++ ) {
+            for ( uint i=0; i < accountCount ; i++ ) {
                
                address tokenHolder = studio.getAddress(i);
                balanceOf[ tokenHolder ] +=  studio.getBalance( tokenHolder ) * profit_per_token;

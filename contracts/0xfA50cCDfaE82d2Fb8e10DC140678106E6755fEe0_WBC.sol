@@ -34,20 +34,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -105,16 +105,16 @@ contract WBC is Token, Owned {
     /// wbc token, ERC20 compliant
     using SafeMath for uint256;
 
-    string public constant name    = &quot;WEBIC Token&quot;;  //The Token&#39;s name
+    string public constant name    = "WEBIC Token";  //The Token's name
     uint8 public constant decimals = 6;               //Number of decimals of the smallest unit
-    string public constant symbol  = &quot;WEBIC&quot;;            //An identifier
+    string public constant symbol  = "WEBIC";            //An identifier
 
 
     uint totoals=0;
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
 
@@ -138,9 +138,9 @@ contract WBC is Token, Owned {
     }
 
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) public {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Transfer(msg.sender, _to, _amount);
@@ -156,7 +156,7 @@ contract WBC is Token, Owned {
         uint256 _amount
     ) public {
 
-        require(allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(allowed[_from][msg.sender] >= _amount && _amount > 0);
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -246,10 +246,10 @@ contract wbcSale is Owned {
     /// @param _wbc The address wbc token contract following ERC20 standard
     function initialize (
         WBC _wbc,address raiseAcc,address team1Acc,address team2Acc,address team3Acc) public onlyOwner {
-        require(blockTime()&gt;=startTime);
+        require(blockTime()>=startTime);
         // ownership of token contract should already be this
         require(_wbc.owner() == address(this));
-        require(raiseAcc!=0&amp;&amp;team1Acc != 0&amp;&amp;team2Acc != 0&amp;&amp;team3Acc != 0);
+        require(raiseAcc!=0&&team1Acc != 0&&team2Acc != 0&&team3Acc != 0);
         wbc = _wbc;
         raiseAccount = raiseAcc;
         team1Account = team1Acc;

@@ -2,15 +2,15 @@ pragma solidity ^0.4.24;
 
 
 /// @title Role based access control mixin for MUST Platform
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16777a7364386c777b667f7a7a7956717b777f7a3875797b">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16777a7364386c777b667f7a7a7956717b777f7a3875797b">[email protected]</a>>
 /// @dev Ignore DRY approach to achieve readability
 contract RBACMixin {
   /// @notice Constant string message to throw on lack of access
-  string constant FORBIDDEN = &quot;Haven&#39;t enough right to access&quot;;
+  string constant FORBIDDEN = "Haven't enough right to access";
   /// @notice Public map of owners
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
   /// @notice Public map of minters
-  mapping (address =&gt; bool) public minters;
+  mapping (address => bool) public minters;
 
   /// @notice The event indicates the addition of a new owner
   /// @param who is address of added owner
@@ -130,8 +130,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -146,9 +146,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -156,7 +156,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -165,7 +165,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -177,7 +177,7 @@ interface IMintableToken {
 
 
 /// @title Very simplified implementation of Token Bucket Algorithm to secure token minting
-/// @author Aler Denisov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="66070a0314481c070b160f0a0a0926010b070f0a4805090b">[email&#160;protected]</a>&gt;
+/// @author Aler Denisov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="66070a0314481c070b160f0a0a0926010b070f0a4805090b">[email protected]</a>>
 /// @notice Works with tokens implemented Mintable interface
 /// @dev Transfer ownership/minting role to contract and execute mint over TokenBucket proxy to secure
 contract TokenBucket is RBACMixin, IMintableToken {
@@ -238,7 +238,7 @@ contract TokenBucket is RBACMixin, IMintableToken {
   /// @param _rate is new refill rate of bucket
   /// @return A boolean that indicates if the operation was successful.
   function setSizeAndRate(uint256 _size, uint256 _rate) public onlyOwner returns (bool) {
-    return setSize(_size) &amp;&amp; setRate(_rate);
+    return setSize(_size) && setRate(_rate);
   }
 
   /// @notice Function to mint tokens
@@ -247,7 +247,7 @@ contract TokenBucket is RBACMixin, IMintableToken {
   /// @return A boolean that indicates if the operation was successful.
   function mint(address _to, uint256 _amount) public onlyMinter returns (bool) {
     uint256 available = availableTokens();
-    require(_amount &lt;= available);
+    require(_amount <= available);
     leftOnLastMint = available.sub(_amount);
     lastMintTime = now; // solium-disable-line security/no-block-members
     require(token.mint(_to, _amount));
@@ -260,6 +260,6 @@ contract TokenBucket is RBACMixin, IMintableToken {
      // solium-disable-next-line security/no-block-members
     uint256 timeAfterMint = now.sub(lastMintTime);
     uint256 refillAmount = rate.mul(timeAfterMint).add(leftOnLastMint);
-    return size &lt; refillAmount ? size : refillAmount;
+    return size < refillAmount ? size : refillAmount;
   }
 }

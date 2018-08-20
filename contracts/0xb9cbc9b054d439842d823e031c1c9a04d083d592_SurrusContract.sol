@@ -33,13 +33,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -53,10 +53,10 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
-    * @dev Gets the balance of user&#39;s address.
+    * @dev Gets the balance of user's address.
     * @param _owner The address to query the the balance of.
     * @return An uint256 representing the amount owned by the passed address.
     */
@@ -86,14 +86,14 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
 
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -123,13 +123,13 @@ contract SurrusContract is StandardToken {
 
     address owner;
 
-    string public constant name = &quot;SurruS&quot;;
+    string public constant name = "SurruS";
 
-    string public constant symbol = &quot;SURR&quot;;
+    string public constant symbol = "SURR";
 
     uint32 public constant decimals = 18;
     
-    string public description=&quot;tokens for ico&quot;;
+    string public description="tokens for ico";
 
     uint256 public INITIAL_SUPPLY = 860000000000000000000000000; //860 000 000, 000 000 000 000 000 000
 
@@ -152,7 +152,7 @@ contract SurrusContract is StandardToken {
      */
     function burnByOwner(address _comandWallet) onlyOwner()  public {
         uint256 soldTokens =totalSupply.sub(balanceOf(owner));
-        if(soldTokens&gt;=520000000000000000000000000)
+        if(soldTokens>=520000000000000000000000000)
             transfer( _comandWallet, balances[owner]);
         else{
             uint256 tmp = soldTokens.mul(40);
@@ -163,7 +163,7 @@ contract SurrusContract is StandardToken {
     }
 
     function burn(uint256 _value) internal {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);

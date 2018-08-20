@@ -22,14 +22,14 @@ contract NeterContract {
     bool public lockdown = false;
 
 
-    string public standard = &#39;Neter token 1.0&#39;;
-    string public name = &#39;Neter&#39;;
-    string public symbol = &#39;NTR&#39;;
+    string public standard = 'Neter token 1.0';
+    string public name = 'Neter';
+    string public symbol = 'NTR';
     uint8 public decimals = 8;
 
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     IProxyManagement proxyManagementContract;
 
 
@@ -48,8 +48,8 @@ contract NeterContract {
     }
 
     function transfer(address _to, uint256 _amount) returns (uint error) {
-        if(balances[msg.sender] &lt; _amount) { return 55; }
-        if(balances[_to] + _amount &lt;= balances[_to]) { return 55; }
+        if(balances[msg.sender] < _amount) { return 55; }
+        if(balances[_to] + _amount <= balances[_to]) { return 55; }
         if(lockdown) { return 55; }
 
         balances[msg.sender] -= _amount;
@@ -60,9 +60,9 @@ contract NeterContract {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) returns (uint error) {
-        if(balances[_from] &lt; _amount) { return 55; }
-        if(balances[_to] + _amount &lt;= balances[_to]) { return 55; }
-        if(_amount &gt; allowed[_from][msg.sender]) { return 55; }
+        if(balances[_from] < _amount) { return 55; }
+        if(balances[_to] + _amount <= balances[_to]) { return 55; }
+        if(_amount > allowed[_from][msg.sender]) { return 55; }
         if(lockdown) { return 55; }
 
         balances[_from] -= _amount;
@@ -85,8 +85,8 @@ contract NeterContract {
     function transferViaProxy(address _source, address _to, uint256 _amount) returns (uint error){
         if (!proxyManagementContract.isProxyLegit(msg.sender)) { return 1; }
 
-        if (balances[_source] &lt; _amount) {return 55;}
-        if (balances[_to] + _amount &lt;= balances[_to]) {return 55;}
+        if (balances[_source] < _amount) {return 55;}
+        if (balances[_to] + _amount <= balances[_to]) {return 55;}
         if (lockdown) {return 55;}
 
         balances[_source] -= _amount;
@@ -103,10 +103,10 @@ contract NeterContract {
     function transferFromViaProxy(address _source, address _from, address _to, uint256 _amount) returns (uint error) {
         if (!proxyManagementContract.isProxyLegit(msg.sender)){ return 1; }
 
-        if (balances[_from] &lt; _amount) {return 55;}
-        if (balances[_to] + _amount &lt;= balances[_to]) {return 55;}
+        if (balances[_from] < _amount) {return 55;}
+        if (balances[_to] + _amount <= balances[_to]) {return 55;}
         if (lockdown) {return 55;}
-        if (_amount &gt; allowed[_from][_source]) {return 55;}
+        if (_amount > allowed[_from][_source]) {return 55;}
 
         balances[_from] -= _amount;
         balances[_to] += _amount;
@@ -135,8 +135,8 @@ contract NeterContract {
     function issueNewCoins(address _destination, uint _amount, string _details) returns (uint error){
         if (msg.sender != creationAddress) { return 1;}
 
-        if(balances[_destination] + _amount &lt; balances[_destination]) { return 55;}
-        if(totalSupply + _amount &lt; totalSupply) { return 55; }
+        if(balances[_destination] + _amount < balances[_destination]) { return 55;}
+        if(totalSupply + _amount < totalSupply) { return 55; }
 
         totalSupply += _amount;
         balances[_destination] += _amount;
@@ -148,7 +148,7 @@ contract NeterContract {
     function destroyOldCoins(address _destination, uint _amount, string _details) returns (uint error) {
         if (msg.sender != destructionAddress) { return 1;}
 
-        if (balances[_destination] &lt; _amount) { return 55;} 
+        if (balances[_destination] < _amount) { return 55;} 
 
         totalSupply -= _amount;
         balances[_destination] -= _amount;
@@ -186,7 +186,7 @@ contract NeterContract {
     }
 
     function emergencyLock() returns (uint error){
-        if (msg.sender != curator &amp;&amp; msg.sender != dev) { return 1; }
+        if (msg.sender != curator && msg.sender != dev) { return 1; }
         
         lockdown = !lockdown;
         return 0;

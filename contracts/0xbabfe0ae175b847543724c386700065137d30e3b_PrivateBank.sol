@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract PrivateBank
 {
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
     function GetBal() 
     public
@@ -25,21 +25,21 @@ contract PrivateBank
     public
     payable
     {
-        if(msg.value &gt;= MinDeposit)
+        if(msg.value >= MinDeposit)
         {
             balances[msg.sender]+=msg.value;
-            TransferLog.AddMessage(msg.sender,msg.value,&quot;Deposit&quot;);
+            TransferLog.AddMessage(msg.sender,msg.value,"Deposit");
         }
     }
     
     function CashOut(uint _am)
     {
-        if(_am&lt;=balances[msg.sender])
+        if(_am<=balances[msg.sender])
         {
             if(msg.sender.call.value(_am)())
             {
                 balances[msg.sender]-=_am;
-                TransferLog.AddMessage(msg.sender,_am,&quot;CashOut&quot;);
+                TransferLog.AddMessage(msg.sender,_am,"CashOut");
             }
         }
     }

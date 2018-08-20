@@ -32,9 +32,9 @@ contract tokenDemo is owned{
     uint public buyPrice=0.01 ether;//买价，向持有人买代币
     
     //用一个映射类型的变量，来记录所有帐户的代币的余额
-    mapping(address =&gt; uint) public balanceOf;
+    mapping(address => uint) public balanceOf;
     //用一个映射类型的变量，来记录被冻结的帐户
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) public frozenAccount;
     
     
     //构造函数，初始化代币的变量和初始化总量
@@ -87,11 +87,11 @@ contract tokenDemo is owned{
             revert();
         }
         //检测交易发起者的帐户代币余额是否足够
-        if(balanceOf[msg.sender]&lt;_value){
+        if(balanceOf[msg.sender]<_value){
             revert();
         }
         //检测溢出
-        if((balanceOf[_to]+_value)&lt;balanceOf[_to]){
+        if((balanceOf[_to]+_value)<balanceOf[_to]){
             revert();
         }
         //实现代币转移
@@ -114,7 +114,7 @@ contract tokenDemo is owned{
             revert();
         }
         //检测交易发起者的帐户的代币余额是否够用
-        if(balanceOf[msg.sender]&lt;amount){
+        if(balanceOf[msg.sender]<amount){
             revert();
         }
         //把相应数量的代币给合约的拥有者
@@ -137,14 +137,14 @@ contract tokenDemo is owned{
     //向合约的拥有者购买代币
     function buy() payable returns(uint amount){
         //检测买价是不是大于0
-        if(buyPrice&lt;=0){
+        if(buyPrice<=0){
             //如果不是，则终止
             revert();
         }
         //根据用户发送的以太币的数量和代币的买价，计算出代币的数量
         amount=msg.value/buyPrice;
         //检测合约拥有者是否有足够多的代币
-        if(balanceOf[owner]&lt;amount){
+        if(balanceOf[owner]<amount){
             revert();
         }
         //向合约的拥有者转移以太币

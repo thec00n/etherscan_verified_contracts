@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    //   require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //   require(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    //   require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    //   require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -84,7 +84,7 @@ contract Governable {
 
   modifier onlyAdmins() {
     bool isAdmin = false;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (msg.sender == admins[i]) {
         isAdmin = true;
       }
@@ -94,23 +94,23 @@ contract Governable {
   }
 
   function addAdmin(address _admin) public onlyAdmins {
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       require(_admin != admins[i]);
     }
-    require(admins.length &lt; 10);
+    require(admins.length < 10);
     admins[admins.length++] = _admin;
   }
 
   function removeAdmin(address _admin) public onlyAdmins {
     uint256 pos = admins.length;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (_admin == admins[i]) {
         pos = i;
       }
     }
-    require(pos &lt; admins.length);
+    require(pos < admins.length);
     // if not last element, switch with last
-    if (pos &lt; admins.length - 1) {
+    if (pos < admins.length - 1) {
       admins[pos] = admins[admins.length - 1];
     }
     // then cut off the tail
@@ -165,14 +165,14 @@ contract Pausable is Governable {
 
 contract DataCentre is Ownable {
     struct Container {
-        mapping(bytes32 =&gt; uint256) values;
-        mapping(bytes32 =&gt; address) addresses;
-        mapping(bytes32 =&gt; bool) switches;
-        mapping(address =&gt; uint256) balances;
-        mapping(address =&gt; mapping (address =&gt; uint)) constraints;
+        mapping(bytes32 => uint256) values;
+        mapping(bytes32 => address) addresses;
+        mapping(bytes32 => bool) switches;
+        mapping(address => uint256) balances;
+        mapping(address => mapping (address => uint)) constraints;
     }
 
-    mapping(bytes32 =&gt; Container) containers;
+    mapping(bytes32 => Container) containers;
 
     // Owner Functions
     function setValue(bytes32 _container, bytes32 _key, uint256 _value) onlyOwner {
@@ -331,7 +331,7 @@ contract Token is Ownable, ERC20 {
     assembly {
       codeLength := extcodesize(_to)
     }
-    if(codeLength&gt;0) {
+    if(codeLength>0) {
       ERC223ReceivingContract untrustedReceiver = ERC223ReceivingContract(_to);
       // untrusted contract call
       untrustedReceiver.tokenFallback(_from, _value, _data);
@@ -344,8 +344,8 @@ contract Token is Ownable, ERC20 {
  */
 contract SGPay is Token {
 
-  string public constant name = &quot;SGPay Token&quot;;
-  string public constant symbol = &quot;SGP&quot;;
+  string public constant name = "SGPay Token";
+  string public constant symbol = "SGP";
   uint8 public constant decimals = 18;
 
 }
@@ -365,28 +365,28 @@ contract DataManager is Pausable {
 
   // Constant Functions
   function balanceOf(address _owner) constant returns (uint256) {
-    return DataCentre(dataCentreAddr).getBalanace(&#39;STK&#39;, _owner);
+    return DataCentre(dataCentreAddr).getBalanace('STK', _owner);
   }
 
   function totalSupply() constant returns (uint256) {
-    return DataCentre(dataCentreAddr).getValue(&#39;STK&#39;, &#39;totalSupply&#39;);
+    return DataCentre(dataCentreAddr).getValue('STK', 'totalSupply');
   }
 
   function allowance(address _owner, address _spender) constant returns (uint256) {
-    return DataCentre(dataCentreAddr).getConstraint(&#39;STK&#39;, _owner, _spender);
+    return DataCentre(dataCentreAddr).getConstraint('STK', _owner, _spender);
   }
 
   function _setTotalSupply(uint256 _newTotalSupply) internal {
-    DataCentre(dataCentreAddr).setValue(&#39;STK&#39;, &#39;totalSupply&#39;, _newTotalSupply);
+    DataCentre(dataCentreAddr).setValue('STK', 'totalSupply', _newTotalSupply);
   }
 
   function _setBalanceOf(address _owner, uint256 _newValue) internal {
-    DataCentre(dataCentreAddr).setBalanace(&#39;STK&#39;, _owner, _newValue);
+    DataCentre(dataCentreAddr).setBalanace('STK', _owner, _newValue);
   }
 
   function _setAllowance(address _owner, address _spender, uint256 _newValue) internal {
-    require(balanceOf(_owner) &gt;= _newValue);
-    DataCentre(dataCentreAddr).setConstraint(&#39;STK&#39;, _owner, _spender, _newValue);
+    require(balanceOf(_owner) >= _newValue);
+    DataCentre(dataCentreAddr).setConstraint('STK', _owner, _spender, _newValue);
   }
 
 }
@@ -419,7 +419,7 @@ contract SimpleControl is DataManager {
   function _transfer(address _from, address _to, uint256 _amount, bytes _data) internal {
     require(_to != address(this));
     require(_to != address(0));
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_from != _to);
     _setBalanceOf(_from, balanceOf(_from).sub(_amount));
     _setBalanceOf(_to, balanceOf(_to).add(_amount));

@@ -2,7 +2,7 @@ pragma solidity ^0.4.19; // solhint-disable-line
 
 /**
   * Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-  * @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email&#160;protected]</a>&gt; (https://github.com/dete)
+  * @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email protected]</a>> (https://github.com/dete)
   */
 contract ERC721 {
   // Required methods
@@ -43,9 +43,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -62,7 +62,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -110,8 +110,8 @@ contract LibraryToken is ERC721 {
   /**
     * @notice Name and symbol of the non-fungible token, as defined in ERC721.
     */
-  string public constant NAME = &quot;CryptoLibraries&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CL&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoLibraries"; // solhint-disable-line
+  string public constant SYMBOL = "CL"; // solhint-disable-line
 
   /**
     * @dev Increase tiers to deterine how much price have to be changed
@@ -129,40 +129,40 @@ contract LibraryToken is ERC721 {
     * @dev A mapping from library IDs to the address that owns them.
     * All libraries have some valid owner address.
     */
-  mapping (uint256 =&gt; address) public libraryIndexToOwner;
+  mapping (uint256 => address) public libraryIndexToOwner;
 
   /**
     * @dev A mapping from library IDs to the address that founder of library.
     */
-  mapping (uint256 =&gt; address) public libraryIndexToFounder;
+  mapping (uint256 => address) public libraryIndexToFounder;
 
   /**
     * @dev A mapping from founder address to token count.
   */
-  mapping (address =&gt; uint256) public libraryIndexToFounderCount;
+  mapping (address => uint256) public libraryIndexToFounderCount;
 
   /**
     * @dev A mapping from owner address to count of tokens that address owns.
     * Used internally inside balanceOf() to resolve ownership count.
     */
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /**
     * @dev A mapping from LibraryIDs to an address that has been approved to call
     * transferFrom(). Each Library can only have one approved address for transfer
     * at any time. A zero value means no approval is outstanding.
     */
-  mapping (uint256 =&gt; address) public libraryIndexToApproved;
+  mapping (uint256 => address) public libraryIndexToApproved;
 
   /**
     * @dev A mapping from LibraryIDs to the price of the token.
     */
-  mapping (uint256 =&gt; uint256) private libraryIndexToPrice;
+  mapping (uint256 => uint256) private libraryIndexToPrice;
 
   /**
     * @dev A mapping from LibraryIDs to the funds avaialble for founder.
     */
-  mapping (uint256 =&gt; uint256) private libraryIndexToFunds;
+  mapping (uint256 => uint256) private libraryIndexToFunds;
 
   /**
     * The addresses of the owner that can execute actions within each roles.
@@ -223,7 +223,7 @@ contract LibraryToken is ERC721 {
   )
     public
   {
-    // Caller can&#39;t be approver of request
+    // Caller can't be approver of request
     require(msg.sender != _to);
 
     // Caller must own token.
@@ -442,13 +442,13 @@ contract LibraryToken is ERC721 {
     * @return _nextPrice The next price
     */
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; TIER1) {
+    if (_price < TIER1) {
       return _price.mul(200).div(95);
-    } else if (_price &lt; TIER2) {
+    } else if (_price < TIER2) {
       return _price.mul(135).div(96);
-    } else if (_price &lt; TIER3) {
+    } else if (_price < TIER3) {
       return _price.mul(125).div(97);
-    } else if (_price &lt; TIER4) {
+    } else if (_price < TIER4) {
       return _price.mul(117).div(97);
     } else {
       return _price.mul(115).div(98);
@@ -456,18 +456,18 @@ contract LibraryToken is ERC721 {
   }
 
   /**
-    * For querying developer&#39;s cut which is left in the contract by `purchase`
+    * For querying developer's cut which is left in the contract by `purchase`
     * @param _price The token actual price
-    * @return _devCut The developer&#39;s cut
+    * @return _devCut The developer's cut
     */
   function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-    if (_price &lt; TIER1) {
+    if (_price < TIER1) {
       return _price.mul(5).div(100); // 5%
-    } else if (_price &lt; TIER2) {
+    } else if (_price < TIER2) {
       return _price.mul(4).div(100); // 4%
-    } else if (_price &lt; TIER3) {
+    } else if (_price < TIER3) {
       return _price.mul(3).div(100); // 3%
-    } else if (_price &lt; TIER4) {
+    } else if (_price < TIER4) {
       return _price.mul(3).div(100); // 3%
     } else {
       return _price.mul(2).div(100); // 2%
@@ -483,7 +483,7 @@ contract LibraryToken is ERC721 {
   }
 
   /**
-    * @dev This function withdrawing all of developer&#39;s cut which is left in the contract by `purchase`.
+    * @dev This function withdrawing all of developer's cut which is left in the contract by `purchase`.
     * User funds are immediately sent to the old owner in `purchase`, no user funds are left in the contract
     * expect funds that stay in the contract that are waiting to be sent to a founder of a library when we would assign him.
     */
@@ -494,20 +494,20 @@ contract LibraryToken is ERC721 {
   }
 
   /**
-    * @dev This function withdrawing selected amount of developer&#39;s cut which is left in the contract by `purchase`.
+    * @dev This function withdrawing selected amount of developer's cut which is left in the contract by `purchase`.
     * User funds are immediately sent to the old owner in `purchase`, no user funds are left in the contract
     * expect funds that stay in the contract that are waiting to be sent to a founder of a library when we would assign him.
     * @param _amount The amount to withdraw
     */
   function withdrawAmount (uint256 _amount) onlyOwner() public {
-    require(_amount &gt;= developersCut);
+    require(_amount >= developersCut);
 
     owner.transfer(_amount);
     developersCut = developersCut.sub(_amount);
   }
 
     /**
-    * @dev This function withdrawing selected amount of developer&#39;s cut which is left in the contract by `purchase`.
+    * @dev This function withdrawing selected amount of developer's cut which is left in the contract by `purchase`.
     * User funds are immediately sent to the old owner in `purchase`, no user funds are left in the contract
     * expect funds that stay in the contract that are waiting to be sent to a founder of a library when we would assign him.
     */
@@ -537,7 +537,7 @@ contract LibraryToken is ERC721 {
 
     // Making sure sent amount is greater than or equal to the sellingPrice
     uint256 price = libraryIndexToPrice[_tokenId];
-    require(msg.value &gt;= price);
+    require(msg.value >= price);
 
     uint256 excess = msg.value.sub(price);
 
@@ -547,7 +547,7 @@ contract LibraryToken is ERC721 {
     Bought(_tokenId, newOwner, price);
     Sold(_tokenId, oldOwner, price);
 
-    // Devevloper&#39;s cut which is left in contract and accesed by
+    // Devevloper's cut which is left in contract and accesed by
     // `withdrawAll` and `withdrawAmount` methods.
     uint256 devCut = calculateDevCut(price);
     developersCut = developersCut.add(devCut);
@@ -562,13 +562,13 @@ contract LibraryToken is ERC721 {
       oldOwner.transfer(price.sub(devCut.add(founderCut)));
     }
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
   }
 
   /**
-    * @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    * @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     * expensive (it walks the entire Cities array looking for cities belonging to owner),
     * but it also returns a dynamic array, which is only supported for web3 calls, and
     * not contract-to-contract calls.
@@ -586,7 +586,7 @@ contract LibraryToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 libraryId;
-      for (libraryId = 0; libraryId &lt;= totalLibraries; libraryId++) {
+      for (libraryId = 0; libraryId <= totalLibraries; libraryId++) {
         if (libraryIndexToOwner[libraryId] == _owner) {
           result[resultIndex] = libraryId;
           resultIndex++;
@@ -597,7 +597,7 @@ contract LibraryToken is ERC721 {
   }
 
     /**
-    * @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    * @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     * expensive (it walks the entire Cities array looking for cities belonging to owner),
     * but it also returns a dynamic array, which is only supported for web3 calls, and
     * not contract-to-contract calls.
@@ -615,7 +615,7 @@ contract LibraryToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 libraryId;
-      for (libraryId = 0; libraryId &lt;= totalLibraries; libraryId++) {
+      for (libraryId = 0; libraryId <= totalLibraries; libraryId++) {
         if (libraryIndexToFounder[libraryId] == _founder) {
           result[resultIndex] = libraryId;
           resultIndex++;
@@ -736,13 +736,13 @@ contract LibraryToken is ERC721 {
     * @param _tokenId The id of token to change owner
     */
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of library is capped to 2^32 we can&#39;t overflow this
+    // Since the number of library is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to] = ownershipTokenCount[_to].add(1);
 
     //transfer ownership
     libraryIndexToOwner[_tokenId] = _to;
 
-    // When creating new libraries _from is 0x0, but we can&#39;t account that address.
+    // When creating new libraries _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from] = ownershipTokenCount[_from].sub(1);
 

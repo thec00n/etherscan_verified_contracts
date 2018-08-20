@@ -74,19 +74,19 @@ contract DeadMansSwitch {
 	}
 
 	function canFinalize() constant returns (bool) {
-		return timeout != 0 &amp;&amp; now &gt; timeout;
+		return timeout != 0 && now > timeout;
 	}
 
 	function timeLeft() constant only_when_timeout returns (uint) {
-		return now &gt; timeout ? 0 : timeout - now;
+		return now > timeout ? 0 : timeout - now;
 	}
 
 	modifier only_owner { if (msg.sender != owner) throw; _; }
 	modifier only_backup { if (msg.sender != backup) throw; _; }
-	modifier only_owner_or_backup { if (msg.sender != backup &amp;&amp; msg.sender != owner) throw; _; }
+	modifier only_owner_or_backup { if (msg.sender != backup && msg.sender != owner) throw; _; }
 	modifier only_when_timeout { if (timeout == 0) throw; _; }
 	modifier when_no_timeout { if (timeout == 0) _; }
-	modifier when_timed_out { if (timeout != 0 &amp;&amp; now &gt; timeout) _; }
+	modifier when_timed_out { if (timeout != 0 && now > timeout) _; }
 
 	address public owner;
 	address public backup;

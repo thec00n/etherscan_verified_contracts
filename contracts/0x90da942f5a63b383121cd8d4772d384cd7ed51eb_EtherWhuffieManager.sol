@@ -5,7 +5,7 @@ contract EtherWhuffieManager {
         uint negativeWhuffies;
     }
     
-    mapping(address =&gt; Status) public stats;
+    mapping(address => Status) public stats;
     
     event PositiveWhuffiesSent(address indexed _from, address indexed _to, uint whuffies, string message);
     event NegativeWhuffiesSent(address indexed _from, address indexed _to, uint whuffies, string message);

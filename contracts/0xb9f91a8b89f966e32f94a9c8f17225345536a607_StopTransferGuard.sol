@@ -102,17 +102,17 @@ contract TokenTransferGuard {
 
 contract StopTransferGuard is DSStop, TokenTransferGuard {
     
-    mapping (address =&gt; bool) public isBlack;
+    mapping (address => bool) public isBlack;
 
     function StopTransferGuard(address[] _blacks) public {
-        for (uint i=0; i&lt;_blacks.length; i++) {
+        for (uint i=0; i<_blacks.length; i++) {
             isBlack[_blacks[i]] = true;
         }
     }
     
     function onTokenTransfer(address _from, address _to, uint _amount) public returns (bool)
     {
-        if (!stopped &amp;&amp; isBlack[_from])
+        if (!stopped && isBlack[_from])
         {
             return false;
         }

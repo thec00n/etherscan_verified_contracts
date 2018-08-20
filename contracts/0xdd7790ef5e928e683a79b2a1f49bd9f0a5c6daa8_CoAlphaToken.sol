@@ -71,7 +71,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -84,7 +84,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
     uint256 internal totalSupply_;
 
     function totalSupply()
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic {
         public
         returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         emit Burn(msg.sender, _value);
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
 
 
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(
         address _from, 
@@ -175,8 +175,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -192,8 +192,8 @@ contract StandardToken is ERC20, BasicToken {
         public
         returns (bool)
     {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -244,7 +244,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -255,8 +255,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract CoAlphaToken is StandardToken, Ownable {
-    string public name = &quot;CoAlphaToken&quot;;
-    string public symbol = &quot;CAL&quot;;
+    string public name = "CoAlphaToken";
+    string public symbol = "CAL";
     uint8 public decimals = 2;
     uint public initialSupply = 2000000000*(10**uint256(decimals));
 

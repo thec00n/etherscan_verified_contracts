@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 contract owned {
-    // Owner&#39;s address
+    // Owner's address
     address public owner;
 
     // Hardcoded address of super owner (for security reasons)
@@ -19,13 +19,13 @@ contract owned {
         super_owner = msg.sender;
     }
 
-    // Modifier for owner&#39;s functions of the contract
+    // Modifier for owner's functions of the contract
     modifier onlyOwner {
-        if ((msg.sender != owner) &amp;&amp; (msg.sender != super_owner)) revert();
+        if ((msg.sender != owner) && (msg.sender != super_owner)) revert();
         _;
     }
 
-    // Modifier for super-owner&#39;s functions of the contract
+    // Modifier for super-owner's functions of the contract
     modifier onlySuperOwner {
         if (msg.sender != super_owner) revert();
         _;
@@ -46,7 +46,7 @@ contract owned {
 
 contract STeX_WL is owned {
 	// ERC20 
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -63,8 +63,8 @@ contract STeX_WL is owned {
     uint256 public wlStartBlock;
     uint256 public wlStopBlock;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
     
@@ -75,8 +75,8 @@ contract STeX_WL is owned {
     	soldSupply = 0;
         decimals = 8;
         
-        name = &quot;STeX White List&quot;;
-        symbol = &quot;STE(WL)&quot;;
+        name = "STeX White List";
+        symbol = "STE(WL)";
         
         minBuyPrice = 20500000; // min price is 0.00205 ETH for 1 STE
         maxBuyPrice = 24900000; // max price is 0.00249 ETH for 1 STE
@@ -88,24 +88,24 @@ contract STeX_WL is owned {
     
     // Calls when send Ethereum to the contract
     function() internal payable {
-    	if ( msg.value &lt; 100000000000000000 ) revert(); // min transaction is 0.1 ETH
-    	if ( ( block.number &gt;= wlStopBlock ) || ( block.number &lt; wlStartBlock ) ) revert();    	
+    	if ( msg.value < 100000000000000000 ) revert(); // min transaction is 0.1 ETH
+    	if ( ( block.number >= wlStopBlock ) || ( block.number < wlStartBlock ) ) revert();    	
     	
     	uint256 add_by_blocks = (((block.number-wlStartBlock)*1000000)/(wlStopBlock-wlStartBlock)*(maxBuyPrice-minBuyPrice))/1000000;
     	uint256 add_by_solded = ((soldSupply*1000000)/totalSupply*(maxBuyPrice-minBuyPrice))/1000000;
     	
     	// The price is calculated from blocks and sold supply
-    	if ( add_by_blocks &gt; add_by_solded ) {
+    	if ( add_by_blocks > add_by_solded ) {
     		curPrice = minBuyPrice + add_by_blocks;
     	} else {
     		curPrice = minBuyPrice + add_by_solded;
     	}
     	
-    	if ( curPrice &gt; maxBuyPrice ) curPrice = maxBuyPrice;
+    	if ( curPrice > maxBuyPrice ) curPrice = maxBuyPrice;
     	
     	uint256 amount = msg.value / curPrice;
     	
-    	if ( balanceOf[this] &lt; amount ) revert();
+    	if ( balanceOf[this] < amount ) revert();
     	
     	balanceOf[this] -= amount;
         balanceOf[msg.sender] += amount;
@@ -133,8 +133,8 @@ contract STeX_WL is owned {
     // Admin function
     function transferFromAdmin(address _from, address _to, uint256 _value) public onlyOwner returns(bool success) {
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert();
-        if ((balanceOf[_to] + _value) &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[_from] < _value) revert();
+        if ((balanceOf[_to] + _value) < balanceOf[_to]) revert(); // Check for overflows
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -158,12 +158,12 @@ contract STeX_WL is owned {
     // Withdraw
     function withdrawToFounders(uint256 amount) public onlyOwner {
     	uint256 amount_to_withdraw = amount * 1000000000000000; // 0.001 ETH
-        if (this.balance &lt; amount_to_withdraw) revert();
+        if (this.balance < amount_to_withdraw) revert();
         amount_to_withdraw = amount_to_withdraw / foundersAddresses.length;
         uint8 i = 0;
         uint8 errors = 0;
         
-        for (i = 0; i &lt; foundersAddresses.length; i++) {
+        for (i = 0; i < foundersAddresses.length; i++) {
 			if (!foundersAddresses[i].send(amount_to_withdraw)) {
 				errors++;
 			}
@@ -177,7 +177,7 @@ contract STeX_WL is owned {
         uint8 i = 0;
         uint8 errors = 0;
         
-        for (i = 0; i &lt; foundersAddresses.length; i++) {
+        for (i = 0; i < foundersAddresses.length; i++) {
 			if (!foundersAddresses[i].send(amount_to_withdraw)) {
 				errors++;
 			}

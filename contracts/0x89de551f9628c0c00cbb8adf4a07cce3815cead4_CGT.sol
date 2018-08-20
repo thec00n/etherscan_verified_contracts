@@ -6,18 +6,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) assert(false);
+        if (x > MAX_UINT256 - y) assert(false);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) assert(false);
+        if (x < y) assert(false);
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) assert(false);
+        if (x > MAX_UINT256 / y) assert(false);
         return x * y;
     }
 }
@@ -30,10 +30,10 @@ contract CGT is SafeMath {
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
   
-    string public name    = &quot;ATESTTEST&quot;;
-    string public symbol  = &quot;x&quot;;
+    string public name    = "ATESTTEST";
+    string public symbol  = "x";
     uint8 public decimals = 6;
     uint256 public totalSupply;
   
@@ -66,7 +66,7 @@ contract CGT is SafeMath {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
       
     if(isContract(_to)) {
-        if (balanceOf(msg.sender) &lt; _value) assert(false);
+        if (balanceOf(msg.sender) < _value) assert(false);
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -112,12 +112,12 @@ contract CGT is SafeMath {
         //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 
   //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) assert(false);
+        if (balanceOf(msg.sender) < _value) assert(false);
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -126,7 +126,7 @@ contract CGT is SafeMath {
   
   //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) assert(false);
+        if (balanceOf(msg.sender) < _value) assert(false);
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -138,8 +138,8 @@ contract CGT is SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) public {
         if(msg.sender != _from) return;
 
-        if (balances[_from] &lt; _value) return;    
-        if (safeAdd(balances[_to] , _value) &lt; balances[_to]) return;
+        if (balances[_from] < _value) return;    
+        if (safeAdd(balances[_to] , _value) < balances[_to]) return;
 
         balances[_from] = safeSub(balances[_from],_value);
         balances[_to] = safeAdd(balances[_to],_value);

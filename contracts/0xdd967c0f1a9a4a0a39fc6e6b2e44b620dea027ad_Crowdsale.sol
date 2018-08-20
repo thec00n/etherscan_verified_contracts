@@ -13,18 +13,18 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,9 +105,9 @@ contract Crowdsale is Ownable {
 
     function isActive() public constant returns (bool) {
         return (
-            isFunding == true &amp;&amp;
-            now &gt;= START &amp;&amp; // Must be after the START date
-            now &lt;= START.add(92 days)
+            isFunding == true &&
+            now >= START && // Must be after the START date
+            now <= START.add(92 days)
         );
     }
 
@@ -116,7 +116,7 @@ contract Crowdsale is Ownable {
 
     function () public payable {
         
-        if (now &gt;= START &amp;&amp; now &lt; START.add(31 days)) {
+        if (now >= START && now < START.add(31 days)) {
             RATE = 50000;  // 50,000/ETH for first month and then 40,000/ETH
             buyTokens();
         } 
@@ -130,7 +130,7 @@ contract Crowdsale is Ownable {
     function buyTokens() public payable whenSaleIsActive {
         
         // Minimum ETH required to buy
-        require(msg.value &gt;= minETH);
+        require(msg.value >= minETH);
         
         // Calculate tokens to sell
         uint256 weiAmount = msg.value;
@@ -159,7 +159,7 @@ contract Crowdsale is Ownable {
     
         // Transfer tokens back to owner
         uint256 balance = token.balanceOf(this);
-        assert(balance &gt; 0);
+        assert(balance > 0);
         token.transfer(owner, balance);
 
         // There should be no ether in the contract but just in case

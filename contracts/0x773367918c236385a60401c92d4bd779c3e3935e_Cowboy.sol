@@ -5,7 +5,7 @@ The Cowboy coin
 ERC-20 Token Standard Compliant
 EIP-621 Compliant
 
-Contract developer: Oyewole Samuel <span class="__cf_email__" data-cfemail="583a312c3b3d2a2c183f35393134763b3735">[email&#160;protected]</span>
+Contract developer: Oyewole Samuel <span class="__cf_email__" data-cfemail="583a312c3b3d2a2c183f35393134763b3735">[email protected]</span>
 
 Token name is Cowboy coin
 Token symbol is CWBY
@@ -21,13 +21,13 @@ Order: FO71192BC2945
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -109,8 +109,8 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
     
     uint256 totalSupply_;
     
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -134,7 +134,7 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -149,7 +149,7 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -186,9 +186,9 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
 
 contract Cowboy is admined, ERC20Token {
     
-    string public name = &quot;Cowboy Coin&quot;;
-    string public symbol = &quot;CWBY&quot;;
-    string public version = &quot;1.0&quot;;
+    string public name = "Cowboy Coin";
+    string public symbol = "CWBY";
+    string public version = "1.0";
     uint8 public decimals = 18;
     
     //address of the beneficiary
@@ -218,7 +218,7 @@ contract Cowboy is admined, ERC20Token {
     
     function giveReward(address _from, address _buyer, uint256 _value) public returns (bool success) {
         require(_buyer != address(0));
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         balances[_buyer] = balances[_buyer].add(_value);
         balances[_from] = balances[_from].sub(_value);

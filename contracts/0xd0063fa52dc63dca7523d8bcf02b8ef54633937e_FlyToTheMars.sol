@@ -4,10 +4,10 @@ pragma solidity ^0.4.24;
  *
  *
  * ,------. ,-----. ,--.   ,--. ,-----.     ,--.   ,--.,--.                                  ,--.   ,--.
- * |  .---&#39;&#39;  .-.  &#39;|   `.&#39;   |&#39;  .-.  &#39;    |  |   |  |`--&#39;,--,--, ,--,--,  ,---. ,--.--.    |   `.&#39;   | ,--,--.,--.--. ,---.
- * |  `--, |  | |  ||  |&#39;.&#39;|  ||  | |  |    |  |.&#39;.|  |,--.|      \|      \| .-. :|  .--&#39;    |  |&#39;.&#39;|  |&#39; ,-.  ||  .--&#39;(  .-&#39;
- * |  |`   &#39;  &#39;-&#39;  &#39;|  |   |  |&#39;  &#39;-&#39;  &#39;    |   ,&#39;.   ||  ||  ||  ||  ||  |\   --.|  |       |  |   |  |\ &#39;-&#39;  ||  |   .-&#39;  `)
- * `--&#39;     `-----&#39; `--&#39;   `--&#39; `-----&#39;     &#39;--&#39;   &#39;--&#39;`--&#39;`--&#39;&#39;--&#39;`--&#39;&#39;--&#39; `----&#39;`--&#39;       `--&#39;   `--&#39; `--`--&#39;`--&#39;   `----&#39;
+ * |  .---''  .-.  '|   `.'   |'  .-.  '    |  |   |  |`--',--,--, ,--,--,  ,---. ,--.--.    |   `.'   | ,--,--.,--.--. ,---.
+ * |  `--, |  | |  ||  |'.'|  ||  | |  |    |  |.'.|  |,--.|      \|      \| .-. :|  .--'    |  |'.'|  |' ,-.  ||  .--'(  .-'
+ * |  |`   '  '-'  '|  |   |  |'  '-'  '    |   ,'.   ||  ||  ||  ||  ||  |\   --.|  |       |  |   |  |\ '-'  ||  |   .-'  `)
+ * `--'     `-----' `--'   `--' `-----'     '--'   '--'`--'`--''--'`--''--' `----'`--'       `--'   `--' `--`--'`--'   `----'
  *
  *
  * 源码不是原创，但是经过了本人审核，不存在资金被超级管理员转走的可能性
@@ -85,8 +85,8 @@ contract FlyToTheMars is FlyToTheMarsEvents {
   uint256 constant private rndFirStage_ = 12 hours;           // 第一轮倒计时长
   uint256 constant private rndSecStage_ = 12 hours;           // 第二轮倒计时长
 
-  mapping(uint256 =&gt; Round) public round_m;                  // (rndNo =&gt; Round) 游戏存储机构
-  mapping(uint256 =&gt; mapping(address =&gt; PlayerRound)) public playerRound_m;   // (rndNo =&gt; addr =&gt; PlayerRound) 玩家存储结构
+  mapping(uint256 => Round) public round_m;                  // (rndNo => Round) 游戏存储机构
+  mapping(uint256 => mapping(address => PlayerRound)) public playerRound_m;   // (rndNo => addr => PlayerRound) 玩家存储结构
 
   address public owner;               // 创建者地址
   uint256 public ownerWithdraw = 0;   // 创建者提走了多少eth
@@ -112,7 +112,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     uint256 _codeLength;
 
     assembly {_codeLength := extcodesize(_addr)}
-    require(_codeLength == 0, &quot;sorry humans only&quot;);
+    require(_codeLength == 0, "sorry humans only");
     _;
   }
 
@@ -121,8 +121,8 @@ contract FlyToTheMars is FlyToTheMarsEvents {
    */
   modifier isWithinLimits(uint256 _eth)
   {
-    require(_eth &gt;= 1000000000, &quot;pocket lint: not a valid currency&quot;); //最小8位小数金额
-    require(_eth &lt;= 100000000000000000000000, &quot;no vitalik, no&quot;); //最大10万eth
+    require(_eth >= 1000000000, "pocket lint: not a valid currency"); //最小8位小数金额
+    require(_eth <= 100000000000000000000000, "no vitalik, no"); //最大10万eth
     _;
   }
 
@@ -131,7 +131,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
    */
   modifier onlyOwner()
   {
-    require(owner == msg.sender, &quot;only owner can do it&quot;);
+    require(owner == msg.sender, "only owner can do it");
     _;
   }
 
@@ -151,7 +151,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     uint256 _ethUse = msg.value;  //用户可用来买key的eth数量
 
     // 是否要开启下一局
-    if (_now &gt; round_m[_rndNo].endTime)
+    if (_now > round_m[_rndNo].endTime)
     {
       _rndNo = _rndNo.add(1);     //开启新的一轮
       rndNo = _rndNo;
@@ -161,19 +161,19 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     }
 
     // 判断是否在第一阶段，从后面逻辑来看key不会超卖的
-    if (round_m[_rndNo].keys &lt; 10000000000000000000000000)
+    if (round_m[_rndNo].keys < 10000000000000000000000000)
     {
       // 计算汇入的eth能买多少key
       uint256 _keys = (round_m[_rndNo].eth).keysRec(_eth);
 
       // key总量 10,000,000, 超过则进入下一个阶段
-      if (_keys.add(round_m[_rndNo].keys) &gt;= 10000000000000000000000000)
+      if (_keys.add(round_m[_rndNo].keys) >= 10000000000000000000000000)
       {
         // 重新计算剩余key的总量
         _keys = (10000000000000000000000000).sub(round_m[_rndNo].keys);
 
         // 如果游戏第一阶段达到8562.5个eth那么就不能再买key了
-        if (round_m[_rndNo].eth &gt;= 8562500000000000000000)
+        if (round_m[_rndNo].eth >= 8562500000000000000000)
         {
           _ethUse = 0;
         } else {
@@ -181,7 +181,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
         }
 
         // 如果汇入的金额大于可以买的金额则退掉多余的部分
-        if (_eth &gt; _ethUse)
+        if (_eth > _ethUse)
         {
           // 退款
           msg.sender.transfer(_eth.sub(_ethUse));
@@ -192,7 +192,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
       }
 
       // 至少要买1个key才会触发游戏规则，少于一个key不会成为赢家
-      if (_keys &gt;= 1000000000000000000)
+      if (_keys >= 1000000000000000000)
       {
         round_m[_rndNo].endTime = _now + rndFirStage_;
         round_m[_rndNo].leader = msg.sender;
@@ -221,18 +221,18 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     } else {
       // 第二阶段已经没有key了
 
-      // lastPrice + 0.1Ether &lt;= newPrice &lt;= lastPrice + 10Ether
+      // lastPrice + 0.1Ether <= newPrice <= lastPrice + 10Ether
       // 新价格必须是在前一次出价+0.1到10eth之间
       uint256 _lastPrice = round_m[_rndNo].lastPrice;
       uint256 _maxPrice = (10000000000000000000).add(_lastPrice);
 
       // less than (lastPrice + 0.1Ether) ?
       // 出价必须大于最后一次出价至少0.1eth
-      require(_eth &gt;= (100000000000000000).add(_lastPrice), &quot;Need more Ether&quot;);
+      require(_eth >= (100000000000000000).add(_lastPrice), "Need more Ether");
 
       // more than (lastPrice + 10Ether) ?
       // 检查出价是否已经超过最后一次出价10eth
-      if (_eth &gt; _maxPrice)
+      if (_eth > _maxPrice)
       {
         _ethUse = _maxPrice;
 
@@ -272,13 +272,13 @@ contract FlyToTheMars is FlyToTheMarsEvents {
   onlyHuman()
   public
   {
-    require(_rndNo &lt;= rndNo, &quot;You&#39;re running too fast&quot;);                      //别这么急，下一轮游戏再来领
+    require(_rndNo <= rndNo, "You're running too fast");                      //别这么急，下一轮游戏再来领
 
     //计算60%能提现的量
     uint256 _total = (((round_m[_rndNo].eth).mul(playerRound_m[_rndNo][msg.sender].keys)).mul(60) / ((round_m[_rndNo].keys).mul(100)));
     uint256 _withdrawed = playerRound_m[_rndNo][msg.sender].withdraw;
 
-    require(_total &gt; _withdrawed, &quot;No need to withdraw&quot;);                     //提完了就不要再提了
+    require(_total > _withdrawed, "No need to withdraw");                     //提完了就不要再提了
 
     uint256 _ethOut = _total.sub(_withdrawed);                                //计算本次真实能提数量
     playerRound_m[_rndNo][msg.sender].withdraw = _total;                      //记录下来，下次再想提就没门了
@@ -302,10 +302,10 @@ contract FlyToTheMars is FlyToTheMarsEvents {
   onlyHuman()
   public
   {
-    require(_rndNo &lt;= rndNo, &quot;You&#39;re running too fast&quot;);                        //别这么急，下一轮游戏再来领
-    require(now &gt; round_m[_rndNo].endTime, &quot;Wait patiently&quot;);                   //还没结束呢，急什么急
-    require(round_m[_rndNo].leader == msg.sender, &quot;The prize is not yours&quot;);    //对不起，眼神不对
-    require(round_m[_rndNo].award == false, &quot;Can&#39;t get prizes repeatedly&quot;);     //你还想重复拿么？没门
+    require(_rndNo <= rndNo, "You're running too fast");                        //别这么急，下一轮游戏再来领
+    require(now > round_m[_rndNo].endTime, "Wait patiently");                   //还没结束呢，急什么急
+    require(round_m[_rndNo].leader == msg.sender, "The prize is not yours");    //对不起，眼神不对
+    require(round_m[_rndNo].award == false, "Can't get prizes repeatedly");     //你还想重复拿么？没门
 
     uint256 _ethOut = ((round_m[_rndNo].eth).mul(35) / (100));  //计算那一轮游戏中的35%的资金
     round_m[_rndNo].award = true;                               //标记已经领了，可不能重复领了
@@ -332,7 +332,7 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     uint256 _total = (totalEth.mul(5) / (100));           //当前总量的5%
     uint256 _withdrawed = ownerWithdraw;                  //已经提走的数量
 
-    require(_total &gt; _withdrawed, &quot;No need to withdraw&quot;); //如果已经提走超过了量那么不能再提
+    require(_total > _withdrawed, "No need to withdraw"); //如果已经提走超过了量那么不能再提
 
     ownerWithdraw = _total;                               //更改所有者已经提走的量，因为合约方法本身都是事务保护的，所以先执行也没问题
     owner.transfer(_total.sub(_withdrawed));              //给合约所有者转账
@@ -394,11 +394,11 @@ contract FlyToTheMars is FlyToTheMarsEvents {
     uint256 _now = now;
 
     // start next round?
-    if (_now &gt; round_m[_rndNo].endTime)
+    if (_now > round_m[_rndNo].endTime)
     {
       return (75000000000000);
     }
-    if (round_m[_rndNo].keys &lt; 10000000000000000000000000)
+    if (round_m[_rndNo].keys < 10000000000000000000000000)
     {
       return ((round_m[_rndNo].keys.add(1000000000000000000)).ethRec(1000000000000000000));
     }
@@ -446,7 +446,7 @@ library KeysCalc {
   /**
    * 计算一定数量的eth会兑换多少key
    *
-   * @param _eth eth &quot;in contract&quot;
+   * @param _eth eth "in contract"
    * @return number of keys that would exist
    */
   function keys(uint256 _eth)
@@ -460,7 +460,7 @@ library KeysCalc {
   /**
    * 计算给定key数的情况下eth数量
    *
-   * @param _keys number of keys &quot;in contract&quot;
+   * @param _keys number of keys "in contract"
    * @return eth that would exists
    */
   function eth(uint256 _keys)
@@ -496,7 +496,7 @@ library SafeMath {
       return 0;
     }
     c = a * b;
-    require(c / a == b, &quot;SafeMath mul failed&quot;);
+    require(c / a == b, "SafeMath mul failed");
     return c;
   }
 
@@ -508,7 +508,7 @@ library SafeMath {
   pure
   returns (uint256)
   {
-    require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+    require(b <= a, "SafeMath sub failed");
     return a - b;
   }
 
@@ -521,7 +521,7 @@ library SafeMath {
   returns (uint256 c)
   {
     c = a + b;
-    require(c &gt;= a, &quot;SafeMath add failed&quot;);
+    require(c >= a, "SafeMath add failed");
     return c;
   }
 
@@ -535,7 +535,7 @@ library SafeMath {
   {
     uint256 z = ((add(x, 1)) / 2);
     y = x;
-    while (z &lt; y)
+    while (z < y)
     {
       y = z;
       z = ((add((x / z), z)) / 2);
@@ -568,7 +568,7 @@ library SafeMath {
     else
     {
       uint256 z = x;
-      for (uint256 i = 1; i &lt; y; i++)
+      for (uint256 i = 1; i < y; i++)
         z = mul(z, x);
       return (z);
     }

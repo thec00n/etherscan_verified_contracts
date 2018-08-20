@@ -53,7 +53,7 @@ contract FunFairSale is Owned, TokenReceivable {
     function FunFairSale() {}
 
     function setSoftCapDeadline(uint t) onlyOwner {
-        if (t &gt; deadline) throw;
+        if (t > deadline) throw;
         deadline = t;
     }
 
@@ -62,23 +62,23 @@ contract FunFairSale is Owned, TokenReceivable {
     }
 
     function () payable {
-        if (block.timestamp &lt; startTime || block.timestamp &gt;= deadline) throw;
+        if (block.timestamp < startTime || block.timestamp >= deadline) throw;
 
-        if (this.balance &gt; capAmount) {
+        if (this.balance > capAmount) {
             deadline = block.timestamp - 1;
         }
     }
 
     function withdraw() onlyOwner {
-        if (block.timestamp &lt; deadline) throw;
+        if (block.timestamp < deadline) throw;
 
-        //testing return value doesn&#39;t do anything here
+        //testing return value doesn't do anything here
         //but it stops a compiler warning
         if (!owner.call.value(this.balance)()) throw;
     }
 
     function setStartTime(uint _startTime, uint _deadline) onlyOwner {
-        if (block.timestamp &gt;= startTime) throw;
+        if (block.timestamp >= startTime) throw;
         startTime = _startTime;
         deadline = _deadline;
     }

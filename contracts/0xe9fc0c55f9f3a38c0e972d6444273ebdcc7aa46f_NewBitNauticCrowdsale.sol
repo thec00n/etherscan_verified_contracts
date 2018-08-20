@@ -21,9 +21,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,11 +51,11 @@ library SafeMath {
  */
 library Math {
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 }
 
@@ -143,7 +143,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Unlocked }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -206,8 +206,8 @@ contract BitNauticWhitelist is Ownable {
         usdPerEth = _usdPerEth;
     }
 
-    mapping(address =&gt; bool) public AMLWhitelisted;
-    mapping(address =&gt; uint256) public contributionCap;
+    mapping(address => bool) public AMLWhitelisted;
+    mapping(address => uint256) public contributionCap;
 
     /**
      * @dev sets the KYC contribution cap for one address
@@ -216,7 +216,7 @@ contract BitNauticWhitelist is Ownable {
      * @return true if the operation was successful
      */
     function setKYCLevel(address addr, uint8 level) onlyOwner public returns (bool) {
-        if (level &gt;= 3) {
+        if (level >= 3) {
             contributionCap[addr] = 50000 ether; // crowdsale hard cap
         } else if (level == 2) {
             contributionCap[addr] = SafeMath.div(500000 * 10 ** 18, usdPerEth); // KYC Tier 2 - 500k USD
@@ -232,7 +232,7 @@ contract BitNauticWhitelist is Ownable {
     function setKYCLevelsBulk(address[] addrs, uint8[] levels) onlyOwner external returns (bool success) {
         require(addrs.length == levels.length);
 
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             assert(setKYCLevel(addrs[i], levels[i]));
         }
 
@@ -253,7 +253,7 @@ contract BitNauticWhitelist is Ownable {
     function setAMLWhitelistedBulk(address[] addrs, bool[] whitelisted) onlyOwner external returns (bool) {
         require(addrs.length == whitelisted.length);
 
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             assert(setAMLWhitelisted(addrs[i], whitelisted[i]));
         }
 
@@ -286,10 +286,10 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     uint256 public founderSupply =  2000000 * 10 ** 18; // 4% of token cap
 
     // amount of tokens each address will receive at the end of the crowdsale
-    mapping (address =&gt; uint256) public creditOf;
+    mapping (address => uint256) public creditOf;
 
     // amount of ether invested by each address
-    mapping (address =&gt; uint256) public weiInvestedBy;
+    mapping (address => uint256) public weiInvestedBy;
 
     // refund vault used to hold funds while crowdsale is running
     RefundVault private vault;
@@ -312,7 +312,7 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
         require(validPurchase());
 
         // checks if the ether amount invested by the buyer is lower than his contribution cap
-        require(SafeMath.add(weiInvestedBy[msg.sender], msg.value) &lt;= whitelist.contributionCap(msg.sender));
+        require(SafeMath.add(weiInvestedBy[msg.sender], msg.value) <= whitelist.contributionCap(msg.sender));
 
         // compute the amount of tokens given the baseRate
         uint256 tokens = SafeMath.mul(msg.value, tokenBaseRate);
@@ -320,7 +320,7 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
         tokens = tokens.add(SafeMath.mul(tokens, getCurrentBonus()).div(1000));
 
         // check hardcap
-        require(SafeMath.add(tokensSold, tokens) &lt;= crowdsaleSupply);
+        require(SafeMath.add(tokensSold, tokens) <= crowdsaleSupply);
 
         // update total token sold counter
         tokensSold = SafeMath.add(tokensSold, tokens);
@@ -336,7 +336,7 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
 
     function privateSale(address beneficiary, uint256 tokenAmount) onlyOwner public {
         require(beneficiary != 0x0);
-        require(SafeMath.add(tokensSold, tokenAmount) &lt;= crowdsaleSupply); // check hardcap
+        require(SafeMath.add(tokensSold, tokenAmount) <= crowdsaleSupply); // check hardcap
 
         tokensSold = SafeMath.add(tokensSold, tokenAmount);
 
@@ -346,7 +346,7 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     // for payments in other currencies
     function offchainSale(address beneficiary, uint256 tokenAmount) onlyOwner public {
         require(beneficiary != 0x0);
-        require(SafeMath.add(tokensSold, tokenAmount) &lt;= crowdsaleSupply); // check hardcap
+        require(SafeMath.add(tokensSold, tokenAmount) <= crowdsaleSupply); // check hardcap
 
         tokensSold = SafeMath.add(tokensSold, tokenAmount);
 
@@ -363,9 +363,9 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
 
     // if the ICO is finished and the goal has been reached, this function will be used to mint and transfer BTNT tokens to each contributor
     function grantContributorTokens(address contributor) public returns (bool) {
-        require(creditOf[contributor] &gt; 0);
+        require(creditOf[contributor] > 0);
         require(whitelist.AMLWhitelisted(contributor));
-        require(now &gt; ICOEndTime &amp;&amp; tokensSold &gt;= softCap);
+        require(now > ICOEndTime && tokensSold >= softCap);
 
         assert(token.mint(contributor, creditOf[contributor]));
         creditOf[contributor] = 0;
@@ -394,17 +394,17 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     }
 
     function validPurchase() internal view returns (bool) {
-        bool duringICO = ICOStartTime &lt;= now &amp;&amp; now &lt;= ICOEndTime;
-        bool minimumContribution = msg.value &gt;= 0.05 ether;
-        return duringICO &amp;&amp; minimumContribution;
+        bool duringICO = ICOStartTime <= now && now <= ICOEndTime;
+        bool minimumContribution = msg.value >= 0.05 ether;
+        return duringICO && minimumContribution;
     }
 
     function hasEnded() public view returns (bool) {
-        return now &gt; ICOEndTime;
+        return now > ICOEndTime;
     }
 
     function unlockVault() onlyOwner public {
-        if (tokensSold &gt;= softCap) {
+        if (tokensSold >= softCap) {
             vault.unlock();
         }
     }
@@ -416,9 +416,9 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     bool isFinalized = false;
     function finalizeCrowdsale() onlyOwner public {
         require(!isFinalized);
-        require(now &gt; ICOEndTime);
+        require(now > ICOEndTime);
 
-        if (tokensSold &lt; softCap) {
+        if (tokensSold < softCap) {
             vault.enableRefunds();
         }
 
@@ -428,7 +428,7 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     // if crowdsale is unsuccessful, investors can claim refunds here
     function claimRefund() public {
         require(isFinalized);
-        require(tokensSold &lt; softCap);
+        require(tokensSold < softCap);
 
         vault.refund(msg.sender);
     }
@@ -438,35 +438,35 @@ contract NewBitNauticCrowdsale is Ownable, Pausable {
     }
 
     function grantBountyTokens(address beneficiary) onlyOwner public {
-        require(bountySupply &gt; 0);
+        require(bountySupply > 0);
 
         token.mint(beneficiary, bountySupply);
         bountySupply = 0;
     }
 
     function grantReserveTokens(address beneficiary) onlyOwner public {
-        require(reserveSupply &gt; 0);
+        require(reserveSupply > 0);
 
         token.mint(beneficiary, reserveSupply);
         reserveSupply = 0;
     }
 
     function grantAdvisorsTokens(address beneficiary) onlyOwner public {
-        require(advisorSupply &gt; 0);
+        require(advisorSupply > 0);
 
         token.mint(beneficiary, advisorSupply);
         advisorSupply = 0;
     }
 
     function grantFoundersTokens(address beneficiary) onlyOwner public {
-        require(founderSupply &gt; 0);
+        require(founderSupply > 0);
 
         token.mint(beneficiary, founderSupply);
         founderSupply = 0;
     }
 
     function grantTeamTokens(address beneficiary) onlyOwner public {
-        require(teamSupply &gt; 0);
+        require(teamSupply > 0);
 
         token.mint(beneficiary, teamSupply);
         teamSupply = 0;

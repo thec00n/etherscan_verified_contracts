@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -99,7 +99,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -245,17 +245,17 @@ contract EpigenCareCrowdsale is Ownable {
   uint256 public tokensPending;
   uint256 public minimumInvestment;
 
-  mapping (address =&gt; Transaction) transactions;
-  mapping (address =&gt; bool) approvedAddresses;
-  mapping (address =&gt; bool) verifiers;
+  mapping (address => Transaction) transactions;
+  mapping (address => bool) approvedAddresses;
+  mapping (address => bool) verifiers;
 
   struct Transaction { uint weiAmount; uint tokenAmount; }
 
   event TokenPurchaseRequest(address indexed purchaser, address indexed beneficiary, uint256 value);
 
   function EpigenCareCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _tokenPool, address _token) Ownable() {
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
     require(_tokenPool != 0x0);
 
@@ -277,7 +277,7 @@ contract EpigenCareCrowdsale is Ownable {
   function requestTokens(address beneficiary) sufficientApproval(msg.value) public payable {
     require(beneficiary != 0x0);
     require(validPurchase());
-    require(msg.value &gt;= minimumInvestment);
+    require(msg.value >= minimumInvestment);
 
     uint256 weiAmount = msg.value;
     uint256 tokens = weiAmount.mul(rate);
@@ -328,7 +328,7 @@ contract EpigenCareCrowdsale is Ownable {
   modifier sufficientApproval(uint value) {
     uint tokensNeeded = tokensPending.add(value.mul(rate));
     uint tokensAvailable = token.allowance(tokenPool, this);
-    require(tokensAvailable &gt;= tokensNeeded);
+    require(tokensAvailable >= tokensNeeded);
     _;
   }
 
@@ -336,7 +336,7 @@ contract EpigenCareCrowdsale is Ownable {
     Transaction transaction = transactions[user];
     weiPending = weiPending.sub(transaction.weiAmount);
     tokensPending = tokensPending.sub(transaction.tokenAmount);
-    if(fee &gt; 0) {
+    if(fee > 0) {
       transaction.weiAmount = transaction.weiAmount.sub(fee);
       wallet.transfer(fee);
     }
@@ -347,13 +347,13 @@ contract EpigenCareCrowdsale is Ownable {
   }
 
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    bool withinPeriod = (now >= startTime && now <= endTime);
     bool nonZeroPurchase = msg.value != 0;
-    return (withinPeriod &amp;&amp; nonZeroPurchase);
+    return (withinPeriod && nonZeroPurchase);
   }
 
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   function updateMinimumInvestment(uint _minimumInvestment) onlyOwner {

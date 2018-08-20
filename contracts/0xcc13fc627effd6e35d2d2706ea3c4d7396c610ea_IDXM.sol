@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title IDXM Contract. IDEX Membership Token contract.
  *
- * @author Ray Pulver, <span class="__cf_email__" data-cfemail="7a081b033a1b0f0815081b1e1b1554191517">[email&#160;protected]</span>
+ * @author Ray Pulver, <span class="__cf_email__" data-cfemail="7a081b033a1b0f0815081b1e1b1554191517">[email protected]</span>
  */
 
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
@@ -15,12 +15,12 @@ contract SafeMath {
     return c;
   }
   function safeSub(uint256 a, uint256 b) returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
   function safeAdd(uint256 a, uint256 b) returns (uint256) {
     uint c = a + b;
-    require(c &gt;= a &amp;&amp; c &gt;= b);
+    require(c >= a && c >= b);
     return c;
   }
 }
@@ -42,15 +42,15 @@ contract Owned {
 
 contract IDXM is Owned, SafeMath {
   uint8 public decimals = 8;
-  bytes32 public standard = &#39;Token 0.1&#39;;
-  bytes32 public name = &#39;IDEX Membership&#39;;
-  bytes32 public symbol = &#39;IDXM&#39;;
+  bytes32 public standard = 'Token 0.1';
+  bytes32 public name = 'IDEX Membership';
+  bytes32 public symbol = 'IDXM';
   uint256 public totalSupply;
 
   event Approval(address indexed from, address indexed spender, uint256 amount);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -69,9 +69,9 @@ contract IDXM is Owned, SafeMath {
     uint256 ts;
   }
 
-  mapping (address =&gt; Validity) public validAfter;
+  mapping (address => Validity) public validAfter;
   uint256 public mustHoldFor = 604800;
-  mapping (address =&gt; uint256) public exportFee;
+  mapping (address => uint256) public exportFee;
 
   /**
    * Constructor.
@@ -90,7 +90,7 @@ contract IDXM is Owned, SafeMath {
     require(!balancesLocked);
     require(addresses.length == balances.length);
     uint256 sum;
-    for (uint256 i = 0; i &lt; uint256(addresses.length); i++) {
+    for (uint256 i = 0; i < uint256(addresses.length); i++) {
       sum = safeAdd(sum, safeSub(balances[i], balanceOf[addresses[i]]));
       balanceOf[addresses[i]] = balances[i];
     }
@@ -109,17 +109,17 @@ contract IDXM is Owned, SafeMath {
    */
   function transfer(address _to, uint256 _amount) returns (bool success) {
     require(!locked);
-    require(balanceOf[msg.sender] &gt;= _amount);
-    require(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+    require(balanceOf[msg.sender] >= _amount);
+    require(balanceOf[_to] + _amount >= balanceOf[_to]);
     balanceOf[msg.sender] -= _amount;
     uint256 preBalance = balanceOf[_to];
     balanceOf[_to] += _amount;
-    bool alreadyMax = preBalance &gt;= singleIDXMQty;
+    bool alreadyMax = preBalance >= singleIDXMQty;
     if (!alreadyMax) {
-      if (now &gt;= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
+      if (now >= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
       validAfter[_to].ts = now;
     }
-    if (validAfter[msg.sender].last &gt; balanceOf[msg.sender]) validAfter[msg.sender].last = balanceOf[msg.sender];
+    if (validAfter[msg.sender].last > balanceOf[msg.sender]) validAfter[msg.sender].last = balanceOf[msg.sender];
     Transfer(msg.sender, _to, _amount);
     return true;
   }
@@ -134,19 +134,19 @@ contract IDXM is Owned, SafeMath {
    */
   function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
     require(!locked);
-    require(balanceOf[_from] &gt;= _amount);
-    require(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
-    require(_amount &lt;= allowance[_from][msg.sender]);
+    require(balanceOf[_from] >= _amount);
+    require(balanceOf[_to] + _amount >= balanceOf[_to]);
+    require(_amount <= allowance[_from][msg.sender]);
     balanceOf[_from] -= _amount;
     uint256 preBalance = balanceOf[_to];
     balanceOf[_to] += _amount;
     allowance[_from][msg.sender] -= _amount;
-    bool alreadyMax = preBalance &gt;= singleIDXMQty;
+    bool alreadyMax = preBalance >= singleIDXMQty;
     if (!alreadyMax) {
-      if (now &gt;= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
+      if (now >= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
       validAfter[_to].ts = now;
     }
-    if (validAfter[_from].last &gt; balanceOf[_from]) validAfter[_from].last = balanceOf[_from];
+    if (validAfter[_from].last > balanceOf[_from]) validAfter[_from].last = balanceOf[_from];
     Transfer(_from, _to, _amount);
     return true;
   }
@@ -194,9 +194,9 @@ contract IDXM is Owned, SafeMath {
   /* --------------- fee calculation method ---------------- */
 
   /**
-   * @notice &#39;Returns the fee for a transfer from `from` to `to` on an amount `amount`.
+   * @notice 'Returns the fee for a transfer from `from` to `to` on an amount `amount`.
    *
-   * Fee&#39;s consist of a possible
+   * Fee's consist of a possible
    *    - import fee on transfers to an address
    *    - export fee on transfers from an address
    * IDXM ownership on an address
@@ -216,9 +216,9 @@ contract IDXM is Owned, SafeMath {
     if (fee == 0) return 0;
     uint256 amountHeld;
     if (balanceOf[to] != 0) {
-      if (validAfter[to].ts + mustHoldFor &lt; now) amountHeld = balanceOf[to];
+      if (validAfter[to].ts + mustHoldFor < now) amountHeld = balanceOf[to];
       else amountHeld = validAfter[to].last;
-      if (amountHeld &gt;= singleIDXMQty) return 0;
+      if (amountHeld >= singleIDXMQty) return 0;
       return amount*fee*(singleIDXMQty - amountHeld) / feeDivisor;
     } else return amount*fee / baseFeeDivisor;
   }
@@ -235,13 +235,13 @@ contract IDXM is Owned, SafeMath {
     singleIDXMQty = pow10(1, decimals);
   }
   function div10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a /= 10;
     }
     return a;
   }
   function pow10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a *= 10;
     }
     return a;

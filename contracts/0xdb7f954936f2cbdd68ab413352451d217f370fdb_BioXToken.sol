@@ -16,21 +16,21 @@ library SafeMath{
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
 
 contract BioXToken {
 	using SafeMath for uint256;
-    string public constant name         = &quot;BIOX&quot;;
-    string public constant symbol       = &quot;BIOX&quot;;
+    string public constant name         = "BIOX";
+    string public constant symbol       = "BIOX";
     uint public constant decimals       = 18;
     
     uint256 bioxEthRate                  = 10 ** decimals;
@@ -49,16 +49,16 @@ contract BioXToken {
     bool public buyable                 = true;
     
     address owner;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt;  uint256) whitelistLimit;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public whitelist;
+    mapping (address =>  uint256) whitelistLimit;
 
     struct BalanceInfo {
         uint256 balance;
         uint256[] freezeAmount;
         uint256[] releaseTime;
     }
-    mapping (address =&gt; BalanceInfo) balances;
+    mapping (address => BalanceInfo) balances;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -93,16 +93,16 @@ contract BioXToken {
         _;
     }
     modifier isBuyable(){
-        require(buyable &amp;&amp; now &gt;= sellStartTime &amp;&amp; now &lt;= sellDeadline2);
+        require(buyable && now >= sellStartTime && now <= sellDeadline2);
         _;
     }
     modifier isNotBuyable(){
-        require(!buyable || now &lt; sellStartTime || now &gt; sellDeadline2);
+        require(!buyable || now < sellStartTime || now > sellDeadline2);
         _;
     }
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -157,11 +157,11 @@ contract BioXToken {
     //
     function airDeliver(address _to,    uint256 _amount)  onlyOwner public {
         require(owner != _to);
-        require(_amount &gt; 0);
-        require(balances[owner].balance &gt;= _amount);
+        require(_amount > 0);
+        require(balances[owner].balance >= _amount);
         
         // take big number as wei
-        if(_amount &lt; bioxSupply){
+        if(_amount < bioxSupply){
             _amount = _amount * bioxEthRate;
         }
         balances[owner].balance = balances[owner].balance.sub(_amount);
@@ -171,18 +171,18 @@ contract BioXToken {
     
     
     function airDeliverMulti(address[]  _addrs, uint256 _amount) onlyOwner public {
-        require(_addrs.length &lt;=  255);
+        require(_addrs.length <=  255);
         
-        for (uint8 i = 0; i &lt; _addrs.length; i++)   {
+        for (uint8 i = 0; i < _addrs.length; i++)   {
             airDeliver(_addrs[i],   _amount);
         }
     }
     
     function airDeliverStandalone(address[] _addrs, uint256[] _amounts) onlyOwner public {
-        require(_addrs.length &lt;=  255);
+        require(_addrs.length <=  255);
         require(_addrs.length ==     _amounts.length);
         
-        for (uint8 i = 0; i &lt; _addrs.length;    i++) {
+        for (uint8 i = 0; i < _addrs.length;    i++) {
             airDeliver(_addrs[i],   _amounts[i]);
         }
     }
@@ -192,24 +192,24 @@ contract BioXToken {
     //
     function  freezeDeliver(address _to, uint _amount, uint _freezeAmount, uint _freezeMonth, uint _unfreezeBeginTime ) onlyOwner public {
         require(owner != _to);
-        require(_freezeMonth &gt; 0);
+        require(_freezeMonth > 0);
         
         uint average = _freezeAmount / _freezeMonth;
         BalanceInfo storage bi = balances[_to];
         uint[] memory fa = new uint[](_freezeMonth);
         uint[] memory rt = new uint[](_freezeMonth);
 
-        if(_amount &lt; bioxSupply){
+        if(_amount < bioxSupply){
             _amount = _amount * bioxEthRate;
             average = average * bioxEthRate;
             _freezeAmount = _freezeAmount * bioxEthRate;
         }
-        require(balances[owner].balance &gt; _amount);
+        require(balances[owner].balance > _amount);
         uint remainAmount = _freezeAmount;
         
         if(_unfreezeBeginTime == 0)
             _unfreezeBeginTime = now + freezeDuration;
-        for(uint i=0;i&lt;_freezeMonth-1;i++){
+        for(uint i=0;i<_freezeMonth-1;i++){
             fa[i] = average;
             rt[i] = _unfreezeBeginTime;
             _unfreezeBeginTime += freezeDuration;
@@ -236,11 +236,11 @@ contract BioXToken {
     function buyTokens() payable isRunning isBuyable public {
         uint256 weiVal = msg.value;
         address investor = msg.sender;
-        require(investor != address(0) &amp;&amp; weiVal &gt;= minInvEth &amp;&amp; weiVal &lt;= maxInvEth);
-        require(weiVal.add(whitelistLimit[investor]) &lt;= maxInvEth);
+        require(investor != address(0) && weiVal >= minInvEth && weiVal <= maxInvEth);
+        require(weiVal.add(whitelistLimit[investor]) <= maxInvEth);
         
         uint256 amount = 0;
-        if(now &gt; sellDeadline1)
+        if(now > sellDeadline1)
             amount = msg.value.mul(ethBioxRate2);
         else
             amount = msg.value.mul(ethBioxRate1);   
@@ -251,11 +251,11 @@ contract BioXToken {
         balances[investor].balance = balances[investor].balance.add(amount);
         emit Transfer(owner, investor, amount);
     }
-	//Use &quot;&quot; for adding whitelists.
+	//Use "" for adding whitelists.
     function addWhiteListMulti(address[] _addrs) public onlyOwner {
-        require(_addrs.length &lt;=  255);
+        require(_addrs.length <=  255);
 
-        for (uint8 i = 0; i &lt; _addrs.length; i++) {
+        for (uint8 i = 0; i < _addrs.length; i++) {
             if (!whitelist[_addrs[i]]){
                 whitelist[_addrs[i]] = true;
             }
@@ -271,8 +271,8 @@ contract BioXToken {
         uint freezeAmount = 0;
         uint t = now;
         
-        for(uint i=0;i&lt; bi.freezeAmount.length;i++){
-            if(t &lt; bi.releaseTime[i])
+        for(uint i=0;i< bi.freezeAmount.length;i++){
+            if(t < bi.releaseTime[i])
                 freezeAmount += bi.freezeAmount[i];
         }
         return freezeAmount;
@@ -282,7 +282,7 @@ contract BioXToken {
         require(_to != address(0));
         uint freezeAmount = freezeOf(msg.sender);
         uint256 _balance = balances[msg.sender].balance.sub(freezeAmount);
-        require(_amount &lt;= _balance);
+        require(_amount <= _balance);
         
         balances[msg.sender].balance = balances[msg.sender].balance.sub(_amount);
         balances[_to].balance = balances[_to].balance.add(_amount);
@@ -291,11 +291,11 @@ contract BioXToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) isRunning onlyPayloadSize(3 * 32) public returns (bool   success) {
-        require(_from   != address(0) &amp;&amp; _to != address(0));
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_from   != address(0) && _to != address(0));
+        require(_amount <= allowed[_from][msg.sender]);
         uint freezeAmount = freezeOf(_from);
         uint256 _balance = balances[_from].balance.sub(freezeAmount);
-        require(_amount &lt;= _balance);
+        require(_amount <= _balance);
         
         balances[_from].balance = balances[_from].balance.sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -305,7 +305,7 @@ contract BioXToken {
     }
 
     function approve(address _spender, uint256 _value) isRunning public returns (bool   success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { 
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { 
             return  false; 
         }
         allowed[msg.sender][_spender] = _value;
@@ -319,13 +319,13 @@ contract BioXToken {
     
     function withdraw() onlyOwner public {
         address myAddress = this;
-        require(myAddress.balance &gt; 0);
+        require(myAddress.balance > 0);
         owner.transfer(myAddress.balance);
         emit Transfer(this, owner, myAddress.balance);    
     }
     
     function burn(address burner, uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender].balance);
+        require(_value <= balances[msg.sender].balance);
 
         balances[burner].balance = balances[burner].balance.sub(_value);
         totalSupply = totalSupply.sub(_value);

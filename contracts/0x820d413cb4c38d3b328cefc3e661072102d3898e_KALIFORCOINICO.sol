@@ -12,10 +12,10 @@ contract KALIFORCOINICO {
 	
 	// Start date v29
 	uint public startdate = now;
-	// Pr&#233; ico round 1 fin: vendredi 5 janvier 2018 23:59:3
+	// Pré ico round 1 fin: vendredi 5 janvier 2018 23:59:3
 	uint public deadlinePreIcoOne = 1515196740;
 	
-	// Pr&#233; ico round 2 fn
+	// Pré ico round 2 fn
     uint public deadlinePreIcoTwo = 1515801540;	
 	
 	// Fianl Tuesday fin
@@ -42,7 +42,7 @@ contract KALIFORCOINICO {
 	
 	// Token Address
     token public tokenReward = token(0x629c09f80348350216f45934ed9713ed969ce570);
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 	
     bool crowdsaleClosed = false;
     bool price_rate_changed = false;
@@ -58,9 +58,9 @@ contract KALIFORCOINICO {
     function MiCarsICO() {}
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	  }
 	function mul(uint256 a, uint256 b) internal constant returns (uint256) {
@@ -112,17 +112,17 @@ contract KALIFORCOINICO {
 		if (price_rate_changed == false) {
 					
 			// Token price in 1st week Pre Ico
-			if (now &lt;= deadlinePreIcoOne) {
+			if (now <= deadlinePreIcoOne) {
 				price = 0.000359801 * 1 ether;
 			}
 			
 			// Token price in 2nd week Pre Ico
-			else if (now &gt; deadlinePreIcoOne &amp;&amp; now &lt;= deadlinePreIcoTwo) {
+			else if (now > deadlinePreIcoOne && now <= deadlinePreIcoTwo) {
 				price = 0.000415207 * 1 ether;
 			}
 			
 			// Token price in 3th week Pre Ico
-			else if (now &gt; deadlinePreIcoTwo &amp;&amp; now &lt;= deadline) {
+			else if (now > deadlinePreIcoTwo && now <= deadline) {
 				price = 0.000505615 * 1 ether;
 			}
 			// Token fixed price in any issue happend
@@ -142,7 +142,7 @@ contract KALIFORCOINICO {
 		uint tokentosend = div(calculedamount, price);
 
 
-        if (msg.value &gt;= vminEtherPerPurchase &amp;&amp; msg.value &lt;= vmaxEtherPerPurchase) {
+        if (msg.value >= vminEtherPerPurchase && msg.value <= vmaxEtherPerPurchase) {
 				
 				balanceOf[msg.sender] += amount;
 				FundTransfer(msg.sender, amount, true);

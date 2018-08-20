@@ -34,15 +34,15 @@ contract owned {
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract token {
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
     event Burn(address indexed from, uint256 value);
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -60,8 +60,8 @@ contract token {
     }
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -83,9 +83,9 @@ contract token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        if (_value &gt; allowance[_from][msg.sender]) throw;
+        if (balanceOf[_from] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -100,7 +100,7 @@ contract token {
 
 contract FILMToken is owned, token {
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     bool frozen = false; 
     event FrozenFunds(address target, bool frozen);
 
@@ -112,8 +112,8 @@ contract FILMToken is owned, token {
     ) token (initialSupply, tokenName, decimalUnits, tokenSymbol) {}
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         if (frozenAccount[msg.sender]) throw;
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -122,9 +122,9 @@ contract FILMToken is owned, token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;
-        if (balanceOf[_from] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        if (_value &gt; allowance[_from][msg.sender]) throw;
+        if (balanceOf[_from] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -165,7 +165,7 @@ contract FILMToken is owned, token {
   event Unfreeze ();
 
     function burn(uint256 _value) public returns (bool success) {        
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);        
@@ -173,8 +173,8 @@ contract FILMToken is owned, token {
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {        
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

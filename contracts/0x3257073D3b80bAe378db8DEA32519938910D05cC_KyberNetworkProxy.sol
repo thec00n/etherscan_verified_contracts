@@ -68,7 +68,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -87,31 +87,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -149,7 +149,7 @@ contract Utils2 is Utils {
         if (token == ETH_TOKEN_ADDRESS) {
             decimal = ETH_DECIMALS;
         } else {
-            if (!address(token).call(bytes4(keccak256(&quot;decimals()&quot;)))) {/* solhint-disable-line avoid-low-level-calls */
+            if (!address(token).call(bytes4(keccak256("decimals()")))) {/* solhint-disable-line avoid-low-level-calls */
                 //above code can only be performed with low level call. otherwise all operation will revert.
                 // call failed
                 decimal = 18;
@@ -172,14 +172,14 @@ contract Utils2 is Utils {
     function calcRateFromQty(uint srcAmount, uint destAmount, uint srcDecimals, uint dstDecimals)
         internal pure returns(uint)
     {
-        require(srcAmount &lt;= MAX_QTY);
-        require(destAmount &lt;= MAX_QTY);
+        require(srcAmount <= MAX_QTY);
+        require(destAmount <= MAX_QTY);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION / ((10 ** (dstDecimals - srcDecimals)) * srcAmount));
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION * (10 ** (srcDecimals - dstDecimals)) / srcAmount);
         }
     }
@@ -191,8 +191,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -263,7 +263,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -274,7 +274,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -288,7 +288,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -299,7 +299,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -526,8 +526,8 @@ contract KyberNetworkProxy is KyberNetworkProxyInterface, SimpleNetworkInterface
         );
 
         require(reportedDestAmount == tradeOutcome.userDeltaDestAmount);
-        require(tradeOutcome.userDeltaDestAmount &lt;= maxDestAmount);
-        require(tradeOutcome.actualRate &gt;= minConversionRate);
+        require(tradeOutcome.userDeltaDestAmount <= maxDestAmount);
+        require(tradeOutcome.actualRate >= minConversionRate);
 
         ExecuteTrade(msg.sender, src, dest, tradeOutcome.userDeltaSrcAmount, tradeOutcome.userDeltaDestAmount);
         return tradeOutcome.userDeltaDestAmount;
@@ -588,8 +588,8 @@ contract KyberNetworkProxy is KyberNetworkProxyInterface, SimpleNetworkInterface
         userDestBalanceAfter = getBalance(dest, destAddress);
 
         //protect from underflow
-        require(userDestBalanceAfter &gt; destBalanceBefore);
-        require(srcBalanceBefore &gt; userSrcBalanceAfter);
+        require(userDestBalanceAfter > destBalanceBefore);
+        require(srcBalanceBefore > userSrcBalanceAfter);
 
         outcome.userDeltaDestAmount = userDestBalanceAfter - destBalanceBefore;
         outcome.userDeltaSrcAmount = srcBalanceBefore - userSrcBalanceAfter;

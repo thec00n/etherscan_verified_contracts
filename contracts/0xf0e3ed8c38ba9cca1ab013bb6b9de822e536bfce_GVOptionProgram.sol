@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -176,8 +176,8 @@ contract GVOptionToken is StandardToken {
 
     // Create tokens
     function buyOptions(address buyer, uint value) optionProgramOnly {
-        require(value &gt; 0);
-        require(totalSupply + value &lt;= TOKEN_LIMIT);
+        require(value > 0);
+        require(totalSupply + value <= TOKEN_LIMIT);
 
         balances[buyer] += value;
         totalSupply += value;
@@ -192,7 +192,7 @@ contract GVOptionToken is StandardToken {
     function executeOption(address addr, uint optionsCount) 
         optionProgramOnly
         returns (uint) {
-        if (balances[addr] &lt; optionsCount) {
+        if (balances[addr] < optionsCount) {
             optionsCount = balances[addr];
         }
         if (optionsCount == 0) {
@@ -216,13 +216,13 @@ contract GVOptionProgram {
     uint constant token20perCent  = 12631578947368500;  // GVT tokens per usd cent during execution of GVOT20
     uint constant token10perCent  = 11578947368421100;  // GVT tokens per usd cent during execution of GVOT10
 
-    string public constant option30name = &quot;30% GVOT&quot;;
-    string public constant option20name = &quot;20% GVOT&quot;;
-    string public constant option10name = &quot;10% GVOT&quot;;
+    string public constant option30name = "30% GVOT";
+    string public constant option20name = "20% GVOT";
+    string public constant option10name = "10% GVOT";
 
-    string public constant option30symbol = &quot;GVOT30&quot;;
-    string public constant option20symbol = &quot;GVOT20&quot;;
-    string public constant option10symbol = &quot;GVOT10&quot;;
+    string public constant option30symbol = "GVOT30";
+    string public constant option20symbol = "GVOT20";
+    string public constant option10symbol = "GVOT10";
 
     uint constant option30_TOKEN_LIMIT = 26 * 1e5 * 1e18;
     uint constant option20_TOKEN_LIMIT = 36 * 1e5 * 1e18;
@@ -259,10 +259,10 @@ contract GVOptionProgram {
         return (gvOptionToken30.remainingTokensCount(), gvOptionToken20.remainingTokensCount(), gvOptionToken10.remainingTokensCount());
     }
 
-    // Execute options during the ICO token purchase. Priority: GVOT30 -&gt; GVOT20 -&gt; GVOT10
+    // Execute options during the ICO token purchase. Priority: GVOT30 -> GVOT20 -> GVOT10
     function executeOptions(address buyer, uint usdCents, string txHash) icoOnly
         returns (uint executedTokens, uint remainingCents) {
-        require(usdCents &gt; 0);
+        require(usdCents > 0);
 
         (executedTokens, remainingCents) = executeIfAvailable(buyer, usdCents, txHash, gvOptionToken30, 0, token30perCent);
         if (remainingCents == 0) {
@@ -281,9 +281,9 @@ contract GVOptionProgram {
         return (executedTokens + executed20 + executed10, remainingCents);
     }
 
-    // Buy option tokens. Priority: GVOT30 -&gt; GVOT20 -&gt; GVOT10
+    // Buy option tokens. Priority: GVOT30 -> GVOT20 -> GVOT10
     function buyOptions(address buyer, uint usdCents, string txHash) icoOnly {
-        require(usdCents &gt; 0);
+        require(usdCents > 0);
 
         var remainUsdCents = buyIfAvailable(buyer, usdCents, txHash, gvOptionToken30, 0, option30perCent);
         if (remainUsdCents == 0) {
@@ -307,7 +307,7 @@ contract GVOptionProgram {
         var optionsAmount = usdCents * optionPerCent;
         executedTokens = optionToken.executeOption(buyer, optionsAmount);
         remainingCents = usdCents - (executedTokens / optionPerCent);
-        if (executedTokens &gt; 0) {
+        if (executedTokens > 0) {
             ExecuteOptions(buyer, executedTokens, txHash, optionType);
         }
         return (executedTokens, remainingCents);
@@ -318,9 +318,9 @@ contract GVOptionProgram {
         private returns (uint) {
         
         var availableTokens = optionToken.remainingTokensCount(); 
-        if (availableTokens &gt; 0) {
+        if (availableTokens > 0) {
             var tokens = usdCents * optionsPerCent;
-            if(availableTokens &gt;= tokens) {
+            if(availableTokens >= tokens) {
                 optionToken.buyOptions(buyer, tokens);
                 BuyOptions(buyer, tokens, txHash, optionType);
                 return 0;

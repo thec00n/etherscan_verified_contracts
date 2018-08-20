@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -86,7 +86,7 @@ contract Drainable is Ownable {
 
 
 contract ADXRegistry is Ownable, Drainable {
-	string public name = &quot;AdEx Registry&quot;;
+	string public name = "AdEx Registry";
 
 	// Structure:
 	// AdUnit (advertiser) - a unit of a single advertisement
@@ -95,14 +95,14 @@ contract ADXRegistry is Ownable, Drainable {
 	// Channel (publisher) - group of properties ; not vital
 	// Each Account is linked to all the items they own through the Account struct
 
-	mapping (address =&gt; Account) public accounts;
+	mapping (address => Account) public accounts;
 
 	// XXX: mostly unused, because solidity does not allow mapping with enum as primary type.. :( we just use uint
 	enum ItemType { AdUnit, AdSlot, Campaign, Channel }
 
 	// uint here corresponds to the ItemType
-	mapping (uint =&gt; uint) public counts;
-	mapping (uint =&gt; mapping (uint =&gt; Item)) public items;
+	mapping (uint => uint) public counts;
+	mapping (uint => mapping (uint => Item)) public items;
 
 	// Publisher or Advertiser (could be both)
 	struct Account {		
@@ -116,7 +116,7 @@ contract ADXRegistry is Ownable, Drainable {
 		bytes32 signature; // signature in the off-blockchain state channel
 		
 		// Items, by type, then in an array of numeric IDs	
-		mapping (uint =&gt; uint[]) items;
+		mapping (uint => uint[]) items;
 	}
 
 	// Sub-item, such as AdUnit, AdSlot, Campaign, Channel
@@ -198,7 +198,7 @@ contract ADXRegistry is Ownable, Drainable {
 	}
 
 	// NOTE
-	// There&#39;s no real point of un-registering items
+	// There's no real point of un-registering items
 	// Campaigns need to be kept anyway, as well as ad units
 	// END NOTE
 

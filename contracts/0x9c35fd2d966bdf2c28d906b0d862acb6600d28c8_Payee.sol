@@ -3,8 +3,8 @@ pragma solidity ^0.4.19;
 contract Storage{
     address public founder;
     bool public changeable;
-    mapping( address =&gt; bool) public adminStatus;
-    mapping( address =&gt; uint256) public slot;
+    mapping( address => bool) public adminStatus;
+    mapping( address => uint256) public slot;
     
     event Update(address whichAdmin, address whichUser, uint256 data);
     event Set(address whichAdmin, address whichUser, uint256 data);
@@ -28,7 +28,7 @@ contract Storage{
     
     function update(address userAddress,uint256 data) public onlyAdmin(){
         assert(changeable==true);
-        assert(slot[userAddress]+data&gt;slot[userAddress]);
+        assert(slot[userAddress]+data>slot[userAddress]);
         slot[userAddress]+=data;
         Update(msg.sender,userAddress,data);
     }
@@ -64,7 +64,7 @@ contract Payee{
     address public storageAddress;
     address public founder;
     bool public changeable;
-    mapping( address =&gt; bool) public adminStatus;
+    mapping( address => bool) public adminStatus;
 
     
     
@@ -116,7 +116,7 @@ contract Payee{
     
     function pay(address _addr, uint256 count) public payable {
         assert(changeable==true);
-        assert(msg.value &gt;= price*count);
+        assert(msg.value >= price*count);
         if(!founder.call.value(price*count)() || !msg.sender.call.value(msg.value-price*count)()){
             revert();
         }

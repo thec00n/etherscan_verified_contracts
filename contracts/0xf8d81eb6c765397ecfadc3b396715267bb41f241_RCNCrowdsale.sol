@@ -6,7 +6,7 @@ contract Crowdsale {
 
 contract CapWhitelist {
     address public owner;
-    mapping (address =&gt; uint256) public whitelist;
+    mapping (address => uint256) public whitelist;
 
     event Set(address _address, uint256 _amount);
 
@@ -47,7 +47,7 @@ contract Token {
 contract StandardToken is Token {
     using SafeMath for uint256;
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value) {
+      if (balances[msg.sender] >= _value) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -58,7 +58,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -91,7 +91,7 @@ contract StandardToken is Token {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -100,8 +100,8 @@ contract StandardToken is Token {
       return true;
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Ownable {
@@ -149,20 +149,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -200,15 +200,15 @@ contract MintableToken is StandardToken, Ownable {
   }
 }
 contract RCNToken is MintableToken {
-    string public constant name = &quot;Ripio Credit Network Token&quot;;
-    string public constant symbol = &quot;RCN&quot;;
+    string public constant name = "Ripio Credit Network Token";
+    string public constant symbol = "RCN";
     uint8 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 }
 
 contract PreallocationsWhitelist {
     address public owner;
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     event Set(address _address, bool _enabled);
 
@@ -256,7 +256,7 @@ contract RCNCrowdsale is Crowdsale {
     // events
     event CreateRCN(address indexed _to, uint256 _value);
 
-    mapping (address =&gt; uint256) bought; // cap map
+    mapping (address => uint256) bought; // cap map
 
     CapWhitelist public whiteList;
     PreallocationsWhitelist public preallocationsWhitelist;
@@ -274,7 +274,7 @@ contract RCNCrowdsale is Crowdsale {
       // sanity checks
       assert(_ethFundDeposit != 0x0);
       assert(_rcnFundDeposit != 0x0);
-      assert(_fundingStartTimestamp &lt; _fundingEndTimestamp);
+      assert(_fundingStartTimestamp < _fundingEndTimestamp);
       assert(uint256(token.decimals()) == decimals); 
 
       isFinalized = false;                   //controls pre through crowdsale state
@@ -294,25 +294,25 @@ contract RCNCrowdsale is Crowdsale {
     // low level token purchase function
     function buyTokens(address beneficiary) payable {
       require (!isFinalized);
-      require (block.timestamp &gt;= fundingStartTimestamp || preallocationsWhitelist.whitelist(msg.sender));
-      require (block.timestamp &lt;= fundingEndTimestamp);
+      require (block.timestamp >= fundingStartTimestamp || preallocationsWhitelist.whitelist(msg.sender));
+      require (block.timestamp <= fundingEndTimestamp);
       require (msg.value != 0);
       require (beneficiary != 0x0);
-      require (tx.gasprice &lt;= gasPriceLimit);
+      require (tx.gasprice <= gasPriceLimit);
 
-      uint256 tokens = msg.value.mul(tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = msg.value.mul(tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = token.totalSupply().add(tokens);
       uint256 checkedBought = bought[msg.sender].add(tokens);
 
       // if sender is not whitelisted or exceeds their cap, cancel the transaction
-      require (checkedBought &lt;= whiteList.whitelist(msg.sender) || preallocationsWhitelist.whitelist(msg.sender));
+      require (checkedBought <= whiteList.whitelist(msg.sender) || preallocationsWhitelist.whitelist(msg.sender));
 
       // return money if something goes wrong
-      require (tokenCreationCap &gt;= checkedSupply);
+      require (tokenCreationCap >= checkedSupply);
 
       // return money if tokens is less than the min amount and the token is not finalizing
       // the min amount does not apply if the availables tokens are less than the min amount.
-      require (tokens &gt;= minBuyTokens || (tokenCreationCap - token.totalSupply()) &lt;= minBuyTokens);
+      require (tokens >= minBuyTokens || (tokenCreationCap - token.totalSupply()) <= minBuyTokens);
 
       token.mint(beneficiary, tokens);
       bought[msg.sender] = checkedBought;
@@ -323,7 +323,7 @@ contract RCNCrowdsale is Crowdsale {
 
     function finalize() {
       require (!isFinalized);
-      require (block.timestamp &gt; fundingEndTimestamp || token.totalSupply() == tokenCreationCap);
+      require (block.timestamp > fundingEndTimestamp || token.totalSupply() == tokenCreationCap);
       require (msg.sender == ethFundDeposit);
       isFinalized = true;
       token.finishMinting();

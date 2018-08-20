@@ -40,37 +40,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
  
@@ -88,10 +88,10 @@ contract StandardToken is ERC223, SafeMath {
     uint256 public decimals;
 
     /* Actual mapBalances of token holders */
-    mapping(address =&gt; uint) mapBalances;
+    mapping(address => uint) mapBalances;
 
     /* approve() allowances */
-    mapping (address =&gt; mapping (address =&gt; uint)) mapApproved;
+    mapping (address => mapping (address => uint)) mapApproved;
 
     /* Interface declaration */
     function isToken() public pure returns (bool weAre) {
@@ -117,7 +117,7 @@ contract StandardToken is ERC223, SafeMath {
         mapBalances[msg.sender] = safeSub(mapBalances[msg.sender], _value);
         mapBalances[_to] = safeAdd(mapBalances[_to], _value);
         
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223Receiver receiver = ERC223Receiver(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -138,7 +138,7 @@ contract StandardToken is ERC223, SafeMath {
         mapBalances[msg.sender] = safeSub(mapBalances[msg.sender], _value);
         mapBalances[_to] = safeAdd(mapBalances[_to], _value);
         
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223Receiver receiver = ERC223Receiver(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -198,8 +198,8 @@ contract StandardToken is ERC223, SafeMath {
  */
 contract RabbitCoin is StandardToken {
 
-    string public name = &quot;BetOnMatch&quot;;
-    string public symbol = &quot;BOM&quot;;
+    string public name = "BetOnMatch";
+    string public symbol = "BOM";
     
     
     address public coinMaster;
@@ -230,7 +230,7 @@ contract RabbitCoin is StandardToken {
     function setTokenInformation(string _name, string _symbol) public {
         require(msg.sender == coinMaster) ;
 
-        require(bytes(name).length &gt; 0 &amp;&amp; bytes(symbol).length &gt; 0);
+        require(bytes(name).length > 0 && bytes(symbol).length > 0);
 
         name = _name;
         symbol = _symbol;

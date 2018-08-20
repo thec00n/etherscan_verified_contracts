@@ -9,13 +9,13 @@ contract SafeMath {
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256 c) {
-    assert(b &lt;= a);
+    assert(b <= a);
     c = a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256 c) {
     c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
   }
 
   function assert(bool assertion) internal {
@@ -64,12 +64,12 @@ contract Token {
 
 contract ValueToken is SafeMath,Token{
     
-    string name = &quot;Value&quot;;
+    string name = "Value";
     uint decimals = 0;
     
     uint256 supplyNow = 0; 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     function totalSupply() constant returns (uint256 totalSupply){
         return supplyNow;
@@ -80,7 +80,7 @@ contract ValueToken is SafeMath,Token{
     }
     
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (balanceOf(msg.sender) &gt;= _value) {
+        if (balanceOf(msg.sender) >= _value) {
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
             balances[_to] = safeAdd(balanceOf(_to), _value);
             Transfer(msg.sender, _to, _value);
@@ -90,7 +90,7 @@ contract ValueToken is SafeMath,Token{
     }
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_to] = safeAdd(balanceOf(_to), _value);
             balances[_from] = safeSub(balanceOf(_from), _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -100,7 +100,7 @@ contract ValueToken is SafeMath,Token{
     }
     
     function approve(address _spender, uint256 _value) returns (bool success){
-        if(balances[msg.sender] &gt;= _value){
+        if(balances[msg.sender] >= _value){
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -150,8 +150,8 @@ contract ValueTrader is SafeMath,ValueToken{
     
     address owner;
     address etherContract;
-    uint256 tradeCoefficient; // 1-(this/10000) = fee for instant trades, &quot;negative&quot; fees possible.
-    mapping (address =&gt; TokenData) tokenManage;
+    uint256 tradeCoefficient; // 1-(this/10000) = fee for instant trades, "negative" fees possible.
+    mapping (address => TokenData) tokenManage;
     bool public burning = false; //after draining is finished, burn to retrieve tokens, allow suicide.
     bool public draining = false; //prevent creation of new value
     
@@ -206,7 +206,7 @@ contract ValueTrader is SafeMath,ValueToken{
         //this is a dangerous and irresponsible feature,
         //gives owner ability to do virtually anything 
         //(bar running away with all the ether)
-        //I can&#39;t think of a better solution until there is a standard for dividend-paying contracts.
+        //I can't think of a better solution until there is a standard for dividend-paying contracts.
         assert(tokenManage[token_].hasDividend);
         assert(tokenManage[token_].divContractAddress.call.value(0)(tokenManage[token_].divData));
     }
@@ -241,7 +241,7 @@ contract ValueTrader is SafeMath,ValueToken{
     
     function valueWithFee(uint256 tempValue) internal returns (uint256 doneValue){
         doneValue = safeMul(tempValue,tradeCoefficient)/10000;
-        if(tradeCoefficient &lt; 10000){
+        if(tradeCoefficient < 10000){
             //send fees to owner (in value tokens).
             createValue(owner,safeSub(tempValue,doneValue));
         }
@@ -286,7 +286,7 @@ contract ValueTrader is SafeMath,ValueToken{
     }
 
     function buyToken(address token, uint256 amount) {
-        assert(!(valueToToken(token,balances[msg.sender]) &lt; amount));
+        assert(!(valueToToken(token,balances[msg.sender]) < amount));
         assert(destroyValue(msg.sender, tokenToValue(token,amount)));
         assert(Token(token).transfer(msg.sender, amount));
         Buy(token, msg.sender, amount, balances[msg.sender]);
@@ -298,7 +298,7 @@ contract ValueTrader is SafeMath,ValueToken{
     }
     
     function buyEther(uint256 amount) {
-        assert(valueToToken(etherContract,balances[msg.sender]) &gt;= amount);
+        assert(valueToToken(etherContract,balances[msg.sender]) >= amount);
         assert(destroyValue(msg.sender, tokenToValue(etherContract,amount)));
         assert(msg.sender.call.value(amount)());
         Buy(etherContract, msg.sender, amount, balances[msg.sender]);
@@ -331,7 +331,7 @@ contract ValueTrader is SafeMath,ValueToken{
 
 //manage ValueTrader in an automated way!
 //fixed amount of (2) holders/managers,
-//because I&#39;m too lazy to make anything more complex.
+//because I'm too lazy to make anything more complex.
 contract ShopKeeper is SafeMath{
     
     ValueTrader public shop;

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -104,7 +104,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -163,7 +163,7 @@ contract Burnable is StandardToken {
   event Burn(address indexed from, uint256 value);
 
   function burn(uint256 _value) returns (bool success) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     Burn(msg.sender, _value);
@@ -171,8 +171,8 @@ contract Burnable is StandardToken {
   }
 
   function burnFrom(address _from, uint256 _value) returns (bool success) {
-    require(balances[_from] &gt;= _value);               // Check if the sender has enough
-    require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+    require(balances[_from] >= _value);               // Check if the sender has enough
+    require(_value <= allowed[_from][msg.sender]);    // Check allowance
     balances[_from] = balances[_from].sub(_value);    // Subtract from the sender
     totalSupply = totalSupply.sub(_value);            // Updates totalSupply
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -195,8 +195,8 @@ contract Burnable is StandardToken {
 
 contract SangusToken is Burnable, Ownable {
 
-  string public name = &quot;Sangus Rating Token&quot;;
-  string public symbol = &quot;SRT&quot;;
+  string public name = "Sangus Rating Token";
+  string public symbol = "SRT";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 20000000 * 1 ether;
 
@@ -207,7 +207,7 @@ contract SangusToken is Burnable, Ownable {
   bool public released = false;
 
   /** Crowdsale contracts and wallets exempt from lockup. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Check whether released or exempt.

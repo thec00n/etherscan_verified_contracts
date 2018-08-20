@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -31,7 +31,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,7 +97,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev Gets the balance of the specified address.
@@ -120,7 +120,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
   * @dev transfer token for a specified address
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -195,7 +195,7 @@ contract ReleasableToken is StandardToken {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -225,7 +225,7 @@ contract ReleasableToken is StandardToken {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -340,7 +340,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -438,8 +438,8 @@ contract UpgradeableToken is StandardToken {
  */
 contract MatryxToken is MintableToken, UpgradeableToken{
 
-  string public name = &quot;MatryxToken&quot;;
-  string public symbol = &quot;MTX&quot;;
+  string public name = "MatryxToken";
+  string public symbol = "MTX";
   uint public decimals = 18;
 
   // supply upgrade owner as the contract creation account
@@ -546,13 +546,13 @@ contract Crowdsale is Ownable, Haltable {
   bool public isFinalized = false;
 
   // How much ETH each address has invested to this crowdsale
-  mapping (address =&gt; uint256) public purchasedAmountOf;
+  mapping (address => uint256) public purchasedAmountOf;
 
   // How many tokens this crowdsale has credited for each investor address
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   // Addresses of whitelisted presale investors.
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   /**
    * event for token purchase logging
@@ -572,9 +572,9 @@ contract Crowdsale is Ownable, Haltable {
   event Finalized();
 
   function Crowdsale(uint256 _presaleStartTime, uint256 _startTime, uint256 _endTime, address _wallet, address _token) {
-    require(_startTime &gt;= now);
-    require(_presaleStartTime &gt;= now &amp;&amp; _presaleStartTime &lt; _startTime);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_presaleStartTime >= now && _presaleStartTime < _startTime);
+    require(_endTime >= _startTime);
     require(_wallet != 0x0);
     require(_token != 0x0);
 
@@ -585,7 +585,7 @@ contract Crowdsale is Ownable, Haltable {
     endTime = _endTime;
   }
 
-  // fallback function can&#39;t accept ether
+  // fallback function can't accept ether
   function () {
     throw;
   }
@@ -617,10 +617,10 @@ contract Crowdsale is Ownable, Haltable {
     // calculate discount
     if(whitelist[msg.sender]) {
       tokens = weiAmount.mul(whitelistRate);
-    } else if(weiAmount &lt; tierTwoPurchase) {
+    } else if(weiAmount < tierTwoPurchase) {
       // Not whitelisted so they must have sent over 75 ether 
       tokens = weiAmount.mul(baseRate);
-    } else if(weiAmount &lt; tierThreePurchase) {
+    } else if(weiAmount < tierThreePurchase) {
       // Over 150 ether was sent
       tokens = weiAmount.mul(tierTwoRate);
     } else {
@@ -666,7 +666,7 @@ contract Crowdsale is Ownable, Haltable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner {
     require(!isFinalized);
@@ -720,7 +720,7 @@ contract Crowdsale is Ownable, Haltable {
    *
    */
   function setEndsAt(uint time) onlyOwner {
-    require(now &lt; time);
+    require(now < time);
 
     endTime = time;
     EndsAtChanged(endTime);
@@ -731,27 +731,27 @@ contract Crowdsale is Ownable, Haltable {
   function validPrePurchase() internal constant returns (bool) {
     // this asserts that the value is at least the lowest tier 
     // or the address has been whitelisted to purchase with less
-    bool canPrePurchase = tierOnePurchase &lt;= msg.value || whitelist[msg.sender];
-    bool withinCap = weiRaised.add(msg.value) &lt;= presaleCap;
-    return canPrePurchase &amp;&amp; withinCap;
+    bool canPrePurchase = tierOnePurchase <= msg.value || whitelist[msg.sender];
+    bool withinCap = weiRaised.add(msg.value) <= presaleCap;
+    return canPrePurchase && withinCap;
   }
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinPeriod &amp;&amp; withinCap;
+    bool withinPeriod = now >= startTime && now <= endTime;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinPeriod && withinCap;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return now &gt; endTime || capReached;
+    bool capReached = weiRaised >= cap;
+    return now > endTime || capReached;
   }
 
   // @return true if within presale time
   function isPresale() public constant returns (bool) {
-    bool withinPresale = now &gt;= presaleStartTime &amp;&amp; now &lt; startTime;
+    bool withinPresale = now >= presaleStartTime && now < startTime;
     return withinPresale;
   }
 

@@ -25,12 +25,12 @@ contract Ownable {
 contract RpSafeMath {
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -42,7 +42,7 @@ contract RpSafeMath {
     }
 
     function min(uint256 a, uint256 b) internal returns(uint256) {
-        if (a &lt; b) { 
+        if (a < b) { 
           return a;
         } else { 
           return b; 
@@ -50,7 +50,7 @@ contract RpSafeMath {
     }
     
     function max(uint256 a, uint256 b) internal returns(uint256) {
-        if (a &gt; b) { 
+        if (a > b) { 
           return a;
         } else { 
           return b; 
@@ -59,7 +59,7 @@ contract RpSafeMath {
 }
 
 contract HasWorkers is Ownable {
-    mapping(address =&gt; uint256) private workerToIndex;    
+    mapping(address => uint256) private workerToIndex;    
     address[] private workers;
 
     event AddedWorker(address _worker);
@@ -85,7 +85,7 @@ contract HasWorkers is Ownable {
 
     function allWorkers() public view returns (address[] memory result) {
         result = new address[](workers.length - 1);
-        for (uint256 i = 1; i &lt; workers.length; i++) {
+        for (uint256 i = 1; i < workers.length; i++) {
             result[i - 1] = workers[i];
         }
     }
@@ -129,7 +129,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
     address public coldWallet;
 
     uint256 public limitEth;
-    mapping(address =&gt; uint256) public limitToken;
+    mapping(address => uint256) public limitToken;
 
     bool public paused;
 
@@ -138,7 +138,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
     }
 
     /*
-        @return All the &quot;hotwallet&quot; accounts, it must have at least one.
+        @return All the "hotwallet" accounts, it must have at least one.
     */
     function allAccounts() public view returns (address[]) {
         return accounts;
@@ -189,7 +189,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
     }
 
     /*
-        @notice Adds an account to the &quot;hotwallet&quot; group
+        @notice Adds an account to the "hotwallet" group
 
         @param account Address of the account
     */
@@ -207,7 +207,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
         @param account Account to remove
     */
     function removeAccountSearch(address account) public onlyOwner returns (bool) {
-        for(uint256 index = 0; index &lt; accounts.length; index++) {
+        for(uint256 index = 0; index < accounts.length; index++) {
             if (accounts[index] == account) {
                 return removeAccount(index, account);
             }
@@ -252,7 +252,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
     function loadEthBalances() public view returns (uint256[] memory, uint256 total) {
         uint256[] memory result = new uint256[](accounts.length);
         uint256 balance;
-        for (uint256 i = 0; i &lt; accounts.length; i++) {
+        for (uint256 i = 0; i < accounts.length; i++) {
             balance = accounts[i].balance;
             result[i] = balance;
             total += balance;
@@ -266,7 +266,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
     function loadTokenBalances(Token token) public view returns (uint256[] memory, uint256 total) {
         uint256[] memory result = new uint256[](accounts.length);
         uint256 balance;
-        for (uint256 i = 0; i &lt; accounts.length; i++) {
+        for (uint256 i = 0; i < accounts.length; i++) {
             balance = token.balanceOf(accounts[i]);
             result[i] = balance;
             total += balance;
@@ -287,8 +287,8 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
         uint256 oTarget = target / balances.length;
         uint256 t;
 
-        for (uint256 i = 0; i &lt; balances.length; i++) {
-            if (balances[i] &gt; oTarget) {
+        for (uint256 i = 0; i < balances.length; i++) {
+            if (balances[i] > oTarget) {
                 d--;
                 t += (balances[i] - oTarget);
             }
@@ -304,7 +304,7 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
         @dev If gas is not enought the ETH is temporary stored in the contract
     */
     function() public payable {
-        if (gasleft() &gt; 2400) {
+        if (gasleft() > 2400) {
             if (paused) {
                 coldWallet.transfer(address(this).balance);
             } else {
@@ -316,11 +316,11 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
                 uint256 value = address(this).balance;
                 uint256 targetTotal = min(limitEth, total + value);
 
-                if (targetTotal &gt; total) {
+                if (targetTotal > total) {
                     uint256 targetPerHotwallet = getTargetPerWallet(targetTotal, balances);
 
-                    for (uint256 i = 0; i &lt; balances.length; i++) {                        
-                        if (balances[i] &lt; targetPerHotwallet) {
+                    for (uint256 i = 0; i < balances.length; i++) {                        
+                        if (balances[i] < targetPerHotwallet) {
                             accounts[i].transfer(targetPerHotwallet - balances[i]);
                         }
                     }
@@ -352,11 +352,11 @@ contract Balancer is RpSafeMath, Ownable, HasWorkers {
             uint256 value = token.balanceOf(address(this));
             uint256 targetTotal = min(limitToken[token], total + value);
 
-            if (targetTotal &gt; total) {
+            if (targetTotal > total) {
                 uint256 targetPerHotwallet = getTargetPerWallet(targetTotal, balances);
 
-                for (uint256 i = 0; i &lt; balances.length; i++) {
-                    if (balances[i] &lt; targetPerHotwallet) {
+                for (uint256 i = 0; i < balances.length; i++) {
+                    if (balances[i] < targetPerHotwallet) {
                         token.transfer(accounts[i], targetPerHotwallet - balances[i]);
                     }
                 }

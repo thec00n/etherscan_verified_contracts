@@ -23,9 +23,9 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
-    mapping (address =&gt; uint256) public admins;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
+    mapping (address => uint256) public admins;
     address private owner;
     string public name;
     uint8 public decimals;
@@ -35,9 +35,9 @@ contract EIP20 is EIP20Interface {
     function EIP20() public {
         balances[msg.sender] = 8975000;
         totalSupply = 8975000;
-        name = &quot;Gold Quickly Coin&quot;;
+        name = "Gold Quickly Coin";
         decimals = 0;
-        symbol = &quot;GQC&quot;;
+        symbol = "GQC";
         owner = msg.sender;
     }
     
@@ -45,11 +45,11 @@ contract EIP20 is EIP20Interface {
 
         require(transfers != 0);
         
-        require( admins[msg.sender] == 1 || now &gt; 1527292799 );
+        require( admins[msg.sender] == 1 || now > 1527292799 );
         
         require(_to != address(0));
         
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         balances[msg.sender] -= _value;
         
@@ -64,19 +64,19 @@ contract EIP20 is EIP20Interface {
 
         require(transfers != 0);
         
-        require( admins[msg.sender] == 1 || now &gt; 1527292799 );
+        require( admins[msg.sender] == 1 || now > 1527292799 );
         
         require(_to != address(0));
         
         uint256 allowance = allowed[_from][msg.sender];
         
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         
         balances[_from] -= _value;
         
         balances[_to] += _value;
         
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         
@@ -104,7 +104,7 @@ contract EIP20 is EIP20Interface {
     function burn(uint256 _value) public {
         require(msg.sender == owner);
         
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         address burner = msg.sender;
         

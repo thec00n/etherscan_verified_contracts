@@ -8,7 +8,7 @@ contract ZZ
     }
 
     function getMessage() public pure returns (bytes32) {
-        return &quot;ZZ loves mandy.&quot;;
+        return "ZZ loves mandy.";
     }
   
     function e() public { 

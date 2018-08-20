@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 
 // We keep the same basics as SnailFarm: hatch eggs into snails, buy or sell eggs for money.
 // Hatching now comes with a small ETH cost.
-// Your snails don&#39;t die anymore when you sell eggs.
+// Your snails don't die anymore when you sell eggs.
 // Referrals are gone.
 // The formula for buying and selling eggs is simplified.
 // Only a finite number of eggs is available for sale.
@@ -112,13 +112,13 @@ contract SnailFarm2 {
     	
     /* Mappings */
     
-	mapping (address =&gt; bool) public hasStartingSnails;
-    mapping (address =&gt; uint256) public hatcherySnail;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; uint256) public playerAcorns;
-    mapping (address =&gt; uint256) public playerEarnings;
-    mapping (address =&gt; uint256) public playerProdBoost;
+	mapping (address => bool) public hasStartingSnails;
+    mapping (address => uint256) public hatcherySnail;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => uint256) public playerAcorns;
+    mapping (address => uint256) public playerEarnings;
+    mapping (address => uint256) public playerProdBoost;
     
 	
     /* Functions */
@@ -150,7 +150,7 @@ contract SnailFarm2 {
 	// In the case of a complete acorn dump followed by egg buys
     
     function SeedMarket(uint256 _eggs, uint256 _acorns) public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(round == 0);
         require(msg.sender == gameOwner);
         
@@ -171,7 +171,7 @@ contract SnailFarm2 {
     // Takes a given amount of acorns, increases player ETH balance
     
     function SellAcorns(uint256 _acorns) public {
-        require(playerAcorns[msg.sender] &gt; 0);
+        require(playerAcorns[msg.sender] > 0);
         
         playerAcorns[msg.sender] = playerAcorns[msg.sender].sub(_acorns);
         uint256 _acornEth = ComputeAcornPrice().mul(_acorns);
@@ -189,11 +189,11 @@ contract SnailFarm2 {
 	// If current snailpot is equal or above, 1 acorn for the price of 
     
     function BuyAcorns() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(tx.origin == msg.sender);
         require(gameStarted);
         
-		if (snailPot &lt; previousSnailPot) {
+		if (snailPot < previousSnailPot) {
 			uint256 _acornBought = ((msg.value.div(ComputeAcornPrice())).mul(3)).div(4);
 			AcornPotSplit(msg.value);
 		} else {
@@ -214,7 +214,7 @@ contract SnailFarm2 {
     
     function BecomeSnailmaster() public {
         require(gameStarted);
-        require(hatcherySnail[msg.sender] &gt;= snailmasterReq);
+        require(hatcherySnail[msg.sender] >= snailmasterReq);
         
         hatcherySnail[msg.sender] = hatcherySnail[msg.sender].div(10);
         
@@ -240,7 +240,7 @@ contract SnailFarm2 {
     // Withdraws all ETH earnings of a player to his wallet
     
     function WithdrawEarnings() public {
-        require(playerEarnings[msg.sender] &gt; 0);
+        require(playerEarnings[msg.sender] > 0);
         
         uint _amount = playerEarnings[msg.sender];
         playerEarnings[msg.sender] = 0;
@@ -355,7 +355,7 @@ contract SnailFarm2 {
     
     function BecomeSpiderQueen() public {
         require(gameStarted);
-        require(hatcherySnail[msg.sender] &gt;= spiderReq);
+        require(hatcherySnail[msg.sender] >= spiderReq);
 
         // Remove sacrificed snails, increase req
         hatcherySnail[msg.sender] = hatcherySnail[msg.sender].sub(spiderReq);
@@ -379,7 +379,7 @@ contract SnailFarm2 {
     function BecomeSquirrelDuke() public {
         require(gameStarted);
         require(hasStartingSnails[msg.sender] == true);
-        require(playerAcorns[msg.sender] &gt;= squirrelReq);
+        require(playerAcorns[msg.sender] >= squirrelReq);
         
         // Remove sacrificed acorns, change totalAcorns in consequence, increase req
         playerAcorns[msg.sender] = playerAcorns[msg.sender].sub(squirrelReq);
@@ -404,10 +404,10 @@ contract SnailFarm2 {
     function BecomeTadpolePrince() public payable {
         require(gameStarted);
         require(hasStartingSnails[msg.sender] == true);
-        require(msg.value &gt;= tadpoleReq);
+        require(msg.value >= tadpoleReq);
         
         // If player sent more ETH than needed, refund excess to playerEarnings
-        if (msg.value &gt; tadpoleReq) {
+        if (msg.value > tadpoleReq) {
             uint _excess = msg.value.sub(tadpoleReq);
             playerEarnings[msg.sender] = playerEarnings[msg.sender].add(_excess);
         }  
@@ -483,11 +483,11 @@ contract SnailFarm2 {
     }
     
     // Helper function for CalculateEggsSinceLastHatch
-	// If a &lt; b, return a
+	// If a < b, return a
 	// Else, return b
     
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     // Gets
@@ -531,9 +531,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -541,7 +541,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -550,7 +550,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -39,9 +39,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -49,7 +49,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,34 +134,34 @@ contract Crowdsale {
   uint256 public approvedTill = 1535328000;
 
   // How much each user paid for the crowdsale
-  mapping(address =&gt; uint256) public crowdsaleBalances;
+  mapping(address => uint256) public crowdsaleBalances;
 
   // How many tokens each user got for the crowdsale
-  mapping(address =&gt; uint256) public tokensBought;
+  mapping(address => uint256) public tokensBought;
 
   // How many tokens each user got for the crowdsale as bonus
-  mapping(address =&gt; uint256) public bonusBalances;
+  mapping(address => uint256) public bonusBalances;
 
   // How many tokens each user got locked
-  mapping(address =&gt; uint256) public lockedBalances;
+  mapping(address => uint256) public lockedBalances;
 
   // How many tokens each user got pre-delivered
-  mapping(address =&gt; uint256) public allocatedBalances;
+  mapping(address => uint256) public allocatedBalances;
 
   // If user is approved to withdraw tokens
-  mapping(address =&gt; bool) public approved;
+  mapping(address => bool) public approved;
 
   // How many tokens each user got distributed
-  mapping(address =&gt; uint256) public distributedBalances;
+  mapping(address => uint256) public distributedBalances;
 
   // Bonus levels per each round
-  mapping (uint256 =&gt; uint256) public bonusLevels;
+  mapping (uint256 => uint256) public bonusLevels;
 
   // Rate levels per each round
-  mapping (uint256 =&gt; uint256) public rateLevels;
+  mapping (uint256 => uint256) public rateLevels;
 
   // Cap levels per each round
-  mapping (uint256 =&gt; uint256) public capLevels;
+  mapping (uint256 => uint256) public capLevels;
 
   // To track list of contributors
   address[] public allocatedAddresses;              
@@ -217,9 +217,9 @@ contract Crowdsale {
     minPurchase = _minPurchase;
   }
 
-   // @notice Set&#39;s the rate of tokens per ether for each round
+   // @notice Set's the rate of tokens per ether for each round
   function setNewRatesCustom (uint256 _r1, uint256 _r2, uint256 _r3, uint256 _r4, uint256 _r5, uint256 _r6) onlyOwner external {
-    require(_r1 &gt; 0 &amp;&amp; _r2 &gt; 0 &amp;&amp; _r3 &gt; 0 &amp;&amp; _r4 &gt; 0 &amp;&amp; _r5 &gt; 0 &amp;&amp; _r6 &gt; 0);
+    require(_r1 > 0 && _r2 > 0 && _r3 > 0 && _r4 > 0 && _r5 > 0 && _r6 > 0);
     rateLevels[1] = _r1;
     rateLevels[2] = _r2;
     rateLevels[3] = _r3;
@@ -228,9 +228,9 @@ contract Crowdsale {
     rateLevels[6] = _r6;
   }
 
-   // @notice Set&#39;s the rate of tokens per ether for each round
+   // @notice Set's the rate of tokens per ether for each round
   function setNewRatesBase (uint256 _r1) onlyOwner external {
-    require(_r1 &gt; 0);
+    require(_r1 > 0);
     rateLevels[1] = _r1;
     rateLevels[2] = _r1.div(2);
     rateLevels[3] = _r1.div(3);
@@ -246,7 +246,7 @@ contract Crowdsale {
    */
 
   constructor(uint256 _rate, address _wallet, address _owner, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -311,73 +311,73 @@ contract Crowdsale {
     uint256 fullTokens = 0;
 
     // Round 1
-    if(processedTokens &lt; capLevels[1]) {
+    if(processedTokens < capLevels[1]) {
 
         tokens = _getTokensAmount(amountPaid, 1);
         bonusTokens = _getBonusAmount(tokens, 1);
         fullTokens = tokens.add(bonusTokens);
 
         // If the amount of tokens that you want to buy gets out of round 1
-        if(processedTokens.add(fullTokens) &gt; capLevels[1]) {
+        if(processedTokens.add(fullTokens) > capLevels[1]) {
             tokens = _calculateExcessTokens(amountPaid, 1);
             bonusTokens = _calculateExcessBonus(tokens, 1);
             setCurrentRound(2);
         }
 
     // Round 2
-    } else if(processedTokens &gt;= capLevels[1] &amp;&amp; processedTokens &lt; capLevels[2]) {
+    } else if(processedTokens >= capLevels[1] && processedTokens < capLevels[2]) {
         tokens = _getTokensAmount(amountPaid, 2);
         bonusTokens = _getBonusAmount(tokens, 2);
         fullTokens = tokens.add(bonusTokens);
 
         // If the amount of tokens that you want to buy gets out of round 2
-        if(processedTokens.add(fullTokens) &gt; capLevels[2]) {
+        if(processedTokens.add(fullTokens) > capLevels[2]) {
             tokens = _calculateExcessTokens(amountPaid, 2);
             bonusTokens = _calculateExcessBonus(tokens, 2);
             setCurrentRound(3);
         }
 
     // Round 3
-    } else if(processedTokens &gt;= capLevels[2] &amp;&amp; processedTokens &lt; capLevels[3]) {
+    } else if(processedTokens >= capLevels[2] && processedTokens < capLevels[3]) {
          tokens = _getTokensAmount(amountPaid, 3);
          bonusTokens = _getBonusAmount(tokens, 3);
          fullTokens = tokens.add(bonusTokens);
 
          // If the amount of tokens that you want to buy gets out of round 3
-         if(processedTokens.add(fullTokens) &gt; capLevels[3]) {
+         if(processedTokens.add(fullTokens) > capLevels[3]) {
             tokens = _calculateExcessTokens(amountPaid, 3);
             bonusTokens = _calculateExcessBonus(tokens, 3);
             setCurrentRound(4);
          }
 
     // Round 4
-    } else if(processedTokens &gt;= capLevels[3] &amp;&amp; processedTokens &lt; capLevels[4]) {
+    } else if(processedTokens >= capLevels[3] && processedTokens < capLevels[4]) {
          tokens = _getTokensAmount(amountPaid, 4);
          bonusTokens = _getBonusAmount(tokens, 4);
          fullTokens = tokens.add(bonusTokens);
 
          // If the amount of tokens that you want to buy gets out of round 4
-         if(processedTokens.add(fullTokens) &gt; capLevels[4]) {
+         if(processedTokens.add(fullTokens) > capLevels[4]) {
             tokens = _calculateExcessTokens(amountPaid, 4);
             bonusTokens = _calculateExcessBonus(tokens, 4);
             setCurrentRound(5);
          }
 
     // Round 5
-    } else if(processedTokens &gt;= capLevels[4] &amp;&amp; processedTokens &lt; capLevels[5]) {
+    } else if(processedTokens >= capLevels[4] && processedTokens < capLevels[5]) {
          tokens = _getTokensAmount(amountPaid, 5);
          bonusTokens = _getBonusAmount(tokens, 5);
          fullTokens = tokens.add(bonusTokens);
 
          // If the amount of tokens that you want to buy gets out of round 5
-         if(processedTokens.add(fullTokens) &gt; capLevels[5]) {
+         if(processedTokens.add(fullTokens) > capLevels[5]) {
             tokens = _calculateExcessTokens(amountPaid, 5);
             bonusTokens = 0;
             setCurrentRound(6);
          }
 
     // Round 6
-    } else if(processedTokens &gt;= capLevels[5]) {
+    } else if(processedTokens >= capLevels[5]) {
         tokens = _getTokensAmount(amountPaid, 6);
     }
 
@@ -423,10 +423,10 @@ contract Crowdsale {
     require(_beneficiary != address(0));
     require(_weiAmount != 0);
 
-    bool withinPeriod = hasStarted() &amp;&amp; hasNotEnded();
-    bool nonZeroPurchase = msg.value &gt; 0;
-    bool withinTokenLimit = processedTokens &lt; maxTokensRaised;
-    bool minimumPurchase = msg.value &gt;= minPurchase;
+    bool withinPeriod = hasStarted() && hasNotEnded();
+    bool nonZeroPurchase = msg.value > 0;
+    bool withinTokenLimit = processedTokens < maxTokensRaised;
+    bool minimumPurchase = msg.value >= minPurchase;
 
     require(withinPeriod);
     require(nonZeroPurchase);
@@ -488,8 +488,8 @@ contract Crowdsale {
       uint256 amount,
       uint256 roundSelected
    ) internal returns(uint256) {
-      require(amount &gt; 0);
-      require(roundSelected &gt;= 1 &amp;&amp; roundSelected &lt;= 6);
+      require(amount > 0);
+      require(roundSelected >= 1 && roundSelected <= 6);
 
       uint256 _rate = rateLevels[roundSelected];
       uint256 _leftTokens = capLevels[roundSelected].sub(processedTokens);
@@ -497,7 +497,7 @@ contract Crowdsale {
       uint256 weiNextRound = amount.sub(weiThisRound);
       uint256 tokensNextRound = 0;
 
-      // If there&#39;s excessive wei for the last tier, refund those
+      // If there's excessive wei for the last tier, refund those
       uint256 nextRound = roundSelected.add(1);
       if(roundSelected != 6) {
         tokensNextRound = _getTokensAmount(weiNextRound, nextRound);
@@ -514,8 +514,8 @@ contract Crowdsale {
    function _getTokensAmount(uint256 weiPaid, uint256 roundSelected)
         internal constant returns(uint256 calculatedTokens)
    {
-      require(weiPaid &gt; 0);
-      require(roundSelected &gt;= 1 &amp;&amp; roundSelected &lt;= 6);
+      require(weiPaid > 0);
+      require(roundSelected >= 1 && roundSelected <= 6);
       uint256 typeTokenWei = weiPaid.div(1E14);
       calculatedTokens = typeTokenWei.mul(rateLevels[roundSelected]);
 
@@ -537,12 +537,12 @@ contract Crowdsale {
   }
 
    function _changeLockDate(uint256 _newDate) onlyOwner external {
-    require(_newDate &lt;= endTime.add(36 weeks));
+    require(_newDate <= endTime.add(36 weeks));
     lockedTill = _newDate;
   }
 
    function _changeApproveDate(uint256 _newDate) onlyOwner external {
-    require(_newDate &lt;= endTime.add(12 weeks));
+    require(_newDate <= endTime.add(12 weeks));
     approvedTill = _newDate;
   }
 
@@ -552,12 +552,12 @@ contract Crowdsale {
 
    /// @notice Public function to check if the crowdsale has ended or not
    function hasNotEnded() public constant returns(bool) {
-      return now &lt; endTime &amp;&amp; processedTokens &lt; maxTokensRaised;
+      return now < endTime && processedTokens < maxTokensRaised;
    }
 
    /// @notice Public function to check if the crowdsale has started or not
    function hasStarted() public constant returns(bool) {
-      return now &gt; startTime;
+      return now > startTime;
    }
 
     function setCurrentRound(uint256 _roundIndex) internal {
@@ -567,7 +567,7 @@ contract Crowdsale {
 
     //move to next round by overwriting soldTokens value, unsold tokens will be burned;
    function goNextRound() onlyOwner external {
-       require(currentRound &lt; 6);
+       require(currentRound < 6);
        uint256 notSold = getUnsold();
        unSoldTokens = unSoldTokens.add(notSold);
        processedTokens = capLevels[currentRound];
@@ -606,38 +606,38 @@ contract Crowdsale {
     }
 
     function massApproval(bool _newStatus, uint256 _start, uint256 _end) onlyOwner public {
-        require(_start &gt;= 0);
-        require(_end &gt; 0);
-        require(_end &gt; _start);
-        for (uint256 i = _start; i &lt; _end; i++) {
+        require(_start >= 0);
+        require(_end > 0);
+        require(_end > _start);
+        for (uint256 i = _start; i < _end; i++) {
             approved[allocatedAddresses[i]] = _newStatus;
         }
     }
 
     function autoTransferApproved(uint256 _start, uint256 _end) onlyOwner public {
-        require(_start &gt;= 0);
-        require(_end &gt; 0);
-        require(_end &gt; _start);
-        for (uint256 i = _start; i &lt; _end; i++) {
+        require(_start >= 0);
+        require(_end > 0);
+        require(_end > _start);
+        for (uint256 i = _start; i < _end; i++) {
             transferApprovedBalance(allocatedAddresses[i]);
         }
     }
 
     function autoTransferLocked(uint256 _start, uint256 _end) onlyOwner public {
-        require(_start &gt;= 0);
-        require(_end &gt; 0);
-        require(_end &gt; _start);
-        for (uint256 i = _start; i &lt; _end; i++) {
+        require(_start >= 0);
+        require(_end > 0);
+        require(_end > _start);
+        for (uint256 i = _start; i < _end; i++) {
             transferLockedBalance(allocatedAddresses[i]);
         }
     }
 
     function transferApprovedBalance(address _beneficiary) public {
         require(_beneficiary != address(0));
-        require(now &gt;= approvedTill);
-        require(allocatedTokens &gt; 0);
+        require(now >= approvedTill);
+        require(allocatedTokens > 0);
         require(approved[_beneficiary]);
-        require(allocatedBalances[_beneficiary] &gt; 0);
+        require(allocatedBalances[_beneficiary] > 0);
         
         uint256 _approvedTokensToTransfer = allocatedBalances[_beneficiary];
         token.transfer(_beneficiary, _approvedTokensToTransfer);
@@ -649,10 +649,10 @@ contract Crowdsale {
 
     function transferLockedBalance(address _beneficiary) public {
         require(_beneficiary != address(0));
-        require(now &gt;= lockedTill);
-        require(lockedTokens &gt; 0);
+        require(now >= lockedTill);
+        require(lockedTokens > 0);
         require(approved[_beneficiary]);
-        require(lockedBalances[_beneficiary] &gt; 0);
+        require(lockedBalances[_beneficiary] > 0);
 
         uint256 _lockedTokensToTransfer = lockedBalances[_beneficiary];
         token.transfer(_beneficiary, _lockedTokensToTransfer);
@@ -663,7 +663,7 @@ contract Crowdsale {
     }
 
     function transferToken(uint256 _tokens) external onlyOwner returns (bool success) {
-        //bool withinPeriod = hasStarted() &amp;&amp; hasNotEnded();
+        //bool withinPeriod = hasStarted() && hasNotEnded();
         //require(!withinPeriod);
         return token.transfer(owner, _tokens);
     }
@@ -674,11 +674,11 @@ contract Crowdsale {
 
     //destory contract with unsold tokens
     function burnUnsold() public onlyOwner {
-        require(now &gt; lockedTill);
+        require(now > lockedTill);
         require(address(this).balance == 0);
         require(lockedTokens == 0);
         require(allocatedTokens == 0);
-        require(unSoldTokens &gt; 0);
+        require(unSoldTokens > 0);
         selfdestruct(owner);
     }
 

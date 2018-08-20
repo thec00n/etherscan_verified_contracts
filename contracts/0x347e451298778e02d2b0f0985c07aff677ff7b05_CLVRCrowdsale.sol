@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,27 +91,27 @@ contract CLVRCrowdsale {
     }
 
     function () public payable {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint256 amount = msg.value.mul(price);
         uint256 _diff;
 
         // period 1 : 25%
-        if (now &gt; startDate &amp;&amp; now &lt; startDate + 2 days) {
+        if (now > startDate && now < startDate + 2 days) {
             _diff = amount.div(4);
             amount = amount.add(_diff);
         }
         
         // period 2 : 15%
-        if (now &gt; startDate + 2 days &amp;&amp; now &lt; startDate + 16 days) {
+        if (now > startDate + 2 days && now < startDate + 16 days) {
             uint256 _amount = amount.div(20);
             _diff = _amount.mul(3);
             amount = amount.add(_diff);
         }
 
         // period 3 : 10%
-        if (now &gt; startDate + 16 days &amp;&amp; now &lt; startDate + 30 days) {
+        if (now > startDate + 16 days && now < startDate + 30 days) {
             _diff = amount.div(10);
             amount = amount.add(_diff);
         }

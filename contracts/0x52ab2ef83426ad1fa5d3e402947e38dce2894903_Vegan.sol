@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
 // --- 0.4.21+commit.dfe3193c
-// --- &#39;VEGAN&#39; &#39;Vegan&#39; token contract
+// --- 'VEGAN' 'Vegan' token contract
 // --- Symbol      : VEGAN
 // --- Name        : Vegan
 // --- Total supply: Generated from contributions
@@ -20,10 +20,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -32,7 +32,7 @@ contract SafeMath {
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
         c = a / b;
-        require(b &gt; 0);
+        require(b > 0);
     }
 }
 
@@ -102,16 +102,16 @@ contract Owned {
         uint8 public decimals;
         uint public _totalSupply;
         uint public startDate;
-        mapping(address =&gt; uint) balances;
-        mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+        mapping(address => uint) balances;
+        mapping(address => mapping(address => uint)) allowed;
 
 // ------------------------------------------------------------------------
 // --- Constructor
 // ------------------------------------------------------------------------
 
     function Vegan() public {
-        symbol = &quot;VEGAN&quot;;
-        name = &quot;Vegan&quot;;
+        symbol = "VEGAN";
+        name = "Vegan";
         decimals = 18;
         _totalSupply = 300000000000000000000000000;
         startDate = now;
@@ -136,8 +136,8 @@ contract Owned {
     }
 
 // ------------------------------------------------------------------------
-// --- Transfer the balance from token owner&#39;s account to `to` account
-// --- Owner&#39;s account must have sufficient balance to transfer
+// --- Transfer the balance from token owner's account to `to` account
+// --- Owner's account must have sufficient balance to transfer
 // --- 0 value transfers are allowed
 // ------------------------------------------------------------------------
 
@@ -180,7 +180,7 @@ contract Owned {
 
 // ------------------------------------------------------------------------
 // --- Token owner can approve for `spender` to transferFrom(...) `tokens`
-// --- from the token owner&#39;s account. The `spender` contract function
+// --- from the token owner's account. The `spender` contract function
 // --- `receiveApproval(...)` is then executed
 // ------------------------------------------------------------------------
 

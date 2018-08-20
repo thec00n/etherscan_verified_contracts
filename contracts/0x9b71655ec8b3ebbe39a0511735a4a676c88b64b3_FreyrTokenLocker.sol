@@ -19,24 +19,24 @@ contract FreyrTokenLocker {
 
     address public beneficiary;
     uint256 public releaseTime;
-    string constant public name = &quot;freyr team locker&quot;;
+    string constant public name = "freyr team locker";
 
-    Token public token = Token(&#39;0x17e67d1CB4e349B9CA4Bc3e17C7DF2a397A7BB64&#39;);
+    Token public token = Token('0x17e67d1CB4e349B9CA4Bc3e17C7DF2a397A7BB64');
 
     function FreyrTokenLocker() public {
         // team account
-        beneficiary = address(&#39;0x31F3EcDb1d0450AEc3e5d6d98B6e0e5B322b864a&#39;);
+        beneficiary = address('0x31F3EcDb1d0450AEc3e5d6d98B6e0e5B322b864a');
         releaseTime = 1552492800;     // 2019-03-14 00:00
     }
 
     // when releaseTime reached, and release() has been called
     // FreyrTokenLocker release all eth and wtc to beneficiary
     function release() public {
-        if (block.timestamp &lt; releaseTime)
+        if (block.timestamp < releaseTime)
             throw;
 
         uint256 totalTokenBalance = token.balanceOf(this);
-        if (totalTokenBalance &gt; 0)
+        if (totalTokenBalance > 0)
             if (!token.transfer(beneficiary, totalTokenBalance))
                 throw;
     }
@@ -52,7 +52,7 @@ contract FreyrTokenLocker {
     }
 
     function secondsRemaining() public constant returns (uint timestamp) {
-        if (block.timestamp &lt; releaseTime)
+        if (block.timestamp < releaseTime)
             return releaseTime - block.timestamp;
         else
             return 0;

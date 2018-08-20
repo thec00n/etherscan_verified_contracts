@@ -1,7 +1,7 @@
 /**
- * @title METTA platform token &amp; preICO crowdsale implementasion
- * @author Maxim Akimov - &lt;<span class="__cf_email__" data-cfemail="87e3e2f1f4f3feebe2f4e8e1f3f0e6f5e2c7e0eae6eeeba9e4e8ea">[email&#160;protected]</span>&gt;
- * @author Dmitrii Bykov - &lt;<span class="__cf_email__" data-cfemail="c6a4bfada9a0a0a2a886a1aba7afaae8a5a9ab">[email&#160;protected]</span>&gt;
+ * @title METTA platform token & preICO crowdsale implementasion
+ * @author Maxim Akimov - <<span class="__cf_email__" data-cfemail="87e3e2f1f4f3feebe2f4e8e1f3f0e6f5e2c7e0eae6eeeba9e4e8ea">[email protected]</span>>
+ * @author Dmitrii Bykov - <<span class="__cf_email__" data-cfemail="c6a4bfada9a0a0a2a886a1aba7afaae8a5a9ab">[email protected]</span>>
  */
 
 pragma solidity ^0.4.15;
@@ -19,20 +19,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
   
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
     
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -102,7 +102,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	/**
 	* @dev Transfer tokens from one address to another
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, BasicToken {
 		var _allowance = allowed[_from][msg.sender];
 
 		// Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-		// require (_value &lt;= _allowance);
+		// require (_value <= _allowance);
 
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -210,7 +210,7 @@ contract BurnableToken is StandardToken, Ownable {
 	* @param _value The amount of token to be burned.
 	*/
 	function burn(uint256 _value) public onlyOwner {
-		require(_value &gt; 0);
+		require(_value > 0);
 
 		address burner = msg.sender;    
 										
@@ -226,8 +226,8 @@ contract BurnableToken is StandardToken, Ownable {
  
 contract MettaCoin is BurnableToken {
  
-	string public constant name = &quot;TOKEN METTACOIN&quot;;   
-	string public constant symbol = &quot;METTACOIN&quot;;   
+	string public constant name = "TOKEN METTACOIN";   
+	string public constant symbol = "METTACOIN";   
 	uint32 public constant decimals = 18;    
 	uint256 public constant initialSupply = 300000000 * 1 ether;
 
@@ -261,7 +261,7 @@ contract Crowdsale is Ownable {
     //
     uint public refererPercent;
     //
-	mapping(address =&gt; uint) public balances;
+	mapping(address => uint) public balances;
     
     // preICO manager data//////////////
      address public managerETHaddress;
@@ -321,7 +321,7 @@ contract Crowdsale is Ownable {
 	 * @dev Indicates that preICO starts and not finishes
 	 */
     modifier saleIsOn() {
-		require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+		require(now > start && now < start + period * 1 days);
 		_;
     }
 	
@@ -329,7 +329,7 @@ contract Crowdsale is Ownable {
 	 * @dev Indicates that we have available tokens for sale
 	 */
     modifier issetTokensForSale() {
-		require(countOfSaleTokens &lt; availableTokensforPreICO); 
+		require(countOfSaleTokens < availableTokensforPreICO); 
 		_;
     }
     
@@ -347,7 +347,7 @@ contract Crowdsale is Ownable {
 	 * @dev Tokens ans ownership will be transfered from preICO contract to ICO contract after preICO period.
 	 */
     function TransferTokenToIcoContract(address ICOcontract) public onlyOwner {
-		require(now &gt; start + period * 1 days);
+		require(now > start + period * 1 days);
 		token.transfer(ICOcontract, token.balanceOf(this));
 		token.transferOwnership(ICOcontract);
     }
@@ -355,15 +355,15 @@ contract Crowdsale is Ownable {
 	 * @dev Investments will be refunded if preICO not hits the softcap.
 	 */
     function refund() public {
-		require(currentPreICObalance &lt; softcap &amp;&amp; now &gt; start + period * 1 days);
+		require(currentPreICObalance < softcap && now > start + period * 1 days);
 		msg.sender.transfer(balances[msg.sender]);
 		balances[msg.sender] = 0;
     }
 	/**
-	 * @dev Manager can get his/shes bonus after preICO reaches it&#39;s softcap
+	 * @dev Manager can get his/shes bonus after preICO reaches it's softcap
 	 */
     function withdrawManagerBonus() public {    
-        if(currentPreICObalance &gt; softcap &amp;&amp; managerETHbonus &gt; 0){
+        if(currentPreICObalance > softcap && managerETHbonus > 0){
             managerETHaddress.transfer(managerETHbonus);
             managerETHbonus = 0;
         }
@@ -372,7 +372,7 @@ contract Crowdsale is Ownable {
 	 * @dev If ICO reached owner can withdrow ETH for ICO comping managment
 	 */
     function withdrawPreIcoFounds() public onlyOwner {  
-		if(currentPreICObalance &gt; softcap) {
+		if(currentPreICObalance > softcap) {
 			// send all current ETH from contract to owner
 			uint availableToTranser = this.balance-managerETHbonus;
 			owner.transfer(availableToTranser);
@@ -384,7 +384,7 @@ contract Crowdsale is Ownable {
     function bytesToAddress(bytes source) internal returns(address) {
         uint result;
         uint mul = 1;
-        for(uint i = 20; i &gt; 0; i--) {
+        for(uint i = 20; i > 0; i--) {
           result += uint8(source[i-1])*mul;
           mul = mul*256;
         }
@@ -392,24 +392,24 @@ contract Crowdsale is Ownable {
     }
    function buyTokens() issetTokensForSale saleIsOn payable {   
         uint tokens = msg.value.mul(1 ether).div(rate);
-        if(tokens &gt; 0)   {
+        if(tokens > 0)   {
              address referer = 0x0;
             //-------------BONUSES-------------//
              uint bonusTokens = 0;
-            if(now &lt; start.add(7* 1 days)) {// 1st week
+            if(now < start.add(7* 1 days)) {// 1st week
     			bonusTokens = tokens.mul(45).div(100); //+45%
-            } else if(now &gt;= start.add(7 * 1 days) &amp;&amp; now &lt; start.add(14 * 1 days)) { // 2nd week
+            } else if(now >= start.add(7 * 1 days) && now < start.add(14 * 1 days)) { // 2nd week
     			bonusTokens = tokens.mul(40).div(100); //+40%
-            } else if(now &gt;= start.add(14* 1 days) &amp;&amp; now &lt; start.add(21 * 1 days)) { // 3th week
+            } else if(now >= start.add(14* 1 days) && now < start.add(21 * 1 days)) { // 3th week
     			bonusTokens = tokens.mul(35).div(100); //+35%
-            } else if(now &gt;= start.add(21* 1 days) &amp;&amp; now &lt; start.add(28 * 1 days)) { // 4th week
+            } else if(now >= start.add(21* 1 days) && now < start.add(28 * 1 days)) { // 4th week
     			bonusTokens = tokens.mul(30).div(100); //+30% 
             } 
             tokens = tokens.add(bonusTokens);
             //---------END-BONUSES-------------//
     		
     		//---------referal program--------- //abailable after 3th week onli
-    	//	if(now &gt;= start.add(14* 1 days) &amp;&amp; now &lt; start.add(28 * 1 days)) {
+    	//	if(now >= start.add(14* 1 days) && now < start.add(28 * 1 days)) {
                 if(msg.data.length == 20) {
                   referer = bytesToAddress(bytes(msg.data));
                   require(referer != msg.sender);
@@ -418,14 +418,14 @@ contract Crowdsale is Ownable {
     	//	}
     		//---------end referal program---------//
     		
-    		if(availableTokensforPreICO &gt; countOfSaleTokens.add(tokens)) {  
+    		if(availableTokensforPreICO > countOfSaleTokens.add(tokens)) {  
     			token.transfer(msg.sender, tokens);
     			currentPreICObalance = currentPreICObalance.add(msg.value); 
     			countOfSaleTokens = countOfSaleTokens.add(tokens); 
     			balances[msg.sender] = balances[msg.sender].add(msg.value);
-    			if(availableTokensforPreICO &gt; countOfSaleTokens.add(tokens).add(refererTokens)){
+    			if(availableTokensforPreICO > countOfSaleTokens.add(tokens).add(refererTokens)){
     			     // send token to referrer
-    			     if(referer !=0x0 &amp;&amp; refererTokens &gt;0){
+    			     if(referer !=0x0 && refererTokens >0){
     			        token.transfer(referer, refererTokens);
     			        	countOfSaleTokens = countOfSaleTokens.add(refererTokens); 
     			     }

@@ -8,37 +8,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -55,8 +55,8 @@ contract ERC20 {
 }
 
 contract StandardToken is ERC20, SafeMath {
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   uint256 public _totalSupply;
   address public _creator;
   bool bIsFreezeAll = false;
@@ -112,12 +112,12 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract TYROS is StandardToken {
-  string public name = &quot;TYROS Token&quot;;
-  string public symbol = &quot;TYROS&quot;;
+  string public name = "TYROS Token";
+  string public symbol = "TYROS";
   uint256 public constant decimals = 18;
   uint256 public constant initial_supply = 50 * 10 ** 26;	
   
-  mapping (address =&gt; string) public keys;
+  mapping (address => string) public keys;
 
   event LogRegister (address user, string key);
 

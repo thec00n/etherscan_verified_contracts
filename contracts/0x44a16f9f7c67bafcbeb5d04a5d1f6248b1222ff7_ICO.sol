@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="6e08400f001a01000701400f050b022e09030f0702400d0103">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="6e08400f001a01000701400f050b022e09030f0702400d0103">[email protected]</span>
 */
 
 /**
@@ -24,7 +24,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract ICO {
     uint256 public completedAt;
     token public tokenReward;
     address public creator;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     DateTime dateTimeContract = DateTime(0x1a6184CD4C5Bea62B0116de7962EE7315B7bcBce);
 
@@ -96,7 +96,7 @@ contract ICO {
     */
     function contribute() public notFinished payable {
 
-        require(msg.value &gt; (10**10));
+        require(msg.value > (10**10));
         
         uint256 tokenBought = 0;
 
@@ -106,33 +106,33 @@ contract ICO {
         tokenBought = tokenBought.mul(rate);
 
         //Bonuses depends on stage
-        if (now &lt; dateTimeContract.toTimestamp(2018,2,15)){//presale
+        if (now < dateTimeContract.toTimestamp(2018,2,15)){//presale
 
             tokenBought = tokenBought.mul(15);
             tokenBought = tokenBought.div(10); //15/10 = 1.5 = 150%
-            require(totalDistributed.add(tokenBought) &lt;= 100000000 * (10 ** 8));//presale limit
+            require(totalDistributed.add(tokenBought) <= 100000000 * (10 ** 8));//presale limit
         
-        } else if (now &lt; dateTimeContract.toTimestamp(2018,2,28)){
+        } else if (now < dateTimeContract.toTimestamp(2018,2,28)){
 
             tokenBought = tokenBought.mul(14);
             tokenBought = tokenBought.div(10); //14/10 = 1.4 = 140%
         
-        } else if (now &lt; dateTimeContract.toTimestamp(2018,3,15)){
+        } else if (now < dateTimeContract.toTimestamp(2018,3,15)){
 
             tokenBought = tokenBought.mul(13);
             tokenBought = tokenBought.div(10); //13/10 = 1.3 = 130%
         
-        } else if (now &lt; dateTimeContract.toTimestamp(2018,3,31)){
+        } else if (now < dateTimeContract.toTimestamp(2018,3,31)){
 
             tokenBought = tokenBought.mul(12);
             tokenBought = tokenBought.div(10); //12/10 = 1.2 = 120%
         
-        } else if (now &lt; dateTimeContract.toTimestamp(2018,4,30)){
+        } else if (now < dateTimeContract.toTimestamp(2018,4,30)){
 
             tokenBought = tokenBought.mul(11);
             tokenBought = tokenBought.div(10); //11/10 = 1.1 = 110%
         
-        } else if (now &lt; dateTimeContract.toTimestamp(2018,5,15)){
+        } else if (now < dateTimeContract.toTimestamp(2018,5,15)){
 
             tokenBought = tokenBought.mul(105);
             tokenBought = tokenBought.div(100); //105/10 = 1.05 = 105%
@@ -154,7 +154,7 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
+        if(now > ICOdeadline && state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
 
             state = State.Successful; //ico becomes Successful
             completedAt = now; //ICO is complete

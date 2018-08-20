@@ -3,12 +3,12 @@ pragma solidity ^0.4.20;
 library SafeMath {
 	function add(uint a, uint b) internal pure returns (uint) {
 		uint c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
 	function sub(uint a, uint b) internal pure returns (uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -22,7 +22,7 @@ library SafeMath {
 	}
 
 	function div(uint a, uint b) internal pure returns (uint) {
-		require(b &gt; 0);
+		require(b > 0);
 		uint c = a / b;
 		return c;
 	}
@@ -39,7 +39,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint;
 
-	mapping(address =&gt; uint) balances;
+	mapping(address => uint) balances;
 
 	function transfer(address _to, uint _value) public returns (bool) {
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -62,12 +62,12 @@ contract ERC20 is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => mapping(address => uint)) allowed;
 
 	function transferFrom(address _from, address _to, uint _value) public returns (bool) {
 		var _allowance = allowed[_from][msg.sender];
 
-		require(_value &lt;= _allowance);
+		require(_value <= _allowance);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -111,8 +111,8 @@ contract Ownable {
 }
 
 contract AIAToken is StandardToken, Ownable {
-	string public constant name = &#39;AIAToken&#39;;
-	string public constant symbol = &#39;AIA&#39;;
+	string public constant name = 'AIAToken';
+	string public constant symbol = 'AIA';
 	uint public constant decimals = 18;
 	uint public totalSupply = 200000000 * 10e18; //200,000,000
 

@@ -6,12 +6,12 @@
  pragma solidity ^0.4.11;
 
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : start
+ * import "./StandardToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./SafeMath.sol&quot; : start
+ * import "./SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -27,25 +27,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b)  constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b)  constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b)  constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;./SafeMath.sol&quot; : end
+ * import "./SafeMath.sol" : end
  *************************************************************************/
 
 
@@ -74,8 +74,8 @@ contract StandardToken {
 
   using SafeMath for uint256;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping(address => uint256) balances;
 
 
   /**
@@ -112,7 +112,7 @@ contract StandardToken {
   */
   function transfer(address _to, uint256 _value)  public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -138,8 +138,8 @@ contract StandardToken {
    */
   function transferFrom(address _from, address _to, uint256 _value)  public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken {
    *
    * Beware - changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -187,7 +187,7 @@ contract StandardToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public whenNotPaused returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -230,7 +230,7 @@ contract StandardToken {
 
 }
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : end
+ * import "./StandardToken.sol" : end
  *************************************************************************/
 
 contract CoinsOpenToken is StandardToken
@@ -238,8 +238,8 @@ contract CoinsOpenToken is StandardToken
 
 
   // Token informations
-  string public constant name = &quot;COT&quot;;
-  string public constant symbol = &quot;COT&quot;;
+  string public constant name = "COT";
+  string public constant symbol = "COT";
   uint8 public constant decimals = 18;
 
   uint public totalSupply = 23000000000000000000000000;
@@ -257,8 +257,8 @@ contract CoinsOpenToken is StandardToken
   uint256 public preSaleTokenPrice = 1400;
   uint256 public saleTokenPrice = 700;
 
-  mapping (address =&gt; uint256) lastDividend;
-  mapping (uint256 =&gt;uint256) dividendList;
+  mapping (address => uint256) lastDividend;
+  mapping (uint256 =>uint256) dividendList;
   uint256 currentDividend = 0;
   uint256 dividendAmount = 0;
 
@@ -323,12 +323,12 @@ contract CoinsOpenToken is StandardToken
     }
     uint256 tokens = (msg.value).mul(tokenPrice);
     if (isPresale) {
-      if (presaleSupply &lt; tokens) {
+      if (presaleSupply < tokens) {
         msg.sender.transfer(msg.value);
         return;
       }
     } else {
-      if (saleSupply &lt; tokens) {
+      if (saleSupply < tokens) {
         msg.sender.transfer(msg.value);
         return;
       }
@@ -364,10 +364,10 @@ contract CoinsOpenToken is StandardToken
     if (lastDividend[_account] != currentDividend) {
       if (balanceOf(_account) != 0) {
         uint256 toSend = 0;
-        for (uint i = lastDividend[_account]; i &lt; currentDividend; i++) {
+        for (uint i = lastDividend[_account]; i < currentDividend; i++) {
           toSend += balanceOf(_account).mul(dividendList[i]).div(10000000000);
         }
-        if (toSend &gt; 0 &amp;&amp; toSend &lt;= dividendAmount) {
+        if (toSend > 0 && toSend <= dividendAmount) {
           _account.transfer(toSend);
           dividendAmount = dividendAmount.sub(toSend);
           SendDividend(_account, toSend);
@@ -402,19 +402,19 @@ contract CoinsOpenToken is StandardToken
    * @dev Returns true if we are still in pre sale period
    */
   function isInPresale() constant returns (bool) {
-    return saleStartTime &gt; now;
+    return saleStartTime > now;
   }
 
   /**
    * @dev Returns true if we are still in sale period
    */
   function isInSale() constant returns (bool) {
-    return saleEndTime &gt;= now &amp;&amp; preSaleStartTime &lt;= now;
+    return saleEndTime >= now && preSaleStartTime <= now;
   }
 
   // @return true if the transaction can buy tokens
   function checkPresale() internal {
-    if (!isInPresale() &amp;&amp; presaleSupply &gt; 0) {
+    if (!isInPresale() && presaleSupply > 0) {
       saleSupply = saleSupply.add(presaleSupply);
       presaleSupply = 0;
     }
@@ -426,8 +426,8 @@ contract CoinsOpenToken is StandardToken
    * @param _receiver Address of the receiver
    */
   function distributeReserveSupply(uint256 _amount, address _receiver) onlyOwner whenNotPaused {
-    require (_amount &lt;= reserveSupply);
-    require (now &gt;= developerLock);
+    require (_amount <= reserveSupply);
+    require (now >= developerLock);
     checkDividend(_receiver);
     balances[_receiver] = balances[_receiver].add(_amount);
     reserveSupply.sub(_amount);
@@ -439,7 +439,7 @@ contract CoinsOpenToken is StandardToken
    */
   function withdraw(uint _amount) onlyOwner {
     require (_amount != 0);
-    require (_amount &lt; this.balance);
+    require (_amount < this.balance);
     (msg.sender).transfer(_amount);
   }
 

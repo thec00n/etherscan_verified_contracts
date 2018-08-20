@@ -78,12 +78,12 @@ contract Sale {
     }
 
     function () payable public {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Token.mintToken(msg.sender, amount);
@@ -93,12 +93,12 @@ contract Sale {
     // CONTRIBUTE FUNCTION
     // converts ETH to Avalanche Genesis Block TOKEN and sends new Avalanche TOKEN to the sender
     function contribute() external payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Token.mintToken(msg.sender, amount);

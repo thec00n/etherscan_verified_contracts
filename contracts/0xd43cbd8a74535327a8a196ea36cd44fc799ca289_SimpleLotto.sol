@@ -1,7 +1,7 @@
 contract SimpleLotto {
     int playCount = 0;
     address owner = msg.sender;
-    mapping (address =&gt; uint) public players;
+    mapping (address => uint) public players;
 
     modifier onlyBy(address _account) {
         if (msg.sender != _account)

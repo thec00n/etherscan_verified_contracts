@@ -63,12 +63,12 @@ contract Migrations is Owned, BalanceFixable {
     address public allowedAccount;
 
     function Migrations() {
-        if(msg.value &gt; 0) throw;
+        if(msg.value > 0) throw;
     }
 
     function setCompleted(uint completed) {
         if (msg.sender != getOwner()
-            &amp;&amp; msg.sender != allowedAccount) {
+            && msg.sender != allowedAccount) {
             throw;
         }
         last_completed_migration = completed;

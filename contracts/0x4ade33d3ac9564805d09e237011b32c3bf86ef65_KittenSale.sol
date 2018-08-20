@@ -19,21 +19,21 @@ contract KittenSale {
         _kittenOwner = msg.sender;
         totalContributions = 0;
         kittensSold = 0;
-        kittensRemainingForSale = 0; // set to 0 first as allowance to contract can&#39;t be set yet
+        kittensRemainingForSale = 0; // set to 0 first as allowance to contract can't be set yet
     }
     
     /* Every time ether is sent to the contract, Kitten Coin will be issued with following rules
-    ** Amount sent &lt; 0.1 ETH - 1 KITTEN for 0.000001 ETH (for example, 0.05 ETH = 50 000 KITTEN)
-    ** 0.1 ETH &lt;= amount sent &lt; 1 ETH - +20% bonus 1.2 KITTEN for 0.000001 ETH (for example, 0.5 ETH = 600 000 KITTEN)
-    ** Amount sent &gt;= 1 ETH - +50% bonus 1.5 KITTEN for 0.000001 ETH (for example, 1.5 ETH = 1 800 000 KITTEN)
+    ** Amount sent < 0.1 ETH - 1 KITTEN for 0.000001 ETH (for example, 0.05 ETH = 50 000 KITTEN)
+    ** 0.1 ETH <= amount sent < 1 ETH - +20% bonus 1.2 KITTEN for 0.000001 ETH (for example, 0.5 ETH = 600 000 KITTEN)
+    ** Amount sent >= 1 ETH - +50% bonus 1.5 KITTEN for 0.000001 ETH (for example, 1.5 ETH = 1 800 000 KITTEN)
     **
     ** If not enough KITTEN remaining to sale, transaction will be cancelled.
     */ 
     function () payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 contribution = msg.value;
-        if (msg.value &gt;= 100 finney) {
-            if (msg.value &gt;= 1 ether) {
+        if (msg.value >= 100 finney) {
+            if (msg.value >= 1 ether) {
                 contribution /= 6666;
             } else {
                 contribution /= 8333;
@@ -41,7 +41,7 @@ contract KittenSale {
         } else {
             contribution /= 10000;
         }
-        require(kittensRemainingForSale &gt;= contribution);
+        require(kittensRemainingForSale >= contribution);
         totalContributions += msg.value;
         kittensSold += contribution;
         _kittenContract.transferFrom(_kittenOwner, msg.sender, contribution);

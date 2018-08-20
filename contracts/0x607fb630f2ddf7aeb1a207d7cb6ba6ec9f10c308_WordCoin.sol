@@ -146,15 +146,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -162,10 +162,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -174,15 +174,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -190,10 +190,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -202,10 +202,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -260,10 +260,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -318,8 +318,8 @@ contract DSStop is DSAuth, DSNote {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint256 supply) {
         _balances[msg.sender] = supply;
@@ -337,7 +337,7 @@ contract DSTokenBase is ERC20, DSMath {
     }
 
     function transfer(address dst, uint wad) returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
 
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -348,8 +348,8 @@ contract DSTokenBase is ERC20, DSMath {
     }
 
     function transferFrom(address src, address dst, uint wad) returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
 
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         _balances[src] = sub(_balances[src], wad);
@@ -410,7 +410,7 @@ contract DSToken is DSTokenBase(0), DSStop {
 
     // Optional token name
 
-    string public  name = &quot;&quot;;
+    string public  name = "";
 
     function setName(string name_) auth {
         name = name_;
@@ -418,7 +418,7 @@ contract DSToken is DSTokenBase(0), DSStop {
 
 }
 
-contract WordCoin is DSToken(&#39;Word&#39;){
+contract WordCoin is DSToken('Word'){
     address public OfferContract;
 
     uint public tokenSellCost;
@@ -435,8 +435,8 @@ contract WordCoin is DSToken(&#39;Word&#39;){
     uint time;
     }
 
-    mapping (address =&gt; uint) public reservedCoins;
-    mapping (address =&gt; Deposit) public deposits;
+    mapping (address => uint) public reservedCoins;
+    mapping (address => Deposit) public deposits;
 
     event LogBounty(address user, uint amount, string message);
     event LogEtherBounty(address user, uint amount, string message);
@@ -491,25 +491,25 @@ contract WordCoin is DSToken(&#39;Word&#39;){
 
 
     function bounty(address user, uint amount) auth {
-        assert(_balances[this] &gt;= amount);
+        assert(_balances[this] >= amount);
 
         _balances[user] += amount;
         _balances[this] -= amount;
-        LogBounty(user, amount, &quot;Sent bounty&quot;);
+        LogBounty(user, amount, "Sent bounty");
     }
 
 
     function etherBounty(address user, uint amount) auth {
-        assert(this.balance &gt;= amount);
+        assert(this.balance >= amount);
         user.transfer(amount);
-        LogEtherBounty(user, amount, &quot;Sent ether bounty&quot;);
+        LogEtherBounty(user, amount, "Sent ether bounty");
     }
 
 
     function sendReward(address from, address to, uint value) onlyOffer {
         reservedCoins[from] -= value;
         _balances[to] += value;
-        LogSendReward(from, to, &quot;Sent reward&quot;);
+        LogSendReward(from, to, "Sent reward");
     }
 
 
@@ -527,36 +527,36 @@ contract WordCoin is DSToken(&#39;Word&#39;){
 
     function getEther(uint128 amount) sellable {
         // exchange coins to Ethers with exchange course
-        assert(tokenSellCost &gt; 0);
-        assert(div(mul(_balances[msg.sender], 10), 100) &gt;= amount);
+        assert(tokenSellCost > 0);
+        assert(div(mul(_balances[msg.sender], 10), 100) >= amount);
         super.push(this, amount);
         msg.sender.transfer(amount * tokenSellCost);
-        LogGetEther(msg.sender, amount * tokenSellCost, &quot;Got Ether&quot;);
+        LogGetEther(msg.sender, amount * tokenSellCost, "Got Ether");
     }
 
 
     function makeDeposit(uint amount) {
-        assert(_balances[msg.sender] &gt; amount);
+        assert(_balances[msg.sender] > amount);
         assert(deposits[msg.sender].amount == 0);
 
         deposits[msg.sender].amount = amount;
         deposits[msg.sender].time = now;
         _balances[msg.sender] -= amount;
         _balances[this] += amount;
-        LogMakeDeposit(msg.sender, amount, &quot;Made deposit&quot;);
+        LogMakeDeposit(msg.sender, amount, "Made deposit");
     }
 
 
     function getDeposit() {
         assert(deposits[msg.sender].amount != 0);
-        assert(now &gt; (deposits[msg.sender].time + mul(secondsAfter, 1 seconds)));
-        assert(_balances[this] &gt; div(mul(deposits[msg.sender].amount, add(100, depositPercents)), 100));
+        assert(now > (deposits[msg.sender].time + mul(secondsAfter, 1 seconds)));
+        assert(_balances[this] > div(mul(deposits[msg.sender].amount, add(100, depositPercents)), 100));
 
         uint amount = div(mul(deposits[msg.sender].amount, add(100, depositPercents)), 100);
         deposits[msg.sender].amount = 0;
         _balances[msg.sender]  += amount;
         _balances[this] -= amount;
-        LogGetDeposit(msg.sender, amount, &quot;Got deposit&quot;);
+        LogGetDeposit(msg.sender, amount, "Got deposit");
     }
 
 
@@ -597,7 +597,7 @@ contract WordCoin is DSToken(&#39;Word&#39;){
         uint amount = div(msg.value, tokenBuyCost);
         _balances[this] -= amount;
         _balances[msg.sender] += amount;
-        LogBuyCoins(msg.sender, amount, &quot;Coins bought&quot;);
+        LogBuyCoins(msg.sender, amount, "Coins bought");
     }
 }
 
@@ -616,7 +616,7 @@ contract preICO is DSAuth, DSExec, DSMath {
     bool largeBonusSent;
     }
 
-    mapping (address =&gt; Investor) public investors;
+    mapping (address => Investor) public investors;
 
     uint public deadline;
     uint public start;
@@ -641,7 +641,7 @@ contract preICO is DSAuth, DSExec, DSMath {
     event LogTokenSent(address user, bool amount, string result);
 
     modifier afterDeadline() {
-        assert(now &gt;= deadline);
+        assert(now >= deadline);
         _;
     }
 
@@ -660,7 +660,7 @@ contract preICO is DSAuth, DSExec, DSMath {
 
 
     function setCoin(WordCoin initCoin) auth {
-        assert(preICOTokenAmount &gt; 0);
+        assert(preICOTokenAmount > 0);
         start = now;
         deadline = now + countDays * 1 days;
         coin = initCoin;
@@ -677,19 +677,19 @@ contract preICO is DSAuth, DSExec, DSMath {
         preICOTokenRemaining -= uint128(amount);
         investors[msg.sender].tokenSent = true;
         investors[msg.sender].tokenAmount = amount;
-        LogSendTokens(msg.sender, amount, &quot;Sent tokens&quot;);
+        LogSendTokens(msg.sender, amount, "Sent tokens");
     }
 
     function autoSend() afterDeadline {
-        LogDonation(msg.sender, &quot;START&quot;);
+        LogDonation(msg.sender, "START");
         assert(!autoTokenSent);
-        for (uint i = 0; i &lt; investorsArray.length; i++) {
-            LogSendTokens(msg.sender, uint256(totalDonationsWithBonuses), &quot;TOTAL&quot;);
+        for (uint i = 0; i < investorsArray.length; i++) {
+            LogSendTokens(msg.sender, uint256(totalDonationsWithBonuses), "TOTAL");
             uint amount = div(mul(investors[investorsArray[i]].amount, preICOTokenAmount), uint256(totalDonationsWithBonuses));
-            LogSendTokens(msg.sender, amount, &quot;TOTAL&quot;);
+            LogSendTokens(msg.sender, amount, "TOTAL");
             if (!investors[investorsArray[i]].tokenSent) {
                 coin.push(investorsArray[i], uint128(amount));
-                LogSendTokens(msg.sender, amount, &quot;PUSH&quot;);
+                LogSendTokens(msg.sender, amount, "PUSH");
                 investors[investorsArray[i]].tokenAmount = amount;
                 investors[investorsArray[i]].tokenSent = true;
             }
@@ -703,15 +703,15 @@ contract preICO is DSAuth, DSExec, DSMath {
 
 
     function getEthers(uint amount) auth {
-        assert(amount &gt; 0);
-        assert(this.balance - amount &gt;= 0);
+        assert(amount > 0);
+        assert(this.balance - amount >= 0);
         assert(msg.sender == owner);
         owner.transfer(amount);
     }
 
 
     function getLargeBonus() {
-        assert(investors[msg.sender].amount &gt; 7 ether);
+        assert(investors[msg.sender].amount > 7 ether);
         assert(!investors[msg.sender].largeBonusSent);
 
         uint amount = div(mul(investors[msg.sender].tokenAmount,10),100);
@@ -719,11 +719,11 @@ contract preICO is DSAuth, DSExec, DSMath {
         preICOTokenRewardRemaining -= uint128(amount);
         investors[msg.sender].largeBonusSent = true;
 
-        LogSendTokens(msg.sender, amount, &quot;Sent tokens for 7 Eth donate&quot;);
+        LogSendTokens(msg.sender, amount, "Sent tokens for 7 Eth donate");
     }
 
     function sendICOTokensBack(uint128 amount) afterDeadline auth{
-        assert(coin.balanceOf(this) &gt; amount);
+        assert(coin.balanceOf(this) > amount);
         coin.push(msg.sender, amount);
     }
 
@@ -741,14 +741,14 @@ contract preICO is DSAuth, DSExec, DSMath {
     }
 
     function () payable {
-        assert(now &lt;= deadline);
+        assert(now <= deadline);
         assert(msg.sender !=  address(0));
         assert(msg.value != 0);
-        assert(preICOTokenRemaining &gt; 0);
+        assert(preICOTokenRemaining > 0);
 
         uint percents = 0;
 
-        if (sub(now,start) &lt; 24 hours) {
+        if (sub(now,start) < 24 hours) {
             percents = sub(24, div(sub(now,start), 1 hours));
         }
 
@@ -763,7 +763,7 @@ contract preICO is DSAuth, DSExec, DSMath {
 
         investorsArray.push(msg.sender);
 
-        LogDonation(msg.sender, &quot;Donation was made&quot;);
+        LogDonation(msg.sender, "Donation was made");
     }
 }
 
@@ -781,7 +781,7 @@ contract ICO is DSAuth, DSExec, DSMath {
     bool largeBonusSent;
     }
 
-    mapping (address =&gt; preICOInvestor) public investors;
+    mapping (address => preICOInvestor) public investors;
 
     preICO public preico;
     WordCoin public coin;
@@ -827,8 +827,8 @@ contract ICO is DSAuth, DSExec, DSMath {
     }
 
     function getEthers(uint amount) auth {
-        assert(amount &gt; 0);
-        assert(this.balance - amount &gt;= 0);
+        assert(amount > 0);
+        assert(this.balance - amount >= 0);
         assert(msg.sender == owner);
         owner.transfer(amount);
     }
@@ -837,30 +837,30 @@ contract ICO is DSAuth, DSExec, DSMath {
         assert(preico != address(0));
         tokenCost = div(preico.totalDonations(), preico.preICOTokenAmount());
         cost = 100;
-        LogStartWeek(&quot;First week started&quot;);
+        LogStartWeek("First week started");
     }
 
 
     function startWeekTwo() auth {
         cost = 105;
-        LogStartWeek(&quot;Second week started&quot;);
+        LogStartWeek("Second week started");
     }
 
     function startWeekThree() auth {
         cost = 110;
-        LogStartWeek(&quot;Third week started&quot;);
+        LogStartWeek("Third week started");
     }
 
 
     function startWeekFour() auth {
         cost = 115;
-        LogStartWeek(&quot;Fourth week started&quot;);
+        LogStartWeek("Fourth week started");
     }
 
 
     function startWeekFive() auth {
         cost = 120;
-        LogStartWeek(&quot;Last week started&quot;);
+        LogStartWeek("Last week started");
     }
 
 
@@ -870,29 +870,29 @@ contract ICO is DSAuth, DSExec, DSMath {
 
 
     function setTokenCost(uint newTokenCost) auth {
-        assert(newTokenCost &gt; 0);
+        assert(newTokenCost > 0);
         tokenCost = newTokenCost;
     }
 
 
     function getMoneyBack() allowGetMoneyBack {
-        assert(investors[msg.sender].amount &gt; 0);
+        assert(investors[msg.sender].amount > 0);
         msg.sender.transfer(investors[msg.sender].amount);
         investors[msg.sender].amount = 0;
-        LogGetMoneyBack(msg.sender, investors[msg.sender].amount, &quot;Money returned&quot;);
+        LogGetMoneyBack(msg.sender, investors[msg.sender].amount, "Money returned");
     }
 
 
     function setCoin(WordCoin initCoin) auth {
-        assert(ICOAmount &gt; 0);
+        assert(ICOAmount > 0);
         coin = initCoin;
         coin.ICOmint(uint128(add(uint256(ICOAmount),uint256(ICOReward))));
     }
 
     function sendPOSTokens() ICOStopped {
         assert(!investors[msg.sender].rewardSent);
-        assert(investors[msg.sender].amount &gt; 0);
-        assert(ICOReward &gt; 0);
+        assert(investors[msg.sender].amount > 0);
+        assert(ICOReward > 0);
 
         uint amount = div(mul(investors[msg.sender].amount, ICOReward), uint256(totalDonations));
 
@@ -900,7 +900,7 @@ contract ICO is DSAuth, DSExec, DSMath {
 
         coin.push(msg.sender, uint128(amount));
         ICOReward -= uint128(amount);
-        LogSendPOSTokens(msg.sender, amount, &quot;Sent prize tokens&quot;);
+        LogSendPOSTokens(msg.sender, amount, "Sent prize tokens");
     }
 
     function sendEthForReward() ICOStopped {
@@ -912,7 +912,7 @@ contract ICO is DSAuth, DSExec, DSMath {
     }
 
     function sendICOTokensBack(uint128 amount) ICOStopped auth{
-        assert(coin.balanceOf(this) &gt; amount);
+        assert(coin.balanceOf(this) > amount);
         coin.push(msg.sender, amount);
     }
 
@@ -923,16 +923,16 @@ contract ICO is DSAuth, DSExec, DSMath {
     function() payable {
         assert(msg.sender !=  address(0));
         assert(msg.value != 0);
-        assert(cost &gt; 0);
-        assert(tokenCost &gt; 0);
-        assert(ICOAmount &gt; 0);
+        assert(cost > 0);
+        assert(tokenCost > 0);
+        assert(ICOAmount > 0);
         assert(!isICOStopped);
 
         investors[msg.sender].amount += msg.value;
 
         totalDonations += msg.value;
         uint amount = div(msg.value, div(mul(tokenCost, cost), 100));
-        if (msg.value &gt; 7 ether) {
+        if (msg.value > 7 ether) {
             amount = div(mul(amount, 110),100);
         }
         coin.push(msg.sender, uint128(amount));
@@ -940,6 +940,6 @@ contract ICO is DSAuth, DSExec, DSMath {
 
         investorsArray.push(msg.sender);
 
-        LogBuyTokens(msg.sender, amount, &quot;Tokens bought&quot;);
+        LogBuyTokens(msg.sender, amount, "Tokens bought");
     }
 }

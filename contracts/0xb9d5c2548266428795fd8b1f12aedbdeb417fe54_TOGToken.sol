@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 // ----------------------------------------------------------------------------
-// &#39;TOG&#39; token contract
+// 'TOG' token contract
 //
 // Deployed to     : 0x916186f2959aC103C458485A2681C0cd805ad7A2
 // Symbol          : TOG
@@ -12,7 +12,7 @@ pragma solidity ^0.4.18;
 // Decimals        : 8
 //
 //
-// (c) by <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89cee8fbf0a7c1fce8e7eec9fde6f1ebfdeaa7eae6e4a7">[email&#160;protected]</a>
+// (c) by <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89cee8fbf0a7c1fce8e7eec9fde6f1ebfdeaa7eae6e4a7">[email protected]</a>
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
@@ -21,10 +21,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint256 a, uint256 b) public pure returns (uint256 c) {
@@ -32,7 +32,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,13 +92,13 @@ contract TOGToken is ERC20Interface, Owned, SafeMath {
     uint256 _secondUnlockTime;
 
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
     function Constructor() public {
-        symbol = &quot;TOG&quot;;
-        name = &quot;Tool of God Token&quot;;
+        symbol = "TOG";
+        name = "Tool of God Token";
         decimals = 8;               // decimals 可以有的小数点个数，最小的代币单位。
         _totalSupply = 1000000000;   // 总共发行10亿枚
         _frozeAmount =  400000000;   // 冻结4亿枚
@@ -120,8 +120,8 @@ contract TOGToken is ERC20Interface, Owned, SafeMath {
     }
 
     function releaseFirstUnlock() public onlyOwner returns (bool success){
-        require(now &gt;= _firstUnlockTime);
-        require(_firstUnlockAmmount &gt; 0);
+        require(now >= _firstUnlockTime);
+        require(_firstUnlockAmmount > 0);
         balances[msg.sender] = safeAdd(balances[msg.sender], _firstUnlockAmmount);
         _firstUnlockAmmount = 0;
         emit Transfer(address(0), msg.sender, _firstUnlockAmmount);
@@ -129,8 +129,8 @@ contract TOGToken is ERC20Interface, Owned, SafeMath {
     }
 
     function releaseSecondUnlock() public onlyOwner returns (bool success){
-        require(now &gt;= _secondUnlockTime);
-        require(_secondUnlockAmmount &gt; 0);
+        require(now >= _secondUnlockTime);
+        require(_secondUnlockAmmount > 0);
         balances[msg.sender] = safeAdd(balances[msg.sender], _secondUnlockAmmount);
         _secondUnlockAmmount = 0;
         emit Transfer(address(0), msg.sender, _secondUnlockAmmount);
@@ -139,8 +139,8 @@ contract TOGToken is ERC20Interface, Owned, SafeMath {
 
     function transfer(address to, uint256 tokens) public returns (bool success) {
         require (to != 0x0);                                             // 收币帐户不能为空帐号
-        require (balances[msg.sender] &gt;= tokens);                        // 转出帐户的余额足够
-        require (balances[to] + tokens &gt;= balances[to]);                 // 转入帐户余额未溢出  
+        require (balances[msg.sender] >= tokens);                        // 转出帐户的余额足够
+        require (balances[to] + tokens >= balances[to]);                 // 转入帐户余额未溢出  
         uint256 previousBalances = balances[msg.sender] + balances[to];  // 两帐户总余额
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);    // 转出
         balances[to] = safeAdd(balances[to], tokens);                    // 转入
@@ -157,8 +157,8 @@ contract TOGToken is ERC20Interface, Owned, SafeMath {
 
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
         require (to != 0x0);                               // 收币帐户不能为空帐号
-        require (balances[from] &gt;= tokens);                // 转出帐户的余额足够
-        require (balances[to] + tokens &gt;= balances[to]);   // 转入帐户余额未溢出                    
+        require (balances[from] >= tokens);                // 转出帐户的余额足够
+        require (balances[to] + tokens >= balances[to]);   // 转入帐户余额未溢出                    
         uint256 previousBalances = balances[from] + balances[to];
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);

@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns ( uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns ( uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -44,7 +44,7 @@ contract StandardToken is SafeMath,ERC20 {
     }
 
     function transfer(address dst, uint wad) public returns (bool) {
-        assert(balances[msg.sender] &gt;= wad);
+        assert(balances[msg.sender] >= wad);
         
         balances[msg.sender] = safeSub(balances[msg.sender], wad);
         balances[dst] = safeAdd(balances[dst], wad);
@@ -55,8 +55,8 @@ contract StandardToken is SafeMath,ERC20 {
     }
     
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        assert(wad &gt; 0 );
-        assert(balances[src] &gt;= wad);
+        assert(wad > 0 );
+        assert(balances[src] >= wad);
         
         balances[src] = safeSub(balances[src], wad);
         balances[dst] = safeAdd(balances[dst], wad);
@@ -85,9 +85,9 @@ contract StandardToken is SafeMath,ERC20 {
     }
     
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) freezes;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) freezes;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract DSAuth {
@@ -130,9 +130,9 @@ contract DSAuth {
 
 contract DRCToken is StandardToken,DSAuth {
 
-    string public name = &quot;Digit RedWine Coin&quot;;
+    string public name = "Digit RedWine Coin";
     uint8 public decimals = 18;
-    string public symbol = &quot;DRC&quot;;
+    string public symbol = "DRC";
     
     /* This notifies clients about the amount frozen */
     event Freeze(address indexed from, uint256 value);
@@ -171,8 +171,8 @@ contract DRCToken is StandardToken,DSAuth {
     }
     
     function freeze(address dst,uint256 _value) Auth public returns (bool success) {
-        assert(balances[dst] &gt;= _value); // Check if the sender has enough
-        assert(_value &gt; 0) ; 
+        assert(balances[dst] >= _value); // Check if the sender has enough
+        assert(_value > 0) ; 
         balances[dst] = SafeMath.safeSub(balances[dst], _value);                      // Subtract from the sender
         freezes[dst] = SafeMath.safeAdd(freezes[dst], _value);                                // Updates totalSupply
         Freeze(dst, _value);
@@ -180,8 +180,8 @@ contract DRCToken is StandardToken,DSAuth {
     }
     
     function unfreeze(address dst,uint256 _value) Auth public returns (bool success) {
-        assert(freezes[dst] &gt;= _value);            // Check if the sender has enough
-        assert(_value &gt; 0) ; 
+        assert(freezes[dst] >= _value);            // Check if the sender has enough
+        assert(_value > 0) ; 
         freezes[dst] = SafeMath.safeSub(freezes[dst], _value);                      // Subtract from the sender
         balances[dst] = SafeMath.safeAdd(balances[dst], _value);
         Unfreeze(dst, _value);

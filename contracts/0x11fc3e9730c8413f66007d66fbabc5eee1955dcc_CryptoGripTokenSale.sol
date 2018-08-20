@@ -23,20 +23,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -58,7 +58,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -98,7 +98,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -109,8 +109,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -173,7 +173,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -217,9 +217,9 @@ contract Ownable {
 /////////////////////////////////////////////////////////
 
 contract CryptoGripInitiative is StandardToken, Ownable {
-    string  public  constant name = &quot;Crypto Grip Initiative&quot;;
+    string  public  constant name = "Crypto Grip Initiative";
 
-    string  public  constant symbol = &quot;CGI&quot;;
+    string  public  constant symbol = "CGI";
 
     uint    public  constant decimals = 18;
 
@@ -230,7 +230,7 @@ contract CryptoGripInitiative is StandardToken, Ownable {
     address public  tokenSaleContract;
 
     modifier onlyWhenTransferEnabled() {
-        if (now &lt;= saleEndTime &amp;&amp; now &gt;= saleStartTime) {
+        if (now <= saleEndTime && now >= saleStartTime) {
             require(msg.sender == tokenSaleContract || msg.sender == owner);
         }
         _;
@@ -304,7 +304,7 @@ contract Whitelist {
 
     address public sale;
 
-    mapping (address =&gt; uint) public accepted;
+    mapping (address => uint) public accepted;
 
     function Whitelist(address _owner, address _sale) {
         owner = _owner;
@@ -337,7 +337,7 @@ contract Whitelist {
 contract ContributorApprover {
     Whitelist public list;
 
-    mapping (address =&gt; uint)    public participated;
+    mapping (address => uint)    public participated;
 
     uint public presaleStartTime;
 
@@ -367,9 +367,9 @@ contract ContributorApprover {
         remainingPublicSaleCap = IcoCap * 10 ** 18;
 
         //    Check that presale is earlier than opensale
-        require(presaleStartTime &lt; openSaleStartTime);
+        require(presaleStartTime < openSaleStartTime);
         //    Check that open sale start is earlier than end
-        require(openSaleStartTime &lt; openSaleEndTime);
+        require(openSaleStartTime < openSaleEndTime);
     }
 
     // this is a seperate function so user could query it before crowdsale starts
@@ -379,14 +379,14 @@ contract ContributorApprover {
 
     function eligible(address contributor, uint amountInWei) constant returns (uint) {
         //        Presale not started yet
-        if (now &lt; presaleStartTime) return 0;
+        if (now < presaleStartTime) return 0;
         //    Both presale and public sale have ended
-        if (now &gt;= openSaleEndTime) return 0;
+        if (now >= openSaleEndTime) return 0;
 
         //        Presale
-        if (now &lt; openSaleStartTime) {
+        if (now < openSaleStartTime) {
             //        Presale cap limit reached
-            if (remainingPresaleCap &lt;= 0) {
+            if (remainingPresaleCap <= 0) {
                 return 0;
             }
             //            Get initial cap
@@ -394,22 +394,22 @@ contract ContributorApprover {
             // Account for already invested amount
             uint remainedCap = cap.sub(participated[contributor]);
             //        Presale cap almost reached
-            if (remainedCap &gt; remainingPresaleCap) {
+            if (remainedCap > remainingPresaleCap) {
                 remainedCap = remainingPresaleCap;
             }
             //            Remaining cap is bigger than contribution
-            if (remainedCap &gt; amountInWei) return amountInWei;
+            if (remainedCap > amountInWei) return amountInWei;
             //            Remaining cap is smaller than contribution
             else return remainedCap;
         }
         //        Public sale
         else {
             //           Public sale  cap limit reached
-            if (remainingPublicSaleCap &lt;= 0) {
+            if (remainingPublicSaleCap <= 0) {
                 return 0;
             }
             //            Public sale cap almost reached
-            if (amountInWei &gt; remainingPublicSaleCap) {
+            if (amountInWei > remainingPublicSaleCap) {
                 return remainingPublicSaleCap;
             }
             //            Public sale cap is bigger than contribution
@@ -423,7 +423,7 @@ contract ContributorApprover {
         uint result = eligible(contributor, amountInWei);
         participated[contributor] = participated[contributor].add(result);
         //    Presale
-        if (now &lt; openSaleStartTime) {
+        if (now < openSaleStartTime) {
             //        Decrement presale cap
             remainingPresaleCap = remainingPresaleCap.sub(result);
         }
@@ -437,15 +437,15 @@ contract ContributorApprover {
     }
 
     function saleEnded() constant returns (bool) {
-        return now &gt; openSaleEndTime;
+        return now > openSaleEndTime;
     }
 
     function saleStarted() constant returns (bool) {
-        return now &gt;= presaleStartTime;
+        return now >= presaleStartTime;
     }
 
     function publicSaleStarted() constant returns (bool) {
-        return now &gt;= openSaleStartTime;
+        return now >= openSaleStartTime;
     }
 }
 
@@ -508,7 +508,7 @@ contract CryptoGripTokenSale is ContributorApprover {
     event Buy(address _buyer, uint _tokens, uint _payedWei);
 
     function buy(address recipient) payable returns (uint){
-        require(tx.gasprice &lt;= 50000000000 wei);
+        require(tx.gasprice <= 50000000000 wei);
 
         require(!haltSale);
         require(saleStarted());
@@ -516,10 +516,10 @@ contract CryptoGripTokenSale is ContributorApprover {
 
         uint weiPayment = eligibleTestAndIncrement(recipient, msg.value);
 
-        require(weiPayment &gt; 0);
+        require(weiPayment > 0);
 
         // send to msg.sender, not to recipient
-        if (msg.value &gt; weiPayment) {
+        if (msg.value > weiPayment) {
             msg.sender.transfer(msg.value.sub(weiPayment));
         }
 
@@ -529,7 +529,7 @@ contract CryptoGripTokenSale is ContributorApprover {
 
         uint recievedTokens = 0;
 
-        if (now &lt; openSaleStartTime) {
+        if (now < openSaleStartTime) {
             recievedTokens = weiPayment.mul(tokensPerEthPresale);
         }
         else {
@@ -566,7 +566,7 @@ contract CryptoGripTokenSale is ContributorApprover {
         require(msg.sender == admin);
         require(saleEnded());
 
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             sendETHToMultiSig(this.balance);
         }
 

@@ -12,10 +12,10 @@ uint256 public totalSupply;
 
 bool public balanceImportsComplete;
 
-mapping (address =&gt; bool) public numRewardsAvailableSetForChildAddress;
+mapping (address => bool) public numRewardsAvailableSetForChildAddress;
 
-mapping (address =&gt; bool) public isNewParent;
-mapping (address =&gt; address) public returnChildForParentNew;
+mapping (address => bool) public isNewParent;
+mapping (address => address) public returnChildForParentNew;
 
 bool public genesisImportsComplete;
 
@@ -28,14 +28,14 @@ address public devAddress; // For doing imports
 
 bool importsComplete; // Locked when devs have updated all balances
 
-mapping (address =&gt; uint256) public burnAmountAllowed;
+mapping (address => uint256) public burnAmountAllowed;
 
-mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping(address => mapping (address => uint256)) allowed;
 
 // Balances for each account
-mapping(address =&gt; uint256) balances;
+mapping(address => uint256) balances;
 
-mapping (address =&gt; uint256) public numRewardsAvailable;
+mapping (address => uint256) public numRewardsAvailable;
 
 // ELIX address info
 bool public ELIXAddressSet;
@@ -46,8 +46,8 @@ event Transfer(address indexed from, address indexed to, uint256 value);
 event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 function elixor() {
-name = &quot;elixor&quot;;
-symbol = &quot;EXOR&quot;;
+name = "elixor";
+symbol = "EXOR";
 decimals = 18;
 startTime=1500307354; //Time contract went online.
 devAddress=0x85196Da9269B24bDf5FfD2624ABB387fcA05382B; // Set the dev import address
@@ -69,8 +69,8 @@ function balanceOf(address _owner) constant returns (uint256 balance) {
 function transfer(address _to, uint256 _value) { 
 if (!frozen){
     
-    if (balances[msg.sender] &lt; _value) revert();
-    if (balances[_to] + _value &lt; balances[_to]) revert();
+    if (balances[msg.sender] < _value) revert();
+    if (balances[_to] + _value < balances[_to]) revert();
 
     if (returnIsParentAddress(_to) || isNewParent[_to])     {
         if ((msg.sender==returnChildAddressForParent(_to)) || (returnChildForParentNew[_to]==msg.sender))  {
@@ -79,14 +79,14 @@ if (!frozen){
                 setNumRewardsAvailableForAddress(msg.sender);
             }
 
-            if (numRewardsAvailable[msg.sender]&gt;0)    {
+            if (numRewardsAvailable[msg.sender]>0)    {
                 uint256 currDate=block.timestamp;
                 uint256 returnMaxPerBatchGenerated=5000000000000000000000; //max 5000 coins per batch
                 uint256 deployTime=10*365*86400; //10 years
                 uint256 secondsSinceStartTime=currDate-startTime;
                 uint256 maximizationTime=deployTime+startTime;
                 uint256 coinsPerBatchGenerated;
-                if (currDate&gt;=maximizationTime)  {
+                if (currDate>=maximizationTime)  {
                     coinsPerBatchGenerated=returnMaxPerBatchGenerated;
                 } else  {
                     uint256 b=(returnMaxPerBatchGenerated/4);
@@ -117,10 +117,10 @@ function transferFrom(
         uint256 _amount
 ) returns (bool success) {
     if (!frozen){
-    if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
 
@@ -149,7 +149,7 @@ function approve(address _spender, uint256 _amount) returns (bool success) {
 function setNumRewardsAvailableForAddresses(uint256[] numRewardsAvailableForAddresses,address[] addressesToSetFor)    {
     if (tx.origin==devAddress) { // Dev address
        if (!importsComplete)  {
-           for (uint256 i=0;i&lt;addressesToSetFor.length;i++)  {
+           for (uint256 i=0;i<addressesToSetFor.length;i++)  {
                address addressToSet=addressesToSetFor[i];
                numRewardsAvailable[addressToSet]=numRewardsAvailableForAddresses[i];
            }
@@ -215,7 +215,7 @@ function lockBalanceChanges() {
 function importGenesisPairs(address[] parents,address[] children) public {
     if (tx.origin==devAddress) { // Dev address
         if (!genesisImportsComplete)    {
-            for (uint256 i=0;i&lt;parents.length;i++)  {
+            for (uint256 i=0;i<parents.length;i++)  {
                 address child=children[i];
                 address parent=parents[i];
                 // Set the parent as parent address
@@ -242,7 +242,7 @@ function lockGenesisImports() public    {
 function importAmountForAddresses(uint256[] amounts,address[] addressesToAddTo) public {
    if (tx.origin==devAddress) { // Dev address
        if (!balanceImportsComplete)  {
-           for (uint256 i=0;i&lt;addressesToAddTo.length;i++)  {
+           for (uint256 i=0;i<addressesToAddTo.length;i++)  {
                 address addressToAddTo=addressesToAddTo[i];
                 uint256 amount=amounts[i];
                 balances[addressToAddTo]+=amount;
@@ -256,7 +256,7 @@ function importAmountForAddresses(uint256[] amounts,address[] addressesToAddTo) 
 function removeAmountForAddresses(uint256[] amounts,address[] addressesToRemoveFrom) public {
    if (tx.origin==devAddress) { // Dev address
        if (!balanceImportsComplete)  {
-           for (uint256 i=0;i&lt;addressesToRemoveFrom.length;i++)  {
+           for (uint256 i=0;i<addressesToRemoveFrom.length;i++)  {
                 address addressToRemoveFrom=addressesToRemoveFrom[i];
                 uint256 amount=amounts[i];
                 balances[addressToRemoveFrom]-=amount;

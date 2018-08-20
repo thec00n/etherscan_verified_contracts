@@ -25,7 +25,7 @@ contract Airdrop {
     
     function send(address[] dests, uint256[] values) public onlyOwner returns(uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             token.transfer(dests[i], values[i]);
             i += 1;
         }

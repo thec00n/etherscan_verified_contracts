@@ -1,14 +1,14 @@
 contract Multisend {
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; uint) public nonces;
+    mapping(address => uint) public balances;
+    mapping(address => uint) public nonces;
 
     
     function send(address[] addrs, uint[] amounts, uint nonce) {
         if(addrs.length != amounts.length || nonce != nonces[msg.sender]) throw;
         uint val = msg.value;
         
-        for(uint i = 0; i&lt;addrs.length; i++){
-            if(val &lt; amounts[i]) throw;
+        for(uint i = 0; i<addrs.length; i++){
+            if(val < amounts[i]) throw;
             
             if(!addrs[i].send(amounts[i])){
                 balances[addrs[i]] += amounts[i];

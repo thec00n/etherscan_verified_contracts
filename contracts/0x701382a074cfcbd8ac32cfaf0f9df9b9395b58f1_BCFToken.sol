@@ -20,37 +20,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -61,10 +61,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool Yes) {
@@ -113,17 +113,17 @@ contract StandardToken is ERC20, SafeMath {
 
 contract BCFToken is StandardToken {
 
-    string public name = &quot;blockchaincrypto.fund&quot;;
-    string public symbol = &quot;BCF&quot;;
+    string public name = "blockchaincrypto.fund";
+    string public symbol = "BCF";
     uint8 public decimals = 18;
     uint public totalSupply = 1000000000 * (10 ** uint(decimals));//Total supply
 	uint public sellPrice = 1000000000000000 wei;//Tokens are sold for this price
     
     //Addresses that are allowed to transfer tokens
-    mapping (address =&gt; bool) public allowedTransfer;
+    mapping (address => bool) public allowedTransfer;
 	
     //Bonuses for selected addresses
-    mapping (address =&gt; uint) public specialBonus;
+    mapping (address => uint) public specialBonus;
     
 	//Technical variables to store states
 	bool public TransferAllowed = true;//Token transfers are blocked
@@ -186,21 +186,21 @@ function BCFToken(address _owner, address _minter, address _wallet) payable {
     function setTokenPrice(uint _tokenPrice) external {
         require(msg.sender == owner || msg.sender == minter);
         sellPrice = _tokenPrice;
-        PriceChanged(&quot;New price is &quot;, _tokenPrice);
+        PriceChanged("New price is ", _tokenPrice);
     }
     
     //Set the bonus percent for each purchase
     function setBonus(uint _percent) external {
         require(msg.sender == owner || msg.sender == minter);
-        require(_percent &gt;=0);
+        require(_percent >=0);
         currentBonus = safeAdd(100,_percent);
-        BonusChanged(&quot;New bonus is &quot;, _percent);
+        BonusChanged("New bonus is ", _percent);
     }
     
     //Set the bonus percent for selected address
     function setSpecialBonus(address _target, uint _percent) external {
         require(msg.sender == owner || msg.sender == minter);
-        require(_percent &gt;=0);
+        require(_percent >=0);
         specialBonus[_target] = safeAdd(100,_percent);
     }
      
@@ -217,9 +217,9 @@ function BCFToken(address _owner, address _minter, address _wallet) payable {
     // Send `_amount` of tokens to `_target`
     function mintTokens(address _target, uint _amount) external returns (bool) {
         require(msg.sender == owner || msg.sender == minter);
-        require(_amount &gt; 0);//Number of tokens must be greater than 0
+        require(_amount > 0);//Number of tokens must be greater than 0
         uint amount=_amount * (10 ** uint256(decimals));
-        require(safeAdd(StatsTotal, amount) &lt;= totalSupply);//The amount of tokens cannot be greater than Total supply
+        require(safeAdd(StatsTotal, amount) <= totalSupply);//The amount of tokens cannot be greater than Total supply
         balances[_target] = safeAdd(balances[_target], amount);
         StatsMinted = safeAdd(StatsMinted, amount);//Update number of tokens minted
         StatsTotal = safeAdd(StatsTotal, amount);//Update total number of tokens
@@ -232,7 +232,7 @@ function BCFToken(address _owner, address _minter, address _wallet) payable {
     // Decrease user balance
     function decreaseTokens(address _target, uint _amount) external returns (bool) {
         require(msg.sender == owner || msg.sender == minter);
-        require(_amount &gt; 0);//Number of tokens must be greater than 0
+        require(_amount > 0);//Number of tokens must be greater than 0
         uint amount=_amount * (10 ** uint256(decimals));
         balances[_target] = safeSub(balances[_target], amount);
         StatsMinted = safeSub(StatsMinted, amount);//Update number of tokens minted
@@ -254,20 +254,20 @@ function BCFToken(address _owner, address _minter, address _wallet) payable {
         require(msg.sender != minter);//The minter cannot buy tokens
         require(msg.sender != wallet);//The wallet address cannot buy tokens
         require(!SalePaused);//Purchase permitted if sale is paused
-        require(msg.value &gt;= price());//The amount received in wei must be greater than the cost of 1 token
+        require(msg.value >= price());//The amount received in wei must be greater than the cost of 1 token
 
         uint tokens = msg.value/price();//Number of tokens to be received by the buyer
-        require(tokens &gt; 0);//Number of tokens must be greater than 0
+        require(tokens > 0);//Number of tokens must be greater than 0
         
         //Add bonus tokens
-        if(currentBonus &gt; 0){
+        if(currentBonus > 0){
         uint bonus = safeMul(tokens, currentBonus);
         bonus = safeDiv(bonus, 100);
         tokens = safeAdd(bonus, tokens);
         }
         
         //Add bonus tokens if this buyer have special bonus
-        if(specialBonus[msg.sender] &gt; 0){
+        if(specialBonus[msg.sender] > 0){
         uint addressBonus = safeMul(tokens, specialBonus[msg.sender]);
         addressBonus = safeDiv(addressBonus, 100);
         tokens = safeAdd(addressBonus, tokens);
@@ -275,7 +275,7 @@ function BCFToken(address _owner, address _minter, address _wallet) payable {
         
         uint tokensToAdd=tokens * (10 ** uint256(decimals));
         
-        require(safeAdd(StatsSold, tokensToAdd) &lt;= totalSupply);//The amount of sold tokens cannot be greater than total supply
+        require(safeAdd(StatsSold, tokensToAdd) <= totalSupply);//The amount of sold tokens cannot be greater than total supply
         
         wallet.transfer(msg.value);//Send received ETH to the fundraising purse
         

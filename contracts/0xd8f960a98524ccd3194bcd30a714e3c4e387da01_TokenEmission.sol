@@ -114,8 +114,8 @@ contract Token is Object, ERC20 {
     uint8 public decimals;
     
     /* Token approvement system */
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowances;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowances;
  
     /**
      * @dev Get balance of plain address
@@ -151,7 +151,7 @@ contract Token is Object, ERC20 {
      * @return `true` when transfer done
      */
     function transfer(address _to, uint _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to]        += _value;
             Transfer(msg.sender, _to, _value);
@@ -170,9 +170,9 @@ contract Token is Object, ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         var avail = allowances[_from][msg.sender]
-                  &gt; balances[_from] ? balances[_from]
+                  > balances[_from] ? balances[_from]
                                     : allowances[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[_from][msg.sender] -= _value;
             balances[_from] -= _value;
             balances[_to]   += _value;
@@ -214,7 +214,7 @@ contract TokenEmission is Token {
      */
     function emission(uint _value) onlyOwner {
         // Overflow check
-        if (_value + totalSupply &lt; totalSupply) throw;
+        if (_value + totalSupply < totalSupply) throw;
 
         totalSupply     += _value;
         balances[owner] += _value;
@@ -226,7 +226,7 @@ contract TokenEmission is Token {
      * @notice sender balance will be decreased by `_value`
      */
     function burn(uint _value) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             totalSupply      -= _value;
         }

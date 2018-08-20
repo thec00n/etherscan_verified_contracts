@@ -55,10 +55,10 @@ contract ReferContract is ReferConstants, Ownable {
     ReferContractInterface referContractInterface;
     uint public baseRate;
     
-    mapping (address =&gt; uint) public etherBalance;
-    mapping (address =&gt; address) public userReferrer;
-    mapping (address =&gt; uint8) public userLevel;
-    mapping (address =&gt; uint) public tokensBought;
+    mapping (address => uint) public etherBalance;
+    mapping (address => address) public userReferrer;
+    mapping (address => uint8) public userLevel;
+    mapping (address => uint) public tokensBought;
     
     constructor(address _tokenAddress) public {
         referContractInterface = ReferContractInterface(_tokenAddress);
@@ -74,8 +74,8 @@ contract ReferContract is ReferConstants, Ownable {
      // decrease the price if there is less traffic to attract more users.
     function updateRate(uint _newRate) onlyOwner public {
         require(baseRate != 0);
-        // rate shouldn&#39;t be less than half or more than twice.
-        require(_newRate.mul(2) &gt; baseRate &amp;&amp; baseRate.mul(2) &gt; _newRate);
+        // rate shouldn't be less than half or more than twice.
+        require(_newRate.mul(2) > baseRate && baseRate.mul(2) > _newRate);
         baseRate = _newRate;
     }
     
@@ -94,7 +94,7 @@ contract ReferContract is ReferConstants, Ownable {
     }
     
     function fundAccount(address ref, uint eth, uint level) internal {
-        if (ref != address(0x0) &amp;&amp; userLevel[ref] &gt;= level) {
+        if (ref != address(0x0) && userLevel[ref] >= level) {
             etherBalance[ref] += eth;
         } else {
             etherBalance[owner] += eth;
@@ -114,19 +114,19 @@ contract ReferContract is ReferConstants, Ownable {
     }
     
     function buyReferTokens(address ref, uint8 level) payable public {
-        require(level &gt; 0 &amp;&amp; level &lt; 5);
+        require(level > 0 && level < 5);
         
         if (userLevel[msg.sender] == 0) { // new user
             userLevel[msg.sender] = level;
-            if (getTokenBalance(ref) &lt; 1) {  // The referee doesn&#39;t have a token 
+            if (getTokenBalance(ref) < 1) {  // The referee doesn't have a token 
                 ref = owner; // change referee
             }
             userReferrer[msg.sender] = ref; // permanently set owner as the referrer
             referContractInterface.decrement(userReferrer[msg.sender]);
         } else { // old user
             require(userLevel[msg.sender] == level);
-            if (getTokenBalance(userReferrer[msg.sender]) &lt; 1) { // The referee doesn&#39;t have a token
-                ref = owner; // only change the parent but don&#39;t change gradparents
+            if (getTokenBalance(userReferrer[msg.sender]) < 1) { // The referee doesn't have a token
+                ref = owner; // only change the parent but don't change gradparents
             } else {
                 ref = userReferrer[msg.sender];
             }
@@ -134,7 +134,7 @@ contract ReferContract is ReferConstants, Ownable {
         }
         
         uint tokens = msg.value.div(getRate(level));
-        require(tokens &gt;= 5);
+        require(tokens >= 5);
         referContractInterface.mint(msg.sender, tokens);
         distributeMoney(ref, userReferrer[userReferrer[msg.sender]] , msg.value);
         tokensBought[msg.sender] += tokens;
@@ -142,11 +142,11 @@ contract ReferContract is ReferConstants, Ownable {
     }
     
     function upgradeLevel(uint8 level) payable public {
-        require(level &lt;= 4);
-        require(userLevel[msg.sender] != 0 &amp;&amp; userLevel[msg.sender] &lt; level);
+        require(level <= 4);
+        require(userLevel[msg.sender] != 0 && userLevel[msg.sender] < level);
         uint rateDiff = getRate(level).sub(getRate(userLevel[msg.sender]));
         uint toBePaid = rateDiff.mul(tokensBought[msg.sender]);
-        require(msg.value &gt;= toBePaid);
+        require(msg.value >= toBePaid);
         userLevel[msg.sender] = level;
         distributeMoney(userReferrer[msg.sender], userReferrer[userReferrer[msg.sender]] , msg.value);
         emit LevelUpdated(msg.sender, msg.value, level);
@@ -185,13 +185,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

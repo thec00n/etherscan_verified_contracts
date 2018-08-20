@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,9 +104,9 @@ contract TokenERC20 is ERC20, Ownable{
     // 18 decimals is the strongly suggested default, avoid changing it
     using SafeMath for uint256;
     // Balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
 
     // ----- Events -----
@@ -129,7 +129,7 @@ contract TokenERC20 is ERC20, Ownable{
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-      if(msg.data.length &lt; size + 4) {
+      if(msg.data.length < size + 4) {
         revert();
       }
       _;
@@ -151,11 +151,11 @@ contract TokenERC20 is ERC20, Ownable{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
-        require(_value &gt;= 0);
+        require(_value >= 0);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from].add(balances[_to]);
          // SafeMath.sub will throw if there is not enough balance.
@@ -191,8 +191,8 @@ contract TokenERC20 is ERC20, Ownable{
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &gt; 0);
+        require(_value <= balances[_from]);
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -242,10 +242,10 @@ contract TokenERC20 is ERC20, Ownable{
    * @return True if the tokens are transferred correctly
    */
   function transferForMultiAddresses(address[] _addresses, uint256[] _amounts)  public returns (bool) {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       require(_addresses[i] != address(0));
-      require(_amounts[i] &lt;= balances[msg.sender]);
-      require(_amounts[i] &gt; 0);
+      require(_amounts[i] <= balances[msg.sender]);
+      require(_amounts[i] > 0);
 
       // SafeMath.sub will throw if there is not enough balance.
       balances[msg.sender] = balances[msg.sender].sub(_amounts[i]);
@@ -263,7 +263,7 @@ contract TokenERC20 is ERC20, Ownable{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns(bool) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);            // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -279,10 +279,10 @@ contract TokenERC20 is ERC20, Ownable{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns(bool) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowances[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowances[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                                 // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -297,7 +297,7 @@ contract TokenERC20 is ERC20, Ownable{
      */
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
         // Check for overflows
-        require(allowances[msg.sender][_spender].add(_addedValue) &gt; allowances[msg.sender][_spender]);
+        require(allowances[msg.sender][_spender].add(_addedValue) > allowances[msg.sender][_spender]);
 
         allowances[msg.sender][_spender] =allowances[msg.sender][_spender].add(_addedValue);
         emit Approval(msg.sender, _spender, allowances[msg.sender][_spender]);
@@ -306,7 +306,7 @@ contract TokenERC20 is ERC20, Ownable{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowances[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -320,7 +320,7 @@ contract TokenERC20 is ERC20, Ownable{
 
 contract ZJLTToken is TokenERC20 {
 
-    function ZJLTToken() TokenERC20(2500000000, &quot;ZJLT Distributed Factoring Network&quot;, &quot;ZJLT&quot;, 18) public {
+    function ZJLTToken() TokenERC20(2500000000, "ZJLT Distributed Factoring Network", "ZJLT", 18) public {
 
     }
     
@@ -342,7 +342,7 @@ contract ZJLTTokenVault is Ownable {
     uint256 public teamVestingStages = 12;
     uint256 public latestUnlockStage = 0;
 
-    mapping (address =&gt; uint256) public lockBalance;
+    mapping (address => uint256) public lockBalance;
     ZJLTToken public token;
     bool public isExec;
     
@@ -352,7 +352,7 @@ contract ZJLTTokenVault is Ownable {
     
     modifier unLocked {
         uint256 nextStage =  latestUnlockStage.add(1);
-        require(startLockTime &gt; 0 &amp;&amp; now &gt;= startLockTime.add(nextStage.mul(timeLockPeriod)));
+        require(startLockTime > 0 && now >= startLockTime.add(nextStage.mul(timeLockPeriod)));
         _;
     }
     
@@ -368,11 +368,11 @@ contract ZJLTTokenVault is Ownable {
     
     function isUnlocked() public constant returns (bool) {
         uint256 nextStage =  latestUnlockStage.add(1);
-        return startLockTime &gt; 0 &amp;&amp; now &gt;= startLockTime.add(nextStage.mul(timeLockPeriod)) ;
+        return startLockTime > 0 && now >= startLockTime.add(nextStage.mul(timeLockPeriod)) ;
     }
     
     function alloc() public onlyOwner unExecd{
-        require(token.balanceOf(address(this)) &gt;= totalAlloc);
+        require(token.balanceOf(address(this)) >= totalAlloc);
         lockBalance[teamWallet] = totalAlloc;
         startLockTime = 1525968000 seconds;
         isExec = true;
@@ -380,8 +380,8 @@ contract ZJLTTokenVault is Ownable {
     }
     
     function claim() public onlyOwner unLocked {
-        require(lockBalance[teamWallet] &gt; 0);
-        if(latestUnlockStage == 11 &amp;&amp; perValue != lockBalance[teamWallet] ){
+        require(lockBalance[teamWallet] > 0);
+        if(latestUnlockStage == 11 && perValue != lockBalance[teamWallet] ){
             perValue = lockBalance[teamWallet];
         }
         lockBalance[teamWallet] = lockBalance[teamWallet].sub(perValue);

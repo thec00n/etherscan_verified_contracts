@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 contract WeTestToken 
 {
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
   function transfer(address newTokensHolder, uint256 tokensNumber) 
     public 
     returns(bool);
@@ -23,7 +23,7 @@ contract VestingContractWTTEST
   //storage
   address public owner;
   WeTestToken public we_test_token;
-  mapping (address =&gt; AccountData) public account_data;
+  mapping (address => AccountData) public account_data;
   uint public current_period;
   uint[] public periods;
   address[] public accounts;
@@ -64,7 +64,7 @@ contract VestingContractWTTEST
     initData(0x0e0da823836499790ecbe17ba075a2a7cbe970e2, 1806343 * 10**18);
   }
   
-  /// @dev Fallback function: don&#39;t accept ETH
+  /// @dev Fallback function: don't accept ETH
   function()
     public
     payable
@@ -108,9 +108,9 @@ contract VestingContractWTTEST
     onlyOwner
   {
     uint current_balance_all = 0;
-    for (uint i = 0; i &lt; accounts.length; i++)
+    for (uint i = 0; i < accounts.length; i++)
       current_balance_all += account_data[accounts[i]].current_balance;
-    require(getBalance() &gt; current_balance_all &amp;&amp; value &lt;= getBalance() - current_balance_all);
+    require(getBalance() > current_balance_all && value <= getBalance() - current_balance_all);
     if (we_test_token.transfer(to, value))
       emit OwnerTransfer(to, value);
   }
@@ -118,11 +118,11 @@ contract VestingContractWTTEST
   function updateCurrentPeriod()
     public
   {
-    require(account_data[msg.sender].original_balance &gt; 0 || msg.sender == owner);
+    require(account_data[msg.sender].original_balance > 0 || msg.sender == owner);
     
     uint new_period = current_period;
-    for (uint i = current_period; i &lt; periods.length; i++)
-      if (periods[i] &gt; now)
+    for (uint i = current_period; i < periods.length; i++)
+      if (periods[i] > now)
       {
         new_period = i;
         break;
@@ -130,7 +130,7 @@ contract VestingContractWTTEST
     if (new_period != current_period)
     {
       current_period = new_period;
-      for (i = 0; i &lt; accounts.length; i++)
+      for (i = 0; i < accounts.length; i++)
       {
         account_data[accounts[i]].current_transferred = 0;
         account_data[accounts[i]].current_limit = account_data[accounts[i]].limit_per_period;
@@ -145,9 +145,9 @@ contract VestingContractWTTEST
     public
   {
     updateCurrentPeriod();
-    require(value &lt;= we_test_token.balanceOf(this) 
-      &amp;&amp; value &lt;= account_data[msg.sender].current_balance 
-      &amp;&amp; account_data[msg.sender].current_transferred + value &lt;= account_data[msg.sender].current_limit);
+    require(value <= we_test_token.balanceOf(this) 
+      && value <= account_data[msg.sender].current_balance 
+      && account_data[msg.sender].current_transferred + value <= account_data[msg.sender].current_limit);
 
     if (we_test_token.transfer(to, value)) 
     {
@@ -158,7 +158,7 @@ contract VestingContractWTTEST
   }
 
   // ERC223
-  // function in contract &#39;ContractReceiver&#39;
+  // function in contract 'ContractReceiver'
   function tokenFallback(address from, uint value, bytes data) {
     // dummy function
   }

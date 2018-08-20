@@ -6,7 +6,7 @@ contract test {
     totalSupply = _totalSupply;
   }
   function add(uint256 _add) {
-    if (_add &gt; 0) {
+    if (_add > 0) {
       totalSupply += _add;
     } else {
       totalSupply++;

@@ -32,7 +32,7 @@ contract PoCGame
 
     modifier  onlyPlayers()
     { 
-        require (wagers[msg.sender] &gt; 0); 
+        require (wagers[msg.sender] > 0); 
         _; 
     }
     
@@ -55,8 +55,8 @@ contract PoCGame
     uint difficulty;
     uint private randomSeed;
     address owner;
-    mapping(address =&gt; uint256) timestamps;
-    mapping(address =&gt; uint256) wagers;
+    mapping(address => uint256) timestamps;
+    mapping(address => uint256) wagers;
     bool openToPublic;
     uint256 totalDonated;
 
@@ -144,7 +144,7 @@ contract PoCGame
     public
     {
         uint256 blockNumber = timestamps[msg.sender];
-        if(blockNumber &lt; block.number)
+        if(blockNumber < block.number)
         {
             timestamps[msg.sender] = 0;
             wagers[msg.sender] = 0;
@@ -196,7 +196,7 @@ contract PoCGame
     function donateToWhale(uint256 amount) 
     internal 
     {
-        whale.call.value(amount)(bytes4(keccak256(&quot;donate()&quot;)));
+        whale.call.value(amount)(bytes4(keccak256("donate()")));
         totalDonated += amount;
         emit Donate(amount, whale, msg.sender);
     }
@@ -207,7 +207,7 @@ contract PoCGame
     function loseWager(uint256 amount) 
     internal 
     {
-        whale.call.value(amount)(bytes4(keccak256(&quot;donate()&quot;)));
+        whale.call.value(amount)(bytes4(keccak256("donate()")));
         totalDonated += amount;
         emit Lose(amount, msg.sender);
     }
@@ -253,7 +253,7 @@ contract PoCGame
     view 
     returns (bool)
     {
-        if(wagers[player] &gt; 0)
+        if(wagers[player] > 0)
         {
             return true;
         }
@@ -265,7 +265,7 @@ contract PoCGame
     }
 
     /**
-     * For the UI to properly display the winner&#39;s pot
+     * For the UI to properly display the winner's pot
      */
     function winnersPot() 
     public 

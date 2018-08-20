@@ -76,7 +76,7 @@ contract Curatable is Ownable {
 }
 
 contract Whitelist is Curatable {
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
 
     function Whitelist() public {
@@ -84,13 +84,13 @@ contract Whitelist is Curatable {
 
 
     function addInvestor(address investor) external onlyCurator {
-        require(investor != 0x0 &amp;&amp; !whitelist[investor]);
+        require(investor != 0x0 && !whitelist[investor]);
         whitelist[investor] = true;
     }
 
 
     function removeInvestor(address investor) external onlyCurator {
-        require(investor != 0x0 &amp;&amp; whitelist[investor]);
+        require(investor != 0x0 && whitelist[investor]);
         whitelist[investor] = false;
     }
 

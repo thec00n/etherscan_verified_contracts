@@ -21,10 +21,10 @@ contract DaoCasinoToken {
 
 contract BETSale {
   // Store the amount of BET purchased by a buyer
-  mapping (address =&gt; uint256) public bet_purchased;
+  mapping (address => uint256) public bet_purchased;
 
   // Store the amount of ETH sent in by a buyer. Good to have this record just in case
-  mapping (address =&gt; uint256) public eth_sent;
+  mapping (address => uint256) public eth_sent;
 
   // Total BET available to sell
   uint256 public total_bet_available;
@@ -41,7 +41,7 @@ contract BETSale {
   //  BET token contract address (IOU offering)
   DaoCasinoToken public token = DaoCasinoToken(0x725803315519de78D232265A8f1040f054e70B98);
 
-  // The seller&#39;s address
+  // The seller's address
   address seller = 0xB00Ae1e677B27Eee9955d632FF07a8590210B366;
 
   // Halt further purchase ability just in case
@@ -75,7 +75,7 @@ contract BETSale {
   */
   function buyTokens() payable {
     if(msg.sender != seller) throw;
-    if(token.totalEthers() &lt; token.CAP()) {
+    if(token.totalEthers() < token.CAP()) {
       token.proxyPayment.value(this.balance)(address(this));
     }
   }
@@ -116,7 +116,7 @@ contract BETSale {
 
     uint256 bet_to_withdraw = bet_purchased[msg.sender];
 
-    // Clear record of buyer&#39;s BET balance before transferring out
+    // Clear record of buyer's BET balance before transferring out
     bet_purchased[msg.sender] = 0;
 
     total_bet_withdrawn += bet_to_withdraw;
@@ -132,7 +132,7 @@ contract BETSale {
     uint256 bet_to_purchase = price_per_eth * msg.value;
 
     // Check if we have enough BET left to sell
-    if((total_bet_purchased + bet_to_purchase) &gt; total_bet_available) throw;
+    if((total_bet_purchased + bet_to_purchase) > total_bet_available) throw;
 
     // Update the amount of BET purchased by user. Also keep track of the total ETH they sent in
     bet_purchased[msg.sender] += bet_to_purchase;
@@ -141,7 +141,7 @@ contract BETSale {
     // Update the total amount of BET purchased by all buyers over all periods of availability
     total_bet_purchased += bet_to_purchase;
 
-    // Tokens are clearly in the contract, therefore we can release ETH to seller&#39;s address
+    // Tokens are clearly in the contract, therefore we can release ETH to seller's address
     seller.transfer(msg.value);
   }
 

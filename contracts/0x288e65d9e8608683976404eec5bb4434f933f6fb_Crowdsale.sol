@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -107,7 +107,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -203,9 +203,9 @@ contract Crowdsale is Ownable {
     2880 ether    //19200000 tokens 40% of ICO tokens
     ];
 
-    mapping(address =&gt; bool) public referrals;
-    mapping(address =&gt; uint) public reservedTokens;
-    mapping(address =&gt; uint) public reservedRefsTokens;
+    mapping(address => bool) public referrals;
+    mapping(address => uint) public reservedTokens;
+    mapping(address => uint) public reservedRefsTokens;
     uint public amountReservedTokens;
     uint public amountReservedRefsTokens;
 
@@ -215,7 +215,7 @@ contract Crowdsale is Ownable {
 
 
     modifier onlyWhileOpen {
-        require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+        require(now >= openingTime && now <= closingTime);
         _;
     }
 
@@ -258,17 +258,17 @@ contract Crowdsale is Ownable {
 
 
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view onlyWhileOpen {
-        require(weiRaised.add(_weiAmount) &lt;= cap);
-        require(_weiAmount &gt;= stagePrices[currentStage]);
+        require(weiRaised.add(_weiAmount) <= cap);
+        require(_weiAmount >= stagePrices[currentStage]);
         require(_beneficiary != address(0));
 
     }
 
     function _preValidateReserve(address _beneficiary, uint256 _weiAmount, address _ref) internal view {
-        require(now &lt; openingTime);
+        require(now < openingTime);
         require(referrals[_ref]);
-        require(weiRaised.add(_weiAmount) &lt;= cap);
-        require(_weiAmount &gt;= stagePrices[currentStage]);
+        require(weiRaised.add(_weiAmount) <= cap);
+        require(_weiAmount >= stagePrices[currentStage]);
         require(_beneficiary != address(0));
     }
 
@@ -309,8 +309,8 @@ contract Crowdsale is Ownable {
 
 
     function getReservedTokens() public {
-        require(now &gt;= openingTime);
-        require(reservedTokens[msg.sender] &gt; 0);
+        require(now >= openingTime);
+        require(reservedTokens[msg.sender] > 0);
         amountReservedTokens = amountReservedTokens.sub(reservedTokens[msg.sender]);
         reservedTokens[msg.sender] = 0;
         token.transfer(msg.sender, reservedTokens[msg.sender]);
@@ -318,8 +318,8 @@ contract Crowdsale is Ownable {
 
 
     function getRefReservedTokens() public {
-        require(now &gt;= openingTime);
-        require(reservedRefsTokens[msg.sender] &gt; 0);
+        require(now >= openingTime);
+        require(reservedRefsTokens[msg.sender] > 0);
         amountReservedRefsTokens = amountReservedRefsTokens.sub(reservedRefsTokens[msg.sender]);
         reservedRefsTokens[msg.sender] = 0;
         token.transferFrom(reserve_fund, msg.sender, reservedRefsTokens[msg.sender]);
@@ -338,11 +338,11 @@ contract Crowdsale is Ownable {
         uint _tokens_price = 0;
         uint _current_tokens = 0;
 
-        for (uint p = currentStage; p &lt; 4 &amp;&amp; _weiAmount &gt;= stagePrices[p]; p++) {
-            if (stageLimits[p] &gt; 0 ) {
+        for (uint p = currentStage; p < 4 && _weiAmount >= stagePrices[p]; p++) {
+            if (stageLimits[p] > 0 ) {
                 //если лимит больше чем _weiAmount, тогда считаем все из расчета что вписываемся в лимит
                 //и выходим из цикла
-                if (stageLimits[p] &gt; _weiAmount) {
+                if (stageLimits[p] > _weiAmount) {
                     //количество токенов по текущему прайсу (останется остаток если прислали  больше чем на точное количество монет)
                     _current_tokens = _weiAmount.div(stagePrices[p]);
                     //цена всех монет, чтобы определить остаток неизрасходованных wei
@@ -378,7 +378,7 @@ contract Crowdsale is Ownable {
         }
 
         //отправляем обратно неизрасходованный остаток
-        if (_weiAmount &gt; 0) {
+        if (_weiAmount > 0) {
             msg.sender.transfer(_weiAmount);
         }
 
@@ -390,7 +390,7 @@ contract Crowdsale is Ownable {
 
 
     function _updateStage() internal {
-        if ((stageLimits[currentStage] == 0) &amp;&amp; currentStage &lt; 3) {
+        if ((stageLimits[currentStage] == 0) && currentStage < 3) {
             currentStage++;
         }
     }
@@ -402,17 +402,17 @@ contract Crowdsale is Ownable {
 
 
     function hasClosed() public view returns (bool) {
-        return now &gt; closingTime;
+        return now > closingTime;
     }
 
 
     function capReached() public view returns (bool) {
-        return weiRaised &gt;= cap;
+        return weiRaised >= cap;
     }
 
 
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
 

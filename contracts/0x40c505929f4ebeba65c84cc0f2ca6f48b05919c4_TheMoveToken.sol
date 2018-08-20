@@ -27,20 +27,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -75,7 +75,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -88,7 +88,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -158,8 +158,8 @@ contract Ownable {
 }
 
 contract TheMoveToken is StandardToken, Ownable {
-    string public constant name = &quot;MOVE Token&quot;;
-    string public constant symbol = &quot;MOVE&quot;;
+    string public constant name = "MOVE Token";
+    string public constant symbol = "MOVE";
     uint public constant decimals = 18;
     using SafeMath for uint256;
     // timestamps for PRE-ICO phase
@@ -188,15 +188,15 @@ contract TheMoveToken is StandardToken, Ownable {
     uint256 public stage4 = 1512000000000000000000000;
 
     modifier inActivePeriod() {
-	   require((preicoStartDate &lt; now &amp;&amp; now &lt;= preicoEndDate) || (icoStartDate &lt; now &amp;&amp; now &lt;= icoEndDate));
+	   require((preicoStartDate < now && now <= preicoEndDate) || (icoStartDate < now && now <= icoEndDate));
         _;
     }
 
     function TheMoveToken(uint _preicostart, uint _preicoend,uint _icostart, uint _icoend, address _wallet) public {
         require(_wallet != 0x0);
-        require(_preicostart &lt; _preicoend);
-        require(_preicoend &lt; _icostart);
-        require(_icostart &lt; _icoend);
+        require(_preicostart < _preicoend);
+        require(_preicoend < _icostart);
+        require(_icostart < _icoend);
 
         totalSupply = 21172000000000000000000000;
         rate = 3600;
@@ -220,13 +220,13 @@ contract TheMoveToken is StandardToken, Ownable {
     }
 
     function setupPREICOPeriod(uint _start, uint _end) public onlyOwner {
-        require(_start &lt; _end);
+        require(_start < _end);
         preicoStartDate = _start;
         preicoEndDate = _end;
     }
 
     function setupICOPeriod(uint _start, uint _end) public onlyOwner {
-        require(_start &lt; _end);
+        require(_start < _end);
         icoStartDate = _start;
         icoEndDate = _end;
     }
@@ -242,7 +242,7 @@ contract TheMoveToken is StandardToken, Ownable {
 
     function burnPREICOTokens() public onlyOwner {
         int256 amountToBurn = int256(preicoSupply) - int256(tokensSold);
-        if (amountToBurn &gt; 0) {
+        if (amountToBurn > 0) {
             balances[this] = balances[this].sub(uint256(amountToBurn));
         }
     }
@@ -253,9 +253,9 @@ contract TheMoveToken is StandardToken, Ownable {
         tokens += getBonus(tokens);
 
         if (isPREICO()) {
-            require(tokensSold + tokens &lt; preicoSupply);
+            require(tokensSold + tokens < preicoSupply);
         } else if (isICO()) {
-            require(tokensSold + tokens &lt;= (icoSupply + bonusesSupply));
+            require(tokensSold + tokens <= (icoSupply + bonusesSupply));
         }
 
         issueTokens(_sender, tokens);
@@ -269,7 +269,7 @@ contract TheMoveToken is StandardToken, Ownable {
 
     function burnBonuses() public onlyOwner {
         int256 amountToBurn = int256(bonusesSupply) - int256(bonusesSold);
-        if (amountToBurn &gt; 0) {
+        if (amountToBurn > 0) {
             balances[this] = balances[this].sub(uint256(amountToBurn));
         }
     }
@@ -277,7 +277,7 @@ contract TheMoveToken is StandardToken, Ownable {
     // low level token purchase function
     function buyTokens(address _sender) public inActivePeriod payable {
         require(_sender != 0x0);
-        require(msg.value &gt;= minTransactionAmount);
+        require(msg.value >= minTransactionAmount);
 
         uint256 weiAmount = msg.value;
 
@@ -288,9 +288,9 @@ contract TheMoveToken is StandardToken, Ownable {
         tokens += getBonus(tokens);
 
         if (isPREICO()) {
-            require(tokensSold + tokens &lt; preicoSupply);
+            require(tokensSold + tokens < preicoSupply);
         } else if (isICO()) {
-            require(tokensSold + tokens &lt;= (icoSupply + bonusesSupply));
+            require(tokensSold + tokens <= (icoSupply + bonusesSupply));
         }
 
         issueTokens(_sender, tokens);
@@ -302,11 +302,11 @@ contract TheMoveToken is StandardToken, Ownable {
     }
 
     function isPREICO() public view returns (bool) {
-        return (preicoStartDate &lt; now &amp;&amp; now &lt;= preicoEndDate);
+        return (preicoStartDate < now && now <= preicoEndDate);
     }
 
     function isICO() public view returns (bool) {
-        return (icoStartDate &lt; now &amp;&amp; now &lt;= icoEndDate);
+        return (icoStartDate < now && now <= icoEndDate);
     }
     
     function setTokensSold(uint256 amount) public onlyOwner {
@@ -321,16 +321,16 @@ contract TheMoveToken is StandardToken, Ownable {
         // First case if PRE-ICO is happening
         if (isPREICO()) {
             // Bonus depends on the amount of tokens sold.
-            if (tokensSold &lt; stage1) {
+            if (tokensSold < stage1) {
                 // 100% bonus for stage1
                 multiplier = 100;
-            } else if (stage1 &lt; tokensSold &amp;&amp; tokensSold &lt; (stage1 + stage2)) {
+            } else if (stage1 < tokensSold && tokensSold < (stage1 + stage2)) {
                 // 80% bonus for stage2
                 multiplier = 80;
-            } else if ((stage1 + stage2) &lt; tokensSold &amp;&amp; tokensSold &lt; (stage1 + stage2 + stage3)) {
+            } else if ((stage1 + stage2) < tokensSold && tokensSold < (stage1 + stage2 + stage3)) {
                 // 60% bonus for stage2
                 multiplier = 60;
-            } else if ((stage1 + stage2 + stage3) &lt; tokensSold &amp;&amp; tokensSold &lt; (stage1 + stage2 + stage3 + stage4)) {
+            } else if ((stage1 + stage2 + stage3) < tokensSold && tokensSold < (stage1 + stage2 + stage3 + stage4)) {
                 // 40% bonus for stage2
                 multiplier = 40;
             }
@@ -343,13 +343,13 @@ contract TheMoveToken is StandardToken, Ownable {
         // Second case if ICO is happening
         else if (isICO()) {
             // Bonus depends on the week of the ICO and the bonus supply
-            if (icoStartDate &lt; now &amp;&amp; now &lt;= icoStartDate + 7 days) {
+            if (icoStartDate < now && now <= icoStartDate + 7 days) {
                 // 20% bonus week 1
                 multiplier = 20;
-            } else if (icoStartDate + 7 days &lt; now &amp;&amp; now &lt;= icoStartDate + 14 days ) {
+            } else if (icoStartDate + 7 days < now && now <= icoStartDate + 14 days ) {
                 // 10% bonus week 2
                 multiplier = 10;
-            } else if (icoStartDate + 14 days &lt; now &amp;&amp; now &lt;= icoStartDate + 21 days ) {
+            } else if (icoStartDate + 14 days < now && now <= icoStartDate + 21 days ) {
                 // 5% bonus week 3
                 multiplier = 5;
             }
@@ -357,7 +357,7 @@ contract TheMoveToken is StandardToken, Ownable {
             bonuses = _tokens.mul(multiplier).div(100);
 
             // Bonus supply limit reached.
-            if (bonusesSold + bonuses &gt; bonusesSupply) {
+            if (bonusesSold + bonuses > bonusesSupply) {
                 bonuses = 0;
             } else {
                 bonusesSold += bonuses;

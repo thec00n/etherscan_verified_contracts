@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /*
 *   CrowdSale DapCar (DAPX)
 *   Created by Starlag Labs (www.starlag.com)
-*   Copyright &#169; DapCar.io 2018. All rights reserved.
+*   Copyright © DapCar.io 2018. All rights reserved.
 *   https://www.dapcar.io
 */
 
@@ -35,7 +35,7 @@ library Math {
     pure 
     returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library Math {
     returns (uint256) 
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,13 +55,13 @@ contract Utils {
 
     modifier greaterThanZero(uint256 _value) 
     {
-        require(_value &gt; 0);
+        require(_value > 0);
         _;
     }
 
     modifier validUint(uint256 _value) 
     {
-        require(_value &gt;= 0);
+        require(_value >= 0);
         _;
     }
 
@@ -79,13 +79,13 @@ contract Utils {
 
     modifier validAddressAndNotThis(address _address) 
     {
-        require(_address != address(0) &amp;&amp; _address != address(this));
+        require(_address != address(0) && _address != address(this));
         _;
     }
 
     modifier notEmpty(string _data)
     {
-        require(bytes(_data).length &gt; 0);
+        require(bytes(_data).length > 0);
         _;
     }
 
@@ -103,19 +103,19 @@ contract Utils {
 
     modifier validUint64(uint64 _value) 
     {
-        require(_value &gt;= 0 &amp;&amp; _value &lt; 4294967296);
+        require(_value >= 0 && _value < 4294967296);
         _;
     }
 
     modifier validUint8(uint8 _value) 
     {
-        require(_value &gt;= 0 &amp;&amp; _value &lt; 256);
+        require(_value >= 0 && _value < 256);
         _;
     }
 
     modifier validBalanceThis(uint256 _value)
     {
-        require(_value &lt;= address(this).balance);
+        require(_value <= address(this).balance);
         _;
     }
 }
@@ -125,7 +125,7 @@ contract Authorizable is Utils {
 
     address public owner;
     address public newOwner;
-    mapping (address =&gt; Level) authorizeds;
+    mapping (address => Level) authorizeds;
     uint256 public authorizedCount;
 
     /*  
@@ -164,7 +164,7 @@ contract Authorizable is Utils {
     }
 
     modifier authLevel(Level _level) {
-        require((authorizeds[msg.sender] &gt; Level.ZERO) &amp;&amp; (authorizeds[msg.sender] &lt;= _level));
+        require((authorizeds[msg.sender] > Level.ZERO) && (authorizeds[msg.sender] <= _level));
         _;
     }
 
@@ -184,7 +184,7 @@ contract Authorizable is Utils {
     }
 
     modifier checkLevel(Level _level) {
-        require((_level &gt; Level.ZERO) &amp;&amp; (Level.DAPP &gt;= _level));
+        require((_level > Level.ZERO) && (Level.DAPP >= _level));
         _;
     }
 
@@ -213,7 +213,7 @@ contract Authorizable is Utils {
         if (authorizeds[owner] == Level.OWNER) {
             delete authorizeds[owner];
         }
-        if (authorizeds[newOwner] &gt; Level.ZERO) {
+        if (authorizeds[newOwner] > Level.ZERO) {
             authorizedCount = authorizedCount.sub(1);
         }
         owner = newOwner;
@@ -256,7 +256,7 @@ contract Authorizable is Utils {
     notThis(_address)
     public  
     {
-        if (authorizeds[_address] &gt; Level.ZERO) {
+        if (authorizeds[_address] > Level.ZERO) {
             authorizedCount = authorizedCount.sub(1);
         }
         delete authorizeds[_address];
@@ -305,9 +305,9 @@ contract IAirDropToken {
 }
 
 contract CrowdSaleDapCar is Authorizable {
-    string public version = &quot;0.1&quot;;
-    string public publisher = &quot;https://www.dapcar.io&quot;;
-    string public description = &quot;This is an official CrowdSale DapCar (DAPX)&quot;;
+    string public version = "0.1";
+    string public publisher = "https://www.dapcar.io";
+    string public description = "This is an official CrowdSale DapCar (DAPX)";
 
     address public walletWithdraw;
     IDapCarToken public dapCarToken;
@@ -329,9 +329,9 @@ contract CrowdSaleDapCar is Authorizable {
     bool public amountBonusEnabled = true;
     bool public couponBonusEnabled = true;
 
-    mapping (uint8 =&gt; Rate) rates;
+    mapping (uint8 => Rate) rates;
 
-    mapping (address =&gt; Investor) investors;
+    mapping (address => Investor) investors;
     uint256 public investorCount;
 
     /*  
@@ -386,7 +386,7 @@ contract CrowdSaleDapCar is Authorizable {
 
     modifier validPeriod(Period _period) 
     {
-        require(_period &gt; Period.ZERO &amp;&amp; _period &lt;= Period.PRERELEASE);
+        require(_period > Period.ZERO && _period <= Period.PRERELEASE);
         _;
     }
 
@@ -403,7 +403,7 @@ contract CrowdSaleDapCar is Authorizable {
     *   Monday, 7 May 2018, 00:00:00 GMT - Sunday, 17 June 2018, 23:59:59 GMT
     *   PRERELEASE: 1 DAPX = 10$
     *   Monday, 18 June 2018, 00:00:00 GMT - Sunday, 1 July 2018, 23:59:59 GMT
-    *   RELEASE GAME: 1 DAPX = 1 DAPBOX &gt;= 15$
+    *   RELEASE GAME: 1 DAPX = 1 DAPBOX >= 15$
     */
     
     function crowdSalePeriodInit()
@@ -474,7 +474,7 @@ contract CrowdSaleDapCar is Authorizable {
     {
         uint64 now64 = uint64(now);
         Period period = Period.ZERO;
-        for (uint8 i = 1; i &lt;= uint8(Period.PRERELEASE); i++) {
+        for (uint8 i = 1; i <= uint8(Period.PRERELEASE); i++) {
             Rate memory rate = rates[i];
             if (!rate.initialized || !rate.enabled) { 
                 continue; 
@@ -483,7 +483,7 @@ contract CrowdSaleDapCar is Authorizable {
                 continue; 
             }
             
-            if (now64 &gt;= rate.start &amp;&amp; now64 &lt; rate.stop) {
+            if (now64 >= rate.start && now64 < rate.stop) {
                 period = rate.period;
                 break;
             }
@@ -497,7 +497,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;crowdSaleEnabled&quot;, crowdSaleEnabled, _value);
+        PropsChanged(msg.sender, "crowdSaleEnabled", crowdSaleEnabled, _value);
         crowdSaleEnabled = _value;
         return true;
     }
@@ -507,7 +507,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;airDropTokenEnabled&quot;, airDropTokenEnabled, _value);
+        PropsChanged(msg.sender, "airDropTokenEnabled", airDropTokenEnabled, _value);
         airDropTokenEnabled = _value;
         return true;
     }
@@ -517,7 +517,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;airDropTokenDestroy&quot;, airDropTokenDestroy, _value);
+        PropsChanged(msg.sender, "airDropTokenDestroy", airDropTokenDestroy, _value);
         airDropTokenDestroy = _value;
         return true;
     }
@@ -527,7 +527,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;amountBonusEnabled&quot;, amountBonusEnabled, _value);
+        PropsChanged(msg.sender, "amountBonusEnabled", amountBonusEnabled, _value);
         amountBonusEnabled = _value;
         return true;
     }
@@ -537,7 +537,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;couponBonusEnabled&quot;, couponBonusEnabled, _value);
+        PropsChanged(msg.sender, "couponBonusEnabled", couponBonusEnabled, _value);
         couponBonusEnabled = _value;
         return true;
     }
@@ -606,7 +606,7 @@ contract CrowdSaleDapCar is Authorizable {
     public
     returns (bool success)
     {
-        require(_start &lt; _stop);
+        require(_start < _stop);
         uint8 period = uint8(_period);
         require(rates[period].initialized);
 
@@ -628,7 +628,7 @@ contract CrowdSaleDapCar is Authorizable {
 
         rates[period].enabled = _enabled;
         rates[period].updated = uint64(now);
-        RatePropsChanged(msg.sender, period, &quot;enabled&quot;, _enabled);
+        RatePropsChanged(msg.sender, period, "enabled", _enabled);
         return true;
     }
 
@@ -673,7 +673,7 @@ contract CrowdSaleDapCar is Authorizable {
 
         investors[_wallet].enabled = _enabled;
         investors[_wallet].updated = uint64(now);
-        InvestorPropsChanged(msg.sender, _wallet, &quot;enabled&quot;, _enabled);
+        InvestorPropsChanged(msg.sender, _wallet, "enabled", _enabled);
         return true;
     }
 
@@ -688,7 +688,7 @@ contract CrowdSaleDapCar is Authorizable {
 
         investors[_wallet].preSaleEnabled = _preSaleEnabled;
         investors[_wallet].updated = uint64(now);
-        InvestorPropsChanged(msg.sender, _wallet, &quot;preSaleEnabled&quot;, _preSaleEnabled);
+        InvestorPropsChanged(msg.sender, _wallet, "preSaleEnabled", _preSaleEnabled);
         return true;
     }
 
@@ -787,7 +787,7 @@ contract CrowdSaleDapCar is Authorizable {
     function donate() 
     internal 
     {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             weiDonated = weiDonated.add(msg.value);
             Donate(msg.sender, msg.value);
             if (walletWithdraw != address(0)) {
@@ -868,7 +868,7 @@ contract CrowdSaleDapCar is Authorizable {
         bool enabled;
         (bonus, disposable, consumed, enabled) = couponToken.getCoupon(_code);
 
-        if (enabled &amp;&amp; (!disposable || (disposable &amp;&amp; !consumed))) { 
+        if (enabled && (!disposable || (disposable && !consumed))) { 
             return bonus;
         } else {
             return 0;
@@ -891,7 +891,7 @@ contract CrowdSaleDapCar is Authorizable {
     internal
     {
         Period period = nowPeriod();
-        if (crowdSaleFinalized || !crowdSaleEnabled || period == Period.ZERO || msg.value &lt;= minPurchaseLimit) {
+        if (crowdSaleFinalized || !crowdSaleEnabled || period == Period.ZERO || msg.value <= minPurchaseLimit) {
             donate();
         } else if (dapCarToken == address(0)) {
             donate();
@@ -906,20 +906,20 @@ contract CrowdSaleDapCar is Authorizable {
                 } 
             }
             if (investor.enabled) {
-                if (investor.bonus &gt; 0) {
+                if (investor.bonus > 0) {
                     bonus = bonus.add(investor.bonus);
                 }
             }
             if (msg.data.length == 8) {
                 uint256 bonusCoupon = getCouponBonus(string(msg.data));
-                if (bonusCoupon &gt; 0 &amp;&amp; updCouponBonusConsumed(string(msg.data), true)) {
+                if (bonusCoupon > 0 && updCouponBonusConsumed(string(msg.data), true)) {
                     bonus = bonus.add(bonusCoupon);
                 }
             }
             if (airDropTokenEnabled) {
-                if (balanceAirDropToken(msg.sender) &gt; 0) {
+                if (balanceAirDropToken(msg.sender) > 0) {
                     bonus = bonus.add(rate.bonusAirDrop);
-                    if (airDropTokenDestroy &amp;&amp; address(airDropToken) != 0) {
+                    if (airDropTokenDestroy && address(airDropToken) != 0) {
                         address[] memory senders = new address[](1);
                         senders[0] = msg.sender;
                         airDropToken.burnAirDrop(senders);
@@ -927,17 +927,17 @@ contract CrowdSaleDapCar is Authorizable {
                 }
             }
             if (amountBonusEnabled) {
-                if (msg.value &gt;= 5 ether &amp;&amp; msg.value &lt; 10 ether) {
+                if (msg.value >= 5 ether && msg.value < 10 ether) {
                     bonus = bonus.add(5);
-                } else if (msg.value &gt;= 10 ether &amp;&amp; msg.value &lt; 50 ether) {
+                } else if (msg.value >= 10 ether && msg.value < 50 ether) {
                     bonus = bonus.add(10);
-                } else if (msg.value &gt;= 50 ether) {
+                } else if (msg.value >= 50 ether) {
                     bonus = bonus.add(15);
                 }
             }
             
             uint256 purchaseToken = rate.rate.mul(1 ether).mul(msg.value).div(1 ether).div(1 ether);
-            if (bonus &gt; 0) {
+            if (bonus > 0) {
                 purchaseToken = purchaseToken.add(purchaseToken.mul(bonus).div(100));
             }
 
@@ -985,7 +985,7 @@ contract CrowdSaleDapCar is Authorizable {
     internal
     returns (bool success)
     {
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             address wallet = walletWithdraw;
             if (wallet == address(0)) {
                 wallet = owner;

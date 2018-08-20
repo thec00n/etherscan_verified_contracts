@@ -14,16 +14,16 @@ contract CyberShekel {
   event Transfer(address indexed _from, address indexed _to, uint256 value);
   event Approval(address indexed _owner, address indexed _spender, uint256 value);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint)) public allowance;
 
 
   function name() pure public returns (string _name){
-    return &quot;CyberShekel&quot;;
+    return "CyberShekel";
   }
 
   function symbol() pure public returns (string _symbol){
-    return &quot;CSK&quot;;
+    return "CSK";
   }
 
   function decimals() view public returns (uint8 _decimals){
@@ -43,8 +43,8 @@ contract CyberShekel {
   }
 
   function transfer(address recipient, uint256 value) public returns (bool success){
-    require(balanceOf[msg.sender] &gt;= value);
-    require(balanceOf[recipient] + value &gt;= balanceOf[recipient]);
+    require(balanceOf[msg.sender] >= value);
+    require(balanceOf[recipient] + value >= balanceOf[recipient]);
     balanceOf[msg.sender] -= value;
     balanceOf[recipient] += value;
     Transfer(msg.sender, recipient, value);
@@ -60,9 +60,9 @@ contract CyberShekel {
 
   function transferFrom(address from, address recipient, uint256 value) public
       returns (bool success){
-    require(balanceOf[from] &gt;= value);                                          //ensure from address has available balance
-    require(balanceOf[recipient] + value &gt;= balanceOf[recipient]);              //stop overflow
-    require(value &lt;= allowance[from][msg.sender]);                              //ensure msg.sender has enough allowance
+    require(balanceOf[from] >= value);                                          //ensure from address has available balance
+    require(balanceOf[recipient] + value >= balanceOf[recipient]);              //stop overflow
+    require(value <= allowance[from][msg.sender]);                              //ensure msg.sender has enough allowance
     balanceOf[from] -= value;
     balanceOf[recipient] += value;
     allowance[from][msg.sender] -= value;

@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ contract TimelockedSafe {
     	require(_withdrawAddress != 0);
 
     	// just to prevent mistakenly passing in a value with incorrect token unit
-    	require(_monthlyWithdrawLimitInWei &gt; 100 * (10 ** decimals));
+    	require(_monthlyWithdrawLimitInWei > 100 * (10 ** decimals));
 
         adminAddress = _adminAddress;
     	withdrawAddress = _withdrawAddress;
@@ -86,18 +86,18 @@ contract TimelockedSafe {
     function withdraw(uint _withdrawAmountInWei) public returns (bool) {    	
     	uint timeElapsed = now.sub(startTime);
     	uint monthsElapsed = (timeElapsed.div(oneMonth)).add(1);
-    	require(monthsElapsed &gt;= lockingPeriodInMonths);
+    	require(monthsElapsed >= lockingPeriodInMonths);
 
     	uint fullyVestedTimeInMonths = lockingPeriodInMonths.add(vestingPeriodInMonths);
     	uint remainingVestingPeriodInMonths = 0;
-    	if (monthsElapsed &lt; fullyVestedTimeInMonths) {
+    	if (monthsElapsed < fullyVestedTimeInMonths) {
     		remainingVestingPeriodInMonths = fullyVestedTimeInMonths.sub(monthsElapsed);
     	}
 
     	address timelockedSafeAddress = address(this);
     	uint minimalBalanceInWei = remainingVestingPeriodInMonths.mul(monthlyWithdrawLimitInWei);
     	uint currentTokenBalanceInWei = token.balanceOf(timelockedSafeAddress);
-    	require(currentTokenBalanceInWei.sub(_withdrawAmountInWei) &gt;= minimalBalanceInWei);
+    	require(currentTokenBalanceInWei.sub(_withdrawAmountInWei) >= minimalBalanceInWei);
 
     	require(token.transfer(withdrawAddress, _withdrawAmountInWei));
 

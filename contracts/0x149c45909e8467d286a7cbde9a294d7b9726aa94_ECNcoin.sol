@@ -5,12 +5,12 @@ contract ECNcoin {
     
     uint public constant _totalsupply = 33333333;
     
-    string public constant symbol = &quot;ECNC&quot;;
-    string public constant name = &quot;ECN coin&quot;;
+    string public constant symbol = "ECNC";
+    string public constant name = "ECN coin";
     uint8 public constant desimls = 8;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function ECNcoin(){
         balances[msg.sender] = _totalsupply;
@@ -26,8 +26,8 @@ contract ECNcoin {
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -37,9 +37,9 @@ contract ECNcoin {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0
         );
         balances[_from] -= _value;
         balances[_to] += _value;

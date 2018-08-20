@@ -1,9 +1,9 @@
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 
 /// @title Abstract token contract - Functions to be implemented by token contracts.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="4e3d3a2b282f2060292b213c292b0e2d21203d2b203d373d60202b3a">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="4e3d3a2b282f2060292b213c292b0e2d21203d2b203d373d60202b3a">[email protected]</span>>
 contract Token {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -32,7 +32,7 @@ contract SingularDTVCrowdfunding {
 
 
 /// @title Fund contract - Implements revenue distribution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="9cefe8f9fafdf2b2fbf9f3eefbf9dcfff3f2eff9f2efe5efb2f2f9e8">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="9cefe8f9fafdf2b2fbf9f3eefbf9dcfff3f2eff9f2efe5efb2f2f9e8">[email protected]</span>>
 contract SingularDTVFund {
 
     /*
@@ -48,17 +48,17 @@ contract SingularDTVFund {
     address constant public workshop = 0xc78310231aA53bD3D0FEA2F8c705C67730929D8f;
     uint public totalRevenue;
 
-    // User&#39;s address =&gt; Revenue at time of withdraw
-    mapping (address =&gt; uint) public revenueAtTimeOfWithdraw;
+    // User's address => Revenue at time of withdraw
+    mapping (address => uint) public revenueAtTimeOfWithdraw;
 
-    // User&#39;s address =&gt; Revenue which can be withdrawn
-    mapping (address =&gt; uint) public owed;
+    // User's address => Revenue which can be withdrawn
+    mapping (address => uint) public owed;
 
     /*
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _
@@ -93,7 +93,7 @@ contract SingularDTVFund {
     }
 
     /// @dev Withdraws revenue for user. Returns revenue.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function calcRevenue(address forAddress) internal returns (uint) {
         return singularDTVToken.balanceOf(forAddress) * (totalRevenue - revenueAtTimeOfWithdraw[forAddress]) / singularDTVToken.totalSupply();
     }
@@ -107,14 +107,14 @@ contract SingularDTVFund {
         uint value = calcRevenue(msg.sender) + owed[msg.sender];
         revenueAtTimeOfWithdraw[msg.sender] = totalRevenue;
         owed[msg.sender] = 0;
-        if (value &gt; 0 &amp;&amp; !msg.sender.send(value)) {
+        if (value > 0 && !msg.sender.send(value)) {
             throw;
         }
         return value;
     }
 
     /// @dev Credits revenue to owed balance.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function softWithdrawRevenueFor(address forAddress)
         external
         noEther
@@ -126,7 +126,7 @@ contract SingularDTVFund {
         return value;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param singularDTVTokenAddress Token address.
     function setup(address singularDTVCrowdfundingAddress, address singularDTVTokenAddress)
         external
@@ -134,7 +134,7 @@ contract SingularDTVFund {
         onlyOwner
         returns (bool)
     {
-        if (address(singularDTVCrowdfunding) == 0 &amp;&amp; address(singularDTVToken) == 0) {
+        if (address(singularDTVCrowdfunding) == 0 && address(singularDTVToken) == 0) {
             singularDTVCrowdfunding = SingularDTVCrowdfunding(singularDTVCrowdfundingAddress);
             singularDTVToken = SingularDTVToken(singularDTVTokenAddress);
             return true;

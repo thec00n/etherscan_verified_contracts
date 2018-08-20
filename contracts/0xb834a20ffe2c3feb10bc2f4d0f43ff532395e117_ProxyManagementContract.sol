@@ -14,7 +14,7 @@ contract ProxyManagementContract{
 
     address[] public proxyList; 
 
-    mapping (address =&gt; bool) approvedProxies;
+    mapping (address => bool) approvedProxies;
     IProxy dedicatedProxy;
 
 
@@ -38,7 +38,7 @@ contract ProxyManagementContract{
         uint newArrayCnt = 0;
         address[] memory tempAddressArray = new address[](temAddressArrayLength);
         
-        for (uint cnt = 0; cnt &lt; proxyList.length; cnt++){
+        for (uint cnt = 0; cnt < proxyList.length; cnt++){
             if (_proxyAddress == proxyList[cnt]){
                 approvedProxies[_proxyAddress] = false;
             }

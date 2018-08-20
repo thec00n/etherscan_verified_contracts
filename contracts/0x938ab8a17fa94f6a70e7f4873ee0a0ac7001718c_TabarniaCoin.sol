@@ -24,17 +24,17 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 
   modifier onlyPayloadSize(uint numWords) {
-     assert(msg.data.length &gt;= numWords * 32 + 4);
+     assert(msg.data.length >= numWords * 32 + 4);
      _;
   }
 
@@ -42,13 +42,13 @@ contract SafeMath {
 
 contract StandardToken is Token, SafeMath {
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -57,7 +57,7 @@ contract StandardToken is Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
         balances[_from] = safeSub(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -98,13 +98,13 @@ contract StandardToken is Token, SafeMath {
 
 contract TabarniaCoin is StandardToken {
 
-    string public name = &quot;Tabarnia Coin&quot;;
-    string public motto = &quot;Acta est fabula&quot;;
+    string public name = "Tabarnia Coin";
+    string public motto = "Acta est fabula";
     uint8 public decimals = 18;
-    string public symbol = &quot;TAB&quot;;
-    string public version = &#39;1.0&#39;;
-    string public author = &quot;Lord Cid&quot;;
-    string public mission = &quot;Somos Anonimos. Somos Legion. No perdonamos. No olvidamos.&quot;;
+    string public symbol = "TAB";
+    string public version = '1.0';
+    string public author = "Lord Cid";
+    string public mission = "Somos Anonimos. Somos Legion. No perdonamos. No olvidamos.";
     uint256 public tabsOneEthCanBuyICO = 1000;
     bool public halted = false;
     bool public tradeable = true;
@@ -119,7 +119,7 @@ contract TabarniaCoin is StandardToken {
         bool voted;
     }
     
-    mapping(address =&gt; Voter) voters;
+    mapping(address => Voter) voters;
     
     Proposal[] proposals;
 
@@ -145,7 +145,7 @@ contract TabarniaCoin is StandardToken {
         require(!halted);
         uint256 amount = safeMul(msg.value,tabsOneEthCanBuyICO);
 
-        if (balances[fundsWallet] &lt; amount) {
+        if (balances[fundsWallet] < amount) {
             return;
         }
 
@@ -160,12 +160,12 @@ contract TabarniaCoin is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if (!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if (!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf(msg.sender) &gt;= _value);
+        require(balanceOf(msg.sender) >= _value);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         totalSupply = safeSub(totalSupply, _value); 
         Burn(msg.sender, _value);
@@ -206,7 +206,7 @@ contract TabarniaCoin is StandardToken {
     function newVoting(uint8 _numProposals) public onlyFundsWallet {
         require(!tradeable);
         proposals.length = _numProposals;
-        for (uint8 prop = 0; prop &lt; proposals.length; prop++) {
+        for (uint8 prop = 0; prop < proposals.length; prop++) {
             proposals[prop].voteCount = 0;
         }
 
@@ -214,8 +214,8 @@ contract TabarniaCoin is StandardToken {
 
     function vote(uint8 toProposal) public {
         require(!tradeable);
-        require(toProposal &lt; proposals.length);
-        require(balances[msg.sender] &gt; 0);
+        require(toProposal < proposals.length);
+        require(balances[msg.sender] > 0);
         require(!voters[msg.sender].voted);
         voters[msg.sender].voted = true;
         voters[msg.sender].vote = toProposal;
@@ -224,8 +224,8 @@ contract TabarniaCoin is StandardToken {
 
     function winningProposal() public constant returns (uint8 _winningProposal) {
         uint256 winningVoteCount = 0;
-        for (uint8 prop = 0; prop &lt; proposals.length; prop++)
-            if (proposals[prop].voteCount &gt; winningVoteCount) {
+        for (uint8 prop = 0; prop < proposals.length; prop++)
+            if (proposals[prop].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[prop].voteCount;
                 _winningProposal = prop;
             }

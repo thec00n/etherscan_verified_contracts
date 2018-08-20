@@ -3,13 +3,13 @@ pragma solidity ^0.4.22;
 library SafeMath {
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,12 +44,12 @@ contract adaCoin is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;ada&quot;;
-    string public constant symbol = &quot;ada&quot;;
+    string public constant name = "ada";
+    string public constant symbol = "ada";
     uint public constant decimals = 8;
     
     uint256 public totalSupply = 45000000000e8;
@@ -93,13 +93,13 @@ contract adaCoin is ERC20 {
     }
     
     function enableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -118,51 +118,51 @@ contract adaCoin is ERC20 {
         Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function airdrop(address[] addresses) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(value &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(value <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(value &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(value <= totalRemaining);
             distr(addresses[i], value);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(amount &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(amount <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner canDistr public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalSupply) {
+            if (totalDistributed >= totalSupply) {
                 distributionFinished = true;
             }
         }
@@ -174,22 +174,22 @@ contract adaCoin is ERC20 {
     
     function getTokens() payable canDistr onlyWhitelist public {
         
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
         
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
         address investor = msg.sender;
         uint256 toGive = value;
         
         distr(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
         
@@ -202,14 +202,14 @@ contract adaCoin is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -220,8 +220,8 @@ contract adaCoin is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -263,7 +263,7 @@ contract adaCoin is ERC20 {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

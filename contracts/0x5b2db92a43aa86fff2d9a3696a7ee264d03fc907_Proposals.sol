@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="107d79737b69507e7f677c7966753e627f">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="107d79737b69507e7f677c7966753e627f">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Token Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email protected]</a>>
 
  Zeppelin ERC20 Standard Token
 
@@ -287,8 +287,8 @@ contract ABIToken {
     uint8 public   decimals;
     uint256 public totalSupply;
     string public  version;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
     address public manager;
     address public deployer;
     bool public mintingFinished = false;
@@ -316,7 +316,7 @@ contract ABIToken {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -333,8 +333,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -358,7 +358,7 @@ contract ABIApplicationAsset {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="701d19131b09301e1f071c1906155e021f">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="701d19131b09301e1f071c1906155e021f">[email protected]</a>>
 
 */
 
@@ -388,7 +388,7 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        Listing Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email protected]</a>>
 
 */
 
@@ -407,7 +407,7 @@ contract ABIListingContract is ABIApplicationAsset {
         uint256 index;
     }
 
-    mapping ( uint256 =&gt; item ) public items;
+    mapping ( uint256 => item ) public items;
     uint256 public itemNum;
 
     function setManagerAddress(address _manager) public;
@@ -425,7 +425,7 @@ contract ABIListingContract is ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c01050f07152c02031b00051a09421e03">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c01050f07152c02031b00051a09421e03">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -464,7 +464,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum;
     uint8 public currentFundingStage;
     uint256 public AmountRaised;
@@ -485,7 +485,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -514,7 +514,7 @@ contract ABIFunding is ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b6dbdfd5ddcff6d8d9c1dadfc0d398c4d9">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b6dbdfd5ddcff6d8d9c1dadfc0d398c4d9">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -533,9 +533,9 @@ contract ABIFundingManager is ABIApplicationAsset {
     uint256 public vaultNum;
     uint256 public LockedVotingTokens;
     bytes32 public currentTask;
-    mapping (bytes32 =&gt; bool) public taskByHash;
-    mapping  (address =&gt; address) public vaultList;
-    mapping  (uint256 =&gt; address) public vaultById;
+    mapping (bytes32 => bool) public taskByHash;
+    mapping  (address => address) public vaultList;
+    mapping  (uint256 => address) public vaultById;
 
     function receivePayment(address _sender, uint8 _payment_method, uint8 _funding_stage) payable public returns(bool);
     function getMyVaultAddress(address _sender) public view returns (address);
@@ -562,7 +562,7 @@ contract ABIFundingManager is ABIApplicationAsset {
 
  * @name        Milestones Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5934303a32201937362e35302f3c772b36">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5934303a32201937362e35302f3c772b36">[email protected]</a>>
 
  Contains the Milestones Contract code deployed and linked to the Application Entity
 
@@ -581,7 +581,7 @@ contract ABIMilestones is ABIApplicationAsset {
         uint256 duration;
         uint256 time_start;                     // start at unixtimestamp
         uint256 last_state_change_time;         // time of last state change
-        uint256 time_end;                       // estimated end time &gt;&gt; can be increased by proposal
+        uint256 time_end;                       // estimated end time >> can be increased by proposal
         uint256 time_ended;                     // actual end time
         uint256 meeting_time;
         uint8 funding_percentage;
@@ -590,9 +590,9 @@ contract ABIMilestones is ABIApplicationAsset {
 
     uint8 public currentRecord;
     uint256 public MilestoneCashBackTime = 0;
-    mapping (uint8 =&gt; Record) public Collection;
-    mapping (bytes32 =&gt; bool) public MilestonePostponingHash;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
+    mapping (uint8 => Record) public Collection;
+    mapping (bytes32 => bool) public MilestonePostponingHash;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
 
     function getBylawsProjectDevelopmentStart() public view returns (uint256);
     function getBylawsMinTimeInTheFutureForMeetingCreation() public view returns (uint256);
@@ -620,7 +620,7 @@ contract ABIMilestones is ABIApplicationAsset {
 
  * @name        Proposals Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b46424840526b45445c47425d4e055944">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b46424840526b45445c47425d4e055944">[email protected]</a>>
 
  Contains the Proposals Contract code deployed and linked to the Application Entity
 
@@ -661,18 +661,18 @@ contract Proposals is ApplicationAsset {
         return ProposalsById[_proposalId].state;
     }
 
-    mapping (bytes32 =&gt; uint8) public ActionTypes;
+    mapping (bytes32 => uint8) public ActionTypes;
 
     function setActionTypes() internal {
         // owner initiated
-        ActionTypes[&quot;MILESTONE_DEADLINE&quot;] = 1;
-        ActionTypes[&quot;MILESTONE_POSTPONING&quot;] = 2;
-        ActionTypes[&quot;EMERGENCY_FUND_RELEASE&quot;] = 60;
-        ActionTypes[&quot;IN_DEVELOPMENT_CODE_UPGRADE&quot;] = 50;
+        ActionTypes["MILESTONE_DEADLINE"] = 1;
+        ActionTypes["MILESTONE_POSTPONING"] = 2;
+        ActionTypes["EMERGENCY_FUND_RELEASE"] = 60;
+        ActionTypes["IN_DEVELOPMENT_CODE_UPGRADE"] = 50;
 
         // shareholder initiated
-        ActionTypes[&quot;AFTER_COMPLETE_CODE_UPGRADE&quot;] = 51;
-        ActionTypes[&quot;PROJECT_DELISTING&quot;] = 75;
+        ActionTypes["AFTER_COMPLETE_CODE_UPGRADE"] = 51;
+        ActionTypes["PROJECT_DELISTING"] = 75;
     }
 
 
@@ -680,11 +680,11 @@ contract Proposals is ApplicationAsset {
 
         setActionTypes();
 
-        RecordStates[&quot;NEW&quot;]                 = 1;
-        RecordStates[&quot;ACCEPTING_VOTES&quot;]     = 2;
-        RecordStates[&quot;VOTING_ENDED&quot;]        = 3;
-        RecordStates[&quot;VOTING_RESULT_YES&quot;]   = 10;
-        RecordStates[&quot;VOTING_RESULT_NO&quot;]    = 20;
+        RecordStates["NEW"]                 = 1;
+        RecordStates["ACCEPTING_VOTES"]     = 2;
+        RecordStates["VOTING_ENDED"]        = 3;
+        RecordStates["VOTING_RESULT_YES"]   = 10;
+        RecordStates["VOTING_RESULT_NO"]    = 20;
     }
 
     event EventNewProposalCreated ( bytes32 indexed _hash, uint256 indexed _proposalId );
@@ -694,35 +694,35 @@ contract Proposals is ApplicationAsset {
         requireInitialised
         requireSettingsNotApplied
     {
-        address FundingAddress = getApplicationAssetAddressByName(&#39;Funding&#39;);
+        address FundingAddress = getApplicationAssetAddressByName('Funding');
         FundingEntity = ABIFunding(FundingAddress);
 
-        address FundingManagerAddress = getApplicationAssetAddressByName(&#39;FundingManager&#39;);
+        address FundingManagerAddress = getApplicationAssetAddressByName('FundingManager');
         FundingManagerEntity = ABIFundingManager(FundingManagerAddress);
 
-        address TokenManagerAddress = getApplicationAssetAddressByName(&#39;TokenManager&#39;);
+        address TokenManagerAddress = getApplicationAssetAddressByName('TokenManager');
         TokenManagerEntity = ABITokenManager(TokenManagerAddress);
         TokenEntity = ABIToken(TokenManagerEntity.TokenEntity());
 
-        address ListingContractAddress = getApplicationAssetAddressByName(&#39;ListingContract&#39;);
+        address ListingContractAddress = getApplicationAssetAddressByName('ListingContract');
         ListingContractEntity = ABIListingContract(ListingContractAddress);
 
-        address MilestonesContractAddress = getApplicationAssetAddressByName(&#39;Milestones&#39;);
+        address MilestonesContractAddress = getApplicationAssetAddressByName('Milestones');
         MilestonesEntity = ABIMilestones(MilestonesContractAddress);
 
         EventRunBeforeApplyingSettings(assetName);
     }
 
     function getBylawsProposalVotingDuration() public view returns (uint256) {
-        return getAppBylawUint256(&quot;proposal_voting_duration&quot;);
+        return getAppBylawUint256("proposal_voting_duration");
     }
 
     function getBylawsMilestoneMinPostponing() public view returns (uint256) {
-        return getAppBylawUint256(&quot;min_postponing&quot;);
+        return getAppBylawUint256("min_postponing");
     }
 
     function getBylawsMilestoneMaxPostponing() public view returns (uint256) {
-        return getAppBylawUint256(&quot;max_postponing&quot;);
+        return getAppBylawUint256("max_postponing");
     }
 
     function getHash(uint8 actionType, bytes32 arg1, bytes32 arg2) public pure returns ( bytes32 ) {
@@ -733,7 +733,7 @@ contract Proposals is ApplicationAsset {
     // need to implement a way to just iterate through active proposals, and remove the ones we already processed
     // otherwise someone with malicious intent could add a ton of proposals, just to make our contract cost a ton of gas.
 
-    // to that end, we allow individual proposal processing. so that we don&#39;t get affected by people with too much
+    // to that end, we allow individual proposal processing. so that we don't get affected by people with too much
     // money and time on their hands.
 
     // whenever the system created a proposal, it will store the id, and process it when required.
@@ -744,21 +744,21 @@ contract Proposals is ApplicationAsset {
     // - only the deployer can create - MILESTONE_POSTPONING / EMERGENCY_FUND_RELEASE / IN_DEVELOPMENT_CODE_UPGRADE
 
     // FUTURE:
-    // - PROJECT_DELISTING is tied into an existing &quot;listing id&quot; which will be created by the system ( if requested by
+    // - PROJECT_DELISTING is tied into an existing "listing id" which will be created by the system ( if requested by
     // someone, but at quite a significant cost )
     // - AFTER_COMPLETE_CODE_UPGRADE
 
-    mapping (uint8 =&gt; uint256) public ActiveProposalIds;
+    mapping (uint8 => uint256) public ActiveProposalIds;
     uint8 public ActiveProposalNum = 0;
 
-    mapping (uint256 =&gt; bool) public ExpiredProposalIds;
+    mapping (uint256 => bool) public ExpiredProposalIds;
 
     function process() public onlyApplicationEntity {
-        for(uint8 i = 0; i &lt; ActiveProposalNum; i++) {
+        for(uint8 i = 0; i < ActiveProposalNum; i++) {
 
             if(
-                getProposalType(ActiveProposalIds[i]) == getActionType(&quot;PROJECT_DELISTING&quot;) ||
-                getProposalType(ActiveProposalIds[i]) == getActionType(&quot;AFTER_COMPLETE_CODE_UPGRADE&quot;)
+                getProposalType(ActiveProposalIds[i]) == getActionType("PROJECT_DELISTING") ||
+                getProposalType(ActiveProposalIds[i]) == getActionType("AFTER_COMPLETE_CODE_UPGRADE")
             ) {
                 ProcessVoteTotals( ActiveProposalIds[i], VoteCountPerProcess );
             } else {
@@ -770,7 +770,7 @@ contract Proposals is ApplicationAsset {
     }
 
     function hasRequiredStateChanges() public view returns (bool) {
-        for(uint8 i = 0; i &lt; ActiveProposalNum; i++) {
+        for(uint8 i = 0; i < ActiveProposalNum; i++) {
             if( needsProcessing( ActiveProposalIds[i] ) ) {
                 return true;
             }
@@ -798,16 +798,16 @@ contract Proposals is ApplicationAsset {
 
         uint8 thisAction;
 
-        if(getApplicationState() == getApplicationEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
-            thisAction = getActionType(&quot;IN_DEVELOPMENT_CODE_UPGRADE&quot;);
+        if(getApplicationState() == getApplicationEntityState("IN_DEVELOPMENT") ) {
+            thisAction = getActionType("IN_DEVELOPMENT_CODE_UPGRADE");
 
-        } else if(getApplicationState() == getApplicationEntityState(&quot;DEVELOPMENT_COMPLETE&quot;) ) {
-            thisAction = getActionType(&quot;AFTER_COMPLETE_CODE_UPGRADE&quot;);
+        } else if(getApplicationState() == getApplicationEntityState("DEVELOPMENT_COMPLETE") ) {
+            thisAction = getActionType("AFTER_COMPLETE_CODE_UPGRADE");
         }
 
         return createProposal(
             msg.sender,
-            &quot;CODE_UPGRADE&quot;,
+            "CODE_UPGRADE",
             getHash( thisAction, bytes32(_addr), 0 ),
             thisAction,
             _addr,
@@ -819,16 +819,16 @@ contract Proposals is ApplicationAsset {
 
     function createMilestoneAcceptanceProposal()
         external
-        onlyAsset(&quot;Milestones&quot;)
+        onlyAsset("Milestones")
         returns (uint256)
     {
 
         uint8 recordId = MilestonesEntity.currentRecord();
         return createProposal(
             msg.sender,
-            &quot;MILESTONE_DEADLINE&quot;,
-            getHash( getActionType(&quot;MILESTONE_DEADLINE&quot;), bytes32( recordId ), 0 ),
-            getActionType(&quot;MILESTONE_DEADLINE&quot;),
+            "MILESTONE_DEADLINE",
+            getHash( getActionType("MILESTONE_DEADLINE"), bytes32( recordId ), 0 ),
+            getActionType("MILESTONE_DEADLINE"),
             0,
             0,
             uint256(recordId)
@@ -840,14 +840,14 @@ contract Proposals is ApplicationAsset {
         onlyDeployer
         returns (uint256)
     {
-        if(_duration &gt;= getBylawsMilestoneMinPostponing() &amp;&amp; _duration &lt;= getBylawsMilestoneMaxPostponing() ) {
+        if(_duration >= getBylawsMilestoneMinPostponing() && _duration <= getBylawsMilestoneMaxPostponing() ) {
 
             uint8 recordId = MilestonesEntity.currentRecord();
             return createProposal(
                 msg.sender,
-                &quot;MILESTONE_POSTPONING&quot;,
-                getHash( getActionType(&quot;MILESTONE_POSTPONING&quot;), bytes32( recordId ), 0 ),
-                getActionType(&quot;MILESTONE_POSTPONING&quot;),
+                "MILESTONE_POSTPONING",
+                getHash( getActionType("MILESTONE_POSTPONING"), bytes32( recordId ), 0 ),
+                getActionType("MILESTONE_POSTPONING"),
                 0,
                 0,
                 _duration
@@ -859,14 +859,14 @@ contract Proposals is ApplicationAsset {
 
     function getCurrentMilestonePostponingProposalDuration() public view returns (uint256) {
         uint8 recordId = MilestonesEntity.currentRecord();
-        bytes32 hash = getHash( getActionType(&quot;MILESTONE_POSTPONING&quot;), bytes32( recordId ), 0 );
+        bytes32 hash = getHash( getActionType("MILESTONE_POSTPONING"), bytes32( recordId ), 0 );
         ProposalRecord memory proposal = ProposalsById[ ProposalIdByHash[hash] ];
         return proposal.extra;
     }
 
     function getCurrentMilestoneProposalStatusForType(uint8 _actionType ) public view returns (uint8) {
 
-        if(_actionType == getActionType(&quot;MILESTONE_DEADLINE&quot;) || _actionType == getActionType(&quot;MILESTONE_POSTPONING&quot;)) {
+        if(_actionType == getActionType("MILESTONE_DEADLINE") || _actionType == getActionType("MILESTONE_POSTPONING")) {
             uint8 recordId = MilestonesEntity.currentRecord();
             bytes32 hash = getHash( _actionType, bytes32( recordId ), 0 );
             uint256 ProposalId = ProposalIdByHash[hash];
@@ -883,9 +883,9 @@ contract Proposals is ApplicationAsset {
     {
         return createProposal(
             msg.sender,
-            &quot;EMERGENCY_FUND_RELEASE&quot;,
-            getHash( getActionType(&quot;EMERGENCY_FUND_RELEASE&quot;), 0, 0 ),
-            getActionType(&quot;EMERGENCY_FUND_RELEASE&quot;),
+            "EMERGENCY_FUND_RELEASE",
+            getHash( getActionType("EMERGENCY_FUND_RELEASE"), 0, 0 ),
+            getActionType("EMERGENCY_FUND_RELEASE"),
             0,
             0,
             0
@@ -897,14 +897,14 @@ contract Proposals is ApplicationAsset {
         onlyTokenHolder
         returns (uint256)
     {
-        // let&#39;s validate the project is actually listed first in order to remove any spamming ability.
+        // let's validate the project is actually listed first in order to remove any spamming ability.
         if( ListingContractEntity.canBeDelisted(_projectId) == true) {
 
             return createProposal(
                 msg.sender,
-                &quot;PROJECT_DELISTING&quot;,
-                getHash( getActionType(&quot;PROJECT_DELISTING&quot;), bytes32(_projectId), 0 ),
-                getActionType(&quot;PROJECT_DELISTING&quot;),
+                "PROJECT_DELISTING",
+                getHash( getActionType("PROJECT_DELISTING"), bytes32(_projectId), 0 ),
+                getActionType("PROJECT_DELISTING"),
                 0,
                 0,
                 _projectId
@@ -915,7 +915,7 @@ contract Proposals is ApplicationAsset {
     }
 
     modifier onlyTokenHolder() {
-        require( getTotalTokenVotingPower(msg.sender) &gt; 0 );
+        require( getTotalTokenVotingPower(msg.sender) > 0 );
         _;
     }
 
@@ -933,8 +933,8 @@ contract Proposals is ApplicationAsset {
         uint256 index;
     }
 
-    mapping (uint256 =&gt; ProposalRecord) public ProposalsById;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
+    mapping (uint256 => ProposalRecord) public ProposalsById;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
 
     function createProposal(
         address _creator,
@@ -949,7 +949,7 @@ contract Proposals is ApplicationAsset {
         returns (uint256)
     {
 
-        // if(_action &gt; 0) {
+        // if(_action > 0) {
 
         if(ProposalIdByHash[_hash] == 0) {
 
@@ -961,7 +961,7 @@ contract Proposals is ApplicationAsset {
             proposal.sourceCodeUrl  = _sourceCodeUrl;
             proposal.extra          = _extra;
             proposal.hash           = _hash;
-            proposal.state          = getRecordState(&quot;NEW&quot;);
+            proposal.state          = getRecordState("NEW");
             proposal.time_start     = getTimestamp();
             proposal.time_end       = getTimestamp() + getBylawsProposalVotingDuration();
             proposal.index          = RecordNum;
@@ -987,7 +987,7 @@ contract Proposals is ApplicationAsset {
 
     function acceptCodeUpgrade(uint256 _proposalId) internal {
         ProposalRecord storage proposal = ProposalsById[_proposalId];
-        // reinitialize this each time, because we rely on &quot;owner&quot; as the address, and it will change
+        // reinitialize this each time, because we rely on "owner" as the address, and it will change
         Application = ApplicationEntityABI(owner);
         Application.acceptCodeUpgradeProposal(proposal.addr);
     }
@@ -998,35 +998,35 @@ contract Proposals is ApplicationAsset {
         ResultRecord storage result = ResultsByProposalId[_proposalId];
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
-        if(getApplicationState() == getApplicationEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
+        if(getApplicationState() == getApplicationEntityState("IN_DEVELOPMENT") ) {
 
-            if(proposal.actionType == getActionType(&quot;PROJECT_DELISTING&quot;) ) {
+            if(proposal.actionType == getActionType("PROJECT_DELISTING") ) {
                 // while in development project delisting can be voted by all available tokens, except owner
                 uint256 ownerLockedTokens = TokenEntity.balanceOf(TokenManagerEntity);
                 result.totalAvailable = TokenEntity.totalSupply() - ownerLockedTokens;
 
-                // since we&#39;re counting unlocked tokens, we need to recount votes each time we want to end the voting period
+                // since we're counting unlocked tokens, we need to recount votes each time we want to end the voting period
                 result.requiresCounting = true;
 
             } else {
-                // any other proposal is only voted by &quot;locked ether&quot;, thus we use locked tokens
+                // any other proposal is only voted by "locked ether", thus we use locked tokens
                 result.totalAvailable = FundingManagerEntity.LockedVotingTokens();
 
                 // locked tokens do not require recounting.
                 result.requiresCounting = false;
             }
 
-        } else if(getApplicationState() == getApplicationEntityState(&quot;DEVELOPMENT_COMPLETE&quot;) ) {
+        } else if(getApplicationState() == getApplicationEntityState("DEVELOPMENT_COMPLETE") ) {
             // remove residual token balance from TokenManagerEntity.
             uint256 residualLockedTokens = TokenEntity.balanceOf(TokenManagerEntity);
             result.totalAvailable = TokenEntity.totalSupply() - residualLockedTokens;
 
-            // since we&#39;re counting unlocked tokens, we need to recount votes each time we want to end the voting period
+            // since we're counting unlocked tokens, we need to recount votes each time we want to end the voting period
             result.requiresCounting = true;
         }
         result.requiredForResult = result.totalAvailable / 2;   // 50%
 
-        proposal.state = getRecordState(&quot;ACCEPTING_VOTES&quot;);
+        proposal.state = getRecordState("ACCEPTING_VOTES");
         addActiveProposal(_proposalId);
 
         tryFinaliseNonLockedTokensProposal(_proposalId);
@@ -1059,10 +1059,10 @@ contract Proposals is ApplicationAsset {
     }
 
 
-    mapping (uint256 =&gt; mapping (uint256 =&gt; VoteStruct) ) public VotesByProposalId;
-    mapping (uint256 =&gt; mapping (address =&gt; VoteStruct) ) public VotesByCaster;
-    mapping (uint256 =&gt; uint256 ) public VotesNumByProposalId;
-    mapping (uint256 =&gt; ResultRecord ) public ResultsByProposalId;
+    mapping (uint256 => mapping (uint256 => VoteStruct) ) public VotesByProposalId;
+    mapping (uint256 => mapping (address => VoteStruct) ) public VotesByCaster;
+    mapping (uint256 => uint256 ) public VotesNumByProposalId;
+    mapping (uint256 => ResultRecord ) public ResultsByProposalId;
 
     function RegisterVote(uint256 _proposalId, bool _myVote) public {
         address Voter = msg.sender;
@@ -1077,7 +1077,7 @@ contract Proposals is ApplicationAsset {
         // make sure proposal.state allows receiving votes
         // make sure proposal.time_end has not passed.
 
-        if(VoterPower &gt; 0 &amp;&amp; proposal.state == getRecordState(&quot;ACCEPTING_VOTES&quot;)) {
+        if(VoterPower > 0 && proposal.state == getRecordState("ACCEPTING_VOTES")) {
 
             // first check if this Voter has a record registered,
             // and if they did, annul initial vote, update results, and add new one
@@ -1087,7 +1087,7 @@ contract Proposals is ApplicationAsset {
 
             registerNewVote(_proposalId, Voter, _myVote, VoterPower);
 
-            // this is where we can end voting before time if result.yes or result.no &gt; totalSoFar
+            // this is where we can end voting before time if result.yes or result.no > totalSoFar
             tryEndVoting(_proposalId);
 
         } else {
@@ -1097,7 +1097,7 @@ contract Proposals is ApplicationAsset {
 
     function hasPreviousVote(uint256 _proposalId, address _voter) public view returns (bool) {
         VoteStruct storage previousVoteByCaster = VotesByCaster[_proposalId][_voter];
-        if( previousVoteByCaster.power &gt; 0 ) {
+        if( previousVoteByCaster.power > 0 ) {
             return true;
         }
         return false;
@@ -1107,7 +1107,7 @@ contract Proposals is ApplicationAsset {
 
         VoteStruct storage previousVoteByCaster = VotesByCaster[_proposalId][_voter];
 
-        // if( previousVoteByCaster.power &gt; 0 ) {
+        // if( previousVoteByCaster.power > 0 ) {
             previousVoteByCaster.annulled = true;
 
             VoteStruct storage previousVoteByProposalId = VotesByProposalId[_proposalId][previousVoteByCaster.index];
@@ -1170,7 +1170,7 @@ contract Proposals is ApplicationAsset {
         uint256 VotingPower = 0;
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
-        if(proposal.actionType == getActionType(&quot;AFTER_COMPLETE_CODE_UPGRADE&quot;)) {
+        if(proposal.actionType == getActionType("AFTER_COMPLETE_CODE_UPGRADE")) {
 
             return TokenEntity.balanceOf(_voter);
 
@@ -1180,8 +1180,8 @@ contract Proposals is ApplicationAsset {
             if(VaultAddress != address(0x0)) {
                 VotingPower = TokenEntity.balanceOf(VaultAddress);
 
-                if( proposal.actionType == getActionType(&quot;PROJECT_DELISTING&quot;) ) {
-                    // for project delisting, we want to also include tokens in the voter&#39;s wallet.
+                if( proposal.actionType == getActionType("PROJECT_DELISTING") ) {
+                    // for project delisting, we want to also include tokens in the voter's wallet.
                     VotingPower+= TokenEntity.balanceOf(_voter);
                 }
             }
@@ -1190,13 +1190,13 @@ contract Proposals is ApplicationAsset {
     }
 
 
-    mapping( uint256 =&gt; uint256 ) public lastProcessedVoteIdByProposal;
-    mapping( uint256 =&gt; uint256 ) public ProcessedVotesByProposal;
-    mapping( uint256 =&gt; uint256 ) public VoteCountAtProcessingStartByProposal;
+    mapping( uint256 => uint256 ) public lastProcessedVoteIdByProposal;
+    mapping( uint256 => uint256 ) public ProcessedVotesByProposal;
+    mapping( uint256 => uint256 ) public VoteCountAtProcessingStartByProposal;
     uint256 public VoteCountPerProcess = 10;
 
     function setVoteCountPerProcess(uint256 _perProcess) external onlyDeployer {
-        if(_perProcess &gt; 0) {
+        if(_perProcess > 0) {
             VoteCountPerProcess = _perProcess;
         } else {
             revert();
@@ -1209,7 +1209,7 @@ contract Proposals is ApplicationAsset {
 
         uint256 start = lastProcessedVoteIdByProposal[_proposalId] + 1;
         uint256 end = start + length - 1;
-        if(end &gt; VotesNumByProposalId[_proposalId]) {
+        if(end > VotesNumByProposalId[_proposalId]) {
             end = VotesNumByProposalId[_proposalId];
         }
 
@@ -1236,7 +1236,7 @@ contract Proposals is ApplicationAsset {
             return;
         }
 
-        for(uint256 i = start; i &lt;= end; i++) {
+        for(uint256 i = start; i <= end; i++) {
 
             VoteStruct storage vote = VotesByProposalId[_proposalId][i - 1];
             // process vote into totals.
@@ -1248,7 +1248,7 @@ contract Proposals is ApplicationAsset {
         }
 
         // reset iterator so we can call it again.
-        if(lastProcessedVoteIdByProposal[_proposalId] &gt;= VotesNumByProposalId[_proposalId] ) {
+        if(lastProcessedVoteIdByProposal[_proposalId] >= VotesNumByProposalId[_proposalId] ) {
 
             ProcessedVotesByProposal[_proposalId] = lastProcessedVoteIdByProposal[_proposalId];
             lastProcessedVoteIdByProposal[_proposalId] = 0;
@@ -1260,14 +1260,14 @@ contract Proposals is ApplicationAsset {
 
         ResultRecord memory result = ResultsByProposalId[_proposalId];
         if(result.requiresCounting == false) {
-            if(result.yes &gt; result.requiredForResult || result.no &gt; result.requiredForResult) {
+            if(result.yes > result.requiredForResult || result.no > result.requiredForResult) {
                 return true;
             }
         }
         else {
 
             if(ProcessedVotesByProposal[_proposalId] == VotesNumByProposalId[_proposalId]) {
-                if(result.yes &gt; result.requiredForResult || result.no &gt; result.requiredForResult) {
+                if(result.yes > result.requiredForResult || result.no > result.requiredForResult) {
                     return true;
                 }
             }
@@ -1282,7 +1282,7 @@ contract Proposals is ApplicationAsset {
 
     function expiryChangesState(uint256 _proposalId) public view returns (bool) {
         ProposalRecord memory proposal = ProposalsById[_proposalId];
-        if( proposal.state == getRecordState(&quot;ACCEPTING_VOTES&quot;) &amp;&amp; proposal.time_end &lt; getTimestamp() ) {
+        if( proposal.state == getRecordState("ACCEPTING_VOTES") && proposal.time_end < getTimestamp() ) {
             return true;
         }
         return false;
@@ -1295,7 +1295,7 @@ contract Proposals is ApplicationAsset {
 
         ResultRecord memory result = ResultsByProposalId[_proposalId];
         if(result.requiresCounting == true) {
-            if( lastProcessedVoteIdByProposal[_proposalId] &lt; VotesNumByProposalId[_proposalId] ) {
+            if( lastProcessedVoteIdByProposal[_proposalId] < VotesNumByProposalId[_proposalId] ) {
                 if(ProcessedVotesByProposal[_proposalId] == VotesNumByProposalId[_proposalId]) {
                     return false;
                 }
@@ -1323,17 +1323,17 @@ contract Proposals is ApplicationAsset {
         ResultRecord storage result = ResultsByProposalId[_proposalId];
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
-        // Milestone Deadline proposals cannot be ended &quot;by majority vote&quot;, we rely on finaliseExpiredProposal here
-        // because we want to allow everyone to be able to vote &quot;NO&quot; if they choose to cashback.
+        // Milestone Deadline proposals cannot be ended "by majority vote", we rely on finaliseExpiredProposal here
+        // because we want to allow everyone to be able to vote "NO" if they choose to cashback.
 
-        if( proposal.actionType != getActionType(&quot;MILESTONE_DEADLINE&quot;)) {
+        if( proposal.actionType != getActionType("MILESTONE_DEADLINE")) {
             // read results,
-            if(result.yes &gt; result.requiredForResult) {
+            if(result.yes > result.requiredForResult) {
                 // voting resulted in YES
-                proposal.state = getRecordState(&quot;VOTING_RESULT_YES&quot;);
-            } else if (result.no &gt;= result.requiredForResult) {
+                proposal.state = getRecordState("VOTING_RESULT_YES");
+            } else if (result.no >= result.requiredForResult) {
                 // voting resulted in NO
-                proposal.state = getRecordState(&quot;VOTING_RESULT_NO&quot;);
+                proposal.state = getRecordState("VOTING_RESULT_NO");
             }
         }
 
@@ -1346,17 +1346,17 @@ contract Proposals is ApplicationAsset {
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
         // an expired proposal with no votes will end as YES
-        if(result.yes == 0 &amp;&amp; result.no == 0) {
-            proposal.state = getRecordState(&quot;VOTING_RESULT_YES&quot;);
+        if(result.yes == 0 && result.no == 0) {
+            proposal.state = getRecordState("VOTING_RESULT_YES");
         } else {
             // read results,
-            if(result.yes &gt; result.no) {
+            if(result.yes > result.no) {
                 // voting resulted in YES
-                proposal.state = getRecordState(&quot;VOTING_RESULT_YES&quot;);
-            } else if (result.no &gt;= result.yes) {
+                proposal.state = getRecordState("VOTING_RESULT_YES");
+            } else if (result.no >= result.yes) {
                 // tie equals no
                 // voting resulted in NO
-                proposal.state = getRecordState(&quot;VOTING_RESULT_NO&quot;);
+                proposal.state = getRecordState("VOTING_RESULT_NO");
             }
         }
         runActionAfterResult(_proposalId);
@@ -1368,7 +1368,7 @@ contract Proposals is ApplicationAsset {
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
         if(result.requiredForResult == 0) {
-            proposal.state = getRecordState(&quot;VOTING_RESULT_YES&quot;);
+            proposal.state = getRecordState("VOTING_RESULT_YES");
             runActionAfterResult(_proposalId);
         }
     }
@@ -1380,7 +1380,7 @@ contract Proposals is ApplicationAsset {
     function removeAndReindexActive(uint256 _proposalId) internal {
 
         bool found = false;
-        for (uint8 i = 0; i &lt; ActiveProposalNum; i++) {
+        for (uint8 i = 0; i < ActiveProposalNum; i++) {
             if(ActiveProposalIds[i] == _proposalId) {
                 found = true;
             }
@@ -1399,22 +1399,22 @@ contract Proposals is ApplicationAsset {
 
         ProposalRecord storage proposal = ProposalsById[_proposalId];
 
-        if(proposal.state == getRecordState(&quot;VOTING_RESULT_YES&quot;)) {
+        if(proposal.state == getRecordState("VOTING_RESULT_YES")) {
 
-            if(proposal.actionType == getActionType(&quot;MILESTONE_DEADLINE&quot;)) {
+            if(proposal.actionType == getActionType("MILESTONE_DEADLINE")) {
 
-            } else if (proposal.actionType == getActionType(&quot;MILESTONE_POSTPONING&quot;)) {
+            } else if (proposal.actionType == getActionType("MILESTONE_POSTPONING")) {
 
-            } else if (proposal.actionType == getActionType(&quot;EMERGENCY_FUND_RELEASE&quot;)) {
+            } else if (proposal.actionType == getActionType("EMERGENCY_FUND_RELEASE")) {
                 EmergencyFundingReleaseApproved = true;
 
-            } else if (proposal.actionType == getActionType(&quot;PROJECT_DELISTING&quot;)) {
+            } else if (proposal.actionType == getActionType("PROJECT_DELISTING")) {
 
                 ListingContractEntity.delistChild( proposal.extra );
 
             } else if (
-                proposal.actionType == getActionType(&quot;IN_DEVELOPMENT_CODE_UPGRADE&quot;) ||
-                proposal.actionType == getActionType(&quot;AFTER_COMPLETE_CODE_UPGRADE&quot;)
+                proposal.actionType == getActionType("IN_DEVELOPMENT_CODE_UPGRADE") ||
+                proposal.actionType == getActionType("AFTER_COMPLETE_CODE_UPGRADE")
             ) {
 
                 // initiate code upgrade
@@ -1423,10 +1423,10 @@ contract Proposals is ApplicationAsset {
 
             removeAndReindexActive(_proposalId);
 
-        } else if(proposal.state == getRecordState(&quot;VOTING_RESULT_NO&quot;)) {
+        } else if(proposal.state == getRecordState("VOTING_RESULT_NO")) {
 
             //
-            if(proposal.actionType == getActionType(&quot;MILESTONE_DEADLINE&quot;)) {
+            if(proposal.actionType == getActionType("MILESTONE_DEADLINE")) {
 
             } else {
                 removeAndReindexActive(_proposalId);
@@ -1438,7 +1438,7 @@ contract Proposals is ApplicationAsset {
     function getMyVoteForCurrentMilestoneRelease(address _voter) public view returns (bool) {
         // find proposal id for current milestone
         uint8 recordId = MilestonesEntity.currentRecord();
-        bytes32 hash = getHash( getActionType(&quot;MILESTONE_DEADLINE&quot;), bytes32( recordId ), 0 );
+        bytes32 hash = getHash( getActionType("MILESTONE_DEADLINE"), bytes32( recordId ), 0 );
         uint256 proposalId = ProposalIdByHash[hash];
         // based on that proposal id, find my vote
         VoteStruct memory vote = VotesByCaster[proposalId][_voter];
@@ -1448,7 +1448,7 @@ contract Proposals is ApplicationAsset {
     function getHasVoteForCurrentMilestoneRelease(address _voter) public view returns (bool) {
         // find proposal id for current milestone
         uint8 recordId = MilestonesEntity.currentRecord();
-        bytes32 hash = getHash( getActionType(&quot;MILESTONE_DEADLINE&quot;), bytes32( recordId ), 0 );
+        bytes32 hash = getHash( getActionType("MILESTONE_DEADLINE"), bytes32( recordId ), 0 );
         uint256 proposalId = ProposalIdByHash[hash];
         return hasPreviousVote(proposalId, _voter);
     }

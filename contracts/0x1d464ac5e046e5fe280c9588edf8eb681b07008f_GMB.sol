@@ -1,6 +1,6 @@
 pragma solidity ^0.4.20;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d7b3b6a1b297b6bcb8bab5b6f9b4b8ba">[email&#160;protected]</a>
+// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d7b3b6a1b297b6bcb8bab5b6f9b4b8ba">[email protected]</a>
 // released under Apache 2.0 licence
 library safeMath
 {
@@ -13,7 +13,7 @@ library safeMath
   function add(uint256 a, uint256 b) internal pure returns (uint256)
   {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,23 +47,23 @@ contract Variable
   uint256 internal ICO_closingTime;
   bool internal transferLock;
   bool internal depositLock;
-  mapping (address =&gt; bool) public allowedAddress;
-  mapping (address =&gt; bool) public blockedAddress;
-  mapping (address =&gt; uint256) public tempLockedAddress;
+  mapping (address => bool) public allowedAddress;
+  mapping (address => bool) public blockedAddress;
+  mapping (address => uint256) public tempLockedAddress;
 
   address withdraw_wallet;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
 
 
   constructor() public
   {
-    name = &quot;GMB&quot;;
-    symbol = &quot;GMB&quot;;
+    name = "GMB";
+    symbol = "GMB";
     decimals = 18;
     _decimals = 10 ** uint256(decimals);
     tokenReward = 0;
     totalSupply = _decimals * 5000000000;
-    status = &quot;&quot;;
+    status = "";
     ICO_startingTime = 0;// 18.01.01 00:00:00 1514732400;
     ICO_closingTime = 0;// 18.12.31 23.59.59 1546268399;
     transferLock = true;
@@ -185,8 +185,8 @@ contract Admin is Variable, Modifiers, Event
 {
   function admin_transfer_tempLockAddress(address _to, uint256 _value, uint256 _unlockTime) public isOwner returns(bool success)
   {
-    require(balanceOf[msg.sender] &gt;= _value);
-    require(balanceOf[_to] + (_value ) &gt;= balanceOf[_to]);
+    require(balanceOf[msg.sender] >= _value);
+    require(balanceOf[_to] + (_value ) >= balanceOf[_to]);
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
     tempLockedAddress[_to] = _unlockTime;
@@ -196,8 +196,8 @@ contract Admin is Variable, Modifiers, Event
   }
   function admin_transferFrom(address _from, address _to, uint256 _value) public isOwner returns(bool success)
   {
-    require(balanceOf[_from] &gt;= _value);
-    require(balanceOf[_to] + (_value ) &gt;= balanceOf[_to]);
+    require(balanceOf[_from] >= _value);
+    require(balanceOf[_to] + (_value ) >= balanceOf[_to]);
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
     emit Transfer(_from, _to, _value);
@@ -205,7 +205,7 @@ contract Admin is Variable, Modifiers, Event
   }
   function admin_tokenBurn(uint256 _value) public isOwner returns(bool success)
   {
-    require(balanceOf[msg.sender] &gt;= _value);
+    require(balanceOf[msg.sender] >= _value);
     balanceOf[msg.sender] -= _value;
     totalSupply -= _value;
     emit TokenBurn(msg.sender, _value);
@@ -232,12 +232,12 @@ contract GMB is Variable, Event, Get, Set, Admin, manageAddress
 
   function() payable public
   {
-    require(ICO_startingTime &lt; block.timestamp &amp;&amp; ICO_closingTime &gt; block.timestamp);
+    require(ICO_startingTime < block.timestamp && ICO_closingTime > block.timestamp);
     require(!depositLock);
     uint256 tokenValue;
     tokenValue = (msg.value).mul(tokenReward);
-    require(balanceOf[owner] &gt;= tokenValue);
-    require(balanceOf[msg.sender].add(tokenValue) &gt;= balanceOf[msg.sender]);
+    require(balanceOf[owner] >= tokenValue);
+    require(balanceOf[msg.sender].add(tokenValue) >= balanceOf[msg.sender]);
     emit Deposit(msg.sender, msg.value, status);
     balanceOf[owner] -= tokenValue;
     balanceOf[msg.sender] += tokenValue;
@@ -246,10 +246,10 @@ contract GMB is Variable, Event, Get, Set, Admin, manageAddress
   function transfer(address _to, uint256 _value) public isValidAddress
   {
     require(allowedAddress[msg.sender] || transferLock == false);
-    require(tempLockedAddress[msg.sender] &lt; block.timestamp);
-    require(!blockedAddress[msg.sender] &amp;&amp; !blockedAddress[_to]);
-    require(balanceOf[msg.sender] &gt;= _value);
-    require((balanceOf[_to].add(_value)) &gt;= balanceOf[_to]);
+    require(tempLockedAddress[msg.sender] < block.timestamp);
+    require(!blockedAddress[msg.sender] && !blockedAddress[_to]);
+    require(balanceOf[msg.sender] >= _value);
+    require((balanceOf[_to].add(_value)) >= balanceOf[_to]);
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
     emit Transfer(msg.sender, _to, _value);

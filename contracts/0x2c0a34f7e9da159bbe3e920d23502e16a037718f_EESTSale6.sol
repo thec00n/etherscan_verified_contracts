@@ -70,20 +70,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,7 +91,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract CrowdsaleBase is ArgumentsChecker, ReentrancyGuard {
         m_funds = new LightFundsRegistry(owner80, owner20);
         m_token = new TokenBase(token_name, token_symbol);
 
-        assert(! hasHardCap() || getMaximumFunds() &gt;= getMinimumFunds());
+        assert(! hasHardCap() || getMaximumFunds() >= getMinimumFunds());
     }
 
 
@@ -194,8 +194,8 @@ contract CrowdsaleBase is ArgumentsChecker, ReentrancyGuard {
         internal
         nonReentrant
     {
-        require(payment &gt;= getMinInvestment());
-        if (getCurrentTime() &gt;= getEndTime())
+        require(payment >= getMinInvestment());
+        if (getCurrentTime() >= getEndTime())
             finish();
 
         if (m_finished) {
@@ -213,7 +213,7 @@ contract CrowdsaleBase is ArgumentsChecker, ReentrancyGuard {
             uint paymentAllowed = getMaximumFunds().sub(getWeiCollected());
             assert(0 != paymentAllowed);
 
-            if (paymentAllowed &lt; payment) {
+            if (paymentAllowed < payment) {
                 change = payment.sub(paymentAllowed);
                 payment = paymentAllowed;
             }
@@ -225,13 +225,13 @@ contract CrowdsaleBase is ArgumentsChecker, ReentrancyGuard {
         // record payment
         m_funds.invested.value(payment)(investor);
 
-        assert((!hasHardCap() || getWeiCollected() &lt;= getMaximumFunds()) &amp;&amp; getWeiCollected() &gt; startingWeiCollected);
+        assert((!hasHardCap() || getWeiCollected() <= getMaximumFunds()) && getWeiCollected() > startingWeiCollected);
         FundTransfer(investor, payment, true);
 
-        if (hasHardCap() &amp;&amp; getWeiCollected() == getMaximumFunds())
+        if (hasHardCap() && getWeiCollected() == getMaximumFunds())
             finish();
 
-        if (change &gt; 0)
+        if (change > 0)
             investor.transfer(change);
 
         assert(startingInvariant == this.balance.add(getWeiCollected()).add(change));
@@ -241,7 +241,7 @@ contract CrowdsaleBase is ArgumentsChecker, ReentrancyGuard {
         if (m_finished)
             return;
 
-        if (getWeiCollected() &gt;= getMinimumFunds()) {
+        if (getWeiCollected() >= getMinimumFunds()) {
             // Success
             m_funds.changeState(LightFundsRegistry.State.SUCCEEDED);
             m_token.ICOSuccess();
@@ -442,7 +442,7 @@ contract LightFundsRegistry is ArgumentsChecker, Ownable, ReentrancyGuard {
         uint256 payment = m_weiBalances[payee];
 
         require(payment != 0);
-        require(this.balance &gt;= payment);
+        require(this.balance >= payment);
 
         totalInvested = totalInvested.sub(payment);
         m_weiBalances[payee] = 0;
@@ -463,7 +463,7 @@ contract LightFundsRegistry is ArgumentsChecker, Ownable, ReentrancyGuard {
     State public m_state = State.GATHERING;
 
     /// @dev balances of investors in wei
-    mapping(address =&gt; uint256) public m_weiBalances;
+    mapping(address => uint256) public m_weiBalances;
 
     /// @dev list of unique investors
     address[] public m_investors;
@@ -481,7 +481,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -492,8 +492,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -507,7 +507,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -542,7 +542,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -644,8 +644,8 @@ contract TokenBase is MintableToken, CirculatingToken {
 
 
     function TokenBase(string _name, string _symbol) public {
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_name).length &lt;= 32);
-        require(bytes(_symbol).length &gt; 0 &amp;&amp; bytes(_symbol).length &lt;= 32);
+        require(bytes(_name).length > 0 && bytes(_name).length <= 32);
+        require(bytes(_symbol).length > 0 && bytes(_symbol).length <= 32);
 
         m_name = _name;
         m_symbol = _symbol;
@@ -654,8 +654,8 @@ contract TokenBase is MintableToken, CirculatingToken {
 
     function burn(uint256 _amount) external returns (bool) {
         address _from = msg.sender;
-        require(_amount&gt;0);
-        require(_amount&lt;=balances[_from]);
+        require(_amount>0);
+        require(_amount<=balances[_from]);
 
         totalSupply = totalSupply.sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
@@ -691,7 +691,7 @@ contract EESTSale6 is CrowdsaleBase {
         CrowdsaleBase(
             /*owner80*/ address(0xade21bda21be237f8b13a494a46b122c5f1f26fb),
             /*owner20*/ address(0xa6809a7e050ca9ea9e4d2ccedc88f07d6ada09aa),
-            &quot;Electronic exchange sign-token 6&quot;, &quot;EEST6&quot;)
+            "Electronic exchange sign-token 6", "EEST6")
     {
     }
 

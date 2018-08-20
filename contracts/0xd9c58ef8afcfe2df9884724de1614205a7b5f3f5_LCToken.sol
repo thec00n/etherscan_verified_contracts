@@ -22,7 +22,7 @@ contract StandardToken is Token {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender].lcValue &gt;= _value &amp;&amp; _value &gt; 0&amp;&amp;  balances[msg.sender].lockTime!=0) {       
+        if (balances[msg.sender].lcValue >= _value && _value > 0&&  balances[msg.sender].lockTime!=0) {       
             balances[msg.sender].lcValue -= _value;
             balances[_to].lcValue += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,15 +49,15 @@ contract StandardToken is Token {
         return balances[_owner].lotteryNum;
     }
 
-    mapping (address =&gt; LCBalance) balances;
+    mapping (address => LCBalance) balances;
 }
 
 contract LCToken is StandardToken {
     // metadata
-    string public constant name = &quot;Bulls and Cows&quot;;
-    string public constant symbol = &quot;BAC&quot;;
+    string public constant name = "Bulls and Cows";
+    string public constant symbol = "BAC";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // constant
     uint256 val1 = 1 wei;    // 1
@@ -100,7 +100,7 @@ contract LCToken is StandardToken {
 
 
     function buyLottery (uint8 _lotteryNum) payable {
-        if ( msg.value &gt;=val3*10 &amp;&amp; _lotteryNum&gt;=0 &amp;&amp;  _lotteryNum&lt;=9 )
+        if ( msg.value >=val3*10 && _lotteryNum>=0 &&  _lotteryNum<=9 )
         {
             bytes32 currentHash=block.blockhash(block.number-1);
             if(blockhash[endIndex]!=currentHash)
@@ -109,7 +109,7 @@ contract LCToken is StandardToken {
                 {
                     endIndex++;
                     blockhash[endIndex]=currentHash;
-                    if(firstIndex&lt;999)
+                    if(firstIndex<999)
                     {
                         firstIndex++;
                     }
@@ -120,7 +120,7 @@ contract LCToken is StandardToken {
                 }
                 else
                 {
-                    if(firstIndex==0 &amp;&amp; 999==endIndex)
+                    if(firstIndex==0 && 999==endIndex)
                     {
                         endIndex=0;
                         blockhash[endIndex]=currentHash;
@@ -128,7 +128,7 @@ contract LCToken is StandardToken {
                     }
                     else
                     {
-                        if(999&lt;=endIndex)
+                        if(999<=endIndex)
                         {
                             endIndex=0;
                         }
@@ -162,7 +162,7 @@ contract LCToken is StandardToken {
             {
                 endIndex++;
                 blockhash[endIndex]=currentHash;
-                if(firstIndex&lt;999)
+                if(firstIndex<999)
                 {
                     firstIndex++;
                 }
@@ -173,7 +173,7 @@ contract LCToken is StandardToken {
             }
             else
             {
-                if(firstIndex==0 &amp;&amp; 999==endIndex)
+                if(firstIndex==0 && 999==endIndex)
                 {
                     endIndex=0;
                     blockhash[endIndex]=currentHash;
@@ -181,7 +181,7 @@ contract LCToken is StandardToken {
                 }
                 else
                 {
-                    if(999&lt;=endIndex)
+                    if(999<=endIndex)
                     {
                         endIndex=0;
                     }
@@ -193,15 +193,15 @@ contract LCToken is StandardToken {
                 }
             }
         }
-        if ( balances[msg.sender].ethValue &gt;=val3*10 &amp;&amp; balances[msg.sender].indexHash!=currentHash)
+        if ( balances[msg.sender].ethValue >=val3*10 && balances[msg.sender].indexHash!=currentHash)
         {
             currentLotteryValue-=balances[msg.sender].ethValue;
 
             uint temuint = balances[msg.sender].index;
-            if(balances[msg.sender].lotteryNum&gt;=0 &amp;&amp; balances[msg.sender].lotteryNum&lt;=9 &amp;&amp; balances[msg.sender].indexHash==blockhash[temuint])
+            if(balances[msg.sender].lotteryNum>=0 && balances[msg.sender].lotteryNum<=9 && balances[msg.sender].indexHash==blockhash[temuint])
             {
                 temuint++;
-                if(temuint&gt;999)
+                if(temuint>999)
                 {
                     temuint=0;
                 }
@@ -210,7 +210,7 @@ contract LCToken is StandardToken {
                 if(temuint==balances[msg.sender].lotteryNum)
                 {
                     uint _tosend=balances[msg.sender].ethValue*90/100;
-                    if(_tosend&gt;totalLotteryValue)
+                    if(_tosend>totalLotteryValue)
                     {
                         _tosend=totalLotteryValue;
                     }
@@ -234,12 +234,12 @@ contract LCToken is StandardToken {
 
     function getShare ()  {
 
-        if(shareTime+SHAREPERIOD&lt;now)
+        if(shareTime+SHAREPERIOD<now)
         {
             uint _jumpc=(now - shareTime)/SHAREPERIOD;
             shareTime += (_jumpc * SHAREPERIOD);
             
-            if(totalLotteryValue&gt;currentLotteryValue)
+            if(totalLotteryValue>currentLotteryValue)
             {
                 currentProfit=totalLotteryValue-currentLotteryValue;
             }
@@ -249,10 +249,10 @@ contract LCToken is StandardToken {
             }
         }
 
-        if (balances[msg.sender].lockTime!=0 &amp;&amp; balances[msg.sender].lockTime+SHAREPERIOD &lt;=shareTime &amp;&amp; currentProfit&gt;0 &amp;&amp; balances[msg.sender].lcValue &gt;=shareLimit)
+        if (balances[msg.sender].lockTime!=0 && balances[msg.sender].lockTime+SHAREPERIOD <=shareTime && currentProfit>0 && balances[msg.sender].lcValue >=shareLimit)
         {
             uint _sharevalue=balances[msg.sender].lcValue/val4*currentProfit/1000;
-            if(_sharevalue&gt;totalLotteryValue)
+            if(_sharevalue>totalLotteryValue)
             {
                 _sharevalue=totalLotteryValue;
             }
@@ -264,7 +264,7 @@ contract LCToken is StandardToken {
 
 
     function Add_totalLotteryValue () payable {
-        if(msg.value&gt;0)
+        if(msg.value>0)
         {
             totalLotteryValue+=msg.value;
         }
@@ -282,12 +282,12 @@ contract LCToken is StandardToken {
     
     //+ buy lc,1eth=1000lc, 30%eth send to owner, 70% keep in contact
     function buyLC () payable {
-        if(now &lt; gcEndTime)
+        if(now < gcEndTime)
         {
             uint256 lcAmount;
-            if ( msg.value &gt;=0){
+            if ( msg.value >=0){
                 lcAmount = msg.value * gcExchangeRate;
-                if (gcSupply &lt; lcAmount) revert();
+                if (gcSupply < lcAmount) revert();
                 gcSupply -= lcAmount;          
                 balances[msg.sender].lcValue += lcAmount;
             }
@@ -303,11 +303,11 @@ contract LCToken is StandardToken {
 
     // exchange lc to eth, 1000lc =0.7eth, 30% for fee
     function clearLC ()  {
-        if(now &lt; gcEndTime)
+        if(now < gcEndTime)
         {
             uint256 ethAmount;
-            if ( balances[msg.sender].lcValue &gt;0 &amp;&amp; balances[msg.sender].lockTime==0){
-                if(msg.sender == account_lock &amp;&amp; now &lt; gcStartTime + LOCKPERIOD)
+            if ( balances[msg.sender].lcValue >0 && balances[msg.sender].lockTime==0){
+                if(msg.sender == account_lock && now < gcStartTime + LOCKPERIOD)
                 {
                     revert();
                 }
@@ -321,9 +321,9 @@ contract LCToken is StandardToken {
 
     //+ transfer
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender].lcValue &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender].lockTime==0 ) { 
+        if (balances[msg.sender].lcValue >= _value && _value > 0 && balances[msg.sender].lockTime==0 ) { 
             if(msg.sender == account_lock ){
-                if(now &lt; gcStartTime + LOCKPERIOD){
+                if(now < gcStartTime + LOCKPERIOD){
                     return false;
                 }
             }
@@ -348,9 +348,9 @@ contract LCToken is StandardToken {
     }
 
     function endThisContact () {
-        if(msg.sender==creator &amp;&amp; balances[msg.sender].lcValue &gt;=9000000 * val4)
+        if(msg.sender==creator && balances[msg.sender].lcValue >=9000000 * val4)
         {
-            if(balances[msg.sender].lcValue &gt;=9000000 * val4 || gcSupply &gt;= 4990000 * 10**decimals)
+            if(balances[msg.sender].lcValue >=9000000 * val4 || gcSupply >= 4990000 * 10**decimals)
             {
                 selfdestruct(creator);
             }

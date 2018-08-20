@@ -38,7 +38,7 @@ contract Token {
   string public name;
   uint8 public decimals;
   string public symbol;
-  string public version = &#39;0.0.1&#39;;
+  string public version = '0.0.1';
   address public owner;
   address public supplyAdjuster;
   uint256 public lockedUntilBlock;
@@ -84,7 +84,7 @@ contract Token {
       returns (bool success) {
 
     // check sufficient allowance
-    if (_value &gt; allowed[_from][msg.sender]) {
+    if (_value > allowed[_from][msg.sender]) {
       return false;
     }
 
@@ -112,15 +112,15 @@ contract Token {
   }
 
   function isTransferValid(address _from, address _to, uint256 _amount) internal constant returns (bool isValid) {
-    return  balances[_from] &gt;= _amount &amp;&amp;                   // sufficient balance
-            isOverflow(balances[_to], _amount) == false &amp;&amp;  // does not overflow recipient balance
-            _amount &gt; 0 &amp;&amp;                                  // amount is positive
+    return  balances[_from] >= _amount &&                   // sufficient balance
+            isOverflow(balances[_to], _amount) == false &&  // does not overflow recipient balance
+            _amount > 0 &&                                  // amount is positive
             _to != address(this)                            // prevent sending tokens to contract
     ;
   }
 
   function isOverflow(uint256 _value, uint256 _increase) internal constant returns (bool isOverflow) {
-    return _value + _increase &lt; _value;
+    return _value + _increase < _value;
   }
 
   function setBlockLock(uint256 _lockedUntilBlock) onlyOwner returns (bool success) {
@@ -130,7 +130,7 @@ contract Token {
   }
 
   function isLocked() constant returns (bool success) {
-    return lockedUntilBlock &gt; block.number;
+    return lockedUntilBlock > block.number;
   }
 
   function replaceOwner(address _newOwner) onlyOwner returns (bool success) {
@@ -156,15 +156,15 @@ contract Token {
 
     balances[_addr] = _newBalance;
 
-    if (oldBalance &gt; _newBalance) {
+    if (oldBalance > _newBalance) {
       Transfer(_addr, this, oldBalance - _newBalance);
-    } else if (_newBalance &gt; oldBalance) {
+    } else if (_newBalance > oldBalance) {
       Transfer(this, _addr, _newBalance - oldBalance);
     }
 
     return true;
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 }

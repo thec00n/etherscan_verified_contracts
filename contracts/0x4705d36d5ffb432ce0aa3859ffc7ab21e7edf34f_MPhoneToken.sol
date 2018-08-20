@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -50,8 +50,8 @@ contract BaseMPHToken is Ownable {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     uint256 public maxtokens;
     address public owner;
@@ -62,7 +62,7 @@ contract BaseMPHToken is Ownable {
     }
 
     modifier IsNoMax() {
-        require(totalSupply &lt;= maxtokens);
+        require(totalSupply <= maxtokens);
         _;
     }
 
@@ -76,7 +76,7 @@ contract BaseMPHToken is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         var _allowance = allowed[_from][msg.sender];
-        require (_value &lt;= _allowance); 
+        require (_value <= _allowance); 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -114,8 +114,8 @@ contract BaseMPHToken is Ownable {
 
 contract MPhoneToken is BaseMPHToken {
 
-    string public constant name = &quot;MPhone Token&quot;;
-    string public constant symbol = &quot;MPH&quot;;
+    string public constant name = "MPhone Token";
+    string public constant symbol = "MPH";
     uint32 public constant decimals = 6;
 
 }
@@ -142,7 +142,7 @@ contract MPhoneSeller is Ownable {
     }
 
     function ChangeRate(uint newrate) onlyOwner public {
-        require(newrate &gt; 0 );
+        require(newrate > 0 );
         rate = newrate;
     }
 

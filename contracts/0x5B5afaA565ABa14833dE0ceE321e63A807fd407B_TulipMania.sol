@@ -26,13 +26,13 @@ library SafeMath3 {
   }
 
   function sub(uint a, uint b) internal constant returns (uint) {
-    assert( b &lt;= a );
+    assert( b <= a );
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns (uint c) {
     c = a + b;
-    assert( c &gt;= a );
+    assert( c >= a );
   }
 
 }
@@ -120,8 +120,8 @@ contract ERC20Token is ERC20Interface, Owned {
   using SafeMath3 for uint;
 
   uint public tokensIssuedTotal = 0;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping (address => uint)) allowed;
 
   // Functions ------------------------
 
@@ -137,11 +137,11 @@ contract ERC20Token is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint _amount) returns (bool success) {
     // amount sent cannot exceed balance
-    require( balances[msg.sender] &gt;= _amount );
+    require( balances[msg.sender] >= _amount );
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -156,7 +156,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
   function approve(address _spender, uint _amount) returns (bool success) {
     // approval amount cannot exceed the balance
-    require ( balances[msg.sender] &gt;= _amount );
+    require ( balances[msg.sender] >= _amount );
       
     // update allowed amount
     allowed[msg.sender][_spender] = _amount;
@@ -166,13 +166,13 @@ contract ERC20Token is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of tokens transfers tokens from the owner&#39;s balance */
+  /* Spender of tokens transfers tokens from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint _amount) returns (bool success) {
     // balance checks
-    require( balances[_from] &gt;= _amount );
-    require( allowed[_from][msg.sender] &gt;= _amount );
+    require( balances[_from] >= _amount );
+    require( allowed[_from][msg.sender] >= _amount );
 
     // update balances and allowed amount
     balances[_from]            = balances[_from].sub(_amount);
@@ -208,8 +208,8 @@ contract TulipMania is ERC20Token {
   
   /* Basic token data */
 
-  string public constant name     = &quot;Tulip Mania&quot;;
-  string public constant symbol   = &quot;BULB&quot;;
+  string public constant name     = "Tulip Mania";
+  string public constant symbol   = "BULB";
   uint8  public constant decimals = 6;
 
   /* Wallet addresses - initially set to owner at deployment */
@@ -255,17 +255,17 @@ contract TulipMania is ERC20Token {
   
   /* Keep track of Ether contributed and tokens received during Crowdsale */
   
-  mapping(address =&gt; uint) public icoEtherContributed;
-  mapping(address =&gt; uint) public icoTokensReceived;
+  mapping(address => uint) public icoEtherContributed;
+  mapping(address => uint) public icoTokensReceived;
 
   /* Keep track of participants who 
   /* - have received their airdropped tokens after a successful ICO */
   /* - or have reclaimed their contributions in case of failed Crowdsale */
   /* - are locked */
   
-  mapping(address =&gt; bool) public airdropClaimed;
-  mapping(address =&gt; bool) public refundClaimed;
-  mapping(address =&gt; bool) public locked;
+  mapping(address => bool) public airdropClaimed;
+  mapping(address => bool) public refundClaimed;
+  mapping(address => bool) public locked;
 
   // Events ---------------------------
   
@@ -305,7 +305,7 @@ contract TulipMania is ERC20Token {
   /* Are tokens transferable? */
 
   function isTransferable() constant returns (bool transferable) {
-     if ( atNow() &lt; DATE_ICO_END + COOLDOWN_PERIOD ) return false;
+     if ( atNow() < DATE_ICO_END + COOLDOWN_PERIOD ) return false;
      return true;
   }
   
@@ -321,7 +321,7 @@ contract TulipMania is ERC20Token {
 
   function removeLockMultiple(address[] _participants) {
     require( msg.sender == adminWallet || msg.sender == owner );
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       locked[_participants[i]] = false;
       LockRemoved(_participants[i]);
     }
@@ -348,7 +348,7 @@ contract TulipMania is ERC20Token {
   /* Change tokensPerEth before ICO start */
   
   function updateTokensPerEth(uint _tokensPerEth) onlyOwner {
-    require( atNow() &lt; DATE_PRESALE_START );
+    require( atNow() < DATE_PRESALE_START );
     tokensPerEth = _tokensPerEth;
     TokensPerEthUpdated(_tokensPerEth);
   }
@@ -357,7 +357,7 @@ contract TulipMania is ERC20Token {
 
   function mintMarketing(address _participant, uint _tokens) onlyOwner {
     // check amount
-    require( _tokens &lt;= TOKEN_SUPPLY_MKT.sub(tokensIssuedMkt) );
+    require( _tokens <= TOKEN_SUPPLY_MKT.sub(tokensIssuedMkt) );
     
     // update balances
     balances[_participant] = balances[_participant].add(_tokens);
@@ -376,7 +376,7 @@ contract TulipMania is ERC20Token {
   /* (for use in case of a failed Crowdsale) */
   
   function ownerClawback() external onlyOwner {
-    require( atNow() &gt; DATE_ICO_END + CLAWBACK_PERIOD );
+    require( atNow() > DATE_ICO_END + CLAWBACK_PERIOD );
     wallet.transfer(this.balance);
   }
 
@@ -397,18 +397,18 @@ contract TulipMania is ERC20Token {
     uint tokens = 0;
     
     // minimum contribution
-    require( msg.value &gt;= MIN_CONTRIBUTION );
+    require( msg.value >= MIN_CONTRIBUTION );
     
     // one address transfer hard cap
-    require( icoEtherContributed[msg.sender].add(msg.value) &lt;= MAX_CONTRIBUTION );
+    require( icoEtherContributed[msg.sender].add(msg.value) <= MAX_CONTRIBUTION );
 
     // check dates for presale or ICO
-    if (ts &gt; DATE_PRESALE_START &amp;&amp; ts &lt; DATE_PRESALE_END) isPresale = true;  
-    if (ts &gt; DATE_ICO_START &amp;&amp; ts &lt; DATE_ICO_END) isIco = true;  
+    if (ts > DATE_PRESALE_START && ts < DATE_PRESALE_END) isPresale = true;  
+    if (ts > DATE_ICO_START && ts < DATE_ICO_END) isIco = true;  
     require( isPresale || isIco );
 
     // presale cap in Ether
-    if (isPresale) require( icoEtherReceived.add(msg.value) &lt;= PRESALE_ETH_CAP );
+    if (isPresale) require( icoEtherReceived.add(msg.value) <= PRESALE_ETH_CAP );
     
     // get baseline number of tokens
     tokens = tokensPerEth.mul(msg.value) / 1 ether;
@@ -419,7 +419,7 @@ contract TulipMania is ERC20Token {
     }
     
     // ICO token volume cap
-    require( tokensIssuedIco.add(tokens) &lt;= TOKEN_SUPPLY_ICO );
+    require( tokensIssuedIco.add(tokens) <= TOKEN_SUPPLY_ICO );
 
     // register tokens
     balances[msg.sender]          = balances[msg.sender].add(tokens);
@@ -443,7 +443,7 @@ contract TulipMania is ERC20Token {
   
   // ERC20 functions ------------------
 
-  /* Override &quot;transfer&quot; (ERC20) */
+  /* Override "transfer" (ERC20) */
 
   function transfer(address _to, uint _amount) returns (bool success) {
     require( isTransferable() );
@@ -452,7 +452,7 @@ contract TulipMania is ERC20Token {
     return super.transfer(_to, _amount);
   }
   
-  /* Override &quot;transferFrom&quot; (ERC20) */
+  /* Override "transferFrom" (ERC20) */
 
   function transferFrom(address _from, address _to, uint _amount) returns (bool success) {
     require( isTransferable() );
@@ -475,13 +475,13 @@ contract TulipMania is ERC20Token {
     uint amount; // refund amount
     
     // ico is finished
-    require( atNow() &gt; DATE_ICO_END);
+    require( atNow() > DATE_ICO_END);
     
     // check if refund has already been claimed
     require( !refundClaimed[msg.sender] );
     
     // check if there is anything to refund
-    require( icoEtherContributed[msg.sender] &gt; 0 );
+    require( icoEtherContributed[msg.sender] > 0 );
     
     // update variables affected by refund
     tokens = icoTokensReceived[msg.sender];
@@ -500,7 +500,7 @@ contract TulipMania is ERC20Token {
     Refund(msg.sender, amount, tokens);
   }
 
-  /* Claiming of &quot;airdropped&quot; tokens in case of successful crowdsale */
+  /* Claiming of "airdropped" tokens in case of successful crowdsale */
   /* Can be done by token holder, or by adminWallet */ 
 
   function claimAirdrop() external {
@@ -514,13 +514,13 @@ contract TulipMania is ERC20Token {
 
   function adminClaimAirdropMultiple(address[] _addresses) external {
     require( msg.sender == adminWallet );
-    for (uint i = 0; i &lt; _addresses.length; i++) doAirdrop(_addresses[i]);
+    for (uint i = 0; i < _addresses.length; i++) doAirdrop(_addresses[i]);
   }  
   
   function doAirdrop(address _participant) internal {
     uint airdrop = computeAirdrop(_participant);
 
-    require( airdrop &gt; 0 );
+    require( airdrop > 0 );
 
     // update balances and token issue volume
     airdropClaimed[_participant] = true;
@@ -540,8 +540,8 @@ contract TulipMania is ERC20Token {
   /* will be newBalance = tokens * TOKEN_SUPPLY_ICO / tokensIssuedIco */
       
   function computeAirdrop(address _participant) constant returns (uint airdrop) {
-    // return 0 if it&#39;s too early
-    if ( atNow() &lt; DATE_ICO_END ) return 0;
+    // return 0 if it's too early
+    if ( atNow() < DATE_ICO_END ) return 0;
     
     // return 0 if the airdrop was already claimed
     if( airdropClaimed[_participant] ) return 0;
@@ -562,7 +562,7 @@ contract TulipMania is ERC20Token {
     require( isTransferable() );
     require( locked[msg.sender] == false );
     require( _addresses.length == _amounts.length );
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
       if (locked[_addresses[i]] == false) super.transfer(_addresses[i], _amounts[i]);
     }
   }  

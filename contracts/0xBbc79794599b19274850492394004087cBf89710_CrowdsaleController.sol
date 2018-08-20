@@ -20,7 +20,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -56,7 +56,7 @@ contract SafeMath {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address owner) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -112,7 +112,7 @@ contract Owned is IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string name) { name; }
     function symbol() public constant returns (string symbol) { symbol; }
     function decimals() public constant returns (uint8 decimals) { decimals; }
@@ -133,10 +133,10 @@ contract ITokenHolder is IOwned {
 }
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned {
@@ -146,7 +146,7 @@ contract TokenHolder is ITokenHolder, Owned {
     function TokenHolder() {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -189,18 +189,18 @@ contract ISmartToken is ITokenHolder, IERC20Token {
 /*
     The smart token controller is an upgradable part of the smart token that allows
     more functionality as well as fixes for bugs/exploits.
-    Once it accepts ownership of the token, it becomes the token&#39;s sole controller
+    Once it accepts ownership of the token, it becomes the token's sole controller
     that can execute any of its functions.
 
     To upgrade the controller, ownership must be transferred to a new controller, along with
     any relevant data.
 
     The smart token must be set on construction and cannot be changed afterwards.
-    Wrappers are provided (as opposed to a single &#39;execute&#39; function) for each of the token&#39;s functions, for easier access.
+    Wrappers are provided (as opposed to a single 'execute' function) for each of the token's functions, for easier access.
 
     Note that the controller can transfer token ownership to a new controller that
-    doesn&#39;t allow executing any function on the token, for a trustless solution.
-    Doing that will also remove the owner&#39;s ability to upgrade the controller.
+    doesn't allow executing any function on the token, for a trustless solution.
+    Doing that will also remove the owner's ability to upgrade the controller.
 */
 contract SmartTokenController is TokenHolder {
     ISmartToken public token;   // smart token
@@ -214,13 +214,13 @@ contract SmartTokenController is TokenHolder {
         token = _token;
     }
 
-    // ensures that the controller is the token&#39;s owner
+    // ensures that the controller is the token's owner
     modifier active() {
         assert(token.owner() == address(this));
         _;
     }
 
-    // ensures that the controller is not the token&#39;s owner
+    // ensures that the controller is not the token's owner
     modifier inactive() {
         assert(token.owner() != address(this));
         _;
@@ -256,7 +256,7 @@ contract SmartTokenController is TokenHolder {
     }
 
     /**
-        @dev allows the owner to execute the token&#39;s issue function
+        @dev allows the owner to execute the token's issue function
 
         @param _to         account to receive the new amount
         @param _amount     amount to increase the supply by
@@ -266,7 +266,7 @@ contract SmartTokenController is TokenHolder {
     }
 
     /**
-        @dev allows the owner to execute the token&#39;s destroy function
+        @dev allows the owner to execute the token's destroy function
 
         @param _from       account to remove the amount from
         @param _amount     amount to decrease the supply by
@@ -293,7 +293,7 @@ contract SmartTokenController is TokenHolder {
 
     The crowdsale version of the smart token controller, allows contributing ether in exchange for Bancor tokens
     The price remains fixed for the entire duration of the crowdsale
-    Note that 20% of the contributions are the Bancor token&#39;s reserve
+    Note that 20% of the contributions are the Bancor token's reserve
 */
 contract CrowdsaleController is SmartTokenController, SafeMath {
     uint256 public constant DURATION = 14 days;                 // crowdsale duration
@@ -302,7 +302,7 @@ contract CrowdsaleController is SmartTokenController, SafeMath {
     uint256 public constant BTCS_ETHER_CAP = 50000 ether;       // maximum bitcoin suisse ether contribution
     uint256 public constant MAX_GAS_PRICE = 50000000000 wei;    // maximum gas price for contribution transactions
 
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
 
     uint256 public startTime = 0;                   // crowdsale start time (in seconds)
     uint256 public endTime = 0;                     // crowdsale end time (in seconds)
@@ -339,13 +339,13 @@ contract CrowdsaleController is SmartTokenController, SafeMath {
 
     // verifies that an amount is greater than zero
     modifier validAmount(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     // verifies that the gas price is lower than 50 gwei
     modifier validGasPrice() {
-        assert(tx.gasprice &lt;= MAX_GAS_PRICE);
+        assert(tx.gasprice <= MAX_GAS_PRICE);
         _;
     }
 
@@ -355,15 +355,15 @@ contract CrowdsaleController is SmartTokenController, SafeMath {
         _;
     }
 
-    // ensures that it&#39;s earlier than the given time
+    // ensures that it's earlier than the given time
     modifier earlierThan(uint256 _time) {
-        assert(now &lt; _time);
+        assert(now < _time);
         _;
     }
 
     // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
     modifier between(uint256 _startTime, uint256 _endTime) {
-        assert(now &gt;= _startTime &amp;&amp; now &lt; _endTime);
+        assert(now >= _startTime && now < _endTime);
         _;
     }
 
@@ -373,20 +373,20 @@ contract CrowdsaleController is SmartTokenController, SafeMath {
         _;
     }
 
-    // ensures that we didn&#39;t reach the ether cap
+    // ensures that we didn't reach the ether cap
     modifier etherCapNotReached(uint256 _contribution) {
-        assert(safeAdd(totalEtherContributed, _contribution) &lt;= totalEtherCap);
+        assert(safeAdd(totalEtherContributed, _contribution) <= totalEtherCap);
         _;
     }
 
-    // ensures that we didn&#39;t reach the bitcoin suisse ether cap
+    // ensures that we didn't reach the bitcoin suisse ether cap
     modifier btcsEtherCapNotReached(uint256 _ethContribution) {
-        assert(safeAdd(totalEtherContributed, _ethContribution) &lt;= BTCS_ETHER_CAP);
+        assert(safeAdd(totalEtherContributed, _ethContribution) <= BTCS_ETHER_CAP);
         _;
     }
 
     /**
-        @dev computes the real cap based on the given cap &amp; key
+        @dev computes the real cap based on the given cap & key
 
         @param _cap    cap
         @param _key    key used to compute the cap hash
@@ -410,7 +410,7 @@ contract CrowdsaleController is SmartTokenController, SafeMath {
         between(startTime, endTime)
         validEtherCap(_cap, _key)
     {
-        require(_cap &lt; totalEtherCap); // validate input
+        require(_cap < totalEtherCap); // validate input
         totalEtherCap = _cap;
     }
 

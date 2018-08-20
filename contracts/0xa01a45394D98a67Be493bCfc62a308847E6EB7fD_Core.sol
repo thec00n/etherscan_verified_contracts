@@ -4,19 +4,19 @@
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -44,9 +44,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -54,7 +54,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -63,7 +63,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -200,21 +200,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -338,7 +338,7 @@ contract ERC721BasicToken is ERC721Basic {
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -353,14 +353,14 @@ contract ERC721BasicToken is ERC721Basic {
     public
     canTransfer(_tokenId)
   {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -487,7 +487,7 @@ contract ERC721BasicToken is ERC721Basic {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -502,7 +502,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -517,16 +517,16 @@ contract ERC721Receiver {
  */
 contract ERC721Token is ERC721, ERC721BasicToken, ERC165 {
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   /**
   * @dev Gets the token ID at a given index of the tokens list of the requested owner
@@ -535,7 +535,7 @@ contract ERC721Token is ERC721, ERC721BasicToken, ERC165 {
   * @return uint256 token ID at the given index of the tokens list owned by the requested address
   */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
   
@@ -563,7 +563,7 @@ contract ERC721Token is ERC721, ERC721BasicToken, ERC165 {
   * @return uint256 token ID at the given index of the tokens list
   */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -673,7 +673,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -716,7 +716,7 @@ contract Base is ERC721Token, Ownable {
 
   // We can withdraw eth balance of contract.
   function withdrawBalance() onlyOwner external {
-    require(address(this).balance &gt; 0);
+    require(address(this).balance > 0);
 
     msg.sender.transfer(address(this).balance);
   }
@@ -726,10 +726,10 @@ contract Base is ERC721Token, Ownable {
 
 contract LootboxStore is Base {
   // mapping between specific Lootbox contract address to price in wei
-  mapping(address =&gt; uint256) ethPricedLootboxes;
+  mapping(address => uint256) ethPricedLootboxes;
 
   // mapping between specific Lootbox contract address to price in NOS tokens
-  mapping(uint256 =&gt; uint256) NOSPackages;
+  mapping(uint256 => uint256) NOSPackages;
 
   uint256 UUID;
 
@@ -744,9 +744,9 @@ contract LootboxStore is Base {
   }
 
   function buyEthLootbox(address _lootboxAddress) payable external {
-    // Verify the given lootbox contract exists and they&#39;ve paid enough
+    // Verify the given lootbox contract exists and they've paid enough
     require(ethPricedLootboxes[_lootboxAddress] != 0);
-    require(msg.value &gt;= ethPricedLootboxes[_lootboxAddress]);
+    require(msg.value >= ethPricedLootboxes[_lootboxAddress]);
 
     LootboxInterface(_lootboxAddress).buy(msg.sender);
   }
@@ -761,7 +761,7 @@ contract LootboxStore is Base {
 
   function buyNOS(uint256 _NOSAmt) payable external {
     require(NOSPackages[_NOSAmt] != 0);
-    require(msg.value &gt;= NOSPackages[_NOSAmt]);
+    require(msg.value >= NOSPackages[_NOSAmt]);
     
     emit NOSPurchased(UUID, msg.sender, _NOSAmt);
     UUID++;
@@ -769,7 +769,7 @@ contract LootboxStore is Base {
 }
 
 contract Core is LootboxStore, ExternalInterface {
-  mapping(address =&gt; uint256) authorizedExternal;
+  mapping(address => uint256) authorizedExternal;
 
   function addAuthorizedExternal(address _address) external onlyOwner {
     authorizedExternal[_address] = 1;
@@ -791,7 +791,7 @@ contract Core is LootboxStore, ExternalInterface {
   }
 
   function giveMultipleItems(address _recipient, uint256[] _traits) onlyAuthorized external {
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipient, _traits[i]);
     }
   }
@@ -799,17 +799,17 @@ contract Core is LootboxStore, ExternalInterface {
   function giveMultipleItemsToMultipleRecipients(address[] _recipients, uint256[] _traits) onlyAuthorized external {
     require(_recipients.length == _traits.length);
 
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipients[i], _traits[i]);
     }
   }
 
   function giveMultipleItemsAndDestroyMultipleItems(address _recipient, uint256[] _traits, uint256[] _tokenIds) onlyAuthorized external {
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipient, _traits[i]);
     }
 
-    for (i = 0; i &lt; _tokenIds.length; ++i) {
+    for (i = 0; i < _tokenIds.length; ++i) {
       _burn(ownerOf(_tokenIds[i]), _tokenIds[i]);
     }
   }
@@ -819,7 +819,7 @@ contract Core is LootboxStore, ExternalInterface {
   }
 
   function destroyMultipleItems(uint256[] _tokenIds) onlyAuthorized external {
-    for (uint i = 0; i &lt; _tokenIds.length; ++i) {
+    for (uint i = 0; i < _tokenIds.length; ++i) {
       _burn(ownerOf(_tokenIds[i]), _tokenIds[i]);
     }
   }

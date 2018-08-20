@@ -9,13 +9,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -41,9 +41,9 @@ contract TokenLab is SafeMath {
     address public feeAccount;
     uint public feeMake;
     uint public feeTake;
-    mapping (address =&gt; mapping (address =&gt; uint)) public tokens;
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public orders;
-    mapping (address =&gt; mapping (bytes32 =&gt; uint)) public orderFills;
+    mapping (address => mapping (address => uint)) public tokens;
+    mapping (address => mapping (bytes32 => bool)) public orders;
+    mapping (address => mapping (bytes32 => uint)) public orderFills;
 
     event Order(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user);
     event Cancel(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s);
@@ -72,12 +72,12 @@ contract TokenLab is SafeMath {
     }
 
     function changeFeeMake(uint feeMake_) onlyAdmin {
-        require (feeMake_ &lt;= feeMake);
+        require (feeMake_ <= feeMake);
         feeMake = feeMake_;
     }
 
     function changeFeeTake(uint feeTake_) onlyAdmin {
-        require (feeTake_ &lt;= feeTake);
+        require (feeTake_ <= feeTake);
         feeTake = feeTake_;
     }
 
@@ -87,7 +87,7 @@ contract TokenLab is SafeMath {
     }
 
     function withdraw(uint amount) {
-        require(tokens[0][msg.sender] &gt;= amount);
+        require(tokens[0][msg.sender] >= amount);
         tokens[0][msg.sender] = safeSub(tokens[0][msg.sender], amount);
         require(msg.sender.call.value(amount)());
         Withdraw(0, msg.sender, amount, tokens[0][msg.sender]);
@@ -102,7 +102,7 @@ contract TokenLab is SafeMath {
 
     function withdrawToken(address token, uint amount) {
         require (token!=0);
-        require (tokens[token][msg.sender] &gt;= amount);
+        require (tokens[token][msg.sender] >= amount);
         tokens[token][msg.sender] = safeSub(tokens[token][msg.sender], amount);
         require (Token(token).transfer(msg.sender, amount));
         Withdraw(token, msg.sender, amount, tokens[token][msg.sender]);
@@ -121,9 +121,9 @@ contract TokenLab is SafeMath {
     function trade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount) {
         bytes32 hash = sha256(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
         require ((
-        (orders[user][hash] || ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),v,r,s) == user) &amp;&amp;
-        block.number &lt;= expires &amp;&amp;
-        safeAdd(orderFills[user][hash], amount) &lt;= amountGet
+        (orders[user][hash] || ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash),v,r,s) == user) &&
+        block.number <= expires &&
+        safeAdd(orderFills[user][hash], amount) <= amountGet
         ));
         tradeBalances(tokenGet, amountGet, tokenGive, amountGive, user, amount);
         orderFills[user][hash] = safeAdd(orderFills[user][hash], amount);
@@ -142,8 +142,8 @@ contract TokenLab is SafeMath {
 
     function testTrade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount, address sender) constant returns(bool) {
         if (!(
-        tokens[tokenGet][sender] &gt;= amount &amp;&amp;
-        availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) &gt;= amount
+        tokens[tokenGet][sender] >= amount &&
+        availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) >= amount
         )) return false;
         return true;
     }
@@ -151,12 +151,12 @@ contract TokenLab is SafeMath {
     function availableVolume(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s) constant returns(uint) {
         bytes32 hash = sha256(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
         if (!(
-        (orders[user][hash] || ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),v,r,s) == user) &amp;&amp;
-        block.number &lt;= expires
+        (orders[user][hash] || ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash),v,r,s) == user) &&
+        block.number <= expires
         )) return 0;
         uint available1 = safeSub(amountGet, orderFills[user][hash]);
         uint available2 = safeMul(tokens[tokenGive][user], amountGet) / amountGive;
-        if (available1&lt;available2) return available1;
+        if (available1<available2) return available1;
         return available2;
     }
 
@@ -167,7 +167,7 @@ contract TokenLab is SafeMath {
 
     function cancelOrder(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s) {
         bytes32 hash = sha256(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
-        require ((orders[msg.sender][hash] || ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),v,r,s) == msg.sender));
+        require ((orders[msg.sender][hash] || ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash),v,r,s) == msg.sender));
         orderFills[msg.sender][hash] = amountGet;
         Cancel(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, msg.sender, v, r, s);
     }

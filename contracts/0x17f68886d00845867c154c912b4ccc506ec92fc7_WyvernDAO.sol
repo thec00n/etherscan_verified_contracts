@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,13 +104,13 @@ contract DelegatedShareholderAssociation is TokenRecipient {
     ERC20 public sharesTokenAddress;
 
     /* Delegate addresses by delegator. */
-    mapping (address =&gt; address) public delegatesByDelegator;
+    mapping (address => address) public delegatesByDelegator;
 
     /* Locked tokens by delegator. */
-    mapping (address =&gt; uint) public lockedDelegatingTokens;
+    mapping (address => uint) public lockedDelegatingTokens;
 
     /* Delegated votes by delegate. */
-    mapping (address =&gt; uint) public delegatedAmountsByDelegate;
+    mapping (address => uint) public delegatedAmountsByDelegate;
     
     /* Tokens currently locked by vote delegation. */
     uint public totalLockedTokens;
@@ -141,7 +141,7 @@ contract DelegatedShareholderAssociation is TokenRecipient {
         uint numberOfVotes;
         bytes32 proposalHash;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Vote {
@@ -151,7 +151,7 @@ contract DelegatedShareholderAssociation is TokenRecipient {
 
     /* Only shareholders can execute a function with this modifier. */
     modifier onlyShareholders {
-        require(ERC20(sharesTokenAddress).balanceOf(msg.sender) &gt; 0);
+        require(ERC20(sharesTokenAddress).balanceOf(msg.sender) > 0);
         _;
     }
 
@@ -175,7 +175,7 @@ contract DelegatedShareholderAssociation is TokenRecipient {
 
     /* Only boardmembers (shareholders above a certain threshold) can execute a function with this modifier. */
     modifier onlyBoardMembers {
-        require(ERC20(sharesTokenAddress).balanceOf(msg.sender) &gt;= requiredSharesToBeBoardMember);
+        require(ERC20(sharesTokenAddress).balanceOf(msg.sender) >= requiredSharesToBeBoardMember);
         _;
     }
 
@@ -368,7 +368,7 @@ contract DelegatedShareholderAssociation is TokenRecipient {
         yea = 0;
         nay = 0;
         quorum = 0;
-        for (uint i = 0; i &lt; p.votes.length; ++i) {
+        for (uint i = 0; i < p.votes.length; ++i) {
             Vote storage v = p.votes[i];
             uint voteWeight = SafeMath.add(sharesTokenAddress.balanceOf(v.voter), delegatedAmountsByDelegate[v.voter]);
             quorum = SafeMath.add(quorum, voteWeight);
@@ -395,18 +395,18 @@ contract DelegatedShareholderAssociation is TokenRecipient {
         Proposal storage p = proposals[proposalNumber];
 
         /* If at or past deadline, not already finalized, and code is correct, keep going. */
-        require((now &gt;= p.votingDeadline) &amp;&amp; !p.finalized &amp;&amp; p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode));
+        require((now >= p.votingDeadline) && !p.finalized && p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode));
 
         /* Count the votes. */
         var ( yea, nay, quorum ) = countVotes(proposalNumber);
 
         /* Assert that a minimum quorum has been reached. */
-        require(quorum &gt;= minimumQuorum);
+        require(quorum >= minimumQuorum);
         
         /* Mark proposal as finalized. */   
         p.finalized = true;
 
-        if (yea &gt; nay) {
+        if (yea > nay) {
             /* Mark proposal as passed. */
             p.proposalPassed = true;
 
@@ -425,7 +425,7 @@ contract DelegatedShareholderAssociation is TokenRecipient {
 
 contract WyvernDAO is DelegatedShareholderAssociation {
 
-    string public constant name = &quot;Project Wyvern DAO&quot;;
+    string public constant name = "Project Wyvern DAO";
 
     uint public constant TOKEN_DECIMALS                     = 18;
     uint public constant REQUIRED_SHARES_TO_BE_BOARD_MEMBER = 2000 * (10 ** TOKEN_DECIMALS); // set to ~ 0.1% of supply

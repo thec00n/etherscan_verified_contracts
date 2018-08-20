@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,12 +81,12 @@ contract CodexStandardToken is ERC20Interface, Owned {
     string public  name;
     uint8 public decimals;
     uint _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     constructor() public {
-        name = &quot;CODEXSTANDARD Token&quot;;
-        symbol = &quot;CDX&quot;;
+        name = "CODEXSTANDARD Token";
+        symbol = "CDX";
         decimals = 0;
         _totalSupply = 273728000;
         balances[owner] = _totalSupply;

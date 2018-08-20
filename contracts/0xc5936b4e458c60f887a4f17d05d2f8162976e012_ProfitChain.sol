@@ -8,29 +8,29 @@ pragma solidity ^0.4.17;
  * hell of a hacker to win... Read the code, and if you find a problem, write owner AT profit-chain.net !
  *
  * Investors participate in rounds of fixed size and investment. Once a round is full, a new one opens automatically.
- * A single winner is picked per round, raking all the round&#39;s investments (minus invitor fees).
+ * A single winner is picked per round, raking all the round's investments (minus invitor fees).
  *
  * Each investor must provide an invitor address when making the first investment in the group.
- * The game includes a time and depth limited invitation pyramid - you must invest first, then you can invite others. As invitor you&#39;ll enjoy a part of invitees investment
+ * The game includes a time and depth limited invitation pyramid - you must invest first, then you can invite others. As invitor you'll enjoy a part of invitees investment
  * and wins, as well as their sub-invitees, for a limited time, and up to certain number of generations.
  *
  * There are multiple groups, each with its specific characteristics- to cater to all players.
  * 
  * We deter hacking of the winner by making it non-economical:
- * There is a &quot;security factor&quot; K, which is larger than the group round size N.
+ * There is a "security factor" K, which is larger than the group round size N.
  * For example, for N=10 we may choose K=50.
- * A few blocks following the round&#39;s last investment, the winner is picked if the block&#39;s hash mod K is a number of 1...N.
- * If a hacker miner made a single invetment in the round, the miner would have to match 1 out of 50 &quot;guesses&quot;, ie. 50 times greater effort than usual...
- * If a hacker miner made all invetments but one in the round, the miner would have to match 9 of of 50 &quot;guesses&quot;, or about 5 times greater than usual...
- * And then there&#39;s the participation fees, that render even that last scenario non-economical.
+ * A few blocks following the round's last investment, the winner is picked if the block's hash mod K is a number of 1...N.
+ * If a hacker miner made a single invetment in the round, the miner would have to match 1 out of 50 "guesses", ie. 50 times greater effort than usual...
+ * If a hacker miner made all invetments but one in the round, the miner would have to match 9 of of 50 "guesses", or about 5 times greater than usual...
+ * And then there's the participation fees, that render even that last scenario non-economical.
  *
  * It would take a little over K blocks on average to declare the winner.
  * At 15 seconds per block, if K=50, it would take on average 13 minutes after the last investment, before a winner is found.
  * BUT! 
  * Winner declaration is temporary - checking is done on last 255 blocks. So even if a winner exists now, the winner must be actively named using a transaction while relevant.
- * A &quot;checkAndDeclareWinner&quot; transaction is required to write the winner (at the time of the transaction!) into the blockchain.
+ * A "checkAndDeclareWinner" transaction is required to write the winner (at the time of the transaction!) into the blockchain.
  * 
- * All Ether withdrawals, after wins or invitor fees payouts, require execution of a &quot;withdraw&quot; transaction, for safety. 
+ * All Ether withdrawals, after wins or invitor fees payouts, require execution of a "withdraw" transaction, for safety. 
  */
 
 
@@ -48,8 +48,8 @@ contract ProfitChain {
     }
     
     struct Round {
-        mapping(uint32 =&gt; Investment) investments;      // all investments made in round
-        mapping (address =&gt; uint32) investorMapping;    // quickly find an investor by address
+        mapping(uint32 => Investment) investments;      // all investments made in round
+        mapping (address => uint32) investorMapping;    // quickly find an investor by address
         uint32 totalInvestors;          // the number of investors in round so far
         uint256 totalInvestment;        // the sum of all investments in round, so far
         address winner;                 // winner of the round (0 if not yet known)
@@ -65,27 +65,27 @@ contract ProfitChain {
         string name;                    // group name
         uint32 roundSize;               // round size (number of investors)
         uint256 investment;             // investment size in wei
-        uint32 blocksBeforeWinCheck;    // how many blocks to wait after round&#39;s final investment, prior to determining the winner
+        uint32 blocksBeforeWinCheck;    // how many blocks to wait after round's final investment, prior to determining the winner
         uint32 securityFactor;          // security factor, larger than the group size, to make hacking difficult
         uint32 invitationFee;           // promiles of invitation fee out of investment and winning
         uint32 ownerFee;                // promiles of owner fee out of investment
         uint32 invitationFeePeriod;     // number of days an invitation incurs fees
         uint8 invitationFeeDepth;       // how many invitors can be paid up the invitation chain
         bool active;                    // is the group open for new rounds?
-        mapping (address =&gt; GroupMember) members;   // all the group members
-        mapping(uint32 =&gt; Round) rounds;            // rounds of this group
+        mapping (address => GroupMember) members;   // all the group members
+        mapping(uint32 => Round) rounds;            // rounds of this group
         uint32 currentRound;            // the current round
         uint32 firstUnwonRound;         // the oldest round we need to check for win
     }
     
     
     // variables
-    string public contractName = &quot;ProfitChain 1.0&quot;;
+    string public contractName = "ProfitChain 1.0";
     uint256 public contractBlock;               // block of contract
     address public owner;                       // owner of the contract
-    mapping (address =&gt; uint256) balances;      // balance of each investor
+    mapping (address => uint256) balances;      // balance of each investor
     Group[] groups;                             // all groups
-    mapping (string =&gt; bool) groupNames;        // for exclusivity of group names
+    mapping (string => bool) groupNames;        // for exclusivity of group names
 
     // modifiers
     modifier onlyOwner() {require(msg.sender == owner); _;}
@@ -133,10 +133,10 @@ contract ProfitChain {
     ) public onlyOwner 
     {
         // some basic tests
-        require(_roundSize &gt; 0);
-        require(_investment &gt; 0);
-        require(_invitationFee.add(_ownerFee) &lt; 1000);
-        require(_securityFactor &gt; _roundSize);
+        require(_roundSize > 0);
+        require(_investment > 0);
+        require(_invitationFee.add(_ownerFee) < 1000);
+        require(_securityFactor > _roundSize);
         // check if group name exists
         require(!groupNameExists(_groupName));
         
@@ -189,8 +189,8 @@ contract ProfitChain {
         require(msg.sender != owner);
         // check group exists, investor does not yet belong to group, and invitor exists (or owner)
         Group storage thisGroup = groups[_group];
-        require(thisGroup.roundSize &gt; 0);
-        require(thisGroup.members[_invitor].joinTime &gt; 0 || _invitor == owner);
+        require(thisGroup.roundSize > 0);
+        require(thisGroup.members[_invitor].joinTime > 0 || _invitor == owner);
         require(thisGroup.members[investor].joinTime == 0);
         // check payment is as required
         require(msg.value == thisGroup.investment);
@@ -217,14 +217,14 @@ contract ProfitChain {
         uint32 round = thisGroup.currentRound;
         Round storage thisRound = thisGroup.rounds[round];
         
-        // check the group is still open for business - only if we&#39;re about to be the first investors
-        require(thisGroup.active || thisRound.totalInvestors &gt; 0);
+        // check the group is still open for business - only if we're about to be the first investors
+        require(thisGroup.active || thisRound.totalInvestors > 0);
         
         // check payment is as required
         require(msg.value == thisGroup.investment);
-        // verify we&#39;re members
-        require(thisGroup.members[investor].joinTime &gt; 0);
-        // verify we&#39;re not already investors in this round
+        // verify we're members
+        require(thisGroup.members[investor].joinTime > 0);
+        // verify we're not already investors in this round
         require(! isInvestorInRound(thisRound, investor));
         
         // notify the world
@@ -272,7 +272,7 @@ contract ProfitChain {
     function withdraw(uint256 sum) public {
         address withdrawer = msg.sender;
         // do we have enough funds for withdrawal?
-        require(balances[withdrawer] &gt;= sum);
+        require(balances[withdrawer] >= sum);
 
         // notify the world
         Withdraw(withdrawer, sum, block.timestamp);
@@ -288,7 +288,7 @@ contract ProfitChain {
      */
     function checkWinner(uint32 _group) public constant returns (bool foundWinner, string reason) {
         Group storage thisGroup = groups[_group];
-        require(thisGroup.roundSize &gt; 0);
+        require(thisGroup.roundSize > 0);
         address winner;
         (winner, reason) = checkWinnerInternal(thisGroup);
         foundWinner = winner != 0;
@@ -302,13 +302,13 @@ contract ProfitChain {
 
     function checkAndDeclareWinner(uint32 _group) public {
         Group storage thisGroup = groups[_group];
-        require(thisGroup.roundSize &gt; 0);
+        require(thisGroup.roundSize > 0);
         address winner;
         string memory reason;
         (winner, reason) = checkWinnerInternal(thisGroup);
         // revert if no winner found
         require(winner != 0);
-        // let&#39;s declare the winner!
+        // let's declare the winner!
         declareWinner(_group, winner);
     }
 
@@ -317,7 +317,7 @@ contract ProfitChain {
      */
 
     function declareWinner(uint32 _group, address _winner) internal {
-        // let&#39;s declare the winner!
+        // let's declare the winner!
         Group storage thisGroup = groups[_group];
         Round storage unwonRound = thisGroup.rounds[thisGroup.firstUnwonRound];
     
@@ -346,12 +346,12 @@ contract ProfitChain {
         // some tests
         // the first round has no previous rounds to check
         if (thisGroup.currentRound == 0) {
-            reason = &#39;Still in first round&#39;;
+            reason = 'Still in first round';
             return;
         }
-        // we don&#39;t check current round - by definition it is not full
+        // we don't check current round - by definition it is not full
         if (thisGroup.currentRound == thisGroup.firstUnwonRound) {
-            reason = &#39;No unwon finished rounds&#39;;
+            reason = 'No unwon finished rounds';
             return;
         }
      
@@ -359,29 +359,29 @@ contract ProfitChain {
         
         // we will scan a range of blocks, from unwonRound.lastBlock + thisGroup.blocksBeforeWinCheck;
         uint256 firstBlock = unwonRound.lastBlock.add(thisGroup.blocksBeforeWinCheck);
-        // but we can&#39;t scan more than 255 blocks into the past
+        // but we can't scan more than 255 blocks into the past
         // the first test is for testing environments that may have less than 256 blocks :)
-        if (block.number &gt; 255 &amp;&amp; firstBlock &lt; block.number.sub(255))
+        if (block.number > 255 && firstBlock < block.number.sub(255))
             firstBlock = block.number.sub(255);
         // the scan ends at the last committed block
         uint256 lastBlock = block.number.sub(1);
 
-        for (uint256 thisBlock = firstBlock; thisBlock &lt;= lastBlock; thisBlock = thisBlock.add(1)) {
+        for (uint256 thisBlock = firstBlock; thisBlock <= lastBlock; thisBlock = thisBlock.add(1)) {
             uint256 latestHash = uint256(block.blockhash(thisBlock));
-            // we&#39;re &quot;drawing&quot; a winner out of the security-factor-sized group - perhaps no winner at all  
+            // we're "drawing" a winner out of the security-factor-sized group - perhaps no winner at all  
             uint32 drawn = uint32(latestHash % thisGroup.securityFactor);
-            if (drawn &lt; thisGroup.roundSize) {
+            if (drawn < thisGroup.roundSize) {
                 // we have a winner!
                 winner = unwonRound.investments[drawn].investor;
                 return;
             }
         }
-        reason = &#39;No winner picked&#39;;
+        reason = 'No winner picked';
     } 
     
     /**
      * Given a group, investor and amount of wei, pay all the eligible invitors.
-     * NOTE: does not draw from the _payer balance - we&#39;re assuming the returned value will be deducted when necessary.
+     * NOTE: does not draw from the _payer balance - we're assuming the returned value will be deducted when necessary.
      * NOTE 2: a recursive call, yet the depth is limited by 8-bits so no real stack concren.
      * Return the amount of wei to be deducted from the payer
      */
@@ -390,14 +390,14 @@ contract ProfitChain {
         address invitor = thisGroup.members[_payer].invitor;
         // conditions for payment:
         if (
-        // the payer&#39;s invitor is not the owner...
+        // the payer's invitor is not the owner...
             invitor == owner ||
         // must have something to share...
             _amount == 0 ||
         // no more than specified depth
-            _depth &gt;= thisGroup.invitationFeeDepth ||
-        // the invitor&#39;s invitation time has not expired
-            _relevantTime &gt; thisGroup.members[_payer].joinTime.add(thisGroup.invitationFeePeriod.mul(1 days))
+            _depth >= thisGroup.invitationFeeDepth ||
+        // the invitor's invitation time has not expired
+            _relevantTime > thisGroup.members[_payer].joinTime.add(thisGroup.invitationFeePeriod.mul(1 days))
         ) {
             return;
         }
@@ -405,7 +405,7 @@ contract ProfitChain {
         // compute how much to pay
         invitationFee = _amount.mul(thisGroup.invitationFee).div(1000);
         
-        // we may have reached rock bottom - don&#39;t continue
+        // we may have reached rock bottom - don't continue
         if (invitationFee == 0) return;
 
         // calculate recursively even higher-hierarcy fees
@@ -494,7 +494,7 @@ contract ProfitChain {
     }
     
     /**
-     * Get info about specific group&#39;s round
+     * Get info about specific group's round
      */
     function roundInfo (uint32 _group, uint32 _round) public constant returns (
         uint32 totalInvestors,
@@ -511,7 +511,7 @@ contract ProfitChain {
     } 
     
     /**
-     * Get info about specific round&#39;s investment, by investor
+     * Get info about specific round's investment, by investor
      */
     function roundInvestorInfoByAddress (uint32 _group, uint32 _round, address investor) public constant returns (
         bool inRound,
@@ -523,7 +523,7 @@ contract ProfitChain {
     }
     
     /**
-     * Get info about specific round&#39;s investment - by index
+     * Get info about specific round's investment - by index
      */
     function roundInvestorInfoByIndex (uint32 _group, uint32 _round, uint32 _index) public constant returns (
         address investor,
@@ -531,7 +531,7 @@ contract ProfitChain {
         uint256 time
     ) {
         require(groupExists(_group));
-        require(groups[_group].rounds[_round].totalInvestors &gt; _index);
+        require(groups[_group].rounds[_round].totalInvestors > _index);
         Investment storage investment = groups[_group].rounds[_round].investments[_index];
         investor = investment.investor;
         sum = investment.sum;
@@ -546,7 +546,7 @@ contract ProfitChain {
     }
 
     function groupExists(uint32 _group) internal constant returns (bool exists) {
-        return _group &lt; groups.length;
+        return _group < groups.length;
     }
 
 }
@@ -563,20 +563,20 @@ library SafeMath256 {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // require(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -589,20 +589,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // require(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }

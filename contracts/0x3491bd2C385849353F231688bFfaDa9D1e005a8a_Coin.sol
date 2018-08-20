@@ -4,8 +4,8 @@ pragma solidity ^0.4.15;
  * @version 1.2.1
 */
 contract Coin {
-  string public constant symbol = &quot;BTRC&quot;;
-  string public constant name = &quot;BITUBER&quot;;
+  string public constant symbol = "BTRC";
+  string public constant name = "BITUBER";
   uint8 public constant decimals = 18;
   uint256 public _totalSupply = 0;
   uint256 public price = 1500;
@@ -13,9 +13,9 @@ contract Coin {
   bool private transferAllowed = false;
   address public owner;
   address private cur_coin;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; uint256) private etherClients;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => uint256) private etherClients;
   event FundsGot(address indexed _sender, uint256 _value);
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -72,10 +72,10 @@ contract Coin {
   }
   function contractState() public view returns (string state) {
     if (workingState) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   //transfer controller functions
@@ -89,10 +89,10 @@ contract Coin {
   }
   function transferState() public view returns (string state) {
     if (transferAllowed) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   //token controller functions
@@ -103,7 +103,7 @@ contract Coin {
 	}
 	else
 	{
-		if (balances[address(this)] &gt;= _amount)
+		if (balances[address(this)] >= _amount)
 		{
 			transferFrom(address(this), _client, _amount);
 		}
@@ -125,7 +125,7 @@ contract Coin {
   }
   //send ether function (working)
   function () public workingFlag payable {
-    bool ret = cur_coin.call(bytes4(keccak256(&quot;pay(address,uint256,uint256)&quot;)), msg.sender, msg.value, price);
+    bool ret = cur_coin.call(bytes4(keccak256("pay(address,uint256,uint256)")), msg.sender, msg.value, price);
     ret;
   }
   function totalSupply() public constant workingFlag returns (uint256 totalsupply) {
@@ -136,9 +136,9 @@ contract Coin {
     return balances[_owner];
   }
   function transfer(address _to, uint256 _value) public workingFlag returns (bool success) {
-    if (balances[msg.sender] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[msg.sender] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         if ((msg.sender == address(this))||(_to == address(this))) {
           balances[msg.sender] -= _value;
@@ -166,10 +166,10 @@ contract Coin {
 	if ((msg.sender == cur_coin)||(msg.sender == owner)) {
       allowed[_from][msg.sender] = _value;
     }
-    if (balances[_from] &gt;= _value
-      &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[_from] >= _value
+      && allowed[_from][msg.sender] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         if ((_from == address(this))||(_to == address(this))) {
           balances[msg.sender] -= _value;

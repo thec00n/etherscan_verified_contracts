@@ -28,10 +28,10 @@ contract locksdc2{
         uint createttime;
     }
     
-    mapping(address=&gt;accountInputSdc[]) public accountInputSdcs;
-    mapping(address=&gt;accountOutputSdc[]) public accountOutputSdcs;
-    mapping(address=&gt;accoutInputOutputSdcLog[]) public accoutInputOutputSdcLogs;
-    mapping(address=&gt;uint) public unlockSdc;
+    mapping(address=>accountInputSdc[]) public accountInputSdcs;
+    mapping(address=>accountOutputSdc[]) public accountOutputSdcs;
+    mapping(address=>accoutInputOutputSdcLog[]) public accoutInputOutputSdcLogs;
+    mapping(address=>uint) public unlockSdc;
     
     event lockLogs(address indexed _controller,address indexed _user,uint256 _sdc,uint _locktime,bool _islock);
     
@@ -44,13 +44,13 @@ contract locksdc2{
     }
     
     function outSdcForUser(uint256 _sdc) public returns(bool b){
-        for(uint i=0;i&lt;accountInputSdcs[msg.sender].length;i++){
-            if(now &gt;= accountInputSdcs[msg.sender][i].locktime){
+        for(uint i=0;i<accountInputSdcs[msg.sender].length;i++){
+            if(now >= accountInputSdcs[msg.sender][i].locktime){
                 unlockSdc[msg.sender] = unlockSdc[msg.sender]+accountInputSdcs[msg.sender][i].sdc;
                 accountInputSdcs[msg.sender][i] = accountInputSdc(msg.sender,0,999999999999,now);
             }
         }
-        require(unlockSdc[msg.sender]&gt;=_sdc);
+        require(unlockSdc[msg.sender]>=_sdc);
         sdcCon.transfer(msg.sender,_sdc);   
         unlockSdc[msg.sender] = unlockSdc[msg.sender]-_sdc;
         lockLogs(msg.sender,msg.sender,_sdc,now,false);
@@ -71,8 +71,8 @@ contract locksdc2{
     }
     function getLockSdc() constant public returns(uint b){
         uint tmpLockSdc = 0;
-        for(uint i=0;i&lt;accountInputSdcs[msg.sender].length;i++){
-            if(now &lt; accountInputSdcs[msg.sender][i].locktime){
+        for(uint i=0;i<accountInputSdcs[msg.sender].length;i++){
+            if(now < accountInputSdcs[msg.sender][i].locktime){
                 tmpLockSdc = tmpLockSdc + accountInputSdcs[msg.sender][i].sdc;
             }
         }
@@ -80,16 +80,16 @@ contract locksdc2{
     }
     function getUnlockSdc() constant public returns(uint b){
         uint tmpUnlockSdc = unlockSdc[msg.sender];
-        for(uint i=0;i&lt;accountInputSdcs[msg.sender].length;i++){
-            if(now &gt;= accountInputSdcs[msg.sender][i].locktime){
+        for(uint i=0;i<accountInputSdcs[msg.sender].length;i++){
+            if(now >= accountInputSdcs[msg.sender][i].locktime){
                 tmpUnlockSdc = tmpUnlockSdc + accountInputSdcs[msg.sender][i].sdc;
             }
         }
         return tmpUnlockSdc;
     }
     function insetMoney() public returns(bool b){
-        for(uint i=0;i&lt;accountInputSdcs[msg.sender].length;i++){
-            if(now &gt;= accountInputSdcs[msg.sender][i].locktime){
+        for(uint i=0;i<accountInputSdcs[msg.sender].length;i++){
+            if(now >= accountInputSdcs[msg.sender][i].locktime){
                 unlockSdc[msg.sender] = unlockSdc[msg.sender]+accountInputSdcs[msg.sender][i].sdc;
                 accountInputSdcs[msg.sender][i] = accountInputSdc(msg.sender,0,999999999999,now);
             }

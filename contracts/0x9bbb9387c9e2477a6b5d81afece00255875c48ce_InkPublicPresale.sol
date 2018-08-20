@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -166,7 +166,7 @@ contract InkPublicPresale is Ownable {
   uint256 public maxGasPrice;
 
   // Contributors storage mapping.
-  mapping(address =&gt; Contributor) private contributors;
+  mapping(address => Contributor) private contributors;
 
   struct Contributor {
     bool whitelisted;
@@ -197,7 +197,7 @@ contract InkPublicPresale is Ownable {
   }
 
   function updateMaxGasPrice(uint256 _maxGasPrice) public onlyOwner {
-    require(_maxGasPrice &gt; 0);
+    require(_maxGasPrice > 0);
 
     maxGasPrice = _maxGasPrice;
   }
@@ -221,15 +221,15 @@ contract InkPublicPresale is Ownable {
 
   // Update the global max contribution.
   function updateGlobalMax(uint256 _globalMax) public notFinalized onlyOwner {
-    require(_globalMax &gt; globalMin);
+    require(_globalMax > globalMin);
 
     globalMax = _globalMax;
   }
 
   // Update the global minimum contribution.
   function updateGlobalMin(uint256 _globalMin) public notFinalized onlyOwner {
-    require(_globalMin &gt; 0);
-    require(_globalMin &lt; globalMax);
+    require(_globalMin > 0);
+    require(_globalMin < globalMax);
 
     globalMin = _globalMin;
   }
@@ -268,8 +268,8 @@ contract InkPublicPresale is Ownable {
   // Add a contributor to the whitelist.
   function addContributor(address _account, uint256 _rate, uint256 _max) public onlyOwner notFinalized {
     require(_account != address(0));
-    require(_rate &gt; 0);
-    require(_max &gt;= globalMin);
+    require(_rate > 0);
+    require(_max >= globalMin);
     require(!contributors[_account].whitelisted);
 
     contributors[_account].whitelisted = true;
@@ -277,16 +277,16 @@ contract InkPublicPresale is Ownable {
     contributors[_account].rate = _rate;
   }
 
-  // Updates a contributor&#39;s rate and/or max.
+  // Updates a contributor's rate and/or max.
   function updateContributor(address _account, uint256 _newRate, uint256 _newMax) public onlyOwner notFinalized {
     require(_account != address(0));
-    require(_newRate &gt; 0);
-    require(_newMax &gt;= globalMin);
+    require(_newRate > 0);
+    require(_newMax >= globalMin);
     require(contributors[_account].whitelisted);
 
     // Account for any changes in rate since we are keeping track of total XNK
     // purchased.
-    if (contributors[_account].balance &gt; 0 &amp;&amp; contributors[_account].rate != _newRate) {
+    if (contributors[_account].balance > 0 && contributors[_account].rate != _newRate) {
       // Put back the purchased XNK for the old rate.
       xnkPurchased = xnkPurchased.sub(contributors[_account].balance.mul(contributors[_account].rate));
 
@@ -308,7 +308,7 @@ contract InkPublicPresale is Ownable {
     contributors[_account].whitelisted = false;
 
     // If contributions were made, refund it.
-    if (contributors[_account].balance &gt; 0) {
+    if (contributors[_account].balance > 0) {
       uint256 balance = contributors[_account].balance;
 
       contributors[_account].balance = 0;
@@ -316,8 +316,8 @@ contract InkPublicPresale is Ownable {
       etherContributed = etherContributed.sub(balance);
 
       // XXX: The exclamation point does nothing. We just want to get rid of the
-      // compiler warning that we&#39;re not using the returned value of the Ether
-      // transfer. The transfer *can* fail but we don&#39;t want it to stop the
+      // compiler warning that we're not using the returned value of the Ether
+      // transfer. The transfer *can* fail but we don't want it to stop the
       // removal of the contributor. We will deal if the transfer failure
       // manually outside this contract.
       !_account.call.value(balance)();
@@ -339,7 +339,7 @@ contract InkPublicPresale is Ownable {
     assert(_to.call.value(this.balance)());
   }
 
-  // Returns a contributor&#39;s balance.
+  // Returns a contributor's balance.
   function balanceOf(address _account) public view returns (uint256) {
     require(_account != address(0));
 
@@ -355,7 +355,7 @@ contract InkPublicPresale is Ownable {
 
     uint256 balance = contributors[msg.sender].balance;
 
-    require(balance &gt; 0);
+    require(balance > 0);
 
     contributors[msg.sender].balance = 0;
     etherContributed = etherContributed.sub(balance);
@@ -368,9 +368,9 @@ contract InkPublicPresale is Ownable {
     _processPayout(_account);
   }
 
-  // Finalize the presale by specifying the XNK token&#39;s contract address.
+  // Finalize the presale by specifying the XNK token's contract address.
   // No further contributions can be made. The presale will be in the
-  // &quot;token claiming&quot; phase.
+  // "token claiming" phase.
   function finalize(address _tokenAddress) public notFinalized onlyOwner {
     require(_tokenAddress != address(0));
 
@@ -380,7 +380,7 @@ contract InkPublicPresale is Ownable {
   // Fallback/payable method for contributions and token claiming.
   function () public payable {
     // Allow the owner to send Ether to the contract arbitrarily.
-    if (msg.sender == owner &amp;&amp; msg.value &gt; 0) {
+    if (msg.sender == owner && msg.value > 0) {
       return;
     }
 
@@ -400,30 +400,30 @@ contract InkPublicPresale is Ownable {
   // Process the contribution.
   function _processContribution() private {
     // Must be contributing a positive amount.
-    require(msg.value &gt; 0);
-    // Limit the transaction&#39;s gas price.
-    require(tx.gasprice &lt;= maxGasPrice);
-    // The sum of the contributor&#39;s total contributions must be higher than the
+    require(msg.value > 0);
+    // Limit the transaction's gas price.
+    require(tx.gasprice <= maxGasPrice);
+    // The sum of the contributor's total contributions must be higher than the
     // global minimum.
-    require(contributors[msg.sender].balance.add(msg.value) &gt;= globalMin);
+    require(contributors[msg.sender].balance.add(msg.value) >= globalMin);
     // The global contribution cap must be higher than what has been contributed
-    // by everyone. Otherwise, there&#39;s zero room for any contribution.
-    require(etherCap &gt; etherContributed);
+    // by everyone. Otherwise, there's zero room for any contribution.
+    require(etherCap > etherContributed);
     // Make sure that this specific contribution does not take the total
     // contribution by everyone over the global contribution cap.
-    require(msg.value &lt;= etherCap.sub(etherContributed));
+    require(msg.value <= etherCap.sub(etherContributed));
 
     uint256 newBalance = contributors[msg.sender].balance.add(msg.value);
 
-    // We limit the individual&#39;s contribution based on whichever is lower
+    // We limit the individual's contribution based on whichever is lower
     // between their individual max or the global max.
-    if (globalMax &lt;= contributors[msg.sender].max) {
-      require(newBalance &lt;= globalMax);
+    if (globalMax <= contributors[msg.sender].max) {
+      require(newBalance <= globalMax);
     } else {
-      require(newBalance &lt;= contributors[msg.sender].max);
+      require(newBalance <= contributors[msg.sender].max);
     }
 
-    // Increment the contributor&#39;s balance.
+    // Increment the contributor's balance.
     contributors[msg.sender].balance = newBalance;
     // Increment the total amount of Ether contributed by everyone.
     etherContributed = etherContributed.add(msg.value);
@@ -439,12 +439,12 @@ contract InkPublicPresale is Ownable {
     uint256 balance = contributors[_recipient].balance;
 
     // The contributor must have contributed something.
-    require(balance &gt; 0);
+    require(balance > 0);
 
     // Figure out the amount of XNK the contributor will receive.
     uint256 amount = balance.mul(contributors[_recipient].rate);
 
-    // Zero out the contributor&#39;s balance to denote that they have received
+    // Zero out the contributor's balance to denote that they have received
     // their tokens.
     contributors[_recipient].balance = 0;
 

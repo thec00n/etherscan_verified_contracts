@@ -19,8 +19,8 @@ contract PixelStorageWithFee {
     // [color] is a 4-bit integer; the upper 4 bits of the uint8 are discarded.
 
     function set(uint32 index, uint8 color) public payable {
-        require(index &lt; 500000);
-        require(msg.value &gt;= feeWei);
+        require(index < 500000);
+        require(msg.value >= feeWei);
 
         uint32 packedByteIndex = index / 2;
         byte currentByte = packedBytes[packedByteIndex];
@@ -30,11 +30,11 @@ contract PixelStorageWithFee {
         if (left) {
             // clear upper 4 bits of existing byte
             // OR with new byte shifted left 4 bits
-            newByte = (currentByte &amp; hex&#39;0f&#39;) | bytes1(color * 2 ** 4);
+            newByte = (currentByte & hex'0f') | bytes1(color * 2 ** 4);
         } else {
             // clear lower 4 bits of existing byte
             // OR with with new color, with upper 4 bits cleared
-            newByte = (currentByte &amp; hex&#39;f0&#39;) | (bytes1(color) &amp; hex&#39;0f&#39;);
+            newByte = (currentByte & hex'f0') | (bytes1(color) & hex'0f');
         }
 
         packedBytes[packedByteIndex] = newByte;

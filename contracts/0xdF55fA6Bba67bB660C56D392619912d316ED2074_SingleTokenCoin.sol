@@ -27,13 +27,13 @@ library SafeMath {
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -42,7 +42,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   event ShowTestB(bool _bool);
   event ShowTestU(string _string, uint _uint);
@@ -64,12 +64,12 @@ contract BasicToken is ERC20Basic {
     uint256 fourPhaseCount;
   }
 
-  mapping(address =&gt; FreezePhases) founding_tokens;
-  mapping(address =&gt; FreezePhases) angel_tokens;
-  mapping(address =&gt; FreezePhases) team_core_tokens;
-  mapping(address =&gt; FreezePhases) pe_investors_tokens;
+  mapping(address => FreezePhases) founding_tokens;
+  mapping(address => FreezePhases) angel_tokens;
+  mapping(address => FreezePhases) team_core_tokens;
+  mapping(address => FreezePhases) pe_investors_tokens;
 
-  mapping(address =&gt; bool) forceFreeze;
+  mapping(address => bool) forceFreeze;
 
   address[] founding_addresses;
   address[] angel_addresses;
@@ -79,7 +79,7 @@ contract BasicToken is ERC20Basic {
   function isFreeze(address _addr, uint256 _value) public {
     require(!forceFreeze[_addr]);
 
-    if (now &lt; ico_finish) {
+    if (now < ico_finish) {
       revert();
     }
 
@@ -94,8 +94,8 @@ contract BasicToken is ERC20Basic {
     isFounder = findAddress(founding_addresses, _addr);
 
     if (isFounder) {
-      if (now &gt; founding_tokens[_addr].firstPhaseTime &amp;&amp; now &lt; founding_tokens[_addr].secondPhaseTime) {
-        if (_value &lt;= founding_tokens[_addr].firstPhaseCount) {
+      if (now > founding_tokens[_addr].firstPhaseTime && now < founding_tokens[_addr].secondPhaseTime) {
+        if (_value <= founding_tokens[_addr].firstPhaseCount) {
           founding_tokens[_addr].firstPhaseCount = founding_tokens[_addr].firstPhaseCount - _value;
         } else {
           revert();
@@ -105,8 +105,8 @@ contract BasicToken is ERC20Basic {
         founding_tokens[_addr].firstPhaseCount = 0;
       }
 
-      if (now &gt; founding_tokens[_addr].secondPhaseTime &amp;&amp; now &lt; founding_tokens[_addr].thirdPhaseTime) {
-        if (_value &lt;= founding_tokens[_addr].secondPhaseCount) {
+      if (now > founding_tokens[_addr].secondPhaseTime && now < founding_tokens[_addr].thirdPhaseTime) {
+        if (_value <= founding_tokens[_addr].secondPhaseCount) {
           founding_tokens[_addr].secondPhaseCount = founding_tokens[_addr].secondPhaseCount - _value;
         } else {
           revert();
@@ -116,8 +116,8 @@ contract BasicToken is ERC20Basic {
         founding_tokens[_addr].secondPhaseCount = 0;
       }
 
-      if (now &gt; founding_tokens[_addr].thirdPhaseTime &amp;&amp; now &lt; founding_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= founding_tokens[_addr].thirdPhaseCount) {
+      if (now > founding_tokens[_addr].thirdPhaseTime && now < founding_tokens[_addr].fourPhaseTime) {
+        if (_value <= founding_tokens[_addr].thirdPhaseCount) {
           founding_tokens[_addr].thirdPhaseCount = founding_tokens[_addr].thirdPhaseCount - _value;
         } else {
           revert();
@@ -127,8 +127,8 @@ contract BasicToken is ERC20Basic {
         founding_tokens[_addr].thirdPhaseCount = 0;
       }
 
-      if (now &gt; founding_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= founding_tokens[_addr].fourPhaseCount) {
+      if (now > founding_tokens[_addr].fourPhaseTime) {
+        if (_value <= founding_tokens[_addr].fourPhaseCount) {
           founding_tokens[_addr].fourPhaseCount = founding_tokens[_addr].fourPhaseCount - _value;
         } else {
           revert();
@@ -143,12 +143,12 @@ contract BasicToken is ERC20Basic {
     isAngel = findAddress(angel_addresses, _addr);
 
     ShowTestB(isAngel);
-    ShowTestU(&quot;firstPhaseCount&quot;, angel_tokens[_addr].firstPhaseCount);
-    ShowTestB(_value &lt;= angel_tokens[_addr].firstPhaseCount);
+    ShowTestU("firstPhaseCount", angel_tokens[_addr].firstPhaseCount);
+    ShowTestB(_value <= angel_tokens[_addr].firstPhaseCount);
 
     if (isAngel) {
-      if (now &gt; angel_tokens[_addr].firstPhaseTime &amp;&amp; now &lt; angel_tokens[_addr].secondPhaseTime) {
-        if (_value &lt;= angel_tokens[_addr].firstPhaseCount) {
+      if (now > angel_tokens[_addr].firstPhaseTime && now < angel_tokens[_addr].secondPhaseTime) {
+        if (_value <= angel_tokens[_addr].firstPhaseCount) {
           angel_tokens[_addr].firstPhaseCount = angel_tokens[_addr].firstPhaseCount - _value;
         } else {
           revert();
@@ -158,8 +158,8 @@ contract BasicToken is ERC20Basic {
         angel_tokens[_addr].firstPhaseCount = 0;
       }
 
-      if (now &gt; angel_tokens[_addr].secondPhaseTime &amp;&amp; now &lt; angel_tokens[_addr].thirdPhaseTime) {
-        if (_value &lt;= angel_tokens[_addr].secondPhaseCount) {
+      if (now > angel_tokens[_addr].secondPhaseTime && now < angel_tokens[_addr].thirdPhaseTime) {
+        if (_value <= angel_tokens[_addr].secondPhaseCount) {
           angel_tokens[_addr].secondPhaseCount = angel_tokens[_addr].secondPhaseCount - _value;
         } else {
           revert();
@@ -169,8 +169,8 @@ contract BasicToken is ERC20Basic {
         angel_tokens[_addr].secondPhaseCount = 0;
       }
 
-      if (now &gt; angel_tokens[_addr].thirdPhaseTime &amp;&amp; now &lt; angel_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= angel_tokens[_addr].thirdPhaseCount) {
+      if (now > angel_tokens[_addr].thirdPhaseTime && now < angel_tokens[_addr].fourPhaseTime) {
+        if (_value <= angel_tokens[_addr].thirdPhaseCount) {
           angel_tokens[_addr].thirdPhaseCount = angel_tokens[_addr].thirdPhaseCount - _value;
         } else {
           revert();
@@ -180,8 +180,8 @@ contract BasicToken is ERC20Basic {
         angel_tokens[_addr].thirdPhaseCount = 0;
       }
 
-      if (now &gt; angel_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= angel_tokens[_addr].fourPhaseCount) {
+      if (now > angel_tokens[_addr].fourPhaseTime) {
+        if (_value <= angel_tokens[_addr].fourPhaseCount) {
           angel_tokens[_addr].fourPhaseCount = angel_tokens[_addr].fourPhaseCount - _value;
         } else {
           revert();
@@ -196,8 +196,8 @@ contract BasicToken is ERC20Basic {
     isTeam = findAddress(team_core_addresses, _addr);
 
     if (isTeam) {
-      if (now &gt; team_core_tokens[_addr].firstPhaseTime &amp;&amp; now &lt; team_core_tokens[_addr].secondPhaseTime) {
-        if (_value &lt;= team_core_tokens[_addr].firstPhaseCount) {
+      if (now > team_core_tokens[_addr].firstPhaseTime && now < team_core_tokens[_addr].secondPhaseTime) {
+        if (_value <= team_core_tokens[_addr].firstPhaseCount) {
           team_core_tokens[_addr].firstPhaseCount = team_core_tokens[_addr].firstPhaseCount - _value;
         } else {
           revert();
@@ -207,8 +207,8 @@ contract BasicToken is ERC20Basic {
         team_core_tokens[_addr].firstPhaseCount = 0;
       }
 
-      if (now &gt; team_core_tokens[_addr].secondPhaseTime &amp;&amp; now &lt; team_core_tokens[_addr].thirdPhaseTime) {
-        if (_value &lt;= team_core_tokens[_addr].secondPhaseCount) {
+      if (now > team_core_tokens[_addr].secondPhaseTime && now < team_core_tokens[_addr].thirdPhaseTime) {
+        if (_value <= team_core_tokens[_addr].secondPhaseCount) {
           team_core_tokens[_addr].secondPhaseCount = team_core_tokens[_addr].secondPhaseCount - _value;
         } else {
           revert();
@@ -218,8 +218,8 @@ contract BasicToken is ERC20Basic {
         team_core_tokens[_addr].secondPhaseCount = 0;
       }
 
-      if (now &gt; team_core_tokens[_addr].thirdPhaseTime &amp;&amp; now &lt; team_core_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= team_core_tokens[_addr].thirdPhaseCount) {
+      if (now > team_core_tokens[_addr].thirdPhaseTime && now < team_core_tokens[_addr].fourPhaseTime) {
+        if (_value <= team_core_tokens[_addr].thirdPhaseCount) {
           team_core_tokens[_addr].thirdPhaseCount = team_core_tokens[_addr].thirdPhaseCount - _value;
         } else {
           revert();
@@ -229,8 +229,8 @@ contract BasicToken is ERC20Basic {
         team_core_tokens[_addr].thirdPhaseCount = 0;
       }
 
-      if (now &gt; team_core_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= team_core_tokens[_addr].fourPhaseCount) {
+      if (now > team_core_tokens[_addr].fourPhaseTime) {
+        if (_value <= team_core_tokens[_addr].fourPhaseCount) {
           team_core_tokens[_addr].fourPhaseCount = team_core_tokens[_addr].fourPhaseCount - _value;
         } else {
           revert();
@@ -245,8 +245,8 @@ contract BasicToken is ERC20Basic {
     isPE = findAddress(pe_investors_addresses, _addr);
 
     if (isPE) {
-      if (now &gt; pe_investors_tokens[_addr].firstPhaseTime &amp;&amp; now &lt; pe_investors_tokens[_addr].secondPhaseTime) {
-        if (_value &lt;= pe_investors_tokens[_addr].firstPhaseCount) {
+      if (now > pe_investors_tokens[_addr].firstPhaseTime && now < pe_investors_tokens[_addr].secondPhaseTime) {
+        if (_value <= pe_investors_tokens[_addr].firstPhaseCount) {
           pe_investors_tokens[_addr].firstPhaseCount = pe_investors_tokens[_addr].firstPhaseCount - _value;
         } else {
           revert();
@@ -256,8 +256,8 @@ contract BasicToken is ERC20Basic {
         pe_investors_tokens[_addr].firstPhaseCount = 0;
       }
 
-      if (now &gt; pe_investors_tokens[_addr].secondPhaseTime &amp;&amp; now &lt; pe_investors_tokens[_addr].thirdPhaseTime) {
-        if (_value &lt;= pe_investors_tokens[_addr].secondPhaseCount) {
+      if (now > pe_investors_tokens[_addr].secondPhaseTime && now < pe_investors_tokens[_addr].thirdPhaseTime) {
+        if (_value <= pe_investors_tokens[_addr].secondPhaseCount) {
           pe_investors_tokens[_addr].secondPhaseCount = pe_investors_tokens[_addr].secondPhaseCount - _value;
         } else {
           revert();
@@ -267,8 +267,8 @@ contract BasicToken is ERC20Basic {
         pe_investors_tokens[_addr].secondPhaseCount = 0;
       }
 
-      if (now &gt; pe_investors_tokens[_addr].thirdPhaseTime &amp;&amp; now &lt; pe_investors_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= pe_investors_tokens[_addr].thirdPhaseCount) {
+      if (now > pe_investors_tokens[_addr].thirdPhaseTime && now < pe_investors_tokens[_addr].fourPhaseTime) {
+        if (_value <= pe_investors_tokens[_addr].thirdPhaseCount) {
           pe_investors_tokens[_addr].thirdPhaseCount = pe_investors_tokens[_addr].thirdPhaseCount - _value;
         } else {
           revert();
@@ -278,8 +278,8 @@ contract BasicToken is ERC20Basic {
         pe_investors_tokens[_addr].thirdPhaseCount = 0;
       }
 
-      if (now &gt; pe_investors_tokens[_addr].fourPhaseTime) {
-        if (_value &lt;= pe_investors_tokens[_addr].fourPhaseCount) {
+      if (now > pe_investors_tokens[_addr].fourPhaseTime) {
+        if (_value <= pe_investors_tokens[_addr].fourPhaseCount) {
           pe_investors_tokens[_addr].fourPhaseCount = pe_investors_tokens[_addr].fourPhaseCount - _value;
         } else {
           revert();
@@ -292,7 +292,7 @@ contract BasicToken is ERC20Basic {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     isFreeze(msg.sender, _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -301,7 +301,7 @@ contract BasicToken is ERC20Basic {
   }
 
   function newTransfer(address _from, address _to, uint256 _value) internal returns (bool) {
-    require(balances[_from] &gt;= _value);
+    require(balances[_from] >= _value);
     isFreeze(_from, _value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -314,7 +314,7 @@ contract BasicToken is ERC20Basic {
   }
 
   function findAddress(address[] _addresses, address _addr) private returns(bool) {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       if (_addresses[i] == _addr) {
         return true;
       }
@@ -344,7 +344,7 @@ contract Ownable {
 }
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     isFreeze(_from, _value);
@@ -430,15 +430,15 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   function transferTokens(address _to, uint256 _amount, uint256 freezeTime, uint256 _type) public onlyOwner {
-    require(balances[poolAddress] &gt;= _amount);
+    require(balances[poolAddress] >= _amount);
 
     Transfer(poolAddress, _to, _amount);
 
-    ShowTestU(&quot;Before condition&quot;,_amount);
+    ShowTestU("Before condition",_amount);
 
     if (_type == 0) {
       setFreezeForAngel(freezeTime, _to, _amount);
-    ShowTestU(&quot;Inside&quot;, _amount);      
+    ShowTestU("Inside", _amount);      
       balances[poolAddress] = balances[poolAddress] - _amount;
       balances[_to] = balances[_to] + _amount;
     }
@@ -457,7 +457,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   function transferTokens(address _from, address _to, uint256 _amount, uint256 freezeTime, uint256 _type) public onlyOwner {
-    require(balances[_from] &gt;= _amount);
+    require(balances[_from] >= _amount);
 
     Transfer(_from, _to, _amount);
 
@@ -498,13 +498,13 @@ contract MintableToken is StandardToken, Ownable {
     // 25%
     fourPhaseCount = angel_tokens[_address].fourPhaseCount + firstPart;
 
-    ShowTestU(&quot;setFreezeForAngel: firstPhaseCount&quot;, firstPhaseCount);
+    ShowTestU("setFreezeForAngel: firstPhaseCount", firstPhaseCount);
 
     FreezePhases memory freezePhase = FreezePhases({firstPhaseTime: firstPhaseTime, secondPhaseTime: secondPhaseTime, thirdPhaseTime: thirdPhaseTime, fourPhaseTime: fourPhaseTime, countTokens: countTokens, firstPhaseCount: firstPhaseCount, secondPhaseCount: secondPhaseCount, thirdPhaseCount: thirdPhaseCount, fourPhaseCount: fourPhaseCount});
     
     angel_tokens[_address] = freezePhase;
 
-    ShowTestU(&quot;setFreezeForAngel: angel_tokens[_address].firstPhaseCount&quot;, angel_tokens[_address].firstPhaseCount);
+    ShowTestU("setFreezeForAngel: angel_tokens[_address].firstPhaseCount", angel_tokens[_address].firstPhaseCount);
   }
   // 1
   function setFreezeForFounding(uint256 _time, address _address, uint256 _tokens) onlyOwner public {
@@ -651,9 +651,9 @@ contract MintableToken is StandardToken, Ownable {
 }
 contract SingleTokenCoin is MintableToken {
     
-    string public constant name = &quot;ADD Token&quot;;
+    string public constant name = "ADD Token";
     
-    string public constant symbol = &quot;ADD&quot;;
+    string public constant symbol = "ADD";
     
     uint32 public constant decimals = 18;
     

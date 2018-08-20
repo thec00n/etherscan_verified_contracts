@@ -50,9 +50,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -60,7 +60,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,10 +98,10 @@ contract TokenERC20 is owned {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
-     // List of Team and Founders account&#39;s frozen till 15 November 2018
-    mapping (address =&gt; uint256) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowed;
+     // List of Team and Founders account's frozen till 15 November 2018
+    mapping (address => uint256) public frozenAccount;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -157,9 +157,9 @@ contract TokenERC20 is owned {
       */   
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[msg.sender]);
-        require(frozenAccount[msg.sender] &lt; now);                   // Check if sender is frozen
-        if (frozenAccount[msg.sender] &lt; now) frozenAccount[msg.sender] = 0;
+        require(_value <= balanceOf[msg.sender]);
+        require(frozenAccount[msg.sender] < now);                   // Check if sender is frozen
+        if (frozenAccount[msg.sender] < now) frozenAccount[msg.sender] = 0;
         // SafeMath.sub will throw if there is not enough balance.
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -175,10 +175,10 @@ contract TokenERC20 is owned {
       */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(frozenAccount[_from] &lt; now);                   // Check if sender is frozen
-        if (frozenAccount[_from] &lt; now) frozenAccount[_from] = 0;
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(frozenAccount[_from] < now);                   // Check if sender is frozen
+        if (frozenAccount[_from] < now) frozenAccount[_from] = 0;
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -215,7 +215,7 @@ contract TokenERC20 is owned {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
               allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -232,7 +232,7 @@ contract TokenERC20 is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -248,10 +248,10 @@ contract TokenERC20 is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowed
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowed
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowed
+        allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowed
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -288,7 +288,7 @@ contract TokenERC20 is owned {
     }  
 
     /**
-      * @notice Freezes from sending &amp; receiving tokens. For users protection can&#39;t be used after 1542326399
+      * @notice Freezes from sending & receiving tokens. For users protection can't be used after 1542326399
       * and will not allow corrections.
       *           
       * @param _from  Founders and Team account we are freezing from sending
@@ -317,19 +317,19 @@ contract LeRT is TokenERC20 {
 
     uint public currentPeriod = 0;
     
-    mapping (uint =&gt; periodTerms) public periodTable;
+    mapping (uint => periodTerms) public periodTable;
 
-    // List of Team and Founders account&#39;s frozen till 01 May 2019
-    mapping (address =&gt; uint256) public frozenAccount;
+    // List of Team and Founders account's frozen till 01 May 2019
+    mapping (address => uint256) public frozenAccount;
 
     
-    /* Handles incoming payments to contract&#39;s address */
+    /* Handles incoming payments to contract's address */
     function() payable canMint public {
-        if (now &gt; periodTable[currentPeriod].periodTime) currentPeriod++;
+        if (now > periodTable[currentPeriod].periodTime) currentPeriod++;
         require(currentPeriod != 7);
         
         uint256 newTokens;
-        require(priceLeRT &gt; 0);
+        require(priceLeRT > 0);
         // calculate new tokens
         newTokens = msg.value / priceLeRT * 10 ** uint256(decimals);
         // calculate bonus tokens

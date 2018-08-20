@@ -26,7 +26,7 @@ contract Lottery {
         owner = msg.sender;
         tickets = 5;
         round = 1;
-        status = &quot;Running&quot;;
+        status = "Running";
         entry = false;
         seed = 777;
     }
@@ -63,7 +63,7 @@ contract Lottery {
         
         if (msg.value != (price)) {
             entry = false;
-            if (keccak256(status) == keccak256(&quot;Shutdown&quot;)) { 
+            if (keccak256(status) == keccak256("Shutdown")) { 
                 selfdestruct(owner);
             }
             revert(); 

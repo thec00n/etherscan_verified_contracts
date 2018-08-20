@@ -7,13 +7,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
   
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -40,7 +40,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,9 +92,9 @@ contract StandardToken is ERC20 {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   
  
   function transfer(address _to, uint256 _value) public returns (bool) {
@@ -125,7 +125,7 @@ contract StandardToken is ERC20 {
 
   function approve(address _spender, uint256 _value) public returns (bool) {
   
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
     return true;
@@ -150,7 +150,7 @@ contract StandardToken is ERC20 {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -164,10 +164,10 @@ contract StandardToken is ERC20 {
 
 contract ZoukCoin is StandardToken, Ownable {
     
-    string public name = &quot;ZoukCoin&quot;;
-    string public symbol = &quot;ZUK&quot;;
+    string public name = "ZoukCoin";
+    string public symbol = "ZUK";
     uint256 public constant decimals = 8;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     
     uint256 public constant INITIAL_SUPPLY = 46000000  * 10 ** decimals; // 46 million tokens
    
@@ -183,10 +183,10 @@ contract ZoukCoin is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -200,7 +200,7 @@ contract ZoukCoin is StandardToken, Ownable {
     }
     
     /**
-     * Don&#39;t expect to just send in money and get tokens.
+     * Don't expect to just send in money and get tokens.
      */
     function()  public payable {
         revert();

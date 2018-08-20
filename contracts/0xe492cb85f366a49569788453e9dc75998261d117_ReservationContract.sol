@@ -16,7 +16,7 @@ contract PreIcoContract {
 contract ReservationContract {
 
     // Keep track of who invested
-    mapping(address =&gt; bool) public invested;
+    mapping(address => bool) public invested;
     // Minimum investment for reservation contract
     uint public MIN_INVESTMENT = 1 ether;
     // address of the pre-ico
@@ -40,7 +40,7 @@ contract ReservationContract {
         // get and set start and end time
         preIcoStart = preIcoAddr.startTime();
         preIcoEnd = preIcoAddr.endTime();
-        require(preIcoStart != 0 &amp;&amp; preIcoEnd != 0 &amp;&amp; now &lt;= preIcoEnd);
+        require(preIcoStart != 0 && preIcoEnd != 0 && now <= preIcoEnd);
     }
 
     /**
@@ -52,9 +52,9 @@ contract ReservationContract {
      * allowed
      */
     function() public payable {
-        require(msg.value &gt;= MIN_INVESTMENT);
-        require(now &gt;= preIcoStart &amp;&amp; now &lt;= preIcoEnd);
-        // check if it&#39;s a contract
+        require(msg.value >= MIN_INVESTMENT);
+        require(now >= preIcoStart && now <= preIcoEnd);
+        // check if it's a contract
         require(isContract(msg.sender) == false);
 
         // update records (used for reference only)
@@ -74,6 +74,6 @@ contract ReservationContract {
     function isContract(address addr) public constant returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }

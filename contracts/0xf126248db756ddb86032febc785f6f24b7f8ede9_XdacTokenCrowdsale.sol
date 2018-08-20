@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -264,8 +264,8 @@ contract StandardToken is ERC20, BasicToken {
 // File: contracts/XdacToken.sol
 
 contract XdacToken is StandardToken, Ownable {
-    string public name = &quot;XDAC COIN&quot;;
-    string public symbol = &quot;XDAC&quot;;
+    string public name = "XDAC COIN";
+    string public symbol = "XDAC";
     uint8 public decimals = 18;
     /**
      * @dev Constructor that gives msg.sender all of existing tokens.
@@ -295,7 +295,7 @@ contract XdacTokenCrowdsale is Ownable {
     // Address where funds are collected
     address public wallet;
 
-    mapping(address =&gt; Contributor) public contributors;
+    mapping(address => Contributor) public contributors;
     //Array of the addresses who participated
     address[] addresses;
 
@@ -348,8 +348,8 @@ contract XdacTokenCrowdsale is Ownable {
     function buyTokens(address _contributor) public payable {
         require(_contributor != address(0));
         require(msg.value != 0);
-        require(msg.value &gt;= minContribution);
-        require(weiDelivered.add(msg.value) &lt;= roundGoals[4]);
+        require(msg.value >= minContribution);
+        require(weiDelivered.add(msg.value) <= roundGoals[4]);
 
         // calculate token amount to be created
         uint256 tokens = _getTokenAmount(msg.value);
@@ -360,8 +360,8 @@ contract XdacTokenCrowdsale is Ownable {
 
     /**********internal***********/
     function _getCurrentRound() internal view returns (uint) {
-        for (uint i = 0; i &lt; 5; i++) {
-            if (weiDelivered &lt; roundGoals[i]) {
+        for (uint i = 0; i < 5; i++) {
+            if (weiDelivered < roundGoals[i]) {
                 return i;
             }
         }
@@ -379,8 +379,8 @@ contract XdacTokenCrowdsale is Ownable {
         uint256 weiRaisedIntermediate = weiDelivered;
         uint256 weiAmount = _weiAmount;
 
-        for (curRound; curRound &lt; 5; curRound++) {
-            if (weiRaisedIntermediate.add(weiAmount) &gt; roundGoals[curRound]) {
+        for (curRound; curRound < 5; curRound++) {
+            if (weiRaisedIntermediate.add(weiAmount) > roundGoals[curRound]) {
                 roundWei = roundGoals[curRound].sub(weiRaisedIntermediate);
                 weiRaisedIntermediate = weiRaisedIntermediate.add(roundWei);
                 weiAmount = weiAmount.sub(roundWei);
@@ -407,8 +407,8 @@ contract XdacTokenCrowdsale is Ownable {
         uint256 weiRaisedIntermediate = weiDelivered;
         uint256 tokenAmount = _tokenAmount;
 
-        for (curRound; curRound &lt; 5; curRound++) {
-            if(weiRaisedIntermediate.add(tokenAmount.div(roundRates[curRound])) &gt; roundGoals[curRound]) {
+        for (curRound; curRound < 5; curRound++) {
+            if(weiRaisedIntermediate.add(tokenAmount.div(roundRates[curRound])) > roundGoals[curRound]) {
                 roundWei = roundGoals[curRound].sub(weiRaisedIntermediate);
                 weiRaisedIntermediate = weiRaisedIntermediate.add(roundWei);
                 tokenAmount = tokenAmount.sub(roundWei.div(roundRates[curRound]));
@@ -439,8 +439,8 @@ contract XdacTokenCrowdsale is Ownable {
         Contributor storage contributor = contributors[_contributor];
         uint256 amountEth = contributor.eth;
         uint256 amountToken = _getTokenAmount(amountEth);
-        require(amountToken &gt; 0);
-        require(amountEth &gt; 0);
+        require(amountToken > 0);
+        require(amountEth > 0);
         require(contributor.whitelisted);
         contributor.eth = 0;
         weiDelivered = weiDelivered.add(amountEth);
@@ -451,7 +451,7 @@ contract XdacTokenCrowdsale is Ownable {
     function _refundTokens(address _contributor) internal {
         Contributor storage contributor = contributors[_contributor];
         uint256 ethAmount = contributor.eth;
-        require(ethAmount &gt; 0);
+        require(ethAmount > 0);
         contributor.eth = 0;
         TokenRefund(_contributor, ethAmount);
         _contributor.transfer(ethAmount);
@@ -465,21 +465,21 @@ contract XdacTokenCrowdsale is Ownable {
             addresses.push(_contributor);
         }
         //Auto deliver tokens
-        if (contributor.eth &gt; 0) {
+        if (contributor.eth > 0) {
             _deliverTokens(_contributor);
         }
     }
 
     function _sendToken(address _address, uint256 _amountTokens) internal{
         XdacToken _token = XdacToken(token);
-        require(_token.balanceOf(_token.owner()) &gt;= _amountTokens);
+        require(_token.balanceOf(_token.owner()) >= _amountTokens);
         _token.transfer(_address, _amountTokens);
     }
 
     /**********************owner*************************/
 
     function whitelistAddresses(address[] _contributors) public onlyOwner {
-        for (uint256 i = 0; i &lt; _contributors.length; i++) {
+        for (uint256 i = 0; i < _contributors.length; i++) {
             _whitelistAddress(_contributors[i]);
         }
     }
@@ -502,10 +502,10 @@ contract XdacTokenCrowdsale is Ownable {
     }
 
     function sendTokens(address[] _addresses, uint256[] _amountTokens) public onlyOwner returns(bool success) {
-        require(_addresses.length &gt; 0);
-        require(_amountTokens.length &gt; 0);
+        require(_addresses.length > 0);
+        require(_amountTokens.length > 0);
         require(_addresses.length  == _amountTokens.length);
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             _sendToken(_addresses[i], _amountTokens[i]);
         }
         return true;

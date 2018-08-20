@@ -10,8 +10,8 @@ contract EtherPrice {
     address private owner;
 
     modifier validateCents (uint256 _dollars, uint8 _cents) {
-        require(_dollars &gt; 0 || _cents &gt; 0);
-        require(_cents &lt; 100);
+        require(_dollars > 0 || _cents > 0);
+        require(_cents < 100);
         _;
     }
 

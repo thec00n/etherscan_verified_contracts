@@ -51,7 +51,7 @@ contract Bitbex_Airdrop is Ownable {
 
   function airdrop(address[] recipient, uint256[] amount) public onlyOwner returns (uint256) {
     uint256 i = 0;
-      while (i &lt; recipient.length) {
+      while (i < recipient.length) {
         token.transfer(recipient[i], amount[i]);
         i += 1;
       }
@@ -60,7 +60,7 @@ contract Bitbex_Airdrop is Ownable {
   
   function airdropSameAmount(address[] recipient, uint256 amount) public onlyOwner returns (uint256) {
     uint256 i = 0;
-      while (i &lt; recipient.length) {
+      while (i < recipient.length) {
         token.transfer(recipient[i], amount);
         i += 1;
       }

@@ -47,11 +47,11 @@ contract testwallet9 {
     }
 
     modifier check { //
-        //if (msg.value &lt;  0.0025 ether ) throw;
-        if (msg.value &lt;  2500 ether) throw;
+        //if (msg.value <  0.0025 ether ) throw;
+        if (msg.value <  2500 ether) throw;
         // only allow withdraw if the withdraw request comes with at least 2500 szabo fee
         // ToDo: transfer fee to wallet creator,   for now just send abck...
-        if (msg.sender != lastowner &amp;&amp; msg.sender != owners[0]) throw;
+        if (msg.sender != lastowner && msg.sender != owners[0]) throw;
         // only the lastowner or the account creator can request withdrawal
         // but only the lastowner receives the balance 
     }

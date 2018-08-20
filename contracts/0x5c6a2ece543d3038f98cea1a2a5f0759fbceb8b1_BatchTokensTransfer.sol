@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) {}
     function symbol() public constant returns (string) {}
     function decimals() public constant returns (uint8) {}
@@ -78,7 +78,7 @@ contract BatchTokensTransfer is Ownable {
         {
             require(_usersWithdrawalAccounts.length == _amounts.length);
 
-            for (uint i = 0; i &lt; _usersWithdrawalAccounts.length; i++) {
+            for (uint i = 0; i < _usersWithdrawalAccounts.length; i++) {
                 if (_usersWithdrawalAccounts[i] != 0x0) {
                     _token.transfer(_usersWithdrawalAccounts[i], _amounts[i]);
                 }
@@ -89,7 +89,7 @@ contract BatchTokensTransfer is Ownable {
         public
         ownerOnly()
         {
-            require(_userWithdrawalAccount != 0x0 &amp;&amp; _amount &gt; 0);
+            require(_userWithdrawalAccount != 0x0 && _amount > 0);
             _token.transfer(_userWithdrawalAccount, _amount);
         }
 

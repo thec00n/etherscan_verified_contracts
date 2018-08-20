@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -99,7 +99,7 @@ contract ITokenConverter {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public view returns (string) {}
     function symbol() public view returns (string) {}
     function decimals() public view returns (uint8) {}
@@ -165,8 +165,8 @@ contract admined { //This token contract is administered
 contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
 
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
     uint256 public totalSupply;
     
     /**
@@ -300,16 +300,16 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
 			IERC20Token(0x595832F8FC6BF59c85C527fEC3740A1b7a361269)
 		];
 	//Path to exchanges
-	mapping(uint8 =&gt; IERC20Token[]) paths;
-	mapping(uint8 =&gt; IERC20Token[]) reversePaths;
+	mapping(uint8 => IERC20Token[]) paths;
+	mapping(uint8 => IERC20Token[]) reversePaths;
 	//public variables
 	address public feeWallet;
 	uint256 public rate = 6850;
 	//token related
-	string public name = &quot;CDMED&quot;;
+	string public name = "CDMED";
     uint8 public decimals = 18;
-    string public symbol = &quot;CDMED&quot;;
-    string public version = &#39;1&#39;;
+    string public symbol = "CDMED";
+    string public version = '1';
 
 	constructor(address _feeWallet) public {
 		feeWallet = _feeWallet;
@@ -356,19 +356,19 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
         uint256 _amount;
         IERC20Token _fromToken;
 
-        for(uint8 j=0;j&lt;8;j++){
+        for(uint8 j=0;j<8;j++){
         	_path = reversePaths[j];
         	// iterate over the conversion path
 	        pathLength = _path.length;
 	        _fromToken = _path[0];
 	        _amount = _fromToken.balanceOf(address(this));
 
-	        for (uint256 i = 1; i &lt; pathLength; i += 2) {
+	        for (uint256 i = 1; i < pathLength; i += 2) {
 	            smartToken = ISmartToken(_path[i]);
 	            toToken = _path[i + 1];
 	            converter = ITokenConverter(smartToken.owner());
 
-	            // make the conversion - if it&#39;s the last one, also provide the minimum return value
+	            // make the conversion - if it's the last one, also provide the minimum return value
 	            _amount = converter.getReturn(_fromToken, toToken, _amount);
 	            _fromToken = toToken;
 	        }
@@ -394,21 +394,21 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
 			uint256 valueStored = valueOnContract();
 			uint256 tokenBuy;
 
-			if(totalSupply &gt; valueStored){
+			if(totalSupply > valueStored){
 
-				uint256 tempRate = totalSupply.div(valueStored); // Must be &gt; 0 Tok/Eth
+				uint256 tempRate = totalSupply.div(valueStored); // Must be > 0 Tok/Eth
 				tokenBuy = msg.value.mul(tempRate); // Eth * Tok / Eth = Tok
 
 			} else {
 				
-				uint256 tempPrice = valueStored.div(totalSupply); // Must be &gt; 0 Eth/Tok
+				uint256 tempPrice = valueStored.div(totalSupply); // Must be > 0 Eth/Tok
 				tokenBuy = msg.value.div(tempPrice); // Eth / Eth / Tok = Tok
 
 			}
 		}
 		
 
-		uint256 ethFee = msg.value.mul(5)/1000; //5/1000 =&gt; 0.5%
+		uint256 ethFee = msg.value.mul(5)/1000; //5/1000 => 0.5%
 		uint256 ethToInvest = msg.value.sub(ethFee);
 
 		feeWallet.transfer(ethFee);
@@ -421,7 +421,7 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
 	function invest(uint256 _amount) private {
 		uint256 standarValue = _amount.div(8);
 
-		for(uint8 i=0; i&lt;8; i++){ 
+		for(uint8 i=0; i<8; i++){ 
 			Bancor.convertForPrioritized.value(standarValue)(paths[i],standarValue,1,address(this),0,0,0,0x0,0x0);
 		}
 
@@ -432,7 +432,7 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
 		uint256 tempFee;
 		uint256 dividedSupply = totalSupply.div(1e5); //ethereum is not decimals friendly
 
-		if(dividedSupply == 0 || _amount &lt; dividedSupply) revert();
+		if(dividedSupply == 0 || _amount < dividedSupply) revert();
 		
 		uint256 factor = _amount.div(dividedSupply);
 
@@ -440,7 +440,7 @@ contract CDMED is admined,IERC20Token { //Standar definition of an ERC20Token
 
         burnToken(_target, _amount);
 		
-		for(uint8 i=0;i&lt;8;i++){
+		for(uint8 i=0;i<8;i++){
 			tempBalance = tokens[i].balanceOf(this);
             tempBalance = tempBalance.mul(factor);
             tempBalance = tempBalance.div(1e5);

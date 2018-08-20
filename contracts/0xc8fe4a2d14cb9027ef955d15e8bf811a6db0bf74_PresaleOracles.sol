@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -111,8 +111,8 @@ contract PresaleOracles is Claimable {
     uint256 public cap;
     uint256 public totalInvestedInWei;
     uint256 public minimumContribution;
-    mapping(address =&gt; uint256) public investorBalances;
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => uint256) public investorBalances;
+    mapping(address => bool) public whitelist;
     uint256 public investorsLength;
     address public vault;
     bool public isInitialized = false;
@@ -128,11 +128,11 @@ contract PresaleOracles is Claimable {
         require(!isInitialized);
         require(_startTime != 0);
         require(_endTime != 0);
-        require(_endTime &gt; _startTime);
+        require(_endTime > _startTime);
         require(_cap != 0);
         require(_minimumContribution != 0);
         require(_vault != 0x0);
-        require(_cap &gt; _minimumContribution);
+        require(_cap > _minimumContribution);
         startTime = _startTime;
         endTime = _endTime;
         cap = _cap;
@@ -146,7 +146,7 @@ contract PresaleOracles is Claimable {
         require(whitelist[msg.sender]);
         require(isValidPurchase(msg.value));
         require(isInitialized);
-        require(getTime() &gt;= startTime &amp;&amp; getTime() &lt;= endTime);
+        require(getTime() >= startTime && getTime() <= endTime);
         address investor = msg.sender;
         investorBalances[investor] += msg.value;
         totalInvestedInWei += msg.value;
@@ -175,10 +175,10 @@ contract PresaleOracles is Claimable {
     }
     //TESTED by Roman Storm
     function isValidPurchase(uint256 _amount) public view returns(bool) {
-        bool nonZero = _amount &gt; 0;
-        bool hasMinimumAmount = investorBalances[msg.sender].add(_amount) &gt;= minimumContribution;
-        bool withinCap = totalInvestedInWei.add(_amount) &lt;= cap;
-        return hasMinimumAmount &amp;&amp; withinCap &amp;&amp; nonZero;
+        bool nonZero = _amount > 0;
+        bool hasMinimumAmount = investorBalances[msg.sender].add(_amount) >= minimumContribution;
+        bool withinCap = totalInvestedInWei.add(_amount) <= cap;
+        return hasMinimumAmount && withinCap && nonZero;
     }
     //TESTED by Roman Storm
     function whitelistInvestor(address _newInvestor) public onlyOwner {
@@ -189,8 +189,8 @@ contract PresaleOracles is Claimable {
     }
     //TESTED by Roman Storm
     function whitelistInvestors(address[] _investors) external onlyOwner {
-        require(_investors.length &lt;= 250);
-        for(uint8 i=0; i&lt;_investors.length;i++) {
+        require(_investors.length <= 250);
+        for(uint8 i=0; i<_investors.length;i++) {
             address newInvestor = _investors[i];
             if(!whitelist[newInvestor]) {
                 whitelist[newInvestor] = true;

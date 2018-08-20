@@ -11,7 +11,7 @@ contract Oracle {
 
 
 /// @title Centralized oracle contract - Allows the contract owner to set an outcome
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b383f2e2d2a250b2c2524382238653b26">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b383f2e2d2a250b2c2524382238653b26">[email protected]</a>>
 contract CentralizedOracle is Oracle {
 
     /*
@@ -100,7 +100,7 @@ contract CentralizedOracle is Oracle {
 
 
 /// @title Centralized oracle factory contract - Allows to create centralized oracle contracts
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6417100102050a24030a0b170d174a1409">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6417100102050a24030a0b170d174a1409">[email protected]</a>>
 contract CentralizedOracleFactory {
 
     /*

@@ -6,13 +6,13 @@ pragma solidity ^0.4.24;
 library SafeMath {
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -78,16 +78,16 @@ contract AToken is STTInterface {
 
    
    uint256 public _totalSupply = 10000000000000000000000;
-   string public name = &quot;A-Token&quot;;
-   string public symbol = &quot;A&quot;;
+   string public name = "A-Token";
+   string public symbol = "A";
    uint8 public constant decimals = 18;
    
-   mapping(address =&gt; uint256) public balances;
-   mapping(address =&gt; mapping (address =&gt; uint256)) public allowed;
+   mapping(address => uint256) public balances;
+   mapping(address => mapping (address => uint256)) public allowed;
    
    //Arry and map for the split.
     address[] private tokenHolders;
-	mapping(address =&gt; bool) private tokenHoldersMap;
+	mapping(address => bool) private tokenHoldersMap;
    
    
    //Constructor
@@ -117,8 +117,8 @@ contract AToken is STTInterface {
 	
 	function transfer(address _to, uint256 _amount) external returns(bool success) {
 
-		require(_amount &gt; 0);
-		require(_amount &lt;= balances[msg.sender]);
+		require(_amount > 0);
+		require(_amount <= balances[msg.sender]);
 		require (_to != address(0));
 		
 		balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -138,9 +138,9 @@ contract AToken is STTInterface {
 
 		require(_from != address(0));
 		require(_to != address (0));
-		require(_amount &gt; 0);
-		require(_amount &lt;= balances[_from]);
-		require(_amount &lt;= allowed[_from][msg.sender]);
+		require(_amount > 0);
+		require(_amount <= balances[_from]);
+		require(_amount <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_amount);
 		balances[_to] = balances[_to].add(_amount);
@@ -159,8 +159,8 @@ contract AToken is STTInterface {
  	function approve(address _spender, uint256 _amount) external returns(bool success) {
 
 		require(_spender != address(0));
-		require(_amount &gt; 0);
-		require(_amount &lt;= balances[msg.sender]);
+		require(_amount > 0);
+		require(_amount <= balances[msg.sender]);
         allowed[msg.sender][_spender] = _amount;
 	
 		emit Approval(msg.sender, _spender, _amount);
@@ -195,7 +195,7 @@ contract AToken is STTInterface {
 
         //checking minimum buy - twice the price
         uint256 Aprice = (thisAddress.balance - msg.value) * 4*2* 1000000000000000000/_totalSupply;
-        require (msg.value&gt;=Aprice);
+        require (msg.value>=Aprice);
         
         //calculating the formula
         
@@ -223,7 +223,7 @@ contract AToken is STTInterface {
        
         //checking the outcome
         uint256 check1=(msg.value-206000)*_totalSupply/(thisAddress.balance-msg.value)/4;
-        require(check1&gt;=AtokenBought);
+        require(check1>=AtokenBought);
         
         //doing the buy
         _totalSupply +=AtokenBought;
@@ -249,22 +249,22 @@ contract AToken is STTInterface {
         locked = true;
 
        //first check amount is equal or higher than 1 token
-        require(SellAmount&gt;=1000000000000000000);
+        require(SellAmount>=1000000000000000000);
        
         //calculating the formula
-        require(msg.value&gt;=206000);
+        require(msg.value>=206000);
         
         //Never going down from 300 tokens.
-        require((_totalSupply-SellAmount)&gt;=300000000000000000000);
-        require(balances[(msg.sender)]&gt;=SellAmount);
+        require((_totalSupply-SellAmount)>=300000000000000000000);
+        require(balances[(msg.sender)]>=SellAmount);
         address thisAddress = this;
         EtherPaid = (_totalSupply -SellAmount)*1000000000000000000/_totalSupply;
         EtherPaid=1000000000000000000-(((EtherPaid**2/1000000000000000000)*(EtherPaid**2/1000000000000000000))/1000000000000000000);
         EtherPaid=(EtherPaid*(thisAddress.balance-msg.value))*9/10000000000000000000;
         //checking the calculation
         uint256 check1=SellAmount*(thisAddress.balance-msg.value)*36/_totalSupply/10;
-        require(check1&gt;EtherPaid);
-        require(EtherPaid&lt;(thisAddress.balance-msg.value));
+        require(check1>EtherPaid);
+        require(EtherPaid<(thisAddress.balance-msg.value));
         
         //paying the ether
         balances[msg.sender] -= SellAmount;
@@ -289,10 +289,10 @@ contract AToken is STTInterface {
         //calculating the factor
         
         uint256 factor = thisContracrt.balance * 4 * 10/_totalSupply;
-    require (factor &gt; 10);
+    require (factor > 10);
         factor *= 10;    
     
-    for(uint index = 0; index &lt; tokenHolders.length; index++) {
+    for(uint index = 0; index < tokenHolders.length; index++) {
 				balances[tokenHolders[(index)]] *=factor ;
 								
 				}
@@ -313,9 +313,9 @@ function getReserve() external constant returns (uint256){
 
   function burn(uint256 _value) external returns (bool success){
     
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
-    require(_totalSupply-_value&gt;=300000000000000000000);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
+    require(_totalSupply-_value>=300000000000000000000);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     _totalSupply = _totalSupply.sub(_value);
     emit Burn(msg.sender, _value);

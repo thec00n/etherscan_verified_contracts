@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -171,7 +171,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   address public mintMaster;
   
@@ -231,7 +231,7 @@ contract BasicToken is ERC20Basic {
     require(_to != address(0));
     address addr = msg.sender;
     require(addr!= address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -244,7 +244,7 @@ contract BasicToken is ERC20Basic {
   
    require(_to != address(0));
   
-   if(balances[_to]&gt;=_value)
+   if(balances[_to]>=_value)
    {
      balances[_to] = balances[_to].sub(_value);
    }
@@ -274,7 +274,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -285,8 +285,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -300,7 +300,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -349,7 +349,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -419,7 +419,7 @@ contract MintableToken is StandardToken, Ownable {
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
     
     mintNums_ = mintNums_.add(_amount);
-    require(mintNums_&lt;=totalSupply_);
+    require(mintNums_<=totalSupply_);
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount);
     emit Transfer(address(0), _to, _amount);
@@ -443,9 +443,9 @@ contract MintableToken is StandardToken, Ownable {
  * Based on references from OpenZeppelin: https://github.com/OpenZeppelin/zeppelin-solidity
  */
 contract STAB is MintableToken, PausableToken {
-    string public constant version = &quot;1.0&quot;;
-    string public constant name = &quot;STACX Crypto Platform&quot;;
-    string public constant symbol = &quot;STACX&quot;;
+    string public constant version = "1.0";
+    string public constant name = "STACX Crypto Platform";
+    string public constant symbol = "STACX";
     uint8 public constant decimals = 18;
 
     event MintMasterTransferred(address indexed previousMaster, address indexed newMaster);
@@ -467,14 +467,14 @@ contract STAB is MintableToken, PausableToken {
     }
 
     function mintToAddresses(address[] addresses, uint256 amount) public onlyMintMasterOrOwner canMint {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(mint(addresses[i], amount));
         }
     }
 
     function mintToAddressesAndAmounts(address[] addresses, uint256[] amounts) public onlyMintMasterOrOwner canMint {
         require(addresses.length == amounts.length);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(mint(addresses[i], amounts[i]));
         }
     }
@@ -506,7 +506,7 @@ contract STAB is MintableToken, PausableToken {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -562,7 +562,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet,address techWallet_ ,address _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
     require(techWallet_ != address(0));
@@ -655,11 +655,11 @@ contract Crowdsale {
     wallet.transfer(crowdValue);
    
     
-    emit TokenAmount(&quot;_forwardFunds &quot;, msgValue);
+    emit TokenAmount("_forwardFunds ", msgValue);
     
-    emit TokenAmount(&quot;_forwardFunds &quot;, tecValue);
+    emit TokenAmount("_forwardFunds ", tecValue);
     
-    emit TokenAmount(&quot;_forwardFunds &quot;, crowdValue);
+    emit TokenAmount("_forwardFunds ", crowdValue);
   }
 }
 
@@ -678,7 +678,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range.
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -688,8 +688,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   constructor (uint256 _openingTime, uint256 _closingTime) public {
-    //require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    //require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -700,7 +700,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**
@@ -730,7 +730,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -757,7 +757,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -780,7 +780,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -813,7 +813,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
 contract STACrowdsale is FinalizableCrowdsale,WhitelistedCrowdsale {
     using SafeMath for uint256;
     // Constants
-    string public constant version = &quot;1.0&quot;;
+    string public constant version = "1.0";
   
   
   
@@ -924,14 +924,14 @@ contract STACrowdsale is FinalizableCrowdsale,WhitelistedCrowdsale {
         uint256 crowNums = CROWDSALE_TOKENS_NUMS;
         uint256 totolCrowd_ = token.totalCrowdSale();
         uint256 leftNums = crowNums.sub(totolCrowd_);
-        require(leftNums&gt;=tokens);
+        require(leftNums>=tokens);
         return tokens;
     }
 
  function getRate() public constant returns (uint256)
  {
       
-      // require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+      // require(now >= openingTime && now <= closingTime);
        uint256 ret = 1;
        uint256 reduInterval= 1000;
        uint256 reduRate = reduInterval.div(9);
@@ -939,14 +939,14 @@ contract STACrowdsale is FinalizableCrowdsale,WhitelistedCrowdsale {
       uint256 startTimeStamp =now.sub(openingTime);
      
      
-       if(startTimeStamp&lt;intervalTime)
+       if(startTimeStamp<intervalTime)
        {
            startTimeStamp = 0;
        }
      
        ret = startRate - (startTimeStamp.div(intervalTime).mul(reduRate));
      
-       if( closingTime.sub(now)&lt;intervalTime)
+       if( closingTime.sub(now)<intervalTime)
        {
            ret =10000;
        }

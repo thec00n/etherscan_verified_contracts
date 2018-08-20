@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
   
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -135,8 +135,8 @@ contract StyrasToken is MintableToken {
   
     using SafeMath for uint256;
 
-    string public name = &quot;Styras&quot;;
-    string public symbol = &quot;STY&quot;;
+    string public name = "Styras";
+    string public symbol = "STY";
     uint256 public decimals = 18;
 
     uint256 public reservedSupply;
@@ -146,8 +146,8 @@ contract StyrasToken is MintableToken {
     uint256 public partnersMintLockEnd = 1514678400; // GMT: Sunday, December 31, 2017 0:00:00
 
     address public partnersWallet;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -160,8 +160,8 @@ contract StyrasToken is MintableToken {
         require(partners != address(0));
         partnersWallet = partners;
         reservedSupply = reserved;
-        assert(publicLockEnd &lt;= partnersLockEnd);
-        assert(partnersMintLockEnd &lt; partnersLockEnd);
+        assert(publicLockEnd <= partnersLockEnd);
+        assert(partnersMintLockEnd < partnersLockEnd);
     }
 
     /**
@@ -180,8 +180,8 @@ contract StyrasToken is MintableToken {
      */
     function transfer(address _to, uint256 _amount) public returns (bool) {
         require(_to != address(0));
-        require((msg.sender != partnersWallet &amp;&amp; now &gt;= publicLockEnd) || now &gt;= partnersLockEnd);
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= balances[msg.sender]);
+        require((msg.sender != partnersWallet && now >= publicLockEnd) || now >= partnersLockEnd);
+        require(_amount > 0 && _amount <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -196,9 +196,9 @@ contract StyrasToken is MintableToken {
      */
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
         require(_to != address(0));
-        require((_from != partnersWallet &amp;&amp; now &gt;= publicLockEnd) || now &gt;= partnersLockEnd);
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require((_from != partnersWallet && now >= publicLockEnd) || now >= partnersLockEnd);
+        require(_amount > 0 && _amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -211,7 +211,7 @@ contract StyrasToken is MintableToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -246,7 +246,7 @@ contract StyrasToken is MintableToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -260,8 +260,8 @@ contract StyrasToken is MintableToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require((msg.sender != partnersWallet &amp;&amp; now &gt;= publicLockEnd) || now &gt;= partnersLockEnd);
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require((msg.sender != partnersWallet && now >= publicLockEnd) || now >= partnersLockEnd);
+        require(_value > 0 && _value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -288,9 +288,9 @@ contract StyrasToken is MintableToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function mintPartners(uint256 amount) onlyOwner canMint public returns (bool) {
-        require(now &gt;= partnersMintLockEnd);
-        require(reservedSupply &gt; 0);
-        require(amount &lt;= reservedSupply);
+        require(now >= partnersMintLockEnd);
+        require(reservedSupply > 0);
+        require(amount <= reservedSupply);
         totalSupply = totalSupply.add(amount);
         reservedSupply = reservedSupply.sub(amount);
         balances[partnersWallet] = balances[partnersWallet].add(amount);
@@ -314,7 +314,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -348,7 +348,7 @@ contract RefundVault is Ownable {
 
     function refund(address investor) public {
         require(state == State.Refunding);
-        require(deposited[investor] &gt; 0);
+        require(deposited[investor] > 0);
         uint256 depositedValue = deposited[investor];
         deposited[investor] = 0;
         investor.transfer(depositedValue);
@@ -381,7 +381,7 @@ contract Withdrawable is Ownable {
   
     // owner can withdraw ether here
     function withdraw(uint256 weiAmount) onlyOwner canWithdraw public {
-        require(this.balance &gt;= weiAmount);
+        require(this.balance >= weiAmount);
         wallet.transfer(weiAmount);
         Withdrawed(weiAmount);
     }
@@ -438,7 +438,7 @@ contract StyrasCrowdsale is Ownable {
     uint256 public pubsaleRate = 3000; // 1 ETH == 3000 STY
     uint256 public pubsaleCap = 180000000000000000000000000;
 
-    // harrd cap = pubsaleCap + reservedSupply -&gt; 200000000 DTY
+    // harrd cap = pubsaleCap + reservedSupply -> 200000000 DTY
     uint256 public reservedSupply = 20000000000000000000000000; // 10% max totalSupply
 
     uint256 public softCap = 840000000000000000000000; // 840 thousands STY
@@ -473,13 +473,13 @@ contract StyrasCrowdsale is Ownable {
     event Finalized();
 
     function StyrasCrowdsale(address escrow, address partners) public {
-        require(now &lt; startTime);
+        require(now < startTime);
         require(partners != address(0));
-        require(startTime &lt; presaleDeadline);
-        require(presaleDeadline &lt; pubsaleDeadline);
-        require(pubsaleRate &lt; presaleRate);
-        require(presaleCap &lt; pubsaleCap);
-        require(softCap &lt;= pubsaleCap);
+        require(startTime < presaleDeadline);
+        require(presaleDeadline < pubsaleDeadline);
+        require(pubsaleRate < presaleRate);
+        require(presaleCap < pubsaleCap);
+        require(softCap <= pubsaleCap);
         endTime = presaleDeadline;
         escrowWallet = escrow;
         partnersWallet = partners;
@@ -489,8 +489,8 @@ contract StyrasCrowdsale is Ownable {
         goal = softCap.div(rate);
         cap = presaleCap.div(rate);
         state = State.preSale;
-        assert(goal &lt; cap);
-        assert(startTime &lt; endTime);
+        assert(goal < cap);
+        assert(startTime < endTime);
     }
 
     // fallback function can be used to buy tokens
@@ -501,7 +501,7 @@ contract StyrasCrowdsale is Ownable {
     // low level token purchase function
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != address(0));
-        require(state &lt; State.hasFinalized);
+        require(state < State.hasFinalized);
         require(validPurchase());
         uint256 weiAmount = msg.value;
         // calculate token amount to be created
@@ -522,11 +522,11 @@ contract StyrasCrowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = startTime &lt;= now &amp;&amp; now &lt;= endTime;
-        bool nonZeroPurchase = msg.value &gt; 0;
-        bool withinCap = weiRaised &lt; cap;
-        bool overMinInvest = msg.value &gt;= minInvest || vault.balanceOf(msg.sender) &gt;= minInvest;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; overMinInvest;
+        bool withinPeriod = startTime <= now && now <= endTime;
+        bool nonZeroPurchase = msg.value > 0;
+        bool withinCap = weiRaised < cap;
+        bool overMinInvest = msg.value >= minInvest || vault.balanceOf(msg.sender) >= minInvest;
+        return withinPeriod && nonZeroPurchase && withinCap && overMinInvest;
     }
 
     function hardCap() public constant returns (uint256) {
@@ -534,13 +534,13 @@ contract StyrasCrowdsale is Ownable {
     }
 
     function goalReached() public constant returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        bool afterPeriod = now &gt; endTime;
-        bool capReached = weiRaised &gt;= cap;
+        bool afterPeriod = now > endTime;
+        bool capReached = weiRaised >= cap;
         return afterPeriod || capReached;
     }
 
@@ -576,14 +576,14 @@ contract StyrasCrowdsale is Ownable {
         cap = weiRaised.add(weiDiff);
         endTime = pubsaleDeadline;
         state = State.publicSale;
-        assert(goal &lt; cap);
-        assert(startTime &lt; endTime);
+        assert(goal < cap);
+        assert(startTime < endTime);
         PresaleFinalized();
     }
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(state == State.publicSale);

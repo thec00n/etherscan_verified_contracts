@@ -12,7 +12,7 @@ contract Ownable {
 
 contract Savings is Ownable {
     address public Owner;
-    mapping (address =&gt; uint) public deposits;
+    mapping (address => uint) public deposits;
     uint public openDate;
     
     event Initialized(address indexed Owner, uint OpenDate);
@@ -28,23 +28,23 @@ contract Savings is Ownable {
     function() payable { deposit(); }
     
     function deposit() payable {
-        if (msg.value &gt;= 1 ether) {
+        if (msg.value >= 1 ether) {
             deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         }
     }
     
     function withdraw(uint amount) payable {
-        if (isOwner() &amp;&amp; now &gt;= openDate) {
+        if (isOwner() && now >= openDate) {
             uint max = deposits[msg.sender];
-            if (amount &lt;= max &amp;&amp; max &gt; 0) {
+            if (amount <= max && max > 0) {
                 msg.sender.transfer(amount);
             }
         }
     }
 
     function kill() payable {
-        if (isOwner() &amp;&amp; this.balance == 0) {
+        if (isOwner() && this.balance == 0) {
             selfdestruct(msg.sender);
         }
 	}

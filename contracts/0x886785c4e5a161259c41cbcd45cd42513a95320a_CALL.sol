@@ -13,29 +13,29 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 /**
  * @title Owned
- * @author Adria Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751411071c1435161a1110161a1b01100d015b1c1a">[email&#160;protected]</a>&gt;
+ * @author Adria Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751411071c1435161a1110161a1b01100d015b1c1a">[email protected]</a>>
  * @notice The Owned contract has an owner address, and provides basic
- *  authorization control functions, this simplifies &amp; the implementation of
+ *  authorization control functions, this simplifies & the implementation of
  *  user permissions; this contract has three work flows for a change in
  *  ownership, the first requires the new owner to validate that they have the
  *  ability to accept ownership, the second allows the ownership to be
@@ -262,11 +262,11 @@ contract ERC777Helper is ERC777Token, ERC20Token, ERC820Implementer {
 
     bool internal mErc20compatible;
     uint256 internal mGranularity;
-    mapping(address =&gt; uint) internal mBalances;
+    mapping(address => uint) internal mBalances;
 
     /**
      * @notice Internal function that ensures `_amount` is multiple of the granularity
-     * @param _amount The quantity that want&#39;s to be checked
+     * @param _amount The quantity that want's to be checked
      */
     function requireMultiple(uint256 _amount) internal view {
         require(_amount.div(mGranularity).mul(mGranularity) == _amount);
@@ -312,7 +312,7 @@ contract ERC777Helper is ERC777Token, ERC20Token, ERC820Implementer {
         callSender(_operator, _from, _to, _amount, _userData, _operatorData);
 
         require(_to != address(0));          // forbid sending to 0x0 (=burning)
-        require(mBalances[_from] &gt;= _amount); // ensure enough funds
+        require(mBalances[_from] >= _amount); // ensure enough funds
 
         mBalances[_from] = mBalances[_from].sub(_amount);
         mBalances[_to] = mBalances[_to].add(_amount);
@@ -345,7 +345,7 @@ contract ERC777Helper is ERC777Token, ERC20Token, ERC820Implementer {
         bytes _operatorData,
         bool _preventLocking
     ) internal {
-        address recipientImplementation = interfaceAddr(_to, &quot;ERC777TokensRecipient&quot;);
+        address recipientImplementation = interfaceAddr(_to, "ERC777TokensRecipient");
         if (recipientImplementation != 0) {
             ERC777TokensRecipient(recipientImplementation).tokensReceived(
                 _operator, _from, _to, _amount, _userData, _operatorData);
@@ -374,7 +374,7 @@ contract ERC777Helper is ERC777Token, ERC20Token, ERC820Implementer {
         bytes _userData,
         bytes _operatorData
     ) internal {
-        address senderImplementation = interfaceAddr(_from, &quot;ERC777TokensSender&quot;);
+        address senderImplementation = interfaceAddr(_from, "ERC777TokensSender");
         if (senderImplementation != 0) {
             ERC777TokensSender(senderImplementation).tokensToSend(
                 _operator, _from, _to, _amount, _userData, _operatorData);
@@ -388,14 +388,14 @@ contract ERC777Helper is ERC777Token, ERC20Token, ERC820Implementer {
  */
 contract ERC20TokenCompat is ERC777Helper, Owned {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) private mAllowed;
+    mapping(address => mapping(address => uint256)) private mAllowed;
 
     /**
      * @notice Contract construction
      */
     constructor() public {
         mErc20compatible = true;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, this);
+        setInterfaceImplementation("ERC20Token", this);
     }
 
     /**
@@ -414,7 +414,7 @@ contract ERC20TokenCompat is ERC777Helper, Owned {
      */
     function disableERC20() public onlyOwner {
         mErc20compatible = false;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, 0x0);
+        setInterfaceImplementation("ERC20Token", 0x0);
     }
 
     /**
@@ -423,7 +423,7 @@ contract ERC20TokenCompat is ERC777Helper, Owned {
      */
     function enableERC20() public onlyOwner {
         mErc20compatible = true;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, this);
+        setInterfaceImplementation("ERC20Token", this);
     }
 
     /*
@@ -436,10 +436,10 @@ contract ERC20TokenCompat is ERC777Helper, Owned {
      * @notice ERC20 backwards compatible transfer.
      * @param _to The address of the recipient
      * @param _amount The number of tokens to be transferred
-     * @return `true`, if the transfer can&#39;t be done, it should fail.
+     * @return `true`, if the transfer can't be done, it should fail.
      */
     function transfer(address _to, uint256 _amount) public erc20 returns (bool success) {
-        doSend(msg.sender, _to, _amount, &quot;&quot;, msg.sender, &quot;&quot;, false);
+        doSend(msg.sender, _to, _amount, "", msg.sender, "", false);
         return true;
     }
 
@@ -448,14 +448,14 @@ contract ERC20TokenCompat is ERC777Helper, Owned {
      * @param _from The address holding the tokens being transferred
      * @param _to The address of the recipient
      * @param _amount The number of tokens to be transferred
-     * @return `true`, if the transfer can&#39;t be done, it should fail.
+     * @return `true`, if the transfer can't be done, it should fail.
      */
     function transferFrom(address _from, address _to, uint256 _amount) public erc20 returns (bool success) {
-        require(_amount &lt;= mAllowed[_from][msg.sender]);
+        require(_amount <= mAllowed[_from][msg.sender]);
 
         // Cannot be after doSend because of tokensReceived re-entry
         mAllowed[_from][msg.sender] = mAllowed[_from][msg.sender].sub(_amount);
-        doSend(_from, _to, _amount, &quot;&quot;, msg.sender, &quot;&quot;, false);
+        doSend(_from, _to, _amount, "", msg.sender, "", false);
         return true;
     }
 
@@ -464,7 +464,7 @@ contract ERC20TokenCompat is ERC777Helper, Owned {
      *  `msg.sender` approves `_spender` to spend `_amount` tokens on its behalf.
      * @param _spender The address of the account able to transfer the tokens
      * @param _amount The number of tokens to be approved for transfer
-     * @return `true`, if the approve can&#39;t be done, it should fail.
+     * @return `true`, if the approve can't be done, it should fail.
      */
     function approve(address _spender, uint256 _amount) public erc20 returns (bool success) {
         mAllowed[msg.sender][_spender] = _amount;
@@ -494,7 +494,7 @@ contract ERC777StandardToken is ERC777Helper, Owned {
     string private mSymbol;
     uint256 private mTotalSupply;
 
-    mapping(address =&gt; mapping(address =&gt; bool)) private mAuthorized;
+    mapping(address => mapping(address => bool)) private mAuthorized;
 
     /**
      * @notice Constructor to create a ERC777StandardToken
@@ -510,8 +510,8 @@ contract ERC777StandardToken is ERC777Helper, Owned {
         uint256 _granularity
     )
     public {
-        require(_granularity &gt;= 1);
-        require(_totalSupply &gt; 0);
+        require(_granularity >= 1);
+        require(_totalSupply > 0);
 
         mName = _name;
         mSymbol = _symbol;
@@ -519,7 +519,7 @@ contract ERC777StandardToken is ERC777Helper, Owned {
         mGranularity = _granularity;
         mBalances[msg.sender] = mTotalSupply;
 
-        setInterfaceImplementation(&quot;ERC777Token&quot;, this);
+        setInterfaceImplementation("ERC777Token", this);
     }
 
     /**
@@ -555,7 +555,7 @@ contract ERC777StandardToken is ERC777Helper, Owned {
      * @param _amount The number of tokens to be sent
      */
     function send(address _to, uint256 _amount) public {
-        doSend(msg.sender, _to, _amount, &quot;&quot;, msg.sender, &quot;&quot;, true);
+        doSend(msg.sender, _to, _amount, "", msg.sender, "", true);
     }
 
     /**
@@ -565,11 +565,11 @@ contract ERC777StandardToken is ERC777Helper, Owned {
      * @param _userData The user supplied data
      */
     function send(address _to, uint256 _amount, bytes _userData) public {
-        doSend(msg.sender, _to, _amount, _userData, msg.sender, &quot;&quot;, true);
+        doSend(msg.sender, _to, _amount, _userData, msg.sender, "", true);
     }
 
     /**
-     * @notice Authorize a third party `_operator` to manage (send) `msg.sender`&#39;s tokens.
+     * @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
      * @param _operator The operator that wants to be Authorized
      */
     function authorizeOperator(address _operator) public {
@@ -579,7 +579,7 @@ contract ERC777StandardToken is ERC777Helper, Owned {
     }
 
     /**
-     * @notice Revoke a third party `_operator`&#39;s rights to manage (send) `msg.sender`&#39;s tokens.
+     * @notice Revoke a third party `_operator`'s rights to manage (send) `msg.sender`'s tokens.
      * @param _operator The operator that wants to be Revoked
      */
     function revokeOperator(address _operator) public {
@@ -626,11 +626,11 @@ contract ERC20Multi is ERC20TokenCompat {
      */
     function multiPartyTransfer(address[] _toAddresses, uint256[] _amounts) external erc20 {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transfer(_toAddresses[i], _amounts[i]);
         }
     }
@@ -644,11 +644,11 @@ contract ERC20Multi is ERC20TokenCompat {
     */
     function multiPartyTransferFrom(address _from, address[] _toAddresses, uint256[] _amounts) external erc20 {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transferFrom(_from, _toAddresses[i], _amounts[i]);
         }
     }
@@ -672,11 +672,11 @@ contract ERC777Multi is ERC777Helper {
     function multiOperatorSend(address _from, address[] _to, uint256[] _amounts, bytes _userData, bytes _operatorData)
     external {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_to.length &lt;= 255);
+        require(_to.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_to.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _to.length; i++) {
+        for (uint8 i = 0; i < _to.length; i++) {
             operatorSend(_from, _to[i], _amounts[i], _userData, _operatorData);
         }
     }
@@ -690,12 +690,12 @@ contract ERC777Multi is ERC777Helper {
      */
     function multiPartySend(address[] _toAddresses, uint256[] _amounts, bytes _userData) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
-            doSend(msg.sender, _toAddresses[i], _amounts[i], _userData, msg.sender, &quot;&quot;, true);
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
+            doSend(msg.sender, _toAddresses[i], _amounts[i], _userData, msg.sender, "", true);
         }
     }
 
@@ -707,12 +707,12 @@ contract ERC777Multi is ERC777Helper {
      */
     function multiPartySend(address[] _toAddresses, uint256[] _amounts) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
-            doSend(msg.sender, _toAddresses[i], _amounts[i], &quot;&quot;, msg.sender, &quot;&quot;, true);
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
+            doSend(msg.sender, _toAddresses[i], _amounts[i], "", msg.sender, "", true);
         }
     }
 }
@@ -738,15 +738,15 @@ contract SafeGuard is Owned {
 
     /**
      * @dev call has been separated into its own function in order to take advantage
-     *  of the Solidity&#39;s code generator to produce a loop that copies tx.data into memory.
+     *  of the Solidity's code generator to produce a loop that copies tx.data into memory.
      */
     function externalCall(address destination, uint value, uint dataLength, bytes data)
     private
     returns (bool) {
         bool result;
         assembly { // solhint-disable-line no-inline-assembly
-        let x := mload(0x40)   // &quot;Allocate&quot; memory for output
-            // (0x40 is where &quot;free memory&quot; pointer is stored by convention)
+        let x := mload(0x40)   // "Allocate" memory for output
+            // (0x40 is where "free memory" pointer is stored by convention)
             let d := add(data, 32) // First 32 bytes are the padded length of data, so exclude that
             result := call(
             sub(gas, 34710), // 34710 is the value that solidity is currently emitting
@@ -776,9 +776,9 @@ contract ERC664Balances is SafeGuard {
     event BalanceAdj(address indexed module, address indexed account, uint amount, string polarity);
     event ModuleSet(address indexed module, bool indexed set);
 
-    mapping(address =&gt; bool) public modules;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => bool) public modules;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     modifier onlyModule() {
         require(modules[msg.sender]);
@@ -894,7 +894,7 @@ contract ERC664Balances is SafeGuard {
      */
     function incBalance(address _acct, uint _val) public onlyModule returns (bool) {
         balances[_acct] = balances[_acct].add(_val);
-        emit BalanceAdj(msg.sender, _acct, _val, &quot;+&quot;);
+        emit BalanceAdj(msg.sender, _acct, _val, "+");
         return true;
     }
 
@@ -906,7 +906,7 @@ contract ERC664Balances is SafeGuard {
      */
     function decBalance(address _acct, uint _val) public onlyModule returns (bool) {
         balances[_acct] = balances[_acct].sub(_val);
-        emit BalanceAdj(msg.sender, _acct, _val, &quot;-&quot;);
+        emit BalanceAdj(msg.sender, _acct, _val, "-");
         return true;
     }
 }
@@ -917,7 +917,7 @@ contract ERC664Balances is SafeGuard {
  */
 contract CStore is ERC664Balances, ERC820Implementer {
 
-    mapping(address =&gt; mapping(address =&gt; bool)) private mAuthorized;
+    mapping(address => mapping(address => bool)) private mAuthorized;
 
     /**
      * @notice Database construction
@@ -927,7 +927,7 @@ contract CStore is ERC664Balances, ERC820Implementer {
     constructor(uint256 _totalSupply, address _registry) public
     ERC664Balances(_totalSupply)
     ERC820Implementer(_registry) {
-        setInterfaceImplementation(&quot;ERC664Balances&quot;, this);
+        setInterfaceImplementation("ERC664Balances", this);
     }
 
     /**
@@ -961,9 +961,9 @@ contract CStore is ERC664Balances, ERC820Implementer {
     onlyModule
     returns (bool) {
         balances[_from] = balances[_from].sub(_amount);
-        emit BalanceAdj(msg.sender, _from, _amount, &quot;-&quot;);
+        emit BalanceAdj(msg.sender, _from, _amount, "-");
         balances[_to] = balances[_to].add(_amount);
-        emit BalanceAdj(msg.sender, _to, _amount, &quot;+&quot;);
+        emit BalanceAdj(msg.sender, _to, _amount, "+");
         return true;
     }
 
@@ -1039,7 +1039,7 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
     ERC820Implementer(_intRegistry)
     ERC777StandardToken(_name, _symbol, _totalSupply, _granularity) {
         balancesDB = CStore(_balancesDB);
-        setInterfaceImplementation(&quot;ERC777CALLToken&quot;, this);
+        setInterfaceImplementation("ERC777CALLToken", this);
     }
 
     /**
@@ -1055,15 +1055,15 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
      * @param _from The address holding the tokens being transferred
      * @param _to The address of the recipient
      * @param _amount The number of tokens to be transferred
-     * @return `true`, if the transfer can&#39;t be done, it should fail.
+     * @return `true`, if the transfer can't be done, it should fail.
      */
     function transferFrom(address _from, address _to, uint256 _amount) public erc20 returns (bool success) {
         uint256 allowance = balancesDB.getAllowance(_from, msg.sender);
-        require(_amount &lt;= allowance);
+        require(_amount <= allowance);
 
         // Cannot be after doSend because of tokensReceived re-entry
         require(balancesDB.decApprove(_from, msg.sender, _amount));
-        doSend(_from, _to, _amount, &quot;&quot;, msg.sender, &quot;&quot;, false);
+        doSend(_from, _to, _amount, "", msg.sender, "", false);
         return true;
     }
 
@@ -1072,7 +1072,7 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
      *  `msg.sender` approves `_spender` to spend `_amount` tokens on its behalf.
      * @param _spender The address of the account able to transfer the tokens
      * @param _amount The number of tokens to be approved for transfer
-     * @return `true`, if the approve can&#39;t be done, it should fail.
+     * @return `true`, if the approve can't be done, it should fail.
      */
     function approve(address _spender, uint256 _amount) public erc20 returns (bool success) {
         require(balancesDB.setApprove(msg.sender, _spender, _amount));
@@ -1109,7 +1109,7 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
     }
 
     /**
-         * @notice Authorize a third party `_operator` to manage (send) `msg.sender`&#39;s tokens at remote database.
+         * @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens at remote database.
          * @param _operator The operator that wants to be Authorized
          */
     function authorizeOperator(address _operator) public {
@@ -1119,7 +1119,7 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
     }
 
     /**
-     * @notice Revoke a third party `_operator`&#39;s rights to manage (send) `msg.sender`&#39;s tokens at remote database.
+     * @notice Revoke a third party `_operator`'s rights to manage (send) `msg.sender`'s tokens at remote database.
      * @param _operator The operator that wants to be Revoked
      */
     function revokeOperator(address _operator) public {
@@ -1167,7 +1167,7 @@ contract CALL is ERC820Implementer, ERC777StandardToken, ERC20TokenCompat, ERC20
         callSender(_operator, _from, _to, _amount, _userData, _operatorData);
 
         require(_to != address(0));          // forbid sending to 0x0 (=burning)
-        // require(mBalances[_from] &gt;= _amount); // ensure enough funds
+        // require(mBalances[_from] >= _amount); // ensure enough funds
         // (Not Required due to SafeMath throw if underflow in database and false check)
 
         require(balancesDB.move(_from, _to, _amount));

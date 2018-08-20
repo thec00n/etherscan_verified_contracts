@@ -7,11 +7,11 @@ pragma solidity ^0.4.15;
 library SafeMath {
     function add(uint a, uint b) internal returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -21,7 +21,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -81,14 +81,14 @@ contract MuxeToken is ERC20Interface, Owned {
     uint public _totalSupply;
     uint public tokensBurnt;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Burn(uint tokens);
 
     function MuxeToken() public {
-        symbol = &quot;MUXE&quot;;
-        name = &quot;MUXE Token&quot;;
+        symbol = "MUXE";
+        name = "MUXE Token";
         decimals = 18;
         _totalSupply = 10000000000 * 10**uint(decimals);
         tokensBurnt = 0;
@@ -150,7 +150,7 @@ contract MuxeToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

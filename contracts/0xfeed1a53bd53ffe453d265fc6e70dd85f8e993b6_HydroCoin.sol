@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -99,20 +99,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -151,7 +151,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -186,7 +186,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -285,8 +285,8 @@ contract MintableToken is StandardToken, Ownable {
 
 
 contract HydroCoin is MintableToken, Pausable {
-  string public name = &quot;H2O Token&quot;;
-  string public symbol = &quot;H2O&quot;;
+  string public name = "H2O Token";
+  string public symbol = "H2O";
   uint256 public decimals = 18;
 
   //----- splitter functions
@@ -311,7 +311,7 @@ contract HydroCoin is MintableToken, Pausable {
     bool    public queueMode;
     uint256 public pos;
 
-    mapping (address =&gt; XRec) public theList;
+    mapping (address => XRec) public theList;
 
     QueueRecord[]  theQueue;
 
@@ -322,8 +322,8 @@ contract HydroCoin is MintableToken, Pausable {
 
     function stopQueueing(uint256 num) onlyOwner {
         queueMode = false;
-        for (uint256 i = 0; i &lt; num; i++) {
-            if (pos &gt;= theQueue.length) {
+        for (uint256 i = 0; i < num; i++) {
+            if (pos >= theQueue.length) {
                 delete theQueue;
                 return;
             }
@@ -350,14 +350,14 @@ contract HydroCoin is MintableToken, Pausable {
             first = whom;
         }
         last = whom;
-        Ev(&quot;add&quot;,whom,value);
+        Ev("add",whom,value);
     }
 
    function remove(address whom) internal {
         if (first == whom) {
             first = theList[whom].next;
             theList[whom] = XRec(false,0x0,0x0,0);
-            Ev(&quot;remove&quot;,whom,0);
+            Ev("remove",whom,0);
             return;
         }
         address next = theList[whom].next;
@@ -373,7 +373,7 @@ contract HydroCoin is MintableToken, Pausable {
         }
 
         theList[whom] =XRec(false,0x0,0x0,0);
-        Ev(&quot;remove&quot;,whom,0);
+        Ev("remove",whom,0);
     }
 
     function update(address whom, uint256 value) internal {
@@ -386,7 +386,7 @@ contract HydroCoin is MintableToken, Pausable {
                 add(whom,value);
             } else {
                 theList[whom].val = value;
-                Ev(&quot;update&quot;,whom,value);
+                Ev("update",whom,value);
             }
             return;
         }
@@ -459,7 +459,7 @@ contract HydroCoinPresale is Ownable,Pausable {
   // address where funds are collected
   address public hardwareWallet = 0xa6128CA2eD94FB697d7058dC3Fd22740F82FF06A;
 
-  mapping (address =&gt; uint256) public deposits;
+  mapping (address => uint256) public deposits;
 
   // how many token units a buyer gets per wei
   uint256 public rate = 125;
@@ -494,26 +494,26 @@ contract HydroCoinPresale is Ownable,Pausable {
 
     token = new HydroCoin();
 
-    require(startTimestamp &gt;= now);
-    require(endTimestamp &gt;= startTimestamp);
+    require(startTimestamp >= now);
+    require(endTimestamp >= startTimestamp);
 
     token.mint(companyTokens, vendorAllocation);
   }
 
   // check if valid purchase
   modifier validPurchase {
-    require(now &gt;= startTimestamp);
-    require(now &lt;= endTimestamp);
-    require(msg.value &gt;= minContribution);
-    require(weiRaised.add(msg.value) &lt;= hardcap);
+    require(now >= startTimestamp);
+    require(now <= endTimestamp);
+    require(msg.value >= minContribution);
+    require(weiRaised.add(msg.value) <= hardcap);
     _;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp)
+    if (now > endTimestamp)
         return true;
-    if (weiRaised &gt;= hardcap)
+    if (weiRaised >= hardcap)
         return true;
     return false;
   }

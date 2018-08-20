@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 
 
 /*
- * @title This is proxy for analytics. Target contract can be found at field m_analytics (see &quot;read contract&quot;).
+ * @title This is proxy for analytics. Target contract can be found at field m_analytics (see "read contract").
  * @author Eenae
 
  * FIXME after fix of truffle issue #560: refactor to a separate contract file which uses InvestmentAnalytics interface
@@ -68,7 +68,7 @@ contract InvestmentAnalytics {
     /// @dev creates more payment channels, up to the limit but not exceeding gas stipend
     function createMorePaymentChannelsInternal(uint limit) internal returns (uint) {
         uint paymentChannelsCreated;
-        for (uint i = 0; i &lt; limit; i++) {
+        for (uint i = 0; i < limit; i++) {
             uint startingGas = msg.gas;
             /*
              * ~170k of gas per paymentChannel,
@@ -82,7 +82,7 @@ contract InvestmentAnalytics {
 
             // cost of creating one channel
             uint gasPerChannel = startingGas.sub(msg.gas);
-            if (gasPerChannel.add(50000) &gt; msg.gas)
+            if (gasPerChannel.add(50000) > msg.gas)
                 break;  // enough proxies for this call
         }
         return paymentChannelsCreated;
@@ -118,7 +118,7 @@ contract InvestmentAnalytics {
         address[] memory keys = new address[](m_paymentChannels.length);
         uint[] memory values = new uint[](m_paymentChannels.length);
 
-        for (uint i = 0; i &lt; m_paymentChannels.length; i++) {
+        for (uint i = 0; i < m_paymentChannels.length; i++) {
             address key = m_paymentChannels[i];
             keys[i] = key;
             values[i] = m_investmentsByPaymentChannel[key];
@@ -132,15 +132,15 @@ contract InvestmentAnalytics {
     }
 
 
-    mapping(address =&gt; uint256) public m_investmentsByPaymentChannel;
-    mapping(address =&gt; bool) m_validPaymentChannels;
+    mapping(address => uint256) public m_investmentsByPaymentChannel;
+    mapping(address => bool) m_validPaymentChannels;
 
     address[] public m_paymentChannels;
 }
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="daa8bfb7b9b59ae8">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="daa8bfb7b9b59ae8">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -171,7 +171,7 @@ contract ReentrancyGuard {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -219,7 +219,7 @@ contract STQPreICO is Ownable, ReentrancyGuard, InvestmentAnalytics {
     event FundTransfer(address backer, uint amount, bool isContribution);
 
     function STQPreICO(address token, address funds) {
-        require(address(0) != address(token) &amp;&amp; address(0) != address(funds));
+        require(address(0) != address(token) && address(0) != address(funds));
 
         m_token = STQToken(token);
         m_funds = funds;
@@ -247,8 +247,8 @@ contract STQPreICO is Ownable, ReentrancyGuard, InvestmentAnalytics {
     }
 
     /// @notice Tests ownership of the current caller.
-    /// @return true if it&#39;s an owner
-    // It&#39;s advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
+    /// @return true if it's an owner
+    // It's advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
     // addOwner/changeOwner and to isOwner.
     function amIOwner() external constant onlyOwner returns (bool) {
         return true;
@@ -262,8 +262,8 @@ contract STQPreICO is Ownable, ReentrancyGuard, InvestmentAnalytics {
         internal
         nonReentrant
     {
-        require(payment &gt;= c_MinInvestment);
-        require(getCurrentTime() &gt;= c_startTime &amp;&amp; getCurrentTime() &lt; c_endTime || msg.sender == owner);
+        require(payment >= c_MinInvestment);
+        require(getCurrentTime() >= c_startTime && getCurrentTime() < c_endTime || msg.sender == owner);
 
         uint startingInvariant = this.balance.add(m_funds.balance);
 
@@ -274,7 +274,7 @@ contract STQPreICO is Ownable, ReentrancyGuard, InvestmentAnalytics {
             return;
         }
         uint change;
-        if (paymentAllowed &lt; payment) {
+        if (paymentAllowed < payment) {
             change = payment.sub(paymentAllowed);
             payment = paymentAllowed;
         }
@@ -294,20 +294,20 @@ contract STQPreICO is Ownable, ReentrancyGuard, InvestmentAnalytics {
         // record payment
         m_funds.transfer(payment);
         m_totalInvested = m_totalInvested.add(payment);
-        assert(m_totalInvested &lt;= getMaximumFunds());
+        assert(m_totalInvested <= getMaximumFunds());
         FundTransfer(investor, payment, true);
 
-        if (change &gt; 0)
+        if (change > 0)
             investor.transfer(change);
 
         assert(startingInvariant == this.balance.add(m_funds.balance).add(change));
     }
 
     function getLargePaymentBonus(uint payment) private constant returns (uint) {
-        if (payment &gt; 1000 ether) return 10;
-        if (payment &gt; 800 ether) return 8;
-        if (payment &gt; 500 ether) return 5;
-        if (payment &gt; 200 ether) return 2;
+        if (payment > 1000 ether) return 10;
+        if (payment > 800 ether) return 8;
+        if (payment > 500 ether) return 5;
+        if (payment > 200 ether) return 2;
         return 0;
     }
 

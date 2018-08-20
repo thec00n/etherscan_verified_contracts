@@ -14,7 +14,7 @@ library SafeMath {
     @tag spec
     @post __reverted == __has_assertion_failure
     @post __has_assertion_failure == __has_overflow
-    @post __reverted == false -&gt; c == a * b
+    @post __reverted == false -> c == a * b
     @post msg == msg__post
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
@@ -34,15 +34,15 @@ library SafeMath {
     @tag spec
     @pre b != 0
     @post __reverted == __has_assertion_failure
-    @post __has_overflow == true -&gt; __has_assertion_failure == true
-    @post __reverted == false -&gt; __return == a / b
+    @post __has_overflow == true -> __has_assertion_failure == true
+    @post __reverted == false -> __return == a / b
     @post msg == msg__post
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -52,13 +52,13 @@ library SafeMath {
   /*@CTK SafeMath_sub
     @tag spec
     @post __reverted == __has_assertion_failure
-    @post __has_overflow == true -&gt; __has_assertion_failure == true
-    @post __reverted == false -&gt; __return == a - b
+    @post __has_overflow == true -> __has_assertion_failure == true
+    @post __reverted == false -> __return == a - b
     @post msg == msg__post
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -69,13 +69,13 @@ library SafeMath {
     @tag spec
     @post __reverted == __has_assertion_failure
     @post __has_assertion_failure == __has_overflow
-    @post __reverted == false -&gt; c == a + b
+    @post __reverted == false -> c == a + b
     @post msg == msg__post
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,7 +97,7 @@ contract Ownable {
    * account.
    */
   /*@CTK owner_set_on_success
-    @pre __reverted == false -&gt; __post.owner == owner
+    @pre __reverted == false -> __post.owner == owner
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function Ownable() public {
@@ -117,9 +117,9 @@ contract Ownable {
    * @param newOwner The address to transfer ownership to.
    */
   /*@CTK transferOwnership
-    @post __reverted == false -&gt; (msg.sender == owner -&gt; __post.owner == newOwner)
-    @post (owner != msg.sender) -&gt; (__reverted == true)
-    @post (newOwner == address(0)) -&gt; (__reverted == true)
+    @post __reverted == false -> (msg.sender == owner -> __post.owner == newOwner)
+    @post (owner != msg.sender) -> (__reverted == true)
+    @post (newOwner == address(0)) -> (__reverted == true)
    */
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function transferOwnership(address newOwner) public onlyOwner {
@@ -205,7 +205,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -223,7 +223,7 @@ contract BasicToken is ERC20Basic {
   */
   /*@CTK transfer_success
     @pre _to != address(0)
-    @pre balances[msg.sender] &gt;= _value
+    @pre balances[msg.sender] >= _value
     @pre __reverted == false
     @post __reverted == false
     @post __return == true
@@ -242,7 +242,7 @@ contract BasicToken is ERC20Basic {
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -275,7 +275,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -295,8 +295,8 @@ contract StandardToken is ERC20, BasicToken {
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -310,14 +310,14 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
    */
   /*@CTK approve_success
-    @post _value == 0 -&gt; __reverted == false
-    @post allowed[msg.sender][_spender] == 0 -&gt; __reverted == false
+    @post _value == 0 -> __reverted == false
+    @post allowed[msg.sender][_spender] == 0 -> __reverted == false
    */
   /*@CTK approve
     @tag assume_completion
@@ -373,13 +373,13 @@ contract StandardToken is ERC20, BasicToken {
    * @param _subtractedValue The amount of tokens to decrease the allowance by.
    */
   /*@CTK CtkDecreaseApprovalEffect_1
-    @pre allowed[msg.sender][_spender] &gt;= _subtractedValue
+    @pre allowed[msg.sender][_spender] >= _subtractedValue
     @tag assume_completion
     @post __post.allowed[msg.sender][_spender] == allowed[msg.sender][_spender] - _subtractedValue
     @post __has_overflow == false
    */
    /*@CTK CtkDecreaseApprovalEffect_2
-    @pre allowed[msg.sender][_spender] &lt; _subtractedValue
+    @pre allowed[msg.sender][_spender] < _subtractedValue
     @tag assume_completion
     @post __post.allowed[msg.sender][_spender] == 0
     @post __has_overflow == false
@@ -387,7 +387,7 @@ contract StandardToken is ERC20, BasicToken {
   /* CertiK Smart Labelling, for more details visit: https://certik.org */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -399,8 +399,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract IoTeXNetwork is StandardToken, Pausable {
-    string public constant name = &quot;IoTeX Network&quot;;
-    string public constant symbol = &quot;IOTX&quot;;
+    string public constant name = "IoTeX Network";
+    string public constant symbol = "IOTX";
     uint8 public constant decimals = 18;
 
     modifier validDestination(address to) {
@@ -416,11 +416,11 @@ contract IoTeXNetwork is StandardToken, Pausable {
     }
 
     /*@CTK CtkTransferNoEffect
-      @post (_to == address(0)) \/ (paused == true) -&gt; __reverted == true
+      @post (_to == address(0)) \/ (paused == true) -> __reverted == true
      */
     /*@CTK CtkTransferEffect
       @pre __reverted == false
-      @pre balances[msg.sender] &gt;= _value
+      @pre balances[msg.sender] >= _value
       @pre paused == false
       @pre __return == true
       @pre msg.sender != _to
@@ -435,7 +435,7 @@ contract IoTeXNetwork is StandardToken, Pausable {
     }
 
     /*@CTK CtkTransferFromNoEffect
-      @post (_to == address(0)) \/ (paused == true) -&gt; __reverted == true
+      @post (_to == address(0)) \/ (paused == true) -> __reverted == true
      */
     /*@CTK CtkTransferFromEffect
       @tag assume_completion
@@ -452,7 +452,7 @@ contract IoTeXNetwork is StandardToken, Pausable {
     }
 
     /*@CTK CtkApproveNoEffect
-      @post (paused == true) -&gt; __post == this
+      @post (paused == true) -> __post == this
      */
     /*@CTK CtkApprove
       @tag assume_completion
@@ -465,7 +465,7 @@ contract IoTeXNetwork is StandardToken, Pausable {
     }
 
     /*@CTK CtkIncreaseApprovalNoEffect
-      @post (paused == true) -&gt; __reverted == true
+      @post (paused == true) -> __reverted == true
      */
     /*@CTK CtkIncreaseApprovalEffect
       @pre paused == false
@@ -480,10 +480,10 @@ contract IoTeXNetwork is StandardToken, Pausable {
     }
 
     /*@CTK CtkDecreaseApprovalNoEffect
-      @post (paused == true) -&gt; __reverted == true
+      @post (paused == true) -> __reverted == true
      */
     /*@CTK CtkDecreaseApprovalEffect
-      @pre allowed[msg.sender][_spender] &gt;= _subtractedValue
+      @pre allowed[msg.sender][_spender] >= _subtractedValue
       @tag assume_completion
       @post __post.allowed[msg.sender][_spender] == allowed[msg.sender][_spender] - _subtractedValue
       @post __has_overflow == false

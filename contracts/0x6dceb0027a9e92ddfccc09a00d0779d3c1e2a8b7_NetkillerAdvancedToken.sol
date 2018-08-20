@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,8 +60,8 @@ contract NetkillerAdvancedToken is Ownable {
     uint256 public totalSupply;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -70,7 +70,7 @@ contract NetkillerAdvancedToken is Ownable {
     event Burn(address indexed from, uint256 value);
     
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address indexed target, bool frozen);
 
     bool public lock = false;                   // Global lock
@@ -110,8 +110,8 @@ contract NetkillerAdvancedToken is Ownable {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) isLock internal {
         require (_to != address(0));                        // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         //require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balances[_from] = balances[_from].sub(_value);      // Subtract from the sender
@@ -125,8 +125,8 @@ contract NetkillerAdvancedToken is Ownable {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -149,7 +149,7 @@ contract NetkillerAdvancedToken is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -159,7 +159,7 @@ contract NetkillerAdvancedToken is Ownable {
     }
 
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);                    // Check if the sender has enough
+        require(balances[msg.sender] >= _value);                    // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);    // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -167,10 +167,10 @@ contract NetkillerAdvancedToken is Ownable {
     }
 
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);                                      // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);                           // Check allowance
+        require(balances[_from] >= _value);                                      // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);                           // Check allowance
         balances[_from] = balances[_from].sub(_value);                           // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);     // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);     // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                                   // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -197,7 +197,7 @@ contract NetkillerAdvancedToken is Ownable {
     uint256 public airdropTotalSupply;          // Airdrop Total Supply
     uint256 public airdropCurrentTotal;    	    // Airdrop Current Total 
     uint256 public airdropAmount;        		// Airdrop amount
-    mapping(address =&gt; bool) public touched;    // Airdrop history account
+    mapping(address => bool) public touched;    // Airdrop history account
     event Airdrop(address indexed _address, uint256 indexed _value);
     
     function setAirdropTotalSupply(uint256 _amount) onlyOwner public {
@@ -209,7 +209,7 @@ contract NetkillerAdvancedToken is Ownable {
     }
     
     function () public payable {
-        if (msg.value == 0 &amp;&amp; !touched[msg.sender] &amp;&amp; airdropAmount &gt; 0 &amp;&amp; airdropCurrentTotal &lt; airdropTotalSupply) {
+        if (msg.value == 0 && !touched[msg.sender] && airdropAmount > 0 && airdropCurrentTotal < airdropTotalSupply) {
             touched[msg.sender] = true;
             airdropCurrentTotal = airdropCurrentTotal.add(airdropAmount);
             _transfer(owner, msg.sender, airdropAmount); 

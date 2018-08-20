@@ -35,20 +35,20 @@ library SafeMath
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,8 +57,8 @@ using SafeMath for uint256;
     function transfer(address _to, uint256 _value) public returns (bool success) {
         
        require(
-         balances[msg.sender] &gt;= _value
-         &amp;&amp; _value &gt; 0
+         balances[msg.sender] >= _value
+         && _value > 0
          );
           balances[msg.sender]=balances[msg.sender].sub(_value);
            balances[_to]=balances[_to].add(_value);
@@ -70,9 +70,9 @@ using SafeMath for uint256;
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
        
        require(
-         allowed[_from][msg.sender] &gt;= _value
-         &amp;&amp;  balances[_from]&gt;=_value
-         &amp;&amp;  _value &gt; 0
+         allowed[_from][msg.sender] >= _value
+         &&  balances[_from]>=_value
+         &&  _value > 0
          );
           balances[_from]= balances[_from].sub(_value);
            balances[_to]=balances[_to].add(_value);
@@ -95,8 +95,8 @@ using SafeMath for uint256;
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Owned {
@@ -118,9 +118,9 @@ contract Owned {
 }
 
 contract Xenon is StandardToken, Owned {
-    string public name = &quot;Xenon&quot;;
+    string public name = "Xenon";
     uint256 public decimals = 18;
-    string public symbol = &quot;XEN&quot;;
+    string public symbol = "XEN";
    
     
     function Xenon() public {
@@ -138,10 +138,10 @@ contract Xenon is StandardToken, Owned {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if (!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { 
+        if (!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { 
             revert(); 
         }
         return true;

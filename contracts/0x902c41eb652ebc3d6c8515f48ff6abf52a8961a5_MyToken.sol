@@ -12,7 +12,7 @@ contract ERC223 {
 	function decimals() public view returns (uint8);
     function totalSupply() public view returns (uint);
 
-	// Needed due to backwards compatibility reasons because of ERC20 transfer function does&#39;t have bytes
+	// Needed due to backwards compatibility reasons because of ERC20 transfer function does't have bytes
 	// parameter. This function must transfer tokens and invoke the function tokenFallback(address, uint256,
 	// bytes) in to, if to is a contract. If the tokenFallback function is not implemented in to (receiver 
 	// contract), the transaaction must fail and the transfer of tokens should not occur.
@@ -57,37 +57,37 @@ library SafeMath {function mul(uint a, uint b) internal pure returns (uint) {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     } 
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
     }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-         return a &lt; b ? a : b;
+         return a < b ? a : b;
   }
 
 }
@@ -100,7 +100,7 @@ library SafeMath {function mul(uint a, uint b) internal pure returns (uint) {
 contract MyToken is ERC223 {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances; // List of user balances.
+    mapping(address => uint) balances; // List of user balances.
 
     string public name;
     string public symbol;
@@ -138,7 +138,7 @@ contract MyToken is ERC223 {
 	}
 
 	function transfer(address to, uint value, bytes data) public returns (bool) {
-		if(balanceOf(msg.sender) &lt; value) revert();
+		if(balanceOf(msg.sender) < value) revert();
 		// Standard function transfer similar to ERC20 transfer with no data.
 		// Added due to backwards compatibility reasons.
 
@@ -153,7 +153,7 @@ contract MyToken is ERC223 {
 	}
 
 	function transfer(address to, uint value) public returns (bool) {
-		if(balanceOf(msg.sender) &lt; value) revert();
+		if(balanceOf(msg.sender) < value) revert();
 		bytes memory empty;
 
 		balances[msg.sender] = balances[msg.sender].sub(value);
@@ -167,7 +167,7 @@ contract MyToken is ERC223 {
 	}
 
 	function transfer(address to, uint value, bytes data, string customFallback) public returns (bool) {
-		if(balanceOf(msg.sender) &lt; value) revert();
+		if(balanceOf(msg.sender) < value) revert();
 
 		balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -183,6 +183,6 @@ contract MyToken is ERC223 {
 		assembly {
 			len := extcodesize(addr)
 		}
-		return (len &gt; 0);
+		return (len > 0);
 	}
 }

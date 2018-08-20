@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
   
 contract SaveData {
-    mapping (string =&gt; string) sign;
+    mapping (string => string) sign;
     address public owner;
     event SetString(string key,string types);
     function SaveData() public {

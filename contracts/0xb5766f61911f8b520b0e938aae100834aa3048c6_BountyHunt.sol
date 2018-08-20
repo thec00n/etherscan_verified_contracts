@@ -1,12 +1,12 @@
 pragma solidity ^0.4.4;
 
 contract BountyHunt {
-  mapping(address =&gt; uint) public bountyAmount;
+  mapping(address => uint) public bountyAmount;
   uint public totalBountyAmount;
 
   modifier preventTheft {
     _;  
-    if (this.balance &lt; totalBountyAmount) throw;
+    if (this.balance < totalBountyAmount) throw;
   }
 
   function grantBounty(address beneficiary, uint amount) payable preventTheft {
@@ -23,7 +23,7 @@ contract BountyHunt {
   }
 
   function transferBounty(address to, uint value) preventTheft {
-    if (bountyAmount[msg.sender] &gt;= value) {
+    if (bountyAmount[msg.sender] >= value) {
       bountyAmount[to] += value;
       bountyAmount[msg.sender] -= value;
     }   

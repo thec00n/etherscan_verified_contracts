@@ -32,7 +32,7 @@ contract YeekAirdropper {
     address public owner;
     uint256 public numberOfTokensPerUser;
     uint256 public tokensDispensed;
-    mapping(address =&gt; bool) public airdroppedUsers;
+    mapping(address => bool) public airdroppedUsers;
     address[] public airdropRecipients;
     event Dispensed(address indexed buyer, uint256 amount);
     
@@ -54,8 +54,8 @@ contract YeekAirdropper {
     //Transfers numberOfTokensPerUser from owner to msg.sender
     //if sufficient remaining tokens exist
     function withdrawAirdropTokens() public  {
-        require(tokenContract.allowance(owner, this) &gt;= numberOfTokensPerUser);
-        require(tokenContract.balanceOf(owner) &gt;= numberOfTokensPerUser);
+        require(tokenContract.allowance(owner, this) >= numberOfTokensPerUser);
+        require(tokenContract.balanceOf(owner) >= numberOfTokensPerUser);
         require(!airdroppedUsers[msg.sender]);  //Each address may only receive the airdrop one time
         
         tokensDispensed += numberOfTokensPerUser;

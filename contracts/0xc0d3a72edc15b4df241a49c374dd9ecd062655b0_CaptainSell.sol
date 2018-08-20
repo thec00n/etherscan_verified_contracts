@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8cfeede5e2f5cce0e5fae9fff8edfea2efe3e1">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="511b3e3f3f287f1724113d382734222530237f323e3c">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8cfeede5e2f5cce0e5fae9fff8edfea2efe3e1">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="511b3e3f3f287f1724113d382734222530237f323e3c">[email protected]</a>
 /*                 
 /* ==================================================================== */
 interface CaptainTokenInterface {
@@ -28,9 +28,9 @@ contract CaptainSell {
   event BuyToken(uint256 tokenId, uint256 oldPrice, address prevOwner, address winner);
   
   //mapping
-  mapping(uint32 =&gt; uint256) captainToCount; 
+  mapping(uint32 => uint256) captainToCount; 
   /// @notice No tipping!
-  /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+  /// @dev Reject all Ether from being sent here, unless it's from one of the
   ///  two auction contracts. (Hopefully, we can prevent user accidents.)
   function() external payable {
   }
@@ -61,13 +61,13 @@ contract CaptainSell {
     (color,atk,,,defense,price,captainCount) = config.getCardInfo(_captainId);
     require(config.getSellable(_captainId) == true);
     SellCount += 1;
-    require(SellCount&lt;=captainCount);
+    require(SellCount<=captainCount);
 
     // Safety check to prevent against an unexpected 0x0 default.
     require(msg.sender != address(0));
     
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= price);
+    require(msg.value >= price);
     captains.CreateCaptainToken(msg.sender,price,_captainId,color,atk, defense,1,0);
     captainToCount[_captainId] = SellCount;
 
@@ -83,7 +83,7 @@ contract CaptainSell {
 
   //@notice withraw all by dev
   function withdraw() external onlyOwner {
-    require(this.balance&gt;0);
+    require(this.balance>0);
     msg.sender.transfer(this.balance);
   }
 

@@ -4,7 +4,7 @@ pragma solidity ^0.4.21; // solhint-disable-line
 * One Proof Shrimp Farm
 * https://oneproof.net/games/shrimp
 * 
-* Instead of having many small &quot;proof of&quot; smart contracts here you can
+* Instead of having many small "proof of" smart contracts here you can
 * create a unique website and use this same smart contract address.
 * This would benefit all those holding because of the increased volume.
 * 
@@ -71,10 +71,10 @@ contract ProofShrimpFarmer is AcceptsProof {
     uint256 PSNH=5000;
     bool public initialized=true;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryShrimp;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryShrimp;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs=8640000000;
 
     function ProofShrimpFarmer(address _baseContract)
@@ -84,7 +84,7 @@ contract ProofShrimpFarmer is AcceptsProof {
     }
 
     /**
-     * Fallback function for the contract.  Since this contract does not use ETH then don&#39;t accept it.
+     * Fallback function for the contract.  Since this contract does not use ETH then don't accept it.
      */
     function() payable public {
       revert();
@@ -104,7 +104,7 @@ contract ProofShrimpFarmer is AcceptsProof {
       returns (bool) {
         require(initialized);
         require(!_isContract(_from));
-        require(_value &gt;= 1 finney); // 0.001 Proof token
+        require(_value >= 1 finney); // 0.001 Proof token
 
         uint256 ProofBalance = tokenContract.myTokens();
 
@@ -120,7 +120,7 @@ contract ProofShrimpFarmer is AcceptsProof {
 
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -140,7 +140,7 @@ contract ProofShrimpFarmer is AcceptsProof {
         require(initialized);
         uint256 hasEggs=getMyEggs();
         uint256 eggValue=calculateEggSell(hasEggs);
-		// This version doesn&#39;t have devfees.
+		// This version doesn't have devfees.
         // uint256 fee=devFee(eggValue);
         claimedEggs[msg.sender]=0;
         lastHatch[msg.sender]=now;
@@ -163,7 +163,7 @@ contract ProofShrimpFarmer is AcceptsProof {
     // All the dividends this contract makes will be used to grow token fund for players
     // of the Proof Schrimp Farm
     function reinvest() public {
-       if(tokenContract.myDividends(true) &gt; 1) {
+       if(tokenContract.myDividends(true) > 1) {
          tokenContract.reinvest();
        }
     }
@@ -190,7 +190,7 @@ contract ProofShrimpFarmer is AcceptsProof {
     }
 
     // Calculate devfee in game
-	// This version doesn&#39;t use devFee
+	// This version doesn't use devFee
     function devFee(uint256 amount) public pure returns(uint256){
         return SafeMath.div(SafeMath.mul(amount,4),100);
     }
@@ -225,11 +225,11 @@ contract ProofShrimpFarmer is AcceptsProof {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -251,9 +251,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -261,7 +261,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -270,7 +270,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

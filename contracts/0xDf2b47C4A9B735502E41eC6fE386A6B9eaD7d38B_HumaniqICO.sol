@@ -4,7 +4,7 @@ pragma solidity ^0.4.2;
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -22,18 +22,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -101,8 +101,8 @@ contract HumaniqToken is StandardToken {
     /*
      * Token meta data
      */
-    string constant public name = &quot;HumaniQ&quot;;
-    string constant public symbol = &quot;HMQ&quot;;
+    string constant public name = "HumaniQ";
+    string constant public symbol = "HMQ";
     uint8 constant public decimals = 8;
 
     address public founder = 0x0;
@@ -200,7 +200,7 @@ contract HumaniqToken is StandardToken {
 
 
 /// @title HumaniqICO contract - Takes funds from users and issues tokens.
-/// @author Evgeny Yurtaev - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="54312233313a2d1431203c31263d3b3a3835367a373b39">[email&#160;protected]</a>&gt;
+/// @author Evgeny Yurtaev - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="54312233313a2d1431203c31263d3b3a3835367a373b39">[email protected]</a>>
 contract HumaniqICO {
 
     /*
@@ -225,8 +225,8 @@ contract HumaniqICO {
     uint public discountedPrice = baseTokenPrice;
     bool public isICOActive = false;
 
-    // participant address =&gt; value in Wei
-    mapping (address =&gt; uint) public investments;
+    // participant address => value in Wei
+    mapping (address => uint) public investments;
 
     /*
      *  Modifiers
@@ -241,7 +241,7 @@ contract HumaniqICO {
 
     modifier minInvestment() {
         // User has to send at least the ether value of one token.
-        if (msg.value &lt; baseTokenPrice) {
+        if (msg.value < baseTokenPrice) {
             throw;
         }
         _;
@@ -276,11 +276,11 @@ contract HumaniqICO {
         }
 
         uint icoDuration = timestamp - startDate;
-        if (icoDuration &gt;= 16 days) {
+        if (icoDuration >= 16 days) {
             return 1000;  // 0%
-        } else if (icoDuration &gt;= 9 days) {
+        } else if (icoDuration >= 9 days) {
             return 1125;  // 12.5%
-        } else if (icoDuration &gt;= 2 days) {
+        } else if (icoDuration >= 2 days) {
             return 1250;  // 25%
         } else {
             return 1499;  // 49.9%
@@ -314,17 +314,17 @@ contract HumaniqICO {
         uint roundedInvestment = tokenCount * discountedPrice;
 
         // Send change back to user.
-        if (sendToFounders &amp;&amp; investment &gt; roundedInvestment &amp;&amp; !beneficiary.send(investment - roundedInvestment)) {
+        if (sendToFounders && investment > roundedInvestment && !beneficiary.send(investment - roundedInvestment)) {
             throw;
         }
 
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         icoBalance += investment;
         coinsIssued += tokenCount;
         investments[beneficiary] += roundedInvestment;
 
         // Send funds to founders if investment was made
-        if (sendToFounders &amp;&amp; !multisig.send(roundedInvestment)) {
+        if (sendToFounders && !multisig.send(roundedInvestment)) {
             // Could not send money
             throw;
         }
@@ -414,7 +414,7 @@ contract HumaniqICO {
         external
         onlyFounder
     {
-        if (isICOActive == false &amp;&amp; startDate == 0) {
+        if (isICOActive == false && startDate == 0) {
           // Start ICO
           isICOActive = true;
           // Set start-date of token creation

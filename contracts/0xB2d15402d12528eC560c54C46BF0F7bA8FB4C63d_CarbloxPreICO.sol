@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -42,11 +42,11 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -71,12 +71,12 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -104,8 +104,8 @@ contract Burnable is StandardToken {
 
     function burn(uint256 _value) public {
 
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
 
@@ -141,8 +141,8 @@ contract Ownable {
 
 contract CarbloxToken is StandardToken, Ownable, Burnable {
 
-    string public constant name = &quot;Carblox Token&quot;;
-    string public constant symbol = &quot;CRX&quot;;
+    string public constant name = "Carblox Token";
+    string public constant symbol = "CRX";
     uint256 public constant decimals = 3;
     uint256 public constant initialSupply = 100000000 * 10**3;
 
@@ -193,7 +193,7 @@ contract CarbloxPreICO is Ownable {
     }
 
     function () public payable {
-        require(msg.value &gt;= 100000000000000000);
+        require(msg.value >= 100000000000000000);
         buyTokens();
     }
 
@@ -215,25 +215,25 @@ contract CarbloxPreICO is Ownable {
 
     function getBonus(uint256 _tokens) public constant returns (uint256) {
 
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
         
-        if (START &lt;= now &amp;&amp; now &lt; START + 5 days) {
+        if (START <= now && now < START + 5 days) {
 
             return _tokens.mul(30).div(100); // 30% days 1-5
 
-        } else if (START + 5 days &lt;= now &amp;&amp; now &lt; START + 10 days) {
+        } else if (START + 5 days <= now && now < START + 10 days) {
 
             return _tokens.div(5); // 20% days 6-10
 
-        } else if (START + 10 days &lt;= now &amp;&amp; now &lt; START + 15 days) {
+        } else if (START + 10 days <= now && now < START + 15 days) {
 
             return _tokens.mul(15).div(100); // 15% days 11-15
 
-        } else if (START + 15 days &lt;= now &amp;&amp; now &lt; START + 20 days) {
+        } else if (START + 15 days <= now && now < START + 20 days) {
 
             return _tokens.div(10); // 10% days 16-20
 
-        } else if (START + 20 days &lt;= now &amp;&amp; now &lt; START + 25 days) {
+        } else if (START + 20 days <= now && now < START + 25 days) {
 
             return _tokens.div(20); // 5% days 21-25
 
@@ -246,9 +246,9 @@ contract CarbloxPreICO is Ownable {
     
     function isActive() public constant returns (bool) {
         return (
-            initialized == true &amp;&amp;
-            now &gt;= START &amp;&amp;
-            now &lt;= START.add(DAYS * 1 days)
+            initialized == true &&
+            now >= START &&
+            now <= START.add(DAYS * 1 days)
         );
     }
 
@@ -262,7 +262,7 @@ contract CarbloxPreICO is Ownable {
         
         uint256 balance = token.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             token.burn(balance);
         }
 

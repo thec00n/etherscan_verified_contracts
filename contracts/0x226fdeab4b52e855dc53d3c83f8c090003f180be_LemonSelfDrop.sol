@@ -40,7 +40,7 @@ contract LemonSelfDrop is Ownable {
     uint256 public donatorReward;
     uint256 public holderReward;
     uint8 public totalDropTransactions;
-    mapping (address =&gt; uint8) participants;
+    mapping (address => uint8) participants;
     
     
     // Initialize the cutest contract in the world
@@ -60,16 +60,16 @@ contract LemonSelfDrop is Ownable {
     
     // Drop some wonderful cutest Lemon Tokens to sender every time contract is called without function
     function() payable {
-        require (participants[msg.sender] &lt; dropNumber &amp;&amp; LemonsRemainingToDrop &gt; basicReward);
+        require (participants[msg.sender] < dropNumber && LemonsRemainingToDrop > basicReward);
         uint256 tokensIssued = basicReward;
         // Send extra Lemon Tokens bonus if participant is donating Ether
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             tokensIssued += donatorReward;
         // Send extra Lemon Token bonus if participant holds at least holderAmount
-        if (LemonContract.balanceOf(msg.sender) &gt;= holderAmount)
+        if (LemonContract.balanceOf(msg.sender) >= holderAmount)
             tokensIssued += holderReward;
         // Check if number of Lemon Tokens to issue is higher than coins remaining for airdrop (last transaction of airdrop)
-        if (tokensIssued &gt; LemonsRemainingToDrop)
+        if (tokensIssued > LemonsRemainingToDrop)
             tokensIssued = LemonsRemainingToDrop;
         
         // Give away these so cute Lemon Token to contributor

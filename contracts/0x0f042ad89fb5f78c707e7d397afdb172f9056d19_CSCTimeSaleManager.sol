@@ -2,12 +2,12 @@ pragma solidity ^0.4.23;
 
 /* Controls state and access rights for contract functions
  * @title Operational Control
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from contract created by OpenZeppelin
  * Ref: https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract OperationalControl {
-    // Facilitates access &amp; control for the game.
+    // Facilitates access & control for the game.
     // Roles:
     //  -The Managers (Primary/Secondary): Has universal control of all elements (No ability to withdraw)
     //  -The Banker: The Bank can withdraw funds and adjust fees / prices.
@@ -22,12 +22,12 @@ contract OperationalControl {
     address public bankManager;
 
     // Contracts that require access for gameplay
-    mapping(address =&gt; uint8) public otherManagers;
+    mapping(address => uint8) public otherManagers;
 
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
 
-    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked &amp; refund can be claimed
+    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked & refund can be claimed
     bool public error = false;
 
     /// @dev Operation modifiers for limiting access
@@ -114,7 +114,7 @@ contract OperationalControl {
     /// @dev Unpauses the smart contract. Can only be called by the Game Master
     /// @notice This is public rather than external so it can be called by derived contracts. 
     function unpause() public onlyManager whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -196,7 +196,7 @@ contract CSCNFTFactory {
         bool
     );
     /// @param _owner The owner whose ships tokens we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire NFT owners array looking for NFT belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -244,7 +244,7 @@ contract CSCNFTFactory {
 contract ERC721Receiver {
     /**
     * @dev Magic value to be returned upon successful reception of an NFT
-    *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+    *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     */
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -259,7 +259,7 @@ contract ERC721Receiver {
     * @param _from The sending address
     * @param _tokenId The NFT identifier which is being transfered
     * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     */
     function onERC721Received(
         address _from,
@@ -276,7 +276,7 @@ contract ERC721Holder is ERC721Receiver {
 }
 
 contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
-    //DATATYPES &amp; CONSTANTS
+    //DATATYPES & CONSTANTS
     struct CollectibleSale {
         // Current owner of NFT (ERC721)
         address seller;
@@ -304,18 +304,18 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
     address public NFTAddress;
 
     // Map from token to their corresponding sale.
-    mapping (uint256 =&gt; CollectibleSale) public tokenIdToSale;
+    mapping (uint256 => CollectibleSale) public tokenIdToSale;
 
     // Count of AssetType Sales
-    mapping (uint256 =&gt; uint256) public assetTypeSaleCount;
+    mapping (uint256 => uint256) public assetTypeSaleCount;
 
     // Last 5 Prices of AssetType Sales
-    mapping (uint256 =&gt; PastSales) internal assetTypeSalePrices;
+    mapping (uint256 => PastSales) internal assetTypeSalePrices;
 
     uint256 public avgSalesToCount = 5;
 
     // type to sales of type
-    mapping(uint256 =&gt; uint256[]) public assetTypeSalesTokenId;
+    mapping(uint256 => uint256[]) public assetTypeSalesTokenId;
 
     event SaleWinner(address owner, uint256 collectibleId, uint256 buyingPrice);
     event SaleCreated(uint256 tokenID, uint256 startingPrice, uint256 endingPrice, uint256 duration, uint64 startedAt);
@@ -345,7 +345,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
 
     function BatchCreateSales(uint256[] _tokenIds, uint256 _startingPrice, uint256 _endingPrice, uint64 _duration, address _seller) public anyOperator {
         uint256 _tokenId;
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
             _tokenId = _tokenIds[i];
             _createSale(_tokenId, _startingPrice, _endingPrice, _duration, _seller);
         }
@@ -360,7 +360,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         //  0-10,000 is mapped to 0%-100% - will be typically 12000 or 120%
         salePrice = salePrice * _margin / 10000;
 
-        if(salePrice &lt; _minPrice) {
+        if(salePrice < _minPrice) {
             salePrice = _minPrice;
         } 
        
@@ -372,7 +372,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         uint256 assetType;
         uint256 _tokenId;
         uint256 salePrice;
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
             _tokenId = _tokenIds[i];
             assetType = cscNFT.getAssetIdItemType(_tokenId);
             // Avg Price of last sales
@@ -381,7 +381,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
             //  0-10,000 is mapped to 0%-100% - will be typically 12000 or 120%
             salePrice = salePrice * _margin / 10000;
 
-            if(salePrice &lt; _minPrice) {
+            if(salePrice < _minPrice) {
                 salePrice = _minPrice;
             } 
             
@@ -392,7 +392,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
 
     function BatchCancelSales(uint256[] _tokenIds) public anyOperator {
         uint256 _tokenId;
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
             _tokenId = _tokenIds[i];
             _cancelSale(_tokenId);
         }
@@ -464,14 +464,14 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
 
     function GetAssetTypeAverageSalePrice(uint256 _assetType) public view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; avgSalesToCount; i++) {
+        for (uint256 i = 0; i < avgSalesToCount; i++) {
             sum += assetTypeSalePrices[_assetType].sales[i];
         }
         return sum / 5;
     }
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.
@@ -480,7 +480,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         super.unpause();
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT (ERC721) contract, but can be called either by
     ///  the owner or the NFT (ERC721) contract.
@@ -517,7 +517,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         CollectibleSale memory onSale = tokenIdToSale[_tokenId];
         require(onSale.isActive == false);
 
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the sale struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -549,7 +549,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
     function _addSale(uint256 _assetId, CollectibleSale _sale) internal {
         // Require that all sales have a duration of
         // at least one minute.
-        require(_sale.duration &gt;= 1 minutes);
+        require(_sale.duration >= 1 minutes);
         
         tokenIdToSale[_assetId] = _sale;
 
@@ -575,8 +575,8 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _sale.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _sale.startedAt) {
             secondsPassed = now - _sale.startedAt;
         }
 
@@ -593,13 +593,13 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
     ///  When testing, make this function public and turn on
     ///  `Current price computation` test suite.
     function _computeCurrentPrice(uint256 _startingPrice, uint256 _endingPrice, uint256 _duration, uint256 _secondsPassed) internal pure returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addSale())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the sale, just return the end price.
             return _endingPrice;
         } else {
@@ -607,7 +607,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -627,7 +627,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         // Check that the bid is greater than or equal to the current buyOut price
         uint256 currentPrice = _currentPrice(_sale);
 
-        require(_price &gt;= currentPrice);
+        require(_price >= currentPrice);
         _sale.buyer = _buyer;
         _sale.isActive = false;
 
@@ -662,7 +662,7 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
     
     /// @dev Returns true if the FT (ERC721) is on sale.
     function _isOnSale(CollectibleSale memory _sale) internal view returns (bool) {
-        return (_sale.startedAt &gt; 0 &amp;&amp; _sale.isActive);
+        return (_sale.startedAt > 0 && _sale.isActive);
     }
 
     function _updateSaleAvgHistory(uint256 _assetType, uint256 _price) internal {
@@ -679,12 +679,12 @@ contract CSCTimeSaleManager is ERC721Holder, OperationalControl {
         uint256 assetType = cscNFT.getAssetIdItemType(_assetId);
 
         bool hasFound = false;
-        for (uint i = 0; i &lt; assetTypeSalesTokenId[assetType].length; i++) {
+        for (uint i = 0; i < assetTypeSalesTokenId[assetType].length; i++) {
             if ( assetTypeSalesTokenId[assetType][i] == _assetId) {
                 hasFound = true;
             }
             if(hasFound == true) {
-                if(i+1 &lt; assetTypeSalesTokenId[assetType].length)
+                if(i+1 < assetTypeSalesTokenId[assetType].length)
                     assetTypeSalesTokenId[assetType][i] = assetTypeSalesTokenId[assetType][i+1];
                 else 
                     delete assetTypeSalesTokenId[assetType][i];

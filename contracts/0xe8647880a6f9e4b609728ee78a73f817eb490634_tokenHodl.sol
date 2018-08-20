@@ -9,14 +9,14 @@ contract ForeignToken {
 contract tokenHodl {
     event Hodl(address indexed hodler, uint indexed amount);
     event Party(address indexed hodler, uint indexed amount);
-    mapping (address =&gt; uint) public hodlers;
+    mapping (address => uint) public hodlers;
     uint partyTime = 1522093545; // test
     function() payable {
         hodlers[msg.sender] += msg.value;
         Hodl(msg.sender, msg.value);
     }
     function party() {
-        require (block.timestamp &gt; partyTime &amp;&amp; hodlers[msg.sender] &gt; 0);
+        require (block.timestamp > partyTime && hodlers[msg.sender] > 0);
         uint value = hodlers[msg.sender];
         uint amount = value/100;
         hodlers[msg.sender] = 0;
@@ -26,7 +26,7 @@ contract tokenHodl {
     }
     function withdrawForeignTokens(address _tokenContract) returns (bool) {
         if (msg.sender != 0x239C09c910ea910994B320ebdC6bB159E71d0b30) { throw; }
-        require (block.timestamp &gt; partyTime);
+        require (block.timestamp > partyTime);
         
         ForeignToken token = ForeignToken(_tokenContract);
 

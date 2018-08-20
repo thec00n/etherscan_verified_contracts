@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 
-// &quot;Proof of Commitment&quot; fun pre-launch competition for Goo!
+// "Proof of Commitment" fun pre-launch competition for Goo!
 
 //  Goo is an addictive freemium game but you can get ahead of
 //  other players (and earn more divs) by playing with eth
@@ -22,19 +22,19 @@ pragma solidity ^0.4.0;
 //  0.5 ether (top eth deposit)
 //  0.3 ether (1 random deposit)
 //  0.2 ether (1 random deposit)
-//  +3 prizes of 0.25, 0.2, &amp; 0.15 for most referals (which will awarded off-contract) as winners manually checked there was no bot/abuse
+//  +3 prizes of 0.25, 0.2, & 0.15 for most referals (which will awarded off-contract) as winners manually checked there was no bot/abuse
 
 
 contract GooLaunchPromotion {
     
     // First Goo Players!
-    mapping(address =&gt; uint256) public deposits;
-    mapping(address =&gt; bool) depositorAlreadyStored;
+    mapping(address => uint256) public deposits;
+    mapping(address => bool) depositorAlreadyStored;
     address[] public depositors;
     
     // Referers contest
-    mapping(address =&gt; address[]) refererals;
-    mapping(address =&gt; bool) refererAlreadyStored;
+    mapping(address => address[]) refererals;
+    mapping(address => bool) refererAlreadyStored;
     address[] public uniqueReferers;
     
     // To trigger contest end only
@@ -64,12 +64,12 @@ contract GooLaunchPromotion {
         deposits[msg.sender] = SafeMath.add(msg.value, existing);
         
         // Finally store contest details
-        if (msg.value &gt;= 0.01 ether &amp;&amp; !depositorAlreadyStored[msg.sender]) {
+        if (msg.value >= 0.01 ether && !depositorAlreadyStored[msg.sender]) {
             depositors.push(msg.sender);
             depositorAlreadyStored[msg.sender] = true;
             
             // Credit referal
-            if (referer != address(0) &amp;&amp; referer != msg.sender) {
+            if (referer != address(0) && referer != msg.sender) {
                 refererals[referer].push(msg.sender);
                 if (!refererAlreadyStored[referer]) {
                     refererAlreadyStored[referer] = true;
@@ -82,7 +82,7 @@ contract GooLaunchPromotion {
     function refund() external {
         // Safely transfer players deposit back
         uint256 depositAmount = deposits[msg.sender];
-        deposits[msg.sender] = 0; // Can&#39;t withdraw twice obviously
+        deposits[msg.sender] = 0; // Can't withdraw twice obviously
         msg.sender.transfer(depositAmount);
     }
     
@@ -92,7 +92,7 @@ contract GooLaunchPromotion {
         
         // Safely transfer back to player
         uint256 depositAmount = deposits[depositor];
-        deposits[depositor] = 0; // Can&#39;t withdraw twice obviously
+        deposits[depositor] = 0; // Can't withdraw twice obviously
         
         // Sends back to correct depositor
         depositor.transfer(depositAmount);
@@ -101,7 +101,7 @@ contract GooLaunchPromotion {
     
     function awardPrizes() external {
         require(msg.sender == ownerAddress);
-        require(now &gt;= LAUNCH_DATE);
+        require(now >= LAUNCH_DATE);
         require(!prizesAwarded);
         
         // Ensure only ran once
@@ -110,11 +110,11 @@ contract GooLaunchPromotion {
         uint256 highestDeposit;
         address highestDepositWinner;
         
-        for (uint256 i = 0; i &lt; depositors.length; i++) {
+        for (uint256 i = 0; i < depositors.length; i++) {
             address depositor = depositors[i];
             
             // No tie allowed!
-            if (deposits[depositor] &gt; highestDeposit) {
+            if (deposits[depositor] > highestDeposit) {
                 highestDeposit = deposits[depositor];
                 highestDepositWinner = depositor;
             }
@@ -169,9 +169,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -179,7 +179,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -188,7 +188,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

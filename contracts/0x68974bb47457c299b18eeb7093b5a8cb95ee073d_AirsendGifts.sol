@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -52,7 +52,7 @@ contract AirsendGifts is Ownable {
     // function initialize(address _tokenAddr, address _tokenOwner, uint256 _amount) onlyOwner public {
     //     require(_tokenAddr != address(0));
     //     require(_tokenOwner != address(0));
-    //     require(_amount &gt; 0);
+    //     require(_amount > 0);
     //     m_token = DRCTestToken(_tokenAddr);
     //     m_token.approve(this, _amount.mul(m_rate));
     //     m_tokenOwner = _tokenOwner;

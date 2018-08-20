@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -96,18 +96,18 @@ contract FUNToken is Ownable { //ERC - 20 token contract
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;FUN&quot;; // solium-disable-line uppercase
-  string public constant name = &quot;THEFORTUNEFUND&quot;; // solium-disable-line uppercase
+  string public constant symbol = "FUN"; // solium-disable-line uppercase
+  string public constant name = "THEFORTUNEFUND"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
   /** @dev maximum token supply
   */
   uint256 _totalSupply = 88888888 ether;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   /**
   * @dev total number of tokens in existence
@@ -132,7 +132,7 @@ contract FUNToken is Ownable { //ERC - 20 token contract
   bool public canChangeLocked = true;
 
   /**
-  * @dev change lock transfer token (&#39;locked&#39;)
+  * @dev change lock transfer token ('locked')
   * @param _request true or false
   */
   function changeLockTransfer (bool _request) public onlyOwner {
@@ -141,7 +141,7 @@ contract FUNToken is Ownable { //ERC - 20 token contract
   }
 
   /**
-  * @dev final unlock transfer token (&#39;locked&#39; and &#39;canChangeLocked&#39;)
+  * @dev final unlock transfer token ('locked' and 'canChangeLocked')
   * Makes for crypto exchangers to prevent the possibility of further blocking
   */
   function finalUnlockTransfer () public {
@@ -188,7 +188,7 @@ contract FUNToken is Ownable { //ERC - 20 token contract
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _amount The amount of tokens to be spent.
@@ -237,7 +237,7 @@ contract FUNToken is Ownable { //ERC - 20 token contract
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -261,8 +261,8 @@ contract FUNToken is Ownable { //ERC - 20 token contract
   address public crowdsaleContract;
 
   /**
-   * @dev setting &#39;crowdsaleContract&#39; variable. Call automatically when crowdsale contract deployed 
-   * throws &#39;crowdsaleContract&#39; already exists
+   * @dev setting 'crowdsaleContract' variable. Call automatically when crowdsale contract deployed 
+   * throws 'crowdsaleContract' already exists
    */
   function setCrowdsaleContract (address _address) public{
     require(crowdsaleContract == address(0));
@@ -274,7 +274,7 @@ contract FUNToken is Ownable { //ERC - 20 token contract
   uint public crowdsaleBalance = 77333333 ether; //Tokens
   
   /**
-   * @dev gets `_address` and `_value` as input and sells tokens to &#39;_address&#39;
+   * @dev gets `_address` and `_value` as input and sells tokens to '_address'
    * throws if not enough tokens after calculation
    */
   function sendCrowdsaleTokens (address _address, uint _value) public {

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) {}
     function symbol() public constant returns (string) {}
     function decimals() public constant returns (uint8) {}
@@ -69,12 +69,12 @@ contract Utils {
         @dev verifies that an amount is greater than zero
     */
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     /*
-        @dev validates an address - currently only checks that it isn&#39;t null
+        @dev validates an address - currently only checks that it isn't null
     */
     modifier validAddress(address _address) {
         require(_address != 0x0);
@@ -93,7 +93,7 @@ contract Utils {
         @dev verifies that the string is not empty
     */
     modifier notEmpty(string _str) {
-        require(bytes(_str).length &gt; 0);
+        require(bytes(_str).length > 0);
         _;
     }
 
@@ -109,7 +109,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -122,7 +122,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        require(_x &gt;= _y);
+        require(_x >= _y);
         return _x - _y;
     }
 
@@ -168,9 +168,9 @@ contract WithdrawalConfigurations is Ownable, Utils {
         Ownable(msg.sender)
         public
         {
-            require(_withdrawalCoolingPeriod &lt;= maxWithdrawalCoolingPeriod &amp;&amp;
-                    _withdrawalCoolingPeriod &gt;= _minWithdrawalCoolingPeriod);
-            require(_minWithdrawalCoolingPeriod &gt;= 0);
+            require(_withdrawalCoolingPeriod <= maxWithdrawalCoolingPeriod &&
+                    _withdrawalCoolingPeriod >= _minWithdrawalCoolingPeriod);
+            require(_minWithdrawalCoolingPeriod >= 0);
 
             minWithdrawalCoolingPeriod = _minWithdrawalCoolingPeriod;
             withdrawalCoolingPeriod = _withdrawalCoolingPeriod;
@@ -193,8 +193,8 @@ contract WithdrawalConfigurations is Ownable, Utils {
         ownerOnly()
         public
         {
-            require (_withdrawalCoolingPeriod &lt;= maxWithdrawalCoolingPeriod &amp;&amp;
-                     _withdrawalCoolingPeriod &gt;= minWithdrawalCoolingPeriod);
+            require (_withdrawalCoolingPeriod <= maxWithdrawalCoolingPeriod &&
+                     _withdrawalCoolingPeriod >= minWithdrawalCoolingPeriod);
             withdrawalCoolingPeriod = _withdrawalCoolingPeriod;
             emit SetWithdrawalCoolingPeriod(_withdrawalCoolingPeriod);
     }
@@ -227,7 +227,7 @@ library SmartWalletLib {
     /*
      *  Members
      */
-    string constant VERSION = &quot;1.1&quot;;
+    string constant VERSION = "1.1";
     address constant withdrawalConfigurationsContract = 0x0D6745B445A7F3C4bC12FE997a7CcbC490F06476; 
     
     /*
@@ -309,7 +309,7 @@ library SmartWalletLib {
             validAddress(_self.userWithdrawalAccount)
             {
 
-                if (_fee &gt; 0) {        
+                if (_fee > 0) {        
                     _feesToken.transfer(_self.feesAccount, _fee); 
                 }       
                 
@@ -328,7 +328,7 @@ library SmartWalletLib {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
     
@@ -362,8 +362,8 @@ library SmartWalletLib {
         public
         userWithdrawalAccountOnly(_self)
         {
-            require(_self.withdrawAllowedAt != 0 &amp;&amp;
-                    _self.withdrawAllowedAt &lt;= now );
+            require(_self.withdrawAllowedAt != 0 &&
+                    _self.withdrawAllowedAt <= now );
 
             uint userBalance = _token.balanceOf(this);
             _token.transfer(_self.userWithdrawalAccount, userBalance);
@@ -392,7 +392,7 @@ contract SmartWallet {
     /*
         @dev constructor
 
-        @param _backupAccount       A default operator&#39;s account to send funds to, in cases where the user account is
+        @param _backupAccount       A default operator's account to send funds to, in cases where the user account is
                                     unavailable or lost
         @param _operator            The contract operator address
         @param _feesAccount         The account to transfer fees to 

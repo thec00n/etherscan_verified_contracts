@@ -7,7 +7,7 @@ pragma solidity ^0.4.23;
 // For details, please visit: http://fantom.foundation
 //
 //
-// written by Alex Kampa - <span class="__cf_email__" data-cfemail="0e6f654e7d6765616c6f206d6163">[email&#160;protected]</span>
+// written by Alex Kampa - <span class="__cf_email__" data-cfemail="0e6f654e7d6765616c6f206d6163">[email protected]</span>
 //
 // ----------------------------------------------------------------------------
 
@@ -22,11 +22,11 @@ library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -48,7 +48,7 @@ contract Owned {
     address public owner;
     address public newOwner;
 
-    mapping(address =&gt; bool) public isAdmin;
+    mapping(address => bool) public isAdmin;
 
     event OwnershipTransferProposed(address indexed _from, address indexed _to);
     event OwnershipTransferred(address indexed _from, address indexed _to);
@@ -146,8 +146,8 @@ contract ERC20Token is ERC20Interface, Owned {
     using SafeMath for uint;
 
     uint public tokensIssuedTotal;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function totalSupply() public view returns (uint) {
         return tokensIssuedTotal;
@@ -199,14 +199,14 @@ contract LockSlots is ERC20Token {
     using SafeMath for uint;
 
     uint public constant LOCK_SLOTS = 5;
-    mapping(address =&gt; uint[LOCK_SLOTS]) public lockTerm;
-    mapping(address =&gt; uint[LOCK_SLOTS]) public lockAmnt;
-    mapping(address =&gt; bool) public mayHaveLockedTokens;
+    mapping(address => uint[LOCK_SLOTS]) public lockTerm;
+    mapping(address => uint[LOCK_SLOTS]) public lockAmnt;
+    mapping(address => bool) public mayHaveLockedTokens;
 
     event RegisteredLockedTokens(address indexed account, uint indexed idx, uint tokens, uint term);
 
     function registerLockedTokens(address _account, uint _tokens, uint _term) internal returns (uint idx) {
-        require(_term &gt; now, &quot;lock term must be in the future&quot;);
+        require(_term > now, "lock term must be in the future");
 
         // find a slot (clean up while doing this)
         // use either the existing slot with the exact same term,
@@ -214,8 +214,8 @@ contract LockSlots is ERC20Token {
         idx = 9999;
         uint[LOCK_SLOTS] storage term = lockTerm[_account];
         uint[LOCK_SLOTS] storage amnt = lockAmnt[_account];
-        for (uint i; i &lt; LOCK_SLOTS; i++) {
-            if (term[i] &lt; now) {
+        for (uint i; i < LOCK_SLOTS; i++) {
+            if (term[i] < now) {
                 term[i] = 0;
                 amnt[i] = 0;
                 if (idx == 9999) idx = i;
@@ -224,7 +224,7 @@ contract LockSlots is ERC20Token {
         }
 
         // fail if no slot was found
-        require(idx != 9999, &quot;registerLockedTokens: no available slot found&quot;);
+        require(idx != 9999, "registerLockedTokens: no available slot found");
 
         // register locked tokens
         if (term[idx] == 0) term[idx] = _term;
@@ -246,10 +246,10 @@ contract LockSlots is ERC20Token {
 
     function isAvailableLockSlot(address _account, uint _term) public view returns (bool) {
         if (!mayHaveLockedTokens[_account]) return true;
-        if (_term &lt; now) return true;
+        if (_term < now) return true;
         uint[LOCK_SLOTS] storage term = lockTerm[_account];
-        for (uint i; i &lt; LOCK_SLOTS; i++) {
-            if (term[i] &lt; now || term[i] == _term) return true;
+        for (uint i; i < LOCK_SLOTS; i++) {
+            if (term[i] < now || term[i] == _term) return true;
         }
         return false;
     }
@@ -267,8 +267,8 @@ contract LockSlots is ERC20Token {
     function pNumberOfLockedTokens(address _account) private view returns (uint locked) {
         uint[LOCK_SLOTS] storage term = lockTerm[_account];
         uint[LOCK_SLOTS] storage amnt = lockAmnt[_account];
-        for (uint i; i &lt; LOCK_SLOTS; i++) {
-            if (term[i] &gt;= now) locked = locked.add(amnt[i]);
+        for (uint i; i < LOCK_SLOTS; i++) {
+            if (term[i] >= now) locked = locked.add(amnt[i]);
         }
     }
 
@@ -294,24 +294,24 @@ contract FantomIcoDates is Owned {
 
     modifier checkDateOrder {
       _ ;
-      require ( dateMainStart &lt; dateMainEnd ) ;
-      require ( dateMainEnd &lt; DATE_LIMIT ) ;
+      require ( dateMainStart < dateMainEnd ) ;
+      require ( dateMainEnd < DATE_LIMIT ) ;
     }
 
     constructor() public checkDateOrder() {
-        require(now &lt; dateMainStart);
+        require(now < dateMainStart);
     }
 
     // set ico dates
 
     function setDateMainStart(uint _unixts) public onlyOwner checkDateOrder {
-        require(now &lt; _unixts &amp;&amp; now &lt; dateMainStart);
+        require(now < _unixts && now < dateMainStart);
         dateMainStart = _unixts;
         emit IcoDateUpdated(1, _unixts);
     }
 
     function setDateMainEnd(uint _unixts) public onlyOwner checkDateOrder {
-        require(now &lt; _unixts &amp;&amp; now &lt; dateMainEnd);
+        require(now < _unixts && now < dateMainEnd);
         dateMainEnd = _unixts;
         emit IcoDateUpdated(2, _unixts);
     }
@@ -319,12 +319,12 @@ contract FantomIcoDates is Owned {
     // where are we?
 
     function isMainFirstDay() public view returns (bool) {
-        if (now &gt; dateMainStart &amp;&amp; now &lt;= dateMainStart + 1 days) return true;
+        if (now > dateMainStart && now <= dateMainStart + 1 days) return true;
         return false;
     }
 
     function isMain() public view returns (bool) {
-        if (now &gt; dateMainStart &amp;&amp; now &lt; dateMainEnd) return true;
+        if (now > dateMainStart && now < dateMainEnd) return true;
         return false;
     }
 
@@ -344,8 +344,8 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
 
     // Basic token data
 
-    string public constant name = &quot;Fantom Token&quot;;
-    string public constant symbol = &quot;FTM&quot;;
+    string public constant name = "Fantom Token";
+    string public constant symbol = "FTM";
     uint8 public constant decimals = 18;
 
     // Token number of possible tokens in existance
@@ -366,22 +366,22 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
 
     // whitelisting
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
     uint public numberWhitelisted;
 
     // track main sale
 
     uint public tokensMain;
-    mapping(address =&gt; uint) public balancesMain;
+    mapping(address => uint) public balancesMain;
 
     uint public totalEthContributed;
-    mapping(address =&gt; uint) public ethContributed;
+    mapping(address => uint) public ethContributed;
 
     // tracking tokens minted
 
     uint public tokensMinted;
-    mapping(address =&gt; uint) public balancesMinted;
-    mapping(address =&gt; mapping(uint =&gt; uint)) public balancesMintedByType;
+    mapping(address => uint) public balancesMinted;
+    mapping(address => mapping(uint => uint)) public balancesMintedByType;
 
     // migration variable
 
@@ -429,7 +429,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     }
 
     function addToWhitelistMultiple(address[] _addresses) public onlyAdmin {
-        for (uint i; i &lt; _addresses.length; i++) {
+        for (uint i; i < _addresses.length; i++) {
             pWhitelist(_addresses[i]);
         }
     }
@@ -444,7 +444,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     // Owner functions ------------------------------------
 
     function updateTokensPerEth(uint _tokens_per_eth) public onlyOwner {
-        require(now &lt; dateMainStart);
+        require(now < dateMainStart);
         tokensPerEth = _tokens_per_eth;
         emit UpdatedTokensPerEth(tokensPerEth);
     }
@@ -454,12 +454,12 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     // any caller to make tokensTradeable.
 
     function makeTradeable() public {
-        require(msg.sender == owner || now &gt; dateMainEnd + 20 weeks);
+        require(msg.sender == owner || now > dateMainEnd + 20 weeks);
         tokensTradeable = true;
     }
 
     function openMigrationPhase() public onlyOwner {
-        require(now &gt; dateMainEnd);
+        require(now > dateMainEnd);
         isMigrationPhaseOpen = true;
     }
 
@@ -471,7 +471,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
 
     function mintTokensMultiple(uint _mint_type, address[] _accounts, uint[] _tokens) public onlyOwner {
         require(_accounts.length == _tokens.length);
-        for (uint i; i &lt; _accounts.length; i++) {
+        for (uint i; i < _accounts.length; i++) {
             pMintTokens(_mint_type, _accounts[i], _tokens[i], 0);
         }
     }
@@ -483,7 +483,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     function mintTokensLockedMultiple(uint _mint_type, address[] _accounts, uint[] _tokens, uint[] _terms) public onlyOwner {
         require(_accounts.length == _tokens.length);
         require(_accounts.length == _terms.length);
-        for (uint i; i &lt; _accounts.length; i++) {
+        for (uint i; i < _accounts.length; i++) {
             pMintTokens(_mint_type, _accounts[i], _tokens[i], _terms[i]);
         }
     }
@@ -491,12 +491,12 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     function pMintTokens(uint _mint_type, address _account, uint _tokens, uint _term) private {
         require(whitelist[_account]);
         require(_account != 0x0);
-        require(_tokens &gt; 0);
-        require(_tokens &lt;= availableToMint(), &quot;not enough tokens available to mint&quot;);
-        require(_term == 0 || _term &gt; now, &quot;either without lock term, or lock term must be in the future&quot;);
+        require(_tokens > 0);
+        require(_tokens <= availableToMint(), "not enough tokens available to mint");
+        require(_term == 0 || _term > now, "either without lock term, or lock term must be in the future");
 
         // register locked tokens (will throw if no slot is found)
-        if (_term &gt; 0) registerLockedTokens(_account, _tokens, _term);
+        if (_term > 0) registerLockedTokens(_account, _tokens, _term);
 
         // update
         balances[_account] = balances[_account].add(_tokens);
@@ -515,7 +515,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
     function buyTokens() private {
 
         require(isMain());
-        require(msg.value &gt;= MINIMUM_CONTRIBUTION);
+        require(msg.value >= MINIMUM_CONTRIBUTION);
         require(whitelist[msg.sender]);
 
         uint tokens_available = TOKEN_MAIN_CAP.sub(tokensMain);
@@ -523,12 +523,12 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
         // adjust tokens_available on first day, if necessary
         if (isMainFirstDay()) {
             uint tokens_available_first_day = firstDayTokenLimit().sub(balancesMain[msg.sender]);
-            if (tokens_available_first_day &lt; tokens_available) {
+            if (tokens_available_first_day < tokens_available) {
                 tokens_available = tokens_available_first_day;
             }
         }
 
-        require (tokens_available &gt; 0);
+        require (tokens_available > 0);
 
         uint tokens_requested = ethToTokens(msg.value);
         uint tokens_issued = tokens_requested;
@@ -536,7 +536,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
         uint eth_contributed = msg.value;
         uint eth_returned;
 
-        if (tokens_requested &gt; tokens_available) {
+        if (tokens_requested > tokens_available) {
             tokens_issued = tokens_available;
             eth_returned = tokensToEth(tokens_requested.sub(tokens_available));
             eth_contributed = msg.value.sub(eth_returned);
@@ -551,7 +551,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
         totalEthContributed = totalEthContributed.add(eth_contributed);
 
         // ether transfers
-        if (eth_returned &gt; 0) msg.sender.transfer(eth_returned);
+        if (eth_returned > 0) msg.sender.transfer(eth_returned);
         wallet.transfer(eth_contributed);
 
         // log
@@ -567,7 +567,7 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
 
     function requestTokenExchange(uint _tokens) public {
         require(isMigrationPhaseOpen);
-        require(_tokens &gt; 0 &amp;&amp; _tokens &lt;= unlockedTokensInternal(msg.sender));
+        require(_tokens > 0 && _tokens <= unlockedTokensInternal(msg.sender));
         balances[msg.sender] = balances[msg.sender].sub(_tokens);
         tokensIssuedTotal = tokensIssuedTotal.sub(_tokens);
         emit Transfer(msg.sender, 0x0, _tokens);
@@ -582,30 +582,30 @@ contract FantomToken is ERC20Token, Wallet, LockSlots, FantomIcoDates {
         return ERC20Interface(_token_address).transfer(owner, _amount);
     }
 
-    /* Override &quot;transfer&quot; */
+    /* Override "transfer" */
 
     function transfer(address _to, uint _amount) public returns (bool success) {
         require(tokensTradeable);
-        require(_amount &lt;= unlockedTokensInternal(msg.sender));
+        require(_amount <= unlockedTokensInternal(msg.sender));
         return super.transfer(_to, _amount);
     }
 
-    /* Override &quot;transferFrom&quot; */
+    /* Override "transferFrom" */
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
         require(tokensTradeable);
-        require(_amount &lt;= unlockedTokensInternal(_from));
+        require(_amount <= unlockedTokensInternal(_from));
         return super.transferFrom(_from, _to, _amount);
     }
 
     /* Multiple token transfers from one address to save gas */
 
     function transferMultiple(address[] _addresses, uint[] _amounts) external {
-        require(_addresses.length &lt;= 100);
+        require(_addresses.length <= 100);
         require(_addresses.length == _amounts.length);
 
         // do the transfers
-        for (uint j; j &lt; _addresses.length; j++) {
+        for (uint j; j < _addresses.length; j++) {
             transfer(_addresses[j], _amounts[j]);
         }
 

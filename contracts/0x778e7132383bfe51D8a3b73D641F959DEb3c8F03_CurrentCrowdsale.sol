@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,7 +98,7 @@ contract Pausable is Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -111,7 +111,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -153,13 +153,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -167,7 +167,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -284,7 +284,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -321,9 +321,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -331,7 +331,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -340,7 +340,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -368,7 +368,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -386,7 +386,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -430,7 +430,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -441,8 +441,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -456,7 +456,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -505,7 +505,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -520,7 +520,7 @@ contract StandardToken is ERC20, BasicToken {
 
 contract PausableToken is StandardToken, Pausable, RBAC {
 
-    string public constant ROLE_ADMINISTRATOR = &quot;administrator&quot;;
+    string public constant ROLE_ADMINISTRATOR = "administrator";
 
     modifier whenNotPausedOrAuthorized() {
         require(!paused || hasRole(msg.sender, ROLE_ADMINISTRATOR));
@@ -544,7 +544,7 @@ contract PausableToken is StandardToken, Pausable, RBAC {
      * @dev Remove an administrator.
      * @param _administrator Address of the administrator to be removed.
      * @return True if the administrator has been removed,
-     *  false if the address wasn&#39;t an administrator in the first place.
+     *  false if the address wasn't an administrator in the first place.
      */
     function removeAdministrator(address _administrator) onlyOwner public returns (bool) {
         if (isAdministrator(_administrator)) {
@@ -588,8 +588,8 @@ contract PausableToken is StandardToken, Pausable, RBAC {
 // File: contracts/CurrentToken.sol
 
 contract CurrentToken is PausableToken {
-    string constant public name = &quot;CurrentCoin&quot;;
-    string constant public symbol = &quot;CUR&quot;;
+    string constant public name = "CurrentCoin";
+    string constant public symbol = "CUR";
     uint8 constant public decimals = 18;
 
     uint256 constant public INITIAL_TOTAL_SUPPLY = 1e11 * (uint256(10) ** decimals);
@@ -633,8 +633,8 @@ contract VariableTimeBonusRate {
     function currentModifier() public view returns (uint256 rateModifier) {
         // solium-disable-next-line security/no-block-members
         uint256 comparisonVariable = now;
-        for (uint i = 0; i &lt; modifiers.length; i++) {
-            if (comparisonVariable &gt;= modifiers[i].start) {
+        for (uint i = 0; i < modifiers.length; i++) {
+            if (comparisonVariable >= modifiers[i].start) {
                 rateModifier = modifiers[i].ratePermilles;
             }
         }
@@ -649,7 +649,7 @@ contract VariableTimeBonusRate {
      * @param _rateModifier RateModifier struct.
      */
     function pushModifier(RateModifier _rateModifier) internal {
-        require(modifiers.length == 0 || _rateModifier.start &gt; modifiers[modifiers.length - 1].start);
+        require(modifiers.length == 0 || _rateModifier.start > modifiers[modifiers.length - 1].start);
         modifiers.push(_rateModifier);
     }
 }
@@ -714,7 +714,7 @@ contract TokenRate is VariableTimeBonusRate {
  * @dev Whitelist for wallets.
 */
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) whitelist;
+    mapping(address => bool) whitelist;
 
     uint256 public whitelistLength = 0;
 
@@ -781,7 +781,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     Whitelist public whitelist;
 
     modifier beforeReachingHardCap() {
-        require(tokensRemainingIco &gt; 0 &amp;&amp; weiRaisedIco &lt; maxcap);
+        require(tokensRemainingIco > 0 && weiRaisedIco < maxcap);
         _;
     }
 
@@ -816,10 +816,10 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     )  TokenRate(_rate) public
     {
         require(_withdrawalWallet != address(0));
-        require(_token != address(0) &amp;&amp; _whitelist != address(0));
-        require(_startPhase1 &gt;= now);
-        require(_endOfPhase3 &gt; _startPhase3);
-        require(_maxcap &gt; 0);
+        require(_token != address(0) && _whitelist != address(0));
+        require(_startPhase1 >= now);
+        require(_endOfPhase3 > _startPhase3);
+        require(_maxcap > 0);
 
         token = _token;
         whitelist = _whitelist;
@@ -855,7 +855,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     * @dev Check whether the ICO is active at the moment.
     */
     function isIco() public constant returns (bool) {
-        return now &gt;= startPhase1 &amp;&amp; now &lt;= endOfPhase3;
+        return now >= startPhase1 && now <= endOfPhase3;
     }
 
     function sellTokensIco() beforeReachingHardCap whenWhitelisted(msg.sender) whenNotPaused public payable {
@@ -863,7 +863,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     }
 
     function sellTokensIcoWithReferal(address referral) beforeReachingHardCap whenWhitelisted(msg.sender) whenNotPaused public payable {
-        if (referral != msg.sender &amp;&amp; whitelist.isWhitelisted(referral)) {
+        if (referral != msg.sender && whitelist.isWhitelisted(referral)) {
             sellTokens(referral);
         } else {
             revert();
@@ -877,7 +877,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     */
     function manualSendTokens(address _beneficiary, uint256 _tokensAmount) public  onlyOwner {
         require(_beneficiary != address(0));
-        require(_tokensAmount &gt; 0);
+        require(_tokensAmount > 0);
 
         token.transfer(_beneficiary, _tokensAmount);
         tokensSoldIco = tokensSoldIco.add(_tokensAmount);
@@ -890,14 +890,14 @@ contract CurrentCrowdsale is Pausable, TokenRate {
     */
     function sellTokens(address referral) beforeReachingHardCap whenWhitelisted(msg.sender) whenNotPaused internal {
         require(isIco());
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint256 weiAmount = msg.value;
         uint256 excessiveFunds = 0;
 
         uint256 plannedWeiTotal = weiRaisedIco.add(weiAmount);
 
-        if (plannedWeiTotal &gt; maxcap) {
+        if (plannedWeiTotal > maxcap) {
             excessiveFunds = plannedWeiTotal.sub(maxcap);
             weiAmount = maxcap.sub(weiRaisedIco);
         }
@@ -906,7 +906,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
         uint256 tokensForReferral = _getTokenAmountForReferral(weiAmount, isReferred);
         uint256 tokensAmount = tokensForUser.add(tokensForReferral);
 
-        if (tokensAmount &gt; tokensRemainingIco) {
+        if (tokensAmount > tokensRemainingIco) {
             uint256 weiToAccept = _getWeiValueOfTokens(tokensRemainingIco, isReferred);
             tokensForReferral = _getTokenAmountForReferral(weiToAccept, isReferred);
             tokensForUser = tokensRemainingIco.sub(tokensForReferral);
@@ -928,7 +928,7 @@ contract CurrentCrowdsale is Pausable, TokenRate {
             token.transfer(referral, tokensForReferral);
         }
 
-        if (excessiveFunds &gt; 0) {
+        if (excessiveFunds > 0) {
             msg.sender.transfer(excessiveFunds);
         }
 

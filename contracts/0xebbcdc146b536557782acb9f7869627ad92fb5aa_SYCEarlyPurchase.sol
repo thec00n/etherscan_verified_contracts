@@ -5,13 +5,13 @@ contract AbstractSYCCrowdsale {
 
 /// @title EarlyPurchase contract - Keep track of purchased amount by Early Purchasers
 /// Project by SynchroLife Team (https://synchrolife.org)
-/// This smart contract developed by Starbase - Token funding &amp; payment Platform for innovative projects &lt;support[at]starbase.co&gt;
+/// This smart contract developed by Starbase - Token funding & payment Platform for innovative projects <support[at]starbase.co>
 
 contract SYCEarlyPurchase {
     /*
      *  Properties
      */
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;ETH&#39;;    // Ether
+    string public constant PURCHASE_AMOUNT_UNIT = 'ETH';    // Ether
     uint public constant WEI_MINIMUM_PURCHASE = 1 * 10 ** 18;
     uint public constant WEI_MAXIMUM_EARLYPURCHASE = 2 * 10 ** 18;
     address public owner;
@@ -45,7 +45,7 @@ contract SYCEarlyPurchase {
     }
 
     modifier onlyEarlyPurchaseTerm() {
-        if (earlyPurchaseClosedAt &gt; 0) {
+        if (earlyPurchaseClosedAt > 0) {
             throw;
         }
         _;
@@ -59,14 +59,14 @@ contract SYCEarlyPurchase {
     /*
      *  Contract functions
      */
-    /// @dev Returns early purchased amount by purchaser&#39;s address
+    /// @dev Returns early purchased amount by purchaser's address
     /// @param purchaser Purchaser address
     function purchasedAmountBy(address purchaser)
         external
         constant
         returns (uint amount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             if (earlyPurchases[i].purchaser == purchaser) {
                 amount += earlyPurchases[i].amount;
             }
@@ -91,15 +91,15 @@ contract SYCEarlyPurchase {
         onlyEarlyPurchaseTerm
         returns (bool)
     {
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
-        if(totalEarlyPurchaseRaised + amount &gt;= WEI_MAXIMUM_EARLYPURCHASE){
+        if(totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE){
            purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);
            earlyPurchases.push(EarlyPurchase(purchaser, WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised, purchasedAt));
            totalEarlyPurchaseRaised += WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;
@@ -109,7 +109,7 @@ contract SYCEarlyPurchase {
            totalEarlyPurchaseRaised += amount;
         }
 
-        if(totalEarlyPurchaseRaised &gt;= WEI_MAXIMUM_EARLYPURCHASE){
+        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE){
             closeEarlyPurchase();
         }
         return true;
@@ -123,7 +123,7 @@ contract SYCEarlyPurchase {
         earlyPurchaseClosedAt = now;
     }
 
-    /// @dev Setup function sets external crowdsale contract&#39;s address
+    /// @dev Setup function sets external crowdsale contract's address
     /// @param sycCrowdsaleAddress Token address
     function setup(address sycCrowdsaleAddress)
         external
@@ -151,7 +151,7 @@ contract SYCEarlyPurchase {
 
     /// @dev By sending Ether to the contract, early purchase will be recorded.
     function () payable{
-        require(msg.value &gt;= WEI_MINIMUM_PURCHASE);
+        require(msg.value >= WEI_MINIMUM_PURCHASE);
         appendEarlyPurchase(msg.sender, msg.value, block.timestamp);
     }
 }

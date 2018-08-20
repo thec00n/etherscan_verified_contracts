@@ -72,18 +72,18 @@ contract Controlled is Ownable{
         _;
     }
 
-    mapping(address =&gt; bool) admins;
+    mapping(address => bool) admins;
 
     // Flag that determines if the token is transferable or not.
     bool public transferEnabled = false;
 
     // frozen account
-    mapping(address =&gt; bool) exclude;
-    mapping(address =&gt; bool) locked;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) exclude;
+    mapping(address => bool) locked;
+    mapping(address => bool) public frozenAccount;
 
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -143,27 +143,27 @@ contract FeeControlled is Controlled{
 
     // transfer rate  default value,  rate/10000
     uint16 defaultTransferRate = 0;
-     // transfer fee min &amp; max
+     // transfer fee min & max
     uint256 transferFeeMin = 0;
     uint256 transferFeeMax = 10 ** 10;
 
     // transfer rate, rate/10000
-    mapping(address =&gt; int16) transferRates;
+    mapping(address => int16) transferRates;
     // reverse transfer rate when receive from user
-    mapping(address =&gt; int16) transferReverseRates;
+    mapping(address => int16) transferReverseRates;
 
 
     function setFeeReceAccount(address _addr) public onlyAdmin
     returns (bool success){
-        require(_addr != address(0) &amp;&amp; feeReceAccount != _addr);
+        require(_addr != address(0) && feeReceAccount != _addr);
         feeReceAccount = _addr;
         return true;
     }
 
     function setFeeParams(uint16 _transferRate, uint256 _transferFeeMin, uint256 _transferFeeMax) public onlyAdmin
     returns (bool success){
-        require(_transferRate&gt;=0  &amp;&amp; _transferRate&lt;10000);
-        require(_transferFeeMin&gt;=0 &amp;&amp; _transferFeeMin&lt;transferFeeMax);
+        require(_transferRate>=0  && _transferRate<10000);
+        require(_transferFeeMin>=0 && _transferFeeMin<transferFeeMax);
         transferFeeMin = _transferFeeMin;
         transferFeeMax = _transferFeeMax;
         defaultTransferRate = _transferRate;
@@ -176,8 +176,8 @@ contract FeeControlled is Controlled{
 
     function setTransferRate(address[] _addrs, int16 _transferRate) public onlyAdmin
     returns (bool success){
-        require((_transferRate&gt;=0  || _transferRate==-1)&amp;&amp; _transferRate&lt;10000);
-        for(uint256 i = 0; i &lt; _addrs.length ; i++){
+        require((_transferRate>=0  || _transferRate==-1)&& _transferRate<10000);
+        for(uint256 i = 0; i < _addrs.length ; i++){
             address _addr = _addrs[i];
             transferRates[_addr] = _transferRate;
         }
@@ -187,7 +187,7 @@ contract FeeControlled is Controlled{
 
     function removeTransferRate(address[] _addrs) public onlyAdmin
     returns (bool success){
-        for(uint256 i = 0; i &lt; _addrs.length ; i++){
+        for(uint256 i = 0; i < _addrs.length ; i++){
             address _addr = _addrs[i];
             delete transferRates[_addr];
         }
@@ -196,8 +196,8 @@ contract FeeControlled is Controlled{
 
     function setReverseRate(address[] _addrs, int16 _reverseRate) public onlyAdmin
     returns (bool success){
-        require(_reverseRate&gt;0 &amp;&amp; _reverseRate&lt;10000);
-        for(uint256 i = 0; i &lt; _addrs.length ; i++){
+        require(_reverseRate>0 && _reverseRate<10000);
+        for(uint256 i = 0; i < _addrs.length ; i++){
             address _addr = _addrs[i];
             transferReverseRates[_addr] = _reverseRate;
         }
@@ -206,7 +206,7 @@ contract FeeControlled is Controlled{
 
 
     function removeReverseRate(address[] _addrs) public onlyAdmin returns (bool success){
-        for(uint256 i = 0; i &lt; _addrs.length ; i++){
+        for(uint256 i = 0; i < _addrs.length ; i++){
             address _addr = _addrs[i];
             delete transferReverseRates[_addr];
         }
@@ -226,13 +226,13 @@ contract FeeControlled is Controlled{
     function getTransferFee(address _addr, uint256 _value) public constant returns(uint256 transferFee){
         uint16 transferRate = getTransferRate(_addr);
         transferFee = 0x0;
-        if(transferRate&gt;0){
+        if(transferRate>0){
            transferFee =  _value * transferRate / 10000;
         }
-        if(transferFee&lt;transferFeeMin){
+        if(transferFee<transferFeeMin){
             transferFee = transferFeeMin;
         }
-        if(transferFee&gt;transferFeeMax){
+        if(transferFee>transferFeeMax){
             transferFee = transferFeeMax;
         }
         return transferFee;
@@ -245,13 +245,13 @@ contract FeeControlled is Controlled{
     function getReverseFee(address _addr, uint256 _value) public constant returns(uint256 reverseFee){
         uint16 reverseRate = uint16(transferReverseRates[_addr]);
         reverseFee = 0x0;
-        if(reverseRate&gt;0){
+        if(reverseRate>0){
             reverseFee = _value * reverseRate / 10000;
         }
-        if(reverseFee&lt;transferFeeMin){
+        if(reverseFee<transferFeeMin){
             reverseFee = transferFeeMin;
         }
-        if(reverseFee&gt;transferFeeMax){
+        if(reverseFee>transferFeeMax){
             reverseFee = transferFeeMax;
         }
         return reverseFee;
@@ -265,7 +265,7 @@ contract TokenERC20 is ERC20, Controlled {
     string public name;
     string public symbol;
     uint8 public decimals = 18;
-    string public version = &#39;v1.0&#39;;
+    string public version = 'v1.0';
 
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
@@ -273,8 +273,8 @@ contract TokenERC20 is ERC20, Controlled {
     uint256 public allocateEndTime;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
 
     function totalSupply() public view returns(uint){
@@ -300,12 +300,12 @@ contract TokenERC20 is ERC20, Controlled {
     // @param _owners The owners list of the token
     // @param _values The value list of the token
     function allocateTokens(address[] _owners, uint256[] _values) public onlyOwner {
-        require(allocateEndTime &gt; now);
+        require(allocateEndTime > now);
         require(_owners.length == _values.length);
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address to = _owners[i];
             uint256 value = _values[i];
-            require(totalSupply + value &gt; totalSupply &amp;&amp; balances[to] + value &gt; balances[to]) ;
+            require(totalSupply + value > totalSupply && balances[to] + value > balances[to]) ;
             totalSupply += value;
             balances[to] += value;
         }
@@ -318,9 +318,9 @@ contract TokenERC20 is ERC20, Controlled {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -355,7 +355,7 @@ contract TokenERC20 is ERC20, Controlled {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -402,7 +402,7 @@ contract TokenERC20 is ERC20, Controlled {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -418,10 +418,10 @@ contract TokenERC20 is ERC20, Controlled {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -441,17 +441,17 @@ contract TokenERC20 is ERC20, Controlled {
     */
     function transferProxy(address _from, address _to, uint256 _value, uint256 _feeProxy,
         uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){
-        require(_value + _feeProxy &gt;= _value);
-        require(balances[_from] &gt;=_value  + _feeProxy);
+        require(_value + _feeProxy >= _value);
+        require(balances[_from] >=_value  + _feeProxy);
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value,_feeProxy,nonce);
         require(_from == ecrecover(h,_v,_r,_s));
-        require(balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] + _feeProxy &gt; balances[msg.sender]);
+        require(balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] + _feeProxy > balances[msg.sender]);
         balances[_from] -= (_value  + _feeProxy);
         balances[_to] += _value;
         Transfer(_from, _to, _value);
-        if(_feeProxy&gt;0){
+        if(_feeProxy>0){
             balances[msg.sender] += _feeProxy;
             Transfer(_from, msg.sender, _feeProxy);
         }
@@ -473,15 +473,15 @@ contract StableToken is TokenERC20, FeeControlled {
 
      function _transferWithRate(address _from, address _to, uint256 _value)  transferAllowed(_from) internal returns (bool success) {
         // check transfer rate and transfer fee to owner
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         uint256 transferFee = getTransferFee(_from, _value);
-        require(balances[_from] &gt;= _value + transferFee);
+        require(balances[_from] >= _value + transferFee);
         if(msg.sender!=_from){
-            require(allowed[_from][msg.sender] &gt;= _value + transferFee);
+            require(allowed[_from][msg.sender] >= _value + transferFee);
         }
-        require(balances[_to] + _value &gt; balances[_to]);
-        if(transferFee&gt;0){
-            require(balances[feeReceAccount] + transferFee &gt; balances[feeReceAccount]);
+        require(balances[_to] + _value > balances[_to]);
+        if(transferFee>0){
+            require(balances[feeReceAccount] + transferFee > balances[feeReceAccount]);
         }
 
         balances[_from] -= (_value + transferFee);
@@ -492,7 +492,7 @@ contract StableToken is TokenERC20, FeeControlled {
         balances[_to] += _value;
         Transfer(_from, _to, _value);
 
-        if(transferFee&gt;0){
+        if(transferFee>0){
             balances[feeReceAccount] += transferFee;
             Transfer(_from, feeReceAccount, transferFee);
         }
@@ -513,25 +513,25 @@ contract StableToken is TokenERC20, FeeControlled {
      */
     function transferReverseProxy(address _from, address _to, uint256 _value,uint256 _feeProxy,
         uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){
-        require(_feeProxy&gt;=0);
-        require(balances[_from] &gt;= _value + _feeProxy);
-        require(getReverseRate(_to)&gt;0);
+        require(_feeProxy>=0);
+        require(balances[_from] >= _value + _feeProxy);
+        require(getReverseRate(_to)>0);
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value, _feeProxy, nonce);
         require(_from == ecrecover(h,_v,_r,_s));
 
         uint256 transferReverseFee = getReverseFee(_to, _value);
-        require(transferReverseFee&gt;0);
-        require(balances[_to] + _value &gt; balances[_to]);
-        require(balances[feeReceAccount] + transferReverseFee &gt; balances[feeReceAccount]);
-        require(balances[msg.sender] + _feeProxy &gt;= balances[msg.sender]);
+        require(transferReverseFee>0);
+        require(balances[_to] + _value > balances[_to]);
+        require(balances[feeReceAccount] + transferReverseFee > balances[feeReceAccount]);
+        require(balances[msg.sender] + _feeProxy >= balances[msg.sender]);
 
         balances[_from] -= (_value + _feeProxy);
         balances[_to] += (_value - transferReverseFee);
         balances[feeReceAccount] += transferReverseFee;
         Transfer(_from, _to, _value);
         Transfer(_to, feeReceAccount, transferReverseFee);
-        if(_feeProxy&gt;0){
+        if(_feeProxy>0){
             balances[msg.sender] += _feeProxy;
             Transfer(_from, msg.sender, _feeProxy);
         }
@@ -554,21 +554,21 @@ contract StableToken is TokenERC20, FeeControlled {
     function transferProxy(address _from, address _to, uint256 _value, uint256 _feeProxy,
         uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){
         uint256 transferFee = getTransferFee(_from, _value);
-        require(_value + transferFee + _feeProxy &gt;= _value);
-        require(balances[_from] &gt;=_value + transferFee + _feeProxy);
+        require(_value + transferFee + _feeProxy >= _value);
+        require(balances[_from] >=_value + transferFee + _feeProxy);
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value,_feeProxy,nonce);
         require(_from == ecrecover(h,_v,_r,_s));
-        require(balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] + _feeProxy &gt; balances[msg.sender]);
+        require(balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] + _feeProxy > balances[msg.sender]);
         balances[_from] -= (_value + transferFee + _feeProxy);
         balances[_to] += _value;
         Transfer(_from, _to, _value);
-        if(_feeProxy&gt;0){
+        if(_feeProxy>0){
             balances[msg.sender] += _feeProxy;
             Transfer(_from, msg.sender, _feeProxy);
         }
-        if(transferFee&gt;0){
+        if(transferFee>0){
             balances[feeReceAccount] += transferFee;
             Transfer(_from, feeReceAccount, transferFee);
         }
@@ -578,13 +578,13 @@ contract StableToken is TokenERC20, FeeControlled {
 
    /*
     * Wrapper function:  transferProxy + transferReverseProxy
-    * address[] _addrs =&gt; [_from, _origin, _to]
-    * uint256[] _values =&gt; [_value, _feeProxy]
+    * address[] _addrs => [_from, _origin, _to]
+    * uint256[] _values => [_value, _feeProxy]
     * token flows
-    * _from-&gt;_origin: _value
-    * _from-&gt;sender: _feeProxy
-    * _origin-&gt;_to: _value
-    * _to-&gt;feeAccount: transferFee
+    * _from->_origin: _value
+    * _from->sender: _feeProxy
+    * _origin->_to: _value
+    * _to->feeAccount: transferFee
     * _from sign:
     * (_v[0],_r[0],_s[0]) = sign(_from, _origin, _value, _feeProxy, nonces[_from])
     * _origin sign:
@@ -599,24 +599,24 @@ contract StableToken is TokenERC20, FeeControlled {
         uint256 _value = _values[0];
         uint256 _feeProxy = _values[1];
 
-        require(_feeProxy&gt;=0);
-        require(balances[_from] &gt;= (_value + _feeProxy));
-        require(getReverseRate(_to)&gt;0);
+        require(_feeProxy>=0);
+        require(balances[_from] >= (_value + _feeProxy));
+        require(getReverseRate(_to)>0);
         uint256 transferReverseFee = getReverseFee(_to, _value);
-        require(transferReverseFee&gt;0);
+        require(transferReverseFee>0);
 
-        // check sign _from =&gt; _origin
+        // check sign _from => _origin
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from, _origin, _value, _feeProxy, nonce);
         require(_from == ecrecover(h,_v[0],_r[0],_s[0]));
-         // check sign _origin =&gt; _to
+         // check sign _origin => _to
         bytes32 h1 = keccak256(_origin, _to, _value);
         require(_origin == ecrecover(h1,_v[1],_r[1],_s[1]));
 
 
-        require(balances[_to] + _value &gt; balances[_to]);
-        require(balances[feeReceAccount] + transferReverseFee &gt; balances[feeReceAccount]);
-        require(balances[msg.sender] + _feeProxy &gt;= balances[msg.sender]);
+        require(balances[_to] + _value > balances[_to]);
+        require(balances[feeReceAccount] + transferReverseFee > balances[feeReceAccount]);
+        require(balances[msg.sender] + _feeProxy >= balances[msg.sender]);
 
         balances[_from] -= _value + _feeProxy;
         balances[_to] += (_value - transferReverseFee);
@@ -626,7 +626,7 @@ contract StableToken is TokenERC20, FeeControlled {
         Transfer(_origin, _to, _value);
         Transfer(_to, feeReceAccount, transferReverseFee);
         
-        if(_feeProxy&gt;0){
+        if(_feeProxy>0){
             balances[msg.sender] += _feeProxy;
             Transfer(_from, msg.sender, _feeProxy);
         }
@@ -661,10 +661,10 @@ contract StableToken is TokenERC20, FeeControlled {
 contract HanYinToken is StableToken{
     
     function HanYinToken() public {
-        name = &quot;HanYin stable Token&quot;;
+        name = "HanYin stable Token";
         decimals = 6;
-        symbol = &quot;HYT&quot;;
-        version = &#39;v1.0&#39;;
+        symbol = "HYT";
+        version = 'v1.0';
         
         allocateEndTime = now + 1 days;
 

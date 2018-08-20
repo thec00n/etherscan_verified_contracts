@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 
 /// @title Abstract token contract - Functions to be implemented by token contracts.
-/// @author braziliex dev team - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9afeffecdaf8e8fbe0f3f6f3ffe2b4f9f5f7">[email&#160;protected]</a>&gt;
+/// @author braziliex dev team - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9afeffecdaf8e8fbe0f3f6f3ffe2b4f9f5f7">[email protected]</a>>
 contract Token {
     uint256 public totalSupply;
     function balanceOf(address owner) constant returns (uint256 balance);
@@ -19,11 +19,11 @@ contract Token {
 
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -36,7 +36,7 @@ contract StandardToken is Token {
 
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -68,8 +68,8 @@ contract StandardToken is Token {
 
 contract BraziliexToken is StandardToken {
 
-    string constant public name = &quot;BraziliexToken&quot;;
-    string constant public symbol = &quot;BRZX&quot;;
+    string constant public name = "BraziliexToken";
+    string constant public symbol = "BRZX";
     uint8 constant public decimals = 8;
 
 

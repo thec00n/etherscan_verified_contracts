@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,11 +66,11 @@ contract Safe{
     uint256 internal timeOutAuthentication;
     
     // arrays of safe keys
-    mapping (address =&gt; bool) internal safeKeys;
+    mapping (address => bool) internal safeKeys;
     address [] internal massSafeKeys = new address[](4);
     
     // array of keys that signed the transaction
-    mapping (address =&gt; bool) internal signKeys;
+    mapping (address => bool) internal signKeys;
     
     // free amount in safe
     uint256 internal freeAmount; 
@@ -99,7 +99,7 @@ contract Safe{
     }
     
     // cell addresses
-    mapping (address =&gt; _Cell) internal userCells;
+    mapping (address => _Cell) internal userCells;
     
     event CreateCell(address indexed key);
     event Deposit(address indexed key, uint256 balance);
@@ -110,36 +110,36 @@ contract Safe{
 
     modifier firstLevel() {
         require(msg.sender == lastSafeKey);
-        require(count&gt;=1);
-        require(now &lt; end);
+        require(count>=1);
+        require(now < end);
         _;
     }
     
     modifier secondLevel() {
         require(msg.sender == lastSafeKey);
-        require(count&gt;=2);
-        require(now &lt; end);
+        require(count>=2);
+        require(now < end);
         _;
     }
     
     modifier thirdLevel() {
         require(msg.sender == lastSafeKey);
-        require(count&gt;=3);
-        require(now &lt; end);
+        require(count>=3);
+        require(now < end);
         _;
     }
     
     constructor (address _first, address _second, address _third, address _fourth) public {
         require(
-            _first != _second &amp;&amp; 
-            _first != _third &amp;&amp; 
-            _first != _fourth &amp;&amp; 
-            _second != _third &amp;&amp;
-            _second != _fourth &amp;&amp;
-            _third != _fourth &amp;&amp;
-            _first != 0x0 &amp;&amp;
-            _second != 0x0 &amp;&amp;
-            _third != 0x0 &amp;&amp;
+            _first != _second && 
+            _first != _third && 
+            _first != _fourth && 
+            _second != _third &&
+            _second != _fourth &&
+            _third != _fourth &&
+            _first != 0x0 &&
+            _second != 0x0 &&
+            _third != 0x0 &&
             _fourth != 0x0
         );
         safeKeys[_first] = true;
@@ -155,7 +155,7 @@ contract Safe{
     
     function AuthStart() public returns(bool){
         require(safeKeys[msg.sender]);
-        require(timeOutAuthentication &gt;=0);
+        require(timeOutAuthentication >=0);
         require(!signKeys[msg.sender]);
         signKeys[msg.sender] = true;
         count++;
@@ -167,7 +167,7 @@ contract Safe{
     // completion of operation with safe-keys
     function AuthEnd() public returns(bool){
         require (safeKeys[msg.sender]);
-        for(uint i=0; i&lt;4; i++){
+        for(uint i=0; i<4; i++){
           signKeys[massSafeKeys[i]] = false;
         }
         count = 0;
@@ -202,8 +202,8 @@ contract Safe{
     
     // withdrawal tokens from safe for issuer
     function AssetWithdraw(address _to, uint256 _balance) secondLevel public returns(bool){
-        require(_balance&lt;=freeAmount);
-        require(now&gt;=mainLockup);
+        require(_balance<=freeAmount);
+        require(now>=mainLockup);
         freeAmount = freeAmount.sub(_balance);
         token.transfer(_to, _balance);
         emit Withdraw(this, _balance);
@@ -211,9 +211,9 @@ contract Safe{
     }
     
     function setCell(address _cell, uint256 _lockup) secondLevel public returns(bool){
-        require(userCells[_cell].lockup==0 &amp;&amp; userCells[_cell].balance==0);
+        require(userCells[_cell].lockup==0 && userCells[_cell].balance==0);
         require(!userCells[_cell].exist);
-        require(_lockup &gt;= mainLockup);
+        require(_lockup >= mainLockup);
         userCells[_cell].lockup = _lockup;
         userCells[_cell].exist = true;
         countOfCell = countOfCell.add(1);
@@ -234,7 +234,7 @@ contract Safe{
     // change parameters of the cell
     function editCell(address _key, uint256 _lockup) secondLevel public returns(bool){
         require(getBalanceCell(_key)==0);
-        require(_lockup&gt;= mainLockup);
+        require(_lockup>= mainLockup);
         require(userCells[_key].exist);
         userCells[_key].lockup = _lockup;
         emit Edit(_key, _lockup);
@@ -243,7 +243,7 @@ contract Safe{
 
     function depositCell(address _key, uint256 _balance) secondLevel public returns(bool){
         require(userCells[_key].exist);
-        require(_balance&lt;=freeAmount);
+        require(_balance<=freeAmount);
         freeAmount = freeAmount.sub(_balance);
         userCells[_key].balance = userCells[_key].balance.add(_balance);
         userCells[_key].timeOfDeposit = now;
@@ -252,7 +252,7 @@ contract Safe{
     }
     
     function changeDepositCell(address _key, uint256 _balance) secondLevel public returns(bool){
-        require(userCells[_key].timeOfDeposit.add(1 hours)&gt;now);
+        require(userCells[_key].timeOfDeposit.add(1 hours)>now);
         userCells[_key].balance = userCells[_key].balance.sub(_balance);
         freeAmount = freeAmount.add(_balance);
         return true;
@@ -278,7 +278,7 @@ contract Safe{
     function changeKey(address _oldKey, address _newKey) thirdLevel public returns(bool){
         require(safeKeys[_oldKey]);
         require(_newKey != 0x0);
-        for(uint i=0; i&lt;4; i++){
+        for(uint i=0; i<4; i++){
           if(massSafeKeys[i]==_oldKey){
             massSafeKeys[i] = _newKey;
           }
@@ -295,17 +295,17 @@ contract Safe{
 
     function setTimeOutAuthentication(uint256 _time) thirdLevel public returns(bool){
         require(
-            _time &gt; 0 &amp;&amp; 
-            timeOutAuthentication != _time &amp;&amp;
-            _time &lt;= (5000 * 1 minutes)
+            _time > 0 && 
+            timeOutAuthentication != _time &&
+            _time <= (5000 * 1 minutes)
         );
         timeOutAuthentication = _time;
         return true;
     }
 
     function withdrawCell(uint256 _balance) public returns(bool){
-        require(userCells[msg.sender].balance &gt;= _balance);
-        require(now &gt;= userCells[msg.sender].lockup);
+        require(userCells[msg.sender].balance >= _balance);
+        require(now >= userCells[msg.sender].lockup);
         userCells[msg.sender].balance = userCells[msg.sender].balance.sub(_balance);
         token.transfer(msg.sender, _balance);
         emit Withdraw(msg.sender, _balance);
@@ -314,8 +314,8 @@ contract Safe{
     
     // transferring tokens from one cell to another
     function transferCell(address _to, uint256 _balance) public returns(bool){
-        require(userCells[msg.sender].balance &gt;= _balance);
-        require(userCells[_to].lockup&gt;=userCells[msg.sender].lockup);
+        require(userCells[msg.sender].balance >= _balance);
+        require(userCells[_to].lockup>=userCells[msg.sender].lockup);
         require(userCells[_to].exist);
         userCells[msg.sender].balance = userCells[msg.sender].balance.sub(_balance);
         userCells[_to].balance = userCells[_to].balance.add(_balance);
@@ -344,7 +344,7 @@ contract Safe{
     }
     
     function isTimeOver() view public returns(bool){
-        if(now &gt; end){
+        if(now > end){
             return true;
         } else{
             return false;

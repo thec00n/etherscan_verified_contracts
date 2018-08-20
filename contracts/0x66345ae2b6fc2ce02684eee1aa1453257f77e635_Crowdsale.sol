@@ -8,20 +8,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns(uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function safeAdd(uint a, uint b) internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -99,7 +99,7 @@ contract Pausable is Ownable {
 // Base contract supporting async send for pull payments.
 // Inherit from this contract and use asyncSend instead of send.
 contract PullPayment {
-    mapping(address =&gt; uint) public payments;
+    mapping(address => uint) public payments;
 
     event RefundETH(address to, uint value);
 
@@ -117,7 +117,7 @@ contract PullPayment {
             revert();
         }
 
-        if (this.balance &lt; payment) {
+        if (this.balance < payment) {
             revert();
         }
 
@@ -159,18 +159,18 @@ contract Crowdsale is SafeMath, Pausable, PullPayment {
     
     uint multiplier = 10000000000; // to provide 10 decimal values
     // Looping through Backer
-    mapping(address =&gt; Backer) public backers; //backer list
+    mapping(address => Backer) public backers; //backer list
     address[] public backersIndex ;   // to be able to itarate through backers when distributing the tokens. 
 
 
     // @notice to verify if action is not performed out of the campaing range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) revert();
+        if ((block.number < startBlock) || (block.number > endBlock)) revert();
         _;
     }
 
     modifier minCapNotReached() {
-        if (GXCSentToETH &gt;= minCap) revert();
+        if (GXCSentToETH >= minCap) revert();
         _;
     }
 
@@ -234,12 +234,12 @@ contract Crowdsale is SafeMath, Pausable, PullPayment {
     // @return res {bool} true if transaction was successful
     function handleETH(address _backer) internal stopInEmergency respectTimeFrame returns(bool res) {
 
-        if (msg.value &lt; minInvestETH) revert(); // stop when required minimum is not sent
+        if (msg.value < minInvestETH) revert(); // stop when required minimum is not sent
 
         uint GXCToSend = (msg.value * multiplier)/ tokenPriceWei ; // calculate number of tokens
 
-        // Ensure that max cap hasn&#39;t been reached
-        if (safeAdd(GXCSentToETH, GXCToSend) &gt; maxCap) revert();
+        // Ensure that max cap hasn't been reached
+        if (safeAdd(GXCSentToETH, GXCToSend) > maxCap) revert();
 
         Backer storage backer = backers[_backer];
 
@@ -264,14 +264,14 @@ contract Crowdsale is SafeMath, Pausable, PullPayment {
         
         uint daysToRefund = 4*60*24*10;  //10 days        
 
-        if (block.number &lt; endBlock &amp;&amp; GXCSentToETH &lt; maxCap -100 ) revert();  // -100 is used to allow closing of the campaing when contribution is near 
-                                                                                 // finished as exact amount of maxCap might be not feasible e.g. you can&#39;t easily buy few tokens. 
+        if (block.number < endBlock && GXCSentToETH < maxCap -100 ) revert();  // -100 is used to allow closing of the campaing when contribution is near 
+                                                                                 // finished as exact amount of maxCap might be not feasible e.g. you can't easily buy few tokens. 
                                                                                  // when min contribution is 0.1 Eth.  
 
-        if (GXCSentToETH &lt; minCap &amp;&amp; block.number &lt; safeAdd(endBlock , daysToRefund)) revert();   
+        if (GXCSentToETH < minCap && block.number < safeAdd(endBlock , daysToRefund)) revert();   
 
        
-        if (GXCSentToETH &gt; minCap) {
+        if (GXCSentToETH > minCap) {
             if (!multisigETH.send(this.balance)) revert();  // transfer balance to multisig wallet
             if (!gxc.transfer(team,  gxc.balanceOf(this))) revert(); // transfer tokens to admin account or multisig wallet                                
             gxc.unlock();    // release lock from transfering tokens. 
@@ -311,7 +311,7 @@ contract Crowdsale is SafeMath, Pausable, PullPayment {
         uint ETHToSend = backers[msg.sender].weiReceived;
         backers[msg.sender].weiReceived = 0;
         backers[msg.sender].GXCSent = 0;
-        if (ETHToSend &gt; 0) {
+        if (ETHToSend > 0) {
             asyncSend(msg.sender, ETHToSend);
             return true;
         }else
@@ -337,7 +337,7 @@ contract GXC is ERC20, SafeMath, Ownable {
     string public name;
     string public symbol;
     uint8 public decimals; // How many decimals to show.
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
     uint public initialSupply;
     uint public totalSupply;
     bool public locked;
@@ -346,18 +346,18 @@ contract GXC is ERC20, SafeMath, Ownable {
     
     uint256 public totalMigrated;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
 
     // Lock transfer during the ICO
     modifier onlyUnlocked() {
-        if (msg.sender != crowdSaleAddress &amp;&amp; locked &amp;&amp; msg.sender != owner) revert();
+        if (msg.sender != crowdSaleAddress && locked && msg.sender != owner) revert();
         _;
     }
 
     modifier onlyAuthorized() {
-        if ( msg.sender != crowdSaleAddress &amp;&amp; msg.sender != owner) revert();
+        if ( msg.sender != crowdSaleAddress && msg.sender != owner) revert();
         _;
     }
 
@@ -366,8 +366,8 @@ contract GXC is ERC20, SafeMath, Ownable {
         locked = true;  // Lock the transfer of tokens during the crowdsale
         initialSupply = 10000000 * multiplier;
         totalSupply = initialSupply;
-        name = &#39;GXC&#39;; // Set the name for display purposes
-        symbol = &#39;GXC&#39;; // Set the symbol for display purposes
+        name = 'GXC'; // Set the name for display purposes
+        symbol = 'GXC'; // Set the symbol for display purposes
         decimals = 10; // Amount of decimals for display purposes
         crowdSaleAddress = _crowdSaleAddress;               
         balances[crowdSaleAddress] = totalSupply;       
@@ -404,8 +404,8 @@ contract GXC is ERC20, SafeMath, Ownable {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) onlyUnlocked returns(bool success) {
-        if (balances[_from] &lt; _value) revert(); // Check if the sender has enough
-        if (_value &gt; allowed[_from][msg.sender]) revert(); // Check allowance
+        if (balances[_from] < _value) revert(); // Check if the sender has enough
+        if (_value > allowed[_from][msg.sender]) revert(); // Check allowance
         balances[_from] = safeSub(balances[_from], _value); // Subtract from the sender
         balances[_to] = safeAdd(balances[_to], _value); // Add the same to the recipient
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 /*
-* &#39;LOOK&#39; token sale contract
+* 'LOOK' token sale contract
 *
 * Refer to https://lookscoin.com/ for further information.
 * 
@@ -39,7 +39,7 @@ contract SafeMath {
      * @return a + b
      */
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
-        require (a &lt;= MAX_UINT256 - b);
+        require (a <= MAX_UINT256 - b);
         return a + b;
     }
 
@@ -51,7 +51,7 @@ contract SafeMath {
      * @return a - b
      */
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
@@ -64,7 +64,7 @@ contract SafeMath {
      */
     function safeMul(uint256 a, uint256 b) internal returns (uint256) {
         if (a == 0 || b == 0) return 0;
-        require (a &lt;= MAX_UINT256 / b);
+        require (a <= MAX_UINT256 / b);
         return a * b;
     }
 }
@@ -122,13 +122,13 @@ contract StandardToken is ERC20, Ownable, SafeMath {
      * Mapping from addresses of token holders to the numbers of tokens belonging
      * to these token holders.
      */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
      * Mapping from addresses of token holders to the mapping of addresses of
      * spenders to the allowances set by these token holders to these spenders.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * Create new Standard Token contract.
@@ -157,10 +157,10 @@ contract StandardToken is ERC20, Ownable, SafeMath {
      */
     function transfer(address _to, uint256 _amount) returns (bool success) {
         // avoid wasting gas on 0 token transfers
-        if(_amount &lt;= 0) return false;
+        if(_amount <= 0) return false;
         if (msg.sender == _to) return false;
-        if (balances[msg.sender] &lt; _amount) return false;
-        if (balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] < _amount) return false;
+        if (balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] = safeSub(balances[msg.sender],_amount);
             balances[_to] = safeAdd(balances[_to],_amount);
             Transfer(msg.sender, _to, _amount);
@@ -180,10 +180,10 @@ contract StandardToken is ERC20, Ownable, SafeMath {
      */
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
         // avoid wasting gas on 0 token transfers
-        if(_amount &lt;= 0) return false;
+        if(_amount <= 0) return false;
         if(_from == _to) return false;
-        if (balances[_from] &lt; _amount) return false;
-        if (_amount &gt; allowed[_from][msg.sender]) return false;
+        if (balances[_from] < _amount) return false;
+        if (_amount > allowed[_from][msg.sender]) return false;
 
         balances[_from] = safeSub(balances[_from],_amount);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_amount);
@@ -207,10 +207,10 @@ contract StandardToken is ERC20, Ownable, SafeMath {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_amount != 0) && (allowed[msg.sender][_spender] != 0)) {
            return false;
         }
-        if (balances[msg.sender] &lt; _amount) {
+        if (balances[msg.sender] < _amount) {
             return false;
         }
         allowed[msg.sender][_spender] = _amount;
@@ -262,7 +262,7 @@ contract LooksCoin is StandardToken {
     * Higher VIP ranking address can outbid other lower ranking addresses once per selling window or promotion period.
     * Usage of the VIP ranking and bid priority will be described on token website.
     */
-    mapping (address =&gt; uint256) viprank;
+    mapping (address => uint256) viprank;
 
     /**
      * Minimium contribution to record a VIP block
@@ -305,7 +305,7 @@ contract LooksCoin is StandardToken {
      * @return name of this token
      */
     function name() constant returns (string name) {
-      return &quot;LOOK&quot;;
+      return "LOOK";
     }
 
     /**
@@ -314,7 +314,7 @@ contract LooksCoin is StandardToken {
      * @return symbol of this token
      */
     function symbol() constant returns (string symbol) {
-      return &quot;LOOK&quot;;
+      return "LOOK";
     }
 
     /**
@@ -355,7 +355,7 @@ contract LooksCoin is StandardToken {
      * @return vip rank of the owner of given address
      */
     function getVIPRank(address participant) constant returns (uint256 rank) {
-        if (balances[participant] &lt; VIP_MINIMUM) {
+        if (balances[participant] < VIP_MINIMUM) {
             return 0;
         }
         return viprank[participant];
@@ -374,7 +374,7 @@ contract LooksCoin is StandardToken {
         // Calculate number of tokens for contributed ETH
         uint256 tokens = safeMul(msg.value, TOKEN_PRICE_D) / TOKEN_PRICE_N;
 
-        // Add tokens purchased to account&#39;s balance and total supply
+        // Add tokens purchased to account's balance and total supply
         balances[msg.sender] = safeAdd(balances[msg.sender],tokens);
         tokensCount = safeAdd(tokensCount,tokens);
 
@@ -389,7 +389,7 @@ contract LooksCoin is StandardToken {
 
         // Contribution timestamp is recorded for VIP rank
         // Recorded timestamp for VIP ranking should always be earlier than the current time
-        if (balances[msg.sender] &gt;= VIP_MINIMUM &amp;&amp; viprank[msg.sender] == 0) {
+        if (balances[msg.sender] >= VIP_MINIMUM && viprank[msg.sender] == 0) {
             viprank[msg.sender] = now;
         }
 
@@ -433,9 +433,9 @@ contract LooksCoin is StandardToken {
      * @return true on success, false on error
      */
     function burnTokens(uint256 _amount) returns (bool success) {
-        if (_amount &lt;= 0) return false;
-        if (_amount &gt; tokensCount) return false;
-        if (_amount &gt; balances[msg.sender]) return false;
+        if (_amount <= 0) return false;
+        if (_amount > tokensCount) return false;
+        if (_amount > balances[msg.sender]) return false;
         balances[msg.sender] = safeSub(balances[msg.sender],_amount);
         tokensCount = safeSub(tokensCount,_amount);
         Transfer(msg.sender, 0x0, _amount);

@@ -24,20 +24,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -46,7 +46,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -131,16 +131,16 @@ contract Pausable is Ownable {
 contract CashPokerProICO is Ownable, Pausable {
     using SafeMath for uint;
 
-    /* The party who holds the full token pool and has approve()&#39;ed tokens for this crowdsale */
+    /* The party who holds the full token pool and has approve()'ed tokens for this crowdsale */
     address public tokenWallet = 0x774d91ac35f4e2f94f0e821a03c6eaff8ad4c138;
 
     uint public tokensSold;
 
     uint public weiRaised;
 
-    mapping (address =&gt; uint256) public holdTokens;
+    mapping (address => uint256) public holdTokens;
 
-    mapping (address =&gt; uint256) public purchaseTokens;
+    mapping (address => uint256) public purchaseTokens;
 
     address[] public holdTokenInvestors;
 
@@ -161,7 +161,7 @@ contract CashPokerProICO is Ownable, Pausable {
 
     uint public investorCount;
 
-    mapping (bytes32 =&gt; Promo) public promoMap;
+    mapping (bytes32 => Promo) public promoMap;
 
     struct Promo {
     bool enable;
@@ -201,27 +201,27 @@ contract CashPokerProICO is Ownable, Pausable {
 
     // low level token purchase function
     function buyTokens(address beneficiary) public whenNotPaused payable {
-        require(startTime &lt;= now &amp;&amp; now &lt;= endTime);
+        require(startTime <= now && now <= endTime);
 
         uint weiAmount = msg.value;
 
-        require(weiAmount &gt;= minInvest);
+        require(weiAmount >= minInvest);
 
         uint tokenAmountEnable = tokensLimit.sub(tokensSold);
 
-        require(tokenAmountEnable &gt; 0);
+        require(tokenAmountEnable > 0);
 
         uint tokenAmount = weiAmount / price * 1 ether;
 
-        if (tokenAmount &gt; tokenAmountEnable) {
+        if (tokenAmount > tokenAmountEnable) {
             tokenAmount = tokenAmountEnable;
             weiAmount = tokenAmount * price / 1 ether;
             msg.sender.transfer(msg.value.sub(weiAmount));
 
 
-            if (msg.data.length &gt; 0) {
+            if (msg.data.length > 0) {
                 Promo storage promo = promoMap[sha3(msg.data)];
-                if (promo.enable &amp;&amp; promo.dealerPercentETH &gt; 0) {
+                if (promo.enable && promo.dealerPercentETH > 0) {
                     uint dealerEthAmount = weiAmount * promo.dealerPercentETH / 10000;
                     promo.dealer.transfer(dealerEthAmount);
                     weiAmount = weiAmount.sub(dealerEthAmount);
@@ -234,7 +234,7 @@ contract CashPokerProICO is Ownable, Pausable {
             uint countBonusAmount = tokenAmount * getCountBonus(weiAmount) / 1000;
             uint timeBonusAmount = tokenAmount * getTimeBonus(now) / 1000;
 
-            if (msg.data.length &gt; 0) {
+            if (msg.data.length > 0) {
                 bytes32 promoPublicKey = sha3(msg.data);
                 promo = promoMap[promoPublicKey];
                 if (promo.enable) {
@@ -243,13 +243,13 @@ contract CashPokerProICO is Ownable, Pausable {
                     promo.investorTokenAmount += tokenAmount;
                     promo.investorEthAmount += weiAmount;
                     
-                    if (promo.dealerPercentToken &gt; 0) {
+                    if (promo.dealerPercentToken > 0) {
                         uint dealerTokenAmount = tokenAmount * promo.dealerPercentToken / 10000;
                         sendTokens(promo.dealer, dealerTokenAmount);
                         promo.dealerTokenAmount += dealerTokenAmount;
                     }
 
-                    if (promo.dealerPercentETH &gt; 0) {
+                    if (promo.dealerPercentETH > 0) {
                         dealerEthAmount = weiAmount * promo.dealerPercentETH / 10000;
                         promo.dealer.transfer(dealerEthAmount);
                         weiAmount = weiAmount.sub(dealerEthAmount);
@@ -257,7 +257,7 @@ contract CashPokerProICO is Ownable, Pausable {
                     }
 
                         
-                    if (promo.investorPercentToken &gt; 0) {
+                    if (promo.investorPercentToken > 0) {
                         uint promoBonusAmount = tokenAmount * promo.investorPercentToken / 10000;
                         tokenAmount += promoBonusAmount;
                     }
@@ -267,7 +267,7 @@ contract CashPokerProICO is Ownable, Pausable {
 
             tokenAmount += countBonusAmount + timeBonusAmount;
 
-            if (tokenAmount &gt; tokenAmountEnable) {
+            if (tokenAmount > tokenAmountEnable) {
                 tokenAmount = tokenAmountEnable;
             }
         }
@@ -302,16 +302,16 @@ contract CashPokerProICO is Ownable, Pausable {
 
 
     function getCountBonus(uint weiAmount) public constant returns (uint) {
-        for (uint i = 0; i &lt; etherForCountBonus.length; i++) {
-            if (weiAmount &lt; etherForCountBonus[i]) return amountForCountBonus[i];
+        for (uint i = 0; i < etherForCountBonus.length; i++) {
+            if (weiAmount < etherForCountBonus[i]) return amountForCountBonus[i];
         }
         return amountForCountBonus[amountForCountBonus.length - 1];
     }
 
     function getTimeBonus(uint time) public constant returns (uint) {
-        if (time &lt; startTime + 1 weeks) return 30;
-        if (time &lt; startTime + 2 weeks) return 20;
-        if (time &lt; startTime + 3 weeks) return 10;
+        if (time < startTime + 1 weeks) return 30;
+        if (time < startTime + 2 weeks) return 20;
+        if (time < startTime + 3 weeks) return 10;
         return 0;
     }
 
@@ -328,16 +328,16 @@ contract CashPokerProICO is Ownable, Pausable {
     function finalSendTokens() public onlyOwner {
         isHoldTokens = false;
         
-        for (uint i = sendInvestorIndex; i &lt; holdTokenInvestors.length; i++) {
+        for (uint i = sendInvestorIndex; i < holdTokenInvestors.length; i++) {
             address investor = holdTokenInvestors[i];
             uint tokenAmount = holdTokens[investor];
 
-            if (tokenAmount &gt; 0) {
+            if (tokenAmount > 0) {
                 holdTokens[investor] = 0;
                 require(token.transferFrom(tokenWallet, investor, tokenAmount));
             }
 
-            if (msg.gas &lt; 100000) {
+            if (msg.gas < 100000) {
                 sendInvestorIndex = i;
                 return;
             }

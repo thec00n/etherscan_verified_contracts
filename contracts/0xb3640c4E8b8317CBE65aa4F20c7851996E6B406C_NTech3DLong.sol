@@ -23,7 +23,7 @@ pragma solidity ^0.4.24;
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -31,9 +31,9 @@ pragma solidity ^0.4.24;
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -45,7 +45,7 @@ pragma solidity ^0.4.24;
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -58,7 +58,7 @@ pragma solidity ^0.4.24;
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -72,7 +72,7 @@ pragma solidity ^0.4.24;
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -105,7 +105,7 @@ pragma solidity ^0.4.24;
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -134,24 +134,24 @@ library NameFilter {
         uint256 _length = _temp.length;
         
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
         
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
         
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -165,22 +165,22 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 || 
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
                 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;    
             }
         }
         
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
         
         bytes32 _ret;
         assembly {
@@ -285,7 +285,7 @@ library NTech3DKeysCalcLong {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth) 
@@ -298,7 +298,7 @@ library NTech3DKeysCalcLong {
     
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot; 
+     * @param _keys number of keys "in contract" 
      * @return eth that would exists
      */
     function eth(uint256 _keys) 
@@ -462,11 +462,11 @@ contract NTech3DLong {
     /******************************************************************************************
      合约权限管理
      设计：会设计用户权限管理，
-        9 =&gt; 管理员角色
-        0 =&gt; 没有任何权限
+        9 => 管理员角色
+        0 => 没有任何权限
      */
     // 用户地址到角色的表
-    mapping(address =&gt; uint256)     private users ;
+    mapping(address => uint256)     private users ;
     // 初始化
     function initUsers() private {
         // 初始化下列地址帐户为管理员
@@ -476,7 +476,7 @@ contract NTech3DLong {
     // 是否是管理员
     modifier isAdmin() {
         uint256 role = users[msg.sender];
-        require((role==9), &quot;Must be admin.&quot;);
+        require((role==9), "Must be admin.");
         _;
     }
     /******************************************************************************************
@@ -486,7 +486,7 @@ contract NTech3DLong {
         address _addr = msg.sender;
         uint256 _codeLength;
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;Humans only&quot;);
+        require(_codeLength == 0, "Humans only");
         _;
     }
     /******************************************************************************************
@@ -511,7 +511,7 @@ contract NTech3DLong {
     */ 
     ERC20 private NTToken_ ;
     function setNTToken(address addr) isAdmin() public {
-        require(address(addr) != address(0x0), &quot;Empty address not allowed.&quot;);
+        require(address(addr) != address(0x0), "Empty address not allowed.");
         NTToken_ = ERC20(addr);
     }
     /** 
@@ -521,7 +521,7 @@ contract NTech3DLong {
      2. 管理员
      */
     function transfer(address toAddr, uint256 amount) isAdmin() public returns (bool) {
-        require(amount &gt; 0, &quot;Must &gt; 0 &quot;);
+        require(amount > 0, "Must > 0 ");
         NTToken_.transfer(toAddr, amount);
         return true ;
     }
@@ -530,7 +530,7 @@ contract NTech3DLong {
      */
     bool public activated_ = false;
     modifier isActivated() {
-        require(activated_ == true, &quot;its not active yet.&quot;); 
+        require(activated_ == true, "its not active yet."); 
         _;
     }
     /**
@@ -544,15 +544,15 @@ contract NTech3DLong {
      */
     function activate() isAdmin() public {
         // 必须设定代币地址
-        require(address(NTToken_) != address(0x0), &quot;Must setup NTToken.&quot;);
+        require(address(NTToken_) != address(0x0), "Must setup NTToken.");
         // 必须设定社区基金地址
-        require(address(communityAddr_) != address(0x0), &quot;Must setup CommunityAddr_.&quot;);
+        require(address(communityAddr_) != address(0x0), "Must setup CommunityAddr_.");
         // 必须设定购买NT地址
-        require(address(NTTokenSeller_) != address(0x0), &quot;Must setup NTTokenSeller.&quot;);
+        require(address(NTTokenSeller_) != address(0x0), "Must setup NTTokenSeller.");
         // 必须设定NT基金地址
-        require(address(NTFoundationAddr_) != address(0x0), &quot;Must setup NTFoundationAddr.&quot;);
+        require(address(NTFoundationAddr_) != address(0x0), "Must setup NTFoundationAddr.");
         // 只能激活一次
-        require(activated_ == false, &quot;Only once&quot;);
+        require(activated_ == false, "Only once");
         //
         activated_ = true ;
         // 初始化开始轮信息
@@ -563,8 +563,8 @@ contract NTech3DLong {
     /******************************************************************************************
      合约信息
      */
-    string constant public name = &quot;NTech 3D Long Official&quot;;  // 合约名称
-    string constant public symbol = &quot;NT3D&quot;;                 // 合约符号
+    string constant public name = "NTech 3D Long Official";  // 合约名称
+    string constant public symbol = "NT3D";                 // 合约符号
     /**
      */
     uint256 constant private rndInc_    = 1 minutes;                  // 每购买一个key延迟的时间
@@ -583,42 +583,42 @@ contract NTech3DLong {
      3. 设定的地址不能为空
      */
     function setOtherNTech3D(address _otherNTech3D) isAdmin() public {
-        require(address(_otherNTech3D) != address(0x0), &quot;Empty address not allowed.&quot;);
-        require(address(otherNTech3D_) == address(0x0), &quot;OtherNTech3D has been set.&quot;);
+        require(address(_otherNTech3D) != address(0x0), "Empty address not allowed.");
+        require(address(otherNTech3D_) == address(0x0), "OtherNTech3D has been set.");
         otherNTech3D_ = OtherNTech3D(_otherNTech3D);
     }
     /******************************************************************************************
      判断金额
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000, &quot;Too little&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;Too much&quot;);
+        require(_eth >= 1000000000, "Too little");
+        require(_eth <= 100000000000000000000000, "Too much");
         _;    
     }
 
     /******************************************************************************************
      玩家信息
      */
-    // 玩家地址 =&gt; 玩家ID 
-    mapping (address =&gt; uint256) public pIDxAddr_;  
-    // 玩家名称 =&gt; 玩家ID
-    mapping (bytes32 =&gt; uint256) public pIDxName_;  
-    // 玩家ID =&gt; 玩家信息
-    mapping (uint256 =&gt; NTech3DDatasets.Player) public plyr_; 
-    // 玩家ID =&gt; 游戏轮编号 =&gt; 玩家游戏轮信息
-    mapping (uint256 =&gt; mapping (uint256 =&gt; NTech3DDatasets.PlayerRounds)) public plyrRnds_;
-    // 玩家ID =&gt; 玩家名称 =&gt; 
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_;
+    // 玩家地址 => 玩家ID 
+    mapping (address => uint256) public pIDxAddr_;  
+    // 玩家名称 => 玩家ID
+    mapping (bytes32 => uint256) public pIDxName_;  
+    // 玩家ID => 玩家信息
+    mapping (uint256 => NTech3DDatasets.Player) public plyr_; 
+    // 玩家ID => 游戏轮编号 => 玩家游戏轮信息
+    mapping (uint256 => mapping (uint256 => NTech3DDatasets.PlayerRounds)) public plyrRnds_;
+    // 玩家ID => 玩家名称 => 
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_;
     /******************************************************************************************
      游戏信息
      */
     uint256 public rID_;                    // 当前游戏轮编号 
     uint256 public airDropPot_;             // 空投小奖池
     uint256 public airDropTracker_ = 0;     // 空投小奖池计数
-    // 游戏每轮ID =&gt; 游戏轮 
-    mapping (uint256 =&gt; NTech3DDatasets.Round) public round_;
-    // 游戏每轮ID -&gt; 团队ID =&gt; ETH
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;
+    // 游戏每轮ID => 游戏轮 
+    mapping (uint256 => NTech3DDatasets.Round) public round_;
+    // 游戏每轮ID -> 团队ID => ETH
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;
     /******************************************************************************************
      团队信息
      0 ： 水鲸队
@@ -626,10 +626,10 @@ contract NTech3DLong {
      2 ： 玩蛇队
      3 ： 疯牛队
      */
-    // 团队ID =&gt; 分配规则 
-    mapping (uint256 =&gt; NTech3DDatasets.TeamFee) public fees_; 
-    // 团队ID =&gt; 分配规则
-    mapping (uint256 =&gt; NTech3DDatasets.PotSplit) public potSplit_;
+    // 团队ID => 分配规则 
+    mapping (uint256 => NTech3DDatasets.TeamFee) public fees_; 
+    // 团队ID => 分配规则
+    mapping (uint256 => NTech3DDatasets.PotSplit) public potSplit_;
     /******************************************************************************************
      构造函数
      */
@@ -697,7 +697,7 @@ contract NTech3DLong {
         NTech3DDatasets.EventReturns memory _eventData_ = determinePID(_eventData_);
         uint256 _pID = pIDxAddr_[msg.sender];
         uint256 _affID;
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name){
+        if (_affCode == '' || _affCode == plyr_[_pID].name){
             _affID = plyr_[_pID].laff;
         }else{
             _affID = pIDxName_[_affCode];
@@ -741,7 +741,7 @@ contract NTech3DLong {
         NTech3DDatasets.EventReturns memory _eventData_;
         uint256 _pID = pIDxAddr_[msg.sender];
         uint256 _affID;
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name){
+        if (_affCode == '' || _affCode == plyr_[_pID].name){
             _affID = plyr_[_pID].laff;
         }else{
             _affID = pIDxName_[_affCode];
@@ -761,13 +761,13 @@ contract NTech3DLong {
         uint256 _pID = pIDxAddr_[msg.sender];
         uint256 _eth;
         
-        if (_now &gt; round_[_rID].end &amp;&amp; (round_[_rID].ended == false) &amp;&amp; round_[_rID].plyr != 0){
+        if (_now > round_[_rID].end && (round_[_rID].ended == false) && round_[_rID].plyr != 0){
             NTech3DDatasets.EventReturns memory _eventData_;
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
             // get their earnings
             _eth = withdrawEarnings(_pID);
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             _eventData_.compressedData = _eventData_.compressedData + (_now * 1000000000000000000);
@@ -788,7 +788,7 @@ contract NTech3DLong {
             );                
         }else{
             _eth = withdrawEarnings(_pID);
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
             emit onWithdraw(
                 _pID, 
@@ -870,8 +870,8 @@ contract NTech3DLong {
         uint256 _rID = rID_;
         uint256 _now = now;
 
-        //if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
-        if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        //if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // init
@@ -883,9 +883,9 @@ contract NTech3DLong {
         uint256 _rID = rID_;
         uint256 _now = now;
 
-        if (_now &lt; round_[_rID].end)
-            //if (_now &gt; round_[_rID].strt + rndGap_)
-            if (_now &gt; round_[_rID].strt)
+        if (_now < round_[_rID].end)
+            //if (_now > round_[_rID].strt + rndGap_)
+            if (_now > round_[_rID].strt)
                 return( (round_[_rID].end).sub(_now) );
             else
                 //return( (round_[_rID].strt + rndGap_).sub(_now) );
@@ -896,7 +896,7 @@ contract NTech3DLong {
 
     function getPlayerVaults(uint256 _pID) public view returns(uint256 ,uint256, uint256) {
         uint256 _rID = rID_;
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0){
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0){
             // if player is winner 
             if (round_[_rID].plyr == _pID){
                 // Added by Huwei
@@ -980,11 +980,11 @@ contract NTech3DLong {
     function buyCore(uint256 _pID, uint256 _affID, uint256 _team, NTech3DDatasets.EventReturns memory _eventData_) private {
         uint256 _rID = rID_;
         uint256 _now = now;
-        //if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) {
-            if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) {
+        //if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) {
+            if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) {
             core(_rID, _pID, msg.value, _affID, _team, _eventData_);
         }else{
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
+            if (_now > round_[_rID].end && round_[_rID].ended == false) {
                 round_[_rID].ended = true;
                 _eventData_ = endRound(_eventData_);
 
@@ -1011,11 +1011,11 @@ contract NTech3DLong {
     function reLoadCore(uint256 _pID, uint256 _affID, uint256 _team, uint256 _eth, NTech3DDatasets.EventReturns memory _eventData_) private {
         uint256 _rID = rID_;
         uint256 _now = now;
-        //if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) {
-        if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) {
+        //if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) {
+        if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) {
             plyr_[_pID].gen = withdrawEarnings(_pID).sub(_eth);
             core(_rID, _pID, _eth, _affID, _team, _eventData_);
-        }else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
+        }else if (_now > round_[_rID].end && round_[_rID].ended == false) {
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -1042,16 +1042,16 @@ contract NTech3DLong {
             _eventData_ = managePlayer(_pID, _eventData_);
         // 每轮早期的限制 (5 ether 以下)
         // 智能合约收到的总额达到100 ETH之前，每个以太坊地址最多只能购买总额10个ETH的Key。
-        if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 10000000000000000000){
+        if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 10000000000000000000){
             uint256 _availableLimit = (10000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
             uint256 _refund = _eth.sub(_availableLimit);
             plyr_[_pID].gen = plyr_[_pID].gen.add(_refund);
             _eth = _availableLimit;
         }
-        if (_eth &gt; 1000000000) {
+        if (_eth > 1000000000) {
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
 
-            if (_keys &gt;= 1000000000000000000){
+            if (_keys >= 1000000000000000000){
                 updateTimer(_keys, _rID);
                 if (round_[_rID].plyr != _pID)
                     round_[_rID].plyr = _pID;  
@@ -1060,20 +1060,20 @@ contract NTech3DLong {
                 _eventData_.compressedData = _eventData_.compressedData + 100;
             }
 
-            if (_eth &gt;= 100000000000000000){
-                // &gt; 0.1 ether, 才有空投
+            if (_eth >= 100000000000000000){
+                // > 0.1 ether, 才有空投
                 airDropTracker_++;
                 if (airdrop() == true){
                     uint256 _prize;
-                    if (_eth &gt;= 10000000000000000000){
-                        // &lt;= 10 ether
+                    if (_eth >= 10000000000000000000){
+                        // <= 10 ether
                         _prize = ((airDropPot_).mul(75)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
                         airDropPot_ = (airDropPot_).sub(_prize);
 
                         _eventData_.compressedData += 300000000000000000000000000000000;
-                    }else if(_eth &gt;= 1000000000000000000 &amp;&amp; _eth &lt; 10000000000000000000) {
-                        // &gt;= 1 ether and &lt; 10 ether
+                    }else if(_eth >= 1000000000000000000 && _eth < 10000000000000000000) {
+                        // >= 1 ether and < 10 ether
                         _prize = ((airDropPot_).mul(50)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
 
@@ -1081,8 +1081,8 @@ contract NTech3DLong {
 
                         _eventData_.compressedData += 200000000000000000000000000000000;
 
-                    }else if(_eth &gt;= 100000000000000000 &amp;&amp; _eth &lt; 1000000000000000000){
-                        // &gt;= 0.1 ether and &lt; 1 ether
+                    }else if(_eth >= 100000000000000000 && _eth < 1000000000000000000){
+                        // >= 0.1 ether and < 1 ether
                         _prize = ((airDropPot_).mul(25)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
 
@@ -1124,8 +1124,8 @@ contract NTech3DLong {
 
     function calcKeysReceived(uint256 _rID, uint256 _eth) public view returns(uint256){
         uint256 _now = now;
-        //if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
-        if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        //if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else // rounds over.  need keys for new round
             return ( (_eth).keys() );
@@ -1136,8 +1136,8 @@ contract NTech3DLong {
 
         uint256 _now = now;
 
-        //if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
-        if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        //if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -1146,7 +1146,7 @@ contract NTech3DLong {
      interface : PlayerBookReceiverInterface
      */
     function receivePlayerInfo(uint256 _pID, address _addr, bytes32 _name, uint256 _laff) external {
-        require (msg.sender == address(PlayerBook), &quot;Called from PlayerBook only&quot;);
+        require (msg.sender == address(PlayerBook), "Called from PlayerBook only");
         if (pIDxAddr_[_addr] != _pID)
             pIDxAddr_[_addr] = _pID;
         if (pIDxName_[_name] != _pID)
@@ -1162,7 +1162,7 @@ contract NTech3DLong {
     }
 
     function receivePlayerNameList(uint256 _pID, bytes32 _name) external {
-        require (msg.sender == address(PlayerBook), &quot;Called from PlayerBook only&quot;);
+        require (msg.sender == address(PlayerBook), "Called from PlayerBook only");
         if(plyrNames_[_pID][_name] == false)
             plyrNames_[_pID][_name] = true;
     }
@@ -1177,12 +1177,12 @@ contract NTech3DLong {
             uint256 _laff = PlayerBook.getPlayerLAff(_pID);
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
-            if (_name != &quot;&quot;){
+            if (_name != ""){
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
             // set the new player bool to true    
             _eventData_.compressedData = _eventData_.compressedData + 1;                
@@ -1193,7 +1193,7 @@ contract NTech3DLong {
      识别团队，默认是玩蛇队
      */
     function verifyTeam(uint256 _team) private pure returns (uint256) {
-        if (_team &lt; 0 || _team &gt; 3) 
+        if (_team < 0 || _team > 3) 
             return(2);
         else
             return(_team);
@@ -1234,7 +1234,7 @@ contract NTech3DLong {
         // calculate ppt for round mask
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0){
+        if (_dust > 0){
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
         }
@@ -1249,7 +1249,7 @@ contract NTech3DLong {
             _res = SafeMath.add(_res,_com);
             _com = 0 ;
         }
-        if(_nt &gt; 0) {
+        if(_nt > 0) {
             if(address(NTFoundationAddr_) != address(0x0)) {
                 // 分配NT基金奖金
                 NTFoundationAddr_.transfer(_nt);
@@ -1285,7 +1285,7 @@ contract NTech3DLong {
 
     function updateGenVault(uint256 _pID, uint256 _rIDlast) private {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0){
+        if (_earnings > 0){
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
 
             plyrRnds_[_pID][_rIDlast].mask = _earnings.add(plyrRnds_[_pID][_rIDlast].mask);
@@ -1298,12 +1298,12 @@ contract NTech3DLong {
 
         uint256 _newTime;
 
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
 
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1321,7 +1321,7 @@ contract NTech3DLong {
             (block.number)
             
         )));
-        if((seed - ((seed / 1000) * 1000)) &lt; airDropTracker_)
+        if((seed - ((seed / 1000) * 1000)) < airDropTracker_)
             return(true);
         else
             return(false);
@@ -1345,7 +1345,7 @@ contract NTech3DLong {
         }
         // 分享，如果没有分享，进入到社区基金
         uint256 _aff = _eth / 10;
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit onAffiliatePayout(
                 _affID, 
@@ -1361,14 +1361,14 @@ contract NTech3DLong {
         }
         // 空投（如果没有设置社区基金地址，那么放入空投）
         uint256 _nt = (_eth.mul(fees_[_team].nt)).div(100);
-        if(_com&gt;0){
+        if(_com>0){
             if(address(communityAddr_)!=address(0x0)) {
                 communityAddr_.transfer(_com);
             }else{
                 _nt = _nt.add(_com);      
             }
         }
-        if(_nt &gt; 0 ){
+        if(_nt > 0 ){
             // amount = _nt * ntOf1Ether_ ;
             uint256 amount = _nt.mul(ntOf1Ether_);
             _eventData_.NTAmount = amount.add(_eventData_.NTAmount);
@@ -1412,7 +1412,7 @@ contract NTech3DLong {
         uint256 _pot = _eth.sub(_gen);
 
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
         
         round_[_rID].pot = _pot.add(_dust).add(round_[_rID].pot);
@@ -1436,7 +1436,7 @@ contract NTech3DLong {
     function withdrawEarnings(uint256 _pID) private returns(uint256) {
         updateGenVault(_pID, plyr_[_pID].lrnd);
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0){
+        if (_earnings > 0){
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
             plyr_[_pID].aff = 0;

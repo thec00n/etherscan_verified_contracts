@@ -2,12 +2,12 @@ pragma solidity ^0.4.18;
 
 contract DrepToken {
 
-    string public name = &quot;DREP&quot;;
-    string public symbol = &quot;DREP&quot;;
+    string public name = "DREP";
+    string public symbol = "DREP";
     uint8 public decimals = 18;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply;
     uint256 constant initialSupply = 10000000000;
@@ -39,8 +39,8 @@ contract DrepToken {
 
     function transfer(address _to, uint256 _value) isRunning validAddress public returns (bool success) {
         require(_to != 0x0);
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -49,9 +49,9 @@ contract DrepToken {
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress public returns (bool success) {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         allowance[_from][msg.sender] -= _value;
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -75,8 +75,8 @@ contract DrepToken {
     }
 
     function burn(uint256 _value) isRunning validAddress public {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(totalSupply &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
+        require(totalSupply >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
     }

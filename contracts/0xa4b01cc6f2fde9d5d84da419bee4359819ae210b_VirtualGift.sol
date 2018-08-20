@@ -68,29 +68,29 @@ contract VirtualGift is ERC721 {
     event Approval(address indexed _owner, address indexed _approved, uint256 _GiftId);
     event Creation(address indexed _owner, uint256 indexed GiftId);
     
-    string public constant name = &quot;VirtualGift&quot;;
-    string public constant symbol = &quot;VTG&quot;;
+    string public constant name = "VirtualGift";
+    string public constant symbol = "VTG";
     
     // Gift object storage in array
     Gift[] giftStorage;
     
     // total Gift of an address
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
     
     // index of Gift array to Owner
-    mapping(uint256 =&gt; address) private GiftIndexToOwners;
+    mapping(uint256 => address) private GiftIndexToOwners;
     
     // Gift exist or not
-    mapping(uint256 =&gt; bool) private GiftExists;
+    mapping(uint256 => bool) private GiftExists;
     
     // mapping from owner and approved address to GiftId
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => mapping (address => uint256)) private allowed;
     
     // mapping from owner and index Gift of owner to GiftId
-    mapping(address =&gt; mapping(uint256 =&gt; uint256)) private ownerIndexToGifts;
+    mapping(address => mapping(uint256 => uint256)) private ownerIndexToGifts;
     
     // Gift metadata
-    mapping(uint256 =&gt; string) GiftLinks;
+    mapping(uint256 => string) GiftLinks;
 
     modifier onlyOwner(){
          require(msg.sender == owner);
@@ -114,14 +114,14 @@ contract VirtualGift is ERC721 {
         // save temporaryly new Gift
         Gift memory newGift = Gift({
             price: 0,
-            description: &quot;MYTHICAL&quot;
+            description: "MYTHICAL"
         });
         // push to array and return the length is the id of new Gift
         uint256 mythicalGift = giftStorage.push(newGift) - 1; // id = 0
         // mythical Gift is not exist
         GiftExists[mythicalGift] = false;
         // assign url for Gift
-        GiftLinks[mythicalGift] = &quot;mythicalGift&quot;;
+        GiftLinks[mythicalGift] = "mythicalGift";
         // This will assign ownership, and also emit the Transfer event as
         // per ERC721 draft
         _transfer(0, msg.sender, mythicalGift);
@@ -261,15 +261,15 @@ contract VirtualGift is ERC721 {
     
     /// @dev transfer ownership of a specific Gift to an address.
     /// @param _from : address owner of Giftid
-    /// @param _to : address&#39;s received
+    /// @param _to : address's received
     /// @param _GiftId : Gift id
     function _transfer(address _from, address _to, uint256 _GiftId) 
     internal {
-        // Since the number of Gift is capped to 2^32 we can&#39;t overflow this
+        // Since the number of Gift is capped to 2^32 we can't overflow this
         balances[_to]++;
         // transfer ownership
         GiftIndexToOwners[_GiftId] = _to;
-        // When creating new Gift _from is 0x0, but we can&#39;t account that address.
+        // When creating new Gift _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             balances[_from]--;
         }
@@ -278,7 +278,7 @@ contract VirtualGift is ERC721 {
     }
     
     /// @dev transfer ownership of Giftid from msg sender to an address
-    /// @param _to : address&#39;s received
+    /// @param _to : address's received
     /// @param _GiftId : Gift id
     function transfer(address _to, uint256 _GiftId)
     validGift(_GiftId)
@@ -320,7 +320,7 @@ contract VirtualGift is ERC721 {
     
     /// @dev Returns a list of all Gift IDs assigned to an address.
     /// @param _owner The owner whose Gift we are interested in.
-    /// @notice This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @notice This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Gift array looking for Gift belonging to owner),
     /// @return ownerGifts : list Gift of owner
     function GiftsOfOwner(address _owner) 
@@ -342,7 +342,7 @@ contract VirtualGift is ERC721 {
             uint256 GiftId;
             
             // scan array and filter Gift of owner
-            for (GiftId = 0; GiftId &lt;= total; GiftId++) {
+            for (GiftId = 0; GiftId <= total; GiftId++) {
                 if (GiftIndexToOwners[GiftId] == _owner) {
                     result[resultIndex] = GiftId;
                     resultIndex++;
@@ -356,7 +356,7 @@ contract VirtualGift is ERC721 {
     /// @dev Returns a Gift IDs assigned to an address.
     /// @param _owner The owner whose Gift we are interested in.
     /// @param _index to owner Gift list
-    /// @notice This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @notice This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Gift array looking for Gift belonging to owner),
     ///  it is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -414,8 +414,8 @@ contract VirtualGift is ERC721 {
     public
     constant 
     returns (uint256, string){
-        if(GiftId &gt; giftStorage.length){
-            return (0, &quot;&quot;);
+        if(GiftId > giftStorage.length){
+            return (0, "");
         }
         Gift memory newGift = giftStorage[GiftId];
         return (newGift.price, newGift.description);

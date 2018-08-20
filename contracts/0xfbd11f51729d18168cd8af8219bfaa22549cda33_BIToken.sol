@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         require(a == b * c + a % b); // There is no case in which this doesn’t hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a-b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -32,10 +32,10 @@ library SafeMath {
 contract BIToken {
 
     ///Public variables of the token
-    string public constant name = &quot;Basic Integration Token&quot;;
+    string public constant name = "Basic Integration Token";
     uint8 public constant decimals = 18;
-    string public constant symbol=&quot;BINTO&quot;;
-    string public constant version = &quot;1.0&quot;;
+    string public constant symbol="BINTO";
+    string public constant version = "1.0";
     using SafeMath for uint256;
     address public ownerAccount;
     uint256 public totalSupply;
@@ -49,8 +49,8 @@ contract BIToken {
     //to finish the sale
     bool public isSaleEnded = false;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -77,8 +77,8 @@ contract BIToken {
     //burn token held by  owner only in case he decides so to destroy
     //any extra tokens in far future.
     function burnToken(uint numberOfTokens) public onlyOwner {
-        require(numberOfTokens &gt; 0);
-        require(balances[msg.sender] &gt;= numberOfTokens);
+        require(numberOfTokens > 0);
+        require(balances[msg.sender] >= numberOfTokens);
         balances[msg.sender] = balances[msg.sender].sub(numberOfTokens);
         totalSupply = totalSupply.sub(numberOfTokens);
         emit Burn(msg.sender,numberOfTokens);
@@ -93,9 +93,9 @@ contract BIToken {
     function sendEtherToOwner() payable public {
         uint256 owneramount = msg.value;
         require(isSaleEnded == false);
-        require(owneramount &gt; 0);
+        require(owneramount > 0);
         uint256 tokens = purchaseRate.mul(owneramount);
-        require(tokens &gt; 0);
+        require(tokens > 0);
         //increse allowances , those will be reduced in transferFrom method again
         allowed[ownerAccount][msg.sender] = allowed[ownerAccount][msg.sender].add(tokens);
         transferFrom(ownerAccount,msg.sender, tokens);
@@ -114,9 +114,9 @@ contract BIToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         //check condition to avoid Overflows
-        require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(_value > 0);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -126,9 +126,9 @@ contract BIToken {
      
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
       
-        require(_value &gt; 0);
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(_value > 0);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -158,7 +158,7 @@ contract BIToken {
 
     function decreaseApproval(address _spender,uint _subtractedValue) public returns (bool){
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

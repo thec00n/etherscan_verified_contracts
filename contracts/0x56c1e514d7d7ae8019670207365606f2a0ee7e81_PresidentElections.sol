@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 library Search {
   function indexOf(uint32[] storage self, uint32 value) public view returns (uint32) {
-    for (uint32 i = 0; i &lt; self.length; i++) {
+    for (uint32 i = 0; i < self.length; i++) {
       if (self[i] == value) return i;
     }
     return uint32(- 1);
@@ -34,8 +34,8 @@ contract PresidentElections {
     uint256 votes;
   }
   uint end = 1521406800;
-  mapping(address =&gt; uint) votes;
-  mapping(uint32 =&gt; Candidate) candidates;
+  mapping(address => uint) votes;
+  mapping(uint32 => Candidate) candidates;
   using Search for uint32[];
   uint32[] candidate_ids;
   uint constant price = 0.01 ether;
@@ -60,7 +60,7 @@ contract PresidentElections {
   }
 
   modifier isCandidate(uint32 candidate) {
-    require(candidates[candidate].id &gt; 0);
+    require(candidates[candidate].id > 0);
     _;
   }
 
@@ -70,7 +70,7 @@ contract PresidentElections {
   }
 
   modifier voteIsOn() {
-    require(now &lt; end);
+    require(now < end);
     _;
   }
 
@@ -94,11 +94,11 @@ contract PresidentElections {
   }
 
   function isFinished() constant public returns (bool) {
-    return now &gt; end;
+    return now > end;
   }
 
   function isVoted() constant public returns (bool) {
-    return votes[msg.sender] &gt; 0;
+    return votes[msg.sender] > 0;
   }
 
   function vote(uint32 candidate) public payable isCandidate(candidate) voteIsOn isNotVoted returns (bool) {
@@ -133,7 +133,7 @@ contract PresidentElections {
 
   function getVotes() public view returns (uint256[]) {
     uint256[] memory v = new uint256[](candidate_ids.length);
-    for(uint i = 0; i &lt; candidate_ids.length; i++ ) {
+    for(uint i = 0; i < candidate_ids.length; i++ ) {
       v[i] = candidates[candidate_ids[i]].votes;
     }
     return v;

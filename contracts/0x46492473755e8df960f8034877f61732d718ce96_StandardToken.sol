@@ -41,7 +41,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract StandardToken is owned{ 
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;                     // the token name 
     string public symbol;                   // the ticker symbol
     uint8 public decimals;                  // amount of decimal places in the token
@@ -52,11 +52,11 @@ contract StandardToken is owned{
     uint256 public totalSupply;             // total number of tokens that exist (e.g. not burned)
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /* This creates an array with all frozen accounts */
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -100,9 +100,9 @@ contract StandardToken is owned{
 
     /* Send tokens */
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (_value == 0) return false; 				             // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[msg.sender] &lt; _value) return false;        // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (_value == 0) return false; 				             // Don't waste gas on zero-value transaction
+        if (balanceOf[msg.sender] < _value) return false;        // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         if (frozenAccount[msg.sender]) throw;                // Check if sender is frozen
         if (frozenAccount[_to]) throw;                       // Check if target is frozen                 
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
@@ -133,9 +133,9 @@ contract StandardToken is owned{
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;                        // Check if sender frozen       
         if (frozenAccount[_to]) throw;                          // Check if target frozen                 
-        if (balanceOf[_from] &lt; _value) return false;            // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;    // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;       // Check allowance
+        if (balanceOf[_from] < _value) return false;            // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;    // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;       // Check allowance
         balanceOf[_from] -= _value;                             // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;                 // Allowance changes
@@ -145,8 +145,8 @@ contract StandardToken is owned{
     
     /* A function to freeze or un-freeze an account, to and from */
     function freezeAccount(address target, bool freeze ) onlyOwner {    
-        if ((target == the120address) &amp;&amp; (now &lt; deadline120)) throw;    // Ensure you can not change 120address frozen status until deadline
-        if ((target == the365address) &amp;&amp; (now &lt; deadline365)) throw;    // Ensure you can not change 365address frozen status until deadline
+        if ((target == the120address) && (now < deadline120)) throw;    // Ensure you can not change 120address frozen status until deadline
+        if ((target == the365address) && (now < deadline365)) throw;    // Ensure you can not change 365address frozen status until deadline
         frozenAccount[target] = freeze;                                 // Set the array object to the value of bool freeze
         FrozenFunds(target, freeze);                                    // Notify event
     }
@@ -154,8 +154,8 @@ contract StandardToken is owned{
     /* A function to burn tokens and remove from supply */
     function burn(uint256 _value) returns (bool success)  {
 		if (frozenAccount[msg.sender]) throw;                  // Check if sender frozen       
-        if (_value == 0) return false;			               // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[msg.sender] &lt; _value) return false;      // Check if the sender has enough
+        if (_value == 0) return false;			               // Don't waste gas on zero-value transaction
+        if (balanceOf[msg.sender] < _value) return false;      // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                       // Subtract from the sender
         totalSupply -= _value;                                 // Reduce totalSupply accordingly
         Transfer(msg.sender,0, _value);                        // Burn baby burn
@@ -165,9 +165,9 @@ contract StandardToken is owned{
     function burnFrom(address _from, uint256 _value) onlyOwner returns (bool success)  {
         if (frozenAccount[msg.sender]) throw;                  // Check if sender frozen       
         if (frozenAccount[_from]) throw;                       // Check if recipient frozen 
-        if (_value == 0) return false;			               // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[_from] &lt; _value) return false;           // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw;      // Check allowance
+        if (_value == 0) return false;			               // Don't waste gas on zero-value transaction
+        if (balanceOf[_from] < _value) return false;           // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw;      // Check allowance
         balanceOf[_from] -= _value;                            // Subtract from the sender
         allowance[_from][msg.sender] -= _value;                // Allowance is updated
         totalSupply -= _value;                                 // Updates totalSupply

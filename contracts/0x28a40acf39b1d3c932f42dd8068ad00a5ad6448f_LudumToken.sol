@@ -11,7 +11,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -19,7 +19,7 @@ library SafeMath {
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -58,10 +58,10 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) returns (bool success) {
-		require( msg.data.length &gt;= (2 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (2 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -70,11 +70,11 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-		require( msg.data.length &gt;= (3 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[_from] &gt;= _value );
-		require( allowed[_from][msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (3 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[_from] >= _value );
+		require( allowed[_from][msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
 
         balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
@@ -99,8 +99,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
 }
 
@@ -110,8 +110,8 @@ contract LudumToken is StandardToken {
 
     using SafeMath for uint;
 
-	string public constant name = &quot;Ludum&quot;; // Ludum tokens name
-    string public constant symbol = &quot;LDM&quot;; // Ludum tokens ticker
+	string public constant name = "Ludum"; // Ludum tokens name
+    string public constant symbol = "LDM"; // Ludum tokens ticker
     uint8 public constant decimals = 18; // Ludum tokens decimals
 	uint public constant maximumSupply =  100000000000000000000000000; // Maximum 100M Ludum tokens can be created
 
@@ -131,12 +131,12 @@ contract LudumToken is StandardToken {
 
     function ludumTokensPerEther() constant returns(uint) {
 
-		if (now &lt; crowdsaleStart || now &gt; crowdsaleEnd) {
+		if (now < crowdsaleStart || now > crowdsaleEnd) {
 			return 0;
 		} else {
-			if (now &lt; crowdsaleStart + 1 days) return 15000; // Ludum token sale with 50% bonus
-			if (now &lt; crowdsaleStart + 7 days) return 13000; // Ludum token sale with 30% bonus
-			if (now &lt; crowdsaleStart + 14 days) return 11000; // Ludum token sale with 10% bonus
+			if (now < crowdsaleStart + 1 days) return 15000; // Ludum token sale with 50% bonus
+			if (now < crowdsaleStart + 7 days) return 13000; // Ludum token sale with 30% bonus
+			if (now < crowdsaleStart + 14 days) return 11000; // Ludum token sale with 10% bonus
 			return 10000; // Ludum token sale
 		}
 
@@ -164,9 +164,9 @@ contract LudumToken is StandardToken {
 
     function makeTokens() payable  {
 		require( !isFinalized );
-		require( now &gt;= crowdsaleStart );
-		require( now &lt; crowdsaleEnd );
-		require( msg.value &gt;= 10 finney );
+		require( now >= crowdsaleStart );
+		require( now < crowdsaleEnd );
+		require( msg.value >= 10 finney );
 
         uint tokens = msg.value.mul(ludumTokensPerEther());
 	    uint teamTokens = tokens.mul(teamPercent).div(100);
@@ -175,7 +175,7 @@ contract LudumToken is StandardToken {
 
 	    uint currentSupply = totalSupply.add(tokens).add(teamTokens).add(operationsTokens).add(marketingTokens);
 
-		require( maximumSupply &gt;= currentSupply );
+		require( maximumSupply >= currentSupply );
 
         totalSupply = currentSupply;
 
@@ -201,7 +201,7 @@ contract LudumToken is StandardToken {
     function finalizeCrowdsale() external {
 		require( !isFinalized );
 		require( msg.sender == ethDepositAddress );
-		require( now &gt;= crowdsaleEnd || totalSupply == maximumSupply );
+		require( now >= crowdsaleEnd || totalSupply == maximumSupply );
 
         isFinalized = true;
 

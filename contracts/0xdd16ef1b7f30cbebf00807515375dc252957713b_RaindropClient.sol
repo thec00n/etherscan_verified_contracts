@@ -31,7 +31,7 @@ library StringUtils {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -54,7 +54,7 @@ library StringUtils {
     */
     function lower(string _base) internal pure returns (string) {
         bytes memory _baseBytes = bytes(_base);
-        for (uint i = 0; i &lt; _baseBytes.length; i++) {
+        for (uint i = 0; i < _baseBytes.length; i++) {
             _baseBytes[i] = _lower(_baseBytes[i]);
         }
         return string(_baseBytes);
@@ -71,7 +71,7 @@ library StringUtils {
     *                and in a upper case otherwise returns the original value
     */
     function _lower(bytes1 _b1) internal pure returns (bytes1) {
-        if (_b1 &gt;= 0x41 &amp;&amp; _b1 &lt;= 0x5A) {
+        if (_b1 >= 0x41 && _b1 <= 0x5A) {
             return bytes1(uint8(_b1) + 32);
         }
         return _b1;
@@ -79,7 +79,7 @@ library StringUtils {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -175,14 +175,14 @@ contract RaindropClient is Withdrawable {
     }
 
     // Mapping from hashed uncased names to users (primary User directory)
-    mapping (bytes32 =&gt; User) internal userDirectory;
+    mapping (bytes32 => User) internal userDirectory;
     // Mapping from addresses to hashed uncased names (secondary directory for account recovery based on address)
-    mapping (address =&gt; bytes32) internal nameDirectory;
+    mapping (address => bytes32) internal nameDirectory;
 
     // Requires an address to have a minimum number of Hydro
     modifier requireStake(address _address, uint stake) {
         ERC20Basic hydro = ERC20Basic(hydroTokenAddress);
-        require(hydro.balanceOf(_address) &gt;= stake);
+        require(hydro.balanceOf(_address) >= stake);
         _;
     }
 
@@ -191,7 +191,7 @@ contract RaindropClient is Withdrawable {
         public
         requireStake(msg.sender, minimumHydroStakeDelegatedUser)
     {
-        require(isSigned(userAddress, keccak256(&quot;Create RaindropClient Hydro Account&quot;), v, r, s));
+        require(isSigned(userAddress, keccak256("Create RaindropClient Hydro Account"), v, r, s));
         _userSignUp(casedUserName, userAddress, true);
     }
 
@@ -223,8 +223,8 @@ contract RaindropClient is Withdrawable {
         public onlyOwner
     {
         ERC20Basic hydro = ERC20Basic(hydroTokenAddress);
-        require(newMinimumHydroStakeUser &lt;= (hydro.totalSupply() / 100 / 100)); // &lt;= .01% of total supply
-        require(newMinimumHydroStakeDelegatedUser &lt;= (hydro.totalSupply() / 100 / 2)); // &lt;= .5% of total supply
+        require(newMinimumHydroStakeUser <= (hydro.totalSupply() / 100 / 100)); // <= .01% of total supply
+        require(newMinimumHydroStakeDelegatedUser <= (hydro.totalSupply() / 100 / 2)); // <= .5% of total supply
         minimumHydroStakeUser = newMinimumHydroStakeUser;
         minimumHydroStakeDelegatedUser = newMinimumHydroStakeDelegatedUser;
     }
@@ -275,7 +275,7 @@ contract RaindropClient is Withdrawable {
         pure
         returns (bool)
     {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedMessageHash = keccak256(prefix, messageHash);
 
         return ecrecover(prefixedMessageHash, v, r, s) == _address;
@@ -283,7 +283,7 @@ contract RaindropClient is Withdrawable {
 
     // Common internal logic for all user signups
     function _userSignUp(string casedUserName, address userAddress, bool delegated) internal {
-        require(bytes(casedUserName).length &lt; 50);
+        require(bytes(casedUserName).length < 50);
 
         bytes32 uncasedUserNameHash = keccak256(casedUserName.toSlice().copy().toString().lower());
         require(!userDirectory[uncasedUserNameHash]._initialized);

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,13 +62,13 @@ contract TBECrowdsale {
     uint256 public bonusDate;
     uint256 public tokenCap;
 
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt; uint256) public whitelistedMax;
-    mapping (address =&gt; bool) public categorie1;
-    mapping (address =&gt; bool) public categorie2;
-    mapping (address =&gt; bool) public tokenAddress;
-    mapping (address =&gt; uint256) public balanceOfEther;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => bool) public whitelist;
+    mapping (address => uint256) public whitelistedMax;
+    mapping (address => bool) public categorie1;
+    mapping (address => bool) public categorie2;
+    mapping (address => bool) public tokenAddress;
+    mapping (address => uint256) public balanceOfEther;
+    mapping (address => uint256) public balanceOf;
 
     modifier isCreator() {
         require(msg.sender == creator);
@@ -140,18 +140,18 @@ contract TBECrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         require(whitelist[msg.sender]);
         
         if (categorie1[msg.sender] == false) {
-            require((whitelistedMax[msg.sender] +  msg.value) &lt;= 5000000000000000000);
+            require((whitelistedMax[msg.sender] +  msg.value) <= 5000000000000000000);
         }
 
         uint256 amount = msg.value * price;
 
-        if (now &gt; startDate &amp;&amp; now &lt;= bonusDate) {
+        if (now > startDate && now <= bonusDate) {
             uint256 _amount = amount / 10;
             amount += _amount * 3;
         }

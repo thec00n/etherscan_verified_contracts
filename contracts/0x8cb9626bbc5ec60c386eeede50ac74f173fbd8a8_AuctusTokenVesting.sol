@@ -4,12 +4,12 @@ pragma solidity ^0.4.21;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(a &gt;= b);
+		assert(a >= b);
 		return a - b;
 	}
 
@@ -49,8 +49,8 @@ contract AuctusStepVesting {
 	*/
 	function AuctusStepVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _steps) public {
 		require(_beneficiary != address(0));
-		require(_steps &gt; 0);
-		require(_cliff &gt; 0);
+		require(_steps > 0);
+		require(_cliff > 0);
 
 		beneficiary = _beneficiary;
 		cliff = _cliff;
@@ -66,7 +66,7 @@ contract AuctusStepVesting {
 	function release() public {
 		uint256 unreleased = getAllowedStepAmount();
 
-		require(unreleased &gt; 0);
+		require(unreleased > 0);
 
 		releasedAmount = releasedAmount.add(unreleased);
 		remainingAmount = remainingAmount.sub(unreleased);
@@ -84,15 +84,15 @@ contract AuctusStepVesting {
 	function getAllowedStepAmount() public view returns (uint256) {
 		if (remainingAmount == 0) {
 			return 0;
-		} else if (now &lt; start) {
+		} else if (now < start) {
 			return 0;
 		} else {
 			uint256 secondsFromTheBeginning = now.sub(start);
-			if (secondsFromTheBeginning &lt; cliff) {
+			if (secondsFromTheBeginning < cliff) {
 				return 0;
 			} else {
 				uint256 stepsAllowed = secondsFromTheBeginning.div(cliff);
-				if (stepsAllowed &gt;= steps) {
+				if (stepsAllowed >= steps) {
 					return remainingAmount;
 				} else if (releasedSteps == stepsAllowed) {
 					return 0;

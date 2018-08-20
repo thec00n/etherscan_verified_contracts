@@ -2,7 +2,7 @@ contract SimpleLotto {
     int public playCount = 0;
     int public playCount1;
     address public owner = msg.sender;
-    mapping (address =&gt; uint) public players;
+    mapping (address => uint) public players;
     My public aloha;
 
   struct My {
@@ -28,7 +28,7 @@ contract SimpleLotto {
         Sent(owner, receiver, playCount);
         players[receiver] += amount;
         
-        aloha.a = &quot;hi&quot;;
+        aloha.a = "hi";
         aloha.b = playCount1;
         
         return msg.value;

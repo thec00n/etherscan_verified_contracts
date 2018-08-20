@@ -7,9 +7,9 @@ pragma solidity ^0.4.11;
 // ALTHOUGH THIS SMART CONTRACT WAS CREATED WITH GREAT CARE AND IN THE HOPE OF BEING USEFUL, NO GUARANTEES OF FLAWLESS OPERATION CAN BE GIVEN.
 // IN PARTICULAR - SUBTILE BUGS, HACKER ATTACKS OR MALFUNCTION OF UNDERLYING TECHNOLOGY CAN CAUSE UNINTENTIONAL BEHAVIOUR.
 // YOU ARE STRONGLY ENCOURAGED TO STUDY THIS SMART CONTRACT CAREFULLY IN ORDER TO UNDERSTAND POSSIBLE EDGE CASES AND RISKS.
-// DON&#39;T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON&#39;T KNOW WHAT YOU ARE DOING.
+// DON'T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON'T KNOW WHAT YOU ARE DOING.
 //
-// THIS SOFTWARE IS PROVIDED &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 // AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 // OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -26,7 +26,7 @@ pragma solidity ^0.4.11;
 //
 
 /// @author ethernian
-/// @notice report bugs to: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="03617664704366776b66716d6a626d2d606c6e">[email&#160;protected]</a>
+/// @notice report bugs to: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="03617664704366776b66716d6a626d2d606c6e">[email protected]</a>
 /// @title Presaler Voting Contract
 
 interface TokenStorage {
@@ -35,7 +35,7 @@ interface TokenStorage {
 
 contract PresalerVoting {
 
-    string public constant VERSION = &quot;0.0.5&quot;;
+    string public constant VERSION = "0.0.5";
 
     /* ====== configuration START ====== */
 
@@ -46,10 +46,10 @@ contract PresalerVoting {
 
     TokenStorage PRESALE_CONTRACT = TokenStorage(0x4Fd997Ed7c10DbD04e95d3730cd77D79513076F2);
 
-    string[3] private stateNames = [&quot;BEFORE_START&quot;,  &quot;VOTING_RUNNING&quot;, &quot;CLOSED&quot; ];
+    string[3] private stateNames = ["BEFORE_START",  "VOTING_RUNNING", "CLOSED" ];
     enum State { BEFORE_START,  VOTING_RUNNING, CLOSED }
 
-    mapping (address =&gt; uint) public rawVotes;
+    mapping (address => uint) public rawVotes;
 
     uint private constant MAX_AMOUNT_EQU_0_PERCENT   = 10 finney;
     uint private constant MIN_AMOUNT_EQU_100_PERCENT = 1 ether ;
@@ -66,9 +66,9 @@ contract PresalerVoting {
     onlyPresaler
     onlyState(State.VOTING_RUNNING)
     payable {
-        if (msg.value &gt; 1 ether || !msg.sender.send(msg.value)) throw;
+        if (msg.value > 1 ether || !msg.sender.send(msg.value)) throw;
         //special treatment for 0-ether payments
-        rawVotes[msg.sender] = msg.value &gt; 0 ? msg.value : 1 wei;
+        rawVotes[msg.sender] = msg.value > 0 ? msg.value : 1 wei;
     }
 
     /// @notice start voting at `startBlockNr` for `durationHrs`.
@@ -86,8 +86,8 @@ contract PresalerVoting {
     /// @param voter balance holder address.
     function votedPerCent(address voter) constant external returns (uint) {
         var rawVote = rawVotes[voter];
-        if (rawVote &lt; MAX_AMOUNT_EQU_0_PERCENT) return 0;
-        else if (rawVote &gt;= MIN_AMOUNT_EQU_100_PERCENT) return 100;
+        if (rawVote < MAX_AMOUNT_EQU_0_PERCENT) return 0;
+        else if (rawVote >= MIN_AMOUNT_EQU_100_PERCENT) return 100;
         else return rawVote * 100 / 1 ether;
     }
 
@@ -98,9 +98,9 @@ contract PresalerVoting {
     }
 
     function currentState() internal constant returns (State) {
-        if (VOTING_START_BLOCKNR == 0 || block.number &lt; VOTING_START_BLOCKNR) {
+        if (VOTING_START_BLOCKNR == 0 || block.number < VOTING_START_BLOCKNR) {
             return State.BEFORE_START;
-        } else if (now &lt;= VOTING_END_TIME) {
+        } else if (now <= VOTING_END_TIME) {
             return State.VOTING_RUNNING;
         } else {
             return State.CLOSED;
@@ -112,7 +112,7 @@ contract PresalerVoting {
         return stateNames[uint(currentState())];
     }
 
-    function max(uint a, uint b) internal constant returns (uint maxValue) { return a&gt;b ? a : b; }
+    function max(uint a, uint b) internal constant returns (uint maxValue) { return a>b ? a : b; }
 
     modifier onlyPresaler() {
         if (PRESALE_CONTRACT.balances(msg.sender) == 0) throw;

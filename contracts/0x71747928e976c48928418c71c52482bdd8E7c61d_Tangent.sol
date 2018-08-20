@@ -3,10 +3,10 @@ pragma solidity ^0.4.20;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -73,12 +73,12 @@ contract Tangent is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function Tangent() public {
-        symbol = &quot;TAN&quot;;
-        name = &quot;Tangent&quot;;
+        symbol = "TAN";
+        name = "Tangent";
         decimals = 18;
         _totalSupply = 1000000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -186,7 +186,7 @@ contract TangentStake is Owned {
     // decreases the rate of Tangents to Ether, the contract cannot be told
     // to give out more Tangents per Ether, only fewer.
     function revalue(uint newMul, uint newDiv) public onlyOwner {
-        require( (newMul.div(newDiv)) &lt;= (multiplier.div(divisor)) );
+        require( (newMul.div(newDiv)) <= (multiplier.div(divisor)) );
         Revaluation(multiplier, divisor, newMul, newDiv);
         multiplier = newMul;
         divisor = newDiv;
@@ -213,12 +213,12 @@ contract TangentStake is Owned {
         return (earnings, amount);
     }
     
-    // Cash out Ether and Tangent at for the purchase at index &quot;index&quot;.
+    // Cash out Ether and Tangent at for the purchase at index "index".
     // All of the Ether and Tangent associated with with that purchase will
     // be sent to recipient, and no future withdrawals can be made for the
     // purchase.
     function cashOut(uint index) public {
-        require(0 &lt;= index &amp;&amp; index &lt; purchases.length);
+        require(0 <= index && index < purchases.length);
         require(purchases[index].addr == msg.sender);
         
         uint earnings;
@@ -227,7 +227,7 @@ contract TangentStake is Owned {
         
         (earnings, amount) = getEarnings(index);
         purchases[index].addr = address(0);
-        require(earnings != 0 &amp;&amp; amount != 0);
+        require(earnings != 0 && amount != 0);
         netStakes = netStakes.sub(amount);
         
         tangles = earnings.mul(multiplier).div(divisor);

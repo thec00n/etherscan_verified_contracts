@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,7 +89,7 @@ contract AdminToken is Owned{
   
   //Enable token sale;
   function sell() public onlyOwner {
-    require (!onSale &amp;&amp; stageNumber &lt; 5);                // cannot activated sale when ongoing/ stage already reach 5
+    require (!onSale && stageNumber < 5);                // cannot activated sale when ongoing/ stage already reach 5
 
     stageNumber += 1;                                    // move to next stage
 
@@ -116,16 +116,16 @@ contract AdminBasicToken is ERC20Basic, AdminToken {
 
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   /**
   * Internal transfer, only can be called by this contract
   */
   function _transfer(address _from, address _to, uint _value) internal {
 
-    require (_to != 0x0 &amp;&amp;                                            // Prevent transfer to 0x0 address.
-           balances[_from] &gt;= _value &amp;&amp;                               // Check if the sender has enough
-           balances[_to] + _value &gt; balances[_to]);                   // Check for overflows
+    require (_to != 0x0 &&                                            // Prevent transfer to 0x0 address.
+           balances[_from] >= _value &&                               // Check if the sender has enough
+           balances[_to] + _value > balances[_to]);                   // Check for overflows
                                        
     balances[_from] = balances[_from].sub(_value);                    // Subtract from the sender
     balances[_to] = balances[_to].add(_value);                        // Add the same to the recipient
@@ -154,7 +154,7 @@ contract AdminBasicToken is ERC20Basic, AdminToken {
 
 contract StandardToken is ERC20, AdminBasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   
   /**
    * @dev Transfer tokens from one address to another
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, AdminBasicToken {
    * @param _value uint256 the amout of tokens to be transfered
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+    require(_value <= allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _transfer(_from, _to, _value);
     return true;
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, AdminBasicToken {
    * @param _addedValue The amount of tokens to increase the allowance by.
    */
   function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
-  	require(_addedValue !=0 &amp;&amp; allowed[msg.sender][_spender] &gt; 0);
+  	require(_addedValue !=0 && allowed[msg.sender][_spender] > 0);
     allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
     Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
@@ -214,9 +214,9 @@ contract StandardToken is ERC20, AdminBasicToken {
    * @param _subtractedValue The amount of tokens to decrease the allowance by.
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
-  	require(_subtractedValue !=0 &amp;&amp; allowed[msg.sender][_spender] &gt; 0);
+  	require(_subtractedValue !=0 && allowed[msg.sender][_spender] > 0);
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -239,8 +239,8 @@ contract StandardToken is ERC20, AdminBasicToken {
 contract SackWengerCoin is StandardToken {
 
   // Public variables of the token
-  string public name =  &quot;Sack Wenger Coin&quot;;
-  string public symbol = &quot;AXW&quot;;
+  string public name =  "Sack Wenger Coin";
+  string public symbol = "AXW";
   uint8 public decimals = 18;
   uint256 ETHreceived = 0;
 
@@ -264,14 +264,14 @@ contract SackWengerCoin is StandardToken {
     stageTokenIssued += newTokenIssued;
     balances[msg.sender] += newTokenIssued;            // makes the transfers
 
-    if (stageTokenIssued &gt;= eachStageSupply) {
+    if (stageTokenIssued >= eachStageSupply) {
       _stopSale();                                     // stop selling coins when stage target is met
       stageTokenIssued = 0;
     }
   }
 
   function () payable public {
-    require (onSale &amp;&amp; msg.value != 0);
+    require (onSale && msg.value != 0);
 
     receiver.transfer(msg.value);
 

@@ -23,7 +23,7 @@ contract Listen{
     }
     
     function draw() onlyOwner{
-        if(this.balance &gt; 0){
+        if(this.balance > 0){
              owner.transfer(this.balance);
         }
     }

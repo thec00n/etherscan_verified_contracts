@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,26 +46,26 @@ contract Deco is ERC20ERC223 {
 
   using SafeMath for uint256;
 
-  string public constant name = &quot;Deco&quot;;
-  string public constant symbol = &quot;DEC&quot;;
+  string public constant name = "Deco";
+  string public constant symbol = "DEC";
   uint8 public constant decimals = 18;
   
   uint256 public constant totalSupply = 6*10**26; // 600,000,000. 000,000,000,000,000,000 units
     
   // Accounts
   
-  mapping(address =&gt; Account) private accounts;
+  mapping(address => Account) private accounts;
   
   struct Account {
     uint256 balance;
-    mapping(address =&gt; uint256) allowed;
-    mapping(address =&gt; bool) isAllowanceAuthorized;
+    mapping(address => uint256) allowed;
+    mapping(address => bool) isAllowanceAuthorized;
   }  
   
   // Fix for the ERC20 short address attack.
   // http://vessenes.com/the-erc20-short-address-attack-explained/
   modifier onlyPayloadSize(uint256 size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
      _;
   }
 
@@ -85,7 +85,7 @@ contract Deco is ERC20ERC223 {
   // Transfers
 
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool) {
-    performTransfer(msg.sender, _to, _value, &quot;&quot;);
+    performTransfer(msg.sender, _to, _value, "");
     Transfer(msg.sender, _to, _value);
     return true;
   }
@@ -99,7 +99,7 @@ contract Deco is ERC20ERC223 {
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool) {
     require(hasApproval(_from, msg.sender));
     uint256 _allowed = accounts[_from].allowed[msg.sender];    
-    performTransfer(_from, _to, _value, &quot;&quot;);    
+    performTransfer(_from, _to, _value, "");    
     accounts[_from].allowed[msg.sender] = _allowed.sub(_value);
     Transfer(_from, _to, _value);
     return true;
@@ -121,15 +121,15 @@ contract Deco is ERC20ERC223 {
     assembly {
       codeLength := extcodesize(_to)
     }
-    return codeLength &gt; 0;
+    return codeLength > 0;
   }
 
-  // Approval &amp; Allowance
+  // Approval & Allowance
   
   function approve(address _spender, uint256 _value) returns (bool) {
     require(msg.sender != _spender);
     // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (accounts[msg.sender].allowed[_spender] != 0)) {
+    if ((_value != 0) && (accounts[msg.sender].allowed[_spender] != 0)) {
       revert();
       return false;
     }

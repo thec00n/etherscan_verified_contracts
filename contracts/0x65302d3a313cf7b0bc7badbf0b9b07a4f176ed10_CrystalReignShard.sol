@@ -23,9 +23,9 @@ library SafeMath {
  * @dev Integer division of two numbers, truncating the quotient.
  */
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-   // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+   // assert(b > 0); // Solidity automatically throws when dividing by 0
    uint256 c = a / b;
-   // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+   // assert(a == b * c + a % b); // There is no case in which this doesn't hold
    return c;
  }
 
@@ -33,7 +33,7 @@ library SafeMath {
  * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
  */
  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-   assert(b &lt;= a);
+   assert(b <= a);
    return a - b;
  }
 
@@ -42,7 +42,7 @@ library SafeMath {
  */
  function add(uint256 a, uint256 b) internal pure returns (uint256) {
    uint256 c = a + b;
-   assert(c &gt;= a);
+   assert(c >= a);
    return c;
  }
 }
@@ -89,7 +89,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -98,7 +98,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -121,8 +121,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -132,7 +132,7 @@ contract CrystalReignShard is StandardToken {
     string public name; 
     uint8 public decimals;            
     string public symbol; 
-    string public version = &#39;H1.0&#39;;
+    string public version = 'H1.0';
     uint256 public unitsOneEthCanBuy;
     uint256 public preSalePrice;
     uint256 public preAlphaPrice;
@@ -153,9 +153,9 @@ contract CrystalReignShard is StandardToken {
         balances[compWallet] = 16400000000000000000000000;
         balances[marketingWallet] = 80000000000000000000000;
         totalSupply = 50000000000000000000000000;                        
-        name = &quot;Crystal Reign Shard&quot;;                                  
+        name = "Crystal Reign Shard";                                  
         decimals = 18;                                              
-        symbol = &quot;CRS&quot;;                                           
+        symbol = "CRS";                                           
         unitsOneEthCanBuy = 1000;                                      
         preSalePrice = 2000;
         preAlphaPrice = 1300;
@@ -165,13 +165,13 @@ contract CrystalReignShard is StandardToken {
     function() payable{
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        if (now &lt; 1521028800){
+        if (now < 1521028800){
             amount = msg.value * preSalePrice;
         }
-        else if (now &lt; 1524571200) {
+        else if (now < 1524571200) {
           amount = msg.value * preAlphaPrice;
         }
-        if (balances[fundsWallet] &lt; amount) {
+        if (balances[fundsWallet] < amount) {
             msg.sender.transfer(msg.value);
             return;
         }
@@ -187,12 +187,12 @@ contract CrystalReignShard is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
     function mint(){
-      if (now &gt;= start + (5 years * mintCount) &amp;&amp; msg.sender == fundsWallet) {
+      if (now >= start + (5 years * mintCount) && msg.sender == fundsWallet) {
         balances[dropWallet] += 16400000000000000000000000;
         mintCount++;
         totalSupply += 16400000000000000000000000;
@@ -202,11 +202,11 @@ contract CrystalReignShard is StandardToken {
       function tileDrop(address[] winners) returns(bool success){
       if(msg.sender == fundsWallet){
         uint256 amount = 1000000000000000000000;
-        for(uint winList = 0; winList &lt; winners.length; winList++){
+        for(uint winList = 0; winList < winners.length; winList++){
           winners[winList].transfer(bonusETH.div(64));
           balances[winners[winList]] = balances[winners[winList]] + amount;
           bonusETH -= bonusETH.div(64);
-            if (balances[dropWallet] &gt;= amount) {
+            if (balances[dropWallet] >= amount) {
             balances[dropWallet] = balances[dropWallet] - amount;
             balances[winners[winList]] = balances[winners[winList]] + bonusCRS.div(64);
             bonusCRS -= bonusCRS.div(64);
@@ -235,7 +235,7 @@ contract CrystalReignShard is StandardToken {
         }
 
         function purchaseCRS(uint256 amount) public returns(bool success){//
-          if(balances[msg.sender] &gt;= amount){
+          if(balances[msg.sender] >= amount){
             balances[fundsWallet] = balances[fundsWallet] + amount.div(5);
             bonusCRS += (amount.div(5)).mul(4);
             balances[msg.sender] = balances[msg.sender] - amount;

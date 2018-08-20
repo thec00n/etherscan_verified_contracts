@@ -20,37 +20,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -59,9 +59,9 @@ contract StandardToken is ERC20, SafeMath {
 
   event Minted(address receiver, uint amount);
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function isToken() public constant returns (bool weAre) {
     return true;
@@ -105,8 +105,8 @@ contract StandardToken is ERC20, SafeMath {
 
 contract BitBeri is StandardToken {
 
-    string public name = &quot;BitBeri&quot;;
-    string public symbol = &quot;BTB&quot;;
+    string public name = "BitBeri";
+    string public symbol = "BTB";
     uint public decimals = 18;
 
     
@@ -151,12 +151,12 @@ contract BitBeri is StandardToken {
 
    function buy() public payable returns(bool) {
         require(!halted);
-        require(msg.value&gt;0);
+        require(msg.value>0);
         
         uint256 weiAmount = msg.value;
         uint256 tokens = safeDiv(safeMul(weiAmount,10**17),13892747985551);
 
-        require(balances[owner]&gt;tokens);
+        require(balances[owner]>tokens);
 
         if (stageThree) {
 			preTge = false;
@@ -180,9 +180,9 @@ contract BitBeri is StandardToken {
         }
 
         if (preTge) {
-            require(safeAdd(presaleTokenSupply, tokens) &lt; preTgeCap);
+            require(safeAdd(presaleTokenSupply, tokens) < preTgeCap);
         } else {
-            require(safeAdd(presaleTokenSupply, tokens) &lt; safeSub(tgeCap, preTgeTokenSupply));
+            require(safeAdd(presaleTokenSupply, tokens) < safeSub(tgeCap, preTgeTokenSupply));
         }
 
         founder.transfer(msg.value);
@@ -286,7 +286,7 @@ contract BitBeri is StandardToken {
     }
 
     modifier isAvailable() {
-        require(!halted &amp;&amp; !freeze);
+        require(!halted && !freeze);
         _;
     }
 

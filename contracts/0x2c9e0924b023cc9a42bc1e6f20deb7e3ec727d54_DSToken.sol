@@ -88,26 +88,26 @@ contract DSStop is DSNote, DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -131,9 +131,9 @@ contract ERC20 is ERC20Events {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; uint256)                       _frozens;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => uint256)                       _frozens;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     constructor(uint supply) public {
         _balances[msg.sender] = supply;
@@ -184,7 +184,7 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract DSToken is DSTokenBase(100000000000000000000000), DSStop {
 
-    string  public  symbol = &quot;ICT&quot;;
+    string  public  symbol = "ICT";
     uint8  public  decimals = 18; // standard token precision. override to customize
 
     event Mint(address indexed guy, uint wad);
@@ -204,9 +204,9 @@ contract DSToken is DSTokenBase(100000000000000000000000), DSStop {
         stoppable
         returns (bool)
     {
-        require(_balances[src] - _frozens[src] &gt;= wad);
+        require(_balances[src] - _frozens[src] >= wad);
         
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -218,10 +218,10 @@ contract DSToken is DSTokenBase(100000000000000000000000), DSStop {
         return true;
     }
     function transferMulti(address[] dsts, uint wad)  public auth returns (bool) {  
-        require(dsts.length &gt; 0);
-        require(_balances[msg.sender] - _frozens[msg.sender] &gt;= wad*dsts.length);
+        require(dsts.length > 0);
+        require(_balances[msg.sender] - _frozens[msg.sender] >= wad*dsts.length);
         
-        for(uint32 i=0; i&lt;dsts.length; i++){
+        for(uint32 i=0; i<dsts.length; i++){
             transfer(dsts[i], wad);
         }  
         return true;
@@ -248,7 +248,7 @@ contract DSToken is DSTokenBase(100000000000000000000000), DSStop {
         emit Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; _approvals[guy][msg.sender] != uint(-1)) {
+        if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -257,14 +257,14 @@ contract DSToken is DSTokenBase(100000000000000000000000), DSStop {
         emit Burn(guy, wad);
     }
     function freezeAccount(address guy, uint wad) public auth {
-        require(_balances[guy] &gt;= wad);
+        require(_balances[guy] >= wad);
         
         _frozens[guy] = add(0, wad);
         emit Freeze(guy, wad);
     }
 
     // Optional token name
-    string   public  name = &quot;Ideal China Token&quot;;
+    string   public  name = "Ideal China Token";
 
     function setName(string name_) public auth {
         name = name_;

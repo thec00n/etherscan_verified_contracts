@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -76,9 +76,9 @@ contract Basic is Ownable {
     using SafeMath for uint256;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public totalAmount;
-    mapping(address =&gt; uint256) public availableAmount;
-    mapping(address =&gt; uint256) public withdrawedAmount;
+    mapping(address => uint256) public totalAmount;
+    mapping(address => uint256) public availableAmount;
+    mapping(address => uint256) public withdrawedAmount;
     uint[] public periods;
     uint256 public currentPeriod;
     smartContract public contractAddress;
@@ -103,10 +103,10 @@ contract Basic is Ownable {
         _updateCurrentPeriod();
         uint256 available;
         uint256 calcPeriod = currentPeriod + 1;
-        if (calcPeriod &lt; periods.length) {
+        if (calcPeriod < periods.length) {
             available = totalAmount[_addr].div(periods.length).mul(calcPeriod);
-            //you don&#39;t have anything to withdraw
-            require(available &gt; withdrawedAmount[_addr]);
+            //you don't have anything to withdraw
+            require(available > withdrawedAmount[_addr]);
             //remove already withdrawed tokens
             available = available.sub(withdrawedAmount[_addr]);
         } else {
@@ -129,11 +129,11 @@ contract Basic is Ownable {
 
     function _withdraw(address _addr) internal {
         require(_addr != 0x0);
-        require(totalAmount[_addr] &gt; 0);
+        require(totalAmount[_addr] > 0);
 
         //Recalculate available balance if time has come
         _recalculateAvailable(_addr);
-        require(availableAmount[_addr] &gt; 0);
+        require(availableAmount[_addr] > 0);
         uint256 available = availableAmount[_addr];
         withdrawedAmount[_addr] = withdrawedAmount[_addr].add(available);
         availableAmount[_addr] = 0;
@@ -148,14 +148,14 @@ contract Basic is Ownable {
     // owner may withdraw funds after some period of time
     function withdrawToOwner(uint256 _amount) external onlyOwner {
         // no need to create modifier for one case
-        require(now &gt; ownerWithdrawalDate);
+        require(now > ownerWithdrawalDate);
         contractAddress.transfer(msg.sender, _amount);
     }
 
     function _updateCurrentPeriod() internal {
-        require(periods.length &gt;= 1);
-        for (uint i = 0; i &lt; periods.length; i++) {
-            if (periods[i] &lt;= now &amp;&amp; i &gt;= currentPeriod) {
+        require(periods.length >= 1);
+        for (uint i = 0; i < periods.length; i++) {
+            if (periods[i] <= now && i >= currentPeriod) {
                 currentPeriod = i;
             }
         }

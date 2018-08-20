@@ -6,24 +6,24 @@ contract SolidusToken {
 
     bool public purchasingAllowed = true;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalSupply = 0;
     uint256 public totalBalancingTokens = 0;
     uint256 public tokenMultiplier = 600;
 
-    function name() constant returns (string) { return &quot;Solidus&quot;; }
-    function symbol() constant returns (string) { return &quot;SOL&quot;; }
+    function name() constant returns (string) { return "Solidus"; }
+    function symbol() constant returns (string) { return "SOL"; }
     function decimals() constant returns (uint8) { return 18; }
     
     function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);                               
-        require(balances[msg.sender] &gt;= _value);           
-        require(balances[_to] + _value &gt; balances[_to]); 
+        require(balances[msg.sender] >= _value);           
+        require(balances[_to] + _value > balances[_to]); 
         balances[msg.sender] -= _value;                     
         balances[_to] += _value;                            
         Transfer(msg.sender, _to, _value);                  
@@ -32,9 +32,9 @@ contract SolidusToken {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);                                
-        require(balances[_from] &gt;= _value);                 
-        require(balances[_to] + _value &gt; balances[_to]);  
-        require(_value &lt;= allowed[_from][msg.sender]);    
+        require(balances[_from] >= _value);                 
+        require(balances[_to] + _value > balances[_to]);  
+        require(_value <= allowed[_from][msg.sender]);    
         balances[_from] -= _value;                        
         balances[_to] += _value;                          
         allowed[_from][msg.sender] -= _value;
@@ -43,7 +43,7 @@ contract SolidusToken {
     }
     
     function approve(address _spender, uint256 _value) returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) {return false;}
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) {return false;}
         
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -78,7 +78,7 @@ contract SolidusToken {
 
     function burn(uint256 _value) returns (bool success) {
         require(msg.sender == owner);
-        require(balances[msg.sender] &gt; _value);
+        require(balances[msg.sender] > _value);
         balances[msg.sender] -= _value;
         totalBalancingTokens -= _value;
         totalSupply -= _value;  

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 
 
-//Melon Wallet $NGR(Natural Root Growth token mining event ICO contract - melon.business &amp; melonwallet.network 
+//Melon Wallet $NGR(Natural Root Growth token mining event ICO contract - melon.business & melonwallet.network 
 
 
 contract SafeMath {
@@ -12,37 +12,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -76,10 +76,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -88,7 +88,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transfer(address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 1) {
+      if (_value < 1) {
           revert();
       }
       
@@ -100,7 +100,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 1) {
+      if (_value < 1) {
           revert();
       }
       
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, SafeMath {
 
 
 
-//Melon Wallet NGR token buying contract - melon.business &amp; melonwallet.network 
+//Melon Wallet NGR token buying contract - melon.business & melonwallet.network 
 
 contract MelonWallet is StandardToken {
   
@@ -149,8 +149,8 @@ contract MelonWallet is StandardToken {
     address public owner = msg.sender;		 //Record the owner of the contract
 	uint256 public tokenAmount = 210000000000000000000000;
   
-    function name() constant returns (string) { return &quot;Melon Wallet&quot;; }
-    function symbol() constant returns (string) { return &quot;NGR&quot;; }
+    function name() constant returns (string) { return "Melon Wallet"; }
+    function symbol() constant returns (string) { return "NGR"; }
     function decimals() constant returns (uint8) { return 18; }
 	
 
@@ -159,23 +159,23 @@ contract MelonWallet is StandardToken {
       
      tokenAmount = ((msg.value*rate)/(1 ether));		//calculate the amount of tokens to give
       
-    if (totalSupply &gt; 6000000000000000000000000) {        //Make sure that no more than 6 million NGR can be made.
+    if (totalSupply > 6000000000000000000000000) {        //Make sure that no more than 6 million NGR can be made.
         revert();
     }
     
-    if (balances[msg.sender] &gt; 25000000000000000000000) {             //Make sure a buyer can&#39;t buy more than 100K.
+    if (balances[msg.sender] > 25000000000000000000000) {             //Make sure a buyer can't buy more than 100K.
         revert();
     }
     
-    if (balances[msg.sender]+tokenAmount &gt; 25000000000000000000000) {    //Make sure a buyer can&#39;t buy more than 100K.
+    if (balances[msg.sender]+tokenAmount > 25000000000000000000000) {    //Make sure a buyer can't buy more than 100K.
         revert();
     }
     
-    if (tokenAmount &gt; 25000000000000000000000) {          //Make sure a buyer can&#39;t buy more than 100K.
+    if (tokenAmount > 25000000000000000000000) {          //Make sure a buyer can't buy more than 100K.
         revert();
     }
     
-	if ((tokenAmount+totalSupply) &gt; 6000000000000000000000000) {      //Make sure that no more than 6 million NGR can be made.
+	if ((tokenAmount+totalSupply) > 6000000000000000000000000) {      //Make sure that no more than 6 million NGR can be made.
         revert();
     }
 
@@ -183,11 +183,11 @@ contract MelonWallet is StandardToken {
           revert();
       }
       
-      if (msg.value &lt;= 0) {                 //Extra precaution to contract attack
+      if (msg.value <= 0) {                 //Extra precaution to contract attack
           revert();
       }
       
-      if (amount &lt; 1) {                     //Extra precaution to contract attack
+      if (amount < 1) {                     //Extra precaution to contract attack
           revert();
       }
 
@@ -205,36 +205,36 @@ contract MelonWallet is StandardToken {
 	//Even if 0 ether is sent.
 function () payable {
     
-    if (balances[msg.sender] &gt; 25000000000000000000000) {     //Make sure a buyer can&#39;t buy more than 100 K Melon Wallet Tokens.
+    if (balances[msg.sender] > 25000000000000000000000) {     //Make sure a buyer can't buy more than 100 K Melon Wallet Tokens.
         revert();
     }
     
-    if (totalSupply &gt; 6000000000000000000000000) {        //Make sure that no more than 6 million NGR can be made.
+    if (totalSupply > 6000000000000000000000000) {        //Make sure that no more than 6 million NGR can be made.
         revert();
     }
     
 
-	if (msg.value &lt;= 0) {		//If zero or less ether is sent, refund user. 
+	if (msg.value <= 0) {		//If zero or less ether is sent, refund user. 
 		revert();
 	}
 	
 
-	tokenAmount = 210000000000000000000000;						//set the &#39;amount&#39; var back to zero
+	tokenAmount = 210000000000000000000000;						//set the 'amount' var back to zero
 	tokenAmount = ((msg.value*rate)/(1 ether));		//calculate the amount of tokens to give
 	
-    if (balances[msg.sender]+tokenAmount &gt; 25000000000000000000000) {     //Make sure a buyer can&#39;t buy more than 100 K Melon Wallet Tokens.
+    if (balances[msg.sender]+tokenAmount > 25000000000000000000000) {     //Make sure a buyer can't buy more than 100 K Melon Wallet Tokens.
         revert();
     }
 	
-    if (tokenAmount &gt; 25000000000000000000000) {          //Make sure a buyer can&#39;t buy more than 100K Melon Wallet Tokens.
+    if (tokenAmount > 25000000000000000000000) {          //Make sure a buyer can't buy more than 100K Melon Wallet Tokens.
         revert();
     }
 	
-	if (tokenAmount &lt; 1) {
+	if (tokenAmount < 1) {
         revert();
     }
     
-	if ((tokenAmount+totalSupply) &gt; 6000000000000000000000000) {      //Make sure that no more than 6 million NGR can be made.
+	if ((tokenAmount+totalSupply) > 6000000000000000000000000) {      //Make sure that no more than 6 million NGR can be made.
         revert();
     }
       

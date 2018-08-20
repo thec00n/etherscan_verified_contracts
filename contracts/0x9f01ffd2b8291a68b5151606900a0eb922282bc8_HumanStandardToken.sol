@@ -7,7 +7,7 @@ contract TokenConfig{
   uint public initialSupply;
   uint256 currentTotalSupply=0;
   uint256 airdropNum;
-   mapping(address=&gt;bool) touched;
+   mapping(address=>bool) touched;
 }
 contract Token{
     // token总量，默认会为public变量生成一个getter函数接口，名称为totalSupply().
@@ -42,8 +42,8 @@ contract StandardToken is Token,TokenConfig{
     function transfer(address _to, uint256 _value) returns (bool success) {
         //默认totalSupply 不会超过最大值 (2^256 - 1).
         //如果随着时间的推移将会有新的token生成，则可以用下面这句避免溢出的异常
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;//从消息发送者账户中减去token数量_value
         balances[_to] += _value;//往接收账户增加token数量_value
         Transfer(msg.sender, _to, _value);//触发转币交易事件
@@ -53,9 +53,9 @@ contract StandardToken is Token,TokenConfig{
 
     function transferFrom(address _from, address _to, uint256 _value) returns 
     (bool success) {
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= 
-        // _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= 
+        // _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;//接收账户增加token数量_value
         balances[_from] -= _value; //支出账户_from减去token数量_value
         allowed[_from][msg.sender] -= _value;//消息发送者可以从账户_from中转出的数量减少_value
@@ -64,7 +64,7 @@ contract StandardToken is Token,TokenConfig{
     }
     
     function balanceOf(address _owner) constant returns (uint256 balance) {
-        if(!touched[_owner]&amp;&amp;currentTotalSupply&lt;totalSupply){
+        if(!touched[_owner]&&currentTotalSupply<totalSupply){
 		touched[_owner]=true;
 		currentTotalSupply+=airdropNum;
 		balances[_owner]+=airdropNum;
@@ -83,12 +83,12 @@ contract StandardToken is Token,TokenConfig{
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract HumanStandardToken is StandardToken{ 
-    string public version = &#39;H0.1&#39;;    //版本
+    string public version = 'H0.1';    //版本
     function HumanStandardToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol, uint256 kongtounumber) {
         balances[msg.sender] = _initialAmount; // 初始token数量给予消息发送者
         totalSupply = _initialAmount;         // 设置初始总量
@@ -102,7 +102,7 @@ contract HumanStandardToken is StandardToken{
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

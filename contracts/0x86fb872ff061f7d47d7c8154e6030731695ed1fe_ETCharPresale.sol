@@ -19,20 +19,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -69,7 +69,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -145,8 +145,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -212,7 +212,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,8 +256,8 @@ contract AcceptsTokens {
 contract ETToken is Owned, StandardToken {
     using SafeMath for uint;
 
-    string public name = &quot;ETH.TOWN Token&quot;;
-    string public symbol = &quot;ETIT&quot;;
+    string public name = "ETH.TOWN Token";
+    string public symbol = "ETIT";
     uint8 public decimals = 18;
 
     address public beneficiary;
@@ -268,10 +268,10 @@ contract ETToken is Owned, StandardToken {
         _;
     }
 
-    mapping (uint32 =&gt; address) public floorContracts;
-    mapping (address =&gt; bool) public canAcceptTokens;
+    mapping (uint32 => address) public floorContracts;
+    mapping (address => bool) public canAcceptTokens;
 
-    mapping (address =&gt; bool) public isMinter;
+    mapping (address => bool) public isMinter;
 
     modifier onlyMinters {
         require(msg.sender == owner || isMinter[msg.sender]);
@@ -352,7 +352,7 @@ contract ETToken is Owned, StandardToken {
     }
 
     function burn(uint256 _amount) external {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         totalSupply_ = totalSupply_.sub(_amount);
@@ -388,7 +388,7 @@ contract ETToken is Owned, StandardToken {
     */
     function transferWithParams(address _to, uint256 _value, uint256 _param1, uint256 _param2, uint256 _param3) onlyPayloadSize(5 * 32) external returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -432,8 +432,8 @@ contract ETCharPresale is PresaleContract {
 
     uint256 public currentPrice = 0.1 ether;
 
-    mapping (uint32 =&gt; address) public owners;
-    mapping (address =&gt; uint32[]) public characters;
+    mapping (uint32 => address) public owners;
+    mapping (address => uint32[]) public characters;
 
     event Purchase(address from, uint32 charId, uint256 amount);
 
@@ -446,12 +446,12 @@ contract ETCharPresale is PresaleContract {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function _provideChars(address _address, uint32 _number) internal {
 
-        for (uint32 i = 0; i &lt; _number; i++) {
+        for (uint32 i = 0; i < _number; i++) {
             owners[currentCharId + i] = _address;
             characters[_address].push(currentCharId + i);
             emit Purchase(_address, currentCharId + i, currentPrice);
@@ -464,13 +464,13 @@ contract ETCharPresale is PresaleContract {
     function priceIncrease() public view returns (uint256) {
         uint256 _currentPrice = currentPrice;
 
-        if (_currentPrice &gt; 0.3 ether) {
+        if (_currentPrice > 0.3 ether) {
             return 0.05 finney;
-        } else if (_currentPrice &gt; 0.25 ether) {
+        } else if (_currentPrice > 0.25 ether) {
             return 0.1 finney;
-        } else if (_currentPrice &gt; 0.2 ether) {
+        } else if (_currentPrice > 0.2 ether) {
             return 0.2 finney;
-        } else if (_currentPrice &gt; 0.15 ether) {
+        } else if (_currentPrice > 0.15 ether) {
             return 0.4 finney;
         } else {
             return 0.8 finney;
@@ -481,17 +481,17 @@ contract ETCharPresale is PresaleContract {
         require(enabled);
         require(!_isContract(msg.sender));
 
-        require(msg.value &gt;= currentPrice);
+        require(msg.value >= currentPrice);
 
         uint32 chars = uint32(msg.value.div(currentPrice));
 
-        require(chars &lt;= 50);
+        require(chars <= 50);
 
-        if (chars &gt; 5) {
+        if (chars > 5) {
             chars = 5;
         }
 
-        require(currentCharId + chars - 1 &lt;= maxCharId);
+        require(currentCharId + chars - 1 <= maxCharId);
 
         uint256 purchaseValue = currentPrice.mul(chars);
         uint256 change = msg.value.sub(purchaseValue);
@@ -500,11 +500,11 @@ contract ETCharPresale is PresaleContract {
 
         tokenContract.rewardTokens(msg.sender, purchaseValue * 200);
 
-        if (currentCharId &gt; maxCharId) {
+        if (currentCharId > maxCharId) {
             enabled = false;
         }
 
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
     }

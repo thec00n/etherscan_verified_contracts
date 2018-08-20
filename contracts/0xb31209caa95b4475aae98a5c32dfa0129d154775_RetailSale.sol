@@ -55,16 +55,16 @@ contract RetailSale {
     aboveMinValue
     public {
         uint price = actualPrice;
-        if (now &gt;= nextPriceDate) {
+        if (now >= nextPriceDate) {
             price = nextPrice;
         }
         uint vp = (msg.value * 1 ether) / price;
         uint b = 0;
         uint tokens = 0;
-        if (now &gt;= bonusStart &amp;&amp; now &lt;= bonusEnd) {
+        if (now >= bonusStart && now <= bonusEnd) {
             b = bonus;
         }
-        if (this.balance &gt;= milestone &amp;&amp; !milestoneReached) {
+        if (this.balance >= milestone && !milestoneReached) {
             b = milestoneBonus;
             milestoneReached = true;
         }
@@ -78,7 +78,7 @@ contract RetailSale {
     }
 
     modifier aboveMinValue() {
-        require(msg.value &gt;= minPurchase);
+        require(msg.value >= minPurchase);
         _;
     }
 
@@ -88,17 +88,17 @@ contract RetailSale {
     }
 
     modifier isClosed() {
-        require(!(now &gt;= periodStart &amp;&amp; now &lt;= periodEnd));
+        require(!(now >= periodStart && now <= periodEnd));
         _;
     }
 
     modifier isOpen() {
-        require(now &gt;= periodStart &amp;&amp; now &lt;= periodEnd);
+        require(now >= periodStart && now <= periodEnd);
         _;
     }
 
     modifier validPeriod(uint start, uint end){
-        require(start &lt; end);
+        require(start < end);
         _;
     }
 
@@ -183,7 +183,7 @@ contract RetailSale {
     }
 
     function open() view public returns (bool) {
-        return (now &gt;= periodStart &amp;&amp; now &lt;= periodEnd);
+        return (now >= periodStart && now <= periodEnd);
     }
 
 }

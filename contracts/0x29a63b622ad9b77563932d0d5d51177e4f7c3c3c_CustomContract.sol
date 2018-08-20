@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ contract Ownable {
     }
     
     function transferOwnership(address _newOwner) public onlyOwner {
-        require(_newOwner != address(0) &amp;&amp; _newOwner != owner);
+        require(_newOwner != address(0) && _newOwner != owner);
         OwnershipTransferred(owner, _newOwner);
         owner = _newOwner;
     }
@@ -68,20 +68,20 @@ contract CustomContract is Ownable {
     
     using SafeMath for uint256;
     
-    mapping (address =&gt; bool) public addrHasInvested;
+    mapping (address => bool) public addrHasInvested;
     
     TokenInterface public constant token = TokenInterface(0x0008b0650EB2faf50cf680c07D32e84bE1c0F07E);
     
     
     modifier legalAirdrop(address[] _addrs, uint256 _value) {
-        require(token.balanceOf(address(this)) &gt;= _addrs.length.mul(_value));
-        require(_addrs.length &lt;= 100);
-        require(_value &gt; 0);
+        require(token.balanceOf(address(this)) >= _addrs.length.mul(_value));
+        require(_addrs.length <= 100);
+        require(_value > 0);
         _;
     }
 
     function airDropTokens(address[] _addrs, uint256 _value) public onlyOwner legalAirdrop(_addrs, _value){
-        for(uint i = 0; i &lt; _addrs.length; i++) {
+        for(uint i = 0; i < _addrs.length; i++) {
             if(_addrs[i] != address(0)) {
                 token.transfer(_addrs[i], _value * (10 ** 18));
             }
@@ -90,20 +90,20 @@ contract CustomContract is Ownable {
     
     modifier legalBatchPayment(address[] _addrs, uint256[] _values) {
         require(_addrs.length == _values.length);
-        require(_addrs.length &lt;= 100);
+        require(_addrs.length <= 100);
         uint256 sum = 0;
-        for(uint i = 0; i &lt; _values.length; i++) {
+        for(uint i = 0; i < _values.length; i++) {
             if(_values[i] == 0 || _addrs[i] == address(0)) {
                 revert();
             }
             sum = sum.add(_values[i]);
         }
-        require(address(this).balance &gt;= sum);
+        require(address(this).balance >= sum);
         _;
     }
     
     function makeBatchPayment(address[] _addrs, uint256[] _values) public onlyOwner legalBatchPayment(_addrs, _values) {
-        for(uint256 i = 0; i &lt; _addrs.length; i++) {
+        for(uint256 i = 0; i < _addrs.length; i++) {
             _addrs[i].transfer(_values[i]);
         }
     }
@@ -121,13 +121,13 @@ contract CustomContract is Ownable {
     
     function withdrawEth(address _to, uint256 _value) public onlyOwner {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         _to.transfer(_value);
     }
     
     function withdrawTokens(address _to, uint256 _value) public onlyOwner {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         token.transfer(_to, _value * (10 ** 18));
     }
     

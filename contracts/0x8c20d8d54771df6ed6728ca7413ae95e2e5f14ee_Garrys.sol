@@ -6,7 +6,7 @@ pragma solidity ^0.4.19;
 //
 // massive shoutout to https://cryptozombies.io
 // best solidity learning series out there!
-// wait what&#39;s to come after Garrys coin :) there must be a Garrys game
+// wait what's to come after Garrys coin :) there must be a Garrys game
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
@@ -81,8 +81,8 @@ contract Garrys is ERC20Interface, Owned {
     uint public _maxSupply;
     uint public _ratio;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     address GameContract;
     
@@ -90,10 +90,10 @@ contract Garrys is ERC20Interface, Owned {
     // Launched once when contract starts
     // ------------------------------------------------------------------------
     function Garrys() public {
-        symbol = &quot;GAR&quot;;
-        name = &quot;Garrys&quot;;
+        symbol = "GAR";
+        name = "Garrys";
         decimals = 18;
-        // the first coin goes to Garry cause, it&#39;s a Garry :P, adding it to total supply here
+        // the first coin goes to Garry cause, it's a Garry :P, adding it to total supply here
         _totalSupply = 1 * 10**uint(decimals);      
         // set ratio, get 100 Garrys for 1 Ether
         _ratio = 100;
@@ -124,12 +124,12 @@ contract Garrys is ERC20Interface, Owned {
     
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(balances[msg.sender] &gt;= tokens);
+        require(balances[msg.sender] >= tokens);
         balances[msg.sender] -= tokens;
         balances[to] += tokens;
         Transfer(msg.sender, to, tokens);
@@ -139,7 +139,7 @@ contract Garrys is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -162,8 +162,8 @@ contract Garrys is ERC20Interface, Owned {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require (allowed[from][msg.sender] &gt;= tokens);
-        require (balances[from] &gt;= tokens);
+        require (allowed[from][msg.sender] >= tokens);
+        require (balances[from] >= tokens);
         
         balances[from] -= tokens;
         allowed[from][msg.sender] -= tokens;
@@ -175,7 +175,7 @@ contract Garrys is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -184,7 +184,7 @@ contract Garrys is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -200,8 +200,8 @@ contract Garrys is ERC20Interface, Owned {
     // But you need to buy at least 0.0001 Garrys to avoid spamming (currently 5 $cent)
     // ------------------------------------------------------------------------
     function () public payable {
-        require(msg.value &gt;= 1000000000000);
-        require(_totalSupply+(msg.value*_ratio)&lt;=_maxSupply);
+        require(msg.value >= 1000000000000);
+        require(_totalSupply+(msg.value*_ratio)<=_maxSupply);
         
         uint tokens;
         tokens = msg.value*_ratio;
@@ -214,7 +214,7 @@ contract Garrys is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Owner can transfer out any accidentally sent ERC20 tokens
-    // Only if he is in the mood though, I won&#39;t give a damn if you are an annoying bot
+    // Only if he is in the mood though, I won't give a damn if you are an annoying bot
     // ------------------------------------------------------------------------
     function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
         return ERC20Interface(tokenAddress).transfer(owner, tokens);
@@ -233,7 +233,7 @@ contract Garrys is ERC20Interface, Owned {
     // Send Contracts Ethereum to address owner
     // ------------------------------------------------------------------------
     function weiToOwner(address _address, uint amount) public onlyOwner {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         _address.transfer(amount);
     }
 }

@@ -10,8 +10,8 @@ library SafeMath {
      * @dev Multiplies two numbers, throws on overflow.
      */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -25,9 +25,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -44,7 +44,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address private owner;
@@ -196,32 +196,32 @@ contract Base {
 
         uint totalInvest;
 
-        mapping(address =&gt; Better) betters;
-        mapping(uint8 =&gt; uint) mPredictionInvest;
+        mapping(address => Better) betters;
+        mapping(uint8 => uint) mPredictionInvest;
     }
 
     struct Better {
         uint invested;
         uint prize;
 
-        mapping(uint8 =&gt; uint) bPredictionInvest;
+        mapping(uint8 => uint) bPredictionInvest;
     }
 
-    // 0.001 ETH =&lt; msg.value =&lt; 100 ETH
+    // 0.001 ETH =< msg.value =< 100 ETH
     modifier validValue() {
-        require(msg.value &gt;= 1000000000000000 &amp;&amp; msg.value &lt;= 100000000000000000000);
+        require(msg.value >= 1000000000000000 && msg.value <= 100000000000000000000);
         _;
     }
 
     // 1-32 teams
     modifier validTeam(uint8 _teamId) {
-        require(_teamId &gt; 0 &amp;&amp; _teamId &lt; 33);
+        require(_teamId > 0 && _teamId < 33);
         _;
     }
 
     // 1-64 matches
     modifier validMatch(uint8 _matchId) {
-        require(_matchId &gt; 0 &amp;&amp; _matchId &lt; 65);
+        require(_matchId > 0 && _matchId < 65);
         _;
     }
 
@@ -235,7 +235,7 @@ contract Base {
 contract WorldCup2018 is Base, AccessControl {
     using SafeMath for uint256;
 
-    //&lt;-------------------------------------------------------------------------------------&gt;
+    //<------------------------------------------------------------------------------------->
     // /**
     //  * @title PullPayment
     //  * @dev Base contract supporting async send for pull payments. Inherit from this
@@ -245,7 +245,7 @@ contract WorldCup2018 is Base, AccessControl {
     // / @dev WithdrawPayments event is emitted whenever a player withdraws the payments.
     event WithdrawPayments(address indexed _player, uint256 _value);
 
-    mapping(address =&gt; uint256) private payments;
+    mapping(address => uint256) private payments;
     uint256 private totalPayments;
 
     /**
@@ -263,7 +263,7 @@ contract WorldCup2018 is Base, AccessControl {
         uint256 payment = payments[payee];
 
         require(payment != 0);
-        require(address(this).balance &gt;= payment);
+        require(address(this).balance >= payment);
 
         totalPayments = totalPayments.sub(payment);
         payments[payee] = 0;
@@ -278,16 +278,16 @@ contract WorldCup2018 is Base, AccessControl {
      * @param amount The amount to transfer.
      */
     function asyncSend(address dest, uint256 amount) internal onlyCLevel whenNotPaused {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
 
         uint tempTotalPayments = totalPayments.add(amount);
-        require(address(this).balance &gt;= tempTotalPayments);
+        require(address(this).balance >= tempTotalPayments);
 
         payments[dest] = payments[dest].add(amount);
         // totalPayments = totalPayments.add(amount);
         totalPayments = tempTotalPayments;
     }
-    //&lt;-------------------------------------------------------------------------------------&gt;
+    //<------------------------------------------------------------------------------------->
 
     event ContractUpgrade(address newContract);
     event BetMatch(address indexed _betterAddress, uint _invested, uint8 _matchId, uint8 _prediction);
@@ -295,15 +295,15 @@ contract WorldCup2018 is Base, AccessControl {
     event UpdateMatch(address indexed _setterAddress, uint8 _matchId, uint8 _hostTeamId, uint8 _guestTeamId);
     event UpdateMatchStartTime(address indexed _setterAddress, uint8 _matchId, uint _startTime);
 
-    //&lt;-------------------------------------------------------------------------------------&gt;
-    mapping(address =&gt; AccountInfo) private accountInfos;
+    //<------------------------------------------------------------------------------------->
+    mapping(address => AccountInfo) private accountInfos;
     uint8[MATCH_CNT] private match_pools;
-    mapping(uint8 =&gt; Match) private matchs;
+    mapping(uint8 => Match) private matchs;
     address[][MATCH_CNT] private nm_players;
-    //&lt;-------------------------------------------------------------------------------------&gt;
+    //<------------------------------------------------------------------------------------->
     uint private totalInvest;
     uint8 private CLAIM_TAX = 10;
-    //&lt;-------------------------------------------------------------------------------------&gt;
+    //<------------------------------------------------------------------------------------->
 
     constructor() public {
         init();
@@ -454,7 +454,7 @@ contract WorldCup2018 is Base, AccessControl {
     }
 
     function setClamTax(uint8 _tax) external onlyCLevel {
-        require(_tax &gt; 0);
+        require(_tax > 0);
         CLAIM_TAX = _tax;
     }
 
@@ -472,7 +472,7 @@ contract WorldCup2018 is Base, AccessControl {
 
         Match storage _match = matchs[_matchId];
         require(_match.outcome == INIT);
-        require(now &lt; _match.startTime);
+        require(now < _match.startTime);
 
         _match.hostTeamId = _hostTeamId;
         _match.guestTeamId = _guestTeamId;
@@ -485,7 +485,7 @@ contract WorldCup2018 is Base, AccessControl {
 
         Match storage _match = matchs[_matchId];
         require(_match.outcome == INIT);
-        require(now &lt; _startTime);
+        require(now < _startTime);
 
         _match.startTime = _startTime;
 
@@ -502,11 +502,11 @@ contract WorldCup2018 is Base, AccessControl {
 
         Match storage _match = matchs[_matchId];
         require(_match.outcome == INIT);
-        require(now &lt; _match.startTime);
+        require(now < _match.startTime);
 
         {
             Better storage better = _match.betters[msg.sender];
-            if (better.invested &gt; 0) {
+            if (better.invested > 0) {
                 better.invested = better.invested.add(msg.value);
             } else {
                 _match.betters[msg.sender] = Better(msg.value, 0);
@@ -525,7 +525,7 @@ contract WorldCup2018 is Base, AccessControl {
 
         {
             AccountInfo storage accountInfo = accountInfos[msg.sender];
-            if (accountInfo.invested &gt; 0) {
+            if (accountInfo.invested > 0) {
                 accountInfo.invested = accountInfo.invested.add(msg.value);
             } else {
                 accountInfos[msg.sender] = AccountInfo({
@@ -539,7 +539,7 @@ contract WorldCup2018 is Base, AccessControl {
             address[] memory match_betters = nm_players[index];
 
             bool ext = false;
-            for (uint i = 0; i &lt; match_betters.length; i++) {
+            for (uint i = 0; i < match_betters.length; i++) {
                 if (match_betters[i] == msg.sender) {
                     ext = true;
                     break;
@@ -574,23 +574,23 @@ contract WorldCup2018 is Base, AccessControl {
         uint fee = 0;
         uint prizeDistributionTotal = 0;
 
-        if (_match.totalInvest &gt; totalInvestForWinners) {
+        if (_match.totalInvest > totalInvestForWinners) {
             (prizeDistributionTotal, fee) = feesTakenFromPrize(_match.totalInvest, totalInvestForWinners);
         }
 
-        if (fee &gt; 0) {
+        if (fee > 0) {
             asyncSend(getCFO(), fee);
         }
 
-        if (prizeDistributionTotal &gt; 0 || _match.totalInvest == totalInvestForWinners) {
+        if (prizeDistributionTotal > 0 || _match.totalInvest == totalInvestForWinners) {
             uint8 index = getMatchIndex(_matchId);
             address[] memory match_betters = nm_players[index];
 
-            for(uint i = 0; i &lt; match_betters.length; i++) {
+            for(uint i = 0; i < match_betters.length; i++) {
                 Better storage better = _match.betters[match_betters[i]];
 
                 uint totalInvestForBetter = better.bPredictionInvest[_match.outcome];
-                if (totalInvestForBetter &gt; 0) {
+                if (totalInvestForBetter > 0) {
                     uint prize = calculatePrize(prizeDistributionTotal, totalInvestForBetter, totalInvestForWinners);
 
                     better.prize = prize;
@@ -611,10 +611,10 @@ contract WorldCup2018 is Base, AccessControl {
     function feesTakenFromPrize(uint _totalInvestForMatch, uint _totalInvestForWinners) 
         private view returns(uint prizeDistributionTotal, uint fee) {
 
-        require(_totalInvestForMatch &gt;= _totalInvestForWinners);
+        require(_totalInvestForMatch >= _totalInvestForWinners);
 
-        if (_totalInvestForWinners &gt; 0) {
-            if (_totalInvestForMatch &gt; _totalInvestForWinners) {
+        if (_totalInvestForWinners > 0) {
+            if (_totalInvestForMatch > _totalInvestForWinners) {
                 uint prizeTotal = _totalInvestForMatch.sub(_totalInvestForWinners);
                 fee = prizeTotal.div(getClamTax());
                 prizeDistributionTotal = prizeTotal.sub(fee);
@@ -652,7 +652,7 @@ contract WorldCup2018 is Base, AccessControl {
         uint[MATCH_CNT] startTimeArray, 
         uint8[MATCH_CNT] outcomeArray 
     ) {
-        for (uint8 intI = 0; intI &lt; MATCH_CNT; intI++) {
+        for (uint8 intI = 0; intI < MATCH_CNT; intI++) {
             Match storage _match = matchs[match_pools[intI]];
 
             matchIdArray[intI] = _match.matchId;
@@ -679,7 +679,7 @@ contract WorldCup2018 is Base, AccessControl {
         uint[MATCH_CNT] losePredictionArray, 
         uint[MATCH_CNT] tiePredictionArray
     ) {
-        for (uint8 intI = 0; intI &lt; MATCH_CNT; intI++) {
+        for (uint8 intI = 0; intI < MATCH_CNT; intI++) {
             Match storage _match = matchs[match_pools[intI]];
 
             winPredictionArray[intI] = _match.mPredictionInvest[WIN];
@@ -699,7 +699,7 @@ contract WorldCup2018 is Base, AccessControl {
         uint[MATCH_CNT] losePredictionArrayForLoginUser, 
         uint[MATCH_CNT] tiePredictionArrayForLoginUser
     ) {
-        for (uint8 intI = 0; intI &lt; MATCH_CNT; intI++) {
+        for (uint8 intI = 0; intI < MATCH_CNT; intI++) {
             Match storage _match = matchs[match_pools[intI]];
 
             Better storage better = _match.betters[msg.sender];
@@ -725,9 +725,9 @@ contract WorldCup2018 is Base, AccessControl {
 
         require(getTotalPayments() == 0);
 
-        for (uint8 intI = 0; intI &lt; MATCH_CNT; intI++) {
+        for (uint8 intI = 0; intI < MATCH_CNT; intI++) {
             Match storage _match = matchs[match_pools[intI]];
-            require(_match.outcome &gt; INIT);
+            require(_match.outcome > INIT);
         }
 
         selfdestruct(getOwner());

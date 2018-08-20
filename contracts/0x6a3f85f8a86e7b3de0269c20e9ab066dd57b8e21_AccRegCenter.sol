@@ -52,7 +52,7 @@ contract AccRegCenter  is Ownable {
   // events
     event TransferTo(address indexed to, uint256 value);
     event TransferToName(address indexed to,string name, uint256 value);
-    mapping(string =&gt; User) recievermap ;
+    mapping(string => User) recievermap ;
     
     string[] public recieverList ;
     
@@ -87,12 +87,12 @@ contract AccRegCenter  is Ownable {
     }
     
     function TransferToAllAccounts() onlyOwner public {
-        for(uint i=0;i&lt;recieverList.length;i++)
+        for(uint i=0;i<recieverList.length;i++)
         {
             recievermap[recieverList[i]].lastTransfer = false;
             address to = recievermap[recieverList[i]].useraddress;
             uint256 val = recievermap[recieverList[i]].useramount;
-            if(val&gt;0)
+            if(val>0)
             {
                  require(ERC20Basic(token).transfer(to, val));
                  emit TransferTo(to, val);
@@ -102,7 +102,7 @@ contract AccRegCenter  is Ownable {
     }
     
     function ResetAllAmount() onlyOwner public {
-        for(uint i=0;i&lt;recieverList.length;i++)
+        for(uint i=0;i<recieverList.length;i++)
         {
             recievermap[recieverList[i]].useramount = 0;
         }

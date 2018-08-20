@@ -73,12 +73,12 @@ contract HorseControl  {
 
 contract GeneScienceInterface is HorseControl{
     
-        mapping (uint256 =&gt; uint256) public dna1; 
-        mapping (uint256 =&gt; uint256) public dna2; 
-        mapping (uint256 =&gt; uint256) public dna3; 
-        mapping (uint256 =&gt; uint256) public dna4; 
-        mapping (uint256 =&gt; uint256) public dna5; 
-        mapping (uint256 =&gt; uint256) public dna6; 
+        mapping (uint256 => uint256) public dna1; 
+        mapping (uint256 => uint256) public dna2; 
+        mapping (uint256 => uint256) public dna3; 
+        mapping (uint256 => uint256) public dna4; 
+        mapping (uint256 => uint256) public dna5; 
+        mapping (uint256 => uint256) public dna6; 
 
     
     function mixGenes(uint256 childId, uint256 _mareId, uint16 mumcool, uint256 _stallionId, uint16 dadcool) internal {
@@ -93,7 +93,7 @@ contract GeneScienceInterface is HorseControl{
         uint256   childG5;
         uint256   childG6;
 
-               if(cooldownI&lt;=1 &amp;&amp; cooldownI&gt;=0){
+               if(cooldownI<=1 && cooldownI>=0){
                    
                    
            childG1= dna1[_stallionId];
@@ -106,7 +106,7 @@ contract GeneScienceInterface is HorseControl{
           
                   
                   
-              }else if(cooldownI&lt;=2 &amp;&amp; cooldownI&gt;1){
+              }else if(cooldownI<=2 && cooldownI>1){
             childG1= dna1[_stallionId];
            childG2= dna2[_mareId];
            childG3= dna3[_stallionId];
@@ -115,7 +115,7 @@ contract GeneScienceInterface is HorseControl{
            childG6= dna6[_stallionId];
            
                   
-              }else if(cooldownI&lt;=3 &amp;&amp; cooldownI&gt;2){
+              }else if(cooldownI<=3 && cooldownI>2){
                   
            
          childG1= dna1[_mareId];
@@ -125,7 +125,7 @@ contract GeneScienceInterface is HorseControl{
            childG5= dna5[_stallionId];
            childG6= dna6[_mareId];
         
-              }else if(cooldownI&lt;=4 &amp;&amp; cooldownI&gt;3){
+              }else if(cooldownI<=4 && cooldownI>3){
                   
            childG1= dna1[_mareId];
            childG2= dna2[_mareId];
@@ -179,13 +179,13 @@ contract HoresBasis is  GeneScienceInterface {
 
     Horse[] horses;
 
-    mapping (uint256 =&gt; address) public horseOwnerIndex;
+    mapping (uint256 => address) public horseOwnerIndex;
     
-    mapping (uint256 =&gt; uint256) public horseIndexPrice;
+    mapping (uint256 => uint256) public horseIndexPrice;
     
-    mapping (uint256 =&gt; bool)  horseIndexForSale;
+    mapping (uint256 => bool)  horseIndexForSale;
 
-    mapping (address =&gt; uint256) tokenOwnershipCount;
+    mapping (address => uint256) tokenOwnershipCount;
 
 
    uint256 public saleFee = 20;
@@ -213,7 +213,7 @@ contract HoresBasis is  GeneScienceInterface {
          
               uint256 price = horseIndexPrice[_tokenId];
             
-            require(price&lt;=value);
+            require(price<=value);
             
          uint256 Fee = price / saleFee;
             
@@ -308,7 +308,7 @@ function makeDna( uint256 _mareId,
         uint256 _genes5,
         uint256 _genes6)internal{
     
-      if(_mareId!=0 &amp;&amp; _stallionId!=0){
+      if(_mareId!=0 && _stallionId!=0){
                
           Horse storage stallion = horses[_stallionId];
      Horse storage mare = horses[_mareId];
@@ -329,7 +329,7 @@ function makeDna( uint256 _mareId,
 
 
     function setSecondsPerBlock(uint256 secs) external  onlyC {
-    require(secs &lt; sterile[0]);
+    require(secs < sterile[0]);
        secondsPerBlock = secs;
       
     }
@@ -339,8 +339,8 @@ function makeDna( uint256 _mareId,
 
 contract HorseOwnership is HoresBasis, ERC721{
 
-  string public constant  name = &quot;CryptoHorse&quot;;
-    string public constant symbol = &quot;CHC&quot;;
+  string public constant  name = "CryptoHorse";
+    string public constant symbol = "CHC";
      uint8 public constant decimals = 0; 
 
     function horseForSale(uint256 _tokenId, uint256 price) external {
@@ -459,16 +459,16 @@ contract HorseStud is HorseOwnership {
 
  
     function isReadyToBear(uint256 _horseId) public view returns (bool) {
-        require(_horseId &gt; 0);
+        require(_horseId > 0);
         Horse storage knight = horses[_horseId];
-        require(knight.unproductiveIndex&lt;4);  
+        require(knight.unproductiveIndex<4);  
     
-        bool ready = (knight.stallionWithId == 0) &amp;&amp; (knight.unproductiveEndBlock &lt;= uint64(block.number));
+        bool ready = (knight.stallionWithId == 0) && (knight.unproductiveEndBlock <= uint64(block.number));
        return ready;
     }
 
     function isPregnant(uint256 _horseId) public view returns (bool) {
-        require(_horseId &gt; 0);
+        require(_horseId > 0);
         return horses[_horseId].stallionWithId != 0;
     }
 
@@ -502,9 +502,9 @@ contract HorseStud is HorseOwnership {
         view
         returns(bool)
     {
-        require(_mareId &gt; 0);
-        require(_stallionId &gt; 0);
-        return _canScrewEachOther( _mareId,  _stallionId) &amp;&amp;
+        require(_mareId > 0);
+        require(_stallionId > 0);
+        return _canScrewEachOther( _mareId,  _stallionId) &&
             _isStallionPermitted(_stallionId, _mareId);
     }
 
@@ -518,10 +518,10 @@ contract HorseStud is HorseOwnership {
          stallion.unproductiveEndBlock = uint64((sterile[stallion.unproductiveIndex]/secondsPerBlock) + block.number);
  mare.unproductiveEndBlock = uint64((sterile[mare.unproductiveIndex]/secondsPerBlock) + block.number);
         
-        if (stallion.unproductiveIndex &lt; 5) {
+        if (stallion.unproductiveIndex < 5) {
             stallion.unproductiveIndex += 1;
         }
-		 if (mare.unproductiveIndex &lt; 5) {
+		 if (mare.unproductiveIndex < 5) {
 					mare.unproductiveIndex += 1;
 		}
 		 
@@ -544,18 +544,18 @@ contract HorseStud is HorseOwnership {
         require(isReadyToBear(_mareId));
         require(isReadyToBear(_stallionId));
 
-        bool (mare.stallionWithId == 0) &amp;&amp; (mare.unproductiveEndBlock &lt;= uint64(block.number));
+        bool (mare.stallionWithId == 0) && (mare.unproductiveEndBlock <= uint64(block.number));
 
         Horse storage stallion = horses[_stallionId];
 
-        bool (stallion.stallionWithId == 0) &amp;&amp; (stallion.unproductiveEndBlock &lt;= uint64(block.number));
+        bool (stallion.stallionWithId == 0) && (stallion.unproductiveEndBlock <= uint64(block.number));
 
         require(_canScrewEachOther(
             _mareId,
             _stallionId
         ));
         
-        if(BirthFee&gt;= msg.value){
+        if(BirthFee>= msg.value){
            
 		   ceoAddress.transfer(BirthFee);
              uint256   rest=msg.value-BirthFee;
@@ -579,14 +579,14 @@ contract HorseStud is HorseOwnership {
           
                require(mare.birthTime != 0);
         
-                bool (mare.stallionWithId != 0) &amp;&amp; (mare.unproductiveEndBlock &lt;= uint64(block.number)); 
+                bool (mare.stallionWithId != 0) && (mare.unproductiveEndBlock <= uint64(block.number)); 
             
               uint256 stallionId = mare.stallionWithId;
                 
                Horse storage stallion = horses[stallionId];
         
                 uint16 parentGen = mare.generation;
-                if (stallion.generation &gt; mare.generation) {
+                if (stallion.generation > mare.generation) {
                     parentGen = stallion.generation;
                 }
         
@@ -621,7 +621,7 @@ contract HorseMinting is HorseStud {
        if (horseOwner == address(0)) {
              horseOwner = ctoAddress;
         }
-    require(gen0Count &lt; GEN_0_LIMIT);
+    require(gen0Count < GEN_0_LIMIT);
 
             
               _newHorse(0, 0, 0, _genes1, _genes2, _genes3, _genes4, _genes5, _genes6, horseOwner);
@@ -660,7 +660,7 @@ contract GetTheHorse is HorseMinting {
 		forSale = horseIndexForSale[_id];
         Horse storage knight = horses[_id];
         isGestating = (knight.stallionWithId != 0);
-        isReady = (knight.unproductiveEndBlock &lt;= block.number);
+        isReady = (knight.unproductiveEndBlock <= block.number);
         unproductiveIndex = uint256(knight.unproductiveIndex);
         nextActionAt = uint256(knight.unproductiveEndBlock);
         stallionWithId = uint256(knight.stallionWithId);

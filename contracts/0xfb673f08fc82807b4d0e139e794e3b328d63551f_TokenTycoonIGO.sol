@@ -72,10 +72,10 @@ contract AccessService is AccessAdmin {
         external 
     {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         address receiver = _target == address(0) ? addrFinance : _target;
         uint256 balance = this.balance;
-        if (_amount &lt; balance) {
+        if (_amount < balance) {
             receiver.transfer(_amount);
         } else {
             receiver.transfer(this.balance);
@@ -90,14 +90,14 @@ interface tokenRecipient {
 contract TokenTycoonIGO is AccessService {
     uint8 public decimals = 18;
     uint256 public totalSupply = 850 * (10 ** uint256(decimals));
-    string public name = &quot;Token Tycoon Coin&quot;;
-    string public symbol = &quot;TTC&quot;;
+    string public name = "Token Tycoon Coin";
+    string public symbol = "TTC";
     bytes32 private emptyHash;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping (address =&gt; string) addressToAccount;
-    mapping (bytes32 =&gt; address) accHashToAddress;
+    mapping (address => uint256) balances;
+    mapping (address => mapping(address => uint256)) allowed;
+    mapping (address => string) addressToAccount;
+    mapping (bytes32 => address) accHashToAddress;
     
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -110,7 +110,7 @@ contract TokenTycoonIGO is AccessService {
         addrFinance = msg.sender;
 
         balances[this] = totalSupply;
-        emptyHash = keccak256(&quot;&quot;);
+        emptyHash = keccak256("");
     }
 
     function() external payable {
@@ -132,7 +132,7 @@ contract TokenTycoonIGO is AccessService {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value);
     }
@@ -154,10 +154,10 @@ contract TokenTycoonIGO is AccessService {
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_to != address(0));
         uint256 oldFromVal = balances[_from];
-        require(_value &gt; 0 &amp;&amp; oldFromVal &gt;= _value);
+        require(_value > 0 && oldFromVal >= _value);
         uint256 oldToVal = balances[_to];
         uint256 newToVal = oldToVal + _value;
-        require(newToVal &gt; oldToVal);
+        require(newToVal > oldToVal);
         uint256 newFromVal = oldFromVal - _value;
         balances[_from] = newFromVal;
         balances[_to] = newToVal;
@@ -185,7 +185,7 @@ contract TokenTycoonIGO is AccessService {
             require(false);
         }
         uint256 b = balances[this];
-        require(b &gt;= tthVal);
+        require(b >= tthVal);
 
         bytes32 hashAccount = keccak256(_account);
         require(hashAccount != emptyHash);

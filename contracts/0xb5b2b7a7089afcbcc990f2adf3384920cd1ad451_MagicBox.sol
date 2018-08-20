@@ -28,12 +28,12 @@ contract MagicBox is Ownable {
     
     function transfer(address _to,uint256 _amount) public payable{
         require(_to != address(0));
-        require(msg.value&gt;=_amount);
+        require(msg.value>=_amount);
         _to.transfer(_amount);
     }
     
     function cancelTx() public payable{
-        require(msg.value&gt;=cancelFee);
+        require(msg.value>=cancelFee);
     }
     
     function plain() public payable{

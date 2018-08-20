@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -130,7 +130,7 @@ contract Pausable is Ownable {
  */
 contract ERC20Basic {
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     function balanceOf(address _owner) public constant returns (uint256) { return balances[_owner]; }
     // Transfer is disabled for users, as this contract is just a proof of purchase (valueless)
     //function transfer(address to, uint256 value) public returns (bool);
@@ -139,21 +139,21 @@ contract ERC20Basic {
 
 /**
 * @title Gimmer PreSale Smart Contract
-* @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234f5640425063444a4e4e46510d4d4657">[email&#160;protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610b0815040f0513002102090815150e05004f020e0c">[email&#160;protected]</a>
+* @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234f5640425063444a4e4e46510d4d4657">[email protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610b0815040f0513002102090815150e05004f020e0c">[email protected]</a>
 */
 contract GimmerPreSale is ERC20Basic, Pausable {
     using SafeMath for uint256;
 
     /**
     * @dev Supporter structure, which allows us to track
-    * how much the user has bought so far, and if he&#39;s flagged as known
+    * how much the user has bought so far, and if he's flagged as known
     */
     struct Supporter {
         uint256 weiSpent;   // the total amount of Wei this address has sent to this contract
         bool hasKYC;        // if the user has KYC flagged
     }
 
-    mapping(address =&gt; Supporter) public supportersMap; // Mapping with all the campaign supporters
+    mapping(address => Supporter) public supportersMap; // Mapping with all the campaign supporters
     address public fundWallet;      // Address to forward all Ether to
     address public kycManager;      // Address that manages approval of KYC
     uint256 public tokensSold;      // How many tokens sold in PreSale
@@ -171,17 +171,17 @@ contract GimmerPreSale is ERC20Basic, Pausable {
 
     /* Bonus Tokens based on the ETH Contributed in single transaction */
     uint256 public constant TOKEN_RATE_BASE_RATE = 2500; // Base Price for reference only
-    uint256 public constant TOKEN_RATE_25_PERCENT_BONUS = 3125; // 25% Bonus Tokens, when &gt;= 30 ETH &amp; &lt; 300 ETH
-    uint256 public constant TOKEN_RATE_30_PERCENT_BONUS = 3250; // 30% Bonus Tokens, when &gt;= 300 ETH &amp; &lt; 3000 ETH
-    uint256 public constant TOKEN_RATE_40_PERCENT_BONUS = 3500; // 40% Bonus Tokens, when &gt;= 3000 ETH
+    uint256 public constant TOKEN_RATE_25_PERCENT_BONUS = 3125; // 25% Bonus Tokens, when >= 30 ETH & < 300 ETH
+    uint256 public constant TOKEN_RATE_30_PERCENT_BONUS = 3250; // 30% Bonus Tokens, when >= 300 ETH & < 3000 ETH
+    uint256 public constant TOKEN_RATE_40_PERCENT_BONUS = 3500; // 40% Bonus Tokens, when >= 3000 ETH
 
     /* start and end timestamps where investments are allowed (both inclusive) */
     uint256 public constant START_TIME = 1511524800; // GMT: Friday, 24 November 2017 12:00:00
     uint256 public constant END_TIME = 1514894400; // GMT: Tuesday, 2 January  2018 12:00:00
 
     /* Token metadata */
-    string public constant name = &quot;GimmerPreSale Token&quot;;
-    string public constant symbol = &quot;GMRP&quot;;
+    string public constant name = "GimmerPreSale Token";
+    string public constant symbol = "GMRP";
     uint256 public constant decimals = 18;
 
     /**
@@ -217,7 +217,7 @@ contract GimmerPreSale is ERC20Basic, Pausable {
     /**
      * Constructor
      * @param _fundWallet           Address to forward all received Ethers to
-     * @param _kycManagerWallet     KYC Manager wallet to approve / disapprove user&#39;s KYC
+     * @param _kycManagerWallet     KYC Manager wallet to approve / disapprove user's KYC
      */
     function GimmerPreSale(address _fundWallet, address _kycManagerWallet) public {
         require(_fundWallet != address(0));
@@ -234,9 +234,9 @@ contract GimmerPreSale is ERC20Basic, Pausable {
 
     /* @return true if the transaction can buy tokens, otherwise false */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= START_TIME &amp;&amp; now &lt;= END_TIME;
-        bool higherThanMin30ETH = msg.value &gt;= PRE_SALE_30_ETH;
-        return withinPeriod &amp;&amp; higherThanMin30ETH;
+        bool withinPeriod = now >= START_TIME && now <= END_TIME;
+        bool higherThanMin30ETH = msg.value >= PRE_SALE_30_ETH;
+        return withinPeriod && higherThanMin30ETH;
     }
 
     /* low level token purchase function */
@@ -254,7 +254,7 @@ contract GimmerPreSale is ERC20Basic, Pausable {
 
         // look if we have not yet reached the cap
         uint256 totalTokensSold = tokensSold.add(newTokens);
-        require(totalTokensSold &lt;= PRE_SALE_GMRP_TOKEN_CAP);
+        require(totalTokensSold <= PRE_SALE_GMRP_TOKEN_CAP);
 
         // update supporter state
         Supporter storage sup = supportersMap[sender];
@@ -278,11 +278,11 @@ contract GimmerPreSale is ERC20Basic, Pausable {
      * based on the amount of wei sent to the contract
      */
     function getRate(uint256 weiAmount) public pure returns (uint256) {
-        if (weiAmount &gt;= PRE_SALE_3000_ETH) {
+        if (weiAmount >= PRE_SALE_3000_ETH) {
             return TOKEN_RATE_40_PERCENT_BONUS;
-        } else if(weiAmount &gt;= PRE_SALE_300_ETH) {
+        } else if(weiAmount >= PRE_SALE_300_ETH) {
             return TOKEN_RATE_30_PERCENT_BONUS;
-        } else if(weiAmount &gt;= PRE_SALE_30_ETH) {
+        } else if(weiAmount >= PRE_SALE_30_ETH) {
             return TOKEN_RATE_25_PERCENT_BONUS;
         } else {
             return 0;
@@ -299,11 +299,11 @@ contract GimmerPreSale is ERC20Basic, Pausable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; END_TIME;
+        return now > END_TIME;
     }
 
     /**
-    * @dev Approves an User&#39;s KYC
+    * @dev Approves an User's KYC
     * @param _user The user to flag as known
     */
     function approveUserKYC(address _user) onlyKycManager public {
@@ -313,7 +313,7 @@ contract GimmerPreSale is ERC20Basic, Pausable {
     }
 
     /**
-     * @dev Disapproves an User&#39;s KYC
+     * @dev Disapproves an User's KYC
      * @param _user The user to flag as unknown / suspecious
      */
     function disapproveUserKYC(address _user) onlyKycManager public {
@@ -333,7 +333,7 @@ contract GimmerPreSale is ERC20Basic, Pausable {
 
     /**
     * @dev Returns if an users has KYC approval or not
-    * @return A boolean representing the user&#39;s KYC status
+    * @return A boolean representing the user's KYC status
     */
     function userHasKYC(address _user) public constant returns (bool) {
         return supportersMap[_user].hasKYC;

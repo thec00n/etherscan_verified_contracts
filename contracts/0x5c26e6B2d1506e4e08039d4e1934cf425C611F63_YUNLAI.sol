@@ -16,9 +16,9 @@ contract ERC20 {
 contract YUNLAI is ERC20{
 
     // metadata
-    string  public constant name = &quot;YUN LAI COIN&quot;;
-    string  public constant symbol = &quot;YLC&quot;;
-    string  public version = &quot;1.0&quot;;
+    string  public constant name = "YUN LAI COIN";
+    string  public constant symbol = "YLC";
+    string  public version = "1.0";
     uint256 public constant decimals = 18;
     uint256 public totalSupply = 1500000000000000000000000000;
    
@@ -26,8 +26,8 @@ contract YUNLAI is ERC20{
     // contracts
     address public owner;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // format decimals.
     function formatDecimals(uint256 _value) internal returns (uint256 ) {
@@ -38,7 +38,7 @@ contract YUNLAI is ERC20{
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-      if(msg.data.length &lt; size + 4) {
+      if(msg.data.length < size + 4) {
         revert();
       }
       _;
@@ -63,8 +63,8 @@ contract YUNLAI is ERC20{
 
     /* Send coins */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2*32) returns (bool success){
-      if ((_to == 0x0) || (_value &lt;= 0) || (balances[msg.sender] &lt; _value)
-           || (balances[_to] + _value &lt; balances[_to])) return false;
+      if ((_to == 0x0) || (_value <= 0) || (balances[msg.sender] < _value)
+           || (balances[_to] + _value < balances[_to])) return false;
       balances[msg.sender] -= _value;
       balances[_to] += _value;
 
@@ -73,9 +73,9 @@ contract YUNLAI is ERC20{
     }
    
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(2*32) returns (bool success) {
-      if ((_to == 0x0) || (_value &lt;= 0) || (balances[_from] &lt; _value)
-          || (balances[_to] + _value &lt; balances[_to])
-          || (_value &gt; allowance[_from][msg.sender]) ) return false;
+      if ((_to == 0x0) || (_value <= 0) || (balances[_from] < _value)
+          || (balances[_to] + _value < balances[_to])
+          || (_value > allowance[_from][msg.sender]) ) return false;
 
       balances[_to] += _value;
       balances[_from] -= _value;

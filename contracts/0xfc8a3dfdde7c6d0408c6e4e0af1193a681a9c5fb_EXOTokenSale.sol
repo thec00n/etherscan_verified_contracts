@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract AbstractCon {
 contract EXOTokenSale is Ownable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;EXO_TOKEN_SALE&quot;;
+    string public constant name = "EXO_TOKEN_SALE";
 
     ///////////////////////
     // DATA STRUCTURES  ///
@@ -109,8 +109,8 @@ contract EXOTokenSale is Ownable {
     }
     
     StageName public currentStage;
-    mapping(uint8   =&gt; StageProperties) public campaignStages;
-    mapping(address =&gt; uint256)         public deposited;
+    mapping(uint8   => StageProperties) public campaignStages;
+    mapping(address => uint256)         public deposited;
     
     uint256 public weiRaised=0; //All raised ether
     uint256 public token_rate=1600; // decimal part of token per wei (0.3$ if 480$==1ETH)
@@ -157,24 +157,24 @@ contract EXOTokenSale is Ownable {
         uint256 weiAmount = msg.value; //local
         uint256 tokens = getTokenAmount(weiAmount);
         require(beneficiary != address(0));
-        require(token_rate &gt; 0);//implicit enabling sell
+        require(token_rate > 0);//implicit enabling sell
         AbstractCon ac = AbstractCon(ERC20address);
-        require(tokens &gt;= minimum_token_sell.mul(10 ** uint256(ac.decimals())));
+        require(tokens >= minimum_token_sell.mul(10 ** uint256(ac.decimals())));
         require(ac.transferFrom(campaignStages[uint8(currentStage)].tokenKeeper, beneficiary, tokens));
         checkCurrentStage();
         weiRaised = weiRaised.add(weiAmount);
         deposited[beneficiary] = deposited[beneficiary].add(weiAmount);
         emit TokenPurchase(msg.sender, beneficiary, msg.value, tokens);
-        if (weiRaised &gt;= softCap) 
+        if (weiRaised >= softCap) 
             withdrawETH();
     }
 
     //Stage time and conditions control
     function checkCurrentStage() internal {
-        if  (campaignStages[uint8(currentStage)].planEndDate &lt;= now) {
+        if  (campaignStages[uint8(currentStage)].planEndDate <= now) {
             // Allow refund if softCap is not reached during PreSale stage
             if  (currentStage == StageName.PreSale 
-                 &amp;&amp; (weiRaised + msg.value) &lt; softCap
+                 && (weiRaised + msg.value) < softCap
                 ) {
                     currentStage = StageName.Refund;
                     return;
@@ -183,7 +183,7 @@ contract EXOTokenSale is Ownable {
         }
         //Finish tokensale campaign when hardCap will reached
         if (currentStage == StageName.Sale 
-            &amp;&amp; (weiRaised + msg.value) &gt;= hardCap
+            && (weiRaised + msg.value) >= hardCap
             ) { 
                currentStage = StageName.Ended;
         }
@@ -217,7 +217,7 @@ contract EXOTokenSale is Ownable {
     function setERC20address(address newERC20contract)  external onlyOwner {
         require(address(newERC20contract) != 0);
         AbstractCon ac = AbstractCon(newERC20contract);
-        require(ac.allowance(campaignStages[uint8(currentStage)].tokenKeeper, address(this))&gt;0);
+        require(ac.allowance(campaignStages[uint8(currentStage)].tokenKeeper, address(this))>0);
         ERC20address = newERC20contract;
     }
     
@@ -225,7 +225,7 @@ contract EXOTokenSale is Ownable {
     function refund(address investor) external {
         require(currentStage == StageName.Refund);
         require(investor != address(0));
-        assert(msg.data.length &gt;= 32 + 4);  //Short Address Attack
+        assert(msg.data.length >= 32 + 4);  //Short Address Attack
         uint256 depositedValue = deposited[investor];
         deposited[investor] = 0;
         investor.transfer(depositedValue);
@@ -255,13 +255,13 @@ contract EXOTokenSale is Ownable {
     } 
 
     function destroy()  external onlyOwner {
-      if  (weiRaised &gt;= softCap)
+      if  (weiRaised >= softCap)
           selfdestruct(owner);
   } 
 
 }              
 //***************************************************************
-  // Designed by by IBERGroup, email:<span class="__cf_email__" data-cfemail="c5a8a4bdb6acbfa8aaa7aca9a085aca7a0b7eba2b7aab0b5">[email&#160;protected]</span>; 
+  // Designed by by IBERGroup, email:<span class="__cf_email__" data-cfemail="c5a8a4bdb6acbfa8aaa7aca9a085aca7a0b7eba2b7aab0b5">[email protected]</span>; 
   //     Telegram: https://t.me/msmobile
   //               https://t.me/alexamuek
   // Code released under the MIT License(see git root).

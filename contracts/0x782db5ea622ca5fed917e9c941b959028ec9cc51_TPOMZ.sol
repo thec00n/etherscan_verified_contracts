@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,13 +48,13 @@ contract TPOMZ is ERC20 {
 
 	using SafeMath for uint256;                                        // Use safe math library
 
-    mapping (address =&gt; uint256) balances;                             // Balances table
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;         // Allowance table
+    mapping (address => uint256) balances;                             // Balances table
+    mapping (address => mapping (address => uint256)) allowed;         // Allowance table
 
     uint public constant decimals = 8;                                 // Decimals count
     uint256 public totalSupply = 5000000000 * 10 ** decimals;          // Total supply
-	string public constant name = &quot;TPOMZ&quot;;                             // Coin name
-    string public constant symbol = &quot;TPOMZ&quot;;                           // Coin symbol
+	string public constant name = "TPOMZ";                             // Coin name
+    string public constant symbol = "TPOMZ";                           // Coin symbol
 
 	function TPOMZ() {                                                 // Constructor
 		balances[msg.sender] = totalSupply;                            // Give the creator all initial tokens
@@ -65,7 +65,7 @@ contract TPOMZ is ERC20 {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {             // Check if the sender has enough
+        if (balances[msg.sender] >= _value && _value > 0) {             // Check if the sender has enough
             balances[msg.sender] = balances[msg.sender].sub(_value);    // Safe decrease sender balance
             balances[_to] = balances[_to].add(_value);                  // Safe increase recipient balance
             Transfer(msg.sender, _to, _value);                          // Emit transfer event
@@ -76,8 +76,8 @@ contract TPOMZ is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp;                                // Check if the from has enough
-            allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {       // Check allowance table row
+        if (balances[_from] >= _value &&                                // Check if the from has enough
+            allowed[_from][msg.sender] >= _value && _value > 0) {       // Check allowance table row
 			balances[_from] = balances[_from].sub(_value);              // Safe decrease from balance
 			allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Safe decrease allowance
 			balances[_to] = balances[_to].add(_value);                  // Safe increase recipient balance

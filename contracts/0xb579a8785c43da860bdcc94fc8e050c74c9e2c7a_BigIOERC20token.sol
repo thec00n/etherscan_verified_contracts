@@ -19,9 +19,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,9 +104,9 @@ contract Admin is Ownable {
     uint256 public feeForArtWorkChangeRequest = 0.2 ether;
     uint256 public minResalePercentage = 15;
 
-    mapping(address =&gt; bool) public globalAdmins;
-    mapping(address =&gt; bool) public admins;
-    mapping(address =&gt; bool) public signers;
+    mapping(address => bool) public globalAdmins;
+    mapping(address => bool) public admins;
+    mapping(address => bool) public signers;
 
     event Halted(bool _halted);
 
@@ -183,7 +183,7 @@ contract Admin is Ownable {
     }
 
     function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) public pure returns (address) {
-        bytes memory prefix = &#39;\x19Ethereum Signed Message:\n32&#39;;
+        bytes memory prefix = '\x19Ethereum Signed Message:\n32';
 
         return ecrecover(keccak256(abi.encodePacked(prefix, _hash)), _v, _r, _s);
     }
@@ -191,7 +191,7 @@ contract Admin is Ownable {
     function isContract(address addr) public view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function setPlatformWallet(address _addresss) public onlyGlobalAdmin() {
@@ -237,24 +237,24 @@ contract BigIoAdSpace is Ownable {
     InnerScope public innerScope;
 
     /// @notice mapping for token URIs
-    mapping(uint256 =&gt; MetaData) public metadata;
+    mapping(uint256 => MetaData) public metadata;
 
     /// @notice Mapping from token ID to owner
-    mapping(uint256 =&gt; address) public tokenOwner;
+    mapping(uint256 => address) public tokenOwner;
 
-    mapping(uint256 =&gt; mapping(uint256 =&gt; bool)) public neighbours;
-    mapping(uint256 =&gt; uint256[]) public neighboursArea;
+    mapping(uint256 => mapping(uint256 => bool)) public neighbours;
+    mapping(uint256 => uint256[]) public neighboursArea;
 
     /// @notice Here different from base class we store the token not an id
     /// Array with all token, used for enumeration
     Token[] public allMinedTokens;
 
     /// @notice Mapping from token id to position in the allMinedTokens array
-    mapping(uint256 =&gt; uint256) public allTokensIndex;
+    mapping(uint256 => uint256) public allTokensIndex;
 
     // store sold units and not-sold but generated units
-//    mapping(uint256 =&gt; mapping(uint256 =&gt; bool)) public soldUnits;
-    mapping(uint256 =&gt; mapping(uint256 =&gt; uint256)) public soldUnits;
+//    mapping(uint256 => mapping(uint256 => bool)) public soldUnits;
+    mapping(uint256 => mapping(uint256 => uint256)) public soldUnits;
 
     address public platform;
 
@@ -354,7 +354,7 @@ contract BigIoAdSpace is Ownable {
     // @return return token scopes
     function getTokenScope(uint256 _tokenId) public exists(_tokenId) view returns (bool, bool) {
         Token memory token = allMinedTokens[allTokensIndex[_tokenId]];
-        return (token.inner &gt; 0, token.outer &gt; 0);
+        return (token.inner > 0, token.outer > 0);
     }
 
     // @return return token scope counters
@@ -381,7 +381,7 @@ contract BigIoAdSpace is Ownable {
 
         // 1.
         require(to != address(0));
-        require(sizeA.mul(sizeB) &lt;= 100);
+        require(sizeA.mul(sizeB) <= 100);
 
         // 2. check area
         uint256 inner;
@@ -426,7 +426,7 @@ contract BigIoAdSpace is Ownable {
     function inInnerScope(uint256 x, uint256 y) public view returns (bool) {
         // x should be between left top and right top corner
         // y should be between left top and left bottom corner
-        if ((x &gt;= innerScope.x1) &amp;&amp; (x &lt;= innerScope.x2) &amp;&amp; (y &gt;= innerScope.y1) &amp;&amp; (y &lt;= innerScope.y3)) {
+        if ((x >= innerScope.x1) && (x <= innerScope.x2) && (y >= innerScope.y1) && (y <= innerScope.y3)) {
             return true;
         }
 
@@ -438,18 +438,18 @@ contract BigIoAdSpace is Ownable {
         uint256 upY = y.add(sizeB);
 
         // check for boundaries
-        require(x &gt;= 1);
-        require(y &gt;= 1);
-        require(upX &lt;= 79);
-        require(upY &lt;= 45);
-        require(sizeA &gt; 0);
-        require(sizeB &gt; 0);
+        require(x >= 1);
+        require(y >= 1);
+        require(upX <= 79);
+        require(upY <= 45);
+        require(sizeA > 0);
+        require(sizeB > 0);
 
         uint256 i;
         uint256 j;
 
-        for (i = x; i &lt; upX; i++) {
-            for (j = y; j &lt; upY; j++) {
+        for (i = x; i < upX; i++) {
+            for (j = y; j < upY; j++) {
                 require(soldUnits[i][j] == 0);
 
                 if (inInnerScope(i, j)) {
@@ -476,7 +476,7 @@ contract BigIoAdSpace is Ownable {
 
         if (neighboursArea[tokenId].length == 0) {
 
-            for (i = token.x; i &lt; upX; i++) {
+            for (i = token.x; i < upX; i++) {
                 // check neighbors on top of area
                 _tokenId = soldUnits[i][token.y - 1];
 
@@ -505,7 +505,7 @@ contract BigIoAdSpace is Ownable {
                 }
             }
 
-            for (j = token.y; j &lt; upY; j++) {
+            for (j = token.y; j < upY; j++) {
                 // check neighbors on left of area of area
                 _tokenId = soldUnits[token.x - 1][j];
                 if (_tokenId != 0) {
@@ -535,7 +535,7 @@ contract BigIoAdSpace is Ownable {
         }
 
         // increase price
-        for (k = 0; k &lt; neighboursArea[tokenId].length; k++) {
+        for (k = 0; k < neighboursArea[tokenId].length; k++) {
             Token storage _token = allMinedTokens[allTokensIndex[neighboursArea[tokenId][k]]];
             _token.soldNearby = _token.soldNearby.add(1);
             _token.actualPrice = _token.actualPrice.add((_token.actualPrice.div(100)));
@@ -552,8 +552,8 @@ contract BigIoAdSpace is Ownable {
         uint256 i; // 1
         uint256 j; // 1
 
-        for (i = x; i &lt; upX; i++) {
-            for (j = y; j &lt; upY; j++) {
+        for (i = x; i < upX; i++) {
+            for (j = y; j < upY; j++) {
                 soldUnits[i][j] = tokenId;
             }
         }
@@ -577,7 +577,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -595,7 +595,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -623,7 +623,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -634,8 +634,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -649,7 +649,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -698,7 +698,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -721,8 +721,8 @@ contract BigIOERC20token is StandardToken, Ownable {
 
     bool public allowedMinting;
 
-    mapping(address =&gt; bool) public mintingAgents;
-    mapping(address =&gt; bool) public stateChangeAgents;
+    mapping(address => bool) public mintingAgents;
+    mapping(address => bool) public stateChangeAgents;
 
     event MintERC20(address indexed _holder, uint256 _tokens);
     event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
@@ -751,7 +751,7 @@ contract BigIOERC20token is StandardToken, Ownable {
 
     /// @notice allow to mint tokens
     function mint(address _holder, uint256 _tokens) public onlyMintingAgents() {
-        require(allowedMinting == true &amp;&amp; totalSupply_.add(_tokens) &lt;= maxSupply);
+        require(allowedMinting == true && totalSupply_.add(_tokens) <= maxSupply);
 
         totalSupply_ = totalSupply_.add(_tokens);
 
@@ -819,7 +819,7 @@ contract Platform is Admin {
 
     Offer[] public offers;
 
-    mapping(address =&gt; uint256) public pendingReturns;
+    mapping(address => uint256) public pendingReturns;
 
     event Minted(address indexed _owner, uint256 _tokenId, uint256 _x, uint256 _y, uint256 _sizeA, uint256 _sizeB, uint256 _price, uint256 _platformTransfer, uint256 _timestamp);
 
@@ -916,7 +916,7 @@ contract Platform is Admin {
 
         logoId = token.mint(platformWallet, logoX, logoY, 10, 10, 0 ether, 0 ether);
 
-        token.setTokenMetadata(logoId, &quot;&quot;);
+        token.setTokenMetadata(logoId, "");
 
         updateTierStatus(100, 0);
 
@@ -945,7 +945,7 @@ contract Platform is Admin {
         address recoveredSigner = verify(keccak256(msg.sender), _v, _r, _s);
 
         require(signers[recoveredSigner] == true);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         internalBuy(x, y, sizeA, sizeB);
     }
@@ -964,14 +964,14 @@ contract Platform is Admin {
         (inner, outer) = preMinting(x, y, sizeA, sizeB);
         totalPrice = calculateTokenPrice(inner, outer);
 
-        require(totalPrice &lt;= msg.value);
+        require(totalPrice <= msg.value);
 
         //         try to mint and update current tier
         updateTierStatus(inner, outer);
 
         uint256 actualPrice = inner.mul(tiers[3].priceInCenter).add(outer.mul(tiers[3].priceInOuter));
 
-        if (msg.value &gt; actualPrice) {
+        if (msg.value > actualPrice) {
             actualPrice = msg.value;
         }
 
@@ -997,16 +997,16 @@ contract Platform is Admin {
         require(signers[recoveredSigner] == true);
 
         require(msg.sender != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint256 currentPrice = getTokenPrice(_tokenId);
-        require(currentPrice &gt; 0);
+        require(currentPrice > 0);
 
         // special case for first sell of logo
-        if (_tokenId == logoId &amp;&amp; token.getCurrentPriceForToken(_tokenId) == 0) {
-            require(msg.value &gt;= logoPrice);
+        if (_tokenId == logoId && token.getCurrentPriceForToken(_tokenId) == 0) {
+            require(msg.value >= logoPrice);
 
-            //update token&#39;s state
+            //update token's state
             token.updateTokensState(logoId, msg.value);
 
             // mint erc20 tokens
@@ -1021,7 +1021,7 @@ contract Platform is Admin {
 
         uint256 minPrice = pricingStrategy.calculateMinPriceForNextRound(currentPrice, minResalePercentage);
 
-        require(msg.value &gt;= minPrice);
+        require(msg.value >= minPrice);
 
         uint256 offerCounter = offers.length;
 
@@ -1037,8 +1037,8 @@ contract Platform is Admin {
         uint256 actualPrice = token.getCurrentPriceForToken(_tokenId);
 
         // special case for first sell of logo
-        if (_tokenId == logoId &amp;&amp; actualPrice == 0) {
-            require(logoPrice &gt; 0);
+        if (_tokenId == logoId && actualPrice == 0) {
+            require(logoPrice > 0);
 
             return logoPrice;
         } else {
@@ -1051,7 +1051,7 @@ contract Platform is Admin {
             (hasInner, hasOuter) = token.getTokenScope(_tokenId);
             (indexInner, indexOuter) = getCurrentTierIndex();
 
-            if (_tokenId != logoId &amp;&amp; hasInner) {
+            if (_tokenId != logoId && hasInner) {
                 require(indexInner == 100000);
             }
 
@@ -1067,7 +1067,7 @@ contract Platform is Admin {
 
         uint256 counter = token.getTokenUpdatedCounter(_tokenId);
 
-        if (counter &gt; 0) {
+        if (counter > 0) {
             return feeForArtWorkChangeRequest;
         }
 
@@ -1090,7 +1090,7 @@ contract Platform is Admin {
 
         uint256 fee = getArtWorkChangeFee(_tokenId);
 
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
 
         uint256 changeRequestCounter = artWorkChangeRequests.length;
 
@@ -1196,14 +1196,14 @@ contract Platform is Admin {
         uint256 indexInner = 100000;
         uint256 indexOuter = 100000;
 
-        for (uint256 i = 0; i &lt; tiers.length; i++) {
+        for (uint256 i = 0; i < tiers.length; i++) {
             if (!tiers[i].filledInCenter) {
                 indexInner = i;
                 break;
             }
         }
 
-        for (uint256 k = 0; k &lt; tiers.length; k++) {
+        for (uint256 k = 0; k < tiers.length; k++) {
             if (!tiers[k].filledInOuter) {
                 indexOuter = k;
                 break;
@@ -1221,14 +1221,14 @@ contract Platform is Admin {
         indexInner = 100000;
         indexOuter = 100000;
 
-        for (uint256 i = 0; i &lt; tiers.length; i++) {
+        for (uint256 i = 0; i < tiers.length; i++) {
             if (!tiers[i].filledInCenter) {
                 indexInner = i;
                 break;
             }
         }
 
-        for (uint256 k = 0; k &lt; tiers.length; k++) {
+        for (uint256 k = 0; k < tiers.length; k++) {
             if (!tiers[k].filledInOuter) {
                 indexOuter = k;
                 break;
@@ -1244,7 +1244,7 @@ contract Platform is Admin {
 
             priceInCenter = tier.priceInCenter;
 
-            if (indexInner &lt; 3) {
+            if (indexInner < 3) {
                 nextPriceInCenter = tiers[indexInner + 1].priceInCenter;
             }
         }
@@ -1256,7 +1256,7 @@ contract Platform is Admin {
 
             priceInOuter = tier.priceInOuter;
 
-            if (indexOuter &lt; 3) {
+            if (indexOuter < 3) {
                 nextPriceInOuter = tiers[indexOuter + 1].priceInOuter;
             }
         }
@@ -1281,7 +1281,7 @@ contract Platform is Admin {
         (platformShare, forPrevOwner) = pricingStrategy.calculateSharesInTheRevenue(
             soldPrice, localOffer.offeredPrice);
 
-        //update token&#39;s state
+        //update token's state
         token.updateTokensState(_tokenId, localOffer.offeredPrice);
 
         // update owner
@@ -1316,7 +1316,7 @@ contract Platform is Admin {
         (total, inner) = token.calculateCounters(x, y, sizeA, sizeB);
         outer = total.sub(inner);
 
-        require(total &lt;= 100);
+        require(total <= 100);
 
         return (inner, outer);
     }
@@ -1325,13 +1325,13 @@ contract Platform is Admin {
         uint256 leftInner = inner;
         uint256 leftOuter = outer;
 
-        for (uint256 i = 0; i &lt; 4; i++) {
+        for (uint256 i = 0; i < 4; i++) {
             Tier storage tier = tiers[i];
 
-            if (leftInner &gt; 0 &amp;&amp; tier.filledInCenter == false) {
+            if (leftInner > 0 && tier.filledInCenter == false) {
                 uint256 availableInner = tier.amountInCenter.sub(tier.soldInCenter);
 
-                if (availableInner &gt; leftInner) {
+                if (availableInner > leftInner) {
                     tier.soldInCenter = tier.soldInCenter.add(leftInner);
 
                     leftInner = 0;
@@ -1343,10 +1343,10 @@ contract Platform is Admin {
                 }
             }
 
-            if (leftOuter &gt; 0 &amp;&amp; tier.filledInOuter == false) {
+            if (leftOuter > 0 && tier.filledInOuter == false) {
                 uint256 availableOuter = tier.amountInOuter.sub(tier.soldInOuter);
 
-                if (availableOuter &gt; leftOuter) {
+                if (availableOuter > leftOuter) {
                     tier.soldInOuter = tier.soldInOuter.add(leftOuter);
 
                     leftOuter = 0;
@@ -1359,20 +1359,20 @@ contract Platform is Admin {
             }
         }
 
-        require(leftInner == 0 &amp;&amp; leftOuter == 0);
+        require(leftInner == 0 && leftOuter == 0);
     }
 
     function calculateTokenPrice(uint256 inner, uint256 outer) public view returns (uint256 price) {
         uint256 leftInner = inner;
         uint256 leftOuter = outer;
 
-        for (uint256 i = 0; i &lt; 4; i++) {
+        for (uint256 i = 0; i < 4; i++) {
             Tier storage tier = tiers[i];
 
-            if (leftInner &gt; 0 &amp;&amp; tier.filledInCenter == false) {
+            if (leftInner > 0 && tier.filledInCenter == false) {
                 uint256 availableInner = tier.amountInCenter.sub(tier.soldInCenter);
 
-                if (availableInner &gt; leftInner) {
+                if (availableInner > leftInner) {
                     price = price.add(leftInner.mul(tier.priceInCenter));
                     leftInner = 0;
                 } else {
@@ -1381,10 +1381,10 @@ contract Platform is Admin {
                 }
             }
 
-            if (leftOuter &gt; 0 &amp;&amp; tier.filledInOuter == false) {
+            if (leftOuter > 0 && tier.filledInOuter == false) {
                 uint256 availableOuter = tier.amountInOuter.sub(tier.soldInOuter);
 
-                if (availableOuter &gt; leftOuter) {
+                if (availableOuter > leftOuter) {
                     price = price.add(leftOuter.mul(tier.priceInOuter));
                     leftOuter = 0;
                 } else {
@@ -1394,11 +1394,11 @@ contract Platform is Admin {
             }
         }
 
-        require(leftInner == 0 &amp;&amp; leftOuter == 0);
+        require(leftInner == 0 && leftOuter == 0);
     }
 
     function minPriceForNextRound(uint256 _tokenId) public view returns (uint256) {
-        if (_tokenId == logoId &amp;&amp; token.getCurrentPriceForToken(_tokenId) == 0) {
+        if (_tokenId == logoId && token.getCurrentPriceForToken(_tokenId) == 0) {
             return logoPrice;
         } else {
             // @TODO: check if sold-out
@@ -1420,11 +1420,11 @@ contract Platform is Admin {
         (hasInner, hasOuter) = token.getTokenScope(_tokenId);
         (indexInner, indexOuter) = getCurrentTierIndex();
 
-        if (hasInner &amp;&amp; hasOuter &amp;&amp; indexInner == 100000 &amp;&amp; indexOuter == 100000) {
+        if (hasInner && hasOuter && indexInner == 100000 && indexOuter == 100000) {
             token.increasePriceForNeighbours(_tokenId);
-        } else if (!hasInner &amp;&amp; hasOuter &amp;&amp; indexOuter == 100000) {
+        } else if (!hasInner && hasOuter && indexOuter == 100000) {
             token.increasePriceForNeighbours(_tokenId);
-        } else if (!hasOuter &amp;&amp; hasInner &amp;&amp; indexInner == 100000) {
+        } else if (!hasOuter && hasInner && indexInner == 100000) {
             token.increasePriceForNeighbours(_tokenId);
         }
     }
@@ -1439,15 +1439,15 @@ contract Platform is Admin {
         (hasInner, hasOuter) = token.getTokenScope(_tokenId);
         (indexInner, indexOuter) = getCurrentTierIndex();
 
-        if (token.getCurrentPriceForToken(_tokenId) == 0 &amp;&amp; logoPrice == 0) {
+        if (token.getCurrentPriceForToken(_tokenId) == 0 && logoPrice == 0) {
             return 4;
         }
 
-        if (_tokenId != logoId &amp;&amp; hasInner &amp;&amp; indexInner != 100000) {
+        if (_tokenId != logoId && hasInner && indexInner != 100000) {
             return 2;
         }
 
-        if (hasOuter &amp;&amp; indexOuter != 100000) {
+        if (hasOuter && indexOuter != 100000) {
             return 3;
         }
 

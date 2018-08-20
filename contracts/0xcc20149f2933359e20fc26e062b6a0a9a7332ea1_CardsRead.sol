@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9fedfef6f1e6dff3f6e9faecebfeedb1fcf0f2">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3b3c33332473273538333a1d31342b382e293c2f733e3230">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9fedfef6f1e6dff3f6e9faecebfeedb1fcf0f2">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3b3c33332473273538333a1d31342b382e293c2f733e3230">[email protected]</a>
 /*                 
 /* ==================================================================== */
 
@@ -59,8 +59,8 @@ contract CardsRead {
     uint256 endId;
     (startId,endId) = schema.productionCardIdRange(); 
     uint256 icount;
-    while (startId &lt;= endId) {
-      if (cards.getOwnedCount(_owner,startId)&gt;=1) {
+    while (startId <= endId) {
+      if (cards.getOwnedCount(_owner,startId)>=1) {
         icount++;
       }
       startId++;
@@ -73,8 +73,8 @@ contract CardsRead {
     uint256 endId;
     (startId,endId) = schema.battleCardIdRange(); 
     uint256 icount;
-    while (startId &lt;= endId) {
-      if (cards.getOwnedCount(_owner,startId)&gt;=1) {
+    while (startId <= endId) {
+      if (cards.getOwnedCount(_owner,startId)>=1) {
         icount++;
       }
       startId++;
@@ -90,8 +90,8 @@ contract CardsRead {
     uint256 endId;
     (startId,endId) = schema.productionCardIdRange(); 
     uint256 i;
-    while (startId &lt;= endId) {
-      if (cards.getOwnedCount(_owner,startId)&gt;=1) {
+    while (startId <= endId) {
+      if (cards.getOwnedCount(_owner,startId)>=1) {
         itemId[i] = startId;
         itemNumber[i] = cards.getOwnedCount(_owner,startId);
         i++;
@@ -112,8 +112,8 @@ contract CardsRead {
     (startId,endId) = schema.battleCardIdRange(); 
 
     uint256 i;
-    while (startId &lt;= endId) {
-      if (cards.getOwnedCount(_owner,startId)&gt;=1) {
+    while (startId <= endId) {
+      if (cards.getOwnedCount(_owner,startId)>=1) {
         itemId[i] = startId;
         itemNumber[i] = cards.getOwnedCount(_owner,startId);
         i++;

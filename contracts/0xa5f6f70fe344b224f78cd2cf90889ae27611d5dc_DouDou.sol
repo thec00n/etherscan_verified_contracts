@@ -16,13 +16,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -53,14 +53,14 @@ contract Owned {
 // ERC20Token
 contract ERC20Token is ERC20 {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalToken; 
 
 
      /* Send coins */
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) 
+        if (balances[msg.sender] >= _value && _value > 0) 
         {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -75,7 +75,7 @@ contract ERC20Token is ERC20 {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_from] = balances[_from].sub(_value);
             balances[_to] = balances[_to].add(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -111,13 +111,13 @@ contract ERC20Token is ERC20 {
 
 contract DouDou is ERC20Token, Owned {
 
-    string  public constant name = &quot;DouDou Token&quot;;
-    string  public constant symbol = &quot;DouDou&quot;;
+    string  public constant name = "DouDou Token";
+    string  public constant symbol = "DouDou";
     uint256 public constant decimals = 18;
     uint256 public tokenDestroyed;
     address public yearteam;
     address public halfyearteam;
-    uint public normal_trade_date = 1519837167; //new Date(&quot;yyyy-mm-ddT00:00:00&quot;).getTime()/1000
+    uint public normal_trade_date = 1519837167; //new Date("yyyy-mm-ddT00:00:00").getTime()/1000
     uint public halfyearteam_trade_date = normal_trade_date + (24*60*60)/2;//(365*24*60*60)/2;
     uint public yearteam_trade_date     = normal_trade_date + (24*60*60);//(365*24*60*60);  
 
@@ -137,11 +137,11 @@ contract DouDou is ERC20Token, Owned {
     function transfer(address _to, uint256 _value) public returns (bool success) 
     {
         //time check
-        if (msg.sender == yearteam &amp;&amp; now &lt; yearteam_trade_date) 
+        if (msg.sender == yearteam && now < yearteam_trade_date) 
             revert();
-        if (msg.sender == halfyearteam &amp;&amp; now &lt; halfyearteam_trade_date)
+        if (msg.sender == halfyearteam && now < halfyearteam_trade_date)
             revert();
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) 
+        if (balances[msg.sender] >= _value && _value > 0) 
         {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -160,11 +160,11 @@ contract DouDou is ERC20Token, Owned {
 
     function burn (uint256 _burntValue) public returns (bool success) 
     {
-        require(balances[msg.sender] &gt;= _burntValue &amp;&amp; _burntValue &gt; 0);
+        require(balances[msg.sender] >= _burntValue && _burntValue > 0);
         balances[msg.sender] = balances[msg.sender].sub(_burntValue);
         totalToken = totalToken.sub(_burntValue);
         tokenDestroyed = tokenDestroyed.add(_burntValue);
-        require (tokenDestroyed &lt;= 100000000000000000000000000);
+        require (tokenDestroyed <= 100000000000000000000000000);
         Transfer(address(this), 0x0, _burntValue);
         Burn(msg.sender, _burntValue);
         return true;

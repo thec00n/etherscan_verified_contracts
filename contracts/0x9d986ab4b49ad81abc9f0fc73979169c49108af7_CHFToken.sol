@@ -4,11 +4,11 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 }
@@ -53,8 +53,8 @@ contract MigrationAgent {
 
 contract CHFToken is ERC20Interface, Owned, SafeMath {
 
-    string constant public symbol = &quot;CHFT&quot;;
-    string constant public name = &quot;CHF-Token&quot;;
+    string constant public symbol = "CHFT";
+    string constant public name = "CHF-Token";
     uint8 constant public decimals = 18;
 
     //SNB M3: 2018-01, 1036.941 Mrd. CHF
@@ -62,8 +62,8 @@ contract CHFToken is ERC20Interface, Owned, SafeMath {
     address public migrationAgent = address(0);
     uint256 public totalMigrated = 0;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
 
@@ -93,7 +93,7 @@ contract CHFToken is ERC20Interface, Owned, SafeMath {
 
     function bulkTransfer(address[] _tos, uint256[] _tokens) public returns (bool) {
 
-        for (uint i = 0; i &lt; _tos.length; i++) {
+        for (uint i = 0; i < _tos.length; i++) {
             require(transfer(_tos[i], _tokens[i]));
         }
 
@@ -124,8 +124,8 @@ contract CHFToken is ERC20Interface, Owned, SafeMath {
     function migrate(uint256 _value) public {
 
         require(migrationAgent != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         totalSupply = safeSub(totalSupply, _value);

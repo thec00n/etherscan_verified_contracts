@@ -26,7 +26,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,20 +124,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -153,7 +153,7 @@ library MathUtils {
      * @param _amount Amount that is supposed to be a percentage
      */
     function validPerc(uint256 _amount) internal pure returns (bool) {
-        return _amount &lt;= PERC_DIVISOR;
+        return _amount <= PERC_DIVISOR;
     }
 
     /*
@@ -334,25 +334,25 @@ contract Minter is Manager, IMinter {
 
     // Checks if caller is BondingManager
     modifier onlyBondingManager() {
-        require(msg.sender == controller.getContract(keccak256(&quot;BondingManager&quot;)));
+        require(msg.sender == controller.getContract(keccak256("BondingManager")));
         _;
     }
 
     // Checks if caller is RoundsManager
     modifier onlyRoundsManager() {
-        require(msg.sender == controller.getContract(keccak256(&quot;RoundsManager&quot;)));
+        require(msg.sender == controller.getContract(keccak256("RoundsManager")));
         _;
     }
 
     // Checks if caller is either BondingManager or JobsManager
     modifier onlyBondingManagerOrJobsManager() {
-        require(msg.sender == controller.getContract(keccak256(&quot;BondingManager&quot;)) || msg.sender == controller.getContract(keccak256(&quot;JobsManager&quot;)));
+        require(msg.sender == controller.getContract(keccak256("BondingManager")) || msg.sender == controller.getContract(keccak256("JobsManager")));
         _;
     }
 
     // Checks if caller is either the currently registered Minter or JobsManager
     modifier onlyMinterOrJobsManager() {
-        require(msg.sender == controller.getContract(keccak256(&quot;Minter&quot;)) || msg.sender == controller.getContract(keccak256(&quot;JobsManager&quot;)));
+        require(msg.sender == controller.getContract(keccak256("Minter")) || msg.sender == controller.getContract(keccak256("JobsManager")));
         _;
     }
 
@@ -385,7 +385,7 @@ contract Minter is Manager, IMinter {
 
         targetBondingRate = _targetBondingRate;
 
-        ParameterUpdate(&quot;targetBondingRate&quot;);
+        ParameterUpdate("targetBondingRate");
     }
 
     /**
@@ -398,12 +398,12 @@ contract Minter is Manager, IMinter {
 
         inflationChange = _inflationChange;
 
-        ParameterUpdate(&quot;inflationChange&quot;);
+        ParameterUpdate("inflationChange");
     }
 
     /**
      * @dev Migrate to a new Minter by transferring ownership of the token as well
-     * as the current Minter&#39;s token balance to the new Minter. Only callable by Controller when system is paused
+     * as the current Minter's token balance to the new Minter. Only callable by Controller when system is paused
      * @param _newMinter Address of new Minter
      */
     function migrateToNewMinter(IMinter _newMinter) external onlyControllerOwner whenSystemPaused {
@@ -415,20 +415,20 @@ contract Minter is Manager, IMinter {
         IController newMinterController = _newMinter.getController();
         // New Minter must have same Controller as current Minter
         require(newMinterController == controller);
-        // New Minter&#39;s Controller must have the current Minter registered
-        require(newMinterController.getContract(keccak256(&quot;Minter&quot;)) == address(this));
+        // New Minter's Controller must have the current Minter registered
+        require(newMinterController.getContract(keccak256("Minter")) == address(this));
 
         // Transfer ownership of token to new Minter
         livepeerToken().transferOwnership(_newMinter);
-        // Transfer current Minter&#39;s token balance to new Minter
+        // Transfer current Minter's token balance to new Minter
         livepeerToken().transfer(_newMinter, livepeerToken().balanceOf(this));
-        // Transfer current Minter&#39;s ETH balance to new Minter
+        // Transfer current Minter's ETH balance to new Minter
         _newMinter.depositETH.value(this.balance)();
     }
 
     /**
      * @dev Create reward based on a fractional portion of the mintable tokens for the current round
-     * @param _fracNum Numerator of fraction (active transcoder&#39;s stake)
+     * @param _fracNum Numerator of fraction (active transcoder's stake)
      * @param _fracDenom Denominator of fraction (total active stake)
      */
     function createReward(uint256 _fracNum, uint256 _fracDenom) external onlyBondingManager whenSystemNotPaused returns (uint256) {
@@ -437,7 +437,7 @@ contract Minter is Manager, IMinter {
         // Update amount of minted tokens for round
         currentMintedTokens = currentMintedTokens.add(mintAmount);
         // Minted tokens must not exceed mintable tokens
-        require(currentMintedTokens &lt;= currentMintableTokens);
+        require(currentMintedTokens <= currentMintableTokens);
         // Mint new tokens
         livepeerToken().mint(this, mintAmount);
 
@@ -505,17 +505,17 @@ contract Minter is Manager, IMinter {
         uint256 currentBondingRate = 0;
         uint256 totalSupply = livepeerToken().totalSupply();
 
-        if (totalSupply &gt; 0) {
+        if (totalSupply > 0) {
             uint256 totalBonded = bondingManager().getTotalBonded();
             currentBondingRate = MathUtils.percPoints(totalBonded, totalSupply);
         }
 
-        if (currentBondingRate &lt; targetBondingRate) {
+        if (currentBondingRate < targetBondingRate) {
             // Bonding rate is below the target - increase inflation
             inflation = inflation.add(inflationChange);
-        } else if (currentBondingRate &gt; targetBondingRate) {
+        } else if (currentBondingRate > targetBondingRate) {
             // Bonding rate is above the target - decrease inflation
-            if (inflationChange &gt; inflation) {
+            if (inflationChange > inflation) {
                 inflation = 0;
             } else {
                 inflation = inflation.sub(inflationChange);
@@ -527,13 +527,13 @@ contract Minter is Manager, IMinter {
      * @dev Returns LivepeerToken interface
      */
     function livepeerToken() internal view returns (ILivepeerToken) {
-        return ILivepeerToken(controller.getContract(keccak256(&quot;LivepeerToken&quot;)));
+        return ILivepeerToken(controller.getContract(keccak256("LivepeerToken")));
     }
 
     /**
      * @dev Returns BondingManager interface
      */
     function bondingManager() internal view returns (IBondingManager) {
-        return IBondingManager(controller.getContract(keccak256(&quot;BondingManager&quot;)));
+        return IBondingManager(controller.getContract(keccak256("BondingManager")));
     }
 }

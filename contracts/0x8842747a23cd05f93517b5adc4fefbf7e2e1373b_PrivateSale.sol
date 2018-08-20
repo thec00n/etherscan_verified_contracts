@@ -12,7 +12,7 @@ contract GenesisProtected {
 // The original code is taken from:
 // https://github.com/OpenZeppelin/zeppelin-solidity:
 //     master branch from zeppelin-solidity/contracts/ownership/Ownable.sol
-// Changed function name: transferOwnership -&gt; setOwner.
+// Changed function name: transferOwnership -> setOwner.
 // Added inheritance from GenesisProtected (address != 0x0).
 // setOwner refactored for emitting after owner replacing.
 // ----------------------------------------------------------------------------
@@ -20,7 +20,7 @@ contract GenesisProtected {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable is GenesisProtected {
     address public owner;
@@ -58,7 +58,7 @@ contract Ownable is GenesisProtected {
 
 
 contract Enums {
-    // Type for mapping uint (index) =&gt; name for baskets types described in WP
+    // Type for mapping uint (index) => name for baskets types described in WP
     enum BasketType {
         unknown, // 0 unknown
         team, // 1 Team
@@ -74,7 +74,7 @@ contract Enums {
 
 contract WPTokensBaskets is Ownable, Enums {
     // This mapping holds all accounts ever used as baskets forever
-    mapping (address =&gt; BasketType) internal types;
+    mapping (address => BasketType) internal types;
 
     // Baskets for tokens
     address public team;
@@ -182,9 +182,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -193,7 +193,7 @@ library SafeMath {
      * greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -202,7 +202,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -238,9 +238,9 @@ contract Token is Ownable, ERC20Interface, Enums {
     using SafeMath for uint;
 
     // Token full name
-    string private constant NAME = &quot;EnvisionX EXCHAIN Token&quot;;
+    string private constant NAME = "EnvisionX EXCHAIN Token";
     // Token symbol name
-    string private constant SYMBOL = &quot;EXT&quot;;
+    string private constant SYMBOL = "EXT";
     // Token max fraction, in decimal signs after the point
     uint8 private constant DECIMALS = 18;
 
@@ -248,19 +248,19 @@ contract Token is Ownable, ERC20Interface, Enums {
     uint public constant MAX_SUPPLY = 3000000000 * (10**uint(DECIMALS));
 
     // Tokens balances map
-    mapping(address =&gt; uint) internal balances;
+    mapping(address => uint) internal balances;
 
     // Maps with allowed amounts fot TransferFrom
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
 
     // Total amount of issued tokens, in EXTwei
     uint internal _totalSupply;
 
     // Map with Ether founds amount by address (using when refunds)
-    mapping(address =&gt; uint) internal etherFunds;
+    mapping(address => uint) internal etherFunds;
     uint internal _earnedFunds;
     // Map with refunded addreses (Black List)
-    mapping(address =&gt; bool) internal refunded;
+    mapping(address => bool) internal refunded;
 
     // Address of sale agent (a contract) which can mint new tokens
     address public mintAgent;
@@ -337,7 +337,7 @@ contract Token is Ownable, ERC20Interface, Enums {
         addrNotNull(to)
         returns (bool)
     {
-        if (balances[msg.sender] &lt; value)
+        if (balances[msg.sender] < value)
             return false;
         if (isFrozen(wpTokensBaskets.typeOf(msg.sender), value))
             return false;
@@ -355,9 +355,9 @@ contract Token is Ownable, ERC20Interface, Enums {
         addrNotNull(to)
         returns (bool)
     {
-        if (balances[from] &lt; value)
+        if (balances[from] < value)
             return false;
-        if (allowance(from, msg.sender) &lt; value)
+        if (allowance(from, msg.sender) < value)
             return false;
         if (isFrozen(wpTokensBaskets.typeOf(from), value))
             return false;
@@ -422,7 +422,7 @@ contract Token is Ownable, ERC20Interface, Enums {
         require(msg.sender == mintAgent);
         require(!refunded[to]);
         _totalSupply = _totalSupply.add(extAmount);
-        require(_totalSupply &lt;= MAX_SUPPLY);
+        require(_totalSupply <= MAX_SUPPLY);
         balances[to] = balances[to].add(extAmount);
         if (wpTokensBaskets.isUnknown(to)) {
             _earnedFunds = _earnedFunds.add(etherAmount);
@@ -449,7 +449,7 @@ contract Token is Ownable, ERC20Interface, Enums {
         addrNotNull(_address)
         onlyOwner()
     {
-        require(msg.value &gt; 0 &amp;&amp; msg.value == etherFunds[_address]);
+        require(msg.value > 0 && msg.value == etherFunds[_address]);
         _totalSupply = _totalSupply.sub(balances[_address]);
         balances[_address] = 0;
         _earnedFunds = _earnedFunds.sub(msg.value);
@@ -481,9 +481,9 @@ contract Token is Ownable, ERC20Interface, Enums {
     //    team can spend up to 25 tokens till next 24 weeks;
     //  3. Someone transfers another 100 tokens to the team basket;
     //  4. ...
-    // Problem is, actually, you can&#39;t spend any of these extra 100
+    // Problem is, actually, you can't spend any of these extra 100
     // tokens until 96 weeks will elapse since minting finish date.
-    // That&#39;s because after next 24 weeks will be unlocked only
+    // That's because after next 24 weeks will be unlocked only
     // 25 tokens more (25% of *minted* tokens) and so on.
     // So, DO NOT send tokens to the team basket until 96 weeks elapse!
     function isFrozen(
@@ -499,7 +499,7 @@ contract Token is Ownable, ERC20Interface, Enums {
         if (_basketType == BasketType.foundation) {
             // Allow to spend foundation tokens only after
             // 48 weeks after minting is finished
-            return now &lt; mintingStopDate + 48 weeks;
+            return now < mintingStopDate + 48 weeks;
         }
         if (_basketType == BasketType.team) {
             // Team allowed to spend tokens:
@@ -507,35 +507,35 @@ contract Token is Ownable, ERC20Interface, Enums {
             //  50%  - after minting finished date + 48 weeks;
             //  75%  - after minting finished date + 72 weeks;
             //  100% - after minting finished date + 96 weeks.
-            if (mintingStopDate + 96 weeks &lt;= now) {
+            if (mintingStopDate + 96 weeks <= now) {
                 return false;
             }
-            if (now &lt; mintingStopDate + 24 weeks)
+            if (now < mintingStopDate + 24 weeks)
                 return true;
             // Calculate fraction as percents multipled to 10^10.
             // Without this owner will be able to spend fractions
             // less than 1% per transaction.
             uint fractionSpent =
                 spentByTeam.add(_value).mul(1000000000000).div(teamTotal);
-            if (now &lt; mintingStopDate + 48 weeks) {
-                return 250000000000 &lt; fractionSpent;
+            if (now < mintingStopDate + 48 weeks) {
+                return 250000000000 < fractionSpent;
             }
-            if (now &lt; mintingStopDate + 72 weeks) {
-                return 500000000000 &lt; fractionSpent;
+            if (now < mintingStopDate + 72 weeks) {
+                return 500000000000 < fractionSpent;
             }
             // from 72 to 96 weeks elapsed
-            return 750000000000 &lt; fractionSpent;
+            return 750000000000 < fractionSpent;
         }
         // No restrictions for other token holders
         return false;
     }
 
     // Save amount of spent tokens by team till 96 weeks after minting
-    // finish date. This is vital because without the check we&#39;ll eventually
+    // finish date. This is vital because without the check we'll eventually
     // overflow the uint256.
     function saveTeamSpent(address _owner, uint _value) internal {
         if (wpTokensBaskets.isTeam(_owner)) {
-            if (now &lt; mintingStopDate + 96 weeks)
+            if (now < mintingStopDate + 96 weeks)
                 spentByTeam = spentByTeam.add(_value);
         }
     }
@@ -648,7 +648,7 @@ contract TokenSale is Killable, Enums {
         remainingSupply = _supplyAmount.mul(dec);
     }
 
-    // Fallback function. Here we&#39;ll receive all investments.
+    // Fallback function. Here we'll receive all investments.
     function() external payable {
         purchase();
     }
@@ -660,9 +660,9 @@ contract TokenSale is Killable, Enums {
     // Return truth if purchase with given _value of ether
     // (in wei) can be made
     function canPurchase(uint256 _value) public view returns (bool) {
-        return start &lt;= now &amp;&amp; now &lt;= stop &amp;&amp;
-            minBuyingAmount &lt;= _value &amp;&amp;
-            toEXTwei(_value) &lt;= remainingSupply;
+        return start <= now && now <= stop &&
+            minBuyingAmount <= _value &&
+            toEXTwei(_value) <= remainingSupply;
     }
 
     // Return address of crowdfunding beneficiary address.
@@ -731,10 +731,10 @@ contract TokenSale is Killable, Enums {
     }
 
     // Method for call mint() in EXT ERC20 contract.
-    // mint() will be called for each record if amount of tokens &gt; 0
+    // mint() will be called for each record if amount of tokens > 0
     function createTokens(tokens[8] memory _tokensArray) internal {
-        for (uint i = 0; i &lt; _tokensArray.length; i++) {
-            if (_tokensArray[i].extAmount &gt; 0) {
+        for (uint i = 0; i < _tokensArray.length; i++) {
+            if (_tokensArray[i].extAmount > 0) {
                 token.mint(
                     _tokensArray[i].beneficiary,
                     _tokensArray[i].extAmount,
@@ -750,7 +750,7 @@ contract PrivateSale is TokenSale {
     using SafeMath for uint256;
 
     // List of investors allowed to buy tokens at PrivateSale
-    mapping(address =&gt; bool) internal allowedInvestors;
+    mapping(address => bool) internal allowedInvestors;
 
     function PrivateSale(Token _token, Beneficiary _beneficiary)
         TokenSale(_token, _beneficiary, uint256(400000000))

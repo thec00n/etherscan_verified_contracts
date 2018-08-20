@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -58,8 +58,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -72,16 +72,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
   /**
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   /**
@@ -89,7 +89,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -122,19 +122,19 @@ contract ERC20 is ERC20Basic {
 }
 contract PreSale is Ownable {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) public unconfirmedMap;
-    mapping(address =&gt; uint256) public confirmedMap;
-    mapping(address =&gt; address) public holderReferrer;
-    mapping(address =&gt; uint256) public holdersOrder;
+    mapping(address => uint256) public unconfirmedMap;
+    mapping(address => uint256) public confirmedMap;
+    mapping(address => address) public holderReferrer;
+    mapping(address => uint256) public holdersOrder;
     address[] public holders;
     uint256 public holdersCount;
-    mapping(address =&gt; uint256) public bonusMap;
-    mapping(address =&gt; uint256) public topMap;
+    mapping(address => uint256) public bonusMap;
+    mapping(address => uint256) public topMap;
     uint256 public confirmedAmount;
     uint256 public bonusAmount;
     uint256 lastOf10 = 0;
     uint256 lastOf15 = 0;
-    mapping(address =&gt; bool) _isConfirmed;
+    mapping(address => bool) _isConfirmed;
     uint256 public totalSupply;
     uint256 REF_BONUS_PERCENT = 50;
     uint256 MIN_AMOUNT = 9 * 10e15;
@@ -151,23 +151,23 @@ contract PreSale is Ownable {
         uint256 _endTime,
         ERC20 _token
     ) public {
-        require(_startTime &gt;= now);
-        require(_startTime &lt; _endTime);
+        require(_startTime >= now);
+        require(_startTime < _endTime);
         totalSupply = _totalSupply;
         startTime = _startTime;
         endTime = _endTime;
         token = _token;
     }
     modifier pending() {
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime);
+        require(now >= startTime && now < endTime);
         _;
     }
     modifier isAbleConfirmation() {
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime + confirmTime);
+        require(now >= startTime && now < endTime + confirmTime);
         _;
     }
     modifier hasClosed() {
-        require(now &gt;= endTime + confirmTime);
+        require(now >= endTime + confirmTime);
         _;
     }
     modifier isGoalReached() {
@@ -193,7 +193,7 @@ contract PreSale is Ownable {
         _buyTokens(holder, amount);
     }
     function _buyTokens(address holder, uint256 amount) private {
-        require(amount &gt;= MIN_AMOUNT);
+        require(amount >= MIN_AMOUNT);
         if (_isConfirmed[holder]) {
             confirmedMap[holder] = confirmedMap[holder].add(amount);
             confirmedAmount = confirmedAmount.add(amount);
@@ -214,9 +214,9 @@ contract PreSale is Ownable {
     }
     function _addBonusOfTop(address holder, uint256 amount) internal {
         uint256 bonusOf = 0;
-        if (holdersOrder[holder] &lt;= holdersCount.div(10)) {
+        if (holdersOrder[holder] <= holdersCount.div(10)) {
             bonusOf = amount.div(10);
-        } else if (holdersOrder[holder] &lt;= holdersCount.mul(15).div(100)) {
+        } else if (holdersOrder[holder] <= holdersCount.mul(15).div(100)) {
             bonusOf = amount.mul(5).div(100);
         }
         if (bonusOf == 0) {
@@ -231,18 +231,18 @@ contract PreSale is Ownable {
         uint256 bonusFor = 0;
         address holder;
         uint256 currentAmount;
-        if (lastOf10 &lt; holdersCount.div(10)) {
+        if (lastOf10 < holdersCount.div(10)) {
             holder = holders[lastOf10++];
             currentAmount = _isConfirmed[holder] ? confirmedMap[holder] : unconfirmedMap[holder];
             bonusFor = currentAmount.div(10);
-        } else if (lastOf15 &lt; holdersCount.mul(15).div(100)) {
+        } else if (lastOf15 < holdersCount.mul(15).div(100)) {
             holder = holders[lastOf15++];
             currentAmount = _isConfirmed[holder] ? confirmedMap[holder] : unconfirmedMap[holder];
             bonusFor = currentAmount.div(20);
         } else {
             return;
         }
-        if (bonusFor &lt;= topMap[holder]) {
+        if (bonusFor <= topMap[holder]) {
             return;
         }
         if (_isConfirmed[holder]) {
@@ -268,9 +268,9 @@ contract PreSale is Ownable {
     }
     function _canSetReferrer(address holder, address referrer) view private returns (bool) {
         return holderReferrer[holder] == 0x0
-        &amp;&amp; holder != referrer
-        &amp;&amp; referrer != 0x0
-        &amp;&amp; holderReferrer[referrer] != holder;
+        && holder != referrer
+        && referrer != 0x0
+        && holderReferrer[referrer] != holder;
     }
     function _setReferrer(address holder, address referrer) private {
         holderReferrer[holder] = referrer;
@@ -296,7 +296,7 @@ contract PreSale is Ownable {
     }
     function getTokens() public hasClosed isGoalReached onlyConfirmed returns (uint256) {
         uint256 tokens = calculateTokens(msg.sender);
-        require(tokens &gt; 0);
+        require(tokens > 0);
         confirmedMap[msg.sender] = 0;
         bonusMap[msg.sender] = 0;
         topMap[msg.sender] = 0;
@@ -308,11 +308,11 @@ contract PreSale is Ownable {
         if (_isConfirmed[holder]) {
             require(_isGoalReached == false);
             funds = confirmedMap[holder];
-            require(funds &gt; 0);
+            require(funds > 0);
             confirmedMap[holder] = 0;
         } else {
             funds = unconfirmedMap[holder];
-            require(funds &gt; 0);
+            require(funds > 0);
             unconfirmedMap[holder] = 0;
         }
         holder.transfer(funds);
@@ -335,7 +335,7 @@ contract PreSale is Ownable {
         _confirm(holder);
     }
     function confirmBatch(address[] _holders) public isAbleConfirmation onlyOwner {
-        for (uint i = 0; i &lt; _holders.length; i++) {
+        for (uint i = 0; i < _holders.length; i++) {
             if (!_isConfirmed[_holders[i]]) {
                 _confirm(_holders[i]);
             }

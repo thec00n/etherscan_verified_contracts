@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
  (token on the most safe Ethereum blockchain) 
 fully supported by Ethereum ecosystem and cryptocurrency exchanges,
 write and deploy smartcontracts inside the ETH blockchain ,
-then I verify your&#39;s coin open-source code with the etherscan Explorer.
+then I verify your's coin open-source code with the etherscan Explorer.
 After  I create the  GitHub brunch for you and
 also add your coin to EtherDelta exchange . 
 The full price is 0.33 ETH or ~60$
@@ -12,10 +12,10 @@ After you  send 0.33 ETH to this smartcontract you are receiving 3.3 RomanLansko
 This means you already paid me for the job and I will create the coin for you
 
 if you use myetherwallet.com
-open &lt;&lt;add custom token&gt;&gt;
-Address is this smarcontract&#39;s address
-Token Symbol is &quot;RomanLanskoj&quot;
-the number of decimals is &quot;2&quot;
+open <<add custom token>>
+Address is this smarcontract's address
+Token Symbol is "RomanLanskoj"
+the number of decimals is "2"
 
 */
 contract owned {
@@ -39,15 +39,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract token {
     /* Public variables of the token */
-    string public standard = &#39;Token 1.0&#39;;
+    string public standard = 'Token 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;                         // Set the symbol for display purposes
        
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -61,16 +61,16 @@ contract token {
         {
         balanceOf[msg.sender] = 33000;              
         totalSupply = initialSupply;
-        name = &quot;RomanLanskoj&quot;;                                 
-        symbol = &quot;JOB&quot;;                               
+        name = "RomanLanskoj";                                 
+        symbol = "JOB";                               
         decimals = 2;                
         }
         
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -94,9 +94,9 @@ contract token {
 
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -124,14 +124,14 @@ uint256 public buyPrice;
     }
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
         if (frozenAccount[msg.sender]) throw;                
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
@@ -142,9 +142,9 @@ uint256 public buyPrice;
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;                                    
-        if (balanceOf[_from] &lt; _value) throw;                 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw;   
+        if (balanceOf[_from] < _value) throw;                 
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw;   
         balanceOf[_from] -= _value;                          
         balanceOf[_to] += _value;                            
         allowance[_from][msg.sender] -= _value;
@@ -168,7 +168,7 @@ uint256 public buyPrice;
 
     function buy(uint256 amount, uint256 buyPrice) payable {
         amount = msg.value / buyPrice;                
-        if (balanceOf[this] &lt; amount) throw;               
+        if (balanceOf[this] < amount) throw;               
         balanceOf[msg.sender] += amount;                   
         balanceOf[this] -= amount;      
         buyPrice = 10000;                       
@@ -176,7 +176,7 @@ uint256 public buyPrice;
     }
 
     function sell(uint256 amount, uint sellPrice) {
-        if (balanceOf[msg.sender] &lt; amount ) throw;        
+        if (balanceOf[msg.sender] < amount ) throw;        
         balanceOf[this] += amount;                         
         balanceOf[msg.sender] -= amount;     
        sellPrice = 10;          

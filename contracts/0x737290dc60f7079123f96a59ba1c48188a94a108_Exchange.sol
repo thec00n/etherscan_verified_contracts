@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -41,7 +41,7 @@ contract Ownable {
 
 }
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6105041504210019080e0c1b040f4f020e">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6105041504210019080e0c1b040f4f020e">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -136,7 +136,7 @@ contract Exchange is Ownable {
         returns (bool)
     {
         return signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+            keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
@@ -166,17 +166,17 @@ contract Exchange is Ownable {
         });
 
 
-        if (msg.value &lt; order.tokenAmount) {
+        if (msg.value < order.tokenAmount) {
             LogError(uint8(Errors.INSUFFICIENT_BALANCE_OR_ALLOWANCE), order.orderHash);
             return ;
         }
 
 
-        require(msg.value &gt;= order.tokenAmount);
+        require(msg.value >= order.tokenAmount);
         require(order.taker == address(0) || order.taker == msg.sender);
 
 
-        require(order.tokenAmount &gt; 0 );
+        require(order.tokenAmount > 0 );
         require(isValidSignature(
             order.maker,
             order.orderHash,
@@ -185,7 +185,7 @@ contract Exchange is Ownable {
             s
         ));
 
-        if (block.timestamp &gt;= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return ;
         }
@@ -215,7 +215,7 @@ contract Exchange is Ownable {
     }
 
     function setTransFeeCut(uint256 val) external onlyOwner {
-        require(val &lt;= 10000);
+        require(val <= 10000);
         transFeeCut = val;
     }
 

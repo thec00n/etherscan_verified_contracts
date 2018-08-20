@@ -20,7 +20,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -56,7 +56,7 @@ contract SafeMath {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string name) { name; }
     function symbol() public constant returns (string symbol) { symbol; }
     function decimals() public constant returns (uint8 decimals) { decimals; }
@@ -73,21 +73,21 @@ contract IERC20Token {
     COSS Token implementation
 */
 contract COSSToken is IERC20Token, SafeMath {
-    string public standard = &#39;COSS&#39;;
-    string public name = &#39;COSS&#39;;
-    string public symbol = &#39;COSS&#39;;
+    string public standard = 'COSS';
+    string public name = 'COSS';
+    string public symbol = 'COSS';
     uint8 public decimals = 18;
     uint256 public totalSupply = 54359820;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    mapping (address =&gt; string) public revenueShareIdentifierList;
-    mapping (address =&gt; string) public revenueShareCurrency;
-    mapping (address =&gt; uint256) public revenueShareDistribution;
+    mapping (address => string) public revenueShareIdentifierList;
+    mapping (address => string) public revenueShareCurrency;
+    mapping (address => uint256) public revenueShareDistribution;
 
     uint256 public decimalMultiplier = 1000000000000000000;
     address public revenueShareOwnerAddress;
@@ -111,7 +111,7 @@ contract COSSToken is IERC20Token, SafeMath {
         balanceOf[investorWalletAddress] = safeMul(10000000,decimalMultiplier);
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -141,7 +141,7 @@ contract COSSToken is IERC20Token, SafeMath {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value)
         public
@@ -162,7 +162,7 @@ contract COSSToken is IERC20Token, SafeMath {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
@@ -188,14 +188,14 @@ contract COSSToken is IERC20Token, SafeMath {
         @param _spender approved address
         @param _value   allowance amount
 
-        @return true if the approval was successful, false if it wasn&#39;t
+        @return true if the approval was successful, false if it wasn't
     */
     function approve(address _spender, uint256 _value)
         public
         validAddress(_spender)
         returns (bool success)
     {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;

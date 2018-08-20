@@ -7,12 +7,12 @@ pragma solidity ^0.4.15;
 - Tradable when issued to the public for consideration, after the ICO closes.
 - Dividends of 4% per annum are payable as increased territory size
 - Deputy Mayor crypto-currency governance role.
-- Democratic governance applies to traffic congestion. All crowd funders who own ZTT coins are &quot;Deputy Mayors&quot; of their district below and may democratically advise ZeroTraffic on congested areas in their district on a regular basis. District maybe re-centered.
+- Democratic governance applies to traffic congestion. All crowd funders who own ZTT coins are "Deputy Mayors" of their district below and may democratically advise ZeroTraffic on congested areas in their district on a regular basis. District maybe re-centered.
 - Coins are optionally retractable and redeemable by ZeroTraffic, individually from each owner any time after 5 years after IOD. Once an owner is exchanged, the market price average for the last 5 days shall be used to compute payment.
-- At least 1250 ZTTs&#39; are required to fill the role of Deputy Mayor.
-- Price per each non-exclusive circle of radius 1/2 km, around any ZTT coin owner specified GPS point, for a map of traffic standstill congestion management advice = (1250 ZTT). Additional size regions are priced for a R&#39; km radius at (R&#39;/R)**2 *price for 1/2km radius in ZTT coin.
-- To be exempt from securities laws, there is no share ownership to ZTT coin holders, right to dividends, proceeds from sales. The parties agree that the Howey test is not met: &quot;investment of money from an expectation of profits arising from a common enterprise depending solely on the efforts of a promoter or third party&quot;. Proceeds will fund initial and continuing development and business development, depending on level of funds raised, for several years.
-- Funds raised in ICO are refundable if minimum isn&#39;t met during ICO and presale, however funds raised during the PreICO are not subject to refund on minimum raise.
+- At least 1250 ZTTs' are required to fill the role of Deputy Mayor.
+- Price per each non-exclusive circle of radius 1/2 km, around any ZTT coin owner specified GPS point, for a map of traffic standstill congestion management advice = (1250 ZTT). Additional size regions are priced for a R' km radius at (R'/R)**2 *price for 1/2km radius in ZTT coin.
+- To be exempt from securities laws, there is no share ownership to ZTT coin holders, right to dividends, proceeds from sales. The parties agree that the Howey test is not met: "investment of money from an expectation of profits arising from a common enterprise depending solely on the efforts of a promoter or third party". Proceeds will fund initial and continuing development and business development, depending on level of funds raised, for several years.
+- Funds raised in ICO are refundable if minimum isn't met during ICO and presale, however funds raised during the PreICO are not subject to refund on minimum raise.
 */
 
 contract Token { 
@@ -63,7 +63,7 @@ contract ZTCrowdsale {
     Token public ztToken;
 
     // Invested balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
 
     /**
@@ -130,35 +130,35 @@ contract ZTCrowdsale {
      */
     function toZT(uint256 _wei) returns (uint256 amount) {
         uint256 rate = 0;
-        if (stage != Stages.Ended &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end) {
+        if (stage != Stages.Ended && now >= start && now <= end) {
 
             // Check for preico
-            if (now &lt;= start + ratePreICOEnd) {
+            if (now <= start + ratePreICOEnd) {
                 rate = ratePreICO;
             }
 
             // Check for angelday
-            else if (now &lt;= start + rateAngelDayEnd) {
+            else if (now <= start + rateAngelDayEnd) {
                 rate = rateAngelDay;
             }
 
             // Check first week
-            else if (now &lt;= start + rateFirstWeekEnd) {
+            else if (now <= start + rateFirstWeekEnd) {
                 rate = rateFirstWeek;
             }
 
             // Check second week
-            else if (now &lt;= start + rateSecondWeekEnd) {
+            else if (now <= start + rateSecondWeekEnd) {
                 rate = rateSecondWeek;
             }
 
             // Check third week
-            else if (now &lt;= start + rateThirdWeekEnd) {
+            else if (now <= start + rateThirdWeekEnd) {
                 rate = rateThirdWeek;
             }
 
             // Check last week
-            else if (now &lt;= start + rateLastWeekEnd) {
+            else if (now <= start + rateLastWeekEnd) {
                 rate = rateLastWeek;
             }
         }
@@ -166,9 +166,9 @@ contract ZTCrowdsale {
         uint256 ztAmount = _wei * rate * 10**8 / 1 ether; // 10**8 for 8 decimals
 
         // Increase price after min amount is reached
-        if (raised &gt; minAmount) {
+        if (raised > minAmount) {
             uint256 multiplier = raised / minAmount; // Remainder discarded
-            for (uint256 i = 0; i &lt; multiplier; i++) {
+            for (uint256 i = 0; i < multiplier; i++) {
                 ztAmount = ztAmount * 965936329 / 10**9;
             }
         }
@@ -184,7 +184,7 @@ contract ZTCrowdsale {
     function endCrowdsale() atStage(Stages.InProgress) {
 
         // Crowdsale not ended yet
-        require(now &gt;= end);
+        require(now >= end);
 
         stage = Stages.Ended;
     }
@@ -197,7 +197,7 @@ contract ZTCrowdsale {
     function withdraw() atStage(Stages.Ended) {
 
         // Confirm that minAmount is raised
-        require(raised &gt;= minAmount);
+        require(raised >= minAmount);
 
         uint256 ethBalance = this.balance;
         uint256 ethFees = ethBalance * 5 / 10**3; // 0.005
@@ -216,12 +216,12 @@ contract ZTCrowdsale {
     function refund() atStage(Stages.Ended) {
 
         // Only allow refunds if minAmount is not raised
-        require(raised &lt; minAmount);
+        require(raised < minAmount);
 
         uint256 receivedAmount = balances[msg.sender];
         balances[msg.sender] = 0;
 
-        if (receivedAmount &gt; 0 &amp;&amp; !msg.sender.send(receivedAmount)) {
+        if (receivedAmount > 0 && !msg.sender.send(receivedAmount)) {
             balances[msg.sender] = receivedAmount;
         }
     }
@@ -233,13 +233,13 @@ contract ZTCrowdsale {
     function () payable atStage(Stages.InProgress) {
 
         // Require Crowdsale started
-        require(now &gt; start);
+        require(now > start);
 
         // Require Crowdsale not expired
-        require(now &lt; end);
+        require(now < end);
 
         // Enforce min amount
-        require(msg.value &gt;= minAcceptedAmount);
+        require(msg.value >= minAcceptedAmount);
         
         address sender = msg.sender;
         uint256 received = msg.value;
@@ -248,7 +248,7 @@ contract ZTCrowdsale {
             revert();
         }
 
-        if (now &lt;= start + ratePreICOEnd) {
+        if (now <= start + ratePreICOEnd) {
 
             // Fees
             uint256 ethFees = received * 5 / 10**3; // 0.005
@@ -272,7 +272,7 @@ contract ZTCrowdsale {
         raised += received;
 
         // Check maxAmount raised
-        if (raised &gt;= maxAmount) {
+        if (raised >= maxAmount) {
             stage = Stages.Ended;
         }
     }

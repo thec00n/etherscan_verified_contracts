@@ -50,7 +50,7 @@ contract EIP20 is EIP20Interface {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -71,11 +71,11 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -84,12 +84,12 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -111,8 +111,8 @@ contract EIP20 is EIP20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 library DLL {
@@ -125,7 +125,7 @@ library DLL {
   }
 
   struct Data {
-    mapping(uint =&gt; Node) dll;
+    mapping(uint => Node) dll;
   }
 
   function isEmpty(Data storage self) public view returns (bool) {
@@ -137,8 +137,8 @@ library DLL {
       return false;
     } 
 
-    bool isSingleNode = (getStart(self) == _curr) &amp;&amp; (getEnd(self) == _curr);
-    bool isNullNode = (getNext(self, _curr) == NULL_NODE_ID) &amp;&amp; (getPrev(self, _curr) == NULL_NODE_ID);
+    bool isSingleNode = (getStart(self) == _curr) && (getEnd(self) == _curr);
+    bool isNullNode = (getNext(self, _curr) == NULL_NODE_ID) && (getPrev(self, _curr) == NULL_NODE_ID);
     return isSingleNode || !isNullNode;
   }
 
@@ -197,7 +197,7 @@ library DLL {
 
 library AttributeStore {
     struct Data {
-        mapping(bytes32 =&gt; uint) store;
+        mapping(bytes32 => uint) store;
     }
 
     function getAttribute(Data storage self, bytes32 _UUID, string _attrName)
@@ -247,10 +247,10 @@ contract PLCRVoting {
     uint constant public INITIAL_POLL_NONCE = 0;
     uint public pollNonce;
 
-    mapping(uint =&gt; Poll) public pollMap; // maps pollID to Poll struct
-    mapping(address =&gt; uint) public voteTokenBalance; // maps user&#39;s address to voteToken balance
+    mapping(uint => Poll) public pollMap; // maps pollID to Poll struct
+    mapping(address => uint) public voteTokenBalance; // maps user's address to voteToken balance
 
-    mapping(address =&gt; DLL.Data) dllMap;
+    mapping(address => DLL.Data) dllMap;
     AttributeStore.Data store;
 
     EIP20 public token;
@@ -278,7 +278,7 @@ contract PLCRVoting {
     @param _numTokens The number of votingTokens desired in exchange for ERC20 tokens
     */
     function requestVotingRights(uint _numTokens) external {
-        require(token.balanceOf(msg.sender) &gt;= _numTokens);
+        require(token.balanceOf(msg.sender) >= _numTokens);
         require(token.transferFrom(msg.sender, this, _numTokens));
         voteTokenBalance[msg.sender] += _numTokens;
         VotingRightsGranted(msg.sender, _numTokens);
@@ -290,7 +290,7 @@ contract PLCRVoting {
     */
     function withdrawVotingRights(uint _numTokens) external {
         uint availableTokens = voteTokenBalance[msg.sender] - getLockedTokens(msg.sender);
-        require(availableTokens &gt;= _numTokens);
+        require(availableTokens >= _numTokens);
         require(token.transfer(msg.sender, _numTokens));
         voteTokenBalance[msg.sender] -= _numTokens;
         VotingRightsWithdrawn(msg.sender, _numTokens);
@@ -314,13 +314,13 @@ contract PLCRVoting {
     /**
     @notice Commits vote using hash of choice and secret salt to conceal vote until reveal
     @param _pollID Integer identifier associated with target poll
-    @param _secretHash Commit keccak256 hash of voter&#39;s choice and salt (tightly packed in this order)
+    @param _secretHash Commit keccak256 hash of voter's choice and salt (tightly packed in this order)
     @param _numTokens The number of tokens to be committed towards the target poll
     @param _prevPollID The ID of the poll that the user has voted the maximum number of tokens in which is still less than or equal to numTokens 
     */
     function commitVote(uint _pollID, bytes32 _secretHash, uint _numTokens, uint _prevPollID) external {
         require(commitPeriodActive(_pollID));
-        require(voteTokenBalance[msg.sender] &gt;= _numTokens); // prevent user from overspending
+        require(voteTokenBalance[msg.sender] >= _numTokens); // prevent user from overspending
         require(_pollID != 0);                // prevent user from committing to zero node placeholder
 
         // TODO: Move all insert validation into the DLL lib
@@ -337,14 +337,14 @@ contract PLCRVoting {
 
         bytes32 UUID = attrUUID(msg.sender, _pollID);
 
-        store.setAttribute(UUID, &quot;numTokens&quot;, _numTokens);
-        store.setAttribute(UUID, &quot;commitHash&quot;, uint(_secretHash));
+        store.setAttribute(UUID, "numTokens", _numTokens);
+        store.setAttribute(UUID, "commitHash", uint(_secretHash));
 
         VoteCommitted(msg.sender, _pollID, _numTokens);
     }
 
     /**
-    @dev Compares previous and next poll&#39;s committed tokens for sorting purposes
+    @dev Compares previous and next poll's committed tokens for sorting purposes
     @param _prevID Integer identifier associated with previous poll in sorted order
     @param _nextID Integer identifier associated with next poll in sorted order
     @param _voter Address of user to check DLL position for
@@ -352,10 +352,10 @@ contract PLCRVoting {
     @return valid Boolean indication of if the specified position maintains the sort
     */
     function validPosition(uint _prevID, uint _nextID, address _voter, uint _numTokens) public constant returns (bool valid) {
-        bool prevValid = (_numTokens &gt;= getNumTokens(_voter, _prevID));
+        bool prevValid = (_numTokens >= getNumTokens(_voter, _prevID));
         // if next is zero node, _numTokens does not need to be greater
-        bool nextValid = (_numTokens &lt;= getNumTokens(_voter, _nextID) || _nextID == 0); 
-        return prevValid &amp;&amp; nextValid;
+        bool nextValid = (_numTokens <= getNumTokens(_voter, _nextID) || _nextID == 0); 
+        return prevValid && nextValid;
     }
 
     /**
@@ -434,7 +434,7 @@ contract PLCRVoting {
         require(pollEnded(_pollID));
 
         Poll memory poll = pollMap[_pollID];
-        return (100 * poll.votesFor) &gt; (poll.voteQuorum * (poll.votesFor + poll.votesAgainst));
+        return (100 * poll.votesFor) > (poll.voteQuorum * (poll.votesFor + poll.votesAgainst));
     }
 
     // ----------------
@@ -457,7 +457,7 @@ contract PLCRVoting {
 
     /**
     @notice Determines if poll is over
-    @dev Checks isExpired for specified poll&#39;s revealEndDate
+    @dev Checks isExpired for specified poll's revealEndDate
     @return Boolean indication of whether polling period is over
     */
     function pollEnded(uint _pollID) constant public returns (bool ended) {
@@ -468,7 +468,7 @@ contract PLCRVoting {
 
     /**
     @notice Checks if the commit period is still active for the specified poll
-    @dev Checks isExpired for the specified poll&#39;s commitEndDate
+    @dev Checks isExpired for the specified poll's commitEndDate
     @param _pollID Integer identifier associated with target poll
     @return Boolean indication of isCommitPeriodActive for target poll
     */
@@ -480,13 +480,13 @@ contract PLCRVoting {
 
     /**
     @notice Checks if the reveal period is still active for the specified poll
-    @dev Checks isExpired for the specified poll&#39;s revealEndDate
+    @dev Checks isExpired for the specified poll's revealEndDate
     @param _pollID Integer identifier associated with target poll
     */
     function revealPeriodActive(uint _pollID) constant public returns (bool active) {
         require(pollExists(_pollID));
 
-        return !isExpired(pollMap[_pollID].revealEndDate) &amp;&amp; !commitPeriodActive(_pollID);
+        return !isExpired(pollMap[_pollID].revealEndDate) && !commitPeriodActive(_pollID);
     }
 
     /**
@@ -510,8 +510,8 @@ contract PLCRVoting {
         uint commitEndDate = pollMap[_pollID].commitEndDate;
         uint revealEndDate = pollMap[_pollID].revealEndDate;
 
-        assert(!(commitEndDate == 0 &amp;&amp; revealEndDate != 0));
-        assert(!(commitEndDate != 0 &amp;&amp; revealEndDate == 0));
+        assert(!(commitEndDate == 0 && revealEndDate != 0));
+        assert(!(commitEndDate != 0 && revealEndDate == 0));
 
         if(commitEndDate == 0 || revealEndDate == 0) { return false; }
         return true;
@@ -528,17 +528,17 @@ contract PLCRVoting {
     @return Bytes32 hash property attached to target poll 
     */
     function getCommitHash(address _voter, uint _pollID) constant public returns (bytes32 commitHash) { 
-        return bytes32(store.getAttribute(attrUUID(_voter, _pollID), &quot;commitHash&quot;));    
+        return bytes32(store.getAttribute(attrUUID(_voter, _pollID), "commitHash"));    
     } 
 
     /**
-    @dev Wrapper for getAttribute with attrName=&quot;numTokens&quot;
+    @dev Wrapper for getAttribute with attrName="numTokens"
     @param _voter Address of user to check against
     @param _pollID Integer identifier associated with target poll
     @return Number of tokens committed to poll in sorted poll-linked-list
     */
     function getNumTokens(address _voter, uint _pollID) constant public returns (uint numTokens) {
-        return store.getAttribute(attrUUID(_voter, _pollID), &quot;numTokens&quot;);
+        return store.getAttribute(attrUUID(_voter, _pollID), "numTokens");
     }
 
     /**
@@ -572,7 +572,7 @@ contract PLCRVoting {
 
       while(tokensInNode != 0) {
         tokensInNode = getNumTokens(_voter, nodeID);
-        if(tokensInNode &lt; _numTokens) {
+        if(tokensInNode < _numTokens) {
           return nodeID;
         }
         nodeID = dllMap[_voter].getPrev(nodeID);
@@ -591,7 +591,7 @@ contract PLCRVoting {
     @return expired Boolean indication of whether the terminationDate has passed
     */
     function isExpired(uint _terminationDate) constant public returns (bool expired) {
-        return (block.timestamp &gt; _terminationDate);
+        return (block.timestamp > _terminationDate);
     }
 
     /**
@@ -634,20 +634,20 @@ contract Parameterizer {
     bool resolved;          // indication of if challenge is resolved
     uint stake;             // number of tokens at risk for either party during challenge
     uint winningTokens;     // (remaining) amount of tokens used for voting by the winning side
-    mapping(address =&gt; bool) tokenClaims;
+    mapping(address => bool) tokenClaims;
   }
 
   // ------
   // STATE
   // ------
 
-  mapping(bytes32 =&gt; uint) public params;
+  mapping(bytes32 => uint) public params;
 
   // maps challengeIDs to associated challenge data
-  mapping(uint =&gt; Challenge) public challenges;
+  mapping(uint => Challenge) public challenges;
  
   // maps pollIDs to intended data change if poll passes
-  mapping(bytes32 =&gt; ParamProposal) public proposals; 
+  mapping(bytes32 => ParamProposal) public proposals; 
 
   // Global Variables
   EIP20 public token;
@@ -666,8 +666,8 @@ contract Parameterizer {
   @param _pMinDeposit      minimum deposit to propose a reparameterization
   @param _applyStageLen    period over which applicants wait to be whitelisted
   @param _pApplyStageLen   period over which reparmeterization proposals wait to be processed 
-  @param _dispensationPct  percentage of losing party&#39;s deposit distributed to winning party
-  @param _pDispensationPct percentage of losing party&#39;s deposit distributed to winning party in parameterizer
+  @param _dispensationPct  percentage of losing party's deposit distributed to winning party
+  @param _pDispensationPct percentage of losing party's deposit distributed to winning party in parameterizer
   @param _commitStageLen  length of commit period for voting
   @param _pCommitStageLen length of commit period for voting in parameterizer
   @param _revealStageLen  length of reveal period for voting
@@ -694,18 +694,18 @@ contract Parameterizer {
       token = EIP20(_tokenAddr);
       voting = PLCRVoting(_plcrAddr);
 
-      set(&quot;minDeposit&quot;, _minDeposit);
-      set(&quot;pMinDeposit&quot;, _pMinDeposit);
-      set(&quot;applyStageLen&quot;, _applyStageLen);
-      set(&quot;pApplyStageLen&quot;, _pApplyStageLen);
-      set(&quot;commitStageLen&quot;, _commitStageLen);
-      set(&quot;pCommitStageLen&quot;, _pCommitStageLen);
-      set(&quot;revealStageLen&quot;, _revealStageLen);
-      set(&quot;pRevealStageLen&quot;, _pRevealStageLen);
-      set(&quot;dispensationPct&quot;, _dispensationPct);
-      set(&quot;pDispensationPct&quot;, _pDispensationPct);
-      set(&quot;voteQuorum&quot;, _voteQuorum);
-      set(&quot;pVoteQuorum&quot;, _pVoteQuorum);
+      set("minDeposit", _minDeposit);
+      set("pMinDeposit", _pMinDeposit);
+      set("applyStageLen", _applyStageLen);
+      set("pApplyStageLen", _pApplyStageLen);
+      set("commitStageLen", _commitStageLen);
+      set("pCommitStageLen", _pCommitStageLen);
+      set("revealStageLen", _revealStageLen);
+      set("pRevealStageLen", _pRevealStageLen);
+      set("dispensationPct", _dispensationPct);
+      set("pDispensationPct", _pDispensationPct);
+      set("voteQuorum", _voteQuorum);
+      set("pVoteQuorum", _pVoteQuorum);
   }
 
   // -----------------------
@@ -713,12 +713,12 @@ contract Parameterizer {
   // -----------------------
 
   /**
-  @notice propose a reparamaterization of the key _name&#39;s value to _value.
+  @notice propose a reparamaterization of the key _name's value to _value.
   @param _name the name of the proposed param to be set
   @param _value the proposed value to set the param to be set
   */
   function proposeReparameterization(string _name, uint _value) public returns (bytes32) {
-    uint deposit = get(&quot;pMinDeposit&quot;);
+    uint deposit = get("pMinDeposit");
     bytes32 propID = keccak256(_name, _value);
 
     require(!propExists(propID)); // Forbid duplicate proposals
@@ -727,13 +727,13 @@ contract Parameterizer {
 
     // attach name and value to pollID    
     proposals[propID] = ParamProposal({
-      appExpiry: now + get(&quot;pApplyStageLen&quot;),
+      appExpiry: now + get("pApplyStageLen"),
       challengeID: 0,
       deposit: deposit,
       name: _name,
       owner: msg.sender,
-      processBy: now + get(&quot;pApplyStageLen&quot;) + get(&quot;pCommitStageLen&quot;) +
-        get(&quot;pRevealStageLen&quot;) + PROCESSBY,
+      processBy: now + get("pApplyStageLen") + get("pCommitStageLen") +
+        get("pRevealStageLen") + PROCESSBY,
       value: _value
     });
 
@@ -747,22 +747,22 @@ contract Parameterizer {
   */
   function challengeReparameterization(bytes32 _propID) public returns (uint challengeID) {
     ParamProposal memory prop = proposals[_propID];
-    uint deposit = get(&quot;pMinDeposit&quot;);
+    uint deposit = get("pMinDeposit");
 
-    require(propExists(_propID) &amp;&amp; prop.challengeID == 0); 
+    require(propExists(_propID) && prop.challengeID == 0); 
 
     //take tokens from challenger
     require(token.transferFrom(msg.sender, this, deposit));
     //start poll
     uint pollID = voting.startPoll(
-      get(&quot;pVoteQuorum&quot;),
-      get(&quot;pCommitStageLen&quot;),
-      get(&quot;pRevealStageLen&quot;)
+      get("pVoteQuorum"),
+      get("pCommitStageLen"),
+      get("pRevealStageLen")
     );
 
     challenges[pollID] = Challenge({
       challenger: msg.sender,
-      rewardPool: ((100 - get(&quot;pDispensationPct&quot;)) * deposit) / 100, 
+      rewardPool: ((100 - get("pDispensationPct")) * deposit) / 100, 
       stake: deposit,
       resolved: false,
       winningTokens: 0
@@ -775,7 +775,7 @@ contract Parameterizer {
   }
 
   /**
-  @notice for the provided proposal ID, set it, resolve its challenge, or delete it depending on whether it can be set, has a challenge which can be resolved, or if its &quot;process by&quot; date has passed
+  @notice for the provided proposal ID, set it, resolve its challenge, or delete it depending on whether it can be set, has a challenge which can be resolved, or if its "process by" date has passed
   @param _propID the proposal ID to make a determination and state transition for
   */
   function processProposal(bytes32 _propID) public {
@@ -785,7 +785,7 @@ contract Parameterizer {
       set(prop.name, prop.value);
     } else if (challengeCanBeResolved(_propID)) {
       resolveChallenge(_propID);
-    } else if (now &gt; prop.processBy) {
+    } else if (now > prop.processBy) {
       require(token.transfer(prop.owner, prop.deposit));
     } else {
       revert();
@@ -807,7 +807,7 @@ contract Parameterizer {
     uint voterTokens = voting.getNumPassingTokens(msg.sender, _challengeID, _salt);
     uint reward = voterReward(msg.sender, _challengeID, _salt);
 
-    // subtract voter&#39;s information to preserve the participation ratios of other voters
+    // subtract voter's information to preserve the participation ratios of other voters
     // compared to the remaining pool of rewards
     challenges[_challengeID].winningTokens -= voterTokens;
     challenges[_challengeID].rewardPool -= reward;
@@ -823,11 +823,11 @@ contract Parameterizer {
   // --------
 
   /**
-  @dev                Calculates the provided voter&#39;s token reward for the given poll.
+  @dev                Calculates the provided voter's token reward for the given poll.
   @param _voter       The address of the voter whose reward balance is to be returned
-  @param _challengeID The ID of the challenge the voter&#39;s reward is being calculated for
-  @param _salt        The salt of the voter&#39;s commit hash in the given poll
-  @return             The uint indicating the voter&#39;s reward
+  @param _challengeID The ID of the challenge the voter's reward is being calculated for
+  @param _salt        The salt of the voter's commit hash in the given poll
+  @return             The uint indicating the voter's reward
   */
   function voterReward(address _voter, uint _challengeID, uint _salt)
   public view returns (uint) {
@@ -844,7 +844,7 @@ contract Parameterizer {
   function canBeSet(bytes32 _propID) view public returns (bool) {
     ParamProposal memory prop = proposals[_propID];
 
-    return (now &gt; prop.appExpiry &amp;&amp; now &lt; prop.processBy &amp;&amp; prop.challengeID == 0);
+    return (now > prop.appExpiry && now < prop.processBy && prop.challengeID == 0);
   }
 
   /**
@@ -852,7 +852,7 @@ contract Parameterizer {
   @param _propID The proposal ID whose existance is to be determined
   */
   function propExists(bytes32 _propID) view public returns (bool) {
-    return proposals[_propID].processBy &gt; 0;
+    return proposals[_propID].processBy > 0;
   }
 
   /**
@@ -863,7 +863,7 @@ contract Parameterizer {
     ParamProposal memory prop = proposals[_propID];
     Challenge memory challenge = challenges[prop.challengeID];
 
-    return (prop.challengeID &gt; 0 &amp;&amp; challenge.resolved == false &amp;&amp;
+    return (prop.challengeID > 0 && challenge.resolved == false &&
             voting.pollEnded(prop.challengeID));
   }
 
@@ -900,11 +900,11 @@ contract Parameterizer {
     ParamProposal memory prop = proposals[_propID];
     Challenge storage challenge = challenges[prop.challengeID];
 
-    // winner gets back their full staked deposit, and dispensationPct*loser&#39;s stake
+    // winner gets back their full staked deposit, and dispensationPct*loser's stake
     uint reward = challengeWinnerReward(prop.challengeID);
 
     if (voting.isPassed(prop.challengeID)) { // The challenge failed
-      if(prop.processBy &gt; now) {
+      if(prop.processBy > now) {
         set(prop.name, prop.value);
       }
       require(token.transfer(prop.owner, reward));

@@ -52,7 +52,7 @@ contract TVRefCrowdsale is Ownable {
     uint256 public refPercentage;
     uint256 public TVThreshold;
     address public holder;
-    mapping(address =&gt; bool) public exceptAddresses;
+    mapping(address => bool) public exceptAddresses;
 
     event TransferRefTVs(address holder, address sender, address referer, uint256 amount, uint256 TVThreshold, uint256 balance);
     event BuyTokens(address sender, uint256 amount);
@@ -81,9 +81,9 @@ contract TVRefCrowdsale is Ownable {
         uint256 balance = TVContract.balanceOf(refAddress);
         uint256 allowance = TVContract.allowance(holder, this);
         uint256 amount = (msg.value * TVCrowdsaleContract.currentRate()) * refPercentage / 100;
-        if ((exceptAddresses[refAddress] || balance &gt;= TVThreshold) &amp;&amp; allowance &gt;= amount) {
+        if ((exceptAddresses[refAddress] || balance >= TVThreshold) && allowance >= amount) {
             bool successful = TVContract.transferFrom(holder, refAddress, amount);
-            if (!successful) revert(&quot;Transfer refTVs failed.&quot;);
+            if (!successful) revert("Transfer refTVs failed.");
             emit TransferRefTVs(holder, msg.sender, refAddress, amount, TVThreshold, balance);
             return true;
         }
@@ -91,7 +91,7 @@ contract TVRefCrowdsale is Ownable {
     }
 
     function changeRefPercentage(uint256 percentage) onlyOwner public {
-        require(percentage &gt; 0);
+        require(percentage > 0);
         refPercentage = percentage;
     }
 
@@ -100,7 +100,7 @@ contract TVRefCrowdsale is Ownable {
     }
 
     function changeThreshold(uint256 threshold) onlyOwner public {
-        require(threshold &gt; 0);
+        require(threshold > 0);
         TVThreshold = threshold;
     }
 }

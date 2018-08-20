@@ -6,7 +6,7 @@ interface STQToken {
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac8dfd7d9d5fa88">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac8dfd7d9d5fa88">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -46,20 +46,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -111,7 +111,7 @@ contract STQPreSale is Ownable, ReentrancyGuard {
     event FundTransfer(address backer, uint amount, bool isContribution);
 
     function STQPreSale(address token, address funds) {
-        require(address(0) != address(token) &amp;&amp; address(0) != address(funds));
+        require(address(0) != address(token) && address(0) != address(funds));
 
         m_token = STQToken(token);
         m_funds = funds;
@@ -136,8 +136,8 @@ contract STQPreSale is Ownable, ReentrancyGuard {
     {
         address investor = msg.sender;
         uint256 payment = msg.value;
-        require(payment &gt;= c_MinInvestment);
-        require(now &lt; 1507766400);
+        require(payment >= c_MinInvestment);
+        require(now < 1507766400);
 
         // issue tokens
         uint stq = payment.mul(c_STQperETH);
@@ -151,8 +151,8 @@ contract STQPreSale is Ownable, ReentrancyGuard {
     }
 
     /// @notice Tests ownership of the current caller.
-    /// @return true if it&#39;s an owner
-    // It&#39;s advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
+    /// @return true if it's an owner
+    // It's advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
     // addOwner/changeOwner and to isOwner.
     function amIOwner() external constant onlyOwner returns (bool) {
         return true;

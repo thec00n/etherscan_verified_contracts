@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,20 +57,20 @@ library SafeMathForBoost {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -79,18 +79,18 @@ library SafeMathForBoost {
 contract Boost {
     using SafeMathForBoost for uint256;
 
-    string public name = &quot;Boost&quot;;
+    string public name = "Boost";
     uint8 public decimals = 0;
-    string public symbol = &quot;BST&quot;;
+    string public symbol = "BST";
     uint256 public totalSupply = 100000000;
 
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
     ///  given value, the block number attached is the one that last changed the value
@@ -138,7 +138,7 @@ contract Boost {
         return true;
     }
 
-    /// @dev _owner The address that&#39;s balance is being requested
+    /// @dev _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -177,7 +177,7 @@ contract Boost {
     /// @param _blockNumber The block number when the balance is queried
     /// @return The balance at `_blockNumber`
     function balanceOfAt(address _owner, uint _blockNumber) public view returns (uint) {
-        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
             return 0;
         } else {
             return getValueAt(balances[_owner], _blockNumber);
@@ -193,7 +193,7 @@ contract Boost {
     function doTransfer(address _from, address _to, uint _amount) internal {
 
         // Do not allow transfer to 0x0 or the token contract itself
-        require((_to != 0) &amp;&amp; (_to != address(this)) &amp;&amp; (_amount != 0));
+        require((_to != 0) && (_to != address(this)) && (_amount != 0));
 
         // First update the balance array with the new value for the address
         // sending the tokens
@@ -218,16 +218,16 @@ contract Boost {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length - 1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length - 1].fromBlock)
             return checkpoints[checkpoints.length - 1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length - 1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1) / 2;
-            if (checkpoints[mid].fromBlock &lt;= _block) {
+            if (checkpoints[mid].fromBlock <= _block) {
                 min = mid;
             } else {
                 max = mid - 1;
@@ -241,7 +241,7 @@ contract Boost {
     /// @param checkpoints The history of data being updated
     /// @param _value The new number of tokens
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock &lt; block.number)) {
+        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];
             newCheckPoint.fromBlock = block.number;
             newCheckPoint.value = _value;
@@ -253,7 +253,7 @@ contract Boost {
 
     /// @dev Helper function to return a min between the two uints
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -303,12 +303,12 @@ contract BoostCrowdsale is Ownable {
 
     // @dev constructor
     function BoostCrowdsale(uint256 _startTime, uint256 _endTime, address _boostAddress, uint256 _rate, address _wallet, uint256 _cap) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_boostAddress != address(0));
-        require(_rate &gt; 0);
+        require(_rate > 0);
         require(_wallet != address(0));
-        require(_cap &gt; 0);
+        require(_cap > 0);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -320,7 +320,7 @@ contract BoostCrowdsale is Ownable {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() public onlyOwner {
         require(!isFinalized);
@@ -354,8 +354,8 @@ contract BoostCrowdsale is Ownable {
 
     // @dev return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        bool overPeriod = now &gt; endTime;
-        bool underPurchasableAmount = getPurchasableAmount() &lt; 10000;
+        bool overPeriod = now > endTime;
+        bool underPurchasableAmount = getPurchasableAmount() < 10000;
         return overPeriod || underPurchasableAmount;
     }
 
@@ -381,16 +381,16 @@ contract BoostCrowdsale is Ownable {
 
     // @dev finalization
     function finalization() internal {
-        if (boost.balanceOf(this) &gt; 0) {
+        if (boost.balanceOf(this) > 0) {
             require(boost.transfer(owner, boost.balanceOf(this)));
         }
     }
 
     // @dev return true if the transaction can buy tokens
     function validPurchase(uint256 _tokens) internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool moreThanOrEqualToMinimumAmount = msg.value &gt;= minimumAmount;
-        bool validPurchasableAmount = cap &gt;= soldAmount.add(_tokens);
-        return withinPeriod &amp;&amp; moreThanOrEqualToMinimumAmount &amp;&amp; validPurchasableAmount;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool moreThanOrEqualToMinimumAmount = msg.value >= minimumAmount;
+        bool validPurchasableAmount = cap >= soldAmount.add(_tokens);
+        return withinPeriod && moreThanOrEqualToMinimumAmount && validPurchasableAmount;
     }
 }

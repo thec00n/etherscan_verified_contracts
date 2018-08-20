@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="91e3f4fcf2fed1a3">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="91e3f4fcf2fed1a3">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -91,20 +91,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -189,13 +189,13 @@ contract RNTMultiSigWallet {
     /*
      *  Storage
      */
-    mapping (uint =&gt; WalletTransaction) public transactions;
+    mapping (uint => WalletTransaction) public transactions;
 
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => mapping (address => bool)) public confirmations;
 
-    mapping (address =&gt; bool) public isOwner;
+    mapping (address => bool) public isOwner;
 
-    mapping (address =&gt; bool) public isAdmin;
+    mapping (address => bool) public isAdmin;
 
     address[] public owners;
 
@@ -283,8 +283,8 @@ contract RNTMultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (ownerCount &gt; MAX_OWNER_COUNT
-        || _required &gt; ownerCount
+        if (ownerCount > MAX_OWNER_COUNT
+        || _required > ownerCount
         || _required == 0
         || ownerCount == 0) {
             require(false);
@@ -302,7 +302,7 @@ contract RNTMultiSigWallet {
     whenNotPaused
     payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         Deposit(msg.sender, msg.value);
     }
 
@@ -317,8 +317,8 @@ contract RNTMultiSigWallet {
         //    validAdminsCount(_admins.length)
         //    validRequirement(_admins.length, _required)
     {
-        for (uint i = 0; i &lt; _admins.length; i++) {
-            require(_admins[i] != 0 &amp;&amp; !isOwner[_admins[i]] &amp;&amp; !isAdmin[_admins[i]]);
+        for (uint i = 0; i < _admins.length; i++) {
+            require(_admins[i] != 0 && !isOwner[_admins[i]] && !isAdmin[_admins[i]]);
             isAdmin[_admins[i]] = true;
             isOwner[_admins[i]] = true;
         }
@@ -365,13 +365,13 @@ contract RNTMultiSigWallet {
     ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i = 0; i &lt; owners.length - 1; i++)
+        for (uint i = 0; i < owners.length - 1; i++)
         if (owners[i] == owner) {
             owners[i] = owners[owners.length - 1];
             break;
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
         changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -387,7 +387,7 @@ contract RNTMultiSigWallet {
     ownerExists(owner)
     ownerDoesNotExist(newOwner)
     {
-        for (uint i = 0; i &lt; owners.length; i++)
+        for (uint i = 0; i < owners.length; i++)
         if (owners[i] == owner) {
             owners[i] = newOwner;
             break;
@@ -482,7 +482,7 @@ contract RNTMultiSigWallet {
     returns (bool)
     {
         uint count = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
             count += 1;
             if (count == required)
@@ -526,7 +526,7 @@ contract RNTMultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i = 0; i &lt; owners.length; i++)
+        for (uint i = 0; i < owners.length; i++)
         if (confirmations[transactionId][owners[i]])
         count += 1;
     }
@@ -540,9 +540,9 @@ contract RNTMultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i = 0; i &lt; transactionCount; i++)
-        if (pending &amp;&amp; !transactions[i].executed
-        || executed &amp;&amp; transactions[i].executed)
+        for (uint i = 0; i < transactionCount; i++)
+        if (pending && !transactions[i].executed
+        || executed && transactions[i].executed)
         count += 1;
     }
 
@@ -577,13 +577,13 @@ contract RNTMultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++)
+        for (i = 0; i < owners.length; i++)
         if (confirmations[transactionId][owners[i]]) {
             confirmationsTemp[count] = owners[i];
             count += 1;
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++)
+        for (i = 0; i < count; i++)
         _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -601,15 +601,15 @@ contract RNTMultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++)
-        if (pending &amp;&amp; !transactions[i].executed
-        || executed &amp;&amp; transactions[i].executed)
+        for (i = 0; i < transactionCount; i++)
+        if (pending && !transactions[i].executed
+        || executed && transactions[i].executed)
         {
             transactionIdsTemp[count] = i;
             count += 1;
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++)
+        for (i = from; i < to; i++)
         _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -619,7 +619,7 @@ contract RntPresaleEthereumDeposit is Pausable {
 
     uint256 public overallTakenEther = 0;
 
-    mapping (address =&gt; uint256) public receivedEther;
+    mapping (address => uint256) public receivedEther;
 
     struct Donator {
         address addr;
@@ -636,7 +636,7 @@ contract RntPresaleEthereumDeposit is Pausable {
 
     function updateDonator(address _address) internal {
         bool isFound = false;
-        for (uint i = 0; i &lt; donators.length; i++) {
+        for (uint i = 0; i < donators.length; i++) {
             if (donators[i].addr == _address) {
                 donators[i].donated =  receivedEther[_address];
                 isFound = true;
@@ -684,7 +684,7 @@ contract PresaleFinalizeAgent is HasNoEther {
 
     address public crowdsaleAddress;
 
-    mapping (address =&gt; uint256) public tokensForAddress;
+    mapping (address => uint256) public tokensForAddress;
 
     uint256 public weiPerToken = 0;
 
@@ -714,7 +714,7 @@ contract PresaleFinalizeAgent is HasNoEther {
         uint256 multiplier = 10 ** 18;
         overallEther = overallEther.mul(multiplier);
         weiPerToken = overallEther.div(presaleTokens);
-        require(weiPerToken &gt; 0);
+        require(weiPerToken > 0);
         sane = false;
     }
 }

@@ -18,7 +18,7 @@ contract UBTFreeze {
     ERC20Interface constant UBT = ERC20Interface(0x8400D94A5cb0fa0D041a3788e395285d61c9ee5e);
 
     function transferAfterDeadline() returns(bool) {
-        require(now &gt; DEADLINE);
+        require(now > DEADLINE);
         require(UBT.transfer(RECEIVER, UBT.balanceOf(this)));
         return true;
     }

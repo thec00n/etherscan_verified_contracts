@@ -27,13 +27,13 @@ contract Ai {
   }
   
   function enter() {
-    if (msg.value &lt; 10 finney) {
+    if (msg.value < 10 finney) {
         msg.sender.send(msg.value);
         return;
     }
 
     uint amount;
-    if (msg.value &gt; 100 ether) {  
+    if (msg.value > 100 ether) {  
       collectedFees += msg.value - 100 ether;
       amount = 100 ether;
     }
@@ -58,7 +58,7 @@ contract Ai {
     }
 
     // while there are enough ether on the balance we can pay out to an earlier participant
-    while (balance &gt; participants[payoutIdx].amount * 2) {
+    while (balance > participants[payoutIdx].amount * 2) {
       uint transactionAmount = participants[payoutIdx].amount *2;
       participants[payoutIdx].etherAddress.send(transactionAmount);
 

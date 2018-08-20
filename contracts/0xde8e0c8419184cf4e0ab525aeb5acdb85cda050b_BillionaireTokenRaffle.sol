@@ -1,5 +1,5 @@
 /*
-* The &quot;Become a Billionaire&quot; decentralized Raffle v1.0, Main-Net Release.
+* The "Become a Billionaire" decentralized Raffle v1.0, Main-Net Release.
 * ~by Gluedog 
 * -----------
 * 
@@ -57,9 +57,9 @@ contract BillionaireTokenRaffle
     /* Initiate the XBL token wrapper */
     XBL_ERC20Wrapper private ERC20_CALLS;
 
-    mapping(address =&gt; uint256) public address_to_tickets; /* Will be made private after open beta is finished. */
-    mapping(address =&gt; uint256) public address_to_tokens_prev_week0; /* Variables which will be made public  */
-    mapping(address =&gt; uint256) public address_to_tokens_prev_week1; /*  after each week&#39;s raffle has ended */
+    mapping(address => uint256) public address_to_tickets; /* Will be made private after open beta is finished. */
+    mapping(address => uint256) public address_to_tokens_prev_week0; /* Variables which will be made public  */
+    mapping(address => uint256) public address_to_tokens_prev_week1; /*  after each week's raffle has ended */
 
     uint8 public prev_week_ID; /* Keeps track of which variable is the correct indicator of prev week mapping
                                     Can only be [0] or [1]. */
@@ -82,7 +82,7 @@ contract BillionaireTokenRaffle
 
     /* A modifier that can be applied to functions to only allow the owner to execute them.       */
     /* This is very useful in cases where one would like to upgrade the deflationary algorithm.   */
-    /* We can simply use setter functions on the &quot;Burner address&quot;,                                */
+    /* We can simply use setter functions on the "Burner address",                                */
     /* so that if we update the Burner, we can just point the Raffle to the new version of it.    */
     modifier onlyOwner()
     {
@@ -96,12 +96,12 @@ contract BillionaireTokenRaffle
         _;
     }
 
-    /* &lt;&lt;&lt;--- Burner accesible functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Burner accesible functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Burner accesible functions ---&gt;&gt;&gt; */
+    /* <<<--- Burner accesible functions --->>> */
+    /* <<<--- Burner accesible functions --->>> */
+    /* <<<--- Burner accesible functions --->>> */
 
     function getLastWeekStake(address user_addr) public onlyBurner returns (uint256 last_week_stake)
-    {   /* The burner accesses this function to retrieve each player&#39;s stake from the previous week. */
+    {   /* The burner accesses this function to retrieve each player's stake from the previous week. */
         if (prev_week_ID == 0)
             return address_to_tokens_prev_week1[user_addr];
         if (prev_week_ID == 1)
@@ -109,16 +109,16 @@ contract BillionaireTokenRaffle
     }
 
     function reduceLastWeekStake(address user_addr, uint256 amount) public onlyBurner
-    {   /* After a succesful burn, the burner will call this function and reduce the player&#39;s last_week_stake. */
+    {   /* After a succesful burn, the burner will call this function and reduce the player's last_week_stake. */
         if (prev_week_ID == 0)
             address_to_tokens_prev_week1[user_addr] -= amount;
         if (prev_week_ID == 1)
             address_to_tokens_prev_week0[user_addr] -= amount;
     }
 
-    /* &lt;&lt;&lt;--- Public utility functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Public utility functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Public utility functions ---&gt;&gt;&gt; */
+    /* <<<--- Public utility functions --->>> */
+    /* <<<--- Public utility functions --->>> */
+    /* <<<--- Public utility functions --->>> */
 
     function registerTickets(uint256 number_of_tickets) public returns (int8 registerTickets_STATUS)
     {
@@ -133,13 +133,13 @@ contract BillionaireTokenRaffle
             [0 ] - REGISTERED OK.                                   */
 
         /* Check the ticket amount limit (256 max) */
-        if (raffle_bowl.length &gt; 256)
+        if (raffle_bowl.length > 256)
         {
             next_week_timestamp = now;
         }
 
         /* Check the time limit, one week is max. */
-        if (now &gt;= next_week_timestamp)
+        if (now >= next_week_timestamp)
         {
             int8 RAFFLE_STATUS = resetRaffle();
             /* Error checks */
@@ -156,13 +156,13 @@ contract BillionaireTokenRaffle
         /* on the XBL contract address and approve the Raffle to spend tokens on their behalf.      */
         /* After they have called approve, they will have to call this registerTickets() function  */
 
-        if ( (number_of_tickets == 0) || (number_of_tickets &gt; 5) || (address_to_tickets[msg.sender] &gt;= 5) )
+        if ( (number_of_tickets == 0) || (number_of_tickets > 5) || (address_to_tickets[msg.sender] >= 5) )
             return -1; /* Invalid Input */
 
-        if (ERC20_CALLS.allowance(msg.sender, raffle_addr) &lt; ticket_price * number_of_tickets)
+        if (ERC20_CALLS.allowance(msg.sender, raffle_addr) < ticket_price * number_of_tickets)
             return -2; /* Allowance check mismatch */
 
-        if (ERC20_CALLS.balanceOf(msg.sender) &lt; ticket_price * number_of_tickets) 
+        if (ERC20_CALLS.balanceOf(msg.sender) < ticket_price * number_of_tickets) 
             return - 2; /* Allowance check mismatch */
 
         /*  Reaching this point means the ticket registrant is legit  */
@@ -177,9 +177,9 @@ contract BillionaireTokenRaffle
         }
     }
 
-    /* &lt;&lt;&lt;--- Owner functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Owner functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Owner functions ---&gt;&gt;&gt; */
+    /* <<<--- Owner functions --->>> */
+    /* <<<--- Owner functions --->>> */
+    /* <<<--- Owner functions --->>> */
 
     function setBurnerAddress(address _burner_addr) public onlyOwner
     {
@@ -196,9 +196,9 @@ contract BillionaireTokenRaffle
         owner_addr = _owner_addr;
     }
 
-    /* &lt;&lt;&lt;--- Internal functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Internal functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Internal functions ---&gt;&gt;&gt; */
+    /* <<<--- Internal functions --->>> */
+    /* <<<--- Internal functions --->>> */
+    /* <<<--- Internal functions --->>> */
 
     function getPercent(uint8 percent, uint256 number) private returns (uint256 result)
     {
@@ -218,12 +218,12 @@ contract BillionaireTokenRaffle
     function resetWeeklyVars() private returns (bool success)
     {   /*  After the weekly vars have been been reset, the player that last
             registered (if this gets called from registerTickets()) will have
-            to have his tickets added to next week&#39;s Raffle Bowl.               */
+            to have his tickets added to next week's Raffle Bowl.               */
 
         total_supply = ERC20_CALLS.totalSupply();
 
         /* Clear everything. */
-        for (uint i = 0; i &lt; participants.length; i++)
+        for (uint i = 0; i < participants.length; i++)
         {
             address_to_tickets[participants[i]] = 0;
 
@@ -267,7 +267,7 @@ contract BillionaireTokenRaffle
             [2 ] - Two players, were refunded.
             [3 ] - Three players, refunded.            */
 
-        while (now &gt;= next_week_timestamp)
+        while (now >= next_week_timestamp)
         {
             next_week_timestamp += minutes_in_a_week * 1 minutes;
             current_week++;
@@ -280,9 +280,9 @@ contract BillionaireTokenRaffle
             return -1;
         }
 
-        if (unique_players &lt; 4)
+        if (unique_players < 4)
         {   /* We have between 1 and three players in the raffle */
-            for (uint i = 0; i &lt; raffle_bowl.length; i++)
+            for (uint i = 0; i < raffle_bowl.length; i++)
             { /* Refund their tokens */ 
                 if (address_to_tickets[raffle_bowl[i]] != 0)
                 {
@@ -320,7 +320,7 @@ contract BillionaireTokenRaffle
         /* Reset variables. */
         resetWeeklyVars();
 
-        if (ERC20_CALLS.balanceOf(raffle_addr) &gt; 0)
+        if (ERC20_CALLS.balanceOf(raffle_addr) > 0)
             return -4; /* We still have a positive balance | error */
 
         return 0; /* Everything OK */
@@ -334,11 +334,11 @@ contract BillionaireTokenRaffle
         /* Use this first random number to choose one of the seeds from the array. */
         uint firstwinner_rand = getRandWithSeed(seeds.length, seeds[initial_rand]);
 
-        /* This new random number is used to grab the first winner&#39;s index from raffle_bowl. */
+        /* This new random number is used to grab the first winner's index from raffle_bowl. */
         winner1 = raffle_bowl[firstwinner_rand];
 
         /* Find the position of winner1 in participants[] */
-        for (uint16 i = 0; i &lt; participants.length; i++)
+        for (uint16 i = 0; i < participants.length; i++)
         {
             if (participants[i] == winner1)
             {
@@ -348,7 +348,7 @@ contract BillionaireTokenRaffle
         }
 
         /* Then choose two more winners, based on the initial position of winner1, looping over participants[] now. */
-        if (winner1_index+1 &gt;= participants.length)
+        if (winner1_index+1 >= participants.length)
         {
             winner2 = participants[0];
             winner3 = participants[1];
@@ -356,7 +356,7 @@ contract BillionaireTokenRaffle
             return 0;
         }
 
-        if (winner1_index+2 &gt;= participants.length)
+        if (winner1_index+2 >= participants.length)
         {
             winner2 = participants[winner1_index+1];
             winner3 = participants[0];
@@ -387,7 +387,7 @@ contract BillionaireTokenRaffle
         /*  [-1] Error with prev_week_ID
         *   [0]  OK                        */
 
-        if ((prev_week_ID != 0) &amp;&amp; (prev_week_ID != 1))
+        if ((prev_week_ID != 0) && (prev_week_ID != 1))
             return -1;
 
         /* Record unique players. */
@@ -405,7 +405,7 @@ contract BillionaireTokenRaffle
             address_to_tokens_prev_week1[user_addr] += number_of_tickets * ticket_price;
 
         uint256 _ticket_number = number_of_tickets;
-        while (_ticket_number &gt; 0)
+        while (_ticket_number > 0)
         {
             raffle_bowl.push(user_addr);
             _ticket_number--;
@@ -427,9 +427,9 @@ contract BillionaireTokenRaffle
             return false;
     }
 
-    /* &lt;&lt;&lt;--- Debug ONLY functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Debug ONLY functions ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Debug ONLY functions ---&gt;&gt;&gt; */
+    /* <<<--- Debug ONLY functions --->>> */
+    /* <<<--- Debug ONLY functions --->>> */
+    /* <<<--- Debug ONLY functions --->>> */
 
     function dSET_XBL_ADDRESS(address _XBLContract_addr) public onlyOwner
     {   /* These will be hardcoded in the production version. */
@@ -445,8 +445,8 @@ contract BillionaireTokenRaffle
 
     function dKERNEL_PANIC() public onlyOwner
     {   /* Out of Gas panic function. */
-        for (uint i = 0; i &lt; raffle_bowl.length; i++)
-        { /* Refund everyone&#39;s tokens */ 
+        for (uint i = 0; i < raffle_bowl.length; i++)
+        { /* Refund everyone's tokens */ 
             if (address_to_tickets[raffle_bowl[i]] != 0)
             {
                 ERC20_CALLS.transfer(raffle_bowl[i], address_to_tickets[raffle_bowl[i]] * ticket_price);

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -167,7 +167,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -218,7 +218,7 @@ library SafeERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -284,7 +284,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -304,7 +304,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -363,7 +363,7 @@ contract TokenTimelock {
   uint64 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -382,18 +382,18 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
 }
 
 contract AidCoin is MintableToken, BurnableToken {
-    string public name = &quot;AidCoin&quot;;
-    string public symbol = &quot;AID&quot;;
+    string public name = "AidCoin";
+    string public symbol = "AID";
     uint256 public decimals = 18;
     uint256 public maxSupply = 100000000 * (10 ** decimals);
 
@@ -443,7 +443,7 @@ contract AidCoinPresale is Ownable, Crowdsale {
     uint256 public bountyTokens 	= 	3000000 * (10 ** 18);
 
     uint256 public claimedAirdropTokens;
-    mapping (address =&gt; bool) public claimedAirdrop;
+    mapping (address => bool) public claimedAirdrop;
 
     // team locked tokens
     TokenTimelock public teamTimeLock;
@@ -453,7 +453,7 @@ contract AidCoinPresale is Ownable, Crowdsale {
     TokenTimelock public companyTimeLock;
 
     modifier beforeEnd() {
-        require(now &lt; endTime);
+        require(now < endTime);
         _;
     }
 
@@ -524,7 +524,7 @@ contract AidCoinPresale is Ownable, Crowdsale {
         uint256 newTotalSold = soldTokens.add(tokens);
 
         // check if we are over the max token cap
-        require(newTotalSold &lt;= tokenCap);
+        require(newTotalSold <= tokenCap);
 
         // update states
         weiRaised = weiRaised.add(weiAmount);
@@ -544,16 +544,16 @@ contract AidCoinPresale is Ownable, Crowdsale {
 
     // mint tokens for airdrop
     function airdrop(address[] users) public onlyOwner beforeEnd {
-        require(users.length &gt; 0);
+        require(users.length > 0);
 
         uint256 amount = 5 * (10 ** 18);
 
         uint len = users.length;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             address to = users[i];
             if (!claimedAirdrop[to]) {
                 claimedAirdropTokens = claimedAirdropTokens.add(amount);
-                require(claimedAirdropTokens &lt;= bountyTokens);
+                require(claimedAirdropTokens <= bountyTokens);
 
                 claimedAirdrop[to] = true;
                 token.mint(to, amount);
@@ -568,7 +568,7 @@ contract AidCoinPresale is Ownable, Crowdsale {
 
         // mint unclaimed bounty tokens
         uint256 unclaimedAirdropTokens = bountyTokens.sub(claimedAirdropTokens);
-        if (unclaimedAirdropTokens &gt; 0) {
+        if (unclaimedAirdropTokens > 0) {
             token.mint(bountyWallet, unclaimedAirdropTokens);
         }
 
@@ -579,12 +579,12 @@ contract AidCoinPresale is Ownable, Crowdsale {
     // overriding Crowdsale#hasEnded to add tokenCap logic
     // @return true if crowdsale event has ended or cap is reached
     function hasEnded() public constant returns (bool) {
-        bool capReached = soldTokens &gt;= tokenCap;
+        bool capReached = soldTokens >= tokenCap;
         return super.hasEnded() || capReached;
     }
 
     // @return true if crowdsale event has started
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime &amp;&amp; now &lt; endTime;
+        return now >= startTime && now < endTime;
     }
 }

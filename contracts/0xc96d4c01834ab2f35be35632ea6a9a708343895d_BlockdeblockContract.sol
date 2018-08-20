@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,16 +56,16 @@ contract BlockdeblockContract is Ownable {
 		string brandGuardPhrase;
 	}
 
-	mapping(uint8 =&gt; string) public sizes;
-	mapping(uint8 =&gt; string) public colors;
-	mapping(uint8 =&gt; string) public genders;
-	mapping(uint8 =&gt; string) public productTypes;
-	mapping(uint =&gt; string) public designs;
-	mapping(uint =&gt; Product) public products;
+	mapping(uint8 => string) public sizes;
+	mapping(uint8 => string) public colors;
+	mapping(uint8 => string) public genders;
+	mapping(uint8 => string) public productTypes;
+	mapping(uint => string) public designs;
+	mapping(uint => Product) public products;
 
 	uint public lastIndex;
 
-	mapping(uint =&gt; uint) public uniqueIds;
+	mapping(uint => uint) public uniqueIds;
 
 	event Registration(uint index, uint date, 
 		uint indexed uniqueId, uint design, uint8 gender, uint8 productType,
@@ -122,14 +122,14 @@ contract BlockdeblockContract is Ownable {
 		if(productType != 0) {
 			product.productType = productType;
 		}
-		if(bytes(brandGuardPhrase).length &gt; 0) {
+		if(bytes(brandGuardPhrase).length > 0) {
 			product.brandGuardPhrase = brandGuardPhrase;
 		}
 	}
 
 	function uniqueIdExists(uint uniqueId) internal view returns (bool exists) {
 		uint index = uniqueIds[uniqueId];
-		return index &gt; 0;
+		return index > 0;
 	}
 
 }

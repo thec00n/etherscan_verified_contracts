@@ -1,7 +1,7 @@
 pragma solidity ^0.4.20;
 
 /// @title kryptono exchange AirDropContract for KNOW token
-/// @author Trong Cau Ta &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7105031e1f1612100419121c040231161c10181d5f121e1c">[email&#160;protected]</a>&gt;
+/// @author Trong Cau Ta <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7105031e1f1612100419121c040231161c10181d5f121e1c">[email protected]</a>>
 /// For more information, please visit kryptono.exchange
 
 /// @title ERC20
@@ -35,10 +35,10 @@ contract AirDropContract {
 
         uint balance = token.balanceOf(msg.sender);
         uint allowance = token.allowance(msg.sender, address(this));
-        uint available = balance &gt; allowance ? allowance : balance;
+        uint available = balance > allowance ? allowance : balance;
 
-        for (uint i = 0; i &lt; recipients.length; i++) {
-            require(available &gt;= amounts[i]);
+        for (uint i = 0; i < recipients.length; i++) {
+            require(available >= amounts[i]);
             if (isQualitifiedAddress(
                 recipients[i]
             )) {
@@ -55,13 +55,13 @@ contract AirDropContract {
         view
         returns (bool result)
     {
-        result = addr != 0x0 &amp;&amp; addr != msg.sender &amp;&amp; !isContract(addr);
+        result = addr != 0x0 && addr != msg.sender && !isContract(addr);
     }
 
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function () payable public {

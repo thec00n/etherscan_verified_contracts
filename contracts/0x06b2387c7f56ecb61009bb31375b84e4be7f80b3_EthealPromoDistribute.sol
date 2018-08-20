@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -54,7 +54,7 @@ contract iPromo {
 * author: thesved, viktor.tabori at etheal dot com
 */
 contract EthealPromoDistribute is Ownable {
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
     iPromo public token;
 
     // constructor
@@ -77,7 +77,7 @@ contract EthealPromoDistribute is Ownable {
 
     // set admins
     function setAdmin(address[] _admins, bool _v) onlyOwner public {
-        for (uint256 i = 0; i&lt;_admins.length; i++) {
+        for (uint256 i = 0; i<_admins.length; i++) {
             admins[ _admins[i] ] = _v;
         }
     }

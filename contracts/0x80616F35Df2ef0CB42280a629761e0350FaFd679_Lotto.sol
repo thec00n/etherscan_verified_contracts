@@ -65,7 +65,7 @@ contract LotteryGameLogicInterface {
  * This contract is pretty generic, as it really only serves to maintain a constant
  * address on the blockchain (through upgrades to the game logic), and to maintain
  * a history of previous rounds.  Note that the rounds will have had ownership
- * transferred to the curator (most likely), so there&#39;s mostly just here for
+ * transferred to the curator (most likely), so there's mostly just here for
  * accounting purposes.
  *
  * A side effect of this is that finalizing a round has to happen from here.
@@ -133,9 +133,9 @@ contract Lotto is Owned {
     return previousRounds.length;
   }
 
-  // You must think I&#39;m a joke
-  // I ain&#39;t gonna be part of your system
-  // Man! Pump that garbage in another man&#39;s veins
+  // You must think I'm a joke
+  // I ain't gonna be part of your system
+  // Man! Pump that garbage in another man's veins
   function () {
     throw;
   }

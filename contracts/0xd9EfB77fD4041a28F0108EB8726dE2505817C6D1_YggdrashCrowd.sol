@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 /**
     ERC20 Interface
-    @author DongOk Peter Ryu - &lt;<span class="__cf_email__" data-cfemail="b7d8d3ded9f7ced0d0d3c5d6c4df99ded8">[email&#160;protected]</span>&gt;
+    @author DongOk Peter Ryu - <<span class="__cf_email__" data-cfemail="b7d8d3ded9f7ced0d0d3c5d6c4df99ded8">[email protected]</span>>
 */
 contract ERC20 {
     function totalSupply() public constant returns (uint supply);
@@ -24,43 +24,43 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
 /**
     YGGDRASH SmartContract
-    @author Peter Ryu - &lt;<span class="__cf_email__" data-cfemail="7c131815123c051b1b180e1d0f14521513">[email&#160;protected]</span>&gt;
+    @author Peter Ryu - <<span class="__cf_email__" data-cfemail="7c131815123c051b1b180e1d0f14521513">[email protected]</span>>
 */
 contract YggdrashCrowd {
     using SafeMath for uint;
@@ -91,8 +91,8 @@ contract YggdrashCrowd {
         bytes data; // sending data
     }
 
-    mapping(address =&gt; ContributeAddress) public _contributeInfo;
-    mapping(bytes =&gt; ContributeAddress) _contruibuteData;
+    mapping(address => ContributeAddress) public _contributeInfo;
+    mapping(bytes => ContributeAddress) _contruibuteData;
 
     /*
         Check is owner address
@@ -109,11 +109,11 @@ contract YggdrashCrowd {
     modifier isValidPayload() {
         // check Max
         if(maxValue != 0){
-            require(msg.value &lt; maxValue + 1);
+            require(msg.value < maxValue + 1);
         }
         // Check Min
         if(minValue != 0){
-            require(msg.value &gt; minValue - 1);
+            require(msg.value > minValue - 1);
         }
         require(wallet != msg.sender);
         // check data value
@@ -163,7 +163,7 @@ contract YggdrashCrowd {
     function YggdrashCrowd(address _token, address _tokenOwner, address _wallet, uint _amount, uint _priceFactor, uint _maxValue, uint _minValue)
     public
     {
-        require (_tokenOwner != 0 &amp;&amp; _wallet != 0 &amp;&amp; _amount != 0 &amp;&amp; _priceFactor != 0);
+        require (_tokenOwner != 0 && _wallet != 0 && _amount != 0 && _priceFactor != 0);
         tokenOwner = _tokenOwner;
         owner = msg.sender;
         wallet = _wallet;
@@ -219,14 +219,14 @@ contract YggdrashCrowd {
         uint amount = msg.value;
         uint maxAmount = totalAmount.div(priceFactor);
         // refund
-        if (amount &gt; maxAmount){
+        if (amount > maxAmount){
             uint refund = amount.sub(maxAmount);
             assert(msg.sender.send(refund));
             amount = maxAmount;
         }
         //  NO MORE GAS WAR!!!
         if(maxGasPrice != 0){
-            assert(tx.gasprice &lt; maxGasPrice + 1);
+            assert(tx.gasprice < maxGasPrice + 1);
         }
         totalReceived = totalReceived.add(amount);
         // calculate token
@@ -264,7 +264,7 @@ contract YggdrashCrowd {
     public
     isOwner
     {
-        require(_totalAmount != 0 &amp;&amp; _priceFactor != 0);
+        require(_totalAmount != 0 && _priceFactor != 0);
         totalAmount = _totalAmount;
         priceFactor = _priceFactor;
         maxValue = _maxValue;

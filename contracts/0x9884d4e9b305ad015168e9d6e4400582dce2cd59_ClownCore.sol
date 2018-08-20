@@ -127,11 +127,11 @@ contract Base is AccessControl {
 
     Clown[] clowns;
 
-    mapping (uint =&gt; address) public clownIndexToOwner;
+    mapping (uint => address) public clownIndexToOwner;
 
-    mapping (address =&gt; uint) ownershipTokenCount;
+    mapping (address => uint) ownershipTokenCount;
 
-    mapping (uint =&gt; address) public clownIndexToApproved;
+    mapping (uint => address) public clownIndexToApproved;
 
     uint _seed = now;
 
@@ -172,21 +172,21 @@ contract Base is AccessControl {
         require(_generation == uint(uint16(_generation)));
 
         uint16 cooldownIndex = uint16(_generation / 2);
-        if (cooldownIndex &gt; 8) {
+        if (cooldownIndex > 8) {
             cooldownIndex = 8;
         }
         uint16[] memory randomValue = new uint16[](3);
         
         uint spAttr = _random(3);
-        for (uint j = 0; j &lt; 3; j++) {
+        for (uint j = 0; j < 3; j++) {
             if (spAttr == j) {
-                if (_generation == 0 || _subGene(_genes, 0, 2) &gt;= 30) {
+                if (_generation == 0 || _subGene(_genes, 0, 2) >= 30) {
                     rankList = spRank1;
                 } else {
                     rankList = spRank2;
                 }
             } else {
-                if (_generation == 0 || _subGene(_genes, 0, 2) &gt;= 30) {
+                if (_generation == 0 || _subGene(_genes, 0, 2) >= 30) {
                     rankList = norRank1;
                 } else {
                     rankList = norRank2;
@@ -195,8 +195,8 @@ contract Base is AccessControl {
 
             uint digNum = _random(100);
             rankNum = 10;
-            for (uint k = 0; k &lt; 6; k++) {
-                if (rankList[k] &gt;= digNum &amp;&amp; rankNum == 10) {
+            for (uint k = 0; k < 6; k++) {
+                if (rankList[k] >= digNum && rankNum == 10) {
                     rankNum = k;
                 }
             }
@@ -242,25 +242,25 @@ contract Base is AccessControl {
 
 contract Ownership is Base, token, owned {
 
-    string public constant name = &quot;CryptoClown&quot;;
-    string public constant symbol = &quot;CC&quot;;
+    string public constant name = "CryptoClown";
+    string public constant symbol = "CC";
 
     uint public promoTypeNum;
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint)')) ^
+        bytes4(keccak256('approve(address,uint)')) ^
+        bytes4(keccak256('transfer(address,uint)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint,string)'));
 
 
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
@@ -356,7 +356,7 @@ contract Ownership is Base, token, owned {
 
             uint catId;
 
-            for (catId = 1; catId &lt;= totalCats; catId++) {
+            for (catId = 1; catId <= totalCats; catId++) {
                 if (clownIndexToOwner[catId] == _owner) {
                     result[resultIndex] = catId;
                     resultIndex++;
@@ -383,7 +383,7 @@ contract Minting is Ownership {
         if (clownOwner == address(0)) {
              clownOwner = cooAddress;
         }
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
         if (_isNew) {
             promoTypeNum++;
         }
@@ -393,7 +393,7 @@ contract Minting is Ownership {
     }
 
     function createGen0(uint _genes) external onlyCOO {
-        require(gen0CreatedCount &lt; GEN0_CREATION_LIMIT);
+        require(gen0CreatedCount < GEN0_CREATION_LIMIT);
 
         _createClown(0, 0, 0, _genes, msg.sender);
 
@@ -401,7 +401,7 @@ contract Minting is Ownership {
     }
 
     function useProps(uint[] _clownIds, uint16[] _values, uint16[] _types) public onlyCOO {
-        for (uint16 j = 0; j &lt; _clownIds.length; j++) {
+        for (uint16 j = 0; j < _clownIds.length; j++) {
             uint _clownId = _clownIds[j];
             uint16 _value = _values[j];
             uint16 _type = _types[j];
@@ -441,7 +441,7 @@ contract Breeding is Ownership {
 
 
     function _updateCooldown(Clown storage _clown) internal {
-        if (_clown.cooldownIndex &lt; 7) {
+        if (_clown.cooldownIndex < 7) {
             _clown.cooldownIndex += 1;
         }
     }
@@ -463,7 +463,7 @@ contract Breeding is Ownership {
         require(matron.birthTime != 0);
 
         uint16 parentGen = matron.generation;
-        if (sire.generation &gt; matron.generation) {
+        if (sire.generation > matron.generation) {
             parentGen = sire.generation;
         }
 

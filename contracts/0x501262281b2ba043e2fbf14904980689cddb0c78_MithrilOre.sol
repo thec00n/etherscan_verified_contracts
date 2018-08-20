@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -47,17 +47,17 @@ interface IERC20 {
 contract MithrilOre is IERC20 {
 
     /* Public variables of the token */
-    string public standard = &quot;Token 0.1&quot;;
-    string public constant name = &quot;Mithril Ore&quot;;
-    string public constant symbol = &quot;MORE&quot;;
+    string public standard = "Token 0.1";
+    string public constant name = "Mithril Ore";
+    string public constant symbol = "MORE";
     uint8 public constant decimals = 2;
     uint256 public initialSupply;
     uint256 public totalSupply;
 
     using SafeMath for uint256;
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function MithrilOre() public {
@@ -110,7 +110,7 @@ contract MithrilOre is IERC20 {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);

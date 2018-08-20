@@ -7,7 +7,7 @@ contract owned {
     // This contract only defines a modifier but does not use
     // it - it will be used in derived contracts.
     // The function body is inserted where the special symbol
-    // &quot;_;&quot; in the definition of a modifier appears.
+    // "_;" in the definition of a modifier appears.
     // This means that if the owner calls this function, the
     // function is executed and otherwise, an exception is
     // thrown.
@@ -28,7 +28,7 @@ contract ERC20 {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d090819082d0c15040200170803430e02">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d090819082d0c15040200170803430e02">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public returns (uint256 total);
@@ -66,9 +66,9 @@ contract AutoWallet is owned {
     }
     
     function sweep() external returns (bool success) {
-        // this can be called by anyone (who wants to pay for gas), but that&#39;s safe because it will only sweep
-        // funds to the owner&#39;s account. it sweeps the entire ether balance
-        require(this.balance &gt; 0);
+        // this can be called by anyone (who wants to pay for gas), but that's safe because it will only sweep
+        // funds to the owner's account. it sweeps the entire ether balance
+        require(this.balance > 0);
         return owner.send(this.balance);
     }
     
@@ -79,10 +79,10 @@ contract AutoWallet is owned {
     }
     
     function sweepToken(address _tokenContractAddress) external returns (bool success) {
-        // like sweep(), this can be called by anyone. it sweeps the full balance of an ERC-20 token to the owner&#39;s account
+        // like sweep(), this can be called by anyone. it sweeps the full balance of an ERC-20 token to the owner's account
         ERC20 token = ERC20(_tokenContractAddress);
         uint bal = token.balanceOf(this);
-        require(bal &gt; 0);
+        require(bal > 0);
         return token.transfer(owner, bal);
     }
     
@@ -109,7 +109,7 @@ contract AutoWallet is owned {
     
     function transferNonFungibleTokenMulti(address _tokenContractAddress, address _to, uint256[] _tokenIds) external onlyOwner {
         ERC721 token = ERC721(_tokenContractAddress);
-        for (uint i = 0; i &lt; _tokenIds.length; i++) {
+        for (uint i = 0; i < _tokenIds.length; i++) {
             token.transfer(_to, _tokenIds[i]);
         }
     }

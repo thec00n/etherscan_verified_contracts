@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -264,7 +264,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   function mint(address _to, uint256 _amount) public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -277,7 +277,7 @@ contract MintableToken is StandardToken, Ownable {
    * @return True if the operation was successful.
    */
   function finishMinting() public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     mintingFinished = true;
     MintFinished();
     return true;
@@ -344,8 +344,8 @@ contract FreezeTokensWallet is Ownable {
   }
 
   function retrieveTokens(address to) public onlyOwner {
-    require(started &amp;&amp; now &gt;= startUnlock);
-    if (now &gt;= startUnlock + period) {
+    require(started && now >= startUnlock);
+    if (now >= startUnlock + period) {
       token.transfer(to, token.balanceOf(this));
     } else {
       uint parts = period.div(duration);
@@ -354,7 +354,7 @@ contract FreezeTokensWallet is Ownable {
       uint pastParts = timeSinceStart.div(duration);
       uint tokensToRetrieveSinceStart = pastParts.mul(tokensByPart);
       uint tokensToRetrieve = tokensToRetrieveSinceStart.sub(retrievedTokens);
-      if(tokensToRetrieve &gt; 0) {
+      if(tokensToRetrieve > 0) {
         retrievedTokens = retrievedTokens.add(tokensToRetrieve);
         token.transfer(to, tokensToRetrieve);
       }
@@ -424,7 +424,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateProvider, Re
   uint public hardcap;
 
   modifier isUnderHardcap() {
-    require(invested &lt; hardcap);
+    require(invested < hardcap);
     _;
   }
 
@@ -438,7 +438,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateProvider, Re
   }
 
   modifier minInvestLimited(uint value) {
-    require(value &gt;= minInvestedLimit);
+    require(value >= minInvestedLimit);
     _;
   }
 
@@ -487,7 +487,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateProvider, Re
   }
 
   function fallback() internal minInvestLimited(msg.value) returns(uint) {
-    require(now &gt;= start &amp;&amp; now &lt; endSaleDate());
+    require(now >= start && now < endSaleDate());
     wallet.transfer(msg.value);
     return mintTokensByETH(msg.sender, msg.value);
   }
@@ -518,19 +518,19 @@ contract StagedCrowdsale is Ownable {
   }
 
   function addMilestone(uint period, uint bonus) public onlyOwner {
-    require(period &gt; 0);
+    require(period > 0);
     milestones.push(Milestone(period, bonus));
     totalPeriod = totalPeriod.add(period);
   }
 
   function removeMilestone(uint8 number) public onlyOwner {
-    require(number &lt; milestones.length);
+    require(number < milestones.length);
     Milestone storage milestone = milestones[number];
     totalPeriod = totalPeriod.sub(milestone.period);
 
     delete milestones[number];
 
-    for (uint i = number; i &lt; milestones.length - 1; i++) {
+    for (uint i = number; i < milestones.length - 1; i++) {
       milestones[i] = milestones[i+1];
     }
 
@@ -538,7 +538,7 @@ contract StagedCrowdsale is Ownable {
   }
 
   function changeMilestone(uint8 number, uint period, uint bonus) public onlyOwner {
-    require(number &lt; milestones.length);
+    require(number < milestones.length);
     Milestone storage milestone = milestones[number];
 
     totalPeriod = totalPeriod.sub(milestone.period);
@@ -550,13 +550,13 @@ contract StagedCrowdsale is Ownable {
   }
 
   function insertMilestone(uint8 numberAfter, uint period, uint bonus) public onlyOwner {
-    require(numberAfter &lt; milestones.length);
+    require(numberAfter < milestones.length);
 
     totalPeriod = totalPeriod.add(period);
 
     milestones.length++;
 
-    for (uint i = milestones.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = milestones.length - 2; i > numberAfter; i--) {
       milestones[i + 1] = milestones[i];
     }
 
@@ -564,8 +564,8 @@ contract StagedCrowdsale is Ownable {
   }
 
   function clearMilestones() public onlyOwner {
-    require(milestones.length &gt; 0);
-    for (uint i = 0; i &lt; milestones.length; i++) {
+    require(milestones.length > 0);
+    for (uint i = 0; i < milestones.length; i++) {
       delete milestones[i];
     }
     milestones.length -= milestones.length;
@@ -578,8 +578,8 @@ contract StagedCrowdsale is Ownable {
 
   function currentMilestone(uint start) public view returns(uint) {
     uint previousDate = start;
-    for(uint i=0; i &lt; milestones.length; i++) {
-      if(now &gt;= previousDate &amp;&amp; now &lt; previousDate + milestones[i].period * 1 days) {
+    for(uint i=0; i < milestones.length; i++) {
+      if(now >= previousDate && now < previousDate + milestones[i].period * 1 days) {
         return i;
       }
       previousDate = previousDate.add(milestones[i].period * 1 days);
@@ -634,7 +634,7 @@ contract ICO is StagedCrowdsale, CommonSale {
     Milestone storage milestone = milestones[milestoneIndex];
 
     uint tokens = _invested.mul(price).div(1 ether);
-    if(milestone.bonus &gt; 0) {
+    if(milestone.bonus > 0) {
       tokens = tokens.add(tokens.mul(milestone.bonus).div(percentRate));
     }
     return tokens;
@@ -677,7 +677,7 @@ contract NextSaleAgentFeature is Ownable {
 
 contract WhiteListFeature is CommonSale {
 
-  mapping(address =&gt; bool)  public whiteList;
+  mapping(address => bool)  public whiteList;
 
   function addToWhiteList(address _address) public onlyDirectMintAgentOrOwner {
     whiteList[_address] = true;
@@ -712,7 +712,7 @@ contract PreICO is NextSaleAgentFeature, WhiteListFeature {
   }
   
   function fallback() internal minInvestLimited(msg.value) returns(uint) {
-    require(now &gt;= start &amp;&amp; now &lt; endSaleDate());
+    require(now >= start && now < endSaleDate());
     require(whiteList[msg.sender]);
     wallet.transfer(msg.value);
     return mintTokensByETH(msg.sender, msg.value);
@@ -732,13 +732,13 @@ contract ReceivingContractCallback {
 
 contract UBCoinToken is MintableToken {
 
-  string public constant name = &quot;UBCoin&quot;;
+  string public constant name = "UBCoin";
 
-  string public constant symbol = &quot;UBC&quot;;
+  string public constant symbol = "UBC";
 
   uint32 public constant decimals = 18;
 
-  mapping(address =&gt; bool)  public registeredCallbacks;
+  mapping(address => bool)  public registeredCallbacks;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     return processCallback(super.transfer(_to, _value), msg.sender, _to, _value);
@@ -757,7 +757,7 @@ contract UBCoinToken is MintableToken {
   }
 
   function processCallback(bool result, address from, address to, uint value) internal returns(bool) {
-    if (result &amp;&amp; registeredCallbacks[to]) {
+    if (result && registeredCallbacks[to]) {
       ReceivingContractCallback targetCallback = ReceivingContractCallback(to);
       targetCallback.tokenFallback(from, value);
     }

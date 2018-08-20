@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,14 +47,14 @@ contract PrivateSale {
   bool public isAcceptingPayments;
 
   // List of admins who can edit the whitelist
-  mapping (address =&gt; bool) public whitelistAdmins;
+  mapping (address => bool) public whitelistAdmins;
 
   // List of addresses that are whitelisted for private sale
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
   uint256 public whitelistCount;
 
   // List of addresses that have made payments
-  mapping (address =&gt; uint256) public weiPaid;
+  mapping (address => uint256) public weiPaid;
 
   uint256 public HARD_CAP = 6666 ether;
 
@@ -97,18 +97,18 @@ contract PrivateSale {
    * @dev fallback function
    */
   function () isWhitelisted acceptingPayments payable public {
-    require(msg.value &gt;= 0.2 ether);
-    require(msg.value &lt;= 500 ether);
+    require(msg.value >= 0.2 ether);
+    require(msg.value <= 500 ether);
     require(msg.sender != address(0));
     
     uint256 contribution = msg.value;
-    // add to sender&#39;s weiPaid record
+    // add to sender's weiPaid record
     weiPaid[msg.sender] += msg.value;
 
     // add to amount raised
     weiRaised = weiRaised.add(msg.value);
 
-    if (weiRaised &gt; HARD_CAP) {
+    if (weiRaised > HARD_CAP) {
       uint256 refundAmount = weiRaised.sub(HARD_CAP);
       msg.sender.transfer(refundAmount);
       contribution = contribution.sub(refundAmount);
@@ -162,7 +162,7 @@ contract PrivateSale {
    * @param _users The addresses of the contributor
    */
   function whitelistAddresses(address[] _users) onlyWhitelistAdmin public {
-    for (uint256 i = 0; i &lt; _users.length; i++) {
+    for (uint256 i = 0; i < _users.length; i++) {
       whitelist[_users[i]] = true;
     }
   }
@@ -180,7 +180,7 @@ contract PrivateSale {
    * @param _users The addresses of the contributor
    */
   function unWhitelistAddresses(address[] _users) onlyWhitelistAdmin public {
-    for (uint256 i = 0; i &lt; _users.length; i++) {
+    for (uint256 i = 0; i < _users.length; i++) {
       whitelist[_users[i]] = false;
     }
   }

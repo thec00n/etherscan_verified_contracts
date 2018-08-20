@@ -11,7 +11,7 @@ pragma solidity ^0.4.24;
  *                            (__ /          (_/ (, /                                      /)™ 
  *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
  * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
- * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+ * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
  * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
  *  _           _             _  _  _  _             _  _  _  _  _                                      
  *=(_) _     _ (_)==========_(_)(_)(_)(_)_==========(_)(_)(_)(_)(_)================================*
@@ -35,7 +35,7 @@ pragma solidity ^0.4.24;
  *                                └────────────────────┘
  * (Step 1) import the library into your contract
  * 
- *    import &quot;./MSFun.sol&quot;;
+ *    import "./MSFun.sol";
  *
  * (Step 2) set up the signature data for msFun
  * 
@@ -47,9 +47,9 @@ pragma solidity ^0.4.24;
  * 
  *     function functionName() 
  *     {
- *         if (MSFun.multiSig(msData, required signatures, &quot;functionName&quot;) == true)
+ *         if (MSFun.multiSig(msData, required signatures, "functionName") == true)
  *         {
- *             MSFun.deleteProposal(msData, &quot;functionName&quot;);
+ *             MSFun.deleteProposal(msData, "functionName");
  * 
  *             // put function body here 
  *         }
@@ -67,7 +67,7 @@ pragma solidity ^0.4.24;
  *     
  *     function deleteProposal(bytes32 _whatFunction) private {MSFun.deleteProposal(msData, _whatFunction);}
  *                             ┌────────────────────────────┐
- *                             │ Utility &amp; Vanity Functions │
+ *                             │ Utility & Vanity Functions │
  *                             └────────────────────────────┘
  * delete any proposal is highly recommended.  without it, if an admin calls a multiSig
  * function, with argument inputs that the other admins do not agree upon, the function
@@ -75,7 +75,7 @@ pragma solidity ^0.4.24;
  * 
  *     function deleteAnyProposal(bytes32 _whatFunction) onlyDevs() public {MSFun.deleteProposal(msData, _whatFunction);}
  * 
- * for viewing who has signed a proposal &amp; proposal data
+ * for viewing who has signed a proposal & proposal data
  *     
  *     function checkData(bytes32 _whatFunction) onlyAdmins() public view returns(bytes32, uint256) {return(MSFun.checkMsgData(msData, _whatFunction), MSFun.checkCount(msData, _whatFunction));}
  *
@@ -119,7 +119,7 @@ library MSFun {
     // contact data setup
     struct Data 
     {
-        mapping (bytes32 =&gt; ProposalData) proposal_;
+        mapping (bytes32 => ProposalData) proposal_;
     }
     struct ProposalData 
     {
@@ -128,9 +128,9 @@ library MSFun {
         // number of signers
         uint256 count;
         // tracking of wither admins have signed
-        mapping (address =&gt; bool) admin;
+        mapping (address => bool) admin;
         // list of admins who have signed
-        mapping (uint256 =&gt; address) log;
+        mapping (uint256 => address) log;
     }
     
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -142,7 +142,7 @@ library MSFun {
     {
         // our proposal key will be a hash of our function name + our contracts address 
         // by adding our contracts address to this, we prevent anyone trying to circumvent
-        // the proposal&#39;s security via external calls.
+        // the proposal's security via external calls.
         bytes32 _whatProposal = whatProposal(_whatFunction);
         
         // this is just done to make the code more readable.  grabs the signature count
@@ -223,9 +223,9 @@ library MSFun {
         bytes32 _whatProposal = whatProposal(_whatFunction);
         address _whichAdmin;
         
-        //delete the admins votes &amp; log.   i know for loops are terrible.  but we have to do this 
-        //for our data stored in mappings.  simply deleting the proposal itself wouldn&#39;t accomplish this.
-        for (uint256 i=0; i &lt; self.proposal_[_whatProposal].count; i++) {
+        //delete the admins votes & log.   i know for loops are terrible.  but we have to do this 
+        //for our data stored in mappings.  simply deleting the proposal itself wouldn't accomplish this.
+        for (uint256 i=0; i < self.proposal_[_whatProposal].count; i++) {
             _whichAdmin = self.proposal_[_whatProposal].log[i];
             delete self.proposal_[_whatProposal].admin[_whichAdmin];
             delete self.proposal_[_whatProposal].log[i];
@@ -275,7 +275,7 @@ library MSFun {
         view
         returns (address signer)
     {
-        require(_signer &gt; 0, &quot;MSFun checkSigner failed - 0 not allowed&quot;);
+        require(_signer > 0, "MSFun checkSigner failed - 0 not allowed");
         bytes32 _whatProposal = whatProposal(_whatFunction);
         return (self.proposal_[_whatProposal].log[_signer - 1]);
     }

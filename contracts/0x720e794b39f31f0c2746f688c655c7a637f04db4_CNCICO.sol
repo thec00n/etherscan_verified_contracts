@@ -26,7 +26,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,7 +58,7 @@ contract ERC20Basic {
  * @notice This contract is administered
  */
 contract admined {
-    mapping(address =&gt; uint8) level;
+    mapping(address => uint8) level;
     //0 normal user
     //1 basic admin
     //2 master admin
@@ -75,7 +75,7 @@ contract admined {
     * @dev This modifier limits function execution to the admin
     */
     modifier onlyAdmin(uint8 _level) { //A modifier to define admin-only functions
-        require(level[msg.sender] &gt;= _level );
+        require(level[msg.sender] >= _level );
         _;
     }
 
@@ -126,12 +126,12 @@ contract CNCICO is admined {
     uint256 public hardCap = 600000000 * (10 ** 18); // 600M tokens
     bool public claimed;
     //User balances handlers
-    mapping (address =&gt; uint256) public ethOnContract; //Balance of sent eth per user
-    mapping (address =&gt; uint256) public tokensSent; //Tokens sent per user
-    mapping (address =&gt; uint256) public balance; //Tokens pending to send per user
+    mapping (address => uint256) public ethOnContract; //Balance of sent eth per user
+    mapping (address => uint256) public tokensSent; //Tokens sent per user
+    mapping (address => uint256) public balance; //Tokens pending to send per user
     //Contract details
     address public creator;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //Tokens per eth rates
     uint256[2] rates = [50000,28572];
@@ -148,7 +148,7 @@ contract CNCICO is admined {
 
     //Modifier to prevent execution if ico has ended
     modifier notFinished() {
-        require(state != State.Successful &amp;&amp; state != State.Failed);
+        require(state != State.Successful && state != State.Failed);
         _;
     }
 
@@ -177,24 +177,24 @@ contract CNCICO is admined {
         //Rate of exchange depends on stage
         if (state == State.PreSale){
 
-            require(now &gt;= PreSaleStart);
+            require(now >= PreSaleStart);
 
             tokenBought = msg.value.mul(rates[0]);
             PreSaleDistributed = PreSaleDistributed.add(tokenBought); //Tokens sold on presale updated
-            require(PreSaleDistributed &lt;= PreSaleLimit);
+            require(PreSaleDistributed <= PreSaleLimit);
 
         } else if (state == State.MainSale){
 
-            require(now &gt;= MainSaleStart);
+            require(now >= MainSaleStart);
 
             tokenBought = msg.value.mul(rates[1]);
 
         }
 
         totalDistributed = totalDistributed.add(tokenBought); //whole tokens sold updated
-        require(totalDistributed &lt;= hardCap);
+        require(totalDistributed <= hardCap);
 
-        if(totalDistributed &gt;= softCap){
+        if(totalDistributed >= softCap){
             //if there are any unclaimed tokens
             uint256 tempBalance = balance[msg.sender];
             //clear pending balance
@@ -223,7 +223,7 @@ contract CNCICO is admined {
     function checkIfFundingCompleteOrExpired() public {
 
         //If hardCap is reached ICO ends
-        if (totalDistributed == hardCap &amp;&amp; state != State.Successful){
+        if (totalDistributed == hardCap && state != State.Successful){
 
             state = State.Successful; //ICO becomes Successful
             completedAt = now; //ICO is complete
@@ -231,13 +231,13 @@ contract CNCICO is admined {
             emit LogFundingSuccessful(totalRaised); //we log the finish
             successful(); //and execute closure
 
-        } else if(state == State.PreSale &amp;&amp; now &gt; PreSaleDeadline){
+        } else if(state == State.PreSale && now > PreSaleDeadline){
 
             state = State.MainSale; //Once presale ends the ICO holds
 
-        } else if(state == State.MainSale &amp;&amp; now &gt; MainSaleDeadline){
+        } else if(state == State.MainSale && now > MainSaleDeadline){
             //Once main sale deadline is reached, softCap has to be compared
-            if(totalDistributed &gt;= softCap){
+            if(totalDistributed >= softCap){
                 //If softCap is reached
                 state = State.Successful; //ICO becomes Successful
                 completedAt = now; //ICO is finished
@@ -270,7 +270,7 @@ contract CNCICO is admined {
             writer.transfer(5 ether);
             //If there is any token left after ico
             uint256 remanent = hardCap.sub(totalDistributed); //Total tokens to distribute - total distributed
-            //It&#39;s send to creator
+            //It's send to creator
             tokenReward.transfer(creator,remanent);
             emit LogContributorsPayout(creator, remanent);
         }
@@ -321,13 +321,13 @@ contract CNCICO is admined {
         require(state == State.Failed);
         //We take the amount of tokens already sent to user
         uint256 holderTokens = tokensSent[msg.sender];
-        //For security it&#39;s cleared
+        //For security it's cleared
         tokensSent[msg.sender] = 0;
         //Also pending tokens are cleared
         balance[msg.sender] = 0;
         //Amount of ether sent by user is checked
         uint256 holderETH = ethOnContract[msg.sender];
-        //For security it&#39;s cleared
+        //For security it's cleared
         ethOnContract[msg.sender] = 0;
         //Contract try to retrieve tokens from user balance using allowance
         require(tokenReward.transferFrom(msg.sender,address(this),holderTokens));
@@ -340,7 +340,7 @@ contract CNCICO is admined {
     function retrieveOnFail() onlyAdmin(2) public {
         require(state == State.Failed);
         tokenReward.transfer(creator, tokenReward.balanceOf(this));
-        if (now &gt; completedAt.add(90 days)){
+        if (now > completedAt.add(90 days)){
           creator.transfer(address(this).balance);
         }
     }

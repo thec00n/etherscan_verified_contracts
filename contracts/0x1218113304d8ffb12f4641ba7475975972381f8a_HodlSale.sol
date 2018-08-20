@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -141,8 +141,8 @@ contract HodlSale is Claimable {
     uint public era;
     Fees public fees;
     Wallets public wallets;
-    mapping(uint =&gt; Sale) public sales;
-    mapping(address =&gt; uint) public balances;
+    mapping(uint => Sale) public sales;
+    mapping(address => uint) public balances;
 
     event NewSale(uint era, uint startTime, uint endTime, uint minPurchase);
     event NewFees(uint fund, uint reward, uint divisor);
@@ -152,7 +152,7 @@ contract HodlSale is Claimable {
     event Withdraw(address indexed wallet, uint amount);
 
     function () public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             buy();
         } else {
             claim();
@@ -165,7 +165,7 @@ contract HodlSale is Claimable {
 
     function buyWithReward(address affiliate) whenFunding public payable {
         Sale storage sale = sales[era];
-        require(msg.value &gt;= sale.minPurchase);
+        require(msg.value >= sale.minPurchase);
 
         require(affiliate != msg.sender);
         require(affiliate != address(this));
@@ -187,7 +187,7 @@ contract HodlSale is Claimable {
     function claim() public {
         if (msg.sender == wallets.fees || msg.sender == wallets.fund) require(!funding());
         uint payment = balances[msg.sender];
-        require(payment &gt; 0);
+        require(payment > 0);
         balances[msg.sender] = 0;
         msg.sender.transfer(payment);
         Withdraw(msg.sender, payment);
@@ -195,7 +195,7 @@ contract HodlSale is Claimable {
 
     function funding() public view returns (bool) {
         Sale storage sale = sales[era];
-        return now &gt;= sale.startTime &amp;&amp; now &lt;= sale.endTime;
+        return now >= sale.startTime && now <= sale.endTime;
     }
 
     modifier whenFunding() {
@@ -214,13 +214,13 @@ contract HodlSale is Claimable {
     }
 
     function updateFees(uint _fund, uint _reward, uint _divisor) whenNotFunding onlyOwner public {
-        require(_divisor &gt; _fund &amp;&amp; _divisor &gt; _reward);
+        require(_divisor > _fund && _divisor > _reward);
         fees = Fees(_fund, _reward, _divisor);
         NewFees(_fund, _reward, _divisor);
     }
 
     function updateSale(uint _startTime, uint _endTime, uint _minPurchase) whenNotFunding onlyOwner public {
-        require(_startTime &gt;= now &amp;&amp; _endTime &gt;= _startTime);
+        require(_startTime >= now && _endTime >= _startTime);
         era = era.add(1);
         sales[era] = Sale(_startTime, _endTime, _minPurchase, 0);
         NewSale(era, _startTime, _endTime, _minPurchase);

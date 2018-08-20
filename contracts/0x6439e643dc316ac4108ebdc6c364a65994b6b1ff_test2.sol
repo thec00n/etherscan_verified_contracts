@@ -15,7 +15,7 @@ contract BaseRegistry {
     }
 
     // This mapping keeps the records of this Registry.
-    mapping(address =&gt; Record) records;
+    mapping(address => Record) records;
 
     // Keeps the total numbers of records in this Registry.
     uint public numRecords;
@@ -113,7 +113,7 @@ contract BaseRegistry {
     // This function is used by subcontracts when an error is detected and
     // the value needs to be returned to the transaction originator.
     function returnValue() internal {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             msg.sender.send(msg.value);
         }
     }

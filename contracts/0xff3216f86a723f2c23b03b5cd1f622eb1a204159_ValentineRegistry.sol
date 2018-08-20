@@ -15,7 +15,7 @@ contract ValentineRegistry {
     }
     address public owner;
     // Requests maps requester addresses to the requests details
-    mapping (address =&gt; Request) private requests;
+    mapping (address => Request) private requests;
     uint public numRequesters;
     address[] public requesters;
     address constant ADDRESS_NULL = 0;
@@ -29,7 +29,7 @@ contract ValentineRegistry {
         _;
     }
     modifier costs(uint _amount) {
-        if (msg.value &lt; _amount)
+        if (msg.value < _amount)
             throw;
         _;
     }
@@ -65,8 +65,8 @@ contract ValentineRegistry {
     function createNewValentineRequest(string requesterName, string valentineName, string customMessage,
         address valentineAddress)
         internal {
-        if (bytes(requesterName).length &gt; MAX_NAME_LENGTH || bytes(valentineName).length &gt; MAX_NAME_LENGTH
-            || bytes(customMessage).length &gt; MAX_CUSTOM_MESSAGE_LENGTH) {
+        if (bytes(requesterName).length > MAX_NAME_LENGTH || bytes(valentineName).length > MAX_NAME_LENGTH
+            || bytes(customMessage).length > MAX_CUSTOM_MESSAGE_LENGTH) {
             throw; // invalid request
         }
         bool doesExist = true;
@@ -82,7 +82,7 @@ contract ValentineRegistry {
     function acceptValentineRequest(address requesterAddress) public {
         Request request = requests[requesterAddress];
         if (!request.doesExist) {
-            throw; // the request doesn&#39;t exist
+            throw; // the request doesn't exist
         }
         request.wasAccepted = true;
         LogRequestAccepted(requesterAddress);
@@ -91,13 +91,13 @@ contract ValentineRegistry {
     function getRequestByRequesterAddress(address requesterAddress) public returns (string, string, string, bool, address, address) {
         Request r = requests[requesterAddress];
         if (!r.doesExist) {
-            return (&quot;&quot;, &quot;&quot;, &quot;&quot;, false, ADDRESS_NULL, ADDRESS_NULL);
+            return ("", "", "", false, ADDRESS_NULL, ADDRESS_NULL);
         }
         return (r.requesterName, r.valentineName, r.customMessage, r.wasAccepted, r.valentineAddress, requesterAddress);
     }
 
     function getRequestByIndex(uint index) public returns (string, string, string, bool, address, address) {
-        if (index &gt;= requesters.length) {
+        if (index >= requesters.length) {
             throw;
         }
         address requesterAddress = requesters[index];

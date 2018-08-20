@@ -51,17 +51,17 @@ contract EIP20Interface {
 contract NextCoin is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string public name = &quot;Next Coin&quot;;                   //fancy name: eg Simon Bucks
+    string public name = "Next Coin";                   //fancy name: eg Simon Bucks
     uint8 public decimals = 2;                //How many decimals to show.
-    string public symbol = &quot;NEXT&quot;;                //An identifier: eg SBX
+    string public symbol = "NEXT";                //An identifier: eg SBX
     address public creator = 0x047f606fd5b2baa5f5c6c4ab8958e45cb6b054b7;
   
 
@@ -76,7 +76,7 @@ contract NextCoin is EIP20Interface {
     }
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -85,10 +85,10 @@ contract NextCoin is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);

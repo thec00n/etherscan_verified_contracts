@@ -4,12 +4,12 @@ pragma solidity ^0.4.21;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(a &gt;= b);
+		assert(a >= b);
 		return a - b;
 	}
 	
@@ -46,8 +46,8 @@ contract AuctusBonusDistribution is ContractReceiver {
 	address public auctusTokenAddress = 0xc12d099be31567add4e4e4d0D45691C3F58f5663;
 	address public auctusPreSaleAddress = 0x84D45E60f7036F0DE7dF8ed68E1Ee50471B963BA;
 	uint256 public escrowedTokens;
-	mapping(address =&gt; bool) public authorized;
-	mapping(address =&gt; bool) public redeemed;
+	mapping(address => bool) public authorized;
+	mapping(address => bool) public redeemed;
 
 	event Escrow(address indexed from, uint256 value);
 	event Redeem(address indexed to, uint256 value);
@@ -62,7 +62,7 @@ contract AuctusBonusDistribution is ContractReceiver {
 	}
 
 	function setAuthorization(address _address, bool _authorized) isAuthorized public {
-		require(_address != address(0) &amp;&amp; _address != msg.sender);
+		require(_address != address(0) && _address != msg.sender);
 		authorized[_address] = _authorized;
 	}
 
@@ -77,7 +77,7 @@ contract AuctusBonusDistribution is ContractReceiver {
 	}
 
 	function sendPreSaleBonusMany(address[] _addresses) isAuthorized public {
-		for (uint256 i = 0; i &lt; _addresses.length; i++) {
+		for (uint256 i = 0; i < _addresses.length; i++) {
 			sendPreSaleBonus(_addresses[i]);
 		}
 	}
@@ -85,7 +85,7 @@ contract AuctusBonusDistribution is ContractReceiver {
 	function sendPreSaleBonus(address _address) public returns (bool) {
 		if (!redeemed[_address]) {
 			uint256 value = AuctusPreSale(auctusPreSaleAddress).getTokenAmount(_address).mul(12).div(100);
-			if (value &gt; 0) {
+			if (value > 0) {
 				redeemed[_address] = true;
 				sendBonus(_address, value);
 				return true;
@@ -95,7 +95,7 @@ contract AuctusBonusDistribution is ContractReceiver {
 	}
 
 	function sendBonusMany(address[] _addresses, uint256[] _values) isAuthorized public {
-		for (uint256 i = 0; i &lt; _addresses.length; i++) {
+		for (uint256 i = 0; i < _addresses.length; i++) {
 			sendBonus(_addresses[i], _values[i]);
 		}
 	}

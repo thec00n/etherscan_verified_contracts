@@ -56,11 +56,11 @@ contract DSAuth is DSAuthEvents {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint x, uint y) internal pure returns (uint z) {
@@ -126,15 +126,15 @@ contract LemoSale is DSAuth, DSMath {
     event Finalized(uint256 _time);
 
     modifier between(uint256 _startTime, uint256 _endTime) {
-        require(block.timestamp &gt;= _startTime &amp;&amp; block.timestamp &lt; _endTime);
+        require(block.timestamp >= _startTime && block.timestamp < _endTime);
         _;
     }
 
     function LemoSale(uint256 _tokenContributionMin, uint256 _tokenContributionCap, uint256 _finney2LemoRate) public {
-        require(_finney2LemoRate &gt; 0);
-        require(_tokenContributionMin &gt; 0);
-        require(_tokenContributionCap &gt; 0);
-        require(_tokenContributionCap &gt; _tokenContributionMin);
+        require(_finney2LemoRate > 0);
+        require(_tokenContributionMin > 0);
+        require(_tokenContributionCap > 0);
+        require(_tokenContributionCap > _tokenContributionMin);
 
         finney2LemoRate = _finney2LemoRate;
         tokenContributionMin = _tokenContributionMin;
@@ -142,8 +142,8 @@ contract LemoSale is DSAuth, DSMath {
     }
 
     function initialize(uint256 _startTime, uint256 _endTime, uint256 _minPaymentFinney) public auth {
-        require(_startTime &lt; _endTime);
-        require(_minPaymentFinney &gt; 0);
+        require(_startTime < _endTime);
+        require(_minPaymentFinney > 0);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -153,7 +153,7 @@ contract LemoSale is DSAuth, DSMath {
 
     function setTokenContract(ERC20 tokenInstance) public auth {
         assert(address(token) == address(0));
-        require(tokenInstance.balanceOf(owner) &gt; tokenContributionMin);
+        require(tokenInstance.balanceOf(owner) > tokenContributionMin);
 
         token = tokenInstance;
     }
@@ -165,14 +165,14 @@ contract LemoSale is DSAuth, DSMath {
     function contribute() public payable between(startTime, endTime) {
         uint256 max = tokenContributionCap;
         uint256 oldSoldAmount = soldAmount;
-        require(oldSoldAmount &lt; max);
-        require(msg.value &gt;= minPayment);
+        require(oldSoldAmount < max);
+        require(msg.value >= minPayment);
 
         uint256 reward = mul(msg.value, finney2LemoRate) / 1 finney;
         uint256 refundEth = 0;
 
         uint256 newSoldAmount = add(oldSoldAmount, reward);
-        if (newSoldAmount &gt; max) {
+        if (newSoldAmount > max) {
             uint over = newSoldAmount - max;
             refundEth = over / finney2LemoRate * 1 finney;
             reward = max - oldSoldAmount;
@@ -184,7 +184,7 @@ contract LemoSale is DSAuth, DSMath {
         token.transferFrom(owner, msg.sender, reward);
         Contribution(msg.sender, msg.value, reward);
         contributionCount++;
-        if (refundEth &gt; 0) {
+        if (refundEth > 0) {
             Refund(msg.sender, refundEth);
             msg.sender.transfer(refundEth);
         }
@@ -192,8 +192,8 @@ contract LemoSale is DSAuth, DSMath {
 
     function finalize() public auth {
         require(funding);
-        require(block.timestamp &gt;= endTime);
-        require(soldAmount &gt;= tokenContributionMin);
+        require(block.timestamp >= endTime);
+        require(soldAmount >= tokenContributionMin);
 
         funding = false;
         Finalized(block.timestamp);
@@ -202,24 +202,24 @@ contract LemoSale is DSAuth, DSMath {
 
     // Withdraw in 3 month after failed. So funds not locked in contract forever
     function withdraw() public auth {
-        require(this.balance &gt; 0);
-        require(block.timestamp &gt;= endTime + 3600 * 24 * 30 * 3);
+        require(this.balance > 0);
+        require(block.timestamp >= endTime + 3600 * 24 * 30 * 3);
 
         owner.transfer(this.balance);
     }
 
     function destroy() public auth {
-        require(block.timestamp &gt;= endTime + 3600 * 24 * 30 * 3);
+        require(block.timestamp >= endTime + 3600 * 24 * 30 * 3);
 
         selfdestruct(owner);
     }
 
     function refund() public {
         require(funding);
-        require(block.timestamp &gt;= endTime &amp;&amp; soldAmount &lt;= tokenContributionMin);
+        require(block.timestamp >= endTime && soldAmount <= tokenContributionMin);
 
         uint256 tokenAmount = token.balanceOf(msg.sender);
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
 
         // need user approve first
         token.transferFrom(msg.sender, owner, tokenAmount);

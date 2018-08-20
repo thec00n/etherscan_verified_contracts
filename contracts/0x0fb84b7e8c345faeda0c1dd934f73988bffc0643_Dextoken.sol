@@ -42,8 +42,8 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);
 
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -54,9 +54,9 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);
 
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);    
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value > balances[_to]);    
+        require(allowed[_from][msg.sender] >= _value);
 
         allowed[_from][msg.sender] -= _value;
         balances[_from] -= _value;
@@ -80,12 +80,12 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract Dextoken is StandardToken {
 
     function () {
@@ -94,10 +94,10 @@ contract Dextoken is StandardToken {
     }
 
     /* Public variables of the token */
-    string public name = &quot;DEX Token&quot;;
-    string public symbol = &quot;DEX&quot;;    
+    string public name = "DEX Token";
+    string public symbol = "DEX";    
     uint8 public decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     function Dextoken() public {
         totalSupply = 10**27;                        // 1 billion tokens
@@ -109,10 +109,10 @@ contract Dextoken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

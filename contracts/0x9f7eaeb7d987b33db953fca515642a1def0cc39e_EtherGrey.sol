@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /// Greys :3
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="244041504164455c4d4b495e414a0a474b">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="244041504164455c4d4b495e414a0a474b">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -45,33 +45,33 @@ contract EtherGrey is ERC721 {
   uint256 private startingPrice = 0.001 ether;
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;EtherGreys&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;EtherGrey&quot;; // solhint-disable-line
+  string public constant NAME = "EtherGreys"; // solhint-disable-line
+  string public constant SYMBOL = "EtherGrey"; // solhint-disable-line
 
   /*** STORAGE ***/
 
   /// @dev A mapping from grey IDs to the address that owns them. All greys have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public greyIndexToOwner;
+  mapping (uint256 => address) public greyIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from GreyIDs to an address that has been approved to call
   ///  transferFrom(). Each Grey can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public greyIndexToApproved;
+  mapping (uint256 => address) public greyIndexToApproved;
 
   // @dev A mapping from GreyIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private greyIndexToPrice;
+  mapping (uint256 => uint256) private greyIndexToPrice;
 
   /// @dev A mapping from GreyIDs to the previpus price of the token. Used
   /// to calculate price delta for payouts
-  mapping (uint256 =&gt; uint256) private greyIndexToPreviousPrice;
+  mapping (uint256 => uint256) private greyIndexToPreviousPrice;
 
   // @dev A mapping from greyId to the 7 last owners.
-  mapping (uint256 =&gt; address[5]) private greyIndexToPreviousOwners;
+  mapping (uint256 => address[5]) private greyIndexToPreviousOwners;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -201,7 +201,7 @@ contract EtherGrey is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 priceDelta = SafeMath.sub(sellingPrice, previousPrice);
     uint256 ownerPayout = SafeMath.add(previousPrice, SafeMath.mul(SafeMath.div(priceDelta, 100), 40));
@@ -221,7 +221,7 @@ contract EtherGrey is ERC721 {
     }
 
     // Next distribute payout Total among previous Owners
-    for (uint i = 0; i &lt; 5; i++) {
+    for (uint i = 0; i < 5; i++) {
         if (previousOwners[i] != address(this)) {
             previousOwners[i].transfer(uint256(SafeMath.mul(SafeMath.div(priceDelta, 100), 10)));
         } else {
@@ -278,7 +278,7 @@ contract EtherGrey is ERC721 {
   }
 
   /// @param _owner The owner whose grey tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Greys array looking for greys belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -292,7 +292,7 @@ contract EtherGrey is ERC721 {
       uint256 totalGreys = totalSupply();
       uint256 resultIndex = 0;
       uint256 greyId;
-      for (greyId = 0; greyId &lt;= totalGreys; greyId++) {
+      for (greyId = 0; greyId <= totalGreys; greyId++) {
         if (greyIndexToOwner[greyId] == _owner) {
           result[resultIndex] = greyId;
           resultIndex++;
@@ -355,8 +355,8 @@ contract EtherGrey is ERC721 {
     });
     uint256 newGreyId = greys.push(_grey) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newGreyId == uint256(uint32(newGreyId)));
 
     Birth(newGreyId, _name, _owner);
@@ -387,11 +387,11 @@ contract EtherGrey is ERC721 {
 
   /// @dev Assigns ownership of a specific Grey to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of greys is capped to 2^32 we can&#39;t overflow this
+    // Since the number of greys is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     greyIndexToOwner[_tokenId] = _to;
-    // When creating new greys _from is 0x0, but we can&#39;t account that address.
+    // When creating new greys _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -430,9 +430,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -440,7 +440,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -449,7 +449,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

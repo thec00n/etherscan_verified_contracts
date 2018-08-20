@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -48,7 +48,7 @@ contract HeartBoutSale is Ownable {
     uint64 public endDate;
     uint256 public soldOnCurrentSale = 0;
     
-    mapping(string =&gt; address) addressByAccountMapping;
+    mapping(string => address) addressByAccountMapping;
 
     HeartBoutToken tokenContract;
     
@@ -58,10 +58,10 @@ contract HeartBoutSale is Ownable {
     
     function startSale(uint32 _rate, uint64 _startDate, uint64 _endDate) public onlyOwner {
         require(rate != 0);
-        require(_rate &lt;= rate);
-        require(100 &lt; _rate &amp;&amp; _rate &lt; 15000);
-        require(_endDate &gt; now);
-        require(_startDate &lt; _endDate);
+        require(_rate <= rate);
+        require(100 < _rate && _rate < 15000);
+        require(_endDate > now);
+        require(_startDate < _endDate);
         
         soldOnCurrentSale = 0;
         
@@ -81,11 +81,11 @@ contract HeartBoutSale is Ownable {
     
     function buyTokens(string _account) public payable {
         
-        require(msg.value &gt; 0);
-        require(rate &gt; 0);
-        require(endDate &gt; now);
+        require(msg.value > 0);
+        require(rate > 0);
+        require(endDate > now);
         
-        require(msg.value &gt;= (10 ** 16));
+        require(msg.value >= (10 ** 16));
         
         uint256 tokens = msg.value * rate;
         

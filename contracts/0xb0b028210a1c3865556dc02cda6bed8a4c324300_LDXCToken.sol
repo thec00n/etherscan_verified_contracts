@@ -19,9 +19,9 @@ contract Token{
 
 contract LDXCToken is Token {
 
-    string public constant name = &quot;Little Dragon Xia Coin&quot;;                   
+    string public constant name = "Little Dragon Xia Coin";                   
     uint8 public constant decimals = 2; 
-    string public constant symbol = &quot;LDXC&quot;;
+    string public constant symbol = "LDXC";
 
     function LDXCToken(uint256 _initialAmount) public {
         totalSupply = _initialAmount * 10 ** uint256(decimals); 
@@ -29,7 +29,7 @@ contract LDXCToken is Token {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         require(_to != 0x0);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -40,7 +40,7 @@ contract LDXCToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns 
     (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
@@ -61,6 +61,6 @@ contract LDXCToken is Token {
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }

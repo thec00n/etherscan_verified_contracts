@@ -5,8 +5,8 @@
 // добавлен лог в refund
 // добавлены функции блокировки\разблокировки внешних переводов в рабочем режиме контракта
 // для возможности расчета дивидендов
-// CRYPT Token = &gt; CRYPT
-// CRTT =&gt; CRT
+// CRYPT Token = > CRYPT
+// CRTT => CRT
 // изменены ф-ции раздачи токенов. бесплатно раздать токены можно только с 4-х зарезервированных адресов
 // в fallback функцию добавлен блок расчета длительности периодов, пауз между периодами 
 // и автоматической смены периодов по окончании контрольного времени (пауза=30 суток)
@@ -64,13 +64,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -80,7 +80,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -90,7 +90,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(
         address _from,
@@ -118,8 +118,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -183,8 +183,8 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract CRYPTToken is StandardToken {
-    string public constant name = &quot;CRYPT Test Token&quot;;
-    string public constant symbol = &quot;CRTT&quot;;
+    string public constant name = "CRYPT Test Token";
+    string public constant symbol = "CRTT";
     uint32 public constant decimals = 18;
     uint256 public INITIAL_SUPPLY = 50000 * 1 ether;
     address public CrowdsaleAddress;
@@ -206,7 +206,7 @@ contract CRYPTToken is StandardToken {
      // Override
     function transfer(address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited in ICO and Crowdsale period&quot;);
+            require(!lockTransfers, "Transfers are prohibited in ICO and Crowdsale period");
         }
         return super.transfer(_to,_value);
     }
@@ -214,13 +214,13 @@ contract CRYPTToken is StandardToken {
      // Override
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited in ICO and Crowdsale period&quot;);
+            require(!lockTransfers, "Transfers are prohibited in ICO and Crowdsale period");
         }
         return super.transferFrom(_from,_to,_value);
     }
      
     function acceptTokens(address _from, uint256 _value) public onlyOwner returns (bool){
-        require (balances[_from] &gt;= _value);
+        require (balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[CrowdsaleAddress] = balances[CrowdsaleAddress].add(_value);
         emit Transfer(_from, CrowdsaleAddress, _value);
@@ -307,7 +307,7 @@ contract Crowdsale is Ownable {
     event LogStateSwitch(State newState);
     event Withdraw(address indexed from, address indexed to, uint256 amount);
     event Refunding(address indexed to, uint256 amount);
-    mapping(address =&gt; uint) public crowdsaleBalances;
+    mapping(address => uint) public crowdsaleBalances;
 
     address myAddress = this;
     uint64 preSaleStartTime = 0;
@@ -374,9 +374,9 @@ contract Crowdsale is Ownable {
         // only after 1 year
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
-        require (now &gt;= preSaleStartTime + 1 days, &quot;only after 1 year&quot;);
+        require (now >= preSaleStartTime + 1 days, "only after 1 year");
         token.acceptTokens(address(holdAddress1), value); 
         return true;
     } 
@@ -386,9 +386,9 @@ contract Crowdsale is Ownable {
         // only after 40 days
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
-        require (now &gt;= preSaleStartTime + 1 days, &quot;only after 40 days&quot;);
+        require (now >= preSaleStartTime + 1 days, "only after 40 days");
         token.acceptTokens(address(holdAddress2), value);    
         return true;
     } 
@@ -398,9 +398,9 @@ contract Crowdsale is Ownable {
         // only after 40 days
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
-        require (now &gt;= preSaleStartTime + 1 days, &quot;only after 40 days&quot;);
+        require (now >= preSaleStartTime + 1 days, "only after 40 days");
         token.acceptTokens(address(holdAddress3), value);    
         return true;
     } 
@@ -409,7 +409,7 @@ contract Crowdsale is Ownable {
         // the function take tokens from HoldAdditionalAddress to contract
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
         token.acceptTokens(address(holdAddress4), value);    
         return true;
@@ -417,7 +417,7 @@ contract Crowdsale is Ownable {
     
     function giveTokens(address _newInvestor, uint256 _value) internal {
         require (_newInvestor != address(0));
-        require (_value &gt;= 1);
+        require (_value >= 1);
         uint256 value = _value;
         value = value.mul(1 ether);
         token.transfer(_newInvestor, value);
@@ -464,14 +464,14 @@ contract Crowdsale is Ownable {
 
     function startPreICO() public onlyOwner onlyInState(State.PreSale) {
         // PreSale minimum 10 days
-        require (now &gt;= preSaleStartTime + 1 days, &quot;Mimimum period Pre-Sale is 10 days&quot;);
+        require (now >= preSaleStartTime + 1 days, "Mimimum period Pre-Sale is 10 days");
         setState(State.PreICO);
         preICOStartTime = uint64(now);
     }
      
     function startCrowdSale() public onlyOwner onlyInState(State.PreICO) {
         // Pre-ICO minimum 15 days
-        require (now &gt;= preICOStartTime + 1 days, &quot;Mimimum period Pre-ICO is 15 days&quot;);
+        require (now >= preICOStartTime + 1 days, "Mimimum period Pre-ICO is 15 days");
         setState(State.CrowdSale);
         crowdSaleStartTime = uint64(now);
     }
@@ -480,10 +480,10 @@ contract Crowdsale is Ownable {
         // CrowdSale minimum 30 days
         // Attention - function not have reverse!
 
-        require (now &gt;= crowdSaleStartTime + 1 days, &quot;Mimimum period CrowdSale is 30 days&quot;);
+        require (now >= crowdSaleStartTime + 1 days, "Mimimum period CrowdSale is 30 days");
         // test coftcap
-        if (soldTokens &lt; TOKEN_SOFT_CAP) {
-            // softcap don&quot;t accessable - refunding
+        if (soldTokens < TOKEN_SOFT_CAP) {
+            // softcap don"t accessable - refunding
             setState(State.Refunding);
         } else {
             // All right! CrowdSale is passed. WithdrawProfit is accessable
@@ -520,37 +520,37 @@ contract Crowdsale is Ownable {
 
  
     function saleTokens() internal {
-        require(currentState != State.Init, &quot;Contract is init, do not accept ether.&quot;); 
-        require(currentState != State.Refunding, &quot;Contract is refunding, do not accept ether.&quot;);
+        require(currentState != State.Init, "Contract is init, do not accept ether."); 
+        require(currentState != State.Refunding, "Contract is refunding, do not accept ether.");
         //calculation length of periods, pauses, auto set next stage
         if (currentState == State.PreSale) {
-            if ((uint64(now) &gt; preSaleStartTime + 1 days) &amp;&amp; (uint64(now) &lt;= preSaleStartTime + 2 days)){
-                require (false, &quot;It is pause after PreSale stage - contract do not accept ether&quot;);
+            if ((uint64(now) > preSaleStartTime + 1 days) && (uint64(now) <= preSaleStartTime + 2 days)){
+                require (false, "It is pause after PreSale stage - contract do not accept ether");
             }
-            if (uint64(now) &gt; preSaleStartTime + 2 days){
+            if (uint64(now) > preSaleStartTime + 2 days){
                 setState(State.PreICO);
                 preICOStartTime = uint64(now);
             }
         }
 
         if (currentState == State.PreICO) {
-            if ((uint64(now) &gt; preICOStartTime + 1 days) &amp;&amp; (uint64(now) &lt;= preICOStartTime + 2 days)){
-                require (false, &quot;It is pause after PreICO stage - contract do not accept ether&quot;);
+            if ((uint64(now) > preICOStartTime + 1 days) && (uint64(now) <= preICOStartTime + 2 days)){
+                require (false, "It is pause after PreICO stage - contract do not accept ether");
             }
-            if (uint64(now) &gt; preICOStartTime + 2 days){
+            if (uint64(now) > preICOStartTime + 2 days){
                 setState(State.CrowdSale);
                 crowdSaleStartTime = uint64(now);
             }
         }        
         
         if (currentState == State.CrowdSale) {
-            if ((uint64(now) &gt; crowdSaleStartTime + 1 days) &amp;&amp; (uint64(now) &lt;= crowdSaleStartTime + 2 days)){
-                require (false, &quot;It is pause after CrowdSale stage - contract do not accept ether&quot;);
+            if ((uint64(now) > crowdSaleStartTime + 1 days) && (uint64(now) <= crowdSaleStartTime + 2 days)){
+                require (false, "It is pause after CrowdSale stage - contract do not accept ether");
             }
-            if (uint64(now) &gt; crowdSaleStartTime + 2 days){
+            if (uint64(now) > crowdSaleStartTime + 2 days){
                 // autofinish CrowdSale stage
-                if (soldTokens &lt; TOKEN_SOFT_CAP) {
-                    // softcap don&quot;t accessable - refunding
+                if (soldTokens < TOKEN_SOFT_CAP) {
+                    // softcap don"t accessable - refunding
                     setState(State.Refunding);
                 } else {
                     // All right! CrowdSale is passed. WithdrawProfit is accessable
@@ -561,13 +561,13 @@ contract Crowdsale is Ownable {
         }        
         
         if (currentState == State.PreSale) {
-            require (RPESALE_TOKEN_SUPPLY_LIMIT &gt; soldTokens, &quot;HardCap of Pre-Sale is passed.&quot;); 
-            require (msg.value &gt;= 1 ether / 10, &quot;Minimum 20 ether for transaction all Pre-Sale period&quot;);
+            require (RPESALE_TOKEN_SUPPLY_LIMIT > soldTokens, "HardCap of Pre-Sale is passed."); 
+            require (msg.value >= 1 ether / 10, "Minimum 20 ether for transaction all Pre-Sale period");
         }
         if (currentState == State.PreICO) {
-            require (RPEICO_TOKEN_SUPPLY_LIMIT &gt; soldTokens, &quot;HardCap of Pre-ICO is passed.&quot;);
-            if (now &lt; preICOStartTime + 1 days){
-                require (msg.value &lt;= 1 ether / 10, &quot;Maximum is 20 ether for transaction in first day of Pre-ICO&quot;);
+            require (RPEICO_TOKEN_SUPPLY_LIMIT > soldTokens, "HardCap of Pre-ICO is passed.");
+            if (now < preICOStartTime + 1 days){
+                require (msg.value <= 1 ether / 10, "Maximum is 20 ether for transaction in first day of Pre-ICO");
             }
         }
         crowdsaleBalances[msg.sender] = crowdsaleBalances[msg.sender].add(msg.value);
@@ -578,7 +578,7 @@ contract Crowdsale is Ownable {
     }
  
     function refund() public payable{
-        require(currentState == State.Refunding, &quot;Only for Refunding stage.&quot;);
+        require(currentState == State.Refunding, "Only for Refunding stage.");
         // refund ether to investors
         uint value = crowdsaleBalances[msg.sender]; 
         crowdsaleBalances[msg.sender] = 0; 
@@ -588,8 +588,8 @@ contract Crowdsale is Ownable {
     
     function withdrawProfit (address _to, uint256 _value) public onlyOwner payable {
     // withdrawProfit - only if coftcap passed
-        require (currentState == State.WorkTime, &quot;Contract is not at WorkTime stage. Access denied.&quot;);
-        require (myAddress.balance &gt;= _value);
+        require (currentState == State.WorkTime, "Contract is not at WorkTime stage. Access denied.");
+        require (myAddress.balance >= _value);
         require(_to != address(0));
         _to.transfer(_value);
         emit Withdraw(msg.sender, _to, _value);

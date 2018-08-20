@@ -54,30 +54,30 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal constant returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal constant returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -113,8 +113,8 @@ contract Ownable {
 
 contract VestingWallet is Ownable, SafeMath {
 
-    mapping(address =&gt; VestingSchedule) public schedules;        // vesting schedules for given addresses
-    mapping(address =&gt; address) public addressChangeRequests;    // requested address changes
+    mapping(address => VestingSchedule) public schedules;        // vesting schedules for given addresses
+    mapping(address => address) public addressChangeRequests;    // requested address changes
 
     Token public vestingToken;
 
@@ -166,13 +166,13 @@ contract VestingWallet is Ownable, SafeMath {
 
     modifier pastCliffTime(address target) {
         VestingSchedule storage vestingSchedule = schedules[target];
-        require(getTime() &gt; vestingSchedule.cliffTimeInSec);
+        require(getTime() > vestingSchedule.cliffTimeInSec);
         _;
     }
 
     modifier validVestingScheduleTimes(uint startTimeInSec, uint cliffTimeInSec, uint endTimeInSec) {
-        require(cliffTimeInSec &gt;= startTimeInSec);
-        require(endTimeInSec &gt;= cliffTimeInSec);
+        require(cliffTimeInSec >= startTimeInSec);
+        require(endTimeInSec >= cliffTimeInSec);
         _;
     }
 
@@ -202,7 +202,7 @@ contract VestingWallet is Ownable, SafeMath {
     addressNotNull(_depositor)
     validVestingScheduleTimes(_startTimeInSec, _cliffTimeInSec, _endTimeInSec)
     {
-        require(_percentage &lt;= 100);
+        require(_percentage <= 100);
         uint vestedAmount = safeDiv(safeMul(
                 _totalAmount, _percentage
             ), 100);
@@ -231,7 +231,7 @@ contract VestingWallet is Ownable, SafeMath {
     {
 
         require(vestingToken.transferFrom(approvedWallet, address(this), _totalAmount));
-        require(vestingToken.balanceOf(address(this)) &gt;= _totalAmount);
+        require(vestingToken.balanceOf(address(this)) >= _totalAmount);
 
         schedules[_addressToRegister] = VestingSchedule({
             startTimeInSec : _startTimeInSec,
@@ -262,7 +262,7 @@ contract VestingWallet is Ownable, SafeMath {
         uint amountWithdrawable = safeSub(totalAmountVested, vestingSchedule.totalAmountWithdrawn);
         vestingSchedule.totalAmountWithdrawn = totalAmountVested;
 
-        if (amountWithdrawable &gt; 0) {
+        if (amountWithdrawable > 0) {
             require(vestingToken.transfer(msg.sender, amountWithdrawable));
             Withdrawal(msg.sender, amountWithdrawable);
         }
@@ -281,7 +281,7 @@ contract VestingWallet is Ownable, SafeMath {
         uint amountWithdrawable = 0;
         uint amountRefundable = 0;
 
-        if (getTime() &lt; vestingSchedule.cliffTimeInSec) {
+        if (getTime() < vestingSchedule.cliffTimeInSec) {
             amountRefundable = vestingSchedule.totalAmount;
         }
         else {
@@ -356,7 +356,7 @@ contract VestingWallet is Ownable, SafeMath {
     view
     returns (uint)
     {
-        if (getTime() &gt;= vestingSchedule.endTimeInSec) {
+        if (getTime() >= vestingSchedule.endTimeInSec) {
             return vestingSchedule.totalAmount;
         }
 

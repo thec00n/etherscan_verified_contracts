@@ -2,14 +2,14 @@
 
   Copyright 2018 HydroProtocol.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -65,24 +65,24 @@ contract HydroSwap {
         uint takerTokenAmount = orderValues[1];
 
         if (takerTokenAddress == wethAddress) {
-            require(takerTokenAmount == msg.value, &quot;WRONG_ETH_AMOUNT&quot;);
+            require(takerTokenAmount == msg.value, "WRONG_ETH_AMOUNT");
             WETH(wethAddress).deposit.value(takerTokenAmount)();
         } else {
-            require(ERC20(takerTokenAddress).transferFrom(msg.sender, this, takerTokenAmount), &quot;TOKEN_TRANSFER_FROM_ERROR&quot;);
+            require(ERC20(takerTokenAddress).transferFrom(msg.sender, this, takerTokenAmount), "TOKEN_TRANSFER_FROM_ERROR");
         }
 
-        require(ERC20(takerTokenAddress).approve(tokenProxyAddress, takerTokenAmount), &quot;TOKEN_APPROVE_ERROR&quot;);
+        require(ERC20(takerTokenAddress).approve(tokenProxyAddress, takerTokenAmount), "TOKEN_APPROVE_ERROR");
 
         require(
             Exchange(exchangeAddress).fillOrder(orderAddresses, orderValues, takerTokenAmount, true, v, r, s) == takerTokenAmount,
-            &quot;FILL_ORDER_ERROR&quot;
+            "FILL_ORDER_ERROR"
         );
 
         if (makerTokenAddress == wethAddress) {
             WETH(wethAddress).withdraw(makerTokenAmount);
             msg.sender.transfer(makerTokenAmount);
         } else {
-            require(ERC20(makerTokenAddress).transfer(msg.sender, makerTokenAmount), &quot;TOKEN_TRANSFER_ERROR&quot;);
+            require(ERC20(makerTokenAddress).transfer(msg.sender, makerTokenAmount), "TOKEN_TRANSFER_ERROR");
         }
 
         emit LogSwapSuccess(id);

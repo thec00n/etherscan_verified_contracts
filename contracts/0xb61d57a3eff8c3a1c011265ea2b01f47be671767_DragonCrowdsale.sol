@@ -14,7 +14,7 @@ contract DragonCrowdsale {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public contributions;
+    mapping(address => uint256) public contributions;
     bool crowdSaleStart;
     bool crowdSalePause;
     bool crowdSaleClosed;
@@ -39,7 +39,7 @@ contract DragonCrowdsale {
     function () payable {
         require(!crowdSaleClosed);
         require(!crowdSalePause);
-        if ( crowdSaleStart) require( now &lt; deadline );
+        if ( crowdSaleStart) require( now < deadline );
         uint amount = msg.value;
         contributions[msg.sender] += amount;
         amountRaised += amount;

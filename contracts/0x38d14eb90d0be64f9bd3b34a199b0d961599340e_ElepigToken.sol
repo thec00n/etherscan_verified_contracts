@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -104,7 +104,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -114,8 +114,8 @@ contract StandardToken is ERC20, BasicToken {
     * @param _value uint256 the amount of tokens to be transferred
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -202,9 +202,9 @@ contract BurnableToken is BasicToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -218,7 +218,7 @@ contract BurnableToken is BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -305,8 +305,8 @@ contract MintableToken is StandardToken, Ownable, BurnableToken {
 }
 
 contract ElepigToken is MintableToken {
-    string public name = &quot;Elepig&quot;;
-    string public symbol = &quot;EPG&quot;;
+    string public name = "Elepig";
+    string public symbol = "EPG";
     uint8 public decimals = 18;    
 
    // unlock times for Team Wallets
@@ -315,7 +315,7 @@ contract ElepigToken is MintableToken {
     uint constant unlockY3Time = 1609459200; //  Friday, January 1, 2021 12:00:00 AM
     uint constant unlockY4Time = 1640995200; //  Saturday, January 1, 2022 12:00:00 AM
          
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => uint256) public freezeOf;
     
     address affiliate;
     address contingency;
@@ -331,7 +331,7 @@ contract ElepigToken is MintableToken {
     
     // tokens to be minted straight away
     //=============================    
-    // 50% of tokens will be minted during presale &amp; ico, 50% now
+    // 50% of tokens will be minted during presale & ico, 50% now
 
     uint256 constant affiliateTokens = 7500000000000000000000000;      // 2.5% 
     uint256 constant contingencyTokens = 52500000000000000000000000;   // 17.5%
@@ -383,7 +383,7 @@ contract ElepigToken is MintableToken {
         teamY3 = _teamY3Address;
         teamY4 = _teamY4Address;
         
-        // mint coins immediately that aren&#39;t for crowdsale
+        // mint coins immediately that aren't for crowdsale
         mint(affiliate, affiliateTokens);
         mint(contingency, contingencyTokens);
         mint(advisor, advisorTokens);
@@ -399,13 +399,13 @@ contract ElepigToken is MintableToken {
 
     function checkPermissions(address _from) internal view returns (bool) {        
         // team vesting, a wallet gets unlocked each year.
-        if (_from == teamY1 &amp;&amp; now &lt; unlockY1Time) {
+        if (_from == teamY1 && now < unlockY1Time) {
             return false;
-        } else if (_from == teamY2 &amp;&amp; now &lt; unlockY2Time) {
+        } else if (_from == teamY2 && now < unlockY2Time) {
             return false;
-        } else if (_from == teamY3 &amp;&amp; now &lt; unlockY3Time) {
+        } else if (_from == teamY3 && now < unlockY3Time) {
             return false;
-        } else if (_from == teamY4 &amp;&amp; now &lt; unlockY4Time) {
+        } else if (_from == teamY4 && now < unlockY4Time) {
             return false;
         } else {
         //all other addresses are not locked
@@ -428,8 +428,8 @@ contract ElepigToken is MintableToken {
     }
 
     function freeze(uint256 _value) public returns (bool success) {     
-        require(balances[msg.sender] &lt; _value); // Check if the sender has enough
-        require(_value &lt;= 0);
+        require(balances[msg.sender] < _value); // Check if the sender has enough
+        require(_value <= 0);
 
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);          // Subtract from the sender
         freezeOf[msg.sender] = SafeMath.add(freezeOf[msg.sender], _value);          // Updates freezeOf
@@ -438,8 +438,8 @@ contract ElepigToken is MintableToken {
     }
 
     function unfreeze(uint256 _value) public returns (bool success) {
-        require(freezeOf[msg.sender] &lt; _value); // Check if the sender has enough
-        require(_value &lt;= 0);
+        require(freezeOf[msg.sender] < _value); // Check if the sender has enough
+        require(_value <= 0);
         
         freezeOf[msg.sender] = SafeMath.sub(freezeOf[msg.sender], _value);           // Subtract from the sender
         balances[msg.sender] = SafeMath.add(balances[msg.sender], _value);

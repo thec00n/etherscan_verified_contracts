@@ -98,20 +98,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -146,9 +146,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startBlock, uint256 _endBlock, uint256 _rate, address _wallet) {
-    require(_startBlock &gt;= block.number);
-    require(_endBlock &gt;= _startBlock);
-    require(_rate &gt; 0);
+    require(_startBlock >= block.number);
+    require(_endBlock >= _startBlock);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -198,14 +198,14 @@ contract Crowdsale {
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return block.number &gt; endBlock;
+    return block.number > endBlock;
   }
 
 
@@ -215,7 +215,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
     using SafeMath for uint256;
 
     // list of addresses that can purchase before crowdsale opens
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     function addToWhitelist(address buyer) public onlyOwner {
         require(buyer != 0x0);
@@ -231,7 +231,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
     // @return true if buyers can buy at the moment
     function validPurchase() internal constant returns (bool) {
         // [TODO] issue with overriding and associativity of logical operators
-        return super.validPurchase() || (!hasEnded() &amp;&amp; isWhitelisted(msg.sender));
+        return super.validPurchase() || (!hasEnded() && isWhitelisted(msg.sender));
     }
 
 }
@@ -239,7 +239,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -324,7 +324,7 @@ contract ContinuousSale {
         uint256 timestamp = block.timestamp;
         uint256 bucket = timestamp - (timestamp % BUCKET_SIZE);
 
-        if (bucket &gt; lastBucket) {
+        if (bucket > lastBucket) {
             lastBucket = bucket;
             bucketAmount = 0;
         }
@@ -332,7 +332,7 @@ contract ContinuousSale {
 
     function checkContinuousPurchase(uint256 tokens) internal {
         uint256 updatedBucketAmount = bucketAmount.add(tokens);
-        require(updatedBucketAmount &lt;= issuance);
+        require(updatedBucketAmount <= issuance);
 
         bucketAmount = updatedBucketAmount;
     }
@@ -361,7 +361,7 @@ contract ContinuousSale {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -374,7 +374,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -422,7 +422,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of tokens to burn.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -567,9 +567,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract MANAToken is BurnableToken, PausableToken, MintableToken {
 
-    string public constant symbol = &quot;MANA&quot;;
+    string public constant symbol = "MANA";
 
-    string public constant name = &quot;Decentraland MANA&quot;;
+    string public constant name = "Decentraland MANA";
 
     uint8 public constant decimals = 18;
 
@@ -584,21 +584,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -614,7 +614,7 @@ contract MANACrowdsale is WhitelistedCrowdsale, CappedCrowdsale, FinalizableCrow
     uint256 public preferentialRate;
 
     // customize the rate for each whitelisted buyer
-    mapping (address =&gt; uint256) public buyerRate;
+    mapping (address => uint256) public buyerRate;
 
     // initial rate at which tokens are offered
     uint256 public initialRate;
@@ -659,7 +659,7 @@ contract MANACrowdsale is WhitelistedCrowdsale, CappedCrowdsale, FinalizableCrow
     function setBuyerRate(address buyer, uint256 rate) onlyOwner public {
         require(rate != 0);
         require(isWhitelisted(buyer));
-        require(block.number &lt; startBlock);
+        require(block.number < startBlock);
 
         buyerRate[buyer] = rate;
 
@@ -668,7 +668,7 @@ contract MANACrowdsale is WhitelistedCrowdsale, CappedCrowdsale, FinalizableCrow
 
     function setInitialRate(uint256 rate) onlyOwner public {
         require(rate != 0);
-        require(block.number &lt; startBlock);
+        require(block.number < startBlock);
 
         initialRate = rate;
 
@@ -677,7 +677,7 @@ contract MANACrowdsale is WhitelistedCrowdsale, CappedCrowdsale, FinalizableCrow
 
     function setEndRate(uint256 rate) onlyOwner public {
         require(rate != 0);
-        require(block.number &lt; startBlock);
+        require(block.number < startBlock);
 
         endRate = rate;
 

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b7ffb0bfa5bebfb8beffb0bab4bd91b6bcb0b8bdffb2bebc">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b7ffb0bfa5bebfb8beffb0bab4bd91b6bcb0b8bdffb2bebc">[email protected]</a>
 */
 
 /**
@@ -24,7 +24,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -72,7 +72,7 @@ contract ICO {
     token public tokenReward;
     address public creator;
     string public campaignUrl;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -136,26 +136,26 @@ contract ICO {
         
         }
 
-        if(msg.value &gt;= usdCentInWei.mul(5000000)){ // 5.000.000 cents = 50.000,00 $
+        if(msg.value >= usdCentInWei.mul(5000000)){ // 5.000.000 cents = 50.000,00 $
 
             tokenBought = tokenBought.mul(2); // +100%
 
-        } else if(msg.value &gt;= usdCentInWei.mul(2000000)){ // 2.000.000 cents = 20.000,00 $
+        } else if(msg.value >= usdCentInWei.mul(2000000)){ // 2.000.000 cents = 20.000,00 $
 
             tokenBought = tokenBought.mul(18);
             tokenBought = tokenBought.div(10); // +80%            
 
-        } else if(msg.value &gt;= usdCentInWei.mul(1000000)){ // 1.000.000 cents = 10.000,00 $
+        } else if(msg.value >= usdCentInWei.mul(1000000)){ // 1.000.000 cents = 10.000,00 $
 
             tokenBought = tokenBought.mul(16);
             tokenBought = tokenBought.div(10); // +60%            
 
-        } else if(msg.value &gt;= usdCentInWei.mul(500000)){ // 500.000 cents = 5.000,00 $
+        } else if(msg.value >= usdCentInWei.mul(500000)){ // 500.000 cents = 5.000,00 $
 
             tokenBought = tokenBought.mul(14);
             tokenBought = tokenBought.div(10); // +40%            
 
-        } else if(msg.value &gt;= usdCentInWei.mul(100000)){ // 100.000 cents = 1.000,00 $
+        } else if(msg.value >= usdCentInWei.mul(100000)){ // 100.000 cents = 1.000,00 $
 
             tokenBought = tokenBought.mul(12);
             tokenBought = tokenBought.div(10); // +20%            
@@ -177,15 +177,15 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(state == State.stage1 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,5,31,23,59)){ // May 31
+        if(state == State.stage1 && now > dateTimeContract.toTimestamp(2018,5,31,23,59)){ // May 31
 
             state = State.stage2;
 
-        } else if(state == State.stage2 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,30,23,59)){ // Jun 30
+        } else if(state == State.stage2 && now > dateTimeContract.toTimestamp(2018,6,30,23,59)){ // Jun 30
 
             state = State.stage3;
             
-        } else if(state == State.stage3 &amp;&amp; now &gt; ICOdeadline &amp;&amp; state!=State.Successful){
+        } else if(state == State.stage3 && now > ICOdeadline && state!=State.Successful){
 
             state = State.Successful; //ico becomes Successful
             completedAt = now; //ICO is complete

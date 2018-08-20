@@ -4,7 +4,7 @@ DVIP Terms of Service
 
 By purchasing, using, and possessing the DVIP token you agree to be legally bound by these terms, which shall take effect immediately upon receipt of the token.
 
-1. Rights of DVIP holders: Each membership entitles the customer to ZERO transaction fees on all on-chain transfers of DC Assets, and &#189; off fees for purchasing and redeeming DC Assets through Crypto Capital. DVIP also entitles the customer to discounts on select future DC services. These discounts only apply to the fees specified on the decentralized capital website. DC is not responsible for any fees charged by third parties including, but not limited to, dapps, exchanges, Crypto Capital, and Coinapult.
+1. Rights of DVIP holders: Each membership entitles the customer to ZERO transaction fees on all on-chain transfers of DC Assets, and ½ off fees for purchasing and redeeming DC Assets through Crypto Capital. DVIP also entitles the customer to discounts on select future DC services. These discounts only apply to the fees specified on the decentralized capital website. DC is not responsible for any fees charged by third parties including, but not limited to, dapps, exchanges, Crypto Capital, and Coinapult.
 
 2. DVIP membership rights expire on January 1st, 2020.
 
@@ -22,7 +22,7 @@ By purchasing, using, and possessing the DVIP token you agree to be legally boun
 
 9. Future DVIP sales: 2500 DVIP have been created, and 2000 will be sold in the initial membership sale. The remaining 500 memberships will be used for marketing events, both leading up to and after the sale, as well as future sale on the open market to generate further revenue. DC reserves the right to create and sell more DVIP in the future, however the total amount of DVIP is capped at 10,000.
 
-10. Entire Agreement: The foregoing Membership Terms &amp; Conditions contain the entire terms and agreements in connection with Member&#39;s participation in the DC service and no representations, inducements, promises or agreement, or otherwise, between DC and the Member not included herein, shall be of any force or effect. If any of the foregoing terms or provisions shall be invalid or unenforceable, the remaining terms and provisions hereof shall not be affected.
+10. Entire Agreement: The foregoing Membership Terms & Conditions contain the entire terms and agreements in connection with Member's participation in the DC service and no representations, inducements, promises or agreement, or otherwise, between DC and the Member not included herein, shall be of any force or effect. If any of the foregoing terms or provisions shall be invalid or unenforceable, the remaining terms and provisions hereof shall not be affected.
 
 11. This agreement shall be governed by and construed under, and the legal relations among the parties hereto shall be determined in accordance with the laws of the United Kingdom of Great Britain and Northern Ireland.
 
@@ -46,13 +46,13 @@ contract Math is Assertive {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -116,11 +116,11 @@ contract MembershipVendor is Owned, Math {
     return true;
   }
   function () {
-    if (msg.value &lt; price) throw;
+    if (msg.value < price) throw;
     uint256 qty = msg.value / price;
     uint256 val = safeMul(price, qty);
     if (!DVIP(dvipAddress).transfer(msg.sender, qty)) throw;
-    if (msg.value &gt; val &amp;&amp; !msg.sender.send(safeSub(msg.value, val))) throw;
-    if (beneficiary != address(0x0) &amp;&amp; !beneficiary.send(val)) throw;
+    if (msg.value > val && !msg.sender.send(safeSub(msg.value, val))) throw;
+    if (beneficiary != address(0x0) && !beneficiary.send(val)) throw;
   }
 }

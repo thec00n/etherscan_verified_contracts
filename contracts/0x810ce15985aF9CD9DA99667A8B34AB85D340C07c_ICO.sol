@@ -2,7 +2,7 @@ pragma solidity 0.4.20;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="2c4a024d425843424543024d4749406c4b414d4540024f4341">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="2c4a024d425843424543024d4749406c4b414d4540024f4341">[email protected]</span>
 */
 
 /**
@@ -24,7 +24,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -62,7 +62,7 @@ contract ICO {
     token public tokenReward;
     address public creator;
     string public campaignUrl;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -167,35 +167,35 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(state == State.preico &amp;&amp; now &gt; startTime.add(14 days)){
+        if(state == State.preico && now > startTime.add(14 days)){
 
             state = State.week1;
 
-        } else if(state == State.week1 &amp;&amp; now &gt; startTime.add(21 days)){
+        } else if(state == State.week1 && now > startTime.add(21 days)){
 
             state = State.week2;
             
-        } else if(state == State.week2 &amp;&amp; now &gt; startTime.add(28 days)){
+        } else if(state == State.week2 && now > startTime.add(28 days)){
 
             state = State.week3;
             
-        } else if(state == State.week3 &amp;&amp; now &gt; startTime.add(35 days)){
+        } else if(state == State.week3 && now > startTime.add(35 days)){
 
             state = State.week4;
             
-        } else if(state == State.week4 &amp;&amp; now &gt; startTime.add(42 days)){
+        } else if(state == State.week4 && now > startTime.add(42 days)){
 
             state = State.week5;
             
-        } else if(state == State.week5 &amp;&amp; now &gt; startTime.add(49 days)){
+        } else if(state == State.week5 && now > startTime.add(49 days)){
 
             state = State.week6;
             
-        } else if(state == State.week6 &amp;&amp; now &gt; startTime.add(56 days)){
+        } else if(state == State.week6 && now > startTime.add(56 days)){
 
             state = State.week7;
             
-        } else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
+        } else if(now > ICOdeadline && state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
 
             state = State.Successful; //ico becomes Successful
             completedAt = now; //ICO is complete

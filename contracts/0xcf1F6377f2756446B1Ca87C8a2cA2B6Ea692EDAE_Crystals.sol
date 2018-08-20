@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 // written by madgustave from Team Chibi Fighters
 // find us at https://chibigame.io
-// <span class="__cf_email__" data-cfemail="60090e060f20030809020906090708140512134e090f">[email&#160;protected]</span>
+// <span class="__cf_email__" data-cfemail="60090e060f20030809020906090708140512134e090f">[email protected]</span>
 // version 1.0.0
 
 contract ExternalTokensSupport {
@@ -65,7 +65,7 @@ contract Crystals is Owned {
 	}
 
 	function () public payable {
-		require(msg.value &gt;= crystalPrice);
+		require(msg.value >= crystalPrice);
 
 		// crystal is indivisible
 		require(msg.value % crystalPrice == 0);
@@ -101,7 +101,7 @@ contract Crystals is Owned {
     * @param _amountWei Amount in WEI to send
     **/
     function weiToOwner(address _address, uint _amountWei) public onlyOwner returns (bool) {
-        require(_amountWei &lt;= address(this).balance);
+        require(_amountWei <= address(this).balance);
         _address.transfer(_amountWei);
         return true;
     }

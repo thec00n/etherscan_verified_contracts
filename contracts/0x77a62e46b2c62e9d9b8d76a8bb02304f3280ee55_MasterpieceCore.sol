@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -144,7 +144,7 @@ contract Pausable is Ownable {
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0d4d5c4d5f0d1c8d9dfddcad5de9ed3df">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0d4d5c4d5f0d1c8d9dfddcad5de9ed3df">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
     event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
@@ -245,7 +245,7 @@ contract MasterpieceAccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause()
         external
@@ -265,7 +265,7 @@ contract MasterpieceAccessControl {
         onlyCEO
         whenPaused
     {
-        // can&#39;t unpause if contract was forked
+        // can't unpause if contract was forked
         paused = false;
     }
 
@@ -306,22 +306,22 @@ contract MasterpieceBase is MasterpieceAccessControl {
     SaleClockAuction public saleAuction;
 
     /// @dev A mapping from masterpiece ids to the address that owns them.
-    mapping (uint256 =&gt; address) public masterpieceToOwner;
+    mapping (uint256 => address) public masterpieceToOwner;
 
     /// @dev A mapping from masterpiece ids to their snatch window.
-    mapping (uint256 =&gt; uint256) public masterpieceToSnatchWindow;
+    mapping (uint256 => uint256) public masterpieceToSnatchWindow;
 
     /// @dev A mapping from owner address to count of masterpieces that address owns.
     /// Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) public ownerMasterpieceCount;
+    mapping (address => uint256) public ownerMasterpieceCount;
 
     /// @dev A mapping from masterpiece ids to an address that has been approved to call
     ///  transferFrom(). Each masterpiece can only have 1 approved address for transfer
     ///  at any time. A 0 value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public masterpieceToApproved;
+    mapping (uint256 => address) public masterpieceToApproved;
 
     // @dev A mapping from masterpiece ids to their price.
-    mapping (uint256 =&gt; uint256) public masterpieceToPrice;
+    mapping (uint256 => uint256) public masterpieceToPrice;
 
     // @dev Returns the snatch window of the given token.
     function snatchWindowOf(uint256 _tokenId)
@@ -337,7 +337,7 @@ contract MasterpieceBase is MasterpieceAccessControl {
         // Transfer ownership and update owner masterpiece counts.
         ownerMasterpieceCount[_to]++;
         masterpieceToOwner[_tokenId] = _to;
-        // When creating new tokens _from is 0x0, but we can&#39;t account that address.
+        // When creating new tokens _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownerMasterpieceCount[_from]--;
             // clear any previously approved ownership exchange
@@ -403,7 +403,7 @@ contract MasterpiecePricing is MasterpieceBase {
     uint128 private constant FOURTH_STEP_LIMIT = 5.0 ether;
 
     /// @dev Computes the next listed price.
-    /// @notice This contract doesn&#39;t handle setting the Masterpiece&#39;s next listing price.
+    /// @notice This contract doesn't handle setting the Masterpiece's next listing price.
     /// This next price is only used from inside bid() in MasterpieceAuction and inside
     /// purchase() in MasterpieceSale to set the next listed price.
     function setNextPriceOf(uint256 tokenId, uint256 salePrice)
@@ -423,13 +423,13 @@ contract MasterpiecePricing is MasterpieceBase {
         pure
         returns (uint256)
     {
-        if (salePrice &lt; FIRST_STEP_LIMIT) {
+        if (salePrice < FIRST_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 200), 95);
-        } else if (salePrice &lt; SECOND_STEP_LIMIT) {
+        } else if (salePrice < SECOND_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 135), 96);
-        } else if (salePrice &lt; THIRD_STEP_LIMIT) {
+        } else if (salePrice < THIRD_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 125), 97);
-        } else if (salePrice &lt; FOURTH_STEP_LIMIT) {
+        } else if (salePrice < FOURTH_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 120), 97);
         } else {
             return SafeMath.div(SafeMath.mul(salePrice, 115), 98);
@@ -437,17 +437,17 @@ contract MasterpiecePricing is MasterpieceBase {
     }
 
     /// @dev Computes the payment for the token, which is the sale price of the token
-    /// minus the house&#39;s cut.
+    /// minus the house's cut.
     function computePayment(uint256 salePrice)
         internal
         pure
         returns (uint256)
     {
-        if (salePrice &lt; FIRST_STEP_LIMIT) {
+        if (salePrice < FIRST_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 95), 100);
-        } else if (salePrice &lt; SECOND_STEP_LIMIT) {
+        } else if (salePrice < SECOND_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 96), 100);
-        } else if (salePrice &lt; FOURTH_STEP_LIMIT) {
+        } else if (salePrice < FOURTH_STEP_LIMIT) {
             return SafeMath.div(SafeMath.mul(salePrice, 97), 100);
         } else {
             return SafeMath.div(SafeMath.mul(salePrice, 98), 100);
@@ -461,25 +461,25 @@ contract MasterpiecePricing is MasterpieceBase {
 contract MasterpieceOwnership is MasterpiecePricing, ERC721 {
 
     /// Name of the collection of NFTs managed by this contract, as defined in ERC721.
-    string public constant NAME = &quot;Masterpieces&quot;;
+    string public constant NAME = "Masterpieces";
     /// Symbol referencing the entire collection of NFTs managed in this contract, as
     /// defined in ERC721.
-    string public constant SYMBOL = &quot;CMP&quot;;
+    string public constant SYMBOL = "CMP";
 
     bytes4 public constant INTERFACE_SIGNATURE_ERC165 =
-    bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+    bytes4(keccak256("supportsInterface(bytes4)"));
 
     bytes4 public constant INTERFACE_SIGNATURE_ERC721 =
-    bytes4(keccak256(&quot;name()&quot;)) ^
-    bytes4(keccak256(&quot;symbol()&quot;)) ^
-    bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-    bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-    bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-    bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-    bytes4(keccak256(&quot;transfer(address,uint256)&quot;)) ^
-    bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)) ^
-    bytes4(keccak256(&quot;tokensOfOwner(address)&quot;)) ^
-    bytes4(keccak256(&quot;tokenMetadata(uint256,string)&quot;));
+    bytes4(keccak256("name()")) ^
+    bytes4(keccak256("symbol()")) ^
+    bytes4(keccak256("totalSupply()")) ^
+    bytes4(keccak256("balanceOf(address)")) ^
+    bytes4(keccak256("ownerOf(uint256)")) ^
+    bytes4(keccak256("approve(address,uint256)")) ^
+    bytes4(keccak256("transfer(address,uint256)")) ^
+    bytes4(keccak256("transferFrom(address,address,uint256)")) ^
+    bytes4(keccak256("tokensOfOwner(address)")) ^
+    bytes4(keccak256("tokenMetadata(uint256,string)"));
 
     /// @dev Grant another address the right to transfer a specific Masterpiece via
     ///  transferFrom(). This is the preferred flow for transfering NFTs to contracts.
@@ -572,7 +572,7 @@ contract MasterpieceOwnership is MasterpiecePricing, ERC721 {
             uint256 resultIndex = 0;
 
             uint256 masterpieceId;
-            for (masterpieceId = 0; masterpieceId &lt;= totalMasterpieces; masterpieceId++) {
+            for (masterpieceId = 0; masterpieceId <= totalMasterpieces; masterpieceId++) {
                 if (masterpieceToOwner[masterpieceId] == _owner) {
                     result[resultIndex] = masterpieceId;
                     resultIndex++;
@@ -634,7 +634,7 @@ contract MasterpieceOwnership is MasterpiecePricing, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular Masterpiece.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId Masterpiece id, only valid when &gt; 0
+    /// @param _tokenId Masterpiece id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId)
         internal
         view
@@ -654,7 +654,7 @@ contract MasterpieceOwnership is MasterpiecePricing, ERC721 {
 
     /// @dev Checks if a given address currently has transferApproval for a particular Masterpiece.
     /// @param _claimant the address we are confirming Masterpiece is approved for.
-    /// @param _tokenId Masterpiece id, only valid when &gt; 0
+    /// @param _tokenId Masterpiece id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId)
         internal
         view
@@ -698,7 +698,7 @@ contract ClockAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) public tokenIdToAuction;
+    mapping (uint256 => Auction) public tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
     event AuctionSuccessful(uint256 tokenId, uint256 price, address winner);
@@ -736,7 +736,7 @@ contract ClockAuctionBase {
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
 
@@ -764,19 +764,19 @@ contract ClockAuctionBase {
         // Get a reference to the auction struct
         Auction storage auction = tokenIdToAuction[_tokenId];
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
         // Grab a reference to the seller before the auction struct gets deleted.
         address seller = auction.seller;
-        // Remove the auction before sending the fees to the sender so we can&#39;t have a reentrancy attack.
+        // Remove the auction before sending the fees to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
             // NOTE: Doing a transfer() in the middle of a complex
@@ -785,7 +785,7 @@ contract ClockAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
             _transfer(msg.sender, _tokenId);
@@ -823,7 +823,7 @@ contract ClockAuctionBase {
         view
         returns (bool)
     {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -839,8 +839,8 @@ contract ClockAuctionBase {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -866,13 +866,13 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -880,7 +880,7 @@ contract ClockAuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -893,14 +893,14 @@ contract ClockAuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -923,7 +923,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
     /// @param _cut - percent cut the owner takes on each auction, must be
     ///  between 0-10,000.
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         MasterpieceOwnership candidateContract = MasterpieceOwnership(_nftAddress);
@@ -931,7 +931,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         nonFungibleContract = candidateContract;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -963,7 +963,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         external
         whenNotPaused
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -993,7 +993,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         _bid(_tokenId, msg.value);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -1088,7 +1088,7 @@ contract SaleClockAuction is ClockAuction {
     )
         external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -1162,7 +1162,7 @@ contract MasterpieceAuction is MasterpieceOwnership {
         whenNotPaused
     {
         // Check that the Masterpiece to be put on an auction sale is owned by
-        // its current owner. If it&#39;s already in an auction, this validation
+        // its current owner. If it's already in an auction, this validation
         // will fail because the MasterpieceAuction contract owns the
         // Masterpiece once it is put on an auction sale.
         require(_owns(msg.sender, _tokenId));
@@ -1197,7 +1197,7 @@ contract MasterpieceSale is MasterpieceAuction {
         // Core contract or was born within the snatch window.
         require(
             (oldOwner == address(this)) ||
-            (now - masterpieces[_tokenId].birthTime &lt;= masterpieceToSnatchWindow[_tokenId])
+            (now - masterpieces[_tokenId].birthTime <= masterpieceToSnatchWindow[_tokenId])
         );
 
         // Require that the owner of the token is not sending to self.
@@ -1211,7 +1211,7 @@ contract MasterpieceSale is MasterpieceAuction {
         require(_addressNotNull(newOwner));
 
         // Check that sent amount is greater than or equal to the sale price
-        require(msg.value &gt;= salePrice);
+        require(msg.value >= salePrice);
 
         uint256 payment = uint256(computePayment(salePrice));
         uint256 purchaseExcess = SafeMath.sub(msg.value, salePrice);
@@ -1273,7 +1273,7 @@ contract MasterpieceMinting is MasterpieceSale {
 
     /// @dev Creates a new promotional Masterpiece with the given name, artist, starting
     /// price, and owner. If the owner or the price is not set, we default them to the
-    /// curator&#39;s address and the starting price for all masterpieces.
+    /// curator's address and the starting price for all masterpieces.
     function createPromoMasterpiece(
         string _name,
         string _artist,
@@ -1285,14 +1285,14 @@ contract MasterpieceMinting is MasterpieceSale {
         onlyCurator
         returns (uint)
     {
-        require(promoMasterpiecesCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoMasterpiecesCreatedCount < PROMO_CREATION_LIMIT);
 
         address masterpieceOwner = _owner;
         if (masterpieceOwner == address(0)) {
             masterpieceOwner = curatorAddress;
         }
 
-        if (_price &lt;= 0) {
+        if (_price <= 0) {
             _price = STARTING_PRICE;
         }
 
@@ -1324,7 +1324,7 @@ contract MasterpieceCore is MasterpieceMinting {
     //  Non-Fungible Token Transactions.
     //
     // - MasterpieceAuction: This contract inherits from the MasterpieceOwnership contract. It defines
-    // the Dutch &quot;clock&quot; auction mechanism for owners of a masterpiece to place it on sale. The auction
+    // the Dutch "clock" auction mechanism for owners of a masterpiece to place it on sale. The auction
     // starts off at the automatically generated next price and until it is sold, decrements the price
     // as time passes. The owner of the masterpiece can cancel the auction at any point and the price
     // cannot go lower than the price that the owner bought the masterpiece for.
@@ -1352,7 +1352,7 @@ contract MasterpieceCore is MasterpieceMinting {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -1399,7 +1399,7 @@ contract MasterpieceCore is MasterpieceMinting {
     }
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive call.

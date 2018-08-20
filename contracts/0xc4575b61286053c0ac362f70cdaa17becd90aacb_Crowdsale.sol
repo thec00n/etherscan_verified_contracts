@@ -14,26 +14,26 @@ library SafeMath {
   }
 
   function Div (uint256 a, uint256 b) internal pure returns (uint256) {
-    //assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function Sub (uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function Add (uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 /**
- * Contract &quot;Ownable&quot;
+ * Contract "Ownable"
  * Purpose: Defines Owner for contract
  * Status : Complete
  * 
@@ -43,7 +43,7 @@ contract Ownable {
 	//owner variable to store contract owner account
   address public owner;
 
-  //Constructor for the contract to store owner&#39;s account on deployement
+  //Constructor for the contract to store owner's account on deployement
   function Ownable() public {
     owner = msg.sender;
   }
@@ -90,9 +90,9 @@ contract GIZAToken is ERC20, Ownable {
 	uint256 public start;
 	
     //Mapping to relate number of  token to the account
-    mapping(address =&gt; uint256 ) balances;
+    mapping(address => uint256 ) balances;
     //Mapping to relate owner and spender to the tokens allowed to transfer from owner
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     event Burn(address indexed burner, uint indexed value);  
 
@@ -100,12 +100,12 @@ contract GIZAToken is ERC20, Ownable {
     * @dev Constructor of GIZA
     */
     function GIZAToken(address _founder, address _team) public {
-		require( _founder != address(0) &amp;&amp; _team != address(0) );
+		require( _founder != address(0) && _team != address(0) );
         /* Public variables of the token */
         //The name of the  token
-        name = &quot;GIZA Token&quot;;
+        name = "GIZA Token";
         //The token symbol
-        symbol = &quot;GIZA&quot;;
+        symbol = "GIZA";
         //Number of zeroes to be treated as decimals
         decimals = 18;       
         //initial token supply 0
@@ -125,7 +125,7 @@ contract GIZAToken is ERC20, Ownable {
 	  
     //To handle ERC20 short address attack
     modifier onlyPayloadSize(uint256 size) {
-       require(msg.data.length &gt;= size + 4);
+       require(msg.data.length >= size + 4);
        _;
     }
 
@@ -136,8 +136,8 @@ contract GIZAToken is ERC20, Ownable {
 	
     modifier ifNotFroze() { 
 		if ( 
-		  (msg.sender == founder || msg.sender == team) &amp;&amp; 
-		  (start == 0 || now &lt; (start + 80 days) ) ) revert();
+		  (msg.sender == founder || msg.sender == team) && 
+		  (start == 0 || now < (start + 80 days) ) ) revert();
 		_;
     }
     
@@ -165,7 +165,7 @@ contract GIZAToken is ERC20, Ownable {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) onlyUnlocked ifNotFroze public returns(bool _success) {
         require( _to != address(0) );
-        if((balances[msg.sender] &gt; _value) &amp;&amp; _value &gt; 0){
+        if((balances[msg.sender] > _value) && _value > 0){
 			balances[msg.sender] = balances[msg.sender].Sub(_value);
 			balances[_to] = balances[_to].Add(_value);
 			Transfer(msg.sender, _to, _value);
@@ -185,9 +185,9 @@ contract GIZAToken is ERC20, Ownable {
     * @return A bool if the transfer was a success or not
     */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) onlyUnlocked ifNotFroze public returns (bool success){
-        require( _to != address(0) &amp;&amp; (_from != address(0)));
-        if((_value &gt; 0)
-           &amp;&amp; (allowed[_from][msg.sender] &gt; _value )){
+        require( _to != address(0) && (_from != address(0)));
+        if((_value > 0)
+           && (allowed[_from][msg.sender] > _value )){
             balances[_from] = balances[_from].Sub(_value);
             balances[_to] = balances[_to].Add(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].Sub(_value);
@@ -217,7 +217,7 @@ contract GIZAToken is ERC20, Ownable {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public returns (bool){
-        if( (_value &gt; 0) &amp;&amp; (_spender != address(0)) &amp;&amp; (balances[msg.sender] &gt;= _value)){
+        if( (_value > 0) && (_spender != address(0)) && (balances[msg.sender] >= _value)){
             allowed[msg.sender][_spender] = _value;
             Approval(msg.sender, _spender, _value);
             return true;
@@ -229,7 +229,7 @@ contract GIZAToken is ERC20, Ownable {
     
     // Only owner can burn own tokens
     function burn(uint _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner = msg.sender;
         balances[burner] = balances[burner].Sub(_value);
         totalSupply = totalSupply.Sub(_value);
@@ -267,7 +267,7 @@ contract Crowdsale is Ownable {
     
     
     function Crowdsale(address _founder, address _team, address _multisig) public {
-        require(_founder != address(0) &amp;&amp; _team != address(0) &amp;&amp; _multisig != address(0));
+        require(_founder != address(0) && _team != address(0) && _multisig != address(0));
         owner = msg.sender;
         team = _team;
         multisig = _multisig;
@@ -287,10 +287,10 @@ contract Crowdsale is Ownable {
     }
     
     function sendBounty(address _to, uint256 _amount) public onlyOwner returns(bool){
-        require(_amount != 0 &amp;&amp; _to != address(0));
+        require(_amount != 0 && _to != address(0));
         token.unlockTransfer();
         uint256 totalToSend = _amount.Mul(1 ether);
-        require(bountySent.Add(totalToSend) &lt; MAX_BOUNTY);
+        require(bountySent.Add(totalToSend) < MAX_BOUNTY);
         if ( transferTokens(_to, totalToSend) ){
                 bountySent = bountySent.Add(totalToSend);
                 return true;
@@ -299,14 +299,14 @@ contract Crowdsale is Ownable {
     }
     
     function sendTokens(address _to, uint256 _amount) public onlyOwner returns(bool){
-        require(_amount != 0 &amp;&amp; _to != address(0));
+        require(_amount != 0 && _to != address(0));
         token.unlockTransfer();
         return transferTokens(_to, _amount.Mul(1 ether));
     } 
   
     //To start Pre ICO
     function startPreICO(uint256 _dollarForOneEtherRate) public onlyOwner {
-        require(startBlock == 0 &amp;&amp; _dollarForOneEtherRate &gt; 0);
+        require(startBlock == 0 && _dollarForOneEtherRate > 0);
         //Set block number to current block number
         startBlock = now;
         //to show pre Ico is running
@@ -325,7 +325,7 @@ contract Crowdsale is Ownable {
     //to start ICO
     function startICO(uint256 _dollarForOneEtherRate) public onlyOwner{
         //ico can be started only after the end of pre ico
-        require( startBlock != 0 &amp;&amp; now &gt; startBlock.Add(DURATION_PRE_ICO) );
+        require( startBlock != 0 && now > startBlock.Add(DURATION_PRE_ICO) );
         startBlock = now;
         //to show iCO IS running
         etype = CrowdsaleType.ICO;
@@ -339,16 +339,16 @@ contract Crowdsale is Ownable {
         uint256 _day = (now - startBlock).Div(1 days);
         // Pre-ICO
         if (etype == CrowdsaleType.PreICO){
-            require(_day &lt;= DURATION_PRE_ICO &amp;&amp; tokensBought &lt; MAX_TOKENS_PRE_ICO);
-            if (_day &gt;= 0 &amp;&amp; _day &lt;= 7 &amp;&amp; tokensBought &lt; MAX_TOKENS_FIRST_7_DAYS_PRE_ICO)
+            require(_day <= DURATION_PRE_ICO && tokensBought < MAX_TOKENS_PRE_ICO);
+            if (_day >= 0 && _day <= 7 && tokensBought < MAX_TOKENS_FIRST_7_DAYS_PRE_ICO)
                 return 20; // $0.2
 			else
                 return 30; // $0.3
         // ICO
         } else {
-            if (_day &gt;= 0 &amp;&amp; _day &lt;= 5 &amp;&amp; tokensBought &lt; MAX_TOKENS_FIRST_5_DAYS_ICO)
+            if (_day >= 0 && _day <= 5 && tokensBought < MAX_TOKENS_FIRST_5_DAYS_ICO)
                 return 60; // $0.6 
-            else if (_day &gt; 5 &amp;&amp; _day &lt;= 10 &amp;&amp; tokensBought &lt; MAX_TOKENS_FIRST_10_DAYS_ICO)
+            else if (_day > 5 && _day <= 10 && tokensBought < MAX_TOKENS_FIRST_10_DAYS_ICO)
                 return 80; // $0.8 
             else
                 return 100; // $1 
@@ -357,7 +357,7 @@ contract Crowdsale is Ownable {
     
     // Calculate tokens to send
     function calcTokensToSend(uint256 _value) internal view returns (uint256){
-        require (_value &gt; 0);
+        require (_value > 0);
         
         // Current token price in cents
         uint256 currentTokenPrice = getCurrentTokenPriceInCents();
@@ -371,15 +371,15 @@ contract Crowdsale is Ownable {
         // Calculate bonus by purshase
         uint8 bonusPercent = 0;
         _value = _value.Div(1 ether).Mul(dollarsForEther);
-        if ( _value &gt;= 35000 ){
+        if ( _value >= 35000 ){
             bonusPercent = 10;
-        }else if ( _value &gt;= 20000 ){
+        }else if ( _value >= 20000 ){
             bonusPercent = 7;
-        }else if ( _value &gt;= 10000 ){
+        }else if ( _value >= 10000 ){
             bonusPercent = 5;
         }
         // Add bonus tokens
-        if (bonusPercent &gt; 0) tokensToSend = tokensToSend.Add(tokensToSend.Div(100).Mul(bonusPercent));
+        if (bonusPercent > 0) tokensToSend = tokensToSend.Add(tokensToSend.Div(100).Mul(bonusPercent));
         
         return tokensToSend;
     }    
@@ -395,7 +395,7 @@ contract Crowdsale is Ownable {
         uint256 tokensForTeam = tot.Mul(4443).Div(1e4);// 5.43% for Team (44,43% of (5.43 + 6.79) )
         uint256 tokensForFounder = tot.Sub(tokensForTeam);// 6.79% for Founders
         uint256 totalToSend = _tokensToSend.Add(tokensForFounder).Add(tokensForTeam);
-        if (token.balanceOf(this) &gt;= totalToSend &amp;&amp; 
+        if (token.balanceOf(this) >= totalToSend && 
             token.transfer(_to, _tokensToSend) == true){
                 token.transfer(founder, tokensForFounder);
                 token.transfer(team, tokensForTeam);
@@ -406,13 +406,13 @@ contract Crowdsale is Ownable {
     }
 
     function buyTokens(address _beneficiary) public isStarted payable {
-        require(_beneficiary != address(0) &amp;&amp;  msg.value != 0 );
+        require(_beneficiary != address(0) &&  msg.value != 0 );
         uint256 tokensToSend = calcTokensToSend(msg.value);
         tokensToSend = tokensToSend.Mul(1 ether);
         
         // Pre-ICO
         if (etype == CrowdsaleType.PreICO){
-            require(tokensBought.Add(tokensToSend) &lt; MAX_TOKENS_PRE_ICO);
+            require(tokensBought.Add(tokensToSend) < MAX_TOKENS_PRE_ICO);
         }      
         
         if (!transferTokens(_beneficiary, tokensToSend)) revert();

@@ -5,14 +5,14 @@ pragma solidity ^0.4.19;
 
 网站：http://henter.one
 微信：henter
-邮箱：<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fcf1fae0f1e6d4fcf1fae0f1e6baf9f1">[email&#160;protected]</a>
+邮箱：<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fcf1fae0f1e6d4fcf1fae0f1e6baf9f1">[email protected]</a>
 
 v2ex 的发帖：
 第一篇帖子，https://www.v2ex.com/t/422516
 第二篇帖子，https://www.v2ex.com/t/429992
 
 公众号文章地址:
-https://mp.weixin.qq.com/s?__biz=MzIyOTUyNzM5Ng==&amp;mid=2247483688&amp;idx=1&amp;sn=fcddae3d2a7d5ec8d0f6f38dc6168aa9&amp;chksm=e8401b23df379235d2eac65e298d55e82d39f7914993ad1f0fd0e4ce0345bf4c3a7a46c3a367#rd
+https://mp.weixin.qq.com/s?__biz=MzIyOTUyNzM5Ng==&mid=2247483688&idx=1&sn=fcddae3d2a7d5ec8d0f6f38dc6168aa9&chksm=e8401b23df379235d2eac65e298d55e82d39f7914993ad1f0fd0e4ce0345bf4c3a7a46c3a367#rd
 
 -----------------公众号文章全文 开始----------------------
 Henter.ONE 大撒币
@@ -130,7 +130,7 @@ contract Ownable {
     }
 
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != owner &amp;&amp; newOwner != address(0x0));
+        require(newOwner != owner && newOwner != address(0x0));
         address oldOwner = owner;
         owner = newOwner;
         OwnerChanged(oldOwner, newOwner);
@@ -138,13 +138,13 @@ contract Ownable {
 }
 
 contract HTRToken is ERC20, Ownable {
-    string public name = &quot;Henter.ONE&quot;;
-    string public symbol = &quot;HTR&quot;;
+    string public name = "Henter.ONE";
+    string public symbol = "HTR";
     uint8  public decimals = 18;
     uint256 public totalSupply = 10000000 * 10 ** uint256(decimals);
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
+    mapping (address => uint256) balances;
 
     uint256 public forGenesis = 10000 * 10 ** uint256(decimals);
 
@@ -724,7 +724,7 @@ contract HTRToken is ERC20, Ownable {
     uint256 public forOwner = totalSupply - forGenesis * genesis.length;
     function HTRToken() public {
         //for gensis users, thank you all for your participation
-        for (uint i = 0; i &lt; genesis.length; i++) {
+        for (uint i = 0; i < genesis.length; i++) {
             balances[genesis[i]] = forGenesis;
         }
 
@@ -737,9 +737,9 @@ contract HTRToken is ERC20, Ownable {
     }
 
     function airdropForGenesisUsers(address[] _addresses) public onlyOwner {
-        require(balances[msg.sender] &gt; forGenesis * _addresses.length);
+        require(balances[msg.sender] > forGenesis * _addresses.length);
 
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             balances[_addresses[i]] = forGenesis;
             genesis.push(_addresses[i]);
         }
@@ -756,8 +756,8 @@ contract HTRToken is ERC20, Ownable {
 
     function _transfer(address _from, address _to, uint _value) internal returns(bool) {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value > balances[_to]);
         balances[_from] -= _value;
         balances[_to] += _value;
         Transfer(_from, _to, _value);

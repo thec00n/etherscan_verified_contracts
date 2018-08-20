@@ -81,7 +81,7 @@ contract UsingAdmin is
         constant
         returns (address _addr)
     {
-        return addressOf(&quot;ADMIN&quot;);
+        return addressOf("ADMIN");
     }
 }
 
@@ -116,19 +116,19 @@ contract UsingTreasury is
         view
         returns (ITreasury)
     {
-        return ITreasury(addressOf(&quot;TREASURY&quot;));
+        return ITreasury(addressOf("TREASURY"));
     }
 }
 
 
 /**
     This is a simple class that maintains a doubly linked list of
-    address =&gt; uint amounts. Address balances can be added to 
+    address => uint amounts. Address balances can be added to 
     or removed from via add() and subtract(). All balances can
     be obtain by calling balances(). If an address has a 0 amount,
     it is removed from the Ledger.
 
-    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it&#39;s safe to
+    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it's safe to
           use to track Ether balances.
 
     Public methods:
@@ -149,7 +149,7 @@ contract Ledger {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -195,7 +195,7 @@ contract Ledger {
         uint _maxAmt = entry.balance;
         if (_maxAmt == 0) return;
         
-        if (_amt &gt;= _maxAmt) {
+        if (_amt >= _maxAmt) {
             // Subtract the max amount, and delete entry.
             total -= _maxAmt;
             entries[entry.prev].next = entry.next;
@@ -222,7 +222,7 @@ contract Ledger {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -248,7 +248,7 @@ contract Ledger {
         _balances = new uint[](_size);
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _balances[_i] = entries[_curEntry.next].balance;
             _curEntry = entries[_curEntry.next];
@@ -279,7 +279,7 @@ contract AddressSet {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -309,8 +309,8 @@ contract AddressSet {
         else entry.exists = true;
 
         // Replace first entry with this one.
-        // Before: HEAD &lt;-&gt; X &lt;-&gt; Y
-        // After: HEAD &lt;-&gt; THIS &lt;-&gt; X &lt;-&gt; Y
+        // Before: HEAD <-> X <-> Y
+        // After: HEAD <-> THIS <-> X <-> Y
         // do: THIS.NEXT = [0].next; [0].next.prev = THIS; [0].next = THIS; THIS.prev = 0;
         Entry storage HEAD = entries[0x0];
         entry.next = HEAD.next;
@@ -327,12 +327,12 @@ contract AddressSet {
         // Do not allow the removal of HEAD.
         if (_address == address(0)) return;
         Entry storage entry = entries[_address];
-        // If it doesn&#39;t exist already, there is nothing to do.
+        // If it doesn't exist already, there is nothing to do.
         if (!entry.exists) return;
 
         // Stitch together next and prev, delete entry.
-        // Before: X &lt;-&gt; THIS &lt;-&gt; Y
-        // After: X &lt;-&gt; Y
+        // Before: X <-> THIS <-> Y
+        // After: X <-> Y
         // do: THIS.next.prev = this.prev; THIS.prev.next = THIS.next;
         entries[entry.prev].next = entry.next;
         entries[entry.next].prev = entry.prev;
@@ -352,7 +352,7 @@ contract AddressSet {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -378,7 +378,7 @@ contract AddressSet {
         // Iterate forward through all entries until the end.
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _curEntry = entries[_curEntry.next];
             _i++;
@@ -393,7 +393,7 @@ contract AddressSet {
 
   - Anybody can add funding (according to whitelist)
   - Anybody can tell profits (balance - (funding + collateral)) to go to Treasury.
-  - Anyone can remove their funding, so long as balance &gt;= collateral.
+  - Anyone can remove their funding, so long as balance >= collateral.
   - Whitelist is managed by getWhitelistOwner() -- typically Admin.
 
   Exposes the following:
@@ -491,8 +491,8 @@ contract Bankrollable is
         address _bankroller = msg.sender;
         uint _collateral = getCollateral();
         uint _balance = address(this).balance;
-        uint _available = _balance &gt; _collateral ? _balance - _collateral : 0;
-        if (_amount &gt; _available) _amount = _available;
+        uint _available = _balance > _collateral ? _balance - _collateral : 0;
+        if (_amount > _available) _amount = _available;
 
         // Try to remove _amount from ledger, get actual _amount removed.
         _amount = ledger.subtract(_bankroller, _amount);
@@ -511,7 +511,7 @@ contract Bankrollable is
         returns (uint _profits)
     {
         int _p = profits();
-        if (_p &lt;= 0) return;
+        if (_p <= 0) return;
         _profits = uint(_p);
         profitsSent += _profits;
         // Send profits to Treasury
@@ -558,7 +558,7 @@ contract Bankrollable is
     }
 
     // Returns the amount that can currently be bankrolled.
-    //   - 0 if balance &lt; collateral
+    //   - 0 if balance < collateral
     //   - If profits: full bankroll
     //   - If no profits: remaning bankroll: balance - collateral
     function bankrollAvailable()
@@ -570,9 +570,9 @@ contract Bankrollable is
         uint _bankroll = bankroll;
         uint _collat = getCollateral();
         // Balance is below collateral!
-        if (_balance &lt;= _collat) return 0;
+        if (_balance <= _collat) return 0;
         // No profits, but we have a balance over collateral.
-        else if (_balance &lt; _collat + _bankroll) return _balance - _collat;
+        else if (_balance < _collat + _bankroll) return _balance - _collat;
         // Profits. Return only _bankroll
         else return _bankroll;
     }
@@ -647,26 +647,26 @@ contract VideoPokerUtils {
         returns (uint32)
     {
         // Draws must be valid. If no hand, must draw all 5 cards.
-        assert(_draws &lt;= 31);
+        assert(_draws <= 31);
         assert(_hand != 0 || _draws == 31);
         // Shortcuts. Return _hand on no draws, or 5 cards on full draw.
         if (_draws == 0) return _hand;
         if (_draws == 31) return uint32(getCardsFromHash(_hash, 5, handToBitmap(_hand)));
 
-        // Create a mask of 1&#39;s where new cards should go.
+        // Create a mask of 1's where new cards should go.
         uint _newMask;
-        for (uint _i=0; _i&lt;5; _i++) {
-            if (_draws &amp; 2**_i == 0) continue;
+        for (uint _i=0; _i<5; _i++) {
+            if (_draws & 2**_i == 0) continue;
             _newMask |= 63 * (2**(6*_i));
         }
-        // Create a mask of 0&#39;s where new cards should go.
+        // Create a mask of 0's where new cards should go.
         // Be sure to use only first 30 bits (5 cards x 6 bits)
-        uint _discardMask = ~_newMask &amp; (2**31-1);
+        uint _discardMask = ~_newMask & (2**31-1);
 
         // Select from _newHand, discard from _hand, and combine.
         uint _newHand = getCardsFromHash(_hash, 5, handToBitmap(_hand));
-        _newHand &amp;= _newMask;
-        _newHand |= _hand &amp; _discardMask;
+        _newHand &= _newMask;
+        _newHand |= _hand & _discardMask;
         return uint32(_newHand);
     }
 
@@ -696,11 +696,11 @@ contract VideoPokerUtils {
         //   Likewise, _hasTrips will be true even if there are Quads.
         uint _i;
         uint _val;
-        for (_i=0; _i&lt;5; _i++) {
+        for (_i=0; _i<5; _i++) {
             _card = readFromCards(_hand, _i);
-            if (_card &gt; 51) return HAND_NOT_COMPUTABLE;
+            if (_card > 51) return HAND_NOT_COMPUTABLE;
             
-            // update val and suit counts, and if it&#39;s a flush
+            // update val and suit counts, and if it's a flush
             _val = _card % 13;
             _valCounts[_val]++;
             _suitCounts[_card/13]++;
@@ -710,8 +710,8 @@ contract VideoPokerUtils {
             if (_val == 0) {
                 _hasAce = true;
             } else {
-                if (_val &lt; _minNonAce) _minNonAce = _val;
-                if (_val &gt; _maxNonAce) _maxNonAce = _val;
+                if (_val < _minNonAce) _minNonAce = _val;
+                if (_val > _maxNonAce) _maxNonAce = _val;
             }
 
             // update _pairVal, _numPairs, _maxSet
@@ -725,17 +725,17 @@ contract VideoPokerUtils {
             }
         }
 
-        if (_numPairs &gt; 0){
-            // If they have quads, they can&#39;t have royal flush, so we can return.
+        if (_numPairs > 0){
+            // If they have quads, they can't have royal flush, so we can return.
             if (_maxSet==4) return HAND_FK;
-            // One of the two pairs was the trips, so it&#39;s a full house.
-            if (_maxSet==3 &amp;&amp; _numPairs==2) return HAND_FH;
+            // One of the two pairs was the trips, so it's a full house.
+            if (_maxSet==3 && _numPairs==2) return HAND_FH;
             // Trips is their best hand (no straight or flush possible)
             if (_maxSet==3) return HAND_TK;
             // Two pair is their best hand (no straight or flush possible)
             if (_numPairs==2) return HAND_TP;
             // One pair is their best hand (no straight or flush possible)
-            if (_numPairs == 1 &amp;&amp; (_pairVal &gt;= 10 || _pairVal==0)) return HAND_JB;
+            if (_numPairs == 1 && (_pairVal >= 10 || _pairVal==0)) return HAND_JB;
             // They have a low pair (no straight or flush possible)
             return HAND_HC;
         }
@@ -748,8 +748,8 @@ contract VideoPokerUtils {
             : _maxNonAce - _minNonAce == 4;
         
         // Check for hands in order of rank.
-        if (_hasStraight &amp;&amp; _hasFlush &amp;&amp; _minNonAce==9) return HAND_RF;
-        if (_hasStraight &amp;&amp; _hasFlush) return HAND_SF;
+        if (_hasStraight && _hasFlush && _minNonAce==9) return HAND_RF;
+        if (_hasStraight && _hasFlush) return HAND_SF;
         if (_hasFlush) return HAND_FL;
         if (_hasStraight) return HAND_ST;
         return HAND_HC;
@@ -762,9 +762,9 @@ contract VideoPokerUtils {
         returns (uint8[5] _cards)
     {
         uint32 _mask;
-        for (uint _i=0; _i&lt;5; _i++){
+        for (uint _i=0; _i<5; _i++){
             _mask = uint32(63 * 2**(6*_i));
-            _cards[_i] = uint8((_hand &amp; _mask) / (2**(6*_i)));
+            _cards[_i] = uint8((_hand & _mask) / (2**(6*_i)));
         }
     }
 
@@ -781,7 +781,7 @@ contract VideoPokerUtils {
     {
         uint _offset = 2**(6*_index);
         uint _oneBits = 2**6 - 1;
-        return (_cards &amp; (_oneBits * _offset)) / _offset;
+        return (_cards & (_oneBits * _offset)) / _offset;
     }
 
     // Returns a bitmap to represent the set of cards in _hand.
@@ -793,9 +793,9 @@ contract VideoPokerUtils {
         if (_hand == 0) return 0;
         uint _mask;
         uint _card;
-        for (uint _i=0; _i&lt;5; _i++){
+        for (uint _i=0; _i<5; _i++){
             _mask = 63 * 2**(6*_i);
-            _card = (_hand &amp; _mask) / (2**(6*_i));
+            _card = (_hand & _mask) / (2**(6*_i));
             _bitmap |= 2**_card;
         }
     }
@@ -807,7 +807,7 @@ contract VideoPokerUtils {
         pure
         returns (uint _cards)
     {
-        // Return early if we don&#39;t need to pick any cards.
+        // Return early if we don't need to pick any cards.
         if (_numCards == 0) return;
 
         uint _cardIdx = 0;                // index of currentCard
@@ -820,7 +820,7 @@ contract VideoPokerUtils {
 
             // If card is not used, add it to _cards and _usedBitmap
             // Return if we have enough cards.
-            if (_usedBitmap &amp; _usedMask == 0) {
+            if (_usedBitmap & _usedMask == 0) {
                 _cards |= (_card * 2**(_cardIdx*6));
                 _usedBitmap |= _usedMask;
                 _cardIdx++;
@@ -880,27 +880,27 @@ contract VideoPoker is
     Vars vars;
 
     // A Mapping of all games
-    mapping(uint32 =&gt; Game) public games;
+    mapping(uint32 => Game) public games;
     
     // Credits we owe the user
-    mapping(address =&gt; uint) public credits;
+    mapping(address => uint) public credits;
 
-    // Store a two-way mapping of address &lt;=&gt; userId
-    // If we&#39;ve seen a user before, betting will be just 1 write
+    // Store a two-way mapping of address <=> userId
+    // If we've seen a user before, betting will be just 1 write
     //  per Game struct vs 2 writes.
     // The trade-off is 3 writes for new users. Seems fair.
-    mapping (address =&gt; uint32) public userIds;
-    mapping (uint32 =&gt; address) public userAddresses;
+    mapping (address => uint32) public userIds;
+    mapping (uint32 => address) public userAddresses;
 
     // Note: Pay tables cannot be changed once added.
     // However, admin can change the current PayTable
-    mapping(uint16=&gt;uint16[12]) payTables;
+    mapping(uint16=>uint16[12]) payTables;
 
     // version of the game
     uint8 public constant version = 2;
-    uint8 constant WARN_IHAND_TIMEOUT = 1; // &quot;Initial hand not available. Drawing 5 new cards.&quot;
-    uint8 constant WARN_DHAND_TIMEOUT = 2; // &quot;Draw cards not available. Using initial hand.&quot;
-    uint8 constant WARN_BOTH_TIMEOUT = 3;  // &quot;Draw cards not available, and no initial hand.&quot;
+    uint8 constant WARN_IHAND_TIMEOUT = 1; // "Initial hand not available. Drawing 5 new cards."
+    uint8 constant WARN_DHAND_TIMEOUT = 2; // "Draw cards not available. Using initial hand."
+    uint8 constant WARN_BOTH_TIMEOUT = 3;  // "Draw cards not available, and no initial hand."
     
     // Admin Events
     event Created(uint time);
@@ -950,8 +950,8 @@ contract VideoPoker is
         public
         fromAdmin
     {
-        require(_maxBet &lt;= .375 ether);
-        require(_payTableId &lt; settings.numPayTables);
+        require(_maxBet <= .375 ether);
+        require(_payTableId < settings.numPayTables);
         settings.minBet = _minBet;
         settings.maxBet = _maxBet;
         settings.curPayTableId = _payTableId;
@@ -967,7 +967,7 @@ contract VideoPoker is
         fromAdmin
     {
         uint32 _today = uint32(block.timestamp / 1 days);
-        require(settings.lastDayAdded &lt; _today);
+        require(settings.lastDayAdded < _today);
         settings.lastDayAdded = _today;
         _addPayTable(_rf, _sf, _fk, _fh, _fl, _st, _tk, _tp, _jb);
         emit PayTableAdded(now, msg.sender, settings.numPayTables-1);
@@ -1006,14 +1006,14 @@ contract VideoPoker is
         payable
     {
         uint _bet = msg.value;
-        if (_bet &gt; settings.maxBet)
-            return _betFailure(&quot;Bet too large.&quot;, _bet, true);
-        if (_bet &lt; settings.minBet)
-            return _betFailure(&quot;Bet too small.&quot;, _bet, true);
-        if (_bet &gt; curMaxBet())
-            return _betFailure(&quot;The bankroll is too low.&quot;, _bet, true);
+        if (_bet > settings.maxBet)
+            return _betFailure("Bet too large.", _bet, true);
+        if (_bet < settings.minBet)
+            return _betFailure("Bet too small.", _bet, true);
+        if (_bet > curMaxBet())
+            return _betFailure("The bankroll is too low.", _bet, true);
 
-        // no uint64 overflow: _bet &lt; maxBet &lt; .625 ETH &lt; 2e64
+        // no uint64 overflow: _bet < maxBet < .625 ETH < 2e64
         uint32 _id = _createNewGame(uint64(_bet));
         emit BetSuccess(now, msg.sender, _id, _bet, settings.curPayTableId);
     }
@@ -1031,14 +1031,14 @@ contract VideoPoker is
     function betWithCredits(uint64 _bet)
         public
     {
-        if (_bet &gt; settings.maxBet)
-            return _betFailure(&quot;Bet too large.&quot;, _bet, false);
-        if (_bet &lt; settings.minBet)
-            return _betFailure(&quot;Bet too small.&quot;, _bet, false);
-        if (_bet &gt; curMaxBet())
-            return _betFailure(&quot;The bankroll is too low.&quot;, _bet, false);
-        if (_bet &gt; credits[msg.sender])
-            return _betFailure(&quot;Insufficient credits&quot;, _bet, false);
+        if (_bet > settings.maxBet)
+            return _betFailure("Bet too large.", _bet, false);
+        if (_bet < settings.minBet)
+            return _betFailure("Bet too small.", _bet, false);
+        if (_bet > curMaxBet())
+            return _betFailure("The bankroll is too low.", _bet, false);
+        if (_bet > credits[msg.sender])
+            return _betFailure("Insufficient credits", _bet, false);
 
         uint32 _id = _createNewGame(uint64(_bet));
         vars.totalCredits -= uint88(_bet);
@@ -1053,7 +1053,7 @@ contract VideoPoker is
         bool _didFinalize = finalize(_id, _hashCheck);
         uint64 _bet = games[_id].bet;
         if (!_didFinalize)
-            return _betFailure(&quot;Failed to finalize prior game.&quot;, _bet, false);
+            return _betFailure("Failed to finalize prior game.", _bet, false);
         betWithCredits(_bet);
     }
 
@@ -1083,19 +1083,19 @@ contract VideoPoker is
         Game storage _game = games[_id];
         address _user = userAddresses[_game.userId];
         if (_game.iBlock == 0)
-            return _drawFailure(_id, _draws, &quot;Invalid game Id.&quot;);
+            return _drawFailure(_id, _draws, "Invalid game Id.");
         if (_user != msg.sender)
-            return _drawFailure(_id, _draws, &quot;This is not your game.&quot;);
+            return _drawFailure(_id, _draws, "This is not your game.");
         if (_game.iBlock == block.number)
-            return _drawFailure(_id, _draws, &quot;Initial cards not available.&quot;);
+            return _drawFailure(_id, _draws, "Initial cards not available.");
         if (_game.dBlock != 0)
-            return _drawFailure(_id, _draws, &quot;Cards already drawn.&quot;);
-        if (_draws &gt; 31)
-            return _drawFailure(_id, _draws, &quot;Invalid draws.&quot;);
+            return _drawFailure(_id, _draws, "Cards already drawn.");
+        if (_draws > 31)
+            return _drawFailure(_id, _draws, "Invalid draws.");
         if (_draws == 0)
-            return _drawFailure(_id, _draws, &quot;Cannot draw 0 cards. Use finalize instead.&quot;);
+            return _drawFailure(_id, _draws, "Cannot draw 0 cards. Use finalize instead.");
         if (_game.handRank != HAND_UNDEFINED)
-            return _drawFailure(_id, _draws, &quot;Game already finalized.&quot;);
+            return _drawFailure(_id, _draws, "Game already finalized.");
         
         _draw(_game, _id, _draws, _hashCheck);
     }
@@ -1120,15 +1120,15 @@ contract VideoPoker is
         Game storage _game = games[_id];
         address _user = userAddresses[_game.userId];
         if (_game.iBlock == 0)
-            return _finalizeFailure(_id, &quot;Invalid game Id.&quot;);
+            return _finalizeFailure(_id, "Invalid game Id.");
         if (_user != msg.sender)
-            return _finalizeFailure(_id, &quot;This is not your game.&quot;);
+            return _finalizeFailure(_id, "This is not your game.");
         if (_game.iBlock == block.number)
-            return _finalizeFailure(_id, &quot;Initial hand not avaiable.&quot;);
+            return _finalizeFailure(_id, "Initial hand not avaiable.");
         if (_game.dBlock == block.number)
-            return _finalizeFailure(_id, &quot;Drawn cards not available.&quot;);
+            return _finalizeFailure(_id, "Drawn cards not available.");
         if (_game.handRank != HAND_UNDEFINED)
-            return _finalizeFailure(_id, &quot;Game already finalized.&quot;);
+            return _finalizeFailure(_id, "Game already finalized.");
 
         _finalize(_game, _id, _hashCheck);
         return true;
@@ -1154,8 +1154,8 @@ contract VideoPoker is
     )
         private
     {
-        require(_rf&lt;=1600 &amp;&amp; _sf&lt;=100 &amp;&amp; _fk&lt;=50 &amp;&amp; _fh&lt;=18 &amp;&amp; _fl&lt;=12 
-                 &amp;&amp; _st&lt;=8 &amp;&amp; _tk&lt;=6 &amp;&amp; _tp&lt;=4 &amp;&amp; _jb&lt;=2);
+        require(_rf<=1600 && _sf<=100 && _fk<=50 && _fh<=18 && _fl<=12 
+                 && _st<=8 && _tk<=6 && _tp<=4 && _jb<=2);
 
         uint16[12] memory _pt;
         _pt[HAND_UNDEFINED] = 0;
@@ -1194,7 +1194,7 @@ contract VideoPoker is
     function _uncreditUser(address _user, uint _amt)
         private
     {
-        if (_amt &gt; credits[_user] || _amt == 0) _amt = credits[_user];
+        if (_amt > credits[_user] || _amt == 0) _amt = credits[_user];
         if (_amt == 0) return;
         vars.totalCredits -= uint88(_amt);
         credits[_user] -= _amt;
@@ -1264,7 +1264,7 @@ contract VideoPoker is
         if (_iBlockHash != 0) {
             // Ensure they are drawing against expected hand
             if (_iBlockHash != _hashCheck) {
-                return _drawFailure(_id, _draws, &quot;HashCheck Failed. Try refreshing game.&quot;);
+                return _drawFailure(_id, _draws, "HashCheck Failed. Try refreshing game.");
             }
             _iHand = getHand(uint(keccak256(_iBlockHash, _id)));
         } else {
@@ -1294,7 +1294,7 @@ contract VideoPoker is
     //     - fail: set draws to 5, return. (user should call finalize again)
     //
     // Gas Cost: 21k loss, 36k win, 49k new win
-    //   - 6k: if draws &gt; 0: drawToHand()
+    //   - 6k: if draws > 0: drawToHand()
     //   - 7k: getHandRank()
     //   - 5k: 1 update: Game
     //   - 2k: FinalizeSuccess
@@ -1336,15 +1336,15 @@ contract VideoPoker is
             if (_blockhash != 0) {
                 // ensure they are drawing against expected hand
                 if (_blockhash != _hashCheck) {
-                    _finalizeFailure(_id, &quot;HashCheck Failed. Try refreshing game.&quot;);
+                    _finalizeFailure(_id, "HashCheck Failed. Try refreshing game.");
                     return;
                 }
                 // draw 5 cards into iHand, use as dHand
                 _iHand = getHand(uint(keccak256(_blockhash, _id)));
                 _dHand = _iHand;
             } else {
-                // can&#39;t finalize with iHand. Draw 5 cards.
-                _finalizeFailure(_id, &quot;Initial hand not available. Drawing 5 new cards.&quot;);
+                // can't finalize with iHand. Draw 5 cards.
+                _finalizeFailure(_id, "Initial hand not available. Drawing 5 new cards.");
                 _game.draws = 31;
                 _game.dBlock = uint32(block.number);
                 emit DrawSuccess(now, _user, _id, 0, 31, WARN_IHAND_TIMEOUT);
@@ -1358,14 +1358,14 @@ contract VideoPoker is
             : uint8(getHandRank(_dHand));
 
         // This only happens if draws==0, and iHand was drawable.
-        if (_iHand &gt; 0) _game.iHand = _iHand;
+        if (_iHand > 0) _game.iHand = _iHand;
         // Always set dHand and handRank
         _game.dHand = _dHand;
         _game.handRank = _handRank;
 
         // Compute _payout, credit user, emit event.
         uint _payout = payTables[_game.payTableId][_handRank] * uint(_game.bet);
-        if (_payout &gt; 0) _creditUser(_user, _payout, _id);
+        if (_payout > 0) _creditUser(_user, _payout, _id);
         emit FinalizeSuccess(now, _user, _id, _game.dHand, _game.handRank, _payout, _warnCode);
     }
 
@@ -1399,7 +1399,7 @@ contract VideoPoker is
     // Return the less of settings.maxBet and curMaxBet()
     function effectiveMaxBet() public view returns (uint _amount) {
         uint _curMax = curMaxBet();
-        return _curMax &gt; settings.maxBet ? settings.maxBet : _curMax;
+        return _curMax > settings.maxBet ? settings.maxBet : _curMax;
     }
 
     function getPayTable(uint16 _payTableId)
@@ -1407,7 +1407,7 @@ contract VideoPoker is
         view
         returns (uint16[12])
     {
-        require(_payTableId &lt; settings.numPayTables);
+        require(_payTableId < settings.numPayTables);
         return payTables[_payTableId];
     }
 

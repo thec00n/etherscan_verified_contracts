@@ -11,12 +11,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -28,13 +28,13 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 x, uint256 y) internal pure returns(uint256) {
-        require(y &gt; 0);
+        require(y > 0);
         return x / y;
     }
 }
 
 contract Authorization {
-    mapping(address =&gt; bool) internal authbook;
+    mapping(address => bool) internal authbook;
     address[] public operators;
     address public owner;
     bool public powerStatus = true;
@@ -79,7 +79,7 @@ contract Authorization {
         public
         onlyOwner
     {
-        if(user_ != address(0) &amp;&amp; !authbook[user_]) {
+        if(user_ != address(0) && !authbook[user_]) {
             authbook[user_] = true;
             operators.push(user_);
         }
@@ -90,7 +90,7 @@ contract Authorization {
         onlyOwner
     {
         delete authbook[user_];
-        for(uint i = 0; i &lt; operators.length; i++) {
+        for(uint i = 0; i < operators.length; i++) {
             if(operators[i] == user_) {
                 operators[i] = operators[operators.length - 1];
                 operators.length -= 1;
@@ -126,7 +126,7 @@ contract Token is Authorization {
 contract StandardToken is SafeMath, Token {
     /* Send coins */
     function transfer(address _to, uint256 _value) onlyActive public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             emit Transfer(msg.sender, _to, _value);
@@ -138,7 +138,7 @@ contract StandardToken is SafeMath, Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) onlyActive public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -166,17 +166,17 @@ contract StandardToken is SafeMath, Token {
     }
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract TidealToken is StandardToken {
 
     // metadata
-    string public constant name = &quot;Tideal Token&quot;;
-    string public constant symbol = &quot;TDT&quot;;
+    string public constant name = "Tideal Token";
+    string public constant symbol = "TDT";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     uint256 public constant tokenCreationCap =  10 * (10**9) * 10**decimals;
 
     // fund accounts

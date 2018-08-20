@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;THBD&#39; token contract
+// 'THBD' token contract
 //
 // Deployed to : 0x756dD5bA2b8e20210ddEb345C59D69C3a011a4EC
 // Symbol      : THBD
@@ -9,7 +9,7 @@ pragma solidity ^0.4.18;
 // Total supply: 1000000000
 // Decimals    : 18
 //
-// (c) by Chanwit Putboribunsuk [king]/ Thailand 4.0 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f6a29e979f93829e8684999c939582b6919b979f9ad895999b">[email&#160;protected]</a>
+// (c) by Chanwit Putboribunsuk [king]/ Thailand 4.0 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f6a29e979f93829e8684999c939582b6919b979f9ad895999b">[email protected]</a>
 // ----------------------------------------------------------------------------
 
 
@@ -19,10 +19,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -30,7 +30,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -100,16 +100,16 @@ contract ThaiBahtDigital is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function ThaiBahtDigital() public {
-        symbol = &quot;THBD&quot;;
-        name = &quot;Thai Baht Digital&quot;;
+        symbol = "THBD";
+        name = "Thai Baht Digital";
         decimals = 18;
         _totalSupply = 1000000000000000000000000000;
 
@@ -135,8 +135,8 @@ contract ThaiBahtDigital is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -174,7 +174,7 @@ contract ThaiBahtDigital is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -183,7 +183,7 @@ contract ThaiBahtDigital is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -195,7 +195,7 @@ contract ThaiBahtDigital is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

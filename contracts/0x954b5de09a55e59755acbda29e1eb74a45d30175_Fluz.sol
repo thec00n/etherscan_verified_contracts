@@ -48,15 +48,15 @@ interface Token {
 
 contract Fluz is Token {
 
-    string public constant name = &quot;FluzFluz&quot;;
-    string public constant symbol = &quot;FLUZ&quot;;
+    string public constant name = "FluzFluz";
+    string public constant symbol = "FLUZ";
     uint8 public constant decimals = 18;
     uint256 public constant totalSupply = 204780000 * 10**18;
 
     uint public launched = 0; // Time of locking distribution and retiring founder; 0 means not launched
-    address public founder = 0x81D5ce5Bf1F4F0a576De11Fd9631e789D72c9BdE; // Founder&#39;s address
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    address public founder = 0x81D5ce5Bf1F4F0a576De11Fd9631e789D72c9BdE; // Founder's address
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
     bool public transfersAreLocked = true;
 
@@ -81,10 +81,10 @@ contract Fluz is Token {
     }
 
     /**
-     * Transfer with checking if it&#39;s allowed
+     * Transfer with checking if it's allowed
      */
     function transfer(address _to, uint256 _value) public canTransfer returns (bool success) {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         balances[msg.sender] -= _value;
@@ -94,10 +94,10 @@ contract Fluz is Token {
     }
 
     /**
-     * Transfer with checking if it&#39;s allowed
+     * Transfer with checking if it's allowed
      */
     function transferFrom(address _from, address _to, uint256 _value) public canTransfer returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             return false;
         }
         allowed[_from][msg.sender] -= _value;

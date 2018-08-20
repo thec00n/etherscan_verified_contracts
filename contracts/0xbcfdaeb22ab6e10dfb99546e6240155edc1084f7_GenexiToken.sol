@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,8 +45,8 @@ contract ERC20Token is IERC20Token {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     modifier validAddress(address _address) {
         require(_address != 0x0);
@@ -125,8 +125,8 @@ contract GenexiToken is ERC20Token, Owned {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;GEN&quot;;
-    string public constant symbol = &quot;GEN&quot;;
+    string public constant name = "GEN";
+    string public constant symbol = "GEN";
     uint32 public constant decimals = 18;
 
     // SET current initial token supply
@@ -147,12 +147,12 @@ contract GenexiToken is ERC20Token, Owned {
     // List wallets to allow transactions tokens
     uint[256] private nWallets;
     // Index on the list of wallets to allow reverse lookup
-    mapping(uint =&gt; uint) private iWallets;
+    mapping(uint => uint) private iWallets;
 
     // Date end of lock Project Token 
     uint256 public endOfLockProjectToken;
     // Lock token on account Genexi Project 
-    mapping (address =&gt; uint256) private lock;
+    mapping (address => uint256) private lock;
 
     event Finalize();
     event DisableTransfers();
@@ -165,7 +165,7 @@ contract GenexiToken is ERC20Token, Owned {
 
         totalSupply = initialSupply;
         // Initializing 70% of tokens for sale
-        // maxSaleToken = initialSupply * 70 / 100 (70% this is maxSaleToken &amp; 100% this is initialSupply)
+        // maxSaleToken = initialSupply * 70 / 100 (70% this is maxSaleToken & 100% this is initialSupply)
         // totalProjectToken will be calculated in function finalize()
         // 
         // |---------maxSaleToken---------totalProjectToken|
@@ -185,7 +185,7 @@ contract GenexiToken is ERC20Token, Owned {
         nWallets[1] = uint(msg.sender);
         iWallets[uint(msg.sender)] = 1;
 
-        for (uint index = 0; index &lt; wallets.length; index++) {
+        for (uint index = 0; index < wallets.length; index++) {
             nWallets[2 + index] = uint(wallets[index]);
             iWallets[uint(wallets[index])] = index + 2;
         }
@@ -200,7 +200,7 @@ contract GenexiToken is ERC20Token, Owned {
     modifier transfersAllowed(address _address) {
         if (fundingEnabled) {
             uint index = iWallets[uint(_address)];
-            assert(index &gt; 0);
+            assert(index > 0);
         }
 
         require(transfersEnabled);
@@ -233,8 +233,8 @@ contract GenexiToken is ERC20Token, Owned {
     }
 
     function unlockProjectToken() external {
-        require(lock[msg.sender] &gt; 0);
-        require(now &gt; endOfLockProjectToken);
+        require(lock[msg.sender] > 0);
+        require(now > endOfLockProjectToken);
 
         balances[msg.sender] = balances[msg.sender].add(lock[msg.sender]);
 
@@ -248,8 +248,8 @@ contract GenexiToken is ERC20Token, Owned {
 
         uint256 soldTokens = maxSaleToken;
 
-        for (uint index = 1; index &lt; nWallets.length; index++) {
-            if (balances[address(nWallets[index])] &gt; 0) {
+        for (uint index = 1; index < nWallets.length; index++) {
+            if (balances[address(nWallets[index])] > 0) {
                 // Get total sold tokens on the funding wallets
                 // totalSoldTokens is 70% of the total number of tokens
                 soldTokens = soldTokens.sub(balances[address(nWallets[index])]);
@@ -262,7 +262,7 @@ contract GenexiToken is ERC20Token, Owned {
 
         totalSoldTokens = soldTokens;
 
-        // totalProjectToken = totalSoldTokens * 30 / 70 (30% this is Genexi Project &amp; 70% this is totalSoldTokens)
+        // totalProjectToken = totalSoldTokens * 30 / 70 (30% this is Genexi Project & 70% this is totalSoldTokens)
         //
         // |-------totalSoldTokens--------totalProjectToken|
         // |===============70%============|======30%=======|

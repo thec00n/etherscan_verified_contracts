@@ -61,7 +61,7 @@ contract SimpleMarket is EventfulMarket
         address owner;
         bool active;
     }
-    mapping( uint =&gt; OfferInfo ) public offers;
+    mapping( uint => OfferInfo ) public offers;
 
     uint public last_offer_id;
 
@@ -95,7 +95,7 @@ contract SimpleMarket is EventfulMarket
 
     // non underflowing subtraction
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     // non overflowing multiplication
@@ -124,9 +124,9 @@ contract SimpleMarket is EventfulMarket
         exclusive
         returns (uint id)
     {
-        assert(sell_how_much &gt; 0);
+        assert(sell_how_much > 0);
         assert(sell_which_token != ERC20(0x0));
-        assert(buy_how_much &gt; 0);
+        assert(buy_how_much > 0);
         assert(buy_which_token != ERC20(0x0));
         assert(sell_which_token != buy_which_token);
 
@@ -158,10 +158,10 @@ contract SimpleMarket is EventfulMarket
         // inferred quantity that the buyer wishes to spend
         uint spend = safeMul(quantity, offer.buy_how_much) / offer.sell_how_much;
 
-        if ( spend &gt; offer.buy_how_much || quantity &gt; offer.sell_how_much ) {
+        if ( spend > offer.buy_how_much || quantity > offer.sell_how_much ) {
             // buyer wants more than is available
             success = false;
-        } else if ( spend == offer.buy_how_much &amp;&amp; quantity == offer.sell_how_much ) {
+        } else if ( spend == offer.buy_how_much && quantity == offer.sell_how_much ) {
             // buyer wants exactly what is available
             delete offers[id];
 
@@ -170,7 +170,7 @@ contract SimpleMarket is EventfulMarket
 
             ItemUpdate(id);
             success = true;
-        } else if ( spend &gt; 0 &amp;&amp; quantity &gt; 0 ) {
+        } else if ( spend > 0 && quantity > 0 ) {
             // buyer wants a fraction of what is available
             offers[id].sell_how_much = safeSub(offer.sell_how_much, quantity);
             offers[id].buy_how_much = safeSub(offer.buy_how_much, spend);
@@ -215,7 +215,7 @@ contract ExpiringMarket is SimpleMarket {
         return block.timestamp;
     }
     function isClosed() constant returns (bool closed) {
-        return (getTime() &gt; close_time);
+        return (getTime() > close_time);
     }
 
     // after market lifetime has elapsed, no new offers are allowed

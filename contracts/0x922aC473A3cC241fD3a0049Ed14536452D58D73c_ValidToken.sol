@@ -45,8 +45,8 @@ contract ERC677Receiver {
  */
 contract ValidToken is ERC677, ERC20 {
     // token metadata
-    string public constant name = &quot;VALID&quot;;
-    string public constant symbol = &quot;VLD&quot;;
+    string public constant name = "VALID";
+    string public constant symbol = "VLD";
     uint8 public constant decimals = 18;
 
     // total supply and maximum amount of tokens
@@ -54,11 +54,11 @@ contract ValidToken is ERC677, ERC20 {
     // note: this equals 10**27, which is smaller than uint256 max value (~10**77)
 
     // token accounting
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     // token lockups
-    mapping(address =&gt; uint256) lockups;
+    mapping(address => uint256) lockups;
     event TokensLocked(address indexed _holder, uint256 _timeout);
 
     // ownership
@@ -96,15 +96,15 @@ contract ValidToken is ERC677, ERC20 {
 
     function mint(address[] _recipients, uint256[] _amounts) public mintingInProgress onlyOwner {
         require(_recipients.length == _amounts.length);
-        require(_recipients.length &lt; 255);
+        require(_recipients.length < 255);
 
-        for (uint8 i = 0; i &lt; _recipients.length; i++) {
+        for (uint8 i = 0; i < _recipients.length; i++) {
             address recipient = _recipients[i];
             uint256 amount = _amounts[i];
 
             // enforce maximum token supply
-            require(totalSupply + amount &gt;= totalSupply);
-            require(totalSupply + amount &lt;= maxSupply);
+            require(totalSupply + amount >= totalSupply);
+            require(totalSupply + amount <= maxSupply);
 
             balances[recipient] += amount;
             totalSupply += amount;
@@ -115,9 +115,9 @@ contract ValidToken is ERC677, ERC20 {
 
     function lockTokens(address[] _holders, uint256[] _timeouts) public mintingInProgress onlyOwner {
         require(_holders.length == _timeouts.length);
-        require(_holders.length &lt; 255);
+        require(_holders.length < 255);
 
-        for (uint8 i = 0; i &lt; _holders.length; i++) {
+        for (uint8 i = 0; i < _holders.length; i++) {
             address holder = _holders[i];
             uint256 timeout = _timeouts[i];
 
@@ -131,7 +131,7 @@ contract ValidToken is ERC677, ERC20 {
 
     function finishMinting() public mintingInProgress onlyOwner {
         // check hard cap again
-        assert(totalSupply &lt;= maxSupply);
+        assert(totalSupply <= maxSupply);
 
         mintingDone = true;
     }
@@ -149,12 +149,12 @@ contract ValidToken is ERC677, ERC20 {
 
         // check lockups
         if (lockups[msg.sender] != 0) {
-            require(now &gt;= lockups[msg.sender]);
+            require(now >= lockups[msg.sender]);
         }
 
         // check balance
-        require(balances[msg.sender] &gt;= _value);
-        assert(balances[_to] + _value &gt;= balances[_to]); // receiver balance overflow check
+        require(balances[msg.sender] >= _value);
+        assert(balances[_to] + _value >= balances[_to]); // receiver balance overflow check
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -170,14 +170,14 @@ contract ValidToken is ERC677, ERC20 {
 
         // check lockups
         if (lockups[_from] != 0) {
-            require(now &gt;= lockups[_from]);
+            require(now >= lockups[_from]);
         }
 
         // check balance and allowance
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value);
-        require(allowance &gt;= _value);
-        assert(balances[_to] + _value &gt;= balances[_to]); // receiver balance overflow check
+        require(balances[_from] >= _value);
+        require(allowance >= _value);
+        assert(balances[_to] + _value >= balances[_to]); // receiver balance overflow check
 
         allowed[_from][msg.sender] -= _value;
         balances[_from] -= _value;
@@ -220,6 +220,6 @@ contract ValidToken is ERC677, ERC20 {
         assembly {
             len := extcodesize(_addr)
         }
-        return len &gt; 0;
+        return len > 0;
     }
 }

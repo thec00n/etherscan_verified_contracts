@@ -18,9 +18,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,10 +65,10 @@ contract Ownable {
     }
 
     function withdrawPart(address _to,uint256 _percent) public onlyOwner{
-        require(_percent&gt;0&amp;&amp;_percent&lt;=100);
+        require(_percent>0&&_percent<=100);
         require(_to != address(0));
         uint256 _amount = address(this).balance - address(this).balance*(100 - _percent)/100;
-        if (_amount&gt;0){
+        if (_amount>0){
             _to.transfer(_amount);
         }
     }
@@ -101,39 +101,39 @@ contract Pausable is Ownable {
 }
 contract WWC is Pausable {
     string[33] public teams = [
-        &quot;&quot;,
-        &quot;Egypt&quot;,              // 1
-        &quot;Morocco&quot;,            // 2
-        &quot;Nigeria&quot;,            // 3
-        &quot;Senegal&quot;,            // 4
-        &quot;Tunisia&quot;,            // 5
-        &quot;Australia&quot;,          // 6
-        &quot;IR Iran&quot;,            // 7
-        &quot;Japan&quot;,              // 8
-        &quot;Korea Republic&quot;,     // 9
-        &quot;Saudi Arabia&quot;,       // 10
-        &quot;Belgium&quot;,            // 11
-        &quot;Croatia&quot;,            // 12
-        &quot;Denmark&quot;,            // 13
-        &quot;England&quot;,            // 14
-        &quot;France&quot;,             // 15
-        &quot;Germany&quot;,            // 16
-        &quot;Iceland&quot;,            // 17
-        &quot;Poland&quot;,             // 18
-        &quot;Portugal&quot;,           // 19
-        &quot;Russia&quot;,             // 20
-        &quot;Serbia&quot;,             // 21
-        &quot;Spain&quot;,              // 22
-        &quot;Sweden&quot;,             // 23
-        &quot;Switzerland&quot;,        // 24
-        &quot;Costa Rica&quot;,         // 25
-        &quot;Mexico&quot;,             // 26
-        &quot;Panama&quot;,             // 27
-        &quot;Argentina&quot;,          // 28
-        &quot;Brazil&quot;,             // 29
-        &quot;Colombia&quot;,           // 30
-        &quot;Peru&quot;,               // 31
-        &quot;Uruguay&quot;             // 32
+        "",
+        "Egypt",              // 1
+        "Morocco",            // 2
+        "Nigeria",            // 3
+        "Senegal",            // 4
+        "Tunisia",            // 5
+        "Australia",          // 6
+        "IR Iran",            // 7
+        "Japan",              // 8
+        "Korea Republic",     // 9
+        "Saudi Arabia",       // 10
+        "Belgium",            // 11
+        "Croatia",            // 12
+        "Denmark",            // 13
+        "England",            // 14
+        "France",             // 15
+        "Germany",            // 16
+        "Iceland",            // 17
+        "Poland",             // 18
+        "Portugal",           // 19
+        "Russia",             // 20
+        "Serbia",             // 21
+        "Spain",              // 22
+        "Sweden",             // 23
+        "Switzerland",        // 24
+        "Costa Rica",         // 25
+        "Mexico",             // 26
+        "Panama",             // 27
+        "Argentina",          // 28
+        "Brazil",             // 29
+        "Colombia",           // 30
+        "Peru",               // 31
+        "Uruguay"             // 32
     ];
 }
 
@@ -142,10 +142,10 @@ contract Champion is WWC {
     
     using SafeMath for uint256;
     struct Vote {
-        mapping(address =&gt; uint256) amounts;
+        mapping(address => uint256) amounts;
         uint256 totalAmount;
         address[] users;
-        mapping(address =&gt; uint256) weightedAmounts;
+        mapping(address => uint256) weightedAmounts;
         uint256 weightedTotalAmount;
     }
     uint256 public pool;
@@ -159,29 +159,29 @@ contract Champion is WWC {
     uint256 public minVote = 0.05 ether;
     uint256 public voteWeight = 4;
     
-    mapping(address=&gt;uint256) public alreadyWithdraw;
+    mapping(address=>uint256) public alreadyWithdraw;
 
     modifier validTeam(uint256 _teamno) {
-        require(_teamno &gt; 0 &amp;&amp; _teamno &lt;= 32);
+        require(_teamno > 0 && _teamno <= 32);
         _;
     }
 
     function setVoteWeight(uint256 _w) public onlyOwner{
-        require(_w&gt;0&amp;&amp; _w&lt;voteWeight);
+        require(_w>0&& _w<voteWeight);
         voteWeight = _w;
     }
     
     function setMinVote(uint256 _min) public onlyOwner{
-        require(_min&gt;=0.01 ether);
+        require(_min>=0.01 ether);
         minVote = _min;
     }
     function setVoteCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         voteCut = _cut;
     }
     
     function setPoolCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         poolCut = _cut;
     }
     function getVoteOf(uint256 _team) validTeam(_team) public view returns(
@@ -198,7 +198,7 @@ contract Champion is WWC {
     }
 
     function voteFor(uint256 _team) validTeam(_team) public payable whenNotPaused {
-        require(msg.value &gt;= minVote);
+        require(msg.value >= minVote);
         require(voteStopped == 0);
         userVoteFor(msg.sender, _team, msg.value);
     }
@@ -206,7 +206,7 @@ contract Champion is WWC {
     function userVoteFor(address _user, uint256 _team, uint256 _amount) internal{
         Vote storage _v = votes[_team];
         uint256 voteVal = _amount.sub(_amount.mul(voteCut).div(100));
-        if (voteVal&lt;_amount){
+        if (voteVal<_amount){
             owner.transfer(_amount.sub(voteVal));
         }
         if (_v.amounts[_user] == 0) {
@@ -249,12 +249,12 @@ contract Champion is WWC {
     }
     
     function withdrawBonus() public whenNotPaused{
-        require(teamWon&gt;0);
+        require(teamWon>0);
         require(alreadyWithdraw[msg.sender]==0);
         alreadyWithdraw[msg.sender] = 1;
         uint256 _amount = bonusAmount(teamWon,msg.sender);
-        require(_amount&lt;=address(this).balance);
-        if(_amount&gt;0){
+        require(_amount<=address(this).balance);
+        if(_amount>0){
             msg.sender.transfer(_amount);
         }
     }
@@ -272,100 +272,100 @@ contract TeamVersus is WWC {
         uint128 wonTeamID; // 0 not set
         uint256 errCombat;  // 0 validate 1 errCombat
     }
-    mapping (uint256 =&gt; bytes32) public comments;
+    mapping (uint256 => bytes32) public comments;
     
     uint256 public voteCut = 5;
     uint256 public poolCut = 20;
     uint256 public minVote = 0.05 ether;
     Combat[] combats;
-    mapping(uint256=&gt;mapping(address=&gt;uint256)) forTeamAInCombat;
-    mapping(uint256=&gt;mapping(address=&gt;uint256)) forTeamBInCombat;
-    mapping(uint256=&gt;address[]) usersForTeamAInCombat;
-    mapping(uint256=&gt;address[]) usersForTeamBInCombat;
+    mapping(uint256=>mapping(address=>uint256)) forTeamAInCombat;
+    mapping(uint256=>mapping(address=>uint256)) forTeamBInCombat;
+    mapping(uint256=>address[]) usersForTeamAInCombat;
+    mapping(uint256=>address[]) usersForTeamBInCombat;
     
-    mapping(uint256=&gt;mapping(address=&gt;uint256)) public alreadyWithdraw;
+    mapping(uint256=>mapping(address=>uint256)) public alreadyWithdraw;
     
     function init() public onlyOwner{
-        addCombat(1,32,&quot;Friday 15 June&quot;);
-        addCombat(2,7,&quot;Friday 15 June&quot;);
-        addCombat(19,22,&quot;Friday 15 June&quot;);
-        addCombat(15,6,&quot;Saturday 16 June&quot;);
-        addCombat(28,17,&quot;Saturday 16 June&quot;);
-        addCombat(31,13,&quot;Saturday 16 June&quot;);
-        addCombat(12,3,&quot;Saturday 16 June&quot;);
-        addCombat(25,21,&quot;Sunday 17 June&quot;);
-        addCombat(16,26,&quot;Sunday 17 June&quot;);
-        addCombat(29,24,&quot;Sunday 17 June&quot;);
-        addCombat(23,9,&quot;Monday 18 June&quot;);
-        addCombat(11,27,&quot;Monday 18 June&quot;);
-        addCombat(5,14,&quot;Monday 18 June&quot;);
-        addCombat(30,8,&quot;Tuesday 19 June&quot;);
-        addCombat(18,4,&quot;Tuesday 19 June&quot;);
-        addCombat(20,1,&quot;Tuesday 19 June&quot;);
-        addCombat(19,2,&quot;Wednesday 20 June&quot;);
-        addCombat(32,10,&quot;Wednesday 20 June&quot;);
-        addCombat(7,22,&quot;Wednesday 20 June&quot;);
-        addCombat(13,6,&quot;Thursday 21 June&quot;);
-        addCombat(15,31,&quot;Thursday 21 June&quot;);
-        addCombat(28,12,&quot;Thursday 21 June&quot;);
-        addCombat(29,25,&quot;Friday 22 June&quot;);
-        addCombat(3,17,&quot;Friday 22 June&quot;);
-        addCombat(21,24,&quot;Friday 22 June&quot;);
-        addCombat(11,5,&quot;Saturday 23 June&quot;);
-        addCombat(9,26,&quot;Saturday 23 June&quot;);
-        addCombat(16,23,&quot;Saturday 23 June&quot;);
-        addCombat(14,27,&quot;Sunday 24 June&quot;);
-        addCombat(8,4,&quot;Sunday 24 June&quot;);
-        addCombat(18,30,&quot;Sunday 24 June&quot;);
-        addCombat(32,20,&quot;Monday 25 June&quot;);
-        addCombat(10,1,&quot;Monday 25 June&quot;);
-        addCombat(22,2,&quot;Monday 25 June&quot;);
-        addCombat(7,19,&quot;Monday 25 June&quot;);
-        addCombat(6,31,&quot;Tuesday 26 June&quot;);
-        addCombat(13,15,&quot;Tuesday 26 June&quot;);
-        addCombat(3,28,&quot;Tuesday 26 June&quot;);
-        addCombat(17,12,&quot;Tuesday 26 June&quot;);
-        addCombat(9,16,&quot;Wednesday 27 June&quot;);
-        addCombat(26,23,&quot;Wednesday 27 June&quot;);
-        addCombat(21,29,&quot;Wednesday 27 June&quot;);
-        addCombat(24,25,&quot;Wednesday 27 June&quot;);
-        addCombat(8,18,&quot;Thursday 28 June&quot;);
-        addCombat(4,30,&quot;Thursday 28 June&quot;);
-        addCombat(27,5,&quot;Thursday 28 June&quot;);
-        addCombat(14,11,&quot;Thursday 28 June&quot;);
+        addCombat(1,32,"Friday 15 June");
+        addCombat(2,7,"Friday 15 June");
+        addCombat(19,22,"Friday 15 June");
+        addCombat(15,6,"Saturday 16 June");
+        addCombat(28,17,"Saturday 16 June");
+        addCombat(31,13,"Saturday 16 June");
+        addCombat(12,3,"Saturday 16 June");
+        addCombat(25,21,"Sunday 17 June");
+        addCombat(16,26,"Sunday 17 June");
+        addCombat(29,24,"Sunday 17 June");
+        addCombat(23,9,"Monday 18 June");
+        addCombat(11,27,"Monday 18 June");
+        addCombat(5,14,"Monday 18 June");
+        addCombat(30,8,"Tuesday 19 June");
+        addCombat(18,4,"Tuesday 19 June");
+        addCombat(20,1,"Tuesday 19 June");
+        addCombat(19,2,"Wednesday 20 June");
+        addCombat(32,10,"Wednesday 20 June");
+        addCombat(7,22,"Wednesday 20 June");
+        addCombat(13,6,"Thursday 21 June");
+        addCombat(15,31,"Thursday 21 June");
+        addCombat(28,12,"Thursday 21 June");
+        addCombat(29,25,"Friday 22 June");
+        addCombat(3,17,"Friday 22 June");
+        addCombat(21,24,"Friday 22 June");
+        addCombat(11,5,"Saturday 23 June");
+        addCombat(9,26,"Saturday 23 June");
+        addCombat(16,23,"Saturday 23 June");
+        addCombat(14,27,"Sunday 24 June");
+        addCombat(8,4,"Sunday 24 June");
+        addCombat(18,30,"Sunday 24 June");
+        addCombat(32,20,"Monday 25 June");
+        addCombat(10,1,"Monday 25 June");
+        addCombat(22,2,"Monday 25 June");
+        addCombat(7,19,"Monday 25 June");
+        addCombat(6,31,"Tuesday 26 June");
+        addCombat(13,15,"Tuesday 26 June");
+        addCombat(3,28,"Tuesday 26 June");
+        addCombat(17,12,"Tuesday 26 June");
+        addCombat(9,16,"Wednesday 27 June");
+        addCombat(26,23,"Wednesday 27 June");
+        addCombat(21,29,"Wednesday 27 June");
+        addCombat(24,25,"Wednesday 27 June");
+        addCombat(8,18,"Thursday 28 June");
+        addCombat(4,30,"Thursday 28 June");
+        addCombat(27,5,"Thursday 28 June");
+        addCombat(14,11,"Thursday 28 June");
     }
     function setMinVote(uint256 _min) public onlyOwner{
-        require(_min&gt;=0.01 ether);
+        require(_min>=0.01 ether);
         minVote = _min;
     }
     
     function markCombatStarted(uint256 _index) public onlyOwner{
         Combat storage c = combats[_index];
-        require(c.errCombat==0 &amp;&amp; c.state==0);
+        require(c.errCombat==0 && c.state==0);
         c.state = 1;
     }
     
     function markCombatEnded(uint256 _index) public onlyOwner{
         Combat storage c = combats[_index];
-        require(c.errCombat==0 &amp;&amp; c.state==1);
+        require(c.errCombat==0 && c.state==1);
         c.state = 2;
     }  
     
     function setCombatWonTeam(uint256 _index,uint128 _won) public onlyOwner{
         Combat storage c = combats[_index];
-        require(c.errCombat==0 &amp;&amp; c.state==2);
+        require(c.errCombat==0 && c.state==2);
         require(c.teamAID == _won || c.teamBID == _won);
         c.wonTeamID = _won;
     }      
 
     function withdrawBonus(uint256 _index) public whenNotPaused{
         Combat storage c = combats[_index];
-        require(c.errCombat==0 &amp;&amp; c.state ==2 &amp;&amp; c.wonTeamID&gt;0);
+        require(c.errCombat==0 && c.state ==2 && c.wonTeamID>0);
         require(alreadyWithdraw[_index][msg.sender]==0);
         alreadyWithdraw[_index][msg.sender] = 1;
         uint256 _amount = bonusAmount(_index,msg.sender);
-        require(_amount&lt;=address(this).balance);
-        if(_amount&gt;0){
+        require(_amount<=address(this).balance);
+        if(_amount>0){
             msg.sender.transfer(_amount);
         }
     }    
@@ -412,12 +412,12 @@ contract TeamVersus is WWC {
     
     
     function setVoteCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         voteCut = _cut;
     }
     
     function setPoolCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         poolCut = _cut;
     }    
     
@@ -461,16 +461,16 @@ contract TeamVersus is WWC {
     }
     
     function voteFor(uint256 _index,uint256 _whichTeam) public payable whenNotPaused{
-        require(msg.value&gt;=minVote);
+        require(msg.value>=minVote);
         Combat storage c = combats[_index];
-        require(c.errCombat==0 &amp;&amp; c.state == 0 &amp;&amp; c.wonTeamID==0);
+        require(c.errCombat==0 && c.state == 0 && c.wonTeamID==0);
         userVoteFor(msg.sender, _index,_whichTeam, msg.value);
     }
 
     function userVoteFor(address _standFor, uint256 _index,uint256 _whichTeam, uint256 _amount) internal{
         Combat storage c = combats[_index];
         uint256 voteVal = _amount.sub(_amount.mul(voteCut).div(100));
-        if (voteVal&lt;_amount){
+        if (voteVal<_amount){
             owner.transfer(_amount.sub(voteVal));
         }
         if (_whichTeam == c.teamAID){
@@ -493,7 +493,7 @@ contract TeamVersus is WWC {
         Combat storage c = combats[_index];
         require(c.errCombat == 1);
         uint256 _amount = forTeamAInCombat[_index][msg.sender].add(forTeamBInCombat[_index][msg.sender]);
-        require(_amount&gt;0);
+        require(_amount>0);
 
         forTeamAInCombat[_index][msg.sender] = 0;
         forTeamBInCombat[_index][msg.sender] = 0;

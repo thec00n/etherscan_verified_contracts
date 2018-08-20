@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 // EtherGuy DApp fee will be stored here 
 // Buying any token gives right to claim 
 // UI: etherguy.surge.sh/dividend.html
-// Made by EtherGuy, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8f9e828f988d9f93aa878b8386c4898587">[email&#160;protected]</a> 
+// Made by EtherGuy, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8f9e828f988d9f93aa878b8386c4898587">[email protected]</a> 
 
 // IF THERE IS ANY BUG the data will be rerolled from here. See the discord https://discord.gg/R84hD6f if anything happens or mail me 
 
@@ -19,11 +19,11 @@ contract Dividends{
     
     address dev;
     
-    mapping (address =&gt; uint256) public MyTokens;
-    mapping (address =&gt; uint256) public DividendCollectSince;
+    mapping (address => uint256) public MyTokens;
+    mapping (address => uint256) public DividendCollectSince;
     
     // TKNS / PRICE 
-    mapping(address =&gt; uint256[2]) public SellOrder;
+    mapping(address => uint256[2]) public SellOrder;
     
     // web 
     // returns tokens + price (in wei)
@@ -47,7 +47,7 @@ contract Dividends{
         return (address(this).balance);
     }
     
-    // &gt;MINT IT
+    // >MINT IT
     function Dividends() public {
         dev = msg.sender;
         // EG
@@ -76,7 +76,7 @@ contract Dividends{
 
     event Sold(address Buyer, address Seller, uint256 price, uint256 tokens);
     function Buy(address who) public payable {
-       // require(msg.value &gt;= (1 szabo)); // normal amounts pls 
+       // require(msg.value >= (1 szabo)); // normal amounts pls 
         // lookup order by addr 
         uint256[2] memory order = SellOrder[who];
         uint256 amt_available = order[0];
@@ -92,7 +92,7 @@ contract Dividends{
         uint256 max = amt_available * price; 
         uint256 currval = msg.value;
         // more than max buy value 
-        if (currval &gt; max){
+        if (currval > max){
             excess = (currval-max);
             currval = max;
         }
@@ -108,7 +108,7 @@ contract Dividends{
         excess = excess + sub(currval, take * price); 
 
         
-        if (excess &gt; 0){
+        if (excess > 0){
             msg.sender.transfer(excess);
         }
         
@@ -122,11 +122,11 @@ contract Dividends{
         
         // the person with these tokens will also receive dividend over this buy order (this.balance)
         // however the excess is removed, see the excess transfer above 
-     //   if (msg.value &gt; (excess+currval+fee)){
+     //   if (msg.value > (excess+currval+fee)){
       //      msg.sender.transfer(msg.value-excess-currval-fee);
      //   }
         _withdraw(who, MyTokens[who]);
-        if (MyTokens[msg.sender] &gt; 0){
+        if (MyTokens[msg.sender] > 0){
             
             _withdraw(msg.sender, MyTokens[msg.sender]);
         }
@@ -147,7 +147,7 @@ contract Dividends{
     function _withdraw(address who, uint256 amt) internal{
         // withdraws from amt. 
         // (amt not used in current code, always same value)
-        if (MyTokens[who] &lt; amt){
+        if (MyTokens[who] < amt){
             revert(); // ??? security check 
         }
         
@@ -162,7 +162,7 @@ contract Dividends{
     event SellOrderPlaced(address who, uint256 amt, uint256 price);
     function PlaceSellOrder(uint256 amt, uint256 price) public {
         // replaces old order 
-        if (amt &gt; MyTokens[msg.sender]){
+        if (amt > MyTokens[msg.sender]){
             revert(); // ?? more sell than you got 
         }
         SellOrder[msg.sender] = [amt,price];
@@ -170,7 +170,7 @@ contract Dividends{
     }
     
     function ChangeTax(uint16 amt) public {
-        require (amt &lt;= 2500);
+        require (amt <= 2500);
         require(msg.sender == dev);
         Tax=amt;
     }
@@ -182,7 +182,7 @@ contract Dividends{
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     } 
     

@@ -4,7 +4,7 @@ contract BitcoinBravado {
     
     address public owner;
     
-    mapping(address =&gt; bool) paidUsers;
+    mapping(address => bool) paidUsers;
     
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -16,7 +16,7 @@ contract BitcoinBravado {
     }
     
     function payEntryFee() public payable  {
-        if (msg.value &gt;= 0.1 ether) {
+        if (msg.value >= 0.1 ether) {
             paidUsers[msg.sender] = true;
         }
     }

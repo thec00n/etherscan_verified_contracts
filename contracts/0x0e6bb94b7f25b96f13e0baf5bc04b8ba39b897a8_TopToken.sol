@@ -2,7 +2,7 @@ pragma solidity 0.4.20;
 
 contract TopTokenBase {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
+    mapping (address => uint256)                       _balances;
     
     event Transfer( address indexed from, address indexed to, uint256 value);
 
@@ -16,7 +16,7 @@ contract TopTokenBase {
     }
     
     function transfer(address dst, uint256 wad) public returns (bool) {
-        require(_balances[msg.sender] &gt;= wad);
+        require(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -28,20 +28,20 @@ contract TopTokenBase {
     
     function add(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        require(z &gt;= x &amp;&amp; z&gt;=y);
+        require(z >= x && z>=y);
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x - y;
-        require(x &gt;= y &amp;&amp; z &lt;= x);
+        require(x >= y && z <= x);
         return z;
     }
 }
 
 contract TopToken is TopTokenBase {
-    string  public  symbol = &quot;TOP&quot;;
-    string  public name = &quot;Top.One Coin&quot;;
+    string  public  symbol = "TOP";
+    string  public name = "Top.One Coin";
     uint256  public  decimals = 18; 
     uint256 public freezedValue = 640000000*(10**18);
     uint256 public eachUnfreezeValue = 160000000*(10**18);
@@ -69,7 +69,7 @@ contract TopToken is TopTokenBase {
     }
 
     function transfer(address dst, uint256 wad) public returns (bool) {
-        require (now &gt;= releaseTime || now &gt;= latestReleaseTime);
+        require (now >= releaseTime || now >= latestReleaseTime);
 
         return super.transfer(dst, wad);
     }
@@ -82,16 +82,16 @@ contract TopToken is TopTokenBase {
 
     function setRelease(uint256 _release) public {
         require(msg.sender == owner);
-        require(_release &lt;= latestReleaseTime);
+        require(_release <= latestReleaseTime);
 
         releaseTime = _release;
     }
 
     function unfreeze(uint256 i) public {
         require(msg.sender == owner);
-        require(i&gt;=0 &amp;&amp; i&lt;unfreezeTimeMap.length);
-        require(now &gt;= unfreezeTimeMap[i].unfreezeTime &amp;&amp; unfreezeTimeMap[i].freezed);
-        require(_balances[0x01] &gt;= eachUnfreezeValue);
+        require(i>=0 && i<unfreezeTimeMap.length);
+        require(now >= unfreezeTimeMap[i].unfreezeTime && unfreezeTimeMap[i].freezed);
+        require(_balances[0x01] >= eachUnfreezeValue);
 
         _balances[0x01] = sub(_balances[0x01], eachUnfreezeValue);
         _balances[owner] = add(_balances[owner], eachUnfreezeValue);

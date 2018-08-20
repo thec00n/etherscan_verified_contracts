@@ -16,23 +16,23 @@ contract pyramidMKII {
 	}
     struct account {
         uint256 ebalance;                                                       // ether balance
-		mapping(uint256=&gt;debtinfo) owed;										// keeps track of outstanding debt 
+		mapping(uint256=>debtinfo) owed;										// keeps track of outstanding debt 
     }
 	
 	uint256 public blksze;														// block size
 	uint256 public surplus;
 	uint256 public IDX;														    // current dividend block
-	mapping(uint256=&gt;blockinfo) public blockData;								// dividend block data
-	mapping(address=&gt;account) public balances;
+	mapping(uint256=>blockinfo) public blockData;								// dividend block data
+	mapping(address=>account) public balances;
 	
 	bytes32 public consul_nme;
 	uint256 public consul_price;
 	address public consul;
 	address patrician;
 	
-    string public standard = &#39;PYRAMIDMKII&#39;;
-    string public name = &#39;PYRAMIDMKII&#39;;
-    string public symbol = &#39;PM2&#39;;
+    string public standard = 'PYRAMIDMKII';
+    string public name = 'PYRAMIDMKII';
+    string public symbol = 'PM2';
     uint8 public decimals = 0 ;
 	
 	constructor() public {                                                     
@@ -44,8 +44,8 @@ contract pyramidMKII {
 	
 	function addSurplus() public payable { surplus += msg.value; }              // used to pay off the debt in final round
 	
-	function callSurplus() public {                                             // if there&#39;s enough surplus 
-	    require(surplus &gt;= blksze, &quot;not enough surplus&quot;);                       // users can call this to make a new block 
+	function callSurplus() public {                                             // if there's enough surplus 
+	    require(surplus >= blksze, "not enough surplus");                       // users can call this to make a new block 
 	    blockData[IDX].value += blksze;                                         // without increasing outstanding
 	    surplus -= blksze;
 	    nextBlock();
@@ -57,12 +57,12 @@ contract pyramidMKII {
 					balances[msg.sender].owed[blk].initial); }
 	
 	function setBlockSze(uint256 _sze) public {
-		require(msg.sender == owner &amp;&amp; _sze &gt;= 1 ether, &quot;error blksze&quot;);
+		require(msg.sender == owner && _sze >= 1 ether, "error blksze");
 		blksze = _sze;
 	}
 	
 	function withdraw() public {
-		require(balances[msg.sender].ebalance &gt; 0, &quot;not enough divs claimed&quot;);
+		require(balances[msg.sender].ebalance > 0, "not enough divs claimed");
         uint256 sval = balances[msg.sender].ebalance;
         balances[msg.sender].ebalance = 0;
         msg.sender.transfer(sval);
@@ -70,7 +70,7 @@ contract pyramidMKII {
 	}
 	
 	function chkConsul(address addr, uint256 val, bytes32 usrmsg) internal returns(uint256) {
-	    if(val &lt;= consul_price) return val;
+	    if(val <= consul_price) return val;
 	    balances[owner].ebalance += val/4;                                      // 25% for fund
 	    balances[consul].ebalance += val/4;                                     // 25% for current consul
 	    consul = addr;
@@ -84,10 +84,10 @@ contract pyramidMKII {
 	}
 	
 	function nextBlock() internal {
-	    if(blockData[IDX].value&gt;= blksze) { 
+	    if(blockData[IDX].value>= blksze) { 
 			surplus += blockData[IDX].value - blksze;
 			blockData[IDX].value = blksze;
-			if(IDX &gt; 0) 
+			if(IDX > 0) 
 			    blockData[IDX].outstanding -= 
 			        (blockData[IDX-1].outstanding * blockData[IDX-1].dividend)/100 ether;
 			blockData[IDX].dividend = 
@@ -95,21 +95,21 @@ contract pyramidMKII {
 			IDX += 1;															// filled block, next
 			blockData[IDX].index = IDX;                                         // to avoid rechecking on frontend
 			blockData[IDX].outstanding = blockData[IDX-1].outstanding;			// debt rolls over
-			if(IDX % 200 == 0 &amp;&amp; IDX != 0) blksze += 1 ether;                   // to keep a proper div distribution
+			if(IDX % 200 == 0 && IDX != 0) blksze += 1 ether;                   // to keep a proper div distribution
 			emit event_divblk(IDX);
 		}
 	}
 	
 	function pyramid(address addr, uint256 val, bytes32 usrmsg) internal {
 	    val = chkConsul(addr, val, usrmsg);
-		uint256 mval = val - (val/10);                                          // 10% in patrician, consul &amp;&amp; fund money
+		uint256 mval = val - (val/10);                                          // 10% in patrician, consul && fund money
 		uint256 tval = val + (val/2);
 		balances[owner].ebalance += (val/100);                                  // 1% for hedge fund
 		balances[consul].ebalance += (val*7)/100 ;                              // 7% for consul
 		balances[patrician].ebalance+= (val/50);                                // 2% for patrician
-		patrician = addr;                                                       // now you&#39;re the patrician
-		uint256 nsurp = (mval &lt; blksze)? blksze-mval : (surplus &lt; blksze)? surplus : 0;
-		nsurp = (surplus &gt;= nsurp)? nsurp : 0;
+		patrician = addr;                                                       // now you're the patrician
+		uint256 nsurp = (mval < blksze)? blksze-mval : (surplus < blksze)? surplus : 0;
+		nsurp = (surplus >= nsurp)? nsurp : 0;
 		mval += nsurp;                                                          // complete a block using surplus
 		surplus-= nsurp;                                                        
 		blockData[IDX].value += mval;
@@ -122,31 +122,31 @@ contract pyramidMKII {
 	}
 	
 	function deposit(bytes32 usrmsg) public payable {
-		require(msg.value &gt;= 0.001 ether, &quot;not enough ether&quot;);
+		require(msg.value >= 0.001 ether, "not enough ether");
 		pyramid(msg.sender, msg.value, usrmsg);
 	}
 	
 	function reinvest(uint256 val, bytes32 usrmsg) public {
-		require(val &lt;= balances[msg.sender].ebalance &amp;&amp; 
-				val &gt; 0.001 ether, &quot;no funds&quot;);
+		require(val <= balances[msg.sender].ebalance && 
+				val > 0.001 ether, "no funds");
 		balances[msg.sender].ebalance -= val;
 		pyramid(msg.sender, val, usrmsg);
 	}	
 	
 	function mine1000(uint256 blk) public {
-		require(balances[msg.sender].owed[blk].idx &lt; IDX &amp;&amp; blk &lt; IDX, &quot;current block&quot;);
-		require(balances[msg.sender].owed[blk].pending &gt; 0.001 ether, &quot;no more divs&quot;);
+		require(balances[msg.sender].owed[blk].idx < IDX && blk < IDX, "current block");
+		require(balances[msg.sender].owed[blk].pending > 0.001 ether, "no more divs");
 		uint256 cdiv = 0;
-		for(uint256 i = 0; i &lt; 1000; i++) {
+		for(uint256 i = 0; i < 1000; i++) {
 			cdiv = (balances[msg.sender].owed[blk].pending *
                     blockData[balances[msg.sender].owed[blk].idx].dividend ) / 100 ether; // get %
-			cdiv = (cdiv &gt; balances[msg.sender].owed[blk].pending)?     
+			cdiv = (cdiv > balances[msg.sender].owed[blk].pending)?     
 						balances[msg.sender].owed[blk].pending : cdiv;          // check for overflow
 			balances[msg.sender].owed[blk].idx += 1;                            // update the index
 			balances[msg.sender].owed[blk].pending -= cdiv;
 			balances[msg.sender].ebalance += cdiv;
 			if( balances[msg.sender].owed[blk].pending == 0 || 
-			    balances[msg.sender].owed[blk].idx &gt;= IDX ) 
+			    balances[msg.sender].owed[blk].idx >= IDX ) 
 				return;
 		}
 	}

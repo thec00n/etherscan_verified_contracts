@@ -6,7 +6,7 @@ contract ProvaSegura {
         uint block_number;
     }
 
-    mapping(address =&gt; Prova) public provas;
+    mapping(address => Prova) public provas;
 	address public owner;
 
     function ProvaSegura() public {

@@ -42,7 +42,7 @@ contract CryptoVideoGameItem {
     Users can purchase multiple video game Items.
     */
     function purchaseVideoGameItem(uint _videoGameItemId) public payable {
-        require(msg.value &gt;= videoGameItems[_videoGameItemId].currentPrice);
+        require(msg.value >= videoGameItems[_videoGameItemId].currentPrice);
         require(isPaused == false);
 
         CryptoVideoGames parentContract = CryptoVideoGames(cryptoVideoGames);
@@ -54,13 +54,13 @@ contract CryptoVideoGameItem {
 
         address parentOwner = parentContract.getVideoGameOwner(videoGameItems[_videoGameItemId].parentVideoGame);
         address newOwner = msg.sender;
-        // Calculate the video game owner commission on this sale &amp; transfer the commission to the owner.     
-        uint256 commissionOwner = currentPrice - devFee - parentOwnerFee; // =&gt; 80%
+        // Calculate the video game owner commission on this sale & transfer the commission to the owner.     
+        uint256 commissionOwner = currentPrice - devFee - parentOwnerFee; // => 80%
         videoGameItems[_videoGameItemId].ownerAddress.transfer(commissionOwner);
 
         // Transfer the 10% commission to the developer
-        devFeeAddress.transfer(devFee); // =&gt; 10% 
-        parentOwner.transfer(parentOwnerFee); // =&gt; 10%   
+        devFeeAddress.transfer(devFee); // => 10% 
+        parentOwner.transfer(parentOwnerFee); // => 10%   
         newOwner.transfer(excess);              
 
         // Update the video game owner and set the new price
@@ -73,9 +73,9 @@ contract CryptoVideoGameItem {
     He can make the price lesser than the current price only.
     */
     function modifyCurrentVideoGameItemPrice(uint _videoGameItemId, uint256 _newPrice) public {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         require(videoGameItems[_videoGameItemId].ownerAddress == msg.sender);
-        require(_newPrice &lt; videoGameItems[_videoGameItemId].currentPrice);
+        require(_newPrice < videoGameItems[_videoGameItemId].currentPrice);
         videoGameItems[_videoGameItemId].currentPrice = _newPrice;
     }
     
@@ -106,7 +106,7 @@ contract CryptoVideoGameItem {
     
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -118,12 +118,12 @@ contract CryptoVideoGameItem {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     

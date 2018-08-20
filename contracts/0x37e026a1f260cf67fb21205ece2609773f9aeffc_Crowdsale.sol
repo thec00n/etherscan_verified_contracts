@@ -42,7 +42,7 @@ contract Crowdsale {
     address public foundersFund = 0xaefe05643b613823dBAF6245AFb819Fd56fBdd22;
 
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
@@ -100,7 +100,7 @@ contract Crowdsale {
 
             requestedTokens = amount * orderRate;
 
-            if (requestedTokens &lt;= curSupply) {
+            if (requestedTokens <= curSupply) {
                 balanceOf[msg.sender] += amount;
                 amountRaised += amount;
 
@@ -174,8 +174,8 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() public {
-        if (now &gt;= deadline || soldOut) {
-            if (amountRaised &gt;= fundingGoal){
+        if (now >= deadline || soldOut) {
+            if (amountRaised >= fundingGoal){
                 fundingGoalReached = true;
                 GoalReached(beneficiary, amountRaised);
             }
@@ -183,7 +183,7 @@ contract Crowdsale {
 
             suppyLeft = supplyRound1 + supplyRound2 + supplyRound3 + supplyRound4;
 
-            if (suppyLeft &gt; 0) {
+            if (suppyLeft > 0) {
                 tokenReward.transfer(burner, suppyLeft);
                 tokenReward.transfer(burner, suppyLeft * erotixFundMultiplier / 100);
                 tokenReward.transfer(burner, suppyLeft * foundersFundMultiplier / 100);
@@ -201,11 +201,11 @@ contract Crowdsale {
      * the amount they contributed.
      */
     function safeWithdrawal() public {
-        if (now &gt;= deadline) {
+        if (now >= deadline) {
             if (!fundingGoalReached) {
                 uint amount = balanceOf[msg.sender];
                 balanceOf[msg.sender] = 0;
-                if (amount &gt; 0) {
+                if (amount > 0) {
                     if (msg.sender.send(amount)) {
                         FundTransfer(msg.sender, amount, false);
                     } else {
@@ -216,7 +216,7 @@ contract Crowdsale {
         }
 
         if (crowdsaleClosed) {
-            if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+            if (fundingGoalReached && beneficiary == msg.sender) {
                 if (beneficiary.send(amountRaised)) {
                     FundTransfer(beneficiary, amountRaised, false);
                 }

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -163,10 +163,10 @@ contract Token {
 
 /*  ERC 20 token */
 contract BLMToken is Token,Ownable,Sales {
-    string public constant name = &quot;Bloomatch Token&quot;;
-    string public constant symbol = &quot;BLM&quot;;
+    string public constant name = "Bloomatch Token";
+    string public constant symbol = "BLM";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     uint public valueToBeSent = 1;
     address personMakingTx;
@@ -189,22 +189,22 @@ contract BLMToken is Token,Ownable,Sales {
     uint256 public fundingStartBlock; // crowdsale start block
     uint256 public fundingEndBlock; // crowdsale end block
     uint256 public tokenCreationMax= 10 * (10**7) * 10**decimals;
-    mapping (address =&gt; bool) ownership;
+    mapping (address => bool) ownership;
     uint256 public minCapUSD = 2000000;
     uint256 public maxCapUSD = 18000000;
 
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
       if(!istransferAllowed) throw;
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -229,7 +229,7 @@ contract BLMToken is Token,Ownable,Sales {
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
         if(!istransferAllowed) throw;
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -282,19 +282,19 @@ contract BLMToken is Token,Ownable,Sales {
 
     function finalizeICO(){
         if(!ownership[msg.sender]) throw;
-        if(usdraised&lt;minCapUSD) throw;
+        if(usdraised<minCapUSD) throw;
         finalizedICO = true;
         istransferAllowed = true;
     }
 
 
     function isValid() returns(bool){
-        if(block.number&gt;=fundingStartBlock &amp;&amp; block.number&lt;fundingEndBlock ){
+        if(block.number>=fundingStartBlock && block.number<fundingEndBlock ){
             return true;
         }else{
             return false;
         }
-        if(usdraised&gt;maxCapUSD) throw;
+        if(usdraised>maxCapUSD) throw;
     }
 
 

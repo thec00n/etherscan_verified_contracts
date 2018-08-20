@@ -4,12 +4,12 @@ pragma solidity ^0.4.21;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(a &gt;= b);
+		assert(a >= b);
 		return a - b;
 	}
 
@@ -58,7 +58,7 @@ contract AuctusTokenSale is ContractReceiver {
 	uint256 public softCap;
 	uint256 public remainingTokens;
 	uint256 public weiRaised;
-	mapping(address =&gt; uint256) public invested;
+	mapping(address => uint256) public invested;
 
 	bool public saleWasSet;
 	bool public tokenSaleHalted;
@@ -80,17 +80,17 @@ contract AuctusTokenSale is ContractReceiver {
 	}
 
 	modifier openSale() {
-		require(saleWasSet &amp;&amp; !tokenSaleHalted &amp;&amp; now &gt;= startTime &amp;&amp; now &lt;= endTime &amp;&amp; remainingTokens &gt; 0);
+		require(saleWasSet && !tokenSaleHalted && now >= startTime && now <= endTime && remainingTokens > 0);
 		_;
 	}
 
 	modifier saleCompletedSuccessfully() {
-		require(weiRaised &gt;= softCap &amp;&amp; (now &gt; endTime || remainingTokens == 0));
+		require(weiRaised >= softCap && (now > endTime || remainingTokens == 0));
 		_;
 	}
 
 	modifier saleFailed() {
-		require(weiRaised &lt; softCap &amp;&amp; now &gt; endTime);
+		require(weiRaised < softCap && now > endTime);
 		_;
 	}
 
@@ -104,12 +104,12 @@ contract AuctusTokenSale is ContractReceiver {
 	}
 
 	function setSoftCap(uint256 minimumCap) onlyOwner public {
-		require(now &lt; startTime);
+		require(now < startTime);
 		softCap = minimumCap;
 	}
 
 	function setEndSaleTime(uint256 endSaleTime) onlyOwner public {
-		require(now &lt; endTime);
+		require(now < endTime);
 		endTime = endSaleTime;
 	}
 
@@ -128,14 +128,14 @@ contract AuctusTokenSale is ContractReceiver {
 		uint256 weiRemaining;
 		(weiToInvest, weiRemaining) = getValueToInvest();
 
-		require(weiToInvest &gt; 0);
+		require(weiToInvest > 0);
 
 		uint256 tokensToReceive = weiToInvest.mul(basicPricePerEth);
 		remainingTokens = remainingTokens.sub(tokensToReceive);
 		weiRaised = weiRaised.add(weiToInvest);
 		invested[msg.sender] = invested[msg.sender].add(weiToInvest);
 
-		if (weiRemaining &gt; 0) {
+		if (weiRemaining > 0) {
 			msg.sender.transfer(weiRemaining);
 		}
 		assert(AuctusToken(auctusTokenAddress).transfer(msg.sender, tokensToReceive));
@@ -145,7 +145,7 @@ contract AuctusTokenSale is ContractReceiver {
 
 	function revoke() saleFailed public {
 		uint256 investedValue = invested[msg.sender];
-		require(investedValue &gt; 0);
+		require(investedValue > 0);
 
 		invested[msg.sender] = 0;
 		msg.sender.transfer(investedValue);
@@ -167,7 +167,7 @@ contract AuctusTokenSale is ContractReceiver {
 
 		AuctusToken token = AuctusToken(auctusTokenAddress);
 		token.setTokenSaleFinished();
-		if (remainingTokens &gt; 0) {
+		if (remainingTokens > 0) {
 			token.burn(remainingTokens);
 			remainingTokens = 0;
 		}
@@ -179,7 +179,7 @@ contract AuctusTokenSale is ContractReceiver {
 		uint256 weiToInvest;
 		if (allowedValue == 0) {
 			weiToInvest = 0;
-		} else if (allowedValue &gt;= invested[msg.sender].add(msg.value)) {
+		} else if (allowedValue >= invested[msg.sender].add(msg.value)) {
 			weiToInvest = getAllowedAmount(msg.value);
 		} else {
 			weiToInvest = getAllowedAmount(allowedValue.sub(invested[msg.sender]));
@@ -189,7 +189,7 @@ contract AuctusTokenSale is ContractReceiver {
 
 	function getAllowedAmount(uint256 value) view private returns (uint256) {
 		uint256 maximumValue = remainingTokens / basicPricePerEth;
-		if (value &gt; maximumValue) {
+		if (value > maximumValue) {
 			return maximumValue;
 		} else {
 			return value;

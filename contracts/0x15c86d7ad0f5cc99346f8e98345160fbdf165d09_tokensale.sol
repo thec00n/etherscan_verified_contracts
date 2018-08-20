@@ -2,10 +2,10 @@ pragma solidity ^0.4.10;
 
 contract Token {
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (uint256 =&gt; address) public addresses;
-    mapping (address =&gt; bool) public addressExists;
-    mapping (address =&gt; uint256) public addressIndex;
+    mapping (address => uint256) public balanceOf;
+    mapping (uint256 => address) public addresses;
+    mapping (address => bool) public addressExists;
+    mapping (address => uint256) public addressIndex;
     uint256 public numberOfAddress = 0;
     
     string public physicalString;
@@ -56,14 +56,14 @@ contract Token {
     
     function transfer(address _to, uint256 _value) payable {
         chargeHoldingTax();
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        if (msg.sender != owner &amp;&amp; _to != owner &amp;&amp; txnTax != 0) {
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        if (msg.sender != owner && _to != owner && txnTax != 0) {
             if(!owner.send(txnTax)) {
                 throw;
             }
         }
-        if(isPrivate &amp;&amp; msg.sender != owner &amp;&amp; !addressExists[_to]) {
+        if(isPrivate && msg.sender != owner && !addressExists[_to]) {
             throw;
         }
         balanceOf[msg.sender] -= _value;
@@ -78,8 +78,8 @@ contract Token {
     }
     
     function mint(uint256 _value) {
-        if(canMintBurn &amp;&amp; msg.sender == owner) {
-            if (balanceOf[msg.sender] + _value &lt; balanceOf[msg.sender]) throw;
+        if(canMintBurn && msg.sender == owner) {
+            if (balanceOf[msg.sender] + _value < balanceOf[msg.sender]) throw;
             balanceOf[msg.sender] += _value;
             totalSupply += _value;
             Transfer(0, msg.sender, _value);
@@ -87,8 +87,8 @@ contract Token {
     }
     
     function burn(uint256 _value) {
-        if(canMintBurn &amp;&amp; msg.sender == owner) {
-            if (balanceOf[msg.sender] &lt; _value) throw;
+        if(canMintBurn && msg.sender == owner) {
+            if (balanceOf[msg.sender] < _value) throw;
             balanceOf[msg.sender] -= _value;
             totalSupply -= _value;
             Transfer(msg.sender, 0, _value);
@@ -99,10 +99,10 @@ contract Token {
         if(holdingTaxInterval!=0) {
             uint256 dateDif = now - lastHoldingTax;
             bool changed = false;
-            while(dateDif &gt;= holdingTaxInterval * (1 weeks)) {
+            while(dateDif >= holdingTaxInterval * (1 weeks)) {
                 changed=true;
                 dateDif -= holdingTaxInterval * (1 weeks);
-                for(uint256 i = 0;i&lt;numberOfAddress;i++) {
+                for(uint256 i = 0;i<numberOfAddress;i++) {
                     if(addresses[i]!=owner) {
                         uint256 amtOfTaxToPay = ((balanceOf[addresses[i]]) * holdingTax)  / (10**holdingTaxDecimals)/ (10**holdingTaxDecimals);
                         balanceOf[addresses[i]] -= amtOfTaxToPay;
@@ -142,7 +142,7 @@ contract Token {
     }
     
     function addAddressManual (address addr) {
-        if(msg.sender == owner &amp;&amp; isPrivate) {
+        if(msg.sender == owner && isPrivate) {
             addAddress(addr);
         } else {
             throw;
@@ -158,7 +158,7 @@ contract Token {
     }
     
     function removeAddressManual (address addr) {
-        if(msg.sender == owner &amp;&amp; isPrivate) {
+        if(msg.sender == owner && isPrivate) {
             removeAddress(addr);
         } else {
             throw;
@@ -202,14 +202,14 @@ contract tokensale {
     
     address public finalAddress = 0x5904957d25D0c6213491882a64765967F88BCCC7;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public addressExists;
-    mapping (uint256 =&gt; address) public addresses;
-    mapping (address =&gt; uint256) public addressIndex;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public addressExists;
+    mapping (uint256 => address) public addresses;
+    mapping (address => uint256) public addressIndex;
     uint256 public numberOfAddress = 0;
     
-    mapping (uint256 =&gt; uint256) public dates;
-    mapping (uint256 =&gt; uint256) public percents;
+    mapping (uint256 => uint256) public dates;
+    mapping (uint256 => uint256) public percents;
     uint256 public numberOfDates = 8;
     
     tokensale ps = tokensale(0xa67d97d75eE175e05BB1FB17529FD772eE8E9030);
@@ -238,8 +238,8 @@ contract tokensale {
         numberOfTokensLeft = noOfTokens * 100;
         pricePerToken = prPerToken;
         owner = msg.sender;
-        name = &quot;Autonio ICO&quot;;
-        symbol = &quot;NIO&quot;;
+        name = "Autonio ICO";
+        symbol = "NIO";
         updatePresaleNumbers();
     }
     
@@ -253,7 +253,7 @@ contract tokensale {
     
     function endPresale() {
         if(msg.sender == owner) {
-            if(now &gt; dates[numberOfDates-1]) {
+            if(now > dates[numberOfDates-1]) {
                 finish();
             } else if(numberOfTokensLeft == 0) {
                 finish();
@@ -273,7 +273,7 @@ contract tokensale {
     
     function withdraw(uint256 amount) {
         if(msg.sender == owner) {
-            if(amount &lt;= withdrawLimit) {
+            if(amount <= withdrawLimit) {
                 withdrawLimit-=amount;
                 if(!finalAddress.send(amount)) {
                     throw;
@@ -308,12 +308,12 @@ contract tokensale {
             throw;
         }
         uint256 weiLeftOver = 0;
-        if(numberOfTokensLeft&lt;=0 || now&lt;dates[0] || now&gt;dates[numberOfDates-1]) {
+        if(numberOfTokensLeft<=0 || now<dates[0] || now>dates[numberOfDates-1]) {
             throw;
         }
         uint256 percent = 9001;
-        for(uint256 i=0;i&lt;numberOfDates-1;i++) {
-            if(now&gt;=dates[i] &amp;&amp; now&lt;=dates[i+1] ) {
+        for(uint256 i=0;i<numberOfDates-1;i++) {
+            if(now>=dates[i] && now<=dates[i+1] ) {
                 percent = percents[i];
                 i=numberOfDates-1;
             }
@@ -322,9 +322,9 @@ contract tokensale {
             throw;
         }
         uint256 tokensToGive = weiSent / pricePerToken;
-        if(tokensToGive * pricePerToken &gt; weiSent) tokensToGive--;
+        if(tokensToGive * pricePerToken > weiSent) tokensToGive--;
         tokensToGive=(tokensToGive*(100000+percent))/100000;
-        if(tokensToGive&gt;numberOfTokensLeft) {
+        if(tokensToGive>numberOfTokensLeft) {
             weiLeftOver = (tokensToGive - numberOfTokensLeft) * pricePerToken;
             tokensToGive = numberOfTokensLeft;
         }
@@ -336,7 +336,7 @@ contract tokensale {
             balanceOf[msg.sender] = tokensToGive;
         }
         Transfer(0x0,msg.sender,tokensToGive);
-        if(weiLeftOver&gt;0)msg.sender.send(weiLeftOver);
+        if(weiLeftOver>0)msg.sender.send(weiLeftOver);
     }
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);

@@ -3,18 +3,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
  
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
  
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
  
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -33,7 +33,7 @@ contract ERC223ReceivingContract {
       ignite.sender = _from;
       ignite.value = _value;
       ignite.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       ignite.sig = bytes4(u);
  
     }
@@ -58,10 +58,10 @@ contract iGnite is SafeMath {
     uint256 private genesisSupply;
     uint256 private _totalSupply;
    
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint) balances; //balances
-    mapping(address =&gt; bool) public genesisAddress;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint) balances; //balances
+    mapping(address => bool) public genesisAddress;
+    mapping (address => mapping (address => uint)) internal _allowances;
     
     event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -91,11 +91,11 @@ contract iGnite is SafeMath {
 
     function assignGenesisAddresses(address[] _address) public returns (bool success)
     {
-        if (block.number &lt;= 4538447) 
+        if (block.number <= 4538447) 
         { 
             if (msg.sender == genesisCallerAddress)
             {
-                for (uint i = 0; i &lt; _address.length; i++)
+                for (uint i = 0; i < _address.length; i++)
                 {
                     balanceOf[_address[i]] = genesisSupplyPerAddress;
                     genesisAddress[_address[i]] = true;
@@ -112,7 +112,7 @@ contract iGnite is SafeMath {
         if (genesisAddress[_address]) {
             minedBlocks = block.number - genesisBlockCount;
 
-            if (minedBlocks &gt;= 75000000) return balanceOf[_address]; //app. 2052
+            if (minedBlocks >= 75000000) return balanceOf[_address]; //app. 2052
 
             availableAmount = rewardPerBlockPerAddress * minedBlocks;
             availableBalance = balanceOf[_address] + availableAmount;
@@ -125,13 +125,13 @@ contract iGnite is SafeMath {
 
     function name() constant returns (string _name)
     {
-        name = &quot;iGnite&quot;;
+        name = "iGnite";
         return name;
     }
     
     function symbol() constant returns (bytes32 _symbol)
     {
-        symbol = &quot;iGn&quot;;
+        symbol = "iGn";
         return symbol;
     }
     
@@ -172,7 +172,7 @@ contract iGnite is SafeMath {
         _totalSupply = iGnited + genesisSupply;
         
         //burn time
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         _totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -189,7 +189,7 @@ contract iGnite is SafeMath {
     }
     
     function transfer(address _to, uint _value) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; !isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && !isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -199,7 +199,7 @@ contract iGnite is SafeMath {
     }
 
     function transfer(address _to, uint _value, bytes _data) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             ERC223ReceivingContract _contract = ERC223ReceivingContract(_to);
@@ -215,12 +215,12 @@ contract iGnite is SafeMath {
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp; _value &gt; 0 &amp;&amp; _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balanceOf[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 && _value > 0 && _allowances[_from][msg.sender] >= _value &&
+            balanceOf[_from] >= _value) {
             balanceOf[_from] -= _value;
             balanceOf[_to] += _value;
             _allowances[_from][msg.sender] -= _value;

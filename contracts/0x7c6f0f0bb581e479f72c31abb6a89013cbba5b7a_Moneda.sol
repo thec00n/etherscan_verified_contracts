@@ -10,7 +10,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -19,7 +19,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -27,9 +27,9 @@ library SafeMath {
 contract Moneda {
     using SafeMath for uint256;
     
-    string constant public standard = &quot;ERC20&quot;;
-    string constant public name = &quot;Moneda Token&quot;;
-    string constant public symbol = &quot;MND&quot;;
+    string constant public standard = "ERC20";
+    string constant public name = "Moneda Token";
+    string constant public symbol = "MND";
     uint8 constant public decimals = 18;
     
     uint256 private _totalSupply = 400000000e18; // Total supply tokens 400mil
@@ -52,8 +52,8 @@ contract Moneda {
     bool public burned;
 
     // Array with all balances
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     // Public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -85,11 +85,11 @@ contract Moneda {
     
     // Transfer some of your tokens to another address
     function transfer(address to, uint256 value) public returns (bool) {
-        require(now &gt;= startTime); // Check if one month lock is passed
-        require(value &gt; 0);
+        require(now >= startTime); // Check if one month lock is passed
+        require(value > 0);
 
         if (msg.sender == ownerAddr || msg.sender == companyAddr)
-                require(now &gt;= teamCompanyLock);
+                require(now >= teamCompanyLock);
                 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -99,16 +99,16 @@ contract Moneda {
     
     // Transfer tokens from one address to another
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(value &gt; 0);
+        require(value > 0);
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowed[from][msg.sender]);
         
-        if (now &lt; icoEnds)  // Check if the crowdsale is already over
+        if (now < icoEnds)  // Check if the crowdsale is already over
             require(from == ownerAddr);
 
         if (msg.sender == ownerAddr || msg.sender == companyAddr)
-            require(now &gt;= teamCompanyLock);
+            require(now >= teamCompanyLock);
             
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -129,8 +129,8 @@ contract Moneda {
     // Anybody may burn the tokens after ICO ended, but only once (in case the owner holds more tokens in the future).
     // this ensures that the owner will not posses a majority of the tokens.
     function burn() public {
-        // Make sure it&#39;s after ICO and hasn&#39;t been called before.
-        require(!burned &amp;&amp; now &gt; icoEnds);
+        // Make sure it's after ICO and hasn't been called before.
+        require(!burned && now > icoEnds);
         uint256 totalReserve = teamReserve.add(companyReserve);
         uint256 difference = balances[ownerAddr].sub(totalReserve);
         balances[ownerAddr] = teamReserve;

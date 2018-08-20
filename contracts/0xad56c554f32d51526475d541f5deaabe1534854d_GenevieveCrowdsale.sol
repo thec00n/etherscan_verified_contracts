@@ -35,7 +35,7 @@ contract GXVCToken {
     string public name;
     string public symbol;
     uint8 public decimals; 
-    string public version = &#39;v0.2&#39;;
+    string public version = 'v0.2';
     uint256 public totalSupply;
     bool locked;
 
@@ -44,9 +44,9 @@ contract GXVCToken {
     uint multiplier = 10000000000; // For 10 decimals
     address swapperAddress; // Can bypass a lock
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) freezed; 
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) freezed; 
 
 
   	event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
@@ -55,7 +55,7 @@ contract GXVCToken {
     // Modifiers
 
     modifier onlyOwner() {
-        if ( msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+        if ( msg.sender != rootAddress && msg.sender != Owner ) revert();
         _;
     }
 
@@ -65,7 +65,7 @@ contract GXVCToken {
     }
 
     modifier isUnlocked() {
-    	if ( locked &amp;&amp; msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+    	if ( locked && msg.sender != rootAddress && msg.sender != Owner ) revert();
 		_;    	
     }
 
@@ -77,10 +77,10 @@ contract GXVCToken {
 
     // Safe math
     function safeAdd(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function safeSub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
 
@@ -88,8 +88,8 @@ contract GXVCToken {
     function GXVCToken() {        
         locked = true;
         totalSupply = 160000000 * multiplier; // 160,000,000 tokens * 10 decimals
-        name = &#39;Genevieve VC&#39;; 
-        symbol = &#39;GXVC&#39;; 
+        name = 'Genevieve VC'; 
+        symbol = 'GXVC'; 
         decimals = 10; 
         rootAddress = msg.sender;        
         Owner = msg.sender;       
@@ -160,7 +160,7 @@ contract GXVCToken {
 
     function burn(uint256 _value) onlyOwner returns(bool) {
     	bytes memory empty;
-        if ( balances[msg.sender] &lt; _value ) revert();
+        if ( balances[msg.sender] < _value ) revert();
         balances[msg.sender] = safeSub( balances[msg.sender] , _value );
         totalSupply = safeSub( totalSupply,  _value );
         Transfer(msg.sender, 0x0, _value , empty);
@@ -183,7 +183,7 @@ contract GXVCToken {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) isUnlocked isUnfreezed(_to) returns (bool success) {
       
     if(isContract(_to)) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] = safeSub( balances[msg.sender] , _value );
         balances[_to] = safeAdd( balances[_to] , _value );
         ContractReceiver receiver = ContractReceiver(_to);
@@ -228,12 +228,12 @@ contract GXVCToken {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -242,7 +242,7 @@ contract GXVCToken {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender] , _value);
     balances[_to] = safeAdd(balances[_to] , _value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -254,10 +254,10 @@ contract GXVCToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
 
-        if ( locked &amp;&amp; msg.sender != swapperAddress ) return false; 
+        if ( locked && msg.sender != swapperAddress ) return false; 
         if ( freezed[_from] || freezed[_to] ) return false; // Check if destination address is freezed
-        if ( balances[_from] &lt; _value ) return false; // Check if the sender has enough
-		if ( _value &gt; allowed[_from][msg.sender] ) return false; // Check allowance
+        if ( balances[_from] < _value ) return false; // Check if the sender has enough
+		if ( _value > allowed[_from][msg.sender] ) return false; // Check allowance
 
         balances[_from] = safeSub(balances[_from] , _value); // Subtract from the sender
         balances[_to] = safeAdd(balances[_to] , _value); // Add the same to the recipient
@@ -299,19 +299,19 @@ contract GXVCToken {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -330,20 +330,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -352,7 +352,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -482,16 +482,16 @@ contract KeeHole {
         maxTokensInTier = 25000 * (10 ** 10);
     }
 
-    mapping (address =&gt; bool) hasParticipated;
+    mapping (address => bool) hasParticipated;
 
     // getBonusAmount - calculates any bonus due.
     // only one bonus per account
     function getBonusAmount(uint256 amount) public returns (uint256 bonus) {
         if (hasParticipated[msg.sender])
             return 0;
-        if ( token.icoBalanceOf(msg.sender,this) &lt; threshold )
+        if ( token.icoBalanceOf(msg.sender,this) < threshold )
             return 0;
-        if (pos&gt;=slots.length)
+        if (pos>=slots.length)
             return 0;
         bonus = (amount.mul(bonuses[pos])).div(100);
         slots[pos]--;
@@ -528,7 +528,7 @@ contract GenevieveCrowdsale is Ownable, Pausable, KeeHole {
   // address where funds are collected
   address public hardwareWallet;
 
-  mapping (address =&gt; uint256) public deposits;
+  mapping (address => uint256) public deposits;
   uint256 public numberOfPurchasers;
 
   // how many token units a buyer gets per wei comes from keeUser
@@ -551,7 +551,7 @@ contract GenevieveCrowdsale is Ownable, Pausable, KeeHole {
 
 // REGISTRY FUNCTIONS 
 
-  mapping (address =&gt; bool) public registered;
+  mapping (address => bool) public registered;
   address public registrar;
   function setReg(address _newReg) external onlyOwner {
     registrar = _newReg;
@@ -582,8 +582,8 @@ contract GenevieveCrowdsale is Ownable, Pausable, KeeHole {
     tokenSpender = 0x6835706E8e58544deb6c4EC59d9815fF6C20417f; // Bal = 104605839.665805634 GXVC
 
     minContribution = 1 finney;
-    require(startTimestamp &gt;= now);
-    require(endTimestamp &gt;= startTimestamp);
+    require(startTimestamp >= now);
+    require(endTimestamp >= startTimestamp);
   }
 
   // check if valid purchase
@@ -591,18 +591,18 @@ contract GenevieveCrowdsale is Ownable, Pausable, KeeHole {
     // REGISTRY REQUIREMENT
     require(registered[msg.sender]);
     // END OF REGISTRY REQUIREMENT
-    require(now &gt;= startTimestamp);
-    require(now &lt; endTimestamp);
-    require(msg.value &gt;= minContribution);
-    require(weiRaised.add(msg.value) &lt;= weiToRaise);
+    require(now >= startTimestamp);
+    require(now < endTimestamp);
+    require(msg.value >= minContribution);
+    require(weiRaised.add(msg.value) <= weiToRaise);
     _;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp) 
+    if (now > endTimestamp) 
         return true;
-    if (weiRaised &gt;= weiToRaise.sub(minContribution))
+    if (weiRaised >= weiToRaise.sub(minContribution))
       return true;
     return false;
   }

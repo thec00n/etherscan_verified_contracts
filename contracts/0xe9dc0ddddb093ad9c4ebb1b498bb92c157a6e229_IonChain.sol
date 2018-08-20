@@ -1,12 +1,12 @@
 pragma solidity ^0.4.24; // 23 May 2018
 
-/*    Copyright &#169; 2018  -  All Rights Reserved
+/*    Copyright © 2018  -  All Rights Reserved
   High-Capacity IonChain Transactional System
 */
 
 contract InCodeWeTrust {
   modifier onlyPayloadSize(uint256 size) {
-    if(msg.data.length &lt; size + 4) {
+    if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -37,7 +37,7 @@ contract InCodeWeTrust {
 contract investor is InCodeWeTrust {
   address internal owner; 
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 }
 /*  SafeMath - the lowest risk library
   Math operations with safety checks
@@ -53,12 +53,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,15 +72,15 @@ contract Satoshi is investor {
  
     /* Batch assets transfer. Used  to distribute  assets to holders */
   function transfer_Different_amounts_of_assets_to_many (address[] _recipients, uint[] _amount_comma_space_amount) public payable {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _amount_comma_space_amount.length);
+        require( _recipients.length > 0 && _recipients.length == _amount_comma_space_amount.length);
 
         uint256 total = 0;
-        for(uint i = 0; i &lt; _amount_comma_space_amount.length; i++){
+        for(uint i = 0; i < _amount_comma_space_amount.length; i++){
             total = total.add(_amount_comma_space_amount[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_amount_comma_space_amount[j]);
             Transfer(msg.sender, _recipients[j], _amount_comma_space_amount[j]);
         }
@@ -89,9 +89,9 @@ contract Satoshi is investor {
   } 
  
   function early_supporters_distribution (address[] address_to_comma_space_address_to_, uint256 _value) public payable { 
-        require(_value &lt;= balances[msg.sender]);
-        for (uint i = 0; i &lt; address_to_comma_space_address_to_.length; i++){
-         if(balances[msg.sender] &gt;= _value)  { 
+        require(_value <= balances[msg.sender]);
+        for (uint i = 0; i < address_to_comma_space_address_to_.length; i++){
+         if(balances[msg.sender] >= _value)  { 
          balances[msg.sender] = balances[msg.sender].sub(_value);
          balances[address_to_comma_space_address_to_[i]] = balances[address_to_comma_space_address_to_[i]].add(_value);
            Transfer(msg.sender, address_to_comma_space_address_to_[i], _value);
@@ -138,14 +138,14 @@ contract TheSmartAsset is Transparent {
   uint256 internal initialSupply;
   
   function totally_decrease_the_supply(uint256 amount_to_burn_from_supply) public payable {
-        require(balances[msg.sender] &gt;= amount_to_burn_from_supply);
+        require(balances[msg.sender] >= amount_to_burn_from_supply);
         balances[msg.sender] = balances[msg.sender].sub(amount_to_burn_from_supply);
         totalSupply = totalSupply.sub(amount_to_burn_from_supply);
   }
 }
 
 contract ERC20 is TheSmartAsset {
- string public name = &quot;IonChain&quot;;
+ string public name = "IonChain";
  string public positive_terms_of_Service;
  string public crowdsale;
  string public alternative_Exchanges_links;
@@ -153,7 +153,7 @@ contract ERC20 is TheSmartAsset {
  string public Price;  
  string public contract_verified;
  uint constant internal decimals = 6;
- string public symbol = &quot;IONC&quot;;
+ string public symbol = "IONC";
   function Voter () {
       balances[this] = 0;  // this is the total initial assets sale limit
       balances[owner] = 1 * (10 ** 9) * decimals;  // total amount for all bounty programs
@@ -172,7 +172,7 @@ contract ERC20 is TheSmartAsset {
 contract Assets is  ERC20 {
 
  function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public payable {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             _value = balances[msg.sender];
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -215,12 +215,12 @@ contract Functions is Assets {
 
  function () payable {
     uint256 assets =  msg.value/(buyPrice);
-     if (assets &gt; (balances[this])) {
+     if (assets > (balances[this])) {
         assets = balances[this];
         uint valueWei = assets * buyPrice ;
         msg.sender.transfer(msg.value - valueWei);
     }
-    require(msg.value &gt;= (10 ** 15));
+    require(msg.value >= (10 ** 15));
     balances[msg.sender] += assets;
     balances[this] -= assets;
     Transfer(this, msg.sender, assets);
@@ -231,15 +231,15 @@ contract Functions is Assets {
 contract IonChain is Functions {
 
  function buy_fromContract() payable public returns (uint256 _amount_) {
-        require (msg.value &gt;= 0);
+        require (msg.value >= 0);
         _amount_ =  msg.value / buyPrice;                 // calculates the amount
-        if (_amount_ &gt; balances[this]) {
+        if (_amount_ > balances[this]) {
             _amount_ = balances[this];
             uint256 valueWei = _amount_ * buyPrice;
             msg.sender.transfer(msg.value - valueWei);
         }
-        balances[msg.sender] += _amount_;                  // adds the amount to buyer&#39;s balance
-        balances[this] -= _amount_;                        // subtracts amount from seller&#39;s balance
+        balances[msg.sender] += _amount_;                  // adds the amount to buyer's balance
+        balances[this] -= _amount_;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, _amount_);              
         
          uint64 _now = uint64(now);
@@ -247,11 +247,11 @@ contract IonChain is Functions {
  }
 
  function sell_toContract (uint256 amount_toSell)  public { 
-        if (balances[msg.sender] &lt; amount_toSell) {
+        if (balances[msg.sender] < amount_toSell) {
             amount_toSell = balances[msg.sender];
         }
-        require (amount_toSell &lt;= (8 * 1e18 / Buy_Wall_level_in_wei)); // max to sell by 1 function&#39;s call is 100 000 assets  
-        balances[this] += amount_toSell;                           // adds the amount to owner&#39;s balance
+        require (amount_toSell <= (8 * 1e18 / Buy_Wall_level_in_wei)); // max to sell by 1 function's call is 100 000 assets  
+        balances[this] += amount_toSell;                           // adds the amount to owner's balance
         balances[msg.sender] -= amount_toSell;  
         msg.sender.transfer(amount_toSell * Buy_Wall_level_in_wei);          
         Transfer(msg.sender, this, amount_toSell);              

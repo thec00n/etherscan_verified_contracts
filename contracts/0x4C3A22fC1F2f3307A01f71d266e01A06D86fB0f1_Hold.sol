@@ -28,7 +28,7 @@ contract Hold is Ownable {
         amountRaised += amount;
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     function safeWithdrawal() public afterDeadline {
         if (owner.send(amountRaised)) {

@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -81,7 +81,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -232,13 +232,13 @@ contract ERC721BasicToken is BrokenContract, ERC721Basic {
     using AddressUtils for address;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    //mapping (uint256 =&gt; address) internal tokenApprovals;
+    //mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     /**
      * @dev Guarantees msg.sender is owner of the given token
@@ -412,16 +412,16 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     string internal symbol_;
 
     // Mapping from owner to list of owned token IDs
-    mapping(address =&gt; uint256[]) internal ownedTokens;
+    mapping(address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
     uint256[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
     /**
      * @dev Constructor function
@@ -454,7 +454,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
      * @return uint256 token ID at the given index of the tokens list owned by the requested address
      */
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -473,7 +473,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
      * @return uint256 token ID at the given index of the tokens list
      */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return allTokens[_index];
     }
 
@@ -584,7 +584,7 @@ contract BaseGame is ERC721Token {
         uint shotA;
         uint shotB;
 
-        // list of ID forecast&#39;s
+        // list of ID forecast's
         uint[] forecasts;
     }
 
@@ -604,23 +604,23 @@ contract BaseGame is ERC721Token {
     ///@dev array of game from, 0 - invalid, index - official ID of game
     // http://welcome2018.com/matches/#
     //Game[65] games;
-    mapping (uint =&gt; Game) games;
+    mapping (uint => Game) games;
 
     ///@dev array of forecast for game from fans
     Forecast[] forecasts;
 
-    ///@dev forecast -&gt; token
-    mapping (uint =&gt; uint) internal forecastToToken;
+    ///@dev forecast -> token
+    mapping (uint => uint) internal forecastToToken;
 
-    ///@dev token -&gt; forecast&#39;s
-    mapping (uint =&gt; uint[]) internal tokenForecasts;
+    ///@dev token -> forecast's
+    mapping (uint => uint[]) internal tokenForecasts;
 
     /**
     * @dev Constructor function
     */
     constructor(string _name, string _symbol) ERC721Token(_name, _symbol) public {}
 
-    /// METHOD&#39;s
+    /// METHOD's
     ///@dev create new token
     function _createToken(uint _parentId, address _owner) internal whenNotPaused
     returns (uint) {
@@ -637,7 +637,7 @@ contract BaseGame is ERC721Token {
 
     ///@dev Create new forecast
     function _createForecast(uint _tokenId, uint _gameId, uint _forecastData) internal whenNotPaused returns (uint) {
-        require(_tokenId &lt; tokens.length);
+        require(_tokenId < tokens.length);
 
         Forecast memory newForecast = Forecast({
             gameId: _gameId,
@@ -666,7 +666,7 @@ contract BaseGameLogic is BaseGame {
     uint public basePrice = 21 finney;
     ///@dev cut game on each clone operation, measured in basis points (1/100 of a percent).
 
-    /// values 0 - 10 000 -&gt; 0 - 100%
+    /// values 0 - 10 000 -> 0 - 100%
     uint public gameCloneFee = 7000;         /// % game fee (contract + prizeFund)
     uint public priceFactor = 10000;         /// %% calculate price (increase/decrease)
     uint public prizeFundFactor = 5000;      /// %% prizeFund
@@ -687,7 +687,7 @@ contract BaseGameLogic is BaseGame {
 
     ///@dev create new Token
     function createAccount() external payable whenNotPaused returns (uint) {
-        require(msg.value &gt;= basePrice);
+        require(msg.value >= basePrice);
 
         ///todo: return excess funds
         _addToFund(msg.value, false);
@@ -699,7 +699,7 @@ contract BaseGameLogic is BaseGame {
         require(exists(_tokenId));
 
         uint tokenPrice = calculateTokenPrice(_tokenId);
-        require(msg.value &gt;= tokenPrice);
+        require(msg.value >= tokenPrice);
 
         /// create clone
         uint newToken = _createToken( _tokenId, msg.sender);
@@ -723,7 +723,7 @@ contract BaseGameLogic is BaseGame {
         uint8 _goalA, uint8 _goalB, bool _odds, uint8 _shotA, uint8 _shotB)
     external whenNotPaused onlyOwnerOf(_tokenId) returns (uint){
         require(exists(_tokenId));
-        require(block.timestamp &lt; games[_gameId].gameDate);
+        require(block.timestamp < games[_gameId].gameDate);
 
         uint _forecastData = toForecastData(_goalA, _goalB, _odds, _shotA, _shotB);
         return _createForecast(_tokenId, _gameId, _forecastData);
@@ -732,7 +732,7 @@ contract BaseGameLogic is BaseGame {
         /* uint forecastId = 0;
         uint _forecastCount = tokenForecasts[_tokenId].length;
         uint _testForecastId;
-        for (uint _forecastIndex = 0; _forecastIndex &lt; _forecastCount; _forecastIndex++) {
+        for (uint _forecastIndex = 0; _forecastIndex < _forecastCount; _forecastIndex++) {
             _testForecastId = tokenForecasts[_tokenId][_forecastIndex];
             if(forecasts[_testForecastId].gameId == _gameId) {
                 forecastId = _testForecastId;
@@ -742,7 +742,7 @@ contract BaseGameLogic is BaseGame {
 
         uint _forecastData = toForecastData(_goalA, _goalB, _odds, _shotA, _shotB);
 
-        if(forecastId &gt; 0) {
+        if(forecastId > 0) {
             return _editForecast(forecastId, _forecastData);
         } else {
             return _createForecast(_tokenId, _gameId, _forecastData);
@@ -762,7 +762,7 @@ contract BaseGameLogic is BaseGame {
             uint resultIndex = 0;
 
             uint _tokenId;
-            for (_tokenId = 1; _tokenId &lt;= totalToken; _tokenId++) {
+            for (_tokenId = 1; _tokenId <= totalToken; _tokenId++) {
                 if (tokenOwner[_tokenId] == _owner) {
                     result[resultIndex] = _tokenId;
                     resultIndex++;
@@ -783,7 +783,7 @@ contract BaseGameLogic is BaseGame {
         } else {
             uint[] memory result = new uint[](forecastCount);
             uint resultIndex;
-            for (resultIndex = 0; resultIndex &lt; forecastCount; resultIndex++) {
+            for (resultIndex = 0; resultIndex < forecastCount; resultIndex++) {
                 result[resultIndex] = tokenForecasts[_tokenId][resultIndex];
             }
 
@@ -840,11 +840,11 @@ contract BaseGameLogic is BaseGame {
 
         uint index = 0;
         uint count = tokenForecasts[_tokenId].length;
-        for (index = 0; index &lt; count; index++) {
-            //game&#39;s ended
-            if(forecasts[tokenForecasts[_tokenId][index]].forecastBlockNumber &lt; _blockNumber){
+        for (index = 0; index < count; index++) {
+            //game's ended
+            if(forecasts[tokenForecasts[_tokenId][index]].forecastBlockNumber < _blockNumber){
                 if(isReleased) {
-                    if (games[forecasts[tokenForecasts[_tokenId][index]].gameId].gameDate &lt; block.timestamp) {
+                    if (games[forecasts[tokenForecasts[_tokenId][index]].gameId].gameDate < block.timestamp) {
                         forecastCount = forecastCount + 1;
                     }
                 } else {
@@ -861,27 +861,27 @@ contract BaseGameLogic is BaseGame {
         return forecastCount;
     }
 
-    ///@dev calculate score by fan&#39;s forecasts
+    ///@dev calculate score by fan's forecasts
     function getScore(uint _tokenId) public view returns (uint){
         uint[] memory _gameForecast = new uint[](65);
         return getScore(_tokenId, block.number, _gameForecast);
     }
 
-    ///@dev calculate score by fan&#39;s forecast to a specific block number
+    ///@dev calculate score by fan's forecast to a specific block number
     function getScore(uint _tokenId, uint _blockNumber, uint[] _gameForecast) public view returns (uint){
         uint score = 0;
 
         /// find all forecasts and calculate forecast score
         uint[] memory _forecasts = forecastOfToken(_tokenId);
-        if (_forecasts.length &gt; 0){
+        if (_forecasts.length > 0){
             uint256 _index;
-            for(_index = _forecasts.length - 1; _index &gt;= 0 &amp;&amp; _index &lt; _forecasts.length ; _index--){
+            for(_index = _forecasts.length - 1; _index >= 0 && _index < _forecasts.length ; _index--){
                 /// check:
-                ///     forecastBlockNumber &lt; current block number
+                ///     forecastBlockNumber < current block number
                 ///     one forecast for one game (last)
-                if(forecasts[_forecasts[_index]].forecastBlockNumber &lt; _blockNumber &amp;&amp;
-                    _gameForecast[forecasts[_forecasts[_index]].gameId] == 0 &amp;&amp;
-                    block.timestamp &gt; games[forecasts[_forecasts[_index]].gameId].gameDate
+                if(forecasts[_forecasts[_index]].forecastBlockNumber < _blockNumber &&
+                    _gameForecast[forecasts[_forecasts[_index]].gameId] == 0 &&
+                    block.timestamp > games[forecasts[_forecasts[_index]].gameId].gameDate
                 ){
                     score = score.add(calculateScore(
                             forecasts[_forecasts[_index]].gameId,
@@ -901,7 +901,7 @@ contract BaseGameLogic is BaseGame {
 
     /// get forecast score
     function getForecastScore(uint256 _forecastId) external view returns (uint256) {
-        require(_forecastId &lt; forecasts.length);
+        require(_forecastId < forecasts.length);
 
         return calculateScore(
             forecasts[_forecastId].gameId,
@@ -912,19 +912,19 @@ contract BaseGameLogic is BaseGame {
     ///@dev calculate score by game forecast (only for games that have ended)
     function calculateScore(uint256 _gameId, uint d)
     public view returns (uint256){
-        require(block.timestamp &gt; games[_gameId].gameDate);
+        require(block.timestamp > games[_gameId].gameDate);
 
-        uint256 _shotB = (d &amp; 0xff);
-        d = d &gt;&gt; 8;
-        uint256 _shotA = (d &amp; 0xff);
-        d = d &gt;&gt; 8;
-        uint odds8 = (d &amp; 0xff);
+        uint256 _shotB = (d & 0xff);
+        d = d >> 8;
+        uint256 _shotA = (d & 0xff);
+        d = d >> 8;
+        uint odds8 = (d & 0xff);
         bool _odds = odds8 == 1 ? true: false;
-        d = d &gt;&gt; 8;
-        uint256 _goalB = (d &amp; 0xff);
-        d = d &gt;&gt; 8;
-        uint256 _goalA = (d &amp; 0xff);
-        d = d &gt;&gt; 8;
+        d = d >> 8;
+        uint256 _goalB = (d & 0xff);
+        d = d >> 8;
+        uint256 _goalA = (d & 0xff);
+        d = d >> 8;
 
         Game memory cGame = games[_gameId];
 
@@ -946,7 +946,7 @@ contract BaseGameLogic is BaseGame {
             isDoubleScore = false;
         }
 
-        /// total goal count&#39;s
+        /// total goal count's
         if((cGame.goalA + cGame.goalB) == (_goalA + _goalB)) {
             _score = _score.add(2);
         } else {
@@ -954,15 +954,15 @@ contract BaseGameLogic is BaseGame {
         }
 
         /// exact match score
-        if(cGame.goalA == _goalA &amp;&amp; cGame.goalB == _goalB) {
+        if(cGame.goalA == _goalA && cGame.goalB == _goalB) {
             _score = _score.add(3);
         } else {
             isDoubleScore = false;
         }
 
-        if( ((cGame.goalA &gt; cGame.goalB) &amp;&amp; (_goalA &gt; _goalB)) ||
-            ((cGame.goalA &lt; cGame.goalB) &amp;&amp; (_goalA &lt; _goalB)) ||
-            ((cGame.goalA == cGame.goalB) &amp;&amp; (_goalA == _goalB))) {
+        if( ((cGame.goalA > cGame.goalB) && (_goalA > _goalB)) ||
+            ((cGame.goalA < cGame.goalB) && (_goalA < _goalB)) ||
+            ((cGame.goalA == cGame.goalB) && (_goalA == _goalB))) {
             _score = _score.add(1);
         } else {
             isDoubleScore = false;
@@ -978,19 +978,19 @@ contract BaseGameLogic is BaseGame {
     /// admin logic
     ///@dev set new base Price for create token
     function setBasePrice(uint256 _val) external onlyAdmin {
-        require(_val &gt; 0);
+        require(_val > 0);
         basePrice = _val;
     }
 
     ///@dev change fee for clone token
     function setGameCloneFee(uint256 _val) external onlyAdmin {
-        require(_val &lt;= 10000);
+        require(_val <= 10000);
         gameCloneFee = _val;
     }
 
     ///@dev change fee for clone token
     function setPrizeFundFactor(uint256 _val) external onlyAdmin {
-        require(_val &lt;= 10000);
+        require(_val <= 10000);
         prizeFundFactor = _val;
     }
 
@@ -1026,12 +1026,12 @@ contract BaseGameLogic is BaseGame {
     function toForecastData(uint8 _goalA, uint8 _goalB, bool _odds, uint8 _shotA, uint8 _shotB)
     pure internal returns (uint) {
         uint forecastData;
-        forecastData = forecastData &lt;&lt; 8 | _goalA;
-        forecastData = forecastData &lt;&lt; 8 | _goalB;
+        forecastData = forecastData << 8 | _goalA;
+        forecastData = forecastData << 8 | _goalB;
         uint8 odds8 = _odds ? 1 : 0;
-        forecastData = forecastData &lt;&lt; 8 | odds8;
-        forecastData = forecastData &lt;&lt; 8 | _shotA;
-        forecastData = forecastData &lt;&lt; 8 | _shotB;
+        forecastData = forecastData << 8 | odds8;
+        forecastData = forecastData << 8 | _shotA;
+        forecastData = forecastData << 8 | _shotB;
 
         return forecastData;
     }
@@ -1054,8 +1054,8 @@ contract HWCIntegration is BaseGameLogic {
     uint public cHWCtoEth = 0;
     uint256 public prizeFundHWC = 0;
 
-    // address =&gt; hwc address
-    mapping (address =&gt; HWCInfo) hwcAddress;
+    // address => hwc address
+    mapping (address => HWCInfo) hwcAddress;
     address[] hwcAddressList;
 
     function _addToFundHWC(uint256 _val) internal whenNotPaused {
@@ -1070,7 +1070,7 @@ contract HWCIntegration is BaseGameLogic {
             hwcAddress[msg.sender].index1 = hwcAddressList.push(msg.sender);
         }
 
-        emit NewHWCRegister(msg.sender, _a, &#39;&#39;);
+        emit NewHWCRegister(msg.sender, _a, '');
     }
 
     function registerHWCWit(string _a) public {
@@ -1081,7 +1081,7 @@ contract HWCIntegration is BaseGameLogic {
             hwcAddress[msg.sender].index1 = hwcAddressList.push(msg.sender);
         }
 
-        emit NewHWCRegister(msg.sender, &#39;&#39;, _a);
+        emit NewHWCRegister(msg.sender, '', _a);
     }
 
     function getHWCAddressCount() public view returns (uint){
@@ -1089,7 +1089,7 @@ contract HWCIntegration is BaseGameLogic {
     }
 
     function getHWCAddressByIndex(uint _index) public view returns (string aDeposit, string aWithdraw, uint d) {
-        require(_index &lt; hwcAddressList.length);
+        require(_index < hwcAddressList.length);
         return getHWCAddress(hwcAddressList[_index]);
     }
 
@@ -1106,7 +1106,7 @@ contract HWCIntegration is BaseGameLogic {
     function createTokenByHWC(address _userTo, uint256 _parentId) external onlyAdmin whenNotPaused returns (uint) {
         //convert eth to hwc
         uint256 tokenPrice = basePrice.div(1e10).mul(cHWCtoEth);
-        if(_parentId &gt; 0) {
+        if(_parentId > 0) {
             tokenPrice = calculateTokenPrice(_parentId);
             tokenPrice = tokenPrice.div(1e10).mul(cHWCtoEth);
             //uint256 gameFee = _calculateGameFee(tokenPrice);
@@ -1134,16 +1134,16 @@ contract SolutionGame is HWCIntegration {
 
     ///@dev winner token list
     uint256 countWinnerPlace;
-    //place -&gt; %%% ( 100% - 10000)
-    mapping (uint256 =&gt; uint256) internal prizeDistribution;
-    //place -&gt; prize
-    mapping (uint256 =&gt; uint256) internal prizesByPlace;
-    mapping (uint256 =&gt; uint256) internal scoreByPlace;
-    //token -&gt; prize
-    mapping (uint =&gt; uint) winnerMap;
+    //place -> %%% ( 100% - 10000)
+    mapping (uint256 => uint256) internal prizeDistribution;
+    //place -> prize
+    mapping (uint256 => uint256) internal prizesByPlace;
+    mapping (uint256 => uint256) internal scoreByPlace;
+    //token -> prize
+    mapping (uint => uint) winnerMap;
     uint[] winnerList;
 
-    mapping (uint256 =&gt; uint256) internal prizesByPlaceHWC;
+    mapping (uint256 => uint256) internal prizesByPlaceHWC;
 
     bool isWinnerTime = false;
 
@@ -1157,7 +1157,7 @@ contract SolutionGame is HWCIntegration {
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+    /// @dev Reject all Ether from being sent here, unless it's from one of the
     ///  two auction contracts. (Hopefully, we can prevent user accidents.)
     function() external payable {
         _addToFund(msg.value, true);
@@ -1179,27 +1179,27 @@ contract SolutionGame is HWCIntegration {
 
     /// @dev set the distribution of the prize by place
     function setWinnerPlaceDistribution(uint256 place, uint256 _val) external onlyOwner {
-        require(place &lt;= countWinnerPlace);
-        require(_val &lt;= 10000);
+        require(place <= countWinnerPlace);
+        require(_val <= 10000);
 
         uint256 testVal = 0;
         uint256 index;
-        for (index = 1; index &lt;= countWinnerPlace; index ++) {
+        for (index = 1; index <= countWinnerPlace; index ++) {
             if(index != place) {
                 testVal = testVal + prizeDistribution[index];
             }
         }
 
         testVal = testVal + _val;
-        require(testVal &lt;= 10000);
+        require(testVal <= 10000);
         prizeDistribution[place] = _val;
     }
 
     ///@dev method for manual add/edit winner list and winner count
     /// only after final
     function setCountWinnerByPlace(uint256 place, uint256 _winnerCount, uint256 _winnerScore) public onlyOwner whenPaused {
-        require(_winnerCount &gt; 0);
-        require(place &lt;= countWinnerPlace);
+        require(_winnerCount > 0);
+        require(place <= countWinnerPlace);
         prizesByPlace[place] = prizeFund.mul(prizeDistribution[place]).div(10000).div(_winnerCount);
         prizesByPlaceHWC[place] = prizeFundHWC.mul(prizeDistribution[place]).div(10000).div(_winnerCount);
         scoreByPlace[place] = _winnerScore;
@@ -1209,7 +1209,7 @@ contract SolutionGame is HWCIntegration {
     returns (uint place) {
         place = 0;
         uint score = getScore(_tokenId);
-        for(uint index = 1; index &lt;= countWinnerPlace; index ++) {
+        for(uint index = 1; index <= countWinnerPlace; index ++) {
             if (score == scoreByPlace[index]) {
                 // token - winner
                 place = index;
@@ -1221,17 +1221,17 @@ contract SolutionGame is HWCIntegration {
     function getMyPrize() external whenWinnerTime {
         uint[] memory tokenList = tokensOfOwner(msg.sender);
 
-        for(uint index = 0; index &lt; tokenList.length; index ++) {
+        for(uint index = 0; index < tokenList.length; index ++) {
             getPrizeByToken(tokenList[index]);
         }
     }
 
     function getPrizeByToken(uint _tokenId) public whenWinnerTime onlyOwnerOf(_tokenId) {
         uint place = checkIsWinner(_tokenId);
-        require (place &gt; 0);
+        require (place > 0);
 
         uint prize = prizesByPlace[place];
-        if(prize &gt; 0) {
+        if(prize > 0) {
             if(winnerMap[_tokenId] == 0) {
                 winnerMap[_tokenId] = prize;
                 winnerList.push(_tokenId);
@@ -1258,7 +1258,7 @@ contract SolutionGame is HWCIntegration {
 
     function getResultTable(uint _start, uint _count) external view returns (uint[]) {
         uint[] memory results = new uint[](_count);
-        for(uint index = _start; index &lt; tokens.length &amp;&amp; index &lt; (_start + _count); index++) {
+        for(uint index = _start; index < tokens.length && index < (_start + _count); index++) {
             results[(index - _start)] = getScore(index);
         }
         return results;

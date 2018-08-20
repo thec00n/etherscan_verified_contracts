@@ -49,7 +49,7 @@ contract Crowdsale
         if (msg.sender == owner) _;
     }
 
-    /* модификатор проверяющий &quot;вызывает продавец или вызывает владелец контракта?&quot; */
+    /* модификатор проверяющий "вызывает продавец или вызывает владелец контракта?" */
     modifier isSetPrice()
     {
         if (msg.sender == seller || msg.sender == owner) _;
@@ -67,7 +67,7 @@ contract Crowdsale
         uint priceUsdCentAvr = price;
         uint256 amountAvrAtom = ((amountWei * priceUsdCentEth) / priceUsdCentAvr) / 10000000000;
 
-        if (tokenReward.balanceOf(ContractAddress) &lt; amountAvrAtom) {
+        if (tokenReward.balanceOf(ContractAddress) < amountAvrAtom) {
             throw;
         }
         tokenReward.transfer(msg.sender, amountAvrAtom);

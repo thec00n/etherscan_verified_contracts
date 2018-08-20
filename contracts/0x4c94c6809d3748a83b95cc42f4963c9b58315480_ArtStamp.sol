@@ -36,17 +36,17 @@ contract ArtStamp {
     }
     
     //contains all pieces on the market
-    mapping (uint =&gt; Piece) pieces;
+    mapping (uint => Piece) pieces;
 
     //number of pieces
     uint piecesLength;
 
     //list of all escrow situations currently in progress
-    mapping (uint =&gt; Escrow) escrowLedger;
+    mapping (uint => Escrow) escrowLedger;
 
     //this is used to ensure that no piece can be uploaded twice. 
     //dataRecord[(hash of a piece goes here)] will be true if that piece has already been uploaded
-    mapping (bytes32 =&gt; bool) dataRecord;
+    mapping (bytes32 => bool) dataRecord;
 
     /************************** */
     /*         LOGIC            */
@@ -106,7 +106,7 @@ contract ArtStamp {
     
     function addPiece(string _metadata, string _title, bytes32 _proof, address witness) public {
         bool exists = hashExists(_proof);
-        require(!exists, &quot;This piece has already been uploaded&quot;);
+        require(!exists, "This piece has already been uploaded");
         dataRecord[_proof] = true;
         pieces[piecesLength] = Piece(_metadata,  _title, _proof, msg.sender, false, witness);
         piecesLength++;
@@ -115,26 +115,26 @@ contract ArtStamp {
     //edit both title and metadata with one transaction, will make things easier on the front end
     function editPieceData(uint id, string newTitle, string newMetadata) public {
         bool ownership = hasOwnership(id);
-        require(ownership, &quot;You don&#39;t own this piece&quot;);
+        require(ownership, "You don't own this piece");
         pieces[id].metadata = newMetadata;
         pieces[id].title = newTitle;
     }
 
     function editMetadata(uint id, string newMetadata) public {
         bool ownership = hasOwnership(id);
-        require(ownership, &quot;You don&#39;t own this piece&quot;);
+        require(ownership, "You don't own this piece");
         pieces[id].metadata = newMetadata;
     }
 
     function editTitle(uint id, string newTitle) public {
         bool ownership = hasOwnership(id);
-        require(ownership, &quot;You don&#39;t own this piece&quot;);
+        require(ownership, "You don't own this piece");
         pieces[id].title = newTitle;
     }
 
     function escrowTransfer(uint id, address recipient) public {
         bool ownership = hasOwnership(id);
-        require(ownership, &quot;You don&#39;t own this piece&quot;);
+        require(ownership, "You don't own this piece");
 
         //set owner of piece to artstamp smart contract
         pieces[id].owner = address(this);
@@ -157,7 +157,7 @@ contract ArtStamp {
         //reject transaction if piece is not in escrow 
         require(pieces[id].owner == address(this));
 
-        require(block.number &gt; escrowLedger[id].blockNum + timeout);
+        require(block.number > escrowLedger[id].blockNum + timeout);
 
         address sender = escrowLedger[id].sender.signee;
 
@@ -175,26 +175,26 @@ contract ArtStamp {
         require(msg.sender == escrowLedger[id].sender.signee ||
             msg.sender == escrowLedger[id].recipient.signee || 
             msg.sender == escrowLedger[id].witness.signee, 
-            &quot;You don&#39;t own this piece&quot;);
+            "You don't own this piece");
 
         bool allHaveSigned = true;
 
         if(msg.sender == escrowLedger[id].sender.signee){
             escrowLedger[id].sender.hasSigned = true;
         }  
-        allHaveSigned = allHaveSigned &amp;&amp; escrowLedger[id].sender.hasSigned;
+        allHaveSigned = allHaveSigned && escrowLedger[id].sender.hasSigned;
         
         if(msg.sender == escrowLedger[id].recipient.signee){
             escrowLedger[id].recipient.hasSigned = true;
         }
-        allHaveSigned = allHaveSigned &amp;&amp; escrowLedger[id].recipient.hasSigned;
+        allHaveSigned = allHaveSigned && escrowLedger[id].recipient.hasSigned;
         
 
         if(msg.sender == escrowLedger[id].witness.signee){
             escrowLedger[id].witness.hasSigned = true;
         }        
         
-        allHaveSigned = allHaveSigned &amp;&amp; 
+        allHaveSigned = allHaveSigned && 
             (escrowLedger[id].witness.hasSigned || 
             escrowLedger[id].witness.signee == 0x0000000000000000000000000000000000000000);
 
@@ -212,7 +212,7 @@ contract ArtStamp {
     function transferPiece(uint id, address _to) public
     {
         bool ownership = hasOwnership(id);
-        require(ownership, &quot;You don&#39;t own this piece&quot;);
+        require(ownership, "You don't own this piece");
 
         //check if there is a witness, if so initiate escrow
         if(pieces[id].witness != 0x0000000000000000000000000000000000000000){

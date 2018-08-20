@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,14 +93,14 @@ contract Blockdrop is ERC20Interface,Ownable {
    uint256 public decimals;
 
    uint256 public _totalSupply;
-   mapping(address =&gt; uint256) tokenBalances;
+   mapping(address => uint256) tokenBalances;
    address ownerWallet;
    // Owner of account approves the transfer of an amount to another account
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
    event Debug(string message, address addr, uint256 number);
 
     modifier checkSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }     
     
@@ -109,8 +109,8 @@ contract Blockdrop is ERC20Interface,Ownable {
    */
     function Blockdrop(address wallet) public {
         owner = wallet;
-        name  = &quot;Blockdrop&quot;;
-        symbol = &quot;BDP&quot;;
+        name  = "Blockdrop";
+        symbol = "BDP";
         decimals = 18;
         _totalSupply = 2350000000;
         _totalSupply = _totalSupply.mul(10 ** uint(decimals));
@@ -122,10 +122,10 @@ contract Blockdrop is ERC20Interface,Ownable {
          return tokenBalances[tokenOwner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address to, uint tokens) public checkSize(2) returns (bool success) {
          require(to != address(0));
-         require(tokens &lt;= tokenBalances[msg.sender]);
+         require(tokens <= tokenBalances[msg.sender]);
          tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(tokens);
          tokenBalances[to] = tokenBalances[to].add(tokens);
          Transfer(msg.sender, to, tokens);
@@ -140,8 +140,8 @@ contract Blockdrop is ERC20Interface,Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public checkSize(3) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokenBalances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= tokenBalances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     tokenBalances[_from] = tokenBalances[_from].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
@@ -155,7 +155,7 @@ contract Blockdrop is ERC20Interface,Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -177,14 +177,14 @@ contract Blockdrop is ERC20Interface,Ownable {
      
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
      }
      
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();

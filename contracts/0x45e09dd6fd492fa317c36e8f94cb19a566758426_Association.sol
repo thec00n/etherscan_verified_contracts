@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 /* The token is used as a voting shares */
-contract token { mapping (address =&gt; uint256) public balanceOf;  }
+contract token { mapping (address => uint256) public balanceOf;  }
 
 
-/* define &#39;owned&#39; */
+/* define 'owned' */
 contract owned {
     address public owner;
 
@@ -65,7 +65,7 @@ contract Association is owned, tokenRecipient {
         uint numberOfVotes;
         bytes32 proposalHash;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Vote {
@@ -152,7 +152,7 @@ contract Association is owned, tokenRecipient {
     function executeProposal(uint proposalNumber, bytes transactionBytecode) {
         Proposal p = proposals[proposalNumber];
         /* Check if the proposal can be executed */
-        if (now &lt; p.votingDeadline  /* has the voting deadline arrived? */
+        if (now < p.votingDeadline  /* has the voting deadline arrived? */
             ||  p.executed        /* has it been already executed? */
             ||  p.proposalHash != sha3(p.recipient, p.amount, transactionBytecode)) /* Does the transaction code match the proposal? */
             throw;
@@ -162,7 +162,7 @@ contract Association is owned, tokenRecipient {
         uint yea = 0;
         uint nay = 0;
 
-        for (uint i = 0; i &lt;  p.votes.length; ++i) {
+        for (uint i = 0; i <  p.votes.length; ++i) {
             Vote v = p.votes[i];
             uint voteWeight = sharesTokenAddress.balanceOf(v.voter);
             quorum += voteWeight;
@@ -174,10 +174,10 @@ contract Association is owned, tokenRecipient {
         }
 
         /* execute result */
-        if (quorum &lt;= minimumQuorum) {
+        if (quorum <= minimumQuorum) {
             /* Not enough significant voters */
             throw;
-        } else if (yea &gt; nay ) {
+        } else if (yea > nay ) {
             /* has quorum and was approved */
             p.executed = true;
             if (!p.recipient.call.value(p.amount * 1 ether)(transactionBytecode)) {

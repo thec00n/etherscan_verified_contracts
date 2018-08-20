@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -81,7 +81,7 @@ contract Claimable is Ownable {
 contract AccessMint is Claimable {
 
   // Access for minting new tokens.
-  mapping(address =&gt; bool) private mintAccess;
+  mapping(address => bool) private mintAccess;
 
   // Modifier for accessibility to define new hero types.
   modifier onlyAccessMint {
@@ -115,7 +115,7 @@ contract AccessMint is Claimable {
 contract AccessDeploy is Claimable {
 
   // Access for deploying heroes.
-  mapping(address =&gt; bool) private deployAccess;
+  mapping(address => bool) private deployAccess;
 
   // Modifier for accessibility to deploy a hero on a location.
   modifier onlyAccessDeploy {
@@ -149,7 +149,7 @@ contract AccessDeploy is Claimable {
 contract CryptoSagaDungeonProgress is Claimable, AccessDeploy {
 
   // The progress of the player in dungeons.
-  mapping(address =&gt; uint32[25]) public addressToProgress;
+  mapping(address => uint32[25]) public addressToProgress;
 
   // @dev Get progress.
   function getProgressOfAddressAndId(address _address, uint32 _id)

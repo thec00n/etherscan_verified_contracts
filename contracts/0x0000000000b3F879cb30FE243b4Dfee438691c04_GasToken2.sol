@@ -15,7 +15,7 @@ contract GasToken2 {
     function count_bytes(uint256 n) constant internal returns (uint256 c) {
         uint i = 0;
         uint mask = 1;
-        while (n &gt;= mask) {
+        while (n >= mask) {
             i += 1;
             mask *= 256;
         }
@@ -34,14 +34,14 @@ contract GasToken2 {
          *                ==========
          *                24-32 bytes
          */
-        require(n &lt;= MAX_NONCE);
+        require(n <= MAX_NONCE);
 
         // number of bytes required to write down the nonce
         uint256 nonce_bytes;
         // length in bytes of the RLP encoding of the nonce
         uint256 nonce_rlp_len;
 
-        if (0 &lt; n &amp;&amp; n &lt; MAX_SINGLE_BYTE) {
+        if (0 < n && n < MAX_SINGLE_BYTE) {
             // nonce fits in a single byte
             // RLP(nonce) = nonce
             nonce_bytes = 1;
@@ -61,7 +61,7 @@ contract GasToken2 {
                        ((128 + ADDRESS_BYTES) * 256**30) +
                        (uint256(a) * 256**10);
 
-        if (0 &lt; n &amp;&amp; n &lt; MAX_SINGLE_BYTE) {
+        if (0 < n && n < MAX_SINGLE_BYTE) {
             word += n * 256**9;
         } else {
             word += (128 + nonce_bytes) * 256**9;
@@ -87,10 +87,10 @@ contract GasToken2 {
     // Generic ERC20
     //////////////////////////////////////////////////////////////////////////
 
-    // owner -&gt; amount
-    mapping(address =&gt; uint256) s_balances;
-    // owner -&gt; spender -&gt; max amount
-    mapping(address =&gt; mapping(address =&gt; uint256)) s_allowances;
+    // owner -> amount
+    mapping(address => uint256) s_balances;
+    // owner -> spender -> max amount
+    mapping(address => mapping(address => uint256)) s_allowances;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -102,7 +102,7 @@ contract GasToken2 {
     }
 
     function internalTransfer(address from, address to, uint256 value) internal returns (bool success) {
-        if (value &lt;= s_balances[from]) {
+        if (value <= s_balances[from]) {
             s_balances[from] -= value;
             s_balances[to] += value;
             Transfer(from, to, value);
@@ -121,7 +121,7 @@ contract GasToken2 {
     // Spec: Send `value` amount of tokens from address `from` to address `to`
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         address spender = msg.sender;
-        if(value &lt;= s_allowances[from][spender] &amp;&amp; internalTransfer(from, to, value)) {
+        if(value <= s_allowances[from][spender] && internalTransfer(from, to, value)) {
             s_allowances[from][spender] -= value;
             return true;
         } else {
@@ -134,7 +134,7 @@ contract GasToken2 {
     // current allowance with `value`.
     function approve(address spender, uint256 value) public returns (bool success) {
         address owner = msg.sender;
-        if (value != 0 &amp;&amp; s_allowances[owner][spender] != 0) {
+        if (value != 0 && s_allowances[owner][spender] != 0) {
             return false;
         }
         s_allowances[owner][spender] = value;
@@ -156,14 +156,14 @@ contract GasToken2 {
     //////////////////////////////////////////////////////////////////////////
 
     uint8 constant public decimals = 2;
-    string constant public name = &quot;Gastoken.io&quot;;
-    string constant public symbol = &quot;GST2&quot;;
+    string constant public name = "Gastoken.io";
+    string constant public symbol = "GST2";
 
     // We build a queue of nonces at which child contracts are stored. s_head is
     // the nonce at the head of the queue, s_tail is the nonce behind the tail
     // of the queue. The queue grows at the head and shrinks from the tail.
     // Note that when and only when a contract CREATEs another contract, the
-    // creating contract&#39;s nonce is incremented.
+    // creating contract's nonce is incremented.
     // The first child contract is created with nonce == 1, the second child
     // contract is created with nonce == 2, and so on...
     // For example, if there are child contracts at nonces [2,3,4],
@@ -199,7 +199,7 @@ contract GasToken2 {
             //     PUSH1 0
             //     MSTORE ;; at this point, memory locations mem[10] through
             //            ;; mem[31] contain the runtime portion of the child
-            //            ;; contract. all that&#39;s left to do is to RETURN this
+            //            ;; contract. all that's left to do is to RETURN this
             //            ;; chunk of memory.
             //     PUSH1 22 ;; length
             //     PUSH1 10 ;; offset
@@ -217,7 +217,7 @@ contract GasToken2 {
     // new child contracts. The minted tokens are owned by the caller of this
     // function.
     function mint(uint256 value) public {
-        for (uint256 i = 0; i &lt; value; i++) {
+        for (uint256 i = 0; i < value; i++) {
             makeChild();
         }
         s_head += value;
@@ -227,18 +227,18 @@ contract GasToken2 {
     // Destroys `value` child contracts and updates s_tail.
     //
     // This function is affected by an issue in solc: https://github.com/ethereum/solidity/issues/2999
-    // The `mk_contract_address(this, i).call();` doesn&#39;t forward all available gas, but only GAS - 25710.
+    // The `mk_contract_address(this, i).call();` doesn't forward all available gas, but only GAS - 25710.
     // As a result, when this line is executed with e.g. 30000 gas, the callee will have less than 5000 gas
     // available and its SELFDESTRUCT operation will fail leading to no gas refund occurring.
-    // The remaining ~29000 gas left after the call is enough to update s_tail and the caller&#39;s balance.
+    // The remaining ~29000 gas left after the call is enough to update s_tail and the caller's balance.
     // Hence tokens will have been destroyed without a commensurate gas refund.
     // Fortunately, there is a simple workaround:
     // Whenever you call free, freeUpTo, freeFrom, or freeUpToFrom, ensure that you pass at least
-    // 25710 + `value` * (1148 + 5722 + 150) gas. (It won&#39;t all be used)
+    // 25710 + `value` * (1148 + 5722 + 150) gas. (It won't all be used)
     function destroyChildren(uint256 value) internal {
         uint256 tail = s_tail;
         // tail points to slot behind the last contract in the queue
-        for (uint256 i = tail + 1; i &lt;= tail + value; i++) {
+        for (uint256 i = tail + 1; i <= tail + value; i++) {
             mk_contract_address(this, i).call();
         }
 
@@ -252,7 +252,7 @@ contract GasToken2 {
     // when calling this function. For details, see the comment above `destroyChilden`.
     function free(uint256 value) public returns (bool success) {
         uint256 from_balance = s_balances[msg.sender];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             return false;
         }
 
@@ -269,7 +269,7 @@ contract GasToken2 {
     // when calling this function. For details, see the comment above `destroyChilden`.
     function freeUpTo(uint256 value) public returns (uint256 freed) {
         uint256 from_balance = s_balances[msg.sender];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             value = from_balance;
         }
 
@@ -287,13 +287,13 @@ contract GasToken2 {
     function freeFrom(address from, uint256 value) public returns (bool success) {
         address spender = msg.sender;
         uint256 from_balance = s_balances[from];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             return false;
         }
 
-        mapping(address =&gt; uint256) from_allowances = s_allowances[from];
+        mapping(address => uint256) from_allowances = s_allowances[from];
         uint256 spender_allowance = from_allowances[spender];
-        if (value &gt; spender_allowance) {
+        if (value > spender_allowance) {
             return false;
         }
 
@@ -312,13 +312,13 @@ contract GasToken2 {
     function freeFromUpTo(address from, uint256 value) public returns (uint256 freed) {
         address spender = msg.sender;
         uint256 from_balance = s_balances[from];
-        if (value &gt; from_balance) {
+        if (value > from_balance) {
             value = from_balance;
         }
 
-        mapping(address =&gt; uint256) from_allowances = s_allowances[from];
+        mapping(address => uint256) from_allowances = s_allowances[from];
         uint256 spender_allowance = from_allowances[spender];
-        if (value &gt; spender_allowance) {
+        if (value > spender_allowance) {
             value = spender_allowance;
         }
 

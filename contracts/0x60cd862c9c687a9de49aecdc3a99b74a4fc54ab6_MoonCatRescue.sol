@@ -9,8 +9,8 @@ contract MoonCatRescue {
 
   bytes16 public imageGenerationCodeMD5 = 0xdbad5c08ec98bec48490e3c196eec683; // use this to verify mooncatparser.js the cat image data generation javascript file.
 
-  string public name = &quot;MoonCats&quot;;
-  string public symbol = &quot;?&quot;; // unicode cat symbol
+  string public name = "MoonCats";
+  string public symbol = "?"; // unicode cat symbol
   uint8 public decimals = 0;
 
   uint256 public totalSupply = 25600;
@@ -20,7 +20,7 @@ contract MoonCatRescue {
 
   bytes5[25600] public rescueOrder;
 
-  bytes32 public searchSeed = 0x0; // gets set with the immediately preceding blockhash when the contract is activated to prevent &quot;premining&quot;
+  bytes32 public searchSeed = 0x0; // gets set with the immediately preceding blockhash when the contract is activated to prevent "premining"
 
   struct AdoptionOffer {
     bool exists;
@@ -37,13 +37,13 @@ contract MoonCatRescue {
     uint price;
   }
 
-  mapping (bytes5 =&gt; AdoptionOffer) public adoptionOffers;
-  mapping (bytes5 =&gt; AdoptionRequest) public adoptionRequests;
+  mapping (bytes5 => AdoptionOffer) public adoptionOffers;
+  mapping (bytes5 => AdoptionRequest) public adoptionRequests;
 
-  mapping (bytes5 =&gt; bytes32) public catNames;
-  mapping (bytes5 =&gt; address) public catOwners;
-  mapping (address =&gt; uint256) public balanceOf; //number of cats owned by a given address
-  mapping (address =&gt; uint) public pendingWithdrawals;
+  mapping (bytes5 => bytes32) public catNames;
+  mapping (bytes5 => address) public catOwners;
+  mapping (address => uint256) public balanceOf; //number of cats owned by a given address
+  mapping (address => uint) public pendingWithdrawals;
 
   /* events */
 
@@ -66,10 +66,10 @@ contract MoonCatRescue {
 
   /* registers and validates cats that are found */
   function rescueCat(bytes32 seed) activeMode returns (bytes5) {
-    require(remainingCats &gt; 0); // cannot register any cats once supply limit is reached
+    require(remainingCats > 0); // cannot register any cats once supply limit is reached
     bytes32 catIdHash = keccak256(seed, searchSeed); // generate the prospective catIdHash
     require(catIdHash[0] | catIdHash[1] | catIdHash[2] == 0x0); // ensures the validity of the catIdHash
-    bytes5 catId = bytes5((catIdHash &amp; 0xffffffff) &lt;&lt; 216); // one byte to indicate genesis, and the last 4 bytes of the catIdHash
+    bytes5 catId = bytes5((catIdHash & 0xffffffff) << 216); // one byte to indicate genesis, and the last 4 bytes of the catIdHash
     require(catOwners[catId] == 0x0); // if the cat is already registered, throw an error. All cats are unique.
 
     rescueOrder[rescueIndex] = catId;
@@ -94,7 +94,7 @@ contract MoonCatRescue {
 
   /* puts a cat up for anyone to adopt */
   function makeAdoptionOffer(bytes5 catId, uint price) onlyCatOwner(catId) {
-    require(price &gt; 0);
+    require(price > 0);
     adoptionOffers[catId] = AdoptionOffer(true, catId, msg.sender, price, 0x0);
     AdoptionOffered(catId, price, 0x0);
   }
@@ -116,8 +116,8 @@ contract MoonCatRescue {
     AdoptionOffer storage offer = adoptionOffers[catId];
     require(offer.exists);
     require(offer.onlyOfferTo == 0x0 || offer.onlyOfferTo == msg.sender);
-    require(msg.value &gt;= offer.price);
-    if(msg.value &gt; offer.price) {
+    require(msg.value >= offer.price);
+    if(msg.value > offer.price) {
       pendingWithdrawals[msg.sender] += (msg.value - offer.price); // if the submitted amount exceeds the price allow the buyer to withdraw the difference
     }
     transferCat(catId, catOwners[catId], msg.sender, offer.price);
@@ -132,11 +132,11 @@ contract MoonCatRescue {
   function makeAdoptionRequest(bytes5 catId) payable isNotSender(catOwners[catId]) {
     require(catOwners[catId] != 0x0); // the cat must be owned
     AdoptionRequest storage existingRequest = adoptionRequests[catId];
-    require(msg.value &gt; 0);
-    require(msg.value &gt; existingRequest.price);
+    require(msg.value > 0);
+    require(msg.value > existingRequest.price);
 
 
-    if(existingRequest.price &gt; 0) {
+    if(existingRequest.price > 0) {
       pendingWithdrawals[existingRequest.requester] += existingRequest.price;
     }
 
@@ -181,30 +181,30 @@ contract MoonCatRescue {
 
   /* disable contract before activation. A safeguard if a bug is found before the contract is activated */
   function disableBeforeActivation() onlyOwner inactiveMode {
-    mode = Modes.Disabled;  // once the contract is disabled it&#39;s mode cannot be changed
+    mode = Modes.Disabled;  // once the contract is disabled it's mode cannot be changed
   }
 
   /* activates the contract in *Live* mode which sets the searchSeed and enables rescuing */
   function activate() onlyOwner inactiveMode {
     searchSeed = block.blockhash(block.number - 1); // once the searchSeed is set it cannot be changed;
-    mode = Modes.Live; // once the contract is activated it&#39;s mode cannot be changed
+    mode = Modes.Live; // once the contract is activated it's mode cannot be changed
   }
 
   /* activates the contract in *Test* mode which sets the searchSeed and enables rescuing */
   function activateInTestMode() onlyOwner inactiveMode { //
     searchSeed = 0x5713bdf5d1c3398a8f12f881f0f03b5025b6f9c17a97441a694d5752beb92a3d; // once the searchSeed is set it cannot be changed;
-    mode = Modes.Test; // once the contract is activated it&#39;s mode cannot be changed
+    mode = Modes.Test; // once the contract is activated it's mode cannot be changed
   }
 
   /* add genesis cats in groups of 16 */
   function addGenesisCatGroup() onlyOwner activeMode {
-    require(remainingGenesisCats &gt; 0);
+    require(remainingGenesisCats > 0);
     bytes5[16] memory newCatIds;
     uint256 price = (17 - (remainingGenesisCats / 16)) * 300000000000000000;
-    for(uint8 i = 0; i &lt; 16; i++) {
+    for(uint8 i = 0; i < 16; i++) {
 
       uint16 genesisCatIndex = 256 - remainingGenesisCats;
-      bytes5 genesisCatId = (bytes5(genesisCatIndex) &lt;&lt; 24) | 0xff00000ca7;
+      bytes5 genesisCatId = (bytes5(genesisCatIndex) << 24) | 0xff00000ca7;
 
       newCatIds[i] = genesisCatId;
 
@@ -223,7 +223,7 @@ contract MoonCatRescue {
 
   function getCatIds() constant returns (bytes5[]) {
     bytes5[] memory catIds = new bytes5[](rescueIndex);
-    for (uint i = 0; i &lt; rescueIndex; i++) {
+    for (uint i = 0; i < rescueIndex; i++) {
       catIds[i] = rescueOrder[i];
     }
     return catIds;
@@ -232,7 +232,7 @@ contract MoonCatRescue {
 
   function getCatNames() constant returns (bytes32[]) {
     bytes32[] memory names = new bytes32[](rescueIndex);
-    for (uint i = 0; i &lt; rescueIndex; i++) {
+    for (uint i = 0; i < rescueIndex; i++) {
       names[i] = catNames[rescueOrder[i]];
     }
     return names;
@@ -240,7 +240,7 @@ contract MoonCatRescue {
 
   function getCatOwners() constant returns (address[]) {
     address[] memory owners = new address[](rescueIndex);
-    for (uint i = 0; i &lt; rescueIndex; i++) {
+    for (uint i = 0; i < rescueIndex; i++) {
       owners[i] = catOwners[rescueOrder[i]];
     }
     return owners;
@@ -248,9 +248,9 @@ contract MoonCatRescue {
 
   function getCatOfferPrices() constant returns (uint[]) {
     uint[] memory catOffers = new uint[](rescueIndex);
-    for (uint i = 0; i &lt; rescueIndex; i++) {
+    for (uint i = 0; i < rescueIndex; i++) {
       bytes5 catId = rescueOrder[i];
-      if(adoptionOffers[catId].exists &amp;&amp; adoptionOffers[catId].onlyOfferTo == 0x0) {
+      if(adoptionOffers[catId].exists && adoptionOffers[catId].onlyOfferTo == 0x0) {
         catOffers[i] = adoptionOffers[catId].price;
       }
     }
@@ -259,7 +259,7 @@ contract MoonCatRescue {
 
   function getCatRequestPrices() constant returns (uint[]) {
     uint[] memory catRequests = new uint[](rescueIndex);
-    for (uint i = 0; i &lt; rescueIndex; i++) {
+    for (uint i = 0; i < rescueIndex; i++) {
       bytes5 catId = rescueOrder[i];
       catRequests[i] = adoptionRequests[catId].price;
     }

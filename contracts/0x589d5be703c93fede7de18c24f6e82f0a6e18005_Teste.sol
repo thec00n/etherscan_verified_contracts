@@ -16,22 +16,22 @@ contract Teste
     
     function pastFiveMinutes() view public returns (bool)
     {
-        return (now &gt;= creationDate + 5 * 1 minutes);
+        return (now >= creationDate + 5 * 1 minutes);
     }
 
     function pastTenMinutes() view public returns (bool)
     {
-        return (now &gt;= creationDate + 10 * 1 minutes);
+        return (now >= creationDate + 10 * 1 minutes);
     }
 
     function pastOneHour() view public returns (bool)
     {
-        return (now &gt;= creationDate + 1 * 1 hours);
+        return (now >= creationDate + 1 * 1 hours);
     }
     
     function pastOneDay() view public returns (bool)
     {
-        return (now &gt;= creationDate + 1 * 1 days);
+        return (now >= creationDate + 1 * 1 days);
     }
 
 }

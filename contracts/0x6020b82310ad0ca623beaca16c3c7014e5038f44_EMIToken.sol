@@ -13,18 +13,18 @@ contract SafeMath {
     */
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 
@@ -90,7 +90,7 @@ contract ContractReceiver {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -105,14 +105,14 @@ contract ContractReceiver {
 
 
 contract StandardToken is ERC223Interface, ERC20Interface, SafeMath, ContractReceiver {
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
         uint256 _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     
         balances[_from] = safeSub(balanceOf(_from), _value); 
     
@@ -152,7 +152,7 @@ contract StandardToken is ERC223Interface, ERC20Interface, SafeMath, ContractRec
   // @dev function to decreaseApproval to spender
   function decreaseApproval (address _spender, uint256 _subtractedValue) public returns (bool success) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);
@@ -165,7 +165,7 @@ contract StandardToken is ERC223Interface, ERC20Interface, SafeMath, ContractRec
   //@dev  function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint256 _value, bytes _data, string _custom_fallback) public returns (bool success) {
         if (isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) {  
+            if (balanceOf(msg.sender) < _value) {  
                 revert();
             }
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
@@ -212,13 +212,13 @@ contract StandardToken is ERC223Interface, ERC20Interface, SafeMath, ContractRec
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
   //function that is called when transaction target is an address
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool) {
         
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC223Interface, ERC20Interface, SafeMath, ContractRec
   
   //function that is called when transaction target is a contract
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -251,10 +251,10 @@ contract BurnableToken is StandardToken,Ownable {
      */
 
     function burn(uint256 _value)  onlyOwner public  returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = safeSub(balances[burner], _value);
         totalSupply = safeSub(totalSupply, _value);
@@ -288,10 +288,10 @@ contract MintableToken is BurnableToken {
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
         bytes memory empty;
 
-        require ( _amount &gt; 0);
+        require ( _amount > 0);
 
-        // if (balanceOf(msg.sender) &lt; _value) revert();
-        // if( safeAdd(circulatingCoins, _amount) &gt; totalSupply ) revert();
+        // if (balanceOf(msg.sender) < _value) revert();
+        // if( safeAdd(circulatingCoins, _amount) > totalSupply ) revert();
         
         totalSupply = safeAdd(totalSupply, _amount);
         balances[_to] = safeAdd(balances[_to], _amount);
@@ -313,8 +313,8 @@ contract MintableToken is BurnableToken {
 
 
 contract EMIToken is StandardToken, MintableToken {
-    string public name = &quot;EMITOKEN&quot;;
-    string public symbol = &quot;EMI&quot;;
+    string public name = "EMITOKEN";
+    string public symbol = "EMI";
     uint8 public decimals = 8;
     uint256 public initialSupply = 600000000 * (10 ** uint256(decimals));
     function EMIToken() public{

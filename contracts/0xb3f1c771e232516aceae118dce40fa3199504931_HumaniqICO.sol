@@ -12,20 +12,20 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -40,7 +40,7 @@ contract SafeMath {
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -59,18 +59,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -86,7 +86,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -127,8 +127,8 @@ contract StandardToken is AbstractToken {
 
 
 /// @title Token contract - Implements Standard Token Interface with HumaniQ features.
-/// @author Evgeny Yurtaev - &lt;<span class="__cf_email__" data-cfemail="7613001113180f3613021e13041f19181a17145815191b">[email&#160;protected]</span>&gt;
-/// @author Alexey Bashlykov - &lt;<span class="__cf_email__" data-cfemail="741518110c110d3411001c11061d1b1a1815165a171b19">[email&#160;protected]</span>&gt;
+/// @author Evgeny Yurtaev - <<span class="__cf_email__" data-cfemail="7613001113180f3613021e13041f19181a17145815191b">[email protected]</span>>
+/// @author Alexey Bashlykov - <<span class="__cf_email__" data-cfemail="741518110c110d3411001c11061d1b1a1815165a171b19">[email protected]</span>>
 contract HumaniqToken is StandardToken, SafeMath {
 
     /*
@@ -139,8 +139,8 @@ contract HumaniqToken is StandardToken, SafeMath {
     /*
      * Token meta data
      */
-    string constant public name = &quot;Humaniq&quot;;
-    string constant public symbol = &quot;HMQ&quot;;
+    string constant public name = "Humaniq";
+    string constant public symbol = "HMQ";
     uint8 constant public decimals = 8;
 
     // Address of the founder of Humaniq.
@@ -200,7 +200,7 @@ contract HumaniqToken is StandardToken, SafeMath {
             return false;
         }
 
-        if (add(totalSupply, tokenCount) &gt; maxTotalSupply) {
+        if (add(totalSupply, tokenCount) > maxTotalSupply) {
             throw;
         }
 
@@ -272,8 +272,8 @@ contract HumaniqToken is StandardToken, SafeMath {
 }
 
 /// @title HumaniqICO contract - Takes funds from users and issues tokens.
-/// @author Evgeny Yurtaev - &lt;<span class="__cf_email__" data-cfemail="bdd8cbdad8d3c4fdd8c9d5d8cfd4d2d3d1dcdf93ded2d0">[email&#160;protected]</span>&gt;
-/// @author Alexey Bashlykov - &lt;<span class="__cf_email__" data-cfemail="3a5b565f425f437a5f4e525f48535554565b5814595557">[email&#160;protected]</span>&gt;
+/// @author Evgeny Yurtaev - <<span class="__cf_email__" data-cfemail="bdd8cbdad8d3c4fdd8c9d5d8cfd4d2d3d1dcdf93ded2d0">[email protected]</span>>
+/// @author Alexey Bashlykov - <<span class="__cf_email__" data-cfemail="3a5b565f425f437a5f4e525f48535554565b5814595557">[email protected]</span>>
 contract HumaniqICO is SafeMath {
 
     /*
@@ -312,7 +312,7 @@ contract HumaniqICO is SafeMath {
 
     modifier minInvestment(uint investment) {
         // User has to send at least the ether value of one token.
-        if (investment &lt; baseTokenPrice) {
+        if (investment < baseTokenPrice) {
             throw;
         }
         _;
@@ -334,20 +334,20 @@ contract HumaniqICO is SafeMath {
         constant
         returns (uint)
     {   
-        if (timestamp &gt; endDate) {
+        if (timestamp > endDate) {
             throw;
         }
 
-        if (startDate &gt; timestamp) {
+        if (startDate > timestamp) {
             return 1499;  // 49.9%
         }
 
         uint icoDuration = timestamp - startDate;
-        if (icoDuration &gt;= 16 days) {
+        if (icoDuration >= 16 days) {
             return 1000;  // 0%
-        } else if (icoDuration &gt;= 9 days) {
+        } else if (icoDuration >= 9 days) {
             return 1125;  // 12.5%
-        } else if (icoDuration &gt;= 2 days) {
+        } else if (icoDuration >= 2 days) {
             return 1250;  // 25%
         } else {
             return 1499;  // 49.9%
@@ -381,7 +381,7 @@ contract HumaniqICO is SafeMath {
         // Calculate number of tokens to mint
         uint tokenCount = calculateTokens(investment, timestamp);
 
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         tokensDistributed = add(tokensDistributed, tokenCount);
 
         // Distribute tokens.

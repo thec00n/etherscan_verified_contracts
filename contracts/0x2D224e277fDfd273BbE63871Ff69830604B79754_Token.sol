@@ -30,7 +30,7 @@ contract Lockable {
     // token contract epoch, before executing a token transfer of any
     // kind
     modifier isNewEpoch {
-        if (numOfCurrentEpoch * EPOCH_LENGTH + creationTime &lt; now ) {
+        if (numOfCurrentEpoch * EPOCH_LENGTH + creationTime < now ) {
             numOfCurrentEpoch = (now - creationTime) / EPOCH_LENGTH + 1;
         }
         _;
@@ -41,7 +41,7 @@ contract Lockable {
     // necessary
     modifier checkLock {
         if ((creationTime + numOfCurrentEpoch * UNLOCKED_TIME) +
-        (numOfCurrentEpoch - 1) * LOCKED_TIME &lt; now) {
+        (numOfCurrentEpoch - 1) * LOCKED_TIME < now) {
             // avoids needless lock state change and event spamming
             if (lock) throw;
 
@@ -83,8 +83,8 @@ contract ERC20 {
 
 contract Token is ERC20, Lockable {
 
-  mapping( address =&gt; uint ) _balances;
-  mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals;
+  mapping( address => uint ) _balances;
+  mapping( address => mapping( address => uint ) ) _approvals;
   uint _supply;
   address public walletAddress;
 
@@ -116,7 +116,7 @@ contract Token is ERC20, Lockable {
 
   // A helper to notify if overflow occurs
   function safeToAdd(uint a, uint b) internal returns (bool) {
-    return (a + b &gt;= a &amp;&amp; a + b &gt;= b);
+    return (a + b >= a && a + b >= b);
   }
 
   function transfer( address to, uint value)
@@ -125,7 +125,7 @@ contract Token is ERC20, Lockable {
     checkLock
     returns (bool ok) {
 
-    if( _balances[msg.sender] &lt; value ) {
+    if( _balances[msg.sender] < value ) {
         throw;
     }
     if( !safeToAdd(_balances[to], value) ) {
@@ -143,12 +143,12 @@ contract Token is ERC20, Lockable {
     isNewEpoch
     checkLock
     returns (bool ok) {
-    // if you don&#39;t have enough balance, throw
-    if( _balances[from] &lt; value ) {
+    // if you don't have enough balance, throw
+    if( _balances[from] < value ) {
         throw;
     }
-    // if you don&#39;t have approval, throw
-    if( _approvals[from][msg.sender] &lt; value ) {
+    // if you don't have approval, throw
+    if( _approvals[from][msg.sender] < value ) {
         throw;
     }
     if( !safeToAdd(_balances[to], value) ) {
@@ -175,13 +175,13 @@ contract Token is ERC20, Lockable {
   // The function currentSwapRate() returns the current exchange rate
   // between vSlice tokens and Ether during the token swap period
   function currentSwapRate() constant returns(uint) {
-      if (creationTime + 1 weeks &gt; now) {
+      if (creationTime + 1 weeks > now) {
           return 130;
       }
-      else if (creationTime + 2 weeks &gt; now) {
+      else if (creationTime + 2 weeks > now) {
           return 120;
       }
-      else if (creationTime + 4 weeks &gt; now) {
+      else if (creationTime + 4 weeks > now) {
           return 100;
       }
       else {

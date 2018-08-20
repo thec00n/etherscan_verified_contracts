@@ -43,7 +43,7 @@ address public farmer = 0x3D14410609731Ec7924ea8B1f13De544BB46A9A6;
     
     function sowCorn(address soil, uint8 seeds) external
     {
-        for(uint8 i = 0; i &lt; seeds; ++i)
+        for(uint8 i = 0; i < seeds; ++i)
         {
             CornFarm(soil).buyObject(this);
         }

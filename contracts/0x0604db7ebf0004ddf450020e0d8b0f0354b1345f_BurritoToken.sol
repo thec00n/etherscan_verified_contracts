@@ -18,7 +18,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,20 +113,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,22 +148,22 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   uint256 public lastPurchase;
 
   // Burrito Data
-  mapping (uint256 =&gt; Token) private tokens;
+  mapping (uint256 => Token) private tokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   // Balances from % payouts.
-  mapping (address =&gt; uint256) private payoutBalances; 
+  mapping (address => uint256) private payoutBalances; 
 
   // Events
   event Purchased(uint256 indexed _tokenId, address indexed _owner, uint256 _purchasePrice);
@@ -209,12 +209,12 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   * @param _owner address of new owner
   */
   function createToken(uint256 _tokenId, uint256 _price, uint256 _lastPrice, uint256 _payoutPercentage, uint8 _kind, uint256 _bossTokenId, address _owner) onlyOwner() public {
-    require(_price &gt; 0);
-    require(_lastPrice &lt; _price);
-    // make sure token hasn&#39;t been used yet
+    require(_price > 0);
+    require(_lastPrice < _price);
+    // make sure token hasn't been used yet
     require(tokens[_tokenId].price == 0);
     // check for kinds
-    require(_kind &gt; 0 &amp;&amp; _kind &lt;= 3);
+    require(_kind > 0 && _kind <= 3);
     
     // create new token
     Token storage newToken = tokens[_tokenId];
@@ -235,7 +235,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   function createMultiple (uint256[] _itemIds, uint256[] _prices, uint256[] _lastPrices, uint256[] _payouts, uint8[] _kinds, uint256[] _bossTokenIds, address[] _owners) onlyOwner() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       createToken(_itemIds[i], _prices[i], _lastPrices[i], _payouts[i], _kinds[i], _bossTokenIds[i], _owners[i]);
     }
   }
@@ -245,13 +245,13 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(200).div(100 - feePercentage);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(135).div(100 - feePercentage);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(125).div(100 - feePercentage);
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(117).div(100 - feePercentage);
     } else {
       return _price.mul(115).div(100 - feePercentage);
@@ -259,13 +259,13 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   function calculatePoolCut (uint256 _price) public view returns (uint256 _poolCut) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(10).div(100);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(9).div(100);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(8).div(100);
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(7).div(100);
     } else {
       return _price.mul(5).div(100);
@@ -288,8 +288,8 @@ contract BurritoToken is ERC721, Ownable, Pausable {
     address oldOwner = token.owner;
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
 
     // Calculate pool cut for taxes.
@@ -308,7 +308,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
 
     transferToken(oldOwner, msg.sender, _tokenId);
 
-    // Transfer payment to old owner minus the developer&#39;s and pool&#39;s cut.
+    // Transfer payment to old owner minus the developer's and pool's cut.
     // Calculate the winnings for the previous owner.
     uint256 finalPayout = price.sub(fee).sub(poolCut).sub(taxesPaid);
 
@@ -326,7 +326,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
     // Calculate overspending
     uint256 excess = msg.value - price;
     
-    if (excess &gt; 0) {
+    if (excess > 0) {
         // Refund overspending
         msg.sender.transfer(excess);
     }
@@ -426,7 +426,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   /**
-  * @dev Withdraw dev&#39;s cut
+  * @dev Withdraw dev's cut
   */
   function withdraw() onlyOwner public {
     owner.transfer(devOwed);
@@ -440,7 +440,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   // function updatePayout(address _owner) public {
   //   uint256[] memory ownerTokens = ownedTokens[_owner];
   //   uint256 owed;
-  //   for (uint256 i = 0; i &lt; ownerTokens.length; i++) {
+  //   for (uint256 i = 0; i < ownerTokens.length; i++) {
   //     owed += _calculateOnePayout(ownerTokens[i]);
   //   }
 
@@ -450,7 +450,7 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   function updatePayout(address _owner) public {
     uint256[] memory ownerTokens = ownedTokens[_owner];
     uint256 owed;
-    for (uint256 i = 0; i &lt; ownerTokens.length; i++) {
+    for (uint256 i = 0; i < ownerTokens.length; i++) {
         uint256 totalOwed;
         
         if (tokens[ownerTokens[i]].kind == BURRITO_KIND) {
@@ -525,11 +525,11 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   /**
-  * @dev Determines if token exists by checking it&#39;s price
+  * @dev Determines if token exists by checking it's price
   * @param _tokenId uint256 ID of token
   */
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return tokens[_tokenId].price &gt; 0;
+    return tokens[_tokenId].price > 0;
   }
 
   /**
@@ -723,30 +723,30 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;CryptoBurrito.co&quot;;
+    return "CryptoBurrito.co";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;MBT&quot;;
+    return "MBT";
   }
 
   function setFeePercentage(uint256 _newFee) onlyOwner public {
-    require(_newFee &lt;= 5);
-    require(_newFee &gt;= 3);
+    require(_newFee <= 5);
+    require(_newFee >= 3);
 
     feePercentage = _newFee;
   }
   
   function setMainPoolCutPercentage(uint256 _newFee) onlyOwner public {
-    require(_newFee &lt;= 30);
-    require(_newFee &gt;= 5);
+    require(_newFee <= 30);
+    require(_newFee >= 5);
 
     mainPoolCutPercentage = _newFee;
   }
 
   function setDividendCutPercentage(uint256 _newFee) onlyOwner public {
-    require(_newFee &lt;= 200);
-    require(_newFee &gt;= 50);
+    require(_newFee <= 200);
+    require(_newFee >= 50);
 
     dividendCutPercentage = _newFee;
   }
@@ -759,8 +759,8 @@ contract BurritoToken is ERC721, Ownable, Pausable {
   }
 
   function populateFromOldContract(uint256[] _ids) onlyOwner public {
-    for (uint256 i = 0; i &lt; _ids.length; i++) {
-      // Can&#39;t rewrite tokens
+    for (uint256 i = 0; i < _ids.length; i++) {
+      // Can't rewrite tokens
       if (tokens[_ids[i]].price == 0) {
         address _owner;
         uint256 _price;

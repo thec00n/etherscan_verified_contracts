@@ -44,12 +44,12 @@ contract SafeMath
 {
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     
 	function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
@@ -69,12 +69,12 @@ contract SafeMath
 }
 
 contract AUMXToken is ERC223, SafeMath{
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-	mapping(address =&gt; uint) balances;
-	string public name = &quot;Alteum&quot;;
-	string public symbol = &quot;AUM&quot;;
+	mapping(address => mapping(address => uint)) allowed;
+	mapping(address => uint) balances;
+	string public name = "Alteum";
+	string public symbol = "AUM";
 	uint8 public decimals = 8; // Using a Satoshi as base for our decimals: 0.00000001;
-	uint256 public totalSupply = 5000000000000000; // 50,000,000 AUM&#39;s, not mineable, not mintable;
+	uint256 public totalSupply = 5000000000000000; // 50,000,000 AUM's, not mineable, not mintable;
 	
 	bool locked;
 	address Owner;
@@ -90,7 +90,7 @@ contract AUMXToken is ERC223, SafeMath{
 	
 	modifier isUnlocked()
 	{
-		if(locked &amp;&amp; msg.sender != Owner) revert();
+		if(locked && msg.sender != Owner) revert();
 		_;
 	}
 	
@@ -136,7 +136,7 @@ contract AUMXToken is ERC223, SafeMath{
 	// Function that is called when a user or another contract wants to transfer funds .
 	function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public isUnlocked returns (bool success) {
 		if(isContract(_to)) {
-			if (balanceOf(msg.sender) &lt; _value) revert();
+			if (balanceOf(msg.sender) < _value) revert();
 			balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 			balances[_to] = safeAdd(balanceOf(_to), _value);
 			assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -181,12 +181,12 @@ contract AUMXToken is ERC223, SafeMath{
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return (length&gt;0);
+		return (length>0);
 	}
 
 	//function that is called when transaction target is an address
 	function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
 		balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 		balances[_to] = safeAdd(balanceOf(_to), _value);
 		Transfer(msg.sender, _to, _value);
@@ -196,7 +196,7 @@ contract AUMXToken is ERC223, SafeMath{
 	  
 	//function that is called when transaction target is a contract
 	function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
 		balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 		balances[_to] = safeAdd(balanceOf(_to), _value);
 		ContractReceiver receiver = ContractReceiver(_to);
@@ -208,9 +208,9 @@ contract AUMXToken is ERC223, SafeMath{
 	
 	function transferFrom(address _from, address _to, uint _value) public returns(bool)
 	{
-		if(locked &amp;&amp; msg.sender != swapperAddress) revert();
-		if (balanceOf(_from) &lt; _value) revert();
-		if(_value &gt; allowed[_from][msg.sender]) revert();
+		if(locked && msg.sender != swapperAddress) revert();
+		if (balanceOf(_from) < _value) revert();
+		if(_value > allowed[_from][msg.sender]) revert();
 		
 		balances[_from] = safeSub(balanceOf(_from), _value);
 		allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);

@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -86,16 +86,16 @@ contract StepCoin is ERC20Interface, Ownable{
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;StepCoin&quot;;
+    string public constant name = "StepCoin";
 
-    string public constant symbol = &quot;STEP&quot;;
+    string public constant symbol = "STEP";
 
     uint8 public constant decimals = 3;
 
     uint256 totalSupply_;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
      
     event Burn(address indexed burner, uint256 value);
 
@@ -124,7 +124,7 @@ contract StepCoin is ERC20Interface, Ownable{
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
         allowed[_from][_to] = allowed[_from][msg.sender].sub(_value);
         
@@ -133,8 +133,8 @@ contract StepCoin is ERC20Interface, Ownable{
     
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool){
         require(_to != 0x0);
-        require(_value &lt;= balances[_from]);
-        require(balances[_to].add(_value) &gt;= balances[_to]);
+        require(_value <= balances[_from]);
+        require(balances[_to].add(_value) >= balances[_to]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract StepCoin is ERC20Interface, Ownable{
     }
 
     function _burn(address _who, uint256 _value) onlyOwner onlyBurner internal {
-      require(_value &lt;= balances[_who]);
+      require(_value <= balances[_who]);
 
       balances[_who] = balances[_who].sub(_value);
       totalSupply_ = totalSupply_.sub(_value);

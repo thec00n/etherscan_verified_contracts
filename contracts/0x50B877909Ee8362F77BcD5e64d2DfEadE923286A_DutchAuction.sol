@@ -6,24 +6,24 @@
  pragma solidity ^0.4.18;
 
 /*************************************************************************
- * import &quot;./LetsbetToken.sol&quot; : start
+ * import "./LetsbetToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/ERC20/PausableToken.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : start
+ * import "./StandardToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "./BasicToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -39,10 +39,10 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../../math/SafeMath.sol&quot; : start
+ * import "../../math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -68,9 +68,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -87,12 +87,12 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;../../math/SafeMath.sol&quot; : end
+ * import "../../math/SafeMath.sol" : end
  *************************************************************************/
 
 
@@ -103,7 +103,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -141,10 +141,10 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -161,7 +161,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 
@@ -174,7 +174,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -185,8 +185,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -249,7 +249,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -260,22 +260,22 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : end
+ * import "./StandardToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../../lifecycle/Pausable.sol&quot; : start
+ * import "../../lifecycle/Pausable.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : start
+ * import "../ownership/Ownable.sol" : start
  *************************************************************************/
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -312,7 +312,7 @@ contract Ownable {
 
 }
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : end
+ * import "../ownership/Ownable.sol" : end
  *************************************************************************/
 
 
@@ -360,7 +360,7 @@ contract Pausable is Ownable {
   }
 }
 /*************************************************************************
- * import &quot;../../lifecycle/Pausable.sol&quot; : end
+ * import "../../lifecycle/Pausable.sol" : end
  *************************************************************************/
 
 
@@ -391,10 +391,10 @@ contract PausableToken is StandardToken, Pausable {
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/ERC20/PausableToken.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol" : start
  *************************************************************************/
 
 
@@ -413,9 +413,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -424,7 +424,7 @@ contract BurnableToken is BasicToken {
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol" : end
  *************************************************************************/
 
 
@@ -434,8 +434,8 @@ contract BurnableToken is BasicToken {
  */
 contract LetsbetToken is PausableToken, BurnableToken {
 
-    string public constant name = &quot;Letsbet Token&quot;;
-    string public constant symbol = &quot;XBET&quot;;
+    string public constant name = "Letsbet Token";
+    string public constant symbol = "XBET";
     uint8 public constant decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 100000000 * 10**uint256(decimals); // 100 000 000 (100m)
@@ -473,7 +473,7 @@ contract LetsbetToken is PausableToken, BurnableToken {
         assert(totalSupply_ == balances[auctionAddress] + balances[walletAddress] + balances[bountyAddress]);
     }
 }/*************************************************************************
- * import &quot;./LetsbetToken.sol&quot; : end
+ * import "./LetsbetToken.sol" : end
  *************************************************************************/
 
 /// @title Dutch auction contract - distribution of a fixed number of tokens using an auction.
@@ -520,8 +520,8 @@ contract DutchAuction {
     // Wei per XBET
     uint public finalPrice;
 
-    // Bidder address =&gt; bid value
-    mapping (address =&gt; uint) public bids;
+    // Bidder address => bid value
+    mapping (address => uint) public bids;
 
 
     Stages public stage;
@@ -629,9 +629,9 @@ contract DutchAuction {
         internal
     {
         require(stage == Stages.AuctionDeployed || stage == Stages.AuctionSetUp);
-        require(_startPrice &gt; 0);
-        require(_priceDecreaseRate &gt; 0);
-        require(_endTimeOfBids &gt; now);
+        require(_startPrice > 0);
+        require(_priceDecreaseRate > 0);
+        require(_endTimeOfBids > now);
         
         endTimeOfBids = _endTimeOfBids;
         startPrice = _startPrice;
@@ -654,7 +654,7 @@ contract DutchAuction {
     function finalizeAuction() public isOwner atStage(Stages.AuctionStarted) {
         // Missing funds should be 0 at this point
         uint missingFunds = missingFundsToEndAuction();
-        require(missingFunds == 0 || now &gt; endTimeOfBids);
+        require(missingFunds == 0 || now > endTimeOfBids);
 
         // Calculate the final price = WEI / XBET = WEI / (Rei / tokenMultiplier)
         // Reminder: tokensAuctioned is the number of Rei (XBET * tokenMultiplier) that are auctioned
@@ -664,7 +664,7 @@ contract DutchAuction {
         stage = Stages.AuctionEnded;
         AuctionEnded(finalPrice);
 
-        assert(finalPrice &gt; 0);
+        assert(finalPrice > 0);
     }
 
     /// --------------------------------- Auction Functions ------------------
@@ -677,15 +677,15 @@ contract DutchAuction {
         payable
         atStage(Stages.AuctionStarted)
     {
-        require(msg.value &gt; 0);
-        assert(bids[msg.sender] + msg.value &gt;= msg.value);
+        require(msg.value > 0);
+        assert(bids[msg.sender] + msg.value >= msg.value);
 
         // Missing funds without the current bid value
         uint missingFunds = missingFundsToEndAuction();
 
         // We require bid values to be less than the funds missing to end the auction
         // at the current price.
-        require(msg.value &lt;= missingFunds);
+        require(msg.value <= missingFunds);
 
         bids[msg.sender] += msg.value;
         receivedWei += msg.value;
@@ -695,7 +695,7 @@ contract DutchAuction {
 
         BidSubmission(msg.sender, msg.value, missingFunds,block.timestamp);
 
-        assert(receivedWei &gt;= msg.value);
+        assert(receivedWei >= msg.value);
     }
 
     /// @notice Claim auction tokens for `msg.sender` after the auction has ended.
@@ -716,7 +716,7 @@ contract DutchAuction {
         // Waiting period after the end of the auction, before anyone can claim tokens
         // Ensures enough time to check if auction was finalized correctly
         // before users start transacting tokens
-        require(now &gt; finalizedTime + TOKEN_CLAIM_WAITING_PERIOD);
+        require(now > finalizedTime + TOKEN_CLAIM_WAITING_PERIOD);
         require(receiverAddress != 0x0);
 
         if (bids[receiverAddress] == 0) {
@@ -729,7 +729,7 @@ contract DutchAuction {
         // than expected. Therefore, the number of remaining unassigned auction tokens
         // may be smaller than the number of tokens needed for the last claimTokens call
         uint auctionTokensBalance = token.balanceOf(address(this));
-        if (num &gt; auctionTokensBalance) {
+        if (num > auctionTokensBalance) {
             num = auctionTokensBalance;
         }
 
@@ -750,7 +750,7 @@ contract DutchAuction {
             TokensDistributed();
         }
 
-        assert(token.balanceOf(receiverAddress) &gt;= num);
+        assert(token.balanceOf(receiverAddress) >= num);
         assert(bids[receiverAddress] == 0);
         return true;
     }
@@ -775,7 +775,7 @@ contract DutchAuction {
     function missingFundsToEndAuction() constant public returns (uint) {
 
         uint requiredWei = tokensAuctioned * price() / tokenMultiplier;
-        if (requiredWei &lt;= receivedWei) {
+        if (requiredWei <= receivedWei) {
             return 0;
         }
 

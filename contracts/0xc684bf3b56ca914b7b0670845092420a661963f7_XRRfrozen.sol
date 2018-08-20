@@ -71,8 +71,8 @@ contract XRRfrozen is Ownable {
     function unfrozen() public {
         require(notEmpty());
         uint8 i = 0;
-        while (i++ &lt; vaults.length) {
-            if (now &gt; vaults[i].unfrozen &amp;&amp; vaults[i].amount &gt; 0) {
+        while (i++ < vaults.length) {
+            if (now > vaults[i].unfrozen && vaults[i].amount > 0) {
                 token.transfer(vaults[i].wallet, vaults[i].amount);
                 vaults[i].amount = 0;
             }
@@ -81,8 +81,8 @@ contract XRRfrozen is Ownable {
 
     function notEmpty() public view returns (bool){
         uint8 i = 0;
-        while (i++ &lt; vaults.length) {
-            if (now &gt; vaults[i].unfrozen &amp;&amp; vaults[i].amount &gt; 0) {
+        while (i++ < vaults.length) {
+            if (now > vaults[i].unfrozen && vaults[i].amount > 0) {
                 return true;
             }
         }

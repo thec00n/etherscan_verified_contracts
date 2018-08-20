@@ -10,10 +10,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -24,7 +24,7 @@ library SafeMath {
         require(c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -96,17 +96,17 @@ contract MyartPoint is ERC20Interface, Owned {
     uint private  _totalSupply;
     bool public halted;
 
-    mapping(address =&gt; uint) private balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => uint) private balances;
+    mapping(address => mapping(address => uint)) private allowed;
+    mapping(address => bool) public frozenAccount;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
         halted = false;
-        symbol = &quot;MYT&quot;;
-        name = &quot;Myart&quot;;
+        symbol = "MYT";
+        name = "Myart";
         decimals = 18;
         _totalSupply = 1210 * 1000 * 1000 * 10**uint(decimals);
 
@@ -126,8 +126,8 @@ contract MyartPoint is ERC20Interface, Owned {
     function allocate(address to, uint amount) public onlyOwner {
         require(to != address(0));
         require(!frozenAccount[to]);
-        require(!halted &amp;&amp; amount &gt; 0);
-        require(balances[owner] &gt;= amount);
+        require(!halted && amount > 0);
+        require(balances[owner] >= amount);
 
         balances[owner] = balances[owner].sub(amount);
         balances[to] = balances[to].add(amount);
@@ -157,12 +157,12 @@ contract MyartPoint is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        if (halted || tokens &lt;= 0) revert();
+        if (halted || tokens <= 0) revert();
         require(!frozenAccount[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -173,14 +173,14 @@ contract MyartPoint is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
-        if (halted || tokens &lt;= 0) revert();
+        if (halted || tokens <= 0) revert();
 
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
@@ -197,7 +197,7 @@ contract MyartPoint is ERC20Interface, Owned {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        if (halted || tokens &lt;= 0) revert();
+        if (halted || tokens <= 0) revert();
         require(!frozenAccount[from]);
 
         balances[from] = balances[from].sub(tokens);
@@ -209,7 +209,7 @@ contract MyartPoint is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -217,11 +217,11 @@ contract MyartPoint is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
-        if (halted || tokens &lt;= 0) revert();
+        if (halted || tokens <= 0) revert();
 
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
@@ -230,7 +230,7 @@ contract MyartPoint is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

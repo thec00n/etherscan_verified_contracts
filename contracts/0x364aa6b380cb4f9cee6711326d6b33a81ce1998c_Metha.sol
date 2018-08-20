@@ -10,10 +10,10 @@ pragma solidity 0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -21,7 +21,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -87,14 +87,14 @@ contract Owned {
 
 contract Metha is ERC20Interface, Owned {
     using SafeMath for uint;
-    string public constant name = &quot;Metha&quot;;
-    string public constant symbol = &quot;METH&quot;;
+    string public constant name = "Metha";
+    string public constant symbol = "METH";
     uint8 public constant decimals = 18;  // 18 is the most common number of decimal places
     uint public _totalSupply = 0;
     uint public constant eth_meth = 100; // price 1 eth/meth = 100
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
@@ -152,13 +152,13 @@ contract Metha is ERC20Interface, Owned {
     // Fix for the ERC20 short address attack
     // ------------------------------------------------------------------------
      modifier onlyPayloadSize(uint size) {
-         assert(msg.data.length &gt;= size + 4);
+         assert(msg.data.length >= size + 4);
          _;
      }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public
@@ -173,7 +173,7 @@ contract Metha is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -210,7 +210,7 @@ contract Metha is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant
     returns (uint remaining) {
@@ -220,7 +220,7 @@ contract Metha is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public

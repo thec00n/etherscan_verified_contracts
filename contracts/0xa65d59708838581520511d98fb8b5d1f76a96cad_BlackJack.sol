@@ -2,8 +2,8 @@ pragma solidity ^0.4.2;
 
 library Deck {
 	// returns random number from 0 to 51
-	// let&#39;s say &#39;value&#39; % 4 means suit (0 - Hearts, 1 - Spades, 2 - Diamonds, 3 - Clubs)
-	//			 &#39;value&#39; / 4 means: 0 - King, 1 - Ace, 2 - 10 - pip values, 11 - Jacket, 12 - Queen
+	// let's say 'value' % 4 means suit (0 - Hearts, 1 - Spades, 2 - Diamonds, 3 - Clubs)
+	//			 'value' / 4 means: 0 - King, 1 - Ace, 2 - 10 - pip values, 11 - Jacket, 12 - Queen
 
 	function deal(address player, uint8 cardNumber) internal returns (uint8) {
 		uint b = block.number;
@@ -16,7 +16,7 @@ library Deck {
 		if (value == 0 || value == 11 || value == 12) { // Face cards
 			return 10;
 		}
-		if (value == 1 &amp;&amp; isBigAce) { // Ace is worth 11
+		if (value == 1 && isBigAce) { // Ace is worth 11
 			return 11;
 		}
 		return value;
@@ -53,11 +53,11 @@ contract BlackJack {
 		uint8 cardsDealt;
 	}
 
-	mapping (address =&gt; Game) public games;
+	mapping (address => Game) public games;
 
 	modifier gameIsGoingOn() {
 		if (games[msg.sender].player == 0 || games[msg.sender].state != GameState.Ongoing) {
-			throw; // game doesn&#39;t exist or already finished
+			throw; // game doesn't exist or already finished
 		}
 		_;
 	}
@@ -88,11 +88,11 @@ contract BlackJack {
 
 	// starts a new game
 	function deal() public payable {
-		if (games[msg.sender].player != 0 &amp;&amp; games[msg.sender].state == GameState.Ongoing) {
+		if (games[msg.sender].player != 0 && games[msg.sender].state == GameState.Ongoing) {
 			throw; // game is already going on
 		}
 
-		if (msg.value &lt; minBet || msg.value &gt; maxBet) {
+		if (msg.value < minBet || msg.value > maxBet) {
 			throw; // incorrect bet
 		}
 
@@ -133,7 +133,7 @@ contract BlackJack {
 
 		var (houseScore, houseScoreBig) = calculateScore(games[msg.sender].houseCards);
 
-		while (houseScoreBig &lt; 17) {
+		while (houseScoreBig < 17) {
 			uint8 nextCard = games[msg.sender].cardsDealt;
 			uint8 newCard = Deck.deal(msg.sender, nextCard);
 			games[msg.sender].houseCards.push(newCard);
@@ -168,18 +168,18 @@ contract BlackJack {
 		} else {
 			if (playerScore == BLACKJACK || playerScoreBig == BLACKJACK) {
 				// PLAYER WON
-				if (game.playerCards.length == 2 &amp;&amp; (Deck.isTen(game.playerCards[0]) || Deck.isTen(game.playerCards[1]))) {
-					// Natural blackjack =&gt; return x2.5
+				if (game.playerCards.length == 2 && (Deck.isTen(game.playerCards[0]) || Deck.isTen(game.playerCards[1]))) {
+					// Natural blackjack => return x2.5
 					if (!msg.sender.send((game.bet * 5) / 2)) throw; // send prize to the player
 				} else {
-					// Usual blackjack =&gt; return x2
+					// Usual blackjack => return x2
 					if (!msg.sender.send(game.bet * 2)) throw; // send prize to the player
 				}
 				games[msg.sender].state = GameState.Player; // finish the game
 				return;
 			} else {
 
-				if (playerScore &gt; BLACKJACK) {
+				if (playerScore > BLACKJACK) {
 					// BUST, HOUSE WON
 					Log(1);
 					games[msg.sender].state = GameState.House; // finish the game
@@ -195,8 +195,8 @@ contract BlackJack {
 				uint8 houseShortage = 0;
 
 				// player decided to finish the game
-				if (playerScoreBig &gt; BLACKJACK) {
-					if (playerScore &gt; BLACKJACK) {
+				if (playerScoreBig > BLACKJACK) {
+					if (playerScore > BLACKJACK) {
 						// HOUSE WON
 						games[msg.sender].state = GameState.House; // simply finish the game
 						return;
@@ -207,8 +207,8 @@ contract BlackJack {
 					playerShortage = BLACKJACK - playerScoreBig;
 				}
 
-				if (houseScoreBig &gt; BLACKJACK) {
-					if (houseScore &gt; BLACKJACK) {
+				if (houseScoreBig > BLACKJACK) {
+					if (houseScore > BLACKJACK) {
 						// PLAYER WON
 						if (!msg.sender.send(game.bet * 2)) throw; // send prize to the player
 						games[msg.sender].state = GameState.Player;
@@ -225,7 +225,7 @@ contract BlackJack {
 					// TIE
 					if (!msg.sender.send(game.bet)) throw; // return bet to the player
 					games[msg.sender].state = GameState.Tie;
-				} else if (houseShortage &gt; playerShortage) {
+				} else if (houseShortage > playerShortage) {
 					// PLAYER WON
 					if (!msg.sender.send(game.bet * 2)) throw; // send prize to the player
 					games[msg.sender].state = GameState.Player;
@@ -240,9 +240,9 @@ contract BlackJack {
 		uint8 score = 0;
 		uint8 scoreBig = 0; // in case of Ace there could be 2 different scores
 		bool bigAceUsed = false;
-		for (uint i = 0; i &lt; cards.length; ++i) {
+		for (uint i = 0; i < cards.length; ++i) {
 			uint8 card = cards[i];
-			if (Deck.isAce(card) &amp;&amp; !bigAceUsed) { // doesn&#39;t make sense to use the second Ace as 11, because it leads to the losing
+			if (Deck.isAce(card) && !bigAceUsed) { // doesn't make sense to use the second Ace as 11, because it leads to the losing
 				scoreBig += Deck.valueOf(card, true);
 				bigAceUsed = true;
 			} else {
@@ -254,14 +254,14 @@ contract BlackJack {
 	}
 
 	function getPlayerCard(uint8 id) public gameIsGoingOn constant returns(uint8) {
-		if (id &lt; 0 || id &gt; games[msg.sender].playerCards.length) {
+		if (id < 0 || id > games[msg.sender].playerCards.length) {
 			throw;
 		}
 		return games[msg.sender].playerCards[id];
 	}
 
 	function getHouseCard(uint8 id) public gameIsGoingOn constant returns(uint8) {
-		if (id &lt; 0 || id &gt; games[msg.sender].houseCards.length) {
+		if (id < 0 || id > games[msg.sender].houseCards.length) {
 			throw;
 		}
 		return games[msg.sender].houseCards[id];
@@ -277,7 +277,7 @@ contract BlackJack {
 
 	function getGameState() public constant returns (uint8) {
 		if (games[msg.sender].player == 0) {
-			throw; // game doesn&#39;t exist
+			throw; // game doesn't exist
 		}
 
 		Game game = games[msg.sender];

@@ -15,7 +15,7 @@ contract TinyProxy {
 
   function release() public {
     uint balance = address(this).balance;
-    if(gasBudget &gt; 0){
+    if(gasBudget > 0){
       require(receiver.call.gas(gasBudget).value(balance)());
     } else {
       require(receiver.send(balance));
@@ -25,8 +25,8 @@ contract TinyProxy {
 }
 
 contract TinyProxyFactory {
-  mapping(address =&gt; mapping(address =&gt; address)) public proxyFor;
-  mapping(address =&gt; address[]) public userProxies;
+  mapping(address => mapping(address => address)) public proxyFor;
+  mapping(address => address[]) public userProxies;
 
   function make(address to, uint gas, bool track) public returns(address proxy){
     proxy = new TinyProxy(to, gas);

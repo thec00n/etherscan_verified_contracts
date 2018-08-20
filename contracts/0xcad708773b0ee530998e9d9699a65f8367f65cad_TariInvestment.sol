@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -47,7 +47,7 @@ contract TariInvestment is Ownable {
   // Minor partner address
   address public minorPartnerAddress = 0xC787C3f6F75D7195361b64318CE019f90507f806;
   // Record balances to allow refunding
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
   // Total received. Used for refunding.
   uint public totalInvestment;
   // Available refunds. Used for refunding.
@@ -79,7 +79,7 @@ contract TariInvestment is Ownable {
 
   // Transfer some funds to the target investment address.
   function execute_transfer(uint transfer_amount, uint gas_amount) public onlyOwner {
-    // Transferral of funds shouldn&#39;t be possible during refunding.
+    // Transferral of funds shouldn't be possible during refunding.
     require(state == State.Open);
 
     // Major fee is 1,50% = 15 / 1000
@@ -102,12 +102,12 @@ contract TariInvestment is Ownable {
   // Only available once refunds are enabled or the deadline for transfers is reached.
   function withdraw() public {
     if (state != State.Refunding) {
-      require(refundingDeadline &lt;= now);
+      require(refundingDeadline <= now);
       state = State.Refunding;
       availableRefunds = this.balance;
     }
 
-    // withdrawal = availableRefunds * investor&#39;s share
+    // withdrawal = availableRefunds * investor's share
     uint withdrawal = availableRefunds * balances[msg.sender] / totalInvestment;
     balances[msg.sender] = 0;
     require(msg.sender.call.gas(withdrawal_gas).value(withdrawal)());

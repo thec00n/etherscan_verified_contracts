@@ -3,12 +3,12 @@ pragma solidity ^0.4.16;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -92,14 +92,14 @@ contract PlayerToken is ERC721, FMWorldAccessControl {
         uint256 position;
     }
 
-    string public name = &quot;Football Manager Player&quot;;
-    string public symbol = &quot;FMP&quot;;
+    string public name = "Football Manager Player";
+    string public symbol = "FMP";
 
     Player[] public players;
 
-    mapping (address =&gt; uint256) ownerPlayersCount;
-    mapping (uint256 =&gt; address) playerOwners;
-    mapping (uint256 =&gt; address) public playerApproved;
+    mapping (address => uint256) ownerPlayersCount;
+    mapping (uint256 => address) playerOwners;
+    mapping (uint256 => address) public playerApproved;
     
     function PlayerToken() public {
         ceoAddress = msg.sender;
@@ -157,7 +157,7 @@ contract PlayerToken is ERC721, FMWorldAccessControl {
             uint256 totalPlayers = totalSupply();
             uint256 playerId;
             uint256 resultIndex = 0;
-            for (playerId = 1; playerId &lt;= totalPlayers; playerId++) {
+            for (playerId = 1; playerId <= totalPlayers; playerId++) {
                 if (playerOwners[playerId] == _owner) {
                     result[resultIndex] = playerId;
                     resultIndex++;

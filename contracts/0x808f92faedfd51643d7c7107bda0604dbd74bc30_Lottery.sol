@@ -5,11 +5,11 @@ pragma solidity ^0.4.19;
  contract Lottery {
      
      address owner;
-     string public constant name = &quot;BETA ETHEREUM LOTTERY&quot;;
+     string public constant name = "BETA ETHEREUM LOTTERY";
      uint public tickets;
      uint public round;
      string public status;
-     string public constant about = &quot;Send exactly 0.05 ether directly to this contract address to buy a lottery ticket. Once 22 tickets are sold this contract will pick a random winner and pay the lucky winner 1 whole ether, and the lottery automatically restarts the next round with a new set of 22 tickets. 0.1 Ether (10%) is kept by the house which also covers gas costs.&quot;;
+     string public constant about = "Send exactly 0.05 ether directly to this contract address to buy a lottery ticket. Once 22 tickets are sold this contract will pick a random winner and pay the lucky winner 1 whole ether, and the lottery automatically restarts the next round with a new set of 22 tickets. 0.1 Ether (10%) is kept by the house which also covers gas costs.";
      uint public lastWiningTicketNumber;
      address public lastWinner;
      address ticket1;
@@ -48,7 +48,7 @@ pragma solidity ^0.4.19;
          round = 1;
          lastWinner = 0;
          lastWiningTicketNumber = 0;
-         status = &quot;Running&quot;;
+         status = "Running";
          ticket1 = 0;
          ticket2 = 0;
          ticket3 = 0;
@@ -324,7 +324,7 @@ pragma solidity ^0.4.19;
              ticket22 = 0;
             
             
-            if (keccak256(status) != keccak256(&quot;Running&quot;)) {
+            if (keccak256(status) != keccak256("Running")) {
                 
                 selfdestruct(owner);
             }

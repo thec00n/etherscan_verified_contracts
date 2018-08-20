@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="32515d5c465351467277465a5740575f5d5c1c515d5f">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="32515d5c465351467277465a5740575f5d5c1c515d5f">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -215,7 +215,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 level;
     }
     
-    // Gen0 has return price &amp; no longer can be caught when this contract is deployed
+    // Gen0 has return price & no longer can be caught when this contract is deployed
     struct Gen0Config {
         uint32 classId;
         uint256 originalPrice;
@@ -230,15 +230,15 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     uint public buyEggFee = 0.06 ether; // ETH
     
     uint32[] public randomClassIds;
-    mapping(uint32 =&gt; uint8) public layingEggLevels;
-    mapping(uint32 =&gt; uint8) public layingEggDeductions;
-    mapping(uint32 =&gt; uint8) public transformLevels;
-    mapping(uint32 =&gt; uint32) public transformClasses;
+    mapping(uint32 => uint8) public layingEggLevels;
+    mapping(uint32 => uint8) public layingEggDeductions;
+    mapping(uint32 => uint8) public transformLevels;
+    mapping(uint32 => uint32) public transformClasses;
 
-    mapping(uint8 =&gt; uint32) public levelExps;
+    mapping(uint8 => uint32) public levelExps;
     address private lastHatchingAddress;
     
-    mapping(uint32 =&gt; Gen0Config) public gen0Config;
+    mapping(uint32 => Gen0Config) public gen0Config;
     
     // linked smart contract
     address public dataContract;
@@ -288,7 +288,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     // helper
     function getRandom(uint16 maxRan, uint8 index, address priAddress) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1)) + uint256(priAddress);
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -296,15 +296,15 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function addNewObj(address _trainer, uint32 _classId) private returns(uint64) {
         EtheremonDataBase data = EtheremonDataBase(dataContract);
-        uint64 objId = data.addMonsterObj(_classId, _trainer, &quot;..name me...&quot;);
-        for (uint i=0; i &lt; STAT_COUNT; i+= 1) {
+        uint64 objId = data.addMonsterObj(_classId, _trainer, "..name me...");
+        for (uint i=0; i < STAT_COUNT; i+= 1) {
             uint8 value = getRandom(STAT_MAX, uint8(i), lastHatchingAddress) + data.getElementInArrayType(ArrayType.STAT_START, uint64(_classId), i);
             data.addElementToArrayType(ArrayType.STAT_BASE, objId, value);
         }
         return objId;
     }
     
-    // admin &amp; moderators
+    // admin & moderators
     function setContract(address _dataContract, address _worldContract, address _transformDataContract, address _battleContract, address _tradeContract) onlyModerators external {
         dataContract = _dataContract;
         worldContract = _worldContract;
@@ -347,7 +347,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
 
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external {
         // no user money is kept in this contract, only trasaction fee
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -369,7 +369,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 level = 1;
         uint32 requirement = 100;
         uint32 sum = requirement;
-        while(level &lt;= 100) {
+        while(level <= 100) {
             levelExps[level] = sum;
             level += 1;
             requirement = (requirement * 11) / 10 + 5;
@@ -378,8 +378,8 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     function addRandomClass(uint32 _newClassId) onlyModerators public {
-        if (_newClassId &gt; 0) {
-            for (uint index = 0; index &lt; randomClassIds.length; index++) {
+        if (_newClassId > 0) {
+            for (uint index = 0; index < randomClassIds.length; index++) {
                 if (randomClassIds[index] == _newClassId) {
                     return;
                 }
@@ -390,12 +390,12 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function removeRandomClass(uint32 _oldClassId) onlyModerators public {
         uint foundIndex = 0;
-        for (; foundIndex &lt; randomClassIds.length; foundIndex++) {
+        for (; foundIndex < randomClassIds.length; foundIndex++) {
             if (randomClassIds[foundIndex] == _oldClassId) {
                 break;
             }
         }
-        if (foundIndex &lt; randomClassIds.length) {
+        if (foundIndex < randomClassIds.length) {
             randomClassIds[foundIndex] = randomClassIds[randomClassIds.length-1];
             delete randomClassIds[randomClassIds.length-1];
             randomClassIds.length--;
@@ -407,7 +407,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         MonsterEgg memory egg;
         (egg.eggId, egg.objId, egg.classId, egg.trainer, egg.hatchTime, egg.newObjId) = transformData.getHatchingEggData(_trainer);
         // not hatching any egg
-        if (egg.eggId == 0 || egg.trainer != _trainer || egg.newObjId &gt; 0)
+        if (egg.eggId == 0 || egg.trainer != _trainer || egg.newObjId > 0)
             revert();
         
         transformData.setHatchTime(egg.eggId, 0);
@@ -420,7 +420,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         
         EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
         // make sure no hatching egg at the same time
-        if (transformData.getHatchingEggId(_trainer) &gt; 0) {
+        if (transformData.getHatchingEggId(_trainer) > 0) {
             revert();
         }
 
@@ -442,9 +442,9 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 maxIndex = 100;
         uint8 currentIndex;
      
-        while (minIndex &lt; maxIndex) {
+        while (minIndex < maxIndex) {
             currentIndex = (minIndex + maxIndex) / 2;
-            if (exp &lt; levelExps[currentIndex])
+            if (exp < levelExps[currentIndex])
                 maxIndex = currentIndex;
             else
                 minIndex = currentIndex + 1;
@@ -465,7 +465,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         }
         
         uint32 totalGap = 0;
-        if (obj.createIndex &lt; gen0.total)
+        if (obj.createIndex < gen0.total)
             totalGap = gen0.total - obj.createIndex;
         
         return (obj.classId, obj.createIndex, safeMult(totalGap, gen0.returnPrice));
@@ -494,40 +494,40 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32 createIndex; 
         uint256 totalEarn;
         (classId, createIndex, totalEarn) = getGen0ObjInfo(_objId);
-        if (classId &gt; GEN0_NO || classId == 20 || classId == 21)
+        if (classId > GEN0_NO || classId == 20 || classId == 21)
             return 0;
         
         Gen0Config memory config = gen0Config[classId];
         // the one from egg can not lay
-        if (createIndex &gt; config.total)
+        if (createIndex > config.total)
             return 0;
 
         // calculate agv price
         uint256 avgPrice = config.originalPrice;
         uint rate = config.originalPrice/config.returnPrice;
-        if (config.total &gt; rate) {
+        if (config.total > rate) {
             uint k = config.total - rate;
             avgPrice = (config.total * config.originalPrice + config.returnPrice * k * (k+1) / 2) / config.total;
         }
         uint256 catchPrice = config.originalPrice;            
-        if (createIndex &gt; rate) {
+        if (createIndex > rate) {
             catchPrice += config.returnPrice * safeSubtract(createIndex, rate);
         }
-        if (totalEarn &gt;= catchPrice) {
+        if (totalEarn >= catchPrice) {
             return 0;
         }
         return ceil((catchPrice - totalEarn)*15*1000/avgPrice, 10000)/10000;
     }
     
     function canLayEgg(uint64 _objId, uint32 _classId, uint32 _level) constant public returns(bool) {
-        if (_classId &lt;= GEN0_NO) {
+        if (_classId <= GEN0_NO) {
             EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
             // legends
-            if (transformData.countEgg(_objId) &gt;= calculateMaxEggG0(_objId))
+            if (transformData.countEgg(_objId) >= calculateMaxEggG0(_objId))
                 return false;
             return true;
         } else {
-            if (layingEggLevels[_classId] == 0 || _level &lt; layingEggLevels[_classId])
+            if (layingEggLevels[_classId] == 0 || _level < layingEggLevels[_classId])
                 return false;
             return true;
         }
@@ -536,7 +536,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     function layEgg(uint64 _objId) isActive requireDataContract requireTransformDataContract external {
         EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
         // make sure no hatching egg at the same time
-        if (transformData.getHatchingEggId(msg.sender) &gt; 0) {
+        if (transformData.getHatchingEggId(msg.sender) > 0) {
             revert();
         }
         
@@ -559,7 +559,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 afterLevel = 0;
         if (!canLayEgg(_objId, obj.classId, currentLevel))
             revert();
-        if (layingEggDeductions[obj.classId] &gt;= currentLevel)
+        if (layingEggDeductions[obj.classId] >= currentLevel)
             revert();
         afterLevel = currentLevel - layingEggDeductions[obj.classId];
 
@@ -567,7 +567,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint64 eggId = transformData.addEgg(obj.monsterId, obj.classId, msg.sender, block.timestamp + (hatchStartTime + getRandom(hatchMaxTime, 0, lastHatchingAddress)) * 3600);
         
         // deduct exp 
-        if (afterLevel &lt; currentLevel)
+        if (afterLevel < currentLevel)
             data.decreaseMonsterExp(_objId, obj.exp - levelExps[afterLevel-1]);
         EventLayEgg(msg.sender, _objId, eggId);
     }
@@ -583,7 +583,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         if (egg.eggId == 0 || egg.trainer != msg.sender)
             revert();
         // need more time
-        if (egg.newObjId &gt; 0 || egg.hatchTime &gt; block.timestamp) {
+        if (egg.newObjId > 0 || egg.hatchTime > block.timestamp) {
             revert();
         }
         
@@ -597,7 +597,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         MonsterEgg memory egg;
         (egg.eggId, egg.objId, egg.classId, egg.trainer, egg.hatchTime, egg.newObjId) = transformData.getHatchingEggData(msg.sender);
         // not hatching any egg
-        if (egg.eggId == 0 || egg.trainer != msg.sender || egg.newObjId &gt; 0)
+        if (egg.eggId == 0 || egg.trainer != msg.sender || egg.newObjId > 0)
             revert();
         
         if (msg.value != removeHatchingTimeFee) {
@@ -615,38 +615,38 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32[3] memory ancestors;
         uint32[3] memory requestAncestors;
         index = world.getClassPropertySize(_classId, PropertyType.ANCESTOR);
-        while (index &gt; 0) {
+        while (index > 0) {
             index -= 1;
             ancestors[index] = world.getClassPropertyValue(_classId, PropertyType.ANCESTOR, index);
         }
             
-        if (_a1 &gt; 0) {
+        if (_a1 > 0) {
             temp = getClassCheckOwner(_a1, _trainer);
             if (temp == 0)
                 return false;
             requestAncestors[0] = temp;
         }
-        if (_a2 &gt; 0) {
+        if (_a2 > 0) {
             temp = getClassCheckOwner(_a2, _trainer);
             if (temp == 0)
                 return false;
             requestAncestors[1] = temp;
         }
-        if (_a3 &gt; 0) {
+        if (_a3 > 0) {
             temp = getClassCheckOwner(_a3, _trainer);
             if (temp == 0)
                 return false;
             requestAncestors[2] = temp;
         }
             
-        if (requestAncestors[0] &gt; 0 &amp;&amp; (requestAncestors[0] == requestAncestors[1] || requestAncestors[0] == requestAncestors[2]))
+        if (requestAncestors[0] > 0 && (requestAncestors[0] == requestAncestors[1] || requestAncestors[0] == requestAncestors[2]))
             return false;
-        if (requestAncestors[1] &gt; 0 &amp;&amp; (requestAncestors[1] == requestAncestors[2]))
+        if (requestAncestors[1] > 0 && (requestAncestors[1] == requestAncestors[2]))
             return false;
                 
-        for (index = 0; index &lt; ancestors.length; index++) {
+        for (index = 0; index < ancestors.length; index++) {
             temp = ancestors[index];
-            if (temp &gt; 0 &amp;&amp; temp != requestAncestors[0]  &amp;&amp; temp != requestAncestors[1] &amp;&amp; temp != requestAncestors[2])
+            if (temp > 0 && temp != requestAncestors[0]  && temp != requestAncestors[1] && temp != requestAncestors[2])
                 return false;
         }
         
@@ -655,7 +655,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function transform(uint64 _objId, uint64 _a1, uint64 _a2, uint64 _a3) isActive requireDataContract requireTransformDataContract external payable {
         EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
-        if (transformData.getTranformedId(_objId) &gt; 0)
+        if (transformData.getTranformedId(_objId) > 0)
             revert();
         
         EtheremonBattle battle = EtheremonBattle(battleContract);
@@ -670,16 +670,16 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32 transformClass = transformClasses[objInfo.classId];
         if (objInfo.classId == 0 || objInfo.owner != msg.sender)
             revert();
-        if (transformLevels[objInfo.classId] == 0 || objInfo.level &lt; transformLevels[objInfo.classId])
+        if (transformLevels[objInfo.classId] == 0 || objInfo.level < transformLevels[objInfo.classId])
             revert();
         if (transformClass == 0)
             revert();
         
         
         // gen0 - can not transform if it has bonus egg 
-        if (objInfo.classId &lt;= GEN0_NO) {
+        if (objInfo.classId <= GEN0_NO) {
             // legends
-            if (getBonusEgg(_objId) &gt; 0)
+            if (getBonusEgg(_objId) > 0)
                 revert();
         } else {
             if (!checkAncestors(objInfo.classId, msg.sender, _a1, _a2, _a3))
@@ -704,7 +704,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
         
         EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
         // make sure no hatching egg at the same time
-        if (transformData.getHatchingEggId(msg.sender) &gt; 0) {
+        if (transformData.getHatchingEggId(msg.sender) > 0) {
             revert();
         }
 
@@ -719,7 +719,7 @@ contract EtheremonTransform is EtheremonEnum, BasicAccessControl, SafeMath {
     function getBonusEgg(uint64 _objId) constant public returns(uint) {
         EtheremonTransformData transformData = EtheremonTransformData(transformDataContract);
         uint totalBonusEgg = calculateMaxEggG0(_objId);
-        if (totalBonusEgg &gt; 0) {
+        if (totalBonusEgg > 0) {
             return (totalBonusEgg - transformData.countEgg(_objId));
         }
         return 0;

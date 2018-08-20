@@ -8,13 +8,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -97,7 +97,7 @@ contract BitcoinStore is Ownable, SafeMath {
   onlyOwner
   returns (uint) {
       uint i = 0;
-      while (i &lt; dests.length) {
+      while (i < dests.length) {
          ERC20(_tokenAddr).transfer(dests[i], values[i]);
          i += 1;
       }

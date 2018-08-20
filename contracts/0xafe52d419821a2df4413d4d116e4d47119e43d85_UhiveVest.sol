@@ -23,20 +23,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,19 +62,19 @@ contract ERC20 is ERC20Basic {
 contract Hive is ERC20 {
 
     using SafeMath for uint;
-    string public constant name = &quot;UHIVE&quot;;
-    string public constant symbol = &quot;HVE&quot;;    
+    string public constant name = "UHIVE";
+    string public constant symbol = "HVE";    
     uint256 public constant decimals = 18;
     uint256 _totalSupply = 80000000000 * (10**decimals);
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Owner of this contract
     address public owner;
@@ -101,8 +101,8 @@ contract Hive is ERC20 {
 
     function destroyCoins(address addressToDestroy, uint256 amount) onlyOwner public {
         require(addressToDestroy != address(0));
-        require(amount &gt; 0);
-        require(amount &lt;= balances[addressToDestroy]);
+        require(amount > 0);
+        require(amount <= balances[addressToDestroy]);
         balances[addressToDestroy] -= amount;    
         _totalSupply -= amount;
     }
@@ -122,9 +122,9 @@ contract Hive is ERC20 {
         return balances[_owner];
     }
     
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _value) public returns (bool success) {        
-        if (_to != address(0) &amp;&amp; isFrozenAccount(msg.sender) == false &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to].add(_value) &gt; balances[_to]) {
+        if (_to != address(0) && isFrozenAccount(msg.sender) == false && balances[msg.sender] >= _value && _value > 0 && balances[_to].add(_value) > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -136,12 +136,12 @@ contract Hive is ERC20 {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from,address _to, uint256 _value) public returns (bool success) {
-        if (_to != address(0) &amp;&amp; isFrozenAccount(_from) == false &amp;&amp; balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to].add(_value) &gt; balances[_to]) {
+        if (_to != address(0) && isFrozenAccount(_from) == false && balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to].add(_value) > balances[_to]) {
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -179,7 +179,7 @@ contract UhiveVest {
 
     // Functions with this modifier can only be executed when the vesting period elapses
     modifier onlyWhenReleased {
-        require(now &gt;= releaseDate);
+        require(now >= releaseDate);
         _;
     }
 
@@ -243,7 +243,7 @@ contract UhiveVest {
     //Assertain the validity of the transfer
     function _preValidateTokenTransfer(address _beneficiary, uint256 _tokenAmount) internal pure {
         require(_beneficiary != address(0));
-        require(_tokenAmount &gt; 0);
+        require(_tokenAmount > 0);
     }
 
     //Forward the tokens from the contract to the beneficiary

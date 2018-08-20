@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -54,12 +54,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -130,7 +130,7 @@ contract IAngelCardData is AccessControl, Enums {
 contract LeaderboardSlogans is AccessControl {
     
     
-    mapping(uint64 =&gt; string) public slogans;
+    mapping(uint64 => string) public slogans;
     uint64[] Slogans;
     address public angelCardDataContract = 0x6D2E76213615925c5fc436565B5ee788Ee0E86DC;
     

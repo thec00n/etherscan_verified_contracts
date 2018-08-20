@@ -5,18 +5,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 
@@ -40,7 +40,7 @@ contract ERC223ReceivingContract {
       igniter.sender = _from;
       igniter.value = _value;
       igniter.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       igniter.sig = bytes4(u);
 
     }
@@ -152,19 +152,19 @@ contract iGniter is SafeMath {
     bool private t4active;
     bool private t5active;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; bool) public initialAddress;
-    mapping(address =&gt; bool) public dividendAddress;
-    mapping(address =&gt; bool) public qualifiedAddress;
-    mapping(address =&gt; bool) public TierStarterDividendAddress;
-    mapping(address =&gt; bool) public TierBasicDividendAddress;
-    mapping(address =&gt; bool) public TierClassicDividendAddress;
-    mapping(address =&gt; bool) public TierWildcatDividendAddress;
-    mapping(address =&gt; bool) public TierRainmakerDividendAddress;
-    mapping(address =&gt; bool) public HODLERAddress;
-    mapping(address =&gt; mapping (address =&gt; uint)) internal _allowances;
-    mapping(address =&gt; serPayment) inrPayments;
-    mapping(address =&gt; dividends) INRdividends;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => bool) public initialAddress;
+    mapping(address => bool) public dividendAddress;
+    mapping(address => bool) public qualifiedAddress;
+    mapping(address => bool) public TierStarterDividendAddress;
+    mapping(address => bool) public TierBasicDividendAddress;
+    mapping(address => bool) public TierClassicDividendAddress;
+    mapping(address => bool) public TierWildcatDividendAddress;
+    mapping(address => bool) public TierRainmakerDividendAddress;
+    mapping(address => bool) public HODLERAddress;
+    mapping(address => mapping (address => uint)) internal _allowances;
+    mapping(address => serPayment) inrPayments;
+    mapping(address => dividends) INRdividends;
 
     address private _Owner1;
     address private _Owner2;
@@ -214,9 +214,9 @@ contract iGniter is SafeMath {
 
     function assignInitialAddresses(address[] _address) isOwner public returns (bool success)
     {
-        if (block.number &lt; 10000000)
+        if (block.number < 10000000)
         {
-          for (uint i = 0; i &lt; _address.length; i++)
+          for (uint i = 0; i < _address.length; i++)
           {
             balanceOf[_address[i]] = balanceOf[_address[i]] + initialSupplyPerAddress;
             initialAddress[_address[i]] = true;
@@ -231,16 +231,16 @@ contract iGniter is SafeMath {
     {
         if((qualifiedAddress[_address]) == true || (initialAddress[_address]) == true)
         {
-            if (minedBlocks &gt; 105120000) return balanceOf[_address]; //app. 2058
+            if (minedBlocks > 105120000) return balanceOf[_address]; //app. 2058
 
             INRdividends[_address].INRpayout = dividendRewards(_address);
 
-            if (INRdividends[_address].INRpayout &lt; INRdividends[_address].INRtransfers)
+            if (INRdividends[_address].INRpayout < INRdividends[_address].INRtransfers)
             {
                 INRdividends[_address].INRpaid = 0;
             }
 
-            if (INRdividends[_address].INRpayout &gt;= INRdividends[_address].INRtransfers)
+            if (INRdividends[_address].INRpayout >= INRdividends[_address].INRtransfers)
             {
                 INRdividends[_address].transDiff = INRdividends[_address].INRpayout - INRdividends[_address].INRtransfers;
                 INRdividends[_address].INRpaid = INRdividends[_address].transDiff;
@@ -258,13 +258,13 @@ contract iGniter is SafeMath {
 
     function name() constant returns (string _name)
     {
-        name = &quot;iGniter&quot;;
+        name = "iGniter";
         return name;
     }
 
     function symbol() constant returns (bytes32 _symbol)
     {
-        symbol = &quot;INR&quot;;
+        symbol = "INR";
         return symbol;
     }
 
@@ -327,7 +327,7 @@ contract iGniter is SafeMath {
 
     function burn(uint256 _value) public returns(bool success) {
 
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         burnt += _value;
         Burn(msg.sender, _value);
@@ -335,7 +335,7 @@ contract iGniter is SafeMath {
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; !isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && !isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             INRdividends[msg.sender].INRtransfers += _value;
@@ -346,7 +346,7 @@ contract iGniter is SafeMath {
     }
 
     function transfer(address _to, uint _value, bytes _data) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             INRdividends[msg.sender].INRtransfers += _value;
@@ -363,12 +363,12 @@ contract iGniter is SafeMath {
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp; _value &gt; 0 &amp;&amp; _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balanceOf[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 && _value > 0 && _allowances[_from][msg.sender] >= _value &&
+            balanceOf[_from] >= _value) {
             balanceOf[_from] -= _value;
             balanceOf[_to] += _value;
             INRdividends[msg.sender].INRtransfers += _value;
@@ -406,8 +406,8 @@ contract iGniter is SafeMath {
 
     function servicePayment(uint _value) public {
 
-      require(_value &gt;= currentCost);
-      require(balanceOf[msg.sender] &gt;= currentCost);
+      require(_value >= currentCost);
+      require(balanceOf[msg.sender] >= currentCost);
 
       inrPayments[msg.sender].unlockedBlockNumber = block.number;
       inrSessions++;
@@ -419,7 +419,7 @@ contract iGniter is SafeMath {
 
     function withdrawal(uint quantity) isOwner returns(bool) {
 
-           require(quantity &lt;= this.balance);
+           require(quantity <= this.balance);
 
            if(msg.sender == _Owner1)
            {
@@ -475,7 +475,7 @@ contract iGniter is SafeMath {
 
     function Tier_Basic_Registration() public payable {
 
-      require(msg.value &gt;= 0.1 ether);
+      require(msg.value >= 0.1 ether);
 
       INRdividends[msg.sender]._tier2Reg = block.number;
       TierBasicDividendAddress[msg.sender] = true;
@@ -487,7 +487,7 @@ contract iGniter is SafeMath {
 
     function Tier_Classic_Registration() public payable {
 
-      require(msg.value &gt;= 1 ether);
+      require(msg.value >= 1 ether);
 
       INRdividends[msg.sender]._tier3Reg = block.number;
       TierClassicDividendAddress[msg.sender] = true;
@@ -499,7 +499,7 @@ contract iGniter is SafeMath {
 
     function Tier_Wildcat_Registration() public payable {
 
-      require(msg.value &gt;= 10 ether);
+      require(msg.value >= 10 ether);
 
       INRdividends[msg.sender]._tier4Reg = block.number;
       TierWildcatDividendAddress[msg.sender] = true;
@@ -511,7 +511,7 @@ contract iGniter is SafeMath {
 
     function Tier_Rainmaker_Registration() public payable {
 
-      require(msg.value &gt;= 100 ether);
+      require(msg.value >= 100 ether);
 
       INRdividends[msg.sender]._tier5Reg = block.number;
       TierRainmakerDividendAddress[msg.sender] = true;
@@ -525,12 +525,12 @@ contract iGniter is SafeMath {
     {
         INRdividends[msg.sender].INRpayout = dividendRewards(msg.sender);
 
-        if (INRdividends[msg.sender].INRpayout &lt; INRdividends[msg.sender].INRtransfers)
+        if (INRdividends[msg.sender].INRpayout < INRdividends[msg.sender].INRtransfers)
         {
             INRdividends[msg.sender].INRpaid = 0;
         }
 
-        if (INRdividends[msg.sender].INRpayout &gt;= INRdividends[msg.sender].INRtransfers)
+        if (INRdividends[msg.sender].INRpayout >= INRdividends[msg.sender].INRtransfers)
         {
             INRdividends[msg.sender].transDiff = INRdividends[msg.sender].INRpayout - INRdividends[msg.sender].INRtransfers;
             INRdividends[msg.sender].INRpaid = INRdividends[msg.sender].transDiff;
@@ -577,7 +577,7 @@ contract iGniter is SafeMath {
           INRdividends[_address]._tier5Payout = T5DividendsPerBlockPerAddress * INRdividends[_address]._tier5Blocks;
         }
 
-        if ((balanceOf[_address]) &gt;= 100000000000 &amp;&amp; (HODLERAddress[_address] == true)) { //100000INR
+        if ((balanceOf[_address]) >= 100000000000 && (HODLERAddress[_address] == true)) { //100000INR
           INRdividends[_address]._hodlBlocks = block.number - INRdividends[_address]._hodlReg;
           INRdividends[_address].hodlPayout = hodlersDividendsPerBlockPerAddress * INRdividends[_address]._hodlBlocks;
         }

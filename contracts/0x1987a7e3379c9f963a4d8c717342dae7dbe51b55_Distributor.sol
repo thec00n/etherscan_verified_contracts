@@ -4,9 +4,9 @@ contract Distributor {
 
   address public owner;
 
-  mapping (address =&gt; uint) public received;
+  mapping (address => uint) public received;
     
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   address[] public receivers;
   
@@ -24,7 +24,7 @@ contract Distributor {
   }
   
   function addReceivers(address[] _receivers, uint[] _balances) public onlyOwner {
-    for(uint i = 0; i &lt; _receivers.length; i++) {
+    for(uint i = 0; i < _receivers.length; i++) {
       address receiver = _receivers[i];
       require(balances[receiver] == 0);
       balances[receiver] = _balances[i];
@@ -34,7 +34,7 @@ contract Distributor {
   }
 
   function process(uint count) public onlyOwner {
-    for(uint i = 0; index &lt; receivers.length &amp;&amp; i &lt; count; i++) {
+    for(uint i = 0; index < receivers.length && i < count; i++) {
       address receiver = receivers[index];
       require(received[receiver] == 0);
       uint value = balances[receiver];

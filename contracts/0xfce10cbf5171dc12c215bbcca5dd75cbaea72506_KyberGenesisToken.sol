@@ -41,12 +41,12 @@ contract ERC20Interface {
 }
 
 contract KyberGenesisToken is Ownable {
-  string  public  constant name     = &quot;Kyber Genesis Token&quot;;
-  string  public  constant symbol   = &quot;KGT&quot;;
+  string  public  constant name     = "Kyber Genesis Token";
+  string  public  constant symbol   = "KGT";
   uint    public  constant decimals = 0;
 
   uint                   public totalSupply = 0;
-  mapping(address=&gt;uint) public balanceOf;
+  mapping(address=>uint) public balanceOf;
 
   function KyberGenesisToken( address minter ) {
     transferOwnership(minter);
@@ -57,7 +57,7 @@ contract KyberGenesisToken is Ownable {
 
   function mint( address[] recipients ) onlyOwner {
     uint newRecipients = 0;
-    for( uint i = 0 ; i &lt; recipients.length ; i++ ){
+    for( uint i = 0 ; i < recipients.length ; i++ ){
       address recipient = recipients[i];
       if( balanceOf[recipient] == 0 ){
         Transfer( address(0x0), recipient, 1 );

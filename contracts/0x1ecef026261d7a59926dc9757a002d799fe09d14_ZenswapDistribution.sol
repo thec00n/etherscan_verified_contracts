@@ -43,14 +43,14 @@ contract ZenswapDistribution is Ownable {
     uint256 amountCount = _amount.length;
     require(addressCount == amountCount);
     
-    for (uint256 i = 0; i &lt; addressCount; i++) {
+    for (uint256 i = 0; i < addressCount; i++) {
         uint256 _tokensAmount = _amount[i] * 10 ** uint256(18);
         tokenReward.transfer(_addresses[i], _tokensAmount);
     }
   }
 
     /**
-     * Withdraw an &quot;amount&quot; of available tokens in the contract
+     * Withdraw an "amount" of available tokens in the contract
      * 
      */
     function withdrawToken(address _address, uint256 _amount) public onlyOwner {

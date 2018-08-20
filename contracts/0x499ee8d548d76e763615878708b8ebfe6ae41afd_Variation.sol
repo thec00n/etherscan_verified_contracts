@@ -100,14 +100,14 @@ contract Variation is Ownable{
     uint256 public variationCycle = 10;
 
     function setVariationProbably(uint256 _value) public onlyOwner{
-        require(_value &gt; 0);
-        require(_value &lt;= 100);
+        require(_value > 0);
+        require(_value <= 100);
         variationProbably = _value;
     }
     
     function setVariationCycle(uint256 _value) public onlyOwner{
-        require(_value &gt; 0);
-        require(_value &lt;= 172800);
+        require(_value > 0);
+        require(_value <= 172800);
         variationCycle = _value;
     }
 
@@ -135,7 +135,7 @@ contract Variation is Ownable{
         randomSeed = uint256(randomSeed * _gene);
         
         uint256 variationRandom = random();
-        uint256 totalRandom = _totalSupply &gt;= 20000 ? _totalSupply : 20000;
+        uint256 totalRandom = _totalSupply >= 20000 ? _totalSupply : 20000;
         return uint256(variationRandom % uint256(totalRandom * variationProbably)) == 1 ? 1 : 0;
     }
 
@@ -149,8 +149,8 @@ contract Variation is Ownable{
         
     function callBackVariations() public {
         uint256 index = 0;
-        if (block.number &lt; cVariations[cVariations.length - 1].withdrawBlock) {
-            require(cVariations.length &gt; 1);
+        if (block.number < cVariations[cVariations.length - 1].withdrawBlock) {
+            require(cVariations.length > 1);
             CallBackVariations(
                 cVariations[cVariations.length - 2].luckyDogs, 
                 cVariations[cVariations.length - 2].luckyAccounts, 
@@ -165,7 +165,7 @@ contract Variation is Ownable{
         currentCVariation.withdrawBlock = block.number;
         var(,,,,,,,spoolAmount,) = lottery.getCLottery();
         uint256 luckyAmount = (dogCore.getAvailableBlance() - spoolAmount) * 3 / 100;
-        require(luckyAmount &gt; 0);
+        require(luckyAmount > 0);
         currentCVariation.totalAmount = luckyAmount;
         
         CVariation memory newCVariation;
@@ -184,16 +184,16 @@ contract Variation is Ownable{
             return;
         }
 
-        for (index = 1; index &lt;= luckySize; index++) {
+        for (index = 1; index <= luckySize; index++) {
             uint256 dogId = currentCVariation.luckyDogs[luckySize - index];
             var(,,,birthTime,,,,,,) = dogCore.getDog(dogId);
-            if(birthTime &lt; block.number){
+            if(birthTime < block.number){
                 break;
             }
             cVariations[cVariations.length - 1].luckyDogs.push(dogId);
             cVariations[cVariations.length - 1].luckyAccounts.push(currentCVariation.luckyAccounts[luckySize - index]);
         }
-        for (index = 1; index &lt;= cVariations[cVariations.length - 1].luckyDogs.length; index++) {
+        for (index = 1; index <= cVariations[cVariations.length - 1].luckyDogs.length; index++) {
             delete currentCVariation.luckyDogs[luckySize - index];
             delete currentCVariation.luckyAccounts[luckySize - index];
         }
@@ -211,7 +211,7 @@ contract Variation is Ownable{
 
         uint256 reward = currentCVariation.totalAmount * 9 / (10 * luckySize);
         
-        for (index = 0; index &lt; luckySize; index++) {
+        for (index = 0; index < luckySize; index++) {
             address owner = currentCVariation.luckyAccounts[index];
             dogCore.sendMoney(owner, reward);
         }

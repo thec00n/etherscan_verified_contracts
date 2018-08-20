@@ -31,8 +31,8 @@ contract CryptaurMigrations is owned
         _;
     }
 
-    mapping(bytes =&gt; address) addressByServices;
-    mapping(address =&gt; bytes) servicesbyAddress;
+    mapping(bytes => address) addressByServices;
+    mapping(address => bytes) servicesbyAddress;
 
     event AddService(uint dateTime, bytes serviceName, address serviceAddress);
 

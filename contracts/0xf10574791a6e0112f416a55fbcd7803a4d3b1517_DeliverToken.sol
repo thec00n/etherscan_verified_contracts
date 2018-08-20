@@ -14,12 +14,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,13 +85,13 @@ contract DeliverToken is ERC20, Pausable {
     uint256 initialSupply;
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) internal locks;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => bool) internal locks;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     function DeliverToken() public {
-        name = &quot;DELIVER&quot;;
-        symbol = &quot;DV&quot;;
+        name = "DELIVER";
+        symbol = "DV";
         decimals = 18;
         initialSupply = 10000000000;
         totalSupply_ = initialSupply * 10 ** uint(decimals);
@@ -106,7 +106,7 @@ contract DeliverToken is ERC20, Pausable {
     }
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(locks[msg.sender] == false);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -116,8 +116,8 @@ contract DeliverToken is ERC20, Pausable {
     }
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(locks[_from] == false);
 
         balances[_from] = balances[_from].sub(_value);
@@ -127,7 +127,7 @@ contract DeliverToken is ERC20, Pausable {
         return true;
     }
     function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -158,7 +158,7 @@ contract DeliverToken is ERC20, Pausable {
         return true;
     }
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

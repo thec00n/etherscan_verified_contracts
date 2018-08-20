@@ -1,18 +1,18 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.18;
 /// @title UintUtil
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f195909f98949db19d9e9e8183989f96df9e8396">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f195909f98949db19d9e9e8183989f96df9e8396">[email protected]</a>>
 /// @dev uint utility functions
 library MathUint {
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -20,15 +20,15 @@ library MathUint {
         require(a == 0 || c / a == b);
     }
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function tolerantSub(uint a, uint b) internal pure returns (uint c) {
-        return (a &gt;= b) ? a - b : 0;
+        return (a >= b) ? a - b : 0;
     }
     /// @dev calculate the square of Coefficient of Variation (CV)
     /// https://en.wikipedia.org/wiki/Coefficient_of_variation
@@ -41,10 +41,10 @@ library MathUint {
         returns (uint)
     {
         uint len = arr.length;
-        require(len &gt; 1);
-        require(scale &gt; 0);
+        require(len > 1);
+        require(scale > 0);
         uint avg = 0;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             avg += arr[i];
         }
         avg = avg / len;
@@ -53,8 +53,8 @@ library MathUint {
         }
         uint cvs = 0;
         uint s = 0;
-        for (i = 0; i &lt; len; i++) {
-            s = arr[i] &gt; avg ? arr[i] - avg : avg - arr[i];
+        for (i = 0; i < len; i++) {
+            s = arr[i] > avg ? arr[i] - avg : avg - arr[i];
             cvs += mul(s, s);
         }
         return (mul(mul(cvs, scale) / avg, scale) / avg) / (len - 1);
@@ -62,24 +62,24 @@ library MathUint {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -99,12 +99,12 @@ contract ERC20 {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -112,7 +112,7 @@ contract ERC20 {
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic
 ///      authorization control functions, this simplifies the implementation of
-///      &quot;user permissions&quot;.
+///      "user permissions".
 contract Ownable {
     address public owner;
     /// @dev The Ownable constructor sets the original `owner` of the contract
@@ -137,13 +137,13 @@ contract Ownable {
 /// @title TokenTransferDelegate - Acts as a middle man to transfer ERC20 tokens
 /// on behalf of different versions of Loopring protocol to avoid ERC20
 /// re-authorization.
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="462227282f232a062a292936342f282168293421">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="462227282f232a062a292936342f282168293421">[email protected]</a>>.
 contract TokenTransferDelegate is Ownable {
     using MathUint for uint;
     ////////////////////////////////////////////////////////////////////////////
     /// Variables                                                            ///
     ////////////////////////////////////////////////////////////////////////////
-    mapping(address =&gt; AddressInfo) private addressInfos;
+    mapping(address => AddressInfo) private addressInfos;
     address public latestAddress;
     ////////////////////////////////////////////////////////////////////////////
     /// Structs                                                              ///
@@ -224,7 +224,7 @@ contract TokenTransferDelegate is Ownable {
         address addr = latestAddress;
         AddressInfo memory addrInfo;
         uint count = 0;
-        while (addr != address(0) &amp;&amp; max &lt; count) {
+        while (addr != address(0) && max < count) {
             addrInfo = addressInfos[addr];
             if (addrInfo.index == 0) {
                 break;
@@ -246,7 +246,7 @@ contract TokenTransferDelegate is Ownable {
         onlyAuthorized
         external
     {
-        if (value &gt; 0 &amp;&amp; from != to) {
+        if (value > 0 && from != to) {
             require(
                 ERC20(token).transferFrom(from, to, value)
             );
@@ -263,17 +263,17 @@ contract TokenTransferDelegate is Ownable {
         require(batch.length == ringSize * 6);
         uint p = ringSize * 2;
         var lrc = ERC20(lrcTokenAddress);
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             uint prev = ((i + ringSize - 1) % ringSize);
             address tokenS = address(batch[i]);
             address owner = address(batch[ringSize + i]);
             address prevOwner = address(batch[ringSize + prev]);
             
-            // Pay tokenS to previous order, or to miner as previous order&#39;s
-            // margin split or/and this order&#39;s margin split.
+            // Pay tokenS to previous order, or to miner as previous order's
+            // margin split or/and this order's margin split.
             ERC20 _tokenS;
             // Try to create ERC20 instances only once per token.
-            if (owner != prevOwner || owner != feeRecipient &amp;&amp; batch[p+1] != 0) {
+            if (owner != prevOwner || owner != feeRecipient && batch[p+1] != 0) {
                 _tokenS = ERC20(tokenS);
             }
             // Here batch[p] has been checked not to be 0.

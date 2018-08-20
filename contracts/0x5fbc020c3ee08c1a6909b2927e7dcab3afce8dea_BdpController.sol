@@ -61,14 +61,14 @@ contract BdpBase is BdpBaseData {
 	}
 
 	modifier whenContractActive() {
-		require(!paused &amp;&amp; setupComplete);
+		require(!paused && setupComplete);
 		_;
 	}
 
 	modifier storageAccessControl() {
 		require(
-			(! setupComplete &amp;&amp; (msg.sender == ownerAddress || msg.sender == managerAddress))
-			|| (setupComplete &amp;&amp; !paused &amp;&amp; (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
+			(! setupComplete && (msg.sender == ownerAddress || msg.sender == managerAddress))
+			|| (setupComplete && !paused && (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
 		);
 		_;
 	}
@@ -127,9 +127,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -137,7 +137,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -146,7 +146,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -172,7 +172,7 @@ contract BdpDataStorage is BdpBase {
 
 	uint256 public lastRegionId = 0;
 
-	mapping (uint256 =&gt; Region) public data;
+	mapping (uint256 => Region) public data;
 
 
 	function getLastRegionId() view public returns (uint256) {
@@ -283,8 +283,8 @@ contract BdpImageStorage is BdpBase {
 		address owner;
 		uint256 regionId;
 		uint256 currentRegionId;
-		mapping(uint16 =&gt; uint256[1000]) data;
-		mapping(uint16 =&gt; uint16) dataLength;
+		mapping(uint16 => uint256[1000]) data;
+		mapping(uint16 => uint16) dataLength;
 		uint16 partsCount;
 		uint16 width;
 		uint16 height;
@@ -294,7 +294,7 @@ contract BdpImageStorage is BdpBase {
 
 	uint256 public lastImageId = 0;
 
-	mapping(uint256 =&gt; Image) public images;
+	mapping(uint256 => Image) public images;
 
 
 	function getLastImageId() view public returns (uint256) {
@@ -307,7 +307,7 @@ contract BdpImageStorage is BdpBase {
 	}
 
 	function createImage(address _owner, uint256 _regionId, uint16 _width, uint16 _height, uint16 _partsCount, uint16 _imageDescriptor) public storageAccessControl returns (uint256) {
-		require(_owner != address(0) &amp;&amp; _width &gt; 0 &amp;&amp; _height &gt; 0 &amp;&amp; _partsCount &gt; 0 &amp;&amp; _imageDescriptor &gt; 0);
+		require(_owner != address(0) && _width > 0 && _height > 0 && _partsCount > 0 && _imageDescriptor > 0);
 		uint256 id = getNextImageId();
 		images[id].owner = _owner;
 		images[id].regionId = _regionId;
@@ -319,7 +319,7 @@ contract BdpImageStorage is BdpBase {
 	}
 
 	function imageExists(uint256 _imageId) view public returns (bool) {
-		return _imageId &gt; 0 &amp;&amp; images[_imageId].owner != address(0);
+		return _imageId > 0 && images[_imageId].owner != address(0);
 	}
 
 	function deleteImage(uint256 _imageId) public storageAccessControl {
@@ -365,7 +365,7 @@ contract BdpImageStorage is BdpBase {
 	function setImageData(uint256 _imageId, uint16 _part, uint256[] _data) public storageAccessControl {
 		require(imageExists(_imageId));
 		images[_imageId].dataLength[_part] = uint16(_data.length);
-		for (uint256 i = 0; i &lt; _data.length; i++) {
+		for (uint256 i = 0; i < _data.length; i++) {
 			images[_imageId].data[_part][i] = _data[i];
 		}
 	}
@@ -430,7 +430,7 @@ contract BdpImageStorage is BdpBase {
 
 	function imageUploadComplete(uint256 _imageId) view public returns (bool) {
 		require(imageExists(_imageId));
-		for (uint16 i = 1; i &lt;= images[_imageId].partsCount; i++) {
+		for (uint16 i = 1; i <= images[_imageId].partsCount; i++) {
 			if(images[_imageId].data[i].length == 0) {
 				return false;
 			}
@@ -451,25 +451,25 @@ contract BdpOwnershipStorage is BdpBase {
 	using SafeMath for uint256;
 
 	// Mapping from token ID to owner
-	mapping (uint256 =&gt; address) public tokenOwner;
+	mapping (uint256 => address) public tokenOwner;
 
 	// Mapping from token ID to approved address
-	mapping (uint256 =&gt; address) public tokenApprovals;
+	mapping (uint256 => address) public tokenApprovals;
 
 	// Mapping from owner to the sum of owned area
-	mapping (address =&gt; uint256) public ownedArea;
+	mapping (address => uint256) public ownedArea;
 
 	// Mapping from owner to list of owned token IDs
-	mapping (address =&gt; uint256[]) public ownedTokens;
+	mapping (address => uint256[]) public ownedTokens;
 
 	// Mapping from token ID to index of the owner tokens list
-	mapping(uint256 =&gt; uint256) public ownedTokensIndex;
+	mapping(uint256 => uint256) public ownedTokensIndex;
 
 	// All tokens list tokens ids
 	uint256[] public tokenIds;
 
 	// Mapping from tokenId to index of the tokens list
-	mapping (uint256 =&gt; uint256) public tokenIdsIndex;
+	mapping (uint256 => uint256) public tokenIdsIndex;
 
 
 	function getTokenOwner(uint256 _tokenId) view public returns (address) {
@@ -597,7 +597,7 @@ contract BdpPriceStorage is BdpBase {
 	}
 
 	function appendPricePoints(uint64[] _pricePoints) public storageAccessControl {
-		for (uint i = 0; i &lt; _pricePoints.length; i++) {
+		for (uint i = 0; i < _pricePoints.length; i++) {
 			pricePoints[pricePointsLength++] = _pricePoints[i];
 		}
 	}
@@ -639,8 +639,8 @@ library BdpCalculator {
 
 	function countPurchasedPixels(address[16] _contracts) view public returns (uint256 _count) {
 		var lastRegionId = BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getLastRegionId();
-		for (uint256 i = 0; i &lt;= lastRegionId; i++) {
-			if(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionPurchasedAt(i) &gt; 0) { // region is purchased
+		for (uint256 i = 0; i <= lastRegionId; i++) {
+			if(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionPurchasedAt(i) > 0) { // region is purchased
 				var (area,,) = calculateArea(_contracts, i);
 				_count += area;
 			}
@@ -667,7 +667,7 @@ library BdpCalculator {
 	/** Current market price per pixel for this region if it is the first sale of this region
 	  */
 	function calculateRegionInitialSalePixelPrice(address[16] _contracts, uint256 _regionId) view public returns (uint256) {
-		require(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionUpdatedAt(_regionId) &gt; 0); // region exists
+		require(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionUpdatedAt(_regionId) > 0); // region exists
 		var purchasedPixels = countPurchasedPixels(_contracts);
 		var (area,,) = calculateArea(_contracts, _regionId);
 		return calculateAveragePixelPrice(_contracts, purchasedPixels, purchasedPixels + area);
@@ -677,7 +677,7 @@ library BdpCalculator {
 	  */
 	function calculateRegionSalePixelPrice(address[16] _contracts, uint256 _regionId) view public returns (uint256) {
 		var pixelPrice = BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionCurrentPixelPrice(_regionId);
-		if(pixelPrice &gt; 0) {
+		if(pixelPrice > 0) {
 			return pixelPrice * 3;
 		} else {
 			return calculateRegionInitialSalePixelPrice(_contracts, _regionId);
@@ -703,14 +703,14 @@ library BdpImage {
 		var dataStorage = BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts));
 		var imageStorage = BdpImageStorage(BdpContracts.getBdpImageStorage(_contracts));
 
-		require( (_imageId == 0 &amp;&amp; _imageData.length == 0 &amp;&amp; !_swapImages &amp;&amp; !_clearImage) // Only one way to change image can be specified
-			|| (_imageId != 0 &amp;&amp; _imageData.length == 0 &amp;&amp; !_swapImages &amp;&amp; !_clearImage) // If image has to be changed
-			|| (_imageId == 0 &amp;&amp; _imageData.length != 0 &amp;&amp; !_swapImages &amp;&amp; !_clearImage)
-			|| (_imageId == 0 &amp;&amp; _imageData.length == 0 &amp;&amp; _swapImages &amp;&amp; !_clearImage)
-			|| (_imageId == 0 &amp;&amp; _imageData.length == 0 &amp;&amp; !_swapImages &amp;&amp; _clearImage) );
+		require( (_imageId == 0 && _imageData.length == 0 && !_swapImages && !_clearImage) // Only one way to change image can be specified
+			|| (_imageId != 0 && _imageData.length == 0 && !_swapImages && !_clearImage) // If image has to be changed
+			|| (_imageId == 0 && _imageData.length != 0 && !_swapImages && !_clearImage)
+			|| (_imageId == 0 && _imageData.length == 0 && _swapImages && !_clearImage)
+			|| (_imageId == 0 && _imageData.length == 0 && !_swapImages && _clearImage) );
 
 		require(_imageId == 0 || // Can use only own images not used by other regions
-			( (msg.sender == imageStorage.getImageOwner(_imageId)) &amp;&amp; (imageStorage.getImageCurrentRegionId(_imageId) == 0) ) );
+			( (msg.sender == imageStorage.getImageOwner(_imageId)) && (imageStorage.getImageCurrentRegionId(_imageId) == 0) ) );
 
 		var nextImageId = dataStorage.getRegionNextImageId(_regionId);
 		require(!_swapImages || imageStorage.imageUploadComplete(nextImageId)); // Can swap images if next image upload is complete
@@ -722,8 +722,8 @@ library BdpImage {
 
 		require(BdpOwnership.ownerOf(_contracts, _regionId) == msg.sender);
 		require(_imageData.length != 0);
-		require(_part &gt; 0);
-		require(_part &lt;= _partsCount);
+		require(_part > 0);
+		require(_part <= _partsCount);
 
 		var nextImageId = dataStorage.getRegionNextImageId(_regionId);
 		if(nextImageId == 0 || _imageDescriptor != imageStorage.getImageDescriptor(nextImageId)) {
@@ -748,8 +748,8 @@ library BdpImage {
 		require(imageStorage.getImageOwner(_imageId) == msg.sender);
 		require(imageStorage.getImageCurrentRegionId(_imageId) == 0);
 		require(_imageData.length != 0);
-		require(_part &gt; 0);
-		require(_part &lt;= imageStorage.getImagePartsCount(_imageId));
+		require(_part > 0);
+		require(_part <= imageStorage.getImagePartsCount(_imageId));
 
 		imageStorage.setImageData(_imageId, _part, _imageData);
 	}
@@ -924,8 +924,8 @@ library BdpCrud {
 
 	function createRegion(address[16] _contracts, address _to, uint256 _x1, uint256 _y1, uint256 _x2, uint256 _y2) public returns (uint256) {
 		var dataStorage = BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts));
-		require(_x2 &lt; 1000 &amp;&amp; _x1 &lt;= _x2);
-		require(_y2 &lt; 1000 &amp;&amp; _y1 &lt;= _y2);
+		require(_x2 < 1000 && _x1 <= _x2);
+		require(_y2 < 1000 && _y1 <= _y2);
 
 		var regionId = dataStorage.getNextRegionId();
 		dataStorage.setRegionCoordinates(regionId, _x1, _y1, _x2, _y2);
@@ -949,7 +949,7 @@ library BdpCrud {
 		var dataStorage = BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts));
 		require(BdpOwnership.ownerOf(_contracts, _regionId) == msg.sender);
 		require(_imageId != 0 || _imageData.length != 0 || _swapImages || _url.length != 0); // Only if image or url is specified
-		require(block.timestamp &lt; BdpCalculator.calculateSetupAllowedUntil(_contracts, _regionId)); // Can only execute if setup is allowed
+		require(block.timestamp < BdpCalculator.calculateSetupAllowedUntil(_contracts, _regionId)); // Can only execute if setup is allowed
 		BdpImage.checkImageInput(_contracts, _regionId, _imageId, _imageData, _swapImages, false);
 
 		_updateRegionImage(_contracts, dataStorage, _regionId, _imageId, _imageData, _swapImages, false);
@@ -974,7 +974,7 @@ library BdpCrud {
 		_updateRegionImage(_contracts, dataStorage, _regionId, _imageId, _imageData, _swapImages, _clearImage);
 		_updateRegionUrl(dataStorage, _regionId, _url, _deleteUrl);
 		_updateRegionOwner(_contracts, _regionId, _newOwner);
-		if(marketPixelPrice &gt; regionCurrentPixelPrice) {
+		if(marketPixelPrice > regionCurrentPixelPrice) {
 			dataStorage.setRegionCurrentPixelPrice(_regionId, marketPixelPrice);
 		}
 		dataStorage.setRegionBlockUpdatedAt(_regionId, block.number);
@@ -988,7 +988,7 @@ library BdpCrud {
 		require(regionCurrentPixelPrice != 0); // region was purchased
 
 		var marketPixelPrice = BdpCalculator.calculateCurrentMarketPixelPrice(_contracts);
-		require(_pixelPrice &gt;= marketPixelPrice);
+		require(_pixelPrice >= marketPixelPrice);
 
 		var (area,,) = BdpCalculator.calculateArea(_contracts, _regionId);
 		_processUpdateFee(_contracts, _pixelPrice * area / 20);
@@ -997,9 +997,9 @@ library BdpCrud {
 	}
 
 	function _processUpdateFee(address[16] _contracts, uint256 _updateFee) internal {
-		require(msg.value &gt;= _updateFee);
+		require(msg.value >= _updateFee);
 
-		if(msg.value &gt; _updateFee) {
+		if(msg.value > _updateFee) {
 			var change = msg.value - _updateFee;
 			msg.sender.transfer(change);
 		}
@@ -1021,7 +1021,7 @@ library BdpCrud {
 			imageStorage.setImageCurrentRegionId(_imageId, _regionId);
 		}
 
-		if(_imageData.length &gt; 0) {
+		if(_imageData.length > 0) {
 			if(currentImageId != 0) {
 				imageStorage.setImageCurrentRegionId(currentImageId, 0);
 			}
@@ -1082,9 +1082,9 @@ library BdpTransfer {
 		var (area,,) = BdpCalculator.calculateArea(_contracts, _regionId);
 		uint256 regionPrice = pixelPrice * area;
 
-		require(msg.value &gt;= regionPrice );
+		require(msg.value >= regionPrice );
 
-		if(msg.value &gt; regionPrice) {
+		if(msg.value > regionPrice) {
 			uint256 change = msg.value - regionPrice;
 			msg.sender.transfer(change);
 		}
@@ -1097,7 +1097,7 @@ library BdpTransfer {
 
 		BdpOwnership.clearApprovalAndTransfer(_contracts, BdpOwnership.ownerOf(_contracts, _regionId), msg.sender, _regionId);
 
-		if(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionCurrentPixelPrice(_regionId) &gt; 0) { // send 95% ether to ownerOf(_regionId)
+		if(BdpDataStorage(BdpContracts.getBdpDataStorage(_contracts)).getRegionCurrentPixelPrice(_regionId) > 0) { // send 95% ether to ownerOf(_regionId)
 			uint256 etherToPreviousOwner = regionPrice * 19 / 20;
 			BdpOwnership.ownerOf(_contracts, _regionId).transfer(etherToPreviousOwner);
 			var forwardUpdateFeesTo = BdpPriceStorage(BdpContracts.getBdpPriceStorage(_contracts)).getForwardUpdateFeesTo();
@@ -1117,15 +1117,15 @@ library BdpTransfer {
 contract BdpController is BdpBase {
 
 	function name() external pure returns (string) {
-		return &quot;The Billion Dollar Picture&quot;;
+		return "The Billion Dollar Picture";
 	}
 
 	function symbol() external pure returns (string) {
-		return &quot;BDP&quot;;
+		return "BDP";
 	}
 
 	function tokenURI(uint256 _tokenId) external view returns (string _tokenURI) {
-		_tokenURI = &quot;https://www.billiondollarpicture.com/#0000000&quot;;
+		_tokenURI = "https://www.billiondollarpicture.com/#0000000";
 		bytes memory tokenURIBytes = bytes(_tokenURI);
 		tokenURIBytes[34] = byte(48+(_tokenId / 1000000) % 10);
 		tokenURIBytes[35] = byte(48+(_tokenId / 100000) % 10);

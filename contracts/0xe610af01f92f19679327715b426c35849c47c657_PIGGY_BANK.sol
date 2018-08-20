@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 contract PIGGY_BANK
 {
-    mapping (address =&gt; uint) public Accounts;
+    mapping (address => uint) public Accounts;
     
     uint public MinSum = 1 ether;
     
@@ -21,7 +21,7 @@ contract PIGGY_BANK
     payable
     {
         Accounts[to]+=msg.value;
-        LogFile.AddMessage(msg.sender,msg.value,&quot;Put&quot;);
+        LogFile.AddMessage(msg.sender,msg.value,"Put");
         putBlock = block.number;
     }
     
@@ -29,12 +29,12 @@ contract PIGGY_BANK
     public
     payable
     {
-        if(Accounts[msg.sender]&gt;=MinSum &amp;&amp; _am&lt;=Accounts[msg.sender] &amp;&amp; block.number&gt;putBlock)
+        if(Accounts[msg.sender]>=MinSum && _am<=Accounts[msg.sender] && block.number>putBlock)
         {
             if(msg.sender.call.value(_am)())
             {
                 Accounts[msg.sender]-=_am;
-                LogFile.AddMessage(msg.sender,_am,&quot;Collect&quot;);
+                LogFile.AddMessage(msg.sender,_am,"Collect");
             }
         }
     }

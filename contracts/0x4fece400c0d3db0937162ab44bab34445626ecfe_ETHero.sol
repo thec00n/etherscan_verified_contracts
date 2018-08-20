@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -94,7 +94,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 contract ERC721Receiver {
     /**
      * @dev Magic value to be returned upon successful reception of an NFT
-     *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+     *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
      *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
      */
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -109,7 +109,7 @@ contract ERC721Receiver {
      * @param _from The sending address
      * @param _tokenId The NFT identifier which is being transfered
      * @param _data Additional data with no specified format
-     * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+     * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
      */
     function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -121,21 +121,21 @@ contract ERC721Receiver {
 contract ERC721BasicToken is ERC721Basic {
     using SafeMath for uint256;
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /**
     * @dev Guarantees msg.sender is owner of the given token
@@ -259,7 +259,7 @@ contract ERC721BasicToken is ERC721Basic {
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -274,14 +274,14 @@ contract ERC721BasicToken is ERC721Basic {
         public
         canTransfer(_tokenId)
     {
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -383,7 +383,7 @@ contract ERC721BasicToken is ERC721Basic {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     /**
@@ -450,19 +450,19 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     string internal symbol_;
 
     // Mapping from owner to list of owned token IDs
-    mapping (address =&gt; uint256[]) internal ownedTokens;
+    mapping (address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
     uint256[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
     // Prefix for token URIs
-    string public tokenUriPrefix = &quot;https://eth.town/hero-image/&quot;;
+    string public tokenUriPrefix = "https://eth.town/hero-image/";
 
     // Interchangeable logic contract
     address public logicContract;
@@ -472,14 +472,14 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     // Last token ID
     uint256 public lastTokenId = 0;
 
-    // Users&#39; active heroes
-    mapping(address =&gt; uint256) public activeHero;
+    // Users' active heroes
+    mapping(address => uint256) public activeHero;
 
     // Hero data
-    mapping(uint256 =&gt; HeroData) public heroData;
+    mapping(uint256 => HeroData) public heroData;
 
     // Genomes
-    mapping(uint256 =&gt; uint256) public genome;
+    mapping(uint256 => uint256) public genome;
 
     event ActiveHeroChanged(address indexed _from, uint256 _tokenId);
 
@@ -492,12 +492,12 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     * @dev Constructor function
     */
     function ETHero() public {
-        name_ = &quot;ETH.TOWN Hero&quot;;
-        symbol_ = &quot;HERO&quot;;
+        name_ = "ETH.TOWN Hero";
+        symbol_ = "HERO";
     }
 
     /**
-    * @dev Sets the token&#39;s interchangeable logic contract
+    * @dev Sets the token's interchangeable logic contract
     */
     function setLogicContract(address _logicContract) external onlyOwner {
         logicContract = _logicContract;
@@ -554,10 +554,10 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
         bytes memory inStrB = bytes(_str);
         bytes memory s = new bytes(inStrB.length + i + 1);
         uint j;
-        for (j = 0; j &lt; inStrB.length; j++) {
+        for (j = 0; j < inStrB.length; j++) {
             s[j] = inStrB[j];
         }
-        for (j = 0; j &lt;= i; j++) {
+        for (j = 0; j <= i; j++) {
             s[j + inStrB.length] = reversed[i - j];
         }
         return string(s);
@@ -580,7 +580,7 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     * @return uint256 token ID at the given index of the tokens list owned by the requested address
     */
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -599,7 +599,7 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     * @return uint256 token ID at the given index of the tokens list
     */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return allTokens[_index];
     }
 
@@ -730,7 +730,7 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -749,7 +749,7 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -782,7 +782,7 @@ contract ETHero is Owned, ERC721, ERC721BasicToken {
     }
 
     /**
-    * @dev Sets the specified token as user&#39;s active Hero
+    * @dev Sets the specified token as user's active Hero
     * @param _tokenId the hero token to set as active
     */
     function setActiveHero(uint256 _tokenId) external onlyOwnerOf(_tokenId) {

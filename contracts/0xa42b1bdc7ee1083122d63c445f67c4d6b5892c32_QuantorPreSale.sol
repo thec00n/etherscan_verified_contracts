@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -84,20 +84,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,7 +121,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -166,7 +166,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -179,7 +179,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -230,7 +230,7 @@ contract Burnable is StandardToken {
   event Burn(address indexed from, uint value);
 
   function burn(uint _value) returns (bool success) {
-    require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+    require(_value > 0 && balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     Burn(msg.sender, _value);
@@ -238,8 +238,8 @@ contract Burnable is StandardToken {
   }
 
   function burnFrom(address _from, uint _value) returns (bool success) {
-    require(_from != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[_from] &gt;= _value);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_from != 0x0 && _value > 0 && balances[_from] >= _value);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     totalSupply = totalSupply.sub(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -267,8 +267,8 @@ contract Burnable is StandardToken {
  */
 contract QuantorToken is Burnable, Ownable {
 
-  string public constant name = &quot;Quant&quot;;
-  string public constant symbol = &quot;QNT&quot;;
+  string public constant name = "Quant";
+  string public constant symbol = "QNT";
   uint8 public constant decimals = 18;
   uint public constant INITIAL_SUPPLY = 2000000000 * 1 ether;
 
@@ -279,7 +279,7 @@ contract QuantorToken is Burnable, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -321,7 +321,7 @@ contract QuantorToken is Burnable, Ownable {
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
     require(addr != 0x0);
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -357,27 +357,27 @@ contract QuantorToken is Burnable, Ownable {
 }
 
 contract InvestorWhiteList is Ownable {
-  mapping (address =&gt; bool) public investorWhiteList;
+  mapping (address => bool) public investorWhiteList;
 
-  mapping (address =&gt; address) public referralList;
+  mapping (address => address) public referralList;
 
   function InvestorWhiteList() {
 
   }
 
   function addInvestorToWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; !investorWhiteList[investor]);
+    require(investor != 0x0 && !investorWhiteList[investor]);
     investorWhiteList[investor] = true;
   }
 
   function removeInvestorFromWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; investorWhiteList[investor]);
+    require(investor != 0x0 && investorWhiteList[investor]);
     investorWhiteList[investor] = false;
   }
 
   //when new user will contribute ICO contract will automatically send bonus to referral
   function addReferralOf(address investor, address referral) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; referral != 0x0 &amp;&amp; referralList[investor] == 0x0 &amp;&amp; investor != referral);
+    require(investor != 0x0 && referral != 0x0 && referralList[investor] == 0x0 && investor != referral);
     referralList[investor] = referral;
   }
 
@@ -408,7 +408,7 @@ contract QuantorPreSale is Haltable, PriceReceiver {
 
   using SafeMath for uint;
 
-  string public constant name = &quot;Quantor Token ICO&quot;;
+  string public constant name = "Quantor Token ICO";
 
   QuantorToken public token;
 
@@ -440,7 +440,7 @@ contract QuantorPreSale is Haltable, PriceReceiver {
 
   bool public crowdsaleFinished = false;
 
-  mapping (address =&gt; uint) public deposited;
+  mapping (address => uint) public deposited;
 
   uint public constant PRICE_BEFORE_SOFTCAP = 65; // in cents * 100
   uint public constant PRICE_AFTER_SOFTCAP = 80; // in cents * 100
@@ -454,17 +454,17 @@ contract QuantorPreSale is Haltable, PriceReceiver {
   event Refunded(address indexed holder, uint amount);
 
   modifier icoActive() {
-    require(now &gt;= startTime &amp;&amp; now &lt; endTime);
+    require(now >= startTime && now < endTime);
     _;
   }
 
   modifier icoEnded() {
-    require(now &gt;= endTime);
+    require(now >= endTime);
     _;
   }
 
   modifier minInvestment() {
-    require(msg.value.mul(ethUsdRate).div(QNTUsdRate) &gt;= 50000 * 1 ether);
+    require(msg.value.mul(ethUsdRate).div(QNTUsdRate) >= 50000 * 1 ether);
     _;
   }
 
@@ -503,7 +503,7 @@ contract QuantorPreSale is Haltable, PriceReceiver {
 
   function refund() external icoEnded {
     require(softCapReached == false);
-    require(deposited[msg.sender] &gt; 0);
+    require(deposited[msg.sender] > 0);
 
     uint refund = deposited[msg.sender];
 
@@ -524,7 +524,7 @@ contract QuantorPreSale is Haltable, PriceReceiver {
   function calculateTokens(uint ethReceived) internal view returns (uint) {
     if (!softCapReached) {
       uint tokens = ethReceived.mul(ethUsdRate.mul(100)).div(PRICE_BEFORE_SOFTCAP);
-      if (softCap &gt;= tokensSold.add(tokens)) return tokens;
+      if (softCap >= tokensSold.add(tokens)) return tokens;
       uint firstPart = softCap.sub(tokensSold);
       uint  firstPartInWei = firstPart.mul(PRICE_BEFORE_SOFTCAP).div(ethUsdRate.mul(100));
       uint secondPartInWei = ethReceived.sub(firstPart.mul(PRICE_BEFORE_SOFTCAP).div(ethUsdRate.mul(100)));
@@ -534,7 +534,7 @@ contract QuantorPreSale is Haltable, PriceReceiver {
   }
 
   function receiveEthPrice(uint ethUsdPrice) external onlyEthPriceProvider {
-    require(ethUsdPrice &gt; 0);
+    require(ethUsdPrice > 0);
     ethUsdRate = ethUsdPrice;
   }
 
@@ -555,9 +555,9 @@ contract QuantorPreSale is Haltable, PriceReceiver {
 
     uint newTokensSold = tokensSold.add(tokens);
 
-    require(newTokensSold &lt;= hardCap);
+    require(newTokensSold <= hardCap);
 
-    if (!softCapReached &amp;&amp; newTokensSold &gt;= softCap) {
+    if (!softCapReached && newTokensSold >= softCap) {
       softCapReached = true;
       SoftCapReached(softCap);
     }

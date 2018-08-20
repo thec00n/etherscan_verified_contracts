@@ -1,13 +1,13 @@
 /*
  * Just Price Protocol Smart Contract.
- * Copyright &#169; 2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="82efebe9eae3ebeeacf4eee3e6ebefebf0edf4c2e5efe3ebeeace1edef">[email&#160;protected]</span>&gt;
+ * Copyright © 2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="82efebe9eae3ebeeacf4eee3e6ebefebf0edf4c2e5efe3ebeeace1edef">[email protected]</span>>
  */
 pragma solidity ^0.4.20;
 
-//import &quot;./SafeMath.sol&quot;;
-//import &quot;./OrgonToken.sol&quot;;
-//import &quot;./OrisSpace.sol&quot;;
+//import "./SafeMath.sol";
+//import "./OrgonToken.sol";
+//import "./OrisSpace.sol";
 contract SafeMath {
   uint256 constant private MAX_UINT256 =
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
@@ -22,7 +22,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -36,7 +36,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -51,7 +51,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -187,27 +187,27 @@ contract JustPriceProtocol is SafeMath {
   uint256 internal constant SALE_START_TIME = 1524117600;
 
   /**
-   * &quot;Reserve&quot; stage deadline (2018-07-08 00:00:00 UTC)
+   * "Reserve" stage deadline (2018-07-08 00:00:00 UTC)
    */
   uint256 internal constant RESERVE_DEADLINE = 1531008000;
 
   /**
-   * Maximum amount to be collected during &quot;reserve&quot; stage.
+   * Maximum amount to be collected during "reserve" stage.
    */
   uint256 internal constant RESERVE_MAX_AMOUNT = 72500 ether;
 
   /**
-   * Minimum amount to be collected during &quot;reserve&quot; stage.
+   * Minimum amount to be collected during "reserve" stage.
    */
   uint256 internal constant RESERVE_MIN_AMOUNT = 30000 ether;
 
   /**
-   * Maximum number of tokens to be sold during &quot;reserve&quot; stage.
+   * Maximum number of tokens to be sold during "reserve" stage.
    */
   uint256 internal constant RESERVE_MAX_TOKENS = 82881476.72e9;
 
   /**
-   * ORNG/ETH ratio after &quot;reserve&quot; stage in Wei per ORGN unit.
+   * ORNG/ETH ratio after "reserve" stage in Wei per ORGN unit.
    */
   uint256 internal constant RESERVE_RATIO = 72500 ether / 725000000e9;
 
@@ -292,24 +292,24 @@ contract JustPriceProtocol is SafeMath {
   uint256 internal constant RESERVE_PRICE_8 = 0.00098 ether / 1e9;
 
   /**
-   * &quot;Growth&quot; stage ends once this many tokens were issued.
+   * "Growth" stage ends once this many tokens were issued.
    */
   uint256 internal constant GROWTH_MAX_TOKENS = 1000000000e9;
 
   /**
-   * Maximum duration of &quot;growth&quot; stage.
+   * Maximum duration of "growth" stage.
    */
   uint256 internal constant GROWTH_MAX_DURATION = 285 days;
 
   /**
-   * Numerator of fraction of tokens bought at &quot;reserve&quot; stage to be delivered
-   * before &quot;growth&quot; stage start.
+   * Numerator of fraction of tokens bought at "reserve" stage to be delivered
+   * before "growth" stage start.
    */
   uint256 internal constant GROWTH_MIN_DELIVERED_NUMERATOR = 75;
 
   /**
-   * Denominator of fraction of tokens bought at &quot;reserve&quot; stage to be delivered
-   * before &quot;growth&quot; stage start.
+   * Denominator of fraction of tokens bought at "reserve" stage to be delivered
+   * before "growth" stage start.
    */
   uint256 internal constant GROWTH_MIN_DELIVERED_DENOMINATIOR = 100;
 
@@ -331,7 +331,7 @@ contract JustPriceProtocol is SafeMath {
   uint256 internal constant FEE_DENOMINATOR = 20000;
 
   /**
-   * Delay after start of &quot;growth&quot; stage before fee may be changed.
+   * Delay after start of "growth" stage before fee may be changed.
    */
   uint256 internal constant FEE_CHANGE_DELAY = 650 days;
 
@@ -374,7 +374,7 @@ contract JustPriceProtocol is SafeMath {
    * Buy tokens.
    */
   function buyTokens () public payable {
-    require (msg.value &gt; 0);
+    require (msg.value > 0);
 
     updateStage ();
 
@@ -391,23 +391,23 @@ contract JustPriceProtocol is SafeMath {
    * @param _value number of tokens to sell
    */
   function sellTokens (uint256 _value) public {
-    require (_value &gt; 0);
-    require (_value &lt; TWO_128);
+    require (_value > 0);
+    require (_value < TWO_128);
 
     updateStage ();
     require (stage == Stage.LIFE);
 
-    assert (reserveAmount &lt; TWO_128);
+    assert (reserveAmount < TWO_128);
     uint256 totalSupply = orgonToken.totalSupply ();
-    require (totalSupply &lt; TWO_128);
+    require (totalSupply < TWO_128);
 
-    require (_value &lt;= totalSupply);
+    require (_value <= totalSupply);
 
     uint256 toPay = safeMul (
       reserveAmount,
       safeSub (
         TWO_128,
-        pow_10 (safeSub (TWO_128, (_value &lt;&lt; 128) / totalSupply)))) &gt;&gt; 128;
+        pow_10 (safeSub (TWO_128, (_value << 128) / totalSupply)))) >> 128;
 
     require (orgonToken.transferFrom (msg.sender, this, _value));
     require (orgonToken.burnTokens (_value));
@@ -418,7 +418,7 @@ contract JustPriceProtocol is SafeMath {
   }
 
   /**
-   * Deliver tokens sold during &quot;reserve&quot; stage to corresponding investors.
+   * Deliver tokens sold during "reserve" stage to corresponding investors.
    *
    * @param _investors addresses of investors to deliver tokens to
    */
@@ -429,7 +429,7 @@ contract JustPriceProtocol is SafeMath {
       stage == Stage.GROWTH ||
       stage == Stage.LIFE);
 
-    for (uint256 i = 0; i &lt; _investors.length; i++) {
+    for (uint256 i = 0; i < _investors.length; i++) {
       address investorAddress = _investors [i];
       Investor storage investor = investors [investorAddress];
 
@@ -437,7 +437,7 @@ contract JustPriceProtocol is SafeMath {
       investor.tokensBought = 0;
       investor.etherInvested = 0;
 
-      if (toDeliver &gt; 0) {
+      if (toDeliver > 0) {
         require (orgonToken.transfer (investorAddress, toDeliver));
         reserveTokensDelivered = safeAdd (reserveTokensDelivered, toDeliver);
 
@@ -445,8 +445,8 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (stage == Stage.BEFORE_GROWTH &amp;&amp;
-      safeMul (reserveTokensDelivered, GROWTH_MIN_DELIVERED_DENOMINATIOR) &gt;=
+    if (stage == Stage.BEFORE_GROWTH &&
+      safeMul (reserveTokensDelivered, GROWTH_MIN_DELIVERED_DENOMINATIOR) >=
         safeMul (reserveTokensSold, GROWTH_MIN_DELIVERED_NUMERATOR)) {
       stage = Stage.GROWTH;
       growthDeadline = currentTime () + GROWTH_MAX_DURATION;
@@ -455,7 +455,7 @@ contract JustPriceProtocol is SafeMath {
   }
 
   /**
-   * Refund investors who bought tokens during &quot;reserve&quot; stage.
+   * Refund investors who bought tokens during "reserve" stage.
    *
    * @param _investors addresses of investors to refund
    */
@@ -463,7 +463,7 @@ contract JustPriceProtocol is SafeMath {
     updateStage ();
     require (stage == Stage.REFUND);
 
-    for (uint256 i = 0; i &lt; _investors.length; i++) {
+    for (uint256 i = 0; i < _investors.length; i++) {
       address investorAddress = _investors [i];
       Investor storage investor = investors [investorAddress];
 
@@ -473,10 +473,10 @@ contract JustPriceProtocol is SafeMath {
       investor.tokensBought = 0;
       investor.etherInvested = 0;
 
-      if (toBurn &gt; 0)
+      if (toBurn > 0)
         require (orgonToken.burnTokens (toBurn));
 
-      if (toRefund &gt; 0) {
+      if (toRefund > 0) {
         investorAddress.transfer (toRefund);
 
         Refund (investorAddress, toRefund);
@@ -491,7 +491,7 @@ contract JustPriceProtocol is SafeMath {
     require (!k1Changed);
 
     uint256 votesCount = voteNumbers [msg.sender];
-    if (votesCount &gt; 0) {
+    if (votesCount > 0) {
       address oldK1 = votes [msg.sender];
       if (_newK1 != oldK1) {
         if (oldK1 != address (0)) {
@@ -506,7 +506,7 @@ contract JustPriceProtocol is SafeMath {
           voteResults [_newK1] = safeAdd (voteResults [_newK1], votesCount);
           Vote (msg.sender, _newK1, votesCount);
 
-          if (safeMul (voteResults [_newK1], REQUIRED_VOTES_DENOMINATOR) &gt;=
+          if (safeMul (voteResults [_newK1], REQUIRED_VOTES_DENOMINATOR) >=
             safeMul (totalVotesNumber, REQUIRED_VOTES_NUMERATIOR)) {
             k1 = _newK1;
             k1Changed = true;
@@ -526,16 +526,16 @@ contract JustPriceProtocol is SafeMath {
   function setFee (uint256 _fee) public {
     require (msg.sender == k1);
 
-    require (_fee &gt;= MIN_FEE);
-    require (_fee &lt;= MAX_FEE);
+    require (_fee >= MIN_FEE);
+    require (_fee <= MAX_FEE);
 
     updateStage ();
 
     require (stage == Stage.GROWTH || stage == Stage.LIFE);
-    require (currentTime () &gt;= feeChangeEnableTime);
+    require (currentTime () >= feeChangeEnableTime);
 
-    require (safeSub (_fee, 1) &lt;= fee);
-    require (safeAdd (_fee, 1) &gt;= fee);
+    require (safeSub (_fee, 1) <= fee);
+    require (safeAdd (_fee, 1) >= fee);
 
     if (fee != _fee) {
       fee = _fee;
@@ -567,14 +567,14 @@ contract JustPriceProtocol is SafeMath {
     Stage currentStage = stage;
 
     if (currentStage == Stage.BEFORE_RESERVE) {
-      if (_currentTime &gt;= SALE_START_TIME)
+      if (_currentTime >= SALE_START_TIME)
         currentStage = Stage.RESERVE;
       else return currentStage;
     }
 
     if (currentStage == Stage.RESERVE) {
-      if (_currentTime &gt;= RESERVE_DEADLINE) {
-        if (reserveAmount &gt;= RESERVE_MIN_AMOUNT)
+      if (_currentTime >= RESERVE_DEADLINE) {
+        if (reserveAmount >= RESERVE_MIN_AMOUNT)
           currentStage = Stage.BEFORE_GROWTH;
         else currentStage = Stage.REFUND;
       }
@@ -583,7 +583,7 @@ contract JustPriceProtocol is SafeMath {
     }
 
     if (currentStage == Stage.GROWTH) {
-      if (_currentTime &gt;= growthDeadline) {
+      if (_currentTime >= growthDeadline) {
         currentStage = Stage.LIFE;
       }
     }
@@ -622,7 +622,7 @@ contract JustPriceProtocol is SafeMath {
   }
 
   /**
-   * Buy tokens during &quot;reserve&quot; stage.
+   * Buy tokens during "reserve" stage.
    */
   function buyTokensReserve () internal {
     require (stage == Stage.RESERVE);
@@ -633,13 +633,13 @@ contract JustPriceProtocol is SafeMath {
     uint256 tokens;
     uint256 tokensValue;
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_1) {
+    if (reserveAmount < RESERVE_THRESHOLD_1) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_1, reserveAmount)) /
         RESERVE_PRICE_1;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_1);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -649,13 +649,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_2) {
+    if (reserveAmount < RESERVE_THRESHOLD_2) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_2, reserveAmount)) /
         RESERVE_PRICE_2;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_2);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -665,13 +665,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_3) {
+    if (reserveAmount < RESERVE_THRESHOLD_3) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_3, reserveAmount)) /
         RESERVE_PRICE_3;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_3);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -681,13 +681,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_4) {
+    if (reserveAmount < RESERVE_THRESHOLD_4) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_4, reserveAmount)) /
         RESERVE_PRICE_4;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_4);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -697,13 +697,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_5) {
+    if (reserveAmount < RESERVE_THRESHOLD_5) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_5, reserveAmount)) /
         RESERVE_PRICE_5;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_5);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -713,13 +713,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_6) {
+    if (reserveAmount < RESERVE_THRESHOLD_6) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_6, reserveAmount)) /
         RESERVE_PRICE_6;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_6);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -729,13 +729,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_7) {
+    if (reserveAmount < RESERVE_THRESHOLD_7) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_7, reserveAmount)) /
         RESERVE_PRICE_7;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_7);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -745,13 +745,13 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (reserveAmount &lt; RESERVE_THRESHOLD_8) {
+    if (reserveAmount < RESERVE_THRESHOLD_8) {
       tokens = min (
         toRefund,
         safeSub (RESERVE_THRESHOLD_8, reserveAmount)) /
         RESERVE_PRICE_8;
 
-      if (tokens &gt; 0) {
+      if (tokens > 0) {
         tokensValue = safeMul (tokens, RESERVE_PRICE_8);
 
         toBuy = safeAdd (toBuy, tokens);
@@ -761,7 +761,7 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (toBuy &gt; 0) {
+    if (toBuy > 0) {
       Investor storage investor = investors [msg.sender];
 
       investor.tokensBought = safeAdd (
@@ -779,7 +779,7 @@ contract JustPriceProtocol is SafeMath {
 
       Investment (msg.sender, etherInvested, toBuy);
 
-      if (safeSub (RESERVE_THRESHOLD_8, reserveAmount) &lt;
+      if (safeSub (RESERVE_THRESHOLD_8, reserveAmount) <
         RESERVE_PRICE_8) {
 
         orisSpace.start (0);
@@ -788,46 +788,46 @@ contract JustPriceProtocol is SafeMath {
       }
     }
 
-    if (toRefund &gt; 0)
+    if (toRefund > 0)
       msg.sender.transfer (toRefund);
   }
 
   /**
-   * Buy tokens during &quot;growth&quot; or &quot;life&quot; stage.
+   * Buy tokens during "growth" or "life" stage.
    */
   function buyTokensGrowthLife () internal {
     require (stage == Stage.GROWTH || stage == Stage.LIFE);
 
-    require (msg.value &lt; TWO_128);
+    require (msg.value < TWO_128);
 
     uint256 totalSupply = orgonToken.totalSupply ();
-    assert (totalSupply &lt; TWO_128);
+    assert (totalSupply < TWO_128);
 
     uint256 toBuy = safeMul (
       totalSupply,
       safeSub (
-        root_10 (safeAdd (TWO_128, (msg.value &lt;&lt; 128) / reserveAmount)),
-        TWO_128)) &gt;&gt; 128;
+        root_10 (safeAdd (TWO_128, (msg.value << 128) / reserveAmount)),
+        TWO_128)) >> 128;
 
     reserveAmount = safeAdd (reserveAmount, msg.value);
-    require (reserveAmount &lt; TWO_128);
+    require (reserveAmount < TWO_128);
 
-    if (toBuy &gt; 0) {
+    if (toBuy > 0) {
       require (orgonToken.createTokens (toBuy));
-      require (orgonToken.totalSupply () &lt; TWO_128);
+      require (orgonToken.totalSupply () < TWO_128);
 
       uint256 feeAmount = safeMul (toBuy, fee) / FEE_DENOMINATOR;
 
       require (orgonToken.transfer (msg.sender, safeSub (toBuy, feeAmount)));
 
-      if (feeAmount &gt; 0)
+      if (feeAmount > 0)
         require (orgonToken.transfer (k1, feeAmount));
 
       if (stage == Stage.GROWTH) {
         uint256 votesCount = toBuy;
 
         totalSupply = orgonToken.totalSupply ();
-        if (totalSupply &gt;= GROWTH_MAX_TOKENS) {
+        if (totalSupply >= GROWTH_MAX_TOKENS) {
           stage = Stage.LIFE;
           votesCount = safeSub (
             votesCount,
@@ -850,7 +850,7 @@ contract JustPriceProtocol is SafeMath {
     Stage currentStage = getStage (currentTime ());
     if (stage != currentStage) {
       if (currentStage == Stage.BEFORE_GROWTH) {
-        // &quot;Reserve&quot; stage deadline reached and minimum amount collected
+        // "Reserve" stage deadline reached and minimum amount collected
         uint256 tokensToBurn =
           safeSub (
             safeAdd (
@@ -862,7 +862,7 @@ contract JustPriceProtocol is SafeMath {
             RESERVE_MAX_TOKENS);
 
         orisSpace.start (tokensToBurn);
-        if (tokensToBurn &gt; 0)
+        if (tokensToBurn > 0)
           require (orgonToken.burnTokens (tokensToBurn));
       }
 
@@ -878,7 +878,7 @@ contract JustPriceProtocol is SafeMath {
    * @return minimum of two values
    */
   function min (uint256 x, uint256 y) internal pure returns (uint256) {
-    return x &lt; y ? x : y;
+    return x < y ? x : y;
   }
 
   /**
@@ -890,41 +890,41 @@ contract JustPriceProtocol is SafeMath {
   function root_10 (uint256 x) internal pure returns (uint256 y) {
     uint256 shift = 0;
 
-    while (x &gt; TWO_128) {
-      x &gt;&gt;= 10;
+    while (x > TWO_128) {
+      x >>= 10;
       shift += 1;
     }
 
     if (x == TWO_128 || x == 0) y = x;
     else {
-      uint256 x128 = x &lt;&lt; 128;
+      uint256 x128 = x << 128;
       y = TWO_128;
 
       uint256 t = x;
       while (true) {
-        t &lt;&lt;= 10;
-        if (t &lt; TWO_128) y &gt;&gt;= 1;
+        t <<= 10;
+        if (t < TWO_128) y >>= 1;
         else break;
       }
 
-      for (uint256 i = 0; i &lt; 16; i++) {
+      for (uint256 i = 0; i < 16; i++) {
         uint256 y9;
 
         if (y == TWO_128) y9 = y;
         else {
-          uint256 y2 = (y * y) &gt;&gt; 128;
-          uint256 y4 = (y2 * y2) &gt;&gt; 128;
-          uint256 y8 = (y4 * y4) &gt;&gt; 128;
-          y9 = (y * y8) &gt;&gt; 128;
+          uint256 y2 = (y * y) >> 128;
+          uint256 y4 = (y2 * y2) >> 128;
+          uint256 y8 = (y4 * y4) >> 128;
+          y9 = (y * y8) >> 128;
         }
 
         y = (9 * y + x128 / y9) / 10;
 
-        assert (y &lt;= TWO_128);
+        assert (y <= TWO_128);
       }
     }
 
-    y &lt;&lt;= shift;
+    y <<= shift;
   }
 
   /**
@@ -934,14 +934,14 @@ contract JustPriceProtocol is SafeMath {
    * @return 2^128 * (x / 2^128)^10
    */
   function pow_10 (uint256 x) internal pure returns (uint256) {
-    require (x &lt;= TWO_128);
+    require (x <= TWO_128);
 
     if (x == TWO_128) return x;
     else {
-      uint256 x2 = (x * x) &gt;&gt; 128;
-      uint256 x4 = (x2 * x2) &gt;&gt; 128;
-      uint256 x8 = (x4 * x4) &gt;&gt; 128;
-      return (x2 * x8) &gt;&gt; 128;
+      uint256 x2 = (x * x) >> 128;
+      uint256 x4 = (x2 * x2) >> 128;
+      uint256 x8 = (x4 * x4) >> 128;
+      return (x2 * x8) >> 128;
     }
   }
 
@@ -969,7 +969,7 @@ contract JustPriceProtocol is SafeMath {
    *         | 72500 ETH collected                |
    *         V                                    |
    * +---------------+ 39013,174672 ETH collected |
-   * | BEFORE_GROWTH |&lt;---------------------------O
+   * | BEFORE_GROWTH |<---------------------------O
    * +---------------+                            |
    *         |                                    | 39013,174672 ETH not collected
    *         | 80% of tokens delivered            |
@@ -978,19 +978,19 @@ contract JustPriceProtocol is SafeMath {
    *  |   GROWTH   |                         | REFUND |
    *  +------------+                         +--------+
    *         |
-   *         | 1,500,000,000 tokens issued or 365 days passed since start of &quot;GROWTH&quot; stage
+   *         | 1,500,000,000 tokens issued or 365 days passed since start of "GROWTH" stage
    *         V
    *     +------+
    *     | LIFE |
    *     +------+
    */
   enum Stage {
-    BEFORE_RESERVE, // Before start of &quot;Reserve&quot; stage
-    RESERVE, // &quot;Reserve&quot; stage
-    BEFORE_GROWTH, // Between &quot;Reserve&quot; and &quot;Growth&quot; stages
-    GROWTH, // &quot;Grows&quot; stage
-    LIFE, // &quot;Life&quot; stage
-    REFUND // &quot;Refund&quot; stage
+    BEFORE_RESERVE, // Before start of "Reserve" stage
+    RESERVE, // "Reserve" stage
+    BEFORE_GROWTH, // Between "Reserve" and "Growth" stages
+    GROWTH, // "Grows" stage
+    LIFE, // "Life" stage
+    REFUND // "Refund" stage
   }
 
   /**
@@ -1019,45 +1019,45 @@ contract JustPriceProtocol is SafeMath {
   uint256 internal reserveAmount;
 
   /**
-   * Number of tokens sold during &quot;reserve&quot; stage.
+   * Number of tokens sold during "reserve" stage.
    */
   uint256 internal reserveTokensSold;
 
   /**
-   * Number of tokens sold during &quot;reserve&quot; stage that were already delivered to
+   * Number of tokens sold during "reserve" stage that were already delivered to
    * investors.
    */
   uint256 internal reserveTokensDelivered;
 
   /**
-   * &quot;Growth&quot; stage deadline.
+   * "Growth" stage deadline.
    */
   uint256 internal growthDeadline;
 
   /**
-   * Mapping from address of a person who bought some tokens during &quot;reserve&quot;
+   * Mapping from address of a person who bought some tokens during "reserve"
    * stage to information about how many tokens he bought to how much ether
    * invested.
    */
-  mapping (address =&gt; Investor) internal investors;
+  mapping (address => Investor) internal investors;
 
   /**
    * Mapping from address of an investor to the number of votes this investor
    * has.
    */
-  mapping (address =&gt; uint256) internal voteNumbers;
+  mapping (address => uint256) internal voteNumbers;
 
   /**
    * Mapping from address of an investor to the new K1 address this investor
    * voted for.
    */
-  mapping (address =&gt; address) internal votes;
+  mapping (address => address) internal votes;
 
   /**
    * Mapping from suggested new K1 address to the number of votes for this
    * address.
    */
-  mapping (address =&gt; uint256) internal voteResults;
+  mapping (address => uint256) internal voteResults;
 
   /**
    * Total number of eligible votes.
@@ -1081,7 +1081,7 @@ contract JustPriceProtocol is SafeMath {
 
   /**
    * Encapsulates information about a person who bought some tokens during
-   * &quot;reserve&quot; stage.
+   * "reserve" stage.
    */
   struct Investor {
     /**
@@ -1096,7 +1096,7 @@ contract JustPriceProtocol is SafeMath {
   }
 
   /**
-   * Logged when investor invested some ether during &quot;reserve&quot; stage.
+   * Logged when investor invested some ether during "reserve" stage.
    *
    * @param investor address of investor
    * @param value amount of ether invested
@@ -1105,7 +1105,7 @@ contract JustPriceProtocol is SafeMath {
   event Investment (address indexed investor, uint256 value, uint256 amount);
 
   /**
-   * Logged when tokens bought at &quot;reserve&quot; stage were delivered to investor.
+   * Logged when tokens bought at "reserve" stage were delivered to investor.
    *
    * @param investor address of investor whom tokens were delivered to
    * @param amount number of tokens delivered

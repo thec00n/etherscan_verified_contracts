@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ contract Basic {
 contract Standard is Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -65,7 +65,7 @@ contract ERC20 is Basic {
 
 contract Token is ERC20, Standard {
     
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   bool public isPreSaleReady = false;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
@@ -104,7 +104,7 @@ contract Token is ERC20, Standard {
   function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
     require(isPreSaleReady);
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -138,8 +138,8 @@ contract Ownable {
 
 contract Venge is Token, Ownable {
 
-  string public constant name = &quot;Venge&quot;;
-  string public constant symbol = &quot;VNG&quot;;
+  string public constant name = "Venge";
+  string public constant symbol = "VNG";
   uint8 public constant decimals = 8;
 
   uint256 public constant Initial_Supply = 100000000 * (10 ** uint256(decimals));

@@ -11,10 +11,10 @@ contract TwoUp {
     // Note the lack of owner privileges. The house gets nothing, like true blue
     // Aussie two-up. Also this feels more legal idunno
 
-    // Don&#39;t let mad dogs bet more than 10 ether and don&#39;t let time wasters send
+    // Don't let mad dogs bet more than 10 ether and don't let time wasters send
     // empty transactions.
     modifier withinRange {
-        assert(msg.value &gt; 0 ether &amp;&amp; msg.value &lt; 10 ether);
+        assert(msg.value > 0 ether && msg.value < 10 ether);
         _;
     }
     
@@ -31,13 +31,13 @@ contract TwoUp {
     function () payable public withinRange {
         if (punterWaiting){
             uint256 _payout = min(msg.value,puntAmount);
-            if (rand(punterAddress) &gt;= rand(msg.sender)) {
+            if (rand(punterAddress) >= rand(msg.sender)) {
                 punterAddress.transfer(_payout+puntAmount);
-                if ((msg.value-_payout)&gt;0)
+                if ((msg.value-_payout)>0)
                     msg.sender.transfer(msg.value-_payout);
             } else {
                 msg.sender.transfer(_payout+msg.value);
-                if ((puntAmount-_payout)&gt;0)
+                if ((puntAmount-_payout)>0)
                     punterAddress.transfer(puntAmount-_payout);
             }
             punterWaiting = false;
@@ -50,7 +50,7 @@ contract TwoUp {
     
     // min(a,b) function required for tidiness
     function min(uint256 _a, uint256 _b) private pure returns(uint256){
-        if (_b &lt; _a) {
+        if (_b < _a) {
             return _b;
         } else {
             return _a;

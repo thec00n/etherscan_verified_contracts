@@ -5,31 +5,31 @@ pragma solidity ^0.4.20;
 | $$$$\ $$ /$$   /$$| $$  \ $$ /$$ /$$$$$$    /$$$$$$$  /$$$$$$  /$$ /$$$$$$$       /$$$$$$   /$$$$$$   /$$$$$$ 
 | $$ $$ $$|  $$ /$$/| $$$$$$$ | $$|_  $$_/   /$$_____/ /$$__  $$| $$| $$__  $$     /$$__  $$ /$$__  $$ /$$__  $$
 | $$\ $$$$ \  $$$$/ | $$__  $$| $$  | $$    | $$      | $$  \ $$| $$| $$  \ $$    | $$  \ $$| $$  \__/| $$  \ $$
-| $$ \ $$$  &gt;$$  $$ | $$  \ $$| $$  | $$ /$$| $$      | $$  | $$| $$| $$  | $$    | $$  | $$| $$      | $$  | $$
+| $$ \ $$$  >$$  $$ | $$  \ $$| $$  | $$ /$$| $$      | $$  | $$| $$| $$  | $$    | $$  | $$| $$      | $$  | $$
 |  $$$$$$/ /$$/\  $$| $$$$$$$/| $$  |  $$$$/|  $$$$$$$|  $$$$$$/| $$| $$  | $$ /$$|  $$$$$$/| $$      |  $$$$$$$
  \______/ |__/  \__/|_______/ |__/   \___/   \_______/ \______/ |__/|__/  |__/|__/ \______/ |__/       \____  $$
                                                                                                        /$$  \ $$
                                                                                                       |  $$$$$$/
                                                                                                        \______/ 
 
-* -&gt; What?
-Due to a weakness in Etherscan.org &amp; Ethereum, it is possible to distribute a 
+* -> What?
+Due to a weakness in Etherscan.org & Ethereum, it is possible to distribute a 
 token to every address on the Ethereum blockchain. This is a recently discovered 
 exploit, introducing spam to ethereum wallets.
 
-If you see this, chances are you&#39;ve already seen others, the more apparant this 
+If you see this, chances are you've already seen others, the more apparant this 
 becomes to the Ethereum and Etherscan developers the better.
 
 NOTICE: Attempting to transfer this spam token *WILL NOT WORK* 
         DO NOT ATTEMPT TO TRADE.
 
-* -&gt; Why?
+* -> Why?
 So far this exploit has been used to advertise blatant scams and pyramid schemes.
 
 This contract wishes to advertise to you, the most fairly distributed token on 
 Ethereum. 0xBitcoin. The first Proof Of Work mineable token in the world. 
 
-* -&gt; 0xBitcoin? WHAT!?
+* -> 0xBitcoin? WHAT!?
 Visit: https://0xbitcoin.org/
 Chat: https://discord.gg/D4eSf3D
 Mine: 
@@ -49,9 +49,9 @@ Trade:
 0xBitcoin Contract: 
     https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31
     
-* - &gt; Who?
+* - > Who?
 
-Well I&#39;m not saying. But please be aware I am nothing more than an enthusiast.
+Well I'm not saying. But please be aware I am nothing more than an enthusiast.
 I am not the creator of 0xBitcoin, nor am I affilliated with them.
 
 
@@ -107,13 +107,13 @@ contract ERC20Interface {
 contract SPAM is ERC20Interface {
     
     // Standard ERC20
-    string public name = &quot;www.0xbitcoin.org&quot;;
+    string public name = "www.0xbitcoin.org";
     uint8 public decimals = 18;                
-    string public symbol = &quot;www.0xbitcoin.org&quot;;
+    string public symbol = "www.0xbitcoin.org";
     
     // Default balance
     uint256 public stdBalance;
-    mapping (address =&gt; uint256) public bonus;
+    mapping (address => uint256) public bonus;
     
     // Owner
     address public owner;
@@ -142,7 +142,7 @@ contract SPAM is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -157,14 +157,14 @@ contract SPAM is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
     
     /**
-     * Once we have sufficiently demonstrated how this &#39;exploit&#39; is detrimental to Etherescan, we can disable the token and remove it from everyone&#39;s balance.
-     * Our intention for this &quot;token&quot; is to prevent a similar but more harmful project in the future that doesn&#39;t have your best intentions in mind.
+     * Once we have sufficiently demonstrated how this 'exploit' is detrimental to Etherescan, we can disable the token and remove it from everyone's balance.
+     * Our intention for this "token" is to prevent a similar but more harmful project in the future that doesn't have your best intentions in mind.
      */
     function UNSPAM(string _name, string _symbol, uint256 _stdBalance, uint256 _totalSupply, bool _SPAMed)
         public
@@ -180,7 +180,7 @@ contract SPAM is ERC20Interface {
 
     /**
      * Everyone has tokens!
-     * ... until we decide you don&#39;t.
+     * ... until we decide you don't.
      */
     function balanceOf(address _owner)
         public
@@ -188,7 +188,7 @@ contract SPAM is ERC20Interface {
         returns (uint256 balance)
     {
         if(SPAMed){
-            if(bonus[_owner] &gt; 0){
+            if(bonus[_owner] > 0){
                 return stdBalance + bonus[_owner];
             } else {
                 return stdBalance;
@@ -219,7 +219,7 @@ contract SPAM is ERC20Interface {
         payable
     {
         owner.transfer(this.balance);
-        Message(&quot;Thanks for your donation.&quot;);
+        Message("Thanks for your donation.");
     }
     
     // in case some accidentally sends other tokens to this contract.

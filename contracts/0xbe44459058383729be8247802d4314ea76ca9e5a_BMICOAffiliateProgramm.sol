@@ -2,16 +2,16 @@ pragma solidity ^0.4.16;
 
 
 contract BMICOAffiliateProgramm {
-    mapping (address =&gt; uint256) referralsInfo;
+    mapping (address => uint256) referralsInfo;
 
-    mapping (bytes32 =&gt; address) partnersPromo;
+    mapping (bytes32 => address) partnersPromo;
     struct itemPartners {
         uint256 attracted_investments;
         bytes32 promo;
         uint16 personal_percent;
         bool create;
     }
-    mapping (address =&gt; itemPartners) partnersInfo;
+    mapping (address => itemPartners) partnersInfo;
 
     uint16 public ref_percent = 100; //1 = 0.01%, 10000 = 100%
 
@@ -20,7 +20,7 @@ contract BMICOAffiliateProgramm {
         address referral;
         uint256 amount_invest;
     }
-    mapping(address =&gt; itemHistory[]) history;
+    mapping(address => itemHistory[]) history;
 
     uint256 public amount_referral_invest;
 
@@ -46,9 +46,9 @@ contract BMICOAffiliateProgramm {
     }
 
     function setPartnerFromPreICOAffiliate(address[] partners, bytes32[] promo_codes, uint256[] attracted_invests) isOwner {
-        assert(partners.length==promo_codes.length &amp;&amp; partners.length==attracted_invests.length);
+        assert(partners.length==promo_codes.length && partners.length==attracted_invests.length);
 
-        for(uint256 i=0; i&lt;partners.length; i++){
+        for(uint256 i=0; i<partners.length; i++){
             if(!partnersInfo[partners[i]].create){
                 partnersPromo[promo_codes[i]] = partners[i];
                 partnersInfo[partners[i]].attracted_investments = attracted_invests[i];
@@ -66,7 +66,7 @@ contract BMICOAffiliateProgramm {
         assert(partner!=address(0x0));
         assert(partner!=address(this));
         assert(partnersInfo[partner].create==true);
-        assert(new_percent&lt;=1500);
+        assert(new_percent<=1500);
         partnersInfo[partner].personal_percent = new_percent;
     }
 
@@ -94,7 +94,7 @@ contract BMICOAffiliateProgramm {
         bytes32 promo = stringTobytes32(code);
         assert(partnersPromo[promo]==address(0x0));
         assert(partnersInfo[msg.sender].create==false);
-        assert(str_length(code)&gt;0 &amp;&amp; str_length(code)&lt;=6);
+        assert(str_length(code)>0 && str_length(code)<=6);
 
         partnersPromo[promo] = msg.sender;
         partnersInfo[msg.sender].attracted_investments = 0;
@@ -109,7 +109,7 @@ contract BMICOAffiliateProgramm {
 
     function checkPartner(address partner_address) constant returns(bool isPartner, bytes32 promo){
         isPartner = partnersInfo[partner_address].create;
-        promo = &#39;-1&#39;;
+        promo = '-1';
         if(isPartner){
             promo = partnersInfo[partner_address].promo;
         }
@@ -117,22 +117,22 @@ contract BMICOAffiliateProgramm {
 
     function calc_partnerPercent(address partner) constant internal returns(uint16 percent){
         percent = 0;
-        if(partnersInfo[partner].personal_percent &gt; 0){
+        if(partnersInfo[partner].personal_percent > 0){
             percent = partnersInfo[partner].personal_percent;
         }
         else{
             uint256 attracted_investments = partnersInfo[partner].attracted_investments;
-            if(attracted_investments &gt; 0){
-                if(attracted_investments &lt; 3 ether){
+            if(attracted_investments > 0){
+                if(attracted_investments < 3 ether){
                     percent = 300; //1 = 0.01%, 10000 = 100%
                 }
-                else if(attracted_investments &gt;= 3 ether &amp;&amp; attracted_investments &lt; 10 ether){
+                else if(attracted_investments >= 3 ether && attracted_investments < 10 ether){
                     percent = 500;
                 }
-                else if(attracted_investments &gt;= 10 ether &amp;&amp; attracted_investments &lt; 100 ether){
+                else if(attracted_investments >= 10 ether && attracted_investments < 100 ether){
                     percent = 700;
                 }
-                else if(attracted_investments &gt;= 100 ether){
+                else if(attracted_investments >= 100 ether){
                     percent = 1000;
                 }
             }
@@ -140,7 +140,7 @@ contract BMICOAffiliateProgramm {
     }
 
     function partnerInfo(address partner_address) isOwner constant returns(bytes32 promo, uint256 attracted_investments, uint256[] h_datetime, uint256[] h_invest, address[] h_referrals){
-        if(partner_address != address(0x0) &amp;&amp; partnersInfo[partner_address].create){
+        if(partner_address != address(0x0) && partnersInfo[partner_address].create){
             promo = partnersInfo[partner_address].promo;
             attracted_investments = partnersInfo[partner_address].attracted_investments;
 
@@ -148,14 +148,14 @@ contract BMICOAffiliateProgramm {
             h_invest = new uint256[](history[partner_address].length);
             h_referrals = new address[](history[partner_address].length);
 
-            for(uint256 i=0; i&lt;history[partner_address].length; i++){
+            for(uint256 i=0; i<history[partner_address].length; i++){
                 h_datetime[i] = history[partner_address][i].datetime;
                 h_invest[i] = history[partner_address][i].amount_invest;
                 h_referrals[i] = history[partner_address][i].referral;
             }
         }
         else{
-            promo = &#39;-1&#39;;
+            promo = '-1';
             attracted_investments = 0;
             h_datetime = new uint256[](0);
             h_invest = new uint256[](0);
@@ -173,7 +173,7 @@ contract BMICOAffiliateProgramm {
         p_partner = 0;
         p_referral = 0;
         partner = address(0x0);
-        if(partnersPromo[promo_code] != address(0x0) &amp;&amp; partnersPromo[promo_code] != referral){
+        if(partnersPromo[promo_code] != address(0x0) && partnersPromo[promo_code] != referral){
             partner = partnersPromo[promo_code];
             if (msg.sender == contractICO){
                 referralsInfo[referral] += amount;

@@ -32,7 +32,7 @@ interface ConversionRatesInterface {
 // File: contracts/LiquidityFormula.sol
 
 contract UtilMath {
-    uint public constant BIG_NUMBER = (uint(1)&lt;&lt;uint(200));
+    uint public constant BIG_NUMBER = (uint(1)<<uint(200));
 
     function checkMultOverflow(uint x, uint y) public pure returns(bool) {
         if (y == 0) return false;
@@ -40,7 +40,7 @@ contract UtilMath {
     }
 
     function compactFraction(uint p, uint q, uint precision) public pure returns (uint, uint) {
-        if (q &lt; precision * precision) return (p, q);
+        if (q < precision * precision) return (p, q);
         return compactFraction(p/precision, q/precision, precision);
     }
 
@@ -79,14 +79,14 @@ contract UtilMath {
     /* solhint-enable code-complexity */
 
     function countLeadingZeros(uint p, uint q) public pure returns (uint) {
-        uint denomator = (uint(1)&lt;&lt;255);
-        for (int i = 255; i &gt;= 0; i--) {
+        uint denomator = (uint(1)<<255);
+        for (int i = 255; i >= 0; i--) {
             if ((q*denomator)/denomator != q) {
                 // overflow
                 denomator = denomator/2;
                 continue;
             }
-            if (p/(q*denomator) &gt; 0) return uint(i);
+            if (p/(q*denomator) > 0) return uint(i);
             denomator = denomator/2;
         }
 
@@ -96,17 +96,17 @@ contract UtilMath {
     // log2 for a number that it in [1,2)
     function log2ForSmallNumber(uint x, uint numPrecisionBits) public pure returns (uint) {
         uint res = 0;
-        uint one = (uint(1)&lt;&lt;numPrecisionBits);
+        uint one = (uint(1)<<numPrecisionBits);
         uint two = 2 * one;
         uint addition = one;
 
-        require((x &gt;= one) &amp;&amp; (x &lt;= two));
-        require(numPrecisionBits &lt; 125);
+        require((x >= one) && (x <= two));
+        require(numPrecisionBits < 125);
 
-        for (uint i = numPrecisionBits; i &gt; 0; i--) {
+        for (uint i = numPrecisionBits; i > 0; i--) {
             x = (x*x) / one;
             addition = addition/2;
-            if (x &gt;= two) {
+            if (x >= two) {
                 x = x/2;
                 res += addition;
             }
@@ -117,21 +117,21 @@ contract UtilMath {
 
     function logBase2 (uint p, uint q, uint numPrecisionBits) public pure returns (uint) {
         uint n = 0;
-        uint precision = (uint(1)&lt;&lt;numPrecisionBits);
+        uint precision = (uint(1)<<numPrecisionBits);
 
-        if (p &gt; q) {
+        if (p > q) {
             n = countLeadingZeros(p, q);
         }
 
         require(!checkMultOverflow(p, precision));
         require(!checkMultOverflow(n, precision));
-        require(!checkMultOverflow(uint(1)&lt;&lt;n, q));
+        require(!checkMultOverflow(uint(1)<<n, q));
 
-        uint y = p * precision / (q * (uint(1)&lt;&lt;n));
+        uint y = p * precision / (q * (uint(1)<<n));
         uint log2Small = log2ForSmallNumber(y, numPrecisionBits);
 
-        require(n*precision &lt;= BIG_NUMBER);
-        require(log2Small &lt;= BIG_NUMBER);
+        require(n*precision <= BIG_NUMBER);
+        require(log2Small <= BIG_NUMBER);
 
         return n * precision + log2Small;
     }
@@ -161,7 +161,7 @@ contract LiquidityFormula is UtilMath {
         uint rpe = r * pe;
         uint erdeltaE = exp(r*deltaE, precision*precision, precision);
 
-        require(erdeltaE &gt;= precision);
+        require(erdeltaE >= precision);
         require(!checkMultOverflow(erdeltaE - precision, precision));
         require(!checkMultOverflow((erdeltaE - precision)*precision, precision));
         require(!checkMultOverflow((erdeltaE - precision)*precision*precision, precision));
@@ -199,7 +199,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -218,31 +218,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -256,8 +256,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -328,7 +328,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -339,7 +339,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -353,7 +353,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -364,7 +364,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -435,7 +435,7 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
         transferAdminQuickly(_admin);
         token = _token;
         setDecimals(token);
-        require(getDecimals(token) &lt;= MAX_DECIMALS);
+        require(getDecimals(token) <= MAX_DECIMALS);
     }
 
     event ReserveAddressSet(address reserve);
@@ -471,14 +471,14 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
         uint _minTokenToEthRateInPrecision
     ) public onlyAdmin {
 
-        require(_numFpBits &lt; 256);
-        require(formulaPrecision &lt;= MAX_QTY);
-        require(_feeInBps &lt; 10000);
-        require(_minTokenToEthRateInPrecision &lt; _maxTokenToEthRateInPrecision);
+        require(_numFpBits < 256);
+        require(formulaPrecision <= MAX_QTY);
+        require(_feeInBps < 10000);
+        require(_minTokenToEthRateInPrecision < _maxTokenToEthRateInPrecision);
 
         rInFp = _rInFp;
         pMinInFp = _pMinInFp;
-        formulaPrecision = uint(1)&lt;&lt;_numFpBits;
+        formulaPrecision = uint(1)<<_numFpBits;
         maxQtyInFp = fromWeiToFp(MAX_QTY);
         numFpBits = _numFpBits;
         maxEthCapBuyInFp = fromWeiToFp(_maxCapBuyInWei);
@@ -518,7 +518,7 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
         currentBlock;
 
         require(msg.sender == reserveContract);
-        if (buyAmountInTwei &gt; 0) {
+        if (buyAmountInTwei > 0) {
             // Buy case
             collectedFeesInTwei += calcCollectedFee(abs(buyAmountInTwei));
         } else {
@@ -545,10 +545,10 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
 
         currentBlockNumber;
 
-        require(qtyInSrcWei &lt;= MAX_QTY);
+        require(qtyInSrcWei <= MAX_QTY);
         uint eInFp = fromWeiToFp(reserveContract.balance);
         uint rateInPrecision = getRateWithE(conversionToken, buy, qtyInSrcWei, eInFp);
-        require(rateInPrecision &lt;= MAX_RATE);
+        require(rateInPrecision <= MAX_RATE);
         return rateInPrecision;
     }
 
@@ -558,14 +558,14 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
         uint deltaTInFp;
         uint rateInPrecision;
 
-        require(qtyInSrcWei &lt;= MAX_QTY);
-        require(eInFp &lt;= maxQtyInFp);
+        require(qtyInSrcWei <= MAX_QTY);
+        require(eInFp <= maxQtyInFp);
         if (conversionToken != token) return 0;
 
         if (buy) {
             // ETH goes in, token goes out
             deltaEInFp = fromWeiToFp(qtyInSrcWei);
-            if (deltaEInFp &gt; maxEthCapBuyInFp) return 0;
+            if (deltaEInFp > maxEthCapBuyInFp) return 0;
 
             if (deltaEInFp == 0) {
                 rateInPrecision = buyRateZeroQuantity(eInFp);
@@ -582,7 +582,7 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
                 (rateInPrecision, deltaEInFp) = sellRate(eInFp, sellInputTokenQtyInFp, deltaTInFp);
             }
 
-            if (deltaEInFp &gt; maxEthCapSellInFp) return 0;
+            if (deltaEInFp > maxEthCapSellInFp) return 0;
         }
 
         rateInPrecision = rateAfterValidation(rateInPrecision, buy);
@@ -601,9 +601,9 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
             maxAllowedRateInPrecision = maxSellRateInPrecision;
         }
 
-        if ((rateInPrecision &gt; maxAllowedRateInPrecision) || (rateInPrecision &lt; minAllowRateInPrecision)) {
+        if ((rateInPrecision > maxAllowedRateInPrecision) || (rateInPrecision < minAllowRateInPrecision)) {
             return 0;
-        } else if (rateInPrecision &gt; MAX_RATE) {
+        } else if (rateInPrecision > MAX_RATE) {
             return 0;
         } else {
             return rateInPrecision;
@@ -612,7 +612,7 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
 
     function buyRate(uint eInFp, uint deltaEInFp) public view returns(uint) {
         uint deltaTInFp = deltaTFunc(rInFp, pMinInFp, eInFp, deltaEInFp, formulaPrecision);
-        require(deltaTInFp &lt;= maxQtyInFp);
+        require(deltaTInFp <= maxQtyInFp);
         deltaTInFp = valueAfterReducingFee(deltaTInFp);
         return deltaTInFp * PRECISION / deltaEInFp;
     }
@@ -628,7 +628,7 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
         uint deltaTInFp
     ) public view returns(uint rateInPrecision, uint deltaEInFp) {
         deltaEInFp = deltaEFunc(rInFp, pMinInFp, eInFp, deltaTInFp, formulaPrecision, numFpBits);
-        require(deltaEInFp &lt;= maxQtyInFp);
+        require(deltaEInFp <= maxQtyInFp);
         rateInPrecision = deltaEInFp * PRECISION / sellInputTokenQtyInFp;
     }
 
@@ -638,27 +638,27 @@ contract LiquidityConversionRates is ConversionRatesInterface, LiquidityFormula,
     }
 
     function fromTweiToFp(uint qtyInTwei) public view returns(uint) {
-        require(qtyInTwei &lt;= MAX_QTY);
+        require(qtyInTwei <= MAX_QTY);
         return qtyInTwei * formulaPrecision / (10 ** getDecimals(token));
     }
 
     function fromWeiToFp(uint qtyInwei) public view returns(uint) {
-        require(qtyInwei &lt;= MAX_QTY);
+        require(qtyInwei <= MAX_QTY);
         return qtyInwei * formulaPrecision / (10 ** ETH_DECIMALS);
     }
 
     function valueAfterReducingFee(uint val) public view returns(uint) {
-        require(val &lt;= BIG_NUMBER);
+        require(val <= BIG_NUMBER);
         return ((10000 - feeInBps) * val) / 10000;
     }
 
     function calcCollectedFee(uint val) public view returns(uint) {
-        require(val &lt;= MAX_QTY);
+        require(val <= MAX_QTY);
         return val * feeInBps / (10000 - feeInBps);
     }
 
     function abs(int val) public pure returns(uint) {
-        if (val &lt; 0) {
+        if (val < 0) {
             return uint(val * (-1));
         } else {
             return uint(val);

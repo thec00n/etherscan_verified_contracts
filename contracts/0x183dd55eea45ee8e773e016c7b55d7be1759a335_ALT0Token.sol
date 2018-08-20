@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,13 +98,13 @@ contract ERC20Basic {
 contract ALT0Token is Ownable, ERC20Basic {
   using SafeMath for uint256;
 
-  string public constant name     = &quot;Altair VR presale token&quot;;
-  string public constant symbol   = &quot;ALT0&quot;;
+  string public constant name     = "Altair VR presale token";
+  string public constant symbol   = "ALT0";
   uint8  public constant decimals = 18;
 
   bool public mintingFinished = false;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   event Mint(address indexed to, uint256 amount);
   event MintFinished();

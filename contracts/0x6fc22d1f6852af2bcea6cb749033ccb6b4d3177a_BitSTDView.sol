@@ -13,8 +13,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 }
 
 contract BitSTDShares is owned, TokenERC20 {
@@ -22,7 +22,7 @@ contract BitSTDShares is owned, TokenERC20 {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 }
 
 contract BitSTDData {
@@ -36,14 +36,14 @@ contract BitSTDData {
     uint256 public totalSupply;
 
     // An array of all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     uint256 public sellPrice;
     uint256 public buyPrice;
     // The allowed address zhi value wei value is true
-    mapping (address =&gt; bool) public owners;
+    mapping (address => bool) public owners;
     // Freeze address
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     BitSTDShares private bit;
 
     constructor(address contractAddress) public {
@@ -153,9 +153,9 @@ contract BitSTDLogic {
         // Prevents transmission to 0x0 address.Call to Burn ()
         require(_to != 0x0);
         // Check that the sender is adequate
-        require(f_value &gt;= _value);
+        require(f_value >= _value);
         // Check the overflow
-        require(t_value + _value &gt; t_value);
+        require(t_value + _value > t_value);
         // Save it as a future assertion
         uint previousBalances = f_value + t_value;
         // Minus from the sender
@@ -176,7 +176,7 @@ contract BitSTDLogic {
         uint256 _value = data.getOldBalanceOf(receiver);
         //Transfer balance
         if (data.balanceOf(receiver) == 0) {
-            if (_value &gt; 0) {
+            if (_value > 0) {
                 _transfer(sender, receiver, _value);
                 result = true;
             }
@@ -245,15 +245,15 @@ contract BitSTDLogic {
     /**
      *Passing tokens from other addresses
       *
-      * sends the value token to &quot;to&quot;, representing &quot;from&quot;
+      * sends the value token to "to", representing "from"
       *
-      * @param _from sender&#39;s address
-      * @param _to recipient&#39;s address
+      * @param _from sender's address
+      * @param _to recipient's address
       * @param _value number sent
      */
     function transferFrom(address _from, address sender, address _to, uint256 _value) onlyOwner public returns (bool success) {
         uint256 a_value = data.allowance(_from, sender);
-        require(_value &lt;=_value ); // Check allowance
+        require(_value <=_value ); // Check allowance
         data.setAllowance(_from, sender, a_value - _value);
         _transfer(_from, _to, _value);
         return true;
@@ -262,7 +262,7 @@ contract BitSTDLogic {
      /**
 * set allowances for other addresses
 *
-* allow the &quot;spender&quot; to spend only the &quot;value&quot; card in your name
+* allow the "spender" to spend only the "value" card in your name
 *
 * @param _spender authorized address
 * @param _value they can spend the most money
@@ -275,7 +275,7 @@ contract BitSTDLogic {
     /**
      * Grant and notify other addresses
        *
-       * allow &quot;spender&quot; to only mark &quot;value&quot; in your name and then write the contract on it.
+       * allow "spender" to only mark "value" in your name and then write the contract on it.
        *
        * @param _spender authorized address
        * @param _value they can spend the most money
@@ -292,13 +292,13 @@ contract BitSTDLogic {
      /**
      * Destroy the tokens,
        *
-       * delete &quot;value&quot; tokens from the system
+       * delete "value" tokens from the system
        *
        * param _value the amount of money to burn
      */
     function burn(address sender, uint256 _value) onlyOwner public returns (bool success) {
         uint256 f_value = balanceOf(sender);
-        require(f_value &gt;= _value);                 // Check that the sender is adequate
+        require(f_value >= _value);                 // Check that the sender is adequate
         setBalanceOf(sender, f_value - _value);    // Minus from the sender
         data.addTotalSupply(totalSupply() - _value);                      // Renewal aggregate supply
         return true;
@@ -307,7 +307,7 @@ contract BitSTDLogic {
     /**
      * Destroy tokens from other accounts
        *
-       * delete &quot;value&quot; tokens from &quot;from&quot; in the system.
+       * delete "value" tokens from "from" in the system.
        *
        * @param _from the address of the sender
        * param _value the amount of money to burn
@@ -315,10 +315,10 @@ contract BitSTDLogic {
     function burnFrom(address _from, address sender, uint256 _value) onlyOwner public returns (bool success) {
         uint256 f_value = balanceOf(sender);
         uint256 a_value = data.allowance(_from, sender);
-        require(f_value &gt;= _value);                             // Check that the target balance is adequate
-        require(_value &lt;= a_value);                             // Check the allowance
+        require(f_value >= _value);                             // Check that the target balance is adequate
+        require(_value <= a_value);                             // Check the allowance
         setBalanceOf(_from, f_value - _value);                // Subtract from the goal balance
-        data.setAllowance(_from, sender, f_value - _value);  // Minus the sender&#39;s allowance
+        data.setAllowance(_from, sender, f_value - _value);  // Minus the sender's allowance
         data.addTotalSupply(totalSupply() - _value);         // update totalSupply
 
         return true;
@@ -334,7 +334,7 @@ contract BitSTDLogic {
 
     }
 
-    //Notice freezes the account to prevent &quot;target&quot; from sending and receiving tokens
+    //Notice freezes the account to prevent "target" from sending and receiving tokens
       // @param target address is frozen
       // @param freezes or does not freeze
     function freezeAccount(address target, bool freeze) onlyOwner public returns (bool) {
@@ -353,7 +353,7 @@ contract BitSTDLogic {
     // @param amount
     function sell(address _contract, address sender, uint256 amount) public {
         require(false);
-        require(address(_contract).balance &gt;= amount * data.sellPrice());      // Check if there is enough ether in the contract
+        require(address(_contract).balance >= amount * data.sellPrice());      // Check if there is enough ether in the contract
         _transfer(sender, _contract, amount);              // makes the transfers
         sender.transfer(amount * data.sellPrice());          // Shipping ether to the seller.This is important to avoid recursive attacks
     }
@@ -547,7 +547,7 @@ contract BitSTDView {
         emit Transfer(this, target, mintedAmount);
 	}
 
-	/// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+	/// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
 	function freezeAccount(address target, bool freeze) onlyOwner public {

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,11 +82,11 @@ contract TKP is Owned {
     bool        public  tokenMintingEnabled;
     bool        public  contractLaunched;
 
-    mapping (address =&gt; mapping (address =&gt; uint256))   public allowance;
-    mapping (address =&gt; uint256)                        public balances;
-    mapping (address =&gt; uint256)                        public icoBalances;
-    mapping (address =&gt; uint256)                        public TKPUserArrayIdentifier;
-    mapping (address =&gt; bool)                           public TKPUserRegistered;
+    mapping (address => mapping (address => uint256))   public allowance;
+    mapping (address => uint256)                        public balances;
+    mapping (address => uint256)                        public icoBalances;
+    mapping (address => uint256)                        public TKPUserArrayIdentifier;
+    mapping (address => bool)                           public TKPUserRegistered;
 
     event Transfer(address indexed _sender, address indexed _recipient, uint256 _amount);
     event Approve(address indexed _owner, address indexed _spender, uint256 _amount);
@@ -98,8 +98,8 @@ contract TKP is Owned {
     event TokenMintingEnabled(address indexed _invoker, bool indexed _enabled);
 
     function TKP() public {
-        name = &quot;Trish Kelly Portfolio Coin&quot;;
-        symbol = &quot;TKP&quot;;
+        name = "Trish Kelly Portfolio Coin";
+        symbol = "TKP";
         decimals = 18;
        
         totalSupply = 60000000000000000000000000;
@@ -175,7 +175,7 @@ contract TKP is Owned {
         public 
         returns (bool success)
     {
-        require(allowance[_owner][msg.sender] &gt;= _amount);
+        require(allowance[_owner][msg.sender] >= _amount);
         require(transferCheck(_owner, _receiver, _amount));
         allowance[_owner][msg.sender] = allowance[_owner][msg.sender].sub(_amount);
         balances[_owner] =  balances[_owner].sub(_amount);
@@ -191,8 +191,8 @@ contract TKP is Owned {
         public
         returns (bool approved)
     {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt;= _amount);
+        require(_amount > 0);
+        require(balances[msg.sender] >= _amount);
         allowance[msg.sender][_spender] = allowance[msg.sender][_spender].add(_amount);
         return true;
     }
@@ -203,10 +203,10 @@ contract TKP is Owned {
         onlyOwner
         returns (bool burned)
     {
-        require(_amount &gt; 0);
-        require(totalSupply.sub(_amount) &gt; 0);
-        require(balances[msg.sender] &gt; _amount);
-        require(balances[msg.sender].sub(_amount) &gt; 0);
+        require(_amount > 0);
+        require(totalSupply.sub(_amount) > 0);
+        require(balances[msg.sender] > _amount);
+        require(balances[msg.sender].sub(_amount) > 0);
         totalSupply = totalSupply.sub(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         Transfer(msg.sender, 0, _amount);
@@ -222,9 +222,9 @@ contract TKP is Owned {
         returns (bool valid)
     {
         require(tokenMintingEnabled);
-        require(_amount &gt; 0);
-        require(totalSupply.add(_amount) &gt; 0);
-        require(totalSupply.add(_amount) &gt; totalSupply);
+        require(_amount > 0);
+        require(totalSupply.add(_amount) > 0);
+        require(totalSupply.add(_amount) > totalSupply);
         return true;
     }
     
@@ -250,11 +250,11 @@ contract TKP is Owned {
         returns (bool success)
     {
         require(!tokenTransfersFrozen);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_receiver != address(0));
-        require(balances[_sender].sub(_amount) &gt;= 0);
-        require(balances[_receiver].add(_amount) &gt; 0);
-        require(balances[_receiver].add(_amount) &gt; balances[_receiver]);
+        require(balances[_sender].sub(_amount) >= 0);
+        require(balances[_receiver].add(_amount) > 0);
+        require(balances[_receiver].add(_amount) > balances[_receiver]);
         return true;
     }
 

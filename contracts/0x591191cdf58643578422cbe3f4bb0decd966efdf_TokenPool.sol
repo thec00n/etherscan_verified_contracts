@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -102,7 +102,7 @@ contract TokenPool is Ownable {
     /**
      * @dev Indicates available token amounts for each pool
      */
-    mapping (string =&gt; Pool) private pools;
+    mapping (string => Pool) private pools;
 
     modifier onlyNotZero(uint256 amount) {
         require(amount != 0);
@@ -110,13 +110,13 @@ contract TokenPool is Ownable {
     }
 
     modifier onlySufficientAmount(string poolId, uint256 amount) {
-        require(amount &lt;= pools[poolId].availableAmount);
+        require(amount <= pools[poolId].availableAmount);
         _;
     }
 
     modifier onlyUnlockedPool(string poolId) {
         /* solhint-disable not-rely-on-time */
-        require(block.timestamp &gt; pools[poolId].lockTimestamp);
+        require(block.timestamp > pools[poolId].lockTimestamp);
         /* solhint-enable not-rely-on-time */
         _;
     }
@@ -181,7 +181,7 @@ contract TokenPool is Ownable {
 
         PoolRegistered(poolId, availableAmount);
 
-        if (lockTimestamp &gt; 0) {
+        if (lockTimestamp > 0) {
             PoolLocked(poolId, lockTimestamp);
         }
     }

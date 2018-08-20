@@ -10,10 +10,10 @@ pragma solidity ^0.4.19;
  * Ticket price: Anything larger than (or equal to) 0.1 ETH
  * Jackpot size: 1.9 times the ticket price
  *
- * HOW TO PARTICIPATE: Just send any amount greater than (or equal to) 0.1 ETH to the contract&#39;s address
+ * HOW TO PARTICIPATE: Just send any amount greater than (or equal to) 0.1 ETH to the contract's address
  * Keep in mind that your address can only win once
  *
- * If the contract doesn&#39;t have enough ETH to pay the jackpot, it sends the whole balance.
+ * If the contract doesn't have enough ETH to pay the jackpot, it sends the whole balance.
  *
  * Example: For each address, a random number is generated, either 0 or 1. This number is then compared
  * with the LuckyNumber - a constant 1. If they are equal, the contract will instantly send you the jackpot:
@@ -33,7 +33,7 @@ contract OpenAddressLottery{
     uint private lastReseed; //last reseed - used to automatically reseed the contract every 1000 blocks
     uint LuckyNumber = 1; //if the number of an address equals 1, it wins
         
-    mapping (address =&gt; bool) winner; //keeping track of addresses that have already won
+    mapping (address => bool) winner; //keeping track of addresses that have already won
     
     function OpenAddressLottery() {
         owner = msg.sender;
@@ -41,10 +41,10 @@ contract OpenAddressLottery{
     }
     
     function participate() payable {
-        if(msg.value&lt;0.1 ether)
+        if(msg.value<0.1 ether)
             return; //verify ticket price
         
-        // make sure he hasn&#39;t won already
+        // make sure he hasn't won already
         require(winner[msg.sender] == false);
         
         if(luckyNumberOfAddress(msg.sender) == LuckyNumber){ //check if it equals 1
@@ -52,12 +52,12 @@ contract OpenAddressLottery{
             
             uint win=(msg.value/10)*19; //win = 1.9 times the ticket price
             
-            if(win&gt;this.balance) //if the balance isnt sufficient...
-                win=this.balance; //...send everything we&#39;ve got
+            if(win>this.balance) //if the balance isnt sufficient...
+                win=this.balance; //...send everything we've got
             msg.sender.transfer(win);
         }
         
-        if(block.number-lastReseed&gt;1000) //reseed if needed
+        if(block.number-lastReseed>1000) //reseed if needed
             reseed(SeedComponents((uint)(block.coinbase), block.difficulty, block.gaslimit, block.timestamp)); //generate a quality random seed
     }
     
@@ -95,7 +95,7 @@ contract OpenAddressLottery{
     }
     
     function () payable { //if someone sends money without any function call, just assume he wanted to participate
-        if(msg.value&gt;=0.1 ether &amp;&amp; msg.sender!=owner) //owner can&#39;t participate, he can only fund the jackpot
+        if(msg.value>=0.1 ether && msg.sender!=owner) //owner can't participate, he can only fund the jackpot
             participate();
     }
 

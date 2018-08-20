@@ -24,20 +24,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -47,7 +47,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
@@ -101,7 +101,7 @@ contract Ownable {
 
   address public owner;
   
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   function Ownable() public {
     owner = msg.sender;
@@ -171,11 +171,11 @@ contract LICERIOToken is MintableToken {
 	}
 	
 	function name () constant returns (string result) {
-		return &quot;LICERIO TOKEN&quot;;
+		return "LICERIO TOKEN";
 	}
 	
 	function symbol () constant returns (string result) {
-		return &quot;LCR&quot;;
+		return "LCR";
 	}
 	
 	function decimals () constant returns (uint result) {
@@ -207,7 +207,7 @@ contract ExchangeRate is Ownable {
 
   event RateUpdated(uint timestamp, bytes32 symbol, uint rate);
 
-  mapping(bytes32 =&gt; uint) public rates;
+  mapping(bytes32 => uint) public rates;
 
   function updateRate(string _symbol, uint _rate) public onlyOwner {
     rates[keccak256(_symbol)] = _rate;
@@ -216,10 +216,10 @@ contract ExchangeRate is Ownable {
 
   
   function updateRates(uint[] data) public onlyOwner {
-    if (data.length % 2 &gt; 0)
+    if (data.length % 2 > 0)
       revert();
     uint i = 0;
-    while (i &lt; data.length / 2) {
+    while (i < data.length / 2) {
       bytes32 symbol = bytes32(data[i * 2]);
       uint rate = data[i * 2 + 1];
       rates[symbol] = rate;
@@ -248,7 +248,7 @@ contract TokenSale is Ownable {
 	
 	address public multisigVault;
     
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
 	enum State { PREICO, ICO_FIRST, ICO_SECOND, STOPPED, CLOSED }
 
@@ -262,7 +262,7 @@ contract TokenSale is Ownable {
     }
 	
 	modifier minAmount(){
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
         _;
     }
 	
@@ -290,7 +290,7 @@ contract TokenSale is Ownable {
 	
 	function buyLCRTokens() public salesRunning minAmount payable {
        
-          uint rate = exchangeRate.getRate(&quot;ETH&quot;);
+          uint rate = exchangeRate.getRate("ETH");
     	  uint tokens = rate.mul(msg.value).div(1 ether);
 	
           token.mint(msg.sender, tokens);

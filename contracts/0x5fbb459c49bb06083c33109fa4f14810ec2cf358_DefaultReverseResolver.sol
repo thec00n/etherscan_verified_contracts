@@ -19,11 +19,11 @@ contract Resolver {
  * which permits only the owner to update it.
  */
 contract DefaultReverseResolver is Resolver {
-    // namehash(&#39;addr.reverse&#39;)
+    // namehash('addr.reverse')
     bytes32 constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
     AbstractENS public ens;
-    mapping(bytes32=&gt;string) public name;
+    mapping(bytes32=>string) public name;
     
     /**
      * @dev Constructor
@@ -59,7 +59,7 @@ contract DefaultReverseResolver is Resolver {
 }
 
 contract ReverseRegistrar {
-    // namehash(&#39;addr.reverse&#39;)
+    // namehash('addr.reverse')
     bytes32 constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
     AbstractENS public ens;
@@ -104,8 +104,8 @@ contract ReverseRegistrar {
         var currentOwner = ens.owner(node);
 
         // Update the resolver if required
-        if(resolver != 0 &amp;&amp; resolver != ens.resolver(node)) {
-            // Transfer the name to us first if it&#39;s not already
+        if(resolver != 0 && resolver != ens.resolver(node)) {
+            // Transfer the name to us first if it's not already
             if(currentOwner != address(this)) {
                 ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, this);
                 currentOwner = address(this);
@@ -135,7 +135,7 @@ contract ReverseRegistrar {
     }
 
     /**
-     * @dev Returns the node hash for a given account&#39;s reverse records.
+     * @dev Returns the node hash for a given account's reverse records.
      * @param addr The address to hash
      * @return The ENS node hash.
      */

@@ -2,8 +2,8 @@ pragma solidity ^0.4.11;
 
 /// @title SaintArnould (Tokyo) Token (SAT) -
 contract SaintArnouldToken {
-    string public constant name = &quot;Saint Arnould Token&quot;;
-    string public constant symbol = &quot;SAT&quot;;
+    string public constant name = "Saint Arnould Token";
+    string public constant symbol = "SAT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     uint256 public constant tokenCreationRate = 5000;  //creation rate 1 ETH = 5000 SAT
@@ -24,7 +24,7 @@ contract SaintArnouldToken {
     // The current total token supply.
     uint256 totalTokens;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -33,15 +33,15 @@ contract SaintArnouldToken {
                                uint256 _fundingEndBlock) {
 
         if (_founders == 0) throw;
-        if (_fundingStartBlock &lt;= block.number) throw;
-        if (_fundingEndBlock   &lt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock <= block.number) throw;
+        if (_fundingEndBlock   <= _fundingStartBlock) throw;
 
         founders = _founders;
         fundingStartBlock = _fundingStartBlock;
         fundingEndBlock = _fundingEndBlock;
     }
 
-    /// @notice Transfer `_value` SAT tokens from sender&#39;s account
+    /// @notice Transfer `_value` SAT tokens from sender's account
     /// `msg.sender` to provided account address `_to`.
     /// @param _to The address of the tokens recipient
     /// @param _value The amount of token to be transferred
@@ -51,7 +51,7 @@ contract SaintArnouldToken {
         if (!funding_ended) throw;
         if (msg.sender == founders) throw;
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -73,13 +73,13 @@ contract SaintArnouldToken {
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding Active
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function buy(address _sender) internal {
         // Abort if not in Funding Active state.
         if (funding_ended) throw;
         // The checking for blocktimes.
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingEndBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingEndBlock) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
@@ -99,7 +99,7 @@ contract SaintArnouldToken {
 
     /// @notice Finalize crowdfunding
     function finalize() external {
-        if (block.number &lt;= fundingEndBlock) throw;
+        if (block.number <= fundingEndBlock) throw;
 
         //locked allocation for founders 
         locked_allocation = totalTokens * 10 / 100;
@@ -112,10 +112,10 @@ contract SaintArnouldToken {
 
     function transferFounders(address _to, uint256 _value) public returns (bool) {
         if (!funding_ended) throw;
-        if (block.number &lt;= unlockingBlock) throw;
+        if (block.number <= unlockingBlock) throw;
         if (msg.sender != founders) throw;
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;

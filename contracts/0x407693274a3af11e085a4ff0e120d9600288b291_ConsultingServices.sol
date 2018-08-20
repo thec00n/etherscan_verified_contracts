@@ -4,7 +4,7 @@ contract ConsultingServices {
 
   address public owner;
   uint256 public yearlyFee = 500 ether;
-  mapping(address =&gt; Retainer) public retainers;
+  mapping(address => Retainer) public retainers;
 
   event Retained(address);
 
@@ -35,8 +35,8 @@ contract ConsultingServices {
   }
 
   function createRetainer() public payable {
-    require(msg.value &gt;= yearlyFee);
-    require(retainers[msg.sender].startDate &lt; now - 1 years);
+    require(msg.value >= yearlyFee);
+    require(retainers[msg.sender].startDate < now - 1 years);
     retainers[msg.sender] = Retainer(now, msg.value);
     Retained(msg.sender);
   }

@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 library itMaps {
     /* itMapAddressUint
-         address =&gt;  Uint
+         address =>  Uint
     */
     struct entryAddressUint {
     // Equal to the index of the key of this item in keys, plus 1.
@@ -11,14 +11,14 @@ library itMaps {
     }
 
     struct itMapAddressUint {
-    mapping(address =&gt; entryAddressUint) data;
+    mapping(address => entryAddressUint) data;
     address[] keys;
     }
 
     function insert(itMapAddressUint storage self, address key, uint value) internal returns (bool replaced) {
         entryAddressUint storage e = self.data[key];
         e.value = value;
-        if (e.keyIndex &gt; 0) {
+        if (e.keyIndex > 0) {
             return true;
         } else {
             e.keyIndex = ++self.keys.length;
@@ -32,7 +32,7 @@ library itMaps {
         if (e.keyIndex == 0)
         return false;
 
-        if (e.keyIndex &lt;= self.keys.length) {
+        if (e.keyIndex <= self.keys.length) {
             // Move an existing element into the vacated key slot.
             self.data[self.keys[self.keys.length - 1]].keyIndex = e.keyIndex;
             self.keys[e.keyIndex - 1] = self.keys[self.keys.length - 1];
@@ -43,7 +43,7 @@ library itMaps {
     }
 
     function destroy(itMapAddressUint storage self) internal  {
-        for (uint i; i&lt;self.keys.length; i++) {
+        for (uint i; i<self.keys.length; i++) {
             delete self.data[ self.keys[i]];
         }
         delete self.keys;
@@ -51,7 +51,7 @@ library itMaps {
     }
 
     function contains(itMapAddressUint storage self, address key) internal constant returns (bool exists) {
-        return self.data[key].keyIndex &gt; 0;
+        return self.data[key].keyIndex > 0;
     }
 
     function size(itMapAddressUint storage self) internal constant returns (uint) {
@@ -89,13 +89,13 @@ contract TakeMyEther is ERC20{
 
     uint private initialSupply = 2800000;
     uint public soldTokens = 0; //reduces when somebody returns money
-    string public constant name = &quot;TakeMyEther&quot;;
-    string public constant symbol = &quot;TMEther&quot;;
+    string public constant name = "TakeMyEther";
+    string public constant symbol = "TMEther";
     address public TakeMyEtherTeamAddress;
 
     itMaps.itMapAddressUint tokenBalances; //amount of tokens each address holds
-    mapping (address =&gt; uint256) weiBalances; //amount of Wei, paid for tokens that smb holds. Used only before project completed.
-    mapping (address =&gt; uint256) weiBalancesReturned;
+    mapping (address => uint256) weiBalances; //amount of Wei, paid for tokens that smb holds. Used only before project completed.
+    mapping (address => uint256) weiBalancesReturned;
 
     uint public percentsOfProjectComplete = 0;
     uint public lastStageSubmitted;
@@ -116,7 +116,7 @@ contract TakeMyEther is ERC20{
         }
     }
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event StageSubmitted(uint last);
     event etherPassedToTheTeam(uint weiAmount, uint when);
@@ -139,7 +139,7 @@ contract TakeMyEther is ERC20{
     }
 
     function transfer(address to, uint value) public returns (bool success) {
-        if (tokenBalances.get(msg.sender) &gt;= value &amp;&amp; value &gt; 0) {
+        if (tokenBalances.get(msg.sender) >= value && value > 0) {
             if (to == address(this)) { // if you send even 1 token back to the contract, it will return all available funds to you
                 returnAllAvailableFunds();
                 return true;
@@ -151,7 +151,7 @@ contract TakeMyEther is ERC20{
     }
 
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
-        if (tokenBalances.get(from)&gt;=value &amp;&amp; allowed[from][to] &gt;= value &amp;&amp; value &gt; 0) {
+        if (tokenBalances.get(from)>=value && allowed[from][to] >= value && value > 0) {
             if (transferTokensAndEtherValue(from, to, value, getAverageTokenPrice(from) * value)) {
                 allowed[from][to] -= value;
                 return true;
@@ -162,7 +162,7 @@ contract TakeMyEther is ERC20{
     }
 
     function approve(address spender, uint value) public returns (bool success) {
-        if ((value != 0) &amp;&amp; (tokenBalances.get(msg.sender) &gt;= value)){
+        if ((value != 0) && (tokenBalances.get(msg.sender) >= value)){
             allowed[msg.sender][spender] = value;
             emit Approval(msg.sender, spender, value);
             return true;
@@ -186,18 +186,18 @@ contract TakeMyEther is ERC20{
         uint valueInWei = 0;
         uint valueToPass = 0;
 
-        if (weiToSpend &lt; currentPrice) {// return ETH back if nothing to buy
+        if (weiToSpend < currentPrice) {// return ETH back if nothing to buy
             return;
         }
 
         if (!tokenBalances.contains(msg.sender))
         tokenBalances.insert(msg.sender, 0);
 
-        if (soldTokens &lt; softCapTokensAmount) {
+        if (soldTokens < softCapTokensAmount) {
             uint valueLeftForSoftCap = softCapTokensAmount - soldTokens;
             valueToPass = weiToSpend / currentPrice;
 
-            if (valueToPass &gt; valueLeftForSoftCap)
+            if (valueToPass > valueLeftForSoftCap)
             valueToPass = valueLeftForSoftCap;
 
             valueInWei = valueToPass * currentPrice;
@@ -209,15 +209,15 @@ contract TakeMyEther is ERC20{
 
         currentPrice = getCurrentSellPrice(); //renew current price
 
-        if (weiToSpend &lt; currentPrice) {
+        if (weiToSpend < currentPrice) {
             return;
         }
 
-        if (soldTokens &lt; hardCapTokensAmount &amp;&amp; soldTokens &gt;= softCapTokensAmount) {
+        if (soldTokens < hardCapTokensAmount && soldTokens >= softCapTokensAmount) {
             uint valueLeftForHardCap = hardCapTokensAmount - soldTokens;
             valueToPass = weiToSpend / currentPrice;
 
-            if (valueToPass &gt; valueLeftForHardCap)
+            if (valueToPass > valueLeftForHardCap)
             valueToPass = valueLeftForHardCap;
 
             valueInWei = valueToPass * currentPrice;
@@ -227,7 +227,7 @@ contract TakeMyEther is ERC20{
             transferTokensAndEtherValue(address(this), msg.sender, valueToPass, valueInWei);
         }
 
-        if (weiToSpend / 10**17 &gt; 1) { //return unspent funds if they are greater than 0.1 ETH
+        if (weiToSpend / 10**17 > 1) { //return unspent funds if they are greater than 0.1 ETH
             msg.sender.transfer(weiToSpend);
         }
     }
@@ -241,7 +241,7 @@ contract TakeMyEther is ERC20{
 
         uint amountOfTokensToReturn = weiBalances[msg.sender] / avPrice;
 
-        require (amountOfTokensToReturn&gt;0);
+        require (amountOfTokensToReturn>0);
 
         uint valueInWei = weiBalances[msg.sender];
 
@@ -261,7 +261,7 @@ contract TakeMyEther is ERC20{
     function getWeiAvailableToReturn(address holder) public view returns (uint amount) {
         if (!isICOfinalized) return weiBalances[holder];
         uint percentsBlocked = 0;
-        if (percentsOfProjectComplete &gt; 10 &amp;&amp; lastStageSubmitted + lockDownPeriod &gt; now)
+        if (percentsOfProjectComplete > 10 && lastStageSubmitted + lockDownPeriod > now)
         percentsBlocked = percentsOfProjectComplete - 10;
         else
         percentsBlocked = percentsOfProjectComplete;
@@ -281,13 +281,13 @@ contract TakeMyEther is ERC20{
 
     function getCurrentSellPrice() public view returns (uint priceInWei) {
         if (!isICOfinalized) {
-            if (soldTokens &lt; softCapTokensAmount) return 10**14 * 5 ; //this is equal to 0.0005 ETH
+            if (soldTokens < softCapTokensAmount) return 10**14 * 5 ; //this is equal to 0.0005 ETH
             else return 10**15; //this is equal to 0.001 ETH
         }
         else { //if someone returns tokens after ICO finished, he can buy them until project is finished. But the price will depend on the project completeness level.
             if (!projectCompleted) //if project is finished, no one can buy tokens
             return (1 * 10**15 + 5 * (percentsOfProjectComplete * 10**13)) ; //each percent of completeness adds 5% to the tokenPrice.
-            else return 0; // there is no problem, because project is completed and fallback function won&#39;t work;
+            else return 0; // there is no problem, because project is completed and fallback function won't work;
         }
     }
 
@@ -302,9 +302,9 @@ contract TakeMyEther is ERC20{
 
     function finalizeICO() public onlyTeam {
         require(!isICOfinalized); // this function can be called only once
-        if (soldTokens &lt; hardCapTokensAmount)
-        require (lastStageSubmitted + minimumStageDuration &lt; now); // ICO duration is at least 2 weeks
-        require(soldTokens &gt;= softCapTokensAmount); //means, that the softCap Reached
+        if (soldTokens < hardCapTokensAmount)
+        require (lastStageSubmitted + minimumStageDuration < now); // ICO duration is at least 2 weeks
+        require(soldTokens >= softCapTokensAmount); //means, that the softCap Reached
         uint tokensToPass = passTokensToTheTeam(); //but without weiValue, so the team can not withdraw ether by returning tokens to the contract
         burnUndistributedTokens(tokensToPass);//tokensToPass); // undistributed tokens are destroyed
         lastStageSubmitted = now;
@@ -315,7 +315,7 @@ contract TakeMyEther is ERC20{
     }
 
     function submitNextStage() public onlyTeam returns (bool success) {
-        if (lastStageSubmitted + minimumStageDuration &gt; now) return false; //Team submitted the completeness of previous stage more then 2 weeks before.
+        if (lastStageSubmitted + minimumStageDuration > now) return false; //Team submitted the completeness of previous stage more then 2 weeks before.
         lastStageSubmitted = now;
         emit StageSubmitted(lastStageSubmitted);
         increaseProjectCompleteLevel();
@@ -323,11 +323,11 @@ contract TakeMyEther is ERC20{
     }
 
     function unlockFundsAndPassEther() public onlyTeam returns (bool success) {
-        require (lastTimeWithdrawal&lt;=lastStageSubmitted);
-        if (lastStageSubmitted + lockDownPeriod &gt; now) return false; //funds can not be passed until lockDownPeriod ends
-        if (percentsOfProjectComplete == 100 &amp;&amp; !projectCompleted) {
+        require (lastTimeWithdrawal<=lastStageSubmitted);
+        if (lastStageSubmitted + lockDownPeriod > now) return false; //funds can not be passed until lockDownPeriod ends
+        if (percentsOfProjectComplete == 100 && !projectCompleted) {
             projectCompleted = true;
-            if (tokenBalances.get(address(this))&gt;0) {
+            if (tokenBalances.get(address(this))>0) {
                 uint toTransferAmount = tokenBalances.get(address(this));
                 tokenBalances.insert(TakeMyEtherTeamAddress, tokenBalances.get(address(this)) + tokenBalances.get(TakeMyEtherTeamAddress));
                 tokenBalances.insert(address(this), 0);
@@ -346,13 +346,13 @@ contract TakeMyEther is ERC20{
         uint weiAmountForHolder = 0;
         uint tokensForHolder = 0;
 
-        for (uint i = 0; i&lt; tokenBalances.size(); i += 1) {
+        for (uint i = 0; i< tokenBalances.size(); i += 1) {
             address tokenHolder = tokenBalances.getKeyByIndex(i);
-            if (tokenBalances.get(tokenHolder)&gt;0) {
+            if (tokenBalances.get(tokenHolder)>0) {
                 weiAmountForHolder = tokenBalances.get(tokenHolder)*weiPerToken;
                 tokensForHolder = tokenBalances.get(tokenHolder) * tokensPerToken / 100; // Dividing because of the previous multiplication
                 tokenHolder.transfer(weiAmountForHolder); //This will pass a certain amount of ether to TakeMyEther platform tokenHolders
-                if (tokensContractAddress.call(bytes4(keccak256(&quot;authorizedTransfer(address,address,uint256)&quot;)), msg.sender, tokenHolder, tokensForHolder)) //This will pass a certain amount of tokens to TakeMyEther platform tokenHolders
+                if (tokensContractAddress.call(bytes4(keccak256("authorizedTransfer(address,address,uint256)")), msg.sender, tokenHolder, tokensForHolder)) //This will pass a certain amount of tokens to TakeMyEther platform tokenHolders
                 emit DividendsTransfered(tokenHolder, tokensForHolder, weiAmountForHolder);
             }
         }
@@ -362,9 +362,9 @@ contract TakeMyEther is ERC20{
         require (projectCompleted);
         uint weiPerToken = (address(this).balance * 100) / initialSupply;
 
-        for (uint i = 0; i&lt; tokenBalances.size(); i += 1) {
+        for (uint i = 0; i< tokenBalances.size(); i += 1) {
             address tokenHolder = tokenBalances.getKeyByIndex(i);
-            if (tokenBalances.get(tokenHolder)&gt;0) {
+            if (tokenBalances.get(tokenHolder)>0) {
                 uint weiAmountForHolder = (tokenBalances.get(tokenHolder)*weiPerToken)/100;
                 tokenHolder.transfer(weiAmountForHolder); //This will pass a certain amount of ether to TakeMyEther platform tokenHolders
                 emit DividendsTransfered(tokenHolder, 0, weiAmountForHolder);
@@ -375,7 +375,7 @@ contract TakeMyEther is ERC20{
     // Internal functions
 
     function transferTokensAndEtherValue(address from, address to, uint value, uint weiValue) internal returns (bool success){
-        if (tokenBalances.contains(from) &amp;&amp; tokenBalances.get(from) &gt;= value) {
+        if (tokenBalances.contains(from) && tokenBalances.get(from) >= value) {
             tokenBalances.insert(to, tokenBalances.get(to) + value);
             tokenBalances.insert(from, tokenBalances.get(from) - value);
 
@@ -398,13 +398,13 @@ contract TakeMyEther is ERC20{
     function passTokensToTheTeam() internal returns (uint tokenAmount) { //This function passes tokens to the team without weiValue, so the team can not withdraw ether by returning tokens to the contract
         uint tokensToPass = getNumberOfTokensForTheTeam();
         tokenBalances.insert(TakeMyEtherTeamAddress, tokensToPass);
-        weiBalances[TakeMyEtherTeamAddress] = 0; // those tokens don&#39;t cost any ether
+        weiBalances[TakeMyEtherTeamAddress] = 0; // those tokens don't cost any ether
         emit Transfer(address(this), TakeMyEtherTeamAddress, tokensToPass);
         return tokensToPass;
     }
 
     function increaseProjectCompleteLevel() internal {
-        if (percentsOfProjectComplete&lt;60)
+        if (percentsOfProjectComplete<60)
         percentsOfProjectComplete += 10;
         else
         percentsOfProjectComplete = 100;

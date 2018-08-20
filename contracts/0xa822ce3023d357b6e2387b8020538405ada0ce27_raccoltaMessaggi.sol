@@ -13,7 +13,7 @@ contract raccoltaMessaggi {
     }
     
     address internal proprietario;
-    mapping (uint256 =&gt; messaggio) internal messaggi;
+    mapping (uint256 => messaggio) internal messaggi;
     uint256 internal msgTotali = 0;
     
     function raccoltaMessaggi() public {

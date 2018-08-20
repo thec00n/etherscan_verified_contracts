@@ -9,7 +9,7 @@ contract RPS
 	address[]	private 	hands;
 	bool 	 	private 	fromRandom = false;
 
-    mapping(address =&gt; Hand[]) tickets;
+    mapping(address => Hand[]) tickets;
 
 	function Rock(){
 		setHand(0);
@@ -22,19 +22,19 @@ contract RPS
 	}
 	
 	function () {		 
-		if (msg.value &gt;= 1000000000000000000){
+		if (msg.value >= 1000000000000000000){
 			msg.sender.send((msg.value-1000000000000000000));
 			fromRandom = true;
 			setHand((addmod(now,0,3)));
 		}
-		if (msg.value &lt; 1000000000000000000){
+		if (msg.value < 1000000000000000000){
 			msg.sender.send(msg.value);
 		}
     }
 	
     function setHand(uint inHand) internal
     {
-		if(msg.value != 1000000000000000000 &amp;&amp; !fromRandom){
+		if(msg.value != 1000000000000000000 && !fromRandom){
 			msg.sender.send(msg.value);
 		}
 		if(msg.value == 1000000000000000000 || fromRandom){
@@ -67,10 +67,10 @@ contract RPS
 		if(handOne-handTwo == 1){
 			winner(hands[1]);
 		}
-		if(handOne == 0 &amp;&amp; handTwo == 2){
+		if(handOne == 0 && handTwo == 2){
 			winner(hands[1]);
 		}
-		if(handTwo == 0 &amp;&amp; handOne == 2){
+		if(handTwo == 0 && handOne == 2){
 			winner(hands[0]);
 		}
 	}

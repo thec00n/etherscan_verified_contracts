@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {  //was constant
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,7 +106,7 @@ contract ASTRICOPreSale is Ownable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   modifier isNotHalted() {     require(!halted);    _;  }
-  modifier afterDeadline() { if (now &gt;= endTime) _; }
+  modifier afterDeadline() { if (now >= endTime) _; }
 
   /**
     * Constructor for ASTRICOPreSale
@@ -144,7 +144,7 @@ contract ASTRICOPreSale is Ownable {
     require(!halted); // useful to test if we have paused it
     uint256 weiAmount                  = msg.value; // money sent in wei
     uint256 tokens                     = SafeMath.div(SafeMath.mul(weiAmount, getCurrentRate()), 1 ether);
-    require(ALLOC_CROWDSALE - astrSold &gt;= tokens);
+    require(ALLOC_CROWDSALE - astrSold >= tokens);
     weiRaised                          += weiAmount;
     astrSold                           += tokens;
     token.transferFrom(ownerAddress, msg.sender, tokens);
@@ -153,14 +153,14 @@ contract ASTRICOPreSale is Ownable {
 
 
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = (msg.value != 0);
-    bool astrAvailable = (ALLOC_CROWDSALE - astrSold) &gt; 0; 
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; astrAvailable &amp;&amp; ! crowdsaleClosed;
+    bool astrAvailable = (ALLOC_CROWDSALE - astrSold) > 0; 
+    return withinPeriod && nonZeroPurchase && astrAvailable && ! crowdsaleClosed;
   }
 
   function getCurrentRate() internal constant returns (uint256) {  
-    if( PRICE_VARIABLE &gt; 0 ) {
+    if( PRICE_VARIABLE > 0 ) {
       return PRICE_VARIABLE; // we can manually set prices if we want
     }
     return PRICE_STAGE_PS;
@@ -169,7 +169,7 @@ contract ASTRICOPreSale is Ownable {
 
   // this closes it when we want to close - rather than waiting 
   function setNewRate(uint256 _coinsPerEther) onlyOwner public {
-    if( _coinsPerEther &gt; 0 ) {
+    if( _coinsPerEther > 0 ) {
         PRICE_VARIABLE = _coinsPerEther * decimalsConversion;
     }
   }

@@ -31,7 +31,7 @@ contract EthereumLottery {
         uint finalizationBlock;
         address finalizer;
         string message;
-        mapping (uint =&gt; address) tickets;
+        mapping (uint => address) tickets;
         int nearestKnownBlock;
         int nearestKnownBlockHash;
     }
@@ -47,7 +47,7 @@ contract EthereumLottery {
     uint public recentActivityIdx;
     uint[1000] public recentActivity;
 
-    mapping (int =&gt; Lottery) public lotteries;
+    mapping (int => Lottery) public lotteries;
 
     address public btcRelay;
     address public poissonData;
@@ -64,7 +64,7 @@ contract EthereumLottery {
     }
 
     modifier afterInitialization {
-        require(id &gt;= 0);
+        require(id >= 0);
         _;
     }
 
@@ -79,16 +79,16 @@ contract EthereumLottery {
     }
 
     function needsInitialization() constant returns (bool) {
-        return id == -1 || lotteries[id].finalizationBlock &gt; 0;
+        return id == -1 || lotteries[id].finalizationBlock > 0;
     }
 
     function initLottery(uint _jackpot, uint _numTickets,
                          uint _ticketPrice, int _durationInBlocks)
              payable onlyAdminOrOwner {
         require(needsInitialization());
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(msg.value == _jackpot);
-        require(_numTickets * _ticketPrice &gt; _jackpot);
+        require(_numTickets * _ticketPrice > _jackpot);
 
         // Look up precomputed timespan in seconds where the
         // probability for n or more blocks occuring within
@@ -98,7 +98,7 @@ contract EthereumLottery {
         // is safe to keep selling tickets.
         uint ticketSaleDuration =
             PoissonData(poissonData).lookup(_durationInBlocks - 1);
-        require(ticketSaleDuration &gt; 0);
+        require(ticketSaleDuration > 0);
 
         id += 1;
         lotteries[id].jackpot = _jackpot;
@@ -115,23 +115,23 @@ contract EthereumLottery {
     function buyTickets(uint[] _tickets)
              payable afterInitialization {
         int blockHeight = BTCRelay(btcRelay).getLastBlockHeight();
-        require(blockHeight + 1 &lt; lotteries[id].decidingBlock);
-        require(now &lt; lotteries[id].cutoffTimestamp);
+        require(blockHeight + 1 < lotteries[id].decidingBlock);
+        require(now < lotteries[id].cutoffTimestamp);
 
-        require(_tickets.length &gt; 0);
+        require(_tickets.length > 0);
         require(msg.value == _tickets.length * lotteries[id].ticketPrice);
 
-        for (uint i = 0; i &lt; _tickets.length; i++) {
+        for (uint i = 0; i < _tickets.length; i++) {
             uint ticket = _tickets[i];
-            require(ticket &gt;= 0);
-            require(ticket &lt; lotteries[id].numTickets);
+            require(ticket >= 0);
+            require(ticket < lotteries[id].numTickets);
             require(lotteries[id].tickets[ticket] == 0);
 
             lotteries[id].tickets[ticket] = msg.sender;
             recentActivity[recentActivityIdx] = ticket;
 
             recentActivityIdx += 1;
-            if (recentActivityIdx &gt;= recentActivity.length) {
+            if (recentActivityIdx >= recentActivity.length) {
                 recentActivityIdx = 0;
             }
         }
@@ -143,7 +143,7 @@ contract EthereumLottery {
             lotteries[id].decidingBlock - blockHeight;
         uint ticketSaleDuration =
             PoissonData(poissonData).lookup(remainingDurationInBlocks - 1);
-        if (now + ticketSaleDuration &lt; lotteries[id].cutoffTimestamp) {
+        if (now + ticketSaleDuration < lotteries[id].cutoffTimestamp) {
             lotteries[id].cutoffTimestamp = now + ticketSaleDuration;
         }
     }
@@ -151,7 +151,7 @@ contract EthereumLottery {
     function needsFinalization()
              afterInitialization constant returns (bool) {
         int blockHeight = BTCRelay(btcRelay).getLastBlockHeight();
-        return blockHeight &gt;= lotteries[id].decidingBlock + 6 &amp;&amp;
+        return blockHeight >= lotteries[id].decidingBlock + 6 &&
                lotteries[id].finalizationBlock == 0;
     }
 
@@ -195,7 +195,7 @@ contract EthereumLottery {
         }
 
         // Walk only a few steps to keep an upper limit on gas costs.
-        for (uint step = 0; step &lt; _steps; step++) {
+        for (uint step = 0; step < _steps; step++) {
             // We expect free access to BTCRelay.
             int fee = BTCRelay(btcRelay).getFeeAmount(blockHash);
             require(fee == 0);
@@ -212,7 +212,7 @@ contract EthereumLottery {
 
             blockHeight -= 1;
             blockHash = 0;
-            for (uint i = 0; i &lt; 32; i++) {
+            for (uint i = 0; i < 32; i++) {
                 blockHash = blockHash | int(temp[uint(i)]) * int(256 ** i);
             }
 
@@ -232,7 +232,7 @@ contract EthereumLottery {
              afterInitialization {
         require(lotteries[_id].winner != 0);
         require(lotteries[_id].winner == msg.sender);
-        require(getMessageLength(_message) &lt;= 500);
+        require(getMessageLength(_message) <= 500);
         lotteries[_id].message = _message;
     }
 
@@ -290,12 +290,12 @@ contract EthereumLottery {
 
     function getTicketDetails(int _id, uint _offset, uint _n, address _addr)
              constant returns (uint8[] details) {
-        require(_offset + _n &lt;= lotteries[_id].numTickets);
+        require(_offset + _n <= lotteries[_id].numTickets);
 
         details = new uint8[](_n);
-        for (uint i = 0; i &lt; _n; i++) {
+        for (uint i = 0; i < _n; i++) {
             address addr = lotteries[_id].tickets[_offset + i];
-            if (addr == _addr &amp;&amp; _addr != 0) {
+            if (addr == _addr && _addr != 0) {
                 details[i] = 2;
             } else if (addr != 0) {
                 details[i] = 1;
@@ -307,7 +307,7 @@ contract EthereumLottery {
 
 
     function getTicketOwner(int _id, uint _ticket) constant returns (address) {
-        require(_id &gt;= 0);
+        require(_id >= 0);
         return lotteries[_id].tickets[_ticket];
     }
 
@@ -315,7 +315,7 @@ contract EthereumLottery {
              constant returns (int _id, uint _idx, uint[1000] _recentActivity) {
         _id = id;
         _idx = recentActivityIdx;
-        for (uint i = 0; i &lt; recentActivity.length; i++) {
+        for (uint i = 0; i < recentActivity.length; i++) {
             _recentActivity[i] = recentActivity[i];
         }
     }
@@ -335,7 +335,7 @@ contract EthereumLottery {
     }
 
     function destruct() onlyOwner {
-        require(now - lastInitTimestamp &gt; INACTIVITY_TIMEOUT);
+        require(now - lastInitTimestamp > INACTIVITY_TIMEOUT);
         selfdestruct(owner);
     }
 }

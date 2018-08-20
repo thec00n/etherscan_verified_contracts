@@ -34,17 +34,17 @@ contract ERC20Interface {
 }
 
 contract DACContract is ERC20Interface, Owned {
-	string public constant symbol = &quot;DAC&quot;;
-	string public constant name = &quot;Davinci coin&quot;;
+	string public constant symbol = "DAC";
+	string public constant name = "Davinci coin";
 	uint8 public constant decimals = 18;
 	uint256 public constant totalSupply = 8800000000000000000000000000;
 
 	bool public stopped;
 
-	mapping (address =&gt; int8) public blackList;
+	mapping (address => int8) public blackList;
 
-	mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+	mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint256)) public allowed;
 
 
     event Blacklisted(address indexed target);
@@ -65,8 +65,8 @@ contract DACContract is ERC20Interface, Owned {
 	
 // function made for airdrop
 	function airdrop(address[] _to, uint256[] _value) onlyOwner notStopped public {
-	    for(uint256 i = 0; i &lt; _to.length; i++){
-	        if(balances[_to[i]] &gt; 0){
+	    for(uint256 i = 0; i < _to.length; i++){
+	        if(balances[_to[i]] > 0){
 	            continue;
 	        }
 	        transfer(_to[i], _value[i]);
@@ -96,13 +96,13 @@ contract DACContract is ERC20Interface, Owned {
 		return balances[_owner];
 	}
 	function transfer(address _to, uint256 _value) notStopped public returns (bool success){
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 
-		if(blackList[msg.sender] &gt; 0){
+		if(blackList[msg.sender] > 0){
 			emit RejectedPaymentFromBlacklistedAddr(msg.sender, _to, _value);
 			return false;
 		}
-		if(blackList[_to] &gt; 0){
+		if(blackList[_to] > 0){
 			emit RejectedPaymentToBlacklistedAddr(msg.sender, _to, _value);
 			return false;
 		}
@@ -113,14 +113,14 @@ contract DACContract is ERC20Interface, Owned {
 		return true;
 	}
 	function transferFrom(address _from, address _to, uint256 _value) notStopped public returns (bool success){
-		require(balances[_from] &gt;= _value
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+		require(balances[_from] >= _value
+			&& allowed[_from][msg.sender] >= _value);
 
-		if(blackList[_from] &gt; 0){
+		if(blackList[_from] > 0){
 			emit RejectedPaymentFromBlacklistedAddr(_from, _to, _value);
 			return false;
 		}
-		if(blackList[_to] &gt; 0){
+		if(blackList[_to] > 0){
 			emit RejectedPaymentToBlacklistedAddr(_from, _to, _value);
 			return false;
 		}

@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /*
 *   DapCar Token (DAPX)
 *   Created by Starlag Labs (www.starlag.com)
-*   Copyright &#169; DapCar.io 2018. All rights reserved.
+*   Copyright © DapCar.io 2018. All rights reserved.
 *   https://www.dapcar.io
 */
 
@@ -35,7 +35,7 @@ library Math {
     pure 
     returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library Math {
     returns (uint256) 
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,13 +55,13 @@ contract Utils {
 
     modifier greaterThanZero(uint256 _value) 
     {
-        require(_value &gt; 0);
+        require(_value > 0);
         _;
     }
 
     modifier validUint(uint256 _value) 
     {
-        require(_value &gt;= 0);
+        require(_value >= 0);
         _;
     }
 
@@ -79,13 +79,13 @@ contract Utils {
 
     modifier validAddressAndNotThis(address _address) 
     {
-        require(_address != address(0) &amp;&amp; _address != address(this));
+        require(_address != address(0) && _address != address(this));
         _;
     }
 
     modifier notEmpty(string _data)
     {
-        require(bytes(_data).length &gt; 0);
+        require(bytes(_data).length > 0);
         _;
     }
 
@@ -103,19 +103,19 @@ contract Utils {
 
     modifier validUint64(uint64 _value) 
     {
-        require(_value &gt;= 0 &amp;&amp; _value &lt; 4294967296);
+        require(_value >= 0 && _value < 4294967296);
         _;
     }
 
     modifier validUint8(uint8 _value) 
     {
-        require(_value &gt;= 0 &amp;&amp; _value &lt; 256);
+        require(_value >= 0 && _value < 256);
         _;
     }
 
     modifier validBalanceThis(uint256 _value)
     {
-        require(_value &lt;= address(this).balance);
+        require(_value <= address(this).balance);
         _;
     }
 }
@@ -125,7 +125,7 @@ contract Authorizable is Utils {
 
     address public owner;
     address public newOwner;
-    mapping (address =&gt; Level) authorizeds;
+    mapping (address => Level) authorizeds;
     uint256 public authorizedCount;
 
     /*  
@@ -164,7 +164,7 @@ contract Authorizable is Utils {
     }
 
     modifier authLevel(Level _level) {
-        require((authorizeds[msg.sender] &gt; Level.ZERO) &amp;&amp; (authorizeds[msg.sender] &lt;= _level));
+        require((authorizeds[msg.sender] > Level.ZERO) && (authorizeds[msg.sender] <= _level));
         _;
     }
 
@@ -184,7 +184,7 @@ contract Authorizable is Utils {
     }
 
     modifier checkLevel(Level _level) {
-        require((_level &gt; Level.ZERO) &amp;&amp; (Level.DAPP &gt;= _level));
+        require((_level > Level.ZERO) && (Level.DAPP >= _level));
         _;
     }
 
@@ -213,7 +213,7 @@ contract Authorizable is Utils {
         if (authorizeds[owner] == Level.OWNER) {
             delete authorizeds[owner];
         }
-        if (authorizeds[newOwner] &gt; Level.ZERO) {
+        if (authorizeds[newOwner] > Level.ZERO) {
             authorizedCount = authorizedCount.sub(1);
         }
         owner = newOwner;
@@ -256,7 +256,7 @@ contract Authorizable is Utils {
     notThis(_address)
     public  
     {
-        if (authorizeds[_address] &gt; Level.ZERO) {
+        if (authorizeds[_address] > Level.ZERO) {
             authorizedCount = authorizedCount.sub(1);
         }
         delete authorizeds[_address];
@@ -289,8 +289,8 @@ contract IERC20 {
 }
 
 contract ERC20Token is Authorizable, IERC20 {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -299,19 +299,19 @@ contract ERC20Token is Authorizable, IERC20 {
 
     modifier validBalance(uint256 _value)
     {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         _;
     }
 
     modifier validBalanceFrom(address _from, uint256 _value)
     {
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         _;
     }
 
     modifier validBalanceOverflows(address _to, uint256 _value)
     {
-        require(balances[_to] &lt;= balances[_to].add(_value));
+        require(balances[_to] <= balances[_to].add(_value));
         _;
     }
 
@@ -362,7 +362,7 @@ contract ERC20Token is Authorizable, IERC20 {
     internal 
     returns (bool success) 
     {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -425,7 +425,7 @@ contract ERC20Token is Authorizable, IERC20 {
     returns (bool success) 
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             delete allowed[msg.sender][_spender];
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -436,7 +436,7 @@ contract ERC20Token is Authorizable, IERC20 {
 }
 
 contract FrozenToken is ERC20Token, ITokenRecipient {
-    mapping (address =&gt; bool) frozeds;
+    mapping (address => bool) frozeds;
     uint256 public frozedCount;
     bool public freezeEnabled = true;
     bool public autoFreeze = true;
@@ -459,7 +459,7 @@ contract FrozenToken is ERC20Token, ITokenRecipient {
 
     modifier notFreezeFrom(address _from) 
     {
-        require((_from != address(0) &amp;&amp; frozeds[_from] == false) || freezeEnabled == false);
+        require((_from != address(0) && frozeds[_from] == false) || freezeEnabled == false);
         _;
     }
 
@@ -501,7 +501,7 @@ contract FrozenToken is ERC20Token, ITokenRecipient {
     authLevel(Level.ADMIN)
     public 
     {
-        PropsChanged(msg.sender, &quot;freezeEnabled&quot;, freezeEnabled, _freezeEnabled);
+        PropsChanged(msg.sender, "freezeEnabled", freezeEnabled, _freezeEnabled);
         freezeEnabled = _freezeEnabled;
     }
 
@@ -509,7 +509,7 @@ contract FrozenToken is ERC20Token, ITokenRecipient {
     authLevel(Level.ADMIN)
     public 
     {
-        PropsChanged(msg.sender, &quot;autoFreeze&quot;, autoFreeze, _autoFreeze);
+        PropsChanged(msg.sender, "autoFreeze", autoFreeze, _autoFreeze);
         autoFreeze = _autoFreeze;
     }
 
@@ -609,7 +609,7 @@ contract FrozenToken is ERC20Token, ITokenRecipient {
         totalSupply_ = totalSupply_.add(_value);
         Transfer(0, _address, _value);
 
-        if (freezeEnabled &amp;&amp; autoFreeze &amp;&amp; _address != address(this) &amp;&amp; isAuthorized(_address) == Level.ZERO) {
+        if (freezeEnabled && autoFreeze && _address != address(this) && isAuthorized(_address) == Level.ZERO) {
             if (!isFreeze(_address)) {
                 frozeds[_address] = true;
                 frozedCount = frozedCount.add(1);
@@ -643,13 +643,13 @@ contract FrozenToken is ERC20Token, ITokenRecipient {
 }
 
 contract DapCarToken is FrozenToken {
-    string public name = &quot;DapCar Token&quot;;
-    string public symbol = &quot;DAPX&quot;;
+    string public name = "DapCar Token";
+    string public symbol = "DAPX";
     uint8 public decimals = 0;
 
-    string public version = &quot;0.1&quot;;
-    string public publisher = &quot;https://www.dapcar.io&quot;;
-    string public description = &quot;This is an official DapCar Token (DAPX)&quot;;
+    string public version = "0.1";
+    string public publisher = "https://www.dapcar.io";
+    string public description = "This is an official DapCar Token (DAPX)";
 
     bool public acceptAdminWithdraw = false;
     bool public acceptDonate = true;
@@ -733,7 +733,7 @@ contract DapCarToken is FrozenToken {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;acceptAdminWithdraw&quot;, acceptAdminWithdraw, _accept);
+        PropsChanged(msg.sender, "acceptAdminWithdraw", acceptAdminWithdraw, _accept);
         acceptAdminWithdraw = _accept;
         return true;
     }
@@ -759,7 +759,7 @@ contract DapCarToken is FrozenToken {
     public
     returns (bool success)
     {
-        PropsChanged(msg.sender, &quot;acceptDonate&quot;, acceptDonate, _accept);
+        PropsChanged(msg.sender, "acceptDonate", acceptDonate, _accept);
         acceptDonate = _accept;
         return true;
     }

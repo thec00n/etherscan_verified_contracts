@@ -1,8 +1,8 @@
 /*
 
-Copyright (c) 2017 Esperite Ltd. &lt;<span class="__cf_email__" data-cfemail="bcd0d9dbddd0fcd9cfccd9ced5c8d992dfd392d2c6">[email&#160;protected]</span>&gt;
+Copyright (c) 2017 Esperite Ltd. <<span class="__cf_email__" data-cfemail="bcd0d9dbddd0fcd9cfccd9ced5c8d992dfd392d2c6">[email protected]</span>>
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
 ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
@@ -28,13 +28,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,26 +61,26 @@ contract Deco is ERC20ERC223 {
 
   using SafeMath for uint256;
 
-  string public constant name = &quot;Deco&quot;;
-  string public constant symbol = &quot;DEC&quot;;
+  string public constant name = "Deco";
+  string public constant symbol = "DEC";
   uint8 public constant decimals = 18;
   
   uint256 public constant totalSupply = 6*10**26; // 600,000,000. 000,000,000,000,000,000 units
     
   // Accounts
   
-  mapping(address =&gt; Account) private accounts;
+  mapping(address => Account) private accounts;
   
   struct Account {
     uint256 balance;
-    mapping(address =&gt; uint256) allowed;
-    mapping(address =&gt; bool) isAllowanceAuthorized;
+    mapping(address => uint256) allowed;
+    mapping(address => bool) isAllowanceAuthorized;
   }  
   
   // Fix for the ERC20 short address attack.
   // http://vessenes.com/the-erc20-short-address-attack-explained/
   modifier onlyPayloadSize(uint256 size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
      _;
   }
 
@@ -100,7 +100,7 @@ contract Deco is ERC20ERC223 {
   // Transfers
 
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool) {
-    performTransfer(msg.sender, _to, _value, &quot;&quot;);
+    performTransfer(msg.sender, _to, _value, "");
     Transfer(msg.sender, _to, _value);
     return true;
   }
@@ -114,7 +114,7 @@ contract Deco is ERC20ERC223 {
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool) {
     require(hasApproval(_from, msg.sender));
     uint256 _allowed = accounts[_from].allowed[msg.sender];    
-    performTransfer(_from, _to, _value, &quot;&quot;);    
+    performTransfer(_from, _to, _value, "");    
     accounts[_from].allowed[msg.sender] = _allowed.sub(_value);
     Transfer(_from, _to, _value);
     return true;
@@ -136,15 +136,15 @@ contract Deco is ERC20ERC223 {
     assembly {
       codeLength := extcodesize(_to)
     }
-    return codeLength &gt; 0;
+    return codeLength > 0;
   }
 
-  // Approval &amp; Allowance
+  // Approval & Allowance
   
   function approve(address _spender, uint256 _value) returns (bool) {
     require(msg.sender != _spender);
     // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (accounts[msg.sender].allowed[_spender] != 0)) {
+    if ((_value != 0) && (accounts[msg.sender].allowed[_spender] != 0)) {
       revert();
       return false;
     }
@@ -205,7 +205,7 @@ contract DecoBank {
   uint256 public rewardDistributedUnits = 0;  
 
   // Contributors
-  mapping(address =&gt; Contributor) private contributors;
+  mapping(address => Contributor) private contributors;
 
   struct Contributor {    
     uint256 contributedWei;
@@ -245,8 +245,8 @@ contract DecoBank {
   }
   
   function isValidPurchase() private returns (bool) {
-    bool minimumContribution = msg.value &gt;= MINIMUM_WEI;
-    return minimumContribution &amp;&amp; (presaleActive() || saleActive());
+    bool minimumContribution = msg.value >= MINIMUM_WEI;
+    return minimumContribution && (presaleActive() || saleActive());
   }  
 
   function() payable validPurchase {
@@ -259,7 +259,7 @@ contract DecoBank {
     uint256 tokens = weiAmount.mul(currentRate());
     uint256 issuerReserveTokens = unitsForIssuerReserve(tokens);
     
-    require(crowdsaleDistributedUnits.add(tokens).add(issuerReserveTokens) &lt;= totalSupplyUnits);
+    require(crowdsaleDistributedUnits.add(tokens).add(issuerReserveTokens) <= totalSupplyUnits);
 
     incrementContributorsCount(beneficiary);
 
@@ -298,7 +298,7 @@ contract DecoBank {
   }
 
   function currentDiscountPercentage() public constant returns (uint256) {
-    if (presaleStartTime &gt; now) { return presaleDiscount; }
+    if (presaleStartTime > now) { return presaleDiscount; }
     if (presaleActive()) { return presaleDiscount; }
     uint256 discountSub = saleStage().mul(5);
     uint256 discount = saleDiscount.sub(discountSub);
@@ -317,7 +317,7 @@ contract DecoBank {
   }
 
   function shouldEndPresale() private constant returns (bool) {
-    if ((crowdsaleDistributedUnits.sub(issuerDistributedUnits) &gt;= presaleLimitUnits()) || (now &gt;= presaleEndTime)) {
+    if ((crowdsaleDistributedUnits.sub(issuerDistributedUnits) >= presaleLimitUnits()) || (now >= presaleEndTime)) {
       return true;
     } else {
       return false;
@@ -325,8 +325,8 @@ contract DecoBank {
   }
 
   function presaleActive() public constant returns (bool) {
-    bool inRange = now &gt;= presaleStartTime &amp;&amp; now &lt; presaleEndTime;
-    return inRange &amp;&amp; shouldEndPresale() == false;
+    bool inRange = now >= presaleStartTime && now < presaleEndTime;
+    return inRange && shouldEndPresale() == false;
   }
 
   // Sale
@@ -344,7 +344,7 @@ contract DecoBank {
   }
 
   function saleLimitReachedForCurrentStage() public constant returns (bool) {
-    return (crowdsaleDistributedUnits.sub(issuerDistributedUnits) &gt;= unitsLimitForCurrentSaleStage());
+    return (crowdsaleDistributedUnits.sub(issuerDistributedUnits) >= unitsLimitForCurrentSaleStage());
   }
 
   function currentSaleStage() constant public returns (uint256) {
@@ -355,13 +355,13 @@ contract DecoBank {
     uint256 delta = saleEndTime.sub(saleStartTime);
     uint256 stageStep = delta.div(6);
     int256 stageDelta = int256(now - saleStartTime);
-    if ((stageDelta &lt;= 0) || (stageStep == 0)) {
+    if ((stageDelta <= 0) || (stageStep == 0)) {
       return 0;
     } else {
       uint256 reminder = uint256(stageDelta) % stageStep;
       uint256 dividableDelta = uint256(stageDelta).sub(reminder);
       uint256 stage = dividableDelta.div(stageStep);
-      if (stage &lt;= 5) {
+      if (stage <= 5) {
         return stage;
       } else {
         return 5;
@@ -370,8 +370,8 @@ contract DecoBank {
   }
 
   function saleActive() public constant returns (bool) {
-    bool inRange = now &gt;= saleStartTime &amp;&amp; now &lt; saleEndTime;        
-    return inRange &amp;&amp; saleLimitReachedForCurrentStage() == false;
+    bool inRange = now >= saleStartTime && now < saleEndTime;        
+    return inRange && saleLimitReachedForCurrentStage() == false;
   }
 
   // Issuer Reserve
@@ -379,7 +379,7 @@ contract DecoBank {
   function unitsForIssuerReserve(uint256 _tokensForDistribution) private returns (uint256) {
     uint256 residue = maximumIssuerReservedUnits().sub(issuerDistributedUnits);
     uint256 toIssuer = _tokensForDistribution.div(100).mul(10);
-    if (residue &gt; toIssuer) {
+    if (residue > toIssuer) {
       return toIssuer;
     } else {
       return residue;
@@ -398,11 +398,11 @@ contract DecoBank {
   }
 
   function rewardDistributionStarted() public constant returns (bool) {
-    return now &gt;= rewardDistributionStart;
+    return now >= rewardDistributionStart;
   }
 
   function requestReward() afterSale external {
-    if ((msg.sender == contractCreator) &amp;&amp; (rewardDistributionEnded())) {
+    if ((msg.sender == contractCreator) && (rewardDistributionEnded())) {
       sendNotDistributedUnits();
     } else {
       rewardDistribution(msg.sender);
@@ -410,9 +410,9 @@ contract DecoBank {
   }
 
   function rewardDistribution(address _address) private {
-    require(contributors[_address].contributedWei &gt; 0);    
+    require(contributors[_address].contributedWei > 0);    
     uint256 reward = payableReward(_address);
-    require(reward &gt; 0);
+    require(reward > 0);
     sendReward(_address, reward);
   }
 
@@ -425,14 +425,14 @@ contract DecoBank {
 
   function payableReward(address _address) afterSale constant public returns (uint256) {
     uint256 unitsLeft = totalUnitsLeft();
-    if (unitsLeft &lt; 10**4) {
+    if (unitsLeft < 10**4) {
       return unitsLeft;
     }
     uint256 totalReward = contributorTotalReward(_address);
     uint256 paidBonus = contributors[_address].rewardDistributedDecoUnits;
     uint256 totalRewardLeft = totalReward.sub(paidBonus);
     uint256 bonusPerDay = totalReward.div(rewardDays());
-    if ((totalRewardLeft &gt; 0) &amp;&amp; ((bonusPerDay == 0) || (rewardDaysLeft() == 0))) {
+    if ((totalRewardLeft > 0) && ((bonusPerDay == 0) || (rewardDaysLeft() == 0))) {
       return totalRewardLeft;
     }
     uint256 totalPayable = rewardPayableDays().mul(bonusPerDay);
@@ -452,7 +452,7 @@ contract DecoBank {
     if (payableDays == 0) {
       payableDays = 1;
     }
-    if (payableDays &gt; rewardDays()) {
+    if (payableDays > rewardDays()) {
       payableDays = rewardDays();
     }
     return payableDays;
@@ -482,12 +482,12 @@ contract DecoBank {
 
   function changeRemainingDecoRewardOwner(address _newOwner, string _confirmation) afterSale external {
     require(_newOwner != 0x0);
-    require(sha3(_confirmation) == sha3(&quot;CONFIRM&quot;));
+    require(sha3(_confirmation) == sha3("CONFIRM"));
     require(_newOwner != address(this));
     require(_newOwner != address(token));    
     require(contributors[_newOwner].decoUnits == 0);
-    require(contributors[msg.sender].decoUnits &gt; 0);
-    require(token.balanceOf(_newOwner) &gt; 0); // The new owner must have some number of DECO tokens. It proofs that _newOwner address is real.
+    require(contributors[msg.sender].decoUnits > 0);
+    require(token.balanceOf(_newOwner) > 0); // The new owner must have some number of DECO tokens. It proofs that _newOwner address is real.
     contributors[_newOwner] = contributors[msg.sender];
     delete(contributors[msg.sender]);
     RemainingRewardOwnershipChanged(msg.sender, _newOwner);
@@ -495,18 +495,18 @@ contract DecoBank {
 
   function totalUnitsLeft() constant public returns (uint256) {
     int256 units = int256(totalSupplyUnits) - int256((rewardDistributedUnits.add(crowdsaleDistributedUnits))); 
-    if (units &lt; 0) {
+    if (units < 0) {
       return token.balanceOf(this);
     }
     return uint256(units);
   }
 
   function rewardDaysLeft() constant public returns (uint256) {
-    if (now &lt; rewardDistributionStart) {
+    if (now < rewardDistributionStart) {
       return rewardDays();
     }
     int256 left = (int256(rewardDistributionEnd()) - int256(now)) / 1 days;
-    if (left &lt; 0) {
+    if (left < 0) {
       left = 0;
     }
     return uint256(left);
@@ -517,7 +517,7 @@ contract DecoBank {
     uint256 leftForBonuses = totalSupplyUnits.sub(crowdsaleDistributedUnits);
     uint256 reward = leftForBonuses.mul(proportion).div(10**32);
     uint256 totalLeft = totalSupplyUnits - (rewardDistributedUnits.add(reward).add(crowdsaleDistributedUnits));
-    if (totalLeft &lt; 10**4) {
+    if (totalLeft < 10**4) {
       reward = reward.add(totalLeft);
     }    
     return reward;
@@ -528,7 +528,7 @@ contract DecoBank {
   }  
 
   function rewardDistributionEnded() public constant returns (bool) {
-    return now &gt; rewardDistributionEnd();
+    return now > rewardDistributionEnd();
   }
 
 }

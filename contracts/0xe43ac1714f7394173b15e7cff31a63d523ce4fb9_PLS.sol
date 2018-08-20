@@ -113,26 +113,26 @@ contract ERC20 {
 }
 contract DSMath {
     function add(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -151,10 +151,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -182,8 +182,8 @@ contract DSMath {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) {
         _balances[msg.sender] = supply;
@@ -228,7 +228,7 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract DSToken is DSTokenBase(0), DSStop {
 
-    mapping (address =&gt; mapping (address =&gt; bool)) _trusted;
+    mapping (address => mapping (address => bool)) _trusted;
 
     bytes32  public  symbol;
     uint256  public  decimals = 18; // standard token precision. override to customize
@@ -256,7 +256,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; !_trusted[src][msg.sender]) {
+        if (src != msg.sender && !_trusted[src][msg.sender]) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -290,7 +290,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) auth stoppable {
-        if (guy != msg.sender &amp;&amp; !_trusted[guy][msg.sender]) {
+        if (guy != msg.sender && !_trusted[guy][msg.sender]) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -300,7 +300,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) auth {
         name = name_;
@@ -362,10 +362,10 @@ contract ApproveAndCallFallBack {
     function receiveApproval(address from, uint256 _amount, address _token, bytes _data);
 }
 
-contract PLS is DSToken(&quot;PLS&quot;), Controlled {
+contract PLS is DSToken("PLS"), Controlled {
 
     function PLS() {
-        setName(&quot;DACPLAY Token&quot;);
+        setName("DACPLAY Token");
     }
 
     /// @notice Send `_amount` tokens to `_to` from `_from` on the condition it
@@ -384,21 +384,21 @@ contract PLS is DSToken(&quot;PLS&quot;), Controlled {
 
         success = super.transferFrom(_from, _to, _amount);
 
-        if (success &amp;&amp; isContract(_to))
+        if (success && isContract(_to))
         {
             // Refer Contract Interface ApproveAndCallFallBack, using keccak256 since sha3 has been deprecated.
-            if(!_to.call(bytes4(bytes32(keccak256(&quot;receiveToken(address,uint256,address)&quot;))), _from, _amount, this)) {
+            if(!_to.call(bytes4(bytes32(keccak256("receiveToken(address,uint256,address)"))), _from, _amount, this)) {
                 // do nothing when error in call in case that the _to contract is not inherited from ReceiveAndCallFallBack
                 // revert();
                 // TODO: Log Some Event here to record the fail.
-                // Even the fallback failed if there is such one, the transfer will not be revert since &quot;revert()&quot; is not called.
+                // Even the fallback failed if there is such one, the transfer will not be revert since "revert()" is not called.
             }
         }
     }
 
     /*
      * ERC 223
-     * Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     * Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      * https://github.com/ethereum/EIPs/issues/223
      * function transfer(address _to, uint256 _value, bytes _data) public returns (bool success);
      */
@@ -484,10 +484,10 @@ contract PLS is DSToken(&quot;PLS&quot;), Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {

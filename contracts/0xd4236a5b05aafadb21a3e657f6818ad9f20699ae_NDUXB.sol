@@ -42,13 +42,13 @@ library SafeMath {
   }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   uint256 totalSupply_;
 
   /**
@@ -81,7 +81,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -97,8 +97,8 @@ contract BasicToken is ERC20Basic {
 
 contract NDUXBase is BasicToken, Ownable {
 
-  string public constant name = &quot;NODUX&quot;;
-  string public constant symbol = &quot;NDUX&quot;;
+  string public constant name = "NODUX";
+  string public constant symbol = "NDUX";
   uint constant maxTotalSupply = 75000000;
   
   function NDUXBase() public {
@@ -106,7 +106,7 @@ contract NDUXBase is BasicToken, Ownable {
   }
 
   function mint(address to, uint amount) internal returns(bool) {
-    require(to != address(0) &amp;&amp; amount &gt; 0);
+    require(to != address(0) && amount > 0);
     totalSupply_ = totalSupply_.add(amount);
     balances[to] = balances[to].add(amount);
     emit Transfer(address(0), to, amount);
@@ -115,7 +115,7 @@ contract NDUXBase is BasicToken, Ownable {
   
   function send(address to, uint amount) public onlyOwner returns(bool) {
     require(to != address(0));
-    require(amount &lt;= balances[this]);
+    require(amount <= balances[this]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[this] = balances[this].sub(amount);
@@ -124,7 +124,7 @@ contract NDUXBase is BasicToken, Ownable {
   }
 
   function burn(address from, uint amount) public onlyOwner returns(bool) {
-    require(from != address(0) &amp;&amp; amount &gt; 0);
+    require(from != address(0) && amount > 0);
     balances[from] = balances[from].sub(amount);
     totalSupply_ = totalSupply_.sub(amount);
     emit Transfer(from, address(0), amount);
@@ -140,7 +140,7 @@ contract TxFeatures is BasicToken {
     uint amount;
   }
 
-  mapping(address =&gt; Tx[]) public txs;
+  mapping(address => Tx[]) public txs;
 
   event NewTx(address user, uint timestamp, uint amount);
 
@@ -150,12 +150,12 @@ contract TxFeatures is BasicToken {
   }
 
   function poptxs(address user, uint amount) internal {
-    require(balanceOf(user) &gt;= amount);
+    require(balanceOf(user) >= amount);
     Tx[] storage usertxs = txs[user];
 
     for(Tx storage curtx = usertxs[usertxs.length - 1]; usertxs.length != 0;) {
 
-      if(curtx.amount &gt; amount) {
+      if(curtx.amount > amount) {
         curtx.amount -= amount;
         amount = 0;
       } else {
@@ -175,10 +175,10 @@ contract NDUXB is NDUXBase, TxFeatures {
    
      function calculateTokensEnabledOne(address user, uint minAge) public view onlyOwner returns(uint amount) {
     Tx[] storage usertxs = txs[user];
-    for(uint it = 0; it &lt; usertxs.length; ++it) {
+    for(uint it = 0; it < usertxs.length; ++it) {
       Tx storage curtx = usertxs[it];
       uint diff = now - curtx.timestamp;
-      if(diff &gt;= minAge) {
+      if(diff >= minAge) {
         amount += curtx.amount;
       }
     }
@@ -188,12 +188,12 @@ contract NDUXB is NDUXBase, TxFeatures {
   event SendMiningProfit(address user, uint tokens, uint ethers);
 
   function sendMiningProfit(address[] users, uint minAge) public payable onlyOwner returns(uint) {
-    require(users.length &gt; 0);
+    require(users.length > 0);
     uint total = 0;
 
     uint[] memory __balances = new uint[](users.length);
 
-    for(uint it = 0; it &lt; users.length; ++it) {
+    for(uint it = 0; it < users.length; ++it) {
       address user = users[it];
       uint balance = calculateTokensEnabledOne(user, minAge);
       __balances[it] = balance;
@@ -204,11 +204,11 @@ contract NDUXB is NDUXBase, TxFeatures {
 
     uint ethersPerToken = msg.value / total;
 
-    for(it = 0; it &lt; users.length; ++it) {
+    for(it = 0; it < users.length; ++it) {
       user = users[it];
       balance = __balances[it];
       uint ethers = balance * ethersPerToken;
-      if(balance &gt; 0)
+      if(balance > 0)
         user.transfer(balance * ethersPerToken);
       emit SendMiningProfit(user, balance, ethers);
     }
@@ -216,26 +216,26 @@ contract NDUXB is NDUXBase, TxFeatures {
   }
 
   function calculateTokensEnabledforAirdrop(address[] users,uint minAge) public view onlyOwner returns(uint total) {
-    for(uint it = 0; it &lt; users.length; ++it) {
+    for(uint it = 0; it < users.length; ++it) {
       total += calculateTokensEnabledOne(users[it], minAge);
     }
   }
 
   function airdrop(address[] users, uint minAge, uint percent, uint maxToSend) public onlyOwner returns(uint) {
-    require(users.length &gt; 0);
-    require(balanceOf(msg.sender) &gt;= maxToSend);
-    require(percent &gt; 0 &amp;&amp; percent &lt; 10);
+    require(users.length > 0);
+    require(balanceOf(msg.sender) >= maxToSend);
+    require(percent > 0 && percent < 10);
 
     uint total = 0;
 
-    for(uint it = 0; it &lt; users.length; ++it) {
+    for(uint it = 0; it < users.length; ++it) {
       address user = users[it];
       uint balance = calculateTokensEnabledOne(user, minAge);
-      if(balance &gt; 0) {
+      if(balance > 0) {
         uint toSend = balance.mul(percent).div(100);
         total += toSend;
         transfer(user, balance.mul(percent).div(100));
-        require(total &lt;= maxToSend);
+        require(total <= maxToSend);
       }
     }
 

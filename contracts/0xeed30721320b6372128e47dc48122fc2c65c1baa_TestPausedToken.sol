@@ -6,13 +6,13 @@ contract TestPausedToken {
   address owner;
   
   uint256 public totalSupply = 1000000000000000000000000000;
-  string public name = &quot;Test Paused Token&quot;;
-  string public symbol = &quot;TPT1&quot;;
+  string public name = "Test Paused Token";
+  string public symbol = "TPT1";
   uint8 public decimals = 18;
   bool public paused = true;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
   
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -31,7 +31,7 @@ contract TestPausedToken {
     if (_to == address(0)) {
       return false;
     }
-    if (_value &gt; balances[msg.sender]) {
+    if (_value > balances[msg.sender]) {
       return false;
     }
     
@@ -49,10 +49,10 @@ contract TestPausedToken {
     if (_to == address(0)) {
       return false;
     }
-    if (_value &gt; balances[_from]) {
+    if (_value > balances[_from]) {
       return false;
     }
-    if (_value &gt; allowed[_from][msg.sender]) {
+    if (_value > allowed[_from][msg.sender]) {
       return false;
     }
 

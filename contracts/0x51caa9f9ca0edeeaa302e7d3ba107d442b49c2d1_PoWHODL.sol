@@ -5,17 +5,17 @@ pragma solidity ^0.4.18;
                __ -				HODL ON!
            /     __   \
              /   _ -    |
-         | &#39;  | (_)  |                        _L/L
+         | '  | (_)  |                        _L/L
             |  __  /   /                    _LT/l_L_
            \ \  __  /                     _LLl/L_T_lL_
                -      _T/L              _LT|L/_|__L_|_L_
                     _Ll/l_L_          _TL|_T/_L_|__T__|_l_
                   _TLl/T_l|_L_      _LL|_Tl/_|__l___L__L_|L_
-                _LT_L/L_|_L_l_L_  _&#39;|_|_|T/_L_l__T _ l__|__|L_
+                _LT_L/L_|_L_l_L_  _'|_|_|T/_L_l__T _ l__|__|L_
               _Tl_L|/_|__|_|__T _LlT_|_Ll/_l_ _|__[ ]__|__|_l_L_
    jjs_ ___ _LT_l_l/|__|__l_T _T_L|_|_|l/___|_ _|__l__|__|__|_T_l_  ___ _
-           . &quot;;;:;.;;:;.;;;;_Ll_|__|_l_/__|___l__|__|___l__L_|_l_LL_
-             .  .:::.:::..:::.&quot;;;;;:;;:.;.;;;;,;;:,;;;.;:,;;,;::;:&quot;.&#39;
+           . ";;:;.;;:;.;;;;_Ll_|__|_l_/__|___l__|__|___l__L_|_l_LL_
+             .  .:::.:::..:::.";;;;:;;:.;.;;;;,;;:,;;;.;:,;;,;::;:".'
                  . ,::.:::.:..:.: ::.::::;..:,:::,::::.::::.:;:.:..
                     . .:.:::.:::.:::: .::.::. :::.::::..::..:.::. . .
                       . ::.:.: :. .:::  ::::.::.:::.::...:. .:::. .
@@ -24,8 +24,8 @@ pragma solidity ^0.4.18;
                             . .           .:. :.. :::. ::..: :.
                 nn_r   nn_r   .              :  .:::.:: ::..:  .
                /l(\   /l)\      nn_r          . ::. :. : : ..
-               `&#39;&quot;``  ``&quot;``    /\(\              . . .:. . : .
-                               &#39; &quot;``                  . :. .
+               `'"``  ``"``    /\(\              . . .:. . : .
+                               ' "``                  . :. .
                                                        .   .
                                                           .
 
@@ -41,7 +41,7 @@ pragma solidity ^0.4.18;
 
 contract PoWHODL {
 
-	// scaleFactor is used to convert Ether into tokens and vice-versa: they&#39;re of different
+	// scaleFactor is used to convert Ether into tokens and vice-versa: they're of different
 	// orders of magnitude, hence the need to bridge between the two.
 	uint256 constant scaleFactor = 0x10000000000000000;  // 2^64
 
@@ -56,16 +56,16 @@ contract PoWHODL {
 	int constant price_coeff = -0x296ABF784A358468C;
 
 	// Typical values that we have to declare.
-	string constant public name = &quot;PoWHODL&quot;;
-	string constant public symbol = &quot;HODL&quot;;
+	string constant public name = "PoWHODL";
+	string constant public symbol = "HODL";
 	uint8 constant public decimals = 18;
 
 	// Array between each address and their number of tokens.
-	mapping(address =&gt; uint256) public tokenBalance;
+	mapping(address => uint256) public tokenBalance;
 		
 	// Array between each address and how much Ether has been paid out to it.
 	// Note that this is scaled by the scaleFactor variable.
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => int256) public payouts;
 
 	// Variable tracking how many tokens are in existence overall.
 	uint256 public totalSupply;
@@ -100,13 +100,13 @@ contract PoWHODL {
 		// Update the payouts array, incrementing the request address by `balance`.
 		payouts[msg.sender] += (int256) (100 szabo * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (100 szabo * scaleFactor);
 		
 		// Send the dividends to the address that requested the withdraw.
 		contractBalance = sub(contractBalance, 100 szabo);
 		uint value_ = (uint) (balance);
-		if (value_ &gt; 0.001 ether)
+		if (value_ > 0.001 ether)
 			msg.sender.transfer(100 szabo);	
 		
 		
@@ -122,7 +122,7 @@ contract PoWHODL {
 		// Since this is essentially a shortcut to withdrawing and reinvesting, this step still holds.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Assign balance to a new variable.
@@ -130,7 +130,7 @@ contract PoWHODL {
 		
 		// If your dividends are worth less than 1 szabo, or more than a million Ether
 		// (in which case, why are you even here), abort.
-		if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 			
 		// msg.sender is the address of the caller.
@@ -153,8 +153,8 @@ contract PoWHODL {
 		var buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -176,7 +176,7 @@ contract PoWHODL {
 			earningsPerToken += rewardPerShare;
 		}
 		
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 		
 		// Assign the tokens to the balance of the buyer.
@@ -211,7 +211,7 @@ contract PoWHODL {
 		// Update the payouts array, incrementing the request address by `balance`.
 		payouts[msg.sender] += (int256) (contractBalance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (contractBalance * scaleFactor);
 		
 		// Send the dividends to the address that requested the withdraw.
@@ -226,11 +226,11 @@ contract PoWHODL {
         withdraw();
 	}
 
-	// Gatekeeper function to check if the amount of Ether being sent isn&#39;t either
+	// Gatekeeper function to check if the amount of Ether being sent isn't either
 	// too small or too large. If it passes, goes direct to buy().
 	function fund() payable public {
-		// Don&#39;t allow for funding if the amount of Ether sent is less than 1 szabo.
-		if (msg.value &gt; 0.000001 ether) {
+		// Don't allow for funding if the amount of Ether sent is less than 1 szabo.
+		if (msg.value > 0.000001 ether) {
 		    contractBalance = add(contractBalance, msg.value);
 			buy();
 		} else {
@@ -266,7 +266,7 @@ contract PoWHODL {
 	function buy() internal {
 		//Proof of not reading the contract. This is a black hole.
 		// Any transaction of less than 1 szabo is likely to be worth less than the gas used to send it.
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 						
 		// msg.sender is the address of the caller.
@@ -285,8 +285,8 @@ contract PoWHODL {
 		var buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -309,7 +309,7 @@ contract PoWHODL {
 			
 		}
 
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 
 		// Assign the tokens to the balance of the buyer.
@@ -341,7 +341,7 @@ contract PoWHODL {
 		// Net Ether for the seller after the fee has been subtracted.
         var numEthers = numEthersBeforeFee - fee;
 		
-		// *Remove* the numTokens which were just sold from the total supply. We&#39;re /definitely/ a crypto central bank.
+		// *Remove* the numTokens which were just sold from the total supply. We're /definitely/ a crypto central bank.
 		totalSupply = sub(totalSupply, amount);
 		
         // Remove the tokens from the balance of the buyer.
@@ -352,16 +352,16 @@ contract PoWHODL {
 		var payoutDiff = (int256) (earningsPerToken * amount + (numEthers * scaleFactor));
 		
         // We reduce the amount paid out to the seller (this effectively resets their payouts value to zero,
-		// since they&#39;re selling all of their tokens). This makes sure the seller isn&#39;t disadvantaged if
+		// since they're selling all of their tokens). This makes sure the seller isn't disadvantaged if
 		// they decide to buy back in.
 		payouts[msg.sender] -= payoutDiff;		
 		
-		// Decrease the total amount that&#39;s been paid out to maintain invariance.
+		// Decrease the total amount that's been paid out to maintain invariance.
         totalPayouts -= payoutDiff;
 		
-		// Check that we have tokens in existence (this is a bit of an irrelevant check since we&#39;re
+		// Check that we have tokens in existence (this is a bit of an irrelevant check since we're
 		// selling tokens, but it guards against division by zero).
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// Scale the Ether taken as the selling fee by the scaleFactor variable.
 			var etherFee = fee * scaleFactor;
 			
@@ -396,18 +396,18 @@ contract PoWHODL {
 		// How much reserve Ether do we have left in the contract?
 		var reserveAmount = reserve();
 
-		// If you&#39;re the Highlander (or bagholder), you get The Prize. Everything left in the vault.
+		// If you're the Highlander (or bagholder), you get The Prize. Everything left in the vault.
 		if (tokens == totalSupply)
 			return reserveAmount;
 
 		// If there would be excess Ether left after the transaction this is called within, return the Ether
-		// corresponding to the equation in Dr Jochen Hoenicke&#39;s original Ponzi paper, which can be found
+		// corresponding to the equation in Dr Jochen Hoenicke's original Ponzi paper, which can be found
 		// at https://test.jochen-hoenicke.de/eth/ponzitoken/ in the third equation, with the CRR numerator 
 		// and denominator altered to 1 and 2 respectively.
 		return sub(reserveAmount, fixedExp((fixedLog(totalSupply - tokens) - price_coeff) * crr_d/crr_n));
 	}
 
-	// You don&#39;t care about these, but if you really do they&#39;re hex values for 
+	// You don't care about these, but if you really do they're hex values for 
 	// co-efficients used to simulate approximations of the log and exp functions.
 	int256  constant one        = 0x10000000000000000;
 	uint256 constant sqrt2      = 0x16a09e667f3bcc908;
@@ -426,11 +426,11 @@ contract PoWHODL {
 	// Hence R(s) = log((1+s)/(1-s)) = log(a)
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -456,10 +456,10 @@ contract PoWHODL {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 	
@@ -476,22 +476,22 @@ contract PoWHODL {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 	
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -499,7 +499,7 @@ contract PoWHODL {
 	// without including any transaction data (useful for, say, mobile wallet apps).
 	function () payable public {
 		// msg.value is the amount of Ether sent by the transaction.
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			fund();
 		} else {
 			//withdrawOld(msg.sender);

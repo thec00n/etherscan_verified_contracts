@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 /**
  * @title VNET Token - The Next Generation Value Transfering Network.
- * @author Wang Yunxiao - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="790e0001404f404b4b391e14181015571a1614">[email&#160;protected]</a>&gt;
+ * @author Wang Yunxiao - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="790e0001404f404b4b391e14181015571a1614">[email protected]</a>>
  */
 
 contract SafeMath {
@@ -13,27 +13,27 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
 
 contract VNET is SafeMath {
-    string constant tokenName = &#39;VNET&#39;;
-    string constant tokenSymbol = &#39;VNET&#39;;
+    string constant tokenName = 'VNET';
+    string constant tokenSymbol = 'VNET';
     uint8 constant decimalUnits = 8;
 
     string public name;
@@ -44,9 +44,9 @@ contract VNET is SafeMath {
 
     address public owner;
     
-    mapping(address =&gt; bool) restrictedAddresses;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => bool) restrictedAddresses;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -68,9 +68,9 @@ contract VNET is SafeMath {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
-        require(balanceOf[msg.sender] &gt;= _value);              // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);    // Check for overflows
+        require(_value > 0);
+        require(balanceOf[msg.sender] >= _value);              // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]);    // Check for overflows
         require(!restrictedAddresses[msg.sender]);
         require(!restrictedAddresses[_to]);
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);   // Subtract from the sender
@@ -86,9 +86,9 @@ contract VNET is SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                  // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);   // Check for overflows
-        require(_value &lt;= allowance[_from][msg.sender]);      // Check allowance
+        require(balanceOf[_from] >= _value);                  // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]);   // Check for overflows
+        require(_value <= allowance[_from][msg.sender]);      // Check allowance
         require(!restrictedAddresses[_from]);
         require(!restrictedAddresses[msg.sender]);
         require(!restrictedAddresses[_to]);

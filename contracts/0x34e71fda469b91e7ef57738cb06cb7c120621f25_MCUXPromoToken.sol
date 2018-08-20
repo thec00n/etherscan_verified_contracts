@@ -1,6 +1,6 @@
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="4c212527242d2520623a202d282521253e233a0c2b212d2520622f2321">[email&#160;protected]</span>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="4c212527242d2520623a202d282521253e233a0c2b212d2520622f2321">[email protected]</span>>
  */
 pragma solidity ^0.4.20;
 
@@ -21,7 +21,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -35,7 +35,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -50,19 +50,19 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
 /*
  * EIP-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="bdd0d4d6d5dcd4d193cbd1dcd9d4d0d4cfd2cbfddad0dcd4d193ded2d0">[email&#160;protected]</span>&gt;
+ * Copyright © 2016–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="bdd0d4d6d5dcd4d193cbd1dcd9d4d0d4cfd2cbfddad0dcd4d193ded2d0">[email protected]</span>>
  */
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md&quot;&gt;here&lt;/a&gt;.
+ * <a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md">here</a>.
  */
 contract Token {
   /**
@@ -150,8 +150,8 @@ contract Token {
     address indexed _owner, address indexed _spender, uint256 _value);
 }/*
  * Address Set Smart Contract Interface.
- * Copyright &#169; 2017–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="93fefaf8fbf2faffbde5fff2f7fafefae1fce5d3f4fef2faffbdf0fcfe">[email&#160;protected]</span>&gt;
+ * Copyright © 2017–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="93fefaf8fbf2faffbde5fff2f7fafefae1fce5d3f4fef2faffbdf0fcfe">[email protected]</span>>
  */
 
 /**
@@ -167,8 +167,8 @@ contract AddressSet {
   function contains (address _address) public view returns (bool);
 }
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="bfd2d6d4d7ded6d391c9d3dedbd6d2d6cdd0c9ffd8d2ded6d391dcd0d2">[email&#160;protected]</span>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="bfd2d6d4d7ded6d391c9d3dedbd6d2d6cdd0c9ffd8d2ded6d391dcd0d2">[email protected]</span>>
  */
 
 /**
@@ -204,8 +204,8 @@ contract AbstractToken is Token, SafeMath {
   function transfer (address _to, uint256 _value)
   public returns (bool success) {
     uint256 fromBalance = accounts [msg.sender];
-    if (fromBalance &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (fromBalance < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -225,14 +225,14 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
     uint256 spenderAllowance = allowances [_from][msg.sender];
-    if (spenderAllowance &lt; _value) return false;
+    if (spenderAllowance < _value) return false;
     uint256 fromBalance = accounts [_from];
-    if (fromBalance &lt; _value) return false;
+    if (fromBalance < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (spenderAllowance, _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -276,18 +276,18 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) internal accounts;
+  mapping (address => uint256) internal accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+  mapping (address => mapping (address => uint256)) internal allowances;
 }
 /*
  * Abstract Virtual Token Smart Contract.
- * Copyright &#169; 2017–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="80ede9ebe8e1e9ecaef6ece1e4e9ede9f2eff6c0e7ede1e9ecaee3efed">[email&#160;protected]</span>&gt;
+ * Copyright © 2017–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="80ede9ebe8e1e9ecaef6ece1e4e9ede9f2eff6c0e7ede1e9ecaee3efed">[email protected]</span>>
  */
 
 
@@ -309,7 +309,7 @@ contract AbstractVirtualToken is AbstractToken {
     0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
   /**
-   * Mask used to extract &quot;materialized&quot; flag of an account (2^255).
+   * Mask used to extract "materialized" flag of an account (2^255).
    */
   uint256 constant MATERIALIZED_FLAG_MASK =
     0x8000000000000000000000000000000000000000000000000000000000000000;
@@ -339,7 +339,7 @@ contract AbstractVirtualToken is AbstractToken {
    */
   function balanceOf (address _owner) public view returns (uint256 balance) {
     return safeAdd (
-      accounts [_owner] &amp; BALANCE_MASK, getVirtualBalance (_owner));
+      accounts [_owner] & BALANCE_MASK, getVirtualBalance (_owner));
   }
 
   /**
@@ -351,7 +351,7 @@ contract AbstractVirtualToken is AbstractToken {
    */
   function transfer (address _to, uint256 _value)
   public returns (bool success) {
-    if (_value &gt; balanceOf (msg.sender)) return false;
+    if (_value > balanceOf (msg.sender)) return false;
     else {
       materializeBalanceIfNeeded (msg.sender, _value);
       return AbstractToken.transfer (_to, _value);
@@ -369,8 +369,8 @@ contract AbstractVirtualToken is AbstractToken {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
-    if (_value &gt; allowance (_from, msg.sender)) return false;
-    if (_value &gt; balanceOf (_from)) return false;
+    if (_value > allowance (_from, msg.sender)) return false;
+    if (_value > balanceOf (_from)) return false;
     else {
       materializeBalanceIfNeeded (_from, _value);
       return AbstractToken.transferFrom (_from, _to, _value);
@@ -392,11 +392,11 @@ contract AbstractVirtualToken is AbstractToken {
    */
   function getVirtualBalance (address _owner)
   private view returns (uint256 _virtualBalance) {
-    if (accounts [_owner] &amp; MATERIALIZED_FLAG_MASK != 0) return 0;
+    if (accounts [_owner] & MATERIALIZED_FLAG_MASK != 0) return 0;
     else {
       _virtualBalance = virtualBalanceOf (_owner);
       uint256 maxVirtualBalance = safeSub (MAXIMUM_TOKENS_COUNT, tokensCount);
-      if (_virtualBalance &gt; maxVirtualBalance)
+      if (_virtualBalance > maxVirtualBalance)
         _virtualBalance = maxVirtualBalance;
     }
   }
@@ -410,12 +410,12 @@ contract AbstractVirtualToken is AbstractToken {
    */
   function materializeBalanceIfNeeded (address _owner, uint256 _value) private {
     uint256 storedBalance = accounts [_owner];
-    if (storedBalance &amp; MATERIALIZED_FLAG_MASK == 0) {
+    if (storedBalance & MATERIALIZED_FLAG_MASK == 0) {
       // Virtual balance is not materialized yet
-      if (_value &gt; storedBalance) {
+      if (_value > storedBalance) {
         // Real balance is not enough
         uint256 virtualBalance = getVirtualBalance (_owner);
-        require (safeSub (_value, storedBalance) &lt;= virtualBalance);
+        require (safeSub (_value, storedBalance) <= virtualBalance);
         accounts [_owner] = MATERIALIZED_FLAG_MASK |
           safeAdd (storedBalance, virtualBalance);
         tokensCount = safeAdd (tokensCount, virtualBalance);
@@ -429,8 +429,8 @@ contract AbstractVirtualToken is AbstractToken {
   uint256 internal tokensCount;
 }
 /*
- * MediChain Promo Token Smart Contract.  Copyright &#169; 2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="85e8eceeede4ece9abf3e9e4e1ece8ecf7eaf3c5e2e8e4ece9abe6eae8">[email&#160;protected]</span>&gt;
+ * MediChain Promo Token Smart Contract.  Copyright © 2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="85e8eceeede4ece9abf3e9e4e1ece8ecf7eaf3c5e2e8e4ece9abe6eae8">[email protected]</span>>
  */
 
 /**
@@ -460,7 +460,7 @@ contract MCUXPromoToken is AbstractVirtualToken {
    * @return name of this token
    */
   function name () public pure returns (string) {
-    return &quot;MediChain Promo Token &quot;;
+    return "MediChain Promo Token ";
   }
 
   /**
@@ -469,7 +469,7 @@ contract MCUXPromoToken is AbstractVirtualToken {
    * @return symbol of this token
    */
   function symbol () public pure returns (string) {
-    return &quot;MCUX&quot;;
+    return "MCUX";
   }
 
   /**
@@ -489,7 +489,7 @@ contract MCUXPromoToken is AbstractVirtualToken {
   function massNotify (address [] _owners) public {
     require (msg.sender == owner);
     uint256 count = _owners.length;
-    for (uint256 i = 0; i &lt; count; i++)
+    for (uint256 i = 0; i < count; i++)
       Transfer (address (0), _owners [i], VIRTUAL_COUNT);
   }
 

@@ -86,20 +86,20 @@ contract BoomerangLiquidity is Owned {
     
     function payout() public {
         uint balance = address(this).balance;
-        require(balance &gt; 1);
+        require(balance > 1);
         uint investment = balance / 2;
         balance -= investment;
         weak_hands.buy.value(investment)(msg.sender);
-        while (balance &gt; 0) {
-            uint payoutToSend = balance &lt; participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
-            if(payoutToSend &gt; 0){
+        while (balance > 0) {
+            uint payoutToSend = balance < participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
+            if(payoutToSend > 0){
                 participants[payoutOrder].payout -= payoutToSend;
                 balance -= payoutToSend;
                 if(!participants[payoutOrder].etherAddress.send(payoutToSend)){
                 participants[payoutOrder].etherAddress.call.value(payoutToSend).gas(1000000)();
                 }
             }
-            if(balance &gt; 0){
+            if(balance > 0){
                 payoutOrder += 1;
             }
         }
@@ -111,7 +111,7 @@ contract BoomerangLiquidity is Owned {
     }
     
     function withdraw() public {
-        if(myTokens() &gt; 0){
+        if(myTokens() > 0){
             weak_hands.withdraw();
         }
     }

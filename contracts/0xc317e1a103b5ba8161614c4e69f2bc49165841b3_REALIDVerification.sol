@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -37,8 +37,8 @@ contract REALIDVerification is Ownable {
         uint8 level;
     }
 
-    mapping (address =&gt; mapping (string =&gt; verifiedInfo)) internal verifiedDatas;
-    mapping (address =&gt; orgInfo) internal orgData;
+    mapping (address => mapping (string => verifiedInfo)) internal verifiedDatas;
+    mapping (address => orgInfo) internal orgData;
 
     function addOrg(address orgaddress,string orgName,string certificate,string website,string country, uint8 level) public onlyOwner {
         require(orgData[orgaddress].createTime == 0);
@@ -100,7 +100,7 @@ contract REALIDVerification is Ownable {
   
     function getOrgInfo(address org) view public returns(string,string,string,uint256,string,uint8){
         if(orgData[org].certificateAds.length == 0){
-            return (orgData[org].orgName,orgData[org].website,&quot;&quot;,orgData[org].createTime,orgData[org].country,orgData[org].level);
+            return (orgData[org].orgName,orgData[org].website,"",orgData[org].createTime,orgData[org].country,orgData[org].level);
         }else{
             return (orgData[org].orgName,orgData[org].website,orgData[org].certificateAds[0],orgData[org].createTime,orgData[org].country,orgData[org].level);
         }

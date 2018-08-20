@@ -15,14 +15,14 @@ contract trustedChildWithdraw {
 
   DAO constant public mainDAO = DAO(0xbb9bc244d798123fde783fcc1c72d3bb8c189413);
   uint[] public trustedProposals = [7, 10, 16, 20, 23, 26, 27, 28, 31, 34, 37, 39, 41, 44, 54, 57, 60, 61, 63, 64, 65, 66];
-  mapping (uint =&gt; DAO) public whiteList;
+  mapping (uint => DAO) public whiteList;
   address constant curator = 0xda4a4626d3e16e094de3225a751aab7128e96526;
 
   /**
   * Populates the whiteList based on the list of trusted proposal Ids.
   */
   function trustedChildWithdraw() {
-      for(uint i=0; i&lt;trustedProposals.length; i++) {
+      for(uint i=0; i<trustedProposals.length; i++) {
           uint proposalId = trustedProposals[i];
           whiteList[proposalId] = DAO(mainDAO.getNewDAOAddress(proposalId));
       }
@@ -34,7 +34,7 @@ contract trustedChildWithdraw {
   */
   function requiredEndowment() constant returns (uint endowment) {
       uint sum = 0;
-      for(uint i=0; i&lt;trustedProposals.length; i++) {
+      for(uint i=0; i<trustedProposals.length; i++) {
           uint proposalId = trustedProposals[i];
           DAO childDAO = whiteList[proposalId];
           sum += childDAO.totalSupply();
@@ -45,7 +45,7 @@ contract trustedChildWithdraw {
   /**
    * Function call to withdraw ETH by burning childDao tokens.
    * @param proposalId The split proposal ID which created the childDao
-   * @dev This requires that the token-holder authorizes this contract&#39;s address using the approve() function.
+   * @dev This requires that the token-holder authorizes this contract's address using the approve() function.
    */
   function withdraw(uint proposalId) external {
     //Check the token balance

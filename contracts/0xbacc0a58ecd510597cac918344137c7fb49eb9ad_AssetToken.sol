@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 /*
 Original Code from Toshendra Sharma Course at UDEMY
-Personalization and modifications by Fares Akel - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="50367e313e243f3e393f7e313b353c10373d31393c7e333f3d">[email&#160;protected]</a>
+Personalization and modifications by Fares Akel - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="50367e313e243f3e393f7e313b353c10373d31393c7e333f3d">[email protected]</a>
 */
 contract admined {
 	address public admin;
@@ -23,7 +23,7 @@ contract admined {
 
 contract Token {
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	// balanceOf[address] = 5;
 	string public name;
 	string public symbol;
@@ -41,8 +41,8 @@ contract Token {
 	}
 
 	function transfer(address _to, uint256 _value){
-		if(balanceOf[msg.sender] &lt; _value) revert();
-		if(balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+		if(balanceOf[msg.sender] < _value) revert();
+		if(balanceOf[_to] + _value < balanceOf[_to]) revert();
 		//if(admin)
 
 		balanceOf[msg.sender] -= _value;
@@ -73,9 +73,9 @@ contract AssetToken is admined, Token{
 	}
 
 	function transfer(address _to, uint256 _value){
-		if(balanceOf[msg.sender] &lt;= 0) revert();
-		if(balanceOf[msg.sender] &lt; _value) revert();
-		if(balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+		if(balanceOf[msg.sender] <= 0) revert();
+		if(balanceOf[msg.sender] < _value) revert();
+		if(balanceOf[_to] + _value < balanceOf[_to]) revert();
 		//if(admin)
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;

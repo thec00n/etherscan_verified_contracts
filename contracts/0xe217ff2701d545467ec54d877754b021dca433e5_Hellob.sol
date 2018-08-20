@@ -19,7 +19,7 @@ library SafeMath
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -27,7 +27,7 @@ library SafeMath
     function add(uint256 a, uint256 b) internal pure returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -83,14 +83,14 @@ contract Hellob is ERC20Interface, OwnerHelper
     uint private E18 = 1000000000000000000;
     
     bool public tokenLock = false;
-    mapping (address =&gt; uint) public balances;
-    mapping (address =&gt; mapping ( address =&gt; uint )) public approvals;
+    mapping (address => uint) public balances;
+    mapping (address => mapping ( address => uint )) public approvals;
     
     function Hellob() public
     {
-        name = &quot;DANCLE&quot;;
+        name = "DANCLE";
         decimals = 18;
-        symbol = &quot;DNCL&quot;;
+        symbol = "DNCL";
         owner = msg.sender;
         
         totalSupply = 2000000000 * E18; // totalSupply
@@ -110,7 +110,7 @@ contract Hellob is ERC20Interface, OwnerHelper
     
     function transfer(address _to, uint _value) public returns (bool) 
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(tokenLock == false);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,7 +123,7 @@ contract Hellob is ERC20Interface, OwnerHelper
     
     function approve(address _spender, uint _value) public returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         approvals[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         
@@ -137,8 +137,8 @@ contract Hellob is ERC20Interface, OwnerHelper
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool) 
     {
-        require(balances[_from] &gt;= _value);
-        require(approvals[_from][msg.sender] &gt;= _value);        
+        require(balances[_from] >= _value);
+        require(approvals[_from][msg.sender] >= _value);        
         require(tokenLock == false);
         
         approvals[_from][msg.sender] = approvals[_from][msg.sender].sub(_value);

@@ -9,14 +9,14 @@ contract Story {
   uint public iteration = 0;
   string[] public history; //choice history
 
-  mapping (uint =&gt; uint) public votes;
+  mapping (uint => uint) public votes;
   uint public numVotes = 0;
   string[] public choices;
 
   function Story() public {
-    prompts.push(&quot;..Lambo drifting across the lunar sand.. the smell of burning garlic awakens you from your slumber. You stumble towards the burning. A plate of roasted garlic, burnt to a crisp atop your new BREAD-CHAMP mining rig. Before you can take another whiff, your BREAD-CHAMP catches fire. Molten solder melts a hole through your apartment floor and your rig plummets ten feet. A flicker on your smartwatch tells you that all crypto has jumped another 10 points towards the Moon! You begin to notice your headache. Then you notice your doge, crying in the hallway. He needs a walk but your crypto is melting and you almost had enough to buy 1 Lambo tire.&quot;);
-    choices.push(&quot;Take your doge for a walk.&quot;);
-    choices.push(&quot;Follow your crypto&#39;s dip into the earth.&quot;);
+    prompts.push("..Lambo drifting across the lunar sand.. the smell of burning garlic awakens you from your slumber. You stumble towards the burning. A plate of roasted garlic, burnt to a crisp atop your new BREAD-CHAMP mining rig. Before you can take another whiff, your BREAD-CHAMP catches fire. Molten solder melts a hole through your apartment floor and your rig plummets ten feet. A flicker on your smartwatch tells you that all crypto has jumped another 10 points towards the Moon! You begin to notice your headache. Then you notice your doge, crying in the hallway. He needs a walk but your crypto is melting and you almost had enough to buy 1 Lambo tire.");
+    choices.push("Take your doge for a walk.");
+    choices.push("Follow your crypto's dip into the earth.");
   }
 
   modifier onlyDev() {
@@ -32,7 +32,7 @@ contract Story {
   }
 
   function next(string newPrompt, string choice0, string choice1, string newPrompt2, string choice20, string choice21) public onlyDev returns (bool) {
-    if (votes[0] &gt;= votes[1]) {
+    if (votes[0] >= votes[1]) {
       history.push(choices[0]);
       StoryUpdate(choices[0], newPrompt);
       prompts.push(newPrompt);
@@ -58,7 +58,7 @@ contract Story {
   }
 
   function payout() public {
-    require(this.balance &gt;= 1000000000000000);
+    require(this.balance >= 1000000000000000);
     developer.transfer(this.balance);
   }
 }

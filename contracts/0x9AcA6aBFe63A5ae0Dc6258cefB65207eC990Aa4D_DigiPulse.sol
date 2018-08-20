@@ -3,16 +3,16 @@ pragma solidity ^0.4.4;
 contract DigiPulse {
 
 	// Token data for ERC20
-  string public constant name = &quot;DigiPulse&quot;;
-  string public constant symbol = &quot;DGT&quot;;
+  string public constant name = "DigiPulse";
+  string public constant symbol = "DGT";
   uint8 public constant decimals = 8;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
 
   // Max available supply is 16581633 * 1e8 (incl. 100000 presale and 2% bounties)
   uint constant tokenSupply = 16125000 * 1e8;
   uint8 constant dgtRatioToEth = 250;
   uint constant raisedInPresale = 961735343125;
-  mapping (address =&gt; uint256) ethBalanceOf;
+  mapping (address => uint256) ethBalanceOf;
   address owner;
 
   // For LIVE
@@ -34,8 +34,8 @@ contract DigiPulse {
 
   // For future transfers of DGT
   function transfer(address _to, uint256 _value) {
-    require (balanceOf[msg.sender] &gt;= _value);          // Check if the sender has enough
-    require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+    require (balanceOf[msg.sender] >= _value);          // Check if the sender has enough
+    require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
 
     balanceOf[msg.sender] -= _value;                    // Subtract from the sender
     balanceOf[_to] += _value;                           // Add the same to the recipient
@@ -46,8 +46,8 @@ contract DigiPulse {
   // logic which converts eth to dgt and stores in allocatedSupply
   function() payable external {
     // Abort if crowdfunding has reached an end
-    require (now &gt; startOfIco);
-    require (now &lt; endOfIco);
+    require (now > startOfIco);
+    require (now < endOfIco);
     require (!icoFulfilled);
 
     // Do not allow creating 0 tokens
@@ -56,13 +56,13 @@ contract DigiPulse {
     // Must adjust number of decimals, so the ratio will work as expected
     // From ETH 16 decimals to DGT 8 decimals
     uint256 dgtAmount = msg.value / 1e10 * dgtRatioToEth;
-    require (dgtAmount &lt; (tokenSupply - allocatedSupply));
+    require (dgtAmount < (tokenSupply - allocatedSupply));
 
     // Tier bonus calculations
     uint256 dgtWithBonus;
     uint256 applicable_for_tier;
 
-    for (uint8 i = 0; i &lt; 4; i++) {
+    for (uint8 i = 0; i < 4; i++) {
       // Each tier has same amount of DGT
       uint256 tier_amount = 3750000 * 1e8;
       // Every next tier has 5% less bonus pool
@@ -70,7 +70,7 @@ contract DigiPulse {
       applicable_for_tier += tier_amount;
 
       // Skipping over this tier, since it is filled already
-      if (allocatedSupply &gt;= applicable_for_tier) continue;
+      if (allocatedSupply >= applicable_for_tier) continue;
 
       // Reached this tier with 0 amount, so abort
       if (dgtAmount == 0) break;
@@ -78,7 +78,7 @@ contract DigiPulse {
       // Cases when part of the contribution is covering two tiers
       int256 diff = int(allocatedSupply) + int(dgtAmount - applicable_for_tier);
 
-      if (diff &gt; 0) {
+      if (diff > 0) {
         // add bonus for current tier and strip the difference for
         // calculation in the next tier
         dgtWithBonus += (uint(int(dgtAmount) - diff) * tier_bonus / 100);
@@ -102,10 +102,10 @@ contract DigiPulse {
   function finalise() external {
     require (!icoFailed);
     require (!icoFulfilled);
-    require (now &gt; endOfIco || allocatedSupply &gt;= tokenSupply);
+    require (now > endOfIco || allocatedSupply >= tokenSupply);
 
     // Min cap is 8000 ETH
-    if (this.balance &lt; 8000 ether) {
+    if (this.balance < 8000 ether) {
       icoFailed = true;
     } else {
       setPreSaleAmounts();
@@ -152,7 +152,7 @@ contract DigiPulse {
   // Allow owner to withdraw funds
   function withdrawFundsToOwner(uint256 _amount) {
     require (icoFulfilled);
-    require (this.balance &gt;= _amount);
+    require (this.balance >= _amount);
 
     owner.transfer(_amount);
   }

@@ -4,7 +4,7 @@ contract chal2sweep {
 
     // restrict msg.sender
     modifier only_noel { if (msg.sender == noel) _ }
-    // don&#39;t run recursively
+    // don't run recursively
     modifier msg_value_not(uint _amount) {
         if (msg.value != _amount) _
     }
@@ -19,9 +19,9 @@ contract chal2sweep {
         suicide(noel);
     }
 
-    // web3.toWei(10, &quot;ether&quot;) == &quot;10000000000000000000&quot;
+    // web3.toWei(10, "ether") == "10000000000000000000"
     function () msg_value_not(10000000000000000000) {
-        if (!chal.call(&quot;withdrawEtherOrThrow&quot;, 10000000000000000000))
+        if (!chal.call("withdrawEtherOrThrow", 10000000000000000000))
             throw;
     }
 }

@@ -18,7 +18,7 @@
   /**
    * @title Ownable
    * @dev The Ownable contract has an owner address, and provides basic authorization control
-   * functions, this simplifies the implementation of &quot;user permissions&quot;.
+   * functions, this simplifies the implementation of "user permissions".
    */
   contract Ownable {
     address public owner;
@@ -116,13 +116,13 @@
     }
   
     function minus(uint a, uint b) returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
   
     function plus(uint a, uint b) returns (uint) {
       uint c = a + b;
-      assert(c&gt;=a);
+      assert(c>=a);
       return c;
     }
   
@@ -163,9 +163,9 @@
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
   
@@ -173,7 +173,7 @@
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
   
@@ -182,7 +182,7 @@
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
   }
@@ -196,7 +196,7 @@
   contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
   
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
   
     uint256 totalSupply_;
   
@@ -214,7 +214,7 @@
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
   
       // SafeMath.sub will throw if there is not enough balance.
       balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -260,7 +260,7 @@
    */
   contract StandardToken is ERC20, BasicToken {
   
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
   
   
     /**
@@ -271,8 +271,8 @@
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[_from]);
-      require(_value &lt;= allowed[_from][msg.sender]);
+      require(_value <= balances[_from]);
+      require(_value <= allowed[_from][msg.sender]);
   
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -286,7 +286,7 @@
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -335,7 +335,7 @@
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -397,13 +397,13 @@
     uint public tokensAllocatedTotal;
   
     /** How much we have allocated to the investors invested */
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
   
     /** How many tokens investors have claimed */
-    mapping(address =&gt; uint) public claimed;
+    mapping(address => uint) public claimed;
   
     /** When was the last claim by an investor **/
-    mapping(address =&gt; uint) public lastClaimedAt;
+    mapping(address => uint) public lastClaimedAt;
   
     /** When our claim freeze is over (UNIX timestamp) */
     uint public freezeEndsAt;
@@ -468,7 +468,7 @@
         throw;
       }
   
-      if (_freezeEndsAt &lt; now) {
+      if (_freezeEndsAt < now) {
         freezeEndsAt = now;
       } else {
         freezeEndsAt = _freezeEndsAt;
@@ -480,15 +480,15 @@
     /// @dev Add a presale participating allocation
     function setInvestor(address investor, uint amount) public onlyOwner {
   
-      if(lockedAt &gt; 0) {
+      if(lockedAt > 0) {
         // Cannot add new investors after the vault is locked
         throw;
       }
   
       if(amount == 0) throw; // No empty buys
   
-      // Don&#39;t allow reset
-      if(balances[investor] &gt; 0) {
+      // Don't allow reset
+      if(balances[investor] > 0) {
         throw;
       }
   
@@ -507,7 +507,7 @@
     ///      - Checks are in place to prevent creating a vault that is locked with incorrect token balances.
     function lock() onlyOwner {
   
-      if(lockedAt &gt; 0) {
+      if(lockedAt > 0) {
         throw; // Already locked
       }
   
@@ -528,7 +528,7 @@
   
     /// @dev In the case locking failed, then allow the owner to reclaim the tokens on the contract.
     function recoverFailedLock() onlyOwner {
-      if(lockedAt &gt; 0) {
+      if(lockedAt > 0) {
         throw;
       }
   
@@ -542,17 +542,17 @@
       return token.balanceOf(address(this));
     }
   
-    /// @dev Check how many tokens &quot;investor&quot; can claim
+    /// @dev Check how many tokens "investor" can claim
     /// @param investor Address of the investor
     /// @return uint How many tokens the investor can claim now
     function getCurrentlyClaimableAmount(address investor) public constant returns (uint claimableAmount) {
       uint maxTokensLeft = balances[investor] - claimed[investor];
   
-      if (now &lt; freezeEndsAt) {
+      if (now < freezeEndsAt) {
         return 0;
       }
   
-      if (tokensPerSecond &gt; 0) {
+      if (tokensPerSecond > 0) {
         uint previousClaimAt = lastClaimedAt[investor];
         uint maxClaim;
   
@@ -562,7 +562,7 @@
   
         maxClaim = (now - previousClaimAt) * tokensPerSecond;
   
-        if (maxClaim &gt; maxTokensLeft) {
+        if (maxClaim > maxTokensLeft) {
           return maxTokensLeft;
         } else {
           return maxClaim;
@@ -581,7 +581,7 @@
         throw; // We were never locked
       }
   
-      if(now &lt; freezeEndsAt) {
+      if(now < freezeEndsAt) {
         throw; // Trying to claim early
       }
   
@@ -591,7 +591,7 @@
       }
   
       uint amount = getCurrentlyClaimableAmount(investor);
-      require (amount &gt; 0);
+      require (amount > 0);
   
       lastClaimedAt[investor] = now;
   
@@ -617,7 +617,7 @@
     function getState() public constant returns(State) {
       if(lockedAt == 0) {
         return State.Loading;
-      } else if(now &gt; freezeEndsAt) {
+      } else if(now > freezeEndsAt) {
         return State.Distributing;
       } else {
         return State.Holding;

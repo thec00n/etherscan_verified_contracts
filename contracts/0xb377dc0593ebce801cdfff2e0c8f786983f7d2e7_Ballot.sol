@@ -13,7 +13,7 @@ contract  Ballot{
     
     address public chairperson  ;
     
-    mapping(address=&gt;Voter) voters;
+    mapping(address=>Voter) voters;
     
     Proposal[] public proposals;
     
@@ -21,7 +21,7 @@ contract  Ballot{
         chairperson = msg.sender; 
         voters[chairperson].weight = 1;
         
-        for(uint i = 0; i &lt; proposalNames.length; i++) {
+        for(uint i = 0; i < proposalNames.length; i++) {
             proposals.push(Proposal({
                 name: proposalNames[i],
                 voteCount:0
@@ -47,7 +47,7 @@ contract  Ballot{
             throw;
             
         while ( 
-            voters[to].delegate != address(0)&amp;&amp;
+            voters[to].delegate != address(0)&&
             voters[to].delegate != msg.sender
         ){
             to = voters[to].delegate;
@@ -83,8 +83,8 @@ contract  Ballot{
     {
         proposal = 0;
         uint maxCount = 0;
-        for (uint i = 0 ; i &lt; proposals.length ; i++) {
-            if (proposals[i].voteCount &gt; maxCount) {
+        for (uint i = 0 ; i < proposals.length ; i++) {
+            if (proposals[i].voteCount > maxCount) {
                 proposal = i;
                 maxCount = proposals[i].voteCount;
             }

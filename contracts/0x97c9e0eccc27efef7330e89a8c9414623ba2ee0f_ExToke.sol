@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 // ----------------------------------------------------------------------------
-// &#39;extoke.com&#39; DEX contract
+// 'extoke.com' DEX contract
 //
 // Admin       : 0xEd86f5216BCAFDd85E5875d35463Aca60925bF16
 // fees        : zero (0)
@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
   //balance in each address account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -130,8 +130,8 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[msg.sender] >= _amount && _amount > 0
+        && balances[_to].add(_amount) > balances[_to]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -160,7 +160,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -171,9 +171,9 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
-    require(_amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
+    require(_amount > 0 && balances[_to].add(_amount) > balances[_to]);
 
     balances[_from] = balances[_from].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -184,8 +184,8 @@ contract StandardToken is ERC20, BasicToken {
 	
 	function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[msg.sender] >= _amount && _amount > 0
+        && balances[_to].add(_amount) > balances[_to]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -198,7 +198,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _amount The amount of tokens to be spent.
@@ -234,25 +234,25 @@ contract ReserveToken is StandardToken {
   }
   function destroy(address account, uint amount) public {
     require(msg.sender == minter);
-    require(balances[account] &gt;= amount);
+    require(balances[account] >= amount);
     balances[account] = balances[account].add(amount);
     totalSupply = totalSupply.sub(amount);
   }
 }
 
 contract AccountLevels {
-  mapping (address =&gt; uint) public accountLevels;
+  mapping (address => uint) public accountLevels;
   //given a user, returns an account level
   //0 = regular user (pays take fee and make fee)
   //1 = market maker silver (pays take fee, no make fee, gets rebate)
-  //2 = market maker gold (pays take fee, no make fee, gets entire counterparty&#39;s take fee as rebate)
+  //2 = market maker gold (pays take fee, no make fee, gets entire counterparty's take fee as rebate)
   function accountLevel(address user) public constant returns(uint) {
       return accountLevels[user];
   }
 }
 
 contract AccountLevelsTest is AccountLevels {
-  //mapping (address =&gt; uint) public accountLevels;
+  //mapping (address => uint) public accountLevels;
 
   function setAccountLevel(address user, uint level) public {
     accountLevels[user] = level;
@@ -267,9 +267,9 @@ contract ExToke is Ownable {
   uint public feeMake; //percentage times (1 ether)
   uint public feeTake; //percentage times (1 ether)
   uint public feeRebate; //percentage times (1 ether)
-  mapping (address =&gt; mapping (address =&gt; uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
-  mapping (address =&gt; mapping (bytes32 =&gt; bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
-  mapping (address =&gt; mapping (bytes32 =&gt; uint)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
+  mapping (address => mapping (address => uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (bytes32 => bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
+  mapping (address => mapping (bytes32 => uint)) public orderFills; //mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
   transferToken public tokenReward;  
   
   event Order(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user);
@@ -306,17 +306,17 @@ contract ExToke is Ownable {
   }
 
   function changeFeeMake(uint feeMake_) public onlyOwner{
-    require(feeMake_ &lt;= feeMake);
+    require(feeMake_ <= feeMake);
     feeMake = feeMake_;
   }
 
   function changeFeeTake(uint feeTake_) public onlyOwner {
-    require (feeTake_ &lt;= feeTake &amp;&amp; feeTake_ &gt;= feeRebate);
+    require (feeTake_ <= feeTake && feeTake_ >= feeRebate);
     feeTake = feeTake_;
   }
 
   function changeFeeRebate(uint feeRebate_) public onlyOwner {
-    require(feeRebate_ &gt;= feeRebate &amp;&amp; feeRebate_ &lt;=feeTake);
+    require(feeRebate_ >= feeRebate && feeRebate_ <=feeTake);
     feeRebate = feeRebate_;
   }
 
@@ -326,7 +326,7 @@ contract ExToke is Ownable {
   }
 
   function withdraw(uint amount) public {
-    require(tokens[0][msg.sender] &gt;= amount);
+    require(tokens[0][msg.sender] >= amount);
     tokens[0][msg.sender] = tokens[0][msg.sender].sub(amount);
     msg.sender.transfer(amount);
     emit Withdraw(0, msg.sender, amount, tokens[0][msg.sender]);
@@ -342,7 +342,7 @@ contract ExToke is Ownable {
 	
   function withdrawToken(address token, uint amount) public {
     require(token!=0);
-    require(tokens[token][msg.sender] &gt;= amount);
+    require(tokens[token][msg.sender] >= amount);
     tokens[token][msg.sender] = tokens[token][msg.sender].sub(amount);
     tokenReward = transferToken(token);
 	tokenReward.transfer(msg.sender, amount);
@@ -363,9 +363,9 @@ contract ExToke is Ownable {
     //amount is in amountGet terms
     bytes32 hash = keccak256(abi.encodePacked(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce));
     require((
-      (orders[user][hash] || ecrecover(keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)),v,r,s) == user) &amp;&amp;
-      block.number &lt;= expires &amp;&amp;
-      orderFills[user][hash].add(amount) &lt;= amountGet
+      (orders[user][hash] || ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)),v,r,s) == user) &&
+      block.number <= expires &&
+      orderFills[user][hash].add(amount) <= amountGet
     ));
     tradeBalances(tokenGet, amountGet, tokenGive, amountGive, user, amount);
     orderFills[user][hash] = orderFills[user][hash].add(amount);
@@ -392,8 +392,8 @@ contract ExToke is Ownable {
   function testTrade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount, address sender) public constant returns(bool) {
     
     if (!(
-      tokens[tokenGet][sender] &gt;= amount &amp;&amp;
-      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) &gt;= amount
+      tokens[tokenGet][sender] >= amount &&
+      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) >= amount
     )) return false;
     return true;
   }
@@ -402,12 +402,12 @@ contract ExToke is Ownable {
     bytes32 hash = keccak256(abi.encodePacked(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce));
     uint available1;
     if (!(
-      (orders[user][hash] || ecrecover(keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)),v,r,s) == user) &amp;&amp;
-      block.number &lt;= expires
+      (orders[user][hash] || ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)),v,r,s) == user) &&
+      block.number <= expires
     )) return 0;
     available1 = tokens[tokenGive][user].mul(amountGet) / amountGive;
     
-    if (amountGet.sub(orderFills[user][hash])&lt;available1) return amountGet.sub(orderFills[user][hash]);
+    if (amountGet.sub(orderFills[user][hash])<available1) return amountGet.sub(orderFills[user][hash]);
     return available1;
     
   }
@@ -419,7 +419,7 @@ contract ExToke is Ownable {
 
   function cancelOrder(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s) public {
     bytes32 hash = keccak256(abi.encodePacked(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce));
-    require((orders[msg.sender][hash] || ecrecover(keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)),v,r,s) == msg.sender));
+    require((orders[msg.sender][hash] || ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)),v,r,s) == msg.sender));
     orderFills[msg.sender][hash] = amountGet;
     emit Cancel(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, msg.sender, v, r, s);
   }

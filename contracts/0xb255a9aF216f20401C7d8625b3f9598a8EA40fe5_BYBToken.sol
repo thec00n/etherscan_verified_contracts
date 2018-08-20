@@ -40,8 +40,8 @@ contract Token {
 contract RegularToken is Token {
 
     function transfer(address _to, uint _value) public returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract RegularToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -72,8 +72,8 @@ contract RegularToken is Token {
         return allowed[_owner][_spender];
     }
 	
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -90,13 +90,13 @@ contract UnboundedRegularToken is RegularToken {
         public returns (bool)
     {
         uint allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowance &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]
+        if (balances[_from] >= _value
+            && allowance >= _value
+            && balances[_to] + _value >= balances[_to]
         ) {
             balances[_to] += _value;
             balances[_from] -= _value;
-            if (allowance &lt; MAX_UINT) {
+            if (allowance < MAX_UINT) {
                 allowed[_from][msg.sender] -= _value;
             }
             emit Transfer(_from, _to, _value);
@@ -118,10 +118,10 @@ contract BYBToken is UnboundedRegularToken {
 
     uint public totalSupply = 20*10**10;
     uint8 constant public decimals = 2;
-    string constant public name = &quot;Bitin Token&quot;;
-    string constant public symbol = &quot;BYB&quot;;
+    string constant public name = "Bitin Token";
+    string constant public symbol = "BYB";
 	address public owner;
-	mapping (address =&gt; uint) public freezes;
+	mapping (address => uint) public freezes;
 
 	/* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint value);
@@ -143,7 +143,7 @@ contract BYBToken is UnboundedRegularToken {
 	}
     
     function burn(uint _value) public returns (bool success) {
-		if (balances[msg.sender] &gt;= _value &amp;&amp; totalSupply - _value &lt;= totalSupply){
+		if (balances[msg.sender] >= _value && totalSupply - _value <= totalSupply){
 			balances[msg.sender] -= _value; 								// Subtract from the sender
             totalSupply -= _value;
 			emit Burn(msg.sender, _value);
@@ -154,8 +154,8 @@ contract BYBToken is UnboundedRegularToken {
     }
 	
 	function freeze(uint _value) public returns (bool success) {
-		if (balances[msg.sender] &gt;= _value &amp;&amp;
-		freezes[msg.sender] + _value &gt;= freezes[msg.sender]){
+		if (balances[msg.sender] >= _value &&
+		freezes[msg.sender] + _value >= freezes[msg.sender]){
 			balances[msg.sender] -= _value;   				// Subtract from the sender
 			freezes[msg.sender] += _value;            		// Updates totalSupply
 			emit Freeze(msg.sender, _value);
@@ -166,8 +166,8 @@ contract BYBToken is UnboundedRegularToken {
     }
 	
 	function unfreeze(uint _value) public returns (bool success) {
-        if (freezes[msg.sender] &gt;= _value &amp;&amp;
-		balances[msg.sender] + _value &gt;= balances[msg.sender]){
+        if (freezes[msg.sender] >= _value &&
+		balances[msg.sender] + _value >= balances[msg.sender]){
 			freezes[msg.sender] -= _value;
 			balances[msg.sender] += _value;
 			emit Unfreeze(msg.sender, _value);

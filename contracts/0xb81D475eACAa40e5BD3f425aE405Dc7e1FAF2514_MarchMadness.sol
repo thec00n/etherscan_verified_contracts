@@ -11,8 +11,8 @@ contract FederatedOracleBytes8 {
     event VoteSubmitted(address account, bytes8 value);
     event ValueFinalized(bytes8 value);
 
-    mapping(address =&gt; Voter) public voters;
-    mapping(bytes8 =&gt; uint8) public votes;
+    mapping(address => Voter) public voters;
+    mapping(bytes8 => uint8) public votes;
 
     uint8 public m;
     uint8 public n;
@@ -68,7 +68,7 @@ contract FederatedOracleBytes8 {
 // This library can be used to score byte brackets. Byte brackets are a succinct encoding of a
 // 64 team bracket into an 8-byte array. The tournament results are encoded in the same format and
 // compared against the bracket picks. To reduce the computation time of scoring a bracket, a 64-bit
-// value called the &quot;scoring mask&quot; is first computed once for a particular result set and used to
+// value called the "scoring mask" is first computed once for a particular result set and used to
 // score all brackets.
 //
 // Algorithm description: https://drive.google.com/file/d/0BxHbbgrucCx2N1MxcnA1ZE1WQW8/view
@@ -80,15 +80,15 @@ library ByteBracket {
     {
         uint8 roundNum = 0;
         uint8 numGames = 32;
-        uint64 blacklist = (uint64(1) &lt;&lt; numGames) - 1;
+        uint64 blacklist = (uint64(1) << numGames) - 1;
         uint64 overlap = uint64(~(bracket ^ results));
 
-        while (numGames &gt; 0) {
-            uint64 scores = overlap &amp; blacklist;
-            points += popcount(scores) &lt;&lt; roundNum;
-            blacklist = pairwiseOr(scores &amp; filter);
-            overlap &gt;&gt;= numGames;
-            filter &gt;&gt;= numGames;
+        while (numGames > 0) {
+            uint64 scores = overlap & blacklist;
+            points += popcount(scores) << roundNum;
+            blacklist = pairwiseOr(scores & filter);
+            overlap >>= numGames;
+            filter >>= numGames;
             numGames /= 2;
             roundNum++;
         }
@@ -96,15 +96,15 @@ library ByteBracket {
 
     function getScoringMask(bytes8 results) constant returns (uint64 mask) {
         // Filter for the second most significant bit since MSB is ignored.
-        bytes8 bitSelector = 1 &lt;&lt; 62;
-        for (uint i = 0; i &lt; 31; i++) {
-            mask &lt;&lt;= 2;
-            if (results &amp; bitSelector != 0) {
+        bytes8 bitSelector = 1 << 62;
+        for (uint i = 0; i < 31; i++) {
+            mask <<= 2;
+            if (results & bitSelector != 0) {
                 mask |= 1;
             } else {
                 mask |= 2;
             }
-            results &lt;&lt;= 1;
+            results <<= 1;
         }
     }
 
@@ -114,25 +114,25 @@ library ByteBracket {
     // shuffling smaller segments of a bitstring.
     function pairwiseOr(uint64 bits) internal returns (uint64) {
         uint64 tmp;
-        tmp = (bits ^ (bits &gt;&gt; 1)) &amp; 0x22222222;
-        bits ^= (tmp ^ (tmp &lt;&lt; 1));
-        tmp = (bits ^ (bits &gt;&gt; 2)) &amp; 0x0c0c0c0c;
-        bits ^= (tmp ^ (tmp &lt;&lt; 2));
-        tmp = (bits ^ (bits &gt;&gt; 4)) &amp; 0x00f000f0;
-        bits ^= (tmp ^ (tmp &lt;&lt; 4));
-        tmp = (bits ^ (bits &gt;&gt; 8)) &amp; 0x0000ff00;
-        bits ^= (tmp ^ (tmp &lt;&lt; 8));
-        uint64 evens = bits &gt;&gt; 16;
+        tmp = (bits ^ (bits >> 1)) & 0x22222222;
+        bits ^= (tmp ^ (tmp << 1));
+        tmp = (bits ^ (bits >> 2)) & 0x0c0c0c0c;
+        bits ^= (tmp ^ (tmp << 2));
+        tmp = (bits ^ (bits >> 4)) & 0x00f000f0;
+        bits ^= (tmp ^ (tmp << 4));
+        tmp = (bits ^ (bits >> 8)) & 0x0000ff00;
+        bits ^= (tmp ^ (tmp << 8));
+        uint64 evens = bits >> 16;
         uint64 odds = bits % 0x10000;
         return evens | odds;
     }
 
     // Counts the number of 1s in a bitstring.
     function popcount(uint64 bits) internal returns (uint8) {
-        bits -= (bits &gt;&gt; 1) &amp; 0x5555555555555555;
-        bits = (bits &amp; 0x3333333333333333) + ((bits &gt;&gt; 2) &amp; 0x3333333333333333);
-        bits = (bits + (bits &gt;&gt; 4)) &amp; 0x0f0f0f0f0f0f0f0f;
-        return uint8(((bits * 0x0101010101010101) &amp; 0xffffffffffffffff) &gt;&gt; 56);
+        bits -= (bits >> 1) & 0x5555555555555555;
+        bits = (bits & 0x3333333333333333) + ((bits >> 2) & 0x3333333333333333);
+        bits = (bits + (bits >> 4)) & 0x0f0f0f0f0f0f0f0f;
+        return uint8(((bits * 0x0101010101010101) & 0xffffffffffffffff) >> 56);
     }
 }
 
@@ -166,7 +166,7 @@ contract MarchMadness {
 
     FederatedOracleBytes8 resultsOracle;
 
-	mapping(address =&gt; Submission) submissions;
+	mapping(address => Submission) submissions;
 
     // Amount that winners will collect
     uint public winnings;
@@ -230,10 +230,10 @@ contract MarchMadness {
         if (msg.value != entryFee) {
             throw;
         }
-        if (now &gt;= tournamentStartTime) {
+        if (now >= tournamentStartTime) {
             throw;
         }
-        if (numSubmissions &gt;= maxSubmissions) {
+        if (numSubmissions >= maxSubmissions) {
             throw;
         }
 
@@ -251,10 +251,10 @@ contract MarchMadness {
         if (results != 0) {
             return false;
         }
-        if (now &lt; tournamentStartTime) {
+        if (now < tournamentStartTime) {
             return false;
         }
-        if (now &gt; noContestTime) {
+        if (now > noContestTime) {
             return false;
         }
 
@@ -284,7 +284,7 @@ contract MarchMadness {
         if (results == 0) {
             return false;
         }
-        if (now &gt;= contestOverTime) {
+        if (now >= contestOverTime) {
             return false;
         }
 
@@ -298,7 +298,7 @@ contract MarchMadness {
 
         submission.score = ByteBracket.getBracketScore(submission.bracket, results, scoringMask);
 
-        if (submission.score &gt; winningScore) {
+        if (submission.score > winningScore) {
             winningScore = submission.score;
             numWinners = 0;
         }
@@ -312,7 +312,7 @@ contract MarchMadness {
     }
 
     function collectWinnings() returns (bool) {
-        if (now &lt; contestOverTime) {
+        if (now < contestOverTime) {
             return false;
         }
 
@@ -334,7 +334,7 @@ contract MarchMadness {
     }
 
     function collectEntryFee() returns (bool) {
-        if (now &lt; noContestTime) {
+        if (now < noContestTime) {
             return false;
         }
         if (results != 0) {

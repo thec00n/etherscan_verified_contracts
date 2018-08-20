@@ -3,10 +3,10 @@ pragma solidity ^0.4.19;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
       c = a + b;
-      require(c &gt;= a);
+      require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-      require(b &lt;= a);
+      require(b <= a);
       c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
       require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-      require(b &gt; 0);
+      require(b > 0);
       c = a / b;
     }
 }
@@ -74,14 +74,14 @@ contract Owned {
 contract TPTToken is ERC20Interface, Owned {
     using SafeMath for uint;
 
-    string public name = &quot;Today Portfolio Token&quot;;
-    string public symbol = &quot;TPT&quot;;
+    string public name = "Today Portfolio Token";
+    string public symbol = "TPT";
     uint8 public decimals = 18;
     uint256 public _totalSupply = 88000000;
     bool public locked = false;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Locked();
 

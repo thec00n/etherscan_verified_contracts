@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,20 +72,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,7 +98,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -150,7 +150,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -161,8 +161,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -211,7 +211,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -231,9 +231,9 @@ contract KITToken is StandardToken, Ownable {
 
   event MintFinished();
 
-  string public constant name = &#39;KIT&#39;;
+  string public constant name = 'KIT';
 
-  string public constant symbol = &#39;KIT&#39;;
+  string public constant symbol = 'KIT';
 
   uint32 public constant decimals = 18;
 
@@ -346,7 +346,7 @@ contract CommonCrowdsale is Ownable, LockableChanges {
   KITToken public token;
 
   modifier saleIsOn() {
-    require(msg.value &gt;= minInvestedLimit &amp;&amp; now &gt;= start &amp;&amp; now &lt; end &amp;&amp; invested &lt; hardcap);
+    require(msg.value >= minInvestedLimit && now >= start && now < end && invested < hardcap);
     _;
   }
 
@@ -391,7 +391,7 @@ contract CommonCrowdsale is Ownable, LockableChanges {
   }
 
   function setEnd(uint newEnd) public onlyOwner {
-    require(start &lt; newEnd);
+    require(start < newEnd);
     end = newEnd;
   }
 
@@ -462,7 +462,7 @@ contract CommonCrowdsale is Ownable, LockableChanges {
     // calculate tokens
     uint tokens = msg.value.mul(price).div(1 ether);
     uint bonus = getBonus();
-    if (bonus &gt; 0) {
+    if (bonus > 0) {
       tokens = tokens.add(tokens.mul(bonus).div(100));
     }
 
@@ -472,10 +472,10 @@ contract CommonCrowdsale is Ownable, LockableChanges {
 
   function getBonus() public constant returns(uint) {
     uint prevTimeLimit = start;
-    for (uint i = 0; i &lt; bonuses.length; i++) {
+    for (uint i = 0; i < bonuses.length; i++) {
       Bonus storage bonus = bonuses[i];
       prevTimeLimit += bonus.periodInDays * 1 days;
-      if (now &lt; prevTimeLimit)
+      if (now < prevTimeLimit)
         return bonus.bonus;
     }
     return 0;
@@ -511,7 +511,7 @@ contract Presale is CommonCrowdsale {
 
   address public nextSaleAgent;
 
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   function Presale() public {
     minInvestedLimit = 10000000000000000;
@@ -553,7 +553,7 @@ contract Presale is CommonCrowdsale {
   }
 
   function refund() public {
-    require(now &gt; start &amp;&amp; refundOn &amp;&amp; balances[msg.sender] &gt; 0);
+    require(now > start && refundOn && balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -562,7 +562,7 @@ contract Presale is CommonCrowdsale {
   function createTokens() public payable saleIsOn {
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     calculateAndTransferTokens(msg.sender, msg.value);
-    if (!softcapAchieved &amp;&amp; invested &gt;= softcap) {
+    if (!softcapAchieved && invested >= softcap) {
       softcapAchieved = true;
     }
   }

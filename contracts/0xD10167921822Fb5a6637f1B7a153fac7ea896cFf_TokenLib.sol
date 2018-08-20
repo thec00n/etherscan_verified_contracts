@@ -29,12 +29,12 @@ library SafeMath {
     /* Internals */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert( c &gt;= a );
+        assert( c >= a );
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a - b;
-        assert( c &lt;= a );
+        assert( c <= a );
         return c;
     }
     function mul(uint256 a, uint256 b) internal pure returns(uint256 c) {
@@ -68,8 +68,8 @@ contract Token is Owned {
     /* Declarations */
     using SafeMath for uint256;
     /* Variables */
-    string  public name = &quot;Inlock token&quot;;
-    string  public symbol = &quot;ILK&quot;;
+    string  public name = "Inlock token";
+    string  public symbol = "ILK";
     uint8   public decimals = 8;
     uint256 public totalSupply = 44e16;
     address public libAddress;
@@ -197,10 +197,10 @@ contract TokenLib is Token {
         bool    _allowed;
         require( _to.length == _amount.length );
         ( _subResult, _allowed ) = ico.allowTransfer(msg.sender);
-        require( _subResult &amp;&amp; _allowed );
+        require( _subResult && _allowed );
         require( db.bulkTransfer(msg.sender, _to, _amount) );
-        for ( i=0 ; i&lt;_to.length ; i++ ) {
-            require( _amount[i] &gt; 0 );
+        for ( i=0 ; i<_to.length ; i++ ) {
+            require( _amount[i] > 0 );
             require( _to[i] != 0x00 );
             require( msg.sender != _to[i] );
             emit Transfer(msg.sender, _to[i], _amount[i]);
@@ -235,10 +235,10 @@ contract TokenLib is Token {
     function _transfer(address _from, address _to, uint256 _amount) internal {
         bool _subResult;
         bool _allowed;
-        require( _amount &gt; 0 );
-        require( _from != 0x00 &amp;&amp; _to != 0x00 );
+        require( _amount > 0 );
+        require( _from != 0x00 && _to != 0x00 );
         ( _subResult, _allowed ) = ico.allowTransfer(_from);
-        require( _subResult &amp;&amp; _allowed );
+        require( _subResult && _allowed );
         require( db.transfer(_from, _to, _amount) );
         emit Transfer(_from, _to, _amount);
     }

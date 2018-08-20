@@ -22,9 +22,9 @@ contract token {
     uint256 public totalSupply; // Total of tokens created.
 
     // Array containing the balance foreach address.
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // Array containing foreach address, an array containing each approved address and the amount of tokens it can spend.
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify about a transfer done. */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -41,8 +41,8 @@ contract token {
     /* Internal transfer, only can be called by this contract. */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address.
-        require(balanceOf[_from] &gt; _value);                // Check if the sender has enough.
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows.
+        require(balanceOf[_from] > _value);                // Check if the sender has enough.
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows.
         balanceOf[_from] -= _value; // Subtract from the sender.
         balanceOf[_to]   += _value; // Add the same to the recipient.
         Transfer(_from, _to, _value); // Notifies the blockchain about the transfer.
@@ -60,7 +60,7 @@ contract token {
     /// @param _to The address of the recipient.
     /// @param _value The amount to send.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance.
+        require(_value <= allowance[_from][msg.sender]); // Check allowance.
         allowance[_from][msg.sender] -= _value; // Updates the allowance array, substracting the amount sent.
         _transfer(_from, _to, _value); // Makes the transfer.
         return true;
@@ -85,7 +85,7 @@ contract HormitechToken is owned, token {
     uint256 public solvency          = this.balance;      // Amount of Ether available to pay sales.
     uint256 public profit            = 0;                 // Shows the actual profit for the company.
     address public comisionGetter = 0xCd8bf69ad65c5158F0cfAA599bBF90d7f4b52Bb0; // The address that gets the comisions paid.
-    mapping (address =&gt; bool) public frozenAccount; // Array containing foreach address if it&#39;s frozen or not.
+    mapping (address => bool) public frozenAccount; // Array containing foreach address if it's frozen or not.
 
     /* This generates a public event on the blockchain that will notify about an address being freezed. */
     event FrozenFunds(address target, bool frozen);
@@ -100,8 +100,8 @@ contract HormitechToken is owned, token {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address.
-        require(balanceOf[_from] &gt;= _value);               // Check if the sender has enough.
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows.
+        require(balanceOf[_from] >= _value);               // Check if the sender has enough.
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows.
         require(!frozenAccount[_from]);                    // Check if sender is frozen.
         require(!frozenAccount[_to]);                      // Check if recipient is frozen.
 		balanceOf[_from] -= _value; // Subtracts _value tokens from the sender.
@@ -121,19 +121,19 @@ contract HormitechToken is owned, token {
         uint market_value = _value * sellPrice;
         uint comision = market_value * 4 / 1000;
         // The token smart-contract pays comision, else the transfer is not possible.
-        require(this.balance &gt;= comision);
+        require(this.balance >= comision);
         comisionGetter.transfer(comision); // Transfers comision to the comisionGetter.
         _transfer(msg.sender, _to, _value);
     }
 
     /* Overrides basic transferFrom function due to comision value */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance.
+        require(_value <= allowance[_from][msg.sender]); // Check allowance.
         // This function requires a comision value of 0.4% of the market value.
         uint market_value = _value * sellPrice;
         uint comision = market_value * 4 / 1000;
         // The token smart-contract pays comision, else the transfer is not possible.
-        require(this.balance &gt;= comision);
+        require(this.balance >= comision);
         comisionGetter.transfer(comision); // Transfers comision to the comisionGetter.
         allowance[_from][msg.sender] -= _value; // Updates the allowance array, substracting the amount sent.
         _transfer(_from, _to, _value); // Makes the transfer.
@@ -153,7 +153,7 @@ contract HormitechToken is owned, token {
             profit = profit + _increment;
         }else{
             // Decrease the profit value
-            if(_increment &gt; profit){ profit = 0; }
+            if(_increment > profit){ profit = 0; }
             else{ profit = profit - _increment; }
         }
     }
@@ -162,24 +162,24 @@ contract HormitechToken is owned, token {
     /// @param target Address to receive the tokens.
     /// @param mintedAmount The amount of tokens target will receive.
     function mintToken(address target, uint256 mintedAmount) onlyOwner public {
-        balanceOf[target] += mintedAmount; // Updates target&#39;s balance.
+        balanceOf[target] += mintedAmount; // Updates target's balance.
         totalSupply       += mintedAmount; // Updates totalSupply.
         _updateTokensAvailable(balanceOf[this]); // Update the balance of tokens available if necessary.
         Transfer(0, this, mintedAmount);      // Notifies the blockchain about the tokens created.
         Transfer(this, target, mintedAmount); // Notifies the blockchain about the transfer to target.
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens.
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens.
     /// @param target Address to be frozen.
     /// @param freeze Either to freeze target or not.
     function freezeAccount(address target, bool freeze) onlyOwner public {
-        frozenAccount[target] = freeze; // Sets the target status. True if it&#39;s frozen, False if it&#39;s not.
+        frozenAccount[target] = freeze; // Sets the target status. True if it's frozen, False if it's not.
         FrozenFunds(target, freeze); // Notifies the blockchain about the change of state.
     }
 
     /// @notice Allow addresses to pay `newBuyPrice`ETH when buying and receive `newSellPrice`ETH when selling, foreach token bought/sold.
-    /// @param newSellPrice Price applied when an address sells its tokens, amount in WEI (1ETH = 10&#185;⁸WEI).
-    /// @param newBuyPrice Price applied when an address buys tokens, amount in WEI (1ETH = 10&#185;⁸WEI).
+    /// @param newSellPrice Price applied when an address sells its tokens, amount in WEI (1ETH = 10¹⁸WEI).
+    /// @param newBuyPrice Price applied when an address buys tokens, amount in WEI (1ETH = 10¹⁸WEI).
     function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner public {
         sellPrice = newSellPrice; // Updates the buying price.
         buyPrice = newBuyPrice;   // Updates the selling price.
@@ -195,12 +195,12 @@ contract HormitechToken is owned, token {
 
     /// @notice Deposits Ether to the contract
     function deposit() payable public returns(bool success) {
-        require((this.balance + msg.value) &gt; this.balance); // Checks for overflows.
+        require((this.balance + msg.value) > this.balance); // Checks for overflows.
         //Contract has already received the Ether when this function is executed.
         _updateSolvency(this.balance);   // Updates the solvency value of the contract.
         _updateProfit(msg.value, false); // Decrease profit value.
         // Decrease because deposits will be done mostly by the owner.
-        // Possible donations won&#39;t count as profit for the company, but in favor of the investors.
+        // Possible donations won't count as profit for the company, but in favor of the investors.
         LogDeposit(msg.sender, msg.value); // Notifies the blockchain about the Ether received.
         return true;
     }
@@ -221,7 +221,7 @@ contract HormitechToken is owned, token {
         uint market_value = amount * buyPrice; //Market value for this amount
         uint comision = market_value * 4 / 1000; //Calculates the comision for this transaction
         uint profit_in_transaction = market_value - (amount * sellPrice) - comision; //Calculates the relative profit for this transaction
-        require(this.balance &gt;= comision); //The token smart-contract pays comision, else the operation is not possible.
+        require(this.balance >= comision); //The token smart-contract pays comision, else the operation is not possible.
         comisionGetter.transfer(comision); //Transfers comision to the comisionGetter.
         _transfer(this, msg.sender, amount); //Makes the transfer of tokens.
         _updateSolvency((this.balance - profit_in_transaction)); //Updates the solvency value of the contract.
@@ -236,7 +236,7 @@ contract HormitechToken is owned, token {
         uint market_value = amount * sellPrice; //Market value for this amount
         uint comision = market_value * 4 / 1000; //Calculates the comision for this transaction
         uint amount_weis = market_value + comision; //Total in weis that must be paid
-        require(this.balance &gt;= amount_weis); //Contract must have enough weis
+        require(this.balance >= amount_weis); //Contract must have enough weis
         comisionGetter.transfer(comision); //Transfers comision to the comisionGetter
         _transfer(msg.sender, this, amount); //Makes the transfer of tokens, the contract receives the tokens.
         _updateSolvency( (this.balance - amount_weis) ); //Updates the solvency value of the contract.

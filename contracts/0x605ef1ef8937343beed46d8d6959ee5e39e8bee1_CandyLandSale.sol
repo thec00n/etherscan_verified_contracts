@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -197,10 +197,10 @@ contract LandAccessControl {
 contract CanReceiveApproval {
     event ReceiveApproval(address from, uint256 value, address token);
 
-    mapping(bytes4 =&gt; bool) allowedFuncs;
+    mapping(bytes4 => bool) allowedFuncs;
 
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 
@@ -211,8 +211,8 @@ contract CanReceiveApproval {
 
 
     function bytesToBytes4(bytes b) internal pure returns (bytes4 out) {
-        for (uint i = 0; i &lt; 4; i++) {
-            out |= bytes4(b[i] &amp; 0xFF) &gt;&gt; (i &lt;&lt; 3);
+        for (uint i = 0; i < 4; i++) {
+            out |= bytes4(b[i] & 0xFF) >> (i << 3);
         }
     }
 
@@ -244,7 +244,7 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
 
 
     function CandyLandSale(address _landManagementAddress) LandAccessControl(_landManagementAddress) public {
-        allowedFuncs[bytes4(keccak256(&quot;_receiveBuyLandForCandy(address,uint256)&quot;))] = true;
+        allowedFuncs[bytes4(keccak256("_receiveBuyLandForCandy(address,uint256)"))] = true;
     }
 
 
@@ -259,10 +259,10 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
     }
 
     function buyLandForEth() onlyWhileEthSaleOpen public payable {
-        require(candyLand.totalSupply() &lt;= candyLand.MAX_SUPPLY());
+        require(candyLand.totalSupply() <= candyLand.MAX_SUPPLY());
         //MAX_SUPPLY проверяется так же в _mint
         uint landPriceWei = landManagement.landPriceWei();
-        require(msg.value &gt;= landPriceWei);
+        require(msg.value >= landPriceWei);
 
         uint weiAmount = msg.value;
         uint landCount = 0;
@@ -270,12 +270,12 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
         uint userRankIndex = userRank.getUserRank(msg.sender);
         uint ranksCount = userRank.ranksCount();
 
-        for (uint i = userRankIndex; i &lt;= ranksCount &amp;&amp; weiAmount &gt;= landPriceWei; i++) {
+        for (uint i = userRankIndex; i <= ranksCount && weiAmount >= landPriceWei; i++) {
 
             uint userLandLimit = userRank.getRankLandLimit(i).sub(candyLand.balanceOf(msg.sender)).sub(_landAmount);
             landCount = weiAmount.div(landPriceWei);
 
-            if (landCount &lt;= userLandLimit) {
+            if (landCount <= userLandLimit) {
 
                 _landAmount = _landAmount.add(landCount);
                 weiAmount = weiAmount.sub(landCount.mul(landPriceWei));
@@ -289,9 +289,9 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
                 _landAmount = _landAmount.add(userLandLimit);
                 weiAmount = weiAmount.sub(userLandLimit.mul(landPriceWei));
 
-                uint nextPrice = (i == 0 &amp;&amp; landManagement.firstRankForFree()) ? 0 : userRank.getRankPriceEth(i + 1);
+                uint nextPrice = (i == 0 && landManagement.firstRankForFree()) ? 0 : userRank.getRankPriceEth(i + 1);
 
-                if (i == ranksCount || weiAmount &lt; nextPrice) {
+                if (i == ranksCount || weiAmount < nextPrice) {
                     break;
                 }
 
@@ -301,12 +301,12 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
 
         }
 
-        require(_landAmount &gt; 0);
+        require(_landAmount > 0);
         candyLand.mint(msg.sender, _landAmount);
 
         emit BuyLand(msg.sender, _landAmount);
 
-        if (weiAmount &gt; 0) {
+        if (weiAmount > 0) {
             msg.sender.transfer(weiAmount);
         }
 
@@ -324,7 +324,7 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
 
     function findRankByCount(uint _rank, uint _totalRanks, uint _balance, uint _count) internal view returns (uint, uint) {
         uint landLimit = userRank.getRankLandLimit(_rank).sub(_balance);
-        if (_count &gt; landLimit &amp;&amp; _rank &lt; _totalRanks) {
+        if (_count > landLimit && _rank < _totalRanks) {
             return findRankByCount(_rank + 1, _totalRanks, _balance, _count);
         }
         return (_rank, landLimit);
@@ -344,14 +344,14 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
 
         uint landPriceCandy = landManagement.landPriceCandy();
 
-        if (_count &gt; landLimit) {
+        if (_count > landLimit) {
             _count = landLimit;
         }
-        require(_count &gt; 0);
+        require(_count > 0);
 
-        if (rank &lt; neededRank) {
+        if (rank < neededRank) {
             totalPrice = userRank.getIndividualPrice(_owner, neededRank);
-            if (rank == 0 &amp;&amp; landManagement.firstRankForFree()) {
+            if (rank == 0 && landManagement.firstRankForFree()) {
                 totalPrice = totalPrice.sub(userRank.getRankPriceCandy(1));
             }
         }
@@ -361,15 +361,15 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
     }
 
     function _buyLandForCandy(address _owner, uint _count) internal {
-        require(_count &gt; 0);
-        require(candyLand.totalSupply().add(_count) &lt;= candyLand.MAX_SUPPLY());
+        require(_count > 0);
+        require(candyLand.totalSupply().add(_count) <= candyLand.MAX_SUPPLY());
         uint rank;
         uint neededRank;
         uint totalPrice;
 
         (rank, neededRank, totalPrice) = getBuyLandInfo(_owner, _count);
         require(candyToken.transferFrom(_owner, this, totalPrice));
-        if (rank &lt; neededRank) {
+        if (rank < neededRank) {
             userRank.getRank(_owner, neededRank);
         }
         candyLand.mint(_owner, _count);
@@ -377,21 +377,21 @@ contract CandyLandSale is LandAccessControl, CanReceiveApproval {
     }
 
     function createPresale(address _owner, uint _count, uint _rankIndex) onlyManager whilePresaleOpen public {
-        require(candyLand.totalSupply().add(_count) &lt;= candyLand.MAX_SUPPLY());
+        require(candyLand.totalSupply().add(_count) <= candyLand.MAX_SUPPLY());
         userRank.getRank(_owner, _rankIndex);
         candyLand.mint(_owner, _count);
     }
 
 
     function withdrawTokens() onlyManager public {
-        require(candyToken.balanceOf(this) &gt; 0);
+        require(candyToken.balanceOf(this) > 0);
         candyToken.transfer(landManagement.walletAddress(), candyToken.balanceOf(this));
         emit TokensTransferred(landManagement.walletAddress(), candyToken.balanceOf(this));
     }
 
 
     function transferEthersToDividendManager(uint _value) onlyManager public {
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
         DividendManagerInterface dividendManager = DividendManagerInterface(landManagement.dividendManagerAddress());
         dividendManager.payDividend.value(_value)();
         emit FundsTransferred(landManagement.dividendManagerAddress(), _value);

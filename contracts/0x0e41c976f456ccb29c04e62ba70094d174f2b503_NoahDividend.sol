@@ -32,10 +32,10 @@ contract NoahDividend is Ownable {
 
     // function checkTotalBalance(uint256[] tokenAmounts) public view returns (bool) {
     //     uint256 total = 0;
-    //     for (uint i = 0; i &lt; tokenAmounts.length; i++) {
+    //     for (uint i = 0; i < tokenAmounts.length; i++) {
     //         total += tokenAmounts[i];
     //     }
-    //     return total &gt; 0 &amp;&amp; noahToken.balanceOf(this) &gt;= total;
+    //     return total > 0 && noahToken.balanceOf(this) >= total;
     //  }
 
     function balanceOfInvestor(address investor) public view returns (uint256 balance) {
@@ -52,7 +52,7 @@ contract NoahDividend is Ownable {
         //     revert();
         // }
         
-        for (uint i = 0; i &lt; investors.length; i++) {
+        for (uint i = 0; i < investors.length; i++) {
             bool result = noahToken.transfer(investors[i], tokenAmounts[i]);
             if (result == true){
                 results[i] = investors[i];

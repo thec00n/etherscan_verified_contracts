@@ -5,34 +5,34 @@ library SafeMath {
         return c;
     }
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
      }
     function add(uint a, uint b) internal returns (uint) {
          uint c = a + b;
-         assert(c &gt;= a);
+         assert(c >= a);
          return c;
      }
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
      }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -51,15 +51,15 @@ contract tokenPCT {
 
         }
     /* This creates an array with all balances */
-        mapping (address =&gt; uint256) public balanceOf;
+        mapping (address => uint256) public balanceOf;
 
 }
 
 contract Presale is tokenPCT {
 
         using SafeMath for uint;
-        string name = &#39;Presale CryptoTickets Token&#39;;
-        string symbol = &#39;PCT&#39;;
+        string name = 'Presale CryptoTickets Token';
+        string symbol = 'PCT';
         uint8 decimals = 18;
         address manager;
         address public ico;
@@ -104,8 +104,8 @@ contract Presale is tokenPCT {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -241,7 +241,7 @@ contract CryptoTicketsICO {
     function replaceToken(address _investor) managerOnly{
          require(statusICO != StatusICO.Finished);
          uint pctTokens = presale.balanceOf(_investor);
-         require(pctTokens &gt; 0);
+         require(pctTokens > 0);
          presale.burnTokens(_investor);
          tkt.mint(_investor, pctTokens);
 
@@ -251,14 +251,14 @@ contract CryptoTicketsICO {
 
     function buy(address _investor, uint _tktValue) internal {
        require(statusICO == StatusICO.Started);
-       require(_tktValue &gt; 0);
+       require(_tktValue > 0);
 
 
        uint bonus = getBonus(_tktValue);
 
        uint _total = _tktValue.add(bonus);
 
-       require(SoldNoBonuses + _tktValue &lt;= Tokens_For_Sale);
+       require(SoldNoBonuses + _tktValue <= Tokens_For_Sale);
        tkt.mint(_investor, _total);
 
        SoldNoBonuses = SoldNoBonuses.add(_tktValue);
@@ -268,18 +268,18 @@ contract CryptoTicketsICO {
     function getBonus(uint _value) public constant returns (uint) {
        uint bonus = 0;
        uint time = now;
-       if(time &gt;= startTime &amp;&amp; time &lt;= startTime + 48 hours)
+       if(time >= startTime && time <= startTime + 48 hours)
        {
 
             bonus = _value * 20/100;
         }
 
-       if(time &gt; startTime + 48 hours &amp;&amp; time &lt;= startTime + 96 hours)
+       if(time > startTime + 48 hours && time <= startTime + 96 hours)
        {
             bonus = _value * 10/100;
        }
 
-       if(time &gt; startTime + 96 hours &amp;&amp; time &lt;= startTime + 168 hours)
+       if(time > startTime + 96 hours && time <= startTime + 168 hours)
        {
 
             bonus = _value * 5/100;
@@ -291,7 +291,7 @@ contract CryptoTicketsICO {
 //function to withdraw ETH from smart contract
 
     // SUGGESTION:
-    // even if you lose you manager keys -&gt; you still will be able to get ETH
+    // even if you lose you manager keys -> you still will be able to get ETH
     function withdrawEther(uint256 _value) external managerOnly {
        require(statusICO == StatusICO.Finished);
        Company.transfer(_value);
@@ -302,8 +302,8 @@ contract CryptoTicketsICO {
 contract TKT  is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;CryptoTickets COIN&quot;;
-    string public symbol = &quot;TKT&quot;;
+    string public name = "CryptoTickets COIN";
+    string public symbol = "TKT";
     uint public decimals = 18;
 
     address public ico;

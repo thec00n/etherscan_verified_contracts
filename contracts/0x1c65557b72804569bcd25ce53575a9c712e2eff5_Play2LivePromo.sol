@@ -1,5 +1,5 @@
 // Play2LivePromo token smart contract.
-// Developed by Phenom.Team &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f272e013129242f2e2c6f3524202c">[email&#160;protected]</a>&gt;
+// Developed by Phenom.Team <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f272e013129242f2e2c6f3524202c">[email protected]</a>>
 
 pragma solidity ^0.4.18;
 
@@ -7,13 +7,13 @@ contract Play2LivePromo {
     //Owner address
     address public owner;
     //Public variables of the token
-    string public constant name  = &quot;Level Up Coin Diamond | play2live.io&quot;;
-    string public constant symbol = &quot;LUCD&quot;;
+    string public constant name  = "Level Up Coin Diamond | play2live.io";
+    string public constant symbol = "LUCD";
     uint8 public constant decimals = 18;
     uint public totalSupply = 0; 
     uint256 promoValue = 777 * 1e18;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
     // Events Log
     event Transfer(address _from, address _to, uint256 amount); 
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -41,7 +41,7 @@ contract Play2LivePromo {
 
    /**
     *   @dev Get balance of investor
-    *   @param _investor     investor&#39;s address
+    *   @param _investor     investor's address
     *   @return              balance of investor
     */
     function balanceOf(address _investor) public constant returns(uint256) {

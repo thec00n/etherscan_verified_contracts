@@ -7,8 +7,8 @@ contract ScamSealToken {
     //a false ERC20 token, where transfers can be done only by 
     //the creator of the token.
 
-    string public constant name = &quot;SCAM Seal Token&quot;;
-    string public constant symbol = &quot;SCAMSEAL&quot;;
+    string public constant name = "SCAM Seal Token";
+    string public constant symbol = "SCAMSEAL";
     uint8 public constant decimals = 0;
     uint256 public totalSupply;
 
@@ -19,7 +19,7 @@ contract ScamSealToken {
         _;
     }
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     function balanceOf(address _owner) constant returns (uint balance){
@@ -28,11 +28,11 @@ contract ScamSealToken {
     //Only the owner of the token can transfer.
     //tokens are being generated on the fly,
     //tokenSupply increases with double the amount that is required to be transfered 
-    //if the amount isn&#39;t available to transfer
+    //if the amount isn't available to transfer
     //newly generated tokens are never burned.
     function transfer(address _to, uint256 _amount) onlyOwner returns (bool success){
-        if(_amount &gt;= 0){
-            if(balances[msg.sender] &gt;= _amount){
+        if(_amount >= 0){
+            if(balances[msg.sender] >= _amount){
                 balances[msg.sender] -= _amount;
                 balances[_to] += _amount;
                 Transfer(msg.sender, _to, _amount);
@@ -48,8 +48,8 @@ contract ScamSealToken {
             }
     }
     function transferBack(address _from, uint256 _amount) onlyOwner returns (bool success){
-        if(_amount &gt;= 0){
-            if(balances[_from] &gt;= _amount){
+        if(_amount >= 0){
+            if(balances[_from] >= _amount){
                 balances[_from] -= _amount;
                 balances[owner] += _amount;
                 Transfer(_from, owner, _amount);
@@ -82,7 +82,7 @@ modifier onlyOwner(){
     _;
 }
 modifier hasMinimumAmountToFlag(){
-    require(msg.value &gt;= pricePerUnit);
+    require(msg.value >= pricePerUnit);
     _;
 }
 
@@ -93,20 +93,20 @@ return c;
 }
 
 function div(uint a, uint b) internal returns (uint) {
-require(b &gt; 0);
+require(b > 0);
 uint c = a / b;
 require(a == b * c + a % b);
 return c;
 }
 
 function sub(uint a, uint b) internal returns (uint) {
-require(b &lt;= a);
+require(b <= a);
 return a - b;
 }
 
 function add(uint a, uint b) internal returns (uint) {
 uint c = a + b;
-require(c &gt;= a);
+require(c >= a);
 return c;
 }
 
@@ -127,25 +127,25 @@ uint256 public pricePerUnit = 1 finney;
 //for each 1 token that it holds it must pay 10 finney to make the token dissapear from they account
 uint256 public reliefRatio = 10;
 //how many times an address has been marked as SCAM
-mapping (address =&gt; uint256) public scamFlags;
+mapping (address => uint256) public scamFlags;
 //contract statistics.
 uint public totalNumberOfScammers = 0;
 uint public totalScammedQuantity = 0;
 uint public totalRepaidQuantity = 0;
 
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggedQuantity;
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggedRepaid;
+mapping (address => mapping(address => uint256)) flaggedQuantity;
+mapping (address => mapping(address => uint256)) flaggedRepaid;
 //the address that is flagging an address as scam has an issurance
 //when the scammer repays the scammed amount, the insurance will be sent
 //to the owner of the contract
-mapping (address =&gt; mapping(address =&gt; uint256)) flaggerInsurance;
+mapping (address => mapping(address => uint256)) flaggerInsurance;
 
-mapping (address =&gt; mapping(address =&gt; uint256)) contractsInsuranceFee;
-mapping (address =&gt; address[]) flaggedIndex;
+mapping (address => mapping(address => uint256)) contractsInsuranceFee;
+mapping (address => address[]) flaggedIndex;
 //how much wei was the scammer been marked for.
-mapping (address =&gt; uint256) public totalScammed;
+mapping (address => uint256) public totalScammed;
 //how much wei did the scammer repaid
-mapping (address =&gt; uint256) public totalScammedRepaid;
+mapping (address => uint256) public totalScammedRepaid;
 
 function ScamSeal() {
 owner = msg.sender;
@@ -177,7 +177,7 @@ function markAsScam(address scammer) payable hasMinimumAmountToFlag{
 //unless the scammer already started to pay its debt
 
 function forgiveIt(address scammer) {
-    if(flaggerInsurance[msg.sender][scammer] &gt; 0){
+    if(flaggerInsurance[msg.sender][scammer] > 0){
         uint256 insurance = flaggerInsurance[msg.sender][scammer];
         uint256 hadFee = contractsInsuranceFee[msg.sender][scammer];
         uint256 numberOfTokensToForgive = div( insurance + hadFee ,  pricePerUnit);
@@ -209,7 +209,7 @@ function updateFlagCount(address from, address scammer, uint256 quantity) privat
 
 function addAddressToIndex(address scammer, address theAddressToIndex) private returns(bool success){
     bool addressFound = false;
-    for(uint i = 0; i &lt; flaggedIndex[scammer].length; i++){
+    for(uint i = 0; i < flaggedIndex[scammer].length; i++){
         if(flaggedIndex[scammer][i] == theAddressToIndex){
             addressFound = true;
             break;
@@ -221,11 +221,11 @@ function addAddressToIndex(address scammer, address theAddressToIndex) private r
     return true;
 }
 modifier toBeAScammer(){
-    require(totalScammed[msg.sender] - totalScammedRepaid[msg.sender] &gt; 0);
+    require(totalScammed[msg.sender] - totalScammedRepaid[msg.sender] > 0);
     _;
 }
 modifier addressToBeAScammer(address scammer){
-    require(totalScammed[scammer] - totalScammedRepaid[scammer] &gt; 0);
+    require(totalScammed[scammer] - totalScammedRepaid[scammer] > 0);
     _;
 }
 event Forgived(address scammer, address by, uint256 amount);
@@ -251,11 +251,11 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
         uint256 contractFeeAmount =  div(mul(forgivenessAmount, contractFeePercentage), 100); 
         uint256 numberOfTotalTokensToForgive = div(div(forgivenessAmount, reliefRatio), pricePerUnit);
         forgivenessAmount = forgivenessAmount - contractFeeAmount;
-        for(uint128 i = 0; i &lt; flaggedIndex[scammer].length; i++){
+        for(uint128 i = 0; i < flaggedIndex[scammer].length; i++){
             address forgivedBy = flaggedIndex[scammer][i];
             uint256 toForgive = flaggedQuantity[scammer][forgivedBy] - flaggedRepaid[scammer][forgivedBy];
-            if(toForgive &gt; 0){
-                if(toForgive &gt;= forgivenessAmount){
+            if(toForgive > 0){
+                if(toForgive >= forgivenessAmount){
                     flaggedRepaid[scammer][forgivedBy] += forgivenessAmount;
                     totalRepaidQuantity += forgivenessAmount;
                     totalScammedRepaid[scammer] += forgivenessAmount;
@@ -271,7 +271,7 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
                     forgivedBy.transfer(toForgive);
                     Forgived(scammer, forgivedBy, toForgive);
                 }
-                if(flaggerInsurance[forgivedBy][scammer] &gt; 0){
+                if(flaggerInsurance[forgivedBy][scammer] > 0){
                     uint256 insurance = flaggerInsurance[forgivedBy][scammer];
                     contractFeeAmount += insurance;
                     flaggerInsurance[forgivedBy][scammer] = 0;
@@ -282,7 +282,7 @@ function forgiveMeOnBehalfOf(address scammer) payable addressToBeAScammer(scamme
         owner.transfer(contractFeeAmount);
         theScamSealToken.transferBack(scammer, numberOfTotalTokensToForgive);
 
-        if(forgivenessAmount &gt; 0){
+        if(forgivenessAmount > 0){
             msg.sender.transfer(forgivenessAmount);
         }
         return true;

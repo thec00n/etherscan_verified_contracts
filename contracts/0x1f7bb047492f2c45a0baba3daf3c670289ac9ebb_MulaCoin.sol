@@ -41,11 +41,11 @@ contract StandardToken is Token
 {
 	function transfer(address _to, uint256 _value) public returns (bool success)
 	{
-		//Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+		//Default assumes totalSupply can't be over max (2^256 - 1).
+		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
 		//Replace the if with this one instead.
-		//if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-		if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+		//if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+		if (balances[msg.sender] >= _value && _value > 0)
 		{
 			balances[msg.sender] -= _value;
 			balances[_to] += _value;
@@ -61,8 +61,8 @@ contract StandardToken is Token
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
 	{
 		//same as above. Replace this line with the following if you want to protect against wrapping uints.
-		//if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-		if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		//if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+		if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 			balances[_to] += _value;
 			balances[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;
@@ -93,8 +93,8 @@ contract StandardToken is Token
           return _totalSupply;
         }
 
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	uint256 _totalSupply;
 }
 
@@ -111,15 +111,15 @@ contract MulaCoin is StandardToken
 	/*
 	NOTE:
 	The following variables are OPTIONAL vanities. One does not have to include them.
-	They allow one to customise the token contract &amp; in no way influences the core functionality.
+	They allow one to customise the token contract & in no way influences the core functionality.
 	Some wallets/interfaces might not even bother to look at this information.
 	*/
 	string public name;                   // Token Name
 	uint8 public decimals;                // How many decimals to show. To be standard complicant keep it 18
 	string public symbol;                 // An identifier: eg SBX, XPR etc..
-	string public version = &#39;1.0&#39;;
+	string public version = '1.0';
 	uint256 public unitsOneEthCanBuy;     // How many units of your coin can be bought by 1 ETH?
-	uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.
+	uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.
 	address public fundsWallet;           // Where should the raised ETH go?
 
 
@@ -135,9 +135,9 @@ contract MulaCoin is StandardToken
 	{
 		_totalSupply 		 = 3000000000000000000000000000;  // Update total supply
 		balances[msg.sender]     = _totalSupply;             // Give the creator all initial tokens.
-		name 				 = &quot;MULA COIN&quot;;                   // Set the name
+		name 				 = "MULA COIN";                   // Set the name
 		decimals 			 = 18;                            // Amount of decimals
-		symbol 				 = &quot;MUT&quot;;                         // Set the symbol
+		symbol 				 = "MUT";                         // Set the symbol
 		unitsOneEthCanBuy 	 = 4356;                          // Set the price
 		fundsWallet 		 = msg.sender;                    // The owner of the contract gets ETH
 	}
@@ -147,7 +147,7 @@ contract MulaCoin is StandardToken
 		totalEthInWei = totalEthInWei + msg.value;
 		uint256 amount = msg.value * unitsOneEthCanBuy;
 
-		if (balances[fundsWallet] &lt; amount)
+		if (balances[fundsWallet] < amount)
 		{
 			revert();
 		}

@@ -11,22 +11,22 @@ library SafeMath {
 	//Безопасное деление.
 	//Safe division.
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 	//Безопасное вычитание.
 	//Safe subtraction.
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 	//Безопасное сложение.
 	//Safe addition.
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,14 +66,14 @@ contract COIN is Ownable {
     
     using SafeMath for uint256;
 	
-	string public constant name = &quot;daoToken&quot;;
-    string public constant symbol = &quot;dao&quot;;
+	string public constant name = "daoToken";
+    string public constant symbol = "dao";
     uint8 constant decimals = 18;
     
-    bytes32 constant password = keccak256(&quot;...And Justice For All!&quot;);
-	bytes32 constant fin = keccak256(&quot;...I Saw The Throne Of Gods...&quot;);
+    bytes32 constant password = keccak256("...And Justice For All!");
+	bytes32 constant fin = keccak256("...I Saw The Throne Of Gods...");
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     uint256 public totalSupply = 0;
     bool public mintingFinished = false;
     
@@ -87,7 +87,7 @@ contract COIN is Ownable {
         totalSupply = 0;
     }
   
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
     
     function totalSupply() constant returns (uint256 total_Supply) {
         return totalSupply;
@@ -120,7 +120,7 @@ contract COIN is Ownable {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -159,16 +159,16 @@ contract COIN is Ownable {
 /*contract DAOcoin is Coin {
   
       
-    string public constant name = &quot;DaoToken&quot;;
-    string public constant symbol = &quot;DAO&quot;;
+    string public constant name = "DaoToken";
+    string public constant symbol = "DAO";
     uint8 constant decimals = 18;
     function DAOcoin(){}
 }*/
 
 contract daocrowdsale is Ownable {
     using SafeMath for uint256;
-    bytes32 constant password = keccak256(&quot;...And Justice For All!&quot;);
-	bytes32 constant fin = keccak256(&quot;...I Saw The Throne Of Gods...&quot;);
+    bytes32 constant password = keccak256("...And Justice For All!");
+	bytes32 constant fin = keccak256("...I Saw The Throne Of Gods...");
 	
 	COIN public DAO;
     
@@ -235,7 +235,7 @@ contract daocrowdsale is Ownable {
     }
     
     function TimeCheck() private constant returns (bool) {
-        if (timeOfNextShift &gt; block.timestamp) return true;
+        if (timeOfNextShift > block.timestamp) return true;
         return false;
     }
     
@@ -250,15 +250,15 @@ contract daocrowdsale is Ownable {
     modifier IsOutdated() {
         if(!TimeCheck()){
             _;
-            StateShift(&quot;OUTDATED&quot;);
+            StateShift("OUTDATED");
         }
         else _;
     }
     
     modifier IsBought(uint256 _amount, uint256 _total){
-        if(_amount &gt;= _total){
+        if(_amount >= _total){
         _;
-        StateShift(&quot;SUCCEED&quot;);
+        StateShift("SUCCEED");
         StartNewStage();
         }
         else _;
@@ -281,7 +281,7 @@ contract daocrowdsale is Ownable {
 	}
 	
     function buy (uint256 _amount) IsOutdated IsBought(DAO.totalSupply(), Values.hardcap) payable returns (bool) {
-    require((msg.value == price*_amount)&amp;&amp;(_amount &lt;= (Values.hardcap - DAO.totalSupply())));
+    require((msg.value == price*_amount)&&(_amount <= (Values.hardcap - DAO.totalSupply())));
 	owner.transfer(msg.value);
     DAO.passwordMint(msg.sender, _amount, password);
     Deal(msg.sender, _amount);
@@ -294,11 +294,11 @@ contract daocrowdsale is Ownable {
    }
 
 function()payable{
-       require(msg.value &gt;= price);
+       require(msg.value >= price);
 	address buyer = msg.sender;
     uint256 refund = (msg.value) % price;
     uint256 accepted = (msg.value) / price;
-    assert(accepted + DAO.totalSupply() &lt;= Values.hardcap);
+    assert(accepted + DAO.totalSupply() <= Values.hardcap);
     if (refund != 0){
         buyer.transfer(refund);
     }

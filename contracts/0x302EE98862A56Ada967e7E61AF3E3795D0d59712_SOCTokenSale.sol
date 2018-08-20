@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 
 contract SOCToken {
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function SOCToken(
@@ -13,8 +13,8 @@ contract SOCToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
     }
@@ -28,7 +28,7 @@ contract SOCTokenSale {
 	uint public deadline; 
 	uint public price;
     SOCToken public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     uint softMarketingLimit = 25 * 1 ether;	
     event GoalReached(address beneficiary, uint amountRaised);
@@ -62,11 +62,11 @@ contract SOCTokenSale {
         FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -83,10 +83,10 @@ contract SOCTokenSale {
     }	
 	
     function safeWithdrawal() afterDeadline {
-        if (amountRaised &lt; softMarketingLimit) {
+        if (amountRaised < softMarketingLimit) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -95,7 +95,7 @@ contract SOCTokenSale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(this.balance)) {
                 FundTransfer(beneficiary, this.balance, false);
             } else {

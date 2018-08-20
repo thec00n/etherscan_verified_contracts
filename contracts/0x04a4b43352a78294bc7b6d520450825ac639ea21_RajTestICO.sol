@@ -21,8 +21,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract RajTest is owned {
     // Public variables of the token
-    string public name = &quot;RajTest&quot;;
-    string public symbol = &quot;RT&quot;;
+    string public name = "RajTest";
+    string public symbol = "RT";
     uint8 public decimals = 18;
     uint256 public totalSupply = 0;
 
@@ -34,9 +34,9 @@ contract RajTest is owned {
     address public crowdsaleAgent;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
    
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -71,9 +71,9 @@ contract RajTest is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Check if sender is frozen
         require(!frozenAccount[_from]);
         // Check if recipient is frozen
@@ -111,7 +111,7 @@ contract RajTest is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -160,7 +160,7 @@ contract RajTest is owned {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -198,7 +198,7 @@ contract RajTestICO is owned, Killable {
     RajTest public token;
 
     /// Current State Name
-    string public state = &quot;Pre ICO&quot;;
+    string public state = "Pre ICO";
 
     /// the UNIX timestamp start date of the crowdsale
     uint public startsAt = 1521648000;
@@ -225,10 +225,10 @@ contract RajTestICO is owned, Killable {
     uint public investorCount = 0;
 
     /// How much ETH each address has invested to this crowdsale
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     /// How much tokens this crowdsale has credited for each investor address
-    mapping (address =&gt; uint256) public tokenAmountOf;
+    mapping (address => uint256) public tokenAmountOf;
 
     /// A new investment was made
     event Invested(address investor, uint weiAmount, uint tokenAmount);
@@ -243,8 +243,8 @@ contract RajTestICO is owned, Killable {
 
     function investInternal(address receiver) private {
         require(!finalized);
-        require(startsAt &lt;= now &amp;&amp; endsAt &gt; now);
-        require(tokensSold &lt;= MAX_GOAL_EBC);
+        require(startsAt <= now && endsAt > now);
+        require(tokensSold <= MAX_GOAL_EBC);
 
         if(investedAmountOf[receiver] == 0) {
             // A new investor
@@ -275,24 +275,24 @@ contract RajTestICO is owned, Killable {
 
     function setEndsAt(uint time) onlyOwner {
         require(!finalized);
-        require(time &gt;= now);
+        require(time >= now);
         endsAt = time;
         EndsAtChanged(endsAt);
     }
     function setRate(uint value) onlyOwner {
         require(!finalized);
-        require(value &gt; 0);
+        require(value > 0);
         RateChanged(TokenPerETH, value);
         TokenPerETH = value;
     }
 
     function finalize(address receiver) public onlyOwner {
-        require(endsAt &lt; now);
+        require(endsAt < now);
         // Finalized Pre ICO crowdsele.
         finalized = true;
         // Make tokens Transferable
         token.releaseTokenTransfer();
-        // Transfer Fund to owner&#39;s address
+        // Transfer Fund to owner's address
         receiver.transfer(this.balance);
     }
 }

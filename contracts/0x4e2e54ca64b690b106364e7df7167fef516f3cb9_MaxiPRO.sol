@@ -8,7 +8,7 @@ twitter https://twitter.com/maxipro_pro
 bitcointalk https://bitcointalk.org/index.php?topic=4336550
 telegram https://t.me/Maxipro_pro
 medium https://medium.com/@maxipro_pro
-contact e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c35323a331c313d24352c2e33722c2e33">[email&#160;protected]</a>
+contact e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c35323a331c313d24352c2e33722c2e33">[email protected]</a>
 */
 
 
@@ -35,8 +35,8 @@ contact e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-
 	contract Crowdsale is owned {
     
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-	  mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+	  mapping (address => bool) public frozenAccount;
       event Transfer(address indexed from, address indexed to, uint256 value);
 
     function Crowdsale() payable owned() {
@@ -65,15 +65,15 @@ contact e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-
     }
 
     function () payable {
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         uint256 tokens = 200000 * msg.value / 1000000000000000000;
-        if (tokens &gt; balanceOf[this]) {
+        if (tokens > balanceOf[this]) {
             tokens = balanceOf[this];
             uint valueWei = tokens * 1000000000000000000 / 200000;
             msg.sender.transfer(msg.value - valueWei);
         }
-        require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]); 
-        require(tokens &gt; 0);
+        require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]); 
+        require(tokens > 0);
         balanceOf[msg.sender] += tokens;
         balanceOf[this] -= tokens;
         Transfer(this, msg.sender, tokens);
@@ -82,11 +82,11 @@ contact e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-
 contract Token is Crowdsale {
     
    
-    string  public name        = &#39;MaxiPRO&#39;;
-    string  public symbol      = &quot;MPR&quot;;
+    string  public name        = 'MaxiPRO';
+    string  public symbol      = "MPR";
     uint8   public decimals    = 0;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Burned(address indexed owner, uint256 value);
@@ -94,8 +94,8 @@ contract Token is Crowdsale {
     function Token() payable Crowdsale() {}
 
     function transfer(address _to, uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -104,9 +104,9 @@ contract Token is Crowdsale {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -124,7 +124,7 @@ contract Token is Crowdsale {
     }
     
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burned(msg.sender, _value);

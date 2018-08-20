@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -129,8 +129,8 @@ contract PoSTokenStandard {
 contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;PallyNetwork&quot;;
-    string public symbol = &quot;Pally&quot;;
+    string public name = "PallyNetwork";
+    string public symbol = "Pally";
     uint public decimals = 4;
 
     uint public chainStartTime; //chain start time
@@ -158,16 +158,16 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
     address PallyFoundation = 0x70F580B083D67949854A3A5cE1D6941504542AA8;
     address TeamSalaries = 0x840Bf950be68260fcAa127111787f98c02a4d329;
     //Mappings
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; transferInStruct[]) transferIns; //mapping to stake stacks
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => transferInStruct[]) transferIns; //mapping to stake stacks
 
     event Burn(address indexed burner, uint256 value);
 
 
     //modifier to limit the minting to not exceed maximum supply limit
     modifier canPoSMint() {
-        require(totalSupply &lt; maxTotalSupply);
+        require(totalSupply < maxTotalSupply);
         _;
     }
 
@@ -223,7 +223,7 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
         emit Transfer(msg.sender, _to, _value);
         
         //if there is any stake on stack, delete the stack
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
         //take actual time
         uint64 _now = uint64(now);
         //reset counter for sender
@@ -248,7 +248,7 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
         allowed[_from][msg.sender] = _allowance.sub(_value);
         emit Transfer(_from, _to, _value);
         //if there is any stake on stack, delete the stack
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
         //take actual time
         uint64 _now = uint64(now);
         //reset counter for sender
@@ -272,12 +272,12 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
 
     //funtion to claim stake reward
     function mint() canPoSMint public returns (bool) {        
-        if(balances[msg.sender] &lt;= 0) return false;//no balance = no stake
-        if(transferIns[msg.sender].length &lt;= 0) return false;//no stake = no reward
+        if(balances[msg.sender] <= 0) return false;//no balance = no stake
+        if(transferIns[msg.sender].length <= 0) return false;//no stake = no reward
 
         uint reward = getProofOfStakeReward(msg.sender);
 
-        if(reward &lt;= 0) return false;
+        if(reward <= 0) return false;
 
         totalSupply = totalSupply.add(reward); //supply is increased
         balances[msg.sender] = balances[msg.sender].add(reward); //assigned to holder
@@ -300,14 +300,14 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
         if((_now.sub(stakeStartTime)).div(1 years) == 0) {
             // 1st year effective annual interest rate is 900% when we select the stakeMaxAge (30 days) as the compounding period.
             interest = (2573 * baseIntCalc).div(100);
-        } else if((_now.sub(stakeStartTime)).div(1 years) &lt;= 10){
+        } else if((_now.sub(stakeStartTime)).div(1 years) <= 10){
             // 2nd to 10th year effective annual interest rate is 10%
             interest = (97 * baseIntCalc).div(100);
         }
     }
 
     function getProofOfStakeReward(address _address) public view returns (uint) {
-        require( (now &gt;= stakeStartTime) &amp;&amp; (stakeStartTime &gt; 0) );
+        require( (now >= stakeStartTime) && (stakeStartTime > 0) );
 
         uint _now = now;
         uint _coinAge = getCoinAge(_address, _now);
@@ -319,7 +319,7 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
         if((_now.sub(stakeStartTime)).div(1 years) == 0) {
             // 1st year effective annual interest rate is 900% when we select the stakeMaxAge (30 days) as the compounding period.
             interest = (2573 * baseIntCalc).div(100);
-        } else if((_now.sub(stakeStartTime)).div(1 years) &lt;= 10){
+        } else if((_now.sub(stakeStartTime)).div(1 years) <= 10){
             // 2nd to 10th year effective annual interest rate is 10%
             interest = (97 * baseIntCalc).div(100);
         }
@@ -328,20 +328,20 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
     }
 
     function getCoinAge(address _address, uint _now) internal view returns (uint _coinAge) {
-        if(transferIns[_address].length &lt;= 0) return 0;
+        if(transferIns[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++){
-            if( _now &lt; uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
+        for (uint i = 0; i < transferIns[_address].length; i++){
+            if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            if( nCoinSeconds &gt; stakeMaxAge ) nCoinSeconds = stakeMaxAge;
+            if( nCoinSeconds > stakeMaxAge ) nCoinSeconds = stakeMaxAge;
 
             _coinAge = _coinAge.add(uint(transferIns[_address][i].amount) * nCoinSeconds.div(1 days));
         }
     }
 
     function ownerBurnToken(uint _value) onlyOwner public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         delete transferIns[msg.sender];
@@ -354,24 +354,24 @@ contract PallyNetwork is ERC20,PoSTokenStandard,Ownable {
 
     /* Batch token transfer. Used by contract creator to distribute initial tokens to holders */
     function batchTransfer(address[] _recipients, uint[] _values) onlyOwner public returns (bool) {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require( _recipients.length > 0 && _recipients.length == _values.length);
 
         uint total = 0;
-        for(uint i = 0; i &lt; _values.length; i++){
+        for(uint i = 0; i < _values.length; i++){
             total = total.add(_values[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
         uint64 _now = uint64(now);
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             transferIns[_recipients[j]].push(transferInStruct(uint128(_values[j]),_now));
             emit Transfer(msg.sender, _recipients[j], _values[j]);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(total);
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
-        if(balances[msg.sender] &gt; 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
+        if(balances[msg.sender] > 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
 
         return true;
     }

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="096d6c7d6c496871606664736c67276a66">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="096d6c7d6c496871606664736c67276a66">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -86,20 +86,20 @@ contract CryptoDrinks is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;CryptoDrinks&quot;;
-  string public constant SYMBOL = &quot;DrinksToken&quot;;
+  string public constant NAME = "CryptoDrinks";
+  string public constant SYMBOL = "DrinksToken";
 
   uint256 private startingPrice = 0.02 ether;
   
   uint256 private startTime = now;
 
-  mapping (uint256 =&gt; address) public drinkIdToOwner;
+  mapping (uint256 => address) public drinkIdToOwner;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public drinkIdToApproved;
+  mapping (uint256 => address) public drinkIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private drinkIdToPrice;
+  mapping (uint256 => uint256) private drinkIdToPrice;
 
   /*** DATATYPES ***/
   struct Drink {
@@ -126,18 +126,18 @@ contract CryptoDrinks is ERC721, Ownable {
   function createManyDrinks() public onlyContractOwner {
      uint256 totalDrinks = totalSupply();
 	 
-     require (totalDrinks &lt; 1);
+     require (totalDrinks < 1);
 	 
- 	 _createDrink(&quot;Barmen&quot;, address(this), 1 ether);
- 	 _createDrink(&quot;Vodka&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Wine&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Cognac&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Martini&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Beer&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Tequila&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Whiskey&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Baileys&quot;, address(this), startingPrice);
-	 _createDrink(&quot;Champagne&quot;, address(this), startingPrice);
+ 	 _createDrink("Barmen", address(this), 1 ether);
+ 	 _createDrink("Vodka", address(this), startingPrice);
+	 _createDrink("Wine", address(this), startingPrice);
+	 _createDrink("Cognac", address(this), startingPrice);
+	 _createDrink("Martini", address(this), startingPrice);
+	 _createDrink("Beer", address(this), startingPrice);
+	 _createDrink("Tequila", address(this), startingPrice);
+	 _createDrink("Whiskey", address(this), startingPrice);
+	 _createDrink("Baileys", address(this), startingPrice);
+	 _createDrink("Champagne", address(this), startingPrice);
   }
   
   function getDrink(uint256 _tokenId) public view returns (string drinkName, uint256 sellingPrice, address owner) {
@@ -163,7 +163,7 @@ contract CryptoDrinks is ERC721, Ownable {
   // Allows someone to send ether and obtain the token
   function purchase(uint256 _tokenId) public payable {
   
-	require (now - startTime &gt;= 10800 || _tokenId==0); //3 hours
+	require (now - startTime >= 10800 || _tokenId==0); //3 hours
 	
     address oldOwner = drinkIdToOwner[_tokenId];
     address newOwner = msg.sender;
@@ -172,7 +172,7 @@ contract CryptoDrinks is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 9), 10)); //90% to previous owner
     uint256 barmen_payment = uint256(SafeMath.div(sellingPrice, 10)); //10% to barmen
@@ -180,7 +180,7 @@ contract CryptoDrinks is ERC721, Ownable {
 	address barmen = ownerOf(0);
 	
     // Next price will in 2 times more if it less then 1 ether.
-	if (sellingPrice &gt;= 1 ether)
+	if (sellingPrice >= 1 ether)
 		drinkIdToPrice[_tokenId] = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 3), 2));
 	else 	
 		drinkIdToPrice[_tokenId] = uint256(SafeMath.mul(sellingPrice, 2));
@@ -194,13 +194,13 @@ contract CryptoDrinks is ERC721, Ownable {
 
     // Pay 10% to barmen, if drink sold
 	// token 0 not drink, its barmen
-    if (_tokenId &gt; 0) {
+    if (_tokenId > 0) {
       barmen.transfer(barmen_payment); //
     }
 
     TokenSold(_tokenId, sellingPrice, drinkIdToPrice[_tokenId], oldOwner, newOwner, drinks[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
@@ -240,7 +240,7 @@ contract CryptoDrinks is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 drinkId;
-      for (drinkId = 0; drinkId &lt;= totalDrinks; drinkId++) {
+      for (drinkId = 0; drinkId <= totalDrinks; drinkId++) {
         if (drinkIdToOwner[drinkId] == _owner) {
           result[resultIndex] = drinkId;
           resultIndex++;
@@ -302,7 +302,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     drinkIdToOwner[_tokenId] = _to;
 
-    // When creating new drinks _from is 0x0, but we can&#39;t account that address.
+    // When creating new drinks _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

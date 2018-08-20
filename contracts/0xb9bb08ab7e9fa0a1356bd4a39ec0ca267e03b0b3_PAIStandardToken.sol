@@ -37,20 +37,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -103,8 +103,8 @@ contract StandardToken is Token ,SafeMath{
     _;
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) canTransfer returns (bool success) {
     
@@ -132,7 +132,7 @@ contract StandardToken is Token ,SafeMath{
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -165,12 +165,12 @@ contract PAIStandardToken is StandardToken,Ownable{
   
   address internal saleAddr;                                 //private sale wallet address
   uint256 public crowdETHTotal = 0;                 //The ETH amount of current crowdsale
-  mapping (address =&gt; uint256) public crowdETHs;    //record user&#39;s balance of crowdsale
+  mapping (address => uint256) public crowdETHs;    //record user's balance of crowdsale
   uint256 public crowdPrice = 10000;                //crowdsale price 1(ETH):10000(PAI)
   uint256 public crowdTarget = 5000 ether;          //The total ETH of crowdsale
   bool public reflectSwitch = false;                // Whether to allow user to reflect PAI
   bool public blacklistSwitch = true;               // Whether to allow owner to set blacklist
-  mapping(address =&gt; string) public reflects;       // reflect token to PAI address
+  mapping(address => string) public reflects;       // reflect token to PAI address
   
 
   event PurchaseSuccess(address indexed _addr, uint256 _weiAmount,uint256 _crowdsaleEth,uint256 _balance);
@@ -192,9 +192,9 @@ contract PAIStandardToken is StandardToken,Ownable{
       address _posAddr
       ) {
       totalSupply = 2100000000000000000000000000;       // Update total supply
-      name = &quot;PCHAIN&quot;;                  // Set the name for display purposes
+      name = "PCHAIN";                  // Set the name for display purposes
       decimals = 18;           // Amount of decimals for display purposes
-      symbol = &quot;PAI&quot;;              // Set the symbol for display purposes
+      symbol = "PAI";              // Set the symbol for display purposes
       wallet = _wallet;                   // Set ETH wallet address
       start = _s;                         // Set start time for crowsale
       end = _e;                           // Set Crowd sale first phase end time
@@ -242,18 +242,18 @@ contract PAIStandardToken is StandardToken,Ownable{
   }
 
   function purchase() payable{
-      require(block.timestamp &lt;= deadline);                                 //the timestamp must be less than the deadline time
-      require(tx.gasprice &lt;= 60000000000);
-      require(block.timestamp &gt;= start);                                //the timestamp must be greater than the start time
+      require(block.timestamp <= deadline);                                 //the timestamp must be less than the deadline time
+      require(tx.gasprice <= 60000000000);
+      require(block.timestamp >= start);                                //the timestamp must be greater than the start time
       uint256 weiAmount = msg.value;                                    // The amount purchased by the current user
-      require(weiAmount &gt;= 0.1 ether);
+      require(weiAmount >= 0.1 ether);
       crowdETHTotal = safeAdd(crowdETHTotal,weiAmount);                 // Calculate the total amount purchased by all users
-      require(crowdETHTotal &lt;= crowdTarget);                            // The total amount is less than or equal to the target amount
+      require(crowdETHTotal <= crowdTarget);                            // The total amount is less than or equal to the target amount
       uint256 userETHTotal = safeAdd(crowdETHs[msg.sender],weiAmount);  // Calculate the total amount purchased by the current user
-      if(block.timestamp &lt;= end){                                       // whether the current timestamp is in the first phase
-        require(userETHTotal &lt;= 0.4 ether);                             // whether the total amount purchased by the current user is less than 0.4ETH
+      if(block.timestamp <= end){                                       // whether the current timestamp is in the first phase
+        require(userETHTotal <= 0.4 ether);                             // whether the total amount purchased by the current user is less than 0.4ETH
       }else{
-        require(userETHTotal &lt;= 10 ether);                              // whether the total amount purchased by the current user is less than 10ETH
+        require(userETHTotal <= 10 ether);                              // whether the total amount purchased by the current user is less than 10ETH
       }      
       
       crowdETHs[msg.sender] = userETHTotal;                             // Record the total amount purchased by the current user

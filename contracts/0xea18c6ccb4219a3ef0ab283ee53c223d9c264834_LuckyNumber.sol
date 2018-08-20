@@ -15,8 +15,8 @@ contract LuckyNumber {
     uint commitTime = 60;
     uint nonce = 1;
     
-    mapping (address =&gt; uint8) addressToGuess;
-    mapping (address =&gt; uint) addressToTimeStamp;
+    mapping (address => uint8) addressToGuess;
+    mapping (address => uint) addressToTimeStamp;
     
     
     //modifier requiring contract to be live. Set bool to false to kill contract
@@ -37,7 +37,7 @@ contract LuckyNumber {
     }
     
 
-    //explicit getter for &quot;balance&quot;
+    //explicit getter for "balance"
     function getBalance() view external returns (uint) {
         return this.balance;
     }
@@ -83,7 +83,7 @@ contract LuckyNumber {
     public
     live
     {
-        require(now&gt;addressToTimeStamp[msg.sender]);
+        require(now>addressToTimeStamp[msg.sender]);
         winningNumber = uint8(keccak256(now, owner, block.coinbase, block.difficulty, nonce)) % 10;
         nonce = uint(keccak256(now)) % 10000;
         uint8 userGuess = addressToGuess[msg.sender];

@@ -23,7 +23,7 @@ contract BaseSafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -34,7 +34,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -69,7 +69,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -78,7 +78,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -98,7 +98,7 @@ contract BaseSafeMath {
 
         uint128 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -109,7 +109,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -144,7 +144,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -153,7 +153,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -173,7 +173,7 @@ contract BaseSafeMath {
 
         uint64 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -184,7 +184,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -219,7 +219,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -228,7 +228,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -250,8 +250,8 @@ contract BaseERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -366,81 +366,81 @@ contract LockUtils {
     function getLockBalance(address account, uint8 decimals) internal view returns (uint256) {
         uint256 tempLock = 0;
         if (account == advance_mining) {
-            if (now &lt; unlock_time_0910) {
+            if (now < unlock_time_0910) {
                 tempLock = 735000000 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0910 &amp;&amp; now &lt; unlock_time_1210) {
+            } else if (now >= unlock_time_0910 && now < unlock_time_1210) {
                 tempLock = 367500000 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1210 &amp;&amp; now &lt; unlock_time_0310) {
+            } else if (now >= unlock_time_1210 && now < unlock_time_0310) {
                 tempLock = 183750000 * 10 ** uint256(decimals);
             }
         } else if (account == community) {
-            if (now &lt; unlock_time_0910) {
+            if (now < unlock_time_0910) {
                 tempLock = 18375000 * 6 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0910 &amp;&amp; now &lt; unlock_time_1010) {
+            } else if (now >= unlock_time_0910 && now < unlock_time_1010) {
                 tempLock = 18375000 * 5 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1010 &amp;&amp; now &lt; unlock_time_1110) {
+            } else if (now >= unlock_time_1010 && now < unlock_time_1110) {
                 tempLock = 18375000 * 4 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1110 &amp;&amp; now &lt; unlock_time_1210) {
+            } else if (now >= unlock_time_1110 && now < unlock_time_1210) {
                 tempLock = 18375000 * 3 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1210 &amp;&amp; now &lt; unlock_time_0110) {
+            } else if (now >= unlock_time_1210 && now < unlock_time_0110) {
                 tempLock = 18375000 * 2 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0110 &amp;&amp; now &lt; unlock_time_0210) {
+            } else if (now >= unlock_time_0110 && now < unlock_time_0210) {
                 tempLock = 18375000 * 1 * 10 ** uint256(decimals);
             }
         } else if (account == foundation_investment) {
-            if (now &lt; unlock_time_0910) {
+            if (now < unlock_time_0910) {
                 tempLock = 18812500 * 12 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0910 &amp;&amp; now &lt; unlock_time_1010) {
+            } else if (now >= unlock_time_0910 && now < unlock_time_1010) {
                 tempLock = 18812500 * 11 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1010 &amp;&amp; now &lt; unlock_time_1110) {
+            } else if (now >= unlock_time_1010 && now < unlock_time_1110) {
                 tempLock = 18812500 * 10 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1110 &amp;&amp; now &lt; unlock_time_1210) {
+            } else if (now >= unlock_time_1110 && now < unlock_time_1210) {
                 tempLock = 18812500 * 9 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1210 &amp;&amp; now &lt; unlock_time_0110) {
+            } else if (now >= unlock_time_1210 && now < unlock_time_0110) {
                 tempLock = 18812500 * 8 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0110 &amp;&amp; now &lt; unlock_time_0210) {
+            } else if (now >= unlock_time_0110 && now < unlock_time_0210) {
                 tempLock = 18812500 * 7 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0210 &amp;&amp; now &lt; unlock_time_0310) {
+            } else if (now >= unlock_time_0210 && now < unlock_time_0310) {
                 tempLock = 18812500 * 6 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0310 &amp;&amp; now &lt; unlock_time_0410) {
+            } else if (now >= unlock_time_0310 && now < unlock_time_0410) {
                 tempLock = 18812500 * 5 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0410 &amp;&amp; now &lt; unlock_time_0510) {
+            } else if (now >= unlock_time_0410 && now < unlock_time_0510) {
                 tempLock = 18812500 * 4 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0510 &amp;&amp; now &lt; unlock_time_0610) {
+            } else if (now >= unlock_time_0510 && now < unlock_time_0610) {
                 tempLock = 18812500 * 3 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0610 &amp;&amp; now &lt; unlock_time_0710) {
+            } else if (now >= unlock_time_0610 && now < unlock_time_0710) {
                 tempLock = 18812500 * 2 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0710 &amp;&amp; now &lt; unlock_time_0810) {
+            } else if (now >= unlock_time_0710 && now < unlock_time_0810) {
                 tempLock = 18812500 * 1 * 10 ** uint256(decimals);
             }
         } else if (account == mining) {
-            if (now &lt; unlock_time_0910) {
+            if (now < unlock_time_0910) {
                 tempLock = 840000000 * 10 ** uint256(decimals);
             }
         } else if (account == adviser) {
-            if (now &lt; unlock_time_0910) {
+            if (now < unlock_time_0910) {
                 tempLock = 15750000 * 12 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0910 &amp;&amp; now &lt; unlock_time_1010) {
+            } else if (now >= unlock_time_0910 && now < unlock_time_1010) {
                 tempLock = 15750000 * 11 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1010 &amp;&amp; now &lt; unlock_time_1110) {
+            } else if (now >= unlock_time_1010 && now < unlock_time_1110) {
                 tempLock = 15750000 * 10 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1110 &amp;&amp; now &lt; unlock_time_1210) {
+            } else if (now >= unlock_time_1110 && now < unlock_time_1210) {
                 tempLock = 15750000 * 9 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_1210 &amp;&amp; now &lt; unlock_time_0110) {
+            } else if (now >= unlock_time_1210 && now < unlock_time_0110) {
                 tempLock = 15750000 * 8 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0110 &amp;&amp; now &lt; unlock_time_0210) {
+            } else if (now >= unlock_time_0110 && now < unlock_time_0210) {
                 tempLock = 15750000 * 7 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0210 &amp;&amp; now &lt; unlock_time_0310) {
+            } else if (now >= unlock_time_0210 && now < unlock_time_0310) {
                 tempLock = 15750000 * 6 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0310 &amp;&amp; now &lt; unlock_time_0410) {
+            } else if (now >= unlock_time_0310 && now < unlock_time_0410) {
                 tempLock = 15750000 * 5 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0410 &amp;&amp; now &lt; unlock_time_0510) {
+            } else if (now >= unlock_time_0410 && now < unlock_time_0510) {
                 tempLock = 15750000 * 4 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0510 &amp;&amp; now &lt; unlock_time_0610) {
+            } else if (now >= unlock_time_0510 && now < unlock_time_0610) {
                 tempLock = 15750000 * 3 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0610 &amp;&amp; now &lt; unlock_time_0710) {
+            } else if (now >= unlock_time_0610 && now < unlock_time_0710) {
                 tempLock = 15750000 * 2 * 10 ** uint256(decimals);
-            } else if (now &gt;= unlock_time_0710 &amp;&amp; now &lt; unlock_time_0810) {
+            } else if (now >= unlock_time_0710 && now < unlock_time_0810) {
                 tempLock = 15750000 * 1 * 10 ** uint256(decimals);
             }
         }
@@ -454,8 +454,8 @@ contract PDTToken is BaseERC20, BaseSafeMath, LockUtils {
     
 
     function PDTToken() public {
-        name = &quot;Matrix World&quot;;
-        symbol = &quot;PDT&quot;;
+        name = "Matrix World";
+        symbol = "PDT";
         decimals = 18;
         totalSupply = 2100000000 * 10 ** uint256(decimals);
         balanceOf[msg.sender] = totalSupply;
@@ -471,11 +471,11 @@ contract PDTToken is BaseERC20, BaseSafeMath, LockUtils {
         require(_to != 0x0);
         // Check if the sender has enough
         // All transfer will check the available unlocked balance
-        require((balanceOf[_from] - getLockBalance(_from, decimals)) &gt;= _value);
+        require((balanceOf[_from] - getLockBalance(_from, decimals)) >= _value);
         // Check balance
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require((balanceOf[_to] + _value) &gt; balanceOf[_to]);
+        require((balanceOf[_to] + _value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -496,7 +496,7 @@ contract PDTToken is BaseERC20, BaseSafeMath, LockUtils {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);

@@ -1,13 +1,13 @@
 pragma solidity ^0.4.16;
 
 contract BMToken {
-    string  public  name = &quot;BMChain Token&quot;;
-    string  public  symbol = &quot;BMT&quot;;
+    string  public  name = "BMChain Token";
+    string  public  symbol = "BMT";
     uint256  public  decimals = 18;
 
     uint256 _supply = 0;
-    mapping (address =&gt; uint256) _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _approvals;
+    mapping (address => uint256) _balances;
+    mapping (address => mapping (address => uint256)) _approvals;
 
     event Transfer( address indexed from, address indexed to, uint value);
     event Approval( address indexed owner, address indexed spender, uint value);
@@ -42,11 +42,11 @@ contract BMToken {
     }
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function totalSupply() constant external returns (uint256) {
@@ -64,7 +64,7 @@ contract BMToken {
     function transfer(address where, uint amount) external returns (bool) {
         assert(where != address(this));
         assert(where != address(0));
-        assert(_balances[msg.sender] &gt;= amount);
+        assert(_balances[msg.sender] >= amount);
 
         _balances[msg.sender] = sub(_balances[msg.sender], amount);
         _balances[where] = add(_balances[where], amount);
@@ -77,8 +77,8 @@ contract BMToken {
     function transferFrom(address src, address where, uint amount) external returns (bool) {
         assert(where != address(this));
         assert(where != address(0));
-        assert(_balances[src] &gt;= amount);
-        assert(_approvals[src][msg.sender] &gt;= amount);
+        assert(_balances[src] >= amount);
+        assert(_approvals[src][msg.sender] >= amount);
 
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], amount);
         _balances[src] = sub(_balances[src], amount);
@@ -104,7 +104,7 @@ contract BMToken {
     function mintTokens(address holder, uint256 amount) external
     {
         assert(msg.sender == ico_contract);
-        assert(now &lt; endDateICO);
+        assert(now < endDateICO);
         _balances[holder] = add(_balances[holder], amount);
         _supply = add(_supply, amount);
         Transfer(address(0x0), holder, amount);

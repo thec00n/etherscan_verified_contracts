@@ -10,18 +10,18 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
   }
 
 }
@@ -103,9 +103,9 @@ contract WILLTOKEN is ERC20Interface, Owned {
     address public owner;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping (address => uint256) public freezeOf;
     
  
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -140,11 +140,11 @@ contract WILLTOKEN is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        require( tokens &gt; 0 &amp;&amp; to != 0x0 );
+        require( tokens > 0 && to != 0x0 );
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender, to, tokens);
@@ -153,7 +153,7 @@ contract WILLTOKEN is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md 
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
@@ -173,7 +173,7 @@ contract WILLTOKEN is ERC20Interface, Owned {
     // - Spender must have sufficient allowance to transfer
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require( tokens &gt; 0 &amp;&amp; to != 0x0 &amp;&amp; from != 0x0 );
+        require( tokens > 0 && to != 0x0 && from != 0x0 );
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -183,7 +183,7 @@ contract WILLTOKEN is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -193,8 +193,8 @@ contract WILLTOKEN is ERC20Interface, Owned {
     // Burns the amount of tokens by the owner
     // ------------------------------------------------------------------------
     function burn(uint256 tokens) public  onlyOwner returns (bool success) {
-       require (balances[msg.sender] &gt;= tokens) ;                        // Check if the sender has enough
-       require (tokens &gt; 0) ; 
+       require (balances[msg.sender] >= tokens) ;                        // Check if the sender has enough
+       require (tokens > 0) ; 
        balances[msg.sender] = balances[msg.sender].sub(tokens);         // Subtract from the sender
        _totalSupply = _totalSupply.sub(tokens);                         // Updates totalSupply
        emit Burn(msg.sender, tokens);
@@ -205,8 +205,8 @@ contract WILLTOKEN is ERC20Interface, Owned {
     // Freeze the amount of tokens by the owner
     // ------------------------------------------------------------------------
     function freeze(uint256 tokens) public onlyOwner returns (bool success) {
-       require (balances[msg.sender] &gt;= tokens) ;                   // Check if the sender has enough
-       require (tokens &gt; 0) ; 
+       require (balances[msg.sender] >= tokens) ;                   // Check if the sender has enough
+       require (tokens > 0) ; 
        balances[msg.sender] = balances[msg.sender].sub(tokens);    // Subtract from the sender
        freezeOf[msg.sender] = freezeOf[msg.sender].add(tokens);     // Updates totalSupply
        emit Freeze(msg.sender, tokens);
@@ -217,8 +217,8 @@ contract WILLTOKEN is ERC20Interface, Owned {
     // Unfreeze the amount of tokens by the owner
     // ------------------------------------------------------------------------
     function unfreeze(uint256 tokens) public onlyOwner returns (bool success) {
-       require (freezeOf[msg.sender] &gt;= tokens) ;                    // Check if the sender has enough
-       require (tokens &gt; 0) ; 
+       require (freezeOf[msg.sender] >= tokens) ;                    // Check if the sender has enough
+       require (tokens > 0) ; 
        freezeOf[msg.sender] = freezeOf[msg.sender].sub(tokens);    // Subtract from the sender
        balances[msg.sender] = balances[msg.sender].add(tokens);
        emit Unfreeze(msg.sender, tokens);
@@ -227,7 +227,7 @@ contract WILLTOKEN is ERC20Interface, Owned {
 
 
    // ------------------------------------------------------------------------
-   // Don&#39;t accept ETH
+   // Don't accept ETH
    // ------------------------------------------------------------------------
    function () public payable {
       revert();

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,17 +62,17 @@ contract SofiaToken is ERC20Interface,Controlled {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     /*
-     * @notice &#39;constructor()&#39; initiates the Token by setting its funding
+     * @notice 'constructor()' initiates the Token by setting its funding
        parameters
      * @param _totalSupply Total supply of tokens
      */
     constructor(uint _totalSupply) public {
-      symbol = &quot;SFX&quot;;
-      name = &quot;Sofia Token&quot;;
+      symbol = "SFX";
+      name = "Sofia Token";
       decimals = 18;
       totalSupply = _totalSupply  * (1 ether);
       balances[msg.sender] = totalSupply; //transfer all Tokens to contract creator
@@ -100,7 +100,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param spender Token spender
      */
     function allowance(address tokenOwner, address spender) public view returns (uint remaining){
-      if (allowed[tokenOwner][spender] &lt; balances[tokenOwner]) {
+      if (allowed[tokenOwner][spender] < balances[tokenOwner]) {
         return allowed[tokenOwner][spender];
       }
       return balances[tokenOwner];
@@ -122,7 +122,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens to be transfered
      */
     function transferFrom(address from, address to, uint tokens) public returns (bool success){
-      if(allowed[from][msg.sender] &gt; 0 &amp;&amp; allowed[from][msg.sender] &gt;= tokens)
+      if(allowed[from][msg.sender] > 0 && allowed[from][msg.sender] >= tokens)
       {
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         return doTransfer(from,to,tokens);
@@ -137,7 +137,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens to be transfered
      */
     function doTransfer(address from,address to, uint tokens) internal returns (bool success){
-        if( tokens &gt; 0 &amp;&amp; balances[from] &gt;= tokens){
+        if( tokens > 0 && balances[from] >= tokens){
             balances[from] = balances[from].sub(tokens);
             balances[to] = balances[to].add(tokens);
             emit Transfer(from,to,tokens);
@@ -152,7 +152,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens in the allowance
      */
     function approve(address spender, uint tokens) public returns (bool success){
-      if(balances[msg.sender] &gt;= tokens){
+      if(balances[msg.sender] >= tokens){
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender,spender,tokens);
         return true;
@@ -172,7 +172,7 @@ contract SofiaToken is ERC20Interface,Controlled {
    * @param _value The amount of token to be burned.
    */
   function burn(uint _value) public onlyController{
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     emit Burn(msg.sender, _value);
@@ -202,7 +202,7 @@ contract Extollet is Controlled {
     address public vaultAddress;           //The address to hold the funds donated
 
   /*
-   * @notice &#39;constructor()&#39; initiates the Campaign by setting its funding parameters
+   * @notice 'constructor()' initiates the Campaign by setting its funding parameters
    * @param _startFundingTime The time that the Campaign will be able to start receiving funds
    * @param _endFundingTime The time that the Campaign will stop being able to receive funds
    * @param _volume Total volume
@@ -218,10 +218,10 @@ contract Extollet is Controlled {
       address _vaultAddress,
       address _tokenAddress
     ) public {
-     require ((_endFundingTime &gt;= now) &amp;&amp;            //Cannot end in the past
-              (_endFundingTime &gt; _startFundingTime) &amp;&amp;
-              (_volume &gt; 0) &amp;&amp;
-              (_rate &gt; 0) &amp;&amp;
+     require ((_endFundingTime >= now) &&            //Cannot end in the past
+              (_endFundingTime > _startFundingTime) &&
+              (_volume > 0) &&
+              (_rate > 0) &&
               (_vaultAddress != 0));                 //To prevent burning ETH
       startFundingTime = _startFundingTime;
       endFundingTime = _endFundingTime;
@@ -231,7 +231,7 @@ contract Extollet is Controlled {
       totalCollected = 0;
       totalTokensSold = 0;
       tokenContract = SofiaToken(_tokenAddress); //The Deployed Token Contract
-      name = &quot;Extollet&quot;;
+      name = "Extollet";
       }
 
   /*
@@ -264,11 +264,11 @@ contract Extollet is Controlled {
 //   Calculate token amount
     uint tokenAmount = getTokenAmount(msg.value);
 //   Check that the Campaign is allowed to receive this donation
-    require ((now &gt;= startFundingTime) &amp;&amp;
-            (now &lt;= endFundingTime) &amp;&amp;
-            (tokenContract.controller() != 0) &amp;&amp;            //Extra check
-            (msg.value != 0) &amp;&amp;
-            ((totalTokensSold + tokenAmount) &lt;= volume)
+    require ((now >= startFundingTime) &&
+            (now <= endFundingTime) &&
+            (tokenContract.controller() != 0) &&            //Extra check
+            (msg.value != 0) &&
+            ((totalTokensSold + tokenAmount) <= volume)
             );
   //Send the ether to the vault
     preValidatePurchase(_owner,msg.value);
@@ -314,7 +314,7 @@ contract Extollet is Controlled {
      * @param newEndingTime The new campaign end time in UNIX time format
      */
     function modifyEndFundingTime(uint256 newEndingTime) public onlyController{
-      require((now &lt; endFundingTime) &amp;&amp; (now &lt; newEndingTime));
+      require((now < endFundingTime) && (now < newEndingTime));
       endFundingTime = newEndingTime;
     }
 
@@ -322,9 +322,9 @@ contract Extollet is Controlled {
      * @dev `finalizeFunding()` can only be called after the end of the funding period.
      */
       function finalizeFunding(address to) public onlyController{
-        require(now &gt;= endFundingTime);
+        require(now >= endFundingTime);
         uint tokensLeft = tokenContract.balanceOf(this);
-        require(tokensLeft &gt; 0);
+        require(tokensLeft > 0);
         require(tokenContract.transfer(to,tokensLeft));
       }
 

@@ -72,7 +72,7 @@ pragma solidity ^0.4.18;
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba; 
@@ -87,7 +87,7 @@ contract ERC721Receiver {
    * @param _from The sending address 
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -117,9 +117,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -127,7 +127,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -136,7 +136,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -158,7 +158,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -172,21 +172,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -311,7 +311,7 @@ contract ERC721BasicToken is ERC721Basic {
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -319,14 +319,14 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -444,19 +444,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
   * @dev Constructor function
@@ -510,7 +510,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list owned by the requested address
   */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -529,7 +529,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list
   */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -611,7 +611,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 }
 
 
-contract RareCoin is ERC721Token(&quot;RareCoin&quot;, &quot;XRC&quot;) {
+contract RareCoin is ERC721Token("RareCoin", "XRC") {
     bool[100] internal _initialized;
     address _auctionContract;
 
@@ -670,7 +670,7 @@ contract RareCoinAuction {
     }
 
     //  Contains details of every bid
-    mapping(address =&gt; BidDetails) internal _bidders;
+    mapping(address => BidDetails) internal _bidders;
 
     //  Static array recording highest 100 bidders in sorted order
     Bidder[100] internal _topBids;
@@ -718,19 +718,19 @@ contract RareCoinAuction {
    * @dev This will be rejected if the bid will not end up in the top 100
    */
     function bid() external payable {
-        require(block.number &lt; _auctionEnd);
+        require(block.number < _auctionEnd);
 
         uint proposedBid = _bidders[msg.sender].value.add(msg.value);
 
-        //  No point in accepting a bid if it isn&#39;t going to result in a chance of a RareCoin
-        require(proposedBid &gt; _lowestBid);
+        //  No point in accepting a bid if it isn't going to result in a chance of a RareCoin
+        require(proposedBid > _lowestBid);
 
-        //  Check whether the bidder is already in the top 100.  Note, not enough to check currentBid &gt; _lowestBid
+        //  Check whether the bidder is already in the top 100.  Note, not enough to check currentBid > _lowestBid
         //  since there can be multiple bids of the same value
         uint startPos = 99;
-        if (_bidders[msg.sender].value &gt;= _lowestBid) {
+        if (_bidders[msg.sender].value >= _lowestBid) {
             //  Note: loop condition relies on overflow
-            for (uint i = 99; i &lt; 100; --i) {
+            for (uint i = 99; i < 100; --i) {
                 if (_topBids[i].bidderAddress == msg.sender) {
                     startPos = i;
                     break;
@@ -740,8 +740,8 @@ contract RareCoinAuction {
 
         //  Do one pass of an insertion sort to maintain _topBids in order
         uint endPos;
-        for (uint j = startPos; j &lt; 100; --j) {
-            if (j != 0 &amp;&amp; proposedBid &gt; _topBids[j - 1].bid) {
+        for (uint j = startPos; j < 100; --j) {
+            if (j != 0 && proposedBid > _topBids[j - 1].bid) {
                 _topBids[j] = _topBids[j - 1];
             } else {
                 _topBids[j].bid = proposedBid;
@@ -759,7 +759,7 @@ contract RareCoinAuction {
         _lowestBid = _topBids[99].bid;
 
         //  If top 3 bidders changes, log event to blockchain
-        if (endPos &lt; 3) {
+        if (endPos < 3) {
             TopThreeChanged(
                 _topBids[0].bidderAddress, _topBids[0].bid,
                 _topBids[1].bidderAddress, _topBids[1].bid,
@@ -780,7 +780,7 @@ contract RareCoinAuction {
         require(!_beneficiaryWithdrawn);
 
         uint total = 0;
-        for (uint i = 0; i &lt; 100; ++i) {
+        for (uint i = 0; i < 100; ++i) {
             total = total.add(_topBids[i].bid);
         }
 
@@ -797,14 +797,14 @@ contract RareCoinAuction {
         require(_ended);
 
         //  The user should not be able to withdraw if they are in the top 100 bids
-        //  Cannot simply require(proposedBid &gt; _lowestBid) since bid #100 can be
+        //  Cannot simply require(proposedBid > _lowestBid) since bid #100 can be
         //  the same value as bid #101
-        for (uint i = 0; i &lt; 100; ++i) {
+        for (uint i = 0; i < 100; ++i) {
             require(_topBids[i].bidderAddress != msg.sender);
         }
 
         uint amount = _bidders[msg.sender].value;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             _bidders[msg.sender].value = 0;
             msg.sender.transfer(amount);
         }
@@ -833,7 +833,7 @@ contract RareCoinAuction {
    * @notice End the auction, allowing the withdrawal of ether and tokens
    */
     function endAuction() external {
-        require(block.number &gt;= _auctionEnd);
+        require(block.number >= _auctionEnd);
         require(!_ended);
 
         _ended = true;
@@ -845,7 +845,7 @@ contract RareCoinAuction {
     }
 
   /**
-   * @notice Returns the value of `(_addr)`&#39;s bid and the time it occurred
+   * @notice Returns the value of `(_addr)`'s bid and the time it occurred
    * @param _addr Address to query for balance
    * @return Tuple (value, bidTime)
    */
@@ -860,7 +860,7 @@ contract RareCoinAuction {
     function getTopBidders() external view returns (address[100]) {
         address[100] memory tempArray;
 
-        for (uint i = 0; i &lt; 100; ++i) {
+        for (uint i = 0; i < 100; ++i) {
             tempArray[i] = _topBids[i].bidderAddress;
         }
 

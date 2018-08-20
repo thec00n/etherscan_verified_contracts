@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -84,13 +84,13 @@ contract WorldCupWinner {
     }
 
     function shareAmount(address winner, uint256 amount, uint256 _buyerType, uint _gameID) public onlyOwner {
-	    require(address(this).balance&gt;=amount);
+	    require(address(this).balance>=amount);
 	    winner.transfer(amount);
 	    emit ShareBonus(winner, uint256(now), _buyerType, _gameID, amount);
     }
     function batchShareAmount(address[] winner, uint256[] amount, uint256 _gameID,uint256 _buyerType,uint256 amount_total) public onlyOwner {
-     require(address(this).balance&gt;=amount_total);
-     for(uint i=0; i&lt;winner.length; i++){
+     require(address(this).balance>=amount_total);
+     for(uint i=0; i<winner.length; i++){
       winner[i].transfer(amount[i]);
          emit ShareBonus(winner[i], uint256(now), _buyerType, _gameID, amount[i]);
          }
@@ -98,7 +98,7 @@ contract WorldCupWinner {
 
 	function getListTeamByPlayType(uint _gameType) public view returns (uint[] teamIDss){
 		_teamIDs = [0];
-		for(uint i=0; i&lt;games.length; i++)
+		for(uint i=0; i<games.length; i++)
 	    {
 		    if(games[i]._playType == _gameType){
 		        _teamIDs.push(i);
@@ -130,7 +130,7 @@ contract WorldCupWinner {
 	    //require(games[_gameID]._stop);
       uint256 totalPrice = (games[_gameID]._teamPrice[_one.sub(100)].add(games[_gameID]._teamPrice[_two.sub(100)]).add(games[_gameID]._teamPrice[_three.sub(100)])).mul(_buyCount);
       totalPrice = totalPrice.add(totalPrice.div(20)) ;
-	    require(msg.value &gt;= totalPrice);
+	    require(msg.value >= totalPrice);
 
 	    emit BuyWinner(msg.sender, uint256(now),_one, _two, _three, _gameID, games[_gameID]._playType, _buyCount, buyPrice);
       emit BuyWinnerList(_one, _two, _three,msg.sender, uint256(now), _gameID, games[_gameID]._playType, _buyCount, buyPrice);
@@ -140,7 +140,7 @@ contract WorldCupWinner {
 
 	function buyTwo(uint256 _one, uint256 _gameID, uint256 _buyCount,uint256 _buyPrice) payable public{
 	    //require(games[_gameID]._stop);
-	    require(msg.value &gt;= ((games[_gameID]._teamPrice[_one].mul(_buyCount)).add(games[_gameID]._teamPrice[_one]).mul(_buyCount).div(20)));
+	    require(msg.value >= ((games[_gameID]._teamPrice[_one].mul(_buyCount)).add(games[_gameID]._teamPrice[_one]).mul(_buyCount).div(20)));
       owner.transfer(msg.value.div(20));
 		  emit BuyWinnerTwo(msg.sender, games[_gameID]._teams[_one], _gameID,uint256(now), games[_gameID]._playType,_buyPrice, _buyCount);
 	    games[_gameID]._bouns = games[_gameID]._bouns.add(msg.value);

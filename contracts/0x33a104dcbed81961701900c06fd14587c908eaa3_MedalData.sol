@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -71,12 +71,12 @@ contract ERC721 {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -134,19 +134,19 @@ contract MedalData is ERC721, AccessControl, SafeMath, IMedalData {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) public tokenOwner;
+  mapping (uint256 => address) public tokenOwner;
 
 // Mapping from token ID to medal type
-  mapping (uint256 =&gt; uint8) public medalType;
+  mapping (uint256 => uint8) public medalType;
   
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
   
   uint32[12] public currentTokenNumbers;
   
@@ -265,7 +265,7 @@ contract MedalData is ERC721, AccessControl, SafeMath, IMedalData {
   
   function _createMedal(address _to, uint8 _seriesID)  onlySERAPHIM public {
     require(_to != address(0));
-   if (currentTokenNumbers[_seriesID] &lt;= maxTokenNumbers[_seriesID]) {
+   if (currentTokenNumbers[_seriesID] <= maxTokenNumbers[_seriesID]) {
     medalType[totalTokens] = _seriesID;
     currentTokenNumbers[_seriesID]= currentTokenNumbers[_seriesID]+1;
     addToken(_to, totalTokens);

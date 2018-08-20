@@ -11,11 +11,11 @@ contract Utils {
 
 	// // verifies that an amount is greater than zero
 	// modifier greaterThanZero(uint256 _amount) {
-	//     require(_amount &gt; 0);
+	//     require(_amount > 0);
 	//     _;
 	// }
 
-	// validates an address - currently only checks that it isn&#39;t null
+	// validates an address - currently only checks that it isn't null
 	modifier validAddress(address _address) {
 	    require(_address != address(0));
 	    _;
@@ -36,18 +36,18 @@ contract Utils {
 			end := add(mload(s), ptr)
 		}
 
-		for (uint len = 0; ptr &lt; end; len++) {
+		for (uint len = 0; ptr < end; len++) {
 			uint8 b;
 			assembly { b := and(mload(ptr), 0xFF) }
-			if (b &lt; 0x80) {
+			if (b < 0x80) {
 				ptr += 1;
-			} else if(b &lt; 0xE0) {
+			} else if(b < 0xE0) {
 				ptr += 2;
-			} else if(b &lt; 0xF0) {
+			} else if(b < 0xF0) {
 				ptr += 3;
-			} else if(b &lt; 0xF8) {
+			} else if(b < 0xF8) {
 				ptr += 4;
-			} else if(b &lt; 0xFC) {
+			} else if(b < 0xFC) {
 				ptr += 5;
 			} else {
 				ptr += 6;
@@ -67,12 +67,12 @@ contract SafeMath {
 
 	function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
 		uint256 z = _x + _y;
-		assert(z &gt;= _x);
+		assert(z >= _x);
 		return z;
 	}
 
 	function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-		assert(_x &gt;= _y);
+		assert(_x >= _y);
 		return _x - _y;
 	}
 
@@ -83,7 +83,7 @@ contract SafeMath {
 	}
 
 	function safeDiv(uint a, uint b) internal returns (uint256) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		return a / b;
 	}
 }
@@ -168,7 +168,7 @@ contract bundinha is Utils {
 	}
 
 	function setBundinha(string x) public {
-		require(strlen(x) &lt;= 32);
+		require(strlen(x) <= 32);
 		bundinha = x;
 	}
 
@@ -186,15 +186,15 @@ contract SomeCoin is Utils, ERC20Interface, Owned, SafeMath, bundinha {
 	uint myVariable;
 	string bundinha;
 
-	string public name = &#39;&#39;;
-	string public symbol = &#39;&#39;;
+	string public name = '';
+	string public symbol = '';
 	uint8 public decimals = 0;
 	uint256 public totalSupply = 0;
 	uint256 public maxSupply = 50000000000000000000000;
 							// 50000.
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) public allowance;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -202,7 +202,7 @@ contract SomeCoin is Utils, ERC20Interface, Owned, SafeMath, bundinha {
 
 	// function SomeCoin(string _name, string _symbol, uint8 _decimals, uint256 supply) {
 	function SomeCoin(string _name, string _symbol, uint8 _decimals) {
-		require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0); // validate input
+		require(bytes(_name).length > 0 && bytes(_symbol).length > 0); // validate input
 
 		name = _name;
 		symbol = _symbol;
@@ -211,7 +211,7 @@ contract SomeCoin is Utils, ERC20Interface, Owned, SafeMath, bundinha {
 	}
 
 	function validSupply() private returns(bool) {
-		return totalSupply &lt;= maxSupply;
+		return totalSupply <= maxSupply;
 	}
 
 	function transfer(address _to, uint256 _value)
@@ -274,7 +274,7 @@ contract SomeCoin is Utils, ERC20Interface, Owned, SafeMath, bundinha {
 		return ERC20Interface(_token).transfer(_to, _amount);
 	}
 
-	// Don&#39;t accept ETH
+	// Don't accept ETH
 	function () payable {
 		revert();
 	}

@@ -58,12 +58,12 @@ contract SMBQToken is pays_commission, owned {
     string public symbol;
     uint8 public decimals = 0;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     uint256 public buyPrice = 1700000000000000;
     uint256 public sellPrice = 1500000000000000;
     bool public closeSell = false;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
 
     // Events
@@ -92,8 +92,8 @@ contract SMBQToken is pays_commission, owned {
         require(_to != 0x0);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -107,7 +107,7 @@ contract SMBQToken is pays_commission, owned {
         uint commission_value = market_value * 1 / 100;
         // The comision is paid with tokens
         uint commission = commission_value / sellPrice;
-        if (commission &lt; minimumTokenCommission){ 
+        if (commission < minimumTokenCommission){ 
             commission = minimumTokenCommission;
         }
         address contr = this;
@@ -150,7 +150,7 @@ contract SMBQToken is pays_commission, owned {
     function withdrawEther(uint amountInWeis)
     onlyOwner public {
         address contr = this;
-        require(contr.balance &gt;= amountInWeis);
+        require(contr.balance >= amountInWeis);
         emit Withdrawal(msg.sender, amountInWeis);
         owner.transfer(amountInWeis);
     }
@@ -172,7 +172,7 @@ contract SMBQToken is pays_commission, owned {
 
     function transferFrom(address _from, address _to, uint256 _value)
     public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         _pay_token_commission(_value);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -182,7 +182,7 @@ contract SMBQToken is pays_commission, owned {
     function depositEther() payable
     public returns(bool success) {
         address contr = this;
-        require((contr.balance + msg.value) &gt; contr.balance);
+        require((contr.balance + msg.value) > contr.balance);
         emit Deposit(msg.sender, msg.value);
         return true;
     }
@@ -193,11 +193,11 @@ contract SMBQToken is pays_commission, owned {
         uint market_value = amount * buyPrice;
         uint commission = market_value * 1 / 100;
         // The comision is paid with Ether
-        if (commission &lt; minimumEtherCommission){
+        if (commission < minimumEtherCommission){
             commission = minimumEtherCommission;
         }
         address contr = this;
-        require(contr.balance &gt;= commission);
+        require(contr.balance >= commission);
         commissionGetter.transfer(commission);
         _transfer(this, msg.sender, amount);
     }
@@ -209,7 +209,7 @@ contract SMBQToken is pays_commission, owned {
         _transfer(msg.sender, this, amount);
         uint market_value = amount * sellPrice;
         address contr = this;
-        require(contr.balance &gt;= market_value);
+        require(contr.balance >= market_value);
         msg.sender.transfer(market_value);
     }
 

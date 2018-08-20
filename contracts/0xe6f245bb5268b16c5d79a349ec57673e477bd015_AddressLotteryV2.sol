@@ -26,7 +26,7 @@ contract AddressLotteryV2{
         
     address owner2;
         
-    mapping (address =&gt; bool) participated;
+    mapping (address => bool) participated;
 
     modifier onlyOwner() {
         require(msg.sender == owner||msg.sender==owner2);
@@ -49,7 +49,7 @@ contract AddressLotteryV2{
     }
     
     function participate() payable onlyHuman { 
-        require(msg.value &gt;= ticketPrice);
+        require(msg.value >= ticketPrice);
         
         // every address can only win once, obviously
         if(!participated[msg.sender]){

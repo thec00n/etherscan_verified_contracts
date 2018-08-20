@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,17 +57,17 @@ contract BasicToken is ERC20Basic, Ownable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
             revert();
         }
         _;
     }
 
     function transfer(address _to, uint256 _amount) public onlyPayloadSize(2 * 32) returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -81,10 +81,10 @@ contract BasicToken is ERC20Basic, Ownable {
 
 contract AdvancedToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -106,7 +106,7 @@ contract AdvancedToken is BasicToken, ERC20 {
 
     function decreaseApproval(address _spender, uint256 _amount) public returns (bool) {
         require(allowances[msg.sender][_spender] != 0);
-        if (_amount &gt;= allowances[msg.sender][_spender]) {
+        if (_amount >= allowances[msg.sender][_spender]) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = allowances[msg.sender][_spender].sub(_amount);
@@ -128,7 +128,7 @@ contract MintableToken is AdvancedToken {
     event MintingFinished();
 
     function mint(address _to, uint256 _amount) external onlyOwner onlyPayloadSize(2 * 32) returns (bool) {
-        require(_to != 0x0 &amp;&amp; _amount &gt; 0 &amp;&amp; !mintingFinished);
+        require(_to != 0x0 && _amount > 0 && !mintingFinished);
         balances[_to] = balances[_to].add(_amount);
         totalSupply = totalSupply.add(_amount);
         Transfer(0x0, _to, _amount);
@@ -156,8 +156,8 @@ contract ACO is MintableToken {
     function ACO() public {
         totalSupply = 0;
         decimals = 18;
-        name = &quot;ACO&quot;;
-        symbol = &quot;ACO&quot;;
+        name = "ACO";
+        symbol = "ACO";
     }
 }
 
@@ -179,7 +179,7 @@ contract MultiOwnable {
     }
 
     function transferOwnership(address _newOwner) public onlyOwners {
-        require(_newOwner != 0x0 &amp;&amp; _newOwner != owners[0] &amp;&amp; _newOwner != owners[1]);
+        require(_newOwner != 0x0 && _newOwner != owners[0] && _newOwner != owners[1]);
         if (msg.sender == owners[0]) {
             OwnershipTransferred(owners[0], _newOwner);
             owners[0] = _newOwner;
@@ -208,8 +208,8 @@ contract Crowdsale is Ownable, MultiOwnable {
 
     uint256[4] public bonusStages;
 
-    mapping (address =&gt; uint256) investments;
-    mapping (address =&gt; bool) hasAuthorizedWithdrawal;
+    mapping (address => uint256) investments;
+    mapping (address => bool) hasAuthorizedWithdrawal;
 
     event TokensPurchased(address indexed by, uint256 amount);
     event RefundIssued(address indexed by, uint256 amount);
@@ -230,15 +230,15 @@ contract Crowdsale is Ownable, MultiOwnable {
         endTime = startTime.add(365 days);
         bonusStages[0] = startTime.add(6 weeks);
 
-        for(uint i = 1; i &lt; bonusStages.length; i++) {
+        for(uint i = 1; i < bonusStages.length; i++) {
             bonusStages[i] = bonusStages[i - 1].add(6 weeks);
         }
     }
 
     function processOffchainPayment(address _beneficiary, uint256 _toMint) public onlyOwners {
-        require(_beneficiary != 0x0 &amp;&amp; now &lt;= endTime &amp;&amp; tokensSold.add(_toMint) &lt;= hardCap &amp;&amp; _toMint &gt; 0);
+        require(_beneficiary != 0x0 && now <= endTime && tokensSold.add(_toMint) <= hardCap && _toMint > 0);
         if(tokensSold.add(_toMint) == hardCap) { HardCapReached(); }
-        if(tokensSold.add(_toMint) &gt;= softCap &amp;&amp; !isSuccess()) { SoftCapReached(); }
+        if(tokensSold.add(_toMint) >= softCap && !isSuccess()) { SoftCapReached(); }
         ACO_Token.mint(_beneficiary, _toMint);
         tokensSold = tokensSold.add(_toMint);
         TokensPurchased(_beneficiary, _toMint);
@@ -249,9 +249,9 @@ contract Crowdsale is Ownable, MultiOwnable {
     }
 
     function buyTokens(address _beneficiary) public payable {
-        require(_beneficiary != 0x0 &amp;&amp; validPurchase() &amp;&amp; tokensSold.add(calculateTokensToMint()) &lt;= hardCap); 
+        require(_beneficiary != 0x0 && validPurchase() && tokensSold.add(calculateTokensToMint()) <= hardCap); 
         if(tokensSold.add(calculateTokensToMint()) == hardCap) { HardCapReached(); }
-        if(tokensSold.add(calculateTokensToMint()) &gt;= softCap &amp;&amp; !isSuccess()) { SoftCapReached(); }
+        if(tokensSold.add(calculateTokensToMint()) >= softCap && !isSuccess()) { SoftCapReached(); }
         uint256 toMint = calculateTokensToMint();
         ACO_Token.mint(_beneficiary, toMint);
         tokensSold = tokensSold.add(toMint);
@@ -269,12 +269,12 @@ contract Crowdsale is Ownable, MultiOwnable {
 
     function getBonusPercentage() internal view returns (uint256 bonusPercentage) {
         uint256 timeStamp = now;
-        if (timeStamp &gt; bonusStages[3]) {
+        if (timeStamp > bonusStages[3]) {
             bonusPercentage = 0;
         } else { 
             bonusPercentage = 25;
-            for (uint i = 0; i &lt; bonusStages.length; i++) {
-                if (timeStamp &lt;= bonusStages[i]) {
+            for (uint i = 0; i < bonusStages.length; i++) {
+                if (timeStamp <= bonusStages[i]) {
                     break;
                 } else {
                     bonusPercentage = bonusPercentage.sub(5);
@@ -285,16 +285,16 @@ contract Crowdsale is Ownable, MultiOwnable {
     }
 
     function authorizeWithdrawal() public onlyOwners {
-        require(hasEnded() &amp;&amp; isSuccess() &amp;&amp; !hasAuthorizedWithdrawal[msg.sender]);
+        require(hasEnded() && isSuccess() && !hasAuthorizedWithdrawal[msg.sender]);
         hasAuthorizedWithdrawal[msg.sender] = true;
-        if (hasAuthorizedWithdrawal[owners[0]] &amp;&amp; hasAuthorizedWithdrawal[owners[1]]) {
+        if (hasAuthorizedWithdrawal[owners[0]] && hasAuthorizedWithdrawal[owners[1]]) {
             FundsWithdrawn(owners[0], this.balance);
             MULTI_SIG.transfer(this.balance);
         }
     }
 
     function issueBounty(address _to, uint256 _toMint) public onlyOwners {
-        require(_to != 0x0 &amp;&amp; _toMint &gt; 0 &amp;&amp; tokensSold.add(_toMint) &lt;= hardCap);
+        require(_to != 0x0 && _toMint > 0 && tokensSold.add(_toMint) <= hardCap);
         ACO_Token.mint(_to, _toMint);
         tokensSold = tokensSold.add(_toMint);
     }
@@ -306,7 +306,7 @@ contract Crowdsale is Ownable, MultiOwnable {
 
     function getRefund(address _addr) public {
         if(_addr == 0x0) { _addr = msg.sender; }
-        require(!isSuccess() &amp;&amp; hasEnded() &amp;&amp; investments[_addr] &gt; 0);
+        require(!isSuccess() && hasEnded() && investments[_addr] > 0);
         uint256 toRefund = investments[_addr];
         investments[_addr] = 0;
         _addr.transfer(toRefund);
@@ -314,7 +314,7 @@ contract Crowdsale is Ownable, MultiOwnable {
     }
     
     function giveRefund(address _addr) public onlyOwner {
-        require(_addr != 0x0 &amp;&amp; investments[_addr] &gt; 0);
+        require(_addr != 0x0 && investments[_addr] > 0);
         uint256 toRefund = investments[_addr];
         investments[_addr] = 0;
         _addr.transfer(toRefund);
@@ -322,11 +322,11 @@ contract Crowdsale is Ownable, MultiOwnable {
     }
 
     function isSuccess() public view returns(bool success) {
-        success = tokensSold &gt;= softCap;
+        success = tokensSold >= softCap;
     }
 
     function hasEnded() public view returns(bool ended) {
-        ended = now &gt; endTime;
+        ended = now > endTime;
     }
 
     function investmentOf(address _addr) public view returns(uint256 investment) {
@@ -334,31 +334,31 @@ contract Crowdsale is Ownable, MultiOwnable {
     }
 
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     function setEndTime(uint256 _numberOfDays) public onlyOwners {
-        require(_numberOfDays &gt; 0);
+        require(_numberOfDays > 0);
         endTime = now.add(_numberOfDays * 1 days);
         DurationAltered(endTime);
     }
 
     function changeSoftCap(uint256 _newSoftCap) public onlyOwners {
-        require(_newSoftCap &gt; 0);
+        require(_newSoftCap > 0);
         softCap = _newSoftCap;
         NewSoftCap(softCap);
     }
 
     function changeHardCap(uint256 _newHardCap) public onlyOwners {
-        assert(_newHardCap &gt; 0);
+        assert(_newHardCap > 0);
         hardCap = _newHardCap;
         NewHardCap(hardCap);
     }
 
     function changeRate(uint256 _newRate) public onlyOwners {
-        require(_newRate &gt; 0);
+        require(_newRate > 0);
         rate = _newRate;
         NewRateSet(rate);
     }

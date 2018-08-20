@@ -9,8 +9,8 @@ contract EthereumPepe {
     uint256 public totalSupply;
     uint8 public decimals = 18;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping(address => uint256)) public allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -19,8 +19,8 @@ contract EthereumPepe {
     constructor() public {
         
         /* Final token characteristics */
-        tokenName = &quot;Ethereum Pepe&quot;;
-        tokenSymbol = &quot;ETHPEPE&quot;;
+        tokenName = "Ethereum Pepe";
+        tokenSymbol = "ETHPEPE";
         uint256 initSupply = 120000;
         /*******************************/
         
@@ -31,8 +31,8 @@ contract EthereumPepe {
     function _transfer(address _from, address _to, uint256 _value) internal {
 
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         uint256 previousBalances = balances[_from] + balances[_to];
 
@@ -52,7 +52,7 @@ contract EthereumPepe {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -61,7 +61,7 @@ contract EthereumPepe {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
 
-        require(_value &lt;= totalSupply);
+        require(_value <= totalSupply);
 
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -70,7 +70,7 @@ contract EthereumPepe {
     
     function burn(uint256 _value) public returns(bool success) {
         
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         balances[msg.sender] -= _value;
         totalSupply -= _value;
@@ -81,8 +81,8 @@ contract EthereumPepe {
     
     function burnFrom(address _from, uint256 _value) public returns(bool success) {
         
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
         
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;

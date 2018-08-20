@@ -28,13 +28,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -45,7 +45,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -62,7 +62,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
@@ -144,16 +144,16 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SimpleTokenCoin is MintableToken {
     
-    string public constant name = &quot;Chain ID Token&quot;;
+    string public constant name = "Chain ID Token";
     
-    string public constant symbol = &quot;CID&quot;;
+    string public constant symbol = "CID";
     
     uint32 public constant decimals = 18;
     
 }
 
 /* Specific contract details: Start time, End time, Min.Cap, Max.Cap,
-Rate of Token to ETH, Final owner wallet, Team&#39;s bonuses wallet*/
+Rate of Token to ETH, Final owner wallet, Team's bonuses wallet*/
 
 contract Crowdsale is Ownable {
     
@@ -177,7 +177,7 @@ contract Crowdsale is Ownable {
     address wal2;
     address wal3;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     function Crowdsale() {
         /** Final owner wallet */
@@ -188,24 +188,24 @@ contract Crowdsale is Ownable {
         hardcap = 70000000000000000000000000; /** 7 000 000 * 1e18 CID*/
         softcap = 300000000000000000000000; /** 300 000 1e18 */
         
-        /*Team&#39;s bonuses wallet*/
+        /*Team's bonuses wallet*/
         wal1 = 0x35E0e717316E38052f6b74f144F2a7CE8318294b;
         wal2 = 0xa9251f22203e34049aa5D4DbfE4638009A1586F5;
         wal3 = 0xE9267a312B9Bc125557cff5146C8379cCEE3a33D;
     }
 
     modifier saleIsOn() {
-    require(now &gt; start &amp;&amp; now &lt; endtime);
+    require(now > start && now < endtime);
         _;
     }
     
     modifier isUnderHardCap() {
-        require(this.balance &lt;= hardcap);
+        require(this.balance <= hardcap);
         _;
     }
     /* refund option for investors*/
     function refund() public {
-        require(this.balance &lt; softcap &amp;&amp; now &gt; start &amp;&amp; balances[msg.sender] &gt; 0);
+        require(this.balance < softcap && now > start && balances[msg.sender] > 0);
         uint value = balances[msg.sender];
         balances[msg.sender] = 0;
         msg.sender.transfer(value);
@@ -213,7 +213,7 @@ contract Crowdsale is Ownable {
     
     /* when softcap reached , finish of token minting could be implemented */
    function finishMinting() public onlyOwner {
-      if(this.balance &gt; softcap) {
+      if(this.balance > softcap) {
         multisig.transfer(this.balance);
         token.finishMinting();
       }
@@ -228,17 +228,17 @@ contract Crowdsale is Ownable {
         uint bonusTokens = 0;
         
         /* bonus tokens calculation for ICO stages */
-        if(CTS &lt;= (300000 * (10 ** 18))) {
+        if(CTS <= (300000 * (10 ** 18))) {
           bonusTokens = (tokens.mul(30)).div(100);    /* 30% bonus */
-        } else if(CTS &gt; (300000 * (10 ** 18)) &amp;&amp; CTS &lt;= (400000 * (10 ** 18)))  {
+        } else if(CTS > (300000 * (10 ** 18)) && CTS <= (400000 * (10 ** 18)))  {
           bonusTokens = (tokens.mul(25)).div(100);       /* 25% bonus */
-        } else if(CTS &gt; (400000 * (10 ** 18)) &amp;&amp; CTS &lt;= (500000 * (10 ** 18))) {
+        } else if(CTS > (400000 * (10 ** 18)) && CTS <= (500000 * (10 ** 18))) {
           bonusTokens = (tokens.mul(20)).div(100);         /* 20% bonus */
-        } else if(CTS &gt; (500000 * (10 ** 18)) &amp;&amp; CTS &lt;= (700000 * (10 ** 18))) {
+        } else if(CTS > (500000 * (10 ** 18)) && CTS <= (700000 * (10 ** 18))) {
           bonusTokens = (tokens.mul(15)).div(100);       /* 15% bonus */
-        } else if(CTS &gt; (700000 * (10 ** 18)) &amp;&amp; CTS &lt;= (1000000 * (10 ** 18))) {
+        } else if(CTS > (700000 * (10 ** 18)) && CTS <= (1000000 * (10 ** 18))) {
           bonusTokens = (tokens.mul(10)).div(100);          /* 10% bonus */
-        } else if(CTS &gt; (1000000 * (10 ** 18))) {
+        } else if(CTS > (1000000 * (10 ** 18))) {
           bonusTokens = 0;      /* 0% */
         }
         
@@ -247,7 +247,7 @@ contract Crowdsale is Ownable {
         
         
         balances[msg.sender] = balances[msg.sender].add(msg.value);
-        /** Team&#39;s bonus tokens calculation*/
+        /** Team's bonus tokens calculation*/
         uint wal1Tokens = (tokens.mul(25)).div(100);
         token.mint(wal1, wal1Tokens);
         

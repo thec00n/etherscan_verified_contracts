@@ -52,10 +52,10 @@ contract AbstractSingularDTVToken is Token {
 
 
 /// @title Fund contract - Implements reward distribution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="f98a8d9c9f9897d79e9c968b9e9cb99a96978a9c978a808ad7979c8d">[email&#160;protected]</span>&gt;
-/// @author Milad Mostavi - &lt;<span class="__cf_email__" data-cfemail="3b5652575a5f155654484f5a4d527b585455485e5548424815555e4f">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="f98a8d9c9f9897d79e9c968b9e9cb99a96978a9c978a808ad7979c8d">[email protected]</span>>
+/// @author Milad Mostavi - <<span class="__cf_email__" data-cfemail="3b5652575a5f155654484f5a4d527b585455485e5548424815555e4f">[email protected]</span>>
 contract SingularDTVFund {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     /*
      *  External contracts
@@ -68,11 +68,11 @@ contract SingularDTVFund {
     address public owner;
     uint public totalReward;
 
-    // User&#39;s address =&gt; Reward at time of withdraw
-    mapping (address =&gt; uint) public rewardAtTimeOfWithdraw;
+    // User's address => Reward at time of withdraw
+    mapping (address => uint) public rewardAtTimeOfWithdraw;
 
-    // User&#39;s address =&gt; Reward which can be withdrawn
-    mapping (address =&gt; uint) public owed;
+    // User's address => Reward which can be withdrawn
+    mapping (address => uint) public owed;
 
     modifier onlyOwner() {
         // Only guard is allowed to do this action.
@@ -96,7 +96,7 @@ contract SingularDTVFund {
     }
 
     /// @dev Withdraws reward for user. Returns reward.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function calcReward(address forAddress) private returns (uint) {
         return singularDTVToken.balanceOf(forAddress) * (totalReward - rewardAtTimeOfWithdraw[forAddress]) / singularDTVToken.totalSupply();
     }
@@ -109,14 +109,14 @@ contract SingularDTVFund {
         uint value = calcReward(msg.sender) + owed[msg.sender];
         rewardAtTimeOfWithdraw[msg.sender] = totalReward;
         owed[msg.sender] = 0;
-        if (value &gt; 0 &amp;&amp; !msg.sender.send(value)) {
+        if (value > 0 && !msg.sender.send(value)) {
             revert();
         }
         return value;
     }
 
     /// @dev Credits reward to owed balance.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function softWithdrawRewardFor(address forAddress)
         external
         returns (uint)

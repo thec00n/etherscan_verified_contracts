@@ -20,7 +20,7 @@ contract StandardToken is BasicToken {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(allowTransfer);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -29,7 +29,7 @@ contract StandardToken is BasicToken {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(allowTransfer);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -52,17 +52,17 @@ contract StandardToken is BasicToken {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
 contract Token is StandardToken {
 
-    string public name = &quot;BlockStorage&quot;;
+    string public name = "BlockStorage";
     uint8 public decimals = 18;
-    string public symbol = &quot;BLOCKS&quot;;
-    string public version = &quot;1.0&quot;;
+    string public symbol = "BLOCKS";
+    string public version = "1.0";
     address public mintableAddress;
 
     function Token(address sale_address) {
@@ -92,7 +92,7 @@ contract Token is StandardToken {
 
     function mintToken(address to, uint256 amount) external returns (bool success) {
         require(msg.sender == mintableAddress);
-        require(balances[this] &gt;= amount);
+        require(balances[this] >= amount);
         balances[this] -= amount;
         balances[to] += amount;
         Transfer(this, to, amount);
@@ -103,7 +103,7 @@ contract Token is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
@@ -112,9 +112,9 @@ contract Token is StandardToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] -= _value;
         totalSupply -= _value;

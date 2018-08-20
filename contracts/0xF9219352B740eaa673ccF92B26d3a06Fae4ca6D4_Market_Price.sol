@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 contract Ownable {
-    mapping (address =&gt; bool) public owners;
+    mapping (address => bool) public owners;
 
     modifier onlyOwner {        
         require(true == owners[msg.sender]);

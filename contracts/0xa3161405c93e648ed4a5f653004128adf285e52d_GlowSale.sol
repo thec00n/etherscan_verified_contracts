@@ -19,13 +19,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -73,7 +73,7 @@ contract GlowSale is Ownable {
     address bounty = 0x7a3B004E8A68BCD6C5D0c3936D2f582Acb89E5DD; // 10% - для баунти программы
     address reserve = 0xd9DADf245d04fB1566e7330be591445Ad9953476; // 10% - для резерва
 
-    mapping(address=&gt;bool) public whitelist;
+    mapping(address=>bool) public whitelist;
 
     uint256 public startPreSale = now; //1529020801; // Thursday, 15-Jun-18 00:00:01 UTC
     uint256 public endPreSale = 1535759999; // Friday, 31-Aug-18 23:59:59 UTC
@@ -98,7 +98,7 @@ contract GlowSale is Ownable {
     event Revoked(address wlCandidate, uint timestamp);
 
     modifier isUnderHardCap() {
-        require(weisRaised &lt;= hardCapSale);
+        require(weisRaised <= hardCapSale);
         _;
     }
 
@@ -144,7 +144,7 @@ contract GlowSale is Ownable {
     }
 
     /*******************************************************************************
-     * Whitelist&#39;s section
+     * Whitelist's section
      */
     // с сайта backEndOperator авторизует инвестора
     function authorize(address wlCandidate) public backEnd  {
@@ -166,15 +166,15 @@ contract GlowSale is Ownable {
         return whitelist[wlCandidate];
     }
     /*******************************************************************************
-     * Payable&#39;s section
+     * Payable's section
      */
 
     function isPreSale() public constant returns(bool) {
-        return now &gt;= startPreSale &amp;&amp; now &lt;= endPreSale;
+        return now >= startPreSale && now <= endPreSale;
     }
 
     function isMainSale() public constant returns(bool) {
-        return now &gt;= startMainSale &amp;&amp; now &lt;= endMainSale;
+        return now >= startMainSale && now <= endMainSale;
     }
     // callback функция контракта
     function () public payable //isUnderHardCap
@@ -213,7 +213,7 @@ contract GlowSale is Ownable {
         weisRaised = weisRaised.add(msg.value);
         soldTokensPreSale = soldTokensPreSale.add(tokens);
 
-        require(soldTokensPreSale &lt;= hardCapPreSale);
+        require(soldTokensPreSale <= hardCapPreSale);
     }
 
     // выпуск токенов в период основной распродажи
@@ -234,7 +234,7 @@ contract GlowSale is Ownable {
         weisRaised = weisRaised.add(msg.value);
         soldTokensSale = soldTokensSale.add(tokens);
 
-        require(soldTokensSale &lt;= hardCapSale);
+        require(soldTokensSale <= hardCapSale);
     }
 
     // Функция отправки токенов получателям в ручном режиме(только владелец контракта)
@@ -250,8 +250,8 @@ contract GlowSale is Ownable {
         uint256 tokenReserve = _value.div(5); // 1/5
         token.mintFromICO(reserve, tokenReserve);
         soldTokensSale = soldTokensSale.add(_value);
-        //require(soldTokensPreSale &lt;= hardCapPreSale);
-        //require(soldTokensSale &lt;= hardCapSale);
+        //require(soldTokensPreSale <= hardCapPreSale);
+        //require(soldTokensSale <= hardCapSale);
     }
 
     // Отправка эфира с контракта

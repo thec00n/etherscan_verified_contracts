@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -90,9 +90,9 @@ contract PonziToken is ERC20, ERC677Token {
   // we need returns string representation of state
   // because enums are not supported by the ABI, they are just supported by Solidity.
   // see: http://solidity.readthedocs.io/en/develop/frequently-asked-questions.html#if-i-return-an-enum-i-only-get-integer-values-in-web3-js-how-to-get-the-named-values
-  string private constant PRE_SALE_STR = &quot;PreSale&quot;;
-  string private constant SALE_STR = &quot;Sale&quot;;
-  string private constant PUBLIC_USE_STR = &quot;PublicUse&quot;;
+  string private constant PRE_SALE_STR = "PreSale";
+  string private constant SALE_STR = "Sale";
+  string private constant PUBLIC_USE_STR = "PublicUse";
   State private m_state;
 
   uint256 private constant DURATION_TO_ACCESS_FOR_OWNER = 144 days;
@@ -110,9 +110,9 @@ contract PonziToken is ERC20, ERC677Token {
   uint8 private m_decimals;
   bool private m_isFixedTokenPrice;
   
-  mapping(address =&gt; mapping (address =&gt; uint256)) private m_allowed;
-  mapping(address =&gt; uint256) private m_balances;
-  mapping(address =&gt; uint256) private m_pendingWithdrawals;
+  mapping(address => mapping (address => uint256)) private m_allowed;
+  mapping(address => uint256) private m_balances;
+  mapping(address => uint256) private m_pendingWithdrawals;
 
 ////////////////
 // EVENTS
@@ -142,16 +142,16 @@ contract PonziToken is ERC20, ERC677Token {
   
   modifier checkAccess() {
     require(m_firstEntranceToSaleStateUNIX == 0 // solium-disable-line indentation, operator-whitespace
-      || now.sub(m_firstEntranceToSaleStateUNIX) &lt;= DURATION_TO_ACCESS_FOR_OWNER 
+      || now.sub(m_firstEntranceToSaleStateUNIX) <= DURATION_TO_ACCESS_FOR_OWNER 
       || m_state != State.PublicUse
     ); 
     _;
     // owner has not access if duration To Access For Owner was passed 
-    // and (&amp;&amp;) contract in PublicUse state.
+    // and (&&) contract in PublicUse state.
   }
   
   modifier validRecipient(address recipient) {
-    require(recipient != address(0) &amp;&amp; recipient != address(this));
+    require(recipient != address(0) && recipient != address(this));
     _;
   }
 
@@ -166,8 +166,8 @@ contract PonziToken is ERC20, ERC677Token {
     m_bank = msg.sender;
     m_state = State.PreSale;
     m_decimals = 8;
-    m_name = &quot;Ponzi&quot;;
-    m_symbol = &quot;PT&quot;;
+    m_name = "Ponzi";
+    m_symbol = "PT";
   }
 
   /**
@@ -182,7 +182,7 @@ contract PonziToken is ERC20, ERC677Token {
     onlyOwner() 
     returns (bool)
   {
-    require(m_maxTokensPerAddress == 0 &amp;&amp; m_decimals &gt; 0);
+    require(m_maxTokensPerAddress == 0 && m_decimals > 0);
     m_maxTokensPerAddress = uint256(1000).mul(uint256(10)**uint256(m_decimals));
 
     m_totalSupply = uint256(100000000).mul(uint256(10)**uint256(m_decimals));
@@ -255,7 +255,7 @@ contract PonziToken is ERC20, ERC677Token {
     validRecipient(to)
     returns (bool) 
   {
-    // require(value &lt;= m_balances[msg.sender]);
+    // require(value <= m_balances[msg.sender]);
     // SafeMath.sub will already throw if this condition is not met
     m_balances[msg.sender] = m_balances[msg.sender].sub(value);
     m_balances[to] = m_balances[to].add(value);
@@ -276,8 +276,8 @@ contract PonziToken is ERC20, ERC677Token {
     validRecipient(to)
     returns (bool) 
   {
-    // require(value &lt;= m_balances[from]);
-    // require(value &lt;= m_allowed[from][msg.sender]);
+    // require(value <= m_balances[from]);
+    // require(value <= m_allowed[from][msg.sender]);
     // SafeMath.sub will already throw if this condition is not met
     m_balances[from] = m_balances[from].sub(value);
     m_balances[to] = m_balances[to].add(value);
@@ -363,7 +363,7 @@ contract PonziToken is ERC20, ERC677Token {
     returns (bool) 
   {
     uint oldValue = m_allowed[msg.sender][spender];
-    if (subtractedValue &gt; oldValue) {
+    if (subtractedValue > oldValue) {
       m_allowed[msg.sender][spender] = 0;
     } else {
       m_allowed[msg.sender][spender] = oldValue.sub(subtractedValue);
@@ -388,7 +388,7 @@ contract PonziToken is ERC20, ERC677Token {
     validRecipient(to)
     returns (bool)
   {
-    // require(value &lt;= m_balances[msg.sender]);
+    // require(value <= m_balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     m_balances[msg.sender] = m_balances[msg.sender].sub(value);
     m_balances[to] = m_balances[to].add(value);
@@ -436,7 +436,7 @@ contract PonziToken is ERC20, ERC677Token {
   function isContract(address addr) internal view returns (bool) {
     uint length;
     assembly { length := extcodesize(addr) }
-    return length &gt; 0;
+    return length > 0;
   }
   
   
@@ -448,9 +448,9 @@ contract PonziToken is ERC20, ERC677Token {
 //
   /**
   * Recived ETH converted to tokens amount for price. sender has max limit for tokens 
-  * amount as m_maxTokensPerAddress - balanceOf(sender). if amount &lt;= max limit
+  * amount as m_maxTokensPerAddress - balanceOf(sender). if amount <= max limit
   * then transfer amount from this to sender and 95%ETH to bank, 5%ETH to owner.
-  * else amount &gt; max limit then we calc cost of max limit of tokens,
+  * else amount > max limit then we calc cost of max limit of tokens,
   * store this cost in m_pendingWithdrawals[sender] and m_myDebtInWei and 
   * transfer max limit of tokens from this to sender and 95% max limit cost to bank
   * 5% max limit cost to owner.
@@ -459,13 +459,13 @@ contract PonziToken is ERC20, ERC677Token {
   */
   function byTokens() public payable atState(State.Sale) {
     // check if msg.sender can to by tokens 
-    require(m_balances[msg.sender] &lt; m_maxTokensPerAddress);
+    require(m_balances[msg.sender] < m_maxTokensPerAddress);
 
     // get actual token price and set it
     m_tokenPriceInWei = calcTokenPriceInWei();
     
     // check if msg.value has enough for by 1 token
-    require(msg.value &gt;= m_tokenPriceInWei);
+    require(msg.value >= m_tokenPriceInWei);
     
     // calc max available tokens for sender
     uint256 maxAvailableTokens = m_maxTokensPerAddress.sub(m_balances[msg.sender]);
@@ -473,7 +473,7 @@ contract PonziToken is ERC20, ERC677Token {
     // convert msg.value(wei) to tokens
     uint256 tokensAmount = weiToTokens(msg.value, m_tokenPriceInWei);
     
-    if (tokensAmount &gt; maxAvailableTokens) {
+    if (tokensAmount > maxAvailableTokens) {
       // we CANT transfer all tokens amount, ONLY max available tokens 
       // calc cost in wei of max available tokens
       // subtract cost from msg.value and store it as debt for sender
@@ -503,23 +503,23 @@ contract PonziToken is ERC20, ERC677Token {
     // transfer 95% of eht-myDebt to bank
     // bank cant be equal address(0) see setBank() and PonziToken()
     m_bank.transfer(this.balance.sub(m_myDebtInWei));
-    checkValidityOfBalance(); // this.balance &gt;= m_myDebtInWei
+    checkValidityOfBalance(); // this.balance >= m_myDebtInWei
     Transfer(address(this), msg.sender, tokensAmount);
     TokensSold(tokensAmount, msg.sender, m_tokenPriceInWei); 
   }
   
   /**
-  * @dev Sender receive his pending withdrawals(if &gt; 0).
+  * @dev Sender receive his pending withdrawals(if > 0).
   */
   function withdraw() external {
     uint amount = m_pendingWithdrawals[msg.sender];
-    require(amount &gt; 0);
+    require(amount > 0);
     // set zero the pending refund before
     // sending to prevent Re-Entrancy 
     m_pendingWithdrawals[msg.sender] = 0;
     m_myDebtInWei = m_myDebtInWei.sub(amount);
     msg.sender.transfer(amount);
-    checkValidityOfBalance(); // this.balance &gt;= m_myDebtInWei
+    checkValidityOfBalance(); // this.balance >= m_myDebtInWei
     Withdrawal(msg.sender, amount);
   }
 
@@ -773,12 +773,12 @@ contract PonziToken is ERC20, ERC677Token {
     // day 12:  price 1*10^(decimals) TOKEN = 0.012 ETH;
     //          price 1 TOKEN = 12 * 10^(15) * 10^(-decimals), in WEI
     
-    // day &gt;12: price 1*10^(decimals) TOKEN = 0.012 ETH;
+    // day >12: price 1*10^(decimals) TOKEN = 0.012 ETH;
     //          price 1 TOKEN = 12 * 10^(15) * 10^(-decimals), in WEI
 
     // from 0 to 11 - sum is 12 days
-    if (day &lt;= 11) 
-      price = day.add(1);// because from &gt;0h to &lt;24h after start day will be 0, 
+    if (day <= 11) 
+      price = day.add(1);// because from >0h to <24h after start day will be 0, 
     else                 // but for calc price it must be 1;
       price = 12;
     // convert to WEI
@@ -788,13 +788,13 @@ contract PonziToken is ERC20, ERC677Token {
   /**
   * @notice It is always must be true, for correct withdrawals and receivers ETH.
   *
-  * Check if this.balance &gt;= m_myDebtInWei.
+  * Check if this.balance >= m_myDebtInWei.
   */
   function checkValidityOfBalance() private view {
     // assertion is not a strict equality of the balance because the contract 
     // can be forcibly sent ether without going through the byTokens() func.
-    // selfdestruct does not trigger a contract&#39;s fallback function. 
+    // selfdestruct does not trigger a contract's fallback function. 
     // see: http://solidity.readthedocs.io/en/develop/contracts.html#fallback-function
-    assert(this.balance &gt;= m_myDebtInWei);
+    assert(this.balance >= m_myDebtInWei);
   }
 }

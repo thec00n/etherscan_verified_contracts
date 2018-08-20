@@ -8,15 +8,15 @@ contract Genesis {
 
   event getFundsEvent(address addr, uint256 amount);
 
-  mapping (address =&gt; address[]) public children;
+  mapping (address => address[]) public children;
 
-  mapping (address =&gt; address) public parents;
+  mapping (address => address) public parents;
 
-  mapping (address =&gt; uint256) public funds;
+  mapping (address => uint256) public funds;
 
-  mapping (address =&gt; string) public nicknames;
+  mapping (address => string) public nicknames;
 
-  mapping (address =&gt; uint256) public lastActivity;
+  mapping (address => uint256) public lastActivity;
 
   uint256 public capital; //all enters
 
@@ -33,7 +33,7 @@ contract Genesis {
 
   modifier withFunds() {
     //funds for me?
-    require(funds[msg.sender] &gt; 0);
+    require(funds[msg.sender] > 0);
     _;
   }
 
@@ -46,42 +46,42 @@ contract Genesis {
 
     require(msg.sender != firstChild);
     genesis = msg.sender;
-    nicknames[genesis] = &#39;Genesis&#39;;
+    nicknames[genesis] = 'Genesis';
     parents[genesis] = 0x0;
     customers++;
-    registerAdmin(firstChild, &#39;First&#39;);
+    registerAdmin(firstChild, 'First');
 
   }
 
 
   function isNotRegistered(address addr) constant  public returns (bool){
-    if (parents[addr] == 0x0 &amp;&amp; children[addr].length == 0) return true;
+    if (parents[addr] == 0x0 && children[addr].length == 0) return true;
     return false;
   }
 
   function currentPayment() public constant returns (uint payment){
 
-    if (capital &gt; 1000 ether) {
+    if (capital > 1000 ether) {
       return 2 ether;
     }
     else
-    if (capital &gt; 200 ether) {
+    if (capital > 200 ether) {
       return 1.33 ether;
     }
     else
-    if (capital &gt; 30 ether) {
+    if (capital > 30 ether) {
       return 0.66 ether;
     }
     else
-    if (capital &gt; 4 ether) {
+    if (capital > 4 ether) {
       return 0.33 ether;
     }
     else
-    if (capital &gt; 0.5 ether) {
+    if (capital > 0.5 ether) {
       return 0.17 ether;
     }
     else
-    if (capital &gt; 0.1 ether) {
+    if (capital > 0.1 ether) {
       return 0.05 ether;
     }
     return 0.01 ether;
@@ -179,7 +179,7 @@ contract Genesis {
     //new genesis is not member
     require(isNotRegistered(newGen));
 
-    for (uint i = 0; i &lt; children[genesis].length; i++) {
+    for (uint i = 0; i < children[genesis].length; i++) {
 
       children[newGen].push(children[genesis][i]);
       parents[children[genesis][i]] = newGen;
@@ -193,7 +193,7 @@ contract Genesis {
     funds[genesis] = 0;
 
     nicknames[newGen] = nicknames[genesis];
-    nicknames[genesis] = &#39;&#39;;
+    nicknames[genesis] = '';
 
     lastActivity[newGen] = now;
     lastActivity[genesis] = 0;
@@ -204,10 +204,10 @@ contract Genesis {
 
   function transferChildren(address child) public {
     require(parents[child] == msg.sender);
-    require(now - lastActivity[child] &gt; deadLine);
-    require(children[child].length &gt; 0);
+    require(now - lastActivity[child] > deadLine);
+    require(children[child].length > 0);
 
-    for (uint256 i = 0; i &lt; children[child].length; i++) {
+    for (uint256 i = 0; i < children[child].length; i++) {
 
       children[msg.sender].push(children[child][i]);
       parents[children[child][i]] = msg.sender;
@@ -222,7 +222,7 @@ contract Genesis {
 
     funds[child] = 0;
 
-    //nicknames[child] = &#39;&#39;;
+    //nicknames[child] = '';
 
     //lastActivity[child] = 0;
 

@@ -3,10 +3,10 @@ pragma solidity 0.4.22;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -99,10 +99,10 @@ contract VXR is ERC20Interface, Pausable {
     uint8 public decimals;
 
     uint public _totalSupply;
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; uint) public lockInfo;
-    mapping(address =&gt; mapping(address =&gt; uint)) internal allowed;
-    mapping (address =&gt; bool) public admins;
+    mapping(address => uint) public balances;
+    mapping(address => uint) public lockInfo;
+    mapping(address => mapping(address => uint)) internal allowed;
+    mapping (address => bool) public admins;
     
     modifier onlyAdmin {
         require(msg.sender == owner || admins[msg.sender]);
@@ -114,8 +114,8 @@ contract VXR is ERC20Interface, Pausable {
     }
 
     constructor() public{
-        symbol = &#39;VXR&#39;;
-        name = &#39;Versara Trade&#39;;
+        symbol = 'VXR';
+        name = 'Versara Trade';
         decimals = 18;
         _totalSupply = 1000000000*10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -133,8 +133,8 @@ contract VXR is ERC20Interface, Pausable {
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                                    // Prevent transfer to 0x0 address. Use burn() instead
         require(_value != 0);                                   // Prevent transfer 0
-        require(balances[_from] &gt;= _value);                     // Check if the sender has enough
-        require(balances[_from] - _value &gt;= lockInfo[_from]);   // Check after transaction, balance is still more than locked value
+        require(balances[_from] >= _value);                     // Check if the sender has enough
+        require(balances[_from] - _value >= lockInfo[_from]);   // Check after transaction, balance is still more than locked value
         balances[_from] = balances[_from].sub(_value);          // Substract value from sender
         balances[_to] = balances[_to].add(_value);              // Add value to recipient
         emit Transfer(_from, _to, _value);
@@ -152,7 +152,7 @@ contract VXR is ERC20Interface, Pausable {
     }
 
     function transferFrom(address from, address to, uint tokens) public whenNotPaused returns (bool success) {
-        require(allowed[from][msg.sender] &gt;= tokens);
+        require(allowed[from][msg.sender] >= tokens);
         _transfer(from, to, tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         return true;
@@ -175,28 +175,28 @@ contract VXR is ERC20Interface, Pausable {
 
     //Batch lock or lock 0 to release all
     function batchLock(address[] accounts, uint lockedToken) public whenNotPaused onlyAdmin {
-      for (uint i = 0; i &lt; accounts.length; i++) {
+      for (uint i = 0; i < accounts.length; i++) {
            lock(accounts[i], lockedToken);
         }
     }
 
     //Batch lock amount with array
     function batchLockArray(address[] accounts, uint[] lockedToken) public whenNotPaused onlyAdmin {
-      for (uint i = 0; i &lt; accounts.length; i++) {
+      for (uint i = 0; i < accounts.length; i++) {
            lock(accounts[i], lockedToken[i]);
         }
     }
 
     //Airdrop Batch with lock 
     function batchAirdropWithLock(address[] receivers, uint tokens, bool freeze) public whenNotPaused onlyAdmin {
-      for (uint i = 0; i &lt; receivers.length; i++) {
+      for (uint i = 0; i < receivers.length; i++) {
            sendTokensWithLock(receivers[i], tokens, freeze);
         }
     }
 
     //VIP Batch with lock
     function batchVipWithLock(address[] receivers, uint[] tokens, bool freeze) public whenNotPaused onlyAdmin {
-      for (uint i = 0; i &lt; receivers.length; i++) {
+      for (uint i = 0; i < receivers.length; i++) {
            sendTokensWithLock(receivers[i], tokens[i], freeze);
         }
     }

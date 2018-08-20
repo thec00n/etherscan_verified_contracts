@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -46,7 +46,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96e4f3fbf5f9d6a4">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96e4f3fbf5f9d6a4">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -85,7 +85,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title TweedentityStore
- * @author Francesco Sullo &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="442236252a272137272b04373128282b6a272b">[email&#160;protected]</a>&gt;
+ * @author Francesco Sullo <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="442236252a272137272b04373128282b6a272b">[email protected]</a>>
  * @dev It store the tweedentities related to the app
  */
 
@@ -95,7 +95,7 @@ contract TweedentityStore
 is HasNoEther
 {
 
-  string public version = &quot;1.3.0&quot;;
+  string public version = "1.3.0";
 
   uint public appId;
   string public appNickname;
@@ -115,8 +115,8 @@ is HasNoEther
     uint lastUpdate;
   }
 
-  mapping(string =&gt; Address) internal __addressByUid;
-  mapping(address =&gt; Uid) internal __uidByAddress;
+  mapping(string => Address) internal __addressByUid;
+  mapping(address => Uid) internal __uidByAddress;
 
   bool public appSet;
 
@@ -142,7 +142,7 @@ is HasNoEther
 
 
   modifier onlyManager() {
-    require(msg.sender == manager || (newManager != address(0) &amp;&amp; msg.sender == newManager));
+    require(msg.sender == manager || (newManager != address(0) && msg.sender == newManager));
     _;
   }
 
@@ -159,7 +159,7 @@ is HasNoEther
 
   /**
   * @dev Sets the manager
-  * @param _address Manager&#39;s address
+  * @param _address Manager's address
   */
   function setManager(
     address _address
@@ -174,7 +174,7 @@ is HasNoEther
 
   /**
   * @dev Sets new manager
-  * @param _address New manager&#39;s address
+  * @param _address New manager's address
   */
   function setNewManager(
     address _address
@@ -182,7 +182,7 @@ is HasNoEther
   external
   onlyOwner
   {
-    require(_address != address(0) &amp;&amp; manager != address(0));
+    require(_address != address(0) && manager != address(0));
     newManager = _address;
   }
 
@@ -212,8 +212,8 @@ is HasNoEther
   onlyOwner
   {
     require(!appSet);
-    require(_appId &gt; 0);
-    require(bytes(_appNickname).length &gt; 0);
+    require(_appId > 0);
+    require(bytes(_appNickname).length > 0);
     appId = _appId;
     appNickname = _appNickname;
     appSet = true;
@@ -264,7 +264,7 @@ is HasNoEther
     require(isUid(_uid));
     require(isUpgradable(_address, _uid));
 
-    if (bytes(__uidByAddress[_address].lastUid).length &gt; 0) {
+    if (bytes(__uidByAddress[_address].lastUid).length > 0) {
       // if _address is associated with an oldUid,
       // this removes the association between _address and oldUid
       __addressByUid[__uidByAddress[_address].lastUid] = Address(address(0), __addressByUid[__uidByAddress[_address].lastUid].lastUpdate);
@@ -290,10 +290,10 @@ is HasNoEther
   whenAppSet
   {
     require(_address != address(0));
-    require(bytes(__uidByAddress[_address].lastUid).length &gt; 0);
+    require(bytes(__uidByAddress[_address].lastUid).length > 0);
 
     string memory uid = __uidByAddress[_address].lastUid;
-    __uidByAddress[_address] = Uid(&#39;&#39;, __uidByAddress[_address].lastUpdate);
+    __uidByAddress[_address] = Uid('', __uidByAddress[_address].lastUpdate);
     __addressByUid[uid] = Address(address(0), __addressByUid[uid].lastUpdate);
     identities--;
     IdentityUnset(_address, uid);
@@ -411,8 +411,8 @@ is HasNoEther
     if (uid.length == 0) {
       return false;
     } else {
-      for (uint i = 0; i &lt; uid.length; i++) {
-        if (uid[i] &lt; 48 || uid[i] &gt; 57) {
+      for (uint i = 0; i < uid.length; i++) {
+        if (uid[i] < 48 || uid[i] > 57) {
           return false;
         }
       }
@@ -435,9 +435,9 @@ is HasNoEther
     bytes memory b = bytes(s);
     uint i;
     result = 0;
-    for (i = 0; i &lt; b.length; i++) {
+    for (i = 0; i < b.length; i++) {
       uint c = uint(b[i]);
-      if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+      if (c >= 48 && c <= 57) {
         result = result * 10 + (c - 48);
       }
     }
@@ -450,7 +450,7 @@ is HasNoEther
   returns (bytes b)
   {
     b = new bytes(32);
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
       b[i] = byte(uint8(x / (2 ** (8 * (31 - i)))));
     }
   }

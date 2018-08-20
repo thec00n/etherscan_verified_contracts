@@ -2,10 +2,10 @@ pragma solidity ^0.4.11;
 
 contract ForklogBlockstarter {
     
-    string public constant contract_md5 = &quot;847df4b1ba31f28b9399b52d784e4a8e&quot;;
-    string public constant contract_sha256 = &quot;cd195ff7ac4743a1c878f0100e138e36471bb79c0254d58806b8244080979116&quot;;
+    string public constant contract_md5 = "847df4b1ba31f28b9399b52d784e4a8e";
+    string public constant contract_sha256 = "cd195ff7ac4743a1c878f0100e138e36471bb79c0254d58806b8244080979116";
     
-    mapping (address =&gt; bool) private signs;
+    mapping (address => bool) private signs;
 
     address private alex = 0x8D5bd2aBa04A07Bfa0cc976C73eD45B23cC6D6a2;
     address private andrey = 0x688d12D97D0E480559B6bEB6EE9907B625c14Adb;
@@ -48,9 +48,9 @@ contract ForklogBlockstarter {
     
     function isSignedByAll() constant returns (bool) {
         return (
-            isSignedByAlex() &amp;&amp; 
-            isSignedByAndrey() &amp;&amp; 
-            isSignedByToly() &amp;&amp; 
+            isSignedByAlex() && 
+            isSignedByAndrey() && 
+            isSignedByToly() && 
             isSignedByEugene()
         );
     }
@@ -73,7 +73,7 @@ http://www.xorbin.com/tools/md5-hash-calculator
 http://onlinemd5.com/
 
 The content of the contract goes below between long lines of stars (*).
-Don&#39;t copy star lines when generating SHA256/MD5. Copy only text in between.
+Don't copy star lines when generating SHA256/MD5. Copy only text in between.
 
 ********************************************************************************
 # Contract between Forklog and Blockstarter
@@ -131,7 +131,7 @@ In the next sections this document describes the functionlity to be implemented 
 
 ---
 
-# &lt;&lt;&lt; START AFTER FORKLOG CONTRIBUTION &gt;&gt;&gt;
+# <<< START AFTER FORKLOG CONTRIBUTION >>>
 
 Forklog contributes 15,000 USD for development of Blockstarter.
 
@@ -261,7 +261,7 @@ Smart contract uses default template created by Blockstarter using values specif
 
 * Token symbol
 
-* Add a string &quot;Created on BlockStarter.co&quot; to generated smart contract.
+* Add a string "Created on BlockStarter.co" to generated smart contract.
 
 ### Generate tokens on Waves platform
 
@@ -275,7 +275,7 @@ Bitshares, NXT, Wings, other?
 
 It should be possible to see all contracts generated for campaigns that launched on Blockstarter.
 
-Contracts could be published to a specific directory of Blockstarter repo called &quot;contracts&quot;.
+Contracts could be published to a specific directory of Blockstarter repo called "contracts".
 
 Provide Github Gist link to the draft contract.
 
@@ -301,7 +301,7 @@ List of contributions and ability to sell and buy tokens between users or buy to
 
 ---
 
-# &lt;&lt;&lt; START AFTER SUCCESSFUL PRESALE &gt;&gt;&gt;
+# <<< START AFTER SUCCESSFUL PRESALE >>>
 
 Presale is considered successful if Blockstarter raises more than 250,000 USD.
 
@@ -413,7 +413,7 @@ Blockstarter will take next % from money each campaign raise during ICO:
 
 ---
 
-# &lt;&lt;&lt; START AFTER SUCCESSFUL ICO &gt;&gt;&gt;
+# <<< START AFTER SUCCESSFUL ICO >>>
 
 Public ICO is considered successful if Blockstarter raises more than 2,000,000 USD.
 

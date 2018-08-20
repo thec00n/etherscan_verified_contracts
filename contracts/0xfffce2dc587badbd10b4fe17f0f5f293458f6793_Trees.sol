@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract Admin {
   address public owner;
-  mapping(address =&gt; bool) public isAdmin;
+  mapping(address => bool) public isAdmin;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -36,12 +36,12 @@ contract Trees is Admin {
   event LogRewardPicked(uint256 indexed treeId, address indexed owner, uint256 date, uint256 amount);
 
   // Get the tree information given the id
-  mapping(uint256 =&gt; Tree) public treeDetails;
+  mapping(uint256 => Tree) public treeDetails;
   // A mapping with all the tree IDs of that owner
-  mapping(address =&gt; uint256[]) public ownerTreesIds;
+  mapping(address => uint256[]) public ownerTreesIds;
   // Tree id and the days the tree has been watered
-  // Tree id =&gt; day number =&gt; isWatered
-  mapping(uint256 =&gt; mapping(uint256 =&gt; bool)) public treeWater;
+  // Tree id => day number => isWatered
+  mapping(uint256 => mapping(uint256 => bool)) public treeWater;
 
   struct Tree {
     uint256 ID;
@@ -67,7 +67,7 @@ contract Trees is Admin {
   // This will be called automatically by the server
   // The contract itself will hold the initial trees
   function generateTrees(uint256 _amountToGenerate) public onlyAdmin {
-    for(uint256 i = 0; i &lt; _amountToGenerate; i++) {
+    for(uint256 i = 0; i < _amountToGenerate; i++) {
         uint256 newTreeId = lastTreeId + 1;
         lastTreeId += 1;
         uint256[] memory emptyArray;
@@ -84,11 +84,11 @@ contract Trees is Admin {
 
   // This is payable, the user will send the payment here
   // We delete the tree from the owner first and we add that to the receiver
-  // When you sell you&#39;re actually putting the tree on the market, not losing it yet
+  // When you sell you're actually putting the tree on the market, not losing it yet
   function putTreeOnSale(uint256 _treeNumber, uint256 _salePrice) public {
     require(msg.sender == treeDetails[_treeNumber].owner);
     require(!treeDetails[_treeNumber].onSale);
-    require(_salePrice &gt; 0);
+    require(_salePrice > 0);
 
     treesOnSale.push(_treeNumber);
     treeDetails[_treeNumber].salePrice = _salePrice;
@@ -99,15 +99,15 @@ contract Trees is Admin {
   function buyTree(uint256 _treeNumber, address _originalOwner) public payable {
     require(msg.sender != treeDetails[_treeNumber].owner);
     require(treeDetails[_treeNumber].onSale);
-    require(msg.value &gt;= treeDetails[_treeNumber].salePrice);
+    require(msg.value >= treeDetails[_treeNumber].salePrice);
     address newOwner = msg.sender;
     // Move id from old to new owner
     // Find the tree of that user and delete it
-    for(uint256 i = 0; i &lt; ownerTreesIds[_originalOwner].length; i++) {
+    for(uint256 i = 0; i < ownerTreesIds[_originalOwner].length; i++) {
         if(ownerTreesIds[_originalOwner][i] == _treeNumber) delete ownerTreesIds[_originalOwner][i];
     }
     // Remove the tree from the array of trees on sale
-    for(uint256 a = 0; a &lt; treesOnSale.length; a++) {
+    for(uint256 a = 0; a < treesOnSale.length; a++) {
         if(treesOnSale[a] == _treeNumber) {
             delete treesOnSale[a];
             break;
@@ -130,7 +130,7 @@ contract Trees is Admin {
     require(msg.sender == treeDetails[_treeId].owner);
     require(treeDetails[_treeId].onSale);
     // Remove the tree from the array of trees on sale
-    for(uint256 a = 0; a &lt; treesOnSale.length; a++) {
+    for(uint256 a = 0; a < treesOnSale.length; a++) {
         if(treesOnSale[a] == _treeId) {
             delete treesOnSale[a];
             break;
@@ -141,20 +141,20 @@ contract Trees is Admin {
 
   // Improves the treePower
   function waterTree(uint256 _treeId) public {
-    require(_treeId &gt; 0);
+    require(_treeId > 0);
     require(msg.sender == treeDetails[_treeId].owner);
     uint256[] memory waterDates = treeDetails[_treeId].waterTreeDates;
     uint256 timeSinceLastWater;
     // We want to store at what day the tree was watered
     uint256 day;
-    if(waterDates.length &gt; 0) {
+    if(waterDates.length > 0) {
         timeSinceLastWater = now - waterDates[waterDates.length - 1];
         day = waterDates[waterDates.length - 1] / 1 days;
     }else {
         timeSinceLastWater = timeBetweenRewards;
         day = 1;
     }
-    require(timeSinceLastWater &gt;= timeBetweenRewards);
+    require(timeSinceLastWater >= timeBetweenRewards);
     treeWater[_treeId][day] = true;
     treeDetails[_treeId].waterTreeDates.push(now);
     treeDetails[_treeId].treePower += 1;
@@ -165,7 +165,7 @@ contract Trees is Admin {
   // To get the ether from the rewards
   function pickReward(uint256 _treeId) public {
     require(msg.sender == treeDetails[_treeId].owner);
-    require(now - treeDetails[_treeId].lastRewardPickedDate &gt; timeBetweenRewards);
+    require(now - treeDetails[_treeId].lastRewardPickedDate > timeBetweenRewards);
 
     uint256[] memory formatedId = new uint256[](1);
     formatedId[0] = _treeId;
@@ -179,11 +179,11 @@ contract Trees is Admin {
   function checkTreesWatered(uint256[] _treeIds) public constant returns(bool[]) {
     bool[] memory results = new bool[](_treeIds.length);
     uint256 timeSinceLastWater;
-    for(uint256 i = 0; i &lt; _treeIds.length; i++) {
+    for(uint256 i = 0; i < _treeIds.length; i++) {
         uint256[] memory waterDates = treeDetails[_treeIds[i]].waterTreeDates;
-        if(waterDates.length &gt; 0) {
+        if(waterDates.length > 0) {
             timeSinceLastWater = now - waterDates[waterDates.length - 1];
-            results[i] = timeSinceLastWater &lt; timeBetweenRewards;
+            results[i] = timeSinceLastWater < timeBetweenRewards;
         } else {
             results[i] = false;
         }
@@ -198,11 +198,11 @@ contract Trees is Admin {
   // Total money in the treasury: 102 ETH
   // A 10% of the total is distributed daily across all the users
   // For instance 10.2 ETH today
-  // So if you pick your rewards right now, you&#39;ll get a 2% of 10.2 ETH which is 0.204 ETH
+  // So if you pick your rewards right now, you'll get a 2% of 10.2 ETH which is 0.204 ETH
   function checkRewards(uint256[] _treeIds) public constant returns(uint256[]) {
     uint256 amountInTreasuryToDistribute = this.balance / 10;
     uint256[] memory results = new uint256[](_treeIds.length);
-    for(uint256 i = 0; i &lt; _treeIds.length; i++) {
+    for(uint256 i = 0; i < _treeIds.length; i++) {
         // Important to multiply by 100 to
         uint256 yourPercentage = treeDetails[_treeIds[i]].treePower * 1 ether / totalTreePower;
         uint256 amountYouGet = yourPercentage * amountInTreasuryToDistribute / 1 ether;

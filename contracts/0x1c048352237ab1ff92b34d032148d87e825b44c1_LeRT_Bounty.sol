@@ -49,9 +49,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -68,7 +68,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -119,7 +119,7 @@ contract StandardToken is Token {
     using SafeMath for uint256;
 
   function transfer(address _to, uint256 _value) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to].add(_value) &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value && balances[_to].add(_value) > balances[_to]) {
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
       Transfer(msg.sender, _to, _value);
@@ -128,7 +128,7 @@ contract StandardToken is Token {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to].add(_value) &gt; balances[_to]) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to].add(_value) > balances[_to]) {
       balances[_to] = balances[_to].add(_value);
       balances[_from] = balances[_from].sub(_value);
       allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -151,9 +151,9 @@ contract StandardToken is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   uint256 public totalSupply;
 }
@@ -165,7 +165,7 @@ contract LeRT_Bounty is owned {
 
     address public token;
 
-    mapping (address =&gt; uint256) public sent; 
+    mapping (address => uint256) public sent; 
     address[] internal extention;
 
     event Withdraw(address user, uint256 amount, uint256 balance);
@@ -211,7 +211,7 @@ contract LeRT_Bounty is owned {
         uint256 tokens;
         uint256 remain;
         tokens = _balanceOf(msg.sender);
-        require(tokens.sub(sent[msg.sender]) &gt;= amount_);
+        require(tokens.sub(sent[msg.sender]) >= amount_);
         sent[msg.sender] = sent[msg.sender].add(amount_);
         remain = tokens.sub(sent[msg.sender]);
         require(Token(token).transfer(msg.sender, amount_));
@@ -219,9 +219,9 @@ contract LeRT_Bounty is owned {
     }
 
     function balanceOf(address user_) public constant returns (uint256) {
-        require(extention.length &gt; 0);
+        require(extention.length > 0);
         uint256 balance;
-        for (uint256 i = 0; i &lt; extention.length; i++){
+        for (uint256 i = 0; i < extention.length; i++){
             Week eachWeek = Week(extention[i]);
             balance = balance.add(eachWeek.get(user_));
         }
@@ -229,9 +229,9 @@ contract LeRT_Bounty is owned {
     }
 
     function _balanceOf(address user_) internal constant returns (uint256) {
-        require(extention.length &gt; 0);
+        require(extention.length > 0);
         uint256 balance;
-        for (uint256 i = 0; i &lt; extention.length; i++){
+        for (uint256 i = 0; i < extention.length; i++){
             Week eachWeek = Week(extention[i]);
             balance = balance.add(eachWeek.get(user_));
         }

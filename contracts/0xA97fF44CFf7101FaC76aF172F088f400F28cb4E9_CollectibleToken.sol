@@ -42,8 +42,8 @@ contract CollectibleToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;crypto-youCollect&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CYC&quot;; // solhint-disable-line
+  string public constant NAME = "crypto-youCollect"; // solhint-disable-line
+  string public constant SYMBOL = "CYC"; // solhint-disable-line
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
   uint256 private firstStepLimit =  0.053613 ether;
@@ -54,19 +54,19 @@ contract CollectibleToken is ERC721 {
 
   /// @dev A mapping from collectible IDs to the address that owns them. All collectibles have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public collectibleIndexToOwner;
+  mapping (uint256 => address) public collectibleIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from CollectibleIDs to an address that has been approved to call
   ///  transferFrom(). Each Collectible can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public collectibleIndexToApproved;
+  mapping (uint256 => address) public collectibleIndexToApproved;
 
   // @dev A mapping from CollectibleIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private collectibleIndexToPrice;
+  mapping (uint256 => uint256) private collectibleIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -130,14 +130,14 @@ contract CollectibleToken is ERC721 {
   /// @dev Creates a new promo collectible with the given name, with given _price and assignes it to an address.
   function createPromoCollectible(uint256 tokenId, address _owner, uint256 _price) public onlyCOO {
     require(collectibleIndexToOwner[tokenId]==address(0));
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address collectibleOwner = _owner;
     if (collectibleOwner == address(0)) {
       collectibleOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -162,9 +162,9 @@ contract CollectibleToken is ERC721 {
 
     if (sellingPrice == 0)
       sellingPrice = startingPrice;
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       nextSellingPrice = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       nextSellingPrice = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
       nextSellingPrice = SafeMath.div(SafeMath.mul(sellingPrice, 115), 94);
@@ -211,16 +211,16 @@ contract CollectibleToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       collectibleIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       collectibleIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
@@ -232,7 +232,7 @@ contract CollectibleToken is ERC721 {
     TokenSold(_tokenId, sellingPrice, collectibleIndexToPrice[_tokenId], oldOwner, newOwner);
 
     // Pay previous tokenOwner if owner is not contract
-    if (oldOwner != address(this) &amp;&amp; oldOwner != address(0)) {
+    if (oldOwner != address(this) && oldOwner != address(0)) {
       oldOwner.transfer(payment); //(1-0.06)
     }
 
@@ -348,12 +348,12 @@ contract CollectibleToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Collectible to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of collectibles is capped to 2^32 we can&#39;t overflow this
+    // Since the number of collectibles is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     collectibleIndexToOwner[_tokenId] = _to;
 
-    // When creating new collectibles _from is 0x0, but we can&#39;t account that address.
+    // When creating new collectibles _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -382,9 +382,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -392,7 +392,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -401,7 +401,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

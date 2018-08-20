@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,8 +156,8 @@ contract DESP  is StandardToken {
   // Constants
   // =========
 
-  string  public constant name = &quot;Decentralized Escrow Private Token&quot;;
-  string  public constant symbol = &quot;DESP&quot;;
+  string  public constant name = "Decentralized Escrow Private Token";
+  string  public constant symbol = "DESP";
   uint    public constant decimals = 18;
   address public constant wallet = 0x51559EfC1AcC15bcAfc7E0C2fB440848C136A46B;
 
@@ -170,21 +170,21 @@ contract DESP  is StandardToken {
 
 
   function price(uint _v) public constant returns (uint) {
-    return // poor man&#39;s binary search
-      _v &lt; 7 ether
-        ? _v &lt; 3 ether
-          ? _v &lt; 1 ether
+    return // poor man's binary search
+      _v < 7 ether
+        ? _v < 3 ether
+          ? _v < 1 ether
             ? 1000
-            : _v &lt; 2 ether ? 1005 : 1010
-          : _v &lt; 4 ether
+            : _v < 2 ether ? 1005 : 1010
+          : _v < 4 ether
             ? 1015
-            : _v &lt; 5 ether ? 1020 : 1030
-        : _v &lt; 14 ether
-          ? _v &lt; 10 ether
-            ? _v &lt; 9 ether ? 1040 : 1050
+            : _v < 5 ether ? 1020 : 1030
+        : _v < 14 ether
+          ? _v < 10 ether
+            ? _v < 9 ether ? 1040 : 1050
             : 1080
-          : _v &lt; 100 ether
-            ? _v &lt; 20 ether ? 1110 : 1150
+          : _v < 100 ether
+            ? _v < 20 ether ? 1110 : 1150
             : 1200;
   }
 

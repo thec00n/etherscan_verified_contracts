@@ -17,7 +17,7 @@ pragma solidity ^0.4.21;
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with LikeCoin Smart Contract.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+//    along with LikeCoin Smart Contract.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.18;
 
@@ -112,12 +112,12 @@ contract ArtMuseumBase is Ownable {
 	/** the id of the oldest artwork */
 	uint32 public oldest;
 	/** the artwork belonging to a given id */
-	mapping(uint32 =&gt; Artwork) artworks;
+	mapping(uint32 => Artwork) artworks;
 	/** the user purchase sequence number per each artwork type */
-	mapping(address=&gt;mapping(uint8 =&gt; uint32)) userArtworkSequenceNumber;
+	mapping(address=>mapping(uint8 => uint32)) userArtworkSequenceNumber;
 	/** the cost of each artwork type */
 	uint128[] public costs;
-	/** the value of each artwork type (cost - fee), so it&#39;s not necessary to compute it each time*/
+	/** the value of each artwork type (cost - fee), so it's not necessary to compute it each time*/
 	uint128[] public values;
 	/** the fee to be paid each time an artwork is bought in percent*/
 	uint8 public fee;
@@ -151,12 +151,12 @@ contract ArtMuseumBase is Ownable {
 
 	/**
 	 * allows the owner to collect the accumulated fees
-	 * sends the given amount to the owner&#39;s address if the amount does not exceed the
-	 * fees (cannot touch the players&#39; balances)
+	 * sends the given amount to the owner's address if the amount does not exceed the
+	 * fees (cannot touch the players' balances)
 	 * */
 	function collectFees(uint128 amount) public onlyOwner {
 		uint collectedFees = getFees();
-		if (amount &lt;= collectedFees) {
+		if (amount <= collectedFees) {
 			like.transfer(owner,amount);
 		}
 	}
@@ -171,7 +171,7 @@ contract ArtMuseumBase is Ownable {
 		types = new uint8[](numArtworks);
 		sequenceNumbers = new uint32[](numArtworks);
 		artworkValues = new uint128[](numArtworks);
-		for (uint16 i = 0; i &lt; numArtworks; i++) {
+		for (uint16 i = 0; i < numArtworks; i++) {
 			id = ids[i];
 			artworkIds[i] = id;
 			types[i] = artworks[id].artworkType;
@@ -185,7 +185,7 @@ contract ArtMuseumBase is Ownable {
 		uint16 j = 0;
 		uint16 howmany = 0;
 		address player = address(msg.sender);
-		for (uint16 k = 0; k &lt; numArtworks; k++) {
+		for (uint16 k = 0; k < numArtworks; k++) {
 			if (artworks[ids[k]].player == player)
 				howmany++;
 		}
@@ -193,7 +193,7 @@ contract ArtMuseumBase is Ownable {
 		types = new uint8[](howmany);
 		sequenceNumbers = new uint32[](howmany);
 		artworkValues = new uint128[](howmany);
-		for (uint16 i = 0; i &lt; numArtworks; i++) {
+		for (uint16 i = 0; i < numArtworks; i++) {
 			if (artworks[ids[i]].player == player) {
 				id = ids[i];
 				artworkIds[j] = id;
@@ -206,15 +206,15 @@ contract ArtMuseumBase is Ownable {
 	}
 
 	function setCosts(uint128[] _costs) public onlyOwner {
-		require(_costs.length &gt;= costs.length);
+		require(_costs.length >= costs.length);
 		costs = _costs;
 		setFee(fee);
 	}
 	
 	function setFee(uint8 _fee) public onlyOwner {
 		fee = _fee;
-		for (uint8 i = 0; i &lt; costs.length; i++) {
-			if (i &lt; values.length)
+		for (uint8 i = 0; i < costs.length; i++) {
+			if (i < values.length)
 				values[i] = costs[i] - costs[i] / 100 * fee;
 			else {
 				values.push(costs[i] - costs[i] / 100 * fee);
@@ -225,7 +225,7 @@ contract ArtMuseumBase is Ownable {
 
 	function getFees() public constant returns(uint) {
 		uint reserved = 0;
-		for (uint16 j = 0; j &lt; numArtworks; j++)
+		for (uint16 j = 0; j < numArtworks; j++)
 			reserved += artworks[ids[j]].value;
 		return like.balanceOf(this) - reserved;
 	}
@@ -259,7 +259,7 @@ contract ArtMuseum is ArtMuseumBase {
 		// Solidity scratch pad at memory position 0.
 		calldatacopy(0, 0, calldatasize)
 		// Call the implementation.
-		// out and outsize are 0 because we don&#39;t know the size yet.
+		// out and outsize are 0 because we don't know the size yet.
 		let result := delegatecall(gas, implementation, 0, calldatasize, 0, 0)
 		// Copy the returned data.
 		returndatacopy(0, 0, returndatasize)

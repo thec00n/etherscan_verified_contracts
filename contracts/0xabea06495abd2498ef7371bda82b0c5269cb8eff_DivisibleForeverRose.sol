@@ -31,12 +31,12 @@ contract ERC721 {
 /// @author Yumin.yang
 contract DivisibleForeverRose is ERC721 {
   
-    //This contract&#39;s owner
+    //This contract's owner
     address private contractOwner;
 
     
     //Gift token storage.
-    mapping(uint =&gt; GiftToken) giftStorage;
+    mapping(uint => GiftToken) giftStorage;
 
     // Total supply of this token. 
 	uint public totalSupply = 10; 
@@ -46,18 +46,18 @@ contract DivisibleForeverRose is ERC721 {
     uint foreverRoseId = 1;
 
     // Divisibility of ownership over a token  
-	mapping(address =&gt; mapping(uint =&gt; uint)) ownerToTokenShare;
+	mapping(address => mapping(uint => uint)) ownerToTokenShare;
 
 	// How much owners have of a token
-	mapping(uint =&gt; mapping(address =&gt; uint)) tokenToOwnersHoldings;
+	mapping(uint => mapping(address => uint)) tokenToOwnersHoldings;
 
     // If Forever Rose has been created
-	mapping(uint =&gt; bool) foreverRoseCreated;
+	mapping(uint => bool) foreverRoseCreated;
 
     string public name;  
     string public symbol;           
     uint8 public decimals = 1;                                 
-    string public version = &quot;1.0&quot;;    
+    string public version = "1.0";    
 
     //Special gift token
     struct GiftToken {
@@ -67,8 +67,8 @@ contract DivisibleForeverRose is ERC721 {
     //@dev Constructor 
     function DivisibleForeverRose() public {
         contractOwner = msg.sender;
-        name = &quot;ForeverRose&quot;;
-        symbol = &quot;ROSE&quot;;  
+        name = "ForeverRose";
+        symbol = "ROSE";  
 
         // Create Forever rose
         GiftToken memory newGift = GiftToken({
@@ -96,7 +96,7 @@ contract DivisibleForeverRose is ERC721 {
         return ownerToTokenShare[_owner][foreverRoseId];
     }
 
-    // We use parameter &#39;_tokenId&#39; as the divisibility
+    // We use parameter '_tokenId' as the divisibility
     function transfer(address _to, uint256 _tokenId) external {
 
         // Requiring this contract be tradable
@@ -109,7 +109,7 @@ contract DivisibleForeverRose is ERC721 {
         uint256 _divisibility = _tokenId;
 
         // Requiring msg.sender has Holdings of Forever rose
-        require(tokenToOwnersHoldings[foreverRoseId][msg.sender] &gt;= _divisibility);
+        require(tokenToOwnersHoldings[foreverRoseId][msg.sender] >= _divisibility);
 
     
         // Remove divisibilitys from old owner
@@ -135,7 +135,7 @@ contract DivisibleForeverRose is ERC721 {
         require(_to != address(this));
         
         // Requiring msg.sender has Holdings of Forever rose
-        require(tokenToOwnersHoldings[foreverRoseId][msg.sender] &gt;= _divisibility);
+        require(tokenToOwnersHoldings[foreverRoseId][msg.sender] >= _divisibility);
 
         //Remove ownership from oldOwner(msg.sender)
         _removeLastOwnerHoldingsFromToken(msg.sender, foreverRoseId, _divisibility);
@@ -209,7 +209,7 @@ contract DivisibleForeverRose is ERC721 {
 /*============================================================================= */
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8bf8ffeeedeae5a5eceee4f9eceecbe8e4e5f8eee5f8f2f8a5e5eeff">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8bf8ffeeedeae5a5eceee4f9eceecbe8e4e5f8eee5f8f2f8a5e5eeff">[email protected]</a>>
 contract MultiSigWallet {
 
    //Load Gifto and IAMICOIN Contracts to this contract.
@@ -229,9 +229,9 @@ contract MultiSigWallet {
     event RequirementChange(uint required);
     event CoinCreation(address coin);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -293,8 +293,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        if (   ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0)
             revert();
@@ -305,7 +305,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -319,7 +319,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
                 revert();
             isOwner[_owners[i]] = true;
@@ -350,13 +350,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -370,7 +370,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -457,7 +457,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -500,7 +500,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -514,9 +514,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -541,13 +541,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -565,31 +565,31 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 
     // Transfer GTO to an outside account
     /*function _withdrawGTO(address _to, uint256 _balance) onlyOwner internal { 
-        require(Gifto.balanceOf(address(this)) &gt;= _balance);
+        require(Gifto.balanceOf(address(this)) >= _balance);
         Gifto.transfer(_to, _balance); 
     }
 
     // Transfer IAMI to an outside account
     function _withdrawIAMI(address _to, uint256 _balance) onlyOwner internal { 
-        require(IAMIToken.balanceOf(address(this)) &gt;= _balance);
+        require(IAMIToken.balanceOf(address(this)) >= _balance);
         IAMIToken.transfer(_to, _balance); 
     }
 
-    // Change Gifto contract&#39;s address or another type of token, like Ether.
+    // Change Gifto contract's address or another type of token, like Ether.
     function setIAMITokenAddress(address newAddress) public onlyOwner {
         IAMIToken = ERC20(newAddress);
     }

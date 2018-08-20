@@ -16,7 +16,7 @@ contract ERC20Basic {
 // Time-locked wallet for Serenity advisors tokens
 contract SerenityTeamAllocator {
     // Address of team member to allocations mapping
-    mapping (address =&gt; uint256) allocations;
+    mapping (address => uint256) allocations;
 
     ERC20Basic erc20_contract = ERC20Basic(0xBC7942054F77b82e8A71aCE170E4B00ebAe67eB6);
     uint unlockedAt;
@@ -34,9 +34,9 @@ contract SerenityTeamAllocator {
         allocations[0x4296C27536553c59e57Fa8EA47913F5000311f03] = 66666 ether;
     }
 
-    // Unlock team member&#39;s tokens by transferring them to his address
+    // Unlock team member's tokens by transferring them to his address
     function unlock() external {
-        require (now &gt;= unlockedAt);
+        require (now >= unlockedAt);
 
         var amount = allocations[msg.sender];
         allocations[msg.sender] = 0;

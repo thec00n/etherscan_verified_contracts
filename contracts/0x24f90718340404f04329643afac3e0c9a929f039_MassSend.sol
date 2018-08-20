@@ -77,7 +77,7 @@ contract MassSend
 
 	function send_all()
 	{
-		for (uint256 i = 0; i &lt; addresses.length; i++)
+		for (uint256 i = 0; i < addresses.length; i++)
 		{
 			ERC20_CALLS.transfer(addresses[i], ticket_price);
 		}

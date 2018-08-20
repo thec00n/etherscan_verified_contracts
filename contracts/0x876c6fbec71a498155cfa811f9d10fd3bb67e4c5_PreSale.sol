@@ -102,7 +102,7 @@ contract PopulationControl is Pausable {
     uint32 maxTimeout = 178 days;
     
     function setBreedTimeout(uint32 timeout) external onlyOwner {
-        require(timeout &lt;= maxTimeout);
+        require(timeout <= maxTimeout);
         
         breedTimeout = timeout;
     }
@@ -129,10 +129,10 @@ contract PetBase is PopulationControl{
         uint16 quality;
     }
     
-    mapping (uint64 =&gt; Pet) pets;
-    mapping (uint64 =&gt; address) petIndexToOwner;
-    mapping (address =&gt; uint256) public ownershipTokenCount;
-    mapping (uint64 =&gt; uint64) breedTimeouts;
+    mapping (uint64 => Pet) pets;
+    mapping (uint64 => address) petIndexToOwner;
+    mapping (address => uint256) public ownershipTokenCount;
+    mapping (uint64 => uint64) breedTimeouts;
  
     uint64 tokensCount;
     uint64 lastTokenId;
@@ -183,8 +183,8 @@ contract PetBase is PopulationControl{
 	// calculation of recommended price
     function recommendedPrice(uint16 quality) public pure returns(uint256 price) {
         
-        require(quality &lt;= uint16(0xF000));
-        require(quality &gt;= uint16(0x1000));
+        require(quality <= uint16(0xF000));
+        require(quality >= uint16(0x1000));
         
         uint256 startPrice = 1000;
         
@@ -227,8 +227,8 @@ contract PetBase is PopulationControl{
 	// grade calculation based on parrot quality
     function getGradeByQuailty(uint16 quality) public pure returns (uint8 grade) {
         
-        require(quality &lt;= uint16(0xF000));
-        require(quality &gt;= uint16(0x1000));
+        require(quality <= uint16(0xF000));
+        require(quality >= uint16(0x1000));
         
         if(quality == uint16(0xF000))
             return 7;
@@ -278,8 +278,8 @@ contract EggMinting is PetOwnership{
     
     uint16 public globalPresaleLimit = 2500;
 
-    mapping (uint16 =&gt; uint16) public eggLimits;
-    mapping (uint16 =&gt; uint16) public purchesedEggs;
+    mapping (uint16 => uint16) public eggLimits;
+    mapping (uint16 => uint16) public purchesedEggs;
     
     constructor() public {
         eggLimits[55375] = 200;
@@ -298,10 +298,10 @@ contract EggMinting is PetOwnership{
 
     function eggAvailable(uint16 quality) constant public returns(bool) {
         // first 100 eggs - only cheap
-        if( quality &lt; 48000 &amp;&amp; tokensCount &lt; ( 100 + uniquePetsCount ) )
+        if( quality < 48000 && tokensCount < ( 100 + uniquePetsCount ) )
            return false;
         
-        return (eggLimits[quality] &gt; purchesedEggs[quality]);
+        return (eggLimits[quality] > purchesedEggs[quality]);
     }
 }
 
@@ -314,19 +314,19 @@ contract EggPurchase is EggMinting, ExternalContracts {
 	// purchasing egg
     function purchaseEgg(uint64 userNumber, uint16 quality) external payable whenNotPaused {
 
-        require(tokensCount &gt;= uniquePetsCount);
+        require(tokensCount >= uniquePetsCount);
 		
         // checking egg availablity
         require(eggAvailable(quality));
         
         // checking total count of presale eggs
-        require(tokensCount &lt;= globalPresaleLimit);
+        require(tokensCount <= globalPresaleLimit);
 
         // calculating price
         uint256 eggPrice = ( recommendedPrice(quality) * (100 - getCurrentDiscountPercent()) ) / 100;
 
         // checking payment amount
-        require(msg.value &gt;= eggPrice);
+        require(msg.value >= eggPrice);
         
         // increment egg counter
         purchesedEggs[quality]++;
@@ -348,9 +348,9 @@ contract EggPurchase is EggMinting, ExternalContracts {
     
     function getCurrentDiscountPercent() constant public returns (uint8 discount) {
         
-        for(uint8 i = 0; i &lt;= 3; i++)
+        for(uint8 i = 0; i <= 3; i++)
         {
-            if(tokensCount &lt; (discountThresholds[i] + uniquePetsCount ))
+            if(tokensCount < (discountThresholds[i] + uniquePetsCount ))
                 return discountPercents[i];
         }
         
@@ -374,9 +374,9 @@ contract PreSale is EggPurchase {
         uint16 childQuality;
         uint64 newPetId;
 
-        for(uint8 i = 0; i&lt; count; i++)
+        for(uint8 i = 0; i< count; i++)
         {
-            if(tokensCount &gt;= uniquePetsCount)
+            if(tokensCount >= uniquePetsCount)
                 continue;
             
             newPetId = tokensCount+1;

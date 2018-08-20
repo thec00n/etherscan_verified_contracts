@@ -35,9 +35,9 @@ contract SHA3_512 {
                    0x0000000080000001,
                    0x8000000080008008 ];
 
-        for( uint i = 0 ; i &lt; 24 ; i++ ) {
+        for( uint i = 0 ; i < 24 ; i++ ) {
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
+            for( x = 0 ; x < 5 ; x++ ) {
                 C[x] = A[5*x]^A[5*x+1]^A[5*x+2]^A[5*x+3]^A[5*x+4];
             }*/
 
@@ -48,20 +48,20 @@ contract SHA3_512 {
             C[4]=A[20]^A[21]^A[22]^A[23]^A[24];
 
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                D[x] = C[(x+4)%5]^((C[(x+1)%5] * 2)&amp;0xffffffffffffffff | (C[(x+1)%5]/(2**63)));
+            for( x = 0 ; x < 5 ; x++ ) {
+                D[x] = C[(x+4)%5]^((C[(x+1)%5] * 2)&0xffffffffffffffff | (C[(x+1)%5]/(2**63)));
             }*/
 
 
-            D[0]=C[4] ^ ((C[1] * 2)&amp;0xffffffffffffffff | (C[1] / (2 ** 63)));
-            D[1]=C[0] ^ ((C[2] * 2)&amp;0xffffffffffffffff | (C[2] / (2 ** 63)));
-            D[2]=C[1] ^ ((C[3] * 2)&amp;0xffffffffffffffff | (C[3] / (2 ** 63)));
-            D[3]=C[2] ^ ((C[4] * 2)&amp;0xffffffffffffffff | (C[4] / (2 ** 63)));
-            D[4]=C[3] ^ ((C[0] * 2)&amp;0xffffffffffffffff | (C[0] / (2 ** 63)));
+            D[0]=C[4] ^ ((C[1] * 2)&0xffffffffffffffff | (C[1] / (2 ** 63)));
+            D[1]=C[0] ^ ((C[2] * 2)&0xffffffffffffffff | (C[2] / (2 ** 63)));
+            D[2]=C[1] ^ ((C[3] * 2)&0xffffffffffffffff | (C[3] / (2 ** 63)));
+            D[3]=C[2] ^ ((C[4] * 2)&0xffffffffffffffff | (C[4] / (2 ** 63)));
+            D[4]=C[3] ^ ((C[0] * 2)&0xffffffffffffffff | (C[0] / (2 ** 63)));
 
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                for( y = 0 ; y &lt; 5 ; y++ ) {
+            for( x = 0 ; x < 5 ; x++ ) {
+                for( y = 0 ; y < 5 ; y++ ) {
                     A[5*x+y] = A[5*x+y] ^ D[x];
                 }
             }*/
@@ -96,65 +96,65 @@ contract SHA3_512 {
 
             /*Rho and pi steps*/
             B[0]=A[0];
-            B[8]=((A[1] * (2 ** 36))&amp;0xffffffffffffffff | (A[1] / (2 ** 28)));
-            B[11]=((A[2] * (2 ** 3))&amp;0xffffffffffffffff | (A[2] / (2 ** 61)));
-            B[19]=((A[3] * (2 ** 41))&amp;0xffffffffffffffff | (A[3] / (2 ** 23)));
-            B[22]=((A[4] * (2 ** 18))&amp;0xffffffffffffffff | (A[4] / (2 ** 46)));
-            B[2]=((A[5] * (2 ** 1))&amp;0xffffffffffffffff | (A[5] / (2 ** 63)));
-            B[5]=((A[6] * (2 ** 44))&amp;0xffffffffffffffff | (A[6] / (2 ** 20)));
-            B[13]=((A[7] * (2 ** 10))&amp;0xffffffffffffffff | (A[7] / (2 ** 54)));
-            B[16]=((A[8] * (2 ** 45))&amp;0xffffffffffffffff | (A[8] / (2 ** 19)));
-            B[24]=((A[9] * (2 ** 2))&amp;0xffffffffffffffff | (A[9] / (2 ** 62)));
-            B[4]=((A[10] * (2 ** 62))&amp;0xffffffffffffffff | (A[10] / (2 ** 2)));
-            B[7]=((A[11] * (2 ** 6))&amp;0xffffffffffffffff | (A[11] / (2 ** 58)));
-            B[10]=((A[12] * (2 ** 43))&amp;0xffffffffffffffff | (A[12] / (2 ** 21)));
-            B[18]=((A[13] * (2 ** 15))&amp;0xffffffffffffffff | (A[13] / (2 ** 49)));
-            B[21]=((A[14] * (2 ** 61))&amp;0xffffffffffffffff | (A[14] / (2 ** 3)));
-            B[1]=((A[15] * (2 ** 28))&amp;0xffffffffffffffff | (A[15] / (2 ** 36)));
-            B[9]=((A[16] * (2 ** 55))&amp;0xffffffffffffffff | (A[16] / (2 ** 9)));
-            B[12]=((A[17] * (2 ** 25))&amp;0xffffffffffffffff | (A[17] / (2 ** 39)));
-            B[15]=((A[18] * (2 ** 21))&amp;0xffffffffffffffff | (A[18] / (2 ** 43)));
-            B[23]=((A[19] * (2 ** 56))&amp;0xffffffffffffffff | (A[19] / (2 ** 8)));
-            B[3]=((A[20] * (2 ** 27))&amp;0xffffffffffffffff | (A[20] / (2 ** 37)));
-            B[6]=((A[21] * (2 ** 20))&amp;0xffffffffffffffff | (A[21] / (2 ** 44)));
-            B[14]=((A[22] * (2 ** 39))&amp;0xffffffffffffffff | (A[22] / (2 ** 25)));
-            B[17]=((A[23] * (2 ** 8))&amp;0xffffffffffffffff | (A[23] / (2 ** 56)));
-            B[20]=((A[24] * (2 ** 14))&amp;0xffffffffffffffff | (A[24] / (2 ** 50)));
+            B[8]=((A[1] * (2 ** 36))&0xffffffffffffffff | (A[1] / (2 ** 28)));
+            B[11]=((A[2] * (2 ** 3))&0xffffffffffffffff | (A[2] / (2 ** 61)));
+            B[19]=((A[3] * (2 ** 41))&0xffffffffffffffff | (A[3] / (2 ** 23)));
+            B[22]=((A[4] * (2 ** 18))&0xffffffffffffffff | (A[4] / (2 ** 46)));
+            B[2]=((A[5] * (2 ** 1))&0xffffffffffffffff | (A[5] / (2 ** 63)));
+            B[5]=((A[6] * (2 ** 44))&0xffffffffffffffff | (A[6] / (2 ** 20)));
+            B[13]=((A[7] * (2 ** 10))&0xffffffffffffffff | (A[7] / (2 ** 54)));
+            B[16]=((A[8] * (2 ** 45))&0xffffffffffffffff | (A[8] / (2 ** 19)));
+            B[24]=((A[9] * (2 ** 2))&0xffffffffffffffff | (A[9] / (2 ** 62)));
+            B[4]=((A[10] * (2 ** 62))&0xffffffffffffffff | (A[10] / (2 ** 2)));
+            B[7]=((A[11] * (2 ** 6))&0xffffffffffffffff | (A[11] / (2 ** 58)));
+            B[10]=((A[12] * (2 ** 43))&0xffffffffffffffff | (A[12] / (2 ** 21)));
+            B[18]=((A[13] * (2 ** 15))&0xffffffffffffffff | (A[13] / (2 ** 49)));
+            B[21]=((A[14] * (2 ** 61))&0xffffffffffffffff | (A[14] / (2 ** 3)));
+            B[1]=((A[15] * (2 ** 28))&0xffffffffffffffff | (A[15] / (2 ** 36)));
+            B[9]=((A[16] * (2 ** 55))&0xffffffffffffffff | (A[16] / (2 ** 9)));
+            B[12]=((A[17] * (2 ** 25))&0xffffffffffffffff | (A[17] / (2 ** 39)));
+            B[15]=((A[18] * (2 ** 21))&0xffffffffffffffff | (A[18] / (2 ** 43)));
+            B[23]=((A[19] * (2 ** 56))&0xffffffffffffffff | (A[19] / (2 ** 8)));
+            B[3]=((A[20] * (2 ** 27))&0xffffffffffffffff | (A[20] / (2 ** 37)));
+            B[6]=((A[21] * (2 ** 20))&0xffffffffffffffff | (A[21] / (2 ** 44)));
+            B[14]=((A[22] * (2 ** 39))&0xffffffffffffffff | (A[22] / (2 ** 25)));
+            B[17]=((A[23] * (2 ** 8))&0xffffffffffffffff | (A[23] / (2 ** 56)));
+            B[20]=((A[24] * (2 ** 14))&0xffffffffffffffff | (A[24] / (2 ** 50)));
 
             /*Xi state*/
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                for( y = 0 ; y &lt; 5 ; y++ ) {
-                    A[5*x+y] = B[5*x+y]^((~B[5*((x+1)%5)+y]) &amp; B[5*((x+2)%5)+y]);
+            for( x = 0 ; x < 5 ; x++ ) {
+                for( y = 0 ; y < 5 ; y++ ) {
+                    A[5*x+y] = B[5*x+y]^((~B[5*((x+1)%5)+y]) & B[5*((x+2)%5)+y]);
                 }
             }*/
 
 
-            A[0]=B[0]^((~B[5]) &amp; B[10]);
-            A[1]=B[1]^((~B[6]) &amp; B[11]);
-            A[2]=B[2]^((~B[7]) &amp; B[12]);
-            A[3]=B[3]^((~B[8]) &amp; B[13]);
-            A[4]=B[4]^((~B[9]) &amp; B[14]);
-            A[5]=B[5]^((~B[10]) &amp; B[15]);
-            A[6]=B[6]^((~B[11]) &amp; B[16]);
-            A[7]=B[7]^((~B[12]) &amp; B[17]);
-            A[8]=B[8]^((~B[13]) &amp; B[18]);
-            A[9]=B[9]^((~B[14]) &amp; B[19]);
-            A[10]=B[10]^((~B[15]) &amp; B[20]);
-            A[11]=B[11]^((~B[16]) &amp; B[21]);
-            A[12]=B[12]^((~B[17]) &amp; B[22]);
-            A[13]=B[13]^((~B[18]) &amp; B[23]);
-            A[14]=B[14]^((~B[19]) &amp; B[24]);
-            A[15]=B[15]^((~B[20]) &amp; B[0]);
-            A[16]=B[16]^((~B[21]) &amp; B[1]);
-            A[17]=B[17]^((~B[22]) &amp; B[2]);
-            A[18]=B[18]^((~B[23]) &amp; B[3]);
-            A[19]=B[19]^((~B[24]) &amp; B[4]);
-            A[20]=B[20]^((~B[0]) &amp; B[5]);
-            A[21]=B[21]^((~B[1]) &amp; B[6]);
-            A[22]=B[22]^((~B[2]) &amp; B[7]);
-            A[23]=B[23]^((~B[3]) &amp; B[8]);
-            A[24]=B[24]^((~B[4]) &amp; B[9]);
+            A[0]=B[0]^((~B[5]) & B[10]);
+            A[1]=B[1]^((~B[6]) & B[11]);
+            A[2]=B[2]^((~B[7]) & B[12]);
+            A[3]=B[3]^((~B[8]) & B[13]);
+            A[4]=B[4]^((~B[9]) & B[14]);
+            A[5]=B[5]^((~B[10]) & B[15]);
+            A[6]=B[6]^((~B[11]) & B[16]);
+            A[7]=B[7]^((~B[12]) & B[17]);
+            A[8]=B[8]^((~B[13]) & B[18]);
+            A[9]=B[9]^((~B[14]) & B[19]);
+            A[10]=B[10]^((~B[15]) & B[20]);
+            A[11]=B[11]^((~B[16]) & B[21]);
+            A[12]=B[12]^((~B[17]) & B[22]);
+            A[13]=B[13]^((~B[18]) & B[23]);
+            A[14]=B[14]^((~B[19]) & B[24]);
+            A[15]=B[15]^((~B[20]) & B[0]);
+            A[16]=B[16]^((~B[21]) & B[1]);
+            A[17]=B[17]^((~B[22]) & B[2]);
+            A[18]=B[18]^((~B[23]) & B[3]);
+            A[19]=B[19]^((~B[24]) & B[4]);
+            A[20]=B[20]^((~B[0]) & B[5]);
+            A[21]=B[21]^((~B[1]) & B[6]);
+            A[22]=B[22]^((~B[2]) & B[7]);
+            A[23]=B[23]^((~B[3]) & B[8]);
+            A[24]=B[24]^((~B[4]) & B[9]);
 
             /*Last step*/
             A[0]=A[0]^RC[i];
@@ -176,10 +176,10 @@ contract SHA3_512 {
         uint[25] memory S;
         uint i; uint y; uint x;
         /*Absorbing Phase*/
-        for( i = 0 ; i &lt; size/r ; i++ ) {
-            for( y = 0 ; y &lt; 5 ; y++ ) {
-                for( x = 0 ; x &lt; 5 ; x++ ) {
-                    if( (x+5*y) &lt; (r/w) ) {
+        for( i = 0 ; i < size/r ; i++ ) {
+            for( y = 0 ; y < 5 ; y++ ) {
+                for( x = 0 ; x < 5 ; x++ ) {
+                    if( (x+5*y) < (r/w) ) {
                         S[5*x+y] = S[5*x+y] ^ M[i*9 + x + 5*y];
                     }
                 }
@@ -190,11 +190,11 @@ contract SHA3_512 {
         /*Squeezing phase*/
         uint[16] memory result;
         uint b = 0;
-        while( b &lt; 16 ) {
-            for( y = 0 ; y &lt; 5 ; y++ ) {
-                for( x = 0 ; x &lt; 5 ; x++ ) {
-                    if( (x+5*y)&lt;(r/w) &amp;&amp; (b&lt;16) ) {
-                        result[b] = S[5*x+y] &amp; 0xFFFFFFFF;
+        while( b < 16 ) {
+            for( y = 0 ; y < 5 ; y++ ) {
+                for( x = 0 ; x < 5 ; x++ ) {
+                    if( (x+5*y)<(r/w) && (b<16) ) {
+                        result[b] = S[5*x+y] & 0xFFFFFFFF;
                         result[b+1] = S[5*x+y] / 0x100000000;
                         b+=2;
                     }
@@ -209,13 +209,13 @@ contract SHA3_512 {
 
        uint i;
        uint[9] memory M;
-       for(i = 0 ; i &lt; 8 ; i++) {
+       for(i = 0 ; i < 8 ; i++) {
            M[i] = uint(input[i]);
        }
 
        uint[16] memory result = sponge(M);
 
-       for(i = 0 ; i &lt; 16 ; i++) {
+       for(i = 0 ; i < 16 ; i++) {
            output[i] = uint32(result[i]);
        }
    }
@@ -226,10 +226,10 @@ contract SHA3_512 {
 contract TeikhosBounty is SHA3_512 {
 
     // Proof-of-public-key in format 2xbytes32, to support xor operator and ecrecover r, s v format
-    bytes32 proof_of_public_key1 = hex&quot;501802c3b21818b74a6a77b24a9eec140bd8c196712467135740c217a32ff17b&quot;;
-    bytes32 proof_of_public_key2 = hex&quot;5a011cbd1416f0fa7f4a81f2c0f64bcafe06d8239a38b820a8efbef4abf11f20&quot;;
+    bytes32 proof_of_public_key1 = hex"501802c3b21818b74a6a77b24a9eec140bd8c196712467135740c217a32ff17b";
+    bytes32 proof_of_public_key2 = hex"5a011cbd1416f0fa7f4a81f2c0f64bcafe06d8239a38b820a8efbef4abf11f20";
     
-    function authenticate(bytes _publicKey) public { // Accepts an array of bytes, for example [&quot;0x00&quot;,&quot;0xaa&quot;, &quot;0xff&quot;]
+    function authenticate(bytes _publicKey) public { // Accepts an array of bytes, for example ["0x00","0xaa", "0xff"]
 
         // Use SHA3_512 library to get a sha3_512 hash of public key
 
@@ -239,11 +239,11 @@ contract TeikhosBounty is SHA3_512 {
 
         bytes memory reversed = new bytes(64);
 
-        for(uint i = 0; i &lt; 64; i++) {
+        for(uint i = 0; i < 64; i++) {
             reversed[i] = _publicKey[63 - i];
         }
 
-        for(i = 0; i &lt; 8; i++) {
+        for(i = 0; i < 8; i++) {
             bytes8 oneEigth;
             // Load 8 byte from reversed public key at position 32 + i * 8
             assembly {
@@ -256,7 +256,7 @@ contract TeikhosBounty is SHA3_512 {
         
         bytes memory reverseHash = new bytes(64);
         
-        for(i = 0; i &lt; 16; i++) {
+        for(i = 0; i < 16; i++) {
             bytes4 oneSixteenth = bytes4(output[15 - i]);
             // Store 4 byte in keyHash at position 32 + i * 4
             assembly { mstore(add(reverseHash, add(32, mul(i, 4))), oneSixteenth) }
@@ -264,7 +264,7 @@ contract TeikhosBounty is SHA3_512 {
 
         bytes memory keyHash = new bytes(64);
 
-        for(i = 0; i &lt; 64; i++) {
+        for(i = 0; i < 64; i++) {
             keyHash[i] = reverseHash[63 - i];
         }
 
@@ -283,7 +283,7 @@ contract TeikhosBounty is SHA3_512 {
         bytes32 s = proof_of_public_key2 ^ hash2;
 
         // Get msgHash for use with ecrecover
-        bytes32 msgHash = keccak256(&quot;\x19Ethereum Signed Message:\n64&quot;, _publicKey);
+        bytes32 msgHash = keccak256("\x19Ethereum Signed Message:\n64", _publicKey);
 
         // Get address from public key
         address signer = address(keccak256(_publicKey));

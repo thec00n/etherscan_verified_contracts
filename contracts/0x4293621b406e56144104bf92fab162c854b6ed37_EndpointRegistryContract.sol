@@ -3,19 +3,19 @@ pragma solidity ^0.4.11;
 contract EndpointRegistryContract {
     event AddressRegistered(address indexed eth_address, string socket);
 
-    // Mapping of Ethereum Addresses =&gt; SocketEndpoints
-    mapping (address =&gt; string) address_to_socket;
+    // Mapping of Ethereum Addresses => SocketEndpoints
+    mapping (address => string) address_to_socket;
 
     modifier noEmptyString(string str)
     {
-        require(equals(str, &quot;&quot;) != true);
+        require(equals(str, "") != true);
         _;
     }
 
     /*
      * @notice Registers the Ethereum Address to the Endpoint socket.
      * @dev Registers the Ethereum Address to the Endpoint socket.
-     * @param string of socket in this format &quot;127.0.0.1:40001&quot;
+     * @param string of socket in this format "127.0.0.1:40001"
      */
     function registerEndpoint(string socket) noEmptyString(socket)
     {

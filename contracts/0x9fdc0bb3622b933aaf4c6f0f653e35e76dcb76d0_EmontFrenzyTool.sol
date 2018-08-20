@@ -1,12 +1,12 @@
 pragma solidity ^0.4.19;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6b5b9b8a2b7b5a296b3bbb9b8a2b7bababfb7b8b5b3f8b5b9bb">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6b5b9b8a2b7b5a296b3bbb9b8a2b7bababfb7b8b5b3f8b5b9bb">[email protected]</a>
 
 contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -77,34 +77,34 @@ contract EmontFrenzyTool is BasicAccessControl {
             
         EmontFrenzyInterface frenzy = EmontFrenzyInterface(frenzyContract);
         
-        if (_pos1 &gt; 0) {
+        if (_pos1 > 0) {
             frenzy.addBonus(_pos1, _amount);
         }
-        if (_pos2 &gt; 0) {
+        if (_pos2 > 0) {
             frenzy.addBonus(_pos2, _amount);
         }
-        if (_pos3 &gt; 0) {
+        if (_pos3 > 0) {
             frenzy.addBonus(_pos3, _amount);
         }
-        if (_pos4 &gt; 0) {
+        if (_pos4 > 0) {
             frenzy.addBonus(_pos4, _amount);
         }
-        if (_pos5 &gt; 0) {
+        if (_pos5 > 0) {
             frenzy.addBonus(_pos5, _amount);
         }
-        if (_pos6 &gt; 0) {
+        if (_pos6 > 0) {
             frenzy.addBonus(_pos6, _amount);
         }
-        if (_pos7 &gt; 0) {
+        if (_pos7 > 0) {
             frenzy.addBonus(_pos7, _amount);
         }
-        if (_pos8 &gt; 0) {
+        if (_pos8 > 0) {
             frenzy.addBonus(_pos8, _amount);
         }
-        if (_pos9 &gt; 0) {
+        if (_pos9 > 0) {
             frenzy.addBonus(_pos9, _amount);
         }
-        if (_pos10 &gt; 0) {
+        if (_pos10 > 0) {
             frenzy.addBonus(_pos10, _amount);
         }
     }

@@ -13,11 +13,11 @@ contract BasicToken is ERC20Basic {
 	
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -41,12 +41,12 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -73,7 +73,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -89,8 +89,8 @@ contract CerttifyToken is StandardToken {
     event Burn(address indexed burner, uint256 value, string message);
     event IssueCert(bytes32 indexed id, address certIssuer, uint256 value, bytes cert);
 
-    string public name = &quot;Certtify Token&quot;;
-    string public symbol = &quot;CTF&quot;;
+    string public name = "Certtify Token";
+    string public symbol = "CTF";
     uint8 public decimals = 18;
 
     address public deployer;
@@ -121,8 +121,8 @@ contract CerttifyToken is StandardToken {
     }
 
     function burn(uint256 _value, string _message) public afterLockup() {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         totalSupply = totalSupply.sub(_value);
         balances[burner] = balances[burner].sub(_value);
@@ -130,8 +130,8 @@ contract CerttifyToken is StandardToken {
     }
 
     function issueCert(uint256 _value, bytes _cert) external afterLockup() {
-        if (_value &gt; 0) { 
-            burn(_value, &quot;&quot;);
+        if (_value > 0) { 
+            burn(_value, "");
         }
         emit IssueCert(keccak256(block.number, msg.sender, _value, _cert), msg.sender, _value, _cert);
     }
@@ -156,7 +156,7 @@ contract Ownable {
 contract Bounty is Ownable {
 
     CerttifyToken public token;
-    mapping(address =&gt; uint256) public bounties;
+    mapping(address => uint256) public bounties;
     bool public withdrawlEnabled = false;
 
     event BountySet(address indexed beneficiary, uint256 amount);
@@ -168,7 +168,7 @@ contract Bounty is Ownable {
 
     function setBounties(address[] beneficiaries, uint256[] amounts) external onlyOwner {
         require(beneficiaries.length == amounts.length);
-        for (uint256 i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint256 i = 0; i < beneficiaries.length; i++) {
             bounties[beneficiaries[i]] = amounts[i];
             emit BountySet(beneficiaries[i], amounts[i]);
         }
@@ -180,7 +180,7 @@ contract Bounty is Ownable {
 
     function withdrawBounty() public {
         require(withdrawlEnabled);
-        require(bounties[msg.sender] &gt; 0);
+        require(bounties[msg.sender] > 0);
         uint256 bountyWithdrawn = bounties[msg.sender];
         bounties[msg.sender] = 0;
         emit BountyWithdraw(msg.sender, bountyWithdrawn);
@@ -210,13 +210,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 	
@@ -304,17 +304,17 @@ contract CerttifyCrowdsale is Ownable {
     }
 
     function setICOSpec(uint256 _timestampStage1, uint256 _timestampStage2, uint256 _timestampStage3, uint256 _timestampEndTime, uint256 _weiCostOfTokenStage1, uint256 _weiCostOfTokenStage2, uint256 _weiCostOfTokenStage3, uint256 _founderTokenUnlockPhase1, uint256 _founderTokenUnlockPhase2, uint256 _founderTokenUnlockPhase3, uint256 _founderTokenUnlockPhase4) external onlyBeforeSpecConfirmed() onlyOwner {
-        require(_timestampStage1 &gt; 0);
-        require(_timestampStage2 &gt;= _timestampStage1);
-        require(_timestampStage3 &gt;= _timestampStage2);
-        require(_timestampEndTime &gt;= _timestampStage3);
-        require(_weiCostOfTokenStage1 &gt; 0);
-        require(_weiCostOfTokenStage2 &gt;= _weiCostOfTokenStage1);
-        require(_weiCostOfTokenStage3 &gt;= _weiCostOfTokenStage2);
-        require(_founderTokenUnlockPhase1 &gt; 0);
-        require(_founderTokenUnlockPhase2 &gt;= _founderTokenUnlockPhase1);
-        require(_founderTokenUnlockPhase3 &gt;= _founderTokenUnlockPhase2);
-        require(_founderTokenUnlockPhase4 &gt;= _founderTokenUnlockPhase3);
+        require(_timestampStage1 > 0);
+        require(_timestampStage2 >= _timestampStage1);
+        require(_timestampStage3 >= _timestampStage2);
+        require(_timestampEndTime >= _timestampStage3);
+        require(_weiCostOfTokenStage1 > 0);
+        require(_weiCostOfTokenStage2 >= _weiCostOfTokenStage1);
+        require(_weiCostOfTokenStage3 >= _weiCostOfTokenStage2);
+        require(_founderTokenUnlockPhase1 > 0);
+        require(_founderTokenUnlockPhase2 >= _founderTokenUnlockPhase1);
+        require(_founderTokenUnlockPhase3 >= _founderTokenUnlockPhase2);
+        require(_founderTokenUnlockPhase4 >= _founderTokenUnlockPhase3);
         startTimeStage1 = _timestampStage1;
         startTimeStage2 = _timestampStage2;
         startTimeStage3 = _timestampStage3;
@@ -351,8 +351,8 @@ contract CerttifyCrowdsale is Ownable {
 
     function buyTokensPreSale(address beneficiary, uint256 tokens) public onlyOwner {
         require(beneficiary != address(0));
-        require(tokens &gt; 0);
-        require(tokenSold.add(tokens) &lt;= MAX_ALLOWED_PRE_SALE);
+        require(tokens > 0);
+        require(tokenSold.add(tokens) <= MAX_ALLOWED_PRE_SALE);
         require(getCurrentStage() == 0);
         tokenSold = tokenSold.add(tokens);
         token.transfer(beneficiary, tokens);
@@ -370,7 +370,7 @@ contract CerttifyCrowdsale is Ownable {
         icoEnded = true;
         uint256 tokenLeft = MAX_SUPPLY_DECIMAL.sub(tokenSold).sub(MAX_ALLOWED_BOUNTY).sub(founderWithdrawableTotal);
         if (tokenLeft != 0) {
-            token.burn(tokenLeft, &quot;ICO_BURN_TOKEN_UNSOLD&quot;);
+            token.burn(tokenLeft, "ICO_BURN_TOKEN_UNSOLD");
         }
         token.unlock();
     }
@@ -379,19 +379,19 @@ contract CerttifyCrowdsale is Ownable {
         require(icoEnded);
         require(!founderTokenWithdrawnPhase4);
         if (!founderTokenWithdrawnPhase1) {
-            require(now &gt;= founderTokenUnlockPhase1);
+            require(now >= founderTokenUnlockPhase1);
             founderTokenWithdrawnPhase1 = true;
             token.transfer(owner, founderWithdrawablePhase1);
         } else if (!founderTokenWithdrawnPhase2) {
-            require(now &gt;= founderTokenUnlockPhase2);
+            require(now >= founderTokenUnlockPhase2);
             founderTokenWithdrawnPhase2 = true;
             token.transfer(owner, founderWithdrawablePhase2);
         } else if (!founderTokenWithdrawnPhase3) {
-            require(now &gt;= founderTokenUnlockPhase3);
+            require(now >= founderTokenUnlockPhase3);
             founderTokenWithdrawnPhase3 = true;
             token.transfer(owner, founderWithdrawablePhase3);
         } else {
-            require(now &gt;= founderTokenUnlockPhase4);
+            require(now >= founderTokenUnlockPhase4);
             founderTokenWithdrawnPhase4 = true;
             token.transfer(owner, founderWithdrawablePhase4);
         }
@@ -402,21 +402,21 @@ contract CerttifyCrowdsale is Ownable {
     }
 
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTimeStage1 &amp;&amp; now &lt; endTime;
+        bool withinPeriod = now >= startTimeStage1 && now < endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     function checkCapNotReached(uint256 tokenBuyReq) internal view returns (bool) {
-        return tokenSold.add(tokenBuyReq) &lt;= MAX_ALLOWED_TOTAL;
+        return tokenSold.add(tokenBuyReq) <= MAX_ALLOWED_TOTAL;
     }
 
     function getCurrentStage() internal view returns (uint8) {
-        if (now &lt; startTimeStage1) {
+        if (now < startTimeStage1) {
             return 0;
-        } else if (now &gt;= startTimeStage1 &amp;&amp; now &lt; startTimeStage2) {
+        } else if (now >= startTimeStage1 && now < startTimeStage2) {
             return 1;
-        } else if (now &gt;= startTimeStage2 &amp;&amp; now &lt; startTimeStage3) {
+        } else if (now >= startTimeStage2 && now < startTimeStage3) {
             return 2;
         } else {
             return 3;
@@ -435,9 +435,9 @@ contract CerttifyCrowdsale is Ownable {
     }
 
     function getCurrentRateByTokenSold() internal view returns (uint256) {
-        if (tokenSold &lt; MAX_ALLOWED_BY_STAGE_1) {
+        if (tokenSold < MAX_ALLOWED_BY_STAGE_1) {
             return rateStage1;
-        } else if (tokenSold &lt; MAX_ALLOWED_BY_STAGE_2) {
+        } else if (tokenSold < MAX_ALLOWED_BY_STAGE_2) {
             return rateStage2;
         } else {
             return rateStage3;
@@ -447,7 +447,7 @@ contract CerttifyCrowdsale is Ownable {
     function getCurrentRate() internal view returns (uint256) {
         uint256 rateByStage = getCurrentRateByStage();
         uint256 rateByTokenSold = getCurrentRateByTokenSold();
-        if (rateByStage &gt; rateByTokenSold) {
+        if (rateByStage > rateByTokenSold) {
             return rateByStage;
         } else {
             return rateByTokenSold;
@@ -455,7 +455,7 @@ contract CerttifyCrowdsale is Ownable {
     }
 
     function hasEnded() public view returns (bool) {
-        return now &gt;= endTime || tokenSold &gt;= MAX_ALLOWED_TOTAL;
+        return now >= endTime || tokenSold >= MAX_ALLOWED_TOTAL;
     }
 
 }

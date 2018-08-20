@@ -19,9 +19,9 @@ contract NATVCoin is Authorization {
 //*************************************************************************
 // Variables
 
-    mapping (address =&gt; uint256) private Balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private Allowances;
-    string public standard = &quot;NATVCoin v1.0&quot;;
+    mapping (address => uint256) private Balances;
+    mapping (address => mapping (address => uint256)) private Allowances;
+    string public standard = "NATVCoin v1.0";
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -42,9 +42,9 @@ contract NATVCoin is Authorization {
         Balances[admin] = 3000000000000000;
         coinSupply = 3000000000000000;
         decimals = 8;
-        symbol = &quot;NATV&quot;;
-        name = &quot;Native Currency&quot;;
-        beneficiary = benificairyAddress; // Need to modify to client&#39;s wallet address
+        symbol = "NATV";
+        name = "Native Currency";
+        beneficiary = benificairyAddress; // Need to modify to client's wallet address
         SetNATVTokenSale();
     }
 
@@ -61,8 +61,8 @@ contract NATVCoin is Authorization {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success){
-        if(Balances[msg.sender]&lt; _value) throw;
-        if(Balances[_to] + _value &lt; Balances[_to]) throw;
+        if(Balances[msg.sender]< _value) throw;
+        if(Balances[_to] + _value < Balances[_to]) throw;
         //if(admin)
 
         Balances[msg.sender] -= _value;
@@ -73,9 +73,9 @@ contract NATVCoin is Authorization {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-        if(Balances[_from] &lt; _value) throw;
-        if(Balances[_to] + _value &lt; Balances[_to]) throw;
-        if(_value &gt; Allowances[_from][msg.sender]) throw;
+        if(Balances[_from] < _value) throw;
+        if(Balances[_to] + _value < Balances[_to]) throw;
+        if(_value > Allowances[_from][msg.sender]) throw;
         Balances[_from] -= _value;
         Balances[_to] += _value;
         Allowances[_from][msg.sender] -= _value;
@@ -102,8 +102,8 @@ contract NATVCoin is Authorization {
 
     function releaseTokens (address _to, uint256 _value) private returns (bool success) {
 
-        if(Balances[admin]&lt; _value) throw;
-        if(Balances[_to] + _value &lt; Balances[_to]) throw;
+        if(Balances[admin]< _value) throw;
+        if(Balances[_to] + _value < Balances[_to]) throw;
         //if(admin)
 
         Balances[admin] -= _value;
@@ -163,7 +163,7 @@ contract NATVCoin is Authorization {
 
     // Modified by amit as on 18th August to stop the tarnsaction if ICO date is Over
     modifier inState(State _state) {
-        if ( now &gt; deadline ) {
+        if ( now > deadline ) {
             state = State.Closed;
         }
 
@@ -172,7 +172,7 @@ contract NATVCoin is Authorization {
     }
 
     modifier isMinimum() {
-        if(msg.value &lt; priceInWei*10) throw;
+        if(msg.value < priceInWei*10) throw;
         _;
     }
 
@@ -187,7 +187,7 @@ contract NATVCoin is Authorization {
     }
 
     modifier atEndOfLifecycle() {
-        if(!((state == State.Failed || state == State.Successful) &amp;&amp; completedAt &lt; now)) {
+        if(!((state == State.Failed || state == State.Successful) && completedAt < now)) {
             throw;
         }
         _;
@@ -197,7 +197,7 @@ contract NATVCoin is Authorization {
     function SetNATVTokenSale () private {
 
         creator = msg.sender;
-        campaignUrl = &quot;www.nativecurrency.com&quot;;
+        campaignUrl = "www.nativecurrency.com";
         fundingMinimumTargetInWei = 0 * 1 ether;
         fundingMaximumTargetInWei = 30000 * 1 ether;
         deadline = now + (46739 * 1 minutes);
@@ -219,10 +219,10 @@ contract NATVCoin is Authorization {
         amountInWei = _value;
         tempTotalRasiedFunds = totalRaised + _value;
         actualVlaue = _value;
-        //debugLog(&quot;amountInWei&quot;,amountInWei,1);
-        //debugLog(&quot;tempTotalRasiedFunds&quot;,tempTotalRasiedFunds,2);
-        if (fundingMaximumTargetInWei != 0 &amp;&amp; tempTotalRasiedFunds &gt; fundingMaximumTargetInWei) {
-            //  debugLog(&quot;insideIf Loop&quot;,0,3);
+        //debugLog("amountInWei",amountInWei,1);
+        //debugLog("tempTotalRasiedFunds",tempTotalRasiedFunds,2);
+        if (fundingMaximumTargetInWei != 0 && tempTotalRasiedFunds > fundingMaximumTargetInWei) {
+            //  debugLog("insideIf Loop",0,3);
             refundAmount = tempTotalRasiedFunds-fundingMaximumTargetInWei;
             actualVlaue = _value-refundAmount;
         }
@@ -233,7 +233,7 @@ contract NATVCoin is Authorization {
             })
         );
 
-        if ( refundAmount &gt; 0 ){
+        if ( refundAmount > 0 ){
             if (!_sender.send(refundAmount)) {
                 throw;
             }
@@ -260,13 +260,13 @@ contract NATVCoin is Authorization {
 
     function checkIfFundingCompleteOrExpired() private {
 
-        if (fundingMaximumTargetInWei != 0 &amp;&amp; totalRaised &gt;= fundingMaximumTargetInWei) {
+        if (fundingMaximumTargetInWei != 0 && totalRaised >= fundingMaximumTargetInWei) {
             state = State.Closed;
             LogFundingSuccessful(totalRaised);
             completedAt = now;
 
-        } else if ( now &gt; deadline )  {
-            if(totalRaised &gt;= fundingMinimumTargetInWei){
+        } else if ( now > deadline )  {
+            if(totalRaised >= fundingMinimumTargetInWei){
                 state = State.Closed;
                 LogFundingSuccessful(totalRaised);
                 completedAt = now;

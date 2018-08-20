@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -133,8 +133,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -148,7 +148,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -223,7 +223,7 @@ contract DetailedERC20 is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -261,7 +261,7 @@ contract Ownable {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a5a2b3b0b7b8f8b1b3b9a4b1b396b5b9b8a5b3b8a5afa5f8b8b3a2">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a5a2b3b0b7b8f8b1b3b9a4b1b396b5b9b8a5b3b8a5afa5f8b8b3a2">[email protected]</a>>
 contract MultiSigWallet {
 
     /*
@@ -285,9 +285,9 @@ contract MultiSigWallet {
     /*
      *  Storage
      */
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -343,14 +343,14 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require(ownerCount &lt;= MAX_OWNER_COUNT &amp;&amp; _required &lt;= ownerCount &amp;&amp; _required != 0 &amp;&amp; ownerCount != 0);
+        require(ownerCount <= MAX_OWNER_COUNT && _required <= ownerCount && _required != 0 && ownerCount != 0);
         _;
     }
 
     /// @dev Fallback function allows to deposit ether.
     function() public payable
     {
-        if (msg.value &gt; 0) emit Deposit(msg.sender, msg.value);
+        if (msg.value > 0) emit Deposit(msg.sender, msg.value);
     }
 
     /*
@@ -386,13 +386,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         emit OwnerRemoval(owner);
     }
@@ -406,7 +406,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -487,11 +487,11 @@ contract MultiSigWallet {
     }
 
     // call has been separated into its own function in order to take advantage
-    // of the Solidity&#39;s code generator to produce a loop that copies tx.data into memory.
+    // of the Solidity's code generator to produce a loop that copies tx.data into memory.
     function external_call(address destination, uint value, uint dataLength, bytes data) private returns (bool) {
         bool result;
         assembly {
-            let x := mload(0x40)   // &quot;Allocate&quot; memory for output (0x40 is where &quot;free memory&quot; pointer is stored by convention)
+            let x := mload(0x40)   // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
             let d := add(data, 32) // First 32 bytes are the padded length of data, so exclude that
             result := call(
                 sub(gas, 34710),   // 34710 is the value that solidity is currently emitting
@@ -517,7 +517,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -560,7 +560,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) count += 1;
         }
     }
@@ -574,8 +574,8 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-      for ( uint i=0; i&lt;transactionCount; i++ ) {
-        if ( pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed )
+      for ( uint i=0; i<transactionCount; i++ ) {
+        if ( pending && !transactions[i].executed || executed && transactions[i].executed )
            count += 1;
       }
     }
@@ -601,13 +601,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -625,15 +625,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -641,7 +641,7 @@ contract MultiSigWallet {
 contract NomadPreICO is
     StandardToken, 
     Ownable, 
-    DetailedERC20(&quot;preNSP&quot;, &quot;NOMAD SPACE NETWORK preICO TOKEN&quot;, 18)
+    DetailedERC20("preNSP", "NOMAD SPACE NETWORK preICO TOKEN", 18)
     , MultiSigWallet
 {
     using SafeMath for uint256;
@@ -669,28 +669,28 @@ contract NomadPreICO is
         onlyOwner 
         public
     {
-        require(getTimestamp() &lt; StartDate);
+        require(getTimestamp() < StartDate);
         ExchangeRate = newExchangeRate;
     }
 
     address[] senders;
-    mapping(address =&gt; uint256) sendersCalcTokens;
-    mapping(address =&gt; uint256) sendersEth;
+    mapping(address => uint256) sendersCalcTokens;
+    mapping(address => uint256) sendersEth;
 
     function getSenders          (               ) public view returns (address[]) {return senders                   ;}
     function getSendersCalcTokens(address _sender) public view returns (uint256 )  {return sendersCalcTokens[_sender];}
     function getSendersEth       (address _sender) public view returns (uint256)   {return sendersEth       [_sender];}
 
     function () payable public {
-        require(msg.value &gt; 0); 
-        require(getTimestamp() &gt;= StartDate);
-        require(getTimestamp() &lt;= EndDate);
-        require(Eth2USD_power18(address(this).balance) &lt;= hardCap);
+        require(msg.value > 0); 
+        require(getTimestamp() >= StartDate);
+        require(getTimestamp() <= EndDate);
+        require(Eth2USD_power18(address(this).balance) <= hardCap);
         
         sendersEth[msg.sender] = sendersEth[msg.sender].add(msg.value);
         sendersCalcTokens[msg.sender] = sendersCalcTokens[msg.sender].add( Eth2preNSP(msg.value) );
 
-        for (uint i=0; i&lt;senders.length; i++) 
+        for (uint i=0; i<senders.length; i++) 
             if (senders[i] == msg.sender) return;
         senders.push(msg.sender);        
     }
@@ -705,7 +705,7 @@ contract NomadPreICO is
     
     function checkSoftCapOk() public { 
         require(!softCapOk);
-        if( softCap &lt;= Eth2USD_power18(address(this).balance) ) softCapOk = true;
+        if( softCap <= Eth2USD_power18(address(this).balance) ) softCapOk = true;
     }
 
     address public withdrawalAddress;
@@ -719,20 +719,20 @@ contract NomadPreICO is
     }
 
     function releaseETH() public onlyWallet {
-        if(address(this).balance &gt; 0 &amp;&amp; softCapOk &amp;&amp; mvpExists)
+        if(address(this).balance > 0 && softCapOk && mvpExists)
             address(withdrawalAddress).transfer(address(this).balance);
     }
 
     function releaseTokens() public onlyWallet {
-        if(softCapOk &amp;&amp; mvpExists)
-            for (uint i=0; i&lt;senders.length; i++)
+        if(softCapOk && mvpExists)
+            for (uint i=0; i<senders.length; i++)
                 releaseTokens4Sender(i);
     }
 
     function releaseTokens4Sender(uint senderNum) public onlyWallet {
         address sender = senders[senderNum];
         uint256 tokens = sendersCalcTokens[sender];
-        if (tokens&gt;0) {
+        if (tokens>0) {
             sendersCalcTokens[sender] = 0;
             mint(sender, tokens);
         }
@@ -745,15 +745,15 @@ contract NomadPreICO is
     }
 
     function returnEth() public onlyWallet {
-        require(getTimestamp() &gt; EndDate);
+        require(getTimestamp() > EndDate);
         require(!softCapOk || !mvpExists);
         
-        for (uint i=0; i&lt;senders.length; i++)
+        for (uint i=0; i<senders.length; i++)
             returnEth4Sender(i);
     }
 
     function returnEth4Sender(uint senderNum) public onlyWallet {
-        require(getTimestamp() &gt; EndDate);
+        require(getTimestamp() > EndDate);
         require(!softCapOk || !mvpExists);
         
         address sender = senders[senderNum];
@@ -762,15 +762,15 @@ contract NomadPreICO is
     }
 
     function GetTokenPriceCents() public view returns (uint256) {
-        require(getTimestamp() &gt;= StartDate);
-        require(getTimestamp() &lt;= EndDate);
-        if( (getTimestamp() &gt;= 1527811200)&amp;&amp;(getTimestamp() &lt; 1530403200) ) return 4; // June 
+        require(getTimestamp() >= StartDate);
+        require(getTimestamp() <= EndDate);
+        if( (getTimestamp() >= 1527811200)&&(getTimestamp() < 1530403200) ) return 4; // June 
         else                   
-        if( (getTimestamp() &gt;= 1530403200)&amp;&amp;(getTimestamp() &lt; 1533081600) ) return 5; // July
+        if( (getTimestamp() >= 1530403200)&&(getTimestamp() < 1533081600) ) return 5; // July
         else
-        if( (getTimestamp() &gt;= 1533081600)&amp;&amp;(getTimestamp() &lt; 1535760000) ) return 6; // August 
+        if( (getTimestamp() >= 1533081600)&&(getTimestamp() < 1535760000) ) return 6; // August 
         else
-        if( (getTimestamp() &gt;= 1535760000)&amp;&amp;(getTimestamp() &lt; 1538352000) ) return 8; // September
+        if( (getTimestamp() >= 1535760000)&&(getTimestamp() < 1538352000) ) return 8; // September
         else revert();
     }
 

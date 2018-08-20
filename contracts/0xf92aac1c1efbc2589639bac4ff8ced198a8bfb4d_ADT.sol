@@ -14,12 +14,12 @@ contract ERC20Interface {
 
 
 contract ADT is ERC20Interface {
-    string public name = &quot;AdToken&quot;;
-    string public symbol = &quot;ADT goo.gl/SpdpxN&quot;;
+    string public name = "AdToken";
+    string public symbol = "ADT goo.gl/SpdpxN";
     uint8 public decimals = 18;                
     
     uint256 stdBalance;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     address owner;
     bool paused;
     

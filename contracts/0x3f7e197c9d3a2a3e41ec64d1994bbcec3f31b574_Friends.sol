@@ -1,6 +1,6 @@
 contract Friends {
     address public owner;
-    mapping (address =&gt; Friend) public friends;
+    mapping (address => Friend) public friends;
     uint defaultPayout = .1 ether;
     
     struct Friend {
@@ -26,7 +26,7 @@ contract Friends {
     }
     
     function withdraw() {
-        require (friends[msg.sender].isFriend &amp;&amp; !friends[msg.sender].hasWithdrawn);
+        require (friends[msg.sender].isFriend && !friends[msg.sender].hasWithdrawn);
         friends[msg.sender].hasWithdrawn = true;
         msg.sender.send(defaultPayout);
     }

@@ -46,9 +46,9 @@ contract MyToken is MyOwned {
     uint256 public sellPrice;
     uint256 public buyPrice;    
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => mapping (address => uint256)) public allowance;
     event Burn (address indexed from, uint256 value);
     event FrozenFunds (address target,bool frozen);
     event Transfer (address indexed from,address indexed to,uint256 value);
@@ -89,8 +89,8 @@ contract MyToken is MyOwned {
         internal {
 
         require (_to != 0x0); 
-        require (balanceOf[_from] &gt;= _value); 
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); 
+        require (balanceOf[_from] >= _value); 
+        require (balanceOf[_to] + _value >= balanceOf[_to]); 
 
         require(!frozenAccount[_from]); 
         require(!frozenAccount[_to]); 
@@ -121,7 +121,7 @@ contract MyToken is MyOwned {
 
         public returns (bool success) {
 
-        require(_value &lt;= allowance[_from][msg.sender]); 
+        require(_value <= allowance[_from][msg.sender]); 
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -174,7 +174,7 @@ contract MyToken is MyOwned {
 
         public onlyOwner returns (bool success) {
 
-        require(balanceOf[_from] &gt;= _value); 
+        require(balanceOf[_from] >= _value); 
 
         balanceOf[_from] -= _value; 
 
@@ -234,7 +234,7 @@ contract MyToken is MyOwned {
 
         public {
 
-        require(this.balance &gt;= amount * sellPrice); 
+        require(this.balance >= amount * sellPrice); 
         _transfer(msg.sender, this, amount); 
         msg.sender.transfer(amount * sellPrice);  
     }    

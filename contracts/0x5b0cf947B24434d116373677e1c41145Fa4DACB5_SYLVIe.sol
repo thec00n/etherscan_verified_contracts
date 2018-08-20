@@ -8,12 +8,12 @@ contract SYLVIe {
       throw;
   }
 
-  string public name = &quot;SYLVIe&quot;;                              // トークン名
+  string public name = "SYLVIe";                              // トークン名
   uint8 public decimals = 0;                                  // 小数点以下何桁か
-  string public symbol = &quot;SLV&quot;;                               // トークンの単位
+  string public symbol = "SLV";                               // トークンの単位
   uint256 public totalSupply = 100000000;                     // 総供給量
-  mapping (address =&gt; uint256) balances;                      // アドレスと所有トークン数のマッピング
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;  // 第1引数のアドレスが第2引数のアドレスにいくらの送信を許可しているか
+  mapping (address => uint256) balances;                      // アドレスと所有トークン数のマッピング
+  mapping (address => mapping (address => uint256)) allowed;  // 第1引数のアドレスが第2引数のアドレスにいくらの送信を許可しているか
 
   event Transfer(address indexed from, address indexed to, uint value);
   event Approval(address indexed owner, address indexed spender, uint value);
@@ -23,7 +23,7 @@ contract SYLVIe {
   }
 
   function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
           balances[msg.sender] -= _value;
           balances[_to] += _value;
           Transfer(msg.sender, _to, _value);
@@ -32,7 +32,7 @@ contract SYLVIe {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
           balances[_to] += _value;
           balances[_from] -= _value;
           allowed[_from][msg.sender] -= _value;

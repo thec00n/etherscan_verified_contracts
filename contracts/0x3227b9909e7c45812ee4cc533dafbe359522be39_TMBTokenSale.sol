@@ -35,13 +35,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 } 
@@ -54,7 +54,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
   /**
   * @dev transfer token for a specified address
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   /**
    * @dev Transfer tokens from one address to another
@@ -100,7 +100,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
  
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
  
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -146,7 +146,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
 contract BurnableToken is StandardToken {
  
   function burn(uint256 _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -178,9 +178,9 @@ contract BurnableToken is StandardToken {
 
 contract TMBToken is BurnableToken {
     
-  string public constant name = &quot;Teambrella Token&quot;;
+  string public constant name = "Teambrella Token";
     
-  string public constant symbol = &quot;TMB&quot;;
+  string public constant symbol = "TMB";
     
   uint32 public constant decimals = 18;
     
@@ -191,7 +191,7 @@ contract TMBToken is BurnableToken {
   bool public stopped = true;
   address public owner;
   
-  mapping(address =&gt; uint256) public unlockTimes;
+  mapping(address => uint256) public unlockTimes;
 
   modifier isRunning() {
     if (stopped) {
@@ -204,9 +204,9 @@ contract TMBToken is BurnableToken {
   modifier isNotLocked() {
     // unconditionally unlock everything in 2 years
     
-    if (now &lt; lockPeriodStart + 730 days) {
+    if (now < lockPeriodStart + 730 days) {
         // add lockedPeriods 
-        if (now &lt; unlockTimes[msg.sender])
+        if (now < unlockTimes[msg.sender])
             revert();
       }
     _;
@@ -290,8 +290,8 @@ contract TMBTokenSale {
     
     uint256 public issuedTokens;
  
-    mapping(address =&gt; uint256) public preBalances;
-    mapping(address =&gt; uint256) public saleBalances;
+    mapping(address => uint256) public preBalances;
+    mapping(address => uint256) public saleBalances;
     
     bool tokensaleFinished = false;
     
@@ -311,17 +311,17 @@ contract TMBTokenSale {
     }
  
     modifier isAfterPresale() {
-    	require(now &gt; endPresale || (stoppedPresale &amp;&amp; now &gt; startPresale));
+    	require(now > endPresale || (stoppedPresale && now > startPresale));
     	_;
     }
 
     modifier isAfterSale() {
-    	require(now &gt; endSale || (stoppedSale &amp;&amp; now &gt; startSale));
+    	require(now > endSale || (stoppedSale && now > startSale));
     	_;
     }
 	
     modifier isAboveSoftCap() {
-        require(receivedEth &gt;= softcap);
+        require(receivedEth >= softcap);
         _;
     }
 
@@ -340,18 +340,18 @@ contract TMBTokenSale {
        address _addr = msg.sender;
        
        require (!isContract(_addr));
-       require(_value &gt;= 0.01 * 1 ether);
+       require(_value >= 0.01 * 1 ether);
        
        uint256 _totalFundedEth;
        
-       if (!stoppedPresale &amp;&amp; now &gt; startPresale &amp;&amp; now &lt; endPresale)
+       if (!stoppedPresale && now > startPresale && now < endPresale)
        {
            _totalFundedEth = preBalances[_addr].add(_value);
            preBalances[_addr] = _totalFundedEth;
            receivedEth = receivedEth.add(_value);
            emit ReservedPresale(_addr, _value);
        }
-       else if (!stoppedSale &amp;&amp; now &gt; startSale &amp;&amp; now &lt; endSale)
+       else if (!stoppedSale && now > startSale && now < endSale)
        {
            _totalFundedEth = saleBalances[_addr].add(_value);
            saleBalances[_addr] = _totalFundedEth;
@@ -378,7 +378,7 @@ contract TMBTokenSale {
 	    assembly {
 		    size := extcodesize(_addr)
 	    }
-	    return size &gt; 0;
+	    return size > 0;
     }
 
     function issueTokens(address _addr, uint256 _valTokens) internal {
@@ -392,7 +392,7 @@ contract TMBTokenSale {
 
         uint256 _issuedTokens = _valEth * 1200; // _valEth * rate + 20% presale bonus, rate == 1000
         uint256 _newDeliveredEth = deliveredEth.add(_valEth);
-        require(_newDeliveredEth &lt; presalecap);
+        require(_newDeliveredEth < presalecap);
         multisigFunds.transfer(_valEth);
         deliveredEth = _newDeliveredEth;
 
@@ -403,7 +403,7 @@ contract TMBTokenSale {
 
         uint256 _issuedTokens = _valEth * 1000; // _valEth * rate, rate == 1000
         uint256 _newDeliveredEth = deliveredEth.add(_valEth);
-        require(_newDeliveredEth &lt; hardcap);
+        require(_newDeliveredEth < hardcap);
         multisigFunds.transfer(_valEth);
         deliveredEth = _newDeliveredEth;
 
@@ -412,10 +412,10 @@ contract TMBTokenSale {
     
     // everyone is able to withdraw his own money if no softcap
     function refund() public isAfterSale {
-        require(receivedEth &lt; softcap);
+        require(receivedEth < softcap);
         uint256 _value = preBalances[msg.sender]; 
         _value += saleBalances[msg.sender]; 
-        if (_value &gt; 0)
+        if (_value > 0)
         {
             preBalances[msg.sender] = 0;
             saleBalances[msg.sender] = 0; 
@@ -426,13 +426,13 @@ contract TMBTokenSale {
 
     function issueTokensPresale(address _addr, uint256 _val) public onlyOwner isAfterPresale isAboveSoftCap {
 
-        require(_val &gt;= 0);
+        require(_val >= 0);
         require(!tokensaleFinished);
         
         uint256 _fundedEth = preBalances[_addr];
-        if (_fundedEth &gt; 0)
+        if (_fundedEth > 0)
         {
-            if (_fundedEth &gt; _val)
+            if (_fundedEth > _val)
             {
                 // rollback the rest of funds
                 uint256 _refunded = _fundedEth.sub(_val);
@@ -441,7 +441,7 @@ contract TMBTokenSale {
                 _fundedEth = _val;
             }
 
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 deliverPresale(_addr, _fundedEth);
             }
@@ -451,13 +451,13 @@ contract TMBTokenSale {
 
     function issueTokensSale(address _addr, uint256 _val) public onlyOwner isAfterSale isAboveSoftCap {
 
-        require(_val &gt;= 0);
+        require(_val >= 0);
         require(!tokensaleFinished);
         
         uint256 _fundedEth = saleBalances[_addr];
-        if (_fundedEth &gt; 0)
+        if (_fundedEth > 0)
         {
-            if (_fundedEth &gt; _val)
+            if (_fundedEth > _val)
             {
                 // rollback the rest of funds
                 uint256 _refunded = _fundedEth.sub(_val);
@@ -466,7 +466,7 @@ contract TMBTokenSale {
                 _fundedEth = _val;
             }
 
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 deliverSale(_addr, _fundedEth);
             }
@@ -478,11 +478,11 @@ contract TMBTokenSale {
 
         require(!tokensaleFinished);
 
-        for (uint256 i; i &lt; _addrs.length; i++)
+        for (uint256 i; i < _addrs.length; i++)
         {
             address _addr = _addrs[i];
             uint256 _fundedEth = preBalances[_addr];
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 deliverPresale(_addr, _fundedEth);
                 preBalances[_addr] = 0;
@@ -494,11 +494,11 @@ contract TMBTokenSale {
 
         require(!tokensaleFinished);
 
-        for (uint256 i; i &lt; _addrs.length; i++)
+        for (uint256 i; i < _addrs.length; i++)
         {
             address _addr = _addrs[i];
             uint256 _fundedEth = saleBalances[_addr];
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 deliverSale(_addr, _fundedEth);
                 saleBalances[_addr] = 0;
@@ -508,11 +508,11 @@ contract TMBTokenSale {
     
     function refundTokensPresale(address[] _addrs) public onlyOwner isAfterPresale {
 
-        for (uint256 i; i &lt; _addrs.length; i++)
+        for (uint256 i; i < _addrs.length; i++)
         {
             address _addr = _addrs[i];
             uint256 _fundedEth = preBalances[_addr];
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 _addr.transfer(_fundedEth);
                 emit Refunded(_addr, _fundedEth);
@@ -523,11 +523,11 @@ contract TMBTokenSale {
 
     function refundTokensSale(address[] _addrs) public onlyOwner isAfterSale {
 
-        for (uint256 i; i &lt; _addrs.length; i++)
+        for (uint256 i; i < _addrs.length; i++)
         {
             address _addr = _addrs[i];
             uint256 _fundedEth = saleBalances[_addr];
-            if (_fundedEth &gt; 0)
+            if (_fundedEth > 0)
             {
                 _addr.transfer(_fundedEth);
                 emit Refunded(_addr, _fundedEth);

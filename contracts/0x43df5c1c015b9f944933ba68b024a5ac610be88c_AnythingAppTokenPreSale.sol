@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -84,20 +84,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,7 +121,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -166,7 +166,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -179,7 +179,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -230,7 +230,7 @@ contract Burnable is StandardToken {
   event Burn(address indexed from, uint value);
 
   function burn(uint _value) returns (bool success) {
-    require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+    require(_value > 0 && balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     Burn(msg.sender, _value);
@@ -238,8 +238,8 @@ contract Burnable is StandardToken {
   }
 
   function burnFrom(address _from, uint _value) returns (bool success) {
-    require(_from != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[_from] &gt;= _value);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_from != 0x0 && _value > 0 && balances[_from] >= _value);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     totalSupply = totalSupply.sub(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -282,8 +282,8 @@ contract ERC223ReceivingContract {
  */
 contract AnythingAppToken is Burnable, Ownable {
 
-  string public constant name = &quot;AnythingApp Token&quot;;
-  string public constant symbol = &quot;ANY&quot;;
+  string public constant name = "AnythingApp Token";
+  string public constant symbol = "ANY";
   uint8 public constant decimals = 18;
   uint public constant INITIAL_SUPPLY = 400000000 * 1 ether;
 
@@ -294,7 +294,7 @@ contract AnythingAppToken is Burnable, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   event Transfer(address indexed from, address indexed to, uint value, bytes data);
 
@@ -337,7 +337,7 @@ contract AnythingAppToken is Burnable, Ownable {
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
     require(addr != 0x0);
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -372,14 +372,14 @@ contract AnythingAppToken is Burnable, Ownable {
      */
     function transfer(address _to, uint _value, bytes _data) canTransfer(msg.sender) returns (bool success) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
       uint codeLength;
       assembly {
           codeLength := extcodesize(_to)
       }
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
-      if(codeLength&gt;0) {
+      if(codeLength>0) {
           ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
           receiver.tokenFallback(msg.sender, _value, _data);
       }
@@ -390,7 +390,7 @@ contract AnythingAppToken is Burnable, Ownable {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -398,7 +398,7 @@ contract AnythingAppToken is Burnable, Ownable {
      */
     function transfer(address _to, uint _value) canTransfer(msg.sender) returns (bool success) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
 
       uint codeLength;
       bytes memory empty;
@@ -409,7 +409,7 @@ contract AnythingAppToken is Burnable, Ownable {
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
-      if(codeLength&gt;0) {
+      if(codeLength>0) {
           ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
           receiver.tokenFallback(msg.sender, _value, empty);
       }
@@ -427,27 +427,27 @@ contract AnythingAppToken is Burnable, Ownable {
 }
 
 contract InvestorWhiteList is Ownable {
-  mapping (address =&gt; bool) public investorWhiteList;
+  mapping (address => bool) public investorWhiteList;
 
-  mapping (address =&gt; address) public referralList;
+  mapping (address => address) public referralList;
 
   function InvestorWhiteList() {
 
   }
 
   function addInvestorToWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; !investorWhiteList[investor]);
+    require(investor != 0x0 && !investorWhiteList[investor]);
     investorWhiteList[investor] = true;
   }
 
   function removeInvestorFromWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; investorWhiteList[investor]);
+    require(investor != 0x0 && investorWhiteList[investor]);
     investorWhiteList[investor] = false;
   }
 
   //when new user will contribute ICO contract will automatically send bonus to referral
   function addReferralOf(address investor, address referral) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; referral != 0x0 &amp;&amp; referralList[investor] == 0x0 &amp;&amp; investor != referral);
+    require(investor != 0x0 && referral != 0x0 && referralList[investor] == 0x0 && investor != referral);
     referralList[investor] = referral;
   }
 
@@ -476,7 +476,7 @@ contract PriceReceiver {
 contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
   using SafeMath for uint;
 
-  string public constant name = &quot;AnythingAppTokenPreSale&quot;;
+  string public constant name = "AnythingAppTokenPreSale";
 
   AnythingAppToken public token;
   InvestorWhiteList public investorWhiteList;
@@ -498,8 +498,8 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
 
   bool public crowdsaleFinished = false;
 
-  mapping (address =&gt; bool) public refunded;
-  mapping (address =&gt; uint) public deposited;
+  mapping (address => bool) public refunded;
+  mapping (address => uint) public deposited;
 
   uint public constant BONUS_LEVEL_1 = 40;
   uint public constant BONUS_LEVEL_2 = 35;
@@ -518,12 +518,12 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
   event Deposited(address indexed holder, uint amount);
 
   modifier preSaleActive() {
-    require(block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt; endTime);
+    require(block.timestamp >= startTime && block.timestamp < endTime);
     _;
   }
 
   modifier preSaleEnded() {
-    require(block.timestamp &gt;= endTime);
+    require(block.timestamp >= endTime);
     _;
   }
 
@@ -583,12 +583,12 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
     tokens = tokens.add(bonus);
 
     uint newTokensSold = tokensSold.add(tokens);
-    if (referralBonus &gt; 0 &amp;&amp; referral != 0x0) {
+    if (referralBonus > 0 && referral != 0x0) {
       newTokensSold = newTokensSold.add(referralBonus);
     }
 
-    require(newTokensSold &lt;= totalTokens);
-    require(token.balanceOf(msg.sender).add(tokens) &lt;= LIMIT_PER_USER);
+    require(newTokensSold <= totalTokens);
+    require(token.balanceOf(msg.sender).add(tokens) <= LIMIT_PER_USER);
 
     tokensSold = newTokensSold;
 
@@ -598,7 +598,7 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
     token.transfer(msg.sender, tokens);
     NewContribution(_owner, tokens, msg.value);
 
-    if (referralBonus &gt; 0 &amp;&amp; referral != 0x0) {
+    if (referralBonus > 0 && referral != 0x0) {
       token.transfer(referral, referralBonus);
       NewReferralTransfer(msg.sender, referral, referralBonus);
     }
@@ -607,9 +607,9 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
   function calculateBonus(uint _tokens, address _referral) private returns (uint _bonuses) {
     uint bonus;
 
-    if (tokensSold &lt; firstStage) {
+    if (tokensSold < firstStage) {
       bonus = BONUS_LEVEL_1;
-    } else if (tokensSold &gt;= firstStage &amp;&amp; tokensSold &lt; secondStage) {
+    } else if (tokensSold >= firstStage && tokensSold < secondStage) {
       bonus = BONUS_LEVEL_2;
     } else {
       bonus = BONUS_LEVEL_3;
@@ -628,16 +628,16 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
 
   function withdraw() external onlyOwner {
     uint withdrawLimit = 500 ether;
-    if (withdrawn &lt; withdrawLimit) {
+    if (withdrawn < withdrawLimit) {
       uint toWithdraw = collected.sub(withdrawn);
-      if (toWithdraw + withdrawn &gt; withdrawLimit) {
+      if (toWithdraw + withdrawn > withdrawLimit) {
         toWithdraw = withdrawLimit.sub(withdrawn);
       }
       beneficiary.transfer(toWithdraw);
       withdrawn = withdrawn.add(toWithdraw);
       return;
     }
-    require(block.timestamp &gt;= endTime);
+    require(block.timestamp >= endTime);
     beneficiary.transfer(collected);
     token.transfer(beneficiary, token.balanceOf(this));
     crowdsaleFinished = true;
@@ -647,7 +647,7 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
     require(refunded[msg.sender] == false);
 
     uint refund = deposited[msg.sender];
-    require(refund &gt; 0);
+    require(refund > 0);
 
     deposited[msg.sender] = 0;
     refunded[msg.sender] = true;
@@ -657,7 +657,7 @@ contract AnythingAppTokenPreSale is Haltable, PriceReceiver {
   }
 
   function receiveEthPrice(uint ethUsdPrice) external onlyEthPriceProvider {
-    require(ethUsdPrice &gt; 0);
+    require(ethUsdPrice > 0);
     ethUsdRate = ethUsdPrice;
   }
 

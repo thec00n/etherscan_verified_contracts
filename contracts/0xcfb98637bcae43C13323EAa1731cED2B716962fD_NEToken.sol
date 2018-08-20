@@ -5,12 +5,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -38,8 +38,8 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token, SafeMath {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint numwords) {
         assert(msg.data.length == numwords * 32 + 4);
@@ -49,7 +49,7 @@ contract StandardToken is Token, SafeMath {
     function transfer(address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -62,7 +62,7 @@ contract StandardToken is Token, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSubtract(balances[_from], _value);
             allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender], _value);
@@ -99,10 +99,10 @@ contract StandardToken is Token, SafeMath {
 contract NEToken is StandardToken {
 
     // Token metadata
-    string public constant name = &quot;Nimiq Network Interim Token&quot;;
-    string public constant symbol = &quot;NET&quot;;
+    string public constant name = "Nimiq Network Interim Token";
+    string public constant symbol = "NET";
     uint256 public constant decimals = 18;
-    string public version = &quot;0.8&quot;;
+    string public version = "0.8";
 
     // Deposit address of Multisig account controlled by the creators
     address public ethFundDeposit;
@@ -128,7 +128,7 @@ contract NEToken is StandardToken {
 
     // Since we have different exchange rates at different stages, we need to keep track
     // of how much ether each contributed in case that we need to issue a refund
-    mapping (address =&gt; uint256) private ethBalances;
+    mapping (address => uint256) private ethBalances;
 
     // Events used for logging
     event LogRefund(address indexed _to, uint256 _value);
@@ -161,7 +161,7 @@ contract NEToken is StandardToken {
     }
 
     modifier isFundraisingIgnorePaused() {
-        require(state == ContractState.Fundraising || (state == ContractState.Paused &amp;&amp; savedState == ContractState.Fundraising));
+        require(state == ContractState.Fundraising || (state == ContractState.Paused && savedState == ContractState.Fundraising));
         _;
     }
 
@@ -171,7 +171,7 @@ contract NEToken is StandardToken {
     }
 
     modifier minimumReached() {
-        require(totalReceivedEth &gt;= ETH_RECEIVED_MIN);
+        require(totalReceivedEth >= ETH_RECEIVED_MIN);
         _;
     }
 
@@ -183,9 +183,9 @@ contract NEToken is StandardToken {
     uint256 _exchangeRateChangesBlock)
     {
         // Check that the parameters make sense
-        require(block.number &lt;= _fundingStartBlock); // The start of the fundraising should happen in the future
-        require(_fundingStartBlock &lt;= _exchangeRateChangesBlock); // The exchange rate change should happen after the start of the fundraising
-        require(_exchangeRateChangesBlock &lt;= _fundingEndBlock); // And the end of the fundraising should happen after the exchange rate change
+        require(block.number <= _fundingStartBlock); // The start of the fundraising should happen in the future
+        require(_fundingStartBlock <= _exchangeRateChangesBlock); // The exchange rate change should happen after the start of the fundraising
+        require(_exchangeRateChangesBlock <= _fundingEndBlock); // And the end of the fundraising should happen after the exchange rate change
 
         // Contract state
         state = ContractState.Fundraising;
@@ -224,22 +224,22 @@ contract NEToken is StandardToken {
     external
     isFundraising
     {
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingEndBlock);
-        require(msg.value &gt; 0);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingEndBlock);
+        require(msg.value > 0);
 
-        // First we check the ETH cap, as it&#39;s easier to calculate, return
+        // First we check the ETH cap, as it's easier to calculate, return
         // the contribution if the cap has been reached already
         uint256 checkedReceivedEth = safeAdd(totalReceivedEth, msg.value);
-        require(checkedReceivedEth &lt;= ETH_RECEIVED_CAP);
+        require(checkedReceivedEth <= ETH_RECEIVED_CAP);
 
         // If all is fine with the ETH cap, we continue to check the
         // minimum amount of tokens and the cap for how many tokens
         // have been generated so far
         uint256 tokens = safeMult(msg.value, getCurrentTokenPrice());
-        require(tokens &gt;= TOKEN_MIN);
+        require(tokens >= TOKEN_MIN);
         uint256 checkedSupply = safeAdd(totalSupply, tokens);
-        require(checkedSupply &lt;= TOKEN_CREATION_CAP);
+        require(checkedSupply <= TOKEN_CREATION_CAP);
 
         // Only when all the checks have passed, then we update the state (ethBalances,
         // totalReceivedEth, totalSupply, and balances) of the contract
@@ -259,7 +259,7 @@ contract NEToken is StandardToken {
     constant
     returns (uint256 currentPrice)
     {
-        if (block.number &lt; exchangeRateChangesBlock) {
+        if (block.number < exchangeRateChangesBlock) {
             return TOKEN_FIRST_EXCHANGE_RATE;
         } else {
             return TOKEN_SECOND_EXCHANGE_RATE;
@@ -273,9 +273,9 @@ contract NEToken is StandardToken {
     isRedeeming
     {
         uint256 netVal = balances[msg.sender];
-        require(netVal &gt;= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
+        require(netVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
-        // Move the tokens of the caller to Nimiq&#39;s address
+        // Move the tokens of the caller to Nimiq's address
         if (!super.transfer(ethFundDeposit, netVal)) throw;
 
         // Log the redeeming of this tokens
@@ -289,7 +289,7 @@ contract NEToken is StandardToken {
     minimumReached
     onlyOwner
     {
-        require(_value &lt;= this.balance);
+        require(_value <= this.balance);
 
         // send the eth to Nimiq Creators
         ethFundDeposit.transfer(_value);
@@ -303,7 +303,7 @@ contract NEToken is StandardToken {
     minimumReached
     onlyOwner // Only the owner of the ethFundDeposit address can finalize the contract
     {
-        require(block.number &gt; fundingEndBlock || totalSupply &gt;= TOKEN_CREATION_CAP || totalReceivedEth &gt;= ETH_RECEIVED_CAP); // Only allow to finalize the contract before the ending block if we already reached any of the two caps
+        require(block.number > fundingEndBlock || totalSupply >= TOKEN_CREATION_CAP || totalReceivedEth >= ETH_RECEIVED_CAP); // Only allow to finalize the contract before the ending block if we already reached any of the two caps
 
         // Move the contract to Finalized state
         state = ContractState.Finalized;
@@ -354,13 +354,13 @@ contract NEToken is StandardToken {
     external
     isFundraisingIgnorePaused // Refunding is only possible in the fundraising phase (no matter if paused) by definition
     {
-        require(block.number &gt; fundingEndBlock); // Prevents refund until fundraising period is over
-        require(totalReceivedEth &lt; ETH_RECEIVED_MIN);  // No refunds if the minimum has been reached
+        require(block.number > fundingEndBlock); // Prevents refund until fundraising period is over
+        require(totalReceivedEth < ETH_RECEIVED_MIN);  // No refunds if the minimum has been reached
 
         uint256 netVal = balances[msg.sender];
-        require(netVal &gt; 0);
+        require(netVal > 0);
         uint256 ethVal = ethBalances[msg.sender];
-        require(ethVal &gt; 0);
+        require(ethVal > 0);
 
         // Update the state only after all the checks have passed
         balances[msg.sender] = 0;
@@ -371,7 +371,7 @@ contract NEToken is StandardToken {
         LogRefund(msg.sender, ethVal);
 
         // Send the contributions only after we have updated all the balances
-        // If you&#39;re using a contract, make sure it works with .transfer() gas limits
+        // If you're using a contract, make sure it works with .transfer() gas limits
         msg.sender.transfer(ethVal);
     }
 }

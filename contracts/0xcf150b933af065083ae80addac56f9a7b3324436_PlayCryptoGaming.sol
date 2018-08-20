@@ -62,11 +62,11 @@ contract PlayCryptoGaming {
             mostExpensiveCryptoGamerOwner = contractOwnerAddress; 
         }
         
-        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
-        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
+        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
+        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - (commission5percent * 3); // =&gt; 85%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - (commission5percent * 3); // => 85%
         
         // This cryptoGamer is still owned by the contract, we transfer the commission to the ownerAddress
         if(cryptoGamers[_cryptoGamerId].ownerAddress == address(this)) {
@@ -79,7 +79,7 @@ contract PlayCryptoGaming {
         
 
         // Transfer the 5% commission to the developer
-        contractOwnerAddress.transfer(commission5percent); // =&gt; 5%                   
+        contractOwnerAddress.transfer(commission5percent); // => 5%                   
 
         // Update the company owner and set the new price
         cryptoGamers[_cryptoGamerId].ownerAddress = msg.sender;
@@ -110,11 +110,11 @@ contract PlayCryptoGaming {
         }
         
         // Transfer the commission
-        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
-        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
+        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
+        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - (commission5percent * 2); // =&gt; 85%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - (commission5percent * 2); // => 85%
         
         contractOwnerAddress.transfer(commissionOwner);
         contractOwnerAddress = msg.sender;
@@ -143,9 +143,9 @@ contract PlayCryptoGaming {
     The price is set in WEI.
     */
     function updateCryptoGamerPrice(uint _cryptoGamerId, uint256 _newPrice) public {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         require(cryptoGamers[_cryptoGamerId].ownerAddress == msg.sender);
-        require(_newPrice &lt; cryptoGamers[_cryptoGamerId].curPrice);
+        require(_newPrice < cryptoGamers[_cryptoGamerId].curPrice);
         cryptoGamers[_cryptoGamerId].curPrice = _newPrice;
     }
     
@@ -171,8 +171,8 @@ contract PlayCryptoGaming {
         uint256 _leastExpensiveGamerPrice = 9999000000000000000000;
 
         // Loop through all the shares of this company
-        for (uint8 i = 0; i &lt; cryptoGamers.length; i++) {
-            if(cryptoGamers[i].curPrice &lt; _leastExpensiveGamerPrice) {
+        for (uint8 i = 0; i < cryptoGamers.length; i++) {
+            if(cryptoGamers[i].curPrice < _leastExpensiveGamerPrice) {
                 _leastExpensiveGamerPrice = cryptoGamers[i].curPrice;
                 _leastExpensiveGamerId = i;
             }
@@ -189,8 +189,8 @@ contract PlayCryptoGaming {
         uint256 _mostExpensiveGamerPrice = 9999000000000000000000;
 
         // Loop through all the shares of this company
-        for (uint8 i = 0; i &lt; cryptoGamers.length; i++) {
-            if(cryptoGamers[i].curPrice &gt; _mostExpensiveGamerPrice) {
+        for (uint8 i = 0; i < cryptoGamers.length; i++) {
+            if(cryptoGamers[i].curPrice > _mostExpensiveGamerPrice) {
                 _mostExpensiveGamerPrice = cryptoGamers[i].curPrice;
                 _mostExpensiveGamerId = i;
             }
@@ -199,7 +199,7 @@ contract PlayCryptoGaming {
     }
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -211,12 +211,12 @@ contract PlayCryptoGaming {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -232,32 +232,32 @@ contract PlayCryptoGaming {
     // Initiate functions that will create the cryptoGamers
     function InitiateCryptoGamers() public onlyOwner {
         require(cryptoGamersAreInitiated == false);
-        createCryptoGamer(&quot;Phil&quot;, 450000000000000000); 
-        createCryptoGamer(&quot;Carlini8&quot;, 310000000000000000); 
-        createCryptoGamer(&quot;Ferocious&quot;, 250000000000000000); 
-        createCryptoGamer(&quot;Pranked&quot;, 224000000000000000); 
-        createCryptoGamer(&quot;SwagDaPanda&quot;, 181000000000000000); 
-        createCryptoGamer(&quot;Slush&quot;, 141000000000000000); 
-        createCryptoGamer(&quot;Acapuck&quot;, 107000000000000000); 
-        createCryptoGamer(&quot;Arwynian&quot;, 131000000000000000); 
-        createCryptoGamer(&quot;Bohl&quot;, 106000000000000000);
-        createCryptoGamer(&quot;Corgi&quot;, 91500000000000000);
-        createCryptoGamer(&quot;Enderhero&quot;, 104000000000000000);
-        createCryptoGamer(&quot;Hecatonquiro&quot;, 105000000000000000);
-        createCryptoGamer(&quot;herb&quot;, 101500000000000000);
-        createCryptoGamer(&quot;Kail&quot;, 103000000000000000);
-        createCryptoGamer(&quot;karupin the cat&quot;, 108100000000000000);
-        createCryptoGamer(&quot;LiveFree&quot;, 90100000000000000);
-        createCryptoGamer(&quot;Prokiller&quot;, 100200000000000000);
-        createCryptoGamer(&quot;Sanko&quot;, 101000000000000000);
-        createCryptoGamer(&quot;TheHermitMonk&quot;, 100000000000000000);
-        createCryptoGamer(&quot;TomiSharked&quot;, 89000000000000000);
-        createCryptoGamer(&quot;Zalman&quot;, 92000000000000000);
-        createCryptoGamer(&quot;xxFyMxx&quot;, 110000000000000000);
-        createCryptoGamer(&quot;UncleTom&quot;, 90000000000000000);
-        createCryptoGamer(&quot;legal&quot;, 115000000000000000);
-        createCryptoGamer(&quot;Terpsicores&quot;, 102000000000000000);
-        createCryptoGamer(&quot;triceratops&quot;, 109000000000000000);
-        createCryptoGamer(&quot;souto&quot;, 85000000000000000);
+        createCryptoGamer("Phil", 450000000000000000); 
+        createCryptoGamer("Carlini8", 310000000000000000); 
+        createCryptoGamer("Ferocious", 250000000000000000); 
+        createCryptoGamer("Pranked", 224000000000000000); 
+        createCryptoGamer("SwagDaPanda", 181000000000000000); 
+        createCryptoGamer("Slush", 141000000000000000); 
+        createCryptoGamer("Acapuck", 107000000000000000); 
+        createCryptoGamer("Arwynian", 131000000000000000); 
+        createCryptoGamer("Bohl", 106000000000000000);
+        createCryptoGamer("Corgi", 91500000000000000);
+        createCryptoGamer("Enderhero", 104000000000000000);
+        createCryptoGamer("Hecatonquiro", 105000000000000000);
+        createCryptoGamer("herb", 101500000000000000);
+        createCryptoGamer("Kail", 103000000000000000);
+        createCryptoGamer("karupin the cat", 108100000000000000);
+        createCryptoGamer("LiveFree", 90100000000000000);
+        createCryptoGamer("Prokiller", 100200000000000000);
+        createCryptoGamer("Sanko", 101000000000000000);
+        createCryptoGamer("TheHermitMonk", 100000000000000000);
+        createCryptoGamer("TomiSharked", 89000000000000000);
+        createCryptoGamer("Zalman", 92000000000000000);
+        createCryptoGamer("xxFyMxx", 110000000000000000);
+        createCryptoGamer("UncleTom", 90000000000000000);
+        createCryptoGamer("legal", 115000000000000000);
+        createCryptoGamer("Terpsicores", 102000000000000000);
+        createCryptoGamer("triceratops", 109000000000000000);
+        createCryptoGamer("souto", 85000000000000000);
     }
 }

@@ -48,8 +48,8 @@ contract StandardToken is Token {
     /*
      *  Storage
     */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
 
     /*
      *  Public functions
@@ -57,8 +57,8 @@ contract StandardToken is Token {
 
     function transfer(address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[msg.sender] < value)
             revert();  // Balance too low
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -68,8 +68,8 @@ contract StandardToken is Token {
 
     function transferFrom(address from, address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[from] &lt; value || allowances[from][msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[from] < value || allowances[from][msg.sender] < value)
             revert(); // Balance or allowance too low
         balances[to] += value;
         balances[from] -= value;
@@ -98,7 +98,7 @@ contract GMTSafe {
   /*
   *  GMTSafe parameters
   */
-  mapping (address =&gt; uint256) allocations;
+  mapping (address => uint256) allocations;
   uint256 public unlockDate;
   StandardToken public gmtAddress;
 
@@ -144,10 +144,10 @@ contract GMTSafe {
   /// @dev The GMT allocations given to the msg.sender are transfered to their account if the lockup period is over
   /// @return boolean indicating whether the transfer was successful or not
   function unlock() external {
-    require(now &gt;= unlockDate);
+    require(now >= unlockDate);
 
     uint256 entitled = allocations[msg.sender];
-    require(entitled &gt; 0);
+    require(entitled > 0);
     allocations[msg.sender] = 0;
 
     if (!StandardToken(gmtAddress).transfer(msg.sender, entitled)) {

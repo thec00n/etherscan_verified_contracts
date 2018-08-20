@@ -15,7 +15,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -104,21 +104,21 @@ contract ERC20 {
 */
 contract ERC20Token is admined, ERC20 { //Standar definition of an ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
-    mapping (address =&gt; uint256) internal balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed; //A mapping of all allowances
+    mapping (address => uint256) internal balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) internal allowed; //A mapping of all allowances
     uint256 internal totalSupply_;
 
     /**
     * A mapping of frozen accounts and unfreeze dates
     *
     * In case your account balance is fronzen and you 
-    * think it&#39;s an error please contact the support team
+    * think it's an error please contact the support team
     *
     * This function is only intended to lock specific wallets
     * as explained on project white paper
     */
-    mapping (address =&gt; bool) frozen;
-    mapping (address =&gt; uint256) unfreezeDate;
+    mapping (address => bool) frozen;
+    mapping (address => uint256) unfreezeDate;
 
     /**
     * @dev total number of tokens in existence
@@ -216,7 +216,7 @@ contract ERC20Token is admined, ERC20 { //Standar definition of an ERC20Token
             emit FrozenStatus(_target,_flag,unfreezeDate[_target]);
 
         } else {
-            require(now &gt;= unfreezeDate[_target]);
+            require(now >= unfreezeDate[_target]);
             frozen[_target] = _flag;
 
             emit FrozenStatus(_target,_flag,unfreezeDate[_target]);
@@ -234,10 +234,10 @@ contract ERC20Token is admined, ERC20 { //Standar definition of an ERC20Token
 * @dev ERC20 Token compliant
 */
 contract AssetViV is ERC20Token {
-    string public name = &#39;VIVALID&#39;;
+    string public name = 'VIVALID';
     uint8 public decimals = 18;
-    string public symbol = &#39;ViV&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'ViV';
+    string public version = '1';
 
     /**
     * @notice token contructor.
@@ -263,7 +263,7 @@ contract AssetViV is ERC20Token {
 
     
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

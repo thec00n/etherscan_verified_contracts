@@ -60,7 +60,7 @@ contract SingularDTVCrowdfunding {
     uint public valuePerShare = baseValue; 
 
     
-    mapping (address =&gt; uint) public investments;
+    mapping (address => uint) public investments;
 
     
     Stages public stage = Stages.CrowdfundingGoingAndGoalNotReached;
@@ -69,7 +69,7 @@ contract SingularDTVCrowdfunding {
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _
@@ -85,7 +85,7 @@ contract SingularDTVCrowdfunding {
 
     modifier minInvestment() {
         
-        if (msg.value &lt; valuePerShare) {
+        if (msg.value < valuePerShare) {
             throw;
         }
         _
@@ -99,7 +99,7 @@ contract SingularDTVCrowdfunding {
     }
 
     modifier atStageOR(Stages _stage1, Stages _stage2) {
-        if (stage != _stage1 &amp;&amp; stage != _stage2) {
+        if (stage != _stage1 && stage != _stage2) {
             throw;
         }
         _
@@ -107,22 +107,22 @@ contract SingularDTVCrowdfunding {
 
     modifier timedTransitions() {
         uint crowdfundDuration = now - startDate;
-        if (crowdfundDuration &gt;= 22 days) {
+        if (crowdfundDuration >= 22 days) {
             valuePerShare = baseValue * 1500 / 1000;
         }
-        else if (crowdfundDuration &gt;= 18 days) {
+        else if (crowdfundDuration >= 18 days) {
             valuePerShare = baseValue * 1375 / 1000;
         }
-        else if (crowdfundDuration &gt;= 14 days) {
+        else if (crowdfundDuration >= 14 days) {
             valuePerShare = baseValue * 1250 / 1000;
         }
-        else if (crowdfundDuration &gt;= 10 days) {
+        else if (crowdfundDuration >= 10 days) {
             valuePerShare = baseValue * 1125 / 1000;
         }
         else {
             valuePerShare = baseValue;
         }
-        if (crowdfundDuration &gt;= CROWDFUNDING_PERIOD) {
+        if (crowdfundDuration >= CROWDFUNDING_PERIOD) {
             if (stage == Stages.CrowdfundingGoingAndGoalNotReached) {
                 stage = Stages.CrowdfundingEndedAndGoalNotReached;
             }
@@ -138,7 +138,7 @@ contract SingularDTVCrowdfunding {
      */
     
     function checkInvariants() constant internal {
-        if (fundBalance &gt; this.balance) {
+        if (fundBalance > this.balance) {
             throw;
         }
     }
@@ -149,8 +149,8 @@ contract SingularDTVCrowdfunding {
         noEther
         returns (bool)
     {
-        if (fundBalance &gt; this.balance) {
-            if (this.balance &gt; 0 &amp;&amp; !singularDTVFund.workshop().send(this.balance)) {
+        if (fundBalance > this.balance) {
+            if (this.balance > 0 && !singularDTVFund.workshop().send(this.balance)) {
                 throw;
             }
             return true;
@@ -167,13 +167,13 @@ contract SingularDTVCrowdfunding {
         returns (uint)
     {
         uint tokenCount = msg.value / valuePerShare; 
-        if (singularDTVToken.totalSupply() + tokenCount &gt; CAP) {
+        if (singularDTVToken.totalSupply() + tokenCount > CAP) {
             
             tokenCount = CAP - singularDTVToken.totalSupply();
         }
         uint investment = tokenCount * valuePerShare; 
         
-        if (msg.value &gt; investment &amp;&amp; !msg.sender.send(msg.value - investment)) {
+        if (msg.value > investment && !msg.sender.send(msg.value - investment)) {
             throw;
         }
         
@@ -185,7 +185,7 @@ contract SingularDTVCrowdfunding {
         }
         
         if (stage == Stages.CrowdfundingGoingAndGoalNotReached) {
-            if (singularDTVToken.totalSupply() &gt;= TOKEN_TARGET) {
+            if (singularDTVToken.totalSupply() >= TOKEN_TARGET) {
                 stage = Stages.CrowdfundingGoingAndGoalReached;
             }
         }
@@ -212,7 +212,7 @@ contract SingularDTVCrowdfunding {
         investments[msg.sender] = 0;
         fundBalance -= investment;
         
-        if (investment &gt; 0  &amp;&amp; !msg.sender.send(investment)) {
+        if (investment > 0  && !msg.sender.send(investment)) {
             throw;
         }
         checkInvariants();
@@ -229,7 +229,7 @@ contract SingularDTVCrowdfunding {
     {
         uint value = fundBalance;
         fundBalance = 0;
-        if (value &gt; 0  &amp;&amp; !singularDTVFund.workshop().send(value)) {
+        if (value > 0  && !singularDTVFund.workshop().send(value)) {
             throw;
         }
         checkInvariants();
@@ -255,7 +255,7 @@ contract SingularDTVCrowdfunding {
         noEther
         returns (bool)
     {
-        return now - startDate &gt;= TOKEN_LOCKING_PERIOD;
+        return now - startDate >= TOKEN_LOCKING_PERIOD;
     }
 
     
@@ -292,7 +292,7 @@ contract SingularDTVCrowdfunding {
         noEther
         returns (bool)
     {
-        if (address(singularDTVFund) == 0 &amp;&amp; address(singularDTVToken) == 0) {
+        if (address(singularDTVFund) == 0 && address(singularDTVToken) == 0) {
             singularDTVFund = SingularDTVFund(singularDTVFundAddress);
             singularDTVToken = SingularDTVToken(singularDTVTokenAddress);
             return true;

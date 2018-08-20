@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -119,13 +119,13 @@ contract RICHToken is Owned, Token {
     using SafeMath for uint256;
 
     // Ethereum token standaard
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
 
     // Full name
-    string public name = &quot;RICH token&quot;;
+    string public name = "RICH token";
 
     // Symbol
-    string public symbol = &quot;RCH&quot;;
+    string public symbol = "RCH";
 
     // No decimal points
     uint8 public decimals = 8;
@@ -136,32 +136,32 @@ contract RICHToken is Owned, Token {
     uint256 public crowdsaleStart; // Reference to time of first crowd sale
     uint256 public icoPeriod = 10 days;
     uint256 public noIcoPeriod = 10 days;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) balancesPerIcoPeriod;
+    mapping (address => mapping (uint256 => uint256)) balancesPerIcoPeriod;
 
     uint256 public burnPercentageDefault = 1; // 0.01%
     uint256 public burnPercentage10m = 5; // 0.05%
     uint256 public burnPercentage100m = 50; // 0.5%
     uint256 public burnPercentage1000m = 100; // 1%
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * Get burning line. All investors that own less than burning line
-     * will lose some tokens if they don&#39;t invest each round 20% more tokens
+     * will lose some tokens if they don't invest each round 20% more tokens
      *
      * @return burnLine
      */
     function getBurnLine() returns (uint256 burnLine) {
-        if (totalSupply &lt; 10**7 * 10**8) {
+        if (totalSupply < 10**7 * 10**8) {
             return totalSupply * burnPercentageDefault / 10000;
         }
 
-        if (totalSupply &lt; 10**8 * 10**8) {
+        if (totalSupply < 10**8 * 10**8) {
             return totalSupply * burnPercentage10m / 10000;
         }
 
-        if (totalSupply &lt; 10**9 * 10**8) {
+        if (totalSupply < 10**9 * 10**8) {
             return totalSupply * burnPercentage100m / 10000;
         }
 
@@ -176,7 +176,7 @@ contract RICHToken is Owned, Token {
     function getCurrentIcoNumber() returns (uint256 icoNumber) {
         uint256 timeBehind = now - crowdsaleStart;
 
-        if (now &lt; crowdsaleStart) {
+        if (now < crowdsaleStart) {
             return 0;
         }
 
@@ -199,7 +199,7 @@ contract RICHToken is Owned, Token {
      * @param _start start of the crowd sale
      */
     function setCrowdSaleStart(uint256 _start) onlyOwner {
-        if (crowdsaleStart &gt; 0) {
+        if (crowdsaleStart > 0) {
             return;
         }
 
@@ -221,12 +221,12 @@ contract RICHToken is Owned, Token {
         }
 
         // Check if the sender has enough tokens
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             throw;
         }
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to])  {
+        if (balances[_to] + _value < balances[_to])  {
             throw;
         }
 
@@ -258,17 +258,17 @@ contract RICHToken is Owned, Token {
         }
 
         // Check if the sender has enough
-        if (balances[_from] &lt; _value) {
+        if (balances[_from] < _value) {
             throw;
         }
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to]) {
+        if (balances[_to] + _value < balances[_to]) {
             throw;
         }
 
         // Check allowance
-        if (_value &gt; allowed[_from][msg.sender]) {
+        if (_value > allowed[_from][msg.sender]) {
             throw;
         }
 
@@ -377,7 +377,7 @@ contract RICHToken is Owned, Token {
     function isIncreasedEnough(address _investor) returns (bool success) {
         uint256 currentIcoNumber = getCurrentIcoNumber();
 
-        if (currentIcoNumber - 2 &lt; 0) {
+        if (currentIcoNumber - 2 < 0) {
             return true;
         }
 
@@ -385,7 +385,7 @@ contract RICHToken is Owned, Token {
         uint256 icosBefore = balancesPerIcoPeriod[_investor][currentIcoNumber - 2];
 
         if (icosBefore == 0) {
-            for(uint i = currentIcoNumber; i &gt;= 2; i--) {
+            for(uint i = currentIcoNumber; i >= 2; i--) {
                 icosBefore = balancesPerIcoPeriod[_investor][i-2];
 
                 if (icosBefore != 0) {
@@ -394,11 +394,11 @@ contract RICHToken is Owned, Token {
             }
         }
 
-        if (currentBalance &lt; icosBefore) {
+        if (currentBalance < icosBefore) {
             return false;
         }
 
-        if (currentBalance - icosBefore &gt; icosBefore * 12 / 10) {
+        if (currentBalance - icosBefore > icosBefore * 12 / 10) {
             return true;
         }
 
@@ -415,12 +415,12 @@ contract RICHToken is Owned, Token {
 
         uint256 burnLine = getBurnLine();
 
-        if (balances[_investor] &gt; burnLine || isIncreasedEnough(_investor)) {
+        if (balances[_investor] > burnLine || isIncreasedEnough(_investor)) {
             return;
         }
 
         uint256 toBeBurned = burnLine - balances[_investor];
-        if (toBeBurned &gt; balances[_investor]) {
+        if (toBeBurned > balances[_investor]) {
             toBeBurned = balances[_investor];
         }
 

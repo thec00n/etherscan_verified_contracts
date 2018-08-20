@@ -3,11 +3,11 @@ pragma solidity ^0.4.17;
 library SafeMathMod {// Partial SafeMath Library
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a - b) &lt; a);
+        require((c = a - b) < a);
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a + b) &gt; a);
+        require((c = a + b) > a);
     }
 }
 
@@ -24,9 +24,9 @@ contract EBTC {//is inherently ERC20
     * @storage allowed Holds the allowable balance to be transferable by another address.
     */
 
-    string constant public name = &quot;eBTC&quot;;
+    string constant public name = "eBTC";
 
-    string constant public symbol = &quot;EBTC&quot;;
+    string constant public symbol = "EBTC";
 
     uint8 constant public decimals = 8;
 
@@ -34,9 +34,9 @@ contract EBTC {//is inherently ERC20
 
     uint256 constant private MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -54,7 +54,7 @@ contract EBTC {//is inherently ERC20
     * @return Whether the transfer was successful or not
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        /* Ensures that tokens are not sent to address &quot;0x0&quot; */
+        /* Ensures that tokens are not sent to address "0x0" */
         require(_to != address(0));
         /* Prevents sending tokens directly to contracts. */
         require(isNotContract(_to));
@@ -75,14 +75,14 @@ contract EBTC {//is inherently ERC20
     * @return Whether the transfer was successful or not
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        /* Ensures that tokens are not sent to address &quot;0x0&quot; */
+        /* Ensures that tokens are not sent to address "0x0" */
         require(_to != address(0));
         /* Ensures tokens are not sent to this contract */
         require(_to != address(this));
         
         uint256 allowance = allowed[_from][msg.sender];
         /* Ensures sender has enough available allowance OR sender is balance holder allowing single transsaction send to contracts*/
-        require(_value &lt;= allowance || _from == msg.sender);
+        require(_value <= allowance || _from == msg.sender);
 
         /* Use SafeMathMod to add and subtract from the _to and _from addresses respectively. Prevents under/overflow and 0 transfers */
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -90,7 +90,7 @@ contract EBTC {//is inherently ERC20
 
         /* Only reduce allowance if not MAX_UINT256 in order to save gas on unlimited allowance */
         /* Balance holder does not need allowance to send from self. */
-        if (allowed[_from][msg.sender] != MAX_UINT256 &amp;&amp; _from != msg.sender) {
+        if (allowed[_from][msg.sender] != MAX_UINT256 && _from != msg.sender) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         }
         Transfer(_from, _to, _value);
@@ -106,11 +106,11 @@ contract EBTC {//is inherently ERC20
     */
     function multiPartyTransfer(address[] _toAddresses, uint256[] _amounts) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transfer(_toAddresses[i], _amounts[i]);
         }
     }
@@ -125,11 +125,11 @@ contract EBTC {//is inherently ERC20
     */
     function multiPartyTransferFrom(address _from, address[] _toAddresses, uint256[] _amounts) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transferFrom(_from, _toAddresses[i], _amounts[i]);
         }
     }
@@ -142,7 +142,7 @@ contract EBTC {//is inherently ERC20
     * @return Whether the approval was successful or not
     */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        /* Ensures address &quot;0x0&quot; is not assigned allowance. */
+        /* Ensures address "0x0" is not assigned allowance. */
         require(_spender != address(0));
 
         allowed[msg.sender][_spender] = _value;

@@ -14,9 +14,9 @@ contract HSCToken is owned {
     uint8 public decimals = 18;
     uint256 public totalSupply; 
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public lockOf;
-	mapping (address =&gt; bool) public frozenAccount; 
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public lockOf;
+	mapping (address => bool) public frozenAccount; 
 	
     event Transfer(address indexed from, address indexed to, uint256 value); 
     event Burn(address indexed from, uint256 value); 
@@ -36,9 +36,9 @@ contract HSCToken is owned {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0); 
-        require (balanceOf[_from] &gt; _value); 
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
-		require( balanceOf[_from] - _value &gt;= lockOf[_from] );
+        require (balanceOf[_from] > _value); 
+        require (balanceOf[_to] + _value > balanceOf[_to]);
+		require( balanceOf[_from] - _value >= lockOf[_from] );
         require(!frozenAccount[_from]); 
         require(!frozenAccount[_to]);
 
@@ -69,7 +69,7 @@ contract HSCToken is owned {
     }
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
 
 		balanceOf[msg.sender] -= _value; 
         totalSupply -= _value; 

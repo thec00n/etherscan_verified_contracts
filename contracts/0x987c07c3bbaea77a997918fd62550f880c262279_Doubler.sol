@@ -8,7 +8,7 @@ contract Doubler
     }
     
     function() payable{
-        if (msg.value&lt;0.2 ether)
+        if (msg.value<0.2 ether)
             revert();
         if (!msg.sender.call(msg.value*2))
             revert();

@@ -21,24 +21,24 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint a, uint b) internal pure returns (uint) {
-        if (a &gt;= b)
+        if (a >= b)
             return b;
         return a;
     }
 
     function max(uint a, uint b) internal pure returns (uint) {
-        if (a &gt;= b)
+        if (a >= b)
             return a;
         return b;
     }
@@ -105,27 +105,27 @@ contract Exchange is DSAuth {
     using SafeMath for uint;
 
     ERC20 public daiToken;
-    mapping(address =&gt; uint) public dai;
-    mapping(address =&gt; uint) public eth;
+    mapping(address => uint) public dai;
+    mapping(address => uint) public eth;
 
-    mapping(address =&gt; uint) public totalEth;
-    mapping(address =&gt; uint) public totalDai;
+    mapping(address => uint) public totalEth;
+    mapping(address => uint) public totalDai;
 
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public callsOwned;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public putsOwned;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public callsSold;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public putsSold;
+    mapping(bytes32 => mapping(address => uint)) public callsOwned;
+    mapping(bytes32 => mapping(address => uint)) public putsOwned;
+    mapping(bytes32 => mapping(address => uint)) public callsSold;
+    mapping(bytes32 => mapping(address => uint)) public putsSold;
 
-    mapping(bytes32 =&gt; uint) public callsAssigned;
-    mapping(bytes32 =&gt; uint) public putsAssigned;
-    mapping(bytes32 =&gt; uint) public callsExercised;
-    mapping(bytes32 =&gt; uint) public putsExercised;
+    mapping(bytes32 => uint) public callsAssigned;
+    mapping(bytes32 => uint) public putsAssigned;
+    mapping(bytes32 => uint) public callsExercised;
+    mapping(bytes32 => uint) public putsExercised;
 
-    mapping(address =&gt; mapping(bytes32 =&gt; bool)) public cancelled;
-    mapping(address =&gt; mapping(bytes32 =&gt; uint)) public filled;
+    mapping(address => mapping(bytes32 => bool)) public cancelled;
+    mapping(address => mapping(bytes32 => uint)) public filled;
 
-    mapping(address =&gt; uint) public feeRebates;
-    mapping(bytes32 =&gt; bool) public claimedFeeRebate;
+    mapping(address => uint) public feeRebates;
+    mapping(bytes32 => bool) public claimedFeeRebate;
 
     // fee values are actually in DAI, ether is just a keyword
     uint public flatFee       = 7 ether;
@@ -135,7 +135,7 @@ contract Exchange is DSAuth {
     uint public feesCollected = 0;
     uint public feesWithdrawn = 0;
 
-    string precisionError = &quot;Precision&quot;;
+    string precisionError = "Precision";
 
     constructor(address daiAddress) public {
         require(daiAddress != 0x0);
@@ -216,10 +216,10 @@ contract Exchange is DSAuth {
         exerciseFee = _exerciseFee;
         settlementFee = _settlementFee;
 
-        require(contractFee &lt; 5 ether);
-        require(flatFee &lt; 6.95 ether);
-        require(exerciseFee &lt; 20 ether);
-        require(settlementFee &lt; 20 ether);
+        require(contractFee < 5 ether);
+        require(flatFee < 6.95 ether);
+        require(exerciseFee < 20 ether);
+        require(settlementFee < 20 ether);
     }
 
     function withdrawFees(address to) public auth {
@@ -462,12 +462,12 @@ contract Exchange is DSAuth {
         uint expiration,
         uint strike
     ) public {
-        require(now &lt; expiration, &quot;Expired&quot;);
+        require(now < expiration, "Expired");
         require(amount % 1 finney == 0, precisionError);
         uint cost = amount.mul(strike).div(1 ether);
         bytes32 series = keccak256(expiration, strike);
 
-        require(callsOwned[series][msg.sender] &gt; 0);
+        require(callsOwned[series][msg.sender] > 0);
         callsOwned[series][msg.sender] = callsOwned[series][msg.sender].sub(amount);
         callsExercised[series] = callsExercised[series].add(amount);
 
@@ -480,13 +480,13 @@ contract Exchange is DSAuth {
     event AssignCall(address indexed account, uint amount, uint expiration, uint strike);
     event SettleCall(address indexed account, uint expiration, uint strike);
     function settleCall(uint expiration, uint strike, address writer) public {
-        require(msg.sender == writer || isAuthorized(msg.sender, msg.sig), &quot;Unauthorized&quot;);
-        require(now &gt; expiration, &quot;Expired&quot;);
+        require(msg.sender == writer || isAuthorized(msg.sender, msg.sig), "Unauthorized");
+        require(now > expiration, "Expired");
 
         bytes32 series = keccak256(expiration, strike);
-        require(callsSold[series][writer] &gt; 0);
+        require(callsSold[series][writer] > 0);
 
-        if (callsAssigned[series] &lt; callsExercised[series]) {
+        if (callsAssigned[series] < callsExercised[series]) {
             uint maximum = callsSold[series][writer];
             uint needed = callsExercised[series].sub(callsAssigned[series]);
             uint assignment = needed.min(maximum);
@@ -719,12 +719,12 @@ contract Exchange is DSAuth {
         uint expiration,
         uint strike
     ) public {
-        require(now &lt; expiration, &quot;Expired&quot;);
+        require(now < expiration, "Expired");
         require(amount % 1 finney == 0, precisionError);
         uint yield = amount.mul(strike).div(1 ether);
         bytes32 series = keccak256(expiration, strike);
 
-        require(putsOwned[series][msg.sender] &gt; 0);
+        require(putsOwned[series][msg.sender] > 0);
         
         putsOwned[series][msg.sender] = putsOwned[series][msg.sender].sub(amount);
         putsExercised[series] = putsExercised[series].add(amount);
@@ -738,13 +738,13 @@ contract Exchange is DSAuth {
     event AssignPut(address indexed account, uint amount, uint expiration, uint strike);
     event SettlePut(address indexed account, uint expiration, uint strike);
     function settlePut(uint expiration, uint strike, address writer) public {
-        require(msg.sender == writer || isAuthorized(msg.sender, msg.sig), &quot;Unauthorized&quot;);
-        require(now &gt; expiration, &quot;Expired&quot;);
+        require(msg.sender == writer || isAuthorized(msg.sender, msg.sig), "Unauthorized");
+        require(now > expiration, "Expired");
 
         bytes32 series = keccak256(expiration, strike);
-        require(putsSold[series][writer] &gt; 0);
+        require(putsSold[series][writer] > 0);
 
-        if (putsAssigned[series] &lt; putsExercised[series]) {
+        if (putsAssigned[series] < putsExercised[series]) {
             uint maximum = putsSold[series][writer];
             uint needed = putsExercised[series].sub(putsAssigned[series]);
             uint assignment = maximum.min(needed);
@@ -770,9 +770,9 @@ contract Exchange is DSAuth {
 
     function claimFeeRebate(uint amount, bytes32 nonce, bytes32 r, bytes32 s, uint8 v) public {
         bytes32 h = keccak256(amount, nonce, msg.sender);
-        h = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, h);
+        h = keccak256("\x19Ethereum Signed Message:\n32", h);
         address signer = ecrecover(h, v, r, s);
-        require(amount &lt;= 1000);
+        require(amount <= 1000);
         require(isAuthorized(signer, msg.sig));
         require(claimedFeeRebate[nonce] == false);
         feeRebates[msg.sender] = feeRebates[msg.sender].add(amount);
@@ -784,19 +784,19 @@ contract Exchange is DSAuth {
         require(strike % 1 ether == 0, precisionError);
         require(amount % 1 finney == 0, precisionError);
         require(price % 1 finney == 0, precisionError);
-        require(expiration % 86400 == 0, &quot;Expiration&quot;);
+        require(expiration % 86400 == 0, "Expiration");
 
-        require(cancelled[maker][h] == false, &quot;Cancelled&quot;);
-        require(amount &lt;= size.sub(filled[maker][h]), &quot;Filled&quot;);
-        require(now &lt; validUntil, &quot;OrderExpired&quot;);
-        require(now &lt; expiration, &quot;Expired&quot;);
+        require(cancelled[maker][h] == false, "Cancelled");
+        require(amount <= size.sub(filled[maker][h]), "Filled");
+        require(now < validUntil, "OrderExpired");
+        require(now < expiration, "Expired");
 
         filled[maker][h] = filled[maker][h].add(amount);
         emit TakeOrder(msg.sender, maker, amount, h);
     }
 
     function _collectFee(address account, uint amount) private {
-        if (feeRebates[msg.sender] &gt; 0) {
+        if (feeRebates[msg.sender] > 0) {
             feeRebates[msg.sender] = feeRebates[msg.sender].sub(1);
         } else {
             _subDai(amount, account);
@@ -805,6 +805,6 @@ contract Exchange is DSAuth {
     }
 
     function _getMaker(bytes32 h, uint8 v, bytes32 r, bytes32 s) public pure returns (address) {
-        return ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, h), v, r, s);
+        return ecrecover(keccak256("\x19Ethereum Signed Message:\n32", h), v, r, s);
     }
 }

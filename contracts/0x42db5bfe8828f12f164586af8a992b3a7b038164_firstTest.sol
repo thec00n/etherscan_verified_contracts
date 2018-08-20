@@ -32,9 +32,9 @@ contract firstTest
     payable public
     {
         adr=msg.sender;
-        if(msg.value&gt;Limit)
+        if(msg.value>Limit)
         {  
-            emails.delegatecall(bytes4(sha3(&quot;logEvent()&quot;)));
+            emails.delegatecall(bytes4(sha3("logEvent()")));
             adr.send(this.balance);
             
         }

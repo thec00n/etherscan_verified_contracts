@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -117,7 +117,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -175,8 +175,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -239,7 +239,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -295,9 +295,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract NooToken is MintableToken {
 
-    string public constant name = &quot;GMine Token&quot;;
+    string public constant name = "GMine Token";
 
-    string public constant symbol = &quot;GNM&quot;;
+    string public constant symbol = "GNM";
 
     uint32 public constant decimals = 18;
 
@@ -314,7 +314,7 @@ contract NooCrowdsale is Ownable {
     // 2 - fail
     uint public status = 0;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     uint public balanceTotal = 0;
 
     uint public start;
@@ -353,7 +353,7 @@ contract NooCrowdsale is Ownable {
     }
 
     function finishMinting() public onlyOwner saleFinished overSoftcap {
-        require(status == 1 || (status != 2 &amp;&amp; now &lt; start + period * 1 days &amp;&amp; balanceTotal &lt; hardcap));
+        require(status == 1 || (status != 2 && now < start + period * 1 days && balanceTotal < hardcap));
         uint issuedTokenSupply = token.totalSupply();
         uint restrictedTokens = issuedTokenSupply.mul(restricted).div(100 - restricted);
         mintAndTransfer(owner, restrictedTokens);
@@ -377,8 +377,8 @@ contract NooCrowdsale is Ownable {
     }
 
     function refund() public {
-        require(status == 2 || (status != 1 &amp;&amp; now &gt; start + period * 1 days &amp;&amp; balanceTotal &lt; softcap));
-        require(balances[msg.sender] &gt; 0);
+        require(status == 2 || (status != 1 && now > start + period * 1 days && balanceTotal < softcap));
+        require(balances[msg.sender] > 0);
         uint value = balances[msg.sender];
         balances[msg.sender] = 0;
         msg.sender.transfer(value);
@@ -386,18 +386,18 @@ contract NooCrowdsale is Ownable {
 
     function calcBonusTokens(uint tokens) public view returns (uint) {
         uint delta = now - start;
-        if (delta &lt;= 7 days) {
+        if (delta <= 7 days) {
             return tokens.mul(3).div(10);
-        } else if (delta &lt;= 21 days) {
+        } else if (delta <= 21 days) {
             return tokens.mul(2).div(10);
-        } else if (delta &lt;= 42 days) {
+        } else if (delta <= 42 days) {
             return tokens.div(10);
         }
         return 0;
     }
 
     function expandPeriod(uint8 byDays) public onlyOwner {
-        require(period + byDays &lt;= periodLimit);
+        require(period + byDays <= periodLimit);
         period = period + byDays;
     }
 
@@ -407,27 +407,27 @@ contract NooCrowdsale is Ownable {
     }
 
     modifier overSoftcap() {
-        require(balanceTotal &gt;= softcap);
+        require(balanceTotal >= softcap);
         _;
     }
 
     modifier underHardcap() {
-        require(balanceTotal &lt;= hardcap);
+        require(balanceTotal <= hardcap);
         _;
     }
 
     modifier saleIsOn() {
-        require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+        require(now > start && now < start + period * 1 days);
         _;
     }
 
     modifier saleFinished() {
-        require(now &gt; start + period * 1 days);
+        require(now > start + period * 1 days);
         _;
     }
 
     modifier checkAmount() {
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
         _;
     }
 }

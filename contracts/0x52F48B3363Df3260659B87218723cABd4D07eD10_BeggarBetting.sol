@@ -23,10 +23,10 @@ contract BeggarBetting {
     }
 
     address public owner;
-    mapping(uint256 =&gt; MatchBettingInfo[]) public matchBettingInfo;  
-    mapping(address =&gt; BetterBettingInfo[]) public betterBettingInfo;
-    mapping(address =&gt; uint256) public betterBalance;
-    mapping(address =&gt; uint) public betterNumWinning;
+    mapping(uint256 => MatchBettingInfo[]) public matchBettingInfo;  
+    mapping(address => BetterBettingInfo[]) public betterBettingInfo;
+    mapping(address => uint256) public betterBalance;
+    mapping(address => uint) public betterNumWinning;
     uint numOfPanhandler;
     uint numOfVagabond;
     uint numOfTramp;
@@ -63,16 +63,16 @@ contract BeggarBetting {
         if (result) {
             revert();
         }                                                                                                  
-        matchBettingInfo[_matchId].push(MatchBettingInfo(msg.sender, _matchId, _homeTeamScore, _awayTeamScore, _bettingPrice)); // Store this match&#39;s betting info        
-        betterBettingInfo[msg.sender].push(BetterBettingInfo(_matchId, _homeTeamScore, _awayTeamScore, _bettingPrice, false, false, 0, 0, 0)); // Store this better&#39;s betting info                                                                                                         
-        address(this).transfer(msg.value); // Send the user&#39;s betting price to this contract
+        matchBettingInfo[_matchId].push(MatchBettingInfo(msg.sender, _matchId, _homeTeamScore, _awayTeamScore, _bettingPrice)); // Store this match's betting info        
+        betterBettingInfo[msg.sender].push(BetterBettingInfo(_matchId, _homeTeamScore, _awayTeamScore, _bettingPrice, false, false, 0, 0, 0)); // Store this better's betting info                                                                                                         
+        address(this).transfer(msg.value); // Send the user's betting price to this contract
         return true;
     }
  
     /**
      * Claim winning prize by the user
      *
-     * Send `winningPrize` to &#39;msg.sender&#39; from this contract
+     * Send `winningPrize` to 'msg.sender' from this contract
      *
      * @param _matchId The matchId to find winners
      * @param _homeTeamScore The home team score to find matching score
@@ -90,11 +90,11 @@ contract BeggarBetting {
         if (result) {
             revert();
         }          
-        // Find matching scores among betters who betted for this match &amp; price
-        for (uint j = 0; j &lt; totalNumBetters; j++) {  
+        // Find matching scores among betters who betted for this match & price
+        for (uint j = 0; j < totalNumBetters; j++) {  
             if (matchBettingInfo[_matchId][j].bettingPrice == _bettingPrice) {
                 numOfBetters++;
-                if (matchBettingInfo[_matchId][j].homeTeamScore == _homeTeamScore &amp;&amp; matchBettingInfo[_matchId][j].awayTeamScore == _awayTeamScore) {          
+                if (matchBettingInfo[_matchId][j].homeTeamScore == _homeTeamScore && matchBettingInfo[_matchId][j].awayTeamScore == _awayTeamScore) {          
                     numOfWinners++;
                 }    
             }
@@ -105,7 +105,7 @@ contract BeggarBetting {
             betterBalance[msg.sender] = (_bettingPrice * numOfBetters) - commissionToOwner;
             winningPrize = (_bettingPrice * numOfBetters) - commissionToOwner;
         // One more winner, divide it equally and gives a 7% commission to the owner
-        } else if (numOfWinners &gt; 1) {
+        } else if (numOfWinners > 1) {
             commissionToOwner = ((_bettingPrice * numOfBetters) / numOfWinners) * 7 / 100;  
             betterBalance[msg.sender] = ((_bettingPrice * numOfBetters) / numOfWinners) - commissionToOwner;
             winningPrize = ((_bettingPrice * numOfBetters) / numOfWinners) - commissionToOwner;   
@@ -121,12 +121,12 @@ contract BeggarBetting {
     /**
      * Send 7% commission to the contract owner
      *
-     * Send `_commission` to `owner` from the winner&#39;s prize
+     * Send `_commission` to `owner` from the winner's prize
      *
      * @param _commission The commission to be sent to the contract owner
      */
     function sendCommissionToOwner(uint _commission) private {    
-        require(address(this).balance &gt;= _commission); 
+        require(address(this).balance >= _commission); 
         owner.transfer(_commission);
     }
 
@@ -137,27 +137,27 @@ contract BeggarBetting {
      */
     function withdraw() private {
         uint256 balance = betterBalance[msg.sender];    
-        require(address(this).balance &gt;= balance); 
+        require(address(this).balance >= balance); 
         betterBalance[msg.sender] -= balance;
         msg.sender.transfer(balance);
     }
 
     /**
-     * Modify winner&#39;s betting information after receiving the prize
+     * Modify winner's betting information after receiving the prize
      *
      * Change hasReceivedPrize to true to process info panel
      *
-     * @param _matchId The matchId to find msg.sender&#39;s info to modify
-     * @param _bettingPrice The betting price to find msg.sender&#39;s info to modify
-     * @param _winningPrize The winning prize to assign value to msg.sender&#39;s final betting info
-     * @param _numOfWinners The number of winners to assign value to msg.sender&#39;s final betting info
-     * @param _numOfBetters The number of betters to assign value to msg.sender&#39;s final betting info
+     * @param _matchId The matchId to find msg.sender's info to modify
+     * @param _bettingPrice The betting price to find msg.sender's info to modify
+     * @param _winningPrize The winning prize to assign value to msg.sender's final betting info
+     * @param _numOfWinners The number of winners to assign value to msg.sender's final betting info
+     * @param _numOfBetters The number of betters to assign value to msg.sender's final betting info
      */ 
     function afterClaim(uint256 _matchId, uint _bettingPrice, uint256 _winningPrize, uint _numOfWinners, uint _numOfBetters) private {
         uint numOfBettingInfo = betterBettingInfo[msg.sender].length;
 
-        for (uint i = 0; i &lt; numOfBettingInfo; i++) {
-            if (betterBettingInfo[msg.sender][i].matchId == _matchId &amp;&amp; betterBettingInfo[msg.sender][i].bettingPrice == _bettingPrice) {
+        for (uint i = 0; i < numOfBettingInfo; i++) {
+            if (betterBettingInfo[msg.sender][i].matchId == _matchId && betterBettingInfo[msg.sender][i].bettingPrice == _bettingPrice) {
                 betterBettingInfo[msg.sender][i].hasReceivedPrize = true;
                 betterBettingInfo[msg.sender][i].winningPrize = _winningPrize;
                 betterBettingInfo[msg.sender][i].numOfWinners = _numOfWinners;
@@ -170,7 +170,7 @@ contract BeggarBetting {
     }
 
     /**
-     * Find the msg.sender&#39;s number of winnings and increment the privilege if it matches
+     * Find the msg.sender's number of winnings and increment the privilege if it matches
      *
      * Increment one of the privileges if numWinning matches
      */
@@ -192,17 +192,17 @@ contract BeggarBetting {
     /**
      * Prevent the user from submitting the same bet again
      *
-     * Send `_commission` to `owner` from the winner&#39;s prize
+     * Send `_commission` to `owner` from the winner's prize
      *
      * @param _better The address of the sender
-     * @param _matchId The matchId to find the msg.sender&#39;s betting info
-     * @param _bettingPrice The betting price to find the msg.sender&#39;s betting info
+     * @param _matchId The matchId to find the msg.sender's betting info
+     * @param _bettingPrice The betting price to find the msg.sender's betting info
      */
     function checkDuplicateMatchId(address _better, uint256 _matchId, uint _bettingPrice) public view returns (bool) {
         uint numOfBetterBettingInfo = betterBettingInfo[_better].length;
       
-        for (uint i = 0; i &lt; numOfBetterBettingInfo; i++) {
-            if (betterBettingInfo[_better][i].matchId == _matchId &amp;&amp; betterBettingInfo[_better][i].bettingPrice == _bettingPrice) {
+        for (uint i = 0; i < numOfBetterBettingInfo; i++) {
+            if (betterBettingInfo[_better][i].matchId == _matchId && betterBettingInfo[_better][i].bettingPrice == _bettingPrice) {
                 return true;
             }
         }
@@ -214,14 +214,14 @@ contract BeggarBetting {
      * Add extra security to prevent the user from trying to receive the winning prize again
      *
      * @param _better The address of the sender
-     * @param _matchId The matchId to find the msg.sender&#39;s betting info
-     * @param _bettingPrice The betting price to find the msg.sender&#39;s betting info
+     * @param _matchId The matchId to find the msg.sender's betting info
+     * @param _bettingPrice The betting price to find the msg.sender's betting info
      */
     function checkPrizeAlreadyReceived(address _better, uint256 _matchId, uint _bettingPrice) public view returns (bool) {
         uint numOfBetterBettingInfo = betterBettingInfo[_better].length;
         // Find if the sender address has already received the prize
-        for (uint i = 0; i &lt; numOfBetterBettingInfo; i++) {
-            if (betterBettingInfo[_better][i].matchId == _matchId &amp;&amp; betterBettingInfo[_better][i].bettingPrice == _bettingPrice) {
+        for (uint i = 0; i < numOfBetterBettingInfo; i++) {
+            if (betterBettingInfo[_better][i].matchId == _matchId && betterBettingInfo[_better][i].bettingPrice == _bettingPrice) {
                 if (betterBettingInfo[_better][i].hasReceivedPrize) {
                     return true;
                 }
@@ -232,9 +232,9 @@ contract BeggarBetting {
     }    
 
     /**
-     * Constant function to return the user&#39;s previous records
+     * Constant function to return the user's previous records
      *
-     * @param _better The better&#39;s address to search betting info
+     * @param _better The better's address to search betting info
      */
     function getBetterBettingInfo(address _better) public view returns (uint256[], uint[], uint[], uint[]) {
         uint length = betterBettingInfo[_better].length;
@@ -243,7 +243,7 @@ contract BeggarBetting {
         uint[] memory awayTeamScore = new uint[](length);
         uint[] memory bettingPrice = new uint[](length);   
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             matchId[i] = betterBettingInfo[_better][i].matchId;
             homeTeamScore[i] = betterBettingInfo[_better][i].homeTeamScore;
             awayTeamScore[i] = betterBettingInfo[_better][i].awayTeamScore;
@@ -254,9 +254,9 @@ contract BeggarBetting {
     }
 
     /**
-     * Constant function to return the user&#39;s previous records
+     * Constant function to return the user's previous records
      *
-     * @param _better The better&#39;s address to search betting info
+     * @param _better The better's address to search betting info
      */
     function getBetterBettingInfo2(address _better) public view returns (bool[], bool[], uint256[], uint[], uint[]) {
         uint length = betterBettingInfo[_better].length;  
@@ -266,7 +266,7 @@ contract BeggarBetting {
         uint[] memory numOfWinners = new uint[](length);
         uint[] memory numOfBetters = new uint[](length);
 
-        for (uint i = 0; i &lt; length; i++) {     
+        for (uint i = 0; i < length; i++) {     
             isWinner[i] = betterBettingInfo[_better][i].isWinner;
             hasReceivedPrize[i] = betterBettingInfo[_better][i].hasReceivedPrize;
             winningPrize[i] = betterBettingInfo[_better][i].winningPrize;
@@ -287,7 +287,7 @@ contract BeggarBetting {
         uint numOfBetters = matchBettingInfo[_matchId].length;    
         uint count = 0;
 
-        for (uint i = 0; i &lt; numOfBetters; i++) {   
+        for (uint i = 0; i < numOfBetters; i++) {   
             if (matchBettingInfo[_matchId][i].bettingPrice == _bettingPrice) {
                 count++;
             }

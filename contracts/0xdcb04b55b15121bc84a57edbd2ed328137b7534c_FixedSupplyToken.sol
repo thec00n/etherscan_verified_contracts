@@ -21,11 +21,11 @@ library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -59,7 +59,7 @@ contract Common {
     }
 
     function getIndexOfTarget(address[] list, address addr) internal pure returns (int) {
-        for (uint i = 0; i &lt; list.length; i++) {
+        for (uint i = 0; i < list.length; i++) {
             if (list[i] == addr) {
                 return int(i);
             }
@@ -125,7 +125,7 @@ contract TokenHeld {
     // ------------------------------------------------------------------------
     function scanAddresses(address addr) internal {
         bool isAddrExist = false;
-        for (uint i = 0;i &lt; addressIndices.length; i++) {
+        for (uint i = 0;i < addressIndices.length; i++) {
             if (addressIndices[i] == addr) {
                 isAddrExist = true;
                 break;
@@ -208,16 +208,16 @@ contract Restricted is Common, Owned {
         int idx = getIndexOfTarget(tokenTransferDisallowedAddresses, addr);
         if (idx == -1) {
             tokenTransferDisallowedAddresses.push(addr);
-            OnTransferDisallowedAddressesChanged(&quot;add&quot;, addr);
+            OnTransferDisallowedAddressesChanged("add", addr);
         }
     }
 
     function removeFromTokenTransferDisallowedAddresses(address addr) public onlyOwnerOrOperator {
         int idx = getIndexOfTarget(tokenTransferDisallowedAddresses, addr);
-        if (idx &gt;= 0) {
+        if (idx >= 0) {
             uint uidx = uint(idx);
             delete tokenTransferDisallowedAddresses[uidx];
-            OnTransferDisallowedAddressesChanged(&quot;remove&quot;, addr);
+            OnTransferDisallowedAddressesChanged("remove", addr);
         }
     }
 }
@@ -254,16 +254,16 @@ contract TokenTransaction is Common, Owned {
         int idx = getIndexOfTarget(transactionDisallowedAddresses, addr);
         if (idx == -1) {
             transactionDisallowedAddresses.push(addr);
-            OnTransactionDisallowedAddressesChanged(&quot;add&quot;, addr);
+            OnTransactionDisallowedAddressesChanged("add", addr);
         }
     }
 
     function removeFromTransactionDisallowedList(address addr) public constant onlyOwnerOrOperator {
         int idx = getIndexOfTarget(transactionDisallowedAddresses, addr);
-        if (idx &gt;= 0) {
+        if (idx >= 0) {
             uint uidx = uint(idx);
             delete transactionDisallowedAddresses[uidx];
-            OnTransactionDisallowedAddressesChanged(&quot;remove&quot;, addr);
+            OnTransactionDisallowedAddressesChanged("remove", addr);
         }
     }
 
@@ -316,7 +316,7 @@ contract Distributed is Owned {
         uint d = tokenTransferPercentageDenominator;
         tokenTransferPercentageNumerator = numerator;
         tokenTransferPercentageDenominator = denominator;
-        OnPercentageChanged(&quot;TokenTransferFee&quot;, m, d, numerator, denominator);
+        OnPercentageChanged("TokenTransferFee", m, d, numerator, denominator);
     }
 
     function setInterestAllocationPercentage(uint numerator, uint denominator) public onlyOwnerOrOperator {
@@ -324,7 +324,7 @@ contract Distributed is Owned {
         uint d = interestAllocationPercentageDenominator;
         interestAllocationPercentageNumerator = numerator;
         interestAllocationPercentageDenominator = denominator;
-        OnPercentageChanged(&quot;InterestAllocation&quot;, m, d, numerator, denominator);
+        OnPercentageChanged("InterestAllocation", m, d, numerator, denominator);
     }
 
     function setManagementFeeChargePercentage(uint numerator, uint denominator) public onlyOwnerOrOperator {
@@ -332,7 +332,7 @@ contract Distributed is Owned {
         uint d = managementFeeChargePercentageDenominator;
         managementFeeChargePercentageNumerator = numerator;
         managementFeeChargePercentageDenominator = denominator;
-        OnPercentageChanged(&quot;ManagementFee&quot;, m, d, numerator, denominator);
+        OnPercentageChanged("ManagementFee", m, d, numerator, denominator);
     }
 
     function setDistributionPercentage(uint c, uint t, uint o) public onlyWhenPercentageSettingIsValid(c, t, o) onlyOwner {
@@ -358,13 +358,13 @@ contract FeeCalculation {
     // ------------------------------------------------------------------------
     function calculateTransferFee(uint tokens) internal pure returns (uint) {
         uint calFee = 0;
-        if (tokens &gt; 0 &amp;&amp; tokens &lt;= 1000)
+        if (tokens > 0 && tokens <= 1000)
             calFee = 1;
-        else if (tokens &gt; 1000 &amp;&amp; tokens &lt;= 5000)
+        else if (tokens > 1000 && tokens <= 5000)
             calFee = tokens.mul(1).div(1000);
-        else if (tokens &gt; 5000 &amp;&amp; tokens &lt;= 10000)
+        else if (tokens > 5000 && tokens <= 10000)
             calFee = tokens.mul(2).div(1000);
-        else if (tokens &gt; 10000)
+        else if (tokens > 10000)
             calFee = 30;
         return calFee;
     }
@@ -382,8 +382,8 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event OnAllocated(address indexed addr, uint allocatedTokens);
     event OnCharged(address indexed addr, uint chargedTokens);
@@ -391,10 +391,10 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     modifier onlyWhenOfferredIsLowerThanDistOfferPercentage {
         uint expectedTokens = msg.value.mul(1000);
         uint totalOfferredTokens = 0;
-        for (uint i = 0; i &lt; addressIndices.length; i++) {
+        for (uint i = 0; i < addressIndices.length; i++) {
             totalOfferredTokens += balances[addressIndices[i]];
         }
-        require(_totalSupply.mul(distOfferPercentage).div(100) - expectedTokens &gt;= 0);
+        require(_totalSupply.mul(distOfferPercentage).div(100) - expectedTokens >= 0);
         _;
     }
 
@@ -402,8 +402,8 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Constructor
     // ------------------------------------------------------------------------
     function FixedSupplyToken() public {
-        symbol = &quot;AGC&quot;;
-        name = &quot;Agile Coin&quot;;
+        symbol = "AGC";
+        name = "Agile Coin";
         decimals = 0;
         _totalSupply = 100000000 * 10**uint(decimals);
 
@@ -427,8 +427,8 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public onlyWhenTokenTransferOpen shouldBeAllowed(transactionDisallowedAddresses, msg.sender) returns (bool success) {
@@ -444,7 +444,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -479,7 +479,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -487,7 +487,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -498,10 +498,10 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable onlyWhenTokenTransactionOpen onlyWhenOfferredIsLowerThanDistOfferPercentage {
-        // Exchange: ETH --&gt; ETTA Coin
+        // Exchange: ETH --> ETTA Coin
         revert();
     }
 
@@ -516,7 +516,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Allocate interest.
     // ------------------------------------------------------------------------
     function allocateTokens() public onlyOwnerOrOperator onlyWhenAllocatingInterestOpen {
-        for (uint i = 0; i &lt; addressIndices.length; i++) {
+        for (uint i = 0; i < addressIndices.length; i++) {
             address crntAddr = addressIndices[i];
             uint balanceOfCrntAddr = balances[crntAddr];
             uint allocatedTokens = balanceOfCrntAddr.mul(interestAllocationPercentageNumerator).div(interestAllocationPercentageDenominator);
@@ -531,7 +531,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Charge investers for management fee.
     // ------------------------------------------------------------------------
     function chargeTokensForManagement() public onlyOwnerOrOperator onlyWhenChargingManagementFeeOpen {
-        for (uint i = 0; i &lt; addressIndices.length; i++) {
+        for (uint i = 0; i < addressIndices.length; i++) {
             address crntAddr = addressIndices[i];
             uint balanceOfCrntAddr = balances[crntAddr];
             uint chargedTokens = balanceOfCrntAddr.mul(managementFeeChargePercentageNumerator).div(managementFeeChargePercentageDenominator);
@@ -546,7 +546,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Distribute more token of contract and transfer to owner 
     // ------------------------------------------------------------------------
     function mintToken(uint256 mintedAmount) public onlyOwner {
-        require(mintedAmount &gt; 0);
+        require(mintedAmount > 0);
         balances[owner] = balances[owner].add(mintedAmount);
         _totalSupply = _totalSupply.add(mintedAmount);
         Transfer(address(0), owner, mintedAmount);
@@ -558,7 +558,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Remove `numerator / denominator` % of tokens from the system irreversibly
     // ------------------------------------------------------------------------
     function burnByPercentage(uint8 m, uint8 d) public onlyOwner returns (bool success) {
-        require(m &gt; 0 &amp;&amp; d &gt; 0 &amp;&amp; m &lt;= d);
+        require(m > 0 && d > 0 && m <= d);
         uint totalBurnedTokens = balances[owner].mul(m).div(d);
         balances[owner] = balances[owner].sub(totalBurnedTokens);
         _totalSupply = _totalSupply.sub(totalBurnedTokens);
@@ -571,7 +571,7 @@ contract FixedSupplyToken is ERC20Interface, Distributed, TokenHeld, Restricted,
     // Remove a quantity of tokens
     // ------------------------------------------------------------------------
     function burnByAmount(uint256 tokens) public onlyOwner returns (bool success) {
-        require(tokens &gt; 0 &amp;&amp; tokens &lt;= balances[owner]);
+        require(tokens > 0 && tokens <= balances[owner]);
         balances[owner] = balances[owner].sub(tokens);
         _totalSupply = _totalSupply.sub(tokens);
         Transfer(owner, address(0), tokens);

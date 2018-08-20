@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -55,8 +55,8 @@ contract ERC20 {
  */
 contract StandardToken is ERC20, SafeMath {
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; 
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed; 
     
     function balanceOf(address _owner) public constant returns (uint256){
         return balances[_owner];
@@ -72,7 +72,7 @@ contract StandardToken is ERC20, SafeMath {
     * http://vessenes.com/the-erc20-short-address-attack-explained/
     */
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
     
@@ -111,7 +111,7 @@ contract StandardToken is ERC20, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) public returns (bool) {
         uint256 _allowance = allowed[_from][msg.sender];
         
-        // Check (_value &lt;= _allowance) is already done in safeSub(_allowance, _value)
+        // Check (_value <= _allowance) is already done in safeSub(_allowance, _value)
         allowed[_from][msg.sender] = safeSub(_allowance, _value);
         safeTransfer(_from, _to, _value);
         return true;
@@ -175,8 +175,8 @@ contract ExtendedERC20 is StandardToken {
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) onlyPayloadSize(2) public returns (bool) {
         uint256 currentValue = allowed[msg.sender][_spender];
-        require(currentValue &gt; 0);
-        if (_subtractedValue &gt; currentValue) {
+        require(currentValue > 0);
+        if (_subtractedValue > currentValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(currentValue, _subtractedValue);
@@ -245,7 +245,7 @@ contract UpgradeableToken is StandardToken {
      * Upgrade states.
      *
      * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-     * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+     * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
      * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
      * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
      *
@@ -371,8 +371,8 @@ contract Ownable {
     /**
      * @dev Allows the current owners to transfer control of the contract to a new owner.
      * @param newOwner The address to transfer ownership to
-     * @param replaceOwnerOne Replace &#39;ownerOne&#39;?
-     * @param replaceOwnerTwo Replace &#39;ownerTwo&#39;?
+     * @param replaceOwnerOne Replace 'ownerOne'?
+     * @param replaceOwnerTwo Replace 'ownerTwo'?
      */
     function transferOwnership(address newOwner, bool replaceOwnerOne, bool replaceOwnerTwo) onlyOwner public {
         require(newOwner != 0x0);
@@ -462,7 +462,7 @@ contract PurchasableToken is StandardToken, Pausable {
     // minimum amount of wei you have to spend to buy some tokens
     uint256 public minimumWeiAmount;
     address public vendorWallet;
-    uint256 public exchangeRate; // &#39;exchangeRate&#39; tokens = 1 ether (consider decimals of token)
+    uint256 public exchangeRate; // 'exchangeRate' tokens = 1 ether (consider decimals of token)
     
     /**
      * event for token purchase logging
@@ -474,10 +474,10 @@ contract PurchasableToken is StandardToken, Pausable {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     
     /** 
-     * @dev modifier to allow token purchase only when purchase is unlocked and rate &gt; 0 
+     * @dev modifier to allow token purchase only when purchase is unlocked and rate > 0 
      */
     modifier isPurchasable {
-        require(purchasable &amp;&amp; exchangeRate &gt; 0 &amp;&amp; minimumWeiAmount &gt; 0);
+        require(purchasable && exchangeRate > 0 && minimumWeiAmount > 0);
         _;
     }
     
@@ -499,7 +499,7 @@ contract PurchasableToken is StandardToken, Pausable {
 
     /** @dev called by the owner to set a new rate (consider decimals of token) */
     function setExchangeRate(uint256 newExchangeRate) onlyOwner public returns (bool) {
-        require(newExchangeRate &gt; 0);
+        require(newExchangeRate > 0);
         exchangeRate = newExchangeRate;
         UpdatedExchangeRate(newExchangeRate);
         return true;
@@ -507,7 +507,7 @@ contract PurchasableToken is StandardToken, Pausable {
     
     /** @dev called by the owner to set the minimum wei amount to buy some token */
     function setMinimumWeiAmount(uint256 newMinimumWeiAmount) onlyOwner public returns (bool) {
-        require(newMinimumWeiAmount &gt; 0);
+        require(newMinimumWeiAmount > 0);
         minimumWeiAmount = newMinimumWeiAmount;
         return true;
     }
@@ -521,7 +521,7 @@ contract PurchasableToken is StandardToken, Pausable {
     
     /** 
      * @dev called by the owner to make the purchase preparations 
-     * (&#39;approve&#39; must be called separately from &#39;vendorWallet&#39;) 
+     * ('approve' must be called separately from 'vendorWallet') 
      */
     function setPurchaseValues( uint256 newExchangeRate, 
                                 uint256 newMinimumWeiAmount, 
@@ -530,22 +530,22 @@ contract PurchasableToken is StandardToken, Pausable {
         setExchangeRate(newExchangeRate);
         setMinimumWeiAmount(newMinimumWeiAmount);
         setVendorWallet(newVendorWallet);
-        // if purchase is already unlocked then &#39;releasePurchase&#39; 
-        // doesn&#39;t change anything and can be set to true or false.
-        if (releasePurchase &amp;&amp; !purchasable) unlockPurchase();
+        // if purchase is already unlocked then 'releasePurchase' 
+        // doesn't change anything and can be set to true or false.
+        if (releasePurchase && !purchasable) unlockPurchase();
         return true;
     }
     
-    /** @dev buy token by sending at least &#39;minimumWeiAmount&#39; wei */
+    /** @dev buy token by sending at least 'minimumWeiAmount' wei */
     function buyToken(address beneficiary) payable isPurchasable whenNotPaused public returns (uint256) {
         require(beneficiary != address(0));
         require(beneficiary != address(this));
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt;= minimumWeiAmount);
+        require(weiAmount >= minimumWeiAmount);
         uint256 tokenAmount = safeMul(weiAmount, exchangeRate);
         tokenAmount = safeDiv(tokenAmount, 1 ether);
         uint256 _allowance = allowed[vendorWallet][this];
-        // Check (tokenAmount &lt;= _allowance) is already done in safeSub(_allowance, tokenAmount)
+        // Check (tokenAmount <= _allowance) is already done in safeSub(_allowance, tokenAmount)
         allowed[vendorWallet][this] = safeSub(_allowance, tokenAmount);
         balances[beneficiary] = safeAdd(balances[beneficiary], tokenAmount);
         balances[vendorWallet] = safeSub(balances[vendorWallet], tokenAmount);
@@ -567,7 +567,7 @@ contract PurchasableToken is StandardToken, Pausable {
 contract CrowdsaleToken is PausableToken {
     
     // addresses that will be allowed to transfer tokens before and during crowdsale
-    mapping (address =&gt; bool) icoAgents;
+    mapping (address => bool) icoAgents;
     // token transfer locked until crowdsale is finished
     bool public crowdsaleLock = true;
 
@@ -580,7 +580,7 @@ contract CrowdsaleToken is PausableToken {
     }
     
     /**
-     * @dev modifier to allow token transfer only when &#39;_sender&#39; is icoAgent or crowdsale has ended 
+     * @dev modifier to allow token transfer only when '_sender' is icoAgent or crowdsale has ended 
      */
     modifier canTransfer(address _sender) {
         require(!crowdsaleLock || isIcoAgent(_sender));
@@ -606,7 +606,7 @@ contract CrowdsaleToken is PausableToken {
         return true; 
     }
     
-    /** @dev return true if &#39;address&#39; is an icoAgent */
+    /** @dev return true if 'address' is an icoAgent */
     function isIcoAgent(address _address) public view returns (bool) {
         return icoAgents[_address];
     }
@@ -633,11 +633,11 @@ contract CanSendFromContract is Ownable {
     function sendToken(address beneficiary, address _token) onlyOwner public {
         ERC20 token = ERC20(_token);
         uint256 amount = token.balanceOf(this);
-        require(amount&gt;0);
+        require(amount>0);
         token.transfer(beneficiary, amount);
     }
     
-    /** @dev called by the owner to transfer &#39;weiAmount&#39; wei to &#39;beneficiary&#39; */
+    /** @dev called by the owner to transfer 'weiAmount' wei to 'beneficiary' */
     function sendEther(address beneficiary, uint256 weiAmount) onlyOwner public {
         beneficiary.transfer(weiAmount);
     }
@@ -647,13 +647,13 @@ contract CanSendFromContract is Ownable {
 /**
  * @title IPCToken
  * @dev IPC Token contract
- * @author Paysura - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="72111d1c061311063202130b010700135c111d1f">[email&#160;protected]</a>&gt;
+ * @author Paysura - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="72111d1c061311063202130b010700135c111d1f">[email protected]</a>>
  */
 contract IPCToken is ExtendedERC20, UpgradeableToken, PurchasableToken, CrowdsaleToken, CanSendFromContract {
 
     // Public variables of the token
-    string public name = &quot;International PayReward Coin&quot;;
-    string public symbol = &quot;IPC&quot;;
+    string public name = "International PayReward Coin";
+    string public symbol = "IPC";
     uint8 public decimals = 12;
     // Distributions of the total supply
     // 264 mio IPC tokens will be distributed during crowdsale
@@ -662,7 +662,7 @@ contract IPCToken is ExtendedERC20, UpgradeableToken, PurchasableToken, Crowdsal
     uint256 public rew = 110000000 * (10 ** uint256(decimals));
     // 66 mio for advisors and partners
     uint256 public dev = 66000000 * (10 ** uint256(decimals));
-    // total supply of 440 mio -&gt; 85% for community.
+    // total supply of 440 mio -> 85% for community.
     uint256 public totalSupply = cr + dev + rew;    
 
     event UpdatedTokenInformation(string newName, string newSymbol);

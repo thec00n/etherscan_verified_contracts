@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 // ----------------------------------------------------------------------------------------------
 // The Audax Legal Document Token - containing the Entropy Token Sale Terms.
 //
-// &#169; Audax Legal Pty Limited 2017
+// © Audax Legal Pty Limited 2017
 // This work is licensed under a Creative Commons
 // Attribution-NonCommercial-NoDerivatives 4.0
 // International License.
@@ -13,7 +13,7 @@ pragma solidity ^0.4.17;
 //
 // An experiment in token and document persistence using the ethereum blockchain, and etherscan.io
 //
-// It&#39;s a lovely day to be solidity coding.
+// It's a lovely day to be solidity coding.
 // This contract adapted from work by Bok, originally working with Incent Coffee Tokens.
 // Adapted and extended by Peter, for the Hut34 Project - www.hut34.io
 //
@@ -155,7 +155,7 @@ decides how to apply the pricing which is stated on the Website from time to tim
 4.11 Applicant acknowledges that failure to follow the Token Sale instructions on the Website or any
 difficulties in transferring payment may limit, delay, or prevent Applicant from applying for and
 acquiring Entropy Tokens. Any questions about such instructions should be directed to
-<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9dfcf9f0f4f3ddf5e8e9aea9b3f4f2b3">[email&#160;protected]</a>
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9dfcf9f0f4f3ddf5e8e9aea9b3f4f2b3">[email protected]</a>
 4.12 Entropy Foundation will pay Applicant, or return to the control of Applicant (as the case may be)
 any amount of payment or other consideration which is in excess of the amount required to
 settle Applicant’s payment obligation to acquire Entropy Tokens allocated to Applicant.
@@ -691,8 +691,8 @@ are standard terms provided by us.
 
 // Contract configuration
 contract TokenConfig {
-    string public constant symbol = &quot;AUDAXDOC&quot;;
-    string public constant name = &quot;Audax Legal Document Token&quot;;
+    string public constant symbol = "AUDAXDOC";
+    string public constant name = "Audax Legal Document Token";
     uint8 public constant decimals = 0;
     uint256 _totalSupply = 42000;
 }
@@ -732,10 +732,10 @@ contract AudaxDocToken is ERC20Interface, TokenConfig {
     address public owner;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() {
@@ -760,11 +760,11 @@ contract AudaxDocToken is ERC20Interface, TokenConfig {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -776,7 +776,7 @@ contract AudaxDocToken is ERC20Interface, TokenConfig {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -785,10 +785,10 @@ contract AudaxDocToken is ERC20Interface, TokenConfig {
         address _to,
         uint256 _amount
 ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

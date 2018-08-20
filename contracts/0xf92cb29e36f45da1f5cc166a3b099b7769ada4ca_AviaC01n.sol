@@ -20,15 +20,15 @@ contract AviaC01n  {
 	function () { revert(); }
 
 	/// ====== ERC20 optional token descriptors ======
-    string public name = &quot;Avia C01n&quot;;
+    string public name = "Avia C01n";
     uint8 public decimals = 18;
-    string public symbol  = &quot;AC0&quot;;
-    string public version = &#39;0.1.0&#39;;
+    string public symbol  = "AC0";
+    string public version = '0.1.0';
     
 	/// ====== ERC20 implementation starts here =====
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -37,7 +37,7 @@ contract AviaC01n  {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -75,8 +75,8 @@ contract AviaC01n  {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
     /// ======= states =====
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 	uint256 public constant totalSupply = 10000000 * 1 finney;
 	
 }

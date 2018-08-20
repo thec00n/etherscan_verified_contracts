@@ -32,12 +32,12 @@ contract SafeMath {
 
   function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
     uint256 z = x + y;
-    assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+    assert((z >= x) && (z >= y));
     return z;
   }
 
   function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-    assert(x &gt;= y);
+    assert(x >= y);
     uint256 z = x - y;
     return z;
   }
@@ -71,12 +71,12 @@ contract StandardToken is ERC20, SafeMath {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32)  returns (bool success){
     balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
@@ -175,10 +175,10 @@ contract IcoToken is SafeMath, StandardToken, Pausable {
 
   function IcoToken() {
 
-    name = &quot;ZION Token&quot;;
-    symbol = &quot;ZION&quot;;
+    name = "ZION Token";
+    symbol = "ZION";
     decimals = 18;
-    version = &quot;1.0&quot;;
+    version = "1.0";
     developer_BSR = 0xAEf46875Eb00Ce14B5830b8de2e05aB79dC625d9;
     developer_EKN = 0x1dEB6F7f7F2c4807cE287A8627681044547AB00A;
 
@@ -209,7 +209,7 @@ contract IcoToken is SafeMath, StandardToken, Pausable {
   }
 
   function sell(address _recipient, uint256 _value) whenNotPaused returns (bool success) {
-      assert(_value &gt; 0);
+      assert(_value > 0);
       require(msg.sender == icoContract);
 
       balances[_recipient] += _value;
@@ -255,9 +255,9 @@ contract IcoContract is SafeMath, Pausable {
   {
     ethFundDeposit = _ethFundDeposit;         //ETH deposit Address
     tokenAddress = _tokenAddress;             //ERC20 Token address
-    tokenCreationCap = _tokenCreationCap;     //&quot;100000000000000000000000000&quot;, // 100.000.000 Token
-    tokenExchangeRate = _tokenExchangeRate;   //&quot;5000&quot;, // Rate: 1 ETH = 5000 Token
-    fundingStartTime = _fundingStartTime;     //&quot;1519862400&quot;, // StartTime 01/03/2018 (unixtimestamp.com)
+    tokenCreationCap = _tokenCreationCap;     //"100000000000000000000000000", // 100.000.000 Token
+    tokenExchangeRate = _tokenExchangeRate;   //"5000", // Rate: 1 ETH = 5000 Token
+    fundingStartTime = _fundingStartTime;     //"1519862400", // StartTime 01/03/2018 (unixtimestamp.com)
     ico = IcoToken(tokenAddress);
     isFinalized = false;
 
@@ -269,14 +269,14 @@ contract IcoContract is SafeMath, Pausable {
 
   /// @dev Accepts ether and creates new ICO tokens.
   function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
-    require (tokenCreationCap &gt; totalSupply);
-    require (now &gt;= fundingStartTime);
+    require (tokenCreationCap > totalSupply);
+    require (now >= fundingStartTime);
     require (!isFinalized);
 
     uint256 tokens = safeMult(_value, tokenExchangeRate);
     uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-    if (tokenCreationCap &lt; checkedSupply) {
+    if (tokenCreationCap < checkedSupply) {
       uint256 tokensToAllocate = safeSubtract(tokenCreationCap, totalSupply);
       uint256 tokensToRefund   = safeSubtract(tokens, tokensToAllocate);
       totalSupply = tokenCreationCap;

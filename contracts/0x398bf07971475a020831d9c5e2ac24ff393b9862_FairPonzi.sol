@@ -14,8 +14,8 @@ contract FairPonzi {
         uint inamount;
         uint outamount;
     }
-    mapping(uint =&gt; mapping(address =&gt; Investment)) public investmentTable;
-    mapping(uint =&gt; Payment) public payoutList;
+    mapping(uint => mapping(address => Investment)) public investmentTable;
+    mapping(uint => Payment) public payoutList;
     
     uint public rewardinterval = 3600 * 24; // 1day
     //uint public rewardinterval = 60; // 1min
@@ -36,21 +36,21 @@ contract FairPonzi {
         buyin(nulladdress); // if normal transaction, nobody get referral
     }
     function buyin(address refaddr)public payable{
-        if(block.number &lt; startblock) revert();
-        if(msg.value &lt; minbid) { // wants a payout
+        if(block.number < startblock) revert();
+        if(msg.value < minbid) { // wants a payout
             redeemPayout();
             return;
         }
         Investment storage acc = investmentTable[roundcount][msg.sender];
         uint addreward = getAccountBalance(msg.sender);
         uint win = addreward - acc.initamount;
-        if(win &gt; 0){
+        if(win > 0){
             investmentTable[roundcount][acc.refaddress].refbonus += win / 10; // Referral get 10%
         }
         
         acc.initamount = msg.value + addreward;
         acc.inittime = block.timestamp;
-        if(refaddr != msg.sender &amp;&amp; acc.refaddress == nulladdress){
+        if(refaddr != msg.sender && acc.refaddress == nulladdress){
             acc.refaddress = refaddr;
             investmentTable[roundcount][refaddr].refcount++;
         }
@@ -62,8 +62,8 @@ contract FairPonzi {
         uint addreward = getAccountBalance(msg.sender);
         uint win = addreward - acc.initamount;
         uint payamount = addreward + acc.refbonus;
-        if(payamount &lt;= 0) return;
-        if(address(this).balance &lt; payamount){
+        if(payamount <= 0) return;
+        if(address(this).balance < payamount){
             reset();
         }else{
             payoutList[payoutcount++] = Payment(msg.sender, acc.initamount, payamount);
@@ -84,10 +84,10 @@ contract FairPonzi {
     function getAccountBalance(address addr)public constant returns (uint amount){
         Investment storage acc = investmentTable[roundcount][addr];
         uint ret = acc.initamount;
-        if(acc.initamount &gt; 0){
+        if(acc.initamount > 0){
             uint rewardcount = (block.timestamp - acc.inittime) / rewardinterval;
-            if(rewardcount &gt; maxdays) rewardcount = maxdays;
-            while(rewardcount &gt; 0){
+            if(rewardcount > maxdays) rewardcount = maxdays;
+            while(rewardcount > 0){
                 ret += ret / 200; // 0.5%
                 rewardcount--;
             }
@@ -99,13 +99,13 @@ contract FairPonzi {
         return (cur.receiver, cur.inamount, cur.outamount);
     }
     function getBlocksUntilStart() public constant returns (uint count){
-        if(startblock &lt;= block.number) return 0;
+        if(startblock <= block.number) return 0;
         else return startblock - block.number;
     }
     function getAccountInfo(address addr) public constant returns (address retaddr, uint initamount, uint investmenttime, uint currentbalance, uint _timeuntilnextreward, uint _refbonus, address _refaddress, uint _refcount) {
         Investment storage acc = investmentTable[roundcount][addr];
         uint nextreward = rewardinterval - ((block.timestamp - acc.inittime) % rewardinterval);
-        if(acc.initamount &lt;= 0) nextreward = 0;
+        if(acc.initamount <= 0) nextreward = 0;
         return (addr, acc.initamount, block.timestamp - acc.inittime, getAccountBalance(addr), nextreward, acc.refbonus, acc.refaddress, acc.refcount);
     }
     function getAccountInfo() public constant returns (address retaddr, uint initamount, uint investmenttime, uint currentbalance, uint _timeuntilnextreward, uint _refbonus, address _refaddress, uint _refcount) {

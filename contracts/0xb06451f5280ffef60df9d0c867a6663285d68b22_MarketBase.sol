@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-// @author - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="72041b041719181b100532151f131b1e5c111d1f">[email&#160;protected]</a>
+// @author - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="72041b041719181b100532151f131b1e5c111d1f">[email protected]</a>
 // Website: http://CryptoStockMarket.co
 // Only CEO can change CEO and CFO address
 
@@ -72,14 +72,14 @@ contract CompanyAccessControl {
 contract BookKeeping {
     
     struct ShareHolders {
-        mapping(address =&gt; uint) ownerAddressToShares;
+        mapping(address => uint) ownerAddressToShares;
         uint numberOfShareHolders;
     }
     
     // _amount should be greator than 0
     function _sharesBought(ShareHolders storage _shareHolders, address _owner, uint _amount) 
     internal {
-        // If user didn&#39;t have shares earlier, he is now a share holder!
+        // If user didn't have shares earlier, he is now a share holder!
         if (_shareHolders.ownerAddressToShares[_owner] == 0) {
             _shareHolders.numberOfShareHolders += 1;
         }
@@ -109,14 +109,14 @@ contract CompanyConstants {
     
     uint constant MAX_CLAIM_SHARES_PERCENTAGE = 5;
     
-    // Release cycle! Every company needs to wait for &quot;at least&quot; 10 days
+    // Release cycle! Every company needs to wait for "at least" 10 days
     // before releasing next set of shares!
     uint constant MIN_COOLDOWN_TIME = 10; // in days
     uint constant MAX_COOLDOWN_TIME = 255;
     
     // A company can start with min 100 tokens or max 10K tokens
     // and min(10%, 500) new tokens will be released every x days where
-    // x &gt;= 10;
+    // x >= 10;
     uint constant INIT_MAX_SHARES_IN_CIRCULATION = 10000;
     uint constant INIT_MIN_SHARES_IN_CIRCULATION = 100;
     uint constant MAX_SHARES_RELEASE_IN_ONE_CYCLE = 500;
@@ -185,7 +185,7 @@ contract CompanyBase is BookKeeping, CompanyConstants {
         // Address of person who registered this company and will receive money from the share sales.
         address ownedBy; 
         
-        // The exact time in future before which shares can&#39;t be released!
+        // The exact time in future before which shares can't be released!
         // if shares are just released then nextSharesReleaseTime will be (now + coolDownTime);
         uint nextSharesReleaseTime; 
 
@@ -256,10 +256,10 @@ contract TradingVolume is CompanyConstants {
     struct Traders {
         uint relaseTime;
         address winningTrader;
-        mapping (address =&gt; uint) sharesTraded;
+        mapping (address => uint) sharesTraded;
     }
     
-    mapping (uint =&gt; Traders) companyIdToTraders;
+    mapping (uint => Traders) companyIdToTraders;
     
     // unique _companyId
     function _addNewCompanyTraders(uint _companyId) 
@@ -272,17 +272,17 @@ contract TradingVolume is CompanyConstants {
         companyIdToTraders[_companyId] = traders;
     }
     
-    // _from!=_to , _amount &gt; 0
+    // _from!=_to , _amount > 0
     function _updateTradingVolume(Traders storage _traders, address _from, address _to, uint _amount) 
     internal {
         _traders.sharesTraded[_from] += _amount;
         _traders.sharesTraded[_to] += _amount;
         
-        if (_traders.sharesTraded[_from] &gt; _traders.sharesTraded[_traders.winningTrader]) {
+        if (_traders.sharesTraded[_from] > _traders.sharesTraded[_traders.winningTrader]) {
             _traders.winningTrader = _from;
         } 
         
-        if (_traders.sharesTraded[_to] &gt; _traders.sharesTraded[_traders.winningTrader]) {
+        if (_traders.sharesTraded[_to] > _traders.sharesTraded[_traders.winningTrader]) {
             _traders.winningTrader = _to;
         } 
     }
@@ -299,10 +299,10 @@ contract TradingVolume is CompanyConstants {
 contract ApprovalContract is CompanyAccessControl {
     // Approver who are approved to launch a company a particular name
     // the bytes32 hash is the hash of the company name!
-    mapping(bytes32 =&gt; address) public approvedToLaunch;
+    mapping(bytes32 => address) public approvedToLaunch;
     
-    // Make sure that we don&#39;t add two companies with same name
-    mapping(bytes32 =&gt; bool) public registredCompanyNames;
+    // Make sure that we don't add two companies with same name
+    mapping(bytes32 => bool) public registredCompanyNames;
     
     // Approve addresses to launch a company with the given name
     // Only ceo or cfo can approve a company;
@@ -334,11 +334,11 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         uint sharesRequiredToBecomeCEO = (_company.sharesInCirculation/2 ) + 1;
         address currentCEO = _company.ceoOfCompany;
         
-        if (_company.shareHolders.ownerAddressToShares[currentCEO] &gt;= sharesRequiredToBecomeCEO) {
+        if (_company.shareHolders.ownerAddressToShares[currentCEO] >= sharesRequiredToBecomeCEO) {
             return;
         } 
         
-        if (_to != address(this) &amp;&amp; _company.shareHolders.ownerAddressToShares[_to] &gt;= sharesRequiredToBecomeCEO) {
+        if (_to != address(this) && _company.shareHolders.ownerAddressToShares[_to] >= sharesRequiredToBecomeCEO) {
             _company.ceoOfCompany = _to;
             emit CEOChanged(_companyId, currentCEO, _to);
             return;
@@ -375,7 +375,7 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         Company storage company = companies[_companyId];
         // implies a promotional company
         require(company.pricePerShare == 0);
-        require(companies[_companyId].shareHolders.ownerAddressToShares[msg.sender] &gt;= _amount);
+        require(companies[_companyId].shareHolders.ownerAddressToShares[msg.sender] >= _amount);
         _transfer(_companyId, msg.sender, _to, _amount);
     }
     
@@ -386,16 +386,16 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
     {
         bytes32 companyNameHash = keccak256(_companyName);
         
-        // There shouldn&#39;t be a company that is already registered with same name!
+        // There shouldn't be a company that is already registered with same name!
         require(registredCompanyNames[companyNameHash] == false);
         
         // Max 10% shares can be released in one release cycle, to control liquidation
         // and uncontrolled issuing of new tokens. Furthermore the max shares that can
         // be released in one cycle can only be upto 500.
-        require(_precentageSharesToRelease &lt;= MAX_PERCENTAGE_SHARE_RELEASE);
+        require(_precentageSharesToRelease <= MAX_PERCENTAGE_SHARE_RELEASE);
         
         // The min release cycle should be at least 10 days
-        require(_coolDownTime &gt;= MIN_COOLDOWN_TIME &amp;&amp; _coolDownTime &lt;= MAX_COOLDOWN_TIME);
+        require(_coolDownTime >= MIN_COOLDOWN_TIME && _coolDownTime <= MAX_COOLDOWN_TIME);
 
         uint _companyId = companies.length;
         uint _nextSharesReleaseTime = now + _coolDownTime * 1 days;
@@ -432,7 +432,7 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
     {
         bytes32 companyNameHash = keccak256(_companyName);
         
-        // There shouldn&#39;t be a company that is already registered with same name!
+        // There shouldn't be a company that is already registered with same name!
         require(registredCompanyNames[companyNameHash] == false);
         
         // Owner have the permissions to launch the company
@@ -441,13 +441,13 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         // Max 10% shares can be released in one release cycle, to control liquidation
         // and uncontrolled issuing of new tokens. Furthermore the max shares that can
         // be released in one cycle can only be upto 500.
-        require(_precentageSharesToRelease &lt;= MAX_PERCENTAGE_SHARE_RELEASE);
+        require(_precentageSharesToRelease <= MAX_PERCENTAGE_SHARE_RELEASE);
         
         // The min release cycle should be at least 10 days
-        require(_coolDownTime &gt;= MIN_COOLDOWN_TIME &amp;&amp; _coolDownTime &lt;= MAX_COOLDOWN_TIME);
+        require(_coolDownTime >= MIN_COOLDOWN_TIME && _coolDownTime <= MAX_COOLDOWN_TIME);
         
-        require(_sharesInCirculation &gt;= INIT_MIN_SHARES_IN_CIRCULATION &amp;&amp;
-        _sharesInCirculation &lt;= INIT_MAX_SHARES_IN_CIRCULATION);
+        require(_sharesInCirculation >= INIT_MIN_SHARES_IN_CIRCULATION &&
+        _sharesInCirculation <= INIT_MAX_SHARES_IN_CIRCULATION);
 
         uint _companyId = companies.length;
         uint _nextSharesReleaseTime = now + _coolDownTime * 1 days;
@@ -485,20 +485,20 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
     payable {
         Company storage company = companies[_companyId];
         
-        require (_numberOfShares &gt; 0 &amp;&amp;
-            _numberOfShares &lt;= (company.sharesInCirculation * MAX_CLAIM_SHARES_PERCENTAGE)/100);
+        require (_numberOfShares > 0 &&
+            _numberOfShares <= (company.sharesInCirculation * MAX_CLAIM_SHARES_PERCENTAGE)/100);
 
-        require(company.unclaimedShares &gt;= _numberOfShares);
+        require(company.unclaimedShares >= _numberOfShares);
         
         uint totalPrice = company.pricePerShare * _numberOfShares;
-        require(msg.value &gt;= totalPrice);
+        require(msg.value >= totalPrice);
 
         company.unclaimedShares -= uint32(_numberOfShares);
 
         _sharesBought(company.shareHolders, msg.sender, _numberOfShares);
         _updateCEOIfRequired(company, _companyId, msg.sender);
 
-        if (totalPrice &gt; 0) {
+        if (totalPrice > 0) {
             uint salesCut = _computeSalesCut(totalPrice);
             withdrawableBalance += salesCut;
             uint sellerProceeds = totalPrice - salesCut;
@@ -509,7 +509,7 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         emit Claimed(_companyId, _numberOfShares, msg.sender);
     }
     
-    // Company&#39;s next shares can be released only by the CEO of the company! 
+    // Company's next shares can be released only by the CEO of the company! 
     // So there should exist a CEO first
     function releaseNextShares(uint _companyId) 
     external 
@@ -519,10 +519,10 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         
         require(company.ceoOfCompany == msg.sender);
         
-        // If there are unclaimedShares with the company, then new shares can&#39;t be relased!
+        // If there are unclaimedShares with the company, then new shares can't be relased!
         require(company.unclaimedShares == 0 );
         
-        require(now &gt;= company.nextSharesReleaseTime);
+        require(now >= company.nextSharesReleaseTime);
 
         company.nextSharesReleaseTime = now + company.coolDownTime * 1 days;
         
@@ -533,11 +533,11 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         uint sharesToRelease = (company.sharesInCirculation * company.percentageSharesToRelease)/100;
         
         // Max 500 tokens can be relased
-        if (sharesToRelease &gt; MAX_SHARES_RELEASE_IN_ONE_CYCLE) {
+        if (sharesToRelease > MAX_SHARES_RELEASE_IN_ONE_CYCLE) {
             sharesToRelease = MAX_SHARES_RELEASE_IN_ONE_CYCLE;
         }
         
-        if (sharesToRelease &gt; 0) {
+        if (sharesToRelease > 0) {
             company.sharesInCirculation += uint32(sharesToRelease);
             _sharesBought(company.shareHolders, company.ceoOfCompany, sharesToRelease);
             emit SharesReleased(_companyId, company.ceoOfCompany, sharesToRelease, company.nextSharesReleaseTime);
@@ -549,13 +549,13 @@ contract CompanyMain is CompanyBase, ApprovalContract, TradingVolume {
         Traders storage traders = companyIdToTraders[_companyId];
         _updateTradingVolume(traders, _from, _to, _amount);
         
-        if (now &lt; traders.relaseTime) {
+        if (now < traders.relaseTime) {
             return;
         }
         
         Company storage company = companies[_companyId];
         uint _newShares = company.sharesInCirculation/100;
-        if (_newShares &gt; MAX_SHARES_RELEASE_IN_ONE_CYCLE) {
+        if (_newShares > MAX_SHARES_RELEASE_IN_ONE_CYCLE) {
             _newShares = 100;
         }
         company.sharesInCirculation += uint32(_newShares);
@@ -591,9 +591,9 @@ contract MarketBase is CompanyMain {
     }
     
     // A mapping of companyId to orders
-    mapping (uint =&gt; Order[]) companyIdToOrders;
+    mapping (uint => Order[]) companyIdToOrders;
     
-    // _amount &gt; 0
+    // _amount > 0
     function _createOrder(uint _companyId, uint _amount, uint _pricePerShare, OrderType _orderType) 
     internal {
         Order memory order = Order({
@@ -612,8 +612,8 @@ contract MarketBase is CompanyMain {
     function placeSellRequest(uint _companyId, uint _amount, uint _pricePerShare) 
     whenNotPaused
     external {
-        require (_amount &gt; 0);
-        require (_pricePerShare &gt; 0);
+        require (_amount > 0);
+        require (_pricePerShare > 0);
 
         // Seller should have enough tokens to place a sell order!
         _verifyOwnershipOfTokens(_companyId, msg.sender, _amount);
@@ -627,12 +627,12 @@ contract MarketBase is CompanyMain {
     external 
     payable 
     whenNotPaused {
-        require(_amount &gt; 0);
-        require(_pricePerShare &gt; 0);
+        require(_amount > 0);
+        require(_pricePerShare > 0);
         require(_amount == uint(uint32(_amount)));
         
         // Should have enough eth!
-        require(msg.value &gt;= _amount * _pricePerShare);
+        require(msg.value >= _amount * _pricePerShare);
 
         _createOrder(_companyId, _amount, _pricePerShare, OrderType.Buy);
     }
@@ -646,7 +646,7 @@ contract MarketBase is CompanyMain {
         
         uint sharesRemaining = _getRemainingSharesInOrder(order);
         
-        require(sharesRemaining &gt; 0);
+        require(sharesRemaining > 0);
 
         order.amountFilled += uint32(sharesRemaining);
         
@@ -671,7 +671,7 @@ contract MarketBase is CompanyMain {
     whenNotPaused
     external 
     payable {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         
         Order storage order = companyIdToOrders[_companyId][_orderIndex];
         require(order.orderType == OrderType.Sell);
@@ -681,7 +681,7 @@ contract MarketBase is CompanyMain {
         _verifyRemainingSharesInOrder(order, _amount);
 
         uint price = _getTotalPrice(order, _amount);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         order.amountFilled += uint32(_amount);
         
@@ -701,7 +701,7 @@ contract MarketBase is CompanyMain {
     whenNotPaused
     external 
     payable {
-        require(_maxAmount &gt; 0);
+        require(_maxAmount > 0);
         
         Order storage order = companyIdToOrders[_companyId][_orderIndex];
         require(order.orderType == OrderType.Sell);
@@ -709,14 +709,14 @@ contract MarketBase is CompanyMain {
         require(msg.sender != order.owner);
        
         uint buyableShares = _getRemainingSharesInOrder(order);
-        require(buyableShares &gt; 0);
+        require(buyableShares > 0);
         
-        if (buyableShares &gt; _maxAmount) {
+        if (buyableShares > _maxAmount) {
             buyableShares = _maxAmount;
         }
 
         uint price = _getTotalPrice(order, buyableShares);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         order.amountFilled += uint32(buyableShares);
         
@@ -738,7 +738,7 @@ contract MarketBase is CompanyMain {
     function fillBuyOrder(uint _companyId, uint _orderIndex, uint _amount) 
     whenNotPaused
     external {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         
         Order storage order = companyIdToOrders[_companyId][_orderIndex];
         require(order.orderType == OrderType.Buy);
@@ -770,7 +770,7 @@ contract MarketBase is CompanyMain {
     function fillBuyOrderPartially(uint _companyId, uint _orderIndex, uint _maxAmount) 
     whenNotPaused
     external {
-        require(_maxAmount &gt; 0);
+        require(_maxAmount > 0);
         
         Order storage order = companyIdToOrders[_companyId][_orderIndex];
         require(order.orderType == OrderType.Buy);
@@ -779,9 +779,9 @@ contract MarketBase is CompanyMain {
         
         // There should exist enought shares to fulfill the request!
         uint buyableShares = _getRemainingSharesInOrder(order);
-        require(buyableShares &gt; 0);
+        require(buyableShares > 0);
         
-        if ( buyableShares &gt; _maxAmount) {
+        if ( buyableShares > _maxAmount) {
             buyableShares = _maxAmount;
         }
         
@@ -812,7 +812,7 @@ contract MarketBase is CompanyMain {
     }
 
     // Returns the price for _amount tokens for the given order
-    // _amount &gt; 0
+    // _amount > 0
     // order should be verified
     function _getTotalPrice(Order storage _order, uint _amount) 
     view
@@ -830,19 +830,19 @@ contract MarketBase is CompanyMain {
     }
 
     // Verifies if the order have _amount shares to buy/sell
-    // _amount &gt; 0
+    // _amount > 0
     function _verifyRemainingSharesInOrder(Order storage _order, uint _amount) 
     view
     internal {
-        require(_getRemainingSharesInOrder(_order) &gt;= _amount);
+        require(_getRemainingSharesInOrder(_order) >= _amount);
     }
 
-    // Checks if the owner have at least &#39;_amount&#39; shares of the company
-    // _amount &gt; 0
+    // Checks if the owner have at least '_amount' shares of the company
+    // _amount > 0
     function _verifyOwnershipOfTokens(uint _companyId, address _owner, uint _amount) 
     view
     internal {
-        require(companies[_companyId].shareHolders.ownerAddressToShares[_owner] &gt;= _amount);
+        require(companies[_companyId].shareHolders.ownerAddressToShares[_owner] >= _amount);
     }
     
     // Returns the length of array! All orders might not be active

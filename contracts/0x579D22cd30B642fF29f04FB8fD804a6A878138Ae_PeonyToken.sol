@@ -38,7 +38,7 @@ contract ERC20 is ERC20Basic {
 contract Peony is Ownable {
 
   string public version;
-  string public unit = &quot;piece&quot;;
+  string public unit = "piece";
   uint256 public total;
   struct Bullion {
     string index;
@@ -47,7 +47,7 @@ contract Peony is Ownable {
     string ipfs;
   }
   bytes32[] public storehouseIndex;
-  mapping (bytes32 =&gt; Bullion) public storehouse;
+  mapping (bytes32 => Bullion) public storehouse;
   address public tokenAddress;
   uint256 public rate = 10;
   PeonyToken token;
@@ -122,11 +122,11 @@ contract PeonyToken is Ownable, ERC20 {
   uint256 public decimals;
   address public peony;
 
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
   uint256 public totalSupply;
   uint256 public totalSupplyLimit;
-  mapping(address =&gt; uint256) public transferLimits;
+  mapping(address => uint256) public transferLimits;
 
   function PeonyToken(
     string _version,
@@ -136,7 +136,7 @@ contract PeonyToken is Ownable, ERC20 {
     uint8 decimalUnits,
     string tokenSymbol
     ) {
-    require(totalSupplyLimit_ == 0 || totalSupplyLimit_ &gt;= initialSupply);
+    require(totalSupplyLimit_ == 0 || totalSupplyLimit_ >= initialSupply);
     version = _version;
     balances[msg.sender] = initialSupply;
     totalSupply = initialSupply;
@@ -153,7 +153,7 @@ contract PeonyToken is Ownable, ERC20 {
   }
 
   modifier isOwnerOrPeonyContract() {
-    require(msg.sender != address(0) &amp;&amp; (msg.sender == peony || msg.sender == owner));
+    require(msg.sender != address(0) && (msg.sender == peony || msg.sender == owner));
     _;
   }
 
@@ -163,7 +163,7 @@ contract PeonyToken is Ownable, ERC20 {
    * @return Whether or not producing was successful
    */
   function produce(uint256 amount) isPeonyContract returns (bool) {
-    require(totalSupplyLimit == 0 || totalSupply.add(amount) &lt;= totalSupplyLimit);
+    require(totalSupplyLimit == 0 || totalSupply.add(amount) <= totalSupplyLimit);
 
     balances[owner] = balances[owner].add(amount);
     totalSupply = totalSupply.add(amount);
@@ -176,8 +176,8 @@ contract PeonyToken is Ownable, ERC20 {
    * @param amount Reduce token amount
    */
   function reduce(uint256 amount) isPeonyContract returns (bool) {
-    require(balances[owner].sub(amount) &gt;= 0);
-    require(totalSupply.sub(amount) &gt;= 0);
+    require(balances[owner].sub(amount) >= 0);
+    require(totalSupply.sub(amount) >= 0);
 
     balances[owner] = balances[owner].sub(amount);
     totalSupply = totalSupply.sub(amount);
@@ -205,7 +205,7 @@ contract PeonyToken is Ownable, ERC20 {
    */
   function transfer(address _to, uint256 _value) returns (bool) {
     require(_to != address(0));
-    require(transferLimits[msg.sender] == 0 || transferLimits[msg.sender] &gt;= _value);
+    require(transferLimits[msg.sender] == 0 || transferLimits[msg.sender] >= _value);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -235,7 +235,7 @@ contract PeonyToken is Ownable, ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -287,7 +287,7 @@ library ConvertStringByte {
   function bytes32ToString(bytes32 x) constant returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
       byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
       if (char != 0) {
           bytesString[charCount] = char;
@@ -295,7 +295,7 @@ library ConvertStringByte {
       }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
       bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);
@@ -316,20 +316,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

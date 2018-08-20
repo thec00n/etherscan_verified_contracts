@@ -290,9 +290,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -341,14 +341,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -360,21 +360,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -391,20 +391,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -451,9 +451,9 @@ contract RefundVault is Ownable {
 
     /* 
         To cover the costs for paying investor related functions by ourself as: 
-            &quot;add investor in the whitelist&quot; and etc.
+            "add investor in the whitelist" and etc.
 
-        We are getting 3% of the investor&#39;s deposit only if the soft cap
+        We are getting 3% of the investor's deposit only if the soft cap
         is not reached and the investor refund his contribution
     */
     uint256 public constant DEDUCTION = 3;
@@ -461,7 +461,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -527,9 +527,9 @@ contract WhitelistedCrowdsale is Ownable {
     */
     uint public constant MAX_INPUT_USERS_COUNT = 200;
 
-    mapping(address =&gt; uint) public preSalesSpecialUsers;
+    mapping(address => uint) public preSalesSpecialUsers;
 
-    mapping(address =&gt; bool) public publicSalesSpecialUsers;
+    mapping(address => bool) public publicSalesSpecialUsers;
 
     address public lister;
 
@@ -559,9 +559,9 @@ contract WhitelistedCrowdsale is Ownable {
     }
 
     function setMultiplePreSalesSpecialUsers(address[] users, uint userRate) external onlyLister {
-        require(users.length &lt;= MAX_INPUT_USERS_COUNT);
+        require(users.length <= MAX_INPUT_USERS_COUNT);
 
-        for(uint i = 0; i &lt; users.length; i++) { 
+        for(uint i = 0; i < users.length; i++) { 
             preSalesSpecialUsers[users[i]] = userRate;
         }
 
@@ -575,9 +575,9 @@ contract WhitelistedCrowdsale is Ownable {
     }
 
     function addMultiplePublicSalesSpecialUser(address[] users) external onlyLister {
-        require(users.length &lt;= MAX_INPUT_USERS_COUNT);
+        require(users.length <= MAX_INPUT_USERS_COUNT);
 
-        for(uint i = 0; i &lt; users.length; i++) { 
+        for(uint i = 0; i < users.length; i++) { 
             publicSalesSpecialUsers[users[i]] = true;
         }
 
@@ -606,7 +606,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -635,7 +635,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     RefundVault public vault;
 
     constructor(uint256 _goal) public {
-        require(_goal &gt; 0);
+        require(_goal > 0);
         vault = new RefundVault(wallet);
         goal = _goal;
     }
@@ -662,7 +662,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     }
 
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 }
 
@@ -740,7 +740,7 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     // The extensionTime is in seconds
     function extendPreSalesPeriodWith(uint extensionTime) public onlyOwner {
-        require(extensionTime &lt;= MAX_PRESALES_EXTENSION);
+        require(extensionTime <= MAX_PRESALES_EXTENSION);
         
         preSalesEndDate = preSalesEndDate.add(extensionTime);
         endTime = endTime.add(extensionTime);
@@ -749,7 +749,7 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
     }
 
     function buyTokens(address beneficiary) public payable {
-        require(msg.value &gt;= MIN_CONTRIBUTION_AMOUNT);
+        require(msg.value >= MIN_CONTRIBUTION_AMOUNT);
         require(beneficiary != address(0));
         require(validPurchase());
 
@@ -758,14 +758,14 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
         // calculate token amount to be created
         uint256 tokens = getTokenAmount(weiAmount, beneficiary);
 
-        // Check for maximum user&#39;s tokens amount overflow
+        // Check for maximum user's tokens amount overflow
         uint256 beneficiaryBalance = token.balanceOf(beneficiary);
-        require(beneficiaryBalance.add(tokens) &lt;= MAX_USER_TOKENS_BALANCE);
+        require(beneficiaryBalance.add(tokens) <= MAX_USER_TOKENS_BALANCE);
 
         // // update state
         weiRaised = weiRaised.add(weiAmount);
 
-        if(weiRaised &gt;= MAX_FUNDS_RAISED_DURING_PRESALE &amp;&amp; isPresalesNotEndedInAdvance){
+        if(weiRaised >= MAX_FUNDS_RAISED_DURING_PRESALE && isPresalesNotEndedInAdvance){
             preSalesEndDate = now;
             isPresalesNotEndedInAdvance = false;
         }
@@ -787,8 +787,8 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     function getRate(address beneficiary) internal view returns(uint256) {
 
-        if(now &lt;= preSalesEndDate &amp;&amp; weiRaised &lt; MAX_FUNDS_RAISED_DURING_PRESALE){
-            if(preSalesSpecialUsers[beneficiary] &gt; 0){
+        if(now <= preSalesEndDate && weiRaised < MAX_FUNDS_RAISED_DURING_PRESALE){
+            if(preSalesSpecialUsers[beneficiary] > 0){
                 return preSalesSpecialUsers[beneficiary];
             }
 
@@ -799,15 +799,15 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
             return PUBLIC_SALES_SPECIAL_USERS_RATE;
         }
 
-        if(now &lt;= preSalesEndDate.add(PUBLIC_SALES_1_PERIOD_END)) {
+        if(now <= preSalesEndDate.add(PUBLIC_SALES_1_PERIOD_END)) {
             return PUBLIC_SALES_1_RATE;
         }
 
-        if(now &lt;= preSalesEndDate.add(PUBLIC_SALES_2_PERIOD_END)) {
+        if(now <= preSalesEndDate.add(PUBLIC_SALES_2_PERIOD_END)) {
             return PUBLIC_SALES_2_RATE;
         }
 
-        if(now &lt;= preSalesEndDate.add(PUBLIC_SALES_3_PERIOD_END)) {
+        if(now <= preSalesEndDate.add(PUBLIC_SALES_3_PERIOD_END)) {
             return PUBLIC_SALES_3_RATE;
         }
 
@@ -816,7 +816,7 @@ contract ICOCrowdsale is Ownable, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     function createBountyToken(address beneficiary, uint256 amount) public onlyOwner returns(bool) {
         require(!hasEnded());
-        require(totalMintedBountyTokens.add(amount) &lt;= MAX_BOUNTYTOKENS_AMOUNT);
+        require(totalMintedBountyTokens.add(amount) <= MAX_BOUNTYTOKENS_AMOUNT);
 
         totalMintedBountyTokens = totalMintedBountyTokens.add(amount);
         token.mint(beneficiary, amount);
@@ -840,7 +840,7 @@ contract ICOCappedRefundableCrowdsale is CappedCrowdsale, ICOCrowdsale, Refundab
         CappedCrowdsale(hardCap)
         RefundableCrowdsale(softCap)
     {
-        require(softCap &lt;= hardCap);
+        require(softCap <= hardCap);
     }
 }
 
@@ -897,7 +897,7 @@ contract ExchangeOracle is Ownable, Pausable {
     event LogMinWeiAmountChanged(uint oldMinWeiAmount, uint newMinWeiAmount, address changer);
 
     constructor(uint initialRate) public {
-        require(initialRate &gt; 0);
+        require(initialRate > 0);
         rate = initialRate;
     }
 
@@ -912,7 +912,7 @@ contract ExchangeOracle is Ownable, Pausable {
             0.01 rate = 10 passed rate ( 100 ethers = 1 token )
     **/
     function setRate(uint newRate) external onlyOwner whenNotPaused returns(bool) {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         
         uint oldRate = rate;
         rate = newRate;
@@ -927,11 +927,11 @@ contract ExchangeOracle is Ownable, Pausable {
         With min wei amount we can set the rate to be a float number
 
         We use it as a multiplier because we can not pass float numbers in ethereum
-        If the token price becomes bigger than ether one, for example -&gt; 1 token = 10 ethers
+        If the token price becomes bigger than ether one, for example -> 1 token = 10 ethers
         We will pass 100 as rate and this will be relevant to 0.1 token = 1 ether
     **/
     function setMinWeiAmount(uint newMinWeiAmount) external onlyOwner whenNotPaused returns(bool) {
-        require(newMinWeiAmount &gt; 0);
+        require(newMinWeiAmount > 0);
         require(newMinWeiAmount % 10 == 0); 
 
         uint oldMinWeiAmount = minWeiAmount;
@@ -977,7 +977,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -986,7 +986,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -1015,9 +1015,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -1035,7 +1035,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -1046,8 +1046,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -1061,7 +1061,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -1110,7 +1110,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -1183,8 +1183,8 @@ contract PausableToken is StandardToken, Pausable {
 
 contract ICOToken is BurnableToken, MintableToken, PausableToken {
 
-    string public constant name = &quot;AIUR Token&quot;;
-    string public constant symbol = &quot;AIUR&quot;;
+    string public constant name = "AIUR Token";
+    string public constant symbol = "AIUR";
     uint8 public constant decimals = 18;
 }
 
@@ -1195,7 +1195,7 @@ contract ICOTokenExtended is ICOToken {
     IHookOperator public hookOperator;
     ExchangeOracle public aiurExchangeOracle;
 
-    mapping(address =&gt; bool) public minters;
+    mapping(address => bool) public minters;
 
     uint256 public constant MIN_REFUND_RATE_DELIMITER = 2; // Refund rate has to be minimum 50% of the AIUR ExchangeOracle rate
 
@@ -1293,7 +1293,7 @@ contract ICOTokenExtended is ICOToken {
         This function is used for taxation purposes and will be used after pre-defined requirement are met
     */
     function taxTransfer(address from, address to, uint tokensAmount) external onlyCurrentHookOperator nonZeroAddress(from) nonZeroAddress(to) returns(bool) {  
-        require(balances[from] &gt;= tokensAmount);
+        require(balances[from] >= tokensAmount);
 
         transferDirectly(from, to, tokensAmount);
 
@@ -1307,14 +1307,14 @@ contract ICOTokenExtended is ICOToken {
         require(!hookOperator.isOverBalanceLimitHolder(from));
 
         uint256 oracleRate = aiurExchangeOracle.rate();
-        require(rate &lt;= oracleRate.add(oracleRate.div(MIN_REFUND_RATE_DELIMITER)));
+        require(rate <= oracleRate.add(oracleRate.div(MIN_REFUND_RATE_DELIMITER)));
 
         uint256 fromBalance = balanceOf(from);
         
         // Calculate percentage limit in tokens
         uint256 maxTokensBalance = totalSupply.mul(hookOperator.getBalancePercentageLimit()).div(100);
 
-        require(fromBalance &gt; maxTokensBalance);
+        require(fromBalance > maxTokensBalance);
 
         uint256 tokensToTake = fromBalance.sub(maxTokensBalance);
         uint256 weiToRefund = aiurExchangeOracle.convertTokensAmountInWeiAtRate(tokensToTake, rate);

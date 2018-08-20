@@ -3,19 +3,19 @@ pragma solidity ^0.4.18;
 // Name        : Vita Token
 // Total supply: 10 ** 28
 // Decimals    : 18
-//import &#39;./SafeMath.sol&#39;;
-//import &#39;./ERC20Interface.sol&#39;;
+//import './SafeMath.sol';
+//import './ERC20Interface.sol';
 //Sobre vita reward:
-//El token se crea primero y luego se asigna la direcci&#243;n de vita reward
+//El token se crea primero y luego se asigna la dirección de vita reward
 
 // ----- Safe Math
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -23,7 +23,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -90,12 +90,12 @@ contract VitaToken is ERC20Interface, SafeMath {
     //Cantidad total recaudada en wei
     uint public collected_crowd_wei;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; uint) rewards;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => uint) rewards;
+    mapping(address => mapping(address => uint)) allowed;
     function VitaToken() public {
-        symbol = &quot;VTA&quot;;
-        name = &quot;Vita Token&quot;;
+        symbol = "VTA";
+        name = "Vita Token";
         //Razones para usar la cantidad estandar de decimales:
         //Todos los envios de dinero se hacen con wei, que es 1 seguido de 18 ceros
         //Seguir el estandar facilita los calculos, especialmente en el crowdsale
@@ -108,7 +108,7 @@ contract VitaToken is ERC20Interface, SafeMath {
         max_crowd_vitas = 3 * 10 ** 27;
         //Vitas recaudadas en crowdsale
         collected_crowd_vitas = 0;
-        // 10 mil millones m&#225;s 18 decimales
+        // 10 mil millones más 18 decimales
         totalSupply = 10 ** 28;
         manager = msg.sender;
         //Mitad para reward, mitad para el equipo
@@ -117,13 +117,13 @@ contract VitaToken is ERC20Interface, SafeMath {
 
         crowd_start_date = now;
         extra_bonus_duration = 4 days;
-        //El crowdsale termina 122 d&#237;as de lanzar el SC (15 agosto)
+        //El crowdsale termina 122 días de lanzar el SC (15 agosto)
         crowd_end_date = crowd_start_date + extra_bonus_duration + 122 days;
-        //la duraci&#243;n del primer bono es de 47 d&#237;as (15 de abril - 1 de junio)
+        //la duración del primer bono es de 47 días (15 de abril - 1 de junio)
         first_bonus_duration = 47 days;
-        //la duraci&#243;n del segundo bono es de 30 d&#237;as (1 de junio - 1 de julio)
+        //la duración del segundo bono es de 30 días (1 de junio - 1 de julio)
         second_bonus_duration = 30 days;
-        //la duraci&#243;n del tercer bono es de 45 d&#237;as, no es relevante agregarla porque es el caso final (1 de julio - 15 de agosto)
+        //la duración del tercer bono es de 45 días, no es relevante agregarla porque es el caso final (1 de julio - 15 de agosto)
 
 
         extra_bonus_amount = 40000;
@@ -137,7 +137,7 @@ contract VitaToken is ERC20Interface, SafeMath {
         _;
     }
 
-    //Decorador para m&#233;todos que solo pueden ser accedidos a trav&#233;s de Vita reward
+    //Decorador para métodos que solo pueden ser accedidos a través de Vita reward
     modifier onlyVitaReward(){
         require(msg.sender == reward_contract);
         _;
@@ -169,7 +169,7 @@ contract VitaToken is ERC20Interface, SafeMath {
         return rewards[_owner];
     }
 
-    //tokens debe ser el n&#250;mero de tokens seguido del n&#250;mero de decimales
+    //tokens debe ser el número de tokens seguido del número de decimales
     function transfer(address to, uint tokens) public returns (bool success) {
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -178,12 +178,12 @@ contract VitaToken is ERC20Interface, SafeMath {
     }
 
 
-    //tokens debe ser el n&#250;mero de tokens seguido del n&#250;mero de decimales
+    //tokens debe ser el número de tokens seguido del número de decimales
     function reward(address patient, address company, uint tokens_patient, uint tokens_company, uint tokens_vita_team) public onlyVitaReward returns (bool success) {
         balances[reward_contract] = safeSub(balances[reward_contract], (tokens_patient + tokens_company + tokens_vita_team));
         //Se envian los tokens del paciente, normalmente el 90%
         balances[patient] = safeAdd(balances[patient], tokens_patient);
-        //Se envian los tokens a la compa&#241;ia que hizo la llamada a reward, normalmente 5%
+        //Se envian los tokens a la compañia que hizo la llamada a reward, normalmente 5%
         balances[company] = safeAdd(balances[company], tokens_company);
         //Se envian los tokens al equipo de vita, normalmente 5%
         balances[manager] = safeAdd(balances[manager], tokens_vita_team);
@@ -197,7 +197,7 @@ contract VitaToken is ERC20Interface, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -220,7 +220,7 @@ contract VitaToken is ERC20Interface, SafeMath {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require(balances[from] &gt;= tokens &amp;&amp; allowed[from][msg.sender] &gt;= tokens);
+        require(balances[from] >= tokens && allowed[from][msg.sender] >= tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
         balances[from] = safeSub(balances[from], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -237,14 +237,14 @@ contract VitaToken is ERC20Interface, SafeMath {
     }
 
     function () public payable {
-        require(now &gt;= crowd_start_date &amp;&amp; now &lt;= crowd_end_date);
-        require(collected_crowd_vitas &lt; max_crowd_vitas);
+        require(now >= crowd_start_date && now <= crowd_end_date);
+        require(collected_crowd_vitas < max_crowd_vitas);
         uint tokens;
-        if(now &lt;= crowd_start_date + extra_bonus_duration){
+        if(now <= crowd_start_date + extra_bonus_duration){
             tokens = msg.value * (ETH_VTA + extra_bonus_amount);
-        }else if(now &lt;= crowd_start_date + extra_bonus_duration + first_bonus_duration){
+        }else if(now <= crowd_start_date + extra_bonus_duration + first_bonus_duration){
             tokens = msg.value * (ETH_VTA + first_bonus_amount);
-        }else if(now &lt;= crowd_start_date + extra_bonus_duration + first_bonus_duration + second_bonus_duration){
+        }else if(now <= crowd_start_date + extra_bonus_duration + first_bonus_duration + second_bonus_duration){
             tokens = msg.value * (ETH_VTA + second_bonus_amount);
         }else{
             tokens = msg.value * (ETH_VTA + third_bonus_amount);

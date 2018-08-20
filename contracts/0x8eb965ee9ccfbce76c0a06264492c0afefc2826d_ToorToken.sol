@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -81,7 +81,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -90,7 +90,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -107,9 +107,9 @@ contract ToorToken is ERC20Basic, Ownable {
         uint lastInterval;
     }
 
-    mapping(address =&gt; Account) public accounts;
-    mapping(uint256 =&gt; uint256) ratesByYear;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => Account) public accounts;
+    mapping(uint256 => uint256) ratesByYear;
+    mapping (address => mapping (address => uint256)) internal allowed;
     uint256 private rateMultiplier;
 
     uint256 initialSupply_;
@@ -137,7 +137,7 @@ contract ToorToken is ERC20Basic, Ownable {
     bool public rewardGenerationComplete;
 
     // Ether addresses of founders and company
-    mapping(uint256 =&gt; address) public distributionAddresses;
+    mapping(uint256 => address) public distributionAddresses;
 
     // Events section
     event Mint(address indexed to, uint256 amount);
@@ -145,9 +145,9 @@ contract ToorToken is ERC20Basic, Ownable {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function ToorToken() public {
-        name = &quot;ToorCoin&quot;;
+        name = "ToorCoin";
         decimals = 18;
-        symbol = &quot;TOOR&quot;;
+        symbol = "TOOR";
 
         // Setup the token staking reward percentage per year
         rateMultiplier = 10**9;
@@ -233,12 +233,12 @@ contract ToorToken is ERC20Basic, Ownable {
         // Distribute rewards tokens first
         if (!rewardGenerationComplete) {
             tokensOwedSender = tokensOwed(_from);
-            require(_value &lt;= (balSender.add(tokensOwedSender))); // Sender should have the number of tokens they want to send
+            require(_value <= (balSender.add(tokensOwedSender))); // Sender should have the number of tokens they want to send
 
             tokensOwedReceiver = tokensOwed(_to);
 
             // If there were tokens owed, increase total supply accordingly
-            if ((tokensOwedSender.add(tokensOwedReceiver)) &gt; 0) {
+            if ((tokensOwedSender.add(tokensOwedReceiver)) > 0) {
                 increaseTotalSupply(tokensOwedSender.add(tokensOwedReceiver)); // This will break if total exceeds max cap
                 pendingRewardsToMint = pendingRewardsToMint.sub(tokensOwedSender.add(tokensOwedReceiver));
             }
@@ -247,7 +247,7 @@ contract ToorToken is ERC20Basic, Ownable {
             raiseEventIfMinted(_from, tokensOwedSender);
             raiseEventIfMinted(_to, tokensOwedReceiver);
         } else {
-            require(_value &lt;= balSender);
+            require(_value <= balSender);
         }
         
         // Update balances of sender and receiver
@@ -268,7 +268,7 @@ contract ToorToken is ERC20Basic, Ownable {
         uint256 amount = cnt.mul(_value);
         
         // Check that the value to send is more than 0
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Add pending rewards for sender first
         if (!rewardGenerationComplete) {
@@ -279,7 +279,7 @@ contract ToorToken is ERC20Basic, Ownable {
         uint256 balSender = balanceOfBasic(msg.sender);
 
         // Check that the sender has the required amount
-        require(balSender &gt;= amount);
+        require(balSender >= amount);
 
         // Update balance and lastInterval of sender
         accounts[msg.sender].balance = balSender.sub(amount);
@@ -287,7 +287,7 @@ contract ToorToken is ERC20Basic, Ownable {
         accounts[msg.sender].lastInterval = currInt;
         
         
-        for (uint i = 0; i &lt; cnt; i++) {
+        for (uint i = 0; i < cnt; i++) {
             // Add pending rewards for receiver first
             if (!rewardGenerationComplete) {
                 address receiver = _receivers[i];
@@ -304,12 +304,12 @@ contract ToorToken is ERC20Basic, Ownable {
         return true;
     }
 
-    // This function allows someone to withdraw tokens from someone&#39;s address
+    // This function allows someone to withdraw tokens from someone's address
     // For this to work, the person needs to have been approved by the account owner (via the approve function)
     function transferFrom(address _from, address _to, uint256 _value) canTransfer(_to) public returns (bool)
     {
         // Check that function caller has been approved to withdraw tokens
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Call out base transfer method
         transferBasic(_from, _to, _value);
@@ -325,7 +325,7 @@ contract ToorToken is ERC20Basic, Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -364,7 +364,7 @@ contract ToorToken is ERC20Basic, Ownable {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -374,7 +374,7 @@ contract ToorToken is ERC20Basic, Ownable {
     }
 
     function raiseEventIfMinted(address owner, uint256 tokensToReward) private returns (bool) {
-        if (tokensToReward &gt; 0) {
+        if (tokensToReward > 0) {
             generateMintEvents(owner, tokensToReward);
         }
     }
@@ -382,7 +382,7 @@ contract ToorToken is ERC20Basic, Ownable {
     function addReward(address owner) private returns (bool) {
         uint256 tokensToReward = tokensOwed(owner);
 
-        if (tokensToReward &gt; 0) {
+        if (tokensToReward > 0) {
             increaseTotalSupply(tokensToReward); // This will break if total supply exceeds max cap. Should never happen though as tokensOwed checks for this condition
             accounts[owner].balance = accounts[owner].balance.add(tokensToReward);
             accounts[owner].lastInterval = intervalAtTime(now);
@@ -394,16 +394,16 @@ contract ToorToken is ERC20Basic, Ownable {
     }
 
     // This function is to vest tokens to the founding team
-    // This deliberately doesn&#39;t use SafeMath as all the values are controlled without risk of overflow
+    // This deliberately doesn't use SafeMath as all the values are controlled without risk of overflow
     function vestTokens() public returns (bool) {
-        require(pendingInstallments &gt; 0);
-        require(paidInstallments &lt; 7);
-        require(pendingVestingPool &gt; 0);
-        require(now - startTime &gt; cliff);
+        require(pendingInstallments > 0);
+        require(paidInstallments < 7);
+        require(pendingVestingPool > 0);
+        require(now - startTime > cliff);
 
         // If they have rewards pending, allocate those first
         if (!rewardGenerationComplete) {
-            for (uint256 i = 1; i &lt;= 5; i++) {
+            for (uint256 i = 1; i <= 5; i++) {
                 addReward(distributionAddresses[i]);
             }
         }
@@ -429,7 +429,7 @@ contract ToorToken is ERC20Basic, Ownable {
         rewardCat[1] = 0;
 
         // Pay out cliff
-        if (paidInstallments &lt; 1) {
+        if (paidInstallments < 1) {
             uint256 intervalAtCliff = intervalAtTime(cliff + startTime);
             tokensToVest = totalPool / 4;
 
@@ -440,7 +440,7 @@ contract ToorToken is ERC20Basic, Ownable {
             pendingVestingPool -= tokensToVest;
 
             // This condition checks if there are any rewards to pay after the cliff
-            if (currInterval &gt; intervalAtCliff &amp;&amp; !rewardGenerationComplete) {
+            if (currInterval > intervalAtCliff && !rewardGenerationComplete) {
                 rewardCat[0] = tokensOwedByInterval(founderCat[0], intervalAtCliff, currInterval);
                 rewardCat[1] = rewardCat[0] / 2;
 
@@ -474,8 +474,8 @@ contract ToorToken is ERC20Basic, Ownable {
         uint256 installmentsToPay = installments + 1 - paidInstallments;
 
         // If there are no installments to pay, skip this
-        if (installmentsToPay &gt; 0) {
-            if (installmentsToPay &gt; pendingInstallments) {
+        if (installmentsToPay > 0) {
+            if (installmentsToPay > pendingInstallments) {
                 installmentsToPay = pendingInstallments;
             }
 
@@ -488,11 +488,11 @@ contract ToorToken is ERC20Basic, Ownable {
             uint256 intervalsAtVest = 0;
 
             // Loop through installments to pay, so that we can add token holding rewards as we go along
-            for (uint256 installment = paidInstallments; installment &lt; (installmentsToPay + paidInstallments); installment++) {
+            for (uint256 installment = paidInstallments; installment < (installmentsToPay + paidInstallments); installment++) {
                 intervalsAtVest = intervalAtTime(cliff + (installment * vestingPeriod) + startTime);
 
                 // This condition checks if there are any rewards to pay after the cliff
-                if (currInterval &gt;= intervalsAtVest &amp;&amp; !rewardGenerationComplete) {
+                if (currInterval >= intervalsAtVest && !rewardGenerationComplete) {
                     rewardCat[0] = tokensOwedByInterval(founderCat[0], intervalsAtVest, currInterval);
                     rewardCat[1] = rewardCat[0] / 2;
 
@@ -536,7 +536,7 @@ contract ToorToken is ERC20Basic, Ownable {
     }
 
     function increaseTotalSupply (uint256 tokens) private returns (bool) {
-        require ((totalSupply_.add(tokens)) &lt;= maxSupply);
+        require ((totalSupply_.add(tokens)) <= maxSupply);
         totalSupply_ = totalSupply_.add(tokens);
 
         return true;
@@ -552,8 +552,8 @@ contract ToorToken is ERC20Basic, Ownable {
     }
 
     function tokensOwedByInterval(uint256 balance, uint256 lastInterval, uint256 currInterval) public view returns (uint256) {
-        // Once the specified address has received all possible rewards, don&#39;t calculate anything
-        if (lastInterval &gt;= currInterval || lastInterval &gt;= finalIntervalForTokenGen) {
+        // Once the specified address has received all possible rewards, don't calculate anything
+        if (lastInterval >= currInterval || lastInterval >= finalIntervalForTokenGen) {
             return 0;
         }
 
@@ -564,23 +564,23 @@ contract ToorToken is ERC20Basic, Ownable {
         // Defines the number of intervals we compute rewards for at a time
         uint256 intPerBatch = 5; // Hardcoded here instead of storing on blockchain to save gas
 
-        mapping(uint256 =&gt; uint256) ratByYear = ratesByYear;
+        mapping(uint256 => uint256) ratByYear = ratesByYear;
         uint256 ratMultiplier = rateMultiplier;
 
         uint256 minRateWindow = (lastInterval / intPerWin).add(1);
         uint256 maxRateWindow = (currInterval / intPerWin).add(1);
-        if (maxRateWindow &gt; totalRateWinds) {
+        if (maxRateWindow > totalRateWinds) {
             maxRateWindow = totalRateWinds;
         }
 
         // Loop through pending periods of rewards, and calculate the total balance user should hold
-        for (uint256 rateWindow = minRateWindow; rateWindow &lt;= maxRateWindow; rateWindow++) {
+        for (uint256 rateWindow = minRateWindow; rateWindow <= maxRateWindow; rateWindow++) {
             uint256 intervals = getIntervalsForWindow(rateWindow, lastInterval, currInterval, intPerWin);
 
-            // This part is to ensure we don&#39;t overflow when rewards are pending for a large number of intervals
+            // This part is to ensure we don't overflow when rewards are pending for a large number of intervals
             // Loop through interval in batches
-            while (intervals &gt; 0) {
-                if (intervals &gt;= intPerBatch) {
+            while (intervals > 0) {
+                if (intervals >= intPerBatch) {
                     tokensHeld = (tokensHeld.mul(ratByYear[rateWindow] ** intPerBatch)) / (ratMultiplier ** intPerBatch);
                     intervals = intervals.sub(intPerBatch);
                 } else {
@@ -596,7 +596,7 @@ contract ToorToken is ERC20Basic, Ownable {
 
     function intervalAtTime(uint256 time) public view returns (uint256) {
         // Check to see that time passed in is not before contract generation time, as that would cause a negative value in the next step
-        if (time &lt;= startTime) {
+        if (time <= startTime) {
             return 0;
         }
 
@@ -604,8 +604,8 @@ contract ToorToken is ERC20Basic, Ownable {
         uint256 interval = (time.sub(startTime)) / tokenGenInterval;
         uint256 finalInt = finalIntervalForTokenGen; // Assign to local to reduce gas
         
-        // Return max intervals if it&#39;s greater than that time
-        if (interval &gt; finalInt) {
+        // Return max intervals if it's greater than that time
+        if (interval > finalInt) {
             return finalInt;
         } else {
             return interval;
@@ -615,12 +615,12 @@ contract ToorToken is ERC20Basic, Ownable {
     // This function checks how many intervals for a given window do we owe tokens to someone for 
     function getIntervalsForWindow(uint256 rateWindow, uint256 lastInterval, uint256 currInterval, uint256 intPerWind) public pure returns (uint256) {
         // If lastInterval for holder falls in a window previous to current one, the lastInterval for the window passed into the function would be the window start interval
-        if (lastInterval &lt; ((rateWindow.sub(1)).mul(intPerWind))) {
+        if (lastInterval < ((rateWindow.sub(1)).mul(intPerWind))) {
             lastInterval = ((rateWindow.sub(1)).mul(intPerWind));
         }
 
         // If currentInterval for holder falls in a window higher than current one, the currentInterval for the window passed into the function would be the window end interval
-        if (currInterval &gt; rateWindow.mul(intPerWind)) {
+        if (currInterval > rateWindow.mul(intPerWind)) {
             currInterval = rateWindow.mul(intPerWind);
         }
 
@@ -645,7 +645,7 @@ contract ToorToken is ERC20Basic, Ownable {
         return (accounts[_owner].lastInterval, ((accounts[_owner].lastInterval).mul(tokenGenInterval)).add(startTime));
     }
 
-    // This function is not meant to be used. It&#39;s only written as a fail-safe against potential unforeseen issues
+    // This function is not meant to be used. It's only written as a fail-safe against potential unforeseen issues
     function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
         // Add pending rewards for recipient of minted tokens
         if (!rewardGenerationComplete) {
@@ -672,7 +672,7 @@ contract ToorToken is ERC20Basic, Ownable {
 
     // Allows the burning of tokens
     function burn(uint256 _value) public {
-        require(_value &lt;= balanceOf(msg.sender));
+        require(_value <= balanceOf(msg.sender));
 
         // First add any rewards pending for the person burning tokens
         if (!rewardGenerationComplete) {

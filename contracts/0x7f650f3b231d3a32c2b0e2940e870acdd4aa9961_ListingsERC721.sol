@@ -187,9 +187,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -197,7 +197,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -206,7 +206,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -228,10 +228,10 @@ contract ListingsERC721 is Ownable {
     event ListingCancelled(bytes32 indexed listingId, uint256 dateCancelled);
     event ListingBought(bytes32 indexed listingId, address tokenContractAddress, uint256 price, uint256 amount, uint256 dateBought, address buyer);
 
-    string constant public VERSION = &quot;1.0.1&quot;;
+    string constant public VERSION = "1.0.1";
     uint16 constant public GAS_LIMIT = 4999;
     uint256 public ownerPercentage;
-    mapping (bytes32 =&gt; Listing) public listings;
+    mapping (bytes32 => Listing) public listings;
 
     constructor (uint256 percentage) public {
         ownerPercentage = percentage;
@@ -259,10 +259,10 @@ contract ListingsERC721 is Ownable {
     }
 
     function createListing(address tokenContractAddress, uint256 price, uint256 allowance, uint256 dateEnds, uint256 salt) external {
-        require(price &gt; 0, &quot;price less than zero&quot;);
-        require(allowance &gt; 0, &quot;allowance less than zero&quot;);
-        require(dateEnds &gt; 0, &quot;dateEnds less than zero&quot;);
-        require(ERC721(tokenContractAddress).ownerOf(allowance) == msg.sender, &quot;user doesn&#39;t own this token&quot;);
+        require(price > 0, "price less than zero");
+        require(allowance > 0, "allowance less than zero");
+        require(dateEnds > 0, "dateEnds less than zero");
+        require(ERC721(tokenContractAddress).ownerOf(allowance) == msg.sender, "user doesn't own this token");
         bytes32 listingId = getHashInternal(tokenContractAddress, price, allowance, dateEnds, salt);
         Listing memory listing = Listing(msg.sender, tokenContractAddress, price, allowance, now, dateEnds);
         listings[listingId] = listing;
@@ -284,14 +284,14 @@ contract ListingsERC721 is Ownable {
         uint256 tokenId = listing.allowance;
         ERC721 tokenContract = ERC721(contractAddress);
         //make sure listing is still available
-        require(now &lt;= listing.dateEnds);
+        require(now <= listing.dateEnds);
         //make sure that the seller still has that amount to sell
-        require(tokenContract.ownerOf(tokenId) == seller, &quot;user doesn&#39;t own this token&quot;);
+        require(tokenContract.ownerOf(tokenId) == seller, "user doesn't own this token");
         //make sure that the seller still will allow that amount to be sold
         require(tokenContract.getApproved(tokenId) == address(this));
         require(msg.value == price);
         tokenContract.transferFrom(seller, msg.sender, tokenId);
-        if (ownerPercentage &gt; 0) {
+        if (ownerPercentage > 0) {
             seller.transfer(price - (listing.price.mul(ownerPercentage).div(10000)));
         } else {
             seller.transfer(price);

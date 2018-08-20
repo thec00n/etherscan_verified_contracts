@@ -5,7 +5,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -42,7 +42,7 @@ contract Ownable {
 
 contract TariInvestment is Ownable {
 
-  // These are addresses that shouldn&#39;t consume too much gas in their fallback functions if they are contracts.
+  // These are addresses that shouldn't consume too much gas in their fallback functions if they are contracts.
   // Address of the target contract
   address public investmentAddress = 0x33eFC5120D99a63bdF990013ECaBbd6c900803CE;
   // Major partner address
@@ -50,7 +50,7 @@ contract TariInvestment is Ownable {
   // Minor partner address
   address public minorPartnerAddress = 0xC787C3f6F75D7195361b64318CE019f90507f806;
   // Record balances to allow refunding
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
   // Total received. Used for refunding.
   uint totalInvestment;
   // Available refunds. Used for refunding.
@@ -81,7 +81,7 @@ contract TariInvestment is Ownable {
   // Transfer some funds to the target investment address.
   // It is expected of all addresses to allow low gas transferrals of ether.
   function execute_transfer(uint transfer_amount) public onlyOwner {
-    // Close down investments. Transferral of funds shouldn&#39;t be possible during refunding.
+    // Close down investments. Transferral of funds shouldn't be possible during refunding.
     State current_state = state;
     if (current_state == State.Open)
       state = State.Closed;
@@ -107,7 +107,7 @@ contract TariInvestment is Ownable {
   // Only available once refunds are enabled.
   function withdraw() public {
     if (state != State.Refunding) {
-      require(refundingDeadline &lt;= now);
+      require(refundingDeadline <= now);
       state = State.Refunding;
       availableRefunds = this.balance;
     }

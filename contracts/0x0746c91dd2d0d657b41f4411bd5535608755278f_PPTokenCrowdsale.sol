@@ -53,9 +53,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -63,7 +63,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -72,7 +72,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -86,7 +86,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -104,7 +104,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -131,7 +131,7 @@ contract ERC20 is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -142,8 +142,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -261,9 +261,9 @@ contract BurnableToken is MintableToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -276,9 +276,9 @@ contract BurnableToken is MintableToken {
 contract PPToken is BurnableToken{
     using SafeMath for uint256;
     
-    string public constant name = &quot;PayPortalToken&quot;;
+    string public constant name = "PayPortalToken";
     
-    string public constant symbol = &quot;PPTL&quot;;
+    string public constant symbol = "PPTL";
     
     uint32 public constant decimals = 18;
     
@@ -288,7 +288,7 @@ contract PPToken is BurnableToken{
     
     
     function PPToken(uint256 initialSupply, uint256 _freezTime) public{
-        require(initialSupply &gt; 0 &amp;&amp; now &lt;= _freezTime);
+        require(initialSupply > 0 && now <= _freezTime);
         totalSupply_ = initialSupply * 10 ** uint256(decimals);
         balances[owner] = totalSupply_;
         emit Mint(owner, totalSupply_);
@@ -320,13 +320,13 @@ contract PPToken is BurnableToken{
     }
     
     function setFreezTime(uint256 _freezTime) public onlyOwner{
-        require(_freezTime &lt;= 1531699200);//16 july 2018
+        require(_freezTime <= 1531699200);//16 july 2018
         freezTime = _freezTime;
     }
     
     function saleTokens(address _to, uint256 _value) public onlySaleAgent returns (bool){
         require(_to != address(0));
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
     
         // SafeMath.sub will throw if there is not enough balance.
         balances[owner] = balances[owner].sub(_value);
@@ -337,7 +337,7 @@ contract PPToken is BurnableToken{
         return true;
     }
     function hasPastFreezTime() public view returns(bool){
-        return now &gt;= freezTime;
+        return now >= freezTime;
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
@@ -382,7 +382,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, PPToken _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -530,7 +530,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -539,7 +539,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -552,7 +552,7 @@ contract CappedCrowdsale is Crowdsale {
     require(_beneficiary != address(0));
     require(_weiAmount != 0);
     //require(!capReached());
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -566,7 +566,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -576,8 +576,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -588,7 +588,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -610,7 +610,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -637,7 +637,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -697,44 +697,44 @@ contract RefundVault is Ownable {
 contract StagebleCrowdsale is FinalizableCrowdsale{
     using SafeMath for uint256;
     
-    mapping (uint256 =&gt; mapping (string =&gt; uint256)) internal stage;
+    mapping (uint256 => mapping (string => uint256)) internal stage;
     uint256 internal countStages;
     
     function StagebleCrowdsale() public {
-        stage[0][&quot;bonus&quot;] = 30;
-        stage[0][&quot;cap&quot;] = (rate * (6000 ether)); // rate * (6000 ether)
-        stage[0][&quot;tranmin&quot;] = (1 ether);
-        stage[0][&quot;closeTime&quot;] = 1529280000;//18.06.2018 - 1529280000
+        stage[0]["bonus"] = 30;
+        stage[0]["cap"] = (rate * (6000 ether)); // rate * (6000 ether)
+        stage[0]["tranmin"] = (1 ether);
+        stage[0]["closeTime"] = 1529280000;//18.06.2018 - 1529280000
         
-        stage[1][&quot;bonus&quot;] = 20;
-        stage[1][&quot;cap&quot;] = (rate * (6000 ether)); // rate * (6000 ether)
-        stage[1][&quot;tranmin&quot;] = (1 ether)/10;
-        stage[1][&quot;closeTime&quot;] = 1529884800;//25.06.2018 - 1529884800
+        stage[1]["bonus"] = 20;
+        stage[1]["cap"] = (rate * (6000 ether)); // rate * (6000 ether)
+        stage[1]["tranmin"] = (1 ether)/10;
+        stage[1]["closeTime"] = 1529884800;//25.06.2018 - 1529884800
         
-        stage[2][&quot;bonus&quot;] = 10;
-        stage[2][&quot;cap&quot;] = (rate * (6000 ether));// rate * (6000 ether)
-        stage[2][&quot;tranmin&quot;] = (1 ether)/10;
-        stage[2][&quot;closeTime&quot;] = 1531094400;//09.07.2018 - 1531094400
+        stage[2]["bonus"] = 10;
+        stage[2]["cap"] = (rate * (6000 ether));// rate * (6000 ether)
+        stage[2]["tranmin"] = (1 ether)/10;
+        stage[2]["closeTime"] = 1531094400;//09.07.2018 - 1531094400
         
-        stage[3][&quot;bonus&quot;] = 0;
-        stage[3][&quot;cap&quot;] = token.totalSupply();
-        stage[3][&quot;tranmin&quot;] = 0;
-        stage[3][&quot;closeTime&quot;] = closingTime;
+        stage[3]["bonus"] = 0;
+        stage[3]["cap"] = token.totalSupply();
+        stage[3]["tranmin"] = 0;
+        stage[3]["closeTime"] = closingTime;
         
         countStages = 4;
     }
 
     function getStageBonus(uint256 _index) public view returns(uint256){
-        return stage[_index][&quot;bonus&quot;];
+        return stage[_index]["bonus"];
     }
     function getStageAvailableTokens(uint256 _index) public view returns(uint256){
-        return stage[_index][&quot;cap&quot;];
+        return stage[_index]["cap"];
     }
     function getStageMinWeiAmount(uint256 _index) public view returns(uint256){
-        return stage[_index][&quot;tranmin&quot;];
+        return stage[_index]["tranmin"];
     }
     function getStageClosingTime(uint256 _index) public view returns(uint256){
-        return stage[_index][&quot;closeTime&quot;];
+        return stage[_index]["closeTime"];
     }
     function getCurrentStageIndex() public view returns(uint256){
         return _getInStageIndex();
@@ -745,26 +745,26 @@ contract StagebleCrowdsale is FinalizableCrowdsale{
 
     function _getBonus(uint256 _stageIndex, uint256 _leftcap) internal returns(uint256){
         uint256 bonuses = 0;
-        if(_stageIndex &lt; countStages)
+        if(_stageIndex < countStages)
         {
-            if(stage[_stageIndex][&quot;cap&quot;] &gt;= _leftcap)
+            if(stage[_stageIndex]["cap"] >= _leftcap)
             {
-                if(stage[_stageIndex][&quot;bonus&quot;] &gt; 0)
+                if(stage[_stageIndex]["bonus"] > 0)
                 {
-                    bonuses = bonuses.add(_leftcap.mul(stage[_stageIndex][&quot;bonus&quot;]).div(100));
+                    bonuses = bonuses.add(_leftcap.mul(stage[_stageIndex]["bonus"]).div(100));
                 }
-                stage[_stageIndex][&quot;cap&quot;] = stage[_stageIndex][&quot;cap&quot;].sub(_leftcap);
+                stage[_stageIndex]["cap"] = stage[_stageIndex]["cap"].sub(_leftcap);
             }
             else
             {
-                _leftcap = _leftcap.sub(stage[_stageIndex][&quot;cap&quot;]);
-                if(stage[_stageIndex][&quot;cap&quot;] &gt; 0)
+                _leftcap = _leftcap.sub(stage[_stageIndex]["cap"]);
+                if(stage[_stageIndex]["cap"] > 0)
                 {
-                    if(stage[_stageIndex][&quot;bonus&quot;] &gt; 0)
+                    if(stage[_stageIndex]["bonus"] > 0)
                     {
-                        bonuses = bonuses.add(stage[_stageIndex][&quot;cap&quot;].mul(stage[_stageIndex][&quot;bonus&quot;]).div(100));
+                        bonuses = bonuses.add(stage[_stageIndex]["cap"].mul(stage[_stageIndex]["bonus"]).div(100));
                     }
-                    stage[_stageIndex][&quot;cap&quot;] = 0;
+                    stage[_stageIndex]["cap"] = 0;
                 }
                 bonuses = bonuses.add(_getBonus(_stageIndex.add(1), _leftcap));
             }
@@ -772,11 +772,11 @@ contract StagebleCrowdsale is FinalizableCrowdsale{
         return bonuses;
     }
     function _isInStage(uint256 _stageIndex) internal view returns (bool){
-        return now &lt; stage[_stageIndex][&quot;closeTime&quot;] &amp;&amp; stage[_stageIndex][&quot;cap&quot;] &gt; 0;
+        return now < stage[_stageIndex]["closeTime"] && stage[_stageIndex]["cap"] > 0;
     }
     function _getInStageIndex () internal view returns(uint256){
         uint256 _index = 0;
-        while(_index &lt; countStages)
+        while(_index < countStages)
         {
             if(_isInStage(_index))
                 return _index;
@@ -794,8 +794,8 @@ contract StagebleCrowdsale is FinalizableCrowdsale{
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
         uint256 _index = _getInStageIndex();
-        if(stage[_index][&quot;tranmin&quot;] &gt; 0)
-            require(stage[_index][&quot;tranmin&quot;] &lt;= _weiAmount);
+        if(stage[_index]["tranmin"] > 0)
+            require(stage[_index]["tranmin"] <= _weiAmount);
     }
 
 }
@@ -818,7 +818,7 @@ contract RefundableCrowdsale is StagebleCrowdsale {
    * @param _goal Funding goal
    */
   function RefundableCrowdsale(uint256 _goal, uint256 _advPercent) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
     advPercent = _advPercent;
@@ -839,7 +839,7 @@ contract RefundableCrowdsale is StagebleCrowdsale {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /**
@@ -860,7 +860,7 @@ contract RefundableCrowdsale is StagebleCrowdsale {
    */
   function _forwardFunds() internal {
     vault.deposit.value(msg.value)(msg.sender);
-    if(!advIsCalc &amp;&amp;_getInStageIndex () &gt; 0 &amp;&amp; goalReached() &amp;&amp; advWallet != address(0))
+    if(!advIsCalc &&_getInStageIndex () > 0 && goalReached() && advWallet != address(0))
     {
         //Send ETH to advisor, after to stage 1
         uint256 advAmount = 0;

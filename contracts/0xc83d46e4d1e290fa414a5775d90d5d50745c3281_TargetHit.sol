@@ -1,13 +1,13 @@
 pragma solidity ^0.4.16;
 
 contract TargetHit {
-    string public name = &quot;Target Hit&quot;;      //  token name
-    string public symbol = &quot;TGH&quot;;           //  token symbol
-    string public version = &quot;1&quot;;
+    string public name = "Target Hit";      //  token name
+    string public symbol = "TGH";           //  token symbol
+    string public version = "1";
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 33333333300000000;
 
@@ -54,9 +54,9 @@ contract TargetHit {
     function buy() public payable returns (uint amount){
         require(stopped == false);
         amount = msg.value / price;                    // calculates the amount
-        require(balanceOf[owner] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[owner] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[owner] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[owner] -= amount;                        // subtracts amount from seller's balance
         owner.transfer(msg.value);
         emit Transfer(owner, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
@@ -68,9 +68,9 @@ contract TargetHit {
     }
 
     function deployTokens (uint256[] _amounts, address[] _recipient) public isOwner {
-        for(uint i = 0; i&lt; _recipient.length; i++)
+        for(uint i = 0; i< _recipient.length; i++)
         {
-            if (_amounts[i] &gt; 0) {
+            if (_amounts[i] > 0) {
               if (transferfromOwner(_recipient[i], _amounts[i])){
                 totalSupply = totalSupply - _amounts[i];
               }
@@ -79,8 +79,8 @@ contract TargetHit {
     }
 
     function transferfromOwner(address _to, uint256 _value) private returns (bool success) {
-        require(balanceOf[owner] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[owner] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[owner] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(owner, _to, _value);
@@ -88,8 +88,8 @@ contract TargetHit {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);

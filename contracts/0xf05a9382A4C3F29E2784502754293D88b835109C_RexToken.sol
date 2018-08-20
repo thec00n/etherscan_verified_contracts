@@ -21,7 +21,7 @@ contract FinalizableToken {
 contract BasicToken is FinalizableToken, ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -49,7 +49,7 @@ contract BasicToken is FinalizableToken, ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -64,7 +64,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -83,7 +83,7 @@ contract StandardToken is ERC20, BasicToken {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -103,8 +103,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract SimpleToken is StandardToken {
 
-  string public name = &quot;SimpleToken&quot;;
-  string public symbol = &quot;SIM&quot;;
+  string public name = "SimpleToken";
+  string public symbol = "SIM";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 10000;
 
@@ -165,50 +165,50 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 contract RexToken is StandardToken, Ownable {
 
   function version() constant returns (bytes32) {
-      return &quot;0.1.2-debug&quot;;
+      return "0.1.2-debug";
   }
 
-  string public constant name = &quot;REX - Real Estate tokens&quot;;
-  string public constant symbol = &quot;REX&quot;;
+  string public constant name = "REX - Real Estate tokens";
+  string public constant symbol = "REX";
   uint256 public constant decimals = 18;
 
   uint256 constant BASE_RATE = 700;
@@ -260,15 +260,15 @@ contract RexToken is StandardToken, Ownable {
   function createTokens(address recipient) payable {
     if (tokenSaleOnHold) revert();
     if (msg.value == 0) revert();
-    if (now &lt; startTime) revert();
-    if (now &gt; startTime + DURATION) revert();
+    if (now < startTime) revert();
+    if (now > startTime + DURATION) revert();
 
     uint256 weiAmount = msg.value;
 
-    if (weiRaised &gt;= WEI_RAISED_CAP) revert();
+    if (weiRaised >= WEI_RAISED_CAP) revert();
 
     //if funder sent more than the remaining amount then send them a refund of the difference
-    if ((weiRaised + weiAmount) &gt; WEI_RAISED_CAP) {
+    if ((weiRaised + weiAmount) > WEI_RAISED_CAP) {
       weiAmount = WEI_RAISED_CAP - weiRaised;
       if (!msg.sender.send(msg.value - weiAmount)) 
         revert();
@@ -291,18 +291,18 @@ contract RexToken is StandardToken, Ownable {
   // return dynamic pricing
   function getRate() constant returns (uint256) {
     uint256 bonus = 0;
-    if (now &lt; (startTime + 1 weeks)) {
+    if (now < (startTime + 1 weeks)) {
       bonus = 300;
-    } else if (now &lt; (startTime + 2 weeks)) {
+    } else if (now < (startTime + 2 weeks)) {
       bonus = 200;
-    } else if (now &lt; (startTime + 3 weeks)) {
+    } else if (now < (startTime + 3 weeks)) {
       bonus = 100;
     }
     return BASE_RATE.add(bonus);
   }
 
   function tokenAmount(uint256 share, uint256 finalSupply) constant returns (uint) {
-    if (share &gt; TOTAL_SHARE) revert();
+    if (share > TOTAL_SHARE) revert();
 
     return share.mul(finalSupply).div(TOTAL_SHARE);
   }
@@ -325,7 +325,7 @@ contract RexToken is StandardToken, Ownable {
     if (isFinalized) revert();
 
     //if we are under the cap and not hit the duration then throw
-    if (weiRaised &lt; WEI_RAISED_CAP &amp;&amp; now &lt;= startTime + DURATION) revert();
+    if (weiRaised < WEI_RAISED_CAP && now <= startTime + DURATION) revert();
 
     uint256 finalSupply = getFinalSupply();
 
@@ -356,7 +356,7 @@ contract RexToken is StandardToken, Ownable {
     uint amount;
   }
 
-  mapping(address =&gt; structMigrate) pendingMigrations;
+  mapping(address => structMigrate) pendingMigrations;
 
   function toggleMigrationStatus() onlyOwner() {
     if (migrateDisabled)
@@ -376,7 +376,7 @@ contract RexToken is StandardToken, Ownable {
       revert();
 
     //dont proceed if there is pending value
-    if (pendingMigrations[msg.sender].amount &gt; 0)
+    if (pendingMigrations[msg.sender].amount > 0)
       revert();
 
 
@@ -399,7 +399,7 @@ contract RexToken is StandardToken, Ownable {
       revert();
 
     //can only claim after a week has passed
-    if (now &lt; pendingMigrations[msg.sender].dateTimeCreated + 1 weeks)
+    if (now < pendingMigrations[msg.sender].dateTimeCreated + 1 weeks)
       revert();
 
     //credit the balances

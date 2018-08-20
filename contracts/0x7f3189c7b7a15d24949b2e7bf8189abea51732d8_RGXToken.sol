@@ -50,7 +50,7 @@ contract Token {
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -58,11 +58,11 @@ Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -72,8 +72,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -96,8 +96,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 /*
 
@@ -127,7 +127,7 @@ contract RGXToken is StandardToken {
     string public name;
     string public symbol;
     uint8 public decimals = 0;
-    string public version = &#39;v1&#39;;
+    string public version = 'v1';
     
     /* RGX */
     address owner; 
@@ -137,7 +137,7 @@ contract RGXToken is StandardToken {
     uint8 public discountMultiplier;
     
     modifier fundingOpen() {
-        require(now &gt;= fundingStart);
+        require(now >= fundingStart);
         _;
     }
     
@@ -152,9 +152,9 @@ contract RGXToken is StandardToken {
         
         uint256 _value = msg.value / 1 finney;
 
-        require(_value &gt;= minContrib); 
+        require(_value >= minContrib); 
         
-        require(balances[owner] &gt;= (_value - frozenSupply) &amp;&amp; _value &gt; 0); 
+        require(balances[owner] >= (_value - frozenSupply) && _value > 0); 
         
         balances[owner] -= _value;
         balances[msg.sender] += _value;
@@ -179,11 +179,11 @@ contract RGXToken is StandardToken {
     }
     
     function isFundingOpen() constant returns (bool yes) {
-        return (now &gt;= fundingStart);
+        return (now >= fundingStart);
     }
     
     function freezeSupply(uint256 _value) onlyBy(owner) {
-        require(balances[owner] &gt;= _value);
+        require(balances[owner] >= _value);
         frozenSupply = _value;
     }
     

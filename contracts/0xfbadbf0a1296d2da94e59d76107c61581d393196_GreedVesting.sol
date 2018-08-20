@@ -46,7 +46,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,19 +92,19 @@ contract Ownable {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -120,20 +120,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -153,14 +153,14 @@ contract GreedVesting is Ownable {
   event Revoked(address beneficiary);
 
   uint256 public totalVesting;
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
-  mapping (address =&gt; bool) public revocables;
-  mapping (address =&gt; uint256) public durations;
-  mapping (address =&gt; uint256) public starts;
-  mapping (address =&gt; uint256) public cliffs; 
-  mapping (address =&gt; uint256) public amounts; 
-  mapping (address =&gt; uint256) public refunded; 
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
+  mapping (address => bool) public revocables;
+  mapping (address => uint256) public durations;
+  mapping (address => uint256) public starts;
+  mapping (address => uint256) public cliffs; 
+  mapping (address => uint256) public amounts; 
+  mapping (address => uint256) public refunded; 
        
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -175,13 +175,13 @@ contract GreedVesting is Ownable {
    */
   function addVesting(ERC20Basic greed, address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, uint256 _amount, bool _revocable) public onlyOwner {
     require(_beneficiary != 0x0);
-    require(_amount &gt; 0);
+    require(_amount > 0);
     // Make sure that a single address can be granted tokens only once.
     require(starts[_beneficiary] == 0);
     // Check for date inconsistencies that may cause unexpected behavior.
-    require(_cliff &lt;= _duration);
-    // Check that this grant doesn&#39;t exceed the total amount of tokens currently available for vesting.
-    require(totalVesting.add(_amount) &lt;= greed.balanceOf(address(this)));
+    require(_cliff <= _duration);
+    // Check that this grant doesn't exceed the total amount of tokens currently available for vesting.
+    require(totalVesting.add(_amount) <= greed.balanceOf(address(this)));
 
 	revocables[_beneficiary] = _revocable;
     durations[_beneficiary] = _duration;
@@ -202,7 +202,7 @@ contract GreedVesting is Ownable {
 
     uint256 unreleased = releasableAmount(beneficiary);
     
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[beneficiary] = released[beneficiary].add(unreleased);
 
@@ -235,7 +235,7 @@ contract GreedVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param beneficiary address of the beneficiary to whom vested tokens are transferred
    * 
    */
@@ -250,9 +250,9 @@ contract GreedVesting is Ownable {
   function vestedAmount(address beneficiary) public constant returns (uint256) {
     uint256 totalBalance = amounts[beneficiary].sub(refunded[beneficiary]);
 
-    if (now &lt; cliffs[beneficiary]) {
+    if (now < cliffs[beneficiary]) {
       return 0;
-    } else if (now &gt;= starts[beneficiary] + durations[beneficiary] || revoked[beneficiary]) {
+    } else if (now >= starts[beneficiary] + durations[beneficiary] || revoked[beneficiary]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now - starts[beneficiary]).div(durations[beneficiary]);

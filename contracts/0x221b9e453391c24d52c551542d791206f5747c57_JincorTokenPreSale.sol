@@ -13,20 +13,20 @@ pragma solidity ^0.4.15;
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
   }
@@ -35,7 +35,7 @@ pragma solidity ^0.4.15;
   /**
    * @title Ownable
    * @dev The Ownable contract has an owner address, and provides basic authorization control
-   * functions, this simplifies the implementation of &quot;user permissions&quot;.
+   * functions, this simplifies the implementation of "user permissions".
    */
   contract Ownable {
     address public owner;
@@ -136,7 +136,7 @@ pragma solidity ^0.4.15;
   contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -170,7 +170,7 @@ pragma solidity ^0.4.15;
    */
   contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -183,7 +183,7 @@ pragma solidity ^0.4.15;
       var _allowance = allowed[_from][msg.sender];
 
       // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-      // require (_value &lt;= _allowance);
+      // require (_value <= _allowance);
 
       balances[_to] = balances[_to].add(_value);
       balances[_from] = balances[_from].sub(_value);
@@ -234,7 +234,7 @@ pragma solidity ^0.4.15;
     event Burn(address indexed from, uint256 value);
 
     function burn(uint256 _value) returns (bool success) {
-      require(balances[msg.sender] &gt;= _value);                // Check if the sender has enough
+      require(balances[msg.sender] >= _value);                // Check if the sender has enough
       balances[msg.sender] = balances[msg.sender].sub(_value);// Subtract from the sender
       totalSupply = totalSupply.sub(_value);                                  // Updates totalSupply
       Burn(msg.sender, _value);
@@ -242,8 +242,8 @@ pragma solidity ^0.4.15;
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-      require(balances[_from] &gt;= _value);               // Check if the sender has enough
-      require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+      require(balances[_from] >= _value);               // Check if the sender has enough
+      require(_value <= allowed[_from][msg.sender]);    // Check allowance
       balances[_from] = balances[_from].sub(_value);    // Subtract from the sender
       totalSupply = totalSupply.sub(_value);            // Updates totalSupply
       allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -272,8 +272,8 @@ pragma solidity ^0.4.15;
    */
   contract JincorToken is Burnable, Ownable {
 
-    string public name = &quot;Jincor Token&quot;;
-    string public symbol = &quot;JCR&quot;;
+    string public name = "Jincor Token";
+    string public symbol = "JCR";
     uint256 public decimals = 18;
     uint256 public INITIAL_SUPPLY = 35000000 * 1 ether;
 
@@ -284,7 +284,7 @@ pragma solidity ^0.4.15;
     bool public released = false;
 
     /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-    mapping (address =&gt; bool) public transferAgents;
+    mapping (address => bool) public transferAgents;
 
     /**
      * Limit token transfer until the crowdsale is over.
@@ -324,7 +324,7 @@ pragma solidity ^0.4.15;
      */
     function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-      // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+      // We don't do interface check here as we might want to a normal wallet address to act as a release agent
       releaseAgent = addr;
     }
 
@@ -363,7 +363,7 @@ pragma solidity ^0.4.15;
   contract JincorTokenPreSale is Ownable, Haltable {
     using SafeMath for uint;
 
-    string public name = &quot;Jincor Token PreSale&quot;;
+    string public name = "Jincor Token PreSale";
 
     JincorToken public token;
 
@@ -393,7 +393,7 @@ pragma solidity ^0.4.15;
 
     bool public crowdsaleFinished = false;
 
-    mapping (address =&gt; bool) refunded;
+    mapping (address => bool) refunded;
 
     event GoalReached(uint amountRaised);
 
@@ -404,12 +404,12 @@ pragma solidity ^0.4.15;
     event Refunded(address indexed holder, uint256 amount);
 
     modifier preSaleActive() {
-      require(block.number &gt;= startBlock &amp;&amp; block.number &lt; endBlock);
+      require(block.number >= startBlock && block.number < endBlock);
       _;
     }
 
     modifier preSaleEnded() {
-      require(block.number &gt;= endBlock);
+      require(block.number >= endBlock);
       _;
     }
 
@@ -438,7 +438,7 @@ pragma solidity ^0.4.15;
     }
 
     function() payable {
-      require(msg.value &gt;= 0.1 * 1 ether);
+      require(msg.value >= 0.1 * 1 ether);
       doPurchase(msg.sender);
     }
 
@@ -447,10 +447,10 @@ pragma solidity ^0.4.15;
       require(refunded[msg.sender] == false);
 
       uint balance = token.balanceOf(msg.sender);
-      require(balance &gt; 0);
+      require(balance > 0);
 
       uint refund = balance.div(price);
-      if (refund &gt; this.balance) {
+      if (refund > this.balance) {
         refund = this.balance;
       }
 
@@ -470,14 +470,14 @@ pragma solidity ^0.4.15;
     function doPurchase(address _owner) private preSaleActive inNormalState {
 
       require(!crowdsaleFinished);
-      require(collected.add(msg.value) &lt;= hardCap);
+      require(collected.add(msg.value) <= hardCap);
 
-      if (!softCapReached &amp;&amp; collected &lt; softCap &amp;&amp; collected.add(msg.value) &gt;= softCap) {
+      if (!softCapReached && collected < softCap && collected.add(msg.value) >= softCap) {
         softCapReached = true;
         SoftCapReached(softCap);
       }
       uint tokens = msg.value * price;
-      require(token.balanceOf(msg.sender).add(tokens) &lt;= purchaseLimit);
+      require(token.balanceOf(msg.sender).add(tokens) <= purchaseLimit);
 
       if (token.balanceOf(msg.sender) == 0) investorCount++;
 

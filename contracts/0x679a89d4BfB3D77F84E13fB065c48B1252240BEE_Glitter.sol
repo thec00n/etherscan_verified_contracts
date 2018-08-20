@@ -40,7 +40,7 @@ contract ERC20TokenInterface is BasicTokenInterface, ApproveAndCallFallBack{
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 }
 
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 
 
@@ -49,12 +49,12 @@ library SafeMath {
     //Guard overflow by making 0 an impassable barrier
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        return (c &gt;= a &amp;&amp; c &gt;= b) ? c : 0;
+        return (c >= a && c >= b) ? c : 0;
     }
 
     //Guard underflow by making 0 an impassable barrier
     function sub(uint a, uint b) internal pure returns (uint) {
-        return (a &gt;=b) ? (a - b): 0;
+        return (a >=b) ? (a - b): 0;
     }
 
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -63,7 +63,7 @@ library SafeMath {
         return c;
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(a &gt; 0 &amp;&amp; b &gt; 0);
+        require(a > 0 && b > 0);
         c = a / b;
         return c;
     }
@@ -76,15 +76,15 @@ contract BasicToken is BasicTokenInterface{
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
     uint public totalSupply;
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
     
     modifier checkpayloadsize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     } 
 
     function transfer(address _to, uint256 _value) public checkpayloadsize(2*32) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         success = true;
         balances[msg.sender] -= _value;
 
@@ -107,7 +107,7 @@ contract BasicToken is BasicTokenInterface{
 contract ManagedToken is BasicToken {
     address manager;
     modifier restricted(){
-        require(msg.sender == manager,&quot;Function can only be used by manager&quot;);
+        require(msg.sender == manager,"Function can only be used by manager");
         _;
     }
 
@@ -121,7 +121,7 @@ contract ManagedToken is BasicToken {
 
 contract ERC20Token is ERC20TokenInterface, ManagedToken{
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -131,8 +131,8 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
     */
     function transferFrom(address _from,address _to,uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -146,7 +146,7 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
     * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -159,7 +159,7 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -203,14 +203,14 @@ contract Glitter is ERC20Token {
     }
     
     constructor() public {
-        name = &quot;Green Light Rewards &quot;;
-        symbol = &quot;GLITTER&quot;;
+        name = "Green Light Rewards ";
+        symbol = "GLITTER";
         decimals = 8;
         totalSupply = 1000000 * (uint(10) ** decimals);
         tokenPrice = 10000000000000000; //0.01 ETH
         manager = 0xa70091DD81bD0c6d54326A973dC0d7b3f47c6dFd;
         balances[manager] = totalSupply;
-        URL = &quot;https://www.icosuccess.com/&quot;;
+        URL = "https://www.icosuccess.com/";
         emit Transfer(address(this),manager,balances[manager]);
     }
 

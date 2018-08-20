@@ -44,8 +44,8 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp;          // Account has sufficient balance
-            balances[_to] + _value &gt;= balances[_to]) { // Overflow check
+        if (balances[msg.sender] >= _value &&          // Account has sufficient balance
+            balances[_to] + _value >= balances[_to]) { // Overflow check
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -54,9 +54,9 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp;                // Account has sufficient balance
-            allowed[_from][msg.sender] &gt;= _value &amp;&amp;     // Amount has been approved
-            balances[_to] + _value &gt;= balances[_to]) {  // Overflow check
+        if (balances[_from] >= _value &&                // Account has sufficient balance
+            allowed[_from][msg.sender] >= _value &&     // Amount has been approved
+            balances[_to] + _value >= balances[_to]) {  // Overflow check
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
@@ -85,25 +85,25 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 }
 
 // Based on TokenFactory(https://github.com/ConsenSys/Token-Factory)
 
 contract SnipCoin is StandardToken {
 
-    string public constant name = &quot;SnipCoin&quot;;         // Token name
-    string public symbol = &quot;SNIP&quot;;                    // Token identifier
+    string public constant name = "SnipCoin";         // Token name
+    string public symbol = "SNIP";                    // Token identifier
     uint8 public constant decimals = 18;              // Decimal points for token
     uint public totalEthReceivedInWei;                // The total amount of Ether received during the sale in WEI
     uint public totalUsdReceived;                     // The total amount of Ether received during the sale in USD terms
     uint public totalUsdValueOfAllTokens;             // The total USD value of 100% of tokens
-    string public version = &quot;1.0&quot;;                    // Code version
+    string public version = "1.0";                    // Code version
     address public saleWalletAddress;                 // The wallet address where the Ether from the sale will be stored
 
-    mapping (address =&gt; bool) public uncappedBuyerList;      // The list of buyers allowed to participate in the sale without a cap
-    mapping (address =&gt; uint) public cappedBuyerList;        // The list of buyers allowed to participate in the sale, with their updated payment sum
+    mapping (address => bool) public uncappedBuyerList;      // The list of buyers allowed to participate in the sale without a cap
+    mapping (address => uint) public cappedBuyerList;        // The list of buyers allowed to participate in the sale, with their updated payment sum
 
     uint public snipCoinToEtherExchangeRate = 76250; // This is the ratio of SnipCoin to Ether, could be updated by the owner, change before the sale
     bool public isSaleOpen = false;                   // This opens and closes upon external command
@@ -128,7 +128,7 @@ contract SnipCoin is StandardToken {
 
     modifier verifySaleNotOver() {
         require(isSaleOpen);
-        require(totalUsdReceived &lt; SALE_CAP_IN_USD); // Make sure that sale isn&#39;t over
+        require(totalUsdReceived < SALE_CAP_IN_USD); // Make sure that sale isn't over
         _;
     }
 
@@ -136,15 +136,15 @@ contract SnipCoin is StandardToken {
         uint currentPurchaseValueInUSD = uint(msg.value / getWeiToUsdExchangeRate()); // The USD worth of tokens sold
         uint totalPurchaseIncludingCurrentPayment = currentPurchaseValueInUSD +  cappedBuyerList[msg.sender]; // The USD worth of all tokens this buyer bought
 
-        require(currentPurchaseValueInUSD &gt; MINIMUM_PURCHASE_IN_USD); // Minimum transfer is of $50
+        require(currentPurchaseValueInUSD > MINIMUM_PURCHASE_IN_USD); // Minimum transfer is of $50
 
         uint EFFECTIVE_MAX_CAP = SALE_CAP_IN_USD + 1000;  // This allows for the end of the sale by passing $8M and reaching the cap
-        require(EFFECTIVE_MAX_CAP - totalUsdReceived &gt; currentPurchaseValueInUSD); // Make sure that there is enough usd left to buy.
+        require(EFFECTIVE_MAX_CAP - totalUsdReceived > currentPurchaseValueInUSD); // Make sure that there is enough usd left to buy.
 
-        if (!uncappedBuyerList[msg.sender]) // If buyer is on uncapped white list then no worries, else need to make sure that they&#39;re okay
+        if (!uncappedBuyerList[msg.sender]) // If buyer is on uncapped white list then no worries, else need to make sure that they're okay
         {
-            require(cappedBuyerList[msg.sender] &gt; 0); // Check that the sender has been initialized.
-            require(totalPurchaseIncludingCurrentPayment &lt; USD_PURCHASE_AMOUNT_REQUIRING_ID); // Check that they&#39;re not buying too much
+            require(cappedBuyerList[msg.sender] > 0); // Check that the sender has been initialized.
+            require(totalPurchaseIncludingCurrentPayment < USD_PURCHASE_AMOUNT_REQUIRING_ID); // Check that they're not buying too much
         }
         _;
     }
@@ -196,22 +196,22 @@ contract SnipCoin is StandardToken {
     }
 
     function addAddressToCappedAddresses(address addr) public onlyPermissioned {
-        cappedBuyerList[addr] = 1; // Allow a certain address to purchase SnipCoin up to the cap (&lt;4500)
+        cappedBuyerList[addr] = 1; // Allow a certain address to purchase SnipCoin up to the cap (<4500)
     }
 
     function addMultipleAddressesToCappedAddresses(address[] addrList) public onlyPermissioned {
-        for (uint i = 0; i &lt; addrList.length; i++) {
-            addAddressToCappedAddresses(addrList[i]); // Allow a certain address to purchase SnipCoin up to the cap (&lt;4500)
+        for (uint i = 0; i < addrList.length; i++) {
+            addAddressToCappedAddresses(addrList[i]); // Allow a certain address to purchase SnipCoin up to the cap (<4500)
         }
     }
 
     function addAddressToUncappedAddresses(address addr) public onlyPermissioned {
-        uncappedBuyerList[addr] = true; // Allow a certain address to purchase SnipCoin above the cap (&gt;=$4500)
+        uncappedBuyerList[addr] = true; // Allow a certain address to purchase SnipCoin above the cap (>=$4500)
     }
 
     function addMultipleAddressesToUncappedAddresses(address[] addrList) public onlyPermissioned {
-        for (uint i = 0; i &lt; addrList.length; i++) {
-            addAddressToUncappedAddresses(addrList[i]); // Allow a certain address to purchase SnipCoin up to the cap (&lt;4500)
+        for (uint i = 0; i < addrList.length; i++) {
+            addAddressToUncappedAddresses(addrList[i]); // Allow a certain address to purchase SnipCoin up to the cap (<4500)
         }
     }
 
@@ -236,7 +236,7 @@ contract SnipCoin is StandardToken {
         totalUsdReceived = totalUsdReceived + usdReceivedInCurrentTransaction; // total usd received counter
         totalUsdValueOfAllTokens = totalUsdReceived * 100 / PERCENTAGE_OF_TOKENS_SOLD_IN_SALE; // sold tokens are 28% of all tokens
 
-        if (cappedBuyerList[msg.sender] &gt; 0)
+        if (cappedBuyerList[msg.sender] > 0)
         {
             cappedBuyerList[msg.sender] = cappedBuyerList[msg.sender] + usdReceivedInCurrentTransaction;
         }

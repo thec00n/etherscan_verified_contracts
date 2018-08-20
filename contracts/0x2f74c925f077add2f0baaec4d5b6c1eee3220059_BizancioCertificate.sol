@@ -12,7 +12,7 @@ contract AccessControl {
     event accessGranted(address user, uint8 access);
     
     // The addresses of the accounts (or contracts) that can execute actions within each roles.
-    mapping(address =&gt; mapping(uint8 =&gt; bool)) accessRights;
+    mapping(address => mapping(uint8 => bool)) accessRights;
 
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
@@ -78,7 +78,7 @@ contract AccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() public canAccess(1) whenNotPaused {
         paused = true;
@@ -103,7 +103,7 @@ contract BizancioCertificate is AccessControl {
         bool valid;
     }
     
-    mapping (bytes32 =&gt; Certificate) public certificates;
+    mapping (bytes32 => Certificate) public certificates;
     event logPrintedCertificate(bytes32 contractAddress, string _name, string email, string _course, string _dates, uint16 _hours);
 
     function printCertificate (string _name, string _email, string _course, uint16 _hours, string _dates) public canAccess(3) whenNotPaused returns (bytes32 _certificateAddress) {

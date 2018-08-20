@@ -35,11 +35,11 @@ contract TokenInterface {
         address indexed _spender,
         uint256 _amount);
 
-    mapping (address =&gt; // owner
+    mapping (address => // owner
         uint256) balances;
 
-    mapping (address =&gt; // owner
-    mapping (address =&gt; // spender
+    mapping (address => // owner
+    mapping (address => // spender
         uint256)) allowed;
 
     uint256 public totalSupply;
@@ -93,9 +93,9 @@ contract Spork is TokenInterface {
         string _lulz);
 
     // vanity attributes
-    string public name = &quot;Spork&quot;;
-    string public symbol = &quot;SPRK&quot;;
-    string public version = &quot;Spork:0.1&quot;;
+    string public name = "Spork";
+    string public symbol = "SPRK";
+    string public version = "Spork:0.1";
     uint8 public decimals = 0;
 
     // @see {Spork.mint}
@@ -111,7 +111,7 @@ contract Spork is TokenInterface {
      */
     function mint(uint256 _amount, string _lulz)
     returns (bool success) {
-        if (totalSupply + _amount &lt;= totalSupply)
+        if (totalSupply + _amount <= totalSupply)
             return false; // zero or rollover value
 
         if (!TokenInterface(TheDAO).transferFrom(msg.sender, this, _amount))
@@ -132,10 +132,10 @@ contract Spork is TokenInterface {
      */
     function transfer(address _to, uint256 _amount)
     returns (bool success) {
-        if (balances[_to] + _amount &lt;= balances[_to])
+        if (balances[_to] + _amount <= balances[_to])
             return false; // zero or rollover value
 
-        if (balances[msg.sender] &lt; _amount)
+        if (balances[msg.sender] < _amount)
             return false; // party foul, sender does not have enough sporks
 
         balances[msg.sender] -= _amount;
@@ -155,13 +155,13 @@ contract Spork is TokenInterface {
      */
     function transferFrom(address _from, address _to, uint256 _amount)
     returns (bool success) {
-        if (balances[_to] + _amount &lt;= balances[_to])
+        if (balances[_to] + _amount <= balances[_to])
             return false; // zero or rollover value
 
-        if (allowed[_from][msg.sender] &lt; _amount)
+        if (allowed[_from][msg.sender] < _amount)
             return false; // sender does not have enough allowance
 
-        if (balances[msg.sender] &lt; _amount)
+        if (balances[msg.sender] < _amount)
             return false; // party foul, sender does not have enough sporks
 
         balances[_to] += _amount;

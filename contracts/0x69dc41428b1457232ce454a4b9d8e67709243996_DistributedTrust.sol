@@ -10,8 +10,8 @@ contract Pointer {
 
 contract DistributedTrust is Pointer {
 
-    mapping(uint256 =&gt; Fact) public facts;
-    mapping(uint256 =&gt; mapping(address =&gt; bool)) public validations;
+    mapping(uint256 => Fact) public facts;
+    mapping(uint256 => mapping(address => bool)) public validations;
 
     event NewFact(uint256 factIndex, address indexed reportedBy, string description, string meta);
     event AttestedFact(uint256 indexed factIndex, address validator);
@@ -33,8 +33,8 @@ contract DistributedTrust is Pointer {
         _;
     }
 
-    // &quot;Olivia Marie Fraga Rolim. Born at 2018-04-03 20:54:00 BRT, in the city of Rio de Janeiro, Brazil&quot;, 
-    // &quot;ipfs://QmfD5tpeF8UpHZMnSVq3qNPVNwd8JNfF4g8L3UFVUfkiRK&quot;
+    // "Olivia Marie Fraga Rolim. Born at 2018-04-03 20:54:00 BRT, in the city of Rio de Janeiro, Brazil", 
+    // "ipfs://QmfD5tpeF8UpHZMnSVq3qNPVNwd8JNfF4g8L3UFVUfkiRK"
     function newFact(string description, string meta) public {
         uint256 factIndex = bumpPointer();
      

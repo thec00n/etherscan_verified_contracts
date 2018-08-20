@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
 
 // HOST: ethlasvegas.surge.sh 
 // Made by EtherGuy 
-// Questions or suggestions? <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385d4c505d4a5f4d417855595154165b5755">[email&#160;protected]</a> 
+// Questions or suggestions? <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385d4c505d4a5f4d417855595154165b5755">[email protected]</a> 
 
 contract RNG{
      uint256 secret = 0;
@@ -55,8 +55,8 @@ contract Poker is RNG{
 
     uint8[5] public HouseCards;
     
-    mapping(address =&gt; uint8[2]) public PlayerCards;
-    mapping(address =&gt; uint256) public PlayerRound;
+    mapping(address => uint8[2]) public PlayerCards;
+    mapping(address => uint256) public PlayerRound;
     
     uint256 public RoundNumber;
     
@@ -96,7 +96,7 @@ contract Poker is RNG{
         uint8 rank;
         uint8 suit;
         uint8 n;
-        for (i=0; i&lt;5; i++){
+        for (i=0; i<5; i++){
             rank = uint8(GiveRNG(13)+1);
             suit = uint8(GiveRNG(4));
             n = GetCardNumber(rank,suit);
@@ -104,7 +104,7 @@ contract Poker is RNG{
         }
 
         uint8[2] storage target = PlayerCards[address(this)];
-        for (i=0; i&lt;2; i++){
+        for (i=0; i<2; i++){
             rank = uint8(GiveRNG(13)+1);
             suit = uint8(GiveRNG(4));
             n = GetCardNumber(rank,suit);
@@ -122,7 +122,7 @@ contract Poker is RNG{
     function DrawAddr() internal {
         uint8 tcard1;
         uint8 tcard2;
-        for (uint8 i=0; i&lt;2; i++){
+        for (uint8 i=0; i<2; i++){
             uint8 rank = uint8(GiveRNG(13)+1);
             uint8 suit = uint8(GiveRNG(4));
             uint8 n = GetCardNumber(rank,suit);
@@ -198,14 +198,14 @@ contract Poker is RNG{
         
         
         uint8 ret = 2;
-        if (CurrScore[0] &gt; CurrentWinHand[0]){
+        if (CurrScore[0] > CurrentWinHand[0]){
  
             return 1;
         }
         else if (CurrScore[0] == CurrentWinHand[0]){
-            for (uint i=1; i&lt;=5; i++){
-                if (CurrScore[i] &gt;= CurrentWinHand[i]){
-                    if (CurrScore[i] &gt; CurrentWinHand[i]){
+            for (uint i=1; i<=5; i++){
+                if (CurrScore[i] >= CurrentWinHand[i]){
+                    if (CurrScore[i] > CurrentWinHand[i]){
 
                         return 1;
                     }
@@ -236,8 +236,8 @@ contract Poker is RNG{
         
         Card[7] memory Cards;
         
-        for (uint8 i=0; i&lt;7; i++){
-            if (i&gt;=5){
+        for (uint8 i=0; i<7; i++){
+            if (i>=5){
                 (rank,suit) = GetCardInfo(PlayerCards[checkhand][i-5]);
                 FlushTracker[suit]++;
                 CardTracker[rank]++;
@@ -252,12 +252,12 @@ contract Poker is RNG{
         }
         
         uint8 straight = 0;
-        // skip all zero&#39;s
+        // skip all zero's
         uint8[3] memory straight_startcard;
-        for (uint8 startcard=13; i&gt;=5; i--){
-            if (CardTracker[startcard] &gt;= 1){
-                for (uint8 currcard=startcard-1; currcard&gt;=(startcard-4); currcard--){
-                    if (CardTracker[currcard] &gt;= 1){
+        for (uint8 startcard=13; i>=5; i--){
+            if (CardTracker[startcard] >= 1){
+                for (uint8 currcard=startcard-1; currcard>=(startcard-4); currcard--){
+                    if (CardTracker[currcard] >= 1){
                         if (currcard == (startcard-4)){
                             // at end, straight 
                             straight_startcard[straight] = startcard;
@@ -273,8 +273,8 @@ contract Poker is RNG{
         
         uint8 flush=0;
 
-        for (i=0;i&lt;=3;i++){
-            if (FlushTracker[i]&gt;=5){
+        for (i=0;i<=3;i++){
+            if (FlushTracker[i]>=5){
                 flush=i;
                 break;
             }
@@ -286,16 +286,16 @@ contract Poker is RNG{
         
         
         
-        if (flush&gt;0 &amp;&amp; straight&gt;0){
+        if (flush>0 && straight>0){
             // someone has straight flush? 
             // level score 9 
             output[0] = 9;
             currcard=0;
-            for (i=0; i&lt;3; i++){
+            for (i=0; i<3; i++){
                 startcard=straight_startcard[i];
                 currcard=5; // track flush, num 5 is standard.    
-                for (rank=0; i&lt;7; i++){
-                    if (Cards[i].suit == flush &amp;&amp; Cards[i].rank &lt;= startcard &amp;&amp; Cards[i].rank&gt;=(startcard-4)){
+                for (rank=0; i<7; i++){
+                    if (Cards[i].suit == flush && Cards[i].rank <= startcard && Cards[i].rank>=(startcard-4)){
                         currcard--;
                         if (currcard==0){
                             break;
@@ -316,14 +316,14 @@ contract Poker is RNG{
         
         //reuse the rank variable to sum cards; 
         rank=0;
-        for (i=13;i&gt;=1;i--){
+        for (i=13;i>=1;i--){
             rank = rank + CardTracker[i];
-            if (CardTracker[i] &gt;= 4){
+            if (CardTracker[i] >= 4){
                 output[0] = 8; // high card 
                 output[1] = i; // the type of card 
                 return output;
             }
-            if (rank &gt;=4){
+            if (rank >=4){
                 break;
             }
         }
@@ -335,11 +335,11 @@ contract Poker is RNG{
         startcard=0;
         currcard=0;
         
-        for (i=13;i&gt;=1;i--){
-            if (rank == 0 &amp;&amp; CardTracker[i] &gt;= 3){
+        for (i=13;i>=1;i--){
+            if (rank == 0 && CardTracker[i] >= 3){
                 rank = i;
             }
-            else if(CardTracker[i] &gt;= 2){
+            else if(CardTracker[i] >= 2){
                 if (suit == 0){
                     suit = i;
                 }
@@ -352,14 +352,14 @@ contract Poker is RNG{
             }
         }
         
-        if (rank != 0 &amp;&amp; suit != 0){
+        if (rank != 0 && suit != 0){
             output[0] = 7;
             output[1] = rank; // full house tripple high 
             output[2] = suit; // full house tripple low 
             return output;
         }
         
-        if (flush&gt;0){
+        if (flush>0){
             // flush 
             output[0] = 6;
             output[1] = flush;
@@ -367,23 +367,23 @@ contract Poker is RNG{
             
         }
         
-        if (straight&gt;0){
+        if (straight>0){
             //straight 
             output[0] = 5;
             output[1] = straight_startcard[0];
             return output;
         }
         
-        if (rank&gt;0){
+        if (rank>0){
             // tripple 
             output[0]=4;
             output[1]=rank;
             currcard=2; // track index; 
             // get 2 highest cards 
-            for (i=13;i&gt;=1;i--){
+            for (i=13;i>=1;i--){
                 if (i != rank){
-                    if (CardTracker[i] &gt; 0){
-                        // note at three of a kind we have no other doubles; all other ranks are different so no check &gt; 1 
+                    if (CardTracker[i] > 0){
+                        // note at three of a kind we have no other doubles; all other ranks are different so no check > 1 
                         output[currcard] = i;
                         currcard++;
                         if(currcard==4){
@@ -394,28 +394,28 @@ contract Poker is RNG{
             }
         }
         
-        if (suit &gt; 0 &amp;&amp; startcard &gt; 0){
+        if (suit > 0 && startcard > 0){
             // double pair 
             output[0] = 3;
             output[1] = suit;
             output[2] = startcard;
             // get highest card 
-            for (i=13;i&gt;=1;i--){
-                if (i!=suit &amp;&amp; i!=startcard &amp;&amp; CardTracker[i]&gt;0){
+            for (i=13;i>=1;i--){
+                if (i!=suit && i!=startcard && CardTracker[i]>0){
                     output[3]=i;
                     return output;
                 }
             }
         }
         
-        if (suit &gt; 0){
+        if (suit > 0){
             // pair 
             output[0]=2;
             output[1]=suit;
             currcard=2;
             // fill 3 other positions with high cards. 
-            for (i=13;i&gt;=1;i--){
-                if (i!=suit &amp;&amp; CardTracker[i]&gt;0){
+            for (i=13;i>=1;i--){
+                if (i!=suit && CardTracker[i]>0){
                     output[currcard]=i;
                     currcard++;
                     if(currcard==5){
@@ -429,8 +429,8 @@ contract Poker is RNG{
         // boring 
         output[0]=1;
         currcard=1;
-        for (i=13;i&gt;=1;i--){
-            if (CardTracker[i]&gt;0){
+        for (i=13;i>=1;i--){
+            if (CardTracker[i]>0){
                 output[currcard]=i;
                 currcard++;
                 if (currcard==6){
@@ -449,7 +449,7 @@ contract Vegas is Poker{
     
     uint256 public Timer;
     
-    uint8 constant MAXPRICEPOWER = 40; // &lt; 255
+    uint8 constant MAXPRICEPOWER = 40; // < 255
     
     address public JackpotWinner;
     
@@ -495,7 +495,7 @@ contract Vegas is Poker{
     }
     
     modifier GameClosed(){
-        require (block.timestamp &gt; Timer);
+        require (block.timestamp > Timer);
         _;
     }
     
@@ -507,27 +507,27 @@ contract Vegas is Poker{
         // withdraw also setups new game. 
         // pays out 0 eth of course to owner, no eth in contract. 
         Timer = 1; // makes sure withdrawal runs
-        Withdraw(&quot;Game init&quot;, &quot;Admin&quot;);
+        Withdraw("Game init", "Admin");
     }
     
     // all contract calls are banned from buying 
     function Buy(uint8 ID, string Quote, string Name) public payable NoContract {
-        require(ID &lt; MaxItems);
+        require(ID < MaxItems);
         require(!EditMode);
         // get price 
         //uint8 pid = Market[ID].PriceID;
         uint256 price = GetPrice(Market[ID].PriceID);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
-        if (block.timestamp &gt; Timer){
+        if (block.timestamp > Timer){
             if (Timer != 0){ // timer 0 means withdraw is gone; withdraw will throw on 0
-                Withdraw(&quot;GameInit&quot;, &quot;Admin&quot;);
+                Withdraw("GameInit", "Admin");
                 return;
             }
         }
         
         // return excess 
-        if (msg.value &gt; price){
+        if (msg.value > price){
             msg.sender.transfer(msg.value-price);
         }
         
@@ -567,9 +567,9 @@ contract Vegas is Poker{
     
     function GetPrice(uint8 id) public view returns (uint256){
         uint256 p = BasePrice;
-        if (id &gt; 0){
+        if (id > 0){
             // max price baseprice * increase^20 is reasonable
-            for (uint i=1; i&lt;=id; i++){
+            for (uint i=1; i<=id; i++){
                 if (i==MAXPRICEPOWER){
                     break; // prevent overflow (not sure why someone would buy at increase^255)
                 }
@@ -582,7 +582,7 @@ contract Vegas is Poker{
     
     function PayPoker(string Quote, string Name) public NoContract{
         uint8 wins = HandWins(msg.sender);
-        if (wins&gt;0){
+        if (wins>0){
             uint256 available_balance = (TotalPot*PotPayout)/10000;
             uint256 payment = sub ((available_balance * PokerPayout)/10000 , PokerPayoutValue);
             
@@ -599,7 +599,7 @@ contract Vegas is Poker{
                 msg.sender.transfer(pval);
                 PokerWinner.transfer(payment-pval);// saves 1 wei error 
                 emit PokerPaid(RoundNumber, pval, msg.sender,  Quote,  Name, WinningHand);
-                emit PokerPaid(RoundNumber, pval, msg.sender, &quot;&quot;, &quot;&quot;, WinningHand);
+                emit PokerPaid(RoundNumber, pval, msg.sender, "", "", WinningHand);
             }*/
         }
         else{
@@ -609,7 +609,7 @@ contract Vegas is Poker{
     }
     
     function GetTime(uint8 id) public view returns (uint256){
-        if (id &gt;= TimeArray.length){
+        if (id >= TimeArray.length){
             return TimeArray[TimeArray.length-1];
         }
         else{
@@ -634,12 +634,12 @@ contract Vegas is Poker{
     // allows winner to get paid without calling poker. should never be called 
     // follows all normal rules of game .
     function WithdrawEmergency() public OnlyOwner{
-        _withdraw(&quot;Emergency withdraw call&quot;,&quot;Admin&quot;,true);
+        _withdraw("Emergency withdraw call","Admin",true);
     }
     function _withdraw(string Quote, string Name, bool Emergency) NoContract internal {
         // Setup cards for new game. 
         
-        require(block.timestamp &gt; Timer &amp;&amp; Timer != 0);
+        require(block.timestamp > Timer && Timer != 0);
         Timer=0; // prevent re-entrancy immediately. 
         
         // send from this.balance 
@@ -652,16 +652,16 @@ contract Vegas is Poker{
         
         // pay the last poker winner remaining poker pot.
         bal = sub(sub(available_balance, bal),PokerPayoutValue);
-        if (bal &gt; 0 &amp;&amp; PokerWinner != address(this)){
+        if (bal > 0 && PokerWinner != address(this)){
             // this only happens at start game,  some wei error 
-            if (bal &gt; address(this).balance){
+            if (bal > address(this).balance){
                 PokerWinner.transfer(address(this).balance);
             }
             else{
                 PokerWinner.transfer(bal);     
             }
            
-            emit PokerPaid(RoundNumber, bal, PokerWinner,  &quot;Paid out left poker pot&quot;, &quot;Dealer&quot;, WinningHand);
+            emit PokerPaid(RoundNumber, bal, PokerWinner,  "Paid out left poker pot", "Dealer", WinningHand);
         }
         TotalPot = address(this).balance;
     
@@ -670,7 +670,7 @@ contract Vegas is Poker{
 
         // reset price 
 
-        for (uint i=0; i&lt;MaxItems; i++){
+        for (uint i=0; i<MaxItems; i++){
             Market[i].PriceID=0;
         }
         
@@ -713,31 +713,31 @@ contract Vegas is Poker{
     }
     
     function editPayoutSetting(uint8 setting, uint16 newv) public OnlyOwner GameClosed{
-        require(setting &gt; 0);
+        require(setting > 0);
         if (setting == 1){
-            require(newv &lt;= 10000);
+            require(newv <= 10000);
             JackpotPayout = newv;
             PokerPayout = 10000-newv;
         }
         else if (setting == 2){
-            require(newv &lt;= 10000);
+            require(newv <= 10000);
             PokerPayout = newv;
             JackpotPayout = 10000-newv;
         }
         else if (setting == 3){
-            require (newv &lt;= 10000);
+            require (newv <= 10000);
             PreviousPayout = newv;
         }
         else if (setting == 4){
-            require(newv &lt;= 30000);
+            require(newv <= 30000);
             Increase = newv;
         }
         else if (setting == 5){
-            require(newv &lt;=10000);
+            require(newv <=10000);
             PotPayout = newv;
         }
         else if (setting == 6){
-            require(newv &lt; 700);
+            require(newv < 700);
             Tax = newv;
         }
         else{
@@ -758,9 +758,9 @@ contract Vegas is Poker{
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -768,7 +768,7 @@ contract Vegas is Poker{
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -777,7 +777,7 @@ contract Vegas is Poker{
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

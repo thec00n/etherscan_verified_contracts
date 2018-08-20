@@ -57,12 +57,12 @@ contract Atra is AttributaOwners, ERC20Interface, ExtendERC20Interface {
     uint public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function Atra() public {
-        symbol = &quot;ATRA&quot;;
-        name = &quot;Atra&quot;;
+        symbol = "ATRA";
+        name = "Atra";
         decimals = 0;
         _totalSupply = 100000000000; //100,000,000,000
         balances[owner] = _totalSupply;
@@ -106,7 +106,7 @@ contract Atra is AttributaOwners, ERC20Interface, ExtendERC20Interface {
 	function transferAndCall(address contractAddress, uint256 amount, bytes data) public returns(bool success){
 	  // Transfer amount to contract requesting payment
 	  transfer(contractAddress, amount);
-	  // make sure the contract requireing payment doesn&#39;t fail, if so revert the transaction
+	  // make sure the contract requireing payment doesn't fail, if so revert the transaction
 	  require(TransferAndCallInterface(contractAddress).transferComplete(msg.sender, amount, data));
 	  return true;
 	}
@@ -125,10 +125,10 @@ contract Atra is AttributaOwners, ERC20Interface, ExtendERC20Interface {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -136,7 +136,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }

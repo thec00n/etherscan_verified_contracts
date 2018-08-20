@@ -8,11 +8,11 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 }
@@ -70,17 +70,17 @@ contract MilcToken is ERC20Interface, Ownable, SafeMath {
 
     /**
     * Max Tokens: 40 Millions MILC with 18 Decimals.
-    * The smallest unit is called &quot;Hey&quot;. 1&#39;000&#39;000&#39;000&#39;000&#39;000&#39;000 Hey = 1 MILC
+    * The smallest unit is called "Hey". 1'000'000'000'000'000'000 Hey = 1 MILC
     */
     uint256 constant public MAX_TOKENS = 40 * 1000 * 1000 * 10 ** uint256(18);
 
-    string public symbol = &quot;MILC&quot;;
-    string public name = &quot;Micro Licensing Coin&quot;;
+    string public symbol = "MILC";
+    string public name = "Micro Licensing Coin";
     uint8 public decimals = 18;
     uint256 public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     event Mint(address indexed to, uint256 amount);
     
@@ -113,7 +113,7 @@ contract MilcToken is ERC20Interface, Ownable, SafeMath {
     /**
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     */
     function approve(address spender, uint256 value) public returns (bool) {
@@ -150,7 +150,7 @@ contract MilcToken is ERC20Interface, Ownable, SafeMath {
      */
     function decreaseApproval(address spender, uint256 subtractedValue) public returns (bool success) {
         uint256 oldValue = allowed[msg.sender][spender];
-        if (subtractedValue &gt; oldValue) {
+        if (subtractedValue > oldValue) {
             allowed[msg.sender][spender] = 0;
         } else {
             allowed[msg.sender][spender] = safeSub(oldValue, subtractedValue);
@@ -165,7 +165,7 @@ contract MilcToken is ERC20Interface, Ownable, SafeMath {
      * @dev both arrays requires to have the same length
      */
     function transferArray(address[] tos, uint256[] values) public returns (bool) {
-        for (uint8 i = 0; i &lt; tos.length; i++) {
+        for (uint8 i = 0; i < tos.length; i++) {
             require(transfer(tos[i], values[i]));
         }
 
@@ -181,13 +181,13 @@ contract MilcToken is ERC20Interface, Ownable, SafeMath {
     function mint(address[] recipients, uint256[] tokens) public returns (bool) {
         require(msg.sender == owner);
 
-        for (uint8 i = 0; i &lt; recipients.length; i++) {
+        for (uint8 i = 0; i < recipients.length; i++) {
 
             address recipient = recipients[i];
             uint256 token = tokens[i];
 
             totalSupply = safeAdd(totalSupply, token);
-            require(totalSupply &lt;= MAX_TOKENS);
+            require(totalSupply <= MAX_TOKENS);
 
             balances[recipient] = safeAdd(balances[recipient], token);
 

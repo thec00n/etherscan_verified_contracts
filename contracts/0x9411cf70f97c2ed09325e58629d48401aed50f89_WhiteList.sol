@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
 contract WhiteList {
-    string public constant VERSION = &quot;0.1.1&quot;;
+    string public constant VERSION = "0.1.1";
 
-    mapping(address=&gt;bool) public contains;
+    mapping(address=>bool) public contains;
     uint public chunkNr = 0;
     uint public recordNr=0;
     uint public controlSum = 0;
@@ -16,7 +16,7 @@ contract WhiteList {
     adminOnly
     external {
         require ( chunkNr++ == _chunkNr);
-        for(uint16 i=0; i&lt;addrs.length; ++i){
+        for(uint16 i=0; i<addrs.length; ++i){
             contains[addrs[i]] = true;
             controlSum += uint160(addrs[i]);
         }

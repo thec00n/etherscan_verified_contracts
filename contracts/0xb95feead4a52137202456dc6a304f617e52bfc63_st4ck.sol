@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 contract st4ck {
     address[][] public wereld;
     address public owner = 0x5372260584003e8Ae3a24E9dF09fa96037a04c2b;
-    mapping(address =&gt; uint) public balance; 
+    mapping(address => uint) public balance; 
     bool public rowQuiter = false;
     
     function st4ckCount() public view returns (uint) {
@@ -25,13 +25,13 @@ contract st4ck {
     
     function buyBlock(uint x, uint y) public payable {
         balance[msg.sender] += msg.value;
-        require(balance[msg.sender] &gt;= price(y));
+        require(balance[msg.sender] >= price(y));
         balance[msg.sender] -= price(y);
         if(x == wereld.length) {
             require(rowQuiter == false);
             wereld.length++;
         }
-        else if (x &gt; wereld.length) {
+        else if (x > wereld.length) {
             revert();
         }
         require(y == wereld[x].length);

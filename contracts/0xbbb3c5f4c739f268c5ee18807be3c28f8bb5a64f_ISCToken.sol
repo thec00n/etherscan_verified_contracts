@@ -6,12 +6,12 @@ contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns(uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function safeSub(uint256 a, uint256 b) internal pure returns(uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function safeMul(uint256 a, uint256 b) internal pure returns(uint256)
@@ -134,22 +134,22 @@ contract EIP20Interface {
 
 contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     //// Constant token specific fields
-    string public constant name =&quot;ISCToken&quot;;
-    string public constant symbol = &quot;ISC&quot;;
+    string public constant name ="ISCToken";
+    string public constant symbol = "ISC";
     uint8 public constant decimals = 18;
-    string  public version  = &#39;v0.1&#39;;
+    string  public version  = 'v0.1';
     uint256 public constant initialSupply = 1010101010;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
 
     //sum of buy
-    mapping (address =&gt; uint) public jail;
+    mapping (address => uint) public jail;
 
-    mapping (address =&gt; uint256) public updateTime;
+    mapping (address => uint256) public updateTime;
     
     //Locked token
-    mapping (address =&gt; uint256) public LockedToken;
+    mapping (address => uint256) public LockedToken;
 
     //set raise time
     uint256 public finaliseTime;
@@ -180,10 +180,10 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function _transfer(address _from, address _to, uint _value) internal whenNotPaused returns(bool) {
-        require(_to != address(0x0)&amp;&amp;_value&gt;0);
+        require(_to != address(0x0)&&_value>0);
         require (canTransfer(_from, _value));
-        require(balances[_from] &gt;= _value);
-        require(safeAdd(balances[_to],_value) &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(safeAdd(balances[_to],_value) > balances[_to]);
 
         uint previousBalances = safeAdd(balances[_from],balances[_to]);
         balances[_from] = safeSub(balances[_from],_value);
@@ -199,7 +199,7 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);
+        require(_value <= allowances[_from][msg.sender]);
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender],_value);
         return _transfer(_from, _to, _value);
     }
@@ -218,7 +218,7 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
             uint oldValue = allowances[msg.sender][_spender];
-            if (_subtractedValue &gt; oldValue) {
+            if (_subtractedValue > oldValue) {
               allowances[msg.sender][_spender] = 0;
             } else {
               allowances[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);
@@ -266,15 +266,15 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
         uint256 locked;
         index = safeSub(now, updateTime[_from]) / 1 days;
 
-        if(index &gt;= 160){
+        if(index >= 160){
             return true;
         }
         uint256 releasedtemp = safeMul(index,jail[_from])/200;
-        if(releasedtemp &gt;= LockedToken[_from]){
+        if(releasedtemp >= LockedToken[_from]){
             return true;
         }
         locked = safeSub(LockedToken[_from],releasedtemp);
-        require(safeSub(balances[_from], _value) &gt;= locked);
+        require(safeSub(balances[_from], _value) >= locked);
         return true;
     }
 
@@ -294,7 +294,7 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
             index = safeSub(now,updateTime[_to])/1 days;
 
             uint256 releasedtemp = safeMul(index,jail[_to])/200;
-            if(releasedtemp &gt;= LockedToken[_to]){
+            if(releasedtemp >= LockedToken[_to]){
                 LockedToken[_to] = 0;
             }else{
                 LockedToken[_to] = safeSub(LockedToken[_to],releasedtemp);
@@ -308,7 +308,7 @@ contract ISCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function() public payable{
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
         uint256 tokens = safeMul(msg.value,rate);
         _buyToken(msg.sender,tokens);
     }

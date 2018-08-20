@@ -28,7 +28,7 @@ contract EtherTreasuryInterface {
 contract Safe {
     // Should always be placed as first modifier!
     modifier noValue {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             // Internal Out Of Gas/Throw: revert this transaction too;
             // Call Stack Depth Limit reached: revert this transaction too;
             // Recursive Call: safe, no any changes applied yet, we are inside of modifier.
@@ -65,7 +65,7 @@ contract Safe {
         if (stackDepthLib == 0x0) {
             throw;
         }
-        if (_depth &gt; 1023) {
+        if (_depth > 1023) {
             throw;
         }
         if (!stackDepthLib.delegatecall(0x32921690, stackDepthLib, _depth)) {
@@ -143,7 +143,7 @@ contract Asset is Safe {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        return __transferWithReference(_to, _value, &quot;&quot;);
+        return __transferWithReference(_to, _value, "");
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
@@ -157,7 +157,7 @@ contract Asset is Safe {
     }
 
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return __transferToICAPWithReference(_icap, _value, &quot;&quot;);
+        return __transferToICAPWithReference(_icap, _value, "");
     }
 
     function transferToICAPWithReference(bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -171,7 +171,7 @@ contract Asset is Safe {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return __transferFromWithReference(_from, _to, _value, &quot;&quot;);
+        return __transferFromWithReference(_from, _to, _value, "");
     }
 
     function transferFromWithReference(address _from, address _to, uint _value, string _reference) returns(bool) {
@@ -183,7 +183,7 @@ contract Asset is Safe {
     }
 
     function transferFromToICAP(address _from, bytes32 _icap, uint _value) returns(bool) {
-        return __transferFromToICAPWithReference(_from, _icap, _value, &quot;&quot;);
+        return __transferFromToICAPWithReference(_from, _icap, _value, "");
     }
 
     function transferFromToICAPWithReference(address _from, bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -214,10 +214,10 @@ contract Asset is Safe {
         address owner = multiAsset.owner(symbol);
         uint balance = this.balance;
         bool success = true;
-        if (balance &gt; 0) {
+        if (balance > 0) {
             success = _unsafeSend(owner, balance);
         }
-        return multiAsset.transfer(owner, balanceOf(owner), symbol) &amp;&amp; success;
+        return multiAsset.transfer(owner, balanceOf(owner), symbol) && success;
     }
 }
 
@@ -227,7 +227,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -251,12 +251,12 @@ contract AmbiEnabled {
         return true;
     }
 
-    function immortality() checkAccess(&quot;owner&quot;) returns(bool) {
+    function immortality() checkAccess("owner") returns(bool) {
         isImmortal = true;
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) returns(bool) {
+    function remove() checkAccess("owner") returns(bool) {
         if (isImmortal) {
             return false;
         }
@@ -285,10 +285,10 @@ contract CryptoCarbon is Asset, AmbiEnabled {
     EtherTreasuryInterface public treasury;
     address public feeAddress;
     bool private __isAllowed;
-    mapping(bytes32 =&gt; address) public allowedForwards;
+    mapping(bytes32 => address) public allowedForwards;
 
-    function setFeeStructure(uint _absMinFee, uint _feePercent, uint _absMaxFee) noValue() checkAccess(&quot;cron&quot;) returns (bool) {
-        if(_feePercent &gt; 10000 || _absMaxFee &lt; _absMinFee) {
+    function setFeeStructure(uint _absMinFee, uint _feePercent, uint _absMaxFee) noValue() checkAccess("cron") returns (bool) {
+        if(_feePercent > 10000 || _absMaxFee < _absMinFee) {
             return false;
         }
         absMinFee = _absMinFee;
@@ -297,16 +297,16 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         return true;
     }
 
-    function setupFee(address _feeAddress) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function setupFee(address _feeAddress) noValue() checkAccess("admin") returns(bool) {
         feeAddress = _feeAddress;
         return true;
     }
 
-    function updateRefundGas() noValue() checkAccess(&quot;setup&quot;) returns(uint) {
+    function updateRefundGas() noValue() checkAccess("setup") returns(uint) {
         uint startGas = msg.gas;
         // just to simulate calculations
         uint refund = (startGas - msg.gas + refundGas) * tx.gasprice;
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return 0;
         }
         // end
@@ -331,7 +331,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint _setCosigner
     )
         noValue()
-        checkAccess(&quot;setup&quot;)
+        checkAccess("setup")
         returns(bool)
     {
         transferCallGas = _transfer;
@@ -348,19 +348,19 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         return true;
     }
 
-    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess(&quot;admin&quot;) returns(bool) {
+    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess("admin") returns(bool) {
         if (_txGasPriceLimit == 0) {
             return _safeFalse();
         }
         treasury = EtherTreasuryInterface(_treasury);
         txGasPriceLimit = _txGasPriceLimit;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             _safeSend(_treasury, msg.value);
         }
         return true;
     }
 
-    function setForward(bytes4 _msgSig, address _forward) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function setForward(bytes4 _msgSig, address _forward) noValue() checkAccess("admin") returns(bool) {
         allowedForwards[sha3(_msgSig)] = _forward;
         return true;
     }
@@ -380,7 +380,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         if (feeAddress == 0x0 || feeAddress == _to || _value == 0) {
             return (false, true);
         }
-        if (!multiAsset.transferFromWithReference(feeAddress, _to, _value, symbol, &quot;Fee return&quot;)) {
+        if (!multiAsset.transferFromWithReference(feeAddress, _to, _value, symbol, "Fee return")) {
             throw;
         }
         return (false, true);
@@ -392,7 +392,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
     }
 
     function _refund(uint _value) internal returns(bool) {
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return false;
         }
         return treasury.withdraw(tx.origin, _value);
@@ -408,10 +408,10 @@ contract CryptoCarbon is Asset, AmbiEnabled {
 
     function calculateFee(uint _value) constant returns(uint) {
         uint fee = (_value * feePercent) / 10000;
-        if (fee &lt; absMinFee) {
+        if (fee < absMinFee) {
             return absMinFee;
         }
-        if (fee &gt; absMaxFee) {
+        if (fee > absMaxFee) {
             return absMaxFee;
         }
         return fee;
@@ -419,23 +419,23 @@ contract CryptoCarbon is Asset, AmbiEnabled {
 
     function calculateFeeDynamic(uint _value, uint _additionalGas) constant returns(uint) {
         uint fee = calculateFee(_value);
-        if (_additionalGas &lt;= 7500) {
+        if (_additionalGas <= 7500) {
             return fee;
         }
-        // Assuming that absMinFee covers at least 100000 gas refund, let&#39;s add another absMinFee
+        // Assuming that absMinFee covers at least 100000 gas refund, let's add another absMinFee
         // for every other 100000 additional gas.
         uint additionalFee = ((_additionalGas / 100000) + 1) * absMinFee;
         return fee + additionalFee;
     }
 
-    function takeFee(address _feeFrom, uint _value, string _reference) noValue() checkAccess(&quot;fee&quot;) returns(bool) {
+    function takeFee(address _feeFrom, uint _value, string _reference) noValue() checkAccess("fee") returns(bool) {
         return _transferFee(_feeFrom, _value, _reference);
     }
 
     function _transfer(address _to, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferCallGas;
         uint fee = calculateFee(_value);
-        if (!_transferFee(msg.sender, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -451,7 +451,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint startGas = msg.gas + transferFromCallGas;
         _allow();
         uint fee = calculateFee(_value);
-        if (!_transferFee(_from, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(_from, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -466,7 +466,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
     function _transferToICAP(bytes32 _icap, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferToICAPCallGas;
         uint fee = calculateFee(_value);
-        if (!_transferFee(msg.sender, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -481,7 +481,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
     function _transferFromToICAP(address _from, bytes32 _icap, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferFromToICAPCallGas;
         uint fee = calculateFee(_value);
-        if (!_transferFee(_from, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(_from, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -497,7 +497,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint startGas = msg.gas + transferWithReferenceCallGas;
         uint additionalGas = _stringGas(_reference);
         uint fee = calculateFeeDynamic(_value, additionalGas);
-        if (!_transferFee(msg.sender, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -513,7 +513,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint startGas = msg.gas + transferFromWithReferenceCallGas;
         uint additionalGas = _stringGas(_reference);
         uint fee = calculateFeeDynamic(_value, additionalGas);
-        if (!_transferFee(_from, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(_from, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -529,7 +529,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint startGas = msg.gas + transferToICAPWithReferenceCallGas;
         uint additionalGas = _stringGas(_reference);
         uint fee = calculateFeeDynamic(_value, additionalGas);
-        if (!_transferFee(msg.sender, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -545,7 +545,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         uint startGas = msg.gas + transferFromToICAPWithReferenceCallGas;
         uint additionalGas = _stringGas(_reference);
         uint fee = calculateFeeDynamic(_value, additionalGas);
-        if (!_transferFee(_from, fee, &quot;Transfer fee&quot;)) {
+        if (!_transferFee(_from, fee, "Transfer fee")) {
             return (false, false);
         }
         _allow();
@@ -559,13 +559,13 @@ contract CryptoCarbon is Asset, AmbiEnabled {
 
     function _approve(address _spender, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + approveCallGas;
-        // Don&#39;t take fee when enabling fee taking.
-        // Don&#39;t refund either.
+        // Don't take fee when enabling fee taking.
+        // Don't refund either.
         if (_spender == address(this)) {
             return (super.approve(_spender, _value), false);
         }
         uint fee = calculateFee(0);
-        if (!_transferFee(msg.sender, fee, &quot;Approve fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Approve fee")) {
             return (false, false);
         }
         _allow();
@@ -580,7 +580,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
     function _setCosignerAddress(address _cosigner) internal returns(bool, bool) {
         uint startGas = msg.gas + setCosignerCallGas;
         uint fee = calculateFee(0);
-        if (!_transferFee(msg.sender, fee, &quot;Cosigner fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Cosigner fee")) {
             return (false, false);
         }
         if (!super.setCosignerAddress(_cosigner)) {
@@ -700,7 +700,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
             return (false, _safeFalse());
         }
         uint fee = calculateFeeDynamic(0, additionalGas);
-        if (!_transferFee(msg.sender, fee, &quot;Forward fee&quot;)) {
+        if (!_transferFee(msg.sender, fee, "Forward fee")) {
             return (false, false);
         }
         if (!_to.call.value(msg.value)(_data)) {
@@ -724,7 +724,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         if (feeAddress == 0x0 || _to == feeAddress || _from == feeAddress) {
             return;
         }
-        if (_transferFee(_from, calculateFee(_value), &quot;Transfer fee&quot;)) {
+        if (_transferFee(_from, calculateFee(_value), "Transfer fee")) {
             return;
         }
         throw;
@@ -738,7 +738,7 @@ contract CryptoCarbon is Asset, AmbiEnabled {
         if (feeAddress == 0x0 || _spender == address(this)) {
             return;
         }
-        if (_transferFee(_from, calculateFee(0), &quot;Approve fee&quot;)) {
+        if (_transferFee(_from, calculateFee(0), "Approve fee")) {
             return;
         }
         throw;

@@ -76,11 +76,11 @@ interface ExchangeHandler {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 contract WETH9 {
-    string public name     = &quot;Wrapped Ether&quot;;
-    string public symbol   = &quot;WETH&quot;;
+    string public name     = "Wrapped Ether";
+    string public symbol   = "WETH";
     uint8  public decimals = 18;
 
     event  Approval(address indexed src, address indexed guy, uint wad);
@@ -88,8 +88,8 @@ contract WETH9 {
     event  Deposit(address indexed dst, uint wad);
     event  Withdrawal(address indexed src, uint wad);
 
-    mapping (address =&gt; uint)                       public  balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint))  public  allowance;
+    mapping (address => uint)                       public  balanceOf;
+    mapping (address => mapping (address => uint))  public  allowance;
 
     function() public payable {
         deposit();
@@ -99,7 +99,7 @@ contract WETH9 {
         Deposit(msg.sender, msg.value);
     }
     function withdraw(uint wad) public {
-        require(balanceOf[msg.sender] &gt;= wad);
+        require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
         msg.sender.transfer(wad);
         Withdrawal(msg.sender, wad);
@@ -123,10 +123,10 @@ contract WETH9 {
         public
         returns (bool)
     {
-        require(balanceOf[src] &gt;= wad);
+        require(balanceOf[src] >= wad);
 
-        if (src != msg.sender &amp;&amp; allowance[src][msg.sender] != uint(-1)) {
-            require(allowance[src][msg.sender] &gt;= wad);
+        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
+            require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
         }
 
@@ -144,7 +144,7 @@ contract WETH9 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -277,7 +277,7 @@ contract AirSwapHandler is ExchangeHandler, Ownable {
         bytes32,
         bytes32
     ) external returns (uint256) {
-        // Just return a orderValues[0], as there&#39;s nothing else we can do here
+        // Just return a orderValues[0], as there's nothing else we can do here
         return orderValues[0];
     }
 

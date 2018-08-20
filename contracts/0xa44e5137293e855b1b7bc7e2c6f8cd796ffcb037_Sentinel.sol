@@ -38,8 +38,8 @@ contract ERC20Token {
   uint8 public decimals;
   uint256 public totalSupply;
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -66,8 +66,8 @@ contract ERC20Token {
         require(_to != 0x0);
         require(_from != 0x0);
         require(_from != _to);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 
@@ -91,7 +91,7 @@ contract ERC20Token {
     address _to,
     uint256 _value)
       public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         allowance[_from][msg.sender] -= _value;
         
@@ -126,7 +126,7 @@ contract ERC20Token {
   function burn(
     uint256 _value)
       public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
@@ -140,8 +140,8 @@ contract ERC20Token {
     address _from,
     uint256 _value)
       public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
 
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -154,7 +154,7 @@ contract ERC20Token {
 }
 
 contract Sentinel is Owned, ERC20Token {
-  mapping (bytes32 =&gt; address) public services;
+  mapping (bytes32 => address) public services;
 
   function Sentinel(
     string _tokenName,
@@ -182,8 +182,8 @@ contract Sentinel is Owned, ERC20Token {
         require(msg.sender == services[_serviceName]);
         require(_from != 0x0);
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 

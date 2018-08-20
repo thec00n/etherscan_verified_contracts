@@ -16,13 +16,13 @@ contract ERC20 {
 
 
 /// @title Basic ERC20 token contract implementation.
-/// @dev Based on OpenZeppelin&#39;s StandardToken.
+/// @dev Based on OpenZeppelin's StandardToken.
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -32,7 +32,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md#approve (see NOTE)
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -110,37 +110,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function toPower2(uint256 a) internal pure returns (uint256) {
@@ -150,7 +150,7 @@ library SafeMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         uint256 c = (a + 1) / 2;
         uint256 b = a;
-        while (c &lt; b) {
+        while (c < b) {
             b = c;
             c = (a / c + c) / 2;
         }
@@ -195,15 +195,15 @@ contract Standard677Token is ERC677, BasicToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions,
-/// this simplifies the implementation of &quot;user permissions&quot;.
-/// @dev Based on OpenZeppelin&#39;s Ownable.
+/// this simplifies the implementation of "user permissions".
+/// @dev Based on OpenZeppelin's Ownable.
 
 contract Ownable {
     address public owner;
@@ -413,8 +413,8 @@ contract EllipseMarketMaker is TokenOwnable {
   /// @dev Constructor calling the library contract using delegate.
   function EllipseMarketMaker(address _mmLib, address _token1, address _token2) public {
     require(_mmLib != address(0));
-    // Signature of the mmLib&#39;s constructor function
-    // bytes4 sig = bytes4(keccak256(&quot;constructor(address,address,address)&quot;));
+    // Signature of the mmLib's constructor function
+    // bytes4 sig = bytes4(keccak256("constructor(address,address,address)"));
     bytes4 sig = 0x6dd23b5b;
 
     // 3 arguments of size 32
@@ -447,7 +447,7 @@ contract EllipseMarketMaker is TokenOwnable {
   /// @dev gets called when no other function matches, delegate to the lib contract.
   function() public {
     address _mmLib = mmLib;
-    if (msg.data.length &gt; 0) {
+    if (msg.data.length > 0) {
       assembly {
         calldatacopy(0xff, 0, calldatasize)
         let retVal := delegatecall(gas, _mmLib, 0xff, calldatasize, 0, 0x20)
@@ -523,8 +523,8 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
   }
 
 
-  // map of Market Maker owners: token address =&gt; currency struct
-  mapping (address =&gt; CurrencyStruct) public currencyMap;
+  // map of Market Maker owners: token address => currency struct
+  mapping (address => CurrencyStruct) public currencyMap;
   // address of the deployed CLN contract (ERC20 Token)
   address public clnAddress;
   // address of the deployed elipse market maker contract
@@ -586,7 +586,7 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
                                   uint256 _clnAmount) public
                                   tokenIssuerOnly(_token, msg.sender)
                                   returns (uint256 _subTokenAmount) {
-  	require(_clnAmount &gt; 0);
+  	require(_clnAmount > 0);
   	address marketMakerAddress = getMarketMakerAddressFromToken(_token);
   	require(ERC20(clnAddress).transferFrom(msg.sender, this, _clnAmount));
   	require(ERC20(clnAddress).approve(marketMakerAddress, _clnAmount));
@@ -651,7 +651,7 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
   /// @dev implementation for standard 223 reciver.
   /// @param _token address of the token used with transferAndCall.
   function supportsToken(address _token) public constant returns (bool) {
-  	return (clnAddress == _token || currencyMap[_token].totalSupply &gt; 0);
+  	return (clnAddress == _token || currencyMap[_token].totalSupply > 0);
   }
 
   /// @dev helper function to get the market maker address form token

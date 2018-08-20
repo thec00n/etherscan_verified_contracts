@@ -94,19 +94,19 @@ contract TokenTimelock {
      */
     function release() public {
         uint256 tmpPay = 0;
-        if(block.timestamp &gt;= firstTime &amp;&amp; firstPay &gt; 0){
+        if(block.timestamp >= firstTime && firstPay > 0){
             tmpPay = firstPay;
             firstPay = 0;
-        }else if(block.timestamp &gt;= secondTime &amp;&amp; secondPay &gt; 0 ){
+        }else if(block.timestamp >= secondTime && secondPay > 0 ){
             tmpPay = secondPay;
             secondPay = 0;
-        }else if (block.timestamp &gt;= thirdTime &amp;&amp; thirdPay &gt; 0) {
+        }else if (block.timestamp >= thirdTime && thirdPay > 0) {
             tmpPay = token.balanceOf(this);
             thirdPay = 0;
         }
-        require(tmpPay &gt; 0);
+        require(tmpPay > 0);
         uint256 amount = token.balanceOf(this);
-        require(amount &gt;= tmpPay);
+        require(amount >= tmpPay);
         token.safeTransfer(beneficiary, tmpPay);
     }
 }

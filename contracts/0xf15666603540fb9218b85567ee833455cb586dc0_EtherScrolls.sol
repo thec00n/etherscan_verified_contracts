@@ -26,13 +26,13 @@ contract Card {
     CardStructure[] allCards;
 
     // erc721 used to id owner
-    mapping (uint =&gt; address) public indexToOwner; 
+    mapping (uint => address) public indexToOwner; 
 
     // part of erc721. used for balanceOf
-    mapping (address =&gt; uint) ownershipCount;
+    mapping (address => uint) ownershipCount;
 
     // part of erc721 used for approval
-    mapping (uint =&gt; address) public indexToApproved;
+    mapping (uint => address) public indexToApproved;
 
     function _transfer(address _from, address _to, uint _tokenId) internal {
      
@@ -86,8 +86,8 @@ contract Card {
         return cardNumber;
     }
 
-    string public name = &quot;EtherScrolls&quot;;
-    string public symbol = &quot;ES&quot;;
+    string public name = "EtherScrolls";
+    string public symbol = "ES";
 
     function implementsERC721() public pure returns (bool) {
         return true;
@@ -170,8 +170,8 @@ contract DutchAuctionToCraftInterface is DutchAuctionInterface {
 
 contract CardMarket is Card { 
 
-    mapping (uint =&gt; uint) public numberOfBasesSold;
-    mapping (uint =&gt; uint) public numberOfAbilitiesSold;
+    mapping (uint => uint) public numberOfBasesSold;
+    mapping (uint => uint) public numberOfAbilitiesSold;
     uint16 lastAbilityToBeAddedToCirculation;
     uint16 lastBaseToBeAddedToCirculation;
     uint16[] arrayOfPossibleBases;
@@ -224,7 +224,7 @@ contract CardMarket is Card {
         uint16[16] memory powers = [uint16(35), uint16(20), uint16(10), uint16(5), uint16(5), uint16(5), uint16(1), uint16(35),
         uint16(21), uint16(14), uint16(10),uint16(9), uint16(8), uint16(3), uint16(9), uint16(7)];
       
-        for (uint i = 0; i &lt; count; i++) {
+        for (uint i = 0; i < count; i++) {
            
             if (base == 0) {
                 bases[14] = uint16((uint(block.blockhash(block.number - i - 1)) % 20));
@@ -233,7 +233,7 @@ contract CardMarket is Card {
             powers[14] = uint16((uint(block.blockhash(block.number - i - 3)) % 9) + 1);
             powers[15] = uint16((uint(block.blockhash(block.number - i - 4)) % 9) + 1);
 
-            if (numberOfSpecialCardsCreated &lt; 250) {
+            if (numberOfSpecialCardsCreated < 250) {
                 _createCard(bases, powers, 0, 0, 0, msg.sender);
                 numberOfSpecialCardsCreated++;
             }
@@ -277,7 +277,7 @@ contract CardMarket is Card {
 
     function createDutchAuctionToBuy(uint _cardNumber, uint startPrice, 
     uint endPrice, uint _lentghOfTime) public {
-        require(_lentghOfTime &gt;= 10 minutes);
+        require(_lentghOfTime >= 10 minutes);
         require(dutchAuctionToBuy.isForAuction(_cardNumber) == false);
         require(dutchAuctionToCraft.isForAuction(_cardNumber) == false);
         require(_owns(msg.sender, _cardNumber));
@@ -287,10 +287,10 @@ contract CardMarket is Card {
 
     function startCraftingAuction(uint _cardNumber, uint startPrice, uint endPrice,
     uint _lentghOfTime) public {
-        require(_lentghOfTime &gt;= 1 minutes);
+        require(_lentghOfTime >= 1 minutes);
         require(_owns(msg.sender, _cardNumber));
         CardStructure storage card = allCards[_cardNumber];
-        require(card.canCraftAt &lt;= now);
+        require(card.canCraftAt <= now);
         require(dutchAuctionToBuy.isForAuction(_cardNumber) == false);
         require(dutchAuctionToCraft.isForAuction(_cardNumber) == false);
         _approve(_cardNumber, dutchAuctionToCraft);
@@ -302,21 +302,21 @@ contract CardMarket is Card {
         require(_owns(msg.sender, _craftedFromLeft));
         require(_owns(msg.sender, _craftedFromRight));
         // make sure that the card that will produce a new card is not up for auction
-        require((isOnAuctionToBuy(_craftedFromLeft) == false) &amp;&amp; (isOnCraftingAuction(_craftedFromLeft) == false));
+        require((isOnAuctionToBuy(_craftedFromLeft) == false) && (isOnCraftingAuction(_craftedFromLeft) == false));
         require(_craftedFromLeft != _craftedFromRight);
         CardStructure storage leftCard = allCards[_craftedFromLeft];
         CardStructure storage rightCard = allCards[_craftedFromRight];
-        require(leftCard.canCraftAt &lt;= now);
-        require(rightCard.canCraftAt &lt;= now);
+        require(leftCard.canCraftAt <= now);
+        require(rightCard.canCraftAt <= now);
         spawnCard(_craftedFromLeft, _craftedFromRight);
     }
 
     function isOnCraftingAuction(uint cardNumber) public view returns (bool) {
-        return (dutchAuctionToCraft.isForAuction(cardNumber) &amp;&amp; dutchAuctionToCraft.isValidAuction(cardNumber));
+        return (dutchAuctionToCraft.isForAuction(cardNumber) && dutchAuctionToCraft.isValidAuction(cardNumber));
     }
 
     function isOnAuctionToBuy(uint cardNumber) public view returns (bool) {
-        return (dutchAuctionToBuy.isForAuction(cardNumber) &amp;&amp; dutchAuctionToBuy.isValidAuction(cardNumber));
+        return (dutchAuctionToBuy.isForAuction(cardNumber) && dutchAuctionToBuy.isValidAuction(cardNumber));
     }
 
     function getCardBuyAuction(uint cardNumber) public view returns( uint startingPrice, uint endPrice, uint duration, address seller,
@@ -353,9 +353,9 @@ contract CardMarket is Card {
     function _startCraftRecovery(CardStructure storage card) internal {
 
         uint base = card.generation + card.difficulty + 1;
-        if (base &lt; 6) {
+        if (base < 6) {
             base = base * (1 minutes);
-        } else if ( base &lt; 11) {
+        } else if ( base < 11) {
             base = (base - 5) * (1 hours);
         } else {
             base = (base - 10) * (1 days);
@@ -364,7 +364,7 @@ contract CardMarket is Card {
         
         card.canCraftAt = uint64(now + base);
 
-        if (card.difficulty &lt; 15) {
+        if (card.difficulty < 15) {
             card.difficulty++;
         }
     }
@@ -373,8 +373,8 @@ contract CardMarket is Card {
         require(_owns(msg.sender, cardIdToCraftWith));
         CardStructure storage cardToBidOn = allCards[cardIdToBidOn];
         CardStructure storage cardToCraftWith = allCards[cardIdToCraftWith];
-        require(cardToCraftWith.canCraftAt &lt;= now);
-        require(cardToBidOn.canCraftAt &lt;= now);
+        require(cardToCraftWith.canCraftAt <= now);
+        require(cardToBidOn.canCraftAt <= now);
         require(cardIdToBidOn != cardIdToCraftWith);
         uint bidAmount = msg.value;
         // the bid funciton ensures that the seller acutally owns the card being sold
@@ -390,12 +390,12 @@ contract CardMarket is Card {
         _startCraftRecovery(leftCard);
 
         uint16 parentGen = leftCard.generation;
-        if (rightCard.generation &gt; leftCard.generation) {
+        if (rightCard.generation > leftCard.generation) {
             parentGen = rightCard.generation;
         }
 
         parentGen += 1;
-        if (parentGen &gt; 18) {
+        if (parentGen > 18) {
             parentGen = 18;
         }
 
@@ -423,7 +423,7 @@ contract CardMarket is Card {
 
     // 250 is the max number of cards that the developers are allowed to print themselves
     function spawnNewZeroCard() public masterRestricted {
-        if (numberOfSpecialCardsCreated &lt; 250) {
+        if (numberOfSpecialCardsCreated < 250) {
             spawnNewZeroCardInternal();
             numberOfSpecialCardsCreated++;
         }
@@ -444,7 +444,7 @@ contract CardMarket is Card {
 
         uint price = dutchAuctionToBuy.priceOfOfficalCardSold() * 2;
         // 11000000000000000 wei is .011 eth
-        if (price &lt; 11000000000000000 ) {
+        if (price < 11000000000000000 ) {
             price = 11000000000000000;
         }
 
@@ -453,7 +453,7 @@ contract CardMarket is Card {
     }
 
     function giftCard(uint cardId, address reciever) public {
-        require((isOnAuctionToBuy(cardId) == false) &amp;&amp; (isOnCraftingAuction(cardId) == false));
+        require((isOnAuctionToBuy(cardId) == false) && (isOnCraftingAuction(cardId) == false));
         require(ownerOf(cardId) == msg.sender);
         transfer(reciever, cardId);
         Gift(cardId, msg.sender, reciever);
@@ -510,9 +510,9 @@ contract CardMarket is Card {
         numberOfAbilitiesSold[ability1]++;
 
         // if we have reached the max number of runes
-        if (numberOfBasesSold[base1] &gt; maxRunes) {
+        if (numberOfBasesSold[base1] > maxRunes) {
             // remove the rune from the list of possible runes
-            for (i = 0; i &lt; arrayOfPossibleBases.length; i++ ) {
+            for (i = 0; i < arrayOfPossibleBases.length; i++ ) {
                 if (arrayOfPossibleBases[i] == base1) {
                 // add a new rune to the list
                 // we dont need a check here to see if lastBaseCardToBeAddedToCirculation overflows because
@@ -524,9 +524,9 @@ contract CardMarket is Card {
             }
         }
 
-        if (numberOfAbilitiesSold[ability1] &gt; maxRunes) {
+        if (numberOfAbilitiesSold[ability1] > maxRunes) {
             // remove the rune from the list of possible runes
-            for (i = 0; i &lt; arrayOfPossibleAbilities.length; i++) {
+            for (i = 0; i < arrayOfPossibleAbilities.length; i++) {
                 if (arrayOfPossibleAbilities[i] == ability1) {
                 // we dont need to check for overflow here because of the 300 rune limits
                 lastAbilityToBeAddedToCirculation++;

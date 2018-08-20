@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -79,8 +79,8 @@ contract MainframeTokenDistribution is Ownable {
 
   function distributeTokens(address tokenOwner, address[] recipients, uint[] values) onlyOwner external {
     require(recipients.length == values.length);
-    for(uint i = 0; i &lt; recipients.length; i++) {
-      if(values[i] &gt; 0) {
+    for(uint i = 0; i < recipients.length; i++) {
+      if(values[i] > 0) {
         require(mainframeToken.transferFrom(tokenOwner, recipients[i], values[i]));
         emit TokensDistributed(recipients[i], values[i]);
         totalDistributed += values[i];

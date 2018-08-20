@@ -66,13 +66,13 @@ contract SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,13 +81,13 @@ contract Bankroi is Pausable, SafeMath {
 
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balances;
+  mapping (address => mapping (address => uint)) public allowed;
 
   
   
-  string public constant name = &quot;BankRoi&quot;;
-  string public constant symbol = &quot;BROI&quot;;
+  string public constant name = "BankRoi";
+  string public constant symbol = "BROI";
   uint8 public constant decimals = 8;
   
   // custom properties
@@ -150,7 +150,7 @@ contract Bankroi is Pausable, SafeMath {
 
   function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
     totalSupply = add(totalSupply, _amount);
-    require(totalSupply &lt;= MINTING_LIMIT);
+    require(totalSupply <= MINTING_LIMIT);
     
     balances[_to] = add(balances[_to], _amount);
     Mint(_to, _amount);

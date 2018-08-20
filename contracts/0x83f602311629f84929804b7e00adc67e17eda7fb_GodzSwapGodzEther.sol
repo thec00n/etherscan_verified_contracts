@@ -25,7 +25,7 @@ library SafeMath {
   /*function name : sub*/
   /*purpose : be the funcion for safe substract*/
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    /*assert(b &lt;= a);*/
+    /*assert(b <= a);*/
     return a - b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   /*purpose : be the funcion for safe sum*/
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    /*assert(c &gt;= a);*/
+    /*assert(c >= a);*/
     return c;
   }
 }
@@ -90,7 +90,7 @@ contract GodzSwapGodzEtherCompliance{
     }
 
     /*mapping of the acounts that send more than usd5000*/
-    mapping(uint=&gt;GodzBuyAccounts) public accountsHolding;
+    mapping(uint=>GodzBuyAccounts) public accountsHolding;
     
     /*index of the account information*/
     uint public indexAccount = 0;
@@ -223,10 +223,10 @@ contract GodzSwapGodzEther  is ReentryProtected{
         if (seller!=buyer) /*if the seller of godz on swap is different than the investor buying*/
         {
             /*if the balance and the allowance match a valid quantity swap*/
-      		if ((balanceAllowed &gt;= buyQuantity) &amp;&amp; (balanceSeller &gt;= buyQuantity))
+      		if ((balanceAllowed >= buyQuantity) && (balanceSeller >= buyQuantity))
             {
                 /*if the msg.value(ether sent) is greater than compliance, store it and sent to the wallet holder*/
-                if (valuePaid&gt;(20 * 1 ether))
+                if (valuePaid>(20 * 1 ether))
                 {
                     /*transfer the value(ether) to the compliance holder wallet*/
                     complianceWallet.transfer(valuePaid);
@@ -278,15 +278,15 @@ contract Token {
     using SafeMath for uint256;
 
     /* Public variables of the token */
-    string public standard = &#39;DSCS.GODZ.TOKEN&#39;;
+    string public standard = 'DSCS.GODZ.TOKEN';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -308,8 +308,8 @@ contract Token {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert();                               /* Prevent transfer to 0x0 address. Use burn() instead*/
-        if (balanceOf[msg.sender] &lt; _value) revert();           /* Check if the sender has enough*/
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); /* Check for overflows*/
+        if (balanceOf[msg.sender] < _value) revert();           /* Check if the sender has enough*/
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); /* Check for overflows*/
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);                        /* Subtract from the sender*/
         balanceOf[_to] = balanceOf[_to].add(_value);                               /* Add the same to the recipient*/
         Transfer(msg.sender, _to, _value);                      /* Notify anyone listening that this transfer took place*/
@@ -337,8 +337,8 @@ contract Token {
         address origin = tx.origin;
         if (origin == 0x0) revert();
         if (_to == 0x0) revert();                                /* Prevent transfer to 0x0 address.*/
-        if (balanceOf[origin] &lt; _value) revert();                /* Check if the sender has enough*/
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();  /* Check for overflows*/
+        if (balanceOf[origin] < _value) revert();                /* Check if the sender has enough*/
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();  /* Check for overflows*/
         balanceOf[origin] = balanceOf[origin].sub(_value);       /* Subtract from the sender*/
         balanceOf[_to] = balanceOf[_to].add(_value);             /* Add the same to the recipient*/
         return true;
@@ -347,9 +347,9 @@ contract Token {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();                                /* Prevent transfer to 0x0 address.*/
-        if (balanceOf[_from] &lt; _value) revert();                 /* Check if the sender has enough*/
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();  /* Check for overflows*/
-        if (_value &gt; allowance[_from][msg.sender]) revert();     /* Check allowance*/
+        if (balanceOf[_from] < _value) revert();                 /* Check if the sender has enough*/
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();  /* Check for overflows*/
+        if (_value > allowance[_from][msg.sender]) revert();     /* Check allowance*/
         balanceOf[_from] = balanceOf[_from].sub(_value);                              /* Subtract from the sender*/
         balanceOf[_to] = balanceOf[_to].add(_value);                                /* Add the same to the recipient*/
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);

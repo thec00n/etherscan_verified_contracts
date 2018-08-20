@@ -53,13 +53,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -76,8 +76,8 @@ contract TokenERC20 is SafeMath {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -90,7 +90,7 @@ contract TokenERC20 is SafeMath {
     * For the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -107,9 +107,9 @@ contract TokenERC20 is SafeMath {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(safeAdd(balanceOf[_to],_value) &gt; balanceOf[_to]);
+        require(safeAdd(balanceOf[_to],_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = safeAdd(balanceOf[_from],balanceOf[_to]);
         // Subtract from the sender
@@ -143,7 +143,7 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(32 * 3) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender],_value);
         _transfer(_from, _to, _value);
         return true;
@@ -171,7 +171,7 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender],_value);  // Subtract from the sender
         totalSupply = safeSub(totalSupply,_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -187,10 +187,10 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyPayloadSize(32 * 2) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] = safeSub(balanceOf[_from],_value);                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender],_value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender],_value);             // Subtract from the sender's allowance
         totalSupply = safeSub(totalSupply,_value);                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -210,7 +210,7 @@ contract OVC is Ownable, TokenERC20 {
     uint256 public totalOVCSold = 0;
     
     OVCLockAllocation public lockedAllocation;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
   
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -228,8 +228,8 @@ contract OVC is Ownable, TokenERC20 {
     function OVC() public {
 
         totalSupply = safeMul(83875000,(10 ** uint256(decimals) ));  // Update total supply(83,875,000) with the decimal amount
-        name = &quot;OVCODE&quot;;  // Set the name for display purposes
-        symbol = &quot;OVC&quot;;   // Set the symbol for display purposes
+        name = "OVCODE";  // Set the name for display purposes
+        symbol = "OVC";   // Set the symbol for display purposes
         
         // 30,000,000 tokens for Presale 
         balanceOf[msg.sender] = safeMul(30000000,(10 ** uint256(decimals))); 
@@ -254,7 +254,7 @@ contract OVC is Ownable, TokenERC20 {
         address bountyAccount = 0xb690acb524BFBD968A91D614654aEEC5041597E0;
         balanceOf[bountyAccount] = safeMul(2450000,(10 ** uint256(decimals)));
 
-        // 14,850,000 &amp; 4,000,000 for our investors
+        // 14,850,000 & 4,000,000 for our investors
         address investor1 = 0x17dC8dD84bD8DbAC168209360EDc1E8539D965DA;
         balanceOf[investor1] = safeMul(14850000,(10 ** uint256(decimals)));
         address investor2 = 0x5B2213eeFc9b7939D863085f7F2D9D1f3a771D5f;
@@ -283,13 +283,13 @@ contract OVC is Ownable, TokenERC20 {
     /* @notice private function for buy token, enable the purchaser to 
     // send Ether directly to the contract address */
     function buyTokens() private {
-        require(now &gt; ICO_START_TIME );
-        require(now &lt; ICO_END_TIME );
+        require(now > ICO_START_TIME );
+        require(now < ICO_END_TIME );
 
         uint256 _value = safeMul(msg.value,ovcPerEther);
         uint256 futureBalance = safeAdd(balanceOf[msg.sender],_value);
 
-        require(futureBalance &gt;= minOVC);
+        require(futureBalance >= minOVC);
         owner.transfer(address(this).balance);
 
         _transfer(this, msg.sender, _value);
@@ -298,15 +298,15 @@ contract OVC is Ownable, TokenERC20 {
     
      /* @notice Change the current amount of OVC token per Ether */
     function changeOVCPerEther(uint256 amount) onlyPayloadSize(1 * 32) onlyOwner public {
-        require(amount &gt;= 0);
+        require(amount >= 0);
         ovcPerEther = amount;
         emit ChangeOvcEtherConversion(msg.sender, amount);
     }
 
     /* @notice Transfer all unsold token to the contract owner */
     function transferUnsoldToken() onlyOwner public {
-        require(now &gt; ICO_END_TIME );
-        require (balanceOf[this] &gt; 0); 
+        require(now > ICO_END_TIME );
+        require (balanceOf[this] > 0); 
         uint256 unsoldToken = balanceOf[this]; 
         _transfer(this, msg.sender, unsoldToken);
     }
@@ -314,8 +314,8 @@ contract OVC is Ownable, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough balance
-        require (safeAdd(balanceOf[_to],_value) &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough balance
+        require (safeAdd(balanceOf[_to],_value) > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] = safeSub(balanceOf[_from],_value);// Subtract from the sender
@@ -333,7 +333,7 @@ contract OVC is Ownable, TokenERC20 {
         emit Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -353,7 +353,7 @@ contract OVCLockAllocation is SafeMath {
     * For the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -363,7 +363,7 @@ contract OVCLockAllocation is SafeMath {
         bool released;
     }
 
-    mapping (address =&gt; Allocations) public allocations;
+    mapping (address => Allocations) public allocations;
 
     /* Initialize the total allocated OVC token */
     // Initialize the 3 wallet address, allocated amount and date unlock
@@ -406,9 +406,9 @@ contract OVCLockAllocation is SafeMath {
         Allocations memory allocation;
         allocation = allocations[msg.sender];
         require(allocation.released == false);
-        require(allocation.allocated &gt; 0);
-        require(allocation.unlockedAt &gt; 0);
-        require(now &gt;= allocation.unlockedAt);
+        require(allocation.allocated > 0);
+        require(allocation.unlockedAt > 0);
+        require(now >= allocation.unlockedAt);
             
         uint256 allocated = allocation.allocated;
         ovc.transfer(msg.sender, allocated);

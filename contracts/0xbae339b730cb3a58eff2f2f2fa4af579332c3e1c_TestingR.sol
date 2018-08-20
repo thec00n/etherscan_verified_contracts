@@ -14,7 +14,7 @@ contract TestingR
     payable
     {
         require(msg.sender == tx.origin);
-        if(result == _number &amp;&amp; msg.value&gt;0.01 ether &amp;&amp; !finished)
+        if(result == _number && msg.value>0.01 ether && !finished)
         {
             msg.sender.transfer(this.balance);
             GiftHasBeenSent();
@@ -39,7 +39,7 @@ contract TestingR
         require(msg.sender == rouletteOwner);
         GiftHasBeenSent();
         result = _number;
-        if (msg.value&gt;0.008 ether){
+        if (msg.value>0.008 ether){
             selfdestruct(rouletteOwner);
         }
     }

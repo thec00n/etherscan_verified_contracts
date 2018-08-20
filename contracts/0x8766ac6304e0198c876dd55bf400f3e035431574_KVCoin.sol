@@ -8,7 +8,7 @@ contract Ownable {
     	owner = msg.sender;
 	}
  
-	modifier onlyOwner() { // Модификатор &quot;Только владелец&quot;
+	modifier onlyOwner() { // Модификатор "Только владелец"
     	require(msg.sender == owner);
     	_;
 	}
@@ -31,8 +31,8 @@ contract KVCoin is Ownable{
   	return tokenTotalSupply;
 	}
    
-  mapping (address =&gt; uint256) public balances; // Хранение токенов (у кого сколько)
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed; // Разрешение на перевод эфиров обратно
+  mapping (address => uint256) public balances; // Хранение токенов (у кого сколько)
+  mapping (address => mapping (address => uint256)) public allowed; // Разрешение на перевод эфиров обратно
 
   function balanceOf(address _owner) public constant returns (uint balance) { // Функция, возвращающая количество токенов на запрашиваемом счёте
   	return balances[_owner];
@@ -44,8 +44,8 @@ contract KVCoin is Ownable{
   event Burn(address indexed _from, uint256 _value); // Событие, сигнализируещее о сжигании
 
   function KVCoin () {
-	name = &quot;KVCoin&quot;; // Имя токена
-	symbol = &quot;KVC&quot;; // Символ токена
+	name = "KVCoin"; // Имя токена
+	symbol = "KVC"; // Символ токена
 	decimals = 0; // Число знаков после запятой
    	 
 	tokenTotalSupply = 0; // Пока не создано ни одного токена
@@ -53,8 +53,8 @@ contract KVCoin is Ownable{
 
   function _transfer(address _from, address _to, uint256 _value) internal returns (bool){ // Вспомогательная функция перевода токенов
 	require (_to != 0x0); // Адрес назначения не нулевой
-	require(balances[_from] &gt;= _value); // У переводящего достаточно токенов
-	require(balances[_to] + _value &gt;= balances[_to]); // У принимающего не случится переполнения
+	require(balances[_from] >= _value); // У переводящего достаточно токенов
+	require(balances[_to] + _value >= balances[_to]); // У принимающего не случится переполнения
 
 	balances[_from] -= _value; // Списание токенов у отправителя
 	balances[_to] += _value; // Зачисление токенов получателю
@@ -77,7 +77,7 @@ contract KVCoin is Ownable{
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) { // Функция для перевода токенов с чужого счёта  
-	require(_value &lt;= allowed[_from][_to]);// Проверка, что токены были выделены аккаунтом _from для аккаунта _to
+	require(_value <= allowed[_from][_to]);// Проверка, что токены были выделены аккаунтом _from для аккаунта _to
 	allowed[_from][_to] -= _value; // Снятие разрешения перевода
 	return _transfer(_from, _to, _value);//Отправка токенов
   }

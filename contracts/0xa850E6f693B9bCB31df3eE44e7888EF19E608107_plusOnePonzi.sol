@@ -16,7 +16,7 @@ contract plusOnePonzi {
   }
 
   function() {
-    if (msg.value &lt; VALUE) {
+    if (msg.value < VALUE) {
       throw;
     }
 
@@ -25,7 +25,7 @@ contract plusOnePonzi {
     payouts[entryIndex].addr = msg.sender;
     payouts[entryIndex].yield = 10 ether;
 
-    while (payouts[payoutIndex].yield &lt; this.balance) {
+    while (payouts[payoutIndex].yield < this.balance) {
       payoutTotal += payouts[payoutIndex].yield;
       payouts[payoutIndex].addr.send(payouts[payoutIndex].yield);
       payoutIndex += 1;

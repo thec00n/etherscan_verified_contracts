@@ -16,7 +16,7 @@ contract Ownable {
 /**
  * @title OwnableImpl
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableImpl is Ownable {
     address public owner;
@@ -120,20 +120,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -202,7 +202,7 @@ contract EtherReceiver {
 
 contract EtherReceiveAdapter is EtherReceiver, ReceiveAdapter {
     function () payable public {
-        receiveWithData(&quot;&quot;);
+        receiveWithData("");
     }
 
     function receiveWithData(bytes _data) payable public {
@@ -225,7 +225,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 sold = getSold(_token, _value);
-        require(sold &gt; 0);
+        require(sold > 0);
         uint256 bonus = getBonus(sold);
         address buyer;
         if (_data.length == 20) {
@@ -242,7 +242,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function getSold(address _token, uint256 _value) constant public returns (uint256) {
         uint256 rate = getRate(_token);
-        require(rate &gt; 0);
+        require(rate > 0);
         return _value.mul(rate).div(10**18);
     }
 
@@ -261,7 +261,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
     }
 
     function toBytes20(bytes b, uint256 _start) pure internal returns (bytes20 result) {
-        require(_start + 20 &lt;= b.length);
+        require(_start + 20 <= b.length);
         assembly {
             let from := add(_start, add(b, 0x20))
             result := mload(from)
@@ -317,7 +317,7 @@ contract CappedSale is AbstractSale {
 
     function checkPurchaseValid(address buyer, uint256 sold, uint256 bonus) internal {
         super.checkPurchaseValid(buyer, sold, bonus);
-        require(cap &gt;= sold);
+        require(cap >= sold);
     }
 
     function onPurchase(address buyer, address token, uint256 value, uint256 sold, uint256 bonus) internal {
@@ -345,7 +345,7 @@ contract Eticket4Sale is MintingSale, OwnableImpl, CappedSale {
 
     function checkPurchaseValid(address buyer, uint256 sold, uint256 bonus) internal {
         super.checkPurchaseValid(buyer, sold, bonus);
-        require(now &gt; start &amp;&amp; now &lt; end);
+        require(now > start && now < end);
     }
 
     function getRate(address _token) constant public returns (uint256) {
@@ -398,7 +398,7 @@ contract PreSale is Eticket4Sale {
 
 	function getBonus(uint256 sold) constant public returns (uint256) {
 		uint256 diffDays = (now - start) / 86400;
-		if (diffDays &lt; 2) {
+		if (diffDays < 2) {
 			return sold.mul(40).div(100);
 		} else {
 			return getTimeBonus(sold, diffDays) + getAmountBonus(sold);
@@ -419,15 +419,15 @@ contract PreSale is Eticket4Sale {
 	}
 
 	function getAmountBonus(uint256 sold) internal returns (uint256) {
-		if (sold &gt; 20000 * 10**18) {
+		if (sold > 20000 * 10**18) {
 			return sold.mul(30).div(100);
-		} else if (sold &gt; 15000 * 10**18) {
+		} else if (sold > 15000 * 10**18) {
 			return sold.mul(25).div(100);
-		} else if (sold &gt; 10000 * 10**18) {
+		} else if (sold > 10000 * 10**18) {
 			return sold.mul(20).div(100);
-		} else if (sold &gt; 5000 * 10**18) {
+		} else if (sold > 5000 * 10**18) {
 			return sold.mul(15).div(100);
-		} else if (sold &gt; 1000 * 10**18) {
+		} else if (sold > 1000 * 10**18) {
 			return sold.mul(10).div(100);
 		} else {
 			return 0;

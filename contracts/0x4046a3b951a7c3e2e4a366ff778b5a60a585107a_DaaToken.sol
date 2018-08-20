@@ -48,7 +48,7 @@ contract DaaToken {
   string public name;
   uint8 public decimals;
   string public symbol;
-  string public version = &#39;0.0.1&#39;;
+  string public version = '0.0.1';
   address public owner;
   address public minter;
   uint256 public lockedUntilBlock;
@@ -99,7 +99,7 @@ contract DaaToken {
   {
 
     // check sufficient allowance
-    if (_value &gt; allowed[_from][msg.sender]) {
+    if (_value > allowed[_from][msg.sender]) {
       return false;
     }
 
@@ -130,8 +130,8 @@ contract DaaToken {
       returns (bool success)
   {
     // ensure _value is greater than zero and
-    // doesn&#39;t overflow
-    if (totalSupply + _value &lt;= totalSupply) {
+    // doesn't overflow
+    if (totalSupply + _value <= totalSupply) {
       return false;
     }
 
@@ -150,7 +150,7 @@ contract DaaToken {
       blockLock(msg.sender)
       returns (bool success)
   {
-    if (_value == 0 || _value &gt; balances[msg.sender]) {
+    if (_value == 0 || _value > balances[msg.sender]) {
       return false;
     }
 
@@ -218,7 +218,7 @@ contract DaaToken {
       constant
       returns (bool success)
   {
-    return lockedUntilBlock &gt; block.number;
+    return lockedUntilBlock > block.number;
   }
 
   /// @dev Checks if transfer parameters are valid
@@ -227,13 +227,13 @@ contract DaaToken {
       constant
       returns (bool isValid)
   {
-    return  balances[_from] &gt;= _amount &amp;&amp;  // sufficient balance
-            _amount &gt; 0 &amp;&amp;                 // amount is positive
-            _to != address(this) &amp;&amp;        // prevent sending tokens to contract
+    return  balances[_from] >= _amount &&  // sufficient balance
+            _amount > 0 &&                 // amount is positive
+            _to != address(this) &&        // prevent sending tokens to contract
             _to != 0x0                     // prevent sending token to 0x0 address
     ;
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 }

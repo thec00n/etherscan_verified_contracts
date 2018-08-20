@@ -57,9 +57,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -67,7 +67,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -76,7 +76,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -89,7 +89,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     /**
@@ -147,8 +147,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -211,7 +211,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -226,7 +226,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -330,7 +330,7 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -341,7 +341,7 @@ contract CappedToken is MintableToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= cap);
+        require(totalSupply_.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -352,7 +352,7 @@ contract CappedToken is MintableToken {
 contract DividendPayoutToken is CappedToken {
 
     // Dividends already claimed by investor
-    mapping(address =&gt; uint256) public dividendPayments;
+    mapping(address => uint256) public dividendPayments;
     // Total dividends claimed by all investors
     uint256 public totalDividendPayments;
 
@@ -396,9 +396,9 @@ contract DividendPayoutToken is CappedToken {
 
 contract IcsToken is DividendPayoutToken {
 
-    string public constant name = &quot;Interexchange Crypstock System&quot;;
+    string public constant name = "Interexchange Crypstock System";
 
-    string public constant symbol = &quot;ICS&quot;;
+    string public constant symbol = "ICS";
 
     uint8 public constant decimals = 18;
 
@@ -410,9 +410,9 @@ contract IcsToken is DividendPayoutToken {
 
 contract HicsToken is DividendPayoutToken {
 
-    string public constant name = &quot;Interexchange Crypstock System Heritage Token&quot;;
+    string public constant name = "Interexchange Crypstock System Heritage Token";
 
-    string public constant symbol = &quot;HICS&quot;;
+    string public constant symbol = "HICS";
 
     uint8 public constant decimals = 18;
 
@@ -485,14 +485,14 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     uint256 public softCap; // in tokens
 
-    // investors =&gt; amount of money
-    mapping(address =&gt; uint) public balances;  // in tokens
+    // investors => amount of money
+    mapping(address => uint) public balances;  // in tokens
 
     // wei which has stored on PreSale contract
-    mapping(address =&gt; uint) balancesForRefund;  // in wei (not public: only for refund)
+    mapping(address => uint) balancesForRefund;  // in wei (not public: only for refund)
 
     // T4T which has stored on PreSale contract
-    mapping(address =&gt; uint) balancesForRefundT4T;  // in T4T tokens (not public: only for refund)
+    mapping(address => uint) balancesForRefundT4T;  // in T4T tokens (not public: only for refund)
 
     // Amount of wei raised in PreSale Contract
     uint256 public weiRaised;
@@ -538,7 +538,7 @@ contract PreSale is Ownable, ReentrancyGuard {
         require(_hicsToken != address(0));
         require(_erc20Token != address(0));
 
-        // periods of PreSale&#39;s bonus and PreSale&#39;s time
+        // periods of PreSale's bonus and PreSale's time
         startTime = 1528675200;  // 1528675200 - 11.06.2018 00:00 UTC
         endPeriodA = 1529107200; // 1529107200 - 16.06.2018 00:00 UTC
         endPeriodB = 1529798400; // 1529798400 - 24.06.2018 00:00 UTC
@@ -546,9 +546,9 @@ contract PreSale is Ownable, ReentrancyGuard {
         endTime = 1531353600;    // 1531353600 - 12.07.2018 00:00 UTC
 
         // check valid of periods
-        bool validPeriod = now &lt; startTime &amp;&amp; startTime &lt; endPeriodA 
-                        &amp;&amp; endPeriodA &lt; endPeriodB &amp;&amp; endPeriodB &lt; endPeriodC 
-                        &amp;&amp; endPeriodC &lt; endTime;
+        bool validPeriod = now < startTime && startTime < endPeriodA 
+                        && endPeriodA < endPeriodB && endPeriodB < endPeriodC 
+                        && endPeriodC < endTime;
         require(validPeriod);
 
         wallet = _wallet;
@@ -579,20 +579,20 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     // @return true if the transaction can buy tokens
     modifier saleIsOn() {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         require(withinPeriod);
         _;
     }
 
     // allowed refund in case of unsuccess PreSale
     modifier refundAllowed() {
-        require(totalRaised &lt; softCap &amp;&amp; now &gt; endTime);
+        require(totalRaised < softCap && now > endTime);
         _;
     }
 
     // @return true if CrowdSale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // Refund ether to the investors in case of under Soft Cap end
@@ -620,13 +620,13 @@ contract PreSale is Ownable, ReentrancyGuard {
     // Get bonus percent
     function _getBonusPercent() internal view returns(uint256) {
 
-        if (now &lt; endPeriodA) {
+        if (now < endPeriodA) {
             return 40;
         }
-        if (now &lt; endPeriodB) {
+        if (now < endPeriodB) {
             return 25;
         }
-        if (now &lt; endPeriodC) {
+        if (now < endPeriodC) {
             return 20;
         }
 
@@ -653,7 +653,7 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     // Withdrawal eth from contract
     function withdrawalEth() public onlyOwner {
-        require(totalRaised &gt;= softCap);
+        require(totalRaised >= softCap);
 
         // withdrawal all eth from contract
         _forwardFunds(address(this).balance);
@@ -661,7 +661,7 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     // Withdrawal T4T tokens from contract
     function withdrawalT4T() public onlyOwner {
-        require(totalRaised &gt;= softCap);
+        require(totalRaised >= softCap);
 
         // withdrawal all T4T tokens from contract
         _forwardT4T(t4tToken.balanceOf(address(this)));
@@ -669,8 +669,8 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     // Success finish of PreSale
     function finishPreSale() public onlyOwner {
-        require(totalRaised &gt;= softCap);
-        require(now &gt; endTime);
+        require(totalRaised >= softCap);
+        require(now > endTime);
 
         // withdrawal all eth from contract
         _forwardFunds(address(this).balance);
@@ -685,7 +685,7 @@ contract PreSale is Ownable, ReentrancyGuard {
 
     // Change owner of tokens after end of PreSale
     function changeTokensOwner() public onlyOwner {
-        require(now &gt; endTime);
+        require(now > endTime);
 
         // transfer ownership of tokens to owner
         icsToken.transferOwnership(owner);
@@ -724,8 +724,8 @@ contract PreSale is Ownable, ReentrancyGuard {
         // calculate HICS token amount
         uint256 valueHics = _value.div(5);  // 20% HICS and 80% ICS Tokens
 
-        if (_value &gt;= hicsTokenPrice
-        &amp;&amp; hicsToken.totalSupply().add(_getTokenNumberWithBonus(valueHics)) &lt; capHicsToken) {
+        if (_value >= hicsTokenPrice
+        && hicsToken.totalSupply().add(_getTokenNumberWithBonus(valueHics)) < capHicsToken) {
             // 20% HICS and 80% ICS Tokens
             _buyIcsTokens(_beneficiary, _value - valueHics);
             _buyHicsTokens(_beneficiary, valueHics);
@@ -751,7 +751,7 @@ contract PreSale is Ownable, ReentrancyGuard {
 
         // check minimumInvest
         uint256 value = valueT4T.mul(rateT4T);
-        require(value &gt;= minimumInvest);
+        require(value >= minimumInvest);
 
         // transfer T4T from _beneficiary to this contract
         require(t4tToken.transferFrom(_beneficiary, address(this), valueT4T));
@@ -768,7 +768,7 @@ contract PreSale is Ownable, ReentrancyGuard {
     // @param _value of tokens (1 token = 10^18)
     function manualBuy(address _to, uint256 _value) public saleIsOn onlyOwner {
         require(_to != address(0));
-        require(_value &gt;= minimumInvest);
+        require(_value >= minimumInvest);
 
         _buyTokens(_to, _value);
     }
@@ -788,7 +788,7 @@ contract PreSale is Ownable, ReentrancyGuard {
 
         uint256 weiAmount = msg.value;
         uint256 value = weiAmount.mul(rate);
-        require(value &gt;= minimumInvest);
+        require(value >= minimumInvest);
 
         _buyTokens(_beneficiary, value);
 

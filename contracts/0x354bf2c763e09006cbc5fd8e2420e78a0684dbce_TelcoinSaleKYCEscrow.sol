@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,18 +38,18 @@ contract Telcoin {
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
-    string public constant name = &quot;Telcoin&quot;;
-    string public constant symbol = &quot;TEL&quot;;
+    string public constant name = "Telcoin";
+    string public constant symbol = "TEL";
     uint8 public constant decimals = 2;
 
     /// The ERC20 total fixed supply of tokens.
     uint256 public constant totalSupply = 100000000000 * (10 ** uint256(decimals));
 
     /// Account balances.
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /// The transfer allowances.
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /// The initial distributor is responsible for allocating the supply
     /// into the various pools described in the whitepaper. This can be
@@ -67,7 +67,7 @@ contract Telcoin {
     /// ERC20 transfer().
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -79,8 +79,8 @@ contract Telcoin {
     /// ERC20 transferFrom().
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -115,7 +115,7 @@ contract Telcoin {
     /// Not officially ERC20. Allows an allowance to be decreased safely.
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -142,8 +142,8 @@ contract TelcoinSaleToken {
     uint256 public totalSupply;
 
     /// The token balance and released amount of each address.
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) redeemed;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) redeemed;
 
     /// Whether the token is still mintable.
     bool public mintingFinished = false;
@@ -186,7 +186,7 @@ contract TelcoinSaleToken {
     function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
         require(_to != 0x0);
         require(!mintingFinished);
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -197,7 +197,7 @@ contract TelcoinSaleToken {
     }
 
     function redeemMany(address[] _beneficiaries) public {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             redeem(_beneficiaries[i]);
         }
     }
@@ -248,11 +248,11 @@ contract TelcoinSaleToken {
         uint256 currentBalance = balances[_beneficiary];
         uint256 totalBalance = currentBalance.add(redeemed[_beneficiary]);
 
-        if (now &lt; vestingStart) {
+        if (now < vestingStart) {
             return 0;
         }
 
-        if (now &gt;= vestingStart.add(vestingDuration)) {
+        if (now >= vestingStart.add(vestingDuration)) {
             return totalBalance;
         }
 
@@ -300,13 +300,13 @@ contract TelcoinSale {
     /// The owner of the contract.
     address public owner;
 
-    /// The temporary token we&#39;re selling. Sale tokens can be converted
+    /// The temporary token we're selling. Sale tokens can be converted
     /// immediately upon successful completion of the sale. Bonus tokens
     /// are on a separate vesting schedule.
     TelcoinSaleToken public saleToken;
     TelcoinSaleToken public bonusToken;
 
-    /// The token we&#39;ll convert to after the sale ends.
+    /// The token we'll convert to after the sale ends.
     Telcoin public telcoin;
 
     /// The minimum and maximum goals to reach. If the soft cap is not reached
@@ -331,12 +331,12 @@ contract TelcoinSale {
     /// The numnber of tokens to mint per wei.
     uint256 public rate;
 
-    /// The total number of wei raised. Note that the contract&#39;s balance may
+    /// The total number of wei raised. Note that the contract's balance may
     /// differ from this value if someone has decided to forcefully send us
     /// ether.
     uint256 public weiRaised;
 
-    /// The wallet that will receive the contract&#39;s balance once the sale
+    /// The wallet that will receive the contract's balance once the sale
     /// finishes and the soft cap is reached.
     address public wallet;
 
@@ -344,13 +344,13 @@ contract TelcoinSale {
     /// up to what amount, and any special rate they may have, provided
     /// that they do in fact participate with at least the minimum value
     /// they agreed to.
-    mapping(address =&gt; uint256) public whitelistedMin;
-    mapping(address =&gt; uint256) public whitelistedMax;
-    mapping(address =&gt; uint32) public bonusRates;
+    mapping(address => uint256) public whitelistedMin;
+    mapping(address => uint256) public whitelistedMax;
+    mapping(address => uint32) public bonusRates;
 
     /// The amount of wei and wei equivalents invested by each investor.
-    mapping(address =&gt; uint256) public deposited;
-    mapping(address =&gt; uint256) public altDeposited;
+    mapping(address => uint256) public deposited;
+    mapping(address => uint256) public altDeposited;
 
     /// An enumerable list of investors.
     address[] public investors;
@@ -362,7 +362,7 @@ contract TelcoinSale {
     bool public finished = false;
     uint256 public finishedAt;
 
-    /// Whether we&#39;re accepting refunds.
+    /// Whether we're accepting refunds.
     bool public refunding = false;
 
     /// The total number of wei refunded.
@@ -376,8 +376,8 @@ contract TelcoinSale {
     modifier saleOpen() {
         require(!finished);
         require(!paused);
-        require(now &gt;= startTime);
-        require(now &lt;= endTime + timeExtension);
+        require(now >= startTime);
+        require(now <= endTime + timeExtension);
         _;
     }
 
@@ -396,12 +396,12 @@ contract TelcoinSale {
         public
         payable
     {
-        require(msg.value &gt; 0);
-        require(_softCap &gt; 0);
-        require(_hardCap &gt;= _softCap);
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(msg.value > 0);
+        require(_softCap > 0);
+        require(_hardCap >= _softCap);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != 0x0);
 
         owner = msg.sender;
@@ -432,12 +432,12 @@ contract TelcoinSale {
         require(_beneficiary != address(0));
 
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt; 0);
-        require(weiRaised.add(weiAmount) &lt;= hardCap);
+        require(weiAmount > 0);
+        require(weiRaised.add(weiAmount) <= hardCap);
 
         uint256 totalPrior = totalDeposited(_beneficiary);
         uint256 totalAfter = totalPrior.add(weiAmount);
-        require(totalAfter &lt;= whitelistedMax[_beneficiary]);
+        require(totalAfter <= whitelistedMax[_beneficiary]);
 
         uint256 saleTokens;
         uint256 bonusTokens;
@@ -451,7 +451,7 @@ contract TelcoinSale {
         weiRaised = weiRaised.add(weiAmount);
 
         saleToken.mint(_beneficiary, saleTokens);
-        if (bonusTokens &gt; 0) {
+        if (bonusTokens > 0) {
             bonusToken.mint(_beneficiary, bonusTokens);
         }
 
@@ -466,7 +466,7 @@ contract TelcoinSale {
 
     function changeWallet(address _wallet) onlyOwner public payable {
         require(_wallet != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         WalletChanged(wallet, _wallet);
         wallet = _wallet;
@@ -476,18 +476,18 @@ contract TelcoinSale {
 
     function extendTime(uint256 _timeExtension) onlyOwner public {
         require(!finished);
-        require(now &lt; endTime + timeExtension);
-        require(_timeExtension &gt; 0);
+        require(now < endTime + timeExtension);
+        require(_timeExtension > 0);
 
         timeExtension = timeExtension.add(_timeExtension);
-        require(timeExtension &lt;= 7 days);
+        require(timeExtension <= 7 days);
 
         Extended(endTime.add(timeExtension));
     }
 
     function finish() onlyOwner public {
         require(!finished);
-        require(hardCapReached() || now &gt; endTime + timeExtension);
+        require(hardCapReached() || now > endTime + timeExtension);
 
         finished = true;
         finishedAt = now;
@@ -529,7 +529,7 @@ contract TelcoinSale {
     }
 
     function refundMany(address[] _investors) public {
-        for (uint256 i = 0; i &lt; _investors.length; i++) {
+        for (uint256 i = 0; i < _investors.length; i++) {
             refund(_investors[i]);
         }
     }
@@ -537,7 +537,7 @@ contract TelcoinSale {
     function refund(address _investor) public {
         require(finished);
         require(refunding);
-        require(deposited[_investor] &gt; 0);
+        require(deposited[_investor] > 0);
 
         uint256 weiAmount = deposited[_investor];
         deposited[_investor] = 0;
@@ -558,7 +558,7 @@ contract TelcoinSale {
         public
     {
         require(_beneficiary != address(0));
-        require(totalDeposited(_beneficiary).add(_weiAmount) &lt;= whitelistedMax[_beneficiary]);
+        require(totalDeposited(_beneficiary).add(_weiAmount) <= whitelistedMax[_beneficiary]);
 
         uint256 saleTokens;
         uint256 bonusTokens;
@@ -572,7 +572,7 @@ contract TelcoinSale {
         weiRaised = weiRaised.add(_weiAmount);
 
         saleToken.mint(_beneficiary, saleTokens);
-        if (bonusTokens &gt; 0) {
+        if (bonusTokens > 0) {
             bonusToken.mint(_beneficiary, bonusTokens);
         }
 
@@ -614,7 +614,7 @@ contract TelcoinSale {
         onlyOwner
         public
     {
-        for (uint256 i = 0; i &lt; _participants.length; i++) {
+        for (uint256 i = 0; i < _participants.length; i++) {
             whitelist(
                 _participants[i],
                 _minWeiAmount,
@@ -634,7 +634,7 @@ contract TelcoinSale {
         public
     {
         require(_participant != 0x0);
-        require(_bonusRate &lt;= 400);
+        require(_bonusRate <= 400);
 
         whitelistedMin[_participant] = _minWeiAmount;
         whitelistedMax[_participant] = _maxWeiAmount;
@@ -648,18 +648,18 @@ contract TelcoinSale {
     }
 
     function withdraw() onlyOwner public {
-        require(softCapReached() || (finished &amp;&amp; now &gt; finishedAt + 14 days));
+        require(softCapReached() || (finished && now > finishedAt + 14 days));
 
         uint256 weiAmount = this.balance;
 
-        if (weiAmount &gt; 0) {
+        if (weiAmount > 0) {
             wallet.transfer(weiAmount);
             Withdrawal(wallet, weiAmount);
         }
     }
 
     function hardCapReached() public constant returns (bool) {
-        return weiRaised &gt;= hardCap.mul(1000 + capFlex).div(1000);
+        return weiRaised >= hardCap.mul(1000 + capFlex).div(1000);
     }
 
     function tokensForPurchase(
@@ -675,7 +675,7 @@ contract TelcoinSale {
         uint256 totalAfter = totalPrior.add(_weiAmount);
 
         // Has the beneficiary passed the assigned minimum purchase level?
-        if (totalAfter &lt; whitelistedMin[_beneficiary]) {
+        if (totalAfter < whitelistedMin[_beneficiary]) {
             return (baseTokens, 0);
         }
 
@@ -683,7 +683,7 @@ contract TelcoinSale {
         uint256 baseBonus = baseTokens.mul(1000 + bonusRate).div(1000).sub(baseTokens);
 
         // Do we pass the minimum purchase level with this purchase?
-        if (totalPrior &lt; whitelistedMin[_beneficiary]) {
+        if (totalPrior < whitelistedMin[_beneficiary]) {
             uint256 balancePrior = totalPrior.mul(rate);
             uint256 accumulatedBonus = balancePrior.mul(1000 + bonusRate).div(1000).sub(balancePrior);
             return (baseTokens, accumulatedBonus.add(baseBonus));
@@ -697,7 +697,7 @@ contract TelcoinSale {
     }
 
     function softCapReached() public constant returns (bool) {
-        return weiRaised &gt;= softCap.mul(1000 + capFlex).div(1000);
+        return weiRaised >= softCap.mul(1000 + capFlex).div(1000);
     }
 }
 
@@ -721,7 +721,7 @@ contract TelcoinSaleKYCEscrow {
     bool public closed = false;
 
     /// The amount of wei and wei equivalents invested by each investor.
-    mapping(address =&gt; uint256) public deposited;
+    mapping(address => uint256) public deposited;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -746,7 +746,7 @@ contract TelcoinSaleKYCEscrow {
 
     function approve(address _participant) onlyOwner public {
         uint256 weiAmount = deposited[_participant];
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
 
         deposited[_participant] = 0;
         Approved(_participant);
@@ -754,7 +754,7 @@ contract TelcoinSaleKYCEscrow {
     }
 
     function approveMany(address[] _participants) onlyOwner public {
-        for (uint256 i = 0; i &lt; _participants.length; i++) {
+        for (uint256 i = 0; i < _participants.length; i++) {
             approve(_participants[i]);
         }
     }
@@ -770,7 +770,7 @@ contract TelcoinSaleKYCEscrow {
         require(_beneficiary != address(0));
 
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
 
         uint256 newDeposited = deposited[_beneficiary].add(weiAmount);
         deposited[_beneficiary] = newDeposited;
@@ -784,7 +784,7 @@ contract TelcoinSaleKYCEscrow {
 
     function reject(address _participant) onlyOwner public {
         uint256 weiAmount = deposited[_participant];
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
 
         deposited[_participant] = 0;
         Rejected(_participant);
@@ -792,7 +792,7 @@ contract TelcoinSaleKYCEscrow {
     }
 
     function rejectMany(address[] _participants) onlyOwner public {
-        for (uint256 i = 0; i &lt; _participants.length; i++) {
+        for (uint256 i = 0; i < _participants.length; i++) {
             reject(_participants[i]);
         }
     }

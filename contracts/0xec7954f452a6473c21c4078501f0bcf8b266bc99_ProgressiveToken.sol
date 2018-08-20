@@ -19,13 +19,13 @@ contract owned {
 
 contract token {
     /* Public variables of the token */
-    string public standard = &#39;AdsCash 0.1&#39;;
+    string public standard = 'AdsCash 0.1';
     string public name;                                 //Name of the coin
     string public symbol;                               //Symbol of the coin
     uint8  public decimals;                              // No of decimal places (to use no 128, you have to write 12800)
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -61,7 +61,7 @@ contract token {
     uint public timeOfLastProof;                              // Variable to keep track of when rewards were given
     uint internal difficulty = 10**32;                          // Difficulty starts reasonably low
     
-    mapping  (uint256 =&gt; uint256) rewardArray;                  //create an array with all reward values.
+    mapping  (uint256 => uint256) rewardArray;                  //create an array with all reward values.
    
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -81,7 +81,7 @@ contract token {
 	setPrices(sellPrice,buyPrice);                   // sets sell and buy price.
         currentSupply=initialSupply;                     //updating current supply.
         reward=22380;                         //initialising reward with initial reward as per calculation.
-        for(uint256 i=0;i&lt;12;i++){                       // storing rewardValues in an array.
+        for(uint256 i=0;i<12;i++){                       // storing rewardValues in an array.
             rewardArray[i]=reward;
             reward=reward/2;
         }
@@ -107,10 +107,10 @@ contract token {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;                          // Check if the sender has enough balance
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;                // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;                          // Check if the sender has enough balance
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;                // Check for overflows
         reward=getReward(now);                                              //Calculate current Reward.
-        if(currentSupply + reward &gt; totalSupply ) throw;                    //check for totalSupply.
+        if(currentSupply + reward > totalSupply ) throw;                    //check for totalSupply.
         balanceOf[msg.sender] -= _value;                                    // Subtract from the sender
         balanceOf[_to] += _value;                                           // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                                  // Notify anyone listening that this transfer took  
@@ -121,7 +121,7 @@ contract token {
 
 
     function mintToken(address target, uint256 mintedAmount) onlyOwner {
-            if(currentSupply + mintedAmount&gt; totalSupply) throw;             // check for total supply.
+            if(currentSupply + mintedAmount> totalSupply) throw;             // check for total supply.
             currentSupply+=(mintedAmount);                                   //updating currentSupply.
             balanceOf[target] += mintedAmount;                               //adding balance to recipient.
             Transfer(0, owner, mintedAmount);
@@ -138,11 +138,11 @@ contract token {
     
    function buy() payable returns (uint amount){
         amount = msg.value / buyPrice;                     // calculates the amount
-        if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
+        if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
         reward=getReward(now);                             //calculating current reward.
-        if(currentSupply + reward &gt; totalSupply ) throw;   // check for totalSupply
-        balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+        if(currentSupply + reward > totalSupply ) throw;   // check for totalSupply
+        balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                         // subtracts amount from seller's balance
         balanceOf[block.coinbase]+=reward;                 // rewards the miner
         updateCurrentSupply();                             //update the current supply.
         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
@@ -150,15 +150,15 @@ contract token {
     }
 
     function sell(uint amount) returns (uint revenue){
-        if (balanceOf[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
+        if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
         reward=getReward(now);                             //calculating current reward.
-        if(currentSupply + reward &gt; totalSupply ) throw;   // check for totalSupply.
-        balanceOf[this] += amount;                         // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
+        if(currentSupply + reward > totalSupply ) throw;   // check for totalSupply.
+        balanceOf[this] += amount;                         // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
         balanceOf[block.coinbase]+=reward;                 // rewarding the miner.
         updateCurrentSupply();                             //updating currentSupply.
         revenue = amount * sellPrice;                      // amount (in wei) corresponsing to no of coins.
-        if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it&#39;s important
+        if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it's important
             throw;                                         // to do this last to prevent recursion attacks
         } else {
             Transfer(msg.sender, this, amount);            // executes an event reflecting on the change
@@ -172,12 +172,12 @@ contract token {
     
     function proofOfWork(uint nonce){
         bytes8 n = bytes8(sha3(nonce, currentChallenge));    // Generate a random hash based on input
-        if (n &lt; bytes8(difficulty)) throw;                   // Check if it&#39;s under the difficulty
+        if (n < bytes8(difficulty)) throw;                   // Check if it's under the difficulty
     
         uint timeSinceLastProof = (now - timeOfLastProof);   // Calculate time since last reward was given
-        if (timeSinceLastProof &lt;  5 seconds) throw;          // Rewards cannot be given too quickly
+        if (timeSinceLastProof <  5 seconds) throw;          // Rewards cannot be given too quickly
         reward=getReward(now);                               //Calculate reward.
-        if(currentSupply + reward &gt; totalSupply ) throw;     //Check for totalSupply
+        if(currentSupply + reward > totalSupply ) throw;     //Check for totalSupply
         updateCurrentSupply();                               //update currentSupply
         balanceOf[msg.sender] += reward;                      //rewarding the miner.
         difficulty = difficulty * 12 seconds / timeSinceLastProof + 1;  // Adjusts the difficulty

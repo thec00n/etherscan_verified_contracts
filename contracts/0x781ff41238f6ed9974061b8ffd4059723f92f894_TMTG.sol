@@ -14,8 +14,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -30,9 +30,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -49,7 +49,7 @@ library SafeMath {
   */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -80,7 +80,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
   */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -143,8 +143,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -223,7 +223,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -247,7 +247,7 @@ contract TMTGOwnable {
     
     enum Role { owner, centralBanker, superOwner, hiddenOwner }
 
-    mapping(address =&gt; bool) public operators;
+    mapping(address => bool) public operators;
     
     
     event TMTG_RoleTransferred(
@@ -298,7 +298,7 @@ contract TMTGOwnable {
 
     /**
     * @dev 해당 주소를 operator로 설정한다.
-    * @param _operator has the ability to pause transaction, has the ability to blacklisting &amp; unblacklisting. 
+    * @param _operator has the ability to pause transaction, has the ability to blacklisting & unblacklisting. 
     */
     function setOperator(address _operator) external onlySuperOwner {
         operators[_operator] = true;
@@ -307,7 +307,7 @@ contract TMTGOwnable {
 
     /**
     * @dev 해당 주소를 operator에서 해제한다.
-    * @param _operator has the ability to pause transaction, has the ability to blacklisting &amp; unblacklisting. 
+    * @param _operator has the ability to pause transaction, has the ability to blacklisting & unblacklisting. 
     */
     function delOperator(address _operator) external onlySuperOwner {
         operators[_operator] = false;
@@ -397,7 +397,7 @@ contract TMTGPausable is TMTGOwnable {
  * @dev 이상 징후가 있는 계정의 주소에 대해 거래를 할 수 없게 막는다.
  */
 contract TMTGBlacklist is TMTGOwnable {
-    mapping(address =&gt; bool) blacklisted;
+    mapping(address => bool) blacklisted;
     
     event TMTG_Blacklisted(address indexed blacklist);
     event TMTG_Whitelisted(address indexed whitelist);
@@ -478,10 +478,10 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
         uint256 _limit;
     }
 
-    mapping(address =&gt; investor) public searchInvestor;
-    mapping(address =&gt; bool) public superInvestor;
-    mapping(address =&gt; bool) public CEx;
-    mapping(address =&gt; bool) public investorList;
+    mapping(address => investor) public searchInvestor;
+    mapping(address => bool) public superInvestor;
+    mapping(address => bool) public CEx;
+    mapping(address => bool) public investorList;
     
     event TMTG_SetCEx(address indexed CEx); 
     event TMTG_DeleteCEx(address indexed CEx);
@@ -583,12 +583,12 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     /**
     * @dev 인베스터가 transfer하는 경우, 타임락에 따라 값을 제한한다.
     * @param _to address to send
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function _transferInvestor(address _to, uint256 _value) internal returns (bool ret) {
         uint256 addedValue = searchInvestor[msg.sender]._sentAmount.add(_value);
 
-        require(_timelimitCal(msg.sender) &gt;= addedValue);
+        require(_timelimitCal(msg.sender) >= addedValue);
         
         searchInvestor[msg.sender]._sentAmount = addedValue;        
         ret = super.transfer(_to, _value);
@@ -602,7 +602,7 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     * 인베스터가 아닌 사람에게 보내는 경우, 해당 사용자를 인베스터로 만들며, 최초 보낸 금액의 10%가 limit으로 할당된다.
     * 또한 인베스터가 transfer 함수를 실행하는 경우, 타임락에 따라 보내는 값이 제한된다.
     * @param _to address to send
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function transfer(address _to, uint256 _value) public
     whenPermitted(msg.sender) whenPermitted(_to) whenNotPaused onlyNotBankOwner
@@ -630,12 +630,12 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     * @dev 인베스터가 transferFrom에서 from 인 경우, 타임락에 따라 값을 제한한다.
     * @param _from send amount from this address 
     * @param _to address to send
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function _transferFromInvestor(address _from, address _to, uint256 _value)
     public returns(bool ret) {
         uint256 addedValue = searchInvestor[_from]._sentAmount.add(_value);
-        require(_timelimitCal(_from) &gt;= addedValue);
+        require(_timelimitCal(_from) >= addedValue);
         searchInvestor[_from]._sentAmount = addedValue;
         ret = super.transferFrom(_from, _to, _value);
 
@@ -651,7 +651,7 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     * 타임락에 따라 양이 제한된다.
     * @param _from send amount from this address 
     * @param _to address to send
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function transferFrom(address _from, address _to, uint256 _value)
     public whenNotPaused whenPermitted(msg.sender) whenPermitted(_to) returns (bool ret)
@@ -689,7 +689,7 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -704,7 +704,7 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     }
     
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _burn(_from, _value);
@@ -714,10 +714,10 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     
     /**
     * @dev owner만 실행이 가능하고, 해당 코인의 양만큼 centralBanker에 입금이 가능하다.
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function stash(uint256 _value) public onlyOwner {
-        require(balances[owner] &gt;= _value);
+        require(balances[owner] >= _value);
         
         balances[owner] = balances[owner].sub(_value);
         
@@ -728,10 +728,10 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     /**
     * @dev centralBanker만 실행이 가능하고, 해당 코인의 양만큼 owner에게 출금이 가능하다.
     * 단, 검수를 거쳐서 실행된다.
-    * @param _value tmtg&#39;s amount
+    * @param _value tmtg's amount
     */
     function unstash(uint256 _value) public onlyBankOwner {
-        require(balances[centralBanker] &gt;= _value);
+        require(balances[centralBanker] >= _value);
         
         balances[centralBanker] = balances[centralBanker].sub(_value);
         
@@ -757,15 +757,15 @@ contract TMTGBaseToken is StandardToken, TMTGPausable, TMTGBlacklist, HasNoEther
     function refreshInvestor(address _investor, address _to, uint _amount) onlyOwner public  {
        require(investorList[_investor]);
        require(_to != address(0));
-       require(_amount &lt;= balances[_investor]);
+       require(_amount <= balances[_investor]);
        balances[_investor] = balances[_investor].sub(_amount);
        balances[_to] = balances[_to].add(_amount); 
     }
 }
 
 contract TMTG is TMTGBaseToken {
-    string public constant name = &quot;The Midas Touch Gold&quot;;
-    string public constant symbol = &quot;TMTG&quot;;
+    string public constant name = "The Midas Touch Gold";
+    string public constant symbol = "TMTG";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 1e10 * (10 ** uint256(decimals));
 

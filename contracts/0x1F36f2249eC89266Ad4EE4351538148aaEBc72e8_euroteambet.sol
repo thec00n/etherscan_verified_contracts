@@ -2,7 +2,7 @@ contract euroteambet {
 
 	struct team {
 		string teamName;
-		mapping(address =&gt; uint) bet;
+		mapping(address => uint) bet;
 		uint totalBet;
 	}
 
@@ -28,55 +28,55 @@ contract euroteambet {
 		// Define the Teams
 		team memory toCreate;
 		// Post a dummy team to ensure the actual range is from 1 to 24 and not 0 to 23.
-		toCreate.teamName = &#39;&#39;;
+		toCreate.teamName = '';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Albania&#39;;
+		toCreate.teamName = 'Albania';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Austria&#39;;
+		toCreate.teamName = 'Austria';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Belgium&#39;;
+		toCreate.teamName = 'Belgium';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Croatia&#39;;
+		toCreate.teamName = 'Croatia';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Czech Republic&#39;;
+		toCreate.teamName = 'Czech Republic';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;England&#39;;
+		toCreate.teamName = 'England';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;France&#39;;
+		toCreate.teamName = 'France';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Germany&#39;;
+		toCreate.teamName = 'Germany';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Hungary&#39;;
+		toCreate.teamName = 'Hungary';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Iceland&#39;;
+		toCreate.teamName = 'Iceland';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Italy&#39;;
+		toCreate.teamName = 'Italy';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Nothern Ireland&#39;;
+		toCreate.teamName = 'Nothern Ireland';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Poland&#39;;
+		toCreate.teamName = 'Poland';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Portugal&#39;;
+		toCreate.teamName = 'Portugal';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Republic of Ireland&#39;;
+		toCreate.teamName = 'Republic of Ireland';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Romania&#39;;
+		toCreate.teamName = 'Romania';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Russia&#39;;
+		toCreate.teamName = 'Russia';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Slovakia&#39;;
+		toCreate.teamName = 'Slovakia';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Spain&#39;;
+		toCreate.teamName = 'Spain';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Sweden&#39;;
+		toCreate.teamName = 'Sweden';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Switzerland&#39;;
+		toCreate.teamName = 'Switzerland';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Turkey&#39;;
+		toCreate.teamName = 'Turkey';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Ukraine&#39;;
+		toCreate.teamName = 'Ukraine';
 		euroTeams.push(toCreate);
-		toCreate.teamName = &#39;Wales&#39;;
+		toCreate.teamName = 'Wales';
 		euroTeams.push(toCreate);
 
 		creator = msg.sender;
@@ -101,8 +101,8 @@ contract euroteambet {
 	 * 4: Check if the winning team as been defined    
 	 */
 	function () {
-		if (startCompetitionTime &gt;= block.timestamp) {
-			if (msg.value &gt;= 100 finney) {
+		if (startCompetitionTime >= block.timestamp) {
+			if (msg.value >= 100 finney) {
 				BetFromTransaction(msg.sender, msg.value);
 				betOnATeam((msg.value % 100 finney) / 1000000000000000);
 			} else {
@@ -114,7 +114,7 @@ contract euroteambet {
 			collectEarnings();
 		} else {
 			BetClosedNoWinningTeam(msg.sender, msg.value);
-			if(msg.value &gt; 0){
+			if(msg.value > 0){
 				msg.sender.send(msg.value);
 			}
 			return;
@@ -135,7 +135,7 @@ contract euroteambet {
 			winningTeam = teamWinningID;
 			winningTeamDefined = true;
 		} else {
-			if(msg.value &gt; 0){
+			if(msg.value > 0){
 				msg.sender.send(msg.value);
 			}
 			return;
@@ -152,7 +152,7 @@ contract euroteambet {
 	 * param      {uint}  id      The identifier of the team to bet on
 	 */
 	function betOnATeam(uint id) {
-		if (startCompetitionTime &gt;= block.timestamp &amp;&amp; msg.value &gt;= 100 finney &amp;&amp; id &gt;= 1 &amp;&amp; id &lt;= 24) {
+		if (startCompetitionTime >= block.timestamp && msg.value >= 100 finney && id >= 1 && id <= 24) {
 
 			uint amount = msg.value;
 
@@ -166,7 +166,7 @@ contract euroteambet {
 			euroTeams[id].totalBet += amount;
 			globalBet += amount;
 		} else {
-			if(msg.value &gt; 0){
+			if(msg.value > 0){
 				msg.sender.send(msg.value);
 			}
 			return;
@@ -180,7 +180,7 @@ contract euroteambet {
 	* return     uint   Amount earned
 	*/
 	function checkEarnings(address toCheck) returns (uint) {
-		if(msg.value &gt; 0){
+		if(msg.value > 0){
 			msg.sender.send(msg.value);
 		}
 
@@ -195,7 +195,7 @@ contract euroteambet {
 	 * Only allowed the withdrawals of the fund once the Winning team is updated
 	 */
 	function collectEarnings() {
-		if(msg.value &gt; 0){
+		if(msg.value > 0){
 			msg.sender.send(msg.value);
 		}
 		if (winningTeamDefined == true) {
@@ -213,10 +213,10 @@ contract euroteambet {
 	* param      address  toSend  Address to receive its earnings 
 	*/
 	function sendEarnings(address toSend) {
-		if(msg.value &gt; 0){
+		if(msg.value > 0){
 			msg.sender.send(msg.value);
 		}
-		if (msg.sender == creator &amp;&amp; winningTeamDefined == true) {
+		if (msg.sender == creator && winningTeamDefined == true) {
 			uint earnings = (globalBet * (euroTeams[winningTeam].bet[toSend] / euroTeams[winningTeam].totalBet));
 			toSend.send(earnings);
 			euroTeams[winningTeam].bet[toSend] = 0;

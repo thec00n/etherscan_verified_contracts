@@ -89,14 +89,14 @@ library SafeMath
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -113,13 +113,13 @@ contract SafeBasicToken is ERC20Basic
     using SafeMath for uint256;
 
     // Maps each address to its current balance
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // List of admins that can transfer tokens also during the ICO
-    mapping(address =&gt; bool) public admin;
+    mapping(address => bool) public admin;
 
     // List of addresses that can receive tokens also during the ICO
-    mapping(address =&gt; bool) public receivable;
+    mapping(address => bool) public receivable;
 
     // Specifies whether the tokens are locked(ICO is running) - Tokens cannot be transferred during the ICO
     bool public locked;
@@ -128,7 +128,7 @@ contract SafeBasicToken is ERC20Basic
     // Checks the size of the message to avoid attacks
     modifier onlyPayloadSize(uint size)
     {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -167,10 +167,10 @@ contract SafeBasicToken is ERC20Basic
  */
 contract SafeStandardToken is ERC20, SafeBasicToken
 {
-    /** Map address =&gt; (address =&gt; value)
+    /** Map address => (address => value)
     *   allowed[_owner][_spender] represents the amount of tokens the _spender can use on behalf of the _owner
     */
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
     /** Return the allowance of the _spender on behalf of the _owner
@@ -198,7 +198,7 @@ contract SafeStandardToken is ERC20, SafeBasicToken
     }
 
 
-    /** Increase the allowance for _spender by _addedValue (to be use when allowed[_spender] &gt; 0)
+    /** Increase the allowance for _spender by _addedValue (to be use when allowed[_spender] > 0)
      */
     function increaseApproval(address _spender, uint _addedValue) public returns (bool success)
     {
@@ -214,7 +214,7 @@ contract SafeStandardToken is ERC20, SafeBasicToken
     {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue)
+        if (_subtractedValue > oldValue)
             allowed[msg.sender][_spender] = 0;
         else
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -247,8 +247,8 @@ contract CrystalToken is SafeStandardToken, Ownable
 {
     using SafeMath for uint256;
 
-    string public constant name = &quot;CrystalToken&quot;;
-    string public constant symbol = &quot;CYL&quot;;
+    string public constant name = "CrystalToken";
+    string public constant symbol = "CYL";
     uint256 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 28000000 * (10 ** uint256(decimals));
 
@@ -260,7 +260,7 @@ contract CrystalToken is SafeStandardToken, Ownable
         uint256 availableTokens;                // Number of tokens available in this round
         uint256 maxPerUser;                     // Number of maximum tokens per user
         uint256 rate;                           // Number of token per wei in this round
-        mapping(address =&gt; uint256) balances;   // Balances of the users in this round
+        mapping(address => uint256) balances;   // Balances of the users in this round
     }
 
     // Array containing information of all the rounds
@@ -322,7 +322,7 @@ contract CrystalToken is SafeStandardToken, Ownable
         // Check that the sender is not the 0 address
         require(beneficiary != 0x0);
 
-        // Check that sent ETH in wei is &gt; 0
+        // Check that sent ETH in wei is > 0
         uint256 weiAmount = msg.value;
         require(weiAmount != 0);
 
@@ -339,7 +339,7 @@ contract CrystalToken is SafeStandardToken, Ownable
         uint256 tokens = weiAmount.mul(round.rate);
         uint256 maxPerUser = round.maxPerUser;
         uint256 remaining = maxPerUser - round.balances[beneficiary];
-        if(remaining &lt; tokens)
+        if(remaining < tokens)
             tokens = remaining;
 
         // Check if the tokens can be sold
@@ -348,7 +348,7 @@ contract CrystalToken is SafeStandardToken, Ownable
         // Reduce the number of available tokens in the round (fails if there are no more available tokens)
         round.availableTokens = round.availableTokens.sub(tokens);
 
-        // Add the number of tokens to the current user&#39;s balance of this round
+        // Add the number of tokens to the current user's balance of this round
         round.balances[msg.sender] = round.balances[msg.sender].add(tokens);
 
         // Transfer the amount of token to the buyer
@@ -377,10 +377,10 @@ contract CrystalToken is SafeStandardToken, Ownable
         Round storage round = rounds[_roundIndex];
 
         return (
-        _tokens &gt; 0 &amp;&amp;                                              // Check that the user can still buy tokens
-        round.availableTokens &gt;= _tokens &amp;&amp;                         // Check that there are still available tokens
-        current_time &gt;= round.startTime &amp;&amp;                          // Check that the current timestamp is after the start of the round
-        current_time &lt;= round.endTime                               // Check that the current timestamp is before the end of the round
+        _tokens > 0 &&                                              // Check that the user can still buy tokens
+        round.availableTokens >= _tokens &&                         // Check that there are still available tokens
+        current_time >= round.startTime &&                          // Check that the current timestamp is after the start of the round
+        current_time <= round.endTime                               // Check that the current timestamp is before the end of the round
         );
     }
 
@@ -401,7 +401,7 @@ contract CrystalToken is SafeStandardToken, Ownable
      */
     function burn(uint256 _value) public onlyOwner
     {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -448,31 +448,31 @@ contract CrystalToken is SafeStandardToken, Ownable
 
     function setRoundStart(uint _round, uint256 _value) onlyOwner public
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         rounds[_round].startTime = _value;
     }
 
     function setRoundEnd(uint _round, uint256 _value) onlyOwner public
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         rounds[_round].endTime = _value;
     }
 
     function setRoundAvailableToken(uint _round, uint256 _value) onlyOwner public
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         rounds[_round].availableTokens = _value;
     }
 
     function setRoundMaxPerUser(uint _round, uint256 _value) onlyOwner public
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         rounds[_round].maxPerUser = _value;
     }
 
     function setRoundRate(uint _round, uint256 _round_usd_cents, uint256 _ethvalue_usd) onlyOwner public
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         uint256 rate = _ethvalue_usd * 100 / _round_usd_cents;
         uint256 oldRate = rounds[_round].rate;
         rounds[_round].rate = rate;
@@ -485,37 +485,37 @@ contract CrystalToken is SafeStandardToken, Ownable
     // ----------------------------------------------------------------------------------------
     function getRoundUserBalance(uint _round, address _user) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].balances[_user];
     }
 
     function getRoundStart(uint _round) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].startTime;
     }
 
     function getRoundEnd(uint _round) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].endTime;
     }
 
     function getRoundAvailableToken(uint _round) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].availableTokens;
     }
 
     function getRoundMaxPerUser(uint _round) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].maxPerUser;
     }
 
     function getRoundRate(uint _round) public constant returns (uint256)
     {
-        require(_round &gt;= 0 &amp;&amp; _round &lt; rounds.length);
+        require(_round >= 0 && _round < rounds.length);
         return rounds[_round].rate;
     }
     // ----------------------------------------------------------------------------------------

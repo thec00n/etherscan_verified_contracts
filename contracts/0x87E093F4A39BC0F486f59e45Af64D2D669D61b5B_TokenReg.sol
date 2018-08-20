@@ -9,10 +9,10 @@ contract TokenReg {
         uint base;
         string name;
         address owner;
-        mapping (bytes32 =&gt; bytes32) meta;
+        mapping (bytes32 => bytes32) meta;
     }
 
-    modifier when_fee_paid { if (msg.value &lt; fee) return; _ }
+    modifier when_fee_paid { if (msg.value < fee) return; _ }
     modifier when_address_free(address _addr) { if (mapFromAddress[_addr] != 0) return; _ }
     modifier when_tla_free(string _tla) { if (mapFromTLA[_tla] != 0) return; _ }
     modifier when_is_tla(string _tla) { if (bytes(_tla).length != 3) return; _ }
@@ -88,8 +88,8 @@ contract TokenReg {
             throw;
     }
 
-    mapping (address =&gt; uint) mapFromAddress;
-    mapping (string =&gt; uint) mapFromTLA;
+    mapping (address => uint) mapFromAddress;
+    mapping (string => uint) mapFromTLA;
     Token[] tokens;
     uint public fee = 1 ether;
 }

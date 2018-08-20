@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,10 +50,10 @@ contract owned {
 /* The authentication manager details user accounts that have access to certain priviledges and keeps a permanent ledger of who has and has had these rights. */
 contract AuthenticationManager {
     /* Map addresses to admins */
-    mapping (address =&gt; bool) adminAddresses;
+    mapping (address => bool) adminAddresses;
 
     /* Map addresses to account readers */
-    mapping (address =&gt; bool) accountReaderAddresses;
+    mapping (address => bool) accountReaderAddresses;
 
     /* Details of all admins that have ever existed */
     address[] adminAudit;
@@ -89,7 +89,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAdmin(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; adminAudit.length; i++)
+        for (uint256 i = 0; i < adminAudit.length; i++)
             if (adminAudit[i] == _address)
                 return true;
         return false;
@@ -102,7 +102,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountReader(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountReaderAudit.length; i++)
+        for (uint256 i = 0; i < accountReaderAudit.length; i++)
             if (accountReaderAudit[i] == _address)
                 return true;
         return false;
@@ -110,7 +110,7 @@ contract AuthenticationManager {
 
     /* Adds a user to our list of admins */
     function addAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -127,11 +127,11 @@ contract AuthenticationManager {
 
     /* Removes a user from our list of admins but keeps them in the history audit */
     function removeAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
-        /* Don&#39;t allow removal of self */
+        /* Don't allow removal of self */
         if (_address == msg.sender)
             throw;
 
@@ -146,7 +146,7 @@ contract AuthenticationManager {
 
     /* Adds a user/contract to our list of account readers */
     function addAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -163,7 +163,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -182,10 +182,10 @@ contract XWinToken {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /* Map between users and their approval addresses and amounts */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /* List of all token holders */
     address[] allTokenHolders;
@@ -226,8 +226,8 @@ contract XWinToken {
     /* Create a new instance of this fund with links to other contracts that are required. */
     function XWinToken(address _icoContractAddress, address _authenticationManagerAddress) {
         // Setup defaults
-        name = &quot;XWin CryptoBet&quot;;
-        symbol = &quot;XWIN&quot;;
+        name = "XWin CryptoBet";
+        symbol = "XWIN";
         decimals = 8;
 
         /* Setup access to our other contracts and validate their versions */
@@ -250,21 +250,21 @@ contract XWinToken {
     }
 
     modifier fundSendablePhase {
-        // If it&#39;s in ICO phase, forbid it
+        // If it's in ICO phase, forbid it
         //if (icoPhaseManagement.icoPhase())
         //    throw;
 
-        // If it&#39;s abandoned, forbid it
+        // If it's abandoned, forbid it
         if (icoPhaseManagement.icoAbandoned())
             throw;
 
-        // We&#39;re good, funds can now be transferred
+        // We're good, funds can now be transferred
         _;
     }
 
     /* Transfer funds between two addresses that are not the current msg.sender - this requires approval to have been set separately and follows standard ERC20 guidelines */
     function transferFrom(address _from, address _to, uint256 _amount) fundSendablePhase onlyPayloadSize(3) returns (bool) {
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to].add(_amount) > balances[_to]) {
             bool isNew = balances[_to] == 0;
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -311,13 +311,13 @@ contract XWinToken {
         return balances[_owner];
     }
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) fundSendablePhase onlyPayloadSize(2) returns (bool) {
         /* Check if sender has balance and for overflows */
-        if (balances[msg.sender] &lt; _amount || balances[_to].add(_amount) &lt; balances[_to])
+        if (balances[msg.sender] < _amount || balances[_to].add(_amount) < balances[_to])
             return false;
 
-        /* Do a check to see if they are new, if so we&#39;ll want to add it to our array */
+        /* Do a check to see if they are new, if so we'll want to add it to our array */
         bool isRecipientNew = balances[_to] == 0;
 
         /* Add and subtract new balances */
@@ -339,12 +339,12 @@ contract XWinToken {
     function tokenOwnerAdd(address _addr) internal {
         /* First check if they already exist */
         uint256 tokenHolderCount = allTokenHolders.length;
-        for (uint256 i = 0; i &lt; tokenHolderCount; i++)
+        for (uint256 i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr)
                 /* Already found so we can abort now */
                 return;
         
-        /* They don&#39;t seem to exist, so let&#39;s add them */
+        /* They don't seem to exist, so let's add them */
         allTokenHolders.length++;
         allTokenHolders[allTokenHolders.length - 1] = _addr;
     }
@@ -356,19 +356,19 @@ contract XWinToken {
         uint256 foundIndex = 0;
         bool found = false;
         uint256 i;
-        for (i = 0; i &lt; tokenHolderCount; i++)
+        for (i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr) {
                 foundIndex = i;
                 found = true;
                 break;
             }
         
-        /* If we didn&#39;t find them just return */
+        /* If we didn't find them just return */
         if (!found)
             return;
         
         /* We now need to shuffle down the array */
-        for (i = foundIndex; i &lt; tokenHolderCount - 1; i++)
+        for (i = foundIndex; i < tokenHolderCount - 1; i++)
             allTokenHolders[i] = allTokenHolders[i + 1];
         allTokenHolders.length--;
     }
@@ -406,18 +406,18 @@ contract IcoPhaseManagement {
     uint256 public icoUnitPrice = 3 finney;
     
     /* Main wallet for collecting ethers*/
-    address mainWallet=&quot;0x20ce46Bce85BFf0CA13b02401164D96B3806f56e&quot;;
+    address mainWallet="0x20ce46Bce85BFf0CA13b02401164D96B3806f56e";
     
     // contract manager address
-    address manager = &quot;0xE3ff0BA0C6E7673f46C7c94A5155b4CA84a5bE0C&quot;;
+    address manager = "0xE3ff0BA0C6E7673f46C7c94A5155b4CA84a5bE0C";
     /* Wallets wor reserved tokens */
-    address reservedWallet1 = &quot;0x43Ceb8b8f755518e325898d95F3912aF16b6110C&quot;;
-    address reservedWallet2 = &quot;0x11F386d6c7950369E8Da56F401d1727cf131816D&quot;;
+    address reservedWallet1 = "0x43Ceb8b8f755518e325898d95F3912aF16b6110C";
+    address reservedWallet2 = "0x11F386d6c7950369E8Da56F401d1727cf131816D";
     // flag - reserved tokens already distributed (can be distributed only once)
     bool public reservedTokensDistributed;
 
     /* If an ICO is abandoned and some withdrawals fail then this map allows people to request withdrawal of locked-in ether. */
-    mapping(address =&gt; uint256) public abandonedIcoBalances;
+    mapping(address => uint256) public abandonedIcoBalances;
 
     /* Defines our interface to the XWIN Token contract. */
     XWinToken xWinToken;
@@ -439,14 +439,14 @@ contract IcoPhaseManagement {
     
     /* Ensures that once the ICO is over this contract cannot be used until the point it is destructed. */
     modifier onlyDuringIco {
-        bool contractValid = xwinContractDefined &amp;&amp; !xWinToken.isClosed();
-        if (!contractValid || (!icoPhase &amp;&amp; !icoAbandoned)) throw;
+        bool contractValid = xwinContractDefined && !xWinToken.isClosed();
+        if (!contractValid || (!icoPhase && !icoAbandoned)) throw;
         _;
     }
 
     /* This code can be executed only after ICO */
     modifier onlyAfterIco {
-        if ( icoEndTime  &gt; now) throw;
+        if ( icoEndTime  > now) throw;
         _;
     }
 
@@ -492,7 +492,7 @@ contract IcoPhaseManagement {
     /* Close the ICO phase and transition to execution phase */
     function close() managerOnly onlyDuringIco {
         // Forbid closing contract before the end of ICO
-        if (now &lt;= icoEndTime)
+        if (now <= icoEndTime)
             throw;
 
         // Close the ICO
@@ -519,21 +519,21 @@ contract IcoPhaseManagement {
     /* Handle receiving ether in ICO phase - we work out how much the user has bought, allocate a suitable balance and send their change */
     function () onlyDuringIco payable {
         // Forbid funding outside of ICO
-        if (now &lt; icoStartTime || now &gt; icoEndTime)
+        if (now < icoStartTime || now > icoEndTime)
             throw;
 
-        /* Determine how much they&#39;ve actually purhcased and any ether change */
+        /* Determine how much they've actually purhcased and any ether change */
         //uint256 tokensPurchased = msg.value.div(icoUnitPrice);
         //uint256 purchaseTotalPrice = tokensPurchased * icoUnitPrice;
         //uint256 change = msg.value.sub(purchaseTotalPrice);
 
         /* Increase their new balance if they actually purchased any */
-        //if (tokensPurchased &gt; 0)
+        //if (tokensPurchased > 0)
         xWinToken.mintTokens(msg.sender, msg.value.mul(100000000).div(icoUnitPrice));
 
         mainWallet.send(msg.value);
         /* Send change back to recipient */
-        /*if (change &gt; 0 &amp;&amp; !msg.sender.send(change))
+        /*if (change > 0 && !msg.sender.send(change))
             throw;*/
     }
     
@@ -545,8 +545,8 @@ contract DividendManager {
     /* Our handle to the XWIN Token contract. */
     XWinToken xwinContract;
 
-    /* Handle payments we couldn&#39;t make. */
-    mapping (address =&gt; uint256) public dividends;
+    /* Handle payments we couldn't make. */
+    mapping (address => uint256) public dividends;
 
     /* Indicates a payment is now available to a shareholder */
     event PaymentAvailable(address addr, uint256 amount);
@@ -560,7 +560,7 @@ contract DividendManager {
         xwinContract = XWinToken(_xwinContractAddress);
     }
 
-    /* Makes a dividend payment - we make it available to all senders then send the change back to the caller.  We don&#39;t actually send the payments to everyone to reduce gas cost and also to 
+    /* Makes a dividend payment - we make it available to all senders then send the change back to the caller.  We don't actually send the payments to everyone to reduce gas cost and also to 
        prevent potentially getting into a situation where we have recipients throwing causing dividend failures and having to consolidate their dividends in a separate process. */
     function () payable {
         if (xwinContract.isClosed())
@@ -574,7 +574,7 @@ contract DividendManager {
 
         /* Enum all accounts and send them payment */
         uint256 totalPaidOut = 0;
-        for (uint256 i = 0; i &lt; xwinContract.tokenHolderCount(); i++) {
+        for (uint256 i = 0; i < xwinContract.tokenHolderCount(); i++) {
             address addr = xwinContract.tokenHolder(i);
             uint256 dividend = paymentPerShare * xwinContract.balanceOf(addr);
             dividends[addr] = dividends[addr].add(dividend);
@@ -584,7 +584,7 @@ contract DividendManager {
 
         // Attempt to send change
         /*uint256 remainder = msg.value.sub(totalPaidOut);
-        if (remainder &gt; 0 &amp;&amp; !msg.sender.send(remainder)) {
+        if (remainder > 0 && !msg.sender.send(remainder)) {
             dividends[msg.sender] = dividends[msg.sender].add(remainder);
             PaymentAvailable(msg.sender, remainder);
         }*/
@@ -599,7 +599,7 @@ contract DividendManager {
         if (dividends[msg.sender] == 0)
             throw;
         
-        // Determine how much we&#39;re sending and reset the count
+        // Determine how much we're sending and reset the count
         uint256 dividend = dividends[msg.sender];
         dividends[msg.sender] = 0;
 
@@ -616,7 +616,7 @@ contract DividendManager {
  */
 contract XWinAssociation {
     
-    address public manager = &quot;0xE3ff0BA0C6E7673f46C7c94A5155b4CA84a5bE0C&quot;;
+    address public manager = "0xE3ff0BA0C6E7673f46C7c94A5155b4CA84a5bE0C";
 
     uint public changeManagerQuorum = 80; // in % of tokens
     
@@ -639,7 +639,7 @@ contract XWinAssociation {
         uint numberOfVotes;
         bytes32 proposalHash;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Vote {
@@ -649,7 +649,7 @@ contract XWinAssociation {
 
     // Modifier that allows only shareholders to vote and create new proposals
     modifier onlyShareholders {
-        require(sharesTokenAddress.balanceOf(msg.sender) &gt; 0);
+        require(sharesTokenAddress.balanceOf(msg.sender) > 0);
         _;
     }
 
@@ -674,7 +674,7 @@ contract XWinAssociation {
     // transfer ethers from contract account    
     function transferEthers(address receiver, uint valueInWei) onlyManager {
         uint value = valueInWei;
-        require ( this.balance &gt; value);
+        require ( this.balance > value);
         receiver.send(value);
     }
     
@@ -753,21 +753,21 @@ contract XWinAssociation {
     function executeProposal(uint proposalNumber, address newManager) {
         Proposal storage p = proposals[proposalNumber];
 
-        require(now &gt; p.votingDeadline                                          // If it is past the voting deadline
-            &amp;&amp; !p.executed                                                      // and it has not already been executed
-            &amp;&amp; p.proposalHash == sha3(newManager));                             // and the supplied code matches the proposal...
+        require(now > p.votingDeadline                                          // If it is past the voting deadline
+            && !p.executed                                                      // and it has not already been executed
+            && p.proposalHash == sha3(newManager));                             // and the supplied code matches the proposal...
 
         // ...then tally the results
         uint yea = 0;
  
-        for (uint i = 0; i &lt;  p.votes.length; ++i) {
+        for (uint i = 0; i <  p.votes.length; ++i) {
             Vote storage v = p.votes[i];
             uint voteWeight = sharesTokenAddress.balanceOf(v.voter);
             if (v.inSupport) 
                 yea += voteWeight;
         }
 
-        if ( yea &gt; changeManagerQuorum * 10**sharesTokenAddress.decimals() ) {
+        if ( yea > changeManagerQuorum * 10**sharesTokenAddress.decimals() ) {
             // Proposal passed; execute the transaction
 
             manager = newManager;
@@ -820,7 +820,7 @@ contract XWinBet {
     }
     
     function transferEthersToDao(uint valueInEthers) onlyManager {
-        require(this.balance.sub(reservedWeis) &gt;= valueInEthers * 1 ether);
+        require(this.balance.sub(reservedWeis) >= valueInEthers * 1 ether);
         dao.transfer(valueInEthers * 1 ether);
         FoundsTransferd(dao, valueInEthers * 1 ether);
     }
@@ -828,7 +828,7 @@ contract XWinBet {
     function bet (uint rate, uint timeLimitInMinutes) payable returns (uint betID)
     {
         uint reserved =  msg.value.mul(rate).div(1000);
-        require ( this.balance &gt; reservedWeis.add(reserved));
+        require ( this.balance > reservedWeis.add(reserved));
         reservedWeis = reservedWeis.add(reserved);
         
         betID = bets.length++;
@@ -850,7 +850,7 @@ contract XWinBet {
     {
         
         Bet b = bets[betId];
-        require (now &gt; b.deadline);
+        require (now > b.deadline);
         require (!b.executed);
         require (msg.sender == b.bettor);
         require (sha3(betId,msg.sender,b.value,b.rate,b.deadline)==b.betHash);

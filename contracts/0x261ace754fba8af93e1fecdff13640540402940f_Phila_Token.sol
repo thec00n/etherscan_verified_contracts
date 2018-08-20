@@ -51,8 +51,8 @@ contract Owned {
 // initial fixed supply
 // ----------------------------------------------------------------------------
 contract Phila_Token is ERC20Interface, Owned {
-    string public constant symbol = &quot;φιλα&quot;;
-    string public constant name = &quot;φιλανθρωπία&quot;;
+    string public constant symbol = "φιλα";
+    string public constant name = "φιλανθρωπία";
     uint8 public constant decimals = 0;
     uint private constant _totalSupply = 10000000;
 
@@ -61,7 +61,7 @@ contract Phila_Token is ERC20Interface, Owned {
     uint public totalCollected;         // In wei
     uint public tokenPrice;         // In wei
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // ------------------------------------------------------------------------
     // Constructor
@@ -82,7 +82,7 @@ contract Phila_Token is ERC20Interface, Owned {
     }
 
     function updateTokenPrice(uint _newTokenPrice) public onlyOwner {
-        require(_newTokenPrice &gt; 0);
+        require(_newTokenPrice > 0);
         tokenPrice = _newTokenPrice;
         return;
     }
@@ -105,7 +105,7 @@ contract Phila_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -122,7 +122,7 @@ contract Phila_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     //
     // THIS TOKENS ARE NOT TRANSFERRABLE.
     //
@@ -133,7 +133,7 @@ contract Phila_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
     //
     // THIS TOKENS ARE NOT TRANSFERRABLE.
     //
@@ -162,7 +162,7 @@ contract Phila_Token is ERC20Interface, Owned {
 
 
     function () public payable {
-        require (fundingEnabled &amp;&amp; (tokenPrice &gt; 0) &amp;&amp; (msg.value &gt;= tokenPrice));
+        require (fundingEnabled && (tokenPrice > 0) && (msg.value >= tokenPrice));
         
         totalCollected += msg.value;
 
@@ -172,13 +172,13 @@ contract Phila_Token is ERC20Interface, Owned {
         uint tokens = msg.value / tokenPrice;
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((msg.sender != 0) &amp;&amp; (msg.sender != address(this)));
+           require((msg.sender != 0) && (msg.sender != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            uint previousBalanceFrom = balances[this];
 
-           require(previousBalanceFrom &gt;= tokens);
+           require(previousBalanceFrom >= tokens);
 
            // First update the balance array with the new value for the address
            //  sending the tokens
@@ -187,7 +187,7 @@ contract Phila_Token is ERC20Interface, Owned {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            uint previousBalanceTo = balances[msg.sender];
-           require(previousBalanceTo + tokens &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + tokens >= previousBalanceTo); // Check for overflow
            balances[msg.sender] = previousBalanceTo + tokens;
 
            // An event to make the transfer easy to find on the blockchain

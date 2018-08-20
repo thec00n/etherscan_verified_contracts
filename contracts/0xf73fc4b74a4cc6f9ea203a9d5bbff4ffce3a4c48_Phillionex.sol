@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 contract Phillionex {
 
     uint256 public totalSupply = 55*10**27;
-    string public name = &quot;Phillionex&quot;;
+    string public name = "Phillionex";
     uint8 public decimals = 18;
-    string public symbol = &quot;PHN&quot;;
-    mapping (address =&gt; uint256) balances;
+    string public symbol = "PHN";
+    mapping (address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
 
@@ -19,7 +19,7 @@ contract Phillionex {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);

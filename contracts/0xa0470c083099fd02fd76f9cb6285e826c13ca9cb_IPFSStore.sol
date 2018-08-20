@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 contract IPFSStore {
-    mapping (uint256 =&gt; string) hashes;
+    mapping (uint256 => string) hashes;
     address owner;
 
     function IPFSStore() public {

@@ -3,12 +3,12 @@ pragma solidity ^0.4.19;
 library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ contract RakuRakuEth {
   uint256 ethWei = 10**18;
 
   Payment[] payments;
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
   
   modifier onlyCreditor() {
     require(msg.sender == creditor);
@@ -83,8 +83,8 @@ contract RakuRakuEth {
 
   function collectPayment(uint256 _index) external returns (bool) {
     require(payments[_index].status == Status.Requested);
-    require(payments[_index].requestedTime + 24*60*60 &lt; block.timestamp);
-    require(balances[debtor] &gt;= payments[_index].amountWei);
+    require(payments[_index].requestedTime + 24*60*60 < block.timestamp);
+    require(balances[debtor] >= payments[_index].amountWei);
     balances[debtor] = balances[debtor].sub(payments[_index].amountWei);
     balances[creditor] = balances[creditor].add(payments[_index].amountWei);
     payments[_index].status = Status.Paid;
@@ -106,7 +106,7 @@ contract RakuRakuEth {
   }
   
   function withdraw(uint256 _amount) external returns (bool) {
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
     msg.sender.transfer(_amount);
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     return true;
@@ -120,7 +120,7 @@ contract RakuRakuEth {
   
   function requestPayment(uint256 _index, uint256 _rateEthJpy) external onlyCreditor returns (bool) {
     require(payments[_index].status == Status.Pending || payments[_index].status == Status.Rejected);
-    require(payments[_index].paymentDue &lt;= block.timestamp);
+    require(payments[_index].paymentDue <= block.timestamp);
     payments[_index].rateEthJpy = _rateEthJpy;
     payments[_index].amountWei = payments[_index].amountJpy.mul(ethWei).div(_rateEthJpy);
     payments[_index].requestedTime = block.timestamp;
@@ -141,14 +141,14 @@ contract RakuRakuEth {
   
   function rejectPayment(uint256 _index) external onlyDebtor returns (bool) {
     require(payments[_index].status == Status.Requested);
-    require(payments[_index].requestedTime + 24*60*60 &gt; block.timestamp);
+    require(payments[_index].requestedTime + 24*60*60 > block.timestamp);
     payments[_index].status = Status.Rejected;
     return true;
   }
   
   function approvePayment(uint256 _index) external onlyDebtor returns (bool) {
     require(payments[_index].status == Status.Requested);
-    require(balances[debtor] &gt;= payments[_index].amountWei);
+    require(balances[debtor] >= payments[_index].amountWei);
     balances[debtor] = balances[debtor].sub(payments[_index].amountWei);
     balances[creditor] = balances[creditor].add(payments[_index].amountWei);
     payments[_index].status = Status.Paid;

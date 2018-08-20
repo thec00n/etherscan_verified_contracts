@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 contract TestToken {
     
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
     
     function () public payable {
         

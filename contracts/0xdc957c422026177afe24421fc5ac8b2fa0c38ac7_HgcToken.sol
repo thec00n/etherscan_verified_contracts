@@ -2,8 +2,8 @@ pragma solidity ^0.4.16;
 
 contract HgcToken {
 
-    string public name = &quot;Happy Guess Chain Coin&quot;;
-    string public symbol = &quot;HGCC&quot;;
+    string public name = "Happy Guess Chain Coin";
+    string public symbol = "HGCC";
     uint256 public decimals = 6;
 
     uint256 constant initSupplyUnits = 2100000000000000;
@@ -18,8 +18,8 @@ contract HgcToken {
         uint256 frozen;
     }
 
-    mapping (address =&gt; Account) public accounts;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => Account) public accounts;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     modifier isOwner {
         assert(owner == msg.sender);
@@ -59,11 +59,11 @@ contract HgcToken {
 
     function transfer(address _to, uint256 _value) public isRunning validAddress returns (bool success) {
         Account storage accountFrom = accounts[msg.sender] ;
-        require(accountFrom.available &gt;= _value);
+        require(accountFrom.available >= _value);
 
         Account storage accountTo = accounts[_to] ;
         uint256 count = balanceFor(accountFrom) + balanceFor(accountTo) ;
-        require(accountTo.available + _value &gt;= accountTo.available);
+        require(accountTo.available + _value >= accountTo.available);
 
         accountFrom.available -= _value;
         accountTo.available += _value;
@@ -75,11 +75,11 @@ contract HgcToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public isRunning validAddress returns (bool success) {
         Account storage accountFrom = accounts[_from] ;
-        require(accountFrom.available &gt;= _value);
+        require(accountFrom.available >= _value);
 
         Account storage accountTo = accounts[_to] ;
-        require(accountTo.available + _value &gt;= accountTo.available);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(accountTo.available + _value >= accountTo.available);
+        require(allowance[_from][msg.sender] >= _value);
 
         uint256 count = balanceFor(accountFrom) + balanceFor(accountTo) ;
 
@@ -121,7 +121,7 @@ contract HgcToken {
 
     function burn(uint256 _value) public isRunning {
         Account storage account = accounts[msg.sender];
-        require(account.available &gt;= _value);
+        require(account.available >= _value);
         account.available -= _value ;
 
         Account storage systemAccount = accounts[0x0] ;
@@ -133,7 +133,7 @@ contract HgcToken {
     function frozen(address targetAddress , uint256 value) public isOwner returns (bool success){
         Account storage account = accounts[targetAddress];
 
-        require(value &gt; 0 &amp;&amp; account.available &gt;= value);
+        require(value > 0 && account.available >= value);
 
         uint256 count = account.available + account.frozen;
 
@@ -148,7 +148,7 @@ contract HgcToken {
     function unfrozen(address targetAddress, uint256 value) public isOwner returns (bool success){
         Account storage account = accounts[targetAddress];
 
-        require(value &gt; 0 &amp;&amp; account.frozen &gt;= value);
+        require(value > 0 && account.frozen >= value);
 
         uint256 count = account.available + account.frozen;
 

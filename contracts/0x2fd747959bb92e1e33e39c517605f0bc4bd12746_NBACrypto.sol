@@ -45,12 +45,12 @@ contract NBACrypto {
 		// Calculate the 5% value
 		uint256 commission5percent = (msg.value / 10);
 
-		// Calculate the owner commission on this sale &amp; transfer the commission to the owner.		
-		uint256 commissionOwner = msg.value - commission5percent; // =&gt; 95%
+		// Calculate the owner commission on this sale & transfer the commission to the owner.		
+		uint256 commissionOwner = msg.value - commission5percent; // => 95%
 		teams[_countryId].ownerAddress.transfer(commissionOwner);
 
 		// Transfer the 5% commission to the developer
-		cfoAddress.transfer(commission5percent); // =&gt; 5% (25% remains in the Jackpot)						
+		cfoAddress.transfer(commission5percent); // => 5% (25% remains in the Jackpot)						
 
 		// Update the team owner and set the new price
 		teams[_countryId].ownerAddress = msg.sender;
@@ -62,9 +62,9 @@ contract NBACrypto {
 	He can make the price smaller than the current price but never bigger.
 	*/
 	function modifyPriceCountry(uint _teamId, uint256 _newPrice) public {
-	    require(_newPrice &gt; 0);
+	    require(_newPrice > 0);
 	    require(teams[_teamId].ownerAddress == msg.sender);
-	    require(_newPrice &lt; teams[_teamId].curPrice);
+	    require(_newPrice < teams[_teamId].curPrice);
 	    teams[_teamId].curPrice = _newPrice;
 	}
 	
@@ -92,7 +92,7 @@ contract NBACrypto {
     }
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -104,48 +104,48 @@ contract NBACrypto {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
 	// We run this function once to create all the teams and set the initial price.
 	function InitiateTeams() public onlyCeo {
 		require(teamsAreInitiated == false);
-        teams.push(Team(&quot;Raptors&quot;, cfoAddress, 750000000000000000)); 
-		teams.push(Team(&quot;Rockets&quot;, cfoAddress, 750000000000000000)); 
-		teams.push(Team(&quot;Celtics&quot;, cfoAddress, 700000000000000000)); 
-        teams.push(Team(&quot;Warriors&quot;, cfoAddress, 700000000000000000)); 
-        teams.push(Team(&quot;Cavaliers&quot;, cfoAddress, 650000000000000000)); 
-        teams.push(Team(&quot;Spurs&quot;, cfoAddress, 650000000000000000)); 
-        teams.push(Team(&quot;Wizards&quot;, cfoAddress, 600000000000000000)); 
-        teams.push(Team(&quot;Timberwolves&quot;, cfoAddress, 600000000000000000)); 
-        teams.push(Team(&quot;Pacers&quot;, cfoAddress, 550000000000000000)); 
-        teams.push(Team(&quot;Thunder&quot;, cfoAddress, 550000000000000000)); 
-        teams.push(Team(&quot;Bucks&quot;, cfoAddress, 500000000000000000));
-        teams.push(Team(&quot;Nuggets&quot;, cfoAddress, 500000000000000000)); 
-		teams.push(Team(&quot;76ers&quot;, cfoAddress, 450000000000000000));
-		teams.push(Team(&quot;Blazers&quot;, cfoAddress, 450000000000000000)); 		
-        teams.push(Team(&quot;Heat&quot;, cfoAddress, 400000000000000000)); 		
-        teams.push(Team(&quot;Pelicans&quot;, cfoAddress, 400000000000000000)); 		
-        teams.push(Team(&quot;Pistons&quot;, cfoAddress, 350000000000000000)); 		
-        teams.push(Team(&quot;Clippers&quot;, cfoAddress, 350000000000000000)); 
-        teams.push(Team(&quot;Hornets&quot;, cfoAddress, 300000000000000000));		
-        teams.push(Team(&quot;Jazz&quot;, cfoAddress, 300000000000000000)); 		
-        teams.push(Team(&quot;Knicks&quot;, cfoAddress, 250000000000000000)); 		
-        teams.push(Team(&quot;Lakers&quot;, cfoAddress, 250000000000000000)); 		
-        teams.push(Team(&quot;Bulls&quot;, cfoAddress, 200000000000000000)); 		
-        teams.push(Team(&quot;Grizzlies&quot;, cfoAddress, 200000000000000000)); 		
-        teams.push(Team(&quot;Nets&quot;, cfoAddress, 150000000000000000));		
-        teams.push(Team(&quot;Kings&quot;, cfoAddress, 150000000000000000));		
-        teams.push(Team(&quot;Magic&quot;, cfoAddress, 100000000000000000));		
-        teams.push(Team(&quot;Mavericks&quot;, cfoAddress, 100000000000000000)); 
-        teams.push(Team(&quot;Hawks&quot;, cfoAddress, 100000000000000000));			
-        teams.push(Team(&quot;Suns&quot;, cfoAddress, 100000000000000000)); 		
+        teams.push(Team("Raptors", cfoAddress, 750000000000000000)); 
+		teams.push(Team("Rockets", cfoAddress, 750000000000000000)); 
+		teams.push(Team("Celtics", cfoAddress, 700000000000000000)); 
+        teams.push(Team("Warriors", cfoAddress, 700000000000000000)); 
+        teams.push(Team("Cavaliers", cfoAddress, 650000000000000000)); 
+        teams.push(Team("Spurs", cfoAddress, 650000000000000000)); 
+        teams.push(Team("Wizards", cfoAddress, 600000000000000000)); 
+        teams.push(Team("Timberwolves", cfoAddress, 600000000000000000)); 
+        teams.push(Team("Pacers", cfoAddress, 550000000000000000)); 
+        teams.push(Team("Thunder", cfoAddress, 550000000000000000)); 
+        teams.push(Team("Bucks", cfoAddress, 500000000000000000));
+        teams.push(Team("Nuggets", cfoAddress, 500000000000000000)); 
+		teams.push(Team("76ers", cfoAddress, 450000000000000000));
+		teams.push(Team("Blazers", cfoAddress, 450000000000000000)); 		
+        teams.push(Team("Heat", cfoAddress, 400000000000000000)); 		
+        teams.push(Team("Pelicans", cfoAddress, 400000000000000000)); 		
+        teams.push(Team("Pistons", cfoAddress, 350000000000000000)); 		
+        teams.push(Team("Clippers", cfoAddress, 350000000000000000)); 
+        teams.push(Team("Hornets", cfoAddress, 300000000000000000));		
+        teams.push(Team("Jazz", cfoAddress, 300000000000000000)); 		
+        teams.push(Team("Knicks", cfoAddress, 250000000000000000)); 		
+        teams.push(Team("Lakers", cfoAddress, 250000000000000000)); 		
+        teams.push(Team("Bulls", cfoAddress, 200000000000000000)); 		
+        teams.push(Team("Grizzlies", cfoAddress, 200000000000000000)); 		
+        teams.push(Team("Nets", cfoAddress, 150000000000000000));		
+        teams.push(Team("Kings", cfoAddress, 150000000000000000));		
+        teams.push(Team("Magic", cfoAddress, 100000000000000000));		
+        teams.push(Team("Mavericks", cfoAddress, 100000000000000000)); 
+        teams.push(Team("Hawks", cfoAddress, 100000000000000000));			
+        teams.push(Team("Suns", cfoAddress, 100000000000000000)); 		
 	}
 
 }

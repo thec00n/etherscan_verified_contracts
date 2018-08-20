@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,20 +57,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ contract EtherRacing is Ownable {
         bytes32 name;
         uint256 earned;
         uint16 c_num;
-        mapping (uint256 =&gt; uint16) garage;
+        mapping (uint256 => uint16) garage;
         uint256[] garage_idx;
     }
 
@@ -100,21 +100,21 @@ contract EtherRacing is Ownable {
       uint8 acc;
       uint8 dur;
       uint8 hndl;
-      mapping (address =&gt; uint16) c_owners;
+      mapping (address => uint16) c_owners;
     }
 
-    string public constant name = &#39;CarToken&#39;;
-    string public constant symbol = &#39;CAR&#39;;
+    string public constant name = 'CarToken';
+    string public constant symbol = 'CAR';
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 10000 * (10 ** uint256(decimals));
 
     uint256 private store_balance;
 
-    mapping (address =&gt; Customer) private customers;
-    //mapping (address =&gt; uint256) pendingWithdrawals;
-    mapping (uint256 =&gt; Car) public cars;
-    mapping (uint256 =&gt; address[]) public yesBuyer;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => Customer) private customers;
+    //mapping (address => uint256) pendingWithdrawals;
+    mapping (uint256 => Car) public cars;
+    mapping (uint256 => address[]) public yesBuyer;
+    mapping (address => uint256) balances;
     uint256[] public carAccts;
 
     /* Store Events */
@@ -218,23 +218,23 @@ contract EtherRacing is Ownable {
     }
 
     function buyCar(uint256 _id) public payable returns (bool success) {
-        require(_id &gt; 0);
-        require(cars[_id].c_price &gt; 0 &amp;&amp; (msg.value + balances[msg.sender]) &gt; 0);
-        require((msg.value + balances[msg.sender]) &gt;= cars[_id].c_price);
+        require(_id > 0);
+        require(cars[_id].c_price > 0 && (msg.value + balances[msg.sender]) > 0);
+        require((msg.value + balances[msg.sender]) >= cars[_id].c_price);
         Customer storage customer = customers[msg.sender];
         customer.garage[_id] += 1;
         customer.garage_idx.push(_id);
         customer.c_num += 1;
         cars[_id].s_count += 1;
 
-        if ((msg.value + balances[msg.sender]) &gt; cars[_id].c_price)
+        if ((msg.value + balances[msg.sender]) > cars[_id].c_price)
             balances[msg.sender] += msg.value - cars[_id].c_price;
 
         uint256 f_price = cars[_id].earning * cars[_id].s_count + cars[_id].o_earning;
-        if(f_price &gt; cars[_id].s_price){
+        if(f_price > cars[_id].s_price){
           cars[_id].c_price = f_price;
         }
-        for (uint i = 0; i &lt; yesBuyer[_id].length; ++i){
+        for (uint i = 0; i < yesBuyer[_id].length; ++i){
             address buyer = yesBuyer[_id][i];
             uint16 buy_count = cars[_id].c_owners[buyer];
             uint256 earned = cars[_id].earning * buy_count;
@@ -296,10 +296,10 @@ contract EtherRacing is Ownable {
 
     function withdraw(uint256 _amount) public returns (bool) {
 
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
         require(_amount == uint256(uint128(_amount)));
-        require(this.balance &gt;= _amount);
-        require(balances[msg.sender] &gt;= _amount);
+        require(this.balance >= _amount);
+        require(balances[msg.sender] >= _amount);
 
         if (_amount == 0)
             _amount = balances[msg.sender];

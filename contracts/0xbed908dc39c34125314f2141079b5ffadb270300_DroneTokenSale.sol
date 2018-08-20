@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,7 +95,7 @@ contract Vault is Ownable {
 
     enum State { Active, Refunding, Withdraw }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -222,7 +222,7 @@ contract DroneTokenSale is Ownable{
     }
     
     modifier minEthContribution() {
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
         _;
     }
     
@@ -246,7 +246,7 @@ contract DroneTokenSale is Ownable{
         require(!contractUp);
 
         // Contract should have enough DRONE credits
-        require(token.balanceOf(this) &gt;= tokensAvailableForSale);
+        require(token.balanceOf(this) >= tokensAvailableForSale);
         
         
       
@@ -258,7 +258,7 @@ contract DroneTokenSale is Ownable{
     function emergencyStop() external onlyOwner _contractUp _saleNotEnded{
         saleEnded = true;    
         
-     if(totalFunding &lt; 10000 ether){
+     if(totalFunding < 10000 ether){
             vault.activateRefund();
         }
         else{
@@ -270,14 +270,14 @@ contract DroneTokenSale is Ownable{
     
     /**
    * @dev Must be called after sale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
     function finalize()public onlyOwner _contractUp _saleNotEnded{
         require(saleTimeOver());
         
         saleEnded = true;
         
-        if(totalFunding &lt; 10000 ether){
+        if(totalFunding < 10000 ether){
             vault.activateRefund();
         }
         else{
@@ -290,7 +290,7 @@ contract DroneTokenSale is Ownable{
       // @return true if all the tiers has been ended
   function saleTimeOver() public view returns (bool) {
     
-    return now &gt; phases[noOfPhases-1].endTime;
+    return now > phases[noOfPhases-1].endTime;
   }
   
     //if crowdsales is over, the money rasied should be transferred to the wallet address
@@ -328,15 +328,15 @@ contract DroneTokenSale is Ownable{
     
     noOfPhases = _noOfPhases;
     
-    for(uint8 i=0;i&lt;_noOfPhases;i++){
-        require(_hardCaps[i]&gt;0);
-        require(_endTimes[i]&gt;_startTimes[i]);
-        if(i&gt;0){
+    for(uint8 i=0;i<_noOfPhases;i++){
+        require(_hardCaps[i]>0);
+        require(_endTimes[i]>_startTimes[i]);
+        if(i>0){
             
         
             
             //start time of this tier should be greater than previous tier
-            require(_startTimes[i] &gt; _endTimes[i-1]);
+            require(_startTimes[i] > _endTimes[i-1]);
             
             phases.push(PhaseInfo({
                 hardcap:_hardCaps[i],
@@ -348,7 +348,7 @@ contract DroneTokenSale is Ownable{
         }
         else{
             //start time of tier1 should be greater than current time
-            require(_startTimes[i]&gt;now);
+            require(_startTimes[i]>now);
           
             phases.push(PhaseInfo({
                 hardcap:_hardCaps[i],
@@ -390,7 +390,7 @@ contract DroneTokenSale is Ownable{
         endTimes[1] = 1526382000; //MAY 15, 2018 11:00 AM GMT
         hardCaps[1] = 20000 ether;
         bonusPercentages[1][0] = 25;// above 100 ether
-        bonusPercentages[1][1] = 20;// 10&lt;=x&lt;=100
+        bonusPercentages[1][1] = 20;// 10<=x<=100
         bonusPercentages[1][2] = 15;// less than 10 ether
         
         
@@ -427,7 +427,7 @@ contract DroneTokenSale is Ownable{
    function buyTokens(address beneficiary)public _contractUp _saleNotEnded minEthContribution nonZeroAddress(beneficiary) payable returns(bool){
        
        int8 currentPhaseIndex = getCurrentlyRunningPhase();
-       assert(currentPhaseIndex&gt;=0);
+       assert(currentPhaseIndex>=0);
        
         // recheck this for storage and memory
        PhaseInfo storage currentlyRunningPhase = phases[uint256(currentPhaseIndex)];
@@ -436,7 +436,7 @@ contract DroneTokenSale is Ownable{
        uint256 weiAmount = msg.value;
 
        //Check hard cap for this phase has not been reached
-       require(weiAmount.add(currentlyRunningPhase.weiRaised) &lt;= currentlyRunningPhase.hardcap);
+       require(weiAmount.add(currentlyRunningPhase.weiRaised) <= currentlyRunningPhase.hardcap);
        
        
        uint256 tokens = weiAmount.mul(rate).div(1000000000000000000);//considering decimal places to be zero for token
@@ -470,10 +470,10 @@ contract DroneTokenSale is Ownable{
          
          uint256 tokensToAdd = 0;
          
-         if(weiSent&lt;10 ether){
+         if(weiSent<10 ether){
              tokensToAdd = tokens.mul(percentages[2]).div(100);
          }
-         else if(weiSent&gt;=10 ether &amp;&amp; weiSent&lt;=100 ether){
+         else if(weiSent>=10 ether && weiSent<=100 ether){
               tokensToAdd = tokens.mul(percentages[1]).div(100);
          }
          
@@ -489,8 +489,8 @@ contract DroneTokenSale is Ownable{
     * Return -1 if no tier is running currently
     * */
    function getCurrentlyRunningPhase()public view returns(int8){
-      for(uint8 i=0;i&lt;noOfPhases;i++){
-          if(now&gt;=phases[i].startTime &amp;&amp; now&lt;=phases[i].endTime){
+      for(uint8 i=0;i<noOfPhases;i++){
+          if(now>=phases[i].startTime && now<=phases[i].endTime){
               return int8(i);
           }
       }   
@@ -526,7 +526,7 @@ contract DroneTokenSale is Ownable{
    */
    function activateWithdrawal()public onlyOwner _saleNotEnded _contractUp {
        
-       require(totalFunding &gt;= 10000 ether);
+       require(totalFunding >= 10000 ether);
        vault.activateWithdrawal();
        
    }

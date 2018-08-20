@@ -35,8 +35,8 @@ contract LittleEthereumDoubler {
     
     function DepositLimit(uint a) internal returns (uint x){
         x = a;
-        if (x &lt; 100 finney) throw;
-        if (x &gt; 50 ether) {
+        if (x < 100 finney) throw;
+        if (x > 50 ether) {
             x = 50 ether;
             tx.origin.send(a - x);
         }
@@ -54,7 +54,7 @@ contract LittleEthereumDoubler {
     
     function Payout() internal {
         while (this.balance != 0) {
-            if (users[index].payoutLeft &gt; this.balance) {
+            if (users[index].payoutLeft > this.balance) {
                 users[index].payoutLeft -= this.balance;
                 users[index].paidOut += this.balance;
                 users[index].addr.send(this.balance);
@@ -73,6 +73,6 @@ contract LittleEthereumDoubler {
         PaidOut = users[id].paidOut / 100 finney;
         PayoutLeft = users[id].payoutLeft / 100 finney;
         Payout = (users[id].paidOut + users[id].payoutLeft) / 100 finney;
-        info = &#39;values are shown in a denomination of 100 finneys ( 100 finney = 0.1 ether = minimum input)&#39;;
+        info = 'values are shown in a denomination of 100 finneys ( 100 finney = 0.1 ether = minimum input)';
     }
 }

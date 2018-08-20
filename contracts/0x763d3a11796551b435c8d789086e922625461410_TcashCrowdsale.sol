@@ -12,17 +12,17 @@ pragma solidity ^0.4.16;
   }
   
   contract TCASH is ERC20 {
-     string public constant symbol = &quot;TCASH&quot;;
-     string public constant name = &quot;Tcash&quot;;
+     string public constant symbol = "TCASH";
+     string public constant name = "Tcash";
      uint8 public constant decimals = 8;
      uint256 _totalSupply = 88000000 * 10**8;
      
 
      address public owner;
   
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
   
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
      
   
      function TCASH() {
@@ -37,7 +37,7 @@ pragma solidity ^0.4.16;
      
      
     function distributeTCASH(address[] addresses) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= 245719916000;
              balances[addresses[i]] += 245719916000;
              Transfer(owner, addresses[i], 245719916000);
@@ -55,9 +55,9 @@ pragma solidity ^0.4.16;
      }
  
      function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount 
+            && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -73,10 +73,10 @@ pragma solidity ^0.4.16;
          address _to,
          uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -156,7 +156,7 @@ contract TcashCrowdsale {
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
       uint256 c = a + b;
-      require(c &gt;= a);
+      require(c >= a);
       return c;
     }
 
@@ -167,9 +167,9 @@ contract TcashCrowdsale {
     }
 
     function safeDiv(uint256 a, uint256 b) internal constant returns (uint256) {
-      // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // require(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // require(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
@@ -188,8 +188,8 @@ contract TcashCrowdsale {
         require(!crowdsaleClosed);
         require(receiver != 0x0);
         require(receiver != target);
-        require(msg.value &gt;= 0.01 ether);
-        require(weiRaised &lt;= HARDCAP);
+        require(msg.value >= 0.01 ether);
+        require(weiRaised <= HARDCAP);
         uint256 weiAmount = msg.value;
         uint256 tokens = computeTokenAmount(weiAmount);
         if (tokenReward.transfer(receiver, tokens)) {
@@ -233,7 +233,7 @@ contract TcashCrowdsale {
      *
      */
     function setPhase(uint256 nPhase) onlyFounder {
-        require((nPhase &lt; priceToken.length) &amp;&amp; (nPhase &gt;= 0));
+        require((nPhase < priceToken.length) && (nPhase >= 0));
         phase = nPhase;
     }
 
@@ -243,7 +243,7 @@ contract TcashCrowdsale {
      */
     function tokenWithdraw(address receiver, uint256 tokens) onlyFounder {
         require(receiver != 0x0);
-        require(tokens &gt; 0);
+        require(tokens > 0);
         if (!tokenReward.transfer(receiver, tokens)) {
            revert();
         }

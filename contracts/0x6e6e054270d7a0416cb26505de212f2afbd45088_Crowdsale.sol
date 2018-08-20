@@ -11,18 +11,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,7 +77,7 @@ contract Crowdsale is Ownable {
   // address where funds are collected
   address public wallet;
   
-  // rate =&gt; tokens per ether
+  // rate => tokens per ether
   uint256 public rate = 750000 ; 
 
   // amount of raised money in wei
@@ -105,8 +105,8 @@ contract Crowdsale is Ownable {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
-    require(msg.value &gt;= 10000000000000000);// min contribution 0.01ETH
-    require(msg.value &lt;= 1000000000000000000);// max contribution 1ETH
+    require(msg.value >= 10000000000000000);// min contribution 0.01ETH
+    require(msg.value <= 1000000000000000000);// max contribution 1ETH
 
     uint256 weiAmount = msg.value;
 

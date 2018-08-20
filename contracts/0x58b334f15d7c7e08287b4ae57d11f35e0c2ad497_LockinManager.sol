@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,13 +35,13 @@ library SafeMath {
 contract AuthenticationManager {
    
     /* Map addresses to admins */
-    mapping (address =&gt; bool) adminAddresses;
+    mapping (address => bool) adminAddresses;
 
     /* Map addresses to account readers */
-    mapping (address =&gt; bool) accountReaderAddresses;
+    mapping (address => bool) accountReaderAddresses;
 
     /* Map addresses to account minters */
-    mapping (address =&gt; bool) accountMinterAddresses;
+    mapping (address => bool) accountMinterAddresses;
 
     /* Details of all admins that have ever existed */
     address[] adminAudit;
@@ -86,7 +86,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAdmin(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; adminAudit.length; i++)
+        for (uint256 i = 0; i < adminAudit.length; i++)
             if (adminAudit[i] == _address)
                 return true;
         return false;
@@ -99,7 +99,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountReader(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountReaderAudit.length; i++)
+        for (uint256 i = 0; i < accountReaderAudit.length; i++)
             if (accountReaderAudit[i] == _address)
                 return true;
         return false;
@@ -112,7 +112,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountMinter(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountMinterAudit.length; i++)
+        for (uint256 i = 0; i < accountMinterAudit.length; i++)
             if (accountMinterAudit[i] == _address)
                 return true;
         return false;
@@ -120,7 +120,7 @@ contract AuthenticationManager {
 
     /* Adds a user to our list of admins */
     function addAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -138,11 +138,11 @@ contract AuthenticationManager {
 
     /* Removes a user from our list of admins but keeps them in the history audit */
     function removeAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
-        /* Don&#39;t allow removal of self */
+        /* Don't allow removal of self */
         if (_address == msg.sender)
             throw;
 
@@ -157,7 +157,7 @@ contract AuthenticationManager {
 
     /* Adds a user/contract to our list of account readers */
     function addAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -174,7 +174,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -189,7 +189,7 @@ contract AuthenticationManager {
 
     /* Add a contract to our list of account minters */
     function addAccountMinter(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -206,7 +206,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountMinter(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -225,10 +225,10 @@ contract Token {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     /* Map between users and their approval addresses and amounts */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /* List of all token holders */
     address[] allTokenHolders;
@@ -263,9 +263,9 @@ contract Token {
     
         uint256 lockedValue = 0;
         
-        for(uint256 i = 0; i &lt; length; i++) {
+        for(uint256 i = 0; i < length; i++) {
 
-            if(lockinManager.getLocksUnlockDate(_owner, i) &gt; now) {
+            if(lockinManager.getLocksUnlockDate(_owner, i) > now) {
                 uint256 _value = lockinManager.getLocksAmount(_owner, i);    
                 lockedValue = lockedValue.add(_value);                
             }
@@ -286,8 +286,8 @@ contract Token {
     /* Create a new instance of this fund with links to other contracts that are required. */
     function Token(address _authenticationManagerAddress) {
         // Setup defaults
-        name = &quot;PIE (Authorito Capital)&quot;;
-        symbol = &quot;PIE&quot;;
+        name = "PIE (Authorito Capital)";
+        symbol = "PIE";
         decimals = 18;
 
         /* Setup access to our other contracts */
@@ -322,7 +322,7 @@ contract Token {
     /* Transfer funds between two addresses that are not the current msg.sender - this requires approval to have been set separately and follows standard ERC20 guidelines */
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3) returns (bool) {
         
-        if (availableBalance(_from) &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]) {
+        if (availableBalance(_from) >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to].add(_amount) > balances[_to]) {
             bool isNew = balances[_to] == 0;
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -369,14 +369,14 @@ contract Token {
         return balances[_owner];
     }
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2) returns (bool) {
                 
         /* Check if sender has balance and for overflows */
-        if (availableBalance(msg.sender) &lt; _amount || balances[_to].add(_amount) &lt; balances[_to])
+        if (availableBalance(msg.sender) < _amount || balances[_to].add(_amount) < balances[_to])
             return false;
 
-        /* Do a check to see if they are new, if so we&#39;ll want to add it to our array */
+        /* Do a check to see if they are new, if so we'll want to add it to our array */
         bool isRecipientNew = balances[_to] == 0;
 
         /* Add and subtract new balances */
@@ -386,7 +386,7 @@ contract Token {
         /* Consolidate arrays if they are new or if sender now has empty balance */
         if (isRecipientNew)
             tokenOwnerAdd(_to);
-        if (balances[msg.sender] &lt;= 0)
+        if (balances[msg.sender] <= 0)
             tokenOwnerRemove(msg.sender);
 
         /* Fire notification event */
@@ -398,12 +398,12 @@ contract Token {
     function tokenOwnerAdd(address _addr) internal {
         /* First check if they already exist */
         uint256 tokenHolderCount = allTokenHolders.length;
-        for (uint256 i = 0; i &lt; tokenHolderCount; i++)
+        for (uint256 i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr)
                 /* Already found so we can abort now */
                 return;
         
-        /* They don&#39;t seem to exist, so let&#39;s add them */
+        /* They don't seem to exist, so let's add them */
         allTokenHolders.length++;
         allTokenHolders[allTokenHolders.length - 1] = _addr;
     }
@@ -415,19 +415,19 @@ contract Token {
         uint256 foundIndex = 0;
         bool found = false;
         uint256 i;
-        for (i = 0; i &lt; tokenHolderCount; i++)
+        for (i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr) {
                 foundIndex = i;
                 found = true;
                 break;
             }
         
-        /* If we didn&#39;t find them just return */
+        /* If we didn't find them just return */
         if (!found)
             return;
         
         /* We now need to shuffle down the array */
-        for (i = foundIndex; i &lt; tokenHolderCount - 1; i++)
+        for (i = foundIndex; i < tokenHolderCount - 1; i++)
             allTokenHolders[i] = allTokenHolders[i + 1];
         allTokenHolders.length--;
     }
@@ -460,14 +460,14 @@ contract Token {
 
         uint256 balance = availableBalance(_investor);
 
-        if (balance &lt; tokenCount) {
+        if (balance < tokenCount) {
             return false;
         }
 
         balances[_investor] -= tokenCount;
         totalSupplyAmount -= tokenCount;
 
-        if(balances[_investor] &lt;= 0)
+        if(balances[_investor] <= 0)
             tokenOwnerRemove(_investor);
 
         return true;
@@ -491,13 +491,13 @@ contract LockinManager {
     uint256 defaultAllowedLock = 7;
 
     /* mapping of list of locked address with array of locks for a particular address */
-    mapping (address =&gt; Lock[]) public lockedAddresses;
+    mapping (address => Lock[]) public lockedAddresses;
 
     /* mapping of valid contracts with their lockin timestamp */
-    mapping (address =&gt; uint256) public allowedContracts;
+    mapping (address => uint256) public allowedContracts;
 
     /* list of locked days mapped with their locked timestamp*/
-    mapping (uint =&gt; uint256) public allowedLocks;
+    mapping (uint => uint256) public allowedLocks;
 
     /* Defines our interface to the token contract */
     Token token;
@@ -575,7 +575,7 @@ contract LockinManager {
     {
         require( ! ifInAllowedLocks(_days));        
 
-        require(token.availableBalance(msg.sender) &gt;= _value);
+        require(token.availableBalance(msg.sender) >= _value);
         
         lockIt(msg.sender, _value, _days);     
     }

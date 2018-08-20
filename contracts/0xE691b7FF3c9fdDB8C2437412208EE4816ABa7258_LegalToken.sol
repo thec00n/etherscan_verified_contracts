@@ -2,19 +2,19 @@ pragma solidity ^0.4.13;
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -63,20 +63,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,9 +102,9 @@ contract LegalLazyScheduler is Ownable {
     modifier intervalTrigger() {
         uint64 currentTime = uint64(now);
         uint64 requiredIntervals = (currentTime - lastUpdate) / intervalDuration;
-        if( schedulerEnabled &amp;&amp; (requiredIntervals &gt; 0)) {
+        if( schedulerEnabled && (requiredIntervals > 0)) {
             LogProcessedInterval(lastUpdate, requiredIntervals);
-            while (requiredIntervals-- &gt; 0) {
+            while (requiredIntervals-- > 0) {
                 callback();
             }
             lastUpdate = currentTime;
@@ -141,7 +141,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-    require(_value &lt;= transferableTokens(_sender, uint64(now)));
+    require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -177,7 +177,7 @@ contract LimitedTransferToken is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -207,7 +207,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -236,7 +236,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -273,7 +273,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -335,7 +335,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -358,9 +358,9 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
   ) onlyOwner public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
+    require(_cliff >= _start && _vesting >= _cliff);
 
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint256 count = grants[_to].push(
                 TokenGrant(
@@ -410,7 +410,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint256 representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) public constant returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -420,7 +420,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -462,7 +462,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Cliff    Vesting
    */
   function calculateVestedTokens(
@@ -473,12 +473,12 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
     uint256 vesting) public constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = (tokens * (time - start)) / (vesting - start)
       uint256 vestedTokens = SafeMath.div(
@@ -548,7 +548,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
   function lastTokenIsTransferableDate(address holder) public constant returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = Math.max64(grants[holder][i].vesting, date);
     }
   }
@@ -596,7 +596,7 @@ contract LegalToken is LegalLazyScheduler, MintableToken, VestedToken {
     * @dev Constructor that gives msg.sender all of existing tokens. 
     */
     function LegalToken(address _rewardWallet, uint32 _inflationCompBPS, uint32 _inflationCompInterval) onlyOwner public {
-        setTokenInformation(&quot;Legal Token&quot;, &quot;LGL&quot;);
+        setTokenInformation("Legal Token", "LGL");
         totalSupply = 0;        
         rewardWallet = _rewardWallet;
         inflationCompBPS = _inflationCompBPS;

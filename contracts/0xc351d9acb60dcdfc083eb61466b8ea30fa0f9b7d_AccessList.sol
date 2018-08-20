@@ -4,7 +4,7 @@ contract AccessList {
     event Added(address _user);
     event Removed(address _user);
 
-    mapping(address =&gt; bool) public access;
+    mapping(address => bool) public access;
 
     function isSet(address addr) external view returns(bool) {
         return access[addr];

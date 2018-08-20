@@ -20,9 +20,9 @@ contract Random {
   function bitSlice(uint256 n, uint256 bits, uint256 slot) public pure returns(uint256) {
       uint256 offset = slot * bits;
       // mask is made by shifting left an offset number of times
-      uint256 mask = uint256((2**bits) - 1) &lt;&lt; offset;
+      uint256 mask = uint256((2**bits) - 1) << offset;
       // AND n with mask, and trim to max of 5 bits
-      return uint256((n &amp; mask) &gt;&gt; offset);
+      return uint256((n & mask) >> offset);
   }
 
   /**
@@ -30,7 +30,7 @@ contract Random {
   the returned blockhash is bytes32(0), 
   */
   function maxRandom(uint256 sourceBlock) public view returns (uint256 randomNumber) {
-    require(block.number &gt; sourceBlock);
+    require(block.number > sourceBlock);
     return uint256(block.blockhash(sourceBlock));
   }
 
@@ -79,7 +79,7 @@ contract KittyArena is Random {
 		Player storage player;
 		Game storage game;
 
-		if (games.length &gt; 0 &amp;&amp; games[games.length - 1].fightBlock == 0) {
+		if (games.length > 0 && games[games.length - 1].fightBlock == 0) {
 			// player is player2 for game
 			game = games[games.length - 1];
 			game.player2 = Player(kitty, msg.sender);
@@ -122,10 +122,10 @@ contract KittyArena is Random {
 		bytes32 genes1 = catGenes(game.player1.kitty);
 		bytes32 genes2 = catGenes(game.player2.kitty);
 
-		require(block.number &gt; game.fightBlock);
+		require(block.number > game.fightBlock);
 		bytes32 seed = bytes32(maxRandom(game.fightBlock));
 		
-		// If game isn&#39;t resolved in 256 blocks and we cannot get the entropy,
+		// If game isn't resolved in 256 blocks and we cannot get the entropy,
 		// we considered it tie
 		if (seed == bytes32(0)) {
 			return TIE;

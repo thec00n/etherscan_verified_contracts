@@ -12,38 +12,38 @@ contract SafeMath {
     }
     
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     
     function min64(uint64 a, uint64 b) internal pure returns (uint64) 
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
  }
  
@@ -118,9 +118,9 @@ contract SafeMath {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -128,8 +128,8 @@ contract SafeMath {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -161,7 +161,7 @@ contract SafeMath {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -213,7 +213,7 @@ contract SafeMath {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -242,7 +242,7 @@ contract SafeMath {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -279,11 +279,11 @@ contract EdgeSmartToken is ERC20, SafeMath, DateTime {
     uint256  public constant _decimals = 18;
     uint256 public constant _totalSupply = (100000000 * 10**_decimals);
     
-    string public constant symbol = &#39;EST&#39;;
-    string public constant name = &#39;Edge Smart Token&#39;;
+    string public constant symbol = 'EST';
+    string public constant name = 'Edge Smart Token';
     
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) approved;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) approved;
     address EdgeSmartTokenOwner;
 
     modifier onlyOwner() {
@@ -327,7 +327,7 @@ contract EdgeSmartToken is ERC20, SafeMath, DateTime {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(
-            balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value && _value > 0
         );
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -345,7 +345,7 @@ contract EdgeSmartToken is ERC20, SafeMath, DateTime {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(
-            approved[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0
+            approved[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0
         );
         balances[_from] = safeSub(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -457,14 +457,14 @@ contract EdgeICO is SafeMath, DateTime, EdgeSmartToken {
     
     function createTokens(address recipient) public payable {
         
-        require(now &lt; ICO_hardcoded_expiry_date);
+        require(now < ICO_hardcoded_expiry_date);
         
         
-        if (preSaleActive &amp;&amp; (now &lt; pre_ICO_end_date)) {
-            require(msg.value &gt;= 1 * (1 ether)); //minimum 1 ETH
+        if (preSaleActive && (now < pre_ICO_end_date)) {
+            require(msg.value >= 1 * (1 ether)); //minimum 1 ETH
             tokensToBuy = safeDiv(safeMul(msg.value * 1 ether, preSaleTokenPrice), 1000000000000000000 ether);  
-            require (preSaleCollected + tokensToBuy &lt;= preSaleTokensLimit); //within preSale sell only 10mio 
-            require (totalCollected + tokensToBuy &lt;= totalTokensCap); //max sell 50mio
+            require (preSaleCollected + tokensToBuy <= preSaleTokensLimit); //within preSale sell only 10mio 
+            require (totalCollected + tokensToBuy <= totalTokensCap); //max sell 50mio
             preSaleCollected = safeAdd(preSaleCollected, tokensToBuy);
             totalCollected = safeAdd(totalCollected, tokensToBuy);
             
@@ -476,10 +476,10 @@ contract EdgeICO is SafeMath, DateTime, EdgeSmartToken {
             
         }
         else
-        if (ICOActive &amp;&amp; (now &lt; ICO_end_date)) {
-            require(msg.value &gt;= 0.1 * (1 ether)); //minimum 0.1 ETH
+        if (ICOActive && (now < ICO_end_date)) {
+            require(msg.value >= 0.1 * (1 ether)); //minimum 0.1 ETH
             tokensToBuy = safeDiv(safeMul(msg.value * 1 ether, ICOTokenPrice), 1000000000000000000 ether);
-            require (totalCollected + tokensToBuy &lt;= totalTokensCap); //max sell 50mio, 40mio + rest from preSale
+            require (totalCollected + tokensToBuy <= totalTokensCap); //max sell 50mio, 40mio + rest from preSale
             ICOCollected = safeAdd(ICOCollected, tokensToBuy);
             totalCollected = safeAdd(totalCollected, tokensToBuy);
             

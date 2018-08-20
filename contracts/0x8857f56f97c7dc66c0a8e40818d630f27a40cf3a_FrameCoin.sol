@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -71,17 +71,17 @@ contract FrameCoin is ERC20Interface, Owned {
     string public IPFSHash;
     
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function FrameCoin () public {
-        symbol = &quot;FCT&quot;;
-        name = &quot;Frame Coin Token&quot;;
+        symbol = "FCT";
+        name = "Frame Coin Token";
         decimals = 18;
         _totalSupply = 100 * 10**uint(decimals);
         balances[owner] = _totalSupply;
         Transfer(address(0), owner, _totalSupply);
-        IPFSHash = &quot;QmTT2Zh1JYXyk8qWrSyYjBBGTTNMZYZZV4TkGBJX2C1mzm&quot;;
+        IPFSHash = "QmTT2Zh1JYXyk8qWrSyYjBBGTTNMZYZZV4TkGBJX2C1mzm";
     }
 
     function totalSupply() public constant returns (uint) {

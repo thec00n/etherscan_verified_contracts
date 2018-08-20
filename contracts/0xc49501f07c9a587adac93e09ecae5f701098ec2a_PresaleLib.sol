@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,9 +62,9 @@ library PresaleLib {
     uint[] withdrawAmount;
     uint[] capAmounts;
     uint32[] capTimes;
-    mapping (address =&gt; uint) tokenBalances;
-    mapping (address =&gt; uint) individualCaps;
-    mapping (address =&gt; Contributor) contributorMap;
+    mapping (address => uint) tokenBalances;
+    mapping (address => uint) individualCaps;
+    mapping (address => Contributor) contributorMap;
   }
   
   event ContributorBalanceChanged (address contributor, uint totalBalance);
@@ -94,7 +94,7 @@ library PresaleLib {
   }
   
   function newPool (Data storage self, uint _fee, address _receiver, uint _contractCap, uint _individualCap) public {
-    require (_fee &lt; 1000);
+    require (_fee < 1000);
     self.owner = msg.sender;
     self.receiver = _receiver;
     self.contractCap = _contractCap;
@@ -105,26 +105,26 @@ library PresaleLib {
 	
   function deposit (Data storage self) public {
 	  assert (!self.poolSubmitted);
-    require (tx.gasprice &lt;= maxGasPrice);
+    require (tx.gasprice <= maxGasPrice);
     Contributor storage c = self.contributorMap[msg.sender];
     uint cap = _getCap(self, msg.sender);
-    require (cap &gt;= c.balance.add(msg.value));
-    if (self.contractCap &lt; address(this).balance) {
-      require (address(this).balance.sub(msg.value) &lt; self.contractCap);
+    require (cap >= c.balance.add(msg.value));
+    if (self.contractCap < address(this).balance) {
+      require (address(this).balance.sub(msg.value) < self.contractCap);
       uint excess = address(this).balance.sub(self.contractCap);
       c.balance = c.balance.add(msg.value.sub(excess));
       msg.sender.transfer(excess);
     } else {
       c.balance = c.balance.add(msg.value);
     }
-    require (c.balance &gt;= contributionMin);
+    require (c.balance >= contributionMin);
     emit ContributorBalanceChanged(msg.sender, c.balance);
   }
   
   function receiveRefund (Data storage self) public {
     assert (self.poolSubmitted);
     require (msg.sender == self.receiver || msg.sender == self.owner);
-    require (msg.value &gt;= 1 ether);
+    require (msg.value >= 1 ether);
     self.withdrawToken.push(0x00);
     self.withdrawAmount.push(msg.value);
     emit WithdrawalAvailable(0x00);
@@ -133,7 +133,7 @@ library PresaleLib {
   function withdraw (Data storage self) public {
     assert (msg.value == 0);
     Contributor storage c = self.contributorMap[msg.sender];
-    require (c.balance &gt; 0);
+    require (c.balance > 0);
     if (!self.poolSubmitted) {
       uint balance = c.balance;
       c.balance = 0;
@@ -141,15 +141,15 @@ library PresaleLib {
       emit ContributorBalanceChanged(msg.sender, 0);
       return;
     }
-    require (c.claimedTokensIndex &lt; self.withdrawToken.length);
+    require (c.claimedTokensIndex < self.withdrawToken.length);
     uint pct = _toPct(c.balance,self.finalBalance);
     uint amount;
     address token;
-    for (uint16 i = c.claimedTokensIndex; i &lt; self.withdrawToken.length; i++) {
+    for (uint16 i = c.claimedTokensIndex; i < self.withdrawToken.length; i++) {
       amount = _applyPct(self.withdrawAmount[i],pct);
       token = self.withdrawToken[i];
       c.claimedTokensIndex++;
-      if (amount &gt; 0) {  
+      if (amount > 0) {  
         if (token == 0x00) {
           msg.sender.transfer(amount);
         } else {
@@ -163,38 +163,38 @@ library PresaleLib {
   
   function setIndividualCaps (Data storage self, address[] addr, uint[] cap) public onlyOwner(self) {
     require (addr.length == cap.length);
-    for (uint8 i = 0; i &lt; addr.length; i++) {
+    for (uint8 i = 0; i < addr.length; i++) {
       self.individualCaps[addr[i]] = cap[i];
     }  
   }
   
   function setCaps (Data storage self, uint32[] times, uint[] caps) public onlyOwner(self) {
-    require (caps.length &gt; 0);
+    require (caps.length > 0);
     require (caps.length == times.length);
     self.capTimes = [0];
     self.capAmounts = [self.capAmounts[0]];
-    for (uint8 i = 0; i &lt; caps.length; i++) {
-      require (times[i] &gt; self.capTimes[self.capTimes.length.sub(1)]);
+    for (uint8 i = 0; i < caps.length; i++) {
+      require (times[i] > self.capTimes[self.capTimes.length.sub(1)]);
       self.capTimes.push(times[i]);
       self.capAmounts.push(caps[i]);
     }
   }
   
   function setContractCap (Data storage self, uint amount) public onlyOwner(self) {
-    require (amount &gt;= address(this).balance);
+    require (amount >= address(this).balance);
     self.contractCap = amount;
   }
   
   function _getCap (Data storage self, address addr) internal view returns (uint) {
-    if (self.individualCaps[addr] &gt; 0) return self.individualCaps[addr];
+    if (self.individualCaps[addr] > 0) return self.individualCaps[addr];
     if (whitelistContract.checkMemberLevel(msg.sender) == 0) return 0;
     return getCapAtTime(self,now);
   }
   
   function getCapAtTime (Data storage self, uint time) public view returns (uint) {
     if (time == 0) time = now;
-    for (uint i = 1; i &lt; self.capTimes.length; i++) {
-      if (self.capTimes[i] &gt; time) return self.capAmounts[i-1];
+    for (uint i = 1; i < self.capTimes.length; i++) {
+      if (self.capTimes[i] > time) return self.capAmounts[i-1];
     }
     return self.capAmounts[self.capAmounts.length-1];
   }
@@ -207,13 +207,13 @@ library PresaleLib {
   function getContributorInfo (Data storage self, address addr) view public returns (uint balance, uint remaining, uint cap) {
     cap = _getCap(self, addr);
     Contributor storage c = self.contributorMap[addr];
-    if (self.poolSubmitted || cap &lt;= c.balance) return (c.balance, 0, cap);
-    if (cap.sub(c.balance) &gt; self.contractCap.sub(address(this).balance)) return (c.balance, self.contractCap.sub(address(this).balance), cap);
+    if (self.poolSubmitted || cap <= c.balance) return (c.balance, 0, cap);
+    if (cap.sub(c.balance) > self.contractCap.sub(address(this).balance)) return (c.balance, self.contractCap.sub(address(this).balance), cap);
     return (c.balance, cap.sub(c.balance), cap);
   }
   
   function checkWithdrawalAvailable (Data storage self, address addr) view public returns (bool) {
-    return self.contributorMap[addr].claimedTokensIndex &lt; self.withdrawToken.length;
+    return self.contributorMap[addr].claimedTokensIndex < self.withdrawToken.length;
   }
   
   function setReceiverAddress (Data storage self, address _receiver) public onlyOwner(self) {
@@ -225,12 +225,12 @@ library PresaleLib {
   
   function submitPool (Data storage self, uint amountInWei) public onlyOwner(self) noReentrancy(self) {
     require (!self.poolSubmitted);
-    require (now &gt; self.addressSetTime.add(86400));
+    require (now > self.addressSetTime.add(86400));
     if (amountInWei == 0) amountInWei = address(this).balance;
     self.finalBalance = address(this).balance;
     self.poolSubmitted = true;
     require (self.receiver.call.value(amountInWei).gas(gasleft().sub(5000))());
-    if (address(this).balance &gt; 0) {
+    if (address(this).balance > 0) {
       self.withdrawToken.push(0x00);
       self.withdrawAmount.push(address(this).balance);
       emit WithdrawalAvailable(0x00);
@@ -243,8 +243,8 @@ library PresaleLib {
     if (feeAddress == 0x00) feeAddress = self.owner;
     ERC20 token = ERC20(tokenAddress);
     uint amount = token.balanceOf(this).sub(self.tokenBalances[tokenAddress]);
-    require (amount &gt; 0);
-    if (self.fee &gt; 0) {
+    require (amount > 0);
+    if (self.fee > 0) {
       require (token.transfer(feeAddress, _applyPct(amount,self.fee)));
       amount = token.balanceOf(this).sub(self.tokenBalances[tokenAddress]);
     }

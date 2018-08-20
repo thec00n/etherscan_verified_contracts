@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -138,10 +138,10 @@ contract Claimable is Ownable {
 }
 
 contract AccessByGame is Pausable, Claimable {
-  mapping(address =&gt; bool) internal contractAccess;
+  mapping(address => bool) internal contractAccess;
 
   modifier onlyAccessByGame {
-    require(!paused &amp;&amp; (msg.sender == owner || contractAccess[msg.sender] == true));
+    require(!paused && (msg.sender == owner || contractAccess[msg.sender] == true));
     _;
   }
 
@@ -238,8 +238,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -254,9 +254,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -264,7 +264,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -273,7 +273,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -285,7 +285,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -303,7 +303,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -331,7 +331,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -349,8 +349,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -364,7 +364,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -433,7 +433,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -474,7 +474,7 @@ contract ERC827Token is ERC827, StandardToken {
    * @dev Beware that changing an allowance with this method brings the risk that
    * @dev someone may use both the old and the new allowance by unfortunate
    * @dev transaction ordering. One possible solution to mitigate this race condition
-   * @dev is to first reduce the spender&#39;s allowance to 0 and set the desired value
+   * @dev is to first reduce the spender's allowance to 0 and set the desired value
    * @dev afterwards:
    * @dev https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    *
@@ -684,8 +684,8 @@ contract MintableToken is StandardToken, Ownable {
 /// @title EverGold
 /// @dev ERC827 Token for games.
 contract EverGold is ERC827Token, MintableToken, AccessByGame {
-  string public constant name = &quot;Ever Gold&quot;;
-  string public constant symbol = &quot;EG&quot;;
+  string public constant name = "Ever Gold";
+  string public constant symbol = "EG";
   uint8 public constant decimals = 0;
 
 /**
@@ -808,7 +808,7 @@ library StringLib {
   {
     uint256 v = _n;
     bytes16 num = 0;
-    while (v &gt; 0) {
+    while (v > 0) {
       num = bytes16(uint(num) / (2 ** 8));
       num |= bytes16(((v % 10) + 48) * 2 ** (8 * 15));
       v /= 10;
@@ -922,7 +922,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -935,7 +935,7 @@ library AddressUtils {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -950,7 +950,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _from,
@@ -969,21 +969,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -1121,7 +1121,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -1137,14 +1137,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -1292,19 +1292,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -1354,7 +1354,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -1373,7 +1373,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -1466,8 +1466,8 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 }
 
 contract CastleToken is ERC721Token, AccessByGame {
-  string constant NAME = &quot;Crypto Ninja Game Castle&quot;;
-  string constant SYMBOL = &quot;CNC&quot;;
+  string constant NAME = "Crypto Ninja Game Castle";
+  string constant SYMBOL = "CNC";
 
   uint256 constant MAX_WIDTH = 10;
 
@@ -1490,8 +1490,8 @@ contract CastleToken is ERC721Token, AccessByGame {
     uint16 reward;
   }
 
-  mapping (uint256 =&gt; bytes) internal traps;
-  mapping (uint256 =&gt; bytes32[]) internal logs;
+  mapping (uint256 => bytes) internal traps;
+  mapping (uint256 => bytes32[]) internal logs;
 
   EverGold internal goldToken;
 
@@ -1523,7 +1523,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     ERC721Token(NAME, SYMBOL)
   {
     castles.push(Castle({
-      name: &quot;DUMMY&quot;, level: 0, exp: 0,
+      name: "DUMMY", level: 0, exp: 0,
       width: 0, depth: 0,
       readyTime: 0,
       tryCount: 0, winCount: 0, lossCount: 0,
@@ -1550,8 +1550,8 @@ contract CastleToken is ERC721Token, AccessByGame {
     onlyAccessByGame
     returns (bool)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
-    require(_reward &gt; 0);
+    require((_castleid > 0) && (_castleid < castles.length));
+    require(_reward > 0);
     Castle storage castle = castles[_castleid];
     castle.reward = _reward;
     traps[_castleid] = _traps;
@@ -1568,9 +1568,9 @@ contract CastleToken is ERC721Token, AccessByGame {
     onlyAccessByGame
     returns (bool)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
-    for (uint256 i = 0; i &lt; castle.width * castle.depth; i++) {
+    for (uint256 i = 0; i < castle.width * castle.depth; i++) {
       traps[_castleid][i] = byte(0);
     }
     castle.reward = 0;
@@ -1587,9 +1587,9 @@ contract CastleToken is ERC721Token, AccessByGame {
     onlyAccessByGame
     returns (bool)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     uint8 width = getWidth(_castleid);
-    for (uint256 i = 0; i &lt; _count; i++) {
+    for (uint256 i = 0; i < _count; i++) {
       traps[_castleid][uint256(_steps[i])] = byte(0);
     }
     Castle storage castle = castles[_castleid];
@@ -1614,7 +1614,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     onlyAccessByGame
     returns (bool)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
     castle.reward = 0;
     castle.lossCount++;
@@ -1674,9 +1674,9 @@ contract CastleToken is ERC721Token, AccessByGame {
     returns (bool)
   {
     require(_beneficiary != address(0));
-    require((_width &gt; 0) &amp;&amp; (_depth &gt; 0));
+    require((_width > 0) && (_depth > 0));
     uint256 tokenid = castles.length;
-    bytes16 name = StringLib.generateName(&quot;CASTLE#&quot;, 7, tokenid);
+    bytes16 name = StringLib.generateName("CASTLE#", 7, tokenid);
 
     uint256 id = castles.push(Castle({
       name: name, level: 1, exp: 0,
@@ -1697,7 +1697,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     internal
     onlyAccessByGame
   {
-    if (_castle.levelPoint &gt;= leveupExp) {
+    if (_castle.levelPoint >= leveupExp) {
       // 10回ごとにレベルアップする。
       _castle.levelPoint -= leveupExp;
       _castle.level++;
@@ -1708,7 +1708,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     internal
     onlyAccessByGame
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
     castle.readyTime = uint32(now + cooldownTime);
   }
@@ -1728,24 +1728,24 @@ contract CastleToken is ERC721Token, AccessByGame {
   {
     uint256 n = 0;
     uint256 i = 0;
-    for (i = _startIndex; i &lt; castles.length; i++) {
+    for (i = _startIndex; i < castles.length; i++) {
       Castle storage castle = castles[i];
-      if ((castle.reward &gt; 0) &amp;&amp;
+      if ((castle.reward > 0) &&
           (ownerOf(i) != msg.sender)) {
         n++;
-        if (n &gt;= _startIndex) {
+        if (n >= _startIndex) {
           break;
         }
       }
     }
     uint256[] memory castleids = new uint256[](itemsPerPage + 1);
     n = 0;
-    while (i &lt; castles.length) {
+    while (i < castles.length) {
       castle = castles[i];
-      if ((castle.reward &gt; 0) &amp;&amp;
+      if ((castle.reward > 0) &&
           (ownerOf(i) != msg.sender)) {
         castleids[n++] = i;
-        if (n &gt; itemsPerPage) {
+        if (n > itemsPerPage) {
           break;
         }
       }
@@ -1769,7 +1769,7 @@ contract CastleToken is ERC721Token, AccessByGame {
       uint8, uint8, uint16, uint16,
       uint16)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
     return (
       castle.name,
@@ -1796,7 +1796,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     view
     returns (bytes32[])
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     return logs[_castleid];
   }
 
@@ -1814,9 +1814,9 @@ contract CastleToken is ERC721Token, AccessByGame {
     view
     returns (bool)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
-    return (castle.readyTime &lt;= now);
+    return (castle.readyTime <= now);
   }
 
   function getReward(uint256 _castleid)
@@ -1824,7 +1824,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     view
     returns (uint16)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
     return castle.reward;
   }
@@ -1834,7 +1834,7 @@ contract CastleToken is ERC721Token, AccessByGame {
     view
     returns (uint8)
   {
-    require((_castleid &gt; 0) &amp;&amp; (_castleid &lt; castles.length));
+    require((_castleid > 0) && (_castleid < castles.length));
     Castle storage castle = castles[_castleid];
     return castle.width;
   }

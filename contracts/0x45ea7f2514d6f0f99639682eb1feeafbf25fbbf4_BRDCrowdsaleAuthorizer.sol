@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -54,9 +54,9 @@ contract Ownable {
  */
 contract BRDCrowdsaleAuthorizer is Ownable {
   // these accounts are authorized to participate in the crowdsale
-  mapping (address =&gt; bool) internal authorizedAccounts;
+  mapping (address => bool) internal authorizedAccounts;
   // these accounts are authorized to authorize accounts
-  mapping (address =&gt; bool) internal authorizers;
+  mapping (address => bool) internal authorizers;
 
   // emitted when a new account is authorized
   event Authorized(address indexed _to);

@@ -3,7 +3,7 @@ contract CryptoNumismat
 {
     address owner;
 
-    string public standard = &#39;CryptoNumismat&#39;;
+    string public standard = 'CryptoNumismat';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -16,8 +16,8 @@ contract CryptoNumismat
         uint minValue;  // in wei
     }
 
-    mapping (uint =&gt; Buy) public cardsForSale;
-    mapping (address =&gt; bool) public admins;
+    mapping (uint => Buy) public cardsForSale;
+    mapping (address => bool) public admins;
 
     event Assign(uint indexed _cardIndex, address indexed _seller, uint256 _value);
     event Transfer(address indexed _from, address indexed _to, uint _cardIndex, uint256 _value);
@@ -28,8 +28,8 @@ contract CryptoNumismat
         admins[owner] = true;
         
         totalSupply = 1000;                         // Update total supply
-        name = &quot;cryptonumismat&quot;;                    // Set the name for display purposes
-        symbol = &quot;$&quot;;                               // Set the symbol for display purposes
+        name = "cryptonumismat";                    // Set the name for display purposes
+        symbol = "$";                               // Set the symbol for display purposes
         decimals = 0;                               // Amount of decimals for display purposes
     }
     
@@ -67,15 +67,15 @@ contract CryptoNumismat
 
     function withdrawAmount(uint256 _amount) onlyOwner() public 
     {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         
         owner.transfer(_amount);
     }
 
     function addCard(uint _cardIndex, uint256 _value) public onlyAdmins()
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         
         require(cardsForSale[_cardIndex].cardIndex != _cardIndex);
         
@@ -88,8 +88,8 @@ contract CryptoNumismat
     
     function displayCard(uint _cardIndex) public constant returns(uint, address, uint256) 
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         
         require (cardsForSale[_cardIndex].cardIndex == _cardIndex);
             
@@ -106,13 +106,13 @@ contract CryptoNumismat
     
     function calculateNextPrice(uint256 _startPrice) public constant returns (uint256 _finalPrice)
     {
-        if (_startPrice &lt; limit1)
+        if (_startPrice < limit1)
             return _startPrice * 10 / 4;
-        else if (_startPrice &lt; limit2)
+        else if (_startPrice < limit2)
             return _startPrice * 10 / 5;
-        else if (_startPrice &lt; limit3)
+        else if (_startPrice < limit3)
             return _startPrice * 10 / 6;
-        else if (_startPrice &lt; limit4)
+        else if (_startPrice < limit4)
             return _startPrice * 10 / 7;
         else
             return _startPrice * 10 / 8;
@@ -120,11 +120,11 @@ contract CryptoNumismat
     
     function calculateDevCut(uint256 _startPrice) public constant returns (uint256 _cut)
     {
-        if (_startPrice &lt; limit2)
+        if (_startPrice < limit2)
             return _startPrice * 5 / 100;
-        else if (_startPrice &lt; limit3)
+        else if (_startPrice < limit3)
             return _startPrice * 4 / 100;
-        else if (_startPrice &lt; limit4)
+        else if (_startPrice < limit4)
             return _startPrice * 3 / 100;
         else
             return _startPrice * 2 / 100;
@@ -132,14 +132,14 @@ contract CryptoNumismat
     
     function buy(uint _cardIndex) public payable
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         require(cardsForSale[_cardIndex].cardIndex == _cardIndex);
         require(cardsForSale[_cardIndex].seller != msg.sender);
         require(msg.sender != address(0));
         require(msg.sender != owner);
-        require(cardsForSale[_cardIndex].minValue &gt; 0);
-        require(msg.value &gt;= cardsForSale[_cardIndex].minValue);
+        require(cardsForSale[_cardIndex].minValue > 0);
+        require(msg.value >= cardsForSale[_cardIndex].minValue);
         
         address _buyer = msg.sender;
         address _seller = cardsForSale[_cardIndex].seller;
@@ -156,7 +156,7 @@ contract CryptoNumismat
         
         _seller.transfer(_totalPrice);
         
-        if (_extra &gt; 0)
+        if (_extra > 0)
         {
             Transfer(_buyer, _buyer, _cardIndex, _extra);
             

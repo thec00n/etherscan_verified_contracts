@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -53,10 +53,10 @@ contract SimpleICO {
 	//2 - Final State
 	uint256 public state;
 
-	mapping (address =&gt; bool) internal contributionKYC;
+	mapping (address => bool) internal contributionKYC;
 
-	mapping (address =&gt; uint256) internal originalContributed;
-	mapping (address =&gt; uint256) internal adjustedContributed;
+	mapping (address => uint256) internal originalContributed;
+	mapping (address => uint256) internal adjustedContributed;
 	uint256 public amountRaised; //Value strictly increases and tracks total raised.
 	uint256 public adjustedRaised;
 	uint256 public currentRate;
@@ -97,20 +97,20 @@ contract SimpleICO {
 	
 	modifier stillRunning() {
 		require(state == 1);
-		require(now &lt;= endTime);
+		require(now <= endTime);
 		_;
 	}
 	
 	modifier canEnd() {
 		require(state == 1);
-		require(now &gt; endTime || amountRaised &gt;= 500 ether);
+		require(now > endTime || amountRaised >= 500 ether);
 		_;
 	}
 
 	modifier allowKYC(address addr) {
 		if (!contributionKYC[addr]) {
 			uint256 total = originalContributed[msg.sender].add(msg.value);
-			require(total &lt; .1 ether);
+			require(total < .1 ether);
 		}
 	
 		_;
@@ -129,7 +129,7 @@ contract SimpleICO {
 	
 	function removeKYC(address addr) external onlyOwner {
 		require(contributionKYC[addr]);
-		require(originalContributed[addr] &lt; .1 ether);
+		require(originalContributed[addr] < .1 ether);
 		contributionKYC[addr] = false;
 	
 		emit KYCRemoved(addr, msg.sender);
@@ -147,7 +147,7 @@ contract SimpleICO {
 		adjustedRaised = adjustedRaised.add(adjusted);
 		emit ContributionReceived(msg.sender, msg.value, total);
 	
-		if (currentRate == 4 &amp;&amp; now &gt; (startTime.add(2 weeks))) {
+		if (currentRate == 4 && now > (startTime.add(2 weeks))) {
 			currentRate = 2;
 			emit RateDecreased(now, currentRate);
 		}
@@ -179,9 +179,9 @@ contract SimpleICO {
 	
 	function withdrawToWallet(uint256 amount) external onlyOwner {
 		require(state == 2);
-		require(amount &lt;= amountRemaining);
+		require(amount <= amountRemaining);
 	
-		if (now &gt; nextCheckpoint) {
+		if (now > nextCheckpoint) {
 			amountRemaining = amountRemaining.add(tenthTotal);
 			nextCheckpoint = now + 1 weeks;
 	

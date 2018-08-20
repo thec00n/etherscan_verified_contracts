@@ -61,16 +61,16 @@ contract SafeMath {
     returns (uint)
   {
     uint c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal
     returns (uint)
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     uint c = a - b;
-    assert(c &lt;= a);
+    assert(c <= a);
     return c;
   }
 
@@ -130,11 +130,11 @@ contract ERC20Token is ERC20Interface, Owned, SafeMath {
 
     // Account balances
     //
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Account holder approves the transfer of an amount to another account
     //
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Get the account balance for an address
     function balanceOf(address _owner) constant 
@@ -144,14 +144,14 @@ contract ERC20Token is ERC20Interface, Owned, SafeMath {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint256 _amount) 
       returns (bool success)
     {
-      require( _amount &gt; 0 );                              // Non-zero transfer
-      require( balances[msg.sender] &gt;= _amount );          // User has balance
-      require( balances[_to] + _amount &gt; balances[_to] );  // Overflow check
+      require( _amount > 0 );                              // Non-zero transfer
+      require( balances[msg.sender] >= _amount );          // User has balance
+      require( balances[_to] + _amount > balances[_to] );  // Overflow check
 
       balances[msg.sender] -= _amount;
       balances[_to] += _amount;
@@ -173,7 +173,7 @@ contract ERC20Token is ERC20Interface, Owned, SafeMath {
       require( _amount == 0 || allowed[msg.sender][_spender] == 0 );
         
       // the approval amount cannot exceed the balance
-      require (balances[msg.sender] &gt;= _amount);
+      require (balances[msg.sender] >= _amount);
         
       allowed[msg.sender][_spender] = _amount;
       Approval(msg.sender, _spender, _amount);
@@ -181,17 +181,17 @@ contract ERC20Token is ERC20Interface, Owned, SafeMath {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
     function transferFrom(address _from, address _to, uint256 _amount) 
     returns (bool success) 
     {
-      require( _amount &gt; 0 );                              // Non-zero transfer
-      require( balances[_from] &gt;= _amount );               // Sufficient balance
-      require( allowed[_from][msg.sender] &gt;= _amount );    // Transfer approved
-      require( balances[_to] + _amount &gt; balances[_to] );  // Overflow check
+      require( _amount > 0 );                              // Non-zero transfer
+      require( balances[_from] >= _amount );               // Sufficient balance
+      require( allowed[_from][msg.sender] >= _amount );    // Transfer approved
+      require( balances[_to] + _amount > balances[_to] );  // Overflow check
 
       balances[_from] -= _amount;
       allowed[_from][msg.sender] -= _amount;
@@ -227,10 +227,10 @@ contract Zorro01Token is ERC20Token {
 
     // basic token data
 
-    string public constant name = &quot;Zorro01&quot;;
-    string public constant symbol = &quot;ZORRO01&quot;;
+    string public constant name = "Zorro01";
+    string public constant symbol = "ZORRO01";
     uint8 public constant decimals = 18;
-    string public constant GITHUB_LINK = &#39;htp://github.com/..&#39;;  // TODO
+    string public constant GITHUB_LINK = 'htp://github.com/..';  // TODO
 
     // wallet address (can be reset at any time during ICO)
     
@@ -339,8 +339,8 @@ contract Zorro01Token is ERC20Token {
     //
     function setTokensPerEth(uint _tokensPerEth) onlyOwner
     {
-      require(now &lt; START_DATE);
-      require(_tokensPerEth &gt; 0);
+      require(now < START_DATE);
+      require(_tokensPerEth > 0);
       tokensPerEth = _tokensPerEth;
       LogTokensPerEthUpdated(tokensPerEth);
     }
@@ -351,8 +351,8 @@ contract Zorro01Token is ERC20Token {
     //
     function setIcoTokenSupply(uint _icoTokenSupply) onlyOwner
     {
-        require(now &lt; START_DATE);
-        require(_icoTokenSupply &lt; 70000000);
+        require(now < START_DATE);
+        require(_icoTokenSupply < 70000000);
         icoTokenSupply = _icoTokenSupply;
         LogIcoTokenSupplyUpdated(icoTokenSupply);
     }
@@ -374,20 +374,20 @@ contract Zorro01Token is ERC20Token {
     function proxyPayment(address participant) payable
     {
         require(!icoFinished);
-        require(now &gt;= START_DATE);
-        require(now &lt;= END_DATE);
-        require(msg.value &gt; MIN_CONTRIBUTION);
+        require(now >= START_DATE);
+        require(now <= END_DATE);
+        require(msg.value > MIN_CONTRIBUTION);
         
         // get number of tokens
         uint tokens = msg.value * tokensPerEth / MULT_FACTOR;
         
         // first check if there is enough capacity
         uint available = icoTokenSupply - icoTokensIssued;
-        require (tokens &lt;= available); 
+        require (tokens <= available); 
 
-        // ok it&#39;s possible to issue tokens so let&#39;s do it
+        // ok it's possible to issue tokens so let's do it
         
-        // Add tokens purchased to account&#39;s balance and total supply
+        // Add tokens purchased to account's balance and total supply
         // TODO - verify SafeAdd is not necessary
         balances[participant] += tokens;
         icoTokensIssued += tokens;
@@ -424,7 +424,7 @@ contract Zorro01Token is ERC20Token {
     //    
     function mint(address participant, uint256 tokens) onlyOwner 
     {
-        require( tokens &lt;= availableToMint() );
+        require( tokens <= availableToMint() );
         balances[participant] += tokens;
         ownerTokensMinted += tokens;
         Transfer(0x0, participant, tokens);
@@ -438,7 +438,7 @@ contract Zorro01Token is ERC20Token {
     function declareIcoFinished() onlyOwner
     {
       // the token can only be made tradeable after ICO finishes
-      require( now &gt; START_DATE || icoTokenSupply - icoTokensIssued &lt; ICO_TRIGGER );
+      require( now > START_DATE || icoTokenSupply - icoTokensIssued < ICO_TRIGGER );
       icoFinished = true;
     }
 

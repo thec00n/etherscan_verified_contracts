@@ -17,15 +17,15 @@ contract TheImmortalsPhoto {
 	
 	function removeFace(){
 	    require(msg.sender == owner || msg.sender == superContract);
-	    photoData = &quot;&quot;;
-	    photoText = &quot;&quot;;
+	    photoData = "";
+	    photoText = "";
         deleted = true;
 	}
 }
 
 contract TheImmortals {
     address public owner;
-    mapping (address =&gt; address[]) public immortals;
+    mapping (address => address[]) public immortals;
     address[] public accounts;
     uint8 public numberImmortals;
     uint constant public maxImmortals = 5;
@@ -42,8 +42,8 @@ contract TheImmortals {
     event PhotoAdded(address indexed _from, address _contract);
 
     function addFace(string _photoData, string _photoText) payable {
-        require (msg.value &gt;= 0.1 ether || msg.sender == owner);
-        require (numberImmortals &lt;= maxImmortals);
+        require (msg.value >= 0.1 ether || msg.sender == owner);
+        require (numberImmortals <= maxImmortals);
 
         address newFace = new TheImmortalsPhoto(_photoData, _photoText, msg.sender, address(this));
         immortals[msg.sender].push(newFace);
@@ -56,7 +56,7 @@ contract TheImmortals {
     }
 
 	function deleteUser(address userAddress) onlyOwner {
-	    for (uint8 i=0;i&lt;immortals[userAddress].length;i++){
+	    for (uint8 i=0;i<immortals[userAddress].length;i++){
 	        TheImmortalsPhoto faceContract = TheImmortalsPhoto(immortals[userAddress][i]);
 	        faceContract.removeFace();
             immortals[userAddress][i] = 0x0;

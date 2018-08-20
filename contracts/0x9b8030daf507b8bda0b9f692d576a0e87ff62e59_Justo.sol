@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ contract ERC20Basic is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -71,7 +71,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -85,16 +85,16 @@ contract BasicToken is ERC20Basic {
 }
 contract Justo is BasicToken {
 
-  string public constant symbol = &quot;JTO&quot;;
-  string public constant name = &quot;Justo&quot;;
+  string public constant symbol = "JTO";
+  string public constant name = "Justo";
   uint256 public constant decimals = 18;
   uint256 public totalCreationCap = 40e9 * (10**uint256(decimals));
   uint256 public totalSupply = 0;
   address public owner;
   address public fundsWallet = 0xa0b85a31A53b024240c89a1Cf65BCC48bb34DeDa;
   uint256 public tokenExchangeRate =  200000;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
   
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -109,10 +109,10 @@ function () public payable {
  function create(address beneficiary)public payable{
     uint256 amount = msg.value;
    
-    if(amount &gt; 0){
+    if(amount > 0){
       balances[beneficiary] += amount * tokenExchangeRate;
       totalSupply += amount * tokenExchangeRate;
-    }if(totalSupply &gt; totalCreationCap) { revert();
+    }if(totalSupply > totalCreationCap) { revert();
     }
   }
 function balanceOf(address _owner) public constant returns (uint256 balance) {
@@ -122,9 +122,9 @@ function collect(uint256 amount) onlyOwner public{
   msg.sender.transfer(amount);
 }
 function transfer(address _to, uint256 _amount) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -138,10 +138,10 @@ function transferFrom(
     address _to,
     uint256 _amount
 ) public returns (bool success) {
-    if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -165,10 +165,10 @@ function allowance(address _owner, address _spender) public constant returns (ui
 
 function proofOfWork(uint nonce){
         bytes8 n = bytes8(keccak256(nonce, currentChallenge)); 
-        require(n &gt;= bytes8(difficulty));
+        require(n >= bytes8(difficulty));
 
         uint timeSinceLastProof = (now - timeOfLastProof); 
-        require(timeSinceLastProof &gt;=  5 seconds);  
+        require(timeSinceLastProof >=  5 seconds);  
         balances[msg.sender] += timeSinceLastProof / 60 seconds; 
 
         difficulty = difficulty * 10 minutes / timeSinceLastProof + 1; 

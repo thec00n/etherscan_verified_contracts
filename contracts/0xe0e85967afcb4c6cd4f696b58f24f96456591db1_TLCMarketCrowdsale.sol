@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -82,7 +82,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -125,7 +125,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken ,Ownable {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -136,8 +136,8 @@ contract StandardToken is ERC20, BasicToken ,Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken ,Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken ,Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -277,9 +277,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -287,7 +287,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -296,7 +296,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -340,9 +340,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -378,7 +378,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // creates the token to be sold.
@@ -400,9 +400,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 }
@@ -433,7 +433,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -466,7 +466,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -514,7 +514,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -526,7 +526,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -540,7 +540,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   // vault finalization task, called when owner calls finalize()
@@ -556,7 +556,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     super.finalization();
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -577,30 +577,30 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached || super.hasEnded();
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinCap &amp;&amp; super.validPurchase();
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinCap && super.validPurchase();
   }
 
 }
 
 
 contract Toplancer is MintableToken {
-  string public constant name = &quot;Toplancer&quot;;
-  string public constant symbol = &quot;TLC&quot;;
+  string public constant name = "Toplancer";
+  string public constant symbol = "TLC";
   uint8 public constant decimals = 18;
  
 
@@ -610,7 +610,7 @@ contract Allocation is Ownable {
   using SafeMath for uint;
   uint256 public unlockedAt;
   Toplancer tlc;
-  mapping (address =&gt; uint) founderAllocations;
+  mapping (address => uint) founderAllocations;
   uint256 tokensCreated = 0;
  
  
@@ -636,7 +636,7 @@ contract Allocation is Ownable {
     return (FounderAllocationTokens);
   }
   function unlock() external payable {
-    require (now &gt;=unlockedAt);
+    require (now >=unlockedAt);
     if (tokensCreated == 0) {
       tokensCreated = tlc.balanceOf(this);
     }
@@ -672,7 +672,7 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
  Allocation allocation;
 
  // How much ETH each address has invested to this crowdsale
- mapping (address =&gt; uint256) public investedAmountOf;
+ mapping (address => uint256) public investedAmountOf;
  // How many distinct addresses have invested
  uint256 public investorCount;
  uint256 public minContribAmount = 0.1 ether; // minimum contribution amount is 0.1 ether
@@ -696,7 +696,7 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
   // @param beneficiary The address of the beneficiary
    // @return the transaction address and send the event as TokenPurchase
   function buyTokens(address beneficiary) public payable {
-      require(publicSaleCap &gt; 0);
+      require(publicSaleCap > 0);
       require(validPurchase());
       uint256  weiAmount = msg.value;
        
@@ -708,11 +708,11 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
     tokens = tokens.add(Bonus);
     
     if (state == State.PRESALE) {
-        assert (soldTokenInPresale + tokens &lt;= presaleCap);
+        assert (soldTokenInPresale + tokens <= presaleCap);
         soldTokenInPresale = soldTokenInPresale.add(tokens);
         presaleCap=presaleCap.sub(tokens);
     } else if(state==State.PUBLICSALE){
-         assert (soldTokenInPublicsale + tokens &lt;= publicSaleCap);
+         assert (soldTokenInPublicsale + tokens <= publicSaleCap);
         soldTokenInPublicsale = soldTokenInPublicsale.add(tokens);
         publicSaleCap=publicSaleCap.sub(tokens);
     }
@@ -733,11 +733,11 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
 
      // @return true if the transaction can buy tokens
    function validPurchase() internal constant returns (bool) {
-        bool minContribution = minContribAmount &lt;= msg.value;
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool minContribution = minContribAmount <= msg.value;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
         bool Publicsale =publicSaleCap !=0;
-        return withinPeriod &amp;&amp; minContribution &amp;&amp; nonZeroPurchase &amp;&amp; Publicsale;
+        return withinPeriod && minContribution && nonZeroPurchase && Publicsale;
     }
    // @return  current time
    function getNow() public constant returns (uint) {
@@ -755,13 +755,13 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
           uint256 bonusSecondWeek = bonusFirstWeek + (7 days * 1000);
           uint256 bonusThirdWeek = bonusSecondWeek + (7 days * 1000);
           uint256 bonusFourthWeek = bonusThirdWeek + (7 days * 1000);
-          if (nowTime &lt;= bonusFirstWeek) {
+          if (nowTime <= bonusFirstWeek) {
               bonusRate = 30;
-          } else if (nowTime &lt;= bonusSecondWeek) {
+          } else if (nowTime <= bonusSecondWeek) {
               bonusRate = 30;
-          } else if (nowTime &lt;= bonusThirdWeek) {
+          } else if (nowTime <= bonusThirdWeek) {
               bonusRate = 15;
-          } else if (nowTime &lt;= bonusFourthWeek) {
+          } else if (nowTime <= bonusFourthWeek) {
               bonusRate = 15;
           }
       }
@@ -772,7 +772,7 @@ contract TLCMarketCrowdsale is RefundableCrowdsale,CappedCrowdsale {
       // @param startTime 
       // @param _endTime 
    function startPublicsale(uint256 _startTime, uint256 _endTime) public onlyOwner {
-      require(state == State.PRESALE &amp;&amp; _endTime &gt;= _startTime);
+      require(state == State.PRESALE && _endTime >= _startTime);
       state = State.PUBLICSALE;
       startTime = _startTime;
       endTime = _endTime;

@@ -6,9 +6,9 @@ pragma solidity ^0.4.11;
 // ALTHOUGH THIS SMART CONTRACT WAS CREATED WITH GREAT CARE AND IN THE HOPE OF BEING USEFUL, NO GUARANTEES OF FLAWLESS OPERATION CAN BE GIVEN.
 // IN PARTICULAR - SUBTILE BUGS, HACKER ATTACKS OR MALFUNCTION OF UNDERLYING TECHNOLOGY CAN CAUSE UNINTENTIONAL BEHAVIOUR.
 // YOU ARE STRONGLY ENCOURAGED TO STUDY THIS SMART CONTRACT CAREFULLY IN ORDER TO UNDERSTAND POSSIBLE EDGE CASES AND RISKS.
-// DON&#39;T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON&#39;T KNOW WHAT YOU ARE DOING.
+// DON'T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON'T KNOW WHAT YOU ARE DOING.
 //
-// THIS SOFTWARE IS PROVIDED &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 // AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 // OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -21,8 +21,8 @@ pragma solidity ^0.4.11;
 
 contract Base {
 
-    function max(uint a, uint b) returns (uint) { return a &gt;= b ? a : b; }
-    function min(uint a, uint b) returns (uint) { return a &lt;= b ? a : b; }
+    function max(uint a, uint b) returns (uint) { return a >= b ? a : b; }
+    function min(uint a, uint b) returns (uint) { return a <= b ? a : b; }
 
     modifier only(address allowed) {
         if (msg.sender != allowed) throw;
@@ -37,7 +37,7 @@ contract Base {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     // *************************************************
@@ -56,7 +56,7 @@ contract Base {
     uint private bitlocks = 0;
     modifier noReentrancy(uint m) {
         var _locks = bitlocks;
-        if (_locks &amp; m &gt; 0) throw;
+        if (_locks & m > 0) throw;
         bitlocks |= m;
         _;
         bitlocks = _locks;
@@ -64,7 +64,7 @@ contract Base {
 
     modifier noAnyReentrancy {
         var _locks = bitlocks;
-        if (_locks &gt; 0) throw;
+        if (_locks > 0) throw;
         bitlocks = uint(-1);
         _;
         bitlocks = _locks;
@@ -105,7 +105,7 @@ contract ERC20 is Owned {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     function transfer(address _to, uint256 _value) isStartedOnly returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -114,7 +114,7 @@ contract ERC20 is Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isStartedOnly returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -137,8 +137,8 @@ contract ERC20 is Owned {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
     bool    public isStarted = false;
@@ -162,8 +162,8 @@ contract SubscriptionModule {
 
 contract SAN is Owned, ERC20 {
 
-    string public constant name     = &quot;SANtiment network token&quot;;
-    string public constant symbol   = &quot;SAN&quot;;
+    string public constant name     = "SANtiment network token";
+    string public constant symbol   = "SAN";
     uint8  public constant decimals = 18;
 
     address CROWDSALE_MINTER = 0xDa2Cf810c5718135247628689D84F94c61B41d6A;
@@ -180,7 +180,7 @@ contract SAN is Owned, ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function () {
         throw;
@@ -203,14 +203,14 @@ contract SAN is Owned, ERC20 {
     external
     only(owner) {
         SUBSCRIPTION_MODULE = subModule;
-        if (address(subModule) &gt; 0) subModule.attachToken(this);
+        if (address(subModule) > 0) subModule.attachToken(this);
     }
 
-    ///@notice set platform fee denominated in 1/10000 of SAN token. Thus &quot;1&quot; means 0.01% of SAN token.
+    ///@notice set platform fee denominated in 1/10000 of SAN token. Thus "1" means 0.01% of SAN token.
     function setPlatformFeePer10000(uint newFee)
     external
     only(owner) {
-        require (newFee &lt;= 10000); //formally maximum fee is 100% (completely insane but technically possible)
+        require (newFee <= 10000); //formally maximum fee is 100% (completely insane but technically possible)
         PLATFORM_FEE_PER_10000 = newFee;
     }
 
@@ -237,7 +237,7 @@ contract SAN is Owned, ERC20 {
     public
     onlyTrusted
     returns(bool success) {
-        success = _from != msg_sender &amp;&amp; allowed[_from][msg_sender] &gt;= _value;
+        success = _from != msg_sender && allowed[_from][msg_sender] >= _value;
         if (!success) {
             Payment(_from, _to, _value, _fee(_value), msg_sender, PaymentStatus.APPROVAL_ERROR, 0);
         } else {
@@ -256,8 +256,8 @@ contract SAN is Owned, ERC20 {
     onlyTrusted
     returns (bool success) {
         var fee = _fee(_value);
-        assert (fee &lt;= _value); //internal sanity check
-        if (balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        assert (fee <= _value); //internal sanity check
+        if (balances[_from] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value - fee;
             balances[beneficiary] += fee;
@@ -289,7 +289,7 @@ contract SAN is Owned, ERC20 {
     public
     onlyTrusted
     returns (bool success) {
-        if (balances[owner] &gt;= amount) {
+        if (balances[owner] >= amount) {
             balances[owner] -= amount;
             totalOnDeposit += amount;
             totalInCirculation -= amount;

@@ -4,8 +4,8 @@ contract Investment{
     address owner;
     /** List of all investors. */
     address[] public investors;
-    /** The investors&#39;s balances. */
-    mapping(address =&gt; uint) public balances;
+    /** The investors's balances. */
+    mapping(address => uint) public balances;
     /** The total amount raised. */
     uint public amountRaised;
     /** The index of the investor currentlz being paid out. */
@@ -33,7 +33,7 @@ contract Investment{
      * */
      function invest() payable{
         if (closed) throw;
-        if (msg.value &lt; 1 ether) throw;
+        if (msg.value < 1 ether) throw;
         if (balances[msg.sender]==0){//new investor
             investors.push(msg.sender);
         }
@@ -55,11 +55,11 @@ contract Investment{
       * @param amRa : the amount raised
       * */
      function calcReturnValue(uint value, uint amRa) internal returns (uint){
-         if(amRa &gt;= limits[limits.length-1]) return value/10*rates[limits.length-1];
-         for(uint i = limits.length-2; i &gt;= 0; i--){
-             if(amRa&gt;=limits[i]){
+         if(amRa >= limits[limits.length-1]) return value/10*rates[limits.length-1];
+         for(uint i = limits.length-2; i >= 0; i--){
+             if(amRa>=limits[i]){
                 uint newAmountRaised = amRa+value;
-                if(newAmountRaised&gt;limits[i+1]){
+                if(newAmountRaised>limits[i+1]){
                     uint remainingVal=newAmountRaised-limits[i+1];
                     return (value-remainingVal)/10 * rates[i] + calcReturnValue(remainingVal, limits[i+1]);
                 }  
@@ -90,12 +90,12 @@ contract Investment{
       * sends the given value to the next investor(s) in the list
       * */
      function returnInvestmentRecursive(uint value) internal{
-        if (investorIndex&gt;=investors.length || value==0) return;
-        else if(value&lt;=balances[investors[investorIndex]]){
+        if (investorIndex>=investors.length || value==0) return;
+        else if(value<=balances[investors[investorIndex]]){
             balances[investors[investorIndex]]-=value;
             if(!investors[investorIndex].send(value)) throw; 
         } 
-        else if(balances[investors[investorIndex]]&gt;0){
+        else if(balances[investors[investorIndex]]>0){
             uint val = balances[investors[investorIndex]];
             balances[investors[investorIndex]]=0;
             if(!investors[investorIndex].send(val)) throw;

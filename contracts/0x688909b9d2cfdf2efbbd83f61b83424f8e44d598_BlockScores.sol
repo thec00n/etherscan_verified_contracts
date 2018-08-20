@@ -1,5 +1,5 @@
 /// @title Store lederboards in the Blockchain
-/// @author Marcel Scherello <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385a54575b534b5b574a5d4b784b5b505d4a5d545457165c5d">[email&#160;protected]</a>
+/// @author Marcel Scherello <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385a54575b534b5b574a5d4b784b5b505d4a5d545457165c5d">[email protected]</a>
 /// @notice Create a custom leaderboard and start counting the scores
 /// @dev All function calls are currently implement without side effects
 /// @dev v1.1.0
@@ -16,9 +16,9 @@ contract BlockScores {
         string  boardDescription;
         uint   numPlayers;
         address boardOwner;
-        mapping (uint =&gt; Player) players;
+        mapping (uint => Player) players;
     }
-    mapping (bytes32 =&gt; Board) boards;
+    mapping (bytes32 => Board) boards;
     uint public numBoards;
     address owner = msg.sender;
 
@@ -80,7 +80,7 @@ contract BlockScores {
     /// @param boardDescription A subtitle for the leaderboard
     /// @return The hash of the newly created leaderboard
     function addNewBoard(bytes32 name, string boardDescription) public payable returns(bytes32 boardHash){
-        require(msg.value &gt;= boardCost);
+        require(msg.value >= boardCost);
         balance += msg.value;
         boardHash = keccak256(abi.encodePacked(name, msg.sender));
         numBoards++;
@@ -127,7 +127,7 @@ contract BlockScores {
     /// @param playerName The name of the player
     /// @return Player ID
     function addPlayerToBoard(bytes32 boardHash, bytes32 playerName) public payable returns (bool) {
-        require(msg.value &gt;= playerCost);
+        require(msg.value >= playerCost);
         Board storage g = boards[boardHash];
         split (g.boardOwner, msg.value);
         uint newPlayerID = g.numPlayers++;
@@ -153,7 +153,7 @@ contract BlockScores {
         Board storage g = boards[boardHash];
         require(g.boardOwner == msg.sender);
         uint8 playerID = getPlayerId (boardHash, playerName, 0);
-        require(playerID &lt; 255 );
+        require(playerID < 255 );
         g.players[playerID].isActive = 0;
         return true;
     }
@@ -165,8 +165,8 @@ contract BlockScores {
     /// @return ID or 999 in case of false
     function getPlayerId (bytes32 boardHash, bytes32 playerName, address playerAddress) constant internal returns (uint8) {
         Board storage g = boards[boardHash];
-        for (uint8 i = 0; i &lt;= g.numPlayers; i++) {
-            if ((keccak256(abi.encodePacked(g.players[i].playerName)) == keccak256(abi.encodePacked(playerName)) || playerAddress == g.players[i].playerAddress) &amp;&amp; g.players[i].isActive == 1) {
+        for (uint8 i = 0; i <= g.numPlayers; i++) {
+            if ((keccak256(abi.encodePacked(g.players[i].playerName)) == keccak256(abi.encodePacked(playerName)) || playerAddress == g.players[i].playerAddress) && g.players[i].isActive == 1) {
                 return i;
                 break;
             }
@@ -185,20 +185,20 @@ contract BlockScores {
     /// @return true/false
     function addBoardScore(bytes32 boardHash, bytes32 playerName, uint score) public returns (bool){
         uint8 playerID = getPlayerId (boardHash, playerName, 0);
-        require(playerID &lt; 255 );
+        require(playerID < 255 );
         boards[boardHash].players[playerID].score_unconfirmed = score;
         return true;
     }
 
     /// @notice Confirm an unconfirmed score to leaderboard/player. Adds unconfirmed to existing score. Player can not confirm his own score
     /// @param boardHash The hash of the leaderboard
-    /// @param playerName The name of the player who&#39;s score should be confirmed
+    /// @param playerName The name of the player who's score should be confirmed
     /// @return true/false
     function confirmBoardScore(bytes32 boardHash, bytes32 playerName) public returns (bool){
         uint8 playerID = getPlayerId (boardHash, playerName, 0);
-        uint8 confirmerID = getPlayerId (boardHash, &quot;&quot;, msg.sender);
-        require(playerID &lt; 255); // player needs to be active
-        require(confirmerID &lt; 255); // confirmer needs to be active
+        uint8 confirmerID = getPlayerId (boardHash, "", msg.sender);
+        require(playerID < 255); // player needs to be active
+        require(confirmerID < 255); // confirmer needs to be active
         require(boards[boardHash].players[playerID].playerAddress != msg.sender); //confirm only other players
         boards[boardHash].players[playerID].score += boards[boardHash].players[playerID].score_unconfirmed;
         boards[boardHash].players[playerID].score_unconfirmed = 0;

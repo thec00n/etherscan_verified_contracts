@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -46,7 +46,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f684939b9599b6c4">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f684939b9599b6c4">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -91,7 +91,7 @@ contract Pausable {
 
 /**
  * @title TweedentityRegistry
- * @author Francesco Sullo &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef8ecfff0fdfbedfdf1deedebf2f2f1b0fdf1">[email&#160;protected]</a>&gt;
+ * @author Francesco Sullo <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef8ecfff0fdfbedfdf1deedebf2f2f1b0fdf1">[email protected]</a>>
  * @dev It store the tweedentities contracts addresses to allows dapp to be updated
  */
 
@@ -100,10 +100,10 @@ contract TweedentityRegistry
 is HasNoEther
 {
 
-  string public version = &quot;1.4.0&quot;;
+  string public version = "1.4.0";
 
   uint public totalStores;
-  mapping (bytes32 =&gt; address) private stores;
+  mapping (bytes32 => address) private stores;
 
   address public manager;
   address public claimer;
@@ -123,7 +123,7 @@ is HasNoEther
   {
     require(_manager != address(0));
     manager = _manager;
-    ContractRegistered(keccak256(&quot;manager&quot;), &quot;&quot;, _manager);
+    ContractRegistered(keccak256("manager"), "", _manager);
   }
 
 
@@ -135,7 +135,7 @@ is HasNoEther
   {
     require(_claimer != address(0));
     claimer = _claimer;
-    ContractRegistered(keccak256(&quot;claimer&quot;), &quot;&quot;, _claimer);
+    ContractRegistered(keccak256("claimer"), "", _claimer);
   }
 
 
@@ -150,8 +150,8 @@ is HasNoEther
     require(_claimer != address(0));
     manager = _manager;
     claimer = _claimer;
-    ContractRegistered(keccak256(&quot;manager&quot;), &quot;&quot;, _manager);
-    ContractRegistered(keccak256(&quot;claimer&quot;), &quot;&quot;, _claimer);
+    ContractRegistered(keccak256("manager"), "", _manager);
+    ContractRegistered(keccak256("claimer"), "", _claimer);
   }
 
 
@@ -167,7 +167,7 @@ is HasNoEther
       totalStores++;
     }
     stores[keccak256(_appNickname)] = _store;
-    ContractRegistered(keccak256(&quot;store&quot;), _appNickname, _store);
+    ContractRegistered(keccak256("store"), _appNickname, _store);
   }
 
 
@@ -193,7 +193,7 @@ is HasNoEther
   constant returns(bool)
   {
     Pausable pausable = Pausable(manager);
-    return totalStores &gt; 0 &amp;&amp; manager != address(0) &amp;&amp; claimer != address(0) &amp;&amp; pausable.paused() == false;
+    return totalStores > 0 && manager != address(0) && claimer != address(0) && pausable.paused() == false;
   }
 
 }

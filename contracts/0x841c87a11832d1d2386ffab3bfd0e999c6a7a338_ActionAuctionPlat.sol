@@ -3,8 +3,8 @@
 /* 
 /* https://ether.online  The first RPG game of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="186a717b73706d766c7d6a366b707d76587f75797174367b7775">[email&#160;protected]</a>   
-/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="66151503151308020f080126010b070f0a4805090b">[email&#160;protected]</a>            
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="186a717b73706d766c7d6a366b707d76587f75797174367b7775">[email protected]</a>   
+/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="66151503151308020f080126010b070f0a4805090b">[email protected]</a>            
 /* ==================================================================== */
 
 pragma solidity ^0.4.20;
@@ -108,10 +108,10 @@ contract AccessService is AccessAdmin {
         external 
     {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         address receiver = _target == address(0) ? addrFinance : _target;
         uint256 balance = this.balance;
-        if (_amount &lt; balance) {
+        if (_amount < balance) {
             receiver.transfer(_amount);
         } else {
             receiver.transfer(this.balance);
@@ -166,9 +166,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -176,7 +176,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -185,7 +185,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -214,22 +214,22 @@ contract WarToken is ERC721, AccessAdmin {
     uint256 destroyFashionCount;
 
     /// @dev Equipment token ID vs owner address
-    mapping (uint256 =&gt; address) fashionIdToOwner;
+    mapping (uint256 => address) fashionIdToOwner;
 
     /// @dev Equipments owner by the owner (array)
-    mapping (address =&gt; uint256[]) ownerToFashionArray;
+    mapping (address => uint256[]) ownerToFashionArray;
 
     /// @dev Equipment token ID search in owner array
-    mapping (uint256 =&gt; uint256) fashionIdToOwnerIndex;
+    mapping (uint256 => uint256) fashionIdToOwnerIndex;
 
     /// @dev The authorized address for each WAR
-    mapping (uint256 =&gt; address) fashionIdToApprovals;
+    mapping (uint256 => address) fashionIdToApprovals;
 
     /// @dev The authorized operators for each address
-    mapping (address =&gt; mapping (address =&gt; bool)) operatorToApprovals;
+    mapping (address => mapping (address => bool)) operatorToApprovals;
 
     /// @dev Trust contract
-    mapping (address =&gt; bool) actionContracts;
+    mapping (address => bool) actionContracts;
 
     function setActionContract(address _actionAddr, bool _useful) external onlyAdmin {
         actionContracts[_actionAddr] = _useful;
@@ -251,7 +251,7 @@ contract WarToken is ERC721, AccessAdmin {
     /// @dev This emits when the equipment created
     event CreateFashion(address indexed owner, uint256 tokenId, uint16 protoId, uint16 quality, uint16 pos, uint16 createType);
 
-    /// @dev This emits when the equipment&#39;s attributes changed
+    /// @dev This emits when the equipment's attributes changed
     event ChangeFashion(address indexed owner, uint256 tokenId, uint16 changeType);
 
     /// @dev This emits when the equipment destroyed
@@ -265,7 +265,7 @@ contract WarToken is ERC721, AccessAdmin {
     // modifier
     /// @dev Check if token ID is valid
     modifier isValidToken(uint256 _tokenId) {
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= fashionArray.length);
+        require(_tokenId >= 1 && _tokenId <= fashionArray.length);
         require(fashionIdToOwner[_tokenId] != address(0)); 
         _;
     }
@@ -279,15 +279,15 @@ contract WarToken is ERC721, AccessAdmin {
     // ERC721
     function supportsInterface(bytes4 _interfaceId) external view returns(bool) {
         // ERC165 || ERC721 || ERC165^ERC721
-        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) &amp;&amp; (_interfaceId != 0xffffffff);
+        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) && (_interfaceId != 0xffffffff);
     }
         
     function name() public pure returns(string) {
-        return &quot;WAR Token&quot;;
+        return "WAR Token";
     }
 
     function symbol() public pure returns(string) {
-        return &quot;WAR&quot;;
+        return "WAR";
     }
 
     /// @dev Search for token quantity address
@@ -325,10 +325,10 @@ contract WarToken is ERC721, AccessAdmin {
         external
         whenNotPaused
     {
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
-    /// @dev Transfer ownership of an WAR, &#39;_to&#39; must be a vaild address, or the WAR will lost
+    /// @dev Transfer ownership of an WAR, '_to' must be a vaild address, or the WAR will lost
     /// @param _from The current owner of the WAR
     /// @param _to The new owner
     /// @param _tokenId The WAR to transfer
@@ -361,7 +361,7 @@ contract WarToken is ERC721, AccessAdmin {
         Approval(owner, _approved, _tokenId);
     }
 
-    /// @dev Enable or disable approval for a third party (&quot;operator&quot;) to manage all your asset.
+    /// @dev Enable or disable approval for a third party ("operator") to manage all your asset.
     /// @param _operator Address to add to the set of authorized operators.
     /// @param _approved True if the operators is approved, false to revoke approval
     function setApprovalForAll(address _operator, bool _approved) 
@@ -417,7 +417,7 @@ contract WarToken is ERC721, AccessAdmin {
             }      
         }
 
-        // Give the WAR to &#39;_to&#39;
+        // Give the WAR to '_to'
         fashionIdToOwner[_tokenId] = _to;
         ownerToFashionArray[_to].push(_tokenId);
         fashionIdToOwnerIndex[_tokenId] = ownerToFashionArray[_to].length - 1;
@@ -445,7 +445,7 @@ contract WarToken is ERC721, AccessAdmin {
             return;
         }
         bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
-        // bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)) = 0xf0b9e5ba;
+        // bytes4(keccak256("onERC721Received(address,uint256,bytes)")) = 0xf0b9e5ba;
         require(retval == 0xf0b9e5ba);
     }
 
@@ -464,7 +464,7 @@ contract WarToken is ERC721, AccessAdmin {
         require(_owner != address(0));
 
         uint256 newFashionId = fashionArray.length;
-        require(newFashionId &lt; 4294967296);
+        require(newFashionId < 4294967296);
 
         fashionArray.length += 1;
         Fashion storage fs = fashionArray[newFashionId];
@@ -531,19 +531,19 @@ contract WarToken is ERC721, AccessAdmin {
         require(actionContracts[msg.sender]);
 
         Fashion storage fs = fashionArray[_tokenId];
-        if (_idxArray[0] &gt; 0) {
+        if (_idxArray[0] > 0) {
             _changeAttrByIndex(fs, _idxArray[0], _params[0]);
         }
 
-        if (_idxArray[1] &gt; 0) {
+        if (_idxArray[1] > 0) {
             _changeAttrByIndex(fs, _idxArray[1], _params[1]);
         }
 
-        if (_idxArray[2] &gt; 0) {
+        if (_idxArray[2] > 0) {
             _changeAttrByIndex(fs, _idxArray[2], _params[2]);
         }
 
-        if (_idxArray[3] &gt; 0) {
+        if (_idxArray[3] > 0) {
             _changeAttrByIndex(fs, _idxArray[3], _params[3]);
         }
 
@@ -588,7 +588,7 @@ contract WarToken is ERC721, AccessAdmin {
     {
         require(actionContracts[msg.sender]);
 
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= fashionArray.length);
+        require(_tokenId >= 1 && _tokenId <= fashionArray.length);
         address owner = fashionIdToOwner[_tokenId];
         require(owner != address(0));
         require(_to != address(0));
@@ -623,7 +623,7 @@ contract WarToken is ERC721, AccessAdmin {
         uint256 length = fsArray.length;
         tokens = new uint256[](length);
         flags = new uint32[](length);
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokens[i] = fsArray[i];
             Fashion storage fs = fashionArray[fsArray[i]];
             flags[i] = uint32(uint32(fs.protoId) * 100 + uint32(fs.quality) * 10 + fs.pos);
@@ -633,11 +633,11 @@ contract WarToken is ERC721, AccessAdmin {
     /// @dev WAR token info returned based on Token ID transfered (64 at most)
     function getFashionsAttrs(uint256[] _tokens) external view returns(uint16[] attrs) {
         uint256 length = _tokens.length;
-        require(length &lt;= 64);
+        require(length <= 64);
         attrs = new uint16[](length * 11);
         uint256 tokenId;
         uint256 index;
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokenId = _tokens[i];
             if (fashionIdToOwner[tokenId] != address(0)) {
                 index = i * 11;
@@ -675,7 +675,7 @@ contract ActionAuctionPlat is AccessService {
     /// @dev Auction Array
     Auction[] public auctionArray;
     /// @dev Latest auction index by tokenId
-    mapping(uint256 =&gt; uint256) public latestAction;
+    mapping(uint256 => uint256) public latestAction;
     /// @dev WarToken(NFT) contract address
     WarToken public tokenContract;
     /// @dev DataEquip contract address
@@ -717,7 +717,7 @@ contract ActionAuctionPlat is AccessService {
     }
 
     function setDuration(uint64 _duration) external onlyAdmin {
-        require(_duration &gt;= 300 &amp;&amp; _duration &lt;= 8640000);
+        require(_duration >= 300 && _duration <= 8640000);
         auctionDuration = _duration;
     }
 
@@ -727,16 +727,16 @@ contract ActionAuctionPlat is AccessService {
     {
         require(tokenContract.ownerOf(_tokenId) == msg.sender);
         require(!equipContract.isEquiped(msg.sender, _tokenId));
-        require(_pricePlat &gt;= 1 &amp;&amp; _pricePlat &lt;= 999999);
+        require(_pricePlat >= 1 && _pricePlat <= 999999);
 
         uint16[12] memory fashion = tokenContract.getFashion(_tokenId);
-        require(fashion[1] &gt; 1);
+        require(fashion[1] > 1);
 
         uint64 tmNow = uint64(block.timestamp);
         uint256 lastIndex = latestAction[_tokenId];
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction memory oldOrder = auctionArray[lastIndex];
-            require((oldOrder.tmStart + auctionDuration) &lt;= tmNow || oldOrder.tmSell &gt; 0);
+            require((oldOrder.tmStart + auctionDuration) <= tmNow || oldOrder.tmSell > 0);
         }
 
         if (address(ethAuction) != address(0)) {
@@ -750,7 +750,7 @@ contract ActionAuctionPlat is AccessService {
         order.tokenId = uint64(_tokenId);
         order.price = _pricePlat;
         uint64 lastActionStart = auctionArray[newAuctionIndex - 1].tmStart;
-        if (tmNow &gt;= lastActionStart) {
+        if (tmNow >= lastActionStart) {
             order.tmStart = tmNow;
         } else {
             order.tmStart = lastActionStart;
@@ -764,7 +764,7 @@ contract ActionAuctionPlat is AccessService {
     function cancelAuction(uint256 _tokenId) external whenNotPaused {
         require(tokenContract.ownerOf(_tokenId) == msg.sender);
         uint256 lastIndex = latestAction[_tokenId];
-        require(lastIndex &gt; 0);
+        require(lastIndex > 0);
         Auction storage order = auctionArray[lastIndex];
         require(order.seller == msg.sender);
         require(order.tmSell == 0);
@@ -775,15 +775,15 @@ contract ActionAuctionPlat is AccessService {
     function changePrice(uint256 _tokenId, uint64 _pricePlat) external whenNotPaused {
         require(tokenContract.ownerOf(_tokenId) == msg.sender);
         uint256 lastIndex = latestAction[_tokenId];
-        require(lastIndex &gt; 0);
+        require(lastIndex > 0);
         Auction storage order = auctionArray[lastIndex];
         require(order.seller == msg.sender);
         require(order.tmSell == 0);
 
         uint64 tmNow = uint64(block.timestamp);
-        require(order.tmStart + auctionDuration &gt; tmNow);
+        require(order.tmStart + auctionDuration > tmNow);
         
-        require(_pricePlat &gt;= 1 &amp;&amp; _pricePlat &lt;= 999999);
+        require(_pricePlat >= 1 && _pricePlat <= 999999);
         order.price = _pricePlat;
 
         AuctionPlatPriceChange(lastIndex, msg.sender, _tokenId, _pricePlat);
@@ -791,11 +791,11 @@ contract ActionAuctionPlat is AccessService {
 
     function _bid(address _sender, uint256 _platVal, uint256 _tokenId) internal {
         uint256 lastIndex = latestAction[_tokenId];
-        require(lastIndex &gt; 0);
+        require(lastIndex > 0);
         Auction storage order = auctionArray[lastIndex];
 
         uint64 tmNow = uint64(block.timestamp);
-        require(order.tmStart + auctionDuration &gt; tmNow);
+        require(order.tmStart + auctionDuration > tmNow);
         require(order.tmSell == 0);
 
         address realOwner = tokenContract.ownerOf(_tokenId);
@@ -819,7 +819,7 @@ contract ActionAuctionPlat is AccessService {
         uint256 val = 0;
         uint256 index = 0;
         uint256 length = _extraData.length;
-        while (index &lt; length) {
+        while (index < length) {
             val += (uint256(_extraData[index]) * (256 ** (length - index - 1)));
             index += 1;
         }
@@ -831,7 +831,7 @@ contract ActionAuctionPlat is AccessService {
         whenNotPaused 
     {
         require(msg.sender == address(bitGuildContract));
-        require(_extraData.length &lt;= 8);
+        require(_extraData.length <= 8);
         uint256 tokenId = _getTokenIdFromBytes(_extraData);
         _bid(_sender, _value, tokenId);
     }
@@ -844,10 +844,10 @@ contract ActionAuctionPlat is AccessService {
         uint64 half;
         uint64 len = uint64(auctionArray.length - startIndex);
 
-        while(len &gt; 0) {
+        while(len > 0) {
             half = len / 2;
             middle = first + half;
-            if (auctionArray[middle].tmStart &lt; tmFind) {
+            if (auctionArray[middle].tmStart < tmFind) {
                 first = middle + 1;
                 len = len - half - 1;
             } else {
@@ -867,18 +867,18 @@ contract ActionAuctionPlat is AccessService {
         returns(uint64[])
     {
         uint64 tmFind = uint64(block.timestamp) - auctionDuration;
-        uint64 start = _startIndex &gt; 0 ? _startIndex : _getStartIndex(0);
+        uint64 start = _startIndex > 0 ? _startIndex : _getStartIndex(0);
         uint256 length = auctionArray.length;
-        uint256 maxLen = _count &gt; 0 ? _count : length - start;
+        uint256 maxLen = _count > 0 ? _count : length - start;
         if (maxLen == 0) {
             maxLen = 1;
         }
         uint64[] memory auctionIdArray = new uint64[](maxLen);
         uint64 counter = 0;
-        for (uint64 i = start; i &lt; length; ++i) {
-            if (auctionArray[i].tmStart &gt; tmFind &amp;&amp; auctionArray[i].tmSell == 0) {
+        for (uint64 i = start; i < length; ++i) {
+            if (auctionArray[i].tmStart > tmFind && auctionArray[i].tmSell == 0) {
                 auctionIdArray[counter++] = i;
-                if (_count &gt; 0 &amp;&amp; counter == _count) {
+                if (_count > 0 && counter == _count) {
                     break;
                 }
             }
@@ -887,7 +887,7 @@ contract ActionAuctionPlat is AccessService {
             return auctionIdArray;
         } else {
             uint64[] memory realIdArray = new uint64[](counter);
-            for (uint256 j = 0; j &lt; counter; ++j) {
+            for (uint256 j = 0; j < counter; ++j) {
                 realIdArray[j] = auctionIdArray[j];
             }
             return realIdArray;
@@ -915,7 +915,7 @@ contract ActionAuctionPlat is AccessService {
         priceArray = new uint64[](length);
         tmStartArray = new uint64[](length);
         
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             Auction storage tmpAuction = auctionArray[auctionIdArray[i]];
             sellerArray[i] = tmpAuction.seller;
             tokenIdArray[i] = tmpAuction.tokenId;
@@ -931,7 +931,7 @@ contract ActionAuctionPlat is AccessService {
         uint64 tmStart,
         uint64 tmSell) 
     {
-        require (auctionId &lt; auctionArray.length); 
+        require (auctionId < auctionArray.length); 
         Auction memory auction = auctionArray[auctionId];
         seller = auction.seller;
         tokenId = auction.tokenId;
@@ -945,16 +945,16 @@ contract ActionAuctionPlat is AccessService {
     }
 
     function getStartIndex(uint64 _startIndex) external view returns(uint256) {
-        require (_startIndex &lt; auctionArray.length);
+        require (_startIndex < auctionArray.length);
         return _getStartIndex(_startIndex);
     }
 
     function isOnSale(uint256 _tokenId) external view returns(bool) {
         uint256 lastIndex = latestAction[_tokenId];
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order = auctionArray[lastIndex];
             uint64 tmNow = uint64(block.timestamp);
-            if ((order.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order.tmSell == 0) {
+            if ((order.tmStart + auctionDuration > tmNow) && order.tmSell == 0) {
                 return true;
             }
         }
@@ -964,16 +964,16 @@ contract ActionAuctionPlat is AccessService {
     function isOnSaleAny2(uint256 _tokenId1, uint256 _tokenId2) external view returns(bool) {
         uint256 lastIndex = latestAction[_tokenId1];
         uint64 tmNow = uint64(block.timestamp);
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order1 = auctionArray[lastIndex];
-            if ((order1.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order1.tmSell == 0) {
+            if ((order1.tmStart + auctionDuration > tmNow) && order1.tmSell == 0) {
                 return true;
             }
         }
         lastIndex = latestAction[_tokenId2];
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order2 = auctionArray[lastIndex];
-            if ((order2.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order2.tmSell == 0) {
+            if ((order2.tmStart + auctionDuration > tmNow) && order2.tmSell == 0) {
                 return true;
             }
         }
@@ -983,23 +983,23 @@ contract ActionAuctionPlat is AccessService {
     function isOnSaleAny3(uint256 _tokenId1, uint256 _tokenId2, uint256 _tokenId3) external view returns(bool) {
         uint256 lastIndex = latestAction[_tokenId1];
         uint64 tmNow = uint64(block.timestamp);
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order1 = auctionArray[lastIndex];
-            if ((order1.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order1.tmSell == 0) {
+            if ((order1.tmStart + auctionDuration > tmNow) && order1.tmSell == 0) {
                 return true;
             }
         }
         lastIndex = latestAction[_tokenId2];
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order2 = auctionArray[lastIndex];
-            if ((order2.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order2.tmSell == 0) {
+            if ((order2.tmStart + auctionDuration > tmNow) && order2.tmSell == 0) {
                 return true;
             }
         }
         lastIndex = latestAction[_tokenId3];
-        if (lastIndex &gt; 0) {
+        if (lastIndex > 0) {
             Auction storage order3 = auctionArray[lastIndex];
-            if ((order3.tmStart + auctionDuration &gt; tmNow) &amp;&amp; order3.tmSell == 0) {
+            if ((order3.tmStart + auctionDuration > tmNow) && order3.tmSell == 0) {
                 return true;
             }
         }

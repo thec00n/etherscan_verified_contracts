@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,16 +49,16 @@ contract NukTestToken is ERC20 {
 	using SafeMath for uint256;	
 	address public owner;	
 
-	string public constant name = &quot;NukTest&quot;; 
-  	string public constant symbol = &quot;Nkt&quot;; 
+	string public constant name = "NukTest"; 
+  	string public constant symbol = "Nkt"; 
   	uint8 public constant decimals = 0; 
 
   	uint256 public constant INITIAL_SUPPLY = 20000000000;
 
 	uint256 totalSupply_;
 
-	mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	event Burn(address indexed burner, uint256 value);
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -82,7 +82,7 @@ contract NukTestToken is ERC20 {
 
   	function transfer(address _to, uint256 _value) public returns (bool) {
 	    require(_to != address(0));
-	    require(_value &lt;= balances[msg.sender]);
+	    require(_value <= balances[msg.sender]);
 
 	    // SafeMath.sub will throw if there is not enough balance.
 	    balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -97,8 +97,8 @@ contract NukTestToken is ERC20 {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 	    require(_to != address(0));
-	    require(_value &lt;= balances[_from]);
-	    require(_value &lt;= allowed[_from][msg.sender]);
+	    require(_value <= balances[_from]);
+	    require(_value <= allowed[_from][msg.sender]);
 
 	    balances[_from] = balances[_from].sub(_value);
 	    balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract NukTestToken is ERC20 {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 	    uint oldValue = allowed[msg.sender][_spender];
-	    if (_subtractedValue &gt; oldValue) {
+	    if (_subtractedValue > oldValue) {
 	      allowed[msg.sender][_spender] = 0;
 	    } else {
 	      allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -135,7 +135,7 @@ contract NukTestToken is ERC20 {
 	}
 
 	function burn(uint256 _value) public {
-	    require(_value &lt;= balances[msg.sender]);   
+	    require(_value <= balances[msg.sender]);   
 		address burner = msg.sender;
 	    balances[burner] = balances[burner].sub(_value);
 	    totalSupply_ = totalSupply_.sub(_value);

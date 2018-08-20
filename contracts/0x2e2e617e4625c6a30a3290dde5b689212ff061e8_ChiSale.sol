@@ -59,7 +59,7 @@ contract Owned {
  * The contract only exchanges whole (integer) values of CHI. If the sender
  * sends a value of 0.00051 ETH, the sender will get 1 CHI and 0.00001 ETH back.
  * 
- * In the case not enough CHI tokens remain to fully exchange the sender&#39;s value
+ * In the case not enough CHI tokens remain to fully exchange the sender's value
  * from ETH to CHI, the remaining CHI will be paid out, and the remaining ETH
  * will be returned to the sender.
  */
@@ -129,19 +129,19 @@ contract ChiSale is Owned {
      * outside this time period are rejected.
      */
     function buy() payable external {
-        require(START_DATE &lt;= now);
-        require(END_DATE &gt;= now);
-        require(tokensForSale &gt; 0);
-        require(msg.value &gt;= tokenPrice);
+        require(START_DATE <= now);
+        require(END_DATE >= now);
+        require(tokensForSale > 0);
+        require(msg.value >= tokenPrice);
 
         uint256 tokens = msg.value / tokenPrice;
         uint256 remainder;
 
-        // If there aren&#39;t enough tokens to exchange, try to exchange as many
+        // If there aren't enough tokens to exchange, try to exchange as many
         // as possible, and pay out the remainder. Else, if there are enough
-        // tokens, pay the remaining ether that couldn&#39;t be exchanged for tokens 
+        // tokens, pay the remaining ether that couldn't be exchanged for tokens 
         // back to the sender.
-        if (tokens &gt; tokensForSale) {
+        if (tokens > tokensForSale) {
             tokens = tokensForSale;
 
             remainder = msg.value - tokens * tokenPrice;
@@ -155,7 +155,7 @@ contract ChiSale is Owned {
 
         chiTokenContract.transfer(msg.sender, tokens);
 
-        if (remainder &gt; 0) {
+        if (remainder > 0) {
             msg.sender.transfer(remainder);
         }
     }

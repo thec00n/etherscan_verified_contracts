@@ -2,7 +2,7 @@ pragma solidity 0.4.19;
 /**
 * @title PREVIP CCS SALE CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @notice Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1c8c2cee1c2c0c2c0ced2c9c0d3c4d28fc2cecc">[email&#160;protected]</a>
+* @notice Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1c8c2cee1c2c0c2c0ced2c9c0d3c4d28fc2cecc">[email protected]</a>
 * @author Fares A. Akel C.
 * ================================================
 * CACAO SHARES IS A DIGITAL ASSET
@@ -31,12 +31,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -99,7 +99,7 @@ contract PREVIPCCS {
     token public tokenReward; //Address of the valid token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaign
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -134,8 +134,8 @@ contract PREVIPCCS {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt;= startTime);
-        require(msg.value &gt;= 1 szabo);
+        require(now >= startTime);
+        require(msg.value >= 1 szabo);
 
         uint256 tokenBought; //Variable to store amount of tokens bought
         uint256 tokenPrice = price.USD(0); //1 cent value in wei
@@ -149,10 +149,10 @@ contract PREVIPCCS {
         tokenBought = tokenBought.mul(10 **10); //Base 8 to Base 18
         
         //Discount calculation
-        if (msg.value &gt;= 10 ether){
+        if (msg.value >= 10 ether){
             tokenBought = tokenBought.mul(123);
             tokenBought = tokenBought.div(100); //+10% discount reflected as +23% bonus
-        } else if (msg.value &gt;= 1 ether){
+        } else if (msg.value >= 1 ether){
             tokenBought = tokenBought.mul(11);
             tokenBought = tokenBought.div(10); //+5% discount reflected as +10% bonus
         }
@@ -173,7 +173,7 @@ contract PREVIPCCS {
     * @param _amountOfWei How much ETH you will invest in Wei (1ETH = 10^18 WEI)
     */
     function calculateTokens(uint256 _amountOfWei) public view returns(uint256) {
-        require(_amountOfWei &gt;= 1 szabo);
+        require(_amountOfWei >= 1 szabo);
         
         uint256 tokenBought; //Variable to store amount of tokens bought
         uint256 tokenPrice = price.USD(0); //1 cent value in wei
@@ -185,10 +185,10 @@ contract PREVIPCCS {
         tokenBought = tokenBought.mul(10 **10); //Base 8 to Base 18
 
         //Discount calculation
-        if (_amountOfWei &gt;= 10 ether){
+        if (_amountOfWei >= 10 ether){
             tokenBought = tokenBought.mul(123);
             tokenBought = tokenBought.div(100); //+10% discount reflected as +23% bonus
-        } else if (_amountOfWei &gt;= 1 ether){
+        } else if (_amountOfWei >= 1 ether){
             tokenBought = tokenBought.mul(11);
             tokenBought = tokenBought.div(10); //+5% discount reflected as +10% bonus
         }
@@ -209,7 +209,7 @@ contract PREVIPCCS {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(now &gt; PREVIPdeadline &amp;&amp; state != State.Successful){
+        if(now > PREVIPdeadline && state != State.Successful){
 
             state = State.Successful; //Sale becomes Successful
             completedAt = now; //PreVIP finished
@@ -260,7 +260,7 @@ contract PREVIPCCS {
 
     /**
     * @notice Function to handle eth transfers
-    * @dev BEWARE: if a call to this functions doesn&#39;t have
+    * @dev BEWARE: if a call to this functions doesn't have
     * enought gas, transaction could not be finished
     */
     function () public payable {

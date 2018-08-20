@@ -72,7 +72,7 @@ contract ClockAuctionStorage is StorageBase {
     }
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     function addAuction(
         uint256 _tokenId,
@@ -120,7 +120,7 @@ contract ClockAuctionStorage is StorageBase {
     }
 
     function isOnAuction(uint256 _tokenId) external view returns (bool) {
-        return (tokenIdToAuction[_tokenId].startedAt &gt; 0);
+        return (tokenIdToAuction[_tokenId].startedAt > 0);
     }
 
     function getSeller(uint256 _tokenId) external view returns (address) {
@@ -283,7 +283,7 @@ contract ClockAuction is LogicBase {
     }
 
     function setOwnerCut(uint256 _cut) public onlyOwner {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
     }
 
@@ -292,7 +292,7 @@ contract ClockAuction is LogicBase {
     }
 
     function getMinPrice() public view returns (uint256) {
-        // return ownerCut &gt; 0 ? (minCutValue / ownerCut * 10000) : 0;
+        // return ownerCut > 0 ? (minCutValue / ownerCut * 10000) : 0;
         // use minCutValue directly, when the price == minCutValue seller will get no profit
         return minCutValue;
     }
@@ -300,7 +300,7 @@ contract ClockAuction is LogicBase {
     // Only auction from none system user need to verify the price
     // System auction can set any price
     function isValidPrice(uint256 _startingPrice, uint256 _endingPrice) public view returns (bool) {
-        return (_startingPrice &lt; _endingPrice ? _startingPrice : _endingPrice) &gt;= getMinPrice();
+        return (_startingPrice < _endingPrice ? _startingPrice : _endingPrice) >= getMinPrice();
     }
 
     function createAuction(
@@ -324,7 +324,7 @@ contract ClockAuction is LogicBase {
         nonFungibleContract.transferFrom(_seller, address(clockAuctionStorage), _tokenId);
 
         // Require that all auctions have a duration of at least one minute.
-        require(_duration &gt;= 1 minutes);
+        require(_duration >= 1 minutes);
 
         clockAuctionStorage.addAuction(
             _tokenId,
@@ -387,17 +387,17 @@ contract ClockAuction is LogicBase {
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(_tokenId);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         address seller = clockAuctionStorage.getSeller(_tokenId);
         uint256 sellerProceeds = 0;
 
-        // Remove the auction before sending the fees to the sender so we can&#39;t have a reentrancy attack
+        // Remove the auction before sending the fees to the sender so we can't have a reentrancy attack
         clockAuctionStorage.removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut, so this subtraction can&#39;t go negative
+        if (price > 0) {
+            // Calculate the auctioneer's cut, so this subtraction can't go negative
             uint256 auctioneerCut = _computeCut(price);
             sellerProceeds = price - auctioneerCut;
 
@@ -427,7 +427,7 @@ contract ClockAuction is LogicBase {
         uint64 startedAt;
         (seller, startingPrice, endingPrice, duration, startedAt) = clockAuctionStorage.getAuction(_tokenId);
 
-        if (now &gt; startedAt) {
+        if (now > startedAt) {
             secondsPassed = now - startedAt;
         }
 
@@ -449,13 +449,13 @@ contract ClockAuction is LogicBase {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -469,8 +469,8 @@ contract ClockAuction is LogicBase {
 
     function _computeCut(uint256 _price) internal view returns (uint256) {
         uint256 cutValue = _price * ownerCut / 10000;
-        if (_price &lt; minCutValue) return cutValue;
-        if (cutValue &gt; minCutValue) return cutValue;
+        if (_price < minCutValue) return cutValue;
+        if (cutValue > minCutValue) return cutValue;
         return minCutValue;
     }
 }

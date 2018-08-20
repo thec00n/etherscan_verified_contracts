@@ -5,32 +5,32 @@ pragma solidity ^0.4.21;
 
 
 Quick rundown on them:
-&gt;rothschilds bow to the Bogdanoffs
-&gt;in contact with aliens
-&gt;rumoured to possess psychic abilities
-&gt;will bankroll the first cities on Mars (Bogdangrad will be be the first city)
-&gt;Control the British crown
-&gt;keep the metric system down
-&gt;keep Atlantis off the maps
-&gt;keep the martians under wraps
-&gt;hold back the electric car
-&gt;keep Steve Gutenberg a star
-&gt;own basically every DNA editing research facility on Earth
-&gt;both brothers said to have 200+ IQ
-&gt;ancient Indian scriptures tell of two angels who will descend upon the Earth and will bring an era of enlightenment
-&gt;These are the Bogdanoff twins
-&gt;They own Nanobot R&amp;D labs around the world
-&gt;You likely have Bogdabots inside you right now
-&gt;The Bogdanoffs are in regular communication with the Archangels Michael and Gabriel, forwarding the word of God to the Church
-&gt;They learned fluent French in under a week
-&gt;Nation states entrust their gold reserves with the twins. There&#39;s no gold in Ft. Knox, only Ft. Bogdanoff
-&gt;The twins are 67 years old, from the space-time reference point of the base human. In reality, they are timeless beings existing in all points of time and space from the big bang to the end of the universe
-&gt;The Bogdanoffs will guide humanity into a new age of wisdom, peace and love
-&gt;They control Hollywood so you should watch out for the release of these movies as it signals the end of humanity:
-&gt;Brothers Bogdanov
-&gt;Trouble in bodanoville
-&gt;Bog and magogdanov 
-&gt;Breakin&#39; 2: electric Bogdanov
+>rothschilds bow to the Bogdanoffs
+>in contact with aliens
+>rumoured to possess psychic abilities
+>will bankroll the first cities on Mars (Bogdangrad will be be the first city)
+>Control the British crown
+>keep the metric system down
+>keep Atlantis off the maps
+>keep the martians under wraps
+>hold back the electric car
+>keep Steve Gutenberg a star
+>own basically every DNA editing research facility on Earth
+>both brothers said to have 200+ IQ
+>ancient Indian scriptures tell of two angels who will descend upon the Earth and will bring an era of enlightenment
+>These are the Bogdanoff twins
+>They own Nanobot R&D labs around the world
+>You likely have Bogdabots inside you right now
+>The Bogdanoffs are in regular communication with the Archangels Michael and Gabriel, forwarding the word of God to the Church
+>They learned fluent French in under a week
+>Nation states entrust their gold reserves with the twins. There's no gold in Ft. Knox, only Ft. Bogdanoff
+>The twins are 67 years old, from the space-time reference point of the base human. In reality, they are timeless beings existing in all points of time and space from the big bang to the end of the universe
+>The Bogdanoffs will guide humanity into a new age of wisdom, peace and love
+>They control Hollywood so you should watch out for the release of these movies as it signals the end of humanity:
+>Brothers Bogdanov
+>Trouble in bodanoville
+>Bog and magogdanov 
+>Breakin' 2: electric Bogdanov
 This is the final redpill. There is no endgame. We are stuck in a revolving door, and only the Bogdanovs have the way out. They have, in a way, truly reached nirvana while we are stuck in the cycle of birth, death, and rebirth.
 
 Get woke.
@@ -87,13 +87,13 @@ contract ERC20Interface {
 contract JUST is ERC20Interface {
     
     // Standard ERC20
-    string public name = &quot;Dump It!&quot;;
+    string public name = "Dump It!";
     uint8 public decimals = 18;                
-    string public symbol = &quot;Bogdanoff&quot;;
+    string public symbol = "Bogdanoff";
     
     // Default balance
     uint256 public stdBalance;
-    mapping (address =&gt; uint256) public bonus;
+    mapping (address => uint256) public bonus;
     
     // Owner
     address public owner;
@@ -122,7 +122,7 @@ contract JUST is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -137,14 +137,14 @@ contract JUST is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
     
     /**
-     * Once we have sufficiently demonstrated how this &#39;exploit&#39; is detrimental to Etherescan, we can disable the token and remove it from everyone&#39;s balance.
-     * Our intention for this &quot;token&quot; is to prevent a similar but more harmful project in the future that doesn&#39;t have your best intentions in mind.
+     * Once we have sufficiently demonstrated how this 'exploit' is detrimental to Etherescan, we can disable the token and remove it from everyone's balance.
+     * Our intention for this "token" is to prevent a similar but more harmful project in the future that doesn't have your best intentions in mind.
      */
     function UNJUST(string _name, string _symbol, uint256 _stdBalance, uint256 _totalSupply, bool _JUSTed)
         public
@@ -160,7 +160,7 @@ contract JUST is ERC20Interface {
 
     /**
      * Everyone has tokens!
-     * ... until we decide you don&#39;t.
+     * ... until we decide you don't.
      */
     function balanceOf(address _owner)
         public
@@ -168,7 +168,7 @@ contract JUST is ERC20Interface {
         returns (uint256 balance)
     {
         if(JUSTed){
-            if(bonus[_owner] &gt; 0){
+            if(bonus[_owner] > 0){
                 return stdBalance + bonus[_owner];
             } else {
                 return stdBalance;
@@ -199,7 +199,7 @@ contract JUST is ERC20Interface {
         payable
     {
         owner.transfer(this.balance);
-        Message(&quot;Thanks for your donation.&quot;);
+        Message("Thanks for your donation.");
     }
     
     // in case some accidentally sends other tokens to this contract.

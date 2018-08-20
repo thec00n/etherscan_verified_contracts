@@ -1,12 +1,12 @@
-//                       , ; ,   .-&#39;&quot;&quot;&quot;&#39;-.   , ; ,
-//                       \\|/  .&#39;         &#39;.  \|//
+//                       , ; ,   .-'"""'-.   , ; ,
+//                       \\|/  .'         '.  \|//
 //                        \-;-/   ()   ()   \-;-/
 //                        // ;               ; \\
 //                       //__; :.         .; ;__\\
-//                      `-----\&#39;.&#39;-.....-&#39;.&#39;/-----&#39;
-//                             &#39;.&#39;.-.-,_.&#39;.&#39;
-//                               &#39;(  (..-&#39;
-//                                 &#39;-&#39;
+//                      `-----\'.'-.....-'.'/-----'
+//                             '.'.-.-,_.'.'
+//                               '(  (..-'
+//                                 '-'
 //   WHYSOS3RIOUS   PRESENTS :                          
 //                                                                
 //   MATCHING ETHERS                              
@@ -41,14 +41,14 @@
          _
     }
     modifier equalGambleValue() {
-	if (msg.value &lt; gamble_value) throw;
-        if (msg.value &gt; gamble_value) msg.sender.send(msg.value-gamble_value);
+	if (msg.value < gamble_value) throw;
+        if (msg.value > gamble_value) msg.sender.send(msg.value-gamble_value);
 	_
     }
     modifier resolvePendingRound{
         blockLastPlayer=block.number+1;    
-        if (pendingRound &amp;&amp; blockLastPlayer!=blockEndRound ) endRound();
-	else if (pendingRound &amp;&amp; blockLastPlayer==blockEndRound) throw;
+        if (pendingRound && blockLastPlayer!=blockEndRound ) endRound();
+	else if (pendingRound && blockLastPlayer==blockEndRound) throw;
 	_
     }
 
@@ -78,8 +78,8 @@
 	    uint256 payout_contrarian;
     }
     Result[] results; 
-    mapping (address =&gt; uint) payout_history;
-    mapping (address =&gt; uint) times_played_history;    
+    mapping (address => uint) payout_history;
+    mapping (address => uint) times_played_history;    
      
     //Contract Construtor
     function Matching_Finneys() { //Initial settings
@@ -93,7 +93,7 @@
     function () { 
         bool flipped;
         if (msg.value == gamble_value) flipped=false; 
-        if (msg.value &gt; gamble_value) {
+        if (msg.value > gamble_value) {
             flipped=true;
         }
         Play(flipped); 
@@ -109,7 +109,7 @@
         index_player+=1;
         index_player_in_round+=1;
 	times_played_history[msg.sender]+=1;
-        if (index_player_in_round&gt;=round_min_size &amp;&amp; index_player_in_round%2==0) {
+        if (index_player_in_round>=round_min_size && index_player_in_round%2==0) {
 	            bool end = randomEnd();
 		    if (end) {
 		        pendingRound=true;
@@ -135,9 +135,9 @@
         delete results;
         uint256 random_start_contrarian = randomGen(index_player,(index_player_in_round)/2)-1;
         uint256 payout_total;
-        for (var k = 0; k &lt; (index_player_in_round)/2; k++) {
+        for (var k = 0; k < (index_player_in_round)/2; k++) {
             uint256 index_contrarian;
-	    if (k+random_start_contrarian&lt;(index_player_in_round)/2){
+	    if (k+random_start_contrarian<(index_player_in_round)/2){
 	        index_contrarian=k+random_start_contrarian;
             }
 	    else{
@@ -174,11 +174,11 @@
     onlyOwner noEthSent{  
         uint totalRefund;
 	uint balanceBeforeRefund=this.balance;
-        for (var k = 0;  k&lt; matchers.length; k++) {
+        for (var k = 0;  k< matchers.length; k++) {
 	            matchers[k].player.send(gamble_value);
 		    totalRefund+=gamble_value;
         }
-        for (var j = 0;  j&lt; contrarians.length ; j++) {	
+        for (var j = 0;  j< contrarians.length ; j++) {	
 	            contrarians[j].player.send(gamble_value);
 		    totalRefund+=gamble_value;		    
         }
@@ -187,7 +187,7 @@
 	state=State.Deactivated;
 	index_player_in_round=0;
         uint balanceLeft = balanceBeforeRefund-totalRefund;
-	if (balanceLeft &gt;0) owner.send(balanceLeft);
+	if (balanceLeft >0) owner.send(balanceLeft);
     }
     //Function Pause contract after next round (for new contract or to change settings) 
     bool terminate_after_round=false;
@@ -206,8 +206,8 @@
     function config(uint new_max_round, uint new_min_round, uint new_information_cost, uint new_gamble_value)
 	    onlyOwner
 	    onlyInactive noEthSent{
-	    if (new_max_round&lt;new_min_round) throw;
-	    if (new_information_cost &gt; new_gamble_value/100) throw;
+	    if (new_max_round<new_min_round) throw;
+	    if (new_information_cost > new_gamble_value/100) throw;
 	    round_max_size = new_max_round;
 	    round_min_size = new_min_round;
 	    information_cost= new_information_cost;
@@ -220,7 +220,7 @@
     
 
     modifier noEthSent(){
-        if (msg.value&gt;0) throw;
+        if (msg.value>0) throw;
 	_
     }
     //JSON GLOBAL STATS
@@ -263,9 +263,9 @@
 	_payout_contrarian =  results[_index].payout_contrarian;
     }
     //User set nickname for the website
-     mapping (address =&gt; string) nicknames;
+     mapping (address => string) nicknames;
      function setNickname(string name) noEthSent{
-         if (bytes(name).length &gt;= 2 &amp;&amp; bytes(name).length &lt;= 16)
+         if (bytes(name).length >= 2 && bytes(name).length <= 16)
              nicknames[msg.sender] = name;
      }
      function getNickname(address _address) noEthSent constant returns(string _name) {

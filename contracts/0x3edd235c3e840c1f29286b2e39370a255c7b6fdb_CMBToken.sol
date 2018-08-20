@@ -32,9 +32,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal  returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -51,7 +51,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,13 +66,13 @@ contract CMBToken is IERC20 {
 using SafeMath for uint256;
 uint public constant _totalSupply = 6500000000000000;
 
-string public constant symbol = &quot;CMBT&quot;;
-string public constant name = &quot;CMB Token&quot;;
+string public constant symbol = "CMBT";
+string public constant name = "CMB Token";
 uint8 public constant decimals = 8;
 
 
-mapping (address =&gt; uint256) balances;
-mapping(address =&gt;  mapping(address =&gt; uint256)) allowed;
+mapping (address => uint256) balances;
+mapping(address =>  mapping(address => uint256)) allowed;
 
  function CMBToken() {
 	balances[msg.sender] = _totalSupply;
@@ -89,8 +89,8 @@ function balanceOf(address _owner) constant returns (uint256 balance) {
 
 function transfer(address _to, uint256 _value) returns (bool success) {
 	require(
-		balances[msg.sender] &gt;= _value
-		&amp;&amp; _value &gt; 0
+		balances[msg.sender] >= _value
+		&& _value > 0
 	);
 	balances[msg.sender] = balances[msg.sender].sub(_value);
 	balances [_to] = balances[_to].add(_value);
@@ -101,9 +101,9 @@ function transfer(address _to, uint256 _value) returns (bool success) {
 
 function transferFrom(address _from, address _to, uint256 _value) returns (bool success) { 
 	require(
-	allowed[_from][msg.sender] &gt;= _value
-	&amp;&amp; balances[_from] &gt;= _value
-	&amp;&amp; _value &gt; 0
+	allowed[_from][msg.sender] >= _value
+	&& balances[_from] >= _value
+	&& _value > 0
 	);
 	balances[_from] = balances[msg.sender].sub(_value);
 	balances[_to] = balances[_to].add(_value);

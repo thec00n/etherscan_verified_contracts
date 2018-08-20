@@ -27,7 +27,7 @@ contract TokenVault is Ownable {
     
     function withdrawTokenTo(address token, address to) public onlyOwner returns (bool) {
         uint amount = balanceOfToken(token);
-        if (amount &gt; 0) {
+        if (amount > 0) {
             TokenTransfer(to, token, amount);
             return Token(token).transfer(to, amount);
         }
@@ -39,16 +39,16 @@ contract TokenVault is Ownable {
     }
 }
 
-// store ether &amp; tokens for a period of time
+// store ether & tokens for a period of time
 contract CraigHester is TokenVault {
     
-    string public constant version = &quot;v1.2&quot;;
+    string public constant version = "v1.2";
     
     event Deposit(address indexed depositor, uint amount);
     event Withdrawal(address indexed to, uint amount);
     event OpenDate(uint date);
 
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
     uint minDeposit;
     bool Locked;
     uint Date;
@@ -61,13 +61,13 @@ contract CraigHester is TokenVault {
     
     function MinimumDeposit() public constant returns (uint) { return minDeposit; }
     function ReleaseDate() public constant returns (uint) { return Date; }
-    function WithdrawEnabled() public constant returns (bool) { return Date &gt; 0 &amp;&amp; Date &lt;= now; }
+    function WithdrawEnabled() public constant returns (bool) { return Date > 0 && Date <= now; }
 
     function() public payable { deposit(); }
 
     function deposit() public payable {
-        if (msg.value &gt; 0) {
-            if (msg.value &gt;= MinimumDeposit())
+        if (msg.value > 0) {
+            if (msg.value >= MinimumDeposit())
                 Deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         }
@@ -81,7 +81,7 @@ contract CraigHester is TokenVault {
     function withdraw(address to, uint amount) public onlyOwner {
         if (WithdrawEnabled()) {
             uint max = Deposits[msg.sender];
-            if (max &gt; 0 &amp;&amp; amount &lt;= max) {
+            if (max > 0 && amount <= max) {
                 to.transfer(amount);
                 Withdrawal(to, amount);
             }

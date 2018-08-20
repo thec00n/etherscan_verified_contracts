@@ -16,14 +16,14 @@ contract Matching_Finneys
          _
     }
     modifier equalGambleValue() {
-	if (msg.value &lt; gamble_value) throw;
-        if (msg.value &gt; gamble_value) msg.sender.send(msg.value-gamble_value);
+	if (msg.value < gamble_value) throw;
+        if (msg.value > gamble_value) msg.sender.send(msg.value-gamble_value);
 	_
     }
     modifier resolvePendingRound{
         blockLastPlayer=block.number+1;    
-        if (pendingRound &amp;&amp; blockLastPlayer!=blockEndRound ) endRound();
-	else if (pendingRound &amp;&amp; blockLastPlayer==blockEndRound) throw;
+        if (pendingRound && blockLastPlayer!=blockEndRound ) endRound();
+	else if (pendingRound && blockLastPlayer==blockEndRound) throw;
 	_
     }
 
@@ -53,8 +53,8 @@ contract Matching_Finneys
 	    uint256 payout_contrarian;
     }
     Result[] results; 
-    mapping (address =&gt; uint) payout_history;
-    mapping (address =&gt; uint) times_played_history;    
+    mapping (address => uint) payout_history;
+    mapping (address => uint) times_played_history;    
      
     //Contract Construtor
     function Matching_Ethers() { //Initial settings
@@ -68,7 +68,7 @@ contract Matching_Finneys
     function () { 
         bool flipped;
         if (msg.value == gamble_value) flipped=false; 
-        if (msg.value &gt; gamble_value) {
+        if (msg.value > gamble_value) {
             flipped=true;
         }
         Play(flipped); 
@@ -84,7 +84,7 @@ contract Matching_Finneys
         index_player+=1;
         index_player_in_round+=1;
 	times_played_history[msg.sender]+=1;
-        if (index_player_in_round&gt;=round_min_size &amp;&amp; index_player_in_round%2==0) {
+        if (index_player_in_round>=round_min_size && index_player_in_round%2==0) {
 	            bool end = randomEnd();
 		    if (end) {
 		        pendingRound=true;
@@ -109,9 +109,9 @@ contract Matching_Finneys
         delete results;
         uint256 random_start_contrarian = randomGen(index_player,(index_player_in_round)/2)-1;
         uint256 payout_total;
-        for (var k = 0; k &lt; (index_player_in_round)/2; k++) {
+        for (var k = 0; k < (index_player_in_round)/2; k++) {
             uint256 index_contrarian;
-	    if (k+random_start_contrarian&lt;(index_player_in_round)/2){
+	    if (k+random_start_contrarian<(index_player_in_round)/2){
 	        index_contrarian=k+random_start_contrarian;
             }
 	    else{
@@ -148,11 +148,11 @@ contract Matching_Finneys
     onlyOwner noEthSent{  
         uint totalRefund;
 	uint balanceBeforeRefund=this.balance;
-        for (var k = 0;  k&lt; matchers.length; k++) {
+        for (var k = 0;  k< matchers.length; k++) {
 	            matchers[k].player.send(gamble_value);
 		    totalRefund+=gamble_value;
         }
-        for (var j = 0;  j&lt; contrarians.length ; j++) {	
+        for (var j = 0;  j< contrarians.length ; j++) {	
 	            contrarians[j].player.send(gamble_value);
 		    totalRefund+=gamble_value;		    
         }
@@ -179,8 +179,8 @@ contract Matching_Finneys
     function config(uint new_max_round, uint new_min_round, uint new_information_cost, uint new_gamble_value)
 	    onlyOwner
 	    onlyInactive noEthSent{
-	    if (new_max_round&lt;new_min_round) throw;
-	    if (new_information_cost &gt; new_gamble_value/100) throw;
+	    if (new_max_round<new_min_round) throw;
+	    if (new_information_cost > new_gamble_value/100) throw;
 	    round_max_size = new_max_round;
 	    round_min_size = new_min_round;
 	    information_cost= new_information_cost;
@@ -193,10 +193,10 @@ contract Matching_Finneys
     
 
     modifier noEthSent(){
-        if (msg.value&gt;0) throw;
+        if (msg.value>0) throw;
 	_
     }
-    //desactiver l&#39;envoi d&#39;argent sur ces fonctions
+    //desactiver l'envoi d'argent sur ces fonctions
     //JSON GLOBAL STATS
     function gameStats() noEthSent constant returns (uint _index_player_in_round, uint _index_player, uint _index_round_ended, bool _pendingRound, uint _blockEndRound, uint _blockLastPlayer, State _state, bool _terminate_after_round)
     {
@@ -238,9 +238,9 @@ contract Matching_Finneys
 	_payout_contrarian =  results[_index].payout_contrarian;
     }
     //User set nickname for the website
-     mapping (address =&gt; string) nicknames;
+     mapping (address => string) nicknames;
      function setNickname(string name) noEthSent{
-         if (bytes(name).length &gt;= 2 &amp;&amp; bytes(name).length &lt;= 16)
+         if (bytes(name).length >= 2 && bytes(name).length <= 16)
              nicknames[msg.sender] = name;
      }
      function getNickname(address _address) noEthSent constant returns(string _name) {

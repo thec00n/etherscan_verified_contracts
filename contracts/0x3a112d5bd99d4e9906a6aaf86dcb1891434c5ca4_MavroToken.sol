@@ -4,26 +4,26 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
      // verifies that an amount is greater or equal to zero
     modifier greaterOrEqualThanZero(uint256 _amount) {
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
-        require(_address != 0x0 &amp;&amp; _address != address(0) &amp;&amp; _address != 0);
+        require(_address != 0x0 && _address != address(0) && _address != 0);
         _;
     }
 
-    // validates multiple addresses - currently only checks that it isn&#39;t null
+    // validates multiple addresses - currently only checks that it isn't null
     modifier validAddresses(address _address, address _anotherAddress) {
-        require((_address != 0x0         &amp;&amp; _address != address(0)        &amp;&amp; _address != 0 ) &amp;&amp;
-                ( _anotherAddress != 0x0 &amp;&amp; _anotherAddress != address(0) &amp;&amp; _anotherAddress != 0)
+        require((_address != 0x0         && _address != address(0)        && _address != 0 ) &&
+                ( _anotherAddress != 0x0 && _anotherAddress != address(0) && _anotherAddress != 0)
         );
         _;
     }
@@ -36,7 +36,7 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanNow(uint256 _startTime) {
-         require(_startTime &gt;= now);
+         require(_startTime >= now);
         _;
     }
 }
@@ -56,20 +56,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,7 +128,7 @@ contract ERC23Basic is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -174,8 +174,8 @@ contract Basic23Token is Utils, ERC23Basic, BasicToken {
         returns (bool success)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);            // Ensure Sender has enough balance to send amount and ensure the sent _value is greater than 0
-        require(balances[_to].add(_value) &gt; balances[_to]);  // Detect balance overflow
+        require(_value <= balances[msg.sender]);            // Ensure Sender has enough balance to send amount and ensure the sent _value is greater than 0
+        require(balances[_to].add(_value) > balances[_to]);  // Detect balance overflow
     
         assert(super.transfer(_to, _value));               //@dev Save transfer
 
@@ -224,7 +224,7 @@ contract Basic23Token is Utils, ERC23Basic, BasicToken {
         // retrieve the size of the code on target address, this needs assembly
         uint length;
         assembly { length := extcodesize(_addr) }
-        return length &gt; 0;
+        return length > 0;
     }
 }
 
@@ -241,7 +241,7 @@ contract ERC23 is ERC20{
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -252,8 +252,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -267,7 +267,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -302,7 +302,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -335,10 +335,10 @@ contract Standard23Token is Utils, ERC23, Basic23Token, StandardToken {
     {
         uint256 allowance = allowed[_from][msg.sender];
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(balances[_to].add(_value) &gt; balances[_to]);  // Detect balance overflow
-        require(_value &lt;= allowance);                        // ensure allowed[_from][msg.sender] is greate or equal to send amount to send
-        if (_value &gt; 0 &amp;&amp; _from != _to) {
+        require(_value <= balances[_from]);
+        require(balances[_to].add(_value) > balances[_to]);  // Detect balance overflow
+        require(_value <= allowance);                        // ensure allowed[_from][msg.sender] is greate or equal to send amount to send
+        if (_value > 0 && _from != _to) {
             require(transferFromInternal(_from, _to, _value)); // do a normal token transfer
             if (isContract(_to)) {
                 return contractFallback(_from, _to, _value, _data);
@@ -431,15 +431,15 @@ contract Mintable23Token is Standard23Token, Ownable {
 
 contract MavroToken is Mintable23Token {
 
-    string public constant name = &quot;Mavro Token&quot;;
-    string public constant symbol = &quot;MVR&quot;;
+    string public constant name = "Mavro Token";
+    string public constant symbol = "MVR";
     uint8 public constant decimals = 18;
     bool public TRANSFERS_ALLOWED = false;
 
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value, address victim) public {
-        require(_value &lt;= balances[victim]);
+        require(_value <= balances[victim]);
         balances[victim] = balances[victim].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(victim, _value);

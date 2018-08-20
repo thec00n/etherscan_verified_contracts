@@ -64,37 +64,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint a, uint b) internal pure returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint a, uint b) internal pure returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -138,8 +138,8 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
   using SafeMath for uint;
 
   uint private total_supply;
-  mapping(address =&gt; uint) private balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) private allowed;
+  mapping(address => uint) private balances;
+  mapping(address => mapping (address => uint)) private allowed;
 
 
   function totalSupply() public view returns (uint) {
@@ -177,7 +177,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
     uint allowance = allowed[from][msg.sender];
 
     // Check is not needed because sub(allowance, value) will already throw if this condition is not met
-    // require(value &lt;= allowance);
+    // require(value <= allowance);
     // SafeMath uses assert instead of require though, beware when using an analysis tool
 
     balances[from] = balances[from].sub(value);
@@ -194,7 +194,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
    */
   function approve(address spender, uint value) public returns (bool success) {
 
-    // To change the approve amount you first have to reduce the addresses&#39;
+    // To change the approve amount you first have to reduce the addresses'
     //  allowance to zero by calling `approve(spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -237,7 +237,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
 
       uint oldVal = allowed[msg.sender][spender];
 
-      if (subtractedValue &gt; oldVal) {
+      if (subtractedValue > oldVal) {
           allowed[msg.sender][spender] = 0;
       } else {
           allowed[msg.sender][spender] = oldVal.sub(subtractedValue);
@@ -281,7 +281,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -328,7 +328,7 @@ contract ReleasableToken is StandardToken, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Set the contract that can call release and make the token transferable.
@@ -337,7 +337,7 @@ contract ReleasableToken is StandardToken, Ownable {
    * it can only be called by a corresponding exposed API in the crowdsale contract in case of input error.
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
-    // We don&#39;t do interface check here as we might want to have a normal wallet address to act as a release agent.
+    // We don't do interface check here as we might want to have a normal wallet address to act as a release agent.
     releaseAgent = addr;
   }
 
@@ -422,7 +422,7 @@ pragma solidity ^0.4.19;
  */
 contract UpgradeAgent {
 
-  /** This value should be the same as the original token&#39;s total supply */
+  /** This value should be the same as the original token's total supply */
   uint public originalSupply;
 
   /** Interface to ensure the contract is correctly configured */
@@ -471,7 +471,7 @@ contract UpgradeableToken is EIP20Token, Burnable {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet. This allows changing the upgrade agent while there is time.
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -500,7 +500,7 @@ contract UpgradeableToken is EIP20Token, Burnable {
    */
   function upgrade(uint value) public {
     UpgradeState state = getUpgradeState();
-    // Ensure it&#39;s not called in a bad state
+    // Ensure it's not called in a bad state
     require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading);
 
     // Validate input value.
@@ -628,7 +628,7 @@ contract MintableToken is Mintable, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state);
 
@@ -638,7 +638,7 @@ contract MintableToken is Mintable, Ownable {
     // Cannot create a token without supply and no minting
     require(mintable || initialSupply != 0);
     // Create initially all balance on the team multisig
-    if (initialSupply &gt; 0)
+    if (initialSupply > 0)
       mintInternal(multisig, initialSupply);
     // No more new supply allowed after the token creation
     mintingFinished = !mintable;
@@ -688,9 +688,9 @@ contract MintableToken is Mintable, Ownable {
  */
 contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, LostAndFoundToken {
 
-  string public name = &quot;Cryptosolartech&quot;;
+  string public name = "Cryptosolartech";
 
-  string public symbol = &quot;CST&quot;;
+  string public symbol = "CST";
 
   uint8 public decimals;
 
@@ -725,7 +725,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Los
    * Allow upgrade agent functionality to kick in only if the crowdsale was a success.
    */
   function canUpgrade() public view returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
   function burn(uint value) public {

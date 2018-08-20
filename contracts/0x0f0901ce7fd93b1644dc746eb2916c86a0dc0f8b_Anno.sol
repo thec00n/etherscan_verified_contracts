@@ -26,10 +26,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -37,7 +37,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -130,18 +130,18 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
     uint8 public medalDecimals;
     uint public _medalTotalSupply;
 
-    mapping(address =&gt; uint) medalBalances;
-    mapping(address =&gt; bool) medalFreezed;
-    mapping(address =&gt; uint) medalFreezeAmount;
-    mapping(address =&gt; uint) medalUnlockTime;
+    mapping(address => uint) medalBalances;
+    mapping(address => bool) medalFreezed;
+    mapping(address => uint) medalFreezeAmount;
+    mapping(address => uint) medalUnlockTime;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function AnnoMedal() public {
-        medalSymbol = &quot;ANCM&quot;;
-        medalName = &quot;Anno Consensus Medal&quot;;
+        medalSymbol = "ANCM";
+        medalName = "Anno Consensus Medal";
         medalDecimals = 0;
         _medalTotalSupply = 1000000;
         medalBalances[adminAddress] = _medalTotalSupply;
@@ -166,8 +166,8 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function medalTransfer(address to, uint tokens) public whenNotPaused returns (bool success) {
@@ -176,8 +176,8 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
             medalBalances[to] = safeAdd(medalBalances[to], tokens);
             MedalTransfer(msg.sender, to, tokens);
         } else {
-            if(medalBalances[msg.sender] &gt; medalFreezeAmount[msg.sender]) {
-                require(tokens &lt;= safeSub(medalBalances[msg.sender], medalFreezeAmount[msg.sender]));
+            if(medalBalances[msg.sender] > medalFreezeAmount[msg.sender]) {
+                require(tokens <= safeSub(medalBalances[msg.sender], medalFreezeAmount[msg.sender]));
                 medalBalances[msg.sender] = safeSub(medalBalances[msg.sender], tokens);
                 medalBalances[to] = safeAdd(medalBalances[to], tokens);
                 MedalTransfer(msg.sender, to, tokens);
@@ -207,7 +207,7 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
     // Freeze Tokens
     // ------------------------------------------------------------------------
     function medalFreeze(address user, uint amount, uint period) public onlyAdmin {
-        require(medalBalances[user] &gt;= amount);
+        require(medalBalances[user] >= amount);
         medalFreezed[user] = true;
         medalUnlockTime[user] = uint(now) + period;
         medalFreezeAmount[user] = amount;
@@ -215,7 +215,7 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
     
     function _medalFreeze(uint amount) internal {
         require(medalFreezed[msg.sender] == false);
-        require(medalBalances[msg.sender] &gt;= amount);
+        require(medalBalances[msg.sender] >= amount);
         medalFreezed[msg.sender] = true;
         medalUnlockTime[msg.sender] = uint(-1);
         medalFreezeAmount[msg.sender] = amount;
@@ -226,7 +226,7 @@ contract AnnoMedal is ERC20Interface, Administration, SafeMath {
     // ------------------------------------------------------------------------
     function medalUnFreeze() public whenNotPaused {
         require(medalFreezed[msg.sender] == true);
-        require(medalUnlockTime[msg.sender] &lt; uint(now));
+        require(medalUnlockTime[msg.sender] < uint(now));
         medalFreezed[msg.sender] = false;
         medalFreezeAmount[msg.sender] = 0;
     }
@@ -290,34 +290,34 @@ contract AnnoToken is AnnoMedal {
 
     modifier onlyPartner(uint _partnerId) {
         require(partners[_partnerId].admin == msg.sender);
-        require(partners[_partnerId].tokenPool &gt; uint(0));
+        require(partners[_partnerId].tokenPool > uint(0));
         uint deadline = safeAdd(partners[_partnerId].timestamp, partners[_partnerId].durance);
-        require(deadline &gt; now);
+        require(deadline > now);
         _;
     }
     
     modifier onlyVip(uint _vipId) {
         require(vips[_vipId].vip == msg.sender);
-        require(vips[_vipId].durance &gt; now);
-        require(vips[_vipId].timestamp &lt; now);
+        require(vips[_vipId].durance > now);
+        require(vips[_vipId].timestamp < now);
         _;
     }
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; bool) freezed;
-    mapping(address =&gt; uint) freezeAmount;
-    mapping(address =&gt; uint) unlockTime;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => bool) freezed;
+    mapping(address => uint) freezeAmount;
+    mapping(address => uint) unlockTime;
     
-    mapping(uint =&gt; Poster[]) PartnerIdToPosterList;
+    mapping(uint => Poster[]) PartnerIdToPosterList;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function AnnoToken() public {
-        symbol = &quot;ANOT&quot;;
-        name = &quot;Anno Consensus Token&quot;;
+        symbol = "ANOT";
+        name = "Anno Consensus Token";
         decimals = 18;
         _totalSupply = 1000000000000000000000000000;
         minePool = 600000000000000000000000000;
@@ -342,8 +342,8 @@ contract AnnoToken is AnnoMedal {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -352,8 +352,8 @@ contract AnnoToken is AnnoMedal {
             balances[to] = safeAdd(balances[to], tokens);
             Transfer(msg.sender, to, tokens);
         } else {
-            if(balances[msg.sender] &gt; freezeAmount[msg.sender]) {
-                require(tokens &lt;= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
+            if(balances[msg.sender] > freezeAmount[msg.sender]) {
+                require(tokens <= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
                 balances[msg.sender] = safeSub(balances[msg.sender], tokens);
                 balances[to] = safeAdd(balances[to], tokens);
                 Transfer(msg.sender, to, tokens);
@@ -366,7 +366,7 @@ contract AnnoToken is AnnoMedal {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -400,7 +400,7 @@ contract AnnoToken is AnnoMedal {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         require(freezed[msg.sender] != true);
@@ -410,7 +410,7 @@ contract AnnoToken is AnnoMedal {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -425,14 +425,14 @@ contract AnnoToken is AnnoMedal {
     // Mint Tokens
     // ------------------------------------------------------------------------
     function _mint(uint amount, address receiver) internal {
-        require(minePool &gt;= amount);
+        require(minePool >= amount);
         minePool = safeSub(minePool, amount);
         balances[receiver] = safeAdd(balances[receiver], amount);
         Transfer(address(0), receiver, amount);
     }
     
     function mint(uint amount) public onlyAdmin {
-        require(minePool &gt;= amount);
+        require(minePool >= amount);
         minePool = safeSub(minePool, amount);
         balances[msg.sender] = safeAdd(balances[msg.sender], amount);
         _totalSupply = safeAdd(_totalSupply, amount);
@@ -442,7 +442,7 @@ contract AnnoToken is AnnoMedal {
     // Freeze Tokens
     // ------------------------------------------------------------------------
     function freeze(address user, uint amount, uint period) public onlyAdmin {
-        require(balances[user] &gt;= amount);
+        require(balances[user] >= amount);
         freezed[user] = true;
         unlockTime[user] = uint(now) + period;
         freezeAmount[user] = amount;
@@ -453,7 +453,7 @@ contract AnnoToken is AnnoMedal {
     // ------------------------------------------------------------------------
     function unFreeze() public {
         require(freezed[msg.sender] == true);
-        require(unlockTime[msg.sender] &lt; uint(now));
+        require(unlockTime[msg.sender] < uint(now));
         freezed[msg.sender] = false;
         freezeAmount[msg.sender] = 0;
     }
@@ -486,7 +486,7 @@ contract AnnoToken is AnnoMedal {
     }
     
     function partnerTransfer(uint _partnerId, bytes32 _data, address _to, uint _amount) public onlyPartner(_partnerId) whenNotPaused returns (bool) {
-        require(_amount &lt;= partners[_partnerId].singleTrans);
+        require(_amount <= partners[_partnerId].singleTrans);
         partners[_partnerId].tokenPool = safeSub(partners[_partnerId].tokenPool, _amount);
         Poster memory _Poster = Poster ({
            poster: _to,
@@ -515,7 +515,7 @@ contract AnnoToken is AnnoMedal {
         Partner memory _Partner = partners[_partnerId];
         admin = _Partner.admin;
         tokenPool = _Partner.tokenPool;
-        if (_Partner.timestamp + _Partner.durance &gt; uint(now)) {
+        if (_Partner.timestamp + _Partner.durance > uint(now)) {
             timeLeft = _Partner.timestamp + _Partner.durance - uint(now);
         } else {
             timeLeft = 0;
@@ -577,12 +577,12 @@ contract AnnoToken is AnnoMedal {
         durance = _Vip.durance;
         frequence = _Vip.frequence;
         salary = _Vip.salary;
-        if(_Vip.timestamp &gt;= uint(now)) {
+        if(_Vip.timestamp >= uint(now)) {
             nextSalary = safeSub(_Vip.timestamp, uint(now));
-            log = &quot;Please Wait&quot;;
+            log = "Please Wait";
         } else {
             nextSalary = 0;
-            log = &quot;Pick Up Your Salary Now&quot;;
+            log = "Pick Up Your Salary Now";
         }
     }
 
@@ -608,10 +608,10 @@ contract Anno is AnnoToken {
     event TradeComplete(uint indexed tradeId, address indexed buyer, address indexed seller, uint medal, uint token);
     event Mine(address indexed miner, uint indexed salary);
     
-    mapping (address =&gt; uint) MemberToLevel;
-    mapping (address =&gt; uint) MemberToMedal;
-    mapping (address =&gt; uint) MemberToToken;
-    mapping (address =&gt; uint) MemberToTime;
+    mapping (address => uint) MemberToLevel;
+    mapping (address => uint) MemberToMedal;
+    mapping (address => uint) MemberToToken;
+    mapping (address => uint) MemberToTime;
     
     uint public period = 14 days;
     
@@ -641,8 +641,8 @@ contract Anno is AnnoToken {
     AnnoTrade[] annoTrades;
     
     function boardMemberApply(uint _level) public whenNotPaused {
-        require(_level &gt; 0 &amp;&amp; _level &lt;= 4);
-        require(medalBalances[msg.sender] &gt;= boardMember[_level]);
+        require(_level > 0 && _level <= 4);
+        require(medalBalances[msg.sender] >= boardMember[_level]);
         _medalFreeze(boardMember[_level]);
         MemberToLevel[msg.sender] = _level;
         if(MemberToTime[msg.sender] == 0) {
@@ -657,7 +657,7 @@ contract Anno is AnnoToken {
         uint timeLeft
     ) {
         level = MemberToLevel[_member];
-        if(MemberToTime[_member] &gt; uint(now)) {
+        if(MemberToTime[_member] > uint(now)) {
             timeLeft = safeSub(MemberToTime[_member], uint(now));
         } else {
             timeLeft = 0;
@@ -665,7 +665,7 @@ contract Anno is AnnoToken {
     }
     
     function boardMemberCancel() public whenNotPaused {
-        require(MemberToLevel[msg.sender] &gt; 0);
+        require(MemberToLevel[msg.sender] > 0);
         _medalUnFreeze(boardMember[MemberToLevel[msg.sender]]);
         
         MemberToLevel[msg.sender] = 0;
@@ -674,7 +674,7 @@ contract Anno is AnnoToken {
     
     function createAnnoTrade(bool _ifMedal, uint _medal, uint _token) public whenNotPaused returns (uint) {
         if(_ifMedal) {
-            require(medalBalances[msg.sender] &gt;= _medal);
+            require(medalBalances[msg.sender] >= _medal);
             medalBalances[msg.sender] = safeSub(medalBalances[msg.sender], _medal);
             MemberToMedal[msg.sender] = _medal;
             AnnoTrade memory anno = AnnoTrade({
@@ -688,7 +688,7 @@ contract Anno is AnnoToken {
             
             return newMedalTradeId;
         } else {
-            require(balances[msg.sender] &gt;= _token);
+            require(balances[msg.sender] >= _token);
             balances[msg.sender] = safeSub(balances[msg.sender], _token);
             MemberToToken[msg.sender] = _token;
             AnnoTrade memory _anno = AnnoTrade({
@@ -737,8 +737,8 @@ contract Anno is AnnoToken {
     
     function mine() public whenNotPaused {
         uint level = MemberToLevel[msg.sender];
-        require(MemberToTime[msg.sender] &lt; uint(now)); 
-        require(level &gt; 0);
+        require(MemberToTime[msg.sender] < uint(now)); 
+        require(level > 0);
         _mint(salary[level], msg.sender);
         MemberToTime[msg.sender] = safeAdd(MemberToTime[msg.sender], period);
         Mine(msg.sender, salary[level]);
@@ -776,6 +776,6 @@ contract Anno is AnnoToken {
     }
     
     function WhoIsTheContractMaster() public pure returns (string) {
-        return &quot;Alexander The Exlosion&quot;;
+        return "Alexander The Exlosion";
     }
 }

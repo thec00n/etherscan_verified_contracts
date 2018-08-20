@@ -12,13 +12,13 @@ interface ERC20 {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 contract Unity3d is ERC20 {
-    string public constant symbol = &quot;U3D&quot;;
-    string public constant name = &quot;unity3d&quot;;
+    string public constant symbol = "U3D";
+    string public constant name = "unity3d";
     uint8 public constant decimals = 1;
 
     uint private constant __totalSupply = 12800000;
-    mapping (address =&gt; uint) private __balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) private __allowances;
+    mapping (address => uint) private __balanceOf;
+    mapping (address => mapping (address => uint)) private __allowances;
 
     function Unity3d() {
             __balanceOf[msg.sender] = __totalSupply;
@@ -33,7 +33,7 @@ contract Unity3d is ERC20 {
     }
 
     function transfer(address _to, uint _value) returns (bool success) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf(msg.sender)) {
+        if (_value > 0 && _value <= balanceOf(msg.sender)) {
             __balanceOf[msg.sender] -= _value;
             __balanceOf[_to] += _value;
             return true;
@@ -42,10 +42,10 @@ contract Unity3d is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-        if (__allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            __allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            __balanceOf[_from] &gt;= _value) {
+        if (__allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            __allowances[_from][msg.sender] >= _value &&
+            __balanceOf[_from] >= _value) {
             __balanceOf[_from] -= _value;
             __balanceOf[_to] += _value;
             // Missed from the video

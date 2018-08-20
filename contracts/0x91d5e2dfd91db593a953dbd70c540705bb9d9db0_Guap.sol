@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ contract Admin {
 }
 
 contract FilterAddress is Admin{
-  mapping (address =&gt; uint) public AccessAddress;
+  mapping (address => uint) public AccessAddress;
     
   function SetAccess(address addr, uint access) onlyAdmin public{
     AccessAddress[addr] = access;
@@ -141,7 +141,7 @@ contract Fees is Admin{
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -180,8 +180,8 @@ contract Ownable {
  */
 contract BasicToken is ERC20Basic, FilterAddress, Fees, Rewards, Ownable {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; uint256) allSummReward;
+  mapping(address => uint256) balances;
+  mapping(address => uint256) allSummReward;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -193,7 +193,7 @@ contract BasicToken is ERC20Basic, FilterAddress, Fees, Rewards, Ownable {
     uint fSummReward;
     require(_to != address(0));
     require(_to != msg.sender);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     //fees
     _valueto = _value;
     if (msg.sender != owner){  
@@ -213,7 +213,7 @@ contract BasicToken is ERC20Basic, FilterAddress, Fees, Rewards, Ownable {
       _valueto = _valueto.sub(fSummFee); 
     //Rewards
       allSummReward[msg.sender] = allSummReward[msg.sender].add(_value);    
-      if (allSummReward[msg.sender] &gt;= SummRew &amp;&amp; balances[RewAddr] &gt;= fSummReward) {
+      if (allSummReward[msg.sender] >= SummRew && balances[RewAddr] >= fSummReward) {
         balances[RewAddr] = balances[RewAddr].sub(fSummReward);
         balances[msg.sender] = balances[msg.sender].add(fSummReward);
         allSummReward[msg.sender] = 0;
@@ -245,7 +245,7 @@ contract BasicToken is ERC20Basic, FilterAddress, Fees, Rewards, Ownable {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -256,8 +256,8 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _valueto;  
     require(_to != msg.sender);  
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     uint fSummFee;
     uint fSummReward;
     _valueto = _value;
@@ -278,7 +278,7 @@ contract StandardToken is ERC20, BasicToken {
       _valueto = _valueto.sub(fSummFee); 
     //Rewards
       allSummReward[_from] = allSummReward[_from].add(_value);
-      if (allSummReward[_from] &gt;= SummRew &amp;&amp; balances[RewAddr] &gt;= fSummReward) {
+      if (allSummReward[_from] >= SummRew && balances[RewAddr] >= fSummReward) {
         balances[RewAddr] = balances[RewAddr].sub(fSummReward);
         balances[_from] = balances[_from].add(fSummReward);
         allSummReward[_from] = 0;
@@ -295,7 +295,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -341,7 +341,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -364,9 +364,9 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-      require(_value &lt;= balances[msg.sender]);
-      // no need to require value &lt;= totalSupply, since that would imply the
-      // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+      require(_value <= balances[msg.sender]);
+      // no need to require value <= totalSupply, since that would imply the
+      // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
       address burner = msg.sender;
       balances[burner] = balances[burner].sub(_value);
@@ -377,8 +377,8 @@ contract BurnableToken is StandardToken {
 
 contract Guap is Ownable, BurnableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;Guap&quot;;
-  string public constant symbol = &quot;Guap&quot;;
+  string public constant name = "Guap";
+  string public constant symbol = "Guap";
   uint32 public constant decimals = 18;
   uint256 public INITIAL_SUPPLY = 9999999999 * 1 ether;
   function Guap() public {

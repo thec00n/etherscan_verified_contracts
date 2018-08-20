@@ -27,20 +27,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -101,7 +101,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -109,7 +109,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) internal returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -131,8 +131,8 @@ contract EtheeraToken is BasicToken,Ownable {
    using SafeMath for uint256;
    
    //TODO: Change the name and the symbol
-   string public constant name = &quot;ETHEERA&quot;;
-   string public constant symbol = &quot;ETA&quot;;
+   string public constant name = "ETHEERA";
+   string public constant symbol = "ETA";
    uint256 public constant decimals = 18;
 
    uint256 public constant INITIAL_SUPPLY = 300000000;
@@ -147,9 +147,9 @@ contract EtheeraToken is BasicToken,Ownable {
     }
 
     function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
     }
     
@@ -211,10 +211,10 @@ contract Crowdsale {
   bool ethersSentForRefund = false;
   uint256 public amountForRefundIfSoftCapNotReached = 0;
   // whitelisted addresses are those that have registered on the website
-  mapping(address=&gt;bool) whiteListedAddresses;
+  mapping(address=>bool) whiteListedAddresses;
 
   // the buyers of tokens and the amount of ethers they sent in
-  mapping(address=&gt;uint) usersThatBoughtETA;
+  mapping(address=>uint) usersThatBoughtETA;
  
   /**
    * event for token purchase logging
@@ -228,11 +228,11 @@ contract Crowdsale {
 
   function Crowdsale(uint256 _startTime, address _wallet) public {
     
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     startTime = _startTime;
     endTime = startTime + 60 days;
     
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
     require(_wallet != 0x0);
 
     wallet = _wallet;
@@ -254,26 +254,26 @@ contract Crowdsale {
     uint256 timeElapsed = now - startTime;
     uint256 timeElapsedInWeeks = timeElapsed.div(7 days);
     
-    if (timeElapsedInWeeks &lt;=1)
+    if (timeElapsedInWeeks <=1)
     {
         //early sale
         //valid for 7 days (1st week)
         //30000+ TOKEN PURCHASE AMOUNT / 33% BONUS
-        if (tokens&gt;30000 * 10 ** 18)
+        if (tokens>30000 * 10 ** 18)
         {
             //33% bonus
             bonus = tokens.mul(33);
             bonus = bonus.div(100);
         }
         //10000+ TOKEN PURCHASE AMOUNT / 26% BONUS
-        else if (tokens&gt;10000 *10 ** 18 &amp;&amp; tokens&lt;= 30000 * 10 ** 18)
+        else if (tokens>10000 *10 ** 18 && tokens<= 30000 * 10 ** 18)
         {
             //26% bonus
             bonus = tokens.mul(26);
             bonus = bonus.div(100);
         }
         //3000+ TOKEN PURCHASE AMOUNT / 23% BONUS
-        else if (tokens&gt;3000 *10 ** 18 &amp;&amp; tokens&lt;= 10000 * 10 ** 18)
+        else if (tokens>3000 *10 ** 18 && tokens<= 10000 * 10 ** 18)
         {
             //23% bonus
             bonus = tokens.mul(23);
@@ -281,33 +281,33 @@ contract Crowdsale {
         }
         
         //75+ TOKEN PURCHASE AMOUNT / 20% BONUS
-        else if (tokens&gt;=75 *10 ** 18 &amp;&amp; tokens&lt;= 3000 * 10 ** 18)
+        else if (tokens>=75 *10 ** 18 && tokens<= 3000 * 10 ** 18)
         {
             //20% bonus
             bonus = tokens.mul(20);
             bonus = bonus.div(100);
         }
     }
-    else if (timeElapsedInWeeks&gt;1 &amp;&amp; timeElapsedInWeeks &lt;=6)
+    else if (timeElapsedInWeeks>1 && timeElapsedInWeeks <=6)
     {
         //sale
         //from 7th day till 49th day (total 42 days or 6 weeks)
         //30000+ TOKEN PURCHASE AMOUNT / 15% BONUS
-        if (tokens&gt;30000 * 10 ** 18)
+        if (tokens>30000 * 10 ** 18)
         {
             //15% bonus
             bonus = tokens.mul(15);
             bonus = bonus.div(100);
         }
         //10000+ TOKEN PURCHASE AMOUNT / 10% BONUS
-        else if (tokens&gt;10000 *10 ** 18 &amp;&amp; tokens&lt;= 30000 * 10 ** 18)
+        else if (tokens>10000 *10 ** 18 && tokens<= 30000 * 10 ** 18)
         {
             //10% bonus
             bonus = tokens.mul(10);
             bonus = bonus.div(100);
         }
         //3000+ TOKEN PURCHASE AMOUNT / 5% BONUS
-        else if (tokens&gt;3000 *10 ** 18 &amp;&amp; tokens&lt;= 10000 * 10 ** 18)
+        else if (tokens>3000 *10 ** 18 && tokens<= 10000 * 10 ** 18)
         {
             //5% bonus
             bonus = tokens.mul(5);
@@ -315,14 +315,14 @@ contract Crowdsale {
         }
         
         //75+ TOKEN PURCHASE AMOUNT / 3% BONUS
-        else if (tokens&gt;=75 *10 ** 18 &amp;&amp; tokens&lt;= 3000 * 10 ** 18)
+        else if (tokens>=75 *10 ** 18 && tokens<= 3000 * 10 ** 18)
         {
             //3% bonus
             bonus = tokens.mul(3);
             bonus = bonus.div(100);
         }
     }
-    else if (timeElapsedInWeeks&gt;6)
+    else if (timeElapsedInWeeks>6)
     {
         //no bonuses after 7th week i.e. 49 days
         bonus = 0;
@@ -339,10 +339,10 @@ contract Crowdsale {
   
   bool hasICOended = hasEnded();
   
-  if(hasICOended &amp;&amp; weiRaised &lt; softCap * 10 ** 18)
+  if(hasICOended && weiRaised < softCap * 10 ** 18)
       refundToBuyers = true;
         
-  if(hasICOended &amp;&amp; weiRaised &lt; hardCap * 10 ** 18)
+  if(hasICOended && weiRaised < hardCap * 10 ** 18)
   {
       burnRemainingTokens();
       beneficiary.transfer(msg.value);
@@ -366,21 +366,21 @@ contract Crowdsale {
     uint bonus = determineBonus(tokens);
     tokens = tokens.add(bonus);
 
-    require (tokens&gt;=75 * 10 ** 18);
+    require (tokens>=75 * 10 ** 18);
   
-    //can&#39;t sale tokens more than 21000000000
-    require(tokens_sold + tokens &lt;= maxTokensForSale * 10 ** 18);
+    //can't sale tokens more than 21000000000
+    require(tokens_sold + tokens <= maxTokensForSale * 10 ** 18);
   
     //30% of the tokens being sold are being accumulated for the etheera team
     updateTokensForEtheeraTeam(tokens);
   
     // update state
-    require(weiRaised.add(weiAmount) &lt;= hardCap * 10 ** 18);
+    require(weiRaised.add(weiAmount) <= hardCap * 10 ** 18);
 
     weiRaised = weiRaised.add(weiAmount);
     amountForRefundIfSoftCapNotReached = amountForRefundIfSoftCapNotReached.add(weiAmount);
     
-    if (weiRaised &gt;= softCap * 10 ** 18)
+    if (weiRaised >= softCap * 10 ** 18)
     {
       isSoftCapReached = true;
       amountForRefundIfSoftCapNotReached = 0;
@@ -407,14 +407,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    function showMyTokenBalance() public constant returns (uint256 tokenBalance) {
@@ -431,7 +431,7 @@ contract Crowdsale {
         uint balance = token.showMyTokenBalance(wallet);
         uint tokensIssued = tokensForReservedFund + tokensForFoundersAndTeam + tokensForAdvisors +tokensForMarketing + tokensForTournament;
         uint tokensToBurn = balance.sub(tokensIssued);
-        require (balance &gt;=tokensToBurn);
+        require (balance >=tokensToBurn);
         address burnAddress = 0x0;
         token.mint(wallet,burnAddress,tokensToBurn);
     }
@@ -444,17 +444,17 @@ contract Crowdsale {
     
     function getRefund() public 
     {
-        require(refundToBuyers == true &amp;&amp; ethersSentForRefund == true);
-        require(usersThatBoughtETA[msg.sender]&gt;0);
+        require(refundToBuyers == true && ethersSentForRefund == true);
+        require(usersThatBoughtETA[msg.sender]>0);
         uint256 ethersSent = usersThatBoughtETA[msg.sender];
-        require (wallet.balance &gt;= ethersSent);
+        require (wallet.balance >= ethersSent);
         msg.sender.transfer(ethersSent);
     }
     
     function debitAmountToRefund() public payable {
         require(hasEnded()==true);
         require(msg.sender == wallet);
-        require(msg.value &gt;=amountForRefundIfSoftCapNotReached);
+        require(msg.value >=amountForRefundIfSoftCapNotReached);
         ethersSentForRefund = true;
     }
     
@@ -495,7 +495,7 @@ contract Crowdsale {
     function withdrawTokensForEtheeraTeam(uint256 whoseTokensToWithdraw,address[] whereToSendTokens) public {
         //1 reserved fund, 2 for founders and team, 3 for advisors, 4 for marketing, 5 for tournament
         require(msg.sender == wallet);
-        require(now&gt;=endTime);
+        require(now>=endTime);
         uint256 lockPeriod = 0;
         uint256 timePassed = now - endTime;
         uint256 tokensToSend = 0;
@@ -504,11 +504,11 @@ contract Crowdsale {
         {
           //15 months lockup period
           lockPeriod = 15 days * 30;
-          require(timePassed &gt;= lockPeriod);
+          require(timePassed >= lockPeriod);
           //allow withdrawal
           tokensToSend = tokensForReservedFund.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -518,11 +518,11 @@ contract Crowdsale {
         {
           //10 months lockup period
           lockPeriod = 10 days * 30;
-          require(timePassed &gt;= lockPeriod);
+          require(timePassed >= lockPeriod);
           //allow withdrawal
           tokensToSend = tokensForFoundersAndTeam.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }            
@@ -532,7 +532,7 @@ contract Crowdsale {
         {
           //allow withdrawal
           tokensToSend = tokensForAdvisors.div(whereToSendTokens.length);        
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -543,7 +543,7 @@ contract Crowdsale {
           //allow withdrawal
           tokensToSend = tokensForMarketing.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -554,7 +554,7 @@ contract Crowdsale {
           //allow withdrawal
           tokensToSend = tokensForTournament.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }

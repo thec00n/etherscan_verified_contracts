@@ -29,8 +29,8 @@ contract TokenHolder {
     address public tokenAddress;
     uint public holdAmount;
     ERC20 public Token;
-    mapping (address =&gt; uint256) public heldTokens;
-    mapping (address =&gt; uint) public heldTimeline;
+    mapping (address => uint256) public heldTokens;
+    mapping (address => uint) public heldTimeline;
     event Deposit(address from, uint256 amount);
     event Withdraw(address from, uint256 amount);
 
@@ -66,7 +66,7 @@ contract TokenHolder {
 
     // deposit tokens to hold in the system
     function depositTokens(uint256 amount) external {
-        require(Token.allowance(msg.sender, this) &gt;= amount);
+        require(Token.allowance(msg.sender, this) >= amount);
         Token.transferFrom(msg.sender, this, amount);
         heldTokens[msg.sender] += amount;
         heldTimeline[msg.sender] = block.number + holdAmount;
@@ -77,8 +77,8 @@ contract TokenHolder {
     function withdrawTokens(uint256 amount) external {
         uint256 held = heldTokens[msg.sender];
         uint heldBlock = heldTimeline[msg.sender];
-        require(held &gt;= 0 &amp;&amp; held &gt;= amount);
-        require(block.number &gt;= heldBlock);
+        require(held >= 0 && held >= amount);
+        require(block.number >= heldBlock);
         heldTokens[msg.sender] -= amount;
         heldTimeline[msg.sender] = 0;
         Withdraw(msg.sender, amount);

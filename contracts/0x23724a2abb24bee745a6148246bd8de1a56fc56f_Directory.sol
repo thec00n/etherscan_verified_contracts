@@ -12,7 +12,7 @@ contract Directory {
         bool deprecated;
     }
 
-    mapping(address =&gt; Entry) public directory;
+    mapping(address => Entry) public directory;
     Entry[] public entries;
 
     address public owner;
@@ -45,7 +45,7 @@ contract Directory {
     }
 
     function findCurrentIndex(address ethAddress) public constant returns (uint256) {
-        for (uint i = 0; i &lt; entries.length; i++) {
+        for (uint i = 0; i < entries.length; i++) {
             if (entries[i].ethAddress == ethAddress) {
                 return i;
             }

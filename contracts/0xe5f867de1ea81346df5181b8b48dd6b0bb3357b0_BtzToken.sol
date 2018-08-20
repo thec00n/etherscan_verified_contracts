@@ -21,7 +21,7 @@ contract BtzReceiver {
     event Withdrawal(address indexed _withdrawalAddress, uint _value, uint _timestamp);
 
     // mapping of user info indexed by the user ID
-    mapping (uint =&gt; UserInfo) userInfo;
+    mapping (uint => UserInfo) userInfo;
 
     constructor() {
         owner = msg.sender;
@@ -97,12 +97,12 @@ contract ERC20 {
 contract StandardToken is ERC20 {
   using SafeMath for *;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) public returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -112,8 +112,8 @@ contract StandardToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20 {
   }
 
   function approve(address _spender, uint _value) public returns (bool success) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     allowed[msg.sender][_spender] = _value;
     emit Approval(msg.sender, _spender, _value);
     return true;
@@ -177,7 +177,7 @@ contract Standard223Token is ERC223, StandardToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
@@ -186,8 +186,8 @@ contract BtzToken is Standard223Token {
   address public owner;
 
   // BTZ Token parameters
-  string public name = &quot;BTZ by Bunz&quot;;
-  string public symbol = &quot;BTZ&quot;;
+  string public name = "BTZ by Bunz";
+  string public symbol = "BTZ";
   uint8 public constant decimals = 18;
   uint256 public constant decimalFactor = 10 ** uint256(decimals);
   uint256 public constant totalSupply = 200000000000 * decimalFactor;
@@ -244,8 +244,8 @@ contract BtzToken is Standard223Token {
   * @param _value A uint representing the amount of BTZ to deposit
   */
   function deposit(uint _id, uint _value) public {
-      require(prebridge &amp;&amp;
-              balances[msg.sender] &gt;= _value);
+      require(prebridge &&
+              balances[msg.sender] >= _value);
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[receiverContractAddress] = balances[receiverContractAddress].add(_value);
       emit Transfer(msg.sender, receiverContractAddress, _value);
@@ -275,9 +275,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -285,7 +285,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -294,7 +294,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

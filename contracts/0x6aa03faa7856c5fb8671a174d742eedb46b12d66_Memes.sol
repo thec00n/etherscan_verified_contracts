@@ -51,14 +51,14 @@ contract Memes{
     }
     
     function SetDevFee(uint16 tfee) public OnlyOwner{
-        require(tfee &lt;= 500);
+        require(tfee <= 500);
         DEVP = tfee;
     }
     
     // allows to change helper fee. minimum is 10%, max 100%. 
     function SetHFee(uint16 hfee) public OnlyOwner {
-        require(hfee &lt;= 10000);
-        require(hfee &gt;= 1000);
+        require(hfee <= 10000);
+        require(hfee >= 1000);
         HVAL = hfee;
     
     }
@@ -83,21 +83,21 @@ contract Memes{
     }
     
     function Payout() public {
-        require(TimeFinish &lt; block.timestamp);
-        require(TimeFinish &gt; 1);
+        require(TimeFinish < block.timestamp);
+        require(TimeFinish > 1);
         uint256 pay = (Pot * WPOTPART)/10000;
         Pot = Pot - pay;
         PotOwner.transfer(pay);
         TimeFinish = 1; // extra setting time never 1 due miners. reset count
         // too much gas
-        for (uint8 i = 0; i &lt;SIZE; i++ ){
+        for (uint8 i = 0; i <SIZE; i++ ){
            ItemList[i].reset= true;
         }
         emit GameWon(PotOwner, pay, Pot);
     }
     
     function Buy(uint8 ID, string says) public payable {
-        require(ID &lt; SIZE);
+        require(ID < SIZE);
         var ITM = ItemList[ID];
         if (TimeFinish == 0){
             // start game condition.
@@ -114,16 +114,16 @@ contract Memes{
             
         }
         
-        if (TimeFinish &lt; block.timestamp){
+        if (TimeFinish < block.timestamp){
             // game done 
            Payout();
            msg.sender.transfer(msg.value);
         }
-        else if (msg.value &gt;= price){
+        else if (msg.value >= price){
             if (!ITM.reset){
                 require(msg.sender != ITM.owner); // do not buy own item
             }
-            if ((msg.value - price) &gt; 0){
+            if ((msg.value - price) > 0){
                 // pay excess back. 
                 msg.sender.transfer(msg.value - price);
             }
@@ -143,10 +143,10 @@ contract Memes{
             uint256 incr = PIncr; // weird way of passing other types to new types.
             ITM.CPrice = (price * (10000 + incr)) / 10000;
 
-            // check if TimeFinish &gt; block.timestamp; and not 0 otherwise not started
+            // check if TimeFinish > block.timestamp; and not 0 otherwise not started
             uint256 TimeLeft = TimeFinish - block.timestamp;
             
-            if (TimeLeft&lt; TimerStartTime){
+            if (TimeLeft< TimerStartTime){
                 
                 TimeFinish = block.timestamp + TimerStartTime;
             }

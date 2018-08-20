@@ -35,20 +35,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -109,8 +109,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -173,7 +173,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -218,9 +218,9 @@ contract TaskFairToken is StandardToken, Ownable {
 
   event MintFinished();
     
-  string public constant name = &quot;Task Fair Token&quot;;
+  string public constant name = "Task Fair Token";
    
-  string public constant symbol = &quot;TFT&quot;;
+  string public constant symbol = "TFT";
     
   uint32 public constant decimals = 18;
 
@@ -305,14 +305,14 @@ contract StagedCrowdsale is Ownable {
   }
 
   function addStage(uint period, uint hardCap, uint discount) public onlyOwner {
-    require(period &gt; 0 &amp;&amp; hardCap &gt; 0);
+    require(period > 0 && hardCap > 0);
     stages.push(Stage(period, hardCap, discount, 0, 0));
     totalPeriod = totalPeriod.add(period);
     totalHardCap = totalHardCap.add(hardCap);
   }
 
   function removeStage(uint8 number) public onlyOwner {
-    require(number &gt;=0 &amp;&amp; number &lt; stages.length);
+    require(number >=0 && number < stages.length);
 
     Stage storage stage = stages[number];
     totalHardCap = totalHardCap.sub(stage.hardCap);    
@@ -320,7 +320,7 @@ contract StagedCrowdsale is Ownable {
 
     delete stages[number];
 
-    for (uint i = number; i &lt; stages.length - 1; i++) {
+    for (uint i = number; i < stages.length - 1; i++) {
       stages[i] = stages[i+1];
     }
 
@@ -328,7 +328,7 @@ contract StagedCrowdsale is Ownable {
   }
 
   function changeStage(uint8 number, uint period, uint hardCap, uint discount) public onlyOwner {
-    require(number &gt;= 0 &amp;&amp; number &lt; stages.length);
+    require(number >= 0 && number < stages.length);
 
     Stage storage stage = stages[number];
 
@@ -344,7 +344,7 @@ contract StagedCrowdsale is Ownable {
   }
 
   function insertStage(uint8 numberAfter, uint period, uint hardCap, uint discount) public onlyOwner {
-    require(numberAfter &lt; stages.length);
+    require(numberAfter < stages.length);
 
 
     totalPeriod = totalPeriod.add(period);
@@ -352,7 +352,7 @@ contract StagedCrowdsale is Ownable {
 
     stages.length++;
 
-    for (uint i = stages.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = stages.length - 2; i > numberAfter; i--) {
       stages[i + 1] = stages[i];
     }
 
@@ -360,7 +360,7 @@ contract StagedCrowdsale is Ownable {
   }
 
   function clearStages() public onlyOwner {
-    for (uint i = 0; i &lt; stages.length; i++) {
+    for (uint i = 0; i < stages.length; i++) {
       delete stages[i];
     }
     stages.length -= stages.length;
@@ -369,10 +369,10 @@ contract StagedCrowdsale is Ownable {
   }
 
   function lastSaleDate() public constant returns(uint) {
-    require(stages.length &gt; 0);
+    require(stages.length > 0);
     uint lastDate = start;
-    for(uint i=0; i &lt; stages.length; i++) {
-      if(stages[i].invested &gt;= stages[i].hardCap) {
+    for(uint i=0; i < stages.length; i++) {
+      if(stages[i].invested >= stages[i].hardCap) {
         lastDate = stages[i].closed;
       } else {
         lastDate = lastDate.add(stages[i].period * 1 days);
@@ -382,11 +382,11 @@ contract StagedCrowdsale is Ownable {
   }
 
   function currentStage() public constant returns(uint) {
-    require(now &gt;= start);
+    require(now >= start);
     uint previousDate = start;
-    for(uint i=0; i &lt; stages.length; i++) {
-      if(stages[i].invested &lt; stages[i].hardCap) {
-        if(now &gt;= previousDate &amp;&amp; now &lt; previousDate + stages[i].period * 1 days) {
+    for(uint i=0; i < stages.length; i++) {
+      if(stages[i].invested < stages[i].hardCap) {
+        if(now >= previousDate && now < previousDate + stages[i].period * 1 days) {
           return i;
         }
         previousDate = previousDate.add(stages[i].period * 1 days);
@@ -401,7 +401,7 @@ contract StagedCrowdsale is Ownable {
     invested = invested.add(investedInWei);
     Stage storage stage = stages[stageIndex];
     stage.invested = stage.invested.add(investedInWei);
-    if(stage.invested &gt;= stage.hardCap) {
+    if(stage.invested >= stage.hardCap) {
       stage.closed = now;
     }
   }
@@ -457,7 +457,7 @@ contract CommonCrowdsale is StagedCrowdsale {
   TaskFairToken public token;
 
   modifier canMint(uint value) {
-    require(now &gt;= start &amp;&amp; value &gt;= minInvestedLimit);
+    require(now >= start && value >= minInvestedLimit);
     _;
   }
 
@@ -618,7 +618,7 @@ contract PreTGE is CommonCrowdsale {
 
   address public nextSaleAgent;
 
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   event RefundsEnabled();
 
@@ -670,7 +670,7 @@ contract PreTGE is CommonCrowdsale {
   }
 
   function refund() public {
-    require(now &gt; start &amp;&amp; refundOn &amp;&amp; balances[msg.sender] &gt; 0);
+    require(now > start && refundOn && balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -684,7 +684,7 @@ contract PreTGE is CommonCrowdsale {
 
   function calculateAndTransferTokens(address to, uint investorWei) internal {
     super.calculateAndTransferTokens(to, investorWei);
-    if(!softcapAchieved &amp;&amp; invested &gt;= softcap) {
+    if(!softcapAchieved && invested >= softcap) {
       softcapAchieved = true;      
       SoftcapReached();
     }

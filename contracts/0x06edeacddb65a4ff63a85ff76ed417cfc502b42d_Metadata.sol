@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 contract Metadata {
-    mapping (address =&gt; mapping (address =&gt; mapping (string =&gt; string))) metadata;
+    mapping (address => mapping (address => mapping (string => string))) metadata;
 
     function put(address _namespace, string _key, string _value) public {
         metadata[_namespace][msg.sender][_key] = _value;

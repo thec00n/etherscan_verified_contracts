@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -73,7 +73,7 @@ contract ERC20 {
 
 
 contract BountyClaim is Ownable {
-    mapping (address =&gt; uint256) allowance;
+    mapping (address => uint256) allowance;
     address _tokenAddress = 0x2A22e5cCA00a3D63308fa39f29202eB1b39eEf52;
 
     constructor() public {
@@ -82,7 +82,7 @@ contract BountyClaim is Ownable {
     }
 
     function() public payable {
-        require(allowance[msg.sender] &gt; 0);
+        require(allowance[msg.sender] > 0);
         ERC20(_tokenAddress).transfer(msg.sender, allowance[msg.sender]);
         allowance[msg.sender] = 0;
     }

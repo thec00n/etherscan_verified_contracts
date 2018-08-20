@@ -2,10 +2,10 @@ pragma solidity 		^0.4.21	;
 									
 contract	DANONE_301201				{				
 									
-	mapping (address =&gt; uint256) public balanceOf;								
+	mapping (address => uint256) public balanceOf;								
 									
-	string	public		name =	&quot;	DANONE_301201		&quot;	;
-	string	public		symbol =	&quot;	DANOI		&quot;	;
+	string	public		name =	"	DANONE_301201		"	;
+	string	public		symbol =	"	DANOI		"	;
 	uint8	public		decimals =		18			;
 									
 	uint256 public totalSupply =		10690063181257200000000000					;	
@@ -18,17 +18,17 @@ contract	DANONE_301201				{
 	}								
 									
 	function transfer(address to, uint256 value) public returns (bool success) {								
-		require(balanceOf[msg.sender] &gt;= value);							
+		require(balanceOf[msg.sender] >= value);							
 									
-		balanceOf[msg.sender] -= value;  // deduct from sender&#39;s balance							
-		balanceOf[to] += value;          // add to recipient&#39;s balance							
+		balanceOf[msg.sender] -= value;  // deduct from sender's balance							
+		balanceOf[to] += value;          // add to recipient's balance							
 		emit Transfer(msg.sender, to, value);							
 		return true;							
 	}								
 									
 	event Approval(address indexed owner, address indexed spender, uint256 value);								
 									
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;								
+	mapping(address => mapping(address => uint256)) public allowance;								
 									
 	function approve(address spender, uint256 value)								
 		public							
@@ -43,8 +43,8 @@ contract	DANONE_301201				{
 		public							
 		returns (bool success)							
 	{								
-		require(value &lt;= balanceOf[from]);							
-		require(value &lt;= allowance[from][msg.sender]);							
+		require(value <= balanceOf[from]);							
+		require(value <= allowance[from][msg.sender]);							
 									
 		balanceOf[from] -= value;							
 		balanceOf[to] += value;							

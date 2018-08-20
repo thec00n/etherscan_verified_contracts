@@ -2,19 +2,19 @@ pragma solidity ^0.4.20;
 
 contract SONICToken {
     /* ERC20 Public variables of the token */
-    string public constant version = &#39;SONIC 0.2&#39;;
+    string public constant version = 'SONIC 0.2';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* ERC20 This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* store the block number when a withdrawal has been requested*/
-    mapping (address =&gt; withdrawalRequest) public withdrawalRequests;
+    mapping (address => withdrawalRequest) public withdrawalRequests;
     struct withdrawalRequest {
     uint sinceTime;
     uint256 amount;
@@ -45,7 +45,7 @@ contract SONICToken {
 
     /**
      * Initializes contract with initial supply tokens to the creator of the contract
-     * In our case, there&#39;s no initial supply. Tokens will be created as ether is sent
+     * In our case, there's no initial supply. Tokens will be created as ether is sent
      * to the fall-back function. Then tokens are burned when ether is withdrawn.
      */
     function SONICToken(
@@ -66,7 +66,7 @@ contract SONICToken {
      * withdrawal has been requested and is currently pending
      */
     modifier notPendingWithdrawal {
-        if (withdrawalRequests[msg.sender].sinceTime &gt; 0) throw;
+        if (withdrawalRequests[msg.sender].sinceTime > 0) throw;
         _;
     }
 
@@ -77,9 +77,9 @@ contract SONICToken {
      * @return Whether the transfer was successful or not
      */
     function transfer(address _to, uint256 _value) notPendingWithdrawal {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if (withdrawalRequests[_to].sinceTime &gt; 0) throw;    // can&#39;t move tokens when _to is pending withdrawal
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if (withdrawalRequests[_to].sinceTime > 0) throw;    // can't move tokens when _to is pending withdrawal
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -93,7 +93,7 @@ contract SONICToken {
      */
     function approve(address _spender, uint256 _value) notPendingWithdrawal
     returns (bool success) {
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) throw;
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;                                      // we must return a bool as part of the ERC20
@@ -108,7 +108,7 @@ contract SONICToken {
 
         if (!approve(_spender, _value)) return false;
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
             throw;
         }
         return true;
@@ -125,13 +125,13 @@ contract SONICToken {
      */
     function transferFrom(address _from, address _to, uint256 _value)
     returns (bool success) {
-        // note that we can&#39;t use notPendingWithdrawal modifier here since this function does a transfer
+        // note that we can't use notPendingWithdrawal modifier here since this function does a transfer
         // on the behalf of _from
-        if (withdrawalRequests[_from].sinceTime &gt; 0) throw;   // can&#39;t move tokens when _from is pending withdrawal
-        if (withdrawalRequests[_to].sinceTime &gt; 0) throw;     // can&#39;t move tokens when _to is pending withdrawal
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (withdrawalRequests[_from].sinceTime > 0) throw;   // can't move tokens when _from is pending withdrawal
+        if (withdrawalRequests[_to].sinceTime > 0) throw;     // can't move tokens when _to is pending withdrawal
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -141,7 +141,7 @@ contract SONICToken {
 
     /**
      * withdrawalInitiate initiates the withdrawal by going into a waiting period
-     * It remembers the block number &amp; amount held at the time of request.
+     * It remembers the block number & amount held at the time of request.
      * Tokens cannot be moved out during the waiting period, locking the tokens until then.
      * After the waiting period finishes, the call withdrawalComplete
      *
@@ -164,7 +164,7 @@ contract SONICToken {
     function withdrawalComplete() returns (bool) {
         withdrawalRequest r = withdrawalRequests[msg.sender];
         if (r.sinceTime == 0) throw;
-        if ((r.sinceTime + timeWait) &gt; now) {
+        if ((r.sinceTime + timeWait) > now) {
             // holder needs to wait some more blocks
             WithdrawalPremature(msg.sender, r.sinceTime + timeWait - now);
             return false;
@@ -174,8 +174,8 @@ contract SONICToken {
         withdrawalRequests[msg.sender].sinceTime = 0;   // This will unlock the holders tokens
         withdrawalRequests[msg.sender].amount = 0;      // clear the amount that was requested
 
-        if (reward &gt; 0) {
-            if (feePot - reward &gt; feePot) {             // underflow check
+        if (reward > 0) {
+            if (feePot - reward > feePot) {             // underflow check
                 feePot = 0;
             } else {
                 feePot -= reward;
@@ -192,8 +192,8 @@ contract SONICToken {
      */
     function calculateReward(uint256 v) constant returns (uint256) {
         uint256 reward = 0;
-        if (feePot &gt; 0) {
-            reward = feePot * v / totalSupply; // assuming that if feePot &gt; 0 then also totalSupply &gt; 0
+        if (feePot > 0) {
+            reward = feePot * v / totalSupply; // assuming that if feePot > 0 then also totalSupply > 0
         }
         return reward;
     }
@@ -231,13 +231,13 @@ contract SONICToken {
     function doWithdrawal(uint256 extra) internal {
         uint256 amount = balanceOf[msg.sender];
         if (amount == 0) throw;                      // cannot withdraw
-        if (amount + extra &gt; this.balance) {
-            throw;                                   // contract doesn&#39;t have enough balance
+        if (amount + extra > this.balance) {
+            throw;                                   // contract doesn't have enough balance
         }
 
         balanceOf[msg.sender] = 0;
-        if (totalSupply &lt; totalSupply - amount) {
-            throw;                                   // don&#39;t let it underflow (should not happen since amount &lt;= totalSupply)
+        if (totalSupply < totalSupply - amount) {
+            throw;                                   // don't let it underflow (should not happen since amount <= totalSupply)
         } else {
             totalSupply -= amount;                   // deflate the supply!
         }

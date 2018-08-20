@@ -1,4 +1,4 @@
-//author : dm &amp; w
+//author : dm & w
 pragma solidity ^0.4.23;
 
 library SafeMath {
@@ -17,13 +17,13 @@ library SafeMath {
   	}
 
   	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   	}
 
   	function add(uint256 a, uint256 b) internal pure returns (uint256) {
     	uint256 c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   	}
 }
@@ -69,7 +69,7 @@ contract Contract is Controller {
 	}
 
   	modifier underMaxAmount {
-    	require(max_amount == 0 || this.balance &lt;= max_amount);
+    	require(max_amount == 0 || this.balance <= max_amount);
     	_;
   	}
 
@@ -84,7 +84,7 @@ contract Contract is Controller {
 	uint8 public rounds;
 	bool public whitelist_enabled;
 
-	mapping (address =&gt; Contributor) public contributors;
+	mapping (address => Contributor) public contributors;
 	Snapshot[] public snapshots;
 
 	uint256 public const_contract_eth_value;
@@ -112,7 +112,7 @@ contract Contract is Controller {
 
 
 	function buy_the_tokens(bytes _data) onlyOwner {
-		require(!bought_tokens &amp;&amp; sale != 0x0);
+		require(!bought_tokens && sale != 0x0);
 		bought_tokens = true;
 		const_contract_eth_value = this.balance;
 		take_fees_eth_dev();
@@ -122,7 +122,7 @@ contract Contract is Controller {
 	}
 
 	function whitelist_addys(address[] _addys, bool _state) onlyOwner {
-		for (uint256 i = 0; i &lt; _addys.length; i++) {
+		for (uint256 i = 0; i < _addys.length; i++) {
 			Contributor storage contributor = contributors[_addys[i]];
 			contributor.whitelisted = _state;
 		}
@@ -155,9 +155,9 @@ contract Contract is Controller {
 	}
 
 	function set_percent_reduction(uint256 _reduction) onlyOwner payable {
-		require(bought_tokens &amp;&amp; rounds == 0 &amp;&amp; _reduction &lt;= 100);
+		require(bought_tokens && rounds == 0 && _reduction <= 100);
 		percent_reduction = _reduction;
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			owner_supplied_eth = true;
 		}
 		const_contract_eth_value = const_contract_eth_value.sub((const_contract_eth_value.mul(_reduction)).div(100));
@@ -195,7 +195,7 @@ contract Contract is Controller {
 		uint256 contract_token_balance = token.balanceOf(address(this));
 		require(contract_token_balance != 0);
 		Contributor storage contributor = contributors[_user];
-		if (contributor.rounds &lt; rounds) {
+		if (contributor.rounds < rounds) {
 			Snapshot storage snapshot = snapshots[contributor.rounds];
             uint256 tokens_to_withdraw = contributor.balance.mul(snapshot.tokens_balance).div(snapshot.eth_balance);
 			snapshot.tokens_balance = snapshot.tokens_balance.sub(tokens_to_withdraw);
@@ -206,7 +206,7 @@ contract Contract is Controller {
 	}
 
 	function refund(address _user) internal {
-		require(!bought_tokens &amp;&amp; allow_refunds &amp;&amp; percent_reduction == 0);
+		require(!bought_tokens && allow_refunds && percent_reduction == 0);
 		Contributor storage contributor = contributors[_user];
 		uint256 eth_to_withdraw = contributor.balance.add(contributor.fee);
 		contributor.balance = 0;
@@ -215,7 +215,7 @@ contract Contract is Controller {
 	}
 
 	function partial_refund(address _user) internal {
-		require(bought_tokens &amp;&amp; allow_refunds &amp;&amp; rounds == 0 &amp;&amp; percent_reduction &gt; 0);
+		require(bought_tokens && allow_refunds && rounds == 0 && percent_reduction > 0);
 		Contributor storage contributor = contributors[_user];
 		require(contributor.rounds == 0);
 		uint256 eth_to_withdraw = contributor.balance.mul(percent_reduction).div(100);
@@ -253,7 +253,7 @@ contract Contract is Controller {
 
 	function tokens_received() internal {
 		uint256 previous_balance;
-		for (uint8 i = 0; i &lt; snapshots.length; i++) {
+		for (uint8 i = 0; i < snapshots.length; i++) {
 			previous_balance = previous_balance.add(snapshots[i].tokens_balance);
 		}
 		snapshots.push(Snapshot(token.balanceOf(address(this)).sub(previous_balance), const_contract_eth_value));
@@ -268,13 +268,13 @@ contract Contract is Controller {
 	}
 
 	function withdraw_my_tokens() {
-		for (uint8 i = contributors[msg.sender].rounds; i &lt; rounds; i++) {
+		for (uint8 i = contributors[msg.sender].rounds; i < rounds; i++) {
 			withdraw(msg.sender);
 		}
 	}
 
 	function withdraw_tokens_for(address _addy) {
-		for (uint8 i = contributors[_addy].rounds; i &lt; rounds; i++) {
+		for (uint8 i = contributors[_addy].rounds; i < rounds; i++) {
 			withdraw(_addy);
 		}
 	}
@@ -290,7 +290,7 @@ contract Contract is Controller {
 	function provide_eth() payable {}
 
 	function () payable underMaxAmount {
-		require(!bought_tokens &amp;&amp; allow_contributions &amp;&amp; (gas_price_max == 0 || tx.gasprice &lt;= gas_price_max));
+		require(!bought_tokens && allow_contributions && (gas_price_max == 0 || tx.gasprice <= gas_price_max));
 		Contributor storage contributor = contributors[msg.sender];
 		if (whitelist_enabled) {
 			require(contributor.whitelisted);
@@ -307,6 +307,6 @@ contract Contract is Controller {
 		contributor.balance = contributor.balance.add(msg.value).sub(fees);
 		contributor.fee = contributor.fee.add(fees);
 
-		require(individual_cap == 0 || contributor.balance &lt;= individual_cap);
+		require(individual_cap == 0 || contributor.balance <= individual_cap);
 	}
 }

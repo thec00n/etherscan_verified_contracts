@@ -31,14 +31,14 @@ contract DynamicPyramid {
     //init function run on fallback
     function init() private{
         //Ensures only tx with value of 1 ether or greater are processed and added to pyramid
-        if (msg.value &lt; 1 ether) {
+        if (msg.value < 1 ether) {
             collectedFees += msg.value;
             return;
         }
         
         uint _fee = feePercent;
         //50% fee rebate on any ether value of 50 or greater
-        if (msg.value &gt;= 50 ether) _fee /= 2;
+        if (msg.value >= 50 ether) _fee /= 2;
         
         addPayout(_fee);
     }
@@ -57,7 +57,7 @@ contract DynamicPyramid {
         collectedFees += (msg.value * _fee)/100;
         
 	//Pays earlier participiants if balance sufficient
-        while (balance &gt; participants[payoutOrder].payout) {
+        while (balance > participants[payoutOrder].payout) {
             uint payoutToSend = participants[payoutOrder].payout;
             participants[payoutOrder].etherAddress.send(payoutToSend);
 
@@ -76,7 +76,7 @@ contract DynamicPyramid {
     
     function collectFeesInEther(uint _amt) onlyowner {
         _amt *= 1 ether;
-        if (_amt &gt; collectedFees) collectAllFees();
+        if (_amt > collectedFees) collectAllFees();
         
         if (collectedFees == 0) throw;
 
@@ -85,7 +85,7 @@ contract DynamicPyramid {
     }
     
     function collectPercentOfFees(uint _pcent) onlyowner {
-        if (collectedFees == 0 || _pcent &gt; 100) throw;
+        if (collectedFees == 0 || _pcent > 100) throw;
         
         uint feesToCollect = collectedFees / 100 * _pcent;
         creator.send(feesToCollect);
@@ -98,13 +98,13 @@ contract DynamicPyramid {
     }
     
     function changeMultiplier(uint _mult) onlyowner {
-        if (_mult &gt; 300 || _mult &lt; 120) throw;
+        if (_mult > 300 || _mult < 120) throw;
         
         pyramidMultiplier = _mult;
     }
     
     function changeFeePercentage(uint _fee) onlyowner {
-        if (_fee &gt; 10) throw;
+        if (_fee > 10) throw;
         
         feePercent = _fee;
     }
@@ -112,17 +112,17 @@ contract DynamicPyramid {
     //Functions to provide information to end-user using JSON interface or other interfaces
     function currentMultiplier() constant returns (uint multiplier, string info) {
         multiplier = pyramidMultiplier;
-        info = &#39;This multiplier applies to you as soon as transaction is received, may be lowered to hasten payouts or increased if payouts are fast enough. Due to no float or decimals, multiplier is x100 for a fractional multiplier e.g. 250 is actually a 2.5x multiplier. Capped at 3x max and 1.2x min.&#39;;
+        info = 'This multiplier applies to you as soon as transaction is received, may be lowered to hasten payouts or increased if payouts are fast enough. Due to no float or decimals, multiplier is x100 for a fractional multiplier e.g. 250 is actually a 2.5x multiplier. Capped at 3x max and 1.2x min.';
     }
     
     function currentFeePercentage() constant returns (uint fee, string info) {
         fee = feePercent;
-        info = &#39;Shown in % form. Fee is halved(50%) for amounts equal or greater than 50 ethers. (Fee may change, but is capped to a maximum of 10%)&#39;;
+        info = 'Shown in % form. Fee is halved(50%) for amounts equal or greater than 50 ethers. (Fee may change, but is capped to a maximum of 10%)';
     }
     
     function currentPyramidBalanceApproximately() constant returns (uint pyramidBalance, string info) {
         pyramidBalance = balance / 1 ether;
-        info = &#39;All balance values are measured in Ethers, note that due to no decimal placing, these values show up as integers only, within the contract itself you will get the exact decimal value you are supposed to&#39;;
+        info = 'All balance values are measured in Ethers, note that due to no decimal placing, these values show up as integers only, within the contract itself you will get the exact decimal value you are supposed to';
     }
     
     function nextPayoutWhenPyramidBalanceTotalsApproximately() constant returns (uint balancePayout) {
@@ -143,7 +143,7 @@ contract DynamicPyramid {
     
     function participantDetails(uint orderInPyramid) constant returns (address Address, uint Payout)
     {
-        if (orderInPyramid &lt;= participants.length) {
+        if (orderInPyramid <= participants.length) {
             Address = participants[orderInPyramid].etherAddress;
             Payout = participants[orderInPyramid].payout / 1 ether;
         }

@@ -21,20 +21,20 @@ contract Ownable {
 
 contract MITtoken is Ownable {
     
-    string public constant name = &quot;MIT Token&quot;;
+    string public constant name = "MIT Token";
     
-    string public constant symbol = &quot;MIT&quot;;
+    string public constant symbol = "MIT";
     
     uint32 public constant decimals = 1;
     
     uint public totalSupply = 0;
     
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
-    mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping (address => mapping(address => uint)) allowed;
     
     function mint(address _to, uint _value) onlyOwner {
-        assert(totalSupply + _value &gt;= totalSupply &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+        assert(totalSupply + _value >= totalSupply && balances[_to] + _value >= balances[_to]);
         balances[_to] += _value;
         totalSupply += _value;
     }
@@ -44,7 +44,7 @@ contract MITtoken is Ownable {
     }
 
     function transfer(address _to, uint _value) returns (bool success) {
-        if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value; 
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -54,9 +54,9 @@ contract MITtoken is Ownable {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-        if( allowed[_from][msg.sender] &gt;= _value &amp;&amp;
-            balances[_from] &gt;= _value 
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if( allowed[_from][msg.sender] >= _value &&
+            balances[_from] >= _value 
+            && balances[_to] + _value >= balances[_to]) {
             allowed[_from][msg.sender] -= _value;
             balances[_from] -= _value; 
             balances[_to] += _value;

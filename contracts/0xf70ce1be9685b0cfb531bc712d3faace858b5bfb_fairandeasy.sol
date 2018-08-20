@@ -25,13 +25,13 @@ contract fairandeasy {
   }
   
   function enter() {
-    if (msg.value &lt; 1/100 ether) {
+    if (msg.value < 1/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 50 ether) {
+		if (msg.value > 50 ether) {
 			msg.sender.send(msg.value - 50 ether);	
 			amount = 50 ether;
     }
@@ -45,7 +45,7 @@ contract fairandeasy {
     persons[idx].etherAddress = msg.sender;
     persons[idx].amount = amount;
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 150) {
+    while (balance > persons[payoutIdx].amount / 100 * 150) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 150;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

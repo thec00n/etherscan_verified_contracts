@@ -1,5 +1,5 @@
 contract Data {
-    mapping(address =&gt; uint256) public CftBalanceOf;
+    mapping(address => uint256) public CftBalanceOf;
        function Data() public {
 CftBalanceOf[0xd658860e010620244fbbc884fcfab11d34746e25] = 216181342997974;
 CftBalanceOf[0xfa4a4cfa94764c6d590bb763d524d2ddd95d8348] = 36301444501;

@@ -61,7 +61,7 @@ contract SafeMath {
 	* @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -70,7 +70,7 @@ contract SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -79,7 +79,7 @@ contract SafeMath {
 	*/
 	function pow(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a ** b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -90,13 +90,13 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	/*
 	 *  Data structures
 	 */
-	mapping (address =&gt; uint256) internal balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => uint256) internal balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	/*
 	 *  Read and write storage functions
 	 */
-	/// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+	/// @dev Transfers sender's tokens to a given address. Returns success.
 	/// @param _to Address of token receiver.
 	/// @param _value Number of tokens to transfer.
 	function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -108,7 +108,7 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	/// @param _to Address to where tokens are sent.
 	/// @param _value Number of tokens to transfer.
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(allowed[_from][msg.sender] &gt;= _value);
+		require(allowed[_from][msg.sender] >= _value);
 		allowed[_from][msg.sender] -= _value;
 
 		return _transfer(_from, _to, _value);
@@ -148,7 +148,7 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	*/
 	function _transfer(address _from, address _to, uint256 _value) private returns (bool success) {
 		require(_to != address(0));
-		require(balances[_from] &gt;= _value);
+		require(balances[_from] >= _value);
 		balances[_from] -= _value;
 		balances[_to] = add(balances[_to], _value);
 		emit Transfer(_from, _to, _value);
@@ -162,8 +162,8 @@ contract eMangirToken is StandardToken {
 	// Time of the contract creation
 	uint256 public creationTime;
    // Token MetaData
-	string constant public name = &#39;eMangir&#39;;
-	string constant public symbol = &#39;EMG&#39;;
+	string constant public name = 'eMangir';
+	string constant public symbol = 'EMG';
 	uint8  public decimals = 18;
 	uint256 public totalSupply = 1000000000e18;
 
@@ -179,7 +179,7 @@ contract eMangirToken is StandardToken {
 		onlyOwner
 		returns (bool success)
 	{
-		require(_token.balanceOf(address(this)) &gt;= _value);
+		require(_token.balanceOf(address(this)) >= _value);
 		uint256 receiverBalance = _token.balanceOf(_to);
 		require(_token.transfer(_to, _value));
 
@@ -199,7 +199,7 @@ contract eMangirToken is StandardToken {
 	/// @dev Decreases approved amount of tokens for spender. Returns success.
 	function decreaseApproval(address _spender, uint256 _value) public returns (bool success) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_value &gt; oldValue) {
+		if (_value > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = sub(oldValue, _value);

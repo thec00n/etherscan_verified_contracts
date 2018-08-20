@@ -4,7 +4,7 @@ pragma solidity 0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     //Variables
@@ -59,20 +59,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -102,9 +102,9 @@ contract ERC20 is Ownable {
 
     bool public transferFrozen;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -126,7 +126,7 @@ contract ERC20 is Ownable {
     )
         public
     {
-        standard = &quot;ERC20 0.1&quot;;
+        standard = "ERC20 0.1";
 
         initialSupply = _initialSupply;
 
@@ -192,7 +192,7 @@ contract ERC20 is Ownable {
             return false;
         }
 
-        if (allowed[_from][msg.sender] &lt; _value) {
+        if (allowed[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -233,7 +233,7 @@ contract ERC20 is Ownable {
             return true;
         }
 
-        if (balances[_from] &lt; _value) {
+        if (balances[_from] < _value) {
             return false;
         }
 
@@ -302,7 +302,7 @@ contract ERC223Token is ERC223, ERC20 {
             return false;
         }
 
-        if (allowed[_from][msg.sender] &lt; _value) {
+        if (allowed[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -316,7 +316,7 @@ contract ERC223Token is ERC223, ERC20 {
     }
 
     function transferInternal(address from, address to, uint256 value, bytes data) internal returns (bool success) {
-        return transferInternal(from, to, value, data, false, &quot;&quot;);
+        return transferInternal(from, to, value, data, false, "");
     }
 
     function transferInternal(
@@ -354,7 +354,7 @@ contract ERC223Token is ERC223, ERC20 {
 
         bytes memory data;
 
-        return transferInternal(from, to, value, data, false, &quot;&quot;);
+        return transferInternal(from, to, value, data, false, "");
     }
 
     //assemble the given address bytecode. If bytecode exists then the _addr is a contract.
@@ -364,7 +364,7 @@ contract ERC223Token is ERC223, ERC20 {
         //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 }
 
@@ -378,7 +378,7 @@ contract MintingERC20 is ERC223Token {
 
     uint256 public maxSupply;
 
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     modifier onlyMinters () {
         require(true == minters[msg.sender]);
@@ -417,7 +417,7 @@ contract MintingERC20 is ERC223Token {
             return uint256(0);
         }
 
-        if (totalSupply().add(_amount) &gt; maxSupply) {
+        if (totalSupply().add(_amount) > maxSupply) {
             return uint256(0);
         }
 
@@ -443,7 +443,7 @@ contract GenesisToken is MintingERC20 {
 
     TokenEmission[] public emissions;
 
-    mapping(address =&gt; uint256) public lastClaims;
+    mapping(address => uint256) public lastClaims;
 
     /* structs */
     struct TokenEmission {
@@ -470,7 +470,7 @@ contract GenesisToken is MintingERC20 {
         public
         MintingERC20(_totalSupply, _maxSupply, _name, _precision, _symbol, _transferAllSupplyToOwner, _locked)
     {
-        standard = &quot;GenesisToken 0.1&quot;;
+        standard = "GenesisToken 0.1";
         emitTokensSince = _emitTokensSince;
     }
 
@@ -479,7 +479,7 @@ contract GenesisToken is MintingERC20 {
     }
 
     function removeTokenEmission(uint256 _i) public onlyOwner {
-        require(_i &lt; emissions.length);
+        require(_i < emissions.length);
 
         emissions[_i].removed = true;
     }
@@ -488,7 +488,7 @@ contract GenesisToken is MintingERC20 {
         public
         onlyOwner
     {
-        require(_i &lt; emissions.length);
+        require(_i < emissions.length);
 
         emissions[_i].blockDuration = _blockDuration;
         emissions[_i].blockTokens = _blockTokens;
@@ -523,15 +523,15 @@ contract GenesisToken is MintingERC20 {
 
         uint256 collectedTokensPerPeriod;
 
-        for (uint256 i = 0; i &lt; emissions.length; i++) {
+        for (uint256 i = 0; i < emissions.length; i++) {
             TokenEmission storage emission = emissions[i];
 
             if (emission.removed) {
                 continue;
             }
 
-            if (newCurrentTime &lt; emission.periodEndsAt) {
-                if (newCurrentTime.add(remainingSeconds) &gt; emission.periodEndsAt) {
+            if (newCurrentTime < emission.periodEndsAt) {
+                if (newCurrentTime.add(remainingSeconds) > emission.periodEndsAt) {
                     uint256 diff = emission.periodEndsAt.sub(newCurrentTime);
 
                     collectedTokensPerPeriod = getPeriodMinedTokens(
@@ -590,7 +590,7 @@ contract GenesisToken is MintingERC20 {
     )
     internal returns (uint256)
     {
-        if (_time &lt; emitTokensSince) {
+        if (_time < emitTokensSince) {
             lastClaims[_address] = emitTokensSince;
 
             return 0;
@@ -609,13 +609,13 @@ contract GenesisToken is MintingERC20 {
             lastClaimAt = emitTokensSince;
         }
 
-        if (lastClaimAt &gt;= _time) {
+        if (lastClaimAt >= _time) {
             return 0;
         }
 
         uint256 tokens = calculateEmissionTokens(lastClaimAt, _time, _currentBalance, _currentTotalSupply);
 
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             tokensClaimedHook(_address, lastClaimAt, _time, tokens);
 
             lastClaims[_address] = _time;
@@ -702,10 +702,10 @@ contract CLC is MintingERC20, AbstractClaimableToken {
     Clout public genesisToken;
 
     function CLC(uint256 _maxSupply, uint8 decimals, Clout _genesisToken, bool transferAllSupplyToOwner) public
-        MintingERC20(0, _maxSupply, &quot;CLC&quot;, decimals, &quot;CLC&quot;, transferAllSupplyToOwner, false)
+        MintingERC20(0, _maxSupply, "CLC", decimals, "CLC", transferAllSupplyToOwner, false)
     {
         createdAt = now;
-        standard = &quot;CLC 0.1&quot;;
+        standard = "CLC 0.1";
         genesisToken = _genesisToken;
     }
 
@@ -735,7 +735,7 @@ contract Clout is GenesisToken {
     AbstractClaimableToken public claimableToken;
     uint256 public createdAt;
 
-    mapping (address =&gt; bool) public issuers;
+    mapping (address => bool) public issuers;
 
     function Clout(uint256 emitTokensSince,
         bool init,
@@ -758,7 +758,7 @@ contract Clout is GenesisToken {
         )
         // solhint-disable-next-line function-max-lines
     {
-        standard = &quot;Clout 0.1&quot;;
+        standard = "Clout 0.1";
 
         createdAt = now;
 
@@ -874,7 +874,7 @@ contract Clout is GenesisToken {
 
         delete emissions;
 
-        for (uint256 i = 0; i &lt; array.length; i += 4) {
+        for (uint256 i = 0; i < array.length; i += 4) {
             emissions.push(TokenEmission(array[i], array[i + 1], array[i + 2], array[i + 3] == 0 ? false : true));
         }
     }
@@ -902,7 +902,7 @@ contract Clout is GenesisToken {
 
 contract Multivest is Ownable {
     /* public variables */
-    mapping (address =&gt; bool) public allowedMultivests;
+    mapping (address => bool) public allowedMultivests;
 
     /* events */
     event MultivestSet(address multivest);
@@ -958,7 +958,7 @@ contract Multivest is Ownable {
     }
 
     function verify(bytes32 hash, uint8 v, bytes32 r, bytes32 s) public constant returns (address) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
         return ecrecover(keccak256(prefix, hash), v, r, s);
     }
@@ -974,7 +974,7 @@ contract ICO is Ownable, Multivest {
 
     uint8 public decimals;
 
-    mapping(address =&gt; uint256) public holderEthers;
+    mapping(address => uint256) public holderEthers;
     uint256 public collectedEthers;
     uint256 public soldTokens;
 
@@ -1020,7 +1020,7 @@ contract ICO is Ownable, Multivest {
         clout = _clout;
         clc = _clc;
 
-        if (_minEthToContribute &gt; 0) {
+        if (_minEthToContribute > 0) {
             minEthToContribute = _minEthToContribute;
         } else {
             minEthToContribute = 0;
@@ -1083,13 +1083,13 @@ contract ICO is Ownable, Multivest {
         uint256 newSoldTokens = _soldTokens;
         uint256 remainingValue = _value;
     
-        for (uint i = 0; i &lt; phases.length; i++) {
+        for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
 
             uint256 tokens = remainingValue * (uint256(10) ** decimals) / phase.price;
 
-            if (phase.maxAmount &gt; newSoldTokens) {
-                if (newSoldTokens + tokens &gt; phase.maxAmount) {
+            if (phase.maxAmount > newSoldTokens) {
+                if (newSoldTokens + tokens > phase.maxAmount) {
                     uint256 diff = phase.maxAmount - tokens;
 
                     amount += diff;
@@ -1113,7 +1113,7 @@ contract ICO is Ownable, Multivest {
             }
         }
 
-        if (remainingValue &gt; 0) {
+        if (remainingValue > 0) {
             return 0;
         }
 
@@ -1122,12 +1122,12 @@ contract ICO is Ownable, Multivest {
 
     // solhint-disable-next-line code-complexity
     function transferEthers() public onlyOwner {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         require(etherReceivers.length == 4);
         require(etherMasterWallet != address(0));
 
         // ether balance on smart contract
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             uint256 balance = this.balance;
 
             etherReceivers[0].transfer(balance * 15 / 100);
@@ -1149,15 +1149,15 @@ contract ICO is Ownable, Multivest {
             return false;
         }
 
-        if (_time &lt; icoSince) {
+        if (_time < icoSince) {
             return false;
         }
 
-        if (_time &gt; icoTill) {
+        if (_time > icoTill) {
             return false;
         }
 
-        if (_value &lt; minEthToContribute || _value == 0) {
+        if (_value < minEthToContribute || _value == 0) {
             return false;
         }
 

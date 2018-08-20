@@ -52,15 +52,15 @@ contract DACVest is Owned {
 
     function release() onlyOwner public {
         require(ready);
-        require(now &gt; start);
+        require(now > start);
 
         uint256 currentPhaseNumber = (now - start) / phaseDuration + 1;
-        require(currentPhaseNumber &gt; latestPhaseNumber);
+        require(currentPhaseNumber > latestPhaseNumber);
 
         uint256 maxReleaseAmount = (currentPhaseNumber - latestPhaseNumber) * phaseReleaseAmount;
         latestPhaseNumber = currentPhaseNumber;
         uint256 tokenBalance = DACContract.balanceOf(this);
-        uint256 returnAmount = maxReleaseAmount &gt; tokenBalance ? tokenBalance : maxReleaseAmount;
+        uint256 returnAmount = maxReleaseAmount > tokenBalance ? tokenBalance : maxReleaseAmount;
 
         require(DACContract.transfer(owner, returnAmount));
     }

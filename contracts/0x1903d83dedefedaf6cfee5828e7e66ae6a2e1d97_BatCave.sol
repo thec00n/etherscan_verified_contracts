@@ -18,9 +18,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -125,11 +125,11 @@ contract BatCave is Pausable {
     address public batman;
     address public superman;
     address public aquaman;
-    mapping(address =&gt; uint256) public hatcheryBat;
-    mapping(address =&gt; uint256) public claimedEggs;
-    mapping(address =&gt; uint256) public lastHatch;
-    mapping(address =&gt; address) public referrals;
-    mapping (address =&gt; uint256) realRef;
+    mapping(address => uint256) public hatcheryBat;
+    mapping(address => uint256) public claimedEggs;
+    mapping(address => uint256) public lastHatch;
+    mapping(address => address) public referrals;
+    mapping (address => uint256) realRef;
 
 
     // total eggs in market
@@ -140,7 +140,7 @@ contract BatCave is Pausable {
     }
 
     modifier onlyDCFamily() {
-      require(batman!=address(0) &amp;&amp; superman!=address(0) &amp;&amp; aquaman!=address(0));
+      require(batman!=address(0) && superman!=address(0) && aquaman!=address(0));
       require(msg.sender == owner || msg.sender == batman || msg.sender == superman || msg.sender == aquaman);
       _;
     }
@@ -167,9 +167,9 @@ contract BatCave is Pausable {
     }
 
     function withdraw(uint256 _percent) public onlyDCFamily {
-        require(_percent&gt;0&amp;&amp;_percent&lt;=100);
+        require(_percent>0&&_percent<=100);
         uint256 val = SafeMath.div(SafeMath.mul(address(this).balance,_percent), 300);
-        if (val&gt;0){
+        if (val>0){
           batman.transfer(val);
           superman.transfer(val);
           aquaman.transfer(val);
@@ -178,8 +178,8 @@ contract BatCave is Pausable {
 
     // hatch eggs into bats
     function hatchEggs(address ref) public whenNotPaused {
-        // set user&#39;s referral only if which is empty
-        if (referrals[msg.sender] == address(0) &amp;&amp; referrals[msg.sender] != msg.sender) {
+        // set user's referral only if which is empty
+        if (referrals[msg.sender] == address(0) && referrals[msg.sender] != msg.sender) {
             //referrals[msg.sender] = ref;
             if (realRef[ref] == 1){
                 referrals[msg.sender] = ref;
@@ -208,7 +208,7 @@ contract BatCave is Pausable {
         uint256 hasEggs = getMyEggs();
         uint256 eggValue = calculateEggSell(hasEggs);
         uint256 fee = devFee(eggValue);
-        // kill one third of the owner&#39;s snails on egg sale
+        // kill one third of the owner's snails on egg sale
         hatcheryBat[msg.sender] = SafeMath.mul(SafeMath.div(hatcheryBat[msg.sender], 3), 2);
         claimedEggs[msg.sender] = 0;
         lastHatch[msg.sender] = now;
@@ -247,7 +247,7 @@ contract BatCave is Pausable {
         return SafeMath.div(SafeMath.mul(amount, 4), 100);
     }
 
-    // add eggs when there&#39;s no more eggs
+    // add eggs when there's no more eggs
     // 864000000 with 0.02 Ether
     function seedMarket(uint256 eggs) public payable {
         require(marketEggs == 0);
@@ -280,6 +280,6 @@ contract BatCave is Pausable {
     }
 
     function min(uint256 a, uint256 b) private pure returns(uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }

@@ -10,10 +10,10 @@ contract MineFarmer{
     uint256 PSNH=5000;
     bool public initialized=false;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryShrimp;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryShrimp;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
     _0xBitcoinToken Token = _0xBitcoinToken(0xB6eD7644C69416d67B522e20bC294A9a9B405B31);
     address partnerAddress;
@@ -23,7 +23,7 @@ contract MineFarmer{
     }
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -59,7 +59,7 @@ contract MineFarmer{
     }
     
     function receiveApproval(address receiveFrom, uint256 tkn, address tknaddr, bytes empty){
-        require(tknaddr == address(Token) &amp;&amp; msg.sender == tknaddr);
+        require(tknaddr == address(Token) && msg.sender == tknaddr);
         Token.transferFrom(receiveFrom, address(this), tkn);
         buyEggs(tkn, receiveFrom);
     }
@@ -88,7 +88,7 @@ contract MineFarmer{
     }
     function seedMarket(uint256 eggs, uint256 tkn) public{
         require(marketEggs==0);
-        if (tkn&gt;0){
+        if (tkn>0){
             Token.transferFrom(msg.sender, address(this), tkn);
         }
         initialized=true;
@@ -114,7 +114,7 @@ contract MineFarmer{
         return SafeMath.mul(secondsPassed,hatcheryShrimp[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -136,9 +136,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -146,7 +146,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -155,7 +155,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -164,7 +164,7 @@ library SafeMath {
 library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
-        if(a &gt; b) return b;
+        if(a > b) return b;
         return a;
     }
 }
@@ -227,7 +227,7 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
      uint public latestDifficultyPeriodStarted;
-    uint public epochCount;//number of &#39;blocks&#39; mined
+    uint public epochCount;//number of 'blocks' mined
     uint public _BLOCKS_PER_READJUSTMENT = 1024;
     //a little number
     uint public  _MINIMUM_TARGET = 2**16;
@@ -242,17 +242,17 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
     uint public lastRewardAmount;
     uint public lastRewardEthBlockNumber;
     bool locked = false;
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
     uint public tokensMinted;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     event Mint(address indexed from, uint reward_amount, uint epochCount, bytes32 newChallengeNumber);
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function _0xBitcoinToken() public onlyOwner{
-        symbol = &quot;0xBTC&quot;;
-        name = &quot;0xBitcoin Token&quot;;
+        symbol = "0xBTC";
+        name = "0xBitcoin Token";
         decimals = 8;
         _totalSupply = 21000000 * 10**uint(decimals);
         if(locked) revert();
@@ -270,12 +270,12 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
         //Transfer(address(0), owner, _totalSupply);
     }
         function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
-            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender&#39;s address to prevent MITM attacks
+            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender's address to prevent MITM attacks
             bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
             //the challenge digest must match the expected
             if (digest != challenge_digest) revert();
             //the digest must be smaller than the target
-            if(uint256(digest) &gt; miningTarget) revert();
+            if(uint256(digest) > miningTarget) revert();
             //only allow one reward for each challenge
              bytes32 solution = solutionForChallenge[challengeNumber];
              solutionForChallenge[challengeNumber] = digest;
@@ -284,7 +284,7 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
             balances[msg.sender] = balances[msg.sender].add(reward_amount);
             tokensMinted = tokensMinted.add(reward_amount);
             //Cannot mint more tokens than there are
-            assert(tokensMinted &lt;= maxSupplyForEra);
+            assert(tokensMinted <= maxSupplyForEra);
             //set readonly diagnostics data
             lastRewardTo = msg.sender;
             lastRewardAmount = reward_amount;
@@ -293,12 +293,12 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
               Mint(msg.sender, reward_amount, epochCount, challengeNumber );
            return true;
         }
-    //a new &#39;block&#39; to be mined
+    //a new 'block' to be mined
     function _startNewMiningEpoch() internal {
       //if max supply for the era will be exceeded next reward round then enter the new era before that happens
       //40 is the final reward era, almost all tokens minted
       //once the final era is reached, more tokens will not be given out because the assert function
-      if( tokensMinted.add(getMiningReward()) &gt; maxSupplyForEra &amp;&amp; rewardEra &lt; 39)
+      if( tokensMinted.add(getMiningReward()) > maxSupplyForEra && rewardEra < 39)
       {
         rewardEra = rewardEra + 1;
       }
@@ -321,11 +321,11 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
     function _reAdjustDifficulty() internal {
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
         //assume 360 ethereum blocks per hour
-        //we want miners to spend 10 minutes to mine each &#39;block&#39;, about 60 ethereum blocks = one 0xbitcoin epoch
+        //we want miners to spend 10 minutes to mine each 'block', about 60 ethereum blocks = one 0xbitcoin epoch
         uint epochsMined = _BLOCKS_PER_READJUSTMENT; //256
         uint targetEthBlocksPerDiffPeriod = epochsMined * 60; //should be 60 times slower than ethereum
         //if there were less eth blocks passed in time than expected
-        if( ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod )
+        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod )
         {
           uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div( ethBlocksSinceLastDifficultyPeriod );
           uint excess_block_pct_extra = excess_block_pct.sub(100).limitLessThan(1000);
@@ -339,11 +339,11 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
           miningTarget = miningTarget.add(miningTarget.div(2000).mul(shortage_block_pct_extra));   //by up to 50 %
         }
         latestDifficultyPeriodStarted = block.number;
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -374,7 +374,7 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
         //help debug mining software
       function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testTarget) public view returns (bool success) {
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
           return (digest == challenge_digest);
         }
     // ------------------------------------------------------------------------
@@ -390,8 +390,8 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
         return balances[tokenOwner];
     }
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -402,7 +402,7 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
     }
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -431,14 +431,14 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
     }
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -448,7 +448,7 @@ contract _0xBitcoinToken is ERC20Interface, Owned {
         return true;
     }
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

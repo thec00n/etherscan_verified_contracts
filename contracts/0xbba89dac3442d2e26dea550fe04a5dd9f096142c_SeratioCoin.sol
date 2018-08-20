@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -73,7 +73,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -86,7 +86,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -252,9 +252,9 @@ contract StartableMintableToken is Startable, MintableToken {
 
 contract SeratioCoin is StartableMintableToken {
     // Name of the token
-    string constant public name = &quot;SeratioCoin&quot;;
+    string constant public name = "SeratioCoin";
     // Token abbreviation
-    string constant public symbol = &quot;SER&quot;;
+    string constant public symbol = "SER";
     // Decimal places
     uint8 constant public decimals = 7;
     // Zeros after the point
@@ -324,17 +324,17 @@ contract SeratioICO is Ownable{
 
         wallet = multisig;
 
-        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  0 days,  tokenPriceInPoundPences:  10})); // from  1st day to  3rd day -&gt; 50% discount
-        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  3 days,  tokenPriceInPoundPences:  12})); // from  4th day to  6th day -&gt; 40% discount
-        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  6 days,  tokenPriceInPoundPences:  14})); // from  7th day to  9th day -&gt; 30% discount
-        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  9 days,  tokenPriceInPoundPences:  16})); // from 10th day to 12th day -&gt; 20% discount
-        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart + 12 days,  tokenPriceInPoundPences:  18})); // from 13th day to 16th day -&gt; 10% discount
+        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  0 days,  tokenPriceInPoundPences:  10})); // from  1st day to  3rd day -> 50% discount
+        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  3 days,  tokenPriceInPoundPences:  12})); // from  4th day to  6th day -> 40% discount
+        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  6 days,  tokenPriceInPoundPences:  14})); // from  7th day to  9th day -> 30% discount
+        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart +  9 days,  tokenPriceInPoundPences:  16})); // from 10th day to 12th day -> 20% discount
+        IcoPhaseOneArray.push(IcoPhaseOneConfig({startingTime: timeStampOfCrowdSaleStart + 12 days,  tokenPriceInPoundPences:  18})); // from 13th day to 16th day -> 10% discount
     }
 
     function getIcoPhaseOneThreeDayIndex(uint time) constant returns (uint){
-        for (uint i = 1; i &lt;= IcoPhaseOneArray.length; i++) {
+        for (uint i = 1; i <= IcoPhaseOneArray.length; i++) {
             uint indexToEvaluate = IcoPhaseOneArray.length-i;
-            if (time &gt;= IcoPhaseOneArray[indexToEvaluate].startingTime)
+            if (time >= IcoPhaseOneArray[indexToEvaluate].startingTime)
                 return indexToEvaluate;
         }
     }
@@ -345,7 +345,7 @@ contract SeratioICO is Ownable{
     }
 
     function hasIcoPhaseOneEnded (uint time) constant returns (bool){
-        return time &gt;= (IcoPhaseOneArray[IcoPhaseOneArray.length-1].startingTime + 4 days);
+        return time >= (IcoPhaseOneArray[IcoPhaseOneArray.length-1].startingTime + 4 days);
     }
 
     /**
@@ -356,7 +356,7 @@ contract SeratioICO is Ownable{
      */
     function () payable hasCrowdSaleStarted hasCrowdSaleNotYetEnded {
         // check if investment is more than 0
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             mintSerTokens(msg.sender, msg.value, now);
             require (wallet.send(msg.value));
             DepositAcceptedEvent(msg.sender, msg.value);
@@ -364,17 +364,17 @@ contract SeratioICO is Ownable{
     }
 
     modifier hasCrowdSaleStarted() {
-        require (now &gt;= timeStampOfCrowdSaleStart);
+        require (now >= timeStampOfCrowdSaleStart);
         _;
     }
 
     modifier hasCrowdSaleEnded() {
-        require (now &gt;= timeStampOfCrowdSaleEnd);
+        require (now >= timeStampOfCrowdSaleEnd);
         _;
     }
 
     modifier hasCrowdSaleNotYetEnded() {
-        require (now &lt; timeStampOfCrowdSaleEnd);
+        require (now < timeStampOfCrowdSaleEnd);
         _;
     }
 
@@ -429,17 +429,17 @@ contract SeratioICO is Ownable{
             investmentCapInPounds = investmentCapIcoPhaseTwoPounds;
             minimumInvestmentInPounds = MIN_INVESTMENT_ICO_PHASE_TWO_POUNDS;
             tokenPriceInPoundPences = BASE_TOKEN_PRICE_IN_POUND_PENCES;
-            require(investmentInPoundsTimesEther &gt;= minimumInvestmentInPounds.mul(1 ether));
+            require(investmentInPoundsTimesEther >= minimumInvestmentInPounds.mul(1 ether));
         }else{
             // ICO Phase One
             investmentCapInPounds = INVESTMENT_CAP_ICO_PHASE_ONE_POUNDS;
             minimumInvestmentInPounds = MIN_INVESTMENT_ICO_PHASE_ONE_POUNDS;
             tokenPriceInPoundPences = getIcoPhaseOneTokenPriceInPoundPences(timeStampOfInvestment);
-            require(investmentInPoundsTimesEther &gt;= minimumInvestmentInPounds.mul(1 ether));
+            require(investmentInPoundsTimesEther >= minimumInvestmentInPounds.mul(1 ether));
 
             uint totalInvestmentInPoundsTimesEther = calculatePoundsTimesEther(getTotalValue().add(value));
             uint investmentCapInPoundsTimesEther = investmentCapInPounds.mul(1 ether);
-            if(totalInvestmentInPoundsTimesEther &gt; investmentCapInPoundsTimesEther){
+            if(totalInvestmentInPoundsTimesEther > investmentCapInPoundsTimesEther){
                 // With this investment, the investment cap is reached
                 investmentCapPreIcoReached = true;
                 // retarget investment over phase one cap to phase two.

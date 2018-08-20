@@ -13,18 +13,18 @@ library SafeMath {
         return c;
       }
       function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
       }
       function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
       }
       function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
       function assert(bool assertion) internal {
@@ -88,13 +88,13 @@ contract Circleramide {
         string message;
     }
     
-    mapping(address =&gt; uint) public balances;
-    mapping (uint =&gt; mapping(uint =&gt; uint)) public blocksCoordinates;
-    mapping (uint =&gt; address) public blocksOwners;
-    mapping (uint =&gt; uint) public prices;
-    mapping (uint =&gt; address) public rewards_id;
-    mapping (uint =&gt; uint) public rewards_amount;
-    mapping (uint =&gt; Block) public blocks;
+    mapping(address => uint) public balances;
+    mapping (uint => mapping(uint => uint)) public blocksCoordinates;
+    mapping (uint => address) public blocksOwners;
+    mapping (uint => uint) public prices;
+    mapping (uint => address) public rewards_id;
+    mapping (uint => uint) public rewards_amount;
+    mapping (uint => Block) public blocks;
     
 
     function Circleramide() {
@@ -104,8 +104,8 @@ contract Circleramide {
         
         totalBlocks = 1;
         calculatePrice(0);
-        placeBlock(owner, 0, 0, &#39;First Block :)&#39;);
-        sendMessage(&#39;Welcome to the Circleramide!&#39;);
+        placeBlock(owner, 0, 0, 'First Block :)');
+        sendMessage('Welcome to the Circleramide!');
     }
 
     // public function
@@ -116,7 +116,7 @@ contract Circleramide {
             uint bet = calculatePrice(y);
             uint senderBalance = balances[sender] + msg.value;
             
-            require(bet &lt;= senderBalance);
+            require(bet <= senderBalance);
             
             if(checkBlockEmpty(x, y)) {
                 uint fee = (bet * FEE_TOP)/FEE_DIV;
@@ -125,7 +125,7 @@ contract Circleramide {
                 uint amountForBlock = bet - fee;
                 
     
-                if(x &lt; FIRST_ROW_BLOCKS_COUNT - y) {
+                if(x < FIRST_ROW_BLOCKS_COUNT - y) {
                    balances[owner] += amountForOwner;
                    rewardBalance += jackpotFee;
                    balances[sender] = senderBalance - bet;
@@ -189,7 +189,7 @@ contract Circleramide {
        uint parent1_id = blocksCoordinates[parentY][x];
        uint parent2_id = blocksCoordinates[parentY][x + 1];
        
-       if(parent1_id != 0 &amp;&amp; parent2_id != 0) {
+       if(parent1_id != 0 && parent2_id != 0) {
             address owner_of_block1 = blocksOwners[parent1_id];
             address owner_of_block2 = blocksOwners[parent2_id];
             
@@ -219,14 +219,14 @@ contract Circleramide {
         require(amount != 0);
         
         // The user must have enough balance to withdraw
-        require(balances[msg.sender] &gt;= amount);
+        require(balances[msg.sender] >= amount);
         
-        // Subtract the withdrawn amount from the user&#39;s balance
+        // Subtract the withdrawn amount from the user's balance
         balances[msg.sender] = balances[msg.sender].sub(amount);
         
-        // Transfer the amount to the user&#39;s address
+        // Transfer the amount to the user's address
         // If the transfer() call fails an exception will be thrown,
-        // and therefore the user&#39;s balance will be automatically restored
+        // and therefore the user's balance will be automatically restored
         msg.sender.transfer(amount);
         
         Withdraw(msg.sender);
@@ -268,7 +268,7 @@ contract Circleramide {
         uint[] memory arr = new uint[](o * 2);
         offset = o; cursor = c;
         uint l = offset + cursor;
-        for(uint i = cursor; i&lt;l; i++) {
+        for(uint i = cursor; i<l; i++) {
             arr[n] = uint(rewards_id[i]);
             arr[n + 1] = rewards_amount[i];
             n += 2;
@@ -280,7 +280,7 @@ contract Circleramide {
         uint[] memory arr = new uint[](o * 3);
         offset = o; cursor = c;
         uint l = offset + cursor;
-        for(uint i = cursor; i&lt;l; i++) {
+        for(uint i = cursor; i<l; i++) {
             Block storage b = blocks[i+1];
             arr[n] = (b.x);
             arr[n + 1] = (b.y);
@@ -294,7 +294,7 @@ contract Circleramide {
         uint[] memory arr = new uint[](o);
         offset = o;  cursor = c;
         uint l = offset + cursor;
-        for(uint i = cursor; i&lt;l; i++) {
+        for(uint i = cursor; i<l; i++) {
             arr[n] = prices[i];
             n++;
         }
@@ -311,8 +311,8 @@ contract Circleramide {
         string message;
     }
     uint private messagesCount;
-    mapping(address =&gt; string) public usernames;
-    mapping(uint =&gt; Message) public messages;
+    mapping(address => string) public usernames;
+    mapping(uint => Message) public messages;
     
     function sendMessage(string message) public returns (uint) {
         messages[messagesCount] = Message(msg.sender, message);

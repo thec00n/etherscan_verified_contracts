@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -46,7 +46,7 @@ contract PreSale is Ownable {
     uint256 constant public END_TIME =   1524251238;
 
     uint256 public eggsSold;
-    mapping (address =&gt; uint32) public eggs;
+    mapping (address => uint32) public eggs;
 
     bool private paused = false; 
 
@@ -58,20 +58,20 @@ contract PreSale is Ownable {
     event EggsRedeemed(address indexed sender, uint256 eggs);
 
     function bulkPurchageEgg() payable public {
-        require(now &gt; START_TIME);
-        require(now &lt; END_TIME);
+        require(now > START_TIME);
+        require(now < END_TIME);
         require(paused == false);
-        require(msg.value &gt;= (eggPrice() * 5 + INCREASE_RATE * 10));
+        require(msg.value >= (eggPrice() * 5 + INCREASE_RATE * 10));
         eggs[msg.sender] = eggs[msg.sender] + 5;
         eggsSold = eggsSold + 5;
         EggsPurchased(msg.sender, msg.value, 5);
     }
     
     function purchaseEgg() payable public {
-        require(now &gt; START_TIME);
-        require(now &lt; END_TIME);
+        require(now > START_TIME);
+        require(now < END_TIME);
         require(paused == false);
-        require(msg.value &gt;= eggPrice());
+        require(msg.value >= eggPrice());
 
         eggs[msg.sender] = eggs[msg.sender] + 1;
         eggsSold = eggsSold + 1;
@@ -81,7 +81,7 @@ contract PreSale is Ownable {
     
     function redeemEgg(address targetUser) public returns(uint256) {
         require(paused == false);
-        require(eggs[targetUser] &gt; 0);
+        require(eggs[targetUser] > 0);
 
         EggsRedeemed(targetUser, eggs[targetUser]);
 

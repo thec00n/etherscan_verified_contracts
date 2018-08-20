@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,7 +88,7 @@ contract LockFounders {
     function release() onlyOwner public {
         uint256 amount = token.balanceOf(this);
         uint256 time = now;
-        require(time &gt;= releaseTime &amp;&amp; !isReleased &amp;&amp; amount &gt; 0);
+        require(time >= releaseTime && !isReleased && amount > 0);
 
         token.safeTransfer(companyWallet, amount);
         isReleased = true;

@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -197,7 +197,7 @@ contract QWoodDAOTokenSale is Pausable {
   uint256 public weiRaised;
 
   // Map from token address to token data
-  mapping (address =&gt; ReceivedToken) public receivedTokens;
+  mapping (address => ReceivedToken) public receivedTokens;
 
 
   /**
@@ -309,7 +309,7 @@ contract QWoodDAOTokenSale is Pausable {
   )
     public
   {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -341,11 +341,11 @@ contract QWoodDAOTokenSale is Pausable {
     require(weiAmount != 0);
 
     uint256 tokenBalance = token.balanceOf(address(this));
-    require(tokenBalance &gt; 0);
+    require(tokenBalance > 0);
 
     uint256 tokens = _getTokenAmount(address(0), weiAmount);
 
-    if (tokens &gt; tokenBalance) {
+    if (tokens > tokenBalance) {
       tokens = tokenBalance;
       weiAmount = _inverseGetTokenAmount(address(0), tokens);
 
@@ -374,7 +374,7 @@ contract QWoodDAOTokenSale is Pausable {
    * @param _newRate New number of token units a buyer gets per wei
    */
   function setRate(uint256 _newRate) onlyOwner external {
-    require(_newRate &gt; 0);
+    require(_newRate > 0);
     rate = _newRate;
 
     emit ChangeRate(_newRate);
@@ -431,7 +431,7 @@ contract QWoodDAOTokenSale is Pausable {
     external
   {
     require(_tokenAddress != address(0));
-    require(_tokenRate &gt; 0);
+    require(_tokenRate > 0);
 
     ReceivedToken memory _token = ReceivedToken({
       name: _tokenName,
@@ -473,8 +473,8 @@ contract QWoodDAOTokenSale is Pausable {
     external
   {
     require(_tokenAddress != address(0));
-    require(receivedTokens[_tokenAddress].rate &gt; 0);
-    require(_newTokenRate &gt; 0);
+    require(receivedTokens[_tokenAddress].rate > 0);
+    require(_newTokenRate > 0);
 
     receivedTokens[_tokenAddress].rate = _newTokenRate;
 
@@ -502,8 +502,8 @@ contract QWoodDAOTokenSale is Pausable {
 
     require(_from != address(0));
     require(_tokenAddress != address(0));
-    require(receivedTokens[_tokenAddress].rate &gt; 0); // check: token in receivedTokens
-    require(_amount &gt; 0);
+    require(receivedTokens[_tokenAddress].rate > 0); // check: token in receivedTokens
+    require(_amount > 0);
 
     require(msg.sender == _tokenAddress);
 
@@ -532,8 +532,8 @@ contract QWoodDAOTokenSale is Pausable {
     // or this contract will not be able to do the transfer on your behalf
     require(_tokenAddress != address(0));
 
-    require(receivedTokens[_tokenAddress].rate &gt; 0);
-    require(_amount &gt; 0);
+    require(receivedTokens[_tokenAddress].rate > 0);
+    require(_amount > 0);
 
     _exchangeTokens(_tokenAddress, msg.sender, _amount);
   }
@@ -561,11 +561,11 @@ contract QWoodDAOTokenSale is Pausable {
     require(_tokenAddress.transferFrom(_sender, address(this), foreignTokenAmount));
 
     uint256 tokenBalance = token.balanceOf(address(this));
-    require(tokenBalance &gt; 0);
+    require(tokenBalance > 0);
 
     uint256 tokens = _getTokenAmount(_tokenAddress, foreignTokenAmount);
 
-    if (tokens &gt; tokenBalance) {
+    if (tokens > tokenBalance) {
       tokens = tokenBalance;
       foreignTokenAmount = _inverseGetTokenAmount(_tokenAddress, tokens);
 

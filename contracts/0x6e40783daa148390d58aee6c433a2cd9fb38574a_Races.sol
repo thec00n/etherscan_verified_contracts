@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,9 +54,9 @@ contract Races is Ownable {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments; 
-  mapping( uint8 =&gt; address) public raceBet; 
-  mapping(address =&gt; uint8) public jockeyLevel; 
+  mapping(address => uint256) public payments; 
+  mapping( uint8 => address) public raceBet; 
+  mapping(address => uint8) public jockeyLevel; 
   uint256 public gameCost = 20 finney; //0.02 eth
   uint32 public raceNum = 1; 
   uint8 public lastWinner = 0; 
@@ -65,7 +65,7 @@ contract Races is Ownable {
   
   function newBet(uint8 horseNum) public payable {
   
-     if (raceBet[horseNum]==0 &amp;&amp; horseNum&lt;7 &amp;&amp; horseNum&gt;0 &amp;&amp; msg.value==20 finney) {
+     if (raceBet[horseNum]==0 && horseNum<7 && horseNum>0 && msg.value==20 finney) {
 		 payments[msg.sender] = payments[msg.sender].add(msg.value);
 		 raceBet[horseNum]=msg.sender;
 		 betsNum++;
@@ -76,15 +76,15 @@ contract Races is Ownable {
 
 			//jockey has level from 0 to 5 (1 - 6 on web site)
 			uint8 newWinner=uint8(random_number%77+1);
-			if (jockeyLevel[raceBet[newWinner]]&lt;5) {
+			if (jockeyLevel[raceBet[newWinner]]<5) {
 				newWinner=uint8(random_number%62+1);
-				if (jockeyLevel[raceBet[newWinner]]&lt;4) {
+				if (jockeyLevel[raceBet[newWinner]]<4) {
 					newWinner=uint8(random_number%47+1);
-					if (jockeyLevel[raceBet[newWinner]]&lt;3) {
+					if (jockeyLevel[raceBet[newWinner]]<3) {
 						newWinner=uint8(random_number%32+1);
-						if (jockeyLevel[raceBet[newWinner]]&lt;2) {
+						if (jockeyLevel[raceBet[newWinner]]<2) {
 							newWinner=uint8(random_number%17+1);
-							if (jockeyLevel[raceBet[newWinner]]&lt;1) {
+							if (jockeyLevel[raceBet[newWinner]]<1) {
 							   newWinner=uint8(random_number%6+1);
 							}
 						}
@@ -92,14 +92,14 @@ contract Races is Ownable {
 				}
 			}
 			
-			if (newWinner&gt;0 &amp;&amp; newWinner&lt;7) {
+			if (newWinner>0 && newWinner<7) {
 				raceNum++;
 				racesInfo(raceNum, newWinner, raceBet[newWinner]); //save event in blockchain
 
-				if (jockeyLevel[raceBet[newWinner]]&lt;5)
+				if (jockeyLevel[raceBet[newWinner]]<5)
 					jockeyLevel[raceBet[newWinner]]++;
 				
-				for (uint8 i=1;i&lt;7;i++) {
+				for (uint8 i=1;i<7;i++) {
 					if (i != newWinner) {
 						payments[raceBet[i]]=payments[raceBet[i]].sub(gameCost);
 						payments[raceBet[newWinner]]=payments[raceBet[newWinner]].add(gameCost).sub(winTax);
@@ -114,14 +114,14 @@ contract Races is Ownable {
 
 		 }
 	 } else {
-	     require(this.balance &gt;= msg.value &amp;&amp; msg.value&gt;0);
+	     require(this.balance >= msg.value && msg.value>0);
 	     address payee = msg.sender;
 	     assert(payee.send(msg.value)); ///error bet, send eth back
 	 }
   }
   
   function setGameCost(uint256 newGameCost) public onlyOwner {
-	  assert(newGameCost&gt;0);
+	  assert(newGameCost>0);
 	  gameCost = newGameCost;
 	  winTax = gameCost.div(10);
   }
@@ -132,7 +132,7 @@ contract Races is Ownable {
      uint8[6] memory jockeyLvl;
      address[6] memory betArr;
 	 
-	 for (uint8 i=1;i&lt;7;i++) {
+	 for (uint8 i=1;i<7;i++) {
 		 jockeyLvl[i-1] = jockeyLevel[raceBet[i]]; 
 	     betArr[i-1] = raceBet[i];
 	 }
@@ -149,11 +149,11 @@ contract Races is Ownable {
 	uint256 payment = payments[payee];
 
 	require(payment != 0);
-	require(this.balance &gt;= payment);
+	require(this.balance >= payment);
 
 	payments[payee] = 0;
 
-	for (uint8 i=1;i&lt;7;i++) {
+	for (uint8 i=1;i<7;i++) {
 		if (raceBet[i]==payee) {
 		   raceBet[i]=0; 
 		   betsNum--;

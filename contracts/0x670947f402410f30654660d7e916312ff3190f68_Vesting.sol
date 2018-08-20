@@ -1,5 +1,5 @@
 pragma solidity ^0.4.23;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 /*
   This file is part of The Colony Network.
 
@@ -14,7 +14,7 @@ pragma experimental &quot;v0.5.0&quot;;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with The Colony Network. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -34,7 +34,7 @@ pragma experimental &quot;v0.5.0&quot;;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with The Colony Network. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -52,7 +52,7 @@ pragma experimental &quot;v0.5.0&quot;;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
@@ -124,13 +124,13 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
 /// erc20.sol -- API for the ERC20 token standard
 
-// See &lt;https://github.com/ethereum/EIPs/issues/20&gt;.
+// See <https://github.com/ethereum/EIPs/issues/20>.
 
 // This file likely does not meet the threshold of originality
 // required for copyright to apply.  As a result, this is free and
@@ -167,32 +167,32 @@ contract ERC20 is ERC20Events {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -211,10 +211,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -241,8 +241,8 @@ contract DSMath {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     constructor(uint supply) public {
         _balances[msg.sender] = supply;
@@ -301,7 +301,7 @@ contract DSTokenBase is ERC20, DSMath {
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with The Colony Network. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -392,7 +392,7 @@ contract Vesting is DSMath {
     uint16 monthsClaimed;
     uint128 totalClaimed;
   }
-  mapping (address =&gt; Grant) public tokenGrants;
+  mapping (address => Grant) public tokenGrants;
 
   modifier onlyColonyMultiSig {
     require(msg.sender == colonyMultiSig);
@@ -424,16 +424,16 @@ contract Vesting is DSMath {
   /// @param _startTime Grant start time as seconds since unix epoch
   /// Allows backdating grants by passing time in the past. If `0` is passed here current blocktime is used. 
   /// @param _amount Total number of tokens in grant
-  /// @param _vestingDuration Number of months of the grant&#39;s duration
-  /// @param _vestingCliff Number of months of the grant&#39;s vesting cliff
+  /// @param _vestingDuration Number of months of the grant's duration
+  /// @param _vestingCliff Number of months of the grant's vesting cliff
   function addTokenGrant(address _recipient, uint256 _startTime, uint128 _amount, uint16 _vestingDuration, uint16 _vestingCliff) public 
   onlyColonyMultiSig
   noGrantExistsForUser(_recipient)
   {
-    require(_vestingCliff &gt; 0);
-    require(_vestingDuration &gt; _vestingCliff);
+    require(_vestingCliff > 0);
+    require(_vestingDuration > _vestingCliff);
     uint amountVestedPerMonth = _amount / _vestingDuration;
-    require(amountVestedPerMonth &gt; 0);
+    require(amountVestedPerMonth > 0);
 
     // Transfer the grant tokens under the control of the vesting contract
     token.transferFrom(colonyMultiSig, address(this), _amount);
@@ -483,7 +483,7 @@ contract Vesting is DSMath {
     uint16 monthsVested;
     uint128 amountVested;
     (monthsVested, amountVested) = calculateGrantClaim(msg.sender);
-    require(amountVested &gt; 0);
+    require(amountVested > 0);
 
     Grant storage tokenGrant = tokenGrants[msg.sender];
     tokenGrant.monthsClaimed = uint16(add(tokenGrant.monthsClaimed, monthsVested));
@@ -503,12 +503,12 @@ contract Vesting is DSMath {
     uint elapsedTime = sub(now, tokenGrant.startTime);
     uint elapsedMonths = elapsedTime / SECONDS_PER_MONTH;
     
-    if (elapsedMonths &lt; tokenGrant.vestingCliff) {
+    if (elapsedMonths < tokenGrant.vestingCliff) {
       return (0, 0);
     }
 
     // If over vesting duration, all tokens vested
-    if (elapsedMonths &gt;= tokenGrant.vestingDuration) {
+    if (elapsedMonths >= tokenGrant.vestingDuration) {
       uint128 remainingGrant = tokenGrant.amount - tokenGrant.totalClaimed;
       return (tokenGrant.vestingDuration, remainingGrant);
     } else {

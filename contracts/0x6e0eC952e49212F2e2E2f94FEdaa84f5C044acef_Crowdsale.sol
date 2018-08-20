@@ -14,14 +14,14 @@ contract owned {
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract CSToken is owned {
 	/* Public variables of the token */
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
 	string public name;
 	string public symbol;
 	uint8 public decimals;
 	uint256 public totalSupply;
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) public allowance;
 	/* This generates a public event on the blockchain that will notify clients */
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	/* Initializes contract with initial supply tokens to the creator of the contract */
@@ -40,8 +40,8 @@ contract CSToken is owned {
 	}
 	/* Send coins */
 	function transfer(address _to, uint256 _value) {
-		if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-		if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+		if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+		if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
 		balanceOf[msg.sender] -= _value;                     // Subtract from the sender
 		balanceOf[_to] += _value;                            // Add the same to the recipient
 		Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -69,9 +69,9 @@ contract CSToken is owned {
 	}
 	/* A contract attempts to get the coins */
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-		if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-		if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-		if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+		if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+		if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+		if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
 		balanceOf[_from] -= _value;                          // Subtract from the sender
 		balanceOf[_to] += _value;                            // Add the same to the recipient
 		allowance[_from][msg.sender] -= _value;
@@ -101,19 +101,19 @@ contract Crowdsale is owned{
     
     
         CSToken public tokenReward;
-        mapping(address =&gt; uint256) public balanceOf;
+        mapping(address => uint256) public balanceOf;
         event GoalReached(address beneficiary, uint totalCollected);
         event FundTransfer(address backer, uint amount, bool isContribution);
         event NewStage (uint time, uint stage);
     
     
-        modifier saleFinished() { if (now &lt; deadline &amp;&amp; currentStage &lt; 2) throw; _; }
-        modifier beforeDeadline() { if (now &gt;= deadline) throw; _; }
+        modifier saleFinished() { if (now < deadline && currentStage < 2) throw; _; }
+        modifier beforeDeadline() { if (now >= deadline) throw; _; }
 
 	function Crowdsale(
 	address _bounties
 	) {
-		tokenReward = new CSToken(0, &#39;MyBit Token&#39;, 8, &#39;MyB&#39;);
+		tokenReward = new CSToken(0, 'MyBit Token', 8, 'MyB');
 		tokenMultiplier = tokenMultiplier**tokenReward.decimals();
 		tokenReward.mintToken(_bounties, 1100000 * tokenMultiplier);
 		presaleDeadline = start + presaleDuration;
@@ -146,7 +146,7 @@ contract Crowdsale is owned{
 		FundTransfer(from, amount, false);
 		uint price = prices[currentStage];
 		uint256 tokenAmount = amount / price;
-		if (tokensRaised + tokenAmount &gt; tresholds[currentStage])
+		if (tokensRaised + tokenAmount > tresholds[currentStage])
 		{
 			uint256 currentTokens = tresholds[currentStage] - tokensRaised;
 			uint256 currentAmount = currentTokens * price;
@@ -158,7 +158,7 @@ contract Crowdsale is owned{
 		}
 	        mint(amount, tokenAmount, from);
 		uint256 change = amount - tokenAmount * price;
-		if(change &gt; 0)
+		if(change > 0)
 		{
 			totalCollected -= change;
 			balanceOf[from] -= change;
@@ -169,16 +169,16 @@ contract Crowdsale is owned{
 	}
 
 	function () payable beforeDeadline {
-		if(now &lt; start) throw;
-		if(currentStage &gt; 1) throw;
+		if(now < start) throw;
+		if(currentStage > 1) throw;
 		if (crowdsaleStarted){
 			processPayment(msg.sender, msg.value);
 		} else {
-			if (now &gt; presaleDeadline)
+			if (now > presaleDeadline)
 			{
 				crowdsaleStarted = true;
 			} else {
-				if (msg.value &lt; 1 ether) throw;
+				if (msg.value < 1 ether) throw;
 			}
 			processPayment(msg.sender, msg.value);    
         }

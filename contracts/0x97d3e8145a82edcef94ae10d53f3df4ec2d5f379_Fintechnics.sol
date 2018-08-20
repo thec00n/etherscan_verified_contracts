@@ -3,12 +3,12 @@ pragma solidity ^0.4.20;
 library SafeMath256 {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -27,11 +27,11 @@ library SafeMath256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -41,7 +41,7 @@ contract ERC223 {
     string public symbol;
     uint256 public decimals;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function transfer(address _to, uint256 _value) public;
     event Transfer(address indexed from, address indexed to, uint256 value);
 }
@@ -49,21 +49,21 @@ contract ERC223 {
 contract Fintechnics is ERC223 {
     using SafeMath256 for uint256;
 
-    string public constant name = &quot;Fintechnics&quot;;
-    string public constant symbol = &quot;FINTC&quot;;
+    string public constant name = "Fintechnics";
+    string public constant symbol = "FINTC";
     uint256 public constant decimals = 18;
     uint256 public constant totalSupply = 1500000 * 10**decimals;
     address public owner = address(0);
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     function isContract(address _addr) internal view returns (bool is_contract) {
         uint256 length;
         assembly { length := extcodesize(_addr) }
-        return length &gt; 0;
+        return length > 0;
     }
 
     function transfer(address _to, uint256 _value) public {
-        require(!isContract(_to) &amp;&amp; msg.sender != _to &amp;&amp; balanceOf[msg.sender] &gt;= _value);
+        require(!isContract(_to) && msg.sender != _to && balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         Transfer(msg.sender, _to, _value);

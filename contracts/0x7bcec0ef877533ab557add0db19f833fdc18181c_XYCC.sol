@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract owned {
 
 contract frozen is owned {
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     
     modifier isFrozen(address _target) {
@@ -71,9 +71,9 @@ contract XYCC is frozen{
     uint256 public totalSupply;
     uint256 public lockPercent = 95;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint256) freezeBalance;
-    mapping(address =&gt; uint256) public preTotalTokens;
+    mapping (address => uint256) public balanceOf;
+    mapping(address => uint256) freezeBalance;
+    mapping(address => uint256) public preTotalTokens;
 
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -81,18 +81,18 @@ contract XYCC is frozen{
     function XYCC() public {
         totalSupply = 1000000000 * 10 ** uint256(decimals);  
         balanceOf[msg.sender] = totalSupply;                
-        name = &quot;XingYunChain Coin&quot;;                                   
-        symbol = &quot;XYCC&quot;;                               
+        name = "XingYunChain Coin";                                   
+        symbol = "XYCC";                               
     }
 
     function _transfer(address _from, address _to, uint _value) internal isFrozen(_from) isFrozen(_to){
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
-        if(freezeBalance[_from] &gt; 0){
+        if(freezeBalance[_from] > 0){
             freezeBalance[_from] = preTotalTokens[_from].mul(lockPercent).div(100);
-            require (_value &lt;= balanceOf[_from].sub(freezeBalance[_from])); 
+            require (_value <= balanceOf[_from].sub(freezeBalance[_from])); 
         }
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -108,8 +108,8 @@ contract XYCC is frozen{
     
     function lock(address _to, uint256 _value) public onlyOwner isFrozen(_to){
         _value = _value.mul(10 ** uint256(decimals));
-		require(balanceOf[owner] &gt;= _value);
-		require (balanceOf[_to].add(_value)&gt; balanceOf[_to]); 
+		require(balanceOf[owner] >= _value);
+		require (balanceOf[_to].add(_value)> balanceOf[_to]); 
 		require (_to != 0x0);
 		uint previousBalances = balanceOf[owner].add(balanceOf[_to]);
         balanceOf[owner] = balanceOf[owner].sub(_value);
@@ -121,7 +121,7 @@ contract XYCC is frozen{
     }
     
     function updataLockPercent() external onlyOwner {
-        require(lockPercent &gt; 0);
+        require(lockPercent > 0);
         lockPercent = lockPercent.sub(5);
     }
 

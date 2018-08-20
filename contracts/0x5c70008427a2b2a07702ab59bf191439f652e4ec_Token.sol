@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 library SafeMathMod {// Partial SafeMath Library
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a - b) &lt; a);
+        require((c = a - b) < a);
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a + b) &gt; a);
+        require((c = a + b) > a);
     }
 }
 
@@ -27,9 +27,9 @@ contract Token {//is inherently ERC20
     * @storage Approval Holds the allowed balance to be transferable by another address.
     */
 
-    string constant public name = &quot;Smart City Token&quot;;
+    string constant public name = "Smart City Token";
 
-    string constant public symbol = &quot;SCT&quot;;
+    string constant public symbol = "SCT";
 
     uint8 constant public decimals = 18;
 
@@ -43,9 +43,9 @@ contract Token {//is inherently ERC20
     
     uint256 constant private MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -74,7 +74,7 @@ contract Token {//is inherently ERC20
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(crowdsaleSuccessful);
-        /* Ensures that tokens are not sent to address &quot;0x0&quot; */
+        /* Ensures that tokens are not sent to address "0x0" */
         require(_to != address(0));
         /* SafeMathMOd.sub will throw if there is not enough balance and if the transfer value is 0. */
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
@@ -93,14 +93,14 @@ contract Token {//is inherently ERC20
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(crowdsaleSuccessful);
-        /* Ensures that tokens are not sent to address &quot;0x0&quot; */
+        /* Ensures that tokens are not sent to address "0x0" */
         require(_to != address(0));
         /* Ensures tokens are not sent to this contract */
         require(_to != address(this));
         
         uint256 allowed = allowance[_from][msg.sender];
         /* Ensures sender has enough available allowance OR sender is balance holder allowing single transsaction send to contracts*/
-        require(_value &lt;= allowed || _from == msg.sender);
+        require(_value <= allowed || _from == msg.sender);
 
         /* Use SafeMathMod to add and subtract from the _to and _from addresses respectively. Prevents under/overflow and 0 transfers */
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -108,7 +108,7 @@ contract Token {//is inherently ERC20
 
         /* Only reduce allowance if not MAX_UINT256 in order to save gas on unlimited allowance */
         /* Balance holder does not need allowance to send from self. */
-        if (allowed != MAX_UINT256 &amp;&amp; _from != msg.sender) {
+        if (allowed != MAX_UINT256 && _from != msg.sender) {
             allowance[_from][msg.sender] = allowed.sub(_value);
         }
         Transfer(_from, _to, _value);
@@ -116,14 +116,14 @@ contract Token {//is inherently ERC20
     }
 
     /**
-    * @notice approve `_value` tokens for `_spender` address to send from &#39;msg.sender&#39;
+    * @notice approve `_value` tokens for `_spender` address to send from 'msg.sender'
     *
     * @param _spender The address of the approved
     * @param _value The amount of token to be allowed
     * @return Whether the allowance was successful
     */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        /* Ensures address &quot;0x0&quot; is not assigned allowance. */
+        /* Ensures address "0x0" is not assigned allowance. */
         require(_spender != address(0));
 
         allowance[msg.sender][_spender] = _value;
@@ -147,7 +147,7 @@ contract Token {//is inherently ERC20
     }
     
     /**
-    * @notice burn all tokens assigned to &#39;_address&#39;
+    * @notice burn all tokens assigned to '_address'
     *
     * @param _address whose tokens will be burned
     * @return Whether the burning was successful

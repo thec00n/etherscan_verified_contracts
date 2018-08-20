@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -149,8 +149,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -372,7 +372,7 @@ contract CrowdsaleToken is MintableToken {
   uint256 public bonusLimit5 = uint256(25).mul(1e4); //with decimals
   address public newOwner = 0x67f00b9B121ab98CF102c5892c14A5e696eA2CC0;
   address public wallet = 0x3840428703BaA6C614E85CaE6167c59d8922C0FE;
-  mapping(address =&gt; uint256) contribution;
+  mapping(address => uint256) contribution;
 
   constructor() public {
     owner = newOwner;
@@ -383,18 +383,18 @@ contract CrowdsaleToken is MintableToken {
   } 
 
   function getBonuses (uint256 _tokens) public view returns (uint256) {
-    if (now &gt;= preIcoStartDate &amp;&amp; now &lt;= preIcoEndDate) {
-      if (_tokens &gt;= bonusLimit1) return 30;
-      if (_tokens &gt;= bonusLimit2) return 25;
-      if (_tokens &gt;= bonusLimit3) return 20;
-      if (_tokens &gt;= bonusLimit4) return 15;
-      if (_tokens &gt;= bonusLimit5) return 10;
+    if (now >= preIcoStartDate && now <= preIcoEndDate) {
+      if (_tokens >= bonusLimit1) return 30;
+      if (_tokens >= bonusLimit2) return 25;
+      if (_tokens >= bonusLimit3) return 20;
+      if (_tokens >= bonusLimit4) return 15;
+      if (_tokens >= bonusLimit5) return 10;
     }
-    if (now &gt;= icoStartDate &amp;&amp; now &lt;= icoEndDate) {
-      if (now &lt;= icoStartDate + bonusPeriod) return 25;
-      if (now &lt;= icoStartDate + bonusPeriod.mul(2)) return 20;
-      if (now &lt;= icoStartDate + bonusPeriod.mul(3)) return 15;
-      if (now &lt;= icoStartDate + bonusPeriod.mul(4)) return 10;
+    if (now >= icoStartDate && now <= icoEndDate) {
+      if (now <= icoStartDate + bonusPeriod) return 25;
+      if (now <= icoStartDate + bonusPeriod.mul(2)) return 20;
+      if (now <= icoStartDate + bonusPeriod.mul(3)) return 15;
+      if (now <= icoStartDate + bonusPeriod.mul(4)) return 10;
       return 5;
     }
     return 0;
@@ -402,49 +402,49 @@ contract CrowdsaleToken is MintableToken {
 
   function mint (address _to, uint256 _amount) public returns (bool) {
     _amount = _amount.mul(1e4);
-    require(totalSupply_.add(_amount) &lt;= totalTokens);
+    require(totalSupply_.add(_amount) <= totalTokens);
     return super.mint(_to, _amount);
   }
 
   function () public payable {
-    require(now &gt;= preIcoStartDate);
+    require(now >= preIcoStartDate);
     uint256 tokens = msg.value.mul(1e4).div(basePrice);
     uint256 bonuses = getBonuses(tokens);
     uint256 extraTokens = tokens.mul(bonuses).div(100);
     tokens = tokens.add(extraTokens);
-    require(totalSupply_.add(tokens) &lt;= totalTokens);
+    require(totalSupply_.add(tokens) <= totalTokens);
     balances[msg.sender] = balances[msg.sender].add(tokens);
     totalSupply_ = totalSupply_.add(tokens);
     contribution[msg.sender] = contribution[msg.sender].add(msg.value);
     weiRaised = weiRaised.add(msg.value);
-    require(weiRaised &lt;= hardCap);
-    if (now &gt; icoEndDate || weiRaised &gt; hardCap) {
+    require(weiRaised <= hardCap);
+    if (now > icoEndDate || weiRaised > hardCap) {
       wallet.transfer(msg.value);
-    } else if (weiRaised &gt;= softCap) {
+    } else if (weiRaised >= softCap) {
       owner.transfer(msg.value);
     }
     emit Transfer(address(this), msg.sender, tokens);
   }
 
   function getEther () public onlyOwner {
-    require(now &gt; refundEndDate || weiRaised &gt;= softCap);
-    require(address(this).balance &gt; 0);
+    require(now > refundEndDate || weiRaised >= softCap);
+    require(address(this).balance > 0);
     owner.transfer(address(this).balance);
   }
 
   function setRefundPercent (uint256 _percent) public onlyOwner {
-    require(_percent &gt; 0);
-    require(_percent &lt;= 100);
+    require(_percent > 0);
+    require(_percent <= 100);
     refundPercent = _percent;
   }
 
   function getRefund () public {
-    require(balances[msg.sender] &gt; 0);
-    require(contribution[msg.sender] &gt; 0);
-    require(address(this).balance &gt;= contribution[msg.sender]);
-    require(now &gt; icoEndDate);
-    require(now &lt; refundEndDate);
-    require(weiRaised &lt; softCap);
+    require(balances[msg.sender] > 0);
+    require(contribution[msg.sender] > 0);
+    require(address(this).balance >= contribution[msg.sender]);
+    require(now > icoEndDate);
+    require(now < refundEndDate);
+    require(weiRaised < softCap);
     uint256 refund = contribution[msg.sender].mul(refundPercent).div(100);
     contribution[msg.sender] = 0;
     balances[msg.sender] = 0;
@@ -453,7 +453,7 @@ contract CrowdsaleToken is MintableToken {
 }
 
 contract FBC is CrowdsaleToken {
-  string public constant name = &quot;Feon Bank Coin&quot;;
-  string public constant symbol = &quot;FBC&quot;;
+  string public constant name = "Feon Bank Coin";
+  string public constant symbol = "FBC";
   uint32 public constant decimals = 4;
 }

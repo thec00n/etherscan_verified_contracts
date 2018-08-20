@@ -146,15 +146,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -162,10 +162,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -174,15 +174,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -190,10 +190,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -202,10 +202,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -260,10 +260,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -318,8 +318,8 @@ contract DSStop is DSAuth, DSNote {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
     
     function DSTokenBase(uint256 supply) {
         _balances[msg.sender] = supply;
@@ -337,7 +337,7 @@ contract DSTokenBase is ERC20, DSMath {
     }
     
     function transfer(address dst, uint wad) returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -348,8 +348,8 @@ contract DSTokenBase is ERC20, DSMath {
     }
     
     function transferFrom(address src, address dst, uint wad) returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
         
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         _balances[src] = sub(_balances[src], wad);
@@ -372,7 +372,7 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract WhiteList {
     
-    mapping (address =&gt; bool)   public  whiteList;
+    mapping (address => bool)   public  whiteList;
     
     address  public  owner;
     
@@ -384,14 +384,14 @@ contract WhiteList {
     function addToWhiteList(address [] _addresses) public {
         require(msg.sender == owner);
         
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whiteList[_addresses[i]] = true;
         }
     }
     
     function removeFromWhiteList(address [] _addresses) public {
         require (msg.sender == owner);
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whiteList[_addresses[i]] = false;
         }
     }
@@ -399,7 +399,7 @@ contract WhiteList {
 
 contract DSToken is DSTokenBase(0), DSStop {
 
-    bytes32  public  symbol = &quot;GENEOS&quot;;
+    bytes32  public  symbol = "GENEOS";
     uint256  public  decimals = 18; // standard token precision. override to customize
     
     WhiteList public wlcontract;
@@ -447,7 +447,7 @@ contract DSToken is DSTokenBase(0), DSStop {
 
     // Optional token name
 
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
     
     function setName(bytes32 name_) auth {
         name = name_;
@@ -459,7 +459,7 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     DSToken  public  GENEOS;               // The EOS token itself
     uint128  public  totalSupply = 1000000000000000000000000000;         // Total EOS amount created
     uint128  public  foundersAllocation = 100000000000000000000000000;   // Amount given to founders
-    string   public  foundersKey = &quot;Dev key&quot;;          // Public key of founders
+    string   public  foundersKey = "Dev key";          // Public key of founders
 
     uint     public  createLastDay = 200000000000000000000000000;       // Tokens sold in last window
     uint     public  createPerDay = 4000000000000000000000000;         // Tokens sold in each window
@@ -470,10 +470,10 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     uint     public  finishTime;
     address  public  foundersAddress = 0x37048f9C92a41fcE4535FDE3022B887b34D7eC0E;
 
-    mapping (uint =&gt; uint)                       public  dailyTotals;
-    mapping (uint =&gt; mapping (address =&gt; uint))  public  userBuys;
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  claimed;
-    mapping (address =&gt; string)                  public  keys;
+    mapping (uint => uint)                       public  dailyTotals;
+    mapping (uint => mapping (address => uint))  public  userBuys;
+    mapping (uint => mapping (address => bool))  public  claimed;
+    mapping (address => string)                  public  keys;
 
     event LogBuy      (uint window, address user, uint amount);
     event LogClaim    (uint window, address user, uint amount);
@@ -516,20 +516,20 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     // Each window is 23 hours long so that end-of-window rotates
     // around the clock for all timezones.
     function dayFor(uint timestamp) constant returns (uint) {
-        if (timestamp &lt; startTime) {
+        if (timestamp < startTime) {
             return 0;
         }
-        if (timestamp &gt;= startTime &amp;&amp; timestamp &lt; finalWindowTime) {
+        if (timestamp >= startTime && timestamp < finalWindowTime) {
             return sub(timestamp, startTime) / 5 minutes + 1;
         }
-        if (timestamp &gt;= finalWindowTime &amp;&amp; timestamp &lt; finishTime) {
+        if (timestamp >= finalWindowTime && timestamp < finishTime) {
             return 176;
         }
         return 999;
     }
 
     function createOnDay(uint day) constant returns (uint) {
-        assert(day &gt;= 1 &amp;&amp; day &lt;= 176);
+        assert(day >= 1 && day <= 176);
         return day == 176 ? createLastDay : createPerDay;
     }
 
@@ -537,17 +537,17 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     // day the buy order is submitted and the maximum price prior to
     // applying this payment that will be allowed.
     function buyWithLimit(uint day, uint limit) payable {
-        assert(today() &gt; 0 &amp;&amp; today() &lt;= numberOfDays + 1);
-        assert(msg.value &gt;= 0.01 ether);
+        assert(today() > 0 && today() <= numberOfDays + 1);
+        assert(msg.value >= 0.01 ether);
 
-        assert(day &gt;= today());
-        assert(day &lt;= numberOfDays + 1);
+        assert(day >= today());
+        assert(day <= numberOfDays + 1);
 
         userBuys[day][msg.sender] += msg.value;
         dailyTotals[day] += msg.value;
 
         if (limit != 0) {
-            assert(dailyTotals[day] &lt;= limit);
+            assert(dailyTotals[day] <= limit);
         }
 
         LogBuy(day, msg.sender, msg.value);
@@ -563,7 +563,7 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
 
     function claim(uint day) {
         
-        assert(today() &gt; day);
+        assert(today() > day);
 
         if (claimed[day][msg.sender] || dailyTotals[day] == 0) {
             return;
@@ -585,7 +585,7 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     }
 
     function claimAll() {
-        for (uint i = 0; i &lt; today(); i++) {
+        for (uint i = 0; i < today(); i++) {
             claim(i);
         }
     }
@@ -594,8 +594,8 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
     // Manually registering requires a base58
     // encoded using the STEEM, BTS, or EOS public key format.
     function register(string key) {
-        assert(today() &lt;=  numberOfDays + 1);
-        assert(bytes(key).length &lt;= 64);
+        assert(today() <=  numberOfDays + 1);
+        assert(bytes(key).length <= 64);
 
         keys[msg.sender] = key;
 
@@ -604,14 +604,14 @@ contract GENEOSSale is DSAuth, DSExec, DSMath {
 
     // Crowdsale owners can collect ETH any number of times
     function collect() auth {
-        assert(today() &gt; 0); // Prevent recycling during window 0
+        assert(today() > 0); // Prevent recycling during window 0
         exec(msg.sender, this.balance);
         LogCollect(this.balance);
     }
 
     // Anyone can freeze the token 1 day after the sale ends
     function freeze() {
-        assert(time() &gt; finishTime);
+        assert(time() > finishTime);
         GENEOS.stop();
         LogFreeze();
     }

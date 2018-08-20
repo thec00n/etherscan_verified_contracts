@@ -13,7 +13,7 @@ contract Token {
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -22,7 +22,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -45,8 +45,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -58,9 +58,9 @@ contract Obredis is StandardToken {
     uint256 public totalRewards;
     uint256 public newReward;
     address[] public addresses;
-    mapping (address =&gt; bool) public isAddress;
+    mapping (address => bool) public isAddress;
     bool public allRewPaid;
-    mapping (address =&gt; bool) public awaitingRew;
+    mapping (address => bool) public awaitingRew;
     
     
     event Minted(uint256 qty,uint256 totalSupply);
@@ -70,9 +70,9 @@ contract Obredis is StandardToken {
     function Obredis() public {
         balances[msg.sender] = 0;
         totalSupply = 0;
-        name = &quot;Obelisk Reward Token&quot;;
+        name = "Obelisk Reward Token";
         decimals = 18;
-        symbol = &quot;ORT&quot;;
+        symbol = "ORT";
         allRewPaid = true;
         awaitingRew[msg.sender] = false;
         fundsWallet = msg.sender;
@@ -106,7 +106,7 @@ contract Obredis is StandardToken {
     
     function forceTransfer(address _who, uint256 _qty) public isOwner returns (bool success) {
         // owner can transfer qty from a wallet (in case your hopeless mates lose their private keys).
-        if (balances[_who] &gt;= _qty &amp;&amp; _qty &gt; 0) {
+        if (balances[_who] >= _qty && _qty > 0) {
             balances[_who] -= _qty;
             balances[fundsWallet] += _qty;
             Transfer(_who, fundsWallet, _qty);
@@ -117,13 +117,13 @@ contract Obredis is StandardToken {
     }
 
     function payReward() public payable isOwner canSend {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         newReward = this.balance; // the only balance will be the scraps after payout
         totalRewards += msg.value;     // only want to update with new amount
         Reward(msg.value);
         allRewPaid = false;
         uint32 len = uint32(addresses.length);
-        for (uint32 i = 0; i &lt; len ; i++){
+        for (uint32 i = 0; i < len ; i++){
             awaitingRew[addresses[i]] = true;
         }
     }
@@ -131,7 +131,7 @@ contract Obredis is StandardToken {
     function payAllRewards() public isOwner {
         require(allRewPaid == false);
         uint32 len = uint32(addresses.length);
-        for (uint32 i = 0; i &lt; len ; i++){
+        for (uint32 i = 0; i < len ; i++){
             if (balances[addresses[i]] == 0){
                 awaitingRew[addresses[i]] = false;
             } else if (awaitingRew[addresses[i]]) {
@@ -143,9 +143,9 @@ contract Obredis is StandardToken {
     }
 
     function paySomeRewards(uint32 _first, uint32 _last) public isOwner {
-        require(_first &lt;= _last);
-        require(_last &lt;= addresses.length);
-        for (uint32 i = _first; i&lt;= _last; i++) {
+        require(_first <= _last);
+        require(_last <= addresses.length);
+        for (uint32 i = _first; i<= _last; i++) {
             if (balances[addresses[i]] == 0){
                 awaitingRew[addresses[i]] = false;
             } else if (awaitingRew[addresses[i]]) {
@@ -158,7 +158,7 @@ contract Obredis is StandardToken {
     
     function checkAllRewPaid() public view returns(bool success) {
         uint32 len = uint32(addresses.length);
-        for (uint32 i = 0; i &lt; len ; i++ ){
+        for (uint32 i = 0; i < len ; i++ ){
             if (awaitingRew[addresses[i]]){
                 return false;
             }
@@ -171,7 +171,7 @@ contract Obredis is StandardToken {
     }
 
     function mint(uint256 _qty) public canSend isOwner {
-        require(totalSupply + _qty &gt; totalSupply); // Prevents overflow
+        require(totalSupply + _qty > totalSupply); // Prevents overflow
         totalSupply += _qty;
         balances[fundsWallet] += _qty;
         Minted(_qty,totalSupply);
@@ -179,8 +179,8 @@ contract Obredis is StandardToken {
     }
     
     function burn(uint256 _qty) public canSend isOwner {
-        require(totalSupply - _qty &lt; totalSupply); // Prevents underflow
-        require(balances[fundsWallet] &gt;= _qty);
+        require(totalSupply - _qty < totalSupply); // Prevents underflow
+        require(balances[fundsWallet] >= _qty);
         totalSupply -= _qty;
         balances[fundsWallet] -= _qty;
         Burned(_qty,totalSupply);

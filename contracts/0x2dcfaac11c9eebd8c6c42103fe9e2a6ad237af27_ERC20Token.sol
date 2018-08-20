@@ -27,7 +27,7 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeDiv(uint a, uint b) internal returns (uint) {
-	    assert(b &gt; 0);
+	    assert(b > 0);
 	    uint c = a / b;
 	    assert(a == b * c + a % b);
 	    return c;
@@ -35,42 +35,42 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeSub(uint a, uint b) internal returns (uint) {
-	    assert(b &lt;= a);
+	    assert(b <= a);
 	    return a - b;
 	  }
 	
 
 	  function safeAdd(uint a, uint b) internal returns (uint) {
 	    uint c = a + b;
-	    assert(c&gt;=a &amp;&amp; c&gt;=b);
+	    assert(c>=a && c>=b);
 	    return c;
 	  }
 	
 
 	  function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	
 
 	  function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	
 
 	}
 	
 
-	contract StandardToken is ERC20, SafeMath {event Minted(address receiver, uint amount);mapping(address =&gt; uint) balances;mapping (address =&gt; mapping (address =&gt; uint)) allowed;function isToken() public constant returns (bool weAre) {
+	contract StandardToken is ERC20, SafeMath {event Minted(address receiver, uint amount);mapping(address => uint) balances;mapping (address => mapping (address => uint)) allowed;function isToken() public constant returns (bool weAre) {
 	    return true;
 	  }function transfer(address _to, uint _value) returns (bool success) {
 	    balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -91,8 +91,8 @@ pragma solidity ^0.4.18;
 	    return true;
 	  }function allowance(address _owner, address _spender) constant returns (uint remaining) {
 	    return allowed[_owner][_spender];
-	  }}contract ERC20Token is StandardToken {string public name = &quot;Smart Node&quot;;
-	    string public symbol = &quot;SMT&quot;;
+	  }}contract ERC20Token is StandardToken {string public name = "Smart Node";
+	    string public symbol = "SMT";
 	    uint public decimals = 18;
 	    uint data1 = 5;
 	    uint data2 = 5;
@@ -119,9 +119,9 @@ pragma solidity ^0.4.18;
 	        return 1 finney;
 	    }function buy() public payable returns(bool) {
 	        require(!halted);
-	        require(msg.value&gt;0);
+	        require(msg.value>0);
 	        uint tokens = msg.value * 10**18 / price();
-	        require(balances[owner]&gt;tokens);
+	        require(balances[owner]>tokens);
 	        if (stageThree) {
 				preTge = false;
 				stageOne = false;
@@ -143,9 +143,9 @@ pragma solidity ^0.4.18;
 				stageThree = false;
 	            tokens = tokens + (tokens / 5);}
 	        if (preTge) {
-	            require(safeAdd(presaleTokenSupply, tokens) &lt; preTgeCap);
+	            require(safeAdd(presaleTokenSupply, tokens) < preTgeCap);
 	        } else {
-	            require(safeAdd(presaleTokenSupply, tokens) &lt; safeSub(tgeCap, preTgeTokenSupply));
+	            require(safeAdd(presaleTokenSupply, tokens) < safeSub(tgeCap, preTgeTokenSupply));
 	        }
 	        founder.transfer(msg.value);
 	        balances[msg.sender] = safeAdd(balances[msg.sender], tokens);
@@ -185,7 +185,7 @@ pragma solidity ^0.4.18;
 	        balances[owner] = 0;}modifier onlyOwner() {
 	        require(msg.sender == owner);
 	        _;}modifier isAvailable() {
-	        require(!halted &amp;&amp; !freeze);
+	        require(!halted && !freeze);
 	        _;}function() payable {
 	        buy();}function freeze() onlyOwner() {
 	         freeze = true;}function unFreeze() onlyOwner() {

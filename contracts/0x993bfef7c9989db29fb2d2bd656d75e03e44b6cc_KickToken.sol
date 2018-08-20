@@ -28,7 +28,7 @@ contract KickUtils {
 	function Utils() {
 	}
 
-	// validates an address - currently only checks that it isn&#39;t null
+	// validates an address - currently only checks that it isn't null
 	modifier validAddress(address _address) {
 		require(_address != 0x0);
 		_;
@@ -52,7 +52,7 @@ contract KickUtils {
 	*/
 	function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
 		uint256 z = _x + _y;
-		assert(z &gt;= _x);
+		assert(z >= _x);
 		return z;
 	}
 
@@ -65,7 +65,7 @@ contract KickUtils {
 		@return difference
 	*/
 	function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-		assert(_x &gt;= _y);
+		assert(_x >= _y);
 		return _x - _y;
 	}
 }
@@ -77,11 +77,11 @@ contract KickToken is KickOwned, KickUtils {
 	struct Dividend {uint256 time; uint256 tenThousandth; uint256 countComplete;}
 
 	/* Public variables of the token */
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
 
-	string public name = &#39;Experimental KickCoin&#39;;
+	string public name = 'Experimental KickCoin';
 
-	string public symbol = &#39;EKICK&#39;;
+	string public symbol = 'EKICK';
 
 	uint8 public decimals = 8;
 
@@ -91,15 +91,15 @@ contract KickToken is KickOwned, KickUtils {
 	bool public allowManuallyBurnTokens = true;
 
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 
-	mapping (address =&gt; mapping (uint256 =&gt; uint256)) public agingBalanceOf;
+	mapping (address => mapping (uint256 => uint256)) public agingBalanceOf;
 
 	uint[] agingTimes;
 
 	Dividend[] dividends;
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 	/* This generates a public event on the blockchain that will notify clients */
 	event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -115,13 +115,13 @@ contract KickToken is KickOwned, KickUtils {
 
 	address[] public addressByIndex;
 
-	mapping (address =&gt; bool) addressAddedToIndex;
+	mapping (address => bool) addressAddedToIndex;
 
-	mapping (address =&gt; uint) agingTimesForPools;
+	mapping (address => uint) agingTimesForPools;
 
 	uint16 currentDividendIndex = 1;
 
-	mapping (address =&gt; uint) calculatedDividendsIndex;
+	mapping (address => uint) calculatedDividendsIndex;
 
 	bool public transfersEnabled = true;
 
@@ -212,16 +212,16 @@ contract KickToken is KickOwned, KickUtils {
 	}
 
 	function calculateDividends(uint256 limit) {
-		require(now &gt;= dividends[currentDividendIndex].time);
-		require(limit &gt; 0);
+		require(now >= dividends[currentDividendIndex].time);
+		require(limit > 0);
 
 		limit = safeAdd(dividends[currentDividendIndex].countComplete, limit);
 
-		if (limit &gt; addressByIndex.length) {
+		if (limit > addressByIndex.length) {
 			limit = addressByIndex.length;
 		}
 
-		for (uint256 i = dividends[currentDividendIndex].countComplete; i &lt; limit; i++) {
+		for (uint256 i = dividends[currentDividendIndex].countComplete; i < limit; i++) {
 			_addDividendsForAddress(addressByIndex[i]);
 		}
 		if (limit == addressByIndex.length) {
@@ -234,13 +234,13 @@ contract KickToken is KickOwned, KickUtils {
 
 	/* User can himself receive dividends without waiting for a global accruals */
 	function receiveDividends() public {
-		require(now &gt;= dividends[currentDividendIndex].time);
+		require(now >= dividends[currentDividendIndex].time);
 		assert(_addDividendsForAddress(msg.sender));
 	}
 
 	function _addDividendsForAddress(address _address) internal returns (bool success) {
 		// skip calculating dividends, if already calculated for this address
-		if (calculatedDividendsIndex[_address] &gt;= currentDividendIndex) return false;
+		if (calculatedDividendsIndex[_address] >= currentDividendIndex) return false;
 
 		uint256 add = balances[_address] * dividends[currentDividendIndex].tenThousandth / 1000;
 		balances[_address] = safeAdd(balances[_address], add);
@@ -248,9 +248,9 @@ contract KickToken is KickOwned, KickUtils {
 		Issuance(add);
 		_totalSupply = safeAdd(_totalSupply, add);
 
-		if (agingBalanceOf[_address][0] &gt; 0) {
+		if (agingBalanceOf[_address][0] > 0) {
 			agingBalanceOf[_address][0] = safeAdd(agingBalanceOf[_address][0], agingBalanceOf[_address][0] * dividends[currentDividendIndex].tenThousandth / 1000);
-			for (uint256 k = 0; k &lt; agingTimes.length; k++) {
+			for (uint256 k = 0; k < agingTimes.length; k++) {
 				agingBalanceOf[_address][agingTimes[k]] = safeAdd(agingBalanceOf[_address][agingTimes[k]], agingBalanceOf[_address][agingTimes[k]] * dividends[currentDividendIndex].tenThousandth / 1000);
 			}
 		}
@@ -261,17 +261,17 @@ contract KickToken is KickOwned, KickUtils {
 	/* Send coins */
 	function transfer(address _to, uint256 _value) transfersAllowed returns (bool success) {
 		_checkMyAging(msg.sender);
-		if (currentDividendIndex &lt; dividends.length &amp;&amp; now &gt;= dividends[currentDividendIndex].time) {
+		if (currentDividendIndex < dividends.length && now >= dividends[currentDividendIndex].time) {
 			_addDividendsForAddress(msg.sender);
 			_addDividendsForAddress(_to);
 		}
 
-		require(accountBalance(msg.sender) &gt;= _value);
+		require(accountBalance(msg.sender) >= _value);
 
 		// Subtract from the sender
 		balances[msg.sender] = safeSub(balances[msg.sender], _value);
 
-		if (agingTimesForPools[msg.sender] &gt; 0 &amp;&amp; agingTimesForPools[msg.sender] &gt; now) {
+		if (agingTimesForPools[msg.sender] > 0 && agingTimesForPools[msg.sender] > now) {
 			_addToAging(msg.sender, _to, agingTimesForPools[msg.sender], _value);
 		}
 
@@ -283,7 +283,7 @@ contract KickToken is KickOwned, KickUtils {
 	}
 
 	function mintToken(address target, uint256 mintedAmount, uint256 agingTime) onlyOwner {
-		if (agingTime &gt; now) {
+		if (agingTime > now) {
 			_addToAging(owner, target, agingTime, mintedAmount);
 		}
 
@@ -327,15 +327,15 @@ contract KickToken is KickOwned, KickUtils {
 	/* A contract attempts to get the coins */
 	function transferFrom(address _from, address _to, uint256 _value) transfersAllowed returns (bool success) {
 		_checkMyAging(_from);
-		if (currentDividendIndex &lt; dividends.length &amp;&amp; now &gt;= dividends[currentDividendIndex].time) {
+		if (currentDividendIndex < dividends.length && now >= dividends[currentDividendIndex].time) {
 			_addDividendsForAddress(_from);
 			_addDividendsForAddress(_to);
 		}
 		// Check if the sender has enough
-		require(accountBalance(_from) &gt;= _value);
+		require(accountBalance(_from) >= _value);
 
 		// Check allowed
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		// Subtract from the sender
 		balances[_from] = safeSub(balances[_from], _value);
@@ -344,7 +344,7 @@ contract KickToken is KickOwned, KickUtils {
 
 		allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
 
-		if (agingTimesForPools[_from] &gt; 0 &amp;&amp; agingTimesForPools[_from] &gt; now) {
+		if (agingTimesForPools[_from] > 0 && agingTimesForPools[_from] > now) {
 			_addToAging(_from, _to, agingTimesForPools[_from], _value);
 		}
 
@@ -362,8 +362,8 @@ contract KickToken is KickOwned, KickUtils {
 	function _checkMyAging(address sender) internal {
 		if (agingBalanceOf[sender][0] == 0) return;
 
-		for (uint256 k = 0; k &lt; agingTimes.length; k++) {
-			if (agingTimes[k] &lt; now) {
+		for (uint256 k = 0; k < agingTimes.length; k++) {
+			if (agingTimes[k] < now) {
 				agingBalanceOf[sender][0] = safeSub(agingBalanceOf[sender][0], agingBalanceOf[sender][agingTimes[k]]);
 				agingBalanceOf[sender][agingTimes[k]] = 0;
 			}
@@ -415,8 +415,8 @@ contract KickToken is KickOwned, KickUtils {
 	function destroy(address _from, uint256 _amount) public {
 		_checkMyAging(_from);
 		// validate input
-		require((msg.sender == _from &amp;&amp; allowManuallyBurnTokens) || msg.sender == owner);
-		require(accountBalance(_from) &gt;= _amount);
+		require((msg.sender == _from && allowManuallyBurnTokens) || msg.sender == owner);
+		require(accountBalance(_from) >= _amount);
 
 		balances[_from] = safeSub(balances[_from], _amount);
 		_totalSupply = safeSub(_totalSupply, _amount);

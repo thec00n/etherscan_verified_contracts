@@ -1,15 +1,15 @@
 pragma solidity ^0.4.18;
 
 /// @title LRC Foundation Icebox Program
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076366696e626b476b686877756e696029687560">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076366696e626b476b686877756e696029687560">[email protected]</a>>.
 /// For more information, please visit https://loopring.org.
 
-/// Loopring Foundation&#39;s LRC (20% of total supply) will be locked during the first two years，
+/// Loopring Foundation's LRC (20% of total supply) will be locked during the first two years，
 /// two years later, 1/24 of all locked LRC fund can be unlocked every month.
 
 /// @title ERC20 ERC20 Interface
 /// @dev see https://github.com/ethereum/EIPs/issues/20
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3357525d5a565f735f5c5c43415a5d541d5c4154">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3357525d5a565f735f5c5c43415a5d541d5c4154">[email protected]</a>>
 contract ERC20 {
     uint public totalSupply;
 
@@ -39,10 +39,10 @@ contract AirDropContract {
 
         uint balance = token.balanceOf(msg.sender);
         uint allowance = token.allowance(msg.sender, address(this));
-        uint available = balance &gt; allowance ? allowance : balance;
+        uint available = balance > allowance ? allowance : balance;
 
-        for (uint i = 0; i &lt; recipients.length; i++) {
-            require(available &gt;= amounts[i]);
+        for (uint i = 0; i < recipients.length; i++) {
+            require(available >= amounts[i]);
             if (isQualitifiedAddress(
                 recipients[i]
             )) {
@@ -59,13 +59,13 @@ contract AirDropContract {
         view
         returns (bool result)
     {
-        result = addr != 0x0 &amp;&amp; addr != msg.sender &amp;&amp; !isContract(addr);
+        result = addr != 0x0 && addr != msg.sender && !isContract(addr);
     }
 
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function () payable public {

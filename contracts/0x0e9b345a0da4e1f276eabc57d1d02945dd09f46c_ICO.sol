@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,7 +56,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -93,8 +93,8 @@ contract Ownable {
 contract Token is Ownable {
     using SafeMath for uint;
 
-    string public name = &quot;Invox&quot;;
-    string public symbol = &quot;INVOX&quot;;
+    string public name = "Invox";
+    string public symbol = "INVOX";
     uint8 public decimals = 18;
     uint256 public totalSupply = 0;
 
@@ -105,8 +105,8 @@ contract Token is Ownable {
 
     uint256 private constant MAY_15_2018 = 1526342400;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function Token () public {
         balances[msg.sender] = 0;
@@ -118,9 +118,9 @@ contract Token is Ownable {
 
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0));
-        require(balances[msg.sender] &gt;= value);
+        require(balances[msg.sender] >= value);
 
-        require(now &gt;= MAY_15_2018 + 14 days);
+        require(now >= MAY_15_2018 + 14 days);
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -132,7 +132,7 @@ contract Token is Ownable {
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
         require(from != address(0));
         require(to != address(0));
-        require(balances[from] &gt;= value &amp;&amp; allowed[from][msg.sender] &gt;= value &amp;&amp; balances[to] + value &gt;= balances[to]);
+        require(balances[from] >= value && allowed[from][msg.sender] >= value && balances[to] + value >= balances[to]);
 
         balances[from] = balances[from].sub(value);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(value);
@@ -186,10 +186,10 @@ contract ICO is Token {
     address private constant WITHDRAW_ADDRESS = 0x8B7aa4103Ae75A7dDcac9d2E90aEaAe915f2C75E;
     address private constant AIR_DROP = 0x1100784Cb330ae0BcAFEd061fa95f8aE093d7769;
 
-    mapping (address =&gt; bool) public whitelistAdmins;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt; address) public tier1;
-    mapping (address =&gt; address) public tier2;
+    mapping (address => bool) public whitelistAdmins;
+    mapping (address => bool) public whitelist;
+    mapping (address => address) public tier1;
+    mapping (address => address) public tier2;
 
     uint32 public whitelistCount;
     uint32 public tier1Count;
@@ -216,11 +216,11 @@ contract ICO is Token {
             return 20;
         }
 
-        if (now &gt;= APRIL_17_2018 &amp;&amp; now &lt; APRIL_20_2018) {
+        if (now >= APRIL_17_2018 && now < APRIL_20_2018) {
             return 10;
         }
 
-        if (now &gt;= APRIL_20_2018 &amp;&amp; now &lt; APRIL_30_2018) {
+        if (now >= APRIL_20_2018 && now < APRIL_30_2018) {
             return 5;
         }
 
@@ -228,7 +228,7 @@ contract ICO is Token {
     }
 
     function inPrivatePreSalePeriod() public constant returns (bool) {
-        if (now &gt;= MARCH_15_2018 &amp;&amp; now &lt; APRIL_15_2018) {
+        if (now >= MARCH_15_2018 && now < APRIL_15_2018) {
             return true;
         } else {
             return false;
@@ -236,7 +236,7 @@ contract ICO is Token {
     }
 
     function inPublicPreSalePeriod() public constant returns (bool) {
-        if (now &gt;= MARCH_15_2018 &amp;&amp; now &lt; MARCH_25_2018) {
+        if (now >= MARCH_15_2018 && now < MARCH_25_2018) {
             return true;
         } else {
             return false;
@@ -244,7 +244,7 @@ contract ICO is Token {
     }
 
     function inAngelPeriod() public constant returns (bool) {
-        if (now &gt;= APRIL_15_2018 &amp;&amp; now &lt; APRIL_17_2018) {
+        if (now >= APRIL_15_2018 && now < APRIL_17_2018) {
             return true;
         } else {
             return false;
@@ -252,7 +252,7 @@ contract ICO is Token {
     }
 
     function inMainSalePeriod() public constant returns (bool) {
-        if (now &gt;= APRIL_17_2018 &amp;&amp; now &lt; MAY_15_2018) {
+        if (now >= APRIL_17_2018 && now < MAY_15_2018) {
             return true;
         } else {
             return false;
@@ -279,7 +279,7 @@ contract ICO is Token {
 
     function addMultipleToWhitelist(address[] participants) public onlyWhiteLister {
         require(participants.length != 0);
-        for (uint16 i = 0; i &lt; participants.length; i++) {
+        for (uint16 i = 0; i < participants.length; i++) {
             addToWhitelist(participants[i]);
         }
     }
@@ -300,7 +300,7 @@ contract ICO is Token {
 
     function addMultipleTier1Members(address[] participants) public onlyWhiteLister {
         require(participants.length != 0);
-        for (uint16 i = 0; i &lt; participants.length; i++) {
+        for (uint16 i = 0; i < participants.length; i++) {
             addTier1Member(participants[i]);
         }
     }
@@ -321,7 +321,7 @@ contract ICO is Token {
 
     function addMultipleTier2Members(address[] participants) public onlyWhiteLister {
         require(participants.length != 0);
-        for (uint16 i = 0; i &lt; participants.length; i++) {
+        for (uint16 i = 0; i < participants.length; i++) {
             addTier2Member(participants[i]);
         }
     }
@@ -334,24 +334,24 @@ contract ICO is Token {
         require(inPrivatePreSalePeriod() || inPublicPreSalePeriod() || inAngelPeriod() || inMainSalePeriod());
 
         if (isInTier1(msg.sender)) {
-            require(msg.value &gt;= TIER_1_MIN);
+            require(msg.value >= TIER_1_MIN);
         }
 
         if (isInTier2(msg.sender)) {
-            require(msg.value &gt;= TIER_2_MIN);
+            require(msg.value >= TIER_2_MIN);
         }
 
         if (inPrivatePreSalePeriod() == true) {
-            require(msg.value &gt;= PRE_SALE_MIN);
+            require(msg.value >= PRE_SALE_MIN);
 
-            require(PRE_SALE_HARD_CAP &gt;= preICOwei.add(msg.value));
+            require(PRE_SALE_HARD_CAP >= preICOwei.add(msg.value));
             preICOwei = preICOwei.add(msg.value);
         }
 
         if (inMainSalePeriod() == true) {
-            require(msg.value &gt;= MAIN_SALE_MIN);
+            require(msg.value >= MAIN_SALE_MIN);
 
-            require(MAX_CAP &gt;= preICOwei + ICOwei.add(msg.value));
+            require(MAX_CAP >= preICOwei + ICOwei.add(msg.value));
             ICOwei = ICOwei.add(msg.value);
         }
 
@@ -386,22 +386,22 @@ contract ICO is Token {
     }
 
     function withdrawPreICOEth() public {
-        require(now &gt; MARCH_25_2018);
+        require(now > MARCH_25_2018);
         WITHDRAW_ADDRESS.transfer(preICOwei);
     }
 
     function withdrawICOEth() public {
-        require(now &gt; MAY_15_2018);
+        require(now > MAY_15_2018);
         WITHDRAW_ADDRESS.transfer(ICOwei);
     }
 
     function withdrawAll() public {
-        require(now &gt; MAY_15_2018);
+        require(now > MAY_15_2018);
         WITHDRAW_ADDRESS.transfer(this.balance);
     }
 
     function unlockTokens() public {
-        require(now &gt; (MAY_15_2018 + 180 days));
+        require(now > (MAY_15_2018 + 180 days));
         balances[FOUNDERS] += balances[FOUNDERS_LOCKUP];
         balances[FOUNDERS_LOCKUP] = 0;
         balances[OPERATIONAL_FUND] += balances[OPERATIONAL_FUND_LOCKUP];

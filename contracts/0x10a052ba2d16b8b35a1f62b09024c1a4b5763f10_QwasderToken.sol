@@ -31,7 +31,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization
- *      control functions, this simplifies the implementation of &quot;user permissions&quot;.
+ *      control functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -121,12 +121,12 @@ contract QwasderToken is ERC20Basic, Ownable {
      * BasicToken data.
      */
     uint256 public totalSupply_ = 0;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
      * StandardToken data.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * MintableToken data.
@@ -149,16 +149,16 @@ contract QwasderToken is ERC20Basic, Ownable {
     /**
      * DetailedERC20 data.
      */
-    string public name     = &quot;Qwasder&quot;;
-    string public symbol   = &quot;QWS&quot;;
+    string public name     = "Qwasder";
+    string public symbol   = "QWS";
     uint8  public decimals = 18;
 
     /**
      * QwasderToken data.
      */
-    mapping (address =&gt; bool) partners;
-    mapping (address =&gt; bool) blacklisted;
-    mapping (address =&gt; bool) freezed;
+    mapping (address => bool) partners;
+    mapping (address => bool) blacklisted;
+    mapping (address => bool) freezed;
     uint256 public publicRelease   = 1525046400; // Mon, 30 Apr 2018 00:00:00 +0000 (GMT)
     uint256 public partnersRelease = 1539129600; // Wed, 10 Oct 2018 00:00:00 +0000 (GMT)
     uint256 public hardcap = 200000000000000000000000000;
@@ -206,9 +206,9 @@ contract QwasderToken is ERC20Basic, Ownable {
      * Initializes contract.
      */
     function QwasderToken() public {
-        assert(reservedSupply &lt; cap &amp;&amp; reservedSupply.add(cap) == hardcap);
-        assert(publicRelease &lt;= partnersRelease);
-        assert(grantsUnlock &lt; partnersRelease);
+        assert(reservedSupply < cap && reservedSupply.add(cap) == hardcap);
+        assert(publicRelease <= partnersRelease);
+        assert(grantsUnlock < partnersRelease);
     }
 
     /**
@@ -225,7 +225,7 @@ contract QwasderToken is ERC20Basic, Ownable {
      */
 
     modifier canGrant() {
-        require(now &gt;= grantsUnlock &amp;&amp; reservedSupply &gt; 0);
+        require(now >= grantsUnlock && reservedSupply > 0);
         _;
     }
 
@@ -256,10 +256,10 @@ contract QwasderToken is ERC20Basic, Ownable {
      * @return A boolean that indicates if the operation was successful.
      */
     function transfer(address to, uint256 amount) public returns (bool success) {
-        require(!freezed[msg.sender] &amp;&amp; !blacklisted[msg.sender]);
-        require(to != address(0) &amp;&amp; !freezed[to] &amp;&amp; !blacklisted[to]);
-        require((!partners[msg.sender] &amp;&amp; now &gt;= publicRelease) || now &gt;= partnersRelease);
-        require(0 &lt; amount &amp;&amp; amount &lt;= balances[msg.sender]);
+        require(!freezed[msg.sender] && !blacklisted[msg.sender]);
+        require(to != address(0) && !freezed[to] && !blacklisted[to]);
+        require((!partners[msg.sender] && now >= publicRelease) || now >= partnersRelease);
+        require(0 < amount && amount <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(amount);
         balances[to] = balances[to].add(amount);
         Transfer(msg.sender, to, amount);
@@ -284,7 +284,7 @@ contract QwasderToken is ERC20Basic, Ownable {
      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      *      Beware that changing an allowance with this method brings the risk that someone may use both
      *      the old and the new allowance by unfortunate transaction ordering. One possible solution to
-     *      mitigate this race condition is to first reduce the spender&#39;s allowance to 0 and set the
+     *      mitigate this race condition is to first reduce the spender's allowance to 0 and set the
      *      desired value afterwards.
      * @param spender The address which will spend the funds.
      * @param amount The amount of tokens to be spent.
@@ -305,11 +305,11 @@ contract QwasderToken is ERC20Basic, Ownable {
      */
     function transferFrom(address from, address to, uint256 amount) public returns (bool success) {
         require(!blacklisted[msg.sender]);
-        require(to != address(0) &amp;&amp; !freezed[to] &amp;&amp; !blacklisted[to]);
-        require(from != address(0) &amp;&amp; !freezed[from] &amp;&amp; !blacklisted[from]);
-        require((!partners[from] &amp;&amp; now &gt;= publicRelease) || now &gt;= partnersRelease);
-        require(0 &lt; amount &amp;&amp; amount &lt;= balances[from]);
-        require(amount &lt;= allowed[from][msg.sender]);
+        require(to != address(0) && !freezed[to] && !blacklisted[to]);
+        require(from != address(0) && !freezed[from] && !blacklisted[from]);
+        require((!partners[from] && now >= publicRelease) || now >= partnersRelease);
+        require(0 < amount && amount <= balances[from]);
+        require(amount <= allowed[from][msg.sender]);
         balances[from] = balances[from].sub(amount);
         balances[to] = balances[to].add(amount);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(amount);
@@ -329,7 +329,7 @@ contract QwasderToken is ERC20Basic, Ownable {
      */
     function decreaseApproval(address spender, uint256 amount) public returns (bool success) {
         uint256 oldValue = allowed[msg.sender][spender];
-        if (amount &gt; oldValue) {
+        if (amount > oldValue) {
             allowed[msg.sender][spender] = 0;
         } else {
             allowed[msg.sender][spender] = oldValue.sub(amount);
@@ -364,9 +364,9 @@ contract QwasderToken is ERC20Basic, Ownable {
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address to, uint256 amount) onlyOwner canMint public returns (bool success) {
-        require(!freezed[to] &amp;&amp; !blacklisted[to] &amp;&amp; !partners[to]);
+        require(!freezed[to] && !blacklisted[to] && !partners[to]);
         uint256 total = totalSupply_.add(amount);
-        require(total &lt;= cap);
+        require(total <= cap);
         totalSupply_ = total;
         balances[to] = balances[to].add(amount);
         Mint(to, amount);
@@ -395,8 +395,8 @@ contract QwasderToken is ERC20Basic, Ownable {
      * @return A boolean that indicates if the operation was successful.
      */
     function grant(address to, uint256 amount) onlyOwner canGrant public returns (bool success) {
-        require(!freezed[to] &amp;&amp; !blacklisted[to] &amp;&amp; partners[to]);
-        require(amount &lt;= reservedSupply);
+        require(!freezed[to] && !blacklisted[to] && partners[to]);
+        require(amount <= reservedSupply);
         totalSupply_ = totalSupply_.add(amount);
         reservedSupply = reservedSupply.sub(amount);
         balances[to] = balances[to].add(amount);
@@ -416,8 +416,8 @@ contract QwasderToken is ERC20Basic, Ownable {
      */
     function burn(uint256 amount) public returns (bool success) {
         require(!freezed[msg.sender]);
-        require((!partners[msg.sender] &amp;&amp; now &gt;= publicRelease) || now &gt;= partnersRelease);
-        require(amount &gt; 0 &amp;&amp; amount &lt;= balances[msg.sender]);
+        require((!partners[msg.sender] && now >= publicRelease) || now >= partnersRelease);
+        require(amount > 0 && amount <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(amount);
         totalSupply_ = totalSupply_.sub(amount);
         Burn(msg.sender, amount);
@@ -434,7 +434,7 @@ contract QwasderToken is ERC20Basic, Ownable {
      */
     function addPartner(address investor) onlyOwner public returns (bool) {
         require(investor != address(0));
-        require(!partners[investor] &amp;&amp; !blacklisted[investor] &amp;&amp; balances[investor] == 0);
+        require(!partners[investor] && !blacklisted[investor] && balances[investor] == 0);
         partners[investor] = true;
         PartnerAdded(investor);
         return partners[investor];
@@ -444,7 +444,7 @@ contract QwasderToken is ERC20Basic, Ownable {
      * Remove a partner.
      */
     function removePartner(address investor) onlyOwner public returns (bool) {
-        require(partners[investor] &amp;&amp; balances[investor] == 0);
+        require(partners[investor] && balances[investor] == 0);
         partners[investor] = false;
         PartnerRemoved(investor);
         return !partners[investor];
@@ -488,63 +488,63 @@ contract QwasderToken is ERC20Basic, Ownable {
     }
 
     /**
-     * @dev Set a new release date for investor&#39;s transfers.
+     * @dev Set a new release date for investor's transfers.
      *      Must be executed before the current release date, and the new
      *      date must be a later one. Up to one more week for security reasons.
-     * @param date UNIX timestamp of the new release date for investor&#39;s transfers.
+     * @param date UNIX timestamp of the new release date for investor's transfers.
      * @return True if the operation was successful.
      */
     function setPublicRelease(uint256 date) onlyOwner public returns (bool success) {
-        require(now &lt; publicRelease &amp;&amp; date &gt; publicRelease);
-        require(date.sub(publicRelease) &lt;= 604800);
+        require(now < publicRelease && date > publicRelease);
+        require(date.sub(publicRelease) <= 604800);
         publicRelease = date;
-        assert(publicRelease &lt;= partnersRelease);
+        assert(publicRelease <= partnersRelease);
         UpdatedPublicReleaseDate(date);
         return true;
     }
 
     /**
-     * @dev Set a new release date for partners&#39; transfers.
+     * @dev Set a new release date for partners' transfers.
      *      Must be executed before the current release date, and the new
      *      date must be a later one. Up to one more week for security reasons.
-     * @param date UNIX timestamp of the new release date for partners&#39; transfers.
+     * @param date UNIX timestamp of the new release date for partners' transfers.
      * @return True if the operation was successful.
      */
     function setPartnersRelease(uint256 date) onlyOwner public returns (bool success) {
-        require(now &lt; partnersRelease &amp;&amp; date &gt; partnersRelease);
-        require(date.sub(partnersRelease) &lt;= 604800);
+        require(now < partnersRelease && date > partnersRelease);
+        require(date.sub(partnersRelease) <= 604800);
         partnersRelease = date;
-        assert(grantsUnlock &lt; partnersRelease);
+        assert(grantsUnlock < partnersRelease);
         UpdatedPartnersReleaseDate(date);
         return true;
     }
 
     /**
-     * @dev Function to set a new unlock date for partners&#39; minting grants.
+     * @dev Function to set a new unlock date for partners' minting grants.
      *      Must be executed before the current unlock date, and the new
      *      date must be a later one. Up to one more week for security reasons.
-     * @param date UNIX timestamp of the new unlock date for partners&#39; grants.
+     * @param date UNIX timestamp of the new unlock date for partners' grants.
      * @param extendLocking boolean value, true to extend the locking periods,
      *        false to leave the current dates.
      * @return True if the operation was successful.
      */
     function setGrantsUnlock(uint256 date, bool extendLocking) onlyOwner public returns (bool success) {
-        require(now &lt; grantsUnlock &amp;&amp; date &gt; grantsUnlock);
+        require(now < grantsUnlock && date > grantsUnlock);
         if (extendLocking) {
           uint256 delay = date.sub(grantsUnlock);
-          require(delay &lt;= 604800);
+          require(delay <= 604800);
           grantsUnlock = date;
           publicRelease = publicRelease.add(delay);
           partnersRelease = partnersRelease.add(delay);
-          assert(publicRelease &lt;= partnersRelease);
-          assert(grantsUnlock &lt; partnersRelease);
+          assert(publicRelease <= partnersRelease);
+          assert(grantsUnlock < partnersRelease);
           UpdatedPublicReleaseDate(publicRelease);
           UpdatedPartnersReleaseDate(partnersRelease);
         }
         else {
           // Can set a date more than one week later, provided it is before the release date.
           grantsUnlock = date;
-          assert(grantsUnlock &lt; partnersRelease);
+          assert(grantsUnlock < partnersRelease);
         }
         UpdatedGrantsLockDate(date);
         return true;
@@ -557,16 +557,16 @@ contract QwasderToken is ERC20Basic, Ownable {
      * @return True if the operation was successful.
      */
     function extendLockPeriods(uint delay, bool extendGrantLock) onlyOwner public returns (bool success) {
-        require(now &lt; publicRelease &amp;&amp; 0 &lt; delay &amp;&amp; delay &lt;= 168);
+        require(now < publicRelease && 0 < delay && delay <= 168);
         delay = delay * 3600;
         publicRelease = publicRelease.add(delay);
         partnersRelease = partnersRelease.add(delay);
-        assert(publicRelease &lt;= partnersRelease);
+        assert(publicRelease <= partnersRelease);
         UpdatedPublicReleaseDate(publicRelease);
         UpdatedPartnersReleaseDate(partnersRelease);
         if (extendGrantLock) {
             grantsUnlock = grantsUnlock.add(delay);
-            assert(grantsUnlock &lt; partnersRelease);
+            assert(grantsUnlock < partnersRelease);
             UpdatedGrantsLockDate(grantsUnlock);
         }
         return true;

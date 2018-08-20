@@ -27,7 +27,7 @@ event Burn(address indexed _from, uint256 _amount);
 contract StandardToken is Token{
 
 	function transfer(address _to, uint256 _value) public returns(bool success) {
-	if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+	if (balances[msg.sender] >= _value && _value > 0) {
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract StandardToken is Token{
 }
 
 function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
-	if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+	if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 		balances[_to] += _value;
 		balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
@@ -62,7 +62,7 @@ function approve(address _spender, uint256 _value) public returns(bool success) 
 }
 
 function burn(uint256 _amount) public returns(bool success) {
-	require(balances[msg.sender] &gt;= _amount);
+	require(balances[msg.sender] >= _amount);
 	balances[msg.sender] -= _amount;
 	totalSupply -= _amount;
 	Burn(msg.sender, _amount);
@@ -71,8 +71,8 @@ function burn(uint256 _amount) public returns(bool success) {
 
 function burnFrom(address from, uint256 _amount) public returns(bool success)
 {
-	require(balances[from] &gt;= _amount);
-	require(_amount &lt;= allowed[from][msg.sender]);
+	require(balances[from] >= _amount);
+	require(_amount <= allowed[from][msg.sender]);
 	balances[from] -= _amount;
 	allowed[from][msg.sender] -= _amount;
 	totalSupply -= _amount;
@@ -84,8 +84,8 @@ function allowance(address _owner, address _spender) constant public returns(uin
 	return allowed[_owner][_spender];
 }
 
-mapping(address =&gt; uint256) balances;
-mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+mapping(address => uint256) balances;
+mapping(address => mapping(address => uint256)) allowed;
 uint256 public totalSupply;
 uint256 public availableSupply;
 uint256 public releasedSupply;
@@ -114,27 +114,27 @@ function AuraToken() public{
 	totalSupply = 50000000 * 10 ** uint256(decimals);  // Update total supply 
 	releasedSupply = 0;
 	availableSupply = 0;
-	name = &quot;AuraToken&quot;;                                   // Set the name for display purposes
-	symbol = &quot;AURA&quot;;                               // Set the symbol for display purposes
+	name = "AuraToken";                                   // Set the name for display purposes
+	symbol = "AURA";                               // Set the symbol for display purposes
 	buyPrice = 1 * 10 ** 18;			//set unreal price for the beginning to prevent attacks (in wei)
 }
 
 function giveTokens(address _payer, uint256 _payment) internal returns(bool success) {
-	require(_payment &gt; 0);
+	require(_payment > 0);
 	uint256 tokens = (_payment / buyPrice) * (10 ** uint256(decimals));
-	if (availableSupply &lt; tokens)tokens = availableSupply;
-	require(availableSupply &gt;= tokens);
-	require((balances[_payer] + tokens) &gt; balances[_payer]); //overflow test
+	if (availableSupply < tokens)tokens = availableSupply;
+	require(availableSupply >= tokens);
+	require((balances[_payer] + tokens) > balances[_payer]); //overflow test
 	balances[_payer] += tokens;
 	availableSupply -= tokens;
 	return true;
 }
 
 function giveReward(address _to, uint256 _amount) public onlyOwner returns(bool success) {
-	require(_amount &gt; 0);
+	require(_amount > 0);
 	require(_to != 0x0); // burn instead
-	require(availableSupply &gt;= _amount);
-	require((balances[_to] + _amount) &gt; balances[_to]);
+	require(availableSupply >= _amount);
+	require((balances[_to] + _amount) > balances[_to]);
 	balances[_to] += _amount;
 	availableSupply -= _amount;
 	return true;
@@ -146,7 +146,7 @@ function setPrice(uint256 _newPrice) public onlyOwner returns(bool success) {
 }
 
 function release(uint256 _amount) public onlyOwner returns(bool success) {
-	require((releasedSupply + _amount) &lt;= totalSupply);
+	require((releasedSupply + _amount) <= totalSupply);
 	releasedSupply += _amount;
 	availableSupply += _amount;
 	return true;

@@ -52,9 +52,9 @@ contract FUTMOTO {
 
  
     // Optional ERC20 values.
-    string public name = &quot;Futeremoto&quot;;
+    string public name = "Futeremoto";
     uint8 public decimals = 18;
-    string public symbol = &quot;FUTMOTO&quot;;
+    string public symbol = "FUTMOTO";
     
     // Public variables so the curious can check the state.
     bool public swap = false;
@@ -80,22 +80,22 @@ contract FUTMOTO {
     uint256 reservedFees = 0;
     
     // Storage.
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
    // Fallback function mines the tokens.
    // Send from a wallet you control.
-   // DON&#39;T send from an exchange wallet!
+   // DON'T send from an exchange wallet!
    // We recommend sending using a method that calculates gas for you.
    // Here are some estimates (not guaranteed to be accurate):
    // It usually costs around 90k gas.  It cost more if you cross a tier.
    // Maximum around 190k gas.
    function () external payable {
    
-       require(msg.sender != address(0) &amp;&amp;
-                tier != 5 &amp;&amp;
-                swap == false &amp;&amp;
+       require(msg.sender != address(0) &&
+                tier != 5 &&
+                swap == false &&
                 wait == false);
     
         uint256 issued = mint(msg.sender, msg.value);
@@ -140,7 +140,7 @@ contract FUTMOTO {
     // Any holders that miss the swap get to keep their tokens.
     // Ether stays in contract, minus 20% penalty fee.
     function restart() public {
-        require(swap &amp;&amp; now &gt;= endTime);
+        require(swap && now >= endTime);
         
         penalty = this.balance * 2000 / 10000;
         
@@ -160,7 +160,7 @@ contract FUTMOTO {
     {
         uint256 total = _submitted + _value;
         
-        if (total &gt; MAX_SUBMITTED)
+        if (total > MAX_SUBMITTED)
         {
             uint256 refund = total - MAX_SUBMITTED - 1;
             _value = _value - refund;
@@ -191,7 +191,7 @@ contract FUTMOTO {
         
         uint256 tokens = 0;
         
-        if (total &gt; levels[tier])
+        if (total > levels[tier])
         {
             uint256 remaining = total - levels[tier];
             _value -= remaining;
@@ -209,8 +209,8 @@ contract FUTMOTO {
         return tokens;
     }
     
-    // This is basically so you don&#39;t have to add 1 to the last completed tier.
-    //  You&#39;re welcome.
+    // This is basically so you don't have to add 1 to the last completed tier.
+    //  You're welcome.
     function currentTier() public view returns (uint256) {
         if (tier == 5)
         {
@@ -258,17 +258,17 @@ contract FUTMOTO {
     // It checks the next deadline and then updates the deadline and state.
     // 
     // It uses the block time, but the time periods are days and months,
-    // so it should be pretty safe  &#175;\_(ツ)_/&#175; 
+    // so it should be pretty safe  ¯\_(ツ)_/¯ 
     function _updateState() internal {
         // Most of the time, this will just be skipped.
-        if (now &gt;= endTime)
+        if (now >= endTime)
         {
             // We are not currently swapping or waiting to swap
-            if(!swap &amp;&amp; !wait)
+            if(!swap && !wait)
             {
                 if (extended)
                 {
-                    // It&#39;s been 36 months.
+                    // It's been 36 months.
                     wait = true;
                     endTime = swapTimeExtended;
                     WaitStarted(endTime);
@@ -291,7 +291,7 @@ contract FUTMOTO {
             } 
             else if (wait)
             {
-                // It&#39;s time to swap.
+                // It's time to swap.
                 swap = true;
                 wait = false;
                 
@@ -319,7 +319,7 @@ contract FUTMOTO {
     // Swapping tokens for ether costs around 46k gas. (around 93k for the first account to swap)
     function transfer(address _to, uint256 _value) public returns (bool success) {
         
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
          // Normal transfers check if time is expired.  
         _updateState();
@@ -327,7 +327,7 @@ contract FUTMOTO {
         // Check if sending in for swap.
         if (_to == address(this)) 
         {
-            // throw if they can&#39;t swap yet.
+            // throw if they can't swap yet.
             require(swap);
             
             if (payRate == 0)
@@ -359,10 +359,10 @@ contract FUTMOTO {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
        
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -406,7 +406,7 @@ contract FUTMOTO {
         reservedFees = 0;
         penalty = 0;
         
-        if (fees &gt; 0) 
+        if (fees > 0) 
         {
             foundation.transfer(fees / 2);
             owner.transfer(fees / 4);

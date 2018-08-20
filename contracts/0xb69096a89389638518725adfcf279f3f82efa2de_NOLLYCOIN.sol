@@ -10,20 +10,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,8 +45,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -55,7 +55,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -75,7 +75,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) returns(bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             uint256 _allowance = allowed[_from][msg.sender];
             allowed[_from][msg.sender] = _allowance.sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -129,8 +129,8 @@ contract NOLLYCOIN is BasicToken {
 
     using SafeMath for uint256;
 
-    string public name = &quot;Nolly Coin&quot;;                        //name of the token
-    string public symbol = &quot;NOLLY&quot;;                                // symbol of the token
+    string public name = "Nolly Coin";                        //name of the token
+    string public symbol = "NOLLY";                                // symbol of the token
     uint8 public decimals = 18;                                  // decimals
     uint256 public totalSupply = 500000000 * 10 ** 18;             // total supply of NOLLY Tokens  
 
@@ -260,7 +260,7 @@ contract NOLLYCOINCrowdFund {
         _;
     }
     modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -310,7 +310,7 @@ contract NOLLYCOINCrowdFund {
     // function call after crowdFundEndTime.
     // It transfers the remaining tokens to remainingTokenHolder address
     function endCrowdfund() onlyFounders inState(State.Finish) returns(bool) {
-        require(now &gt; crowdfundEndDate);
+        require(now > crowdfundEndDate);
         uint256 remainingToken = token.balanceOf(this);  // remaining tokens
 
         if (remainingToken != 0)
@@ -328,7 +328,7 @@ contract NOLLYCOINCrowdFund {
     payable 
     returns(bool) 
     {
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
 
         if (getState() == State.PreSale) {
             if (buyPreSaleTokens(beneficiary)) {
@@ -336,7 +336,7 @@ contract NOLLYCOINCrowdFund {
             }
             return false;
         } else {
-            require(now &gt;= crowdfundStartDate &amp;&amp; now &lt;= crowdfundEndDate);
+            require(now >= crowdfundStartDate && now <= crowdfundEndDate);
             fundTransfer(msg.value);
 
             uint256 amount = getNoOfTokens(exchangeRateForETH, msg.value);
@@ -379,7 +379,7 @@ contract NOLLYCOINCrowdFund {
     function getTokensForPreSale(uint256 _exchangeRate, uint256 _amount) internal constant returns(uint256) {
         uint256 noOfToken = _amount.mul(_exchangeRate);
         uint256 noOfTokenWithBonus = ((100 + getCurrentBonusRate()) * noOfToken).div(100);
-        if (noOfTokenWithBonus + tokenSoldInPresale &gt; (50000000 * 10 ** 18)) { //change this to reflect current max
+        if (noOfTokenWithBonus + tokenSoldInPresale > (50000000 * 10 ** 18)) { //change this to reflect current max
             revert();
         }
         return noOfTokenWithBonus;
@@ -395,10 +395,10 @@ contract NOLLYCOINCrowdFund {
 
     // function to get the current state of the crowdsale
     function getState() public constant returns(State) {
-       if (now &gt;= preSaleStartTime &amp;&amp; now &lt;= preSaleEndTime) {
+       if (now >= preSaleStartTime && now <= preSaleEndTime) {
             return State.PreSale;
         }
-        if (now &gt;= crowdfundStartDate &amp;&amp; now &lt;= crowdfundEndDate) {
+        if (now >= crowdfundStartDate && now <= crowdfundEndDate) {
             return State.Crowdfund;
         } 
         return State.Finish;
@@ -415,18 +415,18 @@ contract NOLLYCOINCrowdFund {
             
 
         //  week 1: 8th of April 1523197901
-            if (now &gt; crowdfundStartDate &amp;&amp; now &lt;= 1523197901) { 
+            if (now > crowdfundStartDate && now <= 1523197901) { 
                 return 25;
             }
 
         //  week 2: 15th of April 1523802701
-            if (now &gt; 1523197901 &amp;&amp; now &lt;= 1523802701) { 
+            if (now > 1523197901 && now <= 1523802701) { 
                 return 20;
             }
 
 
         // week 3: 
-            if (now &gt; 1523802701 &amp;&amp; now &lt;= 1524565102 ) {
+            if (now > 1523802701 && now <= 1524565102 ) {
                 return 15;
 
             } else {

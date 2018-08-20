@@ -2,11 +2,11 @@ pragma solidity ^0.4.19;
 
 /*
           ,/`.
-        ,&#39;/ __`.
-      ,&#39;_/_  _ _`.
-    ,&#39;__/_ ___ _  `.
-  ,&#39;_  /___ __ _ __ `.
- &#39;-.._/___...-&quot;-.-..__`.
+        ,'/ __`.
+      ,'_/_  _ _`.
+    ,'__/_ ___ _  `.
+  ,'_  /___ __ _ __ `.
+ '-.._/___...-"-.-..__`.
   B
 
  EthPyramid. A bullshit pyramid scheme.
@@ -19,26 +19,26 @@ pragma solidity ^0.4.19;
 
 /*
  BizPyramid: (tl;dr below)
- Edited by an anon to implement a starting timer, so that discord won&#39;t have 
+ Edited by an anon to implement a starting timer, so that discord won't have 
  the upper hand. Launch should be 24 hours after contract creation so that
- everyone gets a fair chance to get on the &gt;ground floor, and not only discord
- shills. Still beats me why you&#39;d suffer their bullshit instead of making your
- own contract &amp; website, it&#39;s like 2 hour of work you lazy bastards.
+ everyone gets a fair chance to get on the >ground floor, and not only discord
+ shills. Still beats me why you'd suffer their bullshit instead of making your
+ own contract & website, it's like 2 hour of work you lazy bastards.
  
  NOTE TO DISCORD:
- You&#39;re welcome to FUD this all you want, we all know you&#39;re just trying to
+ You're welcome to FUD this all you want, we all know you're just trying to
  scam /biz/ and even yourselves. If you actually believe this is a scam ( or
- more of a scam than EthPyramid ) you&#39;re welcome to compare the contracts.
+ more of a scam than EthPyramid ) you're welcome to compare the contracts.
  
  FUTURE CONTRACTS:
- -Whenever discord comes up with some contract, it&#39;s very easy to create one
+ -Whenever discord comes up with some contract, it's very easy to create one
   with a timer, it would generally be importing the super contract from here,
   adjusting the starting time, and applying to modifier to every non read
   external/public function.
  -Websites are a different matter, those might be some more work, but webdev
   is also a much more common skill and web3 implementation is a lot easier than
   it might seem at first.
- -I can&#39;t promise I&#39;ll make a less bullshit version of future ones but I hope 
+ -I can't promise I'll make a less bullshit version of future ones but I hope 
   this sparks something.
  
  WARNINGS:
@@ -52,9 +52,9 @@ pragma solidity ^0.4.19;
  -I am not liable for you losing your internet monopoly money
  
  DISCLOSURE:
- I&#39;ve made PLENTY of ether from the pyramid schemes so far, all the way from
- the 1st ponziCoin to the latest Shadow, I&#39;m doing this for fun and as a middle
- finger to discord pajeets. I plan on &quot;investing&quot; into this myself.
+ I've made PLENTY of ether from the pyramid schemes so far, all the way from
+ the 1st ponziCoin to the latest Shadow, I'm doing this for fun and as a middle
+ finger to discord pajeets. I plan on "investing" into this myself.
  
  Thank you for reading, I wish you many gains.
 */
@@ -62,18 +62,18 @@ pragma solidity ^0.4.19;
 /*
  tl;dr
  This is ethPyramid with a start timer to piss off discord
- &quot;invest&quot; or not idgaf don&#39;t blame me if it breaks or you get JUSTed
+ "invest" or not idgaf don't blame me if it breaks or you get JUSTed
 */
 
 contract LaunchDelayMechanism {
 	
-	uint256 public launchTime = 0; // This is set in BizPyramid&#39;s ctor
+	uint256 public launchTime = 0; // This is set in BizPyramid's ctor
 	
 	modifier isOpen()
     {
 		// This makes sure that the last mined block is after the launch time
 		// Time is a UTC UNIX timestamp, google a converter
-        require(now &gt; launchTime);
+        require(now > launchTime);
         // _; means running the rest of the code from the calling function
         _;
     }
@@ -82,7 +82,7 @@ contract LaunchDelayMechanism {
 
 contract BizPyramid is LaunchDelayMechanism {
 
-	// scaleFactor is used to convert Ether into tokens and vice-versa: they&#39;re of different
+	// scaleFactor is used to convert Ether into tokens and vice-versa: they're of different
 	// orders of magnitude, hence the need to bridge between the two.
 	uint256 constant scaleFactor = 0x10000000000000000;  // 2^64
 
@@ -97,16 +97,16 @@ contract BizPyramid is LaunchDelayMechanism {
 	int constant price_coeff = -0x296ABF784A358468C;
 
 	// Typical values that we have to declare.
-	string constant public name = &quot;BizPyramid&quot;; // This isn&#39;t an ERC20 token anymore so this is just fluff
-	string constant public symbol = &quot;BZPY&quot;; // Means literally nothing now
+	string constant public name = "BizPyramid"; // This isn't an ERC20 token anymore so this is just fluff
+	string constant public symbol = "BZPY"; // Means literally nothing now
 	uint8 constant public decimals = 18;
 
 	// Array between each address and their number of tokens.
-	mapping(address =&gt; uint256) public tokenBalance;
+	mapping(address => uint256) public tokenBalance;
 		
 	// Array between each address and how much Ether has been paid out to it.
 	// Note that this is scaled by the scaleFactor variable.
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => int256) public payouts;
 
 	// Variable tracking how many tokens are in existence overall.
 	uint256 public totalSupply;
@@ -146,7 +146,7 @@ contract BizPyramid is LaunchDelayMechanism {
 		// Update the payouts array, incrementing the request address by `balance`.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Send the dividends to the address that requested the withdraw.
@@ -164,7 +164,7 @@ contract BizPyramid is LaunchDelayMechanism {
 		// Since this is essentially a shortcut to withdrawing and reinvesting, this step still holds.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Assign balance to a new variable.
@@ -172,7 +172,7 @@ contract BizPyramid is LaunchDelayMechanism {
 		
 		// If your dividends are worth less than 1 szabo, or more than a million Ether
 		// (in which case, why are you even here), abort.
-		if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 			
 		// msg.sender is the address of the caller.
@@ -195,8 +195,8 @@ contract BizPyramid is LaunchDelayMechanism {
 		var buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -218,7 +218,7 @@ contract BizPyramid is LaunchDelayMechanism {
 			earningsPerToken += rewardPerShare;
 		}
 		
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 		
 		// Assign the tokens to the balance of the buyer.
@@ -252,11 +252,11 @@ contract BizPyramid is LaunchDelayMechanism {
         withdraw();
 	}
 
-	// Gatekeeper function to check if the amount of Ether being sent isn&#39;t either
+	// Gatekeeper function to check if the amount of Ether being sent isn't either
 	// too small or too large. If it passes, goes direct to buy().
 	function fund() isOpen payable public {
-		// Don&#39;t allow for funding if the amount of Ether sent is less than 1 szabo.
-		if (msg.value &gt; 0.000001 ether) {
+		// Don't allow for funding if the amount of Ether sent is less than 1 szabo.
+		if (msg.value > 0.000001 ether) {
 		    contractBalance = add(contractBalance, msg.value);
 			buy();
 		} else {
@@ -293,7 +293,7 @@ contract BizPyramid is LaunchDelayMechanism {
 		// Update the payouts array, incrementing the request address by `balance`.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Send the dividends to the address that requested the withdraw.
@@ -309,7 +309,7 @@ contract BizPyramid is LaunchDelayMechanism {
 
 	function buy() internal {
 		// Any transaction of less than 1 szabo is likely to be worth less than the gas used to send it.
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 						
 		// msg.sender is the address of the caller.
@@ -328,8 +328,8 @@ contract BizPyramid is LaunchDelayMechanism {
 		var buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -352,7 +352,7 @@ contract BizPyramid is LaunchDelayMechanism {
 			
 		}
 
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 
 		// Assign the tokens to the balance of the buyer.
@@ -384,7 +384,7 @@ contract BizPyramid is LaunchDelayMechanism {
 		// Net Ether for the seller after the fee has been subtracted.
         var numEthers = numEthersBeforeFee - fee;
 		
-		// *Remove* the numTokens which were just sold from the total supply. We&#39;re /definitely/ a crypto central bank.
+		// *Remove* the numTokens which were just sold from the total supply. We're /definitely/ a crypto central bank.
 		totalSupply = sub(totalSupply, amount);
 		
         // Remove the tokens from the balance of the buyer.
@@ -395,16 +395,16 @@ contract BizPyramid is LaunchDelayMechanism {
 		var payoutDiff = (int256) (earningsPerToken * amount + (numEthers * scaleFactor));
 		
         // We reduce the amount paid out to the seller (this effectively resets their payouts value to zero,
-		// since they&#39;re selling all of their tokens). This makes sure the seller isn&#39;t disadvantaged if
+		// since they're selling all of their tokens). This makes sure the seller isn't disadvantaged if
 		// they decide to buy back in.
 		payouts[msg.sender] -= payoutDiff;		
 		
-		// Decrease the total amount that&#39;s been paid out to maintain invariance.
+		// Decrease the total amount that's been paid out to maintain invariance.
         totalPayouts -= payoutDiff;
 		
-		// Check that we have tokens in existence (this is a bit of an irrelevant check since we&#39;re
+		// Check that we have tokens in existence (this is a bit of an irrelevant check since we're
 		// selling tokens, but it guards against division by zero).
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// Scale the Ether taken as the selling fee by the scaleFactor variable.
 			var etherFee = fee * scaleFactor;
 			
@@ -439,18 +439,18 @@ contract BizPyramid is LaunchDelayMechanism {
 		// How much reserve Ether do we have left in the contract?
 		var reserveAmount = reserve();
 
-		// If you&#39;re the Highlander (or bagholder), you get The Prize. Everything left in the vault.
+		// If you're the Highlander (or bagholder), you get The Prize. Everything left in the vault.
 		if (tokens == totalSupply)
 			return reserveAmount;
 
 		// If there would be excess Ether left after the transaction this is called within, return the Ether
-		// corresponding to the equation in Dr Jochen Hoenicke&#39;s original Ponzi paper, which can be found
+		// corresponding to the equation in Dr Jochen Hoenicke's original Ponzi paper, which can be found
 		// at https://test.jochen-hoenicke.de/eth/ponzitoken/ in the third equation, with the CRR numerator 
 		// and denominator altered to 1 and 2 respectively.
 		return sub(reserveAmount, fixedExp((fixedLog(totalSupply - tokens) - price_coeff) * crr_d/crr_n));
 	}
 
-	// You don&#39;t care about these, but if you really do they&#39;re hex values for 
+	// You don't care about these, but if you really do they're hex values for 
 	// co-efficients used to simulate approximations of the log and exp functions.
 	int256  constant one        = 0x10000000000000000;
 	uint256 constant sqrt2      = 0x16a09e667f3bcc908;
@@ -469,11 +469,11 @@ contract BizPyramid is LaunchDelayMechanism {
 	// Hence R(s) = log((1+s)/(1-s)) = log(a)
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -499,10 +499,10 @@ contract BizPyramid is LaunchDelayMechanism {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 	
@@ -519,20 +519,20 @@ contract BizPyramid is LaunchDelayMechanism {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -540,7 +540,7 @@ contract BizPyramid is LaunchDelayMechanism {
 	// without including any transaction data (useful for, say, mobile wallet apps).
 	function () payable public {
 		// msg.value is the amount of Ether sent by the transaction.
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			fund();
 		} else {
 			withdrawOld(msg.sender);

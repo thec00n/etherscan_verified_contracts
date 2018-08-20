@@ -3,9 +3,9 @@ pragma solidity ^0.4.15;
 
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="c8a9acbaa1a988aba7acadaba7a6bcadb0bce6a1a7">[email&#160;protected]</span>&gt;
+/// @author Adrià Massanet <<span class="__cf_email__" data-cfemail="c8a9acbaa1a988aba7acadaba7a6bcadb0bce6a1a7">[email protected]</span>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -105,7 +105,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner
@@ -120,7 +120,7 @@ contract ERC20 {
 pragma solidity ^0.4.15;
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="98f9fceaf1f9d8fbf7fcfdfbf7f6ecfde0ecb6f1f7">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="98f9fceaf1f9d8fbf7fcfdfbf7f6ecfde0ecb6f1f7">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ pragma solidity ^0.4.15;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -148,7 +148,7 @@ pragma solidity ^0.4.15;
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -183,7 +183,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) constant public returns (bool) {
         return !escapeBlacklist[_token];
@@ -242,7 +242,7 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @title LPVault
@@ -268,7 +268,7 @@ contract LiquidPledging {
 ///  contract that holds funds for the liquid pledging system.
 contract LPVault is Escapable {
 
-    LiquidPledging public liquidPledging; // LiquidPledging contract&#39;s address
+    LiquidPledging public liquidPledging; // LiquidPledging contract's address
     bool public autoPay; // If false, payments will take 2 txs to be completed
 
     enum PaymentStatus {
@@ -367,7 +367,7 @@ contract LPVault is Escapable {
     ///  payment id (internal function)
     /// @param _idPayment id number for the payment about to be fulfilled 
     function doConfirmPayment(uint _idPayment) internal {
-        require(_idPayment &lt; payments.length);
+        require(_idPayment < payments.length);
         Payment storage p = payments[_idPayment];
         require(p.state == PaymentStatus.Pending);
 
@@ -389,7 +389,7 @@ contract LPVault is Escapable {
     /// @notice Cancels a pending payment (internal function)
     /// @param _idPayment id number for the payment    
     function doCancelPayment(uint _idPayment) internal {
-        require(_idPayment &lt; payments.length);
+        require(_idPayment < payments.length);
         Payment storage p = payments[_idPayment];
         require(p.state == PaymentStatus.Pending);
 
@@ -404,7 +404,7 @@ contract LPVault is Escapable {
     /// @notice `onlyOwner` An efficient way to confirm multiple payments
     /// @param _idPayments An array of multiple payment ids
     function multiConfirm(uint[] _idPayments) public onlyOwner {
-        for (uint i = 0; i &lt; _idPayments.length; i++) {
+        for (uint i = 0; i < _idPayments.length; i++) {
             doConfirmPayment(_idPayments[i]);
         }
     }
@@ -412,7 +412,7 @@ contract LPVault is Escapable {
     /// @notice `onlyOwner` An efficient way to cancel multiple payments
     /// @param _idPayments An array of multiple payment ids
     function multiCancel(uint[] _idPayments) public onlyOwner {
-        for (uint i = 0; i &lt; _idPayments.length; i++) {
+        for (uint i = 0; i < _idPayments.length; i++) {
             doCancelPayment(_idPayments[i]);
         }
     }
@@ -430,7 +430,7 @@ contract LPVault is Escapable {
     function escapeFunds(address _token, uint _amount) public onlyOwner {
         /// @dev Logic for ether
         if (_token == 0x0) {
-            require(this.balance &gt;= _amount);
+            require(this.balance >= _amount);
             escapeHatchDestination.transfer(_amount);
             EscapeHatchCalled(_token, _amount);
             return;
@@ -438,7 +438,7 @@ contract LPVault is Escapable {
         /// @dev Logic for tokens
         ERC20 token = ERC20(_token);
         uint balance = token.balanceOf(this);
-        require(balance &gt;= _amount);
+        require(balance >= _amount);
         require(token.transfer(escapeHatchDestination, _amount));
         EscapeFundsCalled(_token, _amount);
     }

@@ -4,7 +4,7 @@ contract Lotto {
 
     //	Play lottery.
     //	Rules:
-    //	-Address plays between minPlay &amp; mayPlay in order to increase stack amount.
+    //	-Address plays between minPlay & mayPlay in order to increase stack amount.
     //	-Address can play many times.
     //	-A fee is directly withrawn from incoming amounts (see feesPerMillion).
     //	-As soon as the jackpot goes beyond the target, an address is chosen randomly proportionally to its stack amount.
@@ -24,7 +24,7 @@ contract Lotto {
     uint256 public nextMinPlay;
     uint256 public maxPlay;
     uint256 public nextMaxPlay;
-    mapping(address =&gt; uint256) public playersAmounts;
+    mapping(address => uint256) public playersAmounts;
     address[] public playersList;
     uint256 private vMillion;
 
@@ -61,7 +61,7 @@ contract Lotto {
 
     function play() payable public {
         if(msg.sender==owner) throw;
-        if(msg.value&lt;minPlay || msg.value&gt;maxPlay) throw;
+        if(msg.value<minPlay || msg.value>maxPlay) throw;
 
         if(playersAmounts[msg.sender]==0){
             playersList.push(msg.sender);
@@ -71,7 +71,7 @@ contract Lotto {
         playersAmounts[msg.sender]=playersAmounts[msg.sender]+amount;
         jackpot=jackpot+amount;
         newPlay(block.timestamp, gameNumber, msg.sender, msg.value, amount, playersAmounts[msg.sender], jackpot, target);
-        if(jackpot&gt;=target){
+        if(jackpot>=target){
             _pickWinner();
         }
     }
@@ -85,8 +85,8 @@ contract Lotto {
         bool keepGoing;
         playerNumber=0;
         keepGoing=true;
-        while(keepGoing &amp;&amp; playerNumber&lt;playersList.length){
-            if(random&lt;=playersAmounts[playersList[playerNumber]]){
+        while(keepGoing && playerNumber<playersList.length){
+            if(random<=playersAmounts[playersList[playerNumber]]){
                 keepGoing=false;
             }else{
                 random=random-playersAmounts[playersList[playerNumber]];
@@ -107,7 +107,7 @@ contract Lotto {
         feesPerMillion=nextFeesPerMillion;
         jackpot=0;
         gameNumber=gameNumber+1;
-        for(uint256 i; i&lt;playersList.length; i++){
+        for(uint256 i; i<playersList.length; i++){
             playersAmounts[playersList[i]]=0;
         }
         delete playersList;
@@ -135,7 +135,7 @@ contract Lotto {
 
     function _withdraw(address destination, uint256 value) public{
        if(msg.sender!=owner) throw;
-       if(value&gt;=(this.balance-jackpot)) throw;
+       if(value>=(this.balance-jackpot)) throw;
        if(destination.send(value)){
            payment(block.timestamp, destination, value, true);
        }else{

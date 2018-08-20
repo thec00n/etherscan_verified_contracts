@@ -11,17 +11,17 @@ pragma solidity ^0.4.8;
 
     event Burn(address indexed from, uint256 value);
     
-    string public constant symbol = &quot;BIZ&quot;;
-    string public constant name = &quot;Biz Token&quot;;
+    string public constant symbol = "BIZ";
+    string public constant name = "Biz Token";
     uint8 public constant decimals = 18;
     uint256 _totalSupply = 100000000000000000000000;
     uint256 _totalBurned = 0;
      
     address public owner;
   
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
   
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
   
      function BIZToken() 
      {
@@ -49,7 +49,7 @@ pragma solidity ^0.4.8;
         if (_to == 0x0) 
             throw;     
 
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp; (_amount &gt; 0) &amp;&amp; (balances[_to] + _amount &gt; balances[_to]) ) 
+        if ( (balances[msg.sender] >= _amount) && (_amount > 0) && (balances[_to] + _amount > balances[_to]) ) 
         {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -67,7 +67,7 @@ pragma solidity ^0.4.8;
         if (_to == 0x0) 
             throw;   
 
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) 
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) 
         {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -94,7 +94,7 @@ pragma solidity ^0.4.8;
     
     function burn(uint256 _value) returns (bool success) 
     {
-        if (balances[msg.sender] &lt; _value) throw;           
+        if (balances[msg.sender] < _value) throw;           
         balances[msg.sender] -= _value;                     
 
         _totalSupply -= _value;          
@@ -106,9 +106,9 @@ pragma solidity ^0.4.8;
 
     function burnFrom(address _from, uint256 _value) returns (bool success) 
     {
-        if (balances[_from] &lt; _value) 
+        if (balances[_from] < _value) 
             throw;               
-        if (_value &gt; allowed[_from][msg.sender]) 
+        if (_value > allowed[_from][msg.sender]) 
             throw;     
 
         balances[_from] -= _value;                        

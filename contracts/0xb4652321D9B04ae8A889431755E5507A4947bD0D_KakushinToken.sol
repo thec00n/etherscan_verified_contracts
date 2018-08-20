@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract KakushinToken {
 
   
   
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
    
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -81,13 +81,13 @@ contract KakushinToken {
         if(b == 0) {
             c = 1;
         }
-        else if(b &lt; 0) {
-            for(i = 0; i &gt;= b; i--) {
+        else if(b < 0) {
+            for(i = 0; i >= b; i--) {
                 c = c.div(a);
             }
         }
         else {
-            for(i = 1; i &lt; b; i++) {
+            for(i = 1; i < b; i++) {
                 c = c.mul(a);
             }
         }
@@ -98,8 +98,8 @@ contract KakushinToken {
     function KakushinToken() public {
         totalSupply = totalSupply.mul(safeExp(10, uint256(decimals)));  // Update total supply with the decimal amount
                       // Give the creator all initial tokens
-        name = &quot;KAKUSHIN&quot;;                                   // Set the name for display purposes
-        symbol = &quot;KKN&quot;;                               // Set the symbol for display purposes
+        name = "KAKUSHIN";                                   // Set the name for display purposes
+        symbol = "KKN";                               // Set the symbol for display purposes
         balances[owner1] = uint256(59).mul(totalSupply.div(100));
         balances[companyWallet] = uint256(28).mul(totalSupply.div(100));  
         balances[founder1Wallet] = uint256(62400000).mul(safeExp(10, uint256(decimals)));
@@ -118,7 +118,7 @@ contract KakushinToken {
         
         require(_to != 0x0);
         
-        require(balances[msg.sender] &gt;= value);
+        require(balances[msg.sender] >= value);
         
         startDate = now ;
         
@@ -128,7 +128,7 @@ contract KakushinToken {
             balances[_to] = balances[_to].add(value); 
             balances[msg.sender] = balances[msg.sender].sub(value);
             
-        }else if(startDate &gt; endDate){
+        }else if(startDate > endDate){
                   
             balances[_to] = balances[_to].add(value) ; 
             balances[msg.sender] = balances[msg.sender].sub(value) ; 
@@ -152,7 +152,7 @@ contract KakushinToken {
     function checkSale() public view returns(bool success) {
         
         
-        if(startDate &gt; endDate){
+        if(startDate > endDate){
             return true ;
         } else {
             return false;

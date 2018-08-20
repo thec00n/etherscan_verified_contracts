@@ -12,20 +12,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -87,7 +87,7 @@ contract OwnableToken {
 
 contract KYCControl is OwnableToken {
 	event KYCApproved(address _user, bool isApproved);
-	mapping(address =&gt; bool) public KYCParticipants;
+	mapping(address => bool) public KYCParticipants;
 	
 	function isKYCApproved(address _who) view public returns (bool _isAprroved){
 		return KYCParticipants[_who];
@@ -115,7 +115,7 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
 	uint256 _circulatingSupply;
 	
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) public balances;
+	mapping (address => uint256) public balances;
 		
 	// This notifies clients about the amount burnt
 	event Burn(address indexed from, uint256 value);
@@ -123,16 +123,16 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
 
 	/* Initializes contract with initial supply tokens to the creator of the contract */
 	function VernamCrowdSaleToken() public {
-		name = &quot;Vernam Crowdsale Token&quot;;                            // Set the name for display purposes
-		symbol = &quot;VCT&quot;;                               				// Set the symbol for display purposes
+		name = "Vernam Crowdsale Token";                            // Set the name for display purposes
+		symbol = "VCT";                               				// Set the symbol for display purposes
 		decimals = 18;                            					// Amount of decimals for display purposes
 		_totalSupply = SafeMath.mul(1000000000, POW);     			//1 Billion Tokens with 18 Decimals
 		_circulatingSupply = 0;
 	}
 	
 	function mintToken(address _participant, uint256 _mintedAmount) public onlyMinter returns (bool _success) {
-		require(_mintedAmount &gt; 0);
-		require(_circulatingSupply.add(_mintedAmount) &lt;= _totalSupply);
+		require(_mintedAmount > 0);
+		require(_circulatingSupply.add(_mintedAmount) <= _totalSupply);
 		KYCParticipants[_participant] = false;
 
         balances[_participant] =  balances[_participant].add(_mintedAmount);
@@ -146,8 +146,8 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
     }
 	
 	function burn(address _participant, uint256 _value) public onlyBurner returns (bool _success) {
-        require(_value &gt; 0);
-		require(balances[_participant] &gt;= _value);   							// Check if the sender has enough
+        require(_value > 0);
+		require(balances[_participant] >= _value);   							// Check if the sender has enough
 		require(isKYCApproved(_participant) == true);
 		balances[_participant] = balances[_participant].sub(_value);            // Subtract from the sender
 		_circulatingSupply = _circulatingSupply.sub(_value);

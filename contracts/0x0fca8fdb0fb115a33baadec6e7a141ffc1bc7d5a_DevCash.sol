@@ -3,7 +3,7 @@ This is the DevCash Token Contract
 
 DevCash Implements the ERC20 token standard: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 
-DevCash will be distributed through bounties at &quot;Blockchain Developers United&quot; and affiliated meetups. www.blockchaindevsunited.com
+DevCash will be distributed through bounties at "Blockchain Developers United" and affiliated meetups. www.blockchaindevsunited.com
 
 Devcash is intended to incentivize proper Blockchain developer training, grant access to developer resources, and act a medium of exchange in the developer marketplace
 
@@ -68,13 +68,13 @@ contract DevCash is EIP20Interface {
         ) public {
         totalSupply = 21*10**8*10**8;               //DevCash totalSupply
         balances[msg.sender] = totalSupply;         //Allocate DevCash to contract deployer
-        name = &quot;DevCash&quot;;
+        name = "DevCash";
         decimals = 8;                               //Amount of decimals for display purposes
-        symbol = &quot;DCASH&quot;;
+        symbol = "DCASH";
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -83,10 +83,10 @@ contract DevCash is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -108,6 +108,6 @@ contract DevCash is EIP20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }

@@ -5,16 +5,16 @@ contract ERC20Token {
     event Transfer(address indexed from, address indexed _to, uint256 _value);
 	event Approval(address indexed owner, address indexed _spender, uint256 _value);
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /**
      * Internal transfer, only can be called by this contract
      */
     function _transfer(address _from, address _to, uint _value) internal {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_to != 0x0 && _to != address(this));
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -45,7 +45,7 @@ contract ERC20Token {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -88,7 +88,7 @@ contract Owned {
     /**
      * Transfer the ownership to another address
      *
-     * @param newOwner the new owner&#39;s address
+     * @param newOwner the new owner's address
      */
     function transferOwnership(address newOwner) public onlyOwner {
         owner = newOwner;
@@ -100,8 +100,8 @@ contract Beercoin is ERC20Token, Owned {
     event Produce(uint256 value, string caps);
 	event Burn(uint256 value);
 
-    string public name = &quot;Beercoin&quot;;
-    string public symbol = &quot;&#127866;&quot;;
+    string public name = "Beercoin";
+    string public symbol = "🍺";
 	uint8 public decimals = 18;
 	uint256 public totalSupply = 15496000000 * 10 ** uint256(decimals);
 
@@ -110,10 +110,10 @@ contract Beercoin is ERC20Token, Owned {
     // 20800000000 bottle caps will be eventually produced.
     //
     // Within 10000 bottle caps,
-    // 1 (i.e. every 10000th cap in total) has a value of 10000 (&quot;Diamond&quot;) Beercoins,
-    // 9 (i.e. every 1000th cap in total) have a value of 100 (&quot;Gold&quot;) Beercoins,
-    // 990 (i.e. every 10th cap in total) have a value of 10 (&quot;Silver&quot;) Beercoins,
-    // 9000 (i.e. every remaining cap) have a value of 1 (&quot;Bronze&quot;) Beercoin.
+    // 1 (i.e. every 10000th cap in total) has a value of 10000 ("Diamond") Beercoins,
+    // 9 (i.e. every 1000th cap in total) have a value of 100 ("Gold") Beercoins,
+    // 990 (i.e. every 10th cap in total) have a value of 10 ("Silver") Beercoins,
+    // 9000 (i.e. every remaining cap) have a value of 1 ("Bronze") Beercoin.
     //
     // Therefore one bottle cap has an average Beercoin value of
     // (1 * 10000 + 9 * 100 + 990 * 10 + 9000 * 1) / 10000 = 2.98.
@@ -125,7 +125,7 @@ contract Beercoin is ERC20Token, Owned {
 
     // Stores whether users disallow the owner to
     // pull Beercoins for the use of redemption.
-    mapping (address =&gt; bool) public redemptionLocked;
+    mapping (address => bool) public redemptionLocked;
 
     /**
      * Construct the Beercoin contract and
@@ -138,9 +138,9 @@ contract Beercoin is ERC20Token, Owned {
     /**
      * Lock or unlock the redemption functionality
      *
-     * If a user doesn&#39;t want to redeem Beercoins on the owner&#39;s
-     * website and doesn&#39;t trust the owner, the owner&#39;s capability
-     * of pulling Beercoin from the user&#39;s account can be locked
+     * If a user doesn't want to redeem Beercoins on the owner's
+     * website and doesn't trust the owner, the owner's capability
+     * of pulling Beercoin from the user's account can be locked
      *
      * @param lock whether to lock the redemption capability or not
      */
@@ -160,26 +160,26 @@ contract Beercoin is ERC20Token, Owned {
      * @param numberOfCaps the number of bottle caps to be produced
      */
 	function produce(uint256 numberOfCaps) public onlyOwner returns (bool success) {
-        require(numberOfCaps &lt;= unproducedCaps);
+        require(numberOfCaps <= unproducedCaps);
 
         uint256 value = 0;
         bytes memory caps = bytes(new string(numberOfCaps));
         
-        for (uint256 i = 0; i &lt; numberOfCaps; ++i) {
+        for (uint256 i = 0; i < numberOfCaps; ++i) {
             uint256 currentCoin = producedCaps + i;
 
             if (currentCoin % 10000 == 0) {
                 value += 10000;
-                caps[i] = &quot;D&quot;;
+                caps[i] = "D";
             } else if (currentCoin % 1000 == 0) {
                 value += 100;
-                caps[i] = &quot;G&quot;;
+                caps[i] = "G";
             } else if (currentCoin % 10 == 0) {
                 value += 10;
-                caps[i] = &quot;S&quot;;
+                caps[i] = "S";
             } else {
                 value += 1;
-                caps[i] = &quot;B&quot;;
+                caps[i] = "B";
             }
         }
 
@@ -201,14 +201,14 @@ contract Beercoin is ERC20Token, Owned {
 	 * our server registers a valid code scan by the given user
      *
      * @param user the address of the user who scanned a codes
-     * @param cap a bottle cap value (&quot;D&quot;, &quot;G&quot;, &quot;S&quot;, or &quot;B&quot;)
+     * @param cap a bottle cap value ("D", "G", "S", or "B")
      */
 	function scan(address user, byte cap) public onlyOwner returns (bool success) {
-        if (cap == &quot;D&quot;) {
+        if (cap == "D") {
             _transfer(this, user, 10000 * 10 ** uint256(decimals));
-        } else if (cap == &quot;G&quot;) {
+        } else if (cap == "G") {
             _transfer(this, user, 100 * 10 ** uint256(decimals));
-        } else if (cap == &quot;S&quot;) {
+        } else if (cap == "S") {
             _transfer(this, user, 10 * 10 ** uint256(decimals));
         } else {
             _transfer(this, user, 1 * 10 ** uint256(decimals));
@@ -224,12 +224,12 @@ contract Beercoin is ERC20Token, Owned {
 	 * our server registers valid code scans by the given users
      *
      * @param users the addresses of the users who scanned a codes
-     * @param caps bottle cap values (&quot;D&quot;, &quot;G&quot;, &quot;S&quot;, or &quot;B&quot;)
+     * @param caps bottle cap values ("D", "G", "S", or "B")
      */
 	function scanMany(address[] users, byte[] caps) public onlyOwner returns (bool success) {
         require(users.length == caps.length);
 
-        for (uint16 i = 0; i &lt; users.length; ++i) {
+        for (uint16 i = 0; i < users.length; ++i) {
             scan(users[i], caps[i]);
         }
 
@@ -275,7 +275,7 @@ contract Beercoin is ERC20Token, Owned {
     function redeemMany(address[] users, uint256[] values) public onlyOwner returns (bool success) {
         require(users.length == values.length);
 
-        for (uint16 i = 0; i &lt; users.length; ++i) {
+        for (uint16 i = 0; i < users.length; ++i) {
             redeem(users[i], values[i]);
         }
 
@@ -291,7 +291,7 @@ contract Beercoin is ERC20Token, Owned {
     function transferMany(address[] recipients, uint256[] values) public onlyOwner returns (bool success) {
         require(recipients.length == values.length);
 
-        for (uint16 i = 0; i &lt; recipients.length; ++i) {
+        for (uint16 i = 0; i < recipients.length; ++i) {
             transfer(recipients[i], values[i]);
         }
 
@@ -304,7 +304,7 @@ contract Beercoin is ERC20Token, Owned {
      * @param value the amount of Beercoins to burn
      */
     function burn(uint256 value) public onlyOwner returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= value);
+        require(balanceOf[msg.sender] >= value);
         balanceOf[msg.sender] -= value;
         totalSupply -= value;
 		Burn(value);

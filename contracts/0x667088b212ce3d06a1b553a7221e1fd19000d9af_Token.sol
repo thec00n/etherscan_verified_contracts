@@ -36,13 +36,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -53,8 +53,8 @@ contract SafeMath {
 
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -96,7 +96,7 @@ contract StandardToken is ERC20, SafeMath {
   Important!
   We have to run pre-mine allocation first.
   And only then rest of users.
-  Or it&#39;s not going to work due to whenAllocation logic.
+  Or it's not going to work due to whenAllocation logic.
 */
 contract Token is StandardToken, Ownable {
   // Account allocation event
@@ -120,19 +120,19 @@ contract Token is StandardToken, Ownable {
     bool disabled;
 
     uint allocationsCount;
-    mapping(uint =&gt; uint) allocations;
+    mapping(uint => uint) allocations;
   }
 
   /*
     List of preminers
   */
-  mapping(address =&gt; Preminer) preminers;
+  mapping(address => Preminer) preminers;
 
   /*
-    Token Name &amp; Token Symbol &amp; Decimals
+    Token Name & Token Symbol & Decimals
   */
-  string public name = &quot;WINGS&quot;;
-  string public symbol = &quot;WINGS&quot;;
+  string public name = "WINGS";
+  string public symbol = "WINGS";
   uint public decimals = 18;
 
   /*
@@ -188,7 +188,7 @@ contract Token is StandardToken, Ownable {
     Maybe we should add here pre-mine accounts too.
   */
   modifier whenAllocation(bool value) {
-    if ((accountsToAllocate &gt; 0) == value) {
+    if ((accountsToAllocate > 0) == value) {
       _;
     } else {
       throw;
@@ -296,7 +296,7 @@ contract Token is StandardToken, Ownable {
       throw;
     }
 
-    for (uint i = 0; i &lt; preminers[_newPreminer].allocationsCount; i++) {
+    for (uint i = 0; i < preminers[_newPreminer].allocationsCount; i++) {
       preminers[_newPreminer].allocations[i] = oldPreminer.allocations[i];
     }
 
@@ -313,18 +313,18 @@ contract Token is StandardToken, Ownable {
       throw;
     }
 
-    if (preminer.allocationsCount &gt; 0) {
+    if (preminer.allocationsCount > 0) {
       var previousAllocation = preminer.allocations[preminer.allocationsCount-1];
 
-      if (previousAllocation &gt; _time) {
+      if (previousAllocation > _time) {
         throw;
       }
 
-      if (previousAllocation + DAYS_28 &gt; _time) {
+      if (previousAllocation + DAYS_28 > _time) {
         throw;
       }
 
-      if (previousAllocation + DAYS_31 &lt; _time) {
+      if (previousAllocation + DAYS_31 < _time) {
         throw;
       }
     }
@@ -361,8 +361,8 @@ contract Token is StandardToken, Ownable {
       throw;
     }
 
-    for (uint i = preminer.latestAllocation; i &lt; preminer.allocationsCount; i++) {
-      if (preminer.allocations[i] &lt; block.timestamp) {
+    for (uint i = preminer.latestAllocation; i < preminer.allocationsCount; i++) {
+      if (preminer.allocations[i] < block.timestamp) {
         if (preminer.allocations[i] == 0) {
           continue;
         }

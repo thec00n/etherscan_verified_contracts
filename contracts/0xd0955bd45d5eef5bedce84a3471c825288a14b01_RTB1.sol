@@ -21,9 +21,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -58,7 +58,7 @@ library SafeMath {
             return (1);
         else{
             uint256 z = x;
-            for (uint256 i = 1; i &lt; y; i++)
+            for (uint256 i = 1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -76,18 +76,18 @@ contract RTB1 is shareProfit{
     uint256 public totalSupply = 300;
     uint256 public totalSold = 0;
     uint256 public price = 1 ether;
-    string public name = &quot;Retro Block Token 1&quot;;
-    string public symbol = &quot;RTB1&quot;;
+    string public name = "Retro Block Token 1";
+    string public symbol = "RTB1";
     address public owner;
     address public finance;
     
-    mapping (address=&gt;uint256) received;
+    mapping (address=>uint256) received;
     uint256 profit;
     address public jackpot;
-    mapping (address=&gt;uint256) changeProfit;
+    mapping (address=>uint256) changeProfit;
 
-    mapping (address=&gt;uint256) balances;
-    mapping (address=&gt;mapping (address=&gt;uint256)) allowed;
+    mapping (address=>uint256) balances;
+    mapping (address=>mapping (address=>uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -95,7 +95,7 @@ contract RTB1 is shareProfit{
     event Withdraw(address indexed _addr, uint256 _value);
     
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;only owner&quot;);
+        require(msg.sender == owner, "only owner");
         _;
     }
     
@@ -104,7 +104,7 @@ contract RTB1 is shareProfit{
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     
@@ -116,14 +116,14 @@ contract RTB1 is shareProfit{
     }
 
     function() public payable {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             profit = msg.value.div(totalSupply).add(profit);
             emit AddProfit(msg.sender, msg.value, profit);
         }
     }
     
     function increaseProfit() external payable returns(bool){
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             profit = msg.value.div(totalSupply).add(profit);
             emit AddProfit(msg.sender, msg.value, profit);
             return true;
@@ -141,14 +141,14 @@ contract RTB1 is shareProfit{
     }
 
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require(_value &gt; 0 &amp;&amp; allowed[msg.sender][_spender] == 0);
+        require(_value > 0 && allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value);
     }
@@ -162,10 +162,10 @@ contract RTB1 is shareProfit{
     }
 
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
-        require(_to != address(0), &quot;Receiver address cannot be null&quot;);
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_from]);
+        require(_to != address(0), "Receiver address cannot be null");
+        require(_value > 0 && _value <= balances[_from]);
         uint256 newToVal = balances[_to] + _value;
-        assert(newToVal &gt;= balances[_to]);
+        assert(newToVal >= balances[_to]);
         uint256 newFromVal = balances[_from] - _value;
         balances[_from] =  newFromVal;
         balances[_to] = newToVal;
@@ -177,11 +177,11 @@ contract RTB1 is shareProfit{
     }
     
     function buy(uint256 _amount) external onlyHuman payable{
-        require(_amount &gt; 0);
+        require(_amount > 0);
         uint256 _money = _amount.mul(price);
         require(msg.value == _money);
-        require(balances[this] &gt;= _amount);
-        require((totalSupply - totalSold) &gt;= _amount, &quot;Sold out&quot;);
+        require(balances[this] >= _amount);
+        require((totalSupply - totalSold) >= _amount, "Sold out");
         finance.transfer(_money.mul(80).div(100));
         _transfer(this, msg.sender, _amount);
         jackpot.transfer(_money.mul(20).div(100));
@@ -190,7 +190,7 @@ contract RTB1 is shareProfit{
 
     function withdraw() external {
         uint256 value = getProfit(msg.sender);
-        require(value &gt; 0, &quot;No cash available&quot;);
+        require(value > 0, "No cash available");
         emit Withdraw(msg.sender, value);
         received[msg.sender] = received[msg.sender].add(value);
         msg.sender.transfer(value);

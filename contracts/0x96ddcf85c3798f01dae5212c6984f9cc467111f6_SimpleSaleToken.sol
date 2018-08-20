@@ -20,7 +20,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) pure internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) pure internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -90,9 +90,9 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   uint    public contractSendGas = 100000;
   address public owner;
   address public beneficiary;
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) approvals;  //transfer approvals, from -&gt; to
-  // namehash(&#39;addr.reverse&#39;)
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) approvals;  //transfer approvals, from -> to
+  // namehash('addr.reverse')
   //bytes32 constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
   address constant ENS_REVERSE_REGISTRAR = 0x9062C0A6Dbd6108336BcBe4593a3D1cE05512069;
 
@@ -107,14 +107,14 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   }
 
   modifier duringSale {
-    require(tokenPrice != 0 &amp;&amp; tokensRemaining &gt; 0);
+    require(tokenPrice != 0 && tokensRemaining > 0);
     _;
   }
 
   //this is to protect from short-address attack. use this to verify size of args, especially when an address arg preceeds
   //a value arg. see: https://www.reddit.com/r/ethereum/comments/63s917/worrysome_bug_exploit_with_erc20_token/dfwmhc3/
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -142,7 +142,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
 
   function transfer(address _to, uint _value) public onlyPayloadSize(2*32) returns (bool success) {
     //prevent wrap
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       TransferEvent(msg.sender, _to, _value);
@@ -155,7 +155,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3*32) public returns (bool success) {
     //prevent wrap:
-    if (balances[_from] &gt;= _value &amp;&amp; approvals[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[_from] >= _value && approvals[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[_from] -= _value;
       balances[_to] += _value;
       approvals[_from][msg.sender] -= _value;
@@ -193,15 +193,15 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   //
   function () public payable duringSale {
     uint _quantity = msg.value / tokenPrice;
-    if (_quantity &gt; tokensRemaining)
+    if (_quantity > tokensRemaining)
        _quantity = tokensRemaining;
-    require(_quantity &gt;= 1);
+    require(_quantity >= 1);
     uint _cost = safeMul(_quantity, tokenPrice);
     uint _refund = safeSub(msg.value, _cost);
     balances[msg.sender] = safeAdd(balances[msg.sender], _quantity);
     tokenSupply = safeAdd(tokenSupply, _quantity);
     tokensRemaining = safeSub(tokensRemaining, _quantity);
-    if (_refund &gt; 0)
+    if (_refund > 0)
         msg.sender.transfer(_refund);
     PaymentEvent(msg.sender, msg.value);
   }
@@ -221,7 +221,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   }
 
   function lock() public ownerOnly {
-    require(beneficiary != 0 &amp;&amp; tokenPrice != 0);
+    require(beneficiary != 0 && tokenPrice != 0);
     isLocked = true;
   }
 

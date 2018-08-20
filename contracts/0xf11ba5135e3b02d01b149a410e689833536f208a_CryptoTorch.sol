@@ -1,5 +1,5 @@
 // CryptoTorch Source code
-// copyright 2018 CryptoTorch &lt;https://cryptotorch.io&gt;
+// copyright 2018 CryptoTorch <https://cryptotorch.io>
 
 pragma solidity 0.4.19;
 
@@ -26,9 +26,9 @@ library SafeMath {
     * Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     * Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -126,7 +126,7 @@ contract Pausable is Ownable {
 /**
 * @title ReentrancyGuard
 * Helps contracts guard against reentrancy attacks.
-* @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f280979f919db2c0">[email&#160;protected]</a>π.com&gt;
+* @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f280979f919db2c0">[email protected]</a>π.com>
 */
 contract ReentrancyGuard {
     bool private reentrancyLock = false;
@@ -225,7 +225,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
 
     address public torchRunner;
     address public donationsReceiver_;
-    mapping (address =&gt; PlayerData) private playerData_;
+    mapping (address => PlayerData) private playerData_;
 
     CryptoTorchToken internal CryptoTorchToken_;
 
@@ -239,8 +239,8 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
         require(
             whaleIncreaseLimit == 0 ||
             (
-                _amount &lt;= (whaleIncreaseLimit.add(_highestPrices[0].price)) &amp;&amp;
-                playerData_[msg.sender].dividends.add(playerData_[msg.sender].profits).add(_amount) &lt;= whaleMax
+                _amount <= (whaleIncreaseLimit.add(_highestPrices[0].price)) &&
+                playerData_[msg.sender].dividends.add(playerData_[msg.sender].profits).add(_amount) <= whaleMax
             )
         );
         _;
@@ -269,7 +269,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Migrate Leader Prices
      */
     function migratePriceLeader(uint8 _leaderIndex, address _leaderAddress, uint256 _leaderPrice) public onlyOwner onlyDuringMigration {
-        require(_leaderIndex &gt;= 0 &amp;&amp; _leaderIndex &lt; maxLeaders);
+        require(_leaderIndex >= 0 && _leaderIndex < maxLeaders);
         _highestPrices[_leaderIndex].owner = _leaderAddress;
         _highestPrices[_leaderIndex].price = _leaderPrice;
         if (_leaderIndex == maxLeaders-1) {
@@ -281,7 +281,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Migrate Leader Miles
      */
     function migrateMileageLeader(uint8 _leaderIndex, address _leaderAddress, uint256 _leaderMiles) public onlyOwner onlyDuringMigration {
-        require(_leaderIndex &gt;= 0 &amp;&amp; _leaderIndex &lt; maxLeaders);
+        require(_leaderIndex >= 0 && _leaderIndex < maxLeaders);
         _highestMiles[_leaderIndex].owner = _leaderAddress;
         _highestMiles[_leaderIndex].miles = _leaderMiles;
         if (_leaderIndex == maxLeaders-1) {
@@ -341,7 +341,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      */
     function setAccountNickname(string _nickname) public whenNotPaused {
         require(msg.sender != address(0));
-        require(bytes(_nickname).length &gt; 0);
+        require(bytes(_nickname).length > 0);
         playerData_[msg.sender].name = _nickname;
     }
 
@@ -394,10 +394,10 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
     /**
      * Payments made directly to this contract are treated as direct Donations to the Special Olympics.
      *  - Note: payments made directly to the contract do not receive tokens.  Tokens
-     *    are only available via &quot;takeTheTorch()&quot; or through the Dapp at https://cryptotorch.io
+     *    are only available via "takeTheTorch()" or through the Dapp at https://cryptotorch.io
      */
     function() payable public {
-        if (msg.value &gt; 0 &amp;&amp; donationsReceiver_ != 0x0) {
+        if (msg.value > 0 && donationsReceiver_ != 0x0) {
             donationsReceiver_.transfer(msg.value); // donations?  Thank you!  :)
         }
     }
@@ -519,7 +519,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Get the Highest Price per each Medal Leader
      */
     function getHighestPriceAt(uint _index) public view returns (uint256) {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; maxLeaders);
+        require(_index >= 0 && _index < maxLeaders);
         return _highestPrices[_index].price;
     }
 
@@ -527,7 +527,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Get the Highest Price Owner per each Medal Leader
      */
     function getHighestPriceOwnerAt(uint _index) public view returns (address) {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; maxLeaders);
+        require(_index >= 0 && _index < maxLeaders);
         return _highestPrices[_index].owner;
     }
 
@@ -535,7 +535,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Get the Highest Miles per each Medal Leader
      */
     function getHighestMilesAt(uint _index) public view returns (uint256) {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; maxLeaders);
+        require(_index >= 0 && _index < maxLeaders);
         return _highestMiles[_index].miles;
     }
 
@@ -543,7 +543,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Get the Highest Miles Owner per each Medal Leader
      */
     function getHighestMilesOwnerAt(uint _index) public view returns (address) {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; maxLeaders);
+        require(_index >= 0 && _index < maxLeaders);
         return _highestMiles[_index].owner;
     }
 
@@ -556,7 +556,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      */
     function takeTheTorch_(uint256 _amountPaid, address _takenBy, address _referredBy) internal antiWhalePrice(_amountPaid) returns (uint256) {
         require(_takenBy != address(0));
-        require(_amountPaid &gt;= 1 finney);
+        require(_amountPaid >= 1 finney);
         require(_takenBy != torchRunner); // Torch must be passed on
         if (_referredBy == address(this)) { _referredBy = address(0); }
 
@@ -570,7 +570,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
 
         // Grant Mileage Tokens to Torch Holder
         uint256 mintedTokens = CryptoTorchToken_.mint.value(forTokens)(torchRunner, forTokens, _referredBy);
-        if (totalDistanceRun &lt; CryptoTorchToken_.totalSupply()) {
+        if (totalDistanceRun < CryptoTorchToken_.totalSupply()) {
             totalDistanceRun = CryptoTorchToken_.totalSupply();
         }
 
@@ -590,7 +590,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      */
     function withdrawFor_(address _for) internal returns (uint256) {
         uint256 torchDividends = playerData_[_for].dividends;
-        if (playerData_[_for].dividends &gt; 0) {
+        if (playerData_[_for].dividends > 0) {
             playerData_[_for].dividends = 0;
             playerData_[_for].profits = playerData_[_for].profits.add(torchDividends);
             _for.transfer(torchDividends);
@@ -602,17 +602,17 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
      * Update the Medal Leader Boards
      */
     function updateLeaders_(address _torchRunner, uint256 _amountPaid) internal {
-        // Owner can&#39;t be leader; conflict of interest
+        // Owner can't be leader; conflict of interest
         if (_torchRunner == owner) { return; }
 
         // Update Highest Prices
-        if (_amountPaid &gt; _lowestHighPrice) {
+        if (_amountPaid > _lowestHighPrice) {
             updateHighestPrices_(_amountPaid, _torchRunner);
         }
 
         // Update Highest Mileage
         uint256 tokenBalance = CryptoTorchToken_.balanceOf(_torchRunner);
-        if (tokenBalance &gt; _lowestHighMiles) {
+        if (tokenBalance > _lowestHighMiles) {
             updateHighestMiles_(tokenBalance, _torchRunner);
         }
     }
@@ -627,8 +627,8 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
         HighPrice memory tmp;
 
         // Determine positions
-        for (i = maxLeaders-1; i &gt;= 0; i--) {
-            if (_price &gt;= _highestPrices[i].price) {
+        for (i = maxLeaders-1; i >= 0; i--) {
+            if (_price >= _highestPrices[i].price) {
                 newPos = i;
             }
             if (_owner == _highestPrices[i].owner) {
@@ -637,8 +637,8 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
             if (i == 0) { break; } // prevent i going below 0
         }
         // Insert or update leader
-        if (newPos &lt; maxLeaders) {
-            if (oldPos &lt; maxLeaders-1) {
+        if (newPos < maxLeaders) {
+            if (oldPos < maxLeaders-1) {
                 // update price for existing leader
                 _highestPrices[oldPos].price = _price;
                 if (newPos != oldPos) {
@@ -649,7 +649,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
                 }
             } else {
                 // shift down
-                for (i = maxLeaders-1; i &gt; newPos; i--) {
+                for (i = maxLeaders-1; i > newPos; i--) {
                     _highestPrices[i] = _highestPrices[i-1];
                 }
                 // insert
@@ -671,8 +671,8 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
         HighMileage memory tmp;
 
         // Determine positions
-        for (i = maxLeaders-1; i &gt;= 0; i--) {
-            if (_miles &gt;= _highestMiles[i].miles) {
+        for (i = maxLeaders-1; i >= 0; i--) {
+            if (_miles >= _highestMiles[i].miles) {
                 newPos = i;
             }
             if (_owner == _highestMiles[i].owner) {
@@ -681,8 +681,8 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
             if (i == 0) { break; } // prevent i going below 0
         }
         // Insert or update leader
-        if (newPos &lt; maxLeaders) {
-            if (oldPos &lt; maxLeaders-1) {
+        if (newPos < maxLeaders) {
+            if (oldPos < maxLeaders-1) {
                 // update miles for existing leader
                 _highestMiles[oldPos].miles = _miles;
                 if (newPos != oldPos) {
@@ -693,7 +693,7 @@ contract CryptoTorch is Pausable, ReentrancyGuard {
                 }
             } else {
                 // shift down
-                for (i = maxLeaders-1; i &gt; newPos; i--) {
+                for (i = maxLeaders-1; i > newPos; i--) {
                     _highestMiles[i] = _highestMiles[i-1];
                 }
                 // insert

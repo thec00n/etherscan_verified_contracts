@@ -11,17 +11,17 @@ contract Vineyard{
     address public ceoAddress;
     address public ceoWallet;
 
-    mapping (address =&gt; uint256) public vineyardVines;
-    mapping (address =&gt; uint256) public purchasedGrapes;
-    mapping (address =&gt; uint256) public lastHarvest;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public vineyardVines;
+    mapping (address => uint256) public purchasedGrapes;
+    mapping (address => uint256) public lastHarvest;
+    mapping (address => address) public referrals;
 
     uint256 public marketGrapes;
 
-    mapping (address =&gt; uint256) public landMultiplier;
-    mapping (address =&gt; uint256) public totalVineCapacity;
-    mapping (address =&gt; uint256) public wineInCellar;
-    mapping (address =&gt; uint256) public wineProductionRate;
+    mapping (address => uint256) public landMultiplier;
+    mapping (address => uint256) public totalVineCapacity;
+    mapping (address => uint256) public wineInCellar;
+    mapping (address => uint256) public wineProductionRate;
     uint256 public grapesToBuildWinery = 43200000000; // 500000 grapes
     uint256 public grapesToProduceBottle = 3456000000; //40000 grapes
 
@@ -47,12 +47,12 @@ contract Vineyard{
     }
 
     function harvest(address ref) initializedMarket public {
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 grapesUsed = getMyGrapes();
         uint256 newVines = SafeMath.div(grapesUsed, GRAPE_SECS_TO_GROW_VINE);
-        if (SafeMath.add(vineyardVines[msg.sender], newVines) &gt; totalVineCapacity[msg.sender]) {
+        if (SafeMath.add(vineyardVines[msg.sender], newVines) > totalVineCapacity[msg.sender]) {
             purchasedGrapes[msg.sender] = SafeMath.mul(SafeMath.sub(SafeMath.add(vineyardVines[msg.sender], newVines), totalVineCapacity[msg.sender]), GRAPE_SECS_TO_GROW_VINE);
             vineyardVines[msg.sender] = totalVineCapacity[msg.sender];
             grapesUsed = grapesUsed - purchasedGrapes[msg.sender];
@@ -79,9 +79,9 @@ contract Vineyard{
     }
 
     function buildWinery() initializedMarket public {
-        require(wineProductionRate[msg.sender] &lt;= landMultiplier[msg.sender]);
+        require(wineProductionRate[msg.sender] <= landMultiplier[msg.sender]);
         uint256 hasGrapes = getMyGrapes();
-        require(hasGrapes &gt;= grapesToBuildWinery);
+        require(hasGrapes >= grapesToBuildWinery);
 
         uint256 grapesLeft = SafeMath.sub(hasGrapes, grapesToBuildWinery);
         purchasedGrapes[msg.sender] = grapesLeft;
@@ -95,8 +95,8 @@ contract Vineyard{
     function sellGrapes() initializedMarket public {
         uint256 hasGrapes = getMyGrapes();
         uint256 grapesToSell = hasGrapes;
-        if (grapesToSell &gt; marketGrapes) {
-          // don&#39;t allow sell larger than the current market holdings
+        if (grapesToSell > marketGrapes) {
+          // don't allow sell larger than the current market holdings
           grapesToSell = marketGrapes;
         }
         uint256 grapeValue = calculateGrapeSell(grapesToSell);
@@ -109,8 +109,8 @@ contract Vineyard{
     }
 
     function buyGrapes() initializedMarket public payable{
-        require(msg.value &lt;= SafeMath.sub(this.balance,msg.value));
-        require(vineyardVines[msg.sender] &gt; 0);
+        require(msg.value <= SafeMath.sub(this.balance,msg.value));
+        require(vineyardVines[msg.sender] > 0);
 
         uint256 grapesBought = calculateGrapeBuy(msg.value, SafeMath.sub(this.balance, msg.value));
         grapesBought = SafeMath.sub(grapesBought, devFee(grapesBought));
@@ -210,7 +210,7 @@ contract Vineyard{
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -243,9 +243,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -253,7 +253,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -262,7 +262,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

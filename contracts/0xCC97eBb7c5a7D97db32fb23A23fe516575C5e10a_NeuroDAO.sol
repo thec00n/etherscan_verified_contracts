@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the NeuroDAO Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the NeuroDAO Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="f990d78a8f908b9097b997968b9d988f90979dd78b8c">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="f990d78a8f908b9097b997968b9d988f90979dd78b8c">[email protected]</span>>
 
 IF YOU ARE ENJOYED IT DONATE TO 0x3Ad38D1060d1c350aF29685B2b8Ec3eDE527452B ! :)
 */
@@ -77,14 +77,14 @@ contract ManualMigration is owned, ERC20 {
         uint limit;
         bool isTeam;
     }
-    mapping (address =&gt; SpecialTokenHolder) public specials;
+    mapping (address => SpecialTokenHolder) public specials;
 
     struct TokenHolder {
         uint balance;
         uint balanceBeforeUpdate;
         uint balanceUpdateTime;
     }
-    mapping (address =&gt; TokenHolder) public holders;
+    mapping (address => TokenHolder) public holders;
 
     function ManualMigration(address _original) payable owned() {
         original = _original;
@@ -110,7 +110,7 @@ contract ManualMigration is owned, ERC20 {
     }
 
     function beforeBalanceChanges(address _who) internal {
-        if (holders[_who].balanceUpdateTime &lt;= freezedMoment) {
+        if (holders[_who].balanceUpdateTime <= freezedMoment) {
             holders[_who].balanceUpdateTime = now;
             holders[_who].balanceBeforeUpdate = holders[_who].balance;
         }
@@ -122,15 +122,15 @@ contract Crowdsale is ManualMigration {
     function Crowdsale(address _original) payable ManualMigration(_original) {}
 
     function () payable enabled {
-        require(holders[this].balance &gt; 0);
+        require(holders[this].balance > 0);
         uint256 tokens = 5000 * msg.value / 1000000000000000000;
-        if (tokens &gt; holders[this].balance) {
+        if (tokens > holders[this].balance) {
             tokens = holders[this].balance;
             uint valueWei = tokens * 1000000000000000000 / 5000;
             msg.sender.transfer(msg.value - valueWei);
         }
-        require(holders[msg.sender].balance + tokens &gt; holders[msg.sender].balance); // overflow
-        require(tokens &gt; 0);
+        require(holders[msg.sender].balance + tokens > holders[msg.sender].balance); // overflow
+        require(tokens > 0);
         beforeBalanceChanges(msg.sender);
         beforeBalanceChanges(this);
         holders[msg.sender].balance += tokens;
@@ -142,14 +142,14 @@ contract Crowdsale is ManualMigration {
 
 contract Token is Crowdsale {
 
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;NeuroDAO&#39;;
-    string  public symbol      = &quot;NDAO&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'NeuroDAO';
+    string  public symbol      = "NDAO";
     uint8   public decimals    = 0;
 
     uint    public startTime;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Burned(address indexed owner, uint256 value);
 
@@ -170,7 +170,7 @@ contract Token is Crowdsale {
                 } else {
                     periods = (now - startTime) / 1 years;
                     ++periods;
-                    if (periods &lt; 5) {
+                    if (periods < 5) {
                         blocked = limit * (100 - periods * 20) / 100;
                     }
                 }
@@ -185,7 +185,7 @@ contract Token is Crowdsale {
     
     function firstYearPeriods() internal constant returns (uint _periods) {
         _periods = 0;
-        if (now &lt; startTime + 1 years) {
+        if (now < startTime + 1 years) {
             uint8[12] memory logic = [1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9, 10];
             _periods = logic[(now - startTime) / 28 days];
         }
@@ -196,8 +196,8 @@ contract Token is Crowdsale {
     }
 
     function transfer(address _to, uint256 _value) public enabled {
-        require(availableTokens(msg.sender) &gt;= _value);
-        require(holders[_to].balance + _value &gt;= holders[_to].balance); // overflow
+        require(availableTokens(msg.sender) >= _value);
+        require(holders[_to].balance + _value >= holders[_to].balance); // overflow
         beforeBalanceChanges(msg.sender);
         beforeBalanceChanges(_to);
         holders[msg.sender].balance -= _value;
@@ -206,9 +206,9 @@ contract Token is Crowdsale {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public enabled {
-        require(availableTokens(_from) &gt;= _value);
-        require(holders[_to].balance + _value &gt;= holders[_to].balance); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(availableTokens(_from) >= _value);
+        require(holders[_to].balance + _value >= holders[_to].balance); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         beforeBalanceChanges(_from);
         beforeBalanceChanges(_to);
         holders[_from].balance -= _value;
@@ -228,7 +228,7 @@ contract Token is Crowdsale {
     }
     
     function burn(uint256 _value) public enabled {
-        require(holders[msg.sender].balance &gt;= _value);
+        require(holders[msg.sender].balance >= _value);
         beforeBalanceChanges(msg.sender);
         holders[msg.sender].balance -= _value;
         totalSupply -= _value;
@@ -288,7 +288,7 @@ contract NeuroDAO is TokenMigration {
      *  freezeTheMoment()
      */
     function freezedBalanceOf(address _who) constant public returns(uint) {
-        if (holders[_who].balanceUpdateTime &lt;= freezedMoment) {
+        if (holders[_who].balanceUpdateTime <= freezedMoment) {
             return holders[_who].balance;
         } else {
             return holders[_who].balanceBeforeUpdate;
@@ -307,7 +307,7 @@ contract Adapter is owned {
     address public erc20contract;
     address public masterHolder;
     
-    mapping (address =&gt; bool) public alreadyUsed;
+    mapping (address => bool) public alreadyUsed;
     
     function Adapter(address _neuroDAO, address _erc20contract, address _masterHolder)
         payable owned() {

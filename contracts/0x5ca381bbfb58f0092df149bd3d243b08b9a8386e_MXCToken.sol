@@ -18,8 +18,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -34,9 +34,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -44,7 +44,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -53,7 +53,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -97,7 +97,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -115,7 +115,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -142,7 +142,7 @@ contract BasicToken is ERC20Basic {
 */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -159,8 +159,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -173,7 +173,7 @@ contract StandardToken is ERC20, BasicToken {
     * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards,
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards,
     * i.e. clients SHOULD make sure to create user interfaces in such a way 
     * that they set the allowance first to 0 before setting it to another value for the same spender. 
     * @param _spender The address which will spend the funds.
@@ -239,7 +239,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -253,8 +253,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract MXCToken is StandardToken {
 
-    string public constant name = &quot;MXCToken&quot;;
-    string public constant symbol = &quot;MXC&quot;;
+    string public constant name = "MXCToken";
+    string public constant symbol = "MXC";
     uint8 public constant decimals = 18;
 
     uint256 constant MONTH = 3600*24*30;
@@ -281,7 +281,7 @@ contract MXCToken is StandardToken {
         address from;
     }
 
-    mapping(address =&gt; TimeLock) timeLocks;
+    mapping(address => TimeLock) timeLocks;
 
     event NewTokenGrant(address indexed _from, address indexed _to, uint256 _amount, uint256 _start, uint256 _cliff, uint256 _vesting);
     event VestedTokenRedeemed(address indexed _to, uint256 _amount, uint256 _vestedMonths);
@@ -327,12 +327,12 @@ contract MXCToken is StandardToken {
         returns (bool success)
     {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender], &quot;Not enough balance to grant token.&quot;);
-        require(_amount &gt; 0, &quot;Nothing to transfer.&quot;);
-        require((timeLocks[_to].amount.sub(timeLocks[_to].vestedAmount) == 0), &quot;The previous vesting should be completed.&quot;);
-        require(_cliff &gt;= _start, &quot;_cliff must be &gt;= _start&quot;);
-        require(_vesting &gt; _start, &quot;_vesting must be bigger than _start&quot;);
-        require(_vesting &gt; _cliff, &quot;_vesting must be bigger than _cliff&quot;);
+        require(_amount <= balances[msg.sender], "Not enough balance to grant token.");
+        require(_amount > 0, "Nothing to transfer.");
+        require((timeLocks[_to].amount.sub(timeLocks[_to].vestedAmount) == 0), "The previous vesting should be completed.");
+        require(_cliff >= _start, "_cliff must be >= _start");
+        require(_vesting > _start, "_vesting must be bigger than _start");
+        require(_vesting > _cliff, "_vesting must be bigger than _cliff");
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         timeLocks[_to] = TimeLock(_amount, 0, 0, _start, _cliff, _vesting, msg.sender);
@@ -384,25 +384,25 @@ contract MXCToken is StandardToken {
         vestedMonths = 0;
         curTime = now;
         
-        require(timeLocks[_to].amount &gt; 0, &quot;Nothing was granted to this address.&quot;);
+        require(timeLocks[_to].amount > 0, "Nothing was granted to this address.");
         
-        if (curTime &lt;= timeLocks[_to].cliff) {
+        if (curTime <= timeLocks[_to].cliff) {
             return (0, 0, curTime);
         }
 
         vestedMonths = curTime.sub(timeLocks[_to].start) / MONTH;
         vestedMonths = vestedMonths.sub(timeLocks[_to].vestedMonths);
 
-        if (curTime &gt;= timeLocks[_to].vesting) {
+        if (curTime >= timeLocks[_to].vesting) {
             return (timeLocks[_to].amount.sub(timeLocks[_to].vestedAmount), vestedMonths, curTime);
         }
 
-        if (vestedMonths &gt; 0) {
+        if (vestedMonths > 0) {
             vestTotalMonths = timeLocks[_to].vesting.sub(timeLocks[_to].start) / MONTH;
             vestPart = timeLocks[_to].amount.div(vestTotalMonths);
             amount = vestedMonths.mul(vestPart);
             vestedAmount = timeLocks[_to].vestedAmount.add(amount);
-            if (vestedAmount &gt; timeLocks[_to].amount) {
+            if (vestedAmount > timeLocks[_to].amount) {
                 amount = timeLocks[_to].amount.sub(timeLocks[_to].vestedAmount);
             }
         }
@@ -419,11 +419,11 @@ contract MXCToken is StandardToken {
         returns (bool success)
     {
         require(_to != address(0));
-        require(timeLocks[_to].amount &gt; 0, &quot;Nothing was granted to this address!&quot;);
-        require(timeLocks[_to].vestedAmount &lt; timeLocks[_to].amount, &quot;All tokens were vested!&quot;);
+        require(timeLocks[_to].amount > 0, "Nothing was granted to this address!");
+        require(timeLocks[_to].vestedAmount < timeLocks[_to].amount, "All tokens were vested!");
 
         (uint256 amount, uint256 vestedMonths, uint256 curTime) = calcVestableToken(_to);
-        require(amount &gt; 0, &quot;Nothing to redeem now.&quot;);
+        require(amount > 0, "Nothing to redeem now.");
 
         TimeLock storage t = timeLocks[_to];
         balances[_to] = balances[_to].add(amount);
@@ -445,9 +445,9 @@ contract MXCToken is StandardToken {
     {
         address to = timeLocks[msg.sender].from;
         require(to != address(0));
-        require(_amount &gt; 0, &quot;Nothing to transfer.&quot;);
-        require(timeLocks[msg.sender].amount &gt; 0, &quot;Nothing to return.&quot;);
-        require(_amount &lt;= timeLocks[msg.sender].amount.sub(timeLocks[msg.sender].vestedAmount), &quot;Not enough granted token to return.&quot;);
+        require(_amount > 0, "Nothing to transfer.");
+        require(timeLocks[msg.sender].amount > 0, "Nothing to return.");
+        require(_amount <= timeLocks[msg.sender].amount.sub(timeLocks[msg.sender].vestedAmount), "Not enough granted token to return.");
 
         timeLocks[msg.sender].amount = timeLocks[msg.sender].amount.sub(_amount);
         balances[to] = balances[to].add(_amount);

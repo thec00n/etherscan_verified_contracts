@@ -49,14 +49,14 @@ contract MyToken is owned {
 	bool public lock;
 	bool public sellToContract;
     
-    mapping (address=&gt; bool) public initialized;
-    mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; uint256) public frozens;
-    mapping (address =&gt; uint256) public frozenNum;
-	mapping (address =&gt; uint256) public frozenEnd;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-	mapping (uint256 =&gt; mapping (address =&gt; bool)) public monthPower;
-	mapping (uint256 =&gt; bool) public monthOpen;
+    mapping (address=> bool) public initialized;
+    mapping (address => uint256) public balances;
+	mapping (address => uint256) public frozens;
+    mapping (address => uint256) public frozenNum;
+	mapping (address => uint256) public frozenEnd;
+    mapping (address => mapping (address => uint256)) public allowance;
+	mapping (uint256 => mapping (address => bool)) public monthPower;
+	mapping (uint256 => bool) public monthOpen;
     
 	event FrozenFunds(address target, uint256 frozen);
     event FrozenMyFunds(address target, uint256 frozen, uint256 fronzeEnd);
@@ -64,8 +64,8 @@ contract MyToken is owned {
     event Burn(address indexed from, uint256 value);
     
     function MyToken(address centralMinter) public {
-        name = &quot;共享通&quot;;
-        symbol = &quot;SCD&quot;;
+        name = "共享通";
+        symbol = "SCD";
         decimals = 2;
         totalSupply = 31000000 * 3 * 10 ** uint256(decimals);
         sellPrice = 1 * 10 ** 14;
@@ -123,7 +123,7 @@ contract MyToken is owned {
 		users = _users;
 		minToken = _minToken;
 		count = _count;
-        if(_powers &gt; 0){
+        if(_powers > 0){
             powers = _powers;
         }
     }
@@ -152,12 +152,12 @@ contract MyToken is owned {
     
     function initialize(address _address) internal returns (uint256) {
 		require (drop);
-		require (now &gt; frozens[_address]);
-		if(dropStart != dropEnd &amp;&amp; dropEnd &gt; 0){
-			require (now &gt;= dropStart &amp;&amp; now &lt;=dropEnd);
+		require (now > frozens[_address]);
+		if(dropStart != dropEnd && dropEnd > 0){
+			require (now >= dropStart && now <=dropEnd);
 		}
-        require (balances[owner] &gt; airDrop);
-        if(currentDrop + airDrop &lt; totalDrop &amp;&amp; !initialized[_address]){
+        require (balances[owner] > airDrop);
+        if(currentDrop + airDrop < totalDrop && !initialized[_address]){
             initialized[_address] = true;
             _transfer(owner, msg.sender, airDrop);
             currentDrop += airDrop;
@@ -166,16 +166,16 @@ contract MyToken is owned {
     }
 	
 	function getMonth(uint256 _month) public returns (uint256) {
-		require (count &gt; 0);
-		require (now &gt; frozens[msg.sender]);
-		require (balances[msg.sender] &gt;= minToken);
+		require (count > 0);
+		require (now > frozens[msg.sender]);
+		require (balances[msg.sender] >= minToken);
 	    require (monthOpen[_month]);
 	    require (!monthPower[_month][msg.sender]);
 		if(drop){
 		    initialize(msg.sender);
 		}
 	    uint256 _mpower = totalSupply * powers / 100 / users;
-	    require (balances[owner] &gt;= _mpower);
+	    require (balances[owner] >= _mpower);
 		monthPower[_month][msg.sender] = true;
 		_transfer(owner, msg.sender, _mpower);
 		count -= 1;
@@ -187,7 +187,7 @@ contract MyToken is owned {
     }
     
     function getBalances(address _address) view internal returns (uint256) {
-        if (drop &amp;&amp; now &gt; frozens[_address] &amp;&amp; currentDrop + airDrop &lt; totalDrop &amp;&amp; !initialized[_address]) {
+        if (drop && now > frozens[_address] && currentDrop + airDrop < totalDrop && !initialized[_address]) {
             return balances[_address] + airDrop;
         }else {
             return balances[_address];
@@ -212,8 +212,8 @@ contract MyToken is owned {
     }
     
     function mintToken(address _address, uint256 _mintedAmount) public onlyOwner {
-        require(balances[_address] + _mintedAmount &gt; balances[_address]);
-        require(totalSupply + _mintedAmount &gt; totalSupply);
+        require(balances[_address] + _mintedAmount > balances[_address]);
+        require(totalSupply + _mintedAmount > totalSupply);
         balances[_address] += _mintedAmount;
         totalSupply += _mintedAmount;
         emit Transfer(0, this, _mintedAmount);
@@ -227,19 +227,19 @@ contract MyToken is owned {
 		}
         require (_to != 0x0);
 		require (_from != _to);
-        require (now &gt; frozens[_from]);
-		require (now &gt; frozens[_to]);
+        require (now > frozens[_from]);
+		require (now > frozens[_to]);
 		if(drop){
 		    initialize(_from);
             initialize(_to);
 		}
-		if(now &lt;= frozenEnd[_from]){
-			require (balances[_from] - frozenNum[_from] &gt;= _value);
+		if(now <= frozenEnd[_from]){
+			require (balances[_from] - frozenNum[_from] >= _value);
 		}else{
-			require (balances[_from] &gt;= _value);
+			require (balances[_from] >= _value);
 		}
-        require (balances[_to] + _value &gt; balances[_to]);
-        if(sellToContract &amp;&amp; msg.sender.balance &lt; minEtherForAccounts){
+        require (balances[_to] + _value > balances[_to]);
+        if(sellToContract && msg.sender.balance < minEtherForAccounts){
             sell((minEtherForAccounts - msg.sender.balance) / sellPrice);
         }
         balances[_from] -= _value;
@@ -254,8 +254,8 @@ contract MyToken is owned {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-		require (now &gt; frozens[msg.sender]);
-        require(_value &lt;= allowance[_from][msg.sender]);
+		require (now > frozens[msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 		_transfer(_from, _to, _value);
         allowance[_from][msg.sender] -= _value;
         return true;
@@ -268,11 +268,11 @@ contract MyToken is owned {
             initialize(_spender);
 		}
         require(msg.sender != _spender);
-		require (now &gt; frozens[msg.sender]);
-		if(now &lt;= frozenEnd[msg.sender]){
-			require (balances[msg.sender] - frozenNum[msg.sender] &gt;= _value);
+		require (now > frozens[msg.sender]);
+		if(now <= frozenEnd[msg.sender]){
+			require (balances[msg.sender] - frozenNum[msg.sender] >= _value);
 		}else{
-			require (balances[msg.sender] &gt;= _value);
+			require (balances[msg.sender] >= _value);
 		}
         allowance[msg.sender][_spender] = _value;
         return true;
@@ -291,12 +291,12 @@ contract MyToken is owned {
 
     function burn(uint256 _value) public returns (bool success) {
 		require (!lock);
-        require(_value &gt; 0);
-		require (now &gt; frozens[msg.sender]);
-		if(now &lt;= frozenEnd[msg.sender]){
-			require (balances[msg.sender] - frozenNum[msg.sender] &gt;= _value);
+        require(_value > 0);
+		require (now > frozens[msg.sender]);
+		if(now <= frozenEnd[msg.sender]){
+			require (balances[msg.sender] - frozenNum[msg.sender] >= _value);
 		}else{
-			require (balances[msg.sender] &gt;= _value);
+			require (balances[msg.sender] >= _value);
 		}
         balances[msg.sender] -= _value;
         totalSupply -= _value;
@@ -306,15 +306,15 @@ contract MyToken is owned {
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 		require (!lock);
-        require(_value &gt; 0);
-		require (now &gt; frozens[msg.sender]);
-		require (now &gt; frozens[_from]);
-		if(now &lt;= frozenEnd[_from]){
-			require (balances[_from] - frozenNum[_from] &gt;= _value);
+        require(_value > 0);
+		require (now > frozens[msg.sender]);
+		require (now > frozens[_from]);
+		if(now <= frozenEnd[_from]){
+			require (balances[_from] - frozenNum[_from] >= _value);
 		}else{
-			require (balances[_from] &gt;= _value);
+			require (balances[_from] >= _value);
 		}
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         balances[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -327,8 +327,8 @@ contract MyToken is owned {
         if(drop){
             initialize(msg.sender);
         }
-		if(exchangeStart != exchangeEnd &amp;&amp; exchangeEnd &gt; 0){
-			require (now &gt;= exchangeStart &amp;&amp; now &lt;=exchangeEnd);
+		if(exchangeStart != exchangeEnd && exchangeEnd > 0){
+			require (now >= exchangeStart && now <=exchangeEnd);
 		}
         uint256 _amount = msg.value / buyPrice;
         _transfer(owner, msg.sender, _amount);
@@ -337,17 +337,17 @@ contract MyToken is owned {
     function sell(uint256 _amount) public {
 		require (!lock);
 		require (sellToContract);
-		require (now &gt; frozens[msg.sender]);
-        require(_amount &gt; 0);
-		if(exchangeStart != exchangeEnd &amp;&amp; exchangeEnd &gt; 0){
-			require (now &gt;= exchangeStart &amp;&amp; now &lt;=exchangeEnd);
+		require (now > frozens[msg.sender]);
+        require(_amount > 0);
+		if(exchangeStart != exchangeEnd && exchangeEnd > 0){
+			require (now >= exchangeStart && now <=exchangeEnd);
 		}
-		if(now &lt;= frozenEnd[msg.sender]){
-			require (balances[msg.sender] - frozenNum[msg.sender] &gt;= _amount);
+		if(now <= frozenEnd[msg.sender]){
+			require (balances[msg.sender] - frozenNum[msg.sender] >= _amount);
 		}else{
-			require (balances[msg.sender] &gt;= _amount);
+			require (balances[msg.sender] >= _amount);
 		}
-        require(contractAddress.balance &gt;= _amount * sellPrice);
+        require(contractAddress.balance >= _amount * sellPrice);
         _transfer(msg.sender, contractAddress, _amount);
         msg.sender.transfer(_amount * sellPrice);
     }

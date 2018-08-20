@@ -67,13 +67,13 @@ contract DNNTDE {
     ////////////////////////////////////////////
     // Keep track of Wei contributed per user //
     ////////////////////////////////////////////
-    mapping(address =&gt; uint256) ETHContributions;
+    mapping(address => uint256) ETHContributions;
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Keeps track of pre-tde contributors and how many tokens they are entitled to get based on their contribution //
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    mapping(address =&gt; uint256) PRETDEContributorTokensPendingRelease;
+    mapping(address => uint256) PRETDEContributorTokensPendingRelease;
     uint256 PRETDEContributorsTokensPendingCount = 0; // keep track of contributors waiting for tokens
     uint256 TokensPurchasedDuringPRETDE = 0; // keep track of how many tokens need to be issued to presale contributors
 
@@ -94,7 +94,7 @@ contract DNNTDE {
     modifier PRETDEContributorsAwaitingTokens() {
 
         // Determine if there pre-tde contributors that have not received tokens
-        require(PRETDEContributorsTokensPendingCount &gt; 0);
+        require(PRETDEContributorsTokensPendingCount > 0);
 
         _;
     }
@@ -127,7 +127,7 @@ contract DNNTDE {
     // Check if the pre-tde is going on //
     //////////////////////////////////////
     modifier PRETDEHasNotEnded() {
-       require (now &lt; TDEStartDate);
+       require (now < TDEStartDate);
        _;
     }
 
@@ -135,7 +135,7 @@ contract DNNTDE {
     // Check if the tde has ended //
     ////////////////////////////////
     modifier TDEHasEnded() {
-       require (now &gt;= TDEEndDate || fundsRaisedInWei &gt;= maximumFundingGoalInETH);
+       require (now >= TDEEndDate || fundsRaisedInWei >= maximumFundingGoalInETH);
        _;
     }
 
@@ -143,7 +143,7 @@ contract DNNTDE {
     // Checksto see if the contribution is at least the minimum allowed for tde //
     //////////////////////////////////////////////////////////////////////////////
     modifier ContributionIsAtLeastMinimum() {
-        require (msg.value &gt;= minimumTDEContributionInWei);
+        require (msg.value >= minimumTDEContributionInWei);
         _;
     }
 
@@ -152,7 +152,7 @@ contract DNNTDE {
     ///////////////////////////////////////////////////////////////
     modifier ContributionDoesNotCauseGoalExceedance() {
        uint256 newFundsRaised = msg.value+fundsRaisedInWei;
-       require (newFundsRaised &lt;= maximumFundingGoalInETH);
+       require (newFundsRaised <= maximumFundingGoalInETH);
        _;
     }
 
@@ -203,7 +203,7 @@ contract DNNTDE {
     {
         // Make sure that the new date is past the existing date and
         // is not in the past.
-        if (startDate &gt; now &amp;&amp; startDate &gt; TDEStartDate) {
+        if (startDate > now && startDate > TDEStartDate) {
             TDEEndDate = TDEEndDate + (startDate-TDEStartDate); // Move end date the same amount of days as start date
             TDEStartDate = startDate; // set new start date
             return true;
@@ -239,7 +239,7 @@ contract DNNTDE {
        internal
        returns (bool)
     {
-        return PRETDEContributorTokensPendingRelease[_contributorAddress] &gt; 0;
+        return PRETDEContributorTokensPendingRelease[_contributorAddress] > 0;
     }
 
     /////////////////////////////////////////////////////////////
@@ -282,25 +282,25 @@ contract DNNTDE {
         returns (uint256)
     {
         // No bonus - TDE ended
-        if (timestamp &gt; TDEEndDate) {
+        if (timestamp > TDEEndDate) {
             return uint256(0);
         }
 
         // No bonus - TDE has not started
-        if (TDEStartDate &gt; timestamp) {
+        if (TDEStartDate > timestamp) {
             return uint256(0);
         }
 
         // 1 ETH = 3600 DNN (0 - 20% of funding goal) - 20% Bonus
-        if (fundsRaisedInWei &lt;= maximumFundingGoalInETH.mul(20).div(100)) {
+        if (fundsRaisedInWei <= maximumFundingGoalInETH.mul(20).div(100)) {
             return tokenExchangeRateBase.mul(120).div(100);
 
-        // 1 ETH = 3450 DNN (&gt;20% to 60% of funding goal) - 15% Bonus
-        } else if (fundsRaisedInWei &gt; maximumFundingGoalInETH.mul(20).div(100) &amp;&amp; fundsRaisedInWei &lt;= maximumFundingGoalInETH.mul(60).div(100)) {
+        // 1 ETH = 3450 DNN (>20% to 60% of funding goal) - 15% Bonus
+        } else if (fundsRaisedInWei > maximumFundingGoalInETH.mul(20).div(100) && fundsRaisedInWei <= maximumFundingGoalInETH.mul(60).div(100)) {
             return tokenExchangeRateBase.mul(115).div(100);
 
-        // 1 ETH = 3300 DNN (&gt;60% to Funding Goal) - 10% Bonus
-        } else if (fundsRaisedInWei &gt; maximumFundingGoalInETH.mul(60).div(100) &amp;&amp; fundsRaisedInWei &lt;= maximumFundingGoalInETH) {
+        // 1 ETH = 3300 DNN (>60% to Funding Goal) - 10% Bonus
+        } else if (fundsRaisedInWei > maximumFundingGoalInETH.mul(60).div(100) && fundsRaisedInWei <= maximumFundingGoalInETH) {
             return tokenExchangeRateBase.mul(110).div(100);
 
         // Default: 1 ETH = 3000 DNN
@@ -318,20 +318,20 @@ contract DNNTDE {
         returns (uint256)
     {
         // Presale will only accept contributions above minimum
-        if (weiamount &lt; minimumPRETDEContributionInWei) {
+        if (weiamount < minimumPRETDEContributionInWei) {
             return uint256(0);
         }
 
         // Minimum Contribution - 199 ETH (25% Bonus)
-        if (weiamount &gt;= minimumPRETDEContributionInWei &amp;&amp; weiamount &lt;= 199 ether) {
+        if (weiamount >= minimumPRETDEContributionInWei && weiamount <= 199 ether) {
             return tokenExchangeRateBase + tokenExchangeRateBase.mul(25).div(100);
 
         // 200 ETH - 300 ETH Bonus (30% Bonus)
-        } else if (weiamount &gt;= 200 ether &amp;&amp; weiamount &lt;= 300 ether) {
+        } else if (weiamount >= 200 ether && weiamount <= 300 ether) {
             return tokenExchangeRateBase + tokenExchangeRateBase.mul(30).div(100);
 
         // 301 ETH - 2665 ETH Bonus (35% Bonus)
-        } else if (weiamount &gt;= 301 ether &amp;&amp; weiamount &lt;= 2665 ether) {
+        } else if (weiamount >= 301 ether && weiamount <= 2665 ether) {
             return tokenExchangeRateBase + tokenExchangeRateBase.mul(35).div(100);
 
         // 2666+ ETH Bonus (50% Bonus)
@@ -349,7 +349,7 @@ contract DNNTDE {
     {
 
         // Compute how many atto-DNN user is entitled to.
-        uint256 computedTokensForPurchase = weiamount.mul(timestamp &gt;= TDEStartDate ? getTDETokenExchangeRate(timestamp) : getPRETDETokenExchangeRate(weiamount));
+        uint256 computedTokensForPurchase = weiamount.mul(timestamp >= TDEStartDate ? getTDETokenExchangeRate(timestamp) : getPRETDETokenExchangeRate(weiamount));
 
         // Amount of atto-DNN to issue
         return computedTokensForPurchase;
@@ -469,7 +469,7 @@ contract DNNTDE {
     {
         // Check if the tokens are locked and all pre-sale tokens have been
         // transferred to the TDE Supply before unlocking tokens.
-        require(dnnToken.tokensLocked() == true &amp;&amp; dnnToken.PRETDESupplyRemaining() == 0);
+        require(dnnToken.tokensLocked() == true && dnnToken.PRETDESupplyRemaining() == 0);
 
         // Unlock tokens
         dnnToken.unlockTokens();
@@ -490,7 +490,7 @@ contract DNNTDE {
        NoPRETDEContributorsAwaitingTokens
     {
         // Check if we have tokens to transfer to TDE
-        require(dnnToken.PRETDESupplyRemaining() &gt; 0);
+        require(dnnToken.PRETDESupplyRemaining() > 0);
 
         // Transfer unsold TDE tokens to platform
         dnnToken.sendUnsoldPRETDETokensToTDE();
@@ -517,22 +517,22 @@ contract DNNTDE {
         maximumFundingGoalInETH = hardCap * 1 ether;
 
         // Set Start Date
-        TDEStartDate = startDate &gt;= now ? startDate : now;
+        TDEStartDate = startDate >= now ? startDate : now;
 
         // Set End date (Make sure the end date is at least 30 days from start date)
         // Will default to a date that is exactly 30 days from start date.
-        TDEEndDate = endDate &gt; TDEStartDate &amp;&amp; (endDate-TDEStartDate) &gt;= 30 days ? endDate : (TDEStartDate + 30 days);
+        TDEEndDate = endDate > TDEStartDate && (endDate-TDEStartDate) >= 30 days ? endDate : (TDEStartDate + 30 days);
     }
 
     /////////////////////////////////////////////////////////
-    // @des Handle&#39;s ETH sent directly to contract address //
+    // @des Handle's ETH sent directly to contract address //
     /////////////////////////////////////////////////////////
     function () payable {
 
         // Handle pre-sale contribution (tokens held, until tx confirmation from contributor)
         // Makes sure the user sends minimum PRE-TDE contribution, and that  pre-tde contributors
         // are unable to send subsequent ETH contributors before being issued tokens.
-        if (now &lt; TDEStartDate &amp;&amp; msg.value &gt;= minimumPRETDEContributionInWei &amp;&amp; PRETDEContributorTokensPendingRelease[msg.sender] == 0) {
+        if (now < TDEStartDate && msg.value >= minimumPRETDEContributionInWei && PRETDEContributorTokensPendingRelease[msg.sender] == 0) {
 
             // Keep track of contributions (in Wei)
             ETHContributions[msg.sender] = ETHContributions[msg.sender].add(msg.value);
@@ -553,7 +553,7 @@ contract DNNTDE {
             PRETDEContributorsTokensPendingCount += 1;
 
             // Prevent contributions that will cause us to have a shortage of tokens during the pre-sale
-            if (TokensPurchasedDuringPRETDE &gt; dnnToken.TDESupplyRemaining()+dnnToken.PRETDESupplyRemaining()) {
+            if (TokensPurchasedDuringPRETDE > dnnToken.TDESupplyRemaining()+dnnToken.PRETDESupplyRemaining()) {
                 revert();
             }
 
@@ -562,7 +562,7 @@ contract DNNTDE {
         }
 
         // Handle public-sale contribution (tokens issued immediately)
-        else if (now &gt;= TDEStartDate &amp;&amp; now &lt; TDEEndDate) buyTokens();
+        else if (now >= TDEStartDate && now < TDEEndDate) buyTokens();
 
         // Otherwise, reject the contribution
         else revert();
@@ -584,20 +584,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -605,7 +605,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -634,7 +634,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -649,7 +649,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -702,7 +702,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -738,8 +738,8 @@ contract DNNToken is StandardToken {
     /////////////////////
     // Token Meta Data //
     /////////////////////
-    string constant public name = &quot;DNN&quot;;
-    string constant public symbol = &quot;DNN&quot;;
+    string constant public name = "DNN";
+    string constant public symbol = "DNN";
     uint8 constant public decimals = 18; // 1 DNN = 1 * 10^18 atto-DNN
 
     /////////////////////////////////////////
@@ -798,7 +798,7 @@ contract DNNToken is StandardToken {
     modifier CofoundersTokensVested()
     {
         // Make sure that a starting vesting date has been set and 4 weeks have passed since vesting date
-        require (cofoundersSupplyVestingStartDate != 0 &amp;&amp; (now-cofoundersSupplyVestingStartDate) &gt;= 4 weeks);
+        require (cofoundersSupplyVestingStartDate != 0 && (now-cofoundersSupplyVestingStartDate) >= 4 weeks);
 
         // Get current tranche based on the amount of time that has passed since vesting start date
         uint256 currentTranche = now.sub(cofoundersSupplyVestingStartDate) / 4 weeks;
@@ -811,7 +811,7 @@ contract DNNToken is StandardToken {
 
         // Make sure that we still have unvested tokens and that
         // the tokens for the current tranche have not been issued.
-        require (issuedTranches != maxTranches &amp;&amp; currentTranche &gt; issuedTranches);
+        require (issuedTranches != maxTranches && currentTranche > issuedTranches);
 
         _;
     }
@@ -884,7 +884,7 @@ contract DNNToken is StandardToken {
     //////////////////////////////////////////////////
     modifier onlyAllocator()
     {
-        require (msg.sender == allocatorAddress &amp;&amp; tokensLocked == false);
+        require (msg.sender == allocatorAddress && tokensLocked == false);
         _;
     }
 
@@ -996,7 +996,7 @@ contract DNNToken is StandardToken {
         uint256 tokenCount = cofoundersSupply.div(cofoundersSupplyVestingTranches);
 
         // Make sure that there are cofounder tokens left
-        if (tokenCount &gt; cofoundersSupplyRemaining) {
+        if (tokenCount > cofoundersSupplyRemaining) {
            return false;
         }
 
@@ -1024,66 +1024,66 @@ contract DNNToken is StandardToken {
       onlyAllocatorOrCrowdfundContractOrPlatform
       returns (bool)
     {
-        // We&#39;ll use the following to determine whether the allocator, platform,
+        // We'll use the following to determine whether the allocator, platform,
         // or the crowdfunding contract can allocate specified supply
-        bool canAllocatorPerform = msg.sender == allocatorAddress &amp;&amp; tokensLocked == false;
+        bool canAllocatorPerform = msg.sender == allocatorAddress && tokensLocked == false;
         bool canCrowdfundContractPerform = msg.sender == crowdfundContract;
-        bool canPlatformPerform = msg.sender == platform &amp;&amp; tokensLocked == false;
+        bool canPlatformPerform = msg.sender == platform && tokensLocked == false;
 
         // Early Backers
-        if (canAllocatorPerform &amp;&amp; allocationType == DNNSupplyAllocations.EarlyBackerSupplyAllocation &amp;&amp; tokenCount &lt;= earlyBackerSupplyRemaining) {
+        if (canAllocatorPerform && allocationType == DNNSupplyAllocations.EarlyBackerSupplyAllocation && tokenCount <= earlyBackerSupplyRemaining) {
             earlyBackerSupplyRemaining = earlyBackerSupplyRemaining.sub(tokenCount);
         }
 
         // PRE-TDE
-        else if (canCrowdfundContractPerform &amp;&amp; msg.sender == crowdfundContract &amp;&amp; allocationType == DNNSupplyAllocations.PRETDESupplyAllocation) {
+        else if (canCrowdfundContractPerform && msg.sender == crowdfundContract && allocationType == DNNSupplyAllocations.PRETDESupplyAllocation) {
 
               // Check to see if we have enough tokens to satisfy this purchase
               // using just the pre-tde.
-              if (PRETDESupplyRemaining &gt;= tokenCount) {
+              if (PRETDESupplyRemaining >= tokenCount) {
 
                     // Decrease pre-tde supply
                     PRETDESupplyRemaining = PRETDESupplyRemaining.sub(tokenCount);
               }
 
               // Check to see if we can satisfy this using pre-tde and tde supply combined
-              else if (PRETDESupplyRemaining+TDESupplyRemaining &gt;= tokenCount) {
+              else if (PRETDESupplyRemaining+TDESupplyRemaining >= tokenCount) {
 
                     // Decrease tde supply
                     TDESupplyRemaining = TDESupplyRemaining.sub(tokenCount-PRETDESupplyRemaining);
 
-                    // Decrease pre-tde supply by its&#39; remaining tokens
+                    // Decrease pre-tde supply by its' remaining tokens
                     PRETDESupplyRemaining = 0;
               }
 
-              // Otherwise, we can&#39;t satisfy this sale because we don&#39;t have enough tokens.
+              // Otherwise, we can't satisfy this sale because we don't have enough tokens.
               else {
                   return false;
               }
         }
 
         // TDE
-        else if (canCrowdfundContractPerform &amp;&amp; allocationType == DNNSupplyAllocations.TDESupplyAllocation &amp;&amp; tokenCount &lt;= TDESupplyRemaining) {
+        else if (canCrowdfundContractPerform && allocationType == DNNSupplyAllocations.TDESupplyAllocation && tokenCount <= TDESupplyRemaining) {
             TDESupplyRemaining = TDESupplyRemaining.sub(tokenCount);
         }
 
         // Bounty
-        else if (canAllocatorPerform &amp;&amp; allocationType == DNNSupplyAllocations.BountySupplyAllocation &amp;&amp; tokenCount &lt;= bountySupplyRemaining) {
+        else if (canAllocatorPerform && allocationType == DNNSupplyAllocations.BountySupplyAllocation && tokenCount <= bountySupplyRemaining) {
             bountySupplyRemaining = bountySupplyRemaining.sub(tokenCount);
         }
 
         // Writer Accounts
-        else if (canAllocatorPerform &amp;&amp; allocationType == DNNSupplyAllocations.WriterAccountSupplyAllocation &amp;&amp; tokenCount &lt;= writerAccountSupplyRemaining) {
+        else if (canAllocatorPerform && allocationType == DNNSupplyAllocations.WriterAccountSupplyAllocation && tokenCount <= writerAccountSupplyRemaining) {
             writerAccountSupplyRemaining = writerAccountSupplyRemaining.sub(tokenCount);
         }
 
         // Advisory
-        else if (canAllocatorPerform &amp;&amp; allocationType == DNNSupplyAllocations.AdvisorySupplyAllocation &amp;&amp; tokenCount &lt;= advisorySupplyRemaining) {
+        else if (canAllocatorPerform && allocationType == DNNSupplyAllocations.AdvisorySupplyAllocation && tokenCount <= advisorySupplyRemaining) {
             advisorySupplyRemaining = advisorySupplyRemaining.sub(tokenCount);
         }
 
         // Platform (Also makes sure that the beneficiary is the platform address specified in this contract)
-        else if (canPlatformPerform &amp;&amp; allocationType == DNNSupplyAllocations.PlatformSupplyAllocation &amp;&amp; tokenCount &lt;= platformSupplyRemaining) {
+        else if (canPlatformPerform && allocationType == DNNSupplyAllocations.PlatformSupplyAllocation && tokenCount <= platformSupplyRemaining) {
             platformSupplyRemaining = platformSupplyRemaining.sub(tokenCount);
         }
 
@@ -1105,7 +1105,7 @@ contract DNNToken is StandardToken {
       onlyCrowdfundContract
     {
         // Make sure we have tokens to send from TDE
-        if (TDESupplyRemaining &gt; 0) {
+        if (TDESupplyRemaining > 0) {
 
             // Add remaining tde tokens to platform remaining tokens
             platformSupplyRemaining = platformSupplyRemaining.add(TDESupplyRemaining);
@@ -1123,7 +1123,7 @@ contract DNNToken is StandardToken {
       onlyCrowdfundContract
     {
           // Make sure we have tokens to send from pre-TDE
-          if (PRETDESupplyRemaining &gt; 0) {
+          if (PRETDESupplyRemaining > 0) {
 
               // Add remaining pre-tde tokens to tde remaining tokens
               TDESupplyRemaining = TDESupplyRemaining.add(PRETDESupplyRemaining);
@@ -1172,7 +1172,7 @@ contract DNNToken is StandardToken {
           cofoundersSupply = totalSupply.mul(10).div(100); // 10%
           platformSupply = totalSupply.mul(11).div(100); // 11%
 
-          // Set each remaining token count equal to its&#39; respective supply
+          // Set each remaining token count equal to its' respective supply
           earlyBackerSupplyRemaining = earlyBackerSupply;
           PRETDESupplyRemaining = PRETDESupply;
           TDESupplyRemaining = TDESupply;
@@ -1183,6 +1183,6 @@ contract DNNToken is StandardToken {
           platformSupplyRemaining = platformSupply;
 
           // Sets cofounder vesting start date (Ensures that it is a date in the future, otherwise it will default to now)
-          cofoundersSupplyVestingStartDate = vestingStartDate &gt;= now ? vestingStartDate : now;
+          cofoundersSupplyVestingStartDate = vestingStartDate >= now ? vestingStartDate : now;
     }
 }

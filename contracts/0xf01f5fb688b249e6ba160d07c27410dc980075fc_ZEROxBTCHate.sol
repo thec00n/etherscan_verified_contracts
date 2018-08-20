@@ -2,23 +2,23 @@ pragma solidity ^0.4.24;
 
 // DO YOU HATE 0xBTC?
 // LETS SUMMARIZE 0xBTC
-// &gt; NO REAL USE CASES 
-// &gt; PoW WITHOUT CONSENSUS
-// &gt; PAID SHILLS
-// &gt; ETH SUCKS, BUILDS ON ETH
+// > NO REAL USE CASES 
+// > PoW WITHOUT CONSENSUS
+// > PAID SHILLS
+// > ETH SUCKS, BUILDS ON ETH
 // UPLOAD YOUR REASON WHY YOU HATE 0xBTC AND GET FREE 0xBTCHATE TOKENS! 
 // (also check the Transfer address in the IHate0xBTC function)
 
 contract ZEROxBTCHate {
 
-    string public name = &quot;0xBTCHate&quot;;      //  token name
-    string public symbol = &quot;0xBTCHate&quot;;           //  token symbol
+    string public name = "0xBTCHate";      //  token name
+    string public symbol = "0xBTCHate";           //  token symbol
     uint256 public decimals = 18;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
-    mapping (uint =&gt; bool) public ZEROxBTCHaters;
+    mapping (uint => bool) public ZEROxBTCHaters;
     
 
     uint256 public totalSupply = 0;
@@ -45,8 +45,8 @@ contract ZEROxBTCHate {
     }
 
     function transfer(address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -54,9 +54,9 @@ contract ZEROxBTCHate {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

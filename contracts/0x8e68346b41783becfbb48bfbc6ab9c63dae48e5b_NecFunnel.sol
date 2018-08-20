@@ -34,7 +34,7 @@ contract NecFunnel {
 
 	function dropNectar(address[] receivers, uint[] values) public onlyAdmins {
 	    list.register(receivers);
-	    for (uint i = 0; i &lt; receivers.length; i++){
+	    for (uint i = 0; i < receivers.length; i++){
 	        if (!token.transfer(receivers[i],values[i])) {
 	            emit PaymentFailure(receivers[i], values[i]);
 	        }

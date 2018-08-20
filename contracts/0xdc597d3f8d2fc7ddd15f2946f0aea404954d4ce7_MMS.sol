@@ -3,19 +3,19 @@ contract MMS  {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
     // Balances for trading
     // Default balance - 0
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
     
     // Balances fro dividends
-    mapping(address =&gt; uint256) public investBalances;
+    mapping(address => uint256) public investBalances;
     
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
     // Total amount of supplied tokens
     uint256 public totalSupply;
 
     // Information about token
-    string public constant name = &quot;Name of Company&quot;;
-    string public constant symbol = &quot;LLL&quot;;
+    string public constant name = "Name of Company";
+    string public constant symbol = "LLL";
     address public owner;
     uint8 public decimals = 2;
 
@@ -50,7 +50,7 @@ contract MMS  {
  // Transfer tokens from your account to other account
     function transfer(address _to, uint _value) public  returns (bool success) {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address.
-        require(balances[msg.sender] &gt;= _value);           // Check if the sender has enough
+        require(balances[msg.sender] >= _value);           // Check if the sender has enough
         balances[msg.sender] -= _value;                    // Subtract from the sender
         balances[_to] += _value;                           // Add the same to the recipient
         Transfer(msg.sender, _to, _value);
@@ -59,8 +59,8 @@ contract MMS  {
 
    // Transfer tokens from account (_from) to another account (_to)
     function transferFrom(address _from, address _to, uint256 _amount) public  returns(bool) {
-        require(_amount &lt;= allowed[_from][msg.sender]);
-        if (balances[_from] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+        require(_amount <= allowed[_from][msg.sender]);
+        if (balances[_from] >= _amount && _amount > 0) {
             balances[_from] -= _amount;
             balances[_to] += _amount;
             allowed[_from][msg.sender] -= _amount;

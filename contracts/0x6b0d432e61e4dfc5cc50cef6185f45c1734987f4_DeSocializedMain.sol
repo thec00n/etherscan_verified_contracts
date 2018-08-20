@@ -22,9 +22,9 @@ library SafeMath
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,20 +62,20 @@ library SafeMath32
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,20 +96,20 @@ library SafeMath16
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,8 +128,8 @@ contract DeSocializedAdmin
     using SafeMath32 for uint32;
     using SafeMath16 for uint16;
 
-    mapping (address =&gt; uint256) admins;
-    mapping (string =&gt; uint256) options;
+    mapping (address => uint256) admins;
+    mapping (string => uint256) options;
     
     address public feewallet;
     
@@ -145,10 +145,10 @@ contract DeSocializedAdmin
     {
         feewallet = msg.sender;
         admins[msg.sender] = 100;
-        options[&quot;likefee&quot;] = 1000000000000;     // 0.000001 ETH
-        options[&quot;dissfee&quot;] = 1000000000000;     // 0.000001 ETH
-        options[&quot;minefee&quot;] = 10000000000000;    // 0.00001 ETH
-        options[&quot;regifee&quot;] = 10000000000000000; // 0.01 ETH
+        options["likefee"] = 1000000000000;     // 0.000001 ETH
+        options["dissfee"] = 1000000000000;     // 0.000001 ETH
+        options["minefee"] = 10000000000000;    // 0.00001 ETH
+        options["regifee"] = 10000000000000000; // 0.01 ETH
     }
   
     /**
@@ -156,7 +156,7 @@ contract DeSocializedAdmin
     */
     modifier onlyAdmin()
     {
-        require(admins[msg.sender] &gt;= 1);
+        require(admins[msg.sender] >= 1);
         _;
     }
   
@@ -166,8 +166,8 @@ contract DeSocializedAdmin
     function setAdminStatus(address user, uint status) public onlyAdmin
     {
         require(user != address(0));
-        require(status &lt;= admins[msg.sender]);
-        require(admins[user] &lt;= admins[msg.sender]);
+        require(status <= admins[msg.sender]);
+        require(admins[user] <= admins[msg.sender]);
         admins[user] = status;
         emit AdminStatusChange(user, status);
     }
@@ -219,7 +219,7 @@ contract DeSocializedAdmin
      */
     function withdrawl(uint amt) external onlyAdmin
     {
-        require(amt &lt;= address(this).balance);
+        require(amt <= address(this).balance);
         msg.sender.transfer(amt);
         emit AdminWithdrawl(msg.sender, amt);
     }
@@ -251,11 +251,11 @@ contract DeSocializedMain is DeSocializedAdmin
 
     Block[] public blocks;
     
-    mapping (uint =&gt; address) public blockToOwner;
-    mapping (address =&gt; uint) ownerBlockCount;
+    mapping (uint => address) public blockToOwner;
+    mapping (address => uint) ownerBlockCount;
     
-    mapping (string =&gt; address) handleToAddress;
-    mapping (address =&gt; string) public addressToHandle;
+    mapping (string => address) handleToAddress;
+    mapping (address => string) public addressToHandle;
     
     event NewBlock(uint pid, address sender);
     event BlockLiked(uint pid, uint value);
@@ -268,7 +268,7 @@ contract DeSocializedMain is DeSocializedAdmin
      */
     function saveBlock( string _m ) public payable
     {
-        require(msg.value &gt;= options[&quot;minefee&quot;]);
+        require(msg.value >= options["minefee"]);
         feewallet.transfer(msg.value);
         
         uint id = blocks.push( Block( msg.sender, _m, 0, 0, uint(now), 0 ) ) - 1;
@@ -284,7 +284,7 @@ contract DeSocializedMain is DeSocializedAdmin
      */
     function likeBlock( uint _bid ) public payable
     {
-        require(msg.value &gt;= options[&quot;likefee&quot;]);
+        require(msg.value >= options["likefee"]);
         address owner = blockToOwner[_bid];
         owner.transfer(msg.value);
         
@@ -299,7 +299,7 @@ contract DeSocializedMain is DeSocializedAdmin
      */
     function dissBlock( uint _bid ) public payable
     {
-        require(msg.value &gt;= options[&quot;dissfee&quot;]);
+        require(msg.value >= options["dissfee"]);
         feewallet.transfer(msg.value);
         
         Block storage b = blocks[_bid];
@@ -327,8 +327,8 @@ contract DeSocializedMain is DeSocializedAdmin
     {
         require( handleToAddress[ _handle ] == 0 );
         
-        uint fee = options[&quot;regifee&quot;];
-        require(msg.value &gt;= fee);
+        uint fee = options["regifee"];
+        require(msg.value >= fee);
         feewallet.transfer(fee);
         
         _verify( msg.sender, _handle );
@@ -341,7 +341,7 @@ contract DeSocializedMain is DeSocializedAdmin
      */
     function _verify( address _user, string _handle ) internal
     {
-        if( keccak256( abi.encodePacked(addressToHandle[ _user ]) ) != keccak256( abi.encodePacked(&quot;&quot;) ) )
+        if( keccak256( abi.encodePacked(addressToHandle[ _user ]) ) != keccak256( abi.encodePacked("") ) )
         {
             handleToAddress[ addressToHandle[ _user ] ] = 0;
         }
@@ -358,7 +358,7 @@ contract DeSocializedMain is DeSocializedAdmin
     {
         uint[] memory result = new uint[](_len);
         uint counter = 0;
-        for (uint i = _bid; i &lt; (_bid+_len); i++)
+        for (uint i = _bid; i < (_bid+_len); i++)
         {
             if( blockToOwner[i] != 0 )
             {
@@ -379,9 +379,9 @@ contract DeSocializedMain is DeSocializedAdmin
         
         if(_bid == 0)
         {
-            for (uint i = blocks.length; i &gt; (blocks.length-_len); i--)
+            for (uint i = blocks.length; i > (blocks.length-_len); i--)
             {
-                if( blockToOwner[i] != 0 &amp;&amp; counter &lt; _len )
+                if( blockToOwner[i] != 0 && counter < _len )
                 {
                     result[counter] = i;
                     counter++;
@@ -390,9 +390,9 @@ contract DeSocializedMain is DeSocializedAdmin
         }
         else
         {
-            for (uint x = _bid; x &gt; (_bid-_len); x--)
+            for (uint x = _bid; x > (_bid-_len); x--)
             {
-                if( blockToOwner[x] != 0 &amp;&amp; counter &lt; _len )
+                if( blockToOwner[x] != 0 && counter < _len )
                 {
                     result[counter] = x;
                     counter++;
@@ -410,7 +410,7 @@ contract DeSocializedMain is DeSocializedAdmin
     {
         uint[] memory result = new uint[](_len);
         uint counter = 0;
-        for (uint i = _bid; i &lt; (_bid+_len); i++)
+        for (uint i = _bid; i < (_bid+_len); i++)
         {
             if (blockToOwner[i] == _owner)
             {
@@ -431,9 +431,9 @@ contract DeSocializedMain is DeSocializedAdmin
         
         if(_bid == 0)
         {
-            for (uint i = blocks.length; i &gt; (blocks.length-_len); i--)
+            for (uint i = blocks.length; i > (blocks.length-_len); i--)
             {
-                if (blockToOwner[i] == _owner &amp;&amp; counter &lt; _len )
+                if (blockToOwner[i] == _owner && counter < _len )
                 {
                     result[counter] = i;
                     counter++;
@@ -442,9 +442,9 @@ contract DeSocializedMain is DeSocializedAdmin
         }
         else
         {
-            for (uint x = _bid; x &gt; (_bid-_len); x--)
+            for (uint x = _bid; x > (_bid-_len); x--)
             {
-                if (blockToOwner[x] == _owner &amp;&amp; counter &lt; _len )
+                if (blockToOwner[x] == _owner && counter < _len )
                 {
                     result[counter] = x;
                     counter++;
@@ -461,7 +461,7 @@ contract DeSocializedMain is DeSocializedAdmin
     {
         uint[] memory result = new uint[](ownerBlockCount[_owner]);
         uint counter = 0;
-        for (uint i = 0; i &lt; blocks.length; i++)
+        for (uint i = 0; i < blocks.length; i++)
         {
             if (blockToOwner[i] == _owner)
             {

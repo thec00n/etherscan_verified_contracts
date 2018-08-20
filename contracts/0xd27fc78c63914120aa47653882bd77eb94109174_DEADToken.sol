@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 
 contract DEADToken {
   // Balances for each account
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
   // Owner of account approves the transfer of an amount to another account
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping (address => mapping (address => uint)) public allowed;
 
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -28,7 +28,7 @@ contract DEADToken {
   /// @param _value The amount to send
   /// @return Whether the transfer was successful or not
   function transfer(address _to, uint _value) public returns (bool) {
-    require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+    require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
     balances[msg.sender] -= _value;
     balances[_to] += _value;
     Transfer(msg.sender, _to, _value);
@@ -41,7 +41,7 @@ contract DEADToken {
   /// @param _value The amount to send
   /// @return Whether the transfer was successful or not
   function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+    require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
     balances[_to] += _value;
     balances[_from] -= _value;
     allowed[_from][msg.sender] -= _value;
@@ -81,7 +81,7 @@ contract DEADToken {
   /// @param _subtractedValue The amount of tokens to decrease the allowance by.
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -93,8 +93,8 @@ contract DEADToken {
   uint8 public decimals = 8;
   uint public initialSupply = 10000000;
   uint public totalSupply = initialSupply * 10 ** uint(decimals); // 10,000,000.00000000;
-  string public name = &quot;Dead Unicorn&quot;;
-  string public symbol = &quot;DEAD&quot;;
+  string public name = "Dead Unicorn";
+  string public symbol = "DEAD";
 
   function DEADToken() public {
     balances[msg.sender] = totalSupply;

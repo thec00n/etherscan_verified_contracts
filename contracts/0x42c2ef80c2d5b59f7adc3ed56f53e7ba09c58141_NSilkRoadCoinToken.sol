@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -103,15 +103,15 @@ contract limitedFactor {
     address public TeamAddress;
     modifier FoundationAccountNeedFreezeOneYear(address _address) {
         if(_address == FoundationAddress) {
-            require(now &gt;= FoundationAddressFreezeTime + 1 years);
+            require(now >= FoundationAddressFreezeTime + 1 years);
         }
         _;
     }
 
 }
 contract standardToken is ERC20Token, limitedFactor {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function balanceOf(address _owner) constant public returns (uint256) {
         return balances[_owner];
@@ -119,8 +119,8 @@ contract standardToken is ERC20Token, limitedFactor {
 
     /* Transfers tokens from your address to other */
     function transfer(address _to, uint256 _value) public FoundationAccountNeedFreezeOneYear(msg.sender) returns (bool success) {
-        require (balances[msg.sender] &gt;= _value);           // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if owerflow detected
+        require (balances[msg.sender] >= _value);           // Throw if sender has insufficient balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance
         Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -129,7 +129,7 @@ contract standardToken is ERC20Token, limitedFactor {
 
     /* Approve other address to spend tokens on your account */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowances[msg.sender][_spender] = _value;          // Set allowance
         Approval(msg.sender, _spender, _value);             // Raise Approval event
         return true;
@@ -145,9 +145,9 @@ contract standardToken is ERC20Token, limitedFactor {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require (balances[_from] &gt;= _value);                // Throw if sender does not have enough balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if overflow detected
-        require (_value &lt;= allowances[_from][msg.sender]);  // Throw if you do not have allowance
+        require (balances[_from] >= _value);                // Throw if sender does not have enough balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if overflow detected
+        require (_value <= allowances[_from][msg.sender]);  // Throw if you do not have allowance
         balances[_from] -= _value;                          // Deduct senders balance
         balances[_to] += _value;                            // Add recipient blaance
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -165,8 +165,8 @@ contract standardToken is ERC20Token, limitedFactor {
 contract NSilkRoadCoinToken is standardToken,Owned {
     using SafeMath for uint;
 
-    string constant public name=&quot;NSilkRoadCoinToken&quot;;
-    string constant public symbol=&quot;NSRC&quot;;
+    string constant public name="NSilkRoadCoinToken";
+    string constant public symbol="NSRC";
     uint256 constant public decimals=6;
     
     uint256 public totalSupply = 0;
@@ -186,10 +186,10 @@ contract NSilkRoadCoinToken is standardToken,Owned {
     
     /// @dev Issue new tokens
     function mintTokens(address _to, uint256 _amount) internal {
-        require (balances[_to] + _amount &gt;= balances[_to]);     // Check for overflows
+        require (balances[_to] + _amount >= balances[_to]);     // Check for overflows
         balances[_to] = balances[_to].add(_amount);             // Set minted coins to target
         totalSupply = totalSupply.add(_amount);
-        require(totalSupply &lt;= topTotalSupply);
+        require(totalSupply <= topTotalSupply);
         Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x
     }
     
@@ -219,11 +219,11 @@ contract NSilkRoadCoinToken is standardToken,Owned {
     /// @dev allocate Token
     function transferMultiAddress(address[] _recivers, uint256[] _values) public onlyOwner {
         require (_recivers.length == _values.length);
-        for(uint256 i = 0; i &lt; _recivers.length ; i++){
+        for(uint256 i = 0; i < _recivers.length ; i++){
             address reciver = _recivers[i];
             uint256 value = _values[i];
-            require (balances[msg.sender] &gt;= value);           // Throw if sender has insufficient balance
-            require (balances[reciver] + value &gt;= balances[reciver]);  // Throw if owerflow detected
+            require (balances[msg.sender] >= value);           // Throw if sender has insufficient balance
+            require (balances[reciver] + value >= balances[reciver]);  // Throw if owerflow detected
             balances[msg.sender] -= value;                     // Deduct senders balance
             balances[reciver] += value;                            // Add recivers blaance
             Transfer(msg.sender, reciver, value);                  // Raise Transfer event

@@ -11,8 +11,8 @@ contract FileHost {
         //Store the master.
         master = msg.sender;
         version = 5;
-        motd = &quot;&quot;;
-        credit = &quot;to 63e190e32fcae9ffcca380cead85247495cc53ffa32669d2d298ff0b0dbce524 for creating the contract&quot;;
+        motd = "";
+        credit = "to 63e190e32fcae9ffcca380cead85247495cc53ffa32669d2d298ff0b0dbce524 for creating the contract";
         lock = false;
     }
     function newMaster(address newMaster) public {
@@ -23,7 +23,7 @@ contract FileHost {
         //Append data
         require(msg.sender == master);
         require(!lock);
-        for (var i = 0; i &lt; newData.length; i++) {
+        for (var i = 0; i < newData.length; i++) {
             data.push(newData[i]);
         }
     }
@@ -39,11 +39,11 @@ contract FileHost {
         motd = newMotd;
     }
     function getData() public returns (uint256[]) {
-        //Get the data, shouldn&#39;t need to be ran on the network as the data is stored locally on the blockchain.
+        //Get the data, shouldn't need to be ran on the network as the data is stored locally on the blockchain.
         return data;
     }
     function getSize() public returns (uint) {
-        //Get the size, shouldn&#39;t need to be ran on the network as the data is stored locally on the blockchain.
+        //Get the size, shouldn't need to be ran on the network as the data is stored locally on the blockchain.
         return data.length;
     }
     function getMotd() public returns (string) {

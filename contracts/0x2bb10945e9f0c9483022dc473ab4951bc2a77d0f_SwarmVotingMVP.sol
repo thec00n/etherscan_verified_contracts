@@ -30,13 +30,13 @@ contract SwarmVotingMVP {
 
     // Maps to store ballots, along with corresponding log of voters.
     // Should only be modified through `addBallotAndVoter` internal function
-    mapping(uint256 =&gt; bytes32) public encryptedBallots;
-    mapping(uint256 =&gt; bytes32) public associatedPubkeys;
-    mapping(uint256 =&gt; address) public associatedAddresses;
+    mapping(uint256 => bytes32) public encryptedBallots;
+    mapping(uint256 => bytes32) public associatedPubkeys;
+    mapping(uint256 => address) public associatedAddresses;
     uint256 public nVotesCast = 0;
 
     // Use a map for voters to look up their ballot
-    mapping(address =&gt; uint256) public voterToBallotID;
+    mapping(address => uint256) public voterToBallotID;
 
     // Public key with which to encrypt ballots - curve25519
     bytes32 public ballotEncryptionPubkey;
@@ -50,7 +50,7 @@ contract SwarmVotingMVP {
     uint256 public endTime;
 
     // Banned addresses - necessary to ban Swarm Fund from voting in their own ballot
-    mapping(address =&gt; bool) public bannedAddresses;
+    mapping(address => bool) public bannedAddresses;
     // TODO: Is this the right address?
     address public swarmFundAddress = 0x8Bf7b2D536D286B9c5Ad9d99F608e9E214DE63f0;
 
@@ -70,7 +70,7 @@ contract SwarmVotingMVP {
         if (!bannedAddresses[msg.sender]) {  // ensure banned addresses cannot vote
             _;
         } else {
-            Error(&quot;Banned address&quot;);
+            Error("Banned address");
         }
     }
 
@@ -78,15 +78,15 @@ contract SwarmVotingMVP {
         if (msg.sender == owner) {  // fail if msg.sender is not the owner
             _;
         } else {
-            Error(&quot;Not owner&quot;);
+            Error("Not owner");
         }
     }
 
     modifier ballotOpen {
-        if (block.timestamp &gt; startTime &amp;&amp; block.timestamp &lt; endTime) {
+        if (block.timestamp > startTime && block.timestamp < endTime) {
             _;
         } else {
-            Error(&quot;Ballot not open&quot;);
+            Error("Ballot not open");
         }
     }
 
@@ -94,7 +94,7 @@ contract SwarmVotingMVP {
         if (testMode) {
             _;
         } else {
-            Error(&quot;Testing disabled&quot;);
+            Error("Testing disabled");
         }
     }
 
@@ -134,7 +134,7 @@ contract SwarmVotingMVP {
 
     // Allow the owner to reveal the secret key after ballot conclusion
     function revealSeckey(bytes32 _secKey) onlyOwner public {
-        require(block.timestamp &gt; endTime);
+        require(block.timestamp > endTime);
 
         ballotEncryptionSeckey = _secKey;
         seckeyRevealed = true;  // this flag allows the contract to be locked

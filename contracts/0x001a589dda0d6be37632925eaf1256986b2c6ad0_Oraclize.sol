@@ -8,7 +8,7 @@ contract AmIOnTheFork{
 
 
 contract Oraclize {
-    mapping (address =&gt; uint) reqc;
+    mapping (address => uint) reqc;
     
     address public cbAddress = 0x26588a9301b0428d95e6fc3a5024fce8bec12d51;
     
@@ -20,7 +20,7 @@ contract Oraclize {
     address owner;
     
     modifier onlyadmin {
-        if ((msg.sender != owner)&amp;&amp;(msg.sender != cbAddress)) throw;
+        if ((msg.sender != owner)&&(msg.sender != cbAddress)) throw;
         _
     }
     
@@ -34,7 +34,7 @@ contract Oraclize {
         price_multiplier[dsname_hash] = multiplier;
     }
 
-    mapping (bytes32 =&gt; bool) coupons;
+    mapping (bytes32 => bool) coupons;
     bytes32 coupon;
     
     function createCoupon(string _code) onlyadmin {
@@ -46,11 +46,11 @@ contract Oraclize {
     }
     
     function multisetProofType(uint[] _proofType, address[] _addr) onlyadmin {
-        for (uint i=0; i&lt;_addr.length; i++) addr_proofType[_addr[i]] = byte(_proofType[i]);
+        for (uint i=0; i<_addr.length; i++) addr_proofType[_addr[i]] = byte(_proofType[i]);
     }
     
     function multisetCustomGasPrice(uint[] _gasPrice, address[] _addr) onlyadmin {
-        for (uint i=0; i&lt;_addr.length; i++) addr_gasPrice[_addr[i]] = _gasPrice[i];
+        for (uint i=0; i<_addr.length; i++) addr_gasPrice[_addr[i]] = _gasPrice[i];
     }
 
     uint gasprice = 20000000000;
@@ -61,12 +61,12 @@ contract Oraclize {
     
     function setBasePrice(uint new_baseprice) onlyadmin { //0.001 usd in ether
         baseprice = new_baseprice;
-        for (uint i=0; i&lt;dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
+        for (uint i=0; i<dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
     }
 
     function setBasePrice(uint new_baseprice, bytes proofID) onlyadmin { //0.001 usd in ether
         baseprice = new_baseprice;
-        for (uint i=0; i&lt;dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
+        for (uint i=0; i<dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
     }
     
     function withdrawFunds(address _addr) onlyadmin {
@@ -81,18 +81,18 @@ contract Oraclize {
     
     modifier costs(string datasource, uint gaslimit) {
         uint price = getPrice(datasource, gaslimit, msg.sender);
-        if (msg.value &gt;= price){
+        if (msg.value >= price){
             uint diff = msg.value - price;
-            if (diff &gt; 0) msg.sender.send(diff);
+            if (diff > 0) msg.sender.send(diff);
             _
         } else throw;
     }
 
-    mapping (address =&gt; byte) addr_proofType;
-    mapping (address =&gt; uint) addr_gasPrice;
+    mapping (address => byte) addr_proofType;
+    mapping (address => uint) addr_gasPrice;
     uint public baseprice;
-    mapping (bytes32 =&gt; uint) price;
-    mapping (bytes32 =&gt; uint) price_multiplier;
+    mapping (bytes32 => uint) price;
+    mapping (bytes32 => uint) price_multiplier;
     bytes32[] dsources;
     function useCoupon(string _coupon) {
         coupon = sha3(_coupon);
@@ -119,8 +119,8 @@ contract Oraclize {
     }
     
     function getPrice(string _datasource, uint _gaslimit, address _addr) private returns (uint _dsprice) {
-        if ((_gaslimit &lt;= 200000)&amp;&amp;(reqc[_addr] == 0)&amp;&amp;(tx.origin != cbAddress)) return 0;
-        if ((coupon != 0)&amp;&amp;(coupons[coupon] == true)) return 0;
+        if ((_gaslimit <= 200000)&&(reqc[_addr] == 0)&&(tx.origin != cbAddress)) return 0;
+        if ((coupon != 0)&&(coupons[coupon] == true)) return 0;
         _dsprice = price[sha3(_datasource, addr_proofType[_addr])];
         uint gasprice_ = addr_gasPrice[_addr];
         if (gasprice_ == 0) gasprice_ = gasprice; 
@@ -157,7 +157,7 @@ contract Oraclize {
     }
     
     function query1(uint _timestamp, string _datasource, string _arg, uint _gaslimit) costs(_datasource, _gaslimit) returns (bytes32 _id) {
-	if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)) throw;
+	if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)) throw;
 	bool forkFlag = AmIOnTheFork(AmIOnTheForkAddress).forked();
         _id = sha3(forkFlag, this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -166,7 +166,7 @@ contract Oraclize {
     }
     
     function query2(uint _timestamp, string _datasource, string _arg1, string _arg2, uint _gaslimit) costs(_datasource, _gaslimit) returns (bytes32 _id) {
-	if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)) throw;
+	if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)) throw;
 	bool forkFlag = AmIOnTheFork(AmIOnTheForkAddress).forked();
         _id = sha3(forkFlag, this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;

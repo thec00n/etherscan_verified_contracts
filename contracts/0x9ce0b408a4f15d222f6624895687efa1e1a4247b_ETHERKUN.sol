@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,20 +58,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,20 +92,20 @@ library SafeMath16 {
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -154,7 +154,7 @@ contract ETHERKUN {
     
     kun[] public kuns;
     
-    mapping (uint =&gt; address) public kunToOwner;
+    mapping (uint => address) public kunToOwner;
     
     function getKun() external {
         uint id = kuns.push(kun(0, 0, now)) - 1;
@@ -165,7 +165,7 @@ contract ETHERKUN {
   function getKunsByOwner(address _owner) external view returns(uint[]) {
     uint[] memory result = new uint[](kuns.length);
     uint counter = 0;
-    for (uint i = 0; i &lt; kuns.length; i++) {
+    for (uint i = 0; i < kuns.length; i++) {
       if (kunToOwner[i] == _owner) {
         result[counter] = i;
         counter++;
@@ -182,8 +182,8 @@ contract ETHERKUN {
   function getBattleKuns(uint _price) external view returns(uint[]) {
     uint[] memory result = new uint[](kuns.length);
     uint counter = 0;
-    for (uint i = 0; i &lt; kuns.length; i++) {
-      if (kuns[i].price &gt; _price &amp;&amp; kunToOwner[i] != msg.sender) {
+    for (uint i = 0; i < kuns.length; i++) {
+      if (kuns[i].price > _price && kunToOwner[i] != msg.sender) {
         result[counter] = i;
         counter++;
       }
@@ -224,11 +224,11 @@ contract ETHERKUN {
     kun storage mykun = kuns[_kunId];
     uint oldAtk = mykun.atk;
     uint random = randMod();
-    if (random &lt; 20) {
+    if (random < 20) {
         mykun.atk = mykun.atk.add(50);
-    } else if (random &lt; 70) {
+    } else if (random < 70) {
         mykun.atk = mykun.atk.add(100);
-    } else if (random &lt; 90) {
+    } else if (random < 90) {
         mykun.atk = mykun.atk.add(200);
     } else {
          mykun.atk = mykun.atk.add(500);
@@ -243,11 +243,11 @@ contract ETHERKUN {
     kun storage mykun = kuns[_kunId];
     uint oldAtk = mykun.atk;
     uint random = randMod();
-    if (random &lt; 20) {
+    if (random < 20) {
         mykun.atk = mykun.atk.add(550);
-    } else if (random &lt; 70) {
+    } else if (random < 70) {
         mykun.atk = mykun.atk.add(1100);
-    } else if (random &lt; 90) {
+    } else if (random < 90) {
         mykun.atk = mykun.atk.add(2200);
     } else {
          mykun.atk = mykun.atk.add(5500);
@@ -262,11 +262,11 @@ contract ETHERKUN {
     kun storage mykun = kuns[_kunId];
     uint oldAtk = mykun.atk;
     uint random = randMod();
-    if (random &lt; 20) {
+    if (random < 20) {
         mykun.atk = mykun.atk.add(2750);
-    } else if (random &lt; 70) {
+    } else if (random < 70) {
         mykun.atk = mykun.atk.add(5500);
-    } else if (random &lt; 90) {
+    } else if (random < 90) {
         mykun.atk = mykun.atk.add(11000);
     } else {
          mykun.atk = mykun.atk.add(27500);
@@ -281,11 +281,11 @@ contract ETHERKUN {
     kun storage mykun = kuns[_kunId];
     uint oldAtk = mykun.atk;
     uint random = randMod();
-    if (random &lt; 20) {
+    if (random < 20) {
         mykun.atk = mykun.atk.add(6000);
-    } else if (random &lt; 70) {
+    } else if (random < 70) {
         mykun.atk = mykun.atk.add(12000);
-    } else if (random &lt; 90) {
+    } else if (random < 90) {
         mykun.atk = mykun.atk.add(24000);
     } else {
          mykun.atk = mykun.atk.add(60000);
@@ -309,7 +309,7 @@ contract ETHERKUN {
     //sellKun
     function sellKun(uint _kunId) external onlyOwnerOf(_kunId) {
         kun storage mykun = kuns[_kunId];
-        if(now &gt; mykun.readyTime) {
+        if(now > mykun.readyTime) {
             msg.sender.transfer(mykun.price);
              KunSell( msg.sender, _kunId, mykun.price);
         } else{
@@ -327,7 +327,7 @@ contract ETHERKUN {
   
   //判断是否ready
   function _isReady(kun storage _kun) internal view returns (bool) {
-      return (_kun.readyTime &lt;= now);
+      return (_kun.readyTime <= now);
   }
   
   //attack
@@ -335,11 +335,11 @@ contract ETHERKUN {
     kun storage mykun = kuns[_kunId];
     kun storage enemykun = kuns[_targetId]; 
     require(_isReady(enemykun));
-    require(enemykun.atk &gt; 299 &amp;&amp; mykun.atk &gt; 0);
+    require(enemykun.atk > 299 && mykun.atk > 0);
     uint rand = randMod();
     uint probability = mykun.atk * 100 /(mykun.atk + enemykun.atk) ;
     
-    if (rand &lt; probability) {
+    if (rand < probability) {
         //win
         msg.sender.transfer(enemykun.price);
         kunAttackResult(msg.sender, mykun.atk, kunToOwner[_targetId], enemykun.atk, rand, enemykun.price);

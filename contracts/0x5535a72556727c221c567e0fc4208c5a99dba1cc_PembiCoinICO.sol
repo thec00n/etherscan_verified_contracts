@@ -15,8 +15,8 @@ contract PembiCoinICO {
 
     address public owner;
 
-    mapping(uint256 =&gt; address) private contributors;
-    mapping(address =&gt; uint256) private amounts;
+    mapping(uint256 => address) private contributors;
+    mapping(address => uint256) private amounts;
 
     event Transferred(
         address indexed _from,
@@ -36,7 +36,7 @@ contract PembiCoinICO {
     }
 
     function() external payable inState(State.Active) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         if (amounts[msg.sender] == 0) {
             contributors[contributorCount] = msg.sender;
             contributorCount = safeAdd(contributorCount, 1);
@@ -47,7 +47,7 @@ contract PembiCoinICO {
 
     function refund() external inState(State.Failed) {
         uint256 amount = amounts[msg.sender];
-        assert(amount &gt; 0 &amp;&amp; amount &lt;= this.balance);
+        assert(amount > 0 && amount <= this.balance);
         amounts[msg.sender] = 0;
         msg.sender.transfer(amount);
         Transferred(address(this), msg.sender, amount);
@@ -88,7 +88,7 @@ contract PembiCoinICO {
         constant
         returns (address o_contributor, uint256 o_amount)
     {
-        require(_i &gt;= 0 &amp;&amp; _i &lt; contributorCount);
+        require(_i >= 0 && _i < contributorCount);
         o_contributor = contributors[_i];
         o_amount = amounts[o_contributor];
     }
@@ -99,7 +99,7 @@ contract PembiCoinICO {
         returns (uint256 o_sum)
     {
         o_sum = a + b;
-        assert(o_sum &gt;= a &amp;&amp; o_sum &gt;= b);
+        assert(o_sum >= a && o_sum >= b);
     }
 
     modifier inState(State _state) {

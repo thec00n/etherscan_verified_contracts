@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ContractReceiver {
 contract ERC223Token is ERC223 {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   string public name;
   string public symbol;
@@ -123,7 +123,7 @@ contract ERC223Token is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -133,7 +133,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     Transfer(msg.sender, _to, _value);
@@ -143,7 +143,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver reciever = ContractReceiver(_to);
@@ -174,7 +174,7 @@ contract SaturnPresale is ContractReceiver {
     bool    claimed;
   }
 
-  mapping(uint256 =&gt; Order) private orders;
+  mapping(uint256 => Order) private orders;
   uint256 private latestOrderId = 0;
   address private owner;
   address private treasury;
@@ -251,7 +251,7 @@ contract SaturnPresale is ContractReceiver {
 
     uint256 purchasedAmount = msg.value.div(priceDiv);
     if (purchasedAmount == 0) { revert(); } // not enough ETH sent
-    if (purchasedAmount &gt; hardCap - sold) { revert(); } // too much ETH sent
+    if (purchasedAmount > hardCap - sold) { revert(); } // too much ETH sent
 
     orders[latestOrderId] = Order(msg.sender, purchasedAmount, lockup, false);
     sold += purchasedAmount;
@@ -261,12 +261,12 @@ contract SaturnPresale is ContractReceiver {
   }
 
   function redeem(uint256 orderId) public {
-    if (orderId &gt; latestOrderId) { revert(); }
+    if (orderId > latestOrderId) { revert(); }
     Order storage order = orders[orderId];
 
     // only owner can withdraw
     if (msg.sender != order.owner) { revert(); }
-    if (now &lt; order.lockup) { revert(); }
+    if (now < order.lockup) { revert(); }
     if (order.claimed) { revert(); }
     order.claimed = true;
 
@@ -287,7 +287,7 @@ contract SaturnPresale is ContractReceiver {
 
   function _end() private {
     // if there are any tokens remaining - return them to the owner
-    if (sold &lt; hardCap) {
+    if (sold < hardCap) {
       ERC223 token = ERC223(tokenAddress);
       token.transfer(treasury, hardCap.sub(sold));
     }

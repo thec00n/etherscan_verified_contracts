@@ -46,7 +46,7 @@ contract Order is owned {
     }
 
     function min(uint a, uint b) internal returns (uint) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -71,7 +71,7 @@ contract Order is owned {
     // Fills or partially fills the order.
     function _fillOrder(address _from, uint numTokens) internal returns (bool) {
         if (numTokens == 0) throw;
-        if (this.balance &lt; numTokens * weiPerToken / decimalPlaces) throw;
+        if (this.balance < numTokens * weiPerToken / decimalPlaces) throw;
 
         if (!token.transferFrom(_from, owner, numTokens)) return false;
         sendRobust(_from, numTokens * weiPerToken / decimalPlaces);
@@ -102,7 +102,7 @@ contract Order is owned {
     // Even simpler call signature that tries to transfer as many as possible.
     function () {
         // allow receipt of funds
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             return;
         } else {
             fillOrderAuto();

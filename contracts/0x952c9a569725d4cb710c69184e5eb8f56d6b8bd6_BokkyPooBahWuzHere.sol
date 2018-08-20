@@ -5,10 +5,10 @@ contract BokkyPooBahWuzHere {
     }
     
     function helloWorld() constant returns (string) {
-        return &quot;Hello, World!&quot;;
+        return "Hello, World!";
     }
     
     function yaaay() constant returns (string) {
-        return &quot;yaaay!&quot;;
+        return "yaaay!";
     }
 }

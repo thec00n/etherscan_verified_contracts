@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
 
 contract ReturnVestingRegistry is Ownable {
 
-  mapping (address =&gt; address) public returnAddress;
+  mapping (address => address) public returnAddress;
 
   function record(address from, address to) {
     require(from != 0);

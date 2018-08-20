@@ -51,7 +51,7 @@ contract BlockchainDeposit {
     uint amount;
   }
 
-  string[] Currencies = [&quot;DBC&quot;, &quot;ETH&quot;, &quot;BTC&quot;]; // or other erc20 token
+  string[] Currencies = ["DBC", "ETH", "BTC"]; // or other erc20 token
   uint[] Term = [3,7,14,21,30,90,180,365]; // Term deposit in day
   address public master;
   uint public feesRate;
@@ -70,14 +70,14 @@ contract BlockchainDeposit {
   bool public active;
   uint private currentPayoutIndex;
 
-  mapping (uint =&gt; Deposit) public depositsStack;
+  mapping (uint => Deposit) public depositsStack;
 
-  mapping (address =&gt; uint) public refereesCount;
-  mapping (address =&gt; uint) public pendingReferals;
-  mapping (address =&gt; uint) public addressGains;
-  mapping (address =&gt; uint[]) public addressPositions;
-  mapping (address =&gt; address) public refereeInvitations;
-  mapping (address =&gt; bool) public refereds;
+  mapping (address => uint) public refereesCount;
+  mapping (address => uint) public pendingReferals;
+  mapping (address => uint) public addressGains;
+  mapping (address => uint[]) public addressPositions;
+  mapping (address => address) public refereeInvitations;
+  mapping (address => bool) public refereds;
 
   PayoutItem[] public lastPayouts;
   function BlockchainDeposit() {
@@ -86,8 +86,8 @@ contract BlockchainDeposit {
     feesRateTeam = 20; //0.2%
     feesRateCongres = 30; // 0.3%
     feesProfitDeposit = 1000; // 10%
-    garanteSystemDepositInOneFund = 100000000000; // &lt; 1000 USD (this value confifured Congres)
-    garanteSystemDepositInAllFunds = 500000000000; // &lt; 5000 USD (this value confifured Congres)
+    garanteSystemDepositInOneFund = 100000000000; // < 1000 USD (this value confifured Congres)
+    garanteSystemDepositInAllFunds = 500000000000; // < 5000 USD (this value confifured Congres)
     numDeposits = 0;
     currentPayoutIndex = 0;
     profitsRatePercent = 0;
@@ -99,7 +99,7 @@ contract BlockchainDeposit {
   }
 
   function deposit() payable {
-    if(msg.value &lt;= 0) throw;
+    if(msg.value <= 0) throw;
     lastDeposit = block.timestamp;
     depositsStack[numDeposits] = Deposit(msg.sender, msg.value);
     totalDeposited += msg.value;
@@ -128,11 +128,11 @@ contract BlockchainDeposit {
     uint length = lastPayouts.length;
     uint startIndex = 0;
 
-    if (length &gt; 10) {
+    if (length > 10) {
       startIndex = length - 10;
     }
 
-    for(uint i = startIndex; i &lt; length; i++) {
+    for(uint i = startIndex; i < length; i++) {
       currentPayout = lastPayouts[i];
       lastReceivers[j] = currentPayout.receiver;
       lastAmounts[j] = currentPayout.amount;
@@ -232,7 +232,7 @@ contract BlockchainDeposit {
  function computeGains(Deposit deposit) private constant returns (uint gains, uint fees) {
     gains = 0;
 
-    if(deposit.amount &gt; 0) {
+    if(deposit.amount > 0) {
       gains = (deposit.amount * computeGainsRate(deposit.depositor)) / 100;
       fees = (gains * feesRate) / 100;
 
@@ -272,7 +272,7 @@ contract BlockchainDeposit {
     uint payableAmount = deposit.amount + gains;
     address currentDepositor = deposit.depositor;
 
-    if(gains &gt; 0 &amp;&amp; this.balance &gt; payableAmount) {
+    if(gains > 0 && this.balance > payableAmount) {
       success = currentDepositor.send( payableAmount );
       if (success) {
         Payout(currentDepositor, payableAmount);
@@ -291,7 +291,7 @@ contract BlockchainDeposit {
 
   function dispatchGains() public {
 
-    for (uint i = currentPayoutIndex; i&lt;numDeposits; i++){
+    for (uint i = currentPayoutIndex; i<numDeposits; i++){
       payout(depositsStack[i]);
     }
   }

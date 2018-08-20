@@ -14,13 +14,13 @@ contract Storage {
     }
     function getData() public view returns (bytes){
         uint length;
-        for(uint i = 0; i&lt;6; i++) {
+        for(uint i = 0; i<6; i++) {
             length += data[i].length;
         }
         uint index;
         bytes memory result = new bytes(length);
-        for(i = 0; i&lt;6; i++) {
-            for(uint k = 0; k &lt; data[i].length; k++) {
+        for(i = 0; i<6; i++) {
+            for(uint k = 0; k < data[i].length; k++) {
                 result[index + k] = data[i][k];
             }
             index += data[i].length;

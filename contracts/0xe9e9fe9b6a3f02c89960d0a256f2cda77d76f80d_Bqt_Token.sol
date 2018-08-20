@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------
-// Developer Nechesov Andrey &amp; ObjectMicro, Inc 
+// Developer Nechesov Andrey & ObjectMicro, Inc 
 // ----------------------------------------------------------------------------------------------
 // ERC Token Standard #20 Interface
 // https://github.com/ethereum/EIPs/issues/20
@@ -14,20 +14,20 @@ pragma solidity ^0.4.18;
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
   }
@@ -62,8 +62,8 @@ pragma solidity ^0.4.18;
    
   contract Bqt_Token is ERC20Interface {
 
-      string public constant symbol = &quot;BQT&quot;;
-      string public constant name = &quot;BQT token&quot;;
+      string public constant symbol = "BQT";
+      string public constant name = "BQT token";
       uint8 public constant decimals = 18; 
            
       uint256 public constant maxTokens = 200*10**6*10**18; 
@@ -86,16 +86,16 @@ pragma solidity ^0.4.18;
       address public owner;
    
       // Balances for each account
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
    
       // Owner of account approves the transfer of an amount to another account
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       // Orders holders who wish sell tokens, save amount
-      mapping(address =&gt; uint256) public orders_sell_amount;
+      mapping(address => uint256) public orders_sell_amount;
 
       // Orders holders who wish sell tokens, save price
-      mapping(address =&gt; uint256) public orders_sell_price;
+      mapping(address => uint256) public orders_sell_price;
 
       //orders list
       address[] public orders_sell_list;
@@ -134,7 +134,7 @@ pragma solidity ^0.4.18;
       function withdraw(uint256 _amount) onlyOwner returns (bool result) {
           uint256 balance;
           balance = this.balance;
-          if(_amount &gt; 0) balance = _amount;
+          if(_amount > 0) balance = _amount;
           owner.send(balance);
           return true;
       }
@@ -156,12 +156,12 @@ pragma solidity ^0.4.18;
           return balances[_owner];
       }
    
-      // Transfer the balance from owner&#39;s account to another account
+      // Transfer the balance from owner's account to another account
       function transfer(address _to, uint256 _amount) returns (bool success) {          
 
-          if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[msg.sender] -= _amount;
               balances[_to] += _amount;
               Transfer(msg.sender, _to, _amount);
@@ -173,7 +173,7 @@ pragma solidity ^0.4.18;
    
       // Send _value amount of tokens from address _from to address _to
       // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-      // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+      // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
       // fees in sub-currencies; the command should fail unless the _from account has
       // deliberately authorized the sender of the message via some mechanism; we propose
       // these standardized APIs for approval:
@@ -183,10 +183,10 @@ pragma solidity ^0.4.18;
           uint256 _amount
      ) returns (bool success) {         
 
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -217,77 +217,77 @@ pragma solidity ^0.4.18;
 
         uint256 tnow = now;
         
-        //if(tnow &lt; pre_ico_start) throw;
-        if(tnow &gt; ico_finish) throw;
-        if(_totalSupply &gt;= maxTokens) throw;
-        if(!(msg.value &gt;= token_price)) throw;
-        if(!(msg.value &gt;= minValue)) throw;
-        if(msg.value &gt; maxValue) throw;
+        //if(tnow < pre_ico_start) throw;
+        if(tnow > ico_finish) throw;
+        if(_totalSupply >= maxTokens) throw;
+        if(!(msg.value >= token_price)) throw;
+        if(!(msg.value >= minValue)) throw;
+        if(msg.value > maxValue) throw;
 
         uint tokens_buy = (msg.value*10**18).div(token_price);
         uint tokens_buy_total;
 
-        if(!(tokens_buy &gt; 0)) throw;   
+        if(!(tokens_buy > 0)) throw;   
         
         //Bonus for total tokens amount for all contract
         uint b1 = 0;
-        //Time bonus on Pre-ICO &amp;&amp; ICO
+        //Time bonus on Pre-ICO && ICO
         uint b2 = 0;
         //Individual bonus for tokens amount
         uint b3 = 0;
 
-        if(_totalSupply &lt;= 5*10**6*10**18) {
+        if(_totalSupply <= 5*10**6*10**18) {
           b1 = tokens_buy*30/100;
         }
-        if((5*10**6*10**18 &lt; _totalSupply)&amp;&amp;(_totalSupply &lt;= 10*10**6*10**18)) {
+        if((5*10**6*10**18 < _totalSupply)&&(_totalSupply <= 10*10**6*10**18)) {
           b1 = tokens_buy*25/100;
         }
-        if((10*10**6*10**18 &lt; _totalSupply)&amp;&amp;(_totalSupply &lt;= 15*10**6*10**18)) {
+        if((10*10**6*10**18 < _totalSupply)&&(_totalSupply <= 15*10**6*10**18)) {
           b1 = tokens_buy*20/100;
         }
-        if((15*10**6*10**18 &lt; _totalSupply)&amp;&amp;(_totalSupply &lt;= 20*10**6*10**18)) {
+        if((15*10**6*10**18 < _totalSupply)&&(_totalSupply <= 20*10**6*10**18)) {
           b1 = tokens_buy*15/100;
         }
-        if((20*10**6*10**18 &lt; _totalSupply)&amp;&amp;(_totalSupply &lt;= 25*10**6*10**18)) {
+        if((20*10**6*10**18 < _totalSupply)&&(_totalSupply <= 25*10**6*10**18)) {
           b1 = tokens_buy*10/100;
         }
-        if(25*10**6*10**18 &lt;= _totalSupply) {
+        if(25*10**6*10**18 <= _totalSupply) {
           b1 = tokens_buy*5/100;
         }        
 
-        if(tnow &lt; ico_start) {
+        if(tnow < ico_start) {
           b2 = tokens_buy*50/100;
         }
-        if((ico_start + 86400*0 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*5)){
+        if((ico_start + 86400*0 <= tnow)&&(tnow < ico_start + 86400*5)){
           b2 = tokens_buy*10/100;
         } 
-        if((ico_start + 86400*5 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*10)){
+        if((ico_start + 86400*5 <= tnow)&&(tnow < ico_start + 86400*10)){
           b2 = tokens_buy*8/100;        
         } 
-        if((ico_start + 86400*10 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*20)){
+        if((ico_start + 86400*10 <= tnow)&&(tnow < ico_start + 86400*20)){
           b2 = tokens_buy*6/100;        
         } 
-        if((ico_start + 86400*20 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*30)){
+        if((ico_start + 86400*20 <= tnow)&&(tnow < ico_start + 86400*30)){
           b2 = tokens_buy*4/100;        
         } 
-        if(ico_start + 86400*30 &lt;= tnow){
+        if(ico_start + 86400*30 <= tnow){
           b2 = tokens_buy*2/100;        
         }
         
 
-        if((1000*10**18 &lt;= tokens_buy)&amp;&amp;(5000*10**18 &lt;= tokens_buy)) {
+        if((1000*10**18 <= tokens_buy)&&(5000*10**18 <= tokens_buy)) {
           b3 = tokens_buy*5/100;
         }
-        if((5001*10**18 &lt;= tokens_buy)&amp;&amp;(10000*10**18 &lt; tokens_buy)) {
+        if((5001*10**18 <= tokens_buy)&&(10000*10**18 < tokens_buy)) {
           b3 = tokens_buy*10/100;
         }
-        if((10001*10**18 &lt;= tokens_buy)&amp;&amp;(15000*10**18 &lt; tokens_buy)) {
+        if((10001*10**18 <= tokens_buy)&&(15000*10**18 < tokens_buy)) {
           b3 = tokens_buy*15/100;
         }
-        if((15001*10**18 &lt;= tokens_buy)&amp;&amp;(20000*10**18 &lt; tokens_buy)) {
+        if((15001*10**18 <= tokens_buy)&&(20000*10**18 < tokens_buy)) {
           b3 = tokens_buy*20/100;
         }
-        if(20001*10**18 &lt;= tokens_buy) {
+        if(20001*10**18 <= tokens_buy) {
           b3 = tokens_buy*25/100;
         }
 
@@ -295,7 +295,7 @@ pragma solidity ^0.4.18;
         tokens_buy_total = tokens_buy_total.add(b2);
         tokens_buy_total = tokens_buy_total.add(b3);        
 
-        if(_totalSupply.add(tokens_buy_total) &gt; maxTokens) throw;
+        if(_totalSupply.add(tokens_buy_total) > maxTokens) throw;
         _totalSupply = _totalSupply.add(tokens_buy_total);
         balances[msg.sender] = balances[msg.sender].add(tokens_buy_total);         
 
@@ -316,10 +316,10 @@ pragma solidity ^0.4.18;
 
         uint _amount_max = 0;
 
-        if(!(orders_sell_amount[_from] &gt; 0)) return _amount_max;
+        if(!(orders_sell_amount[_from] > 0)) return _amount_max;
 
-        if(balanceOf(_from) &gt; 0) _amount_max = balanceOf(_from);
-        if(orders_sell_amount[_from] &lt; _amount_max) _amount_max = orders_sell_amount[_from];
+        if(balanceOf(_from) > 0) _amount_max = balanceOf(_from);
+        if(orders_sell_amount[_from] < _amount_max) _amount_max = orders_sell_amount[_from];
 
         return _amount_max;
       }
@@ -329,8 +329,8 @@ pragma solidity ^0.4.18;
       */
       function order_sell(uint256 _max_amount, uint256 _price) returns (bool) {
 
-        if(!(_max_amount &gt; 0)) throw;
-        if(!(_price &gt; 0)) throw;        
+        if(!(_max_amount > 0)) throw;
+        if(!(_price > 0)) throw;        
 
         orders_sell_amount[msg.sender] = _max_amount;
         orders_sell_price[msg.sender] = (_price*exchange_coefficient).div(100);
@@ -342,33 +342,33 @@ pragma solidity ^0.4.18;
       }
 
       /**
-      * Order Buy tokens - it&#39;s order search sell order from user _from and if all ok, send token and money 
+      * Order Buy tokens - it's order search sell order from user _from and if all ok, send token and money 
       */
       function order_buy(address _from, uint256 _max_price) payable returns (bool) {
         
-        if(!(msg.value &gt; 0)) throw;
-        if(!(_max_price &gt; 0)) throw;        
-        if(!(orders_sell_amount[_from] &gt; 0)) throw;
-        if(!(orders_sell_price[_from] &gt; 0)) throw; 
-        if(orders_sell_price[_from] &gt; _max_price) throw;
+        if(!(msg.value > 0)) throw;
+        if(!(_max_price > 0)) throw;        
+        if(!(orders_sell_amount[_from] > 0)) throw;
+        if(!(orders_sell_price[_from] > 0)) throw; 
+        if(orders_sell_price[_from] > _max_price) throw;
 
         uint _amount = (msg.value*10**18).div(orders_sell_price[_from]);
         uint _amount_from = get_orders_sell_amount(_from);
 
-        if(_amount &gt; _amount_from) _amount = _amount_from;        
-        if(!(_amount &gt; 0)) throw;        
+        if(_amount > _amount_from) _amount = _amount_from;        
+        if(!(_amount > 0)) throw;        
 
         uint _total_money = (orders_sell_price[_from]*_amount).div(10**18);
-        if(_total_money &gt; msg.value) throw;
+        if(_total_money > msg.value) throw;
 
         uint _seller_money = (_total_money*100).div(exchange_coefficient);
         uint _buyer_money = msg.value - _total_money;
 
-        if(_seller_money &gt; msg.value) throw;
-        if(_seller_money + _buyer_money &gt; msg.value) throw;
+        if(_seller_money > msg.value) throw;
+        if(_seller_money + _buyer_money > msg.value) throw;
 
-        if(_seller_money &gt; 0) _from.send(_seller_money);
-        if(_buyer_money &gt; 0) msg.sender.send(_buyer_money);
+        if(_seller_money > 0) _from.send(_seller_money);
+        if(_buyer_money > 0) msg.sender.send(_buyer_money);
 
         orders_sell_amount[_from] -= _amount;        
         balances[_from] -= _amount;

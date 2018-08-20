@@ -15,13 +15,13 @@ contract trustedChildRefund {
 
   DAO constant public mainDAO = DAO(0xbb9bc244d798123fde783fcc1c72d3bb8c189413);
   uint[] public trustedProposals = [7, 10, 16, 20, 23, 26, 27, 28, 29, 31, 34, 37, 39, 41, 44, 52, 54, 56, 57, 60, 61, 63, 64, 65, 66];
-  mapping (uint =&gt; DAO) public whiteList;
+  mapping (uint => DAO) public whiteList;
 
   /**
   * Populates the whiteList based on the list of trusted proposal Ids.
   */
   function trustedChildRefund() {
-      for(uint i=0; i&lt;trustedProposals.length; i++) {
+      for(uint i=0; i<trustedProposals.length; i++) {
           uint proposalId = trustedProposals[i];
           whiteList[proposalId] = DAO(mainDAO.getNewDAOAddress(proposalId));
       }
@@ -33,7 +33,7 @@ contract trustedChildRefund {
   */
   function requiredEndowment() constant returns (uint endowment) {
       uint sum = 0;
-      for(uint i=0; i&lt;trustedProposals.length; i++) {
+      for(uint i=0; i<trustedProposals.length; i++) {
           uint proposalId = trustedProposals[i];
           DAO childDAO = whiteList[proposalId];
           sum += childDAO.totalSupply();
@@ -44,7 +44,7 @@ contract trustedChildRefund {
   /**
    * Function call to refund ETH by burning childDao tokens.
    * @param proposalId The split proposal ID which created the childDao
-   * @dev This requires that the token-holder authorizes this contract&#39;s address using the approve() function.
+   * @dev This requires that the token-holder authorizes this contract's address using the approve() function.
    */
   function refund(uint proposalId) {
     //Check the token balance

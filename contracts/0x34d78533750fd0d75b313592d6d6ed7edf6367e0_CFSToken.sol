@@ -6,11 +6,11 @@ pragma solidity ^0.4.23;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -20,7 +20,7 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -81,8 +81,8 @@ contract CFSToken is ERC20Interface, Owned, SafeMath {
     uint256 public totalSupply;
     bool    public isStop;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     modifier runnable {
         require(isStop == false);
@@ -98,8 +98,8 @@ contract CFSToken is ERC20Interface, Owned, SafeMath {
         decimals = 18;                                     // Amount of decimals for display purposes
         totalSupply = 10000000000 * 10**uint(decimals);    //total supply (Generate 1 billion tokens)
         balances[msg.sender] = totalSupply;                
-        name = &quot;Crypto Future SAFT&quot;;                       // Set the name for display purposes
-        symbol = &quot;CFS&quot;;                                    // Set the symbol for display purposes
+        name = "Crypto Future SAFT";                       // Set the name for display purposes
+        symbol = "CFS";                                    // Set the symbol for display purposes
         isStop = false;
     }
 
@@ -115,7 +115,7 @@ contract CFSToken is ERC20Interface, Owned, SafeMath {
     }
 
     function transfer(address to, uint256 value) public runnable returns (bool success) {
-        assert(balances[msg.sender] &gt;= value);
+        assert(balances[msg.sender] >= value);
         balances[msg.sender] = safeSub(balances[msg.sender], value);
         balances[to] = safeAdd(balances[to], value);
         emit Transfer(msg.sender, to, value);
@@ -156,15 +156,15 @@ contract CFSToken is ERC20Interface, Owned, SafeMath {
     }
     
     function burn(uint256 value) public runnable onlyOwner{
-        assert(balances[msg.sender] &gt;= value);
+        assert(balances[msg.sender] >= value);
         balances[msg.sender] = safeSub(balances[msg.sender], value);
         totalSupply = safeSub(totalSupply, value);
         emit Burn(msg.sender, value);
     }
 
     function burnFrom(address from, uint256 value) public runnable onlyOwner returns (bool success) {
-        assert(balances[from] &gt;= value);
-        assert(value &lt;= allowed[from][msg.sender]);
+        assert(balances[from] >= value);
+        assert(value <= allowed[from][msg.sender]);
         balances[from] = safeSub(balances[from], value);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], value);
         totalSupply = safeSub(totalSupply, value);
@@ -173,7 +173,7 @@ contract CFSToken is ERC20Interface, Owned, SafeMath {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -41,15 +41,15 @@ contract RobotCoin is Ownable{
   
   address public saleAgent; 
   
-  mapping (address =&gt; uint256) private  balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowed; 
+  mapping (address => uint256) private  balances;
+  mapping (address => mapping (address => uint256)) private allowed; 
   
   event Transfer(address indexed _from, address indexed _to, uint256 _value);  
   event Approval(address indexed _owner, address indexed _spender, uint256 _value); 
 
   function RobotCoin () public {
-    name = &quot;RobotCoin&quot;; 
-    symbol = &quot;RBC&quot;; 
+    name = "RobotCoin"; 
+    symbol = "RBC"; 
     decimals = 3; 
     
     tokenHolder = owner;
@@ -89,8 +89,8 @@ contract RobotCoin is Ownable{
   
   function _transfer(address _from, address _to, uint256 _value) internal returns (bool){ 
     require (_to != 0x0); 
-    require(balances[_from] &gt;= _value); 
-    require(balances[_to] + _value &gt;= balances[_to]); 
+    require(balances[_from] >= _value); 
+    require(balances[_to] + _value >= balances[_to]); 
 
     balances[_from] -= _value; 
     balances[_to] += _value;
@@ -110,13 +110,13 @@ contract RobotCoin is Ownable{
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {   
     require(usersCanTransfer);
-    require(_value &lt;= allowed[_from][_to]);
+    require(_value <= allowed[_from][_to]);
     allowed[_from][_to] -= _value;  
     return _transfer(_from, _to, _value); 
   }
   
   function transferEther(uint256 etherAmmount) public onlyOwner{ 
-    require(this.balance &gt;= etherAmmount); 
+    require(this.balance >= etherAmmount); 
     owner.transfer(etherAmmount); 
   }
 }

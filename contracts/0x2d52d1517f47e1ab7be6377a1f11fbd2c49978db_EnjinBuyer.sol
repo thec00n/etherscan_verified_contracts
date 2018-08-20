@@ -10,8 +10,8 @@ contract ERC20 {
 }
 
 contract EnjinBuyer {
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public balances_after_buy;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public balances_after_buy;
   bool public bought_tokens;
   bool public token_set;
   bool public refunded;
@@ -41,7 +41,7 @@ contract EnjinBuyer {
   }
   
   function personal_withdraw(){
-    if (balances_after_buy[msg.sender]&gt;0 &amp;&amp; msg.sender != sale) {
+    if (balances_after_buy[msg.sender]>0 && msg.sender != sale) {
         uint256 eth_to_withdraw_after_buy = balances_after_buy[msg.sender];
         balances_after_buy[msg.sender] = 0;
         msg.sender.transfer(eth_to_withdraw_after_buy);
@@ -68,11 +68,11 @@ contract EnjinBuyer {
 
 
   // Use with caution - use this withdraw function if you do not trust the
-  // contract&#39;s token setting. You can only use this once, so if you
+  // contract's token setting. You can only use this once, so if you
   // put in the wrong token address you will burn the Enjin on the contract.
   function withdraw_token(address _token){
     ERC20 myToken = ERC20(_token);
-    if (balances_after_buy[msg.sender]&gt;0 &amp;&amp; msg.sender != sale) {
+    if (balances_after_buy[msg.sender]>0 && msg.sender != sale) {
         uint256 eth_to_withdraw_after_buy = balances_after_buy[msg.sender];
         balances_after_buy[msg.sender] = 0;
         msg.sender.transfer(eth_to_withdraw_after_buy);
@@ -98,7 +98,7 @@ contract EnjinBuyer {
 
   function purchase_tokens() {
     require(msg.sender == developer);
-    if (this.balance &lt; eth_minimum) return;
+    if (this.balance < eth_minimum) return;
     if (kill_switch) return;
     require(sale != 0x0);
     bought_tokens = true;
@@ -111,13 +111,13 @@ contract EnjinBuyer {
     if (!bought_tokens) {
       balances[msg.sender] += msg.value;
     } else {
-      // We might be getting a refund from Enjin&#39;s multisig wallet.
+      // We might be getting a refund from Enjin's multisig wallet.
       // It could also be someone who has missed the buy, so we keep
       // track of this as well so that he can safely withdraw.
       // We might get the Enjin refund from another wallet, so this
       // is why we allow this behavior.
       balances_after_buy[msg.sender] += msg.value;
-      if (msg.sender == sale &amp;&amp; this.balance &gt;= contract_eth_value) {
+      if (msg.sender == sale && this.balance >= contract_eth_value) {
         refunded = true;
       }
     }

@@ -80,11 +80,11 @@ contract GuessEth is Ownable,GuessEthEvents{
         int8 result;
         uint prize;
     }
-    mapping(uint =&gt; bnumber[]) public bets;
-    mapping(uint =&gt; address) public betNumber;
+    mapping(uint => bnumber[]) public bets;
+    mapping(uint => address) public betNumber;
     
-    /* player address =&gt; blockNumber[]*/
-    mapping(address =&gt; uint[]) private playerBetBNumber;
+    /* player address => blockNumber[]*/
+    mapping(address => uint[]) private playerBetBNumber;
     
     /* Awards Records */
     struct winner{
@@ -92,8 +92,8 @@ contract GuessEth is Ownable,GuessEthEvents{
         uint prize;
     }
     
-    mapping(uint =&gt; winner[]) private winners;
-    mapping(uint =&gt; uint) private winResult;
+    mapping(uint => winner[]) private winners;
+    mapping(uint => uint) private winResult;
     
     address private wallet1;
     address private wallet2;
@@ -109,7 +109,7 @@ contract GuessEth is Ownable,GuessEthEvents{
     
 
     /* Sponsors */
-    mapping(address =&gt; uint) Sponsors;
+    mapping(address => uint) Sponsors;
     uint public balanceOfSPS=0;
     address[] public SponsorAddresses;
     
@@ -124,7 +124,7 @@ contract GuessEth is Ownable,GuessEthEvents{
         uint256 _codeLength;
     
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     
@@ -155,11 +155,11 @@ contract GuessEth is Ownable,GuessEthEvents{
     }
     
     function guess(uint[] _numbers) payable isHuman() public returns(uint){
-        require(msg.value  &gt;= _numbers.length.mul(minBetVal));
+        require(msg.value  >= _numbers.length.mul(minBetVal));
 
         uint n=blockInterval*(predictBlockInterval + block.number/blockInterval);
         
-        for(uint _i=0;_i &lt; _numbers.length;_i++){
+        for(uint _i=0;_i < _numbers.length;_i++){
             bnumber memory b;
             
             b.addr=msg.sender;
@@ -188,9 +188,9 @@ contract GuessEth is Ownable,GuessEthEvents{
         uint _bnumber;
         uint limitRows=100;
         
-        while(_i &lt; playerBetBNumber[msg.sender].length){
+        while(_i < playerBetBNumber[msg.sender].length){
             _bnumber=playerBetBNumber[msg.sender][_i];
-            for(_j=0 ; _j &lt; bets[_bnumber].length &amp;&amp; _c &lt; limitRows ; _j++){
+            for(_j=0 ; _j < bets[_bnumber].length && _c < limitRows ; _j++){
                 if(msg.sender==bets[_bnumber][_j].addr){
                     _c++;
                 }
@@ -204,17 +204,17 @@ contract GuessEth is Ownable,GuessEthEvents{
         int8[] memory _result=new int8[](_c);
         uint[] memory _prize=new uint[](_c);
         
-        if(_c&lt;=0){
+        if(_c<=0){
             return(_blockNumbers,_numbers,_values,_result,_prize);
         }
 
         //uint[] memory _b=new uint[](bettings[_blocknumber].length);
 
         uint _count=0;
-        for(_i=0 ; _i &lt; playerBetBNumber[msg.sender].length ; _i++){
+        for(_i=0 ; _i < playerBetBNumber[msg.sender].length ; _i++){
             _bnumber=playerBetBNumber[msg.sender][_i];
             
-            for(_j=0 ; _j &lt; bets[_bnumber].length &amp;&amp; _count &lt; limitRows ; _j++){
+            for(_j=0 ; _j < bets[_bnumber].length && _count < limitRows ; _j++){
                 if(bets[_bnumber][_j].addr == msg.sender){
                     _blockNumbers[_count] = _bnumber;
                     _numbers[_count] =  bets[_bnumber][_j].number;
@@ -233,14 +233,14 @@ contract GuessEth is Ownable,GuessEthEvents{
     
 
     function draw(uint _blockNumber,uint _blockTimestamp) public onlyOwner returns (uint){
-        require(block.number &gt;= curOpenBNumber + blockInterval);
+        require(block.number >= curOpenBNumber + blockInterval);
 
         /*Set open Result*/
         curOpenBNumber=_blockNumber;
         uint result=_blockTimestamp % numberRange;
         winResult[_blockNumber]=result;
 
-        for(uint _i=0;_i &lt; bets[_blockNumber].length;_i++){
+        for(uint _i=0;_i < bets[_blockNumber].length;_i++){
             //result+=1;
             
             
@@ -270,7 +270,7 @@ contract GuessEth is Ownable,GuessEthEvents{
         uint[] memory _prize = new uint[](_count);
         
         uint _i=0;
-        for(_i=0;_i&lt;_count;_i++){
+        for(_i=0;_i<_count;_i++){
             //_addresses[_i] = winners[_blockNumber][_i].addr;
             _prize[_i] = winners[_blockNumber][_i].prize;
         }
@@ -283,7 +283,7 @@ contract GuessEth is Ownable,GuessEthEvents{
     }
     
     function withdraw(address _to,uint amount) public onlyOwner returns(bool){
-        require(address(this).balance.sub(amount) &gt; 0);
+        require(address(this).balance.sub(amount) > 0);
         _to.transfer(amount);
         
         emit withdrawEvt(_to,amount);
@@ -292,7 +292,7 @@ contract GuessEth is Ownable,GuessEthEvents{
     
     
     function invest() isHuman payable public returns(uint){
-        require(msg.value &gt;= 0.1 ether,&quot;Minima amoun:0.1 ether&quot;);
+        require(msg.value >= 0.1 ether,"Minima amoun:0.1 ether");
         
         Sponsors[msg.sender] = Sponsors[msg.sender].add(msg.value);
         balanceOfSPS = balanceOfSPS.add(msg.value);
@@ -306,7 +306,7 @@ contract GuessEth is Ownable,GuessEthEvents{
     }
     
     function distribute() public onlyOwner{
-        if(address(this).balance &lt; reservefund){
+        if(address(this).balance < reservefund){
             return;
         }
         
@@ -317,7 +317,7 @@ contract GuessEth is Ownable,GuessEthEvents{
         uint _val=0;
         uint _i=0;
         
-        for(_i=0;_i&lt;SponsorAddresses.length;_i++){
+        for(_i=0;_i<SponsorAddresses.length;_i++){
             _val = (prft1 * Sponsors[SponsorAddresses[_i]]) / (balanceOfSPS);
             SponsorAddresses[_i].transfer(_val);
         }
@@ -335,14 +335,14 @@ contract GuessEth is Ownable,GuessEthEvents{
     function getAllSponsors() view public returns(address[],uint[],uint){
         uint _i=0;
         uint _c=0;
-        for(_i=0;_i&lt;SponsorAddresses.length;_i++){
+        for(_i=0;_i<SponsorAddresses.length;_i++){
             _c+=1;
         }
         
         address[] memory addrs=new address[](_c);
         uint[] memory amounts=new uint[](_c);
 
-        for(_i=0;_i&lt;SponsorAddresses.length;_i++){
+        for(_i=0;_i<SponsorAddresses.length;_i++){
             addrs[_i]=SponsorAddresses[_i];
             amounts[_i]=Sponsors[SponsorAddresses[_i]];
         }
@@ -364,27 +364,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 library utils{
     function inArray(uint[] _arr,uint _val) internal pure returns(bool){
-        for(uint _i=0;_i&lt; _arr.length;_i++){
+        for(uint _i=0;_i< _arr.length;_i++){
             if(_arr[_i]==_val){
                 return true;
                 break;
@@ -394,7 +394,7 @@ library utils{
     }
     
     function inArray(address[] _arr,address _val) internal pure returns(bool){
-        for(uint _i=0;_i&lt; _arr.length;_i++){
+        for(uint _i=0;_i< _arr.length;_i++){
             if(_arr[_i]==_val){
                 return true;
                 break;

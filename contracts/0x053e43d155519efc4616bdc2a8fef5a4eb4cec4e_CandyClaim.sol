@@ -5,11 +5,11 @@ pragma solidity ^0.4.18;
 contract CandyClaim {
   /*** CONSTANTS ***/
   uint256 private fiveHoursInSeconds = 3600; // 18000;
-  string public constant NAME = &quot;CandyClaims&quot;;
-  string public constant SYMBOL = &quot;CandyClaim&quot;;
+  string public constant NAME = "CandyClaims";
+  string public constant SYMBOL = "CandyClaim";
 
   /*** STORAGE ***/
-  mapping (address =&gt; uint256) private ownerCount;
+  mapping (address => uint256) private ownerCount;
 
   address public ceoAddress;
   address public cooAddress;
@@ -21,7 +21,7 @@ contract CandyClaim {
     address approve_transfer_to;
   }
   uint candy_count;
-  mapping (string =&gt; Candy) candies;
+  mapping (string => Candy) candies;
 
   /*** ACCESS MODIFIERS ***/
   modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
@@ -85,12 +85,12 @@ contract CandyClaim {
     require(msg.sender != address(0));
 
     uint256 time_diff = (block.timestamp - candy.last_transaction);
-    while(time_diff &gt;= fiveHoursInSeconds){
+    while(time_diff >= fiveHoursInSeconds){
         time_diff = (time_diff - fiveHoursInSeconds);
         candy.price = SafeMath.mul(SafeMath.div(candy.price, 100), 90);
     }
-    if(candy.price &lt; 1000000000000000){ candy.price = 1000000000000000; }
-    require(msg.value &gt;= candy.price);
+    if(candy.price < 1000000000000000){ candy.price = 1000000000000000; }
+    require(msg.value >= candy.price);
 
     uint256 excess = SafeMath.sub(msg.value, candy.price);
 
@@ -146,12 +146,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

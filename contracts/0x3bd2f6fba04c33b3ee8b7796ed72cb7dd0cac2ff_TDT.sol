@@ -3,8 +3,8 @@ pragma solidity ^0.4.11;
 contract TDT {
     address public owner;
     uint public supply = 10000000000000000000000000;
-    string public name = &#39;TDT&#39;;
-    string public symbol = &#39;TDT&#39;;
+    string public name = 'TDT';
+    string public symbol = 'TDT';
     uint8 public decimals = 18;
     uint public price = 1 finney;
     uint public durationInBlocks = 157553;
@@ -12,7 +12,7 @@ contract TDT {
     uint public deadline;
     uint public tokensSold;
     
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     
@@ -42,12 +42,12 @@ contract TDT {
     }
     
     function isCrowdsale() returns (bool isCrowdsale) {
-        return block.number &lt; deadline;
+        return block.number < deadline;
     }
     
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) revert();
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (balanceOf[msg.sender] < _value) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -65,7 +65,7 @@ contract TDT {
             if (amount == 0) revert();
             
             uint tokensCount = amount * 1000000000000000000 / price;
-            if (tokensCount &lt; 1000000000000000000) revert();
+            if (tokensCount < 1000000000000000000) revert();
             
             balanceOf[msg.sender] += tokensCount;
             supply += tokensCount;

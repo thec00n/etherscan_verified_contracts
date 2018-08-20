@@ -1,7 +1,7 @@
 pragma solidity ^0.4.2;
 contract Token {
     address public issuer;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     function Token() {
         issuer = msg.sender;
@@ -9,7 +9,7 @@ contract Token {
     }
 
     function transfer(address _to, uint _amount) {
-        if (balances[msg.sender] &lt; _amount) {
+        if (balances[msg.sender] < _amount) {
             throw;
         }
 

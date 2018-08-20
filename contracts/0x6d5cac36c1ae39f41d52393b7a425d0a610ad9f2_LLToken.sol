@@ -126,20 +126,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -147,7 +147,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -174,7 +174,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -234,16 +234,16 @@ contract LockableToken is StandardToken, ReentrancyGuard {
         uint256 releaseTime;
     }
 
-    mapping (uint =&gt; LockedBalance) public lockedBalances;
+    mapping (uint => LockedBalance) public lockedBalances;
     uint public lockedBalanceCount;
 
     event TransferLockedToken(address indexed from, address indexed to, uint256 value, uint256 releaseTime);
     event ReleaseLockedBalance(address indexed owner, uint256 value, uint256 releaseTime);
 
-    // &#231;&#187; _to &#232;&#189;&#172;&#231;&#167;&#187; _value &#228;&#184;&#170;&#233;&#229;&#174;&#229;&#176; _releaseTime &#231; token
+    // ç» _to è½¬ç§» _value ä¸ªéå®å° _releaseTime ç token
     function transferLockedToken(address _to, uint256 _value, uint256 _releaseTime) nonReentrant returns (bool) {
-        require(_releaseTime &gt; now);
-        require(_releaseTime.sub(1 years) &lt; now);
+        require(_releaseTime > now);
+        require(_releaseTime.sub(1 years) < now);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         lockedBalances[lockedBalanceCount] = LockedBalance({owner: _to, value: _value, releaseTime: _releaseTime});
         lockedBalanceCount++;
@@ -251,9 +251,9 @@ contract LockableToken is StandardToken, ReentrancyGuard {
         return true;
     }
 
-    // &#230;&#165; address &#231;&#233;&#229;&#174;&#228;&#189;&#233;&#162;
+    // æ¥ address çéå®ä½é¢
     function lockedBalanceOf(address _owner) constant returns (uint256 value) {
-        for (uint i = 0; i &lt; lockedBalanceCount; i++) {
+        for (uint i = 0; i < lockedBalanceCount; i++) {
             LockedBalance lockedBalance = lockedBalances[i];
             if (_owner == lockedBalance.owner) {
                 value = value.add(lockedBalance.value);
@@ -262,11 +262,11 @@ contract LockableToken is StandardToken, ReentrancyGuard {
         return value;
     }
 
-    // &#232;&#167;&#163;&#233;&#230;&#230;&#229;&#183;&#178;&#229;&#176;&#233;&#229;&#174;&#230;&#182;&#233;&#180;&#231; token
+    // è§£éææå·²å°éå®æ¶é´ç token
     function releaseLockedBalance () returns (uint256 releaseAmount) {
         uint index = 0;
-        while (index &lt; lockedBalanceCount) {
-            if (now &gt;= lockedBalances[index].releaseTime) {
+        while (index < lockedBalanceCount) {
+            if (now >= lockedBalances[index].releaseTime) {
                 releaseAmount += lockedBalances[index].value;
                 unlockBalanceByIndex(index);
             } else {
@@ -358,9 +358,9 @@ library DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -368,8 +368,8 @@ library DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -402,7 +402,7 @@ library DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -442,7 +442,7 @@ library DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -471,7 +471,7 @@ library DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -494,23 +494,23 @@ library DateTime {
 contract ReleaseableToken is Operational, LockableToken {
     using SafeMath for uint;
     using DateTime for uint256;
-    bool secondYearUpdate = false; // Limit &#230;&#180;&#230;&#176;&#229;&#176;&#231;&#172;&#172;&#228;&#186;&#229;&#185;&#180;
-    uint256 public releasedSupply; // &#229;&#183;&#178;&#233;&#230;&#190;&#231;&#230;&#176;&#233;
-    uint256 public createTime; // &#229;&#231;&#186;&#166;&#229;&#229;&#187;&#186;&#230;&#182;&#233;&#180;
-    uint256 standardDecimals = 100000000; // &#231;&#177;&#228;&#186;&#230;8&#228;&#189;&#229;&#176;&#230;&#176;&#239;&#188;&#228;&#188;&#160;&#232;&#191;&#230;&#165;&#231;&#229;&#230;&#176;&#233;&#189;&#230;&#175;&#228;&#184;&#229;&#184;&#166;&#229;&#233;&#162;&#231;&#229;&#176;&#230;&#176;&#239;&#188;&#232;&#166;&#230;&#228;&#185;100000000&#231;&#230;&#228;&#189;&#230;&#232;&#189;&#228;&#191;&#232;&#175;&#230;&#176;&#233;&#231;&#186;&#167;&#228;&#184;&#232;&#180;
-    uint256 public totalSupply = standardDecimals.mul(1000000000); // &#230;&#187;&#233;10&#228;&#186;&#191;
-    uint256 public limitSupplyPerYear = standardDecimals.mul(60000000); // &#230;&#175;&#229;&#185;&#180;&#233;&#230;&#190;&#231;LLT&#231;&#233;&#233;&#162;&#239;&#188;&#231;&#172;&#172;&#228;&#184;&#229;&#185;&#180;6000&#228;&#184;
-    uint256 public dailyLimit = standardDecimals.mul(1000000); // &#230;&#175;&#229;&#164;&#169;&#233;&#230;&#190;&#231;&#233;&#233;&#162;
+    bool secondYearUpdate = false; // Limit æ´æ°å°ç¬¬äºå¹´
+    uint256 public releasedSupply; // å·²éæ¾çæ°é
+    uint256 public createTime; // åçº¦åå»ºæ¶é´
+    uint256 standardDecimals = 100000000; // ç±äºæ8ä½å°æ°ï¼ä¼ è¿æ¥çåæ°é½æ¯ä¸å¸¦åé¢çå°æ°ï¼è¦æä¹100000000çæä½æè½ä¿è¯æ°éçº§ä¸è´
+    uint256 public totalSupply = standardDecimals.mul(1000000000); // æ»é10äº¿
+    uint256 public limitSupplyPerYear = standardDecimals.mul(60000000); // æ¯å¹´éæ¾çLLTçéé¢ï¼ç¬¬ä¸å¹´6000ä¸
+    uint256 public dailyLimit = standardDecimals.mul(1000000); // æ¯å¤©éæ¾çéé¢
 
     event ReleaseSupply(address receiver, uint256 value, uint256 releaseTime);
     event UnfreezeAmount(address receiver, uint256 amount, uint256 unfreezeTime);
 
     struct FrozenRecord {
-        uint256 amount; // &#229;&#187;&#231;&#187;&#231;&#230;&#176;&#233;
-        uint256 unfreezeTime; // &#232;&#167;&#163;&#229;&#187;&#231;&#230;&#182;&#233;&#180;
+        uint256 amount; // å»ç»çæ°é
+        uint256 unfreezeTime; // è§£å»çæ¶é´
     }
 
-    mapping (uint =&gt; FrozenRecord) public frozenRecords;
+    mapping (uint => FrozenRecord) public frozenRecords;
     uint public frozenRecordsCount = 0;
 
     function ReleaseableToken(
@@ -524,15 +524,15 @@ contract ReleaseableToken is Operational, LockableToken {
         balances[msg.sender] = initReleasedSupply;
     }
 
-    // &#229;&#168; timestamp &#230;&#182;&#233;&#180;&#231;&#185;&#233;&#230;&#190; releaseAmount &#231; token
+    // å¨ timestamp æ¶é´ç¹éæ¾ releaseAmount ç token
     function releaseSupply(uint256 releaseAmount, uint256 timestamp) onlyOperator returns(uint256 _actualRelease) {
-        require(timestamp &gt;= createTime &amp;&amp; timestamp &lt;= now);
+        require(timestamp >= createTime && timestamp <= now);
         require(!judgeReleaseRecordExist(timestamp));
-        require(releaseAmount &lt;= dailyLimit);
+        require(releaseAmount <= dailyLimit);
         updateLimit();
-        require(limitSupplyPerYear &gt; 0);
-        if (releaseAmount &gt; limitSupplyPerYear) {
-            if (releasedSupply.add(limitSupplyPerYear) &gt; totalSupply) {
+        require(limitSupplyPerYear > 0);
+        if (releaseAmount > limitSupplyPerYear) {
+            if (releasedSupply.add(limitSupplyPerYear) > totalSupply) {
                 releasedSupply = totalSupply;
                 releaseAmount = totalSupply.sub(releasedSupply);
             } else {
@@ -541,7 +541,7 @@ contract ReleaseableToken is Operational, LockableToken {
             }
             limitSupplyPerYear = 0;
         } else {
-            if (releasedSupply.add(releaseAmount) &gt; totalSupply) {
+            if (releasedSupply.add(releaseAmount) > totalSupply) {
                 releasedSupply = totalSupply;
                 releaseAmount = totalSupply.sub(releasedSupply);
             } else {
@@ -555,14 +555,14 @@ contract ReleaseableToken is Operational, LockableToken {
         return releaseAmount;
     }
 
-    // &#229;&#164;&#230;&#173; timestamp &#232;&#191;&#228;&#184;&#229;&#164;&#169;&#230;&#230;&#178;&#161;&#230;&#229;&#183;&#178;&#231;&#187;&#233;&#230;&#190;&#231;&#232;&#174;&#176;&#229;&#189;
+    // å¤æ­ timestamp è¿ä¸å¤©ææ²¡æå·²ç»éæ¾çè®°å½
     function judgeReleaseRecordExist(uint256 timestamp) internal returns(bool _exist) {
         bool exist = false;
-        if (frozenRecordsCount &gt; 0) {
-            for (uint index = 0; index &lt; frozenRecordsCount; index++) {
+        if (frozenRecordsCount > 0) {
+            for (uint index = 0; index < frozenRecordsCount; index++) {
                 if ((frozenRecords[index].unfreezeTime.parseTimestamp().year == (timestamp.add(26 * 1 weeks)).parseTimestamp().year)
-                    &amp;&amp; (frozenRecords[index].unfreezeTime.parseTimestamp().month == (timestamp.add(26 * 1 weeks)).parseTimestamp().month)
-                    &amp;&amp; (frozenRecords[index].unfreezeTime.parseTimestamp().day == (timestamp.add(26 * 1 weeks)).parseTimestamp().day)) {
+                    && (frozenRecords[index].unfreezeTime.parseTimestamp().month == (timestamp.add(26 * 1 weeks)).parseTimestamp().month)
+                    && (frozenRecords[index].unfreezeTime.parseTimestamp().day == (timestamp.add(26 * 1 weeks)).parseTimestamp().day)) {
                     exist = true;
                 }
             }
@@ -570,25 +570,25 @@ contract ReleaseableToken is Operational, LockableToken {
         return exist;
     }
 
-    // &#230;&#180;&#230;&#176;&#230;&#175;&#229;&#185;&#180;&#233;&#230;&#190;token&#231;&#233;&#229;&#182;&#230;&#176;&#233;
+    // æ´æ°æ¯å¹´éæ¾tokençéå¶æ°é
     function updateLimit() internal {
-        if (createTime.add(1 years) &lt; now &amp;&amp; !secondYearUpdate) {
+        if (createTime.add(1 years) < now && !secondYearUpdate) {
             limitSupplyPerYear = standardDecimals.mul(120000000);
             secondYearUpdate = true;
         }
-        if (createTime.add(2 * 1 years) &lt; now) {
-            if (releasedSupply &lt; totalSupply) {
+        if (createTime.add(2 * 1 years) < now) {
+            if (releasedSupply < totalSupply) {
                 limitSupplyPerYear = totalSupply.sub(releasedSupply);
             }
         }
     }
 
-    // &#232;&#167;&#163;&#229;&#187; releaseSupply &#228;&#184;&#173;&#233;&#230;&#190;&#231; token
+    // è§£å» releaseSupply ä¸­éæ¾ç token
     function unfreeze() onlyOperator returns(uint256 _unfreezeAmount) {
         uint256 unfreezeAmount = 0;
         uint index = 0;
-        while (index &lt; frozenRecordsCount) {
-            if (frozenRecords[index].unfreezeTime &lt; now) {
+        while (index < frozenRecordsCount) {
+            if (frozenRecords[index].unfreezeTime < now) {
                 unfreezeAmount += frozenRecords[index].amount;
                 unfreezeByIndex(index);
             } else {
@@ -607,16 +607,16 @@ contract ReleaseableToken is Operational, LockableToken {
         frozenRecordsCount--;
     }
 
-    // &#232;&#174;&#190;&#231;&#189;&#174;&#230;&#175;&#229;&#164;&#169;&#233;&#230;&#190; token &#231;&#233;&#233;&#162;
+    // è®¾ç½®æ¯å¤©éæ¾ token çéé¢
     function setDailyLimit(uint256 _dailyLimit) onlyOwner {
         dailyLimit = _dailyLimit;
     }
 }
 
 contract LLToken is ReleaseableToken {
-    string public standard = &#39;2017082602&#39;;
-    string public name = &#39;LLToken&#39;;
-    string public symbol = &#39;LLT&#39;;
+    string public standard = '2017082602';
+    string public name = 'LLToken';
+    string public symbol = 'LLT';
     uint8 public decimals = 8;
 
     function LLToken(

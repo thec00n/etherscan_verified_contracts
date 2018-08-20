@@ -27,9 +27,9 @@ library SafeMath
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256)
   {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath
   function add(uint256 a, uint256 b) internal pure returns (uint256)
   {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -173,7 +173,7 @@ contract BasicToken is ERC20Basic
 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   
@@ -197,7 +197,7 @@ contract BasicToken is ERC20Basic
   function transfer(address _to, uint256 _value) public returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] -= _value;
     balances[_to] += _value;
@@ -226,7 +226,7 @@ contract BasicToken is ERC20Basic
 contract StandardToken is ERC20, BasicToken 
 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -239,8 +239,8 @@ contract StandardToken is ERC20, BasicToken
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) 
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -255,7 +255,7 @@ contract StandardToken is ERC20, BasicToken
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -311,7 +311,7 @@ contract StandardToken is ERC20, BasicToken
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) 
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) 
+    if (_subtractedValue > oldValue) 
     {
       allowed[msg.sender][_spender] = 0;
     }
@@ -382,7 +382,7 @@ contract CappedToken is MintableToken {
 
   constructor(uint256 _cap) public 
   {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -394,7 +394,7 @@ contract CappedToken is MintableToken {
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) 
   {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -435,12 +435,12 @@ function batchTransfer(address[] _receivers, uint256 _value) public whenNotPause
 {
     uint receiverCount = _receivers.length;
     uint256 amount = _value.mul(uint256(receiverCount));
-    /* require(receiverCount &gt; 0 &amp;&amp; receiverCount &lt;= 20); */
-    require(receiverCount &gt; 0);
-    require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= amount);
+    /* require(receiverCount > 0 && receiverCount <= 20); */
+    require(receiverCount > 0);
+    require(_value > 0 && balances[msg.sender] >= amount);
 
     balances[msg.sender] = balances[msg.sender].sub(amount);
-    for (uint i = 0; i &lt; receiverCount; i++) 
+    for (uint i = 0; i < receiverCount; i++) 
     {
         balances[_receivers[i]] = balances[_receivers[i]].add(_value);
         emit Transfer(msg.sender, _receivers[i], _value);
@@ -463,9 +463,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);

@@ -19,13 +19,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -58,7 +58,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -127,7 +127,7 @@ contract TokenTimelock {
     uint64 public releaseTime;
 
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) public {
-        require(_releaseTime &gt; uint64(block.timestamp));
+        require(_releaseTime > uint64(block.timestamp));
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -137,10 +137,10 @@ contract TokenTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(uint64(block.timestamp) &gt;= releaseTime);
+        require(uint64(block.timestamp) >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -155,7 +155,7 @@ contract TokenTimelock {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -165,8 +165,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -215,7 +215,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -252,8 +252,8 @@ contract Owned {
 }
 
 contract DoradoToken is StandardToken, Owned {
-    string public constant name = &quot;DoradoToken&quot;;
-    string public constant symbol = &quot;DOR&quot;;
+    string public constant name = "DoradoToken";
+    string public constant symbol = "DOR";
     uint8 public constant decimals = 15;
 
     /// Maximum tokens to be allocated on the sale (51% of the hard cap)
@@ -262,7 +262,7 @@ contract DoradoToken is StandardToken, Owned {
     /// Base exchange rate is set to 1 ETH = 6667 DOR.
     uint256 public constant BASE_RATE = 6667;
 
-    /// seconds since 01.01.1970 to 07.02.2018 (16:00:00 o&#39;clock UTC)
+    /// seconds since 01.01.1970 to 07.02.2018 (16:00:00 o'clock UTC)
     /// HOT sale start time
     uint64 private constant dateHOTSale = 1517961600 + 16 hours;
 
@@ -304,15 +304,15 @@ contract DoradoToken is StandardToken, Owned {
     uint64 private constant dateTeamTokensLockedTill = 1609459200;
    
 
-    /// no tokens can be ever issued when this is set to &quot;true&quot;
+    /// no tokens can be ever issued when this is set to "true"
     bool public tokenSaleClosed = false;
 
     /// contract to be called to release the Dorado team tokens
     address public timelockContractAddress;
 
     modifier inProgress {
-        require(totalSupply &lt; TOKENS_SALE_HARD_CAP
-            &amp;&amp; !tokenSaleClosed &amp;&amp; now &gt;= dateHOTSale);
+        require(totalSupply < TOKENS_SALE_HARD_CAP
+            && !tokenSaleClosed && now >= dateHOTSale);
         _;
     }
 
@@ -341,12 +341,12 @@ contract DoradoToken is StandardToken, Owned {
     /// @param _beneficiary Address that newly issued token will be sent to.
     function purchaseTokens(address _beneficiary) public payable inProgress {
         // only accept a minimum amount of ETH?
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
 
         uint256 tokens = computeTokenAmount(msg.value);
         
         // roll back if hard cap reached
-        require(totalSupply.add(tokens) &lt;= TOKENS_SALE_HARD_CAP);
+        require(totalSupply.add(tokens) <= TOKENS_SALE_HARD_CAP);
         
         doIssueTokens(_beneficiary, tokens);
 
@@ -359,9 +359,9 @@ contract DoradoToken is StandardToken, Owned {
     /// @param _addresses the amounts of tokens, with decimals expanded (full).
     function issueTokensMulti(address[] _addresses, uint256[] _tokens) public onlyOwner beforeEnd {
         require(_addresses.length == _tokens.length);
-        require(_addresses.length &lt;= 100);
+        require(_addresses.length <= 100);
 
-        for (uint256 i = 0; i &lt; _tokens.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _tokens.length; i = i.add(1)) {
             doIssueTokens(_addresses[i], _tokens[i]);
         }
     }
@@ -400,7 +400,7 @@ contract DoradoToken is StandardToken, Owned {
         uint256 tokenBase = (ethAmount.mul(BASE_RATE)/10000000000000)*10000000000;//18 decimals to 15 decimals, set precision to 5 decimals
         uint8 roundNum = currentRoundIndex();
         tokens = tokenBase.mul(100)/(100 - (roundDiscountPercentages[roundNum]));
-        while(tokens.add(totalSupply) &gt; roundCaps[roundNum] &amp;&amp; roundNum &lt; 6){
+        while(tokens.add(totalSupply) > roundCaps[roundNum] && roundNum < 6){
            roundNum++;
            tokens = tokenBase.mul(100)/(100 - (roundDiscountPercentages[roundNum])); 
         }
@@ -412,7 +412,7 @@ contract DoradoToken is StandardToken, Owned {
         roundNum = currentRoundIndexByDate();
 
         /// round determined by conjunction of both time and total sold tokens
-        while(roundNum &lt; 6 &amp;&amp; totalSupply &gt; roundCaps[roundNum]) {
+        while(roundNum < 6 && totalSupply > roundCaps[roundNum]) {
             roundNum++;
         }
     }
@@ -420,13 +420,13 @@ contract DoradoToken is StandardToken, Owned {
     /// @dev Determine the current sale tier.
     /// @return the index of the current sale tier by date.
     function currentRoundIndexByDate() internal view returns (uint8 roundNum) {
-        require(now &lt;= date16May2018); 
-        if(now &gt; dateSaleF) return 6;
-        if(now &gt; dateSaleE) return 5;
-        if(now &gt; dateSaleD) return 4;
-        if(now &gt; dateSaleC) return 3;
-        if(now &gt; dateSaleB) return 2;
-        if(now &gt; dateSaleA) return 1;
+        require(now <= date16May2018); 
+        if(now > dateSaleF) return 6;
+        if(now > dateSaleE) return 5;
+        if(now > dateSaleD) return 4;
+        if(now > dateSaleC) return 3;
+        if(now > dateSaleB) return 2;
+        if(now > dateSaleA) return 1;
         else return 0;
     }
 

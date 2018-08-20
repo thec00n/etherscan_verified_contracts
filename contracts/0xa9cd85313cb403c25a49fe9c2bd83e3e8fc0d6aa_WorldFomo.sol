@@ -2,47 +2,47 @@ pragma solidity ^0.4.24;
 /**
 *                                        ,   ,
 *                                        $,  $,     ,
-*                                        &quot;ss.$ss. .s&#39;
+*                                        "ss.$ss. .s'
 *                                ,     .ss$$$$$$$$$$s,
 *                                $. s$$$$$$$$$$$$$$`$$Ss
-*                                &quot;$$$$$$$$$$$$$$$$$$o$$$       ,
+*                                "$$$$$$$$$$$$$$$$$$o$$$       ,
 *                               s$$$$$$$$$$$$$$$$$$$$$$$$s,  ,s
-*                              s$$$$$$$$$&quot;$$$$$$&quot;&quot;&quot;&quot;$$$$$$&quot;$$$$$,
-*                              s$$$$$$$$$$s&quot;&quot;$$$$ssssss&quot;$$$$$$$$&quot;
-*                             s$$$$$$$$$$&#39;         `&quot;&quot;&quot;ss&quot;$&quot;$s&quot;&quot;
-*                             s$$$$$$$$$$,              `&quot;&quot;&quot;&quot;&quot;$  .s$$s
-*                             s$$$$$$$$$$$$s,...               `s$$&#39;  `
-*                         `ssss$$$$$$$$$$$$$$$$$$$$####s.     .$$&quot;$.   , s-
-*                           `&quot;&quot;&quot;&quot;$$$$$$$$$$$$$$$$$$$$#####$$$$$$&quot;     $.$&#39;
-* 祝你成功                        &quot;$$$$$$$$$$$$$$$$$$$$$####s&quot;&quot;     .$$$|
-*   福    喜喜                        &quot;$$$$$$$$$$$$$$$$$$$$$$$$##s    .$$&quot; $
-*                                   $$&quot;&quot;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$&quot;   `
-*                                  $$&quot;  &quot;$&quot;$$$$$$$$$$$$$$$$$$$$S&quot;&quot;&quot;&quot;&#39;
-*                             ,   ,&quot;     &#39;  $$$$$$$$$$$$$$$$####s
-*                             $.          .s$$$$$$$$$$$$$$$$$####&quot;
-*                 ,           &quot;$s.   ..ssS$$$$$$$$$$$$$$$$$$$####&quot;
-*                 $           .$$$S$$$$$$$$$$$$$$$$$$$$$$$$#####&quot;
-*                 Ss     ..sS$$$$$$$$$$$$$$$$$$$$$$$$$$$######&quot;&quot;
-*                  &quot;$$sS$$$$$$$$$$$$$$$$$$$$$$$$$$$########&quot;
-*           ,      s$$$$$$$$$$$$$$$$$$$$$$$$#########&quot;&quot;&#39;
-*           $    s$$$$$$$$$$$$$$$$$$$$$#######&quot;&quot;&#39;      s&#39;         ,
-*           $$..$$$$$$$$$$$$$$$$$$######&quot;&#39;       ....,$$....    ,$
-*            &quot;$$$$$$$$$$$$$$$######&quot;&#39; ,     .sS$$$$$$$$$$$$$$$$s$$
-*              $$$$$$$$$$$$#####&quot;     $, .s$$$$$$$$$$$$$$$$$$$$$$$$s.
-*   )          $$$$$$$$$$$#####&#39;      `$$$$$$$$$###########$$$$$$$$$$$.
-*  ((          $$$$$$$$$$$#####       $$$$$$$$###&quot;       &quot;####$$$$$$$$$$
-*  ) \         $$$$$$$$$$$$####.     $$$$$$###&quot;             &quot;###$$$$$$$$$   s&#39;
-* (   )        $$$$$$$$$$$$$####.   $$$$$###&quot;                ####$$$$$$$$s$$&#39;
-* )  ( (       $$&quot;$$$$$$$$$$$#####.$$$$$###&#39;                .###$$$$$$$$$$&quot;
-* (  )  )   _,$&quot;   $$$$$$$$$$$$######.$$##&#39;                .###$$$$$$$$$$
-* ) (  ( \.         &quot;$$$$$$$$$$$$$#######,,,.          ..####$$$$$$$$$$$&quot;
-*(   )$ )  )        ,$$$$$$$$$$$$$$$$$$####################$$$$$$$$$$$&quot;
-*(   ($$  ( \     _sS&quot;  `&quot;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$S$$,
-* )  )$$$s ) )  .      .   `$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$&quot;&#39;  `$$
-*  (   $$$Ss/  .$,    .$,,s$$$$$$##S$$$$$$$$$$$$$$$$$$$$$$$$S&quot;&quot;        &#39;
-*    \)_$$$$$$$$$$$$$$$$$$$$$$$##&quot;  $$        `$$.        `$$.
-*        `&quot;S$$$$$$$$$$$$$$$$$#&quot;      $          `$          `$
-*            `&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&#39;         &#39;           &#39;           &#39;
+*                              s$$$$$$$$$"$$$$$$""""$$$$$$"$$$$$,
+*                              s$$$$$$$$$$s""$$$$ssssss"$$$$$$$$"
+*                             s$$$$$$$$$$'         `"""ss"$"$s""
+*                             s$$$$$$$$$$,              `"""""$  .s$$s
+*                             s$$$$$$$$$$$$s,...               `s$$'  `
+*                         `ssss$$$$$$$$$$$$$$$$$$$$####s.     .$$"$.   , s-
+*                           `""""$$$$$$$$$$$$$$$$$$$$#####$$$$$$"     $.$'
+* 祝你成功                        "$$$$$$$$$$$$$$$$$$$$$####s""     .$$$|
+*   福    喜喜                        "$$$$$$$$$$$$$$$$$$$$$$$$##s    .$$" $
+*                                   $$""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"   `
+*                                  $$"  "$"$$$$$$$$$$$$$$$$$$$$S""""'
+*                             ,   ,"     '  $$$$$$$$$$$$$$$$####s
+*                             $.          .s$$$$$$$$$$$$$$$$$####"
+*                 ,           "$s.   ..ssS$$$$$$$$$$$$$$$$$$$####"
+*                 $           .$$$S$$$$$$$$$$$$$$$$$$$$$$$$#####"
+*                 Ss     ..sS$$$$$$$$$$$$$$$$$$$$$$$$$$$######""
+*                  "$$sS$$$$$$$$$$$$$$$$$$$$$$$$$$$########"
+*           ,      s$$$$$$$$$$$$$$$$$$$$$$$$#########""'
+*           $    s$$$$$$$$$$$$$$$$$$$$$#######""'      s'         ,
+*           $$..$$$$$$$$$$$$$$$$$$######"'       ....,$$....    ,$
+*            "$$$$$$$$$$$$$$$######"' ,     .sS$$$$$$$$$$$$$$$$s$$
+*              $$$$$$$$$$$$#####"     $, .s$$$$$$$$$$$$$$$$$$$$$$$$s.
+*   )          $$$$$$$$$$$#####'      `$$$$$$$$$###########$$$$$$$$$$$.
+*  ((          $$$$$$$$$$$#####       $$$$$$$$###"       "####$$$$$$$$$$
+*  ) \         $$$$$$$$$$$$####.     $$$$$$###"             "###$$$$$$$$$   s'
+* (   )        $$$$$$$$$$$$$####.   $$$$$###"                ####$$$$$$$$s$$'
+* )  ( (       $$"$$$$$$$$$$$#####.$$$$$###'                .###$$$$$$$$$$"
+* (  )  )   _,$"   $$$$$$$$$$$$######.$$##'                .###$$$$$$$$$$
+* ) (  ( \.         "$$$$$$$$$$$$$#######,,,.          ..####$$$$$$$$$$$"
+*(   )$ )  )        ,$$$$$$$$$$$$$$$$$$####################$$$$$$$$$$$"
+*(   ($$  ( \     _sS"  `"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$S$$,
+* )  )$$$s ) )  .      .   `$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"'  `$$
+*  (   $$$Ss/  .$,    .$,,s$$$$$$##S$$$$$$$$$$$$$$$$$$$$$$$$S""        '
+*    \)_$$$$$$$$$$$$$$$$$$$$$$$##"  $$        `$$.        `$$.
+*        `"S$$$$$$$$$$$$$$$$$#"      $          `$          `$
+*            `"""""""""""""'         '           '           '
 */
 contract F3Devents {
     // 只要玩家注册了名字就会被解雇
@@ -176,8 +176,8 @@ contract WorldFomo is modularShort {
 //    (_(_)| |~|~|(_||_|| (_||_)|(/__\  .  (游戏设置)
 //=================_|===========================================================
     address private admin = msg.sender;
-    string constant public name = &quot;WorldFomo&quot;;
-    string constant public symbol = &quot;WF&quot;;
+    string constant public name = "WorldFomo";
+    string constant public symbol = "WF";
     uint256 private rndExtra_ = 15 seconds;     // 第一个ICO的长度
     uint256 private rndGap_ = 30 minutes;         // ICO阶段的长度，EOS设定为1年。
     uint256 constant private rndInit_ = 30 minutes;                // 圆计时器从此开始
@@ -193,21 +193,21 @@ contract WorldFomo is modularShort {
 //****************
 // 球员数据
 //****************
-    mapping (address =&gt; uint256) public pIDxAddr_;          // （addr =&gt; pID）按地址返回玩家ID
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID）按名称返回玩家ID
-    mapping (uint256 =&gt; F3Ddatasets.Player) public plyr_;   // (pID =&gt; data) 球员数据
-    mapping (uint256 =&gt; mapping (uint256 =&gt; F3Ddatasets.PlayerRounds)) public plyrRnds_;    // (pID =&gt; rID =&gt; data) 玩家ID和轮次ID的玩家轮数据
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool）玩家拥有的名字列表。 （用于这样您可以在您拥有的任何名称中更改您的显示名称）
+    mapping (address => uint256) public pIDxAddr_;          // （addr => pID）按地址返回玩家ID
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID）按名称返回玩家ID
+    mapping (uint256 => F3Ddatasets.Player) public plyr_;   // (pID => data) 球员数据
+    mapping (uint256 => mapping (uint256 => F3Ddatasets.PlayerRounds)) public plyrRnds_;    // (pID => rID => data) 玩家ID和轮次ID的玩家轮数据
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool）玩家拥有的名字列表。 （用于这样您可以在您拥有的任何名称中更改您的显示名称）
 //****************
 // 圆形数据
 //****************
-    mapping (uint256 =&gt; F3Ddatasets.Round) public round_;   // (rID =&gt; data) 圆形数据
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // (rID =&gt; tID =&gt; 数据）每个团队的eth，by round id和team id
+    mapping (uint256 => F3Ddatasets.Round) public round_;   // (rID => data) 圆形数据
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // (rID => tID => 数据）每个团队的eth，by round id和team id
 //****************
 // 团队收费数据
 //****************
-    mapping (uint256 =&gt; F3Ddatasets.TeamFee) public fees_;          // (team =&gt; fees) 按团队分配费用
-    mapping (uint256 =&gt; F3Ddatasets.PotSplit) public potSplit_;     // (team =&gt; fees) 锅分裂由团队分配
+    mapping (uint256 => F3Ddatasets.TeamFee) public fees_;          // (team => fees) 按团队分配费用
+    mapping (uint256 => F3Ddatasets.PotSplit) public potSplit_;     // (team => fees) 锅分裂由团队分配
 //==============================================================================
 //     _ _  _  __|_ _    __|_ _  _  .
 //    (_(_)| |_\ | | |_|(_ | (_)|   .  (合同部署时的初始数据设置)
@@ -245,7 +245,7 @@ contract WorldFomo is modularShort {
      *
      */
     modifier isActivated() {
-        require(activated_ == true, &quot;its not ready yet.  check ?eta in discord&quot;);
+        require(activated_ == true, "its not ready yet.  check ?eta in discord");
         _;
     }
 
@@ -253,7 +253,7 @@ contract WorldFomo is modularShort {
      * @dev 防止合同与fomo3d交互
      */
     modifier isHuman() {
-        require(msg.sender == tx.origin, &quot;sorry humans only - FOR REAL THIS TIME&quot;);
+        require(msg.sender == tx.origin, "sorry humans only - FOR REAL THIS TIME");
         _;
     }
 
@@ -261,8 +261,8 @@ contract WorldFomo is modularShort {
      * @dev 设置传入tx的边界
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000, &quot;pocket lint: not a valid currency&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;no vitalik, no&quot;);
+        require(_eth >= 1000000000, "pocket lint: not a valid currency");
+        require(_eth <= 100000000000000000000000, "no vitalik, no");
         _;
     }
 
@@ -388,7 +388,7 @@ contract WorldFomo is modularShort {
         // 管理会员残差
         uint256 _affID;
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // 使用最后存储的联盟代码
             _affID = plyr_[_pID].laff;
@@ -510,7 +510,7 @@ contract WorldFomo is modularShort {
         // 管理会员残差
         uint256 _affID;
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // 使用最后存储的联盟代码
             _affID = plyr_[_pID].laff;
@@ -557,7 +557,7 @@ contract WorldFomo is modularShort {
         uint256 _eth;
 
         // 检查圆是否已经结束并且还没有人绕圈结束
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // 设置我们的tx事件数据
             F3Ddatasets.EventReturns memory _eventData_;
@@ -570,7 +570,7 @@ contract WorldFomo is modularShort {
             _eth = withdrawEarnings(_pID);
 
             // 给钱
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // 构建事件数据
@@ -599,7 +599,7 @@ contract WorldFomo is modularShort {
             _eth = withdrawEarnings(_pID);
 
             // 给钱
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // 消防事件
@@ -696,7 +696,7 @@ contract WorldFomo is modularShort {
         uint256 _now = now;
 
         // 我们是一个回合?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // init
@@ -718,8 +718,8 @@ contract WorldFomo is modularShort {
         // 抓住时间
         uint256 _now = now;
 
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt + rndGap_)
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt + rndGap_).sub(_now) );
@@ -743,7 +743,7 @@ contract WorldFomo is modularShort {
         uint256 _rID = rID_;
 
         // 如果圆结束了但圆形结束尚未运行（因此合同没有分配奖金）
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // 如果球员是胜利者
             if (round_[_rID].plyr == _pID)
@@ -889,7 +889,7 @@ contract WorldFomo is modularShort {
 
         // 如果圆形是活跃的
 
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // 致电核心
             core(_rID, _pID, msg.value, _affID, _team, _eventData_);
@@ -897,7 +897,7 @@ contract WorldFomo is modularShort {
         // 如果圆形不活跃
         } else {
             // 检查是否需要运行结束轮次
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false)
+            if (_now > round_[_rID].end && round_[_rID].ended == false)
             {
                 // 结束回合（分配锅）并开始新一轮
                 round_[_rID].ended = true;
@@ -943,7 +943,7 @@ contract WorldFomo is modularShort {
         uint256 _now = now;
 
         // 如果圆形是活跃的
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // 从所有金库中获取收益并将未使用的金额归还给gen保险库
             // 因为我们使用自定义safemath库。如果玩家，这将抛出
@@ -954,8 +954,8 @@ contract WorldFomo is modularShort {
             core(_rID, _pID, _eth, _affID, _team, _eventData_);
 
         // 如果round不活动并且需要运行end round
-        } else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
-            // end the round (distributes pot) &amp; start new round
+        } else if (_now > round_[_rID].end && round_[_rID].ended == false) {
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -991,7 +991,7 @@ contract WorldFomo is modularShort {
             _eventData_ = managePlayer(_pID, _eventData_);
 
         // 早期的道路限制器
-        if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 1000000000000000000)
+        if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 1000000000000000000)
         {
             uint256 _availableLimit = (1000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
             uint256 _refund = _eth.sub(_availableLimit);
@@ -1000,14 +1000,14 @@ contract WorldFomo is modularShort {
         }
 
         // 如果留下的eth大于min eth允许（抱歉没有口袋棉绒）
-        if (_eth &gt; 1000000000)
+        if (_eth > 1000000000)
         {
 
             // 铸造新钥匙
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
 
             // 如果他们至少买了一把钥匙
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
             updateTimer(_keys, _rID);
 
@@ -1074,7 +1074,7 @@ contract WorldFomo is modularShort {
         uint256 _now = now;
 
         // 我们是一个回合?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else // 转过来。需要新一轮的钥匙
             return ( (_eth).keys() );
@@ -1098,7 +1098,7 @@ contract WorldFomo is modularShort {
         uint256 _now = now;
 
         // 我们是一个回合?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -1113,7 +1113,7 @@ contract WorldFomo is modularShort {
     function receivePlayerInfo(uint256 _pID, address _addr, bytes32 _name, uint256 _laff)
         external
     {
-        require (msg.sender == address(PlayerBook), &quot;your not playerNames contract... hmmm..&quot;);
+        require (msg.sender == address(PlayerBook), "your not playerNames contract... hmmm..");
         if (pIDxAddr_[_addr] != _pID)
             pIDxAddr_[_addr] = _pID;
         if (pIDxName_[_name] != _pID)
@@ -1134,7 +1134,7 @@ contract WorldFomo is modularShort {
     function receivePlayerNameList(uint256 _pID, bytes32 _name)
         external
     {
-        require (msg.sender == address(PlayerBook), &quot;your not playerNames contract... hmmm..&quot;);
+        require (msg.sender == address(PlayerBook), "your not playerNames contract... hmmm..");
         if(plyrNames_[_pID][_name] == false)
             plyrNames_[_pID][_name] = true;
     }
@@ -1160,14 +1160,14 @@ contract WorldFomo is modularShort {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
 
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
 
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
 
             // 将新玩家bool设置为true
@@ -1185,7 +1185,7 @@ contract WorldFomo is modularShort {
         pure
         returns (uint256)
     {
-        if (_team &lt; 0 || _team &gt; 3)
+        if (_team < 0 || _team > 3)
             return(2);
         else
             return(_team);
@@ -1241,7 +1241,7 @@ contract WorldFomo is modularShort {
         // k计算圆形面罩的ppt
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -1284,7 +1284,7 @@ contract WorldFomo is modularShort {
         private
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // 放入gen库
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -1304,13 +1304,13 @@ contract WorldFomo is modularShort {
 
         // 根据购买的钥匙数计算时间
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
 
         // 比较max并设置新的结束时间
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1336,7 +1336,7 @@ contract WorldFomo is modularShort {
             (block.number)
 
         )));
-        if((seed - ((seed / 1000) * 1000)) &lt; airDropTracker_)
+        if((seed - ((seed / 1000) * 1000)) < airDropTracker_)
             return(true);
         else
             return(false);
@@ -1361,7 +1361,7 @@ contract WorldFomo is modularShort {
 
         // 支付p3d
         _p3d = _p3d.add((_eth.mul(fees_[_team].p3d)) / (100));
-        if (_p3d &gt; 0)
+        if (_p3d > 0)
         {
             round_[_rID].pot = round_[_rID].pot.add(_p3d);
 
@@ -1404,7 +1404,7 @@ contract WorldFomo is modularShort {
 
         // decide what to do with affiliate share of fees
         // affiliate must not be self, and must have a name registered
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit F3Devents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
         } else {
@@ -1414,7 +1414,7 @@ contract WorldFomo is modularShort {
         // 分配gen份额（这就是updateMasks（）所做的）并进行调整
         // 灰尘平衡。
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
 
         // 添加eth到pot
@@ -1472,7 +1472,7 @@ contract WorldFomo is modularShort {
 
         // 来自金库
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1521,11 +1521,11 @@ contract WorldFomo is modularShort {
         public
     {
         // 只有团队才能激活
-        require(msg.sender == admin, &quot;only admin can activate&quot;);
+        require(msg.sender == admin, "only admin can activate");
 
 
         // 只能跑一次
-        require(activated_ == false, &quot;FOMO Free already activated&quot;);
+        require(activated_ == false, "FOMO Free already activated");
 
         // 激活合同
         activated_ = true;
@@ -1613,7 +1613,7 @@ library F3Ddatasets {
 
 //==============================================================================
 //  |  _      _ _ | _  .
-//  |&lt;(/_\/  (_(_||(_  .
+//  |<(/_\/  (_(_||(_  .
 //=======/======================================================================
 library F3DKeysCalcShort {
     using SafeMath for *;
@@ -1709,24 +1709,24 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //对不起限于32个字符
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // 确保它不以空格开头或以空格结尾
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // 确保前两个字符不是0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
 
         // 创建一个bool来跟踪我们是否有非数字字符
         bool _hasNonNumber;
 
         // 转换和检查
-        for (uint256 i = 0; i &lt; _length; i++)
+        for (uint256 i = 0; i < _length; i++)
         {
             // 如果它的大写A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // 转换为小写a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -1740,22 +1740,22 @@ library NameFilter {
                     // 要求角色是一个空间
                     _temp[i] == 0x20 ||
                     // 或小写a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // 或0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // 确保连续两行不是空格
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
 
                 // 看看我们是否有一个数字以外的字符
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
 
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
 
         bytes32 _ret;
         assembly {
@@ -1788,7 +1788,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -1800,7 +1800,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -1813,7 +1813,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -1827,7 +1827,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -1860,7 +1860,7 @@ library SafeMath {
         else
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

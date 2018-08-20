@@ -28,7 +28,7 @@ contract Owned {
 contract TerraformReserve is Owned {
 
   /* Storing a balance for each user */
-  mapping (address =&gt; uint256) public lockedBalance;
+  mapping (address => uint256) public lockedBalance;
   
   /* Store the total sum locked */
   uint public totalLocked;
@@ -60,7 +60,7 @@ contract TerraformReserve is Owned {
    */
   function lockMana(address _from, uint256 mana) public {
     require(acceptingDeposits);
-    require(mana &gt;= 1000 * 1e18);
+    require(mana >= 1000 * 1e18);
     require(manaToken.transferFrom(_from, this, mana));
 
     lockedBalance[_from] += mana; 

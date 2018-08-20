@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,7 +92,7 @@ contract Ambassador {
     uint256[] public euroThreshold; // array of euro(k) threshold reached - 100K = 100.000€
     uint256[] public bonusThreshold; // array of bonus of each euroThreshold reached - 20% = 2000
     
-    mapping(address =&gt; uint256) public balanceUser; // address =&gt; token amount
+    mapping(address => uint256) public balanceUser; // address => token amount
 
     function Ambassador(address _icoContract, address _ambassadorAddr, uint256[] _euroThreshold, uint256[] _bonusThreshold, uint256 _startRC , uint256 _endRC ) public {
         require ( _icoContract != 0 );
@@ -139,27 +139,27 @@ contract Ambassador {
 	event Track(address indexed buyer, bytes trackID, uint256 value, uint256 soldTokensWithoutBonus );
 	
     function () public payable {
-        require( now &gt; startRC );
-        if( now &lt; endRC ) {
+        require( now > startRC );
+        if( now < endRC ) {
             uint256 tokenAmount = icoContract.buy.value(msg.value)(msg.sender);
             balanceUser[msg.sender] = balanceUser[msg.sender].add(tokenAmount);
             soldTokensWithoutBonus = soldTokensWithoutBonus.add(tokenAmount);
 			Track( msg.sender, msg.data, msg.value, tokenAmount );
         } else { //claim premium bonus logic
-            require( balanceUser[msg.sender] &gt; 0 );
+            require( balanceUser[msg.sender] > 0 );
             uint256 bonusApplied = 0;
-            for (uint i = 0; i &lt; euroThreshold.length; i++) {
-                if ( icoContract.euroRaised(soldTokensWithoutBonus).div(1000) &gt; euroThreshold[i] ) {
+            for (uint i = 0; i < euroThreshold.length; i++) {
+                if ( icoContract.euroRaised(soldTokensWithoutBonus).div(1000) > euroThreshold[i] ) {
                     bonusApplied = bonusThreshold[i];
                 }
             }    
-            require( bonusApplied &gt; 0 );
+            require( bonusApplied > 0 );
             
             uint256 addTokenAmount = balanceUser[msg.sender].mul( bonusApplied ).div(10**2);
             balanceUser[msg.sender] = 0; 
             
             icoContract.claimPremium(msg.sender, addTokenAmount);
-            if( msg.value &gt; 0 ) msg.sender.transfer(msg.value); // give back eth 
+            if( msg.value > 0 ) msg.sender.transfer(msg.value); // give back eth 
         }
     }
 }
@@ -188,7 +188,7 @@ contract CoinCrowdICO is Ownable {
 	
     uint256 public remainingTokens; // total wei of XCC remaining (without bonuses)
 
-    mapping(address =&gt; address) public ambassadorAddressOf; // ambassadorContract =&gt; ambassadorAddress
+    mapping(address => address) public ambassadorAddressOf; // ambassadorContract => ambassadorAddress
 
 
     function CoinCrowdICO(address _tokenAddress, uint256 _tokenValue, uint256 _startTime) public {
@@ -234,10 +234,10 @@ contract CoinCrowdICO is Ownable {
     event Buy(address buyer, uint256 value, address indexed ambassador);
 
     function buy(address _buyer) public payable returns(uint256) {
-        require(now &lt; endTime); // check if ended
-        require( remainingTokens &gt; 0 ); // Check if there are any remaining tokens excluding bonuses
+        require(now < endTime); // check if ended
+        require( remainingTokens > 0 ); // Check if there are any remaining tokens excluding bonuses
         
-        require( tokenContract.balanceOf(this) &gt; remainingTokens); // should have enough balance
+        require( tokenContract.balanceOf(this) > remainingTokens); // should have enough balance
         
         uint256 oneXCC = 10 ** decimals;
         uint256 tokenAmount = msg.value.mul(oneXCC).div(tokenValue);
@@ -250,24 +250,24 @@ contract CoinCrowdICO is Ownable {
             bonusRate = 0; // Ambassador Comunity should claim own bonus at the end of RC 
             
         } else { // if is directly called to CoinCrowdICO contract
-            require(now &gt; startTime); // check if started for public user
+            require(now > startTime); // check if started for public user
             
-            if( now &gt; startTime + weekInSeconds*0  ) { bonusRate = 2000; }
-            if( now &gt; startTime + weekInSeconds*1  ) { bonusRate = 1833; }
-            if( now &gt; startTime + weekInSeconds*2  ) { bonusRate = 1667; }
-            if( now &gt; startTime + weekInSeconds*3  ) { bonusRate = 1500; }
-            if( now &gt; startTime + weekInSeconds*4  ) { bonusRate = 1333; }
-            if( now &gt; startTime + weekInSeconds*5  ) { bonusRate = 1167; }
-            if( now &gt; startTime + weekInSeconds*6  ) { bonusRate = 1000; }
-            if( now &gt; startTime + weekInSeconds*7  ) { bonusRate = 833; }
-            if( now &gt; startTime + weekInSeconds*8  ) { bonusRate = 667; }
-            if( now &gt; startTime + weekInSeconds*9  ) { bonusRate = 500; }
-            if( now &gt; startTime + weekInSeconds*10 ) { bonusRate = 333; }
-            if( now &gt; startTime + weekInSeconds*11 ) { bonusRate = 167; }
-            if( now &gt; startTime + weekInSeconds*12 ) { bonusRate = 0; }
+            if( now > startTime + weekInSeconds*0  ) { bonusRate = 2000; }
+            if( now > startTime + weekInSeconds*1  ) { bonusRate = 1833; }
+            if( now > startTime + weekInSeconds*2  ) { bonusRate = 1667; }
+            if( now > startTime + weekInSeconds*3  ) { bonusRate = 1500; }
+            if( now > startTime + weekInSeconds*4  ) { bonusRate = 1333; }
+            if( now > startTime + weekInSeconds*5  ) { bonusRate = 1167; }
+            if( now > startTime + weekInSeconds*6  ) { bonusRate = 1000; }
+            if( now > startTime + weekInSeconds*7  ) { bonusRate = 833; }
+            if( now > startTime + weekInSeconds*8  ) { bonusRate = 667; }
+            if( now > startTime + weekInSeconds*9  ) { bonusRate = 500; }
+            if( now > startTime + weekInSeconds*10 ) { bonusRate = 333; }
+            if( now > startTime + weekInSeconds*11 ) { bonusRate = 167; }
+            if( now > startTime + weekInSeconds*12 ) { bonusRate = 0; }
         }
         
-        if ( remainingTokens &lt; tokenAmount ) {
+        if ( remainingTokens < tokenAmount ) {
             uint256 refund = (tokenAmount - remainingTokens).mul(tokenValue).div(oneXCC);
             tokenAmount = remainingTokens;
             owner.transfer(msg.value-refund);

@@ -85,8 +85,8 @@ contract CryptoCollectorContract is ERC721, Ownable {
     /*** CONSTANTS ***/
       
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant NAME = &quot;CryptoCollectorContract&quot;; // solhint-disable-line
-    string public constant SYMBOL = &quot;CCC&quot;; // solhint-disable-line
+    string public constant NAME = "CryptoCollectorContract"; // solhint-disable-line
+    string public constant SYMBOL = "CCC"; // solhint-disable-line
       
 	uint256 private killerPriceConversionFee = 0.19 ether; 
 	
@@ -99,28 +99,28 @@ contract CryptoCollectorContract is ERC721, Ownable {
         
     /// @dev A mapping from card IDs to the address that owns them. All cards have
     ///  some valid owner address.
-    mapping (uint256 =&gt; address) public cardTokenToOwner;
+    mapping (uint256 => address) public cardTokenToOwner;
         
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
         
     /// @dev A mapping from CardIDs to an address that has been approved to call
     ///  transferFrom(). Each card can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public cardTokenToApproved;
+    mapping (uint256 => address) public cardTokenToApproved;
         
     // @dev A mapping from CardIDs to the price of the token.
-    mapping (uint256 =&gt; uint256) private cardTokenToPrice;
+    mapping (uint256 => uint256) private cardTokenToPrice;
         
     // @dev A mapping from CardIDs to the position of the item in array.
-    mapping (uint256 =&gt; uint256) private cardTokenToPosition;
+    mapping (uint256 => uint256) private cardTokenToPosition;
     
     //@dev A mapping for user list
-    mapping (address =&gt; uint256) public userArreyPosition;
+    mapping (address => uint256) public userArreyPosition;
     
     // @dev A mapping from CardIDs to the position of the item in array.
-    mapping (uint256 =&gt; uint256) private categoryToPosition;
+    mapping (uint256 => uint256) private categoryToPosition;
      
     
     // @dev tokenId of Wild Card.
@@ -208,7 +208,7 @@ contract CryptoCollectorContract is ERC721, Ownable {
 	    string storage cardCategory=cards[index].category;
 	    uint256 totalCards = totalSupply();
         uint256 i=0;
-          for (i = 0; i  &lt;= totalCards-1; i++) {
+          for (i = 0; i  <= totalCards-1; i++) {
             //check for the same category
             //StringUtils
             if (keccak256(cards[i].category)==keccak256(cardCategory)){
@@ -231,7 +231,7 @@ contract CryptoCollectorContract is ERC721, Ownable {
 	    string storage cardCategory=cards[index].category;
 	    uint256 totalCards = totalSupply();
         uint256 i=0;
-          for (i = 0; i  &lt;= totalCards-1; i++) {
+          for (i = 0; i  <= totalCards-1; i++) {
             //check for the same category
             //StringUtils
             if (keccak256(cards[i].category)==keccak256(cardCategory)){
@@ -249,9 +249,9 @@ contract CryptoCollectorContract is ERC721, Ownable {
 		bool iscreated=false;
 		uint256 totalCards = totalSupply();
         uint256 i=0;
-          for (i = 0; i  &lt;= totalCards-1; i++) {
+          for (i = 0; i  <= totalCards-1; i++) {
             //check for the same category
-            if ((keccak256(cards[i].category)==keccak256(_category)) &amp;&amp; (cards[i].Iswildcard==1)){
+            if ((keccak256(cards[i].category)==keccak256(_category)) && (cards[i].Iswildcard==1)){
 			   iscreated=true;
             }
           }
@@ -266,7 +266,7 @@ contract CryptoCollectorContract is ERC721, Ownable {
 	    string storage cardCategory=cards[index].category;
 	    uint256 totalCards = totalSupply();
         uint256 i=0;
-          for (i = 0; i  &lt;= totalCards-1; i++) {
+          for (i = 0; i  <= totalCards-1; i++) {
             //check for the same category
             if (keccak256(cards[i].category)==keccak256(cardCategory)){
                cards[i].Iswildcard=0;
@@ -337,8 +337,8 @@ contract CryptoCollectorContract is ERC721, Ownable {
 			
 		uint256 index = cards.push(_card) - 1;
 		cardTokenToPosition[_id] = index;
-		// It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-		// let&#39;s just be 100% sure we never let this happen.
+		// It's probably never going to happen, 4 billion tokens are A LOT, but
+		// let's just be 100% sure we never let this happen.
 		require(_id == uint256(uint32(_id)));
 
 		emit NewToken(_id, _name, _owner);
@@ -489,13 +489,13 @@ contract CryptoCollectorContract is ERC721, Ownable {
 function getNextPrice(uint256 sellingPrice) private view returns (uint256){
    
      // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       sellingPrice = Helper.div(Helper.mul(sellingPrice, 300), 93);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       sellingPrice= Helper.div(Helper.mul(sellingPrice, 200), 93);
-    } else if (sellingPrice &lt; thirdStepLimit) {
+    } else if (sellingPrice < thirdStepLimit) {
       // second stage
       sellingPrice = Helper.div(Helper.mul(sellingPrice, 120), 93);
     } else {
@@ -509,13 +509,13 @@ function getNextPrice(uint256 sellingPrice) private view returns (uint256){
 function nextPriceOf(uint256 _tokenId) public view returns (uint256 price){
     uint256 sellingPrice=cardTokenToPrice[_tokenId];
      // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       sellingPrice = Helper.div(Helper.mul(sellingPrice, 300), 93);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       sellingPrice= Helper.div(Helper.mul(sellingPrice, 200), 93);
-    } else if (sellingPrice &lt; thirdStepLimit) {
+    } else if (sellingPrice < thirdStepLimit) {
       // second stage
       sellingPrice = Helper.div(Helper.mul(sellingPrice, 120), 93);
     } else {
@@ -564,7 +564,7 @@ function nextPriceOf(uint256 _tokenId) public view returns (uint256 price){
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     
     // Update prices
@@ -602,9 +602,9 @@ function GetWildCardOwner(uint256 _tokenId) public view returns (address _cardow
 		
 	    uint256 totalCards = totalSupply();
         uint256 i=0;
-          for (i = 0; i  &lt;= totalCards-1; i++) {
+          for (i = 0; i  <= totalCards-1; i++) {
             //check for the same category
-            if ((keccak256(cards[i].category)==keccak256(cardCategory)) &amp;&amp; cards[i].Iswildcard==1){
+            if ((keccak256(cards[i].category)==keccak256(cardCategory)) && cards[i].Iswildcard==1){
                return cards[i].owner;
             }
           }
@@ -616,7 +616,7 @@ function GetWildCardOwner(uint256 _tokenId) public view returns (address _cardow
 
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire cards array looking for cards belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -631,7 +631,7 @@ function GetWildCardOwner(uint256 _tokenId) public view returns (address _cardow
       uint256 resultIndex = 0;
 
       uint256 index;
-      for (index = 0; index &lt;= totalCards-1; index++) {
+      for (index = 0; index <= totalCards-1; index++) {
         if (cardTokenToOwner[cards[index].token] == _owner) {
           result[resultIndex] = cards[index].token;
           resultIndex++;
@@ -660,12 +660,12 @@ function GetWildCardOwner(uint256 _tokenId) public view returns (address _cardow
 
   /// @dev Assigns ownership of a specific card to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of cards is capped to 2^32 we can&#39;t overflow this
+    // Since the number of cards is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     cardTokenToOwner[_tokenId] = _to;
 
-    // When creating new cards _from is 0x0, but we can&#39;t account that address.
+    // When creating new cards _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -700,9 +700,9 @@ library Helper {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -710,7 +710,7 @@ library Helper {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -719,7 +719,7 @@ library Helper {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

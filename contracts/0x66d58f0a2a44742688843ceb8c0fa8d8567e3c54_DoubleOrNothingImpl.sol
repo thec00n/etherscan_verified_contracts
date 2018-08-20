@@ -4,12 +4,12 @@ pragma solidity ^0.4.11;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -70,7 +70,7 @@ contract DoubleOrNothing {
     
     // wagers contains all current outstanding wagers.
     // TODO: Support multiple Wagers per address.
-    mapping (address =&gt; Wager) wagers;
+    mapping (address => Wager) wagers;
     
     function makeWager() payable public;
     function payout() public;
@@ -106,7 +106,7 @@ contract DoubleOrNothingImpl is DoubleOrNothing, Owned, Random, SafeMath {
         recipient.transfer(balance);
     }
     
-    // Allow the owner to payout outstanding wagers on others&#39; behalf.
+    // Allow the owner to payout outstanding wagers on others' behalf.
     function ownerPayout(address wager_owner) public onlyOwner {
         _payout(wager_owner);
     }
@@ -121,7 +121,7 @@ contract DoubleOrNothingImpl is DoubleOrNothing, Owned, Random, SafeMath {
     
     // Make a wager.
     function makeWager() payable public {
-        if (msg.value == 0 || msg.value &gt; maxWagerWei) throw;
+        if (msg.value == 0 || msg.value > maxWagerWei) throw;
         if (wagers[msg.sender].active) {
             // A Wager already exists for this user.
             throw;
@@ -163,11 +163,11 @@ contract DoubleOrNothingImpl is DoubleOrNothing, Owned, Random, SafeMath {
             throw;
         }
         uint256 blockDepth = block.number - wagers[wager_owner].creationBlockNumber;
-        if (blockDepth &gt; waitTimeBlocks) {
+        if (blockDepth > waitTimeBlocks) {
             // waitTimeBlocks has passed, resolve and payout this wager.
             uint256 payoutBlock = wagers[wager_owner].creationBlockNumber + waitTimeBlocks - 1;
             uint randNum = getRand(payoutBlock, 10000);
-            if (randNum &lt; payoutOdds) {
+            if (randNum < payoutOdds) {
                 // Wager wins, payout wager.
                 uint256 winnings = safeMult(wagers[wager_owner].wagerWei, 2);
                 if (wagers[wager_owner].sender.send(winnings)) {

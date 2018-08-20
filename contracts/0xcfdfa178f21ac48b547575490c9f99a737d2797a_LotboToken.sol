@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_y &lt;= _x);
+        assert(_y <= _x);
         return _x - _y;
     }
 
     function add(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 }
@@ -64,8 +64,8 @@ contract Erc20Wrapper {
 contract StandardToken is Erc20Wrapper {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -79,7 +79,7 @@ contract StandardToken is Erc20Wrapper {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_value > 0 && _value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -91,7 +91,7 @@ contract StandardToken is Erc20Wrapper {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_from] &amp;&amp; _value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0 && _value <= balances[_from] && _value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract StandardToken is Erc20Wrapper {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -186,8 +186,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract LotboToken is PausableToken {
-    string public name = &quot;Lotbo.io Token&quot;;
-    string public symbol = &quot;LOB&quot;;
+    string public name = "Lotbo.io Token";
+    string public symbol = "LOB";
     uint8  public decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 10000000 ether;
@@ -203,7 +203,7 @@ contract LotboToken is PausableToken {
 
     function mint(address _to, uint256 _value) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         totalSupply_ = totalSupply_.add(_value);
         balances[_to] = balances[_to].add(_value);
@@ -216,7 +216,7 @@ contract LotboToken is PausableToken {
 
     function burn(address _who, uint256 _value) onlyOwner public returns (bool success) {
         require(_who != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_who]);
+        require(_value > 0 && _value <= balances[_who]);
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

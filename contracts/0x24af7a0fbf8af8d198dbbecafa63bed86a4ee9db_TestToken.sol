@@ -17,10 +17,10 @@ contract TestToken {
     uint256 public epoch;
     uint256 public retentionMax;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
@@ -34,8 +34,8 @@ contract TestToken {
 
     function TestToken() public {
         director = msg.sender;
-        name = &quot;test token&quot;;
-        symbol = &quot;TTT&quot;;
+        name = "test token";
+        symbol = "TTT";
         decimals = 8;
         saleClosed = false;
         directorLock = false;
@@ -134,9 +134,9 @@ contract TestToken {
     function bury() public returns (bool success) {
         require(!buried[msg.sender]);
         
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
-        require(balances[msg.sender] &lt;= retentionMax);
+        require(balances[msg.sender] <= retentionMax);
         
         buried[msg.sender] = true;
         
@@ -156,9 +156,9 @@ contract TestToken {
         
         require(msg.sender != _fee);
         
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= epoch);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= epoch);
         
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
         claimed[msg.sender] = block.timestamp;
         
@@ -181,13 +181,13 @@ contract TestToken {
     function () public payable {
         require(!saleClosed);
         
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         
         // Price is 1 ETH = 50000 TTT
         uint256 amount = msg.value * 50000;
         
         // totalSupply limit is 5 million TTT
-        require(totalSupply + amount &lt;= (5000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (5000000 * 10 ** uint256(decimals)));
         
         totalSupply += amount;
         
@@ -202,14 +202,14 @@ contract TestToken {
         require(!buried[_from]);
         
         if (buried[_to]) {
-            require(balances[_to] + _value &lt;= retentionMax);
+            require(balances[_to] + _value <= retentionMax);
         }
         
         require(_to != 0x0);
         
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         uint256 previousBalances = balances[_from] + balances[_to];
         
@@ -228,7 +228,7 @@ contract TestToken {
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -256,7 +256,7 @@ contract TestToken {
     function burn(uint256 _value) public returns (bool success) {
         require(!buried[msg.sender]);
         
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         balances[msg.sender] -= _value;
         
@@ -269,9 +269,9 @@ contract TestToken {
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
         require(!buried[_from]);
         
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         balances[_from] -= _value;
         

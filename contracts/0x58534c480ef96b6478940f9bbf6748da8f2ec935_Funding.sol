@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e43474d45576e4041594247584b005c41">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e43474d45576e4041594247584b005c41">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ff2f6fcf4e6dff1f0e8f3f6e9fab1edf0">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ff2f6fcf4e6dff1f0e8f3f6e9fab1edf0">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f895919b9381b896978f94918e9dd68a97">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f895919b9381b896978f94918e9dd68a97">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -289,8 +289,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -314,7 +314,7 @@ contract ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f02060c04162f0100180306190a411d00">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f02060c04162f0100180306190a411d00">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -333,9 +333,9 @@ contract ABIFundingManager is ABIApplicationAsset {
     uint256 public vaultNum;
     uint256 public LockedVotingTokens;
     bytes32 public currentTask;
-    mapping (bytes32 =&gt; bool) public taskByHash;
-    mapping  (address =&gt; address) public vaultList;
-    mapping  (uint256 =&gt; address) public vaultById;
+    mapping (bytes32 => bool) public taskByHash;
+    mapping  (address => address) public vaultList;
+    mapping  (uint256 => address) public vaultById;
 
     function receivePayment(address _sender, uint8 _payment_method, uint8 _funding_stage) payable public returns(bool);
     function getMyVaultAddress(address _sender) public view returns (address);
@@ -362,7 +362,7 @@ contract ABIFundingManager is ABIApplicationAsset {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35585c565e4c755b5a42595c43501b475a">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35585c565e4c755b5a42595c43501b475a">[email protected]</a>>
 
 */
 
@@ -392,7 +392,7 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        General Funding Input Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026f6b61697b426c6d756e6b74672c706d">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026f6b61697b426c6d756e6b74672c706d">[email protected]</a>>
 
 */
 
@@ -417,7 +417,7 @@ contract ABIFundingInputGeneral {
 
  * @name        Funding Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -440,7 +440,7 @@ contract Funding is ApplicationAsset {
     ABIFundingInputGeneral public DirectInput;
     ABIFundingInputGeneral public MilestoneInput;
 
-    // mapping (bytes32 =&gt; uint8) public FundingMethods;
+    // mapping (bytes32 => uint8) public FundingMethods;
     enum FundingMethodIds {
         __IGNORED__,
         DIRECT_ONLY, 				//
@@ -471,7 +471,7 @@ contract Funding is ApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum = 0;
     uint8 public currentFundingStage = 1;
 
@@ -510,30 +510,30 @@ contract Funding is ApplicationAsset {
     function runBeforeInitialization() internal requireNotInitialised {
 
         // instantiate token manager, moved from runBeforeApplyingSettings
-        TokenManagerEntity = ABITokenManager( getApplicationAssetAddressByName(&#39;TokenManager&#39;) );
-        FundingManagerEntity = ABIFundingManager( getApplicationAssetAddressByName(&#39;FundingManager&#39;) );
+        TokenManagerEntity = ABITokenManager( getApplicationAssetAddressByName('TokenManager') );
+        FundingManagerEntity = ABIFundingManager( getApplicationAssetAddressByName('FundingManager') );
 
         EventRunBeforeInit(assetName);
     }
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
-        EntityStates[&quot;WAITING&quot;]         = 2;
-        EntityStates[&quot;IN_PROGRESS&quot;]     = 3;
-        EntityStates[&quot;COOLDOWN&quot;]        = 4;
-        EntityStates[&quot;FUNDING_ENDED&quot;]   = 5;
-        EntityStates[&quot;FAILED&quot;]          = 6;
-        EntityStates[&quot;FAILED_FINAL&quot;]    = 7;
-        EntityStates[&quot;SUCCESSFUL&quot;]      = 8;
-        EntityStates[&quot;SUCCESSFUL_FINAL&quot;]= 9;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
+        EntityStates["WAITING"]         = 2;
+        EntityStates["IN_PROGRESS"]     = 3;
+        EntityStates["COOLDOWN"]        = 4;
+        EntityStates["FUNDING_ENDED"]   = 5;
+        EntityStates["FAILED"]          = 6;
+        EntityStates["FAILED_FINAL"]    = 7;
+        EntityStates["SUCCESSFUL"]      = 8;
+        EntityStates["SUCCESSFUL_FINAL"]= 9;
 
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
-        RecordStates[&quot;NEW&quot;]             = 1;
-        RecordStates[&quot;IN_PROGRESS&quot;]     = 2;
-        RecordStates[&quot;FINAL&quot;]           = 3;
+        RecordStates["__IGNORED__"]     = 0;
+        RecordStates["NEW"]             = 1;
+        RecordStates["IN_PROGRESS"]     = 2;
+        RecordStates["FINAL"]           = 3;
     }
 
     function addSettings(address _outputAddress, uint256 soft_cap, uint256 hard_cap, uint8 sale_percentage, address _direct, address _milestone )
@@ -541,7 +541,7 @@ contract Funding is ApplicationAsset {
         requireInitialised
         requireSettingsNotApplied
     {
-        if(soft_cap &gt; hard_cap) {
+        if(soft_cap > hard_cap) {
             revert();
         }
 
@@ -549,7 +549,7 @@ contract Funding is ApplicationAsset {
         GlobalAmountCapSoft = soft_cap;
         GlobalAmountCapHard = hard_cap;
 
-        if(sale_percentage &gt; 90) {
+        if(sale_percentage > 90) {
             revert();
         }
 
@@ -564,7 +564,7 @@ contract Funding is ApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -578,7 +578,7 @@ contract Funding is ApplicationAsset {
     {
 
         // make sure end time is later than start time
-        if(_time_end &lt;= _time_start) {
+        if(_time_end <= _time_start) {
             revert();
         }
 
@@ -588,19 +588,19 @@ contract Funding is ApplicationAsset {
         }
 
         // make sure soft cap is not higher than hard cap
-        if(_amount_cap_soft &gt; _amount_cap_hard) {
+        if(_amount_cap_soft > _amount_cap_hard) {
             revert();
         }
 
-        if(_token_share_percentage &gt; 0) {
+        if(_token_share_percentage > 0) {
             revert();
         }
 
         FundingStage storage prevRecord = Collection[FundingStageNum];
-        if(FundingStageNum &gt; 0) {
+        if(FundingStageNum > 0) {
 
             // new stage does not start before the previous one ends
-            if( _time_start &lt;= prevRecord.time_end ) {
+            if( _time_start <= prevRecord.time_end ) {
                 revert();
             }
         }
@@ -622,7 +622,7 @@ contract Funding is ApplicationAsset {
         record.token_share_percentage    = _token_share_percentage;
 
         // state new
-        record.state = getRecordState(&quot;NEW&quot;);
+        record.state = getRecordState("NEW");
         record.index = FundingStageNum;
 
         FundingStageCreated( FundingStageNum, _name );
@@ -664,13 +664,13 @@ contract Funding is ApplicationAsset {
         onlyInputPaymentMethod
         returns(bool)
     {
-        // check that msg.value is higher than 0, don&#39;t really want to have to deal with minus in case the network breaks this somehow
-        if(allowedPaymentMethod(_payment_method) &amp;&amp; canAcceptPayment(msg.value) ) {
+        // check that msg.value is higher than 0, don't really want to have to deal with minus in case the network breaks this somehow
+        if(allowedPaymentMethod(_payment_method) && canAcceptPayment(msg.value) ) {
 
             uint256 contributed_value = msg.value;
 
             uint256 amountOverCap = getValueOverCurrentCap(contributed_value);
-            if ( amountOverCap &gt; 0 ) {
+            if ( amountOverCap > 0 ) {
                 // calculate how much we can accept
 
                 // update contributed value
@@ -688,7 +688,7 @@ contract Funding is ApplicationAsset {
 
             if( FundingManagerEntity.receivePayment.value(contributed_value)( _sender, _payment_method, currentFundingStage ) ) {
 
-                if(amountOverCap &gt; 0) {
+                if(amountOverCap > 0) {
                     // last step, if we received more than we can accept, send remaining back
                     // amountOverCap sent back
                     if( _sender.send(this.balance) ) {
@@ -710,14 +710,14 @@ contract Funding is ApplicationAsset {
     }
 
     modifier onlyInputPaymentMethod() {
-        require(msg.sender != 0x0 &amp;&amp; ( msg.sender == address(DirectInput) || msg.sender == address(MilestoneInput) ));
+        require(msg.sender != 0x0 && ( msg.sender == address(DirectInput) || msg.sender == address(MilestoneInput) ));
         _;
     }
 
     function canAcceptPayment(uint256 _amount) public view returns (bool) {
-        if( _amount &gt; 0 ) {
+        if( _amount > 0 ) {
             // funding state should be IN_PROGRESS, no state changes should be required
-            if( CurrentEntityState == getEntityState(&quot;IN_PROGRESS&quot;) &amp;&amp; hasRequiredStateChanges() == false) {
+            if( CurrentEntityState == getEntityState("IN_PROGRESS") && hasRequiredStateChanges() == false) {
                 return true;
             }
         }
@@ -727,7 +727,7 @@ contract Funding is ApplicationAsset {
     function getValueOverCurrentCap(uint256 _amount) public view returns (uint256) {
         FundingStage memory record = Collection[currentFundingStage];
         uint256 remaining = record.amount_cap_hard - AmountRaised;
-        if( _amount &gt; remaining ) {
+        if( _amount > remaining ) {
             return _amount - remaining;
         }
         return 0;
@@ -815,50 +815,50 @@ contract Funding is ApplicationAsset {
     function getRecordStateRequiredChanges() public view returns (uint8) {
 
         FundingStage memory record = Collection[currentFundingStage];
-        uint8 RecordStateRequired = getRecordState(&quot;__IGNORED__&quot;);
+        uint8 RecordStateRequired = getRecordState("__IGNORED__");
 
-        if(record.state == getRecordState(&quot;FINAL&quot;)) {
-            return getRecordState(&quot;__IGNORED__&quot;);
+        if(record.state == getRecordState("FINAL")) {
+            return getRecordState("__IGNORED__");
         }
 
         /*
             If funding stage is not started and timestamp is after start time:
             - we need to change state to IN_PROGRESS so we can start receiving funds
         */
-        if( getTimestamp() &gt;= record.time_start ) {
-            RecordStateRequired = getRecordState(&quot;IN_PROGRESS&quot;);
+        if( getTimestamp() >= record.time_start ) {
+            RecordStateRequired = getRecordState("IN_PROGRESS");
         }
 
         /*
-            This is where we&#39;re accepting payments unless we can change state to FINAL
+            This is where we're accepting payments unless we can change state to FINAL
 
             1. Check if timestamp is after record time_end
             2. Check hard caps
-            All lead to state change =&gt; FINAL
+            All lead to state change => FINAL
         */
 
         // Time check
-        if(getTimestamp() &gt;= record.time_end) {
+        if(getTimestamp() >= record.time_end) {
             // Funding Phase ended passed
-            return getRecordState(&quot;FINAL&quot;);
+            return getRecordState("FINAL");
         }
 
         // will trigger in pre-ico
         // Record Hard Cap Check
-        if(AmountRaised &gt;= record.amount_cap_hard) {
+        if(AmountRaised >= record.amount_cap_hard) {
             // record hard cap reached
-            return getRecordState(&quot;FINAL&quot;);
+            return getRecordState("FINAL");
         }
 
         // will trigger in ico
         // Global Hard Cap Check
-        if(AmountRaised &gt;= GlobalAmountCapHard) {
+        if(AmountRaised >= GlobalAmountCapHard) {
             // hard cap reached
-            return getRecordState(&quot;FINAL&quot;);
+            return getRecordState("FINAL");
         }
 
         if( record.state == RecordStateRequired ) {
-            RecordStateRequired = getRecordState(&quot;__IGNORED__&quot;);
+            RecordStateRequired = getRecordState("__IGNORED__");
         }
 
         return RecordStateRequired;
@@ -871,14 +871,14 @@ contract Funding is ApplicationAsset {
         DebugRecordRequiredChanges( assetName, CurrentRecordState, RecordStateRequired );
         DebugEntityRequiredChanges( assetName, CurrentEntityState, EntityStateRequired );
 
-        if( RecordStateRequired != getRecordState(&quot;__IGNORED__&quot;) ) {
+        if( RecordStateRequired != getRecordState("__IGNORED__") ) {
             // process record changes.
             RecordProcessor(CurrentRecordState, RecordStateRequired);
             DebugCallAgain(2);
             callAgain = true;
         }
 
-        if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+        if(EntityStateRequired != getEntityState("__IGNORED__") ) {
             // process entity changes.
             // if(CurrentEntityState != EntityStateRequired) {
             EntityProcessor(EntityStateRequired);
@@ -894,10 +894,10 @@ contract Funding is ApplicationAsset {
         var (CurrentRecordState, RecordStateRequired, EntityStateRequired) = getRequiredStateChanges();
         CurrentRecordState = 0;
 
-        if( RecordStateRequired != getRecordState(&quot;__IGNORED__&quot;) ) {
+        if( RecordStateRequired != getRecordState("__IGNORED__") ) {
             hasChanges = true;
         }
-        if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+        if(EntityStateRequired != getEntityState("__IGNORED__") ) {
             hasChanges = true;
         }
         return hasChanges;
@@ -909,8 +909,8 @@ contract Funding is ApplicationAsset {
     function RecordProcessor(uint8 CurrentRecordState, uint8 RecordStateRequired) internal {
         EventRecordProcessor( assetName, CurrentRecordState, RecordStateRequired );
         updateFundingStage( RecordStateRequired );
-        if( RecordStateRequired == getRecordState(&quot;FINAL&quot;) ) {
-            if(currentFundingStage &lt; FundingStageNum) {
+        if( RecordStateRequired == getRecordState("FINAL") ) {
+            if(currentFundingStage < FundingStageNum) {
                 // jump to next stage
                 currentFundingStage++;
             }
@@ -924,19 +924,19 @@ contract Funding is ApplicationAsset {
         // Update our Entity State
         CurrentEntityState = EntityStateRequired;
 
-        if ( EntityStateRequired == getEntityState(&quot;FUNDING_ENDED&quot;) ) {
+        if ( EntityStateRequired == getEntityState("FUNDING_ENDED") ) {
             /*
                 STATE: FUNDING_ENDED
                 @Processor hook
-                Action: Check if funding is successful or not, and move state to &quot;FAILED&quot; or &quot;SUCCESSFUL&quot;
+                Action: Check if funding is successful or not, and move state to "FAILED" or "SUCCESSFUL"
             */
 
             // Global Hard Cap Check
-            if(AmountRaised &gt;= GlobalAmountCapSoft) {
+            if(AmountRaised >= GlobalAmountCapSoft) {
                 // hard cap reached
-                CurrentEntityState = getEntityState(&quot;SUCCESSFUL&quot;);
+                CurrentEntityState = getEntityState("SUCCESSFUL");
             } else {
-                CurrentEntityState = getEntityState(&quot;FAILED&quot;);
+                CurrentEntityState = getEntityState("FAILED");
             }
         }
 
@@ -959,28 +959,28 @@ contract Funding is ApplicationAsset {
 
         uint8 CurrentRecordState = record.state;
         uint8 RecordStateRequired = getRecordStateRequiredChanges();
-        uint8 EntityStateRequired = getEntityState(&quot;__IGNORED__&quot;);
+        uint8 EntityStateRequired = getEntityState("__IGNORED__");
 
 
         // Funding Record State Overrides
         // if(CurrentRecordState != RecordStateRequired) {
-        if(RecordStateRequired != getRecordState(&quot;__IGNORED__&quot;))
+        if(RecordStateRequired != getRecordState("__IGNORED__"))
         {
             // direct state overrides by funding stage
-            if(RecordStateRequired == getRecordState(&quot;IN_PROGRESS&quot;) ) {
+            if(RecordStateRequired == getRecordState("IN_PROGRESS") ) {
                 // both funding stage and entity states need to move to IN_PROGRESS
-                EntityStateRequired = getEntityState(&quot;IN_PROGRESS&quot;);
+                EntityStateRequired = getEntityState("IN_PROGRESS");
 
-            } else if (RecordStateRequired == getRecordState(&quot;FINAL&quot;)) {
+            } else if (RecordStateRequired == getRecordState("FINAL")) {
                 // funding stage moves to FINAL
 
                 if (currentFundingStage == FundingStageNum) {
                     // if current funding is last
-                    EntityStateRequired = getEntityState(&quot;FUNDING_ENDED&quot;);
+                    EntityStateRequired = getEntityState("FUNDING_ENDED");
                 }
                 else {
                     // start cooldown between funding stages
-                    EntityStateRequired = getEntityState(&quot;COOLDOWN&quot;);
+                    EntityStateRequired = getEntityState("COOLDOWN");
                 }
             }
 
@@ -989,18 +989,18 @@ contract Funding is ApplicationAsset {
             // Records do not require any updates.
             // Do Entity Checks
 
-            if( CurrentEntityState == getEntityState(&quot;NEW&quot;) ) {
+            if( CurrentEntityState == getEntityState("NEW") ) {
                 /*
                     STATE: NEW
                     Processor Action: Allocate Tokens to Funding / Owners then Update to WAITING
                 */
-                EntityStateRequired = getEntityState(&quot;WAITING&quot;);
-            } else  if ( CurrentEntityState == getEntityState(&quot;FUNDING_ENDED&quot;) ) {
+                EntityStateRequired = getEntityState("WAITING");
+            } else  if ( CurrentEntityState == getEntityState("FUNDING_ENDED") ) {
                 /*
                     STATE: FUNDING_ENDED
-                    Processor Action: Check if funding is successful or not, and move state to &quot;SUCCESSFUL&quot; or &quot;FAILED&quot;
+                    Processor Action: Check if funding is successful or not, and move state to "SUCCESSFUL" or "FAILED"
                 */
-            } else if ( CurrentEntityState == getEntityState(&quot;SUCCESSFUL&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("SUCCESSFUL") ) {
                 /*
                     STATE: SUCCESSFUL
                     Processor Action: none
@@ -1009,17 +1009,17 @@ contract Funding is ApplicationAsset {
                     FundingManager - Run Internal Processor ( deliver tokens, deliver direct funding eth )
                 */
 
-                // check funding manager has processed the FUNDING_SUCCESSFUL Task, if true =&gt; FUNDING_SUCCESSFUL_DONE
-                if(FundingManagerEntity.taskByHash( FundingManagerEntity.getHash(&quot;FUNDING_SUCCESSFUL_START&quot;, &quot;&quot;) ) == true) {
-                    EntityStateRequired = getEntityState(&quot;SUCCESSFUL_FINAL&quot;);
+                // check funding manager has processed the FUNDING_SUCCESSFUL Task, if true => FUNDING_SUCCESSFUL_DONE
+                if(FundingManagerEntity.taskByHash( FundingManagerEntity.getHash("FUNDING_SUCCESSFUL_START", "") ) == true) {
+                    EntityStateRequired = getEntityState("SUCCESSFUL_FINAL");
                 }
                 /*
-                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;FUNDING_SUCCESSFUL_DONE&quot;) ) {
-                    EntityStateRequired = getEntityState(&quot;SUCCESSFUL_FINAL&quot;);
+                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("FUNDING_SUCCESSFUL_DONE") ) {
+                    EntityStateRequired = getEntityState("SUCCESSFUL_FINAL");
                 }
                 */
 
-            } else if ( CurrentEntityState == getEntityState(&quot;FAILED&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("FAILED") ) {
                 /*
                     STATE: FAILED
                     Processor Action: none
@@ -1028,13 +1028,13 @@ contract Funding is ApplicationAsset {
                     FundingManager - Run Internal Processor (release tokens to owner) ( Cashback is available )
                 */
 
-                // check funding manager state, if FUNDING_NOT_PROCESSED -&gt; getEntityState(&quot;__IGNORED__&quot;)
+                // check funding manager state, if FUNDING_NOT_PROCESSED -> getEntityState("__IGNORED__")
                 // if FUNDING_FAILED_DONE
 
-                if(FundingManagerEntity.taskByHash( FundingManagerEntity.getHash(&quot;FUNDING_FAILED_START&quot;, &quot;&quot;) ) == true) {
-                    EntityStateRequired = getEntityState(&quot;FAILED_FINAL&quot;);
+                if(FundingManagerEntity.taskByHash( FundingManagerEntity.getHash("FUNDING_FAILED_START", "") ) == true) {
+                    EntityStateRequired = getEntityState("FAILED_FINAL");
                 }
-            } else if ( CurrentEntityState == getEntityState(&quot;SUCCESSFUL_FINAL&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("SUCCESSFUL_FINAL") ) {
                 /*
                     STATE: SUCCESSFUL_FINAL
                     Processor Action: none
@@ -1042,7 +1042,7 @@ contract Funding is ApplicationAsset {
                     External Action:
                     Application: Run Internal Processor ( Change State to IN_DEVELOPMENT )
                 */
-            } else if ( CurrentEntityState == getEntityState(&quot;FAILED_FINAL&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("FAILED_FINAL") ) {
                 /*
                     STATE: FINAL_FAILED
                     Processor Action: none

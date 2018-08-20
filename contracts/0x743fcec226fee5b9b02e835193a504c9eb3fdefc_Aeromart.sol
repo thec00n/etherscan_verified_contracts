@@ -23,7 +23,7 @@ contract Aeromart is Owned {
     }
     
     uint public notesLength;
-    mapping (uint256 =&gt; Note) public notes;
+    mapping (uint256 => Note) public notes;
    
     event noteInfo(
         bytes32 productID,
@@ -69,7 +69,7 @@ contract Aeromart is Owned {
     }
     
     uint public commentsLength;
-    mapping (uint256 =&gt; Comment) public comments;
+    mapping (uint256 => Comment) public comments;
     address[] public commentsAccounts;
     
     event commentInfo(

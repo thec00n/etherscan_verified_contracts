@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -76,20 +76,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -154,9 +154,9 @@ contract Crowdsale is Ownable {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = ERC20(_token);
@@ -178,7 +178,7 @@ contract Crowdsale is Ownable {
 
     uint256 weiAmount = msg.value;
     uint256 tokens;
-    if(transactionNum &lt; 100) {
+    if(transactionNum < 100) {
       tokens = weiAmount.mul(discountRate);
     } else {
       tokens = weiAmount.mul(rate);
@@ -186,7 +186,7 @@ contract Crowdsale is Ownable {
 
 
     uint256 tokenBalance = token.balanceOf(this);
-    require(tokenBalance &gt;= tokens);
+    require(tokenBalance >= tokens);
 
     transactionNum = transactionNum + 1;
     // update state
@@ -200,7 +200,7 @@ contract Crowdsale is Ownable {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -213,10 +213,10 @@ contract Crowdsale is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
 
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function finalization() internal {
@@ -242,7 +242,7 @@ contract PreICO is Crowdsale {
   }
 
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached || super.hasEnded();
   }
 
@@ -250,18 +250,18 @@ contract PreICO is Crowdsale {
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
     //0.1 eth and 1000 eth
-    bool withinRange = msg.value &gt;= minContribution &amp;&amp; msg.value &lt;= maxContribution;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinRange &amp;&amp; withinCap &amp;&amp; super.validPurchase();
+    bool withinRange = msg.value >= minContribution && msg.value <= maxContribution;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinRange && withinCap && super.validPurchase();
   }
 
   function changeMinContribution(uint256 _minContribution) public onlyOwner {
-    require(_minContribution &gt; 0);
+    require(_minContribution > 0);
     minContribution = _minContribution;
   }
 
   function changeMaxContribution(uint256 _maxContribution) public onlyOwner {
-    require(_maxContribution &gt; 0);
+    require(_maxContribution > 0);
     maxContribution = _maxContribution;
   }
 

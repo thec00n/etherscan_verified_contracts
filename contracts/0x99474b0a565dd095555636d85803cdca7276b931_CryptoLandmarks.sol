@@ -12,7 +12,7 @@ contract AccessControl {
     modifier onlyAdmins {
         bool found = false;
 
-        for (uint i = 0; i &lt; admins.length; i++) {
+        for (uint i = 0; i < admins.length; i++) {
             if (admins[i] == msg.sender) {
                 found = true;
                 break;
@@ -69,8 +69,8 @@ contract CryptoLandmarks is AccessControl, ERC721 {
     // Event fired when charities are modified
     event Charity(uint256 charityId, address charity);
 
-    string public constant NAME = &quot;Crypto Landmarks&quot;; 
-    string public constant SYMBOL = &quot;LANDMARK&quot;; 
+    string public constant NAME = "Crypto Landmarks"; 
+    string public constant SYMBOL = "LANDMARK"; 
 
     // Initial price of card
     uint256 private startingPrice = 0.001 ether;
@@ -94,9 +94,9 @@ contract CryptoLandmarks is AccessControl, ERC721 {
 
     address[] public charities;
     
-    mapping (uint256 =&gt; address) public landmarkToOwner;
-    mapping (address =&gt; uint256) public landmarkOwnershipCount;
-    mapping (uint256 =&gt; address) public landmarkToApproved;
+    mapping (uint256 => address) public landmarkToOwner;
+    mapping (address => uint256) public landmarkOwnershipCount;
+    mapping (uint256 => address) public landmarkToApproved;
 
     function CryptoLandmarks() public {
         owner = msg.sender;
@@ -165,7 +165,7 @@ contract CryptoLandmarks is AccessControl, ERC721 {
     }
 
     function createLandmark(string _name, address _owner, uint256 _price) public onlyAdmins {
-        if (_price &lt;= 0) {
+        if (_price <= 0) {
             _price = startingPrice;
         }
         
@@ -207,7 +207,7 @@ contract CryptoLandmarks is AccessControl, ERC721 {
         
         require(oldOwner != newOwner);
         require(newOwner != address(0));
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 95), 100));
         uint256 excess = SafeMath.sub(msg.value, sellingPrice);
@@ -231,7 +231,7 @@ contract CryptoLandmarks is AccessControl, ERC721 {
         uint priceIncrease = 120;
 
         // price doubles below 32 finney
-        if (sellingPrice &lt;= 32 finney) {
+        if (sellingPrice <= 32 finney) {
             priceIncrease = 200;
         }
 
@@ -263,7 +263,7 @@ contract CryptoLandmarks is AccessControl, ERC721 {
         require(landmarkToOwner[_tokenId] == msg.sender);
 
         // price cannot be higher than maximum price
-        require(landmarks[_tokenId].maxPrice &gt;= _price);
+        require(landmarks[_tokenId].maxPrice >= _price);
 
         // set new price
         landmarks[_tokenId].price = _price;
@@ -283,7 +283,7 @@ contract CryptoLandmarks is AccessControl, ERC721 {
         uint256 total = totalSupply();
         uint256 resultIndex = 0;
 
-        for(uint256 i = 0; i &lt;= total; i++) {
+        for(uint256 i = 0; i <= total; i++) {
             if (landmarkToOwner[i] == _owner) {
                 result[resultIndex] = i;
                 resultIndex++;
@@ -343,9 +343,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -353,7 +353,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -362,7 +362,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

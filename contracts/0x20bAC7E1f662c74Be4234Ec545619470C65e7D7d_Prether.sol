@@ -41,8 +41,8 @@ contract Token is ERC20, Owned {
 	uint256 public totalSupply; 
 	
 	//Creates arrays for balances
-    mapping (address =&gt; uint256) balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balance;
+    mapping (address => mapping (address => uint256)) allowed;
 	
 	function Token(string tokenName, string tokenSymbol, uint8 decimalUnits, uint256 initialSupply) {
 		name = tokenName; 
@@ -68,9 +68,9 @@ contract Token is ERC20, Owned {
         return balance[_owner];
     }
 
-	//Sends tokens from sender&#39;s account
+	//Sends tokens from sender's account
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balance[msg.sender] &gt;= _value &amp;&amp; balance[_to] + _value &gt; balance[_to]) {
+        if (balance[msg.sender] >= _value && balance[_to] + _value > balance[_to]) {
             balance[msg.sender] -= _value;
             balance[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -82,7 +82,7 @@ contract Token is ERC20, Owned {
 	
 	//Transfers tokens an approved account 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balance[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balance[_to] + _value &gt; balance[_to]) {
+        if (balance[_from] >= _value && allowed[_from][msg.sender] >= _value && balance[_to] + _value > balance[_to]) {
             balance[_to] += _value;
             balance[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -96,8 +96,8 @@ contract Token is ERC20, Owned {
 
 contract Prether is Token {
     //Public variables
-    string public constant name = &quot;PRETHER&quot;;
-    string public constant symbol = &quot;PTH&quot;; 
+    string public constant name = "PRETHER";
+    string public constant symbol = "PTH"; 
     uint8 public constant decimals = 0; 
     uint256 public constant supply = 10000000; 
     
@@ -114,7 +114,7 @@ contract Prether is Token {
 	
 	//Allows contract owner to mint new tokens, prevents numerical overflow
 	function mintToken(address target, uint256 mintedAmount) onlyOwner returns (bool success) {
-		if ((totalSupply + mintedAmount) &lt; totalSupply) {
+		if ((totalSupply + mintedAmount) < totalSupply) {
 			throw; 
 		} else {
 			balance[target] += mintedAmount;

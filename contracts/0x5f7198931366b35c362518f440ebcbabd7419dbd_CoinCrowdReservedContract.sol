@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,8 +40,8 @@ contract TokedoDaicoInterface {
 contract AtomaxKyc {
     using SafeMath for uint256;
 
-    mapping (address =&gt; bool) public isKycSigner;
-    mapping (bytes32 =&gt; uint256) public alreadyPayed;
+    mapping (address => bool) public isKycSigner;
+    mapping (bytes32 => uint256) public alreadyPayed;
 
     event KycVerified(address indexed signer, address buyerAddress, bytes32 buyerId, uint maxAmount);
 
@@ -62,10 +62,10 @@ contract AtomaxKyc {
         bytes32 hash = hasher ( _buyerAddress,  _buyerId,  _maxAmount );
         address signer = ecrecover(hash, _v, _r, _s);
 		
-		require( isKycSigner[signer], &quot;isKycSigner[signer]&quot;);
+		require( isKycSigner[signer], "isKycSigner[signer]");
         
 		uint256 totalPayed = alreadyPayed[_buyerId].add(msg.value);
-		require(totalPayed &lt;= _maxAmount);
+		require(totalPayed <= _maxAmount);
 		alreadyPayed[_buyerId] = totalPayed;
 		
 		emit KycVerified(signer, _buyerAddress, _buyerId, _maxAmount);
@@ -74,7 +74,7 @@ contract AtomaxKyc {
     }
     
     function hasher (address _buyerAddress, bytes32 _buyerId, uint256 _maxAmount) public view returns ( bytes32 hash ) {
-        hash = keccak256(abi.encodePacked(&quot;Atomax authorization:&quot;, this, _buyerAddress, _buyerId, _maxAmount));
+        hash = keccak256(abi.encodePacked("Atomax authorization:", this, _buyerAddress, _buyerId, _maxAmount));
     }
 }
 
@@ -84,7 +84,7 @@ contract CoinCrowdReservedContract is AtomaxKyc {
     tokenInterface public xcc;
     TokedoDaicoInterface public tokenSaleContract;
     
-    mapping (address =&gt; uint256) public tkd_amount;
+    mapping (address => uint256) public tkd_amount;
     
     constructor(address _xcc, address _tokenSaleAddress) public {
         xcc = tokenInterface(_xcc);
@@ -92,15 +92,15 @@ contract CoinCrowdReservedContract is AtomaxKyc {
     } 
 
     function releaseTokensTo(address _buyer) internal returns(bool) {
-        require ( msg.sender == tx.origin, &quot;msg.sender == tx.orgin&quot; );
+        require ( msg.sender == tx.origin, "msg.sender == tx.orgin" );
 		
 		uint256 xcc_amount = xcc.balanceOf(msg.sender);
-		require( xcc_amount &gt; 0, &quot;xcc_amount &gt; 0&quot; );
+		require( xcc_amount > 0, "xcc_amount > 0" );
 		
 		xcc.originBurn(xcc_amount);
 		tokenSaleContract.sendTokens(_buyer, xcc_amount);
 		
-		if ( msg.value &gt; 0 ) msg.sender.transfer(msg.value);
+		if ( msg.value > 0 ) msg.sender.transfer(msg.value);
 		
         return true;
     }

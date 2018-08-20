@@ -34,7 +34,7 @@ contract Mortal is Ownable {
 /// @title CCWhitelist contract
 contract CCWhitelist is Mortal {
     
-    mapping (address =&gt; bool) public whitelisted;
+    mapping (address => bool) public whitelisted;
 
     /// @dev Whitelist a single address
     /// @param addr Address to be whitelisted
@@ -53,7 +53,7 @@ contract CCWhitelist is Mortal {
     /// @dev Whitelist array of addresses
     /// @param arr Array of addresses to be whitelisted
     function bulkWhitelist(address[] arr) public onlyOwner {
-        for (uint i = 0; i &lt; arr.length; i++) {
+        for (uint i = 0; i < arr.length; i++) {
             whitelisted[arr[i]] = true;
         }
     }

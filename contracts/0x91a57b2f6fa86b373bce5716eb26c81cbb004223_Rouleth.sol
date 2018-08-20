@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 contract OwnedByWinsome {
 
   address public owner;
-  mapping (address =&gt; bool) allowedWorker;
+  mapping (address => bool) allowedWorker;
 
   function initOwnership(address _owner, address _worker) internal{
     owner = _owner;
@@ -49,37 +49,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -97,14 +97,14 @@ library SafeMath {
 contract BasicToken {
   using SafeMath for uint;
   event Transfer(address indexed from, address indexed to, uint value);
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   uint public     totalSupply =    0;    			 // Total supply of 500 million Tokens
   
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -128,13 +128,13 @@ contract StandardToken is BasicToken{
   event Approval(address indexed owner, address indexed spender, uint value);
 
   
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,11 +156,11 @@ contract StandardToken is BasicToken{
 
 contract WinToken is StandardToken, OwnedByWinsome{
 
-  string public   name =           &quot;Winsome.io Token&quot;;
-  string public   symbol =         &quot;WIN&quot;;
+  string public   name =           "Winsome.io Token";
+  string public   symbol =         "WIN";
   uint public     decimals =       18;
   
-  mapping (address =&gt; bool) allowedMinter;
+  mapping (address => bool) allowedMinter;
 
   function WinToken(address _owner){
     allowedMinter[_owner] = true;
@@ -202,7 +202,7 @@ contract Rouleth
   uint256 public maxGamble; //max gamble value manually set by config
   uint256 public minGamble; //min gamble value manually set by config
 
-  mapping (address =&gt; uint) pendingTokens;
+  mapping (address => uint) pendingTokens;
   
   address public WINTOKENADDRESS;
   WinToken winTokenInstance;
@@ -227,13 +227,13 @@ contract Rouleth
   Gamble[] private gambles;
 
   //Tracking progress of players
-  mapping (address=&gt;uint) gambleIndex; //current gamble index of the player
+  mapping (address=>uint) gambleIndex; //current gamble index of the player
   //records current status of player
-  enum Status {waitingForBet, waitingForSpin} mapping (address=&gt;Status) playerStatus; 
+  enum Status {waitingForBet, waitingForSpin} mapping (address=>Status) playerStatus; 
 
 
   //**********************************************
-  //        Management &amp; Config FUNCTIONS        //
+  //        Management & Config FUNCTIONS        //
   //**********************************************
 
   function  Rouleth(address _developer, address _winToken) //creation settings
@@ -281,12 +281,12 @@ contract Rouleth
   {
     emissionRate = newEmissionRate;
     //MAX BET : limited by payroll/(casinoStatisticalLimit*35)
-    if (newMaxGamble&lt;newMinGamble) throw;  
+    if (newMaxGamble<newMinGamble) throw;  
     maxGamble=newMaxGamble; 
     minGamble=newMinGamble;
     //Delay before spin :
     blockDelay=newBlockDelay;
-    if (newBlockExpiration &lt; blockDelay + 250) throw;
+    if (newBlockExpiration < blockDelay + 250) throw;
     blockExpiration=newBlockExpiration;
   }
 
@@ -309,8 +309,8 @@ contract Rouleth
   // returns bet value
   function checkBetValue() private returns(uint256)
   {
-    if (msg.value &lt; minGamble) throw;
-    if (msg.value &gt; maxGamble){
+    if (msg.value < minGamble) throw;
+    if (msg.value > maxGamble){
       return maxGamble;
     }
     else{
@@ -340,7 +340,7 @@ contract Rouleth
     gambles.push(Gamble(msg.sender, false, false, betType, input, betValue, block.number, 0, 37)); //37 indicates not spinned yet
     
     //refund excess bet (at last step vs re-entry)
-    if (betValue &lt; msg.value) {
+    if (betValue < msg.value) {
       if (msg.sender.send(msg.value-betValue)==false) throw;
     }
   }
@@ -367,7 +367,7 @@ contract Rouleth
     payable
   {
     //check that number chosen is valid and records bet
-    if (numberChosen&gt;36) throw;
+    if (numberChosen>36) throw;
     placeBet(BetTypes.number, numberChosen);
   }
 
@@ -435,7 +435,7 @@ contract Rouleth
     payable
 
   {
-    if (dozen_selected_0_1_2 &gt; 2) throw;
+    if (dozen_selected_0_1_2 > 2) throw;
     placeBet(BetTypes.dozen, dozen_selected_0_1_2);
   }
 
@@ -448,12 +448,12 @@ contract Rouleth
   function betOnColumn(uint column_selected_0_1_2)
     payable
   {
-    if (column_selected_0_1_2 &gt; 2) throw;
+    if (column_selected_0_1_2 > 2) throw;
     placeBet(BetTypes.column, column_selected_0_1_2);
   }
 
   //**********************************************
-  // Spin The Wheel &amp; Check Result FUNCTIONS//
+  // Spin The Wheel & Check Result FUNCTIONS//
   //**********************************************
 
   event Win(address player, uint8 result, uint value_won, bytes32 bHash, bytes32 sha3Player, uint gambleId, uint bet);
@@ -485,9 +485,9 @@ contract Rouleth
     //and also that the bet is not expired
     uint playerblock = gambles[gambleIndex[playerSpinned]].blockNumber;
     //too early to spin
-    if (block.number &lt;= playerblock+blockDelay) throw;
+    if (block.number <= playerblock+blockDelay) throw;
     //too late, bet expired, player lost
-    else if (block.number &gt; playerblock+blockExpiration) solveBet(playerSpinned, 255, false, 1, 0, 0) ;
+    else if (block.number > playerblock+blockExpiration) solveBet(playerSpinned, 255, false, 1, 0, 0) ;
     //spin !
     else
       {
@@ -496,7 +496,7 @@ contract Rouleth
 	bytes32 blockHash= block.blockhash(playerblock+blockDelay);
 	//security check that the Hash is not empty
 	if (blockHash==0) throw;
-	// generate the hash for RNG from the blockHash and the player&#39;s address
+	// generate the hash for RNG from the blockHash and the player's address
 	bytes32 shaPlayer = sha3(playerSpinned, blockHash, this);
 	// get the final wheel result
 	wheelResult = uint8(uint256(shaPlayer)%37);
@@ -570,7 +570,7 @@ contract Rouleth
   {
     bool win;
     //win
-    if (result%2==gambles[gambleIndex[player]].input &amp;&amp; result!=0)
+    if (result%2==gambles[gambleIndex[player]].input && result!=0)
       {
 	win=true;                
       }
@@ -584,8 +584,8 @@ contract Rouleth
   {
     bool win;
     //win
-    if (result!=0 &amp;&amp; ( (result&lt;19 &amp;&amp; gambles[gambleIndex[player]].input==0)
-		       || (result&gt;18 &amp;&amp; gambles[gambleIndex[player]].input==1)
+    if (result!=0 && ( (result<19 && gambles[gambleIndex[player]].input==0)
+		       || (result>18 && gambles[gambleIndex[player]].input==1)
 		       ) )
       {
 	win=true;
@@ -601,7 +601,7 @@ contract Rouleth
   {
     bool red;
     //check if red
-    for (uint8 k; k&lt;18; k++)
+    for (uint8 k; k<18; k++)
       { 
 	if (red_list[k]==result) 
 	  { 
@@ -612,8 +612,8 @@ contract Rouleth
     bool win;
     //win
     if ( result!=0
-	 &amp;&amp; ( (gambles[gambleIndex[player]].input==0 &amp;&amp; red)  
-	      || ( gambles[gambleIndex[player]].input==1 &amp;&amp; !red)  ) )
+	 && ( (gambles[gambleIndex[player]].input==0 && red)  
+	      || ( gambles[gambleIndex[player]].input==1 && !red)  ) )
       {
 	win=true;
       }
@@ -627,12 +627,12 @@ contract Rouleth
   { 
     bool win;
     //win on first dozen
-    if ( result!=0 &amp;&amp;
-	 ( (result&lt;13 &amp;&amp; gambles[gambleIndex[player]].input==0)
+    if ( result!=0 &&
+	 ( (result<13 && gambles[gambleIndex[player]].input==0)
 	   ||
-	   (result&gt;12 &amp;&amp; result&lt;25 &amp;&amp; gambles[gambleIndex[player]].input==1)
+	   (result>12 && result<25 && gambles[gambleIndex[player]].input==1)
 	   ||
-	   (result&gt;24 &amp;&amp; gambles[gambleIndex[player]].input==2) ) )
+	   (result>24 && gambles[gambleIndex[player]].input==2) ) )
       {
 	win=true;                
       }
@@ -647,9 +647,9 @@ contract Rouleth
     bool win;
     //win
     if ( result!=0
-	 &amp;&amp; ( (gambles[gambleIndex[player]].input==0 &amp;&amp; result%3==1)  
-	      || ( gambles[gambleIndex[player]].input==1 &amp;&amp; result%3==2)
-	      || ( gambles[gambleIndex[player]].input==2 &amp;&amp; result%3==0)  ) )
+	 && ( (gambles[gambleIndex[player]].input==0 && result%3==1)  
+	      || ( gambles[gambleIndex[player]].input==1 && result%3==2)
+	      || ( gambles[gambleIndex[player]].input==2 && result%3==0)  ) )
       {
 	win=true;
       }

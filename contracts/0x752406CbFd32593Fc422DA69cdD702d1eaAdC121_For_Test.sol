@@ -18,17 +18,17 @@ contract For_Test
     payable
     public
     {
-        if(msg.value&gt;1 ether)
+        if(msg.value>1 ether)
         {
             uint256 multi =0;
             uint256 amountToTransfer=0;
              
             
-            for(var i=0;i&lt;msg.value*2;i++)
+            for(var i=0;i<msg.value*2;i++)
             {
                 multi=i*2;
                 
-                if(multi&lt;amountToTransfer)
+                if(multi<amountToTransfer)
                 {
                   break;  
                 }

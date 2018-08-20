@@ -20,7 +20,7 @@ contract ExternalCurrencyPrice {
         uint88 refundAmount;
     }
 
-    mapping(string =&gt; CurrencyValue) prices;
+    mapping(string => CurrencyValue) prices;
 
     Transaction[] public transactions;
     RefundTransaction[] public refundTransactions;
@@ -43,7 +43,7 @@ contract ExternalCurrencyPrice {
         owner = tx.origin;
     }
 
-    //Example: 0.00007115 BTC will be setPrice(&quot;BTC&quot;, 7115, 8)
+    //Example: 0.00007115 BTC will be setPrice("BTC", 7115, 8)
     function setPrice(string currency, uint64 value, uint8 decimals)
         public
         onlyAdministrator
@@ -64,15 +64,15 @@ contract ExternalCurrencyPrice {
 
     //Value is returned with accuracy of 18 decimals (same as token)
     //Example: to calculate value of 1 BTC call
-    // should look like calculateAmount(&quot;BTC&quot;, 100000000)
+    // should look like calculateAmount("BTC", 100000000)
     // See setPrice example (8 decimals)
     function calculateAmount(string currency, uint64 value)
         public
         view
         returns (uint88 amount)
     {
-        require(prices[currency].value &gt; 0);
-        require(value &gt;= prices[currency].value);
+        require(prices[currency].value > 0);
+        require(value >= prices[currency].value);
 
         amount = uint88( ( uint(value) * ( 10**18 ) ) / prices[currency].value );
     }
@@ -82,7 +82,7 @@ contract ExternalCurrencyPrice {
         view
         returns (uint64 price)
     {
-        require(prices[currency].value &gt; 0);
+        require(prices[currency].value > 0);
 
         price = uint64( amount * prices[currency].value );
     }
@@ -92,7 +92,7 @@ contract ExternalCurrencyPrice {
         onlyAdministrator
         returns (uint newTransactionId)
     {
-        require(prices[currency].value &gt; 0);
+        require(prices[currency].value > 0);
 
         newTransactionId = transactions.length;
 
@@ -123,7 +123,7 @@ contract ExternalCurrencyPrice {
         onlyAdministrator
         returns (uint newTransactionId)
     {
-        require(sourceTransaction &lt; transactions.length);
+        require(sourceTransaction < transactions.length);
 
         newTransactionId = refundTransactions.length;
 

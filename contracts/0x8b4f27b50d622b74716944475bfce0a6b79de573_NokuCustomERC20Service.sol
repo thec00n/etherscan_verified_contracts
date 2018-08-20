@@ -31,7 +31,7 @@ interface NokuPricingPlan {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -138,9 +138,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -148,7 +148,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -157,7 +157,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -235,7 +235,7 @@ contract NokuTokenBurner is Pausable {
     * @param _burningPercentage The percentage of tokens to be burnt.
     */
     function setBurningPercentage(uint256 _burningPercentage) public onlyOwner {
-        require(0 &lt;= _burningPercentage &amp;&amp; _burningPercentage &lt;= 100);
+        require(0 <= _burningPercentage && _burningPercentage <= 100);
         require(_burningPercentage != burningPercentage);
         
         burningPercentage = _burningPercentage;
@@ -250,17 +250,17 @@ contract NokuTokenBurner is Pausable {
     */
     function tokenReceived(address _token, uint256 _amount) public whenNotPaused {
         require(_token != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         uint256 amountToBurn = _amount.mul(burningPercentage).div(100);
-        if (amountToBurn &gt; 0) {
+        if (amountToBurn > 0) {
             assert(BurnableERC20(_token).burn(amountToBurn));
             
             burnedTokens = burnedTokens.add(amountToBurn);
         }
 
         uint256 amountToTransfer = _amount.sub(amountToBurn);
-        if (amountToTransfer &gt; 0) {
+        if (amountToTransfer > 0) {
             assert(BurnableERC20(_token).transfer(wallet, amountToTransfer));
 
             transferredTokens = transferredTokens.add(amountToTransfer);
@@ -277,7 +277,7 @@ contract NokuTokenBurner is Pausable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -295,7 +295,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -330,9 +330,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -366,7 +366,7 @@ contract DetailedERC20 is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -377,8 +377,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -392,7 +392,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -441,7 +441,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -527,8 +527,8 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
     // The fee percentage for Custom token transfer or zero if transfer is free of charge
     uint256 public transferFeePercentage;
 
-    bytes32 public constant CUSTOM_ERC20_BURN_SERVICE_NAME = &quot;NokuCustomERC20.burn&quot;;
-    bytes32 public constant CUSTOM_ERC20_MINT_SERVICE_NAME = &quot;NokuCustomERC20.mint&quot;;
+    bytes32 public constant CUSTOM_ERC20_BURN_SERVICE_NAME = "NokuCustomERC20.burn";
+    bytes32 public constant CUSTOM_ERC20_MINT_SERVICE_NAME = "NokuCustomERC20.mint";
 
     /**
     * @dev Modifier to make a function callable only by service provider i.e. Noku.
@@ -547,8 +547,8 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
     )
     DetailedERC20 (_name, _symbol, _decimals) public
     {
-        require(bytes(_name).length &gt; 0);
-        require(bytes(_symbol).length &gt; 0);
+        require(bytes(_name).length > 0);
+        require(bytes(_symbol).length > 0);
         require(_pricingPlan != 0);
         require(_serviceProvider != 0);
 
@@ -574,7 +574,7 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
     * @param _transferFeePercentage The fee percentage to be paid for transfer in range [0, 100].
     */
     function setTransferFeePercentage(uint256 _transferFeePercentage) public onlyOwner {
-        require(0 &lt;= _transferFeePercentage &amp;&amp; _transferFeePercentage &lt;= 100);
+        require(0 <= _transferFeePercentage && _transferFeePercentage <= 100);
         require(_transferFeePercentage != transferFeePercentage);
 
         transferFeePercentage = _transferFeePercentage;
@@ -617,7 +617,7 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
             bool feeTransferred = super.transfer(owner, usageFee);
             bool netValueTransferred = super.transfer(_to, netValue);
 
-            return feeTransferred &amp;&amp; netValueTransferred;
+            return feeTransferred && netValueTransferred;
         }
     }
 
@@ -635,7 +635,7 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
             bool feeTransferred = super.transferFrom(_from, owner, usageFee);
             bool netValueTransferred = super.transferFrom(_from, _to, netValue);
 
-            return feeTransferred &amp;&amp; netValueTransferred;
+            return feeTransferred && netValueTransferred;
         }
     }
 
@@ -644,7 +644,7 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
     * @param _amount The amount of token to be burned.
     */
     function burn(uint256 _amount) public {
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         super.burn(_amount);
 
@@ -659,7 +659,7 @@ contract NokuCustomERC20 is Ownable, DetailedERC20, MintableToken, BurnableToken
     */
     function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool minted) {
         require(_to != 0);
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         super.mint(_to, _amount);
 
@@ -685,7 +685,7 @@ contract NokuCustomERC20Service is Pausable {
     // The pricing plan determining the fee to be paid in NOKU tokens by customers for using Noku services
     address public pricingPlan;
 
-    bytes32 public constant CUSTOM_ERC20_CREATE_SERVICE_NAME = &quot;NokuCustomERC20.create&quot;;
+    bytes32 public constant CUSTOM_ERC20_CREATE_SERVICE_NAME = "NokuCustomERC20.create";
 
     function NokuCustomERC20Service(address _pricingPlan) public {
         require(_pricingPlan != 0);

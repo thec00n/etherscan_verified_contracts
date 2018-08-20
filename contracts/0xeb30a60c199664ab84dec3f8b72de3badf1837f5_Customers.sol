@@ -15,8 +15,8 @@ interface ICustomers {
 
   /**
    * @dev Allow new provider applications
-   * @param _providerAddress The provider&#39;s public key address
-   * @param _name The provider&#39;s name
+   * @param _providerAddress The provider's public key address
+   * @param _name The provider's name
    * @param _details A SHA256 hash of the new providers details
    * @param _fee The fee charged for customer verification
    */
@@ -30,7 +30,7 @@ interface ICustomers {
 
   /**
    * @dev Verify an investor
-   * @param _customer The customer&#39;s public key address
+   * @param _customer The customer's public key address
    * @param _countryJurisdiction The country urisdiction code of the customer
    * @param _divisionJurisdiction The subdivision jurisdiction code of the customer
    * @param _role The type of customer - investor:1, delegate:2, issuer:3, marketmaker:4, etc.
@@ -93,7 +93,7 @@ interface ICustomers {
 
 contract Customers is ICustomers {
 
-    string public VERSION = &quot;1&quot;;
+    string public VERSION = "1";
 
     IERC20 POLY;                                                        // Instance of the POLY token
 
@@ -108,7 +108,7 @@ contract Customers is ICustomers {
         uint256 expires;                                                // Timestamp when customer verification expires
     }
 
-    mapping(address =&gt; mapping(address =&gt; Customer)) public customers;  // Customers (kyc provider address =&gt; customer address)
+    mapping(address => mapping(address => Customer)) public customers;  // Customers (kyc provider address => customer address)
 
     struct Provider {                                                   // KYC/Accreditation Provider
         string name;                                                    // Name of the provider
@@ -117,7 +117,7 @@ contract Customers is ICustomers {
         uint256 fee;                                                    // Fee charged by the KYC providers
     }
 
-    mapping(address =&gt; Provider) public providers;                      // KYC/Accreditation Providers
+    mapping(address => Provider) public providers;                      // KYC/Accreditation Providers
 
     // Notifications
     event LogNewProvider(address providerAddress, string name, bytes32 details);
@@ -138,8 +138,8 @@ contract Customers is ICustomers {
 
     /**
      * @dev Allow new provider applications
-     * @param _providerAddress The provider&#39;s public key address
-     * @param _name The provider&#39;s name
+     * @param _providerAddress The provider's public key address
+     * @param _name The provider's name
      * @param _details A SHA256 hash of the new providers details
      * @param _fee The fee charged for customer verification
      */
@@ -164,7 +164,7 @@ contract Customers is ICustomers {
 
     /**
      * @dev Verify an investor
-     * @param _customer The customer&#39;s public key address
+     * @param _customer The customer's public key address
      * @param _countryJurisdiction The jurisdiction country code of the customer
      * @param _divisionJurisdiction The jurisdiction subdivision code of the customer
      * @param _role The type of customer - investor:1, delegate:2, issuer:3, marketmaker:4, etc.
@@ -180,7 +180,7 @@ contract Customers is ICustomers {
         uint256 _expires
     ) public onlyProvider returns (bool success)
     {
-        require(_expires &gt; now);
+        require(_expires > now);
         require(POLY.transferFrom(_customer, msg.sender, providers[msg.sender].fee));
         customers[msg.sender][_customer].countryJurisdiction = _countryJurisdiction;
         customers[msg.sender][_customer].divisionJurisdiction = _divisionJurisdiction;

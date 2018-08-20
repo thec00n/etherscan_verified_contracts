@@ -15,7 +15,7 @@ contract Billboard {
 
     bytes32 public head;
     uint public length = 0;
-    mapping (bytes32 =&gt; Message) public messages;
+    mapping (bytes32 => Message) public messages;
 
     modifier onlyOwner {
         require(msg.sender == owner);
@@ -38,7 +38,7 @@ contract Billboard {
     * Init.
     */
     function Billboard() public {
-        _saveMessage(now, now, msg.sender, &quot;Welcome to MyEtheroll.com!&quot;);
+        _saveMessage(now, now, msg.sender, "Welcome to MyEtheroll.com!");
         owner = msg.sender;
     }
 
@@ -47,10 +47,10 @@ contract Billboard {
     * If a message already exists that has not expired, the new message will be queued.
     */
     function addMessage(string _message) public payable {
-        require(msg.value &gt;= cost || msg.sender == owner); // make sure enough eth is sent
-        uint validFrom = messages[head].validTo &gt; now ? messages[head].validTo : now;
+        require(msg.value >= cost || msg.sender == owner); // make sure enough eth is sent
+        uint validFrom = messages[head].validTo > now ? messages[head].validTo : now;
         _saveMessage(validFrom, validFrom + calculateDuration(msg.value), msg.sender, _message);
-        if(msg.value&gt;0)owner.transfer(msg.value);
+        if(msg.value>0)owner.transfer(msg.value);
     }
 
 
@@ -116,7 +116,7 @@ contract Billboard {
     */
     function _getActiveMessageId() private view returns (bytes32) {
         bytes32 idx = head;
-        while(messages[messages[idx].next].validTo &gt; now){
+        while(messages[messages[idx].next].validTo > now){
             idx = messages[idx].next;
         }
         return idx;

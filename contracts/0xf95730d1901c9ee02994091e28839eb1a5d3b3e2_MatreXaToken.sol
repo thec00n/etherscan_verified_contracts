@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,7 +121,7 @@ contract Ownable {
 
 /** 
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f2d3a323c301f6d">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f2d3a323c301f6d">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -159,7 +159,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f381969e909cb3c1">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f381969e909cb3c1">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -185,7 +185,7 @@ contract HasNoTokens is CanReclaimToken {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -222,7 +222,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -290,7 +290,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -357,7 +357,7 @@ contract BurnableToken is StandardToken {
     * @dev Sending ether to contract increases burning reward 
     */
     function() payable {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             BurnRewardIncreased(msg.sender, msg.value);    
         }
     }
@@ -379,14 +379,14 @@ contract BurnableToken is StandardToken {
     * @param _amount of tokens to be burned
     */
     function burn(address _from, uint256 _amount) internal returns(bool){
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         
         uint256 reward = burnReward(_amount);
-        assert(this.balance - reward &gt; 0);
+        assert(this.balance - reward > 0);
 
         balances[_from] = balances[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
-        //assert(totalSupply &gt;= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
+        //assert(totalSupply >= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
         
         _from.transfer(reward);
         Transfer(_from, 0x0, _amount);
@@ -418,7 +418,7 @@ contract BurnableToken is StandardToken {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         if( (_to == address(this)) || (_to == 0) ){
             var _allowance = allowed[_from][msg.sender];
-            //require (_value &lt;= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
+            //require (_value <= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
             allowed[_from][msg.sender] = _allowance.sub(_value);
             return burn(_from, _value);
         }else{
@@ -434,8 +434,8 @@ contract BurnableToken is StandardToken {
 contract MatreXaToken is BurnableToken, MintableToken, HasNoContracts, HasNoTokens { //MintableToken is StandardToken, Ownable
     using SafeMath for uint256;
 
-    string public name = &quot;MatreXa&quot;;
-    string public symbol = &quot;MTRX&quot;;
+    string public name = "MatreXa";
+    string public symbol = "MTRX";
     uint256 public decimals = 18;
 
     address public founder;
@@ -448,7 +448,7 @@ contract MatreXaToken is BurnableToken, MintableToken, HasNoContracts, HasNoToke
     modifier canTransfer() {
         if(msg.sender != founder) {
             require(mintingFinished);
-            require(now &gt; allowTransferTimestamp);
+            require(now > allowTransferTimestamp);
         }
         _;
     }

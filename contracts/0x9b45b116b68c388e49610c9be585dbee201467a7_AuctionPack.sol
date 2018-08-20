@@ -91,7 +91,7 @@ contract CardProto is CardBase {
     }
 
     // limits for mythic cards
-    mapping(uint16 =&gt; Limit) public limits;
+    mapping(uint16 => Limit) public limits;
 
     // can only set limits once
     function setLimit(uint16 id, uint64 limit) public onlyGovernor {
@@ -110,8 +110,8 @@ contract CardProto is CardBase {
 
     // could make these arrays to save gas
     // not really necessary - will be update a very limited no of times
-    mapping(uint8 =&gt; bool) public seasonTradable;
-    mapping(uint8 =&gt; bool) public seasonTradabilityLocked;
+    mapping(uint8 => bool) public seasonTradable;
+    mapping(uint8 => bool) public seasonTradabilityLocked;
     uint8 public currentSeason;
 
     function makeTradable(uint8 season) public onlyGovernor {
@@ -133,8 +133,8 @@ contract CardProto is CardBase {
     }
 
     function nextSeason() public onlyGovernor {
-        //Seasons shouldn&#39;t go to 0 if there is more than the uint8 should hold, the governor should know this &#175;\_(ツ)_/&#175; -M
-        require(currentSeason &lt;= 255); 
+        //Seasons shouldn't go to 0 if there is more than the uint8 should hold, the governor should know this ¯\_(ツ)_/¯ -M
+        require(currentSeason <= 255); 
 
         currentSeason++;
         mythic.length = 0;
@@ -171,13 +171,13 @@ contract CardProto is CardBase {
 
     // there is a particular design decision driving this:
     // need to be able to iterate over mythics only for card generation
-    // don&#39;t store 5 different arrays: have to use 2 ids
+    // don't store 5 different arrays: have to use 2 ids
     // better to bear this cost (2 bytes per proto card)
     // rather than 1 byte per instance
 
     uint16 public protoCount;
     
-    mapping(uint16 =&gt; ProtoCard) protos;
+    mapping(uint16 => ProtoCard) protos;
 
     uint16[] public mythic;
     uint16[] public legendary;
@@ -190,7 +190,7 @@ contract CardProto is CardBase {
         uint8[] healths, uint8[] cardTypes, uint8[] tribes, bool[] packable
     ) public onlyGovernor returns(uint16) {
 
-        for (uint i = 0; i &lt; externalIDs.length; i++) {
+        for (uint i = 0; i < externalIDs.length; i++) {
 
             ProtoCard memory card = ProtoCard({
                 exists: true,
@@ -349,10 +349,10 @@ contract CardProto is CardBase {
             uint16 id;
             uint64 limit;
             bool set;
-            for (uint i = 0; i &lt; mythic.length; i++) {
+            for (uint i = 0; i < mythic.length; i++) {
                 id = mythic[(random + i) % mythic.length];
                 (limit, set) = getLimit(id);
-                if (set &amp;&amp; limit &gt; 0){
+                if (set && limit > 0){
                     return id;
                 }
             }
@@ -364,7 +364,7 @@ contract CardProto is CardBase {
     }
 
     // can never adjust tradable cards
-    // each season gets a &#39;balancing beta&#39;
+    // each season gets a 'balancing beta'
     // totally immutable: season, rarity
     function replaceProto(
         uint16 index, uint8 god, uint8 cardType, uint8 mana, uint8 attack, uint8 health, uint8 tribe
@@ -409,17 +409,17 @@ contract CardPackFour {
     event Referral(address indexed referrer, uint value, address purchaser);
 
     /**
-    * purchase &#39;count&#39; of this type of pack
+    * purchase 'count' of this type of pack
     */
     function purchase(uint16 packCount, address referrer) public payable;
 
     // store purity and shine as one number to save users gas
     function _getPurity(uint16 randOne, uint16 randTwo) internal pure returns (uint16) {
-        if (randOne &gt;= 998) {
+        if (randOne >= 998) {
             return 3000 + randTwo;
-        } else if (randOne &gt;= 988) {
+        } else if (randOne >= 988) {
             return 2000 + randTwo;
-        } else if (randOne &gt;= 938) {
+        } else if (randOne >= 938) {
             return 1000 + randTwo;
         } else {
             return randTwo;
@@ -494,8 +494,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -510,9 +510,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -520,7 +520,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -529,7 +529,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -540,8 +540,8 @@ library SafeMath64 {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint64 a, uint64 b) internal pure returns (uint64 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -556,9 +556,9 @@ library SafeMath64 {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint64 a, uint64 b) internal pure returns (uint64) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint64 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -566,7 +566,7 @@ library SafeMath64 {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint64 a, uint64 b) internal pure returns (uint64) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -575,7 +575,7 @@ library SafeMath64 {
   */
   function add(uint64 a, uint64 b) internal pure returns (uint64 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -583,10 +583,10 @@ library SafeMath64 {
 contract AuctionPack is CardPackFour, Pausable {
 
     using SafeMath for uint;
-    // probably a better way to do this/don&#39;t need to do it at all
+    // probably a better way to do this/don't need to do it at all
     using SafeMath64 for uint64;
 
-    mapping(address =&gt; uint) owed;
+    mapping(address => uint) owed;
 
     event Created(uint indexed id, uint16 proto, uint16 purity, uint minBid, uint length);
     event Opened(uint indexed id, uint64 start);
@@ -636,7 +636,7 @@ contract AuctionPack is CardPackFour, Pausable {
         uint minIncreasePercent,
         address beneficiary
     ) {
-        require(auctions.length &gt; id);
+        require(auctions.length > id);
         Auction memory a = auctions[id];
         return (
             a.status, a.proto, a.purity, a.highestBid, 
@@ -652,7 +652,7 @@ contract AuctionPack is CardPackFour, Pausable {
     ) public onlyOwner whenNotPaused returns (uint) {
 
         require(beneficiary != address(0));
-        require(minBid &gt;= 100 wei);
+        require(minBid >= 100 wei);
 
         Auction memory auction = Auction({
             status: Status.Closed,
@@ -696,7 +696,7 @@ contract AuctionPack is CardPackFour, Pausable {
         uint highest = auction.highestBid;
         
         // calculate one percent of the number
-        // highest will always be &gt;= 100
+        // highest will always be >= 100
         uint numerator = highest.div(100);
 
         // calculate the minimum increase required
@@ -715,11 +715,11 @@ contract AuctionPack is CardPackFour, Pausable {
 
         uint64 end = auction.start.add(auction.length);
 
-        require(end &gt;= block.number);
+        require(end >= block.number);
 
         uint threshold = getMinBid(id);
         
-        require(msg.value &gt;= threshold);
+        require(msg.value >= threshold);
 
         
         // if within the buffer period of the auction
@@ -727,7 +727,7 @@ contract AuctionPack is CardPackFour, Pausable {
 
         uint64 differenceToEnd = end.sub(uint64(block.number));
 
-        if (auction.bufferPeriod &gt; differenceToEnd) {
+        if (auction.bufferPeriod > differenceToEnd) {
             
             // extend the auction period to be at least the buffer period
             uint64 toAdd = auction.bufferPeriod.sub(differenceToEnd);
@@ -741,7 +741,7 @@ contract AuctionPack is CardPackFour, Pausable {
 
         if (auction.highestBidder != address(0)) {
 
-            // let&#39;s just go with the safe option rather than using send(): probably fine but no loss
+            // let's just go with the safe option rather than using send(): probably fine but no loss
             owed[auction.highestBidder] = owed[auction.highestBidder].add(auction.highestBid);
 
             // give the previous bidder their bonus/consolation card 
@@ -762,7 +762,7 @@ contract AuctionPack is CardPackFour, Pausable {
 
         uint64 end = auction.start.add(auction.length);
 
-        require(block.number &gt; end);
+        require(block.number > end);
 
         require(auction.status == Status.Open);
         
@@ -772,7 +772,7 @@ contract AuctionPack is CardPackFour, Pausable {
 
         emit Claimed(id, cardID, auction.highestBidder, auction.highestBid, auction.proto, auction.purity);
 
-        // don&#39;t require this to be a trusted address
+        // don't require this to be a trusted address
         owed[auction.beneficiary] = owed[auction.beneficiary].add(auction.highestBid);
 
         return cardID;
@@ -780,7 +780,7 @@ contract AuctionPack is CardPackFour, Pausable {
 
     function withdraw(address user) public {
         uint balance = owed[user];
-        require(balance &gt; 0);
+        require(balance > 0);
         owed[user] = 0;
         user.transfer(balance);
     }

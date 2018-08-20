@@ -2,7 +2,7 @@ pragma solidity ^0.4.15;
 
 /**
  *
- * @author  &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deb0bba9aaa9b7adaa9eaeacb1aab1b0b3bfb7b2f0bdb1b3">[email&#160;protected]</a>&gt;
+ * @author  <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deb0bba9aaa9b7adaa9eaeacb1aab1b0b3bfb7b2f0bdb1b3">[email protected]</a>>
  *
  * Version D
  *
@@ -15,7 +15,7 @@ pragma solidity ^0.4.15;
  * useful, for example, if the sale-contract/owner wants to reduce the supply of tokens.
  *
  */
-//import &#39;./SafeMath.sol&#39;;
+//import './SafeMath.sol';
 pragma solidity ^0.4.18;
 
 /*
@@ -38,7 +38,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) pure internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -51,7 +51,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) pure internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -70,12 +70,12 @@ contract SafeMath {
     }
 }
 
-//import &#39;./iBurnableToken.sol&#39;;
+//import './iBurnableToken.sol';
 pragma solidity ^0.4.15;
 
 //Burnable Token interface
 
-//import &#39;./iERC20Token.sol&#39;;
+//import './iERC20Token.sol';
 
 pragma solidity ^0.4.15;
 
@@ -116,8 +116,8 @@ contract BurnableToken is iBurnableToken, SafeMath {
   uint           tokenSupply;                                //can never be increased; but tokens can be burned
   address public owner;
   address public restrictedAcct;                             //no transfers from this addr during vest time
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) approvals;  //transfer approvals, from -&gt; to
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) approvals;  //transfer approvals, from -> to
 
 
   modifier ownerOnly {
@@ -131,7 +131,7 @@ contract BurnableToken is iBurnableToken, SafeMath {
   }
 
   modifier preventRestricted {
-    require((msg.sender != restrictedAcct) || (now &gt;= restrictUntil));
+    require((msg.sender != restrictedAcct) || (now >= restrictUntil));
     _;
   }
 
@@ -152,8 +152,8 @@ contract BurnableToken is iBurnableToken, SafeMath {
 
   function transfer(address _to, uint _value) public preventRestricted returns (bool success) {
     //if token supply was not limited then we would prevent wrap:
-    //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to])
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to])
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       TransferEvent(msg.sender, _to, _value);
@@ -166,8 +166,8 @@ contract BurnableToken is iBurnableToken, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
     //if token supply was not limited then we would prevent wrap:
-    //if (balances[_from] &gt;= _value &amp;&amp; approvals[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to])
-    if (balances[_from] &gt;= _value &amp;&amp; approvals[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    //if (balances[_from] >= _value && approvals[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to])
+    if (balances[_from] >= _value && approvals[_from][msg.sender] >= _value && _value > 0) {
       balances[_from] -= _value;
       balances[_to] += _value;
       approvals[_from][msg.sender] -= _value;
@@ -238,7 +238,7 @@ contract BurnableToken is iBurnableToken, SafeMath {
   }
 
   function burnTokens(uint _burnCount) public preventRestricted {
-    if (balances[msg.sender] &gt;= _burnCount &amp;&amp; _burnCount &gt; 0) {
+    if (balances[msg.sender] >= _burnCount && _burnCount > 0) {
       uint _value = safeMul(this.balance, _burnCount) / tokenSupply;
       tokenSupply = safeSub(tokenSupply, _burnCount);
       balances[msg.sender] = safeSub(balances[msg.sender], _burnCount);
@@ -248,7 +248,7 @@ contract BurnableToken is iBurnableToken, SafeMath {
   }
 
   function unPaidBurnTokens(uint _burnCount) public preventRestricted {
-    if (balances[msg.sender] &gt;= _burnCount &amp;&amp; _burnCount &gt; 0) {
+    if (balances[msg.sender] >= _burnCount && _burnCount > 0) {
       tokenSupply = safeSub(tokenSupply, _burnCount);
       balances[msg.sender] = safeSub(balances[msg.sender], _burnCount);
       BurnEvent(msg.sender, _burnCount, 0);

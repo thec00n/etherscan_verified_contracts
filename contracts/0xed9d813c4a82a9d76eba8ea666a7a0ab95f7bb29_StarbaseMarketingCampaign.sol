@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -81,7 +81,7 @@ contract AbstractStarbaseToken {
 
 /**
  * @title Crowdsale contract - Starbase marketing campaign contract to reward supportors
- * @author Starbase PTE. LTD. - &lt;<span class="__cf_email__" data-cfemail="670e090108271413061505061402490408">[email&#160;protected]</span>&gt;
+ * @author Starbase PTE. LTD. - <<span class="__cf_email__" data-cfemail="670e090108271413061505061402490408">[email protected]</span>>
  */
 contract StarbaseMarketingCampaign is Ownable {
     /*
@@ -100,7 +100,7 @@ contract StarbaseMarketingCampaign is Ownable {
      */
     struct Contributor {
         uint256 rewardedTokens;
-        mapping (bytes32 =&gt; bool) contributions;  // example: keccak256(bcm-xda98sdf) =&gt; true
+        mapping (bytes32 => bool) contributions;  // example: keccak256(bcm-xda98sdf) => true
         bool isContributor;
     }
 
@@ -108,7 +108,7 @@ contract StarbaseMarketingCampaign is Ownable {
      *  Storage
      */
     address[] public contributors;
-    mapping (address =&gt; Contributor) public contributor;
+    mapping (address => Contributor) public contributor;
 
     /**
      *  Functions
@@ -126,7 +126,7 @@ contract StarbaseMarketingCampaign is Ownable {
      */
 
     /**
-     * @dev Setup function sets external contracts&#39; addresses.
+     * @dev Setup function sets external contracts' addresses.
      * @param starbaseTokenAddress Token address.
      */
     function setup(address starbaseTokenAddress)
@@ -140,7 +140,7 @@ contract StarbaseMarketingCampaign is Ownable {
     }
 
     /**
-     * @dev Allows for marketing contributor&#39;s reward adding and withdrawl
+     * @dev Allows for marketing contributor's reward adding and withdrawl
      * @param contributorAddress The address of the contributor
      * @param tokenCount Token number to awarded and to be withdrawn
      * @param contributionId Id of contribution from bounty app db
@@ -181,7 +181,7 @@ contract StarbaseMarketingCampaign is Ownable {
 
     /**
      * @dev Informs about contributors rewardedTokens and transferredRewardTokens status
-     * @param contributorAddress A contributor&#39;s address
+     * @param contributorAddress A contributor's address
      * @param contributionId Id of contribution from bounty app db
      */
     function getContributorInfo(address contributorAddress, string contributionId)

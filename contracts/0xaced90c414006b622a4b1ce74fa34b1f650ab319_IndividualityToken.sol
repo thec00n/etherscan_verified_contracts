@@ -150,21 +150,21 @@ contract IndividualityToken is TokenInterface, IndividualityTokenInterface {
         _;
     }
 
-    // address =&gt; canmint
-    mapping (address =&gt; bool) minters;
+    // address => canmint
+    mapping (address => bool) minters;
     
-    // owner =&gt; balance
-    mapping (address =&gt; uint) balances;
+    // owner => balance
+    mapping (address => uint) balances;
 
-    // owner =&gt; spender =&gt; balance
-    mapping (address =&gt; mapping (address =&gt; uint)) approvals;
+    // owner => spender => balance
+    mapping (address => mapping (address => uint)) approvals;
 
     uint numTokens;
 
     /// @dev Mints a new token.
     /// @param _to Address of token owner.
     function mint(address _to) minterOnly returns (bool success) {
-        // ensure that the token owner doesn&#39;t already own a token.
+        // ensure that the token owner doesn't already own a token.
         if (balances[_to] != 0x0) return false;
 
         balances[_to] = 1;
@@ -182,7 +182,7 @@ contract IndividualityToken is TokenInterface, IndividualityTokenInterface {
     
     // @dev Mint many new tokens
     function mint(address[] _to) minterOnly returns (bool success) {
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             if(balances[_to[i]] != 0x0) return false;
             balances[_to[i]] = 1;
             Mint(_to[i]);
@@ -294,7 +294,7 @@ contract IndividualityToken is TokenInterface, IndividualityTokenInterface {
             // Cannot transfer to an existing token owner
             return false;
         } else if (approvals[_from][msg.sender] == 0) {
-            // The approved token doesn&#39;t match the token being transferred.
+            // The approved token doesn't match the token being transferred.
             return false;
         }
 

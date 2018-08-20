@@ -8,13 +8,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure  internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
     
@@ -43,17 +43,17 @@ contract ERC20 {
 }
 contract BeefLedger is ERC20, SafeMath
 {
-      string public constant name = &quot;BeefLedger&quot;;
+      string public constant name = "BeefLedger";
   
     	// Symbol of token
-      string public constant symbol = &quot;BLT&quot;; 
+      string public constant symbol = "BLT"; 
       uint8 public constant decimals = 6;  // decimal places
     
       uint public totalSupply = 888888888 * 10**6 ; // total supply includes decimal upto 6 places
       
-      mapping(address =&gt; uint) balances;
+      mapping(address => uint) balances;
      
-      mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+      mapping (address => mapping (address => uint)) allowed;
       address owner;
       // ico dates
       uint256 pre_date;
@@ -110,18 +110,18 @@ contract BeefLedger is ERC20, SafeMath
 
 
     function () public payable{ 
-      require (!stopped &amp;&amp; msg.sender != owner &amp;&amp; ico_status);
-       if(now &lt;= pre_date)
+      require (!stopped && msg.sender != owner && ico_status);
+       if(now <= pre_date)
          {
              
              price_token =  .0001167 ether;
          }
-         else if(now &gt; pre_date &amp;&amp; now &lt;= ico_first)
+         else if(now > pre_date && now <= ico_first)
          {
              
              price_token =  .0001667 ether;
          }
-         else if(now &gt; ico_first &amp;&amp; now &lt;= ico_second)
+         else if(now > ico_first && now <= ico_second)
          {
              
              price_token =  .0002167 ether;
@@ -132,7 +132,7 @@ else {
 }
        
          uint no_of_tokens = (msg.value * 10 **6 ) / price_token ;
-          require(balances[address(this)] &gt;= no_of_tokens);
+          require(balances[address(this)] >= no_of_tokens);
               
           balances[address(this)] = safeSub(balances[address(this)], no_of_tokens);
           balances[msg.sender] = safeAdd(balances[msg.sender], no_of_tokens);
@@ -153,12 +153,12 @@ else {
         return balances[sender];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) public returns(bool success) {
         if (_to == 0x0) revert(); // Prevent transfer to 0x0 address. Use burn() instead
-        if (balances[msg.sender] &lt; _amount) revert(); // Check if the sender has enough
+        if (balances[msg.sender] < _amount) revert(); // Check if the sender has enough
 
-        if (safeAdd(balances[_to], _amount) &lt; balances[_to]) revert(); // Check for overflows
+        if (safeAdd(balances[_to], _amount) < balances[_to]) revert(); // Check for overflows
        
         balances[msg.sender] = safeSub(balances[msg.sender], _amount); // Subtract from the sender
         balances[_to] = safeAdd(balances[_to], _amount); // Add the same to the recipient
@@ -169,7 +169,7 @@ else {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -179,10 +179,10 @@ else {
         address _to,
         uint256 _amount
     ) public returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            allowed[_from][msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            safeAdd(balances[_to], _amount) &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            allowed[_from][msg.sender] >= _amount &&
+            _amount > 0 &&
+            safeAdd(balances[_to], _amount) > balances[_to]) {
             balances[_from] = safeSub(balances[_from], _amount);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _amount);
             balances[_to] = safeAdd(balances[_to], _amount);

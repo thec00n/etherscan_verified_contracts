@@ -42,7 +42,7 @@ contract ReverseRegistrar {
     }
 
     /**
-     * @dev Returns the node hash for a given account&#39;s reverse records.
+     * @dev Returns the node hash for a given account's reverse records.
      * @param addr The address to hash
      * @return The ENS node hash.
      */

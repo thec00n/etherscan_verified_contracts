@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -72,11 +72,11 @@ contract Ownable {
 /**
  * @title Authorizable
  * @dev The Authorizable contract has authorized addresses, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;multiple user permissions&quot;.
+ * functions, this simplifies the implementation of "multiple user permissions".
  */
 contract Authorizable is Ownable {
     
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => bool) public authorized;
     event AuthorizationSet(address indexed addressAuthorized, bool indexed authorization);
 
     /**
@@ -153,7 +153,7 @@ contract PrivateSaleExchangeRate {
  * @title Whitelist interface
  */
 contract Whitelist {
-    mapping(address =&gt; bool) whitelisted;
+    mapping(address => bool) whitelisted;
     event AddToWhitelist(address _beneficiary);
     event RemoveFromWhitelist(address _beneficiary);
     function isWhitelisted(address _address) public view returns (bool);
@@ -202,7 +202,7 @@ contract Crowdsale {
     * @param _token Address of the token being sold
     */
     function Crowdsale(PrivateSaleExchangeRate _rate, address _wallet, ERC20 _token) public {
-        require(_rate.rate() &gt; 0);
+        require(_rate.rate() > 0);
         require(_token != address(0));
         require(_wallet != address(0));
 
@@ -259,8 +259,8 @@ contract Crowdsale {
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount, uint256 _tokenAmount) internal {
         require(_beneficiary != address(0));
-        require(_weiAmount &gt; 0);
-        require(_tokenAmount &gt; 0);
+        require(_weiAmount > 0);
+        require(_tokenAmount > 0);
     }
 
     /**
@@ -330,7 +330,7 @@ contract TimedCrowdsale is Crowdsale {
      * @dev Reverts if not in crowdsale time range. 
     */
     modifier onlyWhileOpen {
-        require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+        require(now >= openingTime && now <= closingTime);
         _;
     }
 
@@ -341,9 +341,9 @@ contract TimedCrowdsale is Crowdsale {
      */
     function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
         
-        require(_closingTime &gt;= now);
+        require(_closingTime >= now);
          
-        require(_closingTime &gt;= _openingTime);
+        require(_closingTime >= _openingTime);
         openingTime = _openingTime;
         closingTime = _closingTime;
     }
@@ -353,7 +353,7 @@ contract TimedCrowdsale is Crowdsale {
      * @return Whether crowdsale period has elapsed
      */
     function hasClosed() public view returns (bool) {
-        return now &gt; closingTime;
+        return now > closingTime;
     }
 
     /**
@@ -361,7 +361,7 @@ contract TimedCrowdsale is Crowdsale {
      * @return Whether crowdsale period has elapsed
      */
     function hasOpening() public view returns (bool) {
-        return (now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+        return (now >= openingTime && now <= closingTime);
     }
   
     /**
@@ -417,8 +417,8 @@ contract CappedCrowdsale is Crowdsale {
     * @param _capToken Max amount of token to be contributed
     */
     function CappedCrowdsale(uint256 _capToken, uint256 _minWei) public {
-        require(_minWei &gt; 0);
-        require(_capToken &gt; 0);
+        require(_minWei > 0);
+        require(_capToken > 0);
         minWei = _minWei;
         capToken = _capToken;
     }
@@ -428,9 +428,9 @@ contract CappedCrowdsale is Crowdsale {
     * @return Whether the cap was reached
     */
     function capReached() public view returns (bool) {
-        if(tokenRaised &gt;= capToken) return true;
+        if(tokenRaised >= capToken) return true;
         uint256 minTokens = rate.getTokenAmount(minWei);
-        if(capToken - tokenRaised &lt;= minTokens) return true;
+        if(capToken - tokenRaised <= minTokens) return true;
         return false;
     }
 
@@ -441,8 +441,8 @@ contract CappedCrowdsale is Crowdsale {
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount, uint256 _tokenAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount, _tokenAmount);
-        require(_weiAmount &gt;= minWei);
-        require(tokenRaised.add(_tokenAmount) &lt;= capToken);
+        require(_weiAmount >= minWei);
+        require(tokenRaised.add(_tokenAmount) <= capToken);
     }
 }
 
@@ -494,10 +494,10 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
     address[] public addressIndices;
 
     // get amount of claim token
-    mapping(address =&gt; uint256) mapAddressToToken;
+    mapping(address => uint256) mapAddressToToken;
     
-    //get index of addressIndices if = 0 &gt;&gt; not found
-    mapping(address =&gt; uint256) mapAddressToIndex;
+    //get index of addressIndices if = 0 >> not found
+    mapping(address => uint256) mapAddressToIndex;
     
      // Amount of wei waiting for claim (token)
     uint256 public waitingForClaimTokens;
@@ -506,7 +506,7 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
     * @dev Constructor, takes token wallet address. 
     */
     function ClaimCrowdsale(uint256 _divider) public {
-        require(_divider &gt; 0);
+        require(_divider > 0);
         divider = _divider;
         addressIndices.push(address(0));
     }
@@ -517,7 +517,7 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
     function claim(address _beneficiary) public onlyAuthorized {
        
         require(_beneficiary != address(0));
-        require(mapAddressToToken[_beneficiary] &gt; 0);
+        require(mapAddressToToken[_beneficiary] > 0);
         
         // remove from list
         uint indexToBeDeleted = mapAddressToIndex[_beneficiary];
@@ -525,7 +525,7 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
         
         uint arrayLength = addressIndices.length;
         // if index to be deleted is not the last index, swap position.
-        if (indexToBeDeleted &lt; arrayLength-1) {
+        if (indexToBeDeleted < arrayLength-1) {
             // swap 
             addressIndices[indexToBeDeleted] = addressIndices[arrayLength-1];
             mapAddressToIndex[addressIndices[indexToBeDeleted]] = indexToBeDeleted;
@@ -544,8 +544,8 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
     }
     
     function checkClaimTokenByIndex(uint index) public view returns (uint256){
-        require(index &gt;= 0);
-        require(index &lt; addressIndices.length);
+        require(index >= 0);
+        require(index < addressIndices.length);
         return checkClaimTokenByAddress(addressIndices[index]);
     }
     
@@ -559,7 +559,7 @@ contract ClaimCrowdsale is Crowdsale, Authorizable {
     
     function _addToClaimList(address _beneficiary, uint256 _claimAmount) internal {
         require(_beneficiary != address(0));
-        require(_claimAmount &gt; 0);
+        require(_claimAmount > 0);
         
         if(mapAddressToToken[_beneficiary] == 0){
             addressIndices.push(_beneficiary);
@@ -644,7 +644,7 @@ contract ZminePrivateSale is ClaimCrowdsale
     function remainingTokenForSale() public view returns (uint256) {
         uint256 allowanceTokenLeft = (token.allowance(tokenWallet, this)).sub(waitingForClaimTokens);
         uint256 balanceTokenLeft = (token.balanceOf(tokenWallet)).sub(waitingForClaimTokens);
-        if(allowanceTokenLeft &lt; balanceTokenLeft) return allowanceTokenLeft;
+        if(allowanceTokenLeft < balanceTokenLeft) return allowanceTokenLeft;
         return balanceTokenLeft;
     }
     
@@ -655,7 +655,7 @@ contract ZminePrivateSale is ClaimCrowdsale
      */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount, uint256 _tokenAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount, _tokenAmount);
-        require(remainingTokenForSale().sub(_tokenAmount) &gt;= 0);
+        require(remainingTokenForSale().sub(_tokenAmount) >= 0);
     }
 }
 

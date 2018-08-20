@@ -32,7 +32,7 @@ contract ERC20 is ERC20Basic {
 */
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     /**
     * @dev total number of tokens in existence
@@ -47,7 +47,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -71,7 +71,7 @@ contract BasicToken is ERC20Basic {
 * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
 */
 contract StandardToken is ERC20, BasicToken {
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
     /**
     * @dev Transfer tokens from one address to another
     * @param _from address The address which you want to send tokens from
@@ -80,8 +80,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -327,18 +327,18 @@ library SafeMath {
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        // assert(b &gt; 0);
+        // assert(b > 0);
         // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         // assert(a == b * c + a % b);
-        // There is no case in which this doesn&#39;t hold
+        // There is no case in which this doesn't hold
         return c;
     }
     /**
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     /**
@@ -346,7 +346,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -357,9 +357,9 @@ library SafeMath {
 * `StandardToken` functions.
 */
 contract SimpleToken is StandardToken {
-    string public constant name = &quot;SimpleToken&quot;;
+    string public constant name = "SimpleToken";
     // solium-disable-line uppercase
-    string public constant symbol = &quot;SIM&quot;;
+    string public constant symbol = "SIM";
     // solium-disable-line uppercase
     uint8 public constant decimals = 18;
     // solium-disable-line uppercase
@@ -383,15 +383,15 @@ contract BiometricLockable is Ownable {
     event BiometricUnlocked(address beneficiary);
 
     address BOPS;
-    mapping(address =&gt; bool) biometricLock;
-    mapping(bytes32 =&gt; bool) biometricCompleted;
-    mapping(bytes32 =&gt; uint256) biometricNow;
+    mapping(address => bool) biometricLock;
+    mapping(bytes32 => bool) biometricCompleted;
+    mapping(bytes32 => uint256) biometricNow;
     /**
     * @dev Locks msg.sender address
     */
     function bioLock() external {
         uint rightNow = now;
-        bytes32 sha = keccak256(&quot;bioLock&quot;, msg.sender, rightNow);
+        bytes32 sha = keccak256("bioLock", msg.sender, rightNow);
         biometricLock[msg.sender] = true;
         biometricNow[sha] = rightNow;
         BiometricLocked(msg.sender, sha);
@@ -402,7 +402,7 @@ contract BiometricLockable is Ownable {
     function bioUnlock(bytes32 sha, uint8 v, bytes32 r, bytes32 s) external {
         require(biometricLock[msg.sender]);
         require(!biometricCompleted[sha]);
-        bytes32 bioLockSha = keccak256(&quot;bioLock&quot;, msg.sender, biometricNow[sha]);
+        bytes32 bioLockSha = keccak256("bioLock", msg.sender, biometricNow[sha]);
         require(sha == bioLockSha);
         require(verify(sha, v, r, s) == true);
         biometricLock[msg.sender] = false;
@@ -422,7 +422,7 @@ contract BiometricLockable is Ownable {
         return biometricLock[_beneficiary];
     }
     /**
-    * @dev BOPS Address setter.  BOPS signs biometric authentications to ensure user&#39;s identity
+    * @dev BOPS Address setter.  BOPS signs biometric authentications to ensure user's identity
     *
     */
     function setBOPSAddress(address _BOPS) external onlyOwner {
@@ -448,18 +448,18 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
     event BiometricTransferRequest(address from, address to, uint256 amount, bytes32 sha);
     event BiometricApprovalRequest(address indexed owner, address indexed spender, uint256 value, bytes32 sha);
     // Transfer related methods variables
-    mapping(bytes32 =&gt; address) biometricFrom;
-    mapping(bytes32 =&gt; address) biometricAllowee;
-    mapping(bytes32 =&gt; address) biometricTo;
-    mapping(bytes32 =&gt; uint256) biometricAmount;
+    mapping(bytes32 => address) biometricFrom;
+    mapping(bytes32 => address) biometricAllowee;
+    mapping(bytes32 => address) biometricTo;
+    mapping(bytes32 => uint256) biometricAmount;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         if (isBiometricLocked(msg.sender)) {
-            require(_value &lt;= balances[msg.sender]);
+            require(_value <= balances[msg.sender]);
             require(_to != address(0));
-            require(_value &gt; 0);
+            require(_value > 0);
             uint rightNow = now;
-            bytes32 sha = keccak256(&quot;transfer&quot;, msg.sender, _to, _value, rightNow);
+            bytes32 sha = keccak256("transfer", msg.sender, _to, _value, rightNow);
             biometricFrom[sha] = msg.sender;
             biometricTo[sha] = _to;
             biometricAmount[sha] = _value;
@@ -474,13 +474,13 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         if (isBiometricLocked(_from)) {
-            require(_value &lt;= balances[_from]);
-            require(_value &lt;= allowed[_from][msg.sender]);
+            require(_value <= balances[_from]);
+            require(_value <= allowed[_from][msg.sender]);
             require(_to != address(0));
             require(_from != address(0));
-            require(_value &gt; 0);
+            require(_value > 0);
             uint rightNow = now;
-            bytes32 sha = keccak256(&quot;transferFrom&quot;, _from, _to, _value, rightNow);
+            bytes32 sha = keccak256("transferFrom", _from, _to, _value, rightNow);
             biometricAllowee[sha] = msg.sender;
             biometricFrom[sha] = _from;
             biometricTo[sha] = _to;
@@ -497,7 +497,7 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
     function approve(address _spender, uint256 _value) public returns (bool) {
         if (isBiometricLocked(msg.sender)) {
             uint rightNow = now;
-            bytes32 sha = keccak256(&quot;approve&quot;, msg.sender, _spender, _value, rightNow);
+            bytes32 sha = keccak256("approve", msg.sender, _spender, _value, rightNow);
             biometricFrom[sha] = msg.sender;
             biometricTo[sha] = _spender;
             biometricAmount[sha] = _value;
@@ -514,7 +514,7 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
         if (isBiometricLocked(msg.sender)) {
             uint newValue = allowed[msg.sender][_spender].add(_addedValue);
             uint rightNow = now;
-            bytes32 sha = keccak256(&quot;increaseApproval&quot;, msg.sender, _spender, newValue, rightNow);
+            bytes32 sha = keccak256("increaseApproval", msg.sender, _spender, newValue, rightNow);
             biometricFrom[sha] = msg.sender;
             biometricTo[sha] = _spender;
             biometricAmount[sha] = newValue;
@@ -531,14 +531,14 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
         if (isBiometricLocked(msg.sender)) {
             uint oldValue = allowed[msg.sender][_spender];
             uint newValue;
-            if (_subtractedValue &gt; oldValue) {
+            if (_subtractedValue > oldValue) {
                 newValue = 0;
             }
             else {
                 newValue = oldValue.sub(_subtractedValue);
             }
             uint rightNow = now;
-            bytes32 sha = keccak256(&quot;decreaseApproval&quot;, msg.sender, _spender, newValue, rightNow);
+            bytes32 sha = keccak256("decreaseApproval", msg.sender, _spender, newValue, rightNow);
             biometricFrom[sha] = msg.sender;
             biometricTo[sha] = _spender;
             biometricAmount[sha] = newValue;
@@ -556,8 +556,8 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
     function releaseTransfer(bytes32 sha, uint8 v, bytes32 r, bytes32 s) public returns (bool){
         require(msg.sender == biometricFrom[sha]);
         require(!biometricCompleted[sha]);
-        bytes32 transferFromSha = keccak256(&quot;transferFrom&quot;, biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
-        bytes32 transferSha = keccak256(&quot;transfer&quot;, biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
+        bytes32 transferFromSha = keccak256("transferFrom", biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
+        bytes32 transferSha = keccak256("transfer", biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
         require(sha == transferSha || sha == transferFromSha);
         require(verify(sha, v, r, s) == true);
         if (transferFromSha == sha) {
@@ -566,8 +566,8 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
             address _to = biometricTo[sha];
             uint256 _value = biometricAmount[sha];
             require(_to != address(0));
-            require(_value &lt;= balances[_from]);
-            require(_value &lt;= allowed[_from][_spender]);
+            require(_value <= balances[_from]);
+            require(_value <= allowed[_from][_spender]);
             balances[_from] = balances[_from].sub(_value);
             balances[_to] = balances[_to].add(_value);
             allowed[msg.sender][_spender] = allowed[msg.sender][_spender].sub(_value);
@@ -594,9 +594,9 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
     function releaseApprove(bytes32 sha, uint8 v, bytes32 r, bytes32 s) public returns (bool){
         require(msg.sender == biometricFrom[sha]);
         require(!biometricCompleted[sha]);
-        bytes32 approveSha = keccak256(&quot;approve&quot;, biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
-        bytes32 increaseApprovalSha = keccak256(&quot;increaseApproval&quot;, biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
-        bytes32 decreaseApprovalSha = keccak256(&quot;decreaseApproval&quot;, biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
+        bytes32 approveSha = keccak256("approve", biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
+        bytes32 increaseApprovalSha = keccak256("increaseApproval", biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
+        bytes32 decreaseApprovalSha = keccak256("decreaseApproval", biometricFrom[sha], biometricTo[sha], biometricAmount[sha], biometricNow[sha]);
         require(approveSha == sha || increaseApprovalSha == sha || decreaseApprovalSha == sha);
         require(verify(sha, v, r, s) == true);
         super.approve(biometricTo[sha], biometricAmount[sha]);
@@ -616,19 +616,19 @@ contract BiometricToken is Ownable, MintableToken, BiometricLockable {
 
 contract CompliantToken is BiometricToken {
     //list of praticipants that have purchased during the presale period
-    mapping(address =&gt; bool) presaleHolder;
+    mapping(address => bool) presaleHolder;
     //list of presale participants and date when their tokens are unlocked
-    mapping(address =&gt; uint256) presaleHolderUnlockDate;
+    mapping(address => uint256) presaleHolderUnlockDate;
     //list of participants from the United States
-    mapping(address =&gt; bool) utilityHolder;
+    mapping(address => bool) utilityHolder;
     //list of Hoyos Integrity Corp addresses that accept RSN as payment for service
-    mapping(address =&gt; bool) allowedHICAddress;
+    mapping(address => bool) allowedHICAddress;
     //list of addresses that can add to presale address list (i.e. crowdsale contract)
-    mapping(address =&gt; bool) privilegeAddress;
+    mapping(address => bool) privilegeAddress;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         if (presaleHolder[msg.sender]) {
-            if (now &gt;= presaleHolderUnlockDate[msg.sender]) {
+            if (now >= presaleHolderUnlockDate[msg.sender]) {
                 return super.transfer(_to, _value);
             }
             else {
@@ -647,7 +647,7 @@ contract CompliantToken is BiometricToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         if (presaleHolder[_from]) {
-            if (now &gt;= presaleHolderUnlockDate[_from]) {
+            if (now >= presaleHolderUnlockDate[_from]) {
                 return super.transferFrom(_from, _to, _value);
             }
             else {
@@ -717,7 +717,7 @@ contract CompliantToken is BiometricToken {
 }
 
 contract RISENCoin is CompliantToken, PausableToken {
-    string public name = &quot;RISEN&quot;;
-    string public symbol = &quot;RSN&quot;;
+    string public name = "RISEN";
+    string public symbol = "RSN";
     uint8 public decimals = 18;
 }

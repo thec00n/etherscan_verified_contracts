@@ -6,7 +6,7 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -24,8 +24,8 @@ contract LoveBlocks {
 
     LoveBlock[] public locks;
 
-    mapping (uint =&gt; address) private lockToOwner;
-    mapping (address =&gt; uint) private ownerToNumber;
+    mapping (uint => address) private lockToOwner;
+    mapping (address => uint) private ownerToNumber;
 
     function myLoveBlockCount() external view returns(uint) {
         return ownerToNumber[msg.sender];
@@ -46,7 +46,7 @@ contract LoveBlocks {
         uint[] memory result = new uint[](ownerToNumber[msg.sender]);
 
         uint counter = 0;
-        for (uint i = 0; i &lt; locks.length; i++) {
+        for (uint i = 0; i < locks.length; i++) {
             if (msg.sender == lockToOwner[i]) {
                 result[counter] = i;
                 counter = counter.add(1);

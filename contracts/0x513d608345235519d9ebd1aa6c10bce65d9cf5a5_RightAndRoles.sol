@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
 
 contract IRightAndRoles {
     address[][] public wallets;
-    mapping(address =&gt; uint16) public roles;
+    mapping(address => uint16) public roles;
 
     event WalletChanged(address indexed newWallet, address indexed oldWallet, uint8 indexed role);
     event CloneChanged(address indexed wallet, uint8 indexed role, bool indexed mod);
@@ -24,10 +24,10 @@ contract RightAndRoles is IRightAndRoles {
 
     function RightAndRoles(address[] _roles) public {
         uint8 len = uint8(_roles.length);
-        require(len &gt; 0&amp;&amp;len &lt;16);
+        require(len > 0&&len <16);
         wallets.length = len;
 
-        for(uint8 i = 0; i &lt; len; i++){
+        for(uint8 i = 0; i < len; i++){
             wallets[i].push(_roles[i]);
             roles[_roles[i]] += uint16(2)**i;
             emit WalletChanged(_roles[i], address(0),i);
@@ -35,40 +35,40 @@ contract RightAndRoles is IRightAndRoles {
     }
 
     function changeClons(address _clon, uint8 _role, bool _mod) external {
-        require(wallets[_role][0] == msg.sender&amp;&amp;_clon != msg.sender);
+        require(wallets[_role][0] == msg.sender&&_clon != msg.sender);
         emit CloneChanged(_clon,_role,_mod);
         uint16 roleMask = uint16(2)**_role;
         if(_mod){
-            require(roles[_clon]&amp;roleMask == 0);
+            require(roles[_clon]&roleMask == 0);
             wallets[_role].push(_clon);
         }else{
             address[] storage tmp = wallets[_role];
             uint8 i = 1;
-            for(i; i &lt; tmp.length; i++){
+            for(i; i < tmp.length; i++){
                 if(tmp[i] == _clon) break;
             }
-            require(i &gt; tmp.length);
+            require(i > tmp.length);
             tmp[i] = tmp[tmp.length];
             delete tmp[tmp.length];
         }
-        roles[_clon] = _mod?roles[_clon]|roleMask:roles[_clon]&amp;~roleMask;
+        roles[_clon] = _mod?roles[_clon]|roleMask:roles[_clon]&~roleMask;
     }
 
     // Change the address for the specified role.
     // Available to any wallet owner except the observer.
     // Available to the manager until the round is initialized.
-    // The Observer&#39;s wallet or his own manager can change at any time.
+    // The Observer's wallet or his own manager can change at any time.
     // @ Do I have to use the function      no
     // @ When it is possible to call        depend...
     // @ When it is launched automatically  -
     // @ Who can call the function          staff (all 7+ roles)
     function changeWallet(address _wallet, uint8 _role) external {
-        require(wallets[_role][0] == msg.sender || wallets[0][0] == msg.sender || (wallets[1][0] == msg.sender &amp;&amp; (managerPowerful || _role == 0)));
+        require(wallets[_role][0] == msg.sender || wallets[0][0] == msg.sender || (wallets[1][0] == msg.sender && (managerPowerful || _role == 0)));
         emit WalletChanged(wallets[_role][0],_wallet,_role);
         uint16 roleMask = uint16(2)**_role;
         address[] storage tmp = wallets[_role];
-        for(uint8 i = 0; i &lt; tmp.length; i++){
-            roles[tmp[i]] = roles[tmp[i]]&amp;~roleMask;
+        for(uint8 i = 0; i < tmp.length; i++){
+            roles[tmp[i]] = roles[tmp[i]]&~roleMask;
         }
         delete  wallets[_role];
         tmp.push(_wallet);
@@ -81,12 +81,12 @@ contract RightAndRoles is IRightAndRoles {
     }
 
     function onlyRoles(address _sender, uint16 _roleMask) view external returns(bool) {
-        return roles[_sender]&amp;_roleMask != 0;
+        return roles[_sender]&_roleMask != 0;
     }
 
     function getMainWallets() view external returns(address[]){
         address[] memory _wallets = new address[](wallets.length);
-        for(uint8 i = 0; i&lt;wallets.length; i++){
+        for(uint8 i = 0; i<wallets.length; i++){
             _wallets[i] = wallets[i][0];
         }
         return _wallets;

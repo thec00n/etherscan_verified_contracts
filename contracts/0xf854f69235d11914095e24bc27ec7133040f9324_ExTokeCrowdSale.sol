@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 // ----------------------------------------------------------------------------
-// &#39;ExToke.com&#39; Crowdsale contract
+// 'ExToke.com' Crowdsale contract
 //
 // Admin       	 : 0xEd86f5216BCAFDd85E5875d35463Aca60925bF16
 // fees      	 : zero (0)
@@ -28,20 +28,20 @@ pragma solidity 0.4.24;
       }
     
       function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
       }
     
       function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
       }
     
       function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     }
@@ -86,8 +86,8 @@ pragma solidity 0.4.24;
         tokenReward = token(addressOfTokenUsedAsReward);
         }
         function () payable public{
-             require(EndTime &gt; now);
-             require (startTime &lt; now);
+             require(EndTime > now);
+             require (startTime < now);
             uint256 ethervalue=msg.value;
             uint256 tokenAmount=ethervalue.div(ExchangeRate);
             tokenReward.transfer(msg.sender, tokenAmount.mul(1 ether));			// makes the transfers

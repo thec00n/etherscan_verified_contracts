@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -102,7 +102,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -122,7 +122,7 @@ contract Object is Owned {
 
 
 
-//import &quot;../contracts/ContractsManagerInterface.sol&quot;;
+//import "../contracts/ContractsManagerInterface.sol";
 
 /**
  * @title General MultiEventsHistory user.
@@ -201,7 +201,7 @@ contract Lockup6m_20180801 is Object {
         if (errorCode != OK) {
             return errorCode;
         }
-        if (eventsHistory != 0x0 &amp;&amp; eventsHistory != _eventsHistory) {
+        if (eventsHistory != 0x0 && eventsHistory != _eventsHistory) {
             return TIME_LOCK_INVALID_INVOCATION;
         }
         eventsHistory = _eventsHistory;
@@ -226,7 +226,7 @@ contract Lockup6m_20180801 is Object {
         if (amount == 0) {
             return TIME_LOCK_BALANCE_ERROR;
         }
-        //1533081600 =&gt; 2018-08-01
+        //1533081600 => 2018-08-01
         lock = accountData(amount, 1533081600);
         return OK;
     }
@@ -234,7 +234,7 @@ contract Lockup6m_20180801 is Object {
     function payOut(address _getter) onlyContractOwner returns(uint errorCode) {
         // check if user has funds due for pay out because lock time is over
         uint amount = lock.balance;
-        if (now &lt; lock.releaseTime) {
+        if (now < lock.releaseTime) {
             return TIME_LOCK_TIMESTAMP_ERROR;
         }
         if (amount == 0) {

@@ -1,5 +1,5 @@
 // Play2liveICO tokensale smart contract.
-// Developed by Phenom.Team &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="254c4b434a65554d404b4a480b51404448">[email&#160;protected]</a>&gt;
+// Developed by Phenom.Team <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="254c4b434a65554d404b4a480b51404448">[email protected]</a>>
 pragma solidity ^0.4.15;
 
 /**
@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -108,8 +108,8 @@ contract Play2liveICO {
     StatusICO statusICO = StatusICO.Created;
     
     // Mappings
-    mapping(address =&gt; bool) public swaped;
-    mapping (address =&gt; string) public keys;
+    mapping(address => bool) public swaped;
+    mapping (address => string) public keys;
     
     // Events Log
     event LogStartPreICO();
@@ -278,7 +278,7 @@ contract Play2liveICO {
     */
     function() external payable {
         if (statusICO == StatusICO.PreIcoStarted) {
-            require(msg.value &gt;= 100 finney);
+            require(msg.value >= 100 finney);
         }
         buy(msg.sender, msg.value.mul(tokenPrice)); 
     }
@@ -286,7 +286,7 @@ contract Play2liveICO {
    /**
     *   @dev Function to issues tokens for investors who made purchases in other cryptocurrencies
     *   @param _investor     address the tokens will be issued to
-    *   @param _txHash       transaction hash of investor&#39;s payment
+    *   @param _txHash       transaction hash of investor's payment
     *   @param _lucValue     number of LUC tokens
     */
 
@@ -310,7 +310,7 @@ contract Play2liveICO {
         require(statusICO == StatusICO.PreIcoStarted || statusICO == StatusICO.IcoStarted);
         uint bonus = getBonus(_lucValue);
         uint total = _lucValue.add(bonus);
-        require(soldAmount + _lucValue &lt;= hardCap);
+        require(soldAmount + _lucValue <= hardCap);
         LUC.mintTokens(_investor, total);
         soldAmount = soldAmount.add(_lucValue);
     }
@@ -325,7 +325,7 @@ contract Play2liveICO {
     function getBonus(uint _value) public constant returns (uint) {
         uint bonus = 0;
         if (statusICO == StatusICO.PreIcoStarted) {
-            if (now &lt; 1517356800) {
+            if (now < 1517356800) {
                 bonus = _value.mul(30).div(100);
                 return bonus;
             } else {
@@ -334,39 +334,39 @@ contract Play2liveICO {
             }
         }
         if (statusICO == StatusICO.IcoStarted) {
-            if (now &lt; 1518652800) {
+            if (now < 1518652800) {
                 bonus = _value.mul(10).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1518912000) {
+            if (now < 1518912000) {
                 bonus = _value.mul(9).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1519171200) {
+            if (now < 1519171200) {
                 bonus = _value.mul(8).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1519344000) {
+            if (now < 1519344000) {
                 bonus = _value.mul(7).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1519516800) {
+            if (now < 1519516800) {
                 bonus = _value.mul(6).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1519689600) {
+            if (now < 1519689600) {
                 bonus = _value.mul(5).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1519862400) {
+            if (now < 1519862400) {
                 bonus = _value.mul(4).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1520035200) {
+            if (now < 1520035200) {
                 bonus = _value.mul(3).div(100);
                 return bonus;                   
             }
-            if (now &lt; 1520208000) {
+            if (now < 1520208000) {
                 bonus = _value.mul(2).div(100);
                 return bonus;                   
             } else {
@@ -400,8 +400,8 @@ contract Play2liveICO {
  */
 contract LucToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Level Up Coin&quot;;
-    string public symbol = &quot;LUC&quot;;
+    string public name = "Level Up Coin";
+    string public symbol = "LUC";
     uint public decimals = 18;
 
     // Ico contract address
@@ -430,7 +430,7 @@ contract LucToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint _value) external icoOnly {
-       require(_value &gt; 0);
+       require(_value > 0);
        balances[_holder] = balances[_holder].add(_value);
        totalSupply = totalSupply.add(_value);
        Transfer(0x0, _holder, _value);
@@ -446,7 +446,7 @@ contract LucToken is ERC20 {
 
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint256) {
@@ -543,15 +543,15 @@ contract tokenLUCG {
 
         }
     /* This creates an array with all balances */
-        mapping (address =&gt; uint256) public balanceOf;
+        mapping (address => uint256) public balanceOf;
 
 }
 
 contract Presale is tokenLUCG {
 
         using SafeMath for uint;
-        string name = &#39;Level Up Coin Gold&#39;;
-        string symbol = &#39;LUCG&#39;;
+        string name = 'Level Up Coin Gold';
+        string symbol = 'LUCG';
         uint8 decimals = 18;
         address manager;
         address public ico;

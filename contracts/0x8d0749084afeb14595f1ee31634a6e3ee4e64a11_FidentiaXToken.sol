@@ -4,7 +4,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,20 +72,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
   * @dev Transfer tokens from one address to another
@@ -219,8 +219,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract FidentiaXToken is MintableToken {
   // Coin Properties
-  string public name = &quot;fidentiaX&quot;;
-  string public symbol = &quot;fdX&quot;;
+  string public name = "fidentiaX";
+  string public symbol = "fdX";
   uint256 public decimals = 18;
 
   // Special propeties
@@ -332,7 +332,7 @@ contract FidentiaXTokenSale is Ownable {
 
   bool    public freeForAll = false;
 
-  mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
+  mapping (address => bool) public authorised; // just to annoy the heck out of americans
 
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
@@ -355,18 +355,18 @@ contract FidentiaXTokenSale is Ownable {
   * @dev Calculates the amount of bonus coins the buyer gets
    */
   function getRateAt(uint256 at) internal constant returns (uint256) {
-    if (at &lt; (tier1Timestamp))
+    if (at < (tier1Timestamp))
       return 575;
-    if (at &lt; (tier2Timestamp))
+    if (at < (tier2Timestamp))
       return 550;
     return 500;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp)
+    if (now > endTimestamp)
       return true;
-    if (tokenRaised &gt;= tokensForSale)
+    if (tokenRaised >= tokensForSale)
       return true; // if we reach the tokensForSale
     return false;
   }
@@ -389,11 +389,11 @@ contract FidentiaXTokenSale is Ownable {
   */
   modifier onlyAuthorised() {
     require (authorised[msg.sender] || freeForAll);
-    require (now &gt;= startTimestamp);
+    require (now >= startTimestamp);
     require (!(hasEnded()));
     require (multiSig != 0x0);
-    require (msg.value &gt; 1 finney);
-    require(tokensForSale &gt; tokenRaised); // check we are not over the number of tokensForSale
+    require (msg.value > 1 finney);
+    require(tokensForSale > tokenRaised); // check we are not over the number of tokensForSale
     _;
   }
 
@@ -408,7 +408,7 @@ contract FidentiaXTokenSale is Ownable {
   * @dev authorise a lot of accounts in one go
   */
   function authoriseManyAccounts(address[] many) onlyCSorFx public {
-    for (uint256 i = 0; i &lt; many.length; i++) {
+    for (uint256 i = 0; i < many.length; i++) {
       authorised[many[i]] = true;
     }
   }
@@ -450,8 +450,8 @@ contract FidentiaXTokenSale is Ownable {
   // low level token purchase function
   function buyTokens(address beneficiary, uint256 amount) onlyAuthorised internal {
     //check minimum and maximum amount
-    require(amount &gt;= minContribution);
-    require(amount &lt;= maxContribution);
+    require(amount >= minContribution);
+    require(amount <= maxContribution);
 
     // Calculate token amount to be purchased
     uint256 actualRate = getRateAt(now);
@@ -473,7 +473,7 @@ contract FidentiaXTokenSale is Ownable {
     require(hasEnded());
     // assign the rest of the 100M tokens to the reserve
     uint unassigned;
-    if(maxTokens &gt; tokenRaised) {
+    if(maxTokens > tokenRaised) {
       unassigned  = maxTokens.sub(tokenRaised);
       token.mint(multiSig,unassigned);
     }

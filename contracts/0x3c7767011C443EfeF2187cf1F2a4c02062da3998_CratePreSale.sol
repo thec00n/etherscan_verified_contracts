@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,8 +50,8 @@ contract CratePreSale is Ownable {
     uint256 public currentPrice = appreciationRateWei; // initalise the price to the appreciation rate
     uint32 public cratesSold;
     
-    mapping (address =&gt; uint32) public userCrateCount; // store how many crates a user has bought
-    mapping (address =&gt; uint[]) public userToRobots; // store the DNA/robot information of bought crates
+    mapping (address => uint32) public userCrateCount; // store how many crates a user has bought
+    mapping (address => uint[]) public userToRobots; // store the DNA/robot information of bought crates
     
     // ------ EVENTS ------ 
     event LogCratePurchase( 
@@ -86,10 +86,10 @@ contract CratePreSale is Ownable {
     }
 
     function purchaseCrate() payable public {
-        require(now &lt; PRESALE_END_TIMESTAMP); // Check presale is still ongoing
-        require(cratesSold &lt; MAX_CRATES_TO_SELL); // Check max crates sold is less than hard limit
-        require(msg.value &gt;= currentPrice); // Check buyer sent sufficient funds to purchase
-        if (msg.value &gt; currentPrice) { //overpaid, return excess
+        require(now < PRESALE_END_TIMESTAMP); // Check presale is still ongoing
+        require(cratesSold < MAX_CRATES_TO_SELL); // Check max crates sold is less than hard limit
+        require(msg.value >= currentPrice); // Check buyer sent sufficient funds to purchase
+        if (msg.value > currentPrice) { //overpaid, return excess
             msg.sender.transfer(msg.value-currentPrice);
         }
         userCrateCount[msg.sender] += 1;

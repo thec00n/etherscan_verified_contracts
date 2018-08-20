@@ -7,10 +7,10 @@ contract Token {
     uint256 public totalSupply;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed from, address indexed to, uint256 value);
@@ -18,17 +18,17 @@ contract Token {
     //Modifiers
 
     modifier when_can_transfer(address _from, uint256 _value) {
-        require (balances[_from] &gt;= _value);
+        require (balances[_from] >= _value);
         _;
     }
 
     modifier when_can_receive(address _recipient, uint256 _value) {
-        require (balances[_recipient] + _value &gt; balances[_recipient]);
+        require (balances[_recipient] + _value > balances[_recipient]);
         _;
     }
 
     modifier when_is_allowed(address _from, address _delegate, uint256 _value) {
-        require (allowed[_from][_delegate] &gt;= _value);
+        require (allowed[_from][_delegate] >= _value);
         _;
     }
 
@@ -51,7 +51,7 @@ contract Token {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
       when_can_transfer(msg.sender, _amount)
       when_can_receive(_to, _amount)
@@ -64,7 +64,7 @@ contract Token {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism:
     function transferFrom(

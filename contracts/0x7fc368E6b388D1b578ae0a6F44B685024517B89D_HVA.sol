@@ -27,8 +27,8 @@ contract token {
     uint8 public decimals = 8;  
     uint256 public totalSupply; 
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value); 
     event Burn(address indexed from, uint256 value);  
@@ -47,8 +47,8 @@ contract token {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
       require(_to != 0x0);
-      require(balances[_from] &gt;= _value);
-      require(balances[_to] + _value &gt; balances[_to]);
+      require(balances[_from] >= _value);
+      require(balances[_to] + _value > balances[_to]);
       uint previousBalances = balances[_from] + balances[_to];
       balances[_from] -= _value;
       balances[_to] += _value;
@@ -63,7 +63,7 @@ contract token {
 
   
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);         // Check allowance
+        require(_value <= allowance[_from][msg.sender]);         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -86,7 +86,7 @@ contract token {
 
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -94,8 +94,8 @@ contract token {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balances[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -106,7 +106,7 @@ contract token {
 }
 
 contract HVA is owned, token {
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     constructor(
@@ -118,8 +118,8 @@ contract HVA is owned, token {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balances[_from] &gt; _value);
-        require (balances[_to] + _value &gt; balances[_to]);
+        require (balances[_from] > _value);
+        require (balances[_to] + _value > balances[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balances[_from] -= _value;

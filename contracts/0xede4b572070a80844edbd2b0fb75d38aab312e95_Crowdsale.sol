@@ -16,7 +16,7 @@ contract Crowdsale {
     uint public startTime;
     uint public deadline;
     uint public price = 80 szabo;                   // 0.00008 ETH/SEHR  ; 1 szabo = 10^-6 Ether
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     bool public fundingGoalReached = false;
     bool public crowdsaleClosed = false;
@@ -37,8 +37,8 @@ contract Crowdsale {
         owner = msg.sender;
     }
     
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
-    modifier beforeDeadline() { if (now &lt; deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
+    modifier beforeDeadline() { if (now < deadline) _; }
     modifier isCrowdsale() { if (!crowdsaleClosed) _; }
     modifier isCheckDone() { if (checkDone) _; }
 
@@ -51,25 +51,25 @@ contract Crowdsale {
         uint amount = msg.value;
         
         if(amount == 0 ) revert();   // Need to send some ether at least
-        else if( amount &lt; 250 finney) {
-            if (sehrRaised &lt; fundingGoal) {
-                if(now &lt; startTime + 31 days) revert();    // Need to invest at least 0.25 Ether during the pre-sale if the funding goal hasn&#39;t been reached yet
+        else if( amount < 250 finney) {
+            if (sehrRaised < fundingGoal) {
+                if(now < startTime + 31 days) revert();    // Need to invest at least 0.25 Ether during the pre-sale if the funding goal hasn't been reached yet
             }
         }
         
         uint tokenAmount = (amount / price) * 1 ether; // We compute the number of tokens to issue
         
-        if(sehrRaised &lt; fundingGoal) {  // Bonus available for any tokens bought before softcap is reached
+        if(sehrRaised < fundingGoal) {  // Bonus available for any tokens bought before softcap is reached
             
-            if(now &lt; startTime + 10 days) {
+            if(now < startTime + 10 days) {
                 tokenAmount = (13 * tokenAmount) / 10; // 30% bonus during the first 10-day period
             }
             
-            else if(now &lt; startTime + 20 days) {
+            else if(now < startTime + 20 days) {
                 tokenAmount = (12 * tokenAmount) / 10;     // 20% bonus during the second 10-day period
             }
             
-            else if(now &lt; startTime + 31 days) {
+            else if(now < startTime + 31 days) {
                 tokenAmount = (11 * tokenAmount) / 10;     // 10% bonus during the third 10-day period
             }
         }
@@ -89,7 +89,7 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline public {
-        if (sehrRaised &gt;= fundingGoal){
+        if (sehrRaised >= fundingGoal){
             fundingGoalReached = true;
             emit GoalReached(SSOTHEALTH_FUNDS_ADDRESS, amountRaised);
         }
@@ -109,7 +109,7 @@ contract Crowdsale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     emit FundTransfer(msg.sender, amount, false);
                 } else {
@@ -118,7 +118,7 @@ contract Crowdsale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; SSOTHEALTH_FUNDS_ADDRESS == msg.sender) {
+        if (fundingGoalReached && SSOTHEALTH_FUNDS_ADDRESS == msg.sender) {
             if (SSOTHEALTH_FUNDS_ADDRESS.send(amountRaised)) {
                 emit FundTransfer(SSOTHEALTH_FUNDS_ADDRESS, amountRaised, false);
             } else {

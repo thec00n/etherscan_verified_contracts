@@ -1,7 +1,7 @@
 contract EtherDOGEICO {
     
-    function name() constant returns (string) { return &quot;EtherDOGE&quot;; }
-    function symbol() constant returns (string) { return &quot;eDOGE&quot;; }
+    function name() constant returns (string) { return "EtherDOGE"; }
+    function symbol() constant returns (string) { return "eDOGE"; }
     function decimals() constant returns (uint8) { return 4; }
 	
 
@@ -35,18 +35,18 @@ contract EtherDOGEICO {
 	//Even if 0 ether is sent.
 	function () payable {
 	    
-	    uint256 tryAmount = div((mul(msg.value, rate)), 1 ether);                   //Don&#39;t let people buy more tokens than there are.
+	    uint256 tryAmount = div((mul(msg.value, rate)), 1 ether);                   //Don't let people buy more tokens than there are.
 	    
-		if (msg.value == 0 || msg.value &lt; 0 || balanceOf(owner) &lt; tryAmount) {		//If zero ether is sent, kill. Do nothing. 
+		if (msg.value == 0 || msg.value < 0 || balanceOf(owner) < tryAmount) {		//If zero ether is sent, kill. Do nothing. 
 			revert();
 		}
 		
-	    amount = 0;									                //set the &#39;amount&#39; var back to zero
+	    amount = 0;									                //set the 'amount' var back to zero
 		amount = div((mul(msg.value, rate)), 1 ether);				//take sent ether, multiply it by the rate then divide by 1 ether.
 		transferFrom(owner, msg.sender, amount);                    //Send tokens to buyer
 		totalSupply += amount;										//Keep track of how many have been sold.
 		totalContrib = (totalContrib + msg.value);
-		amount = 0;									                //set the &#39;amount&#39; var back to zero
+		amount = 0;									                //set the 'amount' var back to zero
 		
 		
 		owner.transfer(msg.value);					                //Send the ETH to contract owner.
@@ -58,7 +58,7 @@ contract EtherDOGEICO {
   
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
 
     function transfer(address _to, uint256 _value) returns (bool success) {
@@ -67,10 +67,10 @@ contract EtherDOGEICO {
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -91,7 +91,7 @@ contract EtherDOGEICO {
         
         uint256 fromBalance = balances[owner];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
+        bool sufficientFunds = fromBalance >= _value;
 
         if (sufficientFunds) {
             balances[_to] += _value;
@@ -116,20 +116,20 @@ contract EtherDOGEICO {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 	

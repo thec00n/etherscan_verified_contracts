@@ -20,13 +20,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -93,8 +93,8 @@ contract BlocksquareSeriesA is owned {
     uint256 MAXAMOUNTOFTOKENS = (1200000 * 10 ** 18);
 
     /** Mappings **/
-    mapping(address =&gt; uint256) contributed;
-    mapping(uint256 =&gt; address) participantIndex;
+    mapping(address => uint256) contributed;
+    mapping(uint256 => address) participantIndex;
 
     function BlocksquareSeriesA() public {
         owner = msg.sender;
@@ -109,7 +109,7 @@ contract BlocksquareSeriesA is owned {
     function () payable public {
         require(reward != address(0));
         require(whitelist != address(0));
-        require(msg.value &gt;= (2 ether / 10));
+        require(msg.value >= (2 ether / 10));
         require(icoHasStarted);
         require(!icoHasClosed);
         require(valueInUSD != 0);
@@ -130,7 +130,7 @@ contract BlocksquareSeriesA is owned {
         emit Received(msg.sender, msg.value);
         emit TokensGiven(msg.sender, tokens);
 
-        if(address(this).balance &gt;= 50 ether) {
+        if(address(this).balance >= 50 ether) {
             if(!address(recipient).send(address(this).balance)) {
                 emit ErrorReturningEth(recipient, address(this).balance);
             }
@@ -150,7 +150,7 @@ contract BlocksquareSeriesA is owned {
         uint256 tokensPerEth = valueInUSD.div(PRICEOFTOKEN);
 
         uint256 rewardAmount = tokensPerEth.mul(_amountOfWei);
-        if(currentAmountOfTokensWithNoBonus.add(rewardAmount) &gt; MAXAMOUNTOFTOKENS) {
+        if(currentAmountOfTokensWithNoBonus.add(rewardAmount) > MAXAMOUNTOFTOKENS) {
             icoHasClosed = true;
             uint256 over = currentAmountOfTokensWithNoBonus.add(rewardAmount).sub(MAXAMOUNTOFTOKENS);
             rewardAmount = rewardAmount.sub(over);
@@ -163,13 +163,13 @@ contract BlocksquareSeriesA is owned {
         }
         currentAmountOfTokensWithNoBonus = currentAmountOfTokensWithNoBonus.add(rewardAmount);
 
-        if(block.timestamp &lt;= startTime.add(BONUS25)) {
+        if(block.timestamp <= startTime.add(BONUS25)) {
             rewardAmount = rewardAmount.add(rewardAmount.mul(25).div(100));
         }
-        else if(block.timestamp &lt;= startTime.add(BONUS15)) {
+        else if(block.timestamp <= startTime.add(BONUS15)) {
             rewardAmount = rewardAmount.add(rewardAmount.mul(15).div(100));
         }
-        else if(block.timestamp &lt;= startTime.add(BONUS7)) {
+        else if(block.timestamp <= startTime.add(BONUS7)) {
             rewardAmount = rewardAmount.add(rewardAmount.mul(7).div(100));
         }
 
@@ -229,7 +229,7 @@ contract BlocksquareSeriesA is owned {
     }
 
     function isCrowdsaleOpen() constant public returns (bool _isOpened) {
-        return (!icoHasClosed &amp;&amp; icoHasStarted);
+        return (!icoHasClosed && icoHasStarted);
     }
 
     function amountContributed(address _contributor) constant public returns(uint256 _contributedUntilNow){

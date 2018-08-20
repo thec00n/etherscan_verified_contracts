@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55363a3b2134362115263834272130213d7b363a">[email&#160;protected]</a>
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55363a3b2134362115263834272130213d7b363a">[email protected]</a>
  */
 
 /**
@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -175,11 +175,11 @@ contract IDT_PreICO is Pausable {
    * @dev Returns the rate of tokens per wei at the present time.
    */
   function getCurrentRate() public view returns (uint256) {
-    if (now &lt;= openingTime.add(2 days)) return rate.add(rate/4);   // Bonus 25%
-    if (now &gt; openingTime.add(2 days) &amp;&amp; now &lt;= openingTime.add(4 days)) return rate.add(rate/5);   // Bonus 20%
-    if (now &gt; openingTime.add(4 days) &amp;&amp; now &lt;= openingTime.add(6 days)) return rate.add(rate*3/20);   // Bonus 15%
-    if (now &gt; openingTime.add(6 days) &amp;&amp; now &lt;= openingTime.add(8 days)) return rate.add(rate/10);   // Bonus 10%
-    if (now &gt; openingTime.add(8 days) &amp;&amp; now &lt;= openingTime.add(10 days)) return rate.add(rate/20);   // Bonus 5%
+    if (now <= openingTime.add(2 days)) return rate.add(rate/4);   // Bonus 25%
+    if (now > openingTime.add(2 days) && now <= openingTime.add(4 days)) return rate.add(rate/5);   // Bonus 20%
+    if (now > openingTime.add(4 days) && now <= openingTime.add(6 days)) return rate.add(rate*3/20);   // Bonus 15%
+    if (now > openingTime.add(6 days) && now <= openingTime.add(8 days)) return rate.add(rate/10);   // Bonus 10%
+    if (now > openingTime.add(8 days) && now <= openingTime.add(10 days)) return rate.add(rate/20);   // Bonus 5%
   }
 
   // -----------------------------------------
@@ -225,8 +225,8 @@ contract IDT_PreICO is Pausable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
-    require(_weiAmount &gt;= minInvest);
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(_weiAmount >= minInvest);
+    require(now >= openingTime && now <= closingTime);
   }
 
   /**
@@ -269,7 +269,7 @@ contract IDT_PreICO is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**

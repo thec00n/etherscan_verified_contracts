@@ -20,7 +20,7 @@ function maximumNumberOfLoops(uint _costSansLoops, uint _loopCost) public consta
 
 function canDoLoop(uint _costSansLoops, uint _loopCost, uint _numberOfLoops) public constant returns (bool) {
     uint loopLimit = maximumNumberOfLoops(_costSansLoops, _loopCost);
-    if(_numberOfLoops &lt; loopLimit) return true;
+    if(_numberOfLoops < loopLimit) return true;
     return false;
 }
 

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -199,7 +199,7 @@ contract TokenDistributor {
     //DateTime public dateTime = DateTime(dateTimeAddr);    
     DateTime public dateTime;
     
-    mapping (address =&gt; DistributeList) public distributeList;    
+    mapping (address => DistributeList) public distributeList;    
 
     /*
     //  events
@@ -247,19 +247,19 @@ contract TokenDistributor {
     }
 
     function addLockUpData(address _receiver, uint[] _amount, uint[] _releaseDate) public payable onlyOwner {
-        require(_amount.length == _releaseDate.length &amp;&amp; _receiver != address(0));
+        require(_amount.length == _releaseDate.length && _receiver != address(0));
 
         uint tokenReserve;
         DistributeList storage dl = distributeList[_receiver];
 
         // check amount of lock token
-        for (uint i = 0; i &lt; _amount.length; i++) {
+        for (uint i = 0; i < _amount.length; i++) {
             tokenReserve += _amount[i];
         }
         
-        require(neededAmountTotal.add(tokenReserve) &lt;= token.balanceOf(this));
+        require(neededAmountTotal.add(tokenReserve) <= token.balanceOf(this));
 
-        for (i = 0; i &lt; _amount.length; i++) {
+        for (i = 0; i < _amount.length; i++) {
             dl.lockUpData.push(LockUpData(_amount[i], _releaseDate[i]));
         }
         
@@ -270,7 +270,7 @@ contract TokenDistributor {
     
     function changeReceiver(address _from, address _to) public onlyOwner {
         //change only when _to address has 0 amount (means new address)
-        require(_to != address(0) &amp;&amp; distributeList[_to].totalAmount == 0);
+        require(_to != address(0) && distributeList[_to].totalAmount == 0);
         
         distributeList[_to] = distributeList[_from];
         delete distributeList[_from];
@@ -278,7 +278,7 @@ contract TokenDistributor {
     }
     
     function removeReceiver(address _receiver) public onlyOwner {
-        require(distributeList[_receiver].totalAmount &gt;= distributeList[_receiver].releasedToken);
+        require(distributeList[_receiver].totalAmount >= distributeList[_receiver].releasedToken);
         
         //adjust neededAmountTotal when lockupdata removing.
         neededAmountTotal -= (distributeList[_receiver].totalAmount).sub(distributeList[_receiver].releasedToken);
@@ -301,9 +301,9 @@ contract TokenDistributor {
         DistributeList storage dl = distributeList[_tokenReceiver];
         uint releasableToken;
 
-        for (uint i=0; i &lt; dl.lockUpData.length ; i++){
+        for (uint i=0; i < dl.lockUpData.length ; i++){
 
-            if(dl.lockUpData[i].releaseDate &lt;= now &amp;&amp; dl.lockUpData[i].amount &gt; 0){
+            if(dl.lockUpData[i].releaseDate <= now && dl.lockUpData[i].amount > 0){
                 releasableToken += dl.lockUpData[i].amount;
                 dl.lockUpData[i].amount = 0;
             }
@@ -318,7 +318,7 @@ contract TokenDistributor {
     }
     
     function transfer(address _to, uint _amount) public onlyOwner {
-        require(neededAmountTotal.add(_amount) &lt;= token.balanceOf(this) &amp;&amp; token.balanceOf(this) &gt; 0);
+        require(neededAmountTotal.add(_amount) <= token.balanceOf(this) && token.balanceOf(this) > 0);
         token.transfer(_to, _amount);
     }
     
@@ -332,7 +332,7 @@ contract TokenDistributor {
         require(_receiver.length == _amount.length);
         uint bountyAmount;
         
-        for (uint i = 0; i &lt; _amount.length; i++) {
+        for (uint i = 0; i < _amount.length; i++) {
             distributedBountyTotal += _amount[i];
             bountyAmount += _amount[i];
             token.transferFrom(approver, _receiver[i], _amount[i]);
@@ -345,8 +345,8 @@ contract TokenDistributor {
         DistributeList storage dl = distributeList[_tokenReceiver];
         uint releasableToken;
 
-        for (uint i=0; i &lt; dl.lockUpData.length ; i++) {
-            if(dl.lockUpData[i].releaseDate &lt;= now &amp;&amp; dl.lockUpData[i].amount &gt; 0) {
+        for (uint i=0; i < dl.lockUpData.length ; i++) {
+            if(dl.lockUpData[i].releaseDate <= now && dl.lockUpData[i].amount > 0) {
                 releasableToken += dl.lockUpData[i].amount;
             }
         }
@@ -361,9 +361,9 @@ contract TokenDistributor {
         uint _releasableToken;
         uint _releaseDate;
 
-        for (uint i=0; i &lt; dl.lockUpData.length ; i++){
-            if(dl.lockUpData[i].releaseDate &gt; now &amp;&amp; dl.lockUpData[i].amount &gt; 0){
-                if(_releaseDate &lt; dl.lockUpData[i].releaseDate || _releaseDate == 0 ){
+        for (uint i=0; i < dl.lockUpData.length ; i++){
+            if(dl.lockUpData[i].releaseDate > now && dl.lockUpData[i].amount > 0){
+                if(_releaseDate < dl.lockUpData[i].releaseDate || _releaseDate == 0 ){
                     _releasableToken = dl.lockUpData[i].amount;
                     _releaseDate = dl.lockUpData[i].releaseDate;
                 }

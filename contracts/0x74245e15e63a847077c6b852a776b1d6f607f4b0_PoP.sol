@@ -27,8 +27,8 @@ contract PoP{
 
 	// Init
 	function PoP() public {
-		name = &quot;PopCoin&quot;; 
-    	symbol = &quot;PoP&quot;; 
+		name = "PopCoin"; 
+    	symbol = "PoP"; 
     	decimals = 18;
     	author = msg.sender;
     	totalSupply_ = 10000000 * 10 ** uint256(decimals);
@@ -80,10 +80,10 @@ contract PoP{
 
 
 	// Game Private Variables
-	mapping (address =&gt; Player.Data) playerCollection;
+	mapping (address => Player.Data) playerCollection;
 	BettingRecordArray.Data currentGameBettingRecords;
 	WrappedArray.Data gameMetaData;
-	mapping (address =&gt; uint256) playerInternalWallet;
+	mapping (address => uint256) playerInternalWallet;
 	FixedPoint.Data public initialBankrollGrowthAmount; // This is what the current pot will be compared to
 	FixedPoint.Data nextGameInitialMinBetSize;
 	FixedPoint.Data currentGameInitialMinBetSize;
@@ -94,8 +94,8 @@ contract PoP{
 	uint256 currentBetNumber;
 
 	// Coin Private Variables
-	mapping(address =&gt; uint256) popBalances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping(address => uint256) popBalances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	uint256 totalSupply_;
 	uint256 supplyMined_;
 	uint256 supplyBurned_;
@@ -104,7 +104,7 @@ contract PoP{
 
 	function startGame () payable public {
 		require (msg.sender == author);
-		require (msg.value &gt; 0);
+		require (msg.value > 0);
 		require (gameHasStarted == false);
 		
 		initialSeed = initialSeed.add(msg.value);
@@ -114,8 +114,8 @@ contract PoP{
 
 	function updateNextGameMinAndMaxBlockUntilGameEnd (uint256 maxBlocks, uint256 minBlocks) public {
 		require (msg.sender == author);
-		require (maxBlocks &gt; 0);
-		require (minBlocks &gt; 0);
+		require (maxBlocks > 0);
+		require (minBlocks > 0);
 		FixedPoint.Data memory nextMaxBlock = FixedPoint.fromInt256(Int256(maxBlocks));
 		FixedPoint.Data memory nextMinBlock = FixedPoint.fromInt256(Int256(minBlocks));
 		require(nextMaxBlock.cmp(kUpperBoundBlocksTillGameEnd.mul(FixedPoint.fromInt256(2))) != 1);
@@ -128,14 +128,14 @@ contract PoP{
 	}
 
 	function addToRakePool () public payable{
-		assert (msg.value &gt; 0);
+		assert (msg.value > 0);
 		playerInternalWallet[this] = playerInternalWallet[this].add(msg.value);
 	}
 
 	// Public API
 	function bet () payable public {
 		// require bet be large enough
-		require(msg.value &gt;= minimumWager); 
+		require(msg.value >= minimumWager); 
 		require(gameHasStarted);
 
 		uint256 betAmount = msg.value;
@@ -143,7 +143,7 @@ contract PoP{
 		// take rake
 		betAmount = betAmountAfterRakeHasBeenWithdrawnAndProcessed(betAmount);
 
-		if((block.number.sub(lastBetBlockNumber) &gt;= minimumNumberOfBlocksToEndGame) &amp;&amp; (lastBetBlockNumber != 0)) {
+		if((block.number.sub(lastBetBlockNumber) >= minimumNumberOfBlocksToEndGame) && (lastBetBlockNumber != 0)) {
 			processEndGame(betAmount);
 		} else if (lastBetBlockNumber == 0) {
 			initialBankrollGrowthAmount = FixedPoint.fromInt256(Int256(betAmount.add(initialSeed)));
@@ -195,12 +195,12 @@ contract PoP{
 		Player.Data storage currentPlayer = playerCollection[msg.sender];
 
 		uint256 playerBettingRecordCount = currentPlayer.unprocessedBettingRecordCount();
-		uint256 numberOfIterations = withdrawCount &lt; playerBettingRecordCount ? withdrawCount : playerBettingRecordCount;
+		uint256 numberOfIterations = withdrawCount < playerBettingRecordCount ? withdrawCount : playerBettingRecordCount;
 		if(numberOfIterations == 0) {return;}
 
 		numberOfIterations = numberOfIterations.add(1);
 
-		for (uint256 i = 0 ; i &lt; numberOfIterations; i = i.add(1)) {
+		for (uint256 i = 0 ; i < numberOfIterations; i = i.add(1)) {
 			Player.BettingRecord memory unprocessedRecord = currentPlayer.getNextRecord();
 			processBettingRecord(unprocessedRecord);
 		}
@@ -236,7 +236,7 @@ contract PoP{
 	function getWinningsForRecordId(uint256 recordIndex, bool onlyWithdrawable, bool onlyCurrentGame) public view returns(uint256) {
 		Player.Data storage currentPlayer = playerCollection[msg.sender];
 		Player.BettingRecord memory record = currentPlayer.getBettingRecordAtIndex(recordIndex);
-		if(onlyCurrentGame &amp;&amp; record.gameId != currentGameNumber) {
+		if(onlyCurrentGame && record.gameId != currentGameNumber) {
 			return 0;
 		}
 		return getWinningsForRecord(record, onlyWithdrawable);
@@ -244,7 +244,7 @@ contract PoP{
 
 	function getWinningsForRecord(Player.BettingRecord record, bool onlyWithdrawable) private view returns(uint256) {
 
-		if(onlyWithdrawable &amp;&amp; recordIsTooNewToProcess(record)) {
+		if(onlyWithdrawable && recordIsTooNewToProcess(record)) {
 			return 0;
 		}
 
@@ -269,7 +269,7 @@ contract PoP{
 	}
 
 	function addToBonusSeed () public payable {
-		require (msg.value &gt; 0);
+		require (msg.value > 0);
 		bonusSeed = bonusSeed.add(msg.value);
 	}
 	
@@ -323,7 +323,7 @@ contract PoP{
 		uint256 bettingRecordValue = getWinningsForRecord(bettingRecord, true);
 		uint256 amountToMineForBettingRecord = computeAmountToMineForBettingRecord(bettingRecord, false);
 
-		// If it is current game we need to not remove the record as it&#39;s value might increase but amend it and re-insert
+		// If it is current game we need to not remove the record as it's value might increase but amend it and re-insert
 		if(bettingRecord.gameId == currentGameNumber) {
 			bettingRecord.withdrawnAmount = bettingRecord.withdrawnAmount.add(bettingRecordValue);
 			bettingRecord.withdrawnPopAmount = bettingRecord.withdrawnPopAmount.add(amountToMineForBettingRecord);
@@ -334,8 +334,8 @@ contract PoP{
 	}
 
 	function potAmountForRecord (Player.BettingRecord record) private view returns(uint256 potAmount) {
-		require(record.gameId &lt;= currentGameNumber);
-		if(record.gameId &lt; currentGameNumber) {
+		require(record.gameId <= currentGameNumber);
+		if(record.gameId < currentGameNumber) {
 			return gameMetaData.itemAtIndex(record.gameId).totalPotAmount; 
 		} else {
 			return currentPot;
@@ -348,20 +348,20 @@ contract PoP{
 
 		if(record.gameId == currentGameNumber) {
 			uint256 halfPot = currentPot.sub(initialSeed).div(2);
-			if(potAtBet &gt;= halfPot) {
-				return true; // You are in the front of the array and we won&#39;t process your record until you are in the back
+			if(potAtBet >= halfPot) {
+				return true; // You are in the front of the array and we won't process your record until you are in the back
 			}
 		}
 		return false;
 	}
 
 	function UInt256 (int256 elem) private pure returns(uint256 res) {
-		assert(elem &gt;= 0);
+		assert(elem >= 0);
 		return uint256(elem);
 	}
 	
 	function Int256 (uint256 elem) private pure returns(int256 res) {
-		assert(int256(elem) &gt;= 0);
+		assert(int256(elem) >= 0);
 		return int256(elem);
 	}
 	
@@ -400,19 +400,19 @@ contract PoP{
 
 		FixedPoint.Data memory backPercent = FixedPoint.fromInt256(Int256(playerRecord.gamePotBeforeBet)).add(FixedPoint.fromInt256(Int256(playerRecord.wagerAmount))).div(potAmountData.sub(getSeedAmountForGameId(playerRecord.gameId)));
 
-		if(frontPercent.val &lt; backPayoutEndPoint.val) {
-		    if(backPercent.val &lt;= backPayoutEndPoint.val) {
+		if(frontPercent.val < backPayoutEndPoint.val) {
+		    if(backPercent.val <= backPayoutEndPoint.val) {
 		    	// Bet started in left half of curve and ended left half of curve 
 		        return calcWinnings(frontPercent, backPercent, backPayoutEndPoint, _pi.div(backWindowAdjustment), backWindowAdjustment, FixedPoint.fromInt256(0), potAmountData);
-		    } else if (backPercent.val &lt;= frontPayoutStartPoint.val) {
+		    } else if (backPercent.val <= frontPayoutStartPoint.val) {
 		    	// Bet started in left half of curve and ended in deadzone between curves
 		        return calcWinnings(frontPercent, backPayoutEndPoint, backPayoutEndPoint, _pi.div(backWindowAdjustment), backWindowAdjustment, FixedPoint.fromInt256(0), potAmountData);
 		    } else {
 		    	// Bet started in left half of curve and ended right half of curve 
 		        return calcWinnings(frontPercent, backPayoutEndPoint, backPayoutEndPoint, _pi.div(backWindowAdjustment), backWindowAdjustment, FixedPoint.fromInt256(0), potAmountData).add(calcWinnings(FixedPoint.fromInt256(0), backPercent.sub(frontPayoutStartPoint), frontPayoutSizePercent, _pi.div(frontWindowAdjustment), frontWindowAdjustment, _pi.div(frontWindowAdjustment), potAmountData));
 		    }
-		} else if (frontPercent.val &lt; frontPayoutStartPoint.val) {
-		    if (backPercent.val &lt;= frontPayoutStartPoint.val) {
+		} else if (frontPercent.val < frontPayoutStartPoint.val) {
+		    if (backPercent.val <= frontPayoutStartPoint.val) {
 		    	// Bet started in dead zone and ended in dead zone
 		        return FixedPoint.fromInt256(0);
 		    } else {
@@ -442,7 +442,7 @@ contract PoP{
 	}
 
     function computeAmountToMineForBettingRecord (Player.BettingRecord record, bool onlyCurrentGame) internal view returns(uint256 value) {
-		if(onlyCurrentGame &amp;&amp; record.gameId != currentGameNumber){
+		if(onlyCurrentGame && record.gameId != currentGameNumber){
 			return 0;
 		}
 
@@ -482,7 +482,7 @@ contract PoP{
     }
     
     function minePoP(address target, uint256 amountToMine) private {
-    	if(supplyMined_ &gt;= totalSupply_) { 
+    	if(supplyMined_ >= totalSupply_) { 
     		return;
     	}
 
@@ -491,7 +491,7 @@ contract PoP{
     		return;
     	}
 
-    	if(remainingPop &lt; amountToMine) {
+    	if(remainingPop < amountToMine) {
     		amountToMine = remainingPop;
     	}
 
@@ -510,17 +510,17 @@ contract PoP{
     }
 
     function redeemPop (uint256 popToRedeem) public returns(bool res) {
-    	require(popBalances[msg.sender] &gt;= popToRedeem);
+    	require(popBalances[msg.sender] >= popToRedeem);
     	require(popToRedeem != 0);
 
     	uint256 potentiallyAllocatedPop = potentiallyCirculatingPop();
-    	require(popToRedeem &lt;= potentiallyAllocatedPop);
+    	require(popToRedeem <= potentiallyAllocatedPop);
 
     	FixedPoint.Data memory redeemRatio = FixedPoint.fromFraction(Int256(popToRedeem), Int256(potentiallyAllocatedPop));
     	FixedPoint.Data memory ethPayoutAmount = redeemRatio.mul(FixedPoint.fromInt256(Int256(totalAmountRaked())));
     	uint256 payout = ethPayoutAmount.toUInt256Raw();
-    	require(payout&lt;=totalAmountRaked());
-    	require(payout &lt;= address(this).balance);
+    	require(payout<=totalAmountRaked());
+    	require(payout <= address(this).balance);
     	
     	burn(popToRedeem);
     	playerInternalWallet[this] = playerInternalWallet[this].sub(payout);
@@ -540,7 +540,7 @@ contract PoP{
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 	    require(_to != address(0));
-	    require(_value &lt;= popBalances[msg.sender]);
+	    require(_value <= popBalances[msg.sender]);
 
 	    // SafeMath.sub will throw if there is not enough balance.
 	    popBalances[msg.sender] = popBalances[msg.sender].sub(_value);
@@ -551,8 +551,8 @@ contract PoP{
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 	    require(_to != address(0));
-	    require(_value &lt;= popBalances[_from]);
-	    require(_value &lt;= allowed[_from][msg.sender]);
+	    require(_value <= popBalances[_from]);
+	    require(_value <= allowed[_from][msg.sender]);
 
 	    popBalances[_from] = popBalances[_from].sub(_value);
 	    popBalances[_to] = popBalances[_to].add(_value);
@@ -579,7 +579,7 @@ contract PoP{
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 	    uint oldValue = allowed[msg.sender][_spender];
-	    if (_subtractedValue &gt; oldValue) {
+	    if (_subtractedValue > oldValue) {
 	      allowed[msg.sender][_spender] = 0;
 	    } else {
 	      allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -589,7 +589,7 @@ contract PoP{
 	}
 
 	function burn(uint256 _value) public {
-	    require (popBalances[msg.sender] &gt;= _value);
+	    require (popBalances[msg.sender] >= _value);
 	    
 	    address burner = msg.sender;
 	    supplyBurned_ = supplyBurned_.add(_value);
@@ -637,7 +637,7 @@ contract PoP{
 		FixedPoint.Data memory total = FixedPoint.fromInt256(0);
 		FixedPoint.Data memory count = FixedPoint.fromInt256(0);
 		uint256 j = 0;
-		for(uint256 i=gameMetaData.length().sub(1) ; i&gt;=0 &amp;&amp; j&lt;kDifficultyWindow; i = i.sub(1)){
+		for(uint256 i=gameMetaData.length().sub(1) ; i>=0 && j<kDifficultyWindow; i = i.sub(1)){
 			WrappedArray.GameMetaDataElement memory thisGame = gameMetaData.itemAtIndex(i);
 			FixedPoint.Data memory thisGamePotSize = FixedPoint.fromInt256(Int256(thisGame.totalPotAmount));
 			FixedPoint.Data memory thisCount = kDifficultyDropOffFactor.pow(FixedPoint.fromInt256(Int256(j)));
@@ -679,7 +679,7 @@ contract PoP{
 	function totalTokenPayout(FixedPoint.Data currentPotValue, FixedPoint.Data difficulty, FixedPoint.Data unpromisedPopAtStartOfGame, uint256 wagerAmount, uint256 previousPotSize) private view returns (FixedPoint.Data) {
 		FixedPoint.Data memory maxPotSize = kExpectedFirstGameSize.mul(difficulty).mul(kMaxPopMiningPotMultiple);
 		FixedPoint.Data memory startPoint = FixedPoint.fromInt256(Int256(previousPotSize));
-		if(startPoint.cmp(maxPotSize) != -1){ // startPoint &gt;= maxPotSize
+		if(startPoint.cmp(maxPotSize) != -1){ // startPoint >= maxPotSize
 			return FixedPoint.fromInt256(0);
 		}
 		FixedPoint.Data memory endPoint = FixedPoint.fromInt256(Int256(previousPotSize + wagerAmount));
@@ -723,7 +723,7 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
     return c;
   }
@@ -732,7 +732,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -741,7 +741,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -764,7 +764,7 @@ library SafeInt {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(int256 a, int256 b) internal pure returns (int256) {
-   	// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+   	// assert(b > 0); // Solidity automatically throws when dividing by 0
     int256 c = a / b;
     return c;
   }
@@ -774,10 +774,10 @@ library SafeInt {
   */
   function sub(int256 a, int256 b) internal pure returns (int256) {
     int256 c = a - b;
-    if(a&gt;0 &amp;&amp; b&lt;0) {
-    	assert (c &gt; a);	
-    } else if(a&lt;0 &amp;&amp; b&gt;0) {
-    	assert (c &lt; a);
+    if(a>0 && b<0) {
+    	assert (c > a);	
+    } else if(a<0 && b>0) {
+    	assert (c < a);
     }
    	return c;
   }
@@ -787,10 +787,10 @@ library SafeInt {
   */
   function add(int256 a, int256 b) internal pure returns (int256) {
     int256 c = a + b;
-    if(a&gt;0 &amp;&amp; b&gt;0) {
-    	assert(c &gt; a);
-    } else if (a &lt; 0 &amp;&amp; b &lt; 0) {
-    	assert(c &lt; a);
+    if(a>0 && b>0) {
+    	assert(c > a);
+    } else if (a < 0 && b < 0) {
+    	assert(c < a);
     }
     return c;
   }
@@ -822,8 +822,8 @@ library WrappedArray {
 
 	/* ItemAtIndex returns the item at index */
 	function itemAtIndex (Data storage self, uint256 index) internal view returns(GameMetaDataElement elem) {
-		/* Can&#39;t access something outside of scope of array */
-		assert(index &lt; self.array.length); 
+		/* Can't access something outside of scope of array */
+		assert(index < self.array.length); 
 		return self.array[index];
 	}
 	
@@ -859,8 +859,8 @@ library CompactArray {
 
 	/* Replaces item at index with last item in array and resizes array accordingly */
 	function removeItemAtIndex (Data storage self, uint256 index) internal {
-		/* Can&#39;t remove something outside of scope of array */
-		assert(index &lt; self.len);
+		/* Can't remove something outside of scope of array */
+		assert(index < self.len);
 
 		/* Deleting the last element in array is same as length - 1 */
 		if(index == self.len.sub(1)) {
@@ -876,7 +876,7 @@ library CompactArray {
 	
 	/* Pop returns last element of array and deletes it from array */
 	function pop (Data storage self) internal returns(Element elem) {
-		assert(self.len &gt; 0);
+		assert(self.len > 0);
 
 		// Decrement size 
 		self.len = self.len.sub(1);
@@ -885,11 +885,11 @@ library CompactArray {
 		return self.array[self.len];
 	}
 
-	/* PopNext keeps track of an index that loops through the array and pops the next item so that push pop doesn&#39;t necessarily return the item you pushed */
+	/* PopNext keeps track of an index that loops through the array and pops the next item so that push pop doesn't necessarily return the item you pushed */
 	function getNext (Data storage self) internal returns(Element elem) {
-		assert(self.len &gt; 0);
+		assert(self.len > 0);
 			
-		if(self.popNextIndex &gt;= self.len) {
+		if(self.popNextIndex >= self.len) {
 			// If there were regular pops inbetween
 			self.popNextIndex = self.len.sub(1);
 		}
@@ -905,8 +905,8 @@ library CompactArray {
 	
 	/* ItemAtIndex returns the item at index */
 	function itemAtIndex (Data storage self, uint256 index) internal view returns(Element elem) {
-		/* Can&#39;t access something outside of scope of array */
-		assert(index &lt; self.len);
+		/* Can't access something outside of scope of array */
+		assert(index < self.len);
 			
 		return self.array[index];
 	}
@@ -929,7 +929,7 @@ library UIntSet {
 	
 	struct Data {
 		CompactArray.Data compactArray;
-		mapping (uint256 =&gt; SetEntry) storedValues;
+		mapping (uint256 => SetEntry) storedValues;
 	}
 
 	/* Returns whether item is contained in dict */
@@ -939,7 +939,7 @@ library UIntSet {
 
 	/* Adds an item to the set */
 	function insert (Data storage self, uint256 element) internal {
-		// Don&#39;t need to insert element if entry already exists
+		// Don't need to insert element if entry already exists
 		if(contains(self, element)) {
 			return;
 		}
@@ -973,7 +973,7 @@ library UIntSet {
 		self.storedValues[element].active = false;
 
 		// If array still has elements we need to update mapping with new index
-		if(index &lt; self.compactArray.length()) {
+		if(index < self.compactArray.length()) {
 			// Get new element stored at deleted index
 			CompactArray.Element memory swappedElem = self.compactArray.itemAtIndex(index);
 			
@@ -1019,7 +1019,7 @@ library Player {
 	
 	struct Data {
 		UIntSet.Data bettingRecordIds;
-		mapping (uint256 =&gt; BettingRecord) bettingRecordMapping;
+		mapping (uint256 => BettingRecord) bettingRecordMapping;
 	}
 	
 	/* Contains betting record for a betting record id */
@@ -1103,8 +1103,8 @@ library FixedPoint {
 	using SafeInt for int256;
 
 	int256 constant fracBits = 32;
-	int256 constant scale = 1 &lt;&lt; 32;
-	int256 constant halfScale = scale &gt;&gt; 1;
+	int256 constant scale = 1 << 32;
+	int256 constant halfScale = scale >> 1;
     int256 constant precision = 1000000;
 	int256 constant e = 11674931554;
 	int256 constant pi = 13493037704;
@@ -1125,11 +1125,11 @@ library FixedPoint {
 	}
 
 	function toInt256(Data n) internal pure returns (int256) {
-		return (n.val * precision) &gt;&gt; fracBits;
+		return (n.val * precision) >> fracBits;
 	}
 
 	function toUInt256Raw(Data a) internal pure returns (uint256) {
-		return uint256(a.val &gt;&gt; fracBits);
+		return uint256(a.val >> fracBits);
 	}
 
 	function add(Data a, Data b) internal pure returns (Data) {
@@ -1178,15 +1178,15 @@ library FixedPoint {
 	function sin(Data x) internal pure returns (Data) {
 		int256 val = x.val % _2pi;
 
-		if(val &lt; -pi) {
+		if(val < -pi) {
 			val += _2pi;
-		} else if (val &gt; pi) {
+		} else if (val > pi) {
 			val -= _2pi;
 		}
         Data memory result;
-		if(val &lt; 0) {
+		if(val < 0) {
 			result = add(mul(Data({val: 5468522184}), Data({val: val})), mul(Data({val: 1740684682}), mul(Data({val: val}), Data({val: val}))));
-			if(result.val &lt; 0) {
+			if(result.val < 0) {
 				result = add(mul(Data({val: 966367641}), sub(mul(result, neg(result)), result)), result);
 			} else {
 				result = add(mul(Data({val: 966367641}), sub(mul(result, result), result)), result);
@@ -1194,7 +1194,7 @@ library FixedPoint {
 			return result;
 		} else {
 			result = sub(mul(Data({val: 5468522184}), Data({val: val})), mul(Data({val: 1740684682}), mul(Data({val: val}), Data({val: val})))); 
-			if(result.val &lt; 0) {
+			if(result.val < 0) {
 				result = add(mul(Data({val: 966367641}), sub(mul(result, neg(result)), result)), result);
 			} else {
 				result = add(mul(Data({val: 966367641}), sub(mul(result, result), result)), result);
@@ -1204,9 +1204,9 @@ library FixedPoint {
 	}
 
 	function cmp(Data a, Data b) internal pure returns (int256) {
-		if(a.val &gt; b.val) {
+		if(a.val > b.val) {
 			return 1;
-		} else if(a.val &lt; b.val) {
+		} else if(a.val < b.val) {
 			return -1;
 		} else {
 			return 0;
@@ -1220,16 +1220,16 @@ library FixedPoint {
 	function ln(Data a) internal pure returns (Data) {
 		int256 LOG = 0;
 		int256 prec = 1000000;
-		int256 x = a.val.mul(prec) &gt;&gt; fracBits;
+		int256 x = a.val.mul(prec) >> fracBits;
 
-		while(x &gt;= 1500000) {
+		while(x >= 1500000) {
 			LOG = LOG.add(405465);
 			x = x.mul(2).div(3);
 		}
 		x = x.sub(prec);
         int256 y = x;
         int256 i = 1;
-        while (i &lt; 10){
+        while (i < 10){
             LOG = LOG.add(y.div(i));
             i = i.add(1);
             y = x.mul(y).div(prec);
@@ -1252,15 +1252,15 @@ library FixedPoint {
 	}
 
 	function exp(Data a) internal pure returns (Data) {
-		int256 pwr = a.val &gt;&gt; fracBits;
-		int256 frac = a.val.sub(pwr &lt;&lt; fracBits);
+		int256 pwr = a.val >> fracBits;
+		int256 frac = a.val.sub(pwr << fracBits);
 
 		return mul(expRaw(Data({val: frac})), expBySquaring(Data({val: e}), fromInt256(pwr)));
 	}
 
 	function pow(Data base, Data power) internal pure returns (Data) {
-		int256 intpwr = power.val &gt;&gt; 32;
-		int256 frac = power.val.sub(intpwr &lt;&lt; fracBits);
+		int256 intpwr = power.val >> 32;
+		int256 frac = power.val.sub(intpwr << fracBits);
 		return mul(expRaw(mul(Data({val:frac}), ln(base))), expBySquaring(base, fromInt256(intpwr)));
 	}
 }

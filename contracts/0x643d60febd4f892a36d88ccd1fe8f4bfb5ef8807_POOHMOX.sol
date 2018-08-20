@@ -130,8 +130,8 @@ contract POOHMOX is POOHMOXevents {
 //=================_|===========================================================
     address private admin = msg.sender;
     address private flushDivs;
-    string constant public name = &quot;POOHMOX&quot;;
-    string constant public symbol = &quot;POOHMOX&quot;;
+    string constant public name = "POOHMOX";
+    string constant public symbol = "POOHMOX";
     uint256 private rndExtra_ = 1 seconds;     // length of the very first ICO phase
     uint256 private rndGap_ = 1 seconds;       // length of ICO phases
     uint256 private rndInit_ = 5 minutes;      // round timer starts at this
@@ -146,21 +146,21 @@ contract POOHMOX is POOHMOXevents {
 //****************
 // PLAYER DATA
 //****************
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID) returns player id by name
-    mapping (uint256 =&gt; POOHMOXDatasets.Player) public plyr_;   // (pID =&gt; data) player data
-    mapping (uint256 =&gt; mapping (uint256 =&gt; POOHMOXDatasets.PlayerRounds)) public plyrRnds_;    // (pID =&gt; rID =&gt; data) player round data by player id &amp; round id
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID) returns player id by name
+    mapping (uint256 => POOHMOXDatasets.Player) public plyr_;   // (pID => data) player data
+    mapping (uint256 => mapping (uint256 => POOHMOXDatasets.PlayerRounds)) public plyrRnds_;    // (pID => rID => data) player round data by player id & round id
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
 //****************
 // ROUND DATA
 //****************
-    mapping (uint256 =&gt; POOHMOXDatasets.Round) public round_;   // (rID =&gt; data) round data
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // (rID =&gt; tID =&gt; data) eth in per team, by round id and team id
+    mapping (uint256 => POOHMOXDatasets.Round) public round_;   // (rID => data) round data
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // (rID => tID => data) eth in per team, by round id and team id
 //****************
 // TEAM FEE DATA
 //****************
-    mapping (uint256 =&gt; POOHMOXDatasets.TeamFee) public fees_;          // (team =&gt; fees) fee distribution by team
-    mapping (uint256 =&gt; POOHMOXDatasets.PotSplit) public potSplit_;     // (team =&gt; fees) pot split distribution by team
+    mapping (uint256 => POOHMOXDatasets.TeamFee) public fees_;          // (team => fees) fee distribution by team
+    mapping (uint256 => POOHMOXDatasets.PotSplit) public potSplit_;     // (team => fees) pot split distribution by team
 //==============================================================================
 //     _ _  _  __|_ _    __|_ _  _  .
 //    (_(_)| |_\ | | |_|(_ | (_)|   .  (initial data setup upon contract deploy)
@@ -172,7 +172,7 @@ contract POOHMOX is POOHMOXevents {
         PlayerBook = PlayerBookInterface(playerbook);
 
         //no teams... only POOH-heads
-        // Referrals / Community rewards are mathematically designed to come from the winner&#39;s share of the pot.
+        // Referrals / Community rewards are mathematically designed to come from the winner's share of the pot.
         fees_[0] = POOHMOXDatasets.TeamFee(39,20);   //30% to pot, 10% to aff, 1% to dev,
        
 
@@ -208,8 +208,8 @@ contract POOHMOX is POOHMOXevents {
      * @dev sets boundaries for incoming tx
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000);
-        require(_eth &lt;= 100000000000000000000000);
+        require(_eth >= 1000000000);
+        require(_eth <= 100000000000000000000000);
         _;
     }
 
@@ -264,7 +264,7 @@ contract POOHMOX is POOHMOXevents {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-        // if affiliate code was given &amp; its not the same as previously stored
+        // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -327,7 +327,7 @@ contract POOHMOX is POOHMOXevents {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -377,7 +377,7 @@ contract POOHMOX is POOHMOXevents {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-        // if affiliate code was given &amp; its not the same as previously stored
+        // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -439,7 +439,7 @@ contract POOHMOX is POOHMOXevents {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -483,7 +483,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _eth;
 
         // check to see if round has ended and no one has run round end yet
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // set up our tx event data
             POOHMOXDatasets.EventReturns memory _eventData_;
@@ -496,7 +496,7 @@ contract POOHMOX is POOHMOXevents {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // build event data
@@ -525,7 +525,7 @@ contract POOHMOX is POOHMOXevents {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // fire withdraw event
@@ -606,7 +606,7 @@ contract POOHMOX is POOHMOXevents {
     }
 //==============================================================================
 //     _  _ _|__|_ _  _ _  .
-//    (_|(/_ |  | (/_| _\  . (for UI &amp; viewing things on etherscan)
+//    (_|(/_ |  | (/_| _\  . (for UI & viewing things on etherscan)
 //=====_|=======================================================================
     /**
      * @dev return the price buyer will pay for next 1 individual key.
@@ -622,7 +622,7 @@ contract POOHMOX is POOHMOXevents {
     }
 
     /**
-     * @dev returns time left.  dont spam this, you&#39;ll ddos yourself from your node
+     * @dev returns time left.  dont spam this, you'll ddos yourself from your node
      * provider
      * -functionhash- 0xc7e284b8
      * @return time left in seconds
@@ -638,8 +638,8 @@ contract POOHMOX is POOHMOXevents {
         // grab time
         uint256 _now = now;
 
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt + rndGap_)
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt + rndGap_).sub(_now) );
@@ -663,7 +663,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _rID = rID_;
 
         // if round has ended.  but round end has not been run (so contract has not distributed winnings)
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // if player is winner
             if (round_[_rID].plyr == _pID)
@@ -715,7 +715,7 @@ contract POOHMOX is POOHMOXevents {
      * @return time round ends
      * @return time round started
      * @return current pot
-     * @return current team ID &amp; player ID in lead
+     * @return current team ID & player ID in lead
      * @return current player in leads address
      * @return current player in leads name
      * @return whales eth in for round
@@ -807,7 +807,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _now = now;
 
         // if round is active
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // call core
             core(_rID, _pID, msg.value, _affID, 0, _eventData_);
@@ -815,9 +815,9 @@ contract POOHMOX is POOHMOXevents {
         // if round is not active
         } else {
             // check to see if end round needs to be ran
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false)
+            if (_now > round_[_rID].end && round_[_rID].ended == false)
             {
-                // end the round (distributes pot) &amp; start new round
+                // end the round (distributes pot) & start new round
                 round_[_rID].ended = true;
                 _eventData_ = endRound(_eventData_);
 
@@ -861,7 +861,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _now = now;
 
         // if round is active
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // get earnings from all vaults and return unused to gen vault
             // because we use a custom safemath library.  this will throw if player
@@ -872,8 +872,8 @@ contract POOHMOX is POOHMOXevents {
             core(_rID, _pID, _eth, _affID, 0, _eventData_);
 
         // if round is not active and end round needs to be ran
-        } else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
-            // end the round (distributes pot) &amp; start new round
+        } else if (_now > round_[_rID].end && round_[_rID].ended == false) {
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -905,14 +905,14 @@ contract POOHMOX is POOHMOXevents {
     function core(uint256 _rID, uint256 _pID, uint256 _eth, uint256 _affID, uint256 _team, POOHMOXDatasets.EventReturns memory _eventData_)
         private
     {
-        require(_eth &gt;= 0.01 ether);
+        require(_eth >= 0.01 ether);
 
         // if player is new to round
         if (plyrRnds_[_pID][_rID].keys == 0)
             _eventData_ = managePlayer(_pID, _eventData_);
 
         // // early round eth limiter
-        // if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 5000000000000000000)
+        // if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 5000000000000000000)
         // {
         //     uint256 _availableLimit = (5000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
         //     uint256 _refund = _eth.sub(_availableLimit);
@@ -927,7 +927,7 @@ contract POOHMOX is POOHMOXevents {
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
 
             // if they bought at least 1 whole key
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
                 updateTimer(_keys, _rID);
 
@@ -989,7 +989,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else // rounds over.  need keys for new round
             return ( (_eth).keys() );
@@ -1013,7 +1013,7 @@ contract POOHMOX is POOHMOXevents {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -1075,14 +1075,14 @@ contract POOHMOX is POOHMOXevents {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
 
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
 
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
 
             // set the new player bool to true
@@ -1094,7 +1094,7 @@ contract POOHMOX is POOHMOXevents {
     
 
     /**
-     * @dev decides if round end needs to be run &amp; new round started.  and if
+     * @dev decides if round end needs to be run & new round started.  and if
      * player unmasked earnings from previously played rounds need to be moved.
      */
     function managePlayer(uint256 _pID, POOHMOXDatasets.EventReturns memory _eventData_)
@@ -1106,7 +1106,7 @@ contract POOHMOX is POOHMOXevents {
         if (plyr_[_pID].lrnd != 0)
             updateGenVault(_pID, plyr_[_pID].lrnd);
 
-        // update player&#39;s last round played
+        // update player's last round played
         plyr_[_pID].lrnd = rID_;
 
         // set the joined round bool to true
@@ -1125,7 +1125,7 @@ contract POOHMOX is POOHMOXevents {
         // setup local rID
         uint256 _rID = rID_;
 
-        // grab our winning player and team id&#39;s
+        // grab our winning player and team id's
         uint256 _winPID = round_[_rID].plyr;
         uint256 _winTID = round_[_rID].team;
 
@@ -1143,7 +1143,7 @@ contract POOHMOX is POOHMOXevents {
         // calculate ppt for round mask
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -1156,7 +1156,7 @@ contract POOHMOX is POOHMOXevents {
 
         admin.transfer(_dev);
 
-        flushDivs.call.value(_POOH)(bytes4(keccak256(&quot;donate()&quot;)));  
+        flushDivs.call.value(_POOH)(bytes4(keccak256("donate()")));  
 
         // distribute gen portion to key holders
         round_[_rID].mask = _ppt.add(round_[_rID].mask);
@@ -1189,7 +1189,7 @@ contract POOHMOX is POOHMOXevents {
         private
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // put in gen vault
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -1209,13 +1209,13 @@ contract POOHMOX is POOHMOXevents {
 
         // calculate time based on number of keys bought
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
 
         // compare to max and set new end time
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1245,7 +1245,7 @@ contract POOHMOX is POOHMOXevents {
 
         // decide what to do with affiliate share of fees
         // affiliate must not be self, and must have a name registered
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit POOHMOXevents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
         } else {
@@ -1254,10 +1254,10 @@ contract POOHMOX is POOHMOXevents {
 
         // pay out POOH
         _POOH = _POOH.add((_eth.mul(fees_[_team].pooh)) / (100));
-        if (_POOH &gt; 0)
+        if (_POOH > 0)
         {
 
-            flushDivs.call.value(_POOH)(bytes4(keccak256(&quot;donate()&quot;)));
+            flushDivs.call.value(_POOH)(bytes4(keccak256("donate()")));
 
             // set up event data
             _eventData_.POOHAmount = _POOH.add(_eventData_.POOHAmount);
@@ -1270,7 +1270,7 @@ contract POOHMOX is POOHMOXevents {
         external
         payable
     {
-       //you shouldn&#39;t be using this method
+       //you shouldn't be using this method
        admin.transfer(msg.value);
     }
 
@@ -1294,7 +1294,7 @@ contract POOHMOX is POOHMOXevents {
         // distribute gen share (thats what updateMasks() does) and adjust
         // balances for dust.
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
 
         // add eth to pot
@@ -1321,26 +1321,26 @@ contract POOHMOX is POOHMOXevents {
             tracker based on profit per share for each round, that increases in
             relevant proportion to the increase in share supply.
 
-            the player will have an additional mask that basically says &quot;based
-            on the rounds mask, my shares, and how much i&#39;ve already withdrawn,
-            how much is still owed to me?&quot;
+            the player will have an additional mask that basically says "based
+            on the rounds mask, my shares, and how much i've already withdrawn,
+            how much is still owed to me?"
         */
 
-        // calc profit per key &amp; round mask based on this buy:  (dust goes to pot)
+        // calc profit per key & round mask based on this buy:  (dust goes to pot)
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         round_[_rID].mask = _ppt.add(round_[_rID].mask);
 
         // calculate player earning from their own buy (only based on the keys
-        // they just bought).  &amp; update player earnings mask
+        // they just bought).  & update player earnings mask
         uint256 _pearn = (_ppt.mul(_keys)) / (1000000000000000000);
         plyrRnds_[_pID][_rID].mask = (((round_[_rID].mask.mul(_keys)) / (1000000000000000000)).sub(_pearn)).add(plyrRnds_[_pID][_rID].mask);
 
-        // calculate &amp; return dust
+        // calculate & return dust
         return(_gen.sub((_ppt.mul(round_[_rID].keys)) / (1000000000000000000)));
     }
 
     /**
-     * @dev adds up unmasked earnings, &amp; vault earnings, sets them all to 0
+     * @dev adds up unmasked earnings, & vault earnings, sets them all to 0
      * @return earnings in wei format
      */
     function withdrawEarnings(uint256 _pID)
@@ -1352,7 +1352,7 @@ contract POOHMOX is POOHMOXevents {
 
         // from vaults
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1363,7 +1363,7 @@ contract POOHMOX is POOHMOXevents {
     }
 
     /**
-     * @dev prepares compression data and fires event for buy or reload tx&#39;s
+     * @dev prepares compression data and fires event for buy or reload tx's
      */
     function endTx(uint256 _pID, uint256 _team, uint256 _eth, uint256 _keys, POOHMOXDatasets.EventReturns memory _eventData_)
         private
@@ -1426,7 +1426,7 @@ contract POOHMOX is POOHMOXevents {
         require(msg.sender == admin);
 
         //take any black-holed eth left in contract and send to pooh whale
-         flushDivs.call.value(address(this).balance)(bytes4(keccak256(&quot;donate()&quot;)));
+         flushDivs.call.value(address(this).balance)(bytes4(keccak256("donate()")));
      }
 
         
@@ -1491,7 +1491,7 @@ library POOHMOXDatasets {
 
 //==============================================================================
 //  |  _      _ _ | _  .
-//  |&lt;(/_\/  (_(_||(_  .
+//  |<(/_\/  (_(_||(_  .
 //=======/======================================================================
 library KeysCalc {
     using SafeMath for *;
@@ -1525,7 +1525,7 @@ library KeysCalc {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth)
@@ -1539,7 +1539,7 @@ library KeysCalc {
 
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot;
+     * @param _keys number of keys "in contract"
      * @return eth that would exists
      */
     function eth(uint256 _keys)
@@ -1589,9 +1589,9 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0);
+        require (_length <= 32 && _length > 0);
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20);
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
@@ -1602,11 +1602,11 @@ library NameFilter {
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
 
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -1620,15 +1620,15 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 ||
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a));
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a));
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
                     require( _temp[i+1] != 0x20);
 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
@@ -1667,7 +1667,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -1679,7 +1679,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -1692,7 +1692,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -1706,7 +1706,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -1739,7 +1739,7 @@ library SafeMath {
         else
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

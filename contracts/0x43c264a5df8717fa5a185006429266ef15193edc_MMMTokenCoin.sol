@@ -22,7 +22,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
   
  
@@ -31,7 +31,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   /**
    * @dev Transfer tokens from one address to another
@@ -74,7 +74,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -134,21 +134,21 @@ library SafeMath {
       return 0;
     }
     if(b==0) return 1;
-    assert(b&gt;=0);
+    assert(b>=0);
     uint256 c = a ** b;
-    assert(c&gt;=a );
+    assert(c>=a );
     return c;
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
@@ -156,12 +156,12 @@ library SafeMath {
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
 function compoundInterest(uint256 depo, uint256 stage2, uint256 start, uint256 current)  internal pure returns (uint256)  {
-            if(current&lt;start || start&lt;stage2 || current&lt;stage2) return depo;
+            if(current<start || start<stage2 || current<stage2) return depo;
 
             uint256 ret=depo; uint256 g; uint256 d;
             stage2=stage2/1 days;
@@ -171,33 +171,33 @@ function compoundInterest(uint256 depo, uint256 stage2, uint256 start, uint256 c
 			uint256 dpercent=100;
 			uint256 i=start;
 			
-			if(i-stage2&gt;365) dpercent=200;
-			if(i-stage2&gt;730) dpercent=1000;			
+			if(i-stage2>365) dpercent=200;
+			if(i-stage2>730) dpercent=1000;			
 			
-			while(i&lt;current)
+			while(i<current)
 			{
 
 				g=i-stage2;			
-				if(g&gt;265 &amp;&amp; g&lt;=365) 
+				if(g>265 && g<=365) 
 				{		
 				    d=365-g;
-					if(d&gt;=(current-start))  d=(current-start);
+					if(d>=(current-start))  d=(current-start);
 					ret=fracExp(ret, dpercent, d, 8);
 				    i+=d;
 					dpercent=200;
 				}
-				if(g&gt;630 &amp;&amp; g&lt;=730) 
+				if(g>630 && g<=730) 
 				{				
 					d=730-g;	
-					if(d&gt;=(current-start))  d=(current-start);					
+					if(d>=(current-start))  d=(current-start);					
 					ret=fracExp(ret, dpercent, d, 8);
 					i+=d;
 					dpercent=1000;					
 				}
-				else if(g&gt;730) dpercent=1000;				
-				else if(g&gt;365) dpercent=200;
+				else if(g>730) dpercent=1000;				
+				else if(g>365) dpercent=200;
 				
-				if(i+100&lt;current) ret=fracExp(ret, dpercent, 100, 8);
+				if(i+100<current) ret=fracExp(ret, dpercent, 100, 8);
 				else return fracExp(ret, dpercent, current-i, 8);
 				i+=100;
 				
@@ -218,7 +218,7 @@ function fracExp(uint256 depo, uint256 percent, uint256 period, uint256 p)  inte
   
 
   
-  for (uint256 i = 0; i &lt; p; ++i){
+  for (uint256 i = 0; i < p; ++i){
     s += depo * N / B / (percent**i);
     N  = N * (period-i);
     B  = B * (i+1);
@@ -239,8 +239,8 @@ function fracExp(uint256 depo, uint256 percent, uint256 period, uint256 p)  inte
 contract MMMTokenCoin is StandardToken, Ownable {
     using SafeMath for uint256;
     
-    string public constant name = &quot;Make More Money&quot;;
-    string public constant symbol = &quot;MMM&quot;;
+    string public constant name = "Make More Money";
+    string public constant symbol = "MMM";
     uint32 public constant decimals = 2;
     
 	
@@ -248,7 +248,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
 	uint256 public stage2StartTime;					// timestamp when compound interest will begin
     uint256 globalInterestDate;             // last date when amount of tokens with interest was changed
     uint256 globalInterestAmount;           // amount of tokens with interest
-	mapping(address =&gt; uint256) dateOfStart;     // timestamp of last operation, from which interest calc will be started
+	mapping(address => uint256) dateOfStart;     // timestamp of last operation, from which interest calc will be started
 	uint256 public currentDate;						// current date timestamp
 	uint256 public debugNow=0;
 
@@ -259,14 +259,14 @@ contract MMMTokenCoin is StandardToken, Ownable {
  uint256 public  softcap;
     uint256 public  step0Rate=100000;       // rate of our tokens. 1 eth = 1000 MMM coins = 100000 tokens (seen as 1000,00 because of decimals)
     uint256 public  currentRate=100000;   
-    uint256 public constant tokensForOwner=2000000000;   // tokens for owner won&#39;t dealt with compound interest
+    uint256 public constant tokensForOwner=2000000000;   // tokens for owner won't dealt with compound interest
     uint256 public tokensFromEther=0;
     uint public saleStatus=0;      // 0 - sale is running, 1 - sale failed, 2 - sale successful
     address multisig=0x8216A5958f05ad61898e3A6F97ae5118C0e4b1A6;
     // counters of tokens for futher refund
-    mapping(address =&gt; uint256) boughtWithEther;                // tokens, bought with ether. can be refunded to ether
-    mapping(address =&gt; uint256) boughtWithOther;    			// tokens, bought with other payment systems. can be refunded to other payment systems, using site
-    mapping(address =&gt; uint256) bountyAndRefsWithEther;  		// bounty tokens, given to some people. can be converted to ether, if ico is succeed
+    mapping(address => uint256) boughtWithEther;                // tokens, bought with ether. can be refunded to ether
+    mapping(address => uint256) boughtWithOther;    			// tokens, bought with other payment systems. can be refunded to other payment systems, using site
+    mapping(address => uint256) bountyAndRefsWithEther;  		// bounty tokens, given to some people. can be converted to ether, if ico is succeed
   
     
 
@@ -328,7 +328,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
    
     
     function updateDate(address _owner) private {
-        if(currentDate&lt;stage2StartTime) dateOfStart[_owner]=stage2StartTime;
+        if(currentDate<stage2StartTime) dateOfStart[_owner]=stage2StartTime;
         else dateOfStart[_owner]=currentDate;
     }
     
@@ -400,7 +400,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
     
     if(_to==owner) 
     {
-    	// before sale finish, tokens can&#39;t be sent to owner
+    	// before sale finish, tokens can't be sent to owner
         require(saleStatus!=0);
         decreaseGlobalInterestAmount(_value);
     }
@@ -473,7 +473,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
 	  
   function burn(uint256 _amount) public 
   {
-	  	require(_amount&gt;0);
+	  	require(_amount>0);
         balances[msg.sender]=balanceOf(msg.sender).sub(_amount);
 		decreaseGlobalInterestAmount(_amount);
         emit Burn(msg.sender, _amount);
@@ -499,12 +499,12 @@ contract MMMTokenCoin is StandardToken, Ownable {
     {
         
        uint256 g; uint256 newDate;
-       require(getNow()&gt;=stage2StartTime);
-       require(getNow()&gt;=currentDate);
+       require(getNow()>=stage2StartTime);
+       require(getNow()>=currentDate);
        newDate=(getNow()/1 days)*1 days;
-        if(getNow()&gt;=stage2StartTime &amp;&amp; saleStatus==0)
+        if(getNow()>=stage2StartTime && saleStatus==0)
         {
-            if(tokensForOwner.sub(balances[owner])&gt;=softcap) saleStatus=2;
+            if(tokensForOwner.sub(balances[owner])>=softcap) saleStatus=2;
             else saleStatus=1;
          
             emit Step0Finished();
@@ -513,7 +513,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
 	   // check if overall compound interest of tokens will be less than total supply
 	  
        g=globalInterestAmount.compoundInterest(stage2StartTime, globalInterestDate, newDate);
-       if(g&lt;=totalSupply &amp;&amp; saleStatus==2) {
+       if(g<=totalSupply && saleStatus==2) {
              currentDate=(getNow()/1 days)*1 days; 
              globalInterestAmount=g;
              globalInterestDate=currentDate;
@@ -528,7 +528,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
     
     /**
      * @dev Sends collected ether to owner. If sale is not success, contract will hold ether for half year, and after, ether can be sent to owner
-     * @return amount of owner&#39;s ether
+     * @return amount of owner's ether
      */
      
     function sendEtherToMultisig() public  returns(uint256 e) {
@@ -540,11 +540,11 @@ contract MMMTokenCoin is StandardToken, Ownable {
         	// calculate ether for refunds
         	req=tokensFromEther.mul(1 ether).div(step0Rate).div(2);
 
-        	if(bDbgEnabled) emit DebugLog(&quot;This balance is&quot;, this.balance);
-        	if(req&gt;=this.balance) return 0;
+        	if(bDbgEnabled) emit DebugLog("This balance is", this.balance);
+        	if(req>=this.balance) return 0;
     	}
     	else if(saleStatus==1) {
-    		require(getNow()-stage2StartTime&gt;15768000);
+    		require(getNow()-stage2StartTime>15768000);
     		req=0; 
     	}
         uint256 amount;
@@ -566,7 +566,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
 	*/
 	
     /**
-     * @dev Refunds ether to sender if he trasnfered tokens to contract address. Calculates max possible amount of refund. If sent tokens&gt;refund amound, tokens will be returned to sender.
+     * @dev Refunds ether to sender if he trasnfered tokens to contract address. Calculates max possible amount of refund. If sent tokens>refund amound, tokens will be returned to sender.
      * @param _to Address of refund receiver
      * @param _value Tokens requested for refund
      */
@@ -574,27 +574,27 @@ contract MMMTokenCoin is StandardToken, Ownable {
     function processRefundEther(address _to, uint256 _value) private returns (uint256 left)
     {
         require(saleStatus!=0);
-        require(_value&gt;0);
+        require(_value>0);
         uint256 Ether=0; uint256 bounty=0;  uint256 total=0;
 
         uint256 rate2=saleStatus;
 
         
-        if(_value&gt;=boughtWithEther[_to]) {Ether=Ether.add(boughtWithEther[_to]); _value=_value.sub(boughtWithEther[_to]); }
+        if(_value>=boughtWithEther[_to]) {Ether=Ether.add(boughtWithEther[_to]); _value=_value.sub(boughtWithEther[_to]); }
         else {Ether=Ether.add(_value); _value=_value.sub(Ether);}
         boughtWithEther[_to]=boughtWithEther[_to].sub(Ether);
         
         if(rate2==2) {        
-            if(_value&gt;=bountyAndRefsWithEther[_to]) {bounty=bounty.add(bountyAndRefsWithEther[_to]); _value=_value.sub(bountyAndRefsWithEther[_to]); }
+            if(_value>=bountyAndRefsWithEther[_to]) {bounty=bounty.add(bountyAndRefsWithEther[_to]); _value=_value.sub(bountyAndRefsWithEther[_to]); }
             else { bounty=bounty.add(_value); _value=_value.sub(bounty); }
             bountyAndRefsWithEther[_to]=bountyAndRefsWithEther[_to].sub(bounty);
         }
         total=Ether.add(bounty);
-     //   if(_value&gt;total) _value=_value.sub(total);
+     //   if(_value>total) _value=_value.sub(total);
         tokensFromEther=tokensFromEther.sub(total);
        uint256 eth=total.mul(1 ether).div(step0Rate).div(rate2);
          _to.transfer(eth);
-        if(bDbgEnabled) emit DebugLog(&quot;Will refund &quot;, eth);
+        if(bDbgEnabled) emit DebugLog("Will refund ", eth);
 
         emit RefundEther(_to, total, eth);
         decreaseGlobalInterestAmount(total);
@@ -624,14 +624,14 @@ contract MMMTokenCoin is StandardToken, Ownable {
         require(saleStatus!=0);
         //uint256 maxValue=refundToOtherGet(_to);
         uint256 maxValue=0;
-        require(_value&lt;=maxValue);
+        require(_value<=maxValue);
         
         uint256 Other=0; uint256 bounty=0; 
 
 
 
         
-        if(_value&gt;=boughtWithOther[_to]) {Other=Other.add(boughtWithOther[_to]); _value=_value.sub(boughtWithOther[_to]); }
+        if(_value>=boughtWithOther[_to]) {Other=Other.add(boughtWithOther[_to]); _value=_value.sub(boughtWithOther[_to]); }
         else {Other=Other.add(_value); _value=_value.sub(Other);}
         boughtWithOther[_to]=boughtWithOther[_to].sub(Other);
 
@@ -652,7 +652,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
     
     function createTokensFromEther()  private   {
                
-        assert(msg.value &gt;= 1 ether / 1000);
+        assert(msg.value >= 1 ether / 1000);
        
          uint256 tokens = currentRate.mul(msg.value).div(1 ether);
 
@@ -675,7 +675,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
       
         require(_to!=address(this));
          transferFromOwner(_to, howMuch,2);
-         if(referer!=0 &amp;&amp; referer!=address(this) &amp;&amp; referer!=0x0000000000000000000000000000000000000000 &amp;&amp; howMuch.div(10)&gt;0) {
+         if(referer!=0 && referer!=address(this) && referer!=0x0000000000000000000000000000000000000000 && howMuch.div(10)>0) {
              transferFromOwner(referer, howMuch.div(10),1);
 	         if(saleStatus==0) {
 	             	tokensFromEther=tokensFromEther.add( howMuch.div(10));
@@ -693,7 +693,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
      */
 	
 	function transferFromOwner(address _to, uint256 _amount, uint t) private {
-	   require(_to!=address(this) &amp;&amp; _to!=address(owner) );
+	   require(_to!=address(this) && _to!=address(owner) );
         balances[owner]=balances[owner].sub(_amount); 
         balances[_to]=balanceOf(_to).add(_amount);
         updateDate(_to);
@@ -714,7 +714,7 @@ contract MMMTokenCoin is StandardToken, Ownable {
     
     function decreaseGlobalInterestAmount(uint256 c) private
     {
-        if(c&lt;globalInterestAmount) {
+        if(c<globalInterestAmount) {
             globalInterestAmount=globalInterestAmount.sub(c);
         }
             

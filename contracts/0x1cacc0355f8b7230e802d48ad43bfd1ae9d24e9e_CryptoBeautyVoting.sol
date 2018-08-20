@@ -59,12 +59,12 @@ contract CryptoBeautyVoting {
   }
 
   function _isReady() internal view returns (bool) {
-    return (readyTime &lt;= now);
+    return (readyTime <= now);
   }
 
   function _isOne(address _voter) private view returns (bool) {
     uint256 j = 0;
-    for(uint256 i = 0; i &lt; arrOfVoters.length; i++) {
+    for(uint256 i = 0; i < arrOfVoters.length; i++) {
       if(keccak256(abi.encodePacked(arrOfVoters[i])) == keccak256(abi.encodePacked(_voter)))
       {
         j++;
@@ -79,7 +79,7 @@ contract CryptoBeautyVoting {
 
   function vote(uint256 _itemId) payable public {
     require(votingStart);
-    require(msg.value &gt;= votePrice);
+    require(msg.value >= votePrice);
     require(!isContract(msg.sender));
     require(msg.sender != address(0));
     require(_isOne(msg.sender));
@@ -96,7 +96,7 @@ contract CryptoBeautyVoting {
   function voteResultPublish(address[] _winner, uint256[] _value) onlyOwner() public {
     require(votingStart);
     votingStart = false;
-    for (uint256 i = 0; i &lt; _winner.length; i++) {
+    for (uint256 i = 0; i < _winner.length; i++) {
      _winner[i].transfer(_value[i]);
      emit Won(_winner[i], _value[i]);
     }
@@ -124,6 +124,6 @@ contract CryptoBeautyVoting {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }

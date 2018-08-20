@@ -10,12 +10,12 @@ library SafeMath {
     return c;
   } 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   } 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }  
 }
@@ -40,7 +40,7 @@ contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
   bool public teamStakesFrozen = true;
   bool public fundariaStakesFrozen = true;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   address public owner;
   address public fundaria = 0x1882464533072e9fCd8C6D3c5c5b588548B95296; // initial Fundaria pool address  
   
@@ -49,7 +49,7 @@ contract BasicToken is ERC20Basic {
   }
   
   modifier notFrozen() {
-    require(msg.sender != owner || (msg.sender == owner &amp;&amp; !teamStakesFrozen) || (msg.sender == fundaria &amp;&amp; !fundariaStakesFrozen));
+    require(msg.sender != owner || (msg.sender == owner && !teamStakesFrozen) || (msg.sender == fundaria && !fundariaStakesFrozen));
     _;
   }
 
@@ -60,7 +60,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public notFrozen returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -79,7 +79,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -88,8 +88,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -102,7 +102,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -148,8 +148,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract SAUR is StandardToken {
-  string public constant name = &quot;Cardosaur Stake&quot;;
-  string public constant symbol = &quot;SAUR&quot;;
+  string public constant name = "Cardosaur Stake";
+  string public constant symbol = "SAUR";
   uint8 public constant decimals = 0;
 }
 
@@ -176,7 +176,7 @@ contract Sale is SAUR {
     uint public distributedFundariaStakes; // distributed Stakes to Fundaria
     uint public contractCreatedTimestamp; // when this contract was created
     address public pool = 0x28C19cEb598fdb171048C624DB8b91C56Af29aA2; // initial pool wallet address  
-    mapping (address=&gt;bool) public rejectedInvestmentWithdrawals;
+    mapping (address=>bool) public rejectedInvestmentWithdrawals;
     uint public allowedAmountToTransferToPool; // this amount is increased when investor rejects to withdraw his/her investment
     uint public allowedAmountTransferedToPoolTotal; // sum of all allowedAmountToTransferToPool used 
     uint public investmentGuidesRewardsWithdrawn; // total amount of rewards wei withdrawn by Guides  
@@ -193,7 +193,7 @@ contract Sale is SAUR {
  * Sale *
  ***********/
     address supplier = 0x0000000000000000000000000000000000000000; // address of Stakes initial supplier (abstract)
-    // data to store invested wei value &amp; Stakes for Investor
+    // data to store invested wei value & Stakes for Investor
     struct saleData {
       uint stakes; // how many Stakes where recieved by this Investor total
       uint invested; // how much wei this Investor invested total
@@ -201,7 +201,7 @@ contract Sale is SAUR {
       uint guideReward; // Investment Guide reward amount
       address guide; // address of Investment Guide
     }
-    mapping (address=&gt;saleData) public saleStat; // invested value + Stakes data for every Investor        
+    mapping (address=>saleData) public saleStat; // invested value + Stakes data for every Investor        
     uint public saleStartTimestamp = 1524852000; // regular Stakes sale start date            
     uint public saleEndTimestamp = 1527444000; 
     uint public distributedSaleStakes; // distributed stakes to all Investors
@@ -214,7 +214,7 @@ contract Sale is SAUR {
     bool public priceIsFrozen = false; // stop increasing the price temporary (in case of low demand. Can be called only after saleEndTimestamp)       
     
 /************************************ 
- * Bonus Stakes &amp; Investment Guides *
+ * Bonus Stakes & Investment Guides *
  ************************************/    
     // data to store Investment Guide reward
     struct guideData {
@@ -223,7 +223,7 @@ contract Sale is SAUR {
       uint rewardToWithdraw; // availabe reward to withdraw now
       uint periodicallyWithdrawnReward; // how much reward wei where withdrawn by this Investment Guide already
     }
-    mapping (address=&gt;guideData) public guidesStat; // mapping of Investment Guides datas    
+    mapping (address=>guideData) public guidesStat; // mapping of Investment Guides datas    
     uint public bonusCap; // max amount of bonus Stakes availabe
     uint public distributedBonusStakes; // how many bonus Stakes are already distributed
     uint public bonusShare = 1; // share of bonus Stakes in supplyCap
@@ -232,11 +232,11 @@ contract Sale is SAUR {
 /*
   WANT TO EARN ON STAKES SALE ?
   BECOME INVESTMENT GUIDE AND RECIEVE 10% OF ATTRACTED INVESTMENT !
-  INTRODUCE YOURSELF ON <span class="__cf_email__" data-cfemail="4402110a0005160d056a070b09040309050d086a070b09">[email&#160;protected]</span> &amp; GIVE YOUR WALLET ADDRESS
+  INTRODUCE YOURSELF ON <span class="__cf_email__" data-cfemail="4402110a0005160d056a070b09040309050d086a070b09">[email protected]</span> & GIVE YOUR WALLET ADDRESS
 */    
 
 /********************************************* 
- * To Pool transfers &amp; Investment withdrawal *
+ * To Pool transfers & Investment withdrawal *
  *********************************************/
 
     uint8 public financePeriodsCount = 6; // How many finance periods in planned period
@@ -268,7 +268,7 @@ contract Sale is SAUR {
       uint financePeriodDuration = businessPlannedPeriodDuration/financePeriodsCount; // quantity of seconds in chosen finance period
       // making array with timestamps of every finance period end date
       financePeriodsTimestamps.push(saleEndTimestamp); // first finance period is whole sale period
-      for(uint8 i=1; i&lt;=financePeriodsCount; i++) {
+      for(uint8 i=1; i<=financePeriodsCount; i++) {
         financePeriodsTimestamps.push(saleEndTimestamp+financePeriodDuration*i);  
       }
       businessPlannedPeriodEndTimestamp = saleEndTimestamp+businessPlannedPeriodDuration; 
@@ -307,19 +307,19 @@ contract Sale is SAUR {
         uint startTimestamp;
         uint endTimestamp;
       // set price for pre sale period      
-      if(now &lt; saleStartTimestamp) {
+      if(now < saleStartTimestamp) {
         targetPriceFrom = targetPrice[0];
         targetPriceTo = targetPrice[1];
         startTimestamp = contractCreatedTimestamp;
         endTimestamp = saleStartTimestamp;        
       // set price for sale period
-      } else if(now &gt;= saleStartTimestamp &amp;&amp; now &lt; saleEndTimestamp) {
+      } else if(now >= saleStartTimestamp && now < saleEndTimestamp) {
         targetPriceFrom = targetPrice[1];
         targetPriceTo = targetPrice[2];
         startTimestamp = saleStartTimestamp;
         endTimestamp = saleEndTimestamp;    
       // set price for post sale period
-      } else if(now &gt;= saleEndTimestamp &amp;&amp; now &lt; businessPlannedPeriodEndTimestamp) {
+      } else if(now >= saleEndTimestamp && now < businessPlannedPeriodEndTimestamp) {
         targetPriceFrom = targetPrice[2];
         targetPriceTo = targetPrice[3];
         startTimestamp = saleEndTimestamp;
@@ -332,8 +332,8 @@ contract Sale is SAUR {
    */    
     function() payable public {
       require(msg.sender != address(0));
-      require(msg.value &gt; 0); // process only requests with wei
-      require(now &lt; businessPlannedPeriodEndTimestamp); // no later then at the end of planned period
+      require(msg.value > 0); // process only requests with wei
+      require(now < businessPlannedPeriodEndTimestamp); // no later then at the end of planned period
       processSale();       
     }
   /**
@@ -351,9 +351,9 @@ contract Sale is SAUR {
         uint weiInvested; // weiInvested now by this Investor
         uint trySaleStakes = stakeForWei(msg.value); // try to get this quantity of Stakes
 
-      if(trySaleStakes &gt; 1) {
+      if(trySaleStakes > 1) {
         uint tryDistribute = distributedSaleStakes+trySaleStakes; // try to distribute this tryStakes        
-        if(tryDistribute &lt;= saleCap) { // saleCap not reached
+        if(tryDistribute <= saleCap) { // saleCap not reached
           saleStakes = trySaleStakes; // all tryStakes can be sold
           weiInvested = msg.value; // all current wei are accepted                    
         } else {
@@ -362,7 +362,7 @@ contract Sale is SAUR {
         }
         teamStakes = (saleStakes*teamShare).div(saleShare); // part of Stakes for a team
         fundariaStakes = (saleStakes*fundariaShare).div(saleShare); // part of Stakes for a team        
-        if(saleStakes &gt; 0) {          
+        if(saleStakes > 0) {          
           balances[owner] += teamStakes; // rewarding team according to teamShare
           totalSupply += teamStakes; // supplying team Stakes
           distributedTeamStakes += teamStakes; // saving distributed team Stakes
@@ -376,7 +376,7 @@ contract Sale is SAUR {
             distributeBonusStakes(msg.sender, saleStakes, weiInvested);  
           }          
         }        
-        if(tryDistribute &gt; saleCap) {
+        if(tryDistribute > saleCap) {
           msg.sender.transfer(msg.value-weiInvested); // return remnant
         }        
       } else {
@@ -384,13 +384,13 @@ contract Sale is SAUR {
       }
     }
   /**
-   * @dev Transfer Stakes from owner balance to buyer balance &amp; saving data to saleStat storage
+   * @dev Transfer Stakes from owner balance to buyer balance & saving data to saleStat storage
    * @param _to is address of buyer 
    * @param _stakes is quantity of Stakes transfered 
    * @param _wei is value invested        
    */ 
     function saleSupply(address _to, uint _stakes, uint _wei) internal {
-      require(_stakes &gt; 0);  
+      require(_stakes > 0);  
       balances[_to] += _stakes; // supply sold Stakes directly to buyer
       totalSupply += _stakes;
       distributedSaleStakes += _stakes;
@@ -472,7 +472,7 @@ contract Sale is SAUR {
       require(guidesStat[key].registered);
       require(saleStat[msg.sender].guide == address(0)); // Investment Guide is not applied yet for this Investor
       saleStat[msg.sender].guide = key; // apply Inv. Guide 
-      if(saleStat[msg.sender].invested &gt; 0) { // we have invested value, process distribution of bonus Stakes and rewarding a Guide     
+      if(saleStat[msg.sender].invested > 0) { // we have invested value, process distribution of bonus Stakes and rewarding a Guide     
         distributeBonusStakes(msg.sender, saleStat[msg.sender].stakes, saleStat[msg.sender].invested);
       }
     }
@@ -485,7 +485,7 @@ contract Sale is SAUR {
    */       
     function distributeBonusStakes(address _to, uint added_stakes, uint added_wei) internal {
       uint added_bonus_stakes = (added_stakes*((bonusShare*100).div(saleShare)))/100; // how many bonus Stakes to add
-      require(distributedBonusStakes+added_bonus_stakes &lt;= bonusCap); // check is bonus cap is not overflowed
+      require(distributedBonusStakes+added_bonus_stakes <= bonusCap); // check is bonus cap is not overflowed
       uint added_potential_reward = (added_wei*guideInvestmentAttractedShareToPay)/100; // reward for the Guide
       if(!rejectedInvestmentWithdrawals[_to]) {
         guidesStat[saleStat[_to].guide].accumulatedPotentialReward += added_potential_reward; // save potential reward for the Guide
@@ -502,9 +502,9 @@ contract Sale is SAUR {
     }
   
   /*
-    weiForStake &amp; stakeForWei functions sometimes show not correct translated value from dapp interface (view) 
+    weiForStake & stakeForWei functions sometimes show not correct translated value from dapp interface (view) 
     because lastStakePriceUSCents sometimes temporary outdated (in view mode)
-    but it doesn&#39;t mean that execution itself is not correct  
+    but it doesn't mean that execution itself is not correct  
   */  
   
   /**
@@ -532,21 +532,21 @@ contract Sale is SAUR {
       uint max_available; // max_available funds for transfering to pool    
       uint amountToTransfer; // amount to transfer to pool
         // search end timestamp of current financial period
-        for(uint8 i=0; i &lt;= financePeriodsCount; i++) {
+        for(uint8 i=0; i <= financePeriodsCount; i++) {
           // found end timestamp of current financial period OR now is later then business planned end date (transfer wei remnant)
-          if(now &lt; financePeriodsTimestamps[i] || (i == financePeriodsCount &amp;&amp; now &gt; financePeriodsTimestamps[i])) {   
+          if(now < financePeriodsTimestamps[i] || (i == financePeriodsCount && now > financePeriodsTimestamps[i])) {   
             // avaialbe only part of total value of total invested funds with substracted total allowed amount transfered
             max_available = ((i+1)*(totalInvested+totalWithdrawn-allowedAmountTransferedToPoolTotal))/(financePeriodsCount+1); 
             // not all max_available funds are transfered at the moment OR we have allowed amount to transfer
-            if(max_available &gt; transferedToPool-allowedAmountTransferedToPoolTotal || allowedAmountToTransferToPool &gt; 0) {
-              if(allowedAmountToTransferToPool &gt; 0) { // we have allowed by Investor (rejected to withdraw) amount
+            if(max_available > transferedToPool-allowedAmountTransferedToPoolTotal || allowedAmountToTransferToPool > 0) {
+              if(allowedAmountToTransferToPool > 0) { // we have allowed by Investor (rejected to withdraw) amount
                 amountToTransfer = allowedAmountToTransferToPool; // to transfer this allowed amount 
                 allowedAmountTransferedToPoolTotal += allowedAmountToTransferToPool; // add allowed amount to total allowed amount
                 allowedAmountToTransferToPool = 0;                  
               } else {
                 amountToTransfer = max_available-transferedToPool; // only remained amount is available to transfer
               }
-              if(amountToTransfer &gt; this.balance || now &gt; financePeriodsTimestamps[i]) { // remained amount to transfer more then current balance
+              if(amountToTransfer > this.balance || now > financePeriodsTimestamps[i]) { // remained amount to transfer more then current balance
                 amountToTransfer = this.balance; // correct amount to transfer  
               }
               transferedToPool += amountToTransfer; // increase transfered to pool amount               
@@ -565,12 +565,12 @@ contract Sale is SAUR {
    */       
     function withdrawInvestment() public {
       require(!rejectedInvestmentWithdrawals[msg.sender]); // this Investor not rejected to withdraw their investment
-      require(saleStat[msg.sender].stakes &gt; 0);
-      require(balances[msg.sender] &gt;= saleStat[msg.sender].stakes+saleStat[msg.sender].bonusStakes); // Investor has needed stakes to return
+      require(saleStat[msg.sender].stakes > 0);
+      require(balances[msg.sender] >= saleStat[msg.sender].stakes+saleStat[msg.sender].bonusStakes); // Investor has needed stakes to return
       uint remained; // all investment which are available to withdraw by all Investors
       uint to_withdraw; // available funds to withdraw for this particular Investor
-      for(uint8 i=0; i &lt; financePeriodsCount; i++) { // last fin. period is not available
-        if(now&lt;financePeriodsTimestamps[i]) { // find end timestamp of current financial period          
+      for(uint8 i=0; i < financePeriodsCount; i++) { // last fin. period is not available
+        if(now<financePeriodsTimestamps[i]) { // find end timestamp of current financial period          
           remained = totalInvested - ((i+1)*totalInvested)/(financePeriodsCount+1); // remained investment to withdraw by all Investors 
           to_withdraw = (saleStat[msg.sender].invested*remained)/totalInvested; // investment to withdraw by this Investor
           uint sale_stakes_to_burn = saleStat[msg.sender].stakes+saleStat[msg.sender].bonusStakes; // returning all Stakes saved in saleStat[msg.sender]
@@ -610,20 +610,20 @@ contract Sale is SAUR {
       rejectedInvestmentWithdrawals[msg.sender] = true;
       address guide = saleStat[msg.sender].guide;
       if(guide != address(0)) { // Inv. Guide exists
-        if(saleStat[msg.sender].guideReward &gt;= guidesStat[guide].periodicallyWithdrawnReward) { // already withdrawed less then to withdraw for this Investor
+        if(saleStat[msg.sender].guideReward >= guidesStat[guide].periodicallyWithdrawnReward) { // already withdrawed less then to withdraw for this Investor
           uint remainedRewardToWithdraw = saleStat[msg.sender].guideReward-guidesStat[guide].periodicallyWithdrawnReward;
           guidesStat[guide].periodicallyWithdrawnReward = 0; // withdrawn reward is counted as withdrawn of this Investor reward 
-          if(guidesStat[guide].accumulatedPotentialReward &gt;= remainedRewardToWithdraw) { // we have enough potential reward
+          if(guidesStat[guide].accumulatedPotentialReward >= remainedRewardToWithdraw) { // we have enough potential reward
             guidesStat[guide].accumulatedPotentialReward -= remainedRewardToWithdraw; // decrease potential reward
             guidesStat[guide].rewardToWithdraw += remainedRewardToWithdraw;  // increase total amount to withdraw right now
           } else {
             guidesStat[guide].accumulatedPotentialReward = 0; // something wrong so nullify
           }
         } else {
-          // substract current Investor&#39;s reward from periodically withdrawn reward to remove it from withdrawned
+          // substract current Investor's reward from periodically withdrawn reward to remove it from withdrawned
           guidesStat[guide].periodicallyWithdrawnReward -= saleStat[msg.sender].guideReward;
           // we have enough potential reward - all ok 
-          if(guidesStat[guide].accumulatedPotentialReward &gt;= saleStat[msg.sender].guideReward) {
+          if(guidesStat[guide].accumulatedPotentialReward >= saleStat[msg.sender].guideReward) {
             // we do not count this Investor guideReward in potential reward
             guidesStat[guide].accumulatedPotentialReward -= saleStat[msg.sender].guideReward;
             guidesStat[guide].rewardToWithdraw += saleStat[msg.sender].guideReward;  // increase total amount to withdraw right now  
@@ -641,7 +641,7 @@ contract Sale is SAUR {
    * @param _stakes is quantity of Stakes transfered       
    */     
     function distributeBounty(address _to, uint _stakes) public onlyOwner {
-      require(distributedBountyStakes+_stakes &lt;= bountyCap); // no more then maximum capacity can be distributed
+      require(distributedBountyStakes+_stakes <= bountyCap); // no more then maximum capacity can be distributed
       balances[_to] = balances[_to].add(_stakes); // to
       totalSupply += _stakes; 
       distributedBountyStakes += _stakes; // adding to total bounty distributed
@@ -649,11 +649,11 @@ contract Sale is SAUR {
       Transfer(supplier, _to, _stakes);    
     } 
   /**
-   * @dev Unfreeze team &amp; Fundaria Stakes.
+   * @dev Unfreeze team & Fundaria Stakes.
    */      
     function unFreeze() public onlyOwner {
       // only after planned period
-      if(now &gt; businessPlannedPeriodEndTimestamp) {
+      if(now > businessPlannedPeriodEndTimestamp) {
         teamStakesFrozen = false; // make team stakes available for transfering
         fundariaStakesFrozen = false; // make Fundaria stakes available for transfering
       }  

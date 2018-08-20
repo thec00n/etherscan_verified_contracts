@@ -20,7 +20,7 @@ contract Crowdsale {
 
     Token public rewardToken;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     bool public fundingGoalReached = false;
     bool public crowdsaleClosed = false;
@@ -44,9 +44,9 @@ contract Crowdsale {
     }
 
     function stageNumber() public constant returns (uint stage) {
-        require(now &gt;= started);
+        require(now >= started);
         uint result = 1  + (now - started) / period;
-        if (result &gt; 3) {
+        if (result > 3) {
             result = 3;
         }
         stage = result;
@@ -57,7 +57,7 @@ contract Crowdsale {
         uint halfDollar = 1 ether / etherCost / 2;
         /* Get current stage for discount calculation */
         uint stage = stageNumber();
-        /* For first stage price is 2 dollars, for second stage is 2.5 dollars &amp; 3 dollars for others */
+        /* For first stage price is 2 dollars, for second stage is 2.5 dollars & 3 dollars for others */
         if (stage == 1) {
             tokenCost = halfDollar * 4;
         } else if (stage == 2) {
@@ -68,13 +68,13 @@ contract Crowdsale {
     }
 
     function () public payable {
-        /* Crowdsale shouldn&#39;t be closed */
+        /* Crowdsale shouldn't be closed */
         require(!crowdsaleClosed);
-        /* Calculate &amp; check number of tokens for that amount */
+        /* Calculate & check number of tokens for that amount */
         uint amount = msg.value;
         uint tokens = amount / calcTokenCost();
-        require(tokens &gt; 0);
-        /* Increase user&#39;s amount of WEI in crowdsale */
+        require(tokens > 0);
+        /* Increase user's amount of WEI in crowdsale */
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
         /* Transfer allowed tokens from crowdsale owner to sender */
@@ -90,7 +90,7 @@ contract Crowdsale {
             fundingGoalReached = true;
             crowdsaleClosed = true;
             GoalReached(crowdsaleBeneficiary, amountRaised);
-        } else if (now &gt;= deadline) {
+        } else if (now >= deadline) {
             crowdsaleClosed = true;
             GoalReached(crowdsaleBeneficiary, amountRaised);
         }

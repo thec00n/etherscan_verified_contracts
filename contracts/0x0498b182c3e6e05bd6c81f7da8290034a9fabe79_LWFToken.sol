@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,14 +47,14 @@ library Utils {
             size := extcodesize(_addr)
         }
 
-        return (_addr == 0) ? false : size &gt; 0;
+        return (_addr == 0) ? false : size > 0;
     }
 }
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -192,27 +192,27 @@ using SafeMath for uint256;
     struct Account {
         uint256 balance;
         Snapshot[] history; // history of snapshots
-        mapping(address =&gt; uint256) allowed;
+        mapping(address => uint256) allowed;
         bool isSet;
     }
 
     address[] accountsList;
 
-    mapping(address =&gt; Account) accounts;
+    mapping(address => Account) accounts;
 
     bool public maintenance;
 
     // BURN SETTINGS
-    mapping(address =&gt; bool) burners; // contracts authorized to block tokens
+    mapping(address => bool) burners; // contracts authorized to block tokens
     bool public burnAllowed;
 
     // LOCK SETTINGS
-    mapping(address =&gt; bool) locked; //locked users addresses
+    mapping(address => bool) locked; //locked users addresses
 
     // COSMETIC THINGS
-    string public name = &quot;LWF&quot;;
-    string public symbol = &quot;LWF&quot;;
-    string public version = &quot;release-1.1&quot;;
+    string public name = "LWF";
+    string public symbol = "LWF";
+    string public version = "release-1.1";
 
     uint256 public decimals = 2;
 
@@ -281,7 +281,7 @@ using SafeMath for uint256;
     }
 
     /**
-    @dev Gets the address of any account in &#39;accountList&#39;.
+    @dev Gets the address of any account in 'accountList'.
     @param _index The index to query the address of
     @return An address pointing to a registered account
     */
@@ -308,10 +308,10 @@ using SafeMath for uint256;
         uint256 i = accounts[_owner].history.length;
         do {
             i--;
-        } while (i &gt; 0 &amp;&amp; accounts[_owner].history[i].block &gt; _block);
+        } while (i > 0 && accounts[_owner].history[i].block > _block);
         uint256 matchingBlock = accounts[_owner].history[i].block;
         uint256 matchingBalance = accounts[_owner].history[i].balance;
-        return (i == 0 &amp;&amp; matchingBlock &gt; _block) ? 0 : matchingBalance;
+        return (i == 0 && matchingBlock > _block) ? 0 : matchingBalance;
     }
 
     /**
@@ -335,7 +335,7 @@ using SafeMath for uint256;
     }
 
     /**
-    @dev Send a specified amount of tokens from sender address to &#39;_recipient&#39;.
+    @dev Send a specified amount of tokens from sender address to '_recipient'.
     @param _recipient address receiving tokens
     @param _amount the amount of tokens to be transferred
     @return A bool set true if successful, false otherwise
@@ -359,7 +359,7 @@ using SafeMath for uint256;
         var _allowance = accounts[_from].allowed[msg.sender];
 
         // Check is not needed because sub(_allowance, _amount) will already throw if this condition is not met
-        // require (_amount &lt;= _allowance);
+        // require (_amount <= _allowance);
         accounts[_from].allowed[msg.sender] = _allowance.sub(_amount);
         return _transfer(_from, _to, _amount);
     }
@@ -404,7 +404,7 @@ using SafeMath for uint256;
     */
     function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
         uint oldValue = accounts[msg.sender].allowed[_spender];
-        accounts[msg.sender].allowed[_spender] = (_subtractedValue &gt; oldValue) ? 0 : oldValue.sub(_subtractedValue);
+        accounts[msg.sender].allowed[_spender] = (_subtractedValue > oldValue) ? 0 : oldValue.sub(_subtractedValue);
         Approval(msg.sender, _spender, accounts[msg.sender].allowed[_spender]);
         return true;
     }
@@ -437,11 +437,11 @@ using SafeMath for uint256;
     @return A bool set true if locked, false otherwise
      */
     function isLocked(address _address) constant returns (bool) {
-        return now &gt;= lockExpiration ? false : locked[_address];
+        return now >= lockExpiration ? false : locked[_address];
     }
 
     /**
-    @dev Function permanently disabling &#39;burn()&#39; and &#39;setBurner()&#39;.
+    @dev Function permanently disabling 'burn()' and 'setBurner()'.
     @dev Already burned tokens are not recoverable.
     @dev Effects of this transaction are irreversible.
     @return A bool set true if successful, false otherwise
@@ -485,7 +485,7 @@ using SafeMath for uint256;
     @dev Maintenance function, if accountsList grows too long back end can safely clean unused accounts
         and push the renewed list into the contract.
     @dev Accounts removed from the list must be deactivated with maintenanceDeactivateUser(_user)
-    @param _accountsList A list containing the accounts&#39; addresses
+    @param _accountsList A list containing the accounts' addresses
     @return A bool set true if successful, false otherwise
      */
     function maintenanceSetAccountsList(address[] _accountsList) onlyOwner onlyUnderMaintenance returns (bool) {
@@ -507,7 +507,7 @@ using SafeMath for uint256;
     @dev Auxiliary method used in constructor to reserve some tokens and lock them in some cases.
     @param _address The address to assign tokens
     @param _amount The amount of tokens
-    @param _lock True to lock until &#39;lockExpiration&#39;, false to not
+    @param _lock True to lock until 'lockExpiration', false to not
     @return A bool set true if successful, false otherwise
      */
     function _setup(address _address, uint256 _amount, bool _lock) internal returns (bool) {
@@ -521,7 +521,7 @@ using SafeMath for uint256;
     }
 
     /**
-    @dev Function implementing the shared logic of &#39;transfer()&#39; and &#39;transferFrom()&#39;
+    @dev Function implementing the shared logic of 'transfer()' and 'transferFrom()'
     @param _from address sending tokens
     @param _recipient address receiving tokens
     @param _amount tokens to send
@@ -542,7 +542,7 @@ using SafeMath for uint256;
 
     /**
     @dev Updates the user history with the latest balance.
-    @param _address The Account&#39;s address to update
+    @param _address The Account's address to update
     @return A bool set true if successful, false otherwise
      */
     function _updateHistory(address _address) internal returns (bool) {

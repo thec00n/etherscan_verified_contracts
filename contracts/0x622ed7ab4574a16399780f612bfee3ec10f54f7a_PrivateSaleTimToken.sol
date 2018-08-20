@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,23 +136,23 @@ contract Pausable is Ownable {
 contract PrivateSaleTimToken is Pausable {
     using SafeMath for uint;
 
-    string public constant name = &quot;Private Sale Tim Token&quot;;
+    string public constant name = "Private Sale Tim Token";
     uint public fiatValueMultiplier = 10 ** 6;
     uint public tokenDecimals = 10 ** 18;
     uint public ethUsdRate;
 
-    mapping(address =&gt; uint) investors;
-    mapping(address =&gt; uint) public tokenHolders;
+    mapping(address => uint) investors;
+    mapping(address => uint) public tokenHolders;
 
     address beneficiary;
 
     modifier allowedToPay(){
-        require(investors[msg.sender] &gt; 0);
+        require(investors[msg.sender] > 0);
         _;
     }
 
     function setRate(uint rate) external onlyOwner {
-        require(rate &gt; 0);
+        require(rate > 0);
         ethUsdRate = rate;
     }
 

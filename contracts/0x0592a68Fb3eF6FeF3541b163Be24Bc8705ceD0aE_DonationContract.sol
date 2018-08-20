@@ -3,12 +3,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -16,7 +16,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -67,7 +67,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -95,8 +95,8 @@ contract LinkedList {
   	uint public size;
   	uint public tail;
   	uint public head;
-  	mapping(uint =&gt; Element) elements;
-  	mapping(address =&gt; uint) elementLocation;
+  	mapping(uint => Element) elements;
+  	mapping(address => uint) elementLocation;
 
 	function addItem(address _newItem) returns (bool) {
 		Element memory elem = Element(0, 0, _newItem);
@@ -146,7 +146,7 @@ contract LinkedList {
         address[] memory tempElementArray = new address[](size);
         uint cnt = 0;
         uint currentElemId = head;
-        while (cnt &lt; size) {
+        while (cnt < size) {
             tempElementArray[cnt] = elements[currentElemId].data;
             currentElemId = elements[currentElemId].next;
             cnt += 1;
@@ -186,7 +186,7 @@ contract RootDonationsContract is Owned {
         uint cnt = 0;
         uint tempArrayCnt = 0;
         uint currentElemId = donationsList.head();
-        while (cnt &lt; donationsList.size()) {
+        while (cnt < donationsList.size()) {
             tempElementArray[tempArrayCnt] = donationsList.getElementAt(currentElemId);
             
             currentElemId = donationsList.getNextElement(currentElemId);
@@ -204,9 +204,9 @@ contract DonationContract is Owned {
         uint contributionAmount;
         bool hasVotedForDisable;
     }
-    mapping(address =&gt; ContributorData) public contributorList;
+    mapping(address => ContributorData) public contributorList;
     uint public nextContributorIndex;
-    mapping(uint =&gt; address) public contributorIndexes;
+    mapping(uint => address) public contributorIndexes;
     uint public nextContributorToReturn;
 
     enum phase { pendingStart, started, EndedFail, EndedSucess, disabled, finished}
@@ -260,11 +260,11 @@ contract DonationContract is Owned {
         donationsStartTime = _donationsStartTime;
         donationsEndedTime = _donationsEndedTime;
         donationPhase = phase.pendingStart;
-        require(_athleteCanClaimPercent &lt;= 100);
+        require(_athleteCanClaimPercent <= 100);
         athleteCanClaimPercent = _athleteCanClaimPercent;
         tick = _tick;
         athlete = _athlete;
-        require(_athleteCanClaimPercent &lt;= 100);
+        require(_athleteCanClaimPercent <= 100);
         contractFee = _contractFee;
         feeWallet = _feeWallet;
     }
@@ -274,7 +274,7 @@ contract DonationContract is Owned {
         require(_value != 0);
 
         if (donationPhase == phase.pendingStart) {
-            if (now &gt;= donationsStartTime) {
+            if (now >= donationsStartTime) {
                 donationPhase = phase.started;
             } else {
                 revert();
@@ -282,8 +282,8 @@ contract DonationContract is Owned {
         }
 
         if(donationPhase == phase.started) {
-            if (now &gt; donationsEndedTime){
-                if(tokensDonated &gt;= minCap){
+            if (now > donationsEndedTime){
+                if(tokensDonated >= minCap){
                     donationPhase = phase.EndedSucess;
                 }else{
                     donationPhase = phase.EndedFail;
@@ -299,13 +299,13 @@ contract DonationContract is Owned {
 
     function processTransaction(address _from, uint _value) internal returns (uint) {
         uint valueToProcess = 0;
-        if (tokensDonated + _value &gt;= maxCap) {
+        if (tokensDonated + _value >= maxCap) {
             valueToProcess = maxCap - tokensDonated;
             donationPhase = phase.EndedSucess;
             MaxCapReached(block.number);
         } else {
             valueToProcess = _value;
-            if (tokensDonated &lt; minCap &amp;&amp; tokensDonated + valueToProcess &gt;= minCap) {
+            if (tokensDonated < minCap && tokensDonated + valueToProcess >= minCap) {
                 MinCapReached(block.number);
             }
         }
@@ -323,10 +323,10 @@ contract DonationContract is Owned {
 
     function manuallyProcessTransaction(address _from, uint _value) onlyOwner public {
         require(_value != 0);
-        require(ERC20TokenInterface(tokenAddress).balanceOf(address(this)) &gt;= _value + tokensDonated);
+        require(ERC20TokenInterface(tokenAddress).balanceOf(address(this)) >= _value + tokensDonated);
 
         if (donationPhase == phase.pendingStart) {
-            if (now &gt;= donationsStartTime) {
+            if (now >= donationsStartTime) {
                 donationPhase = phase.started;
             } else {
                 ERC20TokenInterface(tokenAddress).transfer(_from, _value);
@@ -348,15 +348,15 @@ contract DonationContract is Owned {
 
     function claimFunds() public {
         require(donationPhase == phase.EndedSucess);
-        require(athleteAlreadyClaimed &lt; tokensDonated);
+        require(athleteAlreadyClaimed < tokensDonated);
         require(athlete == msg.sender);
         if (lastClaimed == 0) {
             lastClaimed = now;
         } else {
-            require(lastClaimed + tick &lt;= now);
+            require(lastClaimed + tick <= now);
         }
         uint claimAmount = (athleteCanClaimPercent * tokensDonated) / 100;
-        if (athleteAlreadyClaimed + claimAmount &gt;= tokensDonated) {
+        if (athleteAlreadyClaimed + claimAmount >= tokensDonated) {
             claimAmount = tokensDonated - athleteAlreadyClaimed;
             donationPhase = phase.finished;
         }
@@ -383,7 +383,7 @@ contract DonationContract is Owned {
         tokensVotedForDisable += contributorList[msg.sender].contributionAmount;
         contributorList[msg.sender].hasVotedForDisable = true;
 
-        if (tokensVotedForDisable &gt;= tokensDonated/2) {
+        if (tokensVotedForDisable >= tokensDonated/2) {
             donationPhase = phase.disabled;
         }
     }
@@ -392,7 +392,7 @@ contract DonationContract is Owned {
         require(donationPhase == phase.EndedFail);
         address currentParticipantAddress;
         uint contribution;
-        for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+        for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
             currentParticipantAddress = contributorIndexes[nextContributorToReturn];
             if (currentParticipantAddress == 0x0) {
                 donationPhase = phase.finished;
@@ -408,7 +408,7 @@ contract DonationContract is Owned {
         require(donationPhase == phase.disabled);
         address currentParticipantAddress;
         uint contribution;
-        for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+        for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
             currentParticipantAddress = contributorIndexes[nextContributorToReturn];
             if (currentParticipantAddress == 0x0) {
                 donationPhase = phase.finished;

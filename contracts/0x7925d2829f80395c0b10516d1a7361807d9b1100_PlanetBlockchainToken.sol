@@ -9,9 +9,9 @@ contract ERC20Token
 
     uint8 public decimals = 0;
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(
         address indexed from,
@@ -55,7 +55,7 @@ contract ERC20Token
 
     function transferFrom(address fromAddress, address toAddress, uint256 amount) public returns (bool success)
     {
-        require(amount &lt;= allowed[fromAddress][msg.sender]);
+        require(amount <= allowed[fromAddress][msg.sender]);
         allowed[fromAddress][msg.sender] -= amount;
         xfer(fromAddress, toAddress, amount);
         return true;
@@ -63,7 +63,7 @@ contract ERC20Token
 
     function xfer(address fromAddress, address toAddress, uint amount) internal returns (bool success)
     {
-        require(amount &lt;= balances[fromAddress]);
+        require(amount <= balances[fromAddress]);
         balances[fromAddress] -= amount;
         balances[toAddress] += amount;
         Transfer(fromAddress, toAddress, amount);
@@ -90,7 +90,7 @@ contract ERC20Token
     {
         uint oldValue = allowed[msg.sender][spender];
 
-        if (subtractedValue &gt; oldValue) {
+        if (subtractedValue > oldValue) {
             allowed[msg.sender][spender] = 0;
         } else {
             allowed[msg.sender][spender] = oldValue - subtractedValue;
@@ -107,8 +107,8 @@ contract PlanetBlockchainToken is ERC20Token
 
     function PlanetBlockchainToken()
     {
-        sym = &#39;PBT&#39;;
-        nam = &#39;Planet BlockChain Token&#39;;
+        sym = 'PBT';
+        nam = 'Planet BlockChain Token';
         decimals = 18;
 
     }
@@ -125,7 +125,7 @@ contract PlanetBlockchainToken is ERC20Token
     
     function redeem(uint amount) public returns (bool)
     {
-        require(balances[msg.sender] &gt;= amount);
+        require(balances[msg.sender] >= amount);
         totSupply -= amount;
         balances[msg.sender] -= amount;
         Redeem(msg.sender, amount);

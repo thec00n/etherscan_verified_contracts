@@ -15,7 +15,7 @@ contract ElectricQueue  {
        uint public ChargersCount;
        Investment[] Investments;
        uint[]  ChargersIds ; 
-       mapping (uint=&gt;Charger) Chargers;
+       mapping (uint=>Charger) Chargers;
        address public Proxy;
        address public Manager;
        //contract of electrochargers , which state
@@ -23,7 +23,7 @@ contract ElectricQueue  {
           IElectricCharger Address;
           bool IsActive;
        }
-  //    &#39;Investment&#39; describes investment from uniq address to uniq charger.
+  //    'Investment' describes investment from uniq address to uniq charger.
       struct Investment {
            uint InvestmentId;
            address Address;
@@ -49,13 +49,13 @@ contract ElectricQueue  {
         uint length = ChargersIds.length;
         address []  memory _addresses = new address[](length);
         bool []  memory _states = new bool[](length);
-          for(uint i = 0 ; i &lt; ChargersIds.length;i++){
+          for(uint i = 0 ; i < ChargersIds.length;i++){
               _addresses[i] = Chargers[ChargersIds[i]].Address;
               _states[i] = Chargers[ChargersIds[i]].IsActive;
           }
            return (ChargersIds,_addresses,_states);
        }
-       //create new investment  and push it to array &#39;Investments&#39; 
+       //create new investment  and push it to array 'Investments' 
        function createInvestment(address _address,uint _chargerId) internal returns (Investment investor) {
         checkCharger(_chargerId);
         InvestmentsCount++;
@@ -77,7 +77,7 @@ contract ElectricQueue  {
           syncDate = now;
           return true;
       }
-      //check for exting charger and create new if , mapping hasn&#39;t it
+      //check for exting charger and create new if , mapping hasn't it
       function checkCharger(uint _chargerId) internal{
           if(!Chargers[_chargerId].IsActive ){
               Chargers[_chargerId].IsActive = true;
@@ -87,8 +87,8 @@ contract ElectricQueue  {
       }
       //get investment by two key (address and charger)
       function  getInvestment(address _address,uint _charger) internal returns (uint investmentId ) {
-          for(uint i =0 ; i &lt; InvestmentsCount ; i++){
-                if(Investments[i].Address ==_address &amp;&amp; Investments[i].ChargerId == _charger){
+          for(uint i =0 ; i < InvestmentsCount ; i++){
+                if(Investments[i].Address ==_address && Investments[i].ChargerId == _charger){
                     return Investments[i].InvestmentId;
                 }
           }
@@ -105,7 +105,7 @@ contract ElectricQueue  {
                bool []  memory _states = new bool[](length);
                uint []  memory _lastUpdateDates= new uint[](length);
                uint []  memory _totalSums= new uint[](length);
-               for(uint i =0 ; i &lt; InvestmentsCount ; i++){
+               for(uint i =0 ; i < InvestmentsCount ; i++){
                  _ids[i]= Investments[i].InvestmentId;
                  _addresses[i]= Investments[i].Address;
                  _chargerIds[i]=Investments[i].ChargerId;
@@ -119,16 +119,16 @@ contract ElectricQueue  {
      
       //setting charger address
       function setChargerAddress(uint id , address chargerAddress) {
-         if (msg.sender != Owner &amp;&amp; msg.sender != Manager) return ;
+         if (msg.sender != Owner && msg.sender != Manager) return ;
           Chargers[id].Address = IElectricCharger(chargerAddress);
       }
       //transer money to cherger
       function sendToCharger(uint id){
-                 if (msg.sender != Owner &amp;&amp; msg.sender != Manager) return ;
+                 if (msg.sender != Owner && msg.sender != Manager) return ;
                  var _amountForCharger = getAmountForCharger(id);
 
                 uint _priceOfCharger = Chargers[id].Address.getPrice() ;
-                 if(_priceOfCharger&gt; _amountForCharger){
+                 if(_priceOfCharger> _amountForCharger){
                         uint difference  = _priceOfCharger - _amountForCharger;
                        calculateCountOfInvestmetnsInQueue(difference,id);
                  }            
@@ -144,9 +144,9 @@ contract ElectricQueue  {
             address []  memory _addresses = new address[](length);
             uint []  memory _balances= new uint[](length);
 
-             while(i &lt;InvestmentsCount &amp;&amp; difference &gt; 0){
-                     if(Investments[i].ChargerId == 0 &amp;&amp; Investments[i].Balance &gt;= 1 ether){
-                         if(difference&gt;Investments[i].Balance){
+             while(i <InvestmentsCount && difference > 0){
+                     if(Investments[i].ChargerId == 0 && Investments[i].Balance >= 1 ether){
+                         if(difference>Investments[i].Balance){
                             investmantBalance=Investments[i].Balance;
                             Investments[i].Balance=0;
                            Investments[i].IsTransfered =true;
@@ -174,8 +174,8 @@ contract ElectricQueue  {
             address []  memory _addresses = new address[](length);
             uint []  memory _balances= new uint[](length);
 
-             for(uint i =0 ; i &lt; InvestmentsCount ; i++){
-                if(Investments[i].ChargerId == id &amp;&amp; Investments[i].Balance &gt;= 1 ether){
+             for(uint i =0 ; i < InvestmentsCount ; i++){
+                if(Investments[i].ChargerId == id && Investments[i].Balance >= 1 ether){
                     _ids[chargerInvestments]=Investments[i].InvestmentId;
                     _addresses[chargerInvestments]=Investments[i].Address;
                     _balances[chargerInvestments]=Investments[i].Balance;
@@ -192,7 +192,7 @@ contract ElectricQueue  {
       }
        function  returnMoney(address _to) payable returns(bool success) {
         if(msg.sender != Proxy) return false;
-         for(uint i =0 ; i &lt; InvestmentsCount ; i++){
+         for(uint i =0 ; i < InvestmentsCount ; i++){
                 if(Investments[i].Address ==_to){
                         if(!_to.send(Investments[i].Balance)){
                             return false;

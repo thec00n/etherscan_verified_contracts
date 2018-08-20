@@ -20,37 +20,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -61,10 +61,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool Yes) {
@@ -113,14 +113,14 @@ contract StandardToken is ERC20, SafeMath {
 
 contract CBZToken is StandardToken {
 
-    string public name = &quot;CryptoBazar Token&quot;;
-    string public symbol = &quot;CBZ&quot;;
+    string public name = "CryptoBazar Token";
+    string public symbol = "CBZ";
     uint8 public decimals = 8;
     uint256 public totalSupply = 1000000000 * (10 ** uint256(decimals));//Crowdsale supply
 	uint public sellPrice = 1000000000000000 wei;//Tokens are sold for this manual price, rather than predefined price.
     
     //Addresses that are allowed to transfer tokens
-    mapping (address =&gt; bool) public allowedTransfer;
+    mapping (address => bool) public allowedTransfer;
 	
 	//Technical variables to store states
 	bool public TransferAllowed = true;//Token transfers are blocked
@@ -180,7 +180,7 @@ function CBZToken(address _owner, address _minter, address _wallet) payable {
     //Manually set the token price (in wei - https://etherconverter.online)
     function setTokenPrice(uint _tokenPrice) external onlyOwner {
         sellPrice = _tokenPrice;
-        PriceChanged(&quot;New price is &quot;, _tokenPrice);
+        PriceChanged("New price is ", _tokenPrice);
     }
      
     //Allow or prohibit token transfers
@@ -195,8 +195,8 @@ function CBZToken(address _owner, address _minter, address _wallet) payable {
     
     // Send `_amount` of tokens to `_target`
     function mintTokens(address _target, uint _amount) onlyMinter external returns (bool) {
-        require(_amount &gt; 0);//Number of tokens must be greater than 0
-        require(safeAdd(StatsTotal, _amount) &lt;= totalSupply);//The amount of tokens cannot be greater than Total supply
+        require(_amount > 0);//Number of tokens must be greater than 0
+        require(safeAdd(StatsTotal, _amount) <= totalSupply);//The amount of tokens cannot be greater than Total supply
         balances[_target] = safeAdd(balances[_target], _amount);
         StatsMinted = safeAdd(StatsMinted, _amount);//Update number of tokens minted
         StatsTotal = safeAdd(StatsTotal, _amount);//Update total number of tokens
@@ -208,7 +208,7 @@ function CBZToken(address _owner, address _minter, address _wallet) payable {
     
     // Decrease user balance
     function decreaseTokens(address _target, uint _amount) onlyMinter external returns (bool) {
-        require(_amount &gt; 0);//Number of tokens must be greater than 0
+        require(_amount > 0);//Number of tokens must be greater than 0
         balances[_target] = safeSub(balances[_target], _amount);
         StatsMinted = safeSub(StatsMinted, _amount);//Update number of tokens minted
         StatsTotal = safeSub(StatsTotal, _amount);//Update total number of tokens
@@ -229,12 +229,12 @@ function CBZToken(address _owner, address _minter, address _wallet) payable {
         require(msg.sender != minter);//The minter cannot buy tokens
         require(msg.sender != wallet);//The wallet address cannot buy tokens
         require(!CrowdsalePaused);//Purchase permitted if Crowdsale is paused
-        require(msg.value &gt;= price());//The amount received in wei must be greater than the cost of 1 token
+        require(msg.value >= price());//The amount received in wei must be greater than the cost of 1 token
 
         uint tokens = msg.value/price();//Number of tokens to be received by the buyer
-        require(tokens &gt; 0);//Number of tokens must be greater than 0
+        require(tokens > 0);//Number of tokens must be greater than 0
         
-        require(safeAdd(StatsTotal, tokens) &lt;= totalSupply);//The amount of tokens cannot be greater than Total supply
+        require(safeAdd(StatsTotal, tokens) <= totalSupply);//The amount of tokens cannot be greater than Total supply
         
         wallet.transfer(msg.value);//Send received ETH to the fundraising purse
         

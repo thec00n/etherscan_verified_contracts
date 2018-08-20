@@ -16,27 +16,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -137,7 +137,7 @@ interface TokenInterface {
   uint256 softCap;
   uint256 hardCap;
   
-  mapping(address=&gt;uint256) amountSentByBuyers; 
+  mapping(address=>uint256) amountSentByBuyers; 
   bool refundToBuyers = false;
   uint256 totalDurationInDays = 166 days;
   uint256 decimals = 2;
@@ -152,12 +152,12 @@ interface TokenInterface {
 
   function DayDayCrowdsale(uint256 _startTime, address _wallet, address _tokenAddress) public 
   {
-    require(_startTime &gt;=now);
+    require(_startTime >=now);
     require(_wallet != 0x0);
 
     startTime = _startTime;  
     endTime = startTime + totalDurationInDays;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
    
     owner = _wallet;
     
@@ -196,62 +196,62 @@ interface TokenInterface {
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
         
         //private seed phase 1 (5 days)
-        if (timeElapsedInDays &lt;5)
+        if (timeElapsedInDays <5)
         {
             //bonus application of private seed phase 1
-            if (TOKENS_SOLD &lt;maxTokensToSaleInPrivateSeedPhase1)
+            if (TOKENS_SOLD <maxTokensToSaleInPrivateSeedPhase1)
             {
                 bonus = tokens.mul(bonusInPrivateSeedPhase1); 
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPrivateSeedPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPrivateSeedPhase1);
             }
             
             //bonus application of private seed phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPrivateSeedPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPrivateSeedPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPrivateSeedPhase1 && TOKENS_SOLD < maxTokensToSaleInPrivateSeedPhase2)
             {
                 bonus = tokens.mul(bonusInPrivateSeedPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPrivateSeedPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPrivateSeedPhase2);
             } 
             
             //bonus application of SyndicagteSeed
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPrivateSeedPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInSyndicagteSeed)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPrivateSeedPhase2 && TOKENS_SOLD < maxTokensToSaleInSyndicagteSeed)
             {
                 bonus = tokens.mul(bonusInSyndicagteSeed);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInSyndicagteSeed);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInSyndicagteSeed);
             }
             
             //bonus application of PreITOPublic phase
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInSyndicagteSeed &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPreITOPublic)
+            else if (TOKENS_SOLD >= maxTokensToSaleInSyndicagteSeed && TOKENS_SOLD < maxTokensToSaleInPreITOPublic)
             {
                 bonus = tokens.mul(bonusInPreITOPublic);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreITOPublic);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreITOPublic);
             }
             
             //bonus application of ITOPublic phase 1
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPreITOPublic &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase1)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPreITOPublic && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase1)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase1);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase1);
             }
             
             //bonus application of ITOPublic phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -260,54 +260,54 @@ interface TokenInterface {
         }
         
         //private seed phase 2 (10 days)
-        else if (timeElapsedInDays &gt;= 5 &amp;&amp; timeElapsedInDays &lt;16)
+        else if (timeElapsedInDays >= 5 && timeElapsedInDays <16)
         {
             //bonus application of private seed phase 2
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInPrivateSeedPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPrivateSeedPhase2)
+            if (TOKENS_SOLD >= maxTokensToSaleInPrivateSeedPhase1 && TOKENS_SOLD < maxTokensToSaleInPrivateSeedPhase2)
             {
                 bonus = tokens.mul(bonusInPrivateSeedPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPrivateSeedPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPrivateSeedPhase2);
             } 
             
             //bonus application of SyndicagteSeed
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPrivateSeedPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInSyndicagteSeed)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPrivateSeedPhase2 && TOKENS_SOLD < maxTokensToSaleInSyndicagteSeed)
             {
                 bonus = tokens.mul(bonusInSyndicagteSeed);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInSyndicagteSeed);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInSyndicagteSeed);
             }
             
             //bonus application of PreITOPublic phase
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInSyndicagteSeed &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPreITOPublic)
+            else if (TOKENS_SOLD >= maxTokensToSaleInSyndicagteSeed && TOKENS_SOLD < maxTokensToSaleInPreITOPublic)
             {
                 bonus = tokens.mul(bonusInPreITOPublic);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreITOPublic);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreITOPublic);
             }
             
             //bonus application of ITOPublic phase 1
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPreITOPublic &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase1)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPreITOPublic && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase1)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase1);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase1);
             }
             
             //bonus application of ITOPublic phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -316,46 +316,46 @@ interface TokenInterface {
         }
         
         //Syndicagte phase (19 days) 
-        else if (timeElapsedInDays &gt;= 16 &amp;&amp; timeElapsedInDays&lt;36)
+        else if (timeElapsedInDays >= 16 && timeElapsedInDays<36)
         {
             //bonus application of SyndicagteSeed
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInPrivateSeedPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInSyndicagteSeed)
+            if (TOKENS_SOLD >= maxTokensToSaleInPrivateSeedPhase2 && TOKENS_SOLD < maxTokensToSaleInSyndicagteSeed)
             {
                 bonus = tokens.mul(bonusInSyndicagteSeed);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInSyndicagteSeed);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInSyndicagteSeed);
             }
             
             //bonus application of PreITOPublic phase
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInSyndicagteSeed &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPreITOPublic)
+            else if (TOKENS_SOLD >= maxTokensToSaleInSyndicagteSeed && TOKENS_SOLD < maxTokensToSaleInPreITOPublic)
             {
                 bonus = tokens.mul(bonusInPreITOPublic);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreITOPublic);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreITOPublic);
             }
             
             //bonus application of ITOPublic phase 1
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPreITOPublic &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase1)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPreITOPublic && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase1)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase1);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase1);
             }
             
             //bonus application of ITOPublic phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -364,45 +364,45 @@ interface TokenInterface {
         }
         
         // Pause before the public phases
-        else if (timeElapsedInDays &gt;= 36 &amp;&amp; timeElapsedInDays&lt;103)
+        else if (timeElapsedInDays >= 36 && timeElapsedInDays<103)
         {
             //67 days break
             revert();  //no sale during this time, so revert this transaction
         }
         
         // Pre-ITO public phase (5 days)
-        else if (timeElapsedInDays &gt;= 103 &amp;&amp; timeElapsedInDays&lt;109)
+        else if (timeElapsedInDays >= 103 && timeElapsedInDays<109)
         {
             //bonus application of PreITOPublic phase
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInSyndicagteSeed &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInPreITOPublic)
+            if (TOKENS_SOLD >= maxTokensToSaleInSyndicagteSeed && TOKENS_SOLD < maxTokensToSaleInPreITOPublic)
             {
                 bonus = tokens.mul(bonusInPreITOPublic);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreITOPublic);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreITOPublic);
             }
             
             //bonus application of ITOPublic phase 1
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPreITOPublic &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase1)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPreITOPublic && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase1)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase1);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase1);
             }
             
             //bonus application of ITOPublic phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -411,30 +411,30 @@ interface TokenInterface {
         }
         
         // Public ITO phase 1 (15 days)
-        else if (timeElapsedInDays &gt;= 109 &amp;&amp; timeElapsedInDays&lt;125)
+        else if (timeElapsedInDays >= 109 && timeElapsedInDays<125)
         {
             //bonus application of ITOPublic phase 1
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInPreITOPublic &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase1)
+            if (TOKENS_SOLD >= maxTokensToSaleInPreITOPublic && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase1)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase1);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase1);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase1);
             }
             
             //bonus application of ITOPublic phase 2
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -443,22 +443,22 @@ interface TokenInterface {
         }
         
         // Public ITO phase 2 (20 days)
-        else if (timeElapsedInDays &gt;= 125 &amp;&amp; timeElapsedInDays&lt;146)
+        else if (timeElapsedInDays >= 125 && timeElapsedInDays<146)
         {
             //bonus application of ITOPublic phase 2
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase1 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase2)
+            if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase1 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase2)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase2);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase2);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase2);
             }
             
             //bonus application of ITOPublic phase 3
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            else if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -467,14 +467,14 @@ interface TokenInterface {
         }
         
         // Public ITO phase 3 (20 days)
-        else if (timeElapsedInDays &gt;= 146 &amp;&amp; timeElapsedInDays&lt;167)
+        else if (timeElapsedInDays >= 146 && timeElapsedInDays<167)
         {
             //bonus application of ITOPublic phase 3
-            if (TOKENS_SOLD &gt;= maxTokensToSaleInITOPublicPhase2 &amp;&amp; TOKENS_SOLD &lt; maxTokensToSaleInITOPublicPhase3)
+            if (TOKENS_SOLD >= maxTokensToSaleInITOPublicPhase2 && TOKENS_SOLD < maxTokensToSaleInITOPublicPhase3)
             {
                 bonus = tokens.mul(bonusInITOPublicPhase3);
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInITOPublicPhase3);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInITOPublicPhase3);
             }
             else 
             {
@@ -496,11 +496,11 @@ interface TokenInterface {
     require(validPurchase());
     
     if (isPrivateInvestmentPhase())
-        require(msg.value&gt;= minimumContributionPrivate &amp;&amp; msg.value&lt;=maximumContributionPrivate);
+        require(msg.value>= minimumContributionPrivate && msg.value<=maximumContributionPrivate);
     else
-        require(msg.value&gt;= minimumContributionPublic &amp;&amp; msg.value&lt;=maximumContributionPublic);
+        require(msg.value>= minimumContributionPublic && msg.value<=maximumContributionPublic);
     
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(TOKENS_SOLD<maxTokensToSale);
    
     uint256 weiAmount = msg.value;
     
@@ -509,7 +509,7 @@ interface TokenInterface {
     uint256 tokens = weiAmountForTokens.mul(ratePerWei);
     uint256 bonus = determineBonus(tokens);
     tokens = tokens.add(bonus);
-    require(TOKENS_SOLD.add(tokens)&lt;=maxTokensToSale);
+    require(TOKENS_SOLD.add(tokens)<=maxTokensToSale);
     
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -528,14 +528,14 @@ interface TokenInterface {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    /**
@@ -621,7 +621,7 @@ interface TokenInterface {
      function isPrivateInvestmentPhase() internal constant returns (bool)
      {
          uint timePassed = now.sub(startTime);
-         if (timePassed&lt;=30 days)
+         if (timePassed<=30 days)
             return true;
         return false;
      }
@@ -674,15 +674,15 @@ interface TokenInterface {
      function refundToBuyersIfSoftCapNotReached() public payable onlyOwner
      {
          require(hasEnded());
-         require(weiRaised&lt;softCap);
-         require(msg.value&gt;=weiRaised);
+         require(weiRaised<softCap);
+         require(msg.value>=weiRaised);
          refundToBuyers = true;
      }
      
      function getRefund() public 
      {
          require(refundToBuyers == true);
-         if (amountSentByBuyers[msg.sender] &gt; 0)
+         if (amountSentByBuyers[msg.sender] > 0)
             msg.sender.transfer(amountSentByBuyers[msg.sender]);
      }
 }

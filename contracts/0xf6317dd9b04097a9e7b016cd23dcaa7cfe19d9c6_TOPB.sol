@@ -1,12 +1,12 @@
 pragma solidity ^0.4.24;
 
 contract TOPB {
-    string public name = &#39;TOPBTC TOKEN&#39;;
-    string public symbol = &#39;TOPB&#39;;
+    string public name = 'TOPBTC TOKEN';
+    string public symbol = 'TOPB';
     uint8 public decimals = 18;
     uint256 public totalSupply;
 	
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 	
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -22,8 +22,8 @@ contract TOPB {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
 		assert(_to != 0x0);
-		assert(balanceOf[_from] &gt;= _value);
-		assert(balanceOf[_to] + _value &gt; balanceOf[_to]);
+		assert(balanceOf[_from] >= _value);
+		assert(balanceOf[_to] + _value > balanceOf[_to]);
 		uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += _value;
@@ -36,7 +36,7 @@ contract TOPB {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        assert(balanceOf[msg.sender] &gt;= _value); 
+        assert(balanceOf[msg.sender] >= _value); 
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);

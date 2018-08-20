@@ -46,8 +46,8 @@ contract CryptoPoosToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoPoos&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoPoosToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoPoos"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoPoosToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.005 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -60,19 +60,19 @@ contract CryptoPoosToken is ERC721 {
 
   /// @dev A mapping from poo IDs to the address that owns them. All poos have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public pooIndexToOwner;
+  mapping (uint256 => address) public pooIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PooIDs to an address that has been approved to call
   ///  transferFrom(). Each poo can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public pooIndexToApproved;
+  mapping (uint256 => address) public pooIndexToApproved;
 
   // @dev A mapping from PooIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private pooIndexToPrice;
+  mapping (uint256 => uint256) private pooIndexToPrice;
   
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -119,12 +119,12 @@ contract CryptoPoosToken is ERC721 {
     ceoAddress = msg.sender;
     cooAddress = msg.sender;
 	
-	createContractPoo(&quot;1&quot;);
-	createContractPoo(&quot;2&quot;);
-	createContractPoo(&quot;3&quot;);
-	createContractPoo(&quot;4&quot;);
-	createContractPoo(&quot;5&quot;);
-	createContractPoo(&quot;6&quot;);
+	createContractPoo("1");
+	createContractPoo("2");
+	createContractPoo("3");
+	createContractPoo("4");
+	createContractPoo("5");
+	createContractPoo("6");
 	roundCounter = 1;
   }
 
@@ -213,7 +213,7 @@ contract CryptoPoosToken is ERC721 {
   }
 
    function donate() public payable {
-	require(msg.value &gt;= 0.001 ether);
+	require(msg.value >= 0.001 ether);
    }
 
 
@@ -231,7 +231,7 @@ contract CryptoPoosToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     // 62% to previous owner
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 62), 100));
@@ -260,7 +260,7 @@ contract CryptoPoosToken is ERC721 {
   function tryFlush() public payable {
 
         // Make sure they are sending min flush price
-        require(msg.value &gt;= minFlushPrice);
+        require(msg.value >= minFlushPrice);
 
 		// Jew takes 10% of manual flush attempt. Stops dat spam....
 		ceoAddress.transfer(uint256(SafeMath.div(SafeMath.mul(msg.value, 10), 100)));
@@ -295,7 +295,7 @@ contract CryptoPoosToken is ERC721 {
      
     uint256 flushPooIndex = rand(winningChance);
     
-    if( (flushPooIndex &lt; 6) &amp;&amp; (flushPooIndex != goldenPooId) &amp;&amp;  (msg.sender != pooIndexToOwner[flushPooIndex])  ){
+    if( (flushPooIndex < 6) && (flushPooIndex != goldenPooId) &&  (msg.sender != pooIndexToOwner[flushPooIndex])  ){
       lastFlusher = msg.sender;
 	  flushedTokenId = flushPooIndex;
       
@@ -335,7 +335,7 @@ contract CryptoPoosToken is ERC721 {
 
   // If 2 hours elapsed since last purchase, increase chance of winning pot.
   function _increaseWinPotChance() constant private returns (bool) {
-    if (now &gt;= lastPurchaseTime + 120 minutes) {
+    if (now >= lastPurchaseTime + 120 minutes) {
         // 120 minutes has elapsed from last purchased time
         return true;
     }
@@ -364,7 +364,7 @@ contract CryptoPoosToken is ERC721 {
   }
 
   /// @param _owner The owner whose social media tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire poos array looking for poos belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -379,7 +379,7 @@ contract CryptoPoosToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 pooId;
-      for (pooId = 0; pooId &lt;= totalPoos; pooId++) {
+      for (pooId = 0; pooId <= totalPoos; pooId++) {
         if (pooIndexToOwner[pooId] == _owner) {
           result[resultIndex] = pooId;
           resultIndex++;
@@ -444,8 +444,8 @@ contract CryptoPoosToken is ERC721 {
     });
     uint256 newPooId = poos.push(_poo) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPooId == uint256(uint32(newPooId)));
 
     Birth(newPooId, _name, _owner);
@@ -464,12 +464,12 @@ contract CryptoPoosToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Poo to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of poos is capped to 2^32 we can&#39;t overflow this
+    // Since the number of poos is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     pooIndexToOwner[_tokenId] = _to;
 
-    // When creating new poos _from is 0x0, but we can&#39;t account that address.
+    // When creating new poos _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -480,7 +480,7 @@ contract CryptoPoosToken is ERC721 {
     Transfer(_from, _to, _tokenId);
   }
   
-    //Generate random number between 0 &amp; max
+    //Generate random number between 0 & max
     uint256 constant private FACTOR =  1157920892373161954235709850086879078532699846656405640394575840079131296399;
     function rand(uint max) constant private returns (uint256 result){
         uint256 factor = FACTOR * 100 / max;
@@ -509,9 +509,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -519,7 +519,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -528,7 +528,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

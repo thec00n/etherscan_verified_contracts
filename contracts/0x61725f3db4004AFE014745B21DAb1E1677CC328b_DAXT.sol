@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract Extractable is Ownable {
 
     // allow to extract ether from contract
     function extractEther(address withdrawalAddress) public onlyOwner {
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             withdrawalAddress.transfer(this.balance);
         }
     }
@@ -106,7 +106,7 @@ contract Extractable is Ownable {
     function extractToken(address tokenAddress, address withdrawalAddress) public onlyOwner {
         ERC20Basic tokenContract = ERC20Basic(tokenAddress);
         uint256 balance = tokenContract.balanceOf(this);
-        if (balance &gt; 0) {
+        if (balance > 0) {
             tokenContract.transfer(withdrawalAddress, balance);
         }
     }
@@ -138,7 +138,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -147,7 +147,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -188,7 +188,7 @@ contract DetailedERC20 is ERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -199,8 +199,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -263,7 +263,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -279,7 +279,7 @@ contract FloatingSupplyToken is Ownable, StandardToken {
     // create new token tranche for contract you own
     // this increases total supply and credits new tokens to owner
     function issueTranche(uint256 _amount) public onlyOwner returns (uint256) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         totalSupply = totalSupply.add(_amount);
         balances[owner] = balances[owner].add(_amount);
@@ -291,11 +291,11 @@ contract FloatingSupplyToken is Ownable, StandardToken {
     // destroy tokens that belongs to you
     // this decreases your balance and total supply
     function burn(uint256 _amount) public {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt; 0);
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount > 0);
+        require(balances[msg.sender] > 0);
+        require(_amount <= balances[msg.sender]);
 
-        assert(_amount &lt;= totalSupply);
+        assert(_amount <= totalSupply);
 
         totalSupply = totalSupply.sub(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -308,11 +308,11 @@ contract FundToken is StandardToken {
     using SafeMath for uint256;
 
     // Fund internal balances are held in here
-    mapping (address =&gt; mapping (address =&gt; uint256)) fundBalances;
+    mapping (address => mapping (address => uint256)) fundBalances;
 
     // Owner of account manages funds on behalf of third parties and
     // need to keep an account of what belongs to whom
-    mapping (address =&gt; bool) public fundManagers;
+    mapping (address => bool) public fundManagers;
 
     // modifiers
     // only fund manager can execute that
@@ -338,7 +338,7 @@ contract FundToken is StandardToken {
     // remove address from registered funds
     event DissolveFund(address indexed _fundManager);
 
-    // owner&#39;s tokens moved into the fund
+    // owner's tokens moved into the fund
     event FundTransferIn(address indexed _from, address indexed _fundManager,
                          address indexed _owner, uint256 _value);
 
@@ -384,8 +384,8 @@ contract FundToken is StandardToken {
         require(fundManagers[_fundManager]);
         require(!fundManagers[msg.sender]);
 
-        require(balances[msg.sender] &gt;= _amount);
-        require(_amount &gt; 0);
+        require(balances[msg.sender] >= _amount);
+        require(_amount > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_fundManager] = balances[_fundManager].add(_amount);
@@ -400,9 +400,9 @@ contract FundToken is StandardToken {
         require(!fundManagers[_to]);
         require(fundManagers[msg.sender]);
 
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt;= _amount);
-        require(fundBalances[msg.sender][_from] &gt;= _amount);
+        require(_amount > 0);
+        require(balances[msg.sender] >= _amount);
+        require(fundBalances[msg.sender][_from] >= _amount);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -420,9 +420,9 @@ contract FundToken is StandardToken {
     function fundTransferWithin(address _from, address _to, uint256 _amount) public {
         require(fundManagers[msg.sender]);
 
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt;= _amount);
-        require(fundBalances[msg.sender][_from] &gt;= _amount);
+        require(_amount > 0);
+        require(balances[msg.sender] >= _amount);
+        require(fundBalances[msg.sender][_from] >= _amount);
 
         fundBalances[msg.sender][_from] = fundBalances[msg.sender][_from].sub(_amount);
         fundBalances[msg.sender][_to] = fundBalances[msg.sender][_to].add(_amount);
@@ -457,7 +457,7 @@ contract BurnFundToken is FundToken, FloatingSupplyToken {
     using SafeMath for uint256;
 
     //events
-    // owner&#39;s tokens from the managed fund burned
+    // owner's tokens from the managed fund burned
     event FundBurn(address indexed _fundManager, address indexed _owner, uint256 _value);
 
     // destroy tokens that belongs to you
@@ -469,16 +469,16 @@ contract BurnFundToken is FundToken, FloatingSupplyToken {
     }
 
     // destroy tokens that belong to the fund you control
-    // this decreases that account&#39;s balance, fund balance, total supply
+    // this decreases that account's balance, fund balance, total supply
     function fundBurn(address _fundAccount, uint256 _amount) public onlyFundManager {
         require(fundManagers[msg.sender]);
         require(balances[msg.sender] != 0);
-        require(fundBalances[msg.sender][_fundAccount] &gt; 0);
-        require(_amount &gt; 0);
-        require(_amount &lt;= fundBalances[msg.sender][_fundAccount]);
+        require(fundBalances[msg.sender][_fundAccount] > 0);
+        require(_amount > 0);
+        require(_amount <= fundBalances[msg.sender][_fundAccount]);
 
-        assert(_amount &lt;= totalSupply);
-        assert(_amount &lt;= balances[msg.sender]);
+        assert(_amount <= totalSupply);
+        assert(_amount <= balances[msg.sender]);
 
         totalSupply = totalSupply.sub(_amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -540,8 +540,8 @@ contract PausableToken is BurnFundToken, Pausable {
 }
 
 contract DAXT is PausableToken,
-    DetailedERC20(&quot;Digital Asset Exchange Token&quot;, &quot;DAXT&quot;, 18),
-    Versioned(&quot;1.2.0&quot;),
+    DetailedERC20("Digital Asset Exchange Token", "DAXT", 18),
+    Versioned("1.2.0"),
     Destructible,
     Extractable {
 

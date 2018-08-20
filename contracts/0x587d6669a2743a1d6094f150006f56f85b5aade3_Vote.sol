@@ -6,7 +6,7 @@ contract Vote {
     }
 
     function() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             tx.origin.send(msg.value);
         }
     }

@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,25 +57,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-// This is an ERC-20 token contract based on Open Zepplin&#39;s StandardToken
+// This is an ERC-20 token contract based on Open Zepplin's StandardToken
 // and MintableToken plus the ability to burn tokens.
 //
 // We had to copy over the code instead of inheriting because of changes
@@ -85,11 +85,11 @@ library SafeMath {
 //   * mint() can only be called by the minter who is not the owner
 //     but the HoloTokenSale contract.
 //
-// Token can be burned by a special &#39;destroyer&#39; role that can only
+// Token can be burned by a special 'destroyer' role that can only
 // burn its tokens.
 contract HoloToken is Ownable {
-  string public constant name = &quot;HoloToken&quot;;
-  string public constant symbol = &quot;HOT&quot;;
+  string public constant name = "HoloToken";
+  string public constant symbol = "HOT";
   uint8 public constant decimals = 18;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -107,7 +107,7 @@ contract HoloToken is Ownable {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   /**
   * @dev transfer token for a specified address
@@ -116,7 +116,7 @@ contract HoloToken is Ownable {
   */
   function transfer(address _to, uint256 _value) public whenMintingFinished returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -138,7 +138,7 @@ contract HoloToken is Ownable {
   //=====================================================================================
   // Zeppelin StandardToken (plus modifier to not allow transfers during minting period):
   //=====================================================================================
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => mapping (address => uint256)) public allowed;
 
 
   /**
@@ -149,8 +149,8 @@ contract HoloToken is Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenMintingFinished returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -164,7 +164,7 @@ contract HoloToken is Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -199,7 +199,7 @@ contract HoloToken is Ownable {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -237,8 +237,8 @@ contract HoloToken is Ownable {
   }
 
   function mint(address _to, uint256 _amount) external onlyMinter canMint  returns (bool) {
-    require(balances[_to] + _amount &gt; balances[_to]); // Guard against overflow
-    require(totalSupply + _amount &gt; totalSupply);     // Guard against overflow  (this should never happen)
+    require(balances[_to] + _amount > balances[_to]); // Guard against overflow
+    require(totalSupply + _amount > totalSupply);     // Guard against overflow  (this should never happen)
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -267,7 +267,7 @@ contract HoloToken is Ownable {
   }
 
   function burn(uint256 _amount) external onlyDestroyer {
-    require(balances[destroyer] &gt;= _amount &amp;&amp; _amount &gt; 0);
+    require(balances[destroyer] >= _amount && _amount > 0);
     balances[destroyer] = balances[destroyer].sub(_amount);
     totalSupply = totalSupply.sub(_amount);
     Burn(_amount);

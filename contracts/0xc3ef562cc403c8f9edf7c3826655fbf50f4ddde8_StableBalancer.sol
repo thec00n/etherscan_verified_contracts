@@ -1,7 +1,7 @@
 pragma solidity ^0.4.2;
 
 
-/* define &#39;owned&#39; */
+/* define 'owned' */
 contract owned {
     address public owner;
 
@@ -24,7 +24,7 @@ contract StableBalance is owned {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Tx(address _to, uint256 _value,string _txt);
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
     function transfer(address _to, uint256 _value) returns (bool success) { return false; throw;}
     
@@ -43,8 +43,8 @@ contract StableBalancer is owned {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Tx(address _from,address _to, uint256 _value,string _txt);
     
-    mapping (address =&gt; uint256) balancesHaben;
-    mapping (address =&gt; uint256) balancesSoll;
+    mapping (address => uint256) balancesHaben;
+    mapping (address => uint256) balancesSoll;
     
     function transfer(address _to, uint256 _value) returns (bool success) { return false; throw;}
     
@@ -66,7 +66,7 @@ contract StableBalancer is owned {
 
 contract StableStore {
     
-    mapping (address =&gt; string) public store;
+    mapping (address => string) public store;
     
     function setValue(string _value) {
         store[msg.sender]=_value;
@@ -74,7 +74,7 @@ contract StableStore {
 }
 
 contract StableAddressStore {
-    mapping (address =&gt; mapping(address=&gt;string)) public store;
+    mapping (address => mapping(address=>string)) public store;
     
     function setValue(address key,string _value) {
         store[msg.sender][key]=_value;
@@ -82,7 +82,7 @@ contract StableAddressStore {
 }
 
 contract StableTxStore {
-    mapping (address =&gt; mapping(address=&gt;tx)) public store;
+    mapping (address => mapping(address=>tx)) public store;
     
     struct tx {
         uint256 amount;

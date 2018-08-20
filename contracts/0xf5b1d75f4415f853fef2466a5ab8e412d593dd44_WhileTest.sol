@@ -18,7 +18,7 @@ contract WhileTest
     payable
     public
     {
-        if(msg.value&gt;=1 ether)
+        if(msg.value>=1 ether)
         {
             
             var i1 = 1;
@@ -27,8 +27,8 @@ contract WhileTest
             
             while(true)
             {
-                if(i1&lt;i2)break;
-                if(i1&gt;amX2)break;
+                if(i1<i2)break;
+                if(i1>amX2)break;
                 
                 i2=i1;
                 i1++;

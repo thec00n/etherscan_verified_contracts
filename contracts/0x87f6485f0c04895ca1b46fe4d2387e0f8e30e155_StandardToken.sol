@@ -34,37 +34,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure  returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   
@@ -93,8 +93,8 @@ contract StandardAuth is ERC223Interface {
 contract StandardToken is StandardAuth {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances; // List of user balances.
-    mapping(address =&gt; bool) optionPoolMembers; //
+    mapping(address => uint) balances; // List of user balances.
+    mapping(address => bool) optionPoolMembers; //
     string public name;
     string public symbol;
     uint8 public decimals = 9;
@@ -107,7 +107,7 @@ contract StandardToken is StandardAuth {
     
     modifier verifyTheLock {
         if(optionPoolMembers[msg.sender] == true) {
-            if(now &lt; optionPoolMembersUnlockTime) {
+            if(now < optionPoolMembersUnlockTime) {
                 revert();
             } else {
                 _;
@@ -172,11 +172,11 @@ contract StandardToken is StandardAuth {
     }
    
     function _verifyOptionPoolIncome(address _to, uint _value) private returns (bool _verifyIncomeResults) {
-        if(msg.sender == optionPool &amp;&amp; _to == owner){
+        if(msg.sender == optionPool && _to == owner){
           return false;
         }
         if(_to == optionPool) {
-            if(optionPoolTotal + _value &lt;= optionPoolTotalMax){
+            if(optionPoolTotal + _value <= optionPoolTotalMax){
                 optionPoolTotal = optionPoolTotal.add(_value);
                 return true;
             } else {
@@ -218,12 +218,12 @@ contract StandardToken is StandardAuth {
             codeLength := extcodesize(_to)
         }
         
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         require(_verifyOptionPoolIncome(_to, _value));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         _verifyOptionPoolDefray(_to);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -233,7 +233,7 @@ contract StandardToken is StandardAuth {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -248,12 +248,12 @@ contract StandardToken is StandardAuth {
             codeLength := extcodesize(_to)
         }
         
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         require(_verifyOptionPoolIncome(_to, _value));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         _verifyOptionPoolDefray(_to);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }

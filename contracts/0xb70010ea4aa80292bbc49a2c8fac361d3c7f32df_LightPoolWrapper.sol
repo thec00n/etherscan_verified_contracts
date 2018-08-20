@@ -13,7 +13,7 @@ pragma solidity ^0.4.21;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -100,7 +100,7 @@ contract PriceSanityInterface {
 ////// lib/lightpool-contracts/src/interfaces/WETHInterface.sol
 /* pragma solidity ^0.4.21; */
 
-/* import &quot;./ERC20.sol&quot;; */
+/* import "./ERC20.sol"; */
 
 contract WETHInterface is ERC20 {
   function() external payable;
@@ -111,9 +111,9 @@ contract WETHInterface is ERC20 {
 ////// lib/lightpool-contracts/src/LightPool.sol
 /* pragma solidity ^0.4.21; */
 
-/* import &quot;./interfaces/WETHInterface.sol&quot;; */
-/* import &quot;./interfaces/PriceSanityInterface.sol&quot;; */
-/* import &quot;./interfaces/ERC20.sol&quot;; */
+/* import "./interfaces/WETHInterface.sol"; */
+/* import "./interfaces/PriceSanityInterface.sol"; */
+/* import "./interfaces/ERC20.sol"; */
 
 contract LightPool {
     uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
@@ -124,8 +124,8 @@ contract LightPool {
     }
 
     // key = keccak256(token, base, walletAddress)
-    mapping(bytes32 =&gt; TokenData)       public markets;
-    mapping(address =&gt; bool)            public traders;
+    mapping(bytes32 => TokenData)       public markets;
+    mapping(address => bool)            public traders;
     address                             public owner;
 
     modifier onlyOwner() {
@@ -162,7 +162,7 @@ contract LightPool {
         require(base != address(0));
         require(quote != address(0));
 
-        // Make sure there&#39;s no such configured token
+        // Make sure there's no such configured token
         bytes32 tokenHash = keccak256(base, quote, msg.sender);
         require(markets[tokenHash].walletAddress == address(0));
 
@@ -211,7 +211,7 @@ contract LightPool {
             takenTokenAmount = baseAmount;
             givenTokenAmount = quoteAmount;
         }
-        require(takenTokenAmount != 0 &amp;&amp; givenTokenAmount != 0);
+        require(takenTokenAmount != 0 && givenTokenAmount != 0);
 
         // Swap!
         require(takenToken.transferFrom(msg.sender, tokenData.walletAddress, takenTokenAmount));
@@ -234,32 +234,32 @@ contract LightPool {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -278,10 +278,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -307,7 +307,7 @@ contract DSMath {
 }
 
 ////// lib/lpc/lib/ds-token/lib/ds-stop/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -320,7 +320,7 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -365,13 +365,13 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
-/* import &#39;ds-math/math.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
+/* import 'ds-note/note.sol'; */
+/* import 'ds-math/math.sol'; */
 
 contract DSThing is DSAuth, DSNote, DSMath {
 
@@ -384,8 +384,8 @@ contract DSThing is DSAuth, DSNote, DSMath {
 ////// src/LightPoolWrapper.sol
 /* pragma solidity ^0.4.21; */
 
-/* import &quot;ds-thing/thing.sol&quot;; */
-/* import &quot;lightpool-contracts/LightPool.sol&quot;; */
+/* import "ds-thing/thing.sol"; */
+/* import "lightpool-contracts/LightPool.sol"; */
 
 contract WETH is WETHInterface { }
 
@@ -394,7 +394,7 @@ contract LightPoolWrapper is DSThing {
 
     address public reserve;
     LightPool public lightpool;
-    mapping(address =&gt; bool) public whitelistedWallets;
+    mapping(address => bool) public whitelistedWallets;
 
     function LightPoolWrapper(address reserve_, LightPool lightpool_) public {
         assert(address(reserve_) != 0);

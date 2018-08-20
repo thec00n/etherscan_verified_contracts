@@ -27,10 +27,10 @@ contract blockoptions is ERC20
 
        /* Public variables of the token */
       //To store name for token
-      string public name = &quot;blockoptions&quot;;
+      string public name = "blockoptions";
     
       //To store symbol for token       
-      string public symbol = &quot;BOP&quot;;
+      string public symbol = "BOP";
     
       //To store decimal places for token
       uint public decimals = 8;    
@@ -42,9 +42,9 @@ contract blockoptions is ERC20
        uint pre_ico_end;
        uint ico_start;
        uint ico_end;
-       mapping(uint =&gt; address) investor;
-       mapping(uint =&gt; uint) weireceived;
-       mapping(uint =&gt; uint) optsSent;
+       mapping(uint => address) investor;
+       mapping(uint => uint) weireceived;
+       mapping(uint => uint) optsSent;
       
         event preico(uint counter,address investors,uint weiReceived,uint bopsent);
         event ico(uint counter,address investors,uint weiReceived,uint bopsent);
@@ -60,10 +60,10 @@ contract blockoptions is ERC20
           
         }
       //map to store BOPT balance corresponding to address
-      mapping(address =&gt; uint) balances;
+      mapping(address => uint) balances;
     
-      //To store spender with allowed amount of BOPT to spend corresponding to BOPTs holder&#39;s account
-      mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+      //To store spender with allowed amount of BOPT to spend corresponding to BOPTs holder's account
+      mapping (address => mapping (address => uint)) allowed;
     
       //owner variable to store contract owner account
       address public owner;
@@ -77,7 +77,7 @@ contract blockoptions is ERC20
         _;
     }
     
-      //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner&#39;s account
+      //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner's account
       function transferOwnership(address newOwner) onlyOwner {
           balances[newOwner] = balances[owner];
           balances[owner]=0;
@@ -99,7 +99,7 @@ contract blockoptions is ERC20
         */
         function Div(uint a, uint b) internal returns (uint) {
           //overflow check; b must not be 0
-          assert(b &gt; 0);
+          assert(b > 0);
           uint c = a / b;
           assert(a == b * c + a % b);
           return c;
@@ -110,7 +110,7 @@ contract blockoptions is ERC20
         */
         function Sub(uint a, uint b) internal returns (uint) {
           //b must be greater that a as we need to store value in unsigned integer
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
         }
     
@@ -120,7 +120,7 @@ contract blockoptions is ERC20
         function Add(uint a, uint b) internal returns (uint) {
           uint c = a + b;
           //result must be greater as a or b can not be negative
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
         }
     
@@ -137,28 +137,28 @@ contract blockoptions is ERC20
       function transfer(address _to, uint _value) returns (bool){
 
         uint check = balances[owner] - _value;
-        if(msg.sender == owner &amp;&amp; now&gt;=pre_ico_start &amp;&amp; now&lt;=pre_ico_end &amp;&amp; check &lt; 1900000000000000)
+        if(msg.sender == owner && now>=pre_ico_start && now<=pre_ico_end && check < 1900000000000000)
         {
             return false;
         }
-        else if(msg.sender ==owner &amp;&amp; now&gt;=pre_ico_end &amp;&amp; now&lt;=(pre_ico_end + 16 days) &amp;&amp; check &lt; 1850000000000000)
+        else if(msg.sender ==owner && now>=pre_ico_end && now<=(pre_ico_end + 16 days) && check < 1850000000000000)
         {
             return false;
         }
-        else if(msg.sender == owner &amp;&amp; check &lt; 130000000000000 &amp;&amp; now &lt; ico_start + 180 days)
+        else if(msg.sender == owner && check < 130000000000000 && now < ico_start + 180 days)
         {
             return false;
         }
-        else if (msg.sender == owner &amp;&amp; check &lt; 80000000000000 &amp;&amp; now &lt; ico_start + 360 days)
+        else if (msg.sender == owner && check < 80000000000000 && now < ico_start + 360 days)
         {
             return false;
         }
-        else if (msg.sender == owner &amp;&amp; check &lt; 30000000000000 &amp;&amp; now &lt; ico_start + 540 days)
+        else if (msg.sender == owner && check < 30000000000000 && now < ico_start + 540 days)
         {
             return false;
         }
         //Check provided BOP should not be 0
-       else if (_value &gt; 0) {
+       else if (_value > 0) {
           //deduct BOP amount from transaction initiator
           balances[msg.sender] = Sub(balances[msg.sender],_value);
           //Add BOP to balace of target account
@@ -176,10 +176,10 @@ contract blockoptions is ERC20
       function transferFrom(address _from, address _to, uint _value) returns (bool) {
     
         //Check provided BOP should not be 0
-        if (_value &gt; 0) {
+        if (_value > 0) {
           //Get amount of BOP for which spender is authorized
           var _allowance = allowed[_from][msg.sender];
-          //Add amount of BOP in target account&#39;s balance
+          //Add amount of BOP in target account's balance
           balances[_to] = Add(balances[_to], _value);
           //Deduct BOPT amount from _from account
           balances[_from] = Sub(balances[_from], _value);
@@ -206,7 +206,7 @@ contract blockoptions is ERC20
         return true;
       }
       
-      //Get BOP amount that spender can spend from provided owner&#39;s account 
+      //Get BOP amount that spender can spend from provided owner's account 
       function allowance(address _owner, address _spender) constant returns (uint remaining) {
         return allowed[_owner][_spender];
       }
@@ -220,19 +220,19 @@ contract blockoptions is ERC20
 	
     	function() payable 
     	{   
-    	    if(stopped &amp;&amp; msg.sender != owner)
+    	    if(stopped && msg.sender != owner)
     	    revert();
     	     else if(msg.sender == owner)
     	    {
     	        profit_sent = msg.value;
     	    }
-    	   else if(now&gt;=pre_ico_start &amp;&amp; now&lt;=pre_ico_end)
+    	   else if(now>=pre_ico_start && now<=pre_ico_end)
     	    {
     	        uint check = balances[owner]-((400*msg.value)/10000000000);
-    	        if(check &gt;= 1900000000000000)
+    	        if(check >= 1900000000000000)
                 pre_ico(msg.sender,msg.value);
     	    }
-            else if (now&gt;=ico_start &amp;&amp; now&lt;ico_end)
+            else if (now>=ico_start && now<ico_end)
             {
                 main_ico(msg.sender,msg.value);
             }
@@ -252,7 +252,7 @@ contract blockoptions is ERC20
        
        function  main_ico(address sender, uint value)private
        {
-           if(now &gt;= ico_start &amp;&amp; now &lt;= (ico_start + 7 days)) //20% discount on BOPT
+           if(now >= ico_start && now <= (ico_start + 7 days)) //20% discount on BOPT
            {
               counter = counter+1;
     	      investor[counter]=sender;
@@ -262,7 +262,7 @@ contract blockoptions is ERC20
               balances[investor[counter]]+=optsSent[counter];
               ico(counter,investor[counter],weireceived[counter],optsSent[counter]);
            }
-           else if (now &gt;= (ico_start + 7 days) &amp;&amp; now &lt;= (ico_start + 14 days)) //10% discount on BOPT
+           else if (now >= (ico_start + 7 days) && now <= (ico_start + 14 days)) //10% discount on BOPT
            {
               counter = counter+1;
     	      investor[counter]=sender;
@@ -272,7 +272,7 @@ contract blockoptions is ERC20
               balances[investor[counter]]+=optsSent[counter];
               ico(counter,investor[counter],weireceived[counter],optsSent[counter]);
            }
-           else if (now &gt;= (ico_start + 14 days) &amp;&amp; now &lt;= (ico_start + 31 days)) //no discount on BOPT
+           else if (now >= (ico_start + 14 days) && now <= (ico_start + 31 days)) //no discount on BOPT
            {
               counter = counter+1;
     	      investor[counter]=sender;
@@ -301,7 +301,7 @@ contract blockoptions is ERC20
         function endICO()onlyOwner
        {
           stopped=true;
-          if(balances[owner] &gt; 130000000000000)
+          if(balances[owner] > 130000000000000)
           {
               uint burnedTokens = balances[owner]-130000000000000;
            _totalSupply = _totalSupply-burnedTokens;

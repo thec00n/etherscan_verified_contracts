@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -69,10 +69,10 @@ contract Ownable {
 contract Fund is Ownable  {
     using SafeMath for uint256;
     
-    string public name = &quot;Slot Token&quot;;
+    string public name = "Slot Token";
     uint8 public decimals = 0;
-    string public symbol = &quot;SLOT&quot;;
-    string public version = &quot;0.7&quot;;
+    string public symbol = "SLOT";
+    string public version = "0.7";
     
     uint8 constant TOKENS = 0;
     uint8 constant BALANCE = 1;
@@ -80,8 +80,8 @@ contract Fund is Ownable  {
     uint256 totalWithdrawn;     // of Ether
     uint256 public totalSupply; // of Tokens
     
-    mapping(address =&gt; uint256[2][]) balances;
-    mapping(address =&gt; uint256) withdrawals;
+    mapping(address => uint256[2][]) balances;
+    mapping(address => uint256) withdrawals;
     
     event Withdrawn(
             address indexed investor, 
@@ -100,7 +100,7 @@ contract Fund is Ownable  {
             address indexed spender, 
             uint256 value);
             
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     bool public mintingFinished = false;
 
@@ -121,7 +121,7 @@ contract Fund is Ownable  {
         uint256 previousSnapTotalStake = 0;
         
         // add up all snapshots
-        for (uint256 i = 0 ; i &lt; snapshots.length ; i++) {
+        for (uint256 i = 0 ; i < snapshots.length ; i++) {
             // each snapshot has amount of tokens and totalBalance at the time except last, which should be calculated with current stake
             
             if (i == snapshots.length-1) {
@@ -135,7 +135,7 @@ contract Fund is Ownable  {
             }
             
             uint256 snapTotalStake = snapshots[i][BALANCE];
-            // if it&#39;s the first element, nothing is substracted from snapshot&#39;s total stake, hence previous stake will be 0
+            // if it's the first element, nothing is substracted from snapshot's total stake, hence previous stake will be 0
             uint256 spanBalance = snapshots[i][TOKENS].mul(snapTotalStake.sub(previousSnapTotalStake)).div(totalSupply);
             balance = balance.add(spanBalance);
             
@@ -156,7 +156,7 @@ contract Fund is Ownable  {
     }
     
     function withdrawBalance(address _to, uint256 _value) public {
-        require(getEtherBalance(msg.sender) &gt;= _value);
+        require(getEtherBalance(msg.sender) >= _value);
         
         withdrawals[msg.sender] = withdrawals[msg.sender].add(_value);
         totalWithdrawn = totalWithdrawn.add(_value);
@@ -170,7 +170,7 @@ contract Fund is Ownable  {
     }
     
     function transferFromPrivate(address _from, address _to, uint256 _value) private returns (bool) {
-        require(balanceOf(msg.sender) &gt;= _value);
+        require(balanceOf(msg.sender) >= _value);
         
         uint256 fromTokens = balanceOf(msg.sender);
         pushSnapshot(msg.sender, fromTokens-_value);
@@ -185,7 +185,7 @@ contract Fund is Ownable  {
     function pushSnapshot(address _beneficiary, uint256 _amount) private {
         balances[_beneficiary].push([_amount, 0]);
         
-        if (balances[_beneficiary].length &gt; 1) {
+        if (balances[_beneficiary].length > 1) {
             // update previous snapshot balance
             uint256 lastIndex = balances[msg.sender].length-1;
             balances[_beneficiary][lastIndex-1][BALANCE] = getTotalStake();
@@ -334,7 +334,7 @@ contract SlotCrowdsale is Ownable, Pausable {
     }
     
     function correctedIndex(uint8 _index) constant private returns (uint8 _newIndex) {
-        require(_index &lt; chances.length);
+        require(_index < chances.length);
         // if the chance is 0, return the next index
         
         if (chances[_index] != 0) {
@@ -345,8 +345,8 @@ contract SlotCrowdsale is Ownable, Pausable {
     }
     
     function getRateIndex(uint256 _randomNumber) constant private returns (uint8 _rateIndex) {
-        for (uint8 i = 0 ; i &lt; uint8(chances.length) ; i++) {
-            if (_randomNumber &lt; addedUpChances[i]) { 
+        for (uint8 i = 0 ; i < uint8(chances.length) ; i++) {
+            if (_randomNumber < addedUpChances[i]) { 
                 return correctedIndex(i); 
             }
         }
@@ -354,7 +354,7 @@ contract SlotCrowdsale is Ownable, Pausable {
 
     function buyTokenFor(address _beneficiary) whenNotPaused() payable {
         require(_beneficiary != 0x0);
-        require(msg.value &gt;= PRICE);
+        require(msg.value >= PRICE);
         
         uint256 change = msg.value%PRICE;
         uint256 numberOfTokens = msg.value.sub(change).div(PRICE);
@@ -368,12 +368,12 @@ contract SlotCrowdsale is Ownable, Pausable {
     function mintTokens(address _beneficiary, uint256 _numberOfTokens) private {
         uint16 totalChances = addedUpChances[9];
 
-        for (uint16 i=1 ; i &lt;= _numberOfTokens; i++) {
+        for (uint16 i=1 ; i <= _numberOfTokens; i++) {
             
             uint256 randomNumber = uint256(keccak256(block.blockhash(block.number-1)))%totalChances;
             uint8 rateIndex = getRateIndex(randomNumber);
             
-            // rate shouldn&#39;t be 0 because of correctedIndex function
+            // rate shouldn't be 0 because of correctedIndex function
             assert(chances[rateIndex] != 0);
             chances[rateIndex]--;
             
@@ -383,7 +383,7 @@ contract SlotCrowdsale is Ownable, Pausable {
     }
     
     function crowdsaleEnded() constant private returns (bool ended) {
-        if (fund.totalSupply() &gt;= TOKEN_CAP) { 
+        if (fund.totalSupply() >= TOKEN_CAP) { 
             return true;
         } else {
             return false; 
@@ -391,7 +391,7 @@ contract SlotCrowdsale is Ownable, Pausable {
     }
     
     function lockEnded() constant private returns (bool ended) {
-        if (block.number.sub(lockBegunAtBlock) &gt; OWNERS_LOCK) {
+        if (block.number.sub(lockBegunAtBlock) > OWNERS_LOCK) {
             return true; 
         } else {
             return false;

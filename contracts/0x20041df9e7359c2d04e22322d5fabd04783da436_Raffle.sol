@@ -12,7 +12,7 @@ contract Raffle
 	address owner;
 	Player[] players;
 	address[] previousWinners;
-	mapping(address =&gt; uint) playerTotalAmounts;
+	mapping(address => uint) playerTotalAmounts;
 	uint total = 0;
 	uint seed = 0;
 	uint lastSeed = 0;
@@ -32,7 +32,7 @@ contract Raffle
 	function kill() public
 	{
 		require(msg.sender == owner);
-		if (players.length &gt; 0)
+		if (players.length > 0)
 		{
 			selfdestructQueued = true;
 		}
@@ -44,7 +44,7 @@ contract Raffle
 	
 	function enter(uint userSeed) public payable
 	{
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		require(userSeed != 0);
 		players.push(Player(msg.sender, msg.value, total));
 		playerTotalAmounts[msg.sender] += msg.value;
@@ -75,7 +75,7 @@ contract Raffle
 	{
 		require(msg.sender == owner);
 		address winner = 0x0;
-		if (players.length &gt; 0)
+		if (players.length > 0)
 		{
 			uint value = seed % total;
 			uint i = 0;
@@ -89,17 +89,17 @@ contract Raffle
 			{
 				rangeStart = players[current].previousTotal;
 				rangeEnd = rangeStart + players[current].amount;
-				if (value &gt;= rangeStart &amp;&amp; value &lt; rangeEnd)
+				if (value >= rangeStart && value < rangeEnd)
 				{
 					winner = players[current].delegate;
 					break;
 				}
-				if (value &lt; rangeStart)
+				if (value < rangeStart)
 				{
 					max = current - 1;
 					current = min + (max - min) / 2;
 				}
-				else if (value &gt;= rangeEnd)
+				else if (value >= rangeEnd)
 				{
 					min = current + 1;
 					current = min + (max - min) / 2;
@@ -108,7 +108,7 @@ contract Raffle
 			require(winner != 0x0);
 			uint prize = total * 99 / 100; // 1% fee
 			uint fee = total - prize;
-			for (i = 0; i &lt; players.length; ++i)
+			for (i = 0; i < players.length; ++i)
 			{
 				playerTotalAmounts[players[i].delegate] = 0;
 			}

@@ -7,8 +7,8 @@ contract SponsoredItemGooRaffle {
     address owner;
     
     // Raffle tickets
-    mapping(address =&gt; TicketPurchases) private ticketsBoughtByPlayer;
-    mapping(uint256 =&gt; address[]) private rafflePlayers;
+    mapping(address => TicketPurchases) private ticketsBoughtByPlayer;
+    mapping(uint256 => address[]) private rafflePlayers;
 
     // Current Raffle info
     uint256 private constant RAFFLE_TICKET_BASE_GOO_PRICE = 1000;
@@ -39,7 +39,7 @@ contract SponsoredItemGooRaffle {
     
     function startTokenRaffle(uint256 endTime, address tokenContract, uint256 id, bool hasItemAlready) external {
         require(msg.sender == owner);
-        require(block.timestamp &lt; endTime);
+        require(block.timestamp < endTime);
         
         if (raffleId != 0) { // Sanity to assure raffle has ended before next one starts
             require(raffleWinner != 0);
@@ -58,8 +58,8 @@ contract SponsoredItemGooRaffle {
     
 
     function buyRaffleTicket(uint256 amount) external {
-        require(raffleEndTime &gt;= block.timestamp);
-        require(amount &gt; 0);
+        require(raffleEndTime >= block.timestamp);
+        require(amount > 0);
         
         uint256 ticketsCost = SafeMath.mul(RAFFLE_TICKET_BASE_GOO_PRICE, amount);
         goo.transferFrom(msg.sender, this, ticketsCost);
@@ -80,14 +80,14 @@ contract SponsoredItemGooRaffle {
         if (purchases.numPurchases == purchases.ticketsBought.length) {
             purchases.ticketsBought.length += 1;
         }
-        purchases.ticketsBought[purchases.numPurchases++] = TicketPurchase(raffleTicketsBought, raffleTicketsBought + (amount - 1)); // (eg: buy 10, get id&#39;s 0-9)
+        purchases.ticketsBought[purchases.numPurchases++] = TicketPurchase(raffleTicketsBought, raffleTicketsBought + (amount - 1)); // (eg: buy 10, get id's 0-9)
         
         // Finally update ticket total
         raffleTicketsBought += amount;
     }
     
     function awardRafflePrize(address checkWinner, uint256 checkIndex) external {
-        require(raffleEndTime &lt; block.timestamp);
+        require(raffleEndTime < block.timestamp);
         require(raffleWinner == 0);
         
         if (!raffleWinningTicketSelected) {
@@ -97,9 +97,9 @@ contract SponsoredItemGooRaffle {
         // Reduce gas by (optionally) offering an address to _check_ for winner
         if (checkWinner != 0) {
             TicketPurchases storage tickets = ticketsBoughtByPlayer[checkWinner];
-            if (tickets.numPurchases &gt; 0 &amp;&amp; checkIndex &lt; tickets.numPurchases &amp;&amp; tickets.raffleId == raffleId) {
+            if (tickets.numPurchases > 0 && checkIndex < tickets.numPurchases && tickets.raffleId == raffleId) {
                 TicketPurchase storage checkTicket = tickets.ticketsBought[checkIndex];
-                if (raffleTicketThatWon &gt;= checkTicket.startId &amp;&amp; raffleTicketThatWon &lt;= checkTicket.endId) {
+                if (raffleTicketThatWon >= checkTicket.startId && raffleTicketThatWon <= checkTicket.endId) {
                     assignRaffleWinner(checkWinner); // WINNER!
                     return;
                 }
@@ -107,16 +107,16 @@ contract SponsoredItemGooRaffle {
         }
         
         // Otherwise just naively try to find the winner (will work until mass amounts of players)
-        for (uint256 i = 0; i &lt; rafflePlayers[raffleId].length; i++) {
+        for (uint256 i = 0; i < rafflePlayers[raffleId].length; i++) {
             address player = rafflePlayers[raffleId][i];
             TicketPurchases storage playersTickets = ticketsBoughtByPlayer[player];
             
             uint256 endIndex = playersTickets.numPurchases - 1;
             // Minor optimization to avoid checking every single player
-            if (raffleTicketThatWon &gt;= playersTickets.ticketsBought[0].startId &amp;&amp; raffleTicketThatWon &lt;= playersTickets.ticketsBought[endIndex].endId) {
-                for (uint256 j = 0; j &lt; playersTickets.numPurchases; j++) {
+            if (raffleTicketThatWon >= playersTickets.ticketsBought[0].startId && raffleTicketThatWon <= playersTickets.ticketsBought[endIndex].endId) {
+                for (uint256 j = 0; j < playersTickets.numPurchases; j++) {
                     TicketPurchase storage playerTicket = playersTickets.ticketsBought[j];
-                    if (raffleTicketThatWon &gt;= playerTicket.startId &amp;&amp; raffleTicketThatWon &lt;= playerTicket.endId) {
+                    if (raffleTicketThatWon >= playerTicket.startId && raffleTicketThatWon <= playerTicket.endId) {
                         assignRaffleWinner(player); // WINNER!
                         return;
                     }
@@ -129,10 +129,10 @@ contract SponsoredItemGooRaffle {
         raffleWinner = winner;
     }
     
-    // Random enough for small contests (Owner only to prevent trial &amp; error execution)
+    // Random enough for small contests (Owner only to prevent trial & error execution)
     function drawRandomWinner() public {
         require(msg.sender == owner);
-        require(raffleEndTime &lt; block.timestamp);
+        require(raffleEndTime < block.timestamp);
         require(!raffleWinningTicketSelected);
         
         uint256 seed = raffleTicketsBought + block.timestamp;
@@ -164,7 +164,7 @@ contract SponsoredItemGooRaffle {
             uint256[] memory startIds = new uint256[](playersTickets.numPurchases);
             uint256[] memory endIds = new uint256[](playersTickets.numPurchases);
             
-            for (uint256 i = 0; i &lt; playersTickets.numPurchases; i++) {
+            for (uint256 i = 0; i < playersTickets.numPurchases; i++) {
                 startIds[i] = playersTickets.ticketsBought[i].startId;
                 endIds[i] = playersTickets.ticketsBought[i].endId;
             }
@@ -198,9 +198,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -208,7 +208,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -217,7 +217,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

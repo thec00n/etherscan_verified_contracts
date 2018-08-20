@@ -22,7 +22,7 @@ contract Token {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -73,9 +73,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -92,7 +92,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,7 +104,7 @@ contract PhiToken is Token {
      *  Terminology:
      *  1 token unit = PHI
      *  1 token = PHI = sphi * multiplier
-     *  multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+     *  multiplier set from token's number of decimals (i.e. 10 ** decimals)
      */
 
     /*  
@@ -112,14 +112,14 @@ contract PhiToken is Token {
      *  - Variables
      */
     /// Token metadata
-    string constant public name = &quot;PHI Token&quot;;
-    string constant public symbol = &quot;PHI&quot;;
+    string constant public name = "PHI Token";
+    string constant public symbol = "PHI";
     uint8 constant public decimals = 18;
     using SafeMath for uint;
     uint constant multiplier = 10 ** uint(decimals);
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /*
      * This is a slight change to the ERC20 base standard.
@@ -155,7 +155,7 @@ contract PhiToken is Token {
     /// Do not allow transfers if lockTime is active, allow only
     /// pre-ico and ico if it is (to distribute tokens)
     modifier onlyIfLockTimePassed () {
-        require(now &gt; lockTime || (msg.sender == PRE_ICO_ADDR || msg.sender == ICO_ADDR));
+        require(now > lockTime || (msg.sender == PRE_ICO_ADDR || msg.sender == ICO_ADDR));
         _;
     }
 
@@ -186,16 +186,16 @@ contract PhiToken is Token {
         require(ico_address != 0x0);
         require(pre_ico_address != 0x0);
         require(wallet_address != 0x0);
-        require(ico_address != pre_ico_address &amp;&amp; wallet_address != ico_address);
+        require(ico_address != pre_ico_address && wallet_address != ico_address);
         require(initialTokensAssigned == false);
         // _lockTime should be in the future
-        require(_lockTime &gt; now);
+        require(_lockTime > now);
         lockTime = _lockTime;
 
         WALLET_ADDR = wallet_address;
 
         // Check total supply
-        require(totalSupply &gt; multiplier);
+        require(totalSupply > multiplier);
 
         // tokens to be assigned to pre-ico, ico and wallet address
         uint initAssign = 0;
@@ -253,9 +253,9 @@ contract PhiToken is Token {
     /// @dev Allows to destroy token units (sphi).
     /// @param _value Number of token units (sphi) to burn.
     function burn(uint256 _value) public onlyIfLockTimePassed {
-        require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value);
-        require(totalSupply &gt;= _value);
+        require(_value > 0);
+        require(balances[msg.sender] >= _value);
+        require(totalSupply >= _value);
 
         uint pre_balance = balances[msg.sender];
         address burner = msg.sender;
@@ -271,15 +271,15 @@ contract PhiToken is Token {
      */
 
     /// @notice Send `_value` tokens to `_to` from `msg.sender`.
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
     function transfer(address _to, uint256 _value) public onlyIfLockTimePassed returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to].add(_value) &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to].add(_value) >= balances[_to]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -313,7 +313,7 @@ contract PhiToken is Token {
             codeLength := extcodesize(_to)
         }
 
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -336,9 +336,9 @@ contract PhiToken is Token {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to].add(_value) &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to].add(_value) >= balances[_to]);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);

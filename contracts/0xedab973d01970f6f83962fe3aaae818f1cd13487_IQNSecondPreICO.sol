@@ -34,7 +34,7 @@ contract IQNSecondPreICO is Ownable {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 
     /**
@@ -60,8 +60,8 @@ contract IQNSecondPreICO is Ownable {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () public payable {
-        require(now &lt; deadline &amp;&amp; now &gt;= START);
-        require(msg.value &gt;= 1 ether);
+        require(now < deadline && now >= START);
+        require(msg.value >= 1 ether);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -71,7 +71,7 @@ contract IQNSecondPreICO is Ownable {
     }
 
     modifier afterDeadline() { 
-        require(now &gt;= deadline);
+        require(now >= deadline);
         _; 
     }
 

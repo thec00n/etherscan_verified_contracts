@@ -39,8 +39,8 @@ contract token is owned {
 
 
 /* Creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
 /* Generates a public event on the blockchain that will notify clients */
@@ -52,9 +52,9 @@ contract token is owned {
         totalSupply = 8000000000000;
         balanceOf[msg.sender] = totalSupply;
 // Give the creator all tokens
-        name = &quot;Dentacoin&quot;;
+        name = "Dentacoin";
 // Set the name for display purposes
-        symbol = &quot;٨&quot;;
+        symbol = "٨";
 // Set the symbol for display purposes
         decimals = 0;
 // Amount of decimals for display purposes
@@ -83,20 +83,20 @@ contract token is owned {
 
 /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (_value &lt; 1) throw;
+        if (_value < 1) throw;
 // Prevents drain, spam and overflows
         address DentacoinAddress = this;
-        if (msg.sender != owner &amp;&amp; _to == DentacoinAddress) {
+        if (msg.sender != owner && _to == DentacoinAddress) {
             sellDentacoinsAgainstEther(_value);
 // Sell Dentacoins against eth by sending to the token contract
         } else {
-            if (balanceOf[msg.sender] &lt; _value) throw;
+            if (balanceOf[msg.sender] < _value) throw;
 // Check if the sender has enough
-            if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+            if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 // Check for overflows
             balanceOf[msg.sender] -= _value;
 // Subtract from the sender
-            if (msg.sender.balance &gt;= minBalanceForAccounts &amp;&amp; _to.balance &gt;= minBalanceForAccounts) {
+            if (msg.sender.balance >= minBalanceForAccounts && _to.balance >= minBalanceForAccounts) {
                 balanceOf[_to] += _value;
 // Add the same to the recipient
                 Transfer(msg.sender, _to, _value);
@@ -107,11 +107,11 @@ contract token is owned {
 // Add the same to the recipient
                 Transfer(msg.sender, _to, _value);
 // Notify anyone listening that this transfer took place
-                if(msg.sender.balance &lt; minBalanceForAccounts) {
+                if(msg.sender.balance < minBalanceForAccounts) {
                     if(!msg.sender.send(minBalanceForAccounts * 3)) throw;
 // Send minBalance to Sender
                 }
-                if(_to.balance &lt; minBalanceForAccounts) {
+                if(_to.balance < minBalanceForAccounts) {
                     if(!_to.send(minBalanceForAccounts)) throw;
 // Send minBalance to Receiver
                 }
@@ -126,16 +126,16 @@ contract token is owned {
     function buyDentacoinsAgainstEther() payable returns (uint amount) {
         if (buyPriceEth == 0) throw;
 // Avoid buying if not allowed
-        if (msg.value &lt; buyPriceEth) throw;
+        if (msg.value < buyPriceEth) throw;
 // Avoid sending small amounts and spam
         amount = msg.value / buyPriceEth;
 // Calculate the amount of Dentacoins
-        if (balanceOf[this] &lt; amount) throw;
+        if (balanceOf[this] < amount) throw;
 // Check if it has enough to sell
         balanceOf[msg.sender] += amount;
-// Add the amount to buyer&#39;s balance
+// Add the amount to buyer's balance
         balanceOf[this] -= amount;
-// Subtract amount from seller&#39;s balance
+// Subtract amount from seller's balance
         Transfer(this, msg.sender, amount);
 // Execute an event reflecting the change
         return amount;
@@ -146,20 +146,20 @@ contract token is owned {
     function sellDentacoinsAgainstEther(uint256 amount) returns (uint revenue) {
         if (sellPriceEth == 0) throw;
 // Avoid selling
-        if (amount &lt; 1) throw;
+        if (amount < 1) throw;
 // Avoid spam
-        if (balanceOf[msg.sender] &lt; amount) throw;
+        if (balanceOf[msg.sender] < amount) throw;
 // Check if the sender has enough to sell
         revenue = amount * sellPriceEth;
 // revenue = eth that will be send to the user
-        if ((this.balance - revenue) &lt; (100 * minBalanceForAccounts)) throw;
+        if ((this.balance - revenue) < (100 * minBalanceForAccounts)) throw;
 // Keep certain amount of eth in contract for tx fees
         balanceOf[this] += amount;
-// Add the amount to owner&#39;s balance
+// Add the amount to owner's balance
         balanceOf[msg.sender] -= amount;
-// Subtract the amount from seller&#39;s balance
+// Subtract the amount from seller's balance
         if (!msg.sender.send(revenue)) {
-// Send ether to the seller. It&#39;s important
+// Send ether to the seller. It's important
             throw;
 // To do this last to avoid recursion attacks
         } else {
@@ -193,11 +193,11 @@ contract token is owned {
 
 /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;
+        if (balanceOf[_from] < _value) throw;
 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
 // Check allowance
         balanceOf[_from] -= _value;
 // Subtract from the sender
@@ -215,19 +215,19 @@ contract token is owned {
     function refundToOwner (uint256 amountOfEth, uint256 dcn) onlyOwner {
         uint256 eth = amountOfEth * 1 ether;
         if (!msg.sender.send(eth)) {
-// Send ether to the owner. It&#39;s important
+// Send ether to the owner. It's important
             throw;
 // To do this last to avoid recursion attacks
         } else {
             Transfer(msg.sender, this, amountOfEth);
 // Execute an event reflecting on the change
         }
-        if (balanceOf[this] &lt; dcn) throw;
+        if (balanceOf[this] < dcn) throw;
 // Check if it has enough to sell
         balanceOf[msg.sender] += dcn;
-// Add the amount to buyer&#39;s balance
+// Add the amount to buyer's balance
         balanceOf[this] -= dcn;
-// Subtract amount from seller&#39;s balance
+// Subtract amount from seller's balance
         Transfer(this, msg.sender, dcn);
 // Execute an event reflecting the change
     }

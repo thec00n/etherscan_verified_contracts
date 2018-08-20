@@ -72,15 +72,15 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
 
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
+        //Default assumes totalSupply can't be over max (2^256 - 1).
 
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
 
         //Replace the if with this one instead.
 
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
 
             balances[msg.sender] -= _value;
 
@@ -99,9 +99,9 @@ contract StandardToken is Token {
 
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
 
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 
             balances[_to] += _value;
 
@@ -143,16 +143,16 @@ contract StandardToken is Token {
     }
 
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 
 contract ERC20Token is StandardToken {
 
@@ -175,19 +175,19 @@ contract ERC20Token is StandardToken {
 
     The following variables are OPTIONAL vanities. One does not have to include them.
 
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
 
     Some wallets/interfaces might not even bother to look at this information.
 
     */
 
-    string public name =&quot;Bit Charity&quot;;                   //fancy name: eg Simon Bucks
+    string public name ="Bit Charity";                   //fancy name: eg Simon Bucks
 
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
 
-    string public symbol =&quot;BITC&quot;;                 //An identifier: eg SBX
+    string public symbol ="BITC";                 //An identifier: eg SBX
 
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
 
 //
@@ -197,7 +197,7 @@ contract ERC20Token is StandardToken {
 //
 
 
-//make sure this function name matches the contract name above. So if you&#39;re token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
+//make sure this function name matches the contract name above. So if you're token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
 
 
     function ERC20Token(
@@ -208,11 +208,11 @@ contract ERC20Token is StandardToken {
 
         totalSupply = 100000000;                        // Update total supply (100000 for example)
 
-        name = &quot;Bit Charity&quot;;                                   // Set the name for display purposes
+        name = "Bit Charity";                                   // Set the name for display purposes
 
         decimals = 18;                            // Amount of decimals for display purposes
 
-        symbol = &quot;BITC&quot;;                               // Set the symbol for display purposes
+        symbol = "BITC";                               // Set the symbol for display purposes
 
     }
 
@@ -226,13 +226,13 @@ contract ERC20Token is StandardToken {
         Approval(msg.sender, _spender, _value);
 
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
 
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
 
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
 
         return true;
 

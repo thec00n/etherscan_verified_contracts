@@ -19,7 +19,7 @@ pragma solidity 0.4.18;
  * members about the application of blockchain technology. For further
  * information: modular.network, consensys.net, paritytech.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -37,7 +37,7 @@ library WalletGetterLib {
   /// @return address[51] Returns entire 51 owner slots
   function getOwners(WalletMainLib.WalletData storage self) public view returns (address[51]) {
     address[51] memory o;
-    for(uint256 i = 0; i&lt;self.owners.length; i++){
+    for(uint256 i = 0; i<self.owners.length; i++){
       o[i] = self.owners[i];
     }
     return o;
@@ -105,10 +105,10 @@ library WalletGetterLib {
     return self.majorThreshold[_token];
   }
 
-  /// @dev Get the number of tx&#39;s with the same id
+  /// @dev Get the number of tx's with the same id
   /// @param self Wallet in contract storage
   /// @param _id ID of transactions requested
-  /// @return uint256 Number of tx&#39;s with same ID
+  /// @return uint256 Number of tx's with same ID
   function getTransactionLength(WalletMainLib.WalletData storage self, bytes32 _id) public view returns (uint256) {
     return self.transactionInfo[_id].length;
   }
@@ -124,7 +124,7 @@ library WalletGetterLib {
                                   public view returns (uint256[50])
   {
     uint256[50] memory tc;
-    for(uint256 i = 0; i&lt;self.transactionInfo[_id][_txIndex].confirmedOwners.length; i++){
+    for(uint256 i = 0; i<self.transactionInfo[_id][_txIndex].confirmedOwners.length; i++){
       tc[i] = self.transactionInfo[_id][_txIndex].confirmedOwners[i];
     }
     return tc;
@@ -171,15 +171,15 @@ library WalletMainLib {
     // The amount of a token spent per day, ether is at address mapping 0,
     // all other tokens defined by address. uint256[0] corresponds to the current
     // day,  uint256[1] is the spend amount
-    mapping (address =&gt; uint256[2]) currentSpend;
+    mapping (address => uint256[2]) currentSpend;
     //The day spend threshold for transactions to be major, ether at 0, all others by address
-    mapping (address =&gt; uint256) majorThreshold;
+    mapping (address => uint256) majorThreshold;
     //Array of transactions per day, uint256 is the day timestamp, bytes32 is the transaction id
-    mapping (uint256 =&gt; bytes32[]) transactions;
+    mapping (uint256 => bytes32[]) transactions;
     //Tracks the index of each owner in the owners Array
-    mapping (address =&gt; uint256) ownerIndex;
-    //Array of Transaction&#39;s by id, new tx&#39;s with exact inputs as previous tx will add to array
-    mapping (bytes32 =&gt; Transaction[]) transactionInfo;
+    mapping (address => uint256) ownerIndex;
+    //Array of Transaction's by id, new tx's with exact inputs as previous tx will add to array
+    mapping (bytes32 => Transaction[]) transactionInfo;
 
   }
 
@@ -219,12 +219,12 @@ library WalletMainLib {
                 uint256 _majorThreshold) public returns (bool)
   {
     require(self.owners.length == 0);
-    require(_owners.length &gt;= _requiredAdmin &amp;&amp; _requiredAdmin &gt; 0);
-    require(_owners.length &gt;= _requiredMajor &amp;&amp; _requiredMajor &gt; 0);
-    require(_owners.length &gt;= _requiredMinor &amp;&amp; _requiredMinor &gt; 0);
+    require(_owners.length >= _requiredAdmin && _requiredAdmin > 0);
+    require(_owners.length >= _requiredMajor && _requiredMajor > 0);
+    require(_owners.length >= _requiredMinor && _requiredMinor > 0);
     self.owners.push(0); //Leave index-0 empty for easier owner checks
 
-    for (uint256 i=0; i&lt;_owners.length; i++) {
+    for (uint256 i=0; i<_owners.length; i++) {
       require(_owners[i] != 0);
       self.owners.push(_owners[i]);
       self.ownerIndex[_owners[i]] = i+1;
@@ -248,17 +248,17 @@ library WalletMainLib {
   function checkNotConfirmed(WalletData storage self, bytes32 _id, uint256 _txIndex)
            public returns (bool)
   {
-    require(self.ownerIndex[msg.sender] &gt; 0);
+    require(self.ownerIndex[msg.sender] > 0);
     uint256 _txLen = self.transactionInfo[_id].length;
 
-    if(_txLen == 0 || _txIndex &gt;= _txLen){
-      LogErrorMsg(_txLen, &quot;Tx not initiated&quot;);
+    if(_txLen == 0 || _txIndex >= _txLen){
+      LogErrorMsg(_txLen, "Tx not initiated");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
 
     if(self.transactionInfo[_id][_txIndex].success){
-      LogErrorMsg(_txIndex, &quot;Transaction already complete&quot;);
+      LogErrorMsg(_txIndex, "Transaction already complete");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
@@ -268,7 +268,7 @@ library WalletMainLib {
     uint256 index;
     (found, index) = self.transactionInfo[_id][_txIndex].confirmedOwners.indexOf(uint256(msg.sender), false);
     if(found){
-      LogErrorMsg(index, &quot;Owner already confirmed&quot;);
+      LogErrorMsg(index, "Owner already confirmed");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
@@ -331,7 +331,7 @@ library WalletMainLib {
     uint256 res;
     bool major = true;
     //Reset spend if this is first check of the day
-    if((now / 1 days) &gt; self.currentSpend[0][0]){
+    if((now / 1 days) > self.currentSpend[0][0]){
       self.currentSpend[0][0] = now / 1 days;
       self.currentSpend[0][1] = 0;
     }
@@ -339,11 +339,11 @@ library WalletMainLib {
     (err, res) = self.currentSpend[0][1].plus(_value);
     require(!err);
 
-    if(res &lt; self.majorThreshold[0])
+    if(res < self.majorThreshold[0])
       major = false;
 
-    if(_to != 0 &amp;&amp; _isTransfer){
-      if((now / 1 days) &gt; self.currentSpend[_to][0]){
+    if(_to != 0 && _isTransfer){
+      if((now / 1 days) > self.currentSpend[_to][0]){
         self.currentSpend[_to][0] = now / 1 days;
         self.currentSpend[_to][1] = 0;
       }
@@ -351,7 +351,7 @@ library WalletMainLib {
       (err, res) = self.currentSpend[_to][1].plus(_amount);
       require(!err);
 
-      if(res &gt;= self.majorThreshold[_to])
+      if(res >= self.majorThreshold[_to])
         major = true;
     }
 
@@ -392,7 +392,7 @@ library WalletMainLib {
                    bytes _data)
                    public returns (bool,bytes32)
   {
-    bytes32 _id = keccak256(&quot;serveTx&quot;,_to,_value,_txData);
+    bytes32 _id = keccak256("serveTx",_to,_value,_txData);
     uint256 _txIndex = self.transactionInfo[_id].length;
     uint256 _required = self.requiredMajor;
 
@@ -400,7 +400,7 @@ library WalletMainLib {
     if(msg.sender != address(this)){
       bool allGood;
       uint256 _amount;
-      // if the owner is revoking his/her confirmation but doesn&#39;t know the
+      // if the owner is revoking his/her confirmation but doesn't know the
       // specific transaction id hash
       if(!_confirm) {
         allGood = revokeConfirm(self, _id);
@@ -412,7 +412,7 @@ library WalletMainLib {
 
         //if this is a new transaction id or if a previous identical transaction had already succeeded
         if(_txIndex == 0 || self.transactionInfo[_id][_txIndex - 1].success){
-          require(self.ownerIndex[msg.sender] &gt; 0);
+          require(self.ownerIndex[msg.sender] > 0);
 
           _required = getRequired(self, _to, _value, allGood,_amount);
 
@@ -423,7 +423,7 @@ library WalletMainLib {
           self.transactions[now / 1 days].push(_id);
         } else { // else the transaction is already pending
           _txIndex--; // set the index to the index of the existing transaction
-          //make sure the sender isn&#39;t already confirmed
+          //make sure the sender isn't already confirmed
           allGood = checkNotConfirmed(self, _id, _txIndex);
           if(!allGood)
             return (false,_id);
@@ -476,12 +476,12 @@ library WalletMainLib {
   /// @return Returns true if successful, false otherwise
   function confirmTx(WalletData storage self, bytes32 _id)
                      public returns (bool) {
-    require(self.ownerIndex[msg.sender] &gt; 0);
+    require(self.ownerIndex[msg.sender] > 0);
     uint256 _txIndex = self.transactionInfo[_id].length;
     bool ret;
 
     if(_txIndex == 0){
-      LogErrorMsg(_txIndex, &quot;Tx not initiated&quot;);
+      LogErrorMsg(_txIndex, "Tx not initiated");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
@@ -518,18 +518,18 @@ library WalletMainLib {
            public
            returns (bool)
   {
-    require(self.ownerIndex[msg.sender] &gt; 0);
+    require(self.ownerIndex[msg.sender] > 0);
     uint256 _txIndex = self.transactionInfo[_id].length;
 
     if(_txIndex == 0){
-      LogErrorMsg(_txIndex, &quot;Tx not initiated&quot;);
+      LogErrorMsg(_txIndex, "Tx not initiated");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
 
     _txIndex--;
     if(self.transactionInfo[_id][_txIndex].success){
-      LogErrorMsg(_txIndex, &quot;Transaction already complete&quot;);
+      LogErrorMsg(_txIndex, "Transaction already complete");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
@@ -539,7 +539,7 @@ library WalletMainLib {
     uint256 index;
     (found, index) = self.transactionInfo[_id][_txIndex].confirmedOwners.indexOf(uint256(msg.sender), false);
     if(!found){
-      LogErrorMsg(index, &quot;Owner has not confirmed tx&quot;);
+      LogErrorMsg(index, "Owner has not confirmed tx");
       LogTransactionFailed(_id, msg.sender);
       return false;
     }
@@ -682,15 +682,15 @@ library Array256Lib {
     uint256 rChild;
     uint256 swap;
     uint256 temp;
-    while(start &gt;= 0){
+    while(start >= 0){
       root = start;
       lChild = getLeftChildI(start);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end+1;
@@ -707,19 +707,19 @@ library Array256Lib {
       else
         start = start - 1;
     }
-    while(end &gt; 0){
+    while(end > 0){
       temp = self[end];
       self[end] = self[0];
       self[0] = temp;
       end = end - 1;
       root = 0;
       lChild = getLeftChildI(0);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end + 1;
@@ -740,11 +740,11 @@ library Array256Lib {
     bool contains;
     uint256 index;
 
-    for (uint256 i = 0; i &lt; self.length; i++) {
+    for (uint256 i = 0; i < self.length; i++) {
       (contains, index) = indexOf(self, self[i], false);
 
-      if (i &gt; index) {
-        for (uint256 j = i; j &lt; self.length - 1; j++){
+      if (i > index) {
+        for (uint256 j = i; j < self.length - 1; j++){
           self[j] = self[j + 1];
         }
 

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;CDS&#39; token contract
+// 'CDS' token contract
 //
 // Symbol      : CDS
 // Name        : Coin Dogs Share
@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -29,7 +29,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -110,16 +110,16 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
     uint256 public buyPrice;
 
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function CoinDogToken() public {
-        symbol = &quot;CDS&quot;;
-        name = &quot;Coin Dogs Share&quot;;
+        symbol = "CDS";
+        name = "Coin Dogs Share";
         decimals = 0;
         TotalSupply = 3000000;
         setAmountToDistribute(TotalSupply/3);
@@ -151,8 +151,8 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -165,7 +165,7 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -198,7 +198,7 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -207,7 +207,7 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -257,7 +257,7 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
     function sendToken_internal(address to, uint amount) internal {
 
-        require(DistributedSoFar()+amount &lt;= AmountToDistribute);
+        require(DistributedSoFar()+amount <= AmountToDistribute);
 
         balances[this] = safeSub(balances[this], amount);
         balances[to] = safeAdd(balances[to], amount);
@@ -266,8 +266,8 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
     }
 
     function distributeTokens(address[] addresses, uint[] values) public onlyOwner {
-         require(addresses.length==values.length &amp;&amp; values.length&gt;0);
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         require(addresses.length==values.length && values.length>0);
+         for (uint i = 0; i < addresses.length; i++) {
             sendToken_internal(addresses[i], values[i]);
          }
     }
@@ -275,7 +275,7 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
 
 
     function buy() public payable returns (uint amount)  {
-        require(buyPrice&gt;0);
+        require(buyPrice>0);
 
         amount = msg.value / buyPrice;                    // calculates the amount
 
@@ -285,14 +285,14 @@ contract CoinDogToken is ERC20Interface, Owned, SafeMath {
     }
 
     function sell(uint amount) public returns (uint revenue) {
-        require(sellPrice&gt;0);
+        require(sellPrice>0);
 
         balances[msg.sender] = safeSub(balances[msg.sender], amount);
         balances[this] = safeAdd(balances[this], amount);
 
 
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         emit Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

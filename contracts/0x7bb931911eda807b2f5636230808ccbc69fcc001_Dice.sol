@@ -24,11 +24,11 @@ contract Dice{
    * @return the win and loss 
    * */
   function determineOutcome(uint bet, uint number, uint limit, bool rollBelow) public pure returns(uint win, uint loss){
-    require(limit &gt; 0 &amp;&amp; limit &lt;= 999);
-    if(rollBelow &amp;&amp; number &lt; limit){//win
+    require(limit > 0 && limit <= 999);
+    if(rollBelow && number < limit){//win
       win = bet*1000/limit - bet;
     }
-    else if(!rollBelow &amp;&amp; number &gt; limit){//win
+    else if(!rollBelow && number > limit){//win
       win = bet*1000/(1000-limit) - bet;
     }
     else{//loss

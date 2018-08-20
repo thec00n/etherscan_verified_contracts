@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,8 +57,8 @@ contract KaraOmToken {
     uint256 public tokensPerEth = 17000000e8;
    bool public distributionFinished = false;
     address owner = msg.sender;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
    
     event Transfer(address indexed from, address indexed to, uint256 value);
      event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -86,8 +86,8 @@ contract KaraOmToken {
     
     function KaraOmToken () public {
         totalSupply = 690000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
-        name = &quot;KaraOm Token&quot;;                                   // Set the name for display purposes
-        symbol = &quot;KOM&quot;;                               // Set the symbol for display purposes
+        name = "KaraOm Token";                                   // Set the name for display purposes
+        symbol = "KOM";                               // Set the symbol for display purposes
         owner = msg.sender;    
         distr(owner, totalDistributed);
     }
@@ -115,14 +115,14 @@ contract KaraOmToken {
 
     function doAirdrop(address _participant, uint _amount) internal {
 
-        require( _amount &gt; 0 );      
+        require( _amount > 0 );      
 
-        require( totalDistributed &lt; totalSupply );
+        require( totalDistributed < totalSupply );
         
         balanceOf[_participant] = balanceOf[_participant].add(_amount);
         totalDistributed = totalDistributed.add(_amount);
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
 
@@ -136,7 +136,7 @@ contract KaraOmToken {
     }
 
     function adminClaimAirdropMultiple(address[] _addresses, uint _amount) public onlyOwner {        
-        for (uint i = 0; i &lt; _addresses.length; i++) doAirdrop(_addresses[i], _amount);
+        for (uint i = 0; i < _addresses.length; i++) doAirdrop(_addresses[i], _amount);
     }
 
     function () external payable {
@@ -147,19 +147,19 @@ contract KaraOmToken {
         uint256 tokens = 0;
 
         // minimum contribution
-        require( msg.value &gt;= MIN_CONTRIBUTION );
+        require( msg.value >= MIN_CONTRIBUTION );
 
-        require( msg.value &gt; 0 );
+        require( msg.value > 0 );
 
         // get baseline number of tokens
         tokens = tokensPerEth.mul(msg.value) / 1 ether;        
         address investor = msg.sender;
         
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             distr(investor, tokens);
         }
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
@@ -170,8 +170,8 @@ contract KaraOmToken {
     }
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -186,7 +186,7 @@ contract KaraOmToken {
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -195,7 +195,7 @@ contract KaraOmToken {
     
     function approve(address _spender, uint256 _value) public
         returns (bool success) {
-            if (_value != 0 &amp;&amp; allowance[msg.sender][_spender] != 0) { return false; }
+            if (_value != 0 && allowance[msg.sender][_spender] != 0) { return false; }
             allowance[msg.sender][_spender] = _value;
             emit Approval(msg.sender, _spender, _value);
             return true;
@@ -217,7 +217,7 @@ contract KaraOmToken {
     }
  
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value); 
+        require(balanceOf[msg.sender] >= _value); 
         balanceOf[msg.sender] -= _value;           
         totalSupply -= _value;                    
         emit Burn(msg.sender, _value);
@@ -225,8 +225,8 @@ contract KaraOmToken {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);               
-        require(_value &lt;= allowance[_from][msg.sender]);  
+        require(balanceOf[_from] >= _value);               
+        require(_value <= allowance[_from][msg.sender]);  
         balanceOf[_from] -= _value;                        
         allowance[_from][msg.sender] -= _value;      
         totalSupply -= _value;                            

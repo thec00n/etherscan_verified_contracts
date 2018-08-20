@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="0a786f6769654a38">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="0a786f6769654a38">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -33,7 +33,7 @@ contract ReentrancyGuard {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -86,7 +86,7 @@ contract BitcoineumInterface {
 
 contract SharkPool is Ownable, ReentrancyGuard {
 
-    string constant public pool_name = &quot;SharkPool 200&quot;;
+    string constant public pool_name = "SharkPool 200";
 
     // Percentage of BTE pool takes for operations
     uint256 public pool_percentage = 5;
@@ -114,9 +114,9 @@ contract SharkPool is Ownable, ReentrancyGuard {
         uint256 proportional_contribution;
     }
 
-    mapping (address =&gt; user) public users;
-    mapping (uint256 =&gt; uint256) public attempts;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => user) public users;
+    mapping (uint256 => uint256) public attempts;
+    mapping(address => uint256) balances;
     uint8[] slots;
     address[256] public active_users; // Should equal max_users
 
@@ -126,16 +126,16 @@ contract SharkPool is Ownable, ReentrancyGuard {
 
     function set_pool_percentage(uint8 _percentage) external nonReentrant onlyOwner {
        // Just in case owner is compromised
-       require(_percentage &lt; 11);
+       require(_percentage < 11);
        pool_percentage = _percentage;
     }
 
 
     function find_contribution(address _who) constant external returns (uint256, uint256, uint256, uint256, uint256) {
-      if (users[_who].start_block &gt; 0) {
+      if (users[_who].start_block > 0) {
          user memory u = users[_who];
          uint256 remaining_period= 0;
-         if (u.end_block &gt; mined_blocks) {
+         if (u.end_block > mined_blocks) {
             remaining_period = u.end_block - mined_blocks;
             } else {
             remaining_period = 0;
@@ -149,14 +149,14 @@ contract SharkPool is Ownable, ReentrancyGuard {
     }
 
     function allocate_slot(address _who) internal {
-       if(total_users &lt; max_users) { 
+       if(total_users < max_users) { 
             // Just push into active_users
             active_users[total_users] = _who;
             total_users += 1;
           } else {
             // The maximum users have been reached, can we allocate a free space?
             if (slots.length == 0) {
-                // There isn&#39;t any room left
+                // There isn't any room left
                 revert();
             } else {
                uint8 location = slots[slots.length-1];
@@ -167,12 +167,12 @@ contract SharkPool is Ownable, ReentrancyGuard {
     }
 
      function external_to_internal_block_number(uint256 _externalBlockNum) public constant returns (uint256) {
-        // blockCreationRate is &gt; 0
+        // blockCreationRate is > 0
         return _externalBlockNum / blockCreationRate;
      }
 
      function available_slots() public constant returns (uint256) {
-        if (total_users &lt; max_users) {
+        if (total_users < max_users) {
             return max_users - total_users;
         } else {
           return slots.length;
@@ -194,13 +194,13 @@ contract SharkPool is Ownable, ReentrancyGuard {
     // balance should be 0 aftwards in a perfect world
     function distribute_reward(uint256 _totalAttempt, uint256 _balance) internal {
       uint256 remaining_balance = _balance;
-      for (uint8 i = 0; i &lt; total_users; i++) {
+      for (uint8 i = 0; i < total_users; i++) {
           address user_address = active_users[i];
-          if (user_address &gt; 0 &amp;&amp; remaining_balance != 0) {
+          if (user_address > 0 && remaining_balance != 0) {
               uint256 proportion = users[user_address].proportional_contribution;
               uint256 divided_portion = (proportion * divisible_units) / _totalAttempt;
               uint256 payout = (_balance * divided_portion) / divisible_units;
-              if (payout &gt; remaining_balance) {
+              if (payout > remaining_balance) {
                  payout = remaining_balance;
               }
               balances[user_address] = balances[user_address] + payout;
@@ -225,14 +225,14 @@ contract SharkPool is Ownable, ReentrancyGuard {
 
     // A default ether tx without gas specified will fail.
     function () payable {
-         require(msg.value &gt;= calculate_minimum_contribution());
+         require(msg.value >= calculate_minimum_contribution());
 
          // Did the user already contribute
          user storage current_user = users[msg.sender];
 
          // Does user exist already
-         if (current_user.start_block &gt; 0) {
-            if (current_user.end_block &gt; mined_blocks) {
+         if (current_user.start_block > 0) {
+            if (current_user.end_block > mined_blocks) {
                 uint256 periods_left = current_user.end_block - mined_blocks;
                 uint256 amount_remaining = current_user.proportional_contribution * periods_left;
                 amount_remaining = amount_remaining + msg.value;
@@ -242,7 +242,7 @@ contract SharkPool is Ownable, ReentrancyGuard {
                current_user.proportional_contribution = msg.value / contract_period;
             }
 
-          // If the user exists and has a balance let&#39;s transfer it to them
+          // If the user exists and has a balance let's transfer it to them
           do_redemption();
 
           } else {
@@ -266,15 +266,15 @@ contract SharkPool is Ownable, ReentrancyGuard {
      uint256 total_attempt = 0;
      uint8 total_ejected = 0; 
 
-     for (uint8 i=0; i &lt; total_users; i++) {
+     for (uint8 i=0; i < total_users; i++) {
          address user_address = active_users[i];
-         if (user_address &gt; 0) {
+         if (user_address > 0) {
              // This user exists
              user memory u = users[user_address];
-             if (u.end_block &lt;= mined_blocks) {
+             if (u.end_block <= mined_blocks) {
                 // This user needs to be ejected, no more attempts left
                 // but we limit to 20 to prevent gas issues on slot insert
-                if (total_ejected &lt; 10) {
+                if (total_ejected < 10) {
                     delete active_users[i];
                     slots.push(i);
                     delete users[active_users[i]];
@@ -286,7 +286,7 @@ contract SharkPool is Ownable, ReentrancyGuard {
              }
          }
      }
-     if (total_attempt &gt; 0) {
+     if (total_attempt > 0) {
         // Now we have a total contribution amount
         attempts[_blockNum] = total_attempt;
         base_contract.mine.value(total_attempt)();
@@ -303,7 +303,7 @@ contract SharkPool is Ownable, ReentrancyGuard {
 
                   uint256 initial_balance = base_contract.balanceOf(this);
 
-                  // We won let&#39;s get our reward
+                  // We won let's get our reward
                   base_contract.claim(_blockNumber, this);
 
                   uint256 balance = base_contract.balanceOf(this);
@@ -315,10 +315,10 @@ contract SharkPool is Ownable, ReentrancyGuard {
 
    function do_redemption() internal {
      uint256 balance = balances[msg.sender];
-     if (balance &gt; 0) {
+     if (balance > 0) {
         uint256 owner_cut = (balance / 100) * pool_percentage;
         uint256 remainder = balance - owner_cut;
-        if (owner_cut &gt; 0) {
+        if (owner_cut > 0) {
             base_contract.transfer(owner, owner_cut);
         }
         base_contract.transfer(msg.sender, remainder);

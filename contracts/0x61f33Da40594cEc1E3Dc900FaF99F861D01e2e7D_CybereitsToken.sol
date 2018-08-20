@@ -2,13 +2,13 @@ pragma solidity ^0.4.18;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,8 +68,8 @@ contract Token is ERC20 {
   using SafeMath for uint256;
 
   uint256                                             supply;
-  mapping(address =&gt; uint256)                         balances;
-  mapping (address =&gt; mapping (address =&gt; uint256))   approvals;
+  mapping(address => uint256)                         balances;
+  mapping (address => mapping (address => uint256))   approvals;
 
   function balanceOf(address owner) public constant returns (uint256 balance) {
     return balances[owner];
@@ -81,8 +81,8 @@ contract Token is ERC20 {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(balances[_to] &lt; balances[_to].add(_value));
+    require(_value <= balances[msg.sender]);
+    require(balances[_to] < balances[_to].add(_value));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -92,8 +92,8 @@ contract Token is ERC20 {
 
   function transferFrom(address from, address to, uint256 value) public returns (bool) {
 
-        assert(balances[from] &gt;= value);
-        assert(approvals[from][msg.sender] &gt;= value);
+        assert(balances[from] >= value);
+        assert(approvals[from][msg.sender] >= value);
         
         approvals[from][msg.sender] = approvals[from][msg.sender].sub(value);
         balances[from] = balances[from].sub(value);
@@ -118,8 +118,8 @@ contract Token is ERC20 {
 }
 
 contract CybereitsToken is Token, Ownable {
-    string public name = &quot;Cybereits Token&quot;;
-    string public symbol = &quot;CRE&quot;;
+    string public name = "Cybereits Token";
+    string public symbol = "CRE";
     uint public decimals;
 
     address public teamLockAddr;
@@ -158,8 +158,8 @@ contract CybereitsTeamLock {
 
     event Unlock(address from, uint amount);
 
-    mapping (address =&gt; uint256) allocations;
-    mapping (address =&gt; uint256) frozen;
+    mapping (address => uint256) allocations;
+    mapping (address => uint256) frozen;
 
     CybereitsToken cre;
 
@@ -190,7 +190,7 @@ contract CybereitsTeamLock {
 
     function unlock(address unlockAddr) external returns (bool) {
         require(allocations[unlockAddr] != 0);
-        require(now &gt;= frozen[unlockAddr]);
+        require(now >= frozen[unlockAddr]);
 
         var amount = allocations[unlockAddr];
         assert(cre.transfer(unlockAddr, amount));

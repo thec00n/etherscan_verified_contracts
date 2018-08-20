@@ -66,13 +66,13 @@ contract Serverable is Ownable {
 
 contract BalanceManager is Serverable {
     /** player balances **/
-    mapping(uint32 =&gt; uint64) public balances;
+    mapping(uint32 => uint64) public balances;
     /** player blocked tokens number **/
-    mapping(uint32 =&gt; uint64) public blockedBalances;
+    mapping(uint32 => uint64) public blockedBalances;
     /** wallet balances **/
-    mapping(address =&gt; uint64) public walletBalances;
+    mapping(address => uint64) public walletBalances;
     /** adress users **/
-    mapping(address =&gt; uint32) public userIds;
+    mapping(address => uint32) public userIds;
 
     /** Dispatcher contract address **/
     address public dispatcher;
@@ -101,7 +101,7 @@ contract BalanceManager is Serverable {
      * Deposits from user
      */
     function tokenFallback(address _from, uint256 _amount, bytes _data) public {
-        if (userIds[_from] &gt; 0) {
+        if (userIds[_from] > 0) {
             balances[userIds[_from]] += uint64(_amount);
         } else {
             walletBalances[_from] += uint64(_amount);
@@ -118,7 +118,7 @@ contract BalanceManager is Serverable {
         require(_user != owner);
 
         userIds[_user] = _id;
-        if (walletBalances[_user] &gt; 0) {
+        if (walletBalances[_user] > 0) {
             balances[_id] += walletBalances[_user];
             walletBalances[_user] = 0;
         }
@@ -128,9 +128,9 @@ contract BalanceManager is Serverable {
      * Deposits tokens in game to some user
      */
     function sendTo(address _user, uint64 _amount) external {
-        require(walletBalances[msg.sender] &gt;= _amount);
+        require(walletBalances[msg.sender] >= _amount);
         walletBalances[msg.sender] -= _amount;
-        if (userIds[_user] &gt; 0) {
+        if (userIds[_user] > 0) {
             balances[userIds[_user]] += _amount;
         } else {
             walletBalances[_user] += _amount;
@@ -143,14 +143,14 @@ contract BalanceManager is Serverable {
      */
     function withdraw(uint64 _amount) external {
         uint32 userId = userIds[msg.sender];
-        if (userId &gt; 0) {
-            require(balances[userId] - blockedBalances[userId] &gt;= _amount);
+        if (userId > 0) {
+            require(balances[userId] - blockedBalances[userId] >= _amount);
             if (gameToken.transfer(msg.sender, _amount)) {
                 balances[userId] -= _amount;
                 emit Withdraw(msg.sender, _amount);
             }
         } else {
-            require(walletBalances[msg.sender] &gt;= _amount);
+            require(walletBalances[msg.sender] >= _amount);
             if (gameToken.transfer(msg.sender, _amount)) {
                 walletBalances[msg.sender] -= _amount;
                 emit Withdraw(msg.sender, _amount);
@@ -163,7 +163,7 @@ contract BalanceManager is Serverable {
      */
     function systemWithdraw(address _user, uint64 _amount) external onlyServer {
         uint32 userId = userIds[_user];
-        require(balances[userId] - blockedBalances[userId] &gt;= _amount);
+        require(balances[userId] - blockedBalances[userId] >= _amount);
 
         if (gameToken.transfer(_user, _amount)) {
             balances[userId] -= _amount;
@@ -182,10 +182,10 @@ contract BalanceManager is Serverable {
      * Dispatcher can change user balance
      */
     function spendUserBalance(uint32 _userId, uint64 _amount) external onlyDispatcher {
-        require(balances[_userId] &gt;= _amount);
+        require(balances[_userId] >= _amount);
         balances[_userId] -= _amount;
-        if (blockedBalances[_userId] &gt; 0) {
-            if (blockedBalances[_userId] &lt;= _amount)
+        if (blockedBalances[_userId] > 0) {
+            if (blockedBalances[_userId] <= _amount)
                 blockedBalances[_userId] = 0;
             else
                 blockedBalances[_userId] -= _amount;
@@ -199,11 +199,11 @@ contract BalanceManager is Serverable {
         require(_userIds.length == _amounts.length);
 
         uint64 sum = 0;
-        for (uint32 i = 0; i &lt; _amounts.length; i++)
+        for (uint32 i = 0; i < _amounts.length; i++)
             sum += _amounts[i];
 
-        require(walletBalances[owner] &gt;= sum);
-        for (i = 0; i &lt; _userIds.length; i++) {
+        require(walletBalances[owner] >= sum);
+        for (i = 0; i < _userIds.length; i++) {
             balances[_userIds[i]] += _amounts[i];
             blockedBalances[_userIds[i]] += _amounts[i];
         }
@@ -223,7 +223,7 @@ contract BalanceManager is Serverable {
      * Owner withdraw service fee tokens 
      */
     function serviceFeeWithdraw() external onlyOwner {
-        require(serviceReward &gt; 0);
+        require(serviceReward > 0);
         if (gameToken.transfer(msg.sender, serviceReward))
             serviceReward = 0;
     }

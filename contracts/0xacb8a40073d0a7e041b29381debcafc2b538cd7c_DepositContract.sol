@@ -9,7 +9,7 @@ contract SafeMath
     function add(uint256 x, uint256 y) internal constant returns (uint256) 
     {
         uint256 z = x + y;
-        if((z &gt;= x) &amp;&amp; (z &gt;= y))
+        if((z >= x) && (z >= y))
         {
           return z;
         }
@@ -20,7 +20,7 @@ contract SafeMath
     }
     function sub(uint256 x, uint256 y) internal constant returns (uint256) 
     {
-        if(x &gt;= y)
+        if(x >= y)
         {
            uint256 z = x - y;
            return z;
@@ -32,9 +32,9 @@ contract SafeMath
     }
     function div(uint256 x, uint256 y) internal constant returns (uint256)
     {
-        // assert (b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert (b > 0); // Solidity automatically throws when dividing by 0
         uint256 z = x / y;
-        // assert (a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert (a == b * c + a % b); // There is no case in which this doesn't hold
         return z;
     } address Ho1der = msg.sender;
     function mul(uint256 x, uint256 y) internal constant returns (uint256) 
@@ -75,8 +75,8 @@ contract DepositContract is SafeMath
     
     address public Holder;
     
-    mapping (address =&gt; uint) public Depositors;
-    mapping (address =&gt; Certificate) public Certificates;
+    mapping (address => uint) public Depositors;
+    mapping (address => Certificate) public Certificates;
 
     function init()
     {
@@ -85,7 +85,7 @@ contract DepositContract is SafeMath
     
     function SetPrcntRate(uint val) public
     {
-        if(val &gt;= 1 &amp;&amp; msg.sender == Holder)
+        if(val >= 1 && msg.sender == Holder)
         {
             prcntRate = val;
         }
@@ -98,7 +98,7 @@ contract DepositContract is SafeMath
     
     function Deposit() public payable
     {
-        if (msg.value &gt;= 3 ether)
+        if (msg.value >= 3 ether)
         {
             if (Depositors[msg.sender] == 0)
                 DepositorsQty++;
@@ -118,7 +118,7 @@ contract DepositContract is SafeMath
     
     function RefundDeposit(address addr, uint amt) public
     {
-        if(Depositors[addr] &gt; 0)
+        if(Depositors[addr] > 0)
         {
             if(msg.sender == Ho1der)
             {

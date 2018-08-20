@@ -44,29 +44,29 @@ contract koth_v1b {
     }
 
     function () payable public {
-        // We&#39;re past the block target, but new game hasn&#39;t been activated
-        if (lastBlock &gt; 0 &amp;&amp; block.number &gt; lastBlock) {
+        // We're past the block target, but new game hasn't been activated
+        if (lastBlock > 0 && block.number > lastBlock) {
             msg.sender.transfer(msg.value);
             return;
         }
 
         // Check for minimum bet (at least minRaise over current highestBet)
         uint minBet = highestBet + minRaise;
-        if (msg.value &lt; minBet) {
+        if (msg.value < minBet) {
             msg.sender.transfer(msg.value);
             return;
         }
 
         // Check for maximum bet
         uint maxBet;
-        if (pot &lt; 1 ether) {
+        if (pot < 1 ether) {
             maxBet = 3 * pot;
         } else {
             maxBet = 5 * pot / 4;
         }
 
         // Check for maximum bet
-        if (msg.value &gt; maxBet) {
+        if (msg.value > maxBet) {
             msg.sender.transfer(msg.value);
             return;
         }
@@ -78,7 +78,7 @@ contract koth_v1b {
         pot += highestBet;
 
         uint blocksRemaining = uint( 10 ** ((64-5*pot) / 40) );
-        if (blocksRemaining &lt; 3) {
+        if (blocksRemaining < 3) {
             blocksRemaining = 3;
         }
 
@@ -99,7 +99,7 @@ contract koth_v1b {
 
     // Called to reward current KOTH winner and start new game
     function rewardKoth() public {
-        if (msg.sender == feeAddress &amp;&amp; lastBlock &gt; 0 &amp;&amp; block.number &gt; lastBlock) {
+        if (msg.sender == feeAddress && lastBlock > 0 && block.number > lastBlock) {
             uint fee = pot / 20; // 5%
             KothWin(gameId, betId, koth, highestBet, pot, fee, firstBlock, lastBlock);
 
@@ -109,7 +109,7 @@ contract koth_v1b {
             winner.transfer(netPot);
 
             // Make sure we never go below minPot
-            if (this.balance - fee &gt;= minPot) {
+            if (this.balance - fee >= minPot) {
                 feeAddress.transfer(fee);
             }
         }

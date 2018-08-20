@@ -88,22 +88,22 @@ contract ELHeroToken is ERC721,AccessAdmin{
     uint256 destroyCardCount;
 
     /// @dev Card token ID vs owner address
-    mapping (uint256 =&gt; address) cardIdToOwner;
+    mapping (uint256 => address) cardIdToOwner;
 
     /// @dev cards owner by the owner (array)
-    mapping (address =&gt; uint256[]) ownerToCardArray;
+    mapping (address => uint256[]) ownerToCardArray;
     
     /// @dev card token ID search in owner array
-    mapping (uint256 =&gt; uint256) cardIdToOwnerIndex;
+    mapping (uint256 => uint256) cardIdToOwnerIndex;
 
     /// @dev The authorized address for each token
-    mapping (uint256 =&gt; address) cardIdToApprovals;
+    mapping (uint256 => address) cardIdToApprovals;
 
     /// @dev The authorized operators for each address
-    mapping (address =&gt; mapping (address =&gt; bool)) operatorToApprovals;
+    mapping (address => mapping (address => bool)) operatorToApprovals;
 
     /// @dev Trust contract
-    mapping (address =&gt; bool) actionContracts;
+    mapping (address => bool) actionContracts;
 
     function setActionContract(address _actionAddr, bool _useful) external onlyAdmin {
         actionContracts[_actionAddr] = _useful;
@@ -122,7 +122,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
     
 
     modifier isValidToken(uint256 _tokenId) {
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= cardArray.length);
+        require(_tokenId >= 1 && _tokenId <= cardArray.length);
         require(cardIdToOwner[_tokenId] != address(0)); 
         _;
     }
@@ -136,7 +136,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
     // ERC721
     function supportsInterface(bytes4 _interfaceId) external view returns(bool) {
         // ERC165 || ERC721 || ERC165^ERC721
-        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) &amp;&amp; (_interfaceId != 0xffffffff);
+        return (_interfaceId == 0x01ffc9a7 || _interfaceId == 0x80ac58cd || _interfaceId == 0x8153916a) && (_interfaceId != 0xffffffff);
     }
 
     constructor() public {
@@ -146,11 +146,11 @@ contract ELHeroToken is ERC721,AccessAdmin{
 
 
     function name() public pure returns(string) {
-        return &quot;Ether League Hero Token&quot;;
+        return "Ether League Hero Token";
     }
 
     function symbol() public pure returns(string) {
-        return &quot;ELHT&quot;;
+        return "ELHT";
     }
 
     /// @dev Search for token quantity address
@@ -182,10 +182,10 @@ contract ELHeroToken is ERC721,AccessAdmin{
     /// @param _to The new owner
     /// @param _tokenId The ELHT to transfer
     function safeTransferFrom(address _from, address _to, uint256 _tokenId) external whenNotPaused{
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
-    /// @dev Transfer ownership of an ELHT, &#39;_to&#39; must be a vaild address, or the ELHT will lost
+    /// @dev Transfer ownership of an ELHT, '_to' must be a vaild address, or the ELHT will lost
     /// @param _from The current owner of the ELHT
     /// @param _to The new owner
     /// @param _tokenId The ELHT to transfer
@@ -211,7 +211,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
         emit Approval(owner, _approved, _tokenId);
     }
 
-    /// @dev Enable or disable approval for a third party (&quot;operator&quot;) to manage all your asset.
+    /// @dev Enable or disable approval for a third party ("operator") to manage all your asset.
     /// @param _operator Address to add to the set of authorized operators.
     /// @param _approved True if the operators is approved, false to revoke approval
     function setApprovalForAll(address _operator, bool _approved) external whenNotPaused{
@@ -256,7 +256,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
             return;
         }
         bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
-        // bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)) = 0xf0b9e5ba;
+        // bytes4(keccak256("onERC721Received(address,uint256,bytes)")) = 0xf0b9e5ba;
         require(retval == 0xf0b9e5ba);
     }
 
@@ -283,7 +283,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
             }      
         }
 
-        // Give the ELHT to &#39;_to&#39;
+        // Give the ELHT to '_to'
         cardIdToOwner[_tokenId] = _to;
         ownerToCardArray[_to].push(_tokenId);
         cardIdToOwnerIndex[_tokenId] = ownerToCardArray[_to].length - 1;
@@ -304,7 +304,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
         require(actionContracts[msg.sender]);
         require(_owner != address(0));
         uint256 newCardId = cardArray.length;
-        require(newCardId &lt; 4294967296);
+        require(newCardId < 4294967296);
 
         cardArray.length += 1;
         Card storage cd = cardArray[newCardId];
@@ -343,11 +343,11 @@ contract ELHeroToken is ERC721,AccessAdmin{
         require(actionContracts[msg.sender]);
 
         Card storage cd = cardArray[_tokenId];
-        if (_idxArray[0] &gt; 0) _changeAttrByIndex(cd, _idxArray[0], _params[0]);
-        if (_idxArray[1] &gt; 0) _changeAttrByIndex(cd, _idxArray[1], _params[1]);
-        if (_idxArray[2] &gt; 0) _changeAttrByIndex(cd, _idxArray[2], _params[2]);
-        if (_idxArray[3] &gt; 0) _changeAttrByIndex(cd, _idxArray[3], _params[3]);
-        if (_idxArray[4] &gt; 0) _changeAttrByIndex(cd, _idxArray[4], _params[4]);
+        if (_idxArray[0] > 0) _changeAttrByIndex(cd, _idxArray[0], _params[0]);
+        if (_idxArray[1] > 0) _changeAttrByIndex(cd, _idxArray[1], _params[1]);
+        if (_idxArray[2] > 0) _changeAttrByIndex(cd, _idxArray[2], _params[2]);
+        if (_idxArray[3] > 0) _changeAttrByIndex(cd, _idxArray[3], _params[3]);
+        if (_idxArray[4] > 0) _changeAttrByIndex(cd, _idxArray[4], _params[4]);
         
         emit ChangeCard(cardIdToOwner[_tokenId], _tokenId, _changeType);
     }
@@ -383,7 +383,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
     function safeTransferByContract(uint256 _tokenId, address _to) external whenNotPaused{
         require(actionContracts[msg.sender]);
 
-        require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= cardArray.length);
+        require(_tokenId >= 1 && _tokenId <= cardArray.length);
         address owner = cardIdToOwner[_tokenId];
         require(owner != address(0));
         require(_to != address(0));
@@ -411,7 +411,7 @@ contract ELHeroToken is ERC721,AccessAdmin{
         uint256 length = cdArray.length;
         tokens = new uint256[](length);
         flags = new uint32[](length);
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokens[i] = cdArray[i];
             Card storage cd = cardArray[cdArray[i]];
             flags[i] = uint32(uint32(cd.protoId) * 1000 + uint32(cd.hero) * 10 + cd.quality);
@@ -421,11 +421,11 @@ contract ELHeroToken is ERC721,AccessAdmin{
     /// ELHT token info returned based on Token ID transfered (64 at most)
     function getCardAttrs(uint256[] _tokens) external view returns(uint16[] attrs) {
         uint256 length = _tokens.length;
-        require(length &lt;= 64);
+        require(length <= 64);
         attrs = new uint16[](length * 11);
         uint256 tokenId;
         uint256 index;
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             tokenId = _tokens[i];
             if (cardIdToOwner[tokenId] != address(0)) {
                 index = i * 11;

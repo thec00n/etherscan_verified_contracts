@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -354,12 +354,12 @@ contract PausableToken is StandardToken, Pausable {
 
 /**
  * @title ODEM Token contract - ERC20 compatible token contract.
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f687a7c7b6e79604f606b6a62216660">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f687a7c7b6e79604f606b6a62216660">[email protected]</a>>
  */
 
 contract ODEMToken is PausableToken, MintableToken {
-    string public constant name = &quot;ODEM Token&quot;;
-    string public constant symbol = &quot;ODEM&quot;;
+    string public constant name = "ODEM Token";
+    string public constant symbol = "ODEM";
     uint8 public constant decimals = 18;
 }
 
@@ -367,7 +367,7 @@ contract ODEMToken is PausableToken, MintableToken {
 
 /**
  * @title Team and Advisors Token Allocation contract
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96f1e3e5e2f7e0f9d6f9f2f3fbb8fff9">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96f1e3e5e2f7e0f9d6f9f2f3fbb8fff9">[email protected]</a>>
  */
 
 contract TeamAndAdvisorsAllocation is Ownable {
@@ -379,7 +379,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
     uint256 public allocatedTokens;
     uint256 private totalTeamAndAdvisorsAllocation = 38763636e18; // 38 mm
 
-    mapping (address =&gt; uint256) public teamAndAdvisorsAllocations;
+    mapping (address => uint256) public teamAndAdvisorsAllocations;
 
     ODEMToken public odem;
 
@@ -394,7 +394,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
     }
 
     /**
-     * @dev Adds founders&#39; token allocation
+     * @dev Adds founders' token allocation
      * @param teamOrAdvisorsAddress Address of a founder
      * @param allocationValue Number of tokens allocated to a founder
      * @return true if address is correctly added
@@ -407,7 +407,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
         assert(teamAndAdvisorsAllocations[teamOrAdvisorsAddress] == 0); // can only add once.
 
         allocatedTokens = allocatedTokens.add(allocationValue);
-        require(allocatedTokens &lt;= totalTeamAndAdvisorsAllocation);
+        require(allocatedTokens <= totalTeamAndAdvisorsAllocation);
 
         teamAndAdvisorsAllocations[teamOrAdvisorsAddress] = allocationValue;
         return true;
@@ -418,7 +418,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
      * Need to be called by each address
      */
     function unlock() external {
-        assert(now &gt;= unlockedAt);
+        assert(now >= unlockedAt);
 
         // During first unlock attempt fetch total number of locked tokens.
         if (tokensCreated == 0) {
@@ -436,10 +436,10 @@ contract TeamAndAdvisorsAllocation is Ownable {
      * @dev allow for selfdestruct possibility and sending funds to owner
      */
     function kill() public onlyOwner {
-        assert(now &gt;= canSelfDestruct);
+        assert(now >= canSelfDestruct);
         uint256 balance = odem.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             odem.transfer(owner, balance);
         }
 
@@ -450,21 +450,21 @@ contract TeamAndAdvisorsAllocation is Ownable {
 // File: contracts/Whitelist.sol
 
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) public allowedAddresses;
+    mapping(address => bool) public allowedAddresses;
 
     event WhitelistUpdated(uint256 timestamp, string operation, address indexed member);
 
     function addToWhitelist(address[] _addresses) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             allowedAddresses[_addresses[i]] = true;
-            WhitelistUpdated(now, &quot;Added&quot;, _addresses[i]);
+            WhitelistUpdated(now, "Added", _addresses[i]);
         }
     }
 
     function removeFromWhitelist(address[] _addresses) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             allowedAddresses[_addresses[i]] = false;
-            WhitelistUpdated(now, &quot;Removed&quot;, _addresses[i]);
+            WhitelistUpdated(now, "Removed", _addresses[i]);
         }
     }
 
@@ -513,9 +513,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -564,14 +564,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -593,7 +593,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -618,7 +618,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
 /**
  * @title ODEM Crowdsale contract - crowdsale contract for the ODEM tokens.
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="503725232431263f103f34353d7e393f">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="503725232431263f103f34353d7e393f">[email protected]</a>>
  */
 
 contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
@@ -642,7 +642,7 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
     address public remainderPurchaser;
     uint256 public remainderAmount;
 
-    mapping (address =&gt; uint256) public trackBuyersPurchases;
+    mapping (address => uint256) public trackBuyersPurchases;
 
     // external contracts
     Whitelist public whitelist;
@@ -673,7 +673,7 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
         Crowdsale(_startTime, _endTime, _rate, _wallet)
     {
 
-        require(_whitelist != address(0) &amp;&amp; _wallet != address(0) &amp;&amp; _rewardWallet != address(0));
+        require(_whitelist != address(0) && _wallet != address(0) && _rewardWallet != address(0));
         whitelist = Whitelist(_whitelist);
         rewardWallet = _rewardWallet;
         oneHourAfterStartTime = startTime.add(1 hours);
@@ -699,15 +699,15 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
 
     /**
      * @dev Mint tokens for pre crowdsale putchases before crowdsale starts
-     * @param investorsAddress Purchaser&#39;s address
+     * @param investorsAddress Purchaser's address
      * @param tokensPurchased Tokens purchased during pre crowdsale
      */
     function mintTokenForPreCrowdsale(address investorsAddress, uint256 tokensPurchased)
         external
         onlyOwner
     {
-        require(now &lt; startTime &amp;&amp; investorsAddress != address(0));
-        require(token.totalSupply().add(tokensPurchased) &lt;= PRE_CROWDSALE_CAP);
+        require(now < startTime && investorsAddress != address(0));
+        require(token.totalSupply().add(tokensPurchased) <= PRE_CROWDSALE_CAP);
 
         token.mint(investorsAddress, tokensPurchased);
         PrivateInvestorTokenPurchase(investorsAddress, tokensPurchased);
@@ -734,7 +734,7 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
     {
         require(beneficiary != address(0));
         require(msg.sender == beneficiary);
-        require(validPurchase() &amp;&amp; token.totalSupply() &lt; TOTAL_TOKENS_FOR_CROWDSALE);
+        require(validPurchase() && token.totalSupply() < TOTAL_TOKENS_FOR_CROWDSALE);
 
         uint256 weiAmount = msg.value;
 
@@ -742,17 +742,17 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
         uint256 tokens = weiAmount.mul(rate);
 
         // checks whether personal token purchase cap has been reached within crowdsale first hour
-        if (now &lt; oneHourAfterStartTime)
-            require(trackBuyersPurchases[msg.sender].add(tokens) &lt;= PERSONAL_FIRST_HOUR_CAP);
+        if (now < oneHourAfterStartTime)
+            require(trackBuyersPurchases[msg.sender].add(tokens) <= PERSONAL_FIRST_HOUR_CAP);
 
         trackBuyersPurchases[beneficiary] = trackBuyersPurchases[beneficiary].add(tokens);
 
         //remainder logic
-        if (token.totalSupply().add(tokens) &gt; TOTAL_TOKENS_FOR_CROWDSALE) {
+        if (token.totalSupply().add(tokens) > TOTAL_TOKENS_FOR_CROWDSALE) {
             tokens = TOTAL_TOKENS_FOR_CROWDSALE.sub(token.totalSupply());
             weiAmount = tokens.div(rate);
 
-            // save info so as to refund purchaser after crowdsale&#39;s end
+            // save info so as to refund purchaser after crowdsale's end
             remainderPurchaser = msg.sender;
             remainderAmount = msg.value.sub(weiAmount);
         }
@@ -796,7 +796,7 @@ contract ODEMCrowdsale is FinalizableCrowdsale, Pausable {
         token.mint(wallet, COMPANY_SHARE);
         token.mint(rewardWallet, BOUNTY_REWARD_SHARE);
 
-        if (TOTAL_TOKENS_SUPPLY &gt; token.totalSupply()) {
+        if (TOTAL_TOKENS_SUPPLY > token.totalSupply()) {
             uint256 remainingTokens = TOTAL_TOKENS_SUPPLY.sub(token.totalSupply());
 
             token.mint(wallet, remainingTokens);

@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -100,16 +100,16 @@ contract Owned {
 contract StandardToken is ERC20Interface, Owned {
     using SafeMath for uint256;
 
-    string public constant symbol = &quot;ast&quot;;
-    string public constant name = &quot;AllStocks Token&quot;;
+    string public constant symbol = "ast";
+    string public constant name = "AllStocks Token";
     uint256 public constant decimals = 18;
     uint256 public _totalSupply;
 
     bool public isFinalized;              // switched to true in operational state
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
-    mapping(address =&gt; uint256) refunds;
+    mapping(address => uint256) refunds;
 
 
     // ------------------------------------------------------------------------
@@ -140,8 +140,8 @@ contract StandardToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint256 tokens) public returns (bool success) {
@@ -161,7 +161,7 @@ contract StandardToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -200,7 +200,7 @@ contract StandardToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint256 remaining) {
         //allow trading in token only if sale fhined 
@@ -214,7 +214,7 @@ contract StandardToken is ERC20Interface, Owned {
 // note introduced onlyPayloadSize in StandardToken.sol to protect against short address attacks
 
 contract AllstocksToken is StandardToken {
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;        // deposit address for ETH for Allstocks Fund
@@ -253,8 +253,8 @@ contract AllstocksToken is StandardToken {
       require (msg.sender == owner);                 // locks finalize to the ultimate ETH owner
       require (fundingStartTime == 0);              //run once
       require (fundingEndTime == 0);                //first time 
-      require(_fundingStartTime &gt; 0);
-      require(_fundingEndTime &gt; 0 &amp;&amp; _fundingEndTime &gt; _fundingStartTime);
+      require(_fundingStartTime > 0);
+      require(_fundingEndTime > 0 && _fundingEndTime > _fundingStartTime);
 
       isFinalized = false;                          //controls pre through crowdsale state
       isActive = true;
@@ -270,14 +270,14 @@ contract AllstocksToken is StandardToken {
     /// @dev Accepts ether and creates new Allstocks tokens.
     function createTokens(uint256 _value)  internal {
       require(isFinalized == false);    
-      require(now &gt;= fundingStartTime);
-      require(now &lt; fundingEndTime); 
-      require(msg.value &gt; 0);         
+      require(now >= fundingStartTime);
+      require(now < fundingEndTime); 
+      require(msg.value > 0);         
 
-      uint256 tokens = _value.mul(tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = _value.mul(tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = _totalSupply.add(tokens);
 
-      require(checkedSupply &lt;= tokenCreationCap);
+      require(checkedSupply <= tokenCreationCap);
 
       _totalSupply = checkedSupply;
       balances[msg.sender] += tokens;  // safeAdd not needed
@@ -293,7 +293,7 @@ contract AllstocksToken is StandardToken {
 	function setRate(uint256 _value) external onlyOwner {
       require (isFinalized == false);
       require (isActive == true);
-      require (_value &gt; 0);
+      require (_value > 0);
       require(msg.sender == owner); // Allstocks double chack 
       tokenExchangeRate = _value;
 
@@ -303,14 +303,14 @@ contract AllstocksToken is StandardToken {
     function finalize() external onlyOwner {
       require (isFinalized == false);
       require(msg.sender == owner); // Allstocks double chack  
-      require(_totalSupply &gt;= tokenCreationMin + allstocksFund);  // have to sell minimum to move to operational
-      require(_totalSupply &gt; 0);
+      require(_totalSupply >= tokenCreationMin + allstocksFund);  // have to sell minimum to move to operational
+      require(_totalSupply > 0);
 
-      if (now &lt; fundingEndTime) {    //if try to close before end time, check that we reach target
-        require(_totalSupply &gt;= tokenCreationCap);
+      if (now < fundingEndTime) {    //if try to close before end time, check that we reach target
+        require(_totalSupply >= tokenCreationCap);
       }
       else 
-        require(now &gt;= fundingEndTime);
+        require(now >= fundingEndTime);
       
 	    // move to operational
       isFinalized = true;
@@ -320,7 +320,7 @@ contract AllstocksToken is StandardToken {
     /// @dev send funding to safe wallet if minimum is reached 
     function vaultFunds() external onlyOwner {
       require(msg.sender == owner);            // Allstocks double chack
-      require(_totalSupply &gt;= tokenCreationMin + allstocksFund); // have to sell minimum to move to operational
+      require(_totalSupply >= tokenCreationMin + allstocksFund); // have to sell minimum to move to operational
       ethFundDeposit.transfer(this.balance);  // send the eth to Allstocks
     }
 
@@ -328,16 +328,16 @@ contract AllstocksToken is StandardToken {
     function refund() external {
       require (isFinalized == false);  // prevents refund if operational
       require (isActive == true);
-      require (now &gt; fundingEndTime); // prevents refund until sale period is over
+      require (now > fundingEndTime); // prevents refund until sale period is over
      
-      require(_totalSupply &lt; tokenCreationMin + allstocksFund);  // no refunds if we sold enough
+      require(_totalSupply < tokenCreationMin + allstocksFund);  // no refunds if we sold enough
       require(msg.sender != owner); // Allstocks not entitled to a refund
       
       uint256 allstocksVal = balances[msg.sender];
       uint256 ethValRefund = refunds[msg.sender];
      
-      require(allstocksVal &gt; 0);   
-      require(ethValRefund &gt; 0);  
+      require(allstocksVal > 0);   
+      require(ethValRefund > 0);  
      
       balances[msg.sender] = 0;
       refunds[msg.sender] = 0;
@@ -346,8 +346,8 @@ contract AllstocksToken is StandardToken {
       
       uint256 ethValToken = allstocksVal / tokenExchangeRate;     // should be safe; previous throws covers edges
 
-      require(ethValRefund &lt;= ethValToken);
-      msg.sender.transfer(ethValRefund);                 // if you&#39;re using a contract; make sure it works with .send gas limits
+      require(ethValRefund <= ethValToken);
+      msg.sender.transfer(ethValRefund);                 // if you're using a contract; make sure it works with .send gas limits
       LogRefund(msg.sender, ethValRefund);               // log it
     }
 }

@@ -1,4 +1,4 @@
-/* Author: Victor Mezrin  <span class="__cf_email__" data-cfemail="63150a00170c11230e0619110a0d4d000c0e">[email&#160;protected]</span> */
+/* Author: Victor Mezrin  <span class="__cf_email__" data-cfemail="63150a00170c11230e0619110a0d4d000c0e">[email protected]</span> */
 
 
 pragma solidity ^0.4.18;
@@ -30,20 +30,20 @@ contract SafeMath is SafeMathInterface {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,7 +89,7 @@ contract CommonModifiers is CommonModifiersInterface {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_targetAddress)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 }
 
@@ -122,7 +122,7 @@ contract AssetID is AssetIDInterface {
   /* Constructor */
 
   function AssetID(string _assetID) public {
-    require(bytes(_assetID).length &gt; 0);
+    require(bytes(_assetID).length > 0);
 
     assetID = _assetID;
   }
@@ -143,12 +143,12 @@ contract AssetID is AssetIDInterface {
 /**
  * @title OwnableInterface
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableInterface {
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address);
 
@@ -166,7 +166,7 @@ contract OwnableInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable is OwnableInterface {
 
@@ -241,14 +241,14 @@ contract Ownable is OwnableInterface {
 
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address) {
     return owner;
   }
 
   /**
-   * @dev The getter for &quot;proposedOwner&quot; contract variable
+   * @dev The getter for "proposedOwner" contract variable
    */
   function getProposedOwner() public constant returns (address) {
     return proposedOwner;
@@ -291,8 +291,8 @@ contract Manageable is OwnableInterface,
 
   /* Storage */
 
-  mapping (address =&gt; bool) managerEnabled;  // hard switch for a manager - on/off
-  mapping (address =&gt; mapping (string =&gt; bool)) managerPermissions;  // detailed info about manager`s permissions
+  mapping (address => bool) managerEnabled;  // hard switch for a manager - on/off
+  mapping (address => mapping (string => bool)) managerPermissions;  // detailed info about manager`s permissions
 
 
   /* Events */
@@ -417,7 +417,7 @@ contract Manageable is OwnableInterface,
     onlyValidPermissionName(_permissionName)
     returns (bool)
   {
-    return (managerEnabled[_manager] &amp;&amp; managerPermissions[_manager][_permissionName]);
+    return (managerEnabled[_manager] && managerPermissions[_manager][_permissionName]);
   }
 
 
@@ -445,7 +445,7 @@ contract Manageable is OwnableInterface,
 /**
  * @title PausableInterface
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract PausableInterface {
@@ -469,7 +469,7 @@ contract PausableInterface {
   function unpauseContract() public;
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool);
 
@@ -496,7 +496,7 @@ contract PausableInterface {
 /**
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract Pausable is ManageableInterface,
@@ -512,7 +512,7 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to pause, triggers stopped state
    */
-  function pauseContract() public onlyAllowedManager(&#39;pause_contract&#39;) whenContractNotPaused {
+  function pauseContract() public onlyAllowedManager('pause_contract') whenContractNotPaused {
     paused = true;
     PauseEvent();
   }
@@ -520,13 +520,13 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to unpause, returns to normal state
    */
-  function unpauseContract() public onlyAllowedManager(&#39;unpause_contract&#39;) whenContractPaused {
+  function unpauseContract() public onlyAllowedManager('unpause_contract') whenContractPaused {
     paused = false;
     UnpauseEvent();
   }
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool) {
     return paused;
@@ -583,7 +583,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_call&#39;)
+    onlyAllowedManager('execute_call')
   {
     require(underExecution == false);
 
@@ -600,7 +600,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_delegatecall&#39;)
+    onlyAllowedManager('execute_delegatecall')
   {
     require(underExecution == false);
 
@@ -779,7 +779,7 @@ contract CrydrControllerBaseInterface {
   /* Helpers */
 
   modifier onlyValidCrydrViewStandardName(string _viewApiStandard) {
-    require(bytes(_viewApiStandard).length &gt; 0);
+    require(bytes(_viewApiStandard).length > 0);
     _;
   }
 
@@ -803,8 +803,8 @@ contract CrydrControllerBase is CommonModifiersInterface,
   /* Storage */
 
   address crydrStorage = address(0x0);
-  mapping (string =&gt; address) crydrViewsAddresses;
-  mapping (address =&gt; bool) isRegisteredView;
+  mapping (string => address) crydrViewsAddresses;
+  mapping (address => bool) isRegisteredView;
 
 
   /* CrydrControllerBaseInterface */
@@ -814,7 +814,7 @@ contract CrydrControllerBase is CommonModifiersInterface,
   )
     external
     onlyContractAddress(_crydrStorage)
-    onlyAllowedManager(&#39;set_crydr_storage&#39;)
+    onlyAllowedManager('set_crydr_storage')
     whenContractPaused
   {
     require(_crydrStorage != address(this));
@@ -835,7 +835,7 @@ contract CrydrControllerBase is CommonModifiersInterface,
     external
     onlyContractAddress(_newCrydrView)
     onlyValidCrydrViewStandardName(_viewApiStandardName)
-    onlyAllowedManager(&#39;set_crydr_view&#39;)
+    onlyAllowedManager('set_crydr_view')
     whenContractPaused
   {
     require(_newCrydrView != address(this));
@@ -856,7 +856,7 @@ contract CrydrControllerBase is CommonModifiersInterface,
   )
     external
     onlyValidCrydrViewStandardName(_viewApiStandardName)
-    onlyAllowedManager(&#39;remove_crydr_view&#39;)
+    onlyAllowedManager('remove_crydr_view')
     whenContractPaused
   {
     require(crydrViewsAddresses[_viewApiStandardName] != address(0x0));
@@ -941,7 +941,7 @@ contract CrydrControllerBlockable is ManageableInterface,
     address _account
   )
     public
-    onlyAllowedManager(&#39;block_account&#39;)
+    onlyAllowedManager('block_account')
   {
     CrydrStorageBlocksInterface(getCrydrStorageAddress()).blockAccount(_account);
   }
@@ -950,7 +950,7 @@ contract CrydrControllerBlockable is ManageableInterface,
     address _account
   )
     public
-    onlyAllowedManager(&#39;unblock_account&#39;)
+    onlyAllowedManager('unblock_account')
   {
     CrydrStorageBlocksInterface(getCrydrStorageAddress()).unblockAccount(_account);
   }
@@ -960,7 +960,7 @@ contract CrydrControllerBlockable is ManageableInterface,
     uint256 _value
   )
     public
-    onlyAllowedManager(&#39;block_account_funds&#39;)
+    onlyAllowedManager('block_account_funds')
   {
     CrydrStorageBlocksInterface(getCrydrStorageAddress()).blockAccountFunds(_account, _value);
   }
@@ -970,7 +970,7 @@ contract CrydrControllerBlockable is ManageableInterface,
     uint256 _value
   )
     public
-    onlyAllowedManager(&#39;unblock_account_funds&#39;)
+    onlyAllowedManager('unblock_account_funds')
   {
     CrydrStorageBlocksInterface(getCrydrStorageAddress()).unblockAccountFunds(_account, _value);
   }
@@ -1010,14 +1010,14 @@ contract CrydrControllerMintable is ManageableInterface,
   )
     public
     whenContractNotPaused
-    onlyAllowedManager(&#39;mint_crydr&#39;)
+    onlyAllowedManager('mint_crydr')
   {
     // input parameters checked by the storage
 
     CrydrStorageBalanceInterface(getCrydrStorageAddress()).increaseBalance(_account, _value);
 
-    if (isCrydrViewRegistered(&#39;erc20&#39;) == true) {
-      CrydrViewERC20MintableInterface(getCrydrViewAddress(&#39;erc20&#39;)).emitMintEvent(_account, _value);
+    if (isCrydrViewRegistered('erc20') == true) {
+      CrydrViewERC20MintableInterface(getCrydrViewAddress('erc20')).emitMintEvent(_account, _value);
     }
   }
 
@@ -1026,14 +1026,14 @@ contract CrydrControllerMintable is ManageableInterface,
   )
     public
     whenContractNotPaused
-    onlyAllowedManager(&#39;burn_crydr&#39;)
+    onlyAllowedManager('burn_crydr')
   {
     // input parameters checked by the storage
 
     CrydrStorageBalanceInterface(getCrydrStorageAddress()).decreaseBalance(_account, _value);
 
-    if (isCrydrViewRegistered(&#39;erc20&#39;) == true) {
-      CrydrViewERC20MintableInterface(getCrydrViewAddress(&#39;erc20&#39;)).emitBurnEvent(_account, _value);
+    if (isCrydrViewRegistered('erc20') == true) {
+      CrydrViewERC20MintableInterface(getCrydrViewAddress('erc20')).emitBurnEvent(_account, _value);
     }
   }
 }
@@ -1080,8 +1080,8 @@ contract CrydrControllerERC20 is PausableInterface,
   {
     CrydrStorageERC20Interface(address(getCrydrStorageAddress())).transfer(_msgsender, _to, _value);
 
-    if (isCrydrViewRegistered(&#39;erc20&#39;) == true) {
-      CrydrViewERC20LoggableInterface(getCrydrViewAddress(&#39;erc20&#39;)).emitTransferEvent(_msgsender, _to, _value);
+    if (isCrydrViewRegistered('erc20') == true) {
+      CrydrViewERC20LoggableInterface(getCrydrViewAddress('erc20')).emitTransferEvent(_msgsender, _to, _value);
     }
   }
 
@@ -1106,12 +1106,12 @@ contract CrydrControllerERC20 is PausableInterface,
     // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     // We decided to enforce users to set 0 before set new value
     var allowance = CrydrStorageAllowanceInterface(getCrydrStorageAddress()).getAllowance(_msgsender, _spender);
-    require((allowance &gt; 0 &amp;&amp; _value == 0) || (allowance == 0 &amp;&amp; _value &gt; 0));
+    require((allowance > 0 && _value == 0) || (allowance == 0 && _value > 0));
 
     CrydrStorageERC20Interface(address(getCrydrStorageAddress())).approve(_msgsender, _spender, _value);
 
-    if (isCrydrViewRegistered(&#39;erc20&#39;) == true) {
-      CrydrViewERC20LoggableInterface(getCrydrViewAddress(&#39;erc20&#39;)).emitApprovalEvent(_msgsender, _spender, _value);
+    if (isCrydrViewRegistered('erc20') == true) {
+      CrydrViewERC20LoggableInterface(getCrydrViewAddress('erc20')).emitApprovalEvent(_msgsender, _spender, _value);
     }
   }
 
@@ -1127,8 +1127,8 @@ contract CrydrControllerERC20 is PausableInterface,
   {
     CrydrStorageERC20Interface(address(getCrydrStorageAddress())).transferFrom(_msgsender, _from, _to, _value);
 
-    if (isCrydrViewRegistered(&#39;erc20&#39;) == true) {
-      CrydrViewERC20LoggableInterface(getCrydrViewAddress(&#39;erc20&#39;)).emitTransferEvent(_from, _to, _value);
+    if (isCrydrViewRegistered('erc20') == true) {
+      CrydrViewERC20LoggableInterface(getCrydrViewAddress('erc20')).emitTransferEvent(_from, _to, _value);
     }
   }
 
@@ -1206,7 +1206,7 @@ contract JNTPayableService is CommonModifiersInterface,
   )
     external
     onlyContractAddress(_jntController)
-    onlyAllowedManager(&#39;set_jnt_controller&#39;)
+    onlyAllowedManager('set_jnt_controller')
     whenContractPaused
   {
     require(_jntController != address(jntController));
@@ -1225,7 +1225,7 @@ contract JNTPayableService is CommonModifiersInterface,
   )
     external
     onlyValidJntBeneficiary(_jntBeneficiary)
-    onlyAllowedManager(&#39;set_jnt_beneficiary&#39;)
+    onlyAllowedManager('set_jnt_beneficiary')
     whenContractPaused
   {
     require(_jntBeneficiary != jntBeneficiary);
@@ -1245,7 +1245,7 @@ contract JNTPayableService is CommonModifiersInterface,
   function chargeJNTForService(address _from, uint256 _value) internal whenContractNotPaused {
     require(_from != address(0x0));
     require(_from != jntBeneficiary);
-    require(_value &gt; 0);
+    require(_value > 0);
 
     jntController.chargeJNT(_from, jntBeneficiary, _value);
     JNTChargedEvent(_from, jntBeneficiary, _value);
@@ -1334,7 +1334,7 @@ contract JNTPayableServiceERC20Fees is ManageableInterface,
     uint256 _jntPriceTransfer, uint256 _jntPriceTransferFrom, uint256 _jntPriceApprove
   )
     external
-    onlyAllowedManager(&#39;set_jnt_price&#39;)
+    onlyAllowedManager('set_jnt_price')
     whenContractPaused
   {
     require(_jntPriceTransfer != jntPriceTransfer ||
@@ -1452,7 +1452,7 @@ contract JNTController is CommonModifiers,
 
   /* Constructor */
 
-  function JNTController() AssetID(&#39;JNT&#39;) public {}
+  function JNTController() AssetID('JNT') public {}
 
 
   /* JNTControllerInterface */
@@ -1463,7 +1463,7 @@ contract JNTController is CommonModifiers,
     uint256 _value
   )
     public
-    onlyAllowedManager(&#39;jnt_payable_service&#39;) {
+    onlyAllowedManager('jnt_payable_service') {
     CrydrStorageERC20Interface(address(crydrStorage)).transfer(_from, _to, _value);
     JNTChargedEvent(msg.sender, _from, _to, _value);
   }

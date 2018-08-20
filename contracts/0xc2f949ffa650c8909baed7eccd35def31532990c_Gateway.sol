@@ -52,7 +52,7 @@ contract Gateway is Owned{
   bool public gatewayOpened = false;
 
     
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   
   event TargetWalletUpdated(address _newWallet);
@@ -83,7 +83,7 @@ contract Gateway is Owned{
 
   function addToWhitelistMultiple(address[] _participants) external{
     require(msg.sender == whitelistWallet || msg.sender == owner);
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       whitelist[_participants[i]] = true;
       WhitelistUpdated(_participants[i], true);
     }
@@ -99,7 +99,7 @@ contract Gateway is Owned{
 
   function removeFromWhitelistMultiple(address[] _participants) external{
     require(msg.sender == whitelistWallet || msg.sender == owner);
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       whitelist[_participants[i]] = false;
       WhitelistUpdated(_participants[i], false);
     }

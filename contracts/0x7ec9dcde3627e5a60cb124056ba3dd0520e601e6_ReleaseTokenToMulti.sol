@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -139,7 +139,7 @@ contract ReleaseTokenToMulti is OwnerContract {
 
         bool res = false;
         uint256 i = 0;
-        while (i &lt; _targets.length) {
+        while (i < _targets.length) {
             res = iReleaseContract.releaseAccount(_targets[i]) || res;
             i = i.add(1);
         }
@@ -161,7 +161,7 @@ contract ReleaseTokenToMulti is OwnerContract {
         
         bool res = false;
         uint256 i = 0;
-        while (i &lt; _targets.length) {
+        while (i < _targets.length) {
             require(_targets[i] != address(0));
             require(_dests[i] != address(0));
 
@@ -185,12 +185,12 @@ contract ReleaseTokenToMulti is OwnerContract {
         require(_values.length != 0);
         require(_frozenEndTimes.length != 0);
         require(_releasePeriods.length != 0);
-        require(_targets.length == _values.length &amp;&amp; _values.length == _frozenEndTimes.length &amp;&amp; _frozenEndTimes.length == _releasePeriods.length);
+        require(_targets.length == _values.length && _values.length == _frozenEndTimes.length && _frozenEndTimes.length == _releasePeriods.length);
 
         bool res = true;
-        for (uint256 i = 0; i &lt; _targets.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _targets.length; i = i.add(1)) {
             require(_targets[i] != address(0));
-            res = iReleaseContract.freeze(_targets[i], _values[i], _frozenEndTimes[i], _releasePeriods[i]) &amp;&amp; res; 
+            res = iReleaseContract.freeze(_targets[i], _values[i], _frozenEndTimes[i], _releasePeriods[i]) && res; 
         }
 
         return res;
@@ -209,12 +209,12 @@ contract ReleaseTokenToMulti is OwnerContract {
         require(_values.length != 0);
         require(_frozenEndTimes.length != 0);
         require(_releasePeriods.length != 0);
-        require(_targets.length == _values.length &amp;&amp; _values.length == _frozenEndTimes.length &amp;&amp; _frozenEndTimes.length == _releasePeriods.length);
+        require(_targets.length == _values.length && _values.length == _frozenEndTimes.length && _frozenEndTimes.length == _releasePeriods.length);
 
         bool res = true;
-        for (uint256 i = 0; i &lt; _targets.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _targets.length; i = i.add(1)) {
             require(_targets[i] != address(0));
-            res = iReleaseContract.transferAndFreeze(_targets[i], _values[i], _frozenEndTimes[i], _releasePeriods[i]) &amp;&amp; res; 
+            res = iReleaseContract.transferAndFreeze(_targets[i], _values[i], _frozenEndTimes[i], _releasePeriods[i]) && res; 
         }
 
         return res;
@@ -231,9 +231,9 @@ contract ReleaseTokenToMulti is OwnerContract {
         require(_targets.length != 0);
         
         bool res = true;
-        for (uint256 i = 0; i &lt; _targets.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _targets.length; i = i.add(1)) {
             require(_targets[i] != address(0));
-            res = iReleaseContract.releaseOldBalanceOf(_targets[i]) &amp;&amp; res;
+            res = iReleaseContract.releaseOldBalanceOf(_targets[i]) && res;
         }
 
         return res;
@@ -250,7 +250,7 @@ contract ReleaseTokenToMulti is OwnerContract {
         require(_targets.length != 0);
         
         bool res = false;
-        for (uint256 i = 0; i &lt; _targets.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _targets.length; i = i.add(1)) {
             require(_targets[i] != address(0));
             res = iReleaseContract.releaseByStage(_targets[i]) || res;
         }

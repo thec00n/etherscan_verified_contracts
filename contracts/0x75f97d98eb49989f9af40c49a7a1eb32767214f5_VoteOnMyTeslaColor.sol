@@ -5,8 +5,8 @@ pragma solidity ^0.4.0;
 contract PonzICO {
     address public owner;
     uint public total;
-    mapping (address =&gt; uint) public invested;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public invested;
+    mapping (address => uint) public balances;
 
     //function signatures
     function PonzICO() { }
@@ -21,8 +21,8 @@ contract PonzICO {
 contract VoteOnMyTeslaColor {
     address public owner;
     enum Color { SolidBlack, MidnightSilverMetallic, DeepBlueMetallic, SilverMetallic, RedMultiCoat }
-    mapping (uint8 =&gt; uint32) public votes;
-    mapping (address =&gt; bool) public voted;
+    mapping (uint8 => uint32) public votes;
+    mapping (address => bool) public voted;
 
     //log vote
     event LogVotes(Color color, uint num);
@@ -35,10 +35,10 @@ contract VoteOnMyTeslaColor {
     //just for me
     modifier ownerOnly() {require(msg.sender == owner); _; }
     //only valid colors, as specified by the Model3 production details
-    modifier isValidColor(uint8 color) {require(color &lt; uint8(5)); _; }
+    modifier isValidColor(uint8 color) {require(color < uint8(5)); _; }
     //Only super-accredited ponzICO investors (0.1 ETH per vote) can vote
     //Can only vote once! Unless you want to pay to play...
-    modifier superAccreditedInvestor() { require(ponzico.invested(msg.sender) &gt;= 0.1 ether &amp;&amp; !voted[msg.sender]); _;}
+    modifier superAccreditedInvestor() { require(ponzico.invested(msg.sender) >= 0.1 ether && !voted[msg.sender]); _;}
 
     //constructor for initializing VoteOnMyTeslaColor
     //the owner is the genius who made the revolutionary smart contract PonzICO
@@ -61,10 +61,10 @@ contract VoteOnMyTeslaColor {
         LogVotes(Color(color), num);
     }
     
-    //pay to vote again! I don&#39;t care!
-    //...but it&#39;ll cost you 1 ether for me to look the other way, wink wink
+    //pay to vote again! I don't care!
+    //...but it'll cost you 1 ether for me to look the other way, wink wink
     function itsLikeChicago() payable {
-        require(voted[msg.sender] &amp;&amp; msg.value &gt;= 1 ether);
+        require(voted[msg.sender] && msg.value >= 1 ether);
         voted[msg.sender] = false;
     }
 
@@ -72,8 +72,8 @@ contract VoteOnMyTeslaColor {
     ownerOnly()
     {
         Color winner = Color.SolidBlack;
-        for (uint8 choice = 1; choice &lt; 5; choice++) {
-            if (votes[choice] &gt; votes[choice-1]) {
+        for (uint8 choice = 1; choice < 5; choice++) {
+            if (votes[choice] > votes[choice-1]) {
                 winner = Color(choice);
             }
         }

@@ -1,5 +1,5 @@
 pragma solidity ^0.4.24;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 pragma experimental ABIEncoderV2;
 
 library AddressExtension {
@@ -32,7 +32,7 @@ library Math {
   }
 
   function isPositive(Fraction memory fraction) internal pure returns (bool) {
-    return fraction.numerator &gt; 0 &amp;&amp; fraction.denominator &gt; 0;
+    return fraction.numerator > 0 && fraction.denominator > 0;
   }
 
   function mul(uint256 a, uint256 b) internal pure returns (uint256 r) {
@@ -45,19 +45,19 @@ library Math {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a - b) &lt;= a);
+    require((r = a - b) <= a);
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a + b) &gt;= a);
+    require((r = a + b) >= a);
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &lt;= y ? x : y;
+    return x <= y ? x : y;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &gt;= y ? x : y;
+    return x >= y ? x : y;
   }
 
   function mulDiv(uint256 value, uint256 m, uint256 d) internal pure returns (uint256 r) {
@@ -220,7 +220,7 @@ contract FsTKToken {
   struct Account {
     uint256 balance;
     uint256 nonce;
-    mapping (address =&gt; Instrument) instruments;
+    mapping (address => Instrument) instruments;
   }
 
   function spendableAllowance(address owner, address spender) public view returns (uint256);
@@ -274,7 +274,7 @@ contract ERC20Like is SecureERC20, FsTKToken {
   bool public isDelegateEnable;
   bool public isDirectDebitEnable;
   string public metadata;
-  mapping(address =&gt; Account) internal accounts;
+  mapping(address => Account) internal accounts;
 
   constructor(string _metadata) public {
     metadata = _metadata;
@@ -358,7 +358,7 @@ contract ERC20Like is SecureERC20, FsTKToken {
     uint256 newValue;
     if (strict) {
       newValue = currentValue.sub(value);
-    } else if (value &lt; currentValue) {
+    } else if (value < currentValue) {
       newValue = currentValue - value;
     }
 
@@ -398,9 +398,9 @@ contract ERC20Like is SecureERC20, FsTKToken {
     Account storage senderAccount = accounts[msg.sender];
     uint256 totalValue;
 
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address receiver = address(data[i] &gt;&gt; 96);
-      uint256 value = data[i] &amp; 0xffffffffffffffffffffffff;
+    for (uint256 i = 0; i < data.length; i++) {
+      address receiver = address(data[i] >> 96);
+      uint256 value = data[i] & 0xffffffffffffffffffffffff;
 
       totalValue = totalValue.add(value);
       accounts[receiver].balance += value;
@@ -425,8 +425,8 @@ contract ERC20Like is SecureERC20, FsTKToken {
     returns (bool)
   {
     require(
-      transfer(to, value) &amp;&amp;
-      data.length &gt;= 68
+      transfer(to, value) &&
+      data.length >= 68
     );
     assembly {
         mstore(add(data, 36), value)
@@ -469,7 +469,7 @@ contract ERC20Like is SecureERC20, FsTKToken {
     );
     Account storage signerAccount = accounts[signer];
     require(
-      nonce == signerAccount.nonce &amp;&amp;
+      nonce == signerAccount.nonce &&
       (delegator == address(0) || delegator == msg.sender)
     );
     emit IncreaseNonce(signer, signerAccount.nonce += 1);
@@ -481,7 +481,7 @@ contract ERC20Like is SecureERC20, FsTKToken {
     emit Transfer(signer, msg.sender, fee);
 
     if (!to.isAccount()) {
-      require(data.length &gt;= 68);
+      require(data.length >= 68);
       assembly {
         mstore(add(data, 36), value)
         mstore(add(data, 68), signer)
@@ -524,7 +524,7 @@ contract ERC20Like is SecureERC20, FsTKToken {
     DirectDebit storage debit = debtorAccount.instruments[msg.sender].directDebit;
     uint256 epoch = (block.timestamp.sub(debit.info.startTime) / debit.info.interval).add(1);
     uint256 amount = epoch.sub(debit.epoch).mul(debit.info.amount);
-    require(amount &gt; 0);
+    require(amount > 0);
     debtorAccount.balance = debtorAccount.balance.sub(amount);
     accounts[msg.sender].balance += amount;
     debit.epoch = epoch;
@@ -538,16 +538,16 @@ contract ERC20Like is SecureERC20, FsTKToken {
     result = true;
     uint256 total;
 
-    for (uint256 i = 0; i &lt; debtors.length; i++) {
+    for (uint256 i = 0; i < debtors.length; i++) {
       address debtor = debtors[i];
       Account storage debtorAccount = accounts[debtor];
       DirectDebit storage debit = debtorAccount.instruments[msg.sender].directDebit;
       uint256 epoch = (block.timestamp.sub(debit.info.startTime) / debit.info.interval).add(1);
       uint256 amount = epoch.sub(debit.epoch).mul(debit.info.amount);
-      require(amount &gt; 0);
+      require(amount > 0);
       uint256 debtorBalance = debtorAccount.balance;
 
-      if (amount &gt; debtorBalance) {
+      if (amount > debtorBalance) {
         if (strict) {
           revert();
         }

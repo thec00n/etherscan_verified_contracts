@@ -22,10 +22,10 @@ contract Owned {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -33,7 +33,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -60,8 +60,8 @@ contract BLTCoin is ERC20Interface, Owned{
     string public name;
     uint8 public decimals;
     uint _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     uint256 public rate; // How many token units a buyer gets per wei
     uint256 public weiRaised;  // Amount of wei raised
     uint value;
@@ -84,8 +84,8 @@ contract BLTCoin is ERC20Interface, Owned{
     function BLTCoin(address _owner) public{
         icoOpen = false;
         bonusCompaignOpen = false;
-        symbol = &quot;BRC&quot;;
-        name = &quot;Brotherly Coin&quot;;
+        symbol = "BRC";
+        name = "Brotherly Coin";
         decimals = 18;
         rate = 142857; //tokens per wei
         owner = _owner;
@@ -136,15 +136,15 @@ contract BLTCoin is ERC20Interface, Owned{
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         // prevent transfer to 0x0, use burn instead
         require(to != 0x0);
-        require(balances[msg.sender] &gt;= tokens );
-        require(balances[to] + tokens &gt;= balances[to]);
+        require(balances[msg.sender] >= tokens );
+        require(balances[to] + tokens >= balances[to]);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender,to,tokens);
@@ -154,8 +154,8 @@ contract BLTCoin is ERC20Interface, Owned{
     function _transfer(address _to, uint _tokens) internal returns (bool success){
         // prevent transfer to 0x0, use burn instead
         require(_to != 0x0);
-        require(balances[this] &gt;= _tokens );
-        require(balances[_to] + _tokens &gt;= balances[_to]);
+        require(balances[this] >= _tokens );
+        require(balances[_to] + _tokens >= balances[_to]);
         balances[this] = balances[this].sub(_tokens);
         balances[_to] = balances[_to].add(_tokens);
         emit Transfer(this,_to,_tokens);
@@ -164,7 +164,7 @@ contract BLTCoin is ERC20Interface, Owned{
     
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success){
         allowed[msg.sender][spender] = tokens;
@@ -182,8 +182,8 @@ contract BLTCoin is ERC20Interface, Owned{
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success){
-        require(tokens &lt;= allowed[from][msg.sender]); //check allowance
-        require(balances[from] &gt;= tokens);
+        require(tokens <= allowed[from][msg.sender]); //check allowance
+        require(balances[from] >= tokens);
         balances[from] = balances[from].sub(tokens);
         balances[to] = balances[to].add(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -192,7 +192,7 @@ contract BLTCoin is ERC20Interface, Owned{
     }
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];

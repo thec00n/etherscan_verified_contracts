@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,9 +55,9 @@ contract SafeERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances    
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
     
 
     function totalSupply() public constant returns (uint256) {
@@ -71,7 +71,7 @@ contract SafeERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public {
         require (
-            balanceOf[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balanceOf[msg.sender] >= value && value > 0
         );
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);
         balanceOf[to] = balanceOf[to].add(value);
@@ -85,7 +85,7 @@ contract SafeERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balanceOf[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balanceOf[from] >= value && value > 0
         );
         balanceOf[from] = balanceOf[from].sub(value);
         balanceOf[to] = balanceOf[to].add(value);
@@ -100,7 +100,7 @@ contract SafeERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public {
         require (
-            balanceOf[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balanceOf[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -130,8 +130,8 @@ contract BITTOToken is SafeERC20, owned {
 
 
     // Token properties
-    string public name = &quot;BITTO&quot;;
-    string public symbol = &quot;BITTO&quot;;
+    string public name = "BITTO";
+    string public symbol = "BITTO";
     uint256 public decimals = 18;
 
     uint256 public _totalSupply = 33000000e18;
@@ -159,14 +159,14 @@ contract BITTOToken is SafeERC20, owned {
 
     function transfertoken (uint256 _amount, address recipient) public onlyOwner {
          require(recipient != 0x0);
-         require(balanceOf[owner] &gt;= _amount);
+         require(balanceOf[owner] >= _amount);
          balanceOf[owner] = balanceOf[owner].sub(_amount);
          balanceOf[recipient] = balanceOf[recipient].add(_amount);
 
     }
     
     function burn(uint256 _amount) public onlyOwner{
-        require(balanceOf[owner] &gt;= _amount);
+        require(balanceOf[owner] >= _amount);
         balanceOf[owner] -= _amount;
         _totalSupply -= _amount;
     }

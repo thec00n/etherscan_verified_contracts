@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 contract LiteConnectToken {
 
-    string public name = &quot;LiteConnet&quot;;      //  token name
-    string public symbol = &quot;LCC&quot;;           //  token symbol
+    string public name = "LiteConnet";      //  token name
+    string public symbol = "LCC";           //  token symbol
     uint256 public decimals = 0;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     address[] addresses;
     uint[] values;
 
@@ -40,8 +40,8 @@ contract LiteConnectToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -49,9 +49,9 @@ contract LiteConnectToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -79,7 +79,7 @@ contract LiteConnectToken {
     }
 
     function burn(uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);
@@ -87,7 +87,7 @@ contract LiteConnectToken {
         
 
     function Distribute(address[] _addresses, uint256[] _values) payable returns(bool){
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             transfer(_addresses[i], _values[i]);
         }
         return true;

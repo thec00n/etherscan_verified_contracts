@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,14 +45,14 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping (address =&gt; Snapshot[]) balances;
-    mapping (address =&gt; uint256) userWithdrawalBlocks;
+    mapping (address => Snapshot[]) balances;
+    mapping (address => uint256) userWithdrawalBlocks;
 	
     /**
-     * @dev &#39;Snapshot&#39; is the structure that attaches a block number to a
+     * @dev 'Snapshot' is the structure that attaches a block number to a
      * given value, the block number attached is the one that last changed the value
-     * &#39;fromBlock&#39; - is the block number that the value was generated from
-     * &#39;value&#39; - is the amount of tokens at a specific block number
+     * 'fromBlock' - is the block number that the value was generated from
+     * 'value' - is the amount of tokens at a specific block number
      */
     struct Snapshot {
       uint128 fromBlock;
@@ -65,7 +65,7 @@ contract BasicToken is ERC20Basic {
     Snapshot[] totalSupplyHistory;
     
     /**
-     * @dev track history of &#39;ETH balance&#39; for dividends
+     * @dev track history of 'ETH balance' for dividends
      */
     Snapshot[] balanceForDividendsHistory;
 	
@@ -87,12 +87,12 @@ contract BasicToken is ERC20Basic {
 	   }
      
 	   // Do not allow transfer to 0x0 or the token contract itself
-	   require((_to != 0) &amp;&amp; (_to != address(this)));
+	   require((_to != 0) && (_to != address(this)));
 
 	   // If the amount being transfered is more than the balance of the
 	   //  account the transfer returns false
 	   var previousBalanceFrom = balanceOfAt(_from, block.number);
-	   if (previousBalanceFrom &lt; _amount) {
+	   if (previousBalanceFrom < _amount) {
 		   return false;
 	   }
 
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
 	   // Then update the balance array with the new value for the address
 	   //  receiving the tokens
 	   var previousBalanceTo = balanceOfAt(_to, block.number);
-	   require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+	   require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
 	   updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
 	   // An event to make the transfer easy to find on the blockchain
@@ -130,7 +130,7 @@ contract BasicToken is ERC20Basic {
     function balanceOfAt(address _owner, uint _blockNumber) public constant returns (uint) {
         //  These next few lines are used when the balance of the token is
         //  requested before a check point was ever created for this token
-        if ((balances[_owner].length == 0)|| (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        if ((balances[_owner].length == 0)|| (balances[_owner][0].fromBlock > _blockNumber)) {
 			return 0; 
         } else {
             return getValueAt(balances[_owner], _blockNumber);
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
     function totalSupplyAt(uint _blockNumber) public constant returns(uint) {
         // These next few lines are used when the totalSupply of the token is
         // requested before a check point was ever created for this token
-        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
 			return 0;
         } else {
             return getValueAt(totalSupplyHistory, _blockNumber);
@@ -162,16 +162,16 @@ contract BasicToken is ERC20Basic {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -186,7 +186,7 @@ contract BasicToken is ERC20Basic {
      * @param _value The new number of tokens
      */ 
     function updateValueAtNow(Snapshot[] storage checkpoints, uint _value) internal  {
-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
            Snapshot storage newCheckPoint = checkpoints[ checkpoints.length++ ];
            newCheckPoint.fromBlock =  uint128(block.number);
            newCheckPoint.value = uint128(_value);
@@ -236,7 +236,7 @@ contract Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -282,8 +282,8 @@ contract MintableToken is StandardToken {
   
   bool public mintingFinished = false;
 
-  string public name = &quot;Honey Mining Token&quot;;		
-  string public symbol = &quot;HMT&quot;;		
+  string public name = "Honey Mining Token";		
+  string public symbol = "HMT";		
   uint8 public decimals = 8;		
 
   modifier canMint() {
@@ -300,9 +300,9 @@ contract MintableToken is StandardToken {
   function mint(address _to, uint256 _amount) public canMint returns (bool) {
     totalSupply = totalSupply.add(_amount);
 	uint curTotalSupply = redeemedSupply();
-	require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+	require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
 	uint previousBalanceTo = balanceOf(_to);
-	require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+	require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
 	updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
     updateValueAtNow(balances[_to], previousBalanceTo + _amount);
     Mint(_to, _amount);
@@ -334,9 +334,9 @@ contract MintableToken is StandardToken {
   function awailableDividends(address userAddress) public view returns (uint256) {
       uint256 userLastWithdrawalBlock = userWithdrawalBlocks[userAddress];
       uint256 amountForWithdraw = 0;
-      for(uint i = 0; i&lt;=balanceForDividendsHistory.length-1; i++){
+      for(uint i = 0; i<=balanceForDividendsHistory.length-1; i++){
           Snapshot storage snapshot = balanceForDividendsHistory[i];
-          if(userLastWithdrawalBlock &lt; snapshot.fromBlock)
+          if(userLastWithdrawalBlock < snapshot.fromBlock)
             amountForWithdraw = amountForWithdraw.add(balanceOfAt(userAddress, snapshot.fromBlock).mul(snapshot.value).div(totalSupplyAt(snapshot.fromBlock)));
       }
       return amountForWithdraw;
@@ -420,14 +420,14 @@ contract HoneyMiningToken is Ownable {
     
     // calculate token amount to be created
     uint256 tokens = amount.mul(rate());
-    require(tokens &gt;= 100000000);
+    require(tokens >= 100000000);
     uint256 devTokens = tokens.mul(30).div(100);
     if(referrer != 0x0){
-       require(token.balanceOf(referrer) &gt;= 100000000);
+       require(token.balanceOf(referrer) >= 100000000);
        // 2.5% for referral and referrer
        uint256 refTokens = tokens.mul(25).div(1000);
        //tokens = tokens+refTokens;
-       require(maxSupply.sub(redeemedSupply()) &gt;= tokens.add(refTokens.mul(2)).add(devTokens));
+       require(maxSupply.sub(redeemedSupply()) >= tokens.add(refTokens.mul(2)).add(devTokens));
        
        //generate tokens for purchser
        token.mint(msg.sender, tokens.add(refTokens));
@@ -436,7 +436,7 @@ contract HoneyMiningToken is Ownable {
        ReferralBonus(msg.sender, referrer, refTokens);
        
     } else{
-        require(maxSupply.sub(redeemedSupply())&gt;=tokens.add(devTokens));
+        require(maxSupply.sub(redeemedSupply())>=tokens.add(devTokens));
         //updatedReddemedSupply = redeemedSupply().add(tokens.add(devTokens));
         
         //generate tokens for purchser
@@ -454,14 +454,14 @@ contract HoneyMiningToken is Ownable {
    * @return true if the transaction can buy tokens
    */
   function validPurchase() internal constant returns (bool) {
-    return !hasEnded() &amp;&amp; msg.value != 0;
+    return !hasEnded() && msg.value != 0;
   }
 
   /**
    * @return true if sale is over
    */
   function hasEnded() public constant returns (bool) {
-    return maxSupply &lt;= redeemedSupply();
+    return maxSupply <= redeemedSupply();
   }
   
   /**
@@ -504,7 +504,7 @@ contract HoneyMiningToken is Ownable {
    */
   function withdrawDividends() public {
     uint _amount = awailableDividends(msg.sender);
-    require(_amount &gt; 0);
+    require(_amount > 0);
     msg.sender.transfer(_amount);
     token.recordWithdraw(msg.sender);
     WithdrawDividends(msg.sender, _amount);
@@ -514,7 +514,7 @@ contract HoneyMiningToken is Ownable {
    * @dev function for deposit ether to token address as/for dividends
    */
   function depositForDividends() public payable onlyOwner {
-      require(msg.value &gt; 0);
+      require(msg.value > 0);
       token.recordDeposit(msg.value);
       DepositForDividends(msg.value);
   }
@@ -528,9 +528,9 @@ contract HoneyMiningToken is Ownable {
   }
   
   function rate() internal constant returns (uint) {
-    if(redeemedSupply() &lt; 1000000000000)
+    if(redeemedSupply() < 1000000000000)
         return 675;
-    else if (redeemedSupply() &lt; 5000000000000)
+    else if (redeemedSupply() < 5000000000000)
         return 563;
     else
         return 450;

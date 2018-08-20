@@ -6,12 +6,12 @@ contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns(uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function safeSub(uint256 a, uint256 b) internal pure returns(uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function safeMul(uint256 a, uint256 b) internal pure returns(uint256)
@@ -134,14 +134,14 @@ contract EIP20Interface {
 
 contract HTCCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     //// Constant token specific fields
-    string public constant name =&quot;HTCCToken&quot;;
-    string public constant symbol = &quot;HTCC&quot;;
+    string public constant name ="HTCCToken";
+    string public constant symbol = "HTCC";
     uint8 public constant decimals = 18;
-    string  public version  = &#39;v0.1&#39;;
+    string  public version  = 'v0.1';
     uint256 public constant initialSupply = 101010101;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
 
     //set raise time
     uint256 public finaliseTime;
@@ -171,9 +171,9 @@ contract HTCCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function _transfer(address _from, address _to, uint _value) internal returns(bool) {
-        require(_to != address(0x0)&amp;&amp;_value&gt;0);
-        require(balances[_from] &gt;= _value);
-        require(safeAdd(balances[_to],_value) &gt; balances[_to]);
+        require(_to != address(0x0)&&_value>0);
+        require(balances[_from] >= _value);
+        require(safeAdd(balances[_to],_value) > balances[_to]);
 
         uint previousBalances = safeAdd(balances[_from],balances[_to]);
         balances[_from] = safeSub(balances[_from],_value);
@@ -189,7 +189,7 @@ contract HTCCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);
+        require(_value <= allowances[_from][msg.sender]);
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender],_value);
         return _transfer(_from, _to, _value);
     }
@@ -208,7 +208,7 @@ contract HTCCToken is EIP20Interface,Ownable,SafeMath,Pausable{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
             uint oldValue = allowances[msg.sender][_spender];
-            if (_subtractedValue &gt; oldValue) {
+            if (_subtractedValue > oldValue) {
               allowances[msg.sender][_spender] = 0;
             } else {
               allowances[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);
@@ -258,7 +258,7 @@ contract HTCCToken is EIP20Interface,Ownable,SafeMath,Pausable{
     }
 
     function() public payable{
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
         uint256 tokens = safeMul(msg.value,rate);
         _buyToken(msg.sender,tokens);
     }

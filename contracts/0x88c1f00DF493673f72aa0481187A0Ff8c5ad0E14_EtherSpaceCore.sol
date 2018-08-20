@@ -6,24 +6,24 @@ library ByteConvert {
 
   function bytesToBytes2(bytes b) public pure returns (bytes2) {
     bytes2 out;
-    for (uint i = 0; i &lt; 2; i++) {
-      out |= bytes2(b[i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 2; i++) {
+      out |= bytes2(b[i] & 0xFF) >> (i * 8);
     }
     return out;
   }
 
   function bytesToBytes5(bytes b) public pure returns (bytes5) {
     bytes5 out;
-    for (uint i = 0; i &lt; 5; i++) {
-      out |= bytes5(b[i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 5; i++) {
+      out |= bytes5(b[i] & 0xFF) >> (i * 8);
     }
     return out;
   }
 
   function bytesToBytes8(bytes b) public pure returns (bytes8) {
     bytes8 out;
-    for (uint i = 0; i &lt; 8; i++) {
-      out |= bytes8(b[i] &amp; 0xFF) &gt;&gt; (i * 8);
+    for (uint i = 0; i < 8; i++) {
+      out |= bytes8(b[i] & 0xFF) >> (i * 8);
     }
     return out;
   }
@@ -58,7 +58,7 @@ contract EtherSpaceUpgradeInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -146,9 +146,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -156,7 +156,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -165,7 +165,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -241,16 +241,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -444,7 +444,7 @@ contract ERC721Token is ERC721 {
 
 contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
-  string public url = &quot;https://etherspace.co/&quot;;
+  string public url = "https://etherspace.co/";
 
   using SafeMath for uint256;
 
@@ -459,7 +459,7 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
     uint256 auctionPrice;
   }
 
-  mapping (uint256 =&gt; Spaceship) private spaceships;
+  mapping (uint256 => Spaceship) private spaceships;
   uint256[] private spaceshipIds;
 
   /* */
@@ -470,10 +470,10 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
     uint32 totalSold; // The quantity of spaceships sold for this model
   }
 
-  mapping (uint16 =&gt; SpaceshipProduct) private spaceshipProducts;
+  mapping (uint16 => SpaceshipProduct) private spaceshipProducts;
   uint16 spaceshipProductCount = 0; // The next count for spaceships products created
 
-  mapping (address =&gt; uint256) private balances; // User balances
+  mapping (address => uint256) private balances; // User balances
 
   // Battle
   uint256 public battleFee = 0;
@@ -547,11 +547,11 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
   /* ERC721Metadata */
   function name() external pure returns (string) {
-    return &quot;EtherSpace&quot;;
+    return "EtherSpace";
   }
 
   function symbol() external pure returns (string) {
-    return &quot;ESPC&quot;;
+    return "ESPC";
   }
 
   /* Enable listing of all deeds (alternative to ERC721Enumerable to avoid having to work with arrays). */
@@ -561,7 +561,7 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
   /* Owner functions */
   function setSpaceshipPrice(uint16 _model, uint256 _price) external onlyOwner {
-    require(_price &gt; 0);
+    require(_price > 0);
 
     spaceshipProducts[_model].price = _price;
   }
@@ -607,8 +607,8 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
   /* CashOut */
   function cashOut() public {
-    require(address(this).balance &gt;= balances[msg.sender]); // Checking if this contract has enought money to pay
-    require(balances[msg.sender] &gt; 0); // Cannot cashOut zero amount
+    require(address(this).balance >= balances[msg.sender]); // Checking if this contract has enought money to pay
+    require(balances[msg.sender] > 0); // Cannot cashOut zero amount
 
     uint256 _balance = balances[msg.sender];
 
@@ -620,9 +620,9 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
   /* Marketplace functions */
   function buySpaceship(uint16 _model) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(msg.value == spaceshipProducts[_model].price);
-    require(spaceshipProducts[_model].price &gt; 0);
+    require(spaceshipProducts[_model].price > 0);
 
     _generateSpaceship(_model, msg.sender);
 
@@ -641,7 +641,7 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
       battleWins: 0,
       battleLosses: 0,
       battleStake: 0,
-      upgrades: &quot;\x00\x00\x00\x00\x00&quot;, // Prepared to have 5 different types of upgrades
+      upgrades: "\x00\x00\x00\x00\x00", // Prepared to have 5 different types of upgrades
       isAuction: false,
       auctionPrice: 0
     });
@@ -676,7 +676,7 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
   /* Battle functions */
   function battleAdd(uint256 _tokenId) public payable onlyOwnerOf(_tokenId) {
     require(msg.value == getPlayerSpaceshipBattleStakeById(_tokenId));
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(spaceships[_tokenId].battleMode == false);
 
     spaceships[_tokenId].battleMode = true;
@@ -730,7 +730,7 @@ contract EtherSpaceCore is ERC721Token, Ownable, Claimable, Destructible {
 
   /* Upgrade functions */
   function buySpaceshipUpgrade(uint256 _tokenId, uint16 _model, uint8 _position) public payable onlyOwnerOf(_tokenId) {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 upgradePrice = upgradeContract.getSpaceshipUpgradePriceByModel(_model, _position);
     require(msg.value == upgradePrice);
     require(getPlayerSpaceshipBattleModeById(_tokenId) == false);

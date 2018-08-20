@@ -59,9 +59,9 @@ contract Airdrop is Ownable {
     }
 
     function sendWinnings(address[] winners, uint256[] amounts) public onlyOwner {
-        require(winners.length == amounts.length,&quot;The number of winners must match the number of amounts&quot;);
-        require(winners.length &lt;= 64);
-        for (uint i = 0; i &lt; winners.length; i++) {
+        require(winners.length == amounts.length,"The number of winners must match the number of amounts");
+        require(winners.length <= 64);
+        for (uint i = 0; i < winners.length; i++) {
             token.transfer(winners[i], amounts[i]);
         }
     }

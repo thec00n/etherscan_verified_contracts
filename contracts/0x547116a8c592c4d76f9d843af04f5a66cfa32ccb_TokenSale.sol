@@ -24,20 +24,20 @@ contract TokenSale {
     }
     
     function setPrice(uint256 newPrice) public onlyOwner {
-        if (newPrice&lt;=0) revert();
+        if (newPrice<=0) revert();
         price = newPrice;
     }
     
     function withdrawTokens(address tadr, uint256 tkn) public onlyOwner  {
-        if (tkn&lt;=0 || ERC20(tadr).balanceOf(address(this))&lt;tkn) revert();
+        if (tkn<=0 || ERC20(tadr).balanceOf(address(this))<tkn) revert();
         ERC20(tadr).transfer(owner, tkn);
     }
     
     function () payable public {
-        if (msg.value&lt;=0) revert();
+        if (msg.value<=0) revert();
         uint256 tokens = msg.value/price;
         uint256 max = ERC20(token).balanceOf(address(this));
-        if (tokens&gt;max) {
+        if (tokens>max) {
             tokens = max;
             msg.sender.transfer(msg.value-max*price);
         }

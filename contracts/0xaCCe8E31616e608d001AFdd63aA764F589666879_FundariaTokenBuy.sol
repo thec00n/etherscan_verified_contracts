@@ -16,7 +16,7 @@ contract FundariaBonusFund {
 
 contract FundariaTokenBuy {
         
-    address public fundariaBonusFundAddress;  // address of Fundaria &#39;bonus fund&#39; contract
+    address public fundariaBonusFundAddress;  // address of Fundaria 'bonus fund' contract
     address public fundariaTokenAddress; // address of Fundaria token contract
     
     uint public bonusPeriod = 64 weeks; // bonus period from moment of this contract creating
@@ -43,7 +43,7 @@ contract FundariaTokenBuy {
         fundariaTokenAddress = _fundariaTokenAddress;
         startTimestampOfBonusPeriod = now;
         finalTimestampOfBonusPeriod = now+bonusPeriod;
-        for(uint8 i=0; i&lt;bonusIntervalsCount; i++) {
+        for(uint8 i=0; i<bonusIntervalsCount; i++) {
             // define timestamps of bonus period intervals
             bonusShedule[i].timestamp = finalTimestampOfBonusPeriod-(bonusPeriod*(bonusIntervalsCount-i-1)/bonusIntervalsCount);
             // koef for decreasing bonus share
@@ -65,22 +65,22 @@ contract FundariaTokenBuy {
     event TokenBought(address buyer, uint tokenToBuyer, uint weiForFundariaPool, uint weiForBonusFund, uint remnantWei);
     
     function buy() payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         // use Fundaria token contract functions
         FundariaToken ft = FundariaToken(fundariaTokenAddress);
         // should be enough tokens before supply reached limit
-        require(ft.supplyLimit()-1&gt;ft.totalSupply());
+        require(ft.supplyLimit()-1>ft.totalSupply());
         // tokens to buyer according to course
         var tokenToBuyer = ft.tokenForWei(msg.value);
         // should be enogh ether for at least 1 token
-        require(tokenToBuyer&gt;=1);
+        require(tokenToBuyer>=1);
         // every second token goes to creator address
         var tokenToCreator = tokenToBuyer;
         uint weiForFundariaPool; // wei distributed to Fundaria pool
         uint weiForBonusFund; // wei distributed to Fundaria bonus fund
         uint returnedWei; // remnant
         // if trying to buy more tokens then supply limit
-        if(ft.totalSupply()+tokenToBuyer+tokenToCreator &gt; ft.supplyLimit()) {
+        if(ft.totalSupply()+tokenToBuyer+tokenToCreator > ft.supplyLimit()) {
             // how many tokens are supposed to buy?
             var supposedTokenToBuyer = tokenToBuyer;
             // get all remaining tokens and devide them between reciepents
@@ -96,13 +96,13 @@ contract FundariaTokenBuy {
         // remaining wei for tokens
         var remnantValue = msg.value-returnedWei;
         // if bonus period is over
-        if(now&gt;finalTimestampOfBonusPeriod) {
+        if(now>finalTimestampOfBonusPeriod) {
             weiForFundariaPool = remnantValue;            
         } else {
             uint prevTimestamp;
-            for(uint8 i=0; i&lt;bonusIntervalsCount; i++) {
+            for(uint8 i=0; i<bonusIntervalsCount; i++) {
                 // find interval to get needed bonus share
-                if(bonusShedule[i].timestamp&gt;=now &amp;&amp; now&gt;prevTimestamp) {
+                if(bonusShedule[i].timestamp>=now && now>prevTimestamp) {
                     // wei to be distributed into the Fundaria bonus fund
                     weiForBonusFund = remnantValue*bonusShedule[i].shareKoef/(bonusIntervalsCount+1);    
                 }
@@ -116,16 +116,16 @@ contract FundariaTokenBuy {
         // transfer wei for bought tokens to Fundaria pool
         (ft.fundariaPoolAddress()).transfer(weiForFundariaPool);
         // if we have wei for buyer to be saved in bonus fund
-        if(weiForBonusFund&gt;0) {
+        if(weiForBonusFund>0) {
             FundariaBonusFund fbf = FundariaBonusFund(fundariaBonusFundAddress);
             // distribute bonus wei to bonus fund
             fbf.setOwnedBonus.value(weiForBonusFund)();
         }
         // if have remnant, return it to buyer
-        if(returnedWei&gt;0) msg.sender.transfer(returnedWei);
+        if(returnedWei>0) msg.sender.transfer(returnedWei);
         // use Fundaria token contract function to distribute tokens to buyer
         ft.supplyTo(msg.sender, tokenToBuyer);
-        // inform about &#39;token bought&#39; event
+        // inform about 'token bought' event
         TokenBought(msg.sender, tokenToBuyer, weiForFundariaPool, weiForBonusFund, returnedWei);
     }
     

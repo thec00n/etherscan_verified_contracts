@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2b6b7a6b792b3aabbbdbfa8b7bcfcb1bd">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2b6b7a6b792b3aabbbdbfa8b7bcfcb1bd">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -31,7 +31,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -149,7 +149,7 @@ contract ClockAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
@@ -187,7 +187,7 @@ contract ClockAuctionBase {
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
 
@@ -216,28 +216,28 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -247,7 +247,7 @@ contract ClockAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -278,7 +278,7 @@ contract ClockAuctionBase {
     /// @dev Returns true if the NFT is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -294,8 +294,8 @@ contract ClockAuctionBase {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -321,13 +321,13 @@ contract ClockAuctionBase {
     pure
     returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -335,7 +335,7 @@ contract ClockAuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -348,14 +348,14 @@ contract ClockAuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -381,7 +381,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
     /// @param _cut - percent cut the owner takes on each auction, must be
     ///  between 0-10,000.
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -389,7 +389,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         nonFungibleContract = candidateContract;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -421,7 +421,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
     external
     whenNotPaused
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -452,7 +452,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         _transfer(msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -525,7 +525,7 @@ contract GeneScience {
     uint64 _seed = 0;
 
     /// @dev simply a boolean to indicate this is the contract we expect to be
-    /// pure means &quot;they promise not to read from or modify the state.&quot;
+    /// pure means "they promise not to read from or modify the state."
     function isGeneScience() public pure returns (bool) {
         return true;
     }
@@ -540,7 +540,7 @@ contract GeneScience {
     function randomBetween(uint32 a, uint32 b) internal returns (uint32) {
         uint32 min;
         uint32 max;
-        if(a &lt; b) {
+        if(a < b) {
             min = a;
             max = b;
         } else {
@@ -555,257 +555,257 @@ contract GeneScience {
         //
         uint64 r = random(1000000);
 
-        if (r &lt;= 163) return 151;
-        if (r &lt;= 327) return 251;
-        if (r &lt;= 490) return 196;
-        if (r &lt;= 654) return 197;
-        if (r &lt;= 817) return 238;
-        if (r &lt;= 981) return 240;
-        if (r &lt;= 1144) return 239;
-        if (r &lt;= 1308) return 173;
-        if (r &lt;= 1471) return 175;
-        if (r &lt;= 1635) return 174;
-        if (r &lt;= 1798) return 236;
-        if (r &lt;= 1962) return 172;
-        if (r &lt;= 2289) return 250;
-        if (r &lt;= 2616) return 249;
-        if (r &lt;= 2943) return 244;
-        if (r &lt;= 3270) return 243;
-        if (r &lt;= 3597) return 245;
-        if (r &lt;= 4087) return 145;
-        if (r &lt;= 4577) return 146;
-        if (r &lt;= 5068) return 144;
-        if (r &lt;= 5885) return 248;
-        if (r &lt;= 6703) return 149;
-        if (r &lt;= 7520) return 143;
-        if (r &lt;= 8337) return 112;
-        if (r &lt;= 9155) return 242;
-        if (r &lt;= 9972) return 212;
-        if (r &lt;= 10790) return 160;
-        if (r &lt;= 11607) return 6;
-        if (r &lt;= 12424) return 157;
-        if (r &lt;= 13242) return 131;
-        if (r &lt;= 14059) return 3;
-        if (r &lt;= 14877) return 233;
-        if (r &lt;= 15694) return 9;
-        if (r &lt;= 16511) return 154;
-        if (r &lt;= 17329) return 182;
-        if (r &lt;= 18146) return 176;
-        if (r &lt;= 19127) return 150;
-        if (r &lt;= 20762) return 130;
-        if (r &lt;= 22397) return 68;
-        if (r &lt;= 24031) return 65;
-        if (r &lt;= 25666) return 59;
-        if (r &lt;= 27301) return 94;
-        if (r &lt;= 28936) return 199;
-        if (r &lt;= 30571) return 169;
-        if (r &lt;= 32205) return 208;
-        if (r &lt;= 33840) return 230;
-        if (r &lt;= 35475) return 186;
-        if (r &lt;= 37110) return 36;
-        if (r &lt;= 38744) return 38;
-        if (r &lt;= 40379) return 192;
-        if (r &lt;= 42014) return 26;
-        if (r &lt;= 43649) return 237;
-        if (r &lt;= 45284) return 148;
-        if (r &lt;= 46918) return 247;
-        if (r &lt;= 48553) return 2;
-        if (r &lt;= 50188) return 5;
-        if (r &lt;= 51823) return 8;
-        if (r &lt;= 53785) return 134;
-        if (r &lt;= 55746) return 232;
-        if (r &lt;= 57708) return 76;
-        if (r &lt;= 59670) return 136;
-        if (r &lt;= 61632) return 135;
-        if (r &lt;= 63593) return 181;
-        if (r &lt;= 65555) return 62;
-        if (r &lt;= 67517) return 34;
-        if (r &lt;= 69479) return 31;
-        if (r &lt;= 71440) return 221;
-        if (r &lt;= 73402) return 71;
-        if (r &lt;= 75364) return 185;
-        if (r &lt;= 77325) return 18;
-        if (r &lt;= 79287) return 15;
-        if (r &lt;= 81249) return 12;
-        if (r &lt;= 83211) return 159;
-        if (r &lt;= 85172) return 189;
-        if (r &lt;= 87134) return 219;
-        if (r &lt;= 89096) return 156;
-        if (r &lt;= 91058) return 153;
-        if (r &lt;= 93510) return 217;
-        if (r &lt;= 95962) return 139;
-        if (r &lt;= 98414) return 229;
-        if (r &lt;= 100866) return 141;
-        if (r &lt;= 103319) return 210;
-        if (r &lt;= 105771) return 45;
-        if (r &lt;= 108223) return 205;
-        if (r &lt;= 110675) return 78;
-        if (r &lt;= 113127) return 224;
-        if (r &lt;= 115580) return 171;
-        if (r &lt;= 118032) return 164;
-        if (r &lt;= 120484) return 178;
-        if (r &lt;= 122936) return 195;
-        if (r &lt;= 125388) return 105;
-        if (r &lt;= 127840) return 162;
-        if (r &lt;= 130293) return 168;
-        if (r &lt;= 132745) return 184;
-        if (r &lt;= 135197) return 166;
-        if (r &lt;= 138467) return 103;
-        if (r &lt;= 141736) return 89;
-        if (r &lt;= 145006) return 99;
-        if (r &lt;= 148275) return 142;
-        if (r &lt;= 151545) return 80;
-        if (r &lt;= 154814) return 91;
-        if (r &lt;= 158084) return 115;
-        if (r &lt;= 161354) return 106;
-        if (r &lt;= 164623) return 73;
-        if (r &lt;= 167893) return 28;
-        if (r &lt;= 171162) return 241;
-        if (r &lt;= 174432) return 121;
-        if (r &lt;= 177701) return 55;
-        if (r &lt;= 180971) return 126;
-        if (r &lt;= 184241) return 82;
-        if (r &lt;= 187510) return 125;
-        if (r &lt;= 190780) return 110;
-        if (r &lt;= 194049) return 85;
-        if (r &lt;= 197319) return 57;
-        if (r &lt;= 200589) return 107;
-        if (r &lt;= 203858) return 97;
-        if (r &lt;= 207128) return 119;
-        if (r &lt;= 210397) return 227;
-        if (r &lt;= 213667) return 117;
-        if (r &lt;= 216936) return 49;
-        if (r &lt;= 220206) return 40;
-        if (r &lt;= 223476) return 101;
-        if (r &lt;= 226745) return 87;
-        if (r &lt;= 230015) return 215;
-        if (r &lt;= 233284) return 42;
-        if (r &lt;= 236554) return 22;
-        if (r &lt;= 239823) return 207;
-        if (r &lt;= 243093) return 24;
-        if (r &lt;= 246363) return 93;
-        if (r &lt;= 249632) return 47;
-        if (r &lt;= 252902) return 20;
-        if (r &lt;= 256171) return 53;
-        if (r &lt;= 259441) return 113;
-        if (r &lt;= 262710) return 198;
-        if (r &lt;= 265980) return 51;
-        if (r &lt;= 269250) return 108;
-        if (r &lt;= 272519) return 190;
-        if (r &lt;= 275789) return 158;
-        if (r &lt;= 279058) return 95;
-        if (r &lt;= 282328) return 1;
-        if (r &lt;= 285598) return 225;
-        if (r &lt;= 288867) return 4;
-        if (r &lt;= 292137) return 155;
-        if (r &lt;= 295406) return 7;
-        if (r &lt;= 298676) return 152;
-        if (r &lt;= 301945) return 25;
-        if (r &lt;= 305215) return 132;
-        if (r &lt;= 309302) return 67;
-        if (r &lt;= 313389) return 64;
-        if (r &lt;= 317476) return 75;
-        if (r &lt;= 321563) return 70;
-        if (r &lt;= 325650) return 180;
-        if (r &lt;= 329737) return 61;
-        if (r &lt;= 333824) return 33;
-        if (r &lt;= 337911) return 30;
-        if (r &lt;= 341998) return 17;
-        if (r &lt;= 346085) return 202;
-        if (r &lt;= 350172) return 188;
-        if (r &lt;= 354259) return 11;
-        if (r &lt;= 358346) return 14;
-        if (r &lt;= 362433) return 235;
-        if (r &lt;= 367337) return 214;
-        if (r &lt;= 372241) return 127;
-        if (r &lt;= 377146) return 124;
-        if (r &lt;= 382050) return 128;
-        if (r &lt;= 386954) return 123;
-        if (r &lt;= 391859) return 226;
-        if (r &lt;= 396763) return 234;
-        if (r &lt;= 401667) return 122;
-        if (r &lt;= 406572) return 211;
-        if (r &lt;= 411476) return 203;
-        if (r &lt;= 416381) return 200;
-        if (r &lt;= 421285) return 206;
-        if (r &lt;= 426189) return 44;
-        if (r &lt;= 431094) return 193;
-        if (r &lt;= 435998) return 222;
-        if (r &lt;= 440902) return 58;
-        if (r &lt;= 445807) return 83;
-        if (r &lt;= 450711) return 35;
-        if (r &lt;= 455615) return 201;
-        if (r &lt;= 460520) return 37;
-        if (r &lt;= 465424) return 218;
-        if (r &lt;= 470329) return 220;
-        if (r &lt;= 475233) return 213;
-        if (r &lt;= 481772) return 114;
-        if (r &lt;= 488311) return 137;
-        if (r &lt;= 494850) return 77;
-        if (r &lt;= 501390) return 138;
-        if (r &lt;= 507929) return 140;
-        if (r &lt;= 514468) return 209;
-        if (r &lt;= 521007) return 228;
-        if (r &lt;= 527546) return 170;
-        if (r &lt;= 534085) return 204;
-        if (r &lt;= 540624) return 92;
-        if (r &lt;= 547164) return 133;
-        if (r &lt;= 553703) return 104;
-        if (r &lt;= 560242) return 177;
-        if (r &lt;= 566781) return 246;
-        if (r &lt;= 573320) return 147;
-        if (r &lt;= 579859) return 46;
-        if (r &lt;= 586399) return 194;
-        if (r &lt;= 594573) return 111;
-        if (r &lt;= 602746) return 98;
-        if (r &lt;= 610920) return 88;
-        if (r &lt;= 619094) return 79;
-        if (r &lt;= 627268) return 66;
-        if (r &lt;= 635442) return 27;
-        if (r &lt;= 643616) return 74;
-        if (r &lt;= 651790) return 216;
-        if (r &lt;= 659964) return 231;
-        if (r &lt;= 668138) return 63;
-        if (r &lt;= 676312) return 102;
-        if (r &lt;= 684486) return 109;
-        if (r &lt;= 692660) return 81;
-        if (r &lt;= 700834) return 84;
-        if (r &lt;= 709008) return 118;
-        if (r &lt;= 717182) return 56;
-        if (r &lt;= 725356) return 96;
-        if (r &lt;= 733530) return 54;
-        if (r &lt;= 741703) return 90;
-        if (r &lt;= 749877) return 72;
-        if (r &lt;= 758051) return 120;
-        if (r &lt;= 766225) return 116;
-        if (r &lt;= 774399) return 69;
-        if (r &lt;= 782573) return 48;
-        if (r &lt;= 790747) return 86;
-        if (r &lt;= 798921) return 179;
-        if (r &lt;= 807095) return 100;
-        if (r &lt;= 815269) return 23;
-        if (r &lt;= 823443) return 223;
-        if (r &lt;= 831617) return 32;
-        if (r &lt;= 839791) return 29;
-        if (r &lt;= 847965) return 39;
-        if (r &lt;= 856139) return 60;
-        if (r &lt;= 864313) return 167;
-        if (r &lt;= 872487) return 21;
-        if (r &lt;= 880660) return 165;
-        if (r &lt;= 888834) return 163;
-        if (r &lt;= 897008) return 52;
-        if (r &lt;= 905182) return 19;
-        if (r &lt;= 913356) return 16;
-        if (r &lt;= 921530) return 41;
-        if (r &lt;= 929704) return 161;
-        if (r &lt;= 937878) return 187;
-        if (r &lt;= 946052) return 50;
-        if (r &lt;= 954226) return 183;
-        if (r &lt;= 962400) return 13;
-        if (r &lt;= 970574) return 10;
-        if (r &lt;= 978748) return 191;
-        if (r &lt;= 988556) return 43;
-        if (r &lt;= 1000000) return 129;
+        if (r <= 163) return 151;
+        if (r <= 327) return 251;
+        if (r <= 490) return 196;
+        if (r <= 654) return 197;
+        if (r <= 817) return 238;
+        if (r <= 981) return 240;
+        if (r <= 1144) return 239;
+        if (r <= 1308) return 173;
+        if (r <= 1471) return 175;
+        if (r <= 1635) return 174;
+        if (r <= 1798) return 236;
+        if (r <= 1962) return 172;
+        if (r <= 2289) return 250;
+        if (r <= 2616) return 249;
+        if (r <= 2943) return 244;
+        if (r <= 3270) return 243;
+        if (r <= 3597) return 245;
+        if (r <= 4087) return 145;
+        if (r <= 4577) return 146;
+        if (r <= 5068) return 144;
+        if (r <= 5885) return 248;
+        if (r <= 6703) return 149;
+        if (r <= 7520) return 143;
+        if (r <= 8337) return 112;
+        if (r <= 9155) return 242;
+        if (r <= 9972) return 212;
+        if (r <= 10790) return 160;
+        if (r <= 11607) return 6;
+        if (r <= 12424) return 157;
+        if (r <= 13242) return 131;
+        if (r <= 14059) return 3;
+        if (r <= 14877) return 233;
+        if (r <= 15694) return 9;
+        if (r <= 16511) return 154;
+        if (r <= 17329) return 182;
+        if (r <= 18146) return 176;
+        if (r <= 19127) return 150;
+        if (r <= 20762) return 130;
+        if (r <= 22397) return 68;
+        if (r <= 24031) return 65;
+        if (r <= 25666) return 59;
+        if (r <= 27301) return 94;
+        if (r <= 28936) return 199;
+        if (r <= 30571) return 169;
+        if (r <= 32205) return 208;
+        if (r <= 33840) return 230;
+        if (r <= 35475) return 186;
+        if (r <= 37110) return 36;
+        if (r <= 38744) return 38;
+        if (r <= 40379) return 192;
+        if (r <= 42014) return 26;
+        if (r <= 43649) return 237;
+        if (r <= 45284) return 148;
+        if (r <= 46918) return 247;
+        if (r <= 48553) return 2;
+        if (r <= 50188) return 5;
+        if (r <= 51823) return 8;
+        if (r <= 53785) return 134;
+        if (r <= 55746) return 232;
+        if (r <= 57708) return 76;
+        if (r <= 59670) return 136;
+        if (r <= 61632) return 135;
+        if (r <= 63593) return 181;
+        if (r <= 65555) return 62;
+        if (r <= 67517) return 34;
+        if (r <= 69479) return 31;
+        if (r <= 71440) return 221;
+        if (r <= 73402) return 71;
+        if (r <= 75364) return 185;
+        if (r <= 77325) return 18;
+        if (r <= 79287) return 15;
+        if (r <= 81249) return 12;
+        if (r <= 83211) return 159;
+        if (r <= 85172) return 189;
+        if (r <= 87134) return 219;
+        if (r <= 89096) return 156;
+        if (r <= 91058) return 153;
+        if (r <= 93510) return 217;
+        if (r <= 95962) return 139;
+        if (r <= 98414) return 229;
+        if (r <= 100866) return 141;
+        if (r <= 103319) return 210;
+        if (r <= 105771) return 45;
+        if (r <= 108223) return 205;
+        if (r <= 110675) return 78;
+        if (r <= 113127) return 224;
+        if (r <= 115580) return 171;
+        if (r <= 118032) return 164;
+        if (r <= 120484) return 178;
+        if (r <= 122936) return 195;
+        if (r <= 125388) return 105;
+        if (r <= 127840) return 162;
+        if (r <= 130293) return 168;
+        if (r <= 132745) return 184;
+        if (r <= 135197) return 166;
+        if (r <= 138467) return 103;
+        if (r <= 141736) return 89;
+        if (r <= 145006) return 99;
+        if (r <= 148275) return 142;
+        if (r <= 151545) return 80;
+        if (r <= 154814) return 91;
+        if (r <= 158084) return 115;
+        if (r <= 161354) return 106;
+        if (r <= 164623) return 73;
+        if (r <= 167893) return 28;
+        if (r <= 171162) return 241;
+        if (r <= 174432) return 121;
+        if (r <= 177701) return 55;
+        if (r <= 180971) return 126;
+        if (r <= 184241) return 82;
+        if (r <= 187510) return 125;
+        if (r <= 190780) return 110;
+        if (r <= 194049) return 85;
+        if (r <= 197319) return 57;
+        if (r <= 200589) return 107;
+        if (r <= 203858) return 97;
+        if (r <= 207128) return 119;
+        if (r <= 210397) return 227;
+        if (r <= 213667) return 117;
+        if (r <= 216936) return 49;
+        if (r <= 220206) return 40;
+        if (r <= 223476) return 101;
+        if (r <= 226745) return 87;
+        if (r <= 230015) return 215;
+        if (r <= 233284) return 42;
+        if (r <= 236554) return 22;
+        if (r <= 239823) return 207;
+        if (r <= 243093) return 24;
+        if (r <= 246363) return 93;
+        if (r <= 249632) return 47;
+        if (r <= 252902) return 20;
+        if (r <= 256171) return 53;
+        if (r <= 259441) return 113;
+        if (r <= 262710) return 198;
+        if (r <= 265980) return 51;
+        if (r <= 269250) return 108;
+        if (r <= 272519) return 190;
+        if (r <= 275789) return 158;
+        if (r <= 279058) return 95;
+        if (r <= 282328) return 1;
+        if (r <= 285598) return 225;
+        if (r <= 288867) return 4;
+        if (r <= 292137) return 155;
+        if (r <= 295406) return 7;
+        if (r <= 298676) return 152;
+        if (r <= 301945) return 25;
+        if (r <= 305215) return 132;
+        if (r <= 309302) return 67;
+        if (r <= 313389) return 64;
+        if (r <= 317476) return 75;
+        if (r <= 321563) return 70;
+        if (r <= 325650) return 180;
+        if (r <= 329737) return 61;
+        if (r <= 333824) return 33;
+        if (r <= 337911) return 30;
+        if (r <= 341998) return 17;
+        if (r <= 346085) return 202;
+        if (r <= 350172) return 188;
+        if (r <= 354259) return 11;
+        if (r <= 358346) return 14;
+        if (r <= 362433) return 235;
+        if (r <= 367337) return 214;
+        if (r <= 372241) return 127;
+        if (r <= 377146) return 124;
+        if (r <= 382050) return 128;
+        if (r <= 386954) return 123;
+        if (r <= 391859) return 226;
+        if (r <= 396763) return 234;
+        if (r <= 401667) return 122;
+        if (r <= 406572) return 211;
+        if (r <= 411476) return 203;
+        if (r <= 416381) return 200;
+        if (r <= 421285) return 206;
+        if (r <= 426189) return 44;
+        if (r <= 431094) return 193;
+        if (r <= 435998) return 222;
+        if (r <= 440902) return 58;
+        if (r <= 445807) return 83;
+        if (r <= 450711) return 35;
+        if (r <= 455615) return 201;
+        if (r <= 460520) return 37;
+        if (r <= 465424) return 218;
+        if (r <= 470329) return 220;
+        if (r <= 475233) return 213;
+        if (r <= 481772) return 114;
+        if (r <= 488311) return 137;
+        if (r <= 494850) return 77;
+        if (r <= 501390) return 138;
+        if (r <= 507929) return 140;
+        if (r <= 514468) return 209;
+        if (r <= 521007) return 228;
+        if (r <= 527546) return 170;
+        if (r <= 534085) return 204;
+        if (r <= 540624) return 92;
+        if (r <= 547164) return 133;
+        if (r <= 553703) return 104;
+        if (r <= 560242) return 177;
+        if (r <= 566781) return 246;
+        if (r <= 573320) return 147;
+        if (r <= 579859) return 46;
+        if (r <= 586399) return 194;
+        if (r <= 594573) return 111;
+        if (r <= 602746) return 98;
+        if (r <= 610920) return 88;
+        if (r <= 619094) return 79;
+        if (r <= 627268) return 66;
+        if (r <= 635442) return 27;
+        if (r <= 643616) return 74;
+        if (r <= 651790) return 216;
+        if (r <= 659964) return 231;
+        if (r <= 668138) return 63;
+        if (r <= 676312) return 102;
+        if (r <= 684486) return 109;
+        if (r <= 692660) return 81;
+        if (r <= 700834) return 84;
+        if (r <= 709008) return 118;
+        if (r <= 717182) return 56;
+        if (r <= 725356) return 96;
+        if (r <= 733530) return 54;
+        if (r <= 741703) return 90;
+        if (r <= 749877) return 72;
+        if (r <= 758051) return 120;
+        if (r <= 766225) return 116;
+        if (r <= 774399) return 69;
+        if (r <= 782573) return 48;
+        if (r <= 790747) return 86;
+        if (r <= 798921) return 179;
+        if (r <= 807095) return 100;
+        if (r <= 815269) return 23;
+        if (r <= 823443) return 223;
+        if (r <= 831617) return 32;
+        if (r <= 839791) return 29;
+        if (r <= 847965) return 39;
+        if (r <= 856139) return 60;
+        if (r <= 864313) return 167;
+        if (r <= 872487) return 21;
+        if (r <= 880660) return 165;
+        if (r <= 888834) return 163;
+        if (r <= 897008) return 52;
+        if (r <= 905182) return 19;
+        if (r <= 913356) return 16;
+        if (r <= 921530) return 41;
+        if (r <= 929704) return 161;
+        if (r <= 937878) return 187;
+        if (r <= 946052) return 50;
+        if (r <= 954226) return 183;
+        if (r <= 962400) return 13;
+        if (r <= 970574) return 10;
+        if (r <= 978748) return 191;
+        if (r <= 988556) return 43;
+        if (r <= 1000000) return 129;
 
         return 129;
     }
@@ -1069,31 +1069,31 @@ contract GeneScience {
     function sqrt(uint256 x) internal pure returns (uint256 y) {
         uint256 z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
     }
 
     function maxCP(uint256 genes, uint16 generation) public pure returns (uint32 max_cp) {
-        var code = uint8(genes &amp; 0xFF);
-        var a = uint32((genes &gt;&gt; 8) &amp; 0xFF);
-        var d = uint32((genes &gt;&gt; 16) &amp; 0xFF);
-        var s = uint32((genes &gt;&gt; 24) &amp; 0xFF);
-//      var gender = uint32((genes &gt;&gt; 32) &amp; 0x1);
-        var bgColor = uint8((genes &gt;&gt; 33) &amp; 0xFF);
+        var code = uint8(genes & 0xFF);
+        var a = uint32((genes >> 8) & 0xFF);
+        var d = uint32((genes >> 16) & 0xFF);
+        var s = uint32((genes >> 24) & 0xFF);
+//      var gender = uint32((genes >> 32) & 0x1);
+        var bgColor = uint8((genes >> 33) & 0xFF);
         var (ra, rd, rs) = getBaseStats(code);
 
 
         max_cp = uint32(sqrt(uint256(ra + a) * uint256(ra + a) * uint256(rd + d) * uint256(rs + s) * 3900927938993281/10000000000000000 / 100));
-        if(max_cp &lt; 10)
+        if(max_cp < 10)
             max_cp = 10;
 
-        if(generation &lt; 10)
+        if(generation < 10)
             max_cp += (10 - generation) * 50;
 
         // bgColor
-        if(bgColor &gt;= 8)
+        if(bgColor >= 8)
             bgColor = 0;
 
         max_cp += bgColor * 25;
@@ -1101,22 +1101,22 @@ contract GeneScience {
     }
 
     function getCode(uint256 genes) pure public returns (uint8) {
-        return uint8(genes &amp; 0xFF);
+        return uint8(genes & 0xFF);
     }
 
     function getAttack(uint256 genes) pure public returns (uint8) {
-        return uint8((genes &gt;&gt; 8) &amp; 0xFF);
+        return uint8((genes >> 8) & 0xFF);
     }
 
     function getDefense(uint256 genes) pure public returns (uint8) {
-        return uint8((genes &gt;&gt; 16) &amp; 0xFF);
+        return uint8((genes >> 16) & 0xFF);
     }
 
     function getStamina(uint256 genes) pure public returns (uint8) {
-        return uint8((genes &gt;&gt; 24) &amp; 0xFF);
+        return uint8((genes >> 24) & 0xFF);
     }
 
-    /// @dev given genes of kitten 1 &amp; 2, return a genetic combination - may have a random factor
+    /// @dev given genes of kitten 1 & 2, return a genetic combination - may have a random factor
     /// @param genes1 genes of mom
     /// @param genes2 genes of sire
     /// @return the genes that are supposed to be passed down the child
@@ -1142,12 +1142,12 @@ contract GeneScience {
         var rand = random(~uint64(0));
 
         return uint256(code) // 8
-        | (uint256(attack) &lt;&lt; 8) // 8
-        | (uint256(defense) &lt;&lt; 16) // 8
-        | (uint256(stamina) &lt;&lt; 24) // 8
-        | (uint256(gender) &lt;&lt; 32) // 1
-        | (uint256(bgColor) &lt;&lt; 33) // 8
-        | (uint256(rand) &lt;&lt; 41) // 64
+        | (uint256(attack) << 8) // 8
+        | (uint256(defense) << 16) // 8
+        | (uint256(stamina) << 24) // 8
+        | (uint256(gender) << 32) // 1
+        | (uint256(bgColor) << 33) // 8
+        | (uint256(rand) << 41) // 64
         ;
     }
 
@@ -1161,12 +1161,12 @@ contract GeneScience {
         var rand = random(~uint64(0));
 
         return uint256(code) // 8
-        | (uint256(attack) &lt;&lt; 8) // 8
-        | (uint256(defense) &lt;&lt; 16) // 8
-        | (uint256(stamina) &lt;&lt; 24) // 8
-        | (uint256(gender) &lt;&lt; 32) // 1
-        | (uint256(bgColor) &lt;&lt; 33) // 8
-        | (uint256(rand) &lt;&lt; 41) // 64
+        | (uint256(attack) << 8) // 8
+        | (uint256(defense) << 16) // 8
+        | (uint256(stamina) << 24) // 8
+        | (uint256(gender) << 32) // 1
+        | (uint256(bgColor) << 33) // 8
+        | (uint256(rand) << 41) // 64
         ;
     }
 }
@@ -1202,7 +1202,7 @@ contract SaleClockAuction is ClockAuction {
     )
     external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -1241,7 +1241,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageGen0SalePrice() external view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             sum += lastGen0SalePrices[i];
         }
         return sum / 5;
@@ -1277,7 +1277,7 @@ contract SiringClockAuction is ClockAuction {
     )
     external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -1336,8 +1336,8 @@ contract MonsterAccessControl {
     //
     // It should be noted that these roles are distinct without overlap in their access abilities, the
     // abilities listed for each role above are exhaustive. In particular, while the CEO can assign any
-    // address to any role, the CEO address itself doesn&#39;t have the ability to act in those roles. This
-    // restriction is intentional so that we aren&#39;t tempted to use the CEO address frequently out of
+    // address to any role, the CEO address itself doesn't have the ability to act in those roles. This
+    // restriction is intentional so that we aren't tempted to use the CEO address frequently out of
     // convenience. The less we use an address, the less likely it is that we somehow compromise the
     // account.
 
@@ -1417,7 +1417,7 @@ contract MonsterAccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -1429,7 +1429,7 @@ contract MonsterAccessControl {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -1460,8 +1460,8 @@ contract MonsterBase is MonsterAccessControl {
     ///  is important because of the byte-packing rules used by Ethereum.
     ///  Ref: http://solidity.readthedocs.io/en/develop/miscellaneous.html
     struct Monster {
-        // The Monster&#39;s genetic code is packed into these 256-bits, the format is
-        // sooper-sekret! A monster&#39;s genes never change.
+        // The Monster's genetic code is packed into these 256-bits, the format is
+        // sooper-sekret! A monster's genes never change.
         uint256 genes;
 
         // The timestamp from the block when this monster came into existence.
@@ -1473,10 +1473,10 @@ contract MonsterBase is MonsterAccessControl {
         uint64 cooldownEndBlock;
 
         // The ID of the parents of this monster, set to 0 for gen0 monsters.
-        // Note that using 32-bit unsigned integers limits us to a &quot;mere&quot;
+        // Note that using 32-bit unsigned integers limits us to a "mere"
         // 4 billion monsters. This number might seem small until you realize
         // that Ethereum currently has a limit of about 500 million
-        // transactions per year! So, this definitely won&#39;t be a problem
+        // transactions per year! So, this definitely won't be a problem
         // for several years (even as Ethereum learns to scale).
         uint32 matronId;
         uint32 sireId;
@@ -1494,8 +1494,8 @@ contract MonsterBase is MonsterAccessControl {
         // of whether this monster is acting as matron or sire.
         uint16 cooldownIndex;
 
-        // The &quot;generation number&quot; of this monster. Monsters minted by the CK contract
-        // for sale are called &quot;gen0&quot; and have a generation number of 0. The
+        // The "generation number" of this monster. Monsters minted by the CK contract
+        // for sale are called "gen0" and have a generation number of 0. The
         // generation number of all other monsters is the larger of the two generation
         // numbers of their parents, plus one.
         // (i.e. max(matron.generation, sire.generation) + 1)
@@ -1505,7 +1505,7 @@ contract MonsterBase is MonsterAccessControl {
     /*** CONSTANTS ***/
 
     /// @dev A lookup table indimonstering the cooldown duration after any successful
-    ///  breeding action, called &quot;pregnancy time&quot; for matrons and &quot;siring cooldown&quot;
+    ///  breeding action, called "pregnancy time" for matrons and "siring cooldown"
     ///  for sires. Designed such that the cooldown roughly doubles each time a monster
     ///  is bred, encouraging owners not to just keep breeding the same monster over
     ///  and over again. Caps out at one week (a monster can breed an unbounded number
@@ -1541,21 +1541,21 @@ contract MonsterBase is MonsterAccessControl {
 
     /// @dev A mapping from monster IDs to the address that owns them. All monsters have
     ///  some valid owner address, even gen0 monsters are created with a non-zero owner.
-    mapping(uint256 =&gt; address) public monsterIndexToOwner;
+    mapping(uint256 => address) public monsterIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping(address =&gt; uint256) ownershipTokenCount;
+    mapping(address => uint256) ownershipTokenCount;
 
     /// @dev A mapping from MonsterIDs to an address that has been approved to call
     ///  transferFrom(). Each Monster can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping(uint256 =&gt; address) public monsterIndexToApproved;
+    mapping(uint256 => address) public monsterIndexToApproved;
 
     /// @dev A mapping from MonsterIDs to an address that has been approved to use
     ///  this Monster for siring via breedWith(). Each Monster can only have one approved
     ///  address for siring at any time. A zero value means no approval is outstanding.
-    mapping(uint256 =&gt; address) public sireAllowedToAddress;
+    mapping(uint256 => address) public sireAllowedToAddress;
 
     /// @dev The address of the ClockAuction contract that handles sales of Monsters. This
     ///  same contract handles both peer-to-peer sales as well as the gen0 sales which are
@@ -1571,12 +1571,12 @@ contract MonsterBase is MonsterAccessControl {
 
     /// @dev Assigns ownership of a specific Monster to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
-        // Since the number of monsters is capped to 2^32 we can&#39;t overflow this
+        // Since the number of monsters is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         // transfer ownership
         monsterIndexToOwner[_tokenId] = _to;
 
-        // When creating new monsters _from is 0x0, but we can&#39;t account that address.
+        // When creating new monsters _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // once the monster is transferred also clear sire allowances
@@ -1589,13 +1589,13 @@ contract MonsterBase is MonsterAccessControl {
     }
 
     /// @dev An internal method that creates a new monster and stores it. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate both a Birth event
     ///  and a Transfer event.
     /// @param _matronId The monster ID of the matron of this monster (zero for gen0)
     /// @param _sireId The monster ID of the sire of this monster (zero for gen0)
     /// @param _generation The generation number of this monster, must be computed by caller.
-    /// @param _genes The monster&#39;s genetic code.
+    /// @param _genes The monster's genetic code.
     /// @param _owner The inital owner of this monster, must be non-zero (except for the unMonster, ID 0)
     function _createMonster(
         uint256 _matronId,
@@ -1609,7 +1609,7 @@ contract MonsterBase is MonsterAccessControl {
     {
         // These requires are not strictly necessary, our calling code should make
         // sure that these conditions are never broken. However! _createMonster() is already
-        // an expensive call (for storage), and it doesn&#39;t hurt to be especially careful
+        // an expensive call (for storage), and it doesn't hurt to be especially careful
         // to ensure our data structures are always valid.
         require(_matronId == uint256(uint32(_matronId)));
         require(_sireId == uint256(uint32(_sireId)));
@@ -1617,7 +1617,7 @@ contract MonsterBase is MonsterAccessControl {
 
         // New monster starts with the same cooldown as parent gen/2
         uint16 cooldownIndex = uint16(_generation / 2);
-        if (cooldownIndex &gt; 13) {
+        if (cooldownIndex > 13) {
             cooldownIndex = 13;
         }
 
@@ -1633,8 +1633,8 @@ contract MonsterBase is MonsterAccessControl {
             });
         uint256 newKittenId = monsters.push(_monster) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion monsters is A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion monsters is A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newKittenId == uint256(uint32(newKittenId)));
 
         // emit the birth event
@@ -1656,7 +1656,7 @@ contract MonsterBase is MonsterAccessControl {
 
     // Any C-level can fix how many seconds per blocks are currently observed.
     function setSecondsPerBlock(uint256 secs) external onlyCLevel {
-        require(secs &lt; cooldowns[0]);
+        require(secs < cooldowns[0]);
         secondsPerBlock = secs;
     }
 }
@@ -1671,17 +1671,17 @@ contract ERC721Metadata {
     /// @dev Given a token Id, returns a byte array that is supposed to be converted into string.
     function getMetadata(uint256 _tokenId, string) public view returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -1695,26 +1695,26 @@ contract ERC721Metadata {
 contract MonsterOwnership is MonsterBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;Ethermon&quot;;
-    string public constant symbol = &quot;EM&quot;;
+    string public constant name = "Ethermon";
+    string public constant symbol = "EM";
 
     // The contract that will return monster metadata
     ERC721Metadata public erc721Metadata;
 
     bytes4 constant InterfaceSignature_ERC165 =
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-    bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('tokensOfOwner(address)')) ^
+    bytes4(keccak256('tokenMetadata(uint256,string)'));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -1722,7 +1722,7 @@ contract MonsterOwnership is MonsterBase, ERC721 {
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
@@ -1739,14 +1739,14 @@ contract MonsterOwnership is MonsterBase, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular Monster.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId monster id, only valid when &gt; 0
+    /// @param _tokenId monster id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return monsterIndexToOwner[_tokenId] == _claimant;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular Monster.
     /// @param _claimant the address we are confirming monster is approved for.
-    /// @param _tokenId monster id, only valid when &gt; 0
+    /// @param _tokenId monster id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return monsterIndexToApproved[_tokenId] == _claimant;
     }
@@ -1871,7 +1871,7 @@ contract MonsterOwnership is MonsterBase, ERC721 {
 
     /// @notice Returns a list of all Monster IDs assigned to an address.
     /// @param _owner The owner whose Monsters we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Monster array looking for monsters belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -1890,7 +1890,7 @@ contract MonsterOwnership is MonsterBase, ERC721 {
             // sequentially up to the totalMonster count.
             uint256 monsterId;
 
-            for (monsterId = 1; monsterId &lt;= totalMonsters; monsterId++) {
+            for (monsterId = 1; monsterId <= totalMonsters; monsterId++) {
                 if (monsterIndexToOwner[monsterId] == _owner) {
                     result[resultIndex] = monsterId;
                     resultIndex++;
@@ -1901,12 +1901,12 @@ contract MonsterOwnership is MonsterBase, ERC721 {
         }
     }
 
-    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24455645474c4a4d40644a4b50404b500a4a4150">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24455645474c4a4d40644a4b50404b500a4a4150">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _memcpy(uint _dest, uint _src, uint _len) private view {
         // Copy word-length chunks while possible
-        for (; _len &gt;= 32; _len -= 32) {
+        for (; _len >= 32; _len -= 32) {
             assembly {
                 mstore(_dest, mload(_src))
             }
@@ -1923,7 +1923,7 @@ contract MonsterOwnership is MonsterBase, ERC721 {
         }
     }
 
-    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6100130002090f0805210f0e15050e154f0f0415">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6100130002090f0805210f0e15050e154f0f0415">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _toString(bytes32[4] _rawBytes, uint256 _stringLength) private view returns (string) {
@@ -1994,17 +1994,17 @@ contract MonsterBreeding is MonsterOwnership {
         // In addition to checking the cooldownEndBlock, we also need to check to see if
         // the monster has a pending birth; there can be some period of time between the end
         // of the pregnacy timer and the birth event.
-        return (_monster.siringWithId == 0) &amp;&amp; (_monster.cooldownEndBlock &lt;= uint64(block.number));
+        return (_monster.siringWithId == 0) && (_monster.cooldownEndBlock <= uint64(block.number));
     }
 
     /// @dev Check if a sire has authorized breeding with this matron. True if both sire
     ///  and matron have the same owner, or if the sire has given siring permission to
-    ///  the matron&#39;s owner (via approveSiring()).
+    ///  the matron's owner (via approveSiring()).
     function _isSiringPermitted(uint256 _sireId, uint256 _matronId) internal view returns (bool) {
         address matronOwner = monsterIndexToOwner[_matronId];
         address sireOwner = monsterIndexToOwner[_sireId];
 
-        // Siring is okay if they have same owner, or if the matron&#39;s owner was given
+        // Siring is okay if they have same owner, or if the matron's owner was given
         // permission to breed with this sire.
         return (matronOwner == sireOwner || sireAllowedToAddress[_sireId] == matronOwner);
     }
@@ -2019,7 +2019,7 @@ contract MonsterBreeding is MonsterOwnership {
         // Increment the breeding count, clamping it at 13, which is the length of the
         // cooldowns array. We could check the array size dynamically, but hard-coding
         // this as a constant saves gas. Yay, Solidity!
-        if (_monster.cooldownIndex &lt; 13) {
+        if (_monster.cooldownIndex < 13) {
             _monster.cooldownIndex += 1;
         }
     }
@@ -2047,7 +2047,7 @@ contract MonsterBreeding is MonsterOwnership {
     /// @dev Checks to see if a given Monster is pregnant and (if so) if the gestation
     ///  period has passed.
     function _isReadyToGiveBirth(Monster _matron) private view returns (bool) {
-        return (_matron.siringWithId != 0) &amp;&amp; (_matron.cooldownEndBlock &lt;= uint64(block.number));
+        return (_matron.siringWithId != 0) && (_matron.cooldownEndBlock <= uint64(block.number));
     }
 
     /// @notice Checks that a given monster is able to breed (i.e. it is not pregnant or
@@ -2058,7 +2058,7 @@ contract MonsterBreeding is MonsterOwnership {
     view
     returns (bool)
     {
-        require(_monsterId &gt; 0);
+        require(_monsterId > 0);
         Monster storage monster = monsters[_monsterId];
         return _isReadyToBreed(monster);
     }
@@ -2070,7 +2070,7 @@ contract MonsterBreeding is MonsterOwnership {
     view
     returns (bool)
     {
-        require(_monsterId &gt; 0);
+        require(_monsterId > 0);
         // A monster is pregnant if and only if this field is set
         return monsters[_monsterId].siringWithId != 0;
     }
@@ -2078,9 +2078,9 @@ contract MonsterBreeding is MonsterOwnership {
     /// @dev Internal check to see if a given sire and matron are a valid mating pair. DOES NOT
     ///  check ownership permissions (that is up to the caller).
     /// @param _matron A reference to the Monster struct of the potential matron.
-    /// @param _matronId The matron&#39;s ID.
+    /// @param _matronId The matron's ID.
     /// @param _sire A reference to the Monster struct of the potential sire.
-    /// @param _sireId The sire&#39;s ID
+    /// @param _sireId The sire's ID
     function _isValidMatingPair(
         Monster storage _matron,
         uint256 _matronId,
@@ -2091,12 +2091,12 @@ contract MonsterBreeding is MonsterOwnership {
     view
     returns (bool)
     {
-        // A Monster can&#39;t breed with itself!
+        // A Monster can't breed with itself!
         if (_matronId == _sireId) {
             return false;
         }
 
-        // Monsters can&#39;t breed with their parents.
+        // Monsters can't breed with their parents.
         if (_matron.matronId == _sireId || _matron.sireId == _sireId) {
             return false;
         }
@@ -2110,7 +2110,7 @@ contract MonsterBreeding is MonsterOwnership {
             return true;
         }
 
-        // Monsters can&#39;t breed with full or half siblings.
+        // Monsters can't breed with full or half siblings.
         if (_sire.matronId == _matron.matronId || _sire.matronId == _matron.sireId) {
             return false;
         }
@@ -2118,7 +2118,7 @@ contract MonsterBreeding is MonsterOwnership {
             return false;
         }
 
-        // Everything seems cool! Let&#39;s get DTF.
+        // Everything seems cool! Let's get DTF.
         return true;
     }
 
@@ -2137,7 +2137,7 @@ contract MonsterBreeding is MonsterOwnership {
     /// @notice Checks to see if two monsters can breed together, including checks for
     ///  ownership and siring approvals. Does NOT check that both monsters are ready for
     ///  breeding (i.e. breedWith could still fail until the cooldowns are finished).
-    ///  TODO: Shouldn&#39;t this check pregnancy and cooldowns?!?
+    ///  TODO: Shouldn't this check pregnancy and cooldowns?!?
     /// @param _matronId The ID of the proposed matron.
     /// @param _sireId The ID of the proposed sire.
     function canBreedWith(uint256 _matronId, uint256 _sireId)
@@ -2145,11 +2145,11 @@ contract MonsterBreeding is MonsterOwnership {
     view
     returns (bool)
     {
-        require(_matronId &gt; 0);
-        require(_sireId &gt; 0);
+        require(_matronId > 0);
+        require(_sireId > 0);
         Monster storage matron = monsters[_matronId];
         Monster storage sire = monsters[_sireId];
-        return _isValidMatingPair(matron, _matronId, sire, _sireId) &amp;&amp;
+        return _isValidMatingPair(matron, _matronId, sire, _sireId) &&
         _isSiringPermitted(_sireId, _matronId);
     }
 
@@ -2168,7 +2168,7 @@ contract MonsterBreeding is MonsterOwnership {
         _triggerCooldown(matron);
 
         // Clear siring permission for both parents. This may not be strictly necessary
-        // but it&#39;s likely to avoid confusion!
+        // but it's likely to avoid confusion!
         delete sireAllowedToAddress[_matronId];
         delete sireAllowedToAddress[_sireId];
 
@@ -2190,37 +2190,37 @@ contract MonsterBreeding is MonsterOwnership {
     whenNotPaused
     {
         // Checks for payment.
-        require(msg.value &gt;= autoBirthFee);
+        require(msg.value >= autoBirthFee);
 
         // Caller must own the matron.
         require(_owns(msg.sender, _matronId));
 
         // Neither sire nor matron are allowed to be on auction during a normal
-        // breeding operation, but we don&#39;t need to check that explicitly.
-        // For matron: The caller of this function can&#39;t be the owner of the matron
+        // breeding operation, but we don't need to check that explicitly.
+        // For matron: The caller of this function can't be the owner of the matron
         //   because the owner of a Monster on auction is the auction house, and the
         //   auction house will never call breedWith().
         // For sire: Similarly, a sire on auction will be owned by the auction house
         //   and the act of transferring ownership will have cleared any oustanding
         //   siring approval.
-        // Thus we don&#39;t need to spend gas explicitly checking to see if either monster
+        // Thus we don't need to spend gas explicitly checking to see if either monster
         // is on auction.
 
         // Check that matron and sire are both owned by caller, or that the sire
-        // has given siring permission to caller (i.e. matron&#39;s owner).
+        // has given siring permission to caller (i.e. matron's owner).
         // Will fail for _sireId = 0
         require(_isSiringPermitted(_sireId, _matronId));
 
         // Grab a reference to the potential matron
         Monster storage matron = monsters[_matronId];
 
-        // Make sure matron isn&#39;t pregnant, or in the middle of a siring cooldown
+        // Make sure matron isn't pregnant, or in the middle of a siring cooldown
         require(_isReadyToBreed(matron));
 
         // Grab a reference to the potential sire
         Monster storage sire = monsters[_sireId];
 
-        // Make sure sire isn&#39;t pregnant, or in the middle of a siring cooldown
+        // Make sure sire isn't pregnant, or in the middle of a siring cooldown
         require(_isReadyToBreed(sire));
 
         // Test that these monsters are a valid mating pair.
@@ -2242,7 +2242,7 @@ contract MonsterBreeding is MonsterOwnership {
     ///  combines the genes of the two parents to create a new monster. The new Monster is assigned
     ///  to the current owner of the matron. Upon successful completion, both the matron and the
     ///  new monster will be ready to breed again. Note that anyone can call this function (if they
-    ///  are willing to pay the gas!), but the new monster always goes to the mother&#39;s owner.
+    ///  are willing to pay the gas!), but the new monster always goes to the mother's owner.
     function giveBirth(uint256 _matronId)
     external
     onlyCOO
@@ -2264,7 +2264,7 @@ contract MonsterBreeding is MonsterOwnership {
 
         // Determine the higher generation number of the two parents
         uint16 parentGen = matron.generation;
-        if (sire.generation &gt; matron.generation) {
+        if (sire.generation > matron.generation) {
             parentGen = sire.generation;
         }
 
@@ -2286,7 +2286,7 @@ contract MonsterBreeding is MonsterOwnership {
         // Send the balance fee to the person who made birth happen.
         msg.sender.send(autoBirthFee);
 
-        // return the new monster&#39;s ID
+        // return the new monster's ID
         return monsterId;
     }
 }
@@ -2415,7 +2415,7 @@ contract MonsterAuction is MonsterBreeding {
 
         // Define the current price of the auction.
         uint256 currentPrice = siringAuction.getCurrentPrice(_sireId);
-        require(msg.value &gt;= currentPrice + autoBirthFee);
+        require(msg.value >= currentPrice + autoBirthFee);
 
         // Siring auction will throw if the bid fails.
         siringAuction.bid.value(msg.value - autoBirthFee)(_sireId);
@@ -2455,7 +2455,7 @@ contract MonsterMinting is MonsterAuction {
         if (monsterOwner == address(0)) {
             monsterOwner = cooAddress;
         }
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         promoCreatedCount++;
         _createMonster(0, 0, 0, _genes, monsterOwner);
@@ -2464,7 +2464,7 @@ contract MonsterMinting is MonsterAuction {
     /// @dev Creates a new gen0 monster with the given genes and
     ///  creates an auction for it.
     function createGen0Auction(uint256 _genes) external onlyCOO {
-        require(gen0CreatedCount &lt; GEN0_CREATION_LIMIT);
+        require(gen0CreatedCount < GEN0_CREATION_LIMIT);
 
         uint256 genes = _genes;
         if(genes == 0)
@@ -2489,13 +2489,13 @@ contract MonsterMinting is MonsterAuction {
     function _computeNextGen0Price() internal view returns (uint256) {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
 
-        // Sanity check to ensure we don&#39;t overflow arithmetic
+        // Sanity check to ensure we don't overflow arithmetic
         require(avePrice == uint256(uint128(avePrice)));
 
         uint256 nextPrice = avePrice + (avePrice / 2);
 
         // We never auction for less than starting price
-        if (nextPrice &lt; GEN0_STARTING_PRICE) {
+        if (nextPrice < GEN0_STARTING_PRICE) {
             nextPrice = GEN0_STARTING_PRICE;
         }
 
@@ -2506,17 +2506,17 @@ contract MonsterMinting is MonsterAuction {
 
 /// @title CryptoMonsters: Collectible, breedable, and oh-so-adorable monsters on the Ethereum blockchain.
 /// @author Axiom Zen (https://www.axiomzen.co)
-/// @dev The main CryptoMonsters contract, keeps track of monsters so they don&#39;t wander around and get lost.
+/// @dev The main CryptoMonsters contract, keeps track of monsters so they don't wander around and get lost.
 contract MonsterCore is MonsterMinting {
 
     // This is the main CryptoMonsters contract. In order to keep our code seperated into logical sections,
-    // we&#39;ve broken it up in two ways. First, we have several seperately-instantiated sibling contracts
+    // we've broken it up in two ways. First, we have several seperately-instantiated sibling contracts
     // that handle auctions and our super-top-secret genetic combination algorithm. The auctions are
-    // seperate since their logic is somewhat complex and there&#39;s always a risk of subtle bugs. By keeping
+    // seperate since their logic is somewhat complex and there's always a risk of subtle bugs. By keeping
     // them in their own contracts, we can upgrade them without disrupting the main contract that tracks
     // monster ownership. The genetic combination algorithm is kept seperate so we can open-source all of
     // the rest of our code without making it _too_ easy for folks to figure out how the genetics work.
-    // Don&#39;t worry, I&#39;m sure someone will reverse engineer it soon enough!
+    // Don't worry, I'm sure someone will reverse engineer it soon enough!
     //
     // Secondly, we break the core contract into multiple files using inheritence, one for each major
     // facet of functionality of CK. This allows us to keep related code bundled together while still
@@ -2541,10 +2541,10 @@ contract MonsterCore is MonsterMinting {
     //             through this facet of the core contract.
     //
     //      - MonsterMinting: This final facet contains the functionality we use for creating new gen0 monsters.
-    //             We can make up to 5000 &quot;promo&quot; monsters that can be given away (especially important when
+    //             We can make up to 5000 "promo" monsters that can be given away (especially important when
     //             the community is new), and all others can only be created and then immediately put up
     //             for auction via an algorithmically determined starting price. Regardless of how they
-    //             are created, there is a hard limit of 50k gen0 monsters. After that, it&#39;s all up to the
+    //             are created, there is a hard limit of 50k gen0 monsters. After that, it's all up to the
     //             community to breed, breed, breed!
 
     // Set in case the core contract is broken and an upgrade is required
@@ -2564,13 +2564,13 @@ contract MonsterCore is MonsterMinting {
         //
         cfoAddress = msg.sender;
 
-        // start with the mythical monster 0 - so we don&#39;t have generation-0 parent issues
+        // start with the mythical monster 0 - so we don't have generation-0 parent issues
         _createMonster(0, 0, 0, uint256(-1), address(0));
     }
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indimonstering that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indimonstering that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -2581,7 +2581,7 @@ contract MonsterCore is MonsterMinting {
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+    /// @dev Reject all Ether from being sent here, unless it's from one of the
     ///  two auction contracts. (Hopefully, we can prevent user accidents.)
     function() external payable {
         require(
@@ -2609,9 +2609,9 @@ contract MonsterCore is MonsterMinting {
     ) {
         Monster storage monster = monsters[_id];
 
-        // if this variable is 0 then it&#39;s not gestating
+        // if this variable is 0 then it's not gestating
         isGestating = (monster.siringWithId != 0);
-        isReady = (monster.cooldownEndBlock &lt;= block.number);
+        isReady = (monster.cooldownEndBlock <= block.number);
         cooldownIndex = uint256(monster.cooldownIndex);
         nextActionAt = uint256(monster.cooldownEndBlock);
         siringWithId = uint256(monster.siringWithId);
@@ -2623,7 +2623,7 @@ contract MonsterCore is MonsterMinting {
     }
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.
@@ -2643,7 +2643,7 @@ contract MonsterCore is MonsterMinting {
         // Subtract all the currently pregnant monsters we have, plus 1 of margin.
         uint256 subtractFees = (pregnantMonsters + 1) * autoBirthFee;
 
-        if (balance &gt; subtractFees) {
+        if (balance > subtractFees) {
             cfoAddress.send(balance - subtractFees);
         }
     }

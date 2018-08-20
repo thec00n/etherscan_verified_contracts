@@ -1,7 +1,7 @@
 /**
  * @title DVIP Contract. DCAsset Membership Token contract.
  *
- * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb998a92ab8f8e888e859f998a8782918e8f888a9b829f8a87c5888486">[email&#160;protected]</a>
+ * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb998a92ab8f8e888e859f998a8782918e8f888a9b829f8a87c5888486">[email protected]</a>
  */
 contract Relay {
   function relayReceiveApproval(address _caller, address _spender, uint256 _amount, bytes _extraData) returns (bool success);
@@ -34,7 +34,7 @@ contract DVIPBackend {
     PropertySet(msg.sender);
   }
   modifier onlyOwnerUnlocked {
-    assert(!locked &amp;&amp; msg.sender == owner);
+    assert(!locked && msg.sender == owner);
     _
   }
   function lock() onlyOwner onlyIfUnlocked {
@@ -44,7 +44,7 @@ contract DVIPBackend {
   function isLocked() returns (bool status) {
     return locked;
   }
-  bytes32 public standard = &#39;Token 0.1&#39;;
+  bytes32 public standard = 'Token 0.1';
   bytes32 public name;
   bytes32 public symbol;
   bool public allowTransactions;
@@ -52,8 +52,8 @@ contract DVIPBackend {
 
   event Approval(address indexed from, address indexed spender, uint256 amount);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -63,12 +63,12 @@ contract DVIPBackend {
 
   uint256 public expiry;
   uint8 public feeDecimals;
-  mapping (address =&gt; uint256) public validAfter;
+  mapping (address => uint256) public validAfter;
   uint256 public mustHoldFor;
   address public hotwalletAddress;
   address public frontendAddress;
-  mapping (address =&gt; bool) public frozenAccount;
-  mapping (address =&gt; uint256) public exportFee;
+  mapping (address => bool) public frozenAccount;
+  mapping (address => uint256) public exportFee;
 
   event FeeSetup(address indexed from, address indexed target, uint256 amount);
   event Processed(address indexed sender);
@@ -88,8 +88,8 @@ contract DVIPBackend {
     frontendAddress = _frontendAddress;
     allowTransactions = true;
     totalSupply = 0;
-    name = &quot;DVIP&quot;;
-    symbol = &quot;DVIP&quot;;
+    name = "DVIP";
+    symbol = "DVIP";
     feeDecimals = 6;
     expiry = 1514764800; //1 jan 2018
     mustHoldFor = 86400;
@@ -113,14 +113,14 @@ contract DVIPBackend {
    */
   function transfer(address caller, address _to, uint256 _amount) onlyAsset returns (bool success) {
     assert(allowTransactions);
-    assert(balanceOf[caller] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+    assert(balanceOf[caller] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
     assert(!frozenAccount[caller]);
     assert(!frozenAccount[_to]);
     balanceOf[caller] -= _amount;
     uint256 preBalance = balanceOf[_to];
     balanceOf[_to] += _amount;
-    if (preBalance &lt;= 1 &amp;&amp; balanceOf[_to] &gt;= 1) {
+    if (preBalance <= 1 && balanceOf[_to] >= 1) {
       validAfter[_to] = now + mustHoldFor;
     }
     Transfer(caller, _to, _amount);
@@ -137,9 +137,9 @@ contract DVIPBackend {
    */
   function transferFrom(address caller, address _from, address _to, uint256 _amount) onlyAsset returns (bool success) {
     assert(allowTransactions);
-    assert(balanceOf[_from] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
-    assert(_amount &lt;= allowance[_from][caller]);
+    assert(balanceOf[_from] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
+    assert(_amount <= allowance[_from][caller]);
     assert(!frozenAccount[caller]);
     assert(!frozenAccount[_from]);
     assert(!frozenAccount[_to]);
@@ -147,7 +147,7 @@ contract DVIPBackend {
     uint256 preBalance = balanceOf[_to];
     balanceOf[_to] += _amount;
     allowance[_from][caller] -= _amount;
-    if (balanceOf[_to] &gt;= 1 &amp;&amp; preBalance &lt;= 1) {
+    if (balanceOf[_to] >= 1 && preBalance <= 1) {
       validAfter[_to] = now + mustHoldFor;
     }
     Transfer(_from, _to, _amount);
@@ -216,7 +216,7 @@ contract DVIPBackend {
   }
 
   function seizeTokens(address target, uint256 amount) onlyOwner {
-    assert(balanceOf[target] &gt;= amount);
+    assert(balanceOf[target] >= amount);
     assert(frozenAccount[target]);
     balanceOf[target] -= amount;
     balanceOf[hotwalletAddress] += amount;
@@ -224,7 +224,7 @@ contract DVIPBackend {
   }
 
   function destroyTokens(uint256 amt) onlyOwner {
-    assert(balanceOf[hotwalletAddress] &gt;= amt);
+    assert(balanceOf[hotwalletAddress] >= amt);
     balanceOf[hotwalletAddress] -= amt;
     Processed(msg.sender);
   }
@@ -255,9 +255,9 @@ contract DVIPBackend {
 
 
   /**
-   * @notice &#39;Returns the fee for a transfer from `from` to `to` on an amount `amount`.
+   * @notice 'Returns the fee for a transfer from `from` to `to` on an amount `amount`.
    *
-   * Fee&#39;s consist of a possible
+   * Fee's consist of a possible
    *    - import fee on transfers to an address
    *    - export fee on transfers from an address
    * DVIP ownership on an address
@@ -275,11 +275,11 @@ contract DVIPBackend {
   function feeFor(address from, address to, uint256 amount) constant external returns (uint256 value) {
     uint256 fee = exportFee[from];
     if (fee == 0) return 0;
-    if ((exportFee[from] == 0 &amp;&amp; balanceOf[from] != 0 &amp;&amp; now &lt; expiry &amp;&amp; validAfter[from] &lt;= now) || (balanceOf[to] != 0 &amp;&amp; now &lt; expiry &amp;&amp; validAfter[to] &lt;= now)) return 0;
+    if ((exportFee[from] == 0 && balanceOf[from] != 0 && now < expiry && validAfter[from] <= now) || (balanceOf[to] != 0 && now < expiry && validAfter[to] <= now)) return 0;
     return div10(amount*fee, feeDecimals);
   }
   function div10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a /= 10;
     }
     return a;

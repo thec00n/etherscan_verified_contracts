@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -13,7 +13,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -43,9 +43,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -62,7 +62,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ library SafeMath {
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -80,7 +80,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -139,7 +139,7 @@ contract EIP20Interface {
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -148,7 +148,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -160,7 +160,7 @@ THE SOFTWARE.
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -205,7 +205,7 @@ MIT License for burn() function and event
 Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -214,7 +214,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -228,12 +228,12 @@ THE SOFTWARE.
 contract CellBlocksToken is EIP20Interface, Ownable {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -243,16 +243,16 @@ contract CellBlocksToken is EIP20Interface, Ownable {
     function CellBlocksToken() public {
         balances[msg.sender] = 3*(10**26);            // Give the creator all initial tokens
         totalSupply = 3*(10**26);                     // Update total supply
-        name = &quot;CellBlocks&quot;;                          // Set the name for display purposes
+        name = "CellBlocks";                          // Set the name for display purposes
         decimals = 18;                                // Amount of decimals for display purposes
-        symbol = &quot;CLBK&quot;;                               // Set the symbol for display purposes
+        symbol = "CLBK";                               // Set the symbol for display purposes
     }
 
-    //as long as supply &gt; 10**26 and timestamp is after 6/20/18 12:01 am MST, 
+    //as long as supply > 10**26 and timestamp is after 6/20/18 12:01 am MST, 
     //transfer will call halfPercent() and burn() to burn 0.5% of each transaction 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        if (totalSupply &gt; (10**26) &amp;&amp; block.timestamp &gt;= 1529474460) {
+        require(balances[msg.sender] >= _value);
+        if (totalSupply > (10**26) && block.timestamp >= 1529474460) {
             uint halfP = halfPercent(_value);
             burn(msg.sender, halfP);
             _value = SafeMath.sub(_value, halfP);
@@ -263,19 +263,19 @@ contract CellBlocksToken is EIP20Interface, Ownable {
         return true;
     }
 
-    //as long as supply &gt; 10**26 and timestamp is after 6/20/18 12:01 am MST, 
+    //as long as supply > 10**26 and timestamp is after 6/20/18 12:01 am MST, 
     //transferFrom will call halfPercent() and burn() to burn 0.5% of each transaction
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
-        if (totalSupply &gt; (10**26) &amp;&amp; block.timestamp &gt;= 1529474460) {
+        require(balances[_from] >= _value && allowance >= _value);
+        if (totalSupply > (10**26) && block.timestamp >= 1529474460) {
             uint halfP = halfPercent(_value);
             burn(_from, halfP);
             _value = SafeMath.sub(_value, halfP);
         }
         balances[_to] = SafeMath.add(balances[_to], _value);
         balances[_from] = SafeMath.sub(balances[_from], _value);
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
         }
         Transfer(_from, _to, _value);
@@ -300,7 +300,7 @@ contract CellBlocksToken is EIP20Interface, Ownable {
     /// @param _value amount to calculate 0.5% of
     /// @return uint representing 0.5% of _value
     function halfPercent(uint _value) private pure returns(uint amount) {
-        if (_value &gt; 0) {
+        if (_value > 0) {
             // caution, check safe-to-multiply here
             uint temp = SafeMath.mul(_value, 5);
             amount = SafeMath.div(temp, 1000);
@@ -319,10 +319,10 @@ contract CellBlocksToken is EIP20Interface, Ownable {
     /// @param burner The address to burn the tokens from 
     /// @param _value The amount of tokens to be burnt
     function burn(address burner, uint256 _value) public {
-        require(_value &lt;= balances[burner]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
-        if (_value &gt; 0) {
+        require(_value <= balances[burner]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
+        if (_value > 0) {
             balances[burner] = SafeMath.sub(balances[burner], _value);
             totalSupply = SafeMath.sub(totalSupply, _value);
             Burn(burner, _value);

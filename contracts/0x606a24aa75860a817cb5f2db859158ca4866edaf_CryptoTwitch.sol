@@ -33,8 +33,8 @@ contract CryptoTwitch is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoTwitch&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;Twitch&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoTwitch"; // solhint-disable-line
+  string public constant SYMBOL = "Twitch"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -45,19 +45,19 @@ contract CryptoTwitch is ERC721 {
 
   /// @dev A mapping from item IDs to the address that owns them. All items have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public itemIndexToOwner;
+  mapping (uint256 => address) public itemIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from itemIDs to an address that has been approved to call
   ///  transferFrom(). Each item can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public itemIndexToApproved;
+  mapping (uint256 => address) public itemIndexToApproved;
 
   // @dev A mapping from itemIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private itemIndexToPrice;
+  mapping (uint256 => uint256) private itemIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -127,14 +127,14 @@ contract CryptoTwitch is ERC721 {
 
   /// @dev Creates a new promo item with the given name, with given _price and assignes it to an address.
   function createPromoItem(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address itemOwner = _owner;
     if (itemOwner == address(0)) {
       itemOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -199,16 +199,16 @@ contract CryptoTwitch is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       itemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       itemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
@@ -282,7 +282,7 @@ contract CryptoTwitch is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 itemId;
-      for (itemId = 0; itemId &lt;= totalitems; itemId++) {
+      for (itemId = 0; itemId <= totalitems; itemId++) {
         if (itemIndexToOwner[itemId] == _owner) {
           result[resultIndex] = itemId;
           resultIndex++;
@@ -347,8 +347,8 @@ contract CryptoTwitch is ERC721 {
     });
     uint256 newItemId = items.push(_item) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newItemId == uint256(uint32(newItemId)));
 
     Birth(newItemId, _name, _owner);
@@ -376,12 +376,12 @@ contract CryptoTwitch is ERC721 {
 
   /// @dev Assigns ownership of a specific item to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of items is capped to 2^32 we can&#39;t overflow this
+    // Since the number of items is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     itemIndexToOwner[_tokenId] = _to;
 
-    // When creating new items _from is 0x0, but we can&#39;t account that address.
+    // When creating new items _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -418,7 +418,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -427,7 +427,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

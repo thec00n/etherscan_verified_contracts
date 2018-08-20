@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcbfb3b2a8bdbfa89cafb1bdaea8b9a8b4f2bfb3">[email&#160;protected]</a>
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcbfb3b2a8bdbfa89cafb1bdaea8b9a8b4f2bfb3">[email protected]</a>
  */
 
 /**
@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,8 +87,8 @@ contract ERC20 is ERC20Basic {
 contract ZIC_Token is ERC20, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;Zinscoin&quot;;
-    string public symbol = &quot;ZIC&quot;;
+    string public name = "Zinscoin";
+    string public symbol = "ZIC";
     uint public decimals = 5;
 
     uint public chainStartTime;
@@ -106,9 +106,9 @@ contract ZIC_Token is ERC20, Ownable {
     uint64 time;
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; transferInStruct[]) transferIns;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => transferInStruct[]) transferIns;
     
     event Mint(address indexed _address, uint _reward);
     event Burn(address indexed burner, uint256 value);
@@ -117,12 +117,12 @@ contract ZIC_Token is ERC20, Ownable {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     modifier canPoSMint() {
-        require(totalSupply &lt; maxTotalSupply);
+        require(totalSupply < maxTotalSupply);
         _;
     }
 
@@ -143,7 +143,7 @@ contract ZIC_Token is ERC20, Ownable {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
         uint64 _now = uint64(now);
         transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
         transferIns[_to].push(transferInStruct(uint128(_value),_now));
@@ -156,14 +156,14 @@ contract ZIC_Token is ERC20, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         emit Transfer(_from, _to, _value);
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
         uint64 _now = uint64(now);
         transferIns[_from].push(transferInStruct(uint128(balances[_from]),_now));
         transferIns[_to].push(transferInStruct(uint128(_value),_now));
@@ -183,11 +183,11 @@ contract ZIC_Token is ERC20, Ownable {
     }
 
     function mint() canPoSMint public returns (bool) {
-        if(balances[msg.sender] &lt;= 0) return false;
-        if(transferIns[msg.sender].length &lt;= 0) return false;
+        if(balances[msg.sender] <= 0) return false;
+        if(transferIns[msg.sender].length <= 0) return false;
 
         uint reward = getProofOfStakeReward(msg.sender);
-        if(reward &lt;= 0) return false;
+        if(reward <= 0) return false;
 
         totalSupply = totalSupply.add(reward);
         balances[msg.sender] = balances[msg.sender].add(reward);
@@ -209,24 +209,24 @@ contract ZIC_Token is ERC20, Ownable {
     function annualInterest() public constant returns(uint interest) {
         uint _now = now;
         interest = maxMintProofOfStake;
-        if((_now.sub(stakeStartTime)) &lt;= 30 years) {
+        if((_now.sub(stakeStartTime)) <= 30 years) {
             interest = 4 * maxMintProofOfStake; // Anual reward years (0, 30]: 20%
-        } else if((_now.sub(stakeStartTime)) &gt; 30 years &amp;&amp; (_now.sub(stakeStartTime)) &lt;= 50 years){
+        } else if((_now.sub(stakeStartTime)) > 30 years && (_now.sub(stakeStartTime)) <= 50 years){
             interest = 2 * maxMintProofOfStake; // Anual reward years (30, 50]: 20%
         }
     }
 
     function getProofOfStakeReward(address _address) internal returns (uint) {
-        require( (now &gt;= stakeStartTime) &amp;&amp; (stakeStartTime &gt; 0) );
+        require( (now >= stakeStartTime) && (stakeStartTime > 0) );
 
         uint _now = now;
         uint _coinAge = getCoinAge(_address, _now);
-        if(_coinAge &lt;= 0) return 0;
+        if(_coinAge <= 0) return 0;
         
         uint interest = maxMintProofOfStake;
-        if((_now.sub(stakeStartTime)) &lt;= 30 years) {
+        if((_now.sub(stakeStartTime)) <= 30 years) {
             interest = 4 * maxMintProofOfStake; // Anual reward years (0, 30]: 20%
-        } else if((_now.sub(stakeStartTime)) &gt; 30 years &amp;&amp; (_now.sub(stakeStartTime)) &lt;= 50 years){
+        } else if((_now.sub(stakeStartTime)) > 30 years && (_now.sub(stakeStartTime)) <= 50 years){
             interest = 2 * maxMintProofOfStake; // Anual reward years (30, 50]: 20%
         }
 
@@ -234,10 +234,10 @@ contract ZIC_Token is ERC20, Ownable {
     }
 
     function getCoinAge(address _address, uint _now) internal returns (uint _coinAge) {
-        if(transferIns[_address].length &lt;= 0) return 0;
+        if(transferIns[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++){
-            if( _now &lt; uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
+        for (uint i = 0; i < transferIns[_address].length; i++){
+            if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
 
@@ -246,12 +246,12 @@ contract ZIC_Token is ERC20, Ownable {
     }
 
     function ownerSetStakeStartTime(uint timestamp) public onlyOwner {
-        require((stakeStartTime &lt;= 0) &amp;&amp; (timestamp &gt;= chainStartTime));
+        require((stakeStartTime <= 0) && (timestamp >= chainStartTime));
         stakeStartTime = timestamp;
     }
 
     function ownerBurnToken(uint _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         delete transferIns[msg.sender];

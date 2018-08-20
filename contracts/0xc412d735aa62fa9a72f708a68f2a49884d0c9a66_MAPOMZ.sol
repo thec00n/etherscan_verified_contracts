@@ -11,7 +11,7 @@ library SafeMath {
         internal pure returns (uint256 c)
     {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     )
         internal pure returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -55,9 +55,9 @@ library SafeMath {
     )
         internal pure returns (uint256)
     {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 }
@@ -106,12 +106,12 @@ contract Owned {
 
 contract MAPOMZ is Owned, ERC20Interface {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) public freezeBypassing;
-    mapping(address =&gt; uint256) public lockupExpirations;
-    string public constant symbol = &quot;MAPOMZ&quot;;
-    string public constant name = &quot;Mapomz Token&quot;;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) public freezeBypassing;
+    mapping(address => uint256) public lockupExpirations;
+    string public constant symbol = "MAPOMZ";
+    string public constant name = "Mapomz Token";
     uint8 public constant decimals = 0;
     uint256 public circulatingSupply = 0;
     bool public tradingLive = false;
@@ -134,7 +134,7 @@ contract MAPOMZ is Owned, ERC20Interface {
      * @notice Get the token balance of `owner`
      * @dev This function is part of the ERC20 standard
      * @param owner The wallet to get the balance of
-     * @return {&quot;balance&quot;: &quot;The balance of `owner`&quot;}
+     * @return {"balance": "The balance of `owner`"}
      */
     function balanceOf(
         address owner
@@ -149,7 +149,7 @@ contract MAPOMZ is Owned, ERC20Interface {
      * @dev This function is part of the ERC20 standard
      * @param destination The address that receives the tokens
      * @param amount Token amount to transfer
-     * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+     * @return {"success": "If the operation completed successfuly"}
      */
     function transfer(
         address destination,
@@ -170,7 +170,7 @@ contract MAPOMZ is Owned, ERC20Interface {
      * @param from The address that sends the tokens
      * @param to The address that receives the tokens
      * @param tokenAmount Token amount to transfer
-     * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+     * @return {"success": "If the operation completed successfuly"}
      */
     function transferFrom(
         address from,
@@ -191,7 +191,7 @@ contract MAPOMZ is Owned, ERC20Interface {
      * @dev This function is part of the ERC20 standard
      * @param spender The allowed address
      * @param tokenAmount The maximum amount allowed to spend
-     * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+     * @return {"success": "If the operation completed successfuly"}
      */
     function approve(
         address spender,
@@ -209,7 +209,7 @@ contract MAPOMZ is Owned, ERC20Interface {
      * @dev This function is part of the ERC20 standard
      * @param tokenOwner The address that owns the tokens
      * @param spender The spender
-     * @return {&quot;remaining&quot;: &quot;The amount of tokens remaining in the allowance&quot;}
+     * @return {"remaining": "The amount of tokens remaining in the allowance"}
      */
     function allowance(
         address tokenOwner,

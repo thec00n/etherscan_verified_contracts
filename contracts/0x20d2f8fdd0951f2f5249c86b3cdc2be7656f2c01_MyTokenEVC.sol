@@ -24,8 +24,8 @@ contract MyTokenEVC is owned {
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public _totalSupply;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public _balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
     // This notifies clients about the amount burnt
@@ -38,8 +38,8 @@ contract MyTokenEVC is owned {
     function MyTokenEVC() public {
         _totalSupply = 0 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         _balanceOf[msg.sender] = _totalSupply;                // Give the creator all initial tokens
-        name = &quot;MyTokenEVC 2&quot;;                                   // Set the name for display purposes
-        symbol = &quot;MEVC2&quot;;                               // Set the symbol for display purposes
+        name = "MyTokenEVC 2";                                   // Set the name for display purposes
+        symbol = "MEVC2";                               // Set the symbol for display purposes
     }
     
     function name() public constant returns (string) {
@@ -62,7 +62,7 @@ contract MyTokenEVC is owned {
         return _balanceOf[tokenHolder];
     }
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     event FrozenFunds(address target, bool frozen);
 
@@ -80,9 +80,9 @@ contract MyTokenEVC is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         // Check for overflows
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]);
+        require(_balanceOf[_to] + _value > _balanceOf[_to]);
         //Check if FrozenFunds
         require(!frozenAccount[msg.sender]);
         // Save this for an assertion in the future
@@ -116,7 +116,7 @@ contract MyTokenEVC is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -160,7 +160,7 @@ contract MyTokenEVC is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(_balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(_balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         _balanceOf[msg.sender] -= _value;            // Subtract from the sender
         _totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -175,10 +175,10 @@ contract MyTokenEVC is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(_balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-    ///    require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+    ///    require(_value <= allowance[_from][msg.sender]);    // Check allowance
         _balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         _totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

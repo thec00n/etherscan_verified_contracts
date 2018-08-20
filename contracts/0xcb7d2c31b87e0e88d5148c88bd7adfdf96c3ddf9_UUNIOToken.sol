@@ -20,14 +20,14 @@ library Math {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
 
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -80,7 +80,7 @@ contract BasicToken is ERC20 {
     using Math for uint256;
     
     uint256 totalSupply_;    
-    mapping(address =&gt; uint256) balances_;
+    mapping(address => uint256) balances_;
 
     function totalSupply() public view returns (uint256) {
         
@@ -90,7 +90,7 @@ contract BasicToken is ERC20 {
     function transfer(address to, uint256 value) public returns (bool) {
 
         require(to != address(0));
-        require(value &lt;= balances_[msg.sender]);
+        require(value <= balances_[msg.sender]);
 
         balances_[msg.sender] = balances_[msg.sender].sub(value);
         balances_[to] = balances_[to].add(value);
@@ -109,13 +109,13 @@ contract StandardToken is BasicToken {
 
 
     event Burn(address indexed burner, uint256 value);
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed_;
+    mapping (address => mapping (address => uint256)) internal allowed_;
 
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
 
         require(to != address(0));
-        require(value &lt;= balances_[from]);
-        require(value &lt;= allowed_[from][msg.sender]);
+        require(value <= balances_[from]);
+        require(value <= allowed_[from][msg.sender]);
 
         balances_[from] = balances_[from].sub(value);
         balances_[to] = balances_[to].add(value);
@@ -138,7 +138,7 @@ contract StandardToken is BasicToken {
 
     function burn(uint256 value) public {
 
-        require(value &lt;= balances_[msg.sender]);
+        require(value <= balances_[msg.sender]);
         address burner = msg.sender;
         balances_[burner] = balances_[burner].sub(value);
         totalSupply_ = totalSupply_.sub(value);
@@ -152,8 +152,8 @@ contract UUNIOToken is StandardToken, Ownable {
     
     using Math for uint;
 
-    string constant public name     = &quot;UUNIO Token&quot;;
-    string constant public symbol   = &quot;UUNIO&quot;;
+    string constant public name     = "UUNIO Token";
+    string constant public symbol   = "UUNIO";
     uint8 constant public decimals  = 8;
     uint256 constant INITIAL_SUPPLY = 900000000e8;
 

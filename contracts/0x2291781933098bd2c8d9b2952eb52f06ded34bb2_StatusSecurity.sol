@@ -4,10 +4,10 @@ pragma solidity ^0.4.24;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -69,13 +69,13 @@ contract StatusSecurity is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function StatusSecurity() public {
-        symbol = &quot;STC&quot;;
-        name = &quot;Status Security&quot;;
+        symbol = "STC";
+        name = "Status Security";
         decimals = 18;
         _totalSupply = 10000000000000000000000000000;
         balances[0x23c882878a6d442c42d8d6fc6819bc5b29e7782d] = _totalSupply;

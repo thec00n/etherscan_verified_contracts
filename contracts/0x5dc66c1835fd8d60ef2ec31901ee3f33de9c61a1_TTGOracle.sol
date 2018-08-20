@@ -16,13 +16,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c&gt;=a);
+    require(c>=a);
     return c;
   }
   function mul(uint a, uint b) internal pure returns (uint) {
@@ -32,20 +32,20 @@ library SafeMathLib {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c&gt;=a &amp;&amp; c&gt;=b);
+    require(c>=a && c>=b);
     return c;
   }
 
@@ -102,12 +102,12 @@ contract usingOraclize {
 	
 	function oraclize_setNetwork() internal returns(bool)
 	{
-		if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+		if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
 			OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
 			return true;
 		}
 
-		if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+		if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
 			OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
 			return true;
 		}
@@ -117,13 +117,13 @@ contract usingOraclize {
 	
 	function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource, gaslimit);
-		if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
 		return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
 	}
 
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
 	}
 	
@@ -173,8 +173,8 @@ contract ERC721Abstract
 
 contract ERC721 is ERC721Abstract
 {
-	string constant public   name = &quot;TotalGameOracle&quot;;
-	string constant public symbol = &quot;TTGO&quot;;
+	string constant public   name = "TotalGameOracle";
+	string constant public symbol = "TTGO";
 
 	uint256 public totalSupply;
 	struct Token
@@ -182,18 +182,18 @@ contract ERC721 is ERC721Abstract
 		uint256 price;			//  value of stake
 		uint256	option;			//  [payout]96[idLottery]64[combination]32[dateBuy]0
 	}
-	mapping (uint256 =&gt; Token) tokens;
+	mapping (uint256 => Token) tokens;
 	
 	// A mapping from tokens IDs to the address that owns them. All tokens have some valid owner address
-	mapping (uint256 =&gt; address) public tokenIndexToOwner;
+	mapping (uint256 => address) public tokenIndexToOwner;
 	
 	// A mapping from owner address to count of tokens that address owns.	
-	mapping (address =&gt; uint256) ownershipTokenCount; 
+	mapping (address => uint256) ownershipTokenCount; 
 
 	// A mapping from tokenIDs to an address that has been approved to call transferFrom().
 	// Each token can only have one approved address for transfer at any time.
 	// A zero value means no approval is outstanding.
-	mapping (uint256 =&gt; address) public tokenIndexToApproved;
+	mapping (uint256 => address) public tokenIndexToApproved;
 	
 	function implementsERC721() public pure returns (bool)
 	{
@@ -220,7 +220,7 @@ contract ERC721 is ERC721Abstract
 	
 	// Checks if a given address currently has transferApproval for a particular token.
 	// param _claimant the address we are confirming token is approved for.
-	// param _tokenId token id, only valid when &gt; 0
+	// param _tokenId token id, only valid when > 0
 	function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
 		return tokenIndexToApproved[_tokenId] == _claimant;
 	}
@@ -280,7 +280,7 @@ contract Owned
     address private candidate;
 	address public owner;
 
-	mapping(address =&gt; bool) public admins;
+	mapping(address => bool) public admins;
 	
     function Owned() public 
 	{
@@ -320,8 +320,8 @@ contract Functional
 		bytes memory bresult = bytes(_a);
 		uint mint = 0;
 		bool decimals = false;
-		for (uint i=0; i&lt;bresult.length; i++){
-			if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+		for (uint i=0; i<bresult.length; i++){
+			if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
 				if (decimals){
 				   if (_b == 0) break;
 					else _b--;
@@ -330,13 +330,13 @@ contract Functional
 				mint += uint(bresult[i]) - 48;
 			} else if (bresult[i] == 46) decimals = true;
 		}
-		if (_b &gt; 0) mint *= 10**_b;
+		if (_b > 0) mint *= 10**_b;
 		return mint;
 	}
 	
 	function uint2str(uint i) internal pure returns (string)
 	{
-		if (i == 0) return &quot;0&quot;;
+		if (i == 0) return "0";
 		uint j = i;
 		uint len;
 		while (j != 0){
@@ -370,10 +370,10 @@ contract Functional
 		{
 			abc = new string(_ba.length + _bb.length+ _bc.length);
 			babc = bytes(abc);
-			for (i = 0; i &lt; _ba.length; i++) babc[k++] = _ba[i];
-			for (i = 0; i &lt; _bb.length; i++) babc[k++] = _bb[i];
+			for (i = 0; i < _ba.length; i++) babc[k++] = _ba[i];
+			for (i = 0; i < _bb.length; i++) babc[k++] = _bb[i];
 		}
-        for (i = 0; i &lt; _bc.length; i++) babc[k++] = _bc[i];
+        for (i = 0; i < _bc.length; i++) babc[k++] = _bc[i];
 		return string(babc);
 	}
 	
@@ -418,8 +418,8 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		uint256 sum;		// amount bets
 		uint32 count;		// count bets 
 	}
-	mapping(uint32 =&gt; mapping (uint32 =&gt; Stake)) public betsAll; // ID-lottery =&gt; combination =&gt; Stake
-	mapping(bytes32 =&gt; uint32) private queryRes;  // ID-query =&gt; ID-lottery
+	mapping(uint32 => mapping (uint32 => Stake)) public betsAll; // ID-lottery => combination => Stake
+	mapping(bytes32 => uint32) private queryRes;  // ID-query => ID-lottery
 	
 	uint256 public ORACLIZE_GAS_LIMIT = 2000000;
 	uint256 public ORACLIZE_GASPRICE_GWEY = 40; // 40Gwey
@@ -480,7 +480,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		if (betsSumIn==0) betsSumIn = getSumInByLottery(_id);
 		feeValue = gm.feeValue;
 		status = gm.status;
-		if ( status == Status.PLAYING &amp;&amp; timenow() &gt; dateStopBuy ) status = Status.PROCESSING;
+		if ( status == Status.PLAYING && timenow() > dateStopBuy ) status = Status.PROCESSING;
 		isFreezing = gm.isFreezing;
 	}
 	
@@ -488,7 +488,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 	{
 		Game storage curGame = game[idLottery];
 		uint32 count = 0;
-		for(uint32 i=1;i&lt;=curGame.countCombinations;i++) count += betsAll[idLottery][i].count;
+		for(uint32 i=1;i<=curGame.countCombinations;i++) count += betsAll[idLottery][i].count;
 		return count;
 	}
 	
@@ -496,7 +496,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 	{
 		Game storage curGame = game[idLottery];
 		uint256 sum = 0;
-		for(uint32 i=1;i&lt;=curGame.countCombinations;i++) sum += betsAll[idLottery][i].sum;
+		for(uint32 i=1;i<=curGame.countCombinations;i++) sum += betsAll[idLottery][i].sum;
 		return sum;
 	}
 	
@@ -516,10 +516,10 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		price = tkn.price;
 		
 		uint256 packed = tkn.option;
-		payout = uint8((packed &gt;&gt; (12*8)) &amp; 0xFF)==1?true:false;
-		idLottery   = uint32((packed &gt;&gt; (8*8)) &amp; 0xFFFFFFFF);
-		combination = uint32((packed &gt;&gt; (4*8)) &amp; 0xFFFFFFFF);
-		dateBuy     = uint32(packed &amp; 0xFFFFFFFF);
+		payout = uint8((packed >> (12*8)) & 0xFF)==1?true:false;
+		idLottery   = uint32((packed >> (8*8)) & 0xFFFFFFFF);
+		combination = uint32((packed >> (4*8)) & 0xFFFFFFFF);
+		dateBuy     = uint32(packed & 0xFFFFFFFF);
 		sameComboAmount = betsAll[idLottery][combination].sum;
 		tokenID = _id;
 
@@ -537,36 +537,36 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 
 	function getUserTokens(address user, uint32 count) public view returns ( string res ) 
 	{
-		res=&quot;&quot;;
+		res="";
 		require(user!=0x0);
 		uint32 findCount=0;
-		for (uint256 i = totalSupply-1; i &gt;= 0; i--)
+		for (uint256 i = totalSupply-1; i >= 0; i--)
 		{
-			if(i&gt;totalSupply) break;
+			if(i>totalSupply) break;
 			if (user == tokenIndexToOwner[i]) 
 			{
-				res = strConcat( res, &quot;,&quot;, uint2str(i) );
+				res = strConcat( res, ",", uint2str(i) );
 				findCount++;
-				if (count!=0 &amp;&amp; findCount&gt;=count) break;
+				if (count!=0 && findCount>=count) break;
 			}
 		}
 	}
 
 	function getUserTokensByMatch(address user, uint32 matchID) public view returns ( string res ) 
 	{
-		res=&quot;&quot;;
+		res="";
 		require(user!=0x0);
 		uint32 findCount=0;
-		for (uint256 i = totalSupply-1; i &gt;= 0; i--)
+		for (uint256 i = totalSupply-1; i >= 0; i--)
 		{
-			if(i&gt;totalSupply) break;
+			if(i>totalSupply) break;
 			if (user == tokenIndexToOwner[i]) 
 			{
 				Token storage tkn = tokens[i];
 				uint256 packed = tkn.option;
-				uint32 idStored   = uint32((packed &gt;&gt; (8*8)) &amp; 0xFFFFFFFF);
+				uint32 idStored   = uint32((packed >> (8*8)) & 0xFFFFFFFF);
 				if(idStored == matchID){
-					res = strConcat( res, &quot;,&quot;, uint2str(i) );
+					res = strConcat( res, ",", uint2str(i) );
 					findCount++;
 				}
 				
@@ -584,14 +584,14 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		countAll = uint32(game.length);
 		countPlaying = 0;
 		countProcessing = 0;
-		listPlaying=&quot;&quot;;
-		listProcessing=&quot;&quot;;
+		listPlaying="";
+		listProcessing="";
 		uint32 curtime = timenow();
-		for (uint32 i = 0; i &lt; countAll; i++)
+		for (uint32 i = 0; i < countAll; i++)
 		{
 			if (game[i].status!=Status.PLAYING) continue;
-			if (curtime &lt;  game[i].dateStopBuy) { countPlaying++; listPlaying = strConcat( listPlaying, &quot;,&quot;, uint2str(i) ); }
-			if (curtime &gt;= game[i].dateStopBuy) { countProcessing++; listProcessing = strConcat( listProcessing, &quot;,&quot;, uint2str(i) ); }
+			if (curtime <  game[i].dateStopBuy) { countPlaying++; listPlaying = strConcat( listPlaying, ",", uint2str(i) ); }
+			if (curtime >= game[i].dateStopBuy) { countProcessing++; listProcessing = strConcat( listProcessing, ",", uint2str(i) ); }
 		}
 		
 	}
@@ -617,10 +617,10 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 	function addLottery( string _nameLottery, uint32 _dateStopBuy, uint32 _countCombinations, uint32 gameID, uint32 teamAID, uint32 teamBID, uint32 _minStakeFinney ) onlyAdmin public 
 	{
 
-		require( bytes(_nameLottery).length &gt; 2 );
-		require( _countCombinations &gt; 1 );
-		require( _minStakeFinney &gt; 0 );
-		require( _dateStopBuy &gt; timenow() );
+		require( bytes(_nameLottery).length > 2 );
+		require( _countCombinations > 1 );
+		require( _minStakeFinney > 0 );
+		require( _dateStopBuy > timenow() );
 
 		Game memory _game;
 		_game.nameLottery = _nameLottery;
@@ -636,7 +636,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		uint256 newGameId = game.push(_game) - 1;
 		
 		
-		LogEvent( &quot;AddGame&quot;, _nameLottery, newGameId );
+		LogEvent( "AddGame", _nameLottery, newGameId );
 	}
 
 	function () payable public { require (msg.value == 0x0); }
@@ -653,22 +653,22 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 	{
 		Game storage curGame = game[idLottery];
 		require( curGame.status == Status.PLAYING );
-		require( timenow() &lt; curGame.dateStopBuy );
-		require( combination &gt; 0 &amp;&amp; combination &lt;= curGame.countCombinations );
+		require( timenow() < curGame.dateStopBuy );
+		require( combination > 0 && combination <= curGame.countCombinations );
 		require( captainAddress != msg.sender );
 		require( curGame.isFreezing == false );
 		
 		// check money for stake
-		require( msg.value &gt;= curGame.minStake * 1 finney );
+		require( msg.value >= curGame.minStake * 1 finney );
 		
 		uint256 userStake = msg.value;
 		uint256 airDropAmountUser = userStake.mul(userAirDropRate); 
-		if(airDropAmountUser &gt; 1000*10**18) airDropAmountUser = 1000*10**18;
+		if(airDropAmountUser > 1000*10**18) airDropAmountUser = 1000*10**18;
 		ttgCoin.airDrop(this, msg.sender, airDropAmountUser);
 		address teamOwner = itemToken.ownerOf(teamID);
 		if(teamOwner!=0x0){
 			uint256 airDropAmountOwner = userStake.mul(ownerAirDropRate); 	
-			if(airDropAmountOwner &gt; 1000*10**18) airDropAmountOwner = 1000*10**18;			
+			if(airDropAmountOwner > 1000*10**18) airDropAmountOwner = 1000*10**18;			
 			ttgCoin.airDrop(this, teamOwner, airDropAmountOwner);   //for team owner 
 		}
 		uint256 feeValue = userStake.mul(4).div(100);		// 4% fee for contract
@@ -688,7 +688,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		betsAll[idLottery][combination].count++;
 
 		uint128 packed;
-		packed = ( uint128(idLottery) &lt;&lt; 64 ) + ( uint128(combination) &lt;&lt; 32 ) + uint128(block.timestamp);
+		packed = ( uint128(idLottery) << 64 ) + ( uint128(combination) << 32 ) + uint128(block.timestamp);
 
 		Token memory _token = Token({
 			price: userStake,
@@ -699,7 +699,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		tokens[newTokenId] = _token;
 		_transfer(0, msg.sender, newTokenId);
 		
-		LogToken( &quot;Buy&quot;, msg.sender, idLottery, uint32(newTokenId), combination, userStake);
+		LogToken( "Buy", msg.sender, idLottery, uint32(newTokenId), combination, userStake);
 	}
 	
 	// take win money or money for canceling lottery
@@ -708,9 +708,9 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		Token storage tkn = tokens[_tokenId];
 
 		uint256 packed = tkn.option;
-		bool payout = uint8((packed &gt;&gt; (96)) &amp; 0xFF)==1?true:false;
-		uint32 idLottery = uint32((packed &gt;&gt; (64)) &amp; 0xFFFFFFFF);
-		uint32 combination = uint32((packed &gt;&gt; (32)) &amp; 0xFFFFFFFF);
+		bool payout = uint8((packed >> (96)) & 0xFF)==1?true:false;
+		uint32 idLottery = uint32((packed >> (64)) & 0xFFFFFFFF);
+		uint32 combination = uint32((packed >> (32)) & 0xFFFFFFFF);
 
 		Game storage curGame = game[idLottery];
 		
@@ -732,12 +732,12 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		}
 
 		payout = true;
-		packed += uint128(payout?1:0) &lt;&lt; 96;
+		packed += uint128(payout?1:0) << 96;
 		tkn.option = packed;
 	
 		msg.sender.transfer(sumPayment);
 		
-		LogToken( &quot;Redeem&quot;, msg.sender, idLottery, uint32(_tokenId), combination, sumPayment);
+		LogToken( "Redeem", msg.sender, idLottery, uint32(_tokenId), combination, sumPayment);
 	}
 	
 	function cancelLottery(uint32 idLottery) public 
@@ -746,11 +746,11 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		
 		require( curGame.status == Status.PLAYING );
 		// only owner/admin or anybody after 7 days
-		require( msg.sender == owner || admins[msg.sender] || timenow() &gt; curGame.dateStopBuy.add(7 * 24*60*60) );
+		require( msg.sender == owner || admins[msg.sender] || timenow() > curGame.dateStopBuy.add(7 * 24*60*60) );
 
 		curGame.status = Status.CANCELING;
 
-		LogEvent( &quot;CancelLottery&quot;, curGame.nameLottery, idLottery );
+		LogEvent( "CancelLottery", curGame.nameLottery, idLottery );
 		
 		takeFee(idLottery);
 	}
@@ -763,13 +763,13 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		Game storage curGame = game[idLottery];
 		
 		require( curGame.status == Status.PLAYING );
-		require( timenow() &gt; curGame.dateStopBuy );
+		require( timenow() > curGame.dateStopBuy );
 		
 		uint32 tmpCombination = uint32(parseInt(_result,0));
 		
-		string memory error = &quot;callback&quot;;
-		if ( tmpCombination==0 ) error = &quot;callback_result_not_found&quot;;
-		if ( tmpCombination &gt; curGame.countCombinations ) { tmpCombination = 0; error = &quot;callback_result_limit&quot;; }
+		string memory error = "callback";
+		if ( tmpCombination==0 ) error = "callback_result_not_found";
+		if ( tmpCombination > curGame.countCombinations ) { tmpCombination = 0; error = "callback_result_limit"; }
 
 		LogEvent( error, curGame.nameLottery, tmpCombination );
 
@@ -784,21 +784,21 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 	{
 		Game storage curGame = game[idLottery];
 		
-		uint oraclizeFee = oraclize_getPrice( &quot;URL&quot;, ORACLIZE_GAS_LIMIT );
-		require(msg.value + curGame.feeValue &gt; oraclizeFee); // if contract has not enought money to do query
+		uint oraclizeFee = oraclize_getPrice( "URL", ORACLIZE_GAS_LIMIT );
+		require(msg.value + curGame.feeValue > oraclizeFee); // if contract has not enought money to do query
 		
 		curGame.feeValue = curGame.feeValue + msg.value - oraclizeFee;
 
-		LogEvent( &quot;ResolveLotteryByOraclize&quot;, curGame.nameLottery, delaySec );
+		LogEvent( "ResolveLotteryByOraclize", curGame.nameLottery, delaySec );
 		
 		string memory tmpQuery;
-		tmpQuery = strConcat( &quot;json(https://totalgame.io/api/v2/game/&quot;, uint2str(idLottery), &quot;/result.json).result&quot; );
+		tmpQuery = strConcat( "json(https://totalgame.io/api/v2/game/", uint2str(idLottery), "/result.json).result" );
 	
 		uint32 delay;
-		if ( timenow() &lt; curGame.dateStopBuy ) delay = curGame.dateStopBuy - timenow() + delaySec; //TODO:need to convert to safe math
+		if ( timenow() < curGame.dateStopBuy ) delay = curGame.dateStopBuy - timenow() + delaySec; //TODO:need to convert to safe math
 										  else delay = delaySec;
 	
-		bytes32 queryId = oraclize_query(delay, &quot;URL&quot;, tmpQuery, ORACLIZE_GAS_LIMIT);
+		bytes32 queryId = oraclize_query(delay, "URL", tmpQuery, ORACLIZE_GAS_LIMIT);
 		queryRes[queryId] = idLottery;
 	}
 
@@ -807,14 +807,14 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		Game storage curGame = game[idLottery];
 		
 		require( curGame.status == Status.PLAYING );
-		require( combination &lt;= curGame.countCombinations );
+		require( combination <= curGame.countCombinations );
 		require( combination != 0 );
 
-		//require( timenow() &gt; curGame.dateStopBuy + 2*60*60 ); //TODO: remove comment
+		//require( timenow() > curGame.dateStopBuy + 2*60*60 ); //TODO: remove comment
 
 		curGame.winCombination = combination;
 		
-		LogEvent( &quot;ResolveLotteryByHand&quot;, curGame.nameLottery, curGame.winCombination );
+		LogEvent( "ResolveLotteryByHand", curGame.nameLottery, curGame.winCombination );
 		
 		checkWinNobody(idLottery);
 	}
@@ -830,7 +830,7 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		if ( betsAll[idLottery][curGame.winCombination].count == 0 )
 		{
 			if (curGame.betsSumIn+curGame.feeValue!=0) feeLottery = feeLottery.add(curGame.betsSumIn).add(curGame.feeValue);
-			LogEvent( &quot;NOBODYWIN&quot;, curGame.nameLottery, curGame.betsSumIn+curGame.feeValue );
+			LogEvent( "NOBODYWIN", curGame.nameLottery, curGame.betsSumIn+curGame.feeValue );
 		}
 		else 
 			takeFee(idLottery);
@@ -841,22 +841,22 @@ contract TTGOracle is ERC721, usingOraclize, Functional, Owned
 		Game storage curGame = game[idLottery];
 		
 		// take fee
-		if ( curGame.feeValue &gt; 0 )
+		if ( curGame.feeValue > 0 )
 		{
 			feeLottery = feeLottery + curGame.feeValue;
-			LogEvent( &quot;TakeFee&quot;, curGame.nameLottery, curGame.feeValue );
+			LogEvent( "TakeFee", curGame.nameLottery, curGame.feeValue );
 		}
 	}
 	
 	function withdraw() onlyOwner public
 	{
-		require( feeLottery &gt; 0 );
+		require( feeLottery > 0 );
 
 		uint256 tmpFeeLottery = feeLottery;
 		feeLottery = 0;
 		
 		owner.transfer(tmpFeeLottery);
-		LogEvent( &quot;WITHDRAW&quot;, &quot;&quot;, tmpFeeLottery);
+		LogEvent( "WITHDRAW", "", tmpFeeLottery);
 	}
 
 }

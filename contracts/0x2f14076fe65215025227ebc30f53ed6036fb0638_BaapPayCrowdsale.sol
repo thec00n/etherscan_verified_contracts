@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,19 +127,19 @@ contract BaapPayCrowdsale is Ownable{
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
    modifier checkSize(uint numwords) {
-        assert(msg.data.length &gt;= (numwords * 32) + 4);
+        assert(msg.data.length >= (numwords * 32) + 4);
         _;
     }     
     
   function BaapPayCrowdsale(uint256 _startTime, address _wallet, address _tokenToBeUsed) public 
   {
-    //require(_startTime &gt;=now);
+    //require(_startTime >=now);
     require(_wallet != 0x0);
 
     //startTime = _startTime;  
     startTime = now;
     endTime = startTime + 61 days;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
    
     owner = _wallet;
     
@@ -158,68 +158,68 @@ contract BaapPayCrowdsale is Ownable{
     {
         uint256 timeElapsed = now - startTime;
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
-        if (timeElapsedInDays &lt;20)
+        if (timeElapsedInDays <20)
         {
-            if (TOKENS_SOLD &lt;maxTokensToSaleInPreICOPhase)
+            if (TOKENS_SOLD <maxTokensToSaleInPreICOPhase)
             {
                 bonus = tokens.mul(20); //20% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInPreICOPhase);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInPreICOPhase);
             }
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInPreICOPhase &amp;&amp; TOKENS_SOLD &lt; maxTokensToSale)
+            else if (TOKENS_SOLD >= maxTokensToSaleInPreICOPhase && TOKENS_SOLD < maxTokensToSale)
             {
                 bonus = tokens.mul(15); //15% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
             }
             else 
             {
                 bonus = 0;
             }
         }
-        else if (timeElapsedInDays &gt;= 20 &amp;&amp; timeElapsedInDays &lt;27)
+        else if (timeElapsedInDays >= 20 && timeElapsedInDays <27)
         {
             revert();  //no sale during this time, so revert this transaction
         }
-        else if (timeElapsedInDays &gt;= 27 &amp;&amp; timeElapsedInDays&lt;36)
+        else if (timeElapsedInDays >= 27 && timeElapsedInDays<36)
         {
-            if (TOKENS_SOLD &lt; maxTokensToSaleInICOPhase)
+            if (TOKENS_SOLD < maxTokensToSaleInICOPhase)
             {
                 bonus = tokens.mul(15); //15% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInICOPhase);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInICOPhase);
             }
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInICOPhase &amp;&amp; TOKENS_SOLD &lt; maxTokensToSale)
+            else if (TOKENS_SOLD >= maxTokensToSaleInICOPhase && TOKENS_SOLD < maxTokensToSale)
             {
                 bonus = tokens.mul(10); //10% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
             }
         }
-        else if (timeElapsedInDays &gt;= 36 &amp;&amp; timeElapsedInDays&lt;46)
+        else if (timeElapsedInDays >= 36 && timeElapsedInDays<46)
         {
-            if (TOKENS_SOLD &lt; maxTokensToSaleInICOPhase)
+            if (TOKENS_SOLD < maxTokensToSaleInICOPhase)
             {
                 bonus = tokens.mul(10); //10% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInICOPhase);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInICOPhase);
             }
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInICOPhase &amp;&amp; TOKENS_SOLD &lt; maxTokensToSale)
+            else if (TOKENS_SOLD >= maxTokensToSaleInICOPhase && TOKENS_SOLD < maxTokensToSale)
             {
                 bonus = tokens.mul(5); //5% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
             }
         }
-        else if (timeElapsedInDays &gt;= 46 &amp;&amp; timeElapsedInDays&lt;56)
+        else if (timeElapsedInDays >= 46 && timeElapsedInDays<56)
         {
-            if (TOKENS_SOLD &lt; maxTokensToSaleInICOPhase)
+            if (TOKENS_SOLD < maxTokensToSaleInICOPhase)
             {
                 bonus = tokens.mul(5); //5% bonus
                 bonus = bonus.div(100);
-                require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSaleInICOPhase);
+                require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSaleInICOPhase);
             }
-            else if (TOKENS_SOLD &gt;= maxTokensToSaleInICOPhase &amp;&amp; TOKENS_SOLD &lt; maxTokensToSale)
+            else if (TOKENS_SOLD >= maxTokensToSaleInICOPhase && TOKENS_SOLD < maxTokensToSale)
             {
                 bonus = 0;
             }
@@ -236,8 +236,8 @@ contract BaapPayCrowdsale is Ownable{
     require(beneficiary != 0x0);
     require(isCrowdsalePaused == false);
     require(validPurchase());
-    require(msg.value&gt;= minimumContribution);
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(msg.value>= minimumContribution);
+    require(TOKENS_SOLD<maxTokensToSale);
    
     uint256 weiAmount = msg.value;
     
@@ -245,7 +245,7 @@ contract BaapPayCrowdsale is Ownable{
     uint256 tokens = weiAmount.mul(ratePerWei);
     uint256 bonus = determineBonus(tokens);
     tokens = tokens.add(bonus);
-    require(TOKENS_SOLD.add(tokens)&lt;=maxTokensToSale);
+    require(TOKENS_SOLD.add(tokens)<=maxTokensToSale);
     
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -264,14 +264,14 @@ contract BaapPayCrowdsale is Ownable{
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    
@@ -325,7 +325,7 @@ contract BaapPayCrowdsale is Ownable{
      
      function sendTokensToBuyers() public onlyOwner {
          require(hasEnded());
-         for (uint i=0;i&lt;tokenBuyers.length;i++)
+         for (uint i=0;i<tokenBuyers.length;i++)
          {
              token.transfer(tokenBuyers[i].buyerAddress,tokenBuyers[i].tokenAmount);
          }

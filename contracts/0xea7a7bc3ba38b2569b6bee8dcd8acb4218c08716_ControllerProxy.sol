@@ -26,7 +26,7 @@ contract Ownable {
 
 
 contract HasWorkers is Ownable {
-    mapping(address =&gt; uint256) private workerToIndex;    
+    mapping(address => uint256) private workerToIndex;    
     address[] private workers;
 
     event AddedWorker(address _worker);
@@ -52,7 +52,7 @@ contract HasWorkers is Ownable {
 
     function allWorkers() public view returns (address[] memory result) {
         result = new address[](workers.length - 1);
-        for (uint256 i = 1; i &lt; workers.length; i++) {
+        for (uint256 i = 1; i < workers.length; i++) {
             result[i - 1] = workers[i];
         }
     }
@@ -83,7 +83,7 @@ contract ControllerStorage {
     address public controllerDelegate;
     address public forward;
     uint256 public createdWallets;
-    mapping(bytes32 =&gt; bytes32) public gStorage;
+    mapping(bytes32 => bytes32) public gStorage;
 }
 
 contract DelegateProxy {
@@ -128,7 +128,7 @@ contract ControllerProxy is ControllerStorage, Ownable, HasWorkers, DelegateProv
     }
 
     function() public payable {
-        if (gasleft() &gt; 2400) {
+        if (gasleft() > 2400) {
             delegatedFwd(controllerDelegate, msg.data);
         }
     }

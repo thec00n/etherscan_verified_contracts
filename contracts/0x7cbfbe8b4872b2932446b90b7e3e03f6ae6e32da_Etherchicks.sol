@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 
 /**************************************
  * @title ERC721
- * @dev ethereum &quot;standard&quot; interface
+ * @dev ethereum "standard" interface
  **************************************/ 
 contract ERC721 {
     event Transfer(address _from, address _to, uint256 _tokenId);
@@ -25,7 +25,7 @@ contract ERC721 {
 /**************************************
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  **************************************/ 
 contract Ownable {
   address public owner;
@@ -67,7 +67,7 @@ contract Config is Ownable {
     uint128  internal levelUp = 8 * 10 ** 15; // 0.008 ether + levelUp
     uint128 internal levelUpVIP =4 * 10 **15; // 0.004 ether
 	uint128 internal VIPCost = 99 * 10 ** 16; // 0.99 ether
-	string internal URL = &quot;https://www.etherchicks.com/card/&quot;;
+	string internal URL = "https://www.etherchicks.com/card/";
     
 
    struct User{
@@ -75,7 +75,7 @@ contract Config is Ownable {
         bool vip;
         bool exists;
     }
-    mapping (address =&gt; User) userProfile;
+    mapping (address => User) userProfile;
     
     function giftFor(address _from, address _target, uint256 _count) internal{
         uint256 giftCount = _count;
@@ -114,8 +114,8 @@ contract Config is Ownable {
         return (userProfile[_id].gifts, userProfile[_id].vip, userProfile[_id].exists);
     }
     
-    mapping (address =&gt; uint8) participant;
-    mapping (uint8 =&gt; address) participantIndex;
+    mapping (address => uint8) participant;
+    mapping (uint8 => address) participantIndex;
     uint8 internal numberOfParticipants = 0;
     
     function setPatch(uint256 _cardPrice, uint8 _percentage1, uint8 _percentage2) public onlyOwner {
@@ -123,7 +123,7 @@ contract Config is Ownable {
         cardPrice = _cardPrice;
         patchTimestamp = now;
         
-        if(_percentage1 != 0 &amp;&amp; _percentage2 != 0){
+        if(_percentage1 != 0 && _percentage2 != 0){
             percentage1 = _percentage1;
             percentage2 = _percentage2;
         }
@@ -133,7 +133,7 @@ contract Config is Ownable {
     
       function percentage(uint256 cost, uint8 _percentage) internal pure returns(uint256)
       {
-          require(_percentage &lt; 100);
+          require(_percentage < 100);
           return (cost * _percentage) / 100;
       }
       
@@ -158,7 +158,7 @@ contract Config is Ownable {
     function getAllParticipants() external view onlyOwner returns(address[], uint8[]) {
         address[] memory addresses = new address[](numberOfParticipants);
         uint8[] memory portions   = new uint8[](numberOfParticipants);
-        for(uint8 i=0; i&lt;numberOfParticipants; i++)
+        for(uint8 i=0; i<numberOfParticipants; i++)
         {
             addresses[i] =participantIndex[i];
             portions[i] = participant[participantIndex[i]];
@@ -190,8 +190,8 @@ contract CardCore is Config {
     Card[] public cards;
 
     // standard mapping
-    mapping (uint256 =&gt; address) cardToOwner;
-    mapping (address =&gt; uint256) ownerCardCount;
+    mapping (uint256 => address) cardToOwner;
+    mapping (address => uint256) ownerCardCount;
 
     modifier cardOwner(uint256 _cardId) {
         require(msg.sender == cardToOwner[_cardId]);
@@ -208,7 +208,7 @@ contract CardCore is Config {
     function _updateCard(address _userAddress, uint256 _cardId) internal{
         require(_owns(_userAddress, _cardId));
         Card storage storedCard = cards[_cardId];
-        if(storedCard.level &lt; 9)
+        if(storedCard.level < 9)
         {
             storedCard.level++;
             // raise event Updated
@@ -227,14 +227,14 @@ contract CardCore is Config {
     
     function _getCards(uint8 numberOfCards, address _userAddress) internal{
         // number of card in pack must be higher as 0
-        require(numberOfCards &gt; 0);
-        require(numberOfCards &lt; 11);
+        require(numberOfCards > 0);
+        require(numberOfCards < 11);
         // init local variable
         uint256 cardId;
         uint256 cardCode;
         Card memory c;
         uint256 _blockNr = uint256(keccak256(block.blockhash(block.number-1)));
-        for(uint8 i = 0; i &lt; numberOfCards; i++)
+        for(uint8 i = 0; i < numberOfCards; i++)
         {
             cardCode = _generateCode(_userAddress, _blockNr);
             c = Card(cardCode, level, patchVersion);
@@ -261,7 +261,7 @@ contract CardOwnership is CardCore, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
 
-    mapping (uint256 =&gt; address) cardApprovals;
+    mapping (uint256 => address) cardApprovals;
 	/// internal, private
 
     
@@ -294,10 +294,10 @@ contract CardOwnership is CardCore, ERC721 {
         _transfer(msg.sender, _to, _tokenId);
     }
       function name() constant returns (string name){
-        return &quot;Etherchicks&quot;;
+        return "Etherchicks";
       }
        function symbol() constant returns (string symbol){
-        return &quot;ETCS&quot;;
+        return "ETCS";
       }
       
   
@@ -354,7 +354,7 @@ contract CardOwnership is CardCore, ERC721 {
             // sequentially up to the totalCat count.
             uint256 tokId;
 
-            for (tokId = 1; tokId &lt;= totalCards ; tokId++) {
+            for (tokId = 1; tokId <= totalCards ; tokId++) {
                 if (cardToOwner[tokId] == _owner) {
                     result[resultIndex] = tokId;
                     resultIndex++;
@@ -376,10 +376,10 @@ contract CardOwnership is CardCore, ERC721 {
         bytes memory inStrb = bytes(inStr);
         bytes memory s = new bytes(inStrb.length + i + 1);
         uint j;
-        for (j = 0; j &lt; inStrb.length; j++) {
+        for (j = 0; j < inStrb.length; j++) {
             s[j] = inStrb[j];
         }
-        for (j = 0; j &lt;= i; j++) {
+        for (j = 0; j <= i; j++) {
             s[j + inStrb.length] = reversed[i - j];
         }
         str = string(s);
@@ -408,12 +408,12 @@ contract AuctionHouse is CardOwnership {
         uint128 finalPrice;
         uint256 timestamp;
     }
-    mapping (uint256 =&gt; Auction) public tokenIdToAuction;
+    mapping (uint256 => Auction) public tokenIdToAuction;
 	// max auction time for token is 7 days..
       
     function _isAuctionAble(uint256 _timestamp) internal view returns(bool)
     {
-       return (_timestamp + constantTime &gt;= now);
+       return (_timestamp + constantTime >= now);
     }
   
     function createAuction(
@@ -443,7 +443,7 @@ contract AuctionHouse is CardOwnership {
         
         uint256 price = _currentPrice(auction);
         
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         address seller = tokenIdToAuction[_tokenId].seller;
         
@@ -465,7 +465,7 @@ contract AuctionHouse is CardOwnership {
     {
         uint256 secondsPassed = 0;
 
-        if (now &gt; _auction.timestamp) {
+        if (now > _auction.timestamp) {
             secondsPassed = now - _auction.timestamp;
         }
 
@@ -487,7 +487,7 @@ contract AuctionHouse is CardOwnership {
         returns (uint256)
     {
     
-        if (_secondsPassed &gt;= _sevenDays) {
+        if (_secondsPassed >= _sevenDays) {
             return _endingPrice;
         } 
         else 
@@ -505,7 +505,7 @@ contract AuctionHouse is CardOwnership {
         external cardOwner(_tokenId)
     {
         Auction storage auction = tokenIdToAuction[_tokenId];
-        require(auction.timestamp &gt; 0);
+        require(auction.timestamp > 0);
         require(msg.sender == auction.seller);
         
         _removeAuction(_tokenId);
@@ -558,16 +558,16 @@ contract Etherchicks is AuctionHouse {
     }
     function _calculateDiscount(uint8 _nr, address _user) internal view returns (uint256){       
       uint256 _cardPrice = cardPrice * _nr;      
-      if(uint256(constantTime + patchTimestamp) &gt;= now)
+      if(uint256(constantTime + patchTimestamp) >= now)
       {
           _cardPrice = percentage(_cardPrice, percentage1);
       }
-      else if(uint256((constantTime * 2) + patchTimestamp) &gt;= now)
+      else if(uint256((constantTime * 2) + patchTimestamp) >= now)
       {
           _cardPrice = percentage(_cardPrice, percentage2);
       }    
       
-      if(userProfile[_user].exists &amp;&amp; userProfile[_user].vip)
+      if(userProfile[_user].exists && userProfile[_user].vip)
       {
           _cardPrice = percentage(_cardPrice, 50);
       }
@@ -578,14 +578,14 @@ contract Etherchicks is AuctionHouse {
         return _calculateDiscount(_nr, msg.sender);
     }  
   function buyCardsAndSendGift(uint8 _nr, address _referral) external payable{
-      require(_calculateDiscount(_nr, msg.sender) &lt;= msg.value);
+      require(_calculateDiscount(_nr, msg.sender) <= msg.value);
         _getCards(_nr, msg.sender);
         setUser(msg.sender, _referral, false);
   }
   
   function buyCards(uint8 _nr) external payable
   {
-      require(_calculateDiscount(_nr, msg.sender) &lt;= msg.value);
+      require(_calculateDiscount(_nr, msg.sender) <= msg.value);
         _getCards(_nr, msg.sender);
         setUser(msg.sender, address(0), false);
   }
@@ -594,7 +594,7 @@ contract Etherchicks is AuctionHouse {
       giftFor(address(0), _targetAddress, _count);
   }
   function withdrawGift() external{
-      if(userProfile[msg.sender].gifts &gt; 0)
+      if(userProfile[msg.sender].gifts > 0)
       {
         _getCards(1, msg.sender);
         userProfile[msg.sender].gifts--;
@@ -602,7 +602,7 @@ contract Etherchicks is AuctionHouse {
   }
   
   function beingVIP() external payable{
-      require(VIPCost &lt;= msg.value);
+      require(VIPCost <= msg.value);
       _beingVIP(msg.sender);
   }
     
@@ -610,7 +610,7 @@ contract Etherchicks is AuctionHouse {
         // is not in auction
         require(cardApprovals[_cardId] == address(0));
         uint128 cost = getLevelUpCost(msg.sender); 
-        require(cost &lt;= msg.value);
+        require(cost <= msg.value);
         _updateCard(msg.sender, _cardId);
   }
   
@@ -626,7 +626,7 @@ contract Etherchicks is AuctionHouse {
     // withdrawal function is called monthly
     function withdrawBalance(uint256 _amount) external onlyOwner  {
         uint256 amount = this.balance;
-		if(_amount &lt;= amount)
+		if(_amount <= amount)
 		{
 		    amount = participantsFirst(_amount);
 			owner.transfer(_amount);
@@ -641,7 +641,7 @@ contract Etherchicks is AuctionHouse {
     function participantsFirst(uint256 _amount) internal returns(uint256){
         uint256 provision;
         uint256 amount = _amount;
-        for(uint8 i=0; i &lt; numberOfParticipants; i++)
+        for(uint8 i=0; i < numberOfParticipants; i++)
         {
             provision = percentage(_amount, participant[participantIndex[i]]);
             amount = amount - provision;

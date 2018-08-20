@@ -4,14 +4,14 @@ pragma solidity 0.4.19;
 
   Copyright 2018 EasyTrade.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -62,18 +62,18 @@ library SafeMath {
     }
 
     function safeSub(uint a, uint b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal constant returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -95,8 +95,8 @@ contract EtherToken is Token {
 contract Exchange {
 
     /// @dev Fills the input order.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
     /// @param shouldThrowOnInsufficientBalanceOrAllowance Test if transfer will fail before attempting.
     /// @param v ECDSA signature parameter v.
@@ -120,8 +120,8 @@ contract Exchange {
     */
     
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @return Keccak-256 hash of order.
     function getOrderHash(address[5] orderAddresses, uint[6] orderValues)
         public
@@ -168,8 +168,8 @@ library EtherDeltaTrader {
   }
    
   /// @dev Fills a sell order in EtherDelta.
-  /// @param orderAddresses Array of order&#39;s maker, makerToken, takerToken.
-  /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+  /// @param orderAddresses Array of order's maker, makerToken, takerToken.
+  /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, expires and nonce.
   /// @param exchangeFee Fee percentage of the exchange.
   /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
   /// @param v ECDSA signature parameter v.
@@ -214,8 +214,8 @@ library EtherDeltaTrader {
   }
   
   /// @dev Fills a buy order in EtherDelta.
-  /// @param orderAddresses Array of order&#39;s maker, makerToken, takerToken.
-  /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+  /// @param orderAddresses Array of order's maker, makerToken, takerToken.
+  /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, expires and nonce.
   /// @param exchangeFee Fee percentage of the exchange.
   /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
   /// @param v ECDSA signature parameter v.
@@ -259,8 +259,8 @@ library EtherDeltaTrader {
   }
   
   /// @dev Trade an EtherDelta order.
-  /// @param orderAddresses Array of order&#39;s maker, makerToken, takerToken.
-  /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+  /// @param orderAddresses Array of order's maker, makerToken, takerToken.
+  /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, expires and nonce.
   /// @param amountToTrade Desired amount of takerToken to fill.
   /// @param v ECDSA signature parameter v.
   /// @param r ECDSA signature parameters r.
@@ -308,7 +308,7 @@ library EtherDeltaTrader {
   ) internal returns(uint) {
       
     //If expired return 0 
-    if(block.number &gt; orderValues[2])
+    if(block.number > orderValues[2])
       return 0;
       
     //Fill EtherDelta Order
@@ -396,8 +396,8 @@ library ZrxTrader {
   }
   
   /// @dev Fills a sell order in 0x.
-  /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-  /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+  /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+  /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
   /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
   /// @param v ECDSA signature parameter v.
   /// @param r ECDSA signature parameters r.
@@ -438,8 +438,8 @@ library ZrxTrader {
   }
   
   /// @dev Fills a buy order in 0x.
-  /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-  /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+  /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+  /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
   /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
   /// @param v ECDSA signature parameter v.
   /// @param r ECDSA signature parameters r.
@@ -496,7 +496,7 @@ library ZrxTrader {
   ) internal returns(uint) {
       
       //If expired return 0 
-      if(block.timestamp &gt;= orderValues[4])
+      if(block.timestamp >= orderValues[4])
         return 0;
           
       bytes32 orderHash = Exchange(ZRX_EXCHANGE_ADDR).getOrderHash(orderAddresses, orderValues);
@@ -572,7 +572,7 @@ library ZrxTrader {
 
 contract EasyTrade {
     
-  string constant public VERSION = &quot;1.0.0&quot;;
+  string constant public VERSION = "1.0.0";
   address constant public ZRX_TOKEN_ADDR = 0xe41d2489571d322189246dafa5ebde1f4699f498;
   
   address public admin; // Admin address
@@ -624,7 +624,7 @@ contract EasyTrade {
   /// @dev Set the service fee. Only admin can set the new fee. Service fee can only be reduced, never increased
   /// @param serviceFee_ Percentage times (1 ether).
   function changeFeePercentage(uint serviceFee_) public onlyAdmin {
-    require(serviceFee_ &lt; serviceFee);
+    require(serviceFee_ < serviceFee);
     serviceFee = serviceFee_;
   }
   
@@ -674,16 +674,16 @@ contract EasyTrade {
     );
     
     //We make sure that at least one order had some amount filled
-    require(ethersObtained &gt; 0 &amp;&amp; tokensSold &gt;0);
+    require(ethersObtained > 0 && tokensSold >0);
     
     //Check that the price of what was sold is not smaller than the min agreed
-    require(SafeMath.safeDiv(ethersTotal, tokensTotal) &lt;= SafeMath.safeDiv(ethersObtained, tokensSold));
+    require(SafeMath.safeDiv(ethersTotal, tokensTotal) <= SafeMath.safeDiv(ethersObtained, tokensSold));
     
     //Substracts the tokens sold
     tokensRefunded = SafeMath.safeSub(tokensTotal, tokensSold);
     
     //Return tokens not sold 
-    if(tokensRefunded &gt; 0) 
+    if(tokensRefunded > 0) 
      require(Token(token).transfer(msg.sender, tokensRefunded));
     
     //Send the ethersObtained
@@ -716,7 +716,7 @@ contract EasyTrade {
     uint totalEthersObtained = 0;
     uint tokensRemaining = tokensTotal;
     
-    for (uint i = 0; i &lt; orderAddresses.length; i++) {
+    for (uint i = 0; i < orderAddresses.length; i++) {
    
       (totalEthersObtained, tokensRemaining) = fillOrderForSellRequest(
          totalEthersObtained,
@@ -733,7 +733,7 @@ contract EasyTrade {
     }
     
     //Substracts service fee
-    if(totalEthersObtained &gt; 0) {
+    if(totalEthersObtained > 0) {
       uint fee =  SafeMath.safeMul(totalEthersObtained, serviceFee) / (1 ether);
       totalEthersObtained = collectServiceFee(SafeMath.min256(fee, totalEthersObtained), totalEthersObtained);
     }
@@ -769,7 +769,7 @@ contract EasyTrade {
     uint tokensRemaining = initialTokensRemaining;
     
     //Exchange fees should not be higher than 1% (in Wei)
-    require(exchangeFee &lt; 10000000000000000);
+    require(exchangeFee < 10000000000000000);
     
     //Checks that there is enoughh amount to execute the trade
     uint fillAmount = getFillAmount(
@@ -783,7 +783,7 @@ contract EasyTrade {
       s
     );
     
-    if(fillAmount &gt; 0) {
+    if(fillAmount > 0) {
           
       //Substracts the amount to execute
       tokensRemaining = SafeMath.safeSub(tokensRemaining, fillAmount);
@@ -852,7 +852,7 @@ contract EasyTrade {
     uint ethersSpent;
     uint ethersRefunded = ethersTotal;
      
-    require(tokensTotal &gt; 0 &amp;&amp; msg.value &gt; 0);
+    require(tokensTotal > 0 && msg.value > 0);
     
     (tokensObtained, ethersSpent) = fillOrdersForBuyRequest(
       ethersTotal,
@@ -866,16 +866,16 @@ contract EasyTrade {
     );
     
     //We make sure that at least one order had some amount filled
-    require(ethersSpent &gt; 0 &amp;&amp; tokensObtained &gt;0);
+    require(ethersSpent > 0 && tokensObtained >0);
     
     //Check that the price of what was bought is not greater than the max agreed
-    require(SafeMath.safeDiv(ethersTotal, tokensTotal) &gt;= SafeMath.safeDiv(ethersSpent, tokensObtained));
+    require(SafeMath.safeDiv(ethersTotal, tokensTotal) >= SafeMath.safeDiv(ethersSpent, tokensObtained));
 
     //Substracts the ethers spent
     ethersRefunded = SafeMath.safeSub(ethersTotal, ethersSpent);
     
     //Return ethers not spent 
-    if(ethersRefunded &gt; 0)
+    if(ethersRefunded > 0)
      require(msg.sender.call.value(ethersRefunded)());
    
     //Send the tokens
@@ -909,9 +909,9 @@ contract EasyTrade {
     uint totalTokensObtained = 0;
     uint ethersRemaining = ethersTotal;
     
-    for (uint i = 0; i &lt; orderAddresses.length; i++) {
+    for (uint i = 0; i < orderAddresses.length; i++) {
     
-      if(ethersRemaining &gt; 0) {
+      if(ethersRemaining > 0) {
         (totalTokensObtained, ethersRemaining) = fillOrderForBuyRequest(
           totalTokensObtained,
           ethersRemaining,
@@ -959,7 +959,7 @@ contract EasyTrade {
     uint ethersRemaining = initialEthersRemaining;
        
     //Exchange fees should not be higher than 1% (in Wei)
-    require(exchangeFee &lt; 10000000000000000);
+    require(exchangeFee < 10000000000000000);
      
     //Checks that there is enoughh amount to execute the trade
     uint fillAmount = getFillAmount(
@@ -973,7 +973,7 @@ contract EasyTrade {
       s
     );
    
-    if(fillAmount &gt; 0) {
+    if(fillAmount > 0) {
      
       //Substracts the amount to execute
       ethersRemaining = SafeMath.safeSub(ethersRemaining, fillAmount);
@@ -1073,7 +1073,7 @@ contract EasyTrade {
   {       
       uint fee = SafeMath.safeMul(fillAmount, feePercentage) / (1 ether);
       //If there is enough remaining to pay fee, it substracts the fee from the remaining
-      if(ethersRemaining &gt;= fee)
+      if(ethersRemaining >= fee)
          ethersRemaining = collectServiceFee(fee, ethersRemaining);
       else {
          fillAmount = collectServiceFee(fee, SafeMath.safeAdd(fillAmount, ethersRemaining));
@@ -1109,7 +1109,7 @@ contract EasyTrade {
   /// @dev Withdraw collected service fees. Only by fee account.
   /// @param amount Amount to withdraw
   function withdrawFees(uint amount) public onlyFeeAccount {
-    require(collectedFee &gt;= amount);
+    require(collectedFee >= amount);
     collectedFee = SafeMath.safeSub(collectedFee, amount);
     require(feeAccount.send(amount));
   }

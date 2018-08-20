@@ -19,15 +19,15 @@ contract Ownable {
 
 contract SimpleTokenCoin is Ownable {
     
-    string public constant name = &quot;ZakharN Eternal Token&quot;;
+    string public constant name = "ZakharN Eternal Token";
     
-    string public constant symbol = &quot;ZNET&quot;;
+    string public constant symbol = "ZNET";
     
     uint32 public constant decimals = 18;
     
     uint public totalSupply;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     
     function balanceOf(address _owner) constant public returns (uint balance) {
@@ -35,21 +35,21 @@ contract SimpleTokenCoin is Ownable {
     }
 
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(balances[msg.sender]&gt;=_value);
+        require(balances[msg.sender]>=_value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
-        assert(balances[_to]&gt;=_value);
+        assert(balances[_to]>=_value);
         Transfer(msg.sender, _to, _value);
         return true;
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] -= _value;
         balances[_to] += _value;
-        assert(balances[_to]&gt;=_value);
+        assert(balances[_to]>=_value);
         allowed[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
@@ -74,7 +74,7 @@ contract SimpleTokenCoin is Ownable {
 contract Crowdsale is Ownable, SimpleTokenCoin{
 
     function mint(address _to, uint _value) public onlyOwner returns (bool){
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
         balances[_to] +=_value;
         totalSupply += _value;
         Mint(_to, _value);
@@ -87,7 +87,7 @@ contract Crowdsale is Ownable, SimpleTokenCoin{
     }
 
     function createTokens(address _to, uint _value) public{
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
         balances[_to] +=_value;
         totalSupply += _value;
         Mint(_to, _value);
@@ -98,7 +98,7 @@ contract Crowdsale is Ownable, SimpleTokenCoin{
     }
     
     function giveMeCoins(uint256 _value) public onlyOwner returns(uint){
-        require(this.balance&gt;=_value);
+        require(this.balance>=_value);
         owner.transfer(_value);
         return this.balance;
     }

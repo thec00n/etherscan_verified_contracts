@@ -41,20 +41,20 @@ library SafeMath {
     }
 
     function divide(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function subtract(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -65,9 +65,9 @@ contract StandardToken is ERC20Interface {
     using SafeMath for uint256;
 
     /* Actual balances of token holders */
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     /* approve() allowances */
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     /**
      *
@@ -82,9 +82,9 @@ contract StandardToken is ERC20Interface {
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns (bool ok) {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 holderBalance = balances[msg.sender];
-        require(_value &lt;= holderBalance);
+        require(_value <= holderBalance);
 
         balances[msg.sender] = holderBalance.subtract(_value);
         balances[_to] = balances[_to].add(_value);
@@ -98,8 +98,8 @@ contract StandardToken is ERC20Interface {
         require(_to != address(0));
         uint256 allowToTrans = allowed[_from][msg.sender];
         uint256 balanceFrom = balances[_from];
-        require(_value &lt;= balanceFrom);
-        require(_value &lt;= allowToTrans);
+        require(_value <= balanceFrom);
+        require(_value <= allowToTrans);
 
         balances[_from] = balanceFrom.subtract(_value);
         balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract StandardToken is ERC20Interface {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        //    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        //    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
         //    require((_value == 0) || (allowed[msg.sender][_spender] == 0));
         allowed[msg.sender][_spender] = _value;
 
@@ -160,7 +160,7 @@ contract StandardToken is ERC20Interface {
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) onlyPayloadSize(2 * 32) public returns (bool ok) {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.subtract(_subtractedValue);
@@ -185,7 +185,7 @@ contract BurnableToken is StandardToken {
     }
 
     function _burn(address _holder, uint256 _value) internal {
-        require(_value &lt;= balances[_holder]);
+        require(_value <= balances[_holder]);
 
         balances[_holder] = balances[_holder].subtract(_value);
         totalSupply = totalSupply.subtract(_value);
@@ -202,7 +202,7 @@ contract BurnableToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -300,7 +300,7 @@ contract Standard223Token is ERC223Interface, StandardToken {
             length := extcodesize(_addr)
         }
 
-        return (length &gt; 0);
+        return (length > 0);
     }
 }
 
@@ -356,8 +356,8 @@ contract ICO is Ownable, ERC223ReceivingContract {
 
     uint256 public price = 0.002 ether / 1e3;
     uint256 public minPurchase = 0.01 ether;
-    // Token holders&#39; paid amount in ether
-    mapping(address =&gt; uint256) buyers;
+    // Token holders' paid amount in ether
+    mapping(address => uint256) buyers;
 
     // Tokens sold for ether
     uint256 public totalSold = 0;
@@ -383,18 +383,18 @@ contract ICO is Ownable, ERC223ReceivingContract {
     }
 
     function () public isRunning payable {
-        require(msg.value &gt;= minPurchase);
+        require(msg.value >= minPurchase);
 
         uint256 unsold = forSale.subtract(totalSold);
         uint256 paid = msg.value;
         uint256 purchased = paid.divide(price);
-        if (purchased &gt; unsold) {
+        if (purchased > unsold) {
             purchased = unsold;
         }
         uint256 toReturn = paid.subtract(purchased.multiply(price));
         uint256 reward = calculateReward(totalSold, purchased);
 
-        if (toReturn &gt; 0) {
+        if (toReturn > 0) {
             msg.sender.transfer(toReturn);
         }
         token.transfer(msg.sender, purchased.add(reward));
@@ -404,13 +404,13 @@ contract ICO is Ownable, ERC223ReceivingContract {
     }
 
     modifier isRunning() {
-        require(now &gt;= salePeriod.start);
-        require(now &lt;= salePeriod.end);
+        require(now >= salePeriod.start);
+        require(now <= salePeriod.end);
         _;
     }
 
     modifier afterEnd() {
-        require(now &gt; salePeriod.end);
+        require(now > salePeriod.end);
         _;
     }
 
@@ -441,13 +441,13 @@ contract ICO is Ownable, ERC223ReceivingContract {
 
     function withdrawFunds() public afterEnd {
         if (msg.sender == owner) {
-            require(totalSold &gt;= softCap);
+            require(totalSold >= softCap);
 
             Beneficiary memory beneficiary = beneficiaries[0];
             beneficiary.wallet.transfer(address(this).balance);
         } else {
-            require(totalSold &lt; softCap);
-            require(buyers[msg.sender] &gt; 0);
+            require(totalSold < softCap);
+            require(buyers[msg.sender] > 0);
 
             buyers[msg.sender] = 0;
             msg.sender.transfer(buyers[msg.sender]);
@@ -456,7 +456,7 @@ contract ICO is Ownable, ERC223ReceivingContract {
 
     function allocateFunds() internal {
         // Hold first 5000 ETH until ICO end.
-        if (totalSold &lt; softCap) {
+        if (totalSold < softCap) {
             return;
         }
 
@@ -464,11 +464,11 @@ contract ICO is Ownable, ERC223ReceivingContract {
         uint length = beneficiaries.length;
         uint256 toTransfer = 0;
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             Beneficiary storage beneficiary = beneficiaries[i];
             toTransfer = beneficiary.toTransfer.subtract(beneficiary.transferred);
-            if (toTransfer &gt; 0) {
-                if (toTransfer &gt; balance) {
+            if (toTransfer > 0) {
+                if (toTransfer > balance) {
                     toTransfer = balance;
                 }
                 beneficiary.wallet.transfer(toTransfer);
@@ -492,10 +492,10 @@ contract ICO is Ownable, ERC223ReceivingContract {
         uint256 firstPart = 0;
         uint256 nextPart = 0;
 
-        for (uint8 i = 1; i &lt;= 4; i++) {
+        for (uint8 i = 1; i <= 4; i++) {
             step = 5000000e2 * i;
-            if (_sold &lt; step) {
-                if (_purchased.add(_sold) &gt; step) {
+            if (_sold < step) {
+                if (_purchased.add(_sold) > step) {
                     nextPart = _purchased.add(_sold).subtract(step);
                     firstPart = _purchased.subtract(nextPart);
                     // Next bonus step reward

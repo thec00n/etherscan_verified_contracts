@@ -30,7 +30,7 @@ contract SaleWallet {
   // @dev Withdraw function sends all the funds to the wallet if conditions are correct
   function withdraw() public {
     if (msg.sender != multisig) throw;                       // Only the multisig can request it
-    if (block.number &gt; finalBlock) return doWithdraw();      // Allow after the final block
+    if (block.number > finalBlock) return doWithdraw();      // Allow after the final block
     if (tokenSale.saleFinalized()) return doWithdraw();      // Allow when sale is finalized
   }
 

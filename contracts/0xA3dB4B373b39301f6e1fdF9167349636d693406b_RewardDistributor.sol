@@ -82,20 +82,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -146,12 +146,12 @@ contract RewardDistributor is RewardDistributable, Ownable {
     }
 
     RewardSource[] public rewardSources;
-    mapping(address =&gt; bool) public approvedRewardSources;
+    mapping(address => bool) public approvedRewardSources;
     
-    mapping(address =&gt; bool) public requesters; // distribution requesters
+    mapping(address => bool) public requesters; // distribution requesters
     address[] public approvers; // distribution approvers
 
-    mapping(address =&gt; address) public referrers; // player -&gt; referrer
+    mapping(address => address) public referrers; // player -> referrer
     
     uint public referralBonusRate;
 
@@ -173,19 +173,19 @@ contract RewardDistributor is RewardDistributable, Ownable {
     /// @dev Calculates and transfers the rewards to the player.
     function transferRewards(address player, uint entryAmount, uint gameId) public onlyRequesters {
         // loop through all reward tokens, since we never really expect more than 2, this should be ok wrt gas
-        for (uint i = 0; i &lt; rewardSources.length; i++) {
+        for (uint i = 0; i < rewardSources.length; i++) {
             transferRewardsInternal(player, entryAmount, gameId, rewardSources[i]);
         }
     }
 
     /// @dev Returns the total number of tokens, across all approvals.
     function getTotalTokens(address tokenAddress) public constant validRewardSource(tokenAddress) returns(uint) {
-        for (uint j = 0; j &lt; rewardSources.length; j++) {
+        for (uint j = 0; j < rewardSources.length; j++) {
             if (rewardSources[j].rewardTokenAddress == tokenAddress) {
                 FullERC20 rewardToken = FullERC20(rewardSources[j].rewardTokenAddress);
                 uint total = rewardToken.balanceOf(this);
             
-                for (uint i = 0; i &lt; approvers.length; i++) {
+                for (uint i = 0; i < approvers.length; i++) {
                     address approver = approvers[i];
                     uint allowance = rewardToken.allowance(approver, this);
                     total = total.add(allowance);
@@ -212,7 +212,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
     /// @dev Gets the reward rate inclusive of bonus.
     /// This is meant to be used by dividing the total purchase amount in wei by this amount.
     function getRewardRate(address player, address tokenAddress) public constant validRewardSource(tokenAddress) returns(uint) {
-        for (uint j = 0; j &lt; rewardSources.length; j++) {
+        for (uint j = 0; j < rewardSources.length; j++) {
             if (rewardSources[j].rewardTokenAddress == tokenAddress) {
                 RewardSource storage rewardSource = rewardSources[j];
                 uint256 rewardRate = rewardSource.rewardRate;
@@ -248,7 +248,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
     /// @param approver The approver address to remove from the pool.
     function removeApprover(address approver) public onlyOwner {
         uint good = 0;
-        for (uint i = 0; i &lt; approvers.length; i = i.add(1)) {
+        for (uint i = 0; i < approvers.length; i = i.add(1)) {
             bool isValid = approvers[i] != approver;
             if (isValid) {
                 if (good != i) {
@@ -265,10 +265,10 @@ contract RewardDistributor is RewardDistributable, Ownable {
 
     /// @dev Updates the reward rate
     function updateRewardRate(address tokenAddress, uint newRewardRate) public onlyOwner {
-        require(newRewardRate &gt; 0);
+        require(newRewardRate > 0);
         require(tokenAddress != address(0));
 
-        for (uint i = 0; i &lt; rewardSources.length; i++) {
+        for (uint i = 0; i < rewardSources.length; i++) {
             if (rewardSources[i].rewardTokenAddress == tokenAddress) {
                 rewardSources[i].rewardRate = uint96(newRewardRate);
                 return;
@@ -295,7 +295,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
 
         // Shifting costs significant gas with every write.
         // UI should update the reward sources after this function call.
-        for (uint i = 0; i &lt; rewardSources.length; i++) {
+        for (uint i = 0; i < rewardSources.length; i++) {
             if (rewardSources[i].rewardTokenAddress == tokenAddress) {
                 rewardSources[i] = rewardSources[rewardSources.length - 1];
                 delete rewardSources[rewardSources.length - 1];
@@ -307,7 +307,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
 
     /// @dev Transfers any tokens to the owner
     function destroyRewards() public onlyOwner {
-        for (uint i = 0; i &lt; rewardSources.length; i++) {
+        for (uint i = 0; i < rewardSources.length; i++) {
             FullERC20 rewardToken = FullERC20(rewardSources[i].rewardTokenAddress);
             uint tokenBalance = rewardToken.balanceOf(this);
             assert(rewardToken.transfer(owner, tokenBalance));
@@ -319,7 +319,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
 
     /// @dev Updates the referral bonus percentage
     function updateReferralBonusRate(uint newReferralBonusRate) public onlyOwner {
-        require(newReferralBonusRate &lt; 100);
+        require(newReferralBonusRate < 100);
         referralBonusRate = newReferralBonusRate;
     }
 
@@ -327,7 +327,7 @@ contract RewardDistributor is RewardDistributable, Ownable {
     /// @param player The address of the player
     /// @param referrer The address of the referrer
     function registerReferral(address player, address referrer) public onlyRequesters {
-        if (referrer != address(0) &amp;&amp; player != referrer) {
+        if (referrer != address(0) && player != referrer) {
             referrers[player] = referrer;
             ReferralRegistered(player, referrer);
         }
@@ -351,11 +351,11 @@ contract RewardDistributor is RewardDistributable, Ownable {
         uint playerRewards = rewards.add(referralBonus);
 
         // First check if the contract itself has enough tokens to reward.
-        if (rewardToken.balanceOf(this) &gt;= totalRewards) {
+        if (rewardToken.balanceOf(this) >= totalRewards) {
             assert(rewardToken.transfer(player, playerRewards));
             TokensRewarded(player, rewardToken, playerRewards, msg.sender, gameId, block.number);
 
-            if (referralBonus &gt; 0) {
+            if (referralBonus > 0) {
                 assert(rewardToken.transfer(referrer, referralBonus));
                 ReferralRewarded(referrer, rewardToken, player, referralBonus, gameId, block.number);
             }
@@ -364,13 +364,13 @@ contract RewardDistributor is RewardDistributable, Ownable {
         }
 
         // Iterate through the approvers to find first with enough rewards and successful transfer
-        for (uint i = 0; i &lt; approvers.length; i++) {
+        for (uint i = 0; i < approvers.length; i++) {
             address approver = approvers[i];
             uint allowance = rewardToken.allowance(approver, this);
-            if (allowance &gt;= totalRewards) {
+            if (allowance >= totalRewards) {
                 assert(rewardToken.transferFrom(approver, player, playerRewards));
                 TokensRewarded(player, rewardToken, playerRewards, msg.sender, gameId, block.number);
-                if (referralBonus &gt; 0) {
+                if (referralBonus > 0) {
                     assert(rewardToken.transfer(referrer, referralBonus));
                     ReferralRewarded(referrer, rewardToken, player, referralBonus, gameId, block.number);
                 }

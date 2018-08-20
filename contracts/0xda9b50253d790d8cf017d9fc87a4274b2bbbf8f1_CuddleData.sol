@@ -5,7 +5,7 @@ pragma solidity ^0.4.11;
 /** ************************************************************************ **/
 
 /**
- * @dev This can be exchanged for any ERC721 contract if we don&#39;t want to rely on CK.
+ * @dev This can be exchanged for any ERC721 contract if we don't want to rely on CK.
 **/
 contract KittyCore {
     function ownerOf(uint256 _tokenId) external view returns (address owner);
@@ -14,7 +14,7 @@ contract KittyCore {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -59,13 +59,13 @@ contract Ownable {
     
 /**
  * @dev Holds the data for all kitty actions and all kitty effects.
- * @notice TO-DO: Haven&#39;t fully converted this to a format where effects are actions!
+ * @notice TO-DO: Haven't fully converted this to a format where effects are actions!
 **/
 contract CuddleData is Ownable {
-    // Action/Effect Id =&gt; struct for actions and for effects.
-    mapping (uint256 =&gt; Action) public actions;
+    // Action/Effect Id => struct for actions and for effects.
+    mapping (uint256 => Action) public actions;
     // Actions specific to personality types.
-    mapping (uint256 =&gt; uint256[]) typeActions;
+    mapping (uint256 => uint256[]) typeActions;
     // Actions that any personality can have.
     uint256[] anyActions;
 
@@ -92,7 +92,7 @@ contract CuddleData is Ownable {
     returns (uint256[8] energy, uint256[8] basePets, uint256[8] petsAddition,
              uint256[8] critChance, uint256[8] missChance, uint256[8] turnsAffected)
     {
-        for (uint256 i = 0; i &lt; 8; i++) {
+        for (uint256 i = 0; i < 8; i++) {
             if (_actions[i] == 0) break;
             
             Action memory action = actions[_actions[i]];
@@ -119,7 +119,7 @@ contract CuddleData is Ownable {
       view
     returns (uint256 totalActions)
     {
-        //if (_personality &gt; 0) totalActions = typeActions[_personality].length;
+        //if (_personality > 0) totalActions = typeActions[_personality].length;
         //else totalActions = anyActions.length;
         if (_personality == 0) return 10;
         else return 5;
@@ -146,7 +146,7 @@ contract CuddleData is Ownable {
         Action memory newAction = Action(_newEnergy, _newPets, _petAdditions, _critChance, _missChance, _turnsAffected);
         actions[_actionId] = newAction;
         
-        if (_personality &gt; 0) typeActions[_personality].push(_actionId);
+        if (_personality > 0) typeActions[_personality].push(_actionId);
         else anyActions.push(_actionId);
     }
     
@@ -166,14 +166,14 @@ contract KittyData is Ownable {
     address public arenaContract; // Address of the arena contract.
     
     // Mapping of all kitties by CK kitty Id
-    mapping (uint256 =&gt; Kitty) public kitties;
+    mapping (uint256 => Kitty) public kitties;
     
     // All trained kitties
     struct Kitty {
         uint8[2] kittyType; // Personality/type of the kitty.
         uint32[12] actionsArray; // Array of all moves.
         uint16 level; // Current level of the kitty.
-        uint16 totalBattles; // Total battles that the kitty has &quot;fought&quot;.
+        uint16 totalBattles; // Total battles that the kitty has "fought".
     }
     
 /** ******************************* DEFAULT ******************************** **/
@@ -204,10 +204,10 @@ contract KittyData is Ownable {
       onlyVerified
     returns (bool success)
     {
-        delete kitties[_kittyId]; // Wipe this kitty if it&#39;s already trained.
+        delete kitties[_kittyId]; // Wipe this kitty if it's already trained.
         
         kitties[_kittyId].kittyType[0] = uint8(_kittyType);
-        for (uint256 i = 0; i &lt; 5; i++) { 
+        for (uint256 i = 0; i < 5; i++) { 
             addAction(_kittyId, _actions[i], i);
         }
 
@@ -236,7 +236,7 @@ contract KittyData is Ownable {
      * @dev Used internally and externally to add an action or replace an action.
      * @param _kittyId The unique CK Id of the learning kitty.
      * @param _newAction The new action to learn.
-     * @param _moveSlot The kitty&#39;s actionsArray index where the move shall go.
+     * @param _moveSlot The kitty's actionsArray index where the move shall go.
     **/
     function addAction(uint256 _kittyId, uint256 _newAction, uint256 _moveSlot)
       public
@@ -268,7 +268,7 @@ contract KittyData is Ownable {
     /**
      * @dev Used on KittyGym when rerolling a move to ensure validity.
      * @param _kittyId Unique CK Id of the kitty.
-     * @param _moveSlot The index of the kitty&#39;s actionsArray to check.
+     * @param _moveSlot The index of the kitty's actionsArray to check.
      * @return The move that occupies the _moveSlot.
     **/
     function fetchSlot(uint256 _kittyId, uint256 _moveSlot)
@@ -281,7 +281,7 @@ contract KittyData is Ownable {
     
     /**
      * @dev Used by frontend to get data for a kitty.
-     * @param _kittyId The unique CK Id we&#39;re querying for.
+     * @param _kittyId The unique CK Id we're querying for.
     **/
     function returnKitty(uint256 _kittyId)
       external
@@ -348,8 +348,8 @@ contract KittyGym is Ownable {
     uint256 public learnFee; // In CuddleCoin wei
     uint256 public rerollFee; // In CuddleCoin wei
     
-    // Unique CK Id =&gt; action Id =&gt; true if the kitty knows the action.
-    mapping (uint256 =&gt; mapping (uint256 =&gt; bool)) public kittyActions;
+    // Unique CK Id => action Id => true if the kitty knows the action.
+    mapping (uint256 => mapping (uint256 => bool)) public kittyActions;
 
     event KittyTrained(uint256 indexed kittyId, uint256 indexed kittyNumber,
             uint256 indexed personality, uint256[5] learnedActions);
@@ -392,7 +392,7 @@ contract KittyGym is Ownable {
         require(msg.value == trainFee);
         
         // Make sure we delete all actions if the kitty has already been trained.
-        if (kittyData.fetchSlot(_kittyId, 0) &gt; 0) {
+        if (kittyData.fetchSlot(_kittyId, 0) > 0) {
             var (,actionsArray,,) = kittyData.returnKitty(_kittyId);
             deleteActions(_kittyId, actionsArray); // A special kitty will be thrown here.
         }
@@ -432,15 +432,15 @@ contract KittyGym is Ownable {
       isNotContract
     {
         require(msg.sender == core.ownerOf(_kittyId));
-        // Burn the learning fee from the trainer&#39;s balance
+        // Burn the learning fee from the trainer's balance
         assert(token.burn(msg.sender, learnFee));
-        require(kittyData.fetchSlot(_kittyId, 0) &gt; 0); // Cannot learn without training.
+        require(kittyData.fetchSlot(_kittyId, 0) > 0); // Cannot learn without training.
         require(kittyData.fetchSlot(_kittyId, _moveSlot) == 0); // Must be put in blank spot.
         
         uint256 upper = cuddleData.getActionCount(0);
         uint256 actionId = unduplicate(_kittyId * 11, 999, upper, 0); // * 11 and 99...are arbitrary
         
-        assert(!kittyActions[_kittyId][actionId]); // Throw if a new move still wasn&#39;t found.
+        assert(!kittyActions[_kittyId][actionId]); // Throw if a new move still wasn't found.
         kittyActions[_kittyId][actionId] = true;
         
         assert(kittyData.addAction(_kittyId, actionId, _moveSlot));
@@ -450,7 +450,7 @@ contract KittyGym is Ownable {
     /**
      * @dev May reroll one kitty move. Cheaper than buying a new one.
      * @param _kittyId The kitty who needs to retrain a move slot.
-     * @param _moveSlot The index of the kitty&#39;s actionsArray to replace.
+     * @param _moveSlot The index of the kitty's actionsArray to replace.
      * @param _typeId The personality Id of the kity.
     **/
     function reRollMove(uint256 _kittyId, uint256 _moveSlot, uint256 _typeId)
@@ -461,10 +461,10 @@ contract KittyGym is Ownable {
         
         // Make sure the old action exists and is of the correct type (purposeful underflow).
         uint256 oldAction = kittyData.fetchSlot(_kittyId, _moveSlot);
-        require(oldAction &gt; 0);
-        require(oldAction - (_typeId * 1000) &lt; 1000);
+        require(oldAction > 0);
+        require(oldAction - (_typeId * 1000) < 1000);
         
-        // Burn the rerolling fee from the trainer&#39;s balance
+        // Burn the rerolling fee from the trainer's balance
         assert(token.burn(msg.sender, rerollFee));
 
         uint256 upper = cuddleData.getActionCount(_typeId);
@@ -482,7 +482,7 @@ contract KittyGym is Ownable {
     
     /**
      * @dev Return two actions for training or hybridizing a kitty using the given type.
-     * @param _actionType The type of actions that shall be learned. 0 for &quot;any&quot; actions.
+     * @param _actionType The type of actions that shall be learned. 0 for "any" actions.
      * @param _kittyId The unique CK Id of the kitty.
     **/ 
     function randomizeActions(uint256 _actionType, uint256 _kittyId)
@@ -510,20 +510,20 @@ contract KittyGym is Ownable {
       view
     returns (uint256 newAction)
     {
-        uint256 typeBase = _type * 1000; // The base thousand for this move&#39;s type.
+        uint256 typeBase = _type * 1000; // The base thousand for this move's type.
 
-        for (uint256 i = 1; i &lt; 11; i++) {
+        for (uint256 i = 1; i < 11; i++) {
             newAction = random(i * 666, 1, _upper) + typeBase;
-            if (newAction != _action1 &amp;&amp; !kittyActions[_kittyId][newAction]) break;
+            if (newAction != _action1 && !kittyActions[_kittyId][newAction]) break;
         }
         
-        // If the kitty still knows the move, increment till we find one it doesn&#39;t.
+        // If the kitty still knows the move, increment till we find one it doesn't.
         if (newAction == _action1 || kittyActions[_kittyId][newAction]) {
-            for (uint256 j = 1; j &lt; _upper + 1; j++) {
+            for (uint256 j = 1; j < _upper + 1; j++) {
                 uint256 incAction = ((newAction + j) % _upper) + 1;
 
                 incAction += typeBase;
-                if (incAction != _action1 &amp;&amp; !kittyActions[_kittyId][incAction]) {
+                if (incAction != _action1 && !kittyActions[_kittyId][incAction]) {
                     newAction = incAction;
                     break;
                 }
@@ -554,9 +554,9 @@ contract KittyGym is Ownable {
     function deleteActions(uint256 _kittyId, uint32[12] _actions)
       internal
     {
-        for (uint256 i = 0; i &lt; _actions.length; i++) {
-            // Make sure a special kitty isn&#39;t retrained. Purposeful underflow.
-            require(uint256(_actions[i]) - 50000 &gt; 10000000);
+        for (uint256 i = 0; i < _actions.length; i++) {
+            // Make sure a special kitty isn't retrained. Purposeful underflow.
+            require(uint256(_actions[i]) - 50000 > 10000000);
             
             delete kittyActions[_kittyId][uint256(_actions[i])];
         }
@@ -574,7 +574,7 @@ contract KittyGym is Ownable {
       view
     returns (bool)
     {
-        for (uint256 i = 0; i &lt; 8; i++) {
+        for (uint256 i = 0; i < 8; i++) {
             if (!kittyActions[_kittyId][_kittyActions[i]]) return false; 
         }
         return true;
@@ -683,11 +683,11 @@ contract SpecialGym is Ownable {
     CuddleData public cuddleData;
     KittyGym public kittyGym;
     
-    // Unique CK Id =&gt; true if they already have a special.
-    mapping (uint256 =&gt; bool) public specialKitties;
+    // Unique CK Id => true if they already have a special.
+    mapping (uint256 => bool) public specialKitties;
     
-    // Special personality Id =&gt; number left that may train. Graduates are Id 50.
-    mapping (uint256 =&gt; SpecialPersonality) public specialInfo;
+    // Special personality Id => number left that may train. Graduates are Id 50.
+    mapping (uint256 => SpecialPersonality) public specialInfo;
     
     struct SpecialPersonality {
         uint16 population; // Total amount of this special ever available.
@@ -721,10 +721,10 @@ contract SpecialGym is Ownable {
         SpecialPersonality storage special = specialInfo[_specialId];
         
         require(msg.sender == core.ownerOf(_kittyId));
-        require(kittyData.fetchSlot(_kittyId, 0) &gt; 0); // Require kitty has been trained.
+        require(kittyData.fetchSlot(_kittyId, 0) > 0); // Require kitty has been trained.
         require(!specialKitties[_kittyId]);
         require(msg.value == special.price);
-        require(special.amountLeft &gt; 0);
+        require(special.amountLeft > 0);
 
         // Get two new random special moves.
         uint256[2] memory randomMoves = randomizeActions(_specialId);
@@ -744,7 +744,7 @@ contract SpecialGym is Ownable {
     
     /**
      * @dev Return two actions for training or hybridizing a kitty using the given type.
-     * @param _specialType The type of actions that shall be learned. 0 for &quot;any&quot; actions.
+     * @param _specialType The type of actions that shall be learned. 0 for "any" actions.
      * @return Two new special moves.
     **/ 
     function randomizeActions(uint256 _specialType)
@@ -765,7 +765,7 @@ contract SpecialGym is Ownable {
     }
     
     /**
-     * @dev Used to make sure the kitty doesn&#39;t learn two of the same move.
+     * @dev Used to make sure the kitty doesn't learn two of the same move.
      * @dev If no unique actions can be found, unduplicate throws.
      * @param _action1 The action that is already known.
      * @param _upper The amount of actions that can be tried.
@@ -777,7 +777,7 @@ contract SpecialGym is Ownable {
     returns (uint256)
     {
         uint256 action2;
-        for (uint256 i = 1; i &lt; 10; i++) { // Start at 1 to make sure _rnd is never 1.
+        for (uint256 i = 1; i < 10; i++) { // Start at 1 to make sure _rnd is never 1.
             action2 = random(action2 + i, 1, _upper);
             if (action2 != _action1) break;
         }
@@ -817,7 +817,7 @@ contract SpecialGym is Ownable {
       view 
     returns(uint256, uint256) 
     { 
-        require(_specialId &gt; 0); 
+        require(_specialId > 0); 
         return (specialInfo[_specialId].amountLeft, specialInfo[_specialId].price); 
     }
     
@@ -825,7 +825,7 @@ contract SpecialGym is Ownable {
     
     /**
      * @dev Used by owner to create and populate a new special personality.
-     * @param _specialId The special&#39;s personality Id--starts at 50
+     * @param _specialId The special's personality Id--starts at 50
      * @param _amountAvailable The maximum amount of this special that will ever be available.
      * @param _price The price that the special will be sold for.
     **/
@@ -856,7 +856,7 @@ contract SpecialGym is Ownable {
         
         if (_newPrice != 0) special.price = _newPrice;
         if (_amountToDestroy != 0) {
-            require(_amountToDestroy &lt;= special.population &amp;&amp; _amountToDestroy &lt;= special.amountLeft);
+            require(_amountToDestroy <= special.population && _amountToDestroy <= special.amountLeft);
             special.population -= _amountToDestroy;
             special.amountLeft -= _amountToDestroy;
         }
@@ -903,8 +903,8 @@ contract SpecialGym is Ownable {
 **/
 
 contract CuddleCoin is Ownable {
-    string public constant symbol = &quot;CDL&quot;;
-    string public constant name = &quot;CuddleCoin&quot;;
+    string public constant symbol = "CDL";
+    string public constant name = "CuddleCoin";
 
     address arenaContract; // Needed for minting.
     address vendingMachine; // Needed for minting and burning.
@@ -915,10 +915,10 @@ contract CuddleCoin is Ownable {
     uint256 _totalSupply = 1000000 * (10 ** 18);
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _amount);
     event Approval(address indexed _from, address indexed _spender, uint256 indexed _amount);
@@ -969,7 +969,7 @@ contract CuddleCoin is Ownable {
     returns (bool success)
     {
         // Throw if insufficient balance
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
 
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -979,7 +979,7 @@ contract CuddleCoin is Ownable {
     }
 
     /**
-     * @dev An allowed address can transfer tokens from another&#39;s address.
+     * @dev An allowed address can transfer tokens from another's address.
      * @param _from The owner of the tokens to be transferred.
      * @param _to The address to which the tokens will be transferred.
      * @param _amount The amount of tokens to be transferred.
@@ -988,7 +988,7 @@ contract CuddleCoin is Ownable {
       external
     returns (bool success)
     {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount);
 
         allowed[_from][msg.sender] -= _amount;
         balances[_from] -= _amount;
@@ -999,7 +999,7 @@ contract CuddleCoin is Ownable {
     }
 
     /**
-     * @dev Approves a wallet to transfer tokens on one&#39;s behalf.
+     * @dev Approves a wallet to transfer tokens on one's behalf.
      * @param _spender The wallet approved to spend tokens.
      * @param _amount The amount of tokens approved to spend.
     **/
@@ -1007,14 +1007,14 @@ contract CuddleCoin is Ownable {
       external
     {
         require(_amount == 0 || allowed[msg.sender][_spender] == 0);
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         
         allowed[msg.sender][_spender] = _amount;
         Approval(msg.sender, _spender, _amount);
     }
 
     /**
-     * @dev Allowed amount for a user to spend of another&#39;s tokens.
+     * @dev Allowed amount for a user to spend of another's tokens.
      * @param _owner The owner of the tokens approved to spend.
      * @param _spender The address of the user allowed to spend the tokens.
     **/
@@ -1053,7 +1053,7 @@ contract CuddleCoin is Ownable {
       onlyMinter
     returns (bool success)
     {
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         
         balances[_from] -= _amount;
         Burn(_from, _amount);

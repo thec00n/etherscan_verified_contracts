@@ -13,7 +13,7 @@ contract BDSM_Presale {
 
 	uint public presaleStart_6_December = 1512518460; // start Presale - 6 December 2017
 	uint public presaleStop_13_December = 1513123260; // end Presale - 13 December 2017
-	string public price = &quot;0.0035 Ether for 2 microBDSM&quot;;
+	string public price = "0.0035 Ether for 2 microBDSM";
 	uint realPrice = 0.0035 * 1 ether; // ETH for 1 package of tokens
 	uint coeff = 200000; // capacity of 1 package
 	
@@ -35,10 +35,10 @@ contract BDSM_Presale {
 	    
 		tokenFree = sharesTokenAddress.balanceOf(this); // free tokens count
 		
-		if (now &lt; presaleStart_6_December) {
+		if (now < presaleStart_6_December) {
 		    msg.sender.transfer(msg.value);
 		}
-		else if (now &gt; presaleStop_13_December) {
+		else if (now > presaleStop_13_December) {
 			msg.sender.transfer(msg.value); // if presale closed - cash back
 			if(!tokensWithdrawn){ // when presale closed - unsold tokens transfer to stopScamHolder
 			    sharesTokenAddress.transfer(safeContract, sharesTokenAddress.balanceOf(this));
@@ -52,19 +52,19 @@ contract BDSM_Presale {
 		} 
 		else {
 			uint256 tokenToBuy = msg.value / realPrice * coeff; // tokens to buy
-			if(tokenToBuy &lt;= 0) msg.sender.transfer(msg.value); // mistake protector
-			require(tokenToBuy &gt; 0);
+			if(tokenToBuy <= 0) msg.sender.transfer(msg.value); // mistake protector
+			require(tokenToBuy > 0);
 			uint256 actualETHTransfer = tokenToBuy * realPrice / coeff;
-			if (tokenFree &gt;= tokenToBuy) { // free tokens &gt;= tokens to buy, sell tokens
+			if (tokenFree >= tokenToBuy) { // free tokens >= tokens to buy, sell tokens
 				owner.transfer(actualETHTransfer);
-				if (msg.value &gt; actualETHTransfer){ // if more than need - cash back
+				if (msg.value > actualETHTransfer){ // if more than need - cash back
 					msg.sender.transfer(msg.value - actualETHTransfer);
 				}
 				sharesTokenAddress.transfer(msg.sender, tokenToBuy);
 				tokenSold += tokenToBuy;
 				tokenFree -= tokenToBuy;
 				if(tokenFree==0) presaleClosed = true;
-			} else { // free tokens &lt; tokens to buy 
+			} else { // free tokens < tokens to buy 
 				uint256 sendETH = tokenFree * realPrice / coeff; // price for all free tokens
 				owner.transfer(sendETH); 
 				sharesTokenAddress.transfer(msg.sender, tokenFree); 

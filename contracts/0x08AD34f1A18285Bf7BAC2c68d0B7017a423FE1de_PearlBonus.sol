@@ -75,12 +75,12 @@ contract PearlBonus {
         require(!saleClosed);
         
         // Minimum amount is 1 finney
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         
         // Airdrop price is 1 ETH = 50000 PRL
         uint256 amount = msg.value * 50000;
         
-        require(amount &lt;= pearl.balanceOf(this));
+        require(amount <= pearl.balanceOf(this));
         
         pearl.transfer(msg.sender, amount);
         

@@ -7,7 +7,7 @@ contract TimeLockSend {
     uint256 deadline;
     
     function TimeLockSend(address _sender, address _recipient, uint256 _deadline) payable {
-        if (msg.value &lt;= 0) {
+        if (msg.value <= 0) {
             throw;
         }
         sender = _sender;
@@ -19,7 +19,7 @@ contract TimeLockSend {
     function withdraw() {
         if (msg.sender == recipient) {
             selfdestruct(recipient);
-        } else if (msg.sender == sender &amp;&amp; now &gt; deadline) {
+        } else if (msg.sender == sender && now > deadline) {
             selfdestruct(sender);
         } else {
             throw;
@@ -46,7 +46,7 @@ contract SafeSender {
     }
     
     function safeSend(address recipient, uint256 timeLimit) payable returns (address) {
-        if (msg.value &lt;= 0 || (now + timeLimit) &lt;= now) {
+        if (msg.value <= 0 || (now + timeLimit) <= now) {
             throw;
         }
         uint256 deadline = now + timeLimit;
@@ -67,7 +67,7 @@ contract SafeSender {
         if (msg.sender != owner) {
             throw;
         }
-        if (this.balance &gt; 0 &amp;&amp; !owner.send(this.balance)) {
+        if (this.balance > 0 && !owner.send(this.balance)) {
             throw;
         }
     }

@@ -3,12 +3,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -65,19 +65,19 @@ contract PrivateCityCrowdsale is SafeMath{
     payable
     external
     {
-        require(now &gt;= startDate);
-        require(now &lt;= endDate);
-        require(msg.value &gt; 0);
+        require(now >= startDate);
+        require(now <= endDate);
+        require(msg.value > 0);
         
 
-        // First we check the ETH cap, as it&#39;s easier to calculate, return
+        // First we check the ETH cap, as it's easier to calculate, return
         // the contribution if the cap has been reached already
         uint256 checkedReceivedEth = safeAdd(totalReceivedEth, msg.value);
 
         // If all is fine with the ETH cap, we continue to check the
         // minimum amount of tokens
         uint256 tokens = safeMult(msg.value, getCurrentTokenPrice());
-        require(tokens &gt;= TOKEN_MIN);
+        require(tokens >= TOKEN_MIN);
 
         totalReceivedEth = checkedReceivedEth;
         totalSupply = safeAdd(totalSupply, tokens);

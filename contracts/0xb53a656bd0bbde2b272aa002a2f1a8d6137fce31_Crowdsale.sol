@@ -17,7 +17,7 @@ contract Crowdsale {
    uint public phaseThreeBonusPercent;
    uint public remainingTokens;
    token public tokenReward;
-   mapping(address =&gt; uint256) public balanceOf;
+   mapping(address => uint256) public balanceOf;
    bool public crowdsaleClosed = false;
    event GoalReached(address recipient, uint totalAmountRaised);
    event FundTransfer(address backer, uint amount, bool isContribution);
@@ -47,17 +47,17 @@ contract Crowdsale {
    }
    function () public payable {
        require(!crowdsaleClosed);
-       require(now &lt; deadline);
+       require(now < deadline);
        uint amount = msg.value;
        if (msg.sender != beneficiary) {
-           require(msg.value &gt;= 1 ether);
+           require(msg.value >= 1 ether);
            amountRaised += amount;
            uint tokens = uint(amount * 10 ** uint256(8) / price);
-           if (now &lt; bonusPhaseOneDeadline) {
+           if (now < bonusPhaseOneDeadline) {
                tokens += ((phaseOneBonusPercent * tokens)/100 );
-           } else if (now &lt; bonusPhaseTwoDeadline) {
+           } else if (now < bonusPhaseTwoDeadline) {
                tokens += ((phaseTwoBonusPercent * tokens)/100);
-           } else if (now &lt; bonusPhaseThreeDeadline) {
+           } else if (now < bonusPhaseThreeDeadline) {
                tokens += ((phaseThreeBonusPercent * tokens)/100);
            }
            balanceOf[msg.sender] += tokens;
@@ -80,7 +80,7 @@ contract Crowdsale {
    }
    function withdrawUnsold() public {
        require(msg.sender == beneficiary);
-       require(remainingTokens &gt; 0);
+       require(remainingTokens > 0);
        tokenReward.transfer(msg.sender, remainingTokens);
    }
 }

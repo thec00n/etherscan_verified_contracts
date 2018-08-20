@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -104,7 +104,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -225,7 +225,7 @@ contract Presale {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function Presale(uint256 _startTime, address _wallet) {
-        require(_startTime &gt;=  now);
+        require(_startTime >=  now);
         require(_wallet != 0x0);
 
         token = new Token();
@@ -251,7 +251,7 @@ contract Presale {
      * @return token amount that we should send to our dear investor
      */
     function calcAmount() internal returns (uint256) {
-        if (now &lt; startTime &amp;&amp; msg.value &gt;= early_bird_minimal) {
+        if (now < startTime && msg.value >= early_bird_minimal) {
             return (msg.value / wei_per_token / 60) * 70;   
         }
         return msg.value / wei_per_token;
@@ -265,8 +265,8 @@ contract Presale {
         uint256 amount = calcAmount();
 
         require(contributor != 0x0) ;
-        require(minimal_token_sell &lt; amount);
-        require((token.totalSupply() + amount) &lt;= maximumCap);
+        require(minimal_token_sell < amount);
+        require((token.totalSupply() + amount) <= maximumCap);
         require(validPurchase());
 
         token.mint(contributor, amount);
@@ -282,28 +282,28 @@ contract Presale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = ((now &gt;= startTime  || msg.value &gt;= early_bird_minimal) &amp;&amp; now &lt;= endTime);
+        bool withinPeriod = ((now >= startTime  || msg.value >= early_bird_minimal) && now <= endTime);
         bool nonZeroPurchase = msg.value != 0;
 
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || token.totalSupply() == maximumCap;
+        return now > endTime || token.totalSupply() == maximumCap;
     }
 
 }
 
 contract Token is MintableToken {
 
-    string public constant name = &#39;Privatix Presale&#39;;
-    string public constant symbol = &#39;PRIXY&#39;;
+    string public constant name = 'Privatix Presale';
+    string public constant symbol = 'PRIXY';
     uint256 public constant decimals = 8;
 
     function transferFrom(address from, address to, uint256 value) returns (bool) {

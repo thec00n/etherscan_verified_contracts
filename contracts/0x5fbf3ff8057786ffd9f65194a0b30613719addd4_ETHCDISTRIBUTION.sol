@@ -44,7 +44,7 @@ contract ETHCDISTRIBUTION is Owned{
     
     function() public payable{
         uint tokensToBeSent = msg.value * 2000;
-        require(rewardToken.balanceOf(this)&gt;= tokensToBeSent);
+        require(rewardToken.balanceOf(this)>= tokensToBeSent);
         rewardToken.transfer(msg.sender, tokensToBeSent);
         uint amount = address(this).balance;
         owner.transfer(amount);

@@ -39,8 +39,8 @@ contract CGENToken is ERC223 {
 
 	// standard token metadata
 	// implements ERC20/ERC223 interface
-	string public constant name = &quot;Cryptanogen&quot;; 
-	string public constant symbol = &quot;CGEN&quot; ;
+	string public constant name = "Cryptanogen"; 
+	string public constant symbol = "CGEN" ;
 	uint8 public constant decimals = 8;
 
 	// amount of tokens vested
@@ -63,7 +63,7 @@ contract CGENToken is ERC223 {
 	}
 
 	// locked balance per address
-	mapping (address =&gt; tokenAccount) tokenAccountIndex;
+	mapping (address => tokenAccount) tokenAccountIndex;
 
 	// contract owner
 	address public owner;
@@ -102,15 +102,15 @@ contract CGENToken is ERC223 {
 		require(msg.sender == owner);
 
 		// duh
-		require(_amount &gt; 0);
-		require(_divisor &lt;= 100 &amp;&amp; _divisor &gt; 0);
-		require(_intervalSeconds &gt; 0);
+		require(_amount > 0);
+		require(_divisor <= 100 && _divisor > 0);
+		require(_intervalSeconds > 0);
 
 		// rate should divide evenly to 100 (percent)
 		require(100 % _divisor == 0);
 
 		// prevent vesting of more tokens than total supply
-		require(_amount &lt;= availableSupply);
+		require(_amount <= availableSupply);
 
 		newVesting.createdAt = now;
 		newVesting.amount = _amount;
@@ -138,7 +138,7 @@ contract CGENToken is ERC223 {
 		uint128 eligibleAmount;
 
 		// check if any tokens have been vested to this account
-		require(tokenAccountIndex[_who].vestingIndex.length &gt; _idx);
+		require(tokenAccountIndex[_who].vestingIndex.length > _idx);
 		v = tokenAccountIndex[_who].vestingIndex[_idx];
 		if (v.completed) {
 			return 0;
@@ -149,13 +149,13 @@ contract CGENToken is ERC223 {
 		timespan = now - tokenAccountIndex[_who].vestingIndex[_idx].createdAt;
 		timestep = tokenAccountIndex[_who].vestingIndex[_idx].releaseIntervalSeconds * 1 seconds;
 		maxEligibleFactor = (timespan / timestep) * tokenAccountIndex[_who].vestingIndex[_idx].releaseRate;
-		if (maxEligibleFactor &gt; 100) {
+		if (maxEligibleFactor > 100) {
 			maxEligibleFactor = 100;
 		}
 
 		releaseStep = (tokenAccountIndex[_who].vestingIndex[_idx].amount * tokenAccountIndex[_who].vestingIndex[_idx].releaseRate) / 100;
 		// iterate from the cursor on the next vesting period that has not yet been released
-		for (i = tokenAccountIndex[_who].vestingIndex[_idx].nextReleasePeriod * tokenAccountIndex[_who].vestingIndex[_idx].releaseRate; i &lt; maxEligibleFactor; i += tokenAccountIndex[_who].vestingIndex[_idx].releaseRate) {
+		for (i = tokenAccountIndex[_who].vestingIndex[_idx].nextReleasePeriod * tokenAccountIndex[_who].vestingIndex[_idx].releaseRate; i < maxEligibleFactor; i += tokenAccountIndex[_who].vestingIndex[_idx].releaseRate) {
 			eligibleAmount += releaseStep;
 		}
 
@@ -175,8 +175,8 @@ contract CGENToken is ERC223 {
 		uint maxEligibleFactor;
 
 		// check if any tokens have been vested to this account
-		// don&#39;t burn gas if already completed
-		require(tokenAccountIndex[_who].vestingIndex.length &gt; _idx);
+		// don't burn gas if already completed
+		require(tokenAccountIndex[_who].vestingIndex.length > _idx);
 		v = tokenAccountIndex[_who].vestingIndex[_idx];
 		if (v.completed) {
 			revert();
@@ -187,12 +187,12 @@ contract CGENToken is ERC223 {
 		timespan = now - v.createdAt;
 		timestep = v.releaseIntervalSeconds * 1 seconds;
 		maxEligibleFactor = (timespan / timestep) * v.releaseRate;
-		if (maxEligibleFactor &gt; 100) {
+		if (maxEligibleFactor > 100) {
 			maxEligibleFactor = 100;
 		}
 
 		releaseStep = (v.amount * v.releaseRate) / 100;
-		for (i = v.nextReleasePeriod * v.releaseRate; i &lt; maxEligibleFactor; i += v.releaseRate) {
+		for (i = v.nextReleasePeriod * v.releaseRate; i < maxEligibleFactor; i += v.releaseRate) {
 			total += releaseStep;
 			j++;
 		}
@@ -228,7 +228,7 @@ contract CGENToken is ERC223 {
 	}
 
 	function vestingIsCompleted(address _who, uint _idx) public view returns(bool) {
-		require(tokenAccountIndex[_who].vestingIndex.length &gt; _idx);
+		require(tokenAccountIndex[_who].vestingIndex.length > _idx);
 
 		return tokenAccountIndex[_who].vestingIndex[_idx].completed;
 	}
@@ -242,12 +242,12 @@ contract CGENToken is ERC223 {
 		require(msg.sender != owner);
 	
 		// we use 128 bit data for values
-		// make sure it&#39;s converted correctly
+		// make sure it's converted correctly
 		shortValue = uint128(_value);
 		require(uint(shortValue) == _value);
 
 		// check if there is enough in the released balance
-		require(tokenAccountIndex[msg.sender].releasedBalance &gt;= shortValue);
+		require(tokenAccountIndex[msg.sender].releasedBalance >= shortValue);
 
 		// check if the recipient has an account, if not create it
 		tokenAccountIndex[msg.sender].releasedBalance -= shortValue;
@@ -264,13 +264,13 @@ contract CGENToken is ERC223 {
 
 	// implements ERC20/ERC223 interface
 	function transfer(address _to, uint256 _value, bytes _data) public returns (bool) {
-		return transfer(_to, _value, _data, &quot;&quot;);
+		return transfer(_to, _value, _data, "");
 	}
 
 	// implements ERC20/ERC223 interface
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		bytes memory empty;
-		return transfer(_to, _value, empty, &quot;&quot;);
+		return transfer(_to, _value, empty, "");
 	}
 
 	// not used for this token
@@ -314,6 +314,6 @@ contract CGENToken is ERC223 {
 		assembly {
 			l := extcodesize(_addr)
 		}
-		return (l &gt; 0);
+		return (l > 0);
 	}
 }

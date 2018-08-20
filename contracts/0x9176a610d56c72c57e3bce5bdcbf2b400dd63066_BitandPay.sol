@@ -21,15 +21,15 @@ contract ERC20Interface {
 contract BitandPay is ERC20Interface {
     using SafeMath for uint256;
 
-    string public name = &quot;BitandPay&quot;;
-    string public symbol = &quot;BNP&quot;;
+    string public name = "BitandPay";
+    string public symbol = "BNP";
     uint256 public totalSupply = 50000000;
 
     uint8 public decimals = 0; // from 0 to 18
 
     address public owner;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     uint256 public startTime = 1514073600; // 24 dec 2017 00.00.00
     uint256 public endTime = 1522540799; // 31 march 2018 23.59.59 UNIX timestamp
@@ -124,7 +124,7 @@ contract BitandPay is ERC20Interface {
     function decreaseApproval (address _spender, uint _subtractedValue) whenNotPaused public
     returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -161,27 +161,27 @@ contract BitandPay is ERC20Interface {
         // update state
         weiRaised = weiRaised.add(weiAmount);
 
-        balances[owner] = balances[owner].sub(tokens);            // subtracts amount from seller&#39;s balance
-        balances[purchaser] = balances[purchaser].add(tokens);  // adds the amount to buyer&#39;s balance
+        balances[owner] = balances[owner].sub(tokens);            // subtracts amount from seller's balance
+        balances[purchaser] = balances[purchaser].add(tokens);  // adds the amount to buyer's balance
 
         Transfer(owner, purchaser, tokens);                      // execute an event reflecting the change
         // TokenPurchase(purchaser, weiAmount, tokens);
     }
 
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+        bool withinCap = weiRaised.add(msg.value) <= cap;
+        return withinPeriod && nonZeroPurchase && withinCap;
     }
 
     function hasEnded() public constant returns (bool) {
-        bool capReached = weiRaised &gt;= cap;
-        return now &gt; endTime || capReached;
+        bool capReached = weiRaised >= cap;
+        return now > endTime || capReached;
     }
 
     function changeCap(uint256 _cap) onlyOwner public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -228,13 +228,13 @@ contract BitandPay is ERC20Interface {
     }
 
     function withdrawToOwner(uint256 _amount) onlyOwner public {
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         owner.transfer(_amount);
     }
 
     function withdrawToAdress(address _to, uint256 _amount) onlyOwner public {
         require(_to != address(0));
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         _to.transfer(_amount);
     }
 }
@@ -247,20 +247,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

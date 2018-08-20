@@ -55,8 +55,8 @@ contract HumanityCard is ERC721 {
     ///////////////////////////////////////////////////////////////
     /// Constants
 
-    string constant NAME = &quot;HumanityCards&quot;;
-    string constant SYMBOL = &quot;HCX&quot;;
+    string constant NAME = "HumanityCards";
+    string constant SYMBOL = "HCX";
 
     ///////////////////////////////////////////////////////////////
     /// Attributes
@@ -68,12 +68,12 @@ contract HumanityCard is ERC721 {
     uint cardNumber;
     uint cardMined;
     Card[] cardArray;
-    mapping (address =&gt; uint256) cardCount;
-    mapping (uint256 =&gt; address) approveMap;
+    mapping (address => uint256) cardCount;
+    mapping (uint256 => address) approveMap;
     SellOrder[] sellOrderList;
 
     // Index of the card for the user
-    mapping (address =&gt; mapping (uint =&gt; uint)) indexCard;
+    mapping (address => mapping (uint => uint)) indexCard;
 
     ///////////////////////////////////////////////////////////////
     /// Constructor
@@ -129,7 +129,7 @@ contract HumanityCard is ERC721 {
     }
 
     function ownerOf(uint256 _tokenId) public view returns (address _owner) {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         Card c = cardArray[_tokenId];
         return c.owner;
     }
@@ -142,7 +142,7 @@ contract HumanityCard is ERC721 {
     }
 
     function transferFrom(address _from, address _to, uint256 _tokenId) public {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         require(_from == ownerOf(_tokenId));
         require(_from != _to);
         require(approveMap[_tokenId] == _to);
@@ -163,7 +163,7 @@ contract HumanityCard is ERC721 {
     }
 
     function takeOwnership(uint256 _tokenId) public {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         address oldOwner = ownerOf(_tokenId);
         address newOwner = msg.sender;
         require(newOwner != oldOwner);
@@ -185,7 +185,7 @@ contract HumanityCard is ERC721 {
     }
 
     function transfer(address _to, uint256 _tokenId) public {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         address oldOwner = msg.sender;
         address newOwner = _to;
         require(oldOwner == ownerOf(_tokenId));
@@ -208,14 +208,14 @@ contract HumanityCard is ERC721 {
     }
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) constant returns (uint tokenId) {
-        require(_index &lt; cardCount[_owner]);
+        require(_index < cardCount[_owner]);
 
         return indexCard[_owner][_index];
     }
 
     // For this case the only metadata is the name of the human
     function tokenMetadata(uint256 _tokenId) constant returns (string infoUrl) {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
 
         uint16 humanId = cardArray[_tokenId].human;
         return humanArray[humanId].name;
@@ -227,19 +227,19 @@ contract HumanityCard is ERC721 {
     // Mine a new card
     function mineCard() public payable returns(bool success) {
         require(msg.value == cardPrice);
-        require(cardMined &lt; cardNumber);
+        require(cardMined < cardNumber);
 
         int remaining = (int)(cardNumber - cardMined);
 
         // Choosing the card
         int numero = int(keccak256(block.timestamp))%remaining;
-        if(numero &lt; 0) {
+        if(numero < 0) {
             numero *= -1;
         }
         uint16 chosenOne = 0;
-        while (numero &gt;= 0) {
+        while (numero >= 0) {
             numero -= (int)(humanArray[chosenOne].max-humanArray[chosenOne].mined);
-            if (numero &gt;= 0) {
+            if (numero >= 0) {
                 chosenOne += 1;
             }
         }
@@ -269,7 +269,7 @@ contract HumanityCard is ERC721 {
 
     // Sale functions
     function createSellOrder(uint256 _tokenId, uint price) public {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         require(msg.sender == ownerOf(_tokenId));
 
         SellOrder memory newOrder = SellOrder(msg.sender, _tokenId, price);
@@ -284,7 +284,7 @@ contract HumanityCard is ERC721 {
     }
 
     function processSellOrder(uint id, uint256 _tokenId) payable public {
-        require(id &lt; sellOrderList.length);
+        require(id < sellOrderList.length);
 
         SellOrder memory order = sellOrderList[id];
         require(order.card == _tokenId);
@@ -312,7 +312,7 @@ contract HumanityCard is ERC721 {
     }
 
     function cancelSellOrder(uint id, uint256 _tokenId) public {
-        require(id &lt; sellOrderList.length);
+        require(id < sellOrderList.length);
 
         SellOrder memory order = sellOrderList[id];
         require(order.seller == msg.sender);
@@ -334,7 +334,7 @@ contract HumanityCard is ERC721 {
     }
 
     function getSellOrder(uint id) public view returns(address seller, uint card, uint price) {
-        require(id &lt; sellOrderList.length);
+        require(id < sellOrderList.length);
 
         SellOrder memory ret = sellOrderList[id];
         return(ret.seller, ret.card, ret.price);
@@ -359,7 +359,7 @@ contract HumanityCard is ERC721 {
     }
 
     function getHumanInfo(uint i) public view returns(string name, uint8 max, uint mined) {
-        require(i &lt; humanNumber);
+        require(i < humanNumber);
         Human memory h = humanArray[i];
         return (h.name, h.max, h.mined);
     }
@@ -369,7 +369,7 @@ contract HumanityCard is ERC721 {
     }
 
     function getCardInfo(uint256 _tokenId) public view returns(uint16 human, address owner) {
-        require(_tokenId &lt; cardMined);
+        require(_tokenId < cardMined);
         Card memory c = cardArray[_tokenId];
         return (c.human, c.owner);
     }

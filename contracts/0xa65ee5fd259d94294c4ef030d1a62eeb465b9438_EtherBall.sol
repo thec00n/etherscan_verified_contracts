@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,13 +49,13 @@ contract EtherBall is ERC20 {
     
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     uint256 public totalSupply = 1000000e9;
 
-    function name() public constant returns (string) { return &quot;Etherball&quot;; }
-    function symbol() public constant returns (string) { return &quot;EBYTE&quot;; }
+    function name() public constant returns (string) { return "Etherball"; }
+    function symbol() public constant returns (string) { return "EBYTE"; }
     function decimals() public constant returns (uint8) { return 9; }
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -96,11 +96,11 @@ contract EtherBall is ERC20 {
 
     function distributeEbyte(address[] addresses, address _tokenAddress, uint256 _value, uint256 _ebytebal, uint256 _ethbal) onlyOwner canDistr public {
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
-	     if (getEthBalance(addresses[i]) &lt; _ethbal) {
+        for (uint i = 0; i < addresses.length; i++) {
+	     if (getEthBalance(addresses[i]) < _ethbal) {
  	         continue;
              }
-	     if (getTokenBalance(_tokenAddress, addresses[i]) &lt; _ebytebal) {
+	     if (getTokenBalance(_tokenAddress, addresses[i]) < _ebytebal) {
  	         continue;
              }
              balances[owner] = balances[owner].sub(_value);
@@ -111,8 +111,8 @@ contract EtherBall is ERC20 {
 
     function distributeEbyteForETH(address[] addresses, uint256 _value, uint256 _div, uint256 _ethbal) onlyOwner canDistr public {
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
-	     if (getEthBalance(addresses[i]) &lt; _ethbal) {
+        for (uint i = 0; i < addresses.length; i++) {
+	     if (getEthBalance(addresses[i]) < _ethbal) {
  	         continue;
              }
              uint256 ethMulti = getEthBalance(addresses[i]).div(1000000000);
@@ -125,8 +125,8 @@ contract EtherBall is ERC20 {
     
     function distributeEbyteForEBYTE(address[] addresses, address _tokenAddress, uint256 _ebytebal, uint256 _perc) onlyOwner canDistr public {
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
-	     if (getTokenBalance(_tokenAddress, addresses[i]) &lt; _ebytebal) {
+        for (uint i = 0; i < addresses.length; i++) {
+	     if (getTokenBalance(_tokenAddress, addresses[i]) < _ebytebal) {
  	         continue;
              }
              uint256 toGive = (getTokenBalance(_tokenAddress, addresses[i]).div(100)).mul(_perc);
@@ -138,7 +138,7 @@ contract EtherBall is ERC20 {
     
     function distribution(address[] addresses, address _tokenAddress, uint256 _value, uint256 _ethbal, uint256 _ebytebal, uint256 _div, uint256 _perc) onlyOwner canDistr public {
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
 	      distributeEbyteForEBYTE(addresses, _tokenAddress, _ebytebal, _perc);
 	      distributeEbyteForETH(addresses, _value, _div, _ethbal);
 	      break;
@@ -151,14 +151,14 @@ contract EtherBall is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -169,8 +169,8 @@ contract EtherBall is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -181,7 +181,7 @@ contract EtherBall is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;

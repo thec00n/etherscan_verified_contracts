@@ -2,14 +2,14 @@
 
   Copyright 2018 bZeroX, LLC
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -21,7 +21,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,7 +113,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20Transfer failed&quot;);
+        require(result, "eip20Transfer failed");
     }
 
     function eip20TransferFrom(
@@ -140,7 +140,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20TransferFrom failed&quot;);
+        require(result, "eip20TransferFrom failed");
     }
 
     function eip20Approve(
@@ -166,7 +166,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20Approve failed&quot;);
+        require(result, "eip20Approve failed");
     }
 }
 
@@ -174,7 +174,7 @@ contract BZRXFakeFaucet is EIP20Wrapper, Ownable {
 
     uint public faucetThresholdSecs = 14400; // 4 hours
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public faucetUsers; // mapping of users to mapping of tokens to last request times
+    mapping (address => mapping (address => uint)) public faucetUsers; // mapping of users to mapping of tokens to last request times
 
     function() public payable {}
 
@@ -184,8 +184,8 @@ contract BZRXFakeFaucet is EIP20Wrapper, Ownable {
         public
         returns (bool)
     {
-        require(block.timestamp-faucetUsers[receiver][getToken] &gt;= faucetThresholdSecs 
-            &amp;&amp; block.timestamp-faucetUsers[msg.sender][getToken] &gt;= faucetThresholdSecs, &quot;BZRXFakeFaucet::faucet: token requested too recently&quot;);
+        require(block.timestamp-faucetUsers[receiver][getToken] >= faucetThresholdSecs 
+            && block.timestamp-faucetUsers[msg.sender][getToken] >= faucetThresholdSecs, "BZRXFakeFaucet::faucet: token requested too recently");
 
         faucetUsers[receiver][getToken] = block.timestamp;
         faucetUsers[msg.sender][getToken] = block.timestamp;
@@ -206,7 +206,7 @@ contract BZRXFakeFaucet is EIP20Wrapper, Ownable {
         returns (bool)
     {
         uint amount = value;
-        if (amount &gt; address(this).balance) {
+        if (amount > address(this).balance) {
             amount = address(this).balance;
         }
 

@@ -210,7 +210,7 @@ contract XCPlugin is XCPluginInterface {
         bytes32 name;
         uint weight;
         address[] publicKeys;
-        mapping(string =&gt; Proposal) proposals;
+        mapping(string => Proposal) proposals;
     }
 
     Admin private admin;
@@ -239,12 +239,12 @@ contract XCPlugin is XCPluginInterface {
     function init() internal {
         // Admin { status | platformName | tokenSymbol | account}
         admin.status = true;
-        admin.platformName = &quot;ETH&quot;;
-        admin.tokenSymbol = &quot;INK&quot;;
+        admin.platformName = "ETH";
+        admin.tokenSymbol = "INK";
         admin.account = msg.sender;
-        admin.version = &quot;1.0&quot;;
+        admin.version = "1.0";
         platform.status = true;
-        platform.name = &quot;INK&quot;;
+        platform.name = "INK";
         platform.weight = 3;
         platform.publicKeys.push(0x80aa17b21c16620a4d7dd06ec1dcc44190b02ca0);
         platform.publicKeys.push(0xd2e40bb4967b355da8d70be40c277ebcf108063c);
@@ -292,7 +292,7 @@ contract XCPlugin is XCPluginInterface {
     }
 
     function deleteCaller(address caller) onlyAdmin nonzeroAddress(caller) external {
-        for (uint i = 0; i &lt; callers.length; i++) {
+        for (uint i = 0; i < callers.length; i++) {
             if (callers[i] == caller) {
                 if (i != callers.length - 1 ) {
                     callers[i] = callers[callers.length - 1];
@@ -316,7 +316,7 @@ contract XCPlugin is XCPluginInterface {
     }
 
     function setWeight(uint weight) onlyAdmin external {
-        require(weight &gt; 0);
+        require(weight > 0);
         if (platform.weight != weight) {
             platform.weight = weight;
         }
@@ -328,7 +328,7 @@ contract XCPlugin is XCPluginInterface {
 
     function addPublicKey(address publicKey) onlyAdmin nonzeroAddress(publicKey) external {
         address[] storage publicKeys = platform.publicKeys;
-        for (uint i; i &lt; publicKeys.length; i++) {
+        for (uint i; i < publicKeys.length; i++) {
             if (publicKey == publicKeys[i]) {
                 return;
             }
@@ -338,7 +338,7 @@ contract XCPlugin is XCPluginInterface {
 
     function deletePublicKey(address publicKey) onlyAdmin nonzeroAddress(publicKey) external {
         address[] storage publicKeys = platform.publicKeys;
-        for (uint i = 0; i &lt; publicKeys.length; i++) {
+        for (uint i = 0; i < publicKeys.length; i++) {
             if (publicKeys[i] == publicKey) {
                 if (i != publicKeys.length - 1 ) {
                     publicKeys[i] = publicKeys[publicKeys.length - 1];
@@ -371,7 +371,7 @@ contract XCPlugin is XCPluginInterface {
             proposal.toAccount = toAccount;
             proposal.value = value;
         } else {
-            require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value);
+            require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value);
         }
         changeVoters(publicKey, txid);
     }
@@ -379,17 +379,17 @@ contract XCPlugin is XCPluginInterface {
     function verifyProposal(address fromAccount, address toAccount, uint value, string txid) external view returns (bool, bool) {
         Proposal storage proposal = platform.proposals[txid];
         if (proposal.status) {
-            return (true, (proposal.voters.length &gt;= proposal.weight));
+            return (true, (proposal.voters.length >= proposal.weight));
         }
         if (proposal.value == 0) {
             return (false, false);
         }
-        require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value);
-        return (false, (proposal.voters.length &gt;= platform.weight));
+        require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value);
+        return (false, (proposal.voters.length >= platform.weight));
     }
 
     function commitProposal(string txid) external returns (bool) {
-        require((admin.status &amp;&amp;_existCaller(msg.sender)) || msg.sender == admin.account);
+        require((admin.status &&_existCaller(msg.sender)) || msg.sender == admin.account);
         require(!platform.proposals[txid].status);
         platform.proposals[txid].status = true;
         platform.proposals[txid].weight = platform.proposals[txid].voters.length;
@@ -417,12 +417,12 @@ contract XCPlugin is XCPluginInterface {
      */
 
     function hashMsg(bytes32 fromPlatform, address fromAccount, bytes32 toPlatform, address toAccount, uint value, bytes32 tokenSymbol, string txid,string version) internal pure returns (bytes32) {
-        return sha256(bytes32ToStr(fromPlatform), &quot;:0x&quot;, uintToStr(uint160(fromAccount), 16), &quot;:&quot;, bytes32ToStr(toPlatform), &quot;:0x&quot;, uintToStr(uint160(toAccount), 16), &quot;:&quot;, uintToStr(value, 10), &quot;:&quot;, bytes32ToStr(tokenSymbol), &quot;:&quot;, txid, &quot;:&quot;, version);
+        return sha256(bytes32ToStr(fromPlatform), ":0x", uintToStr(uint160(fromAccount), 16), ":", bytes32ToStr(toPlatform), ":0x", uintToStr(uint160(toAccount), 16), ":", uintToStr(value, 10), ":", bytes32ToStr(tokenSymbol), ":", txid, ":", version);
     }
 
     function changeVoters(address publicKey, string txid) internal {
         address[] storage voters = platform.proposals[txid].voters;
-        for (uint i = 0; i &lt; voters.length; i++) {
+        for (uint i = 0; i < voters.length; i++) {
             if (voters[i] == publicKey) {
                 return;
             }
@@ -432,14 +432,14 @@ contract XCPlugin is XCPluginInterface {
 
     function bytes32ToStr(bytes32 b) internal pure returns (string) {
         uint length = b.length;
-        for (uint i = 0; i &lt; b.length; i++) {
-            if (b[b.length - 1 - i] != &quot;&quot;) {
+        for (uint i = 0; i < b.length; i++) {
+            if (b[b.length - 1 - i] != "") {
                 length -= i;
                 break;
             }
         }
         bytes memory bs = new bytes(length);
-        for (uint j = 0; j &lt; length; j++) {
+        for (uint j = 0; j < length; j++) {
             bs[j] = b[j];
         }
         return string(bs);
@@ -448,9 +448,9 @@ contract XCPlugin is XCPluginInterface {
     function uintToStr(uint value, uint base) internal pure returns (string) {
         uint _value = value;
         uint length = 0;
-        bytes16 tenStr = &quot;0123456789abcdef&quot;;
+        bytes16 tenStr = "0123456789abcdef";
         while (true) {
-            if (_value &gt; 0) {
+            if (_value > 0) {
                 length ++;
                 _value = _value / base;
             } else {
@@ -461,7 +461,7 @@ contract XCPlugin is XCPluginInterface {
             length = 40;
         }
         bytes memory bs = new bytes(length);
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             bs[length - 1 - i] = tenStr[value % base];
             value = value / base;
         }
@@ -469,7 +469,7 @@ contract XCPlugin is XCPluginInterface {
     }
 
     function _existCaller(address caller) internal view returns (bool) {
-        for (uint i = 0; i &lt; callers.length; i++) {
+        for (uint i = 0; i < callers.length; i++) {
             if (callers[i] == caller) {
                 return true;
             }
@@ -479,7 +479,7 @@ contract XCPlugin is XCPluginInterface {
 
     function _existPublicKey(address publicKey) internal view returns (bool) {
         address[] memory publicKeys = platform.publicKeys;
-        for (uint i = 0; i &lt; publicKeys.length; i++) {
+        for (uint i = 0; i < publicKeys.length; i++) {
             if (publicKeys[i] == publicKey) {
                 return true;
             }
@@ -496,7 +496,7 @@ contract XCPlugin is XCPluginInterface {
             s := mload(add(sig, 64))
             v := byte(0, mload(add(sig, 96)))
         }
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
         return ecrecover(hash, v, r, s);

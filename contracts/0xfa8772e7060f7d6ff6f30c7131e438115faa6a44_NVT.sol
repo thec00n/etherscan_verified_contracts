@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
  
 //Never Mind :P
 /* @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
   address public owner;
@@ -59,9 +59,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract NVTReceiver {
 contract BasicToken {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -111,7 +111,7 @@ contract BasicToken {
   */
   function transfer(address _to, uint _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     
     // SafeMath.sub will throw if there is not enough balance.
     if(!isContract(_to)){
@@ -131,7 +131,7 @@ contract BasicToken {
   }
   function transfer(address _to, uint _value, uint _code) public returns (bool) {
       require(isContract(_to));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
       balances[msg.sender] = balanceOf(msg.sender).sub(_value);
       balances[_to] = balanceOf(_to).add(_value);
       NVTReceiver receiver = NVTReceiver(_to);
@@ -157,7 +157,7 @@ function isContract(address _addr) private returns (bool is_contract) {
         //retrieve the size of the code on target address, this needs assembly
         length := extcodesize(_addr)
     }
-    return (length&gt;0);
+    return (length>0);
   }
 
 
@@ -165,7 +165,7 @@ function isContract(address _addr) private returns (bool is_contract) {
   //Only used for recycling NVTs
   function transferToContract(address _to, uint _value, uint _code) public returns (bool success) {
     require(isContract(_to));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
   
       balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
@@ -184,8 +184,8 @@ function isContract(address _addr) private returns (bool is_contract) {
 
 contract NVT is BasicToken, Ownable {
 
-  string public constant name = &quot;NiceVotingToken&quot;;
-  string public constant symbol = &quot;NVT&quot;;
+  string public constant name = "NiceVotingToken";
+  string public constant symbol = "NVT";
   uint8 public constant decimals = 2;
 
   uint256 public constant TOTAL_SUPPLY = 100 * 10 ** 10; //10 billion tokens
@@ -212,7 +212,7 @@ contract NVT is BasicToken, Ownable {
   //Rember 18 zeros for decimals of eth(wei), and 2 zeros for NVT. So add 16 zeros with * 10 ** 16
   //price can only go higher
   function setPrice(uint _newprice) onlyOwner{
-    require(_newprice &gt; price);
+    require(_newprice > price);
     price=_newprice; 
   }
 
@@ -220,7 +220,7 @@ contract NVT is BasicToken, Ownable {
   function () public payable{
     require(halted == false);
     uint amout = msg.value.div(price);
-    require(amout &lt;= TOKEN_FOR_SALE);
+    require(amout <= TOKEN_FOR_SALE);
     TOKEN_FOR_SALE = TOKEN_FOR_SALE.sub(amout);
     balances[msg.sender] = balanceOf(msg.sender).add(amout);
     totalSupply_=totalSupply_.add(amout);
@@ -246,7 +246,7 @@ contract NVT is BasicToken, Ownable {
 
 
   function getTokenForCommunity (address _to, uint _amout) onlyOwner{
-    require(_amout &lt;= TOKEN_FOR_COMUNITY);
+    require(_amout <= TOKEN_FOR_COMUNITY);
     TOKEN_FOR_COMUNITY = TOKEN_FOR_COMUNITY.sub(_amout);
     totalSupply_=totalSupply_.add(_amout);
     balances[_to] = balanceOf(_to).add(_amout);

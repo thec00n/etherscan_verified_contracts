@@ -36,28 +36,28 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract Callable is Owned {
 
-    //sender =&gt; _allowed
-    mapping(address =&gt; bool) public callers;
+    //sender => _allowed
+    mapping(address => bool) public callers;
 
     //modifiers
     modifier onlyCaller {
@@ -73,12 +73,12 @@ contract Callable is Owned {
 
 contract EternalStorage is Callable {
 
-    mapping(bytes32 =&gt; uint) uIntStorage;
-    mapping(bytes32 =&gt; string) stringStorage;
-    mapping(bytes32 =&gt; address) addressStorage;
-    mapping(bytes32 =&gt; bytes) bytesStorage;
-    mapping(bytes32 =&gt; bool) boolStorage;
-    mapping(bytes32 =&gt; int) intStorage;
+    mapping(bytes32 => uint) uIntStorage;
+    mapping(bytes32 => string) stringStorage;
+    mapping(bytes32 => address) addressStorage;
+    mapping(bytes32 => bytes) bytesStorage;
+    mapping(bytes32 => bool) boolStorage;
+    mapping(bytes32 => int) intStorage;
 
     // *** Getter Methods ***
     function getUint(bytes32 _key) external view returns (uint) {
@@ -163,46 +163,46 @@ contract ClaimRepository is Callable {
 
     constructor(address _eternalStorage) public {
         //constructor
-        require(_eternalStorage != address(0), &quot;Eternal storage cannot be 0x0&quot;);
+        require(_eternalStorage != address(0), "Eternal storage cannot be 0x0");
         db = EternalStorage(_eternalStorage);
     }
 
     function addClaim(address _solverAddress, bytes32 _platform, string _platformId, string _solver, address _token, uint256 _requestBalance) public onlyCaller returns (bool) {
-        if (db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) != address(0)) {
-            require(db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) == _solverAddress, &quot;Adding a claim needs to happen with the same claimer as before&quot;);
+        if (db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) != address(0)) {
+            require(db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) == _solverAddress, "Adding a claim needs to happen with the same claimer as before");
         } else {
-            db.setString(keccak256(abi.encodePacked(&quot;claims.solver&quot;, _platform, _platformId)), _solver);
-            db.setAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId)), _solverAddress);
+            db.setString(keccak256(abi.encodePacked("claims.solver", _platform, _platformId)), _solver);
+            db.setAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId)), _solverAddress);
         }
 
-        uint tokenCount = db.getUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)));
-        db.setUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)), tokenCount.add(1));
-        db.setUint(keccak256(abi.encodePacked(&quot;claims.token.amount&quot;, _platform, _platformId, _token)), _requestBalance);
-        db.setAddress(keccak256(abi.encodePacked(&quot;claims.token.address&quot;, _platform, _platformId, tokenCount)), _token);
+        uint tokenCount = db.getUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)));
+        db.setUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)), tokenCount.add(1));
+        db.setUint(keccak256(abi.encodePacked("claims.token.amount", _platform, _platformId, _token)), _requestBalance);
+        db.setAddress(keccak256(abi.encodePacked("claims.token.address", _platform, _platformId, tokenCount)), _token);
         return true;
     }
 
     function isClaimed(bytes32 _platform, string _platformId) view external returns (bool claimed) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) != address(0);
+        return db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) != address(0);
     }
 
     function getSolverAddress(bytes32 _platform, string _platformId) view external returns (address solverAddress) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId)));
+        return db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId)));
     }
 
     function getSolver(bytes32 _platform, string _platformId) view external returns (string){
-        return db.getString(keccak256(abi.encodePacked(&quot;claims.solver&quot;, _platform, _platformId)));
+        return db.getString(keccak256(abi.encodePacked("claims.solver", _platform, _platformId)));
     }
 
     function getTokenCount(bytes32 _platform, string _platformId) view external returns (uint count) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)));
+        return db.getUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)));
     }
 
     function getTokenByIndex(bytes32 _platform, string _platformId, uint _index) view external returns (address token) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.token.address&quot;, _platform, _platformId, _index)));
+        return db.getAddress(keccak256(abi.encodePacked("claims.token.address", _platform, _platformId, _index)));
     }
 
     function getAmountByToken(bytes32 _platform, string _platformId, address _token) view external returns (uint token) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;claims.token.amount&quot;, _platform, _platformId, _token)));
+        return db.getUint(keccak256(abi.encodePacked("claims.token.amount", _platform, _platformId, _token)));
     }
 }

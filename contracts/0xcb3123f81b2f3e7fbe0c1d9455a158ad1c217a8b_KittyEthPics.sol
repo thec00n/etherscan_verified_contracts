@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d494859486d4c55444240574843034e42">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d494859486d4c55444240574843034e42">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -99,20 +99,20 @@ contract KittyEthPics is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;KittyEthPics&quot;;
-  string public constant SYMBOL = &quot;KittyPicsToken&quot;;
+  string public constant NAME = "KittyEthPics";
+  string public constant SYMBOL = "KittyPicsToken";
 
   uint256 private startingPrice = 0.01 ether;
 
-  mapping (uint256 =&gt; address) public kittyIdToOwner;
+  mapping (uint256 => address) public kittyIdToOwner;
 
-  mapping (uint256 =&gt; address) public kittyIdToDivs;
+  mapping (uint256 => address) public kittyIdToDivs;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public kittyIdToApproved;
+  mapping (uint256 => address) public kittyIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private kittyIdToPrice;
+  mapping (uint256 => uint256) private kittyIdToPrice;
 
   /*** DATATYPES ***/
   struct Kitty {
@@ -139,10 +139,10 @@ contract KittyEthPics is ERC721, Ownable {
   function create21KittiesTokens() public onlyContractOwner {
      uint256 totalKitties = totalSupply();
 	 
-	 require (totalKitties&lt;1); // only 21 tokens for start
+	 require (totalKitties<1); // only 21 tokens for start
 	 
-	 for (uint8 i=1; i&lt;=21; i++)
-		_createKitty(&quot;EthKitty&quot;, address(this), startingPrice);
+	 for (uint8 i=1; i<=21; i++)
+		_createKitty("EthKitty", address(this), startingPrice);
 	
   }
   
@@ -175,7 +175,7 @@ contract KittyEthPics is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 8), 10)); //80% to previous owner
     uint256 divs_payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 1), 10)); //10% divs
@@ -199,7 +199,7 @@ contract KittyEthPics is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, kittyIdToPrice[_tokenId], oldOwner, newOwner, kitties[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
@@ -207,13 +207,13 @@ contract KittyEthPics is ERC721, Ownable {
   
   function changeKitty(uint256 _tokenId) public payable { //
 
-    require(kittyIdToOwner[_tokenId] == msg.sender &amp;&amp; msg.value == 20 finney); //tax 0.02eth for change
+    require(kittyIdToOwner[_tokenId] == msg.sender && msg.value == 20 finney); //tax 0.02eth for change
 	
 	uint256 newPrice =  SafeMath.div(kittyIdToPrice[_tokenId], 2);
     
     //get two kitties within one
-	createKittyToken(&quot;EthKitty&quot;, newPrice);
-	createKittyToken(&quot;EthKitty&quot;, newPrice);
+	createKittyToken("EthKitty", newPrice);
+	createKittyToken("EthKitty", newPrice);
 	
 	kittyIdToOwner[_tokenId] = address(this); //return changed kitty to kittypics
 	kittyIdToPrice[_tokenId] = 10 finney;
@@ -244,13 +244,13 @@ contract KittyEthPics is ERC721, Ownable {
 	
 	uint256 totalKitties = totalSupply();
 	
-    if (totalKitties == 0 || _startKittyId &gt;= totalKitties) {
+    if (totalKitties == 0 || _startKittyId >= totalKitties) {
         // Return an empty array
       return (new address[](0),new address[](0),new uint256[](0));
     }
 	
 	uint256 indexTo;
-	if (totalKitties &gt; _startKittyId+1000)
+	if (totalKitties > _startKittyId+1000)
 		indexTo = _startKittyId + 1000;
 	else 	
 		indexTo = totalKitties;
@@ -261,7 +261,7 @@ contract KittyEthPics is ERC721, Ownable {
 	address[] memory divs_res = new address[](totalResultKitties);
 	uint256[] memory prices_res = new uint256[](totalResultKitties);
 	
-	for (uint256 kittyId = _startKittyId; kittyId &lt; indexTo; kittyId++) {
+	for (uint256 kittyId = _startKittyId; kittyId < indexTo; kittyId++) {
 	  owners_res[kittyId - _startKittyId] = kittyIdToOwner[kittyId];
 	  divs_res[kittyId - _startKittyId] = kittyIdToDivs[kittyId];
 	  prices_res[kittyId - _startKittyId] = kittyIdToPrice[kittyId];
@@ -281,7 +281,7 @@ contract KittyEthPics is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 kittyId;
-      for (kittyId = 0; kittyId &lt;= totalKitties; kittyId++) {
+      for (kittyId = 0; kittyId <= totalKitties; kittyId++) {
         if (kittyIdToOwner[kittyId] == _owner) {
           result[resultIndex] = kittyId;
           resultIndex++;
@@ -344,7 +344,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     kittyIdToOwner[_tokenId] = _to;
 
-    // When creating new kitties _from is 0x0, but we can&#39;t account that address.
+    // When creating new kitties _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

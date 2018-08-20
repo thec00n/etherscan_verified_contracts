@@ -2,12 +2,12 @@ pragma solidity ^0.4.21;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
@@ -78,7 +78,7 @@ contract TokenLiquidityMarket {
 
   function withdraw_excess_tokens() public only_admin() {
     uint256 queried_traded_token_balance_ = Token(traded_token).balanceOf(this);
-    require(queried_traded_token_balance_ &gt;= traded_token_balance);
+    require(queried_traded_token_balance_ >= traded_token_balance);
     uint256 excess_ = queried_traded_token_balance_.sub(traded_token_balance);
     require(Token(traded_token).transfer(admin, excess_));
   }
@@ -150,7 +150,7 @@ contract TokenLiquidityMarket {
   }
 
   function market_is_open() private view returns(bool) {
-    return (eth_is_seeded &amp;&amp; traded_token_is_seeded);
+    return (eth_is_seeded && traded_token_is_seeded);
   }
 
   function deactivate_trading() public only_admin() {

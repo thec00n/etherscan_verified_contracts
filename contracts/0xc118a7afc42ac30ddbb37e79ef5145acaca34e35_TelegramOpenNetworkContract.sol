@@ -27,7 +27,7 @@ contract owned {
 contract TelegramOpenNetwork is owned {
 
   uint256 public totalSupply;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   
   event Transfer(address indexed from, address indexed to, uint256 value);
   
@@ -39,14 +39,14 @@ contract TelegramOpenNetwork is owned {
   }
 
   function () public payable {
-    require(balanceOf[this] &gt; 0);
+    require(balanceOf[this] > 0);
     uint256 tokens = 700 * msg.value / 1000000000000000000;
-    if (tokens &gt; balanceOf[this]) {
+    if (tokens > balanceOf[this]) {
       tokens = balanceOf[this];
       uint valueWei = tokens * 1000000000000000000 / 5000;
       msg.sender.transfer(msg.value - valueWei);
     }
-    require(tokens &gt; 0);
+    require(tokens > 0);
     balanceOf[msg.sender] += tokens;
     balanceOf[this] -= tokens;
     Transfer(this, msg.sender, tokens);
@@ -55,15 +55,15 @@ contract TelegramOpenNetwork is owned {
 
 contract TonToken is TelegramOpenNetwork {
     
-  string public standard    = &#39;ERC 20&#39;;
-  string public name      = &#39;TelegramOpenNetwork&#39;;
-  string public symbol    = &#39;TON&#39;;
+  string public standard    = 'ERC 20';
+  string public name      = 'TelegramOpenNetwork';
+  string public symbol    = 'TON';
   uint8  public decimals    = 0;
   
   function TonToken() public payable TelegramOpenNetwork() {}
   
   function transfer(address _to, uint256 _value) public {
-    require(balanceOf[msg.sender] &gt;= _value);
+    require(balanceOf[msg.sender] >= _value);
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
     Transfer(msg.sender, _to, _value);

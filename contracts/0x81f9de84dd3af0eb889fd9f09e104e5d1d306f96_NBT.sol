@@ -59,20 +59,20 @@ contract NBT is Token {
     function transfer(address _to, uint256 _value) public returns(bool success) {
         if (msg.sender == Team) {
             uint timeTemp = (now - startTime) / 60 / 60 / 24 / 100;
-            if (timeTemp &gt; 10) {
+            if (timeTemp > 10) {
                 timeTemp = 10;
             }
-            require(balances[msg.sender] - _value &gt;= (totalSupply / 5 - totalSupply * timeTemp / 50));
+            require(balances[msg.sender] - _value >= (totalSupply / 5 - totalSupply * timeTemp / 50));
             record(_to, _value);
         }
 
         if (msg.sender == Short) {
-            require(balances[msg.sender] &gt;= _value);
+            require(balances[msg.sender] >= _value);
             record(_to, _value);
         }
 
         if (msg.sender == Long) {
-            require(balances[msg.sender] &gt;= _value);
+            require(balances[msg.sender] >= _value);
             longRecord(_to, _value);
         }
 
@@ -84,7 +84,7 @@ contract NBT is Token {
             longJudge(_value, msg.sender);
         }
 
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         require(_to != 0x0);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -93,7 +93,7 @@ contract NBT is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -126,24 +126,24 @@ contract NBT is Token {
         uint256[] storage T = time[addr];
         uint256[] storage A = init[addr];
         number[addr] = 0;
-        for (uint i = 0; i &lt; T.length; i++) {
-            if (now &lt; (T[i] + 100 days)) {
+        for (uint i = 0; i < T.length; i++) {
+            if (now < (T[i] + 100 days)) {
                 number[addr] += A[i];
             }
         }
-        require(balances[addr] - _value &gt;= number[addr]);
+        require(balances[addr] - _value >= number[addr]);
     }
 
     function longJudge(uint256 _value, address addr) private {
         uint256[] storage T = longTime[addr];
         uint256[] storage A = longInit[addr];
         longNumber[addr] = 0;
-        for (uint i = 0; i &lt; T.length; i++) {
-            if (now &lt; (T[i] + 1000 days)) {
+        for (uint i = 0; i < T.length; i++) {
+            if (now < (T[i] + 1000 days)) {
                 longNumber[addr] += A[i];
             }
         }
-        require(balances[addr] - _value &gt;= longNumber[addr]);
+        require(balances[addr] - _value >= longNumber[addr]);
     }
 
     function balanceOf(address _owner) public constant returns(uint256 balance) {
@@ -162,19 +162,19 @@ contract NBT is Token {
 
     function benchTransfer(address[] addr, uint256[] num) public {
         require(addr.length == num.length);
-        for (uint i = 0; i &lt; num.length; i++) {
+        for (uint i = 0; i < num.length; i++) {
 
             transfer(addr[i], num[i] * 10 **uint256(decimals));
         }
     }
 
-    mapping(address =&gt;uint256) balances;
-    mapping(address =&gt;mapping(address =&gt;uint256)) allowed;
+    mapping(address =>uint256) balances;
+    mapping(address =>mapping(address =>uint256)) allowed;
 
-    mapping(address =&gt;uint256[]) time;
-    mapping(address =&gt;uint256[]) init;
-    mapping(address =&gt;uint256) number;
-    mapping(address =&gt;uint256[]) longTime;
-    mapping(address =&gt;uint256[]) longInit;
-    mapping(address =&gt;uint256) longNumber;
+    mapping(address =>uint256[]) time;
+    mapping(address =>uint256[]) init;
+    mapping(address =>uint256) number;
+    mapping(address =>uint256[]) longTime;
+    mapping(address =>uint256[]) longInit;
+    mapping(address =>uint256) longNumber;
 }

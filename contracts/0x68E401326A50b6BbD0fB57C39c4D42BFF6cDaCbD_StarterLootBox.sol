@@ -24,7 +24,7 @@ contract ExternalInterface {
 contract StarterLootBox is LootboxInterface {
   uint16 constant _displayValue = 2;
 
-  mapping(address =&gt; uint) previousPurchasers;
+  mapping(address => uint) previousPurchasers;
 
   function buy(address _buyer) external {
     require(previousPurchasers[_buyer] == 0);

@@ -6,7 +6,7 @@ contract OracleInterface {
         uint blockHeight;
     }
 
-    mapping(uint =&gt; PriceData) public historicPricing;
+    mapping(uint => PriceData) public historicPricing;
     uint public index;
     address public owner;
     uint8 public decimals;
@@ -188,18 +188,18 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     }
     uint public bids_sorted_count;
     uint public bids_sorted_refunded;
-    mapping (uint =&gt; BidData) public bids_sorted; //Is sorted
+    mapping (uint => BidData) public bids_sorted; //Is sorted
 
     uint public bids_burned_count;
-    mapping (uint =&gt; uint) public bids_burned;
+    mapping (uint => uint) public bids_burned;
 
     uint public bids_ignored_count;
     uint public bids_ignored_refunded;
-    mapping (uint =&gt; BidData) public bids_ignored;
+    mapping (uint => BidData) public bids_ignored;
 
 
     uint public bids_decrypted_count;
-    mapping (uint =&gt; uint) public bids_decrypted;
+    mapping (uint => uint) public bids_decrypted;
     uint private bids_reset_count;
 
     struct Bid {
@@ -213,13 +213,13 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         bool will_compute;
     }
     uint public bids_count;
-    mapping (uint =&gt; Bid) public bids;
+    mapping (uint => Bid) public bids;
 
     uint public bids_computed_cursor;
 
     uint public shares_holders_count;
-    mapping (uint =&gt; address) public shares_holders;
-    mapping (address =&gt; uint) public shares_holders_balance;
+    mapping (uint => address) public shares_holders;
+    mapping (address => uint) public shares_holders_balance;
 
     /// @notice External dependencies
 
@@ -241,9 +241,9 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         address _oracle,
         address _art_token_contract
     ) public {
-        require(_max_shares_to_sell &gt; 0);
-        require(_max_shares_to_sell &gt;= _min_shares_to_sell);
-        require(_available_shares &gt;= _max_shares_to_sell);
+        require(_max_shares_to_sell > 0);
+        require(_max_shares_to_sell >= _min_shares_to_sell);
+        require(_available_shares >= _max_shares_to_sell);
         require(_oracle != address(0x0));
         owner = msg.sender;
         min_shares_to_sell = _min_shares_to_sell;
@@ -264,8 +264,8 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     /// @param _fundraise_max Maximum cap for fundraised capital
     function setFundraiseLimits(uint _min_share_price, uint _fundraise_max) public onlyOwner{
         require(!fundraise_defined);
-        require(_min_share_price &gt; 0);
-        require(_fundraise_max &gt; 0);
+        require(_min_share_price > 0);
+        require(_fundraise_max > 0);
         require(status == state.ended);
         fundraise_max = _fundraise_max;
         min_share_price = _min_share_price;
@@ -300,13 +300,13 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         emit BidAdded(bids_count++);
     }
 
-    /// @notice Helper function for calculating a bid&#39;s hash.
+    /// @notice Helper function for calculating a bid's hash.
     function getBidHash(uint nonce, uint bid_id, address investor_address, uint share_price, uint shares_count) public pure returns(bytes32) {
         return keccak256(abi.encodePacked(nonce, bid_id, investor_address, share_price, shares_count));
     }
 
-    /// @notice Allows the &quot;burning&quot; of a bid, for cases in which a bid was corrupted and can&#39;t be decrypted.
-    /// &quot;Burnt&quot; bids do not participate in the final calculations for auction participants
+    /// @notice Allows the "burning" of a bid, for cases in which a bid was corrupted and can't be decrypted.
+    /// "Burnt" bids do not participate in the final calculations for auction participants
     /// @param _index Indicates the index of the bid to be burnt
     function burnBid(uint _index) public onlyOwner {
         require(status == state.ended);
@@ -325,15 +325,15 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         emit BidBurned(_index);
     }
 
-    /// @notice Appends the bid&#39;s data to the contract, for use in the final calculations
-    /// Once all bids are appended, the auction is locked and changes its state to &quot;decrypted&quot;
+    /// @notice Appends the bid's data to the contract, for use in the final calculations
+    /// Once all bids are appended, the auction is locked and changes its state to "decrypted"
     /// @dev Bids MUST be appended in order of asset valuation,
     /// since the contract relies on off-chain sorting and checks if the order is correct
     /// @param _nonce Bid parameter
-    /// @param _index Bid&#39;s index inside the contract
+    /// @param _index Bid's index inside the contract
     /// @param _bid_id Bid parameter
-    /// @param _investor_address Bid parameter - address of the bid&#39;s originator
-    /// @param _share_price Bid parameter - estimated value of the asset&#39;s share price
+    /// @param _investor_address Bid parameter - address of the bid's originator
+    /// @param _share_price Bid parameter - estimated value of the asset's share price
     /// @param _shares_count Bid parameter - amount of shares bid for
     /// @param _transfered_token Bid parameter - amount of ART tokens sent with the bid
     function appendDecryptedBid(uint _nonce, uint _index, uint _bid_id, address _investor_address, uint _share_price, uint _shares_count, uint _transfered_token) onlyOwner public {
@@ -342,15 +342,15 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         require(bids[_index].exist == true);
         require(bids[_index].is_decrypted == false);
         require(bids[_index].is_burned == false);
-        require(_share_price &gt; 0);
-        require(_shares_count &gt; 0);
-        require(_transfered_token &gt;= convert_valuation_to_art(_shares_count.mul(_share_price),bids[_index].art_price));
+        require(_share_price > 0);
+        require(_shares_count > 0);
+        require(_transfered_token >= convert_valuation_to_art(_shares_count.mul(_share_price),bids[_index].art_price));
         
-        if (bids_sorted_count &gt; 0){
+        if (bids_sorted_count > 0){
             BidData memory previous_bid_data = bids_sorted[bids_sorted_count-1];
-            require(_share_price &lt;= previous_bid_data.share_price);
+            require(_share_price <= previous_bid_data.share_price);
             if (_share_price == previous_bid_data.share_price){
-                require(_index &gt; previous_bid_data.origin_index);
+                require(_index > previous_bid_data.origin_index);
             }
         }
         
@@ -363,7 +363,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         BidData memory bid_data = BidData(_index, _bid_id, _investor_address, _share_price, _shares_count, _transfer_amount, _transfered_token, 0, 0, false);
         bids[_index].is_decrypted = true;
         
-        if (_share_price &gt;= min_share_price){
+        if (_share_price >= min_share_price){
             bids[_index].will_compute = true;
             bids_sorted[bids_sorted_count] = bid_data;
             bids_sorted_count++;
@@ -391,8 +391,8 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         require(_investor_address.length == _share_price.length);
         require(_share_price.length == _shares_count.length);
         require(_shares_count.length == _transfered_token.length);
-        require(bids_count.sub(bids_decrypted_count) &gt; 0);
-        for (uint i = 0; i &lt; _index.length; i++){
+        require(bids_count.sub(bids_decrypted_count) > 0);
+        for (uint i = 0; i < _index.length; i++){
             appendDecryptedBid(_nonce[i], _index[i], _bid_id[i], _investor_address[i], _share_price[i], _shares_count[i], _transfered_token[i]);
         }
     }
@@ -401,13 +401,13 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     /// in case a mistake was made and it is not possible to continue appending further bids.
     function resetAppendDecryptedBids(uint _count) public onlyOwner{
         require(status == state.ended);
-        require(bids_decrypted_count &gt; 0);
-        require(_count &gt; 0);
+        require(bids_decrypted_count > 0);
+        require(_count > 0);
         if (bids_reset_count == 0){
             bids_reset_count = bids_decrypted_count;
         }
         uint count = _count;
-        if(bids_reset_count &lt; count){
+        if(bids_reset_count < count){
             count = bids_reset_count;
         }
 
@@ -417,7 +417,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             bids[bids_decrypted[bids_reset_count]].is_burned = false;
             bids[bids_decrypted[bids_reset_count]].will_compute = false;
             count--;
-        } while(count &gt; 0);
+        } while(count > 0);
         
         if (bids_reset_count == 0){
             bids_sorted_count = 0;
@@ -430,7 +430,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     /// @notice Performs the computation of auction winners and losers.
     /// Also, determines if the auction is successful or failed.
     /// Bids which place the asset valuation below the minimum fundraise cap
-    /// as well as bids below the final valuation are marked as ignored or &quot;loser&quot; respectively
+    /// as well as bids below the final valuation are marked as ignored or "loser" respectively
     /// and do not count towards the process.
     /// @dev Since this function is resource intensive, computation is done in batches
     /// of `_count` bids, so as to not encounter an OutOfGas exception in the middle
@@ -438,7 +438,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     /// @param _count Amount of bids to be processed in this run.
     function computeBids(uint _count) public onlyOwner{
         require(status == state.decrypted);
-        require(_count &gt; 0);
+        require(_count > 0);
         uint count = _count;
         // No bids
         if (bids_sorted_count == 0){
@@ -448,7 +448,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         }
         //bids_computed_cursor: How many bid already processed
         //bids_sorted_count: How many bids can compunte
-        require(bids_computed_cursor &lt; bids_sorted_count);
+        require(bids_computed_cursor < bids_sorted_count);
         
         //bid: Auxiliary variable
         BidData memory bid;
@@ -458,8 +458,8 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             bid = bids_sorted[bids_computed_cursor];
             //if only one share of current bid leave us out of fundraise limitis, ignore the bid
             //computed_shares_sold: Sumarize shares sold
-            if (bid.share_price.mul(computed_shares_sold).add(bid.share_price) &gt; fundraise_max){
-                if(bids_computed_cursor &gt; 0){
+            if (bid.share_price.mul(computed_shares_sold).add(bid.share_price) > fundraise_max){
+                if(bids_computed_cursor > 0){
                     bids_computed_cursor--;
                 }
                 bid = bids_sorted[bids_computed_cursor];
@@ -474,24 +474,24 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             bids_computed_cursor++;
             count--;
         }while(
-            count &gt; 0 &amp;&amp; //We have limite to compute
-            bids_computed_cursor &lt; bids_sorted_count &amp;&amp; //We have more bids to compute 
+            count > 0 && //We have limite to compute
+            bids_computed_cursor < bids_sorted_count && //We have more bids to compute 
             (
-                computed_fundraise &lt; fundraise_max &amp;&amp; //Fundraise is more or equal to max
-                computed_shares_sold &lt; max_shares_to_sell //Assigned shares are more or equal to max
+                computed_fundraise < fundraise_max && //Fundraise is more or equal to max
+                computed_shares_sold < max_shares_to_sell //Assigned shares are more or equal to max
             )
         );
 
         if (
             bids_computed_cursor == bids_sorted_count ||  //All bids computed
-            computed_fundraise &gt;= fundraise_max ||//Fundraise is more or equal to max
-            computed_shares_sold &gt;= max_shares_to_sell//Max shares raised
+            computed_fundraise >= fundraise_max ||//Fundraise is more or equal to max
+            computed_shares_sold >= max_shares_to_sell//Max shares raised
         ){
             
             final_share_price = bid.share_price;
             
             //More than max shares
-            if(computed_shares_sold &gt;= max_shares_to_sell){
+            if(computed_shares_sold >= max_shares_to_sell){
                 computed_shares_sold = max_shares_to_sell;//Limit shares
                 computed_fundraise = final_share_price.mul(computed_shares_sold);
                 winner_bids = bids_computed_cursor;
@@ -501,7 +501,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             }
 
             //Max fundraise is raised
-            if(computed_fundraise.add(final_share_price.mul(1)) &gt;= fundraise_max){//More than max fundraise
+            if(computed_fundraise.add(final_share_price.mul(1)) >= fundraise_max){//More than max fundraise
                 computed_fundraise = fundraise_max;//Limit fundraise
                 winner_bids = bids_computed_cursor;
                 status = state.success;
@@ -511,7 +511,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             
             //All bids computed
             if (bids_computed_cursor == bids_sorted_count){
-                if (computed_shares_sold &gt;= min_shares_to_sell){
+                if (computed_shares_sold >= min_shares_to_sell){
                     winner_bids = bids_computed_cursor;
                     status = state.success;
                     emit Success(computed_fundraise, final_share_price, computed_shares_sold);
@@ -543,14 +543,14 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     function refundIgnoredBids(uint _count) public onlyOwner{
         require(status == state.success || status == state.failure);
         uint count = _count;
-        if(bids_ignored_count &lt; bids_ignored_refunded.add(count)){
+        if(bids_ignored_count < bids_ignored_refunded.add(count)){
             count = bids_ignored_count.sub(bids_ignored_refunded);
         }
-        require(count &gt; 0);
+        require(count > 0);
         uint cursor = bids_ignored_refunded;
         bids_ignored_refunded = bids_ignored_refunded.add(count);
         BidData storage bid;
-        while (count &gt; 0) {
+        while (count > 0) {
             bid = bids_ignored[cursor];
             if(bid.closed){
                 continue;
@@ -563,7 +563,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
         }
     }
 
-    /// @notice Performs the refund of the &quot;loser&quot; bids ART tokens
+    /// @notice Performs the refund of the "loser" bids ART tokens
     /// @dev Since this function is resource intensive, computation is done in batches
     /// of `_count` bids, so as to not encounter an OutOfGas exception in the middle
     /// of the process.
@@ -571,14 +571,14 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     function refundLosersBids(uint _count) public onlyOwner{
         require(status == state.success || status == state.failure);
         uint count = _count;
-        if(bids_sorted_count.sub(winner_bids) &lt; bids_sorted_refunded.add(count)){
+        if(bids_sorted_count.sub(winner_bids) < bids_sorted_refunded.add(count)){
             count = bids_sorted_count.sub(winner_bids).sub(bids_sorted_refunded);
         }
-        require(count &gt; 0);
+        require(count > 0);
         uint cursor = bids_sorted_refunded.add(winner_bids);
         bids_sorted_refunded = bids_sorted_refunded.add(count);
         BidData memory bid;
-        while (count &gt; 0) {
+        while (count > 0) {
             bid = bids_sorted[cursor];
             if(bid.closed){
                 continue;
@@ -603,13 +603,13 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             uint _executed_amount_valuation,
             uint _return_amount
         ){
-        if(assigned_shares.add(_shares_count) &gt; max_shares_to_sell){
+        if(assigned_shares.add(_shares_count) > max_shares_to_sell){
             _shares_to_assign = max_shares_to_sell.sub(assigned_shares);
         }else{
             _shares_to_assign = _shares_count;
         }
         _executed_amount_valuation = _shares_to_assign.mul(_final_share_price);
-        if (final_fundraise.add(_executed_amount_valuation) &gt; fundraise_max){
+        if (final_fundraise.add(_executed_amount_valuation) > fundraise_max){
             _executed_amount_valuation = fundraise_max.sub(final_fundraise);
             _shares_to_assign = _executed_amount_valuation.div(_final_share_price);
             _executed_amount_valuation = _shares_to_assign.mul(_final_share_price);
@@ -619,7 +619,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     }
 
 
-    /// @notice Assign the asset share tokens to winner bid&#39;s authors
+    /// @notice Assign the asset share tokens to winner bid's authors
     /// @dev Since this function is resource intensive, computation is done in batches
     /// of `_count` bids, so as to not encounter an OutOfGas exception in the middle
     /// of the process.
@@ -627,15 +627,15 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
     function assignShareTokens(uint _count) public onlyOwner{
         require(status == state.success);
         uint count = _count;
-        if(winner_bids &lt; assigned_bids.add(count)){
+        if(winner_bids < assigned_bids.add(count)){
             count = winner_bids.sub(assigned_bids);
         }
-        require(count &gt; 0);
+        require(count > 0);
         uint cursor = assigned_bids;
         assigned_bids = assigned_bids.add(count);
         BidData storage bid;
 
-        while (count &gt; 0) {
+        while (count > 0) {
             bid = bids_sorted[cursor];
             uint _shares_to_assign;
             uint _executed_amount_valuation;
@@ -653,7 +653,7 @@ contract DutchAuction is Ownable, HasNoEther, HasNoTokens {
             assigned_shares = assigned_shares.add(_shares_to_assign);
             final_fundraise = final_fundraise.add(_executed_amount_valuation);
             final_shares_sold = final_shares_sold.add(_shares_to_assign);
-            if(_return_amount &gt; 0){
+            if(_return_amount > 0){
                 art_token_contract.transfer(bid.investor_address, _return_amount);
             }
             bid.closed = true;
@@ -717,8 +717,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -733,9 +733,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -743,7 +743,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -752,7 +752,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -34,7 +34,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -72,7 +72,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -87,7 +87,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -208,20 +208,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -276,7 +276,7 @@ contract Pausable is Ownable {
 /**
  * @title tonOwnable
  * @dev The tonOwnable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract tonOwnable is Ownable {
 
@@ -395,14 +395,14 @@ contract tonPausable is Pausable, tonModerated {
  **/
 contract tonModeratedToken is StandardToken, tonPausable {
 
-  mapping(address =&gt; bool) frozen;
+  mapping(address => bool) frozen;
 
   /**
    * @dev Check if given address is frozen. Freeze works only if moderator role is active
    * @param _addr address Address to check
    */
   function isFrozen(address _addr) constant returns (bool){
-      return frozen[_addr] &amp;&amp; hasModerator();
+      return frozen[_addr] && hasModerator();
   }
 
   /**
@@ -462,9 +462,9 @@ contract tonModeratedToken is StandardToken, tonPausable {
  * TONToken
  **/
 contract TONToken is tonModeratedToken {
-  string public constant version = &quot;1&quot;;
-  string public constant name = &quot;TonToken&quot;;
-  string public constant symbol = &quot;TON&quot;;
+  string public constant version = "1";
+  string public constant name = "TonToken";
+  string public constant symbol = "TON";
   uint256 public constant decimals = 5;
 
   /**

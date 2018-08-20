@@ -9,25 +9,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -57,9 +57,9 @@ contract Membership {
     
     /*Mappings*/
     //Members information
-    mapping(address =&gt; Member) public members;
+    mapping(address => Member) public members;
     address[] public membersAccts;
-    mapping (address =&gt; uint) public membersAcctsIndex;
+    mapping (address => uint) public membersAcctsIndex;
 
     /*Events*/
     event UpdateMemberAddress(address _from, address _to);
@@ -96,7 +96,7 @@ contract Membership {
     */
     function requestMembership() public payable {
         Member storage sender = members[msg.sender];
-        require(msg.value &gt;= memberFee &amp;&amp; sender.membershipType == 0 );
+        require(msg.value >= memberFee && sender.membershipType == 0 );
         membersAccts.push(msg.sender);
         sender.memberId = membersAccts.length;
         sender.membershipType = 1;

@@ -8,7 +8,7 @@ pragma solidity ^0.4.18;
 // | $$$$\ $$ /$$   /$$| $$  \ $$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$  /$$$$$$  /$$ /$$$$$$$ 
 // | $$ $$ $$|  $$ /$$/| $$  | $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/ /$$__  $$| $$| $$__  $$
 // | $$\ $$$$ \  $$$$/ | $$  | $$| $$  \ $$| $$  \ $$| $$$$$$$$| $$      | $$  \ $$| $$| $$  \ $$
-// | $$ \ $$$  &gt;$$  $$ | $$  | $$| $$  | $$| $$  | $$| $$_____/| $$      | $$  | $$| $$| $$  | $$
+// | $$ \ $$$  >$$  $$ | $$  | $$| $$  | $$| $$  | $$| $$_____/| $$      | $$  | $$| $$| $$  | $$
 // |  $$$$$$/ /$$/\  $$| $$$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$|  $$$$$$$|  $$$$$$/| $$| $$  | $$
 //  \______/ |__/  \__/|_______/  \______/  \____  $$ \_______/ \_______/ \______/ |__/|__/  |__/
 //                                          /$$  \ $$                                            
@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
 //
 // Official OxDogecoin website: http://0xdogecoin.com
 
-// &#39;0xDogecoin&#39; contract
+// '0xDogecoin' contract
 // Mineable ERC20 Token using Proof Of Work
 //
 // Symbol      : 0xDoge
@@ -35,11 +35,11 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -49,7 +49,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -59,7 +59,7 @@ library ExtendedMath {
 
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
-        if(a &gt; b) return b;
+        if(a > b) return b;
         return a;
     }
 }
@@ -153,7 +153,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
     uint8 public decimals;
     uint public _totalSupply;
     uint public latestDifficultyPeriodStarted;
-    uint public epochCount;                 //number of &#39;blocks&#39; mined
+    uint public epochCount;                 //number of 'blocks' mined
     uint public _BLOCKS_PER_READJUSTMENT = 512;
 
     //a little number and a big number
@@ -172,20 +172,20 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     bool locked = false;
 
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
 
     uint public tokensMinted;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function _0xDogecoin() public onlyOwner{
 
-        symbol = &quot;0xDoge&quot;;
-        name = &quot;0xDogecoin&quot;;
+        symbol = "0xDoge";
+        name = "0xDogecoin";
         decimals = 8;
         _totalSupply = 1000000000 * 10**uint(decimals);
 
@@ -204,14 +204,14 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
 
-      //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender&#39;s address to prevent MITM attacks
+      //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender's address to prevent MITM attacks
       bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
 
       //the challenge digest must match the expected
       if (digest != challenge_digest) revert();
 
       //the digest must be smaller than the target
-      if(uint256(digest) &gt; miningTarget) revert();
+      if(uint256(digest) > miningTarget) revert();
 
       //only allow one reward for each challenge
       bytes32 solution = solutionForChallenge[challengeNumber];
@@ -223,7 +223,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
       tokensMinted = tokensMinted.add(reward_amount);
 
       //Cannot mint more tokens than there are
-      assert(tokensMinted &lt;= maxSupplyForEra);
+      assert(tokensMinted <= maxSupplyForEra);
 
       //set readonly diagnostics data
       lastRewardTo = msg.sender;
@@ -238,14 +238,14 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     }
 
-    //a new &#39;block&#39; to be mined
+    //a new 'block' to be mined
     function _startNewMiningEpoch() internal {
 
       //if max supply for the era will be exceeded next reward round then enter the new era before that happens
 
       //40 is the final reward era, almost all tokens minted
       //once the final era is reached, more tokens will not be given out because the assert function
-      if( tokensMinted.add(getMiningReward()) &gt; maxSupplyForEra &amp;&amp; rewardEra &lt; 39)
+      if( tokensMinted.add(getMiningReward()) > maxSupplyForEra && rewardEra < 39)
       {
         rewardEra = rewardEra + 1;
       }
@@ -274,13 +274,13 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
         //assume 360 ethereum blocks per hour
 
-        //we want miners to spend 2 minutes to mine each &#39;block&#39;, about 12 ethereum blocks = one 0xDoge epoch
+        //we want miners to spend 2 minutes to mine each 'block', about 12 ethereum blocks = one 0xDoge epoch
         uint epochsMined = _BLOCKS_PER_READJUSTMENT;
 
         uint targetEthBlocksPerDiffPeriod = epochsMined * 12; //should be 12 times slower than ethereum
 
         //if there were less eth blocks passed in time than expected
-        if( ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod )
+        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod )
         {
           uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div( ethBlocksSinceLastDifficultyPeriod );
 
@@ -299,12 +299,12 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
         latestDifficultyPeriodStarted = block.number;
 
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
 
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -340,7 +340,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
       //help debug mining software
       function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testTarget) public view returns (bool success) {
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
           return (digest == challenge_digest);
         }
 
@@ -359,8 +359,8 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -372,7 +372,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -403,7 +403,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -412,7 +412,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -423,7 +423,7 @@ contract _0xDogecoin is ERC20Interface, Owned, EIP918Interface {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

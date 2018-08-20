@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 contract iWhitelist {
-    mapping(address =&gt; bool) public isWhitelisted;
+    mapping(address => bool) public isWhitelisted;
 }
 
 contract iDeposit {
@@ -12,7 +12,7 @@ contract iDeposit {
         bool cleared;           // 1 bit
     }
     uint256 public transactionCount;
-    mapping (uint256 =&gt; Deposit) public transactions;
+    mapping (uint256 => Deposit) public transactions;
     iWhitelist public whitelist;
 }
 
@@ -38,16 +38,16 @@ contract EthealHelper {
         uint256[] memory _ids = new uint256[](txs);
 
         // search in contributors
-        for (i = 0; i &lt; txs; i++) {
+        for (i = 0; i < txs; i++) {
             (_a, _b, _t, _c) = getTx(_deposit, i);
-            if (!_c &amp;&amp; deposit.whitelist().isWhitelisted(_b)) {
+            if (!_c && deposit.whitelist().isWhitelisted(_b)) {
                 _ids[results] = i;
                 results++;
             }
         }
 
         ids = new uint256[](results);
-        for (i = 0; i &lt; results; i++) {
+        for (i = 0; i < results; i++) {
             ids[i] = _ids[i];
         }
 

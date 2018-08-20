@@ -13,7 +13,7 @@ pragma solidity ^0.4.17;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -87,18 +87,18 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
 
 contract DSRoles is DSAuth, DSAuthority
 {
-    mapping(address=&gt;bool) _root_users;
-    mapping(address=&gt;bytes32) _user_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bytes32)) _capability_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bool)) _public_capabilities;
+    mapping(address=>bool) _root_users;
+    mapping(address=>bytes32) _user_roles;
+    mapping(address=>mapping(bytes4=>bytes32)) _capability_roles;
+    mapping(address=>mapping(bytes4=>bool)) _public_capabilities;
 
     function getUserRoles(address who)
         public
@@ -139,7 +139,7 @@ contract DSRoles is DSAuth, DSAuthority
     {
         bytes32 roles = getUserRoles(who);
         bytes32 shifted = bytes32(uint256(uint256(2) ** uint256(role)));
-        return bytes32(0) != roles &amp; shifted;
+        return bytes32(0) != roles & shifted;
     }
 
     function canCall(address caller, address code, bytes4 sig)
@@ -152,7 +152,7 @@ contract DSRoles is DSAuth, DSAuthority
         } else {
             var has_roles = getUserRoles(caller);
             var needs_one_of = getCapabilityRoles(code, sig);
-            return bytes32(0) != has_roles &amp; needs_one_of;
+            return bytes32(0) != has_roles & needs_one_of;
         }
     }
 
@@ -176,7 +176,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _user_roles[who] = last_roles | shifted;
         } else {
-            _user_roles[who] = last_roles &amp; BITNOT(shifted);
+            _user_roles[who] = last_roles & BITNOT(shifted);
         }
     }
 
@@ -196,7 +196,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _capability_roles[code][sig] = last_roles | shifted;
         } else {
-            _capability_roles[code][sig] = last_roles &amp; BITNOT(shifted);
+            _capability_roles[code][sig] = last_roles & BITNOT(shifted);
         }
 
     }
@@ -217,32 +217,32 @@ contract DSRoles is DSAuth, DSAuthority
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -261,10 +261,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -290,7 +290,7 @@ contract DSMath {
 }
 
 ////// lib/ds-thing/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -303,7 +303,7 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -348,13 +348,13 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
-/* import &#39;ds-math/math.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
+/* import 'ds-note/note.sol'; */
+/* import 'ds-math/math.sol'; */
 
 contract DSThing is DSAuth, DSNote, DSMath {
 
@@ -380,12 +380,12 @@ contract DSThing is DSAuth, DSNote, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &quot;ds-note/note.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
+/* import "ds-note/note.sol"; */
 
 contract DSStop is DSNote, DSAuth {
 
@@ -407,7 +407,7 @@ contract DSStop is DSNote, DSAuth {
 ////// lib/ds-token/lib/erc20/src/erc20.sol
 /// erc20.sol -- API for the ERC20 token standard
 
-// See &lt;https://github.com/ethereum/EIPs/issues/20&gt;.
+// See <https://github.com/ethereum/EIPs/issues/20>.
 
 // This file likely does not meet the threshold of originality
 // required for copyright to apply.  As a result, this is free and
@@ -448,17 +448,17 @@ contract ERC20 is ERC20Events {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;erc20/erc20.sol&quot;; */
-/* import &quot;ds-math/math.sol&quot;; */
+/* import "erc20/erc20.sol"; */
+/* import "ds-math/math.sol"; */
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) public {
         _balances[msg.sender] = supply;
@@ -520,13 +520,13 @@ contract DSTokenBase is ERC20, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-stop/stop.sol&quot;; */
+/* import "ds-stop/stop.sol"; */
 
-/* import &quot;./base.sol&quot;; */
+/* import "./base.sol"; */
 
 contract DSToken is DSTokenBase(0), DSStop {
 
@@ -553,7 +553,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -587,7 +587,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; _approvals[guy][msg.sender] != uint(-1)) {
+        if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -597,7 +597,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) public auth {
         name = name_;
@@ -620,25 +620,25 @@ contract DSToken is DSTokenBase(0), DSStop {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.17; */
 
-/* import &#39;ds-token/token.sol&#39;; */
-/* import &#39;ds-roles/roles.sol&#39;; */
-/* import &#39;ds-thing/thing.sol&#39;; */
+/* import 'ds-token/token.sol'; */
+/* import 'ds-roles/roles.sol'; */
+/* import 'ds-thing/thing.sol'; */
 
 // The right way to use this contract is probably to mix it with some kind
 // of `DSAuthority`, like with `ds-roles`.
 //   SEE DSChief
 contract DSChiefApprovals is DSThing {
-    mapping(bytes32=&gt;address[]) public slates;
-    mapping(address=&gt;bytes32) public votes;
-    mapping(address=&gt;uint256) public approvals;
-    mapping(address=&gt;uint256) public deposits;
+    mapping(bytes32=>address[]) public slates;
+    mapping(address=>bytes32) public votes;
+    mapping(address=>uint256) public approvals;
+    mapping(address=>uint256) public deposits;
     DSToken public GOV; // voting token that gets locked up
     DSToken public IOU; // non-voting representation of a token, for e.g. secondary voting mechanisms
-    address public hat; // the chieftain&#39;s hat
+    address public hat; // the chieftain's hat
 
     uint256 public MAX_YAYS;
 
@@ -678,7 +678,7 @@ contract DSChiefApprovals is DSThing {
         note
         returns (bytes32 slate)
     {
-        require( yays.length &lt;= MAX_YAYS );
+        require( yays.length <= MAX_YAYS );
         requireByteOrderedSet(yays);
 
         bytes32 hash = keccak256(yays);
@@ -705,12 +705,12 @@ contract DSChiefApprovals is DSThing {
         addWeight(weight, votes[msg.sender]);
     }
 
-    // like `drop`/`swap` except simply &quot;elect this address if it is higher than current hat&quot;
+    // like `drop`/`swap` except simply "elect this address if it is higher than current hat"
     function lift(address whom)
         public
         note
     {
-        require(approvals[whom] &gt; approvals[hat]);
+        require(approvals[whom] > approvals[hat]);
         hat = whom;
     }
 
@@ -718,7 +718,7 @@ contract DSChiefApprovals is DSThing {
         internal
     {
         var yays = slates[slate];
-        for( uint i = 0; i &lt; yays.length; i++) {
+        for( uint i = 0; i < yays.length; i++) {
             approvals[yays[i]] = add(approvals[yays[i]], weight);
         }
     }
@@ -727,7 +727,7 @@ contract DSChiefApprovals is DSThing {
         internal
     {
         var yays = slates[slate];
-        for( uint i = 0; i &lt; yays.length; i++) {
+        for( uint i = 0; i < yays.length; i++) {
             approvals[yays[i]] = sub(approvals[yays[i]], weight);
         }
     }
@@ -740,16 +740,16 @@ contract DSChiefApprovals is DSThing {
         if( yays.length == 0 || yays.length == 1 ) {
             return;
         }
-        for( uint i = 0; i &lt; yays.length - 1; i++ ) {
+        for( uint i = 0; i < yays.length - 1; i++ ) {
             // strict inequality ensures both ordering and uniqueness
-            require(uint(bytes32(yays[i])) &lt; uint256(bytes32(yays[i+1])));
+            require(uint(bytes32(yays[i])) < uint256(bytes32(yays[i+1])));
         }
     }
 }
 
 
 // `hat` address is unique root user (has every role) and the
-// unique owner of role 0 (typically &#39;sys&#39; or &#39;internal&#39;)
+// unique owner of role 0 (typically 'sys' or 'internal')
 contract DSChief is DSRoles, DSChiefApprovals {
 
     function DSChief(DSToken GOV, DSToken IOU, uint MAX_YAYS)
@@ -785,7 +785,7 @@ contract DSChief is DSRoles, DSChiefApprovals {
 
 contract DSChiefFab {
     function newChief(DSToken gov, uint MAX_YAYS) public returns (DSChief chief) {
-        DSToken iou = new DSToken(&#39;IOU&#39;);
+        DSToken iou = new DSToken('IOU');
         chief = new DSChief(gov, iou, MAX_YAYS);
         iou.setOwner(chief);
     }

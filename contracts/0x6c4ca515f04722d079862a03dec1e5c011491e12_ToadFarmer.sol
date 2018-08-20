@@ -1,15 +1,15 @@
 pragma solidity ^0.4.23;
 
 contract ToadFarmer {
-    uint256 public EGGS_TO_HATCH_1TOAD = 43200; // Half a day&#39;s worth of seconds to hatch
+    uint256 public EGGS_TO_HATCH_1TOAD = 43200; // Half a day's worth of seconds to hatch
     uint256 TADPOLE = 10000;
     uint256 PSNHTOAD = 5000;
     bool public initialized = false;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryToad;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryToad;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
 
     constructor() public {
@@ -18,7 +18,7 @@ contract ToadFarmer {
 
     function hatchEggs(address ref) public {
         require(initialized);
-        if (referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender) {
+        if (referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender) {
             referrals[msg.sender] = ref;
         }
         uint256 eggsUsed = getMyEggs();
@@ -88,7 +88,7 @@ contract ToadFarmer {
         require(initialized);
         require(hatcheryToad[msg.sender] == 0);
         lastHatch[msg.sender] = now;
-        hatcheryToad[msg.sender] = uint(blockhash(block.number-1))%400 + 1; // &#39;Randomish&#39; 1-400 free eggs
+        hatcheryToad[msg.sender] = uint(blockhash(block.number-1))%400 + 1; // 'Randomish' 1-400 free eggs
     }
 
     function getBalance() public view returns(uint256) {
@@ -109,7 +109,7 @@ contract ToadFarmer {
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -131,9 +131,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -141,7 +141,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -150,7 +150,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

@@ -8,12 +8,12 @@ contract CryptoEmojis {
     // Using SafeMath
     using SafeMath for uint256;    
 
-    // The developer&#39;s address
+    // The developer's address
     address dev;
 
     // Contract information
-    string constant private tokenName = &quot;CryptoEmojis&quot;;
-    string constant private tokenSymbol = &quot;EMO&quot;;
+    string constant private tokenName = "CryptoEmojis";
+    string constant private tokenSymbol = "EMO";
 
     // Our beloved emojis
     struct Emoji {
@@ -27,8 +27,8 @@ contract CryptoEmojis {
     Emoji[] emojis;
     
     // For storing the username and balance of every user
-    mapping(address =&gt; uint256) private balances;
-    mapping(address =&gt; bytes16) private usernames;
+    mapping(address => uint256) private balances;
+    mapping(address => bytes16) private usernames;
 
     // Needed events for represententing of every possible action
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _id, uint256 _price);
@@ -108,7 +108,7 @@ contract CryptoEmojis {
         balances[dev]++;
     }
 
-    /** @dev Edit emoji information to maintain confirming for Unicode standard, we can&#39;t change the price or the owner */
+    /** @dev Edit emoji information to maintain confirming for Unicode standard, we can't change the price or the owner */
     function edit(uint256 _id, string _codepoints, string _name) public onlyDev() {
         require(emojis[_id].exists);
         emojis[_id].codepoints = _codepoints;
@@ -117,7 +117,7 @@ contract CryptoEmojis {
 
     /** @dev Buy an emoji */
     function buy(uint256 _id) payable public {
-        require(emojis[_id].exists &amp;&amp; emojis[_id].owner != msg.sender &amp;&amp; msg.value &gt;= emojis[_id].price);
+        require(emojis[_id].exists && emojis[_id].owner != msg.sender && msg.value >= emojis[_id].price);
         address oldOwner = emojis[_id].owner;
         uint256 oldPrice = emojis[_id].price;
         emojis[_id].owner = msg.sender;
@@ -125,19 +125,19 @@ contract CryptoEmojis {
         balances[oldOwner]--;
         balances[msg.sender]++;
         oldOwner.transfer(oldPrice.div(100).mul(96));
-        if (msg.value &gt; oldPrice) msg.sender.transfer(msg.value.sub(oldPrice));
+        if (msg.value > oldPrice) msg.sender.transfer(msg.value.sub(oldPrice));
         emit Transfer(oldOwner, msg.sender, _id, oldPrice);
         emit PriceChange(_id, emojis[_id].price);
     }
 
     /** @dev Changing the price by the owner of the emoji */
     function setPrice(uint256 _id, uint256 _price) public {
-        require(emojis[_id].exists &amp;&amp; emojis[_id].owner == msg.sender);
+        require(emojis[_id].exists && emojis[_id].owner == msg.sender);
         emojis[_id].price =_price;
         emit PriceChange(_id, _price);
     }
 
-    /** @dev Withdraw all balance. This doesn&#39;t transfer users&#39; money since the contract pay them instantly and doesn&#39;t hold anyone&#39;s money */
+    /** @dev Withdraw all balance. This doesn't transfer users' money since the contract pay them instantly and doesn't hold anyone's money */
     function withdraw() public onlyDev() {
         dev.transfer(address(this).balance);
     }
@@ -164,9 +164,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -174,7 +174,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 }

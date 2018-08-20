@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,7 +66,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -84,7 +84,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,7 +123,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -133,8 +133,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -148,7 +148,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -183,7 +183,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -231,7 +231,7 @@ contract TokenTimelock {
     uint64 public releaseTime;
 
     constructor(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) public {
-        require(_releaseTime &gt; uint64(block.timestamp));
+        require(_releaseTime > uint64(block.timestamp));
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -241,10 +241,10 @@ contract TokenTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(uint64(block.timestamp) &gt;= releaseTime);
+        require(uint64(block.timestamp) >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -265,7 +265,7 @@ contract Owned {
 
 contract ReferralDiscountToken is StandardToken, Owned {
     /// Store the referrers by the referred addresses
-    mapping(address =&gt; address) referrerOf;
+    mapping(address => address) referrerOf;
     address[] ownersIndex;
 
     // Emitted when an investor declares his referrer
@@ -281,10 +281,10 @@ contract ReferralDiscountToken is StandardToken, Owned {
         }
 
         /// get a 10% discount for each one referred
-        for(uint256 i = 0; i &lt; ownersIndex.length; i++) {
+        for(uint256 i = 0; i < ownersIndex.length; i++) {
             if(referrerOf[ownersIndex[i]] == _owner) {
                 total = total.add(10);
-                // if(total &gt;= 60) break;
+                // if(total >= 60) break;
             }
         }
 
@@ -292,16 +292,16 @@ contract ReferralDiscountToken is StandardToken, Owned {
     }
 
     // /**
-    //  * Activate referral discounts by declaring one&#39;s own referrer
-    //  * @param _referrer can&#39;t be self
+    //  * Activate referral discounts by declaring one's own referrer
+    //  * @param _referrer can't be self
     //  * @param _referrer must own tokens at the time of the call
     //  * You must own tokens at the time of the call
     //  */
     // function setReferrer(address _referrer) public returns (bool success) {
     //     require(_referrer != address(0));
     //     require(_referrer != address(msg.sender));
-    //     require(balanceOf(msg.sender) &gt; 0);
-    //     require(balanceOf(_referrer) &gt; 0);
+    //     require(balanceOf(msg.sender) > 0);
+    //     require(balanceOf(_referrer) > 0);
     //     assert(referrerOf[msg.sender] == address(0));
 
     //     ownersIndex.push(msg.sender);
@@ -312,7 +312,7 @@ contract ReferralDiscountToken is StandardToken, Owned {
     // }
 
     /**
-     * Activate referral discounts by declaring one&#39;s own referrer
+     * Activate referral discounts by declaring one's own referrer
      * @param _referrer the investor who brought another
      * @param _referred the investor who was brought by another
      * @dev _referrer and _referred must own tokens at the time of the call
@@ -320,8 +320,8 @@ contract ReferralDiscountToken is StandardToken, Owned {
     function setReferrer(address _referred, address _referrer) onlyOwner public returns (bool success) {
         require(_referrer != address(0));
         require(_referrer != address(_referred));
-        //        require(balanceOf(_referred) &gt; 0);
-        //        require(balanceOf(_referrer) &gt; 0);
+        //        require(balanceOf(_referred) > 0);
+        //        require(balanceOf(_referrer) > 0);
         require(referrerOf[_referred] == address(0));
 
         ownersIndex.push(_referred);
@@ -333,8 +333,8 @@ contract ReferralDiscountToken is StandardToken, Owned {
 }
 
 contract NaorisToken is ReferralDiscountToken {
-    string public constant name = &quot;NaorisToken&quot;;
-    string public constant symbol = &quot;NAO&quot;;
+    string public constant name = "NaorisToken";
+    string public constant symbol = "NAO";
     uint256 public constant decimals = 18;
 
     /// The owner of this address will manage the sale process.
@@ -355,10 +355,10 @@ contract NaorisToken is ReferralDiscountToken {
     /// This is the address of the timelock contract for the locked Board Bonus tokens
     address public treasuryTimelockAddress;
 
-    /// After this flag is changed to &#39;true&#39; no more tokens can be created
+    /// After this flag is changed to 'true' no more tokens can be created
     bool public tokenSaleClosed = false;
 
-    // seconds since 01.01.1970 to 1st of May 2019 (both 00:00:00 o&#39;clock UTC)
+    // seconds since 01.01.1970 to 1st of May 2019 (both 00:00:00 o'clock UTC)
     uint64 date01May2019 = 1556668800;
 
     /// Maximum tokens to be allocated.
@@ -427,7 +427,7 @@ contract NaorisToken is ReferralDiscountToken {
     function close() public onlyTeam beforeEnd {
         /// burn the unsold sale tokens
         uint256 unsoldSaleTokens = balances[saleTeamAddress];
-        if(unsoldSaleTokens &gt; 0) {
+        if(unsoldSaleTokens > 0) {
             balances[saleTeamAddress] = 0;
             totalSupply_ = totalSupply_.sub(unsoldSaleTokens);
             emit Transfer(saleTeamAddress, 0x0, unsoldSaleTokens);
@@ -435,7 +435,7 @@ contract NaorisToken is ReferralDiscountToken {
         
         /// transfer the unspent referal/airdrop tokens to the Reserve fund
         uint256 unspentReferalAirdropTokens = balances[referalAirdropsTokensAddress];
-        if(unspentReferalAirdropTokens &gt; 0) {
+        if(unspentReferalAirdropTokens > 0) {
             balances[referalAirdropsTokensAddress] = 0;
             balances[reserveFundAddress] = balances[reserveFundAddress].add(unspentReferalAirdropTokens);
             emit Transfer(referalAirdropsTokensAddress, reserveFundAddress, unspentReferalAirdropTokens);
@@ -458,25 +458,25 @@ contract NaorisToken is ReferralDiscountToken {
         totalSupply_ = totalSupply_.add(LOCKED_BOARD_BONUS_TOKENS);
         emit Transfer(0x0, treasuryTimelockAddress, LOCKED_BOARD_BONUS_TOKENS);
 
-        require(totalSupply_ &lt;= TOKENS_HARD_CAP);
+        require(totalSupply_ <= TOKENS_HARD_CAP);
 
         tokenSaleClosed = true;
     }
 
     function tokenDiscountPercentage(address _owner) public view returns (uint256 percent) {
-        if(balanceOf(_owner) &gt;= 1000000 * 10**decimals) {
+        if(balanceOf(_owner) >= 1000000 * 10**decimals) {
             return 50;
-        } else if(balanceOf(_owner) &gt;= 500000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 500000 * 10**decimals) {
             return 30;
-        } else if(balanceOf(_owner) &gt;= 250000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 250000 * 10**decimals) {
             return 25;
-        } else if(balanceOf(_owner) &gt;= 100000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 100000 * 10**decimals) {
             return 20;
-        } else if(balanceOf(_owner) &gt;= 50000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 50000 * 10**decimals) {
             return 15;
-        } else if(balanceOf(_owner) &gt;= 10000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 10000 * 10**decimals) {
             return 10;
-        } else if(balanceOf(_owner) &gt;= 1000 * 10**decimals) {
+        } else if(balanceOf(_owner) >= 1000 * 10**decimals) {
             return 5;
         } else {
             return 0;
@@ -489,7 +489,7 @@ contract NaorisToken is ReferralDiscountToken {
         total += tokenDiscountPercentage(_owner);
         total += referralDiscountPercentage(_owner);
 
-        return (total &gt; 60) ? 60 : total;
+        return (total > 60) ? 60 : total;
     }
 
     /// @dev Trading limited - requires the token sale to have closed

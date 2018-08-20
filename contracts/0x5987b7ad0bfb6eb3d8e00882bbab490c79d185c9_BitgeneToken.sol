@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -67,13 +67,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size + 4);
+     assert(msg.data.length >= size + 4);
      _;
   }
 
@@ -121,7 +121,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -134,7 +134,7 @@ contract StandardToken is BasicToken, ERC20 {
     uint _allowance;
     _allowance = allowed[_from][msg.sender];
 
-    require(_allowance &gt;= _value);
+    require(_allowance >= _value);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -175,7 +175,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -283,8 +283,8 @@ contract PausableToken is StandardToken, Pausable {
 contract BitgeneToken is PausableToken {
   using SafeMath for uint256;
 
-  string public name = &quot;Bitgene Token&quot;;
-  string public symbol = &quot;BGT&quot;;
+  string public name = "Bitgene Token";
+  string public symbol = "BGT";
   uint public decimals = 18;
   uint256 public totalSupply = 10 ** 10 * 10**uint(decimals);
   
@@ -296,11 +296,11 @@ contract BitgeneToken is PausableToken {
 	function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {
 	    uint cnt = _receivers.length;
 	    uint256 amount = uint256(cnt).mul(_value);
-	    require(cnt &gt; 0 &amp;&amp; cnt &lt;= 200);
-	    require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= amount);
+	    require(cnt > 0 && cnt <= 200);
+	    require(_value > 0 && balances[msg.sender] >= amount);
 	
 	    balances[msg.sender] = balances[msg.sender].sub(amount);
-	    for (uint i = 0; i &lt; cnt; i++) {
+	    for (uint i = 0; i < cnt; i++) {
 	        balances[_receivers[i]] = balances[_receivers[i]].add(_value);
 	        emit Transfer(msg.sender, _receivers[i], _value);
 	    }

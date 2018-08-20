@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -99,7 +99,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -129,20 +129,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -152,7 +152,7 @@ contract OracleContractAdapter is Object {
     event OracleAdded(address _oracle);
     event OracleRemoved(address _oracle);
 
-    mapping(address =&gt; bool) public oracles;
+    mapping(address => bool) public oracles;
 
     /// @dev Allow access only for oracle
     modifier onlyOracle {
@@ -175,9 +175,9 @@ contract OracleContractAdapter is Object {
     external 
     returns (uint) 
     {
-        for (uint _idx = 0; _idx &lt; _whitelist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _whitelist.length; ++_idx) {
             address _oracle = _whitelist[_idx];
-            if (_oracle != 0x0 &amp;&amp; !oracles[_oracle]) {
+            if (_oracle != 0x0 && !oracles[_oracle]) {
                 oracles[_oracle] = true;
                 _emitOracleAdded(_oracle);
             }
@@ -193,9 +193,9 @@ contract OracleContractAdapter is Object {
     external 
     returns (uint) 
     {
-        for (uint _idx = 0; _idx &lt; _blacklist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _blacklist.length; ++_idx) {
             address _oracle = _blacklist[_idx];
-            if (_oracle != 0x0 &amp;&amp; oracles[_oracle]) {
+            if (_oracle != 0x0 && oracles[_oracle]) {
                 delete oracles[_oracle];
                 _emitOracleRemoved(_oracle);
             }
@@ -265,7 +265,7 @@ contract ERC20 {
 ///
 /// Treasury for CCs deposits for particular fund with bmc-days calculations.
 /// Accept BMC deposits from Continuous Contributors via oracle and
-/// calculates bmc-days metric for each CC&#39;s role.
+/// calculates bmc-days metric for each CC's role.
 contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
 
     /* ERROR CODES */
@@ -279,8 +279,8 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
 
     struct LockedDeposits {
         uint counter;
-        mapping(uint =&gt; uint) index2Date;
-        mapping(uint =&gt; uint) date2deposit;
+        mapping(uint => uint) index2Date;
+        mapping(uint => uint) date2deposit;
     }
 
     struct Period {
@@ -288,10 +288,10 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
         uint totalBmcDays;
         uint bmcDaysPerDay;
         uint startDate;
-        mapping(bytes32 =&gt; uint) user2bmcDays;
-        mapping(bytes32 =&gt; uint) user2lastTransferIdx;
-        mapping(bytes32 =&gt; uint) user2balance;
-        mapping(uint =&gt; uint) transfer2date;
+        mapping(bytes32 => uint) user2bmcDays;
+        mapping(bytes32 => uint) user2lastTransferIdx;
+        mapping(bytes32 => uint) user2balance;
+        mapping(uint => uint) transfer2date;
     }
 
     /* FIELDS */
@@ -300,10 +300,10 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     address profiterole;
     uint periodsCount;
 
-    mapping(uint =&gt; Period) periods;
-    mapping(uint =&gt; uint) periodDate2periodIdx;
-    mapping(bytes32 =&gt; uint) user2lastPeriodParticipated;
-    mapping(bytes32 =&gt; LockedDeposits) user2lockedDeposits;
+    mapping(uint => Period) periods;
+    mapping(uint => uint) periodDate2periodIdx;
+    mapping(bytes32 => uint) user2lastPeriodParticipated;
+    mapping(bytes32 => LockedDeposits) user2lockedDeposits;
 
     /* MODIFIERS */
 
@@ -341,16 +341,16 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     /// @param _value amount of tokens to deposit
     /// @param _feeAmount amount of tokens that will be taken from _value as fee
     /// @param _feeAddress destination address for fee transfer
-    /// @param _lockupDate lock up date for deposit. Until that date the deposited value couldn&#39;t be withdrawn
+    /// @param _lockupDate lock up date for deposit. Until that date the deposited value couldn't be withdrawn
     ///
     /// @return result code of an operation
     function deposit(bytes32 _userKey, uint _value, uint _feeAmount, address _feeAddress, uint _lockupDate) external onlyOracle returns (uint) {
         require(_userKey != bytes32(0));
         require(_value != 0);
-        require(_feeAmount &lt; _value);
+        require(_feeAmount < _value);
 
         ERC20 _token = ERC20(token);
-        if (_token.allowance(msg.sender, address(this)) &lt; _value) {
+        if (_token.allowance(msg.sender, address(this)) < _value) {
             return TREASURY_ERROR_TOKEN_NOT_SET_ALLOWANCE;
         }
 
@@ -386,7 +386,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     function withdraw(bytes32 _userKey, uint _value, address _withdrawAddress, uint _feeAmount, address _feeAddress) external onlyOracle returns (uint) {
         require(_userKey != bytes32(0));
         require(_value != 0);
-        require(_feeAmount &lt; _value);
+        require(_feeAmount < _value);
 
         _makeWithdrawForPeriod(_userKey, _value);
         uint _periodsCount = periodsCount;
@@ -416,7 +416,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     /// Use PERCENT_PRECISION to get right precision
     function getSharesPercentForPeriod(bytes32 _userKey, uint _date) public view returns (uint) {
         uint _periodIdx = periodDate2periodIdx[_date];
-        if (_date != 0 &amp;&amp; _periodIdx == 0) {
+        if (_date != 0 && _periodIdx == 0) {
             return 0;
         }
 
@@ -439,7 +439,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
             return 0;
         }
 
-        if (_lastPeriodForUser &lt;= periodsCount.sub(1)) {
+        if (_lastPeriodForUser <= periodsCount.sub(1)) {
             return periods[_lastPeriodForUser].user2balance[_userKey];
         }
 
@@ -456,8 +456,8 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     /// @notice Gets list of locked up deposits with dates when they will be available to withdraw
     /// @param _userKey aggregated user key (user ID + role ID)
     /// @return {
-    ///     &quot;_lockupDates&quot;: &quot;list of lockup dates of deposits&quot;,
-    ///     &quot;_deposits&quot;: &quot;list of deposits&quot;
+    ///     "_lockupDates": "list of lockup dates of deposits",
+    ///     "_deposits": "list of deposits"
     /// }
     function getLockedUserDeposits(bytes32 _userKey) public view returns (uint[] _lockupDates, uint[] _deposits) {
         LockedDeposits storage _lockedDeposits = user2lockedDeposits[_userKey];
@@ -466,10 +466,10 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
         _deposits = new uint[](_lockedDepositsCounter);
 
         uint _pointer = 0;
-        for (uint _idx = 1; _idx &lt; _lockedDepositsCounter; ++_idx) {
+        for (uint _idx = 1; _idx < _lockedDepositsCounter; ++_idx) {
             uint _lockDate = _lockedDeposits.index2Date[_idx];
 
-            if (_lockDate &gt; now) {
+            if (_lockDate > now) {
                 _lockupDates[_pointer] = _lockDate;
                 _deposits[_pointer] = _lockedDeposits.date2deposit[_lockDate];
                 ++_pointer;
@@ -527,7 +527,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     function _makeWithdrawForPeriod(bytes32 _userKey, uint _value) internal {
         uint _userBalance = getUserBalance(_userKey);
         uint _lockedBalance = _syncLockedDepositsAmount(_userKey);
-        require(_userBalance.sub(_lockedBalance) &gt;= _value);
+        require(_userBalance.sub(_lockedBalance) >= _value);
 
         uint _periodsCount = periodsCount;
         Period storage _transferPeriod = periods[_periodsCount];
@@ -545,7 +545,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
     }
 
     function _registerLockedDeposits(bytes32 _userKey, uint _amount, uint _lockupDate) internal {
-        if (_lockupDate &lt;= now) {
+        if (_lockupDate <= now) {
             return;
         }
 
@@ -564,10 +564,10 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
         LockedDeposits storage _lockedDeposits = user2lockedDeposits[_userKey];
         uint _lockedDepositsCounter = _lockedDeposits.counter;
 
-        for (uint _idx = 1; _idx &lt;= _lockedDepositsCounter; ++_idx) {
+        for (uint _idx = 1; _idx <= _lockedDepositsCounter; ++_idx) {
             uint _lockDate = _lockedDeposits.index2Date[_idx];
 
-            if (_lockDate &lt;= now) {
+            if (_lockDate <= now) {
                 _lockedDeposits.index2Date[_idx] = _lockedDeposits.index2Date[_lockedDepositsCounter];
 
                 delete _lockedDeposits.index2Date[_lockedDepositsCounter];
@@ -589,7 +589,7 @@ contract Treasury is OracleContractAdapter, ServiceAllowance, TreasuryEmitter {
             return 0;
         }
 
-        Period storage _transferPeriod = _lastPeriodForUserIdx &lt;= _periodIdx ? periods[_lastPeriodForUserIdx] : periods[_periodIdx];
+        Period storage _transferPeriod = _lastPeriodForUserIdx <= _periodIdx ? periods[_lastPeriodForUserIdx] : periods[_periodIdx];
         uint _lastTransferDate = _transferPeriod.transfer2date[_transferPeriod.user2lastTransferIdx[_userKey]];
         // NOTE: It is an intended substraction separation to correctly round dates
         uint _daysLong = (_date / 1 days) - (_lastTransferDate / 1 days);
@@ -640,16 +640,16 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
         uint balance;
         uint left;
         uint nextDepositDate;
-        mapping(bytes32 =&gt; Balance) leftToWithdraw;
+        mapping(bytes32 => Balance) leftToWithdraw;
     }
 
     struct UserBalance {
         uint lastWithdrawDate;
     }
 
-    mapping(address =&gt; bool) distributionSourcesList;
-    mapping(bytes32 =&gt; UserBalance) bonusBalances;
-    mapping(uint =&gt; Deposit) public distributionDeposits;
+    mapping(address => bool) distributionSourcesList;
+    mapping(bytes32 => UserBalance) bonusBalances;
+    mapping(uint => Deposit) public distributionDeposits;
 
     uint public firstDepositDate;
     uint public lastDepositDate;
@@ -702,7 +702,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
     ///
     /// @param _whitelist addresses list.
     function addDistributionSources(address[] _whitelist) external onlyContractOwner returns (uint) {
-        for (uint _idx = 0; _idx &lt; _whitelist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _whitelist.length; ++_idx) {
             distributionSourcesList[_whitelist[_idx]] = true;
         }
         return OK;
@@ -713,19 +713,19 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
     ///
     /// @param _blacklist addresses in whitelist.
     function removeDistributionSources(address[] _blacklist) external onlyContractOwner returns (uint) {
-        for (uint _idx = 0; _idx &lt; _blacklist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _blacklist.length; ++_idx) {
             delete distributionSourcesList[_blacklist[_idx]];
         }
         return OK;
     }
 
-    /// @notice Allows to withdraw user&#39;s bonuses that he deserves due to Treasury shares for
+    /// @notice Allows to withdraw user's bonuses that he deserves due to Treasury shares for
     /// every distribution period.
     /// Only oracles allowed to invoke this function.
     ///
     /// @param _userKey aggregated user key (user ID + role ID) on behalf of whom bonuses will be withdrawn
     /// @param _value an amount of tokens to withdraw
-    /// @param _withdrawAddress destination address of withdrawal (usually user&#39;s address)
+    /// @param _withdrawAddress destination address of withdrawal (usually user's address)
     /// @param _feeAmount an amount of fee that will be taken from resulted _value
     /// @param _feeAddress destination address of fee transfer
     ///
@@ -733,12 +733,12 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
     function withdrawBonuses(bytes32 _userKey, uint _value, address _withdrawAddress, uint _feeAmount, address _feeAddress) external onlyOracle returns (uint) {
         require(_userKey != bytes32(0));
         require(_value != 0);
-        require(_feeAmount &lt; _value);
+        require(_feeAmount < _value);
         require(_withdrawAddress != 0x0);
 
         DepositWalletInterface _wallet = DepositWalletInterface(wallet);
         ERC20Interface _bonusToken = ERC20Interface(bonusToken);
-        if (_bonusToken.balanceOf(_wallet) &lt; _value) {
+        if (_bonusToken.balanceOf(_wallet) < _value) {
             return _emitError(PROFITEROLE_ERROR_INSUFFICIENT_BONUS_BALANCE);
         }
 
@@ -769,7 +769,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
 
         for (
             uint _endDate = lastDepositDate;
-            _startDate &lt;= _endDate &amp;&amp; _startDate != 0;
+            _startDate <= _endDate && _startDate != 0;
             _startDate = distributionDeposits[_startDate].nextDepositDate
         ) {
             Deposit storage _pendingDeposit = distributionDeposits[_startDate];
@@ -798,20 +798,20 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
         return _deposit.balance.mul(_sharesPercent).div(PERCENT_PRECISION);
     }
 
-    /// @notice Gets total amount of deposits that has left after users&#39; bonus withdrawals
+    /// @notice Gets total amount of deposits that has left after users' bonus withdrawals
     /// @return amount of deposits available for bonus payments
     function getTotalDepositsAmountLeft() public view returns (uint _amount) {
         uint _lastDepositDate = lastDepositDate;
         for (
             uint _startDate = firstDepositDate;
-            _startDate &lt;= _lastDepositDate || _startDate != 0;
+            _startDate <= _lastDepositDate || _startDate != 0;
             _startDate = distributionDeposits[_startDate].nextDepositDate
         ) {
             _amount = _amount.add(distributionDeposits[_startDate].left);
         }
     }
 
-    /// @notice Gets an amount of deposits that has left after users&#39; bonus withdrawals for selected date
+    /// @notice Gets an amount of deposits that has left after users' bonus withdrawals for selected date
     /// @param _distributionDate date of distribution operation
     /// @return amount of deposits available for bonus payments for concrete distribution date
     function getDepositsAmountLeft(uint _distributionDate) public view returns (uint _amount) {
@@ -832,7 +832,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
 
         ERC20Interface _bonusToken = ERC20Interface(bonusToken);
 
-        if (_bonusToken.allowance(msg.sender, address(this)) &lt; _amount) {
+        if (_bonusToken.allowance(msg.sender, address(this)) < _amount) {
             return _emitError(PROFITEROLE_ERROR_INSUFFICIENT_DISTRIBUTION_BALANCE);
         }
 
@@ -876,7 +876,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
 
         for (
             uint _endDate = lastDepositDate;
-            _startDate &lt;= _endDate &amp;&amp; _startDate != 0 &amp;&amp; _value &gt; 0;
+            _startDate <= _endDate && _startDate != 0 && _value > 0;
             _startDate = distributionDeposits[_startDate].nextDepositDate
         ) {
             uint _balanceToWithdraw = _withdrawBonusesFromDeposit(_userKey, _startDate, _value, _treasury);
@@ -887,7 +887,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
             bonusBalances[_userKey].lastWithdrawDate = _lastWithdrawDate;
         }
 
-        if (_value &gt; 0) {
+        if (_value > 0) {
             revert();
         }
 
@@ -907,7 +907,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
             _userBalance.initialized = true;
         }
 
-        if (_balanceToWithdraw &gt; _value) {
+        if (_balanceToWithdraw > _value) {
             _userBalance.left = _balanceToWithdraw - _value;
             _balanceToWithdraw = _value;
         } else {
@@ -921,7 +921,7 @@ contract Profiterole is OracleContractAdapter, ServiceAllowance, ProfiteroleEmit
 
 /// @title EmissionProviderEmitter
 ///
-/// Organizes and provides a set of events specific for EmissionProvider&#39;s role
+/// Organizes and provides a set of events specific for EmissionProvider's role
 contract EmissionProviderEmitter {
 
     event Error(uint errorCode);
@@ -961,7 +961,7 @@ contract Token is ERC20 {
 }
 
 contract Platform {
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
     function name(bytes32 _symbol) public view returns (string);
     function setProxy(address _address, bytes32 _symbol) public returns (uint errorCode);
     function isOwner(address _owner, bytes32 _symbol) public view returns (bool);
@@ -984,7 +984,7 @@ contract Platform {
 ///
 /// Provides participation registration and token volume issuance called Emission Event.
 /// Full functionality of EmissionProvider issuance will be available after adding a smart contract
-/// as part-owner of an ATx asset in asset&#39;s platform
+/// as part-owner of an ATx asset in asset's platform
 contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionProviderEmitter {
 
     uint constant EMISSION_PROVIDER_ERROR_SCOPE = 107000;
@@ -1011,13 +1011,13 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     address public bonusToken;
     address public profiterole;
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     bool public destructed;
     bool finishedHardcap;
     bool needInitialization;
 
-    /// @dev Deny any access except during sale period (it&#39;s time for sale &amp;&amp; hardcap haven&#39;t reached yet)
+    /// @dev Deny any access except during sale period (it's time for sale && hardcap haven't reached yet)
     modifier onlySale {
         var (hardcapState, softcapState) = getState();
         if (!(State.Sale == hardcapState || State.Sale == softcapState)) {
@@ -1033,7 +1033,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// @dev Deny any access before all sales will be finished
     modifier onlySaleFinished {
         var (hardcapState, softcapState) = getState();
-        if (hardcapState &lt; State.Reached || softcapState &lt; State.Reached) {
+        if (hardcapState < State.Reached || softcapState < State.Reached) {
             _emitError(EMISSION_PROVIDER_ERROR_WRONG_STATE);
             assembly {
                 mstore(0, 107001) // EMISSION_PROVIDER_ERROR_WRONG_STATE
@@ -1045,7 +1045,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// @dev Deny any access before hardcap will be reached
     modifier notHardcapReached {
         var (state,) = getState();
-        if (state &gt;= State.Reached) {
+        if (state >= State.Reached) {
             _emitError(EMISSION_PROVIDER_ERROR_WRONG_STATE);
             assembly {
                 mstore(0, 107001) // EMISSION_PROVIDER_ERROR_WRONG_STATE
@@ -1058,7 +1058,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// @dev Deny any access before softcap will be reached
     modifier notSoftcapReached {
         var (, state) = getState();
-        if (state &gt;= State.Reached) {
+        if (state >= State.Reached) {
             _emitError(EMISSION_PROVIDER_ERROR_WRONG_STATE);
             assembly {
                 mstore(0, 107001) // EMISSION_PROVIDER_ERROR_WRONG_STATE
@@ -1125,10 +1125,10 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
         require(_profiterole != 0x0);
 
         require(_startDate != 0);
-        require(_endDate &gt; _startDate);
+        require(_endDate > _startDate);
 
         require(_tokenSoftcap != 0);
-        require(_tokenHardcap &gt;= _tokenSoftcap);
+        require(_tokenHardcap >= _tokenSoftcap);
 
         require(Profiterole(_profiterole).bonusToken() == _bonusToken);
 
@@ -1142,7 +1142,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
         needInitialization = true;
     }
 
-    /// @dev Payable function. Don&#39;t accept any Ether
+    /// @dev Payable function. Don't accept any Ether
     function() public payable {
         revert();
     }
@@ -1171,7 +1171,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     }
 
     /// @notice Gets current state of Emission Provider. State changes over time or reaching buyback goals.
-    /// @return state of a Emission Provider. &#39;Init&#39;, &#39;Waiting&#39;, &#39;Sale&#39;, &#39;HardcapReached&#39;, &#39;Destructed` values are possible
+    /// @return state of a Emission Provider. 'Init', 'Waiting', 'Sale', 'HardcapReached', 'Destructed` values are possible
     function getState() public view returns (State, State) {
         if (needInitialization) {
             return (State.Init, State.Init);
@@ -1181,11 +1181,11 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
             return (State.Destructed, State.Destructed);
         }
 
-        if (now &lt; startDate) {
+        if (now < startDate) {
             return (State.Waiting, State.Waiting);
         }
 
-        State _hardcapState = (finishedHardcap || (tokenHardcapIssuedValue == tokenHardcapValue) || (now &gt; endDate))
+        State _hardcapState = (finishedHardcap || (tokenHardcapIssuedValue == tokenHardcapValue) || (now > endDate))
         ? State.Reached
         : State.Sale;
 
@@ -1199,7 +1199,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// @notice Add users to whitelist.
     /// @param _whitelist user list.
     function addUsers(address[] _whitelist) public onlyOracleOrOwner onlySale returns (uint) {
-        for (uint _idx = 0; _idx &lt; _whitelist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _whitelist.length; ++_idx) {
             whitelist[_whitelist[_idx]] = true;
         }
         return OK;
@@ -1208,7 +1208,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// @notice Removes users from whitelist.
     /// @param _blacklist user in whitelist.
     function removeUsers(address[] _blacklist) public onlyOracleOrOwner onlySale returns (uint) {
-        for (uint _idx = 0; _idx &lt; _blacklist.length; ++_idx) {
+        for (uint _idx = 0; _idx < _blacklist.length; ++_idx) {
             delete whitelist[_blacklist[_idx]];
         }
         return OK;
@@ -1237,7 +1237,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
 
         uint _tokenHardcap = tokenHardcapValue;
         uint _issued = tokenHardcapIssuedValue;
-        if (_issued.add(_value) &gt; _tokenHardcap) {
+        if (_issued.add(_value) > _tokenHardcap) {
             _value = _tokenHardcap.sub(_issued);
         }
 
@@ -1279,7 +1279,7 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
 
         uint _tokenSoftcap = tokenSoftcap;
         uint _issued = tokenSoftcapIssued;
-        if (_issued.add(_value) &gt; _tokenSoftcap) {
+        if (_issued.add(_value) > _tokenSoftcap) {
             _value = _tokenSoftcap.sub(_issued);
         }
 
@@ -1337,9 +1337,9 @@ contract EmissionProvider is OracleContractAdapter, ServiceAllowance, EmissionPr
     /// 1) oracle and only ATx tokens;
     /// 2) from itself to holder
     function isTransferAllowed(address _from, address _to, address, address _token, uint) public view returns (bool) {
-        if (_token == token &amp;&amp;
-            ((oracles[_from] &amp;&amp; _to == address(this)) ||
-            (_from == address(this) &amp;&amp; whitelist[_to]))
+        if (_token == token &&
+            ((oracles[_from] && _to == address(this)) ||
+            (_from == address(this) && whitelist[_to]))
         ) {
             return true;
         }

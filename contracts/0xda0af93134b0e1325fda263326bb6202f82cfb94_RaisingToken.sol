@@ -14,13 +14,13 @@ contract RaisingToken {
      * Maps address of token holder to the number of tokens currently belonging
      * to this token holder.
      */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /**
      * Maps address of token holder and address of spender to the number of
      * tokens this spender is allowed to transfer from this token holder.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowance;
+    mapping (address => mapping (address => uint256)) allowance;
 
     /**
      * Deploy RaisingToken smart contract, issue one token and sell it to
@@ -28,7 +28,7 @@ contract RaisingToken {
      */
     function RaisingToken () public payable {
         // Make sure some ether was provided
-        require (msg.value &gt; 0);
+        require (msg.value > 0);
 
         // Issue one token...
         totalSupply = 1;
@@ -48,7 +48,7 @@ contract RaisingToken {
         uint256 count = msg.value * totalSupply / this.balance;
 
         // Proceed only if some tokens could actually be bought.
-        require (count &gt; 0);
+        require (count > 0);
 
         // Issue tokens ...        
         totalSupply += count;
@@ -71,9 +71,9 @@ contract RaisingToken {
         // 1. Number of tokens to be sold is non-zero
         // 2. Some tokens will still exist after burning tokens to be sold
         // 3. Message sender has enough tokens to sell
-        if (_value &gt; 0 &amp;&amp;
-            _value &lt; totalSupply &amp;&amp;
-            _value &lt;= balanceOf [msg.sender]) {
+        if (_value > 0 &&
+            _value < totalSupply &&
+            _value <= balanceOf [msg.sender]) {
             // Calculate amount of ether to be sent to seller
             uint256 toSend = _value * this.balance / totalSupply;
 
@@ -101,7 +101,7 @@ contract RaisingToken {
      * @return token name
      */
     function name() public pure returns (string) {
-        return &quot;RaisingToken&quot;;
+        return "RaisingToken";
     }
 
     /**
@@ -110,7 +110,7 @@ contract RaisingToken {
      * @return token symbol
      */
     function symbol() public pure returns (string) {
-        return &quot;RAT&quot;;
+        return "RAT";
     }
 
     /**
@@ -134,7 +134,7 @@ contract RaisingToken {
         // Proceed only if
         // 1. There are more than 1 tokens being transferred
         // 2. Message sender has enough tokens
-        if (_value &gt; 1 &amp;&amp; _value &gt;= balanceOf [msg.sender]) {
+        if (_value > 1 && _value >= balanceOf [msg.sender]) {
             // Take tokens from message sender
             balanceOf [msg.sender] -= _value;
 
@@ -175,9 +175,9 @@ contract RaisingToken {
         // 1. There are more than 1 tokens being transferred
         // 2. Transfer is approved by the owner of source address
         // 3. The owner of source address has enough tokens
-        if (_value &gt; 1 &amp;&amp;
-            _value &gt;= allowance [_from][msg.sender] &amp;&amp;
-            _value &gt;= balanceOf [_from]) {
+        if (_value > 1 &&
+            _value >= allowance [_from][msg.sender] &&
+            _value >= balanceOf [_from]) {
             // Reduce number of tokens message sender is allowed to transfer
             // from the owner of source address
             allowance [_from][msg.sender] -= _value;

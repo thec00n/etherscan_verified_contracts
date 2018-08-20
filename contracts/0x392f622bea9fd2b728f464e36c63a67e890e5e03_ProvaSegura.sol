@@ -9,7 +9,7 @@ contract ProvaSegura {
         string coordenadas;
     }
 
-    mapping(bytes32 =&gt; Prova) public provas;
+    mapping(bytes32 => Prova) public provas;
     address public admin;
 
     function ProvaSegura() public {

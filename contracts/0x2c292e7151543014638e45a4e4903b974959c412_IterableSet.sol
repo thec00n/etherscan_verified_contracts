@@ -14,7 +14,7 @@ contract IterableSet {
     }
 
     // Mapping of values to the corresponding elements
-    mapping(uint =&gt; Element) elements;
+    mapping(uint => Element) elements;
 
     uint256 first;  // Id of the first element
     uint256 last;   // Id of the last element
@@ -63,7 +63,7 @@ contract IterableSet {
 
     // Returns true iff the value is contained in the set
     function contains(uint256 value) public view returns (bool) {
-        return size &gt; 0 &amp;&amp; (first == value || last == value || elements[value].next != 0 || elements[value].previous != 0);
+        return size > 0 && (first == value || last == value || elements[value].next != 0 || elements[value].previous != 0);
     }
 
     // Returns an array containing all the ids in the set
@@ -71,7 +71,7 @@ contract IterableSet {
         uint256[] memory result = new uint256[](size);
         Element storage position = elements[first];
         uint256 i;
-        for (i = 0; i &lt; size; i++) {
+        for (i = 0; i < size; i++) {
             result[i] = position.value;
             position = elements[position.next];
         }

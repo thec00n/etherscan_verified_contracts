@@ -2,8 +2,8 @@ pragma solidity ^0.4.11;
 
 contract ATP {
     
-    string public constant name = &quot;ATL Presale Token&quot;;
-    string public constant symbol = &quot;ATP&quot;;
+    string public constant name = "ATL Presale Token";
+    string public constant symbol = "ATP";
     uint   public constant decimals = 18;
     
     uint public constant PRICE = 505;
@@ -24,7 +24,7 @@ contract ATP {
     address public crowdsaleManager;
     
     uint public totalSupply = 0;
-    mapping (address =&gt; uint256) private balances;
+    mapping (address => uint256) private balances;
     
     event Buy(address indexed buyer, uint amount);
     event Burn(address indexed owner, uint amount);
@@ -44,7 +44,7 @@ contract ATP {
         require(msg.value != 0);
         
         uint tokenAmount = msg.value * PRICE;
-        require(totalSupply + tokenAmount &lt;= TOKEN_SUPPLY_LIMIT);
+        require(totalSupply + tokenAmount <= TOKEN_SUPPLY_LIMIT);
         
         balances[_buyer] += tokenAmount;
         totalSupply += tokenAmount;
@@ -62,14 +62,14 @@ contract ATP {
     
     function setPresalePhase(Phase _nextPhase) public onlyTokenManager {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
         
         require(canSwitchPhase);
         currentPhase = _nextPhase;
@@ -82,7 +82,7 @@ contract ATP {
     }
     
     function withdrawEther() public onlyTokenManager {
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             escrow.transfer(this.balance);
         }
     }
@@ -96,7 +96,7 @@ contract ATP {
         require(currentPhase == Phase.Migrating);
         
         uint tokens = balances[_owner];
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
         balances[_owner] = 0;
         totalSupply -= tokens;

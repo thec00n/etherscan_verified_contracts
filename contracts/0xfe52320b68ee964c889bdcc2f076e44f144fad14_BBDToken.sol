@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -195,10 +195,10 @@ contract MigrationAgent {
 contract BBDToken is StandardToken, Ownable {
 
     // Metadata
-    string public constant name = &quot;BlockChain Board Of Derivatives Token&quot;;
-    string public constant symbol = &quot;BBD&quot;;
+    string public constant name = "BlockChain Board Of Derivatives Token";
+    string public constant symbol = "BBD";
     uint256 public constant decimals = 18;
-    string public constant version = &#39;1.0.0&#39;;
+    string public constant version = '1.0.0';
 
     // Presale parameters
     uint256 public presaleStartTime;
@@ -249,10 +249,10 @@ contract BBDToken is StandardToken, Ownable {
     }
 
     function BBDToken(uint256 _presaleStartTime, uint256 _presaleEndTime, uint256 _saleStartTime, uint256 _saleEndTime) {
-        require(_presaleStartTime &gt;= now);
-        require(_presaleEndTime &gt;= _presaleStartTime);
-        require(_saleStartTime &gt;= _presaleEndTime);
-        require(_saleEndTime &gt;= _saleStartTime);
+        require(_presaleStartTime >= now);
+        require(_presaleEndTime >= _presaleStartTime);
+        require(_saleStartTime >= _presaleEndTime);
+        require(_saleEndTime >= _saleStartTime);
 
         presaleStartTime = _presaleStartTime;
         presaleEndTime = _presaleEndTime;
@@ -283,12 +283,12 @@ contract BBDToken is StandardToken, Ownable {
     function buyPresaleTokens(address _beneficiary) payable {
         require(!presaleFinalized);
         require(msg.value != 0);
-        require(now &lt;= presaleEndTime);
-        require(now &gt;= presaleStartTime);
+        require(now <= presaleEndTime);
+        require(now >= presaleStartTime);
 
         uint256 bbdTokens = msg.value.mul(getTokenCreationRate()).div(divisor);
         uint256 checkedSupply = totalSupply.add(bbdTokens);
-        require(presaleTokenCreationCap &gt;= checkedSupply);
+        require(presaleTokenCreationCap >= checkedSupply);
 
         totalSupply = totalSupply.add(bbdTokens);
         balances[_beneficiary] = balances[_beneficiary].add(bbdTokens);
@@ -300,7 +300,7 @@ contract BBDToken is StandardToken, Ownable {
     // Finalize presale
     function finalizePresale() onlyOwner external {
         require(!presaleFinalized);
-        require(now &gt;= presaleEndTime || totalSupply == presaleTokenCreationCap);
+        require(now >= presaleEndTime || totalSupply == presaleTokenCreationCap);
 
         presaleFinalized = true;
 
@@ -315,12 +315,12 @@ contract BBDToken is StandardToken, Ownable {
     function buySaleTokens(address _beneficiary) payable {
         require(!saleFinalized);
         require(msg.value != 0);
-        require(now &lt;= saleEndTime);
-        require(now &gt;= saleStartTime);
+        require(now <= saleEndTime);
+        require(now >= saleStartTime);
 
         uint256 bbdTokens = msg.value.mul(getTokenCreationRate()).div(divisor);
         uint256 checkedSupply = totalSupply.add(bbdTokens);
-        require(totalTokenCreationCap &gt;= checkedSupply);
+        require(totalTokenCreationCap >= checkedSupply);
 
         totalSupply = totalSupply.add(bbdTokens);
         balances[_beneficiary] = balances[_beneficiary].add(bbdTokens);
@@ -332,7 +332,7 @@ contract BBDToken is StandardToken, Ownable {
     // Finalize sale
     function finalizeSale() onlyOwner external {
         require(!saleFinalized);
-        require(now &gt;= saleEndTime || totalSupply == totalTokenCreationCap);
+        require(now >= saleEndTime || totalSupply == totalTokenCreationCap);
 
         saleFinalized = true;
 
@@ -357,8 +357,8 @@ contract BBDToken is StandardToken, Ownable {
     function migrate(uint256 _value) external {
         require(saleFinalized);
         require(migrationAgent != 0x0);
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);

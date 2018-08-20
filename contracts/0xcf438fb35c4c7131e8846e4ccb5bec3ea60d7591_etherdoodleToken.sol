@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -119,7 +119,7 @@ contract ERC721 {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -134,7 +134,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _from,
@@ -154,20 +154,20 @@ contract etherdoodleToken is ERC721 {
 
 
 //EVENTS
-// @dev fired when a pixel&#39;s colour is changed
+// @dev fired when a pixel's colour is changed
     event ColourChanged(uint pixelId, uint8 colourR, uint8 colourG, uint8 colourB);
 
-// @dev fired when a pixel&#39;s price is changed
+// @dev fired when a pixel's price is changed
     event PriceChanged(uint pixelId, uint oldPrice, uint newPrice);
 
-// @dev fired when a pixel&#39;s text is changed
+// @dev fired when a pixel's text is changed
     event TextChanged(uint pixelId, string textChanged);
 
 //@dev name for ERC-721
-    string constant public name = &quot;etherdoodle&quot;;
+    string constant public name = "etherdoodle";
 
 //@dev symbol for ERC-721
-    string constant public symbol = &quot;etherdoodle&quot;;
+    string constant public symbol = "etherdoodle";
 
 //@dev Starting pixel price
     uint constant public startingPrice = 0.0025 ether;
@@ -199,22 +199,22 @@ contract etherdoodleToken is ERC721 {
 
 //MAPPINGS
 //@dev mapping from a pixel to its owner
-    mapping (uint =&gt; address) private pixelToOwner;
+    mapping (uint => address) private pixelToOwner;
 
 //@dev mapping from owner to all of their pixels;
-    mapping (address =&gt; uint[]) private ownerToPixel;
+    mapping (address => uint[]) private ownerToPixel;
 
 //@dev mapping from an address to the count of pixels
-    mapping (address =&gt; uint) private ownerPixelCount;
+    mapping (address => uint) private ownerPixelCount;
 
 //@dev mapping from a pixelId to the price of that pixel
-    mapping (uint =&gt; uint ) private pixelToPrice;
+    mapping (uint => uint ) private pixelToPrice;
 
 //@dev mapping from a pixel to an approved account for transfer
-    mapping(uint =&gt; address) public pixelToApproved;
+    mapping(uint => address) public pixelToApproved;
 
 //@dev mapping from an address to another mapping that determines if an operator is approved
-    mapping(address =&gt; mapping(address=&gt;bool)) internal operatorApprovals;
+    mapping(address => mapping(address=>bool)) internal operatorApprovals;
 
 //MODIFIERS
 //@dev access modifiers for ceo
@@ -257,9 +257,9 @@ contract etherdoodleToken is ERC721 {
 //@Update All a selected pixels details, can be done by the operator, or the owner
     function updateAllPixelDetails(uint _pixelId, uint8 _colourR, uint8 _colourG, uint8 _colourB,uint _price,string _text) 
     external canManageAndTransfer(_pixelId) {
-        require(_price &lt;= pixelToPrice[_pixelId]);
-        require(_price &gt;= 0.0025 ether);
-        require(bytes(_text).length &lt; 101);
+        require(_price <= pixelToPrice[_pixelId]);
+        require(_price >= 0.0025 ether);
+        require(bytes(_text).length < 101);
         bool colourChangedBool = false;
         if(pixelToPrice[_pixelId] != _price){
             pixelToPrice[_pixelId] = _price;
@@ -287,7 +287,7 @@ contract etherdoodleToken is ERC721 {
         }
     }
 
-//@dev add an address to a pixel&#39;s approved list
+//@dev add an address to a pixel's approved list
     function approve(address _to, uint _pixelId) public  {
         address owner = ownerOf(_pixelId);
         require(_to != owner);
@@ -304,7 +304,7 @@ contract etherdoodleToken is ERC721 {
         return pixelToApproved[_pixelId];
     }
 
-//@dev approve all an owner&#39;s pixels to be managed by an address
+//@dev approve all an owner's pixels to be managed by an address
     function setApprovalForAll(address _to,bool _approved) public{
         require(_to != msg.sender);
         operatorApprovals[msg.sender][_to] = _approved;
@@ -322,7 +322,7 @@ contract etherdoodleToken is ERC721 {
         return owner != address(0);
     }
 
-//@dev returns if an address is approved to manage all another address&#39; pixels
+//@dev returns if an address is approved to manage all another address' pixels
     function isApprovedForAll(address _owner, address _operator) public view returns(bool) {
         return operatorApprovals[_owner][_operator];
     }
@@ -369,7 +369,7 @@ contract etherdoodleToken is ERC721 {
     }
 //@dev ERC 721 safeTransfer from functions
     function safeTransferFrom(address _from, address _to, uint _pixelId) public canManageAndTransfer(_pixelId){
-        safeTransferFrom(_from,_to,_pixelId,&quot;&quot;);
+        safeTransferFrom(_from,_to,_pixelId,"");
     }
 
 //@dev ERC 721 safeTransferFrom functions
@@ -383,7 +383,7 @@ contract etherdoodleToken is ERC721 {
         _transfer(msg.sender, _to, _pixelId);
     }
 
-//@dev returns all pixel&#39;s data
+//@dev returns all pixel's data
     function getPixelData(uint _pixelId) public view returns 
     (uint32 _id, address _owner, uint8 _colourR, uint8 _colourG, uint8 _colourB, uint _price,string _text) {
         Pixel storage pixel = pixels[_pixelId];
@@ -441,8 +441,8 @@ contract etherdoodleToken is ERC721 {
     //@dev purchase promo pixels that cost nothing at start
     function promoPurchase(uint32 _pixelId,uint8 _colourR,uint8 _colourG,uint8 _colourB,string _text) public {
         require(ownerOf(_pixelId) == (address(0)));
-        require(promoCount&lt;PROMO_LIMIT);
-        require(bytes(_text).length &lt; 101);
+        require(promoCount<PROMO_LIMIT);
+        require(bytes(_text).length < 101);
         _createPixel((_pixelId), _colourR, _colourG, _colourB,_text);
         _transfer(address(0),msg.sender,_pixelId);      
         promoCount++;
@@ -450,13 +450,13 @@ contract etherdoodleToken is ERC721 {
         
     //@dev purchase multiple pixels at the same time
     function multiPurchase(uint32[] _Id, uint8[] _R,uint8[] _G,uint8[] _B,string _text) public payable {
-        require(_Id.length == _R.length &amp;&amp; _Id.length == _G.length &amp;&amp; _Id.length == _B.length);
-        require(bytes(_text).length &lt; 101);
+        require(_Id.length == _R.length && _Id.length == _G.length && _Id.length == _B.length);
+        require(bytes(_text).length < 101);
         address newOwner = msg.sender;
         uint totalPrice = 0;
         uint excessValue = msg.value;
         
-        for(uint i = 0; i &lt; _Id.length; i++){
+        for(uint i = 0; i < _Id.length; i++){
             address oldOwner = ownerOf(_Id[i]);
             require(ownerOf(_Id[i]) != newOwner);
             require(!isInvulnerableByArea(_Id[i]));
@@ -466,7 +466,7 @@ contract etherdoodleToken is ERC721 {
             excessValue = processMultiPurchase(_Id[i],_R[i],_G[i],_B[i],_text,oldOwner,newOwner,excessValue);
            
             if(i == _Id.length-1) {
-                require(msg.value &gt;= totalPrice);
+                require(msg.value >= totalPrice);
                 msg.sender.transfer(excessValue);
                 }   
         }
@@ -491,7 +491,7 @@ contract etherdoodleToken is ERC721 {
                 _changeText(_pixelId,_text);
             clearApproval(_oldOwner,_pixelId);
         }
-        if(sellingPrice &lt; stepAt) {
+        if(sellingPrice < stepAt) {
             pixelToPrice[_pixelId] = SafeMath.div(SafeMath.mul(sellingPrice,300),95);
         } else {
             pixelToPrice[_pixelId] = SafeMath.div(SafeMath.mul(sellingPrice,150),95);
@@ -511,7 +511,7 @@ contract etherdoodleToken is ERC721 {
         emit ColourChanged(_pixelId, _colourR, _colourG, _colourB);
     }
     function _changeText(uint _pixelId, string _text) private{
-        require(bytes(_text).length &lt; 101);
+        require(bytes(_text).length < 101);
         pixels[_pixelId].pixelText = _text;
         emit TextChanged(_pixelId,_text);
     }
@@ -519,7 +519,7 @@ contract etherdoodleToken is ERC721 {
 
 //@dev Invulnerability logic check 
     function isInvulnerableByArea(uint _pixelId) public view returns (bool) {
-        require(_pixelId &gt;= 0 &amp;&amp; _pixelId &lt;= 999999);
+        require(_pixelId >= 0 && _pixelId <= 999999);
         if (ownerOf(_pixelId) == address(0)) {
             return false;
         }
@@ -529,7 +529,7 @@ contract etherdoodleToken is ERC721 {
             return false;
         }
 
-        if (_pixelId &lt; 1000) {
+        if (_pixelId < 1000) {
             if (_checkPixelRight(_pixelId)) {
                 counter = SafeMath.add(counter, 1);
             }
@@ -547,7 +547,7 @@ contract etherdoodleToken is ERC721 {
             }
         }
 
-        if (_pixelId &gt; 999000) {
+        if (_pixelId > 999000) {
             if (_checkPixelRight(_pixelId)) {
                 counter = SafeMath.add(counter, 1);
             }
@@ -565,7 +565,7 @@ contract etherdoodleToken is ERC721 {
             }
         }
 
-        if (_pixelId &gt; 999 &amp;&amp; _pixelId &lt; 999000) {
+        if (_pixelId > 999 && _pixelId < 999000) {
             if (_pixelId%1000 == 0 || _pixelId%1000 == 999) {
                 if (_pixelId%1000 == 0) {
                     if (_checkPixelAbove(_pixelId)) {
@@ -627,7 +627,7 @@ contract etherdoodleToken is ERC721 {
                 }
             }
         }
-        return counter &gt;= 5;
+        return counter >= 5;
     }
 
    
@@ -651,7 +651,7 @@ contract etherdoodleToken is ERC721 {
         ownerPixelCount[_to] = SafeMath.add(ownerPixelCount[_to], 1);
         ownerToPixel[_to].push(_pixelId);
         if (_from != address(0)) {
-            for (uint i = 0; i &lt; ownerToPixel[_from].length; i++) {
+            for (uint i = 0; i < ownerToPixel[_from].length; i++) {
                 if (ownerToPixel[_from][i] == _pixelId) {
                     ownerToPixel[_from][i] = ownerToPixel[_from][ownerToPixel[_from].length-1];
                     delete ownerToPixel[_from][ownerToPixel[_from].length-1];

@@ -14,17 +14,17 @@ contract ERC20Interface {
 
 contract UBCToken is ERC20Interface{
     /* 合约初始参数*/
-    string public standard = &#39;Token 1.0.8&#39;;
-    string public constant name=&quot;Ubiquitous Business Credit 2.0&quot;;
-    string public constant symbol=&quot;UBC&quot;;
+    string public standard = 'Token 1.0.8';
+    string public constant name="Ubiquitous Business Credit 2.0";
+    string public constant symbol="UBC";
     uint8 public constant decimals=10;
     uint256 public constant _totalSupply=10000000000000000000;
     /*相关规则交由社区监督*/
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
-    //mapping (address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint256) balances;
-    //mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    //mapping (address => uint256) public balanceOf;
+    mapping(address => uint256) balances;
+    //mapping (address => mapping (address => uint256)) public allowance;
     address public owner;
     /* 全部*/
     function UBCToken() {
@@ -43,9 +43,9 @@ contract UBCToken is ERC20Interface{
 
     /* transfer */
     function transfer(address _to, uint256 _amount) returns (bool success)  {
-       if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+       if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[msg.sender] -= _amount;
               balances[_to] += _amount;
               Transfer(msg.sender, _to, _amount);
@@ -57,9 +57,9 @@ contract UBCToken is ERC20Interface{
 
     /*transferFrom*/
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success){
-        if (balances[_from] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]  &amp;&amp; _amount &lt;= allowed[_from][msg.sender]) {
+        if (balances[_from] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]  && _amount <= allowed[_from][msg.sender]) {
              balances[_from] -= _amount;
              balances[_to] += _amount;
              allowed[_from][msg.sender] -= _amount;

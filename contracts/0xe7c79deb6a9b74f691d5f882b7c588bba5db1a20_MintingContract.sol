@@ -3,12 +3,12 @@ contract SafeMath {
     uint256 constant public MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -16,7 +16,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -56,7 +56,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -85,8 +85,8 @@ contract ERC20TokenInterface {
 }
 contract ERC20PrivateInterface {
     uint256 supply;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -118,9 +118,9 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     // Current supply of tokens
     uint256 supply = 0;
     // Map of users balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Map of users allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     // Event that shows that new tokens were created
     event Mint(address indexed _to, uint256 _value);
@@ -154,7 +154,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     * @return if successful returns true
     */
     function transfer(address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value);
@@ -198,7 +198,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     * @return if successful returns true
     */
     function transferFrom(address _from, address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[_from] = safeSub(balanceOf(_from), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender], _value);
@@ -303,7 +303,7 @@ contract MintingContract is Owned, SafeMath{
     
     function doCommunityMinting(address _destination, uint _tokensToMint) public {
         require(msg.sender == communityAddress || msg.sender == owner);
-        require(safeAdd(comunityMintedTokens, _tokensToMint) &lt;= communityTokensCap);
+        require(safeAdd(comunityMintedTokens, _tokensToMint) <= communityTokensCap);
 
         MintableTokenInterface(tokenAddress).mint(_destination, _tokensToMint);
         comunityMintedTokens = safeAdd(comunityMintedTokens, _tokensToMint);
@@ -311,7 +311,7 @@ contract MintingContract is Owned, SafeMath{
 
     function doPresaleMinting(address _destination, uint _tokensToMint) public onlyOwner {
         require(mintingState == state.crowdsaleMinting);
-        require(safeAdd(tokensAlreadyMinted, _tokensToMint) &lt;= crowdsaleMintingCap);
+        require(safeAdd(tokensAlreadyMinted, _tokensToMint) <= crowdsaleMintingCap);
 
         MintableTokenInterface(tokenAddress).mint(_destination, _tokensToMint);
         tokensAlreadyMinted = safeAdd(tokensAlreadyMinted, _tokensToMint);
@@ -319,7 +319,7 @@ contract MintingContract is Owned, SafeMath{
     function doCrowdsaleMinting(address _destination, uint _tokensToMint) public {
         require(msg.sender == crowdsaleContractAddress);
         require(mintingState == state.crowdsaleMinting);
-        require(safeAdd(tokensAlreadyMinted, _tokensToMint) &lt;= crowdsaleMintingCap);
+        require(safeAdd(tokensAlreadyMinted, _tokensToMint) <= crowdsaleMintingCap);
 
         MintableTokenInterface(tokenAddress).mint(_destination, _tokensToMint);
         tokensAlreadyMinted = safeAdd(tokensAlreadyMinted, _tokensToMint);

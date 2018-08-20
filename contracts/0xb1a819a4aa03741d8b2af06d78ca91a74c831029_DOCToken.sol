@@ -2,10 +2,10 @@ pragma solidity ^0.4.19;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -13,7 +13,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -49,10 +49,10 @@ contract ERC20Token is ERC20Interface {
     uint256 internal tokenTotalSupply;
     uint256 public publicReservedToken;
     uint256 public tokenConversionFactor = 10**4;
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
 
     function ERC20Token(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply,address _publicReserved,uint256 _publicReservedPersentage,address[] boardReserved,uint256[] boardReservedPersentage) public {
@@ -74,10 +74,10 @@ contract ERC20Token is ERC20Interface {
 
         // The initial Board Reserved balance of tokens is assigned to the given token holder address.
         uint256 persentageSum = 0;
-        for(uint i=0; i&lt;boardReserved.length; i++){
+        for(uint i=0; i<boardReserved.length; i++){
             //
             persentageSum = persentageSum.add(boardReservedPersentage[i]);
-            require(persentageSum &lt;= 10000);
+            require(persentageSum <= 10000);
             //assigning board members persentage tokens to particular board member address.
             uint256 token = boardReservedToken.mul(boardReservedPersentage[i]).div(tokenConversionFactor);
             balances[boardReserved[i]] = token;
@@ -119,8 +119,8 @@ contract ERC20Token is ERC20Interface {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         uint256 fromBalance = balances[msg.sender];
-        if (fromBalance &lt; _value) return false;
-        if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+        if (fromBalance < _value) return false;
+        if (_value > 0 && msg.sender != _to) {
           balances[msg.sender] = fromBalance.sub(_value);
           balances[_to] = balances[_to].add(_value);
         }
@@ -131,20 +131,20 @@ contract ERC20Token is ERC20Interface {
 
     // Send `tokens` amount of tokens from address `from` to address `to`
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         
         uint256 spenderAllowance = allowed [_from][msg.sender];
-        if (spenderAllowance &lt; _value) return false;
+        if (spenderAllowance < _value) return false;
         uint256 fromBalance = balances [_from];
-        if (fromBalance &lt; _value) return false;
+        if (fromBalance < _value) return false;
     
         allowed [_from][msg.sender] = spenderAllowance.sub(_value);
     
-        if (_value &gt; 0 &amp;&amp; _from != _to) {
+        if (_value > 0 && _from != _to) {
           balances [_from] = fromBalance.add(_value);
           balances [_to] = balances[_to].add(_value);
         }
@@ -243,7 +243,7 @@ contract FinalizableToken is ERC20Token, Owned {
     address public publicReservedAddress;
 
     //board members time list
-    mapping(address=&gt;uint) private boardReservedAccount;
+    mapping(address=>uint) private boardReservedAccount;
     uint256[] public BOARD_RESERVED_YEARS = [1 years,2 years,3 years,4 years,5 years,6 years,7 years,8 years,9 years,10 years];
     
     event Burn(address indexed burner,uint256 value);
@@ -253,7 +253,7 @@ contract FinalizableToken is ERC20Token, Owned {
     ERC20Token(_name, _symbol, _decimals, _totalSupply, _publicReserved, _publicReservedPersentage, _boardReserved, _boardReservedPersentage)
     Owned(){
         publicReservedAddress = _publicReserved;
-        for(uint i=0; i&lt;_boardReserved.length; i++){
+        for(uint i=0; i<_boardReserved.length; i++){
             boardReservedAccount[_boardReserved[i]] = currentTime() + BOARD_RESERVED_YEARS[i];
         }
     }
@@ -282,7 +282,7 @@ contract FinalizableToken is ERC20Token, Owned {
             return true;
         }else{
             // else  then check allowed token for board member
-            return currentTime() &gt; time;
+            return currentTime() > time;
         }
     }
 
@@ -291,8 +291,8 @@ contract FinalizableToken is ERC20Token, Owned {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
 
         address burner = msg.sender;
@@ -310,8 +310,8 @@ contract FinalizableToken is ERC20Token, Owned {
 
 contract DOCTokenConfig {
 
-    string  public constant TOKEN_SYMBOL      = &quot;DOC&quot;;
-    string  public constant TOKEN_NAME        = &quot;DOMUSCOINS Token&quot;;
+    string  public constant TOKEN_SYMBOL      = "DOC";
+    string  public constant TOKEN_NAME        = "DOMUSCOINS Token";
     uint8   public constant TOKEN_DECIMALS    = 18;
 
     uint256 public constant DECIMALSFACTOR    = 10**uint256(TOKEN_DECIMALS);

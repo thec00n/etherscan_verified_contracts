@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -----
 
@@ -45,17 +45,17 @@ interface tokenRecipient { function receiveApproval(address _from, uint _value, 
 
 contract ILOTContract {
 
-    string public name = &quot;ILOT Interest-Paying Lottery Token&quot;;
-    string public symbol = &quot;ILOT&quot;;
+    string public name = "ILOT Interest-Paying Lottery Token";
+    string public symbol = "ILOT";
     
     /*
-        We&#39;ve hardcoded our official website into the blockchain!
+        We've hardcoded our official website into the blockchain!
         Please do not send ETH to scams/clones/copies. 
         The website indicated below is the only official ILOT website.
     */
-    string public site_url = &quot;https://ILOT.io/&quot;;
+    string public site_url = "https://ILOT.io/";
 
-    bytes32 private current_jackpot_hash = &quot;FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;;
+    bytes32 private current_jackpot_hash = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
     uint8 public decimals = 18;
     uint public totalSupply = 0; // No pre-minted amount.
     uint public interestRate = 15; // 1.5% fixed monthly interest = 15 / 1000
@@ -67,10 +67,10 @@ contract ILOTContract {
         owner = msg.sender;
     }
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-    mapping (address =&gt; uint) public depositTotal; // total ETH deposited per address
-    mapping (address =&gt; uint) public lastBlockInterestPaid;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => uint) public depositTotal; // total ETH deposited per address
+    mapping (address => uint) public lastBlockInterestPaid;
 
     /*
         Declare ILOT events.
@@ -90,11 +90,11 @@ contract ILOTContract {
     }
 
     /*
-        Return an addresse&#39;s current unpaid interest amount in ILOT.
+        Return an addresse's current unpaid interest amount in ILOT.
     */
     function getInterest(address _to) public view returns (uint interest) {
 
-        if (lastBlockInterestPaid[_to] &gt; 0) {
+        if (lastBlockInterestPaid[_to] > 0) {
             interest = ((block.number - lastBlockInterestPaid[_to]) * balanceOf[_to] * interestRate) / (86400000);
         } else {
             interest = 0;
@@ -121,8 +121,8 @@ contract ILOTContract {
             will be paid before transfers or future deposits.
         */
         payInterest(_from);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -158,7 +158,7 @@ contract ILOTContract {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -183,7 +183,7 @@ contract ILOTContract {
     function chown(address to) public onlyOwner { owner = to; }
 
     function burn(uint _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -191,10 +191,10 @@ contract ILOTContract {
     }
 
     function burnFrom(address _from, uint _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -207,8 +207,8 @@ contract ILOTContract {
 
         uint interest = getInterest(_to);
 
-        if (interest &gt; 0) {
-            require( (balanceOf[_to] + interest) &gt; balanceOf[_to]);
+        if (interest > 0) {
+            require( (balanceOf[_to] + interest) > balanceOf[_to]);
             // pay interest
             balanceOf[msg.sender] += interest;
             totalSupply += interest;
@@ -225,10 +225,10 @@ contract ILOTContract {
         Does not carry over if you change Ethereum addresses.
     */
     function payBonus(address _to) private {
-        if (depositTotal[_to] &gt; 0) {
+        if (depositTotal[_to] > 0) {
             uint bonus = getBonus(_to);
-            if (bonus &gt; 0) {
-                require( (balanceOf[_to] + bonus) &gt; balanceOf[_to]);
+            if (bonus > 0) {
+                require( (balanceOf[_to] + bonus) > balanceOf[_to]);
                 balanceOf[_to] +=  bonus;
                 totalSupply += bonus;
                 Transfer(this, _to, bonus);
@@ -240,7 +240,7 @@ contract ILOTContract {
     function hashDifficulty(bytes32 hash) public pure returns(uint) {
         uint diff = 0;
 
-        for (uint i=0;i&lt;32;i++) {
+        for (uint i=0;i<32;i++) {
             if (hash[i] == 0) {
                 diff++;
             } else {
@@ -258,7 +258,7 @@ contract ILOTContract {
     */
     function addressToString(address x) private pure returns (string) {
         bytes memory b = new bytes(20);
-        for (uint i = 0; i &lt; 20; i++)
+        for (uint i = 0; i < 20; i++)
             b[i] = byte(uint8(uint(x) / (2**(8*(19 - i)))));
         return string(b);
     }
@@ -276,7 +276,7 @@ contract ILOTContract {
             return;
         }
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
 
             /*
                 Maintenance fee 2%
@@ -289,9 +289,9 @@ contract ILOTContract {
                 at this time. During a later transaction, if the fee is enough,
                 the previous debt is transferred and zeroed out.
             */
-            if (address(this).balance &gt;= mfee) {
-                if (address(this).balance &gt;= (mfee + maintenanceDebt) ) {
-                    // there&#39;s enough to cover previous debt
+            if (address(this).balance >= mfee) {
+                if (address(this).balance >= (mfee + maintenanceDebt) ) {
+                    // there's enough to cover previous debt
                     owner.transfer(mfee + maintenanceDebt);
                     maintenanceDebt = 0;
                 } else {
@@ -307,8 +307,8 @@ contract ILOTContract {
                 Convert ETH to ILOT at tokensPerEthereum rate.
             */
             uint tokenAmount = tokensPerEthereum * msg.value;
-            if (tokenAmount &gt; 0) {
-                require( (balanceOf[msg.sender] + tokenAmount) &gt; balanceOf[msg.sender]);
+            if (tokenAmount > 0) {
+                require( (balanceOf[msg.sender] + tokenAmount) > balanceOf[msg.sender]);
 
                 /*
                     Pay fidelity bonus.
@@ -341,7 +341,7 @@ contract ILOTContract {
                 current_jackpot_hash = keccak256(current_jackpot_hash, ats, block.coinbase, block.number, block.timestamp);
                 uint diffx = hashDifficulty(current_jackpot_hash);
 
-                if (diffx &gt;= jackpotDifficulty) {
+                if (diffx >= jackpotDifficulty) {
                     /*
 
                         ********************

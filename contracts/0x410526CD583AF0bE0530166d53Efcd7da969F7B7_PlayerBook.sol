@@ -25,7 +25,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -33,9 +33,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -47,7 +47,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -60,7 +60,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -74,7 +74,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -107,7 +107,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -136,24 +136,24 @@ library NameFilter {
         uint256 _length = _temp.length;
         
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
         
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
         
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -167,22 +167,22 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 || 
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
                 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;    
             }
         }
         
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
         
         bytes32 _ret;
         assembly {
@@ -214,19 +214,19 @@ contract PlayerBook{
      */
     address public communityAddr;
     function initCommunityAddr(address addr) isAdmin() public {
-        require(address(addr) != address(0x0), &quot;Empty address not allowed.&quot;);
-        require(address(communityAddr) == address(0x0), &quot;Community address has been set.&quot;);
+        require(address(addr) != address(0x0), "Empty address not allowed.");
+        require(address(communityAddr) == address(0x0), "Community address has been set.");
         communityAddr = addr ;
     }
     /******************************************************************************************
      合约权限管理
      设计：会设计用户权限管理，
-        9 =&gt; 管理员角色
-        0 =&gt; 没有任何权限
+        9 => 管理员角色
+        0 => 没有任何权限
      */
 
     // 用户地址到角色的表
-    mapping(address =&gt; uint256)     private users ;
+    mapping(address => uint256)     private users ;
     // 初始化
     function initUsers() private {
         // 初始化下列地址帐户为管理员
@@ -236,7 +236,7 @@ contract PlayerBook{
     // 是否是管理员
     modifier isAdmin() {
         uint256 role = users[msg.sender];
-        require((role==9), &quot;Must be admin.&quot;);
+        require((role==9), "Must be admin.");
         _;
     }
     /******************************************************************************************
@@ -246,7 +246,7 @@ contract PlayerBook{
         address _addr = msg.sender;
         uint256 _codeLength;
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;Humans only&quot;);
+        require(_codeLength == 0, "Humans only");
         _;
     }
     /****************************************************************************************** 
@@ -284,11 +284,11 @@ contract PlayerBook{
      注册游戏
      */
     // 注册的游戏列表
-    mapping(uint256 =&gt; PlayerBookReceiverInterface) public games_;
+    mapping(uint256 => PlayerBookReceiverInterface) public games_;
     // 注册的游戏名称列表
-    mapping(address =&gt; bytes32) public gameNames_;
+    mapping(address => bytes32) public gameNames_;
     // 注册的游戏ID列表
-    mapping(address =&gt; uint256) public gameIDs_;
+    mapping(address => uint256) public gameIDs_;
     // 游戏数目
     uint256 public gID_;
     // 判断是否是注册游戏
@@ -302,7 +302,7 @@ contract PlayerBook{
      1. 游戏不存在
      */
     function addGame(address _gameAddress, string _gameNameStr) isAdmin() public {
-        require(gameIDs_[_gameAddress] == 0, &quot;Game already registered&quot;);
+        require(gameIDs_[_gameAddress] == 0, "Game already registered");
         gID_++;
         bytes32 _name = _gameNameStr.nameFilter();
         gameIDs_[_gameAddress] = gID_;
@@ -314,16 +314,16 @@ contract PlayerBook{
      */
     // 玩家数目
     uint256 public pID_;
-    // 玩家地址=&gt;玩家ID
-    mapping (address =&gt; uint256) public pIDxAddr_;
-    // 玩家名称=&gt;玩家ID
-    mapping (bytes32 =&gt; uint256) public pIDxName_;  
-    // 玩家ID =&gt; 玩家数据
-    mapping (uint256 =&gt; Player) public plyr_; 
-    // 玩家ID =&gt; 玩家名称 =&gt; 
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_;
-    // 玩家ID =&gt; 名称编号 =&gt; 玩家名称
-    mapping (uint256 =&gt; mapping (uint256 =&gt; bytes32)) public plyrNameList_; 
+    // 玩家地址=>玩家ID
+    mapping (address => uint256) public pIDxAddr_;
+    // 玩家名称=>玩家ID
+    mapping (bytes32 => uint256) public pIDxName_;  
+    // 玩家ID => 玩家数据
+    mapping (uint256 => Player) public plyr_; 
+    // 玩家ID => 玩家名称 => 
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_;
+    // 玩家ID => 名称编号 => 玩家名称
+    mapping (uint256 => mapping (uint256 => bytes32)) public plyrNameList_; 
     /******************************************************************************************
      初始玩家 
      */
@@ -361,13 +361,13 @@ contract PlayerBook{
      */
     function registerNameXID(string _nameString, uint256 _affCode, bool _all) isHuman() public payable{
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
 
         bytes32 _name = NameFilter.nameFilter(_nameString);
         address _addr = msg.sender;
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
-        if (_affCode != 0 &amp;&amp; _affCode != plyr_[_pID].laff &amp;&amp; _affCode != _pID) {
+        if (_affCode != 0 && _affCode != plyr_[_pID].laff && _affCode != _pID) {
             plyr_[_pID].laff = _affCode;
         }else{
             _affCode = 0;
@@ -385,14 +385,14 @@ contract PlayerBook{
      */
     function registerNameXaddr(string _nameString, address _affCode, bool _all) isHuman() public payable{
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
         
         bytes32 _name = NameFilter.nameFilter(_nameString);
         address _addr = msg.sender;
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
         uint256 _affID;
-        if (_affCode != address(0) &amp;&amp; _affCode != _addr){
+        if (_affCode != address(0) && _affCode != _addr){
             _affID = pIDxAddr_[_affCode];
             if (_affID != plyr_[_pID].laff){
                 plyr_[_pID].laff = _affID;
@@ -411,14 +411,14 @@ contract PlayerBook{
      */
     function registerNameXname(string _nameString, bytes32 _affCode, bool _all) isHuman() public payable{
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
         
         bytes32 _name = NameFilter.nameFilter(_nameString);
         address _addr = msg.sender;
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
         uint256 _affID;
-        if (_affCode != &quot;&quot; &amp;&amp; _affCode != _name){
+        if (_affCode != "" && _affCode != _name){
             _affID = pIDxName_[_affCode];
             if (_affID != plyr_[_pID].laff){
                 plyr_[_pID].laff = _affID;
@@ -439,7 +439,7 @@ contract PlayerBook{
     function registerNameCore(uint256 _pID, address _addr, uint256 _affID, bytes32 _name, bool _isNewPlayer, bool _all) private {
         // 判断是否已经注册过
         if (pIDxName_[_name] != 0)
-            require(plyrNames_[_pID][_name] == true, &quot;That names already taken&quot;);
+            require(plyrNames_[_pID][_name] == true, "That names already taken");
         // 
         plyr_[_pID].name = _name;
         pIDxName_[_name] = _pID;
@@ -449,14 +449,14 @@ contract PlayerBook{
             plyrNameList_[_pID][plyr_[_pID].names] = _name;
         }
         // 将注册费用转到社区基金合约账户中
-        if(address(this).balance&gt;0){
+        if(address(this).balance>0){
             if(address(communityAddr) != address(0x0)) {
                 communityAddr.transfer(address(this).balance);
             }
         }
 
         if (_all == true)
-            for (uint256 i = 1; i &lt;= gID_; i++)
+            for (uint256 i = 1; i <= gID_; i++)
                 games_[i].receivePlayerInfo(_pID, _addr, _name, _affID);
         
         emit onNewName(_pID, _addr, _name, _isNewPlayer, _affID, plyr_[_affID].addr, plyr_[_affID].name, msg.value, now);
@@ -477,33 +477,33 @@ contract PlayerBook{
     /**
      */
     function addMeToGame(uint256 _gameID) isHuman() public {
-        require(_gameID &lt;= gID_, &quot;Game doesn&#39;t exist yet&quot;);
+        require(_gameID <= gID_, "Game doesn't exist yet");
         address _addr = msg.sender;
         uint256 _pID = pIDxAddr_[_addr];
-        require(_pID != 0, &quot;You dont even have an account&quot;);
+        require(_pID != 0, "You dont even have an account");
         uint256 _totalNames = plyr_[_pID].names;
         
         // add players profile and most recent name
         games_[_gameID].receivePlayerInfo(_pID, _addr, plyr_[_pID].name, plyr_[_pID].laff);
         
         // add list of all names
-        if (_totalNames &gt; 1)
-            for (uint256 ii = 1; ii &lt;= _totalNames; ii++)
+        if (_totalNames > 1)
+            for (uint256 ii = 1; ii <= _totalNames; ii++)
                 games_[_gameID].receivePlayerNameList(_pID, plyrNameList_[_pID][ii]);
     }
 
     function addMeToAllGames() isHuman() public {
         address _addr = msg.sender;
         uint256 _pID = pIDxAddr_[_addr];
-        require(_pID != 0, &quot;You dont even have an account&quot;);
+        require(_pID != 0, "You dont even have an account");
         uint256 _laff = plyr_[_pID].laff;
         uint256 _totalNames = plyr_[_pID].names;
         bytes32 _name = plyr_[_pID].name;
         
-        for (uint256 i = 1; i &lt;= gID_; i++){
+        for (uint256 i = 1; i <= gID_; i++){
             games_[i].receivePlayerInfo(_pID, _addr, _name, _laff);
-            if (_totalNames &gt; 1)
-                for (uint256 ii = 1; ii &lt;= _totalNames; ii++)
+            if (_totalNames > 1)
+                for (uint256 ii = 1; ii <= _totalNames; ii++)
                     games_[i].receivePlayerNameList(_pID, plyrNameList_[_pID][ii]);
         }
     }
@@ -514,7 +514,7 @@ contract PlayerBook{
         uint256 _pID = pIDxAddr_[msg.sender];
         
         // make sure they own the name 
-        require(plyrNames_[_pID][_name] == true, &quot;Thats not a name you own&quot;);
+        require(plyrNames_[_pID][_name] == true, "Thats not a name you own");
         
         // update their current name 
         plyr_[_pID].name = _name;
@@ -547,12 +547,12 @@ contract PlayerBook{
         isRegisteredGame()
         external payable returns(bool, uint256){
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
 
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
         uint256 _affID = _affCode;
-        if (_affID != 0 &amp;&amp; _affID != plyr_[_pID].laff &amp;&amp; _affID != _pID) {
+        if (_affID != 0 && _affID != plyr_[_pID].laff && _affID != _pID) {
             plyr_[_pID].laff = _affID;
         } else if (_affID == _pID) {
             _affID = 0;
@@ -565,12 +565,12 @@ contract PlayerBook{
         isRegisteredGame()
         external payable returns(bool, uint256){
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
 
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
         uint256 _affID;
-        if (_affCode != address(0) &amp;&amp; _affCode != _addr){
+        if (_affCode != address(0) && _affCode != _addr){
             _affID = pIDxAddr_[_affCode];
             if (_affID != plyr_[_pID].laff){
                 plyr_[_pID].laff = _affID;
@@ -586,12 +586,12 @@ contract PlayerBook{
         isRegisteredGame()
         external payable returns(bool, uint256){
         // 要求注册费用,不需要付费
-        //require (msg.value &gt;= registrationFee_, &quot;You have to pay the name fee&quot;);
+        //require (msg.value >= registrationFee_, "You have to pay the name fee");
 
         bool _isNewPlayer = determinePID(_addr);
         uint256 _pID = pIDxAddr_[_addr];
         uint256 _affID;
-        if (_affCode != &quot;&quot; &amp;&amp; _affCode != _name){
+        if (_affCode != "" && _affCode != _name){
             _affID = pIDxName_[_affCode];
             if (_affID != plyr_[_pID].laff){
                 plyr_[_pID].laff = _affID;

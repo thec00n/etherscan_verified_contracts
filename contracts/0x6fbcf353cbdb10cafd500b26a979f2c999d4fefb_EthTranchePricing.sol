@@ -86,13 +86,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
@@ -110,7 +110,7 @@ library SafeMathLib {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,7 +164,7 @@ contract Haltable is Ownable {
   }
 
   modifier stopNonOwnersInEmergency {
-    if (halted &amp;&amp; msg.sender != owner) throw;
+    if (halted && msg.sender != owner) throw;
     _;
   }
 
@@ -208,7 +208,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public constant returns (bool);
@@ -337,10 +337,10 @@ contract Crowdsale is Haltable {
   address public signerAddress;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -394,8 +394,8 @@ contract Crowdsale is Haltable {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if(startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if(startsAt >= endsAt) {
         throw;
     }
 
@@ -404,7 +404,7 @@ contract Crowdsale is Haltable {
   }
 
   /**
-   * Don&#39;t expect to just send in money and get tokens.
+   * Don't expect to just send in money and get tokens.
    */
   function() payable {
     invest(msg.sender);
@@ -426,7 +426,7 @@ contract Crowdsale is Haltable {
    */
   function investInternal(address receiver, uint128 customerId) stopInEmergency private {
 
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if(getState() == State.Funding) {
       // Retail participants can only come in when the crowdsale is running
       // pass
@@ -585,7 +585,7 @@ contract Crowdsale is Haltable {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!finalizeAgent.isFinalizeAgent()) {
       throw;
     }
@@ -624,8 +624,8 @@ contract Crowdsale is Haltable {
    */
   function setEndsAt(uint time) onlyOwner {
 
-    if(now &gt; time) {
-      throw; // Don&#39;t change past
+    if(now > time) {
+      throw; // Don't change past
     }
 
     endsAt = time;
@@ -640,7 +640,7 @@ contract Crowdsale is Haltable {
   function setPricingStrategy(PricingStrategy _pricingStrategy) onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!pricingStrategy.isPricingStrategy()) {
       throw;
     }
@@ -656,7 +656,7 @@ contract Crowdsale is Haltable {
   function setMultisig(address addr) public onlyOwner {
 
     // Change
-    if(investorCount &gt; MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
+    if(investorCount > MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
       throw;
     }
 
@@ -692,7 +692,7 @@ contract Crowdsale is Haltable {
    * @return true if the crowdsale has raised enough money to be a successful.
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -719,10 +719,10 @@ contract Crowdsale is Haltable {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -783,7 +783,7 @@ contract Crowdsale is Haltable {
 
 
 /// @dev Tranche based pricing with special support for pre-ico deals.
-///      Implementing &quot;first price&quot; tranches, meaning, that if byers order is
+///      Implementing "first price" tranches, meaning, that if byers order is
 ///      covering more than one tranche, the price of the lowest tranche will apply
 ///      to the whole order.
 contract EthTranchePricing is PricingStrategy, Ownable {
@@ -793,7 +793,7 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   uint public constant MAX_TRANCHES = 10;
 
   // This contains all pre-ICO addresses, and their prices (weis per token)
-  mapping (address =&gt; uint) public preicoAddresses;
+  mapping (address => uint) public preicoAddresses;
 
   /**
   * Define pricing schedule using tranches.
@@ -819,7 +819,7 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   /// @param _tranches uint[] tranches Pairs of (start amount, price)
   function EthTranchePricing(uint[] _tranches) {
     // Need to have tuples, length check
-    if(_tranches.length % 2 == 1 || _tranches.length &gt;= MAX_TRANCHES*2) {
+    if(_tranches.length % 2 == 1 || _tranches.length >= MAX_TRANCHES*2) {
       throw;
     }
 
@@ -827,12 +827,12 @@ contract EthTranchePricing is PricingStrategy, Ownable {
 
     uint highestAmount = 0;
 
-    for(uint i=0; i&lt;_tranches.length/2; i++) {
+    for(uint i=0; i<_tranches.length/2; i++) {
       tranches[i].amount = _tranches[i*2];
       tranches[i].price = _tranches[i*2+1];
 
       // No invalid steps
-      if((highestAmount != 0) &amp;&amp; (tranches[i].amount &lt;= highestAmount)) {
+      if((highestAmount != 0) && (tranches[i].amount <= highestAmount)) {
         throw;
       }
 
@@ -884,7 +884,7 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   }
 
   function isSane(address _crowdsale) public constant returns(bool) {
-    // Our tranches are not bound by time, so we can&#39;t really check are we sane
+    // Our tranches are not bound by time, so we can't really check are we sane
     // so we presume we are ;)
     // In the future we could save and track raised tokens, and compare it to
     // the Crowdsale contract.
@@ -897,8 +897,8 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   function getCurrentTranche(uint weiRaised) private constant returns (Tranche) {
     uint i;
 
-    for(i=0; i &lt; tranches.length; i++) {
-      if(weiRaised &lt; tranches[i].amount) {
+    for(i=0; i < tranches.length; i++) {
+      if(weiRaised < tranches[i].amount) {
         return tranches[i-1];
       }
     }
@@ -908,8 +908,8 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   function getCurrentTrancheIndex(uint weiRaised) private constant returns (uint index) {
     uint i;
 
-    for(i=0; i &lt; tranches.length; i++) {
-      if(weiRaised &lt; tranches[i].amount) {
+    for(i=0; i < tranches.length; i++) {
+      if(weiRaised < tranches[i].amount) {
         return (i-1);
       }
     }
@@ -923,7 +923,7 @@ contract EthTranchePricing is PricingStrategy, Ownable {
   }
 
   function isPresalePurchase(address purchaser) public constant returns (bool) {
-    if(preicoAddresses[purchaser] &gt; 0)
+    if(preicoAddresses[purchaser] > 0)
       return true;
     else
       return false;
@@ -936,13 +936,13 @@ contract EthTranchePricing is PricingStrategy, Ownable {
     uint trancheIndex = getCurrentTrancheIndex(weiRaised);
 
     // This investor is coming through pre-ico
-    if(preicoAddresses[msgSender] &gt; 0) {
+    if(preicoAddresses[msgSender] > 0) {
       return value.times(multiplier) / preicoAddresses[msgSender];
     }
 
     //  Modify price if more than 100Eth
     uint price = getCurrentPrice(weiRaised);
-    if (value &gt; 1000000000000000000) {
+    if (value > 1000000000000000000) {
       if (trancheIndex == 0) {
         price = 2898550724637391;
       } else if (trancheIndex == 1) {

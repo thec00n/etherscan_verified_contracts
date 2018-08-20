@@ -16,8 +16,8 @@ contract mhethkeeper {
     uint public curVotes;               /* current amount of votes */
     address public owner;               /* contract creator */
     uint public mgrCount;               /* number of managers */
-    mapping (uint =&gt; bool) public mgrVotes;     /* managers votes */
-    mapping (uint =&gt; address) public mgrAddress; /* managers address */
+    mapping (uint => bool) public mgrVotes;     /* managers votes */
+    mapping (uint => address) public mgrAddress; /* managers address */
 
     /* constructor */
     function mhethkeeper() public{
@@ -30,7 +30,7 @@ contract mhethkeeper {
 
     /* add a wallet manager */
     function AddManager(address _manager) public{
-        if (!isFinalized &amp;&amp; (msg.sender == owner)){
+        if (!isFinalized && (msg.sender == owner)){
             mgrCount = mgrCount + 1;
             mgrAddress[mgrCount] = _manager;
             mgrVotes[mgrCount] = false;
@@ -41,7 +41,7 @@ contract mhethkeeper {
 
     /* finalize settings */
     function Finalize() public{
-        if (!isFinalized &amp;&amp; (msg.sender == owner)){
+        if (!isFinalized && (msg.sender == owner)){
             isFinalized = true;
         } else {
             revert();
@@ -55,13 +55,13 @@ contract mhethkeeper {
         }
 
         if (IsManager(msg.sender)){
-            if (this.balance &lt; _amountToTransfer){
+            if (this.balance < _amountToTransfer){
                 revert();
             }
             recipient = _recipient;
             amountToTransfer = _amountToTransfer;
             
-            for (uint i = 1; i &lt;= mgrCount; i++) {
+            for (uint i = 1; i <= mgrCount; i++) {
                 mgrVotes[i] = false;
             }
             curVotes = 0;
@@ -75,17 +75,17 @@ contract mhethkeeper {
         if (!isFinalized){
             revert();
         }
-        if (!((recipient == _recipient) &amp;&amp; (amountToTransfer == _amountToTransfer))){
+        if (!((recipient == _recipient) && (amountToTransfer == _amountToTransfer))){
             revert();
         }
 
-        for (uint i = 1; i &lt;= mgrCount; i++) {
+        for (uint i = 1; i <= mgrCount; i++) {
             if (mgrAddress[i] == msg.sender){
                 if (!mgrVotes[i]){
                     mgrVotes[i] = true;
                     curVotes = curVotes + 1;
 
-                    if (curVotes &gt;= minVotes){
+                    if (curVotes >= minVotes){
                         recipient.transfer(amountToTransfer);
                         NullSettings();
                     } 
@@ -104,7 +104,7 @@ contract mhethkeeper {
         recipient = address(0x0);
         amountToTransfer = 0;
         curVotes = 0;
-        for (uint i = 1; i &lt;= mgrCount; i++) {
+        for (uint i = 1; i <= mgrCount; i++) {
             mgrVotes[i] = false;
         }
 
@@ -112,7 +112,7 @@ contract mhethkeeper {
 
     /* check that the sender is a manager */
     function IsManager(address _manager) private view returns(bool){
-        for (uint i = 1; i &lt;= mgrCount; i++) {
+        for (uint i = 1; i <= mgrCount; i++) {
             if (mgrAddress[i] == _manager){
                 return true;
             }

@@ -16,7 +16,7 @@ contract SaiContest_Gaia {
         	uint nonce;
         	uint64 count;
 	}
-	mapping (address =&gt; JVal) public jacks; // storing current jackpot participants (in this jackpot round) and their transactions count
+	mapping (address => JVal) public jacks; // storing current jackpot participants (in this jackpot round) and their transactions count
 
 	uint public constant min_payment= 1 finney; // size of minimal payment can be accepted
 	
@@ -29,7 +29,7 @@ contract SaiContest_Gaia {
 	}
 
 	function kill(address addr) public { 
-	    if (msg.sender == owner &amp;&amp; now &gt; start + 1 years){
+	    if (msg.sender == owner && now > start + 1 years){
 	        selfdestruct(addr);
 	    }
 	}
@@ -54,26 +54,26 @@ contract SaiContest_Gaia {
 	    uint64 JackValCount;
 	    uint JackValNonce;
 	    
-	    require(value &gt;= min_payment);
+	    require(value >= min_payment);
 	    oPay = value * 5 / 100; // 5% to owner
 	    CurBal = address(this).balance - oPay;
 	    JackPot = jack_pot;
 
-	    if (now &gt; last_roll + 7 days) {
+	    if (now > last_roll + 7 days) {
 	        WeekPay = CurBal - JackPot;
 	        WeekWinner = week_winner;
 	        last_roll = now;
 	        week_max = value;
 	        week_winner = msg.sender;
 	    } else {
-	        if (value &gt; week_max) {
+	        if (value > week_max) {
     	        week_winner = msg.sender;
 	            week_max = value;
 	        }
 	    }
-	    if (now &gt; last_jack + 30 days) {
+	    if (now > last_jack + 30 days) {
 	        JackWinner = jack_winner;
-	        if (JackPot &gt; CurBal) {
+	        if (JackPot > CurBal) {
 	            JackPay = CurBal;
 	        } else {
 	            JackPay = JackPot;
@@ -90,7 +90,7 @@ contract SaiContest_Gaia {
 	        CurNonce = jack_nonce; 
 	        JackValNonce = jacks[msg.sender].nonce;
 	        JackValCount = jacks[msg.sender].count;
-	        if (JackValNonce &lt; CurNonce) {
+	        if (JackValNonce < CurNonce) {
 	            jacks[msg.sender].nonce = CurNonce;
 	            jacks[msg.sender].count = 1;
     	        if (jack_max == 0) {
@@ -100,7 +100,7 @@ contract SaiContest_Gaia {
 	        } else {
 	            JackValCount = JackValCount + 1;
 	            jacks[msg.sender].count = JackValCount;
-    	        if (JackValCount &gt; jack_max) {
+    	        if (JackValCount > jack_max) {
         	        jack_winner = msg.sender;
     	            jack_max = JackValCount;
     	        }
@@ -109,10 +109,10 @@ contract SaiContest_Gaia {
 	    }
 
 	    owner.transfer(oPay);
-	    if (WeekPay &gt; 0) {
+	    if (WeekPay > 0) {
 	        WeekWinner.transfer(WeekPay);
 	    }
-	    if (JackPay &gt; 0) {
+	    if (JackPay > 0) {
 	        JackWinner.transfer(JackPay);
 	    }
 	}

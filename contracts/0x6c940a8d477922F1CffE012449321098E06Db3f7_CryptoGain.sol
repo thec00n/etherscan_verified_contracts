@@ -12,13 +12,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ contract CryptoGain {
     }
 
     Bid[] public bids;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     address public admin;
     bool public is_alive = true;
@@ -66,14 +66,14 @@ contract CryptoGain {
     }
     
     // Fully destruct contract. Use ONLY if you want to fully close lottery.
-    // This action can&#39;t be revert. Use carefully if you know what you do!
+    // This action can't be revert. Use carefully if you know what you do!
     function destruct() public onlyOwner {
         admin.transfer(this.balance);
-        is_alive = false; // &lt;- this action is fully destroy contract
+        is_alive = false; // <- this action is fully destroy contract
     }
     
     function reset() public onlyOwner {
-        require(block.timestamp &gt; start_ts + week_seconds); //only after week of inactivity
+        require(block.timestamp > start_ts + week_seconds); //only after week of inactivity
         admin.transfer(price_ticket.mul(last_slot));
         restart();
 
@@ -93,21 +93,21 @@ contract CryptoGain {
     }
     
     function is_slot_in_bid(uint8 slot_from, uint8 slot_to, uint8 slot) returns (bool) {
-        return (slot &gt;= slot_from &amp;&amp; slot &lt; slot_to) ? true : false;
+        return (slot >= slot_from && slot < slot_to) ? true : false;
     }
     
     function search_winner_bid_address(uint8 slot) returns (address) {
         uint8 i;
         
-        if (slot &lt; 128) {
-            for (i=0; i&lt;bids.length; i++) {
+        if (slot < 128) {
+            for (i=0; i<bids.length; i++) {
                 if (is_slot_in_bid(bids[i].slot_from, bids[i].slot_to, slot)) {
                     return bids[i].player;
                 }
             }
             
         } else {
-            for (i=uint8(bids.length)-1; i&gt;=0; i--) {
+            for (i=uint8(bids.length)-1; i>=0; i--) {
                 if (is_slot_in_bid(bids[i].slot_from, bids[i].slot_to, slot)) {
                     return bids[i].player;
                 }
@@ -123,7 +123,7 @@ contract CryptoGain {
         bytes20 hash = ripemd160(block.timestamp, block.number, msg.sender);
         
         uint8 current_winner_slot = 0;
-        for (uint8 i=0; i&lt;winners_count; i++) {
+        for (uint8 i=0; i<winners_count; i++) {
             current_winner_slot = ( current_winner_slot + uint8(hash[i]) ) % max_slots;
             address current_winner_address = search_winner_bid_address(current_winner_slot);
             balances[current_winner_address] = balances[current_winner_address].add(win_reward);
@@ -145,17 +145,17 @@ contract CryptoGain {
     }
   
     function withdraw() public onlyAlive {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         var amount = balances[msg.sender];
         balances[msg.sender] = 0;
         msg.sender.transfer(amount);
     }
     
     function run(address player, uint256 deposit_eth) internal onlyAlive {
-        require(deposit_eth &gt;= price_ticket);
+        require(deposit_eth >= price_ticket);
         uint256 exceed_mod_eth = deposit_eth % price_ticket;
         
-        if (exceed_mod_eth &gt; 0) {
+        if (exceed_mod_eth > 0) {
             remove_exceed(exceed_mod_eth);
             deposit_eth = deposit_eth.sub(exceed_mod_eth);
         }
@@ -166,11 +166,11 @@ contract CryptoGain {
         uint8 avaliable_session_slots = max_slots - last_slot;
         
 
-        if (deposit_bids &lt; avaliable_session_slots) {
+        if (deposit_bids < avaliable_session_slots) {
             bid(player, deposit_bids);
         } else {
             uint8 max_avaliable_slots = (avaliable_session_slots + max_slots - 1);
-            if (deposit_bids &gt; max_avaliable_slots) { //overflow
+            if (deposit_bids > max_avaliable_slots) { //overflow
                 uint256 max_bid_eth = price_ticket.mul(max_avaliable_slots);
                 uint256 exceed_over_eth = deposit_eth.sub(max_bid_eth);
                 remove_exceed(exceed_over_eth);
@@ -180,7 +180,7 @@ contract CryptoGain {
             
             bid(player, avaliable_session_slots);
             playout();
-            if (second_session_bids_count &gt; 0) {
+            if (second_session_bids_count > 0) {
                 bid(player, second_session_bids_count);
             }
         }

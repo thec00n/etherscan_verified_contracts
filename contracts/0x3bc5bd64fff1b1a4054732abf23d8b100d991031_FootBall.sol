@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -60,9 +60,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -70,7 +70,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -79,7 +79,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -100,20 +100,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,20 +134,20 @@ library SafeMath16 {
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -176,7 +176,7 @@ contract FootBall is Ownable,ERC721{
     event playerBack(uint _id , address indexed _address);
     event purChase(uint _id, address _newowner, address _oldowner);
     event inviteBack(address _from,address _to, uint _fee);
-    //name&amp;pic store in db;
+    //name&pic store in db;
     struct Player{
         uint256 sellPrice;
         uint256 readytime;
@@ -187,9 +187,9 @@ contract FootBall is Ownable,ERC721{
         uint8 isDraw;
     }
     Player[] public players; 
-    mapping(uint=&gt;address) playerToOwner;
-    mapping(address=&gt;uint) ownerPlayerCount;
-    mapping (uint =&gt; address) playerApprovals;
+    mapping(uint=>address) playerToOwner;
+    mapping(address=>uint) ownerPlayerCount;
+    mapping (uint => address) playerApprovals;
     //modifier
     modifier onlyOwnerOf(uint _id) {
         require(msg.sender == playerToOwner[_id]);
@@ -221,8 +221,8 @@ contract FootBall is Ownable,ERC721{
     }
     //draw card
     function drawPlayer(address _address) public payable returns (uint playerId){
-        require(msg.value == drawFee &amp;&amp; playerInDraw &gt; 0);
-        for(uint i =0;i &lt; players.length;i++){ 
+        require(msg.value == drawFee && playerInDraw > 0);
+        for(uint i =0;i < players.length;i++){ 
             if(players[i].isDraw == 0){ 
                 players[i].isDraw = 1;
                 playerInDraw  = playerInDraw.sub(1);
@@ -240,24 +240,24 @@ contract FootBall is Ownable,ERC721{
     }
     //battle 
     function playerAttack(uint _playerA,uint _playerB) external{
-        require(playerToOwner[_playerA] == msg.sender &amp;&amp; players[_playerB].isDraw == 1 &amp;&amp; playerToOwner[_playerA] != playerToOwner[_playerB]);
-        require(now &gt;= players[_playerB].readytime);
+        require(playerToOwner[_playerA] == msg.sender && players[_playerB].isDraw == 1 && playerToOwner[_playerA] != playerToOwner[_playerB]);
+        require(now >= players[_playerB].readytime);
         uint rdId = uint256(keccak256(block.difficulty,now))%1000;
         uint attackA;
         uint attackB;
         address ownerOfB = playerToOwner[_playerB];
-        if(rdId &gt;= players[_playerA].attack){
+        if(rdId >= players[_playerA].attack){
             attackA = rdId -  players[_playerA].attack;
         }else{ 
             attackA =  players[_playerA].attack - rdId;
         }
-        if(rdId &gt;= players[_playerB].attack){
+        if(rdId >= players[_playerB].attack){
             attackB =  rdId -  players[_playerB].attack;
         }else{
             attackB =  players[_playerB].attack - rdId;
         }
         uint8 result= 0;
-        if(attackA &lt; attackB){
+        if(attackA < attackB){
             result = 1;
             playerToOwner[_playerB] = msg.sender;
             ownerPlayerCount[msg.sender] = ownerPlayerCount[msg.sender].add(1);
@@ -272,13 +272,13 @@ contract FootBall is Ownable,ERC721{
     }
     //defend
     function getPlayerDefend(uint _id) public payable{
-        require(msg.value == defendFee &amp;&amp; msg.sender == playerToOwner[_id]);
+        require(msg.value == defendFee && msg.sender == playerToOwner[_id]);
         players[_id].readytime = uint256(now + coolDownTime);
         emit playerDefend(_id,players[_id].readytime);
     }
     //sendback
     function sendPlayerBack(uint[] _id) public {
-        for(uint i=0;i&lt;_id.length;i++){ 
+        for(uint i=0;i<_id.length;i++){ 
             uint256 id = _id[i];
             require(playerToOwner[id] == msg.sender);
             uint fee = drawFee * backFee/100;
@@ -290,7 +290,7 @@ contract FootBall is Ownable,ERC721{
             playerToOwner[id] = 0;
             ownerPlayerCount[msg.sender] = ownerPlayerCount[msg.sender].sub(1);
             playerInDraw  = playerInDraw.add(1);
-            if(address(this).balance &gt;= fee){ 
+            if(address(this).balance >= fee){ 
                 msg.sender.transfer(fee);    
             }  
             emit playerBack(id,msg.sender);
@@ -321,7 +321,7 @@ contract FootBall is Ownable,ERC721{
         emit Approval(msg.sender, _to, _tokenId);
     }
     function takeOwnership(uint256 _tokenId) public {
-        require(playerApprovals[_tokenId] == msg.sender &amp;&amp; playerToOwner[_tokenId] != msg.sender);
+        require(playerApprovals[_tokenId] == msg.sender && playerToOwner[_tokenId] != msg.sender);
         address owner = ownerOf(_tokenId);
         _transfer(owner, msg.sender, _tokenId);
     }
@@ -336,7 +336,7 @@ contract FootBall is Ownable,ERC721{
         players[_id].isSell = 0;
     }
     function purchase(uint _id) public payable{
-        require(players[_id].isSell == 1 &amp;&amp; msg.value == players[_id].sellPrice &amp;&amp;msg.sender != playerToOwner[_id]);
+        require(players[_id].isSell == 1 && msg.value == players[_id].sellPrice &&msg.sender != playerToOwner[_id]);
         address owner = playerToOwner[_id];
         ownerPlayerCount[owner] = ownerPlayerCount[owner].sub(1) ;
         ownerPlayerCount[msg.sender] = ownerPlayerCount[msg.sender].add(1);

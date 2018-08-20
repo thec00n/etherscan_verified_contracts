@@ -68,7 +68,7 @@ contract DentacoinTimeLock {
 
   function withdraw() onlyBy(owner) {
     lockedAmount = tokenAddress.balanceOf(this);
-    if ((startTime + lockTime) &lt; now) {
+    if ((startTime + lockTime) < now) {
       tokenAddress.transfer(owner, lockedAmount);
     } else { throw; }
   }

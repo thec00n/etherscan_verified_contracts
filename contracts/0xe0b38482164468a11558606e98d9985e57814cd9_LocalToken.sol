@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;LocalToken&#39; CROWDSALE token contract
+// 'LocalToken' CROWDSALE token contract
 //
 // Deployed to : 0xceb584ee9b7e1568acc0ecfb5a23b590e64551cd
 // Symbol      : LOT
@@ -28,10 +28,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -39,7 +39,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -116,16 +116,16 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
     uint256 public totalEthers;
     uint256 public constant CAP = 2 ether;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function LocalToken() public {
-        symbol = &quot;LOT&quot;;
-        name = &quot;Local Token&quot;;
+        symbol = "LOT";
+        name = "Local Token";
         decimals = 18;
         bonusEnds = now;
         endDate = now + 30 minutes;
@@ -150,13 +150,13 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; endDate || totalEthers == CAP);
+        require(now > endDate || totalEthers == CAP);
 
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -167,7 +167,7 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -191,7 +191,7 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; endDate || totalEthers == CAP);
+        require(now > endDate || totalEthers == CAP);
 
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
@@ -203,7 +203,7 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -212,7 +212,7 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -226,11 +226,11 @@ contract LocalToken is ERC20Interface, Owned, SafeMath {
     // 1,000,000,000 LOT Tokens per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         // Add ETH raised to total
         totalEthers = safeAdd(totalEthers, msg.value);
         // Cannot exceed cap
-        require(totalEthers &lt;= CAP);
+        require(totalEthers <= CAP);
 
         uint tokens;
         tokens = msg.value * 1000000000;

@@ -20,9 +20,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -39,7 +39,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -61,7 +61,7 @@ contract Cryptoraces {
       uint horseType;
   }
 
-  mapping (address =&gt; raceDetails) members;
+  mapping (address => raceDetails) members;
 
   address[] private listofUsers;
 
@@ -81,10 +81,10 @@ contract Cryptoraces {
 
       if(leftorright == 1) {
         maximumBalance = getMaximumBetRate();
-        require(msg.value &lt; maximumBalance &amp;&amp; msg.value &gt; .001 ether,&quot;Your bet is too high!&quot;);
+        require(msg.value < maximumBalance && msg.value > .001 ether,"Your bet is too high!");
 
         rewardnumber = randomtests();
-        if(rewardnumber &lt; 45){
+        if(rewardnumber < 45){
             msg.sender.transfer(msg.value.mul(2));
             members[msg.sender].time = now;
             members[msg.sender].luckNumber = rewardnumber;
@@ -99,10 +99,10 @@ contract Cryptoraces {
         }
       } else {
         maximumBalance = getMaximumBetRate();
-        require(msg.value &lt; maximumBalance &amp;&amp; msg.value &gt; .001 ether,&quot;Your bet is too high or low&quot;);
+        require(msg.value < maximumBalance && msg.value > .001 ether,"Your bet is too high or low");
 
         rewardnumber = randomtests();
-        if(rewardnumber &gt; 55){
+        if(rewardnumber > 55){
             msg.sender.transfer(msg.value.mul(2));
 
             members[msg.sender].time = now;
@@ -138,7 +138,7 @@ function getMaximumBetRate() public view returns(uint256){
   }
 
   function uint2str(uint i) internal pure returns (string){
-    if (i == 0) return &quot;0&quot;;
+    if (i == 0) return "0";
     uint j = i;
     uint length;
     while (j != 0){
@@ -163,23 +163,23 @@ function getMaximumBetRate() public view returns(uint256){
 
 
     if(members[_address].time == 0){
-            return (&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;You have never played this game before&quot;);
+            return ("0", "0", "0", "You have never played this game before");
     } else {
 
       if(members[_address].horseType == 1) {
 
-       if(rewardnumber &lt; 45){
-           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber), uint2str(members[_address].horseType), &quot;You Win because your number smaller than 45&quot;);
+       if(rewardnumber < 45){
+           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber), uint2str(members[_address].horseType), "You Win because your number smaller than 45");
 
        } else {
-           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), &quot;youre lose  because your number bigger than 45&quot;);
+           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), "youre lose  because your number bigger than 45");
        }
      } else {
 
-       if(rewardnumber &gt; 55){
-           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), &quot;You win, because your number bigger than 55&quot;);
+       if(rewardnumber > 55){
+           return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), "You win, because your number bigger than 55");
        } else {
-         return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), &quot;You lose because your number smaller than 55&quot;);
+         return (uint2str(members[_address].time), uint2str(members[_address].luckNumber),uint2str(members[_address].horseType), "You lose because your number smaller than 55");
        }
      }
 
@@ -197,13 +197,13 @@ function getMaximumBetRate() public view returns(uint256){
 
 
   function depositEther() public payable returns(uint256){
-     require(msg.sender == manager,&quot;only manager can reach  here&quot;);
+     require(msg.sender == manager,"only manager can reach  here");
     return address(this).balance;
   }
 
   function withDrawalether(uint amount) public payable returns(uint256){
-      require(msg.sender == manager,&quot;only manager can reach  here&quot;);
-      manager.transfer(amount*1000000000000000); // 1 etherin 1000&#39; de birini g&#246;nderebilir.
+      require(msg.sender == manager,"only manager can reach  here");
+      manager.transfer(amount*1000000000000000); // 1 etherin 1000' de birini gönderebilir.
       return address(this).balance;
   }
 

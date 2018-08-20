@@ -12,15 +12,15 @@ contract EthPixel {
     event PixelBought(uint256 coordinates, bytes32 color, uint256 amount, address holder, address boughtFrom);
 
     function buyPixel(uint256 _coordinates, bytes32 _color) payable returns (bool) {
-        require(msg.value &gt; 0);
-        require(_color.length &gt; 0);
+        require(msg.value > 0);
+        require(_color.length > 0);
 
         Pixel memory pixel = pixels[_coordinates];
 
-        require(msg.value &gt; pixel.amount);
+        require(msg.value > pixel.amount);
         require(msg.sender != pixel.holder);
 
-        if (pixel.amount &gt; 0) {
+        if (pixel.amount > 0) {
             pixel.holder.transfer(pixel.amount);
         }
 

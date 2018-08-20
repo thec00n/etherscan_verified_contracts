@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -194,7 +194,7 @@ contract BancorKillerContract {
 
   function market_is_open() private view returns(bool) {
   
-    return (eth_is_seeded &amp;&amp; traded_token_is_seeded);
+    return (eth_is_seeded && traded_token_is_seeded);
 
   }
 

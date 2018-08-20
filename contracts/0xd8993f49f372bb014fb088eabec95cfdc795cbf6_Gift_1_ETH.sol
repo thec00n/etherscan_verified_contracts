@@ -13,7 +13,7 @@ contract Gift_1_ETH
     function SetPass(bytes32 hash)
     payable
     {
-        if(!passHasBeenSet&amp;&amp;(msg.value &gt;= 1 ether))
+        if(!passHasBeenSet&&(msg.value >= 1 ether))
         {
             hashPass = hash;
         }

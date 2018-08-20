@@ -44,15 +44,15 @@ contract Token {
 This implements ONLY the standard functions and NOTHING else.
 For a token like you would want to deploy in something like Mist, see HumanStandardToken.sol.
 
-If you deploy this, you won&#39;t have anything useful.
+If you deploy this, you won't have anything useful.
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
 
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -64,7 +64,7 @@ Imagine coins, currencies, shares, voting weight, etc.
 Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
 
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
 .*/
@@ -82,13 +82,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -150,9 +150,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -160,7 +160,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -169,7 +169,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -177,7 +177,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -222,9 +222,9 @@ contract TokenSwap is Ownable {
     HumanStandardToken ndc;
     /* neverdie token contract address and its instance, can be set by owner only */
     HumanStandardToken tpt;
-    /* signer address, verified in &#39;swap&#39; method, can be set by owner only */
+    /* signer address, verified in 'swap' method, can be set by owner only */
     address neverdieSigner;
-    /* minimal amount for swap, the amount passed to &#39;swap method can&#39;t be smaller
+    /* minimal amount for swap, the amount passed to 'swap method can't be smaller
        than this value, can be set by owner only */
     uint256 minSwapAmount = 40;
 
@@ -281,7 +281,7 @@ contract TokenSwap is Ownable {
     /// @param _sender token sender
     /// @param _value value allowed to be spent
     /// @param _tokenContract callee, should be equal to neverdieContractAddress
-    /// @param _extraData  this should be a well formed calldata with function signature preceding which is used to call, for example, &#39;swap&#39; method
+    /// @param _extraData  this should be a well formed calldata with function signature preceding which is used to call, for example, 'swap' method
     function receiveApproval(address _sender, uint256 _value, address _tokenContract, bytes _extraData) external {
         require(_tokenContract == address(ndc));
         assert(this.call(_extraData));
@@ -309,26 +309,26 @@ contract TokenSwap is Ownable {
                      bytes32 _s) public {
 
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie signer address
         address signer = ecrecover(keccak256(_spender, _rate, _PTaddress, _amount, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
         // Check if the amount of NDC is higher than the minimum amount 
-        require(_amount &gt;= minSwapAmount);
+        require(_amount >= minSwapAmount);
        
         // Check that we hold enough tokens
         HumanStandardToken ptoken = HumanStandardToken(_PTaddress);
         uint256 ptAmount;
         uint8 decimals = ptoken.decimals();
-        if (decimals &lt;= 18) {
+        if (decimals <= 18) {
           ptAmount = SafeMath.div(SafeMath.div(SafeMath.mul(_amount, _rate), 1000), 10**(uint256(18 - decimals)));
         } else {
           ptAmount = SafeMath.div(SafeMath.mul(SafeMath.mul(_amount, _rate), 10**(uint256(decimals - 18))), 1000);
         }
 
-        assert(ndc.transferFrom(_spender, this, _amount) &amp;&amp; ptoken.transfer(_spender, ptAmount));
+        assert(ndc.transferFrom(_spender, this, _amount) && ptoken.transfer(_spender, ptAmount));
 
         // Emit Swap event
         Swap(_spender, _PTaddress, _rate, _amount, ptAmount);
@@ -365,7 +365,7 @@ contract TokenSwap is Ownable {
                     bytes32 _s
                    ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_NDCprice, _expiration), _v, _r, _s);
@@ -391,7 +391,7 @@ contract TokenSwap is Ownable {
                     bytes32 _s
                    ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_TPTprice, _expiration), _v, _r, _s);
@@ -426,7 +426,7 @@ contract TokenSwap is Ownable {
     function kill() onlyOwner public {
         uint256 allNDC = ndc.balanceOf(this);
         uint256 allTPT = tpt.balanceOf(this);
-        assert(ndc.transfer(owner, allNDC) &amp;&amp; tpt.transfer(owner, allTPT));
+        assert(ndc.transfer(owner, allNDC) && tpt.transfer(owner, allTPT));
         selfdestruct(owner);
     }
 

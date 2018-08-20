@@ -21,9 +21,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address internal owner;
@@ -113,7 +113,7 @@ contract BitNauticCrowdsaleTokenDistributor is Ownable {
     BitNauticWhitelist public whitelist;
     BitNauticCrowdsale public crowdsale;
 
-    mapping (address =&gt; bool) public hasClaimedTokens;
+    mapping (address => bool) public hasClaimedTokens;
 
     constructor(MintableToken _token, BitNauticWhitelist _whitelist, BitNauticCrowdsale _crowdsale) public {
         token = _token;
@@ -135,9 +135,9 @@ contract BitNauticCrowdsaleTokenDistributor is Ownable {
     // if the ICO is finished and the goal has been reached, this function will be used to mint and transfer BTNT tokens to each contributor
     function grantContributorTokens(address contributor) public returns (bool) {
         require(!hasClaimedTokens[contributor]);
-        require(crowdsale.creditOf(contributor) &gt; 0);
+        require(crowdsale.creditOf(contributor) > 0);
         require(whitelist.AMLWhitelisted(contributor));
-        require(now &gt; ICOEndTime);
+        require(now > ICOEndTime);
 
         assert(token.mint(contributor, crowdsale.creditOf(contributor)));
         hasClaimedTokens[contributor] = true;
@@ -150,35 +150,35 @@ contract BitNauticCrowdsaleTokenDistributor is Ownable {
     }
 
     function grantBountyTokens(address beneficiary) onlyOwner public {
-        require(bountySupply &gt; 0);
+        require(bountySupply > 0);
 
         token.mint(beneficiary, bountySupply);
         bountySupply = 0;
     }
 
     function grantReserveTokens(address beneficiary) onlyOwner public {
-        require(reserveSupply &gt; 0);
+        require(reserveSupply > 0);
 
         token.mint(beneficiary, reserveSupply);
         reserveSupply = 0;
     }
 
     function grantAdvisorsTokens(address beneficiary) onlyOwner public {
-        require(advisorSupply &gt; 0);
+        require(advisorSupply > 0);
 
         token.mint(beneficiary, advisorSupply);
         advisorSupply = 0;
     }
 
     function grantFoundersTokens(address beneficiary) onlyOwner public {
-        require(founderSupply &gt; 0);
+        require(founderSupply > 0);
 
         token.mint(beneficiary, founderSupply);
         founderSupply = 0;
     }
 
     function grantTeamTokens(address beneficiary) onlyOwner public {
-        require(teamSupply &gt; 0);
+        require(teamSupply > 0);
 
         token.mint(beneficiary, teamSupply);
         teamSupply = 0;

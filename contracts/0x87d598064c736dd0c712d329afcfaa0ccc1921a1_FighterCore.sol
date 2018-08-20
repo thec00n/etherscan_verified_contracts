@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,24 +110,24 @@ contract ClockAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
     event AuctionCancelled(uint256 tokenId);
 
-    /// @dev DON&#39;T give me your money.
+    /// @dev DON'T give me your money.
     function() external {}
 
     // Modifiers to check that inputs can be safely stored with a certain
     // number of bits. We use constants and multiple modifiers to save gas.
     modifier canBeStoredWith64Bits(uint256 _value) {
-        require(_value &lt;= 18446744073709551615);
+        require(_value <= 18446744073709551615);
         _;
     }
 
     modifier canBeStoredWith128Bits(uint256 _value) {
-        require(_value &lt; 340282366920938463463374607431768211455);
+        require(_value < 340282366920938463463374607431768211455);
         _;
     }
 
@@ -163,7 +163,7 @@ contract ClockAuctionBase {
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
         
@@ -192,7 +192,7 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
@@ -200,21 +200,21 @@ contract ClockAuctionBase {
         // Check that the incoming bid is higher than the current
         // price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            //  Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            //  Calculate the auctioneer's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            //  value &lt;= price, so this subtraction can&#39;t go negative.)
+            //  value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -224,7 +224,7 @@ contract ClockAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -244,7 +244,7 @@ contract ClockAuctionBase {
     /// @dev Returns true if the NFT is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -260,8 +260,8 @@ contract ClockAuctionBase {
         
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -287,13 +287,13 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -301,7 +301,7 @@ contract ClockAuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
             
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -314,14 +314,14 @@ contract ClockAuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -338,7 +338,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
     /// @param _cut - percent cut the owner takes on each auction, must be
     ///  between 0-10,000.
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
         
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -346,7 +346,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         nonFungibleContract = candidateContract;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -405,7 +405,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         _transfer(msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -539,7 +539,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageGen0SalePrice() public view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 4; i++) {
+        for (uint256 i = 0; i < 4; i++) {
             sum += lastGen0SalePrices[i];
         }
         return sum / 4;
@@ -626,7 +626,7 @@ contract FighterAccessControl {
     }
 
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -647,8 +647,8 @@ contract FighterBase is FighterAccessControl {
     /// @dev The main Fighter struct. Every fighter in CryptoFighters is represented by a copy
     ///  of this structure.
     struct Fighter {
-        // The Fighter&#39;s genetic code is packed into these 256-bits.
-        // A fighter&#39;s genes never change.
+        // The Fighter's genetic code is packed into these 256-bits.
+        // A fighter's genes never change.
         uint256 genes;
 
         // The minimum timestamp after which this fighter can win a prize fighter again
@@ -667,8 +667,8 @@ contract FighterBase is FighterAccessControl {
         uint16 battlesFought;
         uint16 battlesWon;
 
-        // The &quot;generation number&quot; of this fighter. Fighters minted by the CF contract
-        // for sale are called &quot;gen0&quot; and have a generation number of 0.
+        // The "generation number" of this fighter. Fighters minted by the CF contract
+        // for sale are called "gen0" and have a generation number of 0.
         uint16 generation;
 
         uint8 dexterity;
@@ -686,15 +686,15 @@ contract FighterBase is FighterAccessControl {
 
     /// @dev A mapping from fighter IDs to the address that owns them. All fighters have
     ///  some valid owner address, even gen0 fighters are created with a non-zero owner.
-    mapping (uint256 =&gt; address) public fighterIndexToOwner;
+    mapping (uint256 => address) public fighterIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (address => uint256) ownershipTokenCount;
 
     /// @dev A mapping from FighterIDs to an address that has been approved to call
     ///  transferFrom(). A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public fighterIndexToApproved;
+    mapping (uint256 => address) public fighterIndexToApproved;
     
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         // since the number of fighters is capped to 2^32
@@ -739,7 +739,7 @@ contract FighterBase is FighterAccessControl {
         });
         uint256 newFighterId = fighters.push(_fighter) - 1;
 
-        require(newFighterId &lt;= 4294967295);
+        require(newFighterId <= 4294967295);
 
         FighterCreated(_owner, newFighterId, _fighter.genes);
 
@@ -771,8 +771,8 @@ contract ERC721 {
 
 /// @title The facet of the CryptoFighters core contract that manages ownership, ERC-721 (draft) compliant.
 contract FighterOwnership is FighterBase, ERC721 {
-    string public name = &quot;CryptoFighters&quot;;
-    string public symbol = &quot;CF&quot;;
+    string public name = "CryptoFighters";
+    string public symbol = "CF";
 
     function implementsERC721() public pure returns (bool)
     {
@@ -781,14 +781,14 @@ contract FighterOwnership is FighterBase, ERC721 {
     
     /// @dev Checks if a given address is the current owner of a particular Fighter.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId fighter id, only valid when &gt; 0
+    /// @param _tokenId fighter id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return fighterIndexToOwner[_tokenId] == _claimant;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular Fighter.
     /// @param _claimant the address we are confirming fighter is approved for.
-    /// @param _tokenId fighter id, only valid when &gt; 0
+    /// @param _tokenId fighter id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return fighterIndexToApproved[_tokenId] == _claimant;
     }
@@ -801,7 +801,7 @@ contract FighterOwnership is FighterBase, ERC721 {
     }
 
     /// @dev Transfers a fighter owned by this contract to the specified address.
-    ///  Used to rescue lost fighters. (There is no &quot;proper&quot; flow where this contract
+    ///  Used to rescue lost fighters. (There is no "proper" flow where this contract
     ///  should be the owner of any Fighter. This function exists for us to reassign
     ///  the ownership of Fighters that users may have accidentally sent to our address.)
     /// @param _fighterId - ID of fighter
@@ -891,7 +891,7 @@ contract FighterOwnership is FighterBase, ERC721 {
     /// @notice Returns the nth Fighter assigned to an address, with n specified by the
     ///  _index argument.
     /// @param _owner The owner whose Fighters we are interested in.
-    /// @param _index The zero-based index of the fighter within the owner&#39;s list of fighters.
+    /// @param _index The zero-based index of the fighter within the owner's list of fighters.
     ///  Must be less than balanceOf(_owner).
     /// @dev This method MUST NEVER be called by smart contract code. It will almost
     ///  certainly blow past the block gas limit once there are a large number of
@@ -903,7 +903,7 @@ contract FighterOwnership is FighterBase, ERC721 {
         returns (uint256 tokenId)
     {
         uint256 count = 0;
-        for (uint256 i = 1; i &lt;= totalSupply(); i++) {
+        for (uint256 i = 1; i <= totalSupply(); i++) {
             if (fighterIndexToOwner[i] == _owner) {
                 if (count == _index) {
                     return i;
@@ -955,7 +955,7 @@ contract FighterBattle is FighterOwnership {
         uint8 _luck,
         address _owner
     ) public onlyBattleContract {
-        require(_generation &gt; 0);
+        require(_generation > 0);
         
         _createFighter(_generation, _genes, _dexterity, _strength, _vitality, _luck, _owner);
     }
@@ -1142,8 +1142,8 @@ contract FighterMinting is FighterAuction {
         if (_owner == address(0)) {
              _owner = cooAddress;
         }
-        require(promoCreatedCount &lt; promoCreationLimit);
-        require(gen0CreatedCount &lt; gen0CreationLimit);
+        require(promoCreatedCount < promoCreationLimit);
+        require(gen0CreatedCount < gen0CreationLimit);
 
         promoCreatedCount++;
         gen0CreatedCount++;
@@ -1160,7 +1160,7 @@ contract FighterMinting is FighterAuction {
         uint8 _vitality,
         uint8 _luck
     ) public onlyCOO {
-        require(gen0CreatedCount &lt; gen0CreationLimit);
+        require(gen0CreatedCount < gen0CreationLimit);
 
         uint256 fighterId = _createFighter(0, _genes, _dexterity, _strength, _vitality, _luck, address(this));
         
@@ -1182,13 +1182,13 @@ contract FighterMinting is FighterAuction {
     function _computeNextGen0Price() internal view returns (uint256) {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
 
-        // sanity check to ensure we don&#39;t overflow arithmetic (this big number is 2^128-1).
-        require(avePrice &lt; 340282366920938463463374607431768211455);
+        // sanity check to ensure we don't overflow arithmetic (this big number is 2^128-1).
+        require(avePrice < 340282366920938463463374607431768211455);
 
         uint256 nextPrice = avePrice + (avePrice / 2);
 
         // We never auction for less than starting price
-        if (nextPrice &lt; gen0StartingPrice) {
+        if (nextPrice < gen0StartingPrice) {
             nextPrice = gen0StartingPrice;
         }
 
@@ -1224,7 +1224,7 @@ contract FighterCore is FighterMinting {
     //             while auction creation and bidding is mostly mediated through this facet of the core contract.
     //
     //      - FighterMinting: This final facet contains the functionality we use for creating new gen0 fighters.
-    //             We can make up to 5000 &quot;promo&quot; fighters that can be given away, and all others can only be created and then immediately put up
+    //             We can make up to 5000 "promo" fighters that can be given away, and all others can only be created and then immediately put up
     //             for auction via an algorithmically determined starting price. Regardless of how they
     //             are created, there is a hard limit of 25,000 gen0 fighters.
 
@@ -1244,7 +1244,7 @@ contract FighterCore is FighterMinting {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -1254,7 +1254,7 @@ contract FighterCore is FighterMinting {
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+    /// @dev Reject all Ether from being sent here, unless it's from one of the
     ///  two auction contracts. (Hopefully, we can prevent user accidents.)
     function() external payable {
         require(msg.sender == address(saleAuction));
@@ -1295,7 +1295,7 @@ contract FighterCore is FighterMinting {
     }
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     function unpause() public onlyCEO whenPaused {
         require(saleAuction != address(0));

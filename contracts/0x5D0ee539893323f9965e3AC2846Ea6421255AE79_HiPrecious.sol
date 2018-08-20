@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5f5e4f5e7b5a43525456415e55155854">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5f5e4f5e7b5a43525456415e55155854">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -40,23 +40,23 @@ contract HiPrecious is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;HiPrecious&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;HIP&quot;; // solhint-disable-line
+  string public constant NAME = "HiPrecious"; // solhint-disable-line
+  string public constant SYMBOL = "HIP"; // solhint-disable-line
 
   /*** STORAGE ***/
 
   /// @dev A mapping from precious IDs to the address that owns them. All preciouses have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public preciousIndexToOwner;
+  mapping (uint256 => address) public preciousIndexToOwner;
 
   // @dev A mapping from owner address to count of precious that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipPreciousCount;
+  mapping (address => uint256) private ownershipPreciousCount;
 
   /// @dev A mapping from HiPreciousIDs to an address that has been approved to call
   ///  transferFrom(). Each Precious can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public preciousIndexToApproved;
+  mapping (uint256 => address) public preciousIndexToApproved;
 
   // Addresses of the main roles in HiPrecious.
   address public daVinciAddress; //CPO Product
@@ -68,7 +68,7 @@ contract HiPrecious is ERC721 {
   /*** DATATYPES ***/
 
   struct Precious {
-    string name;  // Edition name like &#39;Monroe&#39;
+    string name;  // Edition name like 'Monroe'
     uint256 number; //  Like 12 means #12 out of the edition.worldQuantity possible (here in the example 15)
     uint256 editionId;  // id to find the edition in which this precious Belongs to. Stored in allEditions[precious.editionId]
     uint256 collectionId; // id to find the collection in which this precious Belongs to. Stored in allCollections[precious.collectionId]
@@ -77,7 +77,7 @@ contract HiPrecious is ERC721 {
 
   struct Edition {
     uint256 id;
-    string name; // Like &#39;Lee&#39;
+    string name; // Like 'Lee'
     uint256 worldQuantity; // The number of precious composing this edition (ex: if 15 then there will never be more precious in this edition)
     uint256[] preciousIds; // The list of precious ids which compose this edition.
     uint256 collectionId;
@@ -85,8 +85,8 @@ contract HiPrecious is ERC721 {
 
   struct Collection {
     uint256 id;
-    string name; // Like &#39;China&#39;
-    uint256[] editionIds; // The list of edition ids which compose this collection Ex: allEditions.get[editionIds[0]].name = &#39;Lee01&#39;dawd&#39;
+    string name; // Like 'China'
+    uint256[] editionIds; // The list of edition ids which compose this collection Ex: allEditions.get[editionIds[0]].name = 'Lee01'dawd'
   }
 
   Precious[] private allPreciouses;
@@ -246,12 +246,12 @@ contract HiPrecious is ERC721 {
   }
 
   function tokenURI(uint256 _tokenId) public view returns (string){
-      require(_tokenId&lt;allPreciouses.length);
+      require(_tokenId<allPreciouses.length);
       return allPreciouses[_tokenId].tokenURI;
   }
   
   function setTokenURI(uint256 _tokenId, string newURI) public onlyDaVinci{
-      require(_tokenId&lt;allPreciouses.length);
+      require(_tokenId<allPreciouses.length);
       Precious storage precious = allPreciouses[_tokenId];
       precious.tokenURI = newURI;
   }
@@ -278,7 +278,7 @@ contract HiPrecious is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire allPreciouses array looking for preciouses belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -293,7 +293,7 @@ contract HiPrecious is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 preciousId;
-      for (preciousId = 0; preciousId &lt;= totalPreciouses; preciousId++) {
+      for (preciousId = 0; preciousId <= totalPreciouses; preciousId++) {
         if (preciousIndexToOwner[preciousId] == _owner) {
           result[resultIndex] = preciousId;
           resultIndex++;
@@ -385,12 +385,12 @@ contract HiPrecious is ERC721 {
 
   /// For creating Precious
   function _createPrecious(address _owner, uint256 _editionId, string _tokenURI) private onlyDaVinci{
-    Edition storage edition = allEditions[_editionId-1]; //if _editionId doesn&#39;t exist in array, exits.
+    Edition storage edition = allEditions[_editionId-1]; //if _editionId doesn't exist in array, exits.
     
     //Check if we can still print precious for that specific edition
-    require(edition.preciousIds.length &lt; edition.worldQuantity);
+    require(edition.preciousIds.length < edition.worldQuantity);
 
-    //string memory preciousName = edition.name + &#39;_&#39; + edition.preciousIds.length+1 + &#39;/&#39; + edition.worldQuantity; NOT DOABLE IN SOLIDITY
+    //string memory preciousName = edition.name + '_' + edition.preciousIds.length+1 + '/' + edition.worldQuantity; NOT DOABLE IN SOLIDITY
 
     Precious memory _precious = Precious({
       name: edition.name,
@@ -403,8 +403,8 @@ contract HiPrecious is ERC721 {
     uint256 newPreciousId = allPreciouses.push(_precious) - 1;
     edition.preciousIds.push(newPreciousId);
 
-    // It&#39;s probably never going to happen, 4 billion preciouses are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion preciouses are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPreciousId == uint256(uint32(newPreciousId)));
 
     emit Birth(newPreciousId, edition.name, _owner);
@@ -430,12 +430,12 @@ contract HiPrecious is ERC721 {
 
   /// @dev Assigns ownership of a specific Precious to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of preciouses is capped to 2^32 we can&#39;t overflow this
+    // Since the number of preciouses is capped to 2^32 we can't overflow this
     ownershipPreciousCount[_to]++;
     //transfer ownership
     preciousIndexToOwner[_tokenId] = _to;
 
-    // When creating new preciouses _from is 0x0, but we can&#39;t account that address.
+    // When creating new preciouses _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipPreciousCount[_from]--;
       // clear any previously approved ownership exchange
@@ -464,9 +464,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -474,7 +474,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -483,7 +483,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -25,7 +25,7 @@ contract Owned {
 /// is set, who can modify the delegates.
 contract Delegated is Owned {
   /// STORAGE
-  mapping (address =&gt; bool) delegates;
+  mapping (address => bool) delegates;
 
   /// MODIFIERS
   modifier only_delegate { require (msg.sender == owner || delegates[msg.sender]); _; }
@@ -39,7 +39,7 @@ contract Delegated is Owned {
 }
 
 /// @title Fee Registrar
-/// @author Nicolas Gotchac &lt;<span class="__cf_email__" data-cfemail="7a14131915161b093a0a1b08130e03541315">[email&#160;protected]</span>&gt;
+/// @author Nicolas Gotchac <<span class="__cf_email__" data-cfemail="7a14131915161b093a0a1b08130e03541315">[email protected]</span>>
 /// @notice This contract records fee payments. The address who deploys the contract
 /// is set as the `owner` of the contract (which can be later modified). The `fee`
 /// which users will have to pay must be specified, as well as the address of the treasury
@@ -58,7 +58,7 @@ contract FeeRegistrar is Delegated {
   uint public fee;
 
   // a mapping of addresses to the origin of payments struct
-  mapping(address =&gt; address[]) s_paid;
+  mapping(address => address[]) s_paid;
 
 
   /// EVENTS
@@ -97,7 +97,7 @@ contract FeeRegistrar is Delegated {
   /// @param who The address whose payment status we check
   /// @ return Whether the address is marked as paid or not
   function paid (address who) public constant returns (bool) {
-    return s_paid[who].length &gt; 0;
+    return s_paid[who].length > 0;
   }
 
 
@@ -109,9 +109,9 @@ contract FeeRegistrar is Delegated {
   /// fee payer (`msg.sender`) is stored in an array.
   /// The value of the transaction must
   /// match the fee that was set in the contructor.
-  /// The only restriction is that you can&#39;t pay for the null
+  /// The only restriction is that you can't pay for the null
   /// address.
-  /// You also can&#39;t pay more than 10 times for the same address
+  /// You also can't pay more than 10 times for the same address
   /// The value that is received is directly transfered to the
   /// `treasury`.
   /// @param who The address which should be marked as paid.
@@ -121,7 +121,7 @@ contract FeeRegistrar is Delegated {
     // Then check that the value matches with the fee
     require(msg.value == fee);
     // Maximum 10 payments per address
-    require(s_paid[who].length &lt; 10);
+    require(s_paid[who].length < 10);
 
     s_paid[who].push(msg.sender);
 
@@ -155,7 +155,7 @@ contract FeeRegistrar is Delegated {
   /// send the refund
   function revoke (address who, address origin) payable external only_delegate {
     // The value must match the current fee, so we can refund
-    // the payer, since the contract doesn&#39;t hold anything.
+    // the payer, since the contract doesn't hold anything.
     require(msg.value == fee);
     bool found;
 
@@ -163,7 +163,7 @@ contract FeeRegistrar is Delegated {
     // the remove the right one
     // NB : this list is limited to 10 items,
     //      @see the `pay` method
-    for (uint i = 0; i &lt; s_paid[who].length; i++) {
+    for (uint i = 0; i < s_paid[who].length; i++) {
       if (s_paid[who][i] != origin) {
         continue;
       }

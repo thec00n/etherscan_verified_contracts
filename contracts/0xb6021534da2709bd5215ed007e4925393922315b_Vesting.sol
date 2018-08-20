@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -77,8 +77,8 @@ contract Vesting is Owned {
         uint sendings;
     }
 
-    mapping (address =&gt; uint) public vestingBalance;
-    mapping (address =&gt; mapping (address =&gt; uint)) public receiverVestings;
+    mapping (address => uint) public vestingBalance;
+    mapping (address => mapping (address => uint)) public receiverVestings;
 
     Vestings[] public vestings;
 
@@ -88,8 +88,8 @@ contract Vesting is Owned {
 
     function createVesting(address _receiver, ERC20Interface _ERC20, uint _amount, uint _parts, uint _paymentInterval, uint _schedule) returns(bool) {
         require(_receiver != 0x0);
-        require(_parts &gt; 0 &amp;&amp; _amount &gt; 0 &amp;&amp; _parts &lt;= 10000);
-        require(SafeMath.add(_schedule, SafeMath.mul(_paymentInterval, _parts)) &lt;= ((365 * 5 days) + now));
+        require(_parts > 0 && _amount > 0 && _parts <= 10000);
+        require(SafeMath.add(_schedule, SafeMath.mul(_paymentInterval, _parts)) <= ((365 * 5 days) + now));
 
         vestings.push(Vestings(_receiver, _ERC20, _amount, _parts, _paymentInterval, _schedule, 0));
         require(_ERC20.transferFrom(msg.sender, address(this), SafeMath.mul(_amount, _parts)));
@@ -100,7 +100,7 @@ contract Vesting is Owned {
     }
 
     function sendVesting(uint _id) returns(bool) {
-        require(now &gt;= (vestings[_id].schedule + vestings[_id].paymentInterval * (vestings[_id].sendings + 1)));
+        require(now >= (vestings[_id].schedule + vestings[_id].paymentInterval * (vestings[_id].sendings + 1)));
 
         require(vestings[_id].ERC20.transfer(vestings[_id].receiver, vestings[_id].amount));
         VestingSent(vestings[_id].receiver, vestings[_id].ERC20, vestings[_id].amount, _id, vestings[_id].sendings);

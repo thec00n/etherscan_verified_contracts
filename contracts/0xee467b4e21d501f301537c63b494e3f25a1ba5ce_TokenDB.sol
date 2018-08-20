@@ -29,12 +29,12 @@ library SafeMath {
     /* Internals */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert( c &gt;= a );
+        assert( c >= a );
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a - b;
-        assert( c &lt;= a );
+        assert( c <= a );
         return c;
     }
     function mul(uint256 a, uint256 b) internal pure returns(uint256 c) {
@@ -60,13 +60,13 @@ contract TokenDB is Owned {
         bool valid;
     }
     /* Variables */
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping(address =&gt; balances_s) public balances;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => balances_s) public balances;
     address public tokenAddress;
     address public oldDBAddress;
     /* Constructor */
     constructor(address _owner, address _tokenAddress, address _icoAddress, address _oldDBAddress) Owned(_owner) public {
-        if ( _oldDBAddress == 0x00  &amp;&amp; _icoAddress != 0x00 ) {
+        if ( _oldDBAddress == 0x00  && _icoAddress != 0x00 ) {
             balances[_icoAddress].amount = 44e16;
         }
         oldDBAddress = _oldDBAddress;
@@ -87,7 +87,7 @@ contract TokenDB is Owned {
         uint256 _senderBalance = _getBalance(_from);
         uint256 _receiverBalance;
         uint256 i;
-        for ( i=0 ; i&lt;_to.length ; i++ ) {
+        for ( i=0 ; i<_to.length ; i++ ) {
             _receiverBalance = _getBalance(_to[i]);
             _senderBalance = _senderBalance.sub(_amount[i]);
             balances[_to[i]].amount = _receiverBalance.add(_amount[i]);
@@ -108,7 +108,7 @@ contract TokenDB is Owned {
     }
     /* Internals */
     function _getBalance(address _owner) internal returns(uint256 _balance) {
-        if ( ( ! balances[_owner].valid ) &amp;&amp; oldDBAddress != 0x00 ) {
+        if ( ( ! balances[_owner].valid ) && oldDBAddress != 0x00 ) {
             bool _subResult;
             ( _subResult, _balance ) = TokenDB(oldDBAddress).balanceOf(_owner);
             balances[_owner].amount = _balance;

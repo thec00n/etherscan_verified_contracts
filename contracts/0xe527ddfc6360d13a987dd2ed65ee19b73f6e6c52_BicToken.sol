@@ -10,20 +10,20 @@ contract SafeMath {
   }
 
   function safeMathDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeMathSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeMathAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -42,9 +42,9 @@ contract BicToken is SafeMath{
     uint256 public totalSupply;
     address public owner;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public freezeOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public freezeOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // Public event on the blockchain to notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -74,9 +74,9 @@ contract BicToken is SafeMath{
 
     // Send coins
     function transfer(address _to, uint256 _value) validAddress returns (bool success) {
-        require(_value &gt; 0);
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);        
+        require(_value > 0);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);        
         balanceOf[msg.sender] = SafeMath.safeMathSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = SafeMath.safeMathAdd(balanceOf[_to], _value);
         emit Transfer(msg.sender, _to, _value);                   
@@ -86,7 +86,7 @@ contract BicToken is SafeMath{
     // Allow other contract to spend some tokens in your behalf 
     function approve(address _spender, uint256 _value)
         returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -94,10 +94,10 @@ contract BicToken is SafeMath{
 
     // A contract attempts to get the coins
     function transferFrom(address _from, address _to, uint256 _value) validAddress returns (bool success) {
-        require(_value &gt; 0); 
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(_value > 0); 
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_from] = SafeMath.safeMathSub(balanceOf[_from], _value);                           
         balanceOf[_to] = SafeMath.safeMathAdd(balanceOf[_to], _value);                             
         allowance[_from][msg.sender] = SafeMath.safeMathSub(allowance[_from][msg.sender], _value);
@@ -106,8 +106,8 @@ contract BicToken is SafeMath{
     }
 
     function burn(uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
+        require(balanceOf[msg.sender] >= _value);
+        require(_value > 0);
         balanceOf[msg.sender] = SafeMath.safeMathSub(balanceOf[msg.sender], _value);
         totalSupply = SafeMath.safeMathSub(totalSupply,_value);                     
         emit Burn(msg.sender, _value);
@@ -115,8 +115,8 @@ contract BicToken is SafeMath{
     }
     
     function freeze(uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
+        require(balanceOf[msg.sender] >= _value);
+        require(_value > 0);
         balanceOf[msg.sender] = SafeMath.safeMathSub(balanceOf[msg.sender], _value);                      
         freezeOf[msg.sender] = SafeMath.safeMathAdd(freezeOf[msg.sender], _value);                        
         emit Freeze(msg.sender, _value);
@@ -124,8 +124,8 @@ contract BicToken is SafeMath{
     }
     
     function unfreeze(uint256 _value) returns (bool success) {
-        require(freezeOf[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
+        require(freezeOf[msg.sender] >= _value);
+        require(_value > 0);
         freezeOf[msg.sender] = SafeMath.safeMathSub(freezeOf[msg.sender], _value);                      
         balanceOf[msg.sender] = SafeMath.safeMathAdd(balanceOf[msg.sender], _value);
         emit Unfreeze(msg.sender, _value);

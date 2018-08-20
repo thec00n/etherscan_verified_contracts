@@ -8,7 +8,7 @@ pragma solidity 0.4.24;
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -21,7 +21,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -61,13 +61,13 @@ library Roles {
  * @dev See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -144,7 +144,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -160,14 +160,14 @@ contract RBAC {
 /**
  * @title RBACWithAdmin
  * @author Matt Condon (@Shrugs)
- * @dev It&#39;s recommended that you define constants in the contract,
+ * @dev It's recommended that you define constants in the contract,
  * @dev like ROLE_ADMIN below, to avoid typos.
  */
 contract RBACWithAdmin is RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev modifier to scope access to admins
@@ -235,9 +235,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -245,7 +245,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -254,7 +254,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -295,13 +295,13 @@ contract FacultyPool is RBACWithAdmin {
     // the destination for this contract
     address public receiverAddress;
     // our beneficiaries
-    mapping (address =&gt; Beneficiary) beneficiaries;
+    mapping (address => Beneficiary) beneficiaries;
     // the total we raised before closing pool
     uint256 public finalBalance;
     // a set of refund amounts we may need to process
     uint256[] public ethRefundAmount;
     // mapping that holds the token allocation struct for each token address
-    mapping (address =&gt; TokenAllocation) tokenAllocationMap;
+    mapping (address => TokenAllocation) tokenAllocationMap;
     // the default token address
     address public defaultToken;
 
@@ -328,7 +328,7 @@ contract FacultyPool is RBACWithAdmin {
         uint256 ethRefund;
         uint256 balance;
         uint256 cap;
-        mapping (address =&gt; uint256) tokensClaimed;
+        mapping (address => uint256) tokensClaimed;
     }
 
     // data structure for holding information related to token withdrawals.
@@ -356,12 +356,12 @@ contract FacultyPool is RBACWithAdmin {
     /*
      * Construct a pool with a set of admins, the poolCap and the cap each beneficiary gets. And,
      * optionally, the receiving address if know at time of contract creation.
-     * fee is in bips so 3.5% would be set as 350 and 100% == 100*100 =&gt; 10000
+     * fee is in bips so 3.5% would be set as 350 and 100% == 100*100 => 10000
      */
     constructor(address[] _admins, uint256 _poolCap, uint256 _beneficiaryCap, address _receiverAddr, uint256 _feePct) public {
-        require(_admins.length &gt; 0, &quot;Must have at least one admin apart from msg.sender&quot;);
-        require(_poolCap &gt;= _beneficiaryCap, &quot;Cannot have the poolCap &lt;= beneficiaryCap&quot;);
-        require(_feePct &gt;=  0 &amp;&amp; _feePct &lt; 10000);
+        require(_admins.length > 0, "Must have at least one admin apart from msg.sender");
+        require(_poolCap >= _beneficiaryCap, "Cannot have the poolCap <= beneficiaryCap");
+        require(_feePct >=  0 && _feePct < 10000);
         feePct = _feePct;
         receiverAddress = _receiverAddr;
         totalPoolCap = _poolCap;
@@ -369,7 +369,7 @@ contract FacultyPool is RBACWithAdmin {
         // setup privileges
         owner = msg.sender;
         addRole(msg.sender, ROLE_ADMIN);
-        for (uint8 i = 0; i &lt; _admins.length; i++) {
+        for (uint8 i = 0; i < _admins.length; i++) {
             addRole(_admins[i], ROLE_ADMIN);
         }
     }
@@ -386,19 +386,19 @@ contract FacultyPool is RBACWithAdmin {
 
     // receive funds. gas limited. min contrib.
     function _receiveDeposit() isOpenContract internal {
-        require(tx.gasprice &lt;= gasLimit, &quot;Gas too high&quot;);
-        require(address(this).balance &lt;= totalPoolCap, &quot;Deposit will put pool over limit. Reverting.&quot;);
+        require(tx.gasprice <= gasLimit, "Gas too high");
+        require(address(this).balance <= totalPoolCap, "Deposit will put pool over limit. Reverting.");
         // Now the code
         Beneficiary storage b = beneficiaries[msg.sender];
         uint256 newBalance = b.balance.add(msg.value);
-        require(newBalance &gt;= minContribution, &quot;contribution is lower than minContribution&quot;);
-        if(b.cap &gt; 0){
-            require(newBalance &lt;= b.cap, &quot;balance is less than set cap for beneficiary&quot;);
+        require(newBalance >= minContribution, "contribution is lower than minContribution");
+        if(b.cap > 0){
+            require(newBalance <= b.cap, "balance is less than set cap for beneficiary");
         } else if(currentBeneficiaryCap == 0) {
             // we have an open cap, no limits
             b.cap = totalPoolCap;
         }else {
-            require(newBalance &lt;= currentBeneficiaryCap, &quot;balance is more than currentBeneficiaryCap&quot;);
+            require(newBalance <= currentBeneficiaryCap, "balance is more than currentBeneficiaryCap");
             // we set it to the default cap
             b.cap = currentBeneficiaryCap;
         }
@@ -408,8 +408,8 @@ contract FacultyPool is RBACWithAdmin {
 
     // Handle refunds only in closed state.
     function _receiveRefund() internal {
-        assert(contractStage &gt;= 2);
-        require(hasRole(msg.sender, ROLE_ADMIN) || msg.sender == receiverAddress, &quot;Receiver or Admins only&quot;);
+        assert(contractStage >= 2);
+        require(hasRole(msg.sender, ROLE_ADMIN) || msg.sender == receiverAddress, "Receiver or Admins only");
         ethRefundAmount.push(msg.value);
         emit RefundReceived(msg.sender, msg.value);
     }
@@ -430,21 +430,21 @@ contract FacultyPool is RBACWithAdmin {
     }
 
     function submitPool(uint256 weiAmount) public onlyAdmin noReentrancy {
-        require(contractStage &lt; CONTRACT_SUBMIT_FUNDS, &quot;Cannot resubmit pool.&quot;);
-        require(receiverAddress != 0x00, &quot;receiver address cannot be empty&quot;);
+        require(contractStage < CONTRACT_SUBMIT_FUNDS, "Cannot resubmit pool.");
+        require(receiverAddress != 0x00, "receiver address cannot be empty");
         uint256 contractBalance = address(this).balance;
         if(weiAmount == 0){
             weiAmount = contractBalance;
         }
-        require(minContribution &lt;= weiAmount &amp;&amp; weiAmount &lt;= contractBalance, &quot;submitted amount too small or larger than the balance&quot;);
+        require(minContribution <= weiAmount && weiAmount <= contractBalance, "submitted amount too small or larger than the balance");
         finalBalance = contractBalance;
         // transfer to upstream receiverAddress
         require(receiverAddress.call.value(weiAmount)
             .gas(gasleft().sub(5000))(),
-            &quot;Error submitting pool to receivingAddress&quot;);
+            "Error submitting pool to receivingAddress");
         // get balance post transfer
         contractBalance = address(this).balance;
-        if(contractBalance &gt; 0) {
+        if(contractBalance > 0) {
             ethRefundAmount.push(contractBalance);
         }
         contractStage = CONTRACT_SUBMIT_FUNDS;
@@ -458,7 +458,7 @@ contract FacultyPool is RBACWithAdmin {
 
     function withdraw(address _tokenAddress) public {
         Beneficiary storage b = beneficiaries[msg.sender];
-        require(b.balance &gt; 0, &quot;msg.sender has no balance. Nice Try!&quot;);
+        require(b.balance > 0, "msg.sender has no balance. Nice Try!");
         if(contractStage == CONTRACT_OPEN){
             uint256 transferAmt = b.balance;
             b.balance = 0;
@@ -471,39 +471,39 @@ contract FacultyPool is RBACWithAdmin {
 
     // This function allows the contract owner to force a withdrawal to any contributor.
     function withdrawFor (address _beneficiary, address tokenAddr) public onlyAdmin {
-        require (contractStage == CONTRACT_SUBMIT_FUNDS, &quot;Can only be done on Submitted Contract&quot;);
-        require (beneficiaries[_beneficiary].balance &gt; 0, &quot;Beneficary has no funds to withdraw&quot;);
+        require (contractStage == CONTRACT_SUBMIT_FUNDS, "Can only be done on Submitted Contract");
+        require (beneficiaries[_beneficiary].balance > 0, "Beneficary has no funds to withdraw");
         _withdraw(_beneficiary, tokenAddr);
     }
 
     function _withdraw (address _beneficiary, address _tokenAddr) internal {
-        require(contractStage == CONTRACT_SUBMIT_FUNDS, &quot;Cannot withdraw when contract is not CONTRACT_SUBMIT_FUNDS&quot;);
+        require(contractStage == CONTRACT_SUBMIT_FUNDS, "Cannot withdraw when contract is not CONTRACT_SUBMIT_FUNDS");
         Beneficiary storage b = beneficiaries[_beneficiary];
         if (_tokenAddr == 0x00) {
             _tokenAddr = defaultToken;
         }
         TokenAllocation storage ta = tokenAllocationMap[_tokenAddr];
-        require ( (ethRefundAmount.length &gt; b.ethRefund) || ta.pct.length &gt; b.tokensClaimed[_tokenAddr] );
+        require ( (ethRefundAmount.length > b.ethRefund) || ta.pct.length > b.tokensClaimed[_tokenAddr] );
 
-        if (ethRefundAmount.length &gt; b.ethRefund) {
+        if (ethRefundAmount.length > b.ethRefund) {
             uint256 pct = _toPct(b.balance,finalBalance);
             uint256 ethAmount = 0;
-            for (uint i= b.ethRefund; i &lt; ethRefundAmount.length; i++) {
+            for (uint i= b.ethRefund; i < ethRefundAmount.length; i++) {
                 ethAmount = ethAmount.add(_applyPct(ethRefundAmount[i],pct));
             }
             b.ethRefund = ethRefundAmount.length;
-            if (ethAmount &gt; 0) {
+            if (ethAmount > 0) {
                 _beneficiary.transfer(ethAmount);
                 emit EthRefunded(_beneficiary, ethAmount);
             }
         }
-        if (ta.pct.length &gt; b.tokensClaimed[_tokenAddr]) {
+        if (ta.pct.length > b.tokensClaimed[_tokenAddr]) {
             uint tokenAmount = 0;
-            for (i= b.tokensClaimed[_tokenAddr]; i&lt; ta.pct.length; i++) {
+            for (i= b.tokensClaimed[_tokenAddr]; i< ta.pct.length; i++) {
                 tokenAmount = tokenAmount.add(_applyPct(b.balance, ta.pct[i]));
             }
             b.tokensClaimed[_tokenAddr] = ta.pct.length;
-            if (tokenAmount &gt; 0) {
+            if (tokenAmount > 0) {
                 require(ta.token.transfer(_beneficiary,tokenAmount));
                 ta.balanceRemaining = ta.balanceRemaining.sub(tokenAmount);
                 emit TokenWithdrawal(_beneficiary, _tokenAddr, tokenAmount);
@@ -512,7 +512,7 @@ contract FacultyPool is RBACWithAdmin {
     }
 
     function setReceiver(address addr) public onlyAdmin {
-        require (contractStage &lt; CONTRACT_SUBMIT_FUNDS);
+        require (contractStage < CONTRACT_SUBMIT_FUNDS);
         receiverAddress = addr;
         emit ReceiverAddressSet(addr);
     }
@@ -520,19 +520,19 @@ contract FacultyPool is RBACWithAdmin {
     // once we have tokens we can enable the withdrawal
     // setting this _useAsDefault to true will set this incoming address to the defaultToken.
     function enableTokenWithdrawals (address _tokenAddr, bool _useAsDefault) public onlyAdmin noReentrancy {
-        require (contractStage == CONTRACT_SUBMIT_FUNDS, &quot;wrong contract stage&quot;);
+        require (contractStage == CONTRACT_SUBMIT_FUNDS, "wrong contract stage");
         if (_useAsDefault) {
             defaultToken = _tokenAddr;
         } else {
-            require (defaultToken != 0x00, &quot;defaultToken must be set&quot;);
+            require (defaultToken != 0x00, "defaultToken must be set");
         }
         TokenAllocation storage ta  = tokenAllocationMap[_tokenAddr];
         if (ta.pct.length==0){
             ta.token = ERC20(_tokenAddr);
         }
         uint256 amount = ta.token.balanceOf(this).sub(ta.balanceRemaining);
-        require (amount &gt; 0);
-        if (feePct &gt; 0) {
+        require (amount > 0);
+        if (feePct > 0) {
             uint256 feePctFromBips = _toPct(feePct, 10000);
             uint256 feeAmount = _applyPct(amount, feePctFromBips);
             require (ta.token.transfer(owner, feeAmount));
@@ -547,7 +547,7 @@ contract FacultyPool is RBACWithAdmin {
     function checkAvailableTokens (address addr, address tokenAddr) view public returns (uint tokenAmount) {
         Beneficiary storage b = beneficiaries[addr];
         TokenAllocation storage ta = tokenAllocationMap[tokenAddr];
-        for (uint i = b.tokensClaimed[tokenAddr]; i &lt; ta.pct.length; i++) {
+        for (uint i = b.tokensClaimed[tokenAddr]; i < ta.pct.length; i++) {
             tokenAmount = tokenAmount.add(_applyPct(b.balance, ta.pct[i]));
         }
         return tokenAmount;

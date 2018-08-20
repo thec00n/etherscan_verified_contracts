@@ -6,7 +6,7 @@ contract BettingInterface {
     // method to claim the reward amount
     function claim_reward() external;
 
-    mapping (bytes32 =&gt; bool) public winner_horse;
+    mapping (bytes32 => bool) public winner_horse;
     
     function checkReward() external constant returns (uint);
 }
@@ -33,15 +33,15 @@ contract HorseFutures {
         bool BuyType;
     }
     
-    mapping(address =&gt; mapping(address =&gt; mapping(bytes32 =&gt; uint256))) ClaimTokens;
-    mapping(address =&gt; mapping (bytes32 =&gt; uint256)) TotalTokensCoinRace;
-    mapping(address =&gt; bool) ClaimedRaces;
+    mapping(address => mapping(address => mapping(bytes32 => uint256))) ClaimTokens;
+    mapping(address => mapping (bytes32 => uint256)) TotalTokensCoinRace;
+    mapping(address => bool) ClaimedRaces;
     
-    mapping(address =&gt; uint256) toDistributeRace;
+    mapping(address => uint256) toDistributeRace;
     //market
-    mapping(bytes32 =&gt; Offer) market;
-    mapping(bytes32 =&gt; address) owner;
-    mapping(address =&gt; uint256) public marketBalance;
+    mapping(bytes32 => Offer) market;
+    mapping(bytes32 => address) owner;
+    mapping(address => uint256) public marketBalance;
     
     function placeBet(bytes32 horse, address race) external payable
     _validRace(race) {
@@ -75,27 +75,27 @@ contract HorseFutures {
         uint256 totalWinningTokens = 0;
         uint256 ownedWinningTokens = 0;
 
-        bool btcWin = raceContract.winner_horse(bytes32(&quot;BTC&quot;));
-        bool ltcWin = raceContract.winner_horse(bytes32(&quot;LTC&quot;));
-        bool ethWin = raceContract.winner_horse(bytes32(&quot;ETH&quot;));
+        bool btcWin = raceContract.winner_horse(bytes32("BTC"));
+        bool ltcWin = raceContract.winner_horse(bytes32("LTC"));
+        bool ethWin = raceContract.winner_horse(bytes32("ETH"));
 
         if(btcWin)
         {
-            totalWinningTokens += TotalTokensCoinRace[race][bytes32(&quot;BTC&quot;)];
-            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32(&quot;BTC&quot;)];
-            ClaimTokens[msg.sender][race][bytes32(&quot;BTC&quot;)] = 0;
+            totalWinningTokens += TotalTokensCoinRace[race][bytes32("BTC")];
+            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32("BTC")];
+            ClaimTokens[msg.sender][race][bytes32("BTC")] = 0;
         } 
         if(ltcWin)
         {
-            totalWinningTokens += TotalTokensCoinRace[race][bytes32(&quot;LTC&quot;)];
-            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32(&quot;LTC&quot;)];
-            ClaimTokens[msg.sender][race][bytes32(&quot;LTC&quot;)] = 0;
+            totalWinningTokens += TotalTokensCoinRace[race][bytes32("LTC")];
+            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32("LTC")];
+            ClaimTokens[msg.sender][race][bytes32("LTC")] = 0;
         } 
         if(ethWin)
         {
-            totalWinningTokens += TotalTokensCoinRace[race][bytes32(&quot;ETH&quot;)];
-            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32(&quot;ETH&quot;)];
-            ClaimTokens[msg.sender][race][bytes32(&quot;ETH&quot;)] = 0;
+            totalWinningTokens += TotalTokensCoinRace[race][bytes32("ETH")];
+            ownedWinningTokens += ClaimTokens[msg.sender][race][bytes32("ETH")];
+            ClaimTokens[msg.sender][race][bytes32("ETH")] = 0;
         }
 
         uint256 claimerCut = toDistributeRace[race] / totalWinningTokens * ownedWinningTokens;
@@ -110,8 +110,8 @@ contract HorseFutures {
     _validHorse(horse)
     returns (bytes32) {
         uint256 ownedAmount = ClaimTokens[msg.sender][race][horse];
-        require(ownedAmount &gt;= amount);
-        require(amount &gt; 0);
+        require(ownedAmount >= amount);
+        require(amount > 0);
         
         bytes32 id = keccak256(abi.encodePacked(amount,price,race,horse,true,block.timestamp));
         require(owner[id] == address(0)); //must not already exist
@@ -141,8 +141,8 @@ contract HorseFutures {
     _validRace(race) 
     _validHorse(horse)
     returns (bytes32) {
-        require(amount &gt; 0);
-        require(price &gt; 0);
+        require(amount > 0);
+        require(price > 0);
         require(msg.value == price * amount);
         bytes32 id = keccak256(abi.encodePacked(amount,price,race,horse,false,block.timestamp));
         require(owner[id] == address(0)); //must not already exist
@@ -183,9 +183,9 @@ contract HorseFutures {
         require(owner[id] != msg.sender);
         Offer storage off = market[id];
         require(!off.BuyType);
-        require(amount &lt;= off.Amount);
+        require(amount <= off.Amount);
         uint256 cost = off.Price * amount;
-        require(msg.value &gt;= cost);
+        require(msg.value >= cost);
         
         ClaimTokens[msg.sender][off.Race][off.Horse] += amount;
         marketBalance[owner[id]] += msg.value;
@@ -208,7 +208,7 @@ contract HorseFutures {
         require(owner[id] != msg.sender);
         Offer storage off = market[id];
         require(off.BuyType);
-        require(amount &lt;= off.Amount);
+        require(amount <= off.Amount);
         
         uint256 cost = amount * off.Price;
         ClaimTokens[msg.sender][off.Race][off.Horse] -= amount;
@@ -240,7 +240,7 @@ contract HorseFutures {
     }
 
     modifier _validHorse(bytes32 horse) {
-        require(horse == bytes32(&quot;BTC&quot;) || horse == bytes32(&quot;ETH&quot;) || horse == bytes32(&quot;LTC&quot;));
+        require(horse == bytes32("BTC") || horse == bytes32("ETH") || horse == bytes32("LTC"));
         _;
     }
     

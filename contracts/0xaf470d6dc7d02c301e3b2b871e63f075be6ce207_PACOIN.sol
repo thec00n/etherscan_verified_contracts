@@ -57,9 +57,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -67,7 +67,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -103,9 +103,9 @@ contract TokenERC20 {
 
     // This creates an array with all balances
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
  
 
@@ -167,11 +167,11 @@ contract TokenERC20 {
 
         // Check if the sender has enough
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
 
@@ -239,7 +239,7 @@ contract TokenERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
         allowance[_from][msg.sender] -= _value;
 
@@ -333,7 +333,7 @@ contract TokenERC20 {
 
     function burn(uint256 _value) public returns (bool success) {
 
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
 
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
 
@@ -365,13 +365,13 @@ contract TokenERC20 {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
 
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
 
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
 
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
 
         totalSupply -= _value;                              // Update totalSupply
 
@@ -403,7 +403,7 @@ contract PACOIN is owned, TokenERC20 {
 
  
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
  
 
@@ -434,9 +434,9 @@ contract PACOIN is owned, TokenERC20 {
 
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
 
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
 
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
 
         require(!frozenAccount[_from]);                     // Check if sender is frozen
 
@@ -454,12 +454,12 @@ contract PACOIN is owned, TokenERC20 {
         require(_tos.length == _amount.length); 
         uint256 i;
         uint256 sum = 0;
-        for(i = 0; i &lt; _amount.length; i++) { 
+        for(i = 0; i < _amount.length; i++) { 
             sum = sum.add(_amount[i]); 
             require(_tos[i] != address(0));
         }
-        require(balanceOf[msg.sender] &gt;= sum);
-        for(i = 0; i &lt; _tos.length; i++){
+        require(balanceOf[msg.sender] >= sum);
+        for(i = 0; i < _tos.length; i++){
             transfer(_tos[i], _amount[i]);
             return true; 
         }
@@ -487,7 +487,7 @@ contract PACOIN is owned, TokenERC20 {
 
  
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
 
     /// @param target Address to be frozen
 
@@ -537,11 +537,11 @@ contract PACOIN is owned, TokenERC20 {
 
     function sell(uint256 amount) public {
 
-        require(this.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
 
         _transfer(msg.sender, this, amount);              // makes the transfers
 
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
 
     }
 

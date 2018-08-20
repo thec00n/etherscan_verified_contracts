@@ -55,9 +55,9 @@ contract SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -65,7 +65,7 @@ contract SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -74,7 +74,7 @@ contract SafeMath {
   */
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,19 +84,19 @@ contract VersusToken is ERC20, SafeMath, Ownable {
   string public name;
   string public symbol;
   uint8 public decimals = 12;
-  string public version = &#39;v0.1&#39;; 
+  string public version = 'v0.1'; 
   uint public initialSupply;
   uint public totalSupply;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function VersusToken() public {
     initialSupply = 700000000 * 10 ** uint256(decimals);
     totalSupply = initialSupply;
     balances[msg.sender] = totalSupply;
-    name = &#39;VersusToken&#39;;   
-    symbol = &#39;VSUS&#39;;
+    name = 'VersusToken';   
+    symbol = 'VSUS';
   }
 
   function burn(uint256 _value) public returns (bool){
@@ -110,9 +110,9 @@ contract VersusToken is ERC20, SafeMath, Ownable {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender

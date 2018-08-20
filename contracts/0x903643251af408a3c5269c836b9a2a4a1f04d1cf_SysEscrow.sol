@@ -23,7 +23,7 @@ contract SysEscrow {
     }
 
     // Mapping of active trades. Key is a hash of the trade data
-    mapping (bytes32 =&gt; Escrow) public escrows;
+    mapping (bytes32 => Escrow) public escrows;
 
 
     modifier onlyOwner() {
@@ -51,7 +51,7 @@ function createEscrow(
       uint _paymentWindowInSeconds // The time in seconds from Escrow creation that the buyer can return money
     ) payable external {
         uint256 _value = msg.value;
-        require(_value&gt;=MinDeposit);
+        require(_value>=MinDeposit);
         bytes32 _tradeHash = keccak256(_tradeID, _seller, _buyer, _value);
         require(!escrows[_tradeHash].exists); // Require that trade does not already exist
         uint _buyerCanCancelAfter =  now + _paymentWindowInSeconds;
@@ -90,7 +90,7 @@ function createEscrow(
         
         bytes32 _tradeHash = keccak256(_tradeID, _seller, _buyer, _value);
         require(escrows[_tradeHash].exists);
-        require(escrows[_tradeHash].buyerCanCancelAfter&lt;now);
+        require(escrows[_tradeHash].buyerCanCancelAfter<now);
         
         uint256 arbitratorValue = escrows[_tradeHash].summ*ARBITRATOR_PERCENT/100;
         uint256 buyerValue =  escrows[_tradeHash].summ - arbitratorValue;
@@ -98,7 +98,7 @@ function createEscrow(
         bool buyerReceivedMoney = escrows[_tradeHash].buyer.call.value(buyerValue)();
         bool arbitratorReceivedMoney = arbitrator.call.value(arbitratorValue)();
         
-        if ( buyerReceivedMoney &amp;&amp; arbitratorReceivedMoney )
+        if ( buyerReceivedMoney && arbitratorReceivedMoney )
         {    
             delete escrows[_tradeHash];
         } else {
@@ -144,7 +144,7 @@ function createEscrow(
         bool sellerReceivedMoney = escrows[_tradeHash].seller.call.value(buyerValue)();
         bool arbitratorReceivedMoney = arbitrator.call.value(arbitratorValue)();
         
-        if ( sellerReceivedMoney &amp;&amp; arbitratorReceivedMoney )
+        if ( sellerReceivedMoney && arbitratorReceivedMoney )
         {    
             delete escrows[_tradeHash];
         } else {

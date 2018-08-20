@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -141,8 +141,8 @@ contract SealTokenSale is Pausable {
   enum TokenSaleState {Private, Pre, Main, Finished}
 
   // Variables
-  mapping(address =&gt; Supporter) public supportersMap; // Mapping with all the Token Sale participants (Private excluded)
-  mapping(address =&gt; ExternalSupporter) public externalSupportersMap; // Mapping with external supporters
+  mapping(address => Supporter) public supportersMap; // Mapping with all the Token Sale participants (Private excluded)
+  mapping(address => ExternalSupporter) public externalSupportersMap; // Mapping with external supporters
   SealToken public token; // ERC20 Token contract address
   address public vaultWallet; // Wallet address to which ETH and Company Reserve Tokens get forwarded
   address public airdropWallet; // Wallet address to which Unsold Tokens get forwarded
@@ -259,10 +259,10 @@ contract SealTokenSale is Pausable {
     require(_vaultWallet != address(0));
     require(_airdropWallet != address(0));
     require(_kycWallet != address(0));
-    require(_tokenBaseRate &gt; 0);
-    require(_referrerBonusRate &gt; 0);
-    require(_referredBonusRate &gt; 0);
-    require(_maxTxGasPrice &gt; 0);
+    require(_tokenBaseRate > 0);
+    require(_referrerBonusRate > 0);
+    require(_referredBonusRate > 0);
+    require(_maxTxGasPrice > 0);
 
     vaultWallet = _vaultWallet;
     airdropWallet = _airdropWallet;
@@ -291,15 +291,15 @@ contract SealTokenSale is Pausable {
     // Do not allow if gasprice is bigger than the maximum
     // This is for fair-chance for all contributors, so no one can
     // set a too-high transaction price and be able to buy earlier
-    require(tx.gasprice &lt;= maxTxGasPrice);
+    require(tx.gasprice <= maxTxGasPrice);
 
-    // make sure we&#39;re in pre or main sale period
+    // make sure we're in pre or main sale period
     require(isPublicTokenSaleRunning());
 
     // check if KYC ok
     require(userHasKYC(msg.sender));
 
-    // check user is sending enough Wei for the stage&#39;s rules
+    // check user is sending enough Wei for the stage's rules
     require(aboveMinimumPurchase());
 
     address sender = msg.sender;
@@ -326,16 +326,16 @@ contract SealTokenSale is Pausable {
   */
   function reserveTokens(address _wallet, uint256 _amount) public onlyOwner {
     // check amount positive
-    require(_amount &gt; 0);
+    require(_amount > 0);
     // check destination address not null
     require(_wallet != address(0));
 
-    // make sure that we&#39;re in private sale or presale
+    // make sure that we're in private sale or presale
     require(isPrivateSaleRunning() || isPreSaleRunning());
 
     // check cap
     uint256 totalTokensReserved = tokensReserved.add(_amount);
-    require(tokensSold + totalTokensReserved &lt;= PRE_SALE_TOKEN_CAP);
+    require(tokensSold + totalTokensReserved <= PRE_SALE_TOKEN_CAP);
 
     // update total reserved
     tokensReserved = totalTokensReserved;
@@ -354,15 +354,15 @@ contract SealTokenSale is Pausable {
   */
   function confirmReservedTokens(address _wallet, uint256 _amount) public onlyOwner {
     // check amount positive
-    require(_amount &gt; 0);
+    require(_amount > 0);
     // check destination address not null
     require(_wallet != address(0));
 
-    // make sure the sale hasn&#39;t ended yet
+    // make sure the sale hasn't ended yet
     require(!hasEnded());
 
     // check amount not more than reserved
-    require(_amount &lt;= externalSupportersMap[_wallet].reservedAmount);
+    require(_amount <= externalSupportersMap[_wallet].reservedAmount);
 
     // check totals and mint the tokens
     checkTotalsAndMintTokens(_wallet, _amount, true);
@@ -378,15 +378,15 @@ contract SealTokenSale is Pausable {
    */
   function cancelReservedTokens(address _wallet, uint256 _amount) public onlyOwner {
     // check amount positive
-    require(_amount &gt; 0);
+    require(_amount > 0);
     // check destination address not null
     require(_wallet != address(0));
 
-    // make sure the sale hasn&#39;t ended yet
+    // make sure the sale hasn't ended yet
     require(!hasEnded());
 
     // check amount not more than reserved
-    require(_amount &lt;= externalSupportersMap[_wallet].reservedAmount);
+    require(_amount <= externalSupportersMap[_wallet].reservedAmount);
 
     // update total reserved
     tokensReserved = tokensReserved.sub(_amount);
@@ -413,9 +413,9 @@ contract SealTokenSale is Pausable {
     }
 
     if (isMainSaleRunning()) {
-      require(totalTokensSold + totalTokensReserved &lt;= TOKEN_SALE_CAP);
+      require(totalTokensSold + totalTokensReserved <= TOKEN_SALE_CAP);
     } else {
-      require(totalTokensSold + totalTokensReserved &lt;= PRE_SALE_TOKEN_CAP);
+      require(totalTokensSold + totalTokensReserved <= PRE_SALE_TOKEN_CAP);
     }
 
     // update contract state
@@ -460,7 +460,7 @@ contract SealTokenSale is Pausable {
 
     // check if we have enough tokens
     uint256 fullShare = _amount.mul(_bonusRate).div(10000);
-    if (fullShare &lt;= maxTokensAvailable) {
+    if (fullShare <= maxTokensAvailable) {
       // mint the tokens
       token.mint(_userAddress, fullShare);
 
@@ -488,7 +488,7 @@ contract SealTokenSale is Pausable {
   * @dev Start Presale
   */
   function startPreSale() public onlyOwner {
-    // make sure we&#39;re in the private sale state
+    // make sure we're in the private sale state
     require(currentState == TokenSaleState.Private);
 
     // move to presale
@@ -499,7 +499,7 @@ contract SealTokenSale is Pausable {
   * @dev Go back to private sale
   */
   function goBackToPrivateSale() public onlyOwner {
-    // make sure we&#39;re in the pre sale
+    // make sure we're in the pre sale
     require(currentState == TokenSaleState.Pre);
 
     // go back to private
@@ -510,7 +510,7 @@ contract SealTokenSale is Pausable {
   * @dev Start Main sale
   */
   function startMainSale() public onlyOwner {
-    // make sure we&#39;re in the presale state
+    // make sure we're in the presale state
     require(currentState == TokenSaleState.Pre);
 
     // move to main sale
@@ -521,7 +521,7 @@ contract SealTokenSale is Pausable {
   * @dev Go back to Presale
   */
   function goBackToPreSale() public onlyOwner {
-    // make sure we&#39;re in the main sale
+    // make sure we're in the main sale
     require(currentState == TokenSaleState.Main);
 
     // go back to presale
@@ -532,7 +532,7 @@ contract SealTokenSale is Pausable {
   * @dev Ends the operation of the contract
   */
   function finishContract() public onlyOwner {
-    // make sure we&#39;re in the main sale
+    // make sure we're in the main sale
     require(currentState == TokenSaleState.Main);
 
     // make sure there are no pending reservations
@@ -553,7 +553,7 @@ contract SealTokenSale is Pausable {
     token.finishMinting();
 
     // transfer ownership of the token contract to the owner,
-    // so it isn&#39;t locked to be a child of the crowd sale contract
+    // so it isn't locked to be a child of the crowd sale contract
     token.transferOwnership(owner);
   }
 
@@ -562,7 +562,7 @@ contract SealTokenSale is Pausable {
   * @param _newMaxTxGasPrice The new maximum gas price
   */
   function updateMaxTxGasPrice(uint256 _newMaxTxGasPrice) public onlyOwner {
-    require(_newMaxTxGasPrice &gt; 0);
+    require(_newMaxTxGasPrice > 0);
     maxTxGasPrice = _newMaxTxGasPrice;
   }
 
@@ -571,7 +571,7 @@ contract SealTokenSale is Pausable {
    * @param _tokenBaseRate The new token baserate in tokens/eth
    */
   function updateTokenBaseRate(uint256 _tokenBaseRate) public onlyOwner {
-    require(_tokenBaseRate &gt; 0);
+    require(_tokenBaseRate > 0);
     tokenBaseRate = _tokenBaseRate;
   }
 
@@ -594,7 +594,7 @@ contract SealTokenSale is Pausable {
   }
 
   /**
-  * @dev Approve user&#39;s KYC
+  * @dev Approve user's KYC
   * @param _user User Address
   */
   function approveUserKYC(address _user) onlyOwnerOrKYCWallet public {
@@ -606,7 +606,7 @@ contract SealTokenSale is Pausable {
   }
 
   /**
-   * @dev Disapprove user&#39;s KYC
+   * @dev Disapprove user's KYC
    * @param _user User Address
    */
   function disapproveUserKYC(address _user) onlyOwnerOrKYCWallet public {
@@ -618,7 +618,7 @@ contract SealTokenSale is Pausable {
   }
 
   /**
-   * @dev Approve user&#39;s KYC and sets referrer
+   * @dev Approve user's KYC and sets referrer
    * @param _user User Address
    * @param _referrerAddress Referrer Address
    */
@@ -678,7 +678,7 @@ contract SealTokenSale is Pausable {
   }
 
   /**
-  * @dev Get User&#39;s referrer address
+  * @dev Get User's referrer address
   * @param _user User Address
   */
   function getUserReferrer(address _user) public view returns (address) {
@@ -686,7 +686,7 @@ contract SealTokenSale is Pausable {
   }
 
   /**
-  * @dev Get User&#39;s reserved amount
+  * @dev Get User's reserved amount
   * @param _user User Address
   */
   function getReservedAmount(address _user) public view returns (uint256) {
@@ -702,19 +702,19 @@ contract SealTokenSale is Pausable {
       return 100;
     }
     else if (isPreSaleRunning()) {
-      if (_weiAmount &gt;= PRE_SALE_30_BONUS_MIN) {
+      if (_weiAmount >= PRE_SALE_30_BONUS_MIN) {
         // 30% bonus
         return 130;
       }
-      else if (_weiAmount &gt;= PRE_SALE_20_BONUS_MIN) {
+      else if (_weiAmount >= PRE_SALE_20_BONUS_MIN) {
         // 20% bonus
         return 120;
       }
-      else if (_weiAmount &gt;= PRE_SALE_15_BONUS_MIN) {
+      else if (_weiAmount >= PRE_SALE_15_BONUS_MIN) {
         // 15% bonus
         return 115;
       }
-      else if (_weiAmount &gt;= PRE_SALE_MIN_ETHER) {
+      else if (_weiAmount >= PRE_SALE_MIN_ETHER) {
         // 10% bonus
         return 110;
       }
@@ -730,10 +730,10 @@ contract SealTokenSale is Pausable {
    */
   function aboveMinimumPurchase() internal view returns (bool) {
     if (isMainSaleRunning()) {
-      return msg.value &gt;= MIN_ETHER;
+      return msg.value >= MIN_ETHER;
     }
     else if (isPreSaleRunning()) {
-      return msg.value &gt;= PRE_SALE_MIN_ETHER;
+      return msg.value >= PRE_SALE_MIN_ETHER;
     } else {
       return false;
     }
@@ -750,7 +750,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -768,7 +768,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -797,7 +797,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -808,8 +808,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -823,7 +823,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -872,7 +872,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -922,8 +922,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SealToken is MintableToken {
     // Constants
-    string public constant name = &quot;SealToken&quot;;
-    string public constant symbol = &quot;SEAL&quot;;
+    string public constant name = "SealToken";
+    string public constant symbol = "SEAL";
     uint8 public constant decimals = 18;
 
     /**

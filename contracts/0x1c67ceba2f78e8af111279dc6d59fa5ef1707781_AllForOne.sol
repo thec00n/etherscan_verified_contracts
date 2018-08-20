@@ -6,14 +6,14 @@ pragma solidity ^0.4.21;
 contract AllForOne {
     
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    mapping (address =&gt; uint) private playerKey;
-    mapping (address =&gt; uint) public playerCount;
-    mapping (address =&gt; uint) public currentGame;
-    mapping (address =&gt; uint) public currentPlayersRequired;
+    mapping (address => uint) private playerKey;
+    mapping (address => uint) public playerCount;
+    mapping (address => uint) public currentGame;
+    mapping (address => uint) public currentPlayersRequired;
     
-    mapping (address =&gt; uint) private playerRegistrationStatus;
-    mapping (address =&gt; uint) private playerNumber;
-    mapping (uint =&gt; address) private numberToAddress;
+    mapping (address => uint) private playerRegistrationStatus;
+    mapping (address => uint) private playerNumber;
+    mapping (uint => address) private numberToAddress;
     
     uint public currentBet = 0.005 ether;
     address public contractAddress;
@@ -53,17 +53,17 @@ contract AllForOne {
         uint _status = 0;
         uint _playerCount = playerCount[contractAddress];
         address _lastWinner = lastWinner;
-        if (playerRegistrationStatus[msg.sender] &lt; currentGame[contractAddress]) {
+        if (playerRegistrationStatus[msg.sender] < currentGame[contractAddress]) {
         _status = 1;
         }
         return (_status, _playerCount, _lastWinner);
     }
     
     modifier betCondition(uint _input) {
-        require (playerRegistrationStatus[msg.sender] &lt; currentGame[contractAddress]);
-        require (playerCount[contractAddress] &lt; 100);
+        require (playerRegistrationStatus[msg.sender] < currentGame[contractAddress]);
+        require (playerCount[contractAddress] < 100);
         require (msg.value == currentBet);
-        require (_input &gt; 0 &amp;&amp; _input != 0);
+        require (_input > 0 && _input != 0);
         _;
     }
     

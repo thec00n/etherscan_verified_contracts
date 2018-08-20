@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -236,7 +236,7 @@ contract Pausable is Ownable {
  * @dev ERC20 Hubcoin Token (HUB)
  *
  * HUB Tokens are divisible by 1e8 (100,000,000) base
- * units referred to as &#39;Grains&#39;.
+ * units referred to as 'Grains'.
  *
  * HUB are displayed using 8 decimal places of precision.
  *
@@ -249,8 +249,8 @@ contract Pausable is Ownable {
  */
 contract Hubcoin is StandardToken, Pausable {
 
-  string public constant name = &#39;Hubcoin&#39;;                       // Set the token name for display
-  string public constant symbol = &#39;HUB&#39;;                                       // Set the token symbol for display
+  string public constant name = 'Hubcoin';                       // Set the token name for display
+  string public constant symbol = 'HUB';                                       // Set the token symbol for display
   uint8 public constant decimals = 6;                                          // Set the number of decimals for display
   uint256 public constant INITIAL_SUPPLY = 326804 * 10**uint256(decimals); // 326804 HUB specified in Grains
   uint256 public constant total_freeze_term = 86400*365;   //Freeze duration
@@ -258,7 +258,7 @@ contract Hubcoin is StandardToken, Pausable {
   uint256 public constant owner_freeze_start = 1506782212;
   uint256 public constant owner_freeze_term = 3600*24;
 
-  mapping (address =&gt; uint256) public frozenAccount;
+  mapping (address => uint256) public frozenAccount;
 
   event FrozenFunds(address target, uint256 frozen);
   event Burn(address burner, uint256 burned);
@@ -306,7 +306,7 @@ contract Hubcoin is StandardToken, Pausable {
 
 
   function freezeAccount(address target, uint256 freeze)  onlyOwner  {
-        require(block.timestamp &lt; (owner_freeze_start + owner_freeze_term));
+        require(block.timestamp < (owner_freeze_start + owner_freeze_term));
         frozenAccount[target] = freeze;
         FrozenFunds(target, freeze);
   }
@@ -315,14 +315,14 @@ contract Hubcoin is StandardToken, Pausable {
 
 
     uint forbiddenPremine =  launch_date - block.timestamp + total_freeze_term;
-    if (forbiddenPremine &lt; 0) forbiddenPremine = 0;
+    if (forbiddenPremine < 0) forbiddenPremine = 0;
 
-    require(balances[_from] &gt;= _value.add( frozenAccount[_from] * forbiddenPremine / total_freeze_term) ); // Check if the sender has enough
+    require(balances[_from] >= _value.add( frozenAccount[_from] * forbiddenPremine / total_freeze_term) ); // Check if the sender has enough
     return true;
   }
 
    function burn(uint256 _value) onlyOwner public {
-    require(_value &gt; 0);
+    require(_value > 0);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);

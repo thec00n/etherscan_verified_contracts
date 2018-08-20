@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -149,7 +149,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -184,7 +184,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -259,9 +259,9 @@ contract PausableToken is StandardToken, Pausable {
 contract PallyCoin is PausableToken {
    using SafeMath for uint256;
 
-   string public constant name = &#39;PallyCoin&#39;;
+   string public constant name = 'PallyCoin';
 
-   string public constant symbol = &#39;PAL&#39;;
+   string public constant symbol = 'PAL';
 
    uint8 public constant decimals = 18;
 
@@ -275,7 +275,7 @@ contract PallyCoin is PausableToken {
 
    address public crowdsale;
 
-   /// @notice Only allows the execution of the function if it&#39;s comming from crowdsale
+   /// @notice Only allows the execution of the function if it's comming from crowdsale
    modifier onlyCrowdsale() {
       require(msg.sender == crowdsale);
       _;
@@ -284,15 +284,15 @@ contract PallyCoin is PausableToken {
    // When someone refunds tokens
    event RefundedTokens(address indexed user, uint256 tokens);
 
-   /// @notice Constructor used to set the platform &amp; development tokens. This is
+   /// @notice Constructor used to set the platform & development tokens. This is
    /// The 20% + 20% of the 100 M tokens used for platform and development team.
    /// The owner, msg.sender, is able to do allowance for other contracts. Remember
-   /// to use `transferFrom()` if you&#39;re allowed
+   /// to use `transferFrom()` if you're allowed
    function PallyCoin() {
       balances[msg.sender] = 40e24; // 40M tokens wei
    }
 
-   /// @notice Function to set the crowdsale smart contract&#39;s address only by the owner of this token
+   /// @notice Function to set the crowdsale smart contract's address only by the owner of this token
    /// @param _crowdsale The address that will be used
    function setCrowdsaleAddress(address _crowdsale) external onlyOwner whenNotPaused {
       require(_crowdsale != address(0));
@@ -305,10 +305,10 @@ contract PallyCoin is PausableToken {
    /// @param tokens The amount of tokens corresponding to that buyer
    function distributePresaleTokens(address _buyer, uint tokens) external onlyOwner whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0 &amp;&amp; tokens &lt;= 10e24);
+      require(tokens > 0 && tokens <= 10e24);
 
-      // Check that the limit of 10M presale tokens hasn&#39;t been met yet
-      require(tokensDistributedPresale &lt; 10e24);
+      // Check that the limit of 10M presale tokens hasn't been met yet
+      require(tokensDistributedPresale < 10e24);
 
       tokensDistributedPresale = tokensDistributedPresale.add(tokens);
       balances[_buyer] = balances[_buyer].add(tokens);
@@ -319,10 +319,10 @@ contract PallyCoin is PausableToken {
    /// @param tokens The amount of tokens to send to that address
    function distributeICOTokens(address _buyer, uint tokens) external onlyCrowdsale whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0);
+      require(tokens > 0);
 
-      // Check that the limit of 50M ICO tokens hasn&#39;t been met yet
-      require(tokensDistributedCrowdsale &lt; 50e24);
+      // Check that the limit of 50M ICO tokens hasn't been met yet
+      require(tokensDistributedCrowdsale < 50e24);
 
       tokensDistributedCrowdsale = tokensDistributedCrowdsale.add(tokens);
       balances[_buyer] = balances[_buyer].add(tokens);
@@ -333,8 +333,8 @@ contract PallyCoin is PausableToken {
    /// @param tokens The tokens to return
    function refundTokens(address _buyer, uint256 tokens) external onlyCrowdsale whenNotPaused {
       require(_buyer != address(0));
-      require(tokens &gt; 0);
-      require(balances[_buyer] &gt;= tokens);
+      require(tokens > 0);
+      require(balances[_buyer] >= tokens);
 
       balances[_buyer] = balances[_buyer].sub(tokens);
       RefundedTokens(_buyer, tokens);

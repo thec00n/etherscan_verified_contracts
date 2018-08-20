@@ -28,20 +28,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -105,7 +105,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -116,8 +116,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -195,7 +195,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -252,21 +252,21 @@ contract Ownable {
  */
 contract ApisToken is StandardToken, Ownable {
     // 토큰의 이름
-    string public constant name = &quot;APIS&quot;;
+    string public constant name = "APIS";
     
     // 토큰의 단위
-    string public constant symbol = &quot;APIS&quot;;
+    string public constant symbol = "APIS";
     
     // 소수점 자리수. ETH 18자리에 맞춘다
     uint8 public constant decimals = 18;
     
     // 지갑별로 송금/수금 기능의 잠긴 여부를 저장
-    mapping (address =&gt; LockedInfo) public lockedWalletInfo;
+    mapping (address => LockedInfo) public lockedWalletInfo;
     
     /**
      * @dev 플랫폼에서 운영하는 마스터노드 스마트 컨트렉트 주소
      */
-    mapping (address =&gt; bool) public manoContracts;
+    mapping (address => bool) public manoContracts;
     
     
     /**
@@ -362,7 +362,7 @@ contract ApisToken is StandardToken, Ownable {
         require(_targetWallet != 0x0);
         
         // If all locks are unlocked, set the _timeLockEnd to zero.
-        if(_sendLock == false &amp;&amp; _receiveLock == false) {
+        if(_sendLock == false && _receiveLock == false) {
             _timeLockEnd = 0;
         }
         
@@ -370,7 +370,7 @@ contract ApisToken is StandardToken, Ownable {
         lockedWalletInfo[_targetWallet].sendLock = _sendLock;
         lockedWalletInfo[_targetWallet].receiveLock = _receiveLock;
         
-        if(_timeLockEnd &gt; 0) {
+        if(_timeLockEnd > 0) {
             Locked(_targetWallet, _timeLockEnd, _sendLock, _receiveLock);
         } else {
             Unlocked(_targetWallet);
@@ -412,7 +412,7 @@ contract ApisToken is StandardToken, Ownable {
     function isWalletLocked_Send(address _addr) public constant returns (bool isSendLocked, uint until) {
         require(_addr != 0x0);
         
-        isSendLocked = (lockedWalletInfo[_addr].timeLockUpEnd &gt; now &amp;&amp; lockedWalletInfo[_addr].sendLock == true);
+        isSendLocked = (lockedWalletInfo[_addr].timeLockUpEnd > now && lockedWalletInfo[_addr].sendLock == true);
         
         if(isSendLocked) {
             until = lockedWalletInfo[_addr].timeLockUpEnd;
@@ -429,7 +429,7 @@ contract ApisToken is StandardToken, Ownable {
     function isWalletLocked_Receive(address _addr) public constant returns (bool isReceiveLocked, uint until) {
         require(_addr != 0x0);
         
-        isReceiveLocked = (lockedWalletInfo[_addr].timeLockUpEnd &gt; now &amp;&amp; lockedWalletInfo[_addr].receiveLock == true);
+        isReceiveLocked = (lockedWalletInfo[_addr].timeLockUpEnd > now && lockedWalletInfo[_addr].receiveLock == true);
         
         if(isReceiveLocked) {
             until = lockedWalletInfo[_addr].timeLockUpEnd;
@@ -482,12 +482,12 @@ contract ApisToken is StandardToken, Ownable {
         }
         
         // 송금 기능이 잠긴 지갑인지 확인한다.
-        if(lockedWalletInfo[msg.sender].timeLockUpEnd &gt; now &amp;&amp; lockedWalletInfo[msg.sender].sendLock == true) {
+        if(lockedWalletInfo[msg.sender].timeLockUpEnd > now && lockedWalletInfo[msg.sender].sendLock == true) {
             RejectedPaymentFromLockedUpWallet(msg.sender, _to, _apisWei);
             return false;
         } 
         // 입금 받는 기능이 잠긴 지갑인지 확인한다
-        else if(lockedWalletInfo[_to].timeLockUpEnd &gt; now &amp;&amp; lockedWalletInfo[_to].receiveLock == true) {
+        else if(lockedWalletInfo[_to].timeLockUpEnd > now && lockedWalletInfo[_to].receiveLock == true) {
             RejectedPaymentToLockedUpWallet(msg.sender, _to, _apisWei);
             return false;
         } 
@@ -528,8 +528,8 @@ contract ApisToken is StandardToken, Ownable {
      * @param _value 소각하려는 토큰의 양(Satoshi)
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        require(_value &lt;= totalSupply);
+        require(_value <= balances[msg.sender]);
+        require(_value <= totalSupply);
         
         address burner = msg.sender;
         balances[burner] -= _value;
@@ -560,7 +560,7 @@ contract ApisToken is StandardToken, Ownable {
  */
 contract WhiteList is Ownable {
     
-    mapping (address =&gt; uint8) internal list;
+    mapping (address => uint8) internal list;
     
     /**
      * @dev 화이트리스트에 변동이 발생했을 때 이벤트
@@ -603,10 +603,10 @@ contract WhiteList is Ownable {
      * @param _allows 대상이 되는 지갑들의 추가 여부 리스트 (true : 추가) (false : 제거)
      */
     function setWhiteBackersByList(address[] _backers, bool[] _allows) onlyOwner public {
-        require(_backers.length &gt; 0);
+        require(_backers.length > 0);
         require(_backers.length == _allows.length);
         
-        for(uint backerIndex = 0; backerIndex &lt; _backers.length; backerIndex++) {
+        for(uint backerIndex = 0; backerIndex < _backers.length; backerIndex++) {
             setWhiteBacker(_backers[backerIndex], _allows[backerIndex]);
         }
     }
@@ -618,7 +618,7 @@ contract WhiteList is Ownable {
      * @param _backers 대상이 되는 지갑들의 리스트
      */
     function addWhiteBackersByList(address[] _backers) onlyOwner public {
-        for(uint backerIndex = 0; backerIndex &lt; _backers.length; backerIndex++) {
+        for(uint backerIndex = 0; backerIndex < _backers.length; backerIndex++) {
             setWhiteBacker(_backers[backerIndex], true);
         }
     }
@@ -631,7 +631,7 @@ contract WhiteList is Ownable {
      */
     function isInWhiteList(address _addr) public constant returns (bool) {
         require(_addr != 0x0);
-        return list[_addr] &gt; 0;
+        return list[_addr] > 0;
     }
     
     /**
@@ -639,7 +639,7 @@ contract WhiteList is Ownable {
      * @return (true : 등록되어있음) (false : 등록되어있지 않음)
      */
     function isMeInWhiteList() public constant returns (bool isWhiteBacker) {
-        return list[msg.sender] &gt; 0;
+        return list[msg.sender] > 0;
     }
 }
 
@@ -705,7 +705,7 @@ contract ApisCrowdSale is Ownable {
 
     
     
-    mapping (address =&gt; Property) public fundersProperty;
+    mapping (address => Property) public fundersProperty;
     
     /**
      * @dev APIS 토큰 구매자의 자산 현황을 정리하기 위한 구조체
@@ -778,11 +778,11 @@ contract ApisCrowdSale is Ownable {
      * @dev 크라우드 세일 진행 중에만 동작하도록 제한하고, APIS의 가격도 설정되어야만 한다.
      */
     modifier onSale() {
-        require(now &gt;= startTime);
-        require(now &lt; endTime);
+        require(now >= startTime);
+        require(now < endTime);
         require(closed == false);
-        require(priceOfApisPerFund &gt; 0);
-        require(fundingGoalCurrent &gt; 0);
+        require(priceOfApisPerFund > 0);
+        require(fundingGoalCurrent > 0);
         _;
     }
     
@@ -790,7 +790,7 @@ contract ApisCrowdSale is Ownable {
      * @dev 크라우드 세일 종료 후에만 동작하도록 제한
      */
     modifier onFinished() {
-        require(now &gt;= endTime || closed == true);
+        require(now >= endTime || closed == true);
         _;
     }
     
@@ -799,7 +799,7 @@ contract ApisCrowdSale is Ownable {
      */
     modifier claimable() {
         require(whiteList.isInWhiteList(msg.sender) == true);
-        require(fundersProperty[msg.sender].reservedFunds &gt; 0);
+        require(fundersProperty[msg.sender].reservedFunds > 0);
         _;
     }
     
@@ -819,9 +819,9 @@ contract ApisCrowdSale is Ownable {
         address _addressOfApisTokenUsedAsReward,
         address _addressOfWhiteList
     ) public {
-        require (_fundingGoalApis &gt; 0);
-        require (_startTime &gt; now);
-        require (_endTime &gt; _startTime);
+        require (_fundingGoalApis > 0);
+        require (_startTime > now);
+        require (_endTime > _startTime);
         require (_addressOfApisTokenUsedAsReward != 0x0);
         require (_addressOfWhiteList != 0x0);
         
@@ -861,7 +861,7 @@ contract ApisCrowdSale is Ownable {
      */
     function setCurrentFundingGoal(uint256 _currentFundingGoalAPIS) onlyOwner public {
         uint256 fundingGoalCurrentWei = _currentFundingGoalAPIS * 10 ** uint256(decimals);
-        require(fundingGoalCurrentWei &gt;= saleStatus.totalSoldApis);
+        require(fundingGoalCurrentWei >= saleStatus.totalSoldApis);
         
         fundingGoalCurrent = fundingGoalCurrentWei;
     }
@@ -883,9 +883,9 @@ contract ApisCrowdSale is Ownable {
      */
     function whiteListOf(address _addr) public view returns (string message) {
         if(whiteList.isInWhiteList(_addr) == true) {
-            return &quot;The address is in whitelist.&quot;;
+            return "The address is in whitelist.";
         } else {
-            return &quot;The address is *NOT* in whitelist.&quot;;
+            return "The address is *NOT* in whitelist.";
         }
     }
     
@@ -897,15 +897,15 @@ contract ApisCrowdSale is Ownable {
      */
     function isClaimable(address _addr) public view returns (string message) {
         if(fundersProperty[_addr].reservedFunds == 0) {
-            return &quot;The address has no claimable balance.&quot;;
+            return "The address has no claimable balance.";
         }
         
         if(whiteList.isInWhiteList(_addr) == false) {
-            return &quot;The address must be registered with KYC and Whitelist&quot;;
+            return "The address must be registered with KYC and Whitelist";
         }
         
         else {
-            return &quot;The address can claim APIS!&quot;;
+            return "The address can claim APIS!";
         }
     }
     
@@ -938,8 +938,8 @@ contract ApisCrowdSale is Ownable {
         
         
         // 목표 금액을 넘어서지 못하도록 한다
-        require(saleStatus.totalSoldApis + reservedApis &lt;= fundingGoalCurrent);
-        require(saleStatus.totalSoldApis + reservedApis &lt;= fundingGoal);
+        require(saleStatus.totalSoldApis + reservedApis <= fundingGoalCurrent);
+        require(saleStatus.totalSoldApis + reservedApis <= fundingGoal);
         
         // 투자자의 자산을 업데이트한다
         fundersProperty[_beneficiary].reservedFunds += amountFunds;
@@ -975,7 +975,7 @@ contract ApisCrowdSale is Ownable {
         // 화이트 리스트에 있어야만 하고
         require(whiteList.isInWhiteList(_target) == true);
         // 예약된 투자금이 있어야만 한다.
-        require(fundersProperty[_target].reservedFunds &gt; 0);
+        require(fundersProperty[_target].reservedFunds > 0);
         
         withdrawal(_target);
     }
@@ -1023,7 +1023,7 @@ contract ApisCrowdSale is Ownable {
      * @param _funder 환불을 진행하려는 지갑의 주소
      */
     function refundByOwner(address _funder) onlyOwner public {
-        require(fundersProperty[_funder].reservedFunds &gt; 0);
+        require(fundersProperty[_funder].reservedFunds > 0);
         
         uint256 amountFunds = fundersProperty[_funder].reservedFunds;
         uint256 amountApis = fundersProperty[_funder].reservedApis;
@@ -1049,7 +1049,7 @@ contract ApisCrowdSale is Ownable {
      * @param remainRefundable true : 환불할 수 있는 금액은 남기고 반환한다. false : 모두 반환한다
      */
     function withdrawalFunds(bool remainRefundable) onlyOwner public {
-        require(now &gt; endTime || closed == true);
+        require(now > endTime || closed == true);
         
         uint256 amount = 0;
         if(remainRefundable) {
@@ -1058,7 +1058,7 @@ contract ApisCrowdSale is Ownable {
             amount = this.balance;
         }
         
-        if(amount &gt; 0) {
+        if(amount > 0) {
             msg.sender.transfer(amount);
             
             WithdrawalFunds(msg.sender, amount);
@@ -1070,8 +1070,8 @@ contract ApisCrowdSale is Ownable {
 	 * @return isOpened true: 진행 중 false : 진행 중이 아님(참여 불가)
 	 */
     function isOpened() public view returns (bool isOpend) {
-        if(now &lt; startTime) return false;
-        if(now &gt;= endTime) return false;
+        if(now < startTime) return false;
+        if(now >= endTime) return false;
         if(closed == true) return false;
         
         return true;

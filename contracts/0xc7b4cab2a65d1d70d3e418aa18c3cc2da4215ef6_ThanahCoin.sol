@@ -10,14 +10,14 @@ contract ThanahCoin {
 
     uint public totalSupply;
     uint public availableSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     uint private lastBlock;    
     uint private coinsPerBlock;
 
     function ThanahCoin() {
-        name = &quot;ThanahCoin&quot;;
-        symbol = &quot;THC&quot;;
+        name = "ThanahCoin";
+        symbol = "THC";
         decimals = 0;
         lastBlock = block.number;
         totalSupply = 0;
@@ -27,8 +27,8 @@ contract ThanahCoin {
 
     function transfer(address _to, uint256 _value) {
         
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;

@@ -10,7 +10,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -69,9 +69,9 @@ contract AddressList is Ownable {
 
   /**
   * @dev Map of addresses that have been whitelisted (and passed KYC).
-  * Whitelist value &gt; 0 indicates the address has been whitelisted.
+  * Whitelist value > 0 indicates the address has been whitelisted.
   */
-  mapping(address =&gt; uint8) public whitelist;
+  mapping(address => uint8) public whitelist;
   
   address operator_;
 
@@ -116,13 +116,13 @@ contract AddressList is Ownable {
   /**
   * @dev Allows ops to add accounts to the whitelist.
   * Only those accounts will be allowed to contribute during the distribution.
-  * _phase &gt; 0: Can contribute
+  * _phase > 0: Can contribute
   * _phase = 0: Cannot contribute at all (not whitelisted).
   * @return true
   */
   function updateWhitelist(address _account, uint8 _phase) external onlyOps returns (bool) {
     require(_account != address(0));
-    require(_phase &lt;= 2);
+    require(_phase <= 2);
 
     whitelist[_account] = _phase;
 

@@ -4,17 +4,17 @@ contract NotASecurity {
   uint public totalSupply;
 
   uint public decimals = 18;
-  string public symbol = &quot;NOT&quot;;
-  string public name = &quot;NotASecurity&quot;;
+  string public symbol = "NOT";
+  string public name = "NotASecurity";
 
-  mapping (address =&gt; uint) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => uint) public balanceOf;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   address[11] public benefactors;
   uint public benefactorsBalance;
 
   // Caching things for performance reasons
-  mapping (address =&gt; uint8) private benefactorMap;
+  mapping (address => uint8) private benefactorMap;
   address private lowestBenefactor;
 
   event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -33,7 +33,7 @@ contract NotASecurity {
     uint _wei = msg.value;
     address _investor = msg.sender;
 
-    require(_wei &gt; 0);
+    require(_wei > 0);
     require(distribute(_wei));
 
     balanceOf[_investor] += _wei;
@@ -51,14 +51,14 @@ contract NotASecurity {
   event Distribution(address _addr, uint _amount);
 
   function distribute(uint _amount) public returns (bool) {
-    for (uint _i = 1; _i &lt; benefactors.length; _i++) {
+    for (uint _i = 1; _i < benefactors.length; _i++) {
       address _benefactor = benefactors[_i];
       uint _benefactorBalance = balanceOf[_benefactor];
 
       uint _amountToTransfer = (_benefactorBalance * _amount) / benefactorsBalance;
       emit Distribution(_benefactor, _amountToTransfer);
 
-      if (_amountToTransfer &gt; 0 &amp;&amp; _benefactor != address(0)) {
+      if (_amountToTransfer > 0 && _benefactor != address(0)) {
         _benefactor.transfer(_amountToTransfer);
       }
     }
@@ -71,14 +71,14 @@ contract NotASecurity {
     address _benefactor;
     for (
       uint _j = 2;
-      _j &lt; benefactors.length;
+      _j < benefactors.length;
       _j++
     ) {
       _benefactor = benefactors[_j];
       if (_benefactor == address(0)) {
         return _benefactor;
 
-      } else if (balanceOf[_benefactor] &lt; balanceOf[_lowestBenefactor]) {
+      } else if (balanceOf[_benefactor] < balanceOf[_lowestBenefactor]) {
         _lowestBenefactor = _benefactor;
       }
     }
@@ -86,7 +86,7 @@ contract NotASecurity {
   }
 
   function findEmptyBenefactorIndex() public returns (uint8) {
-    for (uint8 _i = 1; _i &lt; benefactors.length; _i++) {
+    for (uint8 _i = 1; _i < benefactors.length; _i++) {
       if (benefactors[_i] == address(0)) {
         return _i;
       }
@@ -97,11 +97,11 @@ contract NotASecurity {
 
   function reorganize(uint _amount, address _investor) public returns (bool) {
     // if investor is already a benefactor
-    if (benefactorMap[_investor] &gt; 0) {
+    if (benefactorMap[_investor] > 0) {
       benefactorsBalance += _amount;
 
     // if investor is now a top token holder
-    } else if (balanceOf[_investor] &gt; balanceOf[lowestBenefactor]) {
+    } else if (balanceOf[_investor] > balanceOf[lowestBenefactor]) {
       bool _lowestBenefactorEmpty = lowestBenefactor == address(0);
       uint _oldBalance = balanceOf[lowestBenefactor];
       uint8 _indexToSwap = _lowestBenefactorEmpty
@@ -131,9 +131,9 @@ contract NotASecurity {
   ) internal returns (bool success) {
     require(_to != address(0));
     require(_to != address(this));
-    require(_amount &gt; 0);
-    require(balanceOf[_from] &gt;= _amount);
-    require(balanceOf[_to] + _amount &gt; balanceOf[_to]);
+    require(_amount > 0);
+    require(balanceOf[_from] >= _amount);
+    require(balanceOf[_to] + _amount > balanceOf[_to]);
 
     balanceOf[_from] -= _amount;
     balanceOf[_to] += _amount;
@@ -150,7 +150,7 @@ contract NotASecurity {
   }
 
   function transferFrom(address _from, address _to, uint _amount) external returns (bool success) {
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
 
     bool _tranferSuccess = _transfer(_from, _to, _amount);
     if (_tranferSuccess) {

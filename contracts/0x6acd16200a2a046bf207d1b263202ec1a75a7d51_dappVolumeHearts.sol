@@ -22,9 +22,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		// uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return a / b;
 	}
 
@@ -32,7 +32,7 @@ library SafeMath {
 	* @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -41,12 +41,12 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
 		c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
 
-// Allows users to &quot;heart&quot; (like) a DAPP by dapp id
+// Allows users to "heart" (like) a DAPP by dapp id
 // 1 Like = XXXXX eth will be set on front end of site
 // 50% of each transaction gets sent to the last liker
 
@@ -76,11 +76,11 @@ contract dappVolumeHearts {
 	}
 
 	// map dapp ids with heart totals
-	mapping(uint256 =&gt; uint256) public totals;
+	mapping(uint256 => uint256) public totals;
 
 	// update heart count
 	function update(uint256 dapp_id) public payable {
-		require(msg.value &gt; 1900000000000000);
+		require(msg.value > 1900000000000000);
 		totals[dapp_id] = totals[dapp_id] + msg.value;
 		// send 50% of the money to the last person
 		lastAddress.transfer(msg.value.div(2));

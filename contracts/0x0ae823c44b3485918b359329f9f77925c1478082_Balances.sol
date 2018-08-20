@@ -13,8 +13,8 @@ contract Balances {
         uint userInd = 0;
         uint tokenInd = 0;
         
-        for(userInd = 0 ; userInd &lt; numUsers ; userInd++) {
-            for(tokenInd = 0 ; tokenInd &lt; numTokens ; tokenInd++) {
+        for(userInd = 0 ; userInd < numUsers ; userInd++) {
+            for(tokenInd = 0 ; tokenInd < numTokens ; tokenInd++) {
                 result[resultInd++] = tokens[tokenInd].balanceOf(users[userInd]);
             }
         }

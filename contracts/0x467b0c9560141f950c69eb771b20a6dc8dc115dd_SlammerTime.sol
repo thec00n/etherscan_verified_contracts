@@ -11,7 +11,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,9 +51,9 @@ contract Ownable {
 
 contract SlammerTime is Ownable{
 
-  string public constant purpose = &quot;ETHDenver&quot;;
-  string public constant contact = &quot;https://cryptogs.io&quot;;
-  string public constant author = &quot;Austin Thomas Griffith | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d5c484e4954537d5e52535e484f4f58535e58135452">[email&#160;protected]</a>&quot;;
+  string public constant purpose = "ETHDenver";
+  string public constant contact = "https://cryptogs.io";
+  string public constant author = "Austin Thomas Griffith | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d5c484e4954537d5e52535e484f4f58535e58135452">[email protected]</a>";
 
   address public cryptogs;
 
@@ -69,7 +69,7 @@ contract SlammerTime is Ownable{
 
     Cryptogs cryptogsContract = Cryptogs(cryptogs);
 
-    for(uint8 i=0;i&lt;5;i++){
+    for(uint8 i=0;i<5;i++){
       //make sure player1 owns _id1
       require(cryptogsContract.tokenIndexToOwner(_id1[i])==_player1);
       //transfer id1 in
@@ -79,7 +79,7 @@ contract SlammerTime is Ownable{
     }
 
 
-    for(uint8 j=0;j&lt;5;j++){
+    for(uint8 j=0;j<5;j++){
       //make sure player2 owns _id1
       require(cryptogsContract.tokenIndexToOwner(_id2[j])==_player2);
       //transfer id1 in
@@ -105,7 +105,7 @@ contract SlammerTime is Ownable{
   }
 
   function withdraw(uint256 _amount) public onlyOwner returns (bool) {
-    require(this.balance &gt;= _amount);
+    require(this.balance >= _amount);
     assert(owner.send(_amount));
     return true;
   }
@@ -123,7 +123,7 @@ contract StandardToken {
 
 
 contract Cryptogs {
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
   function transfer(address _to,uint256 _tokenId) external { }
   function transferFrom(address _from,address _to,uint256 _tokenId) external { }
 }

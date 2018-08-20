@@ -2,8 +2,8 @@ pragma solidity ^0.4.17;
 
 /**
  * Allows one to send EIP-20 tokens to multiple addresses cheaply.
- * Copyright &#169; 2017 by ABDK Consulting https://abdk.consulting/
- * Author: Mikhail Vladimirov &lt;mikhail.vladimirov[at]gmail.com&gt;
+ * Copyright © 2017 by ABDK Consulting https://abdk.consulting/
+ * Author: Mikhail Vladimirov <mikhail.vladimirov[at]gmail.com>
  */
 contract BatchTokenSender {
     /**
@@ -30,11 +30,11 @@ contract BatchTokenSender {
      */
     function encodeTransfer (uint96 _lotsNumber, address _to)
     public pure returns (uint256 _encodedTransfer) {
-        return (_lotsNumber &lt;&lt; 160) | uint160 (_to);
+        return (_lotsNumber << 160) | uint160 (_to);
     }
 
     /**
-     * Perform multiple token transfers from message sender&#39;s address.
+     * Perform multiple token transfers from message sender's address.
      *
      * @param _token EIP-20 token smart contract that manages tokens to be sent
      * @param _lotSize number of tokens in lot
@@ -43,11 +43,11 @@ contract BatchTokenSender {
     function batchSend (
         Token _token, uint160 _lotSize, uint256 [] _transfers) public {
         uint256 count = _transfers.length;
-        for (uint256 i = 0; i &lt; count; i++) {
+        for (uint256 i = 0; i < count; i++) {
             uint256 transfer = _transfers [i];
-            uint256 value = (transfer &gt;&gt; 160) * _lotSize;
+            uint256 value = (transfer >> 160) * _lotSize;
             address to = address (
-                transfer &amp; 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+                transfer & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
             if (!_token.transferFrom (msg.sender, to, value)) revert ();
         }
     }
@@ -55,7 +55,7 @@ contract BatchTokenSender {
 
 /**
  * EIP-20 standard token interface, as defined
- * &lt;a href=&quot;https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md&quot;&gt;here&lt;/a&gt;.
+ * <a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md">here</a>.
  */
 contract Token {
     /**

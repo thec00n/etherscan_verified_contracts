@@ -24,7 +24,7 @@ contract GameCards {
         bool availableBuy;
         bool availableLease;
         uint[] leaseList;
-        mapping(uint =&gt; LeaseCard) leaseCardStructs;
+        mapping(uint => LeaseCard) leaseCardStructs;
     }
 
     /// Record card
@@ -38,12 +38,12 @@ contract GameCards {
     }
 
     /// Users pending withdrawals
-    mapping(address =&gt; uint) public pendingWithdrawals;
+    mapping(address => uint) public pendingWithdrawals;
 
-    mapping(uint8 =&gt; Card) public cardStructs; // random access by card key
+    mapping(uint8 => Card) public cardStructs; // random access by card key
     uint8[] public cardList; // list of announce keys so we can enumerate them
 
-    mapping(uint8 =&gt; CardDetails) public cardDetailsStructs; // random access by card details key
+    mapping(uint8 => CardDetails) public cardDetailsStructs; // random access by card details key
     uint8[] public cardDetailsList; // list of cards details keys so we can enumerate them
 
     /// Initial card price
@@ -78,7 +78,7 @@ contract GameCards {
 
     modifier onlyValidCard(uint8 cardId) {
         // Throws if card is not valid
-        require(cardId &gt;= 1 &amp;&amp; cardId &lt;= 100);
+        require(cardId >= 1 && cardId <= 100);
         _;
     }
 
@@ -86,7 +86,7 @@ contract GameCards {
     function getCards() public view returns(uint8[]) {
         uint8[] memory result = new uint8[](cardList.length);
         uint8 counter = 0;
-        for (uint8 i = 0; i &lt; cardList.length; i++) {
+        for (uint8 i = 0; i < cardList.length; i++) {
             result[counter] = i;
             counter++;
         }
@@ -97,7 +97,7 @@ contract GameCards {
     function getCardsDetails() public view returns(uint8[]) {
         uint8[] memory result = new uint8[](cardDetailsList.length);
         uint8 counter = 0;
-        for (uint8 i = 0; i &lt; cardDetailsList.length; i++) {
+        for (uint8 i = 0; i < cardDetailsList.length; i++) {
             result[counter] = i;
             counter++;
         }
@@ -144,7 +144,7 @@ contract GameCards {
     {
         // Check sent amount
         uint price = computeInitialPrice(cardId);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         // If owner is 0x0, then we are sure that
         // this is the initial buy
         require(cardStructs[cardId].owner == address(0));
@@ -176,7 +176,7 @@ contract GameCards {
         require(cardDetailsStructs[cardId].availableBuy);
         // Check sent amount
         uint price = cardDetailsStructs[cardId].price;
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         address previousOwner = cardStructs[cardId].owner;
         // Take 1% cut on buy
@@ -235,7 +235,7 @@ contract GameCards {
         // Card cannot be set on lease while currently leasing
         uint _lastLeaseId = getCardLeaseLength(cardId);
         uint _until = cardDetailsStructs[cardId].leaseCardStructs[_lastLeaseId].untilBlock;
-        require(_until &lt; block.number);
+        require(_until < block.number);
 
         cardDetailsStructs[cardId].priceLease = priceLease;
         cardDetailsStructs[cardId].availableLease = true;
@@ -268,7 +268,7 @@ contract GameCards {
         uint leaseDuration = details.leaseDuration;
         uint totalAmount = price * leaseDuration;
         // Check that amount sent is sufficient
-        require(msg.value &gt;= totalAmount);
+        require(msg.value >= totalAmount);
         // Get new lease id
         uint leaseId = getCardLeaseLength(cardId) + 1;
         // Get the block number of lease end

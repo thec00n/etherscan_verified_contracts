@@ -14,12 +14,12 @@ library SafeMath {
     return a / b;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,10 +33,10 @@ interface IDonQuixoteToken{
 
 }
 contract BaseGame {
-  string public gameName = &quot;ScratchTickets&quot;;
+  string public gameName = "ScratchTickets";
   uint public constant  gameType = 2005;
   string public officialGameUrl;
-  mapping (address =&gt; uint256) public userTokenOf;
+  mapping (address => uint256) public userTokenOf;
   uint public bankerBeginTime;
   uint public bankerEndTime;
   address public currentBanker;
@@ -149,7 +149,7 @@ contract ScratchTickets is Base
     uint AddIndex;
   }
 
-  mapping (uint =&gt; awardInfo) public awardInfoOf;
+  mapping (uint => awardInfo) public awardInfoOf;
 
   struct betInfo
   {
@@ -162,7 +162,7 @@ contract ScratchTickets is Base
     uint EventId;
     bool IsReturnAward;
   }
-  mapping (uint =&gt; betInfo) public playerBetInfoOf;
+  mapping (uint => betInfo) public playerBetInfoOf;
 
   modifier onlyAuction {
     require(msg.sender == auction);
@@ -170,13 +170,13 @@ contract ScratchTickets is Base
   }
   modifier onlyBanker {
     require(msg.sender == currentBanker);
-    require(bankerBeginTime &lt;= now);
-    require(now &lt; bankerEndTime);
+    require(bankerBeginTime <= now);
+    require(now < bankerEndTime);
     _;
   }
 
   function canSetBanker() public view returns (bool _result){
-    _result =  bankerEndTime &lt;= now;
+    _result =  bankerEndTime <= now;
   }
 
   function ScratchTickets(string _gameName,uint256 _gameMinBetAmount,uint256 _gameMaxBetAmount,address _DonQuixoteToken) public{
@@ -248,15 +248,15 @@ contract ScratchTickets is Base
   function setBanker(address _banker, uint _beginTime, uint _endTime) public onlyAuction returns(bool _result){
     _result = false;
     require(_banker != 0x0);
-    if(now &lt; bankerEndTime){
+    if(now < bankerEndTime){
       emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 1, now, getEventId());
       return;
     }
-    if(_beginTime &gt; now){
+    if(_beginTime > now){
       emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 3, now, getEventId());
       return;
     }
-    if(_endTime &lt;= now){
+    if(_endTime <= now){
       emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 4, now, getEventId());
       return;
     }
@@ -264,7 +264,7 @@ contract ScratchTickets is Base
     bankerBeginTime = _beginTime;
     bankerEndTime = _endTime;
     emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime,0, now, getEventId());
-    if(now &lt; donGameGiftLineTime){
+    if(now < donGameGiftLineTime){
       DonQuixoteToken.logPlaying(_banker);
     }
     _result = true;
@@ -281,20 +281,20 @@ contract ScratchTickets is Base
   function _play(string _randomStr, uint256 _betAmount) private  returns(bool _result){
     _result = false;
     require(msg.sender != currentBanker);
-    require(now &lt; bankerEndTime.sub(lockTime));
-    require(userTokenOf[currentBanker]&gt;=gameMaxBetAmount.mul(1000));
-    require(bytes(_randomStr).length&lt;=18);
+    require(now < bankerEndTime.sub(lockTime));
+    require(userTokenOf[currentBanker]>=gameMaxBetAmount.mul(1000));
+    require(bytes(_randomStr).length<=18);
 
     uint256 ba = _betAmount;
-    if (ba &gt; gameMaxBetAmount){
+    if (ba > gameMaxBetAmount){
       ba = gameMaxBetAmount;
     }
-    require(ba &gt;= gameMinBetAmount);
+    require(ba >= gameMinBetAmount);
 
-    if(userTokenOf[msg.sender] &lt; _betAmount){
+    if(userTokenOf[msg.sender] < _betAmount){
       depositToken(_betAmount.sub(userTokenOf[msg.sender]));
     }
-    require(userTokenOf[msg.sender] &gt;= ba);
+    require(userTokenOf[msg.sender] >= ba);
     betInfo memory bi = betInfo({
       Player :  msg.sender,
       BetAmount : ba,
@@ -309,7 +309,7 @@ contract ScratchTickets is Base
     userTokenOf[msg.sender] = userTokenOf[msg.sender].sub(ba);
     userTokenOf[currentBanker] = userTokenOf[currentBanker].add(ba);
     emit OnPlay(msg.sender,  ba,  _randomStr, block.number,playNo,now, getEventId());
-    if(now &lt; donGameGiftLineTime){
+    if(now < donGameGiftLineTime){
       DonQuixoteToken.logPlaying(msg.sender);
     }
     playNo++;
@@ -321,25 +321,25 @@ contract ScratchTickets is Base
   }
 
   function _getaward(uint _playNo) private  returns(bool _result){
-    require(_playNo&lt;=playNo);
+    require(_playNo<=playNo);
     _result = false;
     bool isAward = false;
     betInfo storage bi = playerBetInfoOf[_playNo];
     require(!bi.IsReturnAward);
-    require(bi.BlockNumber&gt;block.number.sub(256));
+    require(bi.BlockNumber>block.number.sub(256));
     bytes32 blockHash = block.blockhash(bi.BlockNumber);
     lock();
     uint256 randomNum = bi.EventId%1000;
     bytes32 encrptyHash = keccak256(bi.RandomStr,bi.Player,blockHash,uint8ToString(randomNum));
     bi.BetNum = uint(encrptyHash)%10000;
     bi.IsReturnAward = true;
-    for (uint i = 1; i &lt; 6; i++) {
+    for (uint i = 1; i < 6; i++) {
       awardInfo memory ai = awardInfoOf[i];
       uint x = bi.BetNum%(10000/ai.Num);
       if(x == ai.KeyNumber){
         uint256 AllAmount = bi.BetAmount.mul(ai.WinMultiplePer);
         uint256 awadrAmount = AllAmount;
-        if(AllAmount &gt;= userTokenOf[bi.Banker]){
+        if(AllAmount >= userTokenOf[bi.Banker]){
           awadrAmount = userTokenOf[bi.Banker];
         }
         userTokenOf[bi.Banker] = userTokenOf[bi.Banker].sub(awadrAmount) ;
@@ -350,7 +350,7 @@ contract ScratchTickets is Base
       }
     }
     if(!isAward){
-      if(now &lt; donGameGiftLineTime){
+      if(now < donGameGiftLineTime){
         DonQuixoteToken.sendGameGift(bi.Player);
       }
       emit OnGetAward(bi.Player,0, _playNo,bi.RandomStr,bi.BlockNumber,blockHash,bi.BetAmount,now,getEventId(),0,0);
@@ -362,7 +362,7 @@ contract ScratchTickets is Base
   function _withdrawToken(address _to, uint256 _amount) internal {
     require(_to != 0x0);
     if(_to == currentBanker){
-      require(userTokenOf[currentBanker] &gt; gameMaxBetAmount.mul(1000));
+      require(userTokenOf[currentBanker] > gameMaxBetAmount.mul(1000));
       _amount = userTokenOf[currentBanker].sub(gameMaxBetAmount.mul(1000));
     }
     userTokenOf[_to] = userTokenOf[_to].sub(_amount);
@@ -380,7 +380,7 @@ contract ScratchTickets is Base
       reversed[i++] = byte(48 + remainder);
     }
     bytes memory s = new bytes(i);
-    for (uint j = 0; j &lt; i; j++) {
+    for (uint j = 0; j < i; j++) {
       s[j] = reversed[i - j - 1];
     }
     string memory str = string(s);

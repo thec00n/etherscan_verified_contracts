@@ -30,7 +30,7 @@ contract Deal {
 
     ERC223Interface public token;
 
-    mapping (bytes32 =&gt; Campaign) public campaigns;
+    mapping (bytes32 => Campaign) public campaigns;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -56,26 +56,26 @@ contract Deal {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
       uint c = a + b;
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 
     function sum(uint[] array) public returns (uint) {
         uint summa;
-        for (uint i; i &lt; array.length; i++) {
+        for (uint i; i < array.length; i++) {
             summa += array[i];
         }
         return summa;
@@ -133,9 +133,9 @@ contract Deal {
     function sendCoin(address[] _routerOwners, uint[] amount, bytes32 id) onlyOwner {
         require(campaigns[id].status == Status.created);
         require(amount.length == _routerOwners.length);
-        require(sum(amount) &lt;= campaigns[id].tokenAmount);
+        require(sum(amount) <= campaigns[id].tokenAmount);
 
-        for (var i = 0; i &lt; amount.length; i++) {
+        for (var i = 0; i < amount.length; i++) {
            token.transfer(_routerOwners[i], safeDiv(safeMul(amount[i], 95), 100)); 
         }
         token.transfer(fee, safeDiv(safeMul(sum(amount), 5), 100) );

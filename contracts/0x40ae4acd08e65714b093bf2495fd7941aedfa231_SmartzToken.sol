@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ contract multiowned {
         // count of confirmations needed
         uint yetNeeded;
 
-        // bitmap of confirmations where owner #ownerIndex&#39;s decision corresponds to 2**ownerIndex bit
+        // bitmap of confirmations where owner #ownerIndex's decision corresponds to 2**ownerIndex bit
         uint ownersDone;
 
         // position of this operation key in m_multiOwnedPendingIndex
@@ -106,18 +106,18 @@ contract multiowned {
         if (confirmAndCheck(_operation)) {
             _;
         }
-        // Even if required number of confirmations has&#39;t been collected yet,
-        // we can&#39;t throw here - because changes to the state have to be preserved.
+        // Even if required number of confirmations has't been collected yet,
+        // we can't throw here - because changes to the state have to be preserved.
         // But, confirmAndCheck itself will throw in case sender is not an owner.
     }
 
     modifier validNumOwners(uint _numOwners) {
-        require(_numOwners &gt; 0 &amp;&amp; _numOwners &lt;= c_maxOwners);
+        require(_numOwners > 0 && _numOwners <= c_maxOwners);
         _;
     }
 
     modifier multiOwnedValidRequirement(uint _required, uint _numOwners) {
-        require(_required &gt; 0 &amp;&amp; _required &lt;= _numOwners);
+        require(_required > 0 && _required <= _numOwners);
         _;
     }
 
@@ -138,23 +138,23 @@ contract multiowned {
 
 	// METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them (msg.sender is not added to the owners!).
     function multiowned(address[] _owners, uint _required)
         public
         validNumOwners(_owners.length)
         multiOwnedValidRequirement(_required, _owners.length)
     {
-        assert(c_maxOwners &lt;= 255);
+        assert(c_maxOwners <= 255);
 
         m_numOwners = _owners.length;
         m_multiOwnedRequired = _required;
 
-        for (uint i = 0; i &lt; _owners.length; ++i)
+        for (uint i = 0; i < _owners.length; ++i)
         {
             address owner = _owners[i];
             // invalid and duplicate addresses are not allowed
-            require(0 != owner &amp;&amp; !isOwner(owner) /* not isOwner yet! */);
+            require(0 != owner && !isOwner(owner) /* not isOwner yet! */);
 
             uint currentOwnerIndex = checkOwnerIndex(i + 1 /* first slot is unused */);
             m_owners[currentOwnerIndex] = owner;
@@ -252,7 +252,7 @@ contract multiowned {
     /// @return memory array of owners
     function getOwners() public constant returns (address[]) {
         address[] memory result = new address[](m_numOwners);
-        for (uint i = 0; i &lt; m_numOwners; i++)
+        for (uint i = 0; i < m_numOwners; i++)
             result[i] = getOwner(i);
 
         return result;
@@ -260,14 +260,14 @@ contract multiowned {
 
     /// @notice checks if provided address is an owner address
     /// @param _addr address to check
-    /// @return true if it&#39;s an owner
+    /// @return true if it's an owner
     function isOwner(address _addr) public constant returns (bool) {
-        return m_ownerIndex[_addr] &gt; 0;
+        return m_ownerIndex[_addr] > 0;
     }
 
     /// @notice Tests ownership of the current caller.
-    /// @return true if it&#39;s an owner
-    // It&#39;s advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
+    /// @return true if it's an owner
+    // It's advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
     // addOwner/changeOwner and to isOwner.
     function amIOwner() external constant onlyowner returns (bool) {
         return true;
@@ -282,7 +282,7 @@ contract multiowned {
     {
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
         var pending = m_multiOwnedPending[_operation];
-        require(pending.ownersDone &amp; ownerIndexBit &gt; 0);
+        require(pending.ownersDone & ownerIndexBit > 0);
 
         assertOperationIsConsistent(_operation);
 
@@ -303,7 +303,7 @@ contract multiowned {
         ownerExists(_owner)
         returns (bool)
     {
-        return !(m_multiOwnedPending[_operation].ownersDone &amp; makeOwnerBitmapBit(_owner) == 0);
+        return !(m_multiOwnedPending[_operation].ownersDone & makeOwnerBitmapBit(_owner) == 0);
     }
 
     // INTERNAL METHODS
@@ -315,14 +315,14 @@ contract multiowned {
     {
         if (512 == m_multiOwnedPendingIndex.length)
             // In case m_multiOwnedPendingIndex grows too much we have to shrink it: otherwise at some point
-            // we won&#39;t be able to do it because of block gas limit.
+            // we won't be able to do it because of block gas limit.
             // Yes, pending confirmations will be lost. Dont see any security or stability implications.
             // TODO use more graceful approach like compact or removal of clearPending completely
             clearPending();
 
         var pending = m_multiOwnedPending[_operation];
 
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (! isOperationActive(_operation)) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_multiOwnedRequired;
@@ -335,10 +335,10 @@ contract multiowned {
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             // ok - check if count is enough to go ahead.
-            assert(pending.yetNeeded &gt; 0);
+            assert(pending.yetNeeded > 0);
             if (pending.yetNeeded == 1) {
                 // enough confirmations: reset and run interior.
                 delete m_multiOwnedPendingIndex[m_multiOwnedPending[_operation].index];
@@ -361,18 +361,18 @@ contract multiowned {
     // TODO given that its called after each removal, it could be simplified.
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
             // iterating to the first free slot from the beginning
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
+            while (free < m_numOwners && m_owners[free] != 0) free++;
 
             // iterating to the first occupied slot from the end
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
 
             // swap, if possible, so free slot is located at the end after the swap
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
-                // owners between swapped slots should&#39;t be renumbered - that saves a lot of gas
+                // owners between swapped slots should't be renumbered - that saves a lot of gas
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
                 m_owners[m_numOwners] = 0;
@@ -383,7 +383,7 @@ contract multiowned {
     function clearPending() private onlyowner {
         uint length = m_multiOwnedPendingIndex.length;
         // TODO block gas limit
-        for (uint i = 0; i &lt; length; ++i) {
+        for (uint i = 0; i < length; ++i) {
             if (m_multiOwnedPendingIndex[i] != 0)
                 delete m_multiOwnedPending[m_multiOwnedPendingIndex[i]];
         }
@@ -391,7 +391,7 @@ contract multiowned {
     }
 
     function checkOwnerIndex(uint ownerIndex) private pure returns (uint) {
-        assert(0 != ownerIndex &amp;&amp; ownerIndex &lt;= c_maxOwners);
+        assert(0 != ownerIndex && ownerIndex <= c_maxOwners);
         return ownerIndex;
     }
 
@@ -406,17 +406,17 @@ contract multiowned {
 
 
     function assertOwnersAreConsistent() private constant {
-        assert(m_numOwners &gt; 0);
-        assert(m_numOwners &lt;= c_maxOwners);
+        assert(m_numOwners > 0);
+        assert(m_numOwners <= c_maxOwners);
         assert(m_owners[0] == 0);
-        assert(0 != m_multiOwnedRequired &amp;&amp; m_multiOwnedRequired &lt;= m_numOwners);
+        assert(0 != m_multiOwnedRequired && m_multiOwnedRequired <= m_numOwners);
     }
 
     function assertOperationIsConsistent(bytes32 _operation) private constant {
         var pending = m_multiOwnedPending[_operation];
         assert(0 != pending.yetNeeded);
         assert(m_multiOwnedPendingIndex[pending.index] == _operation);
-        assert(pending.yetNeeded &lt;= m_multiOwnedRequired);
+        assert(pending.yetNeeded <= m_multiOwnedRequired);
     }
 
 
@@ -433,15 +433,15 @@ contract multiowned {
 
     // list of owners (addresses),
     // slot 0 is unused so there are no owner which index is 0.
-    // TODO could we save space at the end of the array for the common case of &lt;10 owners? and should we?
+    // TODO could we save space at the end of the array for the common case of <10 owners? and should we?
     address[256] internal m_owners;
 
-    // index on the list of owners to allow reverse lookup: owner address =&gt; index in m_owners
-    mapping(address =&gt; uint) internal m_ownerIndex;
+    // index on the list of owners to allow reverse lookup: owner address => index in m_owners
+    mapping(address => uint) internal m_ownerIndex;
 
 
     // the ongoing operations.
-    mapping(bytes32 =&gt; MultiOwnedOperationPendingState) internal m_multiOwnedPending;
+    mapping(bytes32 => MultiOwnedOperationPendingState) internal m_multiOwnedPending;
     bytes32[] internal m_multiOwnedPendingIndex;
 }
 
@@ -462,7 +462,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -471,7 +471,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -496,7 +496,7 @@ contract BurnableToken is BasicToken {
     event Burn(address indexed from, uint256 amount);
 
     /**
-     * Function to burn msg.sender&#39;s tokens.
+     * Function to burn msg.sender's tokens.
      *
      * @param _amount amount of tokens to burn
      *
@@ -508,8 +508,8 @@ contract BurnableToken is BasicToken {
     {
         address from = msg.sender;
 
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[from]);
+        require(_amount > 0);
+        require(_amount <= balances[from]);
 
         totalSupply = totalSupply.sub(_amount);
         balances[from] = balances[from].sub(_amount);
@@ -522,7 +522,7 @@ contract BurnableToken is BasicToken {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -533,8 +533,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -548,7 +548,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -583,7 +583,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -604,8 +604,8 @@ contract TokenWithApproveAndCallMethod is StandardToken {
      * @param _extraData any extra data which to be provided to the _spender
      *
      * By invoking this utility function token holder could do two things in one transaction: approve spending his
-     * tokens and execute some external contract which spends them on token holder&#39;s behalf.
-     * It can&#39;t be known if _spender&#39;s invocation succeed or not.
+     * tokens and execute some external contract which spends them on token holder's behalf.
+     * It can't be known if _spender's invocation succeed or not.
      * This function will throw if approval failed.
      */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public {
@@ -616,7 +616,7 @@ contract TokenWithApproveAndCallMethod is StandardToken {
 
 contract SmartzToken is ArgumentsChecker, multiowned, BurnableToken, StandardToken, TokenWithApproveAndCallMethod {
 
-    /// @title Unit of frozen tokens - tokens which can&#39;t be spent until certain conditions is met.
+    /// @title Unit of frozen tokens - tokens which can't be spent until certain conditions is met.
     struct FrozenCell {
         /// @notice amount of frozen tokens
         uint amount;
@@ -637,7 +637,7 @@ contract SmartzToken is ArgumentsChecker, multiowned, BurnableToken, StandardTok
     }
 
     modifier validUnixTS(uint ts) {
-        require(ts &gt;= 1522046326 &amp;&amp; ts &lt;= 1800000000);
+        require(ts >= 1522046326 && ts <= 1800000000);
         _;
     }
 
@@ -697,7 +697,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     function balanceOf(address _owner) public view returns (uint256) {
         uint256 balance = balances[_owner];
 
-        for (uint cellIndex = 0; cellIndex &lt; frozenBalances[_owner].length; ++cellIndex) {
+        for (uint cellIndex = 0; cellIndex < frozenBalances[_owner].length; ++cellIndex) {
             balance = balance.add(frozenBalances[_owner][cellIndex].amount);
         }
 
@@ -714,7 +714,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     function availableBalanceOf(address _owner) public view returns (uint256) {
         uint256 balance = balances[_owner];
 
-        for (uint cellIndex = 0; cellIndex &lt; frozenBalances[_owner].length; ++cellIndex) {
+        for (uint cellIndex = 0; cellIndex < frozenBalances[_owner].length; ++cellIndex) {
             if (isSpendableFrozenCell(_owner, cellIndex))
                 balance = balance.add(frozenBalances[_owner][cellIndex].amount);
         }
@@ -723,7 +723,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     }
 
     /**
-     * @notice Standard transfer() overridden to have a chance to thaw sender&#39;s tokens.
+     * @notice Standard transfer() overridden to have a chance to thaw sender's tokens.
      *
      * @param _to the address to transfer to
      * @param _value the amount to be transferred
@@ -740,7 +740,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     }
 
     /**
-     * @notice Standard transferFrom overridden to have a chance to thaw sender&#39;s tokens.
+     * @notice Standard transferFrom overridden to have a chance to thaw sender's tokens.
      *
      * @param _from address the address which you want to send tokens from
      * @param _to address the address which you want to transfer to
@@ -759,7 +759,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
 
 
     /**
-     * Function to burn msg.sender&#39;s tokens. Overridden to have a chance to thaw sender&#39;s tokens.
+     * Function to burn msg.sender's tokens. Overridden to have a chance to thaw sender's tokens.
      *
      * @param _amount amount of tokens to burn
      *
@@ -795,11 +795,11 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
      * @param index index of so-called frozen cell from 0 (inclusive) up to frozenCellCount(owner) exclusive
      *
      * @return amount amount of tokens frozen in this cell
-     * @return thawTS unix timestamp at which tokens&#39;ll become available
-     * @return isKYCRequired it&#39;s required to pass KYC to spend tokens iff isKYCRequired is true
+     * @return thawTS unix timestamp at which tokens'll become available
+     * @return isKYCRequired it's required to pass KYC to spend tokens iff isKYCRequired is true
      */
     function frozenCell(address owner, uint index) public view returns (uint amount, uint thawTS, bool isKYCRequired) {
-        require(index &lt; frozenCellCount(owner));
+        require(index < frozenCellCount(owner));
 
         amount = frozenBalances[owner][index].amount;
         thawTS = uint(frozenBalances[owner][index].thawTS);
@@ -848,8 +848,8 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
      *
      * @param _to account to which tokens are sent
      * @param _value amount of tokens to send
-     * @param thawTS unix timestamp at which tokens&#39;ll become available
-     * @param isKYCRequired it&#39;s required to pass KYC to spend tokens iff isKYCRequired is true
+     * @param thawTS unix timestamp at which tokens'll become available
+     * @param isKYCRequired it's required to pass KYC to spend tokens iff isKYCRequired is true
      *
      * Function is used only during token sale phase and available only to sale accounts.
      */
@@ -863,7 +863,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         checkTransferInvariant(msg.sender, _to)
         returns (bool)
     {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         addFrozen(_to, _value, thawTS, isKYCRequired);
@@ -878,12 +878,12 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
      * @param _from account to send tokens from
      * @param _to account to which tokens are sent
      * @param _value amount of tokens to send
-     * @param thawTS unix timestamp at which tokens&#39;ll become available
-     * @param isKYCRequired it&#39;s required to pass KYC to spend tokens iff isKYCRequired is true
+     * @param thawTS unix timestamp at which tokens'll become available
+     * @param isKYCRequired it's required to pass KYC to spend tokens iff isKYCRequired is true
      *
      * Function is used only during token sale phase to make a refunds and available only to sale accounts.
      * _from account has to explicitly approve spending with the approve() call.
-     * thawTS and isKYCRequired parameters are required to withdraw exact &quot;same&quot; tokens (to not affect availability of
+     * thawTS and isKYCRequired parameters are required to withdraw exact "same" tokens (to not affect availability of
      * other tokens of the account).
      */
     function frozenTransferFrom(address _from, address _to, uint256 _value, uint thawTS, bool isKYCRequired)
@@ -897,8 +897,8 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         checkTransferInvariant(_from, _to)
         returns (bool)
     {
-        require(isSale(msg.sender) &amp;&amp; isSale(_to));
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(isSale(msg.sender) && isSale(_to));
+        require(_value <= allowed[_from][msg.sender]);
 
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         subFrozen(_from, _value, thawTS, isKYCRequired);
@@ -937,13 +937,13 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         view
         returns (uint cellIndex)
     {
-        for (cellIndex = 0; cellIndex &lt; frozenBalances[owner].length; ++cellIndex) {
+        for (cellIndex = 0; cellIndex < frozenBalances[owner].length; ++cellIndex) {
             FrozenCell storage checkedCell = frozenBalances[owner][cellIndex];
-            if (checkedCell.thawTS == thawTSEncoded &amp;&amp; checkedCell.isKYCRequired == isKYCRequiredEncoded)
+            if (checkedCell.thawTS == thawTSEncoded && checkedCell.isKYCRequired == isKYCRequiredEncoded)
                 break;
         }
 
-        assert(cellIndex &lt;= frozenBalances[owner].length);
+        assert(cellIndex <= frozenBalances[owner].length);
     }
 
     /// @dev Says if the given cell could be spent now
@@ -953,13 +953,13 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         returns (bool)
     {
         FrozenCell storage cell = frozenBalances[owner][cellIndex];
-        if (uint(cell.thawTS) &gt; getTime())
+        if (uint(cell.thawTS) > getTime())
             return false;
 
         if (0 == cell.amount)   // already spent
             return false;
 
-        if (decodeKYCFlag(cell.isKYCRequired) &amp;&amp; !m_KYCProvider.isKYCPassed(owner))
+        if (decodeKYCFlag(cell.isKYCRequired) && !m_KYCProvider.isKYCPassed(owner))
             return false;
 
         return true;
@@ -987,7 +987,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         }
 
         FrozenCell storage targetCell = frozenBalances[_to][cellIndex];
-        assert(targetCell.thawTS == thawTSEncoded &amp;&amp; targetCell.isKYCRequired == isKYCRequiredEncoded);
+        assert(targetCell.thawTS == thawTSEncoded && targetCell.isKYCRequired == isKYCRequiredEncoded);
 
         targetCell.amount = targetCell.amount.add(_value);
     }
@@ -1001,7 +1001,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
         require(cellIndex != frozenBalances[_from].length);   // has to be found
 
         FrozenCell storage cell = frozenBalances[_from][cellIndex];
-        require(cell.amount &gt;= _value);
+        require(cell.amount >= _value);
 
         cell.amount = cell.amount.sub(_value);
     }
@@ -1010,13 +1010,13 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     function thawSomeTokens(address owner, uint requiredAmount)
         private
     {
-        if (balances[owner] &gt;= requiredAmount)
+        if (balances[owner] >= requiredAmount)
             return;     // fast path
 
         // Checking that our goal is reachable before issuing expensive storage modifications.
-        require(availableBalanceOf(owner) &gt;= requiredAmount);
+        require(availableBalanceOf(owner) >= requiredAmount);
 
-        for (uint cellIndex = 0; cellIndex &lt; frozenBalances[owner].length; ++cellIndex) {
+        for (uint cellIndex = 0; cellIndex < frozenBalances[owner].length; ++cellIndex) {
             if (isSpendableFrozenCell(owner, cellIndex)) {
                 uint amount = frozenBalances[owner][cellIndex].amount;
                 frozenBalances[owner][cellIndex].amount = 0;
@@ -1024,7 +1024,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
             }
         }
 
-        assert(balances[owner] &gt;= requiredAmount);
+        assert(balances[owner] >= requiredAmount);
     }
 
     /// @dev to be overridden in tests
@@ -1047,10 +1047,10 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
     IKYCProvider public m_KYCProvider;
 
     /// @notice set of sale accounts which can freeze tokens
-    mapping (address =&gt; bool) public m_sales;
+    mapping (address => bool) public m_sales;
 
     /// @notice frozen tokens
-    mapping (address =&gt; FrozenCell[]) public frozenBalances;
+    mapping (address => FrozenCell[]) public frozenBalances;
 
     /// @notice allows privileged functions (token sale phase)
     bool public m_allowPrivileged = true;
@@ -1058,7 +1058,7 @@ result[2] = address(0xAACf78F8e1fbDcf7d941E80Ff8B817BE1F054Af4);
 
     // CONSTANTS
 
-    string public constant name = &#39;Smartz token&#39;;
-    string public constant symbol = &#39;SMR&#39;;
+    string public constant name = 'Smartz token';
+    string public constant symbol = 'SMR';
     uint8 public constant decimals = 18;
 }

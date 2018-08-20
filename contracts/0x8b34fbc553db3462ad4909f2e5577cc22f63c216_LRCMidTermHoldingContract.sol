@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -30,20 +30,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,19 +55,19 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -121,7 +121,7 @@ contract Token {
 
 
 /// @title Mid-Team Holding Incentive Program
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="eb8f8a85828e87ab8784849b9982858cc584998c">[email&#160;protected]</span>&gt;, Kongliang Zhong - &lt;<span class="__cf_email__" data-cfemail="97fcf8f9f0fbfef6f9f0d7fbf8f8e7e5fef9f0b9f8e5f0">[email&#160;protected]</span>&gt;.
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="eb8f8a85828e87ab8784849b9982858cc584998c">[email protected]</span>>, Kongliang Zhong - <<span class="__cf_email__" data-cfemail="97fcf8f9f0fbfef6f9f0d7fbf8f8e7e5fef9f0b9f8e5f0">[email protected]</span>>.
 /// For more information, please visit https://loopring.org.
 contract LRCMidTermHoldingContract {
     using SafeMath for uint;
@@ -162,7 +162,7 @@ contract LRCMidTermHoldingContract {
         uint timestamp;
     }
 
-    mapping (address =&gt; Record) records;
+    mapping (address => Record) records;
 
     /*
      * EVENTS
@@ -207,7 +207,7 @@ contract LRCMidTermHoldingContract {
         require(msg.sender == owner);
 
         uint amount = ethAmount.min256(this.balance);
-        require(amount &gt; 0);
+        require(amount > 0);
         owner.transfer(amount);
 
         Drained(amount);
@@ -228,16 +228,16 @@ contract LRCMidTermHoldingContract {
     function close() public payable {
         require(!closed);
         require(msg.sender == owner);
-        require(now &gt; depositStopTime + WITHDRAWAL_DELAY + WITHDRAWAL_WINDOW);
+        require(now > depositStopTime + WITHDRAWAL_DELAY + WITHDRAWAL_WINDOW);
 
         uint ethAmount = this.balance;
-        if (ethAmount &gt; 0) {
+        if (ethAmount > 0) {
             owner.transfer(ethAmount);
         }
 
         var lrcToken = Token(lrcTokenAddress);
         uint lrcAmount = lrcToken.balanceOf(address(this));
-        if (lrcAmount &gt; 0) {
+        if (lrcAmount > 0) {
             require(lrcToken.transfer(owner, lrcAmount));
         }
 
@@ -250,7 +250,7 @@ contract LRCMidTermHoldingContract {
         require(!closed);
 
         if (msg.sender != owner) {
-            if (now &lt;= depositStopTime) depositLRC();
+            if (now <= depositStopTime) depositLRC();
             else withdrawLRC();
         }
     }
@@ -258,10 +258,10 @@ contract LRCMidTermHoldingContract {
 
     /// @dev Deposit LRC for ETH.
     /// If user send x ETH, this method will try to transfer `x * 100 * 6500` LRC from
-    /// the user&#39;s address and send `x * 100` ETH to the user.
+    /// the user's address and send `x * 100` ETH to the user.
     function depositLRC() payable {
-        require(!closed &amp;&amp; msg.sender != owner);
-        require(now &lt;= depositStopTime);
+        require(!closed && msg.sender != owner);
+        require(now <= depositStopTime);
         require(msg.value == 0);
 
         var record = records[msg.sender];
@@ -275,7 +275,7 @@ contract LRCMidTermHoldingContract {
         uint ethAmount = lrcAmount.div(RATE);
         lrcAmount = ethAmount.mul(RATE);
 
-        require(lrcAmount &gt; 0 &amp;&amp; ethAmount &gt; 0);
+        require(lrcAmount > 0 && ethAmount > 0);
 
         record.lrcAmount += lrcAmount;
         record.timestamp = now;
@@ -297,13 +297,13 @@ contract LRCMidTermHoldingContract {
 
     /// @dev Withdrawal LRC with ETH transfer.
     function withdrawLRC() payable {
-        require(!closed &amp;&amp; msg.sender != owner);
-        require(now &gt; depositStopTime);
-        require(msg.value &gt; 0);
+        require(!closed && msg.sender != owner);
+        require(now > depositStopTime);
+        require(msg.value > 0);
 
         var record = records[msg.sender];
-        require(now &gt;= record.timestamp + WITHDRAWAL_DELAY);
-        require(now &lt;= record.timestamp + WITHDRAWAL_DELAY + WITHDRAWAL_WINDOW);
+        require(now >= record.timestamp + WITHDRAWAL_DELAY);
+        require(now <= record.timestamp + WITHDRAWAL_DELAY + WITHDRAWAL_WINDOW);
 
         uint ethAmount = msg.value.min256(record.lrcAmount.div(RATE));
         uint lrcAmount = ethAmount.mul(RATE);
@@ -328,7 +328,7 @@ contract LRCMidTermHoldingContract {
         require(Token(lrcTokenAddress).transfer(msg.sender, lrcAmount));
 
         uint ethRefund = msg.value - ethAmount;
-        if (ethRefund &gt; 0) {
+        if (ethRefund > 0) {
             msg.sender.transfer(ethRefund);
         }
     }

@@ -6,7 +6,7 @@ contract AccountLevels {
   //given a user, returns an account level
   //0 = regular user (pays take fee and make fee)
   //1 = market maker silver (pays take fee, no make fee, gets rebate)
-  //2 = market maker gold (pays take fee, no make fee, gets entire counterparty&#39;s take fee as rebate)
+  //2 = market maker gold (pays take fee, no make fee, gets entire counterparty's take fee as rebate)
   function accountLevel(address user) public constant returns(uint);
 }
 
@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -100,11 +100,11 @@ contract SwissCryptoExchange {
   uint256 public feeMake; //percentage times (1 ether)
   uint256 public feeTake; //percentage times (1 ether)
   uint256 public feeRebate; //percentage times (1 ether)
-  mapping (address =&gt; mapping (address =&gt; uint256)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
-  mapping (address =&gt; bool) public whitelistedTokens; //mapping of whitelisted token addresses (token=0 means Ether)
-  mapping (address =&gt; bool) public whitelistedUsers; // mapping of whitelisted users that can perform trading
-  mapping (address =&gt; mapping (bytes32 =&gt; bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
-  mapping (address =&gt; mapping (bytes32 =&gt; uint256)) public orderFills; //mapping of user accounts to mapping of order hashes to uint256s (amount of order that has been filled)
+  mapping (address => mapping (address => uint256)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => bool) public whitelistedTokens; //mapping of whitelisted token addresses (token=0 means Ether)
+  mapping (address => bool) public whitelistedUsers; // mapping of whitelisted users that can perform trading
+  mapping (address => mapping (bytes32 => bool)) public orders; //mapping of user accounts to mapping of order hashes to booleans (true = submitted by user, equivalent to offchain signature)
+  mapping (address => mapping (bytes32 => uint256)) public orderFills; //mapping of user accounts to mapping of order hashes to uint256s (amount of order that has been filled)
 
   // Events definition.
   event Order(address tokenGet, uint256 amountGet, address tokenGive, uint256 amountGive, uint256 expires, uint256 nonce, address user);
@@ -143,7 +143,7 @@ contract SwissCryptoExchange {
     feeTake = _feeTake;
     feeRebate = _feeRebate;
 
-    // Validate &quot;ethereum address&quot;.
+    // Validate "ethereum address".
     whitelistedTokens[0x0] = true;
   }
 
@@ -169,7 +169,7 @@ contract SwissCryptoExchange {
    */
   function changeAdmin(address _admin) public onlyAdmin {
     // The provided address should be valid and different from the current one.
-    require(_admin != 0x0 &amp;&amp; admin != _admin);
+    require(_admin != 0x0 && admin != _admin);
 
     // Store the new value.
     admin = _admin;
@@ -212,7 +212,7 @@ contract SwissCryptoExchange {
    */
   function changeFeeTake(uint256 _feeTake) public onlyAdmin {
     // The new feeTake should be greater than or equal to the feeRebate.
-    require(_feeTake &gt;= feeRebate);
+    require(_feeTake >= feeRebate);
 
     // Store the new value.
     feeTake = _feeTake;
@@ -224,7 +224,7 @@ contract SwissCryptoExchange {
    */
   function changeFeeRebate(uint256 _feeRebate) public onlyAdmin {
     // The new feeRebate should be less than or equal to the feeTake.
-    require(_feeRebate &lt;= feeTake);
+    require(_feeRebate <= feeTake);
 
     // Store the new value.
     feeRebate = _feeRebate;
@@ -236,7 +236,7 @@ contract SwissCryptoExchange {
    */
   function addWhitelistedTokenAddr(address token) public onlyAdmin {
     // Token address should not be 0x0 (ether) and it should not be already whitelisted.
-    require(token != 0x0 &amp;&amp; !whitelistedTokens[token]);
+    require(token != 0x0 && !whitelistedTokens[token]);
 
     // Change the flag for this contract address to true.
     whitelistedTokens[token] = true;
@@ -248,7 +248,7 @@ contract SwissCryptoExchange {
    */
   function removeWhitelistedTokenAddr(address token) public onlyAdmin {
     // Token address should not be 0x0 (ether) and it should be whitelisted.
-    require(token != 0x0 &amp;&amp; whitelistedTokens[token]);
+    require(token != 0x0 && whitelistedTokens[token]);
 
     // Change the flag for this contract address to false.
     whitelistedTokens[token] = false;
@@ -260,7 +260,7 @@ contract SwissCryptoExchange {
    */
   function addWhitelistedUserAddr(address user) public onlyAdmin {
     // Address provided should be valid and not already whitelisted.
-    require(user != 0x0 &amp;&amp; !whitelistedUsers[user]);
+    require(user != 0x0 && !whitelistedUsers[user]);
 
     // Change the flag for this address to false.
     whitelistedUsers[user] = true;
@@ -272,7 +272,7 @@ contract SwissCryptoExchange {
    */
   function removeWhitelistedUserAddr(address user) public onlyAdmin {
     // Address provided should be valid and whitelisted.
-    require(user != 0x0 &amp;&amp; whitelistedUsers[user]);
+    require(user != 0x0 && whitelistedUsers[user]);
 
     // Change the flag for this address to false.
     whitelistedUsers[user] = false;
@@ -298,7 +298,7 @@ contract SwissCryptoExchange {
    */
   function withdraw(uint256 amount) public {
     // Requester should have enough balance.
-    require(tokens[0x0][msg.sender] &gt;= amount);
+    require(tokens[0x0][msg.sender] >= amount);
   
     // Substract the withdrawn wei amount from the user balance.
     tokens[0x0][msg.sender] = tokens[0x0][msg.sender].sub(amount);
@@ -322,7 +322,7 @@ contract SwissCryptoExchange {
   {
     // Should not deposit wei using this function and
     // token contract address should be whitelisted.
-    require(token != 0x0 &amp;&amp; whitelistedTokens[token]);
+    require(token != 0x0 && whitelistedTokens[token]);
       
     // Only whitelisted users can make deposits.
     require(whitelistedUsers[msg.sender]);
@@ -347,7 +347,7 @@ contract SwissCryptoExchange {
     require(token != 0x0);
 
     // Requester should have enough balance.
-    require(tokens[token][msg.sender] &gt;= amount);
+    require(tokens[token][msg.sender] >= amount);
 
     // Substract the withdrawn token amount from the user balance.
     tokens[token][msg.sender] = tokens[token][msg.sender].sub(amount);
@@ -395,7 +395,7 @@ contract SwissCryptoExchange {
     require(whitelistedUsers[msg.sender]);
 
     // Order tokens addresses should be whitelisted. 
-    require(whitelistedTokens[tokenGet] &amp;&amp; whitelistedTokens[tokenGive]);
+    require(whitelistedTokens[tokenGet] && whitelistedTokens[tokenGive]);
 
     // Calculate the order hash.
     bytes32 hash = keccak256(address(this), tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
@@ -478,10 +478,10 @@ contract SwissCryptoExchange {
     require(whitelistedUsers[msg.sender]);
 
     // Only whitelisted tokens can be traded.
-    require(whitelistedTokens[tokenGet] &amp;&amp; whitelistedTokens[tokenGive]);
+    require(whitelistedTokens[tokenGet] && whitelistedTokens[tokenGive]);
 
     // Expire block number should be greater than current block.
-    require(block.number &lt;= expires);
+    require(block.number <= expires);
 
     // Calculate the trade hash.
     bytes32 hash = keccak256(address(this), tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
@@ -490,7 +490,7 @@ contract SwissCryptoExchange {
     require(validateOrderHash(hash, user, v, r, s));
 
     // Ensure that after the trade the ordered amount will not be excedeed.
-    require(SafeMath.add(orderFills[user][hash], amount) &lt;= amountGet); 
+    require(SafeMath.add(orderFills[user][hash], amount) <= amountGet); 
     
     // Add the traded amount to the order fill.
     orderFills[user][hash] = orderFills[user][hash].add(amount);
@@ -537,16 +537,16 @@ contract SwissCryptoExchange {
     returns(bool)
   {
     // Traders should be whitelisted.
-    require(whitelistedUsers[user] &amp;&amp; whitelistedUsers[sender]);
+    require(whitelistedUsers[user] && whitelistedUsers[sender]);
 
     // Tokens should be whitelisted.
-    require(whitelistedTokens[tokenGet] &amp;&amp; whitelistedTokens[tokenGive]);
+    require(whitelistedTokens[tokenGet] && whitelistedTokens[tokenGive]);
 
     // Sender should have at least the amount he wants to trade and 
-    require(tokens[tokenGet][sender] &gt;= amount);
+    require(tokens[tokenGet][sender] >= amount);
 
     // order should have available volume to fill.
-    return availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) &gt;= amount;
+    return availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) >= amount;
   }
 
   /**
@@ -583,25 +583,25 @@ contract SwissCryptoExchange {
     require(whitelistedUsers[user]);
 
     // Tokens should be whitelisted.
-    require(whitelistedTokens[tokenGet] &amp;&amp; whitelistedTokens[tokenGive]);
+    require(whitelistedTokens[tokenGet] && whitelistedTokens[tokenGive]);
 
     // Calculate the hash.
     bytes32 hash = keccak256(address(this), tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
 
     // If the order is not valid or the trade is expired early exit with 0.
-    if (!(validateOrderHash(hash, user, v, r, s) &amp;&amp; block.number &lt;= expires)) {
+    if (!(validateOrderHash(hash, user, v, r, s) && block.number <= expires)) {
       return 0;
     }
 
     // Condition is used for ensuring the the value returned is
-    //   - the maximum available balance of the user in tokenGet terms if the user can&#39;t fullfil all the order
+    //   - the maximum available balance of the user in tokenGet terms if the user can't fullfil all the order
     //     - SafeMath.sub(amountGet, orderFills[user][hash])
     //     - amountGet - amountAvailableForFill
     //   - the available balance of the the user in tokenGet terms if the user has enough to fullfil all the order 
     //     - SafeMath.mul(tokens[tokenGive][user], amountGet).div(amountGive) 
     //     - balanceGiveAvailable * amountGet / amountGive
     //     - amountGet / amountGive represents the exchange rate 
-    if (SafeMath.sub(amountGet, orderFills[user][hash]) &lt; SafeMath.mul(tokens[tokenGive][user], amountGet).div(amountGive)) {
+    if (SafeMath.sub(amountGet, orderFills[user][hash]) < SafeMath.mul(tokens[tokenGive][user], amountGet).div(amountGive)) {
       return SafeMath.sub(amountGet, orderFills[user][hash]);
     }
 
@@ -636,7 +636,7 @@ contract SwissCryptoExchange {
     require(whitelistedUsers[user]);
 
     // Tokens should be whitelisted.
-    require(whitelistedTokens[tokenGet] &amp;&amp; whitelistedTokens[tokenGive]);
+    require(whitelistedTokens[tokenGet] && whitelistedTokens[tokenGive]);
 
     // Return the amount filled for the given order.
     return orderFills[user][keccak256(address(this), tokenGet, amountGet, tokenGive, amountGive, expires, nonce)];
@@ -706,7 +706,7 @@ contract SwissCryptoExchange {
   {
     return (
       orders[user][hash] ||
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), v, r, s) == user
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s) == user
     );
   }
 }

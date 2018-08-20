@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,18 +59,18 @@ interface ERC20Basic {
 contract PostFactory {
     using SafeMath for uint256;
 
-    string public name = &quot;Karma Factory&quot;;
-    string public constant SYMBOL = &quot;KC&quot;;
+    string public name = "Karma Factory";
+    string public constant SYMBOL = "KC";
 
     uint256 private postId = 1;
     // post IDs start at 1, just like arrays do :)
 
-    mapping (address =&gt; mapping (uint256 =&gt; bool)) upvotedPost;
+    mapping (address => mapping (uint256 => bool)) upvotedPost;
 
-    mapping (address =&gt; mapping (uint256 =&gt; bool)) downvotedPost;
+    mapping (address => mapping (uint256 => bool)) downvotedPost;
 
     // checks if a post exists
-    mapping (uint256 =&gt; bool) postExists;
+    mapping (uint256 => bool) postExists;
 
     struct Post {
         string link;
@@ -79,9 +79,9 @@ contract PostFactory {
         uint64 datePosted;
     }
 
-    mapping (uint256 =&gt; Post) posts; // ties postId to a post
+    mapping (uint256 => Post) posts; // ties postId to a post
 
-    mapping(string =&gt; uint256) linkToPostId; // Ties a post&#39;s link to it&#39;s ID
+    mapping(string => uint256) linkToPostId; // Ties a post's link to it's ID
 
     function createPost(string _link) public returns(uint256) {
 
@@ -111,7 +111,7 @@ contract PostFactory {
 
     function downdoot(uint256 _postId) public {
         require(postExists[_postId]);
-        require(posts[_postId].voteCount &gt;= 1);
+        require(posts[_postId].voteCount >= 1);
         upvotedPost[msg.sender][_postId] = false;
         downvotedPost[msg.sender][_postId] = true;
         posts[_postId].voteCount = posts[_postId].voteCount.sub(1);
@@ -167,7 +167,7 @@ contract KarmaCenter is PostFactory {
 
     function updoot(uint256 _postId) public {
         require(postExists[_postId]);
-        require(token.balanceOf(msg.sender) &gt; 0);
+        require(token.balanceOf(msg.sender) > 0);
         upvotedPost[msg.sender][_postId] = true;
         downvotedPost[msg.sender][_postId] = false;
         posts[_postId].voteCount = posts[_postId].voteCount.add(1);
@@ -177,7 +177,7 @@ contract KarmaCenter is PostFactory {
 
     function downdoot(uint256 _postId) public {
         require(postExists[_postId]);
-        require(posts[_postId].voteCount &gt;= 1);
+        require(posts[_postId].voteCount >= 1);
         upvotedPost[msg.sender][_postId] = false;
         downvotedPost[msg.sender][_postId] = true;
         posts[_postId].voteCount = posts[_postId].voteCount.sub(1);

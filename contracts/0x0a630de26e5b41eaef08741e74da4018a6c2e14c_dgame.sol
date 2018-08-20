@@ -18,8 +18,8 @@ contract dgame {
     uint public endRegisterTime;
     uint public gameNumber;
     uint public numPlayers;
-    mapping(uint =&gt; mapping(uint =&gt; address)) public players;
-    mapping(uint =&gt; mapping(address =&gt; bool)) public registered;
+    mapping(uint => mapping(uint => address)) public players;
+    mapping(uint => mapping(address => bool)) public registered;
     event StartedGame(address initiator, uint regTimeEnd, uint amountSent, uint gameNumber);
     event RegisteredPlayer(address player, uint gameNumber);
     event FoundWinner(address player, uint gameNumber);
@@ -37,9 +37,9 @@ contract dgame {
             if (msg.value == 0)
                 throw;  // prevent a new game to be started with empty pot
             StartedGame(msg.sender, endRegisterTime, msg.value, gameNumber);
-        } else if (now &gt; endRegisterTime &amp;&amp; numPlayers &gt; 0) {
+        } else if (now > endRegisterTime && numPlayers > 0) {
             // status completed: find winner and transition to status idle
-            uint winner = uint(block.blockhash(block.number - 1)) % numPlayers; // find index of winner (take blockhash as source of entropy -&gt; exploitable!)
+            uint winner = uint(block.blockhash(block.number - 1)) % numPlayers; // find index of winner (take blockhash as source of entropy -> exploitable!)
             uint currentGamenumber = gameNumber;
             FoundWinner(players[currentGamenumber][winner], currentGamenumber);
             endRegisterTime = 0;

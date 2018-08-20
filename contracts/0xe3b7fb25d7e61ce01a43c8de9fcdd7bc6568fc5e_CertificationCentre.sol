@@ -50,19 +50,19 @@ contract Owned is OwnedI {
 
 contract PullPaymentCapable {
     uint256 private totalBalance;
-    mapping(address =&gt; uint256) private payments;
+    mapping(address => uint256) private payments;
 
     event LogPaymentReceived(address indexed dest, uint256 amount);
 
     function PullPaymentCapable() {
-        if (0 &lt; this.balance) {
+        if (0 < this.balance) {
             asyncSend(msg.sender, this.balance);
         }
     }
 
     // store sent amount as credit to be pulled, called by payer
     function asyncSend(address dest, uint256 amount) internal {
-        if (amount &gt; 0) {
+        if (amount > 0) {
             totalBalance += amount;
             payments[dest] += amount;
             LogPaymentReceived(dest, amount);
@@ -100,7 +100,7 @@ contract PullPaymentCapable {
     function fixBalanceInternal(address dest)
         internal
         returns (bool success) {
-        if (totalBalance &lt; this.balance) {
+        if (totalBalance < this.balance) {
             uint256 amount = this.balance - totalBalance;
             payments[dest] += amount;
             LogPaymentReceived(dest, amount);
@@ -123,7 +123,7 @@ contract WithBeneficiary is Owned {
             throw;
         }
         beneficiary = _beneficiary;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             asyncSend(beneficiary, msg.value);
         }
     }
@@ -184,12 +184,12 @@ contract CertificationCentre is CertificationCentreI, WithBeneficiary, PullPayme
         uint256 index;
     }
 
-    mapping (address =&gt; CertificationDbStruct) private certificationDbStatuses;
+    mapping (address => CertificationDbStruct) private certificationDbStatuses;
     address[] private certificationDbs;
 
     function CertificationCentre(address beneficiary)
         WithBeneficiary(beneficiary) {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
     }

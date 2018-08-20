@@ -19,22 +19,22 @@ library SafeMath {
 
 	// devides two values safely and returns result
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	// subtracts two values safely and returns result
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	// adds two values safely and returns result
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -42,7 +42,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -109,7 +109,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -118,7 +118,7 @@ contract BasicToken is ERC20Basic {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -149,7 +149,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
 
 	// tracks the allowance of address. 
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	/**
 	 * @dev Transfer tokens from one address to another
@@ -159,8 +159,8 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
 	 *
 	 * Beware that changing an allowance with this method brings the risk that someone may use both the old
 	 * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	 * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	 * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	 * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	 * @param _spender The address which will spend the funds.
 	 * @param _value The amount of tokens to be spent.
@@ -225,7 +225,7 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -264,7 +264,7 @@ contract ERC223Receiver {
 		tkn.sender = _from;
 		tkn.value = _value;
 		tkn.data = _data;
-		// uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+		// uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
 		// tkn.sig = bytes4(u);
 	  
 		/* tkn variable is analogue of msg variable of Ether transaction
@@ -315,7 +315,7 @@ contract ERC223Token is ERC223, StandardToken {
 		if(isContract(_to)) {
 			// validate the address and balance
 			require(_to != address(0));
-			require(_value &lt;= balances[msg.sender]);
+			require(_value <= balances[msg.sender]);
 
 			// SafeMath.sub will throw if there is not enough balance.
 			balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -388,7 +388,7 @@ contract ERC223Token is ERC223, StandardToken {
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return (length &gt; 0);
+		return (length > 0);
 	}
 
 	/**
@@ -401,7 +401,7 @@ contract ERC223Token is ERC223, StandardToken {
 	function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		// validate the address and balance
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -422,7 +422,7 @@ contract ERC223Token is ERC223, StandardToken {
 	function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		// validate the address and balance
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -444,8 +444,8 @@ contract ERC223Token is ERC223, StandardToken {
 */
 contract PalestinoToken is ERC223Token, Ownable {
 
-	string public constant name = &quot;Palestino&quot;;
-	string public constant symbol = &quot;PALE&quot;;
+	string public constant name = "Palestino";
+	string public constant symbol = "PALE";
 	uint256 public constant decimals = 3;
 
 	uint256 constant INITIAL_SUPPLY = 10000000 * 1E3;
@@ -492,7 +492,7 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 	uint256 public totalEtherRaised;
 
 	// ether raised per wallet
-	mapping(address =&gt; uint256) public etherRaisedPerWallet;
+	mapping(address => uint256) public etherRaisedPerWallet;
 
 	// walle which will receive the ether funding
 	address public wallet;
@@ -547,16 +547,16 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 	 */
 	function isValidPurchase(uint256 value, uint256 amount) internal constant returns (bool) {
 		// check if timestamp is falling in the range
-		bool validTimestamp = startingTimestamp &lt;= block.timestamp;
+		bool validTimestamp = startingTimestamp <= block.timestamp;
 
 		// check if value of the ether is valid
 		bool validValue = value != 0;
 
 		// check if the tokens available in contract for sale
-		bool validAmount = maxTokenForSale.sub(totalTokenSold) &gt;= amount &amp;&amp; amount &gt; 0;
+		bool validAmount = maxTokenForSale.sub(totalTokenSold) >= amount && amount > 0;
 
 		// validate if all conditions are met
-		return validTimestamp &amp;&amp; validValue &amp;&amp; validAmount &amp;&amp; !isClose;
+		return validTimestamp && validValue && validAmount && !isClose;
 	}
 
 	/**
@@ -565,8 +565,8 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 	 * @return checks various conditions and returns the current round.
 	 */
 	function getCurrentRound() public constant returns (RoundStruct) {
-		for(uint256 i = 0 ; i &lt; rounds.length ; i ++) {
-			if(rounds[i].fromAmount &lt;= totalTokenSold &amp;&amp; totalTokenSold &lt; rounds[i].toAmount) {
+		for(uint256 i = 0 ; i < rounds.length ; i ++) {
+			if(rounds[i].fromAmount <= totalTokenSold && totalTokenSold < rounds[i].toAmount) {
 				return rounds[i];
 			}
 		}
@@ -580,8 +580,8 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 	 * @return checks various conditions and returns the estimate token round.
 	 */
 	function getEstimatedRound(uint256 amount) public constant returns (RoundStruct) {
-		for(uint256 i = 0 ; i &lt; rounds.length ; i ++) {
-			if(rounds[i].fromAmount &gt; (totalTokenSold + amount)) {
+		for(uint256 i = 0 ; i < rounds.length ; i ++) {
+			if(rounds[i].fromAmount > (totalTokenSold + amount)) {
 				return rounds[i - 1];
 			}
 		}
@@ -597,8 +597,8 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 	 * @return checks various conditions and returns the maximum token round.
 	 */
 	function getMaximumRound(uint256 amount) public constant returns (RoundStruct) {
-		for(uint256 i = 0 ; i &lt; rounds.length ; i ++) {
-			if((totalTokenSold + amount) &lt;= rounds[i].toAmount) {
+		for(uint256 i = 0 ; i < rounds.length ; i ++) {
+			if((totalTokenSold + amount) <= rounds[i].toAmount) {
 				return rounds[i];
 			}
 		}
@@ -616,7 +616,7 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 		uint256 totalAmount = 0;
 
 		// interate until we have some value left for buying
-		while(value &gt; 0) {
+		while(value > 0) {
 			
 			// get current round by passing queue value also 
 			RoundStruct memory estimatedRound = getEstimatedRound(totalAmount);
@@ -631,13 +631,13 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 				// its last round 
 
 				// no tokens left in round and still got value 
-				if(tokensLeft == 0 &amp;&amp; value &gt; 0) {
+				if(tokensLeft == 0 && value > 0) {
 					return (totalAmount , value);
 				}
 			}
 
-			// if tokens left &gt; tokens buy 
-			if(tokensLeft &gt;= tokensBuys) {
+			// if tokens left > tokens buy 
+			if(tokensLeft >= tokensBuys) {
 				totalAmount = totalAmount.add(tokensBuys);
 				value = 0;
 				return (totalAmount , value);
@@ -673,7 +673,7 @@ contract PalestinoTokenSale is Ownable, ERC223Receiver {
 		var (amount, leftValue) = getTokenAmount(value);
 
 		// if there is any left value then return 
-		if(leftValue &gt; 0) {
+		if(leftValue > 0) {
 			value = value.sub(leftValue);
 			msg.sender.transfer(leftValue);
 		}

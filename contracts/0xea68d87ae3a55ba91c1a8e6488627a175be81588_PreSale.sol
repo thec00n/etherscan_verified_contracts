@@ -1,6 +1,6 @@
 pragma solidity 0.4.17;
 
-// import &quot;./FunderSmartToken.sol&quot;;
+// import "./FunderSmartToken.sol";
 
 contract PreSale {
 
@@ -30,9 +30,9 @@ contract PreSale {
   function buyFunderSmartToken (string _email, string _code) payable public returns (bool) {
     require(FunderSmartTokenAddress != 0x0); // 需初始化過 token contract 位址
     require(FundersTokenCentral != 0x0); // 需初始化過 fstk 中央帳戶
-    require(msg.value &gt;= 1 ether); // 人們要至少用 1 ether 買 token
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime); // presale 舉辦期間
-    require(soldTokenValue &lt;= preSaleHardCap); // 累積 presale 量不得超過 fst 總發行量 2%
+    require(msg.value >= 1 ether); // 人們要至少用 1 ether 買 token
+    require(now >= startTime && now <= endTime); // presale 舉辦期間
+    require(soldTokenValue <= preSaleHardCap); // 累積 presale 量不得超過 fst 總發行量 2%
 
     uint256 _tokenValue = msg.value * oneEtherIsHowMuchFST;
 
@@ -52,7 +52,7 @@ contract PreSale {
     }
 
     // 將 FST 從 FundersTokenCentral 轉至 msg.sender
-    if (FunderSmartTokenAddress.call(bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)), FundersTokenCentral, msg.sender, _tokenValue) != true) {
+    if (FunderSmartTokenAddress.call(bytes4(keccak256("transferFrom(address,address,uint256)")), FundersTokenCentral, msg.sender, _tokenValue) != true) {
       revert();
     }
 

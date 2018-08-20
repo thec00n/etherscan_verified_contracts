@@ -16,27 +16,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,7 +92,7 @@ interface TokenInterface {
   // The token being sold
   TokenInterface public token;
   
-  // Hardcaps &amp; Softcaps
+  // Hardcaps & Softcaps
   uint Hardcap = 100000;
   uint Softcap = 10000;
 
@@ -120,7 +120,7 @@ interface TokenInterface {
   
   uint256 totalDurationInDays = 57 days;
   
-  mapping(address=&gt;uint)  EthSentAgainstAddress;
+  mapping(address=>uint)  EthSentAgainstAddress;
   address[] usersAddressForPreICO;
   
   /**
@@ -134,7 +134,7 @@ interface TokenInterface {
 
   function EthereumTravelCrowdsale(uint256 _startTime, address _wallet, address _tokenAddress) public 
   {
-    //require(_startTime &gt;=now);
+    //require(_startTime >=now);
     require(_wallet != 0x0);
     
     weiRaised=0;
@@ -142,7 +142,7 @@ interface TokenInterface {
     startTime = _startTime;  
     //startTime = now;
     endTime = startTime + totalDurationInDays;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
    
     owner = _wallet;
 
@@ -167,38 +167,38 @@ interface TokenInterface {
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
 
         //Pre ICO Phase ( June 05 - 15 i.e. 11 days)
-       if (timeElapsedInDays &lt;12)
+       if (timeElapsedInDays <12)
         {
             bonus = 0;
         }
         //Break ( June 16 - July 30 i.e. 10 days)
-      else if (timeElapsedInDays &gt;= 12 &amp;&amp; timeElapsedInDays &lt;27)
+      else if (timeElapsedInDays >= 12 && timeElapsedInDays <27)
         {
             revert();
         }
         
         //ICO phase 1 ( July 1 - July 10 i.e. 10 days)
-        else if (timeElapsedInDays &gt;= 27 &amp;&amp; timeElapsedInDays &lt;37)
+        else if (timeElapsedInDays >= 27 && timeElapsedInDays <37)
         {
             bonus = tokens.mul(bonusPercInICOPhase1); 
             bonus = bonus.div(100);
-            require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+            require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
         }
         
         //ICO phase 2 ( July 11- July 20 i.e. 10 days)
-        else if (timeElapsedInDays &gt;= 37 &amp;&amp; timeElapsedInDays&lt;47)
+        else if (timeElapsedInDays >= 37 && timeElapsedInDays<47)
         {
             bonus = tokens.mul(bonusPercInICOPhase2); 
             bonus = bonus.div(100);
-            require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+            require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
         }
         
         //ICO phase 3 ( July 21- July 30 i.e. 10 days)
-        else if (timeElapsedInDays &gt;= 47 &amp;&amp; timeElapsedInDays&lt;57)
+        else if (timeElapsedInDays >= 47 && timeElapsedInDays<57)
         {
             bonus = tokens.mul(bonusPercInICOPhase3); 
             bonus = bonus.div(100);
-            require (TOKENS_SOLD.add(tokens.add(bonus)) &lt;= maxTokensToSale);
+            require (TOKENS_SOLD.add(tokens.add(bonus)) <= maxTokensToSale);
         }
         
         else 
@@ -213,18 +213,18 @@ interface TokenInterface {
     require(beneficiary != 0x0);
     require(isCrowdsalePaused == false);
     require(validPurchase());
-    require(msg.value&gt;=1*10**18);
+    require(msg.value>=1*10**18);
     
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(TOKENS_SOLD<maxTokensToSale);
    
     uint256 weiAmount = msg.value;
     uint256 timeElapsed = now - startTime;
     uint256 timeElapsedInDays = timeElapsed.div(1 days);
 
         //Pre ICO Phase ( June 05 - 15 i.e. 11 days)
-       if (timeElapsedInDays &lt;12)
+       if (timeElapsedInDays <12)
         {
-            require(usersAddressForPreICO.length&lt;=5000);
+            require(usersAddressForPreICO.length<=5000);
             // checks if the user is sending eths the firt time
             if(EthSentAgainstAddress[beneficiary]==0)
             {
@@ -237,7 +237,7 @@ interface TokenInterface {
             forwardFunds();
         }
         //Break ( June 16 - July 30 i.e. 15 days)
-      else if (timeElapsedInDays &gt;= 12 &amp;&amp; timeElapsedInDays &lt;27)
+      else if (timeElapsedInDays >= 12 && timeElapsedInDays <27)
         {
             revert();
         }
@@ -247,7 +247,7 @@ interface TokenInterface {
             uint256 tokens = weiAmount.mul(ratePerWei);
             uint256 bonus = determineBonus(tokens);
             tokens = tokens.add(bonus);
-            require(TOKENS_SOLD.add(tokens)&lt;=maxTokensToSale);
+            require(TOKENS_SOLD.add(tokens)<=maxTokensToSale);
             
             // update state
             weiRaised = weiRaised.add(weiAmount);
@@ -269,14 +269,14 @@ interface TokenInterface {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    /**
@@ -354,7 +354,7 @@ interface TokenInterface {
      * send PreICO bonus tokens in bulk to 5000 addresses
      **/ 
     function BulkTransfer() public onlyOwner {
-        for(uint i = 0; i&lt;usersAddressForPreICO.length; i++)
+        for(uint i = 0; i<usersAddressForPreICO.length; i++)
         {
             uint tks=(EthSentAgainstAddress[usersAddressForPreICO[i]].mul(1000000000*10**18)).div(weiRaisedInPreICO);            
             token.transfer(usersAddressForPreICO[i],tks);

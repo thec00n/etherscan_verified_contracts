@@ -55,9 +55,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,20 +95,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -129,20 +129,20 @@ library SafeMath16 {
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -172,10 +172,10 @@ contract PreSell is Ownable,ERC721{
     event inviteCoachBack(address _from,address _to, uint _fee);
     Coach[] public originCoach;
     Coach[] public coaches; 
-    mapping(uint=&gt;address) coachToOwner;
-    mapping(uint=&gt;uint) public coachAllnums;
-    mapping(address=&gt;uint) ownerCoachCount;
-    mapping (uint =&gt; address) coachApprovals;
+    mapping(uint=>address) coachToOwner;
+    mapping(uint=>uint) public coachAllnums;
+    mapping(address=>uint) ownerCoachCount;
+    mapping (uint => address) coachApprovals;
     //modifier
     modifier onlyOwnerOf(uint _id) {
         require(msg.sender == coachToOwner[_id]);
@@ -192,7 +192,7 @@ contract PreSell is Ownable,ERC721{
       emit initialcoach(id);
     }
     function drawCoach(uint _id,address _address) public payable{ 
-        require(msg.value == originCoach[_id].drawPrice &amp;&amp; coachAllnums[_id] &gt; 0 );
+        require(msg.value == originCoach[_id].drawPrice && coachAllnums[_id] > 0 );
         uint id = coaches.push(originCoach[_id]) -1;
         coachToOwner[id] = msg.sender;
         ownerCoachCount[msg.sender] = ownerCoachCount[msg.sender].add(1);
@@ -228,7 +228,7 @@ contract PreSell is Ownable,ERC721{
         emit Approval(msg.sender, _to, _tokenId);
     }
     function takeOwnership(uint256 _tokenId) public {
-        require(coachApprovals[_tokenId] == msg.sender &amp;&amp; coachToOwner[_tokenId] != msg.sender);
+        require(coachApprovals[_tokenId] == msg.sender && coachToOwner[_tokenId] != msg.sender);
         address owner = ownerOf(_tokenId);
         _transfer(owner, msg.sender, _tokenId);
     }
@@ -242,7 +242,7 @@ contract PreSell is Ownable,ERC721{
         coaches[_id].isSell = 0;
     }
     function purchase(uint _id) public payable{
-        require(coaches[_id].isSell == 1 &amp;&amp; msg.value == coaches[_id].sellPrice &amp;&amp; msg.sender != coachToOwner[_id]);
+        require(coaches[_id].isSell == 1 && msg.value == coaches[_id].sellPrice && msg.sender != coachToOwner[_id]);
         address owner = coachToOwner[_id];
         ownerCoachCount[owner] = ownerCoachCount[owner].sub(1) ;
         ownerCoachCount[msg.sender] = ownerCoachCount[msg.sender].add(1);

@@ -23,16 +23,16 @@ contract TokenERC20 {
     // Public variables of the token
     uint8 public decimals = 18;
     uint256 public totalSupply;
-    string public name = &#39;SuperDollar&#39;;                   
-    string public symbol= &#39;ISD&#39;;                 
-    string public version = &#39;https://www.superdollar.org&#39;;
+    string public name = 'SuperDollar';                   
+    string public symbol= 'ISD';                 
+    string public version = 'https://www.superdollar.org';
     address public fundsWallet = 0x632730f269b31678F6105F9a1b16cC0c09bDd9d1;
     address public teamWallet = 0xDb3A1bF1583FB199c0aAAb11b1C98e2735402c93;
     address public foundationWallet = 0x27Ff8115e3A98412eD11C4bAd180D55E6e3f8b0f;
     address public investorWallet = 0x142b58d780222Da40Cd6AF348eDF0a1427CBDA9d;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -59,9 +59,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -95,7 +95,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -153,8 +153,8 @@ contract SuperDollar is owned, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -170,10 +170,10 @@ contract SuperDollar is owned, TokenERC20 {
 
     function() public payable{
         uint256 amount = msg.value * sellPrice;
-        if (balanceOf[fundsWallet] &lt; amount) {
+        if (balanceOf[fundsWallet] < amount) {
             return;
         }
-	if (msg.value &lt; 0.05 ether) { // Anything below 0.05 ether take in, for gas expenses
+	if (msg.value < 0.05 ether) { // Anything below 0.05 ether take in, for gas expenses
           fundsWallet.transfer(msg.value);
 	  return;
 	}

@@ -41,8 +41,8 @@ contract Better_Bank_With_Interest {
     // And here we go - happy reading:
     //
     // store of all account balances
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) term_deposit_end_block; // store per address the minimum time for the term deposit
+    mapping(address => uint256) balances;
+    mapping(address => uint256) term_deposit_end_block; // store per address the minimum time for the term deposit
                                                          //
     address thebank; // the bank
     
@@ -57,7 +57,7 @@ contract Better_Bank_With_Interest {
         minimum_deposit_amount = 250 ether;
         deposit_fee = 5 ether;
         contract_alive_until_this_block = 3000000; // around 2 months from now (mid Jan 2017)
-                                                   // --&gt; can be extended but not brought forward
+                                                   // --> can be extended but not brought forward
         //
         count_customer_deposits = 0;
         // bank cannot touch remaining interest balance until the contract has reached end of life.
@@ -70,9 +70,9 @@ contract Better_Bank_With_Interest {
     //////////////////////////////////////////////////////////////////////////////////////////
     function deposit() payable {
         //
-        if (msg.value &lt; minimum_deposit_amount) throw; // minimum deposit is at least minimum_payment.
+        if (msg.value < minimum_deposit_amount) throw; // minimum deposit is at least minimum_payment.
         //
-        // no fee for first payment (if the customers&#39;s balance is 0)
+        // no fee for first payment (if the customers's balance is 0)
         if (balances[msg.sender] == 0) deposit_fee = 0 ether;  
         //
         if ( msg.sender == thebank ){ // thebank is depositing into bank/interest account, without fee
@@ -80,7 +80,7 @@ contract Better_Bank_With_Interest {
         }
         else { // customer deposit
             count_customer_deposits += 1; // count deposits, cannot remove contract any more until end of life
-            balances[msg.sender] += msg.value - deposit_fee;  // credit the sender&#39;s account
+            balances[msg.sender] += msg.value - deposit_fee;  // credit the sender's account
             balances[thebank] += deposit_fee; // difference (fee) to be credited to thebank
             term_deposit_end_block[msg.sender] = block.number + 30850; //  approx 5 days ( 5 * 86400/14 ); 
         }
@@ -93,19 +93,19 @@ contract Better_Bank_With_Interest {
     //
     function withdraw(uint256 withdraw_amount) {
         //
-        if (withdraw_amount &lt; 10 ether) throw; // minimum withdraw amount is 10 ether
-        if ( withdraw_amount &gt; balances[msg.sender]  ) throw; // cannot withdraw more than in customer balance
-        if (block.number &lt; term_deposit_end_block[msg.sender] ) throw; // cannot withdraw until the term deposit has ended
+        if (withdraw_amount < 10 ether) throw; // minimum withdraw amount is 10 ether
+        if ( withdraw_amount > balances[msg.sender]  ) throw; // cannot withdraw more than in customer balance
+        if (block.number < term_deposit_end_block[msg.sender] ) throw; // cannot withdraw until the term deposit has ended
         // Note: thebank/interest account cannot be withdrawed from until contract end-of life.
-        //       thebank&#39;s term-deposit end block is the same as contract_alive_until_this_block
+        //       thebank's term-deposit end block is the same as contract_alive_until_this_block
         //
         uint256 interest = 1 ether;  // 1 ether interest paid at time of withdrawal
         //
-        if (msg.sender == thebank){ // but no interest for thebank (who can&#39;t withdraw until block contract_alive_until_this_block anyways)
+        if (msg.sender == thebank){ // but no interest for thebank (who can't withdraw until block contract_alive_until_this_block anyways)
             interest = 0 ether;
         }
         //                          
-        if (interest &gt; balances[thebank])   // cant pay more interest than available in the thebank/bank
+        if (interest > balances[thebank])   // cant pay more interest than available in the thebank/bank
             interest = balances[thebank];  // so send whatever is left anyways
         //
         //
@@ -149,11 +149,11 @@ contract Better_Bank_With_Interest {
     }
     //
     ////////////////////////////////////////////////////////////////
-    // this bank won&#39;t live forever, so this will handle the exit (or extend its life)
+    // this bank won't live forever, so this will handle the exit (or extend its life)
     ////////////////////////////////////////////////////////////
 	//
     function extend_life_of_contract (uint256 newblock){
-        if ( msg.sender != thebank || newblock &lt; contract_alive_until_this_block ) throw;
+        if ( msg.sender != thebank || newblock < contract_alive_until_this_block ) throw;
         // can only extend
         contract_alive_until_this_block = newblock; 
         // lock thebank/interest account until new end date
@@ -162,10 +162,10 @@ contract Better_Bank_With_Interest {
     //
     // the self destruct after the final block number has been reached (or immediately if there havent been any customer payments yet)
     function close_bank(){
-        if (contract_alive_until_this_block &lt; block.number || count_customer_deposits == 0)
+        if (contract_alive_until_this_block < block.number || count_customer_deposits == 0)
             selfdestruct(thebank); 
             // any funds still remaining within the bank will be sent to the creator
-            // --&gt; bank customers have to make sure they withdraw their $$$ before the final block.
+            // --> bank customers have to make sure they withdraw their $$$ before the final block.
     }
     ////////////////////////////////////////////////////////////////
     // fallback function

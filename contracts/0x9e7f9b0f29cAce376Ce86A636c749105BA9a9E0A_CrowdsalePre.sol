@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -65,11 +65,11 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
 
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
   }
 
@@ -81,7 +81,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) onlyPayloadSize(32*2) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -108,7 +108,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -120,9 +120,9 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    require (_value &lt;= _allowance);
+    require (_value <= _allowance);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -279,9 +279,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract BetOnCryptToken is MintableToken {
     
-    string public constant name = &quot;BetOnCrypt_Token&quot;;
+    string public constant name = "BetOnCrypt_Token";
     
-    string public constant symbol = &quot;BEC&quot;;
+    string public constant symbol = "BEC";
     
     uint32 public constant decimals = 18;
     
@@ -323,7 +323,7 @@ contract CrowdsalePre is Ownable {
     uint public fourth; 
     uint public fifth;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     uint public indexBalance;
     
     event Closed();
@@ -348,7 +348,7 @@ contract CrowdsalePre is Ownable {
       rateboc = _rateboc.mul(1000000000000000000);      
       softcap = _softcap.mul(1000000000000000000);      
       hardcap = _hardcap.mul(1000000000000000000);
-      if (_restrictedPercent &gt; 0 &amp;&amp; _restrictedPercent &lt; 50){
+      if (_restrictedPercent > 0 && _restrictedPercent < 50){
         restrictedPercent = _restrictedPercent;      
       } 
       else{
@@ -363,22 +363,22 @@ contract CrowdsalePre is Ownable {
 
 
     modifier saleIsOn() {
-    	require((now &gt; start) &amp;&amp; (now &lt; (start + period * 1 days)));
+    	require((now > start) && (now < (start + period * 1 days)));
     	_;
     }
 
     modifier isUnderHardcap() {
-        require(multisig.balance &lt;= hardcap);
+        require(multisig.balance <= hardcap);
         _;
     }
 
     modifier isUnderRefunds() {
-        require((this.balance &lt; softcap) &amp;&amp; (now &gt; (start + period * 1 days)));
+        require((this.balance < softcap) && (now > (start + period * 1 days)));
         _;
     }
 
     function finishMinting() onlyOwner {
-        require(this.balance &gt;= softcap);
+        require(this.balance >= softcap);
         multisig.transfer(this.balance);
         uint issuedTokenSupply = token.totalSupply();
         uint restrictedTokens = issuedTokenSupply.mul(restrictedPercent).div(100 - restrictedPercent);
@@ -395,8 +395,8 @@ contract CrowdsalePre is Ownable {
 
     function closeCrowdsale() onlyOwner {
       require(state == State.Active);
-      require(now &gt; (start + (period * 1 days)));
-      require(this.balance &gt;= softcap);
+      require(now > (start + (period * 1 days)));
+      require(this.balance >= softcap);
       state = State.Close;
       if (is_finishmining == false){
         finishMinting();
@@ -415,7 +415,7 @@ contract CrowdsalePre is Ownable {
       uint value = 0;
       value = balances[msg.sender]; 
       balances[msg.sender] = 0; 
-      if (indexBalance &gt; 0) {
+      if (indexBalance > 0) {
          indexBalance --;
       }
       if (indexBalance == 0) {
@@ -430,17 +430,17 @@ contract CrowdsalePre is Ownable {
         require(msg.sender != address(0));
         require(state == State.Active);
         uint tokens = rateboc.mul(msg.value).div(1 ether);
-        require(tokens &gt; minboc);
+        require(tokens > minboc);
         uint bonusTokens = 0;
-        if(now &lt; (start + 6 days)) {
+        if(now < (start + 6 days)) {
           bonusTokens = tokens.mul(first).div(100);
-        } else if(now &gt;= (start +  6 days) &amp;&amp; now &lt; (start + 12 days)) {
+        } else if(now >= (start +  6 days) && now < (start + 12 days)) {
           bonusTokens = tokens.mul(second).div(100);
-        } else if(now &gt;= (start + 12 days) &amp;&amp; now &lt; (start + 18 days)) {
+        } else if(now >= (start + 12 days) && now < (start + 18 days)) {
           bonusTokens = tokens.mul(third).div(100);
-        } else if(now &gt;= (start + 18 days) &amp;&amp; now &lt; (start + 24 days)) {
+        } else if(now >= (start + 18 days) && now < (start + 24 days)) {
           bonusTokens = tokens.mul(fourth).div(100);
-        } else if(now &gt;= (start + 24 days)) {
+        } else if(now >= (start + 24 days)) {
           bonusTokens = tokens.mul(fifth).div(100);
         }
         tokens += bonusTokens;

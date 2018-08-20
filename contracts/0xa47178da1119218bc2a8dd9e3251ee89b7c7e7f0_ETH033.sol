@@ -7,31 +7,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -73,11 +73,11 @@ contract newToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
 
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -93,11 +93,11 @@ contract newToken is ERC20Basic {
 }
 
 contract BestToken is newToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -108,7 +108,7 @@ contract BestToken is newToken, ERC20 {
     //  allowance to zero by calling approve(_spender, 0) if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -118,10 +118,10 @@ contract BestToken is newToken, ERC20 {
 }
 
  contract RomanLanskoj is BestToken, Ownable {
-  string public constant name = &quot;YourCoin&quot;;
-  string public constant symbol = &quot;ICO&quot;;
+  string public constant name = "YourCoin";
+  string public constant symbol = "ICO";
   uint public constant decimals = 2;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
     uint minBalanceForAccounts;
     uint initialSupply;
     
@@ -137,11 +137,11 @@ contract ETH033 is Ownable, RomanLanskoj {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
    function ETH033() RomanLanskoj () {}
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   
   function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -151,7 +151,7 @@ contract ETH033 is Ownable, RomanLanskoj {
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -159,7 +159,7 @@ contract ETH033 is Ownable, RomanLanskoj {
   }
   function approve(address _spender, uint _value) {
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -183,19 +183,19 @@ function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner {
   
   function buy() payable returns (uint amount){
     amount = msg.value / buyPrice;                     // calculates the amount
-    if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
-    balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-    balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+    if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+    balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+    balanceOf[this] -= amount;                         // subtracts amount from seller's balance
     Transfer(this, msg.sender, amount);                // execute an event reflecting the change
     return amount;                                     // ends function and returns
 }
 
 function sell(uint amount) returns (uint revenue){
-    if (balanceOf[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-    balanceOf[this] += amount;                         // adds the amount to owner&#39;s balance
-    balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
+    if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+    balanceOf[this] += amount;                         // adds the amount to owner's balance
+    balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
     revenue = amount * sellPrice;
-    if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it&#39;s important
+    if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it's important
         throw;                                         // to do this last to prevent recursion attacks
     } else {
         Transfer(msg.sender, this, amount);             // executes an event reflecting on the change

@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,7 +57,7 @@ contract Restricted is Ownable {
         bool _isMonethaAddress
     );
 
-    mapping (address =&gt; bool) public isMonethaAddress;
+    mapping (address => bool) public isMonethaAddress;
 
     /**
      *  Restrict methods in such way, that they can be invoked only by monethaAddress account.
@@ -168,22 +168,22 @@ contract Contactable is Ownable{
 
 contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
-    /// Address of merchant&#39;s account, that can withdraw from wallet
+    /// Address of merchant's account, that can withdraw from wallet
     address public merchantAccount;
     
     /// Unique Merchant identifier hash
     bytes32 public merchantIdHash;
 
     /// profileMap stores general information about the merchant
-    mapping (string=&gt;string) profileMap;
+    mapping (string=>string) profileMap;
 
     /// paymentSettingsMap stores payment and order settings for the merchant
-    mapping (string=&gt;string) paymentSettingsMap;
+    mapping (string=>string) paymentSettingsMap;
 
     /// compositeReputationMap stores composite reputation, that compraises from several metrics
-    mapping (string=&gt;uint32) compositeReputationMap;
+    mapping (string=>uint32) compositeReputationMap;
 
     /// number of last digits in compositeReputation for fractional part
     uint8 public constant REPUTATION_DECIMALS = 4;
@@ -194,12 +194,12 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  @param _merchantAccount Address of merchant&#39;s account, that can withdraw from wallet
+     *  @param _merchantAccount Address of merchant's account, that can withdraw from wallet
      *  @param _merchantId Merchant identifier
      */
     function MerchantWallet(address _merchantAccount, string _merchantId) public {
         require(_merchantAccount != 0x0);
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
         
         merchantAccount = _merchantAccount;
         merchantIdHash = keccak256(_merchantId);
@@ -272,14 +272,14 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  Allows merchant to withdraw funds to it&#39;s own account
+     *  Allows merchant to withdraw funds to it's own account
      */
     function withdraw(uint amount) external {
         withdrawTo(msg.sender, amount);
     }
 
     /**
-     *  Allows merchant to change it&#39;s account address
+     *  Allows merchant to change it's account address
      */
     function changeMerchantAccount(address newAccount) external onlyMerchant whenNotPaused {
         merchantAccount = newAccount;
@@ -322,20 +322,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -345,13 +345,13 @@ library SafeMath {
 /**
  *  @title MonethaGateway
  *
- *  MonethaGateway forward funds from order payment to merchant&#39;s wallet and collects Monetha fee.
+ *  MonethaGateway forward funds from order payment to merchant's wallet and collects Monetha fee.
  */
 contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
 
     using SafeMath for uint256;
     
-    string constant VERSION = &quot;0.4&quot;;
+    string constant VERSION = "0.4";
 
     /**
      *  Fee permille of Monetha fee.
@@ -383,14 +383,14 @@ contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
     }
     
     /**
-     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant&#39;s wallet
+     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant's wallet
      *      and collects Monetha fee.
-     *  @param _merchantWallet address of merchant&#39;s wallet for fund transfer
+     *  @param _merchantWallet address of merchant's wallet for fund transfer
      *  @param _monethaFee is a fee collected by Monetha
      */
     function acceptPayment(address _merchantWallet, uint _monethaFee) external payable onlyMonetha whenNotPaused {
         require(_merchantWallet != 0x0);
-        require(_monethaFee &gt;= 0 &amp;&amp; _monethaFee &lt;= FEE_PERMILLE.mul(msg.value).div(1000)); // Monetha fee cannot be greater than 1.5% of payment
+        require(_monethaFee >= 0 && _monethaFee <= FEE_PERMILLE.mul(msg.value).div(1000)); // Monetha fee cannot be greater than 1.5% of payment
 
         uint merchantIncome = msg.value.sub(_monethaFee);
 
@@ -435,7 +435,7 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
 
     using SafeMath for uint256;
 
-    string constant VERSION = &quot;0.4&quot;;
+    string constant VERSION = "0.4";
 
     // Order paid event
     event OrderPaid(
@@ -482,7 +482,7 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
         address clientAddress;
     }
 
-    mapping (uint=&gt;Withdraw) public withdrawals;
+    mapping (uint=>Withdraw) public withdrawals;
 
     /**
      *  Private Payment Processor sets Monetha Gateway and Merchant Wallet.
@@ -496,7 +496,7 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
         MerchantWallet _merchantWallet
     ) public
     {
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
 
         merchantIdHash = keccak256(_merchantId);
 
@@ -516,9 +516,9 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
         uint _monethaFee
     ) external payable whenNotPaused
     {
-        require(_orderId &gt; 0);
+        require(_orderId > 0);
         require(_originAddress != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         monethaGateway.acceptPayment.value(msg.value)(merchantWallet, _monethaFee);
 
@@ -539,9 +539,9 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
         string _refundReason
     ) external payable onlyMonetha whenNotPaused
     {
-        require(_orderId &gt; 0);
+        require(_orderId > 0);
         require(_clientAddress != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(WithdrawState.Null == withdrawals[_orderId].state);
 
         // create withdraw
@@ -556,7 +556,7 @@ contract PrivatePaymentProcessor is Pausable, Destructible, Contactable, Restric
     }
 
     /**
-     *  withdrawRefund performs fund transfer to the client&#39;s account.
+     *  withdrawRefund performs fund transfer to the client's account.
      *  @param _orderId Identifier of the order
      */
     function withdrawRefund(uint _orderId)

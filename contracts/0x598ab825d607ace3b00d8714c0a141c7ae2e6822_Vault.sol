@@ -53,7 +53,7 @@ contract Escapable is Owned {
     /// @dev The addresses preassigned the `escapeHatchCaller` role
     ///  is the only addresses that can call a function with this modifier
     modifier onlyEscapeHatchCallerOrOwner {
-        if ((msg.sender != escapeHatchCaller)&amp;&amp;(msg.sender != owner))
+        if ((msg.sender != escapeHatchCaller)&&(msg.sender != owner))
             throw;
         _;
     }
@@ -106,9 +106,9 @@ contract Vault is Escapable {
     uint public timeLock;
     uint public maxSecurityGuardDelay;
 
-    /// @dev The white list of approved addresses allowed to set up &amp;&amp; receive
+    /// @dev The white list of approved addresses allowed to set up && receive
     ///  payments from this vault
-    mapping (address =&gt; bool) public allowedSpenders;
+    mapping (address => bool) public allowedSpenders;
 
     /// @dev The address assigned the role of `securityGuard` is the only
     ///  addresses that can call a function with this modifier
@@ -170,7 +170,7 @@ contract Vault is Escapable {
 // Receive Ether
 //////
 
-    /// @notice Called anytime ether is sent to the contract &amp;&amp; creates an event
+    /// @notice Called anytime ether is sent to the contract && creates an event
     /// to more easily track the incoming transactions
     function receiveEther() payable {
         EtherReceived(msg.sender, msg.value);
@@ -212,10 +212,10 @@ contract Vault is Escapable {
         p.spender = msg.sender;
 
         // Overflow protection
-        if (_paymentDelay &gt; 10**18) throw;
+        if (_paymentDelay > 10**18) throw;
 
         // Determines the earliest the recipient can receive payment (Unix time)
-        p.earliestPayTime = _paymentDelay &gt;= timeLock ?
+        p.earliestPayTime = _paymentDelay >= timeLock ?
                                 now + _paymentDelay :
                                 now + timeLock;
         p.recipient = _recipient;
@@ -233,17 +233,17 @@ contract Vault is Escapable {
     function collectAuthorizedPayment(uint _idPayment) {
 
         // Check that the `_idPayment` has been added to the payments struct
-        if (_idPayment &gt;= authorizedPayments.length) throw;
+        if (_idPayment >= authorizedPayments.length) throw;
 
         Payment p = authorizedPayments[_idPayment];
 
         // Checking for reasons not to execute the payment
         if (msg.sender != p.recipient) throw;
         if (!allowedSpenders[p.spender]) throw;
-        if (now &lt; p.earliestPayTime) throw;
+        if (now < p.earliestPayTime) throw;
         if (p.canceled) throw;
         if (p.paid) throw;
-        if (this.balance &lt; p.amount) throw;
+        if (this.balance < p.amount) throw;
 
         p.paid = true; // Set the payment to being paid
         if (!p.recipient.send(p.amount)) {  // Make the payment
@@ -260,14 +260,14 @@ contract Vault is Escapable {
     /// @param _idPayment ID of the payment to be delayed
     /// @param _delay The number of seconds to delay the payment
     function delayPayment(uint _idPayment, uint _delay) onlySecurityGuard {
-        if (_idPayment &gt;= authorizedPayments.length) throw;
+        if (_idPayment >= authorizedPayments.length) throw;
 
         // Overflow test
-        if (_delay &gt; 10**18) throw;
+        if (_delay > 10**18) throw;
 
         Payment p = authorizedPayments[_idPayment];
 
-        if ((p.securityGuardDelay + _delay &gt; maxSecurityGuardDelay) ||
+        if ((p.securityGuardDelay + _delay > maxSecurityGuardDelay) ||
             (p.paid) ||
             (p.canceled))
             throw;
@@ -283,7 +283,7 @@ contract Vault is Escapable {
     /// @notice `onlyOwner` Cancel a payment all together
     /// @param _idPayment ID of the payment to be canceled.
     function cancelPayment(uint _idPayment) onlyOwner {
-        if (_idPayment &gt;= authorizedPayments.length) throw;
+        if (_idPayment >= authorizedPayments.length) throw;
 
         Payment p = authorizedPayments[_idPayment];
 
@@ -314,14 +314,14 @@ contract Vault is Escapable {
     /// @param _newTimeLock Sets the new minimum default `timeLock` in seconds;
     ///  pending payments maintain their `earliestPayTime`
     function setTimelock(uint _newTimeLock) onlyOwner {
-        if (_newTimeLock &lt; absoluteMinTimeLock) throw;
+        if (_newTimeLock < absoluteMinTimeLock) throw;
         timeLock = _newTimeLock;
     }
 
     /// @notice `onlyOwner` Changes the maximum number of seconds
     /// `securityGuard` can delay a payment
     /// @param _maxSecurityGuardDelay The new maximum delay in seconds that
-    ///  `securityGuard` can delay the payment&#39;s execution in total
+    ///  `securityGuard` can delay the payment's execution in total
     function setMaxSecurityGuardDelay(uint _maxSecurityGuardDelay) onlyOwner {
         maxSecurityGuardDelay = _maxSecurityGuardDelay;
     }

@@ -58,8 +58,8 @@ contract Creatures is Permissions {
 	}
 	Creature[] creatures;
 
-	mapping (uint256 =&gt;	address) public creatureIndexToOwner;
-	mapping (address =&gt; uint256) ownershipTokenCount;
+	mapping (uint256 =>	address) public creatureIndexToOwner;
+	mapping (address => uint256) ownershipTokenCount;
 
 	event CreateCreature(uint256 id, address indexed owner);
 	event Transfer(address _from, address _to, uint256 creatureID);
@@ -100,7 +100,7 @@ contract Creatures is Permissions {
 
 contract CreaturesInterface is Permissions {
 
-	mapping (uint8 =&gt; uint256) public creatureCosts;
+	mapping (uint8 => uint256) public creatureCosts;
 
 	function CreaturesInterface() public {
 		creatureCosts[0] = .10 ether;
@@ -124,8 +124,8 @@ contract CreaturesInterface is Permissions {
 
 	function addCreature(uint16 _species, uint8 _subSpecies, uint8 _eyeColor) external payable {
 		require(_species == 0); // only one species available for now
-		require(creatureCosts[_subSpecies] &gt; 0);
-		require(msg.value &gt;= creatureCosts[_subSpecies]);
+		require(creatureCosts[_subSpecies] > 0);
+		require(msg.value >= creatureCosts[_subSpecies]);
 		Creatures creatureStorage = Creatures(storageAddress);
 		creatureStorage.add(msg.sender, _species, _subSpecies, _eyeColor);
 	}

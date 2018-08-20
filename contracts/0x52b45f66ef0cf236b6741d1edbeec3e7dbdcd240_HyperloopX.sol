@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 contract HyperloopX {
 
-    string public name = &quot;HyperloopX&quot;;      //  token name
-    string public symbol = &quot;HLX&quot;;           //  token symbol
+    string public name = "HyperloopX";      //  token name
+    string public symbol = "HLX";           //  token symbol
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 21000000 * (10**decimals);
     address owner;
@@ -22,8 +22,8 @@ contract HyperloopX {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -31,9 +31,9 @@ contract HyperloopX {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

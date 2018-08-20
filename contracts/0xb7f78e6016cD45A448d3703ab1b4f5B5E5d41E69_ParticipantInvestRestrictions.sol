@@ -6,19 +6,19 @@
  pragma solidity ^0.4.10;
 
 /*************************************************************************
- * import &quot;./FloorInvestRestrictions.sol&quot; : start
+ * import "./FloorInvestRestrictions.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IInvestRestrictions.sol&quot; : start
+ * import "./IInvestRestrictions.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : start
+ * import "../common/Manageable.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 
@@ -42,7 +42,7 @@ contract Owned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 
 ///A token that have an owner and a list of managers that can perform some operations
@@ -51,7 +51,7 @@ contract Manageable is Owned {
 
     event ManagerSet(address manager, bool state);
 
-    mapping (address =&gt; bool) public managers;
+    mapping (address => bool) public managers;
 
     function Manageable() Owned() {
         managers[owner] = true;
@@ -75,7 +75,7 @@ contract Manageable is Owned {
         ManagerSet(manager, state);
     }
 }/*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : end
+ * import "../common/Manageable.sol" : end
  *************************************************************************/
 
 /** @dev Restrictions on investment */
@@ -88,7 +88,7 @@ contract IInvestRestrictions is Manageable {
     /**@dev Called when investment was made */
     function investHappened(address investor, uint amount) managerOnly {}    
 }/*************************************************************************
- * import &quot;./IInvestRestrictions.sol&quot; : end
+ * import "./IInvestRestrictions.sol" : end
  *************************************************************************/
 
 /**@dev Allows only investments with large enough amount only  */
@@ -98,7 +98,7 @@ contract FloorInvestRestrictions is IInvestRestrictions {
     uint256 public floor;
 
     /**@dev True if address already invested */
-    mapping (address =&gt; bool) public investors;
+    mapping (address => bool) public investors;
 
 
     function FloorInvestRestrictions(uint256 _floor) {
@@ -108,12 +108,12 @@ contract FloorInvestRestrictions is IInvestRestrictions {
     /**@dev IInvestRestrictions implementation */
     function canInvest(address investor, uint amount, uint tokensLeft) constant returns (bool result) {
         
-        //allow investment if it isn&#39;t the first one 
+        //allow investment if it isn't the first one 
         if (investors[investor]) {
             result = true;
         } else {
             //otherwise check the floor
-            result = (amount &gt;= floor);
+            result = (amount >= floor);
         }
     }
 
@@ -127,10 +127,10 @@ contract FloorInvestRestrictions is IInvestRestrictions {
         floor = newFloor;
     }
 }/*************************************************************************
- * import &quot;./FloorInvestRestrictions.sol&quot; : end
+ * import "./FloorInvestRestrictions.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ICrowdsaleFormula.sol&quot; : start
+ * import "./ICrowdsaleFormula.sol" : start
  *************************************************************************/
 
 /**@dev Abstraction of crowdsale token calculation function */
@@ -144,14 +144,14 @@ contract ICrowdsaleFormula {
     /**@dev Returns how many tokens left for sale */
     function tokensLeft() constant returns(uint256 _left) { _left;}    
 }/*************************************************************************
- * import &quot;./ICrowdsaleFormula.sol&quot; : end
+ * import "./ICrowdsaleFormula.sol" : end
  *************************************************************************/
 
-/**@dev In addition to &#39;floor&#39; behavior restricts investments if there are already too many investors. 
+/**@dev In addition to 'floor' behavior restricts investments if there are already too many investors. 
 Contract owner can reserve some places for future investments:
-1. It is possible to reserve a place for unknown address using &#39;reserve&#39; function. 
-    When invest happens you should &#39;unreserve&#39; that place manually
-2. It is also possible to reserve a certain address using &#39;reserveFor&#39;. 
+1. It is possible to reserve a place for unknown address using 'reserve' function. 
+    When invest happens you should 'unreserve' that place manually
+2. It is also possible to reserve a certain address using 'reserveFor'. 
     When such investor invests, the place becomes unreserved  */
 contract ParticipantInvestRestrictions is FloorInvestRestrictions {
 
@@ -182,7 +182,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
     uint32 public unknownReserved;
 
     /**@dev If address is reserved, shows how much tokens reserved for him */
-    mapping (address =&gt; uint256) public reservedInvestors;
+    mapping (address => uint256) public reservedInvestors;
 
     /**@dev How much tokens reserved */
     uint256 public tokensReserved;
@@ -200,7 +200,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
 
     /**@dev Returns true if there are still free places for investors */
     function hasFreePlaces() constant returns (bool) {
-        return getInvestorCount() &lt; maxInvestors;
+        return getInvestorCount() < maxInvestors;
     }
 
     /**@dev Returns number of investors, including reserved */
@@ -210,14 +210,14 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
 
     /**@dev IInvestRestrictions override */
     function canInvest(address investor, uint amount, uint tokensLeft) constant returns (bool result) {
-        //First check ancestor&#39;s restriction. 
+        //First check ancestor's restriction. 
         //Allow only if it is reserved investor or it invested earlier or there is still room for new investors
         if (super.canInvest(investor, amount, tokensLeft)) {
-            if (reservedInvestors[investor] &gt; 0) {
+            if (reservedInvestors[investor] > 0) {
                 return true;
             } else {
                 var (tokens, excess) = formula.howManyTokensForEther(amount);
-                if (tokensLeft &gt;= tokensReserved + tokens) {
+                if (tokensLeft >= tokensReserved + tokens) {
                     return investors[investor] || hasFreePlaces();
                 }
             }
@@ -233,7 +233,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
             investorsCount++;
             
             //if that investor was already reserved, unreserve the place
-            if (reservedInvestors[investor] &gt; 0) {
+            if (reservedInvestors[investor] > 0) {
                 unreserveFor(investor);
             }
         }
@@ -241,7 +241,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
 
     /**@dev Reserves a place for investor */
     function reserveFor(address investor, uint256 weiAmount) managerOnly {
-        require(!investors[investor] &amp;&amp; hasFreePlaces());
+        require(!investors[investor] && hasFreePlaces());
 
         if(reservedInvestors[investor] == 0) {
             knownReserved++;
@@ -251,7 +251,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
         ReserveKnown(true, investor, weiAmount, reservedInvestors[investor]);
     }
 
-    /**@dev Unreserves special address. For example if investor haven&#39;t sent ether */
+    /**@dev Unreserves special address. For example if investor haven't sent ether */
     function unreserveFor(address investor) managerOnly {
         require(reservedInvestors[investor] != 0);
 
@@ -275,9 +275,9 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
 
     /**@dev Unreserves place for unknown address specified by an index in array */
     function unreserve(uint32 index) managerOnly {
-        require(index &lt; unknownInvestors.length &amp;&amp; unknownInvestors[index].reserved);
+        require(index < unknownInvestors.length && unknownInvestors[index].reserved);
         
-        assert(unknownReserved &gt; 0);
+        assert(unknownReserved > 0);
         unknownReserved--;
         unreserveTokens(unknownInvestors[index].tokens);        
         unknownInvestors[index].reserved = false;
@@ -295,7 +295,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
         uint256 excess;
         (tokens, excess) = formula.howManyTokensForEther(weiAmount);
         
-        if (tokensReserved + tokens &gt; formula.tokensLeft()) {
+        if (tokensReserved + tokens > formula.tokensLeft()) {
             tokens = formula.tokensLeft() - tokensReserved;
         }
         tokensReserved += tokens;
@@ -308,7 +308,7 @@ contract ParticipantInvestRestrictions is FloorInvestRestrictions {
         internal 
         managerOnly 
     {
-        if (tokenAmount &gt; tokensReserved) {
+        if (tokenAmount > tokensReserved) {
             tokensReserved = 0;
         } else {
             tokensReserved = tokensReserved - tokenAmount;

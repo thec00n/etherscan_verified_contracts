@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -151,8 +151,8 @@ contract ERC20 is ERC20Basic {
 contract MintableToken is ERC20, Contactable {
     using SafeMath for uint;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; uint) public holderGroup;
+    mapping (address => uint) balances;
+    mapping (address => uint) public holderGroup;
     bool public mintingFinished = false;
     address public minter;
 
@@ -218,17 +218,17 @@ contract MintableToken is ERC20, Contactable {
 contract HeroCoin is ERC223, MintableToken {
     using SafeMath for uint;
 
-    string constant public name = &quot;HeroCoin&quot;;
-    string constant public symbol = &quot;HRO&quot;;
+    string constant public name = "HeroCoin";
+    string constant public symbol = "HRO";
     uint constant public decimals = 18;
 
-    mapping(address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping(address => mapping (address => uint)) internal allowed;
 
-    mapping (uint =&gt; uint) public activationTime;
+    mapping (uint => uint) public activationTime;
 
     modifier activeForHolder(address holder) {
         uint group = holderGroup[holder];
-        require(activationTime[group] &lt;= now);
+        require(activationTime[group] <= now);
         _;
     }
 
@@ -250,7 +250,7 @@ contract HeroCoin is ERC223, MintableToken {
     */
     function transfer(address _to, uint _value, bytes _data) public activeForHolder(msg.sender) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -295,8 +295,8 @@ contract HeroCoin is ERC223, MintableToken {
      */
     function transferFrom(address _from, address _to, uint _value, bytes _data) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -317,7 +317,7 @@ contract HeroCoin is ERC223, MintableToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -366,7 +366,7 @@ contract HeroCoin is ERC223, MintableToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -389,7 +389,7 @@ contract HeroCoin is ERC223, MintableToken {
               //retrieve the size of the code on target address, this needs assembly
               length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 }
 
@@ -482,7 +482,7 @@ contract SaleBase is Pausable, Contactable {
     uint public weiRefunded;
 
     // how much ETH each address has bought to this crowdsale
-    mapping (address =&gt; uint) public boughtAmountOf;
+    mapping (address => uint) public boughtAmountOf;
 
     // holder group of sale buyers, must be defined in child contract
     function holderGroupNumber() pure returns (uint) {
@@ -520,7 +520,7 @@ contract SaleBase is Pausable, Contactable {
         require(_pricingStrategy.isPricingStrategy());
         require(address(_token) != 0x0);
         require(_wallet != 0x0);
-        require(_weiMaximumGoal &gt; 0);
+        require(_weiMaximumGoal > 0);
 
         setStartTime(_startTime);
         setEndTime(_endTime);
@@ -570,17 +570,17 @@ contract SaleBase is Pausable, Contactable {
 
     // return true if the transaction can buy tokens
     function validPurchase(uint weiAmount) internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool withinCap = weiRaised.add(weiAmount) &lt;= weiMaximumGoal;
-        bool moreThenMinimum = weiAmount &gt;= weiMinimumAmount;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool withinCap = weiRaised.add(weiAmount) <= weiMaximumGoal;
+        bool moreThenMinimum = weiAmount >= weiMinimumAmount;
 
-        return withinPeriod &amp;&amp; withinCap &amp;&amp; moreThenMinimum;
+        return withinPeriod && withinCap && moreThenMinimum;
     }
 
     // return true if crowdsale event has ended
     function hasEnded() external constant returns (bool) {
-        bool capReached = weiRaised &gt;= weiMaximumGoal;
-        bool afterEndTime = now &gt; endTime;
+        bool capReached = weiRaised >= weiMaximumGoal;
+        bool afterEndTime = now > endTime;
         
         return capReached || afterEndTime;
     }
@@ -592,7 +592,7 @@ contract SaleBase is Pausable, Contactable {
 
     // return true if the crowdsale has raised enough money to be a successful.
     function isMinimumGoalReached() public constant returns (bool) {
-        return weiRaised &gt;= weiMinimumGoal;
+        return weiRaised >= weiMinimumGoal;
     }
     
     // allows to update tokens rate for owner
@@ -607,7 +607,7 @@ contract SaleBase is Pausable, Contactable {
     * The team can transfer the funds back on the smart contract in the case the minimum goal was not reached..
     */
     function loadRefund() external payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!isMinimumGoalReached());
         
         loadedRefund = loadedRefund.add(msg.value);
@@ -620,9 +620,9 @@ contract SaleBase is Pausable, Contactable {
     * and not through this contract.
     */
     function refund() external {
-        require(!isMinimumGoalReached() &amp;&amp; loadedRefund &gt; 0);
+        require(!isMinimumGoalReached() && loadedRefund > 0);
         uint256 weiValue = boughtAmountOf[msg.sender];
-        require(weiValue &gt; 0);
+        require(weiValue > 0);
         
         boughtAmountOf[msg.sender] = 0;
         weiRefunded = weiRefunded.add(weiValue);
@@ -631,12 +631,12 @@ contract SaleBase is Pausable, Contactable {
     }
 
     function setStartTime(uint _startTime) public onlyOwner {
-        require(_startTime &gt;= now);
+        require(_startTime >= now);
         startTime = _startTime;
     }
 
     function setEndTime(uint _endTime) public onlyOwner {
-        require(_endTime &gt;= startTime);
+        require(_endTime >= startTime);
         endTime = _endTime;
     }
 }

@@ -21,8 +21,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract ERC20 is owned {
     // Public variables of the token
-    string public name = &quot;Intcoex coin&quot;;
-    string public symbol = &quot;ITX&quot;;
+    string public name = "Intcoex coin";
+    string public symbol = "ITX";
     uint8 public decimals = 18;
     uint256 public totalSupply = 200000000 * 10 ** uint256(decimals);
 
@@ -32,9 +32,9 @@ contract ERC20 is owned {
     address public ICO_Contract;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
    
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -66,9 +66,9 @@ contract ERC20 is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Check if sender is frozen
         require(!frozenAccount[_from]);
         // Check if recipient is frozen
@@ -106,7 +106,7 @@ contract ERC20 is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) canTransfer public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -145,7 +145,7 @@ contract ERC20 is owned {
         }
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -196,7 +196,7 @@ contract ERC20_ICO is Killable {
     uint256 public investorCount = 0;
 
     /// How much ETH each address has invested to this crowdsale
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     /// A new investment was made
     event Invested(address investor, uint256 weiAmount, uint256 tokenAmount);
@@ -214,7 +214,7 @@ contract ERC20_ICO is Killable {
 
     function investInternal(address receiver) private {
         require(!finalized);
-        require(startsAt &lt;= now &amp;&amp; endsAt &gt; now);
+        require(startsAt <= now && endsAt > now);
 
         if(investedAmountOf[receiver] == 0) {
             // A new investor
@@ -231,10 +231,10 @@ contract ERC20_ICO is Killable {
         // Emit an event that shows invested successfully
         emit Invested(receiver, msg.value, tokensAmount);
         
-        // Transfer Token to owner&#39;s address
+        // Transfer Token to owner's address
         token.transfer(receiver, tokensAmount);
 
-        // Transfer Fund to owner&#39;s address
+        // Transfer Fund to owner's address
         beneficiary.transfer(address(this).balance);
 
     }
@@ -255,7 +255,7 @@ contract ERC20_ICO is Killable {
     }
     function setRate(uint256 value) onlyOwner public {
         require(!finalized);
-        require(value &gt; 0);
+        require(value > 0);
         emit RateChanged(TokenPerETH, value);
         TokenPerETH = value;
     }

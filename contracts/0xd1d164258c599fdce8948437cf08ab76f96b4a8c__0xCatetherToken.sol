@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 // ----------------------------------------------------------------------------
 
-// &#39;0xCatether Token&#39; contract
+// '0xCatether Token' contract
 
 // Mineable ERC20 Token using Proof Of Work
 
@@ -35,13 +35,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -57,7 +57,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -73,7 +73,7 @@ library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
 
-        if(a &gt; b) return b;
+        if(a > b) return b;
 
         return a;
 
@@ -209,7 +209,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
     uint public latestDifficultyPeriodStarted;
 
 
-    uint public epochCount;//number of &#39;blocks&#39; mined
+    uint public epochCount;//number of 'blocks' mined
 
     //a little number
     uint public  _MINIMUM_TARGET = 2**16;
@@ -231,15 +231,15 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // a bunch of maps to know where this is going (pun intended)
     
-    mapping(bytes32 =&gt; bytes32) public solutionForChallenge;
-    mapping(uint =&gt; uint) public timeStampForEpoch;
-    mapping(uint =&gt; uint) public targetForEpoch;
+    mapping(bytes32 => bytes32) public solutionForChallenge;
+    mapping(uint => uint) public timeStampForEpoch;
+    mapping(uint => uint) public targetForEpoch;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; address) donationsTo;
+    mapping(address => uint) balances;
+    mapping(address => address) donationsTo;
 
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Donation(address donation);
     event DonationAddressOf(address donator, address donnationAddress);
@@ -253,17 +253,17 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     constructor() public{
 
-        symbol = &quot;0xCATE&quot;;
+        symbol = "0xCATE";
 
-        name = &quot;0xCatether Token&quot;;
+        name = "0xCatether Token";
 
         decimals = 8;
         epochCount = 0;
         _totalSupply = 0;
 
         miningTarget = _MAXIMUM_TARGET;
-        challengeNumber = &quot;GENESIS_BLOCK&quot;;
-        solutionForChallenge[challengeNumber] = &quot;Yes, this is the Genesis block.&quot;;
+        challengeNumber = "GENESIS_BLOCK";
+        solutionForChallenge[challengeNumber] = "Yes, this is the Genesis block.";
 
         latestDifficultyPeriodStarted = block.number;
 
@@ -281,14 +281,14 @@ contract _0xCatetherToken is ERC20Interface, Owned {
         function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
 
 
-            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender&#39;s address to prevent MITM attacks
+            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender's address to prevent MITM attacks
             bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
 
             //the challenge digest must match the expected
             if (digest != challenge_digest) revert();
 
             //the digest must be smaller than the target
-            if(uint256(digest) &gt; miningTarget) revert();
+            if(uint256(digest) > miningTarget) revert();
 
 
             //only allow one reward for each challenge
@@ -317,7 +317,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
         }
 
 
-    //a new &#39;block&#39; to be mined
+    //a new 'block' to be mined
     function _startNewMiningEpoch() internal {
         
         targetForEpoch[epochCount] = miningTarget;
@@ -343,27 +343,27 @@ contract _0xCatetherToken is ERC20Interface, Owned {
     //readjust the target via a tempered SMA
     function _reAdjustDifficulty() internal {
         
-        //we want miners to spend 1 minutes to mine each &#39;block&#39;
+        //we want miners to spend 1 minutes to mine each 'block'
         //for that, we need to approximate as closely as possible the current difficulty, by averaging the 28 last difficulties,
         // compared to the average time it took to mine each block.
-        // also, since we can&#39;t really do that if we don&#39;t even have 28 mined blocks, difficulty will not move until we reach that number.
+        // also, since we can't really do that if we don't even have 28 mined blocks, difficulty will not move until we reach that number.
         
-        uint timeTarget = 188; // roughly equals to Pi number. (There&#39;s also Phi somewhere below)
+        uint timeTarget = 188; // roughly equals to Pi number. (There's also Phi somewhere below)
         
-        if(epochCount&gt;28) {
+        if(epochCount>28) {
             // counter, difficulty-sum, solve-time-sum, solve-time
             uint i = 0;
             uint sumD = 0;
-            uint sumST = 0;  // the first calculation of the timestamp difference can be negative, but it&#39;s not that bad (see below)
+            uint sumST = 0;  // the first calculation of the timestamp difference can be negative, but it's not that bad (see below)
             uint solvetime;
             
-            for(i=epochCount.sub(28); i&lt;epochCount; i++){
+            for(i=epochCount.sub(28); i<epochCount; i++){
                 sumD = sumD.add(targetForEpoch[i]);
                 solvetime = timeStampForEpoch[i] - timeStampForEpoch[i-1];
-                if (solvetime &gt; timeTarget.mul(7)) {solvetime = timeTarget.mul(7); }
-                //if (solvetime &lt; timeTarget.mul(-6)) {solvetime = timeTarget.mul(-6); }    Ethereum EVM doesn&#39;t allow for a timestamp that make time go &quot;backwards&quot; anyway, so, we&#39;re good
-                sumST += solvetime;                                                   //    (block.timestamp is an uint256 =&gt; negative = very very long time, thus rejected by the network)
-                // we don&#39;t use safeAdd because in sore rare cases, it can underflow. However, the EVM structure WILL make it overflow right after, thus giving a correct SumST after a few loops
+                if (solvetime > timeTarget.mul(7)) {solvetime = timeTarget.mul(7); }
+                //if (solvetime < timeTarget.mul(-6)) {solvetime = timeTarget.mul(-6); }    Ethereum EVM doesn't allow for a timestamp that make time go "backwards" anyway, so, we're good
+                sumST += solvetime;                                                   //    (block.timestamp is an uint256 => negative = very very long time, thus rejected by the network)
+                // we don't use safeAdd because in sore rare cases, it can underflow. However, the EVM structure WILL make it overflow right after, thus giving a correct SumST after a few loops
             }
             sumST = sumST.mul(10000).div(2523).add(1260); // 1260 seconds is a 75% weighing on what should be the actual time to mine 28 blocks.
             miningTarget = sumD.mul(60).div(sumST); //We add it to the actual time it took with a weighted average (tempering)
@@ -371,12 +371,12 @@ contract _0xCatetherToken is ERC20Interface, Owned {
         
         latestDifficultyPeriodStarted = block.number;
 
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
 
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -400,22 +400,22 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
 
 
-    //There&#39;s no limit to the coin supply
-    //reward follows the same emmission rate as Dogecoins&#39;
+    //There's no limit to the coin supply
+    //reward follows the same emmission rate as Dogecoins'
     function getMiningReward(bytes32 digest) public constant returns (uint) {
         
-        if(epochCount &gt; 600000) return (30000 * 10**uint(decimals) );
-        if(epochCount &gt; 500000) return (46875 * 10**uint(decimals) );
-        if(epochCount &gt; 400000) return (93750 * 10**uint(decimals) );
-        if(epochCount &gt; 300000) return (187500 * 10**uint(decimals) );
-        if(epochCount &gt; 200000) return (375000 * 10**uint(decimals) );
-        if(epochCount &gt; 145000) return (500000 * 10**uint(decimals) );
-        if(epochCount &gt; 100000) return ((uint256(keccak256(digest, blockhash(block.number - 2))) % 1500000) * 10**uint(decimals) );
+        if(epochCount > 600000) return (30000 * 10**uint(decimals) );
+        if(epochCount > 500000) return (46875 * 10**uint(decimals) );
+        if(epochCount > 400000) return (93750 * 10**uint(decimals) );
+        if(epochCount > 300000) return (187500 * 10**uint(decimals) );
+        if(epochCount > 200000) return (375000 * 10**uint(decimals) );
+        if(epochCount > 145000) return (500000 * 10**uint(decimals) );
+        if(epochCount > 100000) return ((uint256(keccak256(digest, blockhash(block.number - 2))) % 1500000) * 10**uint(decimals) );
         return ( (uint256(keccak256(digest, blockhash(block.number - 2))) % 3000000) * 10**uint(decimals) );
 
     }
 
-    //help debug mining software (even though challenge_digest isn&#39;t used, this function is constant and helps troubleshooting mining issues)
+    //help debug mining software (even though challenge_digest isn't used, this function is constant and helps troubleshooting mining issues)
     function getMintDigest(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number) public view returns (bytes32 digesttest) {
 
         bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
@@ -429,7 +429,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
 
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
 
           return (digest == challenge_digest);
 
@@ -482,9 +482,9 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
 
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
 
     // - 0 value transfers are allowed
 
@@ -525,7 +525,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account
+    // from the token owner's account
 
     //
 
@@ -590,7 +590,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // Returns the amount of tokens approved by the owner that can be
 
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
 
     // ------------------------------------------------------------------------
 
@@ -606,7 +606,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
 
     // `receiveApproval(...)` is then executed
 
@@ -628,7 +628,7 @@ contract _0xCatetherToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Don&#39;t accept ETH
+    // Don't accept ETH
 
     // ------------------------------------------------------------------------
 

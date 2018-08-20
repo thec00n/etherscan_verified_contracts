@@ -13,22 +13,22 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
 
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -158,7 +158,7 @@ contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev Get the token balance for account
@@ -170,13 +170,13 @@ contract BasicToken is ERC20Basic {
     }
 
     /**
-    * @dev Transfer the balance from owner&#39;s account to another account
+    * @dev Transfer the balance from owner's account to another account
     * @param _to The address to transfer to.
     * @param _value The amount to be transferred.
     * @return Returns true if transfer has been successful
     */
     function transfer(address _to, uint256 _value) public returns(bool success){
-        require(_to != address(0x0) &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_to != address(0x0) && _value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -195,10 +195,10 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
-     * @dev Returns the amount of tokens approved by the owner that can be transferred to the spender&#39;s account
+     * @dev Returns the amount of tokens approved by the owner that can be transferred to the spender's account
      * @param _owner The address which owns the funds.
      * @param _spender The address which will spend the funds.
      * @return An uint256 specifying the amount of tokens still available for the spender.
@@ -236,8 +236,8 @@ contract StandardToken is BasicToken, ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -262,7 +262,7 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -280,8 +280,8 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
     using SafeMath for uint256;
 
     // Metadata
-    string  public constant name = &quot;CHERR.IO&quot;;
-    string  public constant symbol = &quot;CHR&quot;;
+    string  public constant name = "CHERR.IO";
+    string  public constant symbol = "CHR";
     uint8   public constant decimals = 18;
 
     // Token supplies
@@ -377,8 +377,8 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
     // The current stage of the offering
     Stages public stage;
 
-    mapping(address =&gt; Contributor) public contributors;
-    mapping(address =&gt; mapping(uint8 =&gt; Pool)) public pool;
+    mapping(address => Contributor) public contributors;
+    mapping(address => mapping(uint8 => Pool)) public pool;
 
     // Check if transfer is enabled
     modifier TransferIsEnabled {
@@ -391,8 +391,8 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
      * @dev Check if address is a valid destination to transfer tokens to
      * - must not be zero address
      * - must not be the token address
-     * - must not be the owner&#39;s address
-     * - must not be the admin&#39;s address
+     * - must not be the owner's address
+     * - must not be the admin's address
      * - must not be the token offering contract address
      * - must not be the beneficiary address
      */
@@ -420,20 +420,20 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
 
     // Check if ICO is live
     modifier CheckIfICOIsLive() {
-        require(stage != Stages.Pending &amp;&amp; stage != Stages.Ended);
+        require(stage != Stages.Pending && stage != Stages.Ended);
 
         if(stage == Stages.PreSale) {
             require(
-                startTimePresale &gt; 0 &amp;&amp;
-                now &gt;= startTimePresale &amp;&amp;
-                now &lt;= tierEndTime[2]
+                startTimePresale > 0 &&
+                now >= startTimePresale &&
+                now <= tierEndTime[2]
             );
         }
         else {
             require(
-                startTime &gt; 0 &amp;&amp;
-                now &gt;= startTime &amp;&amp;
-                now &lt;= endTime
+                startTime > 0 &&
+                now >= startTime &&
+                now <= endTime
             );
         }
 
@@ -442,7 +442,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
 
     // Check if participant sent more then miniminum required contribution
     modifier CheckPurchase() {
-        require(msg.value &gt;= MINIMUM_CONTRIBUTION);
+        require(msg.value >= MINIMUM_CONTRIBUTION);
 
         _;
     }
@@ -510,7 +510,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
     function addApprovedAddresses(address[] _addresses, uint8 _tier) external OnlyOwner {
         uint256 length = _addresses.length;
 
-        for(uint256 i = 0; i &lt; length; i++) {
+        for(uint256 i = 0; i < length; i++) {
             if(!contributors[_addresses[i]].canContribute) {
                 contributors[_addresses[i]].canContribute = true;
                 contributors[_addresses[i]].tier = _tier;
@@ -611,7 +611,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
     function buy() public payable IsNotPaused CheckIfICOIsLive returns(bool _success) {
         uint8 currentTier = getCurrentTier();
 
-        if(currentTier &gt; 3) {
+        if(currentTier > 3) {
             revert();
         }
 
@@ -626,7 +626,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
      * @param _tier Current Token Sale tier
      */
     function buyTokens(uint8 _tier) internal ValidDestination(msg.sender) CheckPurchase returns(bool _success) {
-        if(weiRaised.add(msg.value) &gt; FUNDING_ETH_HARD_CAP) {
+        if(weiRaised.add(msg.value) > FUNDING_ETH_HARD_CAP) {
             revert();
         }
 
@@ -684,7 +684,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
         weiRaised = weiRaised.add(contributionInWei);
         tokensSent[_tier] = tokensSent[_tier].add(tokens);
 
-        if(weiRaised &gt;= FUNDING_ETH_HARD_CAP) {
+        if(weiRaised >= FUNDING_ETH_HARD_CAP) {
             offeringEnded();
         }
 
@@ -736,7 +736,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
      * @param _tier    Current tier
      */
     function checkAllowedTier(address _address, uint8 _tier) internal view returns (bool _allowed) {
-        if(contributors[_address].tier &lt;= _tier) {
+        if(contributors[_address].tier <= _tier) {
             return true;
         }
         else{
@@ -755,12 +755,12 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
         bool status = true;
 
         if(_tier == 0) {
-            if(TIER1_CAP &lt; currentlyTokensSent.add(_value)) {
+            if(TIER1_CAP < currentlyTokensSent.add(_value)) {
                 status = false;
             }
         }
         else if(_tier == 1) {
-            if(TIER2_CAP &lt; currentlyTokensSent.add(_value)) {
+            if(TIER2_CAP < currentlyTokensSent.add(_value)) {
                 status = false;
             }
         }
@@ -777,7 +777,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
     function checkPoolAddressTierCap(uint8 _tier, uint256 _value) internal view returns (bool _success) {
         uint256 currentContribution = pool[poolAddress][_tier].contributionInWei;
 
-        if((_tier == 0 &amp;&amp; (poolAddressCapTier1 &lt; currentContribution.add(_value))) || (_tier == 1 &amp;&amp; (poolAddressCapTier2 &lt; currentContribution.add(_value)))) {
+        if((_tier == 0 && (poolAddressCapTier1 < currentContribution.add(_value))) || (_tier == 1 && (poolAddressCapTier2 < currentContribution.add(_value)))) {
             return false;
         }
 
@@ -796,12 +796,12 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
 
         if(contributors[_address].canContribute) {
             if(_tier == 0) {
-                if(participantCapTier1 &gt;= contributors[_address].contributionInWeiTier1.add(_value)) {
+                if(participantCapTier1 >= contributors[_address].contributionInWeiTier1.add(_value)) {
                     status = true;
                 }
             }
             else if(_tier == 1) {
-                if(participantCapTier2 &gt;= contributors[_address].contributionInWeiTier2.add(_value)) {
+                if(participantCapTier2 >= contributors[_address].contributionInWeiTier2.add(_value)) {
                     status = true;
                 }
             }
@@ -831,7 +831,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
             tokens = RATE_TIER3;
         }
         else if(_tier == 3) {
-            if(now &lt;= publicSaleDiscountEndTime) {
+            if(now <= publicSaleDiscountEndTime) {
                 tokens = RATE_PUBLIC_SALE;
             }
             else {
@@ -847,18 +847,18 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
         uint8 currentTier = 3; // 3 is public sale
 
         if(stage == Stages.PreSale) {
-            if(now &lt;= tierEndTime[0]) {
+            if(now <= tierEndTime[0]) {
                 currentTier = 0;
             }
-            else if(now &lt;= tierEndTime[1]) {
+            else if(now <= tierEndTime[1]) {
                 currentTier = 1;
             }
-            else if(now &lt;= tierEndTime[2]) {
+            else if(now <= tierEndTime[2]) {
                 currentTier = 2;
             }
         }
         else {
-            if(now &gt; endTime) {
+            if(now > endTime) {
                 currentTier = 4; // Token offering ended
             }
         }
@@ -886,7 +886,7 @@ contract Cherrio is StandardToken, BurnableToken, Ownable, Pausable {
         emit OfferingCloses(endTime, weiRaised);
     }
 
-    // Enable transfers, burn unsold tokens &amp; set tokenOfferingAddress to 0
+    // Enable transfers, burn unsold tokens & set tokenOfferingAddress to 0
     function enableTransfer() public OnlyOwner returns(bool _success){
         transferIsEnabled = true;
         uint256 tokensToBurn = allowed[msg.sender][contractAddress];

@@ -30,20 +30,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -64,9 +64,9 @@ contract ERC20 is Ownable {
     uint256 public totalSupply;
 
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -123,7 +123,7 @@ contract ERC20 is Ownable {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
 
-        if (allowed[_from][msg.sender] &lt; _value) {
+        if (allowed[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -162,7 +162,7 @@ contract ERC20 is Ownable {
             return true;
         }
 
-        if (balances[_from] &lt; _value) {
+        if (balances[_from] < _value) {
             return false;
         }
 
@@ -193,8 +193,8 @@ contract ContractReceiver {
 contract AxpireToken is ERC223,ERC20 {
 
     uint256 initialSupply= 350000000 * 10**8;
-    string tokenName=&quot;aXpire Token&quot;;
-    string tokenSymbol=&quot;AXP&quot;;
+    string tokenName="aXpire Token";
+    string tokenSymbol="AXP";
     uint8 decimalUnits=8;
 
     //Constructor
@@ -225,7 +225,7 @@ contract AxpireToken is ERC223,ERC20 {
     // rollback changes to transferInternal for transferFrom
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        if (allowed[_from][msg.sender] &lt; _value) {
+        if (allowed[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -239,7 +239,7 @@ contract AxpireToken is ERC223,ERC20 {
     }
 
     function transferInternal(address from, address to, uint256 value, bytes data) internal returns (bool success) {
-        return transferInternal(from, to, value, data, false, &quot;&quot;);
+        return transferInternal(from, to, value, data, false, "");
     }
 
     function transferInternal(
@@ -276,7 +276,7 @@ contract AxpireToken is ERC223,ERC20 {
 
         bytes memory data;
 
-        return transferInternal(from, to, value, data, false, &quot;&quot;);
+        return transferInternal(from, to, value, data, false, "");
     }
 
     //assemble the given address bytecode. If bytecode exists then the _addr is a contract.
@@ -286,7 +286,7 @@ contract AxpireToken is ERC223,ERC20 {
         //retrieve the size of the code on target address, this needs assembly
         length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
 }

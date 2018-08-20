@@ -7,7 +7,7 @@ pragma solidity ^0.4.20;
 * Powered by TICsmart
 * Description: 
 * Smart Contract of attendance at the event and forum Transfiere 2018
-* C&#243;digo: C&#243;digo Hash impreso en el diploma facilitado por Transfiere 2018
+* Código: Código Hash impreso en el diploma facilitado por Transfiere 2018
 *
 **************************************************************************************/
 
@@ -22,7 +22,7 @@ contract Transfiere2018Asistencia {
     function addOrg(string _codigo) public {
         require(msg.sender == owner);
         
-        for (uint i = 0; i &lt; availableOrgs.length; i++) {
+        for (uint i = 0; i < availableOrgs.length; i++) {
             if (keccak256(availableOrgs[i].codigo) == keccak256(_codigo)) {
                 return;
             }
@@ -34,7 +34,7 @@ contract Transfiere2018Asistencia {
     function deleteOrg(string _codigo) public {
         require(msg.sender == owner);
 
-        for (uint i = 0; i &lt; availableOrgs.length; i++) {
+        for (uint i = 0; i < availableOrgs.length; i++) {
             if (keccak256(availableOrgs[i].codigo) == keccak256(_codigo)) {
                 delete availableOrgs[i];
                 availableOrgs.length--;
@@ -44,13 +44,13 @@ contract Transfiere2018Asistencia {
     }
     
     function checkCode(string _codigo) public view returns (string, string) {
-        for (uint i = 0; i &lt; availableOrgs.length; i++) {
+        for (uint i = 0; i < availableOrgs.length; i++) {
             if (keccak256(availableOrgs[i].codigo) == keccak256(_codigo)) {
-                return (_codigo,&quot;El c&#243;digo es v&#225;lido.&quot;);
+                return (_codigo,"El código es válido.");
             }
         }
     
-        return (_codigo,&quot;El c&#243;digo no existe.&quot;);
+        return (_codigo,"El código no existe.");
     }
     
     function destroy() public {

@@ -2,21 +2,21 @@ pragma solidity ^0.4.24;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract ERC20Interface {
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) internal balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) internal balances;
+  mapping(address => mapping(address => uint256)) internal allowed;
 
   function balanceOf(address owner) public view returns (uint256);
   function allowance(address owner, address spender) public view returns (uint256);
@@ -73,8 +73,8 @@ contract ERC20Token is ERC20Interface {
 }
 
 contract CoomiToken is ERC20Token {
-  string public constant name = &#39;Coomi&#39;;
-  string public constant symbol = &#39;COOMI&#39;;
+  string public constant name = 'Coomi';
+  string public constant symbol = 'COOMI';
   uint8 public constant decimals = 18;
 
   constructor(uint256 _totalSupply) public {

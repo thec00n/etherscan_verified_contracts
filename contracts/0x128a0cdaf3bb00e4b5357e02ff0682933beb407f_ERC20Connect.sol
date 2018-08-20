@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
  library SafeMath {
       function add(uint a, uint b) internal pure returns (uint c) {
           c = a + b;
-          require(c &gt;= a);
+          require(c >= a);
       }
       function sub(uint a, uint b) internal pure returns (uint c) {
-          require(b &lt;= a);
+          require(b <= a);
           c = a - b;
       }
       function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ pragma solidity ^0.4.18;
           require(a == 0 || c / a == b);
       }
       function div(uint a, uint b) internal pure returns (uint c) {
-          require(b &gt; 0);
+          require(b > 0);
           c = a / b;
       }
   }
@@ -70,12 +70,12 @@ pragma solidity ^0.4.18;
      uint256 public unitsOneEthCanBuy;     
      uint256 public totalEthInWei;           
      address public fundsWallet;          
-     mapping(address =&gt; uint) balances;
-     mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+     mapping(address => uint) balances;
+     mapping(address => mapping(address => uint)) allowed;
  
      function ERC20Connect() public {
-         symbol = &quot;ERX&quot;;
-         name = &quot;ERC20Connect&quot;;
+         symbol = "ERX";
+         name = "ERC20Connect";
          decimals = 18;
          _totalSupply = 21000000 * 10**uint(decimals);
          balances[owner] = _totalSupply;
@@ -120,7 +120,7 @@ pragma solidity ^0.4.18;
      function() payable public{
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        if (balances[fundsWallet] &lt; amount) {
+        if (balances[fundsWallet] < amount) {
             return;
         }
 
@@ -135,7 +135,7 @@ pragma solidity ^0.4.18;
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
  

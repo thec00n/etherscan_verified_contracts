@@ -13,12 +13,12 @@ library SafeMath {
     return a / b;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -32,10 +32,10 @@ interface IDonQuixoteToken{
 } 
 
 contract BaseGame {             
-    string public gameName=&quot;BigOrSmall&quot;;         
+    string public gameName="BigOrSmall";         
      uint public constant gameType = 2001;   
     string public officialGameUrl;  
-    mapping (address =&gt; uint256) public userTokenOf;     
+    mapping (address => uint256) public userTokenOf;     
     uint public bankerBeginTime;     
     uint public bankerEndTime;       
     address public currentBanker;      
@@ -138,12 +138,12 @@ contract SelectOne is Base
     uint256 public gameMinBetAmount;    
 	
 	function SelectOne(uint _maxNum, uint  _gameTime, uint256 _gameMinBetAmount, uint256 _gameMaxBetAmount,uint _winMultiplePer, string _gameName,address _DonQuixoteToken)  public {
-        require(_gameMinBetAmount &gt;= 0);
-        require(_gameMaxBetAmount &gt; 0);
-        require(_gameMaxBetAmount &gt;= _gameMinBetAmount);
-		require(_maxNum &lt; 10000);              
-        require(1 &lt; _maxNum);                   
-        require(_winMultiplePer &lt; _maxNum.mul(100));      
+        require(_gameMinBetAmount >= 0);
+        require(_gameMaxBetAmount > 0);
+        require(_gameMaxBetAmount >= _gameMinBetAmount);
+		require(_maxNum < 10000);              
+        require(1 < _maxNum);                   
+        require(_winMultiplePer < _maxNum.mul(100));      
         
 		gameMinBetAmount = _gameMinBetAmount;
         gameMaxBetAmount = _gameMaxBetAmount;
@@ -172,13 +172,13 @@ contract SelectOne is Base
     }
 
     function canSetBanker() public view returns (bool _result){
-        _result =  bankerEndTime &lt;= now &amp;&amp; gameOver;
+        _result =  bankerEndTime <= now && gameOver;
     }
 	
     modifier onlyBanker {               
         require(msg.sender == currentBanker);
-        require(bankerBeginTime &lt;= now);
-        require(now &lt; bankerEndTime);     
+        require(bankerBeginTime <= now);
+        require(now < bankerEndTime);     
         _;
     }
 
@@ -188,7 +188,7 @@ contract SelectOne is Base
 	{
         _result = false;
         require(_banker != 0x0);
-        if(now &lt; bankerEndTime){        
+        if(now < bankerEndTime){        
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 1, now, getEventId());
             return;
         }
@@ -196,15 +196,15 @@ contract SelectOne is Base
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 2, now, getEventId());
             return;
         }
-        if(_beginTime &gt; now){               
+        if(_beginTime > now){               
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 3, now, getEventId()); 
             return;
         }
-        if(_endTime &lt;= now){
+        if(_endTime <= now){
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 4, now, getEventId());
             return;
         }
-	    if(now &lt; donGameGiftLineTime){
+	    if(now < donGameGiftLineTime){
             DonQuixoteToken.logPlaying(_banker);
         }
         currentBanker = _banker;
@@ -221,7 +221,7 @@ contract SelectOne is Base
     bytes32 public gameEncryptedText;  
     uint public gameResult;            
     string public gameRandon1;          
-    string public constant gameRandon2 = &#39;ChinasNewGovernmentBracesforTrump&#39;;   
+    string public constant gameRandon2 = 'ChinasNewGovernmentBracesforTrump';   
     uint  public gameBeginTime;        
     uint  public gameEndTime;           
     bool public gameOver = true;       
@@ -239,12 +239,12 @@ contract SelectOne is Base
     {
         _result = false;
         require(gameOver); 
-        require(bankerBeginTime &lt; now);       
-        require(now.add(gameTime) &lt;= bankerEndTime);    
+        require(bankerBeginTime < now);       
+        require(now.add(gameTime) <= bankerEndTime);    
         gameID++;                           
         currentBanker = msg.sender;
         gameEncryptedText = _gameEncryptedText;
-        gameRandon1 = &#39;&#39;;          
+        gameRandon1 = '';          
         gameBeginTime = now;                
         gameEndTime = now.add(gameTime);
         gameBeginPlayNo = playNo;          
@@ -264,7 +264,7 @@ contract SelectOne is Base
         bool IsReturnAward;     
     }
 
-    mapping (uint =&gt; betInfo) public playerBetInfoOf;              
+    mapping (uint => betInfo) public playerBetInfoOf;              
     event OnPlay(uint indexed _gameID, address indexed _player, uint _betNum, uint256 _betAmount, uint _playNo, uint _eventTime, uint _eventId);
 
     function play(uint _betNum, uint256 _betAmount) public  returns(bool _result){      
@@ -275,25 +275,25 @@ contract SelectOne is Base
         _result = false;
         require(!gameOver);
         require(!betInfoIsLocked);                         
-        require(now &lt; gameEndTime);
-        require(playNo.sub(gameBeginPlayNo) &lt;= maxPlayerNum); 
-        require(minNum &lt;= _betNum &amp;&amp; _betNum &lt;= maxNum);    
+        require(now < gameEndTime);
+        require(playNo.sub(gameBeginPlayNo) <= maxPlayerNum); 
+        require(minNum <= _betNum && _betNum <= maxNum);    
         require(msg.sender != currentBanker);                
                    
         uint256 ba = _betAmount;
-        if (ba &gt; gameMaxBetAmount){                       
+        if (ba > gameMaxBetAmount){                       
             ba = gameMaxBetAmount;
         }
-        require(ba &gt;= gameMinBetAmount);                   
+        require(ba >= gameMinBetAmount);                   
 
-        if(userTokenOf[msg.sender] &lt; ba){                                       
+        if(userTokenOf[msg.sender] < ba){                                       
             depositToken(ba.sub(userTokenOf[msg.sender]));                    
         }
-        require(userTokenOf[msg.sender] &gt;= ba);             
+        require(userTokenOf[msg.sender] >= ba);             
        
         uint256 BankerAmount = ba.mul(winMultiplePer).div(100);                  
       
-        require(userTokenOf[currentBanker] &gt;= BankerAmount);
+        require(userTokenOf[currentBanker] >= BankerAmount);
 
         betInfo memory bi = betInfo({
                 Player :  msg.sender,
@@ -312,7 +312,7 @@ contract SelectOne is Base
         lastBlockNumber = block.number;    
         playNo++;                          
 
-        if(now &lt; donGameGiftLineTime){     
+        if(now < donGameGiftLineTime){     
             DonQuixoteToken.logPlaying(msg.sender);           
         }
         _result = true;
@@ -322,7 +322,7 @@ contract SelectOne is Base
     
     function lockBetInfo() public onlyBanker returns (bool _result) {                  
         require(!gameOver);
-        require(now &lt; gameEndTime);
+        require(now < gameEndTime);
         require(!betInfoIsLocked);
         betInfoIsLocked = true;
         _result = true;
@@ -339,7 +339,7 @@ contract SelectOne is Base
             reversed[i++] = byte(remainder.add(48));
         }
         bytes memory s = new bytes(i);         
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
             s[j] = reversed[(i.sub(j)).sub(1)];         
         }
         string memory str = string(s);          
@@ -357,7 +357,7 @@ contract SelectOne is Base
 	   _result = false;
         require(betInfoIsLocked);          
         require(!gameOver);
-        require(now &lt;= gameEndTime);       
+        require(now <= gameEndTime);       
 
         if(lastBlockNumber == block.number){                        
             emit OnOpenGameResult(gameID, msg.sender, _gameResult, _r1,  false, 2, now, getEventId());         
@@ -366,11 +366,11 @@ contract SelectOne is Base
 
         string memory gr = uint8ToString(_gameResult); 
         if(keccak256(gr, gameRandon2,  _r1) ==  gameEncryptedText){
-            if(_gameResult &gt;= minNum &amp;&amp; _gameResult &lt;= maxNum){     
+            if(_gameResult >= minNum && _gameResult <= maxNum){     
                 gameResult = _gameResult;
                 gameRandon1 = _r1;
                 gameEndPlayNo = playNo.sub(1); 
-                for(uint i = gameBeginPlayNo; i &lt; playNo; i++){     
+                for(uint i = gameBeginPlayNo; i < playNo; i++){     
                     betInfo storage p = playerBetInfoOf[i];
                     if(!p.IsReturnAward){   
                         p.IsReturnAward = true;
@@ -381,7 +381,7 @@ contract SelectOne is Base
                         }else{                                                                  
                             userTokenOf[currentBanker] = userTokenOf[currentBanker].add(AllAmount);
                             userTokenOf[this] = userTokenOf[this].sub(AllAmount);               
-                            if(now &lt; donGameGiftLineTime){  
+                            if(now < donGameGiftLineTime){  
                                 DonQuixoteToken.sendGameGift(p.Player);                                
                             } 
                         }
@@ -416,16 +416,16 @@ contract SelectOne is Base
     function noOpenGameResult() public  returns(bool _result){         
         _result = false;
         require(!gameOver);       
-        require(gameEndTime &lt; now); 
+        require(gameEndTime < now); 
         if(lastBlockNumber == block.number){                           
-            emit OnOpenGameResult(gameID, msg.sender,0, &#39;&#39;,false, 2, now, getEventId());
+            emit OnOpenGameResult(gameID, msg.sender,0, '',false, 2, now, getEventId());
             return;
         }
 
         lock(); 
 		
         gameEndPlayNo = playNo - 1;         
-        for(uint i = gameBeginPlayNo; i &lt; playNo; i++){                                
+        for(uint i = gameBeginPlayNo; i < playNo; i++){                                
             betInfo storage p = playerBetInfoOf[i];
             if(!p.IsReturnAward){           
                 p.IsReturnAward = true;
@@ -439,7 +439,7 @@ contract SelectOne is Base
         if(betInfoIsLocked){
             betInfoIsLocked = false;    
         }
-        emit OnOpenGameResult(gameID, msg.sender,   0,  &#39;&#39;,  true, 1, now, getEventId());
+        emit OnOpenGameResult(gameID, msg.sender,   0,  '',  true, 1, now, getEventId());
         _result = true;
 
         unLock();  
@@ -448,12 +448,12 @@ contract SelectOne is Base
     function  failUserRefund(uint _playNo) public returns (bool _result) {      
         _result = false;
         require(!gameOver);
-        require(gameEndTime.add(30 days) &lt; now);          
+        require(gameEndTime.add(30 days) < now);          
 
         betInfo storage p = playerBetInfoOf[_playNo];   
         require(p.Player == msg.sender);               
         
-        if(!p.IsReturnAward &amp;&amp; p.BetNum &gt; 0){            
+        if(!p.IsReturnAward && p.BetNum > 0){            
             p.IsReturnAward = true;
             uint256 ToUser = p.BetAmount;   
             uint256 ToBanker = p.BetAmount.mul(winMultiplePer).div(100);  

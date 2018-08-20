@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -104,8 +104,8 @@ contract ERPToken is BasicToken,Ownable {
 
    using SafeMath for uint256;
    
-   string public constant name = &quot;ERD&quot;;
-   string public constant symbol = &quot;ERD&quot;;
+   string public constant name = "ERD";
+   string public constant symbol = "ERD";
    uint256 public constant decimals = 18;  
    address public ethStore = 0xDcbFE8d41D4559b3EAD3179fa7Bb3ad77EaDa564;
    uint256 public REMAINING_SUPPLY = 100000000000  * (10 ** uint256(decimals));
@@ -125,9 +125,9 @@ contract ERPToken is BasicToken,Ownable {
     }
     
      function mint(address from, address to, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[from] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[to] = tokenBalances[to].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[from] = tokenBalances[from].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[from] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[to] = tokenBalances[to].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[from] = tokenBalances[from].sub(tokenAmount);                        // subtracts amount from seller's balance
       REMAINING_SUPPLY = tokenBalances[wallet];
       Transfer(from, to, tokenAmount); 
     }

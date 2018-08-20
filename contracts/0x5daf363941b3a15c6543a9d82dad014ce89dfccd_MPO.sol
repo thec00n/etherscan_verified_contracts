@@ -3,10 +3,10 @@ contract MPO {
 	uint256 public time;
 	address public operator; 
 	uint256 shift;
-	string public name =&quot;MP&quot;;
-	string public symbol =&quot;Wh&quot;;
+	string public name ="MP";
+	string public symbol ="Wh";
 	event Transfer(address indexed from, address indexed to, uint256 value);
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	address[] public listeners;
 	
 	function MPO() {
@@ -16,12 +16,12 @@ contract MPO {
 	
 	function updateReading(uint256 last_reading,uint256 timeofreading) {		
 		if(msg.sender!=operator) throw;
-		if((timeofreading&lt;time)||(reading&gt;last_reading)) throw;	
+		if((timeofreading<time)||(reading>last_reading)) throw;	
 		var oldreading=last_reading;
 		reading=last_reading-shift;
 		time=timeofreading;	
 		balanceOf[this]=last_reading;
-		for(var i=0;i&lt;listeners.length;i++) {
+		for(var i=0;i<listeners.length;i++) {
 			balanceOf[listeners[i]]=last_reading;
 			Transfer(msg.sender,listeners[i],last_reading-oldreading);
 		}

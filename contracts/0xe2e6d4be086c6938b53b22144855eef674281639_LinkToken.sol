@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
-/// @title Link Token. This Token will remain the cornerstone of the entire organization. It will have an Ethereum address and from the moment that address is publish until the end, it will remain the same, and should. The Token should be as simple as it possibly can be and should not be able to terminate. It&#39;s state remains so that those who control their Tokens will continue to do so.
-/// @author Riaan F Venter~ RFVenter~ &lt;<span class="__cf_email__" data-cfemail="84e9f7e3c4f6e2f2aaedeb">[email&#160;protected]</span>&gt;
+/// @title Link Token. This Token will remain the cornerstone of the entire organization. It will have an Ethereum address and from the moment that address is publish until the end, it will remain the same, and should. The Token should be as simple as it possibly can be and should not be able to terminate. It's state remains so that those who control their Tokens will continue to do so.
+/// @author Riaan F Venter~ RFVenter~ <<span class="__cf_email__" data-cfemail="84e9f7e3c4f6e2f2aaedeb">[email protected]</span>>
 
 
 /*
@@ -27,37 +27,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -75,13 +75,13 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -121,13 +121,13 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -176,8 +176,8 @@ contract Ownable {
 
 contract LinkToken is StandardToken, Ownable {
 
-    string public   name =           &quot;Link Platform&quot;;    // Name of the Token
-    string public   symbol =         &quot;LNK&quot;;              // ERC20 compliant Token code
+    string public   name =           "Link Platform";    // Name of the Token
+    string public   symbol =         "LNK";              // ERC20 compliant Token code
     uint public     decimals =       18;                 // Token has 18 digit precision
     uint public     totalSupply;    			         // Total supply
 

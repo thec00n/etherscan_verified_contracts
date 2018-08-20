@@ -5,12 +5,12 @@ library SafeMath
     function add(uint256 a, uint256 b) internal pure returns (uint256)
     {
         uint256 c = a+b;
-        assert (c&gt;=a);
+        assert (c>=a);
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        assert(a&gt;=b);
+        assert(a>=b);
         return (a-b);
     }
     function mul(uint256 a,uint256 b)internal pure returns (uint256)
@@ -87,8 +87,8 @@ contract pausable is Owned
 contract TokenControl is ERC20,pausable
 {
     using SafeMath for uint256;
-    mapping (address =&gt;uint256) internal balances;
-    mapping (address =&gt; mapping(address =&gt;uint256)) internal allowed;
+    mapping (address =>uint256) internal balances;
+    mapping (address => mapping(address =>uint256)) internal allowed;
     uint256 totaltoken;
 
     function totalSupply() public view returns (uint256)
@@ -98,7 +98,7 @@ contract TokenControl is ERC20,pausable
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool)
     {
         require(_to!=address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -112,8 +112,8 @@ contract TokenControl is ERC20,pausable
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused  returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract TokenControl is ERC20,pausable
     function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue)
+        if (_subtractedValue > oldValue)
         {
             allowed[msg.sender][_spender] = 0;
         }
@@ -179,8 +179,8 @@ contract claimable is Owned
 contract RT is TokenControl,claimable
 {
     using SafeMath for uint256;
-    string public constant name    = &quot;RecuToken&quot;;
-    string public constant symbol  = &quot;RT&quot;;
+    string public constant name    = "RecuToken";
+    string public constant symbol  = "RT";
     uint256 public decimals = 18;
     uint256 totalsupply =  500000000*(10**decimals);
 
@@ -227,7 +227,7 @@ contract RT is TokenControl,claimable
     function transferTokensFromVault(address toAddress, uint256 tokensAmount) public
     {
         require(salesAgent == msg.sender);
-        require(balances[vault]&gt;=tokensAmount);
+        require(balances[vault]>=tokensAmount);
         balances[vault] = balances[vault].sub(tokensAmount);
         balances[toAddress] = balances[toAddress].add(tokensAmount);
         emit Transfer(vault, toAddress, tokensAmount);

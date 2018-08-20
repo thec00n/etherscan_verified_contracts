@@ -5,7 +5,7 @@ contract Roulette {
     /* Remark: 
      *  Private Seed for generateRand(), 
      *  since this is nowhere visibile, 
-     *  it&#39;s very hard to guess.
+     *  it's very hard to guess.
      */
     uint privSeed; 
     struct Casino {
@@ -18,7 +18,7 @@ contract Roulette {
 
     // Init Constructor
     function Roulette() {
-        sWelcome = &quot;\n-----------------------------\n     Welcome to Roulette \n Got coins? Then come on in! \n-----------------------------\n&quot;;
+        sWelcome = "\n-----------------------------\n     Welcome to Roulette \n Got coins? Then come on in! \n-----------------------------\n";
         privSeed = 1;
         casino.addr = msg.sender;
         casino.balance = 0;
@@ -39,7 +39,7 @@ contract Roulette {
             msg.sender.send(msg.value);
     }
     function casinoWithdraw(uint amount) {
-        if (msg.sender == casino.addr &amp;&amp; amount &lt;= casino.balance) {
+        if (msg.sender == casino.addr && amount <= casino.balance) {
             casino.balance -= amount;
             casino.addr.send(amount);
         }
@@ -50,21 +50,21 @@ contract Roulette {
         // Input Handling
         address addr = msg.sender;
         uint betSize = msg.value;
-        if (betSize &lt; casino.bettingLimitMin || betSize &gt; casino.bettingLimitMax) {
+        if (betSize < casino.bettingLimitMin || betSize > casino.bettingLimitMax) {
             // Return Funds
-            if (betSize &gt;= 1*10**18)
+            if (betSize >= 1*10**18)
                 addr.send(betSize);
-            return &quot;Please choose an amount within between 1 and 10 ETH&quot;;
+            return "Please choose an amount within between 1 and 10 ETH";
         }
-        if (betSize * 36 &gt; casino.balance) {
+        if (betSize * 36 > casino.balance) {
             // Return Funds
             addr.send(betSize);
-            return &quot;Casino has insufficient funds for this bet amount&quot;;
+            return "Casino has insufficient funds for this bet amount";
         }
-        if (number &lt; 0 || number &gt; 36) {
+        if (number < 0 || number > 36) {
             // Return Funds
             addr.send(betSize);
-            return &quot;Please choose a number between 0 and 36&quot;;
+            return "Please choose a number between 0 and 36";
         }
         // Roll the wheel
         privSeed += 1;
@@ -74,11 +74,11 @@ contract Roulette {
             uint winAmount = betSize * 36;
             casino.balance -= (winAmount - betSize);
             addr.send(winAmount);
-            return &quot;Winner winner chicken dinner!&quot;;
+            return "Winner winner chicken dinner!";
         }
         else {
             casino.balance += betSize;
-            return &quot;Wrong number.&quot;;
+            return "Wrong number.";
         }
     }
     
@@ -87,36 +87,36 @@ contract Roulette {
         // Input Handling
         address addr = msg.sender;
         uint betSize = msg.value;
-        if (betSize &lt; casino.bettingLimitMin || betSize &gt; casino.bettingLimitMax) {
+        if (betSize < casino.bettingLimitMin || betSize > casino.bettingLimitMax) {
             // Return Funds
-            if (betSize &gt;= 1*10**18)
+            if (betSize >= 1*10**18)
                 addr.send(betSize);
-            return &quot;Please choose an amount within between 1 and 10 ETH&quot;;
+            return "Please choose an amount within between 1 and 10 ETH";
         }
-        if (betSize * 2 &gt; casino.balance) {
+        if (betSize * 2 > casino.balance) {
             // Return Funds
             addr.send(betSize);
-            return &quot;Casino has insufficient funds for this bet amount&quot;;
+            return "Casino has insufficient funds for this bet amount";
         }
-        if (color != 0 &amp;&amp; color != 1) {
+        if (color != 0 && color != 1) {
             // Return Funds
             addr.send(betSize);
-            return &quot;Please choose either &#39;0&#39; = red or &#39;1&#39; = black as a color&quot;;
+            return "Please choose either '0' = red or '1' = black as a color";
         }
         // Roll the wheel
         privSeed += 1;
         uint rand = generateRand();
         uint randC = (rand + 1) % 2;
         // Win
-        if (rand != 0 &amp;&amp; (randC == color)) {
+        if (rand != 0 && (randC == color)) {
             uint winAmount = betSize * 2;
             casino.balance -= (winAmount - betSize);
             addr.send(winAmount);
-            return &quot;Win! Good job.&quot;;
+            return "Win! Good job.";
         }
         else {
             casino.balance += betSize;
-            return &quot;Wrong color.&quot;;           
+            return "Wrong color.";           
         }
     }
     

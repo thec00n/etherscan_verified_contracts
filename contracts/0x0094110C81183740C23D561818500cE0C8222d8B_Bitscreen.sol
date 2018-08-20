@@ -41,7 +41,7 @@ contract Bitscreen {
         uint  activeAdBuysForDividend; //gets lowered (according to their numberAdBuys) when someone cashes out
         uint  ownerpool;
         uint  dividendPool;
-        mapping(address =&gt; AdBuyerInfo) adbuyerMap;
+        mapping(address => AdBuyerInfo) adbuyerMap;
     }
     
 
@@ -150,7 +150,7 @@ contract Bitscreen {
         
         uint totalDecrease=((screenstate.currTopBid*screenstate.periodPercentagePriceDecrease*ellapsedPeriodsSinceLastBid)/100);
         
-        if(totalDecrease&gt;screenstate.currTopBid){
+        if(totalDecrease>screenstate.currTopBid){
             currDynamicPrice=0;
         }else{
             currDynamicPrice= screenstate.currTopBid-totalDecrease;
@@ -169,9 +169,9 @@ contract Bitscreen {
         
             uint dynamicPrice=calculateCurrDynamicPrice();
         
-            if(msg.value&gt;dynamicPrice) { //prev: msg.value&gt;screenstate.currTopBid
+            if(msg.value>dynamicPrice) { //prev: msg.value>screenstate.currTopBid
             
-                if(truncToThreeDecimals(msg.value)-truncToThreeDecimals(dynamicPrice)&lt;1000000000000000){
+                if(truncToThreeDecimals(msg.value)-truncToThreeDecimals(dynamicPrice)<1000000000000000){
                     revert();
                 }else{
                     

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,14 +50,14 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract BitGuildToken {
     // Public variables of the token
-    string public name = &quot;BitGuild PLAT&quot;;
-    string public symbol = &quot;PLAT&quot;;
+    string public name = "BitGuild PLAT";
+    string public symbol = "PLAT";
     uint8 public decimals = 18;
     uint256 public totalSupply = 10000000000 * 10 ** uint256(decimals); // 10 billion tokens;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -80,9 +80,9 @@ contract BitGuildToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -116,7 +116,7 @@ contract BitGuildToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -163,7 +163,7 @@ contract BitGuildToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -179,10 +179,10 @@ contract BitGuildToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -197,7 +197,7 @@ contract BitGuildWhitelist {
 
   address admin;
 
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
   uint256 public totalWhitelisted = 0;
 
   event AddressWhitelisted(address indexed user, bool whitelisted);
@@ -206,7 +206,7 @@ contract BitGuildWhitelist {
     admin = msg.sender;
   }
 
-  // Doesn&#39;t accept eth
+  // Doesn't accept eth
   function () external payable {
     revert();
   }
@@ -214,12 +214,12 @@ contract BitGuildWhitelist {
   // Allows an admin to update whitelist
   function whitelistAddress(address[] _users, bool _whitelisted) public {
     require(msg.sender == admin);
-    for (uint i = 0; i &lt; _users.length; i++) {
+    for (uint i = 0; i < _users.length; i++) {
       if (whitelist[_users[i]] == _whitelisted) continue;
       if (_whitelisted) {
         totalWhitelisted++;
       } else {
-        if (totalWhitelisted &gt; 0) {
+        if (totalWhitelisted > 0) {
           totalWhitelisted--;
         }
       }
@@ -261,7 +261,7 @@ contract BitGuildCrowdsale {
 
   // amount of raised money in wei
   uint256 public weiRaised;
-  mapping (address =&gt; uint256) public contributions;
+  mapping (address => uint256) public contributions;
 
   // Finalization flag for when we want to withdraw the remaining tokens after the end
   bool public crowdsaleFinalized = false;
@@ -276,8 +276,8 @@ contract BitGuildCrowdsale {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function BitGuildCrowdsale(uint256 _startTime, uint256 _endTime, address _token, address _wallet, address _whitelist) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_token != address(0));
     require(_wallet != address(0));
     require(_whitelist != address(0));
@@ -319,19 +319,19 @@ contract BitGuildCrowdsale {
 
   // Returns true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    bool endTimeReached = now &gt; endTime;
+    bool capReached = weiRaised >= cap;
+    bool endTimeReached = now > endTime;
     return capReached || endTimeReached || crowdsaleFinalized;
   }
 
   // Bonuses for larger purchases (in hundredths of percent)
   function bonusPercentForWeiAmount(uint256 weiAmount) public pure returns(uint256) {
-    if (weiAmount &gt;= 500 ether) return 1000; // 10%
-    if (weiAmount &gt;= 250 ether) return 750;  // 7.5%
-    if (weiAmount &gt;= 100 ether) return 500;  // 5%
-    if (weiAmount &gt;= 50 ether) return 375;   // 3.75%
-    if (weiAmount &gt;= 15 ether) return 250;   // 2.5%
-    if (weiAmount &gt;= 5 ether) return 125;    // 1.25%
+    if (weiAmount >= 500 ether) return 1000; // 10%
+    if (weiAmount >= 250 ether) return 750;  // 7.5%
+    if (weiAmount >= 100 ether) return 500;  // 5%
+    if (weiAmount >= 50 ether) return 375;   // 3.75%
+    if (weiAmount >= 15 ether) return 250;   // 2.5%
+    if (weiAmount >= 5 ether) return 125;    // 1.25%
     return 0; // 0% bonus if lower than 5 eth
   }
 
@@ -345,12 +345,12 @@ contract BitGuildCrowdsale {
 
   // Returns true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-    bool moreThanMinPurchase = msg.value &gt;= minContribution;
-    bool lessThanMaxPurchase = contributions[msg.sender] + msg.value &lt;= maxContribution;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
+    bool withinPeriod = now >= startTime && now <= endTime;
+    bool moreThanMinPurchase = msg.value >= minContribution;
+    bool lessThanMaxPurchase = contributions[msg.sender] + msg.value <= maxContribution;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
 
-    return withinPeriod &amp;&amp; moreThanMinPurchase &amp;&amp; lessThanMaxPurchase &amp;&amp; withinCap &amp;&amp; !crowdsaleFinalized;
+    return withinPeriod && moreThanMinPurchase && lessThanMaxPurchase && withinCap && !crowdsaleFinalized;
   }
 
   // Escape hatch in case the sale needs to be urgently stopped

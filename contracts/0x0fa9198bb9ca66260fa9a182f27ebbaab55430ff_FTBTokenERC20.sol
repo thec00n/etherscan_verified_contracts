@@ -3,15 +3,15 @@ pragma solidity ^0.4.16;
 contract FTBTokenERC20 {
 
     // Public variables of the token
-    string public name = &#39;Feitebi ERC20 TOKEN&#39;;
-    string public symbol = &#39;FTB&#39;;
+    string public name = 'Feitebi ERC20 TOKEN';
+    string public symbol = 'FTB';
     uint8 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
     uint256 public initSupply = 150000000;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
    
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -34,9 +34,9 @@ contract FTBTokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

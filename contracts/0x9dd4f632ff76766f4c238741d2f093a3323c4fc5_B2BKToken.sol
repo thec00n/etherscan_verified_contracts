@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -61,8 +61,8 @@ contract IB2BKToken {
 contract B2BKToken is IB2BKToken, Owned {
     using SafeMath for uint256;
  
-    string public constant name = &quot;B2BX KICKICO&quot;;
-    string public constant symbol = &quot;B2BK&quot;;
+    string public constant name = "B2BX KICKICO";
+    string public constant symbol = "B2BK";
     uint8 public constant decimals = 18;
 
     uint256 public totalSupply = 0;
@@ -80,7 +80,7 @@ contract B2BKToken is IB2BKToken, Owned {
     // The flag indicates is in BUY state.
     bool public finalized = false;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /// @notice B2BK Project - Initializing.
     /// @dev Constructor.
@@ -124,11 +124,11 @@ contract B2BKToken is IB2BKToken, Owned {
     function buy(address _to) public validAddress(_to) isNotFinalized payable {
         uint256 _amount = msg.value;
 
-        assert(_amount &gt; 0);
+        assert(_amount > 0);
 
         uint256 _tokens = _amount.mul(rate);
 
-        assert(totalSupply.add(_tokens) &lt;= totalMaxBuy);
+        assert(totalSupply.add(_tokens) <= totalMaxBuy);
 
         totalSupply = totalSupply.add(_tokens);
         totalETH = totalETH.add(_amount);
@@ -160,7 +160,7 @@ contract B2BKToken is IB2BKToken, Owned {
     function burn() external isFinalized {
         uint256 _balance = balanceOf[msg.sender];
 
-        assert(_balance &gt; 0);
+        assert(_balance > 0);
 
         totalSupply = totalSupply.sub(_balance);
         balanceOf[msg.sender] = 0;

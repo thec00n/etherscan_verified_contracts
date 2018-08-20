@@ -26,7 +26,7 @@ contract WhiteListAccess {
     }
     
     address public owner;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     modifier onlyBy(address who) { require(msg.sender == who); _; }
     modifier onlyOwner {require(msg.sender == owner); _;}
@@ -47,7 +47,7 @@ contract WhiteListAccess {
 // ----------------------------------------------------------------------------
 contract NRB_Common is WhiteListAccess {
     
-    string public name;             // contract&#39;s name
+    string public name;             // contract's name
     bool _init;
     
     function NRB_Common() public { ETH_address = 0x1; }
@@ -83,10 +83,10 @@ contract NRB_Common is WhiteListAccess {
 contract NRB_Tokens is NRB_Common {
 
     // how much raised for each token
-    mapping(address =&gt; uint) raisedAmount;
+    mapping(address => uint) raisedAmount;
 
-    mapping(address =&gt; Token) public tokens;
-    mapping(uint =&gt; address) public tokenlist;
+    mapping(address => Token) public tokens;
+    mapping(uint => address) public tokenlist;
     uint public tokenlenth;
     
     struct Token {
@@ -101,9 +101,9 @@ contract NRB_Tokens is NRB_Common {
     }
 
     function NRB_Tokens() public {
-        name = &quot;NRB_Tokens&quot;;
+        name = "NRB_Tokens";
         tokenlenth = 1;
-        registerAndValidateToken(ETH_address, &quot;Ethereum&quot;, &quot;ETH&quot;, 18, 7812500000000000);
+        registerAndValidateToken(ETH_address, "Ethereum", "ETH", 18, 7812500000000000);
     }
 
     function getTokenListLength() constant public returns (uint) {
@@ -139,7 +139,7 @@ contract NRB_Tokens is NRB_Common {
     function registerToken(address _token, string _name, string _symbol, uint _decimals, uint _nextRecord) public onlyWhitelisted() {
         require(!tokens[_token].validated);
         if (_token != ETH_address) {
-            require(ERC20Interface(_token).totalSupply() &gt; 0);
+            require(ERC20Interface(_token).totalSupply() > 0);
             require(ERC20Interface(_token).balanceOf(address(this)) == 0);
         }
         tokens[_token].validated = false;
@@ -162,7 +162,7 @@ contract NRB_Tokens is NRB_Common {
         uint flc = 0;
         uint next = 0;
         (flc, next) = calculateFLCCore(token, totalpaid);
-        if (flc &gt; 0) {
+        if (flc > 0) {
             tokens[token].nextRecord = next;
             FLC(FLC_address).create(flc);
             ERC20Interface(FLC_address).transfer(user, flc);
@@ -180,7 +180,7 @@ contract NRB_Tokens is NRB_Common {
     function calculateFLCCore(address token, uint totalpaid) constant public returns (uint, uint) {
         uint next = tokens[token].nextRecord;
         uint flc = 0;
-        while (next &lt;= totalpaid) {
+        while (next <= totalpaid) {
             next = next * 2;
             flc++;
         }
@@ -190,12 +190,12 @@ contract NRB_Tokens is NRB_Common {
     // recover tokens sent accidentally
     function _withdrawal(address _token) public {
         uint _balance =  ERC20Interface(_token).balanceOf(address(this));
-        if (_balance &gt; 0) {
+        if (_balance > 0) {
             ERC20Interface(_token).transfer(owner, _balance);
         }
     }
     
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     function () public payable {
         revert();
     }

@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,8 +61,8 @@ contract TTT is ERC20, ERC223 {
     uint8 internal _decimals;
     uint256 internal _totalSupply;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function TTT(string name, string symbol, uint8 decimals, uint256 totalSupply) public {
         _symbol = symbol;
@@ -102,7 +102,7 @@ contract TTT is ERC20, ERC223 {
 
    function transfer(address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender]);
+     require(_value <= balances[msg.sender]);
      balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
      balances[_to] = SafeMath.add(balances[_to], _value);
      Transfer(msg.sender, _to, _value);
@@ -115,8 +115,8 @@ contract TTT is ERC20, ERC223 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = SafeMath.sub(balances[_from], _value);
      balances[_to] = SafeMath.add(balances[_to], _value);
@@ -143,7 +143,7 @@ contract TTT is ERC20, ERC223 {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
      uint oldValue = allowed[msg.sender][_spender];
-     if (_subtractedValue &gt; oldValue) {
+     if (_subtractedValue > oldValue) {
        allowed[msg.sender][_spender] = 0;
      } else {
        allowed[msg.sender][_spender] = SafeMath.sub(oldValue, _subtractedValue);
@@ -153,7 +153,7 @@ contract TTT is ERC20, ERC223 {
    }
    
   function transfer(address _to, uint _value, bytes _data) public {
-    require(_value &gt; 0 );
+    require(_value > 0 );
     if(isContract(_to)) {
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         receiver.tokenFallback(msg.sender, _value, _data);
@@ -169,7 +169,7 @@ contract TTT is ERC20, ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
 

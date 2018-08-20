@@ -31,12 +31,12 @@ contract Terrus {
     bytes32 terrain;
     uint saleCount;
   }
-  mapping(uint =&gt; mapping(uint =&gt; Plot)) plots;
+  mapping(uint => mapping(uint => Plot)) plots;
 
   address owner;
 
-  mapping(uint =&gt; mapping(uint =&gt; address)) authorisedSaleAddresses;
-  mapping(uint =&gt; mapping(uint =&gt; uint)) authorisedSalePrices;
+  mapping(uint => mapping(uint => address)) authorisedSaleAddresses;
+  mapping(uint => mapping(uint => uint)) authorisedSalePrices;
 
   // Constructor
   function Terrus() public {
@@ -55,8 +55,8 @@ contract Terrus {
   }
 
   modifier xyBounded(uint x, uint y) {
-    require(x &lt; 1000);
-    require(y &lt; 1000);
+    require(x < 1000);
+    require(y < 1000);
     _;
   }
 
@@ -66,7 +66,7 @@ contract Terrus {
     require(plot.owned);
     require(plot.owner == msg.sender);
     uint fee = getSaleFee();
-    require(amount &gt;= fee);
+    require(amount >= fee);
     authorisedSaleAddresses[x][y] = buyer;
     authorisedSalePrices[x][y] = amount;
     return true;
@@ -143,13 +143,13 @@ contract Terrus {
     Plot memory plot = plots[x][y];
     bytes32 currentTerrain = plot.owned ? plot.terrain : getInitialTerrain(x, y);
     uint changed = 0;
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
       if (newTerrain[i] != currentTerrain[i]) {
         changed += 1;
       }
     }
     uint price = changed * (0.01 ether);
-    require(price &gt;= 0);
+    require(price >= 0);
     return price;
   }
 
@@ -168,7 +168,7 @@ contract Terrus {
   }
 
   function ping() public pure returns (bytes4) {
-    return &quot;pong&quot;;
+    return "pong";
   }
 
   // TODO TEST
@@ -189,7 +189,7 @@ contract Terrus {
   }
 
   function withdrawEther(uint amount) public ownerOnly returns (bool) {
-    require(this.balance &gt;= amount);
+    require(this.balance >= amount);
     address recipient = msg.sender;
     recipient.transfer(amount);
     Withdrawal(recipient, amount);

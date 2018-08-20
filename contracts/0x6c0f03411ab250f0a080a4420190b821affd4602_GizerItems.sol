@@ -22,11 +22,11 @@ library SafeMath {
 
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require( c &gt;= a );
+    require( c >= a );
   }
 
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require( b &lt;= a );
+    require( b <= a );
     c = a - b;
   }
 
@@ -44,7 +44,7 @@ contract Owned {
   address public owner;
   address public newOwner;
 
-  mapping(address =&gt; bool) public isAdmin;
+  mapping(address => bool) public isAdmin;
 
   // Events ---------------------------
 
@@ -141,9 +141,9 @@ contract ERC721Token is ERC721Interface, ERC721Metadata, ERC721Enumerable, Owned
   uint public ownerCount = 0;
   uint public deedCount = 0;
   
-  mapping(address =&gt; uint) public balances;
-  mapping(uint =&gt; address) public mIdOwner;
-  mapping(uint =&gt; address) public mIdApproved;
+  mapping(address => uint) public balances;
+  mapping(uint => address) public mIdOwner;
+  mapping(uint => address) public mIdApproved;
 
   // Required Functions ------------------------
 
@@ -182,7 +182,7 @@ contract ERC721Token is ERC721Interface, ERC721Metadata, ERC721Enumerable, Owned
   
   function transferFrom(address _from, address _to, uint _id) external {
     // check if the sender has the right to transfer
-    require( _from == mIdOwner[_id] &amp;&amp; mIdApproved[_id] == msg.sender );
+    require( _from == mIdOwner[_id] && mIdApproved[_id] == msg.sender );
 
     // transfer ownership and reset approval (if any)
     mIdOwner[_id] = _to;
@@ -215,7 +215,7 @@ contract ERC721Token is ERC721Interface, ERC721Metadata, ERC721Enumerable, Owned
 
   function deedByIndex(uint _index) external view returns (uint id) {
     id = _index;
-    require( id &lt; deedCount );
+    require( id < deedCount );
   }  
   
   function countOfOwners() external view returns (uint count) {
@@ -248,8 +248,8 @@ contract GizerItems is ERC721Token {
 
   /* Basic token data */
   
-  string constant cName   = &quot;Gizer Item&quot;;
-  string constant cSymbol = &quot;GZR721&quot;;
+  string constant cName   = "Gizer Item";
+  string constant cSymbol = "GZR721";
   
   /* uuid information */
 
@@ -257,7 +257,7 @@ contract GizerItems is ERC721Token {
   uint[] public weight;
   uint public sumOfWeights;
   
-  mapping(bytes32 =&gt; uint) public mCodeIndexPlus; // index + 1
+  mapping(bytes32 => uint) public mCodeIndexPlus; // index + 1
 
   /* Pseudo-randomisation variables */
 
@@ -266,7 +266,7 @@ contract GizerItems is ERC721Token {
   
   /* mapping from item index to uuid */
   
-  mapping(uint =&gt; bytes32) public mIdxUuid;
+  mapping(uint => bytes32) public mIdxUuid;
   
   // Events ---------------------------
   
@@ -295,7 +295,7 @@ contract GizerItems is ERC721Token {
   }
   
   function getUuid(uint _id) external view returns (string) {
-    require( _id &lt; code.length );
+    require( _id < code.length );
     return bytes32ToString(code[_id]);  
   }
 
@@ -304,7 +304,7 @@ contract GizerItems is ERC721Token {
   function mint(address _to) public onlyAdmin returns (uint idx) {
     
     // initial checks
-    require( sumOfWeights &gt; 0 );
+    require( sumOfWeights > 0 );
     require( _to != address(0x0) );
     require( _to != address(this) );
 
@@ -334,9 +334,9 @@ contract GizerItems is ERC721Token {
     updateRandom();
     uint res = lastRandom % sumOfWeights;
     uint cWeight = 0;
-    for (uint i = 0; i &lt; code.length; i++) {
+    for (uint i = 0; i < code.length; i++) {
       cWeight = cWeight + weight[i];
-      if (cWeight &gt;= res) return code[i];
+      if (cWeight >= res) return code[i];
     }
 
     // we should never get here
@@ -362,8 +362,8 @@ contract GizerItems is ERC721Token {
 
     bytes32 uuid32 = stringToBytes32(_code);
 
-    // weight posiitve &amp; code not yet registered
-    require( _weight &gt; 0 );
+    // weight posiitve & code not yet registered
+    require( _weight > 0 );
     require( mCodeIndexPlus[uuid32] == 0 );
 
     // add to end of array
@@ -386,9 +386,9 @@ contract GizerItems is ERC721Token {
 
     bytes32 uuid32 = stringToBytes32(_code);
 
-    // weight positive &amp; code must be registered
-    require( _weight &gt; 0 );
-    require( mCodeIndexPlus[uuid32] &gt; 0 );
+    // weight positive & code must be registered
+    require( _weight > 0 );
+    require( mCodeIndexPlus[uuid32] > 0 );
 
     // update weight and sum of weights
     uint idx = mCodeIndexPlus[uuid32] - 1;
@@ -408,7 +408,7 @@ contract GizerItems is ERC721Token {
     bytes32 uuid32 = stringToBytes32(_code);
 
     // code must be registered
-    require( mCodeIndexPlus[uuid32] &gt; 0 );
+    require( mCodeIndexPlus[uuid32] > 0 );
 
     // index of code to be deleted
     uint idx = mCodeIndexPlus[uuid32] - 1;
@@ -462,7 +462,7 @@ contract GizerItems is ERC721Token {
   function bytes32ToString(bytes32 x) public pure returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
       byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
       if (char != 0) {
         bytesString[charCount] = char;
@@ -470,7 +470,7 @@ contract GizerItems is ERC721Token {
       }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
       bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);

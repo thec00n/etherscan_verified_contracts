@@ -6,7 +6,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -55,25 +55,25 @@ contract Ownable {
 library SafeMath {
     function mul(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a * b;
-        if (a != 0 &amp;&amp; c / a != b) revert();
+        if (a != 0 && c / a != b) revert();
         return c;
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        if (b &gt; a) revert();
+        if (b > a) revert();
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        if (c &lt; a) revert();
+        if (c < a) revert();
         return c;
     }
 }
@@ -81,7 +81,7 @@ library SafeMath {
 
 
 contract VLBBonusStore is Ownable {
-    mapping(address =&gt; uint8) public rates;
+    mapping(address => uint8) public rates;
 
     function collectRate(address investor) onlyOwner public returns (uint8) {
         require(investor != address(0));
@@ -103,7 +103,7 @@ contract VLBRefundVault is Ownable {
     enum State {Active, Refunding, Closed}
     State public state;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public wallet;
 
@@ -352,13 +352,13 @@ contract VLBCrowdsale is Ownable {
      */
     function validPurchase(uint256 _value) internal constant returns (bool) {
         bool nonZeroPurchase = _value != 0;
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool withinCap = !capReached(weiRaised.add(_value));
 
         // For presale we want to decline all payments less then minPresaleAmount
-        bool withinAmount = msg.value &gt;= MIN_SALE_AMOUNT;
+        bool withinAmount = msg.value >= MIN_SALE_AMOUNT;
 
-        return nonZeroPurchase &amp;&amp; withinPeriod &amp;&amp; withinCap &amp;&amp; withinAmount;
+        return nonZeroPurchase && withinPeriod && withinCap && withinAmount;
     }
 
     /**
@@ -379,7 +379,7 @@ contract VLBCrowdsale is Ownable {
      * @return true if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        bool timeIsUp = now &gt; endTime;
+        bool timeIsUp = now > endTime;
         return timeIsUp || capReached();
     }
 
@@ -413,28 +413,28 @@ contract VLBCrowdsale is Ownable {
      * @dev check if soft cap goal is reached in USD
      */
     function goalReached() public view returns (bool) {        
-        return isMinCapReached || weiRaised.mul(ETHUSD).div(10**20) &gt;= USD_GOAL;
+        return isMinCapReached || weiRaised.mul(ETHUSD).div(10**20) >= USD_GOAL;
     }
 
     /**
      * @dev check if hard cap goal is reached in USD
      */
     function capReached() internal view returns (bool) {
-        return weiRaised.mul(ETHUSD).div(10**20) &gt;= USD_CAP;
+        return weiRaised.mul(ETHUSD).div(10**20) >= USD_CAP;
     }
 
     /**
      * @dev check if hard cap goal is reached in USD
      */
     function capReached(uint256 raised) internal view returns (bool) {
-        return raised.mul(ETHUSD).div(10**20) &gt;= USD_CAP;
+        return raised.mul(ETHUSD).div(10**20) >= USD_CAP;
     }
 
     /**
      * @dev if crowdsale is unsuccessful, investors can claim refunds here
      */
     function claimRefund() public {
-        require(isFinalized &amp;&amp; refunding);
+        require(isFinalized && refunding);
 
         vault.refund(msg.sender);
     }    
@@ -466,15 +466,15 @@ contract VLBCrowdsale is Ownable {
      * @dev returns current token price based on current presale time frame
      */
     function getConversionRate() public constant returns (uint256) {
-        if (now &gt;= startTime + 106 days) {
+        if (now >= startTime + 106 days) {
             return 650;
-        } else if (now &gt;= startTime + 99 days) {
+        } else if (now >= startTime + 99 days) {
             return 676;
-        } else if (now &gt;= startTime + 92 days) {
+        } else if (now >= startTime + 92 days) {
             return 715;
-        } else if (now &gt;= startTime + 85 days) {
+        } else if (now >= startTime + 85 days) {
             return 780;
-        } else if (now &gt;= startTime) {
+        } else if (now >= startTime) {
             return 845;
         }
         return 0;

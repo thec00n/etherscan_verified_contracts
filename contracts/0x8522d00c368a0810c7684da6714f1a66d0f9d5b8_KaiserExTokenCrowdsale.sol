@@ -26,16 +26,16 @@ contract KaiserExTokenCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint amount = msg.value * 1000;
-        if(now &lt; endPresaleDate) {
+        if(now < endPresaleDate) {
         	amount = msg.value * 1200;
-        	require(presaleAmount &gt;= amount);
+        	require(presaleAmount >= amount);
         	presaleAmount -= amount;
         }
-        require(amount &gt;= 5 * 1 ether);
+        require(amount >= 5 * 1 ether);
         tokenReward.transfer(msg.sender, amount);
         FundTransfer(msg.sender, amount, true);
         ICOowner.transfer(msg.value);

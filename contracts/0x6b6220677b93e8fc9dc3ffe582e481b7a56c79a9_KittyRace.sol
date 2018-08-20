@@ -53,9 +53,9 @@ contract KittyRace {
     uint8 public maxRacers = 10; // maximum number of racers allowed for single race
 
     uint32 public raceId = 0;
-    mapping (uint256 =&gt; Race) public races;
-    mapping (uint256 =&gt; bool) public activeRacers;
-    mapping (uint256 =&gt; bool) public completedRaces;
+    mapping (uint256 => Race) public races;
+    mapping (uint256 => bool) public activeRacers;
+    mapping (uint256 => bool) public completedRaces;
 
     // Slight advantage for Kitties with the following genes
     // Array of arrays: [ gene mask, gene value, skill value ]
@@ -82,7 +82,7 @@ contract KittyRace {
 
     function kill() public onlyOwner {
         // Contract cannot be killed after midnight, April 1, 2018 (Pacific)
-        require(now &lt; 1522566000);
+        require(now < 1522566000);
 
         selfdestruct(owner);
     }
@@ -137,7 +137,7 @@ contract KittyRace {
         Race storage race = races[raceId];
 
         // Create new race if current race is completed or full
-        if (completedRaces[raceId] || race.racers.length &gt;= maxRacers) {
+        if (completedRaces[raceId] || race.racers.length >= maxRacers) {
             raceId += 1;
             race = races[raceId];
         }
@@ -174,10 +174,10 @@ contract KittyRace {
         uint256 numRacers = races[_raceId].racers.length;
 
         // Is race full, if not, have racers had enough time to join?
-        require(numRacers &gt;= maxRacers || block.number &gt; races[_raceId].blockJoinedFirstRacer + registrationPeriod);
+        require(numRacers >= maxRacers || block.number > races[_raceId].blockJoinedFirstRacer + registrationPeriod);
 
         // Enough unique block hashes to provide random roll for each racer?
-        require(block.number &gt; races[_raceId].blockJoinedLastRacer + numRacers);
+        require(block.number > races[_raceId].blockJoinedLastRacer + numRacers);
 
         Racer memory racer;
         Racer memory winner = races[_raceId].racers[0];
@@ -185,7 +185,7 @@ contract KittyRace {
         uint8 highScore = 0;
 
         // Calc finishing order
-        for(uint i = 0; i &lt; numRacers; i++) {
+        for(uint i = 0; i < numRacers; i++) {
             racer = races[_raceId].racers[i];
             // Genetic skill score
             raceScore = getKittySkillScore(racer.kittyId);
@@ -195,7 +195,7 @@ contract KittyRace {
             if (i == 0) { raceScore += 2; } // First to join
             if (i == 1) { raceScore += 1; } // Second to join
 
-            if (raceScore &gt; highScore) {
+            if (raceScore > highScore) {
                 winner = racer;
                 highScore = raceScore;
             }
@@ -234,8 +234,8 @@ contract KittyRace {
         ( , , , , , , , , , genes) = kittyCore.getKitty(_kittyId);
 
         uint8 skillScore;
-        for(uint8 i = 0; i &lt; geneMasks.length; i++) {
-            if (genes &amp; geneMasks[i][0] == geneMasks[i][1]) {
+        for(uint8 i = 0; i < geneMasks.length; i++) {
+            if (genes & geneMasks[i][0] == geneMasks[i][1]) {
                 skillScore += uint8(geneMasks[i][2]);
             }
         }

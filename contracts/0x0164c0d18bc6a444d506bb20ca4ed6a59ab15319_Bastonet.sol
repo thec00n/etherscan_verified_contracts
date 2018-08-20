@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,10 +63,10 @@ contract Ownable {
 contract Bastonet is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-    string public symbol = &quot;BSN&quot;;
-    string public name = &quot;Bastonet&quot;;
+    string public symbol = "BSN";
+    string public name = "Bastonet";
     uint8 public decimals = 18;
     uint256 private totalSupply_ = 5*(10**27);
     uint256 public fee = 5*(10**18);
@@ -81,7 +81,7 @@ contract Bastonet is ERC20Basic, Ownable {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender] &amp;&amp; _value &lt;= fee);
+    require(_value <= balances[msg.sender] && _value <= fee);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value.sub(fee));

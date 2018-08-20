@@ -5,11 +5,11 @@ pragma solidity ^0.4.18;
 contract RareClaim {
   /*** CONSTANTS ***/
   uint256 private fiveHoursInSeconds = 18000; // 18000;
-  string public constant NAME = &quot;RareClaims&quot;;
-  string public constant SYMBOL = &quot;RareClaim&quot;;
+  string public constant NAME = "RareClaims";
+  string public constant SYMBOL = "RareClaim";
 
   /*** STORAGE ***/
-  mapping (address =&gt; uint256) private ownerCount;
+  mapping (address => uint256) private ownerCount;
 
   address public ceoAddress;
   address public cooAddress;
@@ -21,7 +21,7 @@ contract RareClaim {
     address approve_transfer_to;
   }
   uint rare_count;
-  mapping (string =&gt; Rare) rares;
+  mapping (string => Rare) rares;
 
   /*** ACCESS MODIFIERS ***/
   modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
@@ -85,12 +85,12 @@ contract RareClaim {
     require(msg.sender != address(0));
 
     uint256 time_diff = (block.timestamp - rare.last_transaction);
-    while(time_diff &gt;= fiveHoursInSeconds){
+    while(time_diff >= fiveHoursInSeconds){
         time_diff = (time_diff - fiveHoursInSeconds);
         rare.price = SafeMath.mul(SafeMath.div(rare.price, 100), 75);
     }
-    if(rare.price &lt; 1000000000000000){ rare.price = 1000000000000000; }
-    require(msg.value &gt;= rare.price);
+    if(rare.price < 1000000000000000){ rare.price = 1000000000000000; }
+    require(msg.value >= rare.price);
 
     uint256 excess = SafeMath.sub(msg.value, rare.price);
 
@@ -146,12 +146,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

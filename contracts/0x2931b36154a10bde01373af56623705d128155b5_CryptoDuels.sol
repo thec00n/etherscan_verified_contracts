@@ -4,10 +4,10 @@ pragma solidity ^0.4.20;
 
 library SafeMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
@@ -72,7 +72,7 @@ contract CryptoDuels is Owned {
         uint listPosition;
     }
     
-    mapping (address =&gt; PLAYER) public player;
+    mapping (address => PLAYER) public player;
     address[] public playerList;
     
     function getPlayerCount() public view returns (uint) {
@@ -85,11 +85,11 @@ contract CryptoDuels is Owned {
     uint public divAmt = 0;
     
     function adminSetDiv(uint divCut_) public onlyCLevel {
-        require(divCut_ &lt; 50); // max total cut = 5% (some of which can be used for events)
+        require(divCut_ < 50); // max total cut = 5% (some of which can be used for events)
         divCut = divCut_;
     }
     
-    uint public fatigueBlock = 1; // can&#39;t duel too much in too few time
+    uint public fatigueBlock = 1; // can't duel too much in too few time
     uint public safeBlock = 1; // new players are safe for a while
     
     uint public blockDuelBegin = 0; // for special event
@@ -102,14 +102,14 @@ contract CryptoDuels is Owned {
     
     // for special event
     function adminSetBlock(uint blockDuelBegin_, uint blockWithdrawBegin_) public onlyCLevel {
-        require(blockWithdrawBegin_ &lt; block.number + 6000); // at most 1 day
+        require(blockWithdrawBegin_ < block.number + 6000); // at most 1 day
 
         blockDuelBegin = blockDuelBegin_;
         blockWithdrawBegin = blockWithdrawBegin_;
     }
     
     function adminPayout(uint wad) public onlyCLevel {
-        if ((wad &gt; divAmt) || (wad == 0)) // can only payout dividend, so player&#39;s ETHs are safe
+        if ((wad > divAmt) || (wad == 0)) // can only payout dividend, so player's ETHs are safe
             wad = divAmt;
         divAmt = divAmt.sub(wad);
         ceoAddress.transfer(wad);
@@ -122,7 +122,7 @@ contract CryptoDuels is Owned {
     event DUEL(address indexed player, address opp, bool isWin, uint wad);
     
     function deposit() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         PLAYER storage p = player[msg.sender];
         
@@ -137,7 +137,7 @@ contract CryptoDuels is Owned {
     }
 
     function withdraw(uint wad) public {
-        require(block.number &gt;= blockWithdrawBegin);
+        require(block.number >= blockWithdrawBegin);
         
         PLAYER storage p = player[msg.sender];
         
@@ -157,9 +157,9 @@ contract CryptoDuels is Owned {
     }
     
     function duel(address opp) public returns (uint, uint) {
-        require(block.number &gt;= blockDuelBegin);
-        require(block.number &gt;= fatigueBlock + player[msg.sender].lastDuel);
-        require(block.number &gt;= safeBlock + player[opp].lastJoin);
+        require(block.number >= blockDuelBegin);
+        require(block.number >= fatigueBlock + player[msg.sender].lastDuel);
+        require(block.number >= safeBlock + player[opp].lastJoin);
         require(!isContract(msg.sender));
 
         player[msg.sender].lastDuel = block.number;
@@ -167,13 +167,13 @@ contract CryptoDuels is Owned {
         uint ethPlayer = player[msg.sender].wad;
         uint ethOpp = player[opp].wad;
         
-        require(ethOpp &gt; 0);
-        require(ethPlayer &gt; 0);
+        require(ethOpp > 0);
+        require(ethPlayer > 0);
         
         // this is not a good random number, but good enough for now
         uint fakeRandom = uint(keccak256(block.blockhash(block.number-1), opp, divAmt, block.timestamp));
         
-        bool isWin = (fakeRandom % (ethPlayer.add(ethOpp))) &lt; ethPlayer;
+        bool isWin = (fakeRandom % (ethPlayer.add(ethOpp))) < ethPlayer;
         
         // send ETH from loser to winner
         address winner = msg.sender;
@@ -203,6 +203,6 @@ contract CryptoDuels is Owned {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }

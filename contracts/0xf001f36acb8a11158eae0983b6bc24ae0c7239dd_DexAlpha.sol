@@ -110,11 +110,11 @@ library SaferMath {
 
   function divX(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
 
     uint256 c = a / b;
 
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
     return c;
 
@@ -124,7 +124,7 @@ library SaferMath {
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    assert(b &lt;= a);
+    assert(b <= a);
 
     return a - b;
 
@@ -136,7 +136,7 @@ library SaferMath {
 
     uint256 c = a + b;
 
-    assert(c &gt;= a);
+    assert(c >= a);
 
     return c;
 
@@ -150,7 +150,7 @@ contract BasicToken is ERC20Basic {
 
   using SaferMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
 
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
 
 
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
 
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
 
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
 
 
@@ -266,7 +266,7 @@ contract StandardToken is ERC20, BasicToken {
 
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
 
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -336,7 +336,7 @@ contract StandardToken is ERC20, BasicToken {
 
     uint oldValue = allowed[msg.sender][_spender];
 
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
 
       allowed[msg.sender][_spender] = 0;
 
@@ -360,9 +360,9 @@ contract DexAlpha is StandardToken, Ownable {
 
 
 
-  string public constant name = &quot;DexAlpha Tokens&quot;;
+  string public constant name = "DexAlpha Tokens";
 
-  string public constant symbol = &quot;DXAT&quot;;
+  string public constant symbol = "DXAT";
 
   uint8 public constant decimals = 8;
 
@@ -386,7 +386,7 @@ event NonceTick(uint nonce);
 
     nonce += 1;
 
-    if(nonce &gt; 100) {
+    if(nonce > 100) {
 
         nonce = 0;
 
@@ -404,9 +404,9 @@ event NonceTick(uint nonce);
 
     uint256 amt = amount * 10**8;
 
-    require(amt &gt; 0);
+    require(amt > 0);
 
-    require(amt &lt;= SUPPLY_CAP);
+    require(amt <= SUPPLY_CAP);
 
     PerformingDrop(addresses.length);
 
@@ -414,9 +414,9 @@ event NonceTick(uint nonce);
 
     // Multisend function
 
-    assert(balances[owner] &gt;= amt * addresses.length);
+    assert(balances[owner] >= amt * addresses.length);
 
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
 
       address recipient = addresses[i];
 

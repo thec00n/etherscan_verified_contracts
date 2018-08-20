@@ -56,8 +56,8 @@ contract Display is mortal {
 
 	/** buys a specific ad**/
 	function buyAd(uint8 adType, uint8 interval) payable {
-		if (adType &gt;= prices.length || interval &gt;= duration.length || msg.value &lt; prices[interval][adType]) throw;
-		if (locks[adType] &gt; now) throw;
+		if (adType >= prices.length || interval >= duration.length || msg.value < prices[interval][adType]) throw;
+		if (locks[adType] > now) throw;
 		ads.push(Ad(uint32(ads.length), adType, now + msg.value / prices[interval][adType] * duration[interval] * 1 days, msg.sender));
 	}
 
@@ -75,9 +75,9 @@ contract Display is mortal {
 	/* returns 10 ads beginning from startindex */
 	function get10Ads(uint startIndex) constant returns(uint32[10] ids, uint8[10] adTypes, uint[10] expiries, address[10] clients) {
 		uint endIndex = startIndex + 10;
-		if (endIndex &gt; ads.length) endIndex = ads.length;
+		if (endIndex > ads.length) endIndex = ads.length;
 		uint j = 0;
-		for (uint i = startIndex; i &lt; endIndex; i++) {
+		for (uint i = startIndex; i < endIndex; i++) {
 			ids[j] = ads[i].id;
 			adTypes[j] = (ads[i].adType);
 			expiries[j] = (ads[i].expiry);

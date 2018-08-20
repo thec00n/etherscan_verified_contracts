@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ contract Donatex {
         bool isValue;
     }
 
-    mapping (bytes32 =&gt; Donation[]) public donations;
-    mapping (bytes32 =&gt; DonationBox) public donationBoxes;
+    mapping (bytes32 => Donation[]) public donations;
+    mapping (bytes32 => DonationBox) public donationBoxes;
 
     /**
     * @dev Throws if called by any address other than the one that owns the ID
@@ -68,7 +68,7 @@ contract Donatex {
     function donate(bytes32 id, bytes32 name, bytes text) payable public {
         require(donationBoxes[id].isValue);
         DonationBox storage donationBox = donationBoxes[id];
-        require(msg.value &gt;= donationBox.minDonation);
+        require(msg.value >= donationBox.minDonation);
         donations[id].push(Donation(msg.sender, msg.value, name, text));
         donationBox.totalDonations = SafeMath.add(donationBox.totalDonations, msg.value);
         donationBox.numDonations = SafeMath.add(donationBox.numDonations, 1);
@@ -77,7 +77,7 @@ contract Donatex {
     function transferDonations(bytes32 id, address destination) onlyOwner(id) {
         require(donationBoxes[id].isValue);
         DonationBox storage donationBox = donationBoxes[id];
-        require(donationBox.totalDonations &gt; 0);
+        require(donationBox.totalDonations > 0);
         require(destination.send(donationBox.totalDonations));
     }
     

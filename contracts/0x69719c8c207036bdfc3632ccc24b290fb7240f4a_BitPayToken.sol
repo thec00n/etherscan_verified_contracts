@@ -20,8 +20,8 @@ contract BitPayToken is ERC20Interface {
     uint8   public decimals;
     uint256 public totalSupply;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     
     function BitPayToken(uint256 initial_supply, string _name, string _symbol, uint8 _decimal) {
 
@@ -38,8 +38,8 @@ contract BitPayToken is ERC20Interface {
     }
 
     function transfer(address to, uint value) returns (bool success) {
-        if(balances[msg.sender] &lt; value) return false;
-        if(balances[to] + value &lt; balances[to]) return false;
+        if(balances[msg.sender] < value) return false;
+        if(balances[to] + value < balances[to]) return false;
         
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -53,9 +53,9 @@ contract BitPayToken is ERC20Interface {
 
     function transferFrom(address from, address to, uint value) returns (bool success) {
 
-        if(balances[from] &lt; value) return false;
-        if( allowed[from][msg.sender] &lt; value ) return false;
-        if(balances[to] + value &lt; balances[to]) return false;
+        if(balances[from] < value) return false;
+        if( allowed[from][msg.sender] < value ) return false;
+        if(balances[to] + value < balances[to]) return false;
         
         balances[from] -= value;
         allowed[from][msg.sender] -= value;

@@ -25,7 +25,7 @@ contract BatchAirDrop {
         require(msg.sender == owner);
         require(amount != 0);
         token.mint(this, amount * wallets.length);
-        for (uint256 i = 0; i &lt; wallets.length; i++) {
+        for (uint256 i = 0; i < wallets.length; i++) {
             token.transfer(wallets[i], amount);
         }
     }

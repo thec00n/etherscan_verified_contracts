@@ -2,47 +2,47 @@ pragma solidity ^0.4.24;
 /**
 *                                        ,   ,
 *                                        $,  $,     ,
-*                                        &quot;ss.$ss. .s&#39;
+*                                        "ss.$ss. .s'
 *                                ,     .ss$$$$$$$$$$s,
 *                                $. s$$$$$$$$$$$$$$`$$Ss
-*                                &quot;$$$$$$$$$$$$$$$$$$o$$$       ,
+*                                "$$$$$$$$$$$$$$$$$$o$$$       ,
 *                               s$$$$$$$$$$$$$$$$$$$$$$$$s,  ,s
-*                              s$$$$$$$$$&quot;$$$$$$&quot;&quot;&quot;&quot;$$$$$$&quot;$$$$$,
-*                              s$$$$$$$$$$s&quot;&quot;$$$$ssssss&quot;$$$$$$$$&quot;
-*                             s$$$$$$$$$$&#39;         `&quot;&quot;&quot;ss&quot;$&quot;$s&quot;&quot;
-*                             s$$$$$$$$$$,              `&quot;&quot;&quot;&quot;&quot;$  .s$$s
-*                             s$$$$$$$$$$$$s,...               `s$$&#39;  `
-*                         `ssss$$$$$$$$$$$$$$$$$$$$####s.     .$$&quot;$.   , s-
-*                           `&quot;&quot;&quot;&quot;$$$$$$$$$$$$$$$$$$$$#####$$$$$$&quot;     $.$&#39;
-* 祝你成功                        &quot;$$$$$$$$$$$$$$$$$$$$$####s&quot;&quot;     .$$$|
-*   福    喜喜                        &quot;$$$$$$$$$$$$$$$$$$$$$$$$##s    .$$&quot; $
-*                                   $$&quot;&quot;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$&quot;   `
-*                                  $$&quot;  &quot;$&quot;$$$$$$$$$$$$$$$$$$$$S&quot;&quot;&quot;&quot;&#39;
-*                             ,   ,&quot;     &#39;  $$$$$$$$$$$$$$$$####s
-*                             $.          .s$$$$$$$$$$$$$$$$$####&quot;
-*                 ,           &quot;$s.   ..ssS$$$$$$$$$$$$$$$$$$$####&quot;
-*                 $           .$$$S$$$$$$$$$$$$$$$$$$$$$$$$#####&quot;
-*                 Ss     ..sS$$$$$$$$$$$$$$$$$$$$$$$$$$$######&quot;&quot;
-*                  &quot;$$sS$$$$$$$$$$$$$$$$$$$$$$$$$$$########&quot;
-*           ,      s$$$$$$$$$$$$$$$$$$$$$$$$#########&quot;&quot;&#39;
-*           $    s$$$$$$$$$$$$$$$$$$$$$#######&quot;&quot;&#39;      s&#39;         ,
-*           $$..$$$$$$$$$$$$$$$$$$######&quot;&#39;       ....,$$....    ,$
-*            &quot;$$$$$$$$$$$$$$$######&quot;&#39; ,     .sS$$$$$$$$$$$$$$$$s$$
-*              $$$$$$$$$$$$#####&quot;     $, .s$$$$$$$$$$$$$$$$$$$$$$$$s.
-*   )          $$$$$$$$$$$#####&#39;      `$$$$$$$$$###########$$$$$$$$$$$.
-*  ((          $$$$$$$$$$$#####       $$$$$$$$###&quot;       &quot;####$$$$$$$$$$
-*  ) \         $$$$$$$$$$$$####.     $$$$$$###&quot;             &quot;###$$$$$$$$$   s&#39;
-* (   )        $$$$$$$$$$$$$####.   $$$$$###&quot;                ####$$$$$$$$s$$&#39;
-* )  ( (       $$&quot;$$$$$$$$$$$#####.$$$$$###&#39;                .###$$$$$$$$$$&quot;
-* (  )  )   _,$&quot;   $$$$$$$$$$$$######.$$##&#39;                .###$$$$$$$$$$
-* ) (  ( \.         &quot;$$$$$$$$$$$$$#######,,,.          ..####$$$$$$$$$$$&quot;
-*(   )$ )  )        ,$$$$$$$$$$$$$$$$$$####################$$$$$$$$$$$&quot;
-*(   ($$  ( \     _sS&quot;  `&quot;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$S$$,
-* )  )$$$s ) )  .      .   `$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$&quot;&#39;  `$$
-*  (   $$$Ss/  .$,    .$,,s$$$$$$##S$$$$$$$$$$$$$$$$$$$$$$$$S&quot;&quot;        &#39;
-*    \)_$$$$$$$$$$$$$$$$$$$$$$$##&quot;  $$        `$$.        `$$.
-*        `&quot;S$$$$$$$$$$$$$$$$$#&quot;      $          `$          `$
-*            `&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&#39;         &#39;           &#39;           &#39;
+*                              s$$$$$$$$$"$$$$$$""""$$$$$$"$$$$$,
+*                              s$$$$$$$$$$s""$$$$ssssss"$$$$$$$$"
+*                             s$$$$$$$$$$'         `"""ss"$"$s""
+*                             s$$$$$$$$$$,              `"""""$  .s$$s
+*                             s$$$$$$$$$$$$s,...               `s$$'  `
+*                         `ssss$$$$$$$$$$$$$$$$$$$$####s.     .$$"$.   , s-
+*                           `""""$$$$$$$$$$$$$$$$$$$$#####$$$$$$"     $.$'
+* 祝你成功                        "$$$$$$$$$$$$$$$$$$$$$####s""     .$$$|
+*   福    喜喜                        "$$$$$$$$$$$$$$$$$$$$$$$$##s    .$$" $
+*                                   $$""$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"   `
+*                                  $$"  "$"$$$$$$$$$$$$$$$$$$$$S""""'
+*                             ,   ,"     '  $$$$$$$$$$$$$$$$####s
+*                             $.          .s$$$$$$$$$$$$$$$$$####"
+*                 ,           "$s.   ..ssS$$$$$$$$$$$$$$$$$$$####"
+*                 $           .$$$S$$$$$$$$$$$$$$$$$$$$$$$$#####"
+*                 Ss     ..sS$$$$$$$$$$$$$$$$$$$$$$$$$$$######""
+*                  "$$sS$$$$$$$$$$$$$$$$$$$$$$$$$$$########"
+*           ,      s$$$$$$$$$$$$$$$$$$$$$$$$#########""'
+*           $    s$$$$$$$$$$$$$$$$$$$$$#######""'      s'         ,
+*           $$..$$$$$$$$$$$$$$$$$$######"'       ....,$$....    ,$
+*            "$$$$$$$$$$$$$$$######"' ,     .sS$$$$$$$$$$$$$$$$s$$
+*              $$$$$$$$$$$$#####"     $, .s$$$$$$$$$$$$$$$$$$$$$$$$s.
+*   )          $$$$$$$$$$$#####'      `$$$$$$$$$###########$$$$$$$$$$$.
+*  ((          $$$$$$$$$$$#####       $$$$$$$$###"       "####$$$$$$$$$$
+*  ) \         $$$$$$$$$$$$####.     $$$$$$###"             "###$$$$$$$$$   s'
+* (   )        $$$$$$$$$$$$$####.   $$$$$###"                ####$$$$$$$$s$$'
+* )  ( (       $$"$$$$$$$$$$$#####.$$$$$###'                .###$$$$$$$$$$"
+* (  )  )   _,$"   $$$$$$$$$$$$######.$$##'                .###$$$$$$$$$$
+* ) (  ( \.         "$$$$$$$$$$$$$#######,,,.          ..####$$$$$$$$$$$"
+*(   )$ )  )        ,$$$$$$$$$$$$$$$$$$####################$$$$$$$$$$$"
+*(   ($$  ( \     _sS"  `"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$S$$,
+* )  )$$$s ) )  .      .   `$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"'  `$$
+*  (   $$$Ss/  .$,    .$,,s$$$$$$##S$$$$$$$$$$$$$$$$$$$$$$$$S""        '
+*    \)_$$$$$$$$$$$$$$$$$$$$$$$##"  $$        `$$.        `$$.
+*        `"S$$$$$$$$$$$$$$$$$#"      $          `$          `$
+*            `"""""""""""""'         '           '           '
 */
 
 interface PlayerBookReceiverInterface {
@@ -61,16 +61,16 @@ contract PlayerBook {
 //    (_|(_| | (_|  _\(/_ | |_||_)  .
 //=============================|================================================
     uint256 public registrationFee_ = 10 finney;            // 注册名称的价格
-    mapping(uint256 =&gt; PlayerBookReceiverInterface) public games_;  // 映射我们的游戏界面，将您的帐户信息发送到游戏
-    mapping(address =&gt; bytes32) public gameNames_;          // 查找游戏名称
-    mapping(address =&gt; uint256) public gameIDs_;            // 查找游戏ID
+    mapping(uint256 => PlayerBookReceiverInterface) public games_;  // 映射我们的游戏界面，将您的帐户信息发送到游戏
+    mapping(address => bytes32) public gameNames_;          // 查找游戏名称
+    mapping(address => uint256) public gameIDs_;            // 查找游戏ID
     uint256 public gID_;        // 游戏总数
     uint256 public pID_;        // 球员总数
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) 按地址返回玩家ID
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID) 按名称返回玩家ID
-    mapping (uint256 =&gt; Player) public plyr_;               // (pID =&gt; data) 球员数据
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool) 玩家拥有的名字列表。 （用于这样你就可以改变你的显示名称，而不管你拥有的任何名字）
-    mapping (uint256 =&gt; mapping (uint256 =&gt; bytes32)) public plyrNameList_; // (pID =&gt; nameNum =&gt; name) 玩家拥有的名字列表
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) 按地址返回玩家ID
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID) 按名称返回玩家ID
+    mapping (uint256 => Player) public plyr_;               // (pID => data) 球员数据
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool) 玩家拥有的名字列表。 （用于这样你就可以改变你的显示名称，而不管你拥有的任何名字）
+    mapping (uint256 => mapping (uint256 => bytes32)) public plyrNameList_; // (pID => nameNum => name) 玩家拥有的名字列表
     struct Player {
         address addr;
         bytes32 name;
@@ -85,39 +85,39 @@ contract PlayerBook {
         public
     {
         // premine the dev names (sorry not sorry)
-            // No keys are purchased with this method, it&#39;s simply locking our addresses,
-            // PID&#39;s and names for referral codes.
+            // No keys are purchased with this method, it's simply locking our addresses,
+            // PID's and names for referral codes.
         plyr_[1].addr = 0x8e0d985f3Ec1857BEc39B76aAabDEa6B31B67d53;
-        plyr_[1].name = &quot;justo&quot;;
+        plyr_[1].name = "justo";
         plyr_[1].names = 1;
         pIDxAddr_[0x8e0d985f3Ec1857BEc39B76aAabDEa6B31B67d53] = 1;
-        pIDxName_[&quot;justo&quot;] = 1;
-        plyrNames_[1][&quot;justo&quot;] = true;
-        plyrNameList_[1][1] = &quot;justo&quot;;
+        pIDxName_["justo"] = 1;
+        plyrNames_[1]["justo"] = true;
+        plyrNameList_[1][1] = "justo";
 
         plyr_[2].addr = 0x8b4DA1827932D71759687f925D17F81Fc94e3A9D;
-        plyr_[2].name = &quot;mantso&quot;;
+        plyr_[2].name = "mantso";
         plyr_[2].names = 1;
         pIDxAddr_[0x8b4DA1827932D71759687f925D17F81Fc94e3A9D] = 2;
-        pIDxName_[&quot;mantso&quot;] = 2;
-        plyrNames_[2][&quot;mantso&quot;] = true;
-        plyrNameList_[2][1] = &quot;mantso&quot;;
+        pIDxName_["mantso"] = 2;
+        plyrNames_[2]["mantso"] = true;
+        plyrNameList_[2][1] = "mantso";
 
         plyr_[3].addr = 0x7ac74Fcc1a71b106F12c55ee8F802C9F672Ce40C;
-        plyr_[3].name = &quot;sumpunk&quot;;
+        plyr_[3].name = "sumpunk";
         plyr_[3].names = 1;
         pIDxAddr_[0x7ac74Fcc1a71b106F12c55ee8F802C9F672Ce40C] = 3;
-        pIDxName_[&quot;sumpunk&quot;] = 3;
-        plyrNames_[3][&quot;sumpunk&quot;] = true;
-        plyrNameList_[3][1] = &quot;sumpunk&quot;;
+        pIDxName_["sumpunk"] = 3;
+        plyrNames_[3]["sumpunk"] = true;
+        plyrNameList_[3][1] = "sumpunk";
 
         plyr_[4].addr = 0x18E90Fc6F70344f53EBd4f6070bf6Aa23e2D748C;
-        plyr_[4].name = &quot;inventor&quot;;
+        plyr_[4].name = "inventor";
         plyr_[4].names = 1;
         pIDxAddr_[0x18E90Fc6F70344f53EBd4f6070bf6Aa23e2D748C] = 4;
-        pIDxName_[&quot;inventor&quot;] = 4;
-        plyrNames_[4][&quot;inventor&quot;] = true;
-        plyrNameList_[4][1] = &quot;inventor&quot;;
+        pIDxName_["inventor"] = 4;
+        plyrNames_[4]["inventor"] = true;
+        plyrNameList_[4][1] = "inventor";
 
         pID_ = 4;
     }
@@ -133,7 +133,7 @@ contract PlayerBook {
         uint256 _codeLength;
 
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
 
@@ -206,7 +206,7 @@ contract PlayerBook {
         payable
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 过滤器名称+条件检查
         bytes32 _name = NameFilter.nameFilter(_nameString);
@@ -223,7 +223,7 @@ contract PlayerBook {
         // 管理会员残差
         // 如果没有给出联盟代码，则没有给出新的联盟代码，或者
         // 玩家试图使用自己的pID作为联盟代码
-        if (_affCode != 0 &amp;&amp; _affCode != plyr_[_pID].laff &amp;&amp; _affCode != _pID)
+        if (_affCode != 0 && _affCode != plyr_[_pID].laff && _affCode != _pID)
         {
             // 更新最后一个会员
             plyr_[_pID].laff = _affCode;
@@ -241,7 +241,7 @@ contract PlayerBook {
         payable
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 过滤器名称+条件检查
         bytes32 _name = NameFilter.nameFilter(_nameString);
@@ -258,7 +258,7 @@ contract PlayerBook {
         // 管理会员残差
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
         uint256 _affID;
-        if (_affCode != address(0) &amp;&amp; _affCode != _addr)
+        if (_affCode != address(0) && _affCode != _addr)
         {
             // 从aff Code获取会员ID
             _affID = pIDxAddr_[_affCode];
@@ -281,7 +281,7 @@ contract PlayerBook {
         payable
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 过滤器名称+条件检查
         bytes32 _name = NameFilter.nameFilter(_nameString);
@@ -298,7 +298,7 @@ contract PlayerBook {
         // 管理会员残差
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
         uint256 _affID;
-        if (_affCode != &quot;&quot; &amp;&amp; _affCode != _name)
+        if (_affCode != "" && _affCode != _name)
         {
             // 从aff Code获取会员ID
             _affID = pIDxName_[_affCode];
@@ -327,18 +327,18 @@ contract PlayerBook {
         isHuman()
         public
     {
-        require(_gameID &lt;= gID_, &quot;silly player, that game doesn&#39;t exist yet&quot;);
+        require(_gameID <= gID_, "silly player, that game doesn't exist yet");
         address _addr = msg.sender;
         uint256 _pID = pIDxAddr_[_addr];
-        require(_pID != 0, &quot;hey there buddy, you dont even have an account&quot;);
+        require(_pID != 0, "hey there buddy, you dont even have an account");
         uint256 _totalNames = plyr_[_pID].names;
 
         // 添加玩家个人资料和最新名称
         games_[_gameID].receivePlayerInfo(_pID, _addr, plyr_[_pID].name, plyr_[_pID].laff);
 
         // 添加所有名称的列表
-        if (_totalNames &gt; 1)
-            for (uint256 ii = 1; ii &lt;= _totalNames; ii++)
+        if (_totalNames > 1)
+            for (uint256 ii = 1; ii <= _totalNames; ii++)
                 games_[_gameID].receivePlayerNameList(_pID, plyrNameList_[_pID][ii]);
     }
 
@@ -352,16 +352,16 @@ contract PlayerBook {
     {
         address _addr = msg.sender;
         uint256 _pID = pIDxAddr_[_addr];
-        require(_pID != 0, &quot;hey there buddy, you dont even have an account&quot;);
+        require(_pID != 0, "hey there buddy, you dont even have an account");
         uint256 _laff = plyr_[_pID].laff;
         uint256 _totalNames = plyr_[_pID].names;
         bytes32 _name = plyr_[_pID].name;
 
-        for (uint256 i = 1; i &lt;= gID_; i++)
+        for (uint256 i = 1; i <= gID_; i++)
         {
             games_[i].receivePlayerInfo(_pID, _addr, _name, _laff);
-            if (_totalNames &gt; 1)
-                for (uint256 ii = 1; ii &lt;= _totalNames; ii++)
+            if (_totalNames > 1)
+                for (uint256 ii = 1; ii <= _totalNames; ii++)
                     games_[i].receivePlayerNameList(_pID, plyrNameList_[_pID][ii]);
         }
 
@@ -382,7 +382,7 @@ contract PlayerBook {
         uint256 _pID = pIDxAddr_[msg.sender];
 
         // 确保他们拥有这个名字
-        require(plyrNames_[_pID][_name] == true, &quot;umm... thats not a name you own&quot;);
+        require(plyrNames_[_pID][_name] == true, "umm... thats not a name you own");
 
         // 更新他们当前的名字
         plyr_[_pID].name = _name;
@@ -397,7 +397,7 @@ contract PlayerBook {
     {
         // 如果已使用名称，则要求当前的msg发件人拥有该名称
         if (pIDxName_[_name] != 0)
-            require(plyrNames_[_pID][_name] == true, &quot;sorry that names already taken&quot;);
+            require(plyrNames_[_pID][_name] == true, "sorry that names already taken");
 
         // 为播放器配置文件，注册表和名称簿添加名称
         plyr_[_pID].name = _name;
@@ -414,7 +414,7 @@ contract PlayerBook {
 
         // 将玩家信息推送到游戏
         if (_all == true)
-            for (uint256 i = 1; i &lt;= gID_; i++)
+            for (uint256 i = 1; i <= gID_; i++)
                 games_[i].receivePlayerInfo(_pID, _addr, _name, _affID);
 
         // 火灾事件
@@ -442,7 +442,7 @@ contract PlayerBook {
     }
 //==============================================================================
 //   _   _|_ _  _ _  _ |   _ _ || _  .
-//  (/_&gt;&lt; | (/_| | |(_||  (_(_|||_\  .
+//  (/_>< | (/_| | |(_||  (_(_|||_\  .
 //==============================================================================
     function getPlayerID(address _addr)
         isRegisteredGame()
@@ -487,7 +487,7 @@ contract PlayerBook {
         returns(bool, uint256)
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 设置我们的tx事件数据并确定玩家是否是新手
         bool _isNewPlayer = determinePID(_addr);
@@ -499,7 +499,7 @@ contract PlayerBook {
         // 如果没有给出联盟代码，则没有给出新的联盟代码，或者
         // 玩家试图使用自己的pID作为联盟代码
         uint256 _affID = _affCode;
-        if (_affID != 0 &amp;&amp; _affID != plyr_[_pID].laff &amp;&amp; _affID != _pID)
+        if (_affID != 0 && _affID != plyr_[_pID].laff && _affID != _pID)
         {
             // 更新最后一个会员
             plyr_[_pID].laff = _affID;
@@ -519,7 +519,7 @@ contract PlayerBook {
         returns(bool, uint256)
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 设置我们的tx事件数据并确定玩家是否是新手
         bool _isNewPlayer = determinePID(_addr);
@@ -530,7 +530,7 @@ contract PlayerBook {
         // 管理会员残差
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
         uint256 _affID;
-        if (_affCode != address(0) &amp;&amp; _affCode != _addr)
+        if (_affCode != address(0) && _affCode != _addr)
         {
             // 从aff Code获取会员ID
             _affID = pIDxAddr_[_affCode];
@@ -555,7 +555,7 @@ contract PlayerBook {
         returns(bool, uint256)
     {
         // 确保支付名称费用
-        require (msg.value &gt;= registrationFee_, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= registrationFee_, "umm.....  you have to pay the name fee");
 
         // 设置我们的tx事件数据并确定玩家是否是新手
         bool _isNewPlayer = determinePID(_addr);
@@ -566,7 +566,7 @@ contract PlayerBook {
         // 管理会员残差
         // 如果没有给出联盟代码或者玩家试图使用他们自己的代码
         uint256 _affID;
-        if (_affCode != &quot;&quot; &amp;&amp; _affCode != _name)
+        if (_affCode != "" && _affCode != _name)
         {
             // 从aff Code获取会员ID
             _affID = pIDxName_[_affCode];
@@ -592,7 +592,7 @@ contract PlayerBook {
     function addGame(address _gameAddress, string _gameNameStr)
         public
     {
-        require(gameIDs_[_gameAddress] == 0, &quot;derp, that games already been registered&quot;);
+        require(gameIDs_[_gameAddress] == 0, "derp, that games already been registered");
             gID_++;
             bytes32 _name = _gameNameStr.nameFilter();
             gameIDs_[_gameAddress] = gID_;
@@ -635,24 +635,24 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //对不起限于32个字符
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         //确保它不以空格开头或以空格结尾
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // 确保前两个字符不是0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
 
         // 创建一个bool来跟踪我们是否有非数字字符
         bool _hasNonNumber;
 
         // 转换和检查
-        for (uint256 i = 0; i &lt; _length; i++)
+        for (uint256 i = 0; i < _length; i++)
         {
             // 如果它的大写A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // 转换为小写a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -666,22 +666,22 @@ library NameFilter {
                     // 要求角色是一个空间
                     _temp[i] == 0x20 ||
                     // 或小写a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // 或0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // 确保连续两行不是空格
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
 
                 // 看看我们是否有一个数字以外的字符
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
 
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
 
         bytes32 _ret;
         assembly {
@@ -714,7 +714,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -726,7 +726,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -739,7 +739,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -753,7 +753,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -786,7 +786,7 @@ library SafeMath {
         else
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

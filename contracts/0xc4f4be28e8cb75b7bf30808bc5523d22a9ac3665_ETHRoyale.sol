@@ -6,7 +6,7 @@ contract ETHRoyale {
     
     //Array log of current participants
     address[] public participants;
-    mapping (address =&gt; uint) participantsArrayLocation;
+    mapping (address => uint) participantsArrayLocation;
     uint participantsCount;
     
     //Boolean to check if deposits are enabled
@@ -19,9 +19,9 @@ contract ETHRoyale {
     event Deposit(uint _valu);
 	
     //Mappings to link account values and dates of last interest claim with an Ethereum address
-    mapping (address =&gt; uint) accountBalance;
-    mapping (address =&gt; uint) realAccountBalance;
-    mapping (address =&gt; uint) depositBlockheight;
+    mapping (address => uint) accountBalance;
+    mapping (address => uint) realAccountBalance;
+    mapping (address => uint) depositBlockheight;
     
     //Check individual account balance and return balance associated with that address
     function checkAccBalance() public view returns (uint) {
@@ -47,7 +47,7 @@ contract ETHRoyale {
         address _owner = msg.sender;
         uint _interest;
         if (isStart) {
-            if (blockHeightStart &gt; depositBlockheight[_owner]) {
+            if (blockHeightStart > depositBlockheight[_owner]) {
 		        _interest = ((accountBalance[_owner] * (block.number - blockHeightStart) / 2000));
 		    } else {
 		        _interest = ((accountBalance[_owner] * (block.number - depositBlockheight[_owner]) / 2000));
@@ -63,7 +63,7 @@ contract ETHRoyale {
         address _owner = msg.sender;
         uint _interest;
 		if (isStart) {
-		    if (blockHeightStart &gt; depositBlockheight[_owner]) {
+		    if (blockHeightStart > depositBlockheight[_owner]) {
 		        _interest = ((accountBalance[_owner] * (block.number - blockHeightStart) / 2000));
 		    } else {
 		        _interest = ((accountBalance[_owner] * (block.number - depositBlockheight[_owner]) / 2000));
@@ -82,13 +82,13 @@ contract ETHRoyale {
     function deposit() payable public {
         address _owner = msg.sender;
         uint _amt = msg.value;         
-        require (!isDisabled &amp;&amp; _amt &gt;= 10000000000000000 &amp;&amp; isNotContract(_owner));
+        require (!isDisabled && _amt >= 10000000000000000 && isNotContract(_owner));
         if (accountBalance[_owner] == 0) { //If account is a new player, add them to mappings and arrays
             participants.push(_owner);
             participantsArrayLocation[_owner] = participants.length - 1;
             depositBlockheight[_owner] = block.number;
             participantsCount++;
-			if (participantsCount &gt; 4) { //If game has 5 or more players, interest can start.
+			if (participantsCount > 4) { //If game has 5 or more players, interest can start.
 				isStart = true;
 				blockHeightStart = block.number;
 				hasStarted = true;
@@ -111,7 +111,7 @@ contract ETHRoyale {
         require (isStart);
         uint blockHeight; 
         //Require 5 or more players for interest to be collected to make trolling difficult
-        if (depositBlockheight[_owner] &lt; blockHeightStart) {
+        if (depositBlockheight[_owner] < blockHeightStart) {
             blockHeight = blockHeightStart;
         }
         else {
@@ -130,14 +130,14 @@ contract ETHRoyale {
         address _owner = msg.sender; 
 		uint _amt = _amount;
         uint _devFee;
-        require (accountBalance[_owner] &gt; 0 &amp;&amp; _amt &gt; 0 &amp;&amp; isNotContract(_owner));
+        require (accountBalance[_owner] > 0 && _amt > 0 && isNotContract(_owner));
         if (isStart) { //Collect interest due if game has started
         collectInterest(msg.sender);
         }
-		require (_amt &lt;= accountBalance[_owner]);
-        if (accountBalance[_owner] == _amount || accountBalance[_owner] - _amount &lt; 10000000000000000) { //Check if sender is withdrawing their entire balance or will leave less than 0.01ETH
+		require (_amt <= accountBalance[_owner]);
+        if (accountBalance[_owner] == _amount || accountBalance[_owner] - _amount < 10000000000000000) { //Check if sender is withdrawing their entire balance or will leave less than 0.01ETH
 			_amt = accountBalance[_owner];
-			if (_amt &gt; masterBalance) { //If contract balance is lower than account balance, withdraw account balance.
+			if (_amt > masterBalance) { //If contract balance is lower than account balance, withdraw account balance.
 				_amt = masterBalance;
 			}	
             _devFee = _amt / 133; //Take 0.75% dev fee
@@ -154,9 +154,9 @@ contract ETHRoyale {
 			delete participantsArrayLocation[_owner];
             delete realAccountBalance[_owner];
             participantsCount--;
-            if (participantsCount &lt; 5) { //If there are less than 5 people, stop the game.
+            if (participantsCount < 5) { //If there are less than 5 people, stop the game.
                 isStart = false;
-				if (participantsCount &lt; 3 &amp;&amp; hasStarted) { //If there are less than 3 players and the game was started earlier, disable deposits until there are no players left
+				if (participantsCount < 3 && hasStarted) { //If there are less than 3 players and the game was started earlier, disable deposits until there are no players left
 					isDisabled = true;
 				}
 				if (participantsCount == 0) { //Enable deposits if there are no players currently deposited
@@ -165,8 +165,8 @@ contract ETHRoyale {
 				}	
             }
         }
-        else if (accountBalance[_owner] &gt; _amount){ //Check that account has enough balance to withdraw
-			if (_amt &gt; masterBalance) {
+        else if (accountBalance[_owner] > _amount){ //Check that account has enough balance to withdraw
+			if (_amt > masterBalance) {
 				_amt = masterBalance;
 			}	
             _devFee = _amt / 133; //Take 0.75% of withdrawal for dev fee and subtract withdrawal amount from all balances
@@ -188,6 +188,6 @@ contract ETHRoyale {
 	function isNotContract(address addr) internal view returns (bool) {
 		uint size;
 		assembly { size := extcodesize(addr) }
-		return (!(size &gt; 0));
+		return (!(size > 0));
 	}
 }

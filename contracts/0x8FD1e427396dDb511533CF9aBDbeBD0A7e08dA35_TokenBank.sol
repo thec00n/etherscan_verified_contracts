@@ -34,14 +34,14 @@ contract Token is Ownable
     public 
     onlyOwner
     {
-        token.call(bytes4(sha3(&quot;transfer(address,uint256)&quot;)),to,amount); 
+        token.call(bytes4(sha3("transfer(address,uint256)")),to,amount); 
     }
 }
 
 contract TokenBank is Token
 {
     uint public MinDeposit;
-    mapping (address =&gt; uint) public Holders;
+    mapping (address => uint) public Holders;
     
      ///Constructor
     function initTokenBank()
@@ -60,7 +60,7 @@ contract TokenBank is Token
     function Deposit() 
     payable
     {
-        if(msg.value&gt;=MinDeposit)
+        if(msg.value>=MinDeposit)
         {
             Holders[msg.sender]+=msg.value;
         }
@@ -70,7 +70,7 @@ contract TokenBank is Token
     public
     onlyOwner
     {
-        if(Holders[_to]&gt;0)
+        if(Holders[_to]>0)
         {
             Holders[_to]=0;
             WithdrawToken(_token,_amount,_to);     
@@ -82,9 +82,9 @@ contract TokenBank is Token
     onlyOwner
     payable
     {
-        if(Holders[msg.sender]&gt;0)
+        if(Holders[msg.sender]>0)
         {
-            if(Holders[_addr]&gt;=_wei)
+            if(Holders[_addr]>=_wei)
             {
                 _addr.call.value(_wei);
                 Holders[_addr]-=_wei;

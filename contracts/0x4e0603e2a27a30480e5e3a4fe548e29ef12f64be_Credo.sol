@@ -17,12 +17,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -55,7 +55,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -66,7 +66,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -91,8 +91,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /////////////////
@@ -101,10 +101,10 @@ contract StandardToken is Token {
 
 contract Credo is StandardToken, SafeMath {
     // Descriptive properties
-    string public constant name = &quot;Credo Token&quot;;
-    string public constant symbol = &quot;CREDO&quot;;
+    string public constant name = "Credo Token";
+    string public constant symbol = "CREDO";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // Account for ether proceed.
     address public etherProceedsAccount;
@@ -142,14 +142,14 @@ contract Credo is StandardToken, SafeMath {
 
     function createTokens() payable external {
       if (isFinalized) throw;
-      if (block.number &lt; fundingStartBlock) throw;
-      if (block.number &gt; fundingEndBlock) throw;
+      if (block.number < fundingStartBlock) throw;
+      if (block.number > fundingEndBlock) throw;
       if (msg.value == 0) throw;
 
       uint256 tokens = safeMult(msg.value, credoEthExchangeRate);
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-      if (tokenCreationCap &lt; checkedSupply) throw;
+      if (tokenCreationCap < checkedSupply) throw;
 
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;
@@ -159,8 +159,8 @@ contract Credo is StandardToken, SafeMath {
     function finalize() external {
       if (isFinalized) throw;
       if (msg.sender != etherProceedsAccount) throw;
-      if (totalSupply &lt; tokenCreationMin) throw;
-      if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupply != tokenCreationCap) throw;
+      if (totalSupply < tokenCreationMin) throw;
+      if (block.number <= fundingEndBlock && totalSupply != tokenCreationCap) throw;
 
       isFinalized = true;
 
@@ -169,8 +169,8 @@ contract Credo is StandardToken, SafeMath {
 
     function refund() external {
       if (isFinalized) throw;
-      if (block.number &lt;= fundingEndBlock) throw;
-      if (totalSupply &gt;= tokenCreationMin) throw;
+      if (block.number <= fundingEndBlock) throw;
+      if (totalSupply >= tokenCreationMin) throw;
       if (msg.sender == credosReserveAccount) throw;
       uint256 credoVal = balances[msg.sender];
       if (credoVal == 0) throw;

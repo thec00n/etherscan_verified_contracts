@@ -4,14 +4,14 @@ pragma solidity ^0.4.13;
  * @title FornicoinCrowdsale
  * The Crowdsale contract for the Fornicoin Project.
  * Read more at fornicoin.network
- * &lt;info (at) fornicoin.network&gt;
+ * <info (at) fornicoin.network>
  */
 
 
  /*
  * This is the smart contract for the Fornicoin token.
  * More information can be found on our website at: https://fornicoin.network
- * Created by the Fornicoin Team &lt;<span class="__cf_email__" data-cfemail="731a1d151c33151c011d1a101c1a1d5d1d1607041c0118">[email&#160;protected]</span>&gt;
+ * Created by the Fornicoin Team <<span class="__cf_email__" data-cfemail="731a1d151c33151c011d1a101c1a1d5d1d1607041c0118">[email protected]</span>>
  */
 
 /**
@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -115,7 +115,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
     
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -200,14 +200,14 @@ contract Ownable {
  /*
  * This is the smart contract for the Fornicoin token.
  * More information can be found on our website at: https://fornicoin.network
- * Created by the Fornicoin Team &lt;<span class="__cf_email__" data-cfemail="5d34333b321d3b322f33343e323433733338292a322f36">[email&#160;protected]</span>&gt;
+ * Created by the Fornicoin Team <<span class="__cf_email__" data-cfemail="5d34333b321d3b322f33343e323433733338292a322f36">[email protected]</span>>
  */
 
 contract FornicoinToken is StandardToken, Ownable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;Fornicoin&quot;;
-  string public constant symbol = &quot;FXX&quot;;
+  string public constant name = "Fornicoin";
+  string public constant symbol = "FXX";
   uint8 public constant decimals = 18;
 
   // 100 000 000 Fornicoin tokens created
@@ -236,23 +236,23 @@ contract FornicoinToken is StandardToken, Ownable {
   }
   
   function setSellPrice(uint256 _price) public onlyAdmin {
-      require(_price &gt;= 0);
+      require(_price >= 0);
       // FXX can only become stronger
-      require(_price &lt;= sellPrice);
+      require(_price <= sellPrice);
       
       sellPrice = _price;
   }
   
   // Update state of contract showing tokens bought
   function updateTotalSupply(uint256 additions) onlyOwner {
-      require(totalSupply.add(additions) &lt;= MAX_SUPPLY);
+      require(totalSupply.add(additions) <= MAX_SUPPLY);
       totalSupply += additions;
   }
   
   function setMinTxFee(uint256 _balance) public onlyAdmin {
-      require(_balance &gt;= 0);
+      require(_balance >= 0);
       // can only add more eth
-      require(_balance &gt; minBalanceForTxFee);
+      require(_balance > minBalanceForTxFee);
       
       minBalanceForTxFee = _balance;
   }
@@ -267,11 +267,11 @@ contract FornicoinToken is StandardToken, Ownable {
         // Prevent transfer to 0x0 address
         require (_to != 0x0);
         // Check for overflows 
-        require (balanceOf(_to) + _value &gt; balanceOf(_to));
+        require (balanceOf(_to) + _value > balanceOf(_to));
         // Determine if account has necessary funding for another tx
-        if(msg.sender.balance &lt; minBalanceForTxFee &amp;&amp; 
-        balances[msg.sender].sub(_value) &gt;= minBalanceForTxFee * sellPrice &amp;&amp; 
-        this.balance &gt;= minBalanceForTxFee){
+        if(msg.sender.balance < minBalanceForTxFee && 
+        balances[msg.sender].sub(_value) >= minBalanceForTxFee * sellPrice && 
+        this.balance >= minBalanceForTxFee){
             sellFXX((minBalanceForTxFee.sub(msg.sender.balance)) *                                 
                              sellPrice);
     	        }
@@ -287,10 +287,10 @@ contract FornicoinToken is StandardToken, Ownable {
     // Sells the amount of FXX to refill the senders ETH balance for another transaction
     function sellFXX(uint amount) internal returns (uint revenue){
         // checks if the sender has enough to sell
-        require(balanceOf(msg.sender) &gt;= amount);  
-        // adds the amount to owner&#39;s balance       
+        require(balanceOf(msg.sender) >= amount);  
+        // adds the amount to owner's balance       
         balances[admin] = balances[admin].add(amount);          
-        // subtracts the amount from seller&#39;s balance              
+        // subtracts the amount from seller's balance              
         balances[msg.sender] = balances[msg.sender].sub(amount);   
         // Determines amount of ether to send to the seller 
         revenue = amount / sellPrice;
@@ -307,7 +307,7 @@ contract FornicoinToken is StandardToken, Ownable {
  * @title FornicoinCrowdsale
  * The Crowdsale contract for the Fornicoin Project.
  * Read more at fornicoin.network
- * &lt;info (at) fornicoin.network&gt;
+ * <info (at) fornicoin.network>
  */
  
 contract FornicoinCrowdsale {
@@ -356,7 +356,7 @@ contract FornicoinCrowdsale {
   function FornicoinCrowdsale(uint256 _startTime, address _wallet, address _admin) 
     public 
     {
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(_wallet != 0x0);
     
     token = new FornicoinToken(_admin);
@@ -384,9 +384,9 @@ contract FornicoinCrowdsale {
     uint256 tokens;
 
     // calculate token amount to be created
-    if (now &lt;= startICOPhaseTwo) {
+    if (now <= startICOPhaseTwo) {
       tokens = weiAmount.mul(phaseOneRate);
-    } else if (now &lt; startICOPhaseThree){
+    } else if (now < startICOPhaseThree){
       tokens = weiAmount.mul(phaseTwoRate);
     } else {
       tokens = weiAmount.mul(phaseThreeRate);
@@ -400,7 +400,7 @@ contract FornicoinCrowdsale {
     token.transfer(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
-    if (this.balance &gt; 1 ether){
+    if (this.balance > 1 ether){
       forwardFunds();
     }
   }
@@ -413,16 +413,16 @@ contract FornicoinCrowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startICOPhaseOne &amp;&amp; now &lt;= endICO;
+    bool withinPeriod = now >= startICOPhaseOne && now <= endICO;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   
   // @return currentRate of FXX tokens per ETH
   function currentRate() public constant returns (uint256) {
-    if (now &lt;= startICOPhaseTwo) {
+    if (now <= startICOPhaseTwo) {
       return phaseOneRate;
-    } else if (now &lt;= startICOPhaseThree){
+    } else if (now <= startICOPhaseThree){
       return phaseTwoRate;
     } else {
       return phaseThreeRate;
@@ -431,14 +431,14 @@ contract FornicoinCrowdsale {
   
   // Withdraw team tokens after 1 year
   function withdrawTeamTokens() public onlyAdmin returns (bool) {
-    require(now &gt;= startICOPhaseOne + 1 years);
+    require(now >= startICOPhaseOne + 1 years);
 
     token.transfer(wallet, teamTokens);
     return true;
   }
   
   function distPresale(address _presale, uint256 _tokens) public onlyAdmin {
-      require(_tokens &lt;= 13000000*10**18);
+      require(_tokens <= 13000000*10**18);
       require(!presaleDist);
       presaleDist = true;
       
@@ -447,12 +447,12 @@ contract FornicoinCrowdsale {
   
   //sends any left over funds to the wallet
   function finalizeSale() public onlyAdmin {
-      require(now &gt; endICO);
+      require(now > endICO);
       
-      if (this.balance&gt;0){
+      if (this.balance>0){
           wallet.transfer(this.balance);
       }
-      if(token.totalSupply() &lt; token.MAX_SUPPLY()){
+      if(token.totalSupply() < token.MAX_SUPPLY()){
           uint256 difference = token.MAX_SUPPLY().sub(token.totalSupply());
           token.transfer(wallet, difference);
           token.updateTotalSupply(difference);

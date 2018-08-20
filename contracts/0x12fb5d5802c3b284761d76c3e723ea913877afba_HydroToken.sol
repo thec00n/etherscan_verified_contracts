@@ -5,7 +5,7 @@ Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -14,7 +14,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -53,14 +53,14 @@ contract basicToken {
 
 contract ERC20Standard is basicToken{
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) public balances;
 
     /* Send coins */
     function transfer(address _to, uint256 _value) public returns (bool success){
         require (_to != 0x0);                               // Prevent transfer to 0x0 address
-        require (balances[msg.sender] &gt; _value);            // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[msg.sender] > _value);            // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         _transfer(msg.sender, _to, _value);                 // Perform actually transfer
         Transfer(msg.sender, _to, _value);                  // Trigger Transfer event
         return true;
@@ -69,9 +69,9 @@ contract ERC20Standard is basicToken{
     /* Use admin powers to send from a users account */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
         require (_to != 0x0);                               // Prevent transfer to 0x0 address
-        require (balances[msg.sender] &gt; _value);            // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
-        require (allowed[_from][msg.sender] &gt;= _value);     // Only allow if sender is allowed to do this
+        require (balances[msg.sender] > _value);            // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
+        require (allowed[_from][msg.sender] >= _value);     // Only allow if sender is allowed to do this
         _transfer(msg.sender, _to, _value);                 // Perform actually transfer
         Transfer(msg.sender, _to, _value);                  // Trigger Transfer event
         return true;
@@ -116,17 +116,17 @@ contract HydroToken is ERC20Standard, owned{
         uint timestamp;
     }
 
-    string public name = &quot;Hydro&quot;;
-    string public symbol = &quot;HYDRO&quot;;
+    string public name = "Hydro";
+    string public symbol = "HYDRO";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
     /* This creates an array of all whitelisted addresses
      * Must be whitelisted to be able to utilize auth
      */
-    mapping (uint =&gt; mapping (address =&gt; bool)) public whitelist;
-    mapping (uint =&gt; mapping (address =&gt; partnerValues)) public partnerMap;
-    mapping (uint =&gt; mapping (address =&gt; hydrogenValues)) public hydroPartnerMap;
+    mapping (uint => mapping (address => bool)) public whitelist;
+    mapping (uint => mapping (address => partnerValues)) public partnerMap;
+    mapping (uint => mapping (address => hydrogenValues)) public hydroPartnerMap;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function HydroToken() public {
@@ -144,7 +144,7 @@ contract HydroToken is ERC20Standard, owned{
        Restricted to whitelisted partners */
     function authenticate(uint _value, uint _challenge, uint _partnerId) public {
         require(whitelist[_partnerId][msg.sender]);         // Make sure the sender is whitelisted
-        require(balances[msg.sender] &gt; _value);             // Check if the sender has enough
+        require(balances[msg.sender] > _value);             // Check if the sender has enough
         require(hydroPartnerMap[_partnerId][msg.sender].value == _value);
         updatePartnerMap(msg.sender, _value, _challenge, _partnerId);
         transfer(owner, _value);
@@ -152,14 +152,14 @@ contract HydroToken is ERC20Standard, owned{
     }
 
     function burn(uint256 _value) public onlyOwner {
-        require(balances[msg.sender] &gt; _value);
+        require(balances[msg.sender] > _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
     }
 
     function checkForValidChallenge(address _sender, uint _partnerId) public view returns (uint value){
-        if (hydroPartnerMap[_partnerId][_sender].timestamp &gt; block.timestamp){
+        if (hydroPartnerMap[_partnerId][_sender].timestamp > block.timestamp){
             return hydroPartnerMap[_partnerId][_sender].value;
         }
         return 1;
@@ -182,8 +182,8 @@ contract HydroToken is ERC20Standard, owned{
      */
     function validateAuthentication(address _sender, uint _challenge, uint _partnerId) public constant returns (bool _isValid) {
         if (partnerMap[_partnerId][_sender].value == hydroPartnerMap[_partnerId][_sender].value
-        &amp;&amp; block.timestamp &lt; hydroPartnerMap[_partnerId][_sender].timestamp
-        &amp;&amp; partnerMap[_partnerId][_sender].challenge == _challenge){
+        && block.timestamp < hydroPartnerMap[_partnerId][_sender].timestamp
+        && partnerMap[_partnerId][_sender].challenge == _challenge){
             return true;
         }
         return false;

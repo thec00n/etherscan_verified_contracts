@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,7 +79,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,7 +120,7 @@ contract Ownable {
 
 /** 
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d5f48404e426d1f">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d5f48404e426d1f">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -158,7 +158,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cbb9aea6a8a48bf9">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cbb9aea6a8a48bf9">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -184,7 +184,7 @@ contract HasNoTokens is CanReclaimToken {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -221,7 +221,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -236,7 +236,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -289,7 +289,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -356,7 +356,7 @@ contract BurnableToken is StandardToken {
     * @dev Sending ether to contract increases burning reward 
     */
     function() payable {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             BurnRewardIncreased(msg.sender, msg.value);    
         }
     }
@@ -378,14 +378,14 @@ contract BurnableToken is StandardToken {
     * @param _amount of tokens to be burned
     */
     function burn(address _from, uint256 _amount) internal returns(bool){
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         
         uint256 reward = burnReward(_amount);
-        assert(this.balance - reward &gt; 0);
+        assert(this.balance - reward > 0);
 
         balances[_from] = balances[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
-        //assert(totalSupply &gt;= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
+        //assert(totalSupply >= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
         
         _from.transfer(reward);
         Burn(_from, _amount);
@@ -416,7 +416,7 @@ contract BurnableToken is StandardToken {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         if( (_to == address(this)) || (_to == 0) ){
             var _allowance = allowed[_from][msg.sender];
-            //require (_value &lt;= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
+            //require (_value <= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
             allowed[_from][msg.sender] = _allowance.sub(_value);
             return burn(_from, _value);
         }else{
@@ -432,15 +432,15 @@ contract BurnableToken is StandardToken {
 contract MatreXaToken is BurnableToken, MintableToken, HasNoContracts, HasNoTokens { //MintableToken is StandardToken, Ownable
     using SafeMath for uint256;
 
-    string public name = &quot;MatreXa&quot;;
-    string public symbol = &quot;MTRX&quot;;
+    string public name = "MatreXa";
+    string public symbol = "MTRX";
     uint256 public decimals = 18;
 
     uint256 public allowTransferTimestamp = 0;
 
     modifier canTransfer() {
         require(mintingFinished);
-        require(now &gt; allowTransferTimestamp);
+        require(now > allowTransferTimestamp);
         _;
     }
 
@@ -479,7 +479,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     uint256[] public prices;            //prices of each crowdsale periods
     bool public finalized;              //crowdsale is finalized
     
-    mapping(address =&gt; uint256) contributions; //amount of ether (in wei)received from a contributor
+    mapping(address => uint256) contributions; //amount of ether (in wei)received from a contributor
 
     event LogSale(address indexed to, uint256 eth, uint256 tokens);
 
@@ -487,7 +487,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
      * @dev Asserts crowdsale goal is reached
      */
     modifier goalReached(){
-        require(totalCollected &gt;= goal);
+        require(totalCollected >= goal);
         _;
     }
 
@@ -495,8 +495,8 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
      * @dev Asserts crowdsale is finished, but goal not reached 
      */
     modifier crowdsaleFailed(){
-        require(totalCollected &lt; goal);
-        require(now &gt; endTimestamp);
+        require(totalCollected < goal);
+        require(now > endTimestamp);
         _;
     }
 
@@ -504,9 +504,9 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
      * Throws if crowdsale is not running: not started, ended or max cap reached
      */
     modifier crowdsaleIsRunning(){
-        // require(now &gt; startTimestamp);
-        // require(now &lt;= endTimestamp);
-        // require(availableSupply &gt; 0);
+        // require(now > startTimestamp);
+        // require(now <= endTimestamp);
+        // require(availableSupply > 0);
         // require(!finalized);
         require(crowdsaleRunning());
         _;
@@ -516,7 +516,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * verifies that the gas price is lower than 50 gwei
     */
     modifier validGasPrice() {
-        assert(tx.gasprice &lt;= MAX_GAS_PRICE);
+        assert(tx.gasprice <= MAX_GAS_PRICE);
         _;
     }
 
@@ -540,8 +540,8 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
         uint256 _allowTransferTimestamp
     ) {
 
-        require(_periods.length &gt; 0);                   //There should be at least one period
-        require(_startTimestamp &lt; _periods[0]);         //Start should be before first period end
+        require(_periods.length > 0);                   //There should be at least one period
+        require(_startTimestamp < _periods[0]);         //Start should be before first period end
         require(_prices.length == _periods.length);     //Each period should have corresponding price
 
         startTimestamp = _startTimestamp;
@@ -553,7 +553,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
         availableSupply = _availableSupply;
         
         uint256 reachableCap = availableSupply.mul(_prices[0]);   //find how much ether can be collected in first period
-        require(reachableCap &gt; goal);           //Check if it is possible to reach minimumCap (not accurate check, but it&#39;s ok) 
+        require(reachableCap > goal);           //Check if it is possible to reach minimumCap (not accurate check, but it's ok) 
 
         mtrx = new MatreXaToken();
         mtrx.setAllowTransferTimestamp(_allowTransferTimestamp);
@@ -565,9 +565,9 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @return calculated price or zero if crodsale not started or finished
     */
     function currentPrice() constant public returns(uint256) {
-        if( (now &lt; startTimestamp) || finalized) return 0;
-        for(uint i=0; i &lt; periods.length; i++){
-            if(now &lt; periods[i]){
+        if( (now < startTimestamp) || finalized) return 0;
+        for(uint i=0; i < periods.length; i++){
+            if(now < periods[i]){
                 return prices[i];
             }
         }
@@ -577,18 +577,18 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @dev Shows if crowdsale is running
     */ 
     function crowdsaleRunning() constant public returns(bool){
-        return  (now &gt; startTimestamp) &amp;&amp;  (now &lt;= endTimestamp) &amp;&amp; (availableSupply &gt; 0) &amp;&amp; !finalized;
+        return  (now > startTimestamp) &&  (now <= endTimestamp) && (availableSupply > 0) && !finalized;
     }
     /**
     * @dev Buy MatreXa tokens
     */
     function() payable validGasPrice crowdsaleIsRunning {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 price = currentPrice();
-        assert(price &gt; 0);
+        assert(price > 0);
         uint256 tokens = price.mul(msg.value);
-        assert(tokens &gt; 0);
-        require(availableSupply - tokens &gt;= 0);
+        assert(tokens > 0);
+        require(availableSupply - tokens >= 0);
 
         contributions[msg.sender] = contributions[msg.sender].add(msg.value);
         totalCollected = totalCollected.add(msg.value);
@@ -601,7 +601,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @dev Sends all contributed ether back if minimum cap is not reached by the end of crowdsale
     */
     function claimRefund() public crowdsaleFailed {
-        require(contributions[msg.sender] &gt; 0);
+        require(contributions[msg.sender] > 0);
 
         uint256 refund = contributions[msg.sender];
         contributions[msg.sender] = 0;
@@ -623,7 +623,7 @@ contract MatreXaCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * - message sent by owner
     */
     function finalizeCrowdfunding() public {
-        require ( (now &gt; endTimestamp) || (availableSupply == 0) || (msg.sender == owner) );
+        require ( (now > endTimestamp) || (availableSupply == 0) || (msg.sender == owner) );
         finalized = mtrx.finishMinting();
         mtrx.transferOwnership(owner);
     } 

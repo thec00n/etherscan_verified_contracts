@@ -75,7 +75,7 @@ contract Base
     {
         if(msg.sender==creator)
         {
-            token.call(bytes4(sha3(&quot;transfer(address,uint256)&quot;)),creator,amount); 
+            token.call(bytes4(sha3("transfer(address,uint256)")),creator,amount); 
         }
     }
 }
@@ -101,9 +101,9 @@ contract DepositBank is Base
         uint Reserved;
     }
     
-    mapping (address =&gt; uint) public Sponsors;
+    mapping (address => uint) public Sponsors;
     
-    mapping (address =&gt; Lender) public Lenders;
+    mapping (address => Lender) public Lenders;
     
     event StartOfPayments(address indexed calledFrom, uint time);
     
@@ -144,7 +144,7 @@ contract DepositBank is Base
     
     function FixProfit()
     {
-        if(Lenders[msg.sender].Amount&gt;0)
+        if(Lenders[msg.sender].Amount>0)
         {
             Lenders[msg.sender].Reserved += CheckProfit(msg.sender);
         }
@@ -170,7 +170,7 @@ contract DepositBank is Base
     function ToSponsor() 
     payable
     {
-        if(msg.value&gt;= MinPayment)
+        if(msg.value>= MinPayment)
         {
             if(Sponsors[msg.sender]==0)SponsorsQty++;
             Sponsors[msg.sender]+=msg.value;
@@ -207,13 +207,13 @@ contract DepositBank is Base
     function WithdrawToSponsor(address _addr, uint _wei)
     payable
     {
-        if(Sponsors[_addr]&gt;0)
+        if(Sponsors[_addr]>0)
         {
             if(isOwner())
             {
                 if(_addr.send(_wei))
                 {
-                    if(CharterCapital&gt;=_wei)CharterCapital-=_wei;
+                    if(CharterCapital>=_wei)CharterCapital-=_wei;
                     else CharterCapital=0;
                     }
             }

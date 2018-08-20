@@ -28,13 +28,13 @@ contract ERC20Interface {
 
 contract pow is ERC20Interface {
     
-    string public name = &quot;Proof of weak cock&quot;;
+    string public name = "Proof of weak cock";
     uint8 public decimals = 18;                
-    string public symbol = &quot;Posc.xyz&quot;;
+    string public symbol = "Posc.xyz";
     
 
     uint256 public stdBalance;
-    mapping (address =&gt; uint256) public bonus;
+    mapping (address => uint256) public bonus;
     
 
     address public owner;
@@ -59,7 +59,7 @@ contract pow is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -70,7 +70,7 @@ contract pow is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -94,7 +94,7 @@ contract pow is ERC20Interface {
         returns (uint256 balance)
     {
         if(JUSTed){
-            if(bonus[_owner] &gt; 0){
+            if(bonus[_owner] > 0){
                 return stdBalance + bonus[_owner];
             } else {
                 return stdBalance;
@@ -125,7 +125,7 @@ contract pow is ERC20Interface {
         payable
     {
         owner.transfer(this.balance);
-        Message(&quot;Thanks for your donation.&quot;);
+        Message("Thanks for your donation.");
     }
     
 

@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -79,7 +79,7 @@ contract TopiaCoinSAFTSale is Ownable, Finalizable {
 	event SaleOpen(); // Event
 	event SaleClosed(); // Event
 
-	mapping (bytes8 =&gt; Payment) payments;
+	mapping (bytes8 => Payment) payments;
 	address salesWallet = 0x0;
 	address paymentManager = 0x0;
 	bool public saleStarted = false;
@@ -210,7 +210,7 @@ contract TopiaCoinSAFTSale is Ownable, Finalizable {
 		require (p.status == PENDING_STATUS);
 		require (p.from == 0x0);
 		require (p.paymentHash != 0x0);
-		require (msg.value &gt; 0);
+		require (msg.value > 0);
 
 		// Calculate the Payment Hash and insure it matches the expected hash
 		require (p.paymentHash == calculateHash(_paymentIdentifier, msg.value, nonce)) ;

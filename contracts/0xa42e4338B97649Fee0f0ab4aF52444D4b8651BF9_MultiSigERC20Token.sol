@@ -32,13 +32,13 @@ contract MultiSigERC20Token
     event RequirementChange(uint required);
 	
 	// Mappings
-    mapping (uint =&gt; MetaTransaction) public transactions;
-    mapping (address =&gt; uint256) public withdrawalLimit;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
-	mapping (address =&gt; bool) public frozenAccount;
-	mapping (address =&gt; bool) public isAdmin;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (uint => MetaTransaction) public transactions;
+    mapping (address => uint256) public withdrawalLimit;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
+	mapping (address => bool) public frozenAccount;
+	mapping (address => bool) public isAdmin;
+    mapping (address => uint256) public balanceOf;
 
     // Meta data for pending and executed Transactions
     struct MetaTransaction {
@@ -99,7 +99,7 @@ contract MultiSigERC20Token
     /// @dev Fallback function allows to deposit ether.
     function() payable public
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {
             Deposit(msg.sender, msg.value);
         }
@@ -134,13 +134,13 @@ contract MultiSigERC20Token
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the sender is frozen
         require(!frozenAccount[_from]);
         // Check if the recipient is frozen
         require(!frozenAccount[_to]);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -165,7 +165,7 @@ contract MultiSigERC20Token
     }
 	
 	
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) internal {
@@ -205,13 +205,13 @@ contract MultiSigERC20Token
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -224,7 +224,7 @@ contract MultiSigERC20Token
         adminExists(admin)
     {
         isAdmin[admin] = false;
-        for (uint i=0; i&lt;admins.length - 1; i++)
+        for (uint i=0; i<admins.length - 1; i++)
             if (admins[i] == admin) {
                 admins[i] = admins[admins.length - 1];
                 break;
@@ -241,7 +241,7 @@ contract MultiSigERC20Token
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -348,46 +348,46 @@ contract MultiSigERC20Token
         
         if(operation == 1) // Operation 1 is Add Owner
         {
-            Submission(transactionId,&quot;Add Owner&quot;, source, destination, value, reason);
+            Submission(transactionId,"Add Owner", source, destination, value, reason);
         }
         else if(operation == 2) // Operation 2 is Remove Owner
         {
-            Submission(transactionId,&quot;Remove Owner&quot;, source, destination, value, reason);
+            Submission(transactionId,"Remove Owner", source, destination, value, reason);
         }
         else if(operation == 3) // Operation 3 is Replace Owner
         {
-            Submission(transactionId,&quot;Replace Owner&quot;, source, destination, value, reason);
+            Submission(transactionId,"Replace Owner", source, destination, value, reason);
         }
         else if(operation == 4) // Operation 4 is Freeze Account
         {
-            Submission(transactionId,&quot;Freeze Account&quot;, source, destination, value, reason);
+            Submission(transactionId,"Freeze Account", source, destination, value, reason);
         }
         else if(operation == 5) // Operation 5 is UnFreeze Account
         {
-            Submission(transactionId,&quot;UnFreeze Account&quot;, source, destination, value, reason);
+            Submission(transactionId,"UnFreeze Account", source, destination, value, reason);
         }
         else if(operation == 6) // Operation 6 is change rquirement
         {
-            Submission(transactionId,&quot;Change Requirement&quot;, source, destination, value, reason);
+            Submission(transactionId,"Change Requirement", source, destination, value, reason);
         }
         else if(operation == 7) // Operation 7 is Issue Tokens from Contract
         {
-            Submission(transactionId,&quot;Issue Tokens&quot;, source, destination, value, reason);
+            Submission(transactionId,"Issue Tokens", source, destination, value, reason);
         }
         else if(operation == 8) // Operation 8 is Admin Transfer Tokens
         {
-            Submission(transactionId,&quot;Admin Transfer Tokens&quot;, source, destination, value, reason);
+            Submission(transactionId,"Admin Transfer Tokens", source, destination, value, reason);
         }
         else if(operation == 9) // Operation 9 is Set Owners Unsigned Withdrawal Limit
         {
-            Submission(transactionId,&quot;Set Unsigned Ethereum Withdrawal Limit&quot;, source, destination, value, reason);
+            Submission(transactionId,"Set Unsigned Ethereum Withdrawal Limit", source, destination, value, reason);
         }
         else if(operation == 10) // Operation 10 is Admin Withdraw Ether without multisig
         {
             require(isOwner[destination]);
-            require(withdrawalLimit[destination] &gt; value);
+            require(withdrawalLimit[destination] > value);
             
-            Submission(transactionId,&quot;Unsigned Ethereum Withdrawal&quot;, source, destination, value, reason);
+            Submission(transactionId,"Unsigned Ethereum Withdrawal", source, destination, value, reason);
             
             var newValue = withdrawalLimit[destination] - value;
             withdrawalLimit[destination] = newValue;
@@ -398,15 +398,15 @@ contract MultiSigERC20Token
         }
         else if(operation == 11) // Operation 11 is Admin Withdraw Ether with multisig
         {
-            Submission(transactionId,&quot;Withdraw Ethereum&quot;, source, destination, value, reason);
+            Submission(transactionId,"Withdraw Ethereum", source, destination, value, reason);
         }
         else if(operation == 12) // Operation 12 is Add Admin
         {
-            Submission(transactionId,&quot;Add Admin&quot;, source, destination, value, reason);
+            Submission(transactionId,"Add Admin", source, destination, value, reason);
         }
         else if(operation == 13) // Operation 13 is Remove Admin
         {
-            Submission(transactionId,&quot;Remove Admin&quot;, source, destination, value, reason);
+            Submission(transactionId,"Remove Admin", source, destination, value, reason);
         }
     }
 
@@ -431,7 +431,7 @@ contract MultiSigERC20Token
         ownerExists(msg.sender)
         transactionExists(endTransactionId)
     {
-        for(var i=startTransactionId;i&lt;=endTransactionId;i++)
+        for(var i=startTransactionId;i<=endTransactionId;i++)
         {
             require(transactions[i].operation != 0);
             require(!confirmations[i][msg.sender]);
@@ -561,7 +561,7 @@ contract MultiSigERC20Token
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -584,7 +584,7 @@ contract MultiSigERC20Token
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -598,9 +598,9 @@ contract MultiSigERC20Token
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -625,13 +625,13 @@ contract MultiSigERC20Token
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -649,15 +649,15 @@ contract MultiSigERC20Token
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }

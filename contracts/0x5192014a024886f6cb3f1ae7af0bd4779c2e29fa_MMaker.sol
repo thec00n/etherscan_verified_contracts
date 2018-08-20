@@ -19,7 +19,7 @@ contract owned {
 
 contract MMaker is owned {
     
-    mapping (uint8 =&gt; address) players;
+    mapping (uint8 => address) players;
     
     
     
@@ -38,9 +38,9 @@ contract MMaker is owned {
     
     function enroll() public payable {
         require(state == LotteryState.Accepting);
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
         number += 1;
-        require(number&lt;=maxnumber);
+        require(number<=maxnumber);
         players[number] = (msg.sender);
         if (number == maxnumber){
             state = LotteryState.Finished;
@@ -69,7 +69,7 @@ contract MMaker is owned {
     }
     function startOver() public onlyOwner{
       
-      for (uint8 i=1; i&lt;number; i++){
+      for (uint8 i=1; i<number; i++){
         delete (players[i]);
         }
         number = 0;

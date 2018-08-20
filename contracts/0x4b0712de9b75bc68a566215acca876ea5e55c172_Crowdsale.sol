@@ -32,7 +32,7 @@ contract Ownable {
 library SafeMath {
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -110,9 +110,9 @@ contract ERC20Token is ERC20 {
 
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Gets the balance of the specified address.
@@ -146,7 +146,7 @@ contract ERC20Token is ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -172,7 +172,7 @@ contract ERC20Token is ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -187,8 +187,8 @@ contract ERC20Token is ERC20 {
 
 contract NitroToken is ERC20Token, Ownable {
     
-  string public constant name = &quot;Nitro&quot;;
-  string public constant symbol = &quot;NOX&quot;;
+  string public constant name = "Nitro";
+  string public constant symbol = "NOX";
   uint8 public constant decimals = 18;
 
   function NitroToken(uint256 _totalSupply) public {
@@ -210,7 +210,7 @@ contract NitroToken is ERC20Token, Ownable {
 contract Declaration {
   
   enum TokenTypes { crowdsale, interactive, icandy, consultant, team, reserve }
-  mapping(uint =&gt; uint256) public balances;
+  mapping(uint => uint256) public balances;
   
   uint256 public preSaleStart = 1511020800;
   uint256 public preSaleEnd = 1511452800;
@@ -248,19 +248,19 @@ contract Declaration {
   }
   
   function isPresale() public constant returns (bool){
-    return now&gt;=preSaleStart &amp;&amp; now&lt;=preSaleEnd;
+    return now>=preSaleStart && now<=preSaleEnd;
   }
 
   function isSale()  public constant returns (bool){
-    return now &gt;= saleStart &amp;&amp; now &lt;= saleEnd;
+    return now >= saleStart && now <= saleEnd;
   }
   
   function rate() public constant returns (uint256) {
     if (isPresale()) {
       return preSaleRate;
-    } else if (now&gt;=saleStart &amp;&amp; now&lt;=(saleStartFirstDayEnd)){
+    } else if (now>=saleStart && now<=(saleStartFirstDayEnd)){
       return saleRateFirstDay;
-    } else if (now&gt;(saleStartFirstDayEnd) &amp;&amp; now&lt;=(saleStartSecondDayEnd)){
+    } else if (now>(saleStartFirstDayEnd) && now<=(saleStartSecondDayEnd)){
       return saleRateSecondDay;
     }
     return saleRate;
@@ -277,11 +277,11 @@ contract Crowdsale is Declaration, Ownable{
     uint256 public weiLimit = 6 ether;
     uint256 public satLimit = 30000000;
 
-    mapping(address =&gt; bool) users;
-    mapping(address =&gt; uint256) weiOwed;
-    mapping(address =&gt; uint256) satOwed;
-    mapping(address =&gt; uint256) weiTokensOwed;
-    mapping(address =&gt; uint256) satTokensOwed;
+    mapping(address => bool) users;
+    mapping(address => uint256) weiOwed;
+    mapping(address => uint256) satOwed;
+    mapping(address => uint256) weiTokensOwed;
+    mapping(address => uint256) satTokensOwed;
     
     uint256 public weiRaised;
     uint256 public satRaised;
@@ -313,13 +313,13 @@ contract Crowdsale is Declaration, Ownable{
 
     function buy() withinPeriod public payable returns (bool){
         if (isPresale()) {
-          require(msg.value &gt;= presaleMinValue);
+          require(msg.value >= presaleMinValue);
         }else{
-          require(msg.value &gt; 0);
+          require(msg.value > 0);
         }
-        if (weiOwed[msg.sender]&gt;0) {
+        if (weiOwed[msg.sender]>0) {
           weiFreeze(msg.sender, msg.value);
-        } else if (msg.value&gt;weiLimit &amp;&amp; !users[msg.sender]) {
+        } else if (msg.value>weiLimit && !users[msg.sender]) {
           weiFreeze(msg.sender, msg.value.sub(weiLimit));
           weiTransfer(msg.sender, weiLimit);
         } else {
@@ -425,9 +425,9 @@ contract Crowdsale is Declaration, Ownable{
     ) onlyOwner public {
         require(_addr!=address(0));
 
-        if (_index==uint8(TokenTypes.team) &amp;&amp; now&lt;teamUnfreezeDate) {
+        if (_index==uint8(TokenTypes.team) && now<teamUnfreezeDate) {
             uint256 limit = balances[uint8(TokenTypes.team)].sub(teamFrozenTokens);
-            require(_amount&lt;=limit);
+            require(_amount<=limit);
         }
         
         token.transfer(_addr, _amount);

@@ -2,8 +2,8 @@ pragma solidity ^0.4.18;
 
 // change your nickname for all YouCollect Collectible Games
 contract Nicknames {
-  mapping (address =&gt; string) private nickOfOwner;
-  mapping (string =&gt; address) private ownerOfNick;
+  mapping (address => string) private nickOfOwner;
+  mapping (string => address) private ownerOfNick;
 
   event Set (string indexed _nick, address indexed _owner);
   event Unset (string indexed _nick, address indexed _owner);
@@ -20,13 +20,13 @@ contract Nicknames {
   }
 
   function set (string _nick) public {
-    require(bytes(_nick).length &gt; 2);
+    require(bytes(_nick).length > 2);
     require(ownerOf(_nick) == address(0));
 
     address owner = msg.sender;
     string storage oldNick = nickOfOwner[owner];
 
-    if (bytes(oldNick).length &gt; 0) {
+    if (bytes(oldNick).length > 0) {
       Unset(oldNick, owner);
       delete ownerOfNick[oldNick];
     }
@@ -37,7 +37,7 @@ contract Nicknames {
   }
 
   function unset () public {
-    require(bytes(nickOfOwner[msg.sender]).length &gt; 0);
+    require(bytes(nickOfOwner[msg.sender]).length > 0);
 
     address owner = msg.sender;
     string storage oldNick = nickOfOwner[owner];

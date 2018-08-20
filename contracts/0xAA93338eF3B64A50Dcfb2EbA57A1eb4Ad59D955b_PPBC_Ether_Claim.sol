@@ -11,10 +11,10 @@ contract PPBC_Ether_Claim {
      
      address ppbc;
      
-     mapping (bytes32 =&gt; uint256) valid_voucher_code; // stores claimable amount
-     mapping (bytes32 =&gt; bool) redeemed;  // claimcode --&gt; true/false
-     mapping (bytes32 =&gt; address) who_claimed; //  claimcode --&gt; who_requested
-     mapping (uint256 =&gt; bytes32) claimers; // index number --&gt; claimcode  for iteration, to pay out
+     mapping (bytes32 => uint256) valid_voucher_code; // stores claimable amount
+     mapping (bytes32 => bool) redeemed;  // claimcode --> true/false
+     mapping (bytes32 => address) who_claimed; //  claimcode --> who_requested
+     mapping (uint256 => bytes32) claimers; // index number --> claimcode  for iteration, to pay out
      uint256 public num_claimed;            // how many ppl have claimed already
      uint256 public total_claim_codes;
      bool public deposits_refunded;
@@ -42,10 +42,10 @@ contract PPBC_Ether_Claim {
      // function to register claim
      //
      function register_claim(string password) payable {
-          // claim deposit 50 ether (returned with claim, used to prevent &quot;brute force&quot; password cracking attempts) 
+          // claim deposit 50 ether (returned with claim, used to prevent "brute force" password cracking attempts) 
           if (msg.value != 50 ether || valid_voucher_code[sha3(password)] == 0) return; // if user does not provide the right password, the deposit is being kept.
           
-          // dont claim twice either, and check if deposits have already been refunded -- &gt; throw
+          // dont claim twice either, and check if deposits have already been refunded -- > throw
           if (redeemed[sha3(password)] || deposits_refunded ) throw; 
           
           // if we get here the user has provided a valid claim code, and paid deposit
@@ -57,16 +57,16 @@ contract PPBC_Ether_Claim {
      }
      
      // Refund Step 1: this function will return the deposits paid first
-     //                (this step is separate to avoid issues in case the claim refund amounts haven&#39;t been loaded yet,
-     //                 so at least the deposits won&#39;t get stuck)
+     //                (this step is separate to avoid issues in case the claim refund amounts haven't been loaded yet,
+     //                 so at least the deposits won't get stuck)
      function refund_deposits(string password){ //anyone with a code can call this
             if (deposits_refunded) throw; // already refunded
             if (valid_voucher_code[sha3(password)] == 0) throw; 
             
             // wait till everyone has claimed or claim period ended, and refund-pool has been loaded
-            if (num_claimed &gt;= total_claim_codes || block.number &gt;= 2850000 ){  // ~ 21/12/2017
+            if (num_claimed >= total_claim_codes || block.number >= 2850000 ){  // ~ 21/12/2017
                 // first refund the deposits
-                for (uint256 index = 1; index &lt;= num_claimed; index++){
+                for (uint256 index = 1; index <= num_claimed; index++){
                     bytes32 claimcode = claimers[index];
                     address receiver = who_claimed[claimcode];
                     if (!receiver.send(50 ether)) throw; // refund deposit, or throw in case of any error
@@ -84,14 +84,14 @@ contract PPBC_Ether_Claim {
             if (!deposits_refunded) throw; // first step 1 (refund_deposits) has to be called
             if (valid_voucher_code[sha3(password)] == 0) throw; 
             
-            for (uint256 index = 1; index &lt;= num_claimed; index++){
+            for (uint256 index = 1; index <= num_claimed; index++){
                 bytes32 claimcode = claimers[index];
                 address receiver = who_claimed[claimcode];
                 uint256 refund_amount = valid_voucher_code[claimcode];
                 
                 // only refund claims if there is enough left in the claim bucket
                 
-                if (this.balance &gt;= refund_amount){
+                if (this.balance >= refund_amount){
                     if (!receiver.send(refund_amount)) throw; // refund deposit, or throw in case of any error
                     valid_voucher_code[claimcode] = 0;  // deduct the deposit paid from the claim
                 }
@@ -103,13 +103,13 @@ contract PPBC_Ether_Claim {
      // others
      
      function end_redeem_period(){ 
-            if (block.number &gt;= 2900000 || num_claimed == 0) //suicide ~29/12/2016
+            if (block.number >= 2900000 || num_claimed == 0) //suicide ~29/12/2016
                selfdestruct(ppbc);
      }
     
      function check_redeemed(string password) returns (bool){
          if (valid_voucher_code[sha3(password)] == 0) 
-              return true; //invalid code or already fully redeemed --&gt; just return redeemed=true
+              return true; //invalid code or already fully redeemed --> just return redeemed=true
          return redeemed[sha3(password)];
      }
     

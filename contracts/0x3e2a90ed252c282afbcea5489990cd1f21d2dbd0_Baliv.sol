@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 /*
 Project: XPA Exchange - https://xpa.exchange
-Author : Luphia Chang - <span class="__cf_email__" data-cfemail="a7cbd2d7cfcec689c4cfc6c9c0e7ced4d2c9c4cbc8d2c389c4c8ca">[email&#160;protected]</span>
+Author : Luphia Chang - <span class="__cf_email__" data-cfemail="a7cbd2d7cfcec689c4cfc6c9c0e7ced4d2c9c4cbc8d2c389c4c8ca">[email protected]</span>
  */
 
 interface Token {
@@ -20,7 +20,7 @@ contract SafeMath {
         pure
     returns(uint) {
       uint256 z = x + y;
-      require((z &gt;= x) &amp;&amp; (z &gt;= y));
+      require((z >= x) && (z >= y));
       return z;
     }
 
@@ -28,7 +28,7 @@ contract SafeMath {
         internal
         pure
     returns(uint) {
-      require(x &gt;= y);
+      require(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -46,7 +46,7 @@ contract SafeMath {
         internal
         pure
     returns(uint) {
-        require(y &gt; 0);
+        require(y > 0);
         return x / y;
     }
 
@@ -60,7 +60,7 @@ contract SafeMath {
 }
 
 contract Authorization {
-    mapping(address =&gt; address) public agentBooks;
+    mapping(address => address) public agentBooks;
     address public owner;
     address public operator;
     address public bank;
@@ -159,7 +159,7 @@ contract Authorization {
     1. 檢驗是否指定代理用戶，若是且為合法代理人則將操作角色轉換為被代理人，否則操作角色不變
     2. 檢驗此操作是否有存入 ETH，有則暫時紀錄存入額度 A，若掛單指定 fromToken 不是 ETH 則直接更新用戶 ETH 帳戶餘額
     3. 檢驗此操作是否有存入 fromToken，有則暫時紀錄存入額度 A
-    4. 檢驗用戶 fromToken 帳戶餘額 + 存入額度 A 是否 &gt;= Amount，若是送出 makeOrder 掛單事件，否則結束操作
+    4. 檢驗用戶 fromToken 帳戶餘額 + 存入額度 A 是否 >= Amount，若是送出 makeOrder 掛單事件，否則結束操作
     5. 依照 fromToken、toToken 尋找可匹配的交易對 P
     6. 找出 P 的最低價格單進行匹配，記錄匹配數量，送出 fillOrder 成交事件，並結算 maker 交易結果，若成交完還有掛單數量有剩且未達迴圈次數上限則重複此步驟
     7. 統計步驟 6 總成交量、交易價差利潤、交易手續費
@@ -176,7 +176,7 @@ contract Baliv is SafeMath, Authorization {
     }
 
     /* business options */
-    mapping(address =&gt; uint256) public minAmount;
+    mapping(address => uint256) public minAmount;
     uint256[3] public feerate = [0, 1 * (10 ** 15), 1 * (10 ** 15)];
     uint256 public autoMatch = 10;
     uint256 public maxAmount = 10 ** 27;
@@ -184,13 +184,13 @@ contract Baliv is SafeMath, Authorization {
     address public XPAToken = 0x0090528aeb3a2b736b780fd1b6c478bb7e1d643170;
 
     /* exchange data */
-    mapping(address =&gt; mapping(address =&gt; mapping(uint256 =&gt; mapping(address =&gt; linkedBook)))) public orderBooks;
-    mapping(address =&gt; mapping(address =&gt; mapping(uint256 =&gt; uint256))) public nextOrderPrice;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public priceBooks;
+    mapping(address => mapping(address => mapping(uint256 => mapping(address => linkedBook)))) public orderBooks;
+    mapping(address => mapping(address => mapping(uint256 => uint256))) public nextOrderPrice;
+    mapping(address => mapping(address => uint256)) public priceBooks;
     
     /* user data */
-    mapping(address =&gt; mapping(address =&gt; uint256)) public balances;
-    mapping(address =&gt; bool) internal manualWithdraw;
+    mapping(address => mapping(address => uint256)) public balances;
+    mapping(address => bool) internal manualWithdraw;
 
     /* event */
     event eDeposit(address user,address token, uint256 amount);
@@ -282,7 +282,7 @@ contract Baliv is SafeMath, Authorization {
         public
         view
     returns(uint256) {
-        return minAmount[token_] &gt; 0
+        return minAmount[token_] > 0
             ? minAmount[token_]
             : minAmount[0];
     }
@@ -293,7 +293,7 @@ contract Baliv is SafeMath, Authorization {
         onlyOperator
         public
     {
-        require(feerate_[0] &lt; 0.05 ether &amp;&amp; feerate_[1] &lt; 0.05 ether &amp;&amp; feerate_[2] &lt; 0.05 ether);
+        require(feerate_[0] < 0.05 ether && feerate_[1] < 0.05 ether && feerate_[2] < 0.05 ether);
         feerate = feerate_;
     }
 
@@ -317,7 +317,7 @@ contract Baliv is SafeMath, Authorization {
     {
         address user = getUser(representor_);
         uint256 amount = depositAndFreeze(token_, user);
-        if(amount &gt; 0) {
+        if(amount > 0) {
             updateBalance(msg.sender, token_, amount, true);
         }
     }
@@ -346,10 +346,10 @@ contract Baliv is SafeMath, Authorization {
         public
         payable
     returns(bool) {
-        // depositToken =&gt; makeOrder =&gt; updateBalance
+        // depositToken => makeOrder => updateBalance
         uint256 depositAmount = depositAndFreeze(fromToken_, representor_);
         if(
-            checkAmount(fromToken_, amount_) &amp;&amp;
+            checkAmount(fromToken_, amount_) &&
             checkPriceAmount(price_)
         ) {
             address user = getUser(representor_);
@@ -358,9 +358,9 @@ contract Baliv is SafeMath, Authorization {
             // log event: MakeOrder
             eMakeOrder(fromToken_, toToken_, price_, user, amount_);
 
-            if(costAmount &lt; depositAmount) {
+            if(costAmount < depositAmount) {
                 updateBalance(user, fromToken_, safeSub(depositAmount, costAmount), true);
-            } else if(costAmount &gt; depositAmount) {
+            } else if(costAmount > depositAmount) {
                 updateBalance(user, fromToken_, safeSub(costAmount, depositAmount), false);
             }
             return true;
@@ -378,12 +378,12 @@ contract Baliv is SafeMath, Authorization {
         payable
         onlyActive
     returns(bool) {
-        // checkBalance =&gt; findAndTrade =&gt; userMakeOrder =&gt; updateBalance
+        // checkBalance => findAndTrade => userMakeOrder => updateBalance
         address user = getUser(representor_);
         uint256 depositAmount = depositAndFreeze(fromToken_, user);
         if(
-            checkAmount(fromToken_, amount_) &amp;&amp;
-            checkPriceAmount(price_) &amp;&amp;
+            checkAmount(fromToken_, amount_) &&
+            checkPriceAmount(price_) &&
             checkBalance(user, fromToken_, amount_, depositAmount)
         ) {
             // log event: MakeOrder
@@ -396,16 +396,16 @@ contract Baliv is SafeMath, Authorization {
             uint256 toAmount;
             uint256 orderAmount;
 
-            if(fillAmount[0] &gt; 0) {
+            if(fillAmount[0] > 0) {
                 // log event: makeTrade
                 emit eFillOrder(fromToken_, toToken_, price_, user, fillAmount[0]);
 
                 toAmount = safeDiv(safeMul(fillAmount[0], price_), 1 ether);
-                if(amount_ &gt; fillAmount[0]) {
+                if(amount_ > fillAmount[0]) {
                     orderAmount = safeSub(amount_, fillAmount[0]);
                     makeOrder(fromToken_, toToken_, price_, amount_, user, depositAmount);
                 }
-                if(toAmount &gt; 0) {
+                if(toAmount > 0) {
                     (toAmount, fee) = caculateFee(user, toAmount, 1);
                     profit[1] = profit[1] + fee;
 
@@ -426,9 +426,9 @@ contract Baliv is SafeMath, Authorization {
             }
 
             // update balance
-            if(amount_ &gt; depositAmount) {
+            if(amount_ > depositAmount) {
                 updateBalance(user, fromToken_, safeSub(amount_, depositAmount), false);
-            } else if(amount_ &lt; depositAmount) {
+            } else if(amount_ < depositAmount) {
                 updateBalance(user, fromToken_, safeSub(depositAmount, amount_), true);
             }
 
@@ -445,11 +445,11 @@ contract Baliv is SafeMath, Authorization {
     )
         public
     returns(bool) {
-        // updateOrderAmount =&gt; disconnectOrderUser =&gt; withdraw
+        // updateOrderAmount => disconnectOrderUser => withdraw
         address user = getUser(representor_);
         uint256 amount = getOrderAmount(fromToken_, toToken_, price_, user);
-        amount = amount &gt; amount_ ? amount_ : amount;
-        if(amount &gt; 0) {
+        amount = amount > amount_ ? amount_ : amount;
+        if(amount > 0) {
             // log event: CancelOrder
             emit eCancelOrder(fromToken_, toToken_, price_, user, amount);
 
@@ -480,9 +480,9 @@ contract Baliv is SafeMath, Authorization {
             ? feerate[role_]
             : feerate[role_] + feerate[2];
         myFeerate =
-            myXPABalance &gt; 1000000 ether ? myFeerate * 0.5 ether / 1 ether :
-            myXPABalance &gt; 100000 ether ? myFeerate * 0.6 ether / 1 ether :
-            myXPABalance &gt; 10000 ether ? myFeerate * 0.8 ether / 1 ether :
+            myXPABalance > 1000000 ether ? myFeerate * 0.5 ether / 1 ether :
+            myXPABalance > 100000 ether ? myFeerate * 0.6 ether / 1 ether :
+            myXPABalance > 10000 ether ? myFeerate * 0.8 ether / 1 ether :
             myFeerate;
         uint256 fee = safeDiv(safeMul(amount_, myFeerate), 1 ether);
         uint256 toAmount = safeSub(amount_, fee);
@@ -496,7 +496,7 @@ contract Baliv is SafeMath, Authorization {
         public
         onlyActive
     {
-        // Don&#39;t worry, this takes maker feerate
+        // Don't worry, this takes maker feerate
         uint256 takerPrice = getNextOrderPrice(fromToken_, toToken_, 0);
         address taker = getNextOrderUser(fromToken_, toToken_, takerPrice, 0);
         uint256 takerAmount = getOrderAmount(fromToken_, toToken_, takerPrice, taker);
@@ -509,7 +509,7 @@ contract Baliv is SafeMath, Authorization {
         uint256[2] memory fillAmount;
         uint256[2] memory profit;
         (fillAmount, profit) = findAndTrade(fromToken_, toToken_, takerPrice, takerAmount);
-        if(fillAmount[0] &gt; 0) {
+        if(fillAmount[0] > 0) {
             profit[1] = profit[1] + fillOrder(fromToken_, toToken_, takerPrice, taker, fillAmount[0]);
 
             // save profit to operator
@@ -533,10 +533,10 @@ contract Baliv is SafeMath, Authorization {
         public
         view
     returns(uint256) {
-        if(uint256(fromToken_) &gt;= uint256(toToken_)) {
+        if(uint256(fromToken_) >= uint256(toToken_)) {
             return priceBooks[fromToken_][toToken_];            
         } else {
-            return priceBooks[toToken_][fromToken_] &gt; 0 ? safeDiv(10 ** 36, priceBooks[toToken_][fromToken_]) : 0;
+            return priceBooks[toToken_][fromToken_] > 0 ? safeDiv(10 ** 36, priceBooks[toToken_][fromToken_]) : 0;
         }
     }
 
@@ -556,7 +556,7 @@ contract Baliv is SafeMath, Authorization {
             amount = msg.value;
             return amount;
         } else {
-            if(msg.value &gt; 0) {
+            if(msg.value > 0) {
                 // log event: Deposit
                 emit eDeposit(user, address(0), msg.value);
 
@@ -564,7 +564,7 @@ contract Baliv is SafeMath, Authorization {
             }
             amount = Token(token_).allowance(msg.sender, this);
             if(
-                amount &gt; 0 &amp;&amp;
+                amount > 0 &&
                 Token(token_).transferFrom(msg.sender, this, amount)
             ) {
                 // log event: Deposit
@@ -583,7 +583,7 @@ contract Baliv is SafeMath, Authorization {
     )
         internal
     returns(bool) {
-        if(safeAdd(balances[user_][token_], depositAmount_) &gt;= amount_) {
+        if(safeAdd(balances[user_][token_], depositAmount_) >= amount_) {
             return true;
         } else {
             emit Error(0);
@@ -598,7 +598,7 @@ contract Baliv is SafeMath, Authorization {
         internal
     returns(bool) {
         uint256 min = getMinAmount(token_);
-        if(amount_ &gt; maxAmount || amount_ &lt; min) {
+        if(amount_ > maxAmount || amount_ < min) {
             emit Error(2);
             return false;
         } else {
@@ -611,7 +611,7 @@ contract Baliv is SafeMath, Authorization {
     )
         internal
     returns(bool) {
-        if(price_ == 0 || price_ &gt; maxPrice) {
+        if(price_ == 0 || price_ > maxPrice) {
             emit Error(3);
             return false;
         } else {
@@ -663,9 +663,9 @@ contract Baliv is SafeMath, Authorization {
         uint256 matches = 0;
         uint256 prevBestPrice = 0;
         uint256 bestPrice = getNextOrderPrice(toToken_, fromToken_, prevBestPrice);
-        for(; matches &lt; autoMatch &amp;&amp; remaining &gt; 0;) {
+        for(; matches < autoMatch && remaining > 0;) {
             matchAmount = makeTrade(fromToken_, toToken_, price_, bestPrice, remaining);
-            if(matchAmount[0] &gt; 0) {
+            if(matchAmount[0] > 0) {
                 remaining = safeSub(remaining, matchAmount[0]);
                 totalMatchAmount[0] = safeAdd(totalMatchAmount[0], matchAmount[0]);
                 totalMatchAmount[1] = safeAdd(totalMatchAmount[1], matchAmount[1]);
@@ -680,14 +680,14 @@ contract Baliv is SafeMath, Authorization {
             }
         }
 
-        if(totalMatchAmount[0] &gt; 0) {
+        if(totalMatchAmount[0] > 0) {
             // log price
             logPrice(toToken_, fromToken_, prevBestPrice);
 
             // calculating spread profit
             toAmount = safeDiv(safeMul(totalMatchAmount[0], price_), 1 ether);
             profit[1] = safeSub(totalMatchAmount[1], toAmount);
-            if(totalMatchAmount[1] &gt;= safeDiv(safeMul(amount_, price_), 1 ether)) {
+            if(totalMatchAmount[1] >= safeDiv(safeMul(amount_, price_), 1 ether)) {
                 // fromProfit += amount_ - takerFill;
                 profit[0] = profit[0] + amount_ - totalMatchAmount[0];
                 // fullfill Taker order
@@ -724,11 +724,11 @@ contract Baliv is SafeMath, Authorization {
                 totalFill[2]: Total Maker fee
              */
             uint256[3] memory totalFill;
-            for(uint256 i = 0; i &lt; autoMatch &amp;&amp; remaining &gt; 0 &amp;&amp; maker != address(0); i++) {
+            for(uint256 i = 0; i < autoMatch && remaining > 0 && maker != address(0); i++) {
                 uint256[3] memory fill;
                 bool fullfill;
                 (fill, fullfill) = makeTradeDetail(fromToken_, toToken_, price_, bestPrice_, maker, remaining);
-                if(fill[0] &gt; 0) {
+                if(fill[0] > 0) {
                     if(fullfill) {
                         disconnectOrderUser(toToken_, fromToken_, bestPrice_, maker);
                     }
@@ -772,7 +772,7 @@ contract Baliv is SafeMath, Authorization {
         fillAmount[0] = caculateFill(takerProvide, takerRequire, price_, makerProvide);
         fillAmount[1] = caculateFill(makerProvide, makerRequire, bestPrice_, takerProvide);
         fillAmount[2] = fillOrder(toToken_, fromToken_, bestPrice_, maker_, fillAmount[1]);
-        return (fillAmount, (makerRequire &lt;= takerProvide));
+        return (fillAmount, (makerRequire <= takerProvide));
     }
 
     function caculateFill(
@@ -784,7 +784,7 @@ contract Baliv is SafeMath, Authorization {
         internal
         pure
     returns(uint256) {
-        return require_ &gt; pairProvide_ ? safeDiv(safeMul(pairProvide_, 1 ether), price_) : provide_;
+        return require_ > pairProvide_ ? safeDiv(safeMul(pairProvide_, 1 ether), price_) : provide_;
     }
 
     function checkPricePair(
@@ -793,14 +793,14 @@ contract Baliv is SafeMath, Authorization {
     )
         internal pure 
     returns(bool) {
-        if(bestPrice_ &lt; price_) {
+        if(bestPrice_ < price_) {
             return checkPricePair(bestPrice_, price_);
-        } else if(bestPrice_ &lt; 1 ether) {
+        } else if(bestPrice_ < 1 ether) {
             return true;
-        } else if(price_ &gt; 1 ether) {
+        } else if(price_ > 1 ether) {
             return false;
         } else {
-            return price_ * bestPrice_ &lt;= 1 ether * 1 ether;
+            return price_ * bestPrice_ <= 1 ether * 1 ether;
         }
     }
 
@@ -835,7 +835,7 @@ contract Baliv is SafeMath, Authorization {
         internal
     returns(bool) {
         if(token_ == address(0)) {
-            if(address(this).balance &lt; amount_) {
+            if(address(this).balance < amount_) {
                 emit Error(1);
                 return false;
             } else {
@@ -887,8 +887,8 @@ contract Baliv is SafeMath, Authorization {
         if(checkPriceAmount(price_)) {
             uint256 prevPrice = getNextOrderPrice(fromToken_, toToken_, prev_);
             uint256 nextPrice = getNextOrderPrice(fromToken_, toToken_, prevPrice);
-            if(prev_ != price_ &amp;&amp; prevPrice != price_ &amp;&amp; nextPrice != price_) {
-                if(price_ &lt; prevPrice) {
+            if(prev_ != price_ && prevPrice != price_ && nextPrice != price_) {
+                if(price_ < prevPrice) {
                     updateNextOrderPrice(fromToken_, toToken_, prev_, price_);
                     updateNextOrderPrice(fromToken_, toToken_, price_, prevPrice);
                 } else if(nextPrice == 0) {
@@ -909,7 +909,7 @@ contract Baliv is SafeMath, Authorization {
         internal 
     {
         address firstUser = getNextOrderUser(fromToken_, toToken_, price_, 0);
-        if(user_ != address(0) &amp;&amp; user_ != firstUser) {
+        if(user_ != address(0) && user_ != firstUser) {
             updateNextOrderUser(fromToken_, toToken_, price_, 0, user_);
             if(firstUser != address(0)) {
                 updateNextOrderUser(fromToken_, toToken_, price_, user_, firstUser);
@@ -1034,8 +1034,8 @@ contract Baliv is SafeMath, Authorization {
     )
         internal
     {
-        if(price_ &gt; 0) {
-            if(uint256(fromToken_) &gt;= uint256(toToken_)) {
+        if(price_ > 0) {
+            if(uint256(fromToken_) >= uint256(toToken_)) {
                 priceBooks[fromToken_][toToken_] = price_;
             } else  {
                 priceBooks[toToken_][fromToken_] = safeDiv(10 ** 36, price_);

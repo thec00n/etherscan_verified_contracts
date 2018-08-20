@@ -15,7 +15,7 @@ contract EtherAuction {
   uint public latestBidTime = 0;
   uint public auctionEndTime;
 
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   bool public auctionStarted = false;
   bool public auctionFinalized = false;
@@ -44,7 +44,7 @@ contract EtherAuction {
   //Anyone can bid by calling this function and supplying the corresponding eth
   function bid() public payable {
     require(auctionStarted);
-    require(now &lt; auctionEndTime);
+    require(now < auctionEndTime);
     require(msg.sender != auctioneer);
     require(highestBidder != msg.sender); //If sender is already the highest bidder, reject it.
 
@@ -63,11 +63,11 @@ contract EtherAuction {
     highestBidder = _newBidder;
 
     latestBidTime = now;
-    //Update the bidder&#39;s balance so they can later withdraw any pending balance
+    //Update the bidder's balance so they can later withdraw any pending balance
     balances[_newBidder] = _newBid;
 
-    //If there&#39;s less than an hour remaining and someone bids, extend end time.
-    if(auctionEndTime - now &lt; 3600)
+    //If there's less than an hour remaining and someone bids, extend end time.
+    if(auctionEndTime - now < 3600)
       auctionEndTime += 3600; // Each bid extends the auctionEndTime by 1 hour
 
     E_Bid(highestBidder, highestBid);
@@ -75,7 +75,7 @@ contract EtherAuction {
   }
   // Once the auction end has been reached, we distribute the ether.
   function finalizeAuction() public {
-    require (now &gt; auctionEndTime);
+    require (now > auctionEndTime);
     require (!auctionFinalized);
     auctionFinalized = true;
 
@@ -109,7 +109,7 @@ contract EtherAuction {
     require (auctionFinalized);
 
     uint ethToWithdraw = balances[msg.sender];
-    if(ethToWithdraw &gt; 0){
+    if(ethToWithdraw > 0){
       balances[msg.sender] = 0;
       msg.sender.transfer(ethToWithdraw);
     }
@@ -118,7 +118,7 @@ contract EtherAuction {
 
   //Call thisfunction to know how many seconds remain for the auction to end
   function timeRemaining() public view returns (uint){
-      require (auctionEndTime &gt; now);
+      require (auctionEndTime > now);
       return auctionEndTime - now;
   }
 

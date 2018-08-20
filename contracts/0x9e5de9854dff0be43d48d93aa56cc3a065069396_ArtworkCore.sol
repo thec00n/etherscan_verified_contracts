@@ -2,7 +2,7 @@ pragma solidity ^0.4.14;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -36,7 +36,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="127677667752736a7b7d7f68777c3c717d">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="127677667752736a7b7d7f68777c3c717d">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function approve(address _to, uint256 _tokenId) external;
@@ -66,17 +66,17 @@ contract ERC721Metadata {
     /// @dev Given a token Id, returns a byte array that is supposed to be converted into string.
     function getMetadata(uint256 _tokenId, string) public pure returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -110,7 +110,7 @@ contract ClockAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) internal tokenIdToAuction;
+    mapping (uint256 => Auction) internal tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration, uint256 startedAt);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
@@ -148,7 +148,7 @@ contract ClockAuctionBase {
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
 
@@ -175,27 +175,27 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // Explicitly check that this auction is currently live.
-        //(Because of how Ethereum mappings work, we can&#39;t just count
+        //(Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut. (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+        if (price > 0) {
+            // Calculate the auctioneer's cut. (NOTE: _computeCut() is guaranteed to return a
+            // value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
             // NOTE: Doing a transfer() in the middle of a complex
@@ -204,7 +204,7 @@ contract ClockAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -232,7 +232,7 @@ contract ClockAuctionBase {
     /// @dev Returns true if the NFT is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -248,8 +248,8 @@ contract ClockAuctionBase {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -275,13 +275,13 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -289,7 +289,7 @@ contract ClockAuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -302,14 +302,14 @@ contract ClockAuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -331,7 +331,7 @@ contract ClockAuction is Ownable, ClockAuctionBase {
     /// @param _cut - percent cut the owner takes on each auction, must be
     ///  between 0-10,000.
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -339,7 +339,7 @@ contract ClockAuction is Ownable, ClockAuctionBase {
         nonFungibleContract = candidateContract;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -370,7 +370,7 @@ contract ClockAuction is Ownable, ClockAuctionBase {
     )
         external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -400,7 +400,7 @@ contract ClockAuction is Ownable, ClockAuctionBase {
         _transfer(msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -480,7 +480,7 @@ contract SaleClockAuction is ClockAuction {
     )
         external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -520,7 +520,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageArtworkSalePrice() external view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             sum += lastArtworkSalePrices[i];
         }
         return sum / 5;
@@ -546,8 +546,8 @@ contract ArtworkAccessControl {
     //
     // It should be noted that these roles are distinct without overlap in their access abilities, the
     // abilities listed for each role above are exhaustive. In particular, while the CEO can assign any
-    // address to any role, the CEO address itself doesn&#39;t have the ability to act in those roles. This
-    // restriction is intentional so that we aren&#39;t tempted to use the CEO address frequently out of
+    // address to any role, the CEO address itself doesn't have the ability to act in those roles. This
+    // restriction is intentional so that we aren't tempted to use the CEO address frequently out of
     // convenience. The less we use an address, the less likely it is that we somehow compromise the
     // account.
 
@@ -629,7 +629,7 @@ contract ArtworkAccessControl {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -676,16 +676,16 @@ contract ArtworkBase is ArtworkAccessControl {
     Artwork[] internal artworks;
     /// @dev A mapping from artwork IDs to the address that owns them. All artworks have
     ///  some valid owner address.
-    mapping (uint256 =&gt; address) public artworkIndexToOwner;
+    mapping (uint256 => address) public artworkIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) internal ownershipTokenCount;
+    mapping (address => uint256) internal ownershipTokenCount;
 
     /// @dev A mapping from artworkIDs to an address that has been approved to call
     ///  transferFrom(). Each Artwork can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public artworkIndexToApproved;
+    mapping (uint256 => address) public artworkIndexToApproved;
 
 
     /// @dev The address of the ClockAuction contract that handles sales of Artworks. This
@@ -695,11 +695,11 @@ contract ArtworkBase is ArtworkAccessControl {
 
     /// @dev Assigns ownership of a specific Artwork to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
-        // Since the number of artworks is capped to 2^32 we can&#39;t overflow this
+        // Since the number of artworks is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         // transfer ownership
         artworkIndexToOwner[_tokenId] = _to;
-        // When creating new artworks _from is 0x0, but we can&#39;t account that address.
+        // When creating new artworks _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange
@@ -710,10 +710,10 @@ contract ArtworkBase is ArtworkAccessControl {
     }
 
     /// @dev An internal method that creates a new artwork and stores it. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate both a Birth event
     ///  and a Transfer event.
-    /// @param _id The artwork&#39;s genetic code.
+    /// @param _id The artwork's genetic code.
     /// @param _owner The inital owner of this art, must be non-zero (except for ID 0)
          // The timestamp from the block when this artwork came into existence.
     uint64 internal birthTime;
@@ -726,8 +726,8 @@ contract ArtworkBase is ArtworkAccessControl {
         Artwork memory _artwork = Artwork({ birthTime: uint64(now), name: _name, author: _author, series: _series});
         uint256 newArtworkId = artworks.push(_artwork) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion artworks is A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion artworks is A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newArtworkId == uint256(uint32(newArtworkId)));
 
         // emit the birth event
@@ -748,12 +748,12 @@ contract ArtworkBase is ArtworkAccessControl {
 contract ArtworkUnique {
 
     //mapping with unique key
-    mapping  (bytes32 =&gt; bool) internal uniqueArtworks;
+    mapping  (bytes32 => bool) internal uniqueArtworks;
     
     //Creates a unique key based on the artwork name, author, and series
     function getUniqueKey(string name, string author, uint32 _version)  internal pure returns(bytes32) {
         string memory version = _uintToString(_version);
-        string memory main = _strConcat(name, author, version, &quot;$%)&quot;);
+        string memory main = _strConcat(name, author, version, "$%)");
         string memory lowercased = _toLower(main);
         return keccak256(lowercased);
     }
@@ -763,9 +763,9 @@ contract ArtworkUnique {
     function _toLower(string str) internal pure returns (string)  {
 		bytes memory bStr = bytes(str);
 		bytes memory bLower = new bytes(bStr.length);
-		for (uint i = 0; i &lt; bStr.length; i++) {
+		for (uint i = 0; i < bStr.length; i++) {
 			// Uppercase character...
-			if ((bStr[i] &gt;= 65) &amp;&amp; (bStr[i] &lt;= 90)) {
+			if ((bStr[i] >= 65) && (bStr[i] <= 90)) {
 				// So we add 32 to make it lowercase
 				bLower[i] = bytes1(int(bStr[i]) + 32);
 			} else {
@@ -785,11 +785,11 @@ contract ArtworkUnique {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
@@ -800,13 +800,13 @@ contract ArtworkUnique {
     }
 
     /// title String Utils - String utility functions
-    /// @author Piper Merriam - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6f766f7a6d727a6d6d767e725f78727e7673317c7072">[email&#160;protected]</a>&gt;
+    /// @author Piper Merriam - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6f766f7a6d727a6d6d767e725f78727e7673317c7072">[email protected]</a>>
     ///https://github.com/pipermerriam/ethereum-string-utils
     function _uintToBytes(uint v) private pure returns (bytes32 ret) {
         if (v == 0) {
-            ret = &quot;0&quot;;
+            ret = "0";
         } else {
-            while (v &gt; 0) {
+            while (v > 0) {
                 ret = bytes32(uint(ret) / (2 ** 8));
                 ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
                 v /= 10;
@@ -818,7 +818,7 @@ contract ArtworkUnique {
     function _bytes32ToString(bytes32 x) private pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -826,7 +826,7 @@ contract ArtworkUnique {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
@@ -840,26 +840,26 @@ contract ArtworkUnique {
 contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant NAME = &quot;CryptoArtworks&quot;;
-    string public constant SYMBOL = &quot;CA&quot;;
+    string public constant NAME = "CryptoArtworks";
+    string public constant SYMBOL = "CA";
 
     // The contract that will return artwork metadata
     ERC721Metadata public erc721Metadata;
 
     bytes4 private constant INTERFACE_SIGNATURE_ERC165 =
-    bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+    bytes4(keccak256("supportsInterface(bytes4)"));
 
     bytes4 private constant INTERFACE_SIGNATURE_ERC721 =
-        bytes4(keccak256(&quot;name()&quot;)) ^
-        bytes4(keccak256(&quot;symbol()&quot;)) ^
-        bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-        bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-        bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transfer(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;tokensOfOwner(address)&quot;)) ^
-    bytes4(keccak256(&quot;tokenMetadata(uint256,string)&quot;));
+        bytes4(keccak256("name()")) ^
+        bytes4(keccak256("symbol()")) ^
+        bytes4(keccak256("totalSupply()")) ^
+        bytes4(keccak256("balanceOf(address)")) ^
+        bytes4(keccak256("ownerOf(uint256)")) ^
+        bytes4(keccak256("approve(address,uint256)")) ^
+        bytes4(keccak256("transfer(address,uint256)")) ^
+        bytes4(keccak256("transferFrom(address,address,uint256)")) ^
+        bytes4(keccak256("tokensOfOwner(address)")) ^
+    bytes4(keccak256("tokenMetadata(uint256,string)"));
 
     /// @notice Grant another address the right to transfer a specific Artwork via
     ///  transferFrom(). This is the preferred flow for transfering NFTs to contracts.
@@ -944,7 +944,7 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
 
     /// @notice Returns a list of all Artwork IDs assigned to an address.
     /// @param _owner The owner whose Artworks we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Artwork array looking for arts belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -963,7 +963,7 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
             // sequentially up to the totalArt count.
             uint256 artworkId;
 
-            for (artworkId = 1; artworkId &lt;= totalArts; artworkId++) {
+            for (artworkId = 1; artworkId <= totalArts; artworkId++) {
                 if (artworkIndexToOwner[artworkId] == _owner) {
                     result[resultIndex] = artworkId;
                     resultIndex++;
@@ -979,7 +979,7 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
     ///  ERC-165 (obviously!) and ERC-721.
     function supportsInterface(bytes4 _interfaceID) external view returns (bool) {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
         return ((_interfaceID == INTERFACE_SIGNATURE_ERC165) || (_interfaceID == INTERFACE_SIGNATURE_ERC721));
     }
@@ -1028,14 +1028,14 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
     // the required logic.
     /// @dev Checks if a given address is the current owner of a particular Artwork.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId artwork id, only valid when &gt; 0
+    /// @param _tokenId artwork id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return artworkIndexToOwner[_tokenId] == _claimant;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular Artwork.
     /// @param _claimant the address we are confirming artwork is approved for.
-    /// @param _tokenId artwork id, only valid when &gt; 0
+    /// @param _tokenId artwork id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return artworkIndexToApproved[_tokenId] == _claimant;
     }
@@ -1049,12 +1049,12 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
         artworkIndexToApproved[_tokenId] = _approved;
     }
 
-    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a2b1a2a0abadaaa783adacb7a7acb7edada6b7">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a2b1a2a0abadaaa783adacb7a7acb7edada6b7">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _memcpy(uint _dest, uint _src, uint _len) private view {
         // Copy word-length chunks while possible
-        for (; _len &gt;= 32; _len -= 32) {
+        for (; _len >= 32; _len -= 32) {
             assembly {
                 mstore(_dest, mload(_src))
             }
@@ -1071,7 +1071,7 @@ contract ArtworkOwnership is ArtworkBase, ArtworkUnique, ERC721 {
         }
     }
 
-    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="37564556545f595e537759584353584319595243">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="37564556545f595e537759584353584319595243">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _toString(bytes32[4] _rawBytes, uint256 _stringLength) private view returns (string) {
@@ -1178,7 +1178,7 @@ contract ArtworkMinting is ArtworkAuction {
         if (artworkOwner == address(0)) {
             artworkOwner = cooAddress;
         }
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         promoCreatedCount++;
         _createArtwork(_name, _author, _series, artworkOwner);
@@ -1190,7 +1190,7 @@ contract ArtworkMinting is ArtworkAuction {
     function createArtworkAuction(string _name, string _author, uint32 _series) external onlyCOO {
         bytes32 uniqueKey = getUniqueKey(_name, _author, _series);
         (require(!uniqueArtworks[uniqueKey]));
-        require(artsCreatedCount &lt; CREATION_LIMIT);
+        require(artsCreatedCount < CREATION_LIMIT);
         if (_series != 0) {
             bytes32 uniqueKeyForZero = getUniqueKey(_name, _author, 0);
             (require(!uniqueArtworks[uniqueKeyForZero]));
@@ -1214,13 +1214,13 @@ contract ArtworkMinting is ArtworkAuction {
     function _computeNextArtworkPrice() internal view returns (uint256) {
         uint256 avePrice = saleAuction.averageArtworkSalePrice();
 
-        // Sanity check to ensure we don&#39;t overflow arithmetic
+        // Sanity check to ensure we don't overflow arithmetic
         require(avePrice == uint256(uint128(avePrice)));
 
         uint256 nextPrice = avePrice + (avePrice / 2);
 
         // We never auction for less than starting price
-        if (nextPrice &lt; ARTWORK_STARTING_PRICE) {
+        if (nextPrice < ARTWORK_STARTING_PRICE) {
             nextPrice = ARTWORK_STARTING_PRICE;
         }
 
@@ -1233,30 +1233,30 @@ contract ArtworkMinting is ArtworkAuction {
  * The contractName contract does this and that...
  */
 contract ArtworkQuestions is ArtworkMinting {
-    string private constant QUESTION  = &quot;What is the value? Nothing is &quot;;
-    string public constant MAIN_QUESTION = &quot;What is a masterpiece? &quot;;
+    string private constant QUESTION  = "What is the value? Nothing is ";
+    string public constant MAIN_QUESTION = "What is a masterpiece? ";
     
     function getQuestion() public view returns (string) {
         uint256 value = saleAuction.getValue();
         string memory auctionValue = _uintToString(value);
-        return _strConcat(QUESTION, auctionValue, &quot;&quot;, &quot;&quot;);
+        return _strConcat(QUESTION, auctionValue, "", "");
     }
 }
 
 
 /// @title CryptoArtworks: Collectible arts on the Ethereum blockchain.
 /// @author Axiom Zen (https://www.axiomzen.co)
-/// @dev The main CryptoArtworks contract, keeps track of artworks so they don&#39;t wander around and get lost.
+/// @dev The main CryptoArtworks contract, keeps track of artworks so they don't wander around and get lost.
 contract ArtworkCore is ArtworkQuestions {
 
     // This is the main CryptoArtworks contract. In order to keep our code seperated into logical sections,
-    // we&#39;ve broken it up in two ways. First, we have several seperately-instantiated sibling contracts
+    // we've broken it up in two ways. First, we have several seperately-instantiated sibling contracts
     // that handle auctions and our super-top-secret genetic combination algorithm. The auctions are
-    // seperate since their logic is somewhat complex and there&#39;s always a risk of subtle bugs. By keeping
+    // seperate since their logic is somewhat complex and there's always a risk of subtle bugs. By keeping
     // them in their own contracts, we can upgrade them without disrupting the main contract that tracks
     // artwork ownership. The genetic combination algorithm is kept seperate so we can open-source all of
     // the rest of our code without making it _too_ easy for folks to figure out how the genetics work.
-    // Don&#39;t worry, I&#39;m sure someone will reverse engineer it soon enough!
+    // Don't worry, I'm sure someone will reverse engineer it soon enough!
     //
     // Secondly, we break the core contract into multiple files using inheritence, one for each major
     // facet of functionality of CK. This allows us to keep related code bundled together while still
@@ -1278,7 +1278,7 @@ contract ArtworkCore is ArtworkQuestions {
     //             through this facet of the core contract.
     //
     //      - ArtworkMinting: This final facet contains the functionality we use for creating new arts.
-    //             We can make up to 5000 &quot;promo&quot; arts that can be given away (especially important when
+    //             We can make up to 5000 "promo" arts that can be given away (especially important when
     //             the community is new), and all others can only be created and then immediately put up
     //             for auction via an algorithmically determined starting price. Regardless of how they
     //             are created, there is a hard limit of 450k arts.
@@ -1298,11 +1298,11 @@ contract ArtworkCore is ArtworkQuestions {
         cooAddress = msg.sender;
 
         // start with the art
-        _createArtwork(&quot;none&quot;, &quot;none&quot;, 0, address(0));
+        _createArtwork("none", "none", 0, address(0));
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+    /// @dev Reject all Ether from being sent here, unless it's from one of the
     ///  two auction contracts. (Hopefully, we can prevent user accidents.)
     function() external payable {
         require(
@@ -1312,7 +1312,7 @@ contract ArtworkCore is ArtworkQuestions {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -1347,7 +1347,7 @@ contract ArtworkCore is ArtworkQuestions {
     }
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.

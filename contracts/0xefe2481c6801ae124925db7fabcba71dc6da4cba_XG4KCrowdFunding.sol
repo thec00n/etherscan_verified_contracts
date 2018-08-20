@@ -12,12 +12,12 @@ contract XG4KCrowdFunding {
         uint numFunders;
         uint amount;
         uint deadline;
-        mapping (uint =&gt; Funder) funders;
+        mapping (uint => Funder) funders;
     }
-    //Declares a state variable &#39;numCampaigns&#39;
+    //Declares a state variable 'numCampaigns'
     uint numCampaigns;
     //Creates a mapping of Campaign datatypes
-    mapping (uint =&gt; Campaign) campaigns;
+    mapping (uint => Campaign) campaigns;
     //first function sets up a new campaign
     function newCampaign(address beneficiary, uint goal, uint deadline) returns (uint campaignID) {
         campaignID = numCampaigns++; // campaignID is return variable
@@ -37,15 +37,15 @@ contract XG4KCrowdFunding {
     // checks if the goal or time limit has been reached and ends the campaign
     function checkGoalReached(uint campaignID) returns (bool reached) {
         Campaign c = campaigns[campaignID];
-        if (c.amount &gt;= c.fundingGoal){
+        if (c.amount >= c.fundingGoal){
             c.beneficiary.send(c.amount);
             clean(campaignID);
         	return true;
         }
-        if (c.deadline &lt;= block.number){
+        if (c.deadline <= block.number){
             uint j = 0;
             uint n = c.numFunders;
-            while (j &lt;= n){
+            while (j <= n){
                 c.funders[j].addr.send(c.funders[j].amount);
                 j++;
             }
@@ -63,7 +63,7 @@ contract XG4KCrowdFunding {
         c.fundingGoal = 0;
         c.deadline = 0;
         c.numFunders = 0;
-        while (i &lt;= n){
+        while (i <= n){
             c.funders[i].addr = 0;
             c.funders[i].amount = 0;
             i++;

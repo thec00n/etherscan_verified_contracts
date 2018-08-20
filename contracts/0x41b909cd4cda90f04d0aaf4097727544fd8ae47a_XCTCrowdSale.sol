@@ -4,17 +4,17 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         return x - y;
     }
 
     function safeMin256(uint256 x, uint256 y) internal pure returns (uint256) {
-        return x &lt; y ? x : y;
+        return x < y ? x : y;
     }
 }
 
@@ -31,8 +31,8 @@ contract XCTCrowdSale is SafeMath {
     }
 
     modifier inProgress() {
-      require(block.number &gt;= startBlock);
-      require(amountRaised &lt; hardCap);
+      require(block.number >= startBlock);
+      require(amountRaised < hardCap);
       _;
     }
 
@@ -42,7 +42,7 @@ contract XCTCrowdSale is SafeMath {
     }
 
     function fundRaising() public payable inProgress {
-        require(msg.value &gt;= 15 ether &amp;&amp; msg.value &lt;= 50 ether);
+        require(msg.value >= 15 ether && msg.value <= 50 ether);
         uint256 contribution = safeMin256(msg.value, safeSub(hardCap, amountRaised));
         amountRaised = safeAdd(amountRaised, contribution);
 

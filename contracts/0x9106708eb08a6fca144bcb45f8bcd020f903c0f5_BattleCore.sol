@@ -98,7 +98,7 @@ contract BattleDeciderInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -188,7 +188,7 @@ contract GeneScienceInterface {
     /// @dev simply a boolean to indicate this is the contract we expect to be
     function isGeneScience() public pure returns (bool);
 
-    /// @dev given genes of fighter 1 &amp; 2, return a genetic combination - may have a random factor
+    /// @dev given genes of fighter 1 & 2, return a genetic combination - may have a random factor
     /// @param genes1 genes of fighter1
     /// @param genes2 genes of fighter1
     /// @return the genes that are supposed to be passed down the new fighter
@@ -214,7 +214,7 @@ contract BattleBase is Ownable, Pausable {
     }
     
     Team[] public teams;
-    // index =&gt; base stats (where index represents the race)
+    // index => base stats (where index represents the race)
     RaceBaseStats[] public raceBaseStats;
     
     uint256 internal randomCounter = 0;
@@ -223,10 +223,10 @@ contract BattleBase is Ownable, Pausable {
     GeneScienceInterface public geneScience;
     BattleDeciderInterface public battleDecider;
     
-    mapping (uint256 =&gt; uint256) public fighterIndexToTeam;
-    mapping (uint256 =&gt; bool) public teamIndexToExist;
+    mapping (uint256 => uint256) public fighterIndexToTeam;
+    mapping (uint256 => bool) public teamIndexToExist;
     // an array of deleted teamIds owned by each address so that we can reuse these again
-    // mapping (address =&gt; uint256[]) public addressToDeletedTeams;
+    // mapping (address => uint256[]) public addressToDeletedTeams;
     
     // an array of deleted teams we can reuse later
     uint256[] public deletedTeamIds;
@@ -249,7 +249,7 @@ contract BattleBase is Ownable, Pausable {
     
     // modifier ownsFighters(uint256[] _fighterIds) {
     //     uint len = _fighterIds.length;
-    //     for (uint i = 0; i &lt; len; i++) {
+    //     for (uint i = 0; i < len; i++) {
     //       require(fighterCore.ownerOf(_fighterIds[i]) == msg.sender);
     //     }
     //     _;
@@ -358,15 +358,15 @@ contract BattleAdmin is BattleBase {
 
     // in case we ever add a bad race type
     function removeLastRace() public onlyOwner {
-        // don&#39;t allow the first 4 races to be removed
-        require(raceBaseStats.length &gt; 4);
+        // don't allow the first 4 races to be removed
+        require(raceBaseStats.length > 4);
         
         delete raceBaseStats[raceBaseStats.length - 1];
     }
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case.
     /// @param _v2Address new address
     function setNewAddress(address _v2Address) public onlyOwner whenPaused {
@@ -377,7 +377,7 @@ contract BattleAdmin is BattleBase {
 
     // Owner can fix how many seconds per blocks are currently observed.
     function setSecondsPerBlock(uint256 _secs) external onlyOwner {
-        require(_secs &lt; prizeCooldowns[0]);
+        require(_secs < prizeCooldowns[0]);
         secondsPerBlock = _secs;
     }
 }
@@ -465,11 +465,11 @@ contract BattlePrize is BattleAdmin {
     // Rank 9-15 (2 stars) - random between 1~3
     // Rank 16+ (1 star) - random between 1~2
     function genToLuck(uint256 _gen, uint256 _rand) public pure returns (uint8) {
-        if (_gen &gt;= 1 || _gen &lt;= 2) {
+        if (_gen >= 1 || _gen <= 2) {
             return 2 + uint8(_rand) % 3; // 2 to 4
-        } else if (_gen &gt;= 3 || _gen &lt;= 8) {
+        } else if (_gen >= 3 || _gen <= 8) {
             return 2 + uint8(_rand) % 2; // 2 to 3
-        }  else if (_gen &gt;= 9 || _gen &lt;= 15) {
+        }  else if (_gen >= 9 || _gen <= 15) {
             return 1 + uint8(_rand) % 3; // 1 to 3
         } else { // 16+
             return 1 + uint8(_rand) % 2; // 1 to 2
@@ -482,7 +482,7 @@ contract BattlePrize is BattleAdmin {
         uint8 vitality
     ) {
         // in case we ever have an unknown race due to new races added
-        if (_race &gt;= raceBaseStats.length) {
+        if (_race >= raceBaseStats.length) {
             _race = 0;
         }
 
@@ -499,15 +499,15 @@ contract BattlePrize is BattleAdmin {
         uint8 extraVitality
     ) {
         // in case we ever have an unknown race due to new races added
-        if (_gen &gt;= 10) {
+        if (_gen >= 10) {
             _gen = 10;
         }
 
         uint8 extraStats = extraStatsForGen[_gen];
 
-        uint256 rand1 = _rand &amp; 0xff;
-        uint256 rand2 = _rand &gt;&gt; 16 &amp; 0xff;
-        uint256 rand3 = _rand &gt;&gt; 16 &gt;&gt; 16 &amp; 0xff;
+        uint256 rand1 = _rand & 0xff;
+        uint256 rand2 = _rand >> 16 & 0xff;
+        uint256 rand3 = _rand >> 16 >> 16 & 0xff;
 
         uint256 sum = rand1 + rand2 + rand3;
 
@@ -517,9 +517,9 @@ contract BattlePrize is BattleAdmin {
 
         uint8 remainder = extraStats - (extraStrength + extraDexterity + extraVitality);
 
-        if (rand1 &gt; rand2 &amp;&amp; rand1 &gt; rand3) {
+        if (rand1 > rand2 && rand1 > rand3) {
             extraStrength += remainder;
-        } else if (rand2 &gt; rand3) {
+        } else if (rand2 > rand3) {
             extraDexterity += remainder;
         } else {
             extraVitality += remainder;
@@ -556,8 +556,8 @@ contract BattlePrize is BattleAdmin {
 
         uint256 generation256 = ((generation1 + generation2) / 2) + 1;
 
-        // making sure a gen 65536 doesn&#39;t turn out as a gen 0 :)
-        if (generation256 &gt; 65535)
+        // making sure a gen 65536 doesn't turn out as a gen 0 :)
+        if (generation256 > 65535)
             generation256 = 65535;
         
         uint16 generation = uint16(generation256);
@@ -587,14 +587,14 @@ contract BattlePrize is BattleAdmin {
     // takes in genes and returns raceId
     // race is first loci after version. 
     // [][]...[][race][version] 
-    // each loci = 2B, race is also 2B. father&#39;s gene is determining the fighter&#39;s race
+    // each loci = 2B, race is also 2B. father's gene is determining the fighter's race
     function _getRaceFromGenes(uint256 _genes) internal pure returns (uint256) {
-        return (_genes &gt;&gt; (16)) &amp; 0xff;
+        return (_genes >> (16)) & 0xff;
     }
 
     function experienceToLevel(uint256 _experience) public view returns (uint256) {
-        for (uint256 i = 0; i &lt; stats.length; i++) {
-            if (stats[i] &gt; _experience) {
+        for (uint256 i = 0; i < stats.length; i++) {
+            if (stats[i] > _experience) {
                 // current level is i
                 return i;
             }
@@ -611,10 +611,10 @@ contract BattlePrize is BattleAdmin {
     // 4 - luck
     function _calculateNewStat(uint32 _currentExperience, uint32 _newExperience) internal returns (uint256) {
         // find current level
-        for (uint256 i = 0; i &lt; stats.length; i++) {
-            if (stats[i] &gt; _currentExperience) {
+        for (uint256 i = 0; i < stats.length; i++) {
+            if (stats[i] > _currentExperience) {
                 // current level is i
-                if (stats[i] &lt;= _newExperience) {
+                if (stats[i] <= _newExperience) {
                     // level up a random stat
                     return 1 + randMod(randomCounter++, 4);
                 } else {
@@ -707,7 +707,7 @@ contract BattlePrize is BattleAdmin {
         uint[6] memory data
     ) internal {
         // dont update if on cooldown
-        if (data[5] &gt;= block.number) {
+        if (data[5] >= block.number) {
             return;
         }
 
@@ -729,7 +729,7 @@ contract BattlePrize is BattleAdmin {
     }
 
     function _increaseTeamFighterStats(uint256[] memory _fighterIds, uint32 _experienceGained) private {
-        for (uint i = 0; i &lt; _fighterIds.length; i++) {
+        for (uint i = 0; i < _fighterIds.length; i++) {
             _increaseFighterStats(_fighterIds[i], _experienceGained, _getFighterStatsData(_fighterIds[i]));
         }
     }
@@ -747,10 +747,10 @@ contract BattlePrize is BattleAdmin {
         uint16 updatedBattlesFought = uint16(data[3]) + 1;
 
         // trigger prize cooldown
-        if (_winner &amp;&amp; _leader &amp;&amp; !_skipAwardPrize) {
+        if (_winner && _leader && !_skipAwardPrize) {
             prizeCooldownEndTime = uint64((prizeCooldowns[prizeCooldownIndex] / secondsPerBlock) + block.number);
 
-            if (prizeCooldownIndex &lt; 6) {
+            if (prizeCooldownIndex < 6) {
                prizeCooldownIndex += 1;
             }
         }
@@ -770,7 +770,7 @@ contract BattlePrize is BattleAdmin {
     }
 
     function _updateTeamBattleStats(uint256[] memory _fighterIds, bool _attackerWin, bool _skipAwardPrize) private {
-        for (uint i = 0; i &lt; _fighterIds.length; i++) {
+        for (uint i = 0; i < _fighterIds.length; i++) {
             _updateFighterBattleStats(_fighterIds[i], _attackerWin, i == 0, _getFighterBattleData(_fighterIds[i]), _skipAwardPrize);
         }
     }
@@ -812,7 +812,7 @@ contract BattlePrize is BattleAdmin {
         uint256[7] memory attackerLeader = _getFighterBattleData(_attackerFighterIds[0]);
         uint256[7] memory defenderLeader = _getFighterBattleData(_defenderFighterIds[0]);
 
-        bool skipAwardPrize = (_attackerWin &amp;&amp; attackerLeader[0] &gt;= block.number) || (!_attackerWin &amp;&amp; defenderLeader[0] &gt;= block.number);
+        bool skipAwardPrize = (_attackerWin && attackerLeader[0] >= block.number) || (!_attackerWin && defenderLeader[0] >= block.number);
         
         _increaseTeamFighterStats(_attackerFighterIds, _attackerExperienceGained);
         _increaseTeamFighterStats(_defenderFighterIds, _defenderExperienceGained);
@@ -852,24 +852,24 @@ contract BattleCore is BattlePrize {
         teamIndexToExist[0] = false;
     }
 
-    /// @dev DON&#39;T give me your money.
+    /// @dev DON'T give me your money.
     function() external {}
     
     function totalTeams() public view returns (uint256) {
-        // team 0 doesn&#39;t exist
+        // team 0 doesn't exist
         return teams.length - 1;
     }
     
     function isValidTeam(uint256[] _fighterIds) public view returns (bool) {
-        for (uint i = 0; i &lt; _fighterIds.length; i++) {
+        for (uint i = 0; i < _fighterIds.length; i++) {
             uint256 fighterId = _fighterIds[i];
             if (fighterCore.ownerOf(fighterId) != msg.sender)
                 return false;
-            if (fighterIndexToTeam[fighterId] &gt; 0)
+            if (fighterIndexToTeam[fighterId] > 0)
                 return false;
 
             // check for duplicate fighters
-            for (uint j = i + 1; j &lt; _fighterIds.length; j++) {
+            for (uint j = i + 1; j < _fighterIds.length; j++) {
                 if (_fighterIds[i] == _fighterIds[j]) {
                     return false;            
                 }
@@ -884,7 +884,7 @@ contract BattleCore is BattlePrize {
         whenNotPaused
         returns(uint256)
     {
-        require(_fighterIds.length &gt; 0 &amp;&amp; _fighterIds.length &lt;= maxPerTeam);
+        require(_fighterIds.length > 0 && _fighterIds.length <= maxPerTeam);
         
         require(isValidTeam(_fighterIds));
 
@@ -900,7 +900,7 @@ contract BattleCore is BattlePrize {
         uint256 newTeamId;
 
         // reuse teamId if address has deleted teams
-        if (deletedTeamIds.length &gt; 0) {
+        if (deletedTeamIds.length > 0) {
             newTeamId = deletedTeamIds[deletedTeamIds.length - 1];
             delete deletedTeamIds[deletedTeamIds.length - 1];
             deletedTeamIds.length--;
@@ -909,9 +909,9 @@ contract BattleCore is BattlePrize {
             newTeamId = teams.push(_team) - 1;
         }
 
-        require(newTeamId &lt;= 4294967295);
+        require(newTeamId <= 4294967295);
 
-        for (uint i = 0; i &lt; _fighterIds.length; i++) {
+        for (uint i = 0; i < _fighterIds.length; i++) {
             uint256 fighterId = _fighterIds[i];
 
             fighterIndexToTeam[fighterId] = newTeamId;
@@ -936,7 +936,7 @@ contract BattleCore is BattlePrize {
     function _deleteTeam(uint256 _teamId) private {
         Team memory team = teams[_teamId];
 
-        for (uint256 i = 0; i &lt; team.fighterIds.length; i++) {
+        for (uint256 i = 0; i < team.fighterIds.length; i++) {
             fighterIndexToTeam[team.fighterIds[i]] = 0;
         }
 
@@ -955,12 +955,12 @@ contract BattleCore is BattlePrize {
         onlyExistingTeam(_defenderTeamId)
         returns (bool)
     {
-        require(_attackerFighterIds.length &gt; 0 &amp;&amp; _attackerFighterIds.length &lt;= maxPerTeam);
+        require(_attackerFighterIds.length > 0 && _attackerFighterIds.length <= maxPerTeam);
         require(isValidTeam(_attackerFighterIds));
 
         Team memory defenderTeam = teams[_defenderTeamId];
 
-        // check that a user isn&#39;t attacking himself
+        // check that a user isn't attacking himself
         require(msg.sender != defenderTeam.owner);
 
         uint256[] memory defenderFighterIds = defenderTeam.fighterIds;
@@ -1014,7 +1014,7 @@ contract BattleCore is BattlePrize {
     function getFighterArray(uint256[] _fighterIds) public view returns (uint256[7][]) {
         uint256[7][] memory res = new uint256[7][](_fighterIds.length);
 
-        for (uint i = 0; i &lt; _fighterIds.length; i++) {
+        for (uint i = 0; i < _fighterIds.length; i++) {
             uint256 generation;
             uint256 genes;
             uint256 dexterity;

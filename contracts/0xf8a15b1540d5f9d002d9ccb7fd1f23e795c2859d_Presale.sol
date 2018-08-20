@@ -8,13 +8,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -121,7 +121,7 @@ contract Presale is SafeMath, Pausable {
     Token public token; // addresss of token contract
 
 
-    mapping(address =&gt; Backer) public backers; //backer list
+    mapping(address => Backer) public backers; //backer list
     address[] public backersIndex;  // to be able to iterate through backer list
     uint public maxCap;  // max cap
     uint public claimCount;  // number of contributors claming tokens
@@ -129,13 +129,13 @@ contract Presale is SafeMath, Pausable {
     uint public totalClaimed;  // total of tokens claimed
     uint public totalRefunded;  // total of tokens refunded
     bool public mainSaleSuccessfull; // true if main sale was successfull
-    mapping(address =&gt; uint) public claimed; // Tokens claimed by contibutors
-    mapping(address =&gt; uint) public refunded; // Tokens refunded to contributors
+    mapping(address => uint) public claimed; // Tokens claimed by contibutors
+    mapping(address => uint) public refunded; // Tokens refunded to contributors
 
 
     // @notice to verify if action is not performed out of the campaing range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) 
+        if ((block.number < startBlock) || (block.number > endBlock)) 
             revert();
         _;
     }
@@ -183,8 +183,8 @@ contract Presale is SafeMath, Pausable {
     // @param _backer {address} address of beneficiary
     function claimTokensForUser(address _backer) onlyOwner() external returns(bool) {
 
-        require (!backer.refunded); // if refunded, don&#39;t allow tokens to be claimed           
-        require (!backer.claimed); // if tokens claimed, don&#39;t allow to be claimed again            
+        require (!backer.refunded); // if refunded, don't allow tokens to be claimed           
+        require (!backer.claimed); // if tokens claimed, don't allow to be claimed again            
         require (backer.tokensToSend != 0); // only continue if there are any tokens to send        
         Backer storage backer = backers[_backer];
         backer.claimed = true;  // mark record as claimed
@@ -212,7 +212,7 @@ contract Presale is SafeMath, Pausable {
     // @notice It will be called by owner to start the sale    
     // block numbers will be calculated based on current block time average. 
     function start(uint _block) external onlyOwner() {
-        require(_block &lt; 54000);  // 2.5*60*24*15 days = 54000  
+        require(_block < 54000);  // 2.5*60*24*15 days = 54000  
         startBlock = block.number;
         endBlock = safeAdd(startBlock, _block);   
     }
@@ -222,8 +222,8 @@ contract Presale is SafeMath, Pausable {
     // @param _block  number of blocks representing duration 
     function adjustDuration(uint _block) external onlyOwner() {
         
-        require(_block &lt;= 72000);  // 2.5*60*24*20 days = 72000     
-        require(_block &gt; safeSub(block.number, startBlock)); // ensure that endBlock is not set in the past
+        require(_block <= 72000);  // 2.5*60*24*20 days = 72000     
+        require(_block > safeSub(block.number, startBlock)); // ensure that endBlock is not set in the past
         endBlock = safeAdd(startBlock, _block);   
     }
 
@@ -251,11 +251,11 @@ contract Presale is SafeMath, Pausable {
 
     function contribute(address _contributor) internal stopInEmergency respectTimeFrame returns(bool res) {
          
-        require (msg.value &gt;= minInvestment &amp;&amp; msg.value &lt;= maxInvestment);  // ensure that min and max contributions amount is met
+        require (msg.value >= minInvestment && msg.value <= maxInvestment);  // ensure that min and max contributions amount is met
                    
         uint tokensToSend = calculateNoOfTokensToSend();
         
-        require (safeAdd(tokensSent, tokensToSend) &lt;= maxCap);  // Ensure that max cap hasn&#39;t been reached
+        require (safeAdd(tokensSent, tokensToSend) <= maxCap);  // Ensure that max cap hasn't been reached
 
         Backer storage backer = backers[_contributor];
 
@@ -281,9 +281,9 @@ contract Presale is SafeMath, Pausable {
         uint tokenAmount = safeMul(msg.value, 1e18) / tokenPriceWei;
         uint ethAmount = msg.value;
 
-        if (ethAmount &gt;= 50 ether)
+        if (ethAmount >= 50 ether)
             return tokenAmount + (tokenAmount * 5) / 100;  // 5% percent bonus
-        else if (ethAmount &gt;= 15 ether)
+        else if (ethAmount >= 15 ether)
             return tokenAmount + (tokenAmount * 25) / 1000; // 2.5% percent bonus
         else 
             return tokenAmount;
@@ -295,7 +295,7 @@ contract Presale is SafeMath, Pausable {
     function finalize() external onlyOwner() {
 
         require (!presaleClosed);           
-        require (block.number &gt;= endBlock);                          
+        require (block.number >= endBlock);                          
         presaleClosed = true;
     }
 
@@ -313,8 +313,8 @@ contract Presale is SafeMath, Pausable {
            
         Backer storage backer = backers[msg.sender];
 
-        require (!backer.refunded); // if refunded, don&#39;t allow for another refund           
-        require (!backer.claimed); // if tokens claimed, don&#39;t allow refunding            
+        require (!backer.refunded); // if refunded, don't allow for another refund           
+        require (!backer.claimed); // if tokens claimed, don't allow refunding            
         require (backer.tokensToSend != 0);   // only continue if there are any tokens to send           
 
         claimCount++;
@@ -335,7 +335,7 @@ contract Presale is SafeMath, Pausable {
     function refund() external {
 
         require(!mainSaleSuccessfull);  // ensure that ICO failed
-        require(this.balance &gt; 0);  // contract will hold 0 ether at the end of campaign.                                  
+        require(this.balance > 0);  // contract will hold 0 ether at the end of campaign.                                  
                                     // contract needs to be funded through fundContract() 
         Backer storage backer = backers[msg.sender];
 

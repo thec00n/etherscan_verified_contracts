@@ -9,13 +9,13 @@ library SafeMath {
 	}
 
 	function minus(uint256 x, uint256 y) internal returns (uint256) {
-		assert(y &lt;= x);
+		assert(y <= x);
 		return x - y;
 	}
 
 	function plus(uint256 x, uint256 y) internal returns (uint256) {
 		uint256 z = x + y;
-		assert(z &gt;= x &amp;&amp; z &gt;= y);
+		assert(z >= x && z >= y);
 		return z;
 	}
 }
@@ -52,8 +52,8 @@ contract AuctusPreSale {
 	
 	bool public preSaleHalted;
 	
-	mapping(address =&gt; TokenInfo) public balances;
-	mapping(address =&gt; uint256) public whitelist;
+	mapping(address => TokenInfo) public balances;
+	mapping(address => uint256) public whitelist;
 	
 	event Buy(address indexed recipient, uint256 tokenAmount);
 	event Revoke(address indexed recipient, uint256 weiAmount);
@@ -66,22 +66,22 @@ contract AuctusPreSale {
 	}
 	
 	modifier validPayload(uint256 size) { 
-		require(msg.data.length &gt;= (size + 4));
+		require(msg.data.length >= (size + 4));
 		_;
 	}
 	
 	modifier preSalePeriod() {
-		require(now &gt;= startTime &amp;&amp; now &lt;= endTime &amp;&amp; weiRaised &lt; maximumCap);
+		require(now >= startTime && now <= endTime && weiRaised < maximumCap);
 		_;
 	}
 	
 	modifier preSaleCompletedSuccessfully() {
-		require(weiRaised &gt;= minimumCap &amp;&amp; (now &gt; endTime || weiRaised &gt;= maximumCap));
+		require(weiRaised >= minimumCap && (now > endTime || weiRaised >= maximumCap));
 		_;
 	}
 	
 	modifier preSaleFailed() {
-		require(weiRaised &lt; minimumCap &amp;&amp; now &gt; endTime);
+		require(weiRaised < minimumCap && now > endTime);
 		_;
 	}
 	
@@ -107,7 +107,7 @@ contract AuctusPreSale {
 		preSalePeriod 
 		isPreSaleNotHalted 
 	{
-		require(balances[msg.sender].weiInvested &lt; whitelist[msg.sender]);
+		require(balances[msg.sender].weiInvested < whitelist[msg.sender]);
 		
 		var (weiToInvest, weiRemaining) = getValueToInvest();
 		
@@ -118,7 +118,7 @@ contract AuctusPreSale {
 		tokenSold = tokenSold.plus(amountToReceive);
 		weiRaised = weiRaised.plus(weiToInvest);
 		
-		if (weiRemaining &gt; 0) {
+		if (weiRemaining > 0) {
 			msg.sender.transfer(weiRemaining);
 		}
 		
@@ -127,7 +127,7 @@ contract AuctusPreSale {
 	
 	function revoke() preSaleFailed {
 		uint256 weiAmount = balances[msg.sender].weiInvested;
-		assert(weiAmount &gt; 0);
+		assert(weiAmount > 0);
 		
 		balances[msg.sender].weiInvested = 0;
 		msg.sender.transfer(weiAmount);
@@ -155,7 +155,7 @@ contract AuctusPreSale {
     }
 
     function listAddresses(address[] addresses) onlyOwner {
-        for (uint256 i = 0; i &lt; addresses.length; i++) {
+        for (uint256 i = 0; i < addresses.length; i++) {
             listAddress(addresses[i], maximumIndividualCap);
         }
     }
@@ -182,7 +182,7 @@ contract AuctusPreSale {
 		
 		uint256 weiToInvest;
 		uint256 weiRemaining;
-		if (newWeiInvested &lt;= whitelist[msg.sender]) {
+		if (newWeiInvested <= whitelist[msg.sender]) {
 			weiToInvest = msg.value;
 			weiRemaining = 0;
 		} else {

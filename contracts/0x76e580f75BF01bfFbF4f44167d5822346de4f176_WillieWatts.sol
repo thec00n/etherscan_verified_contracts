@@ -5,14 +5,14 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract WillieWatts {
 
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -29,8 +29,8 @@ contract WillieWatts {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;          
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+        if (balanceOf[msg.sender] < _value) throw;          
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
         balanceOf[msg.sender] -= _value;                 
         balanceOf[_to] += _value;                    
         Transfer(msg.sender, _to, _value);             
@@ -55,9 +55,9 @@ contract WillieWatts {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -68,7 +68,7 @@ contract WillieWatts {
     function refund(uint256 _value) returns (bool success) {
       uint256 etherValue = (_value * 1 ether) / 1000;
 
-      if(balanceOf[msg.sender] &lt; _value) throw;   
+      if(balanceOf[msg.sender] < _value) throw;   
       if(!msg.sender.send(etherValue)) throw;
       
       balanceOf[msg.sender] -= _value;

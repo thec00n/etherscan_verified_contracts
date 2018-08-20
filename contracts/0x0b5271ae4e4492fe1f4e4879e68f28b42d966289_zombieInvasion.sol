@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,8 +136,8 @@ contract zombieInvasion is Ownable{
     
     Area[] public areas;
 
-    mapping (uint=&gt;Zombie) public zombies;
-    mapping (bytes32=&gt;Team) public teams;
+    mapping (uint=>Zombie) public zombies;
+    mapping (bytes32=>Team) public teams;
 
     event StartInvasion(bytes32 indexed teamhash, uint _areaId,uint[] _zombieId);
     event AwardInvation(bytes32 indexed teamhash, bool InvationResult, uint ZOBRevenue);
@@ -149,15 +149,15 @@ contract zombieInvasion is Ownable{
 
 
   function startInvasion(uint _areaId, uint[] _zombieId) public onlyOwnerOf(_zombieId){
-    require(areas[_areaId].TotallimitTeamCount &gt;= areas[_areaId].TotalTeamCount + 1);
+    require(areas[_areaId].TotallimitTeamCount >= areas[_areaId].TotalTeamCount + 1);
     require(areas[_areaId].isOpen);
-    require(areas[_areaId].TeamMemberlimitCount &gt;= _zombieId.length);
+    require(areas[_areaId].TeamMemberlimitCount >= _zombieId.length);
 
     bytes32 teamHash = block.blockhash(block.number-1);
 
-    for(uint16 i = 0; i&lt;_zombieId.length; i++){
+    for(uint16 i = 0; i<_zombieId.length; i++){
       //確保殭屍都在家，並且可以出戰
-      require(now &gt; zombies[_zombieId[i]].readyTime);
+      require(now > zombies[_zombieId[i]].readyTime);
       require(!zombies[_zombieId[i]].notAtHome);
 
       teamHash = keccak256(teamHash,now,_areaId,zombiemain.seeZombieDna(_zombieId[i]));
@@ -167,7 +167,7 @@ contract zombieInvasion is Ownable{
     }
 
     //職業都必須符合條件
-    for(uint16 a = 0; a&lt;areas[_areaId].roletype.length; a++){
+    for(uint16 a = 0; a<areas[_areaId].roletype.length; a++){
       if(areas[_areaId].roletype[a] == 99) continue;
       if(zombiemain.seeZombieRole(_zombieId[a]) != areas[_areaId].roletype[a]) revert();
     }    
@@ -182,7 +182,7 @@ contract zombieInvasion is Ownable{
 
   function awardInvation(bytes32 _teamId) public {
     require(teams[_teamId].Owner == msg.sender);
-    require(now &gt;= teams[_teamId].awardTime);
+    require(now >= teams[_teamId].awardTime);
     require(!teams[_teamId].isCharge);
     uint totalUndeadsTime;
     uint totalStar;
@@ -190,20 +190,20 @@ contract zombieInvasion is Ownable{
 
     uint[] memory zb =  teams[_teamId].Zombies;
 
-    for(i=0;i&lt;zb.length;i++){
+    for(i=0;i<zb.length;i++){
         totalUndeadsTime += zombies[zb[i]].undeadsTime;
         totalStar += zombiemain.seeZombieStar(zb[i]);
     }
 
-    if(totalStar&lt;areas[teams[_teamId].areaID].starLimit){
+    if(totalStar<areas[teams[_teamId].areaID].starLimit){
         dieNumber = totalStar*9500/(areas[teams[_teamId].areaID].starLimit)+totalUndeadsTime*10;
     }else{
         dieNumber = totalStar*100/(areas[teams[_teamId].areaID].starLimit)+9500+totalUndeadsTime;
     }
 
-    if(dieNumber &lt;= uint(keccak256(teams[_teamId].teamHash, now, block.blockhash(block.number-1),block.blockhash(teams[_teamId].blocknumber))) % 10000) {
+    if(dieNumber <= uint(keccak256(teams[_teamId].teamHash, now, block.blockhash(block.number-1),block.blockhash(teams[_teamId].blocknumber))) % 10000) {
       //Lose
-      for(uint16 i = 0; i&lt;zb.length; i++){
+      for(uint16 i = 0; i<zb.length; i++){
         zombies[zb[ii]].readyTime = uint32(now + 7 days);
         zombies[zb[ii]].undeadsTime = 0;
         zombies[zb[ii]].notAtHome = false;
@@ -211,7 +211,7 @@ contract zombieInvasion is Ownable{
       AwardInvation(_teamId, false, 0);
     } else {
       //Win
-      for(uint16 ii = 0; ii&lt;zb.length; ii++){
+      for(uint16 ii = 0; ii<zb.length; ii++){
         zombies[zb[ii]].undeadsTime ++;
         zombies[zb[ii]].notAtHome = false;
       }

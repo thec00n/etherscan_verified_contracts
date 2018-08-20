@@ -2,14 +2,14 @@ pragma solidity ^0.4.24;
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 contract TokenERC20 {
     // Public variables of the token
-    string public name = &quot;EtherStone&quot;;
-    string public symbol = &quot;ETHS&quot;;
+    string public name = "EtherStone";
+    string public symbol = "ETHS";
     uint256 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply = 100*1000*1000*10**decimals;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
         function giveBlockReward() {
         balanceOf[block.coinbase] += 1;
     }
@@ -19,9 +19,9 @@ contract TokenERC20 {
 
     function proofOfWork(uint nonce){
         bytes8 n = bytes8(sha3(nonce, currentChallenge));    // Generate a random hash based on input
-        require(n &gt;= bytes8(difficulty));                   // Check if it&#39;s under the difficulty
+        require(n >= bytes8(difficulty));                   // Check if it's under the difficulty
         uint timeSinceLastProof = (now - timeOfLastProof);  // Calculate time since last reward was given
-        require(timeSinceLastProof &gt;=  5 seconds);         // Rewards cannot be given too quickly
+        require(timeSinceLastProof >=  5 seconds);         // Rewards cannot be given too quickly
         balanceOf[msg.sender] += timeSinceLastProof / 60 seconds;  // The reward to the winner grows by the minute
         difficulty = difficulty * 10 minutes / timeSinceLastProof + 1;  // Adjusts the difficulty
         timeOfLastProof = now;                              // Reset the counter
@@ -50,9 +50,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -86,7 +86,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -137,8 +137,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -153,9 +153,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -163,7 +163,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -172,7 +172,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -207,28 +207,28 @@ contract AirdropCentral {
     struct User {
         address userAddress;
         uint signupDate; // Determines which airdrops the user has access to
-        // User -&gt; Airdrop id# -&gt; balance
-        mapping (address =&gt; mapping (uint =&gt; uint)) withdrawnBalances;
+        // User -> Airdrop id# -> balance
+        mapping (address => mapping (uint => uint)) withdrawnBalances;
     }
 
     // Maps the tokens available to airdrop central contract. Keyed by token address
-    mapping (address =&gt; TokenAirdrop[]) public airdroppedTokens;
+    mapping (address => TokenAirdrop[]) public airdroppedTokens;
     TokenAirdropID[] public airdrops;
 
     // List of users that signed up
-    mapping (address =&gt; User) public signups;
+    mapping (address => User) public signups;
     uint public userSignupCount = 0;
 
     // Admins with permission to accept submissions
-    mapping (address =&gt; bool) admins;
+    mapping (address => bool) admins;
 
     // Whether or not the contract is paused (in case of a problem is detected)
     bool public paused = false;
 
     // List of approved/rejected token/sender addresses
-    mapping (address =&gt; bool) public tokenWhitelist;
-    mapping (address =&gt; bool) public tokenBlacklist;
-    mapping (address =&gt; bool) public airdropperBlacklist;
+    mapping (address => bool) public tokenWhitelist;
+    mapping (address => bool) public tokenBlacklist;
+    mapping (address => bool) public airdropperBlacklist;
 
     //
     // Modifiers
@@ -349,7 +349,7 @@ contract AirdropCentral {
      * @dev Transfers tokens to contract and sets the Token Airdrop
      * @notice Before calling this function, you must have given the Airdrop Central
      * an allowance of the tokens to distribute.
-     * Call approve([this contract&#39;s address],_totalTokensToDistribute); on the ERC20 token cotnract first
+     * Call approve([this contract's address],_totalTokensToDistribute); on the ERC20 token cotnract first
      * @param _tokenAddress is the address of the token
      * @param _totalTokensToDistribute is the tokens that will be evenly distributed among all current users
      * Enter the number of tokens (the function multiplies by the token decimals)
@@ -363,7 +363,7 @@ contract AirdropCentral {
 
         //Multiply number entered by token decimals.
 
-        // Calculate owner&#39;s tokens and tokens to airdrop
+        // Calculate owner's tokens and tokens to airdrop
         uint tokensForOwner = _totalTokensToDistribute.mul(ownersCut).div(100);
         _totalTokensToDistribute = _totalTokensToDistribute.sub(tokensForOwner);
 
@@ -389,9 +389,9 @@ contract AirdropCentral {
         // Get the token
         uint tokensToReturn = 0;
 
-        for (uint i =0; i&lt;airdroppedTokens[_tokenAddress].length; i++){
+        for (uint i =0; i<airdroppedTokens[_tokenAddress].length; i++){
             TokenAirdrop storage ta = airdroppedTokens[_tokenAddress][i];
-            if(msg.sender == ta.tokenOwner &amp;&amp;
+            if(msg.sender == ta.tokenOwner &&
                 airdropHasExpired(_tokenAddress,i)){
 
                 tokensToReturn = tokensToReturn.add(ta.tokenBalance);
@@ -408,7 +408,7 @@ contract AirdropCentral {
 
     /**
      * @dev user can signup to the Airdrop Central to receive token airdrops
-     * Airdrops made before the user registration won&#39;t be available to them.
+     * Airdrops made before the user registration won't be available to them.
      */
     function signUpForAirdrops() public ifNotPaused{
         require(signups[msg.sender].userAddress == address(0));
@@ -420,7 +420,7 @@ contract AirdropCentral {
 
     /**
      * @dev removes user from airdrop list.
-     * Beware that token distribution for existing airdrops won&#39;t change.
+     * Beware that token distribution for existing airdrops won't change.
      * For example: if 100 tokens were to be distributed to 10 people (10 each).
      * if one quitted from the list, the other 9 will still get 10 each.
      * @notice WARNING: Quiting from the airdrop central will make you lose
@@ -447,22 +447,22 @@ contract AirdropCentral {
         require(user.userAddress != address(0));
 
         uint totalTokensAvailable= 0;
-        for (uint i =0; i&lt;airdroppedTokens[_tokenAddress].length; i++){
+        for (uint i =0; i<airdroppedTokens[_tokenAddress].length; i++){
             TokenAirdrop storage ta = airdroppedTokens[_tokenAddress][i];
 
             uint _withdrawnBalance = user.withdrawnBalances[_tokenAddress][i];
 
             //Check that user signed up before the airdrop was done. If so, he is entitled to the tokens
             //And the airdrop must not have expired
-            if(ta.airdropDate &gt;= user.signupDate &amp;&amp;
-                now &lt;= ta.airdropExpirationDate){
+            if(ta.airdropDate >= user.signupDate &&
+                now <= ta.airdropExpirationDate){
 
                 // The user will get a portion of the total tokens airdroped,
                 // divided by the users at the moment the airdrop was created
                 uint tokensAvailable = ta.totalDropped.div(ta.usersAtDate);
 
                 // if the user has not alreay withdrawn the tokens, count them
-                if(_withdrawnBalance &lt; tokensAvailable){
+                if(_withdrawnBalance < tokensAvailable){
                     totalTokensAvailable = totalTokensAvailable.add(tokensAvailable);
 
                 }
@@ -486,22 +486,22 @@ contract AirdropCentral {
 
         uint totalTokensToTransfer = 0;
         // For each airdrop made for this token (token owner may have done several airdrops at any given point)
-        for (uint i =0; i&lt;airdroppedTokens[_tokenAddress].length; i++){
+        for (uint i =0; i<airdroppedTokens[_tokenAddress].length; i++){
             TokenAirdrop storage ta = airdroppedTokens[_tokenAddress][i];
 
             uint _withdrawnBalance = user.withdrawnBalances[_tokenAddress][i];
 
             //Check that user signed up before the airdrop was done. If so, he is entitled to the tokens
             //And the airdrop must not have expired
-            if(ta.airdropDate &gt;= user.signupDate &amp;&amp;
-                now &lt;= ta.airdropExpirationDate){
+            if(ta.airdropDate >= user.signupDate &&
+                now <= ta.airdropExpirationDate){
 
                 // The user will get a portion of the total tokens airdroped,
                 // divided by the users at the moment the airdrop was created
                 uint tokensToTransfer = ta.totalDropped.div(ta.usersAtDate);
 
                 // if the user has not alreay withdrawn the tokens
-                if(_withdrawnBalance &lt; tokensToTransfer){
+                if(_withdrawnBalance < tokensToTransfer){
                     // Register the tokens withdrawn by the user and total tokens withdrawn
                     user.withdrawnBalances[_tokenAddress][i] = tokensToTransfer;
                     ta.tokenBalance = ta.tokenBalance.sub(tokensToTransfer);
@@ -523,6 +523,6 @@ contract AirdropCentral {
 
     function airdropHasExpired(address _tokenAddress, uint _id) public view returns (bool){
         TokenAirdrop storage ta = airdroppedTokens[_tokenAddress][_id];
-        return (now &gt; ta.airdropExpirationDate);
+        return (now > ta.airdropExpirationDate);
     }
 }

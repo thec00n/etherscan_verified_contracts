@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,9 +290,9 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts/BigToken.sol
 
 contract BigToken is MintableToken {
-    string public constant name = &quot;BigToken&quot;;
+    string public constant name = "BigToken";
 
-    string public constant symbol = &quot;BTK&quot;;
+    string public constant symbol = "BTK";
 
     uint8 public decimals = 18;
 
@@ -397,9 +397,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -449,14 +449,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -478,7 +478,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -512,7 +512,7 @@ contract RefundVaultWithCommission is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   address public walletFees;
   State public state;
@@ -569,7 +569,7 @@ contract RefundVaultWithCommission is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsaleWithCommission is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -581,12 +581,12 @@ contract RefundableCrowdsaleWithCommission is FinalizableCrowdsale {
   RefundVaultWithCommission public vault;
 
   function RefundableCrowdsaleWithCommission(uint256 _goal,address _walletFees) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVaultWithCommission(wallet,_walletFees);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -613,7 +613,7 @@ contract RefundableCrowdsaleWithCommission is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -630,7 +630,7 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
     uint256 public maxTokenSupply = 0;
 
     // version cache buster
-    string public constant version = &quot;v1.3&quot;;
+    string public constant version = "v1.3";
 
     // pending contract owner - initialised later by the constructor
     address public pendingOwner;
@@ -643,7 +643,7 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
     uint256 public reservedAmount;
 
     // white list for KYC
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     // white listing admin - initialised later by the constructor
     address public whiteListingAdmin;
@@ -669,12 +669,12 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
     Crowdsale(_startTime, _endTime, _rate, _wallet) public
     {
         require(_pendingOwner != address(0));
-        require(_minimumAmount &gt;= 0);
-        require(_maxTokenSupply &gt; 0);
-        require(_reservedAmount &gt; 0 &amp;&amp; _reservedAmount &lt; _maxTokenSupply);
+        require(_minimumAmount >= 0);
+        require(_maxTokenSupply > 0);
+        require(_reservedAmount > 0 && _reservedAmount < _maxTokenSupply);
 
         // make sure that the refund goal is within the max supply, using the default rate,  without the reserved supply
-        require(_goal.mul(rate) &lt;= _maxTokenSupply.sub(_reservedAmount));
+        require(_goal.mul(rate) <= _maxTokenSupply.sub(_reservedAmount));
 
         pendingOwner = _pendingOwner;
         minimumAmount = _minimumAmount;
@@ -729,20 +729,20 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
     function validPurchase() internal view returns (bool) {
 
         // make sure we accept only the minimum contribution
-        bool minAmount = (msg.value &gt;= minimumAmount);
+        bool minAmount = (msg.value >= minimumAmount);
 
         // cap crowdsaled to a maxTokenSupply
         // make sure we can not mint more token than expected
-        bool lessThanMaxSupply = (token.totalSupply() + msg.value.mul(rate)) &lt;= maxTokenSupply;
+        bool lessThanMaxSupply = (token.totalSupply() + msg.value.mul(rate)) <= maxTokenSupply;
 
         // make sure that the purchase follow each rules to be valid
-        return super.validPurchase() &amp;&amp; minAmount &amp;&amp; lessThanMaxSupply;
+        return super.validPurchase() && minAmount && lessThanMaxSupply;
     }
 
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        bool capReached = token.totalSupply() &gt;= maxTokenSupply;
+        bool capReached = token.totalSupply() >= maxTokenSupply;
         return super.hasEnded() || capReached;
     }
     /**
@@ -788,7 +788,7 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
       *
       */
     function changeMinimumAmount(uint256 _minimumAmount) onlyOwner public {
-        require(_minimumAmount &gt; 0);
+        require(_minimumAmount > 0);
         minimumAmount = _minimumAmount;
     }
 
@@ -802,7 +802,7 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
       *
       */
     function changeRate(uint256 _rate) onlyOwner public {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
@@ -813,8 +813,8 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
       *
       */
     function changeDates(uint256 _startTime, uint256 _endTime) onlyOwner public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         startTime = _startTime;
         endTime = _endTime;
     }
@@ -872,7 +872,7 @@ contract BigTokenCrowdSale is Crowdsale, RefundableCrowdsaleWithCommission {
         // Add an event here to keep track
 
         // add the whitelisted addresses to the mapping
-        for (uint i = 0; i &lt; _address.length; i++) {
+        for (uint i = 0; i < _address.length; i++) {
             whitelist[_address[i]] = value;
         }
     }

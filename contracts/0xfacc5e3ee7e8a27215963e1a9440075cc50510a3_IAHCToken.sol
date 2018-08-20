@@ -40,7 +40,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; (balances[_to] + _value) &gt; balances[_to] &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && (balances[_to] + _value) > balances[_to] && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -72,15 +72,15 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
 contract IAHCToken is StandardToken {
 
-    string public constant name   = &quot;IAHC&quot;;
-    string public constant symbol = &quot;IAHC&quot;;
+    string public constant name   = "IAHC";
+    string public constant symbol = "IAHC";
 
     uint8 public constant decimals = 8;
     uint  public constant decimals_multiplier = 100000000;
@@ -107,8 +107,8 @@ contract IAHCToken is StandardToken {
     uint public icoEndTime            = 1529712000; //23.06.2018
     uint public guarenteedPaybackTime = 1532304000; //23.07.2018
 
-    mapping(address =&gt; bool) public whiteList;
-    mapping(address =&gt; uint) public icoContributions;
+    mapping(address => bool) public whiteList;
+    mapping(address => uint) public icoContributions;
 
     function IAHCToken(){
         icoOwner = msg.sender;
@@ -123,7 +123,7 @@ contract IAHCToken is StandardToken {
 
     //unfroze tokens if some left unsold from ico
     function icoEndUnfrozeTokens() public onlyOwner() returns(bool) {
-        require(now &gt;= icoEndTime &amp;&amp; icoLeftSupply &gt; 0);
+        require(now >= icoEndTime && icoLeftSupply > 0);
 
         balances[icoOwner] += icoLeftSupply;
         icoLeftSupply = 0;
@@ -131,8 +131,8 @@ contract IAHCToken is StandardToken {
 
     //if soft cap is not reached - participant can ask ethers back
     function minCapFail() public {
-        require(now &gt;= icoEndTime &amp;&amp; icoSoldCap &lt; icoMinCap);
-        require(icoContributions[msg.sender] &gt; 0 &amp;&amp; balances[msg.sender] &gt; 0);
+        require(now >= icoEndTime && icoSoldCap < icoMinCap);
+        require(icoContributions[msg.sender] > 0 && balances[msg.sender] > 0);
 
         uint tokens = balances[msg.sender];
         balances[icoOwner] += tokens;
@@ -148,19 +148,19 @@ contract IAHCToken is StandardToken {
     // for info
     function getCurrentStageDiscount() public constant returns (uint) {
         uint discount = 0;
-        if (now &gt;= icoEndTime &amp;&amp; now &lt; preSaleListTime) {
+        if (now >= icoEndTime && now < preSaleListTime) {
             discount = 40;
-        } else if (now &lt; crowdSaleTime) {
+        } else if (now < crowdSaleTime) {
             discount = 28;
-        } else if (now &lt; crowdSaleEndTime) {
+        } else if (now < crowdSaleEndTime) {
             discount = 10;
         }
         return discount;
     }
 
     function safePayback(address receiver, uint amount) public onlyOwner() {
-        require(now &gt;= guarenteedPaybackTime);
-        require(icoSoldCap &lt; icoMinCap);
+        require(now >= guarenteedPaybackTime);
+        require(icoSoldCap < icoMinCap);
 
         receiver.transfer(amount);
     }
@@ -168,20 +168,20 @@ contract IAHCToken is StandardToken {
     // count tokens i could buy now
     function countTokens(uint paid, address sender) public constant returns (uint) {
         uint discount = 0;
-        if (now &lt; preSaleListTime) {
+        if (now < preSaleListTime) {
             require(whiteList[sender]);
-            require(paid &gt;= whiteListMinAmount);
+            require(paid >= whiteListMinAmount);
             discount = 40;
-        } else if (now &lt; crowdSaleTime) {
-            require(paid &gt;= preSaleMinAmount);
+        } else if (now < crowdSaleTime) {
+            require(paid >= preSaleMinAmount);
             discount = 28;
-        } else if (now &lt; crowdSaleEndTime) {
-            require(paid &gt;= crowdSaleMinAmount);
+        } else if (now < crowdSaleEndTime) {
+            require(paid >= crowdSaleMinAmount);
             discount = 10;
         }
 
         uint tokens = paid / icoTokensPrice;
-        if (discount &gt; 0) {
+        if (discount > 0) {
             tokens = tokens / (100 - discount) * 100;
         }
         return tokens;
@@ -193,11 +193,11 @@ contract IAHCToken is StandardToken {
     }
 
     function contribute() public payable {
-        require(now &gt;= whiteListTime &amp;&amp; now &lt; icoEndTime &amp;&amp; icoLeftSupply &gt; 0);
+        require(now >= whiteListTime && now < icoEndTime && icoLeftSupply > 0);
 
         uint tokens = countTokens(msg.value, msg.sender);
         uint payback = 0;
-        if (icoLeftSupply &lt; tokens) {
+        if (icoLeftSupply < tokens) {
             //not enough tokens so we need to return some ethers back
             payback = msg.value - (msg.value / tokens) * icoLeftSupply;
             tokens = icoLeftSupply;
@@ -211,10 +211,10 @@ contract IAHCToken is StandardToken {
 
         Transfer(icoOwner, msg.sender, tokens);
 
-        if (icoSoldCap &gt;= icoMinCap) {
+        if (icoSoldCap >= icoMinCap) {
             ESCROW_WALLET.transfer(this.balance);
         }
-        if (payback &gt; 0) {
+        if (payback > 0) {
             msg.sender.transfer(payback);
         }
     }

@@ -1,6 +1,6 @@
 /* Simple token - simple token for PreICO and ICO
-   Copyright (C) 2017  Sergey Sherkunov &lt;<span class="__cf_email__" data-cfemail="79151c101715180e0c1739151c101715180e0c1757160b1e">[email&#160;protected]</span>&gt;
-   Copyright (C) 2017  OOM.AG &lt;<span class="__cf_email__" data-cfemail="9cf5f2faf3dcf3f3f1b2fdfb">[email&#160;protected]</span>&gt;
+   Copyright (C) 2017  Sergey Sherkunov <<span class="__cf_email__" data-cfemail="79151c101715180e0c1739151c101715180e0c1757160b1e">[email protected]</span>>
+   Copyright (C) 2017  OOM.AG <<span class="__cf_email__" data-cfemail="9cf5f2faf3dcf3f3f1b2fdfb">[email protected]</span>>
 
    This file is part of simple token.
 
@@ -15,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 pragma solidity ^0.4.18;
 
@@ -23,11 +23,11 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         c = a - b;
     }
@@ -49,7 +49,7 @@ library SafeMath {
     function min(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a;
 
-        if(a &gt; b)
+        if(a > b)
            c = b;
     }
 }
@@ -69,9 +69,9 @@ contract ABXToken {
 
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     event Transfer(address indexed oldTokensHolder,
                    address indexed newTokensHolder, uint256 tokensNumber);
@@ -120,7 +120,7 @@ contract ABXToken {
         decimals = _decimals;
         totalSupply = _totalSupply.mul(10 ** uint256(decimals));
 
-        require(decimals &lt;= 77);
+        require(decimals <= 77);
 
         balanceOf[this] = totalSupply;
     }

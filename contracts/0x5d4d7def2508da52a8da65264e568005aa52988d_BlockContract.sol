@@ -8,19 +8,19 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a); 
+    assert(b <= a); 
     return a - b; 
   } 
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) { 
-    uint256 c = a + b; assert(c &gt;= a);
+    uint256 c = a + b; assert(c >= a);
     return c;
   }
  
@@ -30,16 +30,16 @@ library SafeMath {
 contract BlockContract {
 
     uint256 totalSupply_; 
-    string public constant name = &quot;BlockContract&quot;;
-    string public constant symbol = &quot;BLOCK&quot;;
+    string public constant name = "BlockContract";
+    string public constant symbol = "BLOCK";
     uint8 public constant decimals = 18;
     uint256 public constant initialSupply = 100000000*(10**uint256(decimals));
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    mapping (address =&gt; uint256) balances; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances; 
+    mapping (address => mapping (address => uint256)) allowed;
     
     function totalSupply() public view returns (uint256){
         return totalSupply_;
@@ -55,7 +55,7 @@ contract BlockContract {
 
     function transfer(address _to, uint256 _value) public returns (bool ) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value); 
+        require(balances[msg.sender] >= _value); 
         balances[msg.sender] = balances[msg.sender] - _value; 
         balances[_to] = balances[_to] + _value; 
         emit Transfer(msg.sender, _to, _value);
@@ -70,8 +70,8 @@ contract BlockContract {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]); 
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]); 
         balances[_from] = balances[_from] - _value; 
         balances[_to] = balances[_to] + _value; 
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value; 
@@ -87,7 +87,7 @@ contract BlockContract {
  
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) { 
     uint oldValue = allowed[msg.sender][_spender]; 
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
 
         allowed[msg.sender][_spender] = 0;
     } 

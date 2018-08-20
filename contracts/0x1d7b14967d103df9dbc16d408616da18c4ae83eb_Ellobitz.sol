@@ -29,7 +29,7 @@ contract Whitelisted is Owned {
 
     event WhitelistModified(address indexed who, bool inWhitelist);
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     constructor() public {
         whitelist[msg.sender] = true;
@@ -61,8 +61,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -96,9 +96,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -133,7 +133,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -162,7 +162,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -178,10 +178,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -202,7 +202,7 @@ contract Ellobitz is TokenERC20, Owned, Whitelisted {
     uint256 internal mineSize;
     bool internal firstChip;
     
-    mapping(address =&gt; uint) public lastChipTime;
+    mapping(address => uint) public lastChipTime;
 
     event MineFound(address indexed chipper, uint256 activeMine);
     event MineChipped(address indexed chipper, uint256 indexed activeMine, uint256 amount);
@@ -216,8 +216,8 @@ contract Ellobitz is TokenERC20, Owned, Whitelisted {
         uint256 _firstChipBonus,
         uint _chipSpeed
     ) {
-        require(_minMineSize &lt;= _maxMineSize, &quot;Smallest mine size smaller than largest mine size&quot;);
-        require(_chipSize + _firstChipBonus &lt;= _minMineSize, &quot;First chip would exhaust mine&quot;);
+        require(_minMineSize <= _maxMineSize, "Smallest mine size smaller than largest mine size");
+        require(_chipSize + _firstChipBonus <= _minMineSize, "First chip would exhaust mine");
         _;
     }
 
@@ -261,11 +261,11 @@ contract Ellobitz is TokenERC20, Owned, Whitelisted {
 
     function chip(uint256 mineNumber) public whitelisted {
         
-        require(mineNumber == activeMine, &quot;Chipped wrong mine&quot;);
-        require(now &gt;= lastChipTime[msg.sender] + chipSpeed, &quot;Chipped too fast&quot;);
+        require(mineNumber == activeMine, "Chipped wrong mine");
+        require(now >= lastChipTime[msg.sender] + chipSpeed, "Chipped too fast");
         
         uint256 thisChipNoCap = firstChip ? firstChipBonus + chipSize : chipSize;
-        uint256 thisChip = thisChipNoCap &gt; mineSize ? mineSize : thisChipNoCap;
+        uint256 thisChip = thisChipNoCap > mineSize ? mineSize : thisChipNoCap;
 
         if (firstChip) {
             emit MineFound(msg.sender, activeMine);
@@ -277,7 +277,7 @@ contract Ellobitz is TokenERC20, Owned, Whitelisted {
         firstChip = false;
         emit MineChipped(msg.sender, activeMine, thisChip);
 
-        if (mineSize &lt;= 0) {
+        if (mineSize <= 0) {
             emit MineExausted(msg.sender, activeMine);
             _resetMine();
         }

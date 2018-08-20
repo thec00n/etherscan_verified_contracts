@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="771418190316140337150e0312031f12055914181a">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="771418190316140337150e0312031f12055914181a">[email protected]</a>
 
 contract BytetherOV {
     enum ResultCode { 
@@ -20,8 +20,8 @@ contract BytetherOV {
     uint public total = 0;
     bool public maintaining = false;
     
-    // bitcoin_address -&gt; OwnerShip list
-    mapping(string =&gt; OwnerShip[]) items;
+    // bitcoin_address -> OwnerShip list
+    mapping(string => OwnerShip[]) items;
 
     // modifier
     modifier onlyOwner() {
@@ -37,7 +37,7 @@ contract BytetherOV {
     modifier onlyModerators() {
         if (msg.sender != owner) {
             bool found = false;
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == msg.sender) {
                     found = true;
                     break;
@@ -71,7 +71,7 @@ contract BytetherOV {
     }
     
     function AddModerator(address _newModerator) onlyOwner public {
-        for (uint index = 0; index &lt; moderators.length; index++) {
+        for (uint index = 0; index < moderators.length; index++) {
             if (moderators[index] == _newModerator) {
                 return;
             }
@@ -81,12 +81,12 @@ contract BytetherOV {
     
     function RemoveModerator(address _oldModerator) onlyOwner public {
         uint foundIndex = 0;
-        for (; foundIndex &lt; moderators.length; foundIndex++) {
+        for (; foundIndex < moderators.length; foundIndex++) {
             if (moderators[foundIndex] == _oldModerator) {
                 break;
             }
         }
-        if (foundIndex &lt; moderators.length) {
+        if (foundIndex < moderators.length) {
             moderators[foundIndex] = moderators[moderators.length-1];
             delete moderators[moderators.length-1];
             moderators.length--;
@@ -97,7 +97,7 @@ contract BytetherOV {
     function UnclockVerification(string _btcAddress, uint _verifyCode) onlyModerators public returns(ResultCode) {
         // remove from the verify code list
         var array = items[_btcAddress];
-        for (uint i = 0; i&lt;array.length; i++){
+        for (uint i = 0; i<array.length; i++){
             if (array[i].verifyCode == _verifyCode) {
                 if (i != array.length-1) {
                     array[i] = array[array.length-1];
@@ -114,19 +114,19 @@ contract BytetherOV {
     // public function
     function GetOwnership(string _btcAddress, uint _verifyCode) constant public returns(address, string) {
         var array = items[_btcAddress];
-        for (uint i=0; i&lt;array.length; i++) {
+        for (uint i=0; i<array.length; i++) {
             if (array[i].verifyCode == _verifyCode) {
                 var item = array[i];
                 return (item.myEther, item.referCode);
             }
         }
-        return (0, &quot;&quot;);
+        return (0, "");
     }
     
     function AddOwnership(string _btcAddress, uint _verifyCode, string _referCode) isActive public returns(ResultCode) {
         bytes32 btcAddressHash = keccak256(_btcAddress);
         var array = items[_btcAddress];
-        for (uint i=0; i&lt;array.length; i++) {
+        for (uint i=0; i<array.length; i++) {
             if (array[i].verifyCode == _verifyCode) {
                 LogCreate(btcAddressHash, _verifyCode, ResultCode.ERROR_EXIST);
                 return ResultCode.ERROR_EXIST;
@@ -147,7 +147,7 @@ contract BytetherOV {
     function GetVerifyCodes(string _btcAddress) constant public returns(uint[]) {
         var array = items[_btcAddress];
         uint[] memory verifyCodes = new uint[](array.length);
-        for (uint i=0; i&lt;array.length; i++) {
+        for (uint i=0; i<array.length; i++) {
             verifyCodes[i] = array[i].verifyCode;
         }
         return verifyCodes;

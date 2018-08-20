@@ -51,7 +51,7 @@ contract SNcoin_AgentsSale is Owned {
     bool public fundingEnabled;
     uint public totalCollected;         // In wei
     TokenPriveProviderInterface public tokenPriceProvider;         // In wei
-    mapping(address =&gt; address) agents;
+    mapping(address => address) agents;
 
     // ------------------------------------------------------------------------
     // Constructor
@@ -88,7 +88,7 @@ contract SNcoin_AgentsSale is Owned {
     function updateTokenPriceProvider(address _newTokenPriceProvider) public onlyOwner {
         require(_newTokenPriceProvider != 0);
         tokenPriceProvider = TokenPriveProviderInterface(_newTokenPriceProvider);
-        require(tokenPriceProvider.tokenPrice() &gt; 10**9);
+        require(tokenPriceProvider.tokenPrice() > 10**9);
         return;
     }
 
@@ -101,9 +101,9 @@ contract SNcoin_AgentsSale is Owned {
     function buy(uint _discount, bytes _promocode) public payable {
         require (fundingEnabled);
         uint tokenPrice = tokenPriceProvider.tokenPrice(); // In wei
-        require (tokenPrice &gt; 10**9);
-        require (msg.value &gt;= tokenPrice);
-        require (_discount &lt;= 20);
+        require (tokenPrice > 10**9);
+        require (msg.value >= tokenPrice);
+        require (_discount <= 20);
         require (_promocode.length == 97);
 
 
@@ -119,7 +119,7 @@ contract SNcoin_AgentsSale is Owned {
         }
 
         // https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27) {
+        if (v < 27) {
           v += 27;
         }
         require ((v == 27) || (v == 28));
@@ -144,7 +144,7 @@ contract SNcoin_AgentsSale is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept plain ETH transfers
+    // Don't accept plain ETH transfers
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

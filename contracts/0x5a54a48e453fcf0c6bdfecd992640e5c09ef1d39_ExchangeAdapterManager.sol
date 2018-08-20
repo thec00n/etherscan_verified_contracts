@@ -51,7 +51,7 @@ contract ExchangeInterface is ComponentInterface {
      * For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return boolean whether or not the trading pair is supported by this exchange provider
      */
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId)
@@ -63,7 +63,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the _amount.
      * @param uint _minimumRate The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here.
      * @return boolean whether or not the trade succeeded.
      */
@@ -79,7 +79,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of tokens to sell.
      * @param uint _minimumRate The minimum amount of ETH to receive for 1 ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -109,7 +109,7 @@ contract KyberNetworkInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -205,10 +205,10 @@ contract OlympusExchangeAdapterManagerInterface is Ownable {
 
 contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
 
-    mapping(bytes32 =&gt; OlympusExchangeAdapterInterface) public exchangeAdapters;
+    mapping(bytes32 => OlympusExchangeAdapterInterface) public exchangeAdapters;
     bytes32[] public exchanges;
     uint private genExchangeId = 1000;
-    mapping(address=&gt;uint) private adapters;
+    mapping(address=>uint) private adapters;
     ERC20Extended private constant ETH_TOKEN_ADDRESS = ERC20Extended(0x00eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee);
 
 
@@ -261,12 +261,12 @@ contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
         return(0, 0);
     }
 
-    /// &gt;0  : found exchangeId
+    /// >0  : found exchangeId
     /// ==0 : not found
     function pickExchange(ERC20Extended _token, uint _amount, uint _rate, bool _isBuying) public view returns (bytes32 exchangeId) {
 
         int maxRate = -1;
-        for (uint i = 0; i &lt; exchanges.length; i++) {
+        for (uint i = 0; i < exchanges.length; i++) {
 
             bytes32 id = exchanges[i];
             OlympusExchangeAdapterInterface adapter = exchangeAdapters[id];
@@ -287,11 +287,11 @@ contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
                 continue;
             }
 
-            if (resultRate &lt; int(_rate)) {
+            if (resultRate < int(_rate)) {
                 continue;
             }
 
-            if (resultRate &gt;= maxRate) {
+            if (resultRate >= maxRate) {
                 maxRate = resultRate;
                 return id;
             }
@@ -301,7 +301,7 @@ contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
 
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId) external view returns (bool) {
         OlympusExchangeAdapterInterface adapter;
-        if(_exchangeId != &quot;&quot;){
+        if(_exchangeId != ""){
             adapter = exchangeAdapters[id];
             if(!adapter.isEnabled()){
                 return false;
@@ -311,7 +311,7 @@ contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
             }
             return false;
         }
-        for (uint i = 0; i &lt; exchanges.length; i++) {
+        for (uint i = 0; i < exchanges.length; i++) {
             bytes32 id = exchanges[i];
             adapter = exchangeAdapters[id];
             if (!adapter.isEnabled()) {
@@ -326,6 +326,6 @@ contract ExchangeAdapterManager is OlympusExchangeAdapterManagerInterface {
     }
 
     function isValidAdapter(address _adapter) external view returns (bool) {
-        return adapters[_adapter] &gt; 0;
+        return adapters[_adapter] > 0;
     }
 }

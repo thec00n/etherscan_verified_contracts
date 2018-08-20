@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 contract CaterToken {
 
-    string public name = &quot;Cater&quot;;      //  token name
-    string public symbol = &quot;CATER&quot;;           //  token symbol
+    string public name = "Cater";      //  token name
+    string public symbol = "CATER";           //  token symbol
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -38,8 +38,8 @@ contract CaterToken {
     }
 
     function transfer(address _to, uint256 _value) public isRunning validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -47,9 +47,9 @@ contract CaterToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public isRunning validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -81,7 +81,7 @@ contract CaterToken {
     }
 
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         emit Transfer(msg.sender, 0x0, _value);

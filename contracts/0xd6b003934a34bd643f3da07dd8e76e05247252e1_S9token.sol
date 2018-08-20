@@ -2,11 +2,11 @@ pragma solidity ^0.4.15;
 contract S9token {
 	
 	address owner;
-	string public name=&quot;S9token&quot;;
+	string public name="S9token";
 	uint8 public constant decimals = 0;
-	string public constant version = &quot;1&quot;;
+	string public constant version = "1";
 	uint256 _totalSupply;
-	mapping (address =&gt; uint256) public balances;
+	mapping (address => uint256) public balances;
 
 	function S9token() {
 		owner=msg.sender;
@@ -26,9 +26,9 @@ contract S9token {
 
     function transfer(address _to, uint256 _amount) returns (bool success){
     	require(msg.sender==owner);
-		if (balances[msg.sender] &gt;= _amount 
-			&amp;&amp; _amount &gt; 0 
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to]){
+		if (balances[msg.sender] >= _amount 
+			&& _amount > 0 
+			&& balances[_to] + _amount > balances[_to]){
 			balances[msg.sender] -= _amount;
 			balances[_to] += _amount;
 			return true;

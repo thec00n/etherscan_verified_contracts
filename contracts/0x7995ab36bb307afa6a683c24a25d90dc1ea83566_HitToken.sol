@@ -23,9 +23,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -56,7 +56,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -116,7 +116,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 public totalSupply_;
 
@@ -133,9 +133,9 @@ contract BasicToken is ERC20Basic {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(msg.data.length&gt;=(2*32)+4);
+        require(msg.data.length>=(2*32)+4);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -165,7 +165,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -176,8 +176,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -191,14 +191,14 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _spender, uint256 _value) public returns (bool) {
         require(_value==0||allowed[msg.sender][_spender]==0);
-        require(msg.data.length&gt;=(2*32)+4);
+        require(msg.data.length>=(2*32)+4);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -331,23 +331,23 @@ contract PausableToken is StandardToken, Pausable {
  **/
 contract  Lock is PausableToken{
 
-    mapping(address =&gt; uint256) public teamLockTime; // Lock start time
-    mapping(address =&gt; uint256) public fundLockTime; // Lock start time
+    mapping(address => uint256) public teamLockTime; // Lock start time
+    mapping(address => uint256) public fundLockTime; // Lock start time
     uint256 public issueDate =0 ;//issueDate
-    mapping(address =&gt; uint256) public teamLocked;// Total Team lock 
-    mapping(address =&gt; uint256) public fundLocked;// Total fund lock
-    mapping(address =&gt; uint256) public teamUsed;   // Team Used
-    mapping(address =&gt; uint256) public fundUsed;   // Fund Used
-    mapping(address =&gt; uint256) public teamReverse;   // Team reserve
-    mapping(address =&gt; uint256) public fundReverse;   // Fund reserve
+    mapping(address => uint256) public teamLocked;// Total Team lock 
+    mapping(address => uint256) public fundLocked;// Total fund lock
+    mapping(address => uint256) public teamUsed;   // Team Used
+    mapping(address => uint256) public fundUsed;   // Fund Used
+    mapping(address => uint256) public teamReverse;   // Team reserve
+    mapping(address => uint256) public fundReverse;   // Fund reserve
     
 
    /**
     * @dev Calculate the number of Tokens available for teamAccount
-    * @param _to teamAccount&#39;s address
+    * @param _to teamAccount's address
    */
     function teamAvailable(address _to) internal constant returns (uint256) {
-        require(teamLockTime[_to]&gt;0);
+        require(teamLockTime[_to]>0);
         //Cover the start time of the lock before the release is the issueDate
         if(teamLockTime[_to] != issueDate)
         {
@@ -358,22 +358,22 @@ contract  Lock is PausableToken{
         uint256 time = now1.sub(lockTime);
         uint256 percent = 0;
         //locks team account for 1 year
-        if(time &gt;= 365 days) {
+        if(time >= 365 days) {
           percent =  (time.div(30 days)) .add(1);
         }
-        percent = percent &gt; 12 ? 12 : percent;
+        percent = percent > 12 ? 12 : percent;
         uint256 avail = teamLocked[_to];
-        require(avail&gt;0);
+        require(avail>0);
         avail = avail.mul(percent).div(12).sub(teamUsed[_to]);
         return avail ;
     }
     
     /**
      * @dev Get the number of Tokens available for the current private fund account 
-     * @param _to mainFundAccount&#39;s address
+     * @param _to mainFundAccount's address
     **/
     function fundAvailable(address _to) internal constant returns (uint256) {
-        require(fundLockTime[_to]&gt;0);
+        require(fundLockTime[_to]>0);
         //Cover the start time of the lock before the release is the issueDate
         if(fundLockTime[_to] != issueDate)
         {
@@ -386,33 +386,33 @@ contract  Lock is PausableToken{
         //Unlocked 25%
         uint256 percent = 250;
         //After more than 30 days, 75% of the minutes and 150 days of unlocking 5/1000 per day
-        if(time &gt;= 30 days) {
+        if(time >= 30 days) {
             percent = percent.add( (((time.sub(30 days)).div (1 days)).add (1)).mul (5));
         }
-        percent = percent &gt; 1000 ? 1000 : percent;
+        percent = percent > 1000 ? 1000 : percent;
         uint256 avail = fundLocked[_to];
-        require(avail&gt;0);
+        require(avail>0);
         avail = avail.mul(percent).div(1000).sub(fundUsed[_to]);
         return avail ;
     }
     /**
       * @dev Team lock
-      * @param _to  team lock account&#39;s address
+      * @param _to  team lock account's address
       * @param _value the number of Token
      */
     function teamLock(address _to,uint256 _value) internal {
-        require(_value&gt;0);
+        require(_value>0);
         teamLocked[_to] = teamLocked[_to].add(_value);
         teamReverse[_to] = teamReverse[_to].add(_value);
         teamLockTime[_to] = block.timestamp;  // Lock start time
     }
     /**
       * @dev  Privately offered fund lock
-      * @param _to  Privately offered fund account&#39;s address
+      * @param _to  Privately offered fund account's address
       * @param _value the number of Token
      */
     function fundLock(address _to,uint256 _value) internal {
-        require(_value&gt;0);
+        require(_value>0);
         fundLocked[_to] =fundLocked[_to].add(_value);
         fundReverse[_to] = fundReverse[_to].add(_value);
         if(fundLockTime[_to] == 0)
@@ -434,26 +434,26 @@ contract  Lock is PausableToken{
              totalAvail = availReverse;
         }
         else{
-            //the number of Tokens available for teamAccount&#39;Locked part
+            //the number of Tokens available for teamAccount'Locked part
              availTeam = teamAvailable(msg.sender);
              //the number of Tokens available for teamAccount
              totalAvail = availTeam.add(availReverse);
         }
-        require(_value &lt;= totalAvail);
+        require(_value <= totalAvail);
         bool ret = super.transfer(_to,_value);
-        if(ret == true &amp;&amp; issueDate&gt;0) {
-            //If over the teamAccount&#39;s released part
-            if(_value &gt; availTeam){
+        if(ret == true && issueDate>0) {
+            //If over the teamAccount's released part
+            if(_value > availTeam){
                 teamUsed[msg.sender] = teamUsed[msg.sender].add(availTeam);
                  teamReverse[msg.sender] = teamReverse[msg.sender].sub(availTeam);
           }
-            //If in the teamAccount&#39;s released part
+            //If in the teamAccount's released part
             else{
                 teamUsed[msg.sender] = teamUsed[msg.sender].add(_value);
                 teamReverse[msg.sender] = teamReverse[msg.sender].sub(_value);
             }
         }
-        if(teamUsed[msg.sender] &gt;= teamLocked[msg.sender]){
+        if(teamUsed[msg.sender] >= teamLocked[msg.sender]){
             delete teamLockTime[msg.sender];
             delete teamReverse[msg.sender];
         }
@@ -476,26 +476,26 @@ contract  Lock is PausableToken{
              totalAvail = availReverse;
         }
         else{
-            //the number of Tokens available for teamAccount&#39;Locked part
+            //the number of Tokens available for teamAccount'Locked part
              availTeam = teamAvailable(_from);
               //the number of Tokens available for teamAccount
              totalAvail = availTeam.add(availReverse);
         }
-       require(_value &lt;= totalAvail);
+       require(_value <= totalAvail);
         bool ret = super.transferFrom(_from,_to,_value);
-        if(ret == true &amp;&amp; issueDate&gt;0) {
-            //If over the teamAccount&#39;s released part
-            if(_value &gt; availTeam){
+        if(ret == true && issueDate>0) {
+            //If over the teamAccount's released part
+            if(_value > availTeam){
                 teamUsed[_from] = teamUsed[_from].add(availTeam);
                 teamReverse[_from] = teamReverse[_from].sub(availTeam);
            }
-            //If in the teamAccount&#39;s released part
+            //If in the teamAccount's released part
             else{
                 teamUsed[_from] = teamUsed[_from].add(_value);
                 teamReverse[_from] = teamReverse[_from].sub(_value);
             }
         }
-        if(teamUsed[_from] &gt;= teamLocked[_from]){
+        if(teamUsed[_from] >= teamLocked[_from]){
             delete teamLockTime[_from];
             delete teamReverse[_from];
         }
@@ -517,27 +517,27 @@ contract  Lock is PausableToken{
              totalAvail = availReverse;
         }
         else{
-             require(now&gt;issueDate);
-            //the number of Tokens available for mainFundAccount&#39;Locked part
+             require(now>issueDate);
+            //the number of Tokens available for mainFundAccount'Locked part
              availFund = fundAvailable(msg.sender);
              //the number of Tokens available for mainFundAccount
              totalAvail = availFund.add(availReverse);
         }
-        require(_value &lt;= totalAvail);
+        require(_value <= totalAvail);
         bool ret = super.transfer(_to,_value);
-        if(ret == true &amp;&amp; issueDate&gt;0) {
-            //If over the mainFundAccount&#39;s released part
-            if(_value &gt; availFund){
+        if(ret == true && issueDate>0) {
+            //If over the mainFundAccount's released part
+            if(_value > availFund){
                 fundUsed[msg.sender] = fundUsed[msg.sender].add(availFund);
                 fundReverse[msg.sender] = fundReverse[msg.sender].sub(availFund);
              }
-            //If in the mainFundAccount&#39;s released part
+            //If in the mainFundAccount's released part
             else{
                 fundUsed[msg.sender] =  fundUsed[msg.sender].add(_value);
                 fundReverse[msg.sender] = fundReverse[msg.sender].sub(_value);
             }
         }
-        if(fundUsed[msg.sender] &gt;= fundLocked[msg.sender]){
+        if(fundUsed[msg.sender] >= fundLocked[msg.sender]){
             delete fundLockTime[msg.sender];
             delete fundReverse[msg.sender];
         }
@@ -561,28 +561,28 @@ contract  Lock is PausableToken{
              totalAvail = availReverse;
         }
         else{
-             require(now&gt;issueDate);
-             //the number of Tokens available for mainFundAccount&#39;Locked part
+             require(now>issueDate);
+             //the number of Tokens available for mainFundAccount'Locked part
              availFund = fundAvailable(_from);
               //the number of Tokens available for mainFundAccount
              totalAvail = availFund.add(availReverse);
          }
       
-        require(_value &lt;= totalAvail);
+        require(_value <= totalAvail);
         bool ret = super.transferFrom(_from,_to,_value);
-        if(ret == true &amp;&amp; issueDate&gt;0) {
-           //If over the mainFundAccount&#39;s released part
-            if(_value &gt; availFund){
+        if(ret == true && issueDate>0) {
+           //If over the mainFundAccount's released part
+            if(_value > availFund){
                 fundUsed[_from] = fundUsed[_from].add(availFund);
                 fundReverse[_from] = fundReverse[_from].sub(availFund);
             }
-            //If in the mainFundAccount&#39;s released part
+            //If in the mainFundAccount's released part
             else{
                 fundUsed[_from] =  fundUsed[_from].add(_value);
                 fundReverse[_from] = fundReverse[_from].sub(_value);
             }
         }
-        if(fundUsed[_from] &gt;= fundLocked[_from]){
+        if(fundUsed[_from] >= fundLocked[_from]){
             delete fundLockTime[_from];
         }
         return ret;
@@ -623,10 +623,10 @@ contract HitToken is Lock {
 
     /**
      *  @dev Contract constructor
-     *  @param _name token&#39;s name
-     *  @param _symbol token&#39;s symbol
-     *  @param _decimals token&#39;s decimals
-     *  @param _initialSupply token&#39;s initialSupply
+     *  @param _name token's name
+     *  @param _symbol token's symbol
+     *  @param _decimals token's decimals
+     *  @param _initialSupply token's initialSupply
      *  @param _teamAccount  teamAccount
      *  @param _subFundAccount subFundAccount
      *  @param _mainFundAccount mainFundAccount
@@ -664,7 +664,7 @@ contract HitToken is Lock {
     }
 
     /**
-      * @dev destroy the msg sender&#39;s token onlyOwner
+      * @dev destroy the msg sender's token onlyOwner
       * @param _value the number of the destroy token
      */
     function burn(uint256 _value) public onlyOwner returns (bool) {
@@ -686,9 +686,9 @@ contract HitToken is Lock {
             require(msg.sender != mainFundAccount);
         }
 
-        if(teamLockTime[msg.sender] &gt; 0){
+        if(teamLockTime[msg.sender] > 0){
              return super.teamLockTransfer(_to,_value);
-            }else if(fundLockTime[msg.sender] &gt; 0){
+            }else if(fundLockTime[msg.sender] > 0){
                 return super.fundLockTransfer(_to,_value);
             }else {
                return super.transfer(_to, _value);
@@ -709,9 +709,9 @@ contract HitToken is Lock {
             require(_from != mainFundAccount);
         }
       
-        if(teamLockTime[_from] &gt; 0){
+        if(teamLockTime[_from] > 0){
             return super.teamLockTransferFrom(_from,_to,_value);
-        }else if(fundLockTime[_from] &gt; 0 ){  
+        }else if(fundLockTime[_from] > 0 ){  
             return super.fundLockTransferFrom(_from,_to,_value);
         }else{
             return super.transferFrom(_from, _to, _value);
@@ -725,9 +725,9 @@ contract HitToken is Lock {
      */
     function mintFund(address _to, uint256 _value) public  returns (bool){
         require(msg.sender==mainFundAccount);
-        require(mainFundBalance &gt;0);
-        require(_value &gt;0);
-        if(_value &lt;= mainFundBalance){
+        require(mainFundBalance >0);
+        require(_value >0);
+        if(_value <= mainFundBalance){
             super.transfer(_to,_value);
             fundLock(_to,_value);
             mainFundBalance = mainFundBalance.sub(_value);

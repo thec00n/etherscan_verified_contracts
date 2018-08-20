@@ -19,8 +19,8 @@ contract Tiles {
     uint public currentGameCost;
     uint public nextGameCost;
 
-    mapping (address =&gt; uint) public pendingWithdrawals;
-    mapping (uint =&gt; address) public gameToWinner;
+    mapping (address => uint) public pendingWithdrawals;
+    mapping (uint => address) public gameToWinner;
 
     struct Tile {
         uint gameClaimed;
@@ -66,12 +66,12 @@ contract Tiles {
     }
 
     function getRightCoordinate(byte input) returns(uint) {
-        byte val = input &amp; byte(15);
+        byte val = input & byte(15);
         return uint(val);
     }
 
     function getLeftCoordinate(byte input) returns(uint) {
-        byte val = input &gt;&gt; 4;
+        byte val = input >> 4;
         return uint(val);
     }
 
@@ -121,8 +121,8 @@ contract Tiles {
 
     function refundTiles() private {
         Tile memory currTile;
-        for (uint i = 0; i &lt; SIDE_LENGTH; i++) {
-            for (uint j = 0; j &lt; SIDE_LENGTH; j++) {
+        for (uint i = 0; i < SIDE_LENGTH; i++) {
+            for (uint j = 0; j < SIDE_LENGTH; j++) {
                 currTile = tiles[i][j];
                 if (currTile.gameClaimed == currentGameNumber) {
                     if (currTile.claimedBy.send(currentGameCost)) {
@@ -136,7 +136,7 @@ contract Tiles {
     function refundWinnings() private {
         address currAddress;
         uint currAmount;
-        for (uint i = STARTING_GAME_NUMBER; i &lt; currentGameNumber; i++) {
+        for (uint i = STARTING_GAME_NUMBER; i < currentGameNumber; i++) {
             currAddress = gameToWinner[i];
             currAmount = pendingWithdrawals[currAddress];
             if (currAmount != 0) {
@@ -159,7 +159,7 @@ contract Tiles {
     }
 
     function updateGameCost(uint newGameCost) onlyOwner returns (bool) {
-        if (newGameCost &gt; 0) {
+        if (newGameCost > 0) {
             nextGameCost = newGameCost;
             willChangeCost = true;
         }

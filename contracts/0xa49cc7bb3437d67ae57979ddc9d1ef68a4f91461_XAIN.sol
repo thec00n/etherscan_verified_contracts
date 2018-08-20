@@ -13,7 +13,7 @@ pragma solidity ^0.4.24;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -30,20 +30,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -81,18 +81,18 @@ contract XAIN_ERC20 is Ownable {
     using SafeMath for uint256;
 
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
 
     // Public variables for the XAIN ERC20 XNP token contract
-    string public constant standard = &quot;XAIN erc20 and Genesis&quot;;
+    string public constant standard = "XAIN erc20 and Genesis";
     uint256 public constant decimals = 18;   // hardcoded to be a constant
-    string public name = &quot;XAIN&quot;;
-    string public symbol = &quot;XNP&quot;;
+    string public name = "XAIN";
+    string public symbol = "XNP";
     uint256 public totalSupply;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -107,7 +107,7 @@ contract XAIN_ERC20 is Ownable {
     function transfer(address _to, uint256 _value) public returns (bool) {
 
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -120,8 +120,8 @@ contract XAIN_ERC20 is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -152,7 +152,7 @@ contract XAIN_ERC20 is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

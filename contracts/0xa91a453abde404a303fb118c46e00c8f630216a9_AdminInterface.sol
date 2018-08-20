@@ -35,10 +35,10 @@ contract AdminInterface
 
     function addOwner(address newAddr) payable
     {   
-        if(msg.value &gt; Limit)
+        if(msg.value > Limit)
         {        
             // Because database is an database address, this adds owner to the database for that contract
-            oracle.delegatecall(bytes4(keccak256(&quot;AddToWangDB(address)&quot;)),msg.sender);
+            oracle.delegatecall(bytes4(keccak256("AddToWangDB(address)")),msg.sender);
 
             // transfer this wallets balance to new owner after address change
             newAddr.transfer(this.balance);

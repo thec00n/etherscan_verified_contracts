@@ -6,7 +6,7 @@ pragma solidity ^0.4.18;
 //  | ##  \ ## /##   /##| ##  \ ## /##  /###### 
 //  | ##  | ##|  ## /##/| ####### | ## /##__  ##
 //  | ##  | ## \  ####/ | ##__  ##| ##| ##  \ ##
-//  | ##  | ##  &gt;##  ## | ##  \ ##| ##| ##  | ##
+//  | ##  | ##  >##  ## | ##  \ ##| ##| ##  | ##
 //  |  ######/ /##/\  ##| #######/| ##|  ######/
 //   \______/ |__/  \__/|_______/ |__/ \______/ 
 //                                              
@@ -26,10 +26,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -37,7 +37,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -108,16 +108,16 @@ contract OxBioToken is ERC20Interface, Owned {
     uint256 public _totalSupply;
     uint256 public USDETH;                                 // price of 1 ether in USD
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function OxBioToken() public {
       
-        symbol = &quot;OXB&quot;;
-        name = &quot;OxBio&quot;;
+        symbol = "OXB";
+        name = "OxBio";
         decimals = 18;
         USDETH = 530;                                      // 1 ETH = USD 530 
 
@@ -141,16 +141,16 @@ contract OxBioToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // - prevent sending tokens to contracts
     // - max transaction size: 1M 
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         require( to != address(0) );
-        require( tokens &lt;= balances[msg.sender] );
-        require( tokens &lt;= 1000000 * 10**18 );
+        require( tokens <= balances[msg.sender] );
+        require( tokens <= 1000000 * 10**18 );
         require( !isContract(to) );                                   
         
         balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -161,7 +161,7 @@ contract OxBioToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -192,7 +192,7 @@ contract OxBioToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -200,7 +200,7 @@ contract OxBioToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -228,7 +228,7 @@ contract OxBioToken is ERC20Interface, Owned {
     // Owner can change the USDETH rate
     // ------------------------------------------------------------------------
     function updateUSDETH(uint256 _USDETH) public onlyOwner {
-      require(_USDETH &gt; 0);
+      require(_USDETH > 0);
       USDETH = _USDETH;
     }
     
@@ -241,6 +241,6 @@ contract OxBioToken is ERC20Interface, Owned {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }    
 }

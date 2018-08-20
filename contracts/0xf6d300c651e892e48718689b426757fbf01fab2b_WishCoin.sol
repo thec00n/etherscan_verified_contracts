@@ -12,8 +12,8 @@ contract WishCoin
     uint256 public wishes;
     bool public ICO;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -22,8 +22,8 @@ contract WishCoin
     {
         owner = msg.sender;
         supply = 0; 
-        name = &quot;WishCoin&quot;;     
-        symbol = &quot;WISH&quot;;
+        name = "WishCoin";     
+        symbol = "WISH";
         decimals = 8;
         cryptaurus = 0;
         wishes = 0;
@@ -37,7 +37,7 @@ contract WishCoin
     
     function transfer(address _to, uint256 _value) returns (bool success) 
     {
-        if(msg.data.length &lt; (2 * 32) + 4) 
+        if(msg.data.length < (2 * 32) + 4) 
         { 
             throw; 
         }
@@ -49,10 +49,10 @@ contract WishCoin
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) 
+        if (sufficientFunds && !overflowed) 
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -68,7 +68,7 @@ contract WishCoin
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
     {
-        if(msg.data.length &lt; (3 * 32) + 4) 
+        if(msg.data.length < (3 * 32) + 4) 
         { 
             throw; 
         }
@@ -81,11 +81,11 @@ contract WishCoin
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) 
+        if (sufficientFunds && sufficientAllowance && !overflowed) 
         {
             balances[_to] += _value;
             balances[_from] -= _value;
@@ -103,7 +103,7 @@ contract WishCoin
     
     function approve(address _spender, uint256 _value) returns (bool success) 
     {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) 
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) 
         { 
             return false; 
         }
@@ -121,11 +121,11 @@ contract WishCoin
 
     
 
-    /*Some magic you won&#39;t understand*/
+    /*Some magic you won't understand*/
     function UseWish(string _words) returns (bool success) 
     {
         uint256 length = bytes(_words).length;
-        bool sufficientFunds = balances[msg.sender] &gt;= 100000000;
+        bool sufficientFunds = balances[msg.sender] >= 100000000;
         if(sufficientFunds)
         {
             uint256 ExecutableMagicNumber = length * 77 + 8;    //Providing magic to the words
@@ -154,7 +154,7 @@ contract WishCoin
     
     function Buy() payable
     {
-        if(msg.value &lt; 2000000000000000) 
+        if(msg.value < 2000000000000000) 
         { 
             throw; 
         }

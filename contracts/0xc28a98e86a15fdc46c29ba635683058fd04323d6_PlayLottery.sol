@@ -34,7 +34,7 @@ contract WorldLotteryFast is owned{
 	event Transfer(address indexed from, address indexed to, uint256 value);
 
     function clearTickets() public {
-        for (uint i = 0 ; i &lt; countTickets ; i++ )
+        for (uint i = 0 ; i < countTickets ; i++ )
             tickets[i] = 0;
     }
 
@@ -74,9 +74,9 @@ contract PlayLottery is WorldLotteryFast{
 
 function adopt(uint ticketId) public payable returns (uint) {
 		
-		require(msg.value&gt;=ticketPrice);
+		require(msg.value>=ticketPrice);
 
-		require(ticketId &gt;= 0 &amp;&amp; ticketId &lt;= countTickets);
+		require(ticketId >= 0 && ticketId <= countTickets);
 		
 		if ( tickets[ticketId] != 0x0000000000000000000000000000000000000000 ) return 0;                        		    // Check if ticket already buyed
         JackPot += toJackPotfromEveryTicket;                                			    								            // send tokens to JackPot

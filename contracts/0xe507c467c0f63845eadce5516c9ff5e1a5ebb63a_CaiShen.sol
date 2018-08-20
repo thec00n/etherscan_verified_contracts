@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -63,9 +63,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -73,7 +73,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -82,7 +82,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract CaiShen is Ownable {
                             //   Unix timestamp
         uint amount;        // 5 The amount of ETH
         bool redeemed;      // 6 Whether the funds have already been redeemed
-        string giverName;   // 7 The giver&#39;s name
+        string giverName;   // 7 The giver's name
         string message;     // 8 A message from the giver to the recipient
         uint timestamp;     // 9 The timestamp of when the gift was given
     }
@@ -114,10 +114,10 @@ contract CaiShen is Ownable {
 
     // Maps each recipient address to a list of giftIDs of Gifts they have
     // received.
-    mapping (address =&gt; uint[]) public recipientToGiftIds;
+    mapping (address => uint[]) public recipientToGiftIds;
 
     // Maps each gift ID to its associated gift.
-    mapping (uint =&gt; Gift) public giftIdToGift;
+    mapping (uint => Gift) public giftIdToGift;
 
     event Constructed (address indexed by, uint indexed amount);
 
@@ -157,7 +157,7 @@ contract CaiShen is Ownable {
     //// Contract functions:
 
     // Call this function while sending ETH to give a gift.
-    // @recipient: the recipient&#39;s address
+    // @recipient: the recipient's address
     // @expiry: the Unix timestamp of the expiry datetime.
     // @giverName: the name of the giver
     // @message: a personal message
@@ -171,12 +171,12 @@ contract CaiShen is Ownable {
 
         // The gift must be a positive amount of ETH
         uint amount = msg.value;
-        require(amount &gt; 0);
+        require(amount > 0);
         
         // The expiry datetime must be in the future.
         // The possible drift is only 12 minutes.
         // See: https://consensys.github.io/smart-contract-best-practices/recommendations/#timestamp-dependence
-        require(expiry &gt; now);
+        require(expiry > now);
 
         // The giver and the recipient must be different addresses
         require(giver != recipient);
@@ -185,18 +185,18 @@ contract CaiShen is Ownable {
         require(recipient != address(0));
 
         // Make sure nextGiftId is 0 or positive, or this contract is buggy
-        assert(nextGiftId &gt;= 0);
+        assert(nextGiftId >= 0);
 
-        // Calculate the contract owner&#39;s fee
+        // Calculate the contract owner's fee
         uint feeTaken = fee(amount);
-        assert(feeTaken &gt;= 0);
+        assert(feeTaken >= 0);
 
         // Increment feesGathered
         feesGathered = SafeMath.add(feesGathered, feeTaken);
 
         // Shave off the fee from the amount
         uint amtGiven = SafeMath.sub(amount, feeTaken);
-        assert(amtGiven &gt; 0);
+        assert(amtGiven > 0);
 
         // If a gift with this new gift ID already exists, this contract is buggy.
         assert(giftIdToGift[nextGiftId].exists == false);
@@ -225,7 +225,7 @@ contract CaiShen is Ownable {
     // Tested in test/test_redeem.js
     function redeem (uint giftId) public {
         // The giftID should be 0 or positive
-        require(giftId &gt;= 0);
+        require(giftId >= 0);
 
         // The gift must exist and must not have already been redeemed
         require(isValidGift(giftIdToGift[giftId]));
@@ -235,14 +235,14 @@ contract CaiShen is Ownable {
         require(recipient == msg.sender);
 
         // The current datetime must be the same or after the expiry timestamp
-        require(now &gt;= giftIdToGift[giftId].expiry);
+        require(now >= giftIdToGift[giftId].expiry);
 
         //// If the following assert statements are triggered, this contract is
         //// buggy.
 
         // The amount must be positive because this is required in give()
         uint amount = giftIdToGift[giftId].amount;
-        assert(amount &gt; 0);
+        assert(amount > 0);
 
         // The giver must not be the recipient because this was asserted in give()
         address giver = giftIdToGift[giftId].giver;
@@ -262,12 +262,12 @@ contract CaiShen is Ownable {
         Redeemed(giftId, giftIdToGift[giftId].giver, recipient, amount);
     }
 
-    // Calculate the contract owner&#39;s fee
+    // Calculate the contract owner's fee
     // Tested in test/test_fee.js
     function fee (uint amount) public pure returns (uint) {
-        if (amount &lt;= 0.01 ether) {
+        if (amount <= 0.01 ether) {
             return 0;
-        } else if (amount &gt; 0.01 ether) {
+        } else if (amount > 0.01 ether) {
             return SafeMath.div(amount, 100);
         }
     }
@@ -280,7 +280,7 @@ contract CaiShen is Ownable {
         uint amount = feesGathered;
 
         // Make sure that the amount is positive
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // Set the feesGathered state variable to 0
         feesGathered = 0;
@@ -294,6 +294,6 @@ contract CaiShen is Ownable {
     // Returns true only if the gift exists and has not already been
     // redeemed
     function isValidGift(Gift gift) private pure returns (bool) {
-        return gift.exists == true &amp;&amp; gift.redeemed == false;
+        return gift.exists == true && gift.redeemed == false;
     }
 }

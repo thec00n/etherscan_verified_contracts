@@ -4,7 +4,7 @@ library AddressUtils {
     function isContract(address addr) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -12,7 +12,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -94,8 +94,8 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     uint public bidEMONTMin;
     uint public bidEMONTIncrement;
     
-    mapping(uint32 =&gt; BiddingInfo) bids;
-    mapping(uint8 =&gt; uint32[]) sites;
+    mapping(uint32 => BiddingInfo) bids;
+    mapping(uint8 => uint32[]) sites;
 
     // event
     event EventPlaceBid(address indexed bidder, uint8 siteId, uint32 bidId, uint amount);
@@ -107,7 +107,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     }
     
     modifier validETHSiteId(uint8 _siteId) {
-        require(_siteId &gt; 0 &amp;&amp; _siteId &lt;= NO_ETH_SITE);
+        require(_siteId > 0 && _siteId <= NO_ETH_SITE);
         _;
     }
     modifier validEMONTSiteId(uint8 _siteId) {
@@ -116,15 +116,15 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     }
     modifier onlyRunning {
         require(!isMaintaining);
-        require(block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt; endTime);
+        require(block.timestamp >= startTime && block.timestamp < endTime);
         _;
     }
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators public {
         // only allow withdraw after the presale 
-        if (block.timestamp &lt; endTime)
+        if (block.timestamp < endTime)
             revert();
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -132,10 +132,10 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     
     function withdrawToken(address _sendTo, uint _amount) onlyModerators requireTokenContract external {
         // only allow withdraw after the presale 
-        if (block.timestamp &lt; endTime)
+        if (block.timestamp < endTime)
             revert();
         ERC20Interface token = ERC20Interface(tokenContract);
-        if (_amount &gt; token.balanceOf(address(this))) {
+        if (_amount > token.balanceOf(address(this))) {
             revert();
         }
         token.transfer(_sendTo, _amount);
@@ -145,7 +145,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     // public functions
     
     function EtheremonAdventurePresale(uint _bidETHMin, uint _bidETHIncrement, uint _bidEMONTMin, uint _bidEMONTIncrement, uint _startTime, uint _endTime, address _tokenContract) public {
-        if (_startTime &gt;= _endTime) revert();
+        if (_startTime >= _endTime) revert();
         
         startTime = _startTime;
         endTime = _endTime;
@@ -160,7 +160,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     function placeETHBid(uint8 _siteId) onlyRunning payable external validETHSiteId(_siteId) {
         // check valid bid 
         if (msg.sender.isContract()) revert();
-        if (msg.value &lt; bidETHMin) revert();
+        if (msg.value < bidETHMin) revert();
         
         uint index = 0;
         totalBid += 1;
@@ -172,25 +172,25 @@ contract EtheremonAdventurePresale is BasicAccessControl {
         bid.siteId = _siteId;
         
         uint32[] storage siteBids = sites[_siteId];
-        if (siteBids.length &gt;= MAX_BID_PER_SITE) {
+        if (siteBids.length >= MAX_BID_PER_SITE) {
             // find lowest bid
             uint lowestIndex = 0;
             BiddingInfo storage currentBid = bids[siteBids[0]];
             BiddingInfo storage lowestBid = currentBid;
-            for (index = 0; index &lt; siteBids.length; index++) {
+            for (index = 0; index < siteBids.length; index++) {
                 currentBid = bids[siteBids[index]];
                 // check no same ether address 
                 if (currentBid.bidder == msg.sender) {
                     revert();
                 }
-                if (lowestBid.amount == 0 || currentBid.amount &lt; lowestBid.amount || (currentBid.amount == lowestBid.amount &amp;&amp; currentBid.bidId &gt; lowestBid.bidId)) {
+                if (lowestBid.amount == 0 || currentBid.amount < lowestBid.amount || (currentBid.amount == lowestBid.amount && currentBid.bidId > lowestBid.bidId)) {
                     lowestIndex = index;
                     lowestBid = currentBid;
                 }
             }
             
             // verify bidIncrement
-            if (msg.value &lt; lowestBid.amount + bidETHIncrement)
+            if (msg.value < lowestBid.amount + bidETHIncrement)
                 revert();
             
             // update latest bidder
@@ -199,7 +199,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
             // refund for the lowest 
             lowestBid.bidder.transfer(lowestBid.amount);
         } else {
-            for (index = 0; index &lt; siteBids.length; index++) {
+            for (index = 0; index < siteBids.length; index++) {
                 if (bids[siteBids[index]].bidder == msg.sender)
                     revert();
             }
@@ -213,32 +213,32 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     function placeEMONTBid(address _bidder, uint8 _siteId, uint _bidAmount) requireTokenContract onlyRunning onlyModerators external validEMONTSiteId(_siteId) {
         // check valid bid 
         if (_bidder.isContract()) revert();
-        if (_bidAmount &lt; bidEMONTMin) revert();
+        if (_bidAmount < bidEMONTMin) revert();
         
         
         uint index = 0;
         totalBid += 1;
         BiddingInfo storage bid = bids[totalBid];
         uint32[] storage siteBids = sites[_siteId];
-        if (siteBids.length &gt;= MAX_BID_PER_SITE) {
+        if (siteBids.length >= MAX_BID_PER_SITE) {
             // find lowest bid
             uint lowestIndex = 0;
             BiddingInfo storage currentBid = bids[siteBids[0]];
             BiddingInfo storage lowestBid = currentBid;
-            for (index = 0; index &lt; siteBids.length; index++) {
+            for (index = 0; index < siteBids.length; index++) {
                 currentBid = bids[siteBids[index]];
                 // check no same ether address 
                 if (currentBid.bidder == _bidder) {
                     revert();
                 }
-                if (lowestBid.amount == 0 || currentBid.amount &lt; lowestBid.amount || (currentBid.amount == lowestBid.amount &amp;&amp; currentBid.bidId &gt; lowestBid.bidId)) {
+                if (lowestBid.amount == 0 || currentBid.amount < lowestBid.amount || (currentBid.amount == lowestBid.amount && currentBid.bidId > lowestBid.bidId)) {
                     lowestIndex = index;
                     lowestBid = currentBid;
                 }
             }
             
             // verify bidIncrement
-            if (_bidAmount &lt; lowestBid.amount + bidEMONTIncrement)
+            if (_bidAmount < lowestBid.amount + bidEMONTIncrement)
                 revert();
             
             // update latest bidder
@@ -252,7 +252,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
             ERC20Interface token = ERC20Interface(tokenContract);
             token.transfer(lowestBid.bidder, lowestBid.amount);
         } else {
-            for (index = 0; index &lt; siteBids.length; index++) {
+            for (index = 0; index < siteBids.length; index++) {
                 if (bids[siteBids[index]].bidder == _bidder)
                     revert();
             }
@@ -278,7 +278,7 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     
     function getBidBySiteIndex(uint8 _siteId, uint _index) constant external returns(address bidder, uint32 bidId, uint8 siteId, uint amount, uint time) {
         bidId = sites[_siteId][_index];
-        if (bidId &gt; 0) {
+        if (bidId > 0) {
             BiddingInfo memory bid = bids[bidId];
             bidder = bid.bidder;
             siteId = bid.siteId;
@@ -294,8 +294,8 @@ contract EtheremonAdventurePresale is BasicAccessControl {
     function getLowestBid(uint8 _siteId) constant external returns(uint lowestAmount) {
         uint32[] storage siteBids = sites[_siteId];
         lowestAmount = 0;
-        for (uint index = 0; index &lt; siteBids.length; index++) {
-            if (lowestAmount == 0 || bids[siteBids[index]].amount &lt; lowestAmount) {
+        for (uint index = 0; index < siteBids.length; index++) {
+            if (lowestAmount == 0 || bids[siteBids[index]].amount < lowestAmount) {
                 lowestAmount = bids[siteBids[index]].amount;
             }
         }

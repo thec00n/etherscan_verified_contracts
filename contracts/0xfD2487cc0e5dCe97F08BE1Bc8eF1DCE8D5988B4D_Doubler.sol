@@ -27,7 +27,7 @@ contract Doubler {
     }
     
     function enter() {
-        if (msg.value &lt; 1 ether) {
+        if (msg.value < 1 ether) {
             msg.sender.send(msg.value);
             return;
         }
@@ -50,7 +50,7 @@ contract Doubler {
         }
 
 	// if there are enough ether on the balance we can pay out to an earlier participant
-        if (balance &gt; participants[payoutIdx].amount * 2) {
+        if (balance > participants[payoutIdx].amount * 2) {
             uint transactionAmount = 2 * (participants[payoutIdx].amount - participants[payoutIdx].amount / 10);
             participants[payoutIdx].etherAddress.send(transactionAmount);
 

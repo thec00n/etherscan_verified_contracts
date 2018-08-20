@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -104,8 +104,8 @@ contract ERC20 {
 contract BioToken is ERC20, Ownable {
     using SafeMath for uint;
 
-    string public name = &quot;BIONT Token&quot;;
-    string public symbol = &quot;BIONT&quot;;
+    string public name = "BIONT Token";
+    string public symbol = "BIONT";
     uint public decimals = 18;
 
     bool public tradingStarted = false;
@@ -132,9 +132,9 @@ contract BioToken is ERC20, Ownable {
     address public authorizerOne;
     address public authorizerTwo;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) authorizedWithdrawal;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) authorizedWithdrawal;
 
     event Mint(address indexed to, uint256 value);
     event MintFinished();
@@ -145,7 +145,7 @@ contract BioToken is ERC20, Ownable {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
             revert();
         }
         _;
@@ -171,7 +171,7 @@ contract BioToken is ERC20, Ownable {
      * @dev modifier to allow token creation only when the sale IS ON
      */
     modifier saleIsOn() {
-        require(now &gt; start &amp;&amp; now &lt; initialSaleEndDate &amp;&amp; salePaused == false);
+        require(now > start && now < initialSaleEndDate && salePaused == false);
         _;
     }
 
@@ -179,7 +179,7 @@ contract BioToken is ERC20, Ownable {
      * @dev modifier to allow token creation only when the hardcap has not been reached
      */
     modifier isUnderHardCap() {
-        require(tokenTotalSupply &lt;= hardcap);
+        require(tokenTotalSupply <= hardcap);
         _;
     }
 
@@ -202,7 +202,7 @@ contract BioToken is ERC20, Ownable {
     function mint(address _to, uint256 _amount) private canMint returns(bool) {
         tokenTotalSupply = tokenTotalSupply.add(_amount);
 
-        require(tokenTotalSupply &lt;= hardcap);
+        require(tokenTotalSupply <= hardcap);
 
         balances[_to] = balances[_to].add(_amount);
         noContributors = noContributors.add(1);
@@ -220,7 +220,7 @@ contract BioToken is ERC20, Ownable {
     function masterMint(address _to, uint256 _amount) public canMint onlyOwner returns(bool) {
         tokenTotalSupply = tokenTotalSupply.add(_amount);
 
-        require(tokenTotalSupply &lt;= hardcap);
+        require(tokenTotalSupply <= hardcap);
 
         balances[_to] = balances[_to].add(_amount);
         noContributors = noContributors.add(1);
@@ -245,13 +245,13 @@ contract BioToken is ERC20, Ownable {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) hasStartedTrading returns (bool success) {
-        // don&#39;t allow the vault to make transfers
-        if (msg.sender == lockedVault &amp;&amp; now &lt; fiveYearGrace) {
+        // don't allow the vault to make transfers
+        if (msg.sender == lockedVault && now < fiveYearGrace) {
             revert();
         }
 
         // owner needs to wait as well
-        if (msg.sender == ownerVault &amp;&amp; now &lt; ownerGrace) {
+        if (msg.sender == ownerVault && now < ownerGrace) {
             revert();
         }
 
@@ -269,19 +269,19 @@ contract BioToken is ERC20, Ownable {
      * @param _value uint256 the amout of tokens to be transfered
      */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) hasStartedTrading returns (bool success) {
-        if (_from == lockedVault &amp;&amp; now &lt; fiveYearGrace) {
+        if (_from == lockedVault && now < fiveYearGrace) {
             revert();
         }
 
         // owner needs to wait as well
-        if (_from == ownerVault &amp;&amp; now &lt; ownerGrace) {
+        if (_from == ownerVault && now < ownerGrace) {
             revert();
         }
 
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -298,12 +298,12 @@ contract BioToken is ERC20, Ownable {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function masterTransferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public hasStartedTrading onlyOwner returns (bool success) {
-        if (_from == lockedVault &amp;&amp; now &lt; fiveYearGrace) {
+        if (_from == lockedVault && now < fiveYearGrace) {
             revert();
         }
 
         // owner needs to wait as well
-        if (_from == ownerVault &amp;&amp; now &lt; ownerGrace) {
+        if (_from == ownerVault && now < ownerGrace) {
             revert();
         }
 
@@ -338,7 +338,7 @@ contract BioToken is ERC20, Ownable {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -397,11 +397,11 @@ contract BioToken is ERC20, Ownable {
     }
 
     function setAuthorizedWithdrawalAmount(uint256 _amount) public {
-        if (_amount &lt; 0) {
+        if (_amount < 0) {
             revert();
         }
 
-        if (msg.sender != authorizerOne &amp;&amp; msg.sender != authorizerTwo) {
+        if (msg.sender != authorizerOne && msg.sender != authorizerTwo) {
             revert();
         }
 
@@ -414,13 +414,13 @@ contract BioToken is ERC20, Ownable {
      */
     function withdrawEthereum(uint256 _amount) public onlyOwner {
         require(multisigVault != address(0));
-        require(_amount &lt;= this.balance); // wei
+        require(_amount <= this.balance); // wei
 
         if (authorizedWithdrawal[authorizerOne] != authorizedWithdrawal[authorizerTwo]) {
             revert();
         }
 
-        if (_amount &gt; authorizedWithdrawal[authorizerOne]) {
+        if (_amount > authorizedWithdrawal[authorizerOne]) {
             revert();
         }
 
@@ -477,7 +477,7 @@ contract BioToken is ERC20, Ownable {
     }
 
     function saleOn() constant returns(bool) {
-        return (now &gt; start &amp;&amp; now &lt; initialSaleEndDate &amp;&amp; salePaused == false);
+        return (now > start && now < initialSaleEndDate && salePaused == false);
     }
 
     /**
@@ -489,24 +489,24 @@ contract BioToken is ERC20, Ownable {
         uint period = 1 weeks;
         uint256 tokens;
 
-        if (now &lt;= start + 2 * period) {
+        if (now <= start + 2 * period) {
             bonus = 20;
-        } else if (now &gt; start + 2 * period &amp;&amp; now &lt;= start + 3 * period) {
+        } else if (now > start + 2 * period && now <= start + 3 * period) {
             bonus = 15;
-        } else if (now &gt; start + 3 * period &amp;&amp; now &lt;= start + 4 * period) {
+        } else if (now > start + 3 * period && now <= start + 4 * period) {
             bonus = 10;
-        } else if (now &gt; start + 4 * period &amp;&amp; now &lt;= start + 5 * period) {
+        } else if (now > start + 4 * period && now <= start + 5 * period) {
             bonus = 5;
         }
 
-        // the bonus is in percentages, solidity is doing standard integer division, basically rounding &#39;down&#39;
-        if (bonus &gt; 0) {
+        // the bonus is in percentages, solidity is doing standard integer division, basically rounding 'down'
+        if (bonus > 0) {
             tokens = ethToToken.mul(msg.value) + ethToToken.mul(msg.value).mul(bonus).div(100);
         } else {
             tokens = ethToToken.mul(msg.value);
         }
 
-        if (tokens &lt;= 0) {
+        if (tokens <= 0) {
             revert();
         }
 

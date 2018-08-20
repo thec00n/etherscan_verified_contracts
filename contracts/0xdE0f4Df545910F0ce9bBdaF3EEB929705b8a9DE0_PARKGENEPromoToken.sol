@@ -14,18 +14,18 @@ contract SafeMath {
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -67,8 +67,8 @@ contract TokenERC20 is SafeMath {
     
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) private addressBalance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) private addressBalance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -111,9 +111,9 @@ contract TokenERC20 is SafeMath {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(addressBalance[_from] &gt;= _value);
+        require(addressBalance[_from] >= _value);
         // Check for overflows
-        require(addressBalance[_to] + _value &gt; addressBalance[_to]);
+        require(addressBalance[_to] + _value > addressBalance[_to]);
         // Subtract from the sender
         addressBalance[_from] -= _value;
         // Add the same to the recipient
@@ -144,7 +144,7 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -199,13 +199,13 @@ contract PARKGENEPromoToken is Owned,TokenERC20 {
 * @param _amount The amount of tokens to be transfered 
  */
     function airDrop(address[] _addresses,uint256 _amount) public {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             _transfer(msg.sender,_addresses[i],_amount);
         }
     }
 
 
-    function PARKGENEPromoToken() TokenERC20(1000000000, &quot;PARKGENE Promo Token&quot;, &quot;GENEP&quot;) public {
+    function PARKGENEPromoToken() TokenERC20(1000000000, "PARKGENE Promo Token", "GENEP") public {
         }
 
   /**

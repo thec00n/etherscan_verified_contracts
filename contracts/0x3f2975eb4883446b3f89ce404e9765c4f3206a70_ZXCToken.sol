@@ -18,13 +18,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control 
-* functions, this simplifies the implementation of &quot;user permissions&quot;. 
+* functions, this simplifies the implementation of "user permissions". 
 */ 
 contract Ownable {
     address public owner;
@@ -86,7 +86,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -132,7 +132,7 @@ contract ERC20 is ERC20Basic {
 */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -142,7 +142,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -186,8 +186,8 @@ contract ZXCToken is StandardToken, Ownable {
     using SafeMath for uint256;
 
     // Token Information
-    string  public constant name = &quot;MK7 Coin&quot;;
-    string  public constant symbol = &quot;MK7&quot;;
+    string  public constant name = "MK7 Coin";
+    string  public constant symbol = "MK7";
     uint8   public constant decimals = 18;
 
     // Sale period1.
@@ -232,10 +232,10 @@ contract ZXCToken is StandardToken, Ownable {
     function initialize(address _tokenWallet, address _fundWallet, uint256 _start1, uint256 _end1,
                         uint256 _saleCap, uint256 _totalSupply) public
                         onlyOwner uninitialized {
-        require(_start1 &lt; _end1);
+        require(_start1 < _end1);
         require(_tokenWallet != 0x0);
         require(_fundWallet != 0x0);
-        require(_totalSupply &gt;= _saleCap);
+        require(_totalSupply >= _saleCap);
 
         startDate1 = _start1;
         endDate1 = _end1;
@@ -250,12 +250,12 @@ contract ZXCToken is StandardToken, Ownable {
 
     //Set PreSale Time
     function setPeriod(uint period, uint256 _start, uint256 _end) public onlyOwner {
-        require(_end &gt; _start);
+        require(_end > _start);
         if (period == 1) {
             startDate1 = _start;
             endDate1 = _end;
         }else if (period == 2) {
-            require(_start &gt; endDate1);
+            require(_start > endDate1);
             startDate2 = _start;
             endDate2 = _end;      
         }
@@ -263,7 +263,7 @@ contract ZXCToken is StandardToken, Ownable {
 
     // For pushing pre-ICO records
     function sendForPreICO(address buyer, uint256 amount) public onlyOwner {
-        require(saleCap &gt;= amount);
+        require(saleCap >= amount);
 
         saleCap = saleCap - amount;
         // Transfer
@@ -275,10 +275,10 @@ contract ZXCToken is StandardToken, Ownable {
 
     //Set SaleCap
     function setSaleCap(uint256 _saleCap) public onlyOwner {
-        require(balances[0xb1].add(balances[tokenWallet]).sub(_saleCap) &gt; 0);
+        require(balances[0xb1].add(balances[tokenWallet]).sub(_saleCap) > 0);
         uint256 amount=0;
         //Check SaleCap
-        if (balances[tokenWallet] &gt; _saleCap) {
+        if (balances[tokenWallet] > _saleCap) {
             amount = balances[tokenWallet].sub(_saleCap);
             balances[0xb1] = balances[0xb1].add(amount);
         } else {
@@ -291,11 +291,11 @@ contract ZXCToken is StandardToken, Ownable {
 
     //Calcute Bouns
     function getBonusByTime(uint256 atTime) public constant returns (uint256) {
-        if (atTime &lt; startDate1) {
+        if (atTime < startDate1) {
             return 0;
-        } else if (endDate1 &gt; atTime &amp;&amp; atTime &gt; startDate1) {
+        } else if (endDate1 > atTime && atTime > startDate1) {
             return 5000;
-        } else if (endDate2 &gt; atTime &amp;&amp; atTime &gt; startDate2) {
+        } else if (endDate2 > atTime && atTime > startDate2) {
             return 2500;
         } else {
             return 0;
@@ -305,7 +305,7 @@ contract ZXCToken is StandardToken, Ownable {
     function getBounsByAmount(uint256 etherAmount, uint256 tokenAmount) public pure returns (uint256) {
         //Max 40%
         uint256 bonusRatio = etherAmount.div(500 ether);
-        if (bonusRatio &gt; 4) {
+        if (bonusRatio > 4) {
             bonusRatio = 4;
         }
         uint256 bonusCount = SafeMath.mul(bonusRatio, 10);
@@ -326,10 +326,10 @@ contract ZXCToken is StandardToken, Ownable {
     //Check SaleActive
     function saleActive() public constant returns (bool) {
         return (
-            (getCurrentTimestamp() &gt;= startDate1 &amp;&amp;
-                getCurrentTimestamp() &lt; endDate1 &amp;&amp; saleCap &gt; 0) ||
-            (getCurrentTimestamp() &gt;= startDate2 &amp;&amp;
-                getCurrentTimestamp() &lt; endDate2 &amp;&amp; saleCap &gt; 0)
+            (getCurrentTimestamp() >= startDate1 &&
+                getCurrentTimestamp() < endDate1 && saleCap > 0) ||
+            (getCurrentTimestamp() >= startDate2 &&
+                getCurrentTimestamp() < endDate2 && saleCap > 0)
                 );
     }
    
@@ -344,18 +344,18 @@ contract ZXCToken is StandardToken, Ownable {
         require(saleActive());
         
         //Minum buying limit
-        require(value &gt;= 0.5 ether);
+        require(value >= 0.5 ether);
 
         // Calculate token amount to be purchased
         uint256 bonus = getBonusByTime(getCurrentTimestamp());
         uint256 amount = value.mul(bonus);
-        // If ETH &gt; 500 the add 10%
-        if (getCurrentTimestamp() &gt;= startDate1 &amp;&amp; getCurrentTimestamp() &lt; endDate1) {
+        // If ETH > 500 the add 10%
+        if (getCurrentTimestamp() >= startDate1 && getCurrentTimestamp() < endDate1) {
             uint256 p1Bouns = getBounsByAmount(value, amount);
             amount = amount + p1Bouns;
         }
         // We have enough token to sale
-        require(saleCap &gt;= amount);
+        require(saleCap >= amount);
 
         // Transfer
         balances[tokenWallet] = balances[tokenWallet].sub(amount);

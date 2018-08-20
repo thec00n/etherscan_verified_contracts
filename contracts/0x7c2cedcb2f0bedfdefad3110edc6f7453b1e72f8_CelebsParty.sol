@@ -5,7 +5,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -166,9 +166,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -176,7 +176,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -185,7 +185,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -224,10 +224,10 @@ contract CelebsParty is CelebsPartyGate {
         uint256 lastFameBlock;
     }
 
-    mapping(uint256 =&gt; Category) public categories;
-    mapping(uint256 =&gt; Celebrity) public celebrities;
-    mapping(address =&gt; uint256) public fameBalance;
-    mapping(address =&gt; string) public usernames;
+    mapping(uint256 => Category) public categories;
+    mapping(uint256 => Celebrity) public celebrities;
+    mapping(address => uint256) public fameBalance;
+    mapping(address => string) public usernames;
     
     uint256 public categoryCount;
     uint256 public circulatingFame;
@@ -261,9 +261,9 @@ contract CelebsParty is CelebsPartyGate {
         // ensure current agent is not the current player
         require(oldAgent != newAgent);
         // ensure the player can afford to become the agent
-        require(fameBalance[newAgent] &gt;= _agentAwe);
+        require(fameBalance[newAgent] >= _agentAwe);
         // ensure the sent fame is more than the current agent sent
-        require(_agentAwe &gt; celeb.agentAwe);
+        require(_agentAwe > celeb.agentAwe);
         // if we are pre-drop, reset timer and give some fame back to previous bidder
         if (celeb.isQueued) {
             // reset the queue block timer
@@ -275,11 +275,11 @@ contract CelebsParty is CelebsPartyGate {
                 fameBalance[oldAgent] = SafeMath.add(fameBalance[oldAgent], halfOriginalFame);
             }
         }
-        // set the celebrity&#39;s agent to the current player
+        // set the celebrity's agent to the current player
         celeb.agent = newAgent;
         // set the new min required bid
         celeb.agentAwe = _agentAwe;
-        // deduct the sent fame amount from the current player&#39;s balance
+        // deduct the sent fame amount from the current player's balance
         circulatingFame = SafeMath.sub(circulatingFame, _agentAwe);
         fameBalance[newAgent] = SafeMath.sub(fameBalance[newAgent], _agentAwe);
         AgentHired(_identifier, newAgent, celeb.isQueued);
@@ -295,13 +295,13 @@ contract CelebsParty is CelebsPartyGate {
         // ensure the current player is not the current owner
         require(oldOwner != newOwner);
         // ensure the current player can actually afford to buy the celebrity
-        require(msg.value &gt;= salePrice);
+        require(msg.value >= salePrice);
         address agent = celeb.agent;
         // determine how much fame the celebrity has generated
         uint256 generatedFame = uint256(SafeMath.mul((block.number - celeb.lastFameBlock), celeb.famePerBlock));
         // 91% of the sale will go the previous owner
         uint256 payment = uint256(SafeMath.div(SafeMath.mul(salePrice, 91), 100));
-        // 4% of the sale will go to the celebrity&#39;s agent
+        // 4% of the sale will go to the celebrity's agent
         uint256 agentFee = uint256(SafeMath.div(SafeMath.mul(salePrice, 4), 100));
         // 3% of the sale will go to the developer of the game
         uint256 devFee = uint256(SafeMath.div(SafeMath.mul(salePrice, 3), 100));
@@ -310,7 +310,7 @@ contract CelebsParty is CelebsPartyGate {
         // calculate any excess wei that should be refunded
         uint256 purchaseExcess = SafeMath.sub(msg.value, salePrice);
         if (oldOwner != address(this)) {
-            // only transfer the funds if the contract doesn&#39;t own the celebrity (no pre-mine)
+            // only transfer the funds if the contract doesn't own the celebrity (no pre-mine)
             oldOwner.transfer(payment);
         } else {
             // if this is the first sale, main proceeds go to the prize pool
@@ -324,7 +324,7 @@ contract CelebsParty is CelebsPartyGate {
         uint256 spoils = SafeMath.div(generatedFame, 2);
         circulatingFame = SafeMath.add(circulatingFame, spoils);
         fameBalance[newOwner] = SafeMath.add(fameBalance[newOwner], spoils);
-        // don&#39;t send the dev anything, but make a note of it
+        // don't send the dev anything, but make a note of it
         devBalance = SafeMath.add(devBalance, devFee);
         // increase the prize pool balance
         prizePool = SafeMath.add(prizePool, prizeFee);
@@ -336,7 +336,7 @@ contract CelebsParty is CelebsPartyGate {
         celeb.lastFameBlock = block.number;
         // the fame acquired per block increases by 1 every time the celebrity is purchased
         // this is capped at 100 fpb
-        if(celeb.famePerBlock &lt; 100) {
+        if(celeb.famePerBlock < 100) {
             celeb.famePerBlock = SafeMath.add(celeb.famePerBlock, 1);
         }
         // let the world know the celebrity has been purchased
@@ -408,8 +408,8 @@ contract CelebsParty is CelebsPartyGate {
         Celebrity storage celeb = celebrities[_identifier];
         address player = msg.sender;
         // ensure that enough blocks have been mined (no one has bid within this time period)
-        require(block.number - celeb.lastQueueBlock &gt;= minRequiredBlockQueueTime);
-        // ensure the celebrity isn&#39;t already released!
+        require(block.number - celeb.lastQueueBlock >= minRequiredBlockQueueTime);
+        // ensure the celebrity isn't already released!
         require(celeb.isQueued);
         // ensure current agent is the current player
         require(celeb.agent == player);
@@ -423,7 +423,7 @@ contract CelebsParty is CelebsPartyGate {
         // ensure the current player is the owner of the celebrity
         require(msg.sender == celeb.owner);
         // the player can only set a price that is lower than the current asking price
-        require(_price &lt; celeb.price);
+        require(_price < celeb.price);
         // set the new price 
         celeb.price = _price;
         PriceUpdated(_identifier, _price);
@@ -443,15 +443,15 @@ contract CelebsParty is CelebsPartyGate {
 
     function sendPrize(address _player, uint256 _amount, string _reason) external onlyOwner {
         uint256 newPrizePoolAmount = prizePool - _amount;
-        require(prizePool &gt;= _amount);
-        require(newPrizePoolAmount &gt;= 0);
+        require(prizePool >= _amount);
+        require(newPrizePoolAmount >= 0);
         prizePool = newPrizePoolAmount;
         _player.transfer(_amount);
         PrizeAwarded(_player, _amount, _reason);
     }
 
     function withdrawDevBalance() external onlyOwner {
-        require(devBalance &gt; 0);
+        require(devBalance > 0);
         uint256 withdrawAmount = devBalance;
         devBalance = 0;
         owner.transfer(withdrawAmount);
@@ -462,11 +462,11 @@ contract CelebsParty is CelebsPartyGate {
     ***************************/
 
     function _nextPrice(uint256 currentPrice) internal pure returns(uint256) {
-        if (currentPrice &lt; .1 ether) {
+        if (currentPrice < .1 ether) {
             return currentPrice.mul(200).div(100);
-        } else if (currentPrice &lt; 1 ether) {
+        } else if (currentPrice < 1 ether) {
             return currentPrice.mul(150).div(100);
-        } else if (currentPrice &lt; 10 ether) {
+        } else if (currentPrice < 10 ether) {
             return currentPrice.mul(130).div(100);
         } else {
             return currentPrice.mul(120).div(100);
@@ -485,10 +485,10 @@ contract CelebsParty is CelebsPartyGate {
         celebrityCount = 0;
         minRequiredBlockQueueTime = 1000;
         paused = true;
-        _mintCategory(&quot;business&quot;);
-        _mintCategory(&quot;film/tv&quot;);
-        _mintCategory(&quot;music&quot;);
-        _mintCategory(&quot;personality&quot;);
-        _mintCategory(&quot;tech&quot;);
+        _mintCategory("business");
+        _mintCategory("film/tv");
+        _mintCategory("music");
+        _mintCategory("personality");
+        _mintCategory("tech");
     }
 }

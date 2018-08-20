@@ -9,12 +9,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal pure returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -43,7 +43,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -54,7 +54,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -79,17 +79,17 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract BugXToken is StandardToken, SafeMath {
 
     // metadata
-    string  public constant name = &quot;BUGX Token&quot;;
-    string  public constant symbol = &quot;BUGX&quot;;
+    string  public constant name = "BUGX Token";
+    string  public constant symbol = "BUGX";
     uint256 public constant decimals = 18;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
 
     // contracts
     address public ethFundDeposit;          // deposit address for ETH for BUGX Team.
@@ -131,12 +131,12 @@ contract BugXToken is StandardToken, SafeMath {
 
         currentSupply = formatDecimals(_currentSupply);
         totalSupply = formatDecimals(1500000000);    //1,500,000,000 total supply
-        require(currentSupply &lt;= totalSupply);
+        require(currentSupply <= totalSupply);
     }
 
     modifier isOwner()  {require(msg.sender == ethFundDeposit); _;}
 
-    /// @dev set the token&#39;s tokenExchangeRate,
+    /// @dev set the token's tokenExchangeRate,
     function setTokenExchangeRate(uint256 _tokenExchangeRate) isOwner external {
         require (_tokenExchangeRate != 0);
         require (_tokenExchangeRate != tokenExchangeRate);
@@ -144,18 +144,18 @@ contract BugXToken is StandardToken, SafeMath {
         tokenExchangeRate = _tokenExchangeRate;
     }
 
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        require (value + currentSupply &lt;= totalSupply);
+        require (value + currentSupply <= totalSupply);
         currentSupply = safeAdd(currentSupply, value);
         emit IncreaseSupply(value);
     }
 
-    /// @dev decrease the token&#39;s supply
+    /// @dev decrease the token's supply
     function decreaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        require (value + tokenRaised &lt;= currentSupply);
+        require (value + tokenRaised <= currentSupply);
 
         currentSupply = safeSubtract(currentSupply, value);
         emit DecreaseSupply(value);
@@ -164,8 +164,8 @@ contract BugXToken is StandardToken, SafeMath {
     /// @dev turn on the funding state
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) isOwner external {
         require (!isFunding);
-        require (_fundingStartBlock &lt; _fundingStopBlock);
-        require (block.number &lt; _fundingStartBlock);
+        require (_fundingStartBlock < _fundingStopBlock);
+        require (block.number < _fundingStartBlock);
 
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
@@ -230,11 +230,11 @@ contract BugXToken is StandardToken, SafeMath {
         require (isFunding);
         require (msg.value != 0);
 
-        require (block.number &gt;= fundingStartBlock);
-        require (block.number &lt;= fundingStopBlock);
+        require (block.number >= fundingStartBlock);
+        require (block.number <= fundingStopBlock);
 
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);
-        require (tokens + tokenRaised &lt;= currentSupply);
+        require (tokens + tokenRaised <= currentSupply);
 
         tokenRaised = safeAdd(tokenRaised, tokens);
         balances[msg.sender] += tokens;

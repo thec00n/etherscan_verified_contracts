@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 // ----------------------------------------------------------------------------
-// &#39;Otest1&#39; token contract
+// 'Otest1' token contract
 //
 // Deployed to : 0x19237f2d0Ca50b613E091F3DD355D2A76e1735bc
 // Symbol      : Otest1
@@ -19,10 +19,10 @@ pragma solidity ^0.4.23;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -30,7 +30,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -108,16 +108,16 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => bool) public frozenAccount;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;Otest1&quot;;
-        name = &quot;Otest1 Token&quot;;
+        symbol = "Otest1";
+        name = "Otest1 Token";
         decimals = 18;
         totalSupply = 125 * 10 ** 25;
         ownerAddress = 0x19237f2d0Ca50b613E091F3DD355D2A76e1735bc;
@@ -143,15 +143,15 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(to != 0x0);
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= tokens);
+        require(balances[msg.sender] >= tokens);
         // Check if sender is frozen
         require(!frozenAccount[msg.sender]);     
         // Check if recipient is frozen                
@@ -165,7 +165,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -202,7 +202,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -211,7 +211,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -223,7 +223,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -244,7 +244,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
     // @param value the amount of money to burn
     // ------------------------------------------------------------------------
     function burn(uint256 value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= value);   // Check if the sender has enough
+        require(balances[msg.sender] >= value);   // Check if the sender has enough
         balances[msg.sender] -= value;            // Subtract from the sender
         totalSupply -= value;                     // Updates totalSupply
         emit Burn(msg.sender, value);
@@ -252,7 +252,7 @@ contract Otest1Token is ERC20Interface, Owned, SafeMath {
     }
 
     // ------------------------------------------------------------------------
-    // Freeze account - Prevent | Allow` `target` from sending &amp; receiving tokens
+    // Freeze account - Prevent | Allow` `target` from sending & receiving tokens
     // @param target Address to be frozen
     // @param freeze either to freeze it or not
     // ------------------------------------------------------------------------

@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -102,7 +102,7 @@ contract MainSale is Ownable {
     uint256 public constant decimals = 18;
     uint256 constant dec = 10**decimals;
 
-    mapping(address=&gt;bool) whitelist;
+    mapping(address=>bool) whitelist;
 
     uint256 public startCloseSale = now; // start // 1.07.2018 10:00 UTC
     uint256 public endCloseSale = 1532987999; // Monday, 30-Jul-18 23:59:59 UTC-2
@@ -122,7 +122,7 @@ contract MainSale is Ownable {
 
     uint256 public weisRaised = 0;
 
-    string public stageNow = &quot;NoSale&quot;;
+    string public stageNow = "NoSale";
     
     event Authorized(address wlCandidate, uint timestamp);
     event Revoked(address wlCandidate, uint timestamp);
@@ -134,7 +134,7 @@ contract MainSale is Ownable {
     }
     
     /*******************************************************************************
-     * Whitelist&#39;s section
+     * Whitelist's section
      */
     function authorize(address wlCandidate) public onlyOwner  {
         require(wlCandidate != address(0x0));
@@ -153,7 +153,7 @@ contract MainSale is Ownable {
     }
     
     /*******************************************************************************
-     * Setter&#39;s Section
+     * Setter's Section
      */
 
     function setStartCloseSale(uint256 newStartSale) public onlyOwner {
@@ -203,27 +203,27 @@ contract MainSale is Ownable {
      */
     function ()  public payable {
         
-        require(msg.value &gt;= (1*1e18/ethUSD*100));
+        require(msg.value >= (1*1e18/ethUSD*100));
 
-        if (now &gt;= startCloseSale || now &lt;= endCloseSale) {
+        if (now >= startCloseSale || now <= endCloseSale) {
             require(isWhitelisted(msg.sender));
             closeSale(msg.sender, msg.value);
-            stageNow = &quot;Close Sale for Whitelist&#39;s members&quot;;
+            stageNow = "Close Sale for Whitelist's members";
             
-        } else if (now &gt;= startStage1 || now &lt;= endStage1) {
+        } else if (now >= startStage1 || now <= endStage1) {
             sale1(msg.sender, msg.value);
-            stageNow = &quot;Stage 1&quot;;
+            stageNow = "Stage 1";
 
-        } else if (now &gt;= startStage2 || now &lt;= endStage2) {
+        } else if (now >= startStage2 || now <= endStage2) {
             sale2(msg.sender, msg.value);
-             stageNow = &quot;Stage 2&quot;;
+             stageNow = "Stage 2";
 
-        } else if (now &gt;= startStage3 || now &lt;= endStage3) {
+        } else if (now >= startStage3 || now <= endStage3) {
             sale3(msg.sender, msg.value);
-             stageNow = &quot;Stage 3&quot;;
+             stageNow = "Stage 3";
 
         } else {
-            stageNow = &quot;No Sale&quot;;
+            stageNow = "No Sale";
             revert();
         } 
     }

@@ -10,12 +10,12 @@ contract GlobalStorageMultiId {
     uint256 public totalCollected;
     address public admin;
 
-    // mapping(address =&gt; bytes32) ids;
-    mapping(bytes32 =&gt; address) users;
-    mapping(bytes32 =&gt; mapping(bytes32 =&gt; uint256)) dataUint;
-    mapping(bytes32 =&gt; mapping(bytes32 =&gt; bytes32)) dataBytes32;
-    mapping(bytes32 =&gt; mapping(bytes32 =&gt; string)) dataString;
-    mapping(bytes32 =&gt; mapping(bytes32 =&gt; address)) dataAddress; 
+    // mapping(address => bytes32) ids;
+    mapping(bytes32 => address) users;
+    mapping(bytes32 => mapping(bytes32 => uint256)) dataUint;
+    mapping(bytes32 => mapping(bytes32 => bytes32)) dataBytes32;
+    mapping(bytes32 => mapping(bytes32 => string)) dataString;
+    mapping(bytes32 => mapping(bytes32 => address)) dataAddress; 
 
     event Error(string _string);
     event RegisteredUser(address _address , bytes32 _id);
@@ -39,14 +39,14 @@ contract GlobalStorageMultiId {
     }
 
 
-    // User&#39;s admin functions
+    // User's admin functions
 
     function registerUser(bytes32 _id) payable returns(bool) {
 
-        require(msg.value &gt;= regPrice);
+        require(msg.value >= regPrice);
 
         if ( users[_id] != 0x0 ) {
-            Error(&quot;ID already exists&quot;);
+            Error("ID already exists");
             msg.sender.send(msg.value);
             return false;
         }
@@ -72,7 +72,7 @@ contract GlobalStorageMultiId {
     }
 
 
-    // Users&#39;s data storage
+    // Users's data storage
 
     // Uint
 
@@ -81,7 +81,7 @@ contract GlobalStorageMultiId {
             dataUint[_id][_key] = _data;
             return true;
         } else {
-            Error(&quot;Data exists&quot;);
+            Error("Data exists");
             return false;
         }
     }
@@ -98,7 +98,7 @@ contract GlobalStorageMultiId {
             dataString[_id][_key] = _data;
             return true;
         } else {
-            Error(&quot;Data exists&quot;);
+            Error("Data exists");
             return false;
         }
     }
@@ -114,7 +114,7 @@ contract GlobalStorageMultiId {
             dataAddress[_id][_key] = _data;
             return true;
         } else {
-            Error(&quot;Data exists&quot;);
+            Error("Data exists");
             return false;
         }
     }
@@ -130,7 +130,7 @@ contract GlobalStorageMultiId {
             dataBytes32[_id][_key] = _data;
             return true;
         } else {
-            Error(&quot;Data exists&quot;);
+            Error("Data exists");
             return false;
         }
     }

@@ -23,20 +23,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,13 +79,13 @@ contract ERC223Interface {
 contract ERC223Token is ERC223Interface {
      using SafeMath for uint256;
 
-     mapping(address =&gt; uint256) balances; // List of user balances
-	 mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+     mapping(address => uint256) balances; // List of user balances
+	 mapping (address => mapping (address => uint256)) internal allowed;
 	
 	
 	
-	 string public name = &quot;COOPAY COIN TEST&quot;;
-     string public symbol = &quot;COOTEST&quot;;
+	 string public name = "COOPAY COIN TEST";
+     string public symbol = "COOTEST";
      uint8 public decimals = 18;
      uint256 public totalSupply = 265200000 * (10**18);
 	
@@ -128,9 +128,9 @@ contract ERC223Token is ERC223Interface {
      */
     function transfer(address _to, uint256 _value, bytes _data) returns (bool success) {
         
-		require(_value &gt; 0);
+		require(_value > 0);
 		require(_to != 0x0);
-		require(balances[msg.sender] &gt; 0);
+		require(balances[msg.sender] > 0);
 		
         uint256 codeLength;
 
@@ -141,7 +141,7 @@ contract ERC223Token is ERC223Interface {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -152,7 +152,7 @@ contract ERC223Token is ERC223Interface {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -160,9 +160,9 @@ contract ERC223Token is ERC223Interface {
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
 	
-	    require(_value &gt; 0);
+	    require(_value > 0);
 		require(_to != 0x0);
-		require(balances[msg.sender] &gt; 0);
+		require(balances[msg.sender] > 0);
 		
         uint256 codeLength;
         bytes memory empty;
@@ -174,7 +174,7 @@ contract ERC223Token is ERC223Interface {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -184,8 +184,8 @@ contract ERC223Token is ERC223Interface {
 	
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
      bytes memory empty;
      balances[_from] = balances[_from].sub(_value);
      balances[_to] = balances[_to].add(_value);

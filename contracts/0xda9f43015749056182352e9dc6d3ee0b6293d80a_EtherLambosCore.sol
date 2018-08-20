@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -43,7 +43,7 @@ contract Ownable {
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="147071607154756c7d7b796e717a3a777b">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="147071607154756c7d7b796e717a3a777b">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -89,8 +89,8 @@ contract EtherLambosAccessControl {
     //
     // It should be noted that these roles are distinct without overlap in their access abilities, the
     // abilities listed for each role above are exhaustive. In particular, while the CEO can assign any
-    // address to any role, the CEO address itself doesn&#39;t have the ability to act in those roles. This
-    // restriction is intentional so that we aren&#39;t tempted to use the CEO address frequently out of
+    // address to any role, the CEO address itself doesn't have the ability to act in those roles. This
+    // restriction is intentional so that we aren't tempted to use the CEO address frequently out of
     // convenience. The less we use an address, the less likely it is that we somehow compromise the
     // account.
 
@@ -170,7 +170,7 @@ contract EtherLambosAccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -182,7 +182,7 @@ contract EtherLambosAccessControl {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -236,16 +236,16 @@ contract EtherLambosBase is EtherLambosAccessControl {
 
     /// @dev A mapping from car IDs to the address that owns them. All cars have
     ///  some valid owner address.
-    mapping (uint256 =&gt; address) public lamboIndexToOwner;
+    mapping (uint256 => address) public lamboIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (address => uint256) ownershipTokenCount;
 
     /// @dev A mapping from LamboIDs to an address that has been approved to call
     ///  transferFrom(). Each Lambo can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public lamboIndexToApproved;
+    mapping (uint256 => address) public lamboIndexToApproved;
 
     /// @dev The address of the MarketPlace contract that handles sales of Lambos. This
     ///  same contract handles both peer-to-peer sales as well as new model sales. 
@@ -253,11 +253,11 @@ contract EtherLambosBase is EtherLambosAccessControl {
     ServiceStation public serviceStation;
     /// @dev Assigns ownership of a specific Lambo to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
-        // Since the number of lambos is capped to 2^32 we can&#39;t overflow this
+        // Since the number of lambos is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         // transfer ownership
         lamboIndexToOwner[_tokenId] = _to;
-        // When creating new lambos _from is 0x0, but we can&#39;t account that address.
+        // When creating new lambos _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange
@@ -268,10 +268,10 @@ contract EtherLambosBase is EtherLambosAccessControl {
     }
 
     /// @dev An internal method that creates a new lambo and stores it. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate both a Build event
     ///  and a Transfer event.
-    /// @param _attributes The lambo&#39;s attributes.
+    /// @param _attributes The lambo's attributes.
     /// @param _owner The inital owner of this car, must be non-zero
     function _createLambo(
         uint256 _attributes,
@@ -290,8 +290,8 @@ contract EtherLambosBase is EtherLambosAccessControl {
         });
         uint256 newLamboId = lambos.push(_lambo) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion cars is A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion cars is A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newLamboId == uint256(uint32(newLamboId)));
 
         // emit the build event
@@ -308,9 +308,9 @@ contract EtherLambosBase is EtherLambosAccessControl {
         return newLamboId;
     }
      /// @dev An internal method that tunes an existing lambo. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate a Tune event
-    /// @param _newattributes The lambo&#39;s new attributes.
+    /// @param _newattributes The lambo's new attributes.
     /// @param _tokenId The car to be tuned.
     function _tuneLambo(
         uint256 _newattributes,
@@ -329,7 +329,7 @@ contract EtherLambosBase is EtherLambosAccessControl {
     }
     // Any C-level can fix how many seconds per blocks are currently observed.
     function setSecondsPerBlock(uint256 secs) external onlyCLevel {
-        //require(secs &lt; cooldowns[0]);
+        //require(secs < cooldowns[0]);
         secondsPerBlock = secs;
     }
 }
@@ -340,17 +340,17 @@ contract ERC721Metadata {
     /// @dev Given a token Id, returns a byte array that is supposed to be converted into string.
     function getMetadata(uint256 _tokenId, string) public view returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -363,26 +363,26 @@ contract ERC721Metadata {
 contract EtherLambosOwnership is EtherLambosBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;EtherLambos&quot;;
-    string public constant symbol = &quot;EL&quot;;
+    string public constant name = "EtherLambos";
+    string public constant symbol = "EL";
 
     // The contract that will return lambo metadata
     ERC721Metadata public erc721Metadata;
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint256,string)'));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -390,7 +390,7 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
@@ -407,14 +407,14 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular Lambo.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId kitten id, only valid when &gt; 0
+    /// @param _tokenId kitten id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return lamboIndexToOwner[_tokenId] == _claimant;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular Lambo.
     /// @param _claimant the address we are confirming Lambo is approved for.
-    /// @param _tokenId lambo id, only valid when &gt; 0
+    /// @param _tokenId lambo id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return lamboIndexToApproved[_tokenId] == _claimant;
     }
@@ -536,7 +536,7 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
 
     /// @notice Returns a list of all Lambo IDs assigned to an address.
     /// @param _owner The owner whose Lambo we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Lambo array looking for cars belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -555,7 +555,7 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
             // sequentially up to the totalCat count.
             uint256 carId;
 
-            for (carId = 1; carId &lt;= totalCars; carId++) {
+            for (carId = 1; carId <= totalCars; carId++) {
                 if (lamboIndexToOwner[carId] == _owner) {
                     result[resultIndex] = carId;
                     resultIndex++;
@@ -566,12 +566,12 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
         }
     }
 
-    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="69081b080a0107000d2907061d0d061d47070c1d">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="69081b080a0107000d2907061d0d061d47070c1d">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _memcpy(uint _dest, uint _src, uint _len) private view {
         // Copy word-length chunks while possible
-        for(; _len &gt;= 32; _len -= 32) {
+        for(; _len >= 32; _len -= 32) {
             assembly {
                 mstore(_dest, mload(_src))
             }
@@ -588,7 +588,7 @@ contract EtherLambosOwnership is EtherLambosBase, ERC721 {
         }
     }
 
-    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8feefdeeece7e1e6ebcfe1e0fbebe0fba1e1eafb">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8feefdeeece7e1e6ebcfe1e0fbebe0fba1e1eafb">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _toString(bytes32[4] _rawBytes, uint256 _stringLength) private view returns (string) {
@@ -651,10 +651,10 @@ contract MarketPlaceBase is Ownable {
     uint256 public ownerCut;
 
     //map the Affiliate Code to the Affiliate
-    mapping (uint256 =&gt; Affiliates) codeToAffiliate;
+    mapping (uint256 => Affiliates) codeToAffiliate;
 
     // Map from token ID to their corresponding sale.
-    mapping (uint256 =&gt; Sale) tokenIdToSale;
+    mapping (uint256 => Sale) tokenIdToSale;
 
     event SaleCreated(uint256 tokenId, uint256 price);
     event SaleSuccessful(uint256 tokenId, uint256 price, address buyer);
@@ -717,28 +717,28 @@ contract MarketPlaceBase is Ownable {
         Sale storage sale = tokenIdToSale[_tokenId];
 
         // Explicitly check that this sale is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return a sale object that is all zeros.)
         require(_isOnSale(sale));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = sale.price;
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the sale struct
         // gets deleted.
         address seller = sale.seller;
 
         // The bid is good! Remove the sale before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeSale(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the Marketplace&#39;s cut.
+        if (price > 0) {
+            // Calculate the Marketplace's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 marketplaceCut = _computeCut(price);
             uint256 sellerProceeds = price - marketplaceCut;
 
@@ -748,7 +748,7 @@ contract MarketPlaceBase is Ownable {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -779,26 +779,26 @@ contract MarketPlaceBase is Ownable {
     /// @dev Returns true if the NFT is on sale.
     /// @param _sale - Sale to check.
     function _isOnSale(Sale storage _sale) internal view returns (bool) {
-        return (_sale.startedAt &gt; 0);
+        return (_sale.startedAt > 0);
     }
 
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the Marketplace constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
     function _computeAffiliateCut(uint256 _price,Affiliates affiliate) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the Marketplace constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * affiliate.commission / 10000;
     }
     /// @dev Adds an affiliate to the list.
@@ -831,7 +831,7 @@ contract MarketPlaceBase is Ownable {
         require(sale.seller==owner);
 
         // Explicitly check that this sale is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return a sale object that is all zeros.)
         require(_isOnSale(sale));
@@ -841,7 +841,7 @@ contract MarketPlaceBase is Ownable {
         
         //deduce the affiliate pricecut
         price=price * _affiliate.pricecut / 10000;  
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the sale struct
         // gets deleted.
@@ -849,14 +849,14 @@ contract MarketPlaceBase is Ownable {
         address affiliate_address = _affiliate.affiliate_address;
         
         // The bid is good! Remove the sale before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeSale(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the Marketplace&#39;s cut.
+        if (price > 0) {
+            // Calculate the Marketplace's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 affiliateCut = _computeAffiliateCut(price,_affiliate);
             uint256 sellerProceeds = price - affiliateCut;
 
@@ -866,7 +866,7 @@ contract MarketPlaceBase is Ownable {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
             affiliate_address.transfer(affiliateCut);
@@ -956,7 +956,7 @@ contract MarketPlace is Pausable, MarketPlaceBase {
     /// @param _cut - percent cut the owner takes on each sale, must be
     ///  between 0-10,000.
     function MarketPlace(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -964,13 +964,13 @@ contract MarketPlace is Pausable, MarketPlaceBase {
         nonFungibleContract = candidateContract;
     }
     function setNFTAddress(address _nftAddress, uint256 _cut) external onlyOwner {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
         ERC721 candidateContract = ERC721(_nftAddress);
         //require(candidateContract.supportsInterface(InterfaceSignature_ERC721));
         nonFungibleContract = candidateContract;
     }
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -997,7 +997,7 @@ contract MarketPlace is Pausable, MarketPlaceBase {
         external
         whenNotPaused
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_price == uint256(uint128(_price)));
         
@@ -1043,14 +1043,14 @@ contract MarketPlace is Pausable, MarketPlaceBase {
         // _bid will throw if the bid or funds transfer fails
         Affiliates storage affiliate = codeToAffiliate[_code];
         
-        require(affiliate.affiliate_address!=0&amp;&amp;_code&gt;0);
+        require(affiliate.affiliate_address!=0&&_code>0);
         _bidReferral(_tokenId, msg.value,affiliate);
         _transfer(msg.sender, _tokenId);
 
        
     }
     
-    /// @dev Cancels an sale that hasn&#39;t been won yet.
+    /// @dev Cancels an sale that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -1215,7 +1215,7 @@ contract ServiceStationBase {
     //Dissect for options
     part=(attributes/(10 ** options[_optionIndex].startChange)) % (10 ** options[_optionIndex].rangeChange);
     //part=1544;
-    //Change attributes &amp; verify
+    //Change attributes & verify
     //Should attChange be added,subtracted or replaced?
     if(options[_optionIndex].replace == false)
         {
@@ -1224,14 +1224,14 @@ contract ServiceStationBase {
             if(options[_optionIndex].plusMinus == false)
             {
                 //e.g. if range = 4 then value can not be higher then 9999 - overflow check
-                require((part+options[_optionIndex].attChange)&lt;(10**options[_optionIndex].rangeChange));
+                require((part+options[_optionIndex].attChange)<(10**options[_optionIndex].rangeChange));
                 //add to attributes
                 attributes=attributes+options[_optionIndex].attChange*(10 ** options[_optionIndex].startChange);
             }
             else{
                 //do some subtraction
                 //e.g. value must be greater then 0
-                require(part&gt;options[_optionIndex].attChange);
+                require(part>options[_optionIndex].attChange);
                 //substract from attributes 
                 attributes-=options[_optionIndex].attChange*(10 ** options[_optionIndex].startChange);
             }
@@ -1267,7 +1267,7 @@ contract ServiceStation is Pausable, ServiceStationBase {
     bytes4 constant InterfaceSignature_ERC721 = bytes4(0x9a20483d);
 
     uint256 public optionCount;
-    mapping (uint64 =&gt; uint256) public modelIndexToOptionCount;
+    mapping (uint64 => uint256) public modelIndexToOptionCount;
     /// @dev Constructor creates a reference to the NFT ownership contract
     ///  and verifies the owner cut is in the valid range.
     /// @param _nftAddress - address of a deployed contract implementing
@@ -1426,11 +1426,11 @@ contract ServiceStation is Pausable, ServiceStationBase {
        //Tuning Option needs to be enabled
        require(options[_optionIndex].active);
        //Enough money for tuning to spend?
-       require(msg.value&gt;=options[_optionIndex].price);
+       require(msg.value>=options[_optionIndex].price);
        
        _changeAttributes(_tokenId,_optionIndex);
     }
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -1460,8 +1460,8 @@ contract ServiceStation is Pausable, ServiceStationBase {
             // sequentially up to the optionCount count.
             uint256 optionId;
 
-            for (optionId = 1; optionId &lt;= optionCount; optionId++) {
-                if (options[optionId].model == _model &amp;&amp; options[optionId].active == true) {
+            for (optionId = 1; optionId <= optionCount; optionId++) {
+                if (options[optionId].model == _model && options[optionId].active == true) {
                     result[resultIndex] = optionId;
                     resultIndex++;
                 }
@@ -1537,7 +1537,7 @@ contract EtherLambosSale is EtherLambosOwnership {
         // Sale contract checks input sizes
         // If lambo is already on any sale, this will throw
         // because it will be owned by the sale contract.
-        for(uint256 i=0;i&lt;_tokenCount;i++)
+        for(uint256 i=0;i<_tokenCount;i++)
             {
             require(_owns(msg.sender, _tokenIdStart+i));
         
@@ -1581,7 +1581,7 @@ contract EtherLambosBuilding is EtherLambosSale {
         if (lamboOwner == address(0)) {
              lamboOwner = cooAddress;
         }
-        //require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        //require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         lambosBuildCount++;
         _createLambo(_attributes, lamboOwner, _model);
@@ -1598,8 +1598,8 @@ contract EtherLambosBuilding is EtherLambosSale {
             //_attributes=_attributes-part*(10 ** 66);
         
         
-        //require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
-        for(uint256 i=0;i&lt;count;i++)
+        //require(promoCreatedCount < PROMO_CREATION_LIMIT);
+        for(uint256 i=0;i<count;i++)
             {
             lambosBuildCount++;
             att=_attributes+(startNo+i)*(10 ** 66);
@@ -1650,9 +1650,9 @@ contract EtherLambosTuning is EtherLambosBuilding {
 contract EtherLambosCore is EtherLambosTuning {
 
     // This is the main EtherLambos contract. In order to keep our code seperated into logical sections,
-    // we&#39;ve broken it up in two ways. First, we have several seperately-instantiated sibling contracts
+    // we've broken it up in two ways. First, we have several seperately-instantiated sibling contracts
     // that handle sales. The sales are
-    // seperate since their logic is somewhat complex and there&#39;s always a risk of subtle bugs. By keeping
+    // seperate since their logic is somewhat complex and there's always a risk of subtle bugs. By keeping
     // them in their own contracts, we can upgrade them without disrupting the main contract that tracks
     // lambo ownership. 
     //
@@ -1695,7 +1695,7 @@ contract EtherLambosCore is EtherLambosTuning {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -1706,7 +1706,7 @@ contract EtherLambosCore is EtherLambosTuning {
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from the marketPlace contract.
+    /// @dev Reject all Ether from being sent here, unless it's from the marketPlace contract.
     /// (Hopefully, we can prevent user accidents.)
     function() external payable {
         require(
@@ -1754,7 +1754,7 @@ contract EtherLambosCore is EtherLambosTuning {
         return model;
     }
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.

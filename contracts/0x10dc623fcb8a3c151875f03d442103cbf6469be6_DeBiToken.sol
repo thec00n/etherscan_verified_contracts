@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -31,7 +31,7 @@ library SafeMath {
 /**
  * @title owned
  * @dev The owned contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract owned {
     address public owner;
@@ -65,7 +65,7 @@ contract BasicToken {
     using SafeMath for uint256;
     
     uint256       _supply;
-    mapping (address =&gt; uint256)    _balances;
+    mapping (address => uint256)    _balances;
     
     event Transfer( address indexed from, address indexed to, uint256 value);
 
@@ -84,7 +84,7 @@ contract BasicToken {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_balances[msg.sender] &gt;= _value);
+        require(_balances[msg.sender] >= _value);
         
         _balances[msg.sender] =_balances[msg.sender].sub(_value);
         _balances[_to] =_balances[_to].add(_value);
@@ -97,8 +97,8 @@ contract BasicToken {
 }
 
 contract DeBiToken is BasicToken,owned {
-    string  constant public symbol = &quot;DB&quot;;
-    string  constant public name = &quot;Digital Block&quot;;
+    string  constant public symbol = "DB";
+    string  constant public name = "Digital Block";
     uint256 constant public decimals =6; 
     uint256 public lockedCounts = 8*(10**8)*(10**6);
     uint256 public eachUnlockCounts = 2*(10**8)*(10**6);
@@ -128,7 +128,7 @@ contract DeBiToken is BasicToken,owned {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require (now &gt;= startTime);
+        require (now >= startTime);
 
         return super.transfer(_to, _value);
     }
@@ -142,9 +142,9 @@ contract DeBiToken is BasicToken,owned {
      * @dev unlock , only can be called by owner.
      */
     function unlock(uint256 _index) onlyOwner public {
-        require(_index&gt;=0 &amp;&amp; _index&lt;unlockTimeMap.length);
-        require(now &gt;= unlockTimeMap[_index].unlockTime &amp;&amp; unlockTimeMap[_index].locked);
-        require(_balances[0x01] &gt;= eachUnlockCounts);
+        require(_index>=0 && _index<unlockTimeMap.length);
+        require(now >= unlockTimeMap[_index].unlockTime && unlockTimeMap[_index].locked);
+        require(_balances[0x01] >= eachUnlockCounts);
 
         _balances[0x01] =_balances[0x01].sub(eachUnlockCounts);
         _balances[owner] =_balances[owner].add(eachUnlockCounts);

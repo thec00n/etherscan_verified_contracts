@@ -18,12 +18,12 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
 
-  mapping (address =&gt; bool) public admins;
+  mapping (address => bool) public admins;
 
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -79,20 +79,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,22 +112,22 @@ contract Economeme is ERC721, Ownable {
   uint256 public endingBalance; // Balance at the end of the last purchase.
 
   // Meme Data
-  mapping (uint256 =&gt; Meme) public memeData;
+  mapping (uint256 => Meme) public memeData;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   // Balances from % payouts.
-  mapping (address =&gt; uint256) public creatorBalances;
+  mapping (address => uint256) public creatorBalances;
 
   // Events
   event Purchase(uint256 indexed _tokenId, address indexed _buyer, address indexed _seller, uint256 _purchasePrice);
@@ -167,8 +167,8 @@ contract Economeme is ERC721, Ownable {
     uint256 excess = msg.value.sub(price);
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
     
     uint256 devCut = price.mul(2).div(100);
@@ -191,13 +191,13 @@ contract Economeme is ERC721, Ownable {
     safeTransfer(oldOwner, transferAmount);
     
     // Send refund to buyer if needed
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
     
-    // If safeTransfer did not succeed, we take lost funds into our cut and will return manually if it wasn&#39;t malicious.
-    // Otherwise we&#39;re going out for some beers.
-    if (address(this).balance &gt; endingBalance + creatorCut + devCut) submissionPool += transferAmount;
+    // If safeTransfer did not succeed, we take lost funds into our cut and will return manually if it wasn't malicious.
+    // Otherwise we're going out for some beers.
+    if (address(this).balance > endingBalance + creatorCut + devCut) submissionPool += transferAmount;
     
     endingBalance = address(this).balance;
   }
@@ -256,13 +256,13 @@ contract Economeme is ERC721, Ownable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) internal view returns (uint256 _nextPrice) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(200).div(95);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(135).div(96);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(125).div(97);
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(117).div(97);
     } else {
       return _price.mul(115).div(98);
@@ -275,7 +275,7 @@ contract Economeme is ERC721, Ownable {
   * @dev Used by posters to submit and create a new meme.
   */
   function createToken() external payable {
-    // make sure token hasn&#39;t been used yet
+    // make sure token hasn't been used yet
     uint256 tokenId = totalTokens + 1;
     require(memeData[tokenId].price == 0);
     require(msg.value == submissionPrice);
@@ -292,7 +292,7 @@ contract Economeme is ERC721, Ownable {
   }
 
   /**
-  * @dev Withdraw anyone&#39;s creator balance.
+  * @dev Withdraw anyone's creator balance.
   * @param _beneficiary The person whose balance shall be sent to them.
   */
   function withdrawBalance(address _beneficiary) external {
@@ -324,17 +324,17 @@ contract Economeme is ERC721, Ownable {
   }
 
   /**
-  * @dev Determines if token exists by checking it&#39;s price
+  * @dev Determines if token exists by checking it's price
   * @param _tokenId uint256 ID of token
   */
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return memeData[_tokenId].price &gt; 0;
+    return memeData[_tokenId].price > 0;
   }
   
 /** ***************************** Only Admin ******************************* **/
   
   /**
-   * @dev Withdraw dev&#39;s cut
+   * @dev Withdraw dev's cut
    * @param _devAmount The amount to withdraw from developer cut.
    * @param _submissionAmount The amount to withdraw from submission pool.
   */
@@ -562,11 +562,11 @@ contract Economeme is ERC721, Ownable {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;Economeme Meme&quot;;
+    return "Economeme Meme";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;ECME&quot;;
+    return "ECME";
   }
 
 }

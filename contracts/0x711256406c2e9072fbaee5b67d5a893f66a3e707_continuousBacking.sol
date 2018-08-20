@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,7 +78,7 @@ Reward[] public rewards;
 
 function defineReward(string title,address creator,uint256 numAvailable,uint256 minBacking) public	{
     address host=msg.sender;
-    if (numAvailable&gt;MAX_NUM_AVAIL) revert();
+    if (numAvailable>MAX_NUM_AVAIL) revert();
 	Reward memory newReward=Reward(title,host,creator,0,numAvailable,minBacking);
 	rewards.push(newReward);
 	emit CreatedReward(rewards.length-1,numAvailable);
@@ -86,7 +86,7 @@ function defineReward(string title,address creator,uint256 numAvailable,uint256 
 
 function backAtIndex(uint256 index,uint256 totalAmount,uint256 numUnitsDesired) public	{
         if (msg.sender==rewards[index].host || msg.sender==rewards[index].creator) revert();
-        if (totalAmount&lt;rewards[index].spmPreventionAmt) revert();
+        if (totalAmount<rewards[index].spmPreventionAmt) revert();
         if (totalAmount==0) revert();
         if (rewards[index].numTaken==rewards[index].numAvailable) revert();
         rewards[index].numTaken+=1;
@@ -101,8 +101,8 @@ function backAtIndex(uint256 index,uint256 totalAmount,uint256 numUnitsDesired) 
 }
 
 function reviseNumAvailable(uint256 index,uint256 newNumAvailable) public	{
-	if (newNumAvailable&gt;MAX_NUM_AVAIL) revert();
-	if (newNumAvailable&lt;rewards[index].numTaken) revert();
+	if (newNumAvailable>MAX_NUM_AVAIL) revert();
+	if (newNumAvailable<rewards[index].numTaken) revert();
 	if (msg.sender==rewards[index].creator || msg.sender==rewards[index].host)	{
 		rewards[index].numAvailable=newNumAvailable;
 		emit ModifiedNumAvailable(index,newNumAvailable);

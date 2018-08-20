@@ -23,7 +23,7 @@ library SafeMath {
     * Subtracts method.
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,10 +49,10 @@ contract ERC223ReceivingContract {
 contract KaraOmToken is ERC223Interface {
     using SafeMath for uint;
     address owner = msg.sender;
-    mapping(address =&gt; uint) balances; // List of user balances.
+    mapping(address => uint) balances; // List of user balances.
 
-    string public constant name = &quot;KaraOm Token&quot;;
-    string public constant symbol = &quot;KOM&quot;;
+    string public constant name = "KaraOm Token";
+    string public constant symbol = "KOM";
     uint public constant decimals = 8;
     uint256 public totalSupply = 690000000e8;
     uint256 public tokensPerEth = 15000000e8;
@@ -89,16 +89,16 @@ contract KaraOmToken is ERC223Interface {
     function getTokens() payable canDistr public {
         uint256 tokens = 0;
         address investor = msg.sender; 
-        if(msg.value &gt;= MIN_CONTRIBUTION){
+        if(msg.value >= MIN_CONTRIBUTION){
             tokens = tokensPerEth.mul(msg.value) / 1 ether;    
-            if(msg.value &gt;= MIN_BONUS){
+            if(msg.value >= MIN_BONUS){
                 tokens.add((tokens.div(100)).mul(bonusPercent));
             }    
         }
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             distr(investor, tokens);
         }
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
         
@@ -126,7 +126,7 @@ contract KaraOmToken is ERC223Interface {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -142,7 +142,7 @@ contract KaraOmToken is ERC223Interface {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value,empty);
         }
@@ -157,7 +157,7 @@ contract KaraOmToken is ERC223Interface {
         emit BonusPercent(_bonusPercent);
     }
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);

@@ -27,7 +27,7 @@ contract People {
         uint[] ages;
         
         
-        for( uint i = 0; i &lt; people.length; i++){
+        for( uint i = 0; i < people.length; i++){
             Person memory currentPerson;
             currentPerson = people[i];
             firstNames.push(currentPerson.firstName);

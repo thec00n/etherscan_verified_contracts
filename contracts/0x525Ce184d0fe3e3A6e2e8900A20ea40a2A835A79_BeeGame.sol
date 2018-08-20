@@ -60,12 +60,12 @@ contract BeeGame is owned {
     uint internal numeroUsuarios;
     uint fechaTax;
 
-    mapping (address =&gt; uint) balanceOf;
+    mapping (address => uint) balanceOf;
 
     address[] indiceUsuarios;
     
-    mapping (uint256 =&gt; TiposCompartidos.Celda) celdas;
-    mapping (uint256 =&gt; TiposCompartidos.Mensaje) mensajes;
+    mapping (uint256 => TiposCompartidos.Celda) celdas;
+    mapping (uint256 => TiposCompartidos.Mensaje) mensajes;
     
     uint256[] indiceCeldas;
     uint256[] indiceMensajes;
@@ -83,8 +83,8 @@ contract BeeGame is owned {
         balanceOf[owner] = initialSupply;
         setPrices(newSellPrice,newBuyPrice);
         numeroCeldas = 0;
-        name = &quot;Beether&quot;;
-        symbol = &quot;beeth&quot;; 
+        name = "Beether";
+        symbol = "beeth"; 
         decimals = 2;
         TiposCompartidos.Celda memory celda = TiposCompartidos.Celda({
             creador:msg.sender,
@@ -109,7 +109,7 @@ contract BeeGame is owned {
 
     function buy() public payable returns (uint amount) {
         amount = msg.value / buyPrice;         
-        require(balanceOf[owner] &gt;= amount); 
+        require(balanceOf[owner] >= amount); 
         _transfer(owner, msg.sender, amount);
         incluirUsuario(msg.sender);
         Transfer(owner, msg.sender, amount); 
@@ -118,7 +118,7 @@ contract BeeGame is owned {
 
     function incluirUsuario(address usuario) public {
         bool encontrado = false;
-        for (uint i = 0; i &lt; numeroUsuarios; i++) {
+        for (uint i = 0; i < numeroUsuarios; i++) {
             address usuarioT = indiceUsuarios[i];
             if (usuarioT == usuario){
                 encontrado = true;
@@ -131,9 +131,9 @@ contract BeeGame is owned {
     }
 
     function cobrarImpuesto(uint _fechaTax) public onlyOwner {
-        for (uint i = 0; i &lt; numeroUsuarios; i++) {
+        for (uint i = 0; i < numeroUsuarios; i++) {
             address usuario = indiceUsuarios[i];
-            if (balanceOf[usuario] &gt; 0){
+            if (balanceOf[usuario] > 0){
                 _transfer(usuario, owner, 1);
             }
         }
@@ -141,19 +141,19 @@ contract BeeGame is owned {
     }
 
     function crearCelda(uint _polenes, uint256 _fechaCreacion, uint posicion, uint _celdaPadre, uint _celdaAbuelo, TiposCompartidos.TipoPremio tipo) public {
-        require(balanceOf[msg.sender]&gt;=3);
+        require(balanceOf[msg.sender]>=3);
         require(_polenes == 3);
         require(_celdaPadre != 0);
-        require((posicion &gt;= 0 &amp;&amp; posicion &lt; 7) || (posicion == 0 &amp;&amp; msg.sender == owner));
-        require(((tipo == TiposCompartidos.TipoPremio.free || tipo == TiposCompartidos.TipoPremio.x2 || tipo == TiposCompartidos.TipoPremio.x3 || tipo == TiposCompartidos.TipoPremio.x5 || tipo == TiposCompartidos.TipoPremio.surprise) &amp;&amp; msg.sender == owner) || tipo == TiposCompartidos.TipoPremio.none);
+        require((posicion >= 0 && posicion < 7) || (posicion == 0 && msg.sender == owner));
+        require(((tipo == TiposCompartidos.TipoPremio.free || tipo == TiposCompartidos.TipoPremio.x2 || tipo == TiposCompartidos.TipoPremio.x3 || tipo == TiposCompartidos.TipoPremio.x5 || tipo == TiposCompartidos.TipoPremio.surprise) && msg.sender == owner) || tipo == TiposCompartidos.TipoPremio.none);
         TiposCompartidos.Celda memory celdaPadre = celdas[_celdaPadre];
         require(
-            ((posicion == 1 &amp;&amp; celdaPadre.primeraPosicion == 0) || celdas[celdaPadre.primeraPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
-            ((posicion == 2 &amp;&amp; celdaPadre.segundaPosicion == 0) || celdas[celdaPadre.segundaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
-            ((posicion == 3 &amp;&amp; celdaPadre.terceraPosicion == 0) || celdas[celdaPadre.terceraPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
-            ((posicion == 4 &amp;&amp; celdaPadre.cuartaPosicion == 0)  || celdas[celdaPadre.cuartaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
-            ((posicion == 5 &amp;&amp; celdaPadre.quintaPosicion == 0)  || celdas[celdaPadre.quintaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
-            ((posicion == 6 &amp;&amp; celdaPadre.sextaPosicion == 0) || celdas[celdaPadre.sextaPosicion].tipo != TiposCompartidos.TipoPremio.none )
+            ((posicion == 1 && celdaPadre.primeraPosicion == 0) || celdas[celdaPadre.primeraPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
+            ((posicion == 2 && celdaPadre.segundaPosicion == 0) || celdas[celdaPadre.segundaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
+            ((posicion == 3 && celdaPadre.terceraPosicion == 0) || celdas[celdaPadre.terceraPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
+            ((posicion == 4 && celdaPadre.cuartaPosicion == 0)  || celdas[celdaPadre.cuartaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
+            ((posicion == 5 && celdaPadre.quintaPosicion == 0)  || celdas[celdaPadre.quintaPosicion].tipo != TiposCompartidos.TipoPremio.none ) || 
+            ((posicion == 6 && celdaPadre.sextaPosicion == 0) || celdas[celdaPadre.sextaPosicion].tipo != TiposCompartidos.TipoPremio.none )
         );
         TiposCompartidos.Celda memory celda;
         TiposCompartidos.TipoPremio tipoPremio;
@@ -202,32 +202,32 @@ contract BeeGame is owned {
         TiposCompartidos.Celda memory celdaAbuelo = celdas[_celdaAbuelo];
         uint multiplicador = 1;
         address repartidor = msg.sender;
-        if (tipoPremio == TiposCompartidos.TipoPremio.x2 &amp;&amp; !celda.premio) {
+        if (tipoPremio == TiposCompartidos.TipoPremio.x2 && !celda.premio) {
             multiplicador = 2;
             repartidor = owner;
-        } else if (tipoPremio == TiposCompartidos.TipoPremio.x3 &amp;&amp; !celda.premio) {
+        } else if (tipoPremio == TiposCompartidos.TipoPremio.x3 && !celda.premio) {
             multiplicador = 3;
             repartidor = owner;
-        } else if (tipoPremio == TiposCompartidos.TipoPremio.x5 &amp;&amp; !celda.premio) {
+        } else if (tipoPremio == TiposCompartidos.TipoPremio.x5 && !celda.premio) {
             multiplicador = 5;
             repartidor = owner;
-        }  else if (tipoPremio == TiposCompartidos.TipoPremio.free &amp;&amp; !celda.premio) {
+        }  else if (tipoPremio == TiposCompartidos.TipoPremio.free && !celda.premio) {
             repartidor = owner;
         }
-        if (posicion == 1 &amp;&amp; celdaPadre.primeraPosicion == 0) {
+        if (posicion == 1 && celdaPadre.primeraPosicion == 0) {
             celdaPadre.primeraPosicion = _fechaCreacion;   
-        }else if (posicion == 2 &amp;&amp; celdaPadre.segundaPosicion == 0 ) {
+        }else if (posicion == 2 && celdaPadre.segundaPosicion == 0 ) {
             celdaPadre.segundaPosicion = _fechaCreacion;
-        }else if (posicion == 3 &amp;&amp; celdaPadre.terceraPosicion == 0) {
+        }else if (posicion == 3 && celdaPadre.terceraPosicion == 0) {
             celdaPadre.terceraPosicion = _fechaCreacion;
-        }else if (posicion == 4 &amp;&amp; celdaPadre.cuartaPosicion == 0) {
+        }else if (posicion == 4 && celdaPadre.cuartaPosicion == 0) {
             celdaPadre.cuartaPosicion = _fechaCreacion;
-        }else if (posicion == 5 &amp;&amp; celdaPadre.quintaPosicion == 0) {
+        }else if (posicion == 5 && celdaPadre.quintaPosicion == 0) {
             celdaPadre.quintaPosicion = _fechaCreacion;
-        }else if (posicion == 6 &amp;&amp; celdaPadre.sextaPosicion == 0) {
+        }else if (posicion == 6 && celdaPadre.sextaPosicion == 0) {
             celdaPadre.sextaPosicion = _fechaCreacion;
         }
-        if (_celdaAbuelo != 0 &amp;&amp; !celda.premio) {
+        if (_celdaAbuelo != 0 && !celda.premio) {
             _transfer(repartidor,celdaPadre.creador,2 * multiplicador);
             celdaPadre.polenPositivos = celdaPadre.polenPositivos + (2 * multiplicador);
             celdaAbuelo.polenPositivos = celdaAbuelo.polenPositivos + (1 * multiplicador);
@@ -258,7 +258,7 @@ contract BeeGame is owned {
 
     function insertarMensaje(uint256 _fechaCreacion, string _apodo,string _mensaje) public {
         bool encontrado = false;
-        for (uint i = 0; i &lt; numeroUsuarios &amp;&amp; !encontrado; i++) {
+        for (uint i = 0; i < numeroUsuarios && !encontrado; i++) {
             address usuarioT = indiceUsuarios[i];
             if (usuarioT == msg.sender) {
                 encontrado = true;
@@ -273,7 +273,7 @@ contract BeeGame is owned {
             fechaCreacion:_fechaCreacion,
             mensaje:_mensaje,
             estado:TiposCompartidos.EstadoMensaje.aprobado,
-            motivo:&quot;&quot;
+            motivo:""
         });
         mensajes[_fechaCreacion] = mensaje;
     }
@@ -310,7 +310,7 @@ contract BeeGame is owned {
     }
 
     function sell(uint amount) public {
-        require(balanceOf[msg.sender] &gt;= amount);         
+        require(balanceOf[msg.sender] >= amount);         
         _transfer(msg.sender, owner, amount);
         uint revenue = amount * sellPrice;
         if (msg.sender.send (revenue)) {                
@@ -337,8 +337,8 @@ contract BeeGame is owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] = balanceOf[_from] - _value;                         
         balanceOf[_to] = balanceOf[_to] + _value;                           
         Transfer(_from, _to, _value);

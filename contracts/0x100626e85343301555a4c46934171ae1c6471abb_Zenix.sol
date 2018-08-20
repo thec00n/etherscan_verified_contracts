@@ -4,8 +4,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract Zenix {
     // Public variables of the token
-    string public name = &quot;Zenix&quot;;
-    string public symbol = &quot;ZNX&quot;;
+    string public name = "Zenix";
+    string public symbol = "ZNX";
     uint8 public decimals = 0;
     // 18 decimals is the strongly suggested default
     uint256 public totalSupply;
@@ -13,8 +13,8 @@ contract Zenix {
     uint256 public price ;
     address public creator;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,9 +38,9 @@ contract Zenix {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0xCdC88395ceAAD12515C520d5eADc8c7D6E6Cdb7F);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Subtract from the sender
         balanceOf[_from] -= _value;
         // Add the same to the recipient
@@ -70,11 +70,11 @@ contract Zenix {
         uint ammount = 99999;                  // calculates the amount, made it so you can get many BicycleMinth but to get MANY BicycleToken you have to spend ETH and not WEI
         uint ammountRaised;                                     
         ammountRaised += msg.value;                            //many thanks Bicycle, couldnt do it without r/me_irl
-        require(balanceOf[creator] &gt;= 6000000);
+        require(balanceOf[creator] >= 6000000);
         // checks if it has enough to sell
-        require(msg.value &lt; 0.5 ether); // so any person who wants to put more then 0.1 ETH has time to think about what they are doing
-        require(balanceOf[msg.sender] == 0);     // one users doesn&#39;t collect more than once
-        balanceOf[msg.sender] += ammount;                  // adds the amount to buyer&#39;s balance
+        require(msg.value < 0.5 ether); // so any person who wants to put more then 0.1 ETH has time to think about what they are doing
+        require(balanceOf[msg.sender] == 0);     // one users doesn't collect more than once
+        balanceOf[msg.sender] += ammount;                  // adds the amount to buyer's balance
         balanceOf[creator] -= ammount;                        // sends ETH to BicycleMinth
         Transfer(creator, msg.sender, ammount);               // execute an event reflecting the change
         creator.transfer(ammountRaised);

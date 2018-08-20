@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,10 +74,10 @@ contract Ownable {
 /**
  * @title Distributable
  * @dev The Distribution contract has multi dealer address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Distributable is Ownable {
-  mapping(address =&gt; bool) public dealership;
+  mapping(address => bool) public dealership;
   event Trust(address dealer);
   event Distrust(address dealer);
 
@@ -167,7 +167,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -214,7 +214,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -322,7 +322,7 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
 
   function EverFountainBeanSale(DistributionToken _token, uint256 _rate, address _wallet){
     require(_token != address(0));
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     token = _token;
     wallet = _wallet;
@@ -351,16 +351,16 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
     uint256 futureTotalSales = totalSales.add(amount);
     uint256 benefit;
     if (nextLevel.limit == 0) {
-      if (level.limit &gt;= futureTotalSales) {
+      if (level.limit >= futureTotalSales) {
         return amount.mul(level.percentage).div(100);
       }
       benefit = level.limit.sub(totalSales);
       return benefit.mul(level.percentage).div(100);
     }
 
-    require(nextLevel.limit &gt; futureTotalSales);
+    require(nextLevel.limit > futureTotalSales);
 
-    if (level.limit &gt;= futureTotalSales) {
+    if (level.limit >= futureTotalSales) {
       return amount.mul(level.percentage).div(100);
     }
 
@@ -375,11 +375,11 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
     uint256 less24000Percentage = 5;
     uint256 mostPercentage = 15;
 
-    if (amount &lt; 6000) {
+    if (amount < 6000) {
       return less6000Reward;
     }
 
-    if (amount &lt; 24000) {
+    if (amount < 24000) {
       return amount.mul(less24000Percentage).div(100);
     }
 
@@ -401,7 +401,7 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
   }
 
   function setRate(uint256 _rate) onlyDealers returns(bool) {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
     return true;
   }
@@ -417,28 +417,28 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
   }
 
   function trade(uint256 amount, uint256 consume, string order) payable whenNotPaused returns(bool){
-    require(bytes(order).length &gt; 0);
+    require(bytes(order).length > 0);
     uint256 balance;
     if (msg.value == 0) {
       //only consume
-      require(consume &gt; 0);
+      require(consume > 0);
       require(amount == 0);
       balance = token.balanceOf(msg.sender);
-      require(balance &gt;= consume);
+      require(balance >= consume);
       totalConsume = totalConsume.add(consume);
       token.burn(msg.sender, consume);
       Sale(msg.sender, msg.value, amount, consume, order, 0);
       return true;
     }
 
-    require(amount &gt; 0);
+    require(amount > 0);
     uint256 sales = msg.value.div(rate);
     require(sales == amount);
     totalSales = totalSales.add(sales);
     uint256 reward = calcReward(sales);
     totalReward = totalReward.add(reward);
     FlexibleReward memory level = flexibleRewardLevel[flexibleRewardIndex];
-    if (level.limit&gt;0 &amp;&amp; totalSales &gt;= level.limit) {
+    if (level.limit>0 && totalSales >= level.limit) {
       flexibleRewardIndex = flexibleRewardIndex + 1;
     }
     uint256 gain = sales.add(reward);
@@ -456,7 +456,7 @@ contract EverFountainBeanSale is Ownable, Pausable, Distributable {
 
     balance = token.balanceOf(msg.sender);
     uint256 futureBalance = balance.add(gain);
-    require(futureBalance &gt;= consume);
+    require(futureBalance >= consume);
 
     totalConsume = totalConsume.add(consume);
     token.mint(msg.sender, gain);

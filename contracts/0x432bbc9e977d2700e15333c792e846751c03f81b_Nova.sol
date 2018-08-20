@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 contract NovaAccessControl {
-  mapping (address =&gt; bool) managers;
+  mapping (address => bool) managers;
   address public cfoAddress;
 
   function NovaAccessControl() public {
@@ -36,7 +36,7 @@ contract NovaCoin is NovaAccessControl {
   address supplier;
   // 1:1 convert with currency, so to cent
   uint8 public decimals = 2;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   address public novaContractAddress;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -53,8 +53,8 @@ contract NovaCoin is NovaAccessControl {
 
   function _transfer(address _from, address _to, uint _value) internal {
     require(_to != 0x0);
-    require(balanceOf[_from] &gt;= _value);
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require(balanceOf[_from] >= _value);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
   }
@@ -78,9 +78,9 @@ contract NovaCoin is NovaAccessControl {
   // coin can only be trasfered to invoker, and invoker must be Nova contract
   function consumeCoinForNova(address _from, uint _value) external {
     require(msg.sender == novaContractAddress);
-    require(balanceOf[_from] &gt;= _value);
+    require(balanceOf[_from] >= _value);
     var _to = novaContractAddress;
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
     uint previousBalances = balanceOf[_from] + balanceOf[_to];
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
@@ -88,7 +88,7 @@ contract NovaCoin is NovaAccessControl {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f1f0e1f0d5f4edfcfaf8eff0fbbbf6fa">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f1f0e1f0d5f4edfcfaf8eff0fbbbf6fa">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function totalSupply() public view returns (uint256 total);
@@ -127,30 +127,30 @@ contract FamedStarInterface {
 
 contract Nova is NovaAccessControl,ERC721 {
   // ERC721 Required
-  bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+  bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256('supportsInterface(bytes4)'));
 
   bytes4 constant InterfaceSignature_ERC721 =
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-    bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('tokensOfOwner(address)')) ^
+    bytes4(keccak256('tokenMetadata(uint256,string)'));
 
   function supportsInterface(bytes4 _interfaceID) external view returns (bool) {
     return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
   }
 
   function name() public pure returns (string) {
-    return &quot;Nova&quot;;
+    return "Nova";
   }
 
   function symbol() public pure returns (string) {
-    return &quot;NOVA&quot;;
+    return "NOVA";
   }
 
   function totalSupply() public view returns (uint256 total) {
@@ -165,7 +165,7 @@ contract Nova is NovaAccessControl,ERC721 {
     return astroIndexToOwners[_tokenId];
   }
 
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
   function approve(address _to, uint256 _tokenId) external {
     require(msg.sender == astroIndexToOwners[_tokenId]);
     require(msg.sender != _to);
@@ -187,7 +187,7 @@ contract Nova is NovaAccessControl,ERC721 {
     return astroOwnerToIDs[_owner];
   }
 
-  string metaBaseUrl = &quot;http://supernova.duelofkings.com&quot;;
+  string metaBaseUrl = "http://supernova.duelofkings.com";
   function tokenMetadata(uint256 _tokenId, string _preferredTransport) public view returns (string infoUrl) {
     return metaBaseUrl;
   }
@@ -213,7 +213,7 @@ contract Nova is NovaAccessControl,ERC721 {
     uint id; //world unique, astroIDPool start from 1
     uint createTime;
     uint nextAttractTime;
-    // [8][8][88][88] -&gt; L to H: astroType, cdIdx, famedID, mass
+    // [8][8][88][88] -> L to H: astroType, cdIdx, famedID, mass
     uint48 code;
     bytes32 name;
   }
@@ -264,19 +264,19 @@ contract Nova is NovaAccessControl,ERC721 {
   ];
 
   // a mapping from astro ID to the address that owns
-  mapping (uint =&gt; address) public astroIndexToOwners;
-  mapping (address =&gt; uint[]) public astroOwnerToIDs;
-  mapping (address =&gt; uint) public astroOwnerToIDsLen;
+  mapping (uint => address) public astroIndexToOwners;
+  mapping (address => uint[]) public astroOwnerToIDs;
+  mapping (address => uint) public astroOwnerToIDsLen;
 
-  mapping (address =&gt; mapping(uint =&gt; uint)) public astroOwnerToIDIndex;
+  mapping (address => mapping(uint => uint)) public astroOwnerToIDIndex;
 
-  mapping (uint =&gt; uint) public idToIndex;
+  mapping (uint => uint) public idToIndex;
 
   // a mapping from astro name to ID
-  mapping (bytes32 =&gt; uint256) astroNameToIDs;
+  mapping (bytes32 => uint256) astroNameToIDs;
 
   // purchasing mapping
-  mapping (address =&gt; PurchasingRecord) public purchasingBuyer;
+  mapping (address => PurchasingRecord) public purchasingBuyer;
 
   event PurchasedSupernova(address userAddress, uint astroID);
   event ExplodedSupernova(address userAddress, uint[] newAstroIDs);
@@ -325,7 +325,7 @@ contract Nova is NovaAccessControl,ERC721 {
   }
 
   function getAstroInfo(uint id) constant public returns(uint novaId, uint idx, AstroType astroType, string astroName, uint mass, uint createTime, uint famedID, uint nextAttractTime, uint cdTime) {
-      if (id &gt; astroIDPool) {
+      if (id > astroIDPool) {
           return;
       }
 
@@ -373,14 +373,14 @@ contract Nova is NovaAccessControl,ERC721 {
 
       Astro[] storage astroPool = _getAstroPoolByType(expectedType);
 
-      if (lastIndex == 0 || astroPool.length == 0 || lastIndex &gt; astroPool.length) {
+      if (lastIndex == 0 || astroPool.length == 0 || lastIndex > astroPool.length) {
           return;
       }
 
       uint[] memory result = new uint[](count);
       uint start = lastIndex - 1;
       uint i = 0;
-      for (uint cursor = start; cursor &gt;= 0 &amp;&amp; i &lt; count; --cursor) {
+      for (uint cursor = start; cursor >= 0 && i < count; --cursor) {
           var astro = astroPool[cursor];
           if (_isValidAstro(_getAstroTypeByCode(astro.code))) {
             result[i++] = cursor;
@@ -392,7 +392,7 @@ contract Nova is NovaAccessControl,ERC721 {
 
       // ugly
       uint[] memory finalR = new uint[](i);
-      for (uint cnt = 0; cnt &lt; i; cnt++) {
+      for (uint cnt = 0; cnt < i; cnt++) {
         finalR[cnt] = result[cnt];
       }
 
@@ -400,7 +400,7 @@ contract Nova is NovaAccessControl,ERC721 {
   }
 
   function isUserOwnNovas(address userAddress, uint[] novaIDs) constant external returns(bool isOwn) {
-      for (uint i = 0; i &lt; novaIDs.length; i++) {
+      for (uint i = 0; i < novaIDs.length; i++) {
           if (astroIndexToOwners[novaIDs[i]] != userAddress) {
               return false;
           }
@@ -414,32 +414,32 @@ contract Nova is NovaAccessControl,ERC721 {
   }
 
   function _extractIndex(uint codeIdx) pure public returns(uint index, AstroType astroType) {
-      astroType = AstroType(codeIdx &amp; 0x0000000000ff);
-      index = uint(codeIdx &gt;&gt; 8);
+      astroType = AstroType(codeIdx & 0x0000000000ff);
+      index = uint(codeIdx >> 8);
   }
 
   function _combineIndex(uint index, AstroType astroType) pure public returns(uint codeIdx) {
-      codeIdx = uint((index &lt;&lt; 8) | uint(astroType));
+      codeIdx = uint((index << 8) | uint(astroType));
   }
 
   function _updateAstroTypeForIndexCode(uint orgCodeIdx, AstroType astroType) pure public returns(uint) {
-      return (orgCodeIdx &amp; 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00) | (uint(astroType));
+      return (orgCodeIdx & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00) | (uint(astroType));
   }
 
   function _updateIndexForIndexCode(uint orgCodeIdx, uint idx) pure public returns(uint) {
-      return (orgCodeIdx &amp; 0xff) | (idx &lt;&lt; 8);
+      return (orgCodeIdx & 0xff) | (idx << 8);
   }
 
   function _extractCode(uint48 code) pure public returns(AstroType astroType, uint cdIdx, uint famedID, uint mass) {
-     astroType = AstroType(code &amp; 0x0000000000ff);
+     astroType = AstroType(code & 0x0000000000ff);
      if (astroType == AstroType.NormalStar) {
-        cdIdx = (code &amp; 0x00000000ff00) &gt;&gt; 8;
+        cdIdx = (code & 0x00000000ff00) >> 8;
         famedID = 0;
-        mass = (code &amp; 0xffff00000000) &gt;&gt; 32;
+        mass = (code & 0xffff00000000) >> 32;
      } else if (astroType == AstroType.FamedStar) {
-        cdIdx = (code &amp; 0x00000000ff00) &gt;&gt; 8;
-        famedID = (code &amp; 0x0000ffff0000) &gt;&gt; 16;
-        mass = (code &amp; 0xffff00000000) &gt;&gt; 32;
+        cdIdx = (code & 0x00000000ff00) >> 8;
+        famedID = (code & 0x0000ffff0000) >> 16;
+        mass = (code & 0xffff00000000) >> 32;
      } else if (astroType == AstroType.Supernova) {
         cdIdx = 0;
         famedID = 0;
@@ -447,44 +447,44 @@ contract Nova is NovaAccessControl,ERC721 {
      } else {
         cdIdx = 0;
         famedID = 0;
-        mass = (code &amp; 0xffff00000000) &gt;&gt; 32;
+        mass = (code & 0xffff00000000) >> 32;
      }
   }
 
   function _getAstroTypeByCode(uint48 code) pure internal returns(AstroType astroType) {
-     return AstroType(code &amp; 0x0000000000ff);
+     return AstroType(code & 0x0000000000ff);
   }
 
   function _getMassByCode(uint48 code) pure internal returns(uint mass) {
-     return uint((code &amp; 0xffff00000000) &gt;&gt; 32);
+     return uint((code & 0xffff00000000) >> 32);
   }
 
   function _getCdIdxByCode(uint48 code) pure internal returns(uint cdIdx) {
-     return uint((code &amp; 0x00000000ff00) &gt;&gt; 8);
+     return uint((code & 0x00000000ff00) >> 8);
   }
 
   function _getFamedIDByCode(uint48 code) pure internal returns(uint famedID) {
-    return uint((code &amp; 0x0000ffff0000) &gt;&gt; 16);
+    return uint((code & 0x0000ffff0000) >> 16);
   }
 
   function _combieCode(AstroType astroType, uint cdIdx, uint famedID, uint mass) pure public returns(uint48 code) {
      if (astroType == AstroType.NormalStar) {
-        return uint48(astroType) | (uint48(cdIdx) &lt;&lt; 8) | (uint48(mass) &lt;&lt; 32);
+        return uint48(astroType) | (uint48(cdIdx) << 8) | (uint48(mass) << 32);
      } else if (astroType == AstroType.FamedStar) {
-        return uint48(astroType) | (uint48(cdIdx) &lt;&lt; 8) | (uint48(famedID) &lt;&lt; 16) | (uint48(mass) &lt;&lt; 32);
+        return uint48(astroType) | (uint48(cdIdx) << 8) | (uint48(famedID) << 16) | (uint48(mass) << 32);
      } else if (astroType == AstroType.Supernova) {
         return uint48(astroType);
      } else {
-        return uint48(astroType) | (uint48(mass) &lt;&lt; 32);
+        return uint48(astroType) | (uint48(mass) << 32);
      }
   }
 
   function _updateAstroTypeForCode(uint48 orgCode, AstroType newType) pure public returns(uint48 newCode) {
-     return (orgCode &amp; 0xffffffffff00) | (uint48(newType));
+     return (orgCode & 0xffffffffff00) | (uint48(newType));
   }
 
   function _updateCdIdxForCode(uint48 orgCode, uint newIdx) pure public returns(uint48 newCode) {
-     return (orgCode &amp; 0xffffffff00ff) | (uint48(newIdx) &lt;&lt; 8);
+     return (orgCode & 0xffffffff00ff) | (uint48(newIdx) << 8);
   }
 
   function _getAstroPoolByType(AstroType expectedType) constant internal returns(Astro[] storage pool) {
@@ -500,7 +500,7 @@ contract Nova is NovaAccessControl,ERC721 {
   }
 
   function _isValidAstro(AstroType astroType) pure internal returns(bool) {
-      return astroType != AstroType.Placeholder &amp;&amp; astroType != AstroType.Dismissed;
+      return astroType != AstroType.Placeholder && astroType != AstroType.Dismissed;
   }
 
   function _reduceValidAstroCount() internal {
@@ -533,7 +533,7 @@ contract Nova is NovaAccessControl,ERC721 {
     uint idsLen = astroOwnerToIDsLen[userAddress];
     uint index = astroOwnerToIDIndex[userAddress][novaID];
 
-    if (idsLen &gt; 1 &amp;&amp; index != idsLen - 1) {
+    if (idsLen > 1 && index != idsLen - 1) {
         uint endNovaID = astroOwnerToIDs[userAddress][idsLen - 1];
         astroOwnerToIDs[userAddress][index] = endNovaID;
         astroOwnerToIDIndex[userAddress][endNovaID] = index;
@@ -585,7 +585,7 @@ contract Nova is NovaAccessControl,ERC721 {
   function _bytes32ToString(bytes32 x) internal pure returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
         byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
         if (char != 0) {
             bytesString[charCount] = char;
@@ -593,7 +593,7 @@ contract Nova is NovaAccessControl,ERC721 {
         }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
         bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);
@@ -612,7 +612,7 @@ contract Nova is NovaAccessControl,ERC721 {
 
   function _transfer(address _from, address _to, uint _tokenId) internal {
     require(_from == astroIndexToOwners[_tokenId]);
-    require(_from != _to &amp;&amp; _to != address(0));
+    require(_from != _to && _to != address(0));
 
     uint poolIdx;
     AstroType itemType;
@@ -626,9 +626,9 @@ contract Nova is NovaAccessControl,ERC721 {
     _removeAstroFromUser(_from, _tokenId);
     _addAstroToUser(_to, _tokenId);
 
-    // Check if it&#39;s famous star
+    // Check if it's famous star
     uint famedID = _getFamedIDByCode(astro.code);
-    if (famedID &gt; 0) {
+    if (famedID > 0) {
       var famedstarContract = FamedStarInterface(famedStarAddress);
       famedstarContract.updateFamedStarOwner(famedID, _to);
     }
@@ -636,9 +636,9 @@ contract Nova is NovaAccessControl,ERC721 {
 
   // Purchase action only permit manager to use
   function purchaseSupernova(address targetAddress, uint price) external onlyManager {
-    require(superNovaSupply &gt;= 1);
+    require(superNovaSupply >= 1);
     NovaCoin novaCoinContract = NovaCoin(novaCoinAddress);
-    require(novaCoinContract.balanceOf(targetAddress) &gt;= price);
+    require(novaCoinContract.balanceOf(targetAddress) >= price);
     novaCoinContract.consumeCoinForNova(targetAddress, price);
 
     superNovaSupply -= 1;
@@ -646,29 +646,29 @@ contract Nova is NovaAccessControl,ERC721 {
     PurchasedSupernova(targetAddress, newNovaID);
   }
 
-  // explode one supernova from user&#39;s supernova balance, write explode result into user account
+  // explode one supernova from user's supernova balance, write explode result into user account
   function explodeSupernova(address userAddress, uint novaID) external onlyManager {
-    // verifu if user own&#39;s this supernova
+    // verifu if user own's this supernova
     require(astroIndexToOwners[novaID] == userAddress);
     uint poolIdx;
     AstroType itemType;
     (poolIdx, itemType) = _extractIndex(idToIndex[novaID]);
     require(itemType == AstroType.Supernova);
-    // burn down user&#39;s supernova
+    // burn down user's supernova
     _burnDownAstro(userAddress, novaID);
 
     uint[] memory newAstroIDs;
 
     var labContract = NovaLabInterface(labAddress);
     uint star = labContract.bornStar();
-    if (star &gt; 0) {
-        // Got star, check if it&#39;s famed star
+    if (star > 0) {
+        // Got star, check if it's famed star
         newAstroIDs = new uint[](1);
         var famedstarContract = FamedStarInterface(famedStarAddress);
         uint famedID;
         bytes32 novaName;
         (famedID, novaName) = famedstarContract.bornFamedStar(userAddress, star);
-        if (famedID &gt; 0) {
+        if (famedID > 0) {
             newAstroIDs[0] = _insertNewAstro(userAddress, AstroType.FamedStar, star, novaName, famedID);
         } else {
             newAstroIDs[0] = _insertNewAstro(userAddress, AstroType.NormalStar, star, 0, 0);
@@ -677,7 +677,7 @@ contract Nova is NovaAccessControl,ERC721 {
         uint mNum = labContract.bornMeteoriteNumber();
         newAstroIDs = new uint[](mNum);
         uint m;
-        for (uint i = 0; i &lt; mNum; i++) {
+        for (uint i = 0; i < mNum; i++) {
             m = labContract.bornMeteorite();
             newAstroIDs[i] = _insertNewAstro(userAddress, AstroType.Meteorite, m, 0, 0);
         }
@@ -693,7 +693,7 @@ contract Nova is NovaAccessControl,ERC721 {
         //got star, check if we can get famed star
         var famedstarContract = FamedStarInterface(famedStarAddress);
         (famedID, novaName) = famedstarContract.bornFamedStar(userAddress, mergeMass);
-        if (famedID &gt; 0) {
+        if (famedID > 0) {
             newType = AstroType.FamedStar;
         } else {
             newType = AstroType.NormalStar;
@@ -709,7 +709,7 @@ contract Nova is NovaAccessControl,ERC721 {
     mergeMass = 0;
     uint poolIdx;
     AstroType itemType;
-    for (uint i = 0; i &lt; astroIDs.length; i++) {
+    for (uint i = 0; i < astroIDs.length; i++) {
         astroID = astroIDs[i];
         (poolIdx, itemType) = _extractIndex(idToIndex[astroID]);
         require(astroIndexToOwners[astroID] == userAddress);
@@ -725,9 +725,9 @@ contract Nova is NovaAccessControl,ERC721 {
   function mergeAstros(address userAddress, uint novaCoinCentCost, uint[] astroIDs) external onlyManager {
     // check nova coin balance
     NovaCoin novaCoinContract = NovaCoin(novaCoinAddress);
-    require(novaCoinContract.balanceOf(userAddress) &gt;= novaCoinCentCost);
+    require(novaCoinContract.balanceOf(userAddress) >= novaCoinCentCost);
     // check astros
-    require(astroIDs.length &gt; 1 &amp;&amp; astroIDs.length &lt;= 10);
+    require(astroIDs.length > 1 && astroIDs.length <= 10);
 
     uint mergeMass = _combine(userAddress, astroIDs);
     // Consume novaCoin
@@ -745,7 +745,7 @@ contract Nova is NovaAccessControl,ERC721 {
   function _attractBalanceCheck(address userAddress, uint novaCoinCentCost) internal {
     // check balance
     NovaCoin novaCoinContract = NovaCoin(novaCoinAddress);
-    require(novaCoinContract.balanceOf(userAddress) &gt;= novaCoinCentCost);
+    require(novaCoinContract.balanceOf(userAddress) >= novaCoinCentCost);
 
     // consume coin
     novaCoinContract.consumeCoinForNova(userAddress, novaCoinCentCost);
@@ -761,7 +761,7 @@ contract Nova is NovaAccessControl,ERC721 {
 
     var astroPool = _getAstroPoolByType(itemType);
     Astro storage astro = astroPool[poolIdx];
-    require(astro.nextAttractTime &lt;= block.timestamp);
+    require(astro.nextAttractTime <= block.timestamp);
 
     _attractBalanceCheck(userAddress, novaCoinCentCost);
 
@@ -771,7 +771,7 @@ contract Nova is NovaAccessControl,ERC721 {
     newAstroIDs[0] = _insertNewAstro(userAddress, AstroType.Meteorite, m, 0, 0);
     // update cd
     uint cdIdx = _getCdIdxByCode(astro.code);
-    if (cdIdx &gt;= cd.length - 1) {
+    if (cdIdx >= cd.length - 1) {
         astro.nextAttractTime = block.timestamp + cd[cd.length - 1];
     } else {
         astro.code = _updateCdIdxForCode(astro.code, ++cdIdx);
@@ -793,11 +793,11 @@ contract Nova is NovaAccessControl,ERC721 {
 
   function userPurchaseAstro(address ownerAddress, uint astroID) payable external {
     // check valid purchasing tim
-    require(msg.sender.balance &gt;= msg.value);
+    require(msg.sender.balance >= msg.value);
     var record = purchasingBuyer[msg.sender];
-    require(block.timestamp &lt; record.time + priceValidSeconds);
+    require(block.timestamp < record.time + priceValidSeconds);
     require(record.id == astroID);
-    require(record.priceWei &lt;= msg.value);
+    require(record.priceWei <= msg.value);
 
     uint royalties = uint(msg.value * novaTransferRate / 1000);
     ownerAddress.transfer(msg.value - royalties);

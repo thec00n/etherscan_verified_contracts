@@ -6,8 +6,8 @@ contract AmIOnTheFork {
     // Approximately between 2016-07-20 12:00:00 UTC and 2016-07-20 17:00:00 UTC.
     // After that the status will be locked in.
     function update() {
-        if (block.number &gt;= 1920000 &amp;&amp; block.number &lt;= 1921200) {
-            forked = darkDAO.balance &lt; 3600000 ether;
+        if (block.number >= 1920000 && block.number <= 1921200) {
+            forked = darkDAO.balance < 3600000 ether;
         }
     }
     function() {

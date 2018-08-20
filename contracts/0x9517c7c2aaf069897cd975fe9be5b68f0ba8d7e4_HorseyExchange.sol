@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -197,10 +197,10 @@ contract HorseyExchange is Pausable { //also Ownable
     }
 
     /// @dev Market spec to lookup price and original owner based on token id
-    mapping (uint256 =&gt; SaleData) market;
+    mapping (uint256 => SaleData) market;
 
     /// @dev mapping of current tokens on market by owner
-    mapping (address =&gt; uint256[]) userBarn;
+    mapping (address => uint256[]) userBarn;
 
     /// @dev initialize
     constructor() Pausable() public {
@@ -214,7 +214,7 @@ contract HorseyExchange is Pausable { //also Ownable
     function setStables(address _token) external
     onlyOwner()
     {
-        require(address(_token) != 0,&quot;Address of token is zero&quot;);
+        require(address(_token) != 0,"Address of token is zero");
         token = ERC721Basic(_token);
     }
 
@@ -250,7 +250,7 @@ contract HorseyExchange is Pausable { //also Ownable
     isTokenOwner(tokenId)
     nonZeroPrice(price)
     tokenAvailable() {
-        require(token.getApproved(tokenId) == address(this),&quot;Exchange is not allowed to transfer&quot;);
+        require(token.getApproved(tokenId) == address(this),"Exchange is not allowed to transfer");
         //Transfers token from depositee to exchange (contract address)
         token.transferFrom(msg.sender, address(this), tokenId);
         
@@ -283,14 +283,14 @@ contract HorseyExchange is Pausable { //also Ownable
 
         emit SaleCanceled(tokenId);
 
-        //Return true if this user is still &#39;active&#39; within the exchange
+        //Return true if this user is still 'active' within the exchange
         //This will help with client side actions
-        return userBarn[msg.sender].length &gt; 0;
+        return userBarn[msg.sender].length > 0;
     }
 
     /**
         @dev Performs the purchase of a token that is present on the market - this includes checking that the
-            proper amount is sent + appliced fee, updating seller&#39;s balance, updated collected fees and
+            proper amount is sent + appliced fee, updating seller's balance, updated collected fees and
             transfering token to buyer
             Only market tokens can be purchased
         @param tokenId ID of the token we wish to purchase
@@ -303,7 +303,7 @@ contract HorseyExchange is Pausable { //also Ownable
     {
         //Did the sender accidently pay over? - if so track the amount over
         uint256 totalToPay = getTokenPrice(tokenId);
-        require(msg.value &gt;= totalToPay, &quot;Not paying enough&quot;);
+        require(msg.value >= totalToPay, "Not paying enough");
 
         //fetch this tokens sale data
         SaleData memory sale = market[tokenId];
@@ -325,7 +325,7 @@ contract HorseyExchange is Pausable { //also Ownable
         token.transferFrom(address(this), msg.sender, tokenId);
 
         //Return over paid amount to sender if necessary
-        if(msg.value &gt; totalToPay) //overpaid
+        if(msg.value > totalToPay) //overpaid
         {
             msg.sender.transfer(msg.value.sub(totalToPay));
         }
@@ -337,7 +337,7 @@ contract HorseyExchange is Pausable { //also Ownable
     function withdraw() external
     onlyOwner()
     {
-        assert(collectedFees &lt;= address(this).balance);
+        assert(collectedFees <= address(this).balance);
         owner.transfer(collectedFees);
         collectedFees = 0;
     }
@@ -349,12 +349,12 @@ contract HorseyExchange is Pausable { //also Ownable
     */
     function _removeTokenFromBarn(uint tokenId, address barnAddress)  internal {
         uint256[] storage barnArray = userBarn[barnAddress];
-        require(barnArray.length &gt; 0,&quot;No tokens to remove&quot;);
+        require(barnArray.length > 0,"No tokens to remove");
         int index = _indexOf(tokenId, barnArray);
-        require(index &gt;= 0, &quot;Token not found in barn&quot;);
+        require(index >= 0, "Token not found in barn");
 
         // Shift entire array :(
-        for (uint256 i = uint256(index); i&lt;barnArray.length-1; i++){
+        for (uint256 i = uint256(index); i<barnArray.length-1; i++){
             barnArray[i] = barnArray[i+1];
         }
 
@@ -372,7 +372,7 @@ contract HorseyExchange is Pausable { //also Ownable
     function _indexOf(uint item, uint256[] memory array) internal pure returns (int256){
 
         //Iterate over array to find indexOf(token)
-        for(uint256 i = 0; i &lt; array.length; i++){
+        for(uint256 i = 0; i < array.length; i++){
             if(array[i] == item){
                 return int256(i);
             }
@@ -384,37 +384,37 @@ contract HorseyExchange is Pausable { //also Ownable
 
     /// @dev requires token to be on the market = current owner is exchange
     modifier isOnMarket(uint256 tokenId) {
-        require(token.ownerOf(tokenId) == address(this),&quot;Token not on market&quot;);
+        require(token.ownerOf(tokenId) == address(this),"Token not on market");
         _;
     }
     
     /// @dev Is the user the owner of this token?
     modifier isTokenOwner(uint256 tokenId) {
-        require(token.ownerOf(tokenId) == msg.sender,&quot;Not tokens owner&quot;);
+        require(token.ownerOf(tokenId) == msg.sender,"Not tokens owner");
         _;
     }
 
     /// @dev Is this the original owner of the token - at exchange level
     modifier originalOwnerOf(uint256 tokenId) {
-        require(market[tokenId].owner == msg.sender,&quot;Not the original owner of&quot;);
+        require(market[tokenId].owner == msg.sender,"Not the original owner of");
         _;
     }
 
     /// @dev Is this the original owner of the token - at exchange level
     modifier notOriginalOwnerOf(uint256 tokenId) {
-        require(market[tokenId].owner != msg.sender,&quot;Is the original owner&quot;);
+        require(market[tokenId].owner != msg.sender,"Is the original owner");
         _;
     }
 
     /// @dev Is a nonzero price being sent?
     modifier nonZeroPrice(uint256 price){
-        require(price &gt; 0,&quot;Price is zero&quot;);
+        require(price > 0,"Price is zero");
         _;
     }
 
     /// @dev Do we have a token address
     modifier tokenAvailable(){
-        require(address(token) != 0,&quot;Token address not set&quot;);
+        require(address(token) != 0,"Token address not set");
         _;
     }
 }
@@ -448,7 +448,7 @@ contract EthorseRace {
     chronus_info public chronus;
 
     //Coin index mapping to flag - true if index is winner
-    mapping (bytes32 =&gt; bool) public winner_horse;
+    mapping (bytes32 => bool) public winner_horse;
     /*
             // exposing the coin pool details for DApp
     function getCoinIndex(bytes32 index, address candidate) external constant returns (uint, uint, uint, bool, uint) {
@@ -467,8 +467,8 @@ contract EthorseRace {
 contract EthorseHelpers {
 
     /// @dev Convert all symbols to bytes array
-    bytes32[] public all_horses = [bytes32(&quot;BTC&quot;),bytes32(&quot;ETH&quot;),bytes32(&quot;LTC&quot;)];
-    mapping(address =&gt; bool) private _legitOwners;
+    bytes32[] public all_horses = [bytes32("BTC"),bytes32("ETH"),bytes32("LTC")];
+    mapping(address => bool) private _legitOwners;
 
     /// @dev Used to add new symbol to the bytes array 
     function _addHorse(bytes32 newHorse) internal {
@@ -486,7 +486,7 @@ contract EthorseHelpers {
 
     /**
         @param raceAddress - address of this race
-        @param eth_address - user&#39;s ethereum wallet address
+        @param eth_address - user's ethereum wallet address
         @return true if user is winner + name of the winning horse (LTC,BTC,ETH,...)
     */
     function _isWinnerOf(address raceAddress, address eth_address) internal view returns (bool,bytes32)
@@ -512,7 +512,7 @@ contract EthorseHelpers {
         uint256 arrayLength = all_horses.length;
 
         //Iterate over coin symbols to find winner - tie could be possible?
-        for(uint256 i = 0; i &lt; arrayLength; i++)
+        for(uint256 i = 0; i < arrayLength; i++)
         {
             if(race.winner_horse(all_horses[i])) {
                 horse = all_horses[i];
@@ -530,8 +530,8 @@ contract EthorseHelpers {
             (,,,, bet_amount) = race.getCoinIndex(horse, eth_address);
         }
         
-        //winner if the eth_address had a bet &gt; 0 on the winner horse
-        return (bet_amount &gt; 0, horse);
+        //winner if the eth_address had a bet > 0 on the winner horse
+        return (bet_amount > 0, horse);
     }
 }
 
@@ -546,9 +546,9 @@ contract RoyalStablesInterface {
         uint8 tier;
     }
 
-    mapping(uint256 =&gt; Horsey) public horseys;
-    mapping(address =&gt; uint32) public carrot_credits;
-    mapping(uint256 =&gt; string) public names;
+    mapping(uint256 => Horsey) public horseys;
+    mapping(address => uint32) public carrot_credits;
+    mapping(uint256 => string) public names;
     address public master;
 
     function getOwnedTokens(address eth_address) public view returns (uint256[]);
@@ -613,7 +613,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
     }
 
     /// @dev Maps a user to his pending feeding
-    mapping(address =&gt; FeedingData) public pendingFeedings;
+    mapping(address => FeedingData) public pendingFeedings;
 
     /// @dev Stores the renaming fees per character a user has to pay upon renaming a horsey
     uint256 public renamingCostsPerChar = 0.001 ether;
@@ -723,7 +723,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
         @dev Allows a user to claim a special horsey with the same dna as the race one
             Cant be used on paused
             The sender has to be a winner of the race and must never have claimed a special horsey from this race
-        @param raceAddress The race&#39;s address
+        @param raceAddress The race's address
     */
     function claim(address raceAddress) external payable
     costs(claimingFee)
@@ -732,8 +732,8 @@ contract HorseyToken is EthorseHelpers,Pausable {
         //call _isWinnerOf with a 0 address to simply get the winner horse
         bytes32 winner;
         (,winner) = _isWinnerOf(raceAddress, address(0));
-        require(winner != bytes32(0),&quot;Winner is zero&quot;);
-        require(can_claim(raceAddress, msg.sender),&quot;can_claim return false&quot;);
+        require(winner != bytes32(0),"Winner is zero");
+        require(can_claim(raceAddress, msg.sender),"can_claim return false");
         //require(!exists(id)); should already be checked by mining function
         uint256 id = _generate_special_horsey(raceAddress, msg.sender, winner);
         emit Claimed(raceAddress, msg.sender, id);
@@ -756,7 +756,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
     payable {
         uint256 renamingFee = renamingCostsPerChar * bytes(newName).length;
         //Return over paid amount to sender if necessary
-        if(msg.value &gt; renamingFee) //overpaid
+        if(msg.value > renamingFee) //overpaid
         {
             msg.sender.transfer(msg.value.sub(renamingFee));
         }
@@ -767,7 +767,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
 
     /**
         @dev Allows a user to burn a token he owns to get carrots
-            The mount of carrots given is equal to the horsey&#39;s feedingCounter upon burning
+            The mount of carrots given is equal to the horsey's feedingCounter upon burning
             Cant be called on a horsey with a pending feeding
             Cant be called while paused
         @param tokenId ID of the token to burn
@@ -775,7 +775,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
     function freeForCarrots(uint256 tokenId) external 
     whenNotPaused()
     onlyOwnerOf(tokenId) {
-        require(pendingFeedings[msg.sender].horsey != tokenId,&quot;&quot;);
+        require(pendingFeedings[msg.sender].horsey != tokenId,"");
         //credit carrots
         uint8 feedingCounter;
         (,,feedingCounter,) = stables.horseys(tokenId);
@@ -834,13 +834,13 @@ contract HorseyToken is EthorseHelpers,Pausable {
         uint256 blockNumber = pendingFeedings[msg.sender].blockNumber;
         uint256 tokenId = pendingFeedings[msg.sender].horsey;
         //you cant feed and stop feeding from the same block!
-        require(block.number - blockNumber &gt;= 1,&quot;feeding and stop feeding are in same block&quot;);
+        require(block.number - blockNumber >= 1,"feeding and stop feeding are in same block");
 
         delete pendingFeedings[msg.sender];
 
         //solidity only gives you access to the previous 256 blocks
         //deny and remove this obsolete feeding if we cant fetch its blocks hash
-        if(block.number - blockNumber &gt; 255) {
+        if(block.number - blockNumber > 255) {
             //the feeding is outdated = failed
             //the user can feed again but he lost his carrots
             emit FeedingFailed(tokenId);
@@ -865,14 +865,14 @@ contract HorseyToken is EthorseHelpers,Pausable {
 
     /// @dev Only ether sent explicitly through the donation() function is accepted
     function() external payable {
-        revert(&quot;Not accepting donations&quot;);
+        revert("Not accepting donations");
     }
 
     /**
-        @dev Internal function to increase a horsey&#39;s rarity
+        @dev Internal function to increase a horsey's rarity
             Uses a random value to assess if the feeding process increases rarity
             The chances of having a rarity increase are based on the current feedingCounter
-        @param tokenId ID of the token to &quot;feed&quot;
+        @param tokenId ID of the token to "feed"
         @param blockHash Hash of the block where the feeding began
     */
     function _feed(uint256 tokenId, bytes32 blockHash) internal {
@@ -883,14 +883,14 @@ contract HorseyToken is EthorseHelpers,Pausable {
         uint256 probabilityByRarity = 10 ** (uint256(tier).add(1));
         uint256 randNum = uint256(keccak256(abi.encodePacked(tokenId, blockHash))) % probabilityByRarity;
 
-        //Scale probability based on horsey&#39;s level
-        if(randNum &lt;= (feedingCounter * rarityMultiplier)){
+        //Scale probability based on horsey's level
+        if(randNum <= (feedingCounter * rarityMultiplier)){
             _increaseRarity(tokenId, blockHash);
         }
 
         //Increment feedingCounter
         //Maximum allowed is 255, which requires 32385 carrots, so we should never reach that
-        if(feedingCounter &lt; 255) {
+        if(feedingCounter < 255) {
             stables.modifyHorseyFeedingCounter(tokenId,feedingCounter+1);
         }
     }
@@ -929,7 +929,7 @@ contract HorseyToken is EthorseHelpers,Pausable {
         uint8 tier;
         bytes32 dna;
         (,dna,,tier) = stables.horseys(tokenId);
-        if(tier &lt; 255)
+        if(tier < 255)
             stables.modifyHorseyTier(tokenId,tier+1);
         uint256 random = uint256(keccak256(abi.encodePacked(tokenId, blockHash)));
         //this creates a mask of 256 bits such as one of the first 16 bits will be 1
@@ -952,39 +952,39 @@ contract HorseyToken is EthorseHelpers,Pausable {
     modifier carrotsMeetLevel(uint256 tokenId){
         uint256 feedingCounter;
         (,,feedingCounter,) = stables.horseys(tokenId);
-        require(feedingCounter &lt;= stables.carrot_credits(msg.sender),&quot;Not enough carrots&quot;);
+        require(feedingCounter <= stables.carrot_credits(msg.sender),"Not enough carrots");
         _;
     }
 
     /// @dev insures the caller payed the required amount
     modifier costs(uint256 amount) {
-        require(msg.value &gt;= amount,&quot;Not enough funds&quot;);
+        require(msg.value >= amount,"Not enough funds");
         _;
     }
 
     /// @dev requires the address to be non null
     modifier validAddress(address addr) {
-        require(addr != address(0),&quot;Address is zero&quot;);
+        require(addr != address(0),"Address is zero");
         _;
     }
 
     /// @dev requires that the user isnt feeding a horsey already
     modifier noFeedingInProgress() {
         //if the key does not exit, then the default struct data is used where blockNumber is 0
-        require(pendingFeedings[msg.sender].blockNumber == 0,&quot;Already feeding&quot;);
+        require(pendingFeedings[msg.sender].blockNumber == 0,"Already feeding");
         _;
     }
 
     /// @dev requires that the user isnt feeding a horsey already
     modifier feedingInProgress() {
         //if the key does not exit, then the default struct data is used where blockNumber is 0
-        require(pendingFeedings[msg.sender].blockNumber != 0,&quot;No pending feeding&quot;);
+        require(pendingFeedings[msg.sender].blockNumber != 0,"No pending feeding");
         _;
     }
 
     /// @dev requires that the user isnt feeding a horsey already
     modifier onlyOwnerOf(uint256 tokenId) {
-        require(stables.ownerOf(tokenId) == msg.sender, &quot;Caller is not owner of this token&quot;);
+        require(stables.ownerOf(tokenId) == msg.sender, "Caller is not owner of this token");
         _;
     }
 }
@@ -1055,7 +1055,7 @@ contract HorseyPilot {
     address public tokenAddress;
 
     /// @dev Mapping to keep track of pending balance of contract owners
-    mapping(address =&gt; uint) internal _cBalance;
+    mapping(address => uint) internal _cBalance;
 
     /// @dev Encapsulates information about a proposed update
     struct Proposal{
@@ -1095,7 +1095,7 @@ contract HorseyPilot {
         knightAddress = _knightAddress;
         paladinAddress = _paladinAddress;
 
-        for(uint i = 0; i &lt; 3; i++) {
+        for(uint i = 0; i < 3; i++) {
             voters[i] = _voters[i];
         }
 
@@ -1107,7 +1107,7 @@ contract HorseyPilot {
         @dev Used to deploy children contracts as a one shot call
     */
     function deployChildren(address stablesAddress) external {
-        require(!deployed,&quot;already deployed&quot;);
+        require(!deployed,"already deployed");
         // deploy token and exchange contracts
         exchangeAddress = new HorseyExchange();
         tokenAddress = new HorseyToken(stablesAddress);
@@ -1124,7 +1124,7 @@ contract HorseyPilot {
     */
     function transferJokerOwnership(address newJoker) external 
     validAddress(newJoker) {
-        require(jokerAddress == msg.sender,&quot;Not right role&quot;);
+        require(jokerAddress == msg.sender,"Not right role");
         _moveBalance(newJoker);
         jokerAddress = newJoker;
     }
@@ -1135,7 +1135,7 @@ contract HorseyPilot {
     */
     function transferKnightOwnership(address newKnight) external 
     validAddress(newKnight) {
-        require(knightAddress == msg.sender,&quot;Not right role&quot;);
+        require(knightAddress == msg.sender,"Not right role");
         _moveBalance(newKnight);
         knightAddress = newKnight;
     }
@@ -1146,7 +1146,7 @@ contract HorseyPilot {
     */
     function transferPaladinOwnership(address newPaladin) external 
     validAddress(newPaladin) {
-        require(paladinAddress == msg.sender,&quot;Not right role&quot;);
+        require(paladinAddress == msg.sender,"Not right role");
         _moveBalance(newPaladin);
         paladinAddress = newPaladin;
     }
@@ -1162,7 +1162,7 @@ contract HorseyPilot {
     validAddress(destination) {
         //Check that pending balance can be redistributed - if so perform
         //this procedure
-        if(toBeDistributed &gt; 0){
+        if(toBeDistributed > 0){
             _updateDistribution();
         }
         
@@ -1170,7 +1170,7 @@ contract HorseyPilot {
         uint256 balance = _cBalance[msg.sender];
         
         //If we have non-zero balance, CEO may withdraw from pending amount
-        if(balance &gt; 0 &amp;&amp; (address(this).balance &gt;= balance)) {
+        if(balance > 0 && (address(this).balance >= balance)) {
             destination.transfer(balance); //throws on fail
             _cBalance[msg.sender] = 0;
         }
@@ -1194,7 +1194,7 @@ contract HorseyPilot {
 
     /**
         @dev Make a proposal and add to pending proposals
-        @param methodId a string representing the function ie. &#39;renameHorsey()&#39;
+        @param methodId a string representing the function ie. 'renameHorsey()'
         @param parameter parameter to be used if invocation is approved
     */
     function makeProposal( uint8 methodId, uint8 parameter ) external
@@ -1221,12 +1221,12 @@ contract HorseyPilot {
     onlyVoters()
     notVoted() {
         //cant vote on expired!
-        require((block.timestamp - currentProposal.timestamp) &lt;= proposalLife);
+        require((block.timestamp - currentProposal.timestamp) <= proposalLife);
         if(voteFor)
         {
             currentProposal.yay.push(msg.sender);
             //Proposal went through? invoke it
-            if( currentProposal.yay.length &gt;= votingThreshold )
+            if( currentProposal.yay.length >= votingThreshold )
             {
                 _doProposal();
                 proposalInProgress = false;
@@ -1237,7 +1237,7 @@ contract HorseyPilot {
         } else {
             currentProposal.nay.push(msg.sender);
             //Proposal failed?
-            if( currentProposal.nay.length &gt;= votingThreshold )
+            if( currentProposal.nay.length >= votingThreshold )
             {
                 proposalInProgress = false;
                 cooldownStart = block.timestamp;
@@ -1262,7 +1262,7 @@ contract HorseyPilot {
             will only ever be called if balance is non-zero (funds should be distributed)
     */
     function _updateDistribution() internal {
-        require(toBeDistributed != 0,&quot;nothing to distribute&quot;);
+        require(toBeDistributed != 0,"nothing to distribute");
         uint256 knightPayday = toBeDistributed.div(100).mul(knightEquity);
         uint256 paladinPayday = toBeDistributed.div(100).mul(paladinEquity);
 
@@ -1321,51 +1321,51 @@ contract HorseyPilot {
 
     /// @dev requires the address to be non null
     modifier validAddress(address addr) {
-        require(addr != address(0),&quot;Address is zero&quot;);
+        require(addr != address(0),"Address is zero");
         _;
     }
 
     /// @dev requires the sender to be on the contract owners list
     modifier onlyCLevelAccess() {
-        require((jokerAddress == msg.sender) || (knightAddress == msg.sender) || (paladinAddress == msg.sender),&quot;not c level&quot;);
+        require((jokerAddress == msg.sender) || (knightAddress == msg.sender) || (paladinAddress == msg.sender),"not c level");
         _;
     }
 
     /// @dev requires that a proposal is not in process or has exceeded its lifetime, and has cooled down
     /// after being vetoed
     modifier proposalAvailable(){
-        require(((!proposalInProgress) || ((block.timestamp - currentProposal.timestamp) &gt; proposalLife)),&quot;proposal already pending&quot;);
+        require(((!proposalInProgress) || ((block.timestamp - currentProposal.timestamp) > proposalLife)),"proposal already pending");
         _;
     }
 
     // @dev requries that if this proposer was the last proposer, that he or she has reached the 
     // cooldown limit
     modifier cooledDown( ){
-        if(msg.sender == currentProposal.proposer &amp;&amp; (block.timestamp - cooldownStart &lt; 1 days)){
-            revert(&quot;Cool down period not passed yet&quot;);
+        if(msg.sender == currentProposal.proposer && (block.timestamp - cooldownStart < 1 days)){
+            revert("Cool down period not passed yet");
         }
         _;
     }
 
     /// @dev requires a proposal to be active
     modifier proposalPending() {
-        require(proposalInProgress,&quot;no proposal pending&quot;);
+        require(proposalInProgress,"no proposal pending");
         _;
     }
 
     /// @dev requires the voter to not have voted already
     modifier notVoted() {
         uint256 length = currentProposal.yay.length;
-        for(uint i = 0; i &lt; length; i++) {
+        for(uint i = 0; i < length; i++) {
             if(currentProposal.yay[i] == msg.sender) {
-                revert(&quot;Already voted&quot;);
+                revert("Already voted");
             }
         }
 
         length = currentProposal.nay.length;
-        for(i = 0; i &lt; length; i++) {
+        for(i = 0; i < length; i++) {
             if(currentProposal.nay[i] == msg.sender) {
-                revert(&quot;Already voted&quot;);
+                revert("Already voted");
             }
         }
         _;
@@ -1375,14 +1375,14 @@ contract HorseyPilot {
     modifier onlyVoters() {
         bool found = false;
         uint256 length = voters.length;
-        for(uint i = 0; i &lt; length; i++) {
+        for(uint i = 0; i < length; i++) {
             if(voters[i] == msg.sender) {
                 found = true;
                 break;
             }
         }
         if(!found) {
-            revert(&quot;not a voter&quot;);
+            revert("not a voter");
         }
         _;
     }

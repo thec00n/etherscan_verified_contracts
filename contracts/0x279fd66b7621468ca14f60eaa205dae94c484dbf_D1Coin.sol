@@ -58,7 +58,7 @@ contract OfflineSecret {
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions, this simplifies
-/// and the implementation of &quot;user permissions&quot;.
+/// and the implementation of "user permissions".
 contract OwnableWithFoundation is OfflineSecret {
     address public owner;
     address public newOwnerCandidate;
@@ -193,37 +193,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 // Licensed under the MIT License
@@ -279,15 +279,15 @@ contract Pausable is OwnableWithFoundation {
 
 
 /// @title Basic ERC20 token contract implementation.
-/* @dev Kin&#39;s BasicToken based on OpenZeppelin&#39;s StandardToken.
+/* @dev Kin's BasicToken based on OpenZeppelin's StandardToken.
 */
 
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -297,7 +297,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -365,8 +365,8 @@ contract BasicToken is ERC20 {
 contract D1Coin is BasicToken, Pausable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;D1 Coin&quot;;
-    string public constant symbol = &quot;D1&quot;;
+    string public constant name = "D1 Coin";
+    string public constant symbol = "D1";
 
     // Thousands of a token represent the minimum usable unit of token based on
     // its expected value
@@ -379,10 +379,10 @@ contract D1Coin is BasicToken, Pausable {
         uint256 balance;
         bytes32 hashed;
     }
-    mapping (address =&gt; mapping (address =&gt; ProtectedBalanceStruct)) protectedBalances;
+    mapping (address => mapping (address => ProtectedBalanceStruct)) protectedBalances;
     uint256 public protectedSupply;
 
-    // constructor passes owner (Mint) down to Pausable() =&gt; OwnableWithFoundation()
+    // constructor passes owner (Mint) down to Pausable() => OwnableWithFoundation()
     function D1Coin(address _owner) public Pausable(_owner) {
     }
 
@@ -441,7 +441,7 @@ contract D1Coin is BasicToken, Pausable {
     /// @dev Creates a specific amount of tokens and credits them to the Mint.
     /// @param _amount uint256 Amount tokens to mint.
     function mint(uint256 _amount) external onlyOwner whenNotPaused {
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         totalSupply = totalSupply.add(_amount);
         balances[theCoin] = balances[theCoin].add(_amount);
@@ -464,12 +464,12 @@ contract D1Coin is BasicToken, Pausable {
     /// @param _value uint256 The amount to be transferred.
     /// @param _hashed string The hashed secret to use as protection.
     function protectedTransfer(address _to, uint256 _value, bytes32 _hashed) public whenNotPaused returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
-        // &quot;transfers&quot; to address(0) should only be by the burn() function
+        // "transfers" to address(0) should only be by the burn() function
         require(_to != address(0));
 
-        // explicitly disallow tranfer to the owner, as it&#39;s automatically translated into the coin
+        // explicitly disallow tranfer to the owner, as it's automatically translated into the coin
         // in protectedUnlock() and protectedReclaim()
         require(_to != owner);
 
@@ -480,7 +480,7 @@ contract D1Coin is BasicToken, Pausable {
             from = theCoin;
 
             // ensure Mint is actually holding this supply; not required below because of revert in .sub()
-            require(balances[theCoin].sub(protectedSupply) &gt;= _value);
+            require(balances[theCoin].sub(protectedSupply) >= _value);
         } else {
             // otherwise, adjust the balances: transfer the tokens to the Mint to have them held in escrow
             balances[from] = balances[from].sub(_value);
@@ -494,7 +494,7 @@ contract D1Coin is BasicToken, Pausable {
         }
 
         // disallow reusing the previous secret
-        // (not intended to prevent reuse of an N-x, x &gt; 1 secret)
+        // (not intended to prevent reuse of an N-x, x > 1 secret)
         require(protectedBalances[from][_to].hashed != _hashed);
 
         // set the protected balance and hashed value
@@ -572,10 +572,10 @@ contract D1Coin is BasicToken, Pausable {
     /// @param _amount uint256 The amount of tokens to be burned.
     function burn(uint256 _amount) external onlyOwner whenNotPaused {
         // The Mint is the owner of this contract. In this implementation, the
-        // address of this contract (proxy for owner&#39;s account)  is used to control 
+        // address of this contract (proxy for owner's account)  is used to control 
         // the money supply. Avoids the problem of having to transfer balances on owner change.
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[theCoin].sub(protectedSupply)); // account for protected balances
+        require(_amount > 0);
+        require(_amount <= balances[theCoin].sub(protectedSupply)); // account for protected balances
 
         // adjust the balances and supply
         balances[theCoin] = balances[theCoin].sub(_amount);
@@ -606,7 +606,7 @@ contract D1Coin is BasicToken, Pausable {
     /// @param _to address The address to transfer to.
     /// @param _value uint256 The amount to be transferred.
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
-        // &quot;transfers&quot; to address(0) should only be by the burn() function
+        // "transfers" to address(0) should only be by the burn() function
         require(_to != address(0));
 
         return super.transfer(_to, _value);
@@ -617,14 +617,14 @@ contract D1Coin is BasicToken, Pausable {
     /// @param _to address The address which you want to transfer to.
     /// @param _value uint256 the amount of tokens to be transferred.
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
-        // &quot;transfers&quot; to address(0) should only be by the burn() function
+        // "transfers" to address(0) should only be by the burn() function
         require(_to != address(0));
 
         // special case: _from is the Mint
         // note: within the current D1 Coin design, should never encounter this case
         if (_from == theCoin) {
             // ensure Mint is not exceeding its balance less protected supply
-            require(_value &lt;= balances[theCoin].sub(protectedSupply));
+            require(_value <= balances[theCoin].sub(protectedSupply));
         }
 
         return super.transferFrom(_from, _to, _value);

@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
 library ArrayUtils {
 
     /**
-     * Replace bytes in an array with bytes in another array, guarded by a &quot;bytemask&quot;
+     * Replace bytes in an array with bytes in another array, guarded by a "bytemask"
      * 
      * @dev Mask must be 1/8th the size of the byte array. A 1-bit means the byte array can be changed.
      * @param array The original array
@@ -97,10 +97,10 @@ library ArrayUtils {
     {
         byte[8] memory bitmasks = [byte(2 ** 7), byte(2 ** 6), byte(2 ** 5), byte(2 ** 4), byte(2 ** 3), byte(2 ** 2), byte(2 ** 1), byte(2 ** 0)];
         require(array.length == desired.length);
-        require(mask.length &gt;= array.length / 8);
-        for (uint i = 0; i &lt; array.length; i++ ) {
+        require(mask.length >= array.length / 8);
+        for (uint i = 0; i < array.length; i++ ) {
             /* 1-bit means value can be changed. */
-            bool masked = (mask[i / 8] &amp; bitmasks[i % 8]) == 0;
+            bool masked = (mask[i / 8] & bitmasks[i % 8]) == 0;
             if (!masked) {
                 array[i] = desired[i];
             }
@@ -123,7 +123,7 @@ library ArrayUtils {
         if (a.length != b.length) {
             return false;
         }
-        for (uint i = 0; i &lt; a.length; i++) {
+        for (uint i = 0; i < a.length; i++) {
             if (a[i] != b[i]) {
                 return false;
             }
@@ -183,10 +183,10 @@ contract ExchangeCore is ReentrancyGuarded {
     ProxyRegistry public registry;
 
     /* Cancelled / finalized orders, by hash. */
-    mapping(bytes32 =&gt; bool) public cancelledOrFinalized;
+    mapping(bytes32 => bool) public cancelledOrFinalized;
 
     /* Orders verified by on-chain approval (alternative to ECDSA signatures so that smart contracts can place orders directly). */
-    mapping(bytes32 =&gt; bool) public approvedOrders;
+    mapping(bytes32 => bool) public approvedOrders;
 
     /* An ECDSA signature. */ 
     struct Sig {
@@ -256,7 +256,7 @@ contract ExchangeCore is ReentrancyGuarded {
     function chargeFee(address from, address to, uint amount)
         internal
     {
-        if (amount &gt; 0) {
+        if (amount > 0) {
             require(exchangeToken.transferFrom(from, to, amount));
         }
     }
@@ -274,10 +274,10 @@ contract ExchangeCore is ReentrancyGuarded {
         returns (bool result)
     {
         bytes memory combined = new bytes(SafeMath.add(calldata.length, extradata.length));
-        for (uint i = 0; i &lt; extradata.length; i++) {
+        for (uint i = 0; i < extradata.length; i++) {
             combined[i] = extradata[i];
         }
-        for (uint j = 0; j &lt; calldata.length; j++) {
+        for (uint j = 0; j < calldata.length; j++) {
             combined[j + extradata.length] = calldata[j];
         }
         assembly {
@@ -322,7 +322,7 @@ contract ExchangeCore is ReentrancyGuarded {
         pure
         returns (bytes32)
     {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 hash = keccak256(prefix, hashOrderPartOne(order), hashOrderPartTwo(order));
         return hash;
     }
@@ -478,14 +478,14 @@ contract ExchangeCore is ReentrancyGuarded {
         uint buyPrice = SaleKindInterface.calculateFinalPrice(buy.side, buy.saleKind, buy.basePrice, buy.extra, buy.listingTime, buy.expirationTime);
 
         /* Require price cross. */
-        require(buyPrice &gt;= sellPrice);
+        require(buyPrice >= sellPrice);
         
         /* Maker/taker priority. */
         return sell.feeRecipient != address(0) ? sellPrice : buyPrice;
     }
 
     /**
-     * @dev Execute all ERC20 token transfers associated with an order match (fees and buyer =&gt; seller transfer)
+     * @dev Execute all ERC20 token transfers associated with an order match (fees and buyer => seller transfer)
      * @param buy Buy-side order
      * @param sell Sell-side order
      */
@@ -501,7 +501,7 @@ contract ExchangeCore is ReentrancyGuarded {
             /* Sell-side order is maker. */
       
             /* Assert taker fee is less than or equal to maximum fee specified by buyer. */
-            require(sell.takerFee &lt;= buy.takerFee);
+            require(sell.takerFee <= buy.takerFee);
             
             /* Charge maker fee to seller. */
             chargeFee(sell.maker, sell.feeRecipient, sell.makerFee);
@@ -512,7 +512,7 @@ contract ExchangeCore is ReentrancyGuarded {
             /* Buy-side order is maker. */
 
             /* Assert taker fee is less than or equal to maximum fee specified by seller. */
-            require(buy.takerFee &lt;= sell.takerFee);
+            require(buy.takerFee <= sell.takerFee);
 
             /* Charge maker fee to buyer. */
             chargeFee(buy.maker, buy.feeRecipient, buy.makerFee);
@@ -521,7 +521,7 @@ contract ExchangeCore is ReentrancyGuarded {
             chargeFee(sell.maker, buy.feeRecipient, buy.takerFee);
         }
 
-        if (price &gt; 0) {
+        if (price > 0) {
             /* Debit buyer and credit seller. */
             require(sell.paymentToken.transferFrom(buy.maker, sell.maker, price));
         }
@@ -542,20 +542,20 @@ contract ExchangeCore is ReentrancyGuarded {
     {
         return (
             /* Must be opposite-side. */
-            (buy.side == SaleKindInterface.Side.Buy &amp;&amp; sell.side == SaleKindInterface.Side.Sell) &amp;&amp;     
+            (buy.side == SaleKindInterface.Side.Buy && sell.side == SaleKindInterface.Side.Sell) &&     
             /* Must use same payment token. */
-            (buy.paymentToken == sell.paymentToken) &amp;&amp;
+            (buy.paymentToken == sell.paymentToken) &&
             /* Must match maker/taker addresses. */
-            (sell.taker == address(0) || sell.taker == buy.maker) &amp;&amp;
-            (buy.taker == address(0) || buy.taker == sell.maker) &amp;&amp;
+            (sell.taker == address(0) || sell.taker == buy.maker) &&
+            (buy.taker == address(0) || buy.taker == sell.maker) &&
             /* One must be maker and the other must be taker (no bool XOR in Solidity). */
-            ((sell.feeRecipient == address(0) &amp;&amp; buy.feeRecipient != address(0)) || (sell.feeRecipient != address(0) &amp;&amp; buy.feeRecipient == address(0))) &amp;&amp;
+            ((sell.feeRecipient == address(0) && buy.feeRecipient != address(0)) || (sell.feeRecipient != address(0) && buy.feeRecipient == address(0))) &&
             /* Must match target. */
-            (buy.target == sell.target) &amp;&amp;
+            (buy.target == sell.target) &&
             /* Must match howToCall. */
-            (buy.howToCall == sell.howToCall) &amp;&amp;
+            (buy.howToCall == sell.howToCall) &&
             /* Buy-side order must be settleable. */
-            SaleKindInterface.canSettleOrder(buy.listingTime, buy.expirationTime) &amp;&amp;
+            SaleKindInterface.canSettleOrder(buy.listingTime, buy.expirationTime) &&
             /* Sell-side order must be settleable. */
             SaleKindInterface.canSettleOrder(sell.listingTime, sell.expirationTime)
         );
@@ -589,13 +589,13 @@ contract ExchangeCore is ReentrancyGuarded {
         assembly {
             size := extcodesize(target)
         }
-        require(size &gt; 0);
+        require(size > 0);
       
         /* Must match calldata after replacement, if specified. */ 
-        if (buy.replacementPattern.length &gt; 0) {
+        if (buy.replacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(buy.calldata, sell.calldata, buy.replacementPattern);
         }
-        if (sell.replacementPattern.length &gt; 0) {
+        if (sell.replacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(sell.calldata, buy.calldata, sell.replacementPattern);
         }
         require(ArrayUtils.arrayEq(buy.calldata, sell.calldata));
@@ -801,12 +801,12 @@ contract Exchange is ExchangeCore {
     }
 
     /**
-     * @dev Return whether or not two orders&#39; calldata specifications can match
+     * @dev Return whether or not two orders' calldata specifications can match
      * @param buyCalldata Buy-side order calldata
      * @param buyReplacementPattern Buy-side order calldata replacement mask
      * @param sellCalldata Sell-side order calldata
      * @param sellReplacementPattern Sell-side order calldata replacement mask
-     * @return Whether the orders&#39; calldata can be matched
+     * @return Whether the orders' calldata can be matched
      */
     function orderCalldataCanMatch(bytes buyCalldata, bytes buyReplacementPattern, bytes sellCalldata, bytes sellReplacementPattern)
         public
@@ -873,7 +873,7 @@ contract Exchange is ExchangeCore {
 
 contract WyvernExchange is Exchange {
 
-    string public constant name = &quot;Project Wyvern Exchange&quot;;
+    string public constant name = "Project Wyvern Exchange";
 
     /**
      * @dev Initialize a WyvernExchange instance
@@ -913,7 +913,7 @@ library SaleKindInterface {
         returns (bool)
     {
         /* Auctions must have a set expiration date. */
-        return (saleKind == SaleKind.FixedPrice || expirationTime &gt; 0);
+        return (saleKind == SaleKind.FixedPrice || expirationTime > 0);
     }
 
     /**
@@ -927,7 +927,7 @@ library SaleKindInterface {
         internal
         returns (bool)
     {
-        return (listingTime &lt; now) &amp;&amp; (expirationTime == 0 || now &lt; expirationTime);
+        return (listingTime < now) && (expirationTime == 0 || now < expirationTime);
     }
 
     /**
@@ -1016,7 +1016,7 @@ contract AuthenticatedProxy is TokenRecipient {
         public
         returns (bool result)
     {
-        require(msg.sender == user || (!revoked &amp;&amp; registry.contracts(msg.sender)));
+        require(msg.sender == user || (!revoked && registry.contracts(msg.sender)));
         if (howToCall == HowToCall.Call) {
             result = dest.call(calldata);
         } else if (howToCall == HowToCall.DelegateCall) {
@@ -1044,13 +1044,13 @@ contract AuthenticatedProxy is TokenRecipient {
 contract ProxyRegistry is Ownable {
 
     /* Authenticated proxies by user. */
-    mapping(address =&gt; AuthenticatedProxy) public proxies;
+    mapping(address => AuthenticatedProxy) public proxies;
 
     /* Contracts pending access. */
-    mapping(address =&gt; uint) public pending;
+    mapping(address => uint) public pending;
 
     /* Contracts allowed to call those proxies. */
-    mapping(address =&gt; bool) public contracts;
+    mapping(address => bool) public contracts;
 
     /* Delay period for adding an authenticated contract.
        This mitigates a particular class of potential attack on the Wyvern DAO (which owns this registry) - if at any point the value of assets held by proxy contracts exceeded the value of half the WYV supply (votes in the DAO),
@@ -1069,7 +1069,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] == 0);
+        require(!contracts[addr] && pending[addr] == 0);
         pending[addr] = now;
     }
 
@@ -1083,7 +1083,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] != 0 &amp;&amp; ((pending[addr] + DELAY_PERIOD) &lt; now));
+        require(!contracts[addr] && pending[addr] != 0 && ((pending[addr] + DELAY_PERIOD) < now));
         pending[addr] = 0;
         contracts[addr] = true;
     }

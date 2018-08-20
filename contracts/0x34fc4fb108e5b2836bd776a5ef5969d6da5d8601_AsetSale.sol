@@ -54,9 +54,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -64,7 +64,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -73,7 +73,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -140,15 +140,15 @@ contract AsetSale is Ownable {
 
     function withdrawTokens() public onlyOwner {
         require(address(token) != address(0));
-        require(tokensToSale() &gt; 0);
+        require(tokensToSale() > 0);
         token.transfer(wallet, tokensToSale());
     }
 
 
     function() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(address(token) != address(0));
-        require(tokensToSale() &gt; 0);
+        require(tokensToSale() > 0);
 
         uint256 tokensWei = msg.value.mul(price);
         tokensWei = withBonus(tokensWei);
@@ -160,7 +160,7 @@ contract AsetSale is Ownable {
 
     function sendToken(address _to, uint256 tokensWei)public onlyOwner{
         require(address(token) != address(0));
-        require(tokensToSale() &gt; 0);
+        require(tokensToSale() > 0);
 
         uint256 amountWei = tokensWei.div(price);
         token.transfer(_to, tokensWei);
@@ -169,11 +169,11 @@ contract AsetSale is Ownable {
     }
 
     function withBonus(uint256 _amount) internal pure returns(uint256) {
-        if(_amount &lt;= 500 ether) return _amount;
-        else if(_amount &lt;= 1000 ether) return _amount.mul(105).div(100);
-        else if(_amount &lt;= 2000 ether) return _amount.mul(107).div(100);
-        else if(_amount &lt;= 5000 ether) return _amount.mul(110).div(100);
-        else if(_amount &lt;= 10000 ether) return _amount.mul(115).div(100);
+        if(_amount <= 500 ether) return _amount;
+        else if(_amount <= 1000 ether) return _amount.mul(105).div(100);
+        else if(_amount <= 2000 ether) return _amount.mul(107).div(100);
+        else if(_amount <= 5000 ether) return _amount.mul(110).div(100);
+        else if(_amount <= 10000 ether) return _amount.mul(115).div(100);
         else return _amount.mul(120).div(100);
     }
 }

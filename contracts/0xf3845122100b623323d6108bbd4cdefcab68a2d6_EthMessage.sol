@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -52,7 +52,7 @@ contract EthMessage is Ownable {
 
     uint public constant BASEPRICE = 0.01 ether;
     uint public currentPrice = 0.01 ether;
-    string public message = &quot;&quot;;
+    string public message = "";
 
     function withdraw() public payable onlyOwner {
         msg.sender.transfer(this.balance);
@@ -60,12 +60,12 @@ contract EthMessage is Ownable {
     
     // This is only for messed up things people put.
     function removeMessage() onlyOwner public {
-        message = &quot;&quot;;
+        message = "";
     }
 
     modifier requiresPayment () {
-        require(msg.value &gt;= currentPrice);
-        if (msg.value &gt; currentPrice) {
+        require(msg.value >= currentPrice);
+        if (msg.value > currentPrice) {
             msg.sender.transfer(msg.value - currentPrice);
         }
         currentPrice += BASEPRICE;
@@ -73,7 +73,7 @@ contract EthMessage is Ownable {
     }
 
     function putMessage(string messageToPut) public requiresPayment payable {
-        if (bytes(messageToPut).length &gt; 255) {
+        if (bytes(messageToPut).length > 255) {
             revert();
         }
         message = messageToPut;

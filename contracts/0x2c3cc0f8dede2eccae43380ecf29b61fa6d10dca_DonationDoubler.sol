@@ -13,7 +13,7 @@ pragma solidity ^0.4.6;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title Donation Doubler
@@ -34,11 +34,11 @@ pragma solidity ^0.4.6;
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 // 
 // Thank you to @zandy and the Dappsys team for writing this beautiful library
@@ -58,12 +58,12 @@ contract SafeMath {
 
     // ensure that the result of adding x and y is accurate 
     function add(uint x, uint y) internal constant returns (uint z) {
-        assert( (z = x + y) &gt;= x);
+        assert( (z = x + y) >= x);
     }
  
     // ensure that the result of subtracting y from x is accurate 
     function subtract(uint x, uint y) internal constant returns (uint z) {
-        assert( (z = x - y) &lt;= x);
+        assert( (z = x - y) <= x);
     }
 
     // ensure that the result of multiplying x and y is accurate 
@@ -83,22 +83,22 @@ contract SafeMath {
     
     // return the lowest of two 64 bit integers
     function min64(uint64 x, uint64 y) internal constant returns (uint64) {
-      return x &lt; y ? x: y;
+      return x < y ? x: y;
     }
     
     // return the largest of two 64 bit integers
     function max64(uint64 x, uint64 y) internal constant returns (uint64) {
-      return x &gt;= y ? x : y;
+      return x >= y ? x : y;
     }
 
     // return the lowest of two values
     function min(uint x, uint y) internal constant returns (uint) {
-        return (x &lt;= y) ? x : y;
+        return (x <= y) ? x : y;
     }
 
     // return the largest of two values
     function max(uint x, uint y) internal constant returns (uint) {
-        return (x &gt;= y) ? x : y;
+        return (x >= y) ? x : y;
     }
 
     function assert(bool assertion) internal {
@@ -112,7 +112,7 @@ contract SafeMath {
 contract Owned {
     /// @dev `owner` is the only address that can call a function with this
     /// modifier; the function body is inserted where the special symbol
-    /// &quot;_;&quot; in the definition of a modifier appears.
+    /// "_;" in the definition of a modifier appears.
     modifier onlyOwner { if (msg.sender != owner) throw; _; }
 
     address public owner;
@@ -156,7 +156,7 @@ contract Escapable is Owned {
     /// @dev The addresses preassigned the `escapeHatchCaller` role
     ///  is the only addresses that can call a function with this modifier
     modifier onlyEscapeHatchCallerOrOwner {
-        if ((msg.sender != escapeHatchCaller)&amp;&amp;(msg.sender != owner))
+        if ((msg.sender != escapeHatchCaller)&&(msg.sender != owner))
             throw;
         _;
     }
@@ -231,7 +231,7 @@ contract DonationDoubler is Escapable, SafeMath {
         uint amount;
 
         // When there is enough ETH in the contract to double the ETH sent
-        if (this.balance &gt;= multiply(msg.value, 2)){
+        if (this.balance >= multiply(msg.value, 2)){
             amount = multiply(msg.value, 2); // do it two it!
             // Send the ETH to the beneficiary so that they receive Campaign tokens
             if (!beneficiary.proxyPayment.value(amount)(msg.sender))

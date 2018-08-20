@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,7 +107,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -155,8 +155,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -242,7 +242,7 @@ contract MintableToken is StandardToken, Ownable{
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
     /** Modified to handle multiple capped crowdsales */
     _amount = _amount * 1 ether;
-    require(tokensMinted.add(_amount)&lt;=totalSupply); 
+    require(tokensMinted.add(_amount)<=totalSupply); 
     tokensMinted = tokensMinted.add(_amount);
     //Zappelin Standard code 
     balances[_to] = balances[_to].add(_amount);
@@ -274,8 +274,8 @@ contract WandToken is Ownable, MintableToken {
   event TokenPreSaleTransfer(address indexed purchaser, address indexed beneficiary, uint256 amount);
   
   // Token details
-  string public constant name = &quot;Wand Token&quot;;
-  string public constant symbol = &quot;WAND&quot;;
+  string public constant name = "Wand Token";
+  string public constant symbol = "WAND";
 
   // 18 decimal places, the same as ETH.
   uint8 public constant decimals = 18;
@@ -300,11 +300,11 @@ contract WandToken is Ownable, MintableToken {
     @return A boolean that indicates if the operation is successful.
    */
   function batchTransfers(address[] _accounts, uint256[] _tokens) onlyOwner public returns (bool) {
-    require(_accounts.length &gt; 0);
+    require(_accounts.length > 0);
     require(_accounts.length == _tokens.length); 
-    for (uint i = 0; i &lt; _accounts.length; i++) {
+    for (uint i = 0; i < _accounts.length; i++) {
       require(_accounts[i] != 0x0);
-      require(_tokens[i] &gt; 0); 
+      require(_tokens[i] > 0); 
       transfer(_accounts[i], _tokens[i] * 1 ether);
       TokenPreSaleTransfer(msg.sender, _accounts[i], _tokens[i]); 
     }
@@ -375,7 +375,7 @@ contract WandCrowdsale is Ownable
       @return A boolean that indicates if the operation is successful. 
      */
     function batchTransfers(address[] _accounts, uint256[] _tokens) onlyOwner public returns (bool) {
-        require(_accounts.length &gt; 0);
+        require(_accounts.length > 0);
         require(_accounts.length == _tokens.length); 
         token.batchTransfers(_accounts,_tokens);
         return true;
@@ -387,7 +387,7 @@ contract WandCrowdsale is Ownable
       @return A boolean that indicates if the operation is successful.
      */
     function raiseInitialSupply(uint256 _supply) onlyOwner public returns (bool) {
-        require(_supply &gt; 0);
+        require(_supply > 0);
         token.raiseInitialSupply(_supply);
         return true;
     }
@@ -403,11 +403,11 @@ contract WandCrowdsale is Ownable
       @return A boolean that indicates if the operation is successful
      */
     function startCrowdsale(uint256 _startTime, uint256 _endTime,  uint256 _cap, uint256[] _crowsaleSlots, uint256[] _discountedRates) inactiveCrowdSale onlyOwner public returns (bool) {  
-        require(_cap &gt; 0);   
-        require(_crowsaleSlots.length &gt; 0); 
+        require(_cap > 0);   
+        require(_crowsaleSlots.length > 0); 
         require(_crowsaleSlots.length == _discountedRates.length);
-        require(_startTime &gt;= uint256(now));  
-        require( _endTime &gt; _startTime); 
+        require(_startTime >= uint256(now));  
+        require( _endTime > _startTime); 
         
         //sets the contract state for this crowdsale
         cap = _cap * 1 ether;  //Normalized the cap to operate at wei units level
@@ -427,9 +427,9 @@ contract WandCrowdsale is Ownable
      */
     function endCrowdsale() activeCrowdSale onlyOwner public returns (bool) {
         endTime = now;  
-        if(tokensMinted &lt; cap){
+        if(tokensMinted < cap){
             uint256 leftoverTokens = cap.sub(tokensMinted);
-            require(tokensMinted.add(leftoverTokens) &lt;= cap);
+            require(tokensMinted.add(leftoverTokens) <= cap);
             tokensMinted = tokensMinted.add(leftoverTokens);
             token.mint(owner, leftoverTokens.div(1 ether)); 
         }
@@ -443,8 +443,8 @@ contract WandCrowdsale is Ownable
      */
     function findDiscount() constant private returns (uint256 _discountedRate) {
         uint256 elapsedTime = now.sub(startTime);
-        for(uint i=0; i&lt;crowsaleSlots.length; i++){
-            if(elapsedTime &gt;= crowsaleSlots[i]) {
+        for(uint i=0; i<crowsaleSlots.length; i++){
+            if(elapsedTime >= crowsaleSlots[i]) {
                 elapsedTime = elapsedTime.sub(crowsaleSlots[i]);
             }
             else {
@@ -466,8 +466,8 @@ contract WandCrowdsale is Ownable
       */
     function buyTokens(address beneficiary) activeCrowdSale public payable {
         require(beneficiary != 0x0); 
-        require(now &gt;= startTime);
-        require(now &lt;= endTime);
+        require(now >= startTime);
+        require(now <= endTime);
         require(msg.value != 0);   
         
         // amount ether sent to the contract.. normalized to wei
@@ -478,12 +478,12 @@ contract WandCrowdsale is Ownable
         var currentRate = findDiscount();
         // Find out Token value in wei ( Y wei per 1 Token)
         uint256 rate = uint256(1 * 1 ether).div(currentRate); 
-        require(rate &gt; 0);
+        require(rate > 0);
         // Find out the number of tokens for given wei and normalize to ether so that tokens can be minted
         // by token contract
         uint256 numTokens = weiAmount.div(rate); 
-        require(numTokens &gt; 0); 
-        require(tokensMinted.add(numTokens.mul(1 ether)) &lt;= cap);
+        require(numTokens > 0); 
+        require(tokensMinted.add(numTokens.mul(1 ether)) <= cap);
         tokensMinted = tokensMinted.add(numTokens.mul(1 ether));
         
         // Mint the tokens and trasfer to the buyer

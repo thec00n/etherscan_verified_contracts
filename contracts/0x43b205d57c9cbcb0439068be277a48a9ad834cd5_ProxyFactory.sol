@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 /// @title Proxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c0b3b4a5a6a1ae80a7aeafb3a9b3eeb0ad">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c0b3b4a5a6a1ae80a7aeafb3a9b3eeb0ad">[email protected]</a>>
 contract Proxy {
 
     // masterCopy always needs to be first declared variable, to ensure that it is at the same location in the contracts to which calls are delegated.
@@ -12,7 +12,7 @@ contract Proxy {
     constructor(address _masterCopy)
         public
     {
-        require(_masterCopy != 0, &quot;Invalid master copy address provided&quot;);
+        require(_masterCopy != 0, "Invalid master copy address provided");
         masterCopy = _masterCopy;
     }
 
@@ -50,7 +50,7 @@ contract Proxy {
 }
 
 /// @title Proxy Factory - Allows to create new proxy contact and execute a message call to the new proxy within one transaction.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3142455457505f71565f5e4258421f415c">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3142455457505f71565f5e4258421f415c">[email protected]</a>>
 contract ProxyFactory {
 
     event ProxyCreation(Proxy proxy);
@@ -63,7 +63,7 @@ contract ProxyFactory {
         returns (Proxy proxy)
     {
         proxy = new Proxy(masterCopy);
-        if (data.length &gt; 0)
+        if (data.length > 0)
             // solium-disable-next-line security/no-inline-assembly
             assembly {
                 if eq(call(gas, proxy, 0, add(data, 0x20), mload(data), 0, 0), 0) { revert(0, 0) }

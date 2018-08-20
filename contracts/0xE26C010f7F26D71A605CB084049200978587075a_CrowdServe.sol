@@ -30,7 +30,7 @@ In the Ending state:
     Any user can make subsequent calls to tryRoundEnd.
     Each call to tryRoundEnd iterates further through the list of contributors and sets their balance to 0 (destroying the tokens)
     Once all balances have been reset:
-        The producer receives the contract&#39;s remaining balance.
+        The producer receives the contract's remaining balance.
         The contract returns to the Inactive state.
 */
 
@@ -46,7 +46,7 @@ contract CrowdServe {
     // Set upon instantiation and never changed:
     uint public minPreviewInterval; // This gives contributors a guaranteed minimum time to recall their funds
     uint public minContribution; // Gas required to completely end a round increases with number of contributors;
-                                 // minContribution allows the producer to disallow contributions that aren&#39;t worth this added cost.
+                                 // minContribution allows the producer to disallow contributions that aren't worth this added cost.
     address public producer;
 
     enum State {Active, Ending, Inactive}
@@ -56,7 +56,7 @@ contract CrowdServe {
     uint public roundEndTime;
 
 
-    mapping (address =&gt; uint) private balances;
+    mapping (address => uint) private balances;
     address[] public contributors; // used in the Ending state to reset all balances
     uint private balanceResetIterator; // only used in the Ending state
 
@@ -78,7 +78,7 @@ contract CrowdServe {
 
 
     modifier onlyProducer() {require(msg.sender == producer); _; }
-    modifier onlyContributor() {require(balances[msg.sender] &gt; 0); _; }
+    modifier onlyContributor() {require(balances[msg.sender] > 0); _; }
     modifier inState(State s) {require(state == s); _; }
     modifier notInState(State s) {require(state != s); _; }
 
@@ -97,7 +97,7 @@ contract CrowdServe {
     constant
     returns (uint, uint, address, State, bool, uint, uint, uint, uint, uint)
     {
-        bool inPreview = (state == State.Active &amp;&amp;  now &lt; previewStageEndTime);
+        bool inPreview = (state == State.Active &&  now < previewStageEndTime);
         return (minPreviewInterval, minContribution, producer, state, inPreview, previewStageEndTime, roundEndTime, totalContributed, totalRecalled, totalSupply);
     }
 
@@ -110,8 +110,8 @@ contract CrowdServe {
     external
     onlyProducer()
     inState(State.Inactive) {
-        require(previewStageInterval &gt;= minPreviewInterval);
-        require(previewStageInterval &lt; roundInterval);
+        require(previewStageInterval >= minPreviewInterval);
+        require(previewStageInterval < roundInterval);
 
         state = State.Active;
 
@@ -125,7 +125,7 @@ contract CrowdServe {
     external
     payable
     notInState(State.Ending) {
-        require(msg.value &gt;= minContribution);
+        require(msg.value >= minContribution);
 
         totalSupply += msg.value;
         totalContributed += msg.value;
@@ -139,7 +139,7 @@ contract CrowdServe {
     function recall(uint recallAmount, string message)
     external
     notInState(State.Ending) {
-        require(recallAmount &lt;= balances[msg.sender]);
+        require(recallAmount <= balances[msg.sender]);
 
         balances[msg.sender] -= recallAmount;
         totalRecalled += recallAmount;
@@ -148,7 +148,7 @@ contract CrowdServe {
         uint burnAmount;
         if (state == State.Inactive)
             burnAmount = 0;
-        else if (now &lt; previewStageEndTime)
+        else if (now < previewStageEndTime)
             burnAmount = recallAmount/10;
         else
             burnAmount = recallAmount/2;
@@ -164,9 +164,9 @@ contract CrowdServe {
     external
     onlyContributor()
     notInState(State.Ending) {
-        require(burnAmount &lt;= balances[msg.sender]);
+        require(burnAmount <= balances[msg.sender]);
 
-        if (burnAmount &gt; 0) {
+        if (burnAmount > 0) {
             totalSupply -= burnAmount;
             balances[msg.sender] -= burnAmount;
 
@@ -187,7 +187,7 @@ contract CrowdServe {
     notInState(State.Inactive) {
         if (state == State.Active) {
             require(msg.sender == producer);
-            require(now &gt;= roundEndTime);
+            require(now >= roundEndTime);
 
             state = State.Ending;
             RoundEnding();
@@ -196,7 +196,7 @@ contract CrowdServe {
         }
         if (state == State.Ending) {
             uint iteratorLimit = balanceResetIterator + maxLoops;
-            while (balanceResetIterator &lt; iteratorLimit &amp;&amp; balanceResetIterator &lt; contributors.length) {
+            while (balanceResetIterator < iteratorLimit && balanceResetIterator < contributors.length) {
                 //maybe add some way to retain history of token ownership, such as creating another token
                 totalSupply -= balances[contributors[balanceResetIterator]];
                 balances[contributors[balanceResetIterator]] = 0;
@@ -231,7 +231,7 @@ contract CrowdServe {
     function transfer(address _to, uint _value, bytes _data)
     public
     notInState(State.Ending) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] -= _value;
         if (balances[_to] == 0) {
             contributors.push(_to);
@@ -244,7 +244,7 @@ contract CrowdServe {
             codeLength := extcodesize(_to)
         }
 
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }

@@ -20,13 +20,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,9 +87,9 @@ contract BlocksquareSeedSale is owned {
     uint256 MAXIMUM24H = 2 ether;
 
     /** Mappings **/
-    mapping(address =&gt; uint256) contributed;
-    mapping(uint256 =&gt; address) participantIndex;
-    mapping(address =&gt; bool) canRecieveTokens;
+    mapping(address => uint256) contributed;
+    mapping(uint256 => address) participantIndex;
+    mapping(address => bool) canRecieveTokens;
 
     /**
     * Constructor function
@@ -109,16 +109,16 @@ contract BlocksquareSeedSale is owned {
     **/
     function () payable public {
         require(reward != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(icoHasStarted);
         require(!icoHasClosed);
         require(valueInUSD != 0);
         require(canRecieveTokens[msg.sender]);
-        if(block.timestamp &lt; startTime.add(DAY)) {
-            require(contributed[msg.sender].add(msg.value) &lt;= MAXIMUM24H);
+        if(block.timestamp < startTime.add(DAY)) {
+            require(contributed[msg.sender].add(msg.value) <= MAXIMUM24H);
         }
         else {
-            require(contributed[msg.sender].add(msg.value) &lt;= MAXIMUM);
+            require(contributed[msg.sender].add(msg.value) <= MAXIMUM);
         }
 
         if(contributed[msg.sender] == 0) {
@@ -130,7 +130,7 @@ contract BlocksquareSeedSale is owned {
         currentAmountRaised = currentAmountRaised.add(msg.value);
         uint256 tokens = tokensToMint(msg.value);
 
-        if(currentAmountOfTokens.add(tokens) &gt;= maxAmountOfTokens) {
+        if(currentAmountOfTokens.add(tokens) >= maxAmountOfTokens) {
             icoHasClosed = true;
         }
 
@@ -139,7 +139,7 @@ contract BlocksquareSeedSale is owned {
         Received(msg.sender, msg.value);
         TokensGiven(msg.sender, tokens);
 
-        if(this.balance &gt;= 100 ether) {
+        if(this.balance >= 100 ether) {
             if(!recipient.send(this.balance)) {
                 ErrorReturningEth(recipient, this.balance);
             }
@@ -158,11 +158,11 @@ contract BlocksquareSeedSale is owned {
         uint256 raisedTokens = currentAmountOfTokens;
         uint256 left = _amountOfWei;
         uint256 rewardAmount = 0;
-        for(uint8 i = 0; i &lt; tokensInTranch.length; i++) {
-            if (tokensInTranch[i] &gt;= raisedTokens) {
+        for(uint8 i = 0; i < tokensInTranch.length; i++) {
+            if (tokensInTranch[i] >= raisedTokens) {
                 uint256 tokensPerEth = valueInUSD.div(priceOfTokenInUSD[i]);
                 uint256 tokensLeft = tokensPerEth.mul(left);
-                if((raisedTokens.add(tokensLeft)) &lt;= tokensInTranch[i]) {
+                if((raisedTokens.add(tokensLeft)) <= tokensInTranch[i]) {
                     rewardAmount = rewardAmount.add(tokensLeft);
                     left = 0;
                     break;
@@ -220,7 +220,7 @@ contract BlocksquareSeedSale is owned {
     * @param _addresses Array of addresses to add to whitelist.
     **/
     function addAllowanceToRecieveToken(address[] _addresses) public onlyOwner {
-        for(uint256 i = 0; i &lt; _addresses.length; i++) {
+        for(uint256 i = 0; i < _addresses.length; i++) {
             canRecieveTokens[_addresses[i]] = true;
         }
     }
@@ -242,7 +242,7 @@ contract BlocksquareSeedSale is owned {
     }
 
     function isCrowdsaleOpen() constant public returns (bool _isOpened) {
-        return (!icoHasClosed &amp;&amp; icoHasStarted);
+        return (!icoHasClosed && icoHasStarted);
     }
 
     function hasCrowdsaleStarted() constant public returns (bool _hasStarted) {

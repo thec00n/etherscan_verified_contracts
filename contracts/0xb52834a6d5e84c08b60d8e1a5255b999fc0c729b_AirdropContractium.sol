@@ -16,14 +16,14 @@ library SafeMath {
 
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract AirdropContractium is Ownable {
     ContractiumInterface ctuContract;
 
     //Store addresses submitted
-    mapping(address =&gt; bool) submitted;
+    mapping(address => bool) submitted;
     
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_AIRDROP = 20000000 * (10 ** uint256(decimals));
@@ -89,7 +89,7 @@ contract AirdropContractium is Ownable {
     }
     
     function batchSubmit(address[] _addresses) public onlyOwner {
-        for(uint i; i &lt; _addresses.length; i++) {
+        for(uint i; i < _addresses.length; i++) {
             if (!submitted[_addresses[i]]) {
                 submit(_addresses[i]);
             }
@@ -121,8 +121,8 @@ contract AirdropContractium is Ownable {
     }
     
     modifier isRemain() {
-        require(remainAirdrop &gt; 0);
-        require(reward &gt; 0);
+        require(remainAirdrop > 0);
+        require(reward > 0);
         _;
     }
     
@@ -131,7 +131,7 @@ contract AirdropContractium is Ownable {
         address _spender = address(this);
         uint256 _remain = ctuContract.allowance(_owner, _spender);
         
-        if (_remain &lt; reward) {
+        if (_remain < reward) {
             reward = 0;
             remainAirdrop = 0;
         }

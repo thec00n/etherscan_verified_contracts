@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Safether.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ * along with Safether.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /* 
@@ -37,7 +37,7 @@ contract SafetherStorage {
         uint256[3]  _data;
     }
     
-    mapping (address=&gt;Depositor) internal _depositor;
+    mapping (address=>Depositor) internal _depositor;
 }
 
 /* 
@@ -61,8 +61,8 @@ contract SafetherModifier is SafetherStorage {
      */
     modifier isValidDepositor(address depositor, bytes8 token) {
         require(_depositor[depositor]._token == token);
-        require(_depositor[depositor]._data[2] &gt; 0);
-        require(block.number &gt;= _depositor[depositor]._data[1]);
+        require(_depositor[depositor]._data[2] > 0);
+        require(block.number >= _depositor[depositor]._data[1]);
         _;
     }
 }

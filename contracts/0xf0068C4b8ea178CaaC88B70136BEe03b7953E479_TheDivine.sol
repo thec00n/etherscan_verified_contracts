@@ -7,7 +7,7 @@ contract TheDivine{
     bytes32 immotal;
 
     /* Address nonce */
-    mapping (address =&gt; uint256) internal nonce;
+    mapping (address => uint256) internal nonce;
 
     /* Event */
     event NewRand(address _sender, uint256 _complex, bytes32 _randomValue);
@@ -26,7 +26,7 @@ contract TheDivine{
         uint256 complex = (nonce[msg.sender] % 11) + 10;
         result = keccak256(abi.encode(immotal, nonce[msg.sender]++));
         // Calculate digest by complex times
-        for(uint256 c = 0; c &lt; complex; c++){
+        for(uint256 c = 0; c < complex; c++){
             result = keccak256(abi.encode(result));
         }
         //Update new immotal result

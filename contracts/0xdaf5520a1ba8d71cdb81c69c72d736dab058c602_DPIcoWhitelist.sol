@@ -3,7 +3,7 @@ pragma solidity 0.4.15;
 contract DPIcoWhitelist {
   address admin;
   bool isOn;
-  mapping ( address =&gt; bool ) whitelist;
+  mapping ( address => bool ) whitelist;
   address[] users;
 
   modifier signUpOpen() {

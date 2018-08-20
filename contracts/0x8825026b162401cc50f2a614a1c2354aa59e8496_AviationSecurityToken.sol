@@ -21,9 +21,9 @@ library SafeMath {
 
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
 
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
 
-        // benefit is lost if &#39;b&#39; is also tested.
+        // benefit is lost if 'b' is also tested.
 
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
 
@@ -51,11 +51,11 @@ library SafeMath {
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
 
         // uint256 c = a / b;
 
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
         return a / b;
 
@@ -70,7 +70,7 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -87,7 +87,7 @@ library SafeMath {
 
         c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -140,7 +140,7 @@ library AddressUtils {
 
         assembly { size := extcodesize(addr) }
 
-        return size &gt; 0;
+        return size > 0;
 
     }
 
@@ -165,7 +165,7 @@ contract ERC721Receiver {
 
     * @dev Magic value to be returned upon successful reception of an NFT
 
-    *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+    *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
 
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
 
@@ -194,7 +194,7 @@ contract ERC721Receiver {
 
     * @param _data Additional data with no specified format
 
-    * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
 
     */
 
@@ -362,18 +362,18 @@ contract SupportsInterfaceWithLookup is ERC165 {
 
      * 0x01ffc9a7 ===
 
-     *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+     *   bytes4(keccak256('supportsInterface(bytes4)'))
 
      */
 
 
     /**
 
-     * @dev a mapping of interface id to whether or not it&#39;s supported
+     * @dev a mapping of interface id to whether or not it's supported
 
      */
 
-    mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+    mapping(bytes4 => bool) internal supportedInterfaces;
 
 
     /**
@@ -439,23 +439,23 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
      * 0x80ac58cd ===
 
-     *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
+     *   bytes4(keccak256('balanceOf(address)')) ^
 
-     *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
+     *   bytes4(keccak256('ownerOf(uint256)')) ^
 
-     *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
+     *   bytes4(keccak256('approve(address,uint256)')) ^
 
-     *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
+     *   bytes4(keccak256('getApproved(uint256)')) ^
 
-     *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
+     *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
 
-     *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
+     *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
 
-     *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
+     *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
 
-     *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
+     *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
 
-     *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+     *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
 
      */
 
@@ -466,7 +466,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
      * 0x4f558e79 ===
 
-     *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+     *   bytes4(keccak256('exists(uint256)'))
 
      */
 
@@ -476,7 +476,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     using AddressUtils for address;
 
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
 
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
 
@@ -485,22 +485,22 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
     // Mapping from token ID to owner
 
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
 
     // Mapping from token ID to approved address
 
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
 
     // Mapping from owner to number of owned token
 
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
 
     // Mapping from owner to operator approvals
 
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
 
     /**
@@ -741,7 +741,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
      *  which is called upon a safe transfer, and return the magic value
 
-     *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+     *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
 
      *  the transfer is reverted.
 
@@ -759,7 +759,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
         // solium-disable-next-line arg-overflow
 
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
 
     }
 
@@ -772,7 +772,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
      *  which is called upon a safe transfer, and return the magic value
 
-     *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+     *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
 
      *  the transfer is reverted.
 
@@ -1003,7 +1003,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
  * @dev The Ownable contract has an owner address, and provides basic authorization control
 
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
 
  */
 
@@ -1146,11 +1146,11 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
      * 0x780e9d63 ===
 
-     *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
+     *   bytes4(keccak256('totalSupply()')) ^
 
-     *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
+     *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
 
-     *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+     *   bytes4(keccak256('tokenByIndex(uint256)'))
 
      */
 
@@ -1161,33 +1161,33 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
      * 0x5b5e139f ===
 
-     *   bytes4(keccak256(&#39;name()&#39;)) ^
+     *   bytes4(keccak256('name()')) ^
 
-     *   bytes4(keccak256(&#39;symbol()&#39;)) ^
+     *   bytes4(keccak256('symbol()')) ^
 
-     *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+     *   bytes4(keccak256('tokenURI(uint256)'))
 
      */
 
 
     // Token name
 
-    string public name_ = &quot;AviationSecurityToken&quot;;
+    string public name_ = "AviationSecurityToken";
 
 
     // Token symbol
 
-    string public symbol_ = &quot;AVNS&quot;;
+    string public symbol_ = "AVNS";
 
 
     // Mapping from owner to list of owned token IDs
 
-    mapping(address =&gt; uint256[]) internal ownedTokens;
+    mapping(address => uint256[]) internal ownedTokens;
 
 
     // Mapping from token ID to index of the owner tokens list
 
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
 
     // Array with all token ids, used for enumeration
@@ -1197,12 +1197,12 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
     // Mapping from token id to position in the allTokens array
 
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
 
     // Optional mapping for token URIs
 
-    mapping(uint256 =&gt; string) internal tokenURIs;
+    mapping(uint256 => string) internal tokenURIs;
 
 
     struct Data{
@@ -1215,7 +1215,7 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
     
 
-    mapping(uint256 =&gt; Data) internal tokenData;
+    mapping(uint256 => Data) internal tokenData;
 
     /**
 
@@ -1323,7 +1323,7 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
 
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
 
         return ownedTokens[_owner][_index];
 
@@ -1359,7 +1359,7 @@ contract AviationSecurityToken is SupportsInterfaceWithLookup, ERC721, ERC721Bas
 
     function tokenByIndex(uint256 _index) public view returns (uint256) {
 
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
 
         return allTokens[_index];
 

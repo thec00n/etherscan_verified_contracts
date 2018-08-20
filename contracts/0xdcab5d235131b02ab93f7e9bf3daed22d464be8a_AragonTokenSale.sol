@@ -21,37 +21,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -104,7 +104,7 @@ contract SaleWallet {
   // @dev Withdraw function sends all the funds to the wallet if conditions are correct
   function withdraw() public {
     if (msg.sender != multisig) throw;                       // Only the multisig can request it
-    if (block.number &gt; finalBlock) return doWithdraw();      // Allow after the final block
+    if (block.number > finalBlock) return doWithdraw();      // Allow after the final block
     if (tokenSale.saleFinalized()) return doWithdraw();      // Allow when sale is finalized
   }
 
@@ -171,10 +171,10 @@ contract ANPlaceholder is Controller {
 
 
 contract MiniMeToken is ERC20, Controlled {
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -203,10 +203,10 @@ contract MiniMeToken is ERC20, Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -284,7 +284,7 @@ contract MiniMeToken is ERC20, Controlled {
             if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) throw;
+            if (allowed[_from][msg.sender] < _amount) throw;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -309,7 +309,7 @@ contract MiniMeToken is ERC20, Controlled {
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                throw;
            }
 
@@ -325,7 +325,7 @@ contract MiniMeToken is ERC20, Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+           if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -334,7 +334,7 @@ contract MiniMeToken is ERC20, Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -349,11 +349,11 @@ contract MiniMeToken is ERC20, Controlled {
     function approve(address _spender, uint256 _amount) returns (bool success) {
         if (!transfersEnabled) throw;
 
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_amount!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
         // Alerts the token controller of the approve function call
         if (isContract(controller)) {
@@ -387,7 +387,7 @@ contract MiniMeToken is ERC20, Controlled {
     ) returns (bool success) {
         approve(_spender, _amount);
 
-        // This portion is copied from ConsenSys&#39;s Standard Token Contract. It
+        // This portion is copied from ConsenSys's Standard Token Contract. It
         //  calls the receiveApproval function that is part of the contract that
         //  is being approved (`_spender`). The function should look like:
         //  `receiveApproval(address _from, uint256 _amount, address
@@ -426,7 +426,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -451,7 +451,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -465,7 +465,7 @@ contract MiniMeToken is ERC20, Controlled {
     }
 
     function min(uint a, uint b) internal returns (uint) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
     }
 
 ////////////////
@@ -489,7 +489,7 @@ contract MiniMeToken is ERC20, Controlled {
         uint _snapshotBlock,
         bool _transfersEnabled
         ) returns(address) {
-        if (_snapshotBlock &gt; block.number) _snapshotBlock = block.number;
+        if (_snapshotBlock > block.number) _snapshotBlock = block.number;
         MiniMeToken cloneToken = tokenFactory.createCloneToken(
             this,
             _snapshotBlock,
@@ -517,10 +517,10 @@ contract MiniMeToken is ERC20, Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw; // Check for overflow
+        if (curTotalSupply + _amount < curTotalSupply) throw; // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         var previousBalanceTo = balanceOf(_owner);
-        if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+        if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
         return true;
@@ -534,10 +534,10 @@ contract MiniMeToken is ERC20, Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -567,16 +567,16 @@ contract MiniMeToken is ERC20, Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -592,7 +592,7 @@ contract MiniMeToken is ERC20, Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -611,10 +611,10 @@ contract MiniMeToken is ERC20, Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -706,13 +706,13 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint64 start, uint64 cliff, uint64 vesting);
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
-  mapping (address =&gt; bool) canCreateGrants;
+  mapping (address => bool) canCreateGrants;
   address vestingWhitelister;
 
   modifier canTransfer(address _sender, uint _value) {
-    if (_value &gt; spendableBalanceOf(_sender)) throw;
+    if (_value > spendableBalanceOf(_sender)) throw;
     _;
   }
 
@@ -761,12 +761,12 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
     uint64 _vesting) public {
 
     // Check start, cliff and vesting are properly order to ensure correct functionality of the formula.
-    if (_cliff &lt; _start) throw;
-    if (_vesting &lt; _start) throw;
-    if (_vesting &lt; _cliff) throw;
+    if (_cliff < _start) throw;
+    if (_vesting < _start) throw;
+    if (_vesting < _cliff) throw;
 
     if (!canCreateGrants[msg.sender]) throw;
-    if (tokenGrantsCount(_to) &gt; 20) throw;   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    if (tokenGrantsCount(_to) > 20) throw;   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     TokenGrant memory grant = TokenGrant(msg.sender, _value, _cliff, _vesting, _start);
     grants[_to].push(grant);
@@ -837,7 +837,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
   //   |        .      |
   //   |      .        |
   //   |    .          |
-  //   +===+===========+---------+----------&gt; time
+  //   +===+===========+---------+----------> time
   //      Start       Clift    Vesting
 
   function calculateVestedTokens(
@@ -849,8 +849,8 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
     {
 
     // Shortcuts for before cliff and after vesting cases.
-    if (time &lt; cliff) return 0;
-    if (time &gt;= vesting) return tokens;
+    if (time < cliff) return 0;
+    if (time >= vesting) return tokens;
 
     // Interpolate all vested tokens.
     // As before cliff the shortcut returns 0, we can use just this function to
@@ -879,7 +879,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = tokenGrantsCount(holder);
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = max64(grants[holder][i].vesting, date);
     }
     return date;
@@ -893,7 +893,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = safeAdd(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -914,9 +914,9 @@ contract ANT is MiniMeIrrevocableVestedToken {
     _tokenFactory,
     0x0,                    // no parent token
     0,                      // no snapshot block number from parent
-    &quot;Aragon Network Token&quot;, // Token name
+    "Aragon Network Token", // Token name
     18,                     // Decimals
-    &quot;ANT&quot;,                  // Symbol
+    "ANT",                  // Symbol
     true                    // Enable transfers
     ) {}
 }
@@ -944,7 +944,7 @@ contract AragonTokenSale is Controller, SafeMath {
     bool public saleStopped = false;              // Has Aragon Dev stopped the sale?
     bool public saleFinalized = false;            // Has Aragon Dev finalized the sale?
 
-    mapping (address =&gt; bool) public activated;   // Address confirmates that wants to activate the sale
+    mapping (address => bool) public activated;   // Address confirmates that wants to activate the sale
 
     ANT public token;                             // The token
     ANPlaceholder public networkPlaceholder;      // The network placeholder
@@ -979,7 +979,7 @@ price   |      +------+
 Final   |      |                    +------+
 price   |      |                           |
         |      |    for priceStages = 4    |
-        +------+---------------------------+--------&gt;
+        +------+---------------------------+-------->
           Initial                     Final       time
           block                       block
 
@@ -1002,11 +1002,11 @@ Price increases by the same delta in every stage change
       non_zero_address(_aragonDevMultisig)
       non_zero_address(_communityMultisig)
   {
-      if (_initialBlock &lt; getBlockNumber()) throw;
-      if (_initialBlock &gt;= _finalBlock) throw;
-      if (_initialPrice &lt;= _finalPrice) throw;
-      if (_priceStages &lt; 2) throw;
-      if (_priceStages &gt; _initialPrice - _finalPrice) throw;
+      if (_initialBlock < getBlockNumber()) throw;
+      if (_initialBlock >= _finalBlock) throw;
+      if (_initialPrice <= _finalPrice) throw;
+      if (_priceStages < 2) throw;
+      if (_priceStages > _initialPrice - _finalPrice) throw;
       if (uint(_capCommitment) == 0) throw;
 
       // Save constructor arguments as global variables
@@ -1032,7 +1032,7 @@ Price increases by the same delta in every stage change
            only(aragonDevMultisig)
            public {
 
-    // Assert that the function hasn&#39;t been called before, as activate will happen at the end
+    // Assert that the function hasn't been called before, as activate will happen at the end
     if (activated[this]) throw;
 
     token = ANT(_token);
@@ -1042,7 +1042,7 @@ Price increases by the same delta in every stage change
     if (token.controller() != address(this)) throw; // sale is controller
     if (networkPlaceholder.sale() != address(this)) throw; // placeholder has reference to Sale
     if (networkPlaceholder.token() != address(token)) throw; // placeholder has reference to ANT
-    if (token.totalSupply() &gt; 0) throw; // token is empty
+    if (token.totalSupply() > 0) throw; // token is empty
     if (saleWallet.finalBlock() != finalBlock) throw; // final blocks must match
     if (saleWallet.multisig() != aragonDevMultisig) throw; // receiving wallet must match
     if (saleWallet.tokenSale() != address(this)) throw; // watched token sale must be self
@@ -1069,15 +1069,15 @@ Price increases by the same delta in every stage change
   // @notice Whether the needed accounts have activated the sale.
   // @return Is sale activated
   function isActivated() constant public returns (bool) {
-    return activated[this] &amp;&amp; activated[aragonDevMultisig] &amp;&amp; activated[communityMultisig];
+    return activated[this] && activated[aragonDevMultisig] && activated[communityMultisig];
   }
 
   // @notice Get the price for a ANT token at any given block number
   // @param _blockNumber the block for which the price is requested
   // @return Number of wei-ANT for 1 wei
-  // If sale isn&#39;t ongoing for that block, returns 0.
+  // If sale isn't ongoing for that block, returns 0.
   function getPrice(uint _blockNumber) constant public returns (uint256) {
-    if (_blockNumber &lt; initialBlock || _blockNumber &gt;= finalBlock) return 0;
+    if (_blockNumber < initialBlock || _blockNumber >= finalBlock) return 0;
 
     return priceForStage(stageForBlock(_blockNumber));
   }
@@ -1095,9 +1095,9 @@ Price increases by the same delta in every stage change
   // @notice Get what the price is for a given stage
   // @param _stage: Stage number
   // @return Price in wei for that stage.
-  // If sale stage doesn&#39;t exist, returns 0.
+  // If sale stage doesn't exist, returns 0.
   function priceForStage(uint8 _stage) constant internal returns (uint256) {
-    if (_stage &gt;= priceStages) return 0;
+    if (_stage >= priceStages) return 0;
     uint priceDifference = safeSub(initialPrice, finalPrice);
     uint stageDelta = safeDiv(priceDifference, uint(priceStages - 1));
     return safeSub(initialPrice, safeMul(uint256(_stage), stageDelta));
@@ -1115,7 +1115,7 @@ Price increases by the same delta in every stage change
            only(aragonDevMultisig)
            public {
 
-    if (_amount &gt; 10 ** 24) throw; // 1 million ANT. No presale partner will have more than this allocated. Prevent overflows.
+    if (_amount > 10 ** 24) throw; // 1 million ANT. No presale partner will have more than this allocated. Prevent overflows.
 
     if (!token.generateTokens(address(this), _amount)) throw;
     token.grantVestedTokens(_receiver, _amount, uint64(now), cliffDate, vestingDate);
@@ -1180,7 +1180,7 @@ Price increases by the same delta in every stage change
            minimum_value(dust)
            internal {
 
-    if (totalCollected + msg.value &gt; hardCap) throw; // If past hard cap, throw
+    if (totalCollected + msg.value > hardCap) throw; // If past hard cap, throw
 
     uint256 boughtTokens = safeMul(msg.value, getPrice(getBlockNumber())); // Calculate how many tokens bought
 
@@ -1220,12 +1220,12 @@ Price increases by the same delta in every stage change
            verify_cap(_cap, _cap_secure)
            public {
 
-    if (_cap &gt; hardCap) throw;
+    if (_cap > hardCap) throw;
 
     hardCap = _cap;
     CapRevealed(_cap, _cap_secure, msg.sender);
 
-    if (totalCollected + dust &gt;= hardCap) {
+    if (totalCollected + dust >= hardCap) {
       doFinalizeSale(_cap, _cap_secure);
     }
   }
@@ -1243,7 +1243,7 @@ Price increases by the same delta in every stage change
   function doFinalizeSale(uint256 _cap, uint256 _cap_secure)
            verify_cap(_cap, _cap_secure)
            internal {
-    // Doesn&#39;t check if saleStopped is false, because sale could end in a emergency stop.
+    // Doesn't check if saleStopped is false, because sale could end in a emergency stop.
     // This function cannot be successfully called twice, because it will top being the controller,
     // and the generateTokens call will fail if called again.
 
@@ -1306,18 +1306,18 @@ Price increases by the same delta in every stage change
   }
 
   modifier only_before_sale {
-    if (getBlockNumber() &gt;= initialBlock) throw;
+    if (getBlockNumber() >= initialBlock) throw;
     _;
   }
 
   modifier only_during_sale_period {
-    if (getBlockNumber() &lt; initialBlock) throw;
-    if (getBlockNumber() &gt;= finalBlock) throw;
+    if (getBlockNumber() < initialBlock) throw;
+    if (getBlockNumber() >= finalBlock) throw;
     _;
   }
 
   modifier only_after_sale {
-    if (getBlockNumber() &lt; finalBlock) throw;
+    if (getBlockNumber() < finalBlock) throw;
     _;
   }
 
@@ -1342,7 +1342,7 @@ Price increases by the same delta in every stage change
   }
 
   modifier only_finalized_sale {
-    if (getBlockNumber() &lt; finalBlock) throw;
+    if (getBlockNumber() < finalBlock) throw;
     if (!saleFinalized) throw;
     _;
   }
@@ -1353,7 +1353,7 @@ Price increases by the same delta in every stage change
   }
 
   modifier minimum_value(uint256 x) {
-    if (msg.value &lt; x) throw;
+    if (msg.value < x) throw;
     _;
   }
 }

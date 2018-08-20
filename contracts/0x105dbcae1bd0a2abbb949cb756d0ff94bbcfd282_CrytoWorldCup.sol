@@ -10,7 +10,7 @@ pragma solidity ^0.4.4;
 
 contract MainBet{
 
-    bytes30 constant public name = &#39;CrytoWorldCup&#39;;
+    bytes30 constant public name = 'CrytoWorldCup';
     uint constant public vision = 1.0;
 
     uint constant internal NOWINNER = 0;
@@ -32,7 +32,7 @@ contract MainBet{
         uint claimed;
     }
 
-    mapping(address =&gt; Player) public players;
+    mapping(address => Player) public players;
     address[] public ch_players;
     address[][10] public st_players;
     address[][100] public nm_players;
@@ -53,7 +53,7 @@ contract MainBet{
     function claim() public returns(bool){
 
         Player storage player = players[msg.sender];
-        require(player.balance&gt;0);
+        require(player.balance>0);
 
         uint fee = SafeMath.div(player.balance, CLAIM_TAX);
         uint finalValue = SafeMath.sub(player.balance, fee);
@@ -68,7 +68,7 @@ contract MainBet{
     }
 
     function setClamTax(uint _tax) public onlyOwner returns(bool){
-        require(_tax&gt;0);
+        require(_tax>0);
 
         CLAIM_TAX = _tax;
         return true;
@@ -79,11 +79,11 @@ contract MainBet{
         _;
     }
     modifier beforeTime(uint time){
-        assert(now &lt; time);
+        assert(now < time);
         _;
     }
     modifier afterTime(uint time){
-        assert(now &gt; time);
+        assert(now > time);
         _;
     }
 }
@@ -136,8 +136,8 @@ contract Champion is MainBet{
         uint totalInvest;
     }
 
-    mapping (address =&gt; mapping (uint =&gt; uint)) private bets;
-    mapping (uint =&gt; Country) countrys;
+    mapping (address => mapping (uint => uint)) private bets;
+    mapping (uint => Country) countrys;
 
     uint private lucky = 0;
 
@@ -163,15 +163,15 @@ contract Champion is MainBet{
     }
 
     function setChampion(uint _winner) public onlyOwner beforeWinner returns (bool){
-        require(_winner&gt;0);
+        require(_winner>0);
 
         winner = _winner;
 
         Country storage country = countrys[_winner];
 
-        for(uint i=0; i&lt;ch_players.length; i++){
+        for(uint i=0; i<ch_players.length; i++){
             uint myInvest = bets[ch_players[i]][winner];
-            if(myInvest&gt;0){
+            if(myInvest>0){
                 Player storage player = players[ch_players[i]];
                 uint winInest = SafeMath.mul(totalPrize, myInvest);
                 uint prize = SafeMath.div(winInest, country.totalInvest);
@@ -188,8 +188,8 @@ contract Champion is MainBet{
     }
 
     function BetChampion(uint countryId) public beforeWinner afterTime(startTime) beforeTime(endTime) payable returns (bool)  {
-        require(msg.value&gt;0);
-        require(countryId&gt;0);
+        require(msg.value>0);
+        require(countryId>0);
 
         countrys[countryId].totalInvest = SafeMath.add(countrys[countryId].totalInvest, msg.value);
         countrys[countryId].totalNum = SafeMath.add(countrys[countryId].totalNum, 1);
@@ -201,7 +201,7 @@ contract Champion is MainBet{
         numberBets++;
 
         Player storage player = players[msg.sender];
-        if(player.invested&gt;0){
+        if(player.invested>0){
             player.invested = SafeMath.add(player.invested, msg.value);
             player.num = SafeMath.add(player.num, 1);
         }else{
@@ -216,7 +216,7 @@ contract Champion is MainBet{
         }
 
         bool ext = false;
-        for(uint i=0; i&lt;ch_players.length; i++){
+        for(uint i=0; i<ch_players.length; i++){
             if(ch_players[i] == msg.sender) {
                 ext = true;
                 break;
@@ -229,7 +229,7 @@ contract Champion is MainBet{
     }
 
     function getCountryBet(uint countryId) public constant returns(uint[]){
-        require(countryId&gt;0);
+        require(countryId>0);
 
         Country storage country = countrys[countryId];
         uint[] memory data = new uint[](4);
@@ -243,7 +243,7 @@ contract Champion is MainBet{
     }
 
     function getDeepInfo(uint countryId) public constant returns(uint[]){
-        require(countryId&gt;0);
+        require(countryId>0);
 
         Country storage country = countrys[countryId];
         uint[] memory data = new uint[](10);
@@ -253,13 +253,13 @@ contract Champion is MainBet{
         data[3] = 0;
         data[4] = 0;
 
-        if(winner&gt;0){
+        if(winner>0){
             data[4] = 1;
         }
         if(winner == countryId){
 
             uint myInvest = bets[msg.sender][winner];
-            if(myInvest&gt;0){
+            if(myInvest>0){
                 uint winInest = SafeMath.mul(totalPrize, myInvest);
                 uint prize = SafeMath.div(winInest, country.totalInvest);
                 data[2] = 1;
@@ -281,10 +281,10 @@ contract Champion is MainBet{
         data[2] = 0;
         if(isInit){
             data[2] = 1;
-            if(now &gt; endTime){
+            if(now > endTime){
                 data[2] = 2;
             }
-            if(winner &gt; 0){
+            if(winner > 0){
                 data[2] = 3;
             }
         }
@@ -318,16 +318,16 @@ contract Normal is MainBet{
         uint winner;
         uint totalInvest;
         uint totalNum;
-        mapping(address =&gt; mapping(uint =&gt; Better)) betters;
+        mapping(address => mapping(uint => Better)) betters;
     }
 
-    mapping(uint =&gt; Match) public matchs;
+    mapping(uint => Match) public matchs;
     uint[] public match_pools;
     uint public totalNum;
     uint public totalInvest;
 
     function initNormal() public returns(bool){
-        for(uint i=0;i&lt;match_pools.length;i++){
+        for(uint i=0;i<match_pools.length;i++){
             match_pools[i] = 0;
         }
         totalNum = 0;
@@ -336,10 +336,10 @@ contract Normal is MainBet{
     }
 
     function addMatch(uint matchId, uint startTime) public onlyOwner returns(bool res){
-        require(matchId &gt; 0);
-        require(now&lt;startTime);
+        require(matchId > 0);
+        require(now<startTime);
 
-        for(uint i=0;i&lt;match_pools.length;i++){
+        for(uint i=0;i<match_pools.length;i++){
             require(matchId!=match_pools[i]);
         }
 
@@ -351,30 +351,30 @@ contract Normal is MainBet{
     }
 
     function getMatchIndex(uint matchId) public constant returns(uint){
-        require(matchId&gt;0);
+        require(matchId>0);
 
         uint index = 100;
-        for(uint i=0;i&lt;match_pools.length;i++){
+        for(uint i=0;i<match_pools.length;i++){
             if(match_pools[i] == matchId){
                 index = i;
                 break;
             }
         }
-        // require(index &lt; 100);
+        // require(index < 100);
         return index;
     }
 
     function betMatch(uint matchId, uint team) public payable returns(bool res){
-        require(matchId&gt;0 &amp;&amp; team&gt;0);
+        require(matchId>0 && team>0);
         require(team == WIN || team == LOSE || team == TIE);
-        require(msg.value&gt;0);
+        require(msg.value>0);
 
         Match storage _match = matchs[matchId];
         require(_match.winner == NOWINNER);
-        require(now &lt; _match.startTime);
+        require(now < _match.startTime);
 
         Better storage better = _match.betters[msg.sender][team];
-        if(better.invested&gt;0){
+        if(better.invested>0){
             better.invested = SafeMath.add(better.invested, msg.value);
         }else{
             _match.betters[msg.sender][team] = Better(msg.sender, msg.value, team,0);
@@ -386,7 +386,7 @@ contract Normal is MainBet{
         totalInvest = SafeMath.add(totalInvest, msg.value);
 
         Player storage player = players[msg.sender];
-        if(player.invested&gt;0){
+        if(player.invested>0){
             player.invested = SafeMath.add(player.invested, msg.value);
             player.num = SafeMath.add(player.num, 1);
         }else{
@@ -402,7 +402,7 @@ contract Normal is MainBet{
         uint index = getMatchIndex(matchId);
         address[] memory match_betters = nm_players[index];
         bool ext = false;
-        for(uint i=0;i&lt;match_betters.length;i++){
+        for(uint i=0;i<match_betters.length;i++){
             if(match_betters[i]==msg.sender){
                 ext = true;
                 break;
@@ -414,7 +414,7 @@ contract Normal is MainBet{
         return true;
     }
     function getMatch(uint matchId) public constant returns(uint[]){
-        require(matchId&gt;0);
+        require(matchId>0);
         Match storage _match = matchs[matchId];
         uint[] memory data = new uint[](2);
         data[0] = _match.totalNum;
@@ -427,7 +427,7 @@ contract Normal is MainBet{
         data[1] = totalInvest;
     }
     function setWinner(uint _matchId, uint team) public onlyOwner returns(bool){
-        require(_matchId&gt;0);
+        require(_matchId>0);
         require(team == WIN || team == LOSE || team == TIE);
         Match storage _match = matchs[_matchId];
         require(_match.winner == NOWINNER);
@@ -437,9 +437,9 @@ contract Normal is MainBet{
         uint index = getMatchIndex(_matchId);
         address[] memory match_betters = nm_players[index];
         uint teamInvest = getTeamInvest(_matchId, team);
-        for(uint i=0;i&lt;match_betters.length;i++){
+        for(uint i=0;i<match_betters.length;i++){
             Better storage better = _match.betters[match_betters[i]][team];
-            if(better.invested&gt;0){
+            if(better.invested>0){
                 uint winVal = SafeMath.mul(_match.totalInvest, better.invested);
                 uint prize = SafeMath.div(winVal, teamInvest);
                 Player storage player = players[match_betters[i]];
@@ -451,14 +451,14 @@ contract Normal is MainBet{
     }
 
     function getTeamInvest(uint matchId, uint team) public constant returns(uint){
-        require(matchId&gt;0);
+        require(matchId>0);
         require(team == WIN || team == LOSE || team == TIE);
 
         Match storage _match = matchs[matchId];
         uint index = getMatchIndex(matchId);
         address[] storage match_betters = nm_players[index];
         uint invest = 0;
-        for(uint i=0;i&lt;match_betters.length;i++){
+        for(uint i=0;i<match_betters.length;i++){
             Better storage better = _match.betters[match_betters[i]][team];
             invest = SafeMath.add(invest, better.invested);
         }
@@ -467,8 +467,8 @@ contract Normal is MainBet{
     }
 
     function getMyNmBet(uint matchId, uint team) public constant returns(uint[]){
-        require(matchId&gt;0);
-        require(team&gt;0);
+        require(matchId>0);
+        require(team>0);
         Match storage _match = matchs[matchId];
 
         uint[] memory data = new uint[](6);
@@ -478,7 +478,7 @@ contract Normal is MainBet{
         data[2] = 0;
         data[3] = 0;
         data[4] = 0;
-        if(_match.winner&gt;0){
+        if(_match.winner>0){
             data[2] = 1;
             if(_match.winner == team){
                 Better storage better = _match.betters[msg.sender][team];
@@ -520,16 +520,16 @@ contract Stage is MainBet{
        uint winner_team2;
        uint num_betters;
        uint total_prize;
-       mapping (address =&gt; mapping (uint =&gt; StageBetter)) betters;
-       mapping (uint =&gt; uint) num_team_bets;
+       mapping (address => mapping (uint => StageBetter)) betters;
+       mapping (uint => uint) num_team_bets;
     }
 
-    mapping (uint =&gt; Group) groups;
+    mapping (uint => Group) groups;
     uint[] public group_pools;
 
     function initStage() public onlyOwner returns(bool){
 
-        for(uint i = 0;i&lt;group_pools.length; i++){
+        for(uint i = 0;i<group_pools.length; i++){
             group_pools[i] = 0;
         }
 
@@ -537,11 +537,11 @@ contract Stage is MainBet{
     }
 
     function addGroup(uint _group_num, uint _start_time, uint _end_time) public returns(bool) {
-        require(_group_num &gt; 0);
-        require(now &lt;= _start_time);
-        require(_start_time &lt;= _end_time);
+        require(_group_num > 0);
+        require(now <= _start_time);
+        require(_start_time <= _end_time);
 
-        for(uint i = 0; i &lt; group_pools.length; i++) {
+        for(uint i = 0; i < group_pools.length; i++) {
             require(_group_num != group_pools[i]);
         }
 
@@ -555,19 +555,19 @@ contract Stage is MainBet{
 
     function betStage(uint _group_num, uint[] _bet_teams) public payable returns (bool) {
 
-        require(_group_num &gt; 0);
-        require(msg.value &gt; 0);
+        require(_group_num > 0);
+        require(msg.value > 0);
         require(_bet_teams.length == 2);
 
         Group storage group = groups[_group_num];
-        require(group.winner_team1 == 0 &amp;&amp; group.winner_team2 == 0);
+        require(group.winner_team1 == 0 && group.winner_team2 == 0);
 
-        require(now &lt;= group.start_time);
+        require(now <= group.start_time);
 
         uint sumofsquares = SafeMath.sumofsquares(_bet_teams[0], _bet_teams[1]);
 
         StageBetter storage better = group.betters[msg.sender][sumofsquares];
-        if(better.money_invested &gt; 0) {
+        if(better.money_invested > 0) {
             better.money_invested = SafeMath.add(better.money_invested, msg.value);
         } else {
             group.betters[msg.sender][_group_num] = StageBetter({
@@ -583,7 +583,7 @@ contract Stage is MainBet{
         group.num_team_bets[sumofsquares] = SafeMath.add(group.num_team_bets[sumofsquares], 1);
 
         Player storage player = players[msg.sender];
-        if(player.invested&gt;0){
+        if(player.invested>0){
             player.invested = SafeMath.add(player.invested, msg.value);
             player.num = SafeMath.add(player.num, 1);
         }else{
@@ -599,7 +599,7 @@ contract Stage is MainBet{
         uint index = getGroupIndex(_group_num);
         address[] memory group_betters = st_players[index];
         bool ext = false;
-        for(uint i=0;i&lt;group_betters.length;i++){
+        for(uint i=0;i<group_betters.length;i++){
             if(group_betters[i]==msg.sender){
                 ext = true;
                 break;
@@ -613,11 +613,11 @@ contract Stage is MainBet{
 
     function setGroupWinner(uint _group_num, uint[] _winner_teams) public onlyOwner returns(bool) {
 
-        require(_group_num &gt; 0);
+        require(_group_num > 0);
         require(_winner_teams.length == 2);
 
         Group storage group = groups[_group_num];
-        require(group.winner_team1 == 0 &amp;&amp; group.winner_team2 == 0);
+        require(group.winner_team1 == 0 && group.winner_team2 == 0);
 
         group.winner_team1 = _winner_teams[0];
         group.winner_team2 = _winner_teams[1];
@@ -627,9 +627,9 @@ contract Stage is MainBet{
         uint index = getGroupIndex(_group_num);
         address[] memory group_betters = st_players[index];
         uint teamInvest = getGroupTeamInvest(_group_num, sumofsquares);
-        for(uint i=0;i&lt;group_betters.length;i++){
+        for(uint i=0;i<group_betters.length;i++){
             StageBetter storage better = group.betters[group_betters[i]][_group_num];
-            if(better.money_invested &gt; 0){
+            if(better.money_invested > 0){
                 uint aux = SafeMath.mul(group.total_prize, better.money_invested);
                 uint prize = SafeMath.div(aux, teamInvest);
 
@@ -645,7 +645,7 @@ contract Stage is MainBet{
 
     function updateEndTimeManually(uint _group_num, uint _end_time) public onlyOwner returns (bool){
         Group storage group = groups[_group_num];
-        require(group.winner_team1 == 0 &amp;&amp; group.winner_team2 == 0);
+        require(group.winner_team1 == 0 && group.winner_team2 == 0);
 
         group.end_time = _end_time;
         return true;
@@ -653,18 +653,18 @@ contract Stage is MainBet{
 
     function updateStartTimeManually(uint _group_num, uint _start_time) public onlyOwner returns (bool){
         Group storage group = groups[_group_num];
-        require(group.winner_team1 == 0 &amp;&amp; group.winner_team2 == 0);
+        require(group.winner_team1 == 0 && group.winner_team2 == 0);
 
         group.start_time = _start_time;
         return true;
     }
 
     function getWinnerTeam(uint _group_num) public constant returns (uint[]){
-        require(_group_num &gt; 0);
+        require(_group_num > 0);
 
         uint[] memory data = new uint[](2);
         Group storage group = groups[_group_num];
-        require(group.winner_team1 &gt; 0 &amp;&amp; group.winner_team2 &gt; 0);
+        require(group.winner_team1 > 0 && group.winner_team2 > 0);
 
         data[0] = group.winner_team1;
         data[1] = group.winner_team2;
@@ -673,7 +673,7 @@ contract Stage is MainBet{
     }
 
     function getGroupTeamInvest(uint _group_num, uint squares) public constant returns(uint){
-        require(_group_num&gt;0);
+        require(_group_num>0);
 
         uint index = getGroupIndex(_group_num);
         address[] storage group_betters = st_players[index];
@@ -681,7 +681,7 @@ contract Stage is MainBet{
         uint sumofsquares = SafeMath.sumofsquares(group.winner_team1, group.winner_team2);
 
         uint invest = 0;
-        for(uint i=0;i&lt;group_betters.length;i++){
+        for(uint i=0;i<group_betters.length;i++){
             StageBetter storage better = group.betters[group_betters[i]][_group_num];
             if(sumofsquares == squares){
                 invest = SafeMath.add(invest, better.money_invested);
@@ -692,7 +692,7 @@ contract Stage is MainBet{
     }
 
     function getGroupStatistic(uint _group_num) public constant returns (uint[]){
-        require(_group_num &gt; 0);
+        require(_group_num > 0);
 
         uint[] memory data = new uint[](5);
         Group storage group = groups[_group_num];
@@ -703,9 +703,9 @@ contract Stage is MainBet{
     }
 
     function getMyStageBet(uint _group_num, uint team1, uint team2) public constant returns(uint[]){
-        require(_group_num&gt;0);
-        require(team1&gt;0);
-        require(team2&gt;0);
+        require(_group_num>0);
+        require(team1>0);
+        require(team2>0);
 
         Group storage group = groups[_group_num];
         uint sumofsquares = SafeMath.sumofsquares(team1, team2);
@@ -717,7 +717,7 @@ contract Stage is MainBet{
         data[2] = 0;
         data[3] = 0;
         data[4] = 0;
-        if(sumofsquares1&gt;0){
+        if(sumofsquares1>0){
             data[2] = 1;
         }
         if(sumofsquares == sumofsquares1){
@@ -733,21 +733,21 @@ contract Stage is MainBet{
     }
 
     function getGroupIndex(uint group_id) public constant returns(uint){
-        require(group_id&gt;0);
+        require(group_id>0);
 
         uint index = 10;
-        for(uint i=0;i&lt;group_pools.length;i++){
+        for(uint i=0;i<group_pools.length;i++){
             if(group_pools[i] == group_id){
                 index = i;
                 break;
             }
         }
-        // require(index&lt;10);
+        // require(index<10);
         return index;
     }
 
     function getNumberOfBets(uint _group_num) public constant returns (uint num_betters){
-        require(_group_num &gt; 0);
+        require(_group_num > 0);
 
         Group storage group = groups[_group_num];
         return group.num_betters;
@@ -758,7 +758,7 @@ contract Stage is MainBet{
         uint allTotalPrize = 0;
         uint allNumberOfBets = 0;
 
-        for(uint i = 0; i &lt; group_pools.length; i++) {
+        for(uint i = 0; i < group_pools.length; i++) {
             uint group_num = group_pools[i];
             Group storage group = groups[group_num];
             allTotalPrize = SafeMath.add(group.total_prize, allTotalPrize);
@@ -772,7 +772,7 @@ contract Stage is MainBet{
 
     function getAllTotalPrize() public constant returns (uint){
         uint allTotalPrize = 0;
-        for(uint i = 0; i &lt; group_pools.length; i++) {
+        for(uint i = 0; i < group_pools.length; i++) {
             uint group_num = group_pools[i];
             Group storage group = groups[group_num];
             allTotalPrize = SafeMath.add(group.total_prize, allTotalPrize);
@@ -782,7 +782,7 @@ contract Stage is MainBet{
 
     function getAllNumberOfBets() public constant returns (uint){
         uint allNumberOfBets = 0;
-        for(uint i = 0; i &lt; group_pools.length; i++) {
+        for(uint i = 0; i < group_pools.length; i++) {
             uint group_num = group_pools[i];
             Group storage group = groups[group_num];
             allNumberOfBets = SafeMath.add(group.num_betters, allNumberOfBets);
@@ -835,9 +835,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -845,7 +845,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -854,12 +854,12 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function sumofsquares(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a * a + b * b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

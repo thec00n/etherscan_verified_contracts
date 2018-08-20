@@ -5,7 +5,7 @@ pragma solidity 0.4.19;
 ///        from any Ethereum account to any other Ethereum account.
 contract EthereumClaimsRegistry {
 
-    mapping(address =&gt; mapping(address =&gt; mapping(bytes32 =&gt; bytes32))) public registry;
+    mapping(address => mapping(address => mapping(bytes32 => bytes32))) public registry;
 
     event ClaimSet(
         address indexed issuer,

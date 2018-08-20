@@ -34,21 +34,21 @@ contract KryptoArmy {
     Battle[] battles;
 
     // Mapping army
-    mapping (address =&gt; uint) public ownerToArmy;       // Which army does this address own
-    mapping (address =&gt; uint) public ownerArmyCount;    // How many armies own this address?
+    mapping (address => uint) public ownerToArmy;       // Which army does this address own
+    mapping (address => uint) public ownerArmyCount;    // How many armies own this address?
 
     // Mapping weapons to army
-    mapping (uint =&gt; uint) public armyDronesCount;
-    mapping (uint =&gt; uint) public armyPlanesCount;
-    mapping (uint =&gt; uint) public armyHelicoptersCount;
-    mapping (uint =&gt; uint) public armyTanksCount;
-    mapping (uint =&gt; uint) public armyAircraftCarriersCount;
-    mapping (uint =&gt; uint) public armySubmarinesCount;
-    mapping (uint =&gt; uint) public armySatelitesCount;
+    mapping (uint => uint) public armyDronesCount;
+    mapping (uint => uint) public armyPlanesCount;
+    mapping (uint => uint) public armyHelicoptersCount;
+    mapping (uint => uint) public armyTanksCount;
+    mapping (uint => uint) public armyAircraftCarriersCount;
+    mapping (uint => uint) public armySubmarinesCount;
+    mapping (uint => uint) public armySatelitesCount;
 
     // Mapping battles
-    mapping (uint =&gt; uint) public armyCountBattlesWon;
-    mapping (uint =&gt; uint) public armyCountBattlesLost;
+    mapping (uint => uint) public armyCountBattlesWon;
+    mapping (uint => uint) public armyCountBattlesLost;
 
     // This function creates a new army and saves it in the array with its parameters
     function _createArmy(string _name, string _idArmy, uint _price, uint _attackBonus, uint _defenseBonus) public onlyCeo {
@@ -61,7 +61,7 @@ contract KryptoArmy {
     function purchaseArmy(uint _armyId) public payable {
         // We verify that the value paid is equal to the cost of the army
         require(msg.value == armies[_armyId].price);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         // We check if this army is owned by another user
         if(armies[_armyId].ownerAddress != address(this)) {
@@ -75,20 +75,20 @@ contract KryptoArmy {
 
     // Function to purchase a soldier
     function purchaseSoldiers(uint _armyId, uint _countSoldiers) public payable {
-        // Check that message value &gt; 0
-        require(msg.value &gt; 0);
+        // Check that message value > 0
+        require(msg.value > 0);
         uint256 msgValue = msg.value;
 
-        if(msgValue == 1000000000000000 &amp;&amp; _countSoldiers == 1) {
+        if(msgValue == 1000000000000000 && _countSoldiers == 1) {
             // Increment soldiers count in army
             armies[_armyId].soldiersCount = armies[_armyId].soldiersCount + _countSoldiers;
-        } else if(msgValue == 8000000000000000 &amp;&amp; _countSoldiers == 10) {
+        } else if(msgValue == 8000000000000000 && _countSoldiers == 10) {
             // Increment soldiers count in army
             armies[_armyId].soldiersCount = armies[_armyId].soldiersCount + _countSoldiers;
-        } else if(msgValue == 65000000000000000 &amp;&amp; _countSoldiers == 100) {
+        } else if(msgValue == 65000000000000000 && _countSoldiers == 100) {
             // Increment soldiers count in army
             armies[_armyId].soldiersCount = armies[_armyId].soldiersCount + _countSoldiers;
-        } else if(msgValue == 500000000000000000 &amp;&amp; _countSoldiers == 1000) {
+        } else if(msgValue == 500000000000000000 && _countSoldiers == 1000) {
             // Increment soldiers count in army
             armies[_armyId].soldiersCount = armies[_armyId].soldiersCount + _countSoldiers;
         }
@@ -96,29 +96,29 @@ contract KryptoArmy {
 
     // Payable function to purchase weapons
     function purchaseWeapons(uint _armyId, uint _weaponId, uint _bonusAttack, uint _bonusDefense ) public payable {
-        // Check that message value &gt; 0
+        // Check that message value > 0
         uint isValid = 0;
         uint256 msgValue = msg.value;
 
-        if(msgValue == 10000000000000000 &amp;&amp; _weaponId == 0) {
+        if(msgValue == 10000000000000000 && _weaponId == 0) {
             armyDronesCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 25000000000000000 &amp;&amp; _weaponId == 1) {
+        } else if(msgValue == 25000000000000000 && _weaponId == 1) {
              armyPlanesCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 25000000000000000 &amp;&amp; _weaponId == 2) {
+        } else if(msgValue == 25000000000000000 && _weaponId == 2) {
             armyHelicoptersCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 45000000000000000 &amp;&amp; _weaponId == 3) {
+        } else if(msgValue == 45000000000000000 && _weaponId == 3) {
             armyTanksCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 100000000000000000 &amp;&amp; _weaponId == 4) {
+        } else if(msgValue == 100000000000000000 && _weaponId == 4) {
             armyAircraftCarriersCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 100000000000000000 &amp;&amp; _weaponId == 5) {
+        } else if(msgValue == 100000000000000000 && _weaponId == 5) {
             armySubmarinesCount[_armyId]++;
             isValid = 1;
-        } else if(msgValue == 120000000000000000 &amp;&amp; _weaponId == 6) {
+        } else if(msgValue == 120000000000000000 && _weaponId == 6) {
             armySatelitesCount[_armyId]++;
             isValid = 1;
         } 
@@ -170,7 +170,7 @@ contract KryptoArmy {
 
         uint VictoriousArmy;
         uint ExperiencePointsGained;
-        if(ScoreDefense &gt;= ScoreAttack) {
+        if(ScoreDefense >= ScoreAttack) {
             VictoriousArmy = _idArmyDefensing;
             ExperiencePointsGained = armies[_idArmyAttacking].attackBonus + 2;
             armies[_idArmyDefensing].experiencePoints = armies[_idArmyDefensing].experiencePoints + ExperiencePointsGained;
@@ -197,9 +197,9 @@ contract KryptoArmy {
 
     // Owner can sell army
     function ownerSellArmy(uint _armyId, uint256 _amount) public {
-        // We close the function if the user calling this function doesn&#39;t own the army
+        // We close the function if the user calling this function doesn't own the army
         require (armies[_armyId].ownerAddress == msg.sender);
-        require (_amount &gt; 0);
+        require (_amount > 0);
         require (armies[_armyId].isForSale == false);
 
         armies[_armyId].isForSale = true;
@@ -281,7 +281,7 @@ contract KryptoArmy {
 
     // To withdraw fund from this contract
     function withdraw(uint amount, uint who) public onlyCeo returns(bool) {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         if(who == 0) {
             ceoAddress.transfer(amount);
         } else {
@@ -295,39 +295,39 @@ contract KryptoArmy {
     function KryptoArmy() public onlyCeo {
 
       // 1. USA
-        _createArmy(&quot;United States&quot;, &quot;USA&quot;, 550000000000000000, 8, 9);
+        _createArmy("United States", "USA", 550000000000000000, 8, 9);
 
         // 2. North Korea
-        _createArmy(&quot;North Korea&quot;, &quot;NK&quot;, 500000000000000000, 10, 5);
+        _createArmy("North Korea", "NK", 500000000000000000, 10, 5);
 
         // 3. Russia
-        _createArmy(&quot;Russia&quot;, &quot;RUS&quot;, 450000000000000000, 8, 7);
+        _createArmy("Russia", "RUS", 450000000000000000, 8, 7);
 
         // 4. China
-        _createArmy(&quot;China&quot;, &quot;CHN&quot;, 450000000000000000, 7, 8);
+        _createArmy("China", "CHN", 450000000000000000, 7, 8);
 
         // 5. Japan
-        _createArmy(&quot;Japan&quot;, &quot;JPN&quot;, 420000000000000000, 7, 7);
+        _createArmy("Japan", "JPN", 420000000000000000, 7, 7);
 
         // 6. France
-        _createArmy(&quot;France&quot;, &quot;FRA&quot;, 400000000000000000, 6, 8);
+        _createArmy("France", "FRA", 400000000000000000, 6, 8);
 
         // 7. Germany
-        _createArmy(&quot;Germany&quot;, &quot;GER&quot;, 400000000000000000, 7, 6);
+        _createArmy("Germany", "GER", 400000000000000000, 7, 6);
 
         // 8. India
-        _createArmy(&quot;India&quot;, &quot;IND&quot;, 400000000000000000, 7, 6);
+        _createArmy("India", "IND", 400000000000000000, 7, 6);
 
         // 9. United Kingdom
-        _createArmy(&quot;United Kingdom&quot;, &quot;UK&quot;, 350000000000000000, 5, 7);
+        _createArmy("United Kingdom", "UK", 350000000000000000, 5, 7);
 
         // 10. South Korea
-        _createArmy(&quot;South Korea&quot;, &quot;SK&quot;, 350000000000000000, 6, 6);
+        _createArmy("South Korea", "SK", 350000000000000000, 6, 6);
 
         // 11. Turkey
-        _createArmy(&quot;Turkey&quot;, &quot;TUR&quot;, 300000000000000000, 7, 4);
+        _createArmy("Turkey", "TUR", 300000000000000000, 7, 4);
 
         // 12. Italy
-        //_createArmy(&quot;Italy&quot;, &quot;ITA&quot;, 280000000000000000, 5, 5);
+        //_createArmy("Italy", "ITA", 280000000000000000, 5, 5);
     }
 }

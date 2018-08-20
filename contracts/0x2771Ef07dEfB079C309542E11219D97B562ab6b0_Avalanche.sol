@@ -23,16 +23,16 @@ contract AVL is ERC20
 {
     uint public incirculation;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     
-    mapping (address =&gt; uint) goo;
+    mapping (address => uint) goo;
 
     function transfer(address _to, uint _value) public returns (bool success)
     {
         uint gas = msg.gas;
         
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+        if (balances[msg.sender] >= _value && _value > 0)
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -53,7 +53,7 @@ contract AVL is ERC20
     {
         uint gas = msg.gas;
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0)
         {
             balances[_to] += _value;
             balances[_from] -= _value;
@@ -99,12 +99,12 @@ contract AVL is ERC20
     {
         uint amount = (gas-msg.gas+36120) * tx.gasprice;
         
-        if (goo[msg.sender] &lt; amount &amp;&amp; goo[msg.sender] &gt; 0)
+        if (goo[msg.sender] < amount && goo[msg.sender] > 0)
         {
             amount = goo[msg.sender];
         }
         
-        if (goo[msg.sender] &gt;= amount)
+        if (goo[msg.sender] >= amount)
         {
             goo[msg.sender] -= amount;
             
@@ -115,10 +115,10 @@ contract AVL is ERC20
 
 contract Avalanche is AVL 
 {
-    string public constant name = &quot;Avalanche&quot;;
+    string public constant name = "Avalanche";
     uint8 public constant decimals = 4;
-    string public constant symbol = &quot;AVL&quot;;
-    string public constant version = &quot;1.0&quot;;
+    string public constant symbol = "AVL";
+    string public constant version = "1.0";
 
     event tokensCreated(uint total, uint price);
     event etherSent(uint total);
@@ -128,9 +128,9 @@ contract Avalanche is AVL
     uint public constant oneavl = 10000;
     uint public constant totalavl = 1000000 * oneavl;
     
-    mapping (address =&gt; bytes1) addresslevels;
+    mapping (address => bytes1) addresslevels;
 
-    mapping (address =&gt; uint) lastleak;
+    mapping (address => uint) lastleak;
     
     function Avalanche() public
     {
@@ -145,7 +145,7 @@ contract Avalanche is AVL
         uint generateprice = getPrice(getAddressLevel());
         uint generateamount = msg.value * oneavl / generateprice;
         
-        if (incirculation + generateamount &gt; totalavl)
+        if (incirculation + generateamount > totalavl)
         {
             revert();
         }
@@ -174,7 +174,7 @@ contract Avalanche is AVL
     {
         uint gas = msg.gas;
         
-        if (now-lastleak[msg.sender] &lt; 1 days)
+        if (now-lastleak[msg.sender] < 1 days)
         { 
             refund(gas);
             
@@ -185,12 +185,12 @@ contract Avalanche is AVL
         
         uint amount = goo[msg.sender] / uint(getAddressLevel());
         
-        if (goo[msg.sender] &lt; amount &amp;&amp; goo[msg.sender] &gt; 0)
+        if (goo[msg.sender] < amount && goo[msg.sender] > 0)
         {
             amount = goo[msg.sender];
         }
         
-        if (goo[msg.sender] &gt;= amount)
+        if (goo[msg.sender] >= amount)
         {
             lastleak[msg.sender] = now;
             
@@ -216,18 +216,18 @@ contract Avalanche is AVL
    
     function getAddressLevel() internal returns (bytes1 res)
     {
-        if (addresslevels[msg.sender] &gt; 0) 
+        if (addresslevels[msg.sender] > 0) 
         {
             return addresslevels[msg.sender];
         }
       
         bytes1 highest = 0;
         
-        for (uint i = 0; i &lt; 20; i++)
+        for (uint i = 0; i < 20; i++)
         {
             bytes1 c = bytes1(uint8(uint(msg.sender) / (2 ** (8 * (19 - i)))));
             
-            if (bytes1(c) &gt; highest) highest = c;
+            if (bytes1(c) > highest) highest = c;
         }
       
         addresslevels[msg.sender] = highest;

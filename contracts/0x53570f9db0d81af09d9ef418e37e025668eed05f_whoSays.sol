@@ -1,9 +1,9 @@
 pragma solidity ^0.4.0;
 contract whoSays {
 
-    string public name = &quot;whoSays&quot;;
+    string public name = "whoSays";
 
-    mapping(address =&gt; bytes) public data;
+    mapping(address => bytes) public data;
 
     event Said(address indexed person, bytes message);
 

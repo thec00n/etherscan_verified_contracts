@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,10 +88,10 @@ contract Locking {
     }
 
     function release() onlyOwner public {
-        require(now &gt; firstReleaseTime &amp;&amp; !isFirstPartReleased || now &gt; secondReleaseTime);
+        require(now > firstReleaseTime && !isFirstPartReleased || now > secondReleaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         if (!isFirstPartReleased) {
             amount = firstBirdAmount;

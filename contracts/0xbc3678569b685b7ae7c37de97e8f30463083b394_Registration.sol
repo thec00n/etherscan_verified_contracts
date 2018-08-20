@@ -19,7 +19,7 @@ contract owned {
 
 contract Registration is owned { 
     
-    mapping (address =&gt; bool) public isRegistered;   
+    mapping (address => bool) public isRegistered;   
       
     function () public payable {
         //address sender = msg.sender; 
@@ -32,7 +32,7 @@ contract Registration is owned {
     }
     
     function collectFees() onlyOwner public { 
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         
         msg.sender.transfer(this.balance);
     }

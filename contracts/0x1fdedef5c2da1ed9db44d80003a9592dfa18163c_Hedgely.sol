@@ -2,12 +2,12 @@ pragma solidity ^0.4.19;
 
 
 // Hedgely - v2
-// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b293a3f3a36342838331b3c363a323775383436">[email&#160;protected]</a>
+// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b293a3f3a36342838331b3c363a323775383436">[email protected]</a>
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -79,7 +79,7 @@ contract Syndicate is Ownable{
         uint256 winnings; // current available winnings (for withdrawal)
      }
 
-    mapping(address =&gt; somePlayer ) private allPlayers; // all of the players
+    mapping(address => somePlayer ) private allPlayers; // all of the players
 
     struct member {
         uint256 numShares;
@@ -87,7 +87,7 @@ contract Syndicate is Ownable{
      }
 
     address[] private syndicateMembers;
-    mapping(address =&gt; member ) private members;
+    mapping(address => member ) private members;
 
     event ProfitShare(
           uint256 _currentSyndicateValue,
@@ -107,7 +107,7 @@ contract Syndicate is Ownable{
     function claimProfit() public {
       if (members[msg.sender].numShares==0) revert();
       uint256 profitShare = members[msg.sender].profitShare;
-      if (profitShare&gt;0){
+      if (profitShare>0){
         members[msg.sender].profitShare = 0;
         msg.sender.transfer(profitShare);
       }
@@ -117,7 +117,7 @@ contract Syndicate is Ownable{
     function claimPlayerProfit() public {
       if (allPlayers[msg.sender].profitShare==0) revert();
       uint256 profitShare = allPlayers[msg.sender].profitShare;
-      if (profitShare&gt;0){
+      if (profitShare>0){
         allPlayers[msg.sender].profitShare = 0;
         msg.sender.transfer(profitShare);
       }
@@ -127,7 +127,7 @@ contract Syndicate is Ownable{
     function claimPlayerWinnings() public {
       if (allPlayers[msg.sender].winnings==0) revert();
       uint256 winnings = allPlayers[msg.sender].winnings;
-      if (winnings&gt;0){
+      if (winnings>0){
         allPlayers[msg.sender].winnings = 0;
         msg.sender.transfer(winnings);
       }
@@ -152,9 +152,9 @@ contract Syndicate is Ownable{
       uint256 totalOwnedShares = totalSyndicateShares-(playersShareAllocation+availableBuyInShares);
       uint256 profitPerShare = roundIt(SafeMath.div(currentSyndicateValue,totalOwnedShares));
 
-      if (profitPerShare&gt;0){
+      if (profitPerShare>0){
           // foreach member , calculate their profitshare
-          for(uint i = 0; i&lt; numberSyndicateMembers; i++)
+          for(uint i = 0; i< numberSyndicateMembers; i++)
           {
             // do += so that acrues across share cycles.
             members[syndicateMembers[i]].profitShare+=SafeMath.mul(members[syndicateMembers[i]].numShares,profitPerShare);
@@ -163,24 +163,24 @@ contract Syndicate is Ownable{
 
       uint256 topPlayerDistributableProfit =  SafeMath.div(currentSyndicateValue,4); // 25 %
       // player profit calculation
-      uint256 numberOfRecipients = min(numberOfCyclePlayers,10); // even split among top players even if &lt;10
+      uint256 numberOfRecipients = min(numberOfCyclePlayers,10); // even split among top players even if <10
       uint256 profitPerTopPlayer = roundIt(SafeMath.div(topPlayerDistributableProfit,numberOfRecipients));
 
-      if (profitPerTopPlayer&gt;0){
+      if (profitPerTopPlayer>0){
 
           // begin sorting the cycle players
           address[] memory arr = new address[](numberOfCyclePlayers);
 
-          // copy the array to in memory - don&#39;t sort the global too expensive
-          for(i=0; i&lt;numberOfCyclePlayers &amp;&amp; i&lt;maxCyclePlayersConsidered; i++) {
+          // copy the array to in memory - don't sort the global too expensive
+          for(i=0; i<numberOfCyclePlayers && i<maxCyclePlayersConsidered; i++) {
             arr[i] = cyclePlayers[i];
           }
           address key;
           uint j;
-          for(i = 1; i &lt; arr.length; i++ ) {
+          for(i = 1; i < arr.length; i++ ) {
             key = arr[i];
 
-            for(j = i; j &gt; 0 &amp;&amp; allPlayers[arr[j-1]].playCount &gt; allPlayers[key].playCount; j-- ) {
+            for(j = i; j > 0 && allPlayers[arr[j-1]].playCount > allPlayers[key].playCount; j-- ) {
               arr[j] = arr[j-1];
             }
             arr[j] = key;
@@ -189,7 +189,7 @@ contract Syndicate is Ownable{
           //arr now contains the sorted set of addresses for distribution
 
           // for each of the top 10 players distribute their profit.
-          for(i = 0; i&lt; numberOfRecipients; i++)
+          for(i = 0; i< numberOfRecipients; i++)
           {
             // do += so that acrues across share cycles - in case player profit is not claimed.
             if (arr[i]!=0) { // check no null addresses
@@ -219,7 +219,7 @@ contract Syndicate is Ownable{
           insertCyclePlayer();
       }
         allPlayers[msg.sender].playCount++;
-        // note we don&#39;t touch profitShare or winnings because they need to roll over cycles if unclaimed
+        // note we don't touch profitShare or winnings because they need to roll over cycles if unclaimed
     }
 
     // convenience to manage a growing array
@@ -241,12 +241,12 @@ contract Syndicate is Ownable{
     // buy into syndicate
     function buyIntoSyndicate() public payable  {
         if(msg.value==0 || availableBuyInShares==0) revert();
-        if(msg.value &lt; minimumBuyIn*buyInSharePrice) revert();
+        if(msg.value < minimumBuyIn*buyInSharePrice) revert();
 
         uint256 value = (msg.value/precision)*precision; // ensure precision
         uint256 allocation = value/buyInSharePrice;
 
-        if (allocation &gt;= availableBuyInShares){
+        if (allocation >= availableBuyInShares){
             allocation = availableBuyInShares; // limit hit
         }
         availableBuyInShares-=allocation;
@@ -266,7 +266,7 @@ contract Syndicate is Ownable{
 
     // For previous contributors to hedgely v0.1
     function allocateShares(uint256 allocation, address stakeholderAddress)  public onlyOwner {
-        if (allocation &gt; availableBuyInShares) revert();
+        if (allocation > availableBuyInShares) revert();
         availableBuyInShares-=allocation;
         addMember(stakeholderAddress); // possibly add this member to the syndicate
         members[stakeholderAddress].numShares+=allocation;
@@ -289,7 +289,7 @@ contract Syndicate is Ownable{
     }
 
     function min(uint a, uint b) private pure returns (uint) {
-           return a &lt; b ? a : b;
+           return a < b ? a : b;
     }
 
 }
@@ -302,11 +302,11 @@ contract Hedgely is Ownable, Syndicate {
 
    // Array of players
    address[] private players;
-   mapping(address =&gt; bool) private activePlayers;
+   mapping(address => bool) private activePlayers;
    uint256 numPlayers = 0;
 
    // map each player address to their portfolio of investments
-   mapping(address =&gt; uint256 [10] ) private playerPortfolio;
+   mapping(address => uint256 [10] ) private playerPortfolio;
 
    uint256[10] private marketOptions;
 
@@ -405,7 +405,7 @@ contract Hedgely is Ownable, Syndicate {
 
      // check if share cycle is complete and if required distribute profits
      shareCycleIndex+=1;
-     if (shareCycleIndex &gt; shareCycleSessionSize){
+     if (shareCycleIndex > shareCycleSessionSize){
        distributeProfit();
      }
 
@@ -468,14 +468,14 @@ contract Hedgely is Ownable, Syndicate {
     // main entry point for investors/players
     function invest(uint256 optionNumber) public payable {
 
-      // Check that the number is within the range (uints are always&gt;=0 anyway)
-      assert(optionNumber &lt;= 9);
+      // Check that the number is within the range (uints are always>=0 anyway)
+      assert(optionNumber <= 9);
       uint256 amount = roundIt(msg.value); // round to precision
-      assert(amount &gt;= minimumStake);
+      assert(amount >= minimumStake);
 
        // check for zero tie-breaker transaction
        // in this case nobody wins and investment goes into next session.
-      if (block.number &gt;= endingBlock &amp;&amp; currentLowestCount&gt;1 &amp;&amp; marketOptions[currentLowest]==0){
+      if (block.number >= endingBlock && currentLowestCount>1 && marketOptions[currentLowest]==0){
         endSession();
         // auto invest them in the lowest market option  - reward for
         optionNumber = currentLowest;
@@ -498,8 +498,8 @@ contract Hedgely is Ownable, Syndicate {
       updatePlayCount(); // rank the player in leaderboard
       currentLowest = findCurrentLowest();
 
-      // overtime and there&#39;s a winner
-      if (block.number &gt;= endingBlock &amp;&amp; currentLowestCount==1){
+      // overtime and there's a winner
+      if (block.number >= endingBlock && currentLowestCount==1){
           // somebody wins here.
           endSession();
       }
@@ -507,15 +507,15 @@ contract Hedgely is Ownable, Syndicate {
     } // end invest
 
 
-    // find lowest option sets currentLowestCount&gt;1 if there are more than 1 lowest
+    // find lowest option sets currentLowestCount>1 if there are more than 1 lowest
     function findCurrentLowest() internal returns (uint lowestOption) {
 
       uint winner = 0;
       uint lowestTotal = marketOptions[0];
       currentLowestCount = 0;
-      for(uint i=0;i&lt;10;i++)
+      for(uint i=0;i<10;i++)
       {
-          if (marketOptions [i]&lt;lowestTotal){
+          if (marketOptions [i]<lowestTotal){
               winner = i;
               lowestTotal = marketOptions [i];
               currentLowestCount = 0;
@@ -529,16 +529,16 @@ contract Hedgely is Ownable, Syndicate {
     function endSession() internal {
 
       uint256 sessionWinnings = 0;
-      if (currentLowestCount&gt;1){
+      if (currentLowestCount>1){
         numberWinner = 10; // no winner
       }else{
         numberWinner = currentLowest;
       }
 
       // record the end of session
-      for(uint j=1;j&lt;numPlayers;j++)
+      for(uint j=1;j<numPlayers;j++)
       {
-        if (numberWinner&lt;10 &amp;&amp; playerPortfolio[players[j]][numberWinner]&gt;0){
+        if (numberWinner<10 && playerPortfolio[players[j]][numberWinner]>0){
           uint256 winningAmount =  playerPortfolio[players[j]][numberWinner];
           uint256 winnings = SafeMath.mul(winningMultiplier,winningAmount); // n times the invested amount.
           sessionWinnings+=winnings;
@@ -555,16 +555,16 @@ contract Hedgely is Ownable, Syndicate {
 
       uint256 playerInvestments = totalInvested-seedInvestment;
 
-      if (sessionWinnings&gt;playerInvestments){
+      if (sessionWinnings>playerInvestments){
         uint256 loss = sessionWinnings-playerInvestments; // this is a loss
-        if (currentSyndicateValue&gt;=loss){
+        if (currentSyndicateValue>=loss){
           currentSyndicateValue-=loss;
         }else{
           currentSyndicateValue = 0;
         }
       }
 
-      if (playerInvestments&gt;sessionWinnings){
+      if (playerInvestments>sessionWinnings){
         currentSyndicateValue+=playerInvestments-sessionWinnings; // this is a gain
       }
       resetMarket();
@@ -586,7 +586,7 @@ contract Hedgely is Ownable, Syndicate {
     }
 
     function withdraw(uint256 amount) public onlyOwner {
-        require(amount&lt;=this.balance);
+        require(amount<=this.balance);
         if (amount==0){
             amount=this.balance;
         }
@@ -626,9 +626,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -636,7 +636,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -645,7 +645,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

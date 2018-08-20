@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -151,7 +151,7 @@ contract CCCRSale is Pausable {
     function bytesToAddress(bytes source) internal pure returns(address) {
         uint result;
         uint mul = 1;
-        for(uint i = 20; i &gt; 0; i--) {
+        for(uint i = 20; i > 0; i--) {
             result += uint8(source[i-1])*mul;
             mul = mul*256;
         }
@@ -160,7 +160,7 @@ contract CCCRSale is Pausable {
 
     function () whenNotPaused whenSaleNotFinish payable {
 
-      require(msg.value &gt;= etherOne.div(tokenPrice).mul(minimumTokens));
+      require(msg.value >= etherOne.div(tokenPrice).mul(minimumTokens));
         
       uint256 amountWei = msg.value;        
       uint256 amount = amountWei.div(zeroAmount);
@@ -176,16 +176,16 @@ contract CCCRSale is Pausable {
       investWallet.transfer(this.balance);
       totalRaised = totalRaised.add(tokens);
 
-      if (totalRaised &gt;= minCap) {
+      if (totalRaised >= minCap) {
           finished = true;
       }
     }
 
     function getRate() constant internal returns (uint256) {
-        if      (block.timestamp &lt; startline + 19 days) return tokenPrice.mul(138).div(100);
-        else if (block.timestamp &lt;= startline + 46 days) return tokenPrice.mul(123).div(100);
-        else if (block.timestamp &lt;= startline + 60 days) return tokenPrice.mul(115).div(100);
-        else if (block.timestamp &lt;= startline + 74 days) return tokenPrice.mul(109).div(100);
+        if      (block.timestamp < startline + 19 days) return tokenPrice.mul(138).div(100);
+        else if (block.timestamp <= startline + 46 days) return tokenPrice.mul(123).div(100);
+        else if (block.timestamp <= startline + 60 days) return tokenPrice.mul(115).div(100);
+        else if (block.timestamp <= startline + 74 days) return tokenPrice.mul(109).div(100);
         return tokenPrice;
     }
 
@@ -212,7 +212,7 @@ contract CCCRSale is Pausable {
        uint256 arrayLength = arrayAddress.length.sub(1);
        uint256 i = 0;
        
-      while (i &lt;= arrayLength) {
+      while (i <= arrayLength) {
            tokenReward.transfer(arrayAddress[i], arrayAmount[i]);
            i = i.add(1);
       }  

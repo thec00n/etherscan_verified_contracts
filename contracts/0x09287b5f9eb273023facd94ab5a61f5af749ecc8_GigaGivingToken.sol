@@ -17,12 +17,12 @@ contract Token {
 }
 
 contract StandardToken is Token {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool success) {       
         address sender = msg.sender;
-        require(balances[sender] &gt;= _value);
+        require(balances[sender] >= _value);
         balances[sender] -= _value;
         balances[_to] += _value;
         Transfer(sender, _to, _value);
@@ -30,7 +30,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {      
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -66,13 +66,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract GigaGivingToken is StandardToken {
 
     uint256 public constant TOTAL_TOKENS = 15000000;
     uint256 public constant  CROWDSALE_TOKENS = 12000000;  
-    string public constant VERSION = &quot;GC.6&quot;;
+    string public constant VERSION = "GC.6";
 
     uint256 public startTime;
     uint256 public tokenSupply;
@@ -100,12 +100,12 @@ contract GigaGivingToken is StandardToken {
     address public creator;
     address public beneficiary;
 
-    string public name = &quot;Giga Coin&quot;;
-    string public symbol = &quot;GC&quot;;
+    string public name = "Giga Coin";
+    string public symbol = "GC";
     uint256 public decimals = 0;  
     
     // GigaGivingToken public tokenReward;
-    mapping(address =&gt; uint256) public ethBalanceOf;
+    mapping(address => uint256) public ethBalanceOf;
     bool public fundingGoalReached = false;
     bool public crowdsaleClosed = false;
 
@@ -131,25 +131,25 @@ contract GigaGivingToken is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     } 
   
     function () public payable {
-        require(now &gt;= startTime);
-        require(now &lt;= startTime + DURATION);
+        require(now >= startTime);
+        require(now <= startTime + DURATION);
         require(!crowdsaleClosed);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 amount = msg.value;
         uint256 coinTotal = 0;      
         
-        if (now &gt; startTime + 4 weeks) {
+        if (now > startTime + 4 weeks) {
             coinTotal = amount.div(PHASE_5_PRICE);
-        } else if (now &gt; startTime + 3 weeks) {
+        } else if (now > startTime + 3 weeks) {
             coinTotal = amount.div(PHASE_4_PRICE);
-        } else if (now &gt; startTime + 2 weeks) {
+        } else if (now > startTime + 2 weeks) {
             coinTotal = amount.div(PHASE_3_PRICE);
-        } else if (now &gt; startTime + 1 weeks) {
+        } else if (now > startTime + 1 weeks) {
             coinTotal = amount.div(PHASE_2_PRICE);
         } else {
             coinTotal = amount.div(PHASE_1_PRICE);
@@ -163,13 +163,13 @@ contract GigaGivingToken is StandardToken {
     }  
 
     modifier afterDeadline() { 
-        if (now &gt;= (startTime + DURATION)) {
+        if (now >= (startTime + DURATION)) {
             _;
         }
     }
 
     function checkGoalReached() public afterDeadline {
-        if (amountRaised &gt;= fundingGoal) {
+        if (amountRaised >= fundingGoal) {
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -180,7 +180,7 @@ contract GigaGivingToken is StandardToken {
         if (!fundingGoalReached) {
             uint amount = ethBalanceOf[msg.sender];
             ethBalanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -189,7 +189,7 @@ contract GigaGivingToken is StandardToken {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 this.transfer(msg.sender, tokenSupply);
                 FundTransfer(beneficiary, amountRaised, false);                

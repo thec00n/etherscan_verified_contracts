@@ -1,6 +1,6 @@
 /*
  * Safe Math Smart Contract.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4b9bdbfbcb5bdb8faa2b8b5b0bdb9bda6bba294b3b9b5bdb8fab7bbb9">[email&#160;protected]</a>&gt;
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4b9bdbfbcb5bdb8faa2b8b5b0bdb9bda6bba294b3b9b5bdb8fab7bbb9">[email protected]</a>>
  */
 pragma solidity ^0.4.16;
 
@@ -21,7 +21,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -35,7 +35,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -50,20 +50,20 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 } 
 
 /*
  * ERC-20 Standard Token Smart Contract Interface.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec3c7c5c6cfc7c280d8c2cfcac7c3c7dcc1d8eec9c3cfc7c280cdc1c3">[email&#160;protected]</a>&gt;
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec3c7c5c6cfc7c280d8c2cfcac7c3c7dcc1d8eec9c3cfc7c280cdc1c3">[email protected]</a>>
  */
 pragma solidity ^0.4.16;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -152,7 +152,7 @@ contract Token {
 /*
  * Abstract base contract for Token Smart Contracts that may create snapshots of
  * token holder balances.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5989c9e9d949c99db839994919c989c879a83b59298949c99db969a98">[email&#160;protected]</a>&gt;
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5989c9e9d949c99db839994919c989c879a83b59298949c99db969a98">[email protected]</a>>
  */
 pragma solidity ^0.4.16;
 
@@ -208,8 +208,8 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    *         given index was created
    */
   function totalSupplyAt (uint256 _index) constant returns (uint256 supply) {
-    require (_index &gt; 0);
-    require (_index &lt; snapshots.length);
+    require (_index > 0);
+    require (_index < snapshots.length);
 
     return snapshots [_index].tokensCount;
   }
@@ -236,18 +236,18 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    */
   function balanceOfAt (address _owner, uint256 _index)
     constant returns (uint256 balance) {
-    require (_index &gt; 0);
-    require (_index &lt; snapshots.length);
+    require (_index > 0);
+    require (_index < snapshots.length);
 
-    if (_index &gt; accounts [_owner].lastSnapshotIndex)
+    if (_index > accounts [_owner].lastSnapshotIndex)
       return accounts [_owner].balance;
     else {
       uint8 level = 0;
-      while (_index &gt; 0) {
+      while (_index > 0) {
         uint256 v = historicalBalances [_owner][level][_index];
         if (v != 0) return v;
 
-        _index &gt;&gt;= 1;
+        _index >>= 1;
         level += 1; // Overflow is possible here, but is harmless
       }
 
@@ -269,12 +269,12 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    */
   function firstAddressAt (uint256 _index)
     constant returns (bool hasResult, address result) {
-    require (_index &gt; 0);
-    require (_index &lt; snapshots.length);
+    require (_index > 0);
+    require (_index < snapshots.length);
     uint256 rawFirstAddress = snapshots [_index].firstAddress;
     hasResult = rawFirstAddress != MAX_UINT256;
     result = hasResult ?
-      address (rawFirstAddress &amp; MAX_ADDRESS) :
+      address (rawFirstAddress & MAX_ADDRESS) :
         0;
   }
 
@@ -296,7 +296,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
     require (rawNextAddress != 0);
     hasResult = rawNextAddress != MAX_UINT256;
     result = hasResult ?
-      address (rawNextAddress &amp; MAX_ADDRESS) :
+      address (rawNextAddress & MAX_ADDRESS) :
         0;
   }
 
@@ -322,7 +322,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success) {
-    if (_value &gt; approved [_from][msg.sender]) return false;
+    if (_value > approved [_from][msg.sender]) return false;
     else if (doTransfer (_from, _to, _value)) {
       approved [_from][msg.sender] =
         safeSub (approved[_from][msg.sender], _value);
@@ -383,8 +383,8 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    */
   function doTransfer (address _from, address _to, uint256 _value)
     internal returns (bool success) {
-    if (_value &gt; accounts [_from].balance) return false;
-    else if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > accounts [_from].balance) return false;
+    else if (_value > 0 && _from != _to) {
       saveAddress (_to);
       updateHistoricalBalances (_from);
       updateHistoricalBalances (_to);
@@ -402,8 +402,8 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    * @return true on success, false on error
    */
   function doCreateTokens (uint256 _value) internal returns (bool success) {
-    if (_value &gt; safeSub (MAX_TOKENS, tokensCount)) return false;
-    else if (_value &gt; 0) {
+    if (_value > safeSub (MAX_TOKENS, tokensCount)) return false;
+    else if (_value > 0) {
       saveAddress (msg.sender);
       updateHistoricalBalances (msg.sender);
       accounts [msg.sender].balance =
@@ -423,8 +423,8 @@ contract AbstractSnapshottableToken is SafeMath, Token {
     uint256 nextSnapshotIndex = snapshots.length;
     uint256 lastNextSnapshotIndex =
       safeAdd (accounts [_owner].lastSnapshotIndex, 1);
-    if (nextSnapshotIndex &gt; lastNextSnapshotIndex) {
-      if (balance &gt; 0) {
+    if (nextSnapshotIndex > lastNextSnapshotIndex) {
+      if (balance > 0) {
         setHistoricalBalance (
           _owner, lastNextSnapshotIndex, nextSnapshotIndex, balance);
       }
@@ -445,24 +445,24 @@ contract AbstractSnapshottableToken is SafeMath, Token {
   function setHistoricalBalance (
     address _owner, uint256 _from, uint256 _to, uint256 _balance)
     internal {
-    assert (_from &gt; 0);
-    assert (_to &gt;= _from);
-    assert (_balance &gt; 0);
+    assert (_from > 0);
+    assert (_to >= _from);
+    assert (_balance > 0);
 
     uint8 level = 0;
-    while (_from &lt; _to) {
-      if (_from &amp; 1 == 1) {
-        // Overflow is not possible here because _from &lt; _to
+    while (_from < _to) {
+      if (_from & 1 == 1) {
+        // Overflow is not possible here because _from < _to
         historicalBalances [_owner][level][_from++] = _balance;
       }
 
-      if (_to &amp; 1 == 1) {
-        // Underflow is not possible here, because _to &amp; 1 == 1
+      if (_to & 1 == 1) {
+        // Underflow is not possible here, because _to & 1 == 1
         historicalBalances [_owner][level][--_to] = _balance;
       }
 
-      _from &gt;&gt;= 1;
-      _to &gt;&gt;= 1;
+      _from >>= 1;
+      _to >>= 1;
       level += 1; // Even for snapshot index range 1..2^256-1 overflow will
                   // not happen here
     }
@@ -494,7 +494,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
   /**
    * Maps addresses of token owners to states of their accounts.
    */
-  mapping (address =&gt; Account) accounts;
+  mapping (address => Account) accounts;
 
   /**
    * First address that ever had non-zero token balance plus 2^160, or 2^256-1
@@ -507,18 +507,18 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    * address that ever had non-zero token balance plus 2^160 or 2^256-1 if there
    * are no more such addresses.
    */
-  mapping (address =&gt; uint256) nextAddresses;
+  mapping (address => uint256) nextAddresses;
 
   /**
    * Historical balances of token owners.  If for some address, level and index,
-   * where level &gt;= 0 and index &gt; 0, historicalBalances[address][level][index]
+   * where level >= 0 and index > 0, historicalBalances[address][level][index]
    * is non-zero, then owner of given address had this many tokens at the
    * time moments of snapshots with indexes from (index * 2^level) to
    * ((index + 1) * 2^level - 1) inclusive.
    * For each snapshot, there should be at most one level with non-zero
    * value at corresponding index.
    */
-  mapping (address =&gt; mapping (uint8 =&gt; mapping (uint256 =&gt; uint256)))
+  mapping (address => mapping (uint8 => mapping (uint256 => uint256)))
     historicalBalances;
 
   /**
@@ -526,7 +526,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
    * how many tokens belonging to the owner, the spender is currently allowed to
    * transfer.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) approved;
+  mapping (address => mapping (address => uint256)) approved;
 
   /**
    * Encapsulates information about snapshot.
@@ -544,7 +544,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
   }
 
   /**
-   * Encapsulates information about token owner&#39;s balance.
+   * Encapsulates information about token owner's balance.
    */
   struct Account {
     /**
@@ -570,7 +570,7 @@ contract AbstractSnapshottableToken is SafeMath, Token {
 
 /*
  * Standard Snapshottable Token Smart Contract.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3954505251585055174f55585d5054504b564f795e54585055175a5654">[email&#160;protected]</a>&gt;
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3954505251585055174f55585d5054504b564f795e54585055175a5654">[email protected]</a>>
  */
 
 /**
@@ -690,7 +690,7 @@ contract StandardSnapshottableToken is AbstractSnapshottableToken {
 
 /*
  * Science Blockchain Token Smart Contract.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdfffcf5fdf8bae2f8f5f0fdf9fde6fbe2d4f3f9f5fdf8baf7fbf9">[email&#160;protected]</a>&gt;
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdfffcf5fdf8bae2f8f5f0fdf9fde6fbe2d4f3f9f5fdf8baf7fbf9">[email protected]</a>>
  */
 
 /**
@@ -722,7 +722,7 @@ contract ScienceBlockchainToken is StandardSnapshottableToken {
    * @return name of this token
    */
   function name () constant returns (string result) {
-    return &quot;SCIENCE BLOCKCHAIN&quot;;
+    return "SCIENCE BLOCKCHAIN";
   }
 
   /**
@@ -731,7 +731,7 @@ contract ScienceBlockchainToken is StandardSnapshottableToken {
    * @return symbol of this token
    */
   function symbol () constant returns (string result) {
-    return &quot;SCI&quot;;
+    return "SCI";
   }
 
   /**
@@ -751,8 +751,8 @@ contract ScienceBlockchainToken is StandardSnapshottableToken {
    */
   function burnTokens (uint256 _value) returns (bool success) {
     uint256 balance = accounts [msg.sender].balance;
-    if (_value &gt; balance) return false;
-    if (_value &gt; 0) {
+    if (_value > balance) return false;
+    if (_value > 0) {
       updateHistoricalBalances (msg.sender);
       accounts [msg.sender].balance = safeSub (balance, _value);
       tokensCount = safeSub (tokensCount, _value);

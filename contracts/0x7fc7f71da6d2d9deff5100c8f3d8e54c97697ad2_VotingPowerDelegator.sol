@@ -4,9 +4,9 @@ pragma solidity ^0.4.24;
 // Enables safe in-app voting participation, by letting users
 // delegate their cold wallet VP to a convenient hot wallet.
 contract VotingPowerDelegator {
-    // delegator =&gt; beneficiary
-    mapping (address =&gt; address) public delegations;
-    mapping (address =&gt; uint)    public delegatedAt;
+    // delegator => beneficiary
+    mapping (address => address) public delegations;
+    mapping (address => uint)    public delegatedAt;
     event Delegated(address delegator, address beneficiary);
 
     constructor() public { }

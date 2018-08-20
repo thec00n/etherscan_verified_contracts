@@ -8,7 +8,7 @@ library CSCLib {
 	}
 
 	struct CSCStorage {
-		mapping(address =&gt; uint) lastUserClaim;
+		mapping(address => uint) lastUserClaim;
 		uint[] deposits;
 		bool isClaimable;
 
@@ -16,7 +16,7 @@ library CSCLib {
 		uint dev_fee;
 		uint refer_fee;
 		Split[] splits;
-		mapping(address =&gt; uint) userSplit;
+		mapping(address => uint) userSplit;
 	}
 
 	event SplitTransfer(address to, uint amount, uint balance);
@@ -32,15 +32,15 @@ library CSCLib {
 			addSplit(self, Split({to: self.developer, ppm: dev_total}));
 		}
 
-		for(uint index = 0; index &lt; members.length; index++) {
+		for(uint index = 0; index < members.length; index++) {
 			addSplit(self, Split({to: members[index], ppm: ppms[index] - shift_amt}));
 		}
 	}
 
 	function addSplit(CSCStorage storage self, Split newSplit) internal {
-		require(newSplit.ppm &gt; 0);
+		require(newSplit.ppm > 0);
 		uint index = self.userSplit[newSplit.to];
-		if(index &gt; 0) {
+		if(index > 0) {
 			newSplit.ppm += self.splits[index].ppm;
 			self.splits[index] = newSplit;
 		} else {
@@ -50,9 +50,9 @@ library CSCLib {
 	}
 
 	function payAll(CSCStorage storage self) internal {
-		for(uint index = 0; index &lt; self.splits.length; index++) {
+		for(uint index = 0; index < self.splits.length; index++) {
 			uint value = (msg.value) * self.splits[index].ppm / 1000000.00;
-			if(value &gt; 0 ) {
+			if(value > 0 ) {
 				require(self.splits[index].to.call.gas(60000).value(value)());
 				SplitTransfer(self.splits[index].to, value, this.balance);
 			}
@@ -72,7 +72,7 @@ library CSCLib {
 		uint sum = getClaimableBalanceFor(self, user);
 		uint splitIndex = self.userSplit[user];
 		self.lastUserClaim[user] = self.deposits.length;
-		if(sum &gt; 0) {
+		if(sum > 0) {
 			require(self.splits[splitIndex].to.call.gas(60000).value(sum)());
 			SplitTransfer(self.splits[splitIndex].to, sum, this.balance);
 		}
@@ -87,7 +87,7 @@ library CSCLib {
 		uint lastClaimIndex = self.lastUserClaim[user];
 		uint unclaimed = 0;
 		if(self.splits[splitIndex].to == user) {
-			for(uint depositIndex = lastClaimIndex; depositIndex &lt; self.deposits.length; depositIndex++) {
+			for(uint depositIndex = lastClaimIndex; depositIndex < self.deposits.length; depositIndex++) {
 				uint value = self.deposits[depositIndex] * self.splits[splitIndex].ppm / 1000000.00;
 				unclaimed += value;
 			}
@@ -102,10 +102,10 @@ library CSCLib {
 	function transfer(CSCStorage storage self, address to, uint ppm) internal {
 		require(getClaimableBalanceFor(self, msg.sender) == 0.0);
 		require(getClaimableBalanceFor(self, to) == 0.0);
-		require(ppm &gt; 0);
+		require(ppm > 0);
 		// neither user can have a pending balance to use transfer
 		uint splitIndex = self.userSplit[msg.sender];
-		if(splitIndex &gt; 0 &amp;&amp; self.splits[splitIndex].to == msg.sender &amp;&amp; self.splits[splitIndex].ppm &gt;= ppm) {
+		if(splitIndex > 0 && self.splits[splitIndex].to == msg.sender && self.splits[splitIndex].ppm >= ppm) {
 			self.lastUserClaim[to] = self.lastUserClaim[msg.sender];
 			self.splits[splitIndex].ppm -= ppm;
 			addSplit(self, Split({to: to, ppm: ppm}));
@@ -173,10 +173,10 @@ contract ClaimableSplitCoin {
 	}
 }
 contract SplitCoinFactory {
-  mapping(address =&gt; address[]) public contracts;
-  mapping(address =&gt; uint) public referralContracts;
-  mapping(address =&gt; address) public referredBy;
-  mapping(address =&gt; address[]) public referrals;
+  mapping(address => address[]) public contracts;
+  mapping(address => uint) public referralContracts;
+  mapping(address => address) public referredBy;
+  mapping(address => address[]) public referrals;
   address[] public deployed;
   event Deployed (
     address _deployed
@@ -185,9 +185,9 @@ contract SplitCoinFactory {
 
   function make(address[] users, uint[] ppms, address refer, bool claimable) public returns (address) {
     address referContract = referredBy[msg.sender];
-    if(refer != 0x0 &amp;&amp; referContract == 0x0 &amp;&amp; contracts[refer].length &gt; 0 ) {
+    if(refer != 0x0 && referContract == 0x0 && contracts[refer].length > 0 ) {
       uint referContractIndex = referralContracts[refer] - 1;
-      if(referContractIndex &gt;= 0 &amp;&amp; refer != msg.sender) {
+      if(referContractIndex >= 0 && refer != msg.sender) {
         referContract = contracts[refer][referContractIndex];
         referredBy[msg.sender] = referContract;
         referrals[refer].push(msg.sender);

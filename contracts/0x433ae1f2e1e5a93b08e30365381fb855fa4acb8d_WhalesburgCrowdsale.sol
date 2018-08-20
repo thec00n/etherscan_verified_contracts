@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 /*
-* @author Ivan Borisov (<span class="__cf_email__" data-cfemail="1d2f2b2f2f2b2c2d5d7a707c7471337e7270">[email&#160;protected]</span>) (Github.com/pillardevelopment)
+* @author Ivan Borisov (<span class="__cf_email__" data-cfemail="1d2f2b2f2f2b2c2d5d7a707c7471337e7270">[email protected]</span>) (Github.com/pillardevelopment)
 */
 library SafeMath {
 	
@@ -20,13 +20,13 @@ library SafeMath {
 	}
 	
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -87,9 +87,9 @@ contract WhalesburgCrowdsale is Ownable {
 	
 	uint256 public weisRaised;
 	
-	mapping (address =&gt; bool) public onChain;
-	mapping (address =&gt; bool) whitelist;
-	mapping (address =&gt; uint256) public moneySpent;
+	mapping (address => bool) public onChain;
+	mapping (address => bool) whitelist;
+	mapping (address => uint256) public moneySpent;
 	
 	address[] tokenHolders;
 	
@@ -125,7 +125,7 @@ contract WhalesburgCrowdsale is Ownable {
 	}
 	
 	function addManyAuthorizeToWhitelist(address[] _beneficiaries) public onlyOwner {
-		for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+		for (uint256 i = 0; i < _beneficiaries.length; i++) {
 			authorize(_beneficiaries[i]);
 		}
 	}
@@ -141,7 +141,7 @@ contract WhalesburgCrowdsale is Ownable {
 	
 	function finalize() onlyOwner public {
 		require(!isFinalized);
-		require(now &gt;= endICO || weisRaised &gt;= hardCap);
+		require(now >= endICO || weisRaised >= hardCap);
 		emit Finalized();
 		isFinalized = true;
 		token.transferFromICO(owner, token.balanceOf(this));
@@ -151,13 +151,13 @@ contract WhalesburgCrowdsale is Ownable {
 	
 	function () public payable {
 		if(isWhitelisted(msg.sender)) {
-			require(now &gt;= startICO &amp;&amp; now &lt; endICO);
+			require(now >= startICO && now < endICO);
 			currentSaleLimit();
 			moneySpent[msg.sender] = moneySpent[msg.sender].add(msg.value);
-			require(moneySpent[msg.sender] &lt;= individualRoundCap);
+			require(moneySpent[msg.sender] <= individualRoundCap);
 			sell(msg.sender, msg.value);
 			weisRaised = weisRaised.add(msg.value);
-			require(weisRaised &lt;= hardCap);
+			require(weisRaised <= hardCap);
 			multisig.transfer(msg.value);
 		} else {
 			revert();
@@ -165,15 +165,15 @@ contract WhalesburgCrowdsale is Ownable {
 	}
 	
 	function currentSaleLimit() private {
-		if(now &gt;= startICO &amp;&amp; now &lt; startICO+7200) {
+		if(now >= startICO && now < startICO+7200) {
 			
 			individualRoundCap = 1250000000000000000; // 1.25 ETH
 		}
-		else if(now &gt;= startICO+7200 &amp;&amp; now &lt; startICO+14400) {
+		else if(now >= startICO+7200 && now < startICO+14400) {
 			
 			individualRoundCap = 3750000000000000000; // 3.75 ETH
 		}
-		else if(now &gt;= startICO+14400 &amp;&amp; now &lt; endICO) {
+		else if(now >= startICO+14400 && now < endICO) {
 			
 			individualRoundCap = hardCap; // 1365 ether
 		}

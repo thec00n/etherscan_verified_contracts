@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 contract ETHTest01Token{
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     address public owner;
     string public name;
     string public symbol;
@@ -9,11 +9,11 @@ contract ETHTest01Token{
     // total amount of tokens
     uint256 public totalSupply;
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     constructor() public {
         owner = 0xF48be01754b8FC91a48D193D0194bBd4f8e2DB6b;          // Set owner of contract
-        name = &quot;ETHTest01&quot;;                                   // Set the name for display purposes
-        symbol = &quot;ETHTest01&quot;;                                           // Set the symbol for display purposes
+        name = "ETHTest01";                                   // Set the name for display purposes
+        symbol = "ETHTest01";                                           // Set the symbol for display purposes
         decimals = 18;                                            // Amount of decimals for display purposes
         totalSupply = 10000000000000000000000000000;               // Total supply
         balances[owner] = totalSupply;
@@ -35,7 +35,7 @@ contract ETHTest01Token{
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -48,9 +48,9 @@ contract ETHTest01Token{
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balances[_to] + _value &gt;= balances[_to]);   // Check for overflows
-        require(_value &lt;= allowed[_from][msg.sender]);      // Check allowance
+        require(balances[_from] >= _value);                 // Check if the sender has enough
+        require(balances[_to] + _value >= balances[_to]);   // Check for overflows
+        require(_value <= allowed[_from][msg.sender]);      // Check allowance
         balances[_from] -= _value;
         balances[_to] += _value;
         allowed[_from][msg.sender] -= _value;

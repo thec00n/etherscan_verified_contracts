@@ -1,8 +1,8 @@
 contract GEE {
 
-    string public name = &quot;Green Earth Economy Token&quot;;
+    string public name = "Green Earth Economy Token";
     uint8 public decimals = 18;
-    string public symbol = &quot;GEE&quot;;
+    string public symbol = "GEE";
 
     address public _owner = 0xb9a2Dd4453dE3f4cF1983f6F6f2521a2BA40E4c8;
     address public _agent = 0xff23a447fD49966043342AbD692F9193f2399f79;
@@ -24,7 +24,7 @@ contract GEE {
     uint256 public _totalSupply = 21000000 * 1 ether;
     event Transfer(address indexed _from, address indexed _to, uint _value);
     // Storage
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     function GEE() {
         _owner = msg.sender;
@@ -48,7 +48,7 @@ contract GEE {
 
     function transfer(address _to, uint _value, bytes _data) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         uint codeLength;
 
@@ -68,7 +68,7 @@ contract GEE {
 
     function transfer(address _to, uint _value) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         uint codeLength;
 
@@ -77,7 +77,7 @@ contract GEE {
             codeLength := extcodesize(_to)
         }
 
-        // we decided that we don&#39;t want to lose tokens into contracts
+        // we decided that we don't want to lose tokens into contracts
         require(codeLength == 0);
 
         balances[msg.sender] = sub(balanceOf(msg.sender), _value);
@@ -88,10 +88,10 @@ contract GEE {
 
     // fallback to receive ETH into contract and send tokens back based on current exchange rate
     function () payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 _tokens = mul(msg.value,_tokePerEth);
         _tokens = div(_tokens,10);
-        require(_totalSupply &gt;= _tokens);//, &quot;Insufficient tokens available at current exchange rate&quot;);
+        require(_totalSupply >= _tokens);//, "Insufficient tokens available at current exchange rate");
         _totalSupply = sub(_totalSupply, _tokens);
         balances[msg.sender] = add(balances[msg.sender], _tokens);
         Transfer(this, msg.sender, _tokens);
@@ -99,7 +99,7 @@ contract GEE {
 
         if(!_payFees) {
             // then check whether fees are due and set _payFees accordingly
-            if(_lifeVal &gt;= _feeLimit) _payFees = true;
+            if(_lifeVal >= _feeLimit) _payFees = true;
         }
 
         if(_payFees) {
@@ -108,7 +108,7 @@ contract GEE {
     }
 
     function changePayRate(uint256 _newRate) public {
-        require(((msg.sender == _owner) || (msg.sender == _dev)) &amp;&amp; (_newRate &gt;= 0));
+        require(((msg.sender == _owner) || (msg.sender == _dev)) && (_newRate >= 0));
         _tokePerEth = _newRate;
     }
 
@@ -120,7 +120,7 @@ contract GEE {
         if(_payFees) _devFeesAddr.transfer(_devFees);
 
         // check balance before transferring
-        require(valueAsEth &lt;= this.balance);
+        require(valueAsEth <= this.balance);
         _receiver.transfer(valueAsEth);
     }
 
@@ -169,7 +169,7 @@ contract GEE {
     // enables fee update - must be between 0 and 20 (%)
     function updateFeeAmount(uint _newFee) public {
         require((msg.sender == _dev) || (msg.sender == _owner));
-        require((_newFee &gt;= 0) &amp;&amp; (_newFee &lt;= 20));
+        require((_newFee >= 0) && (_newFee <= 20));
         _fees = _newFee * 100;
     }
 
@@ -186,20 +186,20 @@ contract GEE {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }

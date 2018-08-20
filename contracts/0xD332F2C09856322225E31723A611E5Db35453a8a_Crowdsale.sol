@@ -111,13 +111,13 @@ library SafeMath {
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -132,13 +132,13 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   //18.10.2017 23:59 UTC
   uint256 ico_finish = 1508284740;
 
   modifier isFreeze() {
-    if(now &lt; ico_finish) {
+    if(now < ico_finish) {
       revert();
     }
     _;
@@ -181,13 +181,13 @@ contract Migrations {
 
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   //14.10.2017 23:59 UTC
   uint256 ico_finish = 1508025540;
 
   modifier isFreeze() {
-    if(now &lt; ico_finish) {
+    if(now < ico_finish) {
       revert();
     }
     _;
@@ -260,9 +260,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SingleTokenCoin is MintableToken {
     
-    string public constant name = &quot;Start mining&quot;;
+    string public constant name = "Start mining";
     
-    string public constant symbol = &quot;STM&quot;;
+    string public constant symbol = "STM";
     
     uint32 public constant decimals = 2;
     
@@ -273,7 +273,7 @@ contract SingleTokenCoin is MintableToken {
 // Before deploy to Main Net change rinkeby.etherscan.io to etherscan.io 
 // Before deploy to Main Net check all ICO dates in all .sol files
 // Before deploy to Main Net check all Comment in .sol and .js files
-// Before deploy to Main Net check all code area with &#39;* 100&#39; &amp; &#39;/ 100&#39; for .js files
+// Before deploy to Main Net check all code area with '* 100' & '/ 100' for .js files
 
 //----------CHECK----------
 //Get back tokens
@@ -347,23 +347,23 @@ contract Crowdsale is Ownable {
     bool public mintingFinished = false;
 
     //Storage for ICO Buyers ETH
-    mapping(address =&gt; uint256) private ico_buyers_eth;
+    mapping(address => uint256) private ico_buyers_eth;
 
     //Storage for ICO Buyers Token
-    mapping(address =&gt; uint256) private ico_buyers_token;
+    mapping(address => uint256) private ico_buyers_token;
 
     address[] private investors;
 
-    mapping(address =&gt; bytes32) private privilegedWallets;
-    mapping(address =&gt; uint256) private manualAddresses;
+    mapping(address => bytes32) private privilegedWallets;
+    mapping(address => uint256) private manualAddresses;
 
     address[] private manualAddressesCount;
 
     address[] private privilegedWalletsCount;
 
-    bytes32 private g = &quot;granted&quot;;
+    bytes32 private g = "granted";
 
-    bytes32 private r = &quot;revorked&quot;;
+    bytes32 private r = "revorked";
 
     uint256 private soldTokens;
     uint256 private mincup;
@@ -381,7 +381,7 @@ contract Crowdsale is Ownable {
 
       decimals = 35460992907801; // 0.0000003 ETH // 2 decimals
 
-      tax = 36000000000000000; //tax &amp;&amp; minimum price ~10$
+      tax = 36000000000000000; //tax && minimum price ~10$
 
       //minPrice = decimals + tax; // ~10$
 
@@ -449,12 +449,12 @@ contract Crowdsale is Ownable {
 
         uint digit;
 
-        for (uint i = 0; i &lt; 32; i++) {
-            digit = uint((uint(v) / (2 ** (8 * (31 - i)))) &amp; 0xff);
+        for (uint i = 0; i < 32; i++) {
+            digit = uint((uint(v) / (2 ** (8 * (31 - i)))) & 0xff);
             if (digit == 0 || digit == 46) {
                 break;
             }
-            else if (digit &lt; 48 || digit &gt; 57) {
+            else if (digit < 48 || digit > 57) {
                 revert();
             }
             ret *= 10;
@@ -473,16 +473,16 @@ contract Crowdsale is Ownable {
   }
 
     function calculateWithdrow() private {
-      if (!firstWithdrowPhase &amp;&amp; soldTokens &gt;= firstWithdrowAmount &amp;&amp; soldTokens &lt; secondWithdrowAmount) {
+      if (!firstWithdrowPhase && soldTokens >= firstWithdrowAmount && soldTokens < secondWithdrowAmount) {
         sendToOwners(this.balance);
       } else {
-        if (!secondWithdrowPhase &amp;&amp; soldTokens &gt;= secondWithdrowAmount &amp;&amp; soldTokens &lt; thirdWithdrowAmount) {
+        if (!secondWithdrowPhase && soldTokens >= secondWithdrowAmount && soldTokens < thirdWithdrowAmount) {
           sendToOwners(this.balance);
         } else {
-          if (!thirdWithdrowPhase &amp;&amp; soldTokens &gt;= thirdWithdrowAmount &amp;&amp; soldTokens &lt; fourWithdrowAmount) {
+          if (!thirdWithdrowPhase && soldTokens >= thirdWithdrowAmount && soldTokens < fourWithdrowAmount) {
             sendToOwners(this.balance);
           } else {
-            if (!fourWithdrowPhase &amp;&amp; soldTokens &gt;= fourWithdrowAmount) {
+            if (!fourWithdrowPhase && soldTokens >= fourWithdrowAmount) {
               sendToOwners(this.balance);
             }
           }
@@ -525,7 +525,7 @@ contract Crowdsale is Ownable {
     }
 
     modifier isRefund() {
-      if (msg.value &lt; tax) {
+      if (msg.value < tax) {
         refund(msg.value);
         revert();
       }
@@ -540,7 +540,7 @@ contract Crowdsale is Ownable {
     }
 
     modifier isICOFinished() {
-      if (now &gt; ico_finish) {
+      if (now > ico_finish) {
         finishMinting();
         refund(msg.value);
         revert();
@@ -557,7 +557,7 @@ contract Crowdsale is Ownable {
         revert();
       }
 
-      if (privilegedWallets[_address] != g &amp;&amp; privilegedWallets[_address] != r) {
+      if (privilegedWallets[_address] != g && privilegedWallets[_address] != r) {
         privilegedWalletsCount.push(_address);
       }
 
@@ -667,16 +667,16 @@ contract Crowdsale is Ownable {
       mintingFinished = true;
       ShowInfoBool(mintingFinished);
       
-      if (soldTokens &lt; mincup) {
+      if (soldTokens < mincup) {
         if(investors.length != 0) {
-          for (uint256 i=0; i &lt; investors.length; i++) {
+          for (uint256 i=0; i < investors.length; i++) {
             address addr = investors[i];          
             token.burnTokens(addr);
           }
         }
         
         if(manualAddressesCount.length != 0) {
-          for (uint256 j=0; j &lt; manualAddressesCount.length; j++) {
+          for (uint256 j=0; j < manualAddressesCount.length; j++) {
             address manualAddr = manualAddressesCount[j];
             token.burnTokens(manualAddr);
           }
@@ -718,22 +718,22 @@ contract Crowdsale is Ownable {
     function calculateBonusForHours(uint256 _tokens) private returns(uint256) {
 
       //Calculate for first bonus program
-      if (now &gt;= ico_start &amp;&amp; now &lt;= firstBonusPhase ) {
+      if (now >= ico_start && now <= firstBonusPhase ) {
         return _tokens.mul(firstExtraBonus).div(100);
       }
 
       //Calculate for second bonus program
-      if (now &gt; firstBonusPhase &amp;&amp; now &lt;= secondBonusPhase ) {
+      if (now > firstBonusPhase && now <= secondBonusPhase ) {
         return _tokens.mul(secondExtraBonus).div(100);
       }
 
       //Calculate for third bonus program
-      if (now &gt; secondBonusPhase &amp;&amp; now &lt;= thirdBonusPhase ) {
+      if (now > secondBonusPhase && now <= thirdBonusPhase ) {
         return _tokens.mul(thirdExtraBonus).div(100);
       }
 
       //Calculate for four bonus program
-      if (now &gt; thirdBonusPhase &amp;&amp; now &lt;= fourBonusPhase ) {
+      if (now > thirdBonusPhase && now <= fourBonusPhase ) {
         return _tokens.mul(fourExtraBonus).div(100);
       }
 
@@ -853,7 +853,7 @@ contract Crowdsale is Ownable {
             wrapper.transfer(msg.value);
         }
       
-      wrapper.update(&quot;URL&quot;, &quot;json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0&quot;);
+      wrapper.update("URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0");
     }
 
     function getQueryPrice(string datasource) constant returns(uint256) {

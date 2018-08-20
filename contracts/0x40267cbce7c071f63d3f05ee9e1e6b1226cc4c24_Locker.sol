@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -158,7 +158,7 @@ contract Locker is Ownable {
   enum State { Init, Ready, Active, Drawn }
 
   struct Beneficiary {
-    uint ratio;             // ratio based on Locker&#39;s initial balance.
+    uint ratio;             // ratio based on Locker's initial balance.
     uint withdrawAmount;    // accumulated tokens beneficiary released
     bool releaseAllTokens;
   }
@@ -174,7 +174,7 @@ contract Locker is Ownable {
    *     |         . |
    *     |       .   |
    *     |     .     |
-   *     +===+=======+----*----------&gt; time
+   *     +===+=======+----*----------> time
    *     Locker  First    Last
    *  Activated  Release  Release
    *
@@ -188,7 +188,7 @@ contract Locker is Ownable {
    *     |                     |
    *  30 |            _________|
    *     |           |
-   *     +===+=======+---------+----------*------&gt; time
+   *     +===+=======+---------+----------*------> time
    *     Locker   First        Second     Last
    *  Activated   Release      Release    Release
    *
@@ -234,9 +234,9 @@ contract Locker is Ownable {
   uint public initialBalance;
   uint public withdrawAmount; // total amount of tokens released
 
-  mapping (address =&gt; Beneficiary) public beneficiaries;
-  mapping (address =&gt; Release) public releases;  // beneficiary&#39;s lock
-  mapping (address =&gt; bool) public locked; // whether beneficiary&#39;s lock is instantiated
+  mapping (address => Beneficiary) public beneficiaries;
+  mapping (address => Release) public releases;  // beneficiary's lock
+  mapping (address => bool) public locked; // whether beneficiary's lock is instantiated
 
   uint public numBeneficiaries;
   uint public numLocks;
@@ -249,7 +249,7 @@ contract Locker is Ownable {
   }
 
   modifier onlyBeneficiary(address _addr) {
-    require(beneficiaries[_addr].ratio &gt; 0);
+    require(beneficiaries[_addr].ratio > 0);
     _;
   }
 
@@ -267,8 +267,8 @@ contract Locker is Ownable {
 
     uint accRatio;
 
-    for(uint i = 0; i &lt; numBeneficiaries; i++) {
-      require(_ratios[i] &gt; 0);
+    for(uint i = 0; i < numBeneficiaries; i++) {
+      require(_ratios[i] > 0);
       beneficiaries[_beneficiaries[i]].ratio = _ratios[i];
 
       accRatio = accRatio.add(_ratios[i]);
@@ -284,7 +284,7 @@ contract Locker is Ownable {
     require(numLocks == numBeneficiaries); // double check : assert all releases are recorded
 
     initialBalance = token.balanceOf(this);
-    require(initialBalance &gt; 0);
+    require(initialBalance > 0);
 
     activeTime = now; // solium-disable-line security/no-block-members
 
@@ -349,9 +349,9 @@ contract Locker is Ownable {
     require(_releaseRatios[len - 1] == coeff);
 
     // check two array are ascending sorted
-    for(i = 0; i &lt; len - 1; i++) {
-      require(_releaseTimes[i] &lt; _releaseTimes[i + 1]);
-      require(_releaseRatios[i] &lt; _releaseRatios[i + 1]);
+    for(i = 0; i < len - 1; i++) {
+      require(_releaseTimes[i] < _releaseTimes[i + 1]);
+      require(_releaseRatios[i] < _releaseRatios[i + 1]);
     }
 
     // 2 release times for straight locking type
@@ -426,10 +426,10 @@ contract Locker is Ownable {
     uint lastTime = _r.releaseTimes[1];
 
     // solium-disable security/no-block-members
-    require(now &gt;= firstTime); // pass if can release
+    require(now >= firstTime); // pass if can release
     // solium-enable security/no-block-members
 
-    if(now &gt;= lastTime) { // inclusive to reduce calculation
+    if(now >= lastTime) { // inclusive to reduce calculation
       releasableAmount = totalReleasableAmount;
     } else {
       // releasable amount at first time
@@ -463,14 +463,14 @@ contract Locker is Ownable {
     uint releaseRatio;
 
     // reverse order for short curcit
-    for(uint i = _r.releaseTimes.length - 1; i &gt;= 0; i--) {
-      if (now &gt;= _r.releaseTimes[i]) {
+    for(uint i = _r.releaseTimes.length - 1; i >= 0; i--) {
+      if (now >= _r.releaseTimes[i]) {
         releaseRatio = _r.releaseRatios[i];
         break;
       }
     }
 
-    require(releaseRatio &gt; 0);
+    require(releaseRatio > 0);
 
     releasableAmount = getPartialAmount(
       releaseRatio,

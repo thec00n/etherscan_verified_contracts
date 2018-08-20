@@ -61,7 +61,7 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
@@ -75,10 +75,10 @@ contract RedPocket is Pausable, SafeMath {
     uint public promotionCommisionPercent = 1; // unit in percent
     
     Promotion[] public allPromotions;
-    mapping (uint256 =&gt; address) public promotionIndexToHost; // For host: A mapping from promotion IDs to the address that owns them.
-    mapping (address =&gt; uint256) hostingCount; // For host: A mapping from host address to count of promotion that address owns. (ownershipTokenCount)
-    mapping (uint256 =&gt; address) public promotionIndexToClaimant; // For claimant: A mapping from promotion IDs to the address that did the claim.
-    mapping (address =&gt; uint256) claimedCount; // For claimant: A mapping from claimant address to count of promotion that address claimed. (ownershipTokenCount)
+    mapping (uint256 => address) public promotionIndexToHost; // For host: A mapping from promotion IDs to the address that owns them.
+    mapping (address => uint256) hostingCount; // For host: A mapping from host address to count of promotion that address owns. (ownershipTokenCount)
+    mapping (uint256 => address) public promotionIndexToClaimant; // For claimant: A mapping from promotion IDs to the address that did the claim.
+    mapping (address => uint256) claimedCount; // For claimant: A mapping from claimant address to count of promotion that address claimed. (ownershipTokenCount)
 
     // apply cooldowns to claimant to prevent individual claim-spam (might not apply)
     uint32[14] public cooldowns = [
@@ -113,7 +113,7 @@ contract RedPocket is Pausable, SafeMath {
         uint id;
         address host; // each promotion hosted by an address
         string name; // promotion title
-        string msg; // promotion&#39;s promoting message
+        string msg; // promotion's promoting message
         string url;
 
         uint eachRedPocketAmt; // the amount of reward in each red pocket. Unit in msg.value / wei
@@ -145,11 +145,11 @@ contract RedPocket is Pausable, SafeMath {
         returns (uint)
     {
         // check min reward requirement
-        require(_eachAmt &gt; minReward); // unit in wei
+        require(_eachAmt > minReward); // unit in wei
 
         // check if the deposit amount is enough for the input 
         uint256 inputAmt = _eachAmt * _maxNum; // unit in wei
-        require(inputAmt &lt;= msg.value); 
+        require(inputAmt <= msg.value); 
 
         // service charging
         require (manager.send(safeDiv(safeMul(msg.value, promotionCommisionPercent), 100)));
@@ -177,7 +177,7 @@ contract RedPocket is Pausable, SafeMath {
         return newPromotionId;
     }
 
-    // this is the &#39;grab red pocket&#39; function
+    // this is the 'grab red pocket' function
     function claimReward(uint _promoteID, uint _moneyPool) whenNotPaused {
         Promotion storage p = allPromotions[_promoteID];
 
@@ -199,7 +199,7 @@ contract RedPocket is Pausable, SafeMath {
         }
 
         // set promotion finish if moneyPool run out of money / event run out of pocket / timeout
-        if (p.moneyPool &lt; p.eachRedPocketAmt || p.claimedNum &gt;= p.maxRedPocketNum || (block.number - p.startBlock &gt;= p.blockLast)) {
+        if (p.moneyPool < p.eachRedPocketAmt || p.claimedNum >= p.maxRedPocketNum || (block.number - p.startBlock >= p.blockLast)) {
             p.finished = true;
             finishedPromotionIDs.push(_promoteID);
             numOfFinishedPromotions++;
@@ -232,7 +232,7 @@ contract RedPocket is Pausable, SafeMath {
             uint256 resultIndex = 0;
             uint256 promotionId;
 
-            for (promotionId = 0; promotionId &lt; allPromotions.length; promotionId++) {
+            for (promotionId = 0; promotionId < allPromotions.length; promotionId++) {
                 if (promotionIndexToHost[promotionId] == _host) {
                     result[resultIndex] = promotionId;
                     resultIndex++;
@@ -259,7 +259,7 @@ contract RedPocket is Pausable, SafeMath {
             uint256 resultIndex = 0;
             uint256 promotionId;
 
-            for (promotionId = 0; promotionId &lt; allPromotions.length; promotionId++) {
+            for (promotionId = 0; promotionId < allPromotions.length; promotionId++) {
                 if (promotionIndexToClaimant[promotionId] == _claimant) {
                     result[resultIndex] = promotionId;
                     resultIndex++;

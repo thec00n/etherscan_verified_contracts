@@ -21,8 +21,8 @@ contract SECRETSanity {
   }
 
   //Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public balances_bonus;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public balances_bonus;
   // Track whether the contract has bought the tokens yet.
   bool public bought_tokens = false;
   // Record ETH value of tokens currently held by contract.
@@ -39,7 +39,7 @@ contract SECRETSanity {
   
   // Allows any user to withdraw his tokens.
   function withdraw() {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     uint256 contract_token_balance = token.balanceOf(address(this));
     // Disallow token withdrawals if there are no tokens to withdraw.
@@ -47,7 +47,7 @@ contract SECRETSanity {
     uint256 tokens_to_withdraw = (balances[msg.sender] * contract_token_balance) / contract_eth_value;
     // Update the value of tokens currently held by the contract.
     contract_eth_value -= balances[msg.sender];
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
     // Send the funds.  Throws on failure to prevent loss of funds.
     require(token.transfer(msg.sender, tokens_to_withdraw));
@@ -71,13 +71,13 @@ contract SECRETSanity {
   // Allows any user to get his eth refunded before the purchase is made.
   function refund_me() {
     require(!bought_tokens);
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint256 eth_to_withdraw = balances[msg.sender];
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
     //Updates the balances_bonus too
     balances_bonus[msg.sender] = 0;
-    // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+    // Return the user's funds.  Throws on failure to prevent loss of funds.
     msg.sender.transfer(eth_to_withdraw);
   }
   
@@ -89,7 +89,7 @@ contract SECRETSanity {
     bought_tokens = true;
     //Sent before so the contract_eth_value contains the correct balance
     developer.transfer(fees);
-    //Record the amount of ETH sent as the contract&#39;s current value.
+    //Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance;
     contract_eth_value_bonus = this.balance;
     // Transfer all the funds to the crowdsale address.

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -265,11 +265,11 @@ contract MetaGameAccessControl is Claimable, Pausable, CanReclaimToken {
 contract MetaGameBase is MetaGameAccessControl {
     using SafeMath for uint256;
     
-    mapping (uint256 =&gt; address) identifierToOwner;
-    mapping (uint256 =&gt; address) identifierToApproved;
-    mapping (address =&gt; uint256) ownershipDeedCount;
+    mapping (uint256 => address) identifierToOwner;
+    mapping (uint256 => address) identifierToApproved;
+    mapping (address => uint256) ownershipDeedCount;
     
-    mapping (uint256 =&gt; uint256) identifierToParentIdentifier;
+    mapping (uint256 => uint256) identifierToParentIdentifier;
     
     /// @dev All existing identifiers.
     uint256[] public identifiers;
@@ -297,16 +297,16 @@ interface ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-    //     bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+    //     bytes4(keccak256('ownerOf(uint256)')) ^
+    //     bytes4(keccak256('countOfDeeds()')) ^
+    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+    //     bytes4(keccak256('approve(address,uint256)')) ^
+    //     bytes4(keccak256('takeOwnership(uint256)'));
 
     /// @notice Query a contract to see if it supports a certain interface
     /// @dev Returns `true` the interface is supported and `false` otherwise,
@@ -336,7 +336,7 @@ interface ERC721 {
     function countOfDeedsByOwner(address _owner) public view returns (uint256 _count);
 
     /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` &gt;= `countOfDeedsByOwner(_owner)` or if
+    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
     ///  `_owner` is the zero address, representing destroyed deeds.
     /// @param _owner An address where we are interested in deeds owned by them
     /// @param _index A counter between zero and `countOfDeedsByOwner(_owner)`,
@@ -391,9 +391,9 @@ interface ERC721Metadata {
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-    //     bytes4(keccak256(&#39;name()&#39;)) ^
-    //     bytes4(keccak256(&#39;symbol()&#39;)) ^
-    //     bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+    //     bytes4(keccak256('name()')) ^
+    //     bytes4(keccak256('symbol()')) ^
+    //     bytes4(keccak256('deedUri(uint256)'));
 
     /// @notice A descriptive name for a collection of deeds managed by this
     ///  contract
@@ -411,11 +411,11 @@ interface ERC721Metadata {
     ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)
     ///  * The JSON base element is an object
     ///  then these names of the base element SHALL have special meaning:
-    ///  * &quot;name&quot;: A string identifying the item to which `_deedId` grants
+    ///  * "name": A string identifying the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;description&quot;: A string detailing the item to which `_deedId` grants
+    ///  * "description": A string detailing the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;image&quot;: A URI pointing to a file of image/* mime type representing
+    ///  * "image": A URI pointing to a file of image/* mime type representing
     ///    the item to which `_deedId` grants ownership
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
@@ -429,32 +429,32 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
     
     /// @notice Name of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function name() public pure returns (string _deedName) {
-        _deedName = &quot;MetaGame&quot;;
+        _deedName = "MetaGame";
     }
     
     /// @notice Symbol of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function symbol() public pure returns (string _deedSymbol) {
-        _deedSymbol = &quot;MG&quot;;
+        _deedSymbol = "MG";
     }
     
     /// @dev ERC-165 (draft) interface signature for itself
     bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-        bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('countOfDeeds()')) ^
+        bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+        bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('takeOwnership(uint256)'));
         
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('deedUri(uint256)'));
     
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     /// Returns true for any standardized interfaces implemented by this contract.
@@ -558,7 +558,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
         // Ensure the sender is not approving themselves.
         require(msg.sender != _to);
     
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             
             // Require the sender is the owner of the deed.
@@ -594,7 +594,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
         // Disallow transfers to this contract to prevent accidental misuse.
         require(_to != address(this));
     
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             
             // One can only transfer their own deeds.
@@ -620,7 +620,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
     /// calling address has previously been granted transfer approval by the owner.
     /// @param _deedIds The identifier of the deed to be transferred.
     function takeOwnershipMultiple(uint256[] _deedIds) public whenNotPaused {
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             address _from = identifierToOwner[_deedId];
             
@@ -634,7 +634,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
     
     /// @notice Returns a list of all deed identifiers assigned to an address.
     /// @param _owner The owner whose deeds we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. It&#39;s very
+    /// @dev This method MUST NEVER be called by smart contract code. It's very
     /// expensive and is not supported in contract-to-contract calls as it returns
     /// a dynamic array (only supported for web3 calls).
     function deedsOfOwner(address _owner) external view returns(uint256[]) {
@@ -648,7 +648,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
             uint256 totalDeeds = countOfDeeds();
             uint256 resultIndex = 0;
             
-            for (uint256 deedNumber = 0; deedNumber &lt; totalDeeds; deedNumber++) {
+            for (uint256 deedNumber = 0; deedNumber < totalDeeds; deedNumber++) {
                 uint256 identifier = identifiers[deedNumber];
                 if (identifierToOwner[identifier] == _owner) {
                     result[resultIndex] = identifier;
@@ -665,13 +665,13 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
     /// @param _index The index of the deed we want.
     function deedOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
         // The index should be valid.
-        require(_index &lt; countOfDeedsByOwner(_owner));
+        require(_index < countOfDeedsByOwner(_owner));
 
-        // Loop through all deeds, accounting the number of deeds of the owner we&#39;ve seen.
+        // Loop through all deeds, accounting the number of deeds of the owner we've seen.
         uint256 seen = 0;
         uint256 totalDeeds = countOfDeeds();
         
-        for (uint256 deedNumber = 0; deedNumber &lt; totalDeeds; deedNumber++) {
+        for (uint256 deedNumber = 0; deedNumber < totalDeeds; deedNumber++) {
             uint256 identifier = identifiers[deedNumber];
             if (identifierToOwner[identifier] == _owner) {
                 if (seen == _index) {
@@ -689,12 +689,12 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
     /// @dev Implementation of optional ERC-721 functionality.
     function deedUri(uint256 _deedId) external pure returns (string uri) {
         // Assume a maximum deed id length.
-        require (_deedId &lt; 1000000);
+        require (_deedId < 1000000);
         
-        uri = &quot;https://meta.quazr.io/card/xxxxxxx&quot;;
+        uri = "https://meta.quazr.io/card/xxxxxxx";
         bytes memory _uri = bytes(uri);
         
-        for (uint256 i = 0; i &lt; 7; i++) {
+        for (uint256 i = 0; i < 7; i++) {
             _uri[33 - i] = byte(48 + (_deedId / 10 ** i) % 10);
         }
     }
@@ -709,7 +709,7 @@ contract MetaGameDeed is MetaGameBase, ERC721, ERC721Metadata {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -720,7 +720,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -770,10 +770,10 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
     uint256 public dividendRecentBuyersPercentageDecreaseFactor = 2;
     
     // @dev A mapping from deed identifiers to the buyout price.
-    mapping (uint256 =&gt; uint256) public identifierToPrice;
+    mapping (uint256 => uint256) public identifierToPrice;
     
     /// @notice The threshold for a payment to be sent directly,
-    /// instead of added to a beneficiary&#39;s balance.
+    /// instead of added to a beneficiary's balance.
     uint256 public directPaymentThreshold = 0 ether;
     
     /// @notice Boolean indicating whether deed price can be changed
@@ -783,7 +783,7 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
     /// @notice The maximum depth for which dividends will be paid to parents.
     uint256 public maxDividendDepth = 6;
     
-    /// @dev This event is emitted when a deed&#39;s buyout price is initially set or changed.
+    /// @dev This event is emitted when a deed's buyout price is initially set or changed.
     event Price(uint256 indexed identifier, uint256 price, uint256 nextPrice);
     
     /// @dev This event is emitted when a deed is bought out.
@@ -813,9 +813,9 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
     /// @notice Calculate the next price given the current price.
     /// @param currentPrice The current price.
     function nextPrice(uint256 currentPrice) public pure returns(uint256) {
-        if (currentPrice &lt; 1 ether) {
+        if (currentPrice < 1 ether) {
             return currentPrice.mul(200).div(100); // 100% increase
-        } else if (currentPrice &lt; 5 ether) {
+        } else if (currentPrice < 5 ether) {
             return currentPrice.mul(150).div(100); // 50% increase
         } else {
             return currentPrice.mul(135).div(100); // 35% increase
@@ -833,7 +833,7 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
         require(allowChangePrice);
         
         // The new price must be lower than the current price.
-        require(newPrice &lt; identifierToPrice[identifier]);
+        require(newPrice < identifierToPrice[identifier]);
         
         // Set the new price.
         identifierToPrice[identifier] = newPrice;
@@ -863,7 +863,7 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
     {
         uint256 parentIdentifier = identifierToParentIdentifier[identifier];
         
-        if (parentIdentifier != 0 &amp;&amp; depth &lt; maxDividendDepth) {
+        if (parentIdentifier != 0 && depth < maxDividendDepth) {
             address parentOwner = identifierToOwner[parentIdentifier];
         
             if (parentOwner != address(this)) {            
@@ -962,12 +962,12 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
         // minimumFeePlusDividends.
         uint256 _minimumFeePlusDividends = price.mul(minimumFeePlusDividendsPercentage).div(100000);
         
-        if (_minimumFeePlusDividends &gt; dividendsPaid) {
+        if (_minimumFeePlusDividends > dividendsPaid) {
             uint256 feeMinusDividends = _minimumFeePlusDividends.sub(dividendsPaid);
         
-            // The minimum total paid in &#39;fees plus dividends&#39;, minus dividends, is
+            // The minimum total paid in 'fees plus dividends', minus dividends, is
             // greater than the minimum fee. Set the fee to this value.
-            if (feeMinusDividends &gt; fee) {
+            if (feeMinusDividends > fee) {
                 fee = feeMinusDividends;
             }
         }
@@ -987,11 +987,11 @@ contract MetaGameFinance is MetaGameDeed, PullPayment {
     }
     
     /// @dev Send funds to a beneficiary. If sending fails, assign
-    /// funds to the beneficiary&#39;s balance for manual withdrawal.
-    /// @param beneficiary The beneficiary&#39;s address to send funds to
+    /// funds to the beneficiary's balance for manual withdrawal.
+    /// @param beneficiary The beneficiary's address to send funds to
     /// @param amount The amount to send.
     function _sendFunds(address beneficiary, uint256 amount) internal {
-        if (amount &lt; directPaymentThreshold) {
+        if (amount < directPaymentThreshold) {
             // Amount is under send threshold. Send funds asynchronously
             // for manual withdrawal by the beneficiary.
             asyncSend(beneficiary, amount);
@@ -1035,7 +1035,7 @@ contract MetaGameCore is MetaGameFinance {
     function createCollectible(uint256 identifier, address owner, uint256 parentIdentifier, uint256 price) external onlyCFO {
         // The identifier must be valid. Identifier 0 is reserved
         // to mark a collectible as having no parent.
-        require(identifier &gt;= 1);
+        require(identifier >= 1);
     
         // The identifier must not exist yet.
         require(identifierToOwner[identifier] == 0x0);
@@ -1083,7 +1083,7 @@ contract MetaGameCore is MetaGameFinance {
         require(oldOwner != msg.sender);
         
         // Enough ether must be provided.
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         // Set the new price.
         uint256 newPrice = nextPrice(price);
@@ -1120,13 +1120,13 @@ contract MetaGameCore is MetaGameFinance {
         // guarantees price to be greater than or equal to msg.value.
         uint256 excess = msg.value - price;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             // Refund overspent Ether.
             msg.sender.transfer(excess);
         }
     }
     
-    /// @notice Return a collectible&#39;s details.
+    /// @notice Return a collectible's details.
     /// @param identifier The identifier of the collectible to get details for.
     function getDeed(uint256 identifier)
         external

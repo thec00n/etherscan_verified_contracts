@@ -99,13 +99,13 @@ contract ProxyRegistry is Ownable {
     address public delegateProxyImplementation;
 
     /* Authenticated proxies by user. */
-    mapping(address =&gt; OwnableDelegateProxy) public proxies;
+    mapping(address => OwnableDelegateProxy) public proxies;
 
     /* Contracts pending access. */
-    mapping(address =&gt; uint) public pending;
+    mapping(address => uint) public pending;
 
     /* Contracts allowed to call those proxies. */
-    mapping(address =&gt; bool) public contracts;
+    mapping(address => bool) public contracts;
 
     /* Delay period for adding an authenticated contract.
        This mitigates a particular class of potential attack on the Wyvern DAO (which owns this registry) - if at any point the value of assets held by proxy contracts exceeded the value of half the WYV supply (votes in the DAO),
@@ -124,7 +124,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] == 0);
+        require(!contracts[addr] && pending[addr] == 0);
         pending[addr] = now;
     }
 
@@ -138,7 +138,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] != 0 &amp;&amp; ((pending[addr] + DELAY_PERIOD) &lt; now));
+        require(!contracts[addr] && pending[addr] != 0 && ((pending[addr] + DELAY_PERIOD) < now));
         pending[addr] = 0;
         contracts[addr] = true;
     }
@@ -167,7 +167,7 @@ contract ProxyRegistry is Ownable {
         returns (OwnableDelegateProxy proxy)
     {
         require(proxies[msg.sender] == address(0));
-        proxy = new OwnableDelegateProxy(msg.sender, delegateProxyImplementation, abi.encodeWithSignature(&quot;initialize(address,address)&quot;, msg.sender, address(this)));
+        proxy = new OwnableDelegateProxy(msg.sender, delegateProxyImplementation, abi.encodeWithSignature("initialize(address,address)", msg.sender, address(this)));
         proxies[msg.sender] = proxy;
         return proxy;
     }
@@ -176,7 +176,7 @@ contract ProxyRegistry is Ownable {
 
 contract WyvernProxyRegistry is ProxyRegistry {
 
-    string public constant name = &quot;Project Wyvern Proxy Registry&quot;;
+    string public constant name = "Project Wyvern Proxy Registry";
 
     /* Whether the initial auth address has been set. */
     bool public initialAddressSet = false;
@@ -306,7 +306,7 @@ contract AuthenticatedProxy is TokenRecipient, OwnedUpgradeabilityStorage {
         public
         returns (bool result)
     {
-        require(msg.sender == user || (!revoked &amp;&amp; registry.contracts(msg.sender)));
+        require(msg.sender == user || (!revoked && registry.contracts(msg.sender)));
         if (howToCall == HowToCall.Call) {
             result = dest.call(calldata);
         } else if (howToCall == HowToCall.DelegateCall) {

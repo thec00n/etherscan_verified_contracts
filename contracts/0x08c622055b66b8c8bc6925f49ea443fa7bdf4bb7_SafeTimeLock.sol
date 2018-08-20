@@ -72,7 +72,7 @@ contract SafeTimeLock is Ownable {
     }
     
     modifier onlyOutTimeLock() {
-        if (now &lt; startTime || now &lt;= endTime) {
+        if (now < startTime || now <= endTime) {
             throw;
         }
         _;

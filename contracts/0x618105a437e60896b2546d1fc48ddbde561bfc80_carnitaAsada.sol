@@ -161,7 +161,7 @@ contract carnitaAsada{
         addressManager.transfer(_gasUsed); //pay the gas to the Manager
         
         //to pay the bill could be toPaycarnita variable or set by manager
-        if(_bill&gt;0){
+        if(_bill>0){
             bitsoAddress.transfer(carnitas[lastCarnita].participants.length*_bill);
         }else{
         bitsoAddress.transfer(carnitas[lastCarnita].participants.length*toPaycarnita);

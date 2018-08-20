@@ -4,7 +4,7 @@
  * This is an automatically generated file. It will be overwritten.
  *
  * For the original source see
- *    &#39;/Users/swaldman/Dropbox/BaseFolders/development-why/gitproj/eth-ping-pong/src/main/solidity/PingPong.sol&#39;
+ *    '/Users/swaldman/Dropbox/BaseFolders/development-why/gitproj/eth-ping-pong/src/main/solidity/PingPong.sol'
  */
 
 pragma solidity ^0.4.18;
@@ -18,7 +18,7 @@ contract PingPong {
   uint private pong_count;
 
   function PingPong() public {
-    last = &quot;&quot;;
+    last = "";
     pong_count = 0;
   }
 

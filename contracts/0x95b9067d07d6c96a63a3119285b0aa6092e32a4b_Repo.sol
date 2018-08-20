@@ -85,8 +85,8 @@ pragma solidity 0.4.18;
 
 
 contract EVMScriptRegistryConstants {
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256(&quot;evmreg.aragonpm.eth&quot;);
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256(&quot;app&quot;), EVMSCRIPT_REGISTRY_APP_ID);
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256("evmreg.aragonpm.eth");
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256("app"), EVMSCRIPT_REGISTRY_APP_ID);
 }
 
 
@@ -102,8 +102,8 @@ pragma solidity 0.4.18;
 
 library ScriptHelpers {
     // To test with JS and compare with actual encoder. Maintaining for reference.
-    // t = function() { return IEVMScriptExecutor.at(&#39;0x4bcdd59d6c77774ee7317fc1095f69ec84421e49&#39;).contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
-    // run = function() { return ScriptHelpers.new().then(sh =&gt; { sh.abiEncode.call(...[].slice.call(arguments)).then(a =&gt; console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
+    // t = function() { return IEVMScriptExecutor.at('0x4bcdd59d6c77774ee7317fc1095f69ec84421e49').contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
+    // run = function() { return ScriptHelpers.new().then(sh => { sh.abiEncode.call(...[].slice.call(arguments)).then(a => console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
     // This is truly not beautiful but lets no daydream to the day solidity gets reflection features
 
     function abiEncode(bytes _a, bytes _b, address[] _c) public pure returns (bytes d) {
@@ -134,7 +134,7 @@ library ScriptHelpers {
     function abiLength(bytes memory _a) internal pure returns (uint256) {
         // 1 for length +
         // memory words + 1 if not divisible for 32 to offset word
-        return 1 + (_a.length / 32) + (_a.length % 32 &gt; 0 ? 1 : 0);
+        return 1 + (_a.length / 32) + (_a.length % 32 > 0 ? 1 : 0);
     }
 
     function abiLength(address[] _a) internal pure returns (uint256) {
@@ -199,9 +199,9 @@ library ScriptHelpers {
     function toBytes(bytes4 _sig) internal pure returns (bytes) {
         bytes memory payload = new bytes(4);
         payload[0] = bytes1(_sig);
-        payload[1] = bytes1(_sig &lt;&lt; 8);
-        payload[2] = bytes1(_sig &lt;&lt; 16);
-        payload[3] = bytes1(_sig &lt;&lt; 24);
+        payload[1] = bytes1(_sig << 8);
+        payload[2] = bytes1(_sig << 16);
+        payload[3] = bytes1(_sig << 24);
         return payload;
     }
 
@@ -211,7 +211,7 @@ library ScriptHelpers {
         uint256 len = _len;
 
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -265,7 +265,7 @@ contract EVMScriptRunner is AppStorage, EVMScriptRegistryConstants {
     }
 
     /**
-    * @dev copies and returns last&#39;s call data. Needs to ABI decode first
+    * @dev copies and returns last's call data. Needs to ABI decode first
     */
     function returnedDataDecoded() internal view returns (bytes ret) {
         assembly {
@@ -371,17 +371,17 @@ contract ACLSyntaxSugar {
 
 contract ACLHelpers {
     function decodeParamOp(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 30));
+        return uint8(_x >> (8 * 30));
     }
 
     function decodeParamId(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 31));
+        return uint8(_x >> (8 * 31));
     }
 
     function decodeParamsList(uint256 _x) internal pure returns (uint32 a, uint32 b, uint32 c) {
         a = uint32(_x);
-        b = uint32(_x &gt;&gt; (8 * 4));
-        c = uint32(_x &gt;&gt; (8 * 8));
+        b = uint32(_x >> (8 * 4));
+        c = uint32(_x >> (8 * 8));
     }
 }
 
@@ -407,7 +407,7 @@ contract AragonApp is AppStorage, Initializable, ACLSyntaxSugar, EVMScriptRunner
 
     function canPerform(address _sender, bytes32 _role, uint256[] params) public view returns (bool) {
         bytes memory how; // no need to init memory as it is never used
-        if (params.length &gt; 0) {
+        if (params.length > 0) {
             uint256 byteLength = params.length * 32;
             assembly {
                 how := params // forced casting
@@ -432,8 +432,8 @@ contract Repo is AragonApp {
     }
 
     Version[] versions;
-    mapping (bytes32 =&gt; uint256) versionIdForSemantic;
-    mapping (address =&gt; uint256) latestVersionIdForContract;
+    mapping (bytes32 => uint256) versionIdForSemantic;
+    mapping (address => uint256) latestVersionIdForContract;
 
     bytes32 constant public CREATE_VERSION_ROLE = bytes32(1);
 
@@ -442,8 +442,8 @@ contract Repo is AragonApp {
     /**
     * @notice Create new version for repo
     * @param _newSemanticVersion Semantic version for new repo version
-    * @param _contractAddress address for smart contract logic for version (if set to 0, it uses last versions&#39; contractAddress)
-    * @param _contentURI External URI for fetching new version&#39;s content
+    * @param _contractAddress address for smart contract logic for version (if set to 0, it uses last versions' contractAddress)
+    * @param _contentURI External URI for fetching new version's content
     */
     function newVersion(
         uint16[3] _newSemanticVersion,
@@ -452,14 +452,14 @@ contract Repo is AragonApp {
     ) auth(CREATE_VERSION_ROLE) public
     {
         address contractAddress = _contractAddress;
-        if (versions.length &gt; 0) {
+        if (versions.length > 0) {
             Version storage lastVersion = versions[versions.length - 1];
             require(isValidBump(lastVersion.semanticVersion, _newSemanticVersion));
             if (contractAddress == 0) {
                 contractAddress = lastVersion.contractAddress;
             }
             // Only allows smart contract change on major version bumps
-            require(lastVersion.contractAddress == contractAddress || _newSemanticVersion[0] &gt; lastVersion.semanticVersion[0]);
+            require(lastVersion.contractAddress == contractAddress || _newSemanticVersion[0] > lastVersion.semanticVersion[0]);
         } else {
             versions.length += 1;
             uint16[3] memory zeroVersion;
@@ -486,26 +486,26 @@ contract Repo is AragonApp {
     }
 
     function getByVersionId(uint _versionId) public view returns (uint16[3] semanticVersion, address contractAddress, bytes contentURI) {
-        require(_versionId &gt; 0);
+        require(_versionId > 0);
         Version storage version = versions[_versionId];
         return (version.semanticVersion, version.contractAddress, version.contentURI);
     }
 
     function getVersionsCount() public view returns (uint256) {
         uint256 len = versions.length;
-        return len &gt; 0 ? len - 1 : 0;
+        return len > 0 ? len - 1 : 0;
     }
 
     function isValidBump(uint16[3] _oldVersion, uint16[3] _newVersion) public pure returns (bool) {
         bool hasBumped;
         uint i = 0;
-        while (i &lt; 3) {
+        while (i < 3) {
             if (hasBumped) {
                 if (_newVersion[i] != 0) {
                     return false;
                 }
             } else if (_newVersion[i] != _oldVersion[i]) {
-                if (_oldVersion[i] &gt; _newVersion[i] || _newVersion[i] - _oldVersion[i] != 1) {
+                if (_oldVersion[i] > _newVersion[i] || _newVersion[i] - _oldVersion[i] != 1) {
                     return false;
                 }
                 hasBumped = true;

@@ -12,7 +12,7 @@ pragma solidity ^0.4.24;
 //                                                                                                         
 //  site:     https://makingitrain.me
 //
-//  support:  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f8f4fefcfbf2fce1e7f4fcfbf1f0e3d5f2f8f4fcf9bbf6faf8">[email&#160;protected]</a>
+//  support:  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f8f4fefcfbf2fce1e7f4fcfbf1f0e3d5f2f8f4fcf9bbf6faf8">[email protected]</a>
 //
 //  discord:  https://discord.gg/kndpqU3
 //                                                                                                    
@@ -24,33 +24,33 @@ contract Rain {
     =================================*/
     // only people with tokens
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     
     // administrator can:
-    // -&gt; change the name of the contract
-    // -&gt; change the name of the token
-    // -&gt; change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
+    // -> change the name of the contract
+    // -> change the name of the token
+    // -> change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
     // they CANNOT:
-    // -&gt; take funds
-    // -&gt; disable withdrawals
-    // -&gt; kill the contract
-    // -&gt; change the price of tokens
+    // -> take funds
+    // -> disable withdrawals
+    // -> kill the contract
+    // -> change the price of tokens
     modifier onlyAdministrator(){
         require(msg.sender == owner);
         _;
     }
     
     modifier limitBuy() { 
-        if(limit &amp;&amp; msg.value &gt; 3 ether) { // check if the transaction is over 3 ether and limit is active
-            if ((msg.value) &lt; address(this).balance &amp;&amp; (address(this).balance-(msg.value)) &gt;= 50 ether) { // if contract reaches 50 ether disable limit
+        if(limit && msg.value > 3 ether) { // check if the transaction is over 3 ether and limit is active
+            if ((msg.value) < address(this).balance && (address(this).balance-(msg.value)) >= 50 ether) { // if contract reaches 50 ether disable limit
                 limit = false;
             }
             else {
@@ -103,8 +103,8 @@ contract Rain {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;Rain&quot;;
-    string public symbol = &quot;Rain&quot;;
+    string public name = "Rain";
+    string public symbol = "Rain";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 20; // 20%
     uint256 constant internal tokenPriceInitial_ = 0.0000001 ether;
@@ -120,14 +120,14 @@ contract Rain {
     =            DATASETS            =
     ================================*/
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; address) internal referralOf_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; bool) internal alreadyBought;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => address) internal referralOf_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => bool) internal alreadyBought;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
-    mapping(address =&gt; bool) internal whitelisted_;
+    mapping(address => bool) internal whitelisted_;
     bool internal whitelist_ = true;
     bool internal limit = true;
     
@@ -174,7 +174,7 @@ contract Rain {
     }
     
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
      */
     function reinvest()
         onlyStronghands()
@@ -191,7 +191,7 @@ contract Rain {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
         
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends, 0x0);
         
         // fire event
@@ -204,10 +204,10 @@ contract Rain {
     function exit()
         public
     {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
         
         // lambo delivery service
         withdraw();
@@ -248,7 +248,7 @@ contract Rain {
         // setup data
         address _customerAddress = msg.sender;
         // russian hackers BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         
@@ -264,14 +264,14 @@ contract Rain {
         
         if(
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
             
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
 
             // wealth redistribution
@@ -279,11 +279,11 @@ contract Rain {
 
             address tier2 = referralOf_[_referredBy];
 
-            if (tier2 != 0x0000000000000000000000000000000000000000 &amp;&amp; tokenBalanceLedger_[tier2] &gt;= stakingRequirement) {
+            if (tier2 != 0x0000000000000000000000000000000000000000 && tokenBalanceLedger_[tier2] >= stakingRequirement) {
                 referralBalance_[tier2] = SafeMath.add(referralBalance_[tier2], (_referralBonus*30 / 100)); // Tier 2 gets 30% of referrals (3%)
 
                 //address tier3 = referralOf_[tier2];
-                if (referralOf_[tier2] != 0x0000000000000000000000000000000000000000 &amp;&amp; tokenBalanceLedger_[referralOf_[tier2]] &gt;= stakingRequirement) {
+                if (referralOf_[tier2] != 0x0000000000000000000000000000000000000000 && tokenBalanceLedger_[referralOf_[tier2]] >= stakingRequirement) {
                     referralBalance_[referralOf_[tier2]] = SafeMath.add(referralBalance_[referralOf_[tier2]], (_referralBonus*20 / 100)); // Tier 3 get 20% of referrals (2%)
                     }
                 else {
@@ -309,7 +309,7 @@ contract Rain {
         payoutsTo_[_customerAddress] -= _updatedPayouts;       
         
         // dividing by zero is a bad idea
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -331,10 +331,10 @@ contract Rain {
         address _customerAddress = msg.sender;
         
         // make sure we have the requested tokens
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         
         // withdraw all outstanding dividends first
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
 
         // exchange tokens
         tokenBalanceLedger_[_customerAddress] = SafeMath.sub(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
@@ -544,7 +544,7 @@ contract Rain {
         view 
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -567,7 +567,7 @@ contract Rain {
         //As long as the whitelist is true, only whitelisted people are allowed to buy.
 
         // if the person is not whitelisted but whitelist is true/active, revert the transaction
-        if (whitelisted_[msg.sender] == false &amp;&amp; whitelist_ == true) { 
+        if (whitelisted_[msg.sender] == false && whitelist_ == true) { 
             revert();
         }
         // data setup
@@ -587,22 +587,22 @@ contract Rain {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
         // is the user referred by a masternode?
         if(
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
             
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement &amp;&amp;
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement &&
 
-            referralOf_[_customerAddress] == 0x0000000000000000000000000000000000000000 &amp;&amp;
+            referralOf_[_customerAddress] == 0x0000000000000000000000000000000000000000 &&
 
             alreadyBought[_customerAddress] == false
         ){
@@ -613,12 +613,12 @@ contract Rain {
 
             address tier2 = referralOf_[_referredBy];
 
-            if (tier2 != 0x0000000000000000000000000000000000000000 &amp;&amp; tokenBalanceLedger_[tier2] &gt;= stakingRequirement) {
+            if (tier2 != 0x0000000000000000000000000000000000000000 && tokenBalanceLedger_[tier2] >= stakingRequirement) {
                 referralBalance_[tier2] = SafeMath.add(referralBalance_[tier2], (_referralBonus*30 / 100)); // Tier 2 gets 30% of referrals (3%)
 
                 //address tier3 = referralOf_[tier2];
 
-                if (referralOf_[tier2] != 0x0000000000000000000000000000000000000000 &amp;&amp; tokenBalanceLedger_[referralOf_[tier2]] &gt;= stakingRequirement) {
+                if (referralOf_[tier2] != 0x0000000000000000000000000000000000000000 && tokenBalanceLedger_[referralOf_[tier2]] >= stakingRequirement) {
                     referralBalance_[referralOf_[tier2]] = SafeMath.add(referralBalance_[referralOf_[tier2]], (_referralBonus*20 / 100)); // Tier 3 get 20% of referrals (2%)
                     }
                 else {
@@ -639,8 +639,8 @@ contract Rain {
             _fee = _dividends * magnitude;
         }
         
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply_ &gt; 0){
+        // we can't give people infinite ethereum
+        if(tokenSupply_ > 0){
             
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -656,11 +656,11 @@ contract Rain {
             tokenSupply_ = _amountOfTokens;
         }
         
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
         
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int256 _updatedPayouts = (int256) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
         alreadyBought[_customerAddress] = true;
@@ -672,7 +672,7 @@ contract Rain {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum)
@@ -707,7 +707,7 @@ contract Rain {
     
     /**
      * Calculate token sell value.
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function tokensToEthereum_(uint256 _tokens)
@@ -740,7 +740,7 @@ contract Rain {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -769,9 +769,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -779,7 +779,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -788,7 +788,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

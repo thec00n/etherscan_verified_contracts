@@ -15,16 +15,16 @@ library SafeMath
     function div(uint256 a, uint256 b) internal pure
         returns (uint256)
     {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -34,7 +34,7 @@ library SafeMath
     {
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -43,7 +43,7 @@ library SafeMath
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable
 {
@@ -97,8 +97,8 @@ contract TokenERC20 is Ownable
     uint256 public buyPrice = 1000000000000000000 wei;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -135,9 +135,9 @@ contract TokenERC20 is Ownable
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
         // Subtract from the sender
@@ -175,7 +175,7 @@ contract TokenERC20 is Ownable
     function transferFrom(address _from, address _to, uint256 _value) public
         returns (bool success)
     {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
@@ -241,7 +241,7 @@ contract TokenERC20 is Ownable
     {
         uint oldValue = allowance[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,7 +262,7 @@ contract TokenERC20 is Ownable
     function burn(uint256 _value) public onlyOwner
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);  // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
@@ -284,11 +284,11 @@ contract TokenERC20 is Ownable
     function burnFrom(address _from, uint256 _value) public onlyOwner
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
 
         balanceOf[_from] = balanceOf[_from].sub(_value);    // Subtract from the targeted balance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);    // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);    // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);              // Update totalSupply
         avaliableSupply = avaliableSupply.sub(_value);
 
@@ -395,7 +395,7 @@ contract StreamityCrowdsale is Pauseble
     function confirmSell(uint256 _amount) internal view
         returns(bool)
     {
-        if (ICO.tokens &lt; _amount) {
+        if (ICO.tokens < _amount) {
             return false;
         }
 
@@ -415,7 +415,7 @@ contract StreamityCrowdsale is Pauseble
         }
         else if (2 == stage)
         {
-            if (now &lt;= ICO.startDate + 1 days)
+            if (now <= ICO.startDate + 1 days)
             {
                 if (0 == ICO.discountFirstDayICO) {
                     ICO.discountFirstDayICO = 20;
@@ -472,16 +472,16 @@ contract StreamityCrowdsale is Pauseble
         returns (string)
     {
         if (1 == stage) {
-            return &quot;Pre-ICO&quot;;
+            return "Pre-ICO";
         } else if(2 == stage) {
-            return &quot;ICO first stage&quot;;
+            return "ICO first stage";
         } else if (3 == stage) {
-            return &quot;ICO second stage&quot;;
-        } else if (4 &gt;= stage) {
-            return &quot;feature stage&quot;;
+            return "ICO second stage";
+        } else if (4 >= stage) {
+            return "feature stage";
         }
 
-        return &quot;there is no stage at present&quot;;
+        return "there is no stage at present";
     }
 
     /*
@@ -499,7 +499,7 @@ contract StreamityCrowdsale is Pauseble
 
             weisRaised = weisRaised.add(value);
 
-            if (now &gt;= ICO.endDate) {
+            if (now >= ICO.endDate) {
                 pauseInternal();
                 CrowdSaleFinished(crowdSaleStatus()); // if time is up
             }
@@ -538,7 +538,7 @@ contract StreamityCrowdsale is Pauseble
     */
     function startCrowd(uint256 _tokens, uint _startDate, uint _endDate, uint8 _discount, uint8 _discountFirstDayICO) public onlyOwner
     {
-        require(_tokens * DEC &lt;= avaliableSupply);  // require to set correct tokens value for crowd
+        require(_tokens * DEC <= avaliableSupply);  // require to set correct tokens value for crowd
         ICO = Ico (_tokens * DEC, _startDate, _startDate + _endDate * 1 days , _discount, _discountFirstDayICO);
         stage = stage.add(1);
         unpauseInternal();
@@ -569,7 +569,7 @@ contract StreamityCrowdsale is Pauseble
 contract StreamityContract is ERC20Extending, StreamityCrowdsale
 {
     /* Streamity tokens Constructor */
-    function StreamityContract() public TokenERC20(186000000, &quot;Streamity&quot;, &quot;STM&quot;) {} //change before send !!!
+    function StreamityContract() public TokenERC20(186000000, "Streamity", "STM") {} //change before send !!!
 
     /**
     * Function payments handler
@@ -577,8 +577,8 @@ contract StreamityContract is ERC20Extending, StreamityCrowdsale
     */
     function () public payable
     {
-        assert(msg.value &gt;= 1 ether / 10);
-        require(now &gt;= ICO.startDate);
+        assert(msg.value >= 1 ether / 10);
+        require(now >= ICO.startDate);
 
         if (paused == false) {
             paymentManager(msg.sender, msg.value);

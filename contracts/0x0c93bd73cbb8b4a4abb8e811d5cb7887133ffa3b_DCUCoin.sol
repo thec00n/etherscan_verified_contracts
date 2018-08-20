@@ -99,11 +99,11 @@ contract DSStop is DSNote, DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint x, uint y) internal pure returns (uint z) {
@@ -137,8 +137,8 @@ contract DCUCoin is ERC20, DSMath, DSStop {
     string public    symbol;
     uint8 public     decimals = 18;
     uint256 internal supply;
-    mapping(address =&gt; uint256)                      balances;
-    mapping(address =&gt; mapping(address =&gt; uint256))  approvals;
+    mapping(address => uint256)                      balances;
+    mapping(address => mapping(address => uint256))  approvals;
 
     constructor(uint256 token_supply, string token_name, string token_symbol) public {
         balances[msg.sender] = token_supply;
@@ -169,8 +169,8 @@ contract DCUCoin is ERC20, DSMath, DSStop {
 
     function transfer(address dst, uint value) public stoppable returns (bool) {
         // uint never less than 0. The negative number will become to a big positive number
-        require(value &lt; supply);
-        require(balances[msg.sender] &gt;= value);
+        require(value < supply);
+        require(balances[msg.sender] >= value);
 
         balances[msg.sender] = sub(balances[msg.sender], value);
         balances[dst] = add(balances[dst], value);
@@ -183,9 +183,9 @@ contract DCUCoin is ERC20, DSMath, DSStop {
     function transferFrom(address src, address dst, uint value) public stoppable returns (bool)
     {
         // uint never less than 0. The negative number will become to a big positive number
-        require(value &lt; supply);
-        require(approvals[src][msg.sender] &gt;= value);
-        require(balances[src] &gt;= value);
+        require(value < supply);
+        require(approvals[src][msg.sender] >= value);
+        require(balances[src] >= value);
 
         approvals[src][msg.sender] = sub(approvals[src][msg.sender], value);
         balances[src] = sub(balances[src], value);
@@ -198,7 +198,7 @@ contract DCUCoin is ERC20, DSMath, DSStop {
 
     function approve(address guy, uint value) public stoppable returns (bool) {
         // uint never less than 0. The negative number will become to a big positive number
-        require(value &lt; supply);
+        require(value < supply);
 
         approvals[msg.sender][guy] = value;
 

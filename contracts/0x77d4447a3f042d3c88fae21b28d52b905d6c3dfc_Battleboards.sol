@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -52,12 +52,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -69,9 +69,9 @@ contract SafeMath {
     }
     
      function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -299,7 +299,7 @@ contract Battleboards is AccessControl, SafeMath  {
             //This function iterates through turns of players whose tiles may already be dead 
             IBattleboardData battleboardData = IBattleboardData(battleboardDataContract);
             uint8 oldTurnTileID;
-            for (uint8 i = 0; i&lt;6; i++) {
+            for (uint8 i = 0; i<6; i++) {
             oldTurnTileID = battleboardData.getTileIDByOwner(battleboardId, battleboardData.getTurn(battleboardId));
             if (battleboardData.isTileLive(battleboardId, oldTurnTileID) == false) {battleboardData.iterateTurn(battleboardId);}
             else {i=9;} //break loop
@@ -307,17 +307,17 @@ contract Battleboards is AccessControl, SafeMath  {
         }
     
        function move(uint16 battleboardId, uint8 tileId, uint8 positionTo) external {
-           //Can&#39;t move off the board
-           if ((positionTo &lt;= 0) || (positionTo &gt;64)) {revert();}
+           //Can't move off the board
+           if ((positionTo <= 0) || (positionTo >64)) {revert();}
            IBattleboardData battleboardData = IBattleboardData(battleboardDataContract);
            
-           //if it&#39;s not your turn. 
+           //if it's not your turn. 
            if (msg.sender != battleboardData.getTurn(battleboardId)) {
                //first check to see if the team whose turn it is is dead.
               removeDeadTurns(battleboardId);
               if (msg.sender != battleboardData.getTurn(battleboardId)) {
-                  //if it&#39;s still not your turn, revert if it&#39;s also not past the real turn&#39;s delay time. 
-               if  (now  &lt; battleboardData.getLastMoveTime(battleboardId) + (3600* delayHours)) {revert();}
+                  //if it's still not your turn, revert if it's also not past the real turn's delay time. 
+               if  (now  < battleboardData.getLastMoveTime(battleboardId) + (3600* delayHours)) {revert();}
               }
            }
            Tile memory tile;
@@ -329,7 +329,7 @@ contract Battleboards is AccessControl, SafeMath  {
            //Regardless of if the ower moves its tile normally or if someone else moves it, it has to move on its turn. 
            if (battleboardData.getTurn(battleboardId) != tile.owner) {revert();}
            
-           //can&#39;t move if your tile isn&#39;t live. 
+           //can't move if your tile isn't live. 
            if (tile.isLive == false) {revert();}
            
            
@@ -379,7 +379,7 @@ contract Battleboards is AccessControl, SafeMath  {
                //Red barrier
                battleboardData.setTilePosition(battleboardId,tileId, positionTo);
                if (isVulnerable (tile.angelId,1) == true) {
-                    if (tile.hp &gt; tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
+                    if (tile.hp > tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
                     else {battleboardData.killTile(battleboardId, tileId);}
                }
                EventBarrier(battleboardId, tile.angelId,3, tile2.value);
@@ -389,7 +389,7 @@ contract Battleboards is AccessControl, SafeMath  {
                //Yellow barrier
              battleboardData.setTilePosition(battleboardId,tileId, positionTo);
               if (isVulnerable (tile.angelId,2) == true) {
-                    if (tile.hp &gt; tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
+                    if (tile.hp > tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
                     else {battleboardData.killTile(battleboardId, tileId);}
                     
                }
@@ -399,7 +399,7 @@ contract Battleboards is AccessControl, SafeMath  {
                //Blue barrier
                battleboardData.setTilePosition(battleboardId,tileId, positionTo);
                 if (isVulnerable (tile.angelId,3) == true) {
-                    if (tile.hp &gt; tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
+                    if (tile.hp > tile2.value) {battleboardData.setTileHp(battleboardId, tileId, (tile.hp - tile2.value));}
                     else {battleboardData.killTile(battleboardId, tileId);}
                }
                EventBarrier(battleboardId, tile.angelId,5, tile2.value);
@@ -489,7 +489,7 @@ contract Battleboards is AccessControl, SafeMath  {
            uint8 speed2;
               (, speed1,,,,,,,,) = battleboardData.getTileFromBattleboard(battleboardId, tile1Id);
             (, speed2,,,, ,,,,) = battleboardData.getTileFromBattleboard(battleboardId, tile2Id);
-            if (speed1 &gt;= speed2) return true;
+            if (speed1 >= speed2) return true;
             return false;
            
        }
@@ -521,13 +521,13 @@ contract Battleboards is AccessControl, SafeMath  {
         if (angel2aura == 4) {angel2BP += 10;}
         
         //if purple aura, 10% chance of sudden kill
-        if ((angel1aura == 2) &amp;&amp; (getRandomNumber(100,0,msg.sender) &lt;10)) {return true;}
-        if ((angel2aura == 2) &amp;&amp; (getRandomNumber(100,0,msg.sender) &lt;10)) {return false;}
+        if ((angel1aura == 2) && (getRandomNumber(100,0,msg.sender) <10)) {return true;}
+        if ((angel2aura == 2) && (getRandomNumber(100,0,msg.sender) <10)) {return false;}
         
         
         //if green aura, 20% chance of +75 hp
-        if ((angel1aura == 5) &amp;&amp; (getRandomNumber(100,0,msg.sender) &lt;20)) {hp1 += 75;}
-        if ((angel2aura == 5) &amp;&amp; (getRandomNumber(100,0,msg.sender) &lt;20)) {hp2 +=75;}
+        if ((angel1aura == 5) && (getRandomNumber(100,0,msg.sender) <20)) {hp1 += 75;}
+        if ((angel2aura == 5) && (getRandomNumber(100,0,msg.sender) <20)) {hp2 +=75;}
         
         
            uint16 strike;
@@ -535,12 +535,12 @@ contract Battleboards is AccessControl, SafeMath  {
            //attacker (team 1) gets the first strike.
            //see if strike will be angel and pet or just angel. 
            strike = Strike(angel1BP,hp1,petPower1,1);
-           if (hp2 &gt; strike) {hp2 = hp2 - strike;}
+           if (hp2 > strike) {hp2 = hp2 - strike;}
            else {return true;}
            
            //defender gets the second strike if still alive.  
            strike = Strike(angel2BP,hp2,petPower2,2);
-           if (hp1 &gt; strike) {hp1 = hp1 - strike;}
+           if (hp1 > strike) {hp1 = hp1 - strike;}
            else {
                battleboardData.setTileHp(battleboardId, tile2Id, hp2);
                return false;}
@@ -548,10 +548,10 @@ contract Battleboards is AccessControl, SafeMath  {
         // second round (if necessary)
         
         if (getFastest(battleboardId, tile1Id, tile2Id)==true) {
-            if (getRandomNumber(100,0,2) &gt; 30) {
+            if (getRandomNumber(100,0,2) > 30) {
                 //team 1 attacks first. 
                    strike = Strike(angel1BP,hp1,petPower1,3);
-                   if (hp2 &gt; strike) {hp2 = hp2 - strike;}
+                   if (hp2 > strike) {hp2 = hp2 - strike;}
                    else {
                        battleboardData.setTileHp(battleboardId, tile1Id, hp1);
                        return true;}
@@ -559,17 +559,17 @@ contract Battleboards is AccessControl, SafeMath  {
             else {
             //team 2 attacks first    
             strike = Strike(angel2BP,hp2,petPower2,4);
-           if (hp1 &gt; strike) {hp1 = hp1 - strike;}
+           if (hp1 > strike) {hp1 = hp1 - strike;}
            else {
            battleboardData.setTileHp(battleboardId, tile2Id, hp2);
            return false;}
         }
         }
         if (getFastest(battleboardId, tile1Id, tile2Id) == false) {
-               if (getRandomNumber(100,0,2) &gt;70) {
+               if (getRandomNumber(100,0,2) >70) {
                 //team 1 attacks first. 
                    strike = Strike(angel1BP,hp1,petPower1,5);
-                   if (hp2 &gt; strike) {hp2 = hp2 - strike;}
+                   if (hp2 > strike) {hp2 = hp2 - strike;}
                    else {
                        battleboardData.setTileHp(battleboardId, tile1Id, hp1);
                        return true;}
@@ -577,7 +577,7 @@ contract Battleboards is AccessControl, SafeMath  {
             else {
             //team 2 attacks first    
             strike = Strike(angel2BP,hp2,petPower2,6);
-           if (hp1 &gt; strike) {hp1 = hp1 - strike;}
+           if (hp1 > strike) {hp1 = hp1 - strike;}
            else {
            battleboardData.setTileHp(battleboardId, tile2Id, hp2);
            return false;}
@@ -587,10 +587,10 @@ contract Battleboards is AccessControl, SafeMath  {
              // third round (if necessary)
         
         if (getFastest(battleboardId, tile1Id, tile2Id)==true) {
-            if (getRandomNumber(100,0,2) &gt; 30) {
+            if (getRandomNumber(100,0,2) > 30) {
                 //team 1 attacks first. 
                    strike = Strike(angel1BP,hp1,petPower1,7);
-                   if (hp2 &gt; strike) {hp2 = hp2 - strike;}
+                   if (hp2 > strike) {hp2 = hp2 - strike;}
                    else {
                        battleboardData.setTileHp(battleboardId, tile1Id, hp1);
                        return true;}
@@ -599,15 +599,15 @@ contract Battleboards is AccessControl, SafeMath  {
             else {
             //team 2 attacks first    
             strike = Strike(angel2BP,hp2,petPower2,8);
-           if (hp1 &gt; strike) {hp1 = hp1 - strike;}
+           if (hp1 > strike) {hp1 = hp1 - strike;}
            else {battleboardData.setTileHp(battleboardId, tile2Id, hp2);
                return false;}
         }
         if (getFastest(battleboardId, tile1Id, tile2Id) == false) {
-               if (getRandomNumber(100,0,2) &gt;70) {
+               if (getRandomNumber(100,0,2) >70) {
                 //team 1 attacks first. 
                    strike = Strike(angel1BP,hp1,petPower1,9);
-                   if (hp2 &gt; strike) {hp2 = hp2 - strike;}
+                   if (hp2 > strike) {hp2 = hp2 - strike;}
                    else {
                        battleboardData.setTileHp(battleboardId, tile1Id, hp1);
                        return true;}
@@ -615,18 +615,18 @@ contract Battleboards is AccessControl, SafeMath  {
             else {
             //team 2 attacks first    
             strike = Strike(angel2BP,hp2,petPower2,10);
-           if (hp1 &gt; strike) {hp1 = hp1 - strike;}
+           if (hp1 > strike) {hp1 = hp1 - strike;}
            else {
                battleboardData.setTileHp(battleboardId, tile2Id, hp2);
                return false;}
             }
            }
           
-          if (hp1 &gt; hp2) {
+          if (hp1 > hp2) {
               battleboardData.setTileHp(battleboardId, tile1Id, hp1-hp2);
               return true;
           }
-          if (hp1 &lt; hp2) {
+          if (hp1 < hp2) {
               battleboardData.setTileHp(battleboardId, tile2Id, hp2-hp1);
               return false;
           }
@@ -635,11 +635,11 @@ contract Battleboards is AccessControl, SafeMath  {
               return true;
           }
         //if these titans are still left after 3 rounds, the winner is the one with the most HP. 
-        //The loser&#39;s HP goes to 0 and the winner&#39;s HP is reduced by the  losers. In the unlikely event of a tie, the winner gets 1 hp. 
+        //The loser's HP goes to 0 and the winner's HP is reduced by the  losers. In the unlikely event of a tie, the winner gets 1 hp. 
         
         }
         function Strike(uint16 bp, uint32 hp, uint16 petPower, uint8 seed) public constant returns (uint16) {
-            if (hp &gt; petHpThreshold) {return getRandomNumber(bp+petPower,20,seed);}
+            if (hp > petHpThreshold) {return getRandomNumber(bp+petPower,20,seed);}
             return getRandomNumber(bp,20,seed);
             //Your strike is a return of a random from 20 to bp 
         }
@@ -656,7 +656,7 @@ contract Battleboards is AccessControl, SafeMath  {
       
            if (getAuraColor(angelId) != 0) { // blue angels are immune to monsters. 
            //see if the angel team dies or just loses hp
-           if (hp &gt; monsterHit) {
+           if (hp > monsterHit) {
                battleboardData.setTileHp(battleboardId, tile1Id, (hp-monsterHit));
            }
            else {battleboardData.killTile(battleboardId, tile1Id);}
@@ -672,25 +672,25 @@ contract Battleboards is AccessControl, SafeMath  {
            
            //moves up and down are protected from moving off the board by the position numbers. 
            //Check if trying to move off the board to left 
-           if (((position1 % 8) == 1) &amp;&amp; ((position2 == position1-1 ) || (position2 == position1 -2))) {return false;}
-           if (((position1 % 8) == 2) &amp;&amp; (position2 == (position1-2))) {return false;}
+           if (((position1 % 8) == 1) && ((position2 == position1-1 ) || (position2 == position1 -2))) {return false;}
+           if (((position1 % 8) == 2) && (position2 == (position1-2))) {return false;}
            
            //Now check if trying to move off board to right. 
-            if (((position1 % 8) == 0) &amp;&amp; ((position2 == position1+1 ) || (position2 == position1 +2))) {return false;}
-           if (((position1 % 8) == 7) &amp;&amp; (position2 == (position1+2))) {return false;}
+            if (((position1 % 8) == 0) && ((position2 == position1+1 ) || (position2 == position1 +2))) {return false;}
+           if (((position1 % 8) == 7) && (position2 == (position1+2))) {return false;}
            
              IBattleboardData battleboardData = IBattleboardData(battleboardDataContract);
            //legal move left. Either move one space or move two spaces, with nothing blocking the first move. 
-           if ((position2 == uint8(safeSubtract(position1,1))) || ((position2 == uint8(safeSubtract(position1,2)))  &amp;&amp; (battleboardData.getTileIDbyPosition(battleboardId,position1-1) == 0))) {return true;}
+           if ((position2 == uint8(safeSubtract(position1,1))) || ((position2 == uint8(safeSubtract(position1,2)))  && (battleboardData.getTileIDbyPosition(battleboardId,position1-1) == 0))) {return true;}
            
            //legal move right
-           if ((position2 == position1 +1) || ((position2 == position1 + 2) &amp;&amp; (battleboardData.getTileIDbyPosition(battleboardId, position1+1) == 0))) {return true;}
+           if ((position2 == position1 +1) || ((position2 == position1 + 2) && (battleboardData.getTileIDbyPosition(battleboardId, position1+1) == 0))) {return true;}
            
            //legal move down
-           if ((position2 == position1 +8) || ((position2 == position1 + 16) &amp;&amp; (battleboardData.getTileIDbyPosition(battleboardId, position1+8) == 0))) {return true;}
+           if ((position2 == position1 +8) || ((position2 == position1 + 16) && (battleboardData.getTileIDbyPosition(battleboardId, position1+8) == 0))) {return true;}
            
            //legal move up
-            if ((position2 == uint8(safeSubtract(position1,8))) || ((position2 == uint8(safeSubtract(position1,16)))  &amp;&amp; (battleboardData.getTileIDbyPosition(battleboardId,position1-8) == 0))) {return true;}
+            if ((position2 == uint8(safeSubtract(position1,8))) || ((position2 == uint8(safeSubtract(position1,16)))  && (battleboardData.getTileIDbyPosition(battleboardId,position1-8) == 0))) {return true;}
           return false;
            
        }

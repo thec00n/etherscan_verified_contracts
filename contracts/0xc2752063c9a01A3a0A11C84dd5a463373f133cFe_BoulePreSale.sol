@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -118,7 +118,7 @@ pragma solidity ^0.4.11;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -156,7 +156,7 @@ pragma solidity ^0.4.11;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -169,7 +169,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -259,13 +259,13 @@ pragma solidity ^0.4.11;
 
 
 /*
-    Copyright 2017, Giovanni Zorzato (Boul&#233; Foundation)
+    Copyright 2017, Giovanni Zorzato (Boulé Foundation)
 */
 
 contract BouleToken is MintableToken {
     // BouleToken is an OpenZeppelin Mintable Token
-    string public name = &quot;Boule Token&quot;;
-    string public symbol = &quot;BOU&quot;;
+    string public name = "Boule Token";
+    string public symbol = "BOU";
     uint public decimals = 18;
 
     // do no allow to send ether to this token
@@ -281,7 +281,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="c3b0b7a6a5a2adeda4a6acb1a4a683a0acadb0a6adb0bab0edada6b7">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="c3b0b7a6a5a2adeda4a6acb1a4a683a0acadb0a6adb0bab0edada6b7">[email protected]</span>>
 contract MultiSigWallet {
 
     uint constant public MAX_OWNER_COUNT = 50;
@@ -296,9 +296,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -359,8 +359,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        if (   ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0)
             throw;
@@ -371,7 +371,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -385,7 +385,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
                 throw;
             isOwner[_owners[i]] = true;
@@ -416,13 +416,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -436,7 +436,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -523,7 +523,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -566,7 +566,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -580,9 +580,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -607,13 +607,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -631,15 +631,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -648,7 +648,7 @@ pragma solidity ^0.4.11;
 
 
 /*
-    Copyright 2017, Giovanni Zorzato (Boul&#233; Foundation)
+    Copyright 2017, Giovanni Zorzato (Boulé Foundation)
  */
 
 contract BoulePreSale is Ownable{
@@ -661,8 +661,8 @@ contract BoulePreSale is Ownable{
 
 
     uint public totalCollected = 0;               // In wei
-    bool public saleStopped = false;              // Has Boul&#233; Dev stopped the sale?
-    bool public saleFinalized = false;            // Has Boul&#233; Dev finalized the sale?
+    bool public saleStopped = false;              // Has Boulé Dev stopped the sale?
+    bool public saleFinalized = false;            // Has Boulé Dev finalized the sale?
 
     BouleToken public token;              // The token
 
@@ -674,10 +674,10 @@ contract BoulePreSale is Ownable{
 
 
     /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     /** How much they have invested */
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     event NewBuyer(address indexed holder, uint256 bouAmount, uint256 amount);
     // Address early participation whitelist status changed
@@ -693,7 +693,7 @@ contract BoulePreSale is Ownable{
     address _bouleDevMultisig
     )
     {
-        if (_initialBlock &gt;= _finalBlock) throw;
+        if (_initialBlock >= _finalBlock) throw;
 
         // Save constructor arguments as global variables
         token = BouleToken(_token);
@@ -717,10 +717,10 @@ contract BoulePreSale is Ownable{
     // @notice Get the price for a BOU token at any given block number
     // @param _blockNumber the block for which the price is requested
     // @return price of boule
-    // If sale isn&#39;t ongoing for that block, returns 0.
+    // If sale isn't ongoing for that block, returns 0.
     function getPrice(uint _blockNumber) constant public returns (uint256) {
-        if (_blockNumber &gt;= finalBlock) return 0;
-        if(_blockNumber &lt;= discountBlock){
+        if (_blockNumber >= finalBlock) return 0;
+        if(_blockNumber <= discountBlock){
             return 2000; // 2000 BOU for 1 ETH first 24 hours (approx in blocks)
         }
         return 1400; // 1400 BOU for 1 ETH after 24 hours (approx in blocks)
@@ -749,9 +749,9 @@ contract BoulePreSale is Ownable{
     minimum_value(minInvestment)
     internal {
         // do not allow to go past hard cap
-        if ((totalCollected + msg.value) &gt; hardCap) throw; // If past hard cap, throw
+        if ((totalCollected + msg.value) > hardCap) throw; // If past hard cap, throw
 
-        if ((totalCollected + msg.value) &lt; minFundingGoal){ // if under min funding goal
+        if ((totalCollected + msg.value) < minFundingGoal){ // if under min funding goal
             // record the investment for possible refund in case the ICO does not finalize
             balances[_owner] = SafeMath.add(balances[_owner], msg.value);
             // keep funds here
@@ -785,7 +785,7 @@ contract BoulePreSale is Ownable{
     }
 
     // @notice Function to stop sale for an emergency.
-    // @dev Only Boul&#233; Dev can do it after it has been activated.
+    // @dev Only Boulé Dev can do it after it has been activated.
     function emergencyStopSale()
     only_sale_not_stopped
     onlyOwner
@@ -795,7 +795,7 @@ contract BoulePreSale is Ownable{
     }
 
     // @notice Function to restart stopped sale.
-    // @dev Only Boul&#233; Dev can do it after it has been disabled and sale is ongoing.
+    // @dev Only Boulé Dev can do it after it has been disabled and sale is ongoing.
     function restartSale()
     only_during_sale_period
     only_sale_stopped
@@ -806,13 +806,13 @@ contract BoulePreSale is Ownable{
     }
 
     // @notice Function to change sale block intervals.
-    // @dev Only Boul&#233; Dev can do it while the sale is ongoing to fix block time variations.
+    // @dev Only Boulé Dev can do it while the sale is ongoing to fix block time variations.
     function changeSaleBlocks(uint _initialBlock, uint _discountBlock, uint _finalBlock)
     onlyOwner
     only_sale_not_stopped
     public {
-        if (_initialBlock &gt;= _finalBlock) throw;
-        if (_initialBlock &gt;= _discountBlock) throw;
+        if (_initialBlock >= _finalBlock) throw;
+        if (_initialBlock >= _discountBlock) throw;
         if (saleFinalized) throw; // only if sale is still active
         initialBlock = _initialBlock;
         discountBlock = _discountBlock;
@@ -820,18 +820,18 @@ contract BoulePreSale is Ownable{
     }
 
 
-    // @notice Moves funds in sale contract to Boul&#233; MultiSigWallet.
-    // @dev  Moves funds in sale contract to Boul&#233; MultiSigWallet.
+    // @notice Moves funds in sale contract to Boulé MultiSigWallet.
+    // @dev  Moves funds in sale contract to Boulé MultiSigWallet.
     function moveFunds()
     onlyOwner
     public {
-        if (totalCollected &lt; minFundingGoal) throw;
+        if (totalCollected < minFundingGoal) throw;
         // move funds
         if (!wallet.send(this.balance)) throw;
     }
 
 
-    // @notice Finalizes sale generating the tokens for Boul&#233; Dev.
+    // @notice Finalizes sale generating the tokens for Boulé Dev.
     // @dev Transfers the token controller power to the ANPlaceholder.
     function finalizeSale()
     only_after_sale
@@ -843,21 +843,21 @@ contract BoulePreSale is Ownable{
 
     function doFinalizeSale()
     internal {
-        // Doesn&#39;t check if saleStopped is false, because sale could end in a emergency stop.
+        // Doesn't check if saleStopped is false, because sale could end in a emergency stop.
         // This function cannot be successfully called twice, because it will top being the controller,
         // and the generateTokens call will fail if called again.
 
-        // Boul&#233; owns 50% of the total number of emitted tokens at the end of the pre-sale.
+        // Boulé owns 50% of the total number of emitted tokens at the end of the pre-sale.
 
-        if (totalCollected &gt;= minFundingGoal){ // if min funding goal reached
+        if (totalCollected >= minFundingGoal){ // if min funding goal reached
             // move all remaining eth in the sale contract into multisig wallet (no refund is possible anymore)
             if (!wallet.send(this.balance)) throw;
 
             uint256 bouleTokenSupply = token.totalSupply();
 
-            if (!token.mint(bouleDevMultisig, bouleTokenSupply)) throw; // Allocate tokens for Boul&#233;.
+            if (!token.mint(bouleDevMultisig, bouleTokenSupply)) throw; // Allocate tokens for Boulé.
         }
-        // token will be owned by Boul&#233; multisig wallet, this contract cannot mint anymore
+        // token will be owned by Boulé multisig wallet, this contract cannot mint anymore
         token.transferOwnership(bouleDevMultisig);
 
         saleFinalized = true;
@@ -876,25 +876,25 @@ contract BoulePreSale is Ownable{
     }
 
     modifier only_before_sale {
-        if (getBlockNumber() &gt;= initialBlock) throw;
+        if (getBlockNumber() >= initialBlock) throw;
         _;
     }
 
     modifier only_during_sale_period {
-        if (getBlockNumber() &lt; initialBlock) throw;
-        if (getBlockNumber() &gt;= finalBlock) throw;
+        if (getBlockNumber() < initialBlock) throw;
+        if (getBlockNumber() >= finalBlock) throw;
         _;
     }
 
     // valid only during sale or before sale if the sender is whitelisted
     modifier only_during_sale_period_or_whitelisted(address x) {
-        if (getBlockNumber() &lt; initialBlock &amp;&amp; !whitelist[x]) throw;
-        if (getBlockNumber() &gt;= finalBlock) throw;
+        if (getBlockNumber() < initialBlock && !whitelist[x]) throw;
+        if (getBlockNumber() >= finalBlock) throw;
         _;
     }
 
     modifier only_after_sale {
-        if (getBlockNumber() &lt; finalBlock) throw;
+        if (getBlockNumber() < finalBlock) throw;
         _;
     }
 
@@ -909,7 +909,7 @@ contract BoulePreSale is Ownable{
     }
 
     modifier only_finalized_sale {
-        if (getBlockNumber() &lt; finalBlock) throw;
+        if (getBlockNumber() < finalBlock) throw;
         if (!saleFinalized) throw;
         _;
     }
@@ -920,13 +920,13 @@ contract BoulePreSale is Ownable{
     }
 
     modifier only_sale_refundable {
-        if (getBlockNumber() &lt; finalBlock) throw; // sale must have ended
-        if (totalCollected &gt;= minFundingGoal) throw; // sale must be under min funding goal
+        if (getBlockNumber() < finalBlock) throw; // sale must have ended
+        if (totalCollected >= minFundingGoal) throw; // sale must be under min funding goal
         _;
     }
 
     modifier minimum_value(uint256 x) {
-        if (msg.value &lt; x) throw;
+        if (msg.value < x) throw;
         _;
     }
 }

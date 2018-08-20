@@ -13,7 +13,7 @@ pragma solidity 0.4.24;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity 0.4.24;
 
@@ -83,7 +83,7 @@ contract AssetPriceOracle is DSAuth {
         bool isRecord;
     }
 
-    mapping(uint128 =&gt; mapping(uint128 =&gt; AssetPriceRecord)) public assetPriceRecords;
+    mapping(uint128 => mapping(uint128 => AssetPriceRecord)) public assetPriceRecords;
 
     event AssetPriceRecorded(
         uint128 indexed assetId,
@@ -107,7 +107,7 @@ contract AssetPriceOracle is DSAuth {
     }
 
     function () public {
-        // dont receive ether via fallback method (by not having &#39;payable&#39; modifier on this function).
+        // dont receive ether via fallback method (by not having 'payable' modifier on this function).
     }
 }
 
@@ -124,8 +124,8 @@ library SafeMath {
   * @dev Multiplies two unsigned integers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -140,8 +140,8 @@ library SafeMath {
   * @dev Multiplies two signed integers, throws on overflow.
   */
   function mul(int256 a, int256 b) internal pure returns (int256) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -155,9 +155,9 @@ library SafeMath {
   * @dev Integer division of two unsigned integers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -165,9 +165,9 @@ library SafeMath {
   * @dev Integer division of two signed integers, truncating the quotient.
   */
   function div(int256 a, int256 b) internal pure returns (int256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // Overflow only happens when the smallest negative int is multiplied by -1.
-    int256 INT256_MIN = int256((uint256(1) &lt;&lt; 255));
+    int256 INT256_MIN = int256((uint256(1) << 255));
     assert(a != INT256_MIN || b != -1);
     return a / b;
   }
@@ -176,7 +176,7 @@ library SafeMath {
   * @dev Subtracts two unsigned integers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -185,7 +185,7 @@ library SafeMath {
   */
   function sub(int256 a, int256 b) internal pure returns (int256) {
     int256 c = a - b;
-    assert((b &gt;= 0 &amp;&amp; c &lt;= a) || (b &lt; 0 &amp;&amp; c &gt; a));
+    assert((b >= 0 && c <= a) || (b < 0 && c > a));
     return c;
   }
 
@@ -194,7 +194,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -203,7 +203,7 @@ library SafeMath {
   */
   function add(int256 a, int256 b) internal pure returns (int256) {
     int256 c = a + b;
-    assert((b &gt;= 0 &amp;&amp; c &gt;= a) || (b &lt; 0 &amp;&amp; c &lt; a));
+    assert((b >= 0 && c >= a) || (b < 0 && c < a));
     return c;
   }
 }
@@ -243,7 +243,7 @@ contract ContractForDifference is DSAuth {
     uint128 public leverage = 1; // Global leverage of the CFD contract.
     AssetPriceOracle public priceOracle;
 
-    mapping(uint128 =&gt; Cfd) public contracts;
+    mapping(uint128 => Cfd) public contracts;
     uint128                 public numberOfContracts;
 
     event LogMakeCfd (
@@ -312,8 +312,8 @@ contract ContractForDifference is DSAuth {
         payable
         returns (uint128)
     {
-        require(contractEndBlock &gt; block.number); // Contract end block must be after current block.
-        require(msg.value &gt; 0); // Contract Wei amount must be more than zero - contracts for zero Wei does not make sense.
+        require(contractEndBlock > block.number); // Contract end block must be after current block.
+        require(msg.value > 0); // Contract Wei amount must be more than zero - contracts for zero Wei does not make sense.
         require(makerAddress != address(0)); // Maker must provide a non-zero address.
         
         uint128 contractId = numberOfContracts;
@@ -398,7 +398,7 @@ contract ContractForDifference is DSAuth {
         // require(takerAddress != cfd.maker.addr);       // Maker and Taker must not be the same address. (disabled for now)
         require(msg.value == cfd.amount);              // Takers deposit must match makers deposit.
         require(takerAddress != address(0));           // Taker must provide a non-zero address.
-        require(block.number &lt;= cfd.contractEndBlock); // Taker must take contract before end block.
+        require(block.number <= cfd.contractEndBlock); // Taker must take contract before end block.
 
         cfd.taker.addr = takerAddress;
         // Make taker position the inverse of maker position
@@ -440,7 +440,7 @@ contract ContractForDifference is DSAuth {
         returns (bool success) {
         Cfd storage cfd = contracts[cfdId];
 
-        require(cfd.contractEndBlock &lt;= block.number); // Contract must have met its end time.
+        require(cfd.contractEndBlock <= block.number); // Contract must have met its end time.
         require(!cfd.isSettled);                       // Contract must not be settled already.
         require(!cfd.isRefunded);                      // Contract must not be refunded.
         require(cfd.isTaken);                          // Contract must be taken.
@@ -457,7 +457,7 @@ contract ContractForDifference is DSAuth {
          * Maker recieves any leftover wei from integer division.
          */
         uint128 takerSettlement = getSettlementAmount(amount, startPrice, endPrice, cfd.taker.position);
-        if (takerSettlement &gt; 0) {
+        if (takerSettlement > 0) {
             cfd.taker.withdrawBalance = takerSettlement;
         }
 
@@ -488,7 +488,7 @@ contract ContractForDifference is DSAuth {
     public {
         Cfd storage cfd = contracts[cfdId];
         Party storage party = partyAddress == cfd.maker.addr ? cfd.maker : cfd.taker;
-        require(party.withdrawBalance &gt; 0); // The party must have a withdraw balance from previous settlement.
+        require(party.withdrawBalance > 0); // The party must have a withdraw balance from previous settlement.
         require(!party.isPaid); // The party must have already been paid out, fx from a refund.
         
         uint128 amount = party.withdrawBalance;
@@ -515,11 +515,11 @@ contract ContractForDifference is DSAuth {
     returns (uint128) {
         require(position == Position.Long || position == Position.Short);
 
-        // If price didn&#39;t change, settle for equal amount to long and short.
+        // If price didn't change, settle for equal amount to long and short.
         if (entryPriceUInt == exitPriceUInt) {return amountUInt;}
 
         // If entry price is 0 and exit price is more than 0, all must go to long position and nothing to short.
-        if (entryPriceUInt == 0 &amp;&amp; exitPriceUInt &gt; 0) {
+        if (entryPriceUInt == 0 && exitPriceUInt > 0) {
             return position == Position.Long ? amountUInt * 2 : 0;
         }
 
@@ -531,9 +531,9 @@ contract ContractForDifference is DSAuth {
         // Price diff calc depends on which position we are calculating settlement for.
         int256 priceDiff = position == Position.Long ? exitPrice.sub(entryPrice) : entryPrice.sub(exitPrice);
         int256 settlement = amount.add(priceDiff.mul(amount).mul(leverage).div(entryPrice));
-        if (settlement &lt; 0) {
-            return 0; // Calculated settlement was negative. But a party can&#39;t lose more than his deposit, so he&#39;s just awarded 0.
-        } else if (settlement &gt; amount * 2) {
+        if (settlement < 0) {
+            return 0; // Calculated settlement was negative. But a party can't lose more than his deposit, so he's just awarded 0.
+        } else if (settlement > amount * 2) {
             return amountUInt * 2; // Calculated settlement was more than the total deposits, so settle for the total deposits.
         } else {
             return uint128(settlement); // Settlement was more than zero and less than sum of deposit amounts, so we can settle it as is.
@@ -597,6 +597,6 @@ contract ContractForDifference is DSAuth {
     } 
 
     function () public {
-        // dont receive ether via fallback method (by not having &#39;payable&#39; modifier on this function).
+        // dont receive ether via fallback method (by not having 'payable' modifier on this function).
     }
 }

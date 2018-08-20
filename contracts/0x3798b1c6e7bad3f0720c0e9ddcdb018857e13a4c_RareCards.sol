@@ -2,15 +2,15 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff8d9e969186bf9396899a8c8b9e8dd19c9092">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4eecbcacadd8ae2d1e4c8cdd2c1d7d0c5d68ac7cbc9">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff8d9e969186bf9396899a8c8b9e8dd19c9092">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4eecbcacadd8ae2d1e4c8cdd2c1d7d0c5d68ac7cbc9">[email protected]</a>
 /*                 
 /* ==================================================================== */
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -47,10 +47,10 @@ contract Ownable {
 contract AccessAdmin is Ownable {
 
   /// @dev Admin Address
-  mapping (address =&gt; bool) adminContracts;
+  mapping (address => bool) adminContracts;
 
   /// @dev Trust contract
-  mapping (address =&gt; bool) actionContracts;
+  mapping (address => bool) actionContracts;
 
   function setAdminContract(address _addr, bool _useful) public onlyOwner {
     require(_addr != address(0));
@@ -150,23 +150,23 @@ contract RareCards is AccessAdmin, ERC721 {
   address thisAddress = this;
   uint256 PLATPrice = 65000;
   /**mapping**/
-  /// @dev map tokenId to owner (tokenId -&gt; address)
-  mapping (uint256 =&gt; address) public IndexToOwner;
-  /// @dev search rare item index in owner&#39;s array (tokenId -&gt; index)
-  mapping (uint256 =&gt; uint256) indexOfOwnedToken;
+  /// @dev map tokenId to owner (tokenId -> address)
+  mapping (uint256 => address) public IndexToOwner;
+  /// @dev search rare item index in owner's array (tokenId -> index)
+  mapping (uint256 => uint256) indexOfOwnedToken;
   /// @dev list of owned rare items by owner
-  mapping (address =&gt; uint256[]) ownerToRareArray;
+  mapping (address => uint256[]) ownerToRareArray;
   /// @dev search token price by tokenId
-  mapping (uint256 =&gt; uint256) IndexToPrice;
+  mapping (uint256 => uint256) IndexToPrice;
   /// @dev get the authorized address for each rare item
-  mapping (uint256 =&gt; address) public IndexToApproved;
+  mapping (uint256 => address) public IndexToApproved;
   /// @dev get the authorized operators for each rare item
-  mapping (address =&gt; mapping(address =&gt; bool)) operatorToApprovals;
+  mapping (address => mapping(address => bool)) operatorToApprovals;
 
   /** Modifier **/
   /// @dev Check if token ID is valid
   modifier isValidToken(uint256 _tokenId) {
-    require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= rareArray.length);
+    require(_tokenId >= 1 && _tokenId <= rareArray.length);
     require(IndexToOwner[_tokenId] != address(0)); 
     _;
   }
@@ -178,7 +178,7 @@ contract RareCards is AccessAdmin, ERC721 {
 
   /// @dev create a new rare item
   function createRareCard(uint256 _rareClass, uint256 _cardId, uint256 _rareValue) public onlyOwner {
-    require(rareArray.length &lt; PROMO_CREATION_LIMIT); 
+    require(rareArray.length < PROMO_CREATION_LIMIT); 
     _createRareCard(thisAddress, startPrice, _rareClass, _cardId, _rareValue);
   }
 
@@ -311,7 +311,7 @@ contract RareCards is AccessAdmin, ERC721 {
   }
 
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable {
-    _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    _safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /// @dev steps to implement the safeTransferFrom
@@ -321,7 +321,7 @@ contract RareCards is AccessAdmin, ERC721 {
     onlyOwnerOf(_tokenId) 
   {
     address owner = IndexToOwner[_tokenId];
-    require(owner != address(0) &amp;&amp; owner == _from);
+    require(owner != address(0) && owner == _from);
     require(_to != address(0));
             
     _transfer(_from, _to, _tokenId);
@@ -333,7 +333,7 @@ contract RareCards is AccessAdmin, ERC721 {
         return;
     }*/
     bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
-    // bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)) = 0xf0b9e5ba;
+    // bytes4(keccak256("onERC721Received(address,uint256,bytes)")) = 0xf0b9e5ba;
     require(retval == 0xf0b9e5ba);
   }
 
@@ -342,7 +342,7 @@ contract RareCards is AccessAdmin, ERC721 {
   // }
 
   /// @notice Transfers the ownership of a rare item from one address to another address
-  /// @dev Transfer ownership of a rare item, &#39;_to&#39; must be a vaild address, or the card will lost
+  /// @dev Transfer ownership of a rare item, '_to' must be a vaild address, or the card will lost
   /// @param _from The current owner of rare item
   /// @param _to The new owner
   /// @param _tokenId The rare item to transfer
@@ -355,7 +355,7 @@ contract RareCards is AccessAdmin, ERC721 {
     address owner = IndexToOwner[_tokenId];
     // require(_owns(_from, _tokenId));
     // require(_approved(_to, _tokenId));
-    require(owner != address(0) &amp;&amp; owner == _from);
+    require(owner != address(0) && owner == _from);
     require(_to != address(0));
     _transfer(_from, _to, _tokenId);
   }
@@ -385,7 +385,7 @@ contract RareCards is AccessAdmin, ERC721 {
   }
 
 
-  /// @dev Enable or disable approval for a third party (&quot;operator&quot;) to manage all your asset.
+  /// @dev Enable or disable approval for a third party ("operator") to manage all your asset.
   /// @param _operator Address to add to the set of authorized operators.
   /// @param _approved True if the operators is approved, false to revoke approval
   function setApprovalForAll(address _operator, bool _approved) 
@@ -418,24 +418,24 @@ contract RareCards is AccessAdmin, ERC721 {
   }
 
   /// @notice Enumerate valid rare items
-  /// @dev Throws if `_index` &gt;= `totalSupply()`.
+  /// @dev Throws if `_index` >= `totalSupply()`.
   /// @param _index A counter less than `totalSupply()`
   /// @return The token identifier for the `_index`the rare item,
   ///  (sort order not specified)
   function tokenByIndex(uint256 _index) external view returns (uint256) {
-    require(_index &lt;= (rareArray.length - 1));
+    require(_index <= (rareArray.length - 1));
     return _index;
   }
 
   /// @notice Enumerate rare items assigned to an owner
-  /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
   ///  `_owner` is the zero address, representing invalid rare items.
   /// @param _owner An address where we are interested in rare items owned by them
   /// @param _index A counter less than `balanceOf(_owner)`
   /// @return The token identifier for the `_index`the rare item assigned to `_owner`,
   ///   (sort order not specified)
   function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
-    require(_index &lt; ownerToRareArray[_owner].length);
+    require(_index < ownerToRareArray[_owner].length);
     if (_owner != address(0)) {
       uint256 tokenId = ownerToRareArray[_owner][_index];
       return tokenId;
@@ -443,7 +443,7 @@ contract RareCards is AccessAdmin, ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -458,7 +458,7 @@ contract RareCards is AccessAdmin, ERC721 {
       uint256 resultIndex = 0;
 
       uint256 tokenId;
-      for (tokenId = 0; tokenId &lt;= totalRare; tokenId++) {
+      for (tokenId = 0; tokenId <= totalRare; tokenId++) {
         if (IndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;
           resultIndex++;
@@ -478,7 +478,7 @@ contract RareCards is AccessAdmin, ERC721 {
     _transfer(thisAddress,  _to, _tokenId);
   }
 
-  // owner &amp; price list 
+  // owner & price list 
   function getRareItemInfo() external view returns (address[], uint256[], uint256[]) {
     address[] memory itemOwners = new address[](rareArray.length-1);
     uint256[] memory itemPrices = new uint256[](rareArray.length-1);
@@ -488,7 +488,7 @@ contract RareCards is AccessAdmin, ERC721 {
     uint256 endId = rareArray.length-1;
         
     uint256 i;
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       itemOwners[i] = IndexToOwner[startId];
       itemPrices[i] = IndexToPrice[startId];
       itemPlatPrices[i] = SafeMath.mul(IndexToPrice[startId],PLATPrice);
@@ -517,9 +517,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -527,7 +527,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -536,7 +536,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

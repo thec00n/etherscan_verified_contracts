@@ -20,8 +20,8 @@ contract ERC20Interface {
 contract AcuteAngleCoin is ERC20Interface {
     uint256 public constant decimals = 5;
 
-    string public constant symbol = &quot;AAC&quot;;
-    string public constant name = &quot;AcuteAngleCoin&quot;;
+    string public constant symbol = "AAC";
+    string public constant name = "AcuteAngleCoin";
 
     bool public _selling = true;//initial selling
     uint256 public _totalSupply = 10 ** 14; // total supply is 10^14 unit, equivalent to 10^9 AAC
@@ -31,16 +31,16 @@ contract AcuteAngleCoin is ERC20Interface {
     address public owner;
  
     // Balances AAC for each AACount
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
     
     // Owner of AACount approves the transfer of an amount to another AACount
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => mapping (address => uint256)) private allowed;
 
     // List of approved investors
-    mapping(address =&gt; bool) private approvedInvestorList;
+    mapping(address => bool) private approvedInvestorList;
     
     // deposit
-    mapping(address =&gt; uint256) private deposit;
+    mapping(address => uint256) private deposit;
        
 
     // totalTokenSold
@@ -98,7 +98,7 @@ contract AcuteAngleCoin is ERC20Interface {
         onSale
         validInvestor {
         uint256 requestedUnits = (msg.value * _originalBuyPrice) / 10**18;
-        require(balances[owner] &gt;= requestedUnits);
+        require(balances[owner] >= requestedUnits);
         // prepare transfer data
         balances[owner] -= requestedUnits;
         balances[msg.sender] += requestedUnits;
@@ -149,7 +149,7 @@ contract AcuteAngleCoin is ERC20Interface {
         tradable = true;
     }
         
-    /// @dev Gets AACount&#39;s balance
+    /// @dev Gets AACount's balance
     /// @param _addr Address of the AACount
     /// @return AACount balance
     function balanceOf(address _addr) 
@@ -183,7 +183,7 @@ contract AcuteAngleCoin is ERC20Interface {
     function addInvestorList(address[] newInvestorList)
         onlyOwner
         public {
-        for (uint256 i = 0; i &lt; newInvestorList.length; i++){
+        for (uint256 i = 0; i < newInvestorList.length; i++){
             approvedInvestorList[newInvestorList[i]] = true;
         }
     }
@@ -193,7 +193,7 @@ contract AcuteAngleCoin is ERC20Interface {
     function removeInvestorList(address[] investorList)
         onlyOwner
         public {
-        for (uint256 i = 0; i &lt; investorList.length; i++){
+        for (uint256 i = 0; i < investorList.length; i++){
             approvedInvestorList[investorList[i]] = false;
         }
     }
@@ -206,12 +206,12 @@ contract AcuteAngleCoin is ERC20Interface {
         public 
         isTradable
         returns (bool) {
-        // if sender&#39;s balance has enough unit and amount &gt;= 0, 
+        // if sender's balance has enough unit and amount >= 0, 
         //      and the sum is not overflow,
         // then do transfer 
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp;
-             (_amount &gt;= 0) &amp;&amp; 
-             (balances[_to] + _amount &gt; balances[_to]) ) {  
+        if ( (balances[msg.sender] >= _amount) &&
+             (_amount >= 0) && 
+             (balances[_to] + _amount > balances[_to]) ) {  
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -224,7 +224,7 @@ contract AcuteAngleCoin is ERC20Interface {
      
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from AACount has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -236,10 +236,10 @@ contract AcuteAngleCoin is ERC20Interface {
     public
     isTradable
     returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

@@ -1,5 +1,5 @@
 pragma solidity ^0.4.24;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 pragma experimental ABIEncoderV2;
 
 contract ERC20 {
@@ -19,8 +19,8 @@ contract SalesPool {
   Math.Fraction public tokenPrice;
 
   uint256 public pipeIndex = 1;
-  mapping (uint256 =&gt; SalesPipe) public indexToPipe;
-  mapping (address =&gt; uint256)   public pipeToIndex;
+  mapping (uint256 => SalesPipe) public indexToPipe;
+  mapping (address => uint256)   public pipeToIndex;
 
   struct Commission {
     uint256 gt;
@@ -34,7 +34,7 @@ contract SalesPool {
   }
 
   uint256 termsIndex = 1;
-  mapping (uint256 =&gt; Commissions) public terms;
+  mapping (uint256 => Commissions) public terms;
 
   event CreateSalesPipe(address salesPipe);
 
@@ -69,7 +69,7 @@ contract SalesPool {
   function pushTerms (Commission[] _array) public {
     require(msg.sender == owner);
 
-    for (uint256 i = 0; i &lt; _array.length; i++) {
+    for (uint256 i = 0; i < _array.length; i++) {
       terms[termsIndex].array.push(Commission(_array[i].gt, _array[i].lte, _array[i].pa));
     }
 
@@ -130,8 +130,8 @@ contract SalesPool {
   function setTokenPrice(uint256 numerator, uint256 denominator) public {
     require(msg.sender == owner);
     require(
-      numerator   &gt; 0 &amp;&amp;
-      denominator &gt; 0
+      numerator   > 0 &&
+      denominator > 0
     );
 
     tokenPrice.numerator   = numerator;
@@ -209,13 +209,13 @@ contract SalesPipe {
     uint256 purchaseAmount = msg.value.div(tokenPrice);
 
     require(
-      available &amp;&amp;
-      finalized == false &amp;&amp;
-      availableAmount &gt; 0 &amp;&amp;
-      purchaseAmount  &gt; 0
+      available &&
+      finalized == false &&
+      availableAmount > 0 &&
+      purchaseAmount  > 0
     );
 
-    if (availableAmount &gt;= purchaseAmount) {
+    if (availableAmount >= purchaseAmount) {
       revenue = msg.value;
 
       if (availableAmount == purchaseAmount) {
@@ -238,7 +238,7 @@ contract SalesPipe {
 
   function declareRF(string _secret) public {
     require(
-      secretHash == keccak256(abi.encodePacked(_secret)) &amp;&amp;
+      secretHash == keccak256(abi.encodePacked(_secret)) &&
       rf         == address(0)
     );
 
@@ -249,9 +249,9 @@ contract SalesPipe {
 
   function finalize () public {
     require(
-      msg.sender == owner &amp;&amp;
-      available  == false &amp;&amp;
-      finalized  == false &amp;&amp;
+      msg.sender == owner &&
+      available  == false &&
+      finalized  == false &&
       rf         != address(0)
     );
 
@@ -274,9 +274,9 @@ contract SalesPipe {
   ) public view returns (uint256) {
     SalesPool.Commissions memory commissions = pool.getCommissions(_termsNumber);
 
-    for (uint256 i = 0; i &lt; commissions.length; i++) {
+    for (uint256 i = 0; i < commissions.length; i++) {
       SalesPool.Commission memory commission = commissions.array[i];
-      if (_totalReceivedEther &gt; commission.gt &amp;&amp; _totalReceivedEther &lt;= commission.lte) {
+      if (_totalReceivedEther > commission.gt && _totalReceivedEther <= commission.lte) {
         return _totalReceivedEther * commission.pa / 100;
       }
     }
@@ -309,7 +309,7 @@ library Math {
   }
 
   function isPositive(Fraction memory fraction) internal pure returns (bool) {
-    return fraction.numerator &gt; 0 &amp;&amp; fraction.denominator &gt; 0;
+    return fraction.numerator > 0 && fraction.denominator > 0;
   }
 
   function mul(uint256 a, uint256 b) internal pure returns (uint256 r) {
@@ -322,19 +322,19 @@ library Math {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a - b) &lt;= a);
+    require((r = a - b) <= a);
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a + b) &gt;= a);
+    require((r = a + b) >= a);
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &lt;= y ? x : y;
+    return x <= y ? x : y;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &gt;= y ? x : y;
+    return x >= y ? x : y;
   }
 
   function mulDiv(uint256 value, uint256 m, uint256 d) internal pure returns (uint256 r) {

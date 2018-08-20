@@ -1,7 +1,7 @@
 contract SaveInt{
     constructor() public {
     }
-    mapping (string=&gt;uint) data;
+    mapping (string=>uint) data;
     function setStr(string key, uint value) public {
         data[key] = value;
     }

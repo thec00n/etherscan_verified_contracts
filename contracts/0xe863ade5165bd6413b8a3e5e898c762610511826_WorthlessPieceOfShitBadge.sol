@@ -9,17 +9,17 @@ contract WorthlessPieceOfShitBadge
 	address     public app;
 
 
-    string 		public standard = &#39;Token 0.1&#39;;
-	string 		public name = &quot;Worthless Piece of Shit Badge&quot;; 
-	string 		public symbol = &quot;Worthless Piece of Shit Badge&quot;;
+    string 		public standard = 'Token 0.1';
+	string 		public name = "Worthless Piece of Shit Badge"; 
+	string 		public symbol = "Worthless Piece of Shit Badge";
 	uint8 		public decimals = 0; 
 	uint256 	public totalSupply = 0;
 	uint256     public price = 1 ether / 10; 
 	uint256     public removalPrice = 1 ether;
 	
 
-	mapping (address =&gt; uint256) balances;	
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;	
+	mapping (address => mapping (address => uint256)) allowed;
 
 
 	modifier ownerOnly() 
@@ -144,7 +144,7 @@ contract WorthlessPieceOfShitBadge
 	    
 	    uint256 ethRequired = _amount * price;
 	    
-	    if (msg.value &lt; ethRequired) {
+	    if (msg.value < ethRequired) {
 	        require(false);
 	    }
 	    
@@ -163,10 +163,10 @@ contract WorthlessPieceOfShitBadge
 	function remove(address _address, uint256 _amount) public payable returns(bool success) 
 	{
 	    
-	    require(balances[_address] &gt;= _amount);
+	    require(balances[_address] >= _amount);
 	    uint256 ethRequired = _amount * removalPrice;
 	    
-	    if (msg.value &lt; ethRequired) {
+	    if (msg.value < ethRequired) {
 	        require(false);
 	    }
 	    

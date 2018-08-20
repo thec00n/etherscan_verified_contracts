@@ -12,14 +12,14 @@ contract CoinLock is owned {
     uint public expiration; // Timestamp in # of seconds.
     
     function lock(uint _expiration) onlyowner returns (bool) {
-        if (_expiration &gt; block.timestamp &amp;&amp; expiration == 0) {
+        if (_expiration > block.timestamp && expiration == 0) {
             expiration = _expiration;
             return true;
         }
         return false;
     }
     function redeem() onlyowner {
-        if (block.timestamp &gt; expiration) {
+        if (block.timestamp > expiration) {
             suicide(owner);
         }
     }

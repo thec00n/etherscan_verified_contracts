@@ -13,8 +13,8 @@ contract PixelOperationsContract {
 
  	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-	mapping(bytes32 =&gt; address) public pixelsOwned;
-	mapping(bytes32 =&gt; pixelBlock) public pixelsOnSale;
+	mapping(bytes32 => address) public pixelsOwned;
+	mapping(bytes32 => pixelBlock) public pixelsOnSale;
 
 	function PixelOperationsContract() public {
 		owner = msg.sender;
@@ -37,7 +37,7 @@ contract PixelOperationsContract {
 		uint256 pxCount = (bX-tX) * (bY-tY);
 		uint256 blockPrice = getQuotes() * pxCount;
 
-		require(msg.value &gt;= blockPrice);
+		require(msg.value >= blockPrice);
 		require(pixelsOwned[pxHash] == 0x0000000000000000000000000000000000000000);
 		
 		owner.transfer(msg.value);
@@ -49,7 +49,7 @@ contract PixelOperationsContract {
 
 	function buyOwnedPixels(bytes32 pxHash) public payable returns(bool) {
 		require(pixelsOnSale[pxHash].isValue == true);
-		require(msg.value &gt;= pixelsOnSale[pxHash].blockPrice);
+		require(msg.value >= pixelsOnSale[pxHash].blockPrice);
 
 		address blockOwner = pixelsOwned[pxHash];
 		blockOwner.transfer(msg.value);
@@ -82,31 +82,31 @@ contract PixelOperationsContract {
 	function getQuotes() internal returns(uint256) {
 	    	uint256 pixelPrice = 0;
 	    
-	    	if (pixelsSold &lt;= 100000) {
+	    	if (pixelsSold <= 100000) {
             		pixelPrice = 1000000000000000;
 		}
-		else if (pixelsSold &lt;= 200000) {
+		else if (pixelsSold <= 200000) {
 			pixelPrice = 2000000000000000;
 		}
-		else if (pixelsSold &lt;= 300000) {
+		else if (pixelsSold <= 300000) {
 			pixelPrice = 2500000000000000;
 		}
-		else if (pixelsSold &lt;= 400000) {
+		else if (pixelsSold <= 400000) {
 			pixelPrice = 3500000000000000;
 		}
-		else if (pixelsSold &lt;= 500000) {
+		else if (pixelsSold <= 500000) {
 			pixelPrice = 4000000000000000;
 		}
-		else if (pixelsSold &lt;= 600000) {
+		else if (pixelsSold <= 600000) {
 			pixelPrice = 4500000000000000;
 		}
-		else if (pixelsSold &lt;= 700000) {
+		else if (pixelsSold <= 700000) {
 			pixelPrice = 5000000000000000;
 		}
-		else if (pixelsSold &lt;= 800000) {
+		else if (pixelsSold <= 800000) {
 			pixelPrice = 5500000000000000;
 		}
-		else if (pixelsSold &lt;= 900000) {
+		else if (pixelsSold <= 900000) {
 			pixelPrice = 10000000000000000;
 		}
 		else {

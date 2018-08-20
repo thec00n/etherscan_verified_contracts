@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,16 +39,16 @@ library SafeMath {
  }
   
  contract MyToken is ERC20Interface {
-      string public constant symbol = &quot;FOD&quot;; 
-      string public constant name = &quot;fodcreate&quot;;   
+      string public constant symbol = "FOD"; 
+      string public constant name = "fodcreate";   
       uint8 public constant decimals = 18;
       uint256 _totalSupply = 2000000000000000000000000000; 
      
       address public owner;
   
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
   
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
   
       function MyToken() {
           owner = msg.sender;
@@ -64,9 +64,9 @@ library SafeMath {
          return balances[_owner];
       }
    
-      // Transfer the balance from owner&#39;s account to another account
+      // Transfer the balance from owner's account to another account
       function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount) {
+         if (balances[msg.sender] >= _amount) {
             balances[msg.sender] = SafeMath.sub(balances[msg.sender],_amount);
             balances[_to] = SafeMath.add(balances[_to],_amount);
             
@@ -83,7 +83,7 @@ library SafeMath {
     ) returns (bool success) {
          require(_to != address(0));
     
-         if (balances[_from] &gt;= _amount) {
+         if (balances[_from] >= _amount) {
             balances[_from] = SafeMath.sub(balances[_from],_amount);
             balances[_to] = SafeMath.add(balances[_to],_amount);
             

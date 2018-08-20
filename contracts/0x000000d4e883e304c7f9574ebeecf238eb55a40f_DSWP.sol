@@ -6,23 +6,23 @@ interface TokenReceiver {
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
 
 contract DSWP {
   using SafeMath for uint256;
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
   uint256 public decimals = 18;
-  string public name = &quot;Darkswap&quot;;
-  string public symbol = &quot;DSWP&quot;;
+  string public name = "Darkswap";
+  string public symbol = "DSWP";
   uint256 public totalSupply = 1e22;
   event Transfer(address indexed from, address indexed to, uint256 qty);
   event Approval(address indexed from, address indexed spender, uint256 qty);
@@ -34,13 +34,13 @@ contract DSWP {
     assembly {
       codeLength := extcodesize(target)
     }
-    return codeLength &gt; 0;
+    return codeLength > 0;
   }
   function transfer(address target, uint256 qty) external returns (bool) {
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(qty);
     balanceOf[target] = balanceOf[target].add(qty);
     if (isContract(target)) {
-      TokenReceiver(target).tokenFallback(target, qty, &quot;&quot;);
+      TokenReceiver(target).tokenFallback(target, qty, "");
     }
     emit Transfer(msg.sender, target, qty);
     return true;

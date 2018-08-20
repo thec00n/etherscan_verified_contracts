@@ -6,7 +6,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -14,7 +14,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 	
@@ -54,8 +54,8 @@ contract AlphaTierSale is Owned{
 		uint tokensAmount;			// Exchanged ALC amount
 	}
 	
-	mapping(address =&gt; ContributorData) public contributorList;
-	mapping(uint =&gt; address) contributorIndexes;
+	mapping(address => ContributorData) public contributorList;
+	mapping(uint => address) contributorIndexes;
 	uint nextContributorIndex;
 	uint contributorCount;
     
@@ -138,7 +138,7 @@ contract AlphaTierSale is Owned{
     function () public payable {
 		
         require(!crowdsaleClosed);
-        require(now &gt;= START_TIME &amp;&amp; now &lt; END_TIME);
+        require(now >= START_TIME && now < END_TIME);
         
 		processTransaction(msg.sender, msg.value);
     }
@@ -153,16 +153,16 @@ contract AlphaTierSale is Owned{
 		remainAmount += contributionEthAmount;
         
 		// calcualte exchanged token based on exchange rate
-        if (now &gt;= START_TIME &amp;&amp; now &lt; SECOND_TIER_SALE_START_TIME){
+        if (now >= START_TIME && now < SECOND_TIER_SALE_START_TIME){
 			exchangeTokenRate = START_RATE * ALC_DECIMALSFACTOR;
         }
-        if (now &gt;= SECOND_TIER_SALE_START_TIME &amp;&amp; now &lt; THIRD_TIER_SALE_START_TIME){
+        if (now >= SECOND_TIER_SALE_START_TIME && now < THIRD_TIER_SALE_START_TIME){
             exchangeTokenRate = SECOND_TIER_RATE * ALC_DECIMALSFACTOR;
         }
-        if (now &gt;= THIRD_TIER_SALE_START_TIME &amp;&amp; now &lt; FOURTH_TIER_SALE_START_TIME){
+        if (now >= THIRD_TIER_SALE_START_TIME && now < FOURTH_TIER_SALE_START_TIME){
             exchangeTokenRate = THIRD_TIER_RATE * ALC_DECIMALSFACTOR;
         }
-        if (now &gt;= FOURTH_TIER_SALE_START_TIME &amp;&amp; now &lt; END_TIME){
+        if (now >= FOURTH_TIER_SALE_START_TIME && now < END_TIME){
             exchangeTokenRate = FOURTH_RATE * ALC_DECIMALSFACTOR;
         }
         uint amountAlcToken = _amount * exchangeTokenRate / 1 ether;
@@ -183,15 +183,15 @@ contract AlphaTierSale is Owned{
 		
         FundTransfer(msg.sender, contributionEthAmount, true);
 		
-		if (amountRaised &gt;= fundingLimit){
+		if (amountRaised >= fundingLimit){
 			// close crowdsale because the crowdsale limit is reached
 			crowdsaleClosed = true;
 		}		
 		
 	}
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }	
-	modifier afterCrowdsaleClosed() { if (crowdsaleClosed == true || now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }	
+	modifier afterCrowdsaleClosed() { if (crowdsaleClosed == true || now >= deadline) _; }
 	
 	
 	/**
@@ -262,7 +262,7 @@ contract AlphaTierSale is Owned{
      */
     function withdrawALC(uint256 tokenAmount) public afterCrowdsaleClosed {
 		require(beneficiary == msg.sender);
-        if (isALCDistributed &amp;&amp; beneficiary == msg.sender) {
+        if (isALCDistributed && beneficiary == msg.sender) {
             tokenReward.transfer(beneficiary, tokenAmount);
 			// update token balance
 			tokenBalance = tokenReward.balanceOf(address(this));
@@ -279,7 +279,7 @@ contract AlphaTierSale is Owned{
 	function distributeALCToken() public {
 		if (beneficiary == msg.sender) {  // only ALC_FOUNDATION_ADDRESS can distribute the ALC
 			address currentParticipantAddress;
-			for (uint index = 0; index &lt; contributorCount; index++){
+			for (uint index = 0; index < contributorCount; index++){
 				currentParticipantAddress = contributorIndexes[index]; 
 				
 				uint amountAlcToken = contributorList[currentParticipantAddress].tokensAmount;
@@ -308,7 +308,7 @@ contract AlphaTierSale is Owned{
 		if (beneficiary == msg.sender) {  // only ALC_FOUNDATION_ADDRESS can distribute the ALC
 			address currentParticipantAddress;
 			uint transferedUserCount = 0;
-			for (uint index = 0; index &lt; contributorCount &amp;&amp; transferedUserCount&lt;batchUserCount; index++){
+			for (uint index = 0; index < contributorCount && transferedUserCount<batchUserCount; index++){
 				currentParticipantAddress = contributorIndexes[index]; 
 				
 				uint amountAlcToken = contributorList[currentParticipantAddress].tokensAmount;
@@ -329,12 +329,12 @@ contract AlphaTierSale is Owned{
 	}
 	
 	/**
-	 * Check if all contributor&#39;s token are successfully distributed
+	 * Check if all contributor's token are successfully distributed
 	 */
 	function checkIfAllALCDistributed() public {
 	    address currentParticipantAddress;
 		isALCDistributed = true;
-		for (uint index = 0; index &lt; contributorCount; index++){
+		for (uint index = 0; index < contributorCount; index++){
 				currentParticipantAddress = contributorIndexes[index]; 
 				
 			if (false == contributorList[currentParticipantAddress].isTokenDistributed){

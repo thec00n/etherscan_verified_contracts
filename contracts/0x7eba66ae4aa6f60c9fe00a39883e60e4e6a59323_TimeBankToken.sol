@@ -47,12 +47,12 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public tokenName;                   //fancy name: eg Simon Bucks
@@ -90,7 +90,7 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -99,10 +99,10 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -148,9 +148,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -158,7 +158,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -167,7 +167,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -185,14 +185,14 @@ contract TimeBankToken is EIP20 {
     uint256 withdrawed; // already used amount of released part
   }
 
-  mapping (address =&gt; Vesting[]) vestings;
+  mapping (address => Vesting[]) vestings;
   
   address[] managerList;
-  mapping (address =&gt; bool) managers;
-  mapping (bytes32 =&gt; mapping (address =&gt; bool)) confirms;
+  mapping (address => bool) managers;
+  mapping (bytes32 => mapping (address => bool)) confirms;
   
   /*
-  at least &lt;threshold&gt; confirmations
+  at least <threshold> confirmations
   */
   uint majorityThreshold;
   uint managementThreshold;
@@ -206,10 +206,10 @@ contract TimeBankToken is EIP20 {
   }
 
   // 1 with 28 zeros
-  constructor(address _master, address[] _managers, uint _majorityThreshold, uint _managementThreshold) EIP20(10000000000000000000000000000, &quot;Time Bank Token&quot;, 18, &quot;TB&quot;) public {
+  constructor(address _master, address[] _managers, uint _majorityThreshold, uint _managementThreshold) EIP20(10000000000000000000000000000, "Time Bank Token", 18, "TB") public {
     require(checkAddress(_master));
-    require(_managers.length &gt;= _majorityThreshold);
-    require(_managers.length &gt;= _managementThreshold);
+    require(_managers.length >= _majorityThreshold);
+    require(_managers.length >= _managementThreshold);
     
     paused = false;
     master = _master;
@@ -217,7 +217,7 @@ contract TimeBankToken is EIP20 {
     majorityThreshold = _majorityThreshold;
     managementThreshold = _managementThreshold;
 
-    for (uint i=0; i&lt;_managers.length; i++) {
+    for (uint i=0; i<_managers.length; i++) {
       require(checkAddress(_managers[i]));
       managers[_managers[i]] = true;
     }
@@ -282,7 +282,7 @@ contract TimeBankToken is EIP20 {
   event AddManager(address manager);
 
   function setMajorityThreshold(uint _threshold) public isMaster isNotPaused {
-    require(_threshold &gt; 0);
+    require(_threshold > 0);
     require(isEnoughConfirmed(msg.data, managementThreshold));
     uint oldThreshold = majorityThreshold;
     majorityThreshold = _threshold;
@@ -304,7 +304,7 @@ contract TimeBankToken is EIP20 {
   function removeManager(address _manager) public isMaster isNotPaused {
     require(checkAddress(_manager));
     require(isEnoughConfirmed(msg.data, managementThreshold));
-    require(managerList.length &gt; managementThreshold);
+    require(managerList.length > managementThreshold);
     internalRemoveManager(_manager);
     rebuildManagerList();
     removeConfirm(msg.data);
@@ -331,17 +331,17 @@ contract TimeBankToken is EIP20 {
     managerList.push(_manager);
   }
 
-  mapping (address =&gt; bool) checked;
+  mapping (address => bool) checked;
 
   function rebuildManagerList() internal {
     address[] memory res = new address[](managerList.length);
-    for (uint k=0; k&lt;managerList.length; k++) {
+    for (uint k=0; k<managerList.length; k++) {
       checked[managerList[k]] = false;
     }
     uint j=0;
-    for (uint i=0; i&lt;managerList.length; i++) {
+    for (uint i=0; i<managerList.length; i++) {
       address manager = managerList[i];
-      if (managers[manager] &amp;&amp; checked[manager] == false) {
+      if (managers[manager] && checked[manager] == false) {
         res[j] = manager;
         checked[manager] = true;
         j++;
@@ -361,7 +361,7 @@ contract TimeBankToken is EIP20 {
   /*
   manager use this function to confirm a operation
   confirm will not be call inside other functions, so it can be external to save some gas
-  @param {bytes} data is the transaction&#39;s raw input
+  @param {bytes} data is the transaction's raw input
   */
   function confirm(bytes data) external isManager {
     checkData(data);
@@ -375,7 +375,7 @@ contract TimeBankToken is EIP20 {
   /*
   manager use this function to revoke a confirm of the operation
   revoke will not be call inside other functions, so it can be external to save some gas
-  @param {bytes} data is the transaction&#39;s raw input
+  @param {bytes} data is the transaction's raw input
   */
   function revoke(bytes data) external isManager {
     checkData(data);
@@ -406,12 +406,12 @@ contract TimeBankToken is EIP20 {
   function isEnoughConfirmed(bytes data, uint count) internal view returns (bool) {
     bytes32 op = keccak256(data);
     uint confirmsCount = 0;
-    for (uint i=0; i&lt;managerList.length; i++) {
+    for (uint i=0; i<managerList.length; i++) {
       if (confirms[op][managerList[i]] == true) {
         confirmsCount = confirmsCount.add(1);
       }
     }
-    return confirmsCount &gt;= count;
+    return confirmsCount >= count;
   }
 
   /*
@@ -419,7 +419,7 @@ contract TimeBankToken is EIP20 {
   */
   function removeConfirm(bytes data) internal {
     bytes32 op = keccak256(data);
-    for (uint i=0; i&lt;managerList.length; i++) {
+    for (uint i=0; i<managerList.length; i++) {
       confirms[op][managerList[i]] = false;
     }
   }
@@ -438,15 +438,15 @@ contract TimeBankToken is EIP20 {
 
   function batchPresaleVesting(address[] _to, uint256[] _startTime, uint256[] _initReleaseAmount, uint256[] _amount, uint256[] _interval, uint256[] _periods) public isManager isNotPaused {
     require(isMajorityConfirmed(msg.data));
-    for (uint i=0; i&lt;_to.length; i++) {
+    for (uint i=0; i<_to.length; i++) {
       internalPresaleVesting(_to[i], _startTime[i], _initReleaseAmount[i], _amount[i], _interval[i], _periods[i]);
     }
     removeConfirm(msg.data);
   }
 
   function internalPresaleVesting(address _to, uint256 _startTime, uint256 _initReleaseAmount, uint256 _amount, uint256 _interval, uint256 _periods) internal {
-    require(balances[coinbase] &gt;= _amount);
-    require(_initReleaseAmount &lt;= _amount);
+    require(balances[coinbase] >= _amount);
+    require(_initReleaseAmount <= _amount);
     require(checkAddress(_to));
     vestings[_to].push(Vesting(
       _startTime, _initReleaseAmount, _amount, _interval, _periods, 0
@@ -468,14 +468,14 @@ contract TimeBankToken is EIP20 {
 
   function batchPresale(address[] _to, uint256[] _amount) public isManager isNotPaused {
     require(isMajorityConfirmed(msg.data));
-    for (uint i=0; i&lt;_to.length; i++) {
+    for (uint i=0; i<_to.length; i++) {
       internalPresale(_to[i], _amount[i]);
     }
     removeConfirm(msg.data);
   }
 
   function internalPresale(address _to, uint256 _value) internal {
-    require(balances[coinbase] &gt;= _value);
+    require(balances[coinbase] >= _value);
     require(checkAddress(_to));
     balances[_to] = balances[_to].add(_value);
     balances[coinbase] = balances[coinbase].sub(_value);
@@ -492,12 +492,12 @@ contract TimeBankToken is EIP20 {
   math function used to calculate vesting curve
   */
   function vestingFunc(uint256 _currentTime, uint256 _startTime, uint256 _initReleaseAmount, uint256 _amount, uint256 _interval, uint256 _periods) public pure returns (uint256) {
-    if (_currentTime &lt; _startTime) {
+    if (_currentTime < _startTime) {
       return 0;
     }
     uint256 t = _currentTime.sub(_startTime);
     uint256 end = _periods.mul(_interval);
-    if (t &gt;= end) {
+    if (t >= end) {
       return _amount;
     }
     uint256 i_amount = _amount.sub(_initReleaseAmount).div(_periods);
@@ -520,7 +520,7 @@ contract TimeBankToken is EIP20 {
 
   /*
   calculate the released amount of vesting coin
-  it cannot be view, because this function relays on &#39;now&#39;
+  it cannot be view, because this function relays on 'now'
   */
   function vestingReleased(uint256 _startTime, uint256 _initReleaseAmount, uint256 _amount, uint256 _interval, uint256 _periods) internal view returns (uint256) {
     return vestingFunc(now, _startTime, _initReleaseAmount, _amount, _interval, _periods);
@@ -531,7 +531,7 @@ contract TimeBankToken is EIP20 {
   */
   function withdrawVestings(address _to) internal {
     uint256 sum = 0;
-    for (uint i=0; i&lt;vestings[_to].length; i++) {
+    for (uint i=0; i<vestings[_to].length; i++) {
       if (vestings[_to][i].amount == vestings[_to][i].withdrawed) {
         continue;
       }
@@ -541,7 +541,7 @@ contract TimeBankToken is EIP20 {
         vestings[_to][i].interval, vestings[_to][i].periods
       );
       uint256 remain = released.sub(vestings[_to][i].withdrawed);
-      if (remain &gt;= 0) {
+      if (remain >= 0) {
         vestings[_to][i].withdrawed = released;
         sum = sum.add(remain);
       }
@@ -555,7 +555,7 @@ contract TimeBankToken is EIP20 {
   */
   function vestingsBalance(address _to) public view returns (uint256) {
     uint256 sum = 0;
-    for (uint i=0; i&lt;vestings[_to].length; i++) {
+    for (uint i=0; i<vestings[_to].length; i++) {
       sum = sum.add(vestings[_to][i].amount.sub(vestings[_to][i].withdrawed));
     }
     return sum;
@@ -567,7 +567,7 @@ contract TimeBankToken is EIP20 {
   */
   function vestingsReleasedRemain(address _to) internal view returns (uint256) {
     uint256 sum = 0;
-    for (uint i=0; i&lt;vestings[_to].length; i++) {
+    for (uint i=0; i<vestings[_to].length; i++) {
       uint256 released = vestingReleased(
         vestings[_to][i].startTime, vestings[_to][i].initReleaseAmount, vestings[_to][i].amount,
         vestings[_to][i].interval, vestings[_to][i].periods
@@ -594,7 +594,7 @@ contract TimeBankToken is EIP20 {
   }
 
   /*
-  transfer &lt;_value&gt; coin from &lt;msg.sender&gt; to &lt;_to&gt; address
+  transfer <_value> coin from <msg.sender> to <_to> address
   1. check remain balance
   2. withdraw all vesting coin to balance
   3. call original ERC20 transafer function
@@ -602,13 +602,13 @@ contract TimeBankToken is EIP20 {
   function transfer(address _to, uint256 _value) public isNotCoinbase isNotPaused returns (bool) {
     checkAddress(_to);
     uint256 remain = vestingsRemainBalance(msg.sender);
-    require(remain &gt;= _value);
+    require(remain >= _value);
     withdrawVestings(msg.sender);
     return super.transfer(_to, _value);
   }
 
   /*
-  transferFrom &lt;_value&gt; coin from &lt;_from&gt; to &lt;_to&gt; address
+  transferFrom <_value> coin from <_from> to <_to> address
   1. check remain balance
   2. withdraw all vesting coin to balance
   3. call original ERC20 transafer function
@@ -617,13 +617,13 @@ contract TimeBankToken is EIP20 {
     checkAddress(_from);
     checkAddress(_to);
     uint256 remain = vestingsRemainBalance(_from);
-    require(remain &gt;= _value);
+    require(remain >= _value);
     withdrawVestings(_from);
     return super.transferFrom(_from, _to, _value);
   }
 
   /*
-  approve &lt;_value&gt; coin from &lt;_from&gt; to &lt;_to&gt; address
+  approve <_value> coin from <_from> to <_to> address
   1. check remain balance
   2. withdraw all vesting coin to balance
   3. call original ERC20 transafer function
@@ -631,7 +631,7 @@ contract TimeBankToken is EIP20 {
   function approve(address _spender, uint256 _value) public isNotCoinbase isNotPaused returns (bool) {
     checkAddress(_spender);
     uint256 remain = vestingsRemainBalance(msg.sender);
-    require(remain &gt;= _value);
+    require(remain >= _value);
     withdrawVestings(msg.sender);
     return super.approve(_spender, _value);
   }

@@ -8,7 +8,7 @@ contract GESTokenCrowdSale {
 contract AgentContracteGalaxy {
     address __owner;
     address target;
-    mapping(address =&gt; uint256) agent_to_piece_of_10000;
+    mapping(address => uint256) agent_to_piece_of_10000;
     address [] agents;
     event SendEther(address addr, uint256 amount);
 
@@ -36,9 +36,9 @@ contract AgentContracteGalaxy {
     }
     function() payable public {
         uint256 summa = msg.value;
-        assert(summa &gt;= 100000000000000000);
+        assert(summa >= 100000000000000000);
         uint256 summa_rest = msg.value;
-        for (uint i=0; i&lt;agents.length; i++){
+        for (uint i=0; i<agents.length; i++){
             uint256 piece_to_send = agent_to_piece_of_10000[agents[i]];
             uint256 value_to_send = (summa * piece_to_send) / 10000;
             summa_rest = summa_rest - value_to_send;
@@ -49,7 +49,7 @@ contract AgentContracteGalaxy {
               SendEther(agents[i], value_to_send);
             }
         }
-        assert(summa_rest &gt;= 100000000000000000);
+        assert(summa_rest >= 100000000000000000);
         GESTokenCrowdSale(target).buyTokens.value(summa_rest)(tx.origin);
         SendEther(target, summa_rest);
     }

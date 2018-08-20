@@ -8,7 +8,7 @@ contract test {
     }
 
     modifier notzero2(address _addr) {
-        require(_addr != address(0x0), &quot;something is wrong&quot;);
+        require(_addr != address(0x0), "something is wrong");
         _;
     }
 

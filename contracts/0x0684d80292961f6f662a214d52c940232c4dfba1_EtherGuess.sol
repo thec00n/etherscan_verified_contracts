@@ -14,9 +14,9 @@ contract EtherGuess {
     uint public minimumValue;
     address public admin;
     address public bot;
-    mapping (address =&gt; uint) public winners;
-    mapping (int =&gt; GuessInfo) public guesses;
-    mapping (uint8 =&gt; bool) public closedHour;
+    mapping (address => uint) public winners;
+    mapping (int => GuessInfo) public guesses;
+    mapping (uint8 => bool) public closedHour;
 
     //Constant Variables
     uint constant NEGLECTGUESSTIMER = 5 days;
@@ -47,7 +47,7 @@ contract EtherGuess {
     }
 
     function setAdminPayout(uint8 newAdminPayout) onlyAdmin public {
-        require(newAdminPayout &lt;= 10);
+        require(newAdminPayout <= 10);
         adminPayout = newAdminPayout;
     }
 
@@ -108,7 +108,7 @@ contract EtherGuess {
     }
     
     modifier isOpen {
-      require(!closedHour[uint8((now / 60 / 60) % 24)] &amp;&amp; running);
+      require(!closedHour[uint8((now / 60 / 60) % 24)] && running);
       _;
     }
 
@@ -119,11 +119,11 @@ contract EtherGuess {
 
     function isGuessesOpen() public view returns (bool, bytes32) {
         bool open = true;
-        bytes32 answer = &quot;&quot;;
+        bytes32 answer = "";
         
         if (closedHour[uint8((now / 60 / 60) % 24)]){
             open = false;
-            answer = &quot;Hours&quot;;
+            answer = "Hours";
         }
         
         if (!running) {
@@ -135,7 +135,7 @@ contract EtherGuess {
 
 
     function getWinnings() public {
-        require(winners[msg.sender]&gt;0);
+        require(winners[msg.sender]>0);
         uint value = winners[msg.sender];
         winners[msg.sender] = 0;
         totalPayout = subToZero(totalPayout,value);
@@ -147,7 +147,7 @@ contract EtherGuess {
         uint oldRound = guesses[guess].round;
         uint oldValue = guesses[guess].value;
         uint testValue;
-        if (oldRound &lt; currentRound) {
+        if (oldRound < currentRound) {
             testValue = minimumValue;
         } else {
             testValue = oldValue + minimumValue;
@@ -173,12 +173,12 @@ contract EtherGuess {
         uint oldRound = guesses[guess].round;
         uint oldValue = guesses[guess].value;
         uint testValue;
-        if (oldRound &lt; currentRound) {
+        if (oldRound < currentRound) {
             testValue = minimumValue;
         } else {
             testValue = oldValue + minimumValue;
         }
-        require(winners[msg.sender] &gt;= testValue);
+        require(winners[msg.sender] >= testValue);
         if (oldRound == currentRound) {
            totalPayout += oldValue;
            address oldOwner = guesses[guess].owner;
@@ -198,10 +198,10 @@ contract EtherGuess {
     }
     
     function multiGuess(int[] multiGuesses) public payable isOpen {
-        require(multiGuesses.length &gt; 1 &amp;&amp; multiGuesses.length &lt;= 20);
+        require(multiGuesses.length > 1 && multiGuesses.length <= 20);
         uint valueLeft = msg.value;
-        for (uint i = 0; i &lt; multiGuesses.length; i++) {
-            if (valueLeft &gt; 0) {
+        for (uint i = 0; i < multiGuesses.length; i++) {
+            if (valueLeft > 0) {
                 uint newValue = minimumValue;
                 if (guesses[multiGuesses[i]].round == currentRound) {
                     uint oldValue = guesses[multiGuesses[i]].value;
@@ -218,7 +218,7 @@ contract EtherGuess {
             }
 
         }
-        if (valueLeft &gt; 0) {
+        if (valueLeft > 0) {
             Refund(msg.sender, currentRound, valueLeft, -1);
             winners[msg.sender] += valueLeft;
         }
@@ -232,7 +232,7 @@ contract EtherGuess {
     }
 
     function subToZero(uint a, uint b) pure internal returns (uint) {
-        if (b &gt; a) {
+        if (b > a) {
             return 0;
         } else {
         return a - b;
@@ -243,7 +243,7 @@ contract EtherGuess {
     function finishUpRound(int price, string priceInfo) public adminOrBot {
         
         
-            if (guesses[price].round == currentRound &amp;&amp; guesses[price].value &gt; 0) {
+            if (guesses[price].round == currentRound && guesses[price].value > 0) {
                 
                 uint finalTotalPayout = this.balance - totalPayout;
                 uint finalAdminPayout = (finalTotalPayout * adminPayout) / ADMINPAYOUTDENOMINATOR;
@@ -268,8 +268,8 @@ contract EtherGuess {
     }
 
     function neglectGuess(int guess) public {
-        require(lastFinish + NEGLECTGUESSTIMER &lt; now);
-        require(guesses[guess].owner == msg.sender &amp;&amp; guesses[guess].round == currentRound);
+        require(lastFinish + NEGLECTGUESSTIMER < now);
+        require(guesses[guess].owner == msg.sender && guesses[guess].round == currentRound);
         guesses[guess].round = 0;  
         numberOfGuesses -= 1;
         Neglect(msg.sender, currentRound, guesses[guess].value, guess);
@@ -278,7 +278,7 @@ contract EtherGuess {
     }
 
     function neglectOwner() public {
-        require(lastFinish + NEGLECTOWNERTIMER &lt; now);
+        require(lastFinish + NEGLECTOWNERTIMER < now);
         lastFinish = now;
         admin = msg.sender;
         winners[msg.sender] += winners[admin];

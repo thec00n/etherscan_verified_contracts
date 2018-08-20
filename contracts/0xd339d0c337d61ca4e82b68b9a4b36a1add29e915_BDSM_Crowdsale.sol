@@ -34,15 +34,15 @@ contract BDSM_Crowdsale {
 
 	function() payable {
 	    
-	    if(now &gt; increasePrice_20_February) price = 0.070 * 1 ether; 
-	    else if(now &gt; increasePrice_20_January) price = 0.00525 * 1 ether;
+	    if(now > increasePrice_20_February) price = 0.070 * 1 ether; 
+	    else if(now > increasePrice_20_January) price = 0.00525 * 1 ether;
 	    
 		tokenFree = sharesTokenAddress.balanceOf(this); // free tokens count
 		
-		if (now &lt; startICO_20_December) {
+		if (now < startICO_20_December) {
 		    msg.sender.transfer(msg.value);
 		}
-		else if (now &gt; stopICO_20_March) {
+		else if (now > stopICO_20_March) {
 			msg.sender.transfer(msg.value); // if crowdsale closed - cash back
 			if(!tokenWithdraw){ // when crowdsale closed - unsold tokens transfer to stopScamHolder
 			    sharesTokenAddress.transfer(safeContract, sharesTokenAddress.balanceOf(this));
@@ -56,19 +56,19 @@ contract BDSM_Crowdsale {
 		} 
 		else {
 			uint256 tokenToBuy = msg.value / price * coeff; // tokens to buy
-			if(tokenToBuy &lt;= 0) msg.sender.transfer(msg.value); // mistake protector
-			require(tokenToBuy &gt; 0);
+			if(tokenToBuy <= 0) msg.sender.transfer(msg.value); // mistake protector
+			require(tokenToBuy > 0);
 			uint256 actualETHTransfer = tokenToBuy * price / coeff;
-			if (tokenFree &gt;= tokenToBuy) { // free tokens &gt;= tokens to buy, sell tokens
+			if (tokenFree >= tokenToBuy) { // free tokens >= tokens to buy, sell tokens
 				owner.transfer(actualETHTransfer);
-				if (msg.value &gt; actualETHTransfer){ // if more than need - cash back
+				if (msg.value > actualETHTransfer){ // if more than need - cash back
 					msg.sender.transfer(msg.value - actualETHTransfer);
 				}
 				sharesTokenAddress.transfer(msg.sender, tokenToBuy);
 				tokenSold += tokenToBuy;
 				tokenFree -= tokenToBuy;
 				if(tokenFree==0) crowdsaleClosed = true;
-			} else { // free tokens &lt; tokens to buy 
+			} else { // free tokens < tokens to buy 
 				uint256 sendETH = tokenFree * price / coeff; // price for all free tokens
 				owner.transfer(sendETH); 
 				sharesTokenAddress.transfer(msg.sender, tokenFree); 

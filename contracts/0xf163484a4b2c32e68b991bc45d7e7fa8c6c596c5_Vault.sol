@@ -12,7 +12,7 @@ contract Vault {
     uint constant public unlockedAt = 1528397739;
     
     function unlock() public {
-        require(now &gt; unlockedAt);
+        require(now > unlockedAt);
         uint vaultBalance = token.balanceOf(address(this));
         token.transfer(recipient, vaultBalance);
     }

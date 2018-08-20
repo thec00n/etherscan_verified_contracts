@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -80,9 +80,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -90,7 +90,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -99,7 +99,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,7 +112,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -130,7 +130,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -161,7 +161,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -172,8 +172,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -236,7 +236,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,7 +301,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -312,7 +312,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -396,15 +396,15 @@ contract PausableToken is StandardToken, Pausable {
 
 /*
   TaxiToken is PausableToken and on the creation it is paused.
-  It is made so because you don&#39;t want token to be transferable etc,
+  It is made so because you don't want token to be transferable etc,
   while your ico is not over.
 */
 contract TaxiToken is CappedToken, PausableToken {
 
   uint256 private constant TOKEN_CAP = 500 * 10**24;
 
-  string public constant name = &quot;TAXI Token&quot;;
-  string public constant symbol = &quot;TAXI&quot;;
+  string public constant name = "TAXI Token";
+  string public constant symbol = "TAXI";
   uint8 public constant decimals = 18;
 
   function TaxiToken() public CappedToken(TOKEN_CAP) {
@@ -442,7 +442,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -592,7 +592,7 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
   event Finalized();
 
   modifier notFinished() {
-    require(leftovers &gt; 0);
+    require(leftovers > 0);
     require(!isFinalized);
     _;
   }
@@ -604,12 +604,12 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) notFinished whenNotPaused internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(_weiAmount &gt; 0);
+    require(_weiAmount > 0);
   }
 
   function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
     uint256 _tokens = _weiAmount.mul(rate);
-    if (toSellTillNextStep &gt; _tokens &amp;&amp; leftovers &gt; _tokens) {
+    if (toSellTillNextStep > _tokens && leftovers > _tokens) {
       toSellTillNextStep = toSellTillNextStep.sub(_tokens);
       leftovers = leftovers.sub(_tokens);
       return _tokens;
@@ -618,10 +618,10 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
     uint256 _weiReq = 0;
     uint256 _tokensToSend = 0;
 
-    while (leftovers &gt; 0 &amp;&amp; _weiAmount &gt; 0) {
+    while (leftovers > 0 && _weiAmount > 0) {
       uint256 _stepTokens = 0;
 
-      if (toSellTillNextStep &lt; _tokens) {
+      if (toSellTillNextStep < _tokens) {
           _stepTokens = toSellTillNextStep;
           toSellTillNextStep = TOKENS_RATE_CHANGE_STEP;
           _weiReq = _stepTokens.div(rate);
@@ -629,7 +629,7 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
           _calcNextRate();
       } else {
           _stepTokens = leftovers;
-          if (leftovers &gt; _tokens) {
+          if (leftovers > _tokens) {
             _stepTokens = _tokens;
           }
           toSellTillNextStep = toSellTillNextStep.sub(_stepTokens);
@@ -642,7 +642,7 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
       _tokens = _weiAmount.mul(rate);
     }
 
-    if (_weiAmount &gt; 0) {
+    if (_weiAmount > 0) {
       _assignOverlfowData(_weiAmount);
     }
 
@@ -655,14 +655,14 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
   */
   function _postValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._postValidatePurchase(_beneficiary, _weiAmount);
-    if (overflowAmount &gt; 0) {
+    if (overflowAmount > 0) {
       weiRaised = weiRaised.sub(overflowAmount);
     }
   }
 
   function _calcNextRate() internal {
       rate = rate.sub(RATE_STEP);
-      if (rate &lt; MIN_RATE) {
+      if (rate < MIN_RATE) {
         rate = MIN_RATE;
       }
   }
@@ -673,7 +673,7 @@ contract TaxiCrowdsale is MintedCrowdsale, Pausable {
     invested amount to the buyer.
   */
   function _assignOverlfowData(uint256 _weiAmount) internal {
-      require(leftovers &lt;= 0);
+      require(leftovers <= 0);
       overflowOwner = msg.sender;
       overflowAmount = _weiAmount;
   }

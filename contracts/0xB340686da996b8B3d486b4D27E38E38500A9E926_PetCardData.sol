@@ -2,12 +2,12 @@ pragma solidity ^0.4.17;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -48,7 +48,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -152,9 +152,9 @@ contract PetCardData is IPetCardData, SafeMath {
 
     /*** STORAGE ***/
   
-    mapping(uint8 =&gt; PetCardSeries) public petCardSeriesCollection;
-    mapping(uint =&gt; Pet) public petCollection;
-    mapping(address =&gt; uint64[]) public ownerPetCollection;
+    mapping(uint8 => PetCardSeries) public petCardSeriesCollection;
+    mapping(uint => Pet) public petCollection;
+    mapping(address => uint64[]) public ownerPetCollection;
     
     /*** FUNCTIONS ***/
     //*** Write Access ***//
@@ -164,7 +164,7 @@ contract PetCardData is IPetCardData, SafeMath {
 
     //*** Pets ***/
     function createPetCardSeries(uint8 _petCardSeriesId, uint32 _maxTotal) onlyCREATOR public returns(uint8) {
-     if ((now &gt; 1516642200) || (totalPetCardSeries &gt;= 19)) {revert();}
+     if ((now > 1516642200) || (totalPetCardSeries >= 19)) {revert();}
         //This confirms that no one, even the develoopers, can create any angel series after JAN/22/2018 @ 0530pm (UTC) or more than the original 24 series.
       
        PetCardSeries storage petCardSeries = petCardSeriesCollection[_petCardSeriesId];
@@ -177,7 +177,7 @@ contract PetCardData is IPetCardData, SafeMath {
 	function setPet(uint8 _petCardSeriesId, address _owner, string _name, uint8 _luck, uint16 _auraRed, uint16 _auraYellow, uint16 _auraBlue) onlySERAPHIM external returns(uint64) { 
         PetCardSeries storage series = petCardSeriesCollection[_petCardSeriesId];
 
-        if (series.currentPetTotal &gt;= series.maxPetTotal) {
+        if (series.currentPetTotal >= series.maxPetTotal) {
             revert();
         }
         else {
@@ -209,7 +209,7 @@ contract PetCardData is IPetCardData, SafeMath {
 
     function setPetName(string _name, uint64 _petId) public {
         Pet storage pet = petCollection[_petId];
-        if ((pet.petId == _petId) &amp;&amp; (msg.sender == pet.owner)) {
+        if ((pet.petId == _petId) && (msg.sender == pet.owner)) {
             pet.name = _name;
         }
     }
@@ -254,8 +254,8 @@ contract PetCardData is IPetCardData, SafeMath {
     
   function ownerPetTransfer (address _to, uint64 _petId)  public  {
      
-        if ((_petId &gt; totalPets) || (_petId == 0)) {revert();}
-       if (msg.sender == _to) {revert();} //can&#39;t send to yourself. 
+        if ((_petId > totalPets) || (_petId == 0)) {revert();}
+       if (msg.sender == _to) {revert();} //can't send to yourself. 
         if (pet.owner != msg.sender) {
             revert();
         }
@@ -293,7 +293,7 @@ contract PetCardData is IPetCardData, SafeMath {
     }
 	
 	function getPetByIndex(address _owner, uint _index) constant public returns(uint) {
-        if (_index &gt;= ownerPetCollection[_owner].length)
+        if (_index >= ownerPetCollection[_owner].length)
             return 0;
         return ownerPetCollection[_owner][_index];
     }

@@ -23,13 +23,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,7 +38,7 @@ contract SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -127,7 +127,7 @@ contract Pausable is Ownable {
 }
 
 contract TheAbyssCrowdsale is Ownable, SafeMath, Pausable {
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     uint256 public constant TOKEN_PRICE_NUM = 2500;
     uint256 public constant TOKEN_PRICE_DENOM = 1;
@@ -154,12 +154,12 @@ contract TheAbyssCrowdsale is Ownable, SafeMath, Pausable {
     event LogContribution(address indexed contributor, uint256 amountWei, uint256 tokenAmount, uint256 tokenBonus, uint256 timestamp);
 
     modifier checkContribution() {
-        require((now &gt;= PRE_SALE_START_TIME &amp;&amp; now &lt; PRE_SALE_END_TIME &amp;&amp; msg.value &gt;= PRESALE_ETHER_MIN_CONTRIB) || (now &gt;= SALE_START_TIME &amp;&amp; now &lt; SALE_END_TIME &amp;&amp; msg.value &gt;= SALE_ETHER_MIN_CONTRIB));
+        require((now >= PRE_SALE_START_TIME && now < PRE_SALE_END_TIME && msg.value >= PRESALE_ETHER_MIN_CONTRIB) || (now >= SALE_START_TIME && now < SALE_END_TIME && msg.value >= SALE_ETHER_MIN_CONTRIB));
         _;
     }
 
     modifier checkCap() {
-        require(safeAdd(totalEtherContributed, msg.value) &lt;= HARD_CAP);
+        require(safeAdd(totalEtherContributed, msg.value) <= HARD_CAP);
         _;
     }
 
@@ -177,14 +177,14 @@ contract TheAbyssCrowdsale is Ownable, SafeMath, Pausable {
         uint256 numerator = 0;
         uint256 denominator = 100;
 
-        if(now &gt;= PRE_SALE_START_TIME &amp;&amp; now &lt; PRE_SALE_END_TIME) {
+        if(now >= PRE_SALE_START_TIME && now < PRE_SALE_END_TIME) {
             numerator = 25;
-        } else if(now &gt;= SALE_START_TIME &amp;&amp; now &lt; SALE_END_TIME) {
-            if(now &lt; bonusWindow1EndTime) {
+        } else if(now >= SALE_START_TIME && now < SALE_END_TIME) {
+            if(now < bonusWindow1EndTime) {
                 numerator = 15;
-            } else if(now &lt; bonusWindow2EndTime) {
+            } else if(now < bonusWindow2EndTime) {
                 numerator = 10;
-            } else if(now &lt; bonusWindow3EndTime) {
+            } else if(now < bonusWindow3EndTime) {
                 numerator = 5;
             } else {
                 numerator = 0;
@@ -204,7 +204,7 @@ contract TheAbyssCrowdsale is Ownable, SafeMath, Pausable {
         uint256 tokenBonusAmount = 0;
         uint256 tokenAmount = safeDiv(safeMul(msg.value, TOKEN_PRICE_NUM), TOKEN_PRICE_DENOM);
 
-        if(bonusNum &gt; 0) {
+        if(bonusNum > 0) {
             tokenBonusAmount = safeDiv(safeMul(tokenAmount, bonusNum), bonusDenom);
         }
 

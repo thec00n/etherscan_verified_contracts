@@ -4,7 +4,7 @@
  *  allowing the investors to withdraw their funds.
  *  Author: Julia Altenried
  *  Internal audit: Alex Bazhanau, Andrej Ruckij
- *  Audit: Blockchain &amp; Smart Contract Security Group
+ *  Audit: Blockchain & Smart Contract Security Group
  **/
 
 pragma solidity ^0.4.15;
@@ -27,13 +27,13 @@ contract SafeMath {
 	}
 
 	function safeSub(uint a, uint b) internal returns(uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint a, uint b) internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 
@@ -67,7 +67,7 @@ contract Crowdsale is SafeMath {
 	/* the address of the token contract */
 	token public tokenReward;
 	/* the balances (in ETH) of all investors */
-	mapping(address =&gt; uint) public balanceOf;
+	mapping(address => uint) public balanceOf;
 	/* indicates if the crowdsale has been closed already */
 	bool public crowdsaleClosed = false;
 	/* the wallet on which the funds will be stored */
@@ -90,7 +90,7 @@ contract Crowdsale is SafeMath {
 		msWallet = _walletAddr;
 		tokenOwner = _tokenOwner;
 
-		require(_start &lt; _end);
+		require(_start < _end);
 		start = _start;
 		end = _end;
 		timeAfterSoftCap = _timeAfterSoftCap;
@@ -103,15 +103,15 @@ contract Crowdsale is SafeMath {
 	}
 
 	/* make an investment
-	 *  only callable if the crowdsale started and hasn&#39;t been closed already and the maxGoal wasn&#39;t reached yet.
+	 *  only callable if the crowdsale started and hasn't been closed already and the maxGoal wasn't reached yet.
 	 *  the current token price is looked up and the corresponding number of tokens is transfered to the receiver.
 	 *  the sent value is directly forwarded to a safe wallet.
 	 *  this method allows to purchase tokens in behalf of another address.*/
 	function invest(address _receiver) payable {
 		uint amount = msg.value;
 		var (numTokens, reachedSoftCap) = getNumTokens(amount);
-		require(numTokens&gt;0);
-		require(!crowdsaleClosed &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end &amp;&amp; safeAdd(tokensSold, numTokens) &lt;= maxGoal);
+		require(numTokens>0);
+		require(!crowdsaleClosed && now >= start && now <= end && safeAdd(tokensSold, numTokens) <= maxGoal);
 		msWallet.transfer(amount);
 		balanceOf[_receiver] = safeAdd(balanceOf[_receiver], amount);
 		amountRaised = safeAdd(amountRaised, amount);
@@ -120,7 +120,7 @@ contract Crowdsale is SafeMath {
 		FundTransfer(_receiver, amount, true, amountRaised);
 		if (reachedSoftCap) {
 			uint newEnd = now + timeAfterSoftCap;
-			if (newEnd &lt; end) {
+			if (newEnd < end) {
 				end = newEnd;
 				tokenReward.setStart(newEnd);
 			} 
@@ -128,9 +128,9 @@ contract Crowdsale is SafeMath {
 	}
 	
 	function getNumTokens(uint _value) constant returns(uint numTokens, bool reachedSoftCap) {
-		if (tokensSold &lt; softCap) {
+		if (tokensSold < softCap) {
 			numTokens = safeMul(_value,rateSoft)/rateCoefficient;
-			if (safeAdd(tokensSold,numTokens) &lt; softCap) 
+			if (safeAdd(tokensSold,numTokens) < softCap) 
 				return (numTokens, false);
 			else if (safeAdd(tokensSold,numTokens) == softCap) 
 				return (numTokens, true);
@@ -145,7 +145,7 @@ contract Crowdsale is SafeMath {
 	}
 
 	modifier afterDeadline() {
-		if (now &gt; end) 
+		if (now > end) 
 			_;
 	}
 
@@ -153,7 +153,7 @@ contract Crowdsale is SafeMath {
 	function checkGoalReached() afterDeadline {
 		require(msg.sender == tokenOwner);
 
-		if (tokensSold &gt;= fundingGoal) {
+		if (tokensSold >= fundingGoal) {
 			tokenReward.burn(); //burn remaining tokens but the reserved ones
 			GoalReached(tokenOwner, amountRaised);
 		}
@@ -164,9 +164,9 @@ contract Crowdsale is SafeMath {
 	 *  only works after funds have been returned from the wallet. */
 	function safeWithdrawal() afterDeadline {
 		uint amount = balanceOf[msg.sender];
-		if (address(this).balance &gt;= amount) {
+		if (address(this).balance >= amount) {
 			balanceOf[msg.sender] = 0;
-			if (amount &gt; 0) {
+			if (amount > 0) {
 				msg.sender.transfer(amount);
 				FundTransfer(msg.sender, amount, false, amountRaised);
 			}

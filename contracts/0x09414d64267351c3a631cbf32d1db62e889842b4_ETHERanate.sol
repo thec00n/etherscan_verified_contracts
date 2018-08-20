@@ -77,7 +77,7 @@ contract ETHERanate
     
     function canPay() internal                                                  
     {
-        while (meg.balance&gt;persons[paymentqueue].ETHamount/100*180)             
+        while (meg.balance>persons[paymentqueue].ETHamount/100*180)             
         {
             uint transactionAmount=persons[paymentqueue].ETHamount/100*180;     
             persons[paymentqueue].ETHaddress.send(transactionAmount);           

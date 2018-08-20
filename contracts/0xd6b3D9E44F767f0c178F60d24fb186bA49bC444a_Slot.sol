@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -89,7 +89,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -131,7 +131,7 @@ contract Ownable {
  */
 contract StandardMintableToken is ERC20, BasicToken, Ownable {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
   
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
@@ -153,7 +153,7 @@ contract StandardMintableToken is ERC20, BasicToken, Ownable {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -225,10 +225,10 @@ contract StandardMintableToken is ERC20, BasicToken, Ownable {
  
 contract SlotTicket is StandardMintableToken {
 
-    string public name = &quot;Slot Ticket&quot;;
+    string public name = "Slot Ticket";
     uint8 public decimals = 0;
-    string public symbol = &quot;TICKET&quot;;
-    string public version = &quot;0.7&quot;;
+    string public symbol = "TICKET";
+    string public version = "0.7";
 
     function destroy() onlyOwner {
         selfdestruct(owner);
@@ -258,7 +258,7 @@ contract Slot is Ownable {
     *  all winners are picked in order from the single random int 
     *  needs to be cleared after every game
     */
-    mapping (uint =&gt; mapping (uint =&gt; address)) public participants; // game number =&gt; counter =&gt; address
+    mapping (uint => mapping (uint => address)) public participants; // game number => counter => address
     SlotTicket public ticket; // this is a receipt for the ticket, it wont affect the prize distribution
     uint256 public jackpotAmount;
     uint256 public gameIndex;
@@ -295,7 +295,7 @@ contract Slot is Ownable {
 
     function buyTicketsFor(address _beneficiary) public payable {
         require(_beneficiary != 0x0);
-        require(msg.value &gt;= PRICE);
+        require(msg.value >= PRICE);
 
         // calculate number of tickets, issue tokens and add participant
         // every (PRICE) buys a ticket, the rest is returned
@@ -313,7 +313,7 @@ contract Slot is Ownable {
     function addParticipant(address _participant, uint256 _numberOfTickets) private {
         // if number of tickets exceeds the size of the game, tickets are added to next game
 
-        for (uint256 i = 0; i &lt; _numberOfTickets; i++) {
+        for (uint256 i = 0; i < _numberOfTickets; i++) {
             // using gameIndex instead of counter/SIZE since games can be cancelled
             participants[gameIndex][counter%SIZE] = _participant; 
             ParticipantAdded(_participant, gameIndex, counter%SIZE);
@@ -342,9 +342,9 @@ contract Slot is Ownable {
         }
 
         // loop throught the prizes 
-        for (uint8 i = 0; i &lt; prizes.length; i++) {
+        for (uint8 i = 0; i < prizes.length; i++) {
             // GAS: 21000 Paid for every transaction. (prizes.length)
-            participants[gameIndex][winnerIndex%SIZE].transfer(prizes[i]); // msg.sender pays the gas, he&#39;s refunded later, % to wrap around
+            participants[gameIndex][winnerIndex%SIZE].transfer(prizes[i]); // msg.sender pays the gas, he's refunded later, % to wrap around
             PrizeAwarded(gameIndex, participants[gameIndex][winnerIndex%SIZE], prizes[i]);
 
             // increment index to the next winner to receive the next prize
@@ -378,7 +378,7 @@ contract Slot is Ownable {
     }
 
     function refundPlayersAfterVeryLongGame() public {
-        require(block.number.sub(gameStartedAtBlock) &gt;= INACTIVITY);
+        require(block.number.sub(gameStartedAtBlock) >= INACTIVITY);
         require(counter%SIZE != 0); // nothing to refund
         // refunds for everybody can be requested after the game has gone (INACTIVITY) blocks without a conclusion
         
@@ -386,7 +386,7 @@ contract Slot is Ownable {
         uint256 _size = counter%SIZE; // not counter.size, but modulus of SIZE
         counter -= _size;
 
-        for (uint8 i = 0; i &lt; _size; i++) {
+        for (uint8 i = 0; i < _size; i++) {
             participants[gameIndex][i].transfer(PRICE);
         }
 
@@ -395,7 +395,7 @@ contract Slot is Ownable {
     }
 
     function destroy() public onlyOwner {
-        require(this.balance &lt; 1 ether);
+        require(this.balance < 1 ether);
 
         ticket.destroy();
         selfdestruct(owner);

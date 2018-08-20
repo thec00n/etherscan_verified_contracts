@@ -26,20 +26,20 @@ library SafeMath
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
   
@@ -50,10 +50,10 @@ contract BasicToken is ERC20Basic
     
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
-		require(msg.data.length &gt;= (2*32) + 4);     // доп. проверка на атаку с коротких адресов
+		require(msg.data.length >= (2*32) + 4);     // доп. проверка на атаку с коротких адресов
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -68,11 +68,11 @@ contract BasicToken is ERC20Basic
 contract StandardToken is ERC20, BasicToken 
 {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) 
 	{
-		require(msg.data.length &gt;= (3*32) + 4);     // Fix for the ERC20 short address attack
+		require(msg.data.length >= (3*32) + 4);     // Fix for the ERC20 short address attack
 		var _allowance = allowed[_from][msg.sender];
 		
 		balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract BurnableToken is StandardToken, Ownable
 
     modifier BurnAll() 
     { 
-		require(now &gt; endIco &amp;&amp; balances[owner] &gt; 0);  
+		require(now > endIco && balances[owner] > 0);  
 		_;
 	}
     
@@ -141,8 +141,8 @@ contract BurnableToken is StandardToken, Ownable
 
 contract OSCoinToken is BurnableToken 
 {
-	string public constant name = &quot;OSCoin&quot;;   
-	string public constant symbol = &quot;OSC&quot;;    
+	string public constant name = "OSCoin";   
+	string public constant symbol = "OSC";    
 	uint32 public constant decimals = 18;
 
 	uint256 public INITIAL_SUPPLY = 2000000 * 1 ether;
@@ -183,7 +183,7 @@ contract Crowdsale is Ownable
 
 	modifier saleIsOn() 
 	{
-		require(now &lt; endIco);
+		require(now < endIco);
 		_;
 	}
 
@@ -192,10 +192,10 @@ contract Crowdsale is Ownable
 		uint tokens = rate.mul(msg.value).div(1 ether);
 		uint bonusTokens = 0;
 		
-		if((now &lt; startPreIco)) 
+		if((now < startPreIco)) 
 		{ 
 			bonusTokens = tokens.div(2);
-		} else if(now &gt;= startPreIco &amp;&amp; now &lt; startIco) {
+		} else if(now >= startPreIco && now < startIco) {
 			bonusTokens = tokens.div(4);
 		}
 		

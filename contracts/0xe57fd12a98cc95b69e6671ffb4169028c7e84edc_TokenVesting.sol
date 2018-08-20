@@ -93,13 +93,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -123,8 +123,8 @@ contract TokenVesting is Ownable {
 
     bool public revocable;
 
-    mapping (address =&gt; uint256) public released;
-    mapping (address =&gt; bool) public revoked;
+    mapping (address => uint256) public released;
+    mapping (address => bool) public revoked;
 
     constructor(
         address _beneficiary,
@@ -135,7 +135,7 @@ contract TokenVesting is Ownable {
     )
     public {
         require(_beneficiary != address(0));
-        require(_cliff &lt;= _duration);
+        require(_cliff <= _duration);
         beneficiary = _beneficiary;
         revocable = _revocable;
         duration = _duration;
@@ -146,7 +146,7 @@ contract TokenVesting is Ownable {
     function release(ERC20Basic token) public {
         uint256 unreleased = releasableAmount(token);
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         released[token] = released[token].add(unreleased);
 
@@ -179,9 +179,9 @@ contract TokenVesting is Ownable {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released[token]);
 
-        if (block.timestamp &lt; cliff) {
+        if (block.timestamp < cliff) {
             return 0;
-        } else if (block.timestamp &gt;= start.add(duration) || revoked[token]) {
+        } else if (block.timestamp >= start.add(duration) || revoked[token]) {
             return totalBalance;
         } else {
             return totalBalance.mul(block.timestamp.sub(start)).div(duration);

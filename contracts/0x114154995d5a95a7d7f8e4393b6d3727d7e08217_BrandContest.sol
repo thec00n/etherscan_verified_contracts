@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-///&gt;[ Pre Sale ]&gt;&gt;&gt;&gt;
+///>[ Pre Sale ]>>>>
 
 contract BrandContest {
     address public ceoAddress;
@@ -14,16 +14,16 @@ contract BrandContest {
         uint256 ticket_price;
         uint8 tickets_sold;
         address winner;
-        mapping (uint256 =&gt; address) tickets;
+        mapping (uint256 => address) tickets;
     }
-    mapping (string =&gt; Contest) contests;
+    mapping (string => Contest) contests;
 
     
     struct Slot {
         uint256 price;
         address owner;
     }
-    mapping (uint256 =&gt; Slot) slots;
+    mapping (uint256 => Slot) slots;
 
     modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
     function setCEO(address _newCEO) public onlyCEO {
@@ -35,12 +35,12 @@ contract BrandContest {
         require(msg.sender != address(0));
         Contest storage contest = contests[_key];
         require(contest.open == true);
-        require(msg.value &gt;= contest.ticket_price);
+        require(msg.value >= contest.ticket_price);
         
         contest.tickets[contest.tickets_sold] = msg.sender;
         contest.tickets_sold++;
         
-        if(msg.value &gt; contest.ticket_price){
+        if(msg.value > contest.ticket_price){
             msg.sender.transfer(SafeMath.sub(msg.value, contest.ticket_price));
         }
     }
@@ -49,11 +49,11 @@ contract BrandContest {
         require(msg.sender != address(0));
         Slot storage slot = slots[_slot];
         require(slot.owner == address(0));
-        require(msg.value &gt;= slot.price);
+        require(msg.value >= slot.price);
     
         slot.owner = msg.sender;
 
-        if(msg.value &gt; slot.price){
+        if(msg.value > slot.price){
             msg.sender.transfer(SafeMath.sub(msg.value, slot.price));
         }
     }
@@ -72,7 +72,7 @@ contract BrandContest {
         tickets_sold = contests[_key].tickets_sold;
         winner = contests[_key].winner;
     
-        for(uint8 i = 0; i &lt; 5; i++){
+        for(uint8 i = 0; i < 5; i++){
             last_tickets[i] = contests[_key].tickets[ contests[_key].tickets_sold-1-i ];
         }
     }
@@ -94,7 +94,7 @@ contract BrandContest {
         address[] tickets
     ) {
         name = _key;
-        for(uint8 i = 0; i &lt; contests[_key].tickets_sold; i++){
+        for(uint8 i = 0; i < contests[_key].tickets_sold; i++){
             tickets[i] = contests[_key].tickets[ i ];
         }
     }
@@ -104,7 +104,7 @@ contract BrandContest {
         uint ticket_count
     ) {
         name = _key;
-        for(uint8 i = 0; i &lt; contests[_key].tickets_sold; i++){
+        for(uint8 i = 0; i < contests[_key].tickets_sold; i++){
             if(contests[_key].tickets[i] == _address){
                 ticket_count++;
             }
@@ -148,12 +148,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

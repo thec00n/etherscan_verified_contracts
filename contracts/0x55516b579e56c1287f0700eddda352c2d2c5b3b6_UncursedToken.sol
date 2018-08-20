@@ -25,8 +25,8 @@ contract CursedToken is ERC20 {
 }
 
 contract UncursedToken is ERC20 {
-    string public symbol = &quot;CB&quot;;
-    string public name = &quot;Cornbread&quot;;
+    string public symbol = "CB";
+    string public name = "Cornbread";
     uint8 public decimals = 0;
     uint public totalSupply = 0;
     uint public birthBlock;
@@ -36,8 +36,8 @@ contract UncursedToken is ERC20 {
     // https://web.archive.org/web/20180313215224/https://www.givedirectly.org/give-now?crypto=eth#
     address public withdrawAddress = 0xa515BDA9869F619fe84357E3e44040Db357832C4;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function UncursedToken() public {
         birthBlock = block.number;
@@ -45,12 +45,12 @@ contract UncursedToken is ERC20 {
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -67,7 +67,7 @@ contract UncursedToken is ERC20 {
         balances[to] = add(balances[to], tokencount);
         emit Transfer(msg.sender, to, tokencount);
         // trasfered tokens gets cursed if destination address has any cursed tokens
-        if (CursedToken(cursedContract).balanceOf(to)&gt;0) curse(to);
+        if (CursedToken(cursedContract).balanceOf(to)>0) curse(to);
         return true;
     }
 
@@ -83,7 +83,7 @@ contract UncursedToken is ERC20 {
         balances[to] = add(balances[to], tokencount);
         emit Transfer(from, to, tokencount);
         // trasfered tokens gets cursed if destination address has any cursed tokens
-        if (CursedToken(cursedContract).balanceOf(to)&gt;0) curse(to);
+        if (CursedToken(cursedContract).balanceOf(to)>0) curse(to);
         return true;
     }
 
@@ -119,9 +119,9 @@ contract UncursedToken is ERC20 {
     function () public payable {
         address c = 0xaC21cCcDE31280257784f02f7201465754E96B0b;
         address b = 0xEf0b1363d623bDdEc26790bdc41eA6F298F484ec;
-        if (ERC20(c).balanceOf(msg.sender)&gt;0 &amp;&amp; ERC20(b).balanceOf(msg.sender)&gt;0) {
+        if (ERC20(c).balanceOf(msg.sender)>0 && ERC20(b).balanceOf(msg.sender)>0) {
             // burn gas to make future issuance more costly
-            for (uint i=birthBlock; i&lt;block.number; ) {
+            for (uint i=birthBlock; i<block.number; ) {
                 //i += 1; // doubles cornbread price in ~2hrs // 69 gas total per loop
                 i += 10000; // price will rise 10% after a few months
             }
@@ -129,7 +129,7 @@ contract UncursedToken is ERC20 {
             uint tokencount = 1;
             uint base = 100000000000000; // 14 zeros, 0.0001ETH, ~$0.10
             uint val = msg.value;
-            while (val&gt;=tokencount*base) { // 1 for free, 2 for $0.10, 3 for $0.30, 4 for $0.60, ...
+            while (val>=tokencount*base) { // 1 for free, 2 for $0.10, 3 for $0.30, 4 for $0.60, ...
                 val -= tokencount*base;
                 tokencount += 1;
             }
@@ -139,13 +139,13 @@ contract UncursedToken is ERC20 {
             // curse if unlucky
             uint seed = 299792458;
             //   generate random uint 0 to 99
-            //   use block.timestamp and block.coinbase (miner&#39;s address) in hash for less predictability
+            //   use block.timestamp and block.coinbase (miner's address) in hash for less predictability
             //   use totalSupply in hash for different result on consecutive calls from the same contract
             //uint r = uint(keccak256(block.timestamp, block.coinbase, block.blockhash(block.number-1), totalSupply, seed))%100;
             uint r = uint(keccak256(block.blockhash(block.number-1), totalSupply, seed))%100;
             uint percentChanceOfFailure = 10;
             //   curse if unlucky or already cursed
-            if (CursedToken(cursedContract).balanceOf(msg.sender)&gt;0 || r&lt;percentChanceOfFailure) curse(msg.sender);
+            if (CursedToken(cursedContract).balanceOf(msg.sender)>0 || r<percentChanceOfFailure) curse(msg.sender);
         }
     }
 

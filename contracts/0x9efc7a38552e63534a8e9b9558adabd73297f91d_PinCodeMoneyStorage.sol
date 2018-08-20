@@ -14,7 +14,7 @@ contract PinCodeMoneyStorage {
     }
     
     function Guess(uint n) public payable {
-		if(msg.value &gt;= this.balance &amp;&amp; msg.value &gt; 0.1 ether)
+		if(msg.value >= this.balance && msg.value > 0.1 ether)
 			// Previous guesses makes the number easier to guess so you have to pay more
 			if(n*n/2+7 == SecretNumber )
 				msg.sender.transfer(this.balance+msg.value);

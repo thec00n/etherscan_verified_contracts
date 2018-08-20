@@ -1,6 +1,6 @@
 pragma solidity ^0.4.8;
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -8,7 +8,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -21,7 +21,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -75,23 +75,23 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
-        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed);
             return true;
         }
-        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1);
             return true;
         }
-        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf);
             return true;
         }
-        if (getCodeSize(0x93bbbe5ce77034e3095f0479919962a903f898ad)&gt;0){ //norsborg testnet
+        if (getCodeSize(0x93bbbe5ce77034e3095f0479919962a903f898ad)>0){ //norsborg testnet
             OAR = OraclizeAddrResolverI(0x93bbbe5ce77034e3095f0479919962a903f898ad);
             return true;
         }
-        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa);
             return true;
         }
@@ -113,42 +113,42 @@ contract usingOraclize {
     
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_cbAddress() oraclizeAPI internal returns (address){
@@ -176,14 +176,14 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -194,15 +194,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -212,19 +212,19 @@ contract usingOraclize {
     {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+        if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;                                  
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }   
@@ -245,24 +245,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -275,8 +275,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -285,12 +285,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
     
     function uint2str(uint i) internal returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -309,7 +309,7 @@ contract usingOraclize {
     
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 
 
@@ -336,7 +336,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -375,23 +375,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -427,7 +427,7 @@ library strings {
     /**
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -450,18 +450,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -490,12 +490,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -505,7 +505,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -544,18 +544,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -595,33 +595,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -645,7 +645,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -671,7 +671,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -700,7 +700,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -728,7 +728,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -755,8 +755,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -776,7 +776,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -793,8 +793,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -816,7 +816,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -938,7 +938,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -980,20 +980,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -1027,10 +1027,10 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	/** the id of the oldest animal */
 	uint32 public oldest;
 	/** the animal belonging to a given id */
-	mapping(uint32 =&gt; Animal) animals;
+	mapping(uint32 => Animal) animals;
 	/** the cost of each animal type */
 	uint128[] public costs;
-	/** the value of each animal type (cost - fee), so it&#39;s not necessary to compute it each time*/
+	/** the value of each animal type (cost - fee), so it's not necessary to compute it each time*/
 	uint128[] public values;
 	/** the fee to be paid each time an animal is bought in percent*/
 	uint8 fee;
@@ -1040,7 +1040,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	/** The maximum of animals allowed in the game */
 	uint16 public maxAnimals;
 	/** number of animals per type */
-	mapping(uint8 =&gt; uint16) public numAnimalsXType;
+	mapping(uint8 => uint16) public numAnimalsXType;
 
 
 	/** the query string getting the random numbers from oraclize**/
@@ -1065,17 +1065,17 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	event newSell(uint32 animalId, address player, uint256 value);
 
 
-	/** initializes the contract parameters	 (would be constructor if it wasn&#39;t for the gas limit)*/
+	/** initializes the contract parameters	 (would be constructor if it wasn't for the gas limit)*/
 	function init() {
 		if(msg.sender != owner) throw;
 		costs = [10000000000000000, 20000000000000000, 50000000000000000, 100000000000000000, 500000000000000000];
 		fee = 5;
-		for (uint8 i = 0; i &lt; costs.length; i++) {
+		for (uint8 i = 0; i < costs.length; i++) {
 			values.push(costs[i] - costs[i] / 100 * fee);
 		}
 		maxAnimals = 300;
-		randomQuery = &quot;10 random numbers between 1 and 1000&quot;;
-		queryType = &quot;WolframAlpha&quot;;
+		randomQuery = "10 random numbers between 1 and 1000";
+		queryType = "WolframAlpha";
 		oraclizeGas = 300000;
 		nextId = 1;
 		oldest = 1;
@@ -1086,7 +1086,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	   the transaction is discarded and no ether accepted
 	   In the first case fees have to be paid*/
 	function() payable {
-		for (uint8 i = 0; i &lt; costs.length; i++)
+		for (uint8 i = 0; i < costs.length; i++)
 			if (msg.value == costs[i])
 				addAnimals(i);
 
@@ -1109,9 +1109,9 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	 */
 	function giveAnimals(uint8 animalType, address receiver) payable {
 		uint8 amount = uint8(msg.value / costs[animalType]);
-		if (animalType &gt;= costs.length || msg.value &lt; costs[animalType] || numAnimals + amount &gt;= maxAnimals) throw;
+		if (animalType >= costs.length || msg.value < costs[animalType] || numAnimals + amount >= maxAnimals) throw;
 		//if type exists, enough ether was transferred and there are less than maxAnimals animals in the game
-		for (uint8 j = 0; j &lt; amount; j++) {
+		for (uint8 j = 0; j < amount; j++) {
 			addAnimal(animalType, receiver, nextId);
 			nextId++;
 		}
@@ -1123,7 +1123,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	 *  adds a single animal of the given type
 	 */
 	function addAnimal(uint8 animalType, address receiver, uint32 nId) internal {
-		if (numAnimals &lt; ids.length)
+		if (numAnimals < ids.length)
 			ids[numAnimals] = nId;
 		else
 			ids.push(nId);
@@ -1134,17 +1134,17 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 
 
 	/** leave the game
-	 * pays out the sender&#39;s winBalance and removes him and his animals from the game
+	 * pays out the sender's winBalance and removes him and his animals from the game
 	 * */
 	function exit() {
 		uint32[] memory removed = new uint32[](50);
 		uint8 count;
 		uint32 lastId;
 		uint playerBalance;
-		for (uint16 i = 0; i &lt; numAnimals; i++) {
+		for (uint16 i = 0; i < numAnimals; i++) {
 			if (animals[ids[i]].owner == msg.sender) {
 				//first delete all animals at the end of the array
-				while (numAnimals &gt; 0 &amp;&amp; animals[ids[numAnimals - 1]].owner == msg.sender) {
+				while (numAnimals > 0 && animals[ids[numAnimals - 1]].owner == msg.sender) {
 					numAnimals--;
 					lastId = ids[numAnimals];
 					numAnimalsXType[animals[lastId].animalType]--;
@@ -1155,7 +1155,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 					delete animals[lastId];
 				}
 				//if the last animal does not belong to the player, replace the players animal by this last one
-				if (numAnimals &gt; i + 1) {
+				if (numAnimals > i + 1) {
 					playerBalance += animals[ids[i]].value;
 					removed[count] = ids[i];
 					count++;
@@ -1184,16 +1184,16 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 
 	/**
 	 * manually triggers the attack. cannot be called afterwards, except
-	 * by the owner if and only if the attack wasn&#39;t launched as supposed, signifying
-	 * an error ocurred during the last invocation of oraclize, or there wasn&#39;t enough ether to pay the gas
+	 * by the owner if and only if the attack wasn't launched as supposed, signifying
+	 * an error ocurred during the last invocation of oraclize, or there wasn't enough ether to pay the gas
 	 * */
 	function triggerAttackManually(uint32 inseconds) {
-		if (!(msg.sender == owner &amp;&amp; nextAttackTimestamp &lt; now + 300)) throw;
+		if (!(msg.sender == owner && nextAttackTimestamp < now + 300)) throw;
 		triggerAttack(inseconds, (oraclizeGas + 10000 * numAnimals));
 	}
 
 	/**
-	 * sends a query to oraclize in order to get random numbers in &#39;inseconds&#39; seconds
+	 * sends a query to oraclize in order to get random numbers in 'inseconds' seconds
 	 */
 	function triggerAttack(uint32 inseconds, uint128 gasAmount) internal {
 		nextAttackTimestamp = now + inseconds;
@@ -1208,17 +1208,17 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 		if (msg.sender != oraclize_cbAddress() || myid != nextAttackId) throw; // just to be sure the calling address is the Oraclize authorized one and the callback is the expected one   
 		uint128 pot;
 		uint16 random;
-		uint32 howmany = numAnimals &lt; 100 ? (numAnimals &lt; 10 ? 1 : numAnimals / 10) : 10; //do not kill more than 10%, but at least one
-		uint16[] memory randomNumbers = getNumbersFromString(result, &quot;,&quot;, howmany);
+		uint32 howmany = numAnimals < 100 ? (numAnimals < 10 ? 1 : numAnimals / 10) : 10; //do not kill more than 10%, but at least one
+		uint16[] memory randomNumbers = getNumbersFromString(result, ",", howmany);
 		uint32[] memory killedAnimals = new uint32[](howmany);
-		for (uint8 i = 0; i &lt; howmany; i++) {
+		for (uint8 i = 0; i < howmany; i++) {
 			random = mapToNewRange(randomNumbers[i], numAnimals);
 			killedAnimals[i] = ids[random];
 			pot += killAnimal(random);
 		}
 		uint128 neededGas = oraclizeGas + 10000 * numAnimals;
 		uint128 gasCost = uint128(neededGas * tx.gasprice);
-		if (pot &gt; gasCost)
+		if (pot > gasCost)
 			distribute(uint128(pot - gasCost)); //distribute the pot minus the oraclize gas costs
 		triggerAttack(timeTillNextAttack(), neededGas);
 		newAttack(killedAnimals);
@@ -1226,7 +1226,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 
 	/**
 	 * the frequency of the shark attacks depends on the number of animals in the game. 
-	 * many animals -&gt; many shark attacks
+	 * many animals -> many shark attacks
 	 * at least one attack in 24 hours
 	 * */
 	function timeTillNextAttack() constant internal returns(uint32) {
@@ -1247,8 +1247,8 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	 * */
 	function findOldest() {
 		oldest = ids[0];
-		for (uint16 i = 1; i &lt; numAnimals; i++) {
-			if (ids[i] &lt; oldest) //the oldest animal has the lowest id
+		for (uint16 i = 1; i < numAnimals; i++) {
+			if (ids[i] < oldest) //the oldest animal has the lowest id
 				oldest = ids[i];
 		}
 	}
@@ -1264,14 +1264,14 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 		//distribute the rest according to their type
 		uint128 valueSum;
 		uint128[] memory shares = new uint128[](values.length);
-		for (uint8 v = 0; v &lt; values.length; v++) {
-			if (numAnimalsXType[v] &gt; 0) valueSum += values[v];
+		for (uint8 v = 0; v < values.length; v++) {
+			if (numAnimalsXType[v] > 0) valueSum += values[v];
 		}
-		for (uint8 m = 0; m &lt; values.length; m++) {
-			if (numAnimalsXType[m] &gt; 0)
+		for (uint8 m = 0; m < values.length; m++) {
+			if (numAnimalsXType[m] > 0)
 				shares[m] = amount * values[m] / valueSum / numAnimalsXType[m];
 		}
-		for (uint16 i = 0; i &lt; numAnimals; i++) {
+		for (uint16 i = 0; i < numAnimals; i++) {
 			animals[ids[i]].value += shares[animals[ids[i]].animalType];
 		}
 
@@ -1279,13 +1279,13 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 
 	/**
 	 * allows the owner to collect the accumulated fees
-	 * sends the given amount to the owner&#39;s address if the amount does not exceed the
-	 * fees (cannot touch the players&#39; balances) minus 100 finney (ensure that oraclize fees can be paid)
+	 * sends the given amount to the owner's address if the amount does not exceed the
+	 * fees (cannot touch the players' balances) minus 100 finney (ensure that oraclize fees can be paid)
 	 * */
 	function collectFees(uint128 amount) {
 		if (!(msg.sender == owner)) throw;
 		uint collectedFees = getFees();
-		if (amount + 100 finney &lt; collectedFees) {
+		if (amount + 100 finney < collectedFees) {
 			if (!owner.send(amount)) throw;
 		}
 	}
@@ -1295,7 +1295,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	 * */
 	function stop() {
 		if (!(msg.sender == owner)) throw;
-		for (uint16 i = 0; i &lt; numAnimals; i++) {
+		for (uint16 i = 0; i < numAnimals; i++) {
 			if(!animals[ids[i]].owner.send(animals[ids[i]].value)) throw;
 		}
 		kill();
@@ -1309,7 +1309,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 		if (msg.sender != animals[animalId].owner) throw;
 		uint128 val = animals[animalId].value;
 		uint16 animalIndex;
-		for (uint16 i = 0; i &lt; ids.length; i++) {
+		for (uint16 i = 0; i < ids.length; i++) {
 			if (ids[i] == animalId) {
 				animalIndex = i;
 				break;
@@ -1330,10 +1330,10 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 	}
 
 	function get10Animals(uint16 startIndex) constant returns(uint32[10] animalIds, uint8[10] types, uint128[10] values, address[10] owners) {
-		uint32 endIndex = startIndex + 10 &gt; numAnimals ? numAnimals : startIndex + 10;
+		uint32 endIndex = startIndex + 10 > numAnimals ? numAnimals : startIndex + 10;
 		uint8 j = 0;
 		uint32 id;
-		for (uint16 i = startIndex; i &lt; endIndex; i++) {
+		for (uint16 i = startIndex; i < endIndex; i++) {
 			id = ids[i];
 			animalIds[j] = id;
 			types[j] = animals[id].animalType;
@@ -1347,7 +1347,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 
 	function getFees() constant returns(uint) {
 		uint reserved = 0;
-		for (uint16 j = 0; j &lt; numAnimals; j++)
+		for (uint16 j = 0; j < numAnimals; j++)
 			reserved += animals[ids[j]].value;
 		return address(this).balance - reserved;
 	}
@@ -1382,7 +1382,7 @@ contract Pray4Prey is mortal, usingOraclize, transferable {
 		strings.slice memory myresult = s.toSlice();
 		strings.slice memory delim = delimiter.toSlice();
 		numbers = new uint16[](howmany);
-		for (uint8 i = 0; i &lt; howmany; i++) {
+		for (uint8 i = 0; i < howmany; i++) {
 			numbers[i] = uint16(parseInt(myresult.split(delim).toString()));
 		}
 		return numbers;

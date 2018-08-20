@@ -2,10 +2,10 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /* https://staging.bitguild.com/game/magicacademy 
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec9e8d858295ac80859a899f988d9ec28f8381">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef898e818196c195878a8188af8386998a9c9b8e9dc18c8082">[email&#160;protected]</a>
-/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1466757d7a6d547379757d783a777b79">[email&#160;protected]</a>           
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec9e8d858295ac80859a899f988d9ec28f8381">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef898e818196c195878a8188af8386998a9c9b8e9dc18c8082">[email protected]</a>
+/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1466757d7a6d547379757d783a777b79">[email protected]</a>           
 /* ==================================================================== */
 
 library SafeMath {
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -141,8 +141,8 @@ interface ERC20 {
 
 contract JadeCoin is ERC20, OperAccess {
   using SafeMath for SafeMath;
-  string public constant name  = &quot;MAGICACADEMY JADE&quot;;
-  string public constant symbol = &quot;Jade&quot;;
+  string public constant name  = "MAGICACADEMY JADE";
+  string public constant symbol = "Jade";
   uint8 public constant decimals = 0;
   uint256 public roughSupply;
   uint256 public totalJadeProduction;
@@ -151,19 +151,19 @@ contract JadeCoin is ERC20, OperAccess {
   uint256[] public allocatedJadeResearchSnapshots; // The research eth allocated to each prior day past
 
   // Balances for each player
-  mapping(address =&gt; uint256) public jadeBalance;
-  mapping(address =&gt; mapping(uint8 =&gt; uint256)) public coinBalance;
-  mapping(uint256 =&gt; uint256) totalEtherPool; //Total Pool
+  mapping(address => uint256) public jadeBalance;
+  mapping(address => mapping(uint8 => uint256)) public coinBalance;
+  mapping(uint256 => uint256) totalEtherPool; //Total Pool
   
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) private jadeProductionSnapshots; // Store player&#39;s jade production for given day (snapshot)
-  mapping(address =&gt; mapping(uint256 =&gt; bool)) private jadeProductionZeroedSnapshots; // This isn&#39;t great but we need know difference between 0 production and an unused/inactive day.
+  mapping(address => mapping(uint256 => uint256)) private jadeProductionSnapshots; // Store player's jade production for given day (snapshot)
+  mapping(address => mapping(uint256 => bool)) private jadeProductionZeroedSnapshots; // This isn't great but we need know difference between 0 production and an unused/inactive day.
     
-  mapping(address =&gt; uint256) public lastJadeSaveTime; // Seconds (last time player claimed their produced jade)
-  mapping(address =&gt; uint256) public lastJadeProductionUpdate; // Days (last snapshot player updated their production)
-  mapping(address =&gt; uint256) private lastJadeResearchFundClaim; // Days (snapshot number)
+  mapping(address => uint256) public lastJadeSaveTime; // Seconds (last time player claimed their produced jade)
+  mapping(address => uint256) public lastJadeProductionUpdate; // Days (last snapshot player updated their production)
+  mapping(address => uint256) private lastJadeResearchFundClaim; // Days (snapshot number)
    
   // Mapping of approved ERC20 transfers (by player)
-  mapping(address =&gt; mapping(address =&gt; uint256)) private allowed;
+  mapping(address => mapping(address => uint256)) private allowed;
      
   // Constructor
   function JadeCoin() public {
@@ -179,7 +179,7 @@ contract JadeCoin is ERC20, OperAccess {
   /// unclaimed jade
   function balanceOfUnclaimed(address player) public constant returns (uint256) {
     uint256 lSave = lastJadeSaveTime[player];
-    if (lSave &gt; 0 &amp;&amp; lSave &lt; block.timestamp) { 
+    if (lSave > 0 && lSave < block.timestamp) { 
       return SafeMath.mul(getJadeProduction(player),SafeMath.div(SafeMath.sub(block.timestamp,lSave),60));
     }
     return 0;
@@ -215,7 +215,7 @@ contract JadeCoin is ERC20, OperAccess {
     totalJadeProduction = SafeMath.sub(totalJadeProduction,decrease);
   }
 
-  /// update player&#39;s jade balance
+  /// update player's jade balance
   function updatePlayersCoin(address player) internal {
     uint256 coinGain = balanceOfUnclaimed(player);
     lastJadeSaveTime[player] = block.timestamp;
@@ -223,7 +223,7 @@ contract JadeCoin is ERC20, OperAccess {
     jadeBalance[player] = SafeMath.add(jadeBalance[player],coinGain);  
   }
 
-  /// update player&#39;s jade balance
+  /// update player's jade balance
   function updatePlayersCoinByOut(address player) external onlyAccess {
     uint256 coinGain = balanceOfUnclaimed(player);
     lastJadeSaveTime[player] = block.timestamp;
@@ -233,7 +233,7 @@ contract JadeCoin is ERC20, OperAccess {
   /// transfer
   function transfer(address recipient, uint256 amount) public returns (bool) {
     updatePlayersCoin(msg.sender);
-    require(amount &lt;= jadeBalance[msg.sender]);
+    require(amount <= jadeBalance[msg.sender]);
     jadeBalance[msg.sender] = SafeMath.sub(jadeBalance[msg.sender],amount);
     jadeBalance[recipient] = SafeMath.add(jadeBalance[recipient],amount);
     Transfer(msg.sender, recipient, amount);
@@ -242,7 +242,7 @@ contract JadeCoin is ERC20, OperAccess {
   /// transferfrom
   function transferFrom(address player, address recipient, uint256 amount) public returns (bool) {
     updatePlayersCoin(player);
-    require(amount &lt;= allowed[player][msg.sender] &amp;&amp; amount &lt;= jadeBalance[player]);
+    require(amount <= allowed[player][msg.sender] && amount <= jadeBalance[player]);
         
     jadeBalance[player] = SafeMath.sub(jadeBalance[player],amount); 
     jadeBalance[recipient] = SafeMath.add(jadeBalance[recipient],amount); 
@@ -266,9 +266,9 @@ contract JadeCoin is ERC20, OperAccess {
   function updatePlayersCoinByPurchase(address player, uint256 purchaseCost) external onlyAccess {
     uint256 unclaimedJade = balanceOfUnclaimed(player);
         
-    if (purchaseCost &gt; unclaimedJade) {
+    if (purchaseCost > unclaimedJade) {
       uint256 jadeDecrease = SafeMath.sub(purchaseCost, unclaimedJade);
-      require(jadeBalance[player] &gt;= jadeDecrease);
+      require(jadeBalance[player] >= jadeDecrease);
       roughSupply = SafeMath.sub(roughSupply,jadeDecrease);
       jadeBalance[player] = SafeMath.sub(jadeBalance[player],jadeDecrease);
     } else {
@@ -341,7 +341,7 @@ interface GameConfigInterface {
 }
 
 /// @notice define the players,cards,jadecoin
-/// @author rainysiu <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4d5e5651467f5356495a4c4b5e4d115c5052">[email&#160;protected]</a>
+/// @author rainysiu <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4d5e5651467f5356495a4c4b5e4d115c5052">[email protected]</a>
 /// @dev MagicAcademy Games 
 
 contract CardsBase is JadeCoin {
@@ -357,21 +357,21 @@ contract CardsBase is JadeCoin {
   GameConfigInterface public schema;
 
   // Stuff owned by each player
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitsOwned;  //number of normal card
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public upgradesOwned;  //Lv of upgrade card
+  mapping(address => mapping(uint256 => uint256)) public unitsOwned;  //number of normal card
+  mapping(address => mapping(uint256 => uint256)) public upgradesOwned;  //Lv of upgrade card
 
-  mapping(address =&gt; uint256) public uintsOwnerCount; // total number of cards
-  mapping(address=&gt; mapping(uint256 =&gt; uint256)) public uintProduction;  //card&#39;s production
+  mapping(address => uint256) public uintsOwnerCount; // total number of cards
+  mapping(address=> mapping(uint256 => uint256)) public uintProduction;  //card's production
 
-  // Rares &amp; Upgrades (Increase unit&#39;s production / attack etc.)
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitCoinProductionIncreases; // Adds to the coin per second
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitCoinProductionMultiplier; // Multiplies the coin per second
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitAttackIncreases;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitAttackMultiplier;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitDefenseIncreases;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitDefenseMultiplier;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitJadeStealingIncreases;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) public unitJadeStealingMultiplier;
+  // Rares & Upgrades (Increase unit's production / attack etc.)
+  mapping(address => mapping(uint256 => uint256)) public unitCoinProductionIncreases; // Adds to the coin per second
+  mapping(address => mapping(uint256 => uint256)) public unitCoinProductionMultiplier; // Multiplies the coin per second
+  mapping(address => mapping(uint256 => uint256)) public unitAttackIncreases;
+  mapping(address => mapping(uint256 => uint256)) public unitAttackMultiplier;
+  mapping(address => mapping(uint256 => uint256)) public unitDefenseIncreases;
+  mapping(address => mapping(uint256 => uint256)) public unitDefenseMultiplier;
+  mapping(address => mapping(uint256 => uint256)) public unitJadeStealingIncreases;
+  mapping(address => mapping(uint256 => uint256)) public unitJadeStealingMultiplier;
 
   //setting configuration
   function setConfigAddress(address _address) external onlyOwner {
@@ -400,15 +400,15 @@ contract CardsBase is JadeCoin {
     address[] memory arr_addr = new address[](len);
 
     uint counter =0;
-    for (uint k=0;k&lt;len; k++){
+    for (uint k=0;k<len; k++){
       arr[counter] =  getJadeProduction(players[k].owneraddress);
       arr_addr[counter] = players[k].owneraddress;
       counter++;
     }
 
-    for(uint i=0;i&lt;len-1;i++) {
-      for(uint j=0;j&lt;len-i-1;j++) {
-        if(arr[j]&lt;arr[j+1]) {
+    for(uint i=0;i<len-1;i++) {
+      for(uint j=0;j<len-i-1;j++) {
+        if(arr[j]<arr[j+1]) {
           uint256 temp = arr[j];
           address temp_addr = arr_addr[j];
           arr[j] = arr[j+1];
@@ -428,15 +428,15 @@ contract CardsBase is JadeCoin {
     address[] memory arr_addr = new address[](len);
 
     uint counter =0;
-    for (uint k=0;k&lt;len; k++){
+    for (uint k=0;k<len; k++){
       (,,,arr[counter]) = getPlayersBattleStats(players[k].owneraddress);
       arr_addr[counter] = players[k].owneraddress;
       counter++;
     }
 
-    for(uint i=0;i&lt;len-1;i++) {
-      for(uint j=0;j&lt;len-i-1;j++) {
-        if(arr[j]&lt;arr[j+1]) {
+    for(uint i=0;i<len-1;i++) {
+      for(uint j=0;j<len-i-1;j++) {
+        if(arr[j]<arr[j+1]) {
           uint256 temp = arr[j];
           address temp_addr = arr_addr[j];
           arr[j] = arr[j+1];
@@ -459,7 +459,7 @@ contract CardsBase is JadeCoin {
     return (amount * (schema.unitCoinProduction(unitId) + unitCoinProductionIncreases[player][unitId]) * (10 + unitCoinProductionMultiplier[player][unitId])) / 10; 
   } 
 
-  /// one card&#39;s production
+  /// one card's production
   function getUnitsInProduction(address player, uint256 unitId, uint256 amount) external constant returns (uint256) {
     return SafeMath.div(SafeMath.mul(amount,uintProduction[player][unitId]),unitsOwned[player][unitId]);
   } 
@@ -477,7 +477,7 @@ contract CardsBase is JadeCoin {
     return (amount * (schema.unitStealingCapacity(unitId) + unitJadeStealingIncreases[player][unitId]) * (10 + unitJadeStealingMultiplier[player][unitId])) / 10;
   }
  
-  // player&#39;s attacking &amp; defending &amp; stealing &amp; battle power
+  // player's attacking & defending & stealing & battle power
   function getPlayersBattleStats(address player) public constant returns (
     uint256 attackingPower, 
     uint256 defendingPower, 
@@ -489,7 +489,7 @@ contract CardsBase is JadeCoin {
     (startId, endId) = schema.battleCardIdRange();
 
     // Not ideal but will only be a small number of units (and saves gas when buying units)
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       attackingPower = SafeMath.add(attackingPower,getUnitsAttack(player, startId, unitsOwned[player][startId]));
       stealingPower = SafeMath.add(stealingPower,getUnitsStealingCapacity(player, startId, unitsOwned[player][startId]));
       defendingPower = SafeMath.add(defendingPower,getUnitsDefense(player, startId, unitsOwned[player][startId]));

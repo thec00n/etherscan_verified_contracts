@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,9 +105,9 @@ contract KAA is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;KAA&quot;;
-	string public constant symbol=&quot;KAA&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="KAA";
+	string public constant symbol="KAA";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 
@@ -158,11 +158,11 @@ contract KAA is ERC20,Ownable{
 	uint256 public totalCommonWithdrawSupply;
 
     //战略伙伴锁仓总额度
-    mapping(address=&gt;uint256) public lockAmount;
+    mapping(address=>uint256) public lockAmount;
 	 
 	//ERC20的余额
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
      constructor() public{
@@ -186,29 +186,29 @@ contract KAA is ERC20,Ownable{
 
 
 	modifier notReachTotalSupply(uint256 _value){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value));
+		assert(MAX_SUPPLY>=totalSupply.add(_value));
 		_;
 	}
 
 	//平台最大提现额度
 	modifier notReachPlatformFundingSupply(uint256 _value){
-		assert(PLATFORM_FUNDING_SUPPLY&gt;=platformFundingSupply.add(_value));
+		assert(PLATFORM_FUNDING_SUPPLY>=platformFundingSupply.add(_value));
 		_;
 	}
 
 	modifier notReachTeamKeepingSupply(uint256 _value){
-		assert(TEAM_KEEPING&gt;=teamKeepingSupply.add(_value));
+		assert(TEAM_KEEPING>=teamKeepingSupply.add(_value));
 		_;
 	}
 
 
 	modifier notReachCooperateRewardSupply(uint256 _value){
-		assert(COOPERATE_REWARD&gt;=cooperateRewardSupply.add(_value));
+		assert(COOPERATE_REWARD>=cooperateRewardSupply.add(_value));
 		_;
 	}
 
 	modifier notReachCommonWithdrawSupply(uint256 _value){
-		assert(COMMON_WITHDRAW_SUPPLY&gt;=totalCommonWithdrawSupply.add(_value));
+		assert(COMMON_WITHDRAW_SUPPLY>=totalCommonWithdrawSupply.add(_value));
 		_;
 	}
 
@@ -288,7 +288,7 @@ contract KAA is ERC20,Ownable{
 		//当前期数=（现时间-初始时间)/期数步长
 		uint256 epoch=now.sub(startTime).div(unlockStepLong);
 		//如果超出36期时间，那么就设置为36
-		if (epoch&gt;36) {
+		if (epoch>36) {
 			epoch=36;
 		}
 
@@ -296,7 +296,7 @@ contract KAA is ERC20,Ownable{
 		uint256 releaseAmount = platformFundingPerEpoch.mul(epoch);
 		//计算可提现额度=已经释放额度-已经提现额度
 		uint256 canWithdrawAmount=releaseAmount.sub(platformFundingSupply);
-		if(canWithdrawAmount&gt;=_value){
+		if(canWithdrawAmount>=_value){
 			return true;
 		}else{
 			return false;
@@ -308,7 +308,7 @@ contract KAA is ERC20,Ownable{
 		//当前期数=（现时间-初始时间)/期数步长
 		uint256 epoch=now.sub(startTime).div(unlockStepLong);
 		//如果超出36期时间，那么就设置为36
-		if (epoch&gt;36) {
+		if (epoch>36) {
 			epoch=36;
 		}
 
@@ -316,7 +316,7 @@ contract KAA is ERC20,Ownable{
 		uint256 releaseAmount=teamKeepingPerEpoch.mul(epoch);
 		//计算可提现额度=已经释放额度-已经提现额度
 		uint256 canWithdrawAmount=releaseAmount.sub(teamKeepingSupply);
-		if(canWithdrawAmount&gt;=_value){
+		if(canWithdrawAmount>=_value){
 			return true;
 		}else{
 			return false;
@@ -329,7 +329,7 @@ contract KAA is ERC20,Ownable{
 		//当前期数=（现时间-初始时间)/期数步长
 		uint256 epoch=now.sub(startTime).div(unlockStepLong);
 		//如果超出36期时间，那么就设置为36
-		if (epoch&gt;36) {
+		if (epoch>36) {
 			epoch=36;
 		}
 
@@ -357,12 +357,12 @@ contract KAA is ERC20,Ownable{
 
 		//计算锁仓份额
 		uint256 needLockBalance=0;
-		if (lockAmount[msg.sender]&gt;0) {
+		if (lockAmount[msg.sender]>0) {
 			needLockBalance=clacCooperateNeedLockAmount(lockAmount[msg.sender]);
 		}
 
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -384,12 +384,12 @@ contract KAA is ERC20,Ownable{
 
 		//计算锁仓份额
 		uint256 needLockBalance=0;
-		if (lockAmount[_from]&gt;0) {
+		if (lockAmount[_from]>0) {
 			needLockBalance=clacCooperateNeedLockAmount(lockAmount[_from]);
 		}
 
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 
 		uint256 _allowance = allowed[_from][msg.sender];
 

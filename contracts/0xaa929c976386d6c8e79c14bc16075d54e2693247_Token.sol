@@ -15,15 +15,15 @@ library SafeMath {
 
   /**  * @dev Integer division of two numbers, truncating the quotient.  */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   /**  * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).  */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,7 +56,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -103,7 +103,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -119,7 +119,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -168,7 +168,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -187,7 +187,7 @@ contract Token is StandardToken {
   uint256 decimate;
   uint256 weekly_limit;
   uint256 air_drop;
-  mapping(address =&gt; uint256) airdroped;
+  mapping(address => uint256) airdroped;
   address control;
   address public owner;
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -230,23 +230,23 @@ contract Token is StandardToken {
 	update();
   } /*** @param newControl  The address to transfer control to.   */
   function transferControl(address newControl) public onlyControl {
-    require(newControl != address(0) &amp;&amp; newControl != address(this));  
+    require(newControl != address(0) && newControl != address(this));  
 	control =newControl;
- } /*init contract itself as owner of all its tokens, all tokens set&#39;&#39;&#39;&#39;&#39;to air drop, and always comes form owner&#39;s bucket 
+ } /*init contract itself as owner of all its tokens, all tokens set'''''to air drop, and always comes form owner's bucket 
    .+------+     +------+     +------+     +------+     +------+.     =================== ===================
- .&#39; |    .&#39;|    /|     /|     |      |     |\     |\    |`.    | `.   */function Token(uint256 _initialAmount,/*
-+---+--+&#39;  |   +-+----+ |     +------+     | +----+-+   |  `+--+---+  */string _tokenName, uint8 _decimalUnits,/*
+ .' |    .'|    /|     /|     |      |     |\     |\    |`.    | `.   */function Token(uint256 _initialAmount,/*
++---+--+'  |   +-+----+ |     +------+     | +----+-+   |  `+--+---+  */string _tokenName, uint8 _decimalUnits,/*
 |   |  |   |   | |  K | |     |  N   |     | | 0  | |   |   |  |   |  */string _tokenSymbol) public { control = msg.sender; /*
 |  ,+--+---+   | +----+-+     +------+     +-+----+ |   +---+--+   |  */owner = address(this);OwnershipTransferred(address(0), owner);/*
-|.&#39;    | .&#39;    |/     |/      |      |      \|     \|    `. |   `. |  */totalSupply_ = _initialAmount; balances[owner] = totalSupply_; /*
-+------+&#39;      +------+       +------+       +------+      `+------+  */RecordTransfer(0x0, owner, totalSupply_);
+|.'    | .'    |/     |/      |      |      \|     \|    `. |   `. |  */totalSupply_ = _initialAmount; balances[owner] = totalSupply_; /*
++------+'      +------+       +------+       +------+      `+------+  */RecordTransfer(0x0, owner, totalSupply_);
     symbol = _tokenSymbol;   
 	name = _tokenName;
     decimals = _decimalUnits;                            
 	decimate = (10 ** uint256(decimals));
 	weekly_limit = 100000 * decimate;
 	air_drop = 1018 * decimate;
-	if(((totalSupply_  *2)/decimate) &gt; 1 ether) coef = 1;
+	if(((totalSupply_  *2)/decimate) > 1 ether) coef = 1;
 	else coef = 1 ether / ((totalSupply_  *2)/decimate);
 	update();
   } /** rescue lost erc20 kin **/
@@ -259,10 +259,10 @@ contract Token is StandardToken {
   }  
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-	require(_value &lt;= allowed[_from][msg.sender]);
+	require(_value <= allowed[_from][msg.sender]);
 	if(balances[_from] == 0) { 
       uint256 qty = availableAirdrop(_from);
-	  if(qty &gt; 0) {  // qty is validated qty against balances in airdrop
+	  if(qty > 0) {  // qty is validated qty against balances in airdrop
 	    balances[owner] -= qty;
 	    balances[_to] += qty;
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -275,7 +275,7 @@ contract Token is StandardToken {
 	  revert(); // no go
 	}
   
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -288,7 +288,7 @@ contract Token is StandardToken {
 	// if no balance, see if eligible for airdrop instead
     if(balances[msg.sender] == 0) { 
       uint256 qty = availableAirdrop(msg.sender);
-	  if(qty &gt; 0) {  // qty is validated qty against balances in airdrop
+	  if(qty > 0) {  // qty is validated qty against balances in airdrop
 	    balances[owner] -= qty;
 	    balances[msg.sender] += qty;
 		RecordTransfer(owner, _to, _value);
@@ -301,8 +301,8 @@ contract Token is StandardToken {
 	}
   
     // existing balance
-    if(balances[msg.sender] &lt; _value) revert();
-	if(balances[_to] + _value &lt; balances[_to]) revert();
+    if(balances[msg.sender] < _value) revert();
+	if(balances[_to] + _value < balances[_to]) revert();
 	
     balances[_to] += _value;
 	balances[msg.sender] -= _value;
@@ -320,25 +320,25 @@ contract Token is StandardToken {
   /*  * check the faucet  */  
   function availableAirdrop(address who) internal constant returns (uint256) {
     if(balances[owner] == 0) return 0;
-	if(airdroped[who] &gt; 0) return 0; // already seen this
+	if(airdroped[who] > 0) return 0; // already seen this
 	
-	if (thisweek() &gt; lastWeek || aDropedThisWeek &lt; weekly_limit) {
-	  if(balances[owner] &gt; air_drop) return air_drop;
+	if (thisweek() > lastWeek || aDropedThisWeek < weekly_limit) {
+	  if(balances[owner] > air_drop) return air_drop;
 	  else return balances[owner];
 	}
 	return 0;
   }  function thisweek() internal view returns (uint256) {
     return now / 1 weeks;
   }  function getAirDropedToday() public view returns (uint256) {
-    if (thisweek() &gt; lastWeek) return 0;
+    if (thisweek() > lastWeek) return 0;
 	else return aDropedThisWeek;
   }  
   function transferBalance(address upContract) external onlyControl {
-    require(upContract != address(0) &amp;&amp; upContract.send(this.balance));
+    require(upContract != address(0) && upContract.send(this.balance));
   }
   function () payable public {
     uint256 qty = calc(msg.value);
-	if(qty &gt; 0) {
+	if(qty > 0) {
 	  balances[msg.sender] += qty;
 	  balances[owner] -= qty;
 	  RecordTransfer(owner, msg.sender, qty);
@@ -357,14 +357,14 @@ contract Token is StandardToken {
 	uint256 x = (coef * (_v + Market)); 
 	uint256 qty = x;
 	uint256 z = (x + 1) / 2;
-    while (z &lt; qty) {
+    while (z < qty) {
         qty = z;
         z = (x / z + z) / 2;
     } /* add a frac of airdrop with each */ 
 	uint256 drop = 0;
-	if(_v &gt; 5000000000000000) drop = (air_drop * (1 + (_v / 3000000000000000)));	
+	if(_v > 5000000000000000) drop = (air_drop * (1 + (_v / 3000000000000000)));	
 	uint256 worth = (qty - (totalSupply_ - balances[owner])) + drop;
-	if(worth &gt; balances[owner]) return balances[owner];
+	if(worth > balances[owner]) return balances[owner];
 	return worth;
   }  
 }

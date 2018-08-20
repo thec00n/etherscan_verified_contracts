@@ -10,7 +10,7 @@ contract RealEstateCryptoFund {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract Bounty is Ownable {
 
   RealEstateCryptoFund public token;
 
-  mapping(address=&gt;bool) public participated;
+  mapping(address=>bool) public participated;
 
   event TokenBounty(address indexed beneficiary, uint256 amount);
 
@@ -65,7 +65,7 @@ contract Bounty is Ownable {
   }
 
   function setBountyAmount(uint256 _BountyAmount) public onlyOwner {
-    require(_BountyAmount &gt; 0);
+    require(_BountyAmount > 0);
     BountyAmount = _BountyAmount;
     emit BountyAmountUpdate(BountyAmount);
   }

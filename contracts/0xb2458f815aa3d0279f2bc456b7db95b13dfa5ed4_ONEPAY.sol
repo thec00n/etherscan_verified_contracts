@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;ONEPAY&#39; token contract
+// 'ONEPAY' token contract
 //
 // Symbol      : ONEPAY
 // Name        : ONEPAY
@@ -10,7 +10,7 @@ pragma solidity ^0.4.18;
 // Sale Only   : 30,000,000
 // 50% distribute token administration for 15 years to 3 department : WEB Department, Android Department, Market Department
 // business focus : Cloud mining, OnlineShop, Ticket Shop, Games Shop, and many Sponsoring in invasion For 15 years 
-// we take all exchange in the world for one payment processor that&#39;s ONEPAY
+// we take all exchange in the world for one payment processor that's ONEPAY
 // Price for sale 1000 token = 1 ETH
 // Owner Address = 0xF862E808D28B68c58D61eAB4Eaf65086ECB7b971
 // WEB Dev       = 0x99303515E8825C11E650F76eDE08f9f427FcA958
@@ -25,10 +25,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -36,7 +36,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -111,16 +111,16 @@ contract ONEPAY is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function ONEPAY() public {
-        symbol = &quot;ONEPAY&quot;;
-        name = &quot;ONEPAY&quot;;
+        symbol = "ONEPAY";
+        name = "ONEPAY";
         decimals = 18;
         _totalSupply = 60000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -145,8 +145,8 @@ contract ONEPAY is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -159,7 +159,7 @@ contract ONEPAY is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -192,7 +192,7 @@ contract ONEPAY is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -201,7 +201,7 @@ contract ONEPAY is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -213,7 +213,7 @@ contract ONEPAY is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

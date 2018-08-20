@@ -26,20 +26,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns(uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -66,8 +66,8 @@ contract ERC20Interface {
 contract Noxon is ERC20Interface {
 	using SafeMath for uint;
 
-	string public constant symbol = &quot;NOXON&quot;;
-	string public constant name = &quot;NOXON&quot;;
+	string public constant symbol = "NOXON";
+	string public constant name = "NOXON";
 	uint8 public constant decimals = 0; //warning! dividing rounds down, the remainder of the division is the profit of the contract
 	uint256 _totalSupply = 0;
 	uint256 _burnPrice;
@@ -80,10 +80,10 @@ contract Noxon is ERC20Interface {
 	address public manager;
 
 	// Balances for each account
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	// Owner of account approves the transfer of an amount to another account
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	// Functions with this modifier can only be executed by the owner
 	modifier onlyOwner() {
@@ -130,7 +130,7 @@ contract Noxon is ERC20Interface {
 	function NoxonInit() public payable onlyOwner returns (bool) {
 		require(_totalSupply == 0);
 		require(initialized == 0);
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		Transfer(0, msg.sender, 1);
 		balances[owner] = 1; //owner got 1 token
 		_totalSupply = balances[owner];
@@ -166,7 +166,7 @@ contract Noxon is ERC20Interface {
 		return balances[_owner];
 	}
 
-	// Transfer the balance from owner&#39;s account to another account
+	// Transfer the balance from owner's account to another account
 	function transfer(address _to, uint256 _amount) public returns(bool success) {
 
 		// if you send TOKENS to the contract they will be burned and you will return part of Ether from smart contract
@@ -174,7 +174,7 @@ contract Noxon is ERC20Interface {
 			return burnTokens(_amount);
 		} else {
 
-			if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+			if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
 				balances[msg.sender] = balances[msg.sender].sub(_amount);
 				balances[_to] = balances[_to].add(_amount);
 				Transfer(msg.sender, _to, _amount);
@@ -191,14 +191,14 @@ contract Noxon is ERC20Interface {
 		_burnPrice = getBurnPrice();
 		uint256 _burnPriceTmp = _burnPrice;
 
-		if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+		if (balances[msg.sender] >= _amount && _amount > 0) {
 
-			// subtracts the amount from seller&#39;s balance and suply
+			// subtracts the amount from seller's balance and suply
 			balances[msg.sender] = balances[msg.sender].sub(_amount);
 			_totalSupply = _totalSupply.sub(_amount);
 
 			//do not allow sell last share (fear of dividing by zero)
-			assert(_totalSupply &gt;= 1);
+			assert(_totalSupply >= 1);
 
 			// sends ether to the seller
 			msg.sender.transfer(_amount.mul(_burnPrice));
@@ -207,7 +207,7 @@ contract Noxon is ERC20Interface {
 			_burnPrice = getBurnPrice();
 
 			//only growth required 
-			assert(_burnPrice &gt;= _burnPriceTmp);
+			assert(_burnPrice >= _burnPriceTmp);
 
 			//send event
 			TokenBurned(msg.sender, _amount.mul(_burnPrice), _burnPrice, _amount);
@@ -228,16 +228,16 @@ contract Noxon is ERC20Interface {
 		uint256 _burnPriceTmp = _burnPrice;
 
 		require(emissionlocked == false);
-		require(_burnPrice &gt; 0 &amp;&amp; _emissionPrice &gt; _burnPrice);
-		require(msg.value &gt; 0);
+		require(_burnPrice > 0 && _emissionPrice > _burnPrice);
+		require(msg.value > 0);
 
 		// calculate the amount
 		uint256 amount = msg.value / _emissionPrice;
 
 		//check overflow
-		require(balances[msg.sender] + amount &gt; balances[msg.sender]);
+		require(balances[msg.sender] + amount > balances[msg.sender]);
 
-		// adds the amount to buyer&#39;s balance
+		// adds the amount to buyer's balance
 		balances[msg.sender] = balances[msg.sender].add(amount);
 		_totalSupply = _totalSupply.add(amount);
 
@@ -250,8 +250,8 @@ contract Noxon is ERC20Interface {
 		_burnPrice = getBurnPrice();
 		_emissionPrice = _burnPrice.mul(2);
 
-		//&quot;only growth&quot;
-		assert(_burnPrice &gt;= _burnPriceTmp);
+		//"only growth"
+		assert(_burnPrice >= _burnPriceTmp);
 	}
     
 	function getBurnPrice() public returns(uint) {
@@ -263,13 +263,13 @@ contract Noxon is ERC20Interface {
 
 	function addToReserve() public payable returns(bool) {
 	    uint256 _burnPriceTmp = _burnPrice;
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			_burnPrice = getBurnPrice();
 			_emissionPrice = _burnPrice.mul(2);
 			EtherReserved(msg.value);
 			
-			//&quot;only growth&quot; check 
-		    assert(_burnPrice &gt;= _burnPriceTmp);
+			//"only growth" check 
+		    assert(_burnPrice >= _burnPriceTmp);
 			return true;
 		} else {
 			return false;
@@ -278,7 +278,7 @@ contract Noxon is ERC20Interface {
 
 	// Send _value amount of tokens from address _from to address _to
 	// The transferFrom method is used for a withdraw workflow, allowing contracts to send
-	// tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+	// tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 	// fees in sub-currencies; the command should fail unless the _from account has
 	// deliberately authorized the sender of the message via some mechanism; we propose
 	// these standardized APIs for approval:
@@ -287,7 +287,7 @@ contract Noxon is ERC20Interface {
 		address _to,
 		uint256 _amount
 	) public returns(bool success) {
-		if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to] &amp;&amp; _to != address(this) //not allow burn tockens from exhanges
+		if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to] && _to != address(this) //not allow burn tockens from exhanges
 		) {
 			balances[_from] = balances[_from].sub(_amount);
 			allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);

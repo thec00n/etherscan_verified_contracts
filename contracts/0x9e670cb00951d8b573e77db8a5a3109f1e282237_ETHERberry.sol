@@ -53,7 +53,7 @@ contract ETHERberry
 	        hyip.send((feecounter/2)/2);
 	        feecounter=0;                                            
 	        
-            if ((msg.value &gt;= (1 ether)/40) &amp;&amp; (msg.value &lt;= (1 ether)))                                
+            if ((msg.value >= (1 ether)/40) && (msg.value <= (1 ether)))                                
             {
 	            amount = msg.value;                                      
 	            uint idx=persons.length;                                   
@@ -77,32 +77,32 @@ contract ETHERberry
     
     function canPay() internal                                                  
     {
-        uint percent=110;  //if tx &lt;0.05 ether - get 110%
-        if (persons[paymentqueue].ETHamount &gt; (1 ether)/20) //if tx &gt; 0.05 ether - get 115%
+        uint percent=110;  //if tx <0.05 ether - get 110%
+        if (persons[paymentqueue].ETHamount > (1 ether)/20) //if tx > 0.05 ether - get 115%
         {
             percent =115;
         }
-        else if (persons[paymentqueue].ETHamount &gt; (1 ether)/10) //if tx &gt; 0.1 ether - get 120%
+        else if (persons[paymentqueue].ETHamount > (1 ether)/10) //if tx > 0.1 ether - get 120%
         {
             percent = 120;
         }
-        else if (persons[paymentqueue].ETHamount &gt; (1 ether)/5)  //if tx &gt;0.2 ether - get 125%
+        else if (persons[paymentqueue].ETHamount > (1 ether)/5)  //if tx >0.2 ether - get 125%
         {
             percent = 125;
         }
-        else if (persons[paymentqueue].ETHamount &gt; (1 ether)/4)  //if tx &gt; 0.25 ether - get 130%
+        else if (persons[paymentqueue].ETHamount > (1 ether)/4)  //if tx > 0.25 ether - get 130%
         {
             percent = 130;
         }
-        else if (persons[paymentqueue].ETHamount &gt; (1 ether)/2)   //if tx &gt; 0.5 ether - get 140%
+        else if (persons[paymentqueue].ETHamount > (1 ether)/2)   //if tx > 0.5 ether - get 140%
         {
             percent = 140;
         }
-        else if (persons[paymentqueue].ETHamount &gt; ((1 ether)/2 + (1 ether)/4))  // if tx &gt; 0.75 ether - get 145%
+        else if (persons[paymentqueue].ETHamount > ((1 ether)/2 + (1 ether)/4))  // if tx > 0.75 ether - get 145%
         {
             percent = 145;
         }
-        while (meg.balance&gt;persons[paymentqueue].ETHamount/100*percent)             
+        while (meg.balance>persons[paymentqueue].ETHamount/100*percent)             
         {
             uint transactionAmount=persons[paymentqueue].ETHamount/100*percent;     
             persons[paymentqueue].ETHaddress.send(transactionAmount);           

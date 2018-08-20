@@ -14,7 +14,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u); 
  
     }
@@ -25,28 +25,28 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
 
 contract Token is SafeMath{
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
-  string public symbol = &quot;&quot;;
-  string public name = &quot;&quot;;
+  string public symbol = "";
+  string public name = "";
   uint8 public decimals = 18;
   uint256 public totalSupply = 0;
   address owner = 0;
@@ -103,12 +103,12 @@ contract Token is SafeMath{
   function isContract(address _addr) private returns (bool is_contract) {
       uint length;
 	  
-	  if (balanceOf(_addr) &gt;=0 )
+	  if (balanceOf(_addr) >=0 )
 	  
       assembly {
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -117,7 +117,7 @@ contract Token is SafeMath{
     }
 
   function transferToAddress(address _to, uint _value) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value);
@@ -125,7 +125,7 @@ contract Token is SafeMath{
   }
   
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver reciever = ContractReceiver(_to);

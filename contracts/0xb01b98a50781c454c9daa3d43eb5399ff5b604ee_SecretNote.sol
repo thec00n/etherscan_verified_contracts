@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address owner;
@@ -30,12 +30,12 @@ contract Ownable {
  */
 contract SecretNote is Ownable {
     struct UserInfo {
-        mapping(bytes32 =&gt; bytes32) notes;
+        mapping(bytes32 => bytes32) notes;
         bytes32[] noteKeys;
         uint256 index; // 1-based
     }
 
-    mapping(address =&gt; UserInfo) private registerUsers;
+    mapping(address => UserInfo) private registerUsers;
     address[] private userIndex;
 
     event SecretNoteUpdated(address indexed _sender, bytes32 indexed _noteKey, bool _success);
@@ -75,7 +75,7 @@ contract SecretNote is Ownable {
      * @param _index Starting from 1
      */
     function getUserAddress(uint256 _index) public view onlyOwner returns (address) {
-        require(_index &gt; 0);
+        require(_index > 0);
         return userIndex[_index - 1];
     }
 
@@ -108,12 +108,12 @@ contract SecretNote is Ownable {
      * @param _content The note path hash
      */
     function setNote(bytes32 _noteKey, bytes32 _content) public payable {
-        require(_noteKey != &quot;&quot;);
-        require(_content != &quot;&quot;);
+        require(_noteKey != "");
+        require(_content != "");
 
         var userAddr = msg.sender;
         var user = registerUsers[userAddr];
-        if (user.notes[_noteKey] == &quot;&quot;) {
+        if (user.notes[_noteKey] == "") {
             user.noteKeys.push(_noteKey);
         }
         user.notes[_noteKey] = _content;
@@ -126,7 +126,7 @@ contract SecretNote is Ownable {
     }
 
     /**
-     * @dev Destroy one&#39;s account
+     * @dev Destroy one's account
      */
     function destroyAccount() public returns (bool) {
         var userAddr = msg.sender;

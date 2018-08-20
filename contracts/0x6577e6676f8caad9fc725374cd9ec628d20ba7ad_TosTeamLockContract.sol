@@ -67,20 +67,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,7 +94,7 @@ contract TosTeamLockContract {
     using SafeERC20 for TOSERC20;
     using SafeMath for uint;
 
-    string public constant name = &quot;TosTeamLockContract&quot;;
+    string public constant name = "TosTeamLockContract";
 
     uint256 public constant RELEASE_TIME                   = 1623254400;  //2021/6/10 0:0:0;
 
@@ -113,14 +113,14 @@ contract TosTeamLockContract {
      */
     function release() public {
         // solium-disable-next-line security/no-block-members
-        require(now &gt;= RELEASE_TIME);
+        require(now >= RELEASE_TIME);
 
         uint256 num = (now - RELEASE_TIME) / RELEASE_PERIODS;
-        require(num + 1 &gt; numOfReleased);
+        require(num + 1 > numOfReleased);
 
         uint256 amount = tosToken.balanceOf(this).mul(30).div(100);
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         tosToken.safeTransfer(beneficiary, amount);
         numOfReleased = numOfReleased.add(1);   

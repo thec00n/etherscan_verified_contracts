@@ -12,7 +12,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.0;
@@ -21,7 +21,7 @@ contract Base
 {
 /* Constants */
 
-    string constant VERSION = &quot;Base 0.1.1 \n&quot;;
+    string constant VERSION = "Base 0.1.1 \n";
 
 /* State Variables */
 
@@ -115,7 +115,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.0;
@@ -125,11 +125,11 @@ contract Math
 
 /* Constants */
 
-    string constant VERSION = &quot;Math 0.0.1 \n&quot;;
+    string constant VERSION = "Math 0.0.1 \n";
     uint constant NULL = 0;
     bool constant LT = false;
     bool constant GT = true;
-    // No type bool &lt;-&gt; int type converstion in solidity :~(
+    // No type bool <-> int type converstion in solidity :~(
     uint constant iTRUE = 1;
     uint constant iFALSE = 0;
     uint constant iPOS = 1;
@@ -150,35 +150,35 @@ contract Math
       if (!assertion) throw;
     }
     
-    // @dev Parametric comparitor for &gt; or &lt;
-    // !_sym returns a &lt; b
-    // _sym  returns a &gt; b
+    // @dev Parametric comparitor for > or <
+    // !_sym returns a < b
+    // _sym  returns a > b
     function cmp (uint a, uint b, bool _sym) internal constant returns (bool)
     {
-        return (a!=b) &amp;&amp; ((a &lt; b) != _sym);
+        return (a!=b) && ((a < b) != _sym);
     }
 
-    /// @dev Parametric comparitor for &gt;= or &lt;=
-    /// !_sym returns a &lt;= b
-    /// _sym  returns a &gt;= b
+    /// @dev Parametric comparitor for >= or <=
+    /// !_sym returns a <= b
+    /// _sym  returns a >= b
     function cmpEq (uint a, uint b, bool _sym) internal constant returns (bool)
     {
-        return (a==b) || ((a &lt; b) != _sym);
+        return (a==b) || ((a < b) != _sym);
     }
     
     /// Trichotomous comparitor
-    /// a &lt; b returns -1
+    /// a < b returns -1
     /// a == b returns 0
-    /// a &gt; b returns 1
+    /// a > b returns 1
 /*    function triCmp(uint a, uint b) internal constant returns (bool)
     {
         uint c = a - b;
-        return c &amp; c &amp; (0 - 1);
+        return c & c & (0 - 1);
     }
     
     function nSign(uint a) internal returns (uint)
     {
-        return a &amp; 2^255;
+        return a & 2^255;
     }
     
     function neg(uint a) internal returns (uint) {
@@ -194,14 +194,14 @@ contract Math
 
     function safeSub(uint a, uint b) internal constant returns (uint)
     {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function safeAdd(uint a, uint b) internal constant returns (uint)
     {
       uint c = a + b;
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 }
@@ -222,13 +222,13 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 //pragma solidity ^0.4.0;
 
-//import &quot;Math.sol&quot;;
-//import &quot;Base.sol&quot;;
+//import "Math.sol";
+//import "Base.sol";
 
 // ERC20 Standard Token Interface with safe maths and reentry protection
 contract ERC20Interface
@@ -236,7 +236,7 @@ contract ERC20Interface
 /* Structs */
 
 /* Constants */
-    string constant VERSION = &quot;ERC20 0.2.3-o0ragman0o\nMath 0.0.1\nBase 0.1.1\n&quot;;
+    string constant VERSION = "ERC20 0.2.3-o0ragman0o\nMath 0.0.1\nBase 0.1.1\n";
 
 /* State Valiables */
     uint public totalSupply;
@@ -245,11 +245,11 @@ contract ERC20Interface
     string public symbol;
     
     // Token ownership mapping
-    // mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; uint) balance;
+    // mapping (address => uint) public balanceOf;
+    mapping (address => uint) balance;
     
     // Transfer allowances mapping
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => mapping (address => uint)) public allowance;
 
 /* Events */
     // Triggered when tokens are transferred.
@@ -310,13 +310,13 @@ contract ERC20Token is Base, Math, ERC20Interface
 /* Modifiers */
 
     modifier isAvailable(uint _amount) {
-        if (_amount &gt; balance[msg.sender]) throw;
+        if (_amount > balance[msg.sender]) throw;
         _;
     }
 
     modifier isAllowed(address _from, uint _amount) {
-        if (_amount &gt; allowance[_from][msg.sender] ||
-           _amount &gt; balance[_from]) throw;
+        if (_amount > allowance[_from][msg.sender] ||
+           _amount > balance[_from]) throw;
         _;        
     }
 
@@ -412,7 +412,7 @@ This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 //pragma solidity ^0.4.0;
@@ -420,14 +420,14 @@ GNU lesser General Public License for more details.
 // LibCLL using `uint` keys
 library LibCLLu {
 
-    string constant VERSION = &quot;LibCLLu 0.3.1&quot;;
+    string constant VERSION = "LibCLLu 0.3.1";
     uint constant NULL = 0;
     uint constant HEAD = NULL;
     bool constant PREV = false;
     bool constant NEXT = true;
     
     struct CLL{
-        mapping (uint =&gt; mapping (bool =&gt; uint)) cll;
+        mapping (uint => mapping (bool => uint)) cll;
     }
 
     // n: node id  d: direction  r: return node id
@@ -477,7 +477,7 @@ library LibCLLu {
         internal  constant returns (uint r)
     {
         r = step(self, a, d);
-        while  ((b!=r) &amp;&amp; ((b &lt; r) != d)) r = self.cll[r][d];
+        while  ((b!=r) && ((b < r) != d)) r = self.cll[r][d];
         return;
     }
 
@@ -514,14 +514,14 @@ library LibCLLu {
 // LibCLL using `int` keys
 library LibCLLi {
 
-    string constant VERSION = &quot;LibCLLi 0.3.1&quot;;
+    string constant VERSION = "LibCLLi 0.3.1";
     int constant NULL = 0;
     int constant HEAD = NULL;
     bool constant PREV = false;
     bool constant NEXT = true;
     
     struct CLL{
-        mapping (int =&gt; mapping (bool =&gt; int)) cll;
+        mapping (int => mapping (bool => int)) cll;
     }
 
     // n: node id  d: direction  r: return node id
@@ -567,7 +567,7 @@ library LibCLLi {
         internal  constant returns (int r)
     {
         r = step(self, a, d);
-        while  ((b!=r) &amp;&amp; ((b &lt; r) != d)) r = self.cll[r][d];
+        while  ((b!=r) && ((b < r) != d)) r = self.cll[r][d];
         return;
     }
 
@@ -612,22 +612,22 @@ author: Darryl Morris (o0ragman0o)
 email:  o0ragman0o AT gmail.com
 
 An ERC20 compliant token with currency
-exchange functionality here called an &#39;Intrinsically Tradable
-Token&#39; (ITT).
+exchange functionality here called an 'Intrinsically Tradable
+Token' (ITT).
 
 This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 //pragma solidity ^0.4.0;
 
-//import &quot;Base.sol&quot;;
-//import &quot;Math.sol&quot;;
-//import &quot;ERC20.sol&quot;;
-//import &quot;LibCLL.sol&quot;;
+//import "Base.sol";
+//import "Math.sol";
+//import "ERC20.sol";
+//import "LibCLL.sol";
 
 contract ITTInterface
 {
@@ -636,7 +636,7 @@ contract ITTInterface
 
 /* Constants */
 
-    string constant VERSION = &quot;ITT 0.3.6\nERC20 0.2.3-o0ragman0o\nMath 0.0.1\nBase 0.1.1\n&quot;;
+    string constant VERSION = "ITT 0.3.6\nERC20 0.2.3-o0ragman0o\nMath 0.0.1\nBase 0.1.1\n";
     uint constant HEAD = 0;
     uint constant MINNUM = uint(1);
     // use only 128 bits of uint to prevent mul overflows.
@@ -648,12 +648,12 @@ contract ITTInterface
     bool constant BID = false;
     bool constant ASK = true;
 
-    // minimum gas required to prevent out of gas on &#39;take&#39; loop
+    // minimum gas required to prevent out of gas on 'take' loop
     uint constant MINGAS = 100000;
 
     // For staging and commiting trade details.  This saves unneccessary state
     // change gas usage during multi order takes but does increase logic
-    // complexity when encountering &#39;trade with self&#39; orders
+    // complexity when encountering 'trade with self' orders
     struct TradeMessage {
         bool make;
         bool side;
@@ -669,20 +669,20 @@ contract ITTInterface
     bool public trading;
 
     // Mapping for ether ownership of accumulated deposits, sales and refunds.
-    mapping (address =&gt; uint) etherBalance;
+    mapping (address => uint) etherBalance;
 
-    // Orders are stored in circular linked list FIFO&#39;s which are mappings with
+    // Orders are stored in circular linked list FIFO's which are mappings with
     // price as key and value as trader address.  A trader can have only one
     // order open at each price. Reordering at that price will cancel the first
     // order and push the new one onto the back of the queue.
-    mapping (uint =&gt; LibCLLu.CLL) orderFIFOs;
+    mapping (uint => LibCLLu.CLL) orderFIFOs;
     
     // Order amounts are stored in a seperate lookup. The keys of this mapping
     // are `sha3` hashes of the price and trader address.
     // This mapping prevents more than one order at a particular price.
-    mapping (bytes32 =&gt; uint) amounts;
+    mapping (bytes32 => uint) amounts;
 
-    // The pricebook is a linked list holding keys to lookup the price FIFO&#39;s
+    // The pricebook is a linked list holding keys to lookup the price FIFO's
     LibCLLu.CLL priceBook = orderFIFOs[0];
 
 
@@ -705,7 +705,7 @@ contract ITTInterface
     /// @notice Returns best bid or ask price. 
     function spread(bool _side) public constant returns(uint);
     
-    /// @notice Returns the order amount for trader `_trader` at &#39;_price&#39;
+    /// @notice Returns the order amount for trader `_trader` at '_price'
     /// @param _trader Address of trader
     /// @param _price Price of order
     function getAmount(uint _price, address _trader) 
@@ -770,28 +770,28 @@ contract ITT is ERC20Token, ITTInterface
 
     /// @dev Validate buy parameters
     modifier isValidBuy(uint _bidPrice, uint _amount) {
-        if ((etherBalance[msg.sender] + msg.value) &lt; (_amount * _bidPrice) ||
-            _amount == 0 || _amount &gt; totalSupply ||
-            _bidPrice &lt;= MINPRICE || _bidPrice &gt;= MAXNUM) throw; // has insufficient ether.
+        if ((etherBalance[msg.sender] + msg.value) < (_amount * _bidPrice) ||
+            _amount == 0 || _amount > totalSupply ||
+            _bidPrice <= MINPRICE || _bidPrice >= MAXNUM) throw; // has insufficient ether.
         _;
     }
 
     /// @dev Validates sell parameters. Price must be larger than 1.
     modifier isValidSell(uint _askPrice, uint _amount) {
-        if (_amount &gt; balance[msg.sender] || _amount == 0 ||
-            _askPrice &lt; MINPRICE || _askPrice &gt; MAXNUM) throw;
+        if (_amount > balance[msg.sender] || _amount == 0 ||
+            _askPrice < MINPRICE || _askPrice > MAXNUM) throw;
         _;
     }
     
     /// @dev Validates ether balance
     modifier hasEther(address _member, uint _ether) {
-        if (etherBalance[_member] &lt; _ether) throw;
+        if (etherBalance[_member] < _ether) throw;
         _;
     }
 
     /// @dev Validates token balance
     modifier hasBalance(address _member, uint _amount) {
-        if (balance[_member] &lt; _amount) throw;
+        if (balance[_member] < _amount) throw;
         _;
     }
 
@@ -858,7 +858,7 @@ contract ITT is ERC20Token, ITTInterface
         uint i; 
         uint p = priceBook.step(MINNUM, NEXT);
         uint[] memory volumes = new uint[](priceBook.sizeOf() * 2 - 2);
-        while (p &lt; MAXNUM) {
+        while (p < MAXNUM) {
             volumes[i++] = p;
             volumes[i++] = getPriceVolume(p);
             p = priceBook.step(p, NEXT);
@@ -870,8 +870,8 @@ contract ITT is ERC20Token, ITTInterface
     {
         uint c;
         uint p = MINNUM;
-        while (p &lt; MAXNUM) {
-            if (amounts[sha3(p, _addr)] &gt; 0) c++;
+        while (p < MAXNUM) {
+            if (amounts[sha3(p, _addr)] > 0) c++;
             p = priceBook.step(p, NEXT);
         }
         return c;
@@ -884,8 +884,8 @@ contract ITT is ERC20Token, ITTInterface
         uint p = MINNUM;
         uint[] memory open = new uint[](numOrdersOf(_addr)*2);
         p = MINNUM;
-        while (p &lt; MAXNUM) {
-            if (amounts[sha3(p, _addr)] &gt; 0) {
+        while (p < MAXNUM) {
+            if (amounts[sha3(p, _addr)] > 0) {
                 open[i++] = p;
                 open[i++] = amounts[sha3(p, _addr)];
             }
@@ -970,7 +970,7 @@ contract ITT is ERC20Token, ITTInterface
 
 /* Functions Internal */
 
-// Internal functions handle this contract&#39;s logic.
+// Internal functions handle this contract's logic.
 
     function trade (uint _price, uint _amount, bool _side, bool _make) internal {
         TradeMessage memory tmsg;
@@ -1003,14 +1003,14 @@ contract ITT is ERC20Token, ITTInterface
 
         // Loop with available gas to take orders
         while (
-            tmsg.tradeAmount &gt; 0 &amp;&amp;
-            cmpEq(tmsg.price, bestPrice, !tmsg.side) &amp;&amp; 
-            msg.gas &gt; MINGAS
+            tmsg.tradeAmount > 0 &&
+            cmpEq(tmsg.price, bestPrice, !tmsg.side) && 
+            msg.gas > MINGAS
         )
         {
             maker = address(orderFIFOs[bestPrice].step(HEAD, NEXT));
             orderHash = sha3(bestPrice, maker);
-            if (tmsg.tradeAmount &lt; amounts[orderHash]) {
+            if (tmsg.tradeAmount < amounts[orderHash]) {
                 // Prepare to take partial order
                 amounts[orderHash] = safeSub(amounts[orderHash], tmsg.tradeAmount);
                 takeAmount = tmsg.tradeAmount;
@@ -1053,7 +1053,7 @@ contract ITT is ERC20Token, ITTInterface
         internal
     {
         bytes32 orderHash;
-        if (tmsg.tradeAmount == 0 || !tmsg.make || msg.gas &lt; MINGAS) return;
+        if (tmsg.tradeAmount == 0 || !tmsg.make || msg.gas < MINGAS) return;
         orderHash = sha3(tmsg.price, msg.sender);
         if (amounts[orderHash] != 0) {
             // Cancel any pre-existing owned order at this price
@@ -1081,7 +1081,7 @@ contract ITT is ERC20Token, ITTInterface
     function cancelIntl(TradeMessage tmsg) internal {
         uint amount = amounts[sha3(tmsg.price, msg.sender)];
         if (amount == 0) return;
-        if (tmsg.price &gt; spread(BID)) tmsg.balance += amount; // was ask
+        if (tmsg.price > spread(BID)) tmsg.balance += amount; // was ask
         else tmsg.etherBalance += tmsg.price * amount; // was bid
         closeOrder(tmsg.price, msg.sender);
     }

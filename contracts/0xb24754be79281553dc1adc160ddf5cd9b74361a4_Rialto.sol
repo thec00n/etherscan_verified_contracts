@@ -17,15 +17,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract ERC20 {
     /* Public variables of the token */
-    string public standard = &#39;RIALTO 1.0&#39;;
+    string public standard = 'RIALTO 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public supply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -119,11 +119,11 @@ contract Rialto is owned, ERC20 {
     function transfer(address _to, uint256 _value) returns (bool success){
 
 
-        if (balances[msg.sender] &lt; _value) throw;           // Check if the sender has enough
+        if (balances[msg.sender] < _value) throw;           // Check if the sender has enough
 
-        if (balances[_to] + _value &lt; balances[_to]) throw; // Check for overflows
+        if (balances[_to] + _value < balances[_to]) throw; // Check for overflows
 
-        if (msg.sender == owner &amp;&amp; block.timestamp &lt; expiration &amp;&amp; (balances[msg.sender]-_value) &lt; lockPercentage * supply / 100 ) throw;  // Locked funds
+        if (msg.sender == owner && block.timestamp < expiration && (balances[msg.sender]-_value) < lockPercentage * supply / 100 ) throw;  // Locked funds
 
         balances[msg.sender] -= _value;                     // Subtract from the sender
         balances[_to] += _value;                            // Add the same to the recipient
@@ -136,10 +136,10 @@ contract Rialto is owned, ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
 
-        if (balances[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
-        if (_from == owner &amp;&amp; block.timestamp &lt; expiration &amp;&amp; (balances[_from]-_value) &lt; lockPercentage * supply / 100) throw; //Locked funds
+        if (balances[_from] < _value) throw;                 // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
+        if (_from == owner && block.timestamp < expiration && (balances[_from]-_value) < lockPercentage * supply / 100) throw; //Locked funds
 
         balances[_from] -= _value;                          // Subtract from the sender
         balances[_to] += _value;                            // Add the same to the recipient

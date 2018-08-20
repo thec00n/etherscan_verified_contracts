@@ -36,7 +36,7 @@ contract Alice {
     DealState state;
   }
 
-  mapping (bytes32 =&gt; Deal) public deals;
+  mapping (bytes32 => Deal) public deals;
 
   function Alice() { }
 
@@ -46,7 +46,7 @@ contract Alice {
     bytes20 _aliceHash,
     bytes20 _bobHash
   ) external payable {
-    require(_bob != 0x0 &amp;&amp; msg.value &gt; 0 &amp;&amp; deals[_dealId].state == DealState.Uninitialized);
+    require(_bob != 0x0 && msg.value > 0 && deals[_dealId].state == DealState.Uninitialized);
     bytes20 dealHash = ripemd160(
       msg.sender,
       _aliceHash,
@@ -69,7 +69,7 @@ contract Alice {
     bytes20 _bobHash,
     address _tokenAddress
   ) external {
-    require(_bob != 0x0 &amp;&amp; _tokenAddress != 0x0 &amp;&amp; _amount &gt; 0 &amp;&amp; deals[_dealId].state == DealState.Uninitialized);
+    require(_bob != 0x0 && _tokenAddress != 0x0 && _amount > 0 && deals[_dealId].state == DealState.Uninitialized);
     bytes20 dealHash = ripemd160(
       msg.sender,
       _aliceHash,

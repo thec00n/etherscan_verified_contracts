@@ -4,12 +4,12 @@ pragma solidity ^0.4.24;
 // ----------------------------------------------------------------------------
 contract Owned {
     
-    /// &#39;owner&#39; is the only address that can call a function with 
+    /// 'owner' is the only address that can call a function with 
     /// this modifier
     address public owner;
     address internal newOwner;
     
-    ///@notice The constructor assigns the message sender to be &#39;owner&#39;
+    ///@notice The constructor assigns the message sender to be 'owner'
     constructor() public {
         owner = msg.sender;
     }
@@ -48,20 +48,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -117,8 +117,8 @@ contract ERC20Token {
 }
 
 contract standardToken is ERC20Token {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function balanceOf(address _owner) constant public returns (uint256) {
         return balances[_owner];
@@ -129,8 +129,8 @@ contract standardToken is ERC20Token {
         public 
         returns (bool success) 
     {
-        require (balances[msg.sender] &gt;= _value);           // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if owerflow detected
+        require (balances[msg.sender] >= _value);           // Throw if sender has insufficient balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance
         emit Transfer(msg.sender, _to, _value);             // Raise Transfer event
@@ -139,7 +139,7 @@ contract standardToken is ERC20Token {
 
     /* Approve other address to spend tokens on your account */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowances[msg.sender][_spender] = _value;          // Set allowance
         emit Approval(msg.sender, _spender, _value);        // Raise Approval event
         return true;
@@ -155,9 +155,9 @@ contract standardToken is ERC20Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require (balances[_from] &gt;= _value);                // Throw if sender does not have enough balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if overflow detected
-        require (_value &lt;= allowances[_from][msg.sender]);  // Throw if you do not have allowance
+        require (balances[_from] >= _value);                // Throw if sender does not have enough balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if overflow detected
+        require (_value <= allowances[_from][msg.sender]);  // Throw if you do not have allowance
         balances[_from] -= _value;                          // Deduct senders balance
         balances[_to] += _value;                            // Add recipient blaance
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -175,8 +175,8 @@ contract standardToken is ERC20Token {
 contract HOFA is standardToken, Owned {
     using SafeMath for uint;
     
-    string public name=&quot;HOFA Token&quot;;
-    string public symbol=&quot;HOFA&quot;;
+    string public name="HOFA Token";
+    string public symbol="HOFA";
     uint256 public decimals=18;
     uint256 public totalSupply = 0;
     uint256 public topTotalSupply = 8*10**8*10**decimals;

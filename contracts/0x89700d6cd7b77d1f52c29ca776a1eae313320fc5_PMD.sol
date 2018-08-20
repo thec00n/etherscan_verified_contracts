@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -140,7 +140,7 @@ contract Token {
 contract StandardToken is Token, Pausable {
 
     function transfer(address _to, uint256 _value) whenNotPaused public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -148,7 +148,7 @@ contract StandardToken is Token, Pausable {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused public returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -170,16 +170,16 @@ contract StandardToken is Token, Pausable {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) public balances; // *added public
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed; // *added public
+    mapping (address => uint256) public balances; // *added public
+    mapping (address => mapping (address => uint256)) public allowed; // *added public
 }
 
 
 
 contract PMD is StandardToken {
 
-    string public constant name = &quot;PMD Token&quot;;
-    string public constant symbol = &quot;PMD&quot;;
+    string public constant name = "PMD Token";
+    string public constant symbol = "PMD";
     uint256 public constant decimals = 18;
     uint256 public constant totalSupply = 1000000000 * (10**decimals);
     uint256 public totalSupplied = 0;

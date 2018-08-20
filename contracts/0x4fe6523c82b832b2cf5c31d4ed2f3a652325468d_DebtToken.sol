@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,14 +106,14 @@ contract DebtToken {
   */
   string public name;
   string public symbol;
-  string public version = &#39;DT0.1&#39;;
+  string public version = 'DT0.1';
   uint256 public decimals = 18;
 
   /**
   ERC20 properties
   */
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
   event Transfer(address indexed from, address indexed to, uint256 value);
 
   /**
@@ -156,10 +156,10 @@ contract DebtToken {
       address _borrower
       ) {
 
-      require(_exchangeRate &gt; 0);
-      require(_initialAmount &gt; 0);
-      require(_dayLength &gt; 0);
-      require(_loanCycle &gt; 0);
+      require(_exchangeRate > 0);
+      require(_initialAmount > 0);
+      require(_dayLength > 0);
+      require(_loanCycle > 0);
 
       require(_lender != 0x0);
       require(_borrower != 0x0);
@@ -213,21 +213,21 @@ contract DebtToken {
   }
 
   /**
-  Checks that caller&#39;s address is the lender
+  Checks that caller's address is the lender
   */
   function isLender() private constant returns(bool){
     return msg.sender == lender;
   }
 
   /**
-  Check that caller&#39;s address is the borrower
+  Check that caller's address is the borrower
   */
   function isBorrower() private constant returns (bool){
     return msg.sender == borrower;
   }
 
   function isLoanFunded() public constant returns(bool) {
-    return balances[lender] &gt; 0 &amp;&amp; balances[borrower] == 0;
+    return balances[lender] > 0 && balances[borrower] == 0;
   }
 
   /**
@@ -237,7 +237,7 @@ contract DebtToken {
     if(loanActivation == 0)
       return false;
     else
-      return now &gt;= loanActivation.add( dayLength.mul(loanTerm) );
+      return now >= loanActivation.add( dayLength.mul(loanTerm) );
   }
 
   /**
@@ -247,7 +247,7 @@ contract DebtToken {
     if(!isTermOver())
       return true;
     else
-      return !( now &gt;= lastInterestCycle.add( interestCycleLength.mul(dayLength) ) );
+      return !( now >= lastInterestCycle.add( interestCycleLength.mul(dayLength) ) );
   }
 
   /**
@@ -271,7 +271,7 @@ contract DebtToken {
     uint interest_coins;
     uint256 interest_cycle;
     (interest_coins,interest_cycle) = calculateInterestDue();
-    assert(interest_coins &gt; 0 &amp;&amp; interest_cycle &gt; 0);
+    assert(interest_coins > 0 && interest_cycle > 0);
     totalInterestCycles =  totalInterestCycles.add(interest_cycle);
     lastInterestCycle = lastInterestCycle.add( interest_cycle.mul( interestCycleLength.mul(dayLength) ) );
     mint(lender , interest_coins);
@@ -363,7 +363,7 @@ contract DebtToken {
   Fallback function
   */
   function() public payable{
-    require(initialSupply &gt; 0);//Stop the whole process if initialSupply not set
+    require(initialSupply > 0);//Stop the whole process if initialSupply not set
     if(isBorrower())
       refundLoan();
     else if(isLender())

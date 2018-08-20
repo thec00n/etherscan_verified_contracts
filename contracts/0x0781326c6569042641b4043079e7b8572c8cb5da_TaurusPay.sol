@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -76,7 +76,7 @@ contract ERC223ReceivingContract {
 contract ERC223Token is ERC223Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances; // List of user balances.
+    mapping(address => uint256) balances; // List of user balances.
 
     /**
     * @dev protection against short address attack
@@ -102,7 +102,7 @@ contract ERC223Token is ERC223Basic {
         // Added due to backwards compatibility reasons .
         uint codeLength;
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(transfersEnabled);
 
         assembly {
@@ -112,7 +112,7 @@ contract ERC223Token is ERC223Basic {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -122,7 +122,7 @@ contract ERC223Token is ERC223Basic {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -132,7 +132,7 @@ contract ERC223Token is ERC223Basic {
         uint codeLength;
         bytes memory empty;
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(transfersEnabled);
 
         assembly {
@@ -142,7 +142,7 @@ contract ERC223Token is ERC223Basic {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -164,7 +164,7 @@ contract ERC223Token is ERC223Basic {
 
 contract StandardToken is ERC20, ERC223Token {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, ERC223Token {
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(transfersEnabled);
 
         balances[_from] = balances[_from].sub(_value);
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, ERC223Token {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -225,7 +225,7 @@ contract StandardToken is ERC20, ERC223Token {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -238,16 +238,16 @@ contract StandardToken is ERC20, ERC223Token {
 
 contract TaurusPay is StandardToken {
 
-    string public constant name = &quot;TaurusPay Token&quot;;
-    string public constant symbol = &quot;TAPT&quot;;
+    string public constant name = "TaurusPay Token";
+    string public constant symbol = "TAPT";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 950 * 10**6 * (10**uint256(decimals));
     address public owner;
-    mapping (address =&gt; bool) public contractUsers;
+    mapping (address => bool) public contractUsers;
     bool public mintingFinished;
     uint256 public tokenAllocated = 0;
     // list of valid claim
-    mapping (address =&gt; uint) public countClaimsToken;
+    mapping (address => uint) public countClaimsToken;
 
     uint256 public priceToken = 950000;
     uint256 public priceClaim = 0.0005 ether;
@@ -265,7 +265,7 @@ contract TaurusPay is StandardToken {
     constructor(address _owner) public {
         totalSupply = INITIAL_SUPPLY;
         owner = _owner;
-        //owner = msg.sender; // for test&#39;s
+        //owner = msg.sender; // for test's
         balances[owner] = INITIAL_SUPPLY;
         transfersEnabled = true;
         mintingFinished = false;
@@ -291,11 +291,11 @@ contract TaurusPay is StandardToken {
 
     function validPurchaseTokens(uint256 _weiAmount) public returns (uint256) {
         uint256 addTokens = _weiAmount.mul(priceToken);
-        if (_weiAmount &lt; 0.01 ether) {
+        if (_weiAmount < 0.01 ether) {
             emit MinWeiLimitReached(msg.sender, _weiAmount);
             return 0;
         }
-        if (tokenAllocated.add(addTokens) &gt; balances[owner]) {
+        if (tokenAllocated.add(addTokens) > balances[owner]) {
             emit TokenLimitReached(tokenAllocated, addTokens);
             return 0;
         }
@@ -341,7 +341,7 @@ contract TaurusPay is StandardToken {
      */
     function mint(address _to, uint256 _amount, address _owner) canMint internal returns (bool) {
         require(_to != address(0));
-        require(_amount &lt;= balances[owner]);
+        require(_amount <= balances[owner]);
         require(!mintingFinished);
         balances[_to] = balances[_to].add(_amount);
         balances[_owner] = balances[_owner].sub(_amount);
@@ -352,15 +352,15 @@ contract TaurusPay is StandardToken {
 
     function claim() canMint public payable returns (bool) {
         uint256 currentTime = now;
-        //currentTime = 1540037100; //for test&#39;s
+        //currentTime = 1540037100; //for test's
         require(validPurchaseTime(currentTime));
-        require(msg.value &gt;= priceClaim);
+        require(msg.value >= priceClaim);
         address beneficiar = msg.sender;
         require(beneficiar != address(0));
         require(!mintingFinished);
 
         uint256 amount = calcAmount(beneficiar);
-        require(amount &lt;= balances[owner]);
+        require(amount <= balances[owner]);
 
         balances[beneficiar] = balances[beneficiar].add(amount);
         balances[owner] = balances[owner].sub(amount);
@@ -371,12 +371,12 @@ contract TaurusPay is StandardToken {
         return true;
     }
 
-    //function calcAmount(address _beneficiar) canMint public returns (uint256 amount) { //for test&#39;s
+    //function calcAmount(address _beneficiar) canMint public returns (uint256 amount) { //for test's
     function calcAmount(address _beneficiar) canMint internal returns (uint256 amount) {
         if (countClaimsToken[_beneficiar] == 0) {
             countClaimsToken[_beneficiar] = 1;
         }
-        if (countClaimsToken[_beneficiar] &gt;= 22) {
+        if (countClaimsToken[_beneficiar] >= 22) {
             return 0;
         }
         uint step = countClaimsToken[_beneficiar];
@@ -386,20 +386,20 @@ contract TaurusPay is StandardToken {
 
     function validPurchaseTime(uint256 _currentTime) canMint public view returns (bool) {
         uint256 dayTime = _currentTime % 1 days;
-        if (startTimeDay &lt;= dayTime &amp;&amp; dayTime &lt;=  endTimeDay) {
+        if (startTimeDay <= dayTime && dayTime <=  endTimeDay) {
             return true;
         }
         return false;
     }
 
     function changeTime(uint256 _newStartTimeDay, uint256 _newEndTimeDay) public {
-        require(0 &lt; _newStartTimeDay &amp;&amp; 0 &lt; _newEndTimeDay);
+        require(0 < _newStartTimeDay && 0 < _newEndTimeDay);
         startTimeDay = _newStartTimeDay;
         endTimeDay = _newEndTimeDay;
     }
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokensToOwner(address _token) public onlyOwner {
@@ -414,12 +414,12 @@ contract TaurusPay is StandardToken {
     }
 
     function setPriceClaim(uint256 _newPriceClaim) external onlyOwner {
-        require(_newPriceClaim &gt; 0);
+        require(_newPriceClaim > 0);
         priceClaim = _newPriceClaim;
     }
 
     function setNumberClaimToken(uint256 _newNumClaimToken) external onlyOwner {
-        require(_newNumClaimToken &gt; 0);
+        require(_newNumClaimToken > 0);
         numberClaimToken = _newNumClaimToken;
     }
 

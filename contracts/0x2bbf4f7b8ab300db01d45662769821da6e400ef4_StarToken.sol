@@ -55,15 +55,15 @@ contract StandardToken is Token, Owned {
 
     bool public locked;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
     }
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     
     function freezeAccount(address target, bool freeze) onlyOwner {
@@ -77,9 +77,9 @@ contract StandardToken is Token, Owned {
       
         require(!frozenAccount[msg.sender]);
         
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
        
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -94,14 +94,14 @@ contract StandardToken is Token, Owned {
 
         require(!locked);
         
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         require(!frozenAccount[msg.sender]);
         require(!frozenAccount[_from]);
         
              
-        require(balances[_to] + _value &gt;= balances[_to]);    
+        require(balances[_to] + _value >= balances[_to]);    
        
-        require(_value &lt;= allowed[_from][msg.sender]);    
+        require(_value <= allowed[_from][msg.sender]);    
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -138,11 +138,11 @@ contract StandardToken is Token, Owned {
 
 contract StarToken is Owned, StandardToken {
 
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
 
-    string public name = &quot;StarLight&quot;;        
+    string public name = "StarLight";        
     
-    string public symbol = &quot;STAR&quot;;
+    string public symbol = "STAR";
 
     uint8 public decimals = 8;
    
@@ -166,7 +166,7 @@ contract StarToken is Owned, StandardToken {
 
     function issue(address _recipient, uint256 _value) onlyICO returns (bool success) {
 
-        require(_value &gt;= 0);
+        require(_value >= 0);
 
         balances[_recipient] += _value;
         totalSupply += _value;

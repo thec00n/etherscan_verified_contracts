@@ -10,7 +10,7 @@ pragma solidity ^0.4.19;
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -23,7 +23,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -65,13 +65,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -79,7 +79,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -196,7 +196,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -212,9 +212,9 @@ contract RBAC {
 // File: contracts/CourseCertification.sol
 
 contract CourseCertification is RBAC {
-    mapping (string =&gt; address[]) private associations;
+    mapping (string => address[]) private associations;
 
-    string public constant ROLE_MANAGER = &quot;manager&quot;;
+    string public constant ROLE_MANAGER = "manager";
 
     modifier onlyAdminOrManager()
     {
@@ -249,7 +249,7 @@ contract CourseCertification is RBAC {
      * @param courses address[]
      */
     function addCourses(string user, address[] courses) onlyAdminOrManager public {
-        for (uint256 i = 0; i &lt; courses.length; i++) {
+        for (uint256 i = 0; i < courses.length; i++) {
             address course = courses[i];
             associations[user].push(course);
         }

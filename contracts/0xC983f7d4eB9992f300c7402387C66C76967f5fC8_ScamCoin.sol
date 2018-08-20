@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   function transfer(address _to, uint256 _value)  public returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -57,7 +57,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   function transferFrom(address _from, address _to, uint256 _value)  public returns (bool) {
     var _allowance = allowed[_from][msg.sender];
     balances[_from] = balances[_from].sub(_value);
@@ -95,8 +95,8 @@ contract Ownable {
 }
 
 contract ScamCoin is StandardToken, Ownable {
-    string public name = &quot;ScamCoin&quot;;		
-  string public symbol = &quot;SCAM&quot;;		
+    string public name = "ScamCoin";		
+  string public symbol = "SCAM";		
   uint256 public decimals = 18;	
   uint256 public INITIAL_SUPPLY = 200000000 * (10 ** uint256(decimals));
   function ScamCoin()  public {

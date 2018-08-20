@@ -13,30 +13,30 @@ library safeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -84,7 +84,7 @@ contract ERC20Interface {
 contract ERC20 is ERC20Interface {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -93,7 +93,7 @@ contract ERC20 is ERC20Interface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -108,7 +108,7 @@ contract ERC20 is ERC20Interface {
 
     function approve(address _spender, uint256 _value) returns (bool success) {
         // See: https://github.com/ethereum/EIPs/issues/20#issuecomment-263555598
-        if (_value &gt; 0) {
+        if (_value > 0) {
             require(allowed[msg.sender][_spender] == 0);
         }
         allowed[msg.sender][_spender] = _value;
@@ -120,9 +120,9 @@ contract ERC20 is ERC20Interface {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -147,12 +147,12 @@ contract Vesting is DBC {
     function isBeneficiary() constant returns (bool) { return msg.sender == beneficiary; }
     function isVestingStarted() constant returns (bool) { return vestingStartTime != 0; }
 
-    /// @notice Calculates the quantity of Melon asset that&#39;s currently withdrawable
+    /// @notice Calculates the quantity of Melon asset that's currently withdrawable
     /// @return withdrawable Quantity of withdrawable Melon asset
     function calculateWithdrawable() constant returns (uint withdrawable) {
         uint timePassed = now.sub(vestingStartTime);
 
-        if (timePassed &lt; vestingPeriod) {
+        if (timePassed < vestingPeriod) {
             uint vested = totalVestedAmount.mul(timePassed).div(vestingPeriod);
             withdrawable = vested.sub(withdrawn);
         } else {
@@ -172,7 +172,7 @@ contract Vesting is DBC {
     /// @param ofVestingPeriod Vesting period in seconds from vestingStartTime
     function setVesting(address ofBeneficiary, uint ofMelonQuantity, uint ofVestingPeriod)
         pre_cond(!isVestingStarted())
-        pre_cond(ofMelonQuantity &gt; 0)
+        pre_cond(ofMelonQuantity > 0)
     {
         require(MELON_CONTRACT.transferFrom(msg.sender, this, ofMelonQuantity));
         vestingStartTime = now;

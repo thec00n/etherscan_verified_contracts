@@ -27,12 +27,12 @@ contract Owned {
 }
 
 contract GoliathCoin is Owned {
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
     uint256 public totalSupply;
 
-    string public name = &quot;Goliath&quot;;
-    string public symbol = &quot;GOL&quot;;
+    string public name = "Goliath";
+    string public symbol = "GOL";
     uint8 public decimals = 18;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -51,7 +51,7 @@ contract GoliathCoin is Owned {
     }
 
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(value &lt;= allowance[from][to]);
+        require(value <= allowance[from][to]);
 
         allowance[from][to] -= value;
         _transfer(from, to, value);
@@ -66,7 +66,7 @@ contract GoliathCoin is Owned {
     }
 
     function mint(address to, uint256 value) public onlyOwner {
-        require(balanceOf[to] + value &gt;= balanceOf[to]);
+        require(balanceOf[to] + value >= balanceOf[to]);
 
         balanceOf[to] += value;
         totalSupply += value;
@@ -74,7 +74,7 @@ contract GoliathCoin is Owned {
     }
 
     function burn(address from, uint256 value) public onlyOwner {
-        require(balanceOf[from] &gt;= value);
+        require(balanceOf[from] >= value);
 
         balanceOf[from] -= value;
         totalSupply -= value;
@@ -84,8 +84,8 @@ contract GoliathCoin is Owned {
     function _transfer(address from, address to, uint256 value) internal {
         // Checks for validity
         require(to != address(0));
-        require(balanceOf[from] &gt;= value);
-        require(balanceOf[to] + value &gt;= balanceOf[to]);
+        require(balanceOf[from] >= value);
+        require(balanceOf[to] + value >= balanceOf[to]);
 
         // Actually do the transfer
         balanceOf[from] -= value;

@@ -104,8 +104,8 @@ contract TokenState is Owned {
     address public associatedContract;
 
     // ERC20 fields.
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
 
     function TokenState(address _owner, address _associatedContract)
         Owned(_owner)

@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -148,13 +148,13 @@ contract BattleboardData is IBattleboardData  {
     uint8 maxPaidTeams = 4;
     
     //Each angel can only be on one board at a time. 
-    mapping (uint64 =&gt; bool) angelsOnBattleboards; 
+    mapping (uint64 => bool) angelsOnBattleboards; 
 
     //Map the battleboard ID to an array of all tiles on that board. 
-    mapping (uint32 =&gt; Tile[]) TilesonBoard;
+    mapping (uint32 => Tile[]) TilesonBoard;
     
     //for each battleboardId(uint16) there is a number with the tileId of the tile. TileId 0 means blank. 
-    mapping (uint16 =&gt; uint8 [64]) positionsTiles;
+    mapping (uint16 => uint8 [64]) positionsTiles;
     
     
     
@@ -190,8 +190,8 @@ contract BattleboardData is IBattleboardData  {
       }
         
         function createNullTile(uint16 _battleboardId) private    {
-      //We need to create a tile with ID 0 that won&#39;t be on the board. This lets us know if any other tile is ID 0 then that means it&#39;s a blank tile. 
-        if ((_battleboardId &lt;0) || (_battleboardId &gt; totalBattleboards)) {revert();}
+      //We need to create a tile with ID 0 that won't be on the board. This lets us know if any other tile is ID 0 then that means it's a blank tile. 
+        if ((_battleboardId <0) || (_battleboardId > totalBattleboards)) {revert();}
         Tile memory tile ;
         tile.tileType = 0; 
         tile.id = 0;
@@ -202,8 +202,8 @@ contract BattleboardData is IBattleboardData  {
         
         function createTile(uint16 _battleboardId, uint8 _tileType, uint8 _value, uint8 _position, uint32 _hp, uint16 _petPower, uint64 _angelId, uint64 _petId, address _owner, uint8 _team) onlySERAPHIM external  returns (uint8)   {
       //main function to create a tile and add it to the board. 
-        if ((_battleboardId &lt;0) || (_battleboardId &gt; totalBattleboards)) {revert();}
-        if ((angelsOnBattleboards[_angelId] == true) &amp;&amp; (_angelId != 0)) {revert();}
+        if ((_battleboardId <0) || (_battleboardId > totalBattleboards)) {revert();}
+        if ((angelsOnBattleboards[_angelId] == true) && (_angelId != 0)) {revert();}
         angelsOnBattleboards[_angelId] = true;
         Tile memory tile ;
         tile.tileType = _tileType; 
@@ -227,15 +227,15 @@ contract BattleboardData is IBattleboardData  {
      
       TilesonBoard[battleboardId][tileId].isLive= false;
       TilesonBoard[battleboardId][tileId].tileType= 0;
-      for (uint i =0; i&lt; Battleboards[battleboardId].team1.length; i++) {
+      for (uint i =0; i< Battleboards[battleboardId].team1.length; i++) {
           if (Battleboards[battleboardId].team1[i] == TilesonBoard[battleboardId][tileId].owner) {
-             //should be safe because a team can&#39;t be killed if there are 0 teams to kill. 
+             //should be safe because a team can't be killed if there are 0 teams to kill. 
              Battleboards[battleboardId].numTeams1 -= 1; 
           }
       }
-      for (i =0; i&lt; Battleboards[battleboardId].team2.length; i++) {
+      for (i =0; i< Battleboards[battleboardId].team2.length; i++) {
           if (Battleboards[battleboardId].team2[i] == TilesonBoard[battleboardId][tileId].owner) {
-             //should be safe because a team can&#39;t be killed if there are 0 teams to kill. 
+             //should be safe because a team can't be killed if there are 0 teams to kill. 
              Battleboards[battleboardId].numTeams2 -= 1; 
           }
       }
@@ -243,13 +243,13 @@ contract BattleboardData is IBattleboardData  {
      
      function addTeamtoBoard(uint16 battleboardId, address owner, uint8 team) onlySERAPHIM external {
         
-        //Can&#39;t add a team if the board is live, or if the board is already full of teams. 
+        //Can't add a team if the board is live, or if the board is already full of teams. 
          if (Battleboards[battleboardId].isLive == true) {revert();}
-         if ((Battleboards[battleboardId].prize == 0) &amp;&amp;(Battleboards[battleboardId].numTeams == maxFreeTeams)) {revert();}
-         if ((Battleboards[battleboardId].prize != 0) &amp;&amp;(Battleboards[battleboardId].numTeams == maxPaidTeams)) {revert();}
+         if ((Battleboards[battleboardId].prize == 0) &&(Battleboards[battleboardId].numTeams == maxFreeTeams)) {revert();}
+         if ((Battleboards[battleboardId].prize != 0) &&(Battleboards[battleboardId].numTeams == maxPaidTeams)) {revert();}
          
          //only one team per address can be on the board. 
-         for (uint i =0; i&lt;Battleboards[battleboardId].numTeams; i++) {
+         for (uint i =0; i<Battleboards[battleboardId].numTeams; i++) {
              if (Battleboards[battleboardId].players[i] == owner) {revert();}
          }
          Battleboards[battleboardId].numTeams += 1;
@@ -264,8 +264,8 @@ contract BattleboardData is IBattleboardData  {
          Battleboards[battleboardId].team2.push(owner);
          
          //if the board is now full, then go ahead and make it live. 
-         if ((Battleboards[battleboardId].numTeams1 == 3) &amp;&amp; (Battleboards[battleboardId].numTeams2 ==3)) {Battleboards[battleboardId].isLive = true;}
-        if ((Battleboards[battleboardId].prize != 0) &amp;&amp;(Battleboards[battleboardId].numTeams == maxPaidTeams)) {Battleboards[battleboardId].isLive = true;}
+         if ((Battleboards[battleboardId].numTeams1 == 3) && (Battleboards[battleboardId].numTeams2 ==3)) {Battleboards[battleboardId].isLive = true;}
+        if ((Battleboards[battleboardId].prize != 0) &&(Battleboards[battleboardId].numTeams == maxPaidTeams)) {Battleboards[battleboardId].isLive = true;}
          }
           
      }
@@ -287,7 +287,7 @@ contract BattleboardData is IBattleboardData  {
         }
         
         function withdrawEther()  onlyCREATOR external {
-   //shouldn&#39;t have any eth here but just in case. 
+   //shouldn't have any eth here but just in case. 
     creatorAddress.transfer(this.balance);
 }
 
@@ -312,7 +312,7 @@ function setLastMoveTime(uint16 battleboardId) onlySERAPHIM external {
     
         function clearAngelsFromBoard(uint16 battleboardId) private {
          //Free up angels to be used on other boards. 
-         for (uint i = 0; i &lt; Battleboards[battleboardId].numTiles; i++) {
+         for (uint i = 0; i < Battleboards[battleboardId].numTiles; i++) {
             if (TilesonBoard[battleboardId][i].angelId != 0) {
                 angelsOnBattleboards[TilesonBoard[battleboardId][i].angelId] = false;
               }
@@ -355,10 +355,10 @@ function getRandomNumber(uint16 maxRandom, uint8 min, address privateAddress) co
     // Call to get the specified tile at a certain position of a certain board. 
    function getTileFromBattleboard(uint16 battleboardId, uint8 tileId) public constant returns (uint8 tileType, uint8 value, uint8 id, uint8 position, uint32 hp, uint16 petPower, uint64 angelId, uint64 petId, bool isLive, address owner)   {
       
-        if ((battleboardId &lt;0) ||  (battleboardId &gt; totalBattleboards)) {revert();}
+        if ((battleboardId <0) ||  (battleboardId > totalBattleboards)) {revert();}
         Battleboard memory battleboard = Battleboards[battleboardId];
         Tile memory tile;
-        if ((tileId &lt;0) || (tileId&gt; battleboard.numTiles)) {revert();}
+        if ((tileId <0) || (tileId> battleboard.numTiles)) {revert();}
         tile = TilesonBoard[battleboardId][tileId];
         tileType = tile.tileType; 
         value = tile.value;
@@ -375,7 +375,7 @@ function getRandomNumber(uint16 maxRandom, uint8 min, address privateAddress) co
     
     //Each player (address) can only have one tile on each board. 
     function getTileIDByOwner(uint16 battleboardId, address _owner) constant public returns (uint8) {
-        for (uint8 i = 0; i &lt; Battleboards[battleboardId].numTiles+1; i++) {
+        for (uint8 i = 0; i < Battleboards[battleboardId].numTiles+1; i++) {
             if (TilesonBoard[battleboardId][i].owner == _owner) {
                 return TilesonBoard[battleboardId][i].id;
         }
@@ -408,7 +408,7 @@ function getRandomNumber(uint16 maxRandom, uint8 min, address privateAddress) co
         // Call to get the specified tile at a certain position of a certain board. 
    function getPositionFromBattleboard(uint16 battleboardId, uint8 _position) public constant returns (uint8 tileType, uint8 value, uint8 id, uint8 position, uint32 hp, uint32 petPower, uint64 angelId, uint64 petId, bool isLive)   {
       
-        if ((battleboardId &lt;0) ||  (battleboardId &gt; totalBattleboards)) {revert();}
+        if ((battleboardId <0) ||  (battleboardId > totalBattleboards)) {revert();}
     
         Tile memory tile;
         uint8 tileId = positionsTiles[battleboardId][_position+1];
@@ -503,9 +503,9 @@ function getRandomNumber(uint16 maxRandom, uint8 min, address privateAddress) co
     }
     
      function SafeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
     /// Read access
      }

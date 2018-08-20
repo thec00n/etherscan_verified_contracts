@@ -30,10 +30,10 @@ contract ApproveAndCallFallBack {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -41,7 +41,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -119,15 +119,15 @@ contract SEPCToken is ERC20Interface, Ownable{
     uint public thirdStartTime = 1534521600;  // Beijing time 2018/08/18 00:00:00
     uint public endTime = 1550419200; // Beijing time 2019/02/18 00:00:00
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function SEPCToken() public {
-        symbol = &quot;SEPC&quot;;
-        name = &quot;SEPC&quot;;
+        symbol = "SEPC";
+        name = "SEPC";
         decimals = 18;
         angelMaxAmount = 54000000 * 10**uint(decimals);
         firstMaxAmount = 56000000 * 10**uint(decimals);
@@ -153,8 +153,8 @@ contract SEPCToken is ERC20Interface, Ownable{
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -166,7 +166,7 @@ contract SEPCToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -197,7 +197,7 @@ contract SEPCToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -205,7 +205,7 @@ contract SEPCToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -219,7 +219,7 @@ contract SEPCToken is ERC20Interface, Ownable{
     // send ERC20 Token to multi address
     // ------------------------------------------------------------------------
     function multiTransfer(address[] _addresses, uint256[] amounts) public returns (bool success){
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             transfer(_addresses[i], amounts[i]);
         }
         return true;
@@ -229,7 +229,7 @@ contract SEPCToken is ERC20Interface, Ownable{
     // send ERC20 Token to multi address with decimals
     // ------------------------------------------------------------------------
     function multiTransferDecimals(address[] _addresses, uint256[] amounts) public returns (bool success){
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             transfer(_addresses[i], amounts[i] * 10**uint(decimals));
         }
         return true;
@@ -239,30 +239,30 @@ contract SEPCToken is ERC20Interface, Ownable{
     // Crowd-funding
     // ------------------------------------------------------------------------
     function () payable public {
-          require(now &lt; endTime &amp;&amp; now &gt;= angelStartTime);
-          require(angelCurrentAmount &lt;= angelMaxAmount &amp;&amp; firstCurrentAmount &lt;= firstMaxAmount &amp;&amp; secondCurrentAmount &lt;= secondMaxAmount &amp;&amp; thirdCurrentAmount &lt;= thirdMaxAmount);
+          require(now < endTime && now >= angelStartTime);
+          require(angelCurrentAmount <= angelMaxAmount && firstCurrentAmount <= firstMaxAmount && secondCurrentAmount <= secondMaxAmount && thirdCurrentAmount <= thirdMaxAmount);
           uint weiAmount = msg.value;
           uint rewardAmount;
-          if(now &gt;= angelStartTime &amp;&amp; now &lt; firstStartTime){
+          if(now >= angelStartTime && now < firstStartTime){
             rewardAmount = weiAmount.mul(angelRate);
             balances[msg.sender] = balances[msg.sender].add(rewardAmount);
             angelCurrentAmount = angelCurrentAmount.add(rewardAmount);
-            require(angelCurrentAmount &lt;= angelMaxAmount);
-          }else if (now &gt;= firstStartTime &amp;&amp; now &lt; secondStartTime){
+            require(angelCurrentAmount <= angelMaxAmount);
+          }else if (now >= firstStartTime && now < secondStartTime){
             rewardAmount = weiAmount.mul(firstRate);
             balances[msg.sender] = balances[msg.sender].add(rewardAmount);
             firstCurrentAmount = firstCurrentAmount.add(rewardAmount);
-            require(firstCurrentAmount &lt;= firstMaxAmount);
-          }else if(now &gt;= secondStartTime &amp;&amp; now &lt; thirdStartTime){
+            require(firstCurrentAmount <= firstMaxAmount);
+          }else if(now >= secondStartTime && now < thirdStartTime){
             rewardAmount = weiAmount.mul(secondRate);
             balances[msg.sender] = balances[msg.sender].add(rewardAmount);
             secondCurrentAmount = secondCurrentAmount.add(rewardAmount);
-            require(secondCurrentAmount &lt;= secondMaxAmount);
-          }else if(now &gt;= thirdStartTime &amp;&amp; now &lt; endTime){
+            require(secondCurrentAmount <= secondMaxAmount);
+          }else if(now >= thirdStartTime && now < endTime){
             rewardAmount = weiAmount.mul(thirdRate);
             balances[msg.sender] = balances[msg.sender].add(rewardAmount);
             thirdCurrentAmount = thirdCurrentAmount.add(rewardAmount);
-            require(thirdCurrentAmount &lt;= thirdMaxAmount);
+            require(thirdCurrentAmount <= thirdMaxAmount);
           }
           owner.transfer(msg.value);
     }
@@ -271,7 +271,7 @@ contract SEPCToken is ERC20Interface, Ownable{
     // After-Crowd-funding
     // ------------------------------------------------------------------------
     function collectToken()  public onlyOwner {
-        require( now &gt; endTime);
+        require( now > endTime);
         balances[owner] = balances[owner].add(angelMaxAmount + firstMaxAmount + secondMaxAmount + thirdMaxAmount -angelCurrentAmount - firstCurrentAmount - secondCurrentAmount - thirdCurrentAmount);
     }
 }

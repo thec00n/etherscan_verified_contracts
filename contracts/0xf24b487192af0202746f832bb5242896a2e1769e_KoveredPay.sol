@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 contract Admin {
 
     address public owner;
-    mapping(address =&gt; bool) public AdminList;
+    mapping(address => bool) public AdminList;
 
     event AdministratorAdded(address indexed _invoker, address indexed _newAdministrator);
     event AdministratorRemoved(address indexed _invoker, address indexed _removedAdministrator);
@@ -61,8 +61,8 @@ contract Admin {
 
 contract KoveredPay is Admin {
 
-    bytes4 public symbol = &quot;KVP&quot;;
-    bytes16 public name = &quot;KoveredPay&quot;;
+    bytes4 public symbol = "KVP";
+    bytes16 public name = "KoveredPay";
     uint8 public decimals = 18;
     uint256 constant TotalSupply = 50000000000000000000000000;
 
@@ -76,8 +76,8 @@ contract KoveredPay is Admin {
     uint256 public MediatorFees = 0;
     uint256 public LockInExpiry = 0;
 
-    mapping(address =&gt; uint256) public UserBalances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public Allowance;
+    mapping(address => uint256) public UserBalances;
+    mapping(address => mapping(address => uint256)) public Allowance;
 
     struct TrustlessTransaction {
         address _sender;
@@ -101,8 +101,8 @@ contract KoveredPay is Admin {
         uint256 _time;
     }
 
-    mapping(uint256 =&gt; TrustlessTransaction) public TrustlessTransactions_Log;
-    mapping(uint256 =&gt; MediatedTransaction) public MediatedTransactions_Log;
+    mapping(uint256 => TrustlessTransaction) public TrustlessTransactions_Log;
+    mapping(uint256 => MediatedTransaction) public MediatedTransactions_Log;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Trustless_Transfer(uint256 _id, address indexed _from, address indexed _to, uint256 _value);
@@ -124,13 +124,13 @@ contract KoveredPay is Admin {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -176,14 +176,14 @@ contract KoveredPay is Admin {
     function TransferValidation(address sender, address recipient, uint256 amount) private view returns (bool success) {
 
         require(TransfersEnabled == true);
-        require(amount &gt; 0);
+        require(amount > 0);
         require(recipient != address(0));
-        require(UserBalances[sender] &gt;= amount);
-        require(sub(UserBalances[sender], amount) &gt;= 0);
-        require(add(UserBalances[recipient], amount) &gt; UserBalances[recipient]);
+        require(UserBalances[sender] >= amount);
+        require(sub(UserBalances[sender], amount) >= 0);
+        require(add(UserBalances[recipient], amount) > UserBalances[recipient]);
 
-        if (sender == InitialOwnerAddress &amp;&amp; block.timestamp &lt; LockInExpiry) {
-            require(sub(UserBalances[sender], amount) &gt;= 10000000000000000000000000);
+        if (sender == InitialOwnerAddress && block.timestamp < LockInExpiry) {
+            require(sub(UserBalances[sender], amount) >= 10000000000000000000000000);
         }
 
         return true;
@@ -194,7 +194,7 @@ contract KoveredPay is Admin {
 
         uint256 i = 0;
 
-        while (i &lt; _destinations.length) {
+        while (i < _destinations.length) {
             transfer(_destinations[i], _values[i]);
             i += 1;
         }
@@ -216,7 +216,7 @@ contract KoveredPay is Admin {
     function transferFrom(address _owner, address _receiver, uint256 _amount) public returns (bool _status) {
 
         require(TransferValidation(_owner, _receiver, _amount));
-        require(sub(Allowance[_owner][msg.sender], _amount) &gt;= _amount);
+        require(sub(Allowance[_owner][msg.sender], _amount) >= _amount);
         Allowance[_owner][msg.sender] = sub(Allowance[_owner][msg.sender], _amount);
         UserBalances[_owner] = sub(UserBalances[_owner], _amount);
         UserBalances[_receiver] = add(UserBalances[_receiver], _amount);
@@ -258,9 +258,9 @@ contract KoveredPay is Admin {
             require(MediatedTransactions_Log[_txid]._mediator == false);
             require(MediatedTransactions_Log[_txid]._satisfaction == false);
             require(MediatedTransactions_Log[_txid]._statusModified == false);
-            require(difference &lt;= MediatedTransaction_Protection_Seconds);
+            require(difference <= MediatedTransaction_Protection_Seconds);
             require(MediatedTransactions_Log[_txid]._credited == false);
-            require(MediatedTransactions_Log[_txid]._kvp_amount &gt;= MediatorFees);
+            require(MediatedTransactions_Log[_txid]._kvp_amount >= MediatorFees);
 
             MediatedTransactions_Log[_txid]._mediator = true;
             MediatedTransactions_Log[_txid]._fee_amount = MediatorFees;
@@ -283,7 +283,7 @@ contract KoveredPay is Admin {
 
         require(TransfersEnabled == true);
         require(TrustlessTransactions_Log[_transactionId]._statusModified == false);
-        require(difference &lt;= TrustlessTransaction_Protection_Seconds);
+        require(difference <= TrustlessTransaction_Protection_Seconds);
         require(TrustlessTransactions_Log[_transactionId]._sender == msg.sender);
         require(TrustlessTransactions_Log[_transactionId]._refunded == false);
         require(TrustlessTransactions_Log[_transactionId]._credited == false);
@@ -316,7 +316,7 @@ contract KoveredPay is Admin {
 
         uint256 newAmount = sub(MediatedTransactions_Log[_transactionId]._kvp_amount, MediatedTransactions_Log[_transactionId]._fee_amount);
 
-        if (newAmount &lt; 0) {
+        if (newAmount < 0) {
             newAmount = 0;
         }
 
@@ -348,7 +348,7 @@ contract KoveredPay is Admin {
         require(TrustlessTransactions_Log[_transactionId]._credited == true);
         require(TrustlessTransactions_Log[_transactionId]._receiver == msg.sender);
         require(TransferValidation(msg.sender, TrustlessTransactions_Log[_transactionId]._sender, TrustlessTransactions_Log[_transactionId]._kvp_amount));
-        require(sub(UserBalances[TrustlessTransactions_Log[_transactionId]._sender], TrustlessTransactions_Log[_transactionId]._kvp_amount) &gt; 0);
+        require(sub(UserBalances[TrustlessTransactions_Log[_transactionId]._sender], TrustlessTransactions_Log[_transactionId]._kvp_amount) > 0);
         UserBalances[TrustlessTransactions_Log[_transactionId]._sender] = add(UserBalances[TrustlessTransactions_Log[_transactionId]._sender], TrustlessTransactions_Log[_transactionId]._kvp_amount);
         TrustlessTransactions_Log[_transactionId]._refunded = true;
         TrustlessTransaction_Refunded(_transactionId, TrustlessTransactions_Log[_transactionId]._kvp_amount);
@@ -365,7 +365,7 @@ contract KoveredPay is Admin {
 
         require(TransfersEnabled == true);
         require(TrustlessTransactions_Log[_transactionId]._statusModified == false);
-        require(difference &gt; TrustlessTransaction_Protection_Seconds);
+        require(difference > TrustlessTransaction_Protection_Seconds);
         require(TrustlessTransactions_Log[_transactionId]._refunded == false);
         require(TrustlessTransactions_Log[_transactionId]._credited == false);
 
@@ -404,7 +404,7 @@ contract KoveredPay is Admin {
         uint256 difference = sub(right_now, sent_on);
 
         require(TransfersEnabled == true);
-        require(difference &gt; MediatedTransaction_Protection_Seconds);
+        require(difference > MediatedTransaction_Protection_Seconds);
         require(MediatedTransactions_Log[_transactionId]._mediator == false);
         require(MediatedTransactions_Log[_transactionId]._statusModified == false);
         require(MediatedTransactions_Log[_transactionId]._credited == false);
@@ -463,8 +463,8 @@ contract KoveredPay is Admin {
     }
 
     function approve(address spender, uint256 amount) public returns (bool approved) {
-        require(amount &gt; 0);
-        require(UserBalances[spender] &gt; 0);
+        require(amount > 0);
+        require(UserBalances[spender] > 0);
         Allowance[msg.sender][spender] = amount;
         Approval(msg.sender, spender, amount);
         return true;

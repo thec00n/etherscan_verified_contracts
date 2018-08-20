@@ -39,13 +39,13 @@ library SafeMath {
         // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
 
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -54,7 +54,7 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -170,7 +170,7 @@ contract FutureTokenSaleLockBox is Owned {
         tokenSale   = _tokenSale;
         uint256 endTime = tokenSale.endTime();
 
-        require(endTime &gt; 0);
+        require(endTime > 0);
 
         unlockDate  = endTime.add(26 weeks);
     }
@@ -194,7 +194,7 @@ contract FutureTokenSaleLockBox is Owned {
        @dev Determines whether unlock date has passed
     */
     function hasUnlockDatePassed() public view returns (bool) {
-        return currentTime() &gt;= unlockDate;
+        return currentTime() >= unlockDate;
     }
 
     /**
@@ -202,7 +202,7 @@ contract FutureTokenSaleLockBox is Owned {
        @param _newDate new unlock date
     */
     function extendUnlockDate(uint256 _newDate) public onlyOwner returns (bool) {
-        require(_newDate &gt; unlockDate);
+        require(_newDate > unlockDate);
 
         unlockDate = _newDate;
         UnlockDateExtended(_newDate);

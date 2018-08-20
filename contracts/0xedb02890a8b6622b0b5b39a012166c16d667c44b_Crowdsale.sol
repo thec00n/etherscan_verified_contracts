@@ -27,13 +27,13 @@ library SafeMath {
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -43,7 +43,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
    function transfer(address _to, uint256 _value) public returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -60,7 +60,7 @@ contract BasicToken is ERC20Basic {
  
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     var _allowance = allowed[_from][msg.sender];
@@ -129,9 +129,9 @@ contract MintableToken is StandardToken, Ownable {
  
 contract GRV is MintableToken {
     
-    string public constant name = &quot;Graviton&quot;;
+    string public constant name = "Graviton";
     
-    string public constant symbol = &quot;GRV&quot;;
+    string public constant symbol = "GRV";
     
     uint32 public constant decimals = 23;
     
@@ -147,7 +147,7 @@ contract Crowdsale is Ownable {
     bool public isOneToken = false;
     bool public isFinish = false;
     
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     function StopCrowdsale() public onlyOwner {
         if (isFinish) {
@@ -162,7 +162,7 @@ contract Crowdsale is Ownable {
     }
  
     modifier saleIsOn() {
-      require(now &gt; start &amp;&amp; !isFinish);
+      require(now > start && !isFinish);
       _;
     }
 
@@ -172,7 +172,7 @@ contract Crowdsale is Ownable {
       uint bonusTokens = 0;
 
 //Bonus
-      if(finishdays &lt; 0) {
+      if(finishdays < 0) {
           finishdays=0;
       }
       bonusTokens = tokens.mul(finishdays).div(100);

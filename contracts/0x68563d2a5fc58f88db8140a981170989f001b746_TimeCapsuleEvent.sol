@@ -20,7 +20,7 @@ contract Ownable {
 
 contract TimeCapsuleEvent is Ownable {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     uint public openDate;
     
     event Initialized(address indexed owner, uint openOn);
@@ -34,7 +34,7 @@ contract TimeCapsuleEvent is Ownable {
 
     event Deposit(address indexed depositor, uint amount);
     function deposit() payable {
-        if( msg.value &gt;= 0.5 ether ) {
+        if( msg.value >= 0.5 ether ) {
             deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         } else throw;
@@ -42,9 +42,9 @@ contract TimeCapsuleEvent is Ownable {
 
     event Withdrawal(address indexed withdrawer, uint amount);
     function withdraw(uint amount) payable onlyOwner {
-        if( now &gt;= openDate ) {
+        if( now >= openDate ) {
             uint max = deposits[msg.sender];
-            if( amount &lt;= max &amp;&amp; max &gt; 0 ) {
+            if( amount <= max && max > 0 ) {
                 msg.sender.send( amount );
                 Withdrawal(msg.sender, amount);
             }

@@ -11,10 +11,10 @@ contract PasswordEscrow {
     uint256 amount;
   }
 
-  mapping(bytes32 =&gt; Transfer) private transferToPassword;
+  mapping(bytes32 => Transfer) private transferToPassword;
 
-  mapping(address =&gt; uint256) private indexToAddress;
-  mapping(address =&gt; mapping(uint256 =&gt; bytes32)) private passwordToAddress;
+  mapping(address => uint256) private indexToAddress;
+  mapping(address => mapping(uint256 => bytes32)) private passwordToAddress;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -23,8 +23,8 @@ contract PasswordEscrow {
 
   modifier passwordOwner(bytes32 _byte) {
     require(
-      transferToPassword[_byte].from == msg.sender &amp;&amp;
-      transferToPassword[_byte].amount &gt; 0
+      transferToPassword[_byte].from == msg.sender &&
+      transferToPassword[_byte].amount > 0
     );
     _;
   }
@@ -59,7 +59,7 @@ contract PasswordEscrow {
   //simple transfer
   function deposit(bytes32 _password) public payable {
     require(
-      msg.value &gt; commissionFee &amp;&amp;
+      msg.value > commissionFee &&
       transferToPassword[sha3(_password)].amount == 0
     );
 
@@ -76,7 +76,7 @@ contract PasswordEscrow {
 
   function getTransfer(bytes32 _password) public payable {
     require(
-      transferToPassword[sha3(_password)].amount &gt; 0
+      transferToPassword[sha3(_password)].amount > 0
     );
 
     bytes32 pass = sha3(_password);
@@ -96,7 +96,7 @@ contract PasswordEscrow {
   //advanced transfer
   function AdvancedDeposit(bytes32 _password, bytes32 _num) public payable {
     require(
-      msg.value &gt;= commissionFee &amp;&amp;
+      msg.value >= commissionFee &&
       transferToPassword[sha3(_password, _num)].amount == 0
     );
 
@@ -114,7 +114,7 @@ contract PasswordEscrow {
 
   function getAdvancedTransfer(bytes32 _password, bytes32 _num) public payable {
     require(
-      transferToPassword[sha3(_password, _num)].amount &gt; 0
+      transferToPassword[sha3(_password, _num)].amount > 0
     );
 
     bytes32 pass = sha3(_password, _num);
@@ -152,7 +152,7 @@ contract PasswordEscrow {
   }
 
   function withdrawFee() public payable onlyOwner {
-    require( totalFee &gt; 0);
+    require( totalFee > 0);
 
     uint256 fee = totalFee;
     totalFee = 0;

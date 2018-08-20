@@ -68,8 +68,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -84,9 +84,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,7 +115,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -282,7 +282,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -324,7 +324,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      */
     function mint(address _investor, uint256 _amount) public returns (bool success);
 
@@ -342,7 +342,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -525,8 +525,8 @@ contract IModuleFactory is Ownable {
 
     //Pull function sig from _data
     function getSig(bytes _data) internal pure returns (bytes4 sig) {
-        uint len = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; len; i++) {
+        uint len = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < len; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));
         }
     }
@@ -570,7 +570,7 @@ contract IModule {
 
     address public securityToken;
 
-    bytes32 public constant FEE_ADMIN = &quot;FEE_ADMIN&quot;;
+    bytes32 public constant FEE_ADMIN = "FEE_ADMIN";
 
     ERC20 public polyToken;
 
@@ -594,22 +594,22 @@ contract IModule {
     modifier withPerm(bytes32 _perm) {
         bool isOwner = msg.sender == ISecurityToken(securityToken).owner();
         bool isFactory = msg.sender == factory;
-        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), &quot;Permission check failed&quot;);
+        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), "Permission check failed");
         _;
     }
 
     modifier onlyOwner {
-        require(msg.sender == ISecurityToken(securityToken).owner(), &quot;Sender is not owner&quot;);
+        require(msg.sender == ISecurityToken(securityToken).owner(), "Sender is not owner");
         _;
     }
 
     modifier onlyFactory {
-        require(msg.sender == factory, &quot;Sender is not factory&quot;);
+        require(msg.sender == factory, "Sender is not factory");
         _;
     }
 
     modifier onlyFactoryOwner {
-        require(msg.sender == IModuleFactory(factory).owner(), &quot;Sender is not factory owner&quot;);
+        require(msg.sender == IModuleFactory(factory).owner(), "Sender is not factory owner");
         _;
     }
 
@@ -622,7 +622,7 @@ contract IModule {
      * @notice used to withdraw the fee by the factory owner
      */
     function takeFee(uint256 _amount) public withPerm(FEE_ADMIN) returns(bool) {
-        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), &quot;Unable to take fee&quot;);
+        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), "Unable to take fee");
         return true;
     }
 }
@@ -648,7 +648,7 @@ contract ISTO is IModule, Pausable {
      * @param _fundsAmount Amount invested by the beneficiary
      */
     function verifyInvestment(address _beneficiary, uint256 _fundsAmount) public view returns(bool) {
-        return polyToken.allowance(_beneficiary, address(this)) &gt;= _fundsAmount;
+        return polyToken.allowance(_beneficiary, address(this)) >= _fundsAmount;
     }
 
     /**
@@ -670,7 +670,7 @@ contract ISTO is IModule, Pausable {
      * @notice pause (overridden function)
      */
     function pause() public onlyOwner {
-        require(now &lt; endTime);
+        require(now < endTime);
         super._pause();
     }
 
@@ -678,7 +678,7 @@ contract ISTO is IModule, Pausable {
      * @notice unpause (overridden function)
      */
     function unpause(uint256 _newEndDate) public onlyOwner {
-        require(_newEndDate &gt;= endTime);
+        require(_newEndDate >= endTime);
         super._unpause();
         endTime = _newEndDate;
     }
@@ -698,7 +698,7 @@ contract ISTO is IModule, Pausable {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e0c1b131d113e4c">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e0c1b131d113e4c">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -749,7 +749,7 @@ contract CappedSTO is ISTO, ReentrancyGuard {
     //How many tokens this STO will be allowed to sell to investors
     uint256 public cap;
 
-    mapping (address =&gt; uint256) public investors;
+    mapping (address => uint256) public investors;
 
     /**
     * Event for token purchase logging
@@ -793,10 +793,10 @@ contract CappedSTO is ISTO, ReentrancyGuard {
     public
     onlyFactory
     {
-        require(_rate &gt; 0, &quot;Rate of token should be greater than 0&quot;);
-        require(_fundsReceiver != address(0), &quot;Zero address is not permitted&quot;);
-        require(_startTime &gt;= now &amp;&amp; _endTime &gt; _startTime, &quot;Date parameters are not valid&quot;);
-        require(_cap &gt; 0, &quot;Cap should be greater than 0&quot;);
+        require(_rate > 0, "Rate of token should be greater than 0");
+        require(_fundsReceiver != address(0), "Zero address is not permitted");
+        require(_startTime >= now && _endTime > _startTime, "Date parameters are not valid");
+        require(_cap > 0, "Cap should be greater than 0");
         startTime = _startTime;
         endTime = _endTime;
         cap = _cap;
@@ -809,7 +809,7 @@ contract CappedSTO is ISTO, ReentrancyGuard {
      * @notice This function returns the signature of configure function
      */
     function getInitFunction() public pure returns (bytes4) {
-        return bytes4(keccak256(&quot;configure(uint256,uint256,uint256,uint256,uint8,address)&quot;));
+        return bytes4(keccak256("configure(uint256,uint256,uint256,uint256,uint8,address)"));
     }
 
     /**
@@ -818,7 +818,7 @@ contract CappedSTO is ISTO, ReentrancyGuard {
       */
     function buyTokens(address _beneficiary) public payable nonReentrant {
         require(!paused);
-        require(fundraiseType == FundraiseType.ETH, &quot;ETH should be the mode of investment&quot;);
+        require(fundraiseType == FundraiseType.ETH, "ETH should be the mode of investment");
 
         uint256 weiAmount = msg.value;
         _processTx(_beneficiary, weiAmount);
@@ -833,8 +833,8 @@ contract CappedSTO is ISTO, ReentrancyGuard {
       */
     function buyTokensWithPoly(uint256 _investedPOLY) public nonReentrant{
         require(!paused);
-        require(fundraiseType == FundraiseType.POLY, &quot;POLY should be the mode of investment&quot;);
-        require(verifyInvestment(msg.sender, _investedPOLY), &quot;Not valid Investment&quot;);
+        require(fundraiseType == FundraiseType.POLY, "POLY should be the mode of investment");
+        require(verifyInvestment(msg.sender, _investedPOLY), "Not valid Investment");
         _processTx(msg.sender, _investedPOLY);
         _forwardPoly(msg.sender, wallet, _investedPOLY);
         _postValidatePurchase(msg.sender, _investedPOLY);
@@ -845,7 +845,7 @@ contract CappedSTO is ISTO, ReentrancyGuard {
     * @return bool Whether the cap was reached
     */
     function capReached() public view returns (bool) {
-        return tokensSold &gt;= cap;
+        return tokensSold >= cap;
     }
 
     /**
@@ -930,10 +930,10 @@ contract CappedSTO is ISTO, ReentrancyGuard {
     * @param _investedAmount Value in wei involved in the purchase
     */
     function _preValidatePurchase(address _beneficiary, uint256 _investedAmount) internal view {
-        require(_beneficiary != address(0), &quot;Beneficiary address should not be 0x&quot;);
-        require(_investedAmount != 0, &quot;Amount invested should not be equal to 0&quot;);
-        require(tokensSold.add(_getTokenAmount(_investedAmount)) &lt;= cap, &quot;Investment more than cap is not allowed&quot;);
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime, &quot;Offering is closed/Not yet started&quot;);
+        require(_beneficiary != address(0), "Beneficiary address should not be 0x");
+        require(_investedAmount != 0, "Amount invested should not be equal to 0");
+        require(tokensSold.add(_getTokenAmount(_investedAmount)) <= cap, "Investment more than cap is not allowed");
+        require(now >= startTime && now <= endTime, "Offering is closed/Not yet started");
     }
 
     /**
@@ -951,7 +951,7 @@ contract CappedSTO is ISTO, ReentrancyGuard {
     * @param _tokenAmount Number of tokens to be emitted
     */
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-        require(IST20(securityToken).mint(_beneficiary, _tokenAmount), &quot;Error in minting the tokens&quot;);
+        require(IST20(securityToken).mint(_beneficiary, _tokenAmount), "Error in minting the tokens");
     }
 
     /**
@@ -997,12 +997,12 @@ contract CappedSTO is ISTO, ReentrancyGuard {
      * @param _fundraiseType Type of currency used to collect the funds
      */
     function _check(uint8 _fundraiseType) internal {
-        require(_fundraiseType == 0 || _fundraiseType == 1, &quot;Not a valid fundraise type&quot;);
+        require(_fundraiseType == 0 || _fundraiseType == 1, "Not a valid fundraise type");
         if (_fundraiseType == 0) {
             fundraiseType = FundraiseType.ETH;
         }
         if (_fundraiseType == 1) {
-            require(address(polyToken) != address(0), &quot;Address of the polyToken should not be 0x&quot;);
+            require(address(polyToken) != address(0), "Address of the polyToken should not be 0x");
             fundraiseType = FundraiseType.POLY;
         }
     }
@@ -1039,13 +1039,13 @@ contract CappedSTOFactory is IModuleFactory {
      * @return address Contract address of the Module
      */
     function deploy(bytes _data) external returns(address) {
-        if(setupCost &gt; 0)
-            require(polyToken.transferFrom(msg.sender, owner, setupCost), &quot;Failed transferFrom because of sufficent Allowance is not provided&quot;);
+        if(setupCost > 0)
+            require(polyToken.transferFrom(msg.sender, owner, setupCost), "Failed transferFrom because of sufficent Allowance is not provided");
         //Check valid bytes - can only call module init function
         CappedSTO cappedSTO = new CappedSTO(msg.sender, address(polyToken));
-        //Checks that _data is valid (not calling anything it shouldn&#39;t)
-        require(getSig(_data) == cappedSTO.getInitFunction(), &quot;Provided data is not valid&quot;);
-        require(address(cappedSTO).call(_data), &quot;Un-successfull call&quot;);
+        //Checks that _data is valid (not calling anything it shouldn't)
+        require(getSig(_data) == cappedSTO.getInitFunction(), "Provided data is not valid");
+        require(address(cappedSTO).call(_data), "Un-successfull call");
         emit LogGenerateModuleFromFactory(address(cappedSTO), getName(), address(this), msg.sender, now);
         return address(cappedSTO);
     }
@@ -1061,28 +1061,28 @@ contract CappedSTOFactory is IModuleFactory {
      * @notice Get the name of the Module
      */
     function getName() public view returns(bytes32) {
-        return &quot;CappedSTO&quot;;
+        return "CappedSTO";
     }
 
     /**
      * @notice Get the description of the Module
      */
     function getDescription() public view returns(string) {
-        return &quot;Capped STO&quot;;
+        return "Capped STO";
     }
 
     /**
      * @notice Get the title of the Module
      */
     function getTitle() public view returns(string) {
-        return &quot;Capped STO&quot;;
+        return "Capped STO";
     }
 
     /**
      * @notice Get the Instructions that helped to used the module
      */
     function getInstructions() public view returns(string) {
-        return &quot;Initialises a capped STO. Init parameters are _startTime (time STO starts), _endTime (time STO ends), _cap (cap in tokens for STO), _rate (POLY/ETH to token rate), _fundRaiseType (whether you are raising in POLY or ETH), _polyToken (address of POLY token), _fundsReceiver (address which will receive funds)&quot;;
+        return "Initialises a capped STO. Init parameters are _startTime (time STO starts), _endTime (time STO ends), _cap (cap in tokens for STO), _rate (POLY/ETH to token rate), _fundRaiseType (whether you are raising in POLY or ETH), _polyToken (address of POLY token), _fundsReceiver (address which will receive funds)";
     }
 
     /**
@@ -1090,10 +1090,10 @@ contract CappedSTOFactory is IModuleFactory {
      */
     function getTags() public view returns(bytes32[]) {
         bytes32[] memory availableTags = new bytes32[](4);
-        availableTags[0] = &quot;Capped&quot;;
-        availableTags[1] = &quot;Non-refundable&quot;;
-        availableTags[2] = &quot;POLY&quot;;
-        availableTags[3] = &quot;ETH&quot;;
+        availableTags[0] = "Capped";
+        availableTags[1] = "Non-refundable";
+        availableTags[2] = "POLY";
+        availableTags[3] = "ETH";
         return availableTags;
     }
 

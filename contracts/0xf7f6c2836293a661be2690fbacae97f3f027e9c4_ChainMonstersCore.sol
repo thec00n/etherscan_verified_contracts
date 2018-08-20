@@ -9,16 +9,16 @@ interface ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-    //     bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+    //     bytes4(keccak256('ownerOf(uint256)')) ^
+    //     bytes4(keccak256('countOfDeeds()')) ^
+    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+    //     bytes4(keccak256('approve(address,uint256)')) ^
+    //     bytes4(keccak256('takeOwnership(uint256)'));
 
     /// @notice Query a contract to see if it supports a certain interface
     /// @dev Returns `true` the interface is supported and `false` otherwise,
@@ -48,7 +48,7 @@ interface ERC721 {
     function countOfDeedsByOwner(address _owner) external view returns (uint256 _count);
 
     /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` &gt;= `countOfDeedsByOwner(_owner)` or if
+    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
     ///  `_owner` is the zero address, representing invalid deeds.
     /// @param _owner An address where we are interested in deeds owned by them
     /// @param _index A counter less than `countOfDeedsByOwner(_owner)`
@@ -62,20 +62,20 @@ interface ERC721 {
     ///  mechanism. This event emits when deeds are created (`from` == 0) and
     ///  destroyed (`to` == 0). Exception: during contract creation, any
     ///  transfers may occur without emitting `Transfer`. At the time of any transfer,
-    ///  the &quot;approved taker&quot; is implicitly reset to the zero address.
+    ///  the "approved taker" is implicitly reset to the zero address.
     event Transfer(address indexed from, address indexed to, uint256 indexed deedId);
 
-    /// @dev The Approve event emits to log the &quot;approved taker&quot; for a deed -- whether
+    /// @dev The Approve event emits to log the "approved taker" for a deed -- whether
     ///  set for the first time, reaffirmed by setting the same value, or setting to
-    ///  a new value. The &quot;approved taker&quot; is the zero address if nobody can take the
+    ///  a new value. The "approved taker" is the zero address if nobody can take the
     ///  deed now or it is an address if that address can call `takeOwnership` to attempt
-    ///  taking the deed. Any change to the &quot;approved taker&quot; for a deed SHALL cause
+    ///  taking the deed. Any change to the "approved taker" for a deed SHALL cause
     ///  Approve to emit. However, an exception, the Approve event will not emit when
-    ///  Transfer emits, this is because Transfer implicitly denotes the &quot;approved taker&quot;
+    ///  Transfer emits, this is because Transfer implicitly denotes the "approved taker"
     ///  is reset to the zero address.
     event Approval(address indexed owner, address indexed approved, uint256 indexed deedId);
 
-    /// @notice Set the &quot;approved taker&quot; for your deed, or revoke approval by
+    /// @notice Set the "approved taker" for your deed, or revoke approval by
     ///  setting the zero address. You may `approve` any number of times while
     ///  the deed is assigned to you, only the most recent approval matters. Emits
     ///  an Approval event.
@@ -179,7 +179,7 @@ contract MonstersData {
         // add username
         string username;
 
-        // current area in the &quot;world&quot;
+        // current area in the "world"
         uint16 currArea;
 
         address owner;
@@ -200,7 +200,7 @@ contract MonstersBase is MonsterAccessControl, MonstersData {
     MonsterCreatorInterface public monsterCreator;
 
     function setMonsterCreatorAddress(address _address) external onlyAdmin {
-        // only set this once so we (the devs) can&#39;t cheat!
+        // only set this once so we (the devs) can't cheat!
         require(!lockedMonsterCreator);
         MonsterCreatorInterface candidateContract = MonsterCreatorInterface(_address);
 
@@ -217,19 +217,19 @@ contract MonstersBase is MonsterAccessControl, MonstersData {
     uint8[] areas;
     uint8 areaIndex = 0;
 
-    mapping(address =&gt; Trainer) public addressToTrainer;
+    mapping(address => Trainer) public addressToTrainer;
     /// @dev A mapping from monster IDs to the address that owns them. All monster have
     ///  some valid owner address, even gen0 monster are created with a non-zero owner.
-    mapping (uint256 =&gt; address) public monsterIndexToOwner;
+    mapping (uint256 => address) public monsterIndexToOwner;
     // @dev A mapping from owner address to count of tokens that address owns.
     // Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) public monsterIndexToApproved;
-    mapping (uint256 =&gt; string) public monsterIdToNickname;
-    mapping (uint256 =&gt; bool) public monsterIdToTradeable;
-    mapping (uint256 =&gt; uint256) public monsterIdToGeneration;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) public monsterIndexToApproved;
+    mapping (uint256 => string) public monsterIdToNickname;
+    mapping (uint256 => bool) public monsterIdToTradeable;
+    mapping (uint256 => uint256) public monsterIdToGeneration;
     
-    mapping (uint256 =&gt; uint8[7]) public monsterIdToIVs;
+    mapping (uint256 => uint8[7]) public monsterIdToIVs;
 
     // adds new area to world
     function _createArea() internal {
@@ -254,7 +254,7 @@ contract MonstersBase is MonsterAccessControl, MonstersData {
 
         require(newMonsterId == uint256(uint32(newMonsterId)));
 
-        monsterIdToNickname[newMonsterId] = &quot;&quot;;
+        monsterIdToNickname[newMonsterId] = "";
 
         _transfer(0, _owner, newMonsterId);
 
@@ -306,7 +306,7 @@ contract MonstersBase is MonsterAccessControl, MonstersData {
 
     // Only admin can fix how many seconds per blocks are currently observed.
     function setSecondsPerBlock(uint256 secs) external onlyAdmin {
-        //require(secs &lt; cooldowns[0]);
+        //require(secs < cooldowns[0]);
         secondsPerBlock = secs;
     }
 }
@@ -322,7 +322,7 @@ contract MonsterOwnership is MonstersBase, ERC721 {
 
     /// @dev Checks if a given address currently has transferApproval for a particular monster.
     /// @param _claimant the address we are confirming monster is approved for.
-    /// @param _tokenId monster id, only valid when &gt; 0
+    /// @param _tokenId monster id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return monsterIndexToApproved[_tokenId] == _claimant;
     }
@@ -360,14 +360,14 @@ contract MonsterOwnership is MonstersBase, ERC721 {
     function tokensOfOwner(address _owner) public view returns (uint256[] ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
-        if (tokenCount &gt; 0) {
+        if (tokenCount > 0) {
             uint256[] memory result = new uint256[](tokenCount);
             uint256 totalMonsters = totalSupply();
             uint256 resultIndex = 0;
 
             uint256 monsterId;
 
-            for (monsterId = 0; monsterId &lt;= totalMonsters; monsterId++) {
+            for (monsterId = 0; monsterId <= totalMonsters; monsterId++) {
                 if (monsterIndexToOwner[monsterId] == _owner) {
                     result[resultIndex] = monsterId;
                     resultIndex++;
@@ -381,15 +381,15 @@ contract MonsterOwnership is MonstersBase, ERC721 {
     }
 
     bytes4 internal constant INTERFACE_SIGNATURE_ERC165 =
-        bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+        bytes4(keccak256("supportsInterface(bytes4)"));
 
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721 =
-        bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;countOfDeeds()&quot;)) ^
-        bytes4(keccak256(&quot;countOfDeedsByOwner(address)&quot;)) ^
-        bytes4(keccak256(&quot;deedOfOwnerByIndex(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;takeOwnership(uint256)&quot;));
+        bytes4(keccak256("ownerOf(uint256)")) ^
+        bytes4(keccak256("countOfDeeds()")) ^
+        bytes4(keccak256("countOfDeedsByOwner(address)")) ^
+        bytes4(keccak256("deedOfOwnerByIndex(address,uint256)")) ^
+        bytes4(keccak256("approve(address,uint256)")) ^
+        bytes4(keccak256("takeOwnership(uint256)"));
 
     function supportsInterface(bytes4 _interfaceID) external pure returns (bool) {
         return _interfaceID == INTERFACE_SIGNATURE_ERC165 || _interfaceID == INTERFACE_SIGNATURE_ERC721;
@@ -455,9 +455,9 @@ contract MonsterAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping(uint256 =&gt; Auction) tokenIdToAuction;
-    mapping(uint256 =&gt; address) public auctionIdToSeller;
-    mapping (address =&gt; uint256) public ownershipAuctionCount;
+    mapping(uint256 => Auction) tokenIdToAuction;
+    mapping(uint256 => address) public auctionIdToSeller;
+    mapping (address => uint256) public ownershipAuctionCount;
 
     event AuctionCreated(uint256 tokenId, uint256 price, uint256 uID, address seller);
     event AuctionSuccessful(uint256 tokenId, uint256 price, address newOwner, uint256 uID);
@@ -497,7 +497,7 @@ contract MonsterAuctionBase {
         require(_isOnAuction(auction));
 
         uint256 price = auction.price;
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         address seller = auction.seller;
         uint256 uID = auction.id;
@@ -507,7 +507,7 @@ contract MonsterAuctionBase {
 
         ownershipAuctionCount[seller]--;
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -517,7 +517,7 @@ contract MonsterAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             if (seller != address(core)) {
                 seller.transfer(sellerProceeds);
@@ -546,15 +546,15 @@ contract MonsterAuctionBase {
     }
 
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
      function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 }
@@ -564,7 +564,7 @@ contract MonsterAuction is  MonsterAuctionBase, Ownable {
     uint256 public auctionIndex = 0;
 
     function MonsterAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         var candidateContract = MonsterOwnership(_nftAddress);
@@ -576,7 +576,7 @@ contract MonsterAuction is  MonsterAuctionBase, Ownable {
 
     // only possible to decrease ownerCut!
     function setOwnerCut(uint256 _cut) external onlyOwner {
-        require(_cut &lt;= ownerCut);
+        require(_cut <= ownerCut);
         ownerCut = _cut;
     }
 
@@ -603,7 +603,7 @@ contract MonsterAuction is  MonsterAuctionBase, Ownable {
 
         uint256 auctionId;
 
-        for (auctionId = 0; auctionId &lt;= totalAuctions; auctionId++) {
+        for (auctionId = 0; auctionId <= totalAuctions; auctionId++) {
             Auction storage auction = tokenIdToAuction[auctionId];
             if (auction.seller == _owner) {
                 result[resultIndex] = auctionId;
@@ -699,9 +699,9 @@ contract ChainMonstersAuction is MonsterOwnership {
         // see WhitePaper for gen0/promo monster plan
         
         // sanity check that this monster ID is actually in game yet
-        require(monsterCreator.baseStats(_mId, 1) &gt; 0);
+        require(monsterCreator.baseStats(_mId, 1) > 0);
         
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         promoCreatedCount++;
 
@@ -721,9 +721,9 @@ contract ChainMonstersAuction is MonsterOwnership {
 
     function createGen0Auction(uint256 _mId, uint256 price) external onlyAdmin {
          // sanity check that this monster ID is actually in game yet
-        require(monsterCreator.baseStats(_mId, 1) &gt; 0);
+        require(monsterCreator.baseStats(_mId, 1) > 0);
         
-        require(gen0CreatedCount &lt; GEN0_CREATION_LIMIT);
+        require(gen0CreatedCount < GEN0_CREATION_LIMIT);
 
         uint8[7] memory ivs = uint8[7](monsterCreator.getGen0IVs());
 
@@ -760,11 +760,11 @@ contract MonsterChampionship is Ownable {
     // list of top ten
     address[10] topTen;
 
-    // holds the address current &quot;world&quot; champion
+    // holds the address current "world" champion
     address public currChampion;
 
-    mapping (address =&gt; uint256) public addressToPowerlevel;
-    mapping (uint256 =&gt; address) public rankToAddress;
+    mapping (address => uint256) public addressToPowerlevel;
+    mapping (uint256 => address) public rankToAddress;
 
     // try to beat every other player in the top10 with your strongest monster!
     // effectively looping through all top10 players, beating them one by one
@@ -786,14 +786,14 @@ contract MonsterChampionship is Ownable {
         uint myPowerlevel = 10; // todo add calculation method to this contract!
 
         // checks if this transaction is useless
-        // since we can&#39;t fight against ourself!
+        // since we can't fight against ourself!
         // also stops reentrancy attacks
-        require(myPowerlevel &gt; addressToPowerlevel[msg.sender]);
+        require(myPowerlevel > addressToPowerlevel[msg.sender]);
 
         uint myRank = 0;
 
-        for (uint i = 0; i &lt;= maxIndex; i++) {
-            if (myPowerlevel &gt; addressToPowerlevel[topTen[i]]) {
+        for (uint i = 0; i <= maxIndex; i++) {
+            if (myPowerlevel > addressToPowerlevel[topTen[i]]) {
                 // you have beaten this one so increase temporary rank
                 myRank = i;
 
@@ -808,7 +808,7 @@ contract MonsterChampionship is Ownable {
         address[10] storage newTopTen = topTen;
 
         if (currChampion == msg.sender) {
-            for (uint j = 0; j &lt; maxIndex; j++) {
+            for (uint j = 0; j < maxIndex; j++) {
                 // remove ourselves from this list in case
                 if (newTopTen[j] == msg.sender) {
                     newTopTen[j] = 0x0;
@@ -817,11 +817,11 @@ contract MonsterChampionship is Ownable {
             }
         }
 
-        for (uint x = 0; x &lt;= myRank; x++) {
+        for (uint x = 0; x <= myRank; x++) {
             if (x == myRank) {
                 newTopTen[x] = msg.sender;
             } else {
-                if (x &lt; maxIndex)
+                if (x < maxIndex)
                     newTopTen[x] = topTen[x+1];
             }
         }
@@ -844,7 +844,7 @@ contract MonsterChampionship is Ownable {
 }
 
 
-// where the not-so-much &quot;hidden&quot; magic happens
+// where the not-so-much "hidden" magic happens
 contract MonsterCreatorInterface is Ownable {
     uint8 public lockedMonsterStatsCount = 0;
     uint nonce = 0;
@@ -853,20 +853,20 @@ contract MonsterCreatorInterface is Ownable {
         nonce++;
         uint16 result = (uint16(keccak256(block.blockhash(block.number-1), nonce))%max);
 
-        if (result &lt; min) {
+        if (result < min) {
             result = result+min;
         }
 
         return result;
     }
 
-    mapping(uint256 =&gt; uint8[8]) public baseStats;
+    mapping(uint256 => uint8[8]) public baseStats;
 
     function addBaseStats(uint256 _mId, uint8[8] data) external onlyOwner {
-        // lock&quot; the stats down forever
+        // lock" the stats down forever
         // since hp is never going to be 0 this is a valid check
         // so we have to be extra careful when adding new baseStats!
-        require(data[0] &gt; 0);
+        require(data[0] > 0);
         require(baseStats[_mId][0] == 0);
         baseStats[_mId] = data;
     }
@@ -877,7 +877,7 @@ contract MonsterCreatorInterface is Ownable {
     }
 
     function MonsterCreatorInterface() public {
-       // these monsters are already down and &quot;locked&quot; down stats/design wise
+       // these monsters are already down and "locked" down stats/design wise
         _addBaseStats(1, [45, 49, 49, 65, 65, 45, 12, 4]);
         _addBaseStats(2, [60, 62, 63, 80, 80, 60, 12, 4]);
         _addBaseStats(3, [80, 82, 83, 100, 100, 80, 12, 4]);
@@ -912,7 +912,7 @@ contract MonsterCreatorInterface is Ownable {
     function getMonsterGender () external returns(bool female) {
         uint16 femaleChance = rand(0, 100);
 
-        if (femaleChance &gt;= 50) {
+        if (femaleChance >= 50) {
             female = true;
         }
     }
@@ -1019,7 +1019,7 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
         _createArea(); // area 2
     }
 
-    // we don&#39;t know the exact interfaces yet so use the lockedMonsterStats value to determine if the game is &quot;ready&quot;
+    // we don't know the exact interfaces yet so use the lockedMonsterStats value to determine if the game is "ready"
     // see WhitePaper for explaination for our upgrade and development roadmap
     function setGameLogicContract(address _candidateContract) external onlyOwner {
         require(monsterCreator.lockedMonsterStatsCount() == 151);
@@ -1063,7 +1063,7 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
         }
         
         // important to note that the IV generators do not use Gen0 methods and are Generation 1
-        // this means there won&#39;t be more than the 10,000 Gen0 monsters sold during the development through the marketplace
+        // this means there won't be more than the 10,000 Gen0 monsters sold during the development through the marketplace
         uint256 monsterId = _createMonster(1, _owner, _mId, false, gender, shiny);
         monsterIdToTradeable[monsterId] = true;
 
@@ -1072,7 +1072,7 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
 
     // used to add playable content to the game
     // monsters will only spawn in certain areas so some are locked on release
-    // due to the game being in active development on &quot;launch&quot;
+    // due to the game being in active development on "launch"
     // each monster has a maximum number of 3 areas where it can appear
     function createArea() public onlyAdmin {
         _createArea();
@@ -1099,7 +1099,7 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
     }
 
     function changeMonsterNickname(uint256 _tokenId, string _name) public {
-        // users won&#39;t be able to rename a monster that is part of an auction
+        // users won't be able to rename a monster that is part of an auction
         require(_owns(msg.sender, _tokenId));
 
         // some string checks...?
@@ -1107,14 +1107,14 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
     }
 
     function moveToArea(uint16 _newArea) public {
-        require(addressToTrainer[msg.sender].currArea &gt; 0);
+        require(addressToTrainer[msg.sender].currArea > 0);
 
         // never allow anyone to move to area 0 or below since this is used
         // to determine if a trainer profile exists in another method!
-        require(_newArea &gt; 0);
+        require(_newArea > 0);
 
         // make sure that this area exists yet!
-        require(areas.length &gt;= _newArea);
+        require(areas.length >= _newArea);
 
         // when player is not stuck doing something else he can move freely!
         _moveToArea(_newArea, msg.sender);
@@ -1134,14 +1134,14 @@ contract ChainMonstersCore is ChainMonstersAuction, Ownable {
         // these values are retrieved from monsterCreator
         stats = uint8[8](monsterCreator.getMonsterStats(uint256(mon.mID)));
 
-        // hack to overcome solidity&#39;s stack limitation in monster struct....
+        // hack to overcome solidity's stack limitation in monster struct....
         uID = _id;
     }
 
     function isTrainer(address _check) external view returns (bool isTrainer) {
         Trainer storage trainer = addressToTrainer[_check];
 
-        return (trainer.currArea &gt; 0);
+        return (trainer.currArea > 0);
     }
 
     function withdrawBalance() external onlyOwner {

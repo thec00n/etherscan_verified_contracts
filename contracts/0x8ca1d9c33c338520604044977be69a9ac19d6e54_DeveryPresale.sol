@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;PREVE&#39; &#39;Presale EVE Tokens&#39; token contract
+// 'PREVE' 'Presale EVE Tokens' token contract
 //
 // Deployed to : {TBA}
 // Symbol      : PREVE
@@ -19,7 +19,7 @@ pragma solidity ^0.4.18;
 // Devery Presale Whitelist Interface
 // ----------------------------------------------------------------------------
 contract DeveryPresaleWhitelist {
-    mapping(address =&gt; uint) public whitelist;
+    mapping(address => uint) public whitelist;
 }
 
 
@@ -37,10 +37,10 @@ contract PICOPSCertifier {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -48,7 +48,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -115,8 +115,8 @@ contract ERC20Token is ERC20Interface, Owned {
     bool public transferable;
     bool public mintable = true;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event MintingDisabled();
     event TransfersEnabled();
@@ -187,14 +187,14 @@ contract ERC20Token is ERC20Interface, Owned {
 // ----------------------------------------------------------------------------
 contract DeveryPresale is ERC20Token {
     address public wallet;
-    // 9:00pm, 14 December GMT-5 =&gt; 02:00 15 December UTC =&gt; 13:00 15 December AEST =&gt; 1513303200
-    // new Date(1513303200 * 1000).toUTCString() =&gt;  &quot;Fri, 15 Dec 2017 02:00:00 UTC&quot;
+    // 9:00pm, 14 December GMT-5 => 02:00 15 December UTC => 13:00 15 December AEST => 1513303200
+    // new Date(1513303200 * 1000).toUTCString() =>  "Fri, 15 Dec 2017 02:00:00 UTC"
     uint public constant START_DATE = 1513303200;
     bool public closed;
     uint public ethMinContribution = 20 ether;
     uint public constant TEST_CONTRIBUTION = 0.01 ether;
     uint public usdCap = 2000000;
-    // ETH/USD 14 Dec 2017 ~ 16:40 AEST =&gt; 730 from CMC
+    // ETH/USD 14 Dec 2017 ~ 16:40 AEST => 730 from CMC
     uint public usdPerKEther = 730000;
     uint public contributedEth;
     uint public contributedUsd;
@@ -209,41 +209,41 @@ contract DeveryPresale is ERC20Token {
     event PICOPSCertifierUpdated(address indexed oldPICOPSCertifier, address indexed newPICOPSCertifier);
     event Contributed(address indexed addr, uint ethAmount, uint ethRefund, uint usdAmount, uint contributedEth, uint contributedUsd);
 
-    function DeveryPresale() public ERC20Token(&quot;PREVE&quot;, &quot;Presale EVE Tokens&quot;, 18) {
+    function DeveryPresale() public ERC20Token("PREVE", "Presale EVE Tokens", 18) {
         wallet = owner;
     }
     function setWallet(address _wallet) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         WalletUpdated(wallet, _wallet);
         wallet = _wallet;
     } 
     function setEthMinContribution(uint _ethMinContribution) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         EthMinContributionUpdated(ethMinContribution, _ethMinContribution);
         ethMinContribution = _ethMinContribution;
     } 
     function setUsdCap(uint _usdCap) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         UsdCapUpdated(usdCap, _usdCap);
         usdCap = _usdCap;
     } 
     function setUsdPerKEther(uint _usdPerKEther) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         UsdPerKEtherUpdated(usdPerKEther, _usdPerKEther);
         usdPerKEther = _usdPerKEther;
     }
     function setWhitelist(address _whitelist) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         WhitelistUpdated(address(whitelist), _whitelist);
         whitelist = DeveryPresaleWhitelist(_whitelist);
     }
     function setPICOPSCertifier(address _picopsCertifier) public onlyOwner {
-        // require(now &lt;= START_DATE);
+        // require(now <= START_DATE);
         PICOPSCertifierUpdated(address(picopsCertifier), _picopsCertifier);
         picopsCertifier = PICOPSCertifier(_picopsCertifier);
     }
     function addressCanContribute(address _addr) public view returns (bool) {
-        return whitelist.whitelist(_addr) &gt; 0 || picopsCertifier.certified(_addr);
+        return whitelist.whitelist(_addr) > 0 || picopsCertifier.certified(_addr);
     }
     function ethCap() public view returns (uint) {
         return usdCap * 10**uint(3 + 18) / usdPerKEther;
@@ -254,24 +254,24 @@ contract DeveryPresale is ERC20Token {
         disableMinting();
     }
     function () public payable {
-        require(now &gt;= START_DATE || (msg.sender == owner &amp;&amp; msg.value == TEST_CONTRIBUTION));
+        require(now >= START_DATE || (msg.sender == owner && msg.value == TEST_CONTRIBUTION));
         require(!closed);
         require(addressCanContribute(msg.sender));
-        require(msg.value &gt;= ethMinContribution || (msg.sender == owner &amp;&amp; msg.value == TEST_CONTRIBUTION));
+        require(msg.value >= ethMinContribution || (msg.sender == owner && msg.value == TEST_CONTRIBUTION));
         uint ethAmount = msg.value;
         uint ethRefund = 0;
-        if (contributedEth.add(ethAmount) &gt; ethCap()) {
+        if (contributedEth.add(ethAmount) > ethCap()) {
             ethAmount = ethCap().sub(contributedEth);
             ethRefund = msg.value.sub(ethAmount);
         }
-        require(ethAmount &gt; 0);
+        require(ethAmount > 0);
         uint usdAmount = ethAmount * usdPerKEther / 10**uint(3 + 18);
         contributedEth = contributedEth.add(ethAmount);
         contributedUsd = contributedUsd.add(usdAmount);
         mint(msg.sender, ethAmount);
         wallet.transfer(ethAmount);
         Contributed(msg.sender, ethAmount, ethRefund, usdAmount, contributedEth, contributedUsd);
-        if (ethRefund &gt; 0) {
+        if (ethRefund > 0) {
             msg.sender.transfer(ethRefund);
         }
     }

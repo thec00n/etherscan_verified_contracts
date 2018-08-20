@@ -78,7 +78,7 @@ contract ERC20Interface {
    *   https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729,
    *   clients SHOULD make sure to create user interfaces in such a way
    *   that they set the allowance first to 0 before setting it to another value for the same spender.
-   *   THOUGH The contract itself shouldn&#39;t enforce it,
+   *   THOUGH The contract itself shouldn't enforce it,
    *   to allow backwards compatibility with contracts deployed before.
    *
    * @return Whether the approval was successful or not.
@@ -110,20 +110,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -138,8 +138,8 @@ contract ERC20 is ERC20Interface {
   using SafeMath for uint256;
 
   uint256 internal _totalSupply;
-  mapping (address =&gt; uint256) internal _balance;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowed;
+  mapping (address => uint256) internal _balance;
+  mapping (address => mapping (address => uint256)) internal _allowed;
 
 
   /**
@@ -322,7 +322,7 @@ contract ERC20Extended is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -413,7 +413,7 @@ contract AxieOriginCoin is ERC20DetailedInterface, ERC20Extended, ERC20Mintable,
     // As its name says.
     _allocateUnspentRefTokens();
 
-    // Don&#39;t allow tokens to be minted anymore.
+    // Don't allow tokens to be minted anymore.
     finishMinting();
   }
 
@@ -422,7 +422,7 @@ contract AxieOriginCoin is ERC20DetailedInterface, ERC20Extended, ERC20Mintable,
    * @return The name.
    */
   function name() public view returns (string) {
-    return &quot;Axie Origin Coin&quot;;
+    return "Axie Origin Coin";
   }
 
   /**
@@ -430,7 +430,7 @@ contract AxieOriginCoin is ERC20DetailedInterface, ERC20Extended, ERC20Mintable,
    * @return The symbol.
    */
   function symbol() public view returns (string) {
-    return &quot;AOC&quot;;
+    return "AOC";
   }
 
   /**

@@ -81,11 +81,11 @@ contract IdentityManager {
         address indexed newIdManager,
         address instigator);
 
-    mapping(address =&gt; mapping(address =&gt; uint)) owners;
-    mapping(address =&gt; address) recoveryKeys;
-    mapping(address =&gt; mapping(address =&gt; uint)) limiter;
-    mapping(address =&gt; uint) public migrationInitiated;
-    mapping(address =&gt; address) public migrationNewAddress;
+    mapping(address => mapping(address => uint)) owners;
+    mapping(address => address) recoveryKeys;
+    mapping(address => mapping(address => uint)) limiter;
+    mapping(address => uint) public migrationInitiated;
+    mapping(address => address) public migrationNewAddress;
 
     modifier onlyOwner(address identity) {
         require(isOwner(identity, msg.sender));
@@ -103,7 +103,7 @@ contract IdentityManager {
     }
 
     modifier rateLimited(address identity) {
-        require(limiter[identity][msg.sender] &lt; (now - adminRate));
+        require(limiter[identity][msg.sender] < (now - adminRate));
         limiter[identity][msg.sender] = now;
         _;
     }
@@ -118,7 +118,7 @@ contract IdentityManager {
     /// @param _adminTimeLock Time before new owner can add/remove owners
     /// @param _adminRate Time period used for rate limiting a given key for admin functionality
     function IdentityManager(uint _userTimeLock, uint _adminTimeLock, uint _adminRate) {
-        require(_adminTimeLock &gt;= _userTimeLock);
+        require(_adminTimeLock >= _userTimeLock);
         adminTimeLock = _adminTimeLock;
         userTimeLock = _userTimeLock;
         adminRate = _adminRate;
@@ -215,10 +215,10 @@ contract IdentityManager {
     }
 
     /// @dev Allows an owner to finalize migration once adminTimeLock time has passed
-    /// WARNING: before transfering to a new address, make sure this address is &quot;ready to recieve&quot; the proxy.
+    /// WARNING: before transfering to a new address, make sure this address is "ready to recieve" the proxy.
     /// Not doing so risks the proxy becoming stuck.
     function finalizeMigration(Proxy identity) public onlyOlderOwner(identity) {
-        require(migrationInitiated[identity] != 0 &amp;&amp; migrationInitiated[identity] + adminTimeLock &lt; now);
+        require(migrationInitiated[identity] != 0 && migrationInitiated[identity] + adminTimeLock < now);
         address newIdManager = migrationNewAddress[identity];
         delete migrationInitiated[identity];
         delete migrationNewAddress[identity];
@@ -231,11 +231,11 @@ contract IdentityManager {
     }
 
     function isOwner(address identity, address owner) public constant returns (bool) {
-        return (owners[identity][owner] &gt; 0 &amp;&amp; (owners[identity][owner] + userTimeLock) &lt;= now);
+        return (owners[identity][owner] > 0 && (owners[identity][owner] + userTimeLock) <= now);
     }
 
     function isOlderOwner(address identity, address owner) public constant returns (bool) {
-        return (owners[identity][owner] &gt; 0 &amp;&amp; (owners[identity][owner] + adminTimeLock) &lt;= now);
+        return (owners[identity][owner] > 0 && (owners[identity][owner] + adminTimeLock) <= now);
     }
 
     function isRecovery(address identity, address recoveryKey) public constant returns (bool) {

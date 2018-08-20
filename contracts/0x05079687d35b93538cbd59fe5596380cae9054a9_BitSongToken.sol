@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -65,8 +65,8 @@ contract AdjustableToken is ERC20, Ownable {
 
   uint256 totalSupply_;
   bool public adjusted;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   event Adjusted(address indexed who, uint256 value);
   modifier onlyOnce() { require(!adjusted); _; }
@@ -84,7 +84,7 @@ contract AdjustableToken is ERC20, Ownable {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -100,8 +100,8 @@ contract AdjustableToken is ERC20, Ownable {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -119,7 +119,7 @@ contract AdjustableToken is ERC20, Ownable {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -130,7 +130,7 @@ contract AdjustableToken is ERC20, Ownable {
 
   function adjustSupply(uint256 _value) external onlyOwner() onlyOnce() {
     adjusted = true;
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     emit Adjusted(msg.sender, _value);

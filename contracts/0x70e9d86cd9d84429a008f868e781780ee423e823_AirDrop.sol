@@ -69,18 +69,18 @@ contract AirDrop
         uint256 i = 0;
         ERC20Interface T = ERC20Interface(_tokenAddr);
         
-        require(dests.length &gt; 0 &amp;&amp; (dests.length == values.length || values.length == 1));
+        require(dests.length > 0 && (dests.length == values.length || values.length == 1));
         
-        if (values.length &gt; 1)
+        if (values.length > 1)
         {
-            while (i &lt; dests.length) {
+            while (i < dests.length) {
                 T.transfer(dests[i], values[i]);
                 i += 1;
             }
         }
         else    
         {
-            while (i &lt; dests.length) {
+            while (i < dests.length) {
                 T.transfer(dests[i], values[0]);
                 i += 1;
             }
@@ -91,19 +91,19 @@ contract AirDrop
     function MultiTransferETH(address[] dests, uint256[] values) public onlyExecutor
     {
         uint256 i = 0;
-        require(dests.length &gt; 0 &amp;&amp; (dests.length == values.length || values.length == 1));
+        require(dests.length > 0 && (dests.length == values.length || values.length == 1));
         
         
-        if (values.length &gt; 1)
+        if (values.length > 1)
         {
-            while (i &lt; dests.length) {
+            while (i < dests.length) {
                 dests[i].transfer(values[i]);
                 i += 1;
             }
         }
         else    
         {
-            while (i &lt; dests.length) {
+            while (i < dests.length) {
                 dests[i].transfer(values[0]);
                 i += 1;
             }

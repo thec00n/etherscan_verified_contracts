@@ -31,7 +31,7 @@ contract JackPot {
 	
 	function getContributions(address addr) constant returns (uint) {
         uint i;
-        for (i=0; i &lt; numPlayers; i++) {
+        for (i=0; i < numPlayers; i++) {
 			if (contributors[i] == addr) { // if in the list already
 				break;
 			}
@@ -63,9 +63,9 @@ contract JackPot {
 
     function addValueToContribution(uint value) internal {
         // First, make sure this is a valid transaction.
-        if(value &lt; minAmount) throw;
+        if(value < minAmount) throw;
 	    uint i;
-        for (i=0; i &lt; numPlayers; i++) {
+        for (i=0; i < numPlayers; i++) {
 			if (contributors[i] == msg.sender) { // Already contributed?
 				break;
 			}
@@ -115,19 +115,19 @@ contract JackPot {
     function selectWinner(bytes32 seed) internal returns (uint winner_index) {
 
         uint semirandom = uint(sha3(random, seed)) % this.balance;
-        for(uint i = 0; i &lt; numPlayers; ++i) {
-            if(semirandom &lt; contributions[i]) return i;
+        for(uint i = 0; i < numPlayers; ++i) {
+            if(semirandom < contributions[i]) return i;
             semirandom -= contributions[i];
         }
     }
 
     function recordWin(uint winner_index, uint amount) internal {
-        if(recentWins.length &lt; recentWinsCount) {
+        if(recentWins.length < recentWinsCount) {
             recentWins.length++;
         } else {
             // Already at capacity for the number of winners to remember.
-            // Forget the oldest one by shifting each entry &#39;left&#39;
-            for(uint i = 0; i &lt; recentWinsCount - 1; ++i) {
+            // Forget the oldest one by shifting each entry 'left'
+            for(uint i = 0; i < recentWinsCount - 1; ++i) {
                 recentWins[i] = recentWins[i + 1];
             }
         }
@@ -146,8 +146,8 @@ contract JackPot {
     function destroy() {
         if(msg.sender != host) throw;
 
-        // Refund everyone&#39;s contributions.
-        for(uint i = 0; i &lt; numPlayers; ++i) {
+        // Refund everyone's contributions.
+        for(uint i = 0; i < numPlayers; ++i) {
             contributors[i].send(contributions[i]);
         }
 

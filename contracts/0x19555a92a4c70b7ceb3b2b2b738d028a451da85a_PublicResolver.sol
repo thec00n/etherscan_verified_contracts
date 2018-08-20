@@ -31,8 +31,8 @@ contract AbstractENS {
  */
 contract PublicResolver {
     AbstractENS ens;
-    mapping(bytes32=&gt;address) addresses;
-    mapping(bytes32=&gt;bytes32) hashes;
+    mapping(bytes32=>address) addresses;
+    mapping(bytes32=>bytes32) hashes;
 
     modifier only_owner(bytes32 node) {
         if(ens.owner(node) != msg.sender) throw;
@@ -62,7 +62,7 @@ contract PublicResolver {
      *         provided node.
      */
     function has(bytes32 node, bytes32 kind) constant returns (bool) {
-        return (kind == &quot;addr&quot; &amp;&amp; addresses[node] != 0) || (kind == &quot;hash&quot; &amp;&amp; hashes[node] != 0);
+        return (kind == "addr" && addresses[node] != 0) || (kind == "hash" && hashes[node] != 0);
     }
 
     /**

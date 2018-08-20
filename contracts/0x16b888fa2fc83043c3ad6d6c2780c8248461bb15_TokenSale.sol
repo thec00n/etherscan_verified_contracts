@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -130,10 +130,10 @@ contract RC {
     event BuyRC(address indexed buyer, bytes trackID, uint256 value, uint256 soldToken, uint256 valueTokenInEurWei );
     
     function () public payable {
-        require( now &gt; startTime );
-        require( now &lt; endTime );
-        //require( msg.value &gt;= 1*10**18); //1 Ether
-        require( remainingTokens &gt; 0 );
+        require( now > startTime );
+        require( now < endTime );
+        //require( msg.value >= 1*10**18); //1 Ether
+        require( remainingTokens > 0 );
         
         uint256 tokenAmount = tokenSaleContract.buyFromRC.value(msg.value)(msg.sender, oneTokenInEurWei, remainingTokens);
         
@@ -158,7 +158,7 @@ contract TokenSale is Ownable {
     uint256 public endTime;  // seconds from 1970-01-01T00:00:00Z
     uint256 public startTime;  // seconds from 1970-01-01T00:00:00Z
 
-    mapping(address =&gt; bool) public rc;
+    mapping(address => bool) public rc;
 
 
     function TokenSale(address _tokenAddress, address _rateAddress, uint256 _startTime, uint256 _endTime) public {
@@ -171,18 +171,18 @@ contract TokenSale is Ownable {
     }
     
     function tokenValueInEther(uint256 _oneTokenInEurWei) public view returns(uint256 tknValue) {
-        uint256 oneEtherInEur = rateContract.readRate(&quot;eur&quot;);
+        uint256 oneEtherInEur = rateContract.readRate("eur");
         tknValue = _oneTokenInEurWei.mul(10 ** uint256(decimals)).div(oneEtherInEur);
         return tknValue;
     } 
     
     modifier isBuyable() {
-        require( now &gt; startTime ); // check if started
-        require( now &lt; endTime ); // check if ended
-        require( msg.value &gt; 0 );
+        require( now > startTime ); // check if started
+        require( now < endTime ); // check if ended
+        require( msg.value > 0 );
 		
 		uint256 remainingTokens = tokenContract.balanceOf(this);
-        require( remainingTokens &gt; 0 ); // Check if there are any remaining tokens 
+        require( remainingTokens > 0 ); // Check if there are any remaining tokens 
         _;
     }
     
@@ -201,11 +201,11 @@ contract TokenSale is Ownable {
         
         
         uint256 remainingTokens = tokenContract.balanceOf(this);
-        if ( _remainingTokens &lt; remainingTokens ) {
+        if ( _remainingTokens < remainingTokens ) {
             remainingTokens = _remainingTokens;
         }
         
-        if ( remainingTokens &lt; tokenAmount ) {
+        if ( remainingTokens < tokenAmount ) {
             uint256 refund = (tokenAmount - remainingTokens).mul(tokenValue).div(oneToken);
             tokenAmount = remainingTokens;
             forward(msg.value-refund);
@@ -340,10 +340,10 @@ contract PrivateSale {
     event BuyRC(address indexed buyer, bytes trackID, uint256 value, uint256 soldToken, uint256 valueTokenInEurWei );
     
     function () public payable {
-        require( now &gt; startTime );
-        require( now &lt; endTime );
-        //require( msg.value &gt;= 1*10**18); //1 Ether
-        require( remainingTokens &gt; 0 );
+        require( now > startTime );
+        require( now < endTime );
+        //require( msg.value >= 1*10**18); //1 Ether
+        require( remainingTokens > 0 );
         
         uint256 tokenAmount = tokenSaleContract.buyFromRC.value(msg.value)(msg.sender, oneTokenInEurWei, remainingTokens);
         
@@ -351,12 +351,12 @@ contract PrivateSale {
         soldTokens = soldTokens.add(tokenAmount);
         
         uint256 bonusRate;
-        if( now &gt; startTime + weekInSeconds*0  ) { bonusRate = 1000; }
-        if( now &gt; startTime + weekInSeconds*1  ) { bonusRate = 800; }
-        if( now &gt; startTime + weekInSeconds*2  ) { bonusRate = 600; }
-        if( now &gt; startTime + weekInSeconds*3  ) { bonusRate = 400; }
-        if( now &gt; startTime + weekInSeconds*4  ) { bonusRate = 200; }
-        if( now &gt; startTime + weekInSeconds*5  ) { bonusRate = 0; }
+        if( now > startTime + weekInSeconds*0  ) { bonusRate = 1000; }
+        if( now > startTime + weekInSeconds*1  ) { bonusRate = 800; }
+        if( now > startTime + weekInSeconds*2  ) { bonusRate = 600; }
+        if( now > startTime + weekInSeconds*3  ) { bonusRate = 400; }
+        if( now > startTime + weekInSeconds*4  ) { bonusRate = 200; }
+        if( now > startTime + weekInSeconds*5  ) { bonusRate = 0; }
         
         tokenSaleContract.withdrawTokens(msg.sender, tokenAmount.mul( bonusRate ).div(10**4) );
         

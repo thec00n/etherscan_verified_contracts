@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -234,16 +234,16 @@ interface ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-    //     bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+    //     bytes4(keccak256('ownerOf(uint256)')) ^
+    //     bytes4(keccak256('countOfDeeds()')) ^
+    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+    //     bytes4(keccak256('approve(address,uint256)')) ^
+    //     bytes4(keccak256('takeOwnership(uint256)'));
 
     /// @notice Query a contract to see if it supports a certain interface
     /// @dev Returns `true` the interface is supported and `false` otherwise,
@@ -273,7 +273,7 @@ interface ERC721 {
     function countOfDeedsByOwner(address _owner) public view returns (uint256 _count);
 
     /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` &gt;= `countOfDeedsByOwner(_owner)` or if
+    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
     ///  `_owner` is the zero address, representing destroyed deeds.
     /// @param _owner An address where we are interested in deeds owned by them
     /// @param _index A counter between zero and `countOfDeedsByOwner(_owner)`,
@@ -328,9 +328,9 @@ interface ERC721Metadata {
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-    //     bytes4(keccak256(&#39;name()&#39;)) ^
-    //     bytes4(keccak256(&#39;symbol()&#39;)) ^
-    //     bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+    //     bytes4(keccak256('name()')) ^
+    //     bytes4(keccak256('symbol()')) ^
+    //     bytes4(keccak256('deedUri(uint256)'));
 
     /// @notice A descriptive name for a collection of deeds managed by this
     ///  contract
@@ -348,11 +348,11 @@ interface ERC721Metadata {
     ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)
     ///  * The JSON base element is an object
     ///  then these names of the base element SHALL have special meaning:
-    ///  * &quot;name&quot;: A string identifying the item to which `_deedId` grants
+    ///  * "name": A string identifying the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;description&quot;: A string detailing the item to which `_deedId` grants
+    ///  * "description": A string detailing the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;image&quot;: A URI pointing to a file of image/* mime type representing
+    ///  * "image": A URI pointing to a file of image/* mime type representing
     ///    the item to which `_deedId` grants ownership
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
@@ -399,11 +399,11 @@ contract DWorldBase is DWorldAccessControl {
     /// gas cost for minting).
     uint32[] public plots;
     
-    mapping (uint256 =&gt; address) identifierToOwner;
-    mapping (uint256 =&gt; address) identifierToApproved;
-    mapping (address =&gt; uint256) ownershipDeedCount;
+    mapping (uint256 => address) identifierToOwner;
+    mapping (uint256 => address) identifierToApproved;
+    mapping (address => uint256) ownershipDeedCount;
     
-    /// @dev Event fired when a plot&#39;s data are changed. The plot
+    /// @dev Event fired when a plot's data are changed. The plot
     /// data are not stored in the contract directly, instead the
     /// data are logged to the block. This gives significant
     /// reductions in gas requirements (~75k for minting with data
@@ -422,7 +422,7 @@ contract DWorldBase is DWorldAccessControl {
     function coordinateToIdentifier(uint256 x, uint256 y) public pure returns(uint256) {
         require(validCoordinate(x, y));
         
-        return (y &lt;&lt; 16) + x;
+        return (y << 16) + x;
     }
     
     /// @dev Turn a single uint representation of a coordinate into its x and y parts.
@@ -430,24 +430,24 @@ contract DWorldBase is DWorldAccessControl {
     function identifierToCoordinate(uint256 identifier) public pure returns(uint256 x, uint256 y) {
         require(validIdentifier(identifier));
     
-        y = identifier &gt;&gt; 16;
-        x = identifier - (y &lt;&lt; 16);
+        y = identifier >> 16;
+        x = identifier - (y << 16);
     }
     
     /// @dev Test whether the coordinate is valid.
     /// @param x The x-part of the coordinate to test.
     /// @param y The y-part of the coordinate to test.
     function validCoordinate(uint256 x, uint256 y) public pure returns(bool) {
-        return x &lt; 65536 &amp;&amp; y &lt; 65536; // 2^16
+        return x < 65536 && y < 65536; // 2^16
     }
     
     /// @dev Test whether an identifier is valid.
     /// @param identifier The identifier to test.
     function validIdentifier(uint256 identifier) public pure returns(bool) {
-        return identifier &lt; 4294967296; // 2^16 * 2^16
+        return identifier < 4294967296; // 2^16 * 2^16
     }
     
-    /// @dev Set a plot&#39;s data.
+    /// @dev Set a plot's data.
     /// @param identifier The identifier of the plot to set data for.
     function _setPlotData(uint256 identifier, string name, string description, string imageUrl, string infoUrl) internal {
         SetData(identifier, name, description, imageUrl, infoUrl);
@@ -460,32 +460,32 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
     
     /// @notice Name of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function name() public pure returns (string _deedName) {
-        _deedName = &quot;DWorld Plots&quot;;
+        _deedName = "DWorld Plots";
     }
     
     /// @notice Symbol of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function symbol() public pure returns (string _deedSymbol) {
-        _deedSymbol = &quot;DWP&quot;;
+        _deedSymbol = "DWP";
     }
     
     /// @dev ERC-165 (draft) interface signature for itself
     bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-        bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('countOfDeeds()')) ^
+        bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+        bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('takeOwnership(uint256)'));
         
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;deedUri(uint256)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('deedUri(uint256)'));
     
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     /// Returns true for any standardized interfaces implemented by this contract.
@@ -589,7 +589,7 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
         // Ensure the sender is not approving themselves.
         require(msg.sender != _to);
     
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             
             // Require the sender is the owner of the deed.
@@ -625,7 +625,7 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
         // Disallow transfers to this contract to prevent accidental misuse.
         require(_to != address(this));
     
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             
             // One can only transfer their own plots.
@@ -651,7 +651,7 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
     /// calling address has previously been granted transfer approval by the owner.
     /// @param _deedIds The identifier of the deed to be transferred.
     function takeOwnershipMultiple(uint256[] _deedIds) public whenNotPaused {
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             address _from = identifierToOwner[_deedId];
             
@@ -665,7 +665,7 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
     
     /// @notice Returns a list of all deed identifiers assigned to an address.
     /// @param _owner The owner whose deeds we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. It&#39;s very
+    /// @dev This method MUST NEVER be called by smart contract code. It's very
     /// expensive and is not supported in contract-to-contract calls as it returns
     /// a dynamic array (only supported for web3 calls).
     function deedsOfOwner(address _owner) external view returns(uint256[]) {
@@ -679,7 +679,7 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
             uint256 totalDeeds = countOfDeeds();
             uint256 resultIndex = 0;
             
-            for (uint256 deedNumber = 0; deedNumber &lt; totalDeeds; deedNumber++) {
+            for (uint256 deedNumber = 0; deedNumber < totalDeeds; deedNumber++) {
                 uint256 identifier = plots[deedNumber];
                 if (identifierToOwner[identifier] == _owner) {
                     result[resultIndex] = identifier;
@@ -696,13 +696,13 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
     /// @param _index The index of the deed we want.
     function deedOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
         // The index should be valid.
-        require(_index &lt; countOfDeedsByOwner(_owner));
+        require(_index < countOfDeedsByOwner(_owner));
 
-        // Loop through all plots, accounting the number of plots of the owner we&#39;ve seen.
+        // Loop through all plots, accounting the number of plots of the owner we've seen.
         uint256 seen = 0;
         uint256 totalDeeds = countOfDeeds();
         
-        for (uint256 deedNumber = 0; deedNumber &lt; totalDeeds; deedNumber++) {
+        for (uint256 deedNumber = 0; deedNumber < totalDeeds; deedNumber++) {
             uint256 identifier = plots[deedNumber];
             if (identifierToOwner[identifier] == _owner) {
                 if (seen == _index) {
@@ -724,10 +724,10 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
         var (x, y) = identifierToCoordinate(_deedId);
     
         // Maximum coordinate length in decimals is 5 (65535)
-        uri = &quot;https://dworld.io/plot/xxxxx/xxxxx&quot;;
+        uri = "https://dworld.io/plot/xxxxx/xxxxx";
         bytes memory _uri = bytes(uri);
         
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             _uri[27 - i] = byte(48 + (x / 10 ** i) % 10);
             _uri[33 - i] = byte(48 + (y / 10 ** i) % 10);
         }
@@ -738,14 +738,14 @@ contract DWorldDeed is DWorldBase, ERC721, ERC721Metadata {
 /// @dev Implements renting functionality.
 contract DWorldRenting is DWorldDeed {
     event Rent(address indexed renter, uint256 indexed deedId, uint256 rentPeriodEndTimestamp, uint256 rentPeriod);
-    mapping (uint256 =&gt; address) identifierToRenter;
-    mapping (uint256 =&gt; uint256) identifierToRentPeriodEndTimestamp;
+    mapping (uint256 => address) identifierToRenter;
+    mapping (uint256 => uint256) identifierToRentPeriodEndTimestamp;
 
     /// @dev Checks if a given address rents a particular plot.
     /// @param _renter The address of the renter to check for.
     /// @param _deedId The plot identifier to check for.
     function _rents(address _renter, uint256 _deedId) internal view returns (bool) {
-        return identifierToRenter[_deedId] == _renter &amp;&amp; identifierToRentPeriodEndTimestamp[_deedId] &gt;= now;
+        return identifierToRenter[_deedId] == _renter && identifierToRentPeriodEndTimestamp[_deedId] >= now;
     }
     
     /// @dev Rent out a deed to an address.
@@ -783,13 +783,13 @@ contract DWorldRenting is DWorldDeed {
         // Disallow transfers to this contract to prevent accidental misuse.
         require(_to != address(this));
         
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
             
             require(validIdentifier(_deedId));
         
             // There should not be an active renter.
-            require(identifierToRentPeriodEndTimestamp[_deedId] &lt; now);
+            require(identifierToRentPeriodEndTimestamp[_deedId] < now);
             
             // One can only rent out their own plots.
             require(_owns(msg.sender, _deedId));
@@ -805,7 +805,7 @@ contract DWorldRenting is DWorldDeed {
     function renterOf(uint256 _deedId) external view returns (address _renter, uint256 _rentPeriodEndTimestamp) {
         require(validIdentifier(_deedId));
     
-        if (identifierToRentPeriodEndTimestamp[_deedId] &lt; now) {
+        if (identifierToRentPeriodEndTimestamp[_deedId] < now) {
             // There is no active renter
             _renter = address(0);
             _rentPeriodEndTimestamp = 0;
@@ -818,7 +818,7 @@ contract DWorldRenting is DWorldDeed {
 
 
 /// @title The internal clock auction functionality.
-/// Inspired by CryptoKitties&#39; clock auction
+/// Inspired by CryptoKitties' clock auction
 contract ClockAuctionBase {
 
     // Address of the ERC721 contract this auction is linked to.
@@ -831,7 +831,7 @@ contract ClockAuctionBase {
     uint256 public outstandingEther = 0 ether;
     
     // Amount of ether yet to be paid per beneficiary.
-    mapping (address =&gt; uint256) public addressToEtherOwed;
+    mapping (address => uint256) public addressToEtherOwed;
     
     /// @dev Represents a deed auction.
     /// Care has been taken to ensure the auction fits in
@@ -844,7 +844,7 @@ contract ClockAuctionBase {
         uint64 startedAt;
     }
 
-    mapping (uint256 =&gt; Auction) identifierToAuction;
+    mapping (uint256 => Auction) identifierToAuction;
     
     // Events
     event AuctionCreated(address indexed seller, uint256 indexed deedId, uint256 startPrice, uint256 endPrice, uint256 duration);
@@ -870,14 +870,14 @@ contract ClockAuctionBase {
         require(deedContract.supportsInterface(0xda671b9b));
         
         // Fee must be between 0 and 100%.
-        require(0 &lt;= _fee &amp;&amp; _fee &lt;= 100000);
+        require(0 <= _fee && _fee <= 100000);
         fee = _fee;
     }
     
     /// @dev Checks whether the given auction is active.
     /// @param auction The auction to check for activity.
     function _activeAuction(Auction storage auction) internal view returns (bool) {
-        return auction.startedAt &gt; 0;
+        return auction.startedAt > 0;
     }
     
     /// @dev Put the deed into escrow, thereby taking ownership of it.
@@ -908,22 +908,22 @@ contract ClockAuctionBase {
         // The auction must be active.
         require(_activeAuction(auction));
         
-        // Calculate the auction&#39;s current price.
+        // Calculate the auction's current price.
         uint256 price = _currentPrice(auction);
         
         // Make sure enough funds were sent.
-        require(_value &gt;= price);
+        require(_value >= price);
         
         address seller = auction.seller;
     
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 totalFee = _calculateFee(price);
             uint256 proceeds = price - totalFee;
             
             // Assign the proceeds to the seller.
             // We do not send the proceeds directly, as to prevent
             // malicious sellers from denying auctions (and burning
-            // the buyer&#39;s gas).
+            // the buyer's gas).
             _assignProceeds(seller, proceeds);
         }
         
@@ -987,11 +987,11 @@ contract ClockAuctionBase {
     
     /// @dev Calculate the current price of an auction.
     function _currentPrice(Auction storage _auction) internal view returns (uint256) {
-        require(now &gt;= _auction.startedAt);
+        require(now >= _auction.startedAt);
         
         uint256 secondsPassed = now - _auction.startedAt;
         
-        if (secondsPassed &gt;= _auction.duration) {
+        if (secondsPassed >= _auction.duration) {
             return _auction.endPrice;
         } else {
             // Negative if the end price is higher than the start price!
@@ -1008,7 +1008,7 @@ contract ClockAuctionBase {
             int256 price = int256(_auction.startPrice) + currentPriceChange;
             
             // This never throws.
-            assert(price &gt;= 0);
+            assert(price >= 0);
             
             return uint256(price);
         }
@@ -1033,7 +1033,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
     /// @notice Update the auction fee.
     /// @param _fee The new fee.
     function setFee(uint256 _fee) external onlyOwner {
-        require(0 &lt;= _fee &amp;&amp; _fee &lt;= 100000);
+        require(0 <= _fee && _fee <= 100000);
     
         fee = _fee;
     }
@@ -1087,7 +1087,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
         );
     
         // The duration of the auction must be at least 60 seconds.
-        require(_duration &gt;= 60);
+        require(_duration >= 60);
     
         // Throws if placing the deed in escrow fails (the contract requires
         // transfer approval prior to creating the auction).
@@ -1149,7 +1149,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
         uint256 etherOwed = addressToEtherOwed[beneficiary];
         
         // Ensure ether is owed to the beneficiary.
-        require(etherOwed &gt; 0);
+        require(etherOwed > 0);
          
         // Set ether owed to 0   
         delete addressToEtherOwed[beneficiary];
@@ -1197,7 +1197,7 @@ contract RentAuction is ClockAuction {
     /// @dev Allows other contracts to check whether this is the expected contract.
     bool public isRentAuction = true;
     
-    mapping (uint256 =&gt; uint256) public identifierToRentPeriod;
+    mapping (uint256 => uint256) public identifierToRentPeriod;
     
     /// @notice Create an auction for a given deed. Be careful when calling
     /// createAuction for a RentAuction, that this overloaded function (including
@@ -1219,7 +1219,7 @@ contract RentAuction is ClockAuction {
         external
     {
         // Require the rent period to be at least one hour.
-        require(_rentPeriod &gt;= 3600);
+        require(_rentPeriod >= 3600);
         
         // Require there to be no active renter.
         DWorldRenting dWorldRentingContract = DWorldRenting(deedContract);
@@ -1265,7 +1265,7 @@ contract RentAuction is ClockAuction {
 /// @dev Holds functionality for minting new plot deeds.
 contract DWorldMinting is DWorldRenting {
     uint256 public unclaimedPlotPrice = 0.0025 ether;
-    mapping (address =&gt; uint256) freeClaimAllowance;
+    mapping (address => uint256) freeClaimAllowance;
     
     /// @notice Sets the new price for unclaimed plots.
     /// @param _unclaimedPlotPrice The new price for unclaimed plots.
@@ -1289,7 +1289,7 @@ contract DWorldMinting is DWorldRenting {
     /// @notice Buy an unclaimed plot.
     /// @param _deedId The unclaimed plot to buy.
     function claimPlot(uint256 _deedId) external payable whenNotPaused {
-        claimPlotWithData(_deedId, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        claimPlotWithData(_deedId, "", "", "", "");
     }
        
     /// @notice Buy an unclaimed plot.
@@ -1308,7 +1308,7 @@ contract DWorldMinting is DWorldRenting {
     /// @notice Buy unclaimed plots.
     /// @param _deedIds The unclaimed plots to buy.
     function claimPlotMultiple(uint256[] _deedIds) external payable whenNotPaused {
-        claimPlotMultipleWithData(_deedIds, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        claimPlotMultipleWithData(_deedIds, "", "", "", "");
     }
     
     /// @notice Buy unclaimed plots.
@@ -1320,9 +1320,9 @@ contract DWorldMinting is DWorldRenting {
     function claimPlotMultipleWithData(uint256[] _deedIds, string name, string description, string imageUrl, string infoUrl) public payable whenNotPaused {
         uint256 buyAmount = _deedIds.length;
         uint256 etherRequired;
-        if (freeClaimAllowance[msg.sender] &gt; 0) {
+        if (freeClaimAllowance[msg.sender] > 0) {
             // The sender has a free claim allowance.
-            if (freeClaimAllowance[msg.sender] &gt; buyAmount) {
+            if (freeClaimAllowance[msg.sender] > buyAmount) {
                 // Subtract from allowance.
                 freeClaimAllowance[msg.sender] -= buyAmount;
                 
@@ -1334,7 +1334,7 @@ contract DWorldMinting is DWorldRenting {
                 // The full allowance has been used.
                 delete freeClaimAllowance[msg.sender];
                 
-                // The subtraction cannot underflow, as freeAmount &lt;= buyAmount.
+                // The subtraction cannot underflow, as freeAmount <= buyAmount.
                 etherRequired = unclaimedPlotPrice.mul(buyAmount - freeAmount);
             }
         } else {
@@ -1343,7 +1343,7 @@ contract DWorldMinting is DWorldRenting {
         }
         
         // Ensure enough ether is supplied.
-        require(msg.value &gt;= etherRequired);
+        require(msg.value >= etherRequired);
         
         uint256 offset = plots.length;
         
@@ -1352,7 +1352,7 @@ contract DWorldMinting is DWorldRenting {
         // plot, as that requires multiple dynamic allocations).
         plots.length = plots.length.add(_deedIds.length);
         
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) { 
+        for (uint256 i = 0; i < _deedIds.length; i++) { 
             uint256 _deedId = _deedIds[i];
             require(validIdentifier(_deedId));
             
@@ -1376,7 +1376,7 @@ contract DWorldMinting is DWorldRenting {
         // so this cannot underflow.
         uint256 excess = msg.value - etherRequired;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             // Refund any excess ether (not susceptible to re-entry attack, as
             // the owner is assigned before the transfer takes place).
             msg.sender.transfer(excess);
@@ -1465,12 +1465,12 @@ contract DWorldAuction is DWorldMinting {
     /// in a single step.
     function withdrawAuctionBalances() external {
         // Withdraw from the sale contract if the sender is owed Ether.
-        if (saleAuctionContract.addressToEtherOwed(msg.sender) &gt; 0) {
+        if (saleAuctionContract.addressToEtherOwed(msg.sender) > 0) {
             saleAuctionContract.withdrawAuctionBalance(msg.sender);
         }
         
         // Withdraw from the rent contract if the sender is owed Ether.
-        if (rentAuctionContract.addressToEtherOwed(msg.sender) &gt; 0) {
+        if (rentAuctionContract.addressToEtherOwed(msg.sender) > 0) {
             rentAuctionContract.withdrawAuctionBalance(msg.sender);
         }
     }
@@ -1506,7 +1506,7 @@ contract DWorldCore is DWorldAuction {
         // The sender requesting the data update should be
         // the owner (without an active renter) or should
         // be the active renter.
-        require(_owns(msg.sender, _deedId) &amp;&amp; identifierToRentPeriodEndTimestamp[_deedId] &lt; now || _rents(msg.sender, _deedId));
+        require(_owns(msg.sender, _deedId) && identifierToRentPeriodEndTimestamp[_deedId] < now || _rents(msg.sender, _deedId));
     
         // Set the data
         _setPlotData(_deedId, name, description, imageUrl, infoUrl);
@@ -1517,7 +1517,7 @@ contract DWorldCore is DWorldAuction {
         external
         whenNotPaused
     {
-        for (uint256 i = 0; i &lt; _deedIds.length; i++) {
+        for (uint256 i = 0; i < _deedIds.length; i++) {
             uint256 _deedId = _deedIds[i];
         
             setPlotData(_deedId, name, description, imageUrl, infoUrl);

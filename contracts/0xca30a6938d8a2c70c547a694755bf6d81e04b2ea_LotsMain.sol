@@ -52,9 +52,9 @@ contract LotsData is Ownable {
         
     Property[] properties;
 
-    mapping (uint256 =&gt; address) public propertyIdToOwner;
-    mapping (uint256 =&gt; Auction) public propertyIdToAuction;
-    mapping (uint256 =&gt; Escrow) public propertyIdToEscrow;
+    mapping (uint256 => address) public propertyIdToOwner;
+    mapping (uint256 => Auction) public propertyIdToAuction;
+    mapping (uint256 => Escrow) public propertyIdToEscrow;
     
 }
 
@@ -102,8 +102,8 @@ contract LotsApis is LotsData {
     }
     
     function createAuction(uint256 _propertyId, uint256 _startingPriceWei, uint256 _endingPriceWei, uint256 _duration) external onlyOwner {
-        require(_startingPriceWei &gt; _endingPriceWei);
-        require(_startingPriceWei &gt; 0);
+        require(_startingPriceWei > _endingPriceWei);
+        require(_startingPriceWei > 0);
         require(_startingPriceWei == uint256(uint128(_startingPriceWei)));
         require(_endingPriceWei == uint256(uint128(_endingPriceWei)));
         require(_duration == uint256(uint64(_duration)));
@@ -124,10 +124,10 @@ contract LotsApis is LotsData {
     
     function bid(uint256 _propertyId) external payable {
         Auction storage auction = propertyIdToAuction[_propertyId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         uint256 price = _getAuctionPrice(auction);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         Escrow memory escrow = Escrow({
                 seller: auction.seller,
@@ -144,7 +144,7 @@ contract LotsApis is LotsData {
 
     function cancelEscrow(uint256 _propertyId) external onlyOwner {
         Escrow storage escrow = propertyIdToEscrow[_propertyId];
-        require(escrow.amount &gt; 0);
+        require(escrow.amount > 0);
 
         escrow.buyer.transfer(escrow.amount);
         delete propertyIdToEscrow[_propertyId];
@@ -152,7 +152,7 @@ contract LotsApis is LotsData {
 
     function closeEscrow(uint256 _propertyId) external onlyOwner {
         Escrow storage escrow = propertyIdToEscrow[_propertyId];
-        require(escrow.amount &gt; 0);
+        require(escrow.amount > 0);
 
         escrow.seller.transfer(escrow.amount);
          _transfer(escrow.seller, escrow.buyer, _propertyId);
@@ -161,7 +161,7 @@ contract LotsApis is LotsData {
 
     function cancelAuction(uint256 _propertyId) external {
         Auction storage auction = propertyIdToAuction[_propertyId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         require(msg.sender == auction.seller);
         delete propertyIdToAuction[_propertyId];
@@ -170,14 +170,14 @@ contract LotsApis is LotsData {
     
     function getAuction(uint256 _propertyId) external view returns(address seller, uint256 startingPriceWei, uint256 endingPriceWei, uint256 duration, uint256 startedAt) {
         Auction storage auction = propertyIdToAuction[_propertyId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         return (auction.seller, auction.startingPriceWei, auction.endingPriceWei, auction.duration, auction.creationTime);
     }
 
     function getAuctionPrice(uint256 _propertyId) external view returns (uint256) {
         Auction storage auction = propertyIdToAuction[_propertyId];
-        require(auction.startingPriceWei &gt; 0);
+        require(auction.startingPriceWei > 0);
 
         return _getAuctionPrice(auction);
     }
@@ -190,13 +190,13 @@ contract LotsApis is LotsData {
     function _getAuctionPrice(Auction storage _auction) internal view returns (uint256) {
         uint256 secondsPassed = 0;
 
-        if (now &gt; _auction.creationTime) {
+        if (now > _auction.creationTime) {
             secondsPassed = now - _auction.creationTime;
         }
 
         uint256 price = _auction.endingPriceWei;
 
-        if (secondsPassed &lt; _auction.duration) {
+        if (secondsPassed < _auction.duration) {
             uint256 priceSpread = _auction.startingPriceWei - _auction.endingPriceWei;
             uint256 deltaPrice = priceSpread * secondsPassed / _auction.duration;
             price = _auction.startingPriceWei - deltaPrice;

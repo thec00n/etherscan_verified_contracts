@@ -67,14 +67,14 @@ contract BdpBase is BdpBaseData {
 	}
 
 	modifier whileContractIsActive() {
-		require(!paused &amp;&amp; setupCompleted);
+		require(!paused && setupCompleted);
 		_;
 	}
 
 	modifier storageAccessControl() {
 		require(
-			(! setupCompleted &amp;&amp; (msg.sender == ownerAddress || msg.sender == managerAddress))
-			|| (setupCompleted &amp;&amp; !paused &amp;&amp; (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
+			(! setupCompleted && (msg.sender == ownerAddress || msg.sender == managerAddress))
+			|| (setupCompleted && !paused && (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
 		);
 		_;
 	}
@@ -135,9 +135,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
@@ -145,7 +145,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -154,7 +154,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -166,25 +166,25 @@ contract BdpOwnershipStorage is BdpBase {
 	using SafeMath for uint256;
 
 	// Mapping from token ID to owner
-	mapping (uint256 =&gt; address) public tokenOwner;
+	mapping (uint256 => address) public tokenOwner;
 
 	// Mapping from token ID to approved address
-	mapping (uint256 =&gt; address) public tokenApprovals;
+	mapping (uint256 => address) public tokenApprovals;
 
 	// Mapping from owner to the sum of owned area
-	mapping (address =&gt; uint256) public ownedArea;
+	mapping (address => uint256) public ownedArea;
 
 	// Mapping from owner to list of owned token IDs
-	mapping (address =&gt; uint256[]) public ownedTokens;
+	mapping (address => uint256[]) public ownedTokens;
 
 	// Mapping from token ID to index of the owner tokens list
-	mapping(uint256 =&gt; uint256) public ownedTokensIndex;
+	mapping(uint256 => uint256) public ownedTokensIndex;
 
 	// All tokens list tokens ids
 	uint256[] public tokenIds;
 
 	// Mapping from tokenId to index of the tokens list
-	mapping (uint256 =&gt; uint256) public tokenIdsIndex;
+	mapping (uint256 => uint256) public tokenIdsIndex;
 
 
 	function getTokenOwner(uint256 _tokenId) view public returns (address) {

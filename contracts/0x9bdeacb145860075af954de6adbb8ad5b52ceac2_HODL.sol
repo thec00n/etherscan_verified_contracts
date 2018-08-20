@@ -12,7 +12,7 @@ contract HODL {
     uint256 public RELEASE_TIME = 1 years;
 
     // Balances on hold
-    mapping(address =&gt; Deposit) deposits;
+    mapping(address => Deposit) deposits;
     
     struct Deposit {
         uint256 value;
@@ -28,7 +28,7 @@ contract HODL {
      If there is not deposit created by the `msg.sender` it will be created.
    */
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         if (deposits[msg.sender].releaseTime == 0) {
             uint256 releaseTime = now + RELEASE_TIME;
@@ -46,8 +46,8 @@ contract HODL {
      and it will transfer all the ETH deposited back to him.
    */
     function withdraw() public {
-        require(deposits[msg.sender].value &gt; 0);
-        require(deposits[msg.sender].releaseTime &lt; now);
+        require(deposits[msg.sender].value > 0);
+        require(deposits[msg.sender].releaseTime < now);
         
         msg.sender.transfer(deposits[msg.sender].value);
         

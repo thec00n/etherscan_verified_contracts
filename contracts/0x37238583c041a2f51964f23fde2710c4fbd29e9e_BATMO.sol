@@ -124,8 +124,8 @@ contract BATMO is FOMOEvents {
     OBOK public ObokContract;
     address private admin = msg.sender;
     address private admin2;
-    string constant public name = &quot;BATMO&quot;;
-    string constant public symbol = &quot;BATMO&quot;;
+    string constant public name = "BATMO";
+    string constant public symbol = "BATMO";
     uint256 private rndExtra_ = 1 minutes;     // length of the very first ICO
     uint256 private rndGap_ = 1 minutes;         // length of ICO phase, set to 1 year for EOS.
     uint256 constant private rndInit_ = 2 hours;                // round timer starts at this
@@ -139,21 +139,21 @@ contract BATMO is FOMOEvents {
 //****************
 // PLAYER DATA
 //****************
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID) returns player id by name
-    mapping (uint256 =&gt; BATMODatasets.Player) public plyr_;   // (pID =&gt; data) player data
-    mapping (uint256 =&gt; mapping (uint256 =&gt; BATMODatasets.PlayerRounds)) public plyrRnds_;    // (pID =&gt; rID =&gt; data) player round data by player id &amp; round id
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID) returns player id by name
+    mapping (uint256 => BATMODatasets.Player) public plyr_;   // (pID => data) player data
+    mapping (uint256 => mapping (uint256 => BATMODatasets.PlayerRounds)) public plyrRnds_;    // (pID => rID => data) player round data by player id & round id
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
 //****************
 // ROUND DATA
 //****************
-    mapping (uint256 =&gt; BATMODatasets.Round) public round_;   // (rID =&gt; data) round data
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // (rID =&gt; tID =&gt; data) eth in per team, by round id and team id
+    mapping (uint256 => BATMODatasets.Round) public round_;   // (rID => data) round data
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // (rID => tID => data) eth in per team, by round id and team id
 //****************
 // TEAM FEE DATA
 //****************
-    mapping (uint256 =&gt; BATMODatasets.TeamFee) public fees_;          // (team =&gt; fees) fee distribution by team
-    mapping (uint256 =&gt; BATMODatasets.PotSplit) public potSplit_;     // (team =&gt; fees) pot split distribution by team
+    mapping (uint256 => BATMODatasets.TeamFee) public fees_;          // (team => fees) fee distribution by team
+    mapping (uint256 => BATMODatasets.PotSplit) public potSplit_;     // (team => fees) pot split distribution by team
 //==============================================================================
 //     _ _  _  __|_ _    __|_ _  _  .
 //    (_(_)| |_\ | | |_|(_ | (_)|   .  (initial data setup upon contract deploy)
@@ -165,7 +165,7 @@ contract BATMO is FOMOEvents {
         ObokContract = OBOK(token);
         PlayerBook = PlayerBookInterface(playerbook);
         //no teams... 
-        // Referrals / Community rewards are mathematically designed to come from the winner&#39;s share of the pot.
+        // Referrals / Community rewards are mathematically designed to come from the winner's share of the pot.
         fees_[0] = BATMODatasets.TeamFee(47,10);   //30% to pot, 10% to aff, 3% to com
        
 
@@ -201,8 +201,8 @@ contract BATMO is FOMOEvents {
      * @dev sets boundaries for incoming tx
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000);
-        require(_eth &lt;= 100000000000000000000000);
+        require(_eth >= 1000000000);
+        require(_eth <= 100000000000000000000000);
         _;
     }
 
@@ -257,7 +257,7 @@ contract BATMO is FOMOEvents {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-        // if affiliate code was given &amp; its not the same as previously stored
+        // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -320,7 +320,7 @@ contract BATMO is FOMOEvents {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -370,7 +370,7 @@ contract BATMO is FOMOEvents {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-        // if affiliate code was given &amp; its not the same as previously stored
+        // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -432,7 +432,7 @@ contract BATMO is FOMOEvents {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -476,7 +476,7 @@ contract BATMO is FOMOEvents {
         uint256 _eth;
 
         // check to see if round has ended and no one has run round end yet
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // set up our tx event data
             BATMODatasets.EventReturns memory _eventData_;
@@ -489,7 +489,7 @@ contract BATMO is FOMOEvents {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // build event data
@@ -518,7 +518,7 @@ contract BATMO is FOMOEvents {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // fire withdraw event
@@ -599,7 +599,7 @@ contract BATMO is FOMOEvents {
     }
 //==============================================================================
 //     _  _ _|__|_ _  _ _  .
-//    (_|(/_ |  | (/_| _\  . (for UI &amp; viewing things on etherscan)
+//    (_|(/_ |  | (/_| _\  . (for UI & viewing things on etherscan)
 //=====_|=======================================================================
     /**
      * @dev return the price buyer will pay for next 1 individual key.
@@ -618,14 +618,14 @@ contract BATMO is FOMOEvents {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // init
     }
 
     /**
-     * @dev returns time left.  dont spam this, you&#39;ll ddos yourself from your node
+     * @dev returns time left.  dont spam this, you'll ddos yourself from your node
      * provider
      * -functionhash- 0xc7e284b8
      * @return time left in seconds
@@ -641,8 +641,8 @@ contract BATMO is FOMOEvents {
         // grab time
         uint256 _now = now;
 
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt + rndGap_)
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt + rndGap_).sub(_now) );
@@ -666,7 +666,7 @@ contract BATMO is FOMOEvents {
         uint256 _rID = rID_;
 
         // if round has ended.  but round end has not been run (so contract has not distributed winnings)
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // if player is winner
             if (round_[_rID].plyr == _pID)
@@ -718,7 +718,7 @@ contract BATMO is FOMOEvents {
      * @return time round ends
      * @return time round started
      * @return current pot
-     * @return current team ID &amp; player ID in lead
+     * @return current team ID & player ID in lead
      * @return current player in leads address
      * @return current player in leads name
      * @return team eth in for round
@@ -804,7 +804,7 @@ contract BATMO is FOMOEvents {
         uint256 _now = now;
 
         // if round is active
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // call core
             core(_rID, _pID, msg.value, _affID, 0, _eventData_);
@@ -812,9 +812,9 @@ contract BATMO is FOMOEvents {
         // if round is not active
         } else {
             // check to see if end round needs to be ran
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false)
+            if (_now > round_[_rID].end && round_[_rID].ended == false)
             {
-                // end the round (distributes pot) &amp; start new round
+                // end the round (distributes pot) & start new round
                 round_[_rID].ended = true;
                 _eventData_ = endRound(_eventData_);
 
@@ -858,7 +858,7 @@ contract BATMO is FOMOEvents {
         uint256 _now = now;
 
         // if round is active
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
         {
             // get earnings from all vaults and return unused to gen vault
             // because we use a custom safemath library.  this will throw if player
@@ -869,8 +869,8 @@ contract BATMO is FOMOEvents {
             core(_rID, _pID, _eth, _affID, 0, _eventData_);
 
         // if round is not active and end round needs to be ran
-        } else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
-            // end the round (distributes pot) &amp; start new round
+        } else if (_now > round_[_rID].end && round_[_rID].ended == false) {
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -907,7 +907,7 @@ contract BATMO is FOMOEvents {
             _eventData_ = managePlayer(_pID, _eventData_);
 
         // early round eth limiter
-        if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 1000000000000000000)
+        if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 1000000000000000000)
         {
             uint256 _availableLimit = (1000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
             uint256 _refund = _eth.sub(_availableLimit);
@@ -916,14 +916,14 @@ contract BATMO is FOMOEvents {
         }
 
         // if eth left is greater than min eth allowed (sorry no pocket lint)
-        if (_eth &gt; 1000000000)
+        if (_eth > 1000000000)
         {
 
             // mint the new keys
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
 
             // if they bought at least 1 whole key
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
             updateTimer(_keys, _rID);
 
@@ -986,7 +986,7 @@ contract BATMO is FOMOEvents {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else // rounds over.  need keys for new round
             return ( (_eth).keys() );
@@ -1010,7 +1010,7 @@ contract BATMO is FOMOEvents {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -1072,14 +1072,14 @@ contract BATMO is FOMOEvents {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
 
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
 
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
 
             // set the new player bool to true
@@ -1091,7 +1091,7 @@ contract BATMO is FOMOEvents {
     
 
     /**
-     * @dev decides if round end needs to be run &amp; new round started.  and if
+     * @dev decides if round end needs to be run & new round started.  and if
      * player unmasked earnings from previously played rounds need to be moved.
      */
     function managePlayer(uint256 _pID, BATMODatasets.EventReturns memory _eventData_)
@@ -1103,7 +1103,7 @@ contract BATMO is FOMOEvents {
         if (plyr_[_pID].lrnd != 0)
             updateGenVault(_pID, plyr_[_pID].lrnd);
 
-        // update player&#39;s last round played
+        // update player's last round played
         plyr_[_pID].lrnd = rID_;
 
         // set the joined round bool to true
@@ -1122,7 +1122,7 @@ contract BATMO is FOMOEvents {
         // setup local rID
         uint256 _rID = rID_;
 
-        // grab our winning player and team id&#39;s
+        // grab our winning player and team id's
         uint256 _winPID = round_[_rID].plyr;
         uint256 _winTID = round_[_rID].team;
 
@@ -1140,7 +1140,7 @@ contract BATMO is FOMOEvents {
         // calculate ppt for round mask
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -1154,7 +1154,7 @@ contract BATMO is FOMOEvents {
         admin.transfer(_dev / 2);
         admin2.transfer(_dev / 2);
 
-        address(ObokContract).call.value(_OBOK.sub((_OBOK / 3).mul(2)))(bytes4(keccak256(&quot;donateDivs()&quot;)));  //66%
+        address(ObokContract).call.value(_OBOK.sub((_OBOK / 3).mul(2)))(bytes4(keccak256("donateDivs()")));  //66%
 
         round_[_rID].pot = _pot.add(_OBOK / 3);  // 33%
 
@@ -1188,7 +1188,7 @@ contract BATMO is FOMOEvents {
         private
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // put in gen vault
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -1208,13 +1208,13 @@ contract BATMO is FOMOEvents {
 
         // calculate time based on number of keys bought
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
 
         // compare to max and set new end time
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1234,7 +1234,7 @@ contract BATMO is FOMOEvents {
         _dev = _dev.add(_p1);  //  1%  + 2% = 3%
 
         uint256 _OBOK;
-        if (!address(admin).call.value(_dev/2)() &amp;&amp; !address(admin2).call.value(_dev/2)())
+        if (!address(admin).call.value(_dev/2)() && !address(admin2).call.value(_dev/2)())
         {
             _OBOK = _dev;
             _dev = 0;
@@ -1246,7 +1246,7 @@ contract BATMO is FOMOEvents {
 
         // decide what to do with affiliate share of fees
         // affiliate must not be self, and must have a name registered
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit FOMOEvents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
         } else {
@@ -1255,12 +1255,12 @@ contract BATMO is FOMOEvents {
 
         // pay out obok
         _OBOK = _OBOK.add((_eth.mul(fees_[_team].obok)) / (100));
-        if (_OBOK &gt; 0)
+        if (_OBOK > 0)
         {
             // deposit to divies contract
             uint256 _potAmount = _OBOK / 2;
             
-            address(ObokContract).call.value(_OBOK.sub(_potAmount))(bytes4(keccak256(&quot;donateDivs()&quot;)));
+            address(ObokContract).call.value(_OBOK.sub(_potAmount))(bytes4(keccak256("donateDivs()")));
 
             round_[_rID].pot = round_[_rID].pot.add(_potAmount);
 
@@ -1290,7 +1290,7 @@ contract BATMO is FOMOEvents {
         // distribute gen share (thats what updateMasks() does) and adjust
         // balances for dust.
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
 
         // add eth to pot
@@ -1317,26 +1317,26 @@ contract BATMO is FOMOEvents {
             tracker based on profit per share for each round, that increases in
             relevant proportion to the increase in share supply.
 
-            the player will have an additional mask that basically says &quot;based
-            on the rounds mask, my shares, and how much i&#39;ve already withdrawn,
-            how much is still owed to me?&quot;
+            the player will have an additional mask that basically says "based
+            on the rounds mask, my shares, and how much i've already withdrawn,
+            how much is still owed to me?"
         */
 
-        // calc profit per key &amp; round mask based on this buy:  (dust goes to pot)
+        // calc profit per key & round mask based on this buy:  (dust goes to pot)
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         round_[_rID].mask = _ppt.add(round_[_rID].mask);
 
         // calculate player earning from their own buy (only based on the keys
-        // they just bought).  &amp; update player earnings mask
+        // they just bought).  & update player earnings mask
         uint256 _pearn = (_ppt.mul(_keys)) / (1000000000000000000);
         plyrRnds_[_pID][_rID].mask = (((round_[_rID].mask.mul(_keys)) / (1000000000000000000)).sub(_pearn)).add(plyrRnds_[_pID][_rID].mask);
 
-        // calculate &amp; return dust
+        // calculate & return dust
         return(_gen.sub((_ppt.mul(round_[_rID].keys)) / (1000000000000000000)));
     }
 
     /**
-     * @dev adds up unmasked earnings, &amp; vault earnings, sets them all to 0
+     * @dev adds up unmasked earnings, & vault earnings, sets them all to 0
      * @return earnings in wei format
      */
     function withdrawEarnings(uint256 _pID)
@@ -1348,7 +1348,7 @@ contract BATMO is FOMOEvents {
 
         // from vaults
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1359,7 +1359,7 @@ contract BATMO is FOMOEvents {
     }
 
     /**
-     * @dev prepares compression data and fires event for buy or reload tx&#39;s
+     * @dev prepares compression data and fires event for buy or reload tx's
      */
     function endTx(uint256 _pID, uint256 _team, uint256 _eth, uint256 _keys, BATMODatasets.EventReturns memory _eventData_)
         private
@@ -1396,11 +1396,11 @@ contract BATMO is FOMOEvents {
         public
     {
         // only team just can activate
-        require(msg.sender == admin, &quot;only admin can activate&quot;);
+        require(msg.sender == admin, "only admin can activate");
 
 
         // can only be ran once
-        require(activated_ == false, &quot;FOMO Short already activated&quot;);
+        require(activated_ == false, "FOMO Short already activated");
 
         // activate the contract
         activated_ = true;
@@ -1470,7 +1470,7 @@ library BATMODatasets {
 
 //==============================================================================
 //  |  _      _ _ | _  .
-//  |&lt;(/_\/  (_(_||(_  .
+//  |<(/_\/  (_(_||(_  .
 //=======/======================================================================
 library KeysCalc {
     using SafeMath for *;
@@ -1504,7 +1504,7 @@ library KeysCalc {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth)
@@ -1517,7 +1517,7 @@ library KeysCalc {
 
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot;
+     * @param _keys number of keys "in contract"
      * @return eth that would exists
      */
     function eth(uint256 _keys)
@@ -1572,9 +1572,9 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0);
+        require (_length <= 32 && _length > 0);
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20);
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
@@ -1585,11 +1585,11 @@ library NameFilter {
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
 
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -1603,15 +1603,15 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 ||
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a));
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a));
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
                     require( _temp[i+1] != 0x20);
 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
@@ -1650,7 +1650,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -1662,7 +1662,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -1675,7 +1675,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -1689,7 +1689,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -1722,7 +1722,7 @@ library SafeMath {
         else
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

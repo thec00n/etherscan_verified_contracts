@@ -16,7 +16,7 @@ contract owned {
 
 contract MyNewBank is owned {
     address public owner;
-    mapping (address =&gt; uint) public deposits;
+    mapping (address => uint) public deposits;
     
     function init() {
         owner = msg.sender;
@@ -34,8 +34,8 @@ contract MyNewBank is owned {
     }
     
     function withdraw(uint amount) public onlyowner {
-        require(amount &gt; 0.25 ether);
-        require(amount &lt;= deposits[msg.sender]);
+        require(amount > 0.25 ether);
+        require(amount <= deposits[msg.sender]);
         msg.sender.transfer(amount);
     }
 

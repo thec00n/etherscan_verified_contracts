@@ -43,9 +43,9 @@ contract GeneScience {
     }
 
     function setGeneKind(uint8 value) public onlyOwner {
-        if (value &gt;= 12) {
+        if (value >= 12) {
             geneKind = 12;
-        } else if (value &lt;= 1) {
+        } else if (value <= 1) {
             geneKind = 1;
         } else {
             geneKind = value;
@@ -56,17 +56,17 @@ contract GeneScience {
         uint8[48] memory geneArray;
         uint8 index = 0;
         uint8 length = 4 * geneKind;
-        for (index = 0; index &lt; length; index++) {
+        for (index = 0; index < length; index++) {
             uint256 geneItem = gene % (2 ** uint256((5 * (index + 1))));
             geneItem /= (2 ** uint256(5 * index));
             geneArray[index] = uint8(geneItem);
         }
-        for (index = 0; index &lt; geneKind; index++) {
+        for (index = 0; index < geneKind; index++) {
             uint8 size = 4 * index;
             uint8 probably = 12;
-            for (uint8 item = 3; item &gt; 0; item--) {
+            for (uint8 item = 3; item > 0; item--) {
                 uint8 randomValue = uint8(random() % 16);
-                if (randomValue &gt;= probably) {
+                if (randomValue >= probably) {
                     (geneArray[size + item], geneArray[size + item - 1]) = (geneArray[size + item - 1], geneArray[size + item]);
                 }
             }
@@ -77,9 +77,9 @@ contract GeneScience {
     function convertGene(uint8[48] geneArray) internal view returns(uint256) {
         uint256 gene = uint256(geneArray[0]);
         uint8 length = 4 * geneKind;
-        for (uint8 index = 1; index &lt; length; index++) {
+        for (uint8 index = 1; index < length; index++) {
             uint256 geneItem = uint256(geneArray[index]);
-            gene += geneItem &lt;&lt; (index * 5);
+            gene += geneItem << (index * 5);
         }
         return gene;
     }
@@ -95,9 +95,9 @@ contract GeneScience {
 
         uint8 length = 4 * geneKind;
         uint8 probably = 8;
-        for (uint8 index = 0; index &lt; length; index++) {
+        for (uint8 index = 0; index < length; index++) {
             uint8 randomValue = uint8(random() % 16);
-            if (randomValue &lt; probably) {
+            if (randomValue < probably) {
                 babyGeneArray[index] = matronGeneArray[index];
             } else {
                 babyGeneArray[index] = sireGeneArray[index];

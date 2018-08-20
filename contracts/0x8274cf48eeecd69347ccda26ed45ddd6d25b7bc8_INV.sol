@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -108,8 +108,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -229,8 +229,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract INV is Ownable, MintableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;Invest&quot;;
-  string public constant symbol = &quot;INV&quot;;
+  string public constant name = "Invest";
+  string public constant symbol = "INV";
   uint32 public constant decimals = 18;
 
   address public addressTeam; // address of vesting smart contract
@@ -380,12 +380,12 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum amount in ETH
-    require(weiAmount &gt;= minPayment);
-    require(totalAllStage &lt; totalTokens);
+    require(weiAmount >= minPayment);
+    require(totalAllStage < totalTokens);
     //Seed
-    if (now &gt;= startSeedStage &amp;&amp; now &lt; endSeedStage &amp;&amp; totalSeedStage &lt; maxSeedStage){
+    if (now >= startSeedStage && now < endSeedStage && totalSeedStage < maxSeedStage){
       tokens = weiAmount.mul(rateSeedStage);
-      if (maxSeedStage.sub(totalSeedStage) &lt; tokens){
+      if (maxSeedStage.sub(totalSeedStage) < tokens){
         tokens = maxSeedStage.sub(totalSeedStage); 
         weiAmount = tokens.div(rateSeedStage);
         backAmount = msg.value.sub(weiAmount);
@@ -393,9 +393,9 @@ contract Crowdsale is Ownable {
       totalSeedStage = totalSeedStage.add(tokens);
     }
     //Private Sale
-    if (now &gt;= startPrivateSaleStage &amp;&amp; now &lt; endPrivateSaleStage &amp;&amp; totalPrivateSaleStage &lt; maxPrivateSaleStage){
+    if (now >= startPrivateSaleStage && now < endPrivateSaleStage && totalPrivateSaleStage < maxPrivateSaleStage){
       tokens = weiAmount.mul(ratePrivateSaleStage);
-      if (maxPrivateSaleStage.sub(totalPrivateSaleStage) &lt; tokens){
+      if (maxPrivateSaleStage.sub(totalPrivateSaleStage) < tokens){
         tokens = maxPrivateSaleStage.sub(totalPrivateSaleStage); 
         weiAmount = tokens.div(ratePrivateSaleStage);
         backAmount = msg.value.sub(weiAmount);
@@ -403,9 +403,9 @@ contract Crowdsale is Ownable {
       totalPrivateSaleStage = totalPrivateSaleStage.add(tokens);
     }    
     //Pre-sale
-    if (now &gt;= startPreSaleStage &amp;&amp; now &lt; endPreSaleStage &amp;&amp; totalPreSaleStage &lt; maxPreSaleStage){
+    if (now >= startPreSaleStage && now < endPreSaleStage && totalPreSaleStage < maxPreSaleStage){
       tokens = weiAmount.mul(ratePreSaleStage);
-      if (maxPreSaleStage.sub(totalPreSaleStage) &lt; tokens){
+      if (maxPreSaleStage.sub(totalPreSaleStage) < tokens){
         tokens = maxPreSaleStage.sub(totalPreSaleStage); 
         weiAmount = tokens.div(ratePreSaleStage);
         backAmount = msg.value.sub(weiAmount);
@@ -413,9 +413,9 @@ contract Crowdsale is Ownable {
       totalPreSaleStage = totalPreSaleStage.add(tokens);
     }    
     //Public Sale
-    if (now &gt;= startPublicSaleStage &amp;&amp; now &lt; endPublicSaleStage &amp;&amp; totalPublicSaleStage &lt; maxPublicSaleStage){
+    if (now >= startPublicSaleStage && now < endPublicSaleStage && totalPublicSaleStage < maxPublicSaleStage){
       tokens = weiAmount.mul(ratePublicSaleStage);
-      if (maxPublicSaleStage.sub(totalPublicSaleStage) &lt; tokens){
+      if (maxPublicSaleStage.sub(totalPublicSaleStage) < tokens){
         tokens = maxPublicSaleStage.sub(totalPublicSaleStage); 
         weiAmount = tokens.div(ratePublicSaleStage);
         backAmount = msg.value.sub(weiAmount);
@@ -423,12 +423,12 @@ contract Crowdsale is Ownable {
       totalPublicSaleStage = totalPublicSaleStage.add(tokens);
     }   
     
-    require(tokens &gt; 0);
+    require(tokens > 0);
     token.mint(beneficiary, tokens);
     totalAllStage = totalAllStage.add(tokens);
     wallet.transfer(weiAmount);
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     emit TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);

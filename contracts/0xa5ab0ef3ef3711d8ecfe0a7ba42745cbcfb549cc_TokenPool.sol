@@ -6,15 +6,15 @@
  pragma solidity ^0.4.10;
 
 /*************************************************************************
- * import &quot;./ITokenPool.sol&quot; : start
+ * import "./ITokenPool.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : start
+ * import "./ERC20StandardToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : start
+ * import "./IERC20Token.sol" : start
  *************************************************************************/
 
 /**@dev ERC20 compliant token interface. 
@@ -22,7 +22,7 @@ https://theethereum.wiki/w/index.php/ERC20_Token_Standard
 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md */
 contract IERC20Token {
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external    
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external    
     function name() public constant returns (string _name) { _name; }
     function symbol() public constant returns (string _symbol) { _symbol; }
     function decimals() public constant returns (uint8 _decimals) { _decimals; }
@@ -40,10 +40,10 @@ contract IERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : end
+ * import "./IERC20Token.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : start
+ * import "../common/SafeMath.sol" : start
  *************************************************************************/
 
 /**dev Utility methods for overflow-proof arithmetic operations 
@@ -53,14 +53,14 @@ contract SafeMath {
     /**dev Returns the sum of a and b. Throws an exception if it exceeds uint256 limits*/
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {        
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
 
     /**dev Returns the difference of a and b. Throws an exception if a is less than b*/
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
@@ -76,7 +76,7 @@ contract SafeMath {
         return x / y;
     }
 }/*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : end
+ * import "../common/SafeMath.sol" : end
  *************************************************************************/
 
 /**@dev Standard ERC20 compliant token implementation */
@@ -88,9 +88,9 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
     //tokens already issued
     uint256 tokensIssued;
     //balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     //one account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function ERC20StandardToken() {
      
@@ -155,7 +155,7 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
         balances[_to] = safeAdd(balances[_to], _value);
     }
 }/*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : end
+ * import "./ERC20StandardToken.sol" : end
  *************************************************************************/
 
 /**@dev Token pool that manages its tokens by designating trustees */
@@ -167,18 +167,18 @@ contract ITokenPool {
     /**@dev Changes trustee state */
     function setTrustee(address trustee, bool state);
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     /**@dev Returns remaining token amount */
     function getTokenAmount() constant returns (uint256 tokens) {tokens;}
 }/*************************************************************************
- * import &quot;./ITokenPool.sol&quot; : end
+ * import "./ITokenPool.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : start
+ * import "../common/Manageable.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 
@@ -202,7 +202,7 @@ contract Owned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 
 ///A token that have an owner and a list of managers that can perform some operations
@@ -211,7 +211,7 @@ contract Manageable is Owned {
 
     event ManagerSet(address manager, bool state);
 
-    mapping (address =&gt; bool) public managers;
+    mapping (address => bool) public managers;
 
     function Manageable() Owned() {
         managers[owner] = true;
@@ -235,7 +235,7 @@ contract Manageable is Owned {
         ManagerSet(manager, state);
     }
 }/*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : end
+ * import "../common/Manageable.sol" : end
  *************************************************************************/
 
 /**@dev Token pool that manages its tokens by designating trustees */

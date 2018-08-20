@@ -15,7 +15,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -55,18 +55,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -143,7 +143,7 @@ contract Hodler is Ownable {
         bool claimed6M;
         bool claimed9M;
     }
-    mapping (address =&gt; HODL) public hodlerStakes;
+    mapping (address => HODL) public hodlerStakes;
     // total current staking value and hodler addresses
     uint256 public hodlerTotalValue;
     uint256 public hodlerTotalCount;
@@ -167,7 +167,7 @@ contract Hodler is Ownable {
     event LogHodlStartSet(address indexed _setter, uint256 _time);
     /// @dev Only before hodl is started
     modifier beforeHodlStart() {
-        if (hodlerTimeStart == 0 || now &lt;= hodlerTimeStart)
+        if (hodlerTimeStart == 0 || now <= hodlerTimeStart)
             _;
     }
     /// @dev Contructor, it should be created by a TokenController
@@ -202,13 +202,13 @@ contract Hodler is Ownable {
             return;
         
         // add stake and maintain count
-        if (hodlerStakes[_beneficiary].stake == 0 &amp;&amp; _stake &gt; 0) {
+        if (hodlerStakes[_beneficiary].stake == 0 && _stake > 0) {
             hodlerTotalCount = hodlerTotalCount.add(1);
-        } else if (hodlerStakes[_beneficiary].stake &gt; 0 &amp;&amp; _stake == 0) {
+        } else if (hodlerStakes[_beneficiary].stake > 0 && _stake == 0) {
             hodlerTotalCount = hodlerTotalCount.sub(1);
         }
-        uint256 _diff = _stake &gt; hodlerStakes[_beneficiary].stake ? _stake.sub(hodlerStakes[_beneficiary].stake) : hodlerStakes[_beneficiary].stake.sub(_stake);
-        if (_stake &gt; hodlerStakes[_beneficiary].stake) {
+        uint256 _diff = _stake > hodlerStakes[_beneficiary].stake ? _stake.sub(hodlerStakes[_beneficiary].stake) : hodlerStakes[_beneficiary].stake.sub(_stake);
+        if (_stake > hodlerStakes[_beneficiary].stake) {
             hodlerTotalValue = hodlerTotalValue.add(_diff);
         } else {
             hodlerTotalValue = hodlerTotalValue.sub(_diff);
@@ -219,7 +219,7 @@ contract Hodler is Ownable {
     /// @notice Setting hodler start period.
     /// @param _time The time when hodler reward starts counting
     function setHodlerTime(uint256 _time) public onlyOwner beforeHodlStart {
-        require(_time &gt;= now);
+        require(_time >= now);
         hodlerTimeStart = _time;
         hodlerTime3M = _time.add(90 days);
         hodlerTime6M = _time.add(180 days);
@@ -229,12 +229,12 @@ contract Hodler is Ownable {
     /// @notice Invalidates hodler account 
     /// @dev Gets called by EthealController#onTransfer before every transaction
     function invalidate(address _account) public onlyOwner {
-        if (hodlerStakes[_account].stake &gt; 0 &amp;&amp; !hodlerStakes[_account].invalid) {
+        if (hodlerStakes[_account].stake > 0 && !hodlerStakes[_account].invalid) {
             hodlerStakes[_account].invalid = true;
             hodlerTotalValue = hodlerTotalValue.sub(hodlerStakes[_account].stake);
             hodlerTotalCount = hodlerTotalCount.sub(1);
         }
-        // update hodl total values &quot;automatically&quot; - whenever someone sends funds thus
+        // update hodl total values "automatically" - whenever someone sends funds thus
         updateAndGetHodlTotalValue();
     }
     /// @notice Claiming HODL reward for msg.sender
@@ -244,25 +244,25 @@ contract Hodler is Ownable {
     /// @notice Claiming HODL reward for an address
     function claimHodlRewardFor(address _beneficiary) public {
         // only when the address has a valid stake
-        require(hodlerStakes[_beneficiary].stake &gt; 0 &amp;&amp; !hodlerStakes[_beneficiary].invalid);
+        require(hodlerStakes[_beneficiary].stake > 0 && !hodlerStakes[_beneficiary].invalid);
         uint256 _stake = 0;
         
         // update hodl total values
         updateAndGetHodlTotalValue();
         // claim hodl if not claimed
-        if (!hodlerStakes[_beneficiary].claimed3M &amp;&amp; now &gt;= hodlerTime3M) {
+        if (!hodlerStakes[_beneficiary].claimed3M && now >= hodlerTime3M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_3M).div(hodlerTotalValue3M));
             hodlerStakes[_beneficiary].claimed3M = true;
         }
-        if (!hodlerStakes[_beneficiary].claimed6M &amp;&amp; now &gt;= hodlerTime6M) {
+        if (!hodlerStakes[_beneficiary].claimed6M && now >= hodlerTime6M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_6M).div(hodlerTotalValue6M));
             hodlerStakes[_beneficiary].claimed6M = true;
         }
-        if (!hodlerStakes[_beneficiary].claimed9M &amp;&amp; now &gt;= hodlerTime9M) {
+        if (!hodlerStakes[_beneficiary].claimed9M && now >= hodlerTime9M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_9M).div(hodlerTotalValue9M));
             hodlerStakes[_beneficiary].claimed9M = true;
         }
-        if (_stake &gt; 0) {
+        if (_stake > 0) {
             // increasing claimed tokens
             claimedTokens = claimedTokens.add(_stake);
             // transferring tokens
@@ -275,18 +275,18 @@ contract Hodler is Ownable {
     /// @dev Anyone can call this function and distribute hodl rewards
     /// @param _beneficiaries Array of addresses for which we want to claim hodl rewards
     function claimHodlRewardsFor(address[] _beneficiaries) external {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++)
+        for (uint256 i = 0; i < _beneficiaries.length; i++)
             claimHodlRewardFor(_beneficiaries[i]);
     }
     /// @notice Setting 3 - 6 - 9 months total staking hodl value if time is come
     function updateAndGetHodlTotalValue() public returns (uint) {
-        if (now &gt;= hodlerTime3M &amp;&amp; hodlerTotalValue3M == 0) {
+        if (now >= hodlerTime3M && hodlerTotalValue3M == 0) {
             hodlerTotalValue3M = hodlerTotalValue;
         }
-        if (now &gt;= hodlerTime6M &amp;&amp; hodlerTotalValue6M == 0) {
+        if (now >= hodlerTime6M && hodlerTotalValue6M == 0) {
             hodlerTotalValue6M = hodlerTotalValue;
         }
-        if (now &gt;= hodlerTime9M &amp;&amp; hodlerTotalValue9M == 0) {
+        if (now >= hodlerTime9M && hodlerTotalValue9M == 0) {
             hodlerTotalValue9M = hodlerTotalValue;
             // since we can transfer more tokens to this contract, make it possible to retain more than the predefined limit
             TOKEN_HODL_9M = TokenController(owner).ethealToken().balanceOf(this).sub(TOKEN_HODL_3M).sub(TOKEN_HODL_6M).add(claimedTokens);

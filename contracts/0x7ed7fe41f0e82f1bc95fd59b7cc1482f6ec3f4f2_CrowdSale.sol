@@ -16,8 +16,8 @@ library SafeMath {
      * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -32,9 +32,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -51,7 +51,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -81,7 +81,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -139,8 +139,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -220,7 +220,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -232,13 +232,13 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract GRADtoken is StandardToken {
-    string public constant name = &quot;Gradus&quot;;
-    string public constant symbol = &quot;GRAD&quot;;
+    string public constant name = "Gradus";
+    string public constant symbol = "GRAD";
     uint32 public constant decimals = 18;
     uint256 public totalSupply;
     uint256 public tokenBuyRate = 10000;
     
-    mapping(address =&gt; bool   ) isInvestor;
+    mapping(address => bool   ) isInvestor;
     address[] public arrInvestors;
     
     address public CrowdsaleAddress;
@@ -281,7 +281,7 @@ contract GRADtoken is StandardToken {
      // Override
     function transfer(address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited&quot;);
+            require(!lockTransfers, "Transfers are prohibited");
         }
         addInvestor(_to);
         return super.transfer(_to,_value);
@@ -290,7 +290,7 @@ contract GRADtoken is StandardToken {
      // Override
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited&quot;);
+            require(!lockTransfers, "Transfers are prohibited");
         }
         addInvestor(_to);
         return super.transferFrom(_from,_to,_value);
@@ -306,7 +306,7 @@ contract GRADtoken is StandardToken {
     }
     
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
         balances[_who] = balances[_who].sub(_value);
         totalSupply = totalSupply.sub(_value);
         emit Burn(_who, _value);
@@ -321,12 +321,12 @@ contract GRADtoken is StandardToken {
      * function buys tokens from investors and burn it
      */
     function ReturnToken(uint256 _amount) public payable {
-        require (_amount &gt; 0);
+        require (_amount > 0);
         require (msg.sender != address(0));
         
         uint256 weiAmount = _amount.div(tokenBuyRate);
-        require (weiAmount &gt; 0, &quot;Amount is less than the minimum value&quot;);
-        require (address(this).balance &gt;= weiAmount, &quot;Contract balance is empty&quot;);
+        require (weiAmount > 0, "Amount is less than the minimum value");
+        require (address(this).balance >= weiAmount, "Contract balance is empty");
         _burn(msg.sender, _amount);
         msg.sender.transfer(weiAmount);
     }
@@ -374,7 +374,7 @@ contract Dividend {
     address public crowdsaleAddress;
     GRADtoken public token;
     CrowdSale public crowdSaleContract;
-    mapping (address =&gt; uint256) public divmap;
+    mapping (address => uint256) public divmap;
     event PayDividends(address indexed investor, uint256 amount);
 
     constructor(address _crowdsaleAddress, address _tokenAddress) public {
@@ -403,13 +403,13 @@ contract Dividend {
         address invAddress;
         receivedDividends = receivedDividends.add(msg.value);
 
-        if (receivedDividends &gt;= crowdSaleContract.hardCapDividends()){
+        if (receivedDividends >= crowdSaleContract.hardCapDividends()){
             uint256 lengthArrInvesotrs = token.getInvestorsCount();
             crowdSaleContract.lockTransfer(true); 
             k = receivedDividends.mul(myAround).div(token.totalSupply());
             uint256 myProfit;
             
-            for (i = 0;  i &lt; lengthArrInvesotrs; i++) {
+            for (i = 0;  i < lengthArrInvesotrs; i++) {
                 invAddress = token.getInvestorAddress(i);
                 myProfit = token.balanceOf(invAddress).mul(k).div(myAround);
                 divmap[invAddress] = divmap[invAddress].add(myProfit);
@@ -424,8 +424,8 @@ contract Dividend {
      */
     function Pay() public {
         uint256 dividends = divmap[msg.sender];
-        require (dividends &gt; 0);
-        require (dividends &lt;= address(this).balance);
+        require (dividends > 0);
+        require (dividends <= address(this).balance);
         divmap[msg.sender] = 0;
         msg.sender.transfer(dividends);
         emit PayDividends(msg.sender, dividends);
@@ -461,7 +461,7 @@ contract CrowdSale is Ownable{
     // address where funds are collected
     address public wallet = 0x0;
 
-    //tokenSaleRate don&#39;t change
+    //tokenSaleRate don't change
     uint256 public tokenSaleRate; 
 
     // limit for activate function calcucate dividends
@@ -485,7 +485,7 @@ contract CrowdSale is Ownable{
 
     constructor() public {
         /**
-         * @dev tokenRate is rate tokens per 1 ether. don&#39;t change.
+         * @dev tokenRate is rate tokens per 1 ether. don't change.
          */
         tokenSaleRate = 10000;
 
@@ -534,7 +534,7 @@ contract CrowdSale is Ownable{
     }
 
     function setProfitAddress(address _newWallet) public onlyOwner {
-        require(_newWallet != address(0),&quot;Invalid address&quot;);
+        require(_newWallet != address(0),"Invalid address");
         wallet = _newWallet;
     }
 
@@ -542,11 +542,11 @@ contract CrowdSale is Ownable{
      * function sale token to investor
     */
     function _saleTokens() internal {
-        require(msg.value &gt;= 10**16, &quot;Minimum value is 0.01 ether&quot;);
-        require(hardCapCrowdSale &gt;= currentFunds.add(msg.value), &quot;Upper limit on fund raising exceeded&quot;);      
-        require(msg.sender != address(0), &quot;Address sender is empty&quot;);
-        require(wallet != address(0),&quot;Enter address profit wallet&quot;);
-        require(isSaleActive, &quot;Set saleStatus in true&quot;);
+        require(msg.value >= 10**16, "Minimum value is 0.01 ether");
+        require(hardCapCrowdSale >= currentFunds.add(msg.value), "Upper limit on fund raising exceeded");      
+        require(msg.sender != address(0), "Address sender is empty");
+        require(wallet != address(0),"Enter address profit wallet");
+        require(isSaleActive, "Set saleStatus in true");
 
         uint256 weiAmount = msg.value;
 

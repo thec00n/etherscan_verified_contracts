@@ -4,7 +4,7 @@ pragma solidity 0.4.21;
 * No Middle Man
 * Support the Israeli People Directly!
 * @dev ERC-20 Token Standar Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d39bd4dbc1dadbdcda9bd4ded0d9f5d2d8d4dcd99bd6dad8">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d39bd4dbc1dadbdcda9bd4ded0d9f5d2d8d4dcd99bd6dad8">[email protected]</a>
 */
 
 /**
@@ -14,13 +14,13 @@ pragma solidity 0.4.21;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -84,8 +84,8 @@ contract ERC20TokenInterface {
 contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -157,10 +157,10 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
 * @dev ERC20 Token
 */
 contract AssetISR is ERC20Token {
-    string public name =&#39;Israel&#39;;
+    string public name ='Israel';
     uint8 public decimals = 18;
-    string public symbol = &#39;ISR&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'ISR';
+    string public version = '1';
     
     /**
     * @notice token contructor.
@@ -186,7 +186,7 @@ contract AssetISR is ERC20Token {
 
     
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

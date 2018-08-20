@@ -49,13 +49,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -74,8 +74,8 @@ contract AirDrop is Ownable {
 
     function airDrop(address[] _addrs, uint256[] _values) public onlyOwner {
 	    require(_addrs.length == _values.length);
-        for (uint i = 0; i &lt; _addrs.length; i++) {
-            if (_addrs[i] != 0x0 &amp;&amp; _values[i] &gt; 0) {
+        for (uint i = 0; i < _addrs.length; i++) {
+            if (_addrs[i] != 0x0 && _values[i] > 0) {
                 token.transfer(_addrs[i], _values[i] * (10 ** 18));
             }
         }

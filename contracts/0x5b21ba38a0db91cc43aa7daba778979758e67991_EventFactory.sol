@@ -2,8 +2,8 @@ pragma solidity 0.4.15;
 
 
 /// @title Math library - Allows calculation of logarithmic and exponential functions
-/// @author Alan Lu - &lt;<span class="__cf_email__" data-cfemail="d5b4b9b4bbfbb9a095b2bbbaa6bca6fba5b8">[email&#160;protected]</span>&gt;
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="582b2c3d3e3936183f36372b312b762835">[email&#160;protected]</span>&gt;
+/// @author Alan Lu - <<span class="__cf_email__" data-cfemail="d5b4b9b4bbfbb9a095b2bbbaa6bca6fba5b8">[email protected]</span>>
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="582b2c3d3e3936183f36372b312b762835">[email protected]</span>>
 library Math {
 
     /*
@@ -25,21 +25,21 @@ library Math {
         constant
         returns (uint)
     {
-        // revert if x is &gt; MAX_POWER, where
+        // revert if x is > MAX_POWER, where
         // MAX_POWER = int(mp.floor(mp.log(mpf(2**256 - 1) / ONE) * ONE))
-        require(x &lt;= 2454971259878909886679);
+        require(x <= 2454971259878909886679);
         // return 0 if exp(x) is tiny, using
         // MIN_POWER = int(mp.floor(mp.log(mpf(1) / ONE) * ONE))
-        if (x &lt; -818323753292969962227)
+        if (x < -818323753292969962227)
             return 0;
-        // Transform so that e^x -&gt; 2^x
+        // Transform so that e^x -> 2^x
         x = x * int(ONE) / int(LN2);
         // 2^x = 2^whole(x) * 2^frac(x)
         //       ^^^^^^^^^^ is a bit shift
         // so Taylor expand on z = frac(x)
         int shift;
         uint z;
-        if (x &gt;= 0) {
+        if (x >= 0) {
             shift = x / int(ONE);
             z = uint(x % int(ONE));
         }
@@ -50,10 +50,10 @@ library Math {
         // 2^x = 1 + (ln 2) x + (ln 2)^2/2! x^2 + ...
         //
         // Can generate the z coefficients using mpmath and the following lines
-        // &gt;&gt;&gt; from mpmath import mp
-        // &gt;&gt;&gt; mp.dps = 100
-        // &gt;&gt;&gt; ONE =  0x10000000000000000
-        // &gt;&gt;&gt; print(&#39;\n&#39;.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
+        // >>> from mpmath import mp
+        // >>> mp.dps = 100
+        // >>> ONE =  0x10000000000000000
+        // >>> print('\n'.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
         // 0xb17217f7d1cf79ab
         // 0x3d7f7bff058b1d50
         // 0xe35846b82505fc5
@@ -93,13 +93,13 @@ library Math {
         result += 0xe1b7 * zpow / ONE;
         zpow = zpow * z / ONE;
         result += 0x9c7 * zpow / ONE;
-        if (shift &gt;= 0) {
-            if (result &gt;&gt; (256-shift) &gt; 0)
+        if (shift >= 0) {
+            if (result >> (256-shift) > 0)
                 return (2**256-1);
-            return result &lt;&lt; shift;
+            return result << shift;
         }
         else
-            return result &gt;&gt; (-shift);
+            return result >> (-shift);
     }
 
     /// @dev Returns natural logarithm value of given x
@@ -110,16 +110,16 @@ library Math {
         constant
         returns (int)
     {
-        require(x &gt; 0);
+        require(x > 0);
         // binary search for floor(log2(x))
         int ilog2 = floorLog2(x);
         int z;
-        if (ilog2 &lt; 0)
-            z = int(x &lt;&lt; uint(-ilog2));
+        if (ilog2 < 0)
+            z = int(x << uint(-ilog2));
         else
-            z = int(x &gt;&gt; uint(ilog2));
+            z = int(x >> uint(ilog2));
         // z = x * 2^-⌊log₂x⌋
-        // so 1 &lt;= z &lt; 2
+        // so 1 <= z < 2
         // and ln z = ln x - ⌊log₂x⌋/log₂e
         // so just compute ln z using artanh series
         // and calculate ln x from that
@@ -163,13 +163,13 @@ library Math {
         lo = -64;
         int hi = 193;
         // I use a shift here instead of / 2 because it floors instead of rounding towards 0
-        int mid = (hi + lo) &gt;&gt; 1;
-        while((lo + 1) &lt; hi) {
-            if (mid &lt; 0 &amp;&amp; x &lt;&lt; uint(-mid) &lt; ONE || mid &gt;= 0 &amp;&amp; x &gt;&gt; uint(mid) &lt; ONE)
+        int mid = (hi + lo) >> 1;
+        while((lo + 1) < hi) {
+            if (mid < 0 && x << uint(-mid) < ONE || mid >= 0 && x >> uint(mid) < ONE)
                 hi = mid;
             else
                 lo = mid;
-            mid = (hi + lo) &gt;&gt; 1;
+            mid = (hi + lo) >> 1;
         }
     }
 
@@ -181,10 +181,10 @@ library Math {
         constant
         returns (int max)
     {
-        require(nums.length &gt; 0);
+        require(nums.length > 0);
         max = -2**255;
-        for (uint i = 0; i &lt; nums.length; i++)
-            if (nums[i] &gt; max)
+        for (uint i = 0; i < nums.length; i++)
+            if (nums[i] > max)
                 max = nums[i];
     }
 
@@ -197,7 +197,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -209,7 +209,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -272,7 +272,7 @@ library Math {
         constant
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a + b &gt;= a) || (b &lt; 0 &amp;&amp; a + b &lt; a);
+        return (b >= 0 && a + b >= a) || (b < 0 && a + b < a);
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -284,7 +284,7 @@ library Math {
         constant
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a - b &lt;= a) || (b &lt; 0 &amp;&amp; a - b &gt; a);
+        return (b >= 0 && a - b <= a) || (b < 0 && a - b > a);
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -370,14 +370,14 @@ contract StandardToken is Token {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
     uint totalTokens;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Was transfer successful?
@@ -464,7 +464,7 @@ contract StandardToken is Token {
 
 
 /// @title Outcome token contract - Issuing and revoking outcome tokens
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="4437302122252a04232a2b372d376a3429">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="4437302122252a04232a2b372d376a3429">[email protected]</span>>
 contract OutcomeToken is StandardToken {
     using Math for *;
 
@@ -535,7 +535,7 @@ contract Oracle {
 
 
 /// @title Event contract - Provide basic functionality required by different event types
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="a3d0d7c6c5c2cde3c4cdccd0cad08dd3ce">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="a3d0d7c6c5c2cde3c4cdccd0cad08dd3ce">[email protected]</span>>
 contract Event {
 
     /*
@@ -567,11 +567,11 @@ contract Event {
         public
     {
         // Validate input
-        require(address(_collateralToken) != 0 &amp;&amp; address(_oracle) != 0 &amp;&amp; outcomeCount &gt;= 2);
+        require(address(_collateralToken) != 0 && address(_oracle) != 0 && outcomeCount >= 2);
         collateralToken = _collateralToken;
         oracle = _oracle;
         // Create an outcome token for each outcome
-        for (uint8 i = 0; i &lt; outcomeCount; i++) {
+        for (uint8 i = 0; i < outcomeCount; i++) {
             OutcomeToken outcomeToken = new OutcomeToken();
             outcomeTokens.push(outcomeToken);
             OutcomeTokenCreation(outcomeToken, i);
@@ -586,7 +586,7 @@ contract Event {
         // Transfer collateral tokens to events contract
         require(collateralToken.transferFrom(msg.sender, this, collateralTokenCount));
         // Issue new outcome tokens to sender
-        for (uint8 i = 0; i &lt; outcomeTokens.length; i++)
+        for (uint8 i = 0; i < outcomeTokens.length; i++)
             outcomeTokens[i].issue(msg.sender, collateralTokenCount);
         OutcomeTokenSetIssuance(msg.sender, collateralTokenCount);
     }
@@ -596,8 +596,8 @@ contract Event {
     function sellAllOutcomes(uint outcomeTokenCount)
         public
     {
-        // Revoke sender&#39;s outcome tokens of all outcomes
-        for (uint8 i = 0; i &lt; outcomeTokens.length; i++)
+        // Revoke sender's outcome tokens of all outcomes
+        for (uint8 i = 0; i < outcomeTokens.length; i++)
             outcomeTokens[i].revoke(msg.sender, outcomeTokenCount);
         // Transfer collateral tokens to sender
         require(collateralToken.transfer(msg.sender, outcomeTokenCount));
@@ -609,7 +609,7 @@ contract Event {
         public
     {
         // Winning outcome is not set yet in event contract but in oracle contract
-        require(!isOutcomeSet &amp;&amp; oracle.isOutcomeSet());
+        require(!isOutcomeSet && oracle.isOutcomeSet());
         // Set winning outcome
         outcome = oracle.getOutcome();
         isOutcomeSet = true;
@@ -644,7 +644,7 @@ contract Event {
         returns (uint[] outcomeTokenDistribution)
     {
         outcomeTokenDistribution = new uint[](outcomeTokens.length);
-        for (uint8 i = 0; i &lt; outcomeTokenDistribution.length; i++)
+        for (uint8 i = 0; i < outcomeTokenDistribution.length; i++)
             outcomeTokenDistribution[i] = outcomeTokens[i].balanceOf(owner);
     }
 
@@ -652,15 +652,15 @@ contract Event {
     /// @return Event hash
     function getEventHash() public constant returns (bytes32);
 
-    /// @dev Exchanges sender&#39;s winning outcome tokens for collateral tokens
-    /// @return Sender&#39;s winnings
+    /// @dev Exchanges sender's winning outcome tokens for collateral tokens
+    /// @return Sender's winnings
     function redeemWinnings() public returns (uint);
 }
 
 
 
 /// @title Categorical event contract - Categorical events resolve to an outcome from a set of outcomes
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="2556514043444b65424b4a564c560b5548">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="2556514043444b65424b4a564c560b5548">[email protected]</span>>
 contract CategoricalEvent is Event {
 
     /*
@@ -681,8 +681,8 @@ contract CategoricalEvent is Event {
 
     }
 
-    /// @dev Exchanges sender&#39;s winning outcome tokens for collateral tokens
-    /// @return Sender&#39;s winnings
+    /// @dev Exchanges sender's winning outcome tokens for collateral tokens
+    /// @return Sender's winnings
     function redeemWinnings()
         public
         returns (uint winnings)
@@ -712,7 +712,7 @@ contract CategoricalEvent is Event {
 
 
 /// @title Scalar event contract - Scalar events resolve to a number within a range
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="2251564744434c62454c4d514b510c524f">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="2251564744434c62454c4d514b510c524f">[email protected]</span>>
 contract ScalarEvent is Event {
     using Math for *;
 
@@ -747,13 +747,13 @@ contract ScalarEvent is Event {
         Event(_collateralToken, _oracle, 2)
     {
         // Validate bounds
-        require(_upperBound &gt; _lowerBound);
+        require(_upperBound > _lowerBound);
         lowerBound = _lowerBound;
         upperBound = _upperBound;
     }
 
-    /// @dev Exchanges sender&#39;s winning outcome tokens for collateral tokens
-    /// @return Sender&#39;s winnings
+    /// @dev Exchanges sender's winning outcome tokens for collateral tokens
+    /// @return Sender's winnings
     function redeemWinnings()
         public
         returns (uint winnings)
@@ -763,10 +763,10 @@ contract ScalarEvent is Event {
         // Calculate winnings
         uint24 convertedWinningOutcome;
         // Outcome is lower than defined lower bound
-        if (outcome &lt; lowerBound)
+        if (outcome < lowerBound)
             convertedWinningOutcome = 0;
         // Outcome is higher than defined upper bound
-        else if (outcome &gt; upperBound)
+        else if (outcome > upperBound)
             convertedWinningOutcome = OUTCOME_RANGE;
         // Map outcome to outcome range
         else
@@ -798,7 +798,7 @@ contract ScalarEvent is Event {
 
 
 /// @title Event factory contract - Allows creation of categorical and scalar events
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="3447405152555a74535a5b475d471a4459">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="3447405152555a74535a5b475d471a4459">[email protected]</span>>
 contract EventFactory {
 
     /*
@@ -810,8 +810,8 @@ contract EventFactory {
     /*
      *  Storage
      */
-    mapping (bytes32 =&gt; CategoricalEvent) public categoricalEvents;
-    mapping (bytes32 =&gt; ScalarEvent) public scalarEvents;
+    mapping (bytes32 => CategoricalEvent) public categoricalEvents;
+    mapping (bytes32 => ScalarEvent) public scalarEvents;
 
     /*
      *  Public functions

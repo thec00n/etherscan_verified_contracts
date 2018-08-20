@@ -3,8 +3,8 @@
 /* 
 /* https://ether.online  The first RPG game of blockchain 
 /*  
-/* authors <span class="__cf_email__" data-cfemail="e19388828a89948f958493cf9289848fa1868c80888dcf828e8c">[email&#160;protected]</span>   
-/*         <span class="__cf_email__" data-cfemail="0576766076706b616c6b62456268646c692b666a68">[email&#160;protected]</span>            
+/* authors <span class="__cf_email__" data-cfemail="e19388828a89948f958493cf9289848fa1868c80888dcf828e8c">[email protected]</span>   
+/*         <span class="__cf_email__" data-cfemail="0576766076706b616c6b62456268646c692b666a68">[email protected]</span>            
 /* ==================================================================== */
 
 pragma solidity ^0.4.20;
@@ -103,9 +103,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -113,7 +113,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -122,7 +122,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -152,7 +152,7 @@ contract ActionAgon is AccessNoWithdraw {
     address public poolContract;
     IAgonFight fightContract;
 
-    mapping (address =&gt; uint64[]) public ownerToAgonIdArray;
+    mapping (address => uint64[]) public ownerToAgonIdArray;
     uint256 public maxAgonCount = 6;
     uint256 public maxResolvedAgonId = 0; 
     uint256[5] public agonValues = [0.05 ether, 0.2 ether, 0.5 ether, 1 ether, 2 ether];
@@ -174,7 +174,7 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function setMaxAgonCount(uint256 _count) external onlyAdmin {
-        require(_count &gt; 0 &amp;&amp; _count &lt; 20);
+        require(_count > 0 && _count < 20);
         require(_count != maxAgonCount);
         maxAgonCount = _count;
     }
@@ -185,7 +185,7 @@ contract ActionAgon is AccessNoWithdraw {
 
     function setMaxResolvedAgonId() external {
         uint256 length = agonArray.length;
-        for (uint256 i = maxResolvedAgonId; i &lt; length; ++i) {
+        for (uint256 i = maxResolvedAgonId; i < length; ++i) {
             if (agonArray[i].result == 0) {
                 maxResolvedAgonId = i - 1;
                 break;
@@ -194,12 +194,12 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function setAgonValues(uint256[5] values) external onlyAdmin {
-        require(values[0] &gt;= 0.001 ether);
-        require(values[1] &gt;= values[0]);
-        require(values[2] &gt;= values[1]);
-        require(values[3] &gt;= values[2]);
-        require(values[4] &gt;= values[3]);
-        require(values[4] &lt;= 10 ether);     // 10 ether &lt; 2^64
+        require(values[0] >= 0.001 ether);
+        require(values[1] >= values[0]);
+        require(values[2] >= values[1]);
+        require(values[3] >= values[2]);
+        require(values[4] >= values[3]);
+        require(values[4] <= 10 ether);     // 10 ether < 2^64
         require(values[0] % 1000000000 == 0);
         require(values[1] % 1000000000 == 0);
         require(values[2] % 1000000000 == 0);
@@ -213,15 +213,15 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function newAgon(uint64 _outFlag, uint64 _valId) external payable whenNotPaused {
-        require(ownerToAgonIdArray[msg.sender].length &lt; maxAgonCount);
-        require(_valId &gt;= 0 &amp;&amp; _valId &lt;= 4);
+        require(ownerToAgonIdArray[msg.sender].length < maxAgonCount);
+        require(_valId >= 0 && _valId <= 4);
         require(msg.value == agonValues[_valId]);
         
         uint64 newAgonId = uint64(agonArray.length);
         agonArray.length += 1;
         Agon storage agon = agonArray[newAgonId];
         agon.master = msg.sender;
-        agon.agonPrice = uint64(msg.value);    // 10 ether &lt; 2^64
+        agon.agonPrice = uint64(msg.value);    // 10 ether < 2^64
         agon.outFlag = _outFlag;
 
         ownerToAgonIdArray[msg.sender].push(newAgonId);
@@ -232,9 +232,9 @@ contract ActionAgon is AccessNoWithdraw {
     function _removeAgonIdByOwner(address _owner, uint64 _agonId) internal {
         uint64[] storage agonIdArray = ownerToAgonIdArray[_owner];
         uint256 length = agonIdArray.length;
-        require(length &gt; 0);
+        require(length > 0);
         uint256 findIndex = 99;
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             if (_agonId == agonIdArray[i]) {
                 findIndex = i;
             }
@@ -247,7 +247,7 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function cancelAgon(uint64 _agonId) external {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.challenger == address(0));
@@ -261,7 +261,7 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function cancelAgonForce(uint64 _agonId) external onlyService {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.challenger == address(0));
@@ -274,7 +274,7 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function newChallenge(uint64 _agonId, uint64 _flag) external payable whenNotPaused {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.master != msg.sender);
@@ -287,9 +287,9 @@ contract ActionAgon is AccessNoWithdraw {
     }
 
     function fightAgon(uint64 _agonId, uint64 _mFlag, uint256 _aSeed, uint256 _fSeed) external onlyService {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
-        require(agon.result == 0 &amp;&amp; agon.challenger != address(0));
+        require(agon.result == 0 && agon.challenger != address(0));
         require(fightContract != address(0));
         uint64 fRet = fightContract.calcFight(_mFlag, agon.agonFlag, _aSeed, _fSeed);
         require(fRet == 1 || fRet == 2);
@@ -322,7 +322,7 @@ contract ActionAgon is AccessNoWithdraw {
             uint64 result
         )
     {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon memory agon = agonArray[_agonId];
         master = agon.master;
         challenger = agon.challenger;
@@ -344,13 +344,13 @@ contract ActionAgon is AccessNoWithdraw {
         ) 
     {
         uint64 length = uint64(agonArray.length);
-        require(_startAgonId &lt; length);
-        require(_startAgonId &gt; 0);
+        require(_startAgonId < length);
+        require(_startAgonId > 0);
         uint256 maxLen;
         if (_count == 0) {
             maxLen = length - _startAgonId;
         } else {
-            maxLen = (length - _startAgonId) &gt;= _count ? _count : (length - _startAgonId);
+            maxLen = (length - _startAgonId) >= _count ? _count : (length - _startAgonId);
         }
         agonIds = new uint64[](maxLen);
         masters = new address[](maxLen);
@@ -360,7 +360,7 @@ contract ActionAgon is AccessNoWithdraw {
         agonFlags = new uint64[](maxLen);
         results = new uint64[](maxLen);
         uint256 counter = 0;
-        for (uint64 i = _startAgonId; i &lt; length; ++i) {
+        for (uint64 i = _startAgonId; i < length; ++i) {
             Agon storage tmpAgon = agonArray[i];
             agonIds[counter] = i;
             masters[counter] = tmpAgon.master;
@@ -370,7 +370,7 @@ contract ActionAgon is AccessNoWithdraw {
             agonFlags[counter] = tmpAgon.agonFlag;
             results[counter] = tmpAgon.result;
             counter += 1;
-            if (counter &gt;= maxLen) {
+            if (counter >= maxLen) {
                 break;
             }
         }

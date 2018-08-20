@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,8 +35,8 @@ contract EnjinGiveaway {
   uint256 public totalShares = 1000000;
   uint256 public totalReleased = 0;
 
-  mapping(address =&gt; uint256) public shares;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public shares;
+  mapping(address => uint256) public released;
   address[] public payees;
   address public owner;
   address public tokenContract;
@@ -56,7 +56,7 @@ contract EnjinGiveaway {
    */
   function addPayee(address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
+    require(_shares > 0);
     require(shares[_payee] == 0);
 
     payees.push(_payee);
@@ -64,7 +64,7 @@ contract EnjinGiveaway {
   }
   
   function () payable {
-      require(totalReleased &lt; totalShares);
+      require(totalReleased < totalShares);
       uint256 amount = msg.sender.balance;
       uint256 payeeShares = amount * 2000 / 1e18;
       totalReleased = totalReleased + payeeShares;
@@ -75,8 +75,8 @@ contract EnjinGiveaway {
   function creditTokens() public {
     require(msg.sender == owner);
     
-    for (uint i=0; i &lt; payees.length; i++) {
-        tokenContract.call(bytes4(sha3(&quot;transferFrom(address,address,uint256)&quot;)), this, payees[i], shares[payees[i]]);
+    for (uint i=0; i < payees.length; i++) {
+        tokenContract.call(bytes4(sha3("transferFrom(address,address,uint256)")), this, payees[i], shares[payees[i]]);
     }
   }    
 }

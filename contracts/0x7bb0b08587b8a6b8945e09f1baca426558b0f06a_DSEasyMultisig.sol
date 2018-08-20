@@ -33,7 +33,7 @@ contract DSAuthorizedEvents is DSAuthModesEnum {
 // `DSAuthority` is the interface which `DSAuthorized` (`DSAuth`) contracts expect
 // their authority to be when they are in the remote auth mode.
 contract DSAuthority {
-    // `can_call` will be called with these arguments in the caller&#39;s
+    // `can_call` will be called with these arguments in the caller's
     // scope if it is coming from an `auth()` call:
     // `DSAuthority(_ds_authority).can_call(msg.sender, address(this), msg.sig);`
     function canCall( address caller
@@ -51,10 +51,10 @@ contract RejectingAuthority is DSFalseFallback {}
 // It has a shorter alias `auth/auth.sol: DSAuth` because it is so common.
 contract DSAuthorized is DSAuthModesEnum, DSAuthorizedEvents
 {
-    // There are two &quot;modes&quot;:
-    // * &quot;owner mode&quot;, where `auth()` simply checks if the sender is `_authority`.
+    // There are two "modes":
+    // * "owner mode", where `auth()` simply checks if the sender is `_authority`.
     //   This is the default mode, when `_auth_mode` is false.
-    // * &quot;authority mode&quot;, where `auth()` makes a call to
+    // * "authority mode", where `auth()` makes a call to
     // `DSAuthority(_authority).canCall(sender, this, sig)` to ask if the
     // call should be allowed.
     DSAuthModes  public _auth_mode;
@@ -87,7 +87,7 @@ contract DSAuthorized is DSAuthModesEnum, DSAuthorizedEvents
         if( _auth_mode == DSAuthModes.Owner ) {
             return msg.sender == address(_authority);
         }
-        if( _auth_mode == DSAuthModes.Authority ) { // use `canCall` in &quot;authority&quot; mode
+        if( _auth_mode == DSAuthModes.Authority ) { // use `canCall` in "authority" mode
             return _authority.canCall( msg.sender, address(this), msg.sig );
         }
         throw;
@@ -165,14 +165,14 @@ contract DSEasyMultisigEvents {
  * you very easily by casting the multisig address as the target type.
  * Then, you call `easyPropose` with the missing arguments. This calls `propose`.
  *
- * &quot;last calldata&quot; is &quot;local&quot; to the `msg.sender`. This makes it usable directly
+ * "last calldata" is "local" to the `msg.sender`. This makes it usable directly
  * from keys (but still not as secure as if it were atomic using a helper contract).
  *
  * In Soldity:
  * 1) `TargetType(address(multisig)).doAction(arg1, arg2);`
  * 2) `multisig.easyPropose(address(target), value);`
  *
- * This is equivalent to `propose(address(my_target), &lt;calldata&gt;, value);`,
+ * This is equivalent to `propose(address(my_target), <calldata>, value);`,
  * where calldata is correctly formatted for `TargetType(target).doAction(arg1, arg2)`
  */
 contract DSEasyMultisig is DSBaseActor
@@ -202,15 +202,15 @@ contract DSEasyMultisig is DSBaseActor
         bool triggered; // Was this action successfully triggered (multisig does not catch exceptions)
     }
 
-    mapping( uint =&gt; action ) actions;
+    mapping( uint => action ) actions;
 
-    // action_id -&gt; member -&gt; confirmed
-    mapping( uint =&gt; mapping( address =&gt; bool ) ) confirmations;
+    // action_id -> member -> confirmed
+    mapping( uint => mapping( address => bool ) ) confirmations;
     // A record of the last fallback calldata recorded for this sender.
     // This is an easy way to create proposals for most actions.
-    mapping( address =&gt; bytes ) easy_calldata;
+    mapping( address => bytes ) easy_calldata;
     // Only these addresses can add confirmations
-    mapping( address =&gt; bool ) is_member;
+    mapping( address => bool ) is_member;
 
     function DSEasyMultisig( uint required, uint member_count, uint expiration ) {
         _required = required;
@@ -244,7 +244,7 @@ contract DSEasyMultisig is DSBaseActor
     {
         return (_required, _member_count, _expiration, _last_action_id);
     }
-    // Public getter for the action mapping doesn&#39;t work in web3.js yet
+    // Public getter for the action mapping doesn't work in web3.js yet
     function getActionStatus(uint action_id)
              constant
              returns (uint confirmations, uint expiration, bool triggered, address target, uint eth_value)
@@ -253,7 +253,7 @@ contract DSEasyMultisig is DSBaseActor
         return (a.confirmations, a.expiration, a.triggered, a.target, a.value);
     }
 
-    // `propose` an action using the calldata from this sender&#39;s last call.
+    // `propose` an action using the calldata from this sender's last call.
     function easyPropose( address target, uint value ) returns (uint action_id) {
         return propose( target, easy_calldata[msg.sender], value );
     }
@@ -288,11 +288,11 @@ contract DSEasyMultisig is DSBaseActor
         if( confirmations[action_id][msg.sender] ) {
             throw;
         }
-        if( action_id &gt; _last_action_id ) {
+        if( action_id > _last_action_id ) {
             throw;
         }
         var a = actions[action_id];
-        if( block.timestamp &gt; a.expiration ) {
+        if( block.timestamp > a.expiration ) {
             throw;
         }
         if( a.triggered ) {
@@ -308,16 +308,16 @@ contract DSEasyMultisig is DSBaseActor
     // Fails if there are not enough confirmations or if the action has expired.
     function trigger( uint action_id ) {
         var a = actions[action_id];
-        if( a.confirmations &lt; _required ) {
+        if( a.confirmations < _required ) {
             throw;
         }
-        if( block.timestamp &gt; a.expiration ) {
+        if( block.timestamp > a.expiration ) {
             throw;
         }
         if( a.triggered ) {
             throw;
         }
-        if( this.balance &lt; a.value ) {
+        if( this.balance < a.value ) {
             throw;
         }
         a.triggered = true;

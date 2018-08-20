@@ -1,8 +1,8 @@
 pragma solidity ^0.4.17;
 
 contract LatiumX {
-    string public constant name = &quot;LatiumX&quot;;
-    string public constant symbol = &quot;LATX&quot;;
+    string public constant name = "LatiumX";
+    string public constant symbol = "LATX";
     uint8 public constant decimals = 8;
     uint256 public constant totalSupply =
         300000000 * 10 ** uint256(decimals);
@@ -11,7 +11,7 @@ contract LatiumX {
     address public owner;
 
     // balances for each account
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // triggered when tokens are transferred
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -22,19 +22,19 @@ contract LatiumX {
         balanceOf[owner] = totalSupply;
     }
 
-    // transfer the balance from sender&#39;s account to another one
+    // transfer the balance from sender's account to another one
     function transfer(address _to, uint256 _value) {
         // prevent transfer to 0x0 address
         require(_to != 0x0);
         // sender and recipient should be different
         require(msg.sender != _to);
         // check if the sender has enough coins
-        require(_value &gt; 0 &amp;&amp; balanceOf[msg.sender] &gt;= _value);
+        require(_value > 0 && balanceOf[msg.sender] >= _value);
         // check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-        // subtract coins from sender&#39;s account
+        require(balanceOf[_to] + _value > balanceOf[_to]);
+        // subtract coins from sender's account
         balanceOf[msg.sender] -= _value;
-        // add coins to recipient&#39;s account
+        // add coins to recipient's account
         balanceOf[_to] += _value;
         // notify listeners about this transfer
         Transfer(msg.sender, _to, _value);
@@ -63,7 +63,7 @@ contract LatiumLocker {
         , 15000000
        
     ];
-    mapping (uint32 =&gt; uint256) private _releaseTiers;
+    mapping (uint32 => uint256) private _releaseTiers;
 
     // owner of this contract
     address public owner;
@@ -72,8 +72,8 @@ contract LatiumLocker {
     function LatiumLocker() {
         owner = msg.sender;
         // initialize release tiers with pairs:
-        // &quot;UNIX timestamp&quot; =&gt; &quot;amount of tokens to release&quot; (with decimals)
-        for (uint8 i = 0; i &lt; _timestamps.length; i++) {
+        // "UNIX timestamp" => "amount of tokens to release" (with decimals)
+        for (uint8 i = 0; i < _timestamps.length; i++) {
             _releaseTiers[_timestamps[i]] =
                 _tokensToRelease[i] * 10 ** uint256(_latium.decimals());
             _lockLimit += _releaseTiers[_timestamps[i]];
@@ -97,19 +97,19 @@ contract LatiumLocker {
     function lockedTokens() constant returns (uint256 locked) {
         locked = 0;
         uint256 unlocked = 0;
-        for (uint8 i = 0; i &lt; _timestamps.length; i++) {
-            if (now &gt;= _timestamps[i]) {
+        for (uint8 i = 0; i < _timestamps.length; i++) {
+            if (now >= _timestamps[i]) {
                 unlocked += _releaseTiers[_timestamps[i]];
             } else {
                 locked += _releaseTiers[_timestamps[i]];
             }
         }
         uint256 balance = latiumBalance();
-        if (unlocked &gt; balance) {
+        if (unlocked > balance) {
             locked = 0;
         } else {
             balance -= unlocked;
-            if (balance &lt; locked) {
+            if (balance < locked) {
                 locked = balance;
             }
         }
@@ -121,18 +121,18 @@ contract LatiumLocker {
         unlockedTokens = 0;
         excessTokens = 0;
         uint256 tiersBalance = 0;
-        for (uint8 i = 0; i &lt; _timestamps.length; i++) {
+        for (uint8 i = 0; i < _timestamps.length; i++) {
             tiersBalance += _releaseTiers[_timestamps[i]];
-            if (now &gt;= _timestamps[i]) {
+            if (now >= _timestamps[i]) {
                 unlockedTokens += _releaseTiers[_timestamps[i]];
             }
         }
         uint256 balance = latiumBalance();
-        if (unlockedTokens &gt; balance) {
+        if (unlockedTokens > balance) {
             // actual Latium balance of this contract is smaller
             // than can be released at this moment
             unlockedTokens = balance;
-        } else if (balance &gt; tiersBalance) {
+        } else if (balance > tiersBalance) {
             // if actual Latium balance of this contract is greater
             // than can be locked, all excess tokens can be withdrawn
             // at any time
@@ -150,23 +150,23 @@ contract LatiumLocker {
     function withdraw(uint256 _amount) onlyOwner {
         var (unlockedTokens, excessTokens) = canBeWithdrawn();
         uint256 totalAmount = unlockedTokens + excessTokens;
-        require(totalAmount &gt; 0);
+        require(totalAmount > 0);
         if (_amount == 0) {
             // withdraw all available tokens
             _amount = totalAmount;
         }
-        require(totalAmount &gt;= _amount);
+        require(totalAmount >= _amount);
         uint256 unlockedToWithdraw =
-            _amount &gt; unlockedTokens ?
+            _amount > unlockedTokens ?
                 unlockedTokens :
                 _amount;
-        if (unlockedToWithdraw &gt; 0) {
+        if (unlockedToWithdraw > 0) {
             // update tiers data
             uint8 i = 0;
-            while (unlockedToWithdraw &gt; 0 &amp;&amp; i &lt; _timestamps.length) {
-                if (now &gt;= _timestamps[i]) {
+            while (unlockedToWithdraw > 0 && i < _timestamps.length) {
+                if (now >= _timestamps[i]) {
                     uint256 amountToReduce =
-                        unlockedToWithdraw &gt; _releaseTiers[_timestamps[i]] ?
+                        unlockedToWithdraw > _releaseTiers[_timestamps[i]] ?
                             _releaseTiers[_timestamps[i]] :
                             unlockedToWithdraw;
                     _releaseTiers[_timestamps[i]] -= amountToReduce;
@@ -175,7 +175,7 @@ contract LatiumLocker {
                 i++;
             }
         }
-        // transfer tokens to owner&#39;s account
+        // transfer tokens to owner's account
         _latium.transfer(msg.sender, _amount);
     }
 }

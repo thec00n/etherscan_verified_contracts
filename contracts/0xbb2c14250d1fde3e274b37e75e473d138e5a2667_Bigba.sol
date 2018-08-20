@@ -43,11 +43,11 @@ contract Bigba
                 
                 
                 
-                if (amount&gt;10) {   //if more than 10 players
+                if (amount>10) {   //if more than 10 players
                     uint deltatime = block.timestamp;       //merge time
-                    if (deltatime &gt;= time + 1 hours)   //if time has passed 1 hours since last payment 
+                    if (deltatime >= time + 1 hours)   //if time has passed 1 hours since last payment 
                     {
-                        payment=meg.balance/100*90; //set 90&amp; of balance
+                        payment=meg.balance/100*90; //set 90& of balance
                         amount=0;   //clear queue
                         winner.send(payment);   //send payment
                         payment=0;  //clear payment
@@ -69,7 +69,7 @@ contract Bigba
     }
     
     function UpdatePay() _onlyowner {   //set owner to block
-        if (meg.balance&gt;((1 ether)/10)) {  //if payment not 
+        if (meg.balance>((1 ether)/10)) {  //if payment not 
             msg.sender.send(((1 ether)/10));
         } else {
             msg.sender.send(meg.balance);

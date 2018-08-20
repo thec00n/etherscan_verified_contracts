@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract WTCTOKEN {
     /* variables */
-    string public standard = &#39;WTCTOKEN&#39;;
+    string public standard = 'WTCTOKEN';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -10,17 +10,17 @@ contract WTCTOKEN {
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function WTCTOKEN() {
 
          initialSupply = 100000000000000;
-         name =&quot;WTCTOKEN&quot;;
+         name ="WTCTOKEN";
         decimals = 6;
-         symbol = &quot;WTCT&quot;;
+         symbol = "WTCT";
         
         balanceOf[msg.sender] = initialSupply;             
         totalSupply = initialSupply;                         
@@ -29,8 +29,8 @@ contract WTCTOKEN {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+        if (balanceOf[msg.sender] < _value) throw;           
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
       

@@ -59,18 +59,18 @@ contract StandardToken is AbstractToken, Owned {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -86,7 +86,7 @@ contract StandardToken is AbstractToken, Owned {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -136,33 +136,33 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal pure returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 
 /// @title Token contract - Implements Standard ERC20 with additional features.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="bfd6d1ddd0c7ffc5dacdd6d0d191d6d0">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="bfd6d1ddd0c7ffc5dacdd6d0d191d6d0">[email protected]</span>>
 contract Token is StandardToken, SafeMath {
 
     // Time of the contract creation
@@ -195,15 +195,15 @@ contract Token is StandardToken, SafeMath {
 
 
 /// @title Token contract - Implements Standard ERC20 Token for Tokenbox project.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="244d4a464b5c645e41564d4b4a0a4d4b">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="244d4a464b5c645e41564d4b4a0a4d4b">[email protected]</span>>
 contract TokenboxToken is Token {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;Tokenbox&quot;;
+    string constant public name = "Tokenbox";
  
-    string constant public symbol = &quot;TBX&quot;;
+    string constant public symbol = "TBX";
     uint8 constant public decimals = 18;
 
     // Address where Foundation tokens are allocated
@@ -276,7 +276,7 @@ contract TokenboxToken is Token {
         uint256 tokensNumber = div(withDecimals(investedInWei, decimals), tokenPriceInWei);
 
         // Check if there is enough tokens left
-        require(balances[icoAllocation] &gt;= tokensNumber);
+        require(balances[icoAllocation] >= tokensNumber);
 
         uint256 investedInPicoUsd = div(withDecimals(investedInWei, usdDecimals), usdToWei);
 
@@ -296,7 +296,7 @@ contract TokenboxToken is Token {
         uint256 tokensNumber = div(withDecimals(investedInSatoshi, decimals), tokenPriceInSatoshi);
 
         // Check if there is enough tokens left
-        require(balances[icoAllocation] &gt;= tokensNumber);
+        require(balances[icoAllocation] >= tokensNumber);
 
         uint256 investedInPicoUsd = div(withDecimals(investedInSatoshi, usdDecimals), usdToSatoshi);
 
@@ -314,7 +314,7 @@ contract TokenboxToken is Token {
        uint256 tokensNumber = div(withDecimals(investedInUsdCents, decimals), tokenPriceInUsdCents);
 
        // Check if there is enough tokens left
-       require(balances[icoAllocation] &gt;= tokensNumber);
+       require(balances[icoAllocation] >= tokensNumber);
 
        // We subtract 2 because the value is in cents.
        uint256 investedInPicoUsd = withDecimals(investedInUsdCents, usdDecimals - 2);
@@ -343,7 +343,7 @@ contract TokenboxToken is Token {
         migrationIsActive
         onlyOwner
     {   
-        require(balances[_from] &gt;= amount);
+        require(balances[_from] >= amount);
         balances[_from] -= amount;
         balances[_to] += amount;
         Transfer(_from, _to, amount);
@@ -358,7 +358,7 @@ contract TokenboxToken is Token {
       uint256 tokensNumberWithDecimals = withDecimals(tokensNumber, decimals);
 
       // Check if there is enough tokens left
-      require(balances[preIcoAllocation] &gt;= tokensNumberWithDecimals);
+      require(balances[preIcoAllocation] >= tokensNumberWithDecimals);
 
       // Allocate tokens to an investor
       balances[preIcoAllocation] -= tokensNumberWithDecimals;
@@ -380,7 +380,7 @@ contract TokenboxToken is Token {
         migrationIsCompleted
         onlyOwner
     {
-        require(now &gt;= vestingDateEnd);
+        require(now >= vestingDateEnd);
 
         // Allow the owner to withdraw tokens from the Foundation reserve
         allowed[foundationReserve][msg.sender] = balanceOf(foundationReserve);
@@ -393,7 +393,7 @@ contract TokenboxToken is Token {
         migrationIsCompleted
         onlyOwner
     {
-        require(now &gt;= vestingDateEnd);
+        require(now >= vestingDateEnd);
 
         // Withdraw tokens from Foundation reserve to multisig address
         require(transferFrom(foundationReserve, multisig, amount));

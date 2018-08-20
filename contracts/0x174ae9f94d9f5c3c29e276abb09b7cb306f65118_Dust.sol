@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,8 +77,8 @@ contract Ownable {
 contract Dust is Ownable {
     using SafeMath for uint;
 
-    string public name = &quot;Dust&quot;;
-    string public symbol = &quot;DST&quot;;
+    string public name = "Dust";
+    string public symbol = "DST";
     uint8 public decimals = 0;
 
     uint public totalSupply = 2000000000;
@@ -87,8 +87,8 @@ contract Dust is Ownable {
     uint public dustToEtherPrice = 800000000000000; // buy price
     string public information; // info
 
-    mapping(address =&gt; uint) private balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
+    mapping(address => uint) private balances;
+    mapping(address => mapping(address => uint)) private allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -111,7 +111,7 @@ contract Dust is Ownable {
     * @dev set new prices for buy/sell tokens from contract
     */
     function setPrices(uint _etherToDustPrice, uint _dustToEtherPrice) external onlyMasters {
-        require(_etherToDustPrice &gt; _dustToEtherPrice);
+        require(_etherToDustPrice > _dustToEtherPrice);
         etherToDustPrice = _etherToDustPrice;
         dustToEtherPrice = _dustToEtherPrice;
     }
@@ -121,8 +121,8 @@ contract Dust is Ownable {
     */
     function _transfer(address _from, address _to, uint _value) internal returns (bool){
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(balances[_from] &gt;= _value);
+        require(_value > 0);
+        require(balances[_from] >= _value);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[_from] = balances[_from].sub(_value);
@@ -156,7 +156,7 @@ contract Dust is Ownable {
      * @dev Transfer tokens from one address to another
      */
     function transferFrom(address _from, address _to, uint _value) external returns (bool) {
-        require(_value &lt;= allowed[_from][_to]);
+        require(_value <= allowed[_from][_to]);
         allowed[_from][_to] = allowed[_from][_to].sub(_value);
         return _transfer(_from, _to, _value);
     }
@@ -192,7 +192,7 @@ contract Dust is Ownable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) external returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -208,13 +208,13 @@ contract Dust is Ownable {
     // sell tokens
     function convertEtherToDust() public payable {
         uint amount = msg.value.div(etherToDustPrice);
-        require(amount &gt; 0);
-        if (amount &gt; balances[this]) {
+        require(amount > 0);
+        if (amount > balances[this]) {
             amount = balances[this];
         }
         _transfer(this, msg.sender, amount);
         uint diff = msg.value.sub(amount.mul(etherToDustPrice));
-        if (diff &gt; 0) {
+        if (diff > 0) {
             msg.sender.transfer(diff);
         }
     }
@@ -222,21 +222,21 @@ contract Dust is Ownable {
     // buy tokens
     function convertDustToEther(uint _amount) external {
         uint value = _amount.mul(dustToEtherPrice);
-        require(address(this).balance &gt;= value);
+        require(address(this).balance >= value);
         _transfer(msg.sender, this, _amount);
         msg.sender.transfer(value);
     }
 
     // withdraw available funds from contract
     function withdrawFunds(address _to, uint _value) external onlyMasters {
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
         _to.transfer(_value);
         emit Withdrawal(_value);
     }
 
     // refill contract with funds
     function refillFunds() external payable {
-        require(msg.value &gt;= dustToEtherPrice);
+        require(msg.value >= dustToEtherPrice);
         emit Refill(msg.value);
     }
 }

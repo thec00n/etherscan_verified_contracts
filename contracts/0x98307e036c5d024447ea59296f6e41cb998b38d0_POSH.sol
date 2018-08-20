@@ -19,16 +19,16 @@ contract POSH {
 	// the reserve is 0.8 ether and price 1 ether/token.
 	int constant LOGC = -0x296ABF784A358468C;
 	
-	string constant public name = &quot;ProofOfStrongHandsV1&quot;;
-	string constant public symbol = &quot;POSH&quot;;
+	string constant public name = "ProofOfStrongHandsV1";
+	string constant public symbol = "POSH";
 	uint8 constant public decimals = 18;
 	uint256 public totalSupply;
 	// amount of shares for each address (scaled number)
-	mapping(address =&gt; uint256) public balanceOfOld;
+	mapping(address => uint256) public balanceOfOld;
 	// allowance map, see erc20
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+	mapping(address => mapping(address => uint256)) public allowance;
 	// amount payed out for each address (scaled number)
-	mapping(address =&gt; int256) payouts;
+	mapping(address => int256) payouts;
 	// sum of all payouts (scaled number)
 	int256 totalPayouts;
 	// amount earned for each share (scaled number)
@@ -68,7 +68,7 @@ contract POSH {
       payable 
       returns (bool)
     {
-      if (msg.value &gt; 0.000001 ether)
+      if (msg.value > 0.000001 ether)
 			buy();
 		else
 			return false;
@@ -85,7 +85,7 @@ contract POSH {
 	}
 
 	function transferTokens(address _from, address _to, uint256 _value) internal {
-		if (balanceOfOld[_from] &lt; _value)
+		if (balanceOfOld[_from] < _value)
 			revert();
 		if (_to == address(this)) {
 			sell(_value);
@@ -105,7 +105,7 @@ contract POSH {
 	
     function transferFrom(address _from, address _to, uint256 _value) public {
         var _allowance = allowance[_from][msg.sender];
-        if (_allowance &lt; _value)
+        if (_allowance < _value)
             revert();
         allowance[_from][msg.sender] = _allowance - _value;
         transferTokens(_from, _to, _value);
@@ -116,7 +116,7 @@ contract POSH {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) revert();
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) revert();
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
     }
@@ -141,7 +141,7 @@ contract POSH {
 	}
 
 	function buy() internal {
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 		var sender = msg.sender;
 		// 5 % of the amount is used to pay holders.
@@ -152,7 +152,7 @@ contract POSH {
 		var numTokens = getTokensForEther(numEther);
 
 		var buyerfee = fee * PRECISION;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// compute how the fee distributed to previous holders and buyer.
 			// The buyer already gets a part of the fee as if he would buy each token separately.
 			var holderreward =
@@ -169,7 +169,7 @@ contract POSH {
 		totalSupply += numTokens;
 		// add numTokens to balance
 		balanceOfOld[sender] += numTokens;
-		// fix payouts so that sender doesn&#39;t get old earnings for the new tokens.
+		// fix payouts so that sender doesn't get old earnings for the new tokens.
 		// also add its buyerfee
 		var payoutDiff = (int256) ((earningsPerShare * numTokens) - buyerfee);
 		payouts[sender] += payoutDiff;
@@ -178,7 +178,7 @@ contract POSH {
 	
 	function sell(uint256 amount) internal {
 	
-		if (amount &lt; 0.000001 ether || amount &gt; 1000000 ether)
+		if (amount < 0.000001 ether || amount > 1000000 ether)
 			revert();
 		
 		// Calculate sell fee
@@ -186,7 +186,7 @@ contract POSH {
 		var fee = (uint)( numEther / 10 );
 		numEther -= fee;
 		
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// compute how the fee distributed to previous holders
 			var holderreward =
 			    (PRECISION - (reserve() + numEther) * amount * PRECISION / (totalSupply + amount) / numEther)
@@ -232,11 +232,11 @@ contract POSH {
 
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -264,15 +264,15 @@ contract POSH {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 
 	function () payable public {
-		if (msg.value &gt; 0)
+		if (msg.value > 0)
 			buy();
 		else
 			withdrawOld(msg.sender);

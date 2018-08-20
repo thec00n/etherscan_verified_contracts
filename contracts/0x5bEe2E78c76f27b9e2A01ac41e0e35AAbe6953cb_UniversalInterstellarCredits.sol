@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract UniversalInterstellarCredits {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract UniversalInterstellarCredits {
 
     function UniversalInterstellarCredits() {
         totalSupply = 10000000;
-        symbol = &#39;UIC&#39;;
+        symbol = 'UIC';
         owner = 0x019368e306179894da707b9fcf4f5b891849991c;
         balances[owner] = totalSupply;
         decimals = 0;

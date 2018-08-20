@@ -15,7 +15,7 @@
 // Ex: We generate 100 Eth profit daily, then it will be distributed in 50 times in 2 ether packages, then those packages get shared between shareholders. With the example above if you hold 2%, then you will earn 50 times 0.04 Eth, which is 2 Eth profit in total.
 //
 //
-// Profit: This contract itself is not generating any profit, it&#39;s just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
+// Profit: This contract itself is not generating any profit, it's just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
 // Ex: A dice game built on this contract that generates say 10 Eth daily, will send the fees directly here
 // Ex: A doubler game built on this contract that generates 50 Eth daily, that will send all fees here
 // Ex: Any other form of contract that takes a % fee, and will send the fees directly here to be distributed between EthVentures shareholders.
@@ -37,7 +37,7 @@
 //
 //
 //============================================================================================================================
-// Copyright (c) 2016 to &quot;BetGod&quot; from Bitcointalk.org, This piece of code cannot be copied or reused without the author&#39;s permission!
+// Copyright (c) 2016 to "BetGod" from Bitcointalk.org, This piece of code cannot be copied or reused without the author's permission!
 //
 // Author: https://bitcointalk.org/index.php?action=profile;u=803185
 //
@@ -59,7 +59,7 @@ uint public balance = 0;
 uint public totaldeposited=0;
 uint public totalpaidout=0;
 uint public totaldividends=0;
-string public Message_To_Investors=&quot;Welcome to EthVenturesFinal! New and improved! All bugs fixed!&quot;; // the manager can send short messages to investors
+string public Message_To_Investors="Welcome to EthVenturesFinal! New and improved! All bugs fixed!"; // the manager can send short messages to investors
 address public owner;
 // manager privilege
 modifier manager { if (msg.sender == owner) _ }
@@ -75,7 +75,7 @@ Enter();
 function Enter() {
 //DIVIDEND PAYOUT FUNCTION, IT WILL GET INCOME FROM OTHER CONTRACTS, THE DIVIDENDS WILL ALWAYS BE SENT
 //IN LESS THAN 2 ETHER SIZE PACKETS, BECAUSE ANY DEPOSIT OVER 2 ETHER GETS REGISTERED AS AN INVESTOR!!!
-if (msg.value &lt; 2 ether)
+if (msg.value < 2 ether)
 {
 uint PRE_payout;
 uint PRE_amount=msg.value;
@@ -83,16 +83,16 @@ owner.send(PRE_amount/100); //send the 1% management fee to the manager
 totalpaidout+=PRE_amount/100; //update paid out amount
 PRE_amount-=PRE_amount/100; //remaining 99% is the dividend
 //Distribute Dividends
-if(investors.length !=0 &amp;&amp; PRE_amount !=0)
+if(investors.length !=0 && PRE_amount !=0)
 {
-for(uint PRE_i=0; PRE_i&lt;investors.length;PRE_i++)
+for(uint PRE_i=0; PRE_i<investors.length;PRE_i++)
 {
 PRE_payout = PRE_amount * investors[PRE_i].percentage_ownership /10000000000; //calculate pay out
 investors[PRE_i].etherAddress.send(PRE_payout); //send dividend to investor
 totalpaidout += PRE_payout; //update paid out amount
 totaldividends+=PRE_payout; // update paid out dividends
 }
-Message_To_Investors=&quot;Dividends have been paid out!&quot;;
+Message_To_Investors="Dividends have been paid out!";
 }
 }
 // YOU MUST INVEST AT LEAST 2 ETHER OR HIGHER TO BE A SHAREHOLDER, OTHERWISE THE DEPOSIT IS CONSIDERED A DIVIDEND!!!
@@ -108,7 +108,7 @@ balance += amount; // balance update
 bool alreadyinvestor =false;
 uint alreadyinvestor_id;
 //go through all investors and see if the current investor was already an investor or not
-for(uint i=0; i&lt;investors.length;i++)
+for(uint i=0; i<investors.length;i++)
 {
 if( msg.sender== investors[i].etherAddress) // if yes then:
 {
@@ -117,7 +117,7 @@ alreadyinvestor_id=i; // and save the id of the investor in the investor array
 break; // get out of the loop to save gas, because we already found it
 }
 }
-// if it&#39;s a new investor then add it to the array
+// if it's a new investor then add it to the array
 if(alreadyinvestor==false)
 {
 total_investors=investors.length+1;
@@ -125,9 +125,9 @@ investors.length += 1; //increment first
 investors[investors.length-1].etherAddress = msg.sender;
 investors[investors.length-1].amount = amount;
 investors[investors.length-1].percentage_ownership = amount /totaldeposited*10000000000;
-Message_To_Investors=&quot;New Investor has joined us!&quot;; // a new and real investor has joined us
+Message_To_Investors="New Investor has joined us!"; // a new and real investor has joined us
 
-for(uint k=0; k&lt;investors.length;k++) //if smaller than incremented, goes into loop
+for(uint k=0; k<investors.length;k++) //if smaller than incremented, goes into loop
 {investors[k].percentage_ownership = investors[k].amount/totaldeposited*10000000000;} //recalculate % ownership
 
 }
@@ -150,7 +150,7 @@ totalpaidout+=fees; //update paid out amount
 function NewOwner(address new_owner) manager
 {
 owner = new_owner;
-Message_To_Investors=&quot;The contract has a new manager!&quot;;
+Message_To_Investors="The contract has a new manager!";
 }
 //********************************************EMERGENCY WITHDRAW
 // It will only be used in case the funds get stuck or any bug gets discovered in the future
@@ -161,7 +161,7 @@ if(balance!=0)
 {
 owner.send(balance);
 balance=0;
-Message_To_Investors=&quot;Emergency Withdraw has been issued!&quot;;
+Message_To_Investors="Emergency Withdraw has been issued!";
 }
 }
 //********************************************EMERGENCY BALANCE RESET
@@ -169,7 +169,7 @@ Message_To_Investors=&quot;Emergency Withdraw has been issued!&quot;;
 function EmergencyBalanceReset(uint new_balance) manager
 {
 balance = new_balance;
-Message_To_Investors=&quot;The Balance has been edited by the Manager!&quot;;
+Message_To_Investors="The Balance has been edited by the Manager!";
 }
 //********************************************NEW MESSAGE
 //The manager can send short messages to investors to keep them updated
@@ -188,17 +188,17 @@ investors[investors.length-1].etherAddress = new_investor;
 investors[investors.length-1].amount = new_amount;
 investors[investors.length-1].percentage_ownership = new_amount /totaldeposited*10000000000;
 
-Message_To_Investors=&quot;New manual Investor has been added by the Manager!&quot;; // you can see if the newest investor was manually added or not, this will add transparency to the contract, since this function should only be used in emergency situations.
-// This will ensure that the manager doesn&#39;t add fake investors of his own addresses.
+Message_To_Investors="New manual Investor has been added by the Manager!"; // you can see if the newest investor was manually added or not, this will add transparency to the contract, since this function should only be used in emergency situations.
+// This will ensure that the manager doesn't add fake investors of his own addresses.
 }
 //********************************************MANUAL DEPOSIT
-//The manager can deposit manually from previous version&#39;s balances
+//The manager can deposit manually from previous version's balances
 function ManualDeposit() manager
 {
 totaldeposited+=msg.value; //update deposited amount manually
 balance+=msg.value; //update balance amount manually
 
-Message_To_Investors = &quot;Manual Deposit received from the Manager&quot;;
+Message_To_Investors = "Manual Deposit received from the Manager";
 }
 
 //end

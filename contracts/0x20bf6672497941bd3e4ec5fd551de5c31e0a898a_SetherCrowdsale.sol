@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -90,7 +90,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -127,7 +127,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -142,7 +142,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -248,8 +248,8 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract SetherToken is MintableToken {
 
-    string public constant name = &quot;Sether&quot;;
-    string public constant symbol = &quot;SETH&quot;;
+    string public constant name = "Sether";
+    string public constant symbol = "SETH";
     uint8 public constant decimals = 18;
 
     function getTotalSupply() public returns (uint256) {
@@ -290,7 +290,7 @@ contract SetherBaseCrowdsale {
     event SethTokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     function SetherBaseCrowdsale(uint256 _rate, address _wallet) {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         token = createTokenContract();
@@ -327,12 +327,12 @@ contract SetherBaseCrowdsale {
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // @return true if crowdsale event has started
     function hasStarted() public constant returns (bool) {
-        return now &lt; startTime;
+        return now < startTime;
     }
 
     // send ether to the fund collection wallet
@@ -342,9 +342,9 @@ contract SetherBaseCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
     
     //Override this method with token distribution strategy
@@ -399,41 +399,41 @@ contract SetherMultiStepCrowdsale is SetherBaseCrowdsale {
     }
 
     function isWithinPresaleTimeLimit() internal returns (bool) {
-        return now &lt;= limitDatePresale;
+        return now <= limitDatePresale;
     }
 
     function isWithinCrowdWeek1TimeLimit() internal returns (bool) {
-        return now &lt;= limitDateCrowdWeek1;
+        return now <= limitDateCrowdWeek1;
     }
 
     function isWithinCrowdWeek2TimeLimit() internal returns (bool) {
-        return now &lt;= limitDateCrowdWeek2;
+        return now <= limitDateCrowdWeek2;
     }
 
     function isWithinCrowdWeek3TimeLimit() internal returns (bool) {
-        return now &lt;= limitDateCrowdWeek3;
+        return now <= limitDateCrowdWeek3;
     }
 
     function isWithinCrodwsaleTimeLimit() internal returns (bool) {
-        return now &lt;= endTime &amp;&amp; now &gt; limitDatePresale;
+        return now <= endTime && now > limitDatePresale;
     }
 
     function isWithinPresaleLimit(uint256 _tokens) internal returns (bool) {
-        return token.getTotalSupply().add(_tokens) &lt;= PRESALE_LIMIT;
+        return token.getTotalSupply().add(_tokens) <= PRESALE_LIMIT;
     }
 
     function isWithinCrowdsaleLimit(uint256 _tokens) internal returns (bool) {
-        return token.getTotalSupply().add(_tokens) &lt;= CROWDSALE_LIMIT;
+        return token.getTotalSupply().add(_tokens) <= CROWDSALE_LIMIT;
     }
 
     function validPurchase() internal constant returns (bool) {
-        return super.validPurchase() &amp;&amp;
-                 !(isWithinPresaleTimeLimit() &amp;&amp; msg.value &lt; PRESALE_BONUS_LIMIT);
+        return super.validPurchase() &&
+                 !(isWithinPresaleTimeLimit() && msg.value < PRESALE_BONUS_LIMIT);
     }
 
     function isWithinTokenAllocLimit(uint256 _tokens) internal returns (bool) {
-        return (isWithinPresaleTimeLimit() &amp;&amp; isWithinPresaleLimit(_tokens)) ||
-                        (isWithinCrodwsaleTimeLimit() &amp;&amp; isWithinCrowdsaleLimit(_tokens));
+        return (isWithinPresaleTimeLimit() && isWithinPresaleLimit(_tokens)) ||
+                        (isWithinCrodwsaleTimeLimit() && isWithinCrowdsaleLimit(_tokens));
     }
 
     function computeTokens(uint256 weiAmount) internal returns (uint256) {
@@ -468,15 +468,15 @@ contract SetherCappedCrowdsale is SetherMultiStepCrowdsale {
     // overriding SetherBaseCrowdsale#validPurchase to add extra cap logic
     // @return true if investors can buy at the moment
     function validPurchase() internal constant returns (bool) {
-        bool withinCap = weiRaised.add(msg.value) &lt;= HARD_CAP;
+        bool withinCap = weiRaised.add(msg.value) <= HARD_CAP;
 
-        return super.validPurchase() &amp;&amp; withinCap;
+        return super.validPurchase() && withinCap;
     }
 
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        bool capReached = weiRaised &gt;= HARD_CAP;
+        bool capReached = weiRaised >= HARD_CAP;
         return super.hasEnded() || capReached;
     }
 }
@@ -494,7 +494,7 @@ contract SetherStartableCrowdsale is SetherBaseCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function start() onlyOwner public {
     require(!isStarted);
@@ -530,7 +530,7 @@ contract SetherFinalizableCrowdsale is SetherBaseCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -554,7 +554,7 @@ contract SetherFinalizableCrowdsale is SetherBaseCrowdsale, Ownable {
 
 /**
  * @title SetherCrowdsale
- * @dev This is Sether&#39;s crowdsale contract.
+ * @dev This is Sether's crowdsale contract.
  */
 contract SetherCrowdsale is SetherCappedCrowdsale, SetherStartableCrowdsale, SetherFinalizableCrowdsale {
 

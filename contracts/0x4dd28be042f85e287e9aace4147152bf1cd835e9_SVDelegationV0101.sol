@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 // DELEGATION SC v1.1
 // (c) SecureVote 2018
-// Author: Max Kaye &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f222e370f3c2a2c3a3d2a6139203b2a">[email&#160;protected]</a>&gt;
+// Author: Max Kaye <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f222e370f3c2a2c3a3d2a6139203b2a">[email protected]</a>>
 // Released under MIT licence
 
 // the most up-to-date version of the contract lives at delegate.secvote.eth
@@ -13,7 +13,7 @@ contract SVDelegationV0101 {
 
     address public owner;
 
-    // in the last version we didn&#39;t include enough data - this makes it trivial to traverse off-chain
+    // in the last version we didn't include enough data - this makes it trivial to traverse off-chain
     struct Delegation {
         uint64 thisDelegationId;
         uint64 prevDelegationId;
@@ -24,15 +24,15 @@ contract SVDelegationV0101 {
     }
 
     // easy lookups
-    mapping (address =&gt; mapping (address =&gt; Delegation)) tokenDlgts;
-    mapping (address =&gt; Delegation) globalDlgts;
+    mapping (address => mapping (address => Delegation)) tokenDlgts;
+    mapping (address => Delegation) globalDlgts;
 
     // track which token contracts we know about for easy traversal + backwards compatibility
-    mapping (address =&gt; bool) knownTokenContracts;
+    mapping (address => bool) knownTokenContracts;
     address[] logTokenContracts;
 
     // track all delegations via an indexed map
-    mapping (uint64 =&gt; Delegation) historicalDelegations;
+    mapping (uint64 => Delegation) historicalDelegations;
     uint64 public totalDelegations = 0;
 
     // reference to v1.0 of contract
@@ -89,7 +89,7 @@ contract SVDelegationV0101 {
             _tokenDlgt = globalDlgts[voter];
         }
 
-        // default to 0 if we don&#39;t have a valid delegation
+        // default to 0 if we don't have a valid delegation
         if (_validDelegation(_tokenDlgt)) {
             return _tokenDlgt.thisDelegationId;
         }
@@ -110,7 +110,7 @@ contract SVDelegationV0101 {
             return _dlgtRet(_globalDlgt);
         }
 
-        // but if we don&#39;t have a delegation in this contract then resolve according the prev contract
+        // but if we don't have a delegation in this contract then resolve according the prev contract
         address _dlgt;
         uint256 meh;
         (meh, _dlgt, meh, meh) = prevSVDelegation.resolveDelegation(voter, tokenContract);
@@ -176,24 +176,24 @@ contract SVDelegationV0101 {
 
         // first loop through delegations in this contract
         uint64 i;
-        // start at 1 because the first delegation is a &quot;genesis&quot; delegation in constructor
-        for (i = 1; i &lt; totalDelegations; i++) {
+        // start at 1 because the first delegation is a "genesis" delegation in constructor
+        for (i = 1; i < totalDelegations; i++) {
             _delegation = historicalDelegations[i];
             if (_delegation.delegatee == delegate) {
-                // since `.push` isn&#39;t available on memory arrays, use their length as the next index location
+                // since `.push` isn't available on memory arrays, use their length as the next index location
                 voters = _appendMemArray(voters, _delegation.delegator);
                 tokenContracts = _appendMemArray(tokenContracts, _delegation.tokenContract);
             }
         }
 
         // then loop through delegations in the previous contract
-        for (i = 0; i &lt; oldSenders.length; i++) {
+        for (i = 0; i < oldSenders.length; i++) {
             uint256 _oldId;
             address _oldDlgt;
             uint256 _oldSetAtBlock;
             uint256 _oldPrevId;
             (_oldId, _oldDlgt, _oldSetAtBlock, _oldPrevId) = prevSVDelegation.resolveDelegation(oldSenders[i], oldToken);
-            if (_oldDlgt == delegate &amp;&amp; _oldSetAtBlock != 0) {
+            if (_oldDlgt == delegate && _oldSetAtBlock != 0) {
                 voters = _appendMemArray(voters, oldSenders[i]);
                 tokenContracts = _appendMemArray(tokenContracts, oldToken);
             }
@@ -231,13 +231,13 @@ contract SVDelegationV0101 {
     function _validDelegation(Delegation d) internal pure returns(bool) {
         // probs simplest test to check if we have a valid delegation - important to check if delegation is set to 0x00
         // to avoid counting a revocation (which is done by delegating to 0x00)
-        return d.setAtBlock &gt; 0 &amp;&amp; d.delegatee != address(0);
+        return d.setAtBlock > 0 && d.delegatee != address(0);
     }
 
     function _appendMemArray(address[] memory arr, address toAppend) internal pure returns(address[] memory arr2) {
         arr2 = new address[](arr.length + 1);
 
-        for (uint k = 0; k &lt; arr.length; k++) {
+        for (uint k = 0; k < arr.length; k++) {
             arr2[k] = arr[k];
         }
 
@@ -270,10 +270,10 @@ contract SVDelegation {
         uint256 prevDelegation;
     }
 
-    mapping (address =&gt; mapping (address =&gt; Delegation)) tokenDlgts;
-    mapping (address =&gt; Delegation) globalDlgts;
+    mapping (address => mapping (address => Delegation)) tokenDlgts;
+    mapping (address => Delegation) globalDlgts;
 
-    mapping (uint256 =&gt; Delegation) public historicalDelegations;
+    mapping (uint256 => Delegation) public historicalDelegations;
     uint256 public totalDelegations = 0;
 
     event SetGlobalDelegation(address voter, address delegate);
@@ -312,7 +312,7 @@ contract SVDelegation {
         Delegation memory _tokenDlgt = tokenDlgts[tokenContract][voter];
 
         // probs simplest test to check if we have a valid delegation
-        if (_tokenDlgt.setAtBlock &gt; 0) {
+        if (_tokenDlgt.setAtBlock > 0) {
             return _dlgtRet(_tokenDlgt);
         } else {
             return _dlgtRet(globalDlgts[voter]);

@@ -73,9 +73,9 @@ contract TourPool is Owned{
 	}
 
 	// mappings of riders and players
-	mapping(address =&gt; Player) public players;
+	mapping(address => Player) public players;
 	address[] public registrations;
-	mapping(uint =&gt; Rider) public riders;
+	mapping(uint => Rider) public riders;
 
 	// Events
 	event NewPlayer(address indexed player);
@@ -86,7 +86,7 @@ contract TourPool is Owned{
 
 	// Function Modifiers
 	modifier beforeDeadline {
-		require(now &lt;= registrationDeadline);
+		require(now <= registrationDeadline);
 		_;
 	}
 
@@ -139,7 +139,7 @@ contract TourPool is Owned{
 	// ---------------------------
 	function uploadStartlist(uint[] prices) public onlyOwner beforeDeadline returns (bool success){
 		require(prices.length == 176);	
-		for (uint i; i &lt; prices.length; i++){
+		for (uint i; i < prices.length; i++){
 			riders[i + 1].price = prices[i];
 		}
 		startlistUploaded = true;
@@ -148,7 +148,7 @@ contract TourPool is Owned{
 
 	function editStartlist(uint[] riderIDs, uint[] prices) public onlyOwner beforeDeadline returns (bool success){
 		require(riderIDs.length == prices.length);
-		for (uint i = 0; i &lt; riderIDs.length; i++){
+		for (uint i = 0; i < riderIDs.length; i++){
 			riders[riderIDs[i]].price = prices[i];
 		}
 		return true;
@@ -162,7 +162,7 @@ contract TourPool is Owned{
 		{
 		require(_riderIDs.length == _scores.length);
 		// Update scores
-		for (uint i; i &lt; _riderIDs.length; i++){			
+		for (uint i; i < _riderIDs.length; i++){			
 			riders[_riderIDs[i]].score += _scores[i];
 		}		
 		emit scoresUpdated(_riderIDs, _scores);
@@ -172,7 +172,7 @@ contract TourPool is Owned{
 
 	function editScores(uint[] _riderIDs, uint[] _newScores) public onlyOwner returns (bool success){
 		require(_riderIDs.length == _newScores.length);
-		for (uint i; i &lt; _riderIDs.length; i++){			
+		for (uint i; i < _riderIDs.length; i++){			
 			riders[_riderIDs[i]].score = _newScores[i];
 		}
 		(highScore, currentLeader) = getHighscore();
@@ -203,7 +203,7 @@ contract TourPool is Owned{
 	// ---------------------------
 	function getTeamPrice(uint[] team) public view returns (uint totalPrice){
 		totalPrice = 0;
-		for (uint i; i &lt; team.length; i++){
+		for (uint i; i < team.length; i++){
 			totalPrice += riders[team[i]].price;
 		}
 	}
@@ -211,9 +211,9 @@ contract TourPool is Owned{
 	function getPlayerScore(address _player) public view returns(uint score){
 		uint[] storage team = players[_player].team;			
 		score = 0;
-		for (uint i = 0; i &lt; team.length; i++){
+		for (uint i = 0; i < team.length; i++){
 			uint dupCount = 0;
-			for (uint j = 0;j &lt; team.length; j++){
+			for (uint j = 0;j < team.length; j++){
 				if (team[i] == team[j]){
 					dupCount++;
 				}				
@@ -227,9 +227,9 @@ contract TourPool is Owned{
 
 	function getHighscore() public view returns (uint newHighscore, address leader){
 		newHighscore = 0;		
-		for (uint i; i &lt; registrations.length; i++){
+		for (uint i; i < registrations.length; i++){
 			uint score = getPlayerScore(registrations[i]);
-			if (score &gt; newHighscore){
+			if (score > newHighscore){
 				newHighscore = score;
 				leader = registrations[i];
 			}			
@@ -257,14 +257,14 @@ contract TourPool is Owned{
     	private returns (bool success)
     {
 	    // check team size, price and player registration
-	    require(players[_player].status &gt;= 1);
-	    require(_team.length &lt;= maxTeamSize);
+	    require(players[_player].status >= 1);
+	    require(_team.length <= maxTeamSize);
 	    uint oldPrice = players[_player].teamPrice;
 	    uint newPrice = getTeamPrice(_team);
-	    require(oldPrice + _value &gt;= newPrice);
-	    require(oldPrice + _value &lt;= playerBudget);
+	    require(oldPrice + _value >= newPrice);
+	    require(oldPrice + _value <= playerBudget);
 	    // commit team and emit event
-	    if (newPrice &lt; oldPrice){
+	    if (newPrice < oldPrice){
 	    	ERC20Interface(diipCoinContract).transfer(_player,  (oldPrice - newPrice));
 	    }
     	players[_player].teamPrice = newPrice;

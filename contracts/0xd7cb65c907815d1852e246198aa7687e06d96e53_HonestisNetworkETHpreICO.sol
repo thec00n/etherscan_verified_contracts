@@ -8,8 +8,8 @@ contract MigrationAgent {
 
 // title preICO honestis networkToken (H.N Token) - crowdfunding code for preICO honestis networkToken PreICO
 contract HonestisNetworkETHpreICO {
-    string public constant name = &quot;preICO seed for Honestis.Network on ETH&quot;;
-    string public constant symbol = &quot;HNT&quot;;
+    string public constant name = "preICO seed for Honestis.Network on ETH";
+    string public constant symbol = "HNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETC/ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -45,8 +45,8 @@ contract HonestisNetworkETHpreICO {
     // The current total token supply.
     uint256 totalTokens;
 	uint256 bonusCreationRate;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) balancesRAW;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) balancesRAW;
 
 
 	address public migrationAgent=0x8585D5A25b1FA2A0E6c3BcfC098195bac9789BE2;
@@ -60,11 +60,11 @@ contract HonestisNetworkETHpreICO {
 
         if (honestisFort == 0) throw;
         if (migrationMaster == 0) throw;
-        if (fundingEndBlock   &lt;= fundingStartBlock) throw;
+        if (fundingEndBlock   <= fundingStartBlock) throw;
 
     }
 
-    // notice Transfer `_value` H.N Token tokens from sender&#39;s account
+    // notice Transfer `_value` H.N Token tokens from sender's account
     // `msg.sender` to provided account address `_to`.
     // notice This function is disabled during the funding.
     // dev Required state: Operational
@@ -74,10 +74,10 @@ contract HonestisNetworkETHpreICO {
     function transfer(address _to, uint256 _value) returns (bool) {
 
 // freez till end of crowdfunding + 2 about weeks
-if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 73000)) throw;
+if ((msg.sender!=migrationMaster)&&(block.number < fundingEndBlock + 73000)) throw;
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -106,29 +106,29 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
         function createHNtokens(address holder) payable {
 
         if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingEndBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingEndBlock) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
 		// check the maximum token creation cap
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / tokenCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / tokenCreationRate)
           throw;
 		
 		//bonus structure
 		bonusCreationRate = tokenCreationRate;
 		// early birds bonuses :
-        if (totalTokens &lt; tokenSEEDcap) bonusCreationRate = tokenCreationRate +500;
+        if (totalTokens < tokenSEEDcap) bonusCreationRate = tokenCreationRate +500;
 	
 		//after preICO period
-		if (block.number &gt; (fundingStartBlock + 6*oneweek +2*oneday)) {
+		if (block.number > (fundingStartBlock + 6*oneweek +2*oneday)) {
 			bonusCreationRate = tokenCreationRate - 200;//min 800
-		if	(totalTokens &gt; token3MstepCAP){bonusCreationRate = tokenCreationRate - 300;}//min 500
-		if	(totalTokens &gt; token10MstepCAP){bonusCreationRate = tokenCreationRate - 250;} //min 250
+		if	(totalTokens > token3MstepCAP){bonusCreationRate = tokenCreationRate - 300;}//min 500
+		if	(totalTokens > token10MstepCAP){bonusCreationRate = tokenCreationRate - 250;} //min 250
 		}
 	//time bonuses
 	// 1 block = 16-16.8 s
-		if (block.number &lt; (fundingStartBlock + 5*oneweek )){
+		if (block.number < (fundingStartBlock + 5*oneweek )){
 		bonusCreationRate = bonusCreationRate + (fundingStartBlock+5*oneweek-block.number)/(5*oneweek)*800;
 		}
 		
@@ -175,7 +175,7 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
     // notice Finalize crowdfunding clossing funding options
 	
 function finalizebackup() external {
-        if (block.number &lt;= fundingEndBlock+oneweek) throw;
+        if (block.number <= fundingEndBlock+oneweek) throw;
         // Switch to Operational state. This is the only place this can happen.
         funding = false;		
         // Transfer ETH to the preICO honestis network Fort address.
@@ -188,7 +188,7 @@ function finalizebackup() external {
 
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -212,6 +212,6 @@ function refundTRA() external {
 }
 
 function preICOregulations() external returns(string wow) {
-	return &#39;Regulations of preICO are present at website  honestis.network and by using this smartcontract you commit that you accept and will follow those rules&#39;;
+	return 'Regulations of preICO are present at website  honestis.network and by using this smartcontract you commit that you accept and will follow those rules';
 }
 }

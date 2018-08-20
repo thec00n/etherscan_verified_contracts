@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,7 +74,7 @@ contract Ownable {
 
 /**
  * @title PausableOnce
- * @dev The PausableOnce contract provides an option for the &quot;pauseMaster&quot;
+ * @dev The PausableOnce contract provides an option for the "pauseMaster"
  * to pause once the transactions for two weeks.
  *
  */
@@ -113,7 +113,7 @@ contract PausableOnce is Ownable {
      * @dev Modifier to make a function callable only when the contract is not paused.
      */
     modifier whenNotPaused() {
-        require(now &gt; pauseEnd);
+        require(now > pauseEnd);
         _;
     }
 
@@ -146,7 +146,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -194,7 +194,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -223,7 +223,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -260,7 +260,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,7 +290,7 @@ contract InterfaceUpgradeAgent {
 /**
  * @title UpgradableToken
  * @dev The UpgradableToken contract provides an option of upgrading the tokens to a new revision.
- * The &quot;upgradeMaster&quot; may propose the upgrade. Token holders can opt-in amount of tokens to upgrade.
+ * The "upgradeMaster" may propose the upgrade. Token holders can opt-in amount of tokens to upgrade.
  */
 
 contract UpgradableToken is StandardToken, Ownable {
@@ -323,12 +323,12 @@ contract UpgradableToken is StandardToken, Ownable {
     /**
      * @dev Set the upgrade agent (once only) thus enabling the upgrade.
      * @param _upgradeAgent Upgrade agent contract address
-     * @param _revision Unique ID that agent contract must return on &quot;.revision()&quot;
+     * @param _revision Unique ID that agent contract must return on ".revision()"
      */
     function setUpgradeAgent(address _upgradeAgent, uint32 _revision)
         onlyUpgradeMaster whenUpgradeDisabled external
     {
-        require((_upgradeAgent != address(0)) &amp;&amp; (_revision != 0));
+        require((_upgradeAgent != address(0)) && (_revision != 0));
 
         InterfaceUpgradeAgent agent = InterfaceUpgradeAgent(_upgradeAgent);
 
@@ -344,10 +344,10 @@ contract UpgradableToken is StandardToken, Ownable {
      * @param value How many tokens to be upgraded
      */
     function upgrade(uint256 value) whenUpgradeEnabled external {
-        require(value &gt; 0);
+        require(value > 0);
 
         uint256 balance = balances[msg.sender];
-        require(balance &gt; 0);
+        require(balance > 0);
 
         // Take tokens out from the old contract
         balances[msg.sender] = balance.sub(value);
@@ -389,12 +389,12 @@ contract UpgradableToken is StandardToken, Ownable {
 /**
  * @title Withdrawable
  * @dev The Withdrawable contract provides a mechanism of withdrawal(s).
- * &quot;Withdrawals&quot; are permissions for specified addresses to pull (withdraw) payments from the contract balance.
+ * "Withdrawals" are permissions for specified addresses to pull (withdraw) payments from the contract balance.
  */
 
 contract Withdrawable {
 
-    mapping (address =&gt; uint) pendingWithdrawals;
+    mapping (address => uint) pendingWithdrawals;
 
     /*
      * @dev Logged upon a granted allowance to the specified drawer on withdrawal.
@@ -417,10 +417,10 @@ contract Withdrawable {
      * @return success
      */
     function setWithdrawal(address drawer, uint256 weiAmount) internal returns (bool success) {
-        if ((drawer != address(0)) &amp;&amp; (weiAmount &gt; 0)) {
+        if ((drawer != address(0)) && (weiAmount > 0)) {
             uint256 oldBalance = pendingWithdrawals[drawer];
             uint256 newBalance = oldBalance + weiAmount;
-            if (newBalance &gt; oldBalance) {
+            if (newBalance > oldBalance) {
                 pendingWithdrawals[drawer] = newBalance;
                 Withdrawal(drawer, weiAmount);
                 return true;
@@ -435,7 +435,7 @@ contract Withdrawable {
      */
     function withdraw() public returns (bool success) {
         uint256 weiAmount = pendingWithdrawals[msg.sender];
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
 
         pendingWithdrawals[msg.sender] = 0;
         msg.sender.transfer(weiAmount);
@@ -454,17 +454,17 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;Cointed Token&quot;;
-    string public constant symbol = &quot;CTD&quot;;
-    /** Number of &quot;Atom&quot; in 1 CTD (1 CTD = 1x10^decimals Atom) */
+    string public constant name = "Cointed Token";
+    string public constant symbol = "CTD";
+    /** Number of "Atom" in 1 CTD (1 CTD = 1x10^decimals Atom) */
     uint8  public constant decimals = 18;
 
     /** Holder of bounty tokens */
     address public bounty;
 
-    /** Limit (in Atom) issued, inclusive owner&#39;s and bounty shares */
+    /** Limit (in Atom) issued, inclusive owner's and bounty shares */
     uint256 constant internal TOTAL_LIMIT   = 650000000 * (10 ** uint256(decimals));
-    /** Limit (in Atom) for Pre-ICO Phases A, incl. owner&#39;s and bounty shares */
+    /** Limit (in Atom) for Pre-ICO Phases A, incl. owner's and bounty shares */
     uint256 constant internal PRE_ICO_LIMIT = 130000000 * (10 ** uint256(decimals));
 
     /**
@@ -531,7 +531,7 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
      * msg.value MUST be at least the sum of awards.
      */
     function CtdToken(uint64 _preIcoOpeningTime) payable {
-        require(_preIcoOpeningTime &gt; now);
+        require(_preIcoOpeningTime > now);
 
         preIcoOpeningTime = _preIcoOpeningTime;
         icoOpeningTime = preIcoOpeningTime + PRE_ICO_DURATION;
@@ -562,8 +562,8 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
      * @return success/failure
      */
     function create() payable whenNotClosed whenNotPaused public returns (bool success) {
-        require(msg.value &gt; 0);
-        require(now &gt;= preIcoOpeningTime);
+        require(msg.value > 0);
+        require(now >= preIcoOpeningTime);
 
         Phases oldPhase = phase;
         uint256 weiToParticipate = msg.value;
@@ -578,15 +578,15 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
             uint256 requestedSupply = totalSupply.add(newTokens);
 
             uint256 oversoldTokens = computeOversoldAndAdjustPhase(requestedSupply);
-            overpaidWei = (oversoldTokens &gt; 0) ? oversoldTokens.div(rates.total) : 0;
+            overpaidWei = (oversoldTokens > 0) ? oversoldTokens.div(rates.total) : 0;
 
-            if (overpaidWei &gt; 0) {
+            if (overpaidWei > 0) {
                 weiToParticipate = msg.value.sub(overpaidWei);
                 newTokens = weiToParticipate.mul(rates.total);
                 requestedSupply = totalSupply.add(newTokens);
             }
 
-            // &quot;emission&quot; of new tokens
+            // "emission" of new tokens
             totalSupply = requestedSupply;
             balances[msg.sender] = balances[msg.sender].add(weiToParticipate.mul(rates.toSender));
             balances[owner] = balances[owner].add(weiToParticipate.mul(rates.toOwner));
@@ -595,7 +595,7 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
             // ETH transfers
             totalProceeds = totalProceeds.add(weiToParticipate);
             owner.transfer(weiToParticipate);
-            if (overpaidWei &gt; 0) {
+            if (overpaidWei > 0) {
                 setWithdrawal(msg.sender, overpaidWei);
             }
 
@@ -623,11 +623,11 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
 
     function adjustPhaseBasedOnTime() internal {
 
-        if (now &gt;= closingTime) {
+        if (now >= closingTime) {
             if (phase != Phases.AfterIco) {
                 phase = Phases.AfterIco;
             }
-        } else if (now &gt;= icoOpeningTime) {
+        } else if (now >= icoOpeningTime) {
             if (phase != Phases.MainIco) {
                 phase = Phases.MainIco;
             }
@@ -651,12 +651,12 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
 
     function computeOversoldAndAdjustPhase(uint256 newTotalSupply) internal returns (uint256 oversoldTokens) {
 
-        if ((phase == Phases.PreIcoA) &amp;&amp;
-            (newTotalSupply &gt;= PRE_ICO_LIMIT)) {
+        if ((phase == Phases.PreIcoA) &&
+            (newTotalSupply >= PRE_ICO_LIMIT)) {
             phase = Phases.PreIcoB;
             oversoldTokens = newTotalSupply.sub(PRE_ICO_LIMIT);
 
-        } else if (newTotalSupply &gt;= TOTAL_LIMIT) {
+        } else if (newTotalSupply >= TOTAL_LIMIT) {
             phase = Phases.AfterIco;
             oversoldTokens = newTotalSupply.sub(TOTAL_LIMIT);
 
@@ -733,7 +733,7 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
 
     /**
      * @dev Approve the specified address to spend the specified amount of tokens on behalf of the msg.sender.
-     * Use &quot;increaseApproval&quot; or &quot;decreaseApproval&quot; function to change the approval, if needed.
+     * Use "increaseApproval" or "decreaseApproval" function to change the approval, if needed.
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
      * @return success/failure
@@ -805,7 +805,7 @@ contract CtdToken is UpgradableToken, PausableOnce, Withdrawable {
      * @dev Throws if called before returnAllowedTime.
      */
     modifier afterWithdrawPause() {
-        require(now &gt; returnAllowedTime);
+        require(now > returnAllowedTime);
         _;
     }
 

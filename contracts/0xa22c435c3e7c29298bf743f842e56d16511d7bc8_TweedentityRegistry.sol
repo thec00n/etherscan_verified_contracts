@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -46,7 +46,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0173646c626e4133">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0173646c626e4133">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -145,7 +145,7 @@ interface StoreInterface {
 
 /**
  * @title TweedentityRegistry
- * @author Francesco Sullo &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026470636c616771616d4271776e6e6d2c616d">[email&#160;protected]</a>&gt;
+ * @author Francesco Sullo <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026470636c616771616d4271776e6e6d2c616d">[email protected]</a>>
  * @dev It store the tweedentities contracts addresses to allows dapp to be updated
  */
 
@@ -154,7 +154,7 @@ contract TweedentityRegistry
 is HasNoEther
 {
 
-  string public fromVersion = &quot;1.0.0&quot;;
+  string public fromVersion = "1.0.0";
 
   address public manager;
   address public claimer;
@@ -174,7 +174,7 @@ is HasNoEther
   {
     require(_manager != address(0));
     manager = _manager;
-    ContractRegistered(keccak256(&quot;manager&quot;), &quot;&quot;, _manager);
+    ContractRegistered(keccak256("manager"), "", _manager);
   }
 
 
@@ -186,7 +186,7 @@ is HasNoEther
   {
     require(_claimer != address(0));
     claimer = _claimer;
-    ContractRegistered(keccak256(&quot;claimer&quot;), &quot;&quot;, _claimer);
+    ContractRegistered(keccak256("claimer"), "", _claimer);
   }
 
 
@@ -255,7 +255,7 @@ is HasNoEther
       return noStoresSet;
     }
     bool atLeastOneIsActive;
-    for (uint i = 1; i &lt;= totalStores; i++) {
+    for (uint i = 1; i <= totalStores; i++) {
       StoreInterface theStore = StoreInterface(theManager.getStoreAddressById(i));
       if (theManager.isStoreActive(i)) {
         atLeastOneIsActive = true;

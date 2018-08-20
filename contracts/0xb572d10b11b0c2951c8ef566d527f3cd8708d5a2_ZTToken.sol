@@ -94,10 +94,10 @@ contract StandardToken is Token {
 
 
     // ZTT token balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // ZTT token allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
 
     /** 
@@ -121,10 +121,10 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) returns (bool success) {
 
         // Check if the sender has enough tokens
-        require(balances[msg.sender] &gt;= _value);   
+        require(balances[msg.sender] >= _value);   
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Transfer tokens
         balances[msg.sender] -= _value;
@@ -147,13 +147,13 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) returns (bool success) {
 
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Check allowance
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Transfer tokens
         balances[_to] += _value;
@@ -210,13 +210,13 @@ contract StandardToken is Token {
 contract ZTToken is Owned, StandardToken {
 
     // Ethereum token standard
-    string public standard = &quot;Token 0.2&quot;;
+    string public standard = "Token 0.2";
 
     // Full name
-    string public name = &quot;ZeroTraffic&quot;;        
+    string public name = "ZeroTraffic";        
     
     // Symbol
-    string public symbol = &quot;ZTT&quot;;
+    string public symbol = "ZTT";
 
     // No decimal points
     uint8 public decimals = 8;
@@ -253,12 +253,12 @@ contract ZTToken is Owned, StandardToken {
      */
     function withdrawIncentives() {
         require(!incentiveDistributed);
-        require(now &gt; incentiveDistributionDate);
+        require(now > incentiveDistributionDate);
 
         incentiveDistributed = true;
 
         uint256 totalSupplyToDate = totalSupply;
-        for (uint256 i = 0; i &lt; incentives.length; i++) {
+        for (uint256 i = 0; i < incentives.length; i++) {
 
             // totalSupplyToDate * (percentage * 10^2) / 10^2 / denominator
             uint256 amount = totalSupplyToDate * incentives[i].percentage / 10**2; 
@@ -276,7 +276,7 @@ contract ZTToken is Owned, StandardToken {
 
 
     /**
-     * Issues `_value` new tokens to `_recipient` (_value &lt; 0 guarantees that tokens are never removed)
+     * Issues `_value` new tokens to `_recipient` (_value < 0 guarantees that tokens are never removed)
      *
      * @param _recipient The address to which the tokens will be issued
      * @param _value The amount of new tokens to issue
@@ -285,7 +285,7 @@ contract ZTToken is Owned, StandardToken {
     function issue(address _recipient, uint256 _value) onlyOwner onlyPayloadSize(2) returns (bool success) {
 
         // Guarantee positive 
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Create tokens
         balances[_recipient] += _value;

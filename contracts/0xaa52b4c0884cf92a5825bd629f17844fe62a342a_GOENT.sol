@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,11 +34,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     function transfer(address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -63,15 +63,15 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
         require(_to != address(0));
 
         uint _allowance = allowed[_from][msg.sender];
 
-        require (_value &lt;= _allowance);
-        require(_value &gt; 0);
+        require (_value <= _allowance);
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -100,7 +100,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -113,8 +113,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract GOENT is StandardToken {
 
-    string public constant name = &quot;GOEN TOKEN&quot;;
-    string public constant symbol = &quot;GOENT&quot;;
+    string public constant name = "GOEN TOKEN";
+    string public constant symbol = "GOENT";
     uint   public constant decimals = 8;
     uint   public constant INITIAL_SUPPLY =  10000000000 * (10 ** decimals); 
 

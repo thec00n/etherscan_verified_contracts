@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -155,7 +155,7 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -194,7 +194,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -205,8 +205,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -220,7 +220,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -255,7 +255,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -298,16 +298,16 @@ contract PausableToken is StandardToken, Pausable {
 
 contract MetaToken is PausableToken {
 
-    string public name = &#39;MetaMetaMeta! Token&#39;;
+    string public name = 'MetaMetaMeta! Token';
     uint8 public decimals = 8;
-    string public symbol = &#39;M3T&#39;;
-    string public version = &#39;0.4.0&#39;;
+    string public symbol = 'M3T';
+    string public version = '0.4.0';
 
     uint256 public blockReward = 1 * (10**uint256(decimals));
     uint32 public halvingInterval = 210000;
     uint256 public blockNumber = 0; // how many blocks mined
     uint256 public totalSupply = 0;
-    uint256 public target   = 0x0000ffff00000000000000000000000000000000000000000000000000000000; // i.e. difficulty. miner needs to find nonce, so that (hash(nonce+random) &lt; target)
+    uint256 public target   = 0x0000ffff00000000000000000000000000000000000000000000000000000000; // i.e. difficulty. miner needs to find nonce, so that (hash(nonce+random) < target)
     uint256 public powLimit = 0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     uint40 public lastMinedOn; // will be used to check how long did it take to mine
     uint256 public randomness;
@@ -329,14 +329,14 @@ contract MetaToken is PausableToken {
         return randomness;
     }
 
-    /// pure, accepts randomness &amp; nonce and returns hash as int (which should be compared to target)
+    /// pure, accepts randomness & nonce and returns hash as int (which should be compared to target)
     function hash(uint256 nonce, uint256 currentRandomness) pure returns (uint256){
         return uint256(sha3(nonce+currentRandomness));
     }
 
-    /// pure, accepts randomness, nonce &amp; target and returns boolian whether work is good
+    /// pure, accepts randomness, nonce & target and returns boolian whether work is good
     function checkProofOfWork(uint256 nonce, uint256 currentRandomness, uint256 currentTarget) pure returns (bool workAccepted){
-        return uint256(hash(nonce, currentRandomness)) &lt; currentTarget;
+        return uint256(hash(nonce, currentRandomness)) < currentTarget;
     }
 
     // accepts Nonce and tells whether it is good to mine
@@ -345,7 +345,7 @@ contract MetaToken is PausableToken {
     }
 
     /*
-        accepts nonce aka &quot;mining field&quot;, checks if it passess proof of work,
+        accepts nonce aka "mining field", checks if it passess proof of work,
         rewards if it does
     */
     function mine(uint256 nonce) whenNotPaused returns (bool success) {
@@ -360,16 +360,16 @@ contract MetaToken is PausableToken {
 
         // difficulty retarget:
         var mul = (block.timestamp - lastMinedOn);
-        if (mul &gt; (60*2.5*2)) {
+        if (mul > (60*2.5*2)) {
             mul = 60*2.5*2;
         }
-        if (mul &lt; (60*2.5/2)) {
+        if (mul < (60*2.5/2)) {
             mul = 60*2.5/2;
         }
         target *= mul;
         target /= (60*2.5);
 
-        if (target &gt; powLimit) { // difficulty not lower than that
+        if (target > powLimit) { // difficulty not lower than that
             target = powLimit;
         }
 

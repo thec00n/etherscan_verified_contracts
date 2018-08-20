@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,8 +43,8 @@ contract HardcodedCrowdsale {
     address public owner = msg.sender;
     ManagedToken public managedTokenLedger;
 
-    string public name = &quot;Uservice Token&quot;;
-    string public symbol = &quot;UST&quot;;
+    string public name = "Uservice Token";
+    string public symbol = "UST";
 
     bool public halted = false;
      
@@ -68,11 +68,11 @@ contract HardcodedCrowdsale {
     uint256 public preICOprice = uint256(0.25 ether).div(1000);
     uint256[3] public preICOcoinsLeft = [40000000*DECIMAL_MULTIPLIER, 0*DECIMAL_MULTIPLIER, 0*DECIMAL_MULTIPLIER];
 
-    mapping(address =&gt; uint256) public weiForRefundPreICO;
+    mapping(address => uint256) public weiForRefundPreICO;
 
-    mapping(address =&gt; uint256) public weiToRecoverPreICO;
+    mapping(address => uint256) public weiToRecoverPreICO;
 
-    mapping(address =&gt; uint256) public balancesForPreICO;
+    mapping(address => uint256) public balancesForPreICO;
 
     event Purchased(address indexed _from, uint256 _value);
 
@@ -82,19 +82,19 @@ contract HardcodedCrowdsale {
     }
 
     function transitionState() internal {
-        if (now &gt;= preICOstart) {
+        if (now >= preICOstart) {
             if (preICOstate == ICOStateEnum.NotStarted) {
                 preICOstate = ICOStateEnum.Started;
             }
-            if (preICOcap &gt; 0 &amp;&amp; preICOcollected &gt;= preICOcap) {
+            if (preICOcap > 0 && preICOcollected >= preICOcap) {
                 preICOstate = ICOStateEnum.Successful;
             }
-            if ( (saleIndex == preICOcoinsLeft.length) &amp;&amp; (preICOcoinsLeft[saleIndex-1] == 0) ) {
+            if ( (saleIndex == preICOcoinsLeft.length) && (preICOcoinsLeft[saleIndex-1] == 0) ) {
                 preICOstate = ICOStateEnum.Successful;
             }
-        } if (now &gt;= preICOend) {
+        } if (now >= preICOend) {
             if (preICOstate == ICOStateEnum.Started) {
-                if (preICOcollected &gt;= preICOgoal) {
+                if (preICOcollected >= preICOgoal) {
                     preICOstate = ICOStateEnum.Successful;
                 } else {
                     preICOstate = ICOStateEnum.Refunded;
@@ -139,9 +139,9 @@ contract HardcodedCrowdsale {
 
 
     function HardcodedCrowdsale (uint _preICOstart, uint _preICOend, uint _preICOgoal, uint _preICOcap, address _newLedgerAddress) public {
-//        require(_preICOstart &gt; now);
-        require(_preICOend &gt; _preICOstart);
-        require(_preICOgoal &gt; 0);
+//        require(_preICOstart > now);
+        require(_preICOend > _preICOstart);
+        require(_preICOgoal > 0);
         require(_newLedgerAddress != address(0));
         preICOstart = _preICOstart;
         preICOend = _preICOend;
@@ -152,8 +152,8 @@ contract HardcodedCrowdsale {
     }
 
     function setNameAndTicker(string _name, string _symbol) onlyOwner public returns (bool success) {
-        require(bytes(_name).length &gt; 1);
-        require(bytes(_symbol).length &gt; 1);
+        require(bytes(_name).length > 1);
+        require(bytes(_symbol).length > 1);
         name = _name;
         symbol = _symbol;
         return true;
@@ -167,7 +167,7 @@ contract HardcodedCrowdsale {
     }
 
     function () payable stateTransition notHalted external {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(preICOstate == ICOStateEnum.Started);
         assert(preICOBuy());
     }
@@ -188,7 +188,7 @@ contract HardcodedCrowdsale {
         internal returns (uint256 _tokensToBuyScaled, uint256 _weisLeftScaled) {
         uint256 value = _weisSentScaled;
         uint256 totalPurchased = 0;
-        for (uint8 i = saleIndex; i &lt; preICOcoinsLeft.length; i++) {
+        for (uint8 i = saleIndex; i < preICOcoinsLeft.length; i++) {
             if (preICOcoinsLeft[i] == 0) {
                 continue;
             }
@@ -196,7 +196,7 @@ contract HardcodedCrowdsale {
             if (forThisRate == 0) {
                 break;
             }
-            if (forThisRate &gt;= preICOcoinsLeft[i]) {
+            if (forThisRate >= preICOcoinsLeft[i]) {
                 forThisRate = preICOcoinsLeft[i];
                 preICOcoinsLeft[i] = 0;
                 saleIndex = i+1;
@@ -216,7 +216,7 @@ contract HardcodedCrowdsale {
         var (tokensBought, fundsLeftScaled) = calculateAmountBoughtPreICO(weisSentScaled);
         uint256 fundsLeft = fundsLeftScaled.div(DECIMAL_MULTIPLIER);
         uint256 totalSpent = msg.value.sub(fundsLeft);
-        if (totalSpent &lt; minWeiToBuy) {
+        if (totalSpent < minWeiToBuy) {
             revert();
         }
         if (balanceOf(_for) == 0) {

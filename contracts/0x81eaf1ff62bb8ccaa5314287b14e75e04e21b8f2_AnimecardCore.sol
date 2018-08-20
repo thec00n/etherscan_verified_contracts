@@ -22,9 +22,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,13 +41,13 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="90f4f5e4f5d0f1e8f9fffdeaf5febef3ff">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="90f4f5e4f5d0f1e8f9fffdeaf5febef3ff">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
     event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
     event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
@@ -150,7 +150,7 @@ contract AnimecardAccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -162,7 +162,7 @@ contract AnimecardAccessControl {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -189,7 +189,7 @@ contract AnimecardBase is AnimecardAccessControl {
     struct Animecard {
         /// Name of the character
         string characterName;
-        /// Name of designer &amp; studio that created the character
+        /// Name of designer & studio that created the character
         string studioName;
 
         /// AWS S3-CDN URL for character image
@@ -216,22 +216,22 @@ contract AnimecardBase is AnimecardAccessControl {
     Animecard[] animecards;
 
     /// @dev A mapping from anime card ids to the address that owns them.
-    mapping(uint256 =&gt; address) public animecardToOwner;
+    mapping(uint256 => address) public animecardToOwner;
 
     /// @dev A mapping from owner address to count of anime cards that address owns.
     /// Used internally inside balanceOf() to resolve ownership count.
-    mapping(address =&gt; uint256) public ownerAnimecardCount;
+    mapping(address => uint256) public ownerAnimecardCount;
 
     /// @dev A mapping from anime card ids to an address that has been approved to call
     ///  transferFrom(). Each anime card can only have 1 approved address for transfer
     ///  at any time. A 0 value means no approval is outstanding.
-    mapping(uint256 =&gt; address) public animecardToApproved;
+    mapping(uint256 => address) public animecardToApproved;
 
     // @dev A mapping from anime card ids to their price.
-    mapping(uint256 =&gt; uint256) public animecardToPrice;
+    mapping(uint256 => uint256) public animecardToPrice;
 
     // @dev Previous sale price of anime card
-    mapping(uint256 =&gt; uint256) public animecardPrevPrice;
+    mapping(uint256 => uint256) public animecardPrevPrice;
 
     /// @dev Assigns ownership of a specific anime card to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
@@ -239,7 +239,7 @@ contract AnimecardBase is AnimecardAccessControl {
         // ownerAnimecardCount[_to] = ownerAnimecardCount[_to].add(1);
         ownerAnimecardCount[_to]++;
         animecardToOwner[_tokenId] = _to;
-        // When creating new tokens _from is 0x0, but we can&#39;t account that address.
+        // When creating new tokens _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             // ownerAnimecardCount[_from] = ownerAnimecardCount[_from].sub(1);
             ownerAnimecardCount[_from]--;
@@ -307,7 +307,7 @@ contract AnimecardPricing is AnimecardBase {
     uint256 private constant fourth_step_limit = 5.0 ether;
 
 
-    // Cut for studio &amp; platform for each sale transaction
+    // Cut for studio & platform for each sale transaction
     uint256 public platformFee = 50; // 50%
 
     /// @dev Set Studio Fee. Can only be called by the Animator address. 
@@ -320,13 +320,13 @@ contract AnimecardPricing is AnimecardBase {
     internal
     pure
     returns(uint256) {
-        if (_salePrice &lt; first_step_limit) {
+        if (_salePrice < first_step_limit) {
             return SafeMath.div(SafeMath.mul(_salePrice, 200), 100);
-        } else if (_salePrice &lt; second_step_limit) {
+        } else if (_salePrice < second_step_limit) {
             return SafeMath.div(SafeMath.mul(_salePrice, 135), 100);
-        } else if (_salePrice &lt; third_step_limit) {
+        } else if (_salePrice < third_step_limit) {
             return SafeMath.div(SafeMath.mul(_salePrice, 125), 100);
-        } else if (_salePrice &lt; fourth_step_limit) {
+        } else if (_salePrice < fourth_step_limit) {
             return SafeMath.div(SafeMath.mul(_salePrice, 120), 100);
         } else {
             return SafeMath.div(SafeMath.mul(_salePrice, 115), 100);
@@ -334,7 +334,7 @@ contract AnimecardPricing is AnimecardBase {
     }
 
     /// @dev Computes the payment for the token, which is the sale price of the token
-    /// minus the house&#39;s cut.
+    /// minus the house's cut.
     function computePayment(
         uint256 _tokenId,
         uint256 _salePrice)
@@ -354,25 +354,25 @@ contract AnimecardPricing is AnimecardBase {
 
 contract AnimecardOwnership is AnimecardPricing, ERC721 {
     /// Name of the collection of NFTs managed by this contract, as defined in ERC721.
-    string public constant NAME = &quot;CryptoAnime&quot;;
+    string public constant NAME = "CryptoAnime";
     /// Symbol referencing the entire collection of NFTs managed in this contract, as
     /// defined in ERC721.
-    string public constant SYMBOL = &quot;ANM&quot;;
+    string public constant SYMBOL = "ANM";
 
     bytes4 public constant INTERFACE_SIGNATURE_ERC165 =
-        bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+        bytes4(keccak256("supportsInterface(bytes4)"));
 
     bytes4 public constant INTERFACE_SIGNATURE_ERC721 =
-        bytes4(keccak256(&quot;name()&quot;)) ^
-        bytes4(keccak256(&quot;symbol()&quot;)) ^
-        bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-        bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-        bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transfer(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;tokensOfOwner(address)&quot;)) ^
-        bytes4(keccak256(&quot;tokenMetadata(uint256,string)&quot;));
+        bytes4(keccak256("name()")) ^
+        bytes4(keccak256("symbol()")) ^
+        bytes4(keccak256("totalSupply()")) ^
+        bytes4(keccak256("balanceOf(address)")) ^
+        bytes4(keccak256("ownerOf(uint256)")) ^
+        bytes4(keccak256("approve(address,uint256)")) ^
+        bytes4(keccak256("transfer(address,uint256)")) ^
+        bytes4(keccak256("transferFrom(address,address,uint256)")) ^
+        bytes4(keccak256("tokensOfOwner(address)")) ^
+        bytes4(keccak256("tokenMetadata(uint256,string)"));
 
     /*** EVENTS ***/
     /// Approval event as defined in the current draft of ERC721. Fired every time
@@ -516,7 +516,7 @@ contract AnimecardOwnership is AnimecardPricing, ERC721 {
             uint256 resultIndex = 0;
 
             uint256 animecardId;
-            for (animecardId = 0; animecardId &lt;= totalAnimecards; animecardId++) {
+            for (animecardId = 0; animecardId <= totalAnimecards; animecardId++) {
                 if (animecardToOwner[animecardId] == _owner) {
                     result[resultIndex] = animecardId;
                     resultIndex++;
@@ -529,7 +529,7 @@ contract AnimecardOwnership is AnimecardPricing, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular Animecard.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId Animecard id, only valid when &gt; 0
+    /// @param _tokenId Animecard id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId)
     internal
     view
@@ -549,7 +549,7 @@ contract AnimecardOwnership is AnimecardPricing, ERC721 {
     /// @dev Checks if a given address currently has transferApproval for a particular 
     /// Animecard.
     /// @param _claimant the address we are confirming Animecard is approved for.
-    /// @param _tokenId Animecard id, only valid when &gt; 0
+    /// @param _tokenId Animecard id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId)
     internal
     view
@@ -582,7 +582,7 @@ contract AnimecardSale is AnimecardOwnership {
         require(_addressNotNull(newOwner));
 
         // Check that sent amount is greater than or equal to the sale price
-        require(msg.value &gt;= salePrice);
+        require(msg.value >= salePrice);
 
         uint256 payment = uint256(computePayment(_tokenId, salePrice));
         uint256 purchaseExcess = SafeMath.sub(msg.value, salePrice);
@@ -660,7 +660,7 @@ contract AnimecardCore is AnimecardMinting {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -709,7 +709,7 @@ contract AnimecardCore is AnimecardMinting {
 
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive call.

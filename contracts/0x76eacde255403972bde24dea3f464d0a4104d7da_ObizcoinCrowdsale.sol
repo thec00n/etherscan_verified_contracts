@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -41,7 +41,7 @@ contract ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     function transfer(address _to, uint256 _value) returns (bool) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -68,7 +68,7 @@ contract ERC20 is ERC20Basic {
 
 
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         var _allowance = allowed[_from][msg.sender];
@@ -135,7 +135,7 @@ contract MintableToken is StandardToken, Ownable {
 
     function destroy(uint256 _amount, address destroyer) onlyOwner {
         uint256 myBalance = balances[destroyer];
-        if (myBalance &gt; _amount) {
+        if (myBalance > _amount) {
             totalSupply = totalSupply.sub(_amount);
             balances[destroyer] = myBalance.sub(_amount);
         }
@@ -185,10 +185,10 @@ contract Crowdsale is Ownable {
     function profitSharing() payable public {
         uint256 weiAmount = msg.value;
         uint256 ballanceOfHolder;
-        for (uint i = 0; i &lt; holders.length; i++)
+        for (uint i = 0; i < holders.length; i++)
         {
             ballanceOfHolder = token.balanceOf(holders[i]);
-            if (ballanceOfHolder &gt; 0) {
+            if (ballanceOfHolder > 0) {
                 holders[i].transfer(ballanceOfHolder.mul(weiAmount).div(token.totalSupply()));
             }
         }
@@ -223,12 +223,12 @@ contract Crowdsale is Ownable {
         uint256 tokens;
         // calculate token amount to be created
 
-        if (block.timestamp &gt;= time0 &amp;&amp; block.timestamp &lt; time1) tokens = weiAmount.mul(11000);
-        else if (block.timestamp &gt;= time1 &amp;&amp; block.timestamp &lt; time2) tokens = weiAmount.mul(10000);
-        else if (block.timestamp &gt;= time3 &amp;&amp; block.timestamp &lt; time4) tokens = weiAmount.mul(9000);
-        else if (block.timestamp &gt;= time4 &amp;&amp; block.timestamp &lt; time5) tokens = weiAmount.mul(8000);
-        else if (block.timestamp &gt;= time5 &amp;&amp; block.timestamp &lt; time6) tokens = weiAmount.mul(7000);
-        else if (block.timestamp &gt;= time6 &amp;&amp; block.timestamp &lt; time7) tokens = weiAmount.mul(6000);
+        if (block.timestamp >= time0 && block.timestamp < time1) tokens = weiAmount.mul(11000);
+        else if (block.timestamp >= time1 && block.timestamp < time2) tokens = weiAmount.mul(10000);
+        else if (block.timestamp >= time3 && block.timestamp < time4) tokens = weiAmount.mul(9000);
+        else if (block.timestamp >= time4 && block.timestamp < time5) tokens = weiAmount.mul(8000);
+        else if (block.timestamp >= time5 && block.timestamp < time6) tokens = weiAmount.mul(7000);
+        else if (block.timestamp >= time6 && block.timestamp < time7) tokens = weiAmount.mul(6000);
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -240,12 +240,12 @@ contract Crowdsale is Ownable {
 
     function mintTokens(address beneficiary, uint256 tokens) internal {
         uint256 weiAmount;
-        if (block.timestamp &gt;= time0 &amp;&amp; block.timestamp &lt; time1) weiAmount = tokens.div(11000);
-        else if (block.timestamp &gt;= time1 &amp;&amp; block.timestamp &lt; time2) weiAmount = tokens.div(10000);
-        else if (block.timestamp &gt;= time3 &amp;&amp; block.timestamp &lt; time4) weiAmount = tokens.div(9000);
-        else if (block.timestamp &gt;= time4 &amp;&amp; block.timestamp &lt; time5) weiAmount = tokens.div(8000);
-        else if (block.timestamp &gt;= time5 &amp;&amp; block.timestamp &lt; time6) weiAmount = tokens.div(7000);
-        else if (block.timestamp &gt;= time6 &amp;&amp; block.timestamp &lt; time7) weiAmount = tokens.div(6000);
+        if (block.timestamp >= time0 && block.timestamp < time1) weiAmount = tokens.div(11000);
+        else if (block.timestamp >= time1 && block.timestamp < time2) weiAmount = tokens.div(10000);
+        else if (block.timestamp >= time3 && block.timestamp < time4) weiAmount = tokens.div(9000);
+        else if (block.timestamp >= time4 && block.timestamp < time5) weiAmount = tokens.div(8000);
+        else if (block.timestamp >= time5 && block.timestamp < time6) weiAmount = tokens.div(7000);
+        else if (block.timestamp >= time6 && block.timestamp < time7) weiAmount = tokens.div(6000);
 
         weiRaised = weiRaised.add(weiAmount);
         token.mint(beneficiary, tokens);
@@ -264,10 +264,10 @@ contract Crowdsale is Ownable {
     }
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return block.timestamp &lt; time0 || (block.timestamp &gt; time2 &amp;&amp; block.timestamp &lt; time3) || block.timestamp &gt; time7;
+        return block.timestamp < time0 || (block.timestamp > time2 && block.timestamp < time3) || block.timestamp > time7;
     }
 
-    mapping (address =&gt; bool) isHolder;
+    mapping (address => bool) isHolder;
 
     address[] public holders;
 
@@ -288,8 +288,8 @@ contract ObizcoinCrowdsaleToken is MintableToken {
     uint8 public decimals;
 
     function ObizcoinCrowdsaleToken() {
-        name = &quot;Obizcoin Token&quot;;
-        symbol = &quot;OBZ&quot;;
+        name = "Obizcoin Token";
+        symbol = "OBZ";
         decimals = 18;
     }
 }

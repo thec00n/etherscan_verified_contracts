@@ -15,37 +15,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) public pure returns (uint256) {
-    //assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    //assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    //assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) public pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) public pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) public pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) public pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) external pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) external pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -87,8 +87,8 @@ contract TokenERC223 is Owned{
 
     // Public variables of the token
 
-    string  public name=&quot;Littafi Token&quot;;
-    string  public symbol=&quot;LITT&quot;;
+    string  public name="Littafi Token";
+    string  public symbol="LITT";
     uint8   public decimals = 18;// 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply=1000000000; //1,000,000,000 tokens
     address[] public littHolders;
@@ -108,14 +108,14 @@ contract TokenERC223 is Owned{
     }
 
     //Create an array of admins
-    mapping(address =&gt; Admin) admins;
+    mapping(address => Admin) admins;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     // This generates a public event on the blockchain that will notify clients
     event FrozenFunds(address target, bool frozen);
@@ -155,7 +155,7 @@ contract TokenERC223 is Owned{
     }
     
     function transfer(address _to, uint256 _value, bytes _data, string _custom_fallback) public returns (bool success) {
-     require(!frozenAccount[msg.sender] &amp;&amp; !frozenAccount[_to]);
+     require(!frozenAccount[msg.sender] && !frozenAccount[_to]);
 
     if(isContract(_to)) {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
@@ -172,7 +172,7 @@ contract TokenERC223 is Owned{
    }
     
     function transfer(address _to, uint256 _value, bytes _data)public  returns (bool success) {
-     require(!frozenAccount[msg.sender] &amp;&amp; !frozenAccount[_to]);
+     require(!frozenAccount[msg.sender] && !frozenAccount[_to]);
      
     if(isContract(_to)) {
         return transferToContract(_to, _value, _data);
@@ -185,7 +185,7 @@ contract TokenERC223 is Owned{
     // Standard function transfer similar to ERC20 transfer with no _data .
     // Added due to backwards compatibility reasons .
     function transfer(address _to, uint256 _value)public returns (bool success) {
-     require(!frozenAccount[msg.sender] &amp;&amp; !frozenAccount[_to]);
+     require(!frozenAccount[msg.sender] && !frozenAccount[_to]);
       
      bytes memory empty;
      if(isContract(_to)) {
@@ -203,12 +203,12 @@ contract TokenERC223 is Owned{
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
-     require(balanceOf[msg.sender] &gt; _value); 
+     require(balanceOf[msg.sender] > _value); 
      
      balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
      balanceOf[_to] = balanceOf[_to].add(_value);
@@ -219,7 +219,7 @@ contract TokenERC223 is Owned{
   
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
-     require(balanceOf[msg.sender] &gt; _value); 
+     require(balanceOf[msg.sender] > _value); 
        
      balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
      balanceOf[_to] = balanceOf[_to].add(_value);
@@ -231,7 +231,7 @@ contract TokenERC223 is Owned{
     }
 
     function transferToOwner(uint256 _amount) public onlyOwner(){
-        require(balanceOf[this] &gt; convert(_amount));
+        require(balanceOf[this] > convert(_amount));
         uint256 amount=convert(_amount);
         balanceOf[this]=balanceOf[this].sub(amount);
         balanceOf[owner]=balanceOf[owner].add(amount);
@@ -254,7 +254,7 @@ contract TokenERC223 is Owned{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public onlyOwner {
-        require(balanceOf[this] &gt;= convert(_value)); 
+        require(balanceOf[this] >= convert(_value)); 
         uint256 value=convert(_value);
         // Check if the contract has enough
         balanceOf[this]=balanceOf[this].sub(value);    // Subtract from the contract
@@ -282,8 +282,8 @@ contract TokenERC223 is Owned{
     }
 
     function buy() payable public {
-        require(msg.value &gt; 0);
-        require(msg.sender != owner &amp;&amp; saleIsOn == true);
+        require(msg.value > 0);
+        require(msg.sender != owner && saleIsOn == true);
         uint256 amount=msg.value.mul(buyRate);
         uint256 percentile=amount.add(getEthRate(msg.value).mul(amount).div(100));
         balanceOf[msg.sender]=balanceOf[msg.sender].add(percentile);  // calculates the amount and makes the transaction
@@ -300,23 +300,23 @@ contract TokenERC223 is Owned{
     function destroyContract() public onlyOwner {
        selfdestruct(owner);
        transferOwnership(0x0);
-       emit LogContractDestroyed(this, &quot;Contract has been destroyed&quot;);
+       emit LogContractDestroyed(this, "Contract has been destroyed");
    }
    
     function getEthRate(uint256 _value) private pure returns(uint256){
-       require(_value &gt; 0 );
-       if(_value &lt; 3 ether)
+       require(_value > 0 );
+       if(_value < 3 ether)
          return 10;
-       if(_value &gt;= 3 ether &amp;&amp; _value &lt; 5 ether )
+       if(_value >= 3 ether && _value < 5 ether )
          return 20;
-       if(_value &gt;= 5 ether &amp;&amp; _value &lt; 24 ether )
+       if(_value >= 5 ether && _value < 24 ether )
          return 30;
-       if(_value &gt;= 24 ether )
+       if(_value >= 24 ether )
          return 40;
    }
    
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] =allowance[_from][msg.sender].sub(_value);
         transfer(_to, _value);
         return true;

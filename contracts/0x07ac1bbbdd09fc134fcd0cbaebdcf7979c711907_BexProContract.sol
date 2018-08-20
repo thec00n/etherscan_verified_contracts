@@ -98,20 +98,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -146,14 +146,14 @@ contract TokenERC20Standart is TokenERC20, Pausable{
         uint256 public totalSupply; 
             
         // create array with all blances    
-        mapping(address =&gt; uint) public balances;
-        mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+        mapping(address => uint) public balances;
+        mapping(address => mapping(address => uint)) public allowed;
         
         /**
         * @dev Fix for the ERC20 short address attack.
         */
         modifier onlyPayloadSize(uint size) {
-            require(msg.data.length &gt;= size + 4) ;
+            require(msg.data.length >= size + 4) ;
             _;
         }
             
@@ -192,17 +192,17 @@ contract TokenERC20Standart is TokenERC20, Pausable{
         }
         
         function _transfer(address _from, address _to, uint _value) internal {
-            assert(_value &gt; 0);
+            assert(_value > 0);
             require (_to != 0x0);                              
-            require (balances[_from] &gt;= _value);               
-            require (balances[_to] + _value &gt;= balances[_to]);
+            require (balances[_from] >= _value);               
+            require (balances[_to] + _value >= balances[_to]);
             balances[_from] = balances[_from].sub(_value);                        
             balances[_to] = balances[_to].add(_value);                           
             emit Transfer(_from, _to, _value);
         }
 
         function burn(uint256 _value) public returns (bool success) {
-            require(balances[msg.sender] &gt;= _value);                             // Check if the sender has enough
+            require(balances[msg.sender] >= _value);                             // Check if the sender has enough
             balances[msg.sender] =  balances[msg.sender].sub(_value);            // Subtract from the sender
             totalSupply = totalSupply.sub(_value);                              // Updates totalSupply
             emit Burn(msg.sender, _value);
@@ -210,10 +210,10 @@ contract TokenERC20Standart is TokenERC20, Pausable{
         }
 
         function burnFrom(address _from, uint256 _value) public returns (bool success) {
-            require(balances[_from] &gt;= _value);                                      // Check if the targeted balance is enough
-            require(_value &lt;= allowed[_from][msg.sender]);                          // Check allowance
+            require(balances[_from] >= _value);                                      // Check if the targeted balance is enough
+            require(_value <= allowed[_from][msg.sender]);                          // Check allowance
             balances[_from] =  balances[_from].sub(_value);                         // Subtract from the targeted balance
-            allowed[_from][msg.sender] =   allowed[_from][msg.sender].sub(_value);   // Subtract from the sender&#39;s allowance
+            allowed[_from][msg.sender] =   allowed[_from][msg.sender].sub(_value);   // Subtract from the sender's allowance
             totalSupply = totalSupply.sub(_value);                                      // Update totalSupply
             emit Burn(_from, _value);
             return true;
@@ -226,15 +226,15 @@ contract TokenERC20Standart is TokenERC20, Pausable{
 contract BexProContract is TokenERC20Standart{
     
     using SafeMath for uint256;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     constructor () public {
-        name = &quot;BEXPRO&quot;;                        // Set the name for display purposes
+        name = "BEXPRO";                        // Set the name for display purposes
         decimals = 18;                          // Amount of decimals for display purposes
-        symbol = &quot;BPRO&quot;;                        // Set the symbol for display purposes
+        symbol = "BPRO";                        // Set the symbol for display purposes
         owner = msg.sender;                     // Set contract owner
-        version = &quot;1&quot;;                         // Set contract version 
+        version = "1";                         // Set contract version 
         totalSupply = 502000000 * 10 ** uint256(decimals);
         balances[msg.sender] = totalSupply; // Give the creator all initial tokens
         emit Transfer(address(0x0), msg.sender, totalSupply);
@@ -242,8 +242,8 @@ contract BexProContract is TokenERC20Standart{
     
      function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balances[_from] &gt;= _value);               
-        require (balances[_to] + _value &gt;= balances[_to]); 
+        require (balances[_from] >= _value);               
+        require (balances[_to] + _value >= balances[_to]); 
         require(!frozenAccount[_from]);                     
         require(!frozenAccount[_to]);                       
         balances[_from] = balances[_from].sub(_value);                        

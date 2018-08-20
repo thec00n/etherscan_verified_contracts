@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,7 +74,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -182,8 +182,8 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract ElecTokenSmartContract is StandardToken, Ownable {
-    string  public  constant name = &quot;ELECTRIFY TOKEN&quot;;
-    string  public  constant symbol = &quot;ELEC&quot;;
+    string  public  constant name = "ELECTRIFY TOKEN";
+    string  public  constant symbol = "ELEC";
     uint8    public  constant decimals = 18;
 
     uint    public  saleStartTime;
@@ -194,7 +194,7 @@ contract ElecTokenSmartContract is StandardToken, Ownable {
     address public adminAddress;
 
     modifier onlyWhenTransferEnabled() {
-        if( now &lt;= (saleEndTime + lockedDays * 1 days) &amp;&amp; now &gt;= saleStartTime ) {
+        if( now <= (saleEndTime + lockedDays * 1 days) && now >= saleStartTime ) {
             require( msg.sender == tokenSaleContract || msg.sender == adminAddress );
         }
         _;
@@ -273,20 +273,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -294,7 +294,7 @@ library SafeMath {
 
 contract ElecApprover {
     ElecWhitelist public list;
-    mapping(address=&gt;uint)    public participated;
+    mapping(address=>uint)    public participated;
 
     uint                      public saleStartTime;
     uint                      public firstRoundTime;
@@ -314,8 +314,8 @@ contract ElecApprover {
         saleEndTime = _saleEndTime;
 
         require( list != ElecWhitelist(0x0) );
-        require( saleStartTime &lt; firstRoundTime );
-        require(  firstRoundTime &lt; saleEndTime );
+        require( saleStartTime < firstRoundTime );
+        require(  firstRoundTime < saleEndTime );
     }
 
     // this is a seperate function so user could query it before crowdsale starts
@@ -323,7 +323,7 @@ contract ElecApprover {
         uint  cap= list.getCap( contributor );
         uint higherCap = cap;
 
-        if ( now &gt; firstRoundTime ) {
+        if ( now > firstRoundTime ) {
             higherCap = cap.mul(xtime);
         }
         return higherCap;
@@ -331,27 +331,27 @@ contract ElecApprover {
 
 
     function eligible( address contributor, uint amountInWei ) public constant returns(uint) {
-        if( now &lt; saleStartTime ) return 0;
-        if( now &gt;= saleEndTime ) return 0;
+        if( now < saleStartTime ) return 0;
+        if( now >= saleEndTime ) return 0;
 
         uint cap = list.getCap( contributor );
 
         if( cap == 0 ) return 0;
 
         uint higherCap = cap;
-        if ( now &gt; firstRoundTime ) {
+        if ( now > firstRoundTime ) {
             higherCap = cap.mul(xtime);
         }
 
         uint remainedCap = higherCap.sub(participated[ contributor ]);
-        if( remainedCap &gt; amountInWei ) return amountInWei;
+        if( remainedCap > amountInWei ) return amountInWei;
               else return remainedCap;
 
     }
 
     function eligibleTestAndIncrement( address contributor, uint amountInWei ) internal returns(uint) {
         uint result = eligible( contributor, amountInWei );
-        if ( result &gt; 0) {
+        if ( result > 0) {
             participated[contributor] = participated[contributor].add( result );
         }
         return result;
@@ -372,11 +372,11 @@ contract ElecApprover {
 
 
     function saleEnded() public constant returns(bool) {
-        return now &gt; saleEndTime;
+        return now > saleEndTime;
     }
 
     function saleStarted() public constant returns(bool) {
-        return now &gt;= saleStartTime;
+        return now >= saleStartTime;
     }
 }
 
@@ -389,7 +389,7 @@ contract ElecWhitelist is Ownable {
     // after kyc registration ends, we change it to the actual value with setUsersCap
     /// Currenty we set the cap to 1 ETH and the owner is able to change it in the future by call function: setUsersCap
     uint public communityusersCap = (10**18);
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function ElecWhitelist() public {}
 
@@ -405,7 +405,7 @@ contract ElecWhitelist is Ownable {
     // an optimization in case of network congestion
     function listAddresses( address[] _users, uint[] _cap ) public onlyOwner {
         require(_users.length == _cap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _cap[i] );
         }
     }
@@ -435,7 +435,7 @@ contract ElecSaleSmartContract is ElecApprover{
     uint                constant toWei = (10**18);
     uint                public minCap = toWei.div(2);
 
-    mapping(bytes32=&gt;uint) public proxyPurchases;
+    mapping(bytes32=>uint) public proxyPurchases;
 
     function ElecSaleSmartContract( address _admin,
     address _multiSigWallet,
@@ -488,7 +488,7 @@ contract ElecSaleSmartContract is ElecApprover{
 
     event Buy( address _buyer, uint _tokens, uint _payedWei );
     function buy( address recipient ) public payable returns(uint){
-        require( tx.gasprice &lt;= 50000000000 wei );
+        require( tx.gasprice <= 50000000000 wei );
 
         require( ! haltSale );
         require( saleStarted() );
@@ -497,17 +497,17 @@ contract ElecSaleSmartContract is ElecApprover{
         // check min buy at least 0.5 ETH;
         uint weiContributedCap = contributedInternalCap(recipient);
 
-        if (weiContributedCap == 0 ) require( msg.value &gt;= minCap);
+        if (weiContributedCap == 0 ) require( msg.value >= minCap);
 
 
 
         uint weiPayment = eligibleTestAndIncrement( recipient, msg.value );
 
-        require( weiPayment &gt; 0 );
+        require( weiPayment > 0 );
 
 
         // send to msg.sender, not to recipient
-        if( msg.value &gt; weiPayment ) {
+        if( msg.value > weiPayment ) {
             msg.sender.transfer( msg.value.sub( weiPayment ) );
         }
 
@@ -546,7 +546,7 @@ contract ElecSaleSmartContract is ElecApprover{
         require( msg.sender == admin );
         require( saleEnded() );
 
-        if( this.balance &gt; 0 ) {
+        if( this.balance > 0 ) {
             sendETHToMultiSig( this.balance );
         }
 

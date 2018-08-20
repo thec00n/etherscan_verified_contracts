@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -79,13 +79,13 @@ contract PaparazzoToken is ERC20Interface, Owned, SafeMath {
     uint public bonusEnds;
     uint public endDate;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function PaparazzoToken() public {
-        symbol = &quot;PPZ&quot;;
-        name = &quot;Paparazzo Token&quot;;
+        symbol = "PPZ";
+        name = "Paparazzo Token";
         decimals = 18;
         bonusEnds = now + 2 weeks;
         endDate = now + 10 weeks;
@@ -147,9 +147,9 @@ contract PaparazzoToken is ERC20Interface, Owned, SafeMath {
     // 1000 Paparazzo Tokens per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) {
+        if (now <= bonusEnds) {
             tokens = msg.value * 10000;
         } else {
             tokens = msg.value * 1000;

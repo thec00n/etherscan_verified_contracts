@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract Pausable is ERC20Basic {
    * @dev modifier to allow actions only when the contract IS not paused
    */
   modifier whenNotPaused() {
-    require(now &lt; startPreICO || now &gt; endICOStage4);
+    require(now < startPreICO || now > endICOStage4);
     _;
   }
 
@@ -88,7 +88,7 @@ contract Pausable is ERC20Basic {
 contract BasicToken is Pausable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is Pausable {
   */
   function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -126,7 +126,7 @@ contract BasicToken is Pausable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -136,8 +136,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -186,7 +186,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -235,8 +235,8 @@ contract Ownable {
 contract Gelios is Ownable, StandardToken {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Gelios Token&quot;;
-    string public constant symbol = &quot;GLS&quot;;
+    string public constant name = "Gelios Token";
+    string public constant symbol = "GLS";
     uint256 public constant decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 16808824 ether;
@@ -253,13 +253,13 @@ contract Gelios is Ownable, StandardToken {
     }
 
     function () payable public {
-        require(now &gt;= startPreICO);
+        require(now >= startPreICO);
         buyTokens(msg.value);
     }
 
     function buyTokensBonus(address bonusAddress) public payable {
-        require(now &gt;= startPreICO &amp;&amp; now &lt; endICOStage4);
-        if (bonusAddress != 0x0 &amp;&amp; msg.sender != bonusAddress) {
+        require(now >= startPreICO && now < endICOStage4);
+        if (bonusAddress != 0x0 && msg.sender != bonusAddress) {
             uint bonus = msg.value.mul(tokenRate).div(100).mul(5);
             if(buyTokens(msg.value)) {
                sendTokensRef(bonusAddress, bonus);
@@ -306,7 +306,7 @@ contract Gelios is Ownable, StandardToken {
         // ico 4 - 0% cap or 15 days 5000000
         
         uint tokens = amount.mul(tokenRate);
-        if(now &gt;= startPreICO &amp;&amp; now &lt; endPreICO &amp;&amp; stats.preICO &lt; preIcoCap) {
+        if(now >= startPreICO && now < endPreICO && stats.preICO < preIcoCap) {
             tokens = tokens.add(tokens.div(100).mul(30));
             tokens = safeSend(tokens, preIcoCap.sub(stats.preICO));
             stats.preICO = stats.preICO.add(tokens);
@@ -314,8 +314,8 @@ contract Gelios is Ownable, StandardToken {
             burnAmount = burnAmount.sub(tokens);
             
             return true;
-        } else if (now &gt;= startICOStage1 &amp;&amp; now &lt; endICOStage1 &amp;&amp; stats.ICOStage1 &lt; icoStage1Cap) {
-            if (burnAmount &gt; 0 &amp;&amp; burnStage[0]) {
+        } else if (now >= startICOStage1 && now < endICOStage1 && stats.ICOStage1 < icoStage1Cap) {
+            if (burnAmount > 0 && burnStage[0]) {
                 burnTokens();
                 burnStage[0] = false;
                 burnAmount = icoStage1Cap;
@@ -328,8 +328,8 @@ contract Gelios is Ownable, StandardToken {
             burnAmount = burnAmount.sub(tokens);
 
             return true;
-        } else if ( now &lt; endICOStage2 &amp;&amp; stats.ICOStage2 &lt; icoStage2Cap ) {
-            if (burnAmount &gt; 0 &amp;&amp; burnStage[1]) {
+        } else if ( now < endICOStage2 && stats.ICOStage2 < icoStage2Cap ) {
+            if (burnAmount > 0 && burnStage[1]) {
                 burnTokens();
                 burnStage[1] = false;
                 burnAmount = icoStage2Cap;
@@ -342,8 +342,8 @@ contract Gelios is Ownable, StandardToken {
             burnAmount = burnAmount.sub(tokens);
             
             return true;
-        } else if ( now &lt; endICOStage3 &amp;&amp; stats.ICOStage3 &lt; icoStage3Cap ) {
-            if (burnAmount &gt; 0 &amp;&amp; burnStage[2]) {
+        } else if ( now < endICOStage3 && stats.ICOStage3 < icoStage3Cap ) {
+            if (burnAmount > 0 && burnStage[2]) {
                 burnTokens();
                 burnStage[2] = false;
                 burnAmount = icoStage3Cap;
@@ -356,8 +356,8 @@ contract Gelios is Ownable, StandardToken {
             burnAmount = burnAmount.sub(tokens);
             
             return true;
-        } else if ( now &lt; endICOStage4 &amp;&amp; stats.ICOStage4 &lt; icoStage4Cap ) {
-            if (burnAmount &gt; 0 &amp;&amp; burnStage[3]) {
+        } else if ( now < endICOStage4 && stats.ICOStage4 < icoStage4Cap ) {
+            if (burnAmount > 0 && burnStage[3]) {
                 burnTokens();
                 burnStage[3] = false;
                 burnAmount = icoStage4Cap;
@@ -369,7 +369,7 @@ contract Gelios is Ownable, StandardToken {
             burnAmount = burnAmount.sub(tokens);
             
             return true;
-        } else if (now &gt; endICOStage4 &amp;&amp; burnAmount &gt; 0) {
+        } else if (now > endICOStage4 && burnAmount > 0) {
             burnTokens();
             msg.sender.transfer(msg.value);
             burnAmount = 0;
@@ -391,7 +391,7 @@ contract Gelios is Ownable, StandardToken {
      * Check last token on sale
      **/
     function safeSend(uint tokens, uint stageLimmit) private returns(uint) {
-        if (stageLimmit &lt; tokens) {
+        if (stageLimmit < tokens) {
             uint toReturn = tokenRate.mul(tokens.sub(stageLimmit));
             sendTokens(msg.sender, stageLimmit);
             msg.sender.transfer(toReturn);

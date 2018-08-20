@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -16,7 +16,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -52,7 +52,7 @@ library Roles {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -129,7 +129,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -147,8 +147,8 @@ contract RBACWithAdmin is RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
-  string public constant ROLE_PAUSE_ADMIN = &quot;pauseAdmin&quot;;
+  string public constant ROLE_ADMIN = "admin";
+  string public constant ROLE_PAUSE_ADMIN = "pauseAdmin";
 
   /**
    * @dev modifier to scope access to admins
@@ -208,7 +208,7 @@ contract Necropolis is RBACWithAdmin {
     }
     
     Dragon[] public dragons;
-    mapping(uint256 =&gt; uint256) public dragonIndex;
+    mapping(uint256 => uint256) public dragonIndex;
     
     constructor() public {
         Dragon memory _dragon = Dragon({
@@ -225,7 +225,7 @@ contract Necropolis is RBACWithAdmin {
         uint256 _deathReason
     ) 
         external 
-        onlyRole(&quot;MainContract&quot;) 
+        onlyRole("MainContract") 
     {
         Dragon memory _dragon = Dragon({
             lastDragonOwner: _lastDragonOwner,

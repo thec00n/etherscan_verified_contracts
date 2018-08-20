@@ -33,7 +33,7 @@ contract MariamTimeLock {
 
   function withdraw() onlyBy(owner) public {
     lockedAmount = tokenAddress.balanceOf(this);
-    require((startTime + lockTime) &lt; now);
+    require((startTime + lockTime) < now);
     tokenAddress.transfer(owner, lockedAmount);
   }
 }

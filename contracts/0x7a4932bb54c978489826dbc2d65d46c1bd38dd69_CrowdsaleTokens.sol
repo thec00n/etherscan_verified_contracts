@@ -23,7 +23,7 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal constant returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
 
     return a - b;
   }
@@ -31,7 +31,7 @@ contract SafeMath {
   function safeAdd(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
 
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
 
     return c;
   }
@@ -71,7 +71,7 @@ contract CrowdsaleTokens is SafeMath {
   uint public tokenCap; // maximum number of tokens to be issued
 
   modifier crowdsalePeriod() {
-    require(block.number &gt;= crowdsaleStarts &amp;&amp; block.number &lt; crowdsaleEnds);
+    require(block.number >= crowdsaleStarts && block.number < crowdsaleEnds);
 
     _;
   }
@@ -98,7 +98,7 @@ contract CrowdsaleTokens is SafeMath {
   }
 
   // Allows anyone to buy tokens in exchange of ether.
-  // Only executed after &quot;crowdsaleStarts&quot; and before &quot;crowdsaleEnds&quot;
+  // Only executed after "crowdsaleStarts" and before "crowdsaleEnds"
   function buy() public payable crowdsalePeriod {
     // Calculate price
     uint price = calculatePrice(block.number);
@@ -108,13 +108,13 @@ contract CrowdsaleTokens is SafeMath {
   }
 
   // Manages the purchase of the tokens for a given price.
-  // The maximum amount of tokens that can be purchased is given by the &quot;remaining&quot; function
+  // The maximum amount of tokens that can be purchased is given by the "remaining" function
   function processPurchase(uint price) private {
     // number of the tokens to be purchased  for the given price and ether sent
     uint numTokens = safeDiv(safeMul(msg.value, price), 1 ether);
 
     // token cap
-    assert(numTokens &lt;= remaining() &amp;&amp; remaining() &gt; 0);
+    assert(numTokens <= remaining() && remaining() > 0);
 
     // update variables
     totalCollected = safeAdd(totalCollected, msg.value);

@@ -41,13 +41,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -220,9 +220,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract EstateCoin is MintableToken {
     
-    string public constant name = &quot;EstateCoin&quot;;
+    string public constant name = "EstateCoin";
     
-    string public constant symbol = &quot;ESC&quot;;
+    string public constant symbol = "ESC";
     
     uint32 public constant decimals = 2;
     
@@ -276,7 +276,7 @@ contract Crowdsale {
     rate = 250; //250ESC = 1ETH
     wallet = msg.sender;
 
-    require(startTime &lt;= now);
+    require(startTime <= now);
     require(wallet != 0x0);
   }
 
@@ -310,19 +310,19 @@ contract Crowdsale {
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
     
     uint256 bonus = 0;
-    if (now &lt; 1507204800) {
+    if (now < 1507204800) {
         bonus = tokens.div(20); //5%
-    } else if (now &lt; 1507291200) {
+    } else if (now < 1507291200) {
         bonus = tokens.div(25); //4%
-    } else if (now &lt; 1507377600) {
+    } else if (now < 1507377600) {
         bonus = tokens.div(33); //3%
-    } else if (now &lt; 1507464000) {
+    } else if (now < 1507464000) {
         bonus = tokens.div(50); //2%
-    } else if (now &lt; 1507550400) {
+    } else if (now < 1507550400) {
         bonus = tokens.div(100); //1%
     }
     
-    if (bonus &gt; 0) {
+    if (bonus > 0) {
         token.mint(beneficiary, bonus);
         TokenBonus(msg.sender, beneficiary, bonus);
     }
@@ -338,14 +338,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
 }
@@ -366,14 +366,14 @@ contract CappedCrowdsale is Crowdsale {
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -390,7 +390,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -445,7 +445,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -470,7 +470,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -486,7 +486,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     goal = 2950000000000000000000; // Minimal goal is 2950ETH = 4400ETH - 1450ETH(funding on Waves Platform)
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -513,7 +513,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -521,7 +521,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 /**
  * @title ESCCrowdsale
  * CappedCrowdsale - sets a max boundary for raised funds
- * RefundableCrowdsale - set a min goal to be reached and returns funds if it&#39;s not met
+ * RefundableCrowdsale - set a min goal to be reached and returns funds if it's not met
  */
 contract ESCCrowdsale is CappedCrowdsale, RefundableCrowdsale {
 

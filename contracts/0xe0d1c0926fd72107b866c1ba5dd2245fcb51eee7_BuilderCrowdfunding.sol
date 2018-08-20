@@ -114,8 +114,8 @@ contract Token is Object, ERC20 {
     uint8 public decimals;
     
     /* Token approvement system */
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowances;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowances;
  
     /**
      * @dev Get balance of plain address
@@ -151,7 +151,7 @@ contract Token is Object, ERC20 {
      * @return `true` when transfer done
      */
     function transfer(address _to, uint _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to]        += _value;
             Transfer(msg.sender, _to, _value);
@@ -170,9 +170,9 @@ contract Token is Object, ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         var avail = allowances[_from][msg.sender]
-                  &gt; balances[_from] ? balances[_from]
+                  > balances[_from] ? balances[_from]
                                     : allowances[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[_from][msg.sender] -= _value;
             balances[_from] -= _value;
             balances[_to]   += _value;
@@ -214,7 +214,7 @@ contract TokenEmission is Token {
      */
     function emission(uint _value) onlyOwner {
         // Overflow check
-        if (_value + totalSupply &lt; totalSupply) throw;
+        if (_value + totalSupply < totalSupply) throw;
 
         totalSupply     += _value;
         balances[owner] += _value;
@@ -226,7 +226,7 @@ contract TokenEmission is Token {
      * @notice sender balance will be decreased by `_value`
      */
     function burn(uint _value) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             totalSupply      -= _value;
         }
@@ -294,7 +294,7 @@ contract Crowdfunding is Object, Recipient {
     /**
      * @dev Distribution of donations
      */
-    mapping(address =&gt; uint256) public donations;
+    mapping(address => uint256) public donations;
 
     /**
      * @dev Total funded value
@@ -343,7 +343,7 @@ contract Crowdfunding is Object, Recipient {
      * @return Bounty value
      */
     function bountyValue(uint256 _value, uint256 _block) constant returns (uint256) {
-        if (_block &lt; config.startBlock || _block &gt; config.stopBlock)
+        if (_block < config.startBlock || _block > config.stopBlock)
             return 0;
 
         var R = config.startRatio;
@@ -358,9 +358,9 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfunding running checks
      */
     modifier onlyRunning {
-        bool isRunning = totalFunded  &lt; config.maxValue
-                      &amp;&amp; block.number &gt; config.startBlock
-                      &amp;&amp; block.number &lt; config.stopBlock;
+        bool isRunning = totalFunded  < config.maxValue
+                      && block.number > config.startBlock
+                      && block.number < config.stopBlock;
         if (!isRunning) throw;
         _;
     }
@@ -369,8 +369,8 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfundung failure checks
      */
     modifier onlyFailure {
-        bool isFailure = totalFunded  &lt; config.minValue
-                      &amp;&amp; block.number &gt; config.stopBlock;
+        bool isFailure = totalFunded  < config.minValue
+                      && block.number > config.stopBlock;
         if (!isFailure) throw;
         _;
     }
@@ -379,8 +379,8 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfunding success checks
      */
     modifier onlySuccess {
-        bool isSuccess = totalFunded &gt;= config.minValue
-                      &amp;&amp; block.number &gt; config.stopBlock;
+        bool isSuccess = totalFunded >= config.minValue
+                      && block.number > config.stopBlock;
         if (!isSuccess) throw;
         _;
     }
@@ -469,10 +469,10 @@ library CreatorCrowdfunding {
     { return new Crowdfunding(_fund, _bounty, _reference, _startBlock, _stopBlock, _minValue, _maxValue, _scale, _startRatio, _reductionStep, _reductionValue); }
 
     function version() constant returns (string)
-    { return &quot;v0.6.3&quot;; }
+    { return "v0.6.3"; }
 
     function abi() constant returns (string)
-    { return &#39;[{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setOwner&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;withdraw&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;hammer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;refund&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;config&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;startBlock&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;stopBlock&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;minValue&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;maxValue&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;bountyScale&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;startRatio&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;reductionStep&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;reductionValue&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;destroy&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_block&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;bountyValue&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_token&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_extraData&quot;,&quot;type&quot;:&quot;bytes&quot;}],&quot;name&quot;:&quot;receiveApproval&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;bounty&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalFunded&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;fund&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;reference&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;donations&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_hammer&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setHammer&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_fund&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_bounty&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_reference&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_startBlock&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_stopBlock&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_minValue&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_maxValue&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_scale&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_startRatio&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_reductionStep&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_reductionValue&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:true,&quot;type&quot;:&quot;fallback&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;sender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;ReceivedEther&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;token&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;extraData&quot;,&quot;type&quot;:&quot;bytes&quot;}],&quot;name&quot;:&quot;ReceivedTokens&quot;,&quot;type&quot;:&quot;event&quot;}]&#39;; }
+    { return '[{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"setOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"hammer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"refund","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"config","outputs":[{"name":"startBlock","type":"uint256"},{"name":"stopBlock","type":"uint256"},{"name":"minValue","type":"uint256"},{"name":"maxValue","type":"uint256"},{"name":"bountyScale","type":"uint256"},{"name":"startRatio","type":"uint256"},{"name":"reductionStep","type":"uint256"},{"name":"reductionValue","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destroy","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_value","type":"uint256"},{"name":"_block","type":"uint256"}],"name":"bountyValue","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_value","type":"uint256"},{"name":"_token","type":"address"},{"name":"_extraData","type":"bytes"}],"name":"receiveApproval","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"bounty","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalFunded","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"fund","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"reference","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"donations","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_hammer","type":"address"}],"name":"setHammer","outputs":[],"payable":false,"type":"function"},{"inputs":[{"name":"_fund","type":"address"},{"name":"_bounty","type":"address"},{"name":"_reference","type":"string"},{"name":"_startBlock","type":"uint256"},{"name":"_stopBlock","type":"uint256"},{"name":"_minValue","type":"uint256"},{"name":"_maxValue","type":"uint256"},{"name":"_scale","type":"uint256"},{"name":"_startRatio","type":"uint256"},{"name":"_reductionStep","type":"uint256"},{"name":"_reductionValue","type":"uint256"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":true,"name":"amount","type":"uint256"}],"name":"ReceivedEther","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"value","type":"uint256"},{"indexed":true,"name":"token","type":"address"},{"indexed":false,"name":"extraData","type":"bytes"}],"name":"ReceivedTokens","type":"event"}]'; }
 }
 
 /**
@@ -485,7 +485,7 @@ contract Builder is Object {
     event Builded(address indexed client, address indexed instance);
  
     /* Addresses builded contracts at sender */
-    mapping(address =&gt; address[]) public getContractsOf;
+    mapping(address => address[]) public getContractsOf;
  
     /**
      * @dev Get last address
@@ -549,18 +549,18 @@ contract BuilderCrowdfunding is Builder {
         uint256 _reductionValue,
         address _client
     ) payable returns (address) {
-        if (buildingCostWei &gt; 0 &amp;&amp; beneficiary != 0) {
+        if (buildingCostWei > 0 && beneficiary != 0) {
             // Too low value
-            if (msg.value &lt; buildingCostWei) throw;
+            if (msg.value < buildingCostWei) throw;
             // Beneficiary send
             if (!beneficiary.send(buildingCostWei)) throw;
             // Refund
-            if (msg.value &gt; buildingCostWei) {
+            if (msg.value > buildingCostWei) {
                 if (!msg.sender.send(msg.value - buildingCostWei)) throw;
             }
         } else {
             // Refund all
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 if (!msg.sender.send(msg.value)) throw;
             }
         }

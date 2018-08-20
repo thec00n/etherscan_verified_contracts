@@ -64,7 +64,7 @@ contract Pausable is Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="9efafbeafbdeffe6f7f1f3e4fbf0b0fdf1">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="9efafbeafbdeffe6f7f1f3e4fbf0b0fdf1">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
 	// Required methods
 	function totalSupply() public view returns (uint total);
@@ -121,20 +121,20 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 	enum ItemRarity {Common, Uncommon, Rare, Superior, Epic, Legendary, Unique}
 
 	function name() public view returns (string){
-		return &quot;Cryptoverse Preorder Bonus Assets&quot;;
+		return "Cryptoverse Preorder Bonus Assets";
 	}
 
 	function symbol() public view returns (string){
-		return &quot;CPBA&quot;;
+		return "CPBA";
 	}
 
 	Item[] public items;
 
-	mapping(uint =&gt; address) public itemIndexToOwner;
+	mapping(uint => address) public itemIndexToOwner;
 
-	mapping(address =&gt; uint) public ownershipTokenCount;
+	mapping(address => uint) public ownershipTokenCount;
 
-	mapping(uint =&gt; address) public itemIndexToApproved;
+	mapping(uint => address) public itemIndexToApproved;
 
 	function reclaimToken(ERC20 token) external onlyOwner {
 		uint256 balance = token.balanceOf(this);
@@ -179,7 +179,7 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 			uint totalItems = totalSupply();
 			uint resultIndex = 0;
 
-			for (uint itemId = 0; itemId &lt; totalItems; itemId++) {
+			for (uint itemId = 0; itemId < totalItems; itemId++) {
 				if (itemIndexToOwner[itemId] == owner) {
 					ownerTokens[resultIndex] = itemId;
 					resultIndex++;
@@ -200,7 +200,7 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 			uint totalItems = totalSupply();
 			uint k = 0;
 
-			for (uint itemId = 0; itemId &lt; totalItems; itemId++) {
+			for (uint itemId = 0; itemId < totalItems; itemId++) {
 				if (itemIndexToOwner[itemId] == owner) {
 					Item item = items[itemId];
 					ownerTokens[k++] = itemId;
@@ -234,19 +234,19 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 	ERC721Metadata public erc721Metadata;
 
 	bytes4 constant InterfaceSignature_ERC165 =
-	bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+	bytes4(keccak256('supportsInterface(bytes4)'));
 
 	bytes4 constant InterfaceSignature_ERC721 =
-	bytes4(keccak256(&#39;name()&#39;)) ^
-	bytes4(keccak256(&#39;symbol()&#39;)) ^
-	bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-	bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-	bytes4(keccak256(&#39;ownerOf(uint)&#39;)) ^
-	bytes4(keccak256(&#39;approve(address,uint)&#39;)) ^
-	bytes4(keccak256(&#39;transfer(address,uint)&#39;)) ^
-	bytes4(keccak256(&#39;transferFrom(address,address,uint)&#39;)) ^
-	bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-	bytes4(keccak256(&#39;tokenMetadata(uint,string)&#39;));
+	bytes4(keccak256('name()')) ^
+	bytes4(keccak256('symbol()')) ^
+	bytes4(keccak256('totalSupply()')) ^
+	bytes4(keccak256('balanceOf(address)')) ^
+	bytes4(keccak256('ownerOf(uint)')) ^
+	bytes4(keccak256('approve(address,uint)')) ^
+	bytes4(keccak256('transfer(address,uint)')) ^
+	bytes4(keccak256('transferFrom(address,address,uint)')) ^
+	bytes4(keccak256('tokensOfOwner(address)')) ^
+	bytes4(keccak256('tokenMetadata(uint,string)'));
 
 	function supportsInterface(bytes4 contractID) external view returns (bool)
 	{
@@ -304,12 +304,12 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 		require(owner != address(0));
 	}
 
-	/// @dev Adapted from memcpy() by @arachnid (Nick Johnson &lt;<span class="__cf_email__" data-cfemail="d0b1a2b1b3b8beb9b490bebfa4b4bfa4febeb5a4">[email&#160;protected]</span>&gt;)
+	/// @dev Adapted from memcpy() by @arachnid (Nick Johnson <<span class="__cf_email__" data-cfemail="d0b1a2b1b3b8beb9b490bebfa4b4bfa4febeb5a4">[email protected]</span>>)
 	///  This method is licenced under the Apache License.
 	///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
 	function _memcpy(uint _dest, uint _src, uint _len) private pure {
 		// Copy word-length chunks while possible
-		for (; _len &gt;= 32; _len -= 32) {
+		for (; _len >= 32; _len -= 32) {
 			assembly {
 				mstore(_dest, mload(_src))
 			}
@@ -326,7 +326,7 @@ contract CryptoversePreorderBonusAssets is Pausable, ERC721 {
 		}
 	}
 
-	/// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<span class="__cf_email__" data-cfemail="dbbaa9bab8b3b5b2bf9bb5b4afbfb4aff5b5beaf">[email&#160;protected]</span>&gt;)
+	/// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<span class="__cf_email__" data-cfemail="dbbaa9bab8b3b5b2bf9bb5b4afbfb4aff5b5beaf">[email protected]</span>>)
 	///  This method is licenced under the Apache License.
 	///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
 	function _toString(bytes32[4] _rawBytes, uint _stringLength) private pure returns (string) {
@@ -374,9 +374,9 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 
 	uint public contributorsCompleteCount;
 
-	mapping(address =&gt; uint) public contributorBalance;
-	mapping(address =&gt; bool) public contributorComplete;
-	mapping(address =&gt; uint) public contributorWhiteListTime;
+	mapping(address => uint) public contributorBalance;
+	mapping(address => bool) public contributorComplete;
+	mapping(address => uint) public contributorWhiteListTime;
 
 	uint public constant hardCap = 50000 ether;
 
@@ -446,11 +446,11 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 
 		uint weiAmount = msg.value;
 
-		require(weiAmount &gt;= minInvest);
+		require(weiAmount >= minInvest);
 
 		weiRaised += weiAmount;
 
-		require(weiRaised &lt;= hardCap);
+		require(weiRaised <= hardCap);
 
 		emit Purchase(contributor, weiAmount);
 
@@ -460,9 +460,9 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			contributorWhiteListTime[contributor] = now;
 		} else {
 			require(!contributorComplete[contributor]);
-			require(weiAmount &gt;= contributorBalance[contributor] * 99);
+			require(weiAmount >= contributorBalance[contributor] * 99);
 
-			bool hasBonus = (now - contributorWhiteListTime[contributor]) &lt; 72 hours;
+			bool hasBonus = (now - contributorWhiteListTime[contributor]) < 72 hours;
 
 			contributorBalance[contributor] += weiAmount;
 			sendTokens(contributorBalance[contributor], contributor, hasBonus);
@@ -474,13 +474,13 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 
 	function sendTokens(uint balance, address contributor, bool hasBonus) private {
 
-		if (balance &lt; 40 ether) {
+		if (balance < 40 ether) {
 			createMechBTC(balance, contributor);
 			createSaiLimitedEdition(balance, contributor);
 			createVRCBox(ItemModel.Kilo, balance, contributor);
 			createVCXVault(balance, contributor);
 
-		} else if (balance &lt; 100 ether) {
+		} else if (balance < 100 ether) {
 			createMechBTC(balance, contributor);
 			createMechVRC(balance, contributor);
 			createSaiLimitedEdition(balance, contributor);
@@ -488,7 +488,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			createVRCBox(ItemModel.Mega, hasBonus ? (balance * 105 / 100) : balance, contributor);
 			createVCXVault(balance, contributor);
 
-		} else if (balance &lt; 500 ether) {
+		} else if (balance < 500 ether) {
 			createMechBTC(balance, contributor);
 			createMechVRC(balance, contributor);
 			createMechETH(balance, contributor);
@@ -497,7 +497,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			createVRCBox(ItemModel.Giga, hasBonus ? (balance * 110 / 100) : balance, contributor);
 			createVCXVault(balance, contributor);
 
-		} else if (balance &lt; 1000 ether) {
+		} else if (balance < 1000 ether) {
 
 			createMechBTC(balance, contributor);
 			createMechVRC(balance, contributor);
@@ -507,7 +507,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			createVRCBox(ItemModel.Tera, hasBonus ? (balance * 115 / 100) : balance, contributor);
 			createVCXVault(balance, contributor);
 
-		} else if (balance &lt; 5000 ether) {
+		} else if (balance < 5000 ether) {
 
 			createMechBTC(balance, contributor);
 			createMechVRC(balance, contributor);
@@ -518,7 +518,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			createVRCBox(ItemModel.Peta, hasBonus ? (balance * 120 / 100) : balance, contributor);
 			createVCXVault(balance, contributor);
 
-		} else if (balance &gt;= 5000 ether) {
+		} else if (balance >= 5000 ether) {
 
 			createMechBTC(balance, contributor);
 			createMechVRC(balance, contributor);
@@ -543,7 +543,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 	function setVRC(address _vrc, address _vrcWallet, uint _vrcCount) public onlyOwner {
 		require(_vrc != address(0));
 		require(_vrcWallet != address(0));
-		require(_vrcCount &gt; 0);
+		require(_vrcCount > 0);
 
 		vrc = ERC20(_vrc);
 		vrcWallet = _vrcWallet;
@@ -553,7 +553,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 	function setVCX(address _vcx, address _vcxWallet, uint _vcxCount) public onlyOwner {
 		require(_vcx != address(0));
 		require(_vcxWallet != address(0));
-		require(_vcxCount &gt; 0);
+		require(_vcxCount > 0);
 
 		vcx = ERC20(_vcx);
 		vcxWallet = _vcxWallet;
@@ -570,15 +570,15 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 			uint totalItems = totalSupply();
 			uint n = 0;
 
-			for (uint itemId = 0; itemId &lt; totalItems; itemId++) {
-				if (itemIndexToOwner[itemId] == contributor &amp;&amp; isBoxItemId(itemId)) {
+			for (uint itemId = 0; itemId < totalItems; itemId++) {
+				if (itemIndexToOwner[itemId] == contributor && isBoxItemId(itemId)) {
 					_boxes[n++] = itemId;
 				}
 			}
 
 			boxes = new uint[](n);
 
-			for (uint i = 0; i &lt; n; i++) {
+			for (uint i = 0; i < n; i++) {
 				boxes[i] = _boxes[i];
 			}
 			return boxes;
@@ -594,7 +594,7 @@ contract CryptoversePreorder is CryptoversePreorderBonusAssets {
 	}
 
 	function openBoxes(uint[] itemIds) public {
-		for (uint i = 0; i &lt; itemIds.length; i++) {
+		for (uint i = 0; i < itemIds.length; i++) {
 			uint itemId = itemIds[i];
 			Item storage item = items[itemId];
 			require(isBox(item));

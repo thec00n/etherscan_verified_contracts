@@ -6,13 +6,13 @@ pragma solidity ^0.4.18;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,16 +62,16 @@ contract BlocksquareToken is ERC20Token, owned {
     using SafeMath for uint256;
 
     /* Public variables */
-    string public name = &quot;BlocksquareToken&quot;;
-    string public symbol = &quot;BST&quot;;
+    string public name = "BlocksquareToken";
+    string public symbol = "BST";
     uint8 public decimals = 18;
     bool public tokenFrozen;
 
     /* Private variables */
     uint256 supply;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-    mapping (address =&gt; bool) allowedToMint;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
+    mapping (address => bool) allowedToMint;
 
     /* Events */
     event TokenFrozen(bool _frozen, string _reason);
@@ -92,7 +92,7 @@ contract BlocksquareToken is ERC20Token, owned {
     function _transfer(address _from, address _to, uint256 _amount) private {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         balances[_to] = balances[_to].add(_amount);
         balances[_from] = balances[_from].sub(_amount);
         Transfer(_from, _to, _amount);
@@ -101,7 +101,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Transfer token
     *
-    * Send &#39;_amount&#39; tokens to &#39;_to&#39; from your address.
+    * Send '_amount' tokens to '_to' from your address.
     *
     * @param _to Address of recipient.
     * @param _amount Amount to send.
@@ -116,7 +116,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Set allowance
     *
-    * Allows &#39;_spender&#39; to spend &#39;_amount&#39; tokens from your address
+    * Allows '_spender' to spend '_amount' tokens from your address
     *
     * @param _spender Address of spender.
     * @param _amount Max amount allowed to spend.
@@ -131,7 +131,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     *Transfer token from
     *
-    * Send &#39;_amount&#39; token from address &#39;_from&#39; to address &#39;_to&#39;
+    * Send '_amount' token from address '_from' to address '_to'
     *
     * @param _from Address of sender.
     * @param _to Address of recipient.
@@ -139,7 +139,7 @@ contract BlocksquareToken is ERC20Token, owned {
     * @return Whether the transfer was successful or not.
     **/
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool _success) {
-        require(_amount &lt;= allowances[_from][msg.sender]);
+        require(_amount <= allowances[_from][msg.sender]);
         require(!tokenFrozen);
         _transfer(_from, _to, _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
@@ -156,8 +156,8 @@ contract BlocksquareToken is ERC20Token, owned {
     **/
     function mintTokens(address _atAddress, uint256 _amount) public {
         require(allowedToMint[msg.sender]);
-        require(balances[_atAddress].add(_amount) &gt; balances[_atAddress]);
-        require((supply.add(_amount)) &lt;= 100000000 * 10**18);
+        require(balances[_atAddress].add(_amount) > balances[_atAddress]);
+        require((supply.add(_amount)) <= 100000000 * 10**18);
         supply = supply.add(_amount);
         balances[_atAddress] = balances[_atAddress].add(_amount);
         Mint(_atAddress, _amount);
@@ -167,7 +167,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Change freeze
     *
-    * Changes status of frozen because of &#39;_reason&#39;
+    * Changes status of frozen because of '_reason'
     *
     * @param _reason Reason for freezing or unfreezing token
     **/
@@ -190,7 +190,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Get allowance
     *
-    * @return Return amount allowed to spend from &#39;_owner&#39; by &#39;_spender&#39;
+    * @return Return amount allowed to spend from '_owner' by '_spender'
     **/
     function allowance(address _owner, address _spender) public constant returns (uint256 _remaining) {
         return allowances[_owner][_spender];
@@ -208,7 +208,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Balance of address
     *
-    * Check balance of &#39;_owner&#39;
+    * Check balance of '_owner'
     *
     * @param _owner Address
     * @return Amount of token in possession
@@ -220,7 +220,7 @@ contract BlocksquareToken is ERC20Token, owned {
     /**
     * Address allowed to mint
     *
-    * Checks if &#39;_address&#39; is allowed to mint
+    * Checks if '_address' is allowed to mint
     *
     * @param _address Address
     * @return Allowance to mint

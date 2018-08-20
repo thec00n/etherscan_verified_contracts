@@ -42,7 +42,7 @@ contract STARCrowdsale {
     Token public starToken;
 
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     modifier atStage(Stages _stage) {
         if (stage != _stage) {
@@ -78,22 +78,22 @@ contract STARCrowdsale {
             
             uint256 supply = starToken.totalSupply();
             
-            if (supply &lt;= 3000000 * 10**8) {
+            if (supply <= 3000000 * 10**8) {
 
                 rate = rateAngel;
             }
             
-            else if (supply &gt; 3000000 * 10**8) {
+            else if (supply > 3000000 * 10**8) {
 
                 rate = rateA;
             }
             
-            else if (supply &gt; 9000000 * 10**8) {
+            else if (supply > 9000000 * 10**8) {
 
                 rate = rateB;
             }
             
-            else if (supply &gt; 23400000 * 10**8) {
+            else if (supply > 23400000 * 10**8) {
 
                 rate = rateC;
             }
@@ -131,7 +131,7 @@ contract STARCrowdsale {
     function () payable atStage(Stages.InProgress) {
 
             
-        if (msg.value &lt; minAcceptedAmount) {
+        if (msg.value < minAcceptedAmount) {
             throw;
         }
         
@@ -159,7 +159,7 @@ contract STARCrowdsale {
 
         raised += received;
 
-        if (starToken.totalSupply() &gt;= maxSupply) {
+        if (starToken.totalSupply() >= maxSupply) {
             stage = Stages.Ended;
         }
     }

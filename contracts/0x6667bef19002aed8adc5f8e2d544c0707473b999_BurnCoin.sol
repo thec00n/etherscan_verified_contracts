@@ -105,21 +105,21 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
  
@@ -190,9 +190,9 @@ contract BurnCoin is Ownable, Destructible, Contactable, MintableToken {
 
     uint256 constant maxavailable = 10000000000000000000000;
 
-    string public name = &quot;BurnCoin&quot;;
+    string public name = "BurnCoin";
 
-    string public symbol = &quot;BRN&quot;;
+    string public symbol = "BRN";
     uint public decimals = 18;
     uint public ownerstake = 5001000000000000000000;
     address public owner;
@@ -210,7 +210,7 @@ contract BurnCoin is Ownable, Destructible, Contactable, MintableToken {
       startBlock = block.number;
       endBlock = startBlock + 10000000;
         
-      require(endBlock &gt;= startBlock);
+      require(endBlock >= startBlock);
         
       rate = 1;
       wallet = msg.sender;
@@ -218,7 +218,7 @@ contract BurnCoin is Ownable, Destructible, Contactable, MintableToken {
       owner = msg.sender;
       totalSupply = maxavailable;
       balances[owner] = maxavailable;
-      contactInformation = &quot;BurnCoin (BRN) : Burn Fiat. Make Coin.&quot;;
+      contactInformation = "BurnCoin (BRN) : Burn Fiat. Make Coin.";
   }
 
   function unlock() onlyOwner 
@@ -273,20 +273,20 @@ contract BurnCoin is Ownable, Destructible, Contactable, MintableToken {
 
     function validPurchase() internal constant returns (bool) {
         uint256 current = block.number;
-        bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+        bool withinPeriod = current >= startBlock && current <= endBlock;
         bool nonZeroPurchase = msg.value != 0;
-        bool nonMaxPurchase = msg.value &lt;= 1000 ether;
-        bool maxavailableNotReached = balances[owner] &gt; ownerstake;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; nonMaxPurchase &amp;&amp; maxavailableNotReached;
+        bool nonMaxPurchase = msg.value <= 1000 ether;
+        bool maxavailableNotReached = balances[owner] > ownerstake;
+        return withinPeriod && nonZeroPurchase && nonMaxPurchase && maxavailableNotReached;
     }
 
     function hasEnded() public constant returns (bool) {
-        return block.number &gt; endBlock;
+        return block.number > endBlock;
     }
 
    function burn(uint _value) onlyOwner 
    {
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);

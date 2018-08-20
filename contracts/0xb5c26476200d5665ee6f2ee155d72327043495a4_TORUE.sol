@@ -14,12 +14,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract ReceivingContract {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         
         tkn.sig = bytes4(u);
     }
@@ -98,16 +98,16 @@ contract Owned {
 contract TORUE is ERC223Interface,ERC20Interface,Owned {
     using SafeMath for uint;
     
-    string public name = &quot;torue&quot;;
-    string public symbol = &quot;TRE&quot;;
+    string public name = "torue";
+    string public symbol = "TRE";
     uint8 public decimals = 6;
     uint256 public totalSupply = 100e8 * 1e6;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) public lockedAccounts;
-    mapping (address =&gt; bool) public frozenAccounts;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (address =&gt; bool) public salvageableAddresses;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) public lockedAccounts;
+    mapping (address => bool) public frozenAccounts;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (address => bool) public salvageableAddresses;
     
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
@@ -178,27 +178,27 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     }
 
     function isUnlocked(address _addr) private view returns (bool){
-        return(now &gt; lockedAccounts[_addr] &amp;&amp; frozenAccounts[_addr] == false);
+        return(now > lockedAccounts[_addr] && frozenAccounts[_addr] == false);
     }
     
     function isUnlockedBoth(address _addr) private view returns (bool){
-        return(now &gt; lockedAccounts[msg.sender] &amp;&amp; now &gt; lockedAccounts[_addr] &amp;&amp; frozenAccounts[msg.sender] == false &amp;&amp; frozenAccounts[_addr] == false);
+        return(now > lockedAccounts[msg.sender] && now > lockedAccounts[_addr] && frozenAccounts[msg.sender] == false && frozenAccounts[_addr] == false);
     }
     
     function lockAccounts(address[] _addresses, uint256 _releaseTime) onlyOwner public {
-        require(_addresses.length &gt; 0);
+        require(_addresses.length > 0);
                 
-        for(uint j = 0; j &lt; _addresses.length; j++){
-            require(lockedAccounts[_addresses[j]] &lt; _releaseTime);
+        for(uint j = 0; j < _addresses.length; j++){
+            require(lockedAccounts[_addresses[j]] < _releaseTime);
             lockedAccounts[_addresses[j]] = _releaseTime;
             AccountLocked(_addresses[j], _releaseTime);
         }
     }
 
     function freezeAccounts(address[] _addresses, bool _value) onlyOwner public {
-        require(_addresses.length &gt; 0);
+        require(_addresses.length > 0);
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
+        for (uint j = 0; j < _addresses.length; j++) {
             require(_addresses[j] != 0x0);
             frozenAccounts[_addresses[j]] = _value;
             AccountFrozen(_addresses[j], _value);
@@ -216,9 +216,9 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     }
     
     function salvageTokens(address _addr,uint256 _amount) onlyOwner public isRunning returns(bool) {
-        require(_amount &gt; 0 &amp;&amp; balances[_addr] &gt;= _amount);
-        require(now &gt; lockedAccounts[msg.sender] &amp;&amp; now &gt; lockedAccounts[_addr]);
-        require(salvageableAddresses[_addr] == true &amp;&amp; salvageFinished == false);
+        require(_amount > 0 && balances[_addr] >= _amount);
+        require(now > lockedAccounts[msg.sender] && now > lockedAccounts[_addr]);
+        require(salvageableAddresses[_addr] == true && salvageFinished == false);
         balances[_addr] = balances[_addr].sub(_amount);
         balances[msg.sender] = balances[msg.sender].add(_amount);
         Transfer(_addr, msg.sender, _amount);
@@ -242,8 +242,8 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
         require(isUnlocked(_to));
         
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -263,8 +263,8 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
         require(isUnlocked(_to));
         
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -288,7 +288,7 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     function decreaseApproval(address _spender, uint _subtractedValue) public isRunning returns (bool) {
         require(compatible20);
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -313,8 +313,8 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     }
     
     function burn(uint256 _value) public isRunning {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -327,13 +327,13 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
         assembly {
             ln := extcodesize(_addr)
         }
-        return (ln &gt; 0);
+        return (ln > 0);
     }
 
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public isRunning returns (bool ok) {
         require(compatible223ex);
         require(isUnlockedBoth(_to));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         if (isContract(_to)) {
@@ -348,7 +348,7 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     function transfer(address _to, uint _value, bytes _data) public isRunning returns (bool ok) {
         require(compatible223);
         require(isUnlockedBoth(_to));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         if(isContract(_to)) {
@@ -362,7 +362,7 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     
     function transfer(address _to, uint _value) public isRunning returns (bool ok) {
         require(isUnlockedBoth(_to));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         if(isContract(_to)) {
@@ -395,12 +395,12 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     }
     
     function distributeTokens(address[] _addresses, uint256 _amount) onlyOwner public isRunning returns(bool) {
-        require(_addresses.length &gt; 0 &amp;&amp; isUnlocked(msg.sender));
+        require(_addresses.length > 0 && isUnlocked(msg.sender));
 
         uint256 totalAmount = _amount.mul(_addresses.length);
-        require(balances[msg.sender] &gt;= totalAmount);
+        require(balances[msg.sender] >= totalAmount);
 
-        for (uint j = 0; j &lt; _addresses.length; j++) {
+        for (uint j = 0; j < _addresses.length; j++) {
             require(isUnlocked(_addresses[j]));
             balances[_addresses[j]] = balances[_addresses[j]].add(_amount);
             Transfer(msg.sender, _addresses[j], _amount);
@@ -412,15 +412,15 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
     }
     
     function distributeTokens(address[] _addresses, uint256[] _amounts) onlyOwner public isRunning returns (bool) {
-        require(_addresses.length &gt; 0 &amp;&amp; _addresses.length == _amounts.length &amp;&amp; isUnlocked(msg.sender));
+        require(_addresses.length > 0 && _addresses.length == _amounts.length && isUnlocked(msg.sender));
         uint256 totalAmount = 0;
-        for(uint j = 0; j &lt; _addresses.length; j++){
-            require(_amounts[j] &gt; 0 &amp;&amp; _addresses[j] != 0x0 &amp;&amp; isUnlocked(_addresses[j]));
+        for(uint j = 0; j < _addresses.length; j++){
+            require(_amounts[j] > 0 && _addresses[j] != 0x0 && isUnlocked(_addresses[j]));
             totalAmount = totalAmount.add(_amounts[j]);
         }
-        require(balances[msg.sender] &gt;= totalAmount);
+        require(balances[msg.sender] >= totalAmount);
         
-        for (j = 0; j &lt; _addresses.length; j++) {
+        for (j = 0; j < _addresses.length; j++) {
             balances[_addresses[j]] = balances[_addresses[j]].add(_amounts[j]);
             Transfer(msg.sender, _addresses[j], _amounts[j]);
         }
@@ -434,7 +434,7 @@ contract TORUE is ERC223Interface,ERC20Interface,Owned {
         require(upgradable);
         require(upgradeAgent != 0);
         require(_value != 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         totalUpgraded = totalUpgraded.add(_value);

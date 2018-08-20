@@ -6,7 +6,7 @@ contract GeneMixerInterface {
     /// @dev simply a boolean to indicate this is the contract we expect to be
     function isGeneMixer() external pure returns (bool);
 
-    /// @dev given genes of cutie 1 &amp; 2, return a genetic combination - may have a random factor
+    /// @dev given genes of cutie 1 & 2, return a genetic combination - may have a random factor
     /// @param genes1 genes of mom
     /// @param genes2 genes of dad
     /// @return the genes that are supposed to be passed down the child
@@ -77,7 +77,7 @@ interface ERC721TokenReceiver {
     /// @param _from The sending address 
     /// @param _tokenId The NFT identifier which is being transfered
     /// @param data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     ///  unless throwing
     function onERC721Received(address _from, uint256 _tokenId, bytes data) external returns(bytes4);
 }
@@ -118,13 +118,13 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     /// @notice A descriptive name for a collection of NFTs in this contract
     function name() external pure returns (string _name) 
     {
-        return &quot;BlockchainCuties&quot;; 
+        return "BlockchainCuties"; 
     }
 
     /// @notice An abbreviated name for NFTs in this contract
     function symbol() external pure returns (string _symbol)
     {
-        return &quot;BC&quot;;
+        return "BC";
     }
     
     /// @notice Query if a contract implements an interface
@@ -137,7 +137,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     {
         return
             interfaceID == 0x6466353c || 
-            interfaceID == bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+            interfaceID == bytes4(keccak256('supportsInterface(bytes4)'));
     }
 
     event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
@@ -155,7 +155,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     ///  Reference: http://solidity.readthedocs.io/en/develop/miscellaneous.html
     struct Cutie
     {
-        // The Cutie&#39;s genetic code is in these 256-bits. Cutie&#39;s genes never change.
+        // The Cutie's genetic code is in these 256-bits. Cutie's genes never change.
         uint256 genes;
 
         // The timestamp from the block when this cutie was created.
@@ -165,7 +165,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         // again.
         uint40 cooldownEndTime;
 
-        // The cutie&#39;s parents ID is set to 0 for gen0 cuties.
+        // The cutie's parents ID is set to 0 for gen0 cuties.
         // Because of using 32-bit unsigned integers the limit is 4 billion cuties. 
         // Current Ethereum annual limit is about 500 million transactions.
         uint40 momId;
@@ -178,9 +178,9 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         // of being cutie mom or cutie dad.
         uint16 cooldownIndex;
 
-        // The &quot;generation number&quot; of the cutie. Cutioes minted by the contract
-        // for sale are called &quot;gen0&quot; with generation number of 0. All other cuties&#39; 
-        // generation number is the larger of their parents&#39; two generation
+        // The "generation number" of the cutie. Cutioes minted by the contract
+        // for sale are called "gen0" with generation number of 0. All other cuties' 
+        // generation number is the larger of their parents' two generation
         // numbers, plus one (i.e. max(mom.generation, dad.generation) + 1)
         uint16 generation;
 
@@ -196,21 +196,21 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     /// @dev A mapping from cutie IDs to the address that owns them. All cuties have
     ///  some valid owner address, even gen0 cuties are created with a non-zero owner.
-    mapping (uint40 =&gt; address) public cutieIndexToOwner;
+    mapping (uint40 => address) public cutieIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (address => uint256) ownershipTokenCount;
 
     /// @dev A mapping from CutieIDs to an address that has been approved to call
     ///  transferFrom(). A Cutie can have one approved address for transfer
     ///  at any time. A zero value means that there is no outstanding approval.
-    mapping (uint40 =&gt; address) public cutieIndexToApproved;
+    mapping (uint40 => address) public cutieIndexToApproved;
 
     /// @dev A mapping from CutieIDs to an address that has been approved to use
     ///  this Cutie for breeding via breedWith(). A Cutie can have one approved
     ///  address for breeding at any time. A zero value means that there is no outstanding approval.
-    mapping (uint40 =&gt; address) public sireAllowedToAddress;
+    mapping (uint40 => address) public sireAllowedToAddress;
 
 
     /// @dev The address of the Market contract used to sell cuties. This
@@ -227,7 +227,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     // Modifiers to check that inputs can be safely stored with a certain
     // number of bits.
     modifier canBeStoredIn40Bits(uint256 _value) {
-        require(_value &lt;= 0xFFFFFFFFFF);
+        require(_value <= 0xFFFFFFFFFF);
         _;
     }    
 
@@ -251,7 +251,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     /// @dev Checks if a given address is the current owner of a certain Cutie.
     /// @param _claimant the address we are validating against.
-    /// @param _cutieId cutie id, only valid when &gt; 0
+    /// @param _cutieId cutie id, only valid when > 0
     function _isOwner(address _claimant, uint40 _cutieId) internal view returns (bool)
     {
         return cutieIndexToOwner[_cutieId] == _claimant;
@@ -259,7 +259,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     /// @dev Checks if a given address currently has transferApproval for a certain Cutie.
     /// @param _claimant the address we are confirming the cutie is approved for.
-    /// @param _cutieId cutie id, only valid when &gt; 0
+    /// @param _cutieId cutie id, only valid when > 0
     function _approvedFor(address _claimant, uint40 _cutieId) internal view returns (bool)
     {
         return cutieIndexToApproved[_cutieId] == _claimant;
@@ -305,7 +305,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     /// @dev Required for ERC-721 compliance.
     function approve(address _to, uint256 _cutieId) external whenNotPaused canBeStoredIn40Bits(_cutieId)
     {
-        // Only cutie&#39;s owner can grant transfer approval.
+        // Only cutie's owner can grant transfer approval.
         require(_isOwner(msg.sender, uint40(_cutieId)));
 
         // Registering approval replaces any previous approval.
@@ -320,9 +320,9 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -346,7 +346,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;
+    ///  except this function just sets data to ""
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -399,7 +399,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     /// @notice Returns the nth Cutie assigned to an address, with n specified by the
     ///  _index argument.
     /// @param _owner The owner of the Cuties we are interested in.
-    /// @param _index The zero-based index of the cutie within the owner&#39;s list of cuties.
+    /// @param _index The zero-based index of the cutie within the owner's list of cuties.
     ///  Must be less than balanceOf(_owner).
     /// @dev This method must not be called by smart contract code. It will almost
     ///  certainly blow past the block gas limit once there are a large number of
@@ -411,7 +411,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         returns (uint256 cutieId)
     {
         uint40 count = 0;
-        for (uint40 i = 1; i &lt;= _totalSupply(); ++i) {
+        for (uint40 i = 1; i <= _totalSupply(); ++i) {
             if (cutieIndexToOwner[i] == _owner) {
                 if (count == _index) {
                     return i;
@@ -424,7 +424,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     }
 
     /// @notice Enumerate valid NFTs
-    /// @dev Throws if `_index` &gt;= `totalSupply()`.
+    /// @dev Throws if `_index` >= `totalSupply()`.
     /// @param _index A counter less than `totalSupply()`
     /// @return The token identifier for the `_index`th NFT,
     ///  (sort order not specified)
@@ -437,9 +437,9 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     ///  transferFrom() for all cuties, owned by owner.
     ///  Only one approved address is permitted for each account for transfer
     ///  at any time. A zero value means there is no outstanding approval.
-    mapping (address =&gt; address) public addressToApprovedAll;
+    mapping (address => address) public addressToApprovedAll;
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+    /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your asset.
     /// @dev Emits the ApprovalForAll event
     /// @param _operator Address to add to the set of authorized operators.
@@ -465,7 +465,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         external view canBeStoredIn40Bits(_tokenId) 
         returns (address)
     {
-        require(_tokenId &lt;= _totalSupply());
+        require(_tokenId <= _totalSupply());
 
         if (cutieIndexToApproved[uint40(_tokenId)] != address(0))
         {
@@ -491,8 +491,8 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     }
 
     /// @dev A lookup table that shows the cooldown duration after a successful
-    ///  breeding action, called &quot;breeding cooldown&quot;. The cooldown roughly doubles each time
-    /// a cutie is bred, so that owners don&#39;t breed the same cutie continuously. Maximum cooldown is seven days.
+    ///  breeding action, called "breeding cooldown". The cooldown roughly doubles each time
+    /// a cutie is bred, so that owners don't breed the same cutie continuously. Maximum cooldown is seven days.
     uint32[14] public cooldowns = [
         uint32(1 minutes),
         uint32(2 minutes),
@@ -522,7 +522,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     /// @param _momId The cutie ID of the mom of this cutie (zero for gen0)
     /// @param _dadId The cutie ID of the dad of this cutie (zero for gen0)
     /// @param _generation The generation number of this cutie, must be computed by caller.
-    /// @param _genes The cutie&#39;s genetic code.
+    /// @param _genes The cutie's genetic code.
     /// @param _owner The initial owner of this cutie, must be non-zero (except for the unCutie, ID 0)
     function _createCutie(
         uint40 _momId,
@@ -537,7 +537,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     {
         // New cutie starts with the same cooldown as parent gen/2
         uint16 cooldownIndex = uint16(_generation / 2);
-        if (cooldownIndex &gt; cooldowns.length) {
+        if (cooldownIndex > cooldowns.length) {
             cooldownIndex = uint16(cooldowns.length - 1);
         }
 
@@ -554,7 +554,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         uint256 newCutieId256 = cuties.push(_cutie) - 1;
 
         // Check if id can fit into 40 bits
-        require(newCutieId256 &lt;= 0xFFFFFFFFFF);
+        require(newCutieId256 <= 0xFFFFFFFFFF);
 
         uint40 newCutieId = uint40(newCutieId256);
 
@@ -613,7 +613,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     }
 
     /// @dev For transferring a cutie owned by this contract to the specified address.
-    ///  Used to rescue lost cuties. (There is no &quot;proper&quot; flow where this contract
+    ///  Used to rescue lost cuties. (There is no "proper" flow where this contract
     ///  should be the owner of any Cutie. This function exists for us to reassign
     ///  the ownership of Cuties that users may have accidentally sent to our address.)
     /// @param _cutieId - ID of cutie
@@ -669,13 +669,13 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         paused = true;
     }
 
-    string public metadataUrlPrefix = &quot;https://blockchaincuties.co/cutie/&quot;;
-    string public metadataUrlSuffix = &quot;.svg&quot;;
+    string public metadataUrlPrefix = "https://blockchaincuties.co/cutie/";
+    string public metadataUrlSuffix = ".svg";
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string infoUrl)
     {
         return 
@@ -690,9 +690,9 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     }
 
 
-    mapping(address =&gt; PluginInterface) public plugins;
+    mapping(address => PluginInterface) public plugins;
     PluginInterface[] public pluginsArray;
-    mapping(uint40 =&gt; address) public usedSignes;
+    mapping(uint40 => address) public usedSignes;
     uint40 public minSignId;
 
     event GenesChanged(uint40 indexed cutieId, uint256 oldValue, uint256 newValue);
@@ -724,7 +724,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         delete plugins[_address];
 
         uint256 kindex = 0;
-        while (kindex &lt; pluginsArray.length)
+        while (kindex < pluginsArray.length)
         {
             if (address(pluginsArray[kindex]) == _address)
             {
@@ -753,7 +753,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         // If _cutieId is 0, then cutie is not used on this feature.
         require(_cutieId == 0 || _isOwner(msg.sender, _cutieId));
         require(address(plugins[_pluginAddress]) != address(0));
-        if (_cutieId &gt; 0)
+        if (_cutieId > 0)
         {
             _approve(_cutieId, _pluginAddress);
         }
@@ -973,9 +973,9 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         require(address(plugins[_pluginAddress]) != address(0));    
 
         require (usedSignes[_signId] == address(0));
-        require (_signId &gt;= minSignId);
+        require (_signId >= minSignId);
         // value can also be zero for free calls
-        require (_value &lt;= msg.value);
+        require (_value <= msg.value);
 
         require (isValidSignature(_pluginAddress, _signId, _cutieId, _value, _parameter, _v, _r, _s));
         
@@ -998,7 +998,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         public
         onlyOperator
     {
-        require (_newMinSignId &gt; minSignId);
+        require (_newMinSignId > minSignId);
         minSignId = _newMinSignId;
         emit MinSignSet(minSignId);
     }
@@ -1059,7 +1059,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     ///  creates an auction for it.
     function createGen0Auction(uint256 _genes, uint128 startPrice, uint128 endPrice, uint40 duration) public onlyOperator
     {
-        require(gen0CutieCreatedCount &lt; gen0Limit);
+        require(gen0CutieCreatedCount < gen0Limit);
         uint40 cutieId = _createCutie(0, 0, 0, _genes, address(this), uint40(now));
         _approve(cutieId, saleMarket);
 
@@ -1076,7 +1076,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     function createPromoCutie(uint256 _genes, address _owner) public onlyOperator
     {
-        require(promoCutieCreatedCount &lt; promoLimit);
+        require(promoCutieCreatedCount < promoLimit);
         if (_owner == address(0)) {
              _owner = operatorAddress;
         }
@@ -1187,13 +1187,13 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     /// @dev Check if dad has authorized breeding with the mom. True if both dad
     ///  and mom have the same owner, or if the dad has given breeding permission to
-    ///  the mom&#39;s owner (via approveBreeding()).
+    ///  the mom's owner (via approveBreeding()).
     function _isBreedingPermitted(uint40 _dadId, uint40 _momId) internal view returns (bool)
     {
         address momOwner = cutieIndexToOwner[_momId];
         address dadOwner = cutieIndexToOwner[_dadId];
 
-        // Breeding is approved if they have same owner, or if the mom&#39;s owner was given
+        // Breeding is approved if they have same owner, or if the mom's owner was given
         // permission to breed with the dad.
         return (momOwner == dadOwner || sireAllowedToAddress[_dadId] == momOwner);
     }
@@ -1214,7 +1214,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     ///  current cooldown is finished (for dads)
     function _canBreed(Cutie _cutie) internal view returns (bool)
     {
-        return _cutie.cooldownEndTime &lt;= now;
+        return _cutie.cooldownEndTime <= now;
     }
 
     /// @notice Grants approval to another user to sire with one of your Cuties.
@@ -1239,7 +1239,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         emit CooldownEndTimeChanged(_cutieId, oldValue, _cutie.cooldownEndTime);
 
         // Increment the breeding count.
-        if (_cutie.cooldownIndex + 1 &lt; cooldowns.length) {
+        if (_cutie.cooldownIndex + 1 < cooldowns.length) {
             uint16 oldValue2 = _cutie.cooldownIndex;
             _cutie.cooldownIndex++;
             emit CooldownIndexChanged(_cutieId, oldValue2, _cutie.cooldownIndex);
@@ -1254,7 +1254,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         view
         returns (bool)
     {
-        require(_cutieId &gt; 0);
+        require(_cutieId > 0);
         Cutie storage cutie = cuties[_cutieId];
         return _canBreed(cutie);
     }
@@ -1270,12 +1270,12 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         view
         returns(bool)
     {
-        // A Cutie can&#39;t breed with itself.
+        // A Cutie can't breed with itself.
         if (_dadId == _momId) { 
             return false; 
         }
 
-        // Cuties can&#39;t breed with their parents.
+        // Cuties can't breed with their parents.
         if (_mom.momId == _dadId) {
             return false;
         }
@@ -1299,7 +1299,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
             return true;
         }
 
-        // Cuties can&#39;t breed with full or half siblings.
+        // Cuties can't breed with full or half siblings.
         if (_dad.momId == _mom.momId) {
             return false;
         }
@@ -1329,15 +1329,15 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         view
         returns(bool)
     {
-        require(_momId &gt; 0);
-        require(_dadId &gt; 0);
+        require(_momId > 0);
+        require(_dadId > 0);
         Cutie storage mom = cuties[_momId];
         Cutie storage dad = cuties[_dadId];
-        return _canPairMate(mom, _momId, dad, _dadId) &amp;&amp; _isBreedingPermitted(_dadId, _momId);
+        return _canPairMate(mom, _momId, dad, _dadId) && _isBreedingPermitted(_dadId, _momId);
     }
     
     /// @dev Internal check to see if a given dad and mom are a valid mating pair for
-    ///  breeding via market (this method doesn&#39;t check ownership and if mating is allowed).
+    ///  breeding via market (this method doesn't check ownership and if mating is allowed).
     function _canMateViaMarketplace(uint40 _momId, uint40 _dadId)
         internal
         view
@@ -1360,30 +1360,30 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
         // Neither dad nor mom can be on auction during
         // breeding.
-        // For mom: The caller of this function can&#39;t be the owner of the mom
+        // For mom: The caller of this function can't be the owner of the mom
         //   because the owner of a Cutie on auction is the auction house, and the
         //   auction house will never call breedWith().
         // For dad: Similarly, a dad on auction will be owned by the auction house
         //   and the act of transferring ownership will have cleared any outstanding
         //   breeding approval.
-        // Thus we don&#39;t need check if either cutie
+        // Thus we don't need check if either cutie
         // is on auction.
 
         // Check that mom and dad are both owned by caller, or that the dad
-        // has given breeding permission to caller (i.e. mom&#39;s owner).
+        // has given breeding permission to caller (i.e. mom's owner).
         // Will fail for _dadId = 0
         require(_isBreedingPermitted(_dadId, _momId));
 
         // Grab a reference to the potential mom
         Cutie storage mom = cuties[_momId];
 
-        // Make sure mom&#39;s cooldown isn&#39;t active, or in the middle of a breeding cooldown
+        // Make sure mom's cooldown isn't active, or in the middle of a breeding cooldown
         require(_canBreed(mom));
 
         // Grab a reference to the potential dad
         Cutie storage dad = cuties[_dadId];
 
-        // Make sure dad cooldown isn&#39;t active, or in the middle of a breeding cooldown
+        // Make sure dad cooldown isn't active, or in the middle of a breeding cooldown
         require(_canBreed(dad));
 
         // Test that these cuties are a valid mating pair.
@@ -1418,7 +1418,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
         // Determine the higher generation number of the two parents
         uint16 parentGen = mom.generation;
-        if (dad.generation &gt; mom.generation) {
+        if (dad.generation > mom.generation) {
             parentGen = dad.generation;
         }
 
@@ -1429,11 +1429,11 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
         address owner = cutieIndexToOwner[_momId];
         uint40 cutieId = _createCutie(_momId, _dadId, parentGen + 1, childGenes, owner, mom.cooldownEndTime);
 
-        // return the new cutie&#39;s ID
+        // return the new cutie's ID
         return cutieId;
     }
 
-    mapping(address =&gt; uint40) isTutorialPetUsed;
+    mapping(address => uint40) isTutorialPetUsed;
 
     /// @dev Completes a breeding tutorial cutie (non existing in blockchain)
     ///  with auction by bidding. Immediately breeds with dad on auction.
@@ -1462,7 +1462,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
         // Tutorial pet gen is 26
         uint16 parentGen = 26;
-        if (dad.generation &gt; parentGen) {
+        if (dad.generation > parentGen) {
             parentGen = dad.generation;
         }
 
@@ -1474,7 +1474,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
         isTutorialPetUsed[msg.sender] = cutieId;
 
-        // return the new cutie&#39;s ID
+        // return the new cutie's ID
         return cutieId;
     }
 
@@ -1519,7 +1519,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
         saleMarket.withdrawEthFromBalance();
         breedingMarket.withdrawEthFromBalance();
-        for (uint32 i = 0; i &lt; pluginsArray.length; ++i)        
+        for (uint32 i = 0; i < pluginsArray.length; ++i)        
         {
             pluginsArray[i].withdraw();
         }
@@ -1553,11 +1553,11 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     }
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<span class="__cf_email__" data-cfemail="f190839092999f9895b19f9e85959e85df9f9485">[email&#160;protected]</span>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<span class="__cf_email__" data-cfemail="f190839092999f9895b19f9e85959e85df9f9485">[email protected]</span>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -1565,11 +1565,11 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -1584,7 +1584,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -1611,7 +1611,7 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
     function memcpy(uint dest, uint src, uint len) private pure
     {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -1648,28 +1648,28 @@ contract BlockchainCutiesCore /*is ERC721, CutieCoreInterface*/
 
     function uintToString(uint256 a) internal pure returns (string result)
     {
-        string memory r = &quot;&quot;;
+        string memory r = "";
         do
         {
             uint b = a % 10;
             a /= 10;
 
-            string memory c = &quot;&quot;;
+            string memory c = "";
 
-            if (b == 0) c = &quot;0&quot;;
-            else if (b == 1) c = &quot;1&quot;;
-            else if (b == 2) c = &quot;2&quot;;
-            else if (b == 3) c = &quot;3&quot;;
-            else if (b == 4) c = &quot;4&quot;;
-            else if (b == 5) c = &quot;5&quot;;
-            else if (b == 6) c = &quot;6&quot;;
-            else if (b == 7) c = &quot;7&quot;;
-            else if (b == 8) c = &quot;8&quot;;
-            else if (b == 9) c = &quot;9&quot;;
+            if (b == 0) c = "0";
+            else if (b == 1) c = "1";
+            else if (b == 2) c = "2";
+            else if (b == 3) c = "3";
+            else if (b == 4) c = "4";
+            else if (b == 5) c = "5";
+            else if (b == 6) c = "6";
+            else if (b == 7) c = "7";
+            else if (b == 8) c = "8";
+            else if (b == 9) c = "9";
 
             r = concat(toSlice(c), toSlice(r));
         }
-        while (a &gt; 0);
+        while (a > 0);
         result = r;
     }
 }

@@ -2,7 +2,7 @@ contract Ownable {
 
   address public owner;
   
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   function Ownable() public {
     owner = msg.sender;

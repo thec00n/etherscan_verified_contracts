@@ -14,7 +14,7 @@ contract TheRichest {
     
     //pay to become theAddress with richest label
     function () public payable {
-        if (msg.value &gt; theBid) {
+        if (msg.value > theBid) {
             theAddress = msg.sender;
             theBid = msg.value;
         }

@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,8 +46,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -56,7 +56,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -75,7 +75,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,8 +129,8 @@ contract DOWToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;DOW&quot;;                        //name of the token
-string public symbol = &quot;dow&quot;;                      // symbol of the token
+string public name = "DOW";                        //name of the token
+string public symbol = "dow";                      // symbol of the token
 uint8 public decimals = 18;                        // decimals
 uint256 public initialSupply = 2000000000 * 10**18;  // total supply of dow Tokens  
 
@@ -243,7 +243,7 @@ contract DOWCrowdfund {
         _;
     }
      modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -264,7 +264,7 @@ contract DOWCrowdfund {
     }
 
     modifier isBetween() {
-        require(now &gt;= crowdfundStartTime &amp;&amp; now &lt;= crowdfundEndTime);
+        require(now >= crowdfundStartTime && now <= crowdfundEndTime);
         _;
     }
 
@@ -300,7 +300,7 @@ contract DOWCrowdfund {
     // function call after crowdFundEndTime.
     // It transfers the remaining tokens to remainingTokenHolder address
     function endCrowdfund() onlyFounders returns (bool) {
-        require(now &gt; crowdfundEndTime);
+        require(now > crowdfundEndTime);
         uint256 remainingToken = token.balanceOf(this);  // remaining tokens
 
         if (remainingToken != 0) {
@@ -323,7 +323,7 @@ contract DOWCrowdfund {
     payable 
     returns(bool) 
     {
-        if (totalWeiRaised.add(msg.value) &gt; MAX_FUNDING_GOAL) 
+        if (totalWeiRaised.add(msg.value) > MAX_FUNDING_GOAL) 
             revert();
 
             fundTransfer(msg.value);
@@ -349,16 +349,16 @@ contract DOWCrowdfund {
     // function provide the token
     function getNoOfTokens(uint256 investedAmount) internal returns (uint256) {
         
-        if ( now &gt; crowdfundStartTime + 3 weeks &amp;&amp; now &lt; crowdfundEndTime) {
+        if ( now > crowdfundStartTime + 3 weeks && now < crowdfundEndTime) {
             return  investedAmount.mul(weekFourthRate);
         }
-        if (now &gt; crowdfundStartTime + 2 weeks) {
+        if (now > crowdfundStartTime + 2 weeks) {
             return investedAmount.mul(weekThreeRate);
         }
-        if (now &gt; crowdfundStartTime + 1 weeks) {
+        if (now > crowdfundStartTime + 1 weeks) {
             return investedAmount.mul(weekTwoRate);
         }
-        if (now &gt; crowdfundStartTime) {
+        if (now > crowdfundStartTime) {
             return investedAmount.mul(weekOneRate);
         }
     }

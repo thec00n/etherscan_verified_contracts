@@ -13,7 +13,7 @@ contract P4PDonationSplitter {
     /** Payout function
     Splits the funds currently hold by the contract between the two receivers.
     No access restriction to this function needed.
-    The &quot;payable&quot; attribute is not needed, but doesn&#39;t harm -
+    The "payable" attribute is not needed, but doesn't harm -
     it allows to make additional donations in a single transaction.
     */
     function payout() payable public {

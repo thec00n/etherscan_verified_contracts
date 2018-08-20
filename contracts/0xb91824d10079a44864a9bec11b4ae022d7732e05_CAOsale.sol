@@ -2,13 +2,13 @@ pragma solidity ^0.4.8;
 
 //代币合约
  contract token {
-     string public name = &quot;cao token&quot;; //代币名称
-     string public symbol = &quot;CAO&quot;; //代币符号比如&#39;$&#39;
+     string public name = "cao token"; //代币名称
+     string public symbol = "CAO"; //代币符号比如'$'
      uint8 public decimals = 18;  //代币单位，展示的小数点后面多少个0,和以太币一样后面是是18个0
      uint256 public totalSupply; //代币总量,这里没有做限制,你也可以限定
 
     //地址对应的余额
-     mapping (address =&gt; uint256) public balanceOf;
+     mapping (address => uint256) public balanceOf;
 
      event Transfer(address indexed from, address indexed to, uint256 value);  //转帐通知事件
 
@@ -68,7 +68,7 @@ contract CAOsale is token {
     bool public crowdsaleClosed = false; //众筹关闭,默认不关闭
 
 
-    mapping(address =&gt; uint256) public balance; //保存众筹地址
+    mapping(address => uint256) public balance; //保存众筹地址
 
     //记录已接收的eth通知
     event GoalReached(address _beneficiary, uint _amountRaised);
@@ -128,15 +128,15 @@ contract CAOsale is token {
      * 判断是否已经过了众筹截止限期
      */
     modifier afterDeadline() {
-        // if (this == msg.sender &amp;&amp; now &gt;= deadline) _; 并且该方法只能被创建者调用,严格一点
-        if (now &gt;= deadline) _;
+        // if (this == msg.sender && now >= deadline) _; 并且该方法只能被创建者调用,严格一点
+        if (now >= deadline) _;
         }
 
     /**
      * 检测众筹目标是否完成
      */
     function checkGoalReached() afterDeadline public{
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             //达成众筹目标
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
@@ -158,7 +158,7 @@ contract CAOsale is token {
             //获取合约调用者已捐款余额
             uint amount = balance[msg.sender];
 
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 //返回合约发起者所有余额
                 //transfer是自带的方法,就是朝msg.sender转入数量的意思.类似方法还有 send
                 //文档具体地址:http://solidity.readthedocs.io/en/develop/types.html#members-of-addresses
@@ -169,7 +169,7 @@ contract CAOsale is token {
         }
 
         //如果达成众筹目标，并且合约调用者是受益人
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
 
             //将所有捐款从合约中给受益人
             beneficiary.transfer(amountRaised);

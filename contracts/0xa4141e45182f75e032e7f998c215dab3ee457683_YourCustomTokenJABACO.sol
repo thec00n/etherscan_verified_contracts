@@ -11,13 +11,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -26,12 +26,12 @@ library SafeMath {
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
 
-//it&#39;s contract name:
+//it's contract name:
 
 contract YourCustomTokenJABACO{ //ERC - 20 token contract
   using SafeMath for uint;
@@ -42,9 +42,9 @@ contract YourCustomTokenJABACO{ //ERC - 20 token contract
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 
-  // It&#39;s nessesary ERC-20 parameters
-  string public constant symbol = &quot;JABAS&quot;;
-  string public constant name = &quot;JABATOKENS&quot;;
+  // It's nessesary ERC-20 parameters
+  string public constant symbol = "JABAS";
+  string public constant name = "JABATOKENS";
   uint8 public constant decimals = 4;
   uint256 _totalSupply = 10000000000;
  
@@ -53,10 +53,10 @@ contract YourCustomTokenJABACO{ //ERC - 20 token contract
   address public owner;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function totalSupply() public view returns (uint256) { //standart ERC-20 function
     return _totalSupply;

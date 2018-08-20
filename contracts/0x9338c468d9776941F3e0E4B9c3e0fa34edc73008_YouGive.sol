@@ -7,13 +7,13 @@ contract SafeMath {
 
   function safeSub(uint256 x, uint256 y) internal pure returns (uint256) {
     uint256 z = x - y;
-    assert(z &lt;= x);
+    assert(z <= x);
     return z;
   }
 
   function safeAdd(uint256 x, uint256 y) internal pure returns (uint256) {
     uint256 z = x + y;
-    assert(z &gt;= x);
+    assert(z >= x);
     return z;
   }
 	
@@ -29,12 +29,12 @@ contract SafeMath {
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256) {
-    uint256 z = x &lt;= y ? x : y;
+    uint256 z = x <= y ? x : y;
     return z;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256) {
-    uint256 z = x &gt;= y ? x : y;
+    uint256 z = x >= y ? x : y;
     return z;
   }
 }
@@ -117,7 +117,7 @@ contract ContractReceiver {
  */
 contract StandardToken is ERC223, SafeMath{
 	
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string public name;
   string public symbol;
@@ -153,7 +153,7 @@ contract StandardToken is ERC223, SafeMath{
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
       
     if(isContract(_to)) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -199,12 +199,12 @@ contract StandardToken is ERC223, SafeMath{
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     emit Transfer(msg.sender, _to, _value, _data);
@@ -213,7 +213,7 @@ contract StandardToken is ERC223, SafeMath{
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver receiver = ContractReceiver(_to);

@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -65,7 +65,7 @@ contract DevWallet {
   address public wallet = 0xEA15Adb66DC92a4BbCcC8Bf32fd25E2e86a2A770;
 
   function withdraw() public {
-    require(now &gt;= date);
+    require(now >= date);
     wallet.transfer(this.balance);
   }
 
@@ -102,20 +102,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -143,7 +143,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -152,7 +152,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -196,7 +196,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -207,8 +207,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -271,7 +271,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -300,7 +300,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   function mint(address _to, uint256 _amount) public returns (bool) {
-    require(msg.sender == saleAgent &amp;&amp; !mintingFinished);
+    require(msg.sender == saleAgent && !mintingFinished);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -312,7 +312,7 @@ contract MintableToken is StandardToken, Ownable {
    * @return True if the operation was successful.
    */
   function finishMinting() public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     mintingFinished = true;
     MintFinished();
     return true;
@@ -324,9 +324,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract REPUToken is MintableToken {
 
-  string public constant name = &#39;REPU&#39;;
+  string public constant name = 'REPU';
 
-  string public constant symbol = &#39;REPU&#39;;
+  string public constant symbol = 'REPU';
 
   uint32 public constant decimals = 18;
 
@@ -359,7 +359,7 @@ contract CommonSale is PercentRateProvider {
   uint public invested;
 
   modifier isUnderHardcap() {
-    require(invested &lt; hardcap);
+    require(invested < hardcap);
     _;
   }
 
@@ -373,7 +373,7 @@ contract CommonSale is PercentRateProvider {
   }
 
   modifier minInvestLimited(uint value) {
-    require(value &gt;= minInvestedLimit);
+    require(value >= minInvestedLimit);
     _;
   }
 
@@ -434,10 +434,10 @@ contract CommonSale is PercentRateProvider {
   function devWithdraw() internal {
     uint received = devWallet.balance;
     uint limit = devWallet.limit();
-    if (received &lt; limit) {
+    if (received < limit) {
       uint shouldSend = limit.sub(received);
       uint value;
-      if (msg.value &lt; shouldSend) {
+      if (msg.value < shouldSend) {
         value = msg.value;
       } else {
         value = shouldSend;
@@ -447,7 +447,7 @@ contract CommonSale is PercentRateProvider {
   }
 
   function fallback() internal minInvestLimited(msg.value) returns(uint) {
-    require(now &gt;= start &amp;&amp; now &lt; endSaleDate());
+    require(now >= start && now < endSaleDate());
     if (devWallet != address(0)) {
       devWithdraw();
     }
@@ -499,8 +499,8 @@ contract ValueBonusFeature is PercentRateProvider {
 
   function getValueBonus(uint value) public view returns(uint) {
     uint bonus = 0;
-    for (uint i = 0; i &lt; valueBonuses.length; i++) {
-      if (value &gt;= valueBonuses[i].from) {
+    for (uint i = 0; i < valueBonuses.length; i++) {
+      if (value >= valueBonuses[i].from) {
         bonus = valueBonuses[i].bonus;
       } else {
         return bonus;
@@ -538,19 +538,19 @@ contract StagedCrowdsale is Ownable {
   }
 
   function addMilestone(uint period, uint bonus) public onlyOwner {
-    require(period &gt; 0);
+    require(period > 0);
     milestones.push(Milestone(period, bonus));
     totalPeriod = totalPeriod.add(period);
   }
 
   function removeMilestone(uint8 number) public onlyOwner {
-    require(number &lt; milestones.length);
+    require(number < milestones.length);
     Milestone storage milestone = milestones[number];
     totalPeriod = totalPeriod.sub(milestone.period);
 
     delete milestones[number];
 
-    for (uint i = number; i &lt; milestones.length - 1; i++) {
+    for (uint i = number; i < milestones.length - 1; i++) {
       milestones[i] = milestones[i+1];
     }
 
@@ -558,7 +558,7 @@ contract StagedCrowdsale is Ownable {
   }
 
   function changeMilestone(uint8 number, uint period, uint bonus) public onlyOwner {
-    require(number &lt; milestones.length);
+    require(number < milestones.length);
     Milestone storage milestone = milestones[number];
 
     totalPeriod = totalPeriod.sub(milestone.period);
@@ -570,13 +570,13 @@ contract StagedCrowdsale is Ownable {
   }
 
   function insertMilestone(uint8 numberAfter, uint period, uint bonus) public onlyOwner {
-    require(numberAfter &lt; milestones.length);
+    require(numberAfter < milestones.length);
 
     totalPeriod = totalPeriod.add(period);
 
     milestones.length++;
 
-    for (uint i = milestones.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = milestones.length - 2; i > numberAfter; i--) {
       milestones[i + 1] = milestones[i];
     }
 
@@ -584,8 +584,8 @@ contract StagedCrowdsale is Ownable {
   }
 
   function clearMilestones() public onlyOwner {
-    require(milestones.length &gt; 0);
-    for (uint i = 0; i &lt; milestones.length; i++) {
+    require(milestones.length > 0);
+    for (uint i = 0; i < milestones.length; i++) {
       delete milestones[i];
     }
     milestones.length -= milestones.length;
@@ -598,8 +598,8 @@ contract StagedCrowdsale is Ownable {
 
   function currentMilestone(uint start) public view returns(uint) {
     uint previousDate = start;
-    for (uint i = 0; i &lt; milestones.length; i++) {
-      if (now &gt;= previousDate &amp;&amp; now &lt; previousDate + milestones[i].period * 1 days) {
+    for (uint i = 0; i < milestones.length; i++) {
+      if (now >= previousDate && now < previousDate + milestones[i].period * 1 days) {
         return i;
       }
       previousDate = previousDate.add(milestones[i].period * 1 days);
@@ -666,7 +666,7 @@ contract Mainsale is StagedCrowdsale, REPUCommonSale {
     Milestone storage milestone = milestones[milestoneIndex];
     uint tokens = _invested.mul(price).div(1 ether);
     uint valueBonusTokens = getValueBonusTokens(tokens, _invested);
-    if (milestone.bonus &gt; 0) {
+    if (milestone.bonus > 0) {
       tokens = tokens.add(tokens.mul(milestone.bonus).div(percentRate));
     }
     return tokens.add(valueBonusTokens);
@@ -702,7 +702,7 @@ contract Presale is NextSaleAgentFeature, StagedCrowdsale, REPUCommonSale {
     Milestone storage milestone = milestones[milestoneIndex];
     uint tokens = _invested.mul(price).div(1 ether);
     uint valueBonusTokens = getValueBonusTokens(tokens, _invested);
-    if (milestone.bonus &gt; 0) {
+    if (milestone.bonus > 0) {
       tokens = tokens.add(tokens.mul(milestone.bonus).div(percentRate));
     }
     return tokens.add(valueBonusTokens);
@@ -744,7 +744,7 @@ contract ClosedRound is NextSaleAgentFeature, REPUCommonSale {
   }
 
   function fallback() internal returns(uint) {
-    require(msg.value &lt;= maxLimit);
+    require(msg.value <= maxLimit);
     return super.fallback();
   }
 
@@ -785,10 +785,10 @@ contract Configurator is Ownable {
     closedRound.setHardcap(1000000000000000000000);       // 1000 ETH
     closedRound.setMinInvestedLimit(1000000000000000000); // 1 ETH
     closedRound.setMaxLimit(250000000000000000000);       // 250 ETH
-    closedRound.addValueBonus(2000000000000000000, 2);    // &gt; 2 ETH =&gt; 2%
-    closedRound.addValueBonus(11000000000000000000, 5);   // &gt; 11 ETH =&gt; 5%
-    closedRound.addValueBonus(51000000000000000000, 7);   // &gt; 51 ETH =&gt; 7%
-    closedRound.addValueBonus(101000000000000000000, 10); // &gt; 101 ETH =&gt; 10%
+    closedRound.addValueBonus(2000000000000000000, 2);    // > 2 ETH => 2%
+    closedRound.addValueBonus(11000000000000000000, 5);   // > 11 ETH => 5%
+    closedRound.addValueBonus(51000000000000000000, 7);   // > 51 ETH => 7%
+    closedRound.addValueBonus(101000000000000000000, 10); // > 101 ETH => 10%
     closedRound.setToken(token);
     closedRound.setNextSaleAgent(presale);
     closedRound.setDevWallet(devWallet);
@@ -811,11 +811,11 @@ contract Configurator is Ownable {
 
 /*    presale.setHardcap(1800000000000000000000);           // 1800 ETH
     presale.setMinInvestedLimit(100000000000000000);      // 0.1 ETH
-    presale.addValueBonus(2000000000000000000, 200);      // &gt; 2 ETH =&gt; 2%
-    presale.addValueBonus(11000000000000000000, 500);     // &gt; 11 ETH =&gt; 5%
-    presale.addValueBonus(51000000000000000000, 700);     // &gt; 51 ETH =&gt; 7%
-    presale.addValueBonus(101000000000000000000, 1000);   // &gt; 101 ETH =&gt; 10%
-    presale.addValueBonus(301000000000000000000, 1500);   // &gt; 301 ETH =&gt; 15%
+    presale.addValueBonus(2000000000000000000, 200);      // > 2 ETH => 2%
+    presale.addValueBonus(11000000000000000000, 500);     // > 11 ETH => 5%
+    presale.addValueBonus(51000000000000000000, 700);     // > 51 ETH => 7%
+    presale.addValueBonus(101000000000000000000, 1000);   // > 101 ETH => 10%
+    presale.addValueBonus(301000000000000000000, 1500);   // > 301 ETH => 15%
 
     presale.setToken(token);
     presale.setNextSaleAgent(mainsale);
@@ -831,13 +831,13 @@ contract Configurator is Ownable {
     mainsale.addMilestone(9, 0);                              // 3937.0078 REPU / ETH
     mainsale.setHardcap(30000000000000000000000);             // 30 000 ETH
     mainsale.setMinInvestedLimit(30000000000000000);          // 0.03 ETH
-    mainsale.addValueBonus(2000000000000000000, 2000);        // &gt; 2 ETH =&gt; 2%
-    mainsale.addValueBonus(11000000000000000000, 3000);       // &gt; 11 ETH =&gt; 3%
-    mainsale.addValueBonus(51000000000000000000, 5000);       // &gt; 51 ETH =&gt; 5%
-    mainsale.addValueBonus(101000000000000000000, 7000);      // &gt; 101 ETH =&gt; 7%
-    mainsale.addValueBonus(301000000000000000000, 10000);     // &gt; 301 ETH =&gt; 10%
-    mainsale.addValueBonus(501000000000000000000, 15000);     // &gt; 501 ETH =&gt; 15%
-    mainsale.addValueBonus(1000000000000000000000, 20000);    // &gt; 1000 ETH =&gt; 20%
+    mainsale.addValueBonus(2000000000000000000, 2000);        // > 2 ETH => 2%
+    mainsale.addValueBonus(11000000000000000000, 3000);       // > 11 ETH => 3%
+    mainsale.addValueBonus(51000000000000000000, 5000);       // > 51 ETH => 5%
+    mainsale.addValueBonus(101000000000000000000, 7000);      // > 101 ETH => 7%
+    mainsale.addValueBonus(301000000000000000000, 10000);     // > 301 ETH => 10%
+    mainsale.addValueBonus(501000000000000000000, 15000);     // > 501 ETH => 15%
+    mainsale.addValueBonus(1000000000000000000000, 20000);    // > 1000 ETH => 20%
     mainsale.setFoundersTokensWallet(0x650F7fcBd397AB0C722D9EfBBd6Cd885d02e8f8F);
     mainsale.setFoundersTokensPercent(12500);
     mainsale.setAdvisorsTokensWallet(0x93b103Ecc79f6ef79038E041704a1083E9C4e1A6);

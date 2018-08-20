@@ -6,8 +6,8 @@ contract AmIOnTheFork {
     // Approximately between 2016-07-20 12:00:00 UTC and 2016-07-20 17:00:00 UTC.
     // After that the status will be locked in.
     function update() {
-        if (block.number &gt;= 1920000 &amp;&amp; block.number &lt;= 1921200) {
-            forked = darkDAO.balance &lt; 3600000 ether;
+        if (block.number >= 1920000 && block.number <= 1921200) {
+            forked = darkDAO.balance < 3600000 ether;
         }
     }
     function() {
@@ -20,9 +20,9 @@ contract ReplaySafeSplit {
 
     // Splits the funds into 2 addresses
     function split(address targetFork, address targetNoFork) returns(bool) {
-        if (amIOnTheFork.forked() &amp;&amp; targetFork.send(msg.value)) {
+        if (amIOnTheFork.forked() && targetFork.send(msg.value)) {
             return true;
-        } else if (!amIOnTheFork.forked() &amp;&amp; targetNoFork.send(msg.value)) {
+        } else if (!amIOnTheFork.forked() && targetNoFork.send(msg.value)) {
             return true;
         }
         throw;

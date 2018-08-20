@@ -55,13 +55,13 @@ contract MilestonePricing is PricingStrategy {
     preicoPrice = _preicoPrice;
 
     // Need to have tuples, length check
-    if(_milestones.length % 2 == 1 || _milestones.length &gt;= MAX_MILESTONE) {
+    if(_milestones.length % 2 == 1 || _milestones.length >= MAX_MILESTONE) {
       throw;
     }
 
     milestoneCount = _milestones.length / 2;
 
-    for(uint i=0; i&lt;_milestones.length/2; i++) {
+    for(uint i=0; i<_milestones.length/2; i++) {
       milestones[i].time = _milestones[i*2];
       milestones[i].price = _milestones[i*2+1];
     }
@@ -87,8 +87,8 @@ contract MilestonePricing is PricingStrategy {
     uint i;
     uint price;
 
-    for(i=0; i&lt;milestones.length; i++) {
-      if(now &lt; milestones[i].time) {
+    for(i=0; i<milestones.length; i++) {
+      if(now < milestones[i].time) {
         return milestones[i-1];
       }
     }

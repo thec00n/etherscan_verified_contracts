@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,8 +84,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   uint256 totalSupply_;
@@ -96,7 +96,7 @@ contract StandardToken is ERC20 {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -110,8 +110,8 @@ contract StandardToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,18 +135,18 @@ contract StandardToken is ERC20 {
       allowed[msg.sender][_spender] = _value;
       emit Approval(msg.sender, _spender, _value);
 
-      //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+      //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
       //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
       //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-      if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+      if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
       return true;
   }
 
 }
 
 contract DCVToken is StandardToken, Ownable {
-    string constant public name = &quot;Decentraverse Token&quot;;
-    string constant public symbol = &quot;DCVT&quot;;
+    string constant public name = "Decentraverse Token";
+    string constant public symbol = "DCVT";
     uint8 constant public decimals = 3;
     uint public totalSupply = 5 * 10 ** 7 * (10 ** uint(decimals));
 
@@ -156,7 +156,7 @@ contract DCVToken is StandardToken, Ownable {
 
     function distributeTokens(address[] addresses, uint256[] values) onlyOwner public returns (bool success) {
         require(addresses.length == values.length);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             transfer(addresses[i], values[i]);
         }
         return true;

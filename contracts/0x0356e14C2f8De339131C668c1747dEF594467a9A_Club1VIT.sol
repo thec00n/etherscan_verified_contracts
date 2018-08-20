@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -88,15 +88,15 @@ contract Club1VIT is Ownable {
 
 using SafeMath for uint256;
 
-  string public name = &quot;Club1 VIT&quot;;
-  string public symbol = &quot;VIT&quot;;
+  string public name = "Club1 VIT";
+  string public symbol = "VIT";
   uint8 public decimals = 0;
   uint256 public initialSupply  = 1;
   
   
   
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
    event Transfer(address indexed from, address indexed to);
 
@@ -140,7 +140,7 @@ using SafeMath for uint256;
     _value = 1;
     require(balances[msg.sender] == 1);
     require(_to == owner);
-    if (!owner.call(bytes4(keccak256(&quot;resetToken()&quot;)))) revert();
+    if (!owner.call(bytes4(keccak256("resetToken()")))) revert();
     
     balances[msg.sender] = 0;
     balances[_to] = 1;

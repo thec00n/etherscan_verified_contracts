@@ -21,12 +21,12 @@ contract admined {
 
 contract BitsaleERC20 {
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     // balanceOf[address] = 5;
-    string public standard = &quot;BitsaleERC20 v1.0&quot;;
-    string public name = &quot;BitsaleERC20&quot;;
-    string public symbol = &quot;BSL&quot;;
+    string public standard = "BitsaleERC20 v1.0";
+    string public name = "BitsaleERC20";
+    string public symbol = "BSL";
     uint8 public decimals = 8; 
     uint256 public totalSupply = 1200000000 ;
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -37,10 +37,10 @@ contract BitsaleERC20 {
     }
 
     function transfer(address _to, uint256 _value){
-        // if(balanceOf[msg.sender] &lt; _value) throw;
-        // if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        // if(balanceOf[msg.sender] < _value) throw;
+        // if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         //if(admin)
 
         balanceOf[msg.sender] -= _value;
@@ -54,12 +54,12 @@ contract BitsaleERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-        // if(balanceOf[_from] &lt; _value) throw;
-        require(balanceOf[_from] &gt;= _value);
-        // if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        // if(_value &gt; allowance[_from][msg.sender]) throw;
-        require(_value &lt; allowance[_from][msg.sender]);
+        // if(balanceOf[_from] < _value) throw;
+        require(balanceOf[_from] >= _value);
+        // if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        // if(_value > allowance[_from][msg.sender]) throw;
+        require(_value < allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -74,7 +74,7 @@ contract Bitsale is admined, BitsaleERC20{
     uint256 minimumBalanceForAccounts = 5 finney;
     uint256 public sellPrice;
     uint256 public buyPrice;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFund(address target, bool frozen);
 
@@ -97,15 +97,15 @@ contract Bitsale is admined, BitsaleERC20{
     }
 
     function transfer(address _to, uint256 _value){
-        if(msg.sender.balance &lt; minimumBalanceForAccounts)
+        if(msg.sender.balance < minimumBalanceForAccounts)
         sell((minimumBalanceForAccounts - msg.sender.balance)/sellPrice);
 
         // if(frozenAccount[msg.sender]) throw;
         require(!frozenAccount[msg.sender]);
-        // if(balanceOf[msg.sender] &lt; _value) throw;
-        require(balanceOf[msg.sender] &gt;= _value);
-        // if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        // if(balanceOf[msg.sender] < _value) throw;
+        require(balanceOf[msg.sender] >= _value);
+        // if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         //if(admin)
 
         balanceOf[msg.sender] -= _value;
@@ -116,12 +116,12 @@ contract Bitsale is admined, BitsaleERC20{
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
         // if(frozenAccount[_from]) throw;
         require(!frozenAccount[_from]);
-        // if(balanceOf[_from] &lt; _value) throw;
-        require(balanceOf[_from] &gt;= _value);
-        // if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        // if(_value &gt; allowance[_from][msg.sender]) throw;
-        require(_value &lt;= allowance[_from][msg.sender]);
+        // if(balanceOf[_from] < _value) throw;
+        require(balanceOf[_from] >= _value);
+        // if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        // if(_value > allowance[_from][msg.sender]) throw;
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -137,16 +137,16 @@ contract Bitsale is admined, BitsaleERC20{
 
     function buy() payable {
         uint256 amount = (msg.value/(1 ether)) / buyPrice;
-        // if(balanceOf[this] &lt; amount) throw;
-        require(balanceOf[this] &gt;= amount);
+        // if(balanceOf[this] < amount) throw;
+        require(balanceOf[this] >= amount);
         balanceOf[msg.sender] += amount;
         balanceOf[this] -= amount;
         Transfer(this, msg.sender, amount);
     }
 
     function sell(uint256 amount){
-        // if(balanceOf[msg.sender] &lt; amount) throw;
-        require(balanceOf[msg.sender] &gt;= amount);
+        // if(balanceOf[msg.sender] < amount) throw;
+        require(balanceOf[msg.sender] >= amount);
         balanceOf[this] +=amount;
         balanceOf[msg.sender] -= amount;
         if(!msg.sender.send(amount * sellPrice * 1 ether)){
@@ -167,11 +167,11 @@ contract Bitsale is admined, BitsaleERC20{
     function proofOfWork(uint nonce){
         bytes8 n = bytes8(sha3(nonce, currentChallenge));
 
-        // if(n &lt; bytes8(difficulty)) throw;
-        require(n &gt;= bytes8(difficulty));
+        // if(n < bytes8(difficulty)) throw;
+        require(n >= bytes8(difficulty));
         uint timeSinceLastBlock = (now - timeOfLastProof);
-        // if(timeSinceLastBlock &lt; 5 seconds) throw;
-        require(timeSinceLastBlock &gt;= 5 seconds);
+        // if(timeSinceLastBlock < 5 seconds) throw;
+        require(timeSinceLastBlock >= 5 seconds);
 
         balanceOf[msg.sender] += timeSinceLastBlock / 60 seconds;
         difficulty = difficulty * 10 minutes / timeOfLastProof + 1;

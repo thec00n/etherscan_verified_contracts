@@ -23,10 +23,10 @@ contract Private_Fund{
         _;
      }
      
-    modifier afterDeadline() { if (now &gt;= deadline) _;}
+    modifier afterDeadline() { if (now >= deadline) _;}
     
     function check_deadline() {
-      if (now &gt;= deadline) deadline_status = true;
+      if (now >= deadline) deadline_status = true;
       else                 deadline_status = false;
     }
     
@@ -50,8 +50,8 @@ contract Private_Fund{
     
     /* The function without name is the default function that is called whenever anyone sends funds to a contract */
     function () payable {
-        if(now &lt; start) throw;
-        if(now &gt;= deadline) throw;
+        if(now < start) throw;
+        if(now >= deadline) throw;
         
         uint amount = msg.value;
         funders[funders.length++] = Funder({addr: msg.sender, amount: amount});
@@ -67,7 +67,7 @@ contract Private_Fund{
             FundTransfer(beneficiary, amountRaised, false);
         } else {
             FundTransfer(0, 11, false);
-            for (uint i = 0; i &lt; funders.length; ++i) {
+            for (uint i = 0; i < funders.length; ++i) {
               funders[i].addr.send(funders[i].amount);  
               FundTransfer(funders[i].addr, funders[i].amount, false);
             }               

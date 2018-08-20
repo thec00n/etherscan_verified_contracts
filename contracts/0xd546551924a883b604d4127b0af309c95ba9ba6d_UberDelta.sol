@@ -24,21 +24,21 @@ contract SafeMath {
   }
   
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    require(b &gt; 0); //gentler than an assert.
+    require(b > 0); //gentler than an assert.
     c = a / b;
     return c;
   }
 
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract OwnerManager {
 
 contract Helper is OwnerManager {
 
-  mapping (address =&gt; bool) public isHelper;
+  mapping (address => bool) public isHelper;
 
   modifier onlyHelper {
     assert(isHelper[msg.sender] == true);
@@ -191,48 +191,48 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   bool public contractLocked;
   
   bytes32 signedTradeHash = keccak256(
-    &quot;address contractAddress&quot;,
-    &quot;address takerTokenAddress&quot;,
-    &quot;uint256 takerTokenAmount&quot;,
-    &quot;address makerTokenAddress&quot;,
-    &quot;uint256 makerTokenAmount&quot;,
-    &quot;uint256 tradeExpires&quot;,
-    &quot;uint256 salt&quot;,
-    &quot;address maker&quot;,
-    &quot;address restrictedTo&quot;
+    "address contractAddress",
+    "address takerTokenAddress",
+    "uint256 takerTokenAmount",
+    "address makerTokenAddress",
+    "uint256 makerTokenAmount",
+    "uint256 tradeExpires",
+    "uint256 salt",
+    "address maker",
+    "address restrictedTo"
   );
   
   bytes32 signedWithdrawHash = keccak256(
-    &quot;address contractAddress&quot;,
-    &quot;uint256 amount&quot;,
-    &quot;uint256 fee&quot;,
-    &quot;uint256 withdrawExpires&quot;,
-    &quot;uint256 salt&quot;,
-    &quot;address maker&quot;,
-    &quot;address restrictedTo&quot;
+    "address contractAddress",
+    "uint256 amount",
+    "uint256 fee",
+    "uint256 withdrawExpires",
+    "uint256 salt",
+    "address maker",
+    "address restrictedTo"
   );
 
 
   // Balance per token, for each user.
-  mapping (address =&gt; mapping (address =&gt; uint256)) public balances;
+  mapping (address => mapping (address => uint256)) public balances;
   
   // global token balance tracking (to detect lost tokens)
-  mapping (address =&gt; uint256) public globalBalance;
+  mapping (address => uint256) public globalBalance;
   
   // List of orders created by calling the exchange contract directly.
-  mapping (bytes32 =&gt; bool) public orders;
+  mapping (bytes32 => bool) public orders;
   
   // Lists the amount of each order that has been filled or cancelled.
-  mapping (bytes32 =&gt; uint256) public orderFills;
+  mapping (bytes32 => uint256) public orderFills;
   
   // Tokens that need to be checked through the compliance engine.
-  mapping (address =&gt; bool) public restrictedTokens;
+  mapping (address => bool) public restrictedTokens;
 
   // Mapping of fees by user class (default class == 0x0)
-  mapping (uint256 =&gt; uint256) public feeByClass;
+  mapping (uint256 => uint256) public feeByClass;
   
   // Mapping of users to user classes.
-  mapping (address =&gt; uint256) public userClass; 
+  mapping (address => uint256) public userClass; 
   
   
   /*******************************************
@@ -415,7 +415,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   }
 
   function changeClassFee(uint256 _class, uint256 _fee) external onlyManager {
-    require(_fee &lt;= 10000000000000000); //Max 1%.
+    require(_fee <= 10000000000000000); //Max 1%.
 
     feeByClass[_class] = _fee;
 
@@ -493,7 +493,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
 
   // Withdraw ETH from the contract to your wallet  (internal transaction on etherscan)
   function withdraw(uint256 _amount) external returns(uint256) {
-    //require(balances[address(0x0)][msg.sender] &gt;= _amount);
+    //require(balances[address(0x0)][msg.sender] >= _amount);
     //handled by safeSub.
     
     balances[address(0x0)][msg.sender] = safeSub(balances[address(0x0)][msg.sender], _amount);
@@ -533,7 +533,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   {
     if (_token == address(0x0)){
       //keep the nulls to reduce gas usage.
-      //require(balances[_token)][msg.sender] &gt;= _amount);
+      //require(balances[_token)][msg.sender] >= _amount);
       //handled by safeSub.
       balances[address(0x0)][msg.sender] = safeSub(balances[address(0x0)][msg.sender], _amount);
       globalBalance[address(0x0)] = safeSub(globalBalance[address(0x0)], _amount);
@@ -541,7 +541,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
       //transfer has a built in require
       msg.sender.transfer(_amount);
     } else {
-      //require(balances[_token][msg.sender] &gt;= _amount);
+      //require(balances[_token][msg.sender] >= _amount);
       //handled by safeSub 
  
       balances[_token][msg.sender] = safeSub(balances[_token][msg.sender], _amount);
@@ -560,8 +560,8 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   function depositToUser(address _toUser) external payable notLocked returns (bool success) {
     require(
         (_toUser != address(0x0))
-     &amp;&amp; (_toUser != address(this))
-     &amp;&amp; (Compliance(complianceAddress).canDeposit(_toUser))
+     && (_toUser != address(this))
+     && (Compliance(complianceAddress).canDeposit(_toUser))
     );
     
     balances[address(0x0)][_toUser] = safeAdd(balances[address(0x0)][_toUser], msg.value);
@@ -588,10 +588,10 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     require(
         (_token != address(0x0))
 
-     &amp;&amp; (_toUser  != address(0x0))
-     &amp;&amp; (_toUser  != address(this))
-     &amp;&amp; (_toUser  != _token)
-     &amp;&amp; (Compliance(complianceAddress).canDeposit(_toUser))
+     && (_toUser  != address(0x0))
+     && (_toUser  != address(this))
+     && (_toUser  != _token)
+     && (Compliance(complianceAddress).canDeposit(_toUser))
     );
     
     balances[_token][_toUser] = safeAdd(balances[_token][_toUser], _amount);
@@ -610,7 +610,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   function tokenFallback(
     address _from,  // user calling the function
     uint256 _value, // the number of tokens
-    bytes _sendTo     // &quot;deposit to other user&quot; if exactly 20 bytes sent
+    bytes _sendTo     // "deposit to other user" if exactly 20 bytes sent
     
   )
     external
@@ -620,8 +620,8 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     address toUser = _from;     //probably this
     if (_sendTo.length == 20){  //but use data for sendTo otherwise.
 
-      // I&#39;m about 90% sure I don&#39;t need to do the casting here, but for
-      // like twenty gas, I&#39;ll take the protection from potentially
+      // I'm about 90% sure I don't need to do the casting here, but for
+      // like twenty gas, I'll take the protection from potentially
       // stomping on weird memory locations.
       
       uint256 asmAddress;
@@ -634,9 +634,9 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     //sanity checks.
     require(
         (toUser != address(0x0))
-     &amp;&amp; (toUser != address(this))
-     &amp;&amp; (toUser != msg.sender)  // msg.sender is the token
-     &amp;&amp; (Compliance(complianceAddress).canDeposit(toUser))
+     && (toUser != address(this))
+     && (toUser != msg.sender)  // msg.sender is the token
+     && (Compliance(complianceAddress).canDeposit(toUser))
     );
     
     // check if a contract is calling this
@@ -644,13 +644,13 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     assembly {
       codeLength := extcodesize(caller)
     }
-    require(codeLength &gt; 0);    
+    require(codeLength > 0);    
     
     globalBalance[msg.sender] = safeAdd(globalBalance[msg.sender], _value);
     balances[msg.sender][toUser] = safeAdd(balances[msg.sender][toUser], _value);
     
     //sanity check, and as a perk, we check for balanceOf();
-    require(Token(msg.sender).balanceOf(this) &gt;= _value);
+    require(Token(msg.sender).balanceOf(this) >= _value);
 
     Deposit(msg.sender, toUser, _from, _value);
   }
@@ -666,11 +666,11 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     returns(uint256)
   {
     require(
-        (balances[_token][msg.sender] &gt;= _amount)
-     &amp;&amp; (_toUser != address(0x0))
-     &amp;&amp; (_toUser != address(this))
-     &amp;&amp; (_toUser != _token)
-     &amp;&amp; (Compliance(complianceAddress).canDeposit(_toUser))
+        (balances[_token][msg.sender] >= _amount)
+     && (_toUser != address(0x0))
+     && (_toUser != address(this))
+     && (_toUser != _token)
+     && (Compliance(complianceAddress).canDeposit(_toUser))
     );
  
     balances[_token][msg.sender] = safeSub(balances[_token][msg.sender], _amount);
@@ -687,25 +687,25 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   }
 
   
-  // In order to see the ERC20 total balance, we&#39;re calling an external contract,
-  // and this contract claims to be ERC20, but we don&#39;t know what&#39;s really there.
-  // We can&#39;t rely on the EVM or solidity to enforce &quot;view&quot;, so even though a
-  // normal token can rely on itself to be non-malicious, we can&#39;t.
-  // We have no idea what potentially evil tokens we&#39;ll be interacting with.
+  // In order to see the ERC20 total balance, we're calling an external contract,
+  // and this contract claims to be ERC20, but we don't know what's really there.
+  // We can't rely on the EVM or solidity to enforce "view", so even though a
+  // normal token can rely on itself to be non-malicious, we can't.
+  // We have no idea what potentially evil tokens we'll be interacting with.
   // The call to check the reported balance needs to go after the state changes,
-  // even though it&#39;s un-natural. Now, on one hand, this function might at first
-  // appear safe, since we&#39;re only allowing the sweeper address to access
+  // even though it's un-natural. Now, on one hand, this function might at first
+  // appear safe, since we're only allowing the sweeper address to access
   // *this function,* but we are reading the state of the globalBalance.
   // In theory, a malicious token could do the following:
-  //  1a) Check if the caller of balanceOf is our contract, if it&#39;s not, act normally.
+  //  1a) Check if the caller of balanceOf is our contract, if it's not, act normally.
   //  1b) If the caller is our contract, it does the following:
   //  2) Read our contracts globalBalance for its own address.
-  //  3) Sets our contract&#39;s balance of the token (in the token controller) to our internal globalBalance
+  //  3) Sets our contract's balance of the token (in the token controller) to our internal globalBalance
   //  4) Allocates some other address the difference in globalBalance and actual balance for our contract.
   //  5) Report back to this function exactly the amount we had in globalBalance.
   // (which, by then is true, since they were stolen).
-  // Now we&#39;re always going to see 0 extra tokens, and our users have had their tokens perminantly lost.
-  // bonus: this is why there is no &quot;sweep all&quot; function.
+  // Now we're always going to see 0 extra tokens, and our users have had their tokens perminantly lost.
+  // bonus: this is why there is no "sweep all" function.
     
   // Detect ERC20 tokens that have been sent to the contract without a deposit (lost tokens),
   // which are not included in globalBalance[..]
@@ -717,11 +717,11 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     //You go last!
 	if(_token != address(0x0)) { 
-      require(globalBalance[_token] &lt;= Token(_token).balanceOf(this));
+      require(globalBalance[_token] <= Token(_token).balanceOf(this));
 	} else {
 	  // if another contract performs selfdestruct(UberDelta),
     // ETH can get in here without being in globalBalance
-	  require(globalBalance[address(0x0)] &lt;= this.balance); 
+	  require(globalBalance[address(0x0)] <= this.balance); 
 	}
     
     TokenSweep(_token, msg.sender, _amount, balances[_token][sweepAccount]);
@@ -741,7 +741,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   // this function allows for on-chain orders to be created
   function order(
     address[4] _addressData,
-    uint256[4] _numberData //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData //web3 isn't ready for structs.
   )
     external
     notLocked
@@ -775,7 +775,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   )
     internal
   {
-    require(_takerTokenAmount &gt; 0); //safeDiv
+    require(_takerTokenAmount > 0); //safeDiv
 
     // We charge only the takers this fee
     uint256 feeValue = safeMul(_tradeAmount, feeByClass[userClass[msg.sender]]) / (1 ether);
@@ -803,7 +803,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
 
   function trade(
     address[4] _addressData,
-    uint256[4] _numberData, //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData, //web3 isn't ready for structs.
     uint8 _v,
     bytes32 _r,
     bytes32 _s,
@@ -828,9 +828,9 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     tradeAmount = safeSub(_numberData[0], orderFills[hash]); //avail to trade
     
-    //balance of giveToken / amount I said I&#39;d give of giveToken * amount I said I want of getToken
+    //balance of giveToken / amount I said I'd give of giveToken * amount I said I want of getToken
     if (
-      tradeAmount &gt; safeDiv(
+      tradeAmount > safeDiv(
         safeMul(balances[_addressData[1]][_addressData[2]], _numberData[0]),
         _numberData[1]
       )
@@ -842,11 +842,11 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
       );
     }
     
-    if (tradeAmount &gt; _amount) { tradeAmount = _amount; }
+    if (tradeAmount > _amount) { tradeAmount = _amount; }
     
         //_numberData[0] is takerTokenAmount
-    if (tradeAmount == 0) { //idfk. There&#39;s nothing there to get. Canceled? Traded?
-      if (orderFills[hash] &lt; _numberData[0]) { //Maker seems to be missing tokens?
+    if (tradeAmount == 0) { //idfk. There's nothing there to get. Canceled? Traded?
+      if (orderFills[hash] < _numberData[0]) { //Maker seems to be missing tokens?
         FailedTrade(
           (bytes32(_addressData[0]) ^ bytes32(_addressData[1])),
           msg.sender,
@@ -865,7 +865,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     }
     
     
-    if (block.number &gt; _numberData[2]) { //order is expired
+    if (block.number > _numberData[2]) { //order is expired
       FailedTrade(
         (bytes32(_addressData[0]) ^ bytes32(_addressData[1])),
         msg.sender,
@@ -876,7 +876,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     }
 
 
-    if ((_fillOrKill == true) &amp;&amp; (tradeAmount &lt; _amount)) { //didnt fill, so kill
+    if ((_fillOrKill == true) && (tradeAmount < _amount)) { //didnt fill, so kill
       FailedTrade(
         (bytes32(_addressData[0]) ^ bytes32(_addressData[1])),
         msg.sender,
@@ -890,7 +890,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     uint256 feeValue = safeMul(_amount, feeByClass[userClass[msg.sender]]) / (1 ether);
 
     //if they trade more than they have, get 0.
-    if ( (_amount + feeValue) &gt; balances[_addressData[0]][msg.sender])  { 
+    if ( (_amount + feeValue) > balances[_addressData[0]][msg.sender])  { 
       FailedTrade(
         (bytes32(_addressData[0]) ^ bytes32(_addressData[1])),
         msg.sender,
@@ -902,7 +902,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     if ( //not a valid order.
         (ecrecover(keccak256(signedTradeHash, hash), _v, _r, _s) != _addressData[2])
-        &amp;&amp; (! orders[hash])
+        && (! orders[hash])
     )
     {
       FailedTrade(
@@ -915,7 +915,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     }
 
     
-    if ((_addressData[3] != address(0x0)) &amp;&amp; (_addressData[3] != msg.sender)) { //check restrictedTo
+    if ((_addressData[3] != address(0x0)) && (_addressData[3] != msg.sender)) { //check restrictedTo
       FailedTrade(
         (bytes32(_addressData[0]) ^ bytes32(_addressData[1])),
         msg.sender,
@@ -926,14 +926,14 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     }
         
     
-    if ( //if there&#39;s a compliance restriction.
+    if ( //if there's a compliance restriction.
       ((_addressData[0] != address(0x0)) //if not Eth, and restricted, check with Compliance.
-        &amp;&amp; (restrictedTokens[_addressData[0]] )
-        &amp;&amp; ! Compliance(complianceAddress).validateTrade(_addressData[0], _addressData[2], msg.sender)
+        && (restrictedTokens[_addressData[0]] )
+        && ! Compliance(complianceAddress).validateTrade(_addressData[0], _addressData[2], msg.sender)
       )
       || ((_addressData[1] != address(0x0))  //ditto
-        &amp;&amp; (restrictedTokens[_addressData[1]])
-        &amp;&amp; ! Compliance(complianceAddress).validateTrade(_addressData[1], _addressData[2], msg.sender)
+        && (restrictedTokens[_addressData[1]])
+        && ! Compliance(complianceAddress).validateTrade(_addressData[1], _addressData[2], msg.sender)
       )
     )
     {
@@ -978,7 +978,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   // Cancel a signed order, once this is confirmed nobody will be able to trade it anymore
   function cancelOrder(
     address[4] _addressData,
-    uint256[4] _numberData //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData //web3 isn't ready for structs.
   )
     external
     returns(uint256 amountCancelled)
@@ -986,7 +986,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     require(msg.sender == _addressData[2]);
     
-    //  msg.sender can &#39;cancel&#39; nonexistent orders since they&#39;re offchain.
+    //  msg.sender can 'cancel' nonexistent orders since they're offchain.
     bytes32 hash = getHash(_addressData, _numberData);
  
     amountCancelled = safeSub(_numberData[0],orderFills[hash]);
@@ -1031,12 +1031,12 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   {
     //is the withdraw possible?
     require(
-        (balances[address(0x0)][_maker] &gt;= safeAdd(_withdrawAmount, _feeAmount))
-     &amp;&amp; (
+        (balances[address(0x0)][_maker] >= safeAdd(_withdrawAmount, _feeAmount))
+     && (
             (_restrictedTo == address(0x0))
          || (_restrictedTo == msg.sender)
         )
-     &amp;&amp; ((_feeAmount == 0) || (Compliance(complianceAddress).canDeposit(msg.sender)))
+     && ((_feeAmount == 0) || (Compliance(complianceAddress).canDeposit(msg.sender)))
     );
     
     //has this withdraw happened already? (and generate the hash)
@@ -1126,7 +1126,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   /Upgrade Function
   ***************************/
       
-  // move tokens/ETH over to a new upgraded smart contract  (avoids having to withdraw &amp; deposit)
+  // move tokens/ETH over to a new upgraded smart contract  (avoids having to withdraw & deposit)
   function upgrade(address _token) external returns(uint256 moveBalance) {
     require (newExchange != address(0x0));
 
@@ -1155,7 +1155,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   
   function testTrade(
     address[4] _addressData,
-    uint256[4] _numberData, //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData, //web3 isn't ready for structs.
     uint8 _v,
     bytes32 _r,
     bytes32 _s,
@@ -1173,16 +1173,16 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
       contractLocked
       ||
       ((_addressData[0] != address(0x0)) //if not Eth, and restricted, check with Compliance.
-        &amp;&amp; (restrictedTokens[_addressData[0]] )
-        &amp;&amp; ! Compliance(complianceAddress).validateTrade(_addressData[0], _addressData[2], _sender)
+        && (restrictedTokens[_addressData[0]] )
+        && ! Compliance(complianceAddress).validateTrade(_addressData[0], _addressData[2], _sender)
       )
       || ((_addressData[1] != address(0x0))  //ditto
-        &amp;&amp; (restrictedTokens[_addressData[1]])
-        &amp;&amp; ! Compliance(complianceAddress).validateTrade(_addressData[1], _addressData[2], _sender)
+        && (restrictedTokens[_addressData[1]])
+        && ! Compliance(complianceAddress).validateTrade(_addressData[1], _addressData[2], _sender)
       )
          //if they trade more than they have, get 0.
-      || ((_amount + feeValue) &gt; balances[_addressData[0]][_sender]) 
-      || ((_addressData[3] != address(0x0)) &amp;&amp; (_addressData[3] != _sender)) //check restrictedTo
+      || ((_amount + feeValue) > balances[_addressData[0]][_sender]) 
+      || ((_addressData[3] != address(0x0)) && (_addressData[3] != _sender)) //check restrictedTo
     )
     {
       return 0;
@@ -1196,9 +1196,9 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
         _s
     );
     
-    if (tradeAmount &gt; _amount) { tradeAmount = _amount; }
+    if (tradeAmount > _amount) { tradeAmount = _amount; }
     
-    if ((_fillOrKill == true) &amp;&amp; (tradeAmount &lt; _amount)) {
+    if ((_fillOrKill == true) && (tradeAmount < _amount)) {
       return 0;
     }
 
@@ -1210,7 +1210,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   // return value in order of _takerTokenAddress
   function availableVolume(
     address[4] _addressData,
-    uint256[4] _numberData, //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData, //web3 isn't ready for structs.
     uint8 _v,
     bytes32 _r,
     bytes32 _s
@@ -1231,10 +1231,10 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     bytes32 hash = getHash(_addressData, _numberData);
 
     if (
-      (block.number &gt; _numberData[2])
+      (block.number > _numberData[2])
       || ( 
         (ecrecover(keccak256(signedTradeHash, hash), _v, _r, _s) != _addressData[2])
-        &amp;&amp; (! orders[hash])
+        && (! orders[hash])
       )
     ) { return 0; }
 
@@ -1242,7 +1242,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
      amountRemaining = safeSub(_numberData[0], orderFills[hash]);
 
     if (
-      amountRemaining &lt; safeDiv(
+      amountRemaining < safeDiv(
         safeMul(balances[_addressData[1]][_addressData[2]], _numberData[0]),
         _numberData[1]
       )
@@ -1274,7 +1274,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   // return value in order of _takerTokenAddress
   function amountFilled(
     address[4] _addressData,
-    uint256[4] _numberData //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData //web3 isn't ready for structs.
   )
     external
     view
@@ -1316,11 +1316,11 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     if (
       contractLocked
       ||
-      (balances[address(0x0)][_maker] &lt; safeAdd(_withdrawAmount, _feeAmount))
-      ||((_restrictedTo != address(0x0)) &amp;&amp; (_restrictedTo != _sender))
+      (balances[address(0x0)][_maker] < safeAdd(_withdrawAmount, _feeAmount))
+      ||((_restrictedTo != address(0x0)) && (_restrictedTo != _sender))
       || (orderFills[hash] != 0)
       || (ecrecover(keccak256(signedWithdrawHash, hash), _v, _r, _s) != _maker)
-      || ((_feeAmount &gt; 0) &amp;&amp; (! Compliance(complianceAddress).canDeposit(_sender)))
+      || ((_feeAmount > 0) && (! Compliance(complianceAddress).canDeposit(_sender)))
     )
     {
       return 0;
@@ -1333,7 +1333,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   
   function getHash(
     address[4] _addressData,
-    uint256[4] _numberData //web3 isn&#39;t ready for structs.
+    uint256[4] _numberData //web3 isn't ready for structs.
   )
     public
     view
@@ -1446,7 +1446,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   /**********************************/
   
   
-  mapping (address =&gt; uint256) public exercisedOptions;
+  mapping (address => uint256) public exercisedOptions;
   
   //get asset for tickets
   event CollapseOption(
@@ -1510,7 +1510,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     returns (uint256 ticketsCreated)
   {
     //if before expiry
-    require (block.number &lt; _optionExpires); //option would be expired
+    require (block.number < _optionExpires); //option would be expired
     
     //if they have the asset
     //[checked by safemath during locking]
@@ -1594,7 +1594,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     return _ticketAmount;
   }
   
-  //if own buy &amp; writer ticket get asset, void tickets
+  //if own buy & writer ticket get asset, void tickets
   // 1 ticket gets 10^18 option units voided.
   function collapseOptionPair( //#66
     address _assetTokenAddress,
@@ -1629,8 +1629,8 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     //if they have the write option
     //if they have the hold option
     require (
-      (balances[holderTicketAddress][msg.sender] &gt;= _ticketAmount)
-      &amp;&amp; (balances[writerTicketAddress][msg.sender] &gt;= _ticketAmount)
+      (balances[holderTicketAddress][msg.sender] >= _ticketAmount)
+      && (balances[writerTicketAddress][msg.sender] >= _ticketAmount)
     );
     //I guess it can be expired, since you have both legs.
     
@@ -1673,9 +1673,9 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     q: why would someone ever want to buy an out-of-the-money,
        collaterized call option at strike price?
 
-    a: if an american option is executed, and the collateral&#39;s movement
+    a: if an american option is executed, and the collateral's movement
        makes it later out of the money, the value of the option would
-       need to be calculated by including the &quot;pre-executed&quot; amount.
+       need to be calculated by including the "pre-executed" amount.
        * 
        This would prevent an external actor performing weird arb trades
        (write a billion tickets, collapse a billion tickets, profit!).
@@ -1703,7 +1703,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     returns (uint256 ticketsUnwound) //(amountTraded)
   {
     //only before, equal to expiry
-    require(block.number &lt;= _optionExpires);
+    require(block.number <= _optionExpires);
     
     address holderTicketAddress = getOptionAddress(
       _assetTokenAddress,
@@ -1718,12 +1718,12 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     ticketsUnwound = exercisedOptions[holderTicketAddress];
 
     //fill or kill.
-    require((_fillOrKill == false) || (ticketsUnwound &gt;= _ticketAmount));
+    require((_fillOrKill == false) || (ticketsUnwound >= _ticketAmount));
 
     //get amount to trade.
-    if (ticketsUnwound &gt; _ticketAmount) ticketsUnwound = _ticketAmount;
+    if (ticketsUnwound > _ticketAmount) ticketsUnwound = _ticketAmount;
     
-    require(ticketsUnwound &gt; 0);
+    require(ticketsUnwound > 0);
     //cant buy zero, either because not avail, or you asked for zero.
  
     //check compliance, like a trade!
@@ -1786,7 +1786,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   returns (uint256 ticketsExcercised)
   {  
     //only holder before, equal to expiry
-    require(block.number &lt;= _optionExpires);
+    require(block.number <= _optionExpires);
     
     address holderTicketAddress = getOptionAddress(
       _assetTokenAddress,
@@ -1799,13 +1799,13 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     //get balance of tickets
     ticketsExcercised = balances[holderTicketAddress][msg.sender];
-    require(ticketsExcercised &gt;= _ticketAmount); //its just a balance here.
+    require(ticketsExcercised >= _ticketAmount); //its just a balance here.
     
     //get amount to trade.
-    if (ticketsExcercised &gt; _ticketAmount) ticketsExcercised = _ticketAmount;
+    if (ticketsExcercised > _ticketAmount) ticketsExcercised = _ticketAmount;
     
     //cant execute zero, either you have zero, or you asked for zero.
-    require(ticketsExcercised &gt; 0);
+    require(ticketsExcercised > 0);
     
     //debit balance of caller for holdOption, credit exercisedOptions    
     balances[holderTicketAddress][msg.sender] =
@@ -1862,7 +1862,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   returns (uint256 ticketsExpired)
   {
   //only writer, only after expiry
-    require(block.number &gt; _optionExpires);
+    require(block.number > _optionExpires);
         
     address holderTicketAddress = getOptionAddress(
       _assetTokenAddress,
@@ -1884,13 +1884,13 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
     
     //get balance of tickets
     ticketsExpired = balances[writerTicketAddress][msg.sender];
-    require(ticketsExpired &gt;= _ticketAmount); //its just a balance here.
+    require(ticketsExpired >= _ticketAmount); //its just a balance here.
     
     //get amount to trade.
-    if (ticketsExpired &gt; _ticketAmount) ticketsExpired = _ticketAmount;
+    if (ticketsExpired > _ticketAmount) ticketsExpired = _ticketAmount;
     
     //cant execute zero, either you have zero, or you asked for zero.
-    require(ticketsExpired &gt; 0);
+    require(ticketsExpired > 0);
     
     // debit holder tickets from user, add to exercisedOptions.
     balances[writerTicketAddress][msg.sender] =
@@ -1940,11 +1940,11 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   }
 
 
-  //get an option&#39;s Hash&#39;s address
-  //  (•_•)  ( •_•)&gt;⌐■-■  (⌐■_■)
+  //get an option's Hash's address
+  //  (•_•)  ( •_•)>⌐■-■  (⌐■_■)
   //
   //going from 32 bytes to 20 bytes still gives us 160 bits of hash goodness.
-  //that&#39;s still a crazy large number, and used by ethereum for addresses.
+  //that's still a crazy large number, and used by ethereum for addresses.
   function getOptionAddress(
     address _assetTokenAddress,
     uint256 _assetTokenAmount,
@@ -2004,7 +2004,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   / Default Options Registration Code
   ************************************/
   // Register emits an event and adds it to restrictedToken.
-  // We&#39;ll deal with any other needed registration later.
+  // We'll deal with any other needed registration later.
   // Set up for upgradeable external contract.
   // return bools.
   
@@ -2088,7 +2088,7 @@ contract UberDelta is SafeMath, OwnerManager, Helper {
   }
   
   
-  // for v1, we&#39;ll simply return if there&#39;s a restriction.
+  // for v1, we'll simply return if there's a restriction.
   function isOptionPairRegistered(
     address _assetTokenAddress,
     uint256 _assetTokenAmount,

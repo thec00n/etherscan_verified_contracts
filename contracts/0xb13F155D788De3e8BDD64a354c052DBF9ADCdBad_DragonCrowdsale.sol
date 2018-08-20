@@ -18,8 +18,8 @@ contract DragonCrowdsale {
     
     
     token public tokenReward;
-    mapping( address =&gt; uint256 ) public contributions;
-    mapping( address =&gt; bool )    public preICOparticipated;
+    mapping( address => uint256 ) public contributions;
+    mapping( address => bool )    public preICOparticipated;
     
     bool public crowdSaleStart;
     bool public crowdSalePause;
@@ -59,8 +59,8 @@ contract DragonCrowdsale {
         
         
         // only two purchase values acceptable due to ppre-ico packages
-        if( msg.value != .3333333 ether &amp;&amp; msg.value != 3.3333333 ether  &amp;&amp; crowdSaleStart == false  ) throw;
-        if ( crowdSaleStart == false &amp;&amp; preICOparticipated[msg.sender] == true ) throw;
+        if( msg.value != .3333333 ether && msg.value != 3.3333333 ether  && crowdSaleStart == false  ) throw;
+        if ( crowdSaleStart == false && preICOparticipated[msg.sender] == true ) throw;
         if ( crowdSaleStart == false ) {
             
             if ( msg.value ==  .3333333 ether ) package = Package.Small;
@@ -68,26 +68,26 @@ contract DragonCrowdsale {
         }
         
        
-        if ( crowdSaleStart) require( now &lt; deadline );
+        if ( crowdSaleStart) require( now < deadline );
         uint amount = msg.value;
         
         tokenReward.transfer( msg.sender, amount / price ); // what buyer purchases
         
         // only triggers before official launch
-        if ( package == Package.Small  &amp;&amp; crowdSaleStart == false &amp;&amp; tokensSold &lt; preICOspecial ) { 
+        if ( package == Package.Small  && crowdSaleStart == false && tokensSold < preICOspecial ) { 
         
             tokenReward.transfer( charity    , 800000000  );  //charitable donation
-            tokenReward.transfer( msg.sender , 800000000  );  // buyer&#39;s reward bonus
+            tokenReward.transfer( msg.sender , 800000000  );  // buyer's reward bonus
             preICOparticipated[ msg.sender ] = true; 
             tokensSold +=  1600000000;
             
         }
         
         // only triggers before official launch
-        if ( package == Package.Large  &amp;&amp; crowdSaleStart == false &amp;&amp; tokensSold &lt; preICOspecial ) { 
+        if ( package == Package.Large  && crowdSaleStart == false && tokensSold < preICOspecial ) { 
         
             tokenReward.transfer( charity    , 8000000000 );  // charitable donation
-            tokenReward.transfer( msg.sender , 8000000000 );  // buyer&#39;s reward bonus
+            tokenReward.transfer( msg.sender , 8000000000 );  // buyer's reward bonus
             preICOparticipated[ msg.sender ] = true; 
             tokensSold += 16000000000;
             

@@ -15,28 +15,28 @@ contract PyramidGame
     // Pyramid grid data
     //
     // The uint32 is the coordinates.
-    // It consists of two uint16&#39;s:
+    // It consists of two uint16's:
     // The x is the most significant 2 bytes (16 bits)
     // The y is the least significant 2 bytes (16 bits)
-    // x = coordinates &gt;&gt; 16
-    // y = coordinates &amp; 0xFFFF
-    // coordinates = (x &lt;&lt; 16) | y
+    // x = coordinates >> 16
+    // y = coordinates & 0xFFFF
+    // coordinates = (x << 16) | y
     // x is a 16-bit unsigned integer
     // y is a 16-bit unsigned integer
-    mapping(uint32 =&gt; address) public coordinatesToAddresses;
+    mapping(uint32 => address) public coordinatesToAddresses;
     uint32[] public allBlockCoordinates;
     
     // In the user interface, the rows of blocks will be
     // progressively shifted more to the right, as y increases
     // 
-    // For example, these blocks in the contract&#39;s coordinate system:
+    // For example, these blocks in the contract's coordinate system:
     //         ______
     //      2 |__A__|______
     // /|\  1 |__B__|__D__|______
     //  |   0 |__C__|__E__|__F__|
     //  y        0     1     2
     // 
-    //        x --&gt;
+    //        x -->
     // 
     // 
     // Become these blocks in the user interface:
@@ -45,14 +45,14 @@ contract PyramidGame
     //   /    __|__B__|__D__|___
     //  y    |__C__|__E__|__F__|
     // 
-    //   x --&gt;
+    //   x -->
     // 
     // 
     
     /////////////////////////////////////////////
     // Address properties
-    mapping(address =&gt; uint256) public addressesToTotalWeiPlaced;
-    mapping(address =&gt; uint256) public addressBalances;
+    mapping(address => uint256) public addressesToTotalWeiPlaced;
+    mapping(address => uint256) public addressBalances;
     
     ////////////////////////////////////////////
     // Game Constructor
@@ -65,8 +65,8 @@ contract PyramidGame
         addressesToChatMessagesLeft[administrator] += 5;
         
         // Set the first block in the middle of the bottom row
-        coordinatesToAddresses[uint32(1 &lt;&lt; 15) &lt;&lt; 16] = msg.sender;
-        allBlockCoordinates.push(uint32(1 &lt;&lt; 15) &lt;&lt; 16);
+        coordinatesToAddresses[uint32(1 << 15) << 16] = msg.sender;
+        allBlockCoordinates.push(uint32(1 << 15) << 16);
     }
     
     ////////////////////////////////////////////
@@ -74,12 +74,12 @@ contract PyramidGame
     function getBetAmountAtLayer(uint16 y) public pure returns (uint256)
     {
         // The minimum bet doubles every time you go up 1 layer
-        return BOTTOM_LAYER_BET_AMOUNT * (uint256(1) &lt;&lt; y);
+        return BOTTOM_LAYER_BET_AMOUNT * (uint256(1) << y);
     }
     
     function isThereABlockAtCoordinates(uint16 x, uint16 y) public view returns (bool)
     {
-        return coordinatesToAddresses[(uint32(x) &lt;&lt; 16) | uint16(y)] != 0;
+        return coordinatesToAddresses[(uint32(x) << 16) | uint16(y)] != 0;
     }
     
     function getTotalAmountOfBlocks() public view returns (uint256)
@@ -94,7 +94,7 @@ contract PyramidGame
         // You may only place a block on an empty spot
         require(!isThereABlockAtCoordinates(x, y));
         
-        // Add the transaction amount to the person&#39;s balance
+        // Add the transaction amount to the person's balance
         addressBalances[msg.sender] += msg.value;
         
         // Calculate the required bet amount at the specified layer
@@ -112,16 +112,16 @@ contract PyramidGame
         else
         {
             // There must be two existing blocks below it:
-            require(isThereABlockAtCoordinates(x  , y-1) &amp;&amp;
+            require(isThereABlockAtCoordinates(x  , y-1) &&
                     isThereABlockAtCoordinates(x+1, y-1));
         }
         
-        // Subtract the bet amount from the person&#39;s balance
+        // Subtract the bet amount from the person's balance
         addressBalances[msg.sender] -= betAmount;
         
         // Place the block
-        coordinatesToAddresses[(uint32(x) &lt;&lt; 16) | y] = msg.sender;
-        allBlockCoordinates.push((uint32(x) &lt;&lt; 16) | y);
+        coordinatesToAddresses[(uint32(x) << 16) | y] = msg.sender;
+        allBlockCoordinates.push((uint32(x) << 16) | y);
         
         // If the block is at the lowest layer...
         if (y == 0)
@@ -140,21 +140,21 @@ contract PyramidGame
             uint256 betAmountMinusAdminFee = betAmount - adminFee;
             
             // Add the money to the balances of the people below
-            addressBalances[coordinatesToAddresses[(uint32(x  ) &lt;&lt; 16) | (y-1)]] += betAmountMinusAdminFee / 2;
-            addressBalances[coordinatesToAddresses[(uint32(x+1) &lt;&lt; 16) | (y-1)]] += betAmountMinusAdminFee / 2;
+            addressBalances[coordinatesToAddresses[(uint32(x  ) << 16) | (y-1)]] += betAmountMinusAdminFee / 2;
+            addressBalances[coordinatesToAddresses[(uint32(x+1) << 16) | (y-1)]] += betAmountMinusAdminFee / 2;
             
             // Give the admin fee to the admin
             addressBalances[administrator] += adminFee;
         }
         
-        // The new sender&#39;s balance must not have underflowed
+        // The new sender's balance must not have underflowed
         // (this verifies that the sender has enough balance to place the block)
-        require(addressBalances[msg.sender] &lt; (1 &lt;&lt; 255));
+        require(addressBalances[msg.sender] < (1 << 255));
         
         // Give the sender their chat message rights
-        addressesToChatMessagesLeft[msg.sender] += uint32(1) &lt;&lt; y;
+        addressesToChatMessagesLeft[msg.sender] += uint32(1) << y;
         
-        // Register the sender&#39;s total bets placed
+        // Register the sender's total bets placed
         addressesToTotalWeiPlaced[msg.sender] += betAmount;
     }
     
@@ -165,14 +165,14 @@ contract PyramidGame
         require(amountToWithdraw != 0);
         
         // The user must have enough balance to withdraw
-        require(addressBalances[msg.sender] &gt;= amountToWithdraw);
+        require(addressBalances[msg.sender] >= amountToWithdraw);
         
-        // Subtract the withdrawn amount from the user&#39;s balance
+        // Subtract the withdrawn amount from the user's balance
         addressBalances[msg.sender] -= amountToWithdraw;
         
-        // Transfer the amount to the user&#39;s address
+        // Transfer the amount to the user's address
         // If the transfer() call fails an exception will be thrown,
-        // and therefore the user&#39;s balance will be automatically restored
+        // and therefore the user's balance will be automatically restored
         msg.sender.transfer(amountToWithdraw);
     }
     
@@ -183,11 +183,11 @@ contract PyramidGame
         address person;
         string message;
     }
-    mapping(bytes32 =&gt; address) public usernamesToAddresses;
-    mapping(address =&gt; bytes32) public addressesToUsernames;
-    mapping(address =&gt; uint32) public addressesToChatMessagesLeft;
+    mapping(bytes32 => address) public usernamesToAddresses;
+    mapping(address => bytes32) public addressesToUsernames;
+    mapping(address => uint32) public addressesToChatMessagesLeft;
     ChatMessage[] public chatMessages;
-    mapping(uint256 =&gt; bool) public censoredChatMessages;
+    mapping(uint256 => bool) public censoredChatMessages;
     
     /////////////////////////////////////////////
     // Chatbox functions
@@ -199,7 +199,7 @@ contract PyramidGame
         // The address must not already have a username
         require(addressesToUsernames[msg.sender] == 0);
         
-        // Register the new username &amp; address combination
+        // Register the new username & address combination
         usernamesToAddresses[username] = msg.sender;
         addressesToUsernames[msg.sender] = username;
     }
@@ -207,7 +207,7 @@ contract PyramidGame
     function sendChatMessage(string message) external
     {
         // The sender must have at least 1 chat message allowance
-        require(addressesToChatMessagesLeft[msg.sender] &gt;= 1);
+        require(addressesToChatMessagesLeft[msg.sender] >= 1);
         
         // Deduct 1 chat message allowence from the sender
         addressesToChatMessagesLeft[msg.sender]--;
@@ -247,7 +247,7 @@ contract PyramidGame
     function setFeeDivisor(uint256 newFeeDivisor) external
     {
         require(msg.sender == administrator);
-        require(newFeeDivisor &gt;= 20); // The fee may never exceed 5%
+        require(newFeeDivisor >= 20); // The fee may never exceed 5%
         adminFeeDivisor = newFeeDivisor;
     }
 }

@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,7 +56,7 @@ contract InvestedProvider is Ownable {
 
 contract AddressesFilterFeature is Ownable {
 
-  mapping(address =&gt; bool) public allowedAddresses;
+  mapping(address => bool) public allowedAddresses;
 
   function addAllowedAddress(address allowedAddress) public onlyOwner {
     allowedAddresses[allowedAddress] = true;
@@ -85,20 +85,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -126,7 +126,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -179,7 +179,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -190,8 +190,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -254,7 +254,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -277,7 +277,7 @@ contract MintableToken is AddressesFilterFeature, StandardToken {
 
   address public saleAgent;
 
-  mapping (address =&gt; uint) public initialBalances;
+  mapping (address => uint) public initialBalances;
 
   modifier notLocked(address _from) {
     require(_from == owner || _from == saleAgent || allowedAddresses[_from] || mintingFinished);
@@ -290,7 +290,7 @@ contract MintableToken is AddressesFilterFeature, StandardToken {
   }
 
   function mint(address _to, uint256 _amount) public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -307,7 +307,7 @@ contract MintableToken is AddressesFilterFeature, StandardToken {
    * @return True if the operation was successful.
    */
   function finishMinting() public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     mintingFinished = true;
     MintFinished();
     return true;
@@ -413,7 +413,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateFeature, Ret
   uint public hardcap;
 
   modifier isUnderHardcap() {
-    require(invested &lt; hardcap);
+    require(invested < hardcap);
     _;
   }
 
@@ -427,7 +427,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateFeature, Ret
   }
 
   modifier minInvestLimited(uint value) {
-    require(value &gt;= minInvestedLimit);
+    require(value >= minInvestedLimit);
     _;
   }
 
@@ -478,7 +478,7 @@ contract CommonSale is InvestedProvider, WalletProvider, PercentRateFeature, Ret
   }
 
   function fallback() internal minInvestLimited(msg.value) returns(uint) {
-    require(now &gt;= start &amp;&amp; now &lt; endSaleDate());
+    require(now >= start && now < endSaleDate());
     wallet.transfer(msg.value);
     return mintTokensByETH(msg.sender, msg.value);
   }
@@ -510,7 +510,7 @@ contract TimeCountBonusFeature is CommonSale {
   }
 
   function addMilestone(uint _hardcap, uint _price, uint _period) public onlyOwner {
-    require(_hardcap &gt; 0 &amp;&amp; _price &gt; 0 &amp;&amp; _period &gt; 0);
+    require(_hardcap > 0 && _price > 0 && _period > 0);
     Milestone memory milestone = Milestone(_hardcap.mul(1 ether), _price, _period, 0, 0);
     milestones.push(milestone);
     hardcap = hardcap.add(milestone.hardcap);
@@ -518,19 +518,19 @@ contract TimeCountBonusFeature is CommonSale {
   }
 
   function removeMilestone(uint8 number) public onlyOwner {
-    require(number &gt;=0 &amp;&amp; number &lt; milestones.length);
+    require(number >=0 && number < milestones.length);
     Milestone storage milestone = milestones[number];
     hardcap = hardcap.sub(milestone.hardcap);    
     period = period.sub(milestone.period);    
     delete milestones[number];
-    for (uint i = number; i &lt; milestones.length - 1; i++) {
+    for (uint i = number; i < milestones.length - 1; i++) {
       milestones[i] = milestones[i+1];
     }
     milestones.length--;
   }
 
   function changeMilestone(uint8 number, uint _hardcap, uint _price, uint _period) public onlyOwner {
-    require(number &gt;= 0 &amp;&amp;number &lt; milestones.length);
+    require(number >= 0 &&number < milestones.length);
     Milestone storage milestone = milestones[number];
     hardcap = hardcap.sub(milestone.hardcap);    
     period = period.sub(milestone.period);    
@@ -542,19 +542,19 @@ contract TimeCountBonusFeature is CommonSale {
   }
 
   function insertMilestone(uint8 numberAfter, uint _hardcap, uint _price, uint _period) public onlyOwner {
-    require(numberAfter &lt; milestones.length);
+    require(numberAfter < milestones.length);
     Milestone memory milestone = Milestone(_hardcap.mul(1 ether), _price, _period, 0, 0);
     hardcap = hardcap.add(milestone.hardcap);
     period = period.add(milestone.period);
     milestones.length++;
-    for (uint i = milestones.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = milestones.length - 2; i > numberAfter; i--) {
       milestones[i + 1] = milestones[i];
     }
     milestones[numberAfter + 1] = milestone;
   }
 
   function clearMilestones() public onlyOwner {
-    for (uint i = 0; i &lt; milestones.length; i++) {
+    for (uint i = 0; i < milestones.length; i++) {
       delete milestones[i];
     }
     milestones.length = 0;
@@ -568,9 +568,9 @@ contract TimeCountBonusFeature is CommonSale {
 
   function currentMilestone() public constant returns(uint) {
     uint closeTime = start;
-    for(uint i=0; i &lt; milestones.length; i++) {
+    for(uint i=0; i < milestones.length; i++) {
       closeTime += milestones[i].period.mul(1 days);
-      if(milestones[i].closed == 0 &amp;&amp; now &lt; closeTime) {
+      if(milestones[i].closed == 0 && now < closeTime) {
         return i;
       }
     }
@@ -584,7 +584,7 @@ contract TimeCountBonusFeature is CommonSale {
 
     // update milestone
     milestone.invested = milestone.invested.add(_invested);
-    if(milestone.invested &gt;= milestone.hardcap) {
+    if(milestone.invested >= milestone.hardcap) {
       milestone.closed = now;
     }
 
@@ -606,7 +606,7 @@ contract WalletsPercents is Ownable {
 
   address[] public wallets;
 
-  mapping (address =&gt; uint) percents;
+  mapping (address => uint) percents;
 
   function addWallet(address wallet, uint percent) public onlyOwner {
     wallets.push(wallet);
@@ -622,7 +622,7 @@ contract WalletsPercents is Ownable {
 
 // File: contracts/ExtendedWalletsMintTokensFeature.sol
 
-//import &#39;./PercentRateProvider.sol&#39;;
+//import './PercentRateProvider.sol';
 
 contract ExtendedWalletsMintTokensFeature is /*PercentRateProvider,*/ MintTokensInterface, WalletsPercents {
 
@@ -632,12 +632,12 @@ contract ExtendedWalletsMintTokensFeature is /*PercentRateProvider,*/ MintTokens
 
   function mintExtendedTokens() public onlyOwner {
     uint summaryTokensPercent = 0;
-    for(uint i = 0; i &lt; wallets.length; i++) {
+    for(uint i = 0; i < wallets.length; i++) {
       summaryTokensPercent = summaryTokensPercent.add(percents[wallets[i]]);
     }
     uint mintedTokens = token.totalSupply();
     uint allTokens = mintedTokens.mul(percentRate).div(percentRate.sub(summaryTokensPercent));
-    for(uint k = 0; k &lt; wallets.length; k++) {
+    for(uint k = 0; k < wallets.length; k++) {
       mintTokens(wallets[k], allTokens.mul(percents[wallets[k]]).div(percentRate));
     }
 
@@ -651,7 +651,7 @@ contract SoftcapFeature is InvestedProvider, WalletProvider {
 
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   bool public softcapAchieved;
 
@@ -681,13 +681,13 @@ contract SoftcapFeature is InvestedProvider, WalletProvider {
 
   function updateBalance(address to, uint amount) internal {
     balances[to] = balances[to].add(amount);
-    if (!softcapAchieved &amp;&amp; invested &gt;= softcap) {
+    if (!softcapAchieved && invested >= softcap) {
       softcapAchieved = true;
     }
   }
 
   function refund() public {
-    require(refundOn &amp;&amp; balances[msg.sender] &gt; 0);
+    require(refundOn && balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -740,7 +740,7 @@ contract TeamWallet is Ownable{
   }
 
   function withdrawTokens (address _to) public onlyOwner{
-  	require(now &gt; endLock);
+  	require(now > endLock);
   	ERC20 ERC20token = ERC20(token);
     ERC20token.transfer(_to, ERC20token.balanceOf(this));  
   }
@@ -778,7 +778,7 @@ contract ITO is ExtendedWalletsMintTokensFeature, SoftcapFeature, AssembledCommo
   }
 
   function fallback() internal minInvestLimited(msg.value) returns(uint) {
-    require(now &gt;= start &amp;&amp; now &lt; endSaleDate());
+    require(now >= start && now < endSaleDate());
     require(!paused);
     return mintTokensByETH(msg.sender, msg.value);
   }
@@ -805,13 +805,13 @@ contract ReceivingContractCallback {
 
 contract Token is MintableToken {
 
-  string public constant name = &quot;HelixHill&quot;;
+  string public constant name = "HelixHill";
 
-  string public constant symbol = &quot;HILL&quot;;
+  string public constant symbol = "HILL";
 
   uint32 public constant decimals = 18;
 
-  mapping(address =&gt; bool)  public registeredCallbacks;
+  mapping(address => bool)  public registeredCallbacks;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     return processCallback(super.transfer(_to, _value), msg.sender, _to, _value);
@@ -830,7 +830,7 @@ contract Token is MintableToken {
   }
 
   function processCallback(bool result, address from, address to, uint value) internal returns(bool) {
-    if (result &amp;&amp; registeredCallbacks[to]) {
+    if (result && registeredCallbacks[to]) {
       ReceivingContractCallback targetCallback = ReceivingContractCallback(to);
       targetCallback.tokenFallback(from, value);
     }

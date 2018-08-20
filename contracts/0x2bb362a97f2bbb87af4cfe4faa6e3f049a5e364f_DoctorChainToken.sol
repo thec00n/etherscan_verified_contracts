@@ -9,17 +9,17 @@ library SafeMath {
       return c;
   }
   function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint256 c = a / b;
       return c;
   }
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
   }
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
   }
 }
@@ -67,12 +67,12 @@ contract DoctorChainToken is ERC20,Ownable {
 	uint256 public constant decimals = 18;
 	address[] private walletArr;
 	uint walletIdx = 0;
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) allowed;
 	event FundTransfer(address fundWallet, uint256 amount);
 	function DoctorChainToken( ) public {
-		name=&quot;DoctorChain&quot;;
-		symbol=&quot;DCH&quot;;
+		name="DoctorChain";
+		symbol="DCH";
 		totalSupply = 1000000000*(10**decimals);
 		balanceOf[msg.sender] = totalSupply;
 		walletArr.push(0x5Db3F5FD3081Eb6ADdc873ac79B6A7139422d168);
@@ -82,8 +82,8 @@ contract DoctorChainToken is ERC20,Ownable {
 	}
 	function _transferFrom(address _from, address _to, uint256 _value)  internal {
 	    require(_to != 0x0);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 	    uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 	    balanceOf[_from] = balanceOf[_from].sub(_value);
 	    balanceOf[_to] = balanceOf[_to].add(_value);
@@ -98,7 +98,7 @@ contract DoctorChainToken is ERC20,Ownable {
 	    _tokenPurchase( msg.value);
 	}
 	function _tokenPurchase( uint256 _value) internal {
-	    require(_value &gt;= 0.1 ether);
+	    require(_value >= 0.1 ether);
 	    address wallet = walletArr[walletIdx];
 	    walletIdx = (walletIdx+1) % walletArr.length;
 	    wallet.transfer(msg.value);
@@ -116,11 +116,11 @@ contract DoctorChainToken is ERC20,Ownable {
 	    return true;
 	}
 	function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
-	    require(_value &gt; 0);
-	    require (allowed[_from][msg.sender] &gt;= _value);
+	    require(_value > 0);
+	    require (allowed[_from][msg.sender] >= _value);
 	    require(_to != 0x0);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 	    balanceOf[_from] = balanceOf[_from].sub(_value);
 	    balanceOf[_to] = balanceOf[_to].add(_value);
 	    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);

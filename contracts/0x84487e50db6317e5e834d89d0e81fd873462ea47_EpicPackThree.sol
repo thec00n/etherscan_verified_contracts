@@ -30,7 +30,7 @@ contract Vault is Ownable {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         owner.transfer(amount);
     }
 
@@ -50,7 +50,7 @@ contract CappedVault is Vault {
     }
 
     function () public payable {
-        require(total() + msg.value &lt;= limit);
+        require(total() + msg.value <= limit);
     }
 
     function total() public view returns(uint) {
@@ -58,7 +58,7 @@ contract CappedVault is Vault {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         owner.transfer(amount);
         withdrawn += amount;
     }
@@ -209,7 +209,7 @@ contract CardProto is CardBase {
     }
 
     // limits for mythic cards
-    mapping(uint16 =&gt; Limit) public limits;
+    mapping(uint16 => Limit) public limits;
 
     // can only set limits once
     function setLimit(uint16 id, uint64 limit) public onlyGovernor {
@@ -228,8 +228,8 @@ contract CardProto is CardBase {
 
     // could make these arrays to save gas
     // not really necessary - will be update a very limited no of times
-    mapping(uint8 =&gt; bool) public seasonTradable;
-    mapping(uint8 =&gt; bool) public seasonTradabilityLocked;
+    mapping(uint8 => bool) public seasonTradable;
+    mapping(uint8 => bool) public seasonTradabilityLocked;
     uint8 public currentSeason;
 
     function makeTradable(uint8 season) public onlyGovernor {
@@ -251,8 +251,8 @@ contract CardProto is CardBase {
     }
 
     function nextSeason() public onlyGovernor {
-        //Seasons shouldn&#39;t go to 0 if there is more than the uint8 should hold, the governor should know this &#175;\_(ツ)_/&#175; -M
-        require(currentSeason &lt;= 255); 
+        //Seasons shouldn't go to 0 if there is more than the uint8 should hold, the governor should know this ¯\_(ツ)_/¯ -M
+        require(currentSeason <= 255); 
 
         currentSeason++;
         mythic.length = 0;
@@ -289,13 +289,13 @@ contract CardProto is CardBase {
 
     // there is a particular design decision driving this:
     // need to be able to iterate over mythics only for card generation
-    // don&#39;t store 5 different arrays: have to use 2 ids
+    // don't store 5 different arrays: have to use 2 ids
     // better to bear this cost (2 bytes per proto card)
     // rather than 1 byte per instance
 
     uint16 public protoCount;
     
-    mapping(uint16 =&gt; ProtoCard) protos;
+    mapping(uint16 => ProtoCard) protos;
 
     uint16[] public mythic;
     uint16[] public legendary;
@@ -308,7 +308,7 @@ contract CardProto is CardBase {
         uint8[] healths, uint8[] cardTypes, uint8[] tribes, bool[] packable
     ) public onlyGovernor returns(uint16) {
 
-        for (uint i = 0; i &lt; externalIDs.length; i++) {
+        for (uint i = 0; i < externalIDs.length; i++) {
 
             ProtoCard memory card = ProtoCard({
                 exists: true,
@@ -467,10 +467,10 @@ contract CardProto is CardBase {
             uint16 id;
             uint64 limit;
             bool set;
-            for (uint i = 0; i &lt; mythic.length; i++) {
+            for (uint i = 0; i < mythic.length; i++) {
                 id = mythic[(random + i) % mythic.length];
                 (limit, set) = getLimit(id);
-                if (set &amp;&amp; limit &gt; 0){
+                if (set && limit > 0){
                     return id;
                 }
             }
@@ -482,7 +482,7 @@ contract CardProto is CardBase {
     }
 
     // can never adjust tradable cards
-    // each season gets a &#39;balancing beta&#39;
+    // each season gets a 'balancing beta'
     // totally immutable: season, rarity
     function replaceProto(
         uint16 index, uint8 god, uint8 cardType, uint8 mana, uint8 attack, uint8 health, uint8 tribe
@@ -527,17 +527,17 @@ contract CardPackThree {
     event Referral(address indexed referrer, uint value, address purchaser);
 
     /**
-    * purchase &#39;count&#39; of this type of pack
+    * purchase 'count' of this type of pack
     */
     function purchase(uint16 packCount, address referrer) public payable;
 
     // store purity and shine as one number to save users gas
     function _getPurity(uint16 randOne, uint16 randTwo) internal pure returns (uint16) {
-        if (randOne &gt;= 998) {
+        if (randOne >= 998) {
             return 3000 + randTwo;
-        } else if (randOne &gt;= 988) {
+        } else if (randOne >= 988) {
             return 2000 + randTwo;
-        } else if (randOne &gt;= 938) {
+        } else if (randOne >= 938) {
             return 1000 + randTwo;
         } else {
             return randTwo;
@@ -558,14 +558,14 @@ contract FirstPheonix is Pausable {
 
     uint16 PHEONIX_PROTO = 380;
 
-    mapping(address =&gt; bool) public claimed;
+    mapping(address => bool) public claimed;
 
     function approvePack(address toApprove) public onlyOwner {
         approved.push(toApprove);
     }
 
     function isApproved(address test) public view returns (bool) {
-        for (uint i = 0; i &lt; approved.length; i++) {
+        for (uint i = 0; i < approved.length; i++) {
             if (approved[i] == test) {
                 return true;
             }
@@ -632,17 +632,17 @@ contract PresalePackThree is CardPackThree, Pausable {
 
     // start in bytes, length in bytes
     function extract(uint num, uint length, uint start) internal pure returns (uint) {
-        return (((1 &lt;&lt; (length * 8)) - 1) &amp; (num &gt;&gt; ((start * 8) - 1)));
+        return (((1 << (length * 8)) - 1) & (num >> ((start * 8) - 1)));
     }
 
     function purchase(uint16 packCount, address referrer) whenNotPaused public payable {
 
-        require(packCount &gt; 0);
+        require(packCount > 0);
         require(referrer != msg.sender);
 
         uint price = calculatePrice(basePrice(), packCount);
 
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         Purchase memory p = Purchase({
             user: msg.sender,
@@ -667,8 +667,8 @@ contract PresalePackThree is CardPackThree, Pausable {
     }
 
     // can be called by anybody
-    // can miners withhold blocks --&gt; not really
-    // giving up block reward for extra chance --&gt; still really low
+    // can miners withhold blocks --> not really
+    // giving up block reward for extra chance --> still really low
     function callback(uint id) public {
 
         Purchase storage p = purchases[id];
@@ -677,10 +677,10 @@ contract PresalePackThree is CardPackThree, Pausable {
 
         bytes32 bhash = blockhash(p.commit);
         // will get the same on every block
-        // only use properties which can&#39;t be altered by the user
+        // only use properties which can't be altered by the user
         uint random = uint(keccak256(abi.encodePacked(bhash, p.user, address(this), p.count)));
 
-        // can&#39;t callback on the original block
+        // can't callback on the original block
         require(uint64(block.number) != p.commit);
 
         if (uint(bhash) == 0) {
@@ -712,16 +712,16 @@ contract PresalePackThree is CardPackThree, Pausable {
 
         require(result != 0); // have to wait for the callback
         // require(user == msg.sender); // not needed
-        require(count &gt; 0);
+        require(count > 0);
 
         uint[] memory ids = new uint[](size);
 
-        uint16 end = current + packsPerClaim() &gt; count ? count : current + packsPerClaim();
+        uint16 end = current + packsPerClaim() > count ? count : current + packsPerClaim();
 
-        require(end &gt; current);
+        require(end > current);
 
-        for (uint16 i = current; i &lt; end; i++) {
-            for (uint8 j = 0; j &lt; size; j++) {
+        for (uint16 i = current; i < end; i++) {
+            for (uint8 j = 0; j < size; j++) {
                 (proto, purity) = getCardDetails(i, j, result);
                 ids[j] = migration.createCard(user, proto, purity);
             }
@@ -743,8 +743,8 @@ contract PresalePackThree is CardPackThree, Pausable {
         purities = new uint16[](size * count);
         protos = new uint16[](size * count);
 
-        for (uint16 i = 0; i &lt; count; i++) {
-            for (uint8 j = 0; j &lt; size; j++) {
+        for (uint16 i = 0; i < count; i++) {
+            for (uint8 j = 0; j < size; j++) {
                 (proto, purity) = getCardDetails(i, j, result);
                 purities[(i * size) + j] = purity;
                 protos[(i * size) + j] = proto;
@@ -757,7 +757,7 @@ contract PresalePackThree is CardPackThree, Pausable {
         // roughly 6k blocks per day
         uint difference = block.number - creationBlock;
         uint numDays = difference / 6000;
-        if (20 &gt; numDays) {
+        if (20 > numDays) {
             return (base - (((20 - numDays) * base) / 100)) * packCount;
         }
         return base * packCount;
@@ -766,11 +766,11 @@ contract PresalePackThree is CardPackThree, Pausable {
     function _getCommonPlusRarity(uint32 rand) internal pure returns (CardProto.Rarity) {
         if (rand == 999999) {
             return CardProto.Rarity.Mythic;
-        } else if (rand &gt;= 998345) {
+        } else if (rand >= 998345) {
             return CardProto.Rarity.Legendary;
-        } else if (rand &gt;= 986765) {
+        } else if (rand >= 986765) {
             return CardProto.Rarity.Epic;
-        } else if (rand &gt;= 924890) {
+        } else if (rand >= 924890) {
             return CardProto.Rarity.Rare;
         } else {
             return CardProto.Rarity.Common;
@@ -780,9 +780,9 @@ contract PresalePackThree is CardPackThree, Pausable {
     function _getRarePlusRarity(uint32 rand) internal pure returns (CardProto.Rarity) {
         if (rand == 999999) {
             return CardProto.Rarity.Mythic;
-        } else if (rand &gt;= 981615) {
+        } else if (rand >= 981615) {
             return CardProto.Rarity.Legendary;
-        } else if (rand &gt;= 852940) {
+        } else if (rand >= 852940) {
             return CardProto.Rarity.Epic;
         } else {
             return CardProto.Rarity.Rare;
@@ -792,7 +792,7 @@ contract PresalePackThree is CardPackThree, Pausable {
     function _getEpicPlusRarity(uint32 rand) internal pure returns (CardProto.Rarity) {
         if (rand == 999999) {
             return CardProto.Rarity.Mythic;
-        } else if (rand &gt;= 981615) {
+        } else if (rand >= 981615) {
             return CardProto.Rarity.Legendary;
         } else {
             return CardProto.Rarity.Epic;
@@ -854,7 +854,7 @@ contract PackMultiplier is PresalePackThree {
     }
 
     function isPriorPack(address test) public view returns(bool) {
-        for (uint i = 0; i &lt; packs.length; i++) {
+        for (uint i = 0; i < packs.length; i++) {
             if (packs[i] == test) {
                 return true;
             }
@@ -874,7 +874,7 @@ contract PackMultiplier is PresalePackThree {
 
         uint lengthAfter = getCardCount();
 
-        require(lengthAfter &gt; length);
+        require(lengthAfter > length);
 
         uint16 cardDifference = uint16(lengthAfter - length);
 
@@ -904,8 +904,8 @@ contract PackMultiplier is PresalePackThree {
         emit Status(length, lengthAfter);
 
 
-        if (packCount &lt;= packLimit) {
-            for (uint i = 0; i &lt; cardDifference; i++) {
+        if (packCount <= packLimit) {
+            for (uint i = 0; i < cardDifference; i++) {
                 migration.migrate(lengthAfter - 1 - i);
             }
         }

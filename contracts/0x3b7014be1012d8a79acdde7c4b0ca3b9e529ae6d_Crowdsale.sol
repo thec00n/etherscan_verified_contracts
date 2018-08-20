@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -114,7 +114,7 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic, Ownable {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -170,8 +170,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -234,7 +234,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -291,8 +291,8 @@ contract MintableToken is StandardToken {
 
 contract LTE is Ownable, MintableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;LTE&quot;;
-  string public constant symbol = &quot;LTE&quot;;
+  string public constant name = "LTE";
+  string public constant symbol = "LTE";
   uint32 public constant decimals = 18;
   address public addressBounty;
   address public addressTeam;
@@ -427,19 +427,19 @@ contract Crowdsale is Ownable {
   function getRateIcoWithBonus() public view returns (uint256) {
     uint256 bonus;
     //PreICO   
-    if (now &gt;= startPreICOStage1 &amp;&amp; now &lt; endPreICOStage1){
+    if (now >= startPreICOStage1 && now < endPreICOStage1){
       bonus = 30;    
     }     
-    if (now &gt;= startPreICOStage2 &amp;&amp; now &lt; endPreICOStage2){
+    if (now >= startPreICOStage2 && now < endPreICOStage2){
       bonus = 25;    
     }        
-    if (now &gt;= startPreICOStage3 &amp;&amp; now &lt; endPreICOStage3){
+    if (now >= startPreICOStage3 && now < endPreICOStage3){
       bonus = 15;    
     }
-    if (now &gt;= startICOStage1 &amp;&amp; now &lt; endICOStage1){
+    if (now >= startICOStage1 && now < endICOStage1){
       bonus = 10;    
     }    
-    if (now &gt;= startICOStage2 &amp;&amp; now &lt; endICOStage2){
+    if (now >= startICOStage2 && now < endICOStage2){
       bonus = 0;    
     }      
     return rateIco + rateIco.mul(bonus).div(100);
@@ -447,24 +447,24 @@ contract Crowdsale is Ownable {
   
   function checkHardCap(uint256 _value) public {
     //PreICO   
-    if (now &gt;= startPreICOStage1 &amp;&amp; now &lt; endPreICOStage1){
-      require(_value.add(sumPreICO1) &lt;= sumHardCapPreICO1);
+    if (now >= startPreICOStage1 && now < endPreICOStage1){
+      require(_value.add(sumPreICO1) <= sumHardCapPreICO1);
       sumPreICO1 = sumPreICO1.add(_value);
     }     
-    if (now &gt;= startPreICOStage2 &amp;&amp; now &lt; endPreICOStage2){
-      require(_value.add(sumPreICO2) &lt;= sumHardCapPreICO2);
+    if (now >= startPreICOStage2 && now < endPreICOStage2){
+      require(_value.add(sumPreICO2) <= sumHardCapPreICO2);
       sumPreICO2 = sumPreICO2.add(_value);  
     }        
-    if (now &gt;= startPreICOStage3 &amp;&amp; now &lt; endPreICOStage3){
-      require(_value.add(sumPreICO3) &lt;= sumHardCapPreICO3);
+    if (now >= startPreICOStage3 && now < endPreICOStage3){
+      require(_value.add(sumPreICO3) <= sumHardCapPreICO3);
       sumPreICO3 = sumPreICO3.add(_value);    
     }
-    if (now &gt;= startICOStage1 &amp;&amp; now &lt; endICOStage1){
-      require(_value.add(sumICO1) &lt;= sumHardCapICO1);
+    if (now >= startICOStage1 && now < endICOStage1){
+      require(_value.add(sumICO1) <= sumHardCapICO1);
       sumICO1 = sumICO1.add(_value);  
     }    
-    if (now &gt;= startICOStage2 &amp;&amp; now &lt; endICOStage2){
-      require(_value.add(sumICO2) &lt;= sumHardCapICO2);
+    if (now >= startICOStage2 && now < endICOStage2){
+      require(_value.add(sumICO2) <= sumHardCapICO2);
       sumICO2 = sumICO2.add(_value);   
     }      
   } 
@@ -473,8 +473,8 @@ contract Crowdsale is Ownable {
     uint256 weiAmount = msg.value;
     uint256 rate;
     address _this = this;
-    require(now &gt;= startPreICOStage1);
-    require(now &lt;= endICOStage2);
+    require(now >= startPreICOStage1);
+    require(now <= endICOStage2);
     require(_beneficiary != address(0));
     rate = getRateIcoWithBonus();
     tokens = weiAmount.mul(rate);

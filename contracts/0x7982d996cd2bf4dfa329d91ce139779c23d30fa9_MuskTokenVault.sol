@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,11 +89,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -103,8 +103,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -127,13 +127,13 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract MuskToken is StandardToken {
 
     function () {
@@ -146,28 +146,28 @@ contract MuskToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
 //
 // CHANGE THESE VALUES FOR YOUR TOKEN
 //
 
-//make sure this function name matches the contract name above. So if you&#39;re token is called TutorialToken, make sure the 
+//make sure this function name matches the contract name above. So if you're token is called TutorialToken, make sure the 
 //contract name above is also TutorialToken instead of MuskToken
 
     function MuskToken(
         ) {
         balances[msg.sender] = 1000000000000000000000000000;               // Give the creator all initial tokens (100000 for example)
         totalSupply = 1000000000000000000000000000;                        // Update total supply (100000 for example)
-        name = &quot;Musk Token&quot;;                                   // Set the name for display purposes
+        name = "Musk Token";                                   // Set the name for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
-        symbol = &quot;MUSK&quot;;                               // Set the symbol for display purposes
+        symbol = "MUSK";                               // Set the symbol for display purposes
     }
 
     /* Approves and then calls the receiving contract */
@@ -175,10 +175,10 @@ contract MuskToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }
@@ -186,7 +186,7 @@ contract MuskToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -242,13 +242,13 @@ contract MuskTokenVault is Ownable {
     uint256 public finalReserveTimeLock = 2 * 365 days;
 
     /** Reserve allocations */
-    mapping(address =&gt; uint256) public allocations;
+    mapping(address => uint256) public allocations;
 
     /** When timeLocks are over (UNIX Timestamp)  */  
-    mapping(address =&gt; uint256) public timeLocks;
+    mapping(address => uint256) public timeLocks;
 
     /** How many tokens each reserve wallet has claimed */
-    mapping(address =&gt; uint256) public claimed;
+    mapping(address => uint256) public claimed;
 
     /** When this vault was locked (UNIX Timestamp)*/
     uint256 public lockedAt = 0;
@@ -266,21 +266,21 @@ contract MuskTokenVault is Ownable {
 
     //Any of the three reserve wallets
     modifier onlyReserveWallets {
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only Musk team reserve wallet
     modifier onlyTeamReserve {
         require(msg.sender == teamReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only final token reserve wallet
     modifier onlyTokenReserve {
         require(msg.sender == finalReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
@@ -291,7 +291,7 @@ contract MuskTokenVault is Ownable {
     }
 
     modifier locked {
-        require(lockedAt &gt; 0);
+        require(lockedAt > 0);
         _;
     }
 
@@ -361,8 +361,8 @@ contract MuskTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         // Must Only claim once
         require(claimed[reserveWallet] == 0);
@@ -384,10 +384,10 @@ contract MuskTokenVault is Ownable {
         //Amount of tokens the team should have at this vesting stage
         uint256 totalUnlocked = vestingStage.mul(allocations[teamReserveWallet]).div(teamVestingStages);
 
-        require(totalUnlocked &lt;= allocations[teamReserveWallet]);
+        require(totalUnlocked <= allocations[teamReserveWallet]);
 
         //Previously claimed tokens must be less than what is unlocked
-        require(claimed[teamReserveWallet] &lt; totalUnlocked);
+        require(claimed[teamReserveWallet] < totalUnlocked);
 
         uint256 payment = totalUnlocked.sub(claimed[teamReserveWallet]);
 
@@ -406,8 +406,8 @@ contract MuskTokenVault is Ownable {
 
         uint256 stage = (block.timestamp.sub(lockedAt)).div(vestingMonths);
 
-        //Ensures team vesting stage doesn&#39;t go past teamVestingStages
-        if(stage &gt; teamVestingStages){
+        //Ensures team vesting stage doesn't go past teamVestingStages
+        if(stage > teamVestingStages){
             stage = teamVestingStages;
         }
 
@@ -418,7 +418,7 @@ contract MuskTokenVault is Ownable {
     // Checks if msg.sender can collect tokens
     function canCollect() public view onlyReserveWallets returns(bool) {
 
-        return block.timestamp &gt; timeLocks[msg.sender] &amp;&amp; claimed[msg.sender] == 0;
+        return block.timestamp > timeLocks[msg.sender] && claimed[msg.sender] == 0;
 
     }
 

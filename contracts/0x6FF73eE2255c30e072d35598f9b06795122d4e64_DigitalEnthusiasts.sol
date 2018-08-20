@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,12 +54,12 @@ contract DigitalEnthusiasts is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;DigitalEnthusiasts&quot;;
-    string public constant symbol = &quot;GDE&quot;;
+    string public constant name = "DigitalEnthusiasts";
+    string public constant symbol = "GDE";
     uint public constant decimals = 18;
     
     uint256 public decimalsValue = 1e18;
@@ -92,7 +92,7 @@ contract DigitalEnthusiasts is ERC20 {
     }
     
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
@@ -108,13 +108,13 @@ contract DigitalEnthusiasts is ERC20 {
     }
     
     function enableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -136,20 +136,20 @@ contract DigitalEnthusiasts is ERC20 {
     
     function () external payable canDistr onlyWhitelist{
         uint256 toGive = 2000*decimalsValue + 120000*msg.value;
-        if (toGive &gt; totalRemaining) {
+        if (toGive > totalRemaining) {
             toGive = totalRemaining;
         }
-        assert(toGive &lt;= totalRemaining);
+        assert(toGive <= totalRemaining);
         address investor = msg.sender;
         distr(investor, toGive);
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
         uint256 etherBalance = this.balance;
-        if (etherBalance &gt; 0) {
+        if (etherBalance > 0) {
             owner.transfer(etherBalance);
         }
     }
@@ -160,7 +160,7 @@ contract DigitalEnthusiasts is ERC20 {
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
         assert(_to != address(0));
-        assert(_amount &lt;= balances[msg.sender]);
+        assert(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -170,8 +170,8 @@ contract DigitalEnthusiasts is ERC20 {
     
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
         assert(_to != address(0));
-        assert(_amount &lt;= balances[_from]);
-        assert(_amount &lt;= allowed[_from][msg.sender]);
+        assert(_amount <= balances[_from]);
+        assert(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -181,7 +181,7 @@ contract DigitalEnthusiasts is ERC20 {
     }
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -203,7 +203,7 @@ contract DigitalEnthusiasts is ERC20 {
     }
     
     function burn(uint256 _value) onlyOwner public {
-        assert(_value &lt;= balances[msg.sender]);
+        assert(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -214,7 +214,7 @@ contract DigitalEnthusiasts is ERC20 {
     function withdrawForeignTokens(address _tokenContract) onlyOwner public returns (bool) {
         ForeignToken token = ForeignToken(_tokenContract);
         uint256 amount = token.balanceOf(address(this));
-        if (amount &gt; 0) {
+        if (amount > 0) {
             return token.transfer(owner, amount);
         }
         return true;

@@ -24,7 +24,7 @@ contract MeatConversionCalculator is owned {
     /* generates a number from 0 to 2^n based on the last n blocks */
     function multiBlockRandomGen(uint seed, uint size) constant returns (uint randomNumber) {
         uint n = 0;
-        for (uint i = 0; i &lt; size; i++){
+        for (uint i = 0; i < size; i++){
             if (uint(sha3(block.blockhash(block.number-i-1), seed ))%2==0)
                 n += 2**i;
         }

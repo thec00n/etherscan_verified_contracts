@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -65,7 +65,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(address(this).balance &gt;= payment);
+    require(address(this).balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -93,7 +93,7 @@ contract PullPayment {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,8 +136,8 @@ library SaleListLib {
   struct SaleList {
     address head;
 
-    mapping(address =&gt; address) sellerListMapping;
-    mapping(address =&gt; uint) sellerToPrice;
+    mapping(address => address) sellerListMapping;
+    mapping(address => uint) sellerToPrice;
   }
 
   function getBest(SaleList storage self) public view returns (address, uint) {
@@ -154,7 +154,7 @@ library SaleListLib {
     }
 
     self.sellerToPrice[seller] = price;
-    if (self.head == nullAddress || price &lt;= self.sellerToPrice[self.head]) {
+    if (self.head == nullAddress || price <= self.sellerToPrice[self.head]) {
       self.sellerListMapping[seller] = self.head;
       self.head = seller;
     } else {
@@ -162,7 +162,7 @@ library SaleListLib {
       address cur = self.sellerListMapping[prev];
 
       while (cur != nullAddress) {
-        if (price &lt;= self.sellerToPrice[cur]) {
+        if (price <= self.sellerToPrice[cur]) {
           self.sellerListMapping[prev] = seller;
           self.sellerListMapping[seller] = cur;
 
@@ -196,7 +196,7 @@ library SaleListLib {
 
       // TODO: Make SURE that initialized mapping with address vals initializes those vals to address(0)
       // NOTE: Redundant check (prev != seller)
-      while (cur != nullAddress &amp;&amp; prev != seller) {
+      while (cur != nullAddress && prev != seller) {
         if (cur == seller) {
           self.sellerListMapping[prev] = self.sellerListMapping[seller];
           _remove(self, seller);
@@ -250,15 +250,15 @@ contract SaleRegistry is Ownable {
   // State
   ////////
 
-  mapping(bytes32 =&gt; SaleListLib.SaleList) _sigToSortedSales;
+  mapping(bytes32 => SaleListLib.SaleList) _sigToSortedSales;
 
-  mapping(address =&gt; mapping(bytes32 =&gt; uint256)) _addressToSigToSalePrice;
+  mapping(address => mapping(bytes32 => uint256)) _addressToSigToSalePrice;
 
   // NOTE: Rules are different for contract owner. Can run many sales at a time, all at a single price. This
   // allows multi-sale at genesis time
-  mapping(bytes32 =&gt; uint256) _ownerSigToNumSales;
+  mapping(bytes32 => uint256) _ownerSigToNumSales;
 
-  mapping(bytes32 =&gt; uint256) public sigToNumSales;
+  mapping(bytes32 => uint256) public sigToNumSales;
 
   /////////////
   // User views
@@ -311,7 +311,7 @@ contract SaleRegistry is Ownable {
     emit SalePosted(seller, sig, price);
   }
 
-  // NOTE: Special remove logic for contract owner&#39;s sale!
+  // NOTE: Special remove logic for contract owner's sale!
   function cancelSale(address seller, bytes32 sig) internal {
     if (seller == owner) {
       _ownerSigToNumSales[sig] = _ownerSigToNumSales[sig].sub(1);
@@ -354,15 +354,15 @@ contract OwnerRegistry {
   ////////
 
   bytes32[] _allSigs;
-  mapping(address =&gt; mapping(bytes32 =&gt; uint256)) _ownerToSigToCount;
-  mapping(bytes32 =&gt; uint256) _sigToCount;
+  mapping(address => mapping(bytes32 => uint256)) _ownerToSigToCount;
+  mapping(bytes32 => uint256) _sigToCount;
 
   ////////////////
   // Admin actions
   ////////////////
 
   function addCardToRegistry(address owner, bytes32 sig, uint256 numToAdd) internal {
-    // Only allow adding cards that haven&#39;t already been added
+    // Only allow adding cards that haven't already been added
     require(_sigToCount[sig] == 0);
 
     _allSigs.push(sig);
@@ -394,10 +394,10 @@ contract OwnerRegistry {
 
   function registryTransfer(address oldOwner, address newOwner, bytes32 sig, uint256 count) internal {
     // Must be transferring at least one card!
-    require(count &gt; 0);
+    require(count > 0);
 
-    // Don&#39;t allow a transfer when the old owner doesn&#39;t enough of the card
-    require(_ownerToSigToCount[oldOwner][sig] &gt;= count);
+    // Don't allow a transfer when the old owner doesn't enough of the card
+    require(_ownerToSigToCount[oldOwner][sig] >= count);
 
     _ownerToSigToCount[oldOwner][sig] = _ownerToSigToCount[oldOwner][sig].sub(count);
     _ownerToSigToCount[newOwner][sig] = _ownerToSigToCount[newOwner][sig].add(count);
@@ -409,10 +409,10 @@ contract OwnerRegistry {
 contract ArtistRegistry {
   using SafeMath for uint256;
 
-  mapping(bytes32 =&gt; address) _sigToArtist;
+  mapping(bytes32 => address) _sigToArtist;
 
   // fee tuple is of form (txFeePercent, genesisSalePercent)
-  mapping(bytes32 =&gt; uint256[2]) _sigToFeeTuple;
+  mapping(bytes32 => uint256[2]) _sigToFeeTuple;
 
   function addArtistToRegistry(bytes32 sig,
                                address artist,
@@ -458,15 +458,15 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
   address public shareholder2;
   address public shareholder3;
 
-  // 0 -&gt; 3 depending on contract state. I only use uint256 so that I can use SafeMath...
+  // 0 -> 3 depending on contract state. I only use uint256 so that I can use SafeMath...
   uint256 public numShareholders = 0;
 
   // Used to set initial shareholders
   function addShareholderAddress(address newShareholder) external onlyOwner {
-    // Don&#39;t let shareholder be address(0)
+    // Don't let shareholder be address(0)
     require(newShareholder != address(0));
 
-    // Contract owner can&#39;t be a shareholder
+    // Contract owner can't be a shareholder
     require(newShareholder != owner);
 
     // Must be an open shareholder spot!
@@ -487,7 +487,7 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
   // Splits the amount specified among shareholders equally
   function payShareholders(uint256 amount) internal {
     // If no shareholders, shareholder fees will be held in contract to be withdrawable by owner
-    if (numShareholders &gt; 0) {
+    if (numShareholders > 0) {
       uint256 perShareholderFee = amount.div(numShareholders);
 
       if (shareholder1 != address(0)) {
@@ -512,8 +512,8 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
     uint256 contractBalance = address(this).balance;
     uint256 withdrawableBalance = contractBalance.sub(totalPayments);
 
-    // No withdrawal necessary if &lt;= 0 balance
-    require(withdrawableBalance &gt; 0);
+    // No withdrawal necessary if <= 0 balance
+    require(withdrawableBalance > 0);
 
     msg.sender.transfer(withdrawableBalance);
   }
@@ -536,21 +536,21 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
   ///////////////
 
   function createSale(bytes32 sig, uint256 price) external {
-    // Can&#39;t sell a card for 0... May want other limits in the future
-    require(price &gt; 0);
+    // Can't sell a card for 0... May want other limits in the future
+    require(price > 0);
 
-    // Can&#39;t sell a card you don&#39;t own
-    require(getNumSigsOwned(sig) &gt; 0);
+    // Can't sell a card you don't own
+    require(getNumSigsOwned(sig) > 0);
 
-    // Can&#39;t post a sale if you have one posted already! Unless you&#39;re the contract owner
+    // Can't post a sale if you have one posted already! Unless you're the contract owner
     require(msg.sender == owner || _addressToSigToSalePrice[msg.sender][sig] == 0);
 
     postSale(msg.sender, sig, price);
   }
 
   function removeSale(bytes32 sig) public {
-    // Can&#39;t cancel a sale that doesn&#39;t exist
-    require(_addressToSigToSalePrice[msg.sender][sig] &gt; 0);
+    // Can't cancel a sale that doesn't exist
+    require(_addressToSigToSalePrice[msg.sender][sig] > 0);
 
     cancelSale(msg.sender, sig);
   }
@@ -588,14 +588,14 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
     (seller, price) = getBestSale(sig);
 
     // There must be a valid sale for the card
-    require(price &gt; 0 &amp;&amp; seller != address(0));
+    require(price > 0 && seller != address(0));
 
     // Buyer must have enough Eth via wallet and payment to cover posted price
     uint256 availableEth = msg.value.add(payments[msg.sender]);
-    require(availableEth &gt;= price);
+    require(availableEth >= price);
 
-    // Debit wallet if msg doesn&#39;t have enough value to cover price
-    if (msg.value &lt; price) {
+    // Debit wallet if msg doesn't have enough value to cover price
+    if (msg.value < price) {
       asyncDebit(msg.sender, price.sub(msg.value));
     }
 
@@ -620,23 +620,23 @@ contract PepeCore is PullPayment, OwnerRegistry, SaleRegistry, ArtistRegistry {
   function transferSig(bytes32 sig, uint256 count, address newOwner) external {
     uint256 numOwned = getNumSigsOwned(sig);
 
-    // Can&#39;t transfer cards you don&#39;t own
-    require(numOwned &gt;= count);
+    // Can't transfer cards you don't own
+    require(numOwned >= count);
 
     // If transferring from contract owner, cancel the proper number of sales if necessary
     if (msg.sender == owner) {
       uint256 remaining = numOwned.sub(count);
 
-      if (remaining &lt; _ownerSigToNumSales[sig]) {
+      if (remaining < _ownerSigToNumSales[sig]) {
         uint256 numSalesToCancel = _ownerSigToNumSales[sig].sub(remaining);
 
-        for (uint256 i = 0; i &lt; numSalesToCancel; i++) {
+        for (uint256 i = 0; i < numSalesToCancel; i++) {
           removeSale(sig);
         }
       }
     } else {
       // Remove existing sale if transferring all owned cards
-      if (numOwned == count &amp;&amp; _addressToSigToSalePrice[msg.sender][sig] &gt; 0) {
+      if (numOwned == count && _addressToSigToSalePrice[msg.sender][sig] > 0) {
         removeSale(sig);
       }
     }

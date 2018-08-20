@@ -11,7 +11,7 @@ function transfer(address _to, uint256 _value) public returns (bool success);
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 //Send _value amount of tokens from address _from to address _to
 /*The transferFrom method is used for a withdraw workflow, allowing contracts to send 
-tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 fees in sub-currencies; the command should fail unless the _from account has deliberately
 authorized the sender of the message via some mechanism; we propose these standardized APIs for approval: */
 function approve(address _spender, uint256 _value) public returns (bool success);
@@ -48,9 +48,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -67,7 +67,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,14 +76,14 @@ contract Nickelcoin is IERC20 {
     
     using SafeMath for uint256;
     
-    string public constant name = &quot;Nickelcoin&quot;;  
-    string public constant symbol = &quot;NKL&quot;; 
+    string public constant name = "Nickelcoin";  
+    string public constant symbol = "NKL"; 
     uint8 public constant decimals = 8;  
     uint public  _totalSupply = 4000000000000000; 
     
    
-    mapping (address =&gt; uint256) public funds; 
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => uint256) public funds; 
+    mapping(address => mapping(address => uint256)) allowed;
     
     event Transfer(address indexed from, address indexed to, uint256 value);  
     
@@ -101,7 +101,7 @@ contract Nickelcoin is IERC20 {
         
     function transfer(address _to, uint256 _value) public returns (bool success) {
    
-    require(funds[msg.sender] &gt;= _value &amp;&amp; funds[_to].add(_value) &gt;= funds[_to]);
+    require(funds[msg.sender] >= _value && funds[_to].add(_value) >= funds[_to]);
 
     
     funds[msg.sender] = funds[msg.sender].sub(_value); 
@@ -112,10 +112,10 @@ contract Nickelcoin is IERC20 {
     }
 	
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require (allowed[_from][msg.sender] &gt;= _value);   
+        require (allowed[_from][msg.sender] >= _value);   
         require (_to != 0x0);                            
-        require (funds[_from] &gt;= _value);               
-        require (funds[_to].add(_value) &gt; funds[_to]); 
+        require (funds[_from] >= _value);               
+        require (funds[_to].add(_value) > funds[_to]); 
         funds[_from] = funds[_from].sub(_value);   
         funds[_to] = funds[_to].add(_value);        
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);

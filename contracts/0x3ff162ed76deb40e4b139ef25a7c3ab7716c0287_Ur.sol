@@ -3,7 +3,7 @@ contract Owned {
 
     address public owner;
     enum StatusEditor{DisableEdit, EnableEdit}
-    mapping(address =&gt; StatusEditor) public editors;
+    mapping(address => StatusEditor) public editors;
 
     function Owned() {
         owner = msg.sender;
@@ -32,7 +32,7 @@ contract Owned {
     }
 
     modifier onlyOwnerOrEditor{
-        if (msg.sender != owner &amp;&amp; editors[msg.sender] != StatusEditor.EnableEdit) throw;
+        if (msg.sender != owner && editors[msg.sender] != StatusEditor.EnableEdit) throw;
         _;
     }
 
@@ -59,7 +59,7 @@ contract Ur is Owned {
     }
 
     uint256 public totalBalance;
-    string public standard = &#39;UrToken&#39;;
+    string public standard = 'UrToken';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -72,9 +72,9 @@ contract Ur is Owned {
     uint public difficultyBalance;
     uint public increaseStep;
 
-    mapping(bytes32 =&gt; Group) public userGroups;
-    mapping(address =&gt; User) public users;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(bytes32 => Group) public userGroups;
+    mapping(address => User) public users;
+    mapping(address => uint256) public balanceOf;
 
     address[] public userAddresses;
     bytes32[] public groupArray;
@@ -99,8 +99,8 @@ contract Ur is Owned {
     function Ur(){
         totalBalance = 10000000000000000000000000000;
         balanceOf[msg.sender] = 10000000000000000000000000000;
-        name = &#39;UrToken&#39;;
-        symbol = &#39;URT&#39;;
+        name = 'UrToken';
+        symbol = 'URT';
         decimals = 16;
         contractPays = false;
 
@@ -164,10 +164,10 @@ contract Ur is Owned {
 
     function addUser(address _userAddress, uint _userGroupID) onlyOwnerOrEditor returns(bool){ 
 
-        if(groupArray[_userGroupID] == &#39;0x&#39;)
+        if(groupArray[_userGroupID] == '0x')
             return false;
 
-        for(uint i=0;i&lt;groupArray.length;i++){
+        for(uint i=0;i<groupArray.length;i++){
 
             if(i == _userGroupID){
                 difficultyBalance += userGroups[groupArray[i]].price;
@@ -183,7 +183,7 @@ contract Ur is Owned {
 
         userAddresses.push(_userAddress);
 
-        //if(difficultyBalance&gt;balanceTemp){
+        //if(difficultyBalance>balanceTemp){
         //    incrementPriceAndDifficulty = false;
         //    increasePriceAndDifficulty();
         //}
@@ -205,10 +205,10 @@ contract Ur is Owned {
 
     function changeUserGroup(address _userAddress, uint _newUserGroupID) onlyOwner returns (bool){
 
-        if(groupArray[_newUserGroupID] == &#39;0x&#39;)
+        if(groupArray[_newUserGroupID] == '0x')
             return false;
 
-        for(uint i=0;i&lt;groupArray.length;i++){
+        for(uint i=0;i<groupArray.length;i++){
 
             if(i == _newUserGroupID){
                 users[_userAddress].userGroupID = _newUserGroupID;
@@ -224,7 +224,7 @@ contract Ur is Owned {
     }
 
     function increasePriceAndDifficulty() onlyOwnerOrEditor{
-        if((difficultyBalance - balanceTemp) &gt;= increaseStep){            
+        if((difficultyBalance - balanceTemp) >= increaseStep){            
             balanceTemp = difficultyBalance;
             Difficulty += 10;
             Price += 1;           
@@ -252,7 +252,7 @@ contract Ur is Owned {
 
     function transfer(address _to, uint256 _value) {
 
-        if (_value &lt; 0 || balanceOf[msg.sender] &lt; _value)
+        if (_value < 0 || balanceOf[msg.sender] < _value)
             throw;
 
         if (users[msg.sender].convertedToCoins) throw;
@@ -260,7 +260,7 @@ contract Ur is Owned {
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, int256(_value));
-        if (contractPays &amp;&amp; !msg.sender.send(tx.gasprice))
+        if (contractPays && !msg.sender.send(tx.gasprice))
             throw;
     }
 

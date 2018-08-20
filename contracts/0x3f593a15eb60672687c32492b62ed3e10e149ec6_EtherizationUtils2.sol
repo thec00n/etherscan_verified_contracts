@@ -51,8 +51,8 @@ contract Etherization {
     Player[] public players;
     uint public numPlayers = 0;
     
-    mapping(address =&gt; uint) playerIDs;
-    mapping(uint =&gt; uint) public playerMsgs;
+    mapping(address => uint) playerIDs;
+    mapping(uint => uint) public playerMsgs;
     
     City city;
     City[] public cities;
@@ -71,7 +71,7 @@ contract Etherization {
     address utilsAddress;
     address utilsAddress2;
     
-    // Sum of all players&#39; balances
+    // Sum of all players' balances
     uint public totalBalances = 0;
 
     // Used to ensure only the owner can do some things.
@@ -91,15 +91,15 @@ contract Etherization {
         
         
         // If they paid too little, reject and refund their money.
-        if (msg.value &lt; START_PRICE) {
+        if (msg.value < START_PRICE) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] = &quot;Not enough ether sent to found a city and start playing. Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] = "Not enough ether sent to found a city and start playing. Sending back any eth sent...";
             return;
         }
         // If the player already exists
-        if (playerIDs[msg.sender] &gt; 0) {
+        if (playerIDs[msg.sender] > 0) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] =  &quot;You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] =  "You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...";
             return;
         }
         
@@ -116,7 +116,7 @@ contract Etherization {
         city.owner = numPlayers;
         city.name = cityName;
         // the first city in the game has a quarry and a farm by default
-        if(numCities &lt;= 0) {
+        if(numCities <= 0) {
             city.buildings[0] = true;
             quarryCities.push(0);
             city.buildings[1] = true;
@@ -127,7 +127,7 @@ contract Etherization {
         } else {
             city.buildings[0] = false;
             city.buildings[1] = false;
-            if(row&gt;33 || col&gt;33 || rowref&gt;33 || colref&gt;33 || int(row)-int(rowref) &gt; int(1) || int(row)-int(rowref) &lt; int(-1) || int(col)-int(colref) &gt; int(1) || int(col)-int(colref) &lt; int(-1) || map[row][col]&gt;0 || map[rowref][colref]&lt;=0) {
+            if(row>33 || col>33 || rowref>33 || colref>33 || int(row)-int(rowref) > int(1) || int(row)-int(rowref) < int(-1) || int(col)-int(colref) > int(1) || int(col)-int(colref) < int(-1) || map[row][col]>0 || map[rowref][colref]<=0) {
                 throw;
             }
             city.rowcol[0] = row;
@@ -139,7 +139,7 @@ contract Etherization {
             uint productionCut;
             uint i;
             productionCut = START_PRICE / quarryCities.length;
-            for(i=0; i &lt; quarryCities.length; i++) {
+            for(i=0; i < quarryCities.length; i++) {
                 players[cities[quarryCities[i]].owner].treasury += productionCut;
             }
         }
@@ -163,15 +163,15 @@ contract Etherization {
     }
     
     function withdraw(uint amount) {
-        if(int(playerIDs[msg.sender])-1 &lt; 0) {
+        if(int(playerIDs[msg.sender])-1 < 0) {
             throw;
         }
         uint playerID = playerIDs[msg.sender]-1;
-        if(timePassed(playerID) &lt; WAIT_TIME) {
+        if(timePassed(playerID) < WAIT_TIME) {
             playerMsgs[playerIDs[msg.sender]-1] = 2;
             return;        
         }
-        if(amount &lt; players[playerID].treasury &amp;&amp; amount &gt; MIN_WTH) {
+        if(amount < players[playerID].treasury && amount > MIN_WTH) {
             players[playerID].treasury -= amount;
             totalBalances -= amount;
             players[playerID].etherAddress.send((amount*99)/100); //keep 1% as commission
@@ -205,7 +205,7 @@ contract Etherization {
 
     // Used only by the wizard to collect his commission.
     function sweepCommission(uint amount) onlywizard {
-        if(amount &lt; this.balance-totalBalances) {
+        if(amount < this.balance-totalBalances) {
             wizardAddress.send(amount);
         }
     }
@@ -221,7 +221,7 @@ contract Etherization {
     }
     
     function getPlayerID(address sender) onlyutils constant returns (uint playerID) {
-        if(int(playerIDs[sender])-1 &lt; 0) {
+        if(int(playerIDs[sender])-1 < 0) {
             throw;
         }
         return playerIDs[sender]-1;
@@ -373,7 +373,7 @@ contract EtherizationUtils2 {
         
         playerID = e.getPlayerID(msg.sender);
         
-        if(e.timePassed(playerID) &lt; e.WAIT_TIME()) {
+        if(e.timePassed(playerID) < e.WAIT_TIME()) {
             e.setMsg(msg.sender, 2);
             return;        
         }
@@ -382,13 +382,13 @@ contract EtherizationUtils2 {
         (ownerT,,,unitsT,tRowcol,,) = e.getCity(target);
         (,,treasuryS,,numCitiesS,numUnitsS,) = e.players(ownerS);
         (,,treasuryT,,numCitiesT,numUnitsT,) = e.players(ownerT);
-        if(playerID != ownerS || playerID == ownerT || int(sRowcol[0])-int(tRowcol[0]) &gt; int(1) || int(sRowcol[0])-int(tRowcol[0]) &lt; int(-1) || int(sRowcol[1])-int(tRowcol[1]) &gt; int(1) || int(sRowcol[1])-int(tRowcol[1]) &lt; int(-1)) {
+        if(playerID != ownerS || playerID == ownerT || int(sRowcol[0])-int(tRowcol[0]) > int(1) || int(sRowcol[0])-int(tRowcol[0]) < int(-1) || int(sRowcol[1])-int(tRowcol[1]) > int(1) || int(sRowcol[1])-int(tRowcol[1]) < int(-1)) {
             e.setMsg(msg.sender, 17);
             return;
         }
 
         cityCaptured = false;
-        for(uint i=0; i&lt;unitIndxs.length; i++) {
+        for(uint i=0; i<unitIndxs.length; i++) {
             bestType = 0;
             win = false;
             ran = uint32(block.blockhash(block.number-1-i))/42949673; //random number between 0 and 100 (divide by MAX_UINT32/100)
@@ -396,29 +396,29 @@ contract EtherizationUtils2 {
             if(unitsS[unitIndxs[i]]==1) {
                 bestType = 0;
                 bestTypeInd = 0;
-                for(j=0; j&lt;unitsT.length; j++) {
-                    if(unitsT[j] == 1 &amp;&amp; bestType!=2) {
+                for(j=0; j<unitsT.length; j++) {
+                    if(unitsT[j] == 1 && bestType!=2) {
                         bestType = 1;
                         bestTypeInd = j;
                     } else if(unitsT[j] == 2) {
                         bestType = 2;
                         bestTypeInd = j;
                         break;
-                    } else if(unitsT[j] == 3 &amp;&amp; bestType!=2 &amp;&amp; bestType!=1) {
+                    } else if(unitsT[j] == 3 && bestType!=2 && bestType!=1) {
                         bestType = 3;
                         bestTypeInd = j;
                     }
                 }
                 if(bestType==1) {
-                    if(ran &gt; 50) {
+                    if(ran > 50) {
                         win = true;
                     }
                 } else if(bestType==2) {
-                    if(ran &gt; 75) {
+                    if(ran > 75) {
                         win = true;
                     }
                 } else if(bestType==3) {
-                    if(ran &gt; 25) {
+                    if(ran > 25) {
                         win = true;
                     }
                 } else {
@@ -430,29 +430,29 @@ contract EtherizationUtils2 {
             else if(unitsS[unitIndxs[i]]==2) {
                 bestType = 0;
                 bestTypeInd = 0;
-                for(j=0; j&lt;unitsT.length; j++) {
-                    if(unitsT[j] == 2 &amp;&amp; bestType!=3) {
+                for(j=0; j<unitsT.length; j++) {
+                    if(unitsT[j] == 2 && bestType!=3) {
                         bestType = 2;
                         bestTypeInd = j;
                     } else if(unitsT[j] == 3) {
                         bestType = 3;
                         bestTypeInd = j;
                         break;
-                    } else if(unitsT[j] == 1 &amp;&amp; bestType!=3 &amp;&amp; bestType!=2) {
+                    } else if(unitsT[j] == 1 && bestType!=3 && bestType!=2) {
                         bestType = 1;
                         bestTypeInd = j;
                     }
                 }
                 if(bestType==1) {
-                    if(ran &gt; 25) {
+                    if(ran > 25) {
                         win = true;
                     }
                 } else if(bestType==2) {
-                    if(ran &gt; 50) {
+                    if(ran > 50) {
                         win = true;
                     }
                 } else if(bestType==3) {
-                    if(ran &gt; 75) {
+                    if(ran > 75) {
                         win = true;
                     }
                 } else {
@@ -464,29 +464,29 @@ contract EtherizationUtils2 {
             else if(unitsS[unitIndxs[i]]==3) {
                 bestType = 0;
                 bestTypeInd = 0;
-                for(j=0; j&lt;unitsT.length; j++) {
-                    if(unitsT[j] == 3 &amp;&amp; bestType!=1) {
+                for(j=0; j<unitsT.length; j++) {
+                    if(unitsT[j] == 3 && bestType!=1) {
                         bestType = 3;
                         bestTypeInd = j;
                     } else if(unitsT[j] == 1) {
                         bestType = 1;
                         bestTypeInd = j;
                         break;
-                    } else if(unitsT[j] == 2 &amp;&amp; bestType!=1 &amp;&amp; bestType!=3) {
+                    } else if(unitsT[j] == 2 && bestType!=1 && bestType!=3) {
                         bestType = 2;
                         bestTypeInd = j;
                     }
                 }
                 if(bestType==1) {
-                    if(ran &gt; 75) {
+                    if(ran > 75) {
                         win = true;
                     }
                 } else if(bestType==2) {
-                    if(ran &gt; 25) {
+                    if(ran > 25) {
                         win = true;
                     }
                 } else if(bestType==3) {
-                    if(ran &gt; 50) {
+                    if(ran > 50) {
                         win = true;
                     }
                 } else {
@@ -518,7 +518,7 @@ contract EtherizationUtils2 {
         if(cityCaptured) {
             //march into the city
             j = 0;
-            for(; i &lt; unitIndxs.length; i++) {
+            for(; i < unitIndxs.length; i++) {
                 e.setUnit(target, j, unitsS[unitIndxs[i]]);
                 e.setUnit(source, unitIndxs[i], 0);
                 j++;
@@ -534,16 +534,16 @@ contract EtherizationUtils2 {
             int previousID;
             int nextID;
             uint capitol;
-            //remove the link to the city in losing player&#39;s city chai
+            //remove the link to the city in losing player's city chai
             (,,,,,,previousID,nextID) = e.getCity(target);
-            if(previousID &gt;= 0) {
+            if(previousID >= 0) {
                 e.setNextID(uint(previousID), nextID);
                 (,,,capitol,,,) = e.players(ownerT);
                 if(capitol == target) {
                     e.setCapitol(capitol, uint(previousID));
                 }
             }
-            if(nextID &gt;= 0) {
+            if(nextID >= 0) {
                 e.setPreviousID(uint(nextID), previousID);
                 if(capitol == target) {
                     e.setCapitol(capitol, uint(nextID));
@@ -554,10 +554,10 @@ contract EtherizationUtils2 {
             e.setMap(tRowcol[0], tRowcol[1], ownerS+1);
             
             (,,,,,,previousID,nextID) = e.getCity(source);
-            //add the city to winning player&#39;s city chain
+            //add the city to winning player's city chain
             e.setPreviousID(target, int(source));
             e.setNextID(target, nextID);
-            if(nextID &gt;= 0) {
+            if(nextID >= 0) {
                 e.setPreviousID(uint(nextID), int(target));
             }
             e.setNextID(source, int(target));
@@ -572,7 +572,7 @@ contract EtherizationUtils2 {
     function buildCity(string cityName, uint[2] rowcol, uint[2] rowcolref) {
         playerID = e.getPlayerID(msg.sender);
         
-        if(e.timePassed(playerID) &lt; e.WAIT_TIME()) {
+        if(e.timePassed(playerID) < e.WAIT_TIME()) {
             e.setMsg(msg.sender, 2);
             return;        
         }
@@ -582,14 +582,14 @@ contract EtherizationUtils2 {
         uint numUnits;
         uint capitol;
         (,,treasury,capitol,numCities,numUnits,) = e.players(playerID);
-        if(treasury &lt; e.CITY_PRICE()) {
+        if(treasury < e.CITY_PRICE()) {
             e.setMsg(msg.sender, 6);
             return;
         }
 
         e.setTreasury(playerID, treasury-e.CITY_PRICE());
         
-        if(rowcol[0]&gt;33 || rowcol[1]&gt;33 || rowcolref[0]&gt;33 || rowcolref[1]&gt;33 || int(rowcol[0])-int(rowcolref[0]) &gt; int(1) || int(rowcol[0])-int(rowcolref[0]) &lt; int(-1) || int(rowcol[1])-int(rowcolref[1]) &gt; int(1) || int(rowcol[1])-int(rowcolref[1]) &lt; int(-1) || e.map(rowcol[0],rowcol[1])&gt;0 || e.map(rowcolref[0],rowcolref[1])&lt;=0) {
+        if(rowcol[0]>33 || rowcol[1]>33 || rowcolref[0]>33 || rowcolref[1]>33 || int(rowcol[0])-int(rowcolref[0]) > int(1) || int(rowcol[0])-int(rowcolref[0]) < int(-1) || int(rowcol[1])-int(rowcolref[1]) > int(1) || int(rowcol[1])-int(rowcolref[1]) < int(-1) || e.map(rowcol[0],rowcol[1])>0 || e.map(rowcolref[0],rowcolref[1])<=0) {
             throw;
         }
 
@@ -598,7 +598,7 @@ contract EtherizationUtils2 {
         uint owner;
         int i;
         productionCut = e.CITY_PRICE() / e.getQrLength();
-        for(i=0; uint(i) &lt; e.getQrLength(); i++) {
+        for(i=0; uint(i) < e.getQrLength(); i++) {
             (owner,) = e.cities(e.quarryCities(uint(i)));
             (,,treasury,,,,) = e.players(owner);
             e.setTreasury(owner, treasury+productionCut);
@@ -616,14 +616,14 @@ contract EtherizationUtils2 {
         e.setMap(rowcol[0], rowcol[1], playerID+1);
         
         // if player has no cities currently
-        if(numCities&lt;1) {
+        if(numCities<1) {
             e.setCapitol(playerID, e.numCities());
             e.setPreviousID(e.numCities(), -1);
         } else {
             int nextID;
             i = int(capitol);
             (,nextID) = e.getCity(uint(i));
-            for(; nextID &gt;= 0 ;) {
+            for(; nextID >= 0 ;) {
                 i = nextID;
                 (,nextID) = e.getCity(uint(i));
             }

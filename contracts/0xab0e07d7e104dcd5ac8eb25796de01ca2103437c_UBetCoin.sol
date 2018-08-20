@@ -30,37 +30,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -84,8 +84,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
       
@@ -99,7 +99,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -127,18 +127,18 @@ contract StandardToken is ERC20, SafeMath {
 
 contract UBetCoin is Ownable, StandardToken {
 
-    string public name = &quot;UBetCoin&quot;;               // name of the token
-    string public symbol = &quot;UBET&quot;;                 // ERC20 compliant 4 digit token code
+    string public name = "UBetCoin";               // name of the token
+    string public symbol = "UBET";                 // ERC20 compliant 4 digit token code
     uint public decimals = 2;                      // token has 2 digit precision
 
     uint256 public totalSupply =  400000000000;      // 4 BILLION INITIAL SUPPLY
     uint256 public tokenSupplyFromCheck = 0;             // Total from check!
     uint256 public tokenSupplyBackedByGold = 4000000000; // Supply Backed By Gold
     
-    string public constant YOU_BET_MINE_DOCUMENT_PATH = &quot;https://s3.amazonaws.com/s3-ubetcoin-user-signatures/document/GOLD-MINES-assigned+TO-SAINT-NICOLAS-SNADCO-03-22-2016.pdf&quot;;
-    string public constant YOU_BET_MINE_DOCUMENT_SHA512 = &quot;7e9dc6362c5bf85ff19d75df9140b033c4121ba8aaef7e5837b276d657becf0a0d68fcf26b95e76023a33251ac94f35492f2f0af882af4b87b1b1b626b325cf8&quot;;
-    string public constant UBETCOIN_LEDGER_TO_LEDGER_ENTRY_DOCUMENT_PATH = &quot;https://s3.amazonaws.com/s3-ubetcoin-user-signatures/document/LEDGER-TO-LEDGER+ENTRY-FOR-UBETCOIN+03-20-2018.pdf&quot;;
-    string public constant UBETCOIN_LEDGER_TO_LEDGER_ENTRY_DOCUMENT_SHA512 = &quot;c8f0ae2602005dd88ef908624cf59f3956107d0890d67d3baf9c885b64544a8140e282366cae6a3af7bfbc96d17f856b55fc4960e2287d4a03d67e646e0e88c6&quot;;
+    string public constant YOU_BET_MINE_DOCUMENT_PATH = "https://s3.amazonaws.com/s3-ubetcoin-user-signatures/document/GOLD-MINES-assigned+TO-SAINT-NICOLAS-SNADCO-03-22-2016.pdf";
+    string public constant YOU_BET_MINE_DOCUMENT_SHA512 = "7e9dc6362c5bf85ff19d75df9140b033c4121ba8aaef7e5837b276d657becf0a0d68fcf26b95e76023a33251ac94f35492f2f0af882af4b87b1b1b626b325cf8";
+    string public constant UBETCOIN_LEDGER_TO_LEDGER_ENTRY_DOCUMENT_PATH = "https://s3.amazonaws.com/s3-ubetcoin-user-signatures/document/LEDGER-TO-LEDGER+ENTRY-FOR-UBETCOIN+03-20-2018.pdf";
+    string public constant UBETCOIN_LEDGER_TO_LEDGER_ENTRY_DOCUMENT_SHA512 = "c8f0ae2602005dd88ef908624cf59f3956107d0890d67d3baf9c885b64544a8140e282366cae6a3af7bfbc96d17f856b55fc4960e2287d4a03d67e646e0e88c6";
     
     /// Base exchange rate is set
     uint256 public ratePerOneEther = 962;
@@ -168,7 +168,7 @@ contract UBetCoin is Ownable, StandardToken {
       string digitalCheckFingerPrint;
     }
     
-    mapping (address =&gt; UBetCheck) UBetChecks;
+    mapping (address => UBetCheck) UBetChecks;
     address[] public uBetCheckAccts;
     
     
@@ -208,8 +208,8 @@ contract UBetCoin is Ownable, StandardToken {
       require(bytes(_routingNumber).length != 0);
       require(bytes(_institution).length != 0);
       require(bytes(_fullname).length != 0);
-      require(_amount &gt; 0);
-      require(_tokens &gt; 0);
+      require(_amount > 0);
+      require(_tokens > 0);
       require(bytes(_checkFilePath).length != 0);
       require(bytes(_digitalCheckFingerPrint).length != 0);
       
@@ -297,7 +297,7 @@ contract UBetCoin is Ownable, StandardToken {
     /// @param _beneficiary Address that newly issued token will be sent to.
     function purchaseTokens(address _beneficiary) public payable {
       // only accept a minimum amount of ETH?
-      require(msg.value &gt;= 0.00104 ether);
+      require(msg.value >= 0.00104 ether);
      
       uint _tokens = safeDiv(safeMul(msg.value, ratePerOneEther), (10**(18-decimals)));
       doIssueTokens(_beneficiary, _tokens);
@@ -316,7 +316,7 @@ contract UBetCoin is Ownable, StandardToken {
     /// @dev Change Rate per token in one ether
     /// @param _value the amount of tokens, with decimals expanded (full).
     function setRatePerOneEther(uint256 _value) public onlyOwner {
-      require(_value &gt;= 1);
+      require(_value >= 1);
       ratePerOneEther = _value;
     }
     

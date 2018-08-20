@@ -3,12 +3,12 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     function sub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -59,9 +59,9 @@ contract RARTokens is ERC20, Owned  {
     string public name;
     uint public decimals;  
     
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
     //Constructor receiving the parrent address and the total supply 
     function RARTokens(address parent, uint maxSupply) public {
@@ -85,7 +85,7 @@ contract RARTokens is ERC20, Owned  {
     //transfer token for a specified address
     function transfer(address to, uint tokens) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         Transfer(msg.sender, to, tokens);
@@ -95,8 +95,8 @@ contract RARTokens is ERC20, Owned  {
     //Transfer tokens from one address to another
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
         
         balances[from] = balances[from].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -138,8 +138,8 @@ contract RAXToken is RARTokens{
     //Constructor passing the parent address and the total supply 
     function RAXToken() RARTokens (this, _maxSupply) public {
         
-         symbol = &quot;RAX&quot;;
-         name = &quot;RAX Token&quot;;
+         symbol = "RAX";
+         name = "RAX Token";
          decimals = 18;
     }
 }
@@ -156,8 +156,8 @@ contract AVYToken is RARTokens{
     //parent here is RAX Token
     function AVYToken(address parent) RARTokens (parent, _maxSupply) public {
         
-        symbol = &quot;AVY&quot;;
-        name = &quot;AVY Token&quot;;
+        symbol = "AVY";
+        name = "AVY Token";
         decimals = 18; 
     } 
 }
@@ -175,8 +175,8 @@ contract RAZToken is RARTokens{
     //parent here is AVY Token
     function RAZToken(address parent) RARTokens (parent, _maxSupply) public {
         
-        symbol = &quot;RAZ&quot;;
-        name = &quot;RAZ Token&quot;;
+        symbol = "RAZ";
+        name = "RAZ Token";
         decimals = 18;   
     }
 }

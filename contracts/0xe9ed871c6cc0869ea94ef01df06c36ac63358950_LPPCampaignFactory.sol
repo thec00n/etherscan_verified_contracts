@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 
 /*
     Copyright 2017, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="bfdedbcdd6deffdcd0dbdadcd0d1cbdac7cb91d6d0">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="bfdedbcdd6deffdcd0dbdadcd0d1cbdac7cb91d6d0">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -32,17 +32,17 @@ contract ILiquidPledgingPlugin {
     /// @param pledgeFrom This is the Id from which value will be transfered.
     /// @param pledgeTo This is the Id that value will be transfered to.    
     /// @param context The situation that is triggering the plugin:
-    ///  0 -&gt; Plugin for the owner transferring pledge to another party
-    ///  1 -&gt; Plugin for the first delegate transferring pledge to another party
-    ///  2 -&gt; Plugin for the second delegate transferring pledge to another party
+    ///  0 -> Plugin for the owner transferring pledge to another party
+    ///  1 -> Plugin for the first delegate transferring pledge to another party
+    ///  2 -> Plugin for the second delegate transferring pledge to another party
     ///  ...
-    ///  255 -&gt; Plugin for the intendedProject transferring pledge to another party
+    ///  255 -> Plugin for the intendedProject transferring pledge to another party
     ///
-    ///  256 -&gt; Plugin for the owner receiving pledge to another party
-    ///  257 -&gt; Plugin for the first delegate receiving pledge to another party
-    ///  258 -&gt; Plugin for the second delegate receiving pledge to another party
+    ///  256 -> Plugin for the owner receiving pledge to another party
+    ///  257 -> Plugin for the first delegate receiving pledge to another party
+    ///  258 -> Plugin for the second delegate receiving pledge to another party
     ///  ...
-    ///  511 -&gt; Plugin for the intendedProject receiving pledge to another party
+    ///  511 -> Plugin for the intendedProject receiving pledge to another party
     /// @param amount The amount of value that will be transfered.
     function beforeTransfer(
         uint64 pledgeManager,
@@ -59,17 +59,17 @@ contract ILiquidPledgingPlugin {
     /// @param pledgeFrom This is the Id from which value will be transfered.
     /// @param pledgeTo This is the Id that value will be transfered to.    
     /// @param context The situation that is triggering the plugin:
-    ///  0 -&gt; Plugin for the owner transferring pledge to another party
-    ///  1 -&gt; Plugin for the first delegate transferring pledge to another party
-    ///  2 -&gt; Plugin for the second delegate transferring pledge to another party
+    ///  0 -> Plugin for the owner transferring pledge to another party
+    ///  1 -> Plugin for the first delegate transferring pledge to another party
+    ///  2 -> Plugin for the second delegate transferring pledge to another party
     ///  ...
-    ///  255 -&gt; Plugin for the intendedProject transferring pledge to another party
+    ///  255 -> Plugin for the intendedProject transferring pledge to another party
     ///
-    ///  256 -&gt; Plugin for the owner receiving pledge to another party
-    ///  257 -&gt; Plugin for the first delegate receiving pledge to another party
-    ///  258 -&gt; Plugin for the second delegate receiving pledge to another party
+    ///  256 -> Plugin for the owner receiving pledge to another party
+    ///  257 -> Plugin for the first delegate receiving pledge to another party
+    ///  258 -> Plugin for the second delegate receiving pledge to another party
     ///  ...
-    ///  511 -&gt; Plugin for the intendedProject receiving pledge to another party
+    ///  511 -> Plugin for the intendedProject receiving pledge to another party
     ///  @param amount The amount of value that will be transfered.
     function afterTransfer(
         uint64 pledgeManager,
@@ -85,9 +85,9 @@ pragma solidity ^0.4.15;
 
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="8aebeef8e3ebcae9e5eeefe9e5e4feeff2fea4e3e5">[email&#160;protected]</span>&gt;
+/// @author Adrià Massanet <<span class="__cf_email__" data-cfemail="8aebeef8e3ebcae9e5eeefe9e5e4feeff2fea4e3e5">[email protected]</span>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -187,7 +187,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner
@@ -202,7 +202,7 @@ contract ERC20 {
 pragma solidity ^0.4.15;
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="4b2a2f39222a0b28242f2e2824253f2e333f652224">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="4b2a2f39222a0b28242f2e2824253f2e333f652224">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -215,7 +215,7 @@ pragma solidity ^0.4.15;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -230,7 +230,7 @@ pragma solidity ^0.4.15;
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -265,7 +265,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) constant public returns (bool) {
         return !escapeBlacklist[_token];
@@ -310,7 +310,7 @@ contract Escapable is Owned {
 pragma solidity ^0.4.11;
 /*
     Copyright 2017, Jordi Baylina
-    Contributors: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="38595c4a5159785b575c5d5b57564c5d404c165157">[email&#160;protected]</span>&gt;, RJ Ewing, Griff
+    Contributors: Adrià Massanet <<span class="__cf_email__" data-cfemail="38595c4a5159785b575c5d5b57564c5d404c165157">[email protected]</span>>, RJ Ewing, Griff
     Green, Arthur Lunn
 
     This program is free software: you can redistribute it and/or modify
@@ -324,7 +324,7 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -339,7 +339,7 @@ interface LPVault {
 }
 
 /// @dev `LiquidPledgingBase` is the base level contract used to carry out
-///  liquidPledging&#39;s most basic functions, mostly handling and searching the
+///  liquidPledging's most basic functions, mostly handling and searching the
 ///  data structures
 contract LiquidPledgingBase is Escapable {
 
@@ -359,7 +359,7 @@ contract LiquidPledgingBase is Escapable {
         address addr; // Account or contract address for admin
         string name;
         string url;  // Can be IPFS hash
-        uint64 commitTime;  // In seconds, used for Givers&#39; &amp; Delegates&#39; vetos
+        uint64 commitTime;  // In seconds, used for Givers' & Delegates' vetos
         uint64 parentProject;  // Only for projects
         bool canceled;      //Always false except for canceled projects
 
@@ -382,10 +382,10 @@ contract LiquidPledgingBase is Escapable {
     PledgeAdmin[] admins; //The list of pledgeAdmins 0 means there is no admin
     LPVault public vault;
 
-    /// @dev this mapping allows you to search for a specific pledge&#39;s 
+    /// @dev this mapping allows you to search for a specific pledge's 
     ///  index number by the hash of that pledge
-    mapping (bytes32 =&gt; uint64) hPledge2idx;
-    mapping (bytes32 =&gt; bool) pluginWhitelist;
+    mapping (bytes32 => uint64) hPledge2idx;
+    mapping (bytes32 => bool) pluginWhitelist;
     
     bool public usePluginWhitelist = true;
 
@@ -425,10 +425,10 @@ contract LiquidPledgingBase is Escapable {
 
     /// @notice Creates a Giver Admin with the `msg.sender` as the Admin address
     /// @param name The name used to identify the Giver
-    /// @param url The link to the Giver&#39;s profile often an IPFS hash
+    /// @param url The link to the Giver's profile often an IPFS hash
     /// @param commitTime The length of time in seconds the Giver has to
-    ///   veto when the Giver&#39;s delegates Pledge funds to a project
-    /// @param plugin This is Giver&#39;s liquid pledge plugin allowing for 
+    ///   veto when the Giver's delegates Pledge funds to a project
+    /// @param plugin This is Giver's liquid pledge plugin allowing for 
     ///  extended functionality
     /// @return idGiver The id number used to reference this Admin
     function addGiver(
@@ -457,15 +457,15 @@ contract LiquidPledgingBase is Escapable {
 
     event GiverAdded(uint64 indexed idGiver);
 
-    /// @notice Updates a Giver&#39;s info to change the address, name, url, or 
+    /// @notice Updates a Giver's info to change the address, name, url, or 
     ///  commitTime, it cannot be used to change a plugin, and it must be called
     ///  by the current address of the Giver
     /// @param idGiver This is the Admin id number used to specify the Giver
     /// @param newAddr The new address that represents this Giver
     /// @param newName The new name used to identify the Giver
-    /// @param newUrl The new link to the Giver&#39;s profile often an IPFS hash
+    /// @param newUrl The new link to the Giver's profile often an IPFS hash
     /// @param newCommitTime Sets the length of time in seconds the Giver has to
-    ///   veto when the Giver&#39;s delegates Pledge funds to a project
+    ///   veto when the Giver's delegates Pledge funds to a project
     function updateGiver(
         uint64 idGiver,
         address newAddr,
@@ -487,11 +487,11 @@ contract LiquidPledgingBase is Escapable {
 
     /// @notice Creates a Delegate Admin with the `msg.sender` as the Admin addr
     /// @param name The name used to identify the Delegate
-    /// @param url The link to the Delegate&#39;s profile often an IPFS hash
+    /// @param url The link to the Delegate's profile often an IPFS hash
     /// @param commitTime Sets the length of time in seconds that this delegate
     ///  can be vetoed. Whenever this delegate is in a delegate chain the time
     ///  allowed to veto any event must be greater than or equal to this time.
-    /// @param plugin This is Delegate&#39;s liquid pledge plugin allowing for 
+    /// @param plugin This is Delegate's liquid pledge plugin allowing for 
     ///  extended functionality
     /// @return idxDelegate The id number used to reference this Delegate within
     ///  the admins array
@@ -521,13 +521,13 @@ contract LiquidPledgingBase is Escapable {
 
     event DelegateAdded(uint64 indexed idDelegate);
 
-    /// @notice Updates a Delegate&#39;s info to change the address, name, url, or 
+    /// @notice Updates a Delegate's info to change the address, name, url, or 
     ///  commitTime, it cannot be used to change a plugin, and it must be called
     ///  by the current address of the Delegate
     /// @param idDelegate The Admin id number used to specify the Delegate
     /// @param newAddr The new address that represents this Delegate
     /// @param newName The new name used to identify the Delegate
-    /// @param newUrl The new link to the Delegate&#39;s profile often an IPFS hash
+    /// @param newUrl The new link to the Delegate's profile often an IPFS hash
     /// @param newCommitTime Sets the length of time in seconds that this 
     ///  delegate can be vetoed. Whenever this delegate is in a delegate chain 
     ///  the time allowed to veto any event must be greater than or equal to
@@ -552,14 +552,14 @@ contract LiquidPledgingBase is Escapable {
 
     /// @notice Creates a Project Admin with the `msg.sender` as the Admin addr
     /// @param name The name used to identify the Project
-    /// @param url The link to the Project&#39;s profile often an IPFS hash
+    /// @param url The link to the Project's profile often an IPFS hash
     /// @param projectAdmin The address for the trusted project manager 
     /// @param parentProject The Admin id number for the parent project or 0 if
     ///  there is no parentProject
     /// @param commitTime Sets the length of time in seconds the Project has to
     ///   veto when the Project delegates to another Delegate and they pledge 
     ///   those funds to a project
-    /// @param plugin This is Project&#39;s liquid pledge plugin allowing for 
+    /// @param plugin This is Project's liquid pledge plugin allowing for 
     ///  extended functionality
     /// @return idProject The id number used to reference this Admin
     function addProject(
@@ -575,7 +575,7 @@ contract LiquidPledgingBase is Escapable {
         if (parentProject != 0) {
             PledgeAdmin storage pa = findAdmin(parentProject);
             require(pa.adminType == PledgeAdminType.Project);
-            require(getProjectLevel(pa) &lt; MAX_SUBPROJECT_LEVEL);
+            require(getProjectLevel(pa) < MAX_SUBPROJECT_LEVEL);
         }
 
         idProject = uint64(admins.length);
@@ -597,13 +597,13 @@ contract LiquidPledgingBase is Escapable {
     event ProjectAdded(uint64 indexed idProject);
 
 
-    /// @notice Updates a Project&#39;s info to change the address, name, url, or 
+    /// @notice Updates a Project's info to change the address, name, url, or 
     ///  commitTime, it cannot be used to change a plugin or a parentProject,
     ///  and it must be called by the current address of the Project
     /// @param idProject The Admin id number used to specify the Project
     /// @param newAddr The new address that represents this Project
     /// @param newName The new name used to identify the Project
-    /// @param newUrl The new link to the Project&#39;s profile often an IPFS hash
+    /// @param newUrl The new link to the Project's profile often an IPFS hash
     /// @param newCommitTime Sets the length of time in seconds the Project has
     ///  to veto when the Project delegates to a Delegate and they pledge those
     ///  funds to a project
@@ -661,7 +661,7 @@ contract LiquidPledgingBase is Escapable {
         pledgeState = p.pledgeState;
     }
 
-    /// @notice Getter to find Delegate w/ the Pledge ID &amp; the Delegate index
+    /// @notice Getter to find Delegate w/ the Pledge ID & the Delegate index
     /// @param idPledge The id number representing the pledge being queried
     /// @param idxDelegate The index number for the delegate in this Pledge 
     function getPledgeDelegate(uint64 idPledge, uint idxDelegate) constant returns(
@@ -685,15 +685,15 @@ contract LiquidPledgingBase is Escapable {
     /// @notice A constant getter to check the details of a specified Admin  
     /// @return addr Account or contract address for admin
     /// @return name Name of the pledgeAdmin
-    /// @return url The link to the Project&#39;s profile often an IPFS hash
+    /// @return url The link to the Project's profile often an IPFS hash
     /// @return commitTime The length of time in seconds the Admin has to veto
     ///   when the Admin delegates to a Delegate and that Delegate pledges those
     ///   funds to a project
     /// @return parentProject The Admin id number for the parent project or 0
     ///  if there is no parentProject
-    /// @return canceled 0 for Delegates &amp; Givers, true if a Project has been 
+    /// @return canceled 0 for Delegates & Givers, true if a Project has been 
     ///  canceled
-    /// @return plugin This is Project&#39;s liquidPledging plugin allowing for 
+    /// @return plugin This is Project's liquidPledging plugin allowing for 
     ///  extended functionality
     function getPledgeAdmin(uint64 idAdmin) constant returns (
         PledgeAdminType adminType,
@@ -722,18 +722,18 @@ contract LiquidPledgingBase is Escapable {
 
     /// @notice This creates a Pledge with an initial amount of 0 if one is not
     ///  created already; otherwise it finds the pledge with the specified
-    ///  attributes; all pledges technically exist, if the pledge hasn&#39;t been
-    ///  created in this system yet it simply isn&#39;t in the hash array
+    ///  attributes; all pledges technically exist, if the pledge hasn't been
+    ///  created in this system yet it simply isn't in the hash array
     ///  hPledge2idx[] yet
     /// @param owner The owner of the pledge being looked up
     /// @param delegationChain The list of delegates in order of authority
     /// @param intendedProject The project this pledge will Fund after the
     ///  commitTime has passed
     /// @param commitTime The length of time in seconds the Giver has to
-    ///   veto when the Giver&#39;s delegates Pledge funds to a project
+    ///   veto when the Giver's delegates Pledge funds to a project
     /// @param oldPledge This value is used to store the pledge the current
     ///  pledge was came from, and in the case a Project is canceled, the Pledge
-    ///  will revert back to it&#39;s previous state
+    ///  will revert back to it's previous state
     /// @param state The pledge state: Pledged, Paying, or state
     /// @return The hPledge2idx index number
     function findOrCreatePledge(
@@ -748,7 +748,7 @@ contract LiquidPledgingBase is Escapable {
         bytes32 hPledge = sha3(
             owner, delegationChain, intendedProject, commitTime, oldPledge, state);
         uint64 idx = hPledge2idx[hPledge];
-        if (idx &gt; 0) return idx;
+        if (idx > 0) return idx;
         idx = uint64(pledges.length);
         hPledge2idx[hPledge] = idx;
         pledges.push(Pledge(
@@ -756,19 +756,19 @@ contract LiquidPledgingBase is Escapable {
         return idx;
     }
 
-    /// @notice A getter to look up a Admin&#39;s details
+    /// @notice A getter to look up a Admin's details
     /// @param idAdmin The id for the Admin to lookup
     /// @return The PledgeAdmin struct for the specified Admin
     function findAdmin(uint64 idAdmin) internal returns (PledgeAdmin storage) {
-        require(idAdmin &lt; admins.length);
+        require(idAdmin < admins.length);
         return admins[idAdmin];
     }
 
-    /// @notice A getter to look up a Pledge&#39;s details
+    /// @notice A getter to look up a Pledge's details
     /// @param idPledge The id for the Pledge to lookup
     /// @return The PledgeA struct for the specified Pledge
     function findPledge(uint64 idPledge) internal returns (Pledge storage) {
-        require(idPledge &lt; pledges.length);
+        require(idPledge < pledges.length);
         return pledges[idPledge];
     }
 
@@ -778,22 +778,22 @@ contract LiquidPledgingBase is Escapable {
     /// @notice A getter that searches the delegationChain for the level of
     ///  authority a specific delegate has within a Pledge
     /// @param p The Pledge that will be searched
-    /// @param idDelegate The specified delegate that&#39;s searched for
+    /// @param idDelegate The specified delegate that's searched for
     /// @return If the delegate chain contains the delegate with the
     ///  `admins` array index `idDelegate` this returns that delegates
     ///  corresponding index in the delegationChain. Otherwise it returns
     ///  the NOTFOUND constant
     function getDelegateIdx(Pledge p, uint64 idDelegate) internal returns(uint64) {
-        for (uint i=0; i &lt; p.delegationChain.length; i++) {
+        for (uint i=0; i < p.delegationChain.length; i++) {
             if (p.delegationChain[i] == idDelegate) return uint64(i);
         }
         return NOTFOUND;
     }
 
-    /// @notice A getter to find how many old &quot;parent&quot; pledges a specific Pledge
+    /// @notice A getter to find how many old "parent" pledges a specific Pledge
     ///  had using a self-referential loop
     /// @param p The Pledge being queried
-    /// @return The number of old &quot;parent&quot; pledges a specific Pledge had
+    /// @return The number of old "parent" pledges a specific Pledge had
     function getPledgeLevel(Pledge p) internal returns(uint) {
         if (p.oldPledge == 0) return 0;
         Pledge storage oldN = findPledge(p.oldPledge);
@@ -806,13 +806,13 @@ contract LiquidPledgingBase is Escapable {
     /// @return The maximum commitTime out of the owner and all the delegates
     function maxCommitTime(Pledge p) internal returns(uint commitTime) {
         PledgeAdmin storage m = findAdmin(p.owner);
-        commitTime = m.commitTime; // start with the owner&#39;s commitTime
+        commitTime = m.commitTime; // start with the owner's commitTime
 
-        for (uint i=0; i&lt;p.delegationChain.length; i++) {
+        for (uint i=0; i<p.delegationChain.length; i++) {
             m = findAdmin(p.delegationChain[i]);
 
-            // If a delegate&#39;s commitTime is longer, make it the new commitTime
-            if (m.commitTime &gt; commitTime) commitTime = m.commitTime;
+            // If a delegate's commitTime is longer, make it the new commitTime
+            if (m.commitTime > commitTime) commitTime = m.commitTime;
         }
     }
 
@@ -839,9 +839,9 @@ contract LiquidPledgingBase is Escapable {
         return isProjectCanceled(m.parentProject);
     }
 
-    /// @notice A getter to find the oldest pledge that hasn&#39;t been canceled
+    /// @notice A getter to find the oldest pledge that hasn't been canceled
     /// @param idPledge The starting place to lookup the pledges 
-    /// @return The oldest idPledge that hasn&#39;t been canceled (DUH!)
+    /// @return The oldest idPledge that hasn't been canceled (DUH!)
     function getOldestPledgeNotCanceled(uint64 idPledge
         ) internal constant returns(uint64) {
         if (idPledge == 0) return 0;
@@ -894,7 +894,7 @@ contract LiquidPledgingBase is Escapable {
             // allocate output byte array - this could also be done without assembly
             // by using o_code = new bytes(size)
             o_code := mload(0x40)
-            // new &quot;memory end&quot; including padding
+            // new "memory end" including padding
             mstore(0x40, add(o_code, and(add(add(size, 0x20), 0x1f), not(0x1f))))
             // store length in memory
             mstore(o_code, size)
@@ -910,7 +910,7 @@ pragma solidity ^0.4.11;
 
 /*
     Copyright 2017, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="d6b7b2a4bfb796b5b9b2b3b5b9b8a2b3aea2f8bfb9">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="d6b7b2a4bfb796b5b9b2b3b5b9b8a2b3aea2f8bfb9">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -923,7 +923,7 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Contract Imports
@@ -958,12 +958,12 @@ contract LiquidPledging is LiquidPledgingBase {
     ///  relevant to this Giver without delegates is increased, and a normal
     ///  transfer is done to the idReceiver
     /// @param idGiver Identifier of the giver thats donating.
-    /// @param idReceiver To whom it&#39;s transfered. Can be the same giver,
+    /// @param idReceiver To whom it's transfered. Can be the same giver,
     ///  another giver, a delegate or a project.
     function donate(uint64 idGiver, uint64 idReceiver) payable {
         if (idGiver == 0) {
             // default to 3 day commitTime
-            idGiver = addGiver(&quot;&quot;, &quot;&quot;, 259200, ILiquidPledgingPlugin(0x0));
+            idGiver = addGiver("", "", 259200, ILiquidPledgingPlugin(0x0));
         }
 
         PledgeAdmin storage sender = findAdmin(idGiver);
@@ -974,7 +974,7 @@ contract LiquidPledging is LiquidPledgingBase {
 
         uint amount = msg.value;
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         vault.transfer(amount); // transfers the baseToken to the Vault
         uint64 idPledge = findOrCreatePledge(
@@ -1000,8 +1000,8 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @param idSender ID of the giver, delegate or project admin that is 
     ///  transferring the funds from Pledge to Pledge; this admin must have 
     ///  permissions to move the value
-    /// @param idPledge Id of the pledge that&#39;s moving the value
-    /// @param amount Quantity of value that&#39;s being moved
+    /// @param idPledge Id of the pledge that's moving the value
+    /// @param amount Quantity of value that's being moved
     /// @param idReceiver Destination of the value, can be a giver sending to 
     ///  a giver or a delegate, a delegate to another delegate or a project 
     ///  to pre-commit it to that project if called from a delegate,
@@ -1072,7 +1072,7 @@ contract LiquidPledging is LiquidPledgingBase {
                 // after the sender, then all of the other delegates after the
                 // sender are removed and the receiver is appended at the
                 // end of the delegation chain
-                } else if (receiverDIdx &gt; senderDIdx) {
+                } else if (receiverDIdx > senderDIdx) {
                     idPledge = undelegate(
                         idPledge,
                         amount,
@@ -1086,7 +1086,7 @@ contract LiquidPledging is LiquidPledgingBase {
                 // this is interesting because the delegate is removed from the
                 // delegates that delegated to this delegate. Are there game theory
                 // issues? should this be allowed?
-                } else if (receiverDIdx &lt;= senderDIdx) {
+                } else if (receiverDIdx <= senderDIdx) {
                     undelegate(
                         idPledge,
                         amount,
@@ -1237,8 +1237,8 @@ contract LiquidPledging is LiquidPledgingBase {
         uint[] pledgesAmounts,
         uint64 idReceiver
     ) {
-        for (uint i = 0; i &lt; pledgesAmounts.length; i++ ) {
-            uint64 idPledge = uint64( pledgesAmounts[i] &amp; (D64-1) );
+        for (uint i = 0; i < pledgesAmounts.length; i++ ) {
+            uint64 idPledge = uint64( pledgesAmounts[i] & (D64-1) );
             uint amount = pledgesAmounts[i] / D64;
 
             transfer(idSender, idPledge, amount, idReceiver);
@@ -1250,8 +1250,8 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @param pledgesAmounts An array of pledge amounts and IDs which are
     ///  extrapolated using the D64 bitmask
     function mWithdraw(uint[] pledgesAmounts) {
-        for (uint i = 0; i &lt; pledgesAmounts.length; i++ ) {
-            uint64 idPledge = uint64( pledgesAmounts[i] &amp; (D64-1) );
+        for (uint i = 0; i < pledgesAmounts.length; i++ ) {
+            uint64 idPledge = uint64( pledgesAmounts[i] & (D64-1) );
             uint amount = pledgesAmounts[i] / D64;
 
             withdraw(idPledge, amount);
@@ -1263,8 +1263,8 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @param pledgesAmounts An array of pledge amounts and IDs which are extrapolated
     ///  using the D64 bitmask
     function mConfirmPayment(uint[] pledgesAmounts) {
-        for (uint i = 0; i &lt; pledgesAmounts.length; i++ ) {
-            uint64 idPledge = uint64( pledgesAmounts[i] &amp; (D64-1) );
+        for (uint i = 0; i < pledgesAmounts.length; i++ ) {
+            uint64 idPledge = uint64( pledgesAmounts[i] & (D64-1) );
             uint amount = pledgesAmounts[i] / D64;
 
             confirmPayment(idPledge, amount);
@@ -1276,8 +1276,8 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @param pledgesAmounts An array of pledge amounts and IDs which are extrapolated
     ///  using the D64 bitmask
     function mCancelPayment(uint[] pledgesAmounts) {
-        for (uint i = 0; i &lt; pledgesAmounts.length; i++ ) {
-            uint64 idPledge = uint64( pledgesAmounts[i] &amp; (D64-1) );
+        for (uint i = 0; i < pledgesAmounts.length; i++ ) {
+            uint64 idPledge = uint64( pledgesAmounts[i] & (D64-1) );
             uint amount = pledgesAmounts[i] / D64;
 
             cancelPayment(idPledge, amount);
@@ -1288,7 +1288,7 @@ contract LiquidPledging is LiquidPledgingBase {
     ///  normalized efficiently
     /// @param pledges An array of pledge IDs
     function mNormalizePledge(uint64[] pledges) {
-        for (uint i = 0; i &lt; pledges.length; i++ ) {
+        for (uint i = 0; i < pledges.length; i++ ) {
             normalizePledge( pledges[i] );
         }
     }
@@ -1299,9 +1299,9 @@ contract LiquidPledging is LiquidPledgingBase {
 
     /// @notice `transferOwnershipToProject` allows for the transfer of
     ///  ownership to the project, but it can also be called by a project
-    ///  to un-delegate everyone by setting one&#39;s own id for the idReceiver
+    ///  to un-delegate everyone by setting one's own id for the idReceiver
     /// @param idPledge Id of the pledge to be transfered.
-    /// @param amount Quantity of value that&#39;s being transfered
+    /// @param amount Quantity of value that's being transfered
     /// @param idReceiver The new owner of the project (or self to un-delegate)
     function transferOwnershipToProject(
         uint64 idPledge,
@@ -1312,7 +1312,7 @@ contract LiquidPledging is LiquidPledgingBase {
 
         // Ensure that the pledge is not already at max pledge depth
         // and the project has not been canceled
-        require(getPledgeLevel(p) &lt; MAX_INTERPROJECT_LEVEL);
+        require(getPledgeLevel(p) < MAX_INTERPROJECT_LEVEL);
         require(!isProjectCanceled(idReceiver));
 
         uint64 oldPledge = findOrCreatePledge(
@@ -1339,7 +1339,7 @@ contract LiquidPledging is LiquidPledgingBase {
     ///  value back to the Giver, value is placed in a pledged state
     ///  without being attached to a project, delegation chain, or time line.
     /// @param idPledge Id of the pledge to be transfered.
-    /// @param amount Quantity of value that&#39;s being transfered
+    /// @param amount Quantity of value that's being transfered
     /// @param idReceiver The new owner of the pledge
     function transferOwnershipToGiver(
         uint64 idPledge,
@@ -1360,7 +1360,7 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @notice `appendDelegate` allows for a delegate to be added onto the
     ///  end of the delegate chain for a given Pledge.
     /// @param idPledge Id of the pledge thats delegate chain will be modified.
-    /// @param amount Quantity of value that&#39;s being chained.
+    /// @param amount Quantity of value that's being chained.
     /// @param idReceiver The delegate to be added at the end of the chain
     function appendDelegate(
         uint64 idPledge,
@@ -1369,11 +1369,11 @@ contract LiquidPledging is LiquidPledgingBase {
     ) internal {
         Pledge storage p = findPledge(idPledge);
 
-        require(p.delegationChain.length &lt; MAX_DELEGATES);
+        require(p.delegationChain.length < MAX_DELEGATES);
         uint64[] memory newDelegationChain = new uint64[](
             p.delegationChain.length + 1
         );
-        for (uint i = 0; i&lt;p.delegationChain.length; i++) {
+        for (uint i = 0; i<p.delegationChain.length; i++) {
             newDelegationChain[i] = p.delegationChain[i];
         }
 
@@ -1394,7 +1394,7 @@ contract LiquidPledging is LiquidPledgingBase {
     /// @notice `appendDelegate` allows for a delegate to be added onto the
     ///  end of the delegate chain for a given Pledge.
     /// @param idPledge Id of the pledge thats delegate chain will be modified.
-    /// @param amount Quantity of value that&#39;s shifted from delegates.
+    /// @param amount Quantity of value that's shifted from delegates.
     /// @param q Number (or depth) to remove as delegates
     function undelegate(
         uint64 idPledge,
@@ -1405,7 +1405,7 @@ contract LiquidPledging is LiquidPledgingBase {
         uint64[] memory newDelegationChain = new uint64[](
             p.delegationChain.length - q
         );
-        for (uint i=0; i&lt;p.delegationChain.length - q; i++) {
+        for (uint i=0; i<p.delegationChain.length - q; i++) {
             newDelegationChain[i] = p.delegationChain[i];
         }
         uint64 toPledge = findOrCreatePledge(
@@ -1435,7 +1435,7 @@ contract LiquidPledging is LiquidPledgingBase {
     ) internal {
         Pledge storage p = findPledge(idPledge);
 
-        require(getPledgeLevel(p) &lt; MAX_INTERPROJECT_LEVEL);
+        require(getPledgeLevel(p) < MAX_INTERPROJECT_LEVEL);
         require(!isProjectCanceled(idReceiver));
 
         uint64 toPledge = findOrCreatePledge(
@@ -1464,7 +1464,7 @@ contract LiquidPledging is LiquidPledgingBase {
         }
         Pledge storage nFrom = findPledge(from);
         Pledge storage nTo = findPledge(to);
-        require(nFrom.amount &gt;= amount);
+        require(nFrom.amount >= amount);
         nFrom.amount -= amount;
         nTo.amount += amount;
 
@@ -1482,7 +1482,7 @@ contract LiquidPledging is LiquidPledgingBase {
     ///       at the expiration of the commitTime)
     ///
     ///   #2: Checks to make sure that if there has been a cancellation in the
-    ///       chain of projects, the pledge&#39;s owner has been changed
+    ///       chain of projects, the pledge's owner has been changed
     ///       appropriately.
     ///
     /// This function can be called by anybody at anytime on any pledge.
@@ -1493,14 +1493,14 @@ contract LiquidPledging is LiquidPledgingBase {
 
         Pledge storage p = findPledge(idPledge);
 
-        // Check to make sure this pledge hasn&#39;t already been used 
+        // Check to make sure this pledge hasn't already been used 
         // or is in the process of being used
         if (p.pledgeState != PledgeState.Pledged) {
             return idPledge;
         }
 
-        // First send to a project if it&#39;s proposed and committed
-        if ((p.intendedProject &gt; 0) &amp;&amp; ( getTime() &gt; p.commitTime)) {
+        // First send to a project if it's proposed and committed
+        if ((p.intendedProject > 0) && ( getTime() > p.commitTime)) {
             uint64 oldPledge = findOrCreatePledge(
                 p.owner,
                 p.delegationChain,
@@ -1561,7 +1561,7 @@ contract LiquidPledging is LiquidPledgingBase {
         allowedAmount = amount;
         PledgeAdmin storage admin = findAdmin(adminId);
         // Checks admin has a plugin assigned and a non-zero amount is requested
-        if ((address(admin.plugin) != 0) &amp;&amp; (allowedAmount &gt; 0)) {
+        if ((address(admin.plugin) != 0) && (allowedAmount > 0)) {
             // There are two seperate functions called in the plugin.
             // One is called before the transfer and one after
             if (before) {
@@ -1572,7 +1572,7 @@ contract LiquidPledging is LiquidPledgingBase {
                     context,
                     amount
                 );
-                require(newAmount &lt;= allowedAmount);
+                require(newAmount <= allowedAmount);
                 allowedAmount = newAmount;
             } else {
                 admin.plugin.afterTransfer(
@@ -1621,7 +1621,7 @@ contract LiquidPledging is LiquidPledgingBase {
         );
 
         // Apply call plugin to all delegates
-        for (uint64 i=0; i&lt;p.delegationChain.length; i++) {
+        for (uint64 i=0; i<p.delegationChain.length; i++) {
             allowedAmount = callPlugin(
                 before,
                 p.delegationChain[i],
@@ -1635,7 +1635,7 @@ contract LiquidPledging is LiquidPledgingBase {
         // If there is an intended project also call the plugin in
         // either a transferring or receiving context based on offset
         // on the intended project
-        if (p.intendedProject &gt; 0) {
+        if (p.intendedProject > 0) {
             allowedAmount = callPlugin(
                 before,
                 p.intendedProject,
@@ -1762,13 +1762,13 @@ pragma solidity ^0.4.18;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -1782,13 +1782,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -1817,10 +1817,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -1898,7 +1898,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -1917,15 +1917,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -1941,7 +1941,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -1950,7 +1950,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -2036,7 +2036,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -2061,7 +2061,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -2123,9 +2123,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -2140,9 +2140,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -2173,16 +2173,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -2198,7 +2198,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -2217,15 +2217,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -2318,7 +2318,7 @@ pragma solidity ^0.4.13;
 
 
 /// @title LPPCampaign
-/// @author perissology &lt;<span class="__cf_email__" data-cfemail="671702150e1414080b08001e271715081308090a060e0b4904080a">[email&#160;protected]</span>&gt;
+/// @author perissology <<span class="__cf_email__" data-cfemail="671702150e1414080b08001e271715081308090a060e0b4904080a">[email protected]</span>>
 /// @notice The LPPCampaign contract is a plugin contract for liquidPledging,
 ///  extending the functionality of a liquidPledging project. This contract
 ///  prevents withdrawals from any pledges this contract is the owner of.
@@ -2405,12 +2405,12 @@ contract LPPCampaign is Escapable, TokenController {
         var (, , , , , , toPledgeState ) = liquidPledging.getPledge(pledgeTo);
 
         // campaigns can not withdraw funds
-        if ( (context == TO_OWNER) &amp;&amp; (toPledgeState != LiquidPledgingBase.PledgeState.Pledged) ) return 0;
+        if ( (context == TO_OWNER) && (toPledgeState != LiquidPledgingBase.PledgeState.Pledged) ) return 0;
 
         // If this campaign is the proposed recipient of delegated funds or funds are being directly
         // transferred to me, ensure that the campaign has not been canceled
         if ( (context == TO_PROPOSEDPROJECT)
-            || ( (context == TO_OWNER) &amp;&amp; (fromProposedProject != idProject) ))
+            || ( (context == TO_OWNER) && (fromProposedProject != idProject) ))
         {
             if (isCanceled()) return 0;
         }
@@ -2429,7 +2429,7 @@ contract LPPCampaign is Escapable, TokenController {
       var (, fromOwner, , , , , ) = liquidPledging.getPledge(pledgeFrom);
 
       // only issue tokens when pledge is committed to this campaign
-      if ( (context == TO_OWNER) &amp;&amp;
+      if ( (context == TO_OWNER) &&
               (toPledgeState == LiquidPledgingBase.PledgeState.Pledged)) {
         var (, fromAddr , , , , , , ) = liquidPledging.getPledgeAdmin(fromOwner);
 

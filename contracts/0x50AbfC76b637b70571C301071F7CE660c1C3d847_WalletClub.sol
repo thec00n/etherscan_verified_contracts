@@ -7,7 +7,7 @@ Hosts Wallet for Multiple Members
 Copyright (c) 2016 Martin Knopp
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -16,7 +16,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -71,7 +71,7 @@ contract Owned
 
 contract WalletClub is Owned
 {
-    mapping (address =&gt; uint) public Members;
+    mapping (address => uint) public Members;
     address public owner;
     uint256 public TotalFunds;
      
@@ -85,7 +85,7 @@ contract WalletClub is Owned
     public
     payable
     {
-        if(msg.value &gt;= 1 ether)
+        if(msg.value >= 1 ether)
         {
             Members[msg.sender]+=msg.value;
             TotalFunds += msg.value;
@@ -102,13 +102,13 @@ contract WalletClub is Owned
     function WithdrawToMember(address _addr, uint _wei)
     public 
     {
-        if(Members[_addr]&gt;0)
+        if(Members[_addr]>0)
         {
             if(isOwner())
             {
                  if(_addr.send(_wei))
                  {
-                   if(TotalFunds&gt;=_wei)TotalFunds-=_wei;
+                   if(TotalFunds>=_wei)TotalFunds-=_wei;
                    else TotalFunds=0;
                  }
             }

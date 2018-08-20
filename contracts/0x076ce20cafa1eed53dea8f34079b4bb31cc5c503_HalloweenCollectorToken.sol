@@ -19,13 +19,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -36,8 +36,8 @@ contract RandomToken {
 }
 
 contract HalloweenCollectorToken is ERC20Interface, SafeMath {
-    string constant token_name = &quot;Halloween Limited Edition Token&quot;;
-    string constant token_symbol = &quot;HALW&quot;;
+    string constant token_name = "Halloween Limited Edition Token";
+    string constant token_symbol = "HALW";
     uint8 constant token_decimals = 0;
     uint256 public constant ether_per_token = 0.0035 * 1 ether;
     uint public constant TOKEN_SWAP_DURATION_HOURS = 1 * 24;
@@ -51,9 +51,9 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
     uint256 public airdrop_cnt;
 
     address owner;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) is_airdropped;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) is_airdropped;
     
     
     modifier onlyOwner() {
@@ -66,7 +66,7 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
     }
     
     modifier purchaseAllowed() {
-        if (now &gt; time_of_token_swap_end) { revert(); }
+        if (now > time_of_token_swap_end) { revert(); }
         _;
     }
     
@@ -94,9 +94,9 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
 
     function transfer(address _to, uint256 _amount) public transferAllowed returns (bool) {
         if ( 
-                _amount &gt; 0
-            &amp;&amp;  balances[msg.sender] &gt;= _amount
-            &amp;&amp;  balances[_to] + _amount &gt; balances[_to]
+                _amount > 0
+            &&  balances[msg.sender] >= _amount
+            &&  balances[_to] + _amount > balances[_to]
         ) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -113,10 +113,10 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
         uint256 _amount
     ) public transferAllowed returns (bool) {
         if (
-                _amount &gt; 0
-            &amp;&amp;  balances[_from] &gt;= _amount
-            &amp;&amp;  allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp;  balances[_to] + _amount &gt; balances[_to]
+                _amount > 0
+            &&  balances[_from] >= _amount
+            &&  allowed[_from][msg.sender] >= _amount
+            &&  balances[_to] + _amount > balances[_to]
         ) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -141,7 +141,7 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
     
     function() public payable purchaseAllowed {
         if (msg.value == 0) {
-            if (airdrop_cnt &gt;= token_airdrop_cnt_max || is_airdropped[msg.sender]) {
+            if (airdrop_cnt >= token_airdrop_cnt_max || is_airdropped[msg.sender]) {
                 //  airdrop already received
                 return;
             }
@@ -157,7 +157,7 @@ contract HalloweenCollectorToken is ERC20Interface, SafeMath {
         else {
             //  normal swap
             uint256 tokenRequested = msg.value / ether_per_token;
-            assert(tokenRequested &gt; 0 &amp;&amp; tokenRequested &lt;= balances[owner]);
+            assert(tokenRequested > 0 && tokenRequested <= balances[owner]);
             uint256 cost = safeMul(tokenRequested, ether_per_token);
             uint256 change = safeSub(msg.value, cost);
             

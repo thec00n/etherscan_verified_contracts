@@ -82,7 +82,7 @@ contract Pausable is Ownable {
 contract SkinPresale is Pausable {
 
     // Record number of packages each account buy
-    mapping (address =&gt; uint256) public accountToBoughtNum;
+    mapping (address => uint256) public accountToBoughtNum;
 
     // Total number of packages for presale
     uint256 public totalSupplyForPresale = 10000;
@@ -100,14 +100,14 @@ contract SkinPresale is Pausable {
         address account = msg.sender;
 
         // Check account limit
-        require(accountToBoughtNum[account] + 1 &lt; accountBuyLimit);
+        require(accountToBoughtNum[account] + 1 < accountBuyLimit);
 
         // Check total presale limit
-        require(remainPackage &gt; 0);
+        require(remainPackage > 0);
 
         // Check enough money
         uint256 price = 20 finney + (10000 - remainPackage) / 500 * 10 finney;
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         // Perform purchase
         accountToBoughtNum[account] += 1;

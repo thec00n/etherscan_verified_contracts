@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   //function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    //// require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //// require(b > 0); // Solidity automatically throws when dividing by 0
     //uint256 c = a / b;
-    //// require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    //// require(a == b * c + a % b); // There is no case in which this doesn't hold
     //return c;
   //}
 
   //function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    //require(b &lt;= a);
+    //require(b <= a);
     //return a - b;
   //}
 
   //function add(uint256 a, uint256 b) internal pure returns (uint256) {
     //uint256 c = a + b;
-    //require(c &gt;= a);
+    //require(c >= a);
     //return c;
   //}
 }
@@ -70,7 +70,7 @@ contract Distribution {
   function handleTokensReceived() public {
     require(state == State.AwaitingTokens);
     uint256 totalTokens = tokenContract.balanceOf(this);
-    require(totalTokens &gt; 0);
+    require(totalTokens > 0);
 
     tokensTransferred = 0;
     if (totalTokens == expectedTotalTokens) {
@@ -90,7 +90,7 @@ contract Distribution {
       uint256 tokens = actualTotalTokens.mul(contributorExpectedTokens) / expectedTotalTokens;
 
       // Handle roundoff on last contributor.
-      if (tokens &lt; tokensRemaining) {
+      if (tokens < tokensRemaining) {
         return tokens;
       } else {
         return tokensRemaining;
@@ -123,7 +123,7 @@ contract Distribution {
     uint256 tokensTransferredThisCall = 0;
     uint256 end = start + contributors.length;
     State _state = state;
-    for (uint256 i = start; i &lt; end; ++i) {
+    for (uint256 i = start; i < end; ++i) {
       address contributor = contributors[i];
       uint256 expectedTokens = contributorExpectedTokens[i];
       require(contributionHashes[i] == keccak256(contributor, expectedTokens));

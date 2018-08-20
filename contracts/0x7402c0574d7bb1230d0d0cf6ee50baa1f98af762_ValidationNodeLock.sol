@@ -21,7 +21,7 @@ contract ValidationNodeLock {
   uint public nodePrice = 30000 * 10**18;
 
   uint public lockedUntil;
-  mapping(address =&gt; mapping(string =&gt; uint)) lockingData;
+  mapping(address => mapping(string => uint)) lockingData;
 
   event Withdrawn(address indexed withdrawer, uint indexed withdrawnAmount);
   event FundsLocked(
@@ -40,29 +40,29 @@ contract ValidationNodeLock {
   }
 
   modifier lastLockingTimeIsInTheFuture(uint _lastLockingTime) {
-    require(now &lt; _lastLockingTime);
+    require(now < _lastLockingTime);
     _;
   }
 
   modifier onlyOnceLockingPeriodIsOver() {
-    require(now &gt;= lockedUntil || allFundsCanBeUnlocked);
+    require(now >= lockedUntil || allFundsCanBeUnlocked);
     _;
   }
 
   modifier checkUsersTokenBalance(uint _fundsToTransfer) {
     require(
-      _fundsToTransfer &lt;= VerityToken(tokenAddress).balanceOf(msg.sender)
+      _fundsToTransfer <= VerityToken(tokenAddress).balanceOf(msg.sender)
     );
     _;
   }
 
   modifier checkValidLockingTime() {
-    require(now &lt;= lastLockingTime);
+    require(now <= lastLockingTime);
     _;
   }
 
   modifier checkValidLockingArguments(uint _tokens, uint _nodes) {
-    require(_tokens &gt;= nodePrice &amp;&amp; _nodes &gt;= 1);
+    require(_tokens >= nodePrice && _nodes >= 1);
     _;
   }
 
@@ -72,7 +72,7 @@ contract ValidationNodeLock {
   }
 
   modifier lockedUntilIsInTheFuture(uint _lockedUntil) {
-    require(now &lt; _lockedUntil);
+    require(now < _lockedUntil);
     _;
   }
 
@@ -81,7 +81,7 @@ contract ValidationNodeLock {
     uint _lockedUntil
   )
   {
-    require(_lastLockingTime &lt; _lockedUntil);
+    require(_lastLockingTime < _lockedUntil);
     _;
   }
 
@@ -114,8 +114,8 @@ contract ValidationNodeLock {
       VerityToken(tokenAddress).transferFrom(msg.sender, address(this), _tokens)
     );
 
-    lockingData[msg.sender][&quot;amount&quot;] += _tokens;
-    lockingData[msg.sender][&quot;nodes&quot;] += _nodes;
+    lockingData[msg.sender]["amount"] += _tokens;
+    lockingData[msg.sender]["nodes"] += _nodes;
 
     emit FundsLocked(
       msg.sender,
@@ -128,8 +128,8 @@ contract ValidationNodeLock {
     public
     onlyOnceLockingPeriodIsOver()
   {
-    uint amountToBeTransferred = lockingData[msg.sender][&quot;amount&quot;];
-    lockingData[msg.sender][&quot;amount&quot;] = 0;
+    uint amountToBeTransferred = lockingData[msg.sender]["amount"];
+    lockingData[msg.sender]["amount"] = 0;
     VerityToken(tokenAddress).transfer(msg.sender, amountToBeTransferred);
 
     emit Withdrawn(
@@ -148,6 +148,6 @@ contract ValidationNodeLock {
   }
 
   function getUserData(address _user) public view returns (uint[2]) {
-    return [lockingData[_user][&quot;amount&quot;], lockingData[_user][&quot;nodes&quot;]];
+    return [lockingData[_user]["amount"], lockingData[_user]["nodes"]];
   }
 }

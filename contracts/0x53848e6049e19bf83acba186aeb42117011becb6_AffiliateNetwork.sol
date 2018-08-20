@@ -2,11 +2,11 @@ pragma solidity ^0.4.15;
 
 contract AffiliateNetwork {
     uint public idx = 0;
-    mapping (uint =&gt; address) public affiliateAddresses;
-    mapping (address =&gt; uint) public affiliateCodes;
+    mapping (uint => address) public affiliateAddresses;
+    mapping (address => uint) public affiliateCodes;
 
     function () payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             msg.sender.transfer(msg.value);
         }
 

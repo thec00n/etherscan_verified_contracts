@@ -30,7 +30,7 @@ contract Vault is Ownable {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         owner.transfer(amount);
     }
 

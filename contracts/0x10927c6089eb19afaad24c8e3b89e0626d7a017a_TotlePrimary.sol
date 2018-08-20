@@ -2,19 +2,19 @@ pragma solidity ^0.4.24;
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -40,9 +40,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -122,7 +122,7 @@ contract TokenTransferProxy is Ownable {
         _;
     }
 
-    mapping (address =&gt; bool) public authorized;
+    mapping (address => bool) public authorized;
     address[] public authorities;
 
     event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
@@ -152,7 +152,7 @@ contract TokenTransferProxy is Ownable {
         targetAuthorized(target)
     {
         delete authorized[target];
-        for (uint i = 0; i &lt; authorities.length; i++) {
+        for (uint i = 0; i < authorities.length; i++) {
             if (authorities[i] == target) {
                 authorities[i] = authorities[authorities.length - 1];
                 authorities.length -= 1;
@@ -270,13 +270,13 @@ contract Token {
 /// @title The primary contract for Totle Inc
 contract TotlePrimary is Ownable {
     // Constants
-    string public constant CONTRACT_VERSION = &quot;0&quot;;
+    string public constant CONTRACT_VERSION = "0";
     uint256 public constant MAX_EXCHANGE_FEE_PERCENTAGE = 0.01 * 10**18; // 1%
     bool constant BUY = false;
     bool constant SELL = true;
 
     // State variables
-    mapping(address =&gt; bool) public handlerWhitelist;
+    mapping(address => bool) public handlerWhitelist;
     address tokenTransferProxy;
 
     // Structs
@@ -348,18 +348,18 @@ contract TotlePrimary is Ownable {
     ) public payable {
 
         require(
-            tokenAddresses.length == buyOrSell.length &amp;&amp;
-            buyOrSell.length      == amountToObtain.length &amp;&amp;
+            tokenAddresses.length == buyOrSell.length &&
+            buyOrSell.length      == amountToObtain.length &&
             amountToObtain.length == amountToGive.length
         );
 
         require(
-            tokenForOrder.length  == exchanges.length &amp;&amp;
-            exchanges.length      == orderAddresses.length &amp;&amp;
-            orderAddresses.length == orderValues.length &amp;&amp;
-            orderValues.length    == exchangeFees.length &amp;&amp;
-            exchangeFees.length   == v.length &amp;&amp;
-            v.length              == r.length &amp;&amp;
+            tokenForOrder.length  == exchanges.length &&
+            exchanges.length      == orderAddresses.length &&
+            orderAddresses.length == orderValues.length &&
+            orderValues.length    == exchangeFees.length &&
+            exchangeFees.length   == v.length &&
+            v.length              == r.length &&
             r.length              == s.length
         );
 
@@ -400,19 +400,19 @@ contract TotlePrimary is Ownable {
         uint256 etherBalance = msg.value;
         uint256 orderIndex = 0;
 
-        for(uint256 tokenIndex = 0; tokenIndex &lt; tokensLength; tokenIndex++) {
+        for(uint256 tokenIndex = 0; tokenIndex < tokensLength; tokenIndex++) {
             // NOTE - check for repetitions in the token list?
 
             uint256 amountRemaining = tokens.amountToGive[tokenIndex];
             uint256 amountObtained = 0;
 
-            while(orderIndex &lt; ordersLength) {
+            while(orderIndex < ordersLength) {
                 require(tokens.tokenAddresses[tokenIndex] == orders.tokenForOrder[orderIndex]);
                 require(handlerWhitelist[orders.exchanges[orderIndex]]);
 
-                if(amountRemaining &gt; 0) {
+                if(amountRemaining > 0) {
                     if(tokens.buyOrSell[tokenIndex] == BUY) {
-                        require(etherBalance &gt;= amountRemaining);
+                        require(etherBalance >= amountRemaining);
                     }
                     (amountRemaining, amountObtained) = performTrade(
                         tokens.buyOrSell[tokenIndex],
@@ -438,32 +438,32 @@ contract TotlePrimary is Ownable {
                 // Take away spent ether from refund balance
                 etherBalance = SafeMath.sub(etherBalance, amountGiven);
                 // Transfer back tokens acquired
-                if(amountObtained &gt; 0) {
+                if(amountObtained > 0) {
                     require(Token(tokens.tokenAddresses[tokenIndex]).transfer(msg.sender, amountObtained));
                 }
             } else {
                 // Add ether to refund balance
                 etherBalance = SafeMath.add(etherBalance, amountObtained);
                 // Transfer back un-sold tokens
-                if(amountRemaining &gt; 0) {
+                if(amountRemaining > 0) {
                     require(Token(tokens.tokenAddresses[tokenIndex]).transfer(msg.sender, amountRemaining));
                 }
             }
         }
 
         // Send back acquired/unspent ether - throw on failure
-        if(etherBalance &gt; 0) {
+        if(etherBalance > 0) {
             msg.sender.transfer(etherBalance);
         }
     }
 
-    /// @dev Iterates through a list of token orders, transfer the SELL orders to this contract &amp; calculates if we have the ether needed
+    /// @dev Iterates through a list of token orders, transfer the SELL orders to this contract & calculates if we have the ether needed
     /// @param tokens Struct containing the arrays of token orders
     function transferTokens(Tokens tokens) internal {
         uint256 expectedEtherAvailable = msg.value;
         uint256 totalEtherNeeded = 0;
 
-        for(uint256 i = 0; i &lt; tokens.tokenAddresses.length; i++) {
+        for(uint256 i = 0; i < tokens.tokenAddresses.length; i++) {
             if(tokens.buyOrSell[i] == BUY) {
                 totalEtherNeeded = SafeMath.add(totalEtherNeeded, tokens.amountToGive[i]);
             } else {
@@ -478,7 +478,7 @@ contract TotlePrimary is Ownable {
         }
 
         // Make sure we have will have enough ETH after SELLs to cover our BUYs
-        require(expectedEtherAvailable &gt;= totalEtherNeeded);
+        require(expectedEtherAvailable >= totalEtherNeeded);
     }
 
     /// @dev Performs a single trade via the requested exchange handler
@@ -494,11 +494,11 @@ contract TotlePrimary is Ownable {
         uint256 obtained = 0;
         uint256 remaining = initialRemaining;
 
-        require(orders.exchangeFees[index] &lt; MAX_EXCHANGE_FEE_PERCENTAGE);
+        require(orders.exchangeFees[index] < MAX_EXCHANGE_FEE_PERCENTAGE);
 
         uint256 amountToFill = getAmountToFill(remaining, orders, index);
 
-        if(amountToFill &gt; 0) {
+        if(amountToFill > 0) {
             remaining = SafeMath.sub(remaining, amountToFill);
 
             if(buyOrSell == BUY) {
@@ -558,12 +558,12 @@ contract TotlePrimary is Ownable {
     /// @return Boolean value indicating whether this order was valid
     function orderWasValid(uint256 amountObtained, uint256 amountGiven, uint256 amountToObtain, uint256 amountToGive) internal pure returns (bool) {
 
-        if(amountObtained &gt; 0 &amp;&amp; amountGiven &gt; 0) {
+        if(amountObtained > 0 && amountGiven > 0) {
             // NOTE - Check the edge cases here
-            if(amountObtained &gt; amountGiven) {
-                return SafeMath.div(amountToObtain, amountToGive) &lt;= SafeMath.div(amountObtained, amountGiven);
+            if(amountObtained > amountGiven) {
+                return SafeMath.div(amountToObtain, amountToGive) <= SafeMath.div(amountObtained, amountGiven);
             } else {
-                return SafeMath.div(amountToGive, amountToObtain) &gt;= SafeMath.div(amountGiven, amountObtained);
+                return SafeMath.div(amountToGive, amountToObtain) >= SafeMath.div(amountGiven, amountObtained);
             }
         }
         return false;
@@ -576,6 +576,6 @@ contract TotlePrimary is Ownable {
         assembly {
             size := extcodesize(sender)
         }
-        require(size &gt; 0);
+        require(size > 0);
     }
 }

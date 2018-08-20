@@ -17,10 +17,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,8 +92,8 @@ contract TokenCore is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Total supply
@@ -112,8 +112,8 @@ contract TokenCore is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -126,7 +126,7 @@ contract TokenCore is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -159,14 +159,14 @@ contract TokenCore is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -210,8 +210,8 @@ contract CappedMintableBurnableToken is TokenCore {
   // @return A boolean that indicates if the operation was successful.
   // ------------------------------------------------------------------------
   function mint(address _to, uint256 _amount) hasMintPermission canMint public returns (bool) {
-    require(_amount &lt;= batchlimits);
-    require(_totalSupply.add(_amount) &lt;= cap);
+    require(_amount <= batchlimits);
+    require(_totalSupply.add(_amount) <= cap);
     _totalSupply = _totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount);
@@ -237,9 +237,9 @@ contract CappedMintableBurnableToken is TokenCore {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     _totalSupply = _totalSupply.sub(_value);
@@ -251,8 +251,8 @@ contract CappedMintableBurnableToken is TokenCore {
 contract Dgram is CappedMintableBurnableToken {
 
     constructor() public {
-        symbol = &quot;BGM&quot;;
-        name = &quot;Dgram Token&quot;;
+        symbol = "BGM";
+        name = "Dgram Token";
         decimals = 18;
         _totalSupply = 1000000 * 10**uint(decimals);
         cap = 100000000 * 10**uint(decimals);

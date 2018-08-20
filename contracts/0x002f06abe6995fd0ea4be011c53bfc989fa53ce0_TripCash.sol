@@ -27,13 +27,13 @@ contract TripCash is Ownable {
     uint256 public totalSupply = 5000000000 * 1 ether;
 
 
-    string public constant name = &quot;TripCash&quot;;
-    string public constant symbol = &quot;TASH&quot;;
+    string public constant name = "TripCash";
+    string public constant symbol = "TASH";
     uint8 public constant decimals = 18;
 
-    mapping (address =&gt; uint256) public balances; //Addresses map
-    mapping (address =&gt; mapping(address =&gt; uint256)) public allowed;
-    mapping (address =&gt; bool) public notransfer;
+    mapping (address => uint256) public balances; //Addresses map
+    mapping (address => mapping(address => uint256)) public allowed;
+    mapping (address => bool) public notransfer;
 
 
     uint256 public startPreICO = 1523840400; // preICO  start date
@@ -73,11 +73,11 @@ contract TripCash is Ownable {
         }
         
         if (_from == teamWallet1) {
-            require(now &gt;= endTime + 15552000);
+            require(now >= endTime + 15552000);
         }
 
         if (_from == teamWallet2) {
-            require(now &gt;= endTime + 31536000);
+            require(now >= endTime + 31536000);
         }
         
         _;
@@ -95,7 +95,7 @@ contract TripCash is Ownable {
      *  Modifier for checking ICO period
      */
     modifier saleIsOn() {
-        require((now &gt; startTime &amp;&amp; now &lt; endTime)||(now &gt; startPreICO &amp;&amp; now &lt; endPreICO));
+        require((now > startTime && now < endTime)||(now > startPreICO && now < endPreICO));
         _;
     }
 
@@ -168,7 +168,7 @@ contract TripCash is Ownable {
      */
     function transfer(address _to, uint256 _value) canTransferToken(msg.sender) public returns (bool){
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender] - _value;
         balances[_to] = balances[_to] + _value;
         if (notransfer[msg.sender] == true) {
@@ -187,8 +187,8 @@ contract TripCash is Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) canTransferToken(_from) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
@@ -203,7 +203,7 @@ contract TripCash is Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -228,7 +228,7 @@ contract TripCash is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -248,28 +248,28 @@ contract TripCash is Ownable {
     }
 
     /**
-     * @dev function for rewarding token holders, who didn&#39;t transfer in 1 or 2 years
+     * @dev function for rewarding token holders, who didn't transfer in 1 or 2 years
      * @param _holder token holders address
      */
 
     function rewarding(address _holder) public onlyOwner returns(uint){
         if(notransfer[_holder]==true){
-            if(now &gt;= endTime + 63072000){
+            if(now >= endTime + 63072000){
                 uint noTransfer2BonusYear = balances[_holder]*25 / 100;
-                if (balances[fundWallet] &gt;= noTransfer2BonusYear) {
+                if (balances[fundWallet] >= noTransfer2BonusYear) {
                     balances[fundWallet] = balances[fundWallet] - noTransfer2BonusYear;
                     balances[_holder] = balances[_holder] + noTransfer2BonusYear;
-                    assert(balances[_holder] &gt;= noTransfer2BonusYear);
+                    assert(balances[_holder] >= noTransfer2BonusYear);
                     Transfer(fundWallet, _holder, noTransfer2BonusYear);
                     notransfer[_holder]=false;
                     return noTransfer2BonusYear;
                 }
-            } else if (now &gt;= endTime + 31536000) {
+            } else if (now >= endTime + 31536000) {
                 uint noTransferBonusYear = balances[_holder]*15 / 100;
-                if (balances[fundWallet] &gt;= noTransferBonusYear) {
+                if (balances[fundWallet] >= noTransferBonusYear) {
                     balances[fundWallet] = balances[fundWallet] - noTransferBonusYear;
                     balances[_holder] = balances[_holder] + noTransferBonusYear;
-                    assert(balances[_holder] &gt;= noTransferBonusYear);
+                    assert(balances[_holder] >= noTransferBonusYear);
                     Transfer(fundWallet, _holder, noTransferBonusYear);
                     notransfer[_holder]=false;
                     return noTransferBonusYear;
@@ -282,17 +282,17 @@ contract TripCash is Ownable {
      * Unsold and undistributed tokens will be vested (50% for 2 years, 50% for 4 years) 
      * to be allocated for the future development needs of the project; 
      * in case of high unexpected volatility of the token, 
-     * part or all of the vested tokens can be burned to support the token&#39;s value.
+     * part or all of the vested tokens can be burned to support the token's value.
      * /
     /**
      * function for after ICO burning tokens which was not bought
      * @param _value uint256 Amount of burning tokens
      */
     function burn(uint256 _value) onlyOwner public returns (bool){
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner] - _value;
@@ -305,7 +305,7 @@ contract TripCash is Ownable {
      *  Allownes refund
      */
     function changeRefundToken() public onlyOwner {
-        require(now &gt;= endTime);
+        require(now >= endTime);
         refundToken = true;
     }
     

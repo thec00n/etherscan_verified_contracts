@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -190,7 +190,7 @@ contract TokenTimelockController is Ownable {
   uint256 public constant TEAM_LOCK_DURATION_PART2 = 2 * 365 days;
   uint256 public constant INVESTOR_LOCK_DURATION = 6 * 30 days;
 
-  mapping (address =&gt; TokenTimelock[]) tokenTimeLocks;
+  mapping (address => TokenTimelock[]) tokenTimeLocks;
   
   ERC20 public token;
   address public crowdsale;
@@ -213,7 +213,7 @@ contract TokenTimelockController is Ownable {
 
   modifier onlyValidTokenTimelock(address _beneficiary, uint256 _id) {
     require(_beneficiary != address(0));
-    require(_id &lt; tokenTimeLocks[_beneficiary].length);
+    require(_id < tokenTimeLocks[_beneficiary].length);
     require(!tokenTimeLocks[_beneficiary][_id].revoked);
     _;
   }
@@ -254,7 +254,7 @@ contract TokenTimelockController is Ownable {
     address _tokenHolder
   ) external onlyCrowdsale returns (bool)
     {
-    require(_beneficiary != address(0) &amp;&amp; _amount &gt; 0);
+    require(_beneficiary != address(0) && _amount > 0);
     require(_tokenHolder != address(0));
 
     TokenTimelock memory tokenLock = TokenTimelock(
@@ -294,7 +294,7 @@ contract TokenTimelockController is Ownable {
     address _tokenHolder
   ) external onlyOwner returns (bool)
     {
-    require(_beneficiary != address(0) &amp;&amp; _amount &gt; 0);
+    require(_beneficiary != address(0) && _amount > 0);
     require(_tokenHolder != address(0));
 
     uint256 amount = _amount.div(2);
@@ -376,7 +376,7 @@ contract TokenTimelockController is Ownable {
     bool _revocable,
     bool _revoked) 
     {
-    require(_id &lt; tokenTimeLocks[_beneficiary].length);
+    require(_id < tokenTimeLocks[_beneficiary].length);
     _amount = tokenTimeLocks[_beneficiary][_id].amount;
     _releaseTime = tokenTimeLocks[_beneficiary][_id].releaseTime;
     _released = tokenTimeLocks[_beneficiary][_id].released;
@@ -385,7 +385,7 @@ contract TokenTimelockController is Ownable {
   }
 
   /**
-   * @dev Changes the beneficiary of the _id&#39;th lock of the sender with the provided newBeneficiary.
+   * @dev Changes the beneficiary of the _id'th lock of the sender with the provided newBeneficiary.
    * The release can be peformed only if:
    * - the controller was activated by the crowdsale contract;
    * - the sender and _id reference a valid lock;
@@ -395,7 +395,7 @@ contract TokenTimelockController is Ownable {
    */
   function changeBeneficiary(uint256 _id, address _newBeneficiary) external onlyWhenActivated onlyValidTokenTimelock(msg.sender, _id) {
     tokenTimeLocks[_newBeneficiary].push(tokenTimeLocks[msg.sender][_id]);
-    if (tokenTimeLocks[msg.sender].length &gt; 1) {
+    if (tokenTimeLocks[msg.sender].length > 1) {
       tokenTimeLocks[msg.sender][_id] = tokenTimeLocks[msg.sender][tokenTimeLocks[msg.sender].length.sub(1)];
       delete(tokenTimeLocks[msg.sender][tokenTimeLocks[msg.sender].length.sub(1)]);
     }
@@ -432,7 +432,7 @@ contract TokenTimelockController is Ownable {
     TokenTimelock storage tokenLock = tokenTimeLocks[_beneficiary][_id];
     require(!tokenLock.released);
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= tokenLock.releaseTime);
+    require(block.timestamp >= tokenLock.releaseTime);
     tokenLock.released = true;
     require(token.transfer(_beneficiary, tokenLock.amount));
     emit TokenTimelockReleased(_beneficiary, tokenLock.amount);

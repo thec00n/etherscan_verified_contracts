@@ -22,8 +22,8 @@ contract REMMESale {
     uint public allowedGasPrice = 20000000000 wei;
     uint public tokenPriceWei;
 
-    mapping(address =&gt; uint) public participantContribution;
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => uint) public participantContribution;
+    mapping(address => bool) public whitelist;
 
     event Contributed(address receiver, uint contribution, uint reward);
     event WhitelistUpdated(address participant, bool isWhitelisted);
@@ -40,26 +40,26 @@ contract REMMESale {
     }
 
     function contributeFor(address _participant) payable returns(bool) {
-        require(now &gt;= SALES_START);
-        require(now &lt; SALES_DEADLINE);
-        require((participantContribution[_participant] + msg.value) &gt;= MINIMAL_PARTICIPATION);
+        require(now >= SALES_START);
+        require(now < SALES_DEADLINE);
+        require((participantContribution[_participant] + msg.value) >= MINIMAL_PARTICIPATION);
         // Only the whitelisted addresses can participate.
         require(whitelist[_participant]);
 
         //check for MAXIMAL_PARTICIPATION and allowedGasPrice only at first day
-        if (now &lt;= FIRST_DAY_END) {
-            require((participantContribution[_participant] + msg.value) &lt;= MAXIMAL_PARTICIPATION);
-            require(tx.gasprice &lt;= allowedGasPrice);
+        if (now <= FIRST_DAY_END) {
+            require((participantContribution[_participant] + msg.value) <= MAXIMAL_PARTICIPATION);
+            require(tx.gasprice <= allowedGasPrice);
         }
 
         // If there is some division reminder, we just collect it too.
         uint tokensAmount = (msg.value * TOKEN_CENTS) / tokenPriceWei;
-        require(tokensAmount &gt; 0);
+        require(tokensAmount > 0);
         uint bonusTokens = (tokensAmount * BONUS) / 100;
         uint totalTokens = tokensAmount + bonusTokens;
 
         tokensPurchased += totalTokens;
-        require(tokensPurchased &lt;= SALE_MAX_CAP);
+        require(tokensPurchased <= SALE_MAX_CAP);
         require(ERC20(TOKEN).transferFrom(ASSET_MANAGER_WALLET, _participant, totalTokens));
         saleContributions += msg.value;
         participantContribution[_participant] += msg.value;

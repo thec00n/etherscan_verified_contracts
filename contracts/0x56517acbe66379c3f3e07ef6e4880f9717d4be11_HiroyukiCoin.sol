@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;HiroyukiCoin&#39; token contract
+// 'HiroyukiCoin' token contract
 //
 // Deployed to : 0x56517aCbE66379C3f3e07EF6e4880F9717d4be11
 // Symbol      : HRYK
@@ -25,20 +25,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
         // assert(a == b * c + a % b);
         return a / b;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -107,8 +107,8 @@ contract HiroyukiCoin is ERC20Interface, Owned {
     uint public startDate;
     uint public endDate;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     // ------------------------------------------------------------------------
@@ -117,8 +117,8 @@ contract HiroyukiCoin is ERC20Interface, Owned {
     function HiroyukiCoin() public {
         owner = msg.sender;
 
-        symbol = &quot;HRYK&quot;;
-        name = &quot;HiroyukiCoin&quot;;
+        symbol = "HRYK";
+        name = "HiroyukiCoin";
         decimals = 18;
 
         _totalSupply = 20000000000000000000000000000000;
@@ -149,13 +149,13 @@ contract HiroyukiCoin is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint256 tokens) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], tokens);
         balances[to] = SafeMath.add(balances[to], tokens);
         Transfer(msg.sender, to, tokens);
@@ -165,7 +165,7 @@ contract HiroyukiCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -189,8 +189,8 @@ contract HiroyukiCoin is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
         balances[from] = SafeMath.sub(balances[from], tokens);
         allowed[from][msg.sender] = SafeMath.sub(allowed[from][msg.sender], tokens);
         balances[to] = SafeMath.add(balances[to], tokens);
@@ -199,7 +199,7 @@ contract HiroyukiCoin is ERC20Interface, Owned {
     }
 
     function burn(uint256 tokens) public returns (bool success) {
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], tokens);
         _totalSupply = SafeMath.sub(_totalSupply, tokens);
         Burn(msg.sender, tokens);
@@ -208,7 +208,7 @@ contract HiroyukiCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint256 remaining) {
         return allowed[tokenOwner][spender];
@@ -217,7 +217,7 @@ contract HiroyukiCoin is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint256 tokens, bytes data) public returns (bool success) {

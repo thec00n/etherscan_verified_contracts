@@ -58,7 +58,7 @@ contract EasySend is Ownable {
     function sendETH(bytes32 _base, bytes32 _handle) public payable {
         require(ahs.isRegistered(_base));
         require(findAddress(_base, _handle) != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         address to = findAddress(_base, _handle);
         to.transfer(msg.value);
     }

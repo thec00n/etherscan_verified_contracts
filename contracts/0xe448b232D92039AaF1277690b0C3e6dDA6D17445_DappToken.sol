@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 
 contract DappToken {
-    string  public name = &quot;ZToken&quot;;
-    string  public symbol = &quot;ZT&quot;;
-    string  public standard = &quot;ZToken v1.0&quot;;
+    string  public name = "ZToken";
+    string  public symbol = "ZT";
+    string  public standard = "ZToken v1.0";
     uint8 public decimals = 5;
     uint256 public totalSupply;
 
@@ -19,8 +19,8 @@ contract DappToken {
         uint256 _value
     );
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     function DappToken (uint256 _initialSupply) public {
         balanceOf[msg.sender] = _initialSupply;
@@ -28,7 +28,7 @@ contract DappToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -47,8 +47,8 @@ contract DappToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;

@@ -18,7 +18,7 @@ contract SignalPylon {
      *  Storage  *
     \*************/
     address public token;                       // The address of the signal token
-    mapping (uint =&gt; Signal) public signals;    // Signals captured from users/voters
+    mapping (uint => Signal) public signals;    // Signals captured from users/voters
     uint public signalCount;                    // Total count of signals (index)
 
     /*************\
@@ -27,7 +27,7 @@ contract SignalPylon {
      *  Signal (vote)
      *  @dev Represents a particular vote or signal captured/cast
      *       at a specific blockheight. Note: signaling uses the
-     *       entire available token balance of the caller&#39;s account.
+     *       entire available token balance of the caller's account.
     \*****************************************************************/
     struct Signal {
         address signaler;
@@ -55,7 +55,7 @@ contract SignalPylon {
     \***********************************************/
     function sendSignal(bytes32 _register) public {
         uint signalValue = Token(token).balanceOf(msg.sender);
-        require(signalValue &gt; 0);
+        require(signalValue > 0);
 
         // Append to signal list
         signals[signalCount] = Signal({

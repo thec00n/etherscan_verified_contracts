@@ -18,15 +18,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract RTokenBase {
   /* contract info */
-  string public standard = &#39;Token 0.1&#39;;
+  string public standard = 'Token 0.1';
   string public name;
   string public symbol;
   uint8 public decimals;
   uint256 public totalSupply;
 
   /* maintain a balance mapping of R tokens */
-  mapping(address =&gt; uint256) public balanceMap;
-  mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+  mapping(address => uint256) public balanceMap;
+  mapping(address => mapping(address => uint256)) public allowance;
 
   /* what to do on transfers */
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -43,8 +43,8 @@ contract RTokenBase {
   /* send tokens */
   function transfer(address _to, uint256 _value) payable {
     if(
-        (balanceMap[msg.sender] &lt; _value) ||
-        (balanceMap[_to] + _value &lt; balanceMap[_to])
+        (balanceMap[msg.sender] < _value) ||
+        (balanceMap[_to] + _value < balanceMap[_to])
       )
       throw;
     balanceMap[msg.sender] -= _value;
@@ -71,9 +71,9 @@ contract RTokenBase {
   /* do a transfer */
   function transferFrom(address _from, address _to, uint256 _value) payable returns (bool success) {
     if(
-        (balanceMap[_from] &lt; _value) ||
-        (balanceMap[_to] + _value &lt; balanceMap[_to]) ||
-        (_value &gt; allowance[_from][msg.sender])
+        (balanceMap[_from] < _value) ||
+        (balanceMap[_to] + _value < balanceMap[_to]) ||
+        (_value > allowance[_from][msg.sender])
       )
       throw;
     balanceMap[_from] -= _value;
@@ -94,7 +94,7 @@ contract RTokenMain is owned, RTokenBase {
   uint256 public buyPrice;
   uint256 public totalSupply;
 
-  mapping(address =&gt; bool) public frozenAccount;
+  mapping(address => bool) public frozenAccount;
 
   event FrozenFunds(address target, bool frozen);
 
@@ -107,8 +107,8 @@ contract RTokenMain is owned, RTokenBase {
 
   function transfer(address _to, uint256 _value) payable {
     if(
-        (balanceMap[msg.sender] &lt; _value) ||
-        (balanceMap[_to] + _value &lt; balanceMap[_to]) ||
+        (balanceMap[msg.sender] < _value) ||
+        (balanceMap[_to] + _value < balanceMap[_to]) ||
         (frozenAccount[msg.sender])
       )
       throw;
@@ -120,9 +120,9 @@ contract RTokenMain is owned, RTokenBase {
   function transferFrom(address _from, address _to, uint256 _value) payable returns (bool success) {
     if(
         (frozenAccount[_from]) ||
-        (balanceMap[_from] &lt; _value) ||
-        (balanceMap[_to] + _value &lt; balanceMap[_to]) ||
-        (_value &gt; allowance[_from][msg.sender])
+        (balanceMap[_from] < _value) ||
+        (balanceMap[_to] + _value < balanceMap[_to]) ||
+        (_value > allowance[_from][msg.sender])
       )
       throw;
     balanceMap[_from] -= _value;
@@ -151,7 +151,7 @@ contract RTokenMain is owned, RTokenBase {
 
   function buy() payable {
     uint amount = msg.value/buyPrice;
-    if(balanceMap[this] &lt; amount)
+    if(balanceMap[this] < amount)
       throw;
     balanceMap[msg.sender] += amount;
     balanceMap[this] -= amount;
@@ -159,7 +159,7 @@ contract RTokenMain is owned, RTokenBase {
   }
 
   function sell(uint256 amount) {
-    if(balanceMap[msg.sender] &lt; amount)
+    if(balanceMap[msg.sender] < amount)
       throw;
     balanceMap[msg.sender] -= amount;
     balanceMap[this] += amount;

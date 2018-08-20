@@ -3,17 +3,17 @@ pragma solidity ^0.4.19;
 
 contract BitcoinQuick {
 
-    string public constant name = &quot;Bitcoin Quick&quot;;
+    string public constant name = "Bitcoin Quick";
 
-    string public constant symbol = &quot;BTCQ&quot;;
+    string public constant symbol = "BTCQ";
 
     uint public constant decimals = 8;
 
     uint public constant totalSupply = 8500000 * 10 ** decimals;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
 
@@ -33,7 +33,7 @@ contract BitcoinQuick {
     }
 
     function transfer(address _to, uint _amount) public returns (bool success)  {
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[msg.sender] >= _amount && _amount > 0);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -41,7 +41,7 @@ contract BitcoinQuick {
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0);
         balances[_to] += _amount;
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;

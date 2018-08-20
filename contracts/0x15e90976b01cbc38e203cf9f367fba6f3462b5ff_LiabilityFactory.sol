@@ -42,12 +42,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -57,7 +57,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * @dev and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -68,7 +68,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      &quot;\x19Ethereum Signed Message:\n32&quot;,
+      "\x19Ethereum Signed Message:\n32",
       hash
     );
   }
@@ -100,8 +100,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -116,9 +116,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -126,7 +126,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -135,7 +135,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -149,7 +149,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
 
   uint256 internal totalSupply_;
 
@@ -166,7 +166,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -218,7 +218,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -235,8 +235,8 @@ contract StandardToken is ERC20, BasicToken {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -317,7 +317,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -333,7 +333,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -468,9 +468,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -482,8 +482,8 @@ contract BurnableToken is BasicToken {
 // File: contracts/robonomics/XRT.sol
 
 contract XRT is MintableToken, BurnableToken {
-    string public constant name     = &quot;Robonomics Beta&quot;;
-    string public constant symbol   = &quot;XRT&quot;;
+    string public constant name     = "Robonomics Beta";
+    string public constant symbol   = "XRT";
     uint   public constant decimals = 9;
 
     uint256 public constant INITIAL_SUPPLY = 1000 * (10 ** uint256(decimals));
@@ -499,8 +499,8 @@ contract XRT is MintableToken, BurnableToken {
 // File: contracts/robonomics/DutchAuction.sol
 
 /// @title Dutch auction contract - distribution of XRT tokens using an auction.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="691a1d0c0f0807470e0c061b0e0c290a06071a0c071a101a47070c1d">[email&#160;protected]</a>&gt;
-/// @author Airalab - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed9f889e888c9f8e85ad8c849f8cc381848b88">[email&#160;protected]</a>&gt; 
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="691a1d0c0f0807470e0c061b0e0c290a06071a0c071a101a47070c1d">[email protected]</a>>
+/// @author Airalab - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed9f889e888c9f8e85ad8c849f8cc381848b88">[email protected]</a>> 
 contract DutchAuction {
 
     /*
@@ -527,7 +527,7 @@ contract DutchAuction {
     uint public endTime;
     uint public totalReceived;
     uint public finalPrice;
-    mapping (address =&gt; uint) public bids;
+    mapping (address => uint) public bids;
     Stages public stage;
 
     /*
@@ -568,9 +568,9 @@ contract DutchAuction {
     }
 
     modifier timedTransitions() {
-        if (stage == Stages.AuctionStarted &amp;&amp; calcTokenPrice() &lt;= calcStopPrice())
+        if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice())
             finalizeAuction();
-        if (stage == Stages.AuctionEnded &amp;&amp; now &gt; endTime + WAITING_PERIOD)
+        if (stage == Stages.AuctionEnded && now > endTime + WAITING_PERIOD)
             stage = Stages.TradingStarted;
         _;
     }
@@ -585,7 +585,7 @@ contract DutchAuction {
     constructor(address _wallet, uint _ceiling, uint _priceFactor)
         public
     {
-        require(_wallet != 0 &amp;&amp; _ceiling != 0 &amp;&amp; _priceFactor != 0);
+        require(_wallet != 0 && _ceiling != 0 && _priceFactor != 0);
         owner = msg.sender;
         wallet = _wallet;
         ceiling = _ceiling;
@@ -593,7 +593,7 @@ contract DutchAuction {
         stage = Stages.AuctionDeployed;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param _xrt Robonomics token address.
     /// @param _ambix Distillation cube address.
     function setup(address _xrt, address _ambix)
@@ -602,7 +602,7 @@ contract DutchAuction {
         atStage(Stages.AuctionDeployed)
     {
         // Validate argument
-        require(_xrt != 0 &amp;&amp; _ambix != 0);
+        require(_xrt != 0 && _ambix != 0);
         xrt = XRT(_xrt);
         ambix = _ambix;
 
@@ -666,7 +666,7 @@ contract DutchAuction {
         atStage(Stages.AuctionStarted)
         returns (uint amount)
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         amount = msg.value;
 
         // If a bid is done on behalf of a user via ShapeShift, the receiver address is set.
@@ -676,11 +676,11 @@ contract DutchAuction {
         // Prevent that more than 90% of tokens are sold. Only relevant if cap not reached.
         uint maxWei = MAX_TOKENS_SOLD * calcTokenPrice() / 10**9 - totalReceived;
         uint maxWeiBasedOnTotalReceived = ceiling - totalReceived;
-        if (maxWeiBasedOnTotalReceived &lt; maxWei)
+        if (maxWeiBasedOnTotalReceived < maxWei)
             maxWei = maxWeiBasedOnTotalReceived;
 
         // Only invest maximum possible amount.
-        if (amount &gt; maxWei) {
+        if (amount > maxWei) {
             amount = maxWei;
             // Send change back to receiver address. In case of a ShapeShift bid the user receives the change back directly.
             receiver.transfer(msg.value - amount);
@@ -817,14 +817,14 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
         bytes multihash;
     }
 
     ENS ens;
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -895,7 +895,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) public only_owner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) &amp; contentType) == 0);
+        require(((contentType - 1) & contentType) == 0);
         
         records[node].abis[contentType] = data;
         ABIChanged(node, contentType);
@@ -954,8 +954,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes data) {
         Record storage record = records[node];
-        for (contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -1043,9 +1043,9 @@ contract LighthouseABI {
 
 contract LighthouseAPI {
     address[] public members;
-    mapping(address =&gt; uint256) indexOf;
+    mapping(address => uint256) indexOf;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     uint256 public minimalFreeze;
     uint256 public timeoutBlocks;
@@ -1065,7 +1065,7 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
 
     function refill(uint256 _value) external {
         require(xrt.transferFrom(msg.sender, this, _value));
-        require(_value &gt;= minimalFreeze);
+        require(_value >= minimalFreeze);
 
         if (balances[msg.sender] == 0) {
             indexOf[msg.sender] = members.length;
@@ -1075,7 +1075,7 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
     }
 
     function withdraw(uint256 _value) external {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] -= _value;
         require(xrt.transfer(msg.sender, _value));
@@ -1088,7 +1088,7 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
             
             uint256 senderIndex = indexOf[msg.sender];
             uint256 lastIndex = members.length - 1;
-            if (senderIndex &lt; lastIndex)
+            if (senderIndex < lastIndex)
                 members[senderIndex] = members[lastIndex];
             members.length -= 1;
         }
@@ -1107,14 +1107,14 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
         }
 
         // Consume one quota for transaction sending
-        assert(quota &gt; 0);
+        assert(quota > 0);
         quota -= 1;
 
         _;
     }
 
     modifier keepalive {
-        if (timeoutBlocks &lt; block.number - keepaliveBlock) {
+        if (timeoutBlocks < block.number - keepaliveBlock) {
             // Search keepalive sender
             while (msg.sender != members[marker])
                 nextMember();
@@ -1128,7 +1128,7 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
 
     modifier member {
         // Zero members guard
-        require(members.length &gt; 0);
+        require(members.length > 0);
 
         // Only member with marker can to send transaction
         require(msg.sender == members[marker]);
@@ -1140,7 +1140,7 @@ contract LighthouseLib is LighthouseAPI, LighthouseABI {
     }
 
     function to(address _to, bytes _data) external keepalive quoted member {
-        require(factory.gasUtilizing(_to) &gt; 0);
+        require(factory.gasUtilizing(_to) > 0);
         require(_to.call(_data));
     }
 
@@ -1246,7 +1246,7 @@ contract RobotLiabilityLib is RobotLiabilityABI
         returns (bool)
     {
         require(msg.sender == address(factory));
-        require(block.number &lt; _deadline);
+        require(block.number < _deadline);
 
         model        = _model;
         objective    = _objective;
@@ -1289,7 +1289,7 @@ contract RobotLiabilityLib is RobotLiabilityABI
         returns (bool)
     {
         require(msg.sender == address(factory));
-        require(block.number &lt; _deadline);
+        require(block.number < _deadline);
         require(keccak256(model) == keccak256(_model));
         require(keccak256(objective) == keccak256(_objective));
         require(_token == token);
@@ -1350,7 +1350,7 @@ contract RobotLiabilityLib is RobotLiabilityABI
             else
                 require(token.transfer(promisee, cost));
 
-            if (validatorFee &gt; 0)
+            if (validatorFee > 0)
                 require(factory.xrt().transfer(validator, validatorFee));
         }
 
@@ -1413,7 +1413,7 @@ contract LiabilityFactory {
     /**
      * @dev GAS utilized by liability contracts
      */
-    mapping(address =&gt; uint256) public gasUtilizing;
+    mapping(address => uint256) public gasUtilizing;
 
     /**
      * @dev The count of utilized gas for switch to next epoch 
@@ -1428,12 +1428,12 @@ contract LiabilityFactory {
     /**
      * @dev Used market orders accounting
      */
-    mapping(bytes32 =&gt; bool) public usedHash;
+    mapping(bytes32 => bool) public usedHash;
 
     /**
      * @dev Lighthouse accounting
      */
-    mapping(address =&gt; bool) public isLighthouse;
+    mapping(address => bool) public isLighthouse;
 
     /**
      * @dev Robot liability shared code smart contract
@@ -1449,7 +1449,7 @@ contract LiabilityFactory {
      * @dev XRT emission value for utilized gas
      */
     function wnFromGas(uint256 _gas) public view returns (uint256) {
-        // Just return wn=gas when auction isn&#39;t finish
+        // Just return wn=gas when auction isn't finish
         if (auction.finalPrice() == 0)
             return _gas;
 
@@ -1460,7 +1460,7 @@ contract LiabilityFactory {
         uint256 wn = _gas * 10**9 * gasPrice * 2**epoch / 3**epoch / auction.finalPrice();
 
         // Check to not permit emission decrease below wn=gas
-        return wn &lt; _gas ? _gas : wn;
+        return wn < _gas ? _gas : wn;
     }
 
     /**
@@ -1519,7 +1519,7 @@ contract LiabilityFactory {
                                    liability.cost()));
 
         // Transfer validator fee and hold on contract
-        if (address(liability.validator()) != 0 &amp;&amp; liability.validatorFee() &gt; 0)
+        if (address(liability.validator()) != 0 && liability.validatorFee() > 0)
             require(xrt.transferFrom(liability.promisee(),
                                      liability,
                                      liability.validatorFee()));
@@ -1535,7 +1535,7 @@ contract LiabilityFactory {
      * @param _minimalFreeze Minimal freeze value of XRT token
      * @param _timeoutBlocks Max time of lighthouse silence in blocks
      * @param _name Lighthouse subdomain,
-     *              example: for &#39;my-name&#39; will created &#39;my-name.lighthouse.1.robonomics.eth&#39; domain
+     *              example: for 'my-name' will created 'my-name.lighthouse.1.robonomics.eth' domain
      */
     function createLighthouse(
         uint256 _minimalFreeze,
@@ -1577,7 +1577,7 @@ contract LiabilityFactory {
         external
         returns (bool)
     {
-        require(gasUtilizing[msg.sender] &gt; 0);
+        require(gasUtilizing[msg.sender] > 0);
 
         uint256 gas = _gas - gasleft();
         totalGasUtilizing        += gas;

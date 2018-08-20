@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -117,7 +117,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -165,7 +165,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -176,8 +176,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -240,7 +240,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -306,7 +306,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -351,8 +351,8 @@ contract RefundVault is Ownable {
 contract MinerOneToken is MintableToken {
     using SafeMath for uint256;
 
-    string public name = &quot;MinerOne&quot;;
-    string public symbol = &quot;MIO&quot;;
+    string public name = "MinerOne";
+    string public symbol = "MIO";
     uint8 public decimals = 18;
 
     /**
@@ -376,7 +376,7 @@ contract MinerOneToken is MintableToken {
     /**
      * Mapping which holds all token holders data
      */
-    mapping(address =&gt; Account) internal accounts;
+    mapping(address => Account) internal accounts;
 
     /**
      * Running total of all dividends distributed
@@ -403,7 +403,7 @@ contract MinerOneToken is MintableToken {
     modifier fixBalance(address _owner) {
         Account storage account = accounts[_owner];
         uint256 diff = totalDividends.sub(account.lastDividends);
-        if (diff &gt; 0) {
+        if (diff > 0) {
             uint256 numerator = account.remainder.add(balances[_owner].mul(diff));
 
             account.fixedBalance = account.fixedBalance.add(numerator.div(totalSupply_));
@@ -423,8 +423,8 @@ contract MinerOneToken is MintableToken {
     }
 
     function deposit() external payable {
-        require(msg.value &gt; 0);
-        require(msg.value &lt;= this.balance.sub(reserved));
+        require(msg.value > 0);
+        require(msg.value <= this.balance.sub(reserved));
 
         totalDividends = totalDividends.add(msg.value);
         reserved = reserved.add(msg.value);
@@ -437,7 +437,7 @@ contract MinerOneToken is MintableToken {
     function getDividends(address _owner) public view returns (uint256) {
         Account storage account = accounts[_owner];
         uint256 diff = totalDividends.sub(account.lastDividends);
-        if (diff &gt; 0) {
+        if (diff > 0) {
             uint256 numerator = account.remainder.add(balances[_owner].mul(diff));
             return account.fixedBalance.add(numerator.div(totalSupply_));
         } else {
@@ -460,9 +460,9 @@ contract MinerOneToken is MintableToken {
     }
 
     function payoutToAddress(address[] _holders) external {
-        require(_holders.length &gt; 0);
-        require(_holders.length &lt;= 100);
-        for (uint256 i = 0; i &lt; _holders.length; i++) {
+        require(_holders.length > 0);
+        require(_holders.length <= 100);
+        for (uint256 i = 0; i < _holders.length; i++) {
             withdraw(_holders[i], 0);
         }
     }
@@ -478,10 +478,10 @@ contract MinerOneToken is MintableToken {
         reserved = reserved.sub(amount);
         accounts[_benefeciary].fixedBalance = 0;
         uint256 toTransfer = amount.add(_toReturn);
-        if (toTransfer &gt; 0) {
+        if (toTransfer > 0) {
             _benefeciary.transfer(toTransfer);
         }
-        if (amount &gt; 0) {
+        if (amount > 0) {
             Paid(_benefeciary, amount);
         }
         return true;
@@ -579,19 +579,19 @@ contract MinerOneCrowdsale is Ownable {
     }
 
     function mintTokens(address[] _receivers, uint256[] _amounts) external onlyTokenMinterOrOwner {
-        require(_receivers.length &gt; 0 &amp;&amp; _receivers.length &lt;= 100);
+        require(_receivers.length > 0 && _receivers.length <= 100);
         require(_receivers.length == _amounts.length);
         require(!isFinalized);
-        for (uint256 i = 0; i &lt; _receivers.length; i++) {
+        for (uint256 i = 0; i < _receivers.length; i++) {
             address receiver = _receivers[i];
             uint256 amount = _amounts[i];
 
             require(receiver != address(0));
-            require(amount &gt; 0);
+            require(amount > 0);
 
             uint256 excess = appendContribution(receiver, amount);
 
-            if (excess &gt; 0) {
+            if (excess > 0) {
                 ManualTokenMintRequiresRefund(receiver, excess);
             }
         }
@@ -606,22 +606,22 @@ contract MinerOneCrowdsale is Ownable {
         uint256 weiReceived = msg.value;
         uint256 nowTime = getNow();
         // this loop moves phases and insures correct stage according to date
-        while (currentPhase &lt; phases.length &amp;&amp; phases[currentPhase].till &lt; nowTime) {
+        while (currentPhase < phases.length && phases[currentPhase].till < nowTime) {
             currentPhase = currentPhase.add(1);
         }
 
         // calculate token amount to be created
         uint256 tokens = calculateTokens(weiReceived);
 
-        if (tokens &lt; MIN_TOKEN_AMOUNT) revert();
+        if (tokens < MIN_TOKEN_AMOUNT) revert();
 
         uint256 excess = appendContribution(beneficiary, tokens);
-        uint256 refund = (excess &gt; 0 ? excess.mul(weiReceived).div(tokens) : 0);
+        uint256 refund = (excess > 0 ? excess.mul(weiReceived).div(tokens) : 0);
 
         weiReceived = weiReceived.sub(refund);
         weiRaised = weiRaised.add(weiReceived);
 
-        if (refund &gt; 0) {
+        if (refund > 0) {
             sender.transfer(refund);
         }
 
@@ -644,7 +644,7 @@ contract MinerOneCrowdsale is Ownable {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() public onlyOwner {
         require(!isFinalized);
@@ -675,11 +675,11 @@ contract MinerOneCrowdsale is Ownable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return getNow() &gt; icoEndTime || token.totalSupply() == ICO_TOKENS;
+        return getNow() > icoEndTime || token.totalSupply() == ICO_TOKENS;
     }
 
     function goalReached() public view returns (bool) {
-        return token.totalSupply() &gt;= SOFT_CAP;
+        return token.totalSupply() >= SOFT_CAP;
     }
 
     function setTokenMinter(address _tokenMinter) public onlyOwner {
@@ -693,7 +693,7 @@ contract MinerOneCrowdsale is Ownable {
     }
 
     function setIcoEndTime(uint256 _endTime) public onlyOwner {
-        require(_endTime &gt; icoEndTime);
+        require(_endTime > icoEndTime);
         icoEndTime = _endTime;
     }
 
@@ -705,8 +705,8 @@ contract MinerOneCrowdsale is Ownable {
         uint256 tokens = _weiAmount.mul(RATE).mul(100).div(uint256(100).sub(phases[currentPhase].discount));
 
         uint256 bonus = 0;
-        if (currentPhase &gt; 0) {
-            bonus = bonus.add(tokens &gt;= LARGE_PURCHASE ? LARGE_PURCHASE_BONUS : 0);
+        if (currentPhase > 0) {
+            bonus = bonus.add(tokens >= LARGE_PURCHASE ? LARGE_PURCHASE_BONUS : 0);
             bonus = bonus.add(msg.sender == tokenDeskProxy ? TOKEN_DESK_BONUS : 0);
         }
         return tokens.add(tokens.mul(bonus).div(100));
@@ -717,13 +717,13 @@ contract MinerOneCrowdsale is Ownable {
         uint256 tokensToMint = 0;
         uint256 totalSupply = token.totalSupply();
 
-        if (totalSupply.add(_tokens) &lt; ICO_TOKENS) {
+        if (totalSupply.add(_tokens) < ICO_TOKENS) {
             tokensToMint = _tokens;
         } else {
             tokensToMint = ICO_TOKENS.sub(totalSupply);
             excess = _tokens.sub(tokensToMint);
         }
-        if (tokensToMint &gt; 0) {
+        if (tokensToMint > 0) {
             token.mint(_beneficiary, tokensToMint);
         }
         return excess;
@@ -731,10 +731,10 @@ contract MinerOneCrowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = getNow() &gt;= START_TIME &amp;&amp; getNow() &lt;= icoEndTime;
+        bool withinPeriod = getNow() >= START_TIME && getNow() <= icoEndTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool canMint = token.totalSupply() &lt; ICO_TOKENS;
-        bool validPhase = (currentPhase &lt; phases.length);
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; canMint &amp;&amp; validPhase;
+        bool canMint = token.totalSupply() < ICO_TOKENS;
+        bool validPhase = (currentPhase < phases.length);
+        return withinPeriod && nonZeroPurchase && canMint && validPhase;
     }
 }

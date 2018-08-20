@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -63,9 +63,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -73,7 +73,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -82,7 +82,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -135,7 +135,7 @@ contract ERC827 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -153,7 +153,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -183,7 +183,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -194,8 +194,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -258,7 +258,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -286,7 +286,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -510,19 +510,19 @@ contract PausableToken is StandardToken, Pausable {
 
 
 /**
-   @title L&#237;f, the Winding Tree token
+   @title Líf, the Winding Tree token
 
-   Implementation of L&#237;f, the ERC827 token for Winding Tree, an extension of the
+   Implementation of Líf, the ERC827 token for Winding Tree, an extension of the
    ERC20 token with extra methods to transfer value and data to execute a call
    on transfer.
    Uses OpenZeppelin StandardToken, ERC827Token, MintableToken and PausableToken.
  */
 contract LifToken is StandardToken, ERC827Token, MintableToken, PausableToken {
   // Token Name
-  string public constant NAME = &quot;L&#237;f&quot;;
+  string public constant NAME = "Líf";
 
   // Token Symbol
-  string public constant SYMBOL = &quot;LIF&quot;;
+  string public constant SYMBOL = "LIF";
 
   // Token decimals
   uint public constant DECIMALS = 18;
@@ -534,7 +534,7 @@ contract LifToken is StandardToken, ERC827Token, MintableToken, PausableToken {
    */
   function burn(uint256 _value) public whenNotPaused {
 
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -554,7 +554,7 @@ contract LifToken is StandardToken, ERC827Token, MintableToken, PausableToken {
 
     require(!mintingFinished);
 
-    require(_value &lt;= balances[burner]);
+    require(_value <= balances[burner]);
 
     balances[burner] = balances[burner].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -616,12 +616,12 @@ contract VestedPayment is Ownable {
     uint256 _totalPeriods, uint256 _cliffDuration,
     uint256 _tokens, address tokenAddress
   ) {
-    require(_startTimestamp &gt;= block.timestamp);
-    require(_secondsPerPeriod &gt; 0);
-    require(_totalPeriods &gt; 0);
+    require(_startTimestamp >= block.timestamp);
+    require(_secondsPerPeriod > 0);
+    require(_totalPeriods > 0);
     require(tokenAddress != address(0));
-    require(_cliffDuration &lt; _totalPeriods);
-    require(_tokens &gt; 0);
+    require(_cliffDuration < _totalPeriods);
+    require(_tokens > 0);
 
     startTimestamp = _startTimestamp;
     secondsPerPeriod = _secondsPerPeriod;
@@ -638,9 +638,9 @@ contract VestedPayment is Ownable {
     uint256 period = block.timestamp.sub(startTimestamp)
       .div(secondsPerPeriod);
 
-    if (period &lt; cliffDuration) {
+    if (period < cliffDuration) {
       return 0;
-    } else if (period &gt;= totalPeriods) {
+    } else if (period >= totalPeriods) {
       return tokens.sub(claimed);
     } else {
       return tokens.mul(period.add(1)).div(totalPeriods).sub(claimed);
@@ -654,7 +654,7 @@ contract VestedPayment is Ownable {
      @param amount how many tokens to be claimed
    */
   function claimTokens(uint256 amount) public onlyOwner {
-    assert(getAvailableTokens() &gt;= amount);
+    assert(getAvailableTokens() >= amount);
 
     claimed = claimed.add(amount);
     token.transfer(owner, amount);
@@ -751,8 +751,8 @@ contract LifMarketValidationMechanism is Ownable {
     uint8 _totalPeriods, address _foundationAddr
   ) {
     require(lifAddr != address(0));
-    require(_startTimestamp &gt; block.timestamp);
-    require(_secondsPerPeriod &gt; 0);
+    require(_startTimestamp > block.timestamp);
+    require(_secondsPerPeriod > 0);
     require(_totalPeriods == 24 || _totalPeriods == 48);
     require(_foundationAddr != address(0));
 
@@ -792,7 +792,7 @@ contract LifMarketValidationMechanism is Ownable {
     // Table with the max delta % that can be distributed back to the foundation on
     // each period. It follows an exponential curve (starts with lower % and ends
     // with higher %) to keep the funds in the MVM longer. deltas24
-    // is used when MVM lifetime is 24 months, deltas48 when it&#39;s 48 months.
+    // is used when MVM lifetime is 24 months, deltas48 when it's 48 months.
     // The sum is less than 100% because the last % is missing: after the last period
     // the 100% remaining can be claimed by the foundation. Values multipled by 10^5
 
@@ -812,7 +812,7 @@ contract LifMarketValidationMechanism is Ownable {
       60921, 65150, 69560, 74155, 78937, 83909, 89075, 94438
     ];
 
-    for (uint8 i = 0; i &lt; totalPeriods; i++) {
+    for (uint8 i = 0; i < totalPeriods; i++) {
 
       if (totalPeriods == 24) {
         periods.push(accumDistribution24[i]);
@@ -829,7 +829,7 @@ contract LifMarketValidationMechanism is Ownable {
      @return the current period as a number from 0 to totalPeriods
     */
   function getCurrentPeriodIndex() public view returns(uint256) {
-    assert(block.timestamp &gt;= startTimestamp);
+    assert(block.timestamp >= startTimestamp);
     return block.timestamp.sub(startTimestamp).
       sub(totalPausedSeconds).
       div(secondsPerPeriod);
@@ -845,7 +845,7 @@ contract LifMarketValidationMechanism is Ownable {
   function getAccumulatedDistributionPercentage() public view returns(uint256 percentage) {
     uint256 period = getCurrentPeriodIndex();
 
-    assert(period &lt; totalPeriods);
+    assert(period < totalPeriods);
 
     return periods[period];
   }
@@ -865,7 +865,7 @@ contract LifMarketValidationMechanism is Ownable {
   }
 
   /**
-     @dev Returns the maximum amount of wei that the foundation can claim. It&#39;s
+     @dev Returns the maximum amount of wei that the foundation can claim. It's
      a portion of the ETH that was not claimed by token holders
 
      @return the maximum wei claimable by the foundation as of now
@@ -884,7 +884,7 @@ contract LifMarketValidationMechanism is Ownable {
         mul(currentCirculation).div(originalTotalSupply).
         add(claimableFromReimbursed);
 
-      if (maxClaimable &gt; totalWeiClaimed) {
+      if (maxClaimable > totalWeiClaimed) {
         return maxClaimable.sub(totalWeiClaimed);
       } else {
         return 0;
@@ -897,7 +897,7 @@ contract LifMarketValidationMechanism is Ownable {
      determined by getBuyPrice. The tokens are burned
     */
   function sendTokens(uint256 tokens) public whenNotPaused {
-    require(tokens &gt; 0);
+    require(tokens > 0);
 
     uint256 price = getBuyPrice();
     uint256 totalWei = tokens.mul(price).div(PRICE_FACTOR);
@@ -920,7 +920,7 @@ contract LifMarketValidationMechanism is Ownable {
      @return true if the MVM end-of-life has been reached
     */
   function isFinished() public view returns (bool finished) {
-    return getCurrentPeriodIndex() &gt;= totalPeriods;
+    return getCurrentPeriodIndex() >= totalPeriods;
   }
 
   /**
@@ -933,7 +933,7 @@ contract LifMarketValidationMechanism is Ownable {
 
     uint256 claimable = getMaxClaimableWeiAmount();
 
-    assert(claimable &gt;= weiAmount);
+    assert(claimable >= weiAmount);
 
     foundationAddr.transfer(weiAmount);
 
@@ -972,7 +972,7 @@ contract LifMarketValidationMechanism is Ownable {
 
    Implementation of the Lif Token Generation Event (TGE) Crowdsale: A 2 week
    fixed price, uncapped token sale, with a discounted ratefor contributions
-   &#236;n the private presale and a Market Validation Mechanism that will receive
+   ìn the private presale and a Market Validation Mechanism that will receive
    the funds over the USD 10M soft cap.
    The crowdsale has a minimum cap of USD 5M which in case of not being reached
    by purchases made during the 2 week period the token will not start operating
@@ -999,7 +999,7 @@ contract LifCrowdsale is Ownable, Pausable {
   uint256 public end2Timestamp;
 
   // Address of the Winding Tree Foundation wallet. Funds up to the soft cap are
-  // sent to this address. It&#39;s also the address to which the MVM distributes
+  // sent to this address. It's also the address to which the MVM distributes
   // the funds that are made available month after month. An extra 5% of tokens
   // are put in a Vested Payment with this address as beneficiary, acting as a
   // long-term reserve for the foundation.
@@ -1055,7 +1055,7 @@ contract LifCrowdsale is Ownable, Pausable {
 
   // Tracks the wei sent per address during the 2 week TGE. This is the amount
   // that can be claimed by each address in case the minimum cap is not reached
-  mapping(address =&gt; uint256) public purchases;
+  mapping(address => uint256) public purchases;
 
   // Has the Crowdsale been finalized by a successful call to `finalize`?
   bool public isFinalized = false;
@@ -1106,12 +1106,12 @@ contract LifCrowdsale is Ownable, Pausable {
     address _foundersWallet
   ) {
 
-    require(_startTimestamp &gt; block.timestamp);
-    require(_end1Timestamp &gt; _startTimestamp);
-    require(_end2Timestamp &gt; _end1Timestamp);
-    require(_rate1 &gt; 0);
-    require(_rate2 &gt; 0);
-    require(_setWeiLockSeconds &gt; 0);
+    require(_startTimestamp > block.timestamp);
+    require(_end1Timestamp > _startTimestamp);
+    require(_end2Timestamp > _end1Timestamp);
+    require(_rate1 > 0);
+    require(_rate2 > 0);
+    require(_setWeiLockSeconds > 0);
     require(_foundationWallet != address(0));
     require(_foundersWallet != address(0));
 
@@ -1135,8 +1135,8 @@ contract LifCrowdsale is Ownable, Pausable {
      @param _weiPerUSD wei per USD rate valid during the TGE
    */
   function setWeiPerUSDinTGE(uint256 _weiPerUSD) public onlyOwner {
-    require(_weiPerUSD &gt; 0);
-    assert(block.timestamp &lt; startTimestamp.sub(setWeiLockSeconds));
+    require(_weiPerUSD > 0);
+    assert(block.timestamp < startTimestamp.sub(setWeiLockSeconds));
 
     weiPerUSDinTGE = _weiPerUSD;
   }
@@ -1147,11 +1147,11 @@ contract LifCrowdsale is Ownable, Pausable {
      @return the current Lif per Eth rate or 0 when not in TGE
    */
   function getRate() public view returns (uint256) {
-    if (block.timestamp &lt; startTimestamp)
+    if (block.timestamp < startTimestamp)
       return 0;
-    else if (block.timestamp &lt;= end1Timestamp)
+    else if (block.timestamp <= end1Timestamp)
       return rate1;
-    else if (block.timestamp &lt;= end2Timestamp)
+    else if (block.timestamp <= end2Timestamp)
       return rate2;
     else
       return 0;
@@ -1172,14 +1172,14 @@ contract LifCrowdsale is Ownable, Pausable {
    */
   function buyTokens(address beneficiary) public payable whenNotPaused validPurchase {
     require(beneficiary != address(0));
-    assert(weiPerUSDinTGE &gt; 0);
+    assert(weiPerUSDinTGE > 0);
 
     uint256 weiAmount = msg.value;
 
     // get current price (it depends on current block number)
     uint256 rate = getRate();
 
-    assert(rate &gt; 0);
+    assert(rate > 0);
 
     // calculate token amount to be created
     uint256 tokens = weiAmount.mul(rate);
@@ -1205,12 +1205,12 @@ contract LifCrowdsale is Ownable, Pausable {
   function addPrivatePresaleTokens(
     address beneficiary, uint256 weiSent, uint256 rate
   ) public onlyOwner {
-    require(block.timestamp &lt; startTimestamp);
+    require(block.timestamp < startTimestamp);
     require(beneficiary != address(0));
-    require(weiSent &gt; 0);
+    require(weiSent > 0);
 
     // validate that rate is higher than TGE rate
-    require(rate &gt; rate1);
+    require(rate > rate1);
 
     uint256 tokens = weiSent.mul(rate);
 
@@ -1235,7 +1235,7 @@ contract LifCrowdsale is Ownable, Pausable {
     // We use weiRaised to compare becuase that is the total amount of wei raised in all TGE
     // but we have to distribute the balance using `this.balance` because thats the amount
     // raised by the crowdsale
-    if (weiRaised &lt;= foundationBalanceCapWei) {
+    if (weiRaised <= foundationBalanceCapWei) {
 
       foundationWallet.transfer(this.balance);
 
@@ -1247,7 +1247,7 @@ contract LifCrowdsale is Ownable, Pausable {
 
       // check how much preiods we have to use on the MVM
       uint8 MVMPeriods = 24;
-      if (mmFundBalance &gt; MVM24PeriodsCapUSD.mul(weiPerUSDinTGE))
+      if (mmFundBalance > MVM24PeriodsCapUSD.mul(weiPerUSDinTGE))
         MVMPeriods = 48;
 
       foundationWallet.transfer(foundationBalanceCapWei);
@@ -1308,9 +1308,9 @@ contract LifCrowdsale is Ownable, Pausable {
      ok if the transaction can buy tokens on TGE
    */
   modifier validPurchase() {
-    bool withinPeriod = now &gt;= startTimestamp &amp;&amp; now &lt;= end2Timestamp;
+    bool withinPeriod = now >= startTimestamp && now <= end2Timestamp;
     bool nonZeroPurchase = msg.value != 0;
-    assert(withinPeriod &amp;&amp; nonZeroPurchase);
+    assert(withinPeriod && nonZeroPurchase);
     _;
   }
 
@@ -1319,7 +1319,7 @@ contract LifCrowdsale is Ownable, Pausable {
      ok when block.timestamp is past end2Timestamp
   */
   modifier hasEnded() {
-    assert(block.timestamp &gt; end2Timestamp);
+    assert(block.timestamp > end2Timestamp);
     _;
   }
 
@@ -1328,8 +1328,8 @@ contract LifCrowdsale is Ownable, Pausable {
      @return true if minCapUSD has been reached by contributions during the TGE
   */
   function funded() public view returns (bool) {
-    assert(weiPerUSDinTGE &gt; 0);
-    return weiRaised &gt;= minCapUSD.mul(weiPerUSDinTGE);
+    assert(weiPerUSDinTGE > 0);
+    return weiRaised >= minCapUSD.mul(weiPerUSDinTGE);
   }
 
   /**
@@ -1341,7 +1341,7 @@ contract LifCrowdsale is Ownable, Pausable {
     require(!funded());
 
     uint256 toReturn = purchases[msg.sender];
-    assert(toReturn &gt; 0);
+    assert(toReturn > 0);
 
     purchases[msg.sender] = 0;
 
@@ -1357,7 +1357,7 @@ contract LifCrowdsale is Ownable, Pausable {
     require(!isFinalized);
 
     uint256 toReturn = purchases[contributor];
-    assert(toReturn &gt; 0);
+    assert(toReturn > 0);
 
     uint256 tokenBalance = token.balanceOf(contributor);
 
@@ -1434,7 +1434,7 @@ contract TGEDeployer {
   function addPresaleTokens(address[] contributors, uint256[] values, uint256 rate) public {
     require(msg.sender == owner);
     require(contributors.length == values.length);
-    for (uint32 i = 0; i &lt; contributors.length; i ++) {
+    for (uint32 i = 0; i < contributors.length; i ++) {
       crowdsale.addPrivatePresaleTokens(contributors[i], values[i], rate);
     }
   }

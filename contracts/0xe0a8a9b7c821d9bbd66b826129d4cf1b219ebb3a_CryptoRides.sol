@@ -20,17 +20,17 @@ contract CryptoRides is ERC721 {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name, bytes7 plateNumber);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;CryptoRides&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoRidesToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoRides"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoRidesToken"; // solhint-disable-line
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
   uint256 private firstStepLimit =  0.053613 ether;
   uint256 private secondStepLimit = 0.564957 ether;
 
-  mapping (uint256 =&gt; address) public tokenIdToOwner;
-  mapping (address =&gt; uint256) private ownershipTokenCount;
-  mapping (uint256 =&gt; address) public tokenIdToApproved;
-  mapping (uint256 =&gt; uint256) private tokenIdToPrice;
+  mapping (uint256 => address) public tokenIdToOwner;
+  mapping (address => uint256) private ownershipTokenCount;
+  mapping (uint256 => address) public tokenIdToApproved;
+  mapping (uint256 => uint256) private tokenIdToPrice;
 
   address public ceoAddress;
   address public cooAddress;
@@ -80,14 +80,14 @@ contract CryptoRides is ERC721 {
   }
 
   function createPromoRide(address _owner, string _name, bytes7 _plateNo, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address rideOwner = _owner;
     if (rideOwner == address(0)) {
       rideOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -143,16 +143,16 @@ contract CryptoRides is ERC721 {
 
     require(_addressNotNull(newOwner));
 
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 92), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       tokenIdToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 92);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       tokenIdToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 92);
     } else {
@@ -217,7 +217,7 @@ contract CryptoRides is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 rideId;
-      for (rideId = 0; rideId &lt;= totalRides; rideId++) {
+      for (rideId = 0; rideId <= totalRides; rideId++) {
         if (tokenIdToOwner[rideId] == _owner) {
           result[resultIndex] = rideId;
           resultIndex++;
@@ -283,12 +283,12 @@ contract CryptoRides is ERC721 {
   }
 
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of rides is capped to 2^32 we can&#39;t overflow this
+    // Since the number of rides is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     tokenIdToOwner[_tokenId] = _to;
 
-    // When creating new rides _from is 0x0, but we can&#39;t account that address.
+    // When creating new rides _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -309,18 +309,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

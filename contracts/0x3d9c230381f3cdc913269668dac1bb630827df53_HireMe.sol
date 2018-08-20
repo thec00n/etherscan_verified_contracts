@@ -4,7 +4,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -63,9 +63,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -73,7 +73,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -82,7 +82,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,8 +97,8 @@ contract HireMe is Ownable {
         uint timestamp;      // 2. The timestamp of when the bid was made
         address bidder;      // 3. The address of the bidder
         uint amount;         // 4. The amount of ETH in the bid
-        string email;        // 5. The bidder&#39;s email address
-        string organisation; // 6. The bidder&#39;s organisation
+        string email;        // 5. The bidder's email address
+        string organisation; // 6. The bidder's organisation
     }
 
     event BidMade(uint indexed id, address indexed bidder, uint indexed amount);
@@ -122,7 +122,7 @@ contract HireMe is Ownable {
 
     // SHA256 checksum of https://github.com/weijiekoh/hireme/blob/master/AUTHOR.asc
     // See the bottom of this file for the contents of AUTHOR.asc
-    string public constant AUTHORSIGHASH = &quot;8c8b82a2d83a33cb0f45f5f6b22b45c1955f08fc54e7ab4d9e76fb76843c4918&quot;;
+    string public constant AUTHORSIGHASH = "8c8b82a2d83a33cb0f45f5f6b22b45c1955f08fc54e7ab4d9e76fb76843c4918";
 
     // Whether the donate() function has been called
     bool public donated = false;
@@ -132,9 +132,9 @@ contract HireMe is Ownable {
 
     // Tracks the total amount of ETH currently residing in the contract
     // balance per address.
-    mapping (address =&gt; uint) public addressBalance;
+    mapping (address => uint) public addressBalance;
 
-    // The Internet Archive&#39;s ETH donation address
+    // The Internet Archive's ETH donation address
     address public charityAddress = 0x635599b0ab4b5c6B1392e0a2D1d69cF7d1ddDF02;
 
     // Only the contract owner may end this contract, and may do so only if
@@ -153,19 +153,19 @@ contract HireMe is Ownable {
         uint _id = bids.length;
 
         // The auction must not be over
-        require(!hasExpired() &amp;&amp; !manuallyEnded);
+        require(!hasExpired() && !manuallyEnded);
 
         // The bidder must be neither the contract owner nor the charity
         // donation address
-        require(_bidder != owner &amp;&amp; _bidder != charityAddress);
+        require(_bidder != owner && _bidder != charityAddress);
 
         // The bidder address, email, and organisation must valid
         require(_bidder != address(0));
-        require(bytes(_email).length &gt; 0);
-        require(bytes(_organisation).length &gt; 0);
+        require(bytes(_email).length > 0);
+        require(bytes(_organisation).length > 0);
 
         // Make sure the amount bid is more than the rolling minimum bid
-        require(_amount &gt;= calcCurrentMinBid());
+        require(_amount >= calcCurrentMinBid());
 
         // Update the state with the new bid
         bids.push(Bid(true, _id, now, _bidder, _amount, _email, _organisation));
@@ -185,20 +185,20 @@ contract HireMe is Ownable {
 
         // There must be at least 2 bids. Note that if there is only 1 bid and
         // that bid is the winning bid, it cannot be reclaimed.
-        require(bids.length &gt;= 2);
+        require(bids.length >= 2);
 
         // The auction must not have been manually ended
         require(!manuallyEnded);
 
         // Make sure the amount to reclaim is more than 0
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         // Subtract the amount to be reclaimed from the state variable which
         // tracks the total amount paid per address
         uint _newTotal = SafeMath.sub(addressBalance[_caller], _amount);
 
         // The amount must not be negative, or the contract is buggy
-        assert(_newTotal &gt;= 0);
+        assert(_newTotal >= 0);
 
         // Update the state to prevent double-spending
         addressBalance[_caller] = _newTotal;
@@ -226,7 +226,7 @@ contract HireMe is Ownable {
         assert(!manuallyEnded);
 
         // There must be at least 1 bid, or the contract is buggy
-        assert(bids.length &gt; 0);
+        assert(bids.length > 0);
 
         // Calculate the amount to donate
         uint _amount;
@@ -240,7 +240,7 @@ contract HireMe is Ownable {
 
         // The amount to be donated must be more than 0, or this contract is
         // buggy
-        assert(_amount &gt; 0);
+        assert(_amount > 0);
 
         // Prevent double-donating
         donated = true;
@@ -308,12 +308,12 @@ contract HireMe is Ownable {
         uint _numBids = bids.length;
 
         // There is no expiry if there are no bids
-        require(_numBids &gt; 0);
+        require(_numBids > 0);
 
         // The timestamp of the most recent bid
         uint _lastBidTimestamp = bids[SafeMath.sub(_numBids, 1)].timestamp;
 
-        if (_numBids &lt;= INITIAL_BIDS) {
+        if (_numBids <= INITIAL_BIDS) {
             return SafeMath.add(_lastBidTimestamp, EXPIRY_DAYS_BEFORE);
         } else {
             return SafeMath.add(_lastBidTimestamp, EXPIRY_DAYS_AFTER);
@@ -328,7 +328,7 @@ contract HireMe is Ownable {
             return false;
         } else {
             // Compare with the current time
-            return now &gt;= this.expiryTimestamp();
+            return now >= this.expiryTimestamp();
         }
     }
 }
@@ -356,4 +356,4 @@ contract HireMe is Ownable {
 //-----END PGP SIGNATURE-----
 
 // AUTHOR:
-//Koh Wei Jie &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5969a9b81949681b59e9a9d82909c9f9c90db969a98">[email&#160;protected]</a>&gt;
+//Koh Wei Jie <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5969a9b81949681b59e9a9d82909c9f9c90db969a98">[email protected]</a>>

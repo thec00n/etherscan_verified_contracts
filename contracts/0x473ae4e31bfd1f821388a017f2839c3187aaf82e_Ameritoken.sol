@@ -24,17 +24,17 @@ contract owned {
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 
 contract Ameritoken {
-    string public constant name = &#39;Ameritoken&#39;;                                 // Public variables of the token
-    string public constant symbol = &#39;ATMX&#39;;                                     
+    string public constant name = 'Ameritoken';                                 // Public variables of the token
+    string public constant symbol = 'ATMX';                                     
     uint256 public constant decimals = 0;                                       // 0 decimals 
-    string public constant version = &#39;ATMX-1.1&#39;;                                // Public Version
+    string public constant version = 'ATMX-1.1';                                // Public Version
                                                                                 // Corrected glitch of sending double qty to receiver. 
                                                                                 // Fix provided by https://ethereum.stackexchange.com/users/19510/smarx
                                               
     uint256 private constant totalTokens = 41000000;                            // Fourty One million coins, NO FORK
                                                                                 // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;                              // (ERC20)
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;         // (ERC20)
+    mapping (address => uint256) public balanceOf;                              // (ERC20)
+    mapping (address => mapping (address => uint256)) public allowance;         // (ERC20)
 
                                                                                 // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);    
@@ -50,8 +50,8 @@ contract Ameritoken {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                                                    // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);                                    // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);                      // Check for overflows
+        require(balanceOf[_from] >= _value);                                    // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);                      // Check for overflows
         uint previousBalances = balanceOf[_from] + balanceOf[_to];              // Save this for an assertion in the future
         balanceOf[_from] -= _value;                                             // Subtract from the sender
         balanceOf[_to] += _value;                                               // Add the same to the recipient
@@ -61,7 +61,7 @@ contract Ameritoken {
 
    
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balanceOf[msg.sender] &gt;= _value) {
+        if (balanceOf[msg.sender] >= _value) {
             _transfer(msg.sender, _to, _value);
             return true;
         }
@@ -70,7 +70,7 @@ contract Ameritoken {
 
  
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    if (balanceOf[_from] &gt;= _value &amp;&amp; allowance[_from][msg.sender] &gt;= _value) {
+    if (balanceOf[_from] >= _value && allowance[_from][msg.sender] >= _value) {
       balanceOf[_from] -= _value;
       allowance[_from][msg.sender] -= _value;
       balanceOf[_to] += _value;

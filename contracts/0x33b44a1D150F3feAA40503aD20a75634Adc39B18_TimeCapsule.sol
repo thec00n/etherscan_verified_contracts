@@ -9,7 +9,7 @@ contract Ownable {
 
 contract TimeCapsule is Ownable {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     uint public openDate;
     
     function initCapsule(uint open) {
@@ -20,21 +20,21 @@ contract TimeCapsule is Ownable {
     function() payable { deposit(); }
     
     function deposit() {
-        if( msg.value &gt;= 0.5 ether )
+        if( msg.value >= 0.5 ether )
             deposits[msg.sender] += msg.value;
         else throw;
     }
     
     function withdraw(uint amount) {
-        if( isOwner() &amp;&amp; now &gt;= openDate ) {
+        if( isOwner() && now >= openDate ) {
             uint max = deposits[msg.sender];
-            if( amount &lt;= max &amp;&amp; max &gt; 0 )
+            if( amount <= max && max > 0 )
                 msg.sender.send( amount );
         }
     }
 
     function kill() {
-        if( isOwner() &amp;&amp; this.balance == 0 )
+        if( isOwner() && this.balance == 0 )
             suicide( msg.sender );
 	}
 }

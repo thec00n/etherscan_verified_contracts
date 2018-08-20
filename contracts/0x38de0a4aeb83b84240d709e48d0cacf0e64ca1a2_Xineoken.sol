@@ -18,19 +18,19 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal pure returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,7 +57,7 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /// seconds since 01.01.1970 to 17.02.2018 00:00:00 GMT
     uint64 public dateTransferable = 1518825600;
@@ -69,8 +69,8 @@ contract BasicToken is ERC20Basic {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         uint64 _now = uint64(block.timestamp);
-        require(_now &gt;= dateTransferable);
-        require(_to != address(this)); // Don&#39;t allow to transfer tokens to contract address
+        require(_now >= dateTransferable);
+        require(_to != address(this)); // Don't allow to transfer tokens to contract address
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -103,14 +103,14 @@ contract ERC20 is ERC20Basic {
 /** 
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
     address public owner;
 
     /**
-     * @dev The Ownable constructor sets the original &#39;owner&#39; of the contract to the sender account.
+     * @dev The Ownable constructor sets the original 'owner' of the contract to the sender account.
      */
     function Ownable() public {
         owner = msg.sender;
@@ -225,9 +225,9 @@ contract Xineoken is BasicToken, Ownable, Pausable, MintableToken {
 
     using SafeMath for uint256;
     
-    string public name = &quot;Xineoken&quot;;
+    string public name = "Xineoken";
     uint256 public decimals = 2;
-    string public symbol = &quot;XIN&quot;;
+    string public symbol = "XIN";
 
     /// price for a single token
     uint256 public buyPrice = 10526315789474;
@@ -267,16 +267,16 @@ contract Xineoken is BasicToken, Ownable, Pausable, MintableToken {
         var stage2TokensNoDec = stage2Tokens / (10 ** decimals);
         var allocatedTokensNoDec = allocatedTokens / (10 ** decimals);
   
-        if (allocatedTokensNoDec &lt; stage1TokensNoDec) {
+        if (allocatedTokensNoDec < stage1TokensNoDec) {
             tokenAmount = _value / buyPrice;
-            if (tokenAmount.add(allocatedTokensNoDec) &gt; stage1TokensNoDec) {
+            if (tokenAmount.add(allocatedTokensNoDec) > stage1TokensNoDec) {
                 tokenAmountCurrentStage = stage1TokensNoDec.sub(allocatedTokensNoDec);
                 tokenAmountNextStage = (_value.sub(tokenAmountCurrentStage.mul(buyPrice))) / (buyPrice * 2);
                 tokenAmount = tokenAmountCurrentStage + tokenAmountNextStage;
             }
-        } else if (allocatedTokensNoDec &lt; (stage2TokensNoDec)) {
+        } else if (allocatedTokensNoDec < (stage2TokensNoDec)) {
             tokenAmount = _value / (buyPrice * 2);
-            if (tokenAmount.add(allocatedTokensNoDec) &gt; stage2TokensNoDec) {
+            if (tokenAmount.add(allocatedTokensNoDec) > stage2TokensNoDec) {
                 tokenAmountCurrentStage = stage2TokensNoDec.sub(allocatedTokensNoDec);
                 tokenAmountNextStage = (_value.sub(tokenAmountCurrentStage.mul(buyPrice * 2))) / buyPriceFinal;
                 tokenAmount = tokenAmountCurrentStage + tokenAmountNextStage;
@@ -294,12 +294,12 @@ contract Xineoken is BasicToken, Ownable, Pausable, MintableToken {
     function buyToken() public whenNotPaused payable {
 
         require(msg.sender != 0x0);
-        require(msg.value &gt;= minimumBuyAmount);
+        require(msg.value >= minimumBuyAmount);
         
         uint256 weiAmount = msg.value;
         uint256 tokens = calculateTokenAmount(weiAmount);
 
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         uint256 totalTokens = tokens * (10 ** decimals);
 
@@ -318,7 +318,7 @@ contract Xineoken is BasicToken, Ownable, Pausable, MintableToken {
      * @return True if the operation was successful.
      */
     function allocateTokens(address _to, uint256 _tokens) public onlyOwner returns (bool) {
-        require(balanceOf(owner) &gt;= _tokens);
+        require(balanceOf(owner) >= _tokens);
         balances[owner] = balances[owner].sub(_tokens);
         balances[_to] = balances[_to].add(_tokens);
         allocatedTokens = allocatedTokens.add(_tokens);

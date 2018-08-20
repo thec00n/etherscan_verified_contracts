@@ -2,8 +2,8 @@ pragma solidity 0.4.15;
 
 
 /// @title Math library - Allows calculation of logarithmic and exponential functions
-/// @author Alan Lu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d7c717c733371685d7a73726e746e336d70">[email&#160;protected]</a>&gt;
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f88b8c9d9e9996b89f96978b918bd68895">[email&#160;protected]</a>&gt;
+/// @author Alan Lu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d7c717c733371685d7a73726e746e336d70">[email protected]</a>>
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f88b8c9d9e9996b89f96978b918bd68895">[email protected]</a>>
 library Math {
 
     /*
@@ -25,21 +25,21 @@ library Math {
         constant
         returns (uint)
     {
-        // revert if x is &gt; MAX_POWER, where
+        // revert if x is > MAX_POWER, where
         // MAX_POWER = int(mp.floor(mp.log(mpf(2**256 - 1) / ONE) * ONE))
-        require(x &lt;= 2454971259878909886679);
+        require(x <= 2454971259878909886679);
         // return 0 if exp(x) is tiny, using
         // MIN_POWER = int(mp.floor(mp.log(mpf(1) / ONE) * ONE))
-        if (x &lt; -818323753292969962227)
+        if (x < -818323753292969962227)
             return 0;
-        // Transform so that e^x -&gt; 2^x
+        // Transform so that e^x -> 2^x
         x = x * int(ONE) / int(LN2);
         // 2^x = 2^whole(x) * 2^frac(x)
         //       ^^^^^^^^^^ is a bit shift
         // so Taylor expand on z = frac(x)
         int shift;
         uint z;
-        if (x &gt;= 0) {
+        if (x >= 0) {
             shift = x / int(ONE);
             z = uint(x % int(ONE));
         }
@@ -50,10 +50,10 @@ library Math {
         // 2^x = 1 + (ln 2) x + (ln 2)^2/2! x^2 + ...
         //
         // Can generate the z coefficients using mpmath and the following lines
-        // &gt;&gt;&gt; from mpmath import mp
-        // &gt;&gt;&gt; mp.dps = 100
-        // &gt;&gt;&gt; ONE =  0x10000000000000000
-        // &gt;&gt;&gt; print(&#39;\n&#39;.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
+        // >>> from mpmath import mp
+        // >>> mp.dps = 100
+        // >>> ONE =  0x10000000000000000
+        // >>> print('\n'.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
         // 0xb17217f7d1cf79ab
         // 0x3d7f7bff058b1d50
         // 0xe35846b82505fc5
@@ -93,13 +93,13 @@ library Math {
         result += 0xe1b7 * zpow / ONE;
         zpow = zpow * z / ONE;
         result += 0x9c7 * zpow / ONE;
-        if (shift &gt;= 0) {
-            if (result &gt;&gt; (256-shift) &gt; 0)
+        if (shift >= 0) {
+            if (result >> (256-shift) > 0)
                 return (2**256-1);
-            return result &lt;&lt; shift;
+            return result << shift;
         }
         else
-            return result &gt;&gt; (-shift);
+            return result >> (-shift);
     }
 
     /// @dev Returns natural logarithm value of given x
@@ -110,16 +110,16 @@ library Math {
         constant
         returns (int)
     {
-        require(x &gt; 0);
+        require(x > 0);
         // binary search for floor(log2(x))
         int ilog2 = floorLog2(x);
         int z;
-        if (ilog2 &lt; 0)
-            z = int(x &lt;&lt; uint(-ilog2));
+        if (ilog2 < 0)
+            z = int(x << uint(-ilog2));
         else
-            z = int(x &gt;&gt; uint(ilog2));
+            z = int(x >> uint(ilog2));
         // z = x * 2^-⌊log₂x⌋
-        // so 1 &lt;= z &lt; 2
+        // so 1 <= z < 2
         // and ln z = ln x - ⌊log₂x⌋/log₂e
         // so just compute ln z using artanh series
         // and calculate ln x from that
@@ -163,13 +163,13 @@ library Math {
         lo = -64;
         int hi = 193;
         // I use a shift here instead of / 2 because it floors instead of rounding towards 0
-        int mid = (hi + lo) &gt;&gt; 1;
-        while((lo + 1) &lt; hi) {
-            if (mid &lt; 0 &amp;&amp; x &lt;&lt; uint(-mid) &lt; ONE || mid &gt;= 0 &amp;&amp; x &gt;&gt; uint(mid) &lt; ONE)
+        int mid = (hi + lo) >> 1;
+        while((lo + 1) < hi) {
+            if (mid < 0 && x << uint(-mid) < ONE || mid >= 0 && x >> uint(mid) < ONE)
                 hi = mid;
             else
                 lo = mid;
-            mid = (hi + lo) &gt;&gt; 1;
+            mid = (hi + lo) >> 1;
         }
     }
 
@@ -181,10 +181,10 @@ library Math {
         constant
         returns (int max)
     {
-        require(nums.length &gt; 0);
+        require(nums.length > 0);
         max = -2**255;
-        for (uint i = 0; i &lt; nums.length; i++)
-            if (nums[i] &gt; max)
+        for (uint i = 0; i < nums.length; i++)
+            if (nums[i] > max)
                 max = nums[i];
     }
 
@@ -197,7 +197,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -209,7 +209,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -272,7 +272,7 @@ library Math {
         constant
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a + b &gt;= a) || (b &lt; 0 &amp;&amp; a + b &lt; a);
+        return (b >= 0 && a + b >= a) || (b < 0 && a + b < a);
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -284,7 +284,7 @@ library Math {
         constant
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a - b &lt;= a) || (b &lt; 0 &amp;&amp; a - b &gt; a);
+        return (b >= 0 && a - b <= a) || (b < 0 && a - b > a);
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -370,14 +370,14 @@ contract StandardToken is Token {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
     uint totalTokens;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Was transfer successful?
@@ -464,7 +464,7 @@ contract StandardToken is Token {
 
 
 /// @title Token contract - Token exchanging Ether 1:1
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a797e6f6c6b644a6d6465796379247a67">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a797e6f6c6b644a6d6465796379247a67">[email protected]</a>>
 contract EtherToken is StandardToken {
     using Math for *;
 
@@ -477,8 +477,8 @@ contract EtherToken is StandardToken {
     /*
      *  Constants
      */
-    string public constant name = &quot;Ether Token&quot;;
-    string public constant symbol = &quot;ETH&quot;;
+    string public constant name = "Ether Token";
+    string public constant symbol = "ETH";
     uint8 public constant decimals = 18;
 
     /*

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -117,9 +117,9 @@ contract DopamemePresale is Claimable {
     uint256 public investorsLength;
     
     address vault;
-    mapping(address =&gt; uint256) public investorBalances;
-    mapping(address =&gt; uint256) public investorToken;
-    mapping(address =&gt; bool) whitelist;
+    mapping(address => uint256) public investorBalances;
+    mapping(address => uint256) public investorToken;
+    mapping(address => bool) whitelist;
     
     modifier notPaused() {
         require(!paused);
@@ -127,11 +127,11 @@ contract DopamemePresale is Claimable {
     }
 
     function hasStarted() public constant returns(bool) {
-        return block.number &gt;= startBlock;
+        return block.number >= startBlock;
     }
 
     function hasEnded() public constant returns (bool) {
-        return (getTime() &gt; end_Dec_21_2017 || maxCapReached());
+        return (getTime() > end_Dec_21_2017 || maxCapReached());
     }
 
     function showVault() onlyOwner constant returns(address) {
@@ -144,20 +144,20 @@ contract DopamemePresale is Claimable {
 
     /// @return Total to invest in weis.
     function toFound() public constant returns(uint256) {
-        return maxCap &gt;= totalInvestedInWei ? maxCap - totalInvestedInWei : 0;
+        return maxCap >= totalInvestedInWei ? maxCap - totalInvestedInWei : 0;
     }
     
     /// @return Total to invest in weis.
     function tokensleft() public constant returns(uint256) {
-        return DMT_TotalSuply &gt; tokensGenerated ? DMT_TotalSuply - tokensGenerated : 0;
+        return DMT_TotalSuply > tokensGenerated ? DMT_TotalSuply - tokensGenerated : 0;
     }
 
     function maxCapReached() public constant returns(bool) {
-        return totalInvestedInWei &gt;= maxCap;
+        return totalInvestedInWei >= maxCap;
     }
 
     function minCapReached() public constant returns(bool) {
-        return totalInvestedInWei &gt;= minCap;
+        return totalInvestedInWei >= minCap;
     }
 
     function () public payable {
@@ -205,10 +205,10 @@ contract DopamemePresale is Claimable {
     }
     
     function isValidPurchase(uint256 _amount) internal view returns(bool) {
-        bool nonZero = _amount &gt; 0;
-        bool hasMinimumAmount = investorBalances[msg.sender].add(_amount) &gt;= minimum_investment;
-        bool withinCap = totalInvestedInWei.add(_amount) &lt;= maxCap;
-        return hasMinimumAmount &amp;&amp; withinCap &amp;&amp; nonZero;
+        bool nonZero = _amount > 0;
+        bool hasMinimumAmount = investorBalances[msg.sender].add(_amount) >= minimum_investment;
+        bool withinCap = totalInvestedInWei.add(_amount) <= maxCap;
+        return hasMinimumAmount && withinCap && nonZero;
     }
     function whitelistInvestor(address _newInvestor) internal {
         if(!whitelist[_newInvestor]) {
@@ -217,8 +217,8 @@ contract DopamemePresale is Claimable {
         }
     }
     function whitelistInvestors(address[] _investors) external onlyOwner {
-        require(_investors.length &lt;= 250);
-        for(uint8 i=0; i&lt;_investors.length;i++) {
+        require(_investors.length <= 250);
+        for(uint8 i=0; i<_investors.length;i++) {
             address newInvestor = _investors[i];
             if(!whitelist[newInvestor]) {
                 whitelist[newInvestor] = true;

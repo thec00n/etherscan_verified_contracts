@@ -7,7 +7,7 @@ Copyright (c) 2018 Murray Software, LLC.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -16,7 +16,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -29,7 +29,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 contract ContractProbe {
 
     function probe(address _addr) public view returns (bool isContract, address forwardedTo) {
-        bytes memory clone = hex&quot;6000368180378080368173bebebebebebebebebebebebebebebebebebebebe5af43d82803e15602c573d90f35b3d90fd&quot;;
+        bytes memory clone = hex"6000368180378080368173bebebebebebebebebebebebebebebebebebebebe5af43d82803e15602c573d90f35b3d90fd";
         uint size;
         bytes memory code;
 
@@ -37,10 +37,10 @@ contract ContractProbe {
             size := extcodesize(_addr)
         }
 
-        isContract = size &gt; 0;
+        isContract = size > 0;
         forwardedTo = _addr;
 
-        if (size &lt;= 48 &amp;&amp; size &gt;= 44) {
+        if (size <= 48 && size >= 44) {
             bool matches = true;
             uint i;
 
@@ -50,10 +50,10 @@ contract ContractProbe {
                 mstore(code, size)
                 extcodecopy(_addr, add(code, 0x20), 0, size)
             }
-            for (i = 0; matches &amp;&amp; i &lt; 10; i++) { 
+            for (i = 0; matches && i < 10; i++) { 
                 matches = code[i] == clone[i];
             }
-            for (i = 0; matches &amp;&amp; i &lt; 17; i++) {
+            for (i = 0; matches && i < 17; i++) {
                 if (i == 8) {
                     matches = code[code.length - i - 1] == byte(uint(clone[48 - i - 1]) - (48 - size));
                 } else {
@@ -68,8 +68,8 @@ contract ContractProbe {
                 assembly { //solhint-disable-line
                     forwardedToBuffer := mload(add(code, 31))
                 }
-                forwardedToBuffer &amp;= (0x1 &lt;&lt; 20 * 8) - 1;
-                forwardedTo = address(forwardedToBuffer &gt;&gt; ((48 - size) * 8));
+                forwardedToBuffer &= (0x1 << 20 * 8) - 1;
+                forwardedTo = address(forwardedToBuffer >> ((48 - size) * 8));
             }
         }
     }

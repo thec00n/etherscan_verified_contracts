@@ -18,7 +18,7 @@ contract ERC20 {
 
     /* Send _value amount of tokens from address _from to address _to.
      * The transferFrom method is used for a withdraw workflow, allowing contracts to send tokens on your behalf,
-     * for example to &quot;deposit&quot; to a contract address and/or to charge fees in sub-currencies; the command should
+     * for example to "deposit" to a contract address and/or to charge fees in sub-currencies; the command should
      * fail unless the _from account has deliberately authorized the sender of the message via the approve mechanism. */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool);
 
@@ -49,37 +49,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a &amp;&amp; c &gt;= b);
+        require(c >= a && c >= b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -94,8 +94,8 @@ contract StandardToken is ERC20, SafeMath {
     uint256 internal globalSupply;
 
     /* Actual balances of token holders */
-    mapping (address =&gt; uint256) internal balanceMap;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowanceMap;
+    mapping (address => uint256) internal balanceMap;
+    mapping (address => mapping (address => uint256)) internal allowanceMap;
 
     /* Interface declaration */
     function isToken() public pure returns (bool) {
@@ -104,8 +104,8 @@ contract StandardToken is ERC20, SafeMath {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require (_to != 0x0);                                           // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceMap[msg.sender] &gt;= _value);                      // Check if the sender has enough
-        require (balanceMap[_to] + _value &gt;= balanceMap[_to]);            // Check for overflows
+        require (balanceMap[msg.sender] >= _value);                      // Check if the sender has enough
+        require (balanceMap[_to] + _value >= balanceMap[_to]);            // Check for overflows
         balanceMap[msg.sender] = safeSub(balanceMap[msg.sender], _value); // Subtract from the sender
         balanceMap[_to] = safeAdd(balanceMap[_to], _value);               // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                              // Notify anyone listening that this transfer took place
@@ -114,9 +114,9 @@ contract StandardToken is ERC20, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require (_to != 0x0);                                           // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceMap[_from] &gt;= _value);                           // Check if the sender has enough
-        require (balanceMap[_to] + _value &gt;= balanceMap[_to]);            // Check for overflows
-        require (_value &lt;= allowanceMap[_from][msg.sender]);               // Check allowance
+        require (balanceMap[_from] >= _value);                           // Check if the sender has enough
+        require (balanceMap[_to] + _value >= balanceMap[_to]);            // Check for overflows
+        require (_value <= allowanceMap[_from][msg.sender]);               // Check allowance
         balanceMap[_from] = safeSub(balanceMap[_from], _value);           // Subtract from the sender
         balanceMap[_to] = safeAdd(balanceMap[_to], _value);               // Add the same to the recipient
 
@@ -174,8 +174,8 @@ contract Owned {
 
 contract AlsToken is StandardToken, Owned {
 
-    string public constant name = &quot;CryptoAlias&quot;;
-    string public constant symbol = &quot;ALS&quot;;
+    string public constant name = "CryptoAlias";
+    string public constant symbol = "ALS";
     uint8 public constant decimals = 18;        // Same as ETH
 
     address public icoAddress;
@@ -191,13 +191,13 @@ contract AlsToken is StandardToken, Owned {
     bool private teamTokensWereAllocated = false;
 
     /* Initializes the initial supply of ALS to 80 million.
-     * For more details about the token&#39;s supply and allocation see https://github.com/CryptoAlias/ALS */
+     * For more details about the token's supply and allocation see https://github.com/CryptoAlias/ALS */
     function AlsToken() public {
         globalSupply = 80 * oneMillionAls;
     }
 
     modifier onlyAfterIco() {
-        require(now &gt;= icoEndTime);
+        require(now >= icoEndTime);
         _;
     }
 
@@ -219,7 +219,7 @@ contract AlsToken is StandardToken, Owned {
         icoTokensWereBurned = true;
 
         uint256 tokensToBurn = balanceMap[icoAddress];
-        if (tokensToBurn &gt; 0)
+        if (tokensToBurn > 0)
         {
             balanceMap[icoAddress] = 0;
             globalSupply = safeSub(globalSupply, tokensToBurn);

@@ -8,7 +8,7 @@ contract Upload{
         string file;
     }
     
-    mapping (uint =&gt; dataStruct) data;
+    mapping (uint => dataStruct) data;
 
     
     function addData(uint8 idData, string namaData, string alamatData, string fileData) public{

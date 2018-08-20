@@ -6,7 +6,7 @@ contract IAllocation {
 
 contract IRightAndRoles {
     address[][] public wallets;
-    mapping(address =&gt; uint16) public roles;
+    mapping(address => uint16) public roles;
 
     event WalletChanged(address indexed newWallet, address indexed oldWallet, uint8 indexed role);
     event CloneChanged(address indexed wallet, uint8 indexed role, bool indexed mod);
@@ -21,10 +21,10 @@ contract RightAndRoles is IRightAndRoles {
 
     function RightAndRoles(address[] _roles) public {
         uint8 len = uint8(_roles.length);
-        require(len &gt; 0&amp;&amp;len &lt;16);
+        require(len > 0&&len <16);
         wallets.length = len;
 
-        for(uint8 i = 0; i &lt; len; i++){
+        for(uint8 i = 0; i < len; i++){
             wallets[i].push(_roles[i]);
             roles[_roles[i]] += uint16(2)**i;
             emit WalletChanged(_roles[i], address(0),i);
@@ -32,40 +32,40 @@ contract RightAndRoles is IRightAndRoles {
     }
 
     function changeClons(address _clon, uint8 _role, bool _mod) external {
-        require(wallets[_role][0] == msg.sender&amp;&amp;_clon != msg.sender);
+        require(wallets[_role][0] == msg.sender&&_clon != msg.sender);
         emit CloneChanged(_clon,_role,_mod);
         uint16 roleMask = uint16(2)**_role;
         if(_mod){
-            require(roles[_clon]&amp;roleMask == 0);
+            require(roles[_clon]&roleMask == 0);
             wallets[_role].push(_clon);
         }else{
             address[] storage tmp = wallets[_role];
             uint8 i = 1;
-            for(i; i &lt; tmp.length; i++){
+            for(i; i < tmp.length; i++){
                 if(tmp[i] == _clon) break;
             }
-            require(i &gt; tmp.length);
+            require(i > tmp.length);
             tmp[i] = tmp[tmp.length];
             delete tmp[tmp.length];
         }
-        roles[_clon] = _mod?roles[_clon]|roleMask:roles[_clon]&amp;~roleMask;
+        roles[_clon] = _mod?roles[_clon]|roleMask:roles[_clon]&~roleMask;
     }
 
     // Change the address for the specified role.
     // Available to any wallet owner except the observer.
     // Available to the manager until the round is initialized.
-    // The Observer&#39;s wallet or his own manager can change at any time.
+    // The Observer's wallet or his own manager can change at any time.
     // @ Do I have to use the function      no
     // @ When it is possible to call        depend...
     // @ When it is launched automatically  -
     // @ Who can call the function          staff (all 7+ roles)
     function changeWallet(address _wallet, uint8 _role) external {
-        require(wallets[_role][0] == msg.sender || wallets[0][0] == msg.sender || (wallets[1][0] == msg.sender &amp;&amp; managerPowerful));
+        require(wallets[_role][0] == msg.sender || wallets[0][0] == msg.sender || (wallets[1][0] == msg.sender && managerPowerful));
         emit WalletChanged(wallets[_role][0],_wallet,_role);
         uint16 roleMask = uint16(2)**_role;
         address[] storage tmp = wallets[_role];
-        for(uint8 i = 0; i &lt; tmp.length; i++){
-            roles[tmp[i]] = roles[tmp[i]]&amp;~roleMask;
+        for(uint8 i = 0; i < tmp.length; i++){
+            roles[tmp[i]] = roles[tmp[i]]&~roleMask;
         }
         delete  wallets[_role];
         tmp.push(_wallet);
@@ -78,12 +78,12 @@ contract RightAndRoles is IRightAndRoles {
     }
 
     function onlyRoles(address _sender, uint16 _roleMask) view external returns(bool) {
-        return roles[_sender]&amp;_roleMask != 0;
+        return roles[_sender]&_roleMask != 0;
     }
 
     function getMainWallets() view external returns(address[]){
         address[] memory _wallets = new address[](wallets.length);
-        for(uint8 i = 0; i&lt;wallets.length; i++){
+        for(uint8 i = 0; i<wallets.length; i++){
             _wallets[i] = wallets[i][0];
         }
         return _wallets;
@@ -104,7 +104,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -122,7 +122,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -184,7 +184,7 @@ contract Creator is ICreator{
         //beneficiary
         tmp[2] = 0x07544edde0542857277188598606B32F2C28062F;
         // Accountant
-        // Receives all the tokens for non-ETH investors (when finalizing Round1 &amp; Round2)
+        // Receives all the tokens for non-ETH investors (when finalizing Round1 & Round2)
         tmp[3] = 0x8a91aC199440Da0B45B2E278f3fE616b1bCcC494;
         // Observer
         // Has only the right to call paymentsInOtherCurrency (please read the document)
@@ -249,7 +249,7 @@ contract MigratableToken is BasicToken,GuidedByRoles {
 
     function migrateAll(address[] _holders) public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        for(uint i = 0; i &lt; _holders.length; i++){
+        for(uint i = 0; i < _holders.length; i++){
             migrateInternal(_holders[i]);
         }
     }
@@ -257,7 +257,7 @@ contract MigratableToken is BasicToken,GuidedByRoles {
     // Reissue your tokens.
     function migrate() public
     {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         migrateInternal(msg.sender);
     }
 
@@ -265,7 +265,7 @@ contract MigratableToken is BasicToken,GuidedByRoles {
 
 contract Pausable is GuidedByRoles {
 
-    mapping (address =&gt; bool) public unpausedWallet;
+    mapping (address => bool) public unpausedWallet;
 
     event Pause();
     event Unpause();
@@ -285,7 +285,7 @@ contract Pausable is GuidedByRoles {
         require(rightAndRoles.onlyRoles(msg.sender,3));
     }
 
-    // Add a wallet ignoring the &quot;Exchange pause&quot;. Available to the owner of the contract.
+    // Add a wallet ignoring the "Exchange pause". Available to the owner of the contract.
     function setUnpausedWallet(address _wallet, bool mode) public {
         onlyAdmin();
         unpausedWallet[_wallet] = mode;
@@ -296,11 +296,11 @@ contract Pausable is GuidedByRoles {
      */
     function setPause(bool mode)  public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        if (!paused &amp;&amp; mode) {
+        if (!paused && mode) {
             paused = true;
             emit Pause();
         }else
-        if (paused &amp;&amp; !mode) {
+        if (paused && !mode) {
             paused = false;
             emit Unpause();
         }
@@ -313,7 +313,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
     uint8 public step;
 
-    mapping (uint8 =&gt; mapping (address =&gt; uint256)) public deposited;
+    mapping (uint8 => mapping (address => uint256)) public deposited;
 
                              // Partner 0   Partner 1    Partner 2
     uint256[0] public percent;
@@ -414,7 +414,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             // arg1 = old ETH/USD (exchange)
             // arg2 = new ETH/USD (_ETHUSD)
             require(_params.length == 2);
-            for (uint8 user=0; user&lt;cap.length; user++) cap[user]=cap[user].mul(uint256(_params[0])).div(uint256(_params[1]));
+            for (uint8 user=0; user<cap.length; user++) cap[user]=cap[user].mul(uint256(_params[0])).div(uint256(_params[1]));
         }
 
     }
@@ -436,12 +436,12 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
         uint8 i;
 
-        for (i =0; i &lt;percent.length; i++) {
+        for (i =0; i <percent.length; i++) {
             plan=_allValue*percent[i]/100;
 
-            if(cap[i] != 0 &amp;&amp; plan &gt; cap[i]) plan = cap[i];
+            if(cap[i] != 0 && plan > cap[i]) plan = cap[i];
 
-            if (total[i] &gt;= plan) {
+            if (total[i] >= plan) {
                 debt[i]=0;
                 continue;
             }
@@ -452,17 +452,17 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             indexes[count++] = i;
             prcSum += percent[i];
         }
-        if(common &gt; free){
+        if(common > free){
             benReady = 0;
             uint8 j = 0;
-            while (j &lt; count){
+            while (j < count){
                 i = indexes[j++];
                 plan = free*percent[i]/prcSum;
-                if(plan + total[i] &lt;= cap[i] || cap[i] ==0){
+                if(plan + total[i] <= cap[i] || cap[i] ==0){
                     debt[i] = plan;
                     continue;
                 }
-                debt[i] = cap[i] - total[i]; //&#39;total&#39; is always less than &#39;cap&#39;
+                debt[i] = cap[i] - total[i]; //'total' is always less than 'cap'
                 free -= debt[i];
                 prcSum -= percent[i];
                 indexes[j-1] = indexes[--count];
@@ -470,7 +470,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             }
         }
         common = 0;
-        for(i = 0; i &lt; debt.length; i++){
+        for(i = 0; i < debt.length; i++){
             total[i] += debt[i];
             ready[i] += debt[i];
             common += ready[i];
@@ -482,7 +482,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
     function refund(address _investor) external {
         require(state == State.Refunding);
         uint256 depositedValue = deposited[step][_investor];
-        require(depositedValue &gt; 0);
+        require(depositedValue > 0);
         deposited[step][_investor] = 0;
         _investor.transfer(depositedValue);
         emit Refunded(_investor, depositedValue);
@@ -508,7 +508,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
     // Call from Crowdsale:
     function getPartnerCash(uint8 _user, address _msgsender) external canGetCash {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        require(_user&lt;wallets.length);
+        require(_user<wallets.length);
 
         onlyPartnersOrAdmin(_msgsender);
 
@@ -525,10 +525,10 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
     function onlyPartnersOrAdmin(address _sender) internal view {
         if (!rightAndRoles.onlyRoles(_sender,65535)) {
-            for (uint8 i=0; i&lt;wallets.length; i++) {
+            for (uint8 i=0; i<wallets.length; i++) {
                 if (wallets[i]==_sender) break;
             }
-            if (i&gt;=wallets.length) {
+            if (i>=wallets.length) {
                 revert();
             }
         }
@@ -558,9 +558,9 @@ contract BurnableToken is BasicToken, GuidedByRoles {
      */
     function burn(address _beneficiary, uint256 _value) public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        require(_value &lt;= balances[_beneficiary]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_beneficiary]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_beneficiary] = balances[_beneficiary].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -583,16 +583,16 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function minus(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b&gt;=a) return 0;
+        if (b>=a) return 0;
         return a - b;
     }
 }
@@ -610,7 +610,7 @@ contract Allocation is GuidedByRoles, IAllocation {
     uint256 public unlockPart2;
     uint256 public totalShare;
 
-    mapping(address =&gt; Share) public shares;
+    mapping(address => Share) public shares;
 
     ERC20Basic public token;
 
@@ -634,13 +634,13 @@ contract Allocation is GuidedByRoles, IAllocation {
 
     // If the time of freezing expired will return the funds to the owner.
     function unlockFor(address _owner) public {
-        require(now &gt;= unlockPart1);
+        require(now >= unlockPart1);
         uint256 share = shares[_owner].proportion;
-        if (now &lt; unlockPart2) {
+        if (now < unlockPart2) {
             share = share.mul(shares[_owner].forPart)/100;
             shares[_owner].forPart = 0;
         }
-        if (share &gt; 0) {
+        if (share > 0) {
             uint256 unlockedToken = token.balanceOf(this).mul(share).div(totalShare);
             shares[_owner].proportion = shares[_owner].proportion.sub(share);
             totalShare = totalShare.sub(share);
@@ -658,7 +658,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -669,8 +669,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -684,7 +684,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -733,7 +733,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -762,17 +762,17 @@ contract FreezingToken is PausableToken {
     }
 
 
-    mapping (address =&gt; freeze) freezedTokens;
+    mapping (address => freeze) freezedTokens;
 
     function freezedTokenOf(address _beneficiary) public view returns (uint256 amount){
         freeze storage _freeze = freezedTokens[_beneficiary];
-        if(_freeze.when &lt; now) return 0;
+        if(_freeze.when < now) return 0;
         return _freeze.amount;
     }
 
     function defrostDate(address _beneficiary) public view returns (uint256 Date) {
         freeze storage _freeze = freezedTokens[_beneficiary];
-        if(_freeze.when &lt; now) return 0;
+        if(_freeze.when < now) return 0;
         return _freeze.when;
     }
 
@@ -785,8 +785,8 @@ contract FreezingToken is PausableToken {
 
     function masFreezedTokens(address[] _beneficiary, uint256[] _amount, uint256[] _when) public {
         onlyAdmin();
-        require(_beneficiary.length == _amount.length &amp;&amp; _beneficiary.length == _when.length);
-        for(uint16 i = 0; i &lt; _beneficiary.length; i++){
+        require(_beneficiary.length == _amount.length && _beneficiary.length == _when.length);
+        for(uint16 i = 0; i < _beneficiary.length; i++){
             freeze storage _freeze = freezedTokens[_beneficiary[i]];
             _freeze.amount = _amount[i];
             _freeze.when = _when[i];
@@ -797,7 +797,7 @@ contract FreezingToken is PausableToken {
     function transferAndFreeze(address _to, uint256 _value, uint256 _when) external {
         require(unpausedWallet[msg.sender]);
         require(freezedTokenOf(_to) == 0);
-        if(_when &gt; 0){
+        if(_when > 0){
             freeze storage _freeze = freezedTokens[_to];
             _freeze.amount = _value;
             _freeze.when = _when;
@@ -806,12 +806,12 @@ contract FreezingToken is PausableToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(balanceOf(msg.sender) &gt;= freezedTokenOf(msg.sender).add(_value));
+        require(balanceOf(msg.sender) >= freezedTokenOf(msg.sender).add(_value));
         return super.transfer(_to,_value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(balanceOf(_from) &gt;= freezedTokenOf(_from).add(_value));
+        require(balanceOf(_from) >= freezedTokenOf(_from).add(_value));
         return super.transferFrom( _from,_to,_value);
     }
 }
@@ -838,7 +838,7 @@ contract MintableToken is StandardToken, GuidedByRoles {
 
 contract Token is IToken, FreezingToken, MintableToken, MigratableToken, BurnableToken{
     function Token(ICreator _creator) GuidedByRoles(_creator.rightAndRoles()) public {}
-    string public constant name = &quot;Imigize&quot;;
-    string public constant symbol = &quot;IMGZ&quot;;
+    string public constant name = "Imigize";
+    string public constant symbol = "IMGZ";
     uint8 public constant decimals = 18;
 }

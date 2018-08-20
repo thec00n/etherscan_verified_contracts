@@ -32,10 +32,10 @@ contract EtherTower {
     address owner;
   }
 
-  mapping (uint256 =&gt; Token) public tokens;
+  mapping (uint256 => Token) public tokens;
 
   // Player earnings
-  mapping (address =&gt; uint256) public earnings;
+  mapping (address => uint256) public earnings;
 
   event TokenPurchased(
     uint256 tokenId,
@@ -52,7 +52,7 @@ contract EtherTower {
   }
 
   modifier onlyGameStarted {
-    require(now &gt;= gameStartTime);
+    require(now >= gameStartTime);
     _;
   }
 
@@ -118,7 +118,7 @@ contract EtherTower {
     Token storage token = tokens[_tokenId];
 
     // Value must be greater than or equal to the token price
-    require(msg.value &gt;= token.price);
+    require(msg.value >= token.price);
 
     // Prevent user from buying their own token
     require(msg.sender != token.owner);
@@ -145,7 +145,7 @@ contract EtherTower {
     earnings[tokens[TOWER_BOSS_TOKEN_ID].owner] = earnings[tokens[TOWER_BOSS_TOKEN_ID].owner].add(towerBossCut);
 
     // send funds to the manager (if applicable)
-    if (managerCut &gt; 0) {
+    if (managerCut > 0) {
       address managerAddress = getManagerAddress(_tokenId);
       earnings[managerAddress] = earnings[managerAddress].add(managerCut);
     }
@@ -154,7 +154,7 @@ contract EtherTower {
     sendFunds(oldOwner, oldOwnerProfit);
 
     // refund any excess to the sender
-    if (purchaseExcess &gt; 0) {
+    if (purchaseExcess > 0) {
       sendFunds(newOwner, purchaseExcess);
     }
 
@@ -171,7 +171,7 @@ contract EtherTower {
 
   /// @dev Managers only get a cut of floor sales
   function getManagerCut(uint256 _tokenId, uint256 _price) private pure returns (uint256) {
-    if (_tokenId &gt;= BOTTOM_FLOOR_ID) {
+    if (_tokenId >= BOTTOM_FLOOR_ID) {
       return _price.mul(3).div(100); // 3%
     } else {
       return 0;
@@ -179,11 +179,11 @@ contract EtherTower {
   }
 
   function getManagerAddress(uint256 _tokenId) private view returns (address) {
-    if (_tokenId &gt;= APARTMENT_INDEX_MIN &amp;&amp; _tokenId &lt;= APARTMENT_INDEX_MAX) {
+    if (_tokenId >= APARTMENT_INDEX_MIN && _tokenId <= APARTMENT_INDEX_MAX) {
       return tokens[APARTMENT_MANAGER_ID].owner;
-    } else if (_tokenId &gt;= HOTEL_INDEX_MIN &amp;&amp; _tokenId &lt;= HOTEL_INDEX_MAX) {
+    } else if (_tokenId >= HOTEL_INDEX_MIN && _tokenId <= HOTEL_INDEX_MAX) {
       return tokens[HOTEL_MANAGER_ID].owner;
-    } else if (_tokenId &gt;= CONDO_INDEX_MIN &amp;&amp; _tokenId &lt;= CONDO_INDEX_MAX) {
+    } else if (_tokenId >= CONDO_INDEX_MIN && _tokenId <= CONDO_INDEX_MAX) {
       return tokens[CONDO_MANAGER_ID].owner;
     } else {
       // This should never happen
@@ -192,9 +192,9 @@ contract EtherTower {
   }
 
   function getNextPrice(uint256 _price) private view returns (uint256) {
-    if (_price &lt;= firstStepLimit) {
+    if (_price <= firstStepLimit) {
       return _price.mul(2); // increase by 100%
-    } else if (_price &lt;= secondStepLimit) {
+    } else if (_price <= secondStepLimit) {
       return _price.mul(125).div(100); // increase by 25%
     } else {
       return _price.mul(118).div(100); // increase by 18%
@@ -231,9 +231,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -241,7 +241,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -250,7 +250,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.19;
 
 contract MINTY {
-    string public name = &#39;MINTY&#39;;
-    string public symbol = &#39;MINTY&#39;;
+    string public name = 'MINTY';
+    string public symbol = 'MINTY';
     uint8 public decimals = 18;
     uint public totalSupply = 10000000000000000000000000;
     uint public minted = totalSupply / 5;
@@ -14,10 +14,10 @@ contract MINTY {
     uint private ownerBalance;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public successesOf;
-    mapping (address =&gt; uint256) public failsOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public successesOf;
+    mapping (address => uint256) public failsOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -41,8 +41,8 @@ contract MINTY {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -57,7 +57,7 @@ contract MINTY {
     
     /* Transfer tokens from other address */
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -80,14 +80,14 @@ contract MINTY {
             uint minedAtBlock = uint(block.blockhash(block.number - 1));
             uint minedHashRel = uint(sha256(minedAtBlock + randomNumber + uint(msg.sender))) % 10000000;
             uint balanceRel = balanceOf[msg.sender] * 1000 / minted;
-            if (balanceRel &gt;= 1) {
-                if (balanceRel &gt; 255) {
+            if (balanceRel >= 1) {
+                if (balanceRel > 255) {
                     balanceRel = 255;
                 }
                 balanceRel = 2 ** balanceRel;
                 balanceRel = 5000000 / balanceRel;
                 balanceRel = 5000000 - balanceRel;
-                if (minedHashRel &lt; balanceRel) {
+                if (minedHashRel < balanceRel) {
                     uint reward = minReward + minedHashRel * 1000 / reducer * 100000000000000;
                     _transfer(this, msg.sender, reward);
                     minted += reward;

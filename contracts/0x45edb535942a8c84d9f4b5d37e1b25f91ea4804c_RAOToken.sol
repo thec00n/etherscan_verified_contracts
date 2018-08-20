@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract RAOToken is Ownable, ERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;RadioYo Coin&quot;;
-    string public symbol = &quot;RAO&quot;;
+    string public name = "RadioYo Coin";
+    string public symbol = "RAO";
     uint256 public decimals = 18;
     uint256 public numberDecimal18 = 1000000000000000000;
 
@@ -89,20 +89,20 @@ contract RAOToken is Ownable, ERC20 {
     uint256 public _softcap = 165000e18;
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // whitelisting users
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     // time seal for upper management
-    mapping (address =&gt; uint256) vault;
+    mapping (address => uint256) vault;
     
     
     //Balances for waiting KYC approving
-    mapping (address =&gt; uint256) balancesWaitingKYC;
+    mapping (address => uint256) balancesWaitingKYC;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
     
     // start and end timestamps where investments are allowed (both inclusive)
     uint256 public startTime; 
@@ -154,7 +154,7 @@ contract RAOToken is Ownable, ERC20 {
     }
     
     modifier saleIsOpen(){
-        require(startTime &lt;= getNow() &amp;&amp; getNow() &lt;= endTime);
+        require(startTime <= getNow() && getNow() <= endTime);
         _;
     }
 
@@ -202,7 +202,7 @@ contract RAOToken is Ownable, ERC20 {
         uint256 weiAmount = msg.value;
         uint256 numberRaoToken = weiAmount.mul(RATE).div(1 ether);
         
-        require(_icoSupply &gt;= numberRaoToken);   
+        require(_icoSupply >= numberRaoToken);   
                 
         totalNumberTokenSold = totalNumberTokenSold.add(numberRaoToken);
 
@@ -210,7 +210,7 @@ contract RAOToken is Ownable, ERC20 {
 
         TokenPurchase(msg.sender, recipient, weiAmount, numberRaoToken);
 
-         if (weiAmount &lt; kycLevel) {
+         if (weiAmount < kycLevel) {
             updateBalances(recipient, numberRaoToken);
          } else {
             balancesWaitingKYC[recipient] = balancesWaitingKYC[recipient].add(numberRaoToken); 
@@ -251,22 +251,22 @@ contract RAOToken is Ownable, ERC20 {
     }
     
     function setWhitelistForBulk(address[] listAddresses, bool status) public onlyOwner {
-        for (uint256 i = 0; i &lt; listAddresses.length; i++) {
+        for (uint256 i = 0; i < listAddresses.length; i++) {
             whitelist[listAddresses[i]] = status;
         }
     }
     
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = getNow() &gt;= startTime &amp;&amp; getNow() &lt;= endTime;
+        bool withinPeriod = getNow() >= startTime && getNow() <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool notReachedHardCap = hardCap &gt;= totalNumberTokenSold;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; notReachedHardCap;
+        bool notReachedHardCap = hardCap >= totalNumberTokenSold;
+        return withinPeriod && nonZeroPurchase && notReachedHardCap;
     }
 
     // @return true if crowdsale current lot event has ended
     function hasEnded() public constant returns (bool) {
-        return getNow() &gt; endTime;
+        return getNow() > endTime;
     }
 
     function getNow() public constant returns (uint) {
@@ -347,7 +347,7 @@ contract RAOToken is Ownable, ERC20 {
 
     function transferToVault(address recipient, uint256 amount) public onlyOwner isActive {
         require (
-            balances[multisig] &gt;= amount &amp;&amp; amount &gt; 0
+            balances[multisig] >= amount && amount > 0
         );
 
         balances[multisig] = balances[multisig].sub(amount);
@@ -366,7 +366,7 @@ contract RAOToken is Ownable, ERC20 {
     
 
     function approveBalancesWaitingKYC(address[] listAddresses) public onlyOwner {
-         for (uint256 i = 0; i &lt; listAddresses.length; i++) {
+         for (uint256 i = 0; i < listAddresses.length; i++) {
              address client = listAddresses[i];
              balances[multisig] = balances[multisig].sub(balancesWaitingKYC[client]);
              balances[client] = balances[client].add(balancesWaitingKYC[client]);
@@ -375,13 +375,13 @@ contract RAOToken is Ownable, ERC20 {
     }
 
     function remit() public {
-        require(vault[msg.sender] &gt; 0 &amp;&amp; now &gt;= sealdate);
+        require(vault[msg.sender] > 0 && now >= sealdate);
         balances[msg.sender] = balances[msg.sender].add(vault[msg.sender]);
         vault[msg.sender] = 0;
     }
 
     function remitFor(address person) public onlyOwner {
-        require(vault[person] &gt; 0 &amp;&amp; now &gt;= sealdate);
+        require(vault[person] > 0 && now >= sealdate);
         balances[person] = balances[person].add(vault[person]);
         vault[person] = 0;
     }
@@ -409,7 +409,7 @@ contract RAOToken is Ownable, ERC20 {
 
 
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[multisig]);
+        require(_value <= balances[multisig]);
         balances[multisig] = balances[multisig].sub(_value);
         _totalSupply = _totalSupply.sub(_value);
         Burn(multisig, _value);
@@ -423,7 +423,7 @@ contract RAOToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public canTradable isActive {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -435,8 +435,8 @@ contract RAOToken is Ownable, ERC20 {
             tos.length == values.length
             );
         
-        for(uint256 i = 0; i &lt; tos.length; i++){
-        require(_icoSupply &gt;= values[i]);   
+        for(uint256 i = 0; i < tos.length; i++){
+        require(_icoSupply >= values[i]);   
         totalNumberTokenSold = totalNumberTokenSold.add(values[i]);
         _icoSupply = _icoSupply.sub(values[i]);
         updateBalances(tos[i],values[i]);
@@ -450,7 +450,7 @@ contract RAOToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public canTradable isActive {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -465,7 +465,7 @@ contract RAOToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public isActive {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);

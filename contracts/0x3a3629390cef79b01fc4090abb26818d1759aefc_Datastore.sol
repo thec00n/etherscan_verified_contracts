@@ -17,7 +17,7 @@ interface UidCheckerInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -58,7 +58,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0674636b65694634">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0674636b65694634">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -97,7 +97,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title Store
- * @author Francesco Sullo &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="593f2b38373a3c2a3a36192a2c353536773a36">[email&#160;protected]</a>&gt;
+ * @author Francesco Sullo <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="593f2b38373a3c2a3a36192a2c353536773a36">[email protected]</a>>
  * @dev It store the tweedentities related to the app
  */
 
@@ -107,7 +107,7 @@ contract Datastore
 is HasNoEther
 {
 
-  string public fromVersion = &quot;1.0.0&quot;;
+  string public fromVersion = "1.0.0";
 
   uint public appId;
   string public appNickname;
@@ -129,8 +129,8 @@ is HasNoEther
     uint lastUpdate;
   }
 
-  mapping(string =&gt; Address) internal __addressByUid;
-  mapping(address =&gt; Uid) internal __uidByAddress;
+  mapping(string => Address) internal __addressByUid;
+  mapping(address => Uid) internal __uidByAddress;
 
   bool public appSet;
 
@@ -174,7 +174,7 @@ is HasNoEther
 
 
   modifier onlyManager() {
-    require(msg.sender == manager || (newManager != address(0) &amp;&amp; msg.sender == newManager));
+    require(msg.sender == manager || (newManager != address(0) && msg.sender == newManager));
     _;
   }
 
@@ -191,7 +191,7 @@ is HasNoEther
 
   /**
   * @dev Updates the checker for the store
-  * @param _address Checker&#39;s address
+  * @param _address Checker's address
   */
   function setNewChecker(
     address _address
@@ -206,7 +206,7 @@ is HasNoEther
 
   /**
   * @dev Sets the manager
-  * @param _address Manager&#39;s address
+  * @param _address Manager's address
   */
   function setManager(
     address _address
@@ -222,7 +222,7 @@ is HasNoEther
 
   /**
   * @dev Sets new manager
-  * @param _address New manager&#39;s address
+  * @param _address New manager's address
   */
   function setNewManager(
     address _address
@@ -230,7 +230,7 @@ is HasNoEther
   external
   onlyOwner
   {
-    require(_address != address(0) &amp;&amp; manager != address(0));
+    require(_address != address(0) && manager != address(0));
     newManager = _address;
     ManagerSet(_address, true);
   }
@@ -264,9 +264,9 @@ is HasNoEther
   onlyOwner
   {
     require(!appSet);
-    require(_appId &gt; 0);
+    require(_appId > 0);
     require(_checker != address(0));
-    require(bytes(_appNickname).length &gt; 0);
+    require(bytes(_appNickname).length > 0);
     appId = _appId;
     appNickname = _appNickname;
     checker = UidCheckerInterface(_checker);
@@ -319,7 +319,7 @@ is HasNoEther
     require(isUid(_uid));
     require(isUpgradable(_address, _uid));
 
-    if (bytes(__uidByAddress[_address].lastUid).length &gt; 0) {
+    if (bytes(__uidByAddress[_address].lastUid).length > 0) {
       // if _address is associated with an oldUid,
       // this removes the association between _address and oldUid
       __addressByUid[__uidByAddress[_address].lastUid] = Address(address(0), __addressByUid[__uidByAddress[_address].lastUid].lastUpdate);
@@ -345,10 +345,10 @@ is HasNoEther
   whenAppSet
   {
     require(_address != address(0));
-    require(bytes(__uidByAddress[_address].lastUid).length &gt; 0);
+    require(bytes(__uidByAddress[_address].lastUid).length > 0);
 
     string memory uid = __uidByAddress[_address].lastUid;
-    __uidByAddress[_address] = Uid(&#39;&#39;, __uidByAddress[_address].lastUpdate);
+    __uidByAddress[_address] = Uid('', __uidByAddress[_address].lastUpdate);
     __addressByUid[uid] = Address(address(0), __addressByUid[uid].lastUpdate);
     identities--;
     IdentityUnset(_address, uid);

@@ -13,7 +13,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -92,11 +92,11 @@ contract ICO {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt; delay);
+        require(now > delay);
         uint tokenBought;
         totalRaised = totalRaised.add(msg.value);
 
-        if(totalDistributed &lt; 10000000 * (10 ** 18)){ //if on the first 10M
+        if(totalDistributed < 10000000 * (10 ** 18)){ //if on the first 10M
             tokenBought = msg.value.mul(tablePrices[0]);
         }
         else {
@@ -117,19 +117,19 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &lt; ICOdeadline &amp;&amp; state!=State.Successful){ //if we are on ICO period and its not Successful
-            if(state == State.Ongoin &amp;&amp; totalRaised &gt;= SoftCap){ //if we are Ongoin and we pass the SoftCap
+        if(now < ICOdeadline && state!=State.Successful){ //if we are on ICO period and its not Successful
+            if(state == State.Ongoin && totalRaised >= SoftCap){ //if we are Ongoin and we pass the SoftCap
                 state = State.SoftCap; //We are on SoftCap state
                 completedAt = now; //ICO is complete and will finish in 24h
             }
-            else if (state == State.SoftCap &amp;&amp; now &gt; completedAt.add(24 hours)){ //if we are on SoftCap state and 24hrs have passed
+            else if (state == State.SoftCap && now > completedAt.add(24 hours)){ //if we are on SoftCap state and 24hrs have passed
                 state == State.Successful; //the ico becomes Successful
                 closedAt = now; //we finish now
                 LogFundingSuccessful(totalRaised); //we log the finish
                 finished(); //and execute closure
             }
         }
-        else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
+        else if(now > ICOdeadline && state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
             state = State.Successful; //ico becomes Successful
 
             if(completedAt == 0){  //if not completed previously

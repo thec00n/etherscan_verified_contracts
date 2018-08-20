@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,20 +72,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
   * @dev Transfer tokens from one address to another
@@ -219,8 +219,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract MITx_Token is MintableToken {
-  string public name = &quot;Morpheus Infrastructure Token&quot;;
-  string public symbol = &quot;MITx&quot;;
+  string public name = "Morpheus Infrastructure Token";
+  string public symbol = "MITx";
   uint256 public decimals = 18;
 
   bool public tradingStarted = false;
@@ -317,7 +317,7 @@ contract MITx_TokenSale is Ownable {
   // switch on/off the authorisation , default: true
   bool    public freeForAll = true;
 
-  mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
+  mapping (address => bool) public authorised; // just to annoy the heck out of americans
 
   event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
   event SaleClosed();
@@ -344,15 +344,15 @@ contract MITx_TokenSale is Ownable {
   */
   function setTier() internal {
  
-    if (now &lt;= tier1Timestamp) {  // during 1th period they get 50% bonus
+    if (now <= tier1Timestamp) {  // during 1th period they get 50% bonus
       rate = 8000;
       minContribution = 1 ether;
       maxContribution = 1000000 ether;
-    } else if (now &lt;= tier2Timestamp) { // during 2th period they get 35% bonus
+    } else if (now <= tier2Timestamp) { // during 2th period they get 35% bonus
       rate = 10800;
       minContribution = 0.001 ether;
       maxContribution = 1000000 ether;
-    } else if (now &lt;= tier3Timestamp) { // during 3th period they get 20% bonus
+    } else if (now <= tier3Timestamp) { // during 3th period they get 20% bonus
       rate = 9600;
       minContribution = 0.001 ether;
       maxContribution = 1000000 ether;
@@ -364,9 +364,9 @@ contract MITx_TokenSale is Ownable {
   }
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp)
+    if (now > endTimestamp)
       return true;
-    if (tokenRaised &gt;= tokensForSale)
+    if (tokenRaised >= tokensForSale)
       return true; // if we reach the tokensForSale
     return false;
   }
@@ -388,10 +388,10 @@ contract MITx_TokenSale is Ownable {
   */
   modifier onlyAuthorised() {
     require (authorised[msg.sender] || freeForAll);
-    require (now &gt;= startTimestamp);
+    require (now >= startTimestamp);
     require (!(hasEnded()));
     require (multiSig != 0x0);
-    require(tokensForSale &gt; tokenRaised); // check we are not over the number of tokensForSale
+    require(tokensForSale > tokenRaised); // check we are not over the number of tokensForSale
     _;
   }
 
@@ -406,7 +406,7 @@ contract MITx_TokenSale is Ownable {
   * @dev authorise a lot of accounts in one go
   */
   function authoriseManyAccounts(address[] many) onlyCSorOwner public {
-    for (uint256 i = 0; i &lt; many.length; i++) {
+    for (uint256 i = 0; i < many.length; i++) {
       authorised[many[i]] = true;
     }
   }
@@ -442,8 +442,8 @@ contract MITx_TokenSale is Ownable {
     //check minimum and maximum amount
     require(_tokens != 0);
     require(!hasEnded());
-    require(tokenRaised &lt;= maxTokens);
-    require(now &lt;= endTimestamp);
+    require(tokenRaised <= maxTokens);
+    require(now <= endTimestamp);
     uint256 amount = 0;
     if (token.balanceOf(beneficiary) == 0) {
       numberOfPurchasers++;
@@ -478,7 +478,7 @@ contract MITx_TokenSale is Ownable {
 
     // assign the rest of the 60M tokens to the reserve
     uint unassigned;
-    if(maxTokens &gt; tokenRaised) {
+    if(maxTokens > tokenRaised) {
       unassigned  = maxTokens.sub(tokenRaised);
       token.mint(multiSig,unassigned);
     }

@@ -9,15 +9,15 @@
 *                 
 * //*** This Game Pays The Last One To Bid Before The Time Runs Out
 *
-* &quot;Now I am become Death, the destroyer of worlds&quot;
+* "Now I am become Death, the destroyer of worlds"
 *  
 * //*** Developed By:
 *   _____       _         _         _ ___ _         
 *  |_   _|__ __| |_  _ _ (_)__ __ _| | _ (_)___ ___ 
-*    | |/ -_) _| &#39; \| &#39; \| / _/ _` | |   / (_-&lt;/ -_)
+*    | |/ -_) _| ' \| ' \| / _/ _` | |   / (_-</ -_)
 *    |_|\___\__|_||_|_||_|_\__\__,_|_|_|_\_/__/\___|
 *   
-*   &#169; 2018 TechnicalRise.  Written in March 2018.  
+*   © 2018 TechnicalRise.  Written in March 2018.  
 *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
 *   https://www.reddit.com/user/TechnicalRise/
 *  
@@ -39,11 +39,11 @@ contract EthAnte {
 	} 
 	
 	function fund() public payable {
-	    require(msg.value &gt;= 1 finney);
+	    require(msg.value >= 1 finney);
 	    
 	    // If the transaction is after the timer 
 	    // runs out pay the winner
-	    if (timeOut &lt;= now) {
+	    if (timeOut <= now) {
 	        TechnicalRise.transfer((address(this).balance - msg.value) / feeRate);
 	        lastBidder.transfer((address(this).balance - msg.value) - address(this).balance / feeRate);
 	    }

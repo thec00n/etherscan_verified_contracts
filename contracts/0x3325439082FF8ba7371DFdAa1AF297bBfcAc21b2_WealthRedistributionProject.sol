@@ -20,7 +20,7 @@ contract WealthRedistributionProject {
   }
   
   function enter() {
-    if (msg.value != 1 ether) { //return payment if it&#39;s not 1 ETH
+    if (msg.value != 1 ether) { //return payment if it's not 1 ETH
         msg.sender.send(msg.value);
         return;
     }
@@ -37,7 +37,7 @@ contract WealthRedistributionProject {
 	balance += msg.value;  //keep track of amount available
 
    // payment gets distributed to all benefactors based on what % of the total was contributed by them    
-    while (k&lt;total_inv) 
+    while (k<total_inv) 
     { 
     	transactionAmount = msg.value * benefactor[k].amount / totalBalance;       //Calculate amount to send
 		benefactor[k].etherAddress.send(transactionAmount);    					//Wealth redistribution

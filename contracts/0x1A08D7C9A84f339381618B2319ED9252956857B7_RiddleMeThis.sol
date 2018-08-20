@@ -26,8 +26,8 @@ contract RiddleMeThis {
 
     function play(string guess) public payable {
         require(isActive);
-        require(msg.value &gt; 1 ether);
-        require(bytes(guess).length &gt; 0);
+        require(msg.value > 1 ether);
+        require(bytes(guess).length > 0);
         
         Guess newGuess;
         newGuess.player = msg.sender;

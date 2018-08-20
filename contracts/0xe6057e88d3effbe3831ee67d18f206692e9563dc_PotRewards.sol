@@ -9,7 +9,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -34,7 +34,7 @@ contract AmbiEnabled {
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) {
+    function remove() checkAccess("owner") {
         suicide(msg.sender);
     }
 }
@@ -47,7 +47,7 @@ contract ElcoinDb {
 
     modifier checkOwner() { _ }
     modifier checkCaller() { _ }
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     function ElcoinDb(address pCaller) {
         owner = msg.sender;
@@ -87,7 +87,7 @@ contract ElcoinDb {
 
     function withdraw(address addr, uint amount, bytes32 hash, uint time) checkCaller() returns (bool res) {
         uint oldBalance = balances[addr];
-        if (oldBalance &gt;= amount) {
+        if (oldBalance >= amount) {
             balances[addr] = oldBalance - amount;
             Transaction(hash, addr, 0, time, amount);
             return true;
@@ -123,8 +123,8 @@ contract PotRewards is AmbiEnabled {
 
     ElcoinInterface public elcoin;  //contract to do rewardTo calls
 
-    function configure(uint _periodicity, uint8 _auctionSize, uint _prize, uint _minTx, uint _counter, uint _startTime) checkAccess(&quot;owner&quot;) returns (bool) {
-        if (_auctionSize &gt; _periodicity || _prize == 0 || _auctionSize &gt; 255) {
+    function configure(uint _periodicity, uint8 _auctionSize, uint _prize, uint _minTx, uint _counter, uint _startTime) checkAccess("owner") returns (bool) {
+        if (_auctionSize > _periodicity || _prize == 0 || _auctionSize > 255) {
             return false;
         }
         periodicity = _periodicity;
@@ -133,20 +133,20 @@ contract PotRewards is AmbiEnabled {
         minTx = _minTx;
         counter = _counter;
         startTime = _startTime;
-        elcoin = ElcoinInterface(getAddress(&quot;elcoin&quot;));
+        elcoin = ElcoinInterface(getAddress("elcoin"));
         return true;
     }
 
-    function transfer(address _from, address _to, uint _amount) checkAccess(&quot;elcoin&quot;) {
-        if (startTime &gt; now || periodicity == 0 || auctionSize == 0 || prize == 0) {
+    function transfer(address _from, address _to, uint _amount) checkAccess("elcoin") {
+        if (startTime > now || periodicity == 0 || auctionSize == 0 || prize == 0) {
             return;
         }
         counter++;
-        if (_amount &gt;= minTx &amp;&amp; counter &gt; periodicity - auctionSize) {
+        if (_amount >= minTx && counter > periodicity - auctionSize) {
             transactions.push(Transaction(_from, _amount));
         }
 
-        if (counter &gt;= periodicity) {
+        if (counter >= periodicity) {
             _prepareAndSendReward();
             counter = 0;
             round++;
@@ -154,17 +154,17 @@ contract PotRewards is AmbiEnabled {
         }
     }
 
-    mapping(uint =&gt; mapping(address =&gt; uint)) public prizes;
+    mapping(uint => mapping(address => uint)) public prizes;
 
     function _prepareAndSendReward() internal {
         uint amount = 0;
         address[] memory winners = new address[](auctionSize);
         uint winnerPosition = 0;
-        for (uint8 i = 0; i &lt; transactions.length; i++) {
+        for (uint8 i = 0; i < transactions.length; i++) {
             if (transactions[i].amount == amount) {
                 winners[winnerPosition++] = transactions[i].from;
             }
-            if (transactions[i].amount &gt; amount) {
+            if (transactions[i].amount > amount) {
                 amount = transactions[i].amount;
                 winnerPosition = 0;
                 winners[winnerPosition++] = transactions[i].from;
@@ -177,14 +177,14 @@ contract PotRewards is AmbiEnabled {
         uint uniqueWinnerPosition = 0;
         uint currentPrize = _is360thDay() ? prize*2 : prize;
         uint reward = currentPrize / winnerPosition;
-        for (uint8 position = 0; position &lt; winnerPosition; position++) {
+        for (uint8 position = 0; position < winnerPosition; position++) {
             address winner = winners[position];
             if (prizes[round][winner] == 0) {
                 uniqueWinners[uniqueWinnerPosition++] = winner;
             }
             prizes[round][winner] += reward;
         }
-        for (position = 0; position &lt; uniqueWinnerPosition; position++) {
+        for (position = 0; position < uniqueWinnerPosition; position++) {
             winner = uniqueWinners[position];
             uint winnerReward = prizes[round][winner];
             if (elcoin.rewardTo(winner, winnerReward)) {
@@ -194,7 +194,7 @@ contract PotRewards is AmbiEnabled {
     }
 
     function _is360thDay() internal constant returns(bool) {
-        if (startTime &gt; now) {
+        if (startTime > now) {
             return false;
         }
 

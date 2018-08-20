@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 contract TradeIO {
     address owner;
-    mapping(bytes8 =&gt; string) dateToHash;
+    mapping(bytes8 => string) dateToHash;
     
     modifier onlyOwner () {
         require(owner == msg.sender);

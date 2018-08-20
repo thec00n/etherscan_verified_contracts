@@ -4,10 +4,10 @@ pragma solidity ^0.4.2;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
   function mul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ library SafeMath {
     require(a == 0 || c / a == b);
   }
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -61,13 +61,13 @@ contract VouchCoin is Ownable, ERC20Interface {
   using SafeMath for uint;
 
   uint public _totalSupply = 10000000000000000;
-  string public constant name = &quot;VouchCoin&quot;;
-  string public constant symbol = &quot;VHC&quot;;
+  string public constant name = "VouchCoin";
+  string public constant symbol = "VHC";
   uint public constant decimals = 8;
-  string public standard = &quot;VouchCoin token v2.0&quot;;
+  string public standard = "VouchCoin token v2.0";
 
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowances;
 
   event Burn(address indexed _from, uint _value);
 

@@ -26,7 +26,7 @@ contract owned {
 
 contract MyToken is owned{
 
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
 
     string public name;
 
@@ -42,9 +42,9 @@ contract MyToken is owned{
 
         uint minBalanceForAccounts;  
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-        mapping (address =&gt; bool) public frozenAccount;
+        mapping (address => bool) public frozenAccount;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -70,13 +70,13 @@ contract MyToken is owned{
 
             if (frozenAccount[msg.sender]) throw;
 
-        if (balanceOf[msg.sender] &lt; _value) throw;
+        if (balanceOf[msg.sender] < _value) throw;
 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 
-        if(msg.sender.balance&lt;minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
+        if(msg.sender.balance<minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
 
-        if(_to.balance&lt;minBalanceForAccounts)      _to.send(sell((minBalanceForAccounts-_to.balance)/sellPrice));
+        if(_to.balance<minBalanceForAccounts)      _to.send(sell((minBalanceForAccounts-_to.balance)/sellPrice));
 
         balanceOf[msg.sender] -= _value;
 
@@ -118,7 +118,7 @@ contract MyToken is owned{
 
             amount = msg.value / buyPrice;
 
-            if (balanceOf[this] &lt; amount) throw;
+            if (balanceOf[this] < amount) throw;
 
             balanceOf[msg.sender] += amount;
 
@@ -132,7 +132,7 @@ contract MyToken is owned{
 
         function sell(uint amount) returns (uint revenue){
 
-            if (balanceOf[msg.sender] &lt; amount ) throw;
+            if (balanceOf[msg.sender] < amount ) throw;
 
             balanceOf[this] += amount;
 

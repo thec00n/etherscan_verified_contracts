@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,8 +60,8 @@ contract StandardToken is ERC20 {
     using SafeMath
     for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
     /**
@@ -95,8 +95,8 @@ contract StandardToken is ERC20 {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
 
         balances[_from] = balances[_from].sub(_value);
@@ -130,8 +130,8 @@ contract StandardToken is ERC20 {
 }
 
 contract PPCToken is StandardToken {
-    string public constant name = &quot;PurpleChain&quot;;
-    string public constant symbol = &quot;PPC&quot;;
+    string public constant name = "PurpleChain";
+    string public constant symbol = "PPC";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 20000000000 * (10 ** uint256(decimals));
     // market Address 

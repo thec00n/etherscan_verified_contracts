@@ -7,7 +7,7 @@ contract Utils {
     function Utils() internal {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -31,7 +31,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -44,7 +44,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -67,7 +67,7 @@ contract Utils {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) { name; }
     function symbol() public constant returns (string) { symbol; }
     function decimals() public constant returns (uint8) { decimals; }
@@ -85,7 +85,7 @@ contract IERC20Token {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -166,8 +166,8 @@ contract YoobaBatchTransfer is  Owned,YooStop,Utils {
     
     function batchTransfer(IERC20Token _token,address[] _to,uint256 _amountOfEach) public 
     ownerOnly stoppable validAddress(_token){
-        require(_to.length &gt; 0 &amp;&amp; _amountOfEach &gt; 0 &amp;&amp; _to.length * _amountOfEach &lt;=  _token.balanceOf(this) &amp;&amp; _to.length &lt; 10000);
-        for(uint16 i = 0; i &lt; _to.length ;i++){
+        require(_to.length > 0 && _amountOfEach > 0 && _to.length * _amountOfEach <=  _token.balanceOf(this) && _to.length < 10000);
+        for(uint16 i = 0; i < _to.length ;i++){
           assert(_token.transfer(_to[i],_amountOfEach));
         }
     }
@@ -177,7 +177,7 @@ contract YoobaBatchTransfer is  Owned,YooStop,Utils {
         public ownerOnly stoppable
         notThis(_to)
     {   
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         _to.transfer(_amount); // send the amount to the target account
     }
     

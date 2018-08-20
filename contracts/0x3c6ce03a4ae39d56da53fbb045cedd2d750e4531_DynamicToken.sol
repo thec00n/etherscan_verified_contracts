@@ -1,8 +1,8 @@
 pragma solidity ^0.4.13;
 
 contract TokenInterface {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     function balanceOf(address _owner) constant returns (uint256 balance);
     function transfer(address _to, uint256 _amount) returns (bool success);
@@ -35,8 +35,8 @@ contract DynamicToken is TokenInterface {
 
   string[] public proofIds;
 
-  mapping (address =&gt; bool) public accountExists;
-  mapping (string =&gt; bool) proofIdExists;
+  mapping (address => bool) public accountExists;
+  mapping (string => bool) proofIdExists;
 
   event TransferFrom(address indexed _from, address indexed _to,  address indexed _spender, uint256 _amount);
   event Issue(address indexed _from, address indexed _to, uint256 _amount, string _proofId);
@@ -77,7 +77,7 @@ contract DynamicToken is TokenInterface {
   }
 
   // no ether should be transferred to this contract
-  modifier noEther() {if (msg.value &gt; 0) revert(); _;}
+  modifier noEther() {if (msg.value > 0) revert(); _;}
 
   // accessors
 
@@ -97,11 +97,11 @@ contract DynamicToken is TokenInterface {
 
   // tokens are only issued in exchange for a unique proof of contribution
   function issue(address _to, uint256 _amount, string _proofId) notClosed onlyContractOwner noEther returns (bool success) {
-    if (balances[_to] + _amount &lt; balances[_to]) revert(); // Guard against overflow
-    if (totalSupply + _amount &lt; totalSupply) revert();     // Guard against overflow  (this should never happen)
+    if (balances[_to] + _amount < balances[_to]) revert(); // Guard against overflow
+    if (totalSupply + _amount < totalSupply) revert();     // Guard against overflow  (this should never happen)
 
     if (proofIdExists[_proofId]) return false;
-    if (totalSupply + _amount &gt; maxSupply) return false;
+    if (totalSupply + _amount > maxSupply) return false;
 
     balances[_to] += _amount;
     totalSupply += _amount;
@@ -112,7 +112,7 @@ contract DynamicToken is TokenInterface {
   }
 
   function setMaxSupply(uint256 _maxSupply) notClosed onlyContractOwner noEther returns (bool success) {
-    if (_maxSupply &lt; totalSupply) revert();
+    if (_maxSupply < totalSupply) revert();
     if (isMaxSupplyLocked) return false;
 
     maxSupply = _maxSupply;
@@ -138,9 +138,9 @@ contract DynamicToken is TokenInterface {
   }
 
   function transferFrom(address _from, address _to, uint256 _amount) notClosed noEther returns (bool success) {
-    if (_amount &gt; allowed[_from][msg.sender]) return false;
+    if (_amount > allowed[_from][msg.sender]) return false;
 
-    if (allowed[_from][msg.sender] - _amount &gt; allowed[_from][msg.sender]) revert();  // Guard against underflow
+    if (allowed[_from][msg.sender] - _amount > allowed[_from][msg.sender]) revert();  // Guard against underflow
 
     if (_transfer(_from, _to, _amount)) {
       allowed[_from][msg.sender] -= _amount;
@@ -152,11 +152,11 @@ contract DynamicToken is TokenInterface {
   }
 
   function burn(uint256 _amount) notClosed noEther returns (bool success) {
-    if (_amount &gt; balances[msg.sender]) return false;
+    if (_amount > balances[msg.sender]) return false;
 
-    if (_amount &gt; totalSupply) revert();
-    if (balances[msg.sender] - _amount &gt; balances[msg.sender]) revert();     // Guard against underflow
-    if (totalSupply - _amount &gt; totalSupply) revert();                     // Guard against underflow
+    if (_amount > totalSupply) revert();
+    if (balances[msg.sender] - _amount > balances[msg.sender]) revert();     // Guard against underflow
+    if (totalSupply - _amount > totalSupply) revert();                     // Guard against underflow
 
     balances[msg.sender] -= _amount;
     totalSupply -= _amount;
@@ -208,10 +208,10 @@ contract DynamicToken is TokenInterface {
   // PRIVATE MUTATORS
 
   function _transfer(address _from, address _to, uint256 _amount) notClosed private returns (bool success) {
-    if (_amount &gt; balances[_from]) return false;
+    if (_amount > balances[_from]) return false;
 
-    if (balances[_to] + _amount &lt; balances[_to]) revert();      // Guard against overflow
-    if (balances[_from] - _amount &gt; balances[_from]) revert();  // Guard against underflow
+    if (balances[_to] + _amount < balances[_to]) revert();      // Guard against overflow
+    if (balances[_from] - _amount > balances[_from]) revert();  // Guard against underflow
 
     balances[_to] += _amount;
     balances[_from] -= _amount;

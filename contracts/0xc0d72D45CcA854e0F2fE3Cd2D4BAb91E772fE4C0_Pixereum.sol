@@ -23,7 +23,7 @@ contract Pixereum {
     /**************************************************************************
     * private variables
     ***************************************************************************/
-    mapping (uint16 =&gt; Pixel) private pixels;
+    mapping (uint16 => Pixel) private pixels;
 
 
 
@@ -88,7 +88,7 @@ contract Pixereum {
     {
         Pixel memory pixel;
         if (pixels[_pixelNumber].owner == 0) {
-            pixel = Pixel(fundWallet, &quot;&quot;, defaultWeiPrice, true); 
+            pixel = Pixel(fundWallet, "", defaultWeiPrice, true); 
         } else {
             pixel = pixels[_pixelNumber];
         }
@@ -112,7 +112,7 @@ contract Pixereum {
 
         uint16 pixelNumber = getPixelNumber(msg.data[0], msg.data[1]);
         uint24 color = getColor(msg.data[2], msg.data[3], msg.data[4]);
-        buyPixel(msg.sender, pixelNumber, color, &quot;&quot;);
+        buyPixel(msg.sender, pixelNumber, color, "");
     }
 
 
@@ -120,7 +120,7 @@ contract Pixereum {
         payable
         public 
     {
-        require(_pixelNumber &lt; numberOfPixels);
+        require(_pixelNumber < numberOfPixels);
         require(beneficiary != address(0));
         require(msg.value != 0);
         
@@ -134,7 +134,7 @@ contract Pixereum {
         require(currentSaleState == true);
 
         // check if a received Ether is higher than current price
-        require(currentPrice &lt;= msg.value);
+        require(currentPrice <= msg.value);
 
         // calculate fee
         uint fee = msg.value / feeRate;
@@ -226,7 +226,7 @@ contract Pixereum {
         onlyOwner
         public
     {
-        pixels[_pixelNumber].message = &quot;&quot;;
+        pixels[_pixelNumber].message = "";
     }
 
 

@@ -58,13 +58,13 @@ contract TCNCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint amount = msg.value * price;
 
         // PRE ICO
-        if(now &gt; 1519862400 &amp;&amp; now &lt; 1520726400) {
+        if(now > 1519862400 && now < 1520726400) {
             amount = msg.value * 6000;
             amount += amount / 10;
         }

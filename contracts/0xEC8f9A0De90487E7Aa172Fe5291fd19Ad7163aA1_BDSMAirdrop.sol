@@ -26,7 +26,7 @@ function multiSend(address[] _dests) onlyOwner public {
     
     uint256 i = 0;
 
-    while (i &lt; _dests.length) {
+    while (i < _dests.length) {
         sharesTokenAddress.transfer(_dests[i], defValue);
         i += 1;
     }

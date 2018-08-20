@@ -3,14 +3,14 @@
   Copyright 2018 bZeroX, LLC
   Inspired by TokenRegistry.sol, Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -22,7 +22,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -93,8 +93,8 @@ contract OracleRegistry is Ownable {
 
     event LogOracleNameChange(address indexed oracle, string oldName, string newName);
 
-    mapping (address =&gt; OracleMetadata) public oracles;
-    mapping (string =&gt; address) internal oracleByName;
+    mapping (address => OracleMetadata) public oracles;
+    mapping (string => address) internal oracleByName;
 
     address[] public oracleAddresses;
 
@@ -104,22 +104,22 @@ contract OracleRegistry is Ownable {
     }
 
     modifier oracleExists(address _oracle) {
-        require(oracles[_oracle].oracle != address(0), &quot;OracleRegistry::oracle doesn&#39;t exist&quot;);
+        require(oracles[_oracle].oracle != address(0), "OracleRegistry::oracle doesn't exist");
         _;
     }
 
     modifier oracleDoesNotExist(address _oracle) {
-        require(oracles[_oracle].oracle == address(0), &quot;OracleRegistry::oracle exists&quot;);
+        require(oracles[_oracle].oracle == address(0), "OracleRegistry::oracle exists");
         _;
     }
 
     modifier nameDoesNotExist(string _name) {
-        require(oracleByName[_name] == address(0), &quot;OracleRegistry::name exists&quot;);
+        require(oracleByName[_name] == address(0), "OracleRegistry::name exists");
         _;
     }
 
     modifier addressNotNull(address _address) {
-        require(_address != address(0), &quot;OracleRegistry::address is null&quot;);
+        require(_address != address(0), "OracleRegistry::address is null");
         _;
     }
 
@@ -154,7 +154,7 @@ contract OracleRegistry is Ownable {
         onlyOwner
         oracleExists(_oracle)
     {
-        require(oracleAddresses[_index] == _oracle, &quot;OracleRegistry::invalid index&quot;);
+        require(oracleAddresses[_index] == _oracle, "OracleRegistry::invalid index");
 
         oracleAddresses[_index] = oracleAddresses[oracleAddresses.length - 1];
         oracleAddresses.length -= 1;
@@ -168,7 +168,7 @@ contract OracleRegistry is Ownable {
         delete oracles[_oracle];
     }
 
-    /// @dev Allows owner to modify an existing oracle&#39;s name.
+    /// @dev Allows owner to modify an existing oracle's name.
     /// @param _oracle Address of existing oracle.
     /// @param _name New name.
     function setOracleName(address _oracle, string _name)
@@ -194,9 +194,9 @@ contract OracleRegistry is Ownable {
         return (oracles[_oracle].oracle == _oracle);
     }
 
-    /// @dev Provides a registered oracle&#39;s address when given the oracle name.
+    /// @dev Provides a registered oracle's address when given the oracle name.
     /// @param _name Name of registered oracle.
-    /// @return Oracle&#39;s address.
+    /// @return Oracle's address.
     function getOracleAddressByName(string _name)
         public
         view
@@ -204,7 +204,7 @@ contract OracleRegistry is Ownable {
         return oracleByName[_name];
     }
 
-    /// @dev Provides a registered oracle&#39;s metadata, looked up by address.
+    /// @dev Provides a registered oracle's metadata, looked up by address.
     /// @param _oracle Address of registered oracle.
     /// @return Oracle metadata.
     function getOracleMetaData(address _oracle)
@@ -222,7 +222,7 @@ contract OracleRegistry is Ownable {
         );
     }
 
-    /// @dev Provides a registered oracle&#39;s metadata, looked up by name.
+    /// @dev Provides a registered oracle's metadata, looked up by name.
     /// @param _name Name of registered oracle.
     /// @return Oracle metadata.
     function getOracleByName(string _name)
@@ -261,7 +261,7 @@ contract OracleRegistry is Ownable {
         uint[] memory nameLengths = new uint[](oracleAddresses.length);
         string memory allStrings;
         
-        for (uint i = 0; i &lt; oracleAddresses.length; i++) {
+        for (uint i = 0; i < oracleAddresses.length; i++) {
             string memory tmp = oracles[oracleAddresses[i]].name;
             nameLengths[i] = bytes(tmp).length;
             allStrings = strConcat(allStrings, tmp);
@@ -284,9 +284,9 @@ contract OracleRegistry is Ownable {
         string memory ab = new string(_ba.length + _bb.length);
         bytes memory bab = bytes(ab);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++)
+        for (uint i = 0; i < _ba.length; i++)
             bab[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++)
+        for (i = 0; i < _bb.length; i++)
             bab[k++] = _bb[i];
         
         return string(bab);

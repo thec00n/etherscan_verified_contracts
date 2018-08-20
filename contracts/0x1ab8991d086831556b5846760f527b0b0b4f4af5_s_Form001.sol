@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
  
 contract s_Form001 {
     
-    mapping (bytes32 =&gt; string) data;
+    mapping (bytes32 => string) data;
     
     address owner;
     

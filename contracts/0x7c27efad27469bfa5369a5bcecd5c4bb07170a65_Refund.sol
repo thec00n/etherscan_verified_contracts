@@ -14,10 +14,10 @@ contract Refund {
         _;
     }
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     function add_addys(address[] _addys, uint256[] _values) onlyOwner {
-        for (uint i = 0; i &lt; _addys.length ; i++) {
+        for (uint i = 0; i < _addys.length ; i++) {
             balances[_addys[i]] += (_values[i]);
         }
     }
@@ -29,7 +29,7 @@ contract Refund {
     }
 
     function direct_refunds(address[] _addys, uint256[] _values) onlyOwner {
-        for (uint i = 0; i &lt; _addys.length ; i++) {
+        for (uint i = 0; i < _addys.length ; i++) {
             uint256 to_refund = (_values[i]);
             balances[_addys[i]] = 0;
             _addys[i].transfer(to_refund);

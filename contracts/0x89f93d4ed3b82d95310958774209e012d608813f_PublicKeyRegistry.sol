@@ -7,7 +7,7 @@ pragma solidity 0.4.24;
     These public keys can be usedfor encryption and the like.
 */
 contract PublicKeyRegistry {
-    mapping(address =&gt; bytes) public publicKeys;
+    mapping(address => bytes) public publicKeys;
     
     function pubKeyToAddress(bytes _pubKey) internal pure returns (address) {
         return address(keccak256(_pubKey));
@@ -20,11 +20,11 @@ contract PublicKeyRegistry {
     function registerPubKey(address _addr, bytes _pubKey) external {
         require(
             isValidPubKey(_pubKey),
-            &quot;The public key was invalid&quot;
+            "The public key was invalid"
         );
         require(
             pubKeyToAddress(_pubKey) == _addr, 
-            &quot;The public key does not correspond with the address&quot;
+            "The public key does not correspond with the address"
         );
         
         publicKeys[_addr] = _pubKey;

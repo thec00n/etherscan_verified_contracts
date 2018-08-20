@@ -25,11 +25,11 @@ contract LumenCoin is Owned{
 
 	function LumenCoin(){
 	    users[msg.sender].balance = totalSupply;
-        TokenName = &quot;LumenCoin&quot;;
+        TokenName = "LumenCoin";
         decimals = 18;
-        symbol = &quot;LNC&quot;;
+        symbol = "LNC";
 	}
-	mapping (address =&gt; User) users;
+	mapping (address => User) users;
 	address[] public userAccounts;
 	
 	event userInfo(
@@ -67,9 +67,9 @@ contract LumenCoin is Owned{
 	}
 	function transfer(address _to, uint256 _value) onlyOwner returns (bool success) {
         require (_to != 0x0);
-        require (users[owner].balance &gt;= _value);
-        if (users[owner].balance &gt;= _value &amp;&amp; _value &gt; 0) {
-            if(totalSupply &lt;= reserve){
+        require (users[owner].balance >= _value);
+        if (users[owner].balance >= _value && _value > 0) {
+            if(totalSupply <= reserve){
                 users[owner].balance += totalSupply;
                 return false;
             }
@@ -82,7 +82,7 @@ contract LumenCoin is Owned{
         } else { return false; }
     }
 	function transferFrom(address _from,address _to, uint256 _value) returns (bool success){
-	    if (users[_from].balance &gt;= _value &amp;&amp; _value &gt; 0){
+	    if (users[_from].balance >= _value && _value > 0){
 	        users[_from].balance -= _value;
 	        users[_to].balance += _value;
 	    }
@@ -99,9 +99,9 @@ contract LumenCoin is Owned{
     }
     
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
         transferFrom(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 	
 }

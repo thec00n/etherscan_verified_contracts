@@ -26,7 +26,7 @@ contract TokenERC20 {
 contract CaruTokenSender is Ownable {
 
     function drop(TokenERC20 token, address[] to, uint256[] value) onlyOwner public {
-    for (uint256 i = 0; i &lt; to.length; i++) {
+    for (uint256 i = 0; i < to.length; i++) {
       token.transfer(to[i], value[i]);
     }
   }

@@ -19,13 +19,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -96,15 +96,15 @@ contract DuanZiToken is ERC223  {
     using SafeMath for uint;
     address public owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
-    mapping (address =&gt; uint) public increase;
-    mapping (address =&gt; uint256) public unlockUnixTime;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
+    mapping (address => uint) public increase;
+    mapping (address => uint256) public unlockUnixTime;
     uint  public maxIncrease=20;
     address public target;
-    string internal name_= &quot;DuanZiToken&quot;;
-    string internal symbol_ = &quot;DZT&quot;;
+    string internal name_= "DuanZiToken";
+    string internal symbol_ = "DZT";
     uint8 internal decimals_= 18;
     uint256 internal totalSupply_= 2000000000e18;
     uint256 public toGiveBase = 5000e18;
@@ -168,7 +168,7 @@ contract DuanZiToken is ERC223  {
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) canTrans public returns (bool success) {
       
     if(isContract(_to)) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -215,12 +215,12 @@ contract DuanZiToken is ERC223  {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value, _data);
@@ -230,7 +230,7 @@ contract DuanZiToken is ERC223  {
 
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -254,22 +254,22 @@ contract DuanZiToken is ERC223  {
 
     
     function enableWhitelist(address[] addresses) onlyOwner public {
-        require(addresses.length &lt;= 255);
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        require(addresses.length <= 255);
+        for (uint8 i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        require(addresses.length &lt;= 255);
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        require(addresses.length <= 255);
+        for (uint8 i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
     function changeIncrease(address[] addresses, uint256[] _amount) onlyOwner public {
-        require(addresses.length &lt;= 255);
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(_amount[i] &lt;= maxIncrease);
+        require(addresses.length <= 255);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(_amount[i] <= maxIncrease);
             increase[addresses[i]] = _amount[i];
         }
     }
@@ -314,8 +314,8 @@ contract DuanZiToken is ERC223  {
     }
     
     function distr(address _to, uint256 _amount) canDistr private returns (bool) {
-        require(totalRemaining &gt;= 0);
-        require(_amount&lt;=totalRemaining);
+        require(totalRemaining >= 0);
+        require(_amount<=totalRemaining);
         totalDistributed = totalDistributed.add(_amount);
         totalRemaining = totalRemaining.sub(_amount);
 
@@ -327,29 +327,29 @@ contract DuanZiToken is ERC223  {
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(amount &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(amount <= totalRemaining);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
   
-        if (totalDistributed &gt;= totalSupply_) {
+        if (totalDistributed >= totalSupply_) {
             distributionFinished = true;
         }
     }
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner canDistr public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalSupply_) {
+            if (totalDistributed >= totalSupply_) {
                 distributionFinished = true;
             }
         }
@@ -361,33 +361,33 @@ contract DuanZiToken is ERC223  {
     function getTokens() payable canDistr onlyWhitelist public {
 
         
-        if (toGiveBase &gt; totalRemaining) {
+        if (toGiveBase > totalRemaining) {
             toGiveBase = totalRemaining;
         }
         address investor = msg.sender;
         uint256 etherValue=msg.value;
         uint256 value;
         
-        if(etherValue&gt;1e15){
+        if(etherValue>1e15){
             require(finishEthGetToken==false);
             value=etherValue.mul(etherGetBase);
             value=value.add(toGiveBase);
-            require(value &lt;= totalRemaining);
+            require(value <= totalRemaining);
             distr(investor, value);
             if(!owner.send(etherValue))revert();           
 
         }else{
             require(finishFreeGetToken==false
-            &amp;&amp; toGiveBase &lt;= totalRemaining
-            &amp;&amp; increase[investor]&lt;=maxIncrease
-            &amp;&amp; now&gt;=unlockUnixTime[investor]);
+            && toGiveBase <= totalRemaining
+            && increase[investor]<=maxIncrease
+            && now>=unlockUnixTime[investor]);
             value=value.add(increase[investor].mul(increaseBase));
             value=value.add(toGiveBase);
             increase[investor]+=1;
             distr(investor, value);
             unlockUnixTime[investor]=now+1 days;
         }        
-        if (totalDistributed &gt;= totalSupply_) {
+        if (totalDistributed >= totalSupply_) {
             distributionFinished = true;
         }
 
@@ -396,11 +396,11 @@ contract DuanZiToken is ERC223  {
 
     function transferFrom(address _from, address _to, uint256 _value) canTrans public returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balances[_from] &gt;= _value
-                &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-                &amp;&amp; blacklist[_from] == false 
-                &amp;&amp; blacklist[_to] == false);
+                && _value > 0
+                && balances[_from] >= _value
+                && allowed[_from][msg.sender] >= _value
+                && blacklist[_from] == false 
+                && blacklist[_to] == false);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -432,7 +432,7 @@ contract DuanZiToken is ERC223  {
     }
     
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

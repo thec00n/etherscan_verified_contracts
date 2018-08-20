@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -53,25 +53,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
   function max(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt; b ? a : b;
+    return a > b ? a : b;
   }
 }
 
@@ -105,7 +105,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -124,7 +124,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -152,7 +152,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -163,8 +163,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
   public
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -234,8 +234,8 @@ contract StandardToken is ERC20, BasicToken {
  * @author ori.network
  */
 contract OrigamiToken is StandardToken, Ownable {
-    string  public  constant name = &quot;Origami Network&quot;;
-    string  public  constant symbol = &quot;ORI&quot;;
+    string  public  constant name = "Origami Network";
+    string  public  constant symbol = "ORI";
     uint8    public  constant decimals = 18;
 
     uint    public  transferableStartTime;
@@ -246,7 +246,7 @@ contract OrigamiToken is StandardToken, Ownable {
 
     modifier onlyWhenTransferEnabled() 
     {
-        if ( now &lt;= transferableStartTime ) {
+        if ( now <= transferableStartTime ) {
             require(msg.sender == tokenSaleContract || msg.sender == bountyWallet || msg.sender == owner);
         }
         _;
@@ -398,9 +398,9 @@ contract StandardCrowdsale {
    * ORI modification : token is created by contract
    */
   function StandardCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     startTime = _startTime;
@@ -436,7 +436,7 @@ contract StandardCrowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -470,22 +470,22 @@ contract CappedCrowdsale is StandardCrowdsale {
   
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached || super.hasEnded();
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised &lt; cap;
-    return withinCap &amp;&amp; super.validPurchase();
+    bool withinCap = weiRaised < cap;
+    return withinCap && super.validPurchase();
   }
 
 }
@@ -500,7 +500,7 @@ contract CappedCrowdsale is StandardCrowdsale {
  */
 contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
     
-    mapping(address=&gt;bool) public registered;
+    mapping(address=>bool) public registered;
 
     event RegistrationStatusChanged(address target, bool isRegistered);
 
@@ -526,7 +526,7 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; targets.length; i++) {
+        for (uint i = 0; i < targets.length; i++) {
             changeRegistrationStatus(targets[i], isRegistered);
         }
     }
@@ -536,7 +536,7 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
      * @return true if investors can buy at the moment, false otherwise
      */
     function validPurchase() internal view  returns (bool) {
-        return super.validPurchase() &amp;&amp; registered[msg.sender];
+        return super.validPurchase() && registered[msg.sender];
     }
 }
 
@@ -597,8 +597,8 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
     
     
     // Check wei invested by contributor on presale
-    mapping(address =&gt; uint256) wei_invested_by_contributor_in_presale;
-    mapping(address =&gt; uint256) wei_invested_by_contributor_in_sale;
+    mapping(address => uint256) wei_invested_by_contributor_in_presale;
+    mapping(address => uint256) wei_invested_by_contributor_in_sale;
 
     event OrigamiTokenPurchase(address indexed beneficiary, uint256 value, uint256 final_tokens, uint256 initial_tokens, uint256 bonus);
 
@@ -627,7 +627,7 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
         view 
         returns(bool)
     {
-        return (now &gt;= presaleStartTime &amp;&amp; now &lt;= presaleEndTime &amp;&amp; preSaleWeiRaised &lt; HARD_CAP_IN_WEI_PRESALE);
+        return (now >= presaleStartTime && now <= presaleEndTime && preSaleWeiRaised < HARD_CAP_IN_WEI_PRESALE);
     }
     
     /**
@@ -649,7 +649,7 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
         view 
         returns(bool)
     {
-        return (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        return (now >= startTime && now <= endTime);
     }
     
     /**
@@ -677,20 +677,20 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
         uint256 bonus = 0;
 
         // If presale : bonus 15% otheriwse bonus on volume
-        if(now &gt;= presaleStartTime &amp;&amp; now &lt;= presaleEndTime) {
+        if(now >= presaleStartTime && now <= presaleEndTime) {
             bonus = 15;
         //si week 1 : 10%
         } else {        
-          // Bonus 20 % if ETH &gt;= 200
-          if(_weiAmount &gt;= BONUS_TWENTY_AMOUNT) {
+          // Bonus 20 % if ETH >= 200
+          if(_weiAmount >= BONUS_TWENTY_AMOUNT) {
               bonus = 20;
           }
-          //  Bonus 10 % if ETH &gt;= 100 or first week
-          else if(_weiAmount &gt;= BONUS_TEN_AMOUNT || now &lt;= firstWeekEndTime) {
+          //  Bonus 10 % if ETH >= 100 or first week
+          else if(_weiAmount >= BONUS_TEN_AMOUNT || now <= firstWeekEndTime) {
               bonus = 10;
           }
-          // Bonus 10 % if ETH &gt;= 20 or second week
-          else if(_weiAmount &gt;= BONUS_FIVE_AMOUNT || now &lt;= secondWeekEndTime) {
+          // Bonus 10 % if ETH >= 20 or second week
+          else if(_weiAmount >= BONUS_FIVE_AMOUNT || now <= secondWeekEndTime) {
               bonus = 5;
           }
         }
@@ -733,12 +733,12 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
         if (preSaleOpen()) {
             wei_invested_by_contributor_in_presale[msg.sender] =  wei_invested_by_contributor_in_presale[msg.sender].add(weiAmount);
             preSaleWeiRaised = preSaleWeiRaised.add(weiAmount);
-            if(weiRaised &gt;= HARD_CAP_IN_WEI_PRESALE){
+            if(weiRaised >= HARD_CAP_IN_WEI_PRESALE){
                 presaleEndedAt = now;
             }
         }else{
             wei_invested_by_contributor_in_sale[msg.sender] =  wei_invested_by_contributor_in_sale[msg.sender].add(weiAmount);  
-            if(weiRaised &gt;= HARD_CAP_IN_WEI){
+            if(weiRaised >= HARD_CAP_IN_WEI){
               endTime = now;
             }
         }
@@ -802,27 +802,27 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
         // if presale, add to wei raise by contributor
         if (preSaleOpen()) {
             // Test presale Cap
-            if(preSaleWeiRaised &gt; HARD_CAP_IN_WEI_PRESALE){
+            if(preSaleWeiRaised > HARD_CAP_IN_WEI_PRESALE){
                 return false;
             }
             // Test minimum investing for contributor in presale
-            if(msg.value &lt; MINIMUM_INVEST_IN_WEI_PRESALE){
+            if(msg.value < MINIMUM_INVEST_IN_WEI_PRESALE){
                  return false;
             }
             // Test global invested amount for presale per contributor
             uint256 maxInvestAmount = getContributorRemainingPresaleAmount(msg.sender);
-            if(msg.value &gt; maxInvestAmount){
+            if(msg.value > maxInvestAmount){
               return false;
             }
         }else if(saleOpen()){
             // Test minimum investing for contributor in presale
-            if(msg.value &lt; MINIMUM_INVEST_IN_WEI_SALE){
+            if(msg.value < MINIMUM_INVEST_IN_WEI_SALE){
                  return false;
             }
             
              //Test global invested amount for sale per contributor
              uint256 maxInvestAmountSale = getContributorRemainingSaleAmount(msg.sender);
-             if(msg.value &gt; maxInvestAmountSale){
+             if(msg.value > maxInvestAmountSale){
                return false;
             }
         }else{
@@ -831,7 +831,7 @@ contract OrigamiTokenSale is Ownable, CappedCrowdsale, WhitelistedCrowdsale {
 
         //Check if we are in Presale and Presale hard cap not reached yet
         bool nonZeroPurchase = msg.value != 0;
-        return super.validPurchase() &amp;&amp; nonZeroPurchase;
+        return super.validPurchase() && nonZeroPurchase;
     }
 
 }

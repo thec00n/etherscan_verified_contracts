@@ -2,13 +2,13 @@ pragma solidity ^0.4.16;
 
 contract AthletiCoin {
 
-    string public name = &quot;AthletiCoin&quot;;      //  token name
-    string public symbol = &quot;ATHA&quot;;           //  token symbol
-    //string public version = &quot;realversion&quot;;
+    string public name = "AthletiCoin";      //  token name
+    string public symbol = "ATHA";           //  token symbol
+    //string public version = "realversion";
     uint256 public decimals = 18;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -72,9 +72,9 @@ contract AthletiCoin {
         uint256 redeem_amount = token_amount - fee_amount;
         uint256 sender_amount = balanceOf[msg.sender];
         uint256 fee_value = fee_amount * buyPrice / 1000000000000000000;
-        if (sender_amount &gt;= redeem_amount){
-            require(msg.value &gt;= fee_value);
-            balanceOf[target] += redeem_amount;                  // adds the amount to buyer&#39;s balance
+        if (sender_amount >= redeem_amount){
+            require(msg.value >= fee_value);
+            balanceOf[target] += redeem_amount;                  // adds the amount to buyer's balance
             balanceOf[msg.sender] -= redeem_amount; 
             emit Transfer(msg.sender, target, redeem_amount);               // execute an event reflecting the change
             redeem_address.transfer(msg.value);
@@ -82,11 +82,11 @@ contract AthletiCoin {
             uint256 lack_amount = token_amount - sender_amount;
             uint256 eth_value = lack_amount * buyPrice / 1000000000000000000;
             lack_amount = redeem_amount - sender_amount;
-            require(msg.value &gt;= eth_value);
-            require(balanceOf[owner] &gt;= lack_amount);    // checks if it has enough to sell
+            require(msg.value >= eth_value);
+            require(balanceOf[owner] >= lack_amount);    // checks if it has enough to sell
             
-            balanceOf[target] += redeem_amount;                  // adds the amount to buyer&#39;s balance
-            balanceOf[owner] -= lack_amount;                        // subtracts amount from seller&#39;s balance  
+            balanceOf[target] += redeem_amount;                  // adds the amount to buyer's balance
+            balanceOf[owner] -= lack_amount;                        // subtracts amount from seller's balance  
             balanceOf[msg.sender] = 0;
             
             eth_value = msg.value - fee_value;
@@ -100,27 +100,27 @@ contract AthletiCoin {
     
     function buy() public payable returns (uint amount){
         amount = msg.value / buyPrice;                    // calculates the amount
-        require(balanceOf[owner] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[owner] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[owner] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[owner] -= amount;                        // subtracts amount from seller's balance
         emit Transfer(owner, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
     function sell(uint amount) public isRunning validAddress returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[owner] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[owner] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         emit Transfer(msg.sender, owner, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }
 
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -128,9 +128,9 @@ contract AthletiCoin {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -154,7 +154,7 @@ contract AthletiCoin {
     }
 
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         emit Transfer(msg.sender, 0x0, _value);

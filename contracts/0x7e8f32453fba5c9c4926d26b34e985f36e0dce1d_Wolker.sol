@@ -1,16 +1,16 @@
 pragma solidity 0.4.11;
 
 contract Wolker {
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; uint256) allocations;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; mapping (address =&gt; bool)) authorized; //trustee
+  mapping (address => uint256) balances;
+  mapping (address => uint256) allocations;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => mapping (address => bool)) authorized; //trustee
 
   /// @param _to The address of the recipient
   /// @param _value The amount of token to be transferred
   /// @return Whether the transfer was successful or not
   function transfer(address _to, uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] = safeSub(balances[msg.sender], _value);
       balances[_to] = safeAdd(balances[_to], _value);
       Transfer(msg.sender, _to, _value, balances[msg.sender], balances[_to]);
@@ -26,7 +26,7 @@ contract Wolker {
   /// @return Whether the transfer was successful or not
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     var _allowance = allowed[_from][msg.sender];
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] = safeAdd(balances[_to], _value);
       balances[_from] = safeSub(balances[_from], _value);
       allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -67,7 +67,7 @@ contract Wolker {
     return true;
   }
 
-  /// @param _trustee_to_remove Revoke trustee&#39;s permission on settle media spend 
+  /// @param _trustee_to_remove Revoke trustee's permission on settle media spend 
   /// @return Whether the deauthorization was successful or not
   function deauthorize(address _trustee_to_remove) returns (bool success) {
     authorized[msg.sender][_trustee_to_remove] = false;
@@ -114,9 +114,9 @@ contract Wolker {
 
 
   //**** ERC20 TOK fields:
-  string  public constant name = &#39;Wolk Coin&#39;;
-  string  public constant symbol = &quot;WOLK&quot;;
-  string  public constant version = &quot;0.2.2&quot;;
+  string  public constant name = 'Wolk Coin';
+  string  public constant symbol = "WOLK";
+  string  public constant version = "0.2.2";
   uint256 public constant decimals = 18;
   uint256 public constant wolkFund  =  10 * 10**1 * 10**decimals;        //  100 Wolk in operation Fund
   uint256 public constant tokenCreationMin =  20 * 10**1 * 10**decimals; //  200 Wolk Min
@@ -161,7 +161,7 @@ contract Wolker {
     // wolkFund is 100
     balances[owner] = wolkFund;
 
-    // Wolk Inc has 25MM Wolk, 5MM of which is allocated for Wolk Inc Founding staff, who vest at &quot;unlockedAt&quot; time
+    // Wolk Inc has 25MM Wolk, 5MM of which is allocated for Wolk Inc Founding staff, who vest at "unlockedAt" time
     reservedTokens = 25 * 10**decimals;
     allocations[0x564a3f7d98Eb5B1791132F8875fef582d528d5Cf] = 20; // unassigned
     allocations[0x7f512CCFEF05F651A70Fa322Ce27F4ad79b74ffe] = 1;  // Sourabh
@@ -173,11 +173,11 @@ contract Wolker {
   }
 
   // ****** VESTING SUPPORT
-  /// @notice Allow developer to unlock allocated tokens by transferring them to developer&#39;s address on vesting schedule of &quot;vested 100% on 1 year)
+  /// @notice Allow developer to unlock allocated tokens by transferring them to developer's address on vesting schedule of "vested 100% on 1 year)
   function unlock() external {
-    if (now &lt; unlockedAt) throw;
+    if (now < unlockedAt) throw;
     uint256 vested = allocations[msg.sender] * 10**decimals;
-    if (vested &lt; 0 ) throw; // Will fail if allocation (and therefore toTransfer) is 0.
+    if (vested < 0 ) throw; // Will fail if allocation (and therefore toTransfer) is 0.
     allocations[msg.sender] = 0;
     reservedTokens = safeSub(reservedTokens, vested);
     balances[msg.sender] = safeAdd(balances[msg.sender], vested); 
@@ -188,15 +188,15 @@ contract Wolker {
   // Accepts ETH and creates WOLK
   function redeemToken() payable external {
     if (isFinalized) throw;
-    if (block.number &lt; start_block) throw;
-    if (block.number &gt; end_block) throw;
-    if (msg.value &lt;= dust) throw;
-    if (tx.gasprice &gt; 0.46 szabo &amp;&amp; fairsale_protection) throw; 
-    if (msg.value &gt; 4 ether &amp;&amp; fairsale_protection) throw; 
+    if (block.number < start_block) throw;
+    if (block.number > end_block) throw;
+    if (msg.value <= dust) throw;
+    if (tx.gasprice > 0.46 szabo && fairsale_protection) throw; 
+    if (msg.value > 4 ether && fairsale_protection) throw; 
 
-    uint256 tokens = safeMul(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+    uint256 tokens = safeMul(msg.value, tokenExchangeRate); // check that we're not over totals
     uint256 checkedSupply = safeAdd(generalTokens, tokens);
-    if ( checkedSupply &gt; tokenCreationMax) throw; // they need to get their money back if something goes wrong
+    if ( checkedSupply > tokenCreationMax) throw; // they need to get their money back if something goes wrong
     
       generalTokens = checkedSupply;
       balances[msg.sender] = safeAdd(balances[msg.sender], tokens);   // safeAdd not needed; bad semantics to use here
@@ -205,11 +205,11 @@ contract Wolker {
   }
   
   // The value of the message must be sufficiently large to not be considered dust.
-  //modifier is_not_dust { if (msg.value &lt; dust) throw; _; }
+  //modifier is_not_dust { if (msg.value < dust) throw; _; }
 
   // Disabling fairsale protection  
   function fairsale_protectionOFF() external {
-    if ( block.number - start_block &lt; 200) throw; // fairsale window is strictly enforced
+    if ( block.number - start_block < 200) throw; // fairsale window is strictly enforced
     if ( msg.sender != owner ) throw;
     fairsale_protection = false;
   }
@@ -219,8 +219,8 @@ contract Wolker {
   function finalize() external {
     if ( isFinalized ) throw;
     if ( msg.sender != owner ) throw;  // locks finalize to ETH owner
-    if ( generalTokens &lt; tokenCreationMin ) throw; // have to sell tokenCreationMin to finalize
-    if ( block.number &lt; end_block ) throw;  
+    if ( generalTokens < tokenCreationMin ) throw; // have to sell tokenCreationMin to finalize
+    if ( block.number < end_block ) throw;  
     isFinalized = true;
     end_ts = now;
     unlockedAt = end_ts + 2 minutes;
@@ -229,14 +229,14 @@ contract Wolker {
 
 	function withdraw() onlyOwner{ 		
 		if (this.balance == 0) throw;				
-		if (generalTokens &lt; tokenCreationMin) throw;	
+		if (generalTokens < tokenCreationMin) throw;	
         if ( ! multisig_owner.send(this.balance) ) throw;
  }
 	
   function refund() external {
     if ( isFinalized ) throw; 
-    if ( block.number &lt; end_block ) throw;   
-    if ( generalTokens &gt;= tokenCreationMin ) throw;  
+    if ( block.number < end_block ) throw;   
+    if ( generalTokens >= tokenCreationMin ) throw;  
     if ( msg.sender == owner ) throw;
     uint256 Val = balances[msg.sender];
     balances[msg.sender] = 0;
@@ -250,12 +250,12 @@ contract Wolker {
   function settleFrom(address _from, address _to, uint256 _value) isOperational() external returns (bool success) {
     var _allowance = allowed[_from][msg.sender];
     var isPreauthorized = authorized[_from][msg.sender];
-    //allowed[_from][msg.sender] &gt;= _value
-    if (balances[_from] &gt;= _value &amp;&amp; ( isPreauthorized ) &amp;&amp; _value &gt; 0) {
+    //allowed[_from][msg.sender] >= _value
+    if (balances[_from] >= _value && ( isPreauthorized ) && _value > 0) {
       balances[_to] = safeAdd(balances[_to], _value);
       balances[_from] = safeSub(balances[_from], _value);
       allowed[_from][msg.sender] = safeSub(_allowance, _value);
-      if ( allowed[_from][msg.sender] &lt; 0 ){
+      if ( allowed[_from][msg.sender] < 0 ){
          allowed[_from][msg.sender] = 0;
       }
       Transfer(_from, _to, _value, balances[_from], balances[_to]);
@@ -296,20 +296,20 @@ contract Wolker {
   }
   
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 

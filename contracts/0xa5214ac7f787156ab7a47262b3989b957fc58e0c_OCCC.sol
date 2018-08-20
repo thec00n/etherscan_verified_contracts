@@ -9,7 +9,7 @@ contract OCCC {
     //decimal setting
     uint8 public decimals = 18;
     
-    //contract admin&#39;s address
+    //contract admin's address
     address private admin_add;
     //new user can get money when first register
     uint private present_money=0;
@@ -18,8 +18,8 @@ contract OCCC {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     //save the msg of contract_users
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowances;
     
     // constructor
     constructor(uint256 limit,string token_name,string token_symbol,uint8 token_decimals) public {
@@ -62,7 +62,7 @@ contract OCCC {
     function burnAccountMoeny(address add,uint256 value) public{
         address opt_add=msg.sender;
         require(opt_add == admin_add);
-        require(balanceOf[add]&gt;value);
+        require(balanceOf[add]>value);
         
         balanceOf[add]-=value;
         totalSupply -=value;
@@ -76,7 +76,7 @@ contract OCCC {
     //transfer action between users
     function transferFrom(address from,address to,uint256 value) public returns (bool success){
         
-        require(value &lt;= allowances[from][msg.sender]);     // Check allowance
+        require(value <= allowances[from][msg.sender]);     // Check allowance
         allowances[from][msg.sender] -= value;
         
         return _transferAct(from,to,value);
@@ -86,9 +86,9 @@ contract OCCC {
         //sure target no be 0x0
         require(to != 0x0);
         //check balance of sender
-        require(balanceOf[from] &gt;= value);
+        require(balanceOf[from] >= value);
         //sure the amount of the transfer is greater than 0
-        require(balanceOf[to] + value &gt;= balanceOf[to]);
+        require(balanceOf[to] + value >= balanceOf[to]);
         
         uint previousBalances = balanceOf[from] + balanceOf[to];
         balanceOf[from] -= value;

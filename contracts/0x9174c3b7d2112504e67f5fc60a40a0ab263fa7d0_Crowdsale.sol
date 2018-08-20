@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
 
 contract IRightAndRoles {
     address[][] public wallets;
-    mapping(address =&gt; uint16) public roles;
+    mapping(address => uint16) public roles;
 
     event WalletChanged(address indexed newWallet, address indexed oldWallet, uint8 indexed role);
     event CloneChanged(address indexed wallet, uint8 indexed role, bool indexed mod);
@@ -72,16 +72,16 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function minus(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b&gt;=a) return 0;
+        if (b>=a) return 0;
         return a - b;
     }
 }
@@ -157,20 +157,20 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 
     // How many tokens (excluding the bonus) are transferred to the investor in exchange for 1 ETH
     // **THOUSANDS** 10^18 for human, *10**18 for Solidity, 1e18 for MyEtherWallet (MEW).
-    // Example: if 1ETH = 40.5 Token ==&gt; use 40500 finney
+    // Example: if 1ETH = 40.5 Token ==> use 40500 finney
     uint256 public rate = 2333 ether; // $0.1 (ETH/USD=$500)
 
     // ETH/USD rate in US$
-    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: ETH/USD=$1000 ==&gt; use 1000*10**18 (Solidity) or 1000 ether or 1000e18 (MEW)
+    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: ETH/USD=$1000 ==> use 1000*10**18 (Solidity) or 1000 ether or 1000e18 (MEW)
     uint256 public exchange  = 700 ether;
 
     // If the round does not attain this value before the closing date, the round is recognized as a
     // failure and investors take the money back (the founders will not interfere in any way).
-    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: softcap=15ETH ==&gt; use 15*10**18 (Solidity) or 15e18 (MEW)
+    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: softcap=15ETH ==> use 15*10**18 (Solidity) or 15e18 (MEW)
     uint256 public softCap = 0;
 
     // The maximum possible amount of income
-    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: hardcap=123.45ETH ==&gt; use 123450*10**15 (Solidity) or 12345e15 (MEW)
+    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: hardcap=123.45ETH ==> use 123450*10**15 (Solidity) or 12345e15 (MEW)
     uint256 public hardCap = 45413 ether; // $31M (ETH/USD=$500)
 
     // If the last payment is slightly higher than the hardcap, then the usual contracts do
@@ -183,7 +183,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     uint256 public overLimit = 20 ether;
 
     // The minimum possible payment from an investor in ETH. Payments below this value will be rejected.
-    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: minPay=0.1ETH ==&gt; use 100*10**15 (Solidity) or 100e15 (MEW)
+    // **QUINTILLIONS** 10^18 / *10**18 / 1e18. Example: minPay=0.1ETH ==> use 100*10**15 (Solidity) or 100e15 (MEW)
     uint256 public minPay = 43 finney;
 
     uint256 public maxAllProfit = 30; // max time bonus=20%, max value bonus=10%, maxAll=10%+20%
@@ -212,7 +212,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // Setting the current rate ETH/USD         
 //    function changeExchange(uint256 _ETHUSD) public {
 //        require(rightAndRoles.onlyRoles(msg.sender,18));
-//        require(_ETHUSD &gt;= 1 ether);
+//        require(_ETHUSD >= 1 ether);
 //        emit ExchangeChanged(exchange,_ETHUSD);
 //        softCap=softCap.mul(exchange).div(_ETHUSD);             // QUINTILLIONS
 //        hardCap=hardCap.mul(exchange).div(_ETHUSD);             // QUINTILLIONS
@@ -220,7 +220,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 //
 //        rate=rate.mul(_ETHUSD).div(exchange);                   // QUINTILLIONS
 //
-//        for (uint16 i = 0; i &lt; bonuses.length; i++) {
+//        for (uint16 i = 0; i < bonuses.length; i++) {
 //            bonuses[i].value=bonuses[i].value.mul(exchange).div(_ETHUSD);   // QUINTILLIONS
 //        }
 //        bytes32[] memory params = new bytes32[](2);
@@ -284,8 +284,8 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
         require(rightAndRoles.onlyRoles(msg.sender,6));
         require(canFirstMint);
         begin();
-        require(_to.length == _amount.length &amp;&amp; _to.length == _setAsUnpaused.length);
-        for(uint256 i = 0; i &lt; _to.length; i++){
+        require(_to.length == _amount.length && _to.length == _setAsUnpaused.length);
+        for(uint256 i = 0; i < _to.length; i++){
             token.mint(_to[i],_amount[i]);
             totalSaledToken = totalSaledToken.add(_amount[i]);
             if(_setAsUnpaused[i]){
@@ -301,7 +301,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 
     // Returns the name of the current round in plain text. Constant.
     function getTokenSaleType() external view returns(string){
-        return (TokenSale == TokenSaleType.round1)?&#39;round1&#39;:&#39;round2&#39;;
+        return (TokenSale == TokenSaleType.round1)?'round1':'round2';
     }
 
     // Transfers the funds of the investor to the contract of return of funds. Internal.
@@ -313,34 +313,34 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     function validPurchase() internal view returns (bool) {
 
         // The round started and did not end
-        bool withinPeriod = (now &gt; startTime &amp;&amp; now &lt; endTime.add(renewal));
+        bool withinPeriod = (now > startTime && now < endTime.add(renewal));
 
         // Rate is greater than or equal to the minimum
-        bool nonZeroPurchase = msg.value &gt;= minPay;
+        bool nonZeroPurchase = msg.value >= minPay;
 
         // hardCap is not reached, and in the event of a transaction, it will not be exceeded by more than OverLimit
-        bool withinCap = msg.value &lt;= hardCap.sub(weiRaised()).add(overLimit);
+        bool withinCap = msg.value <= hardCap.sub(weiRaised()).add(overLimit);
 
-        // round is initialized and no &quot;Pause of trading&quot; is set
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; isInitialized &amp;&amp; !isFinalized &amp;&amp; !isPausedCrowdsale;
+        // round is initialized and no "Pause of trading" is set
+        return withinPeriod && nonZeroPurchase && withinCap && isInitialized && !isFinalized && !isPausedCrowdsale;
     }
 
     // Check for the ability to finalize the round. Constant.
     function hasEnded() public view returns (bool) {
         bool isAdmin = rightAndRoles.onlyRoles(msg.sender,6);
 
-        bool timeReached = now &gt; endTime.add(renewal);
+        bool timeReached = now > endTime.add(renewal);
 
-        bool capReached = weiRaised() &gt;= hardCap;
+        bool capReached = weiRaised() >= hardCap;
 
-        return (timeReached || capReached || (isAdmin &amp;&amp; goalReached())) &amp;&amp; isInitialized &amp;&amp; !isFinalized;
+        return (timeReached || capReached || (isAdmin && goalReached())) && isInitialized && !isFinalized;
     }
 
     // Finalize. Only available to the Manager and the Beneficiary. If the round failed, then
     // anyone can call the finalization to unlock the return of funds to investors
-    // You must call a function to finalize each round (after the Round1 &amp; after the Round2)
+    // You must call a function to finalize each round (after the Round1 & after the Round2)
     // @ Do I have to use the function      yes
-    // @ When it is possible to call        after end of Round1 &amp; Round2
+    // @ When it is possible to call        after end of Round1 & Round2
     // @ When it is launched automatically  no
     // @ Who can call the function          admins or anybody (if round is failed)
     function finalize() public {
@@ -364,7 +364,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
             financialStrategy.setup(1,params);//Для контракта Buz деньги не возвращает.
 
             // if there is anything to give
-            if (tokenReserved &gt; 0) {
+            if (tokenReserved > 0) {
 
                 token.mint(rightAndRoles.wallets(3,0),tokenReserved);
                 totalSaledToken = totalSaledToken.add(tokenReserved);
@@ -457,7 +457,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 
         // And the specified start time has not yet come
         // If initialization return an error, check the start date!
-        //require(now &lt;= startTime);
+        //require(now <= startTime);
 
         initialization();
 
@@ -494,7 +494,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
         if(_calc)
             calcFin();
         financialStrategy.getBeneficiaryCash();
-        if(!isInitialized &amp;&amp; financialStrategy.freeCash() == 0)
+        if(!isInitialized && financialStrategy.freeCash() == 0)
             rightAndRoles.setManagerPowerful(true);
     }
 
@@ -512,14 +512,14 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     function calcAndGet() public {
         require(rightAndRoles.onlyRoles(msg.sender,22));
         getBeneficiaryCash(true);
-        for (uint8 i=0; i&lt;0; i++) {
+        for (uint8 i=0; i<0; i++) {
             financialStrategy.getPartnerCash(i, msg.sender);
         }
     }
 
     // We check whether we collected the necessary minimum funds. Constant.
     function goalReached() public view returns (bool) {
-        return weiRaised() &gt;= softCap;
+        return weiRaised() >= softCap;
     }
 
 
@@ -540,19 +540,19 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
         begin();
 
         // Date and time are correct
-        //require(now &lt;= _startTime);
-        require(_startTime &lt; _endTime);
+        //require(now <= _startTime);
+        require(_startTime < _endTime);
 
         startTime = _startTime;
         endTime = _endTime;
 
         // The parameters are correct
-        require(_softCap &lt;= _hardCap);
+        require(_softCap <= _hardCap);
 
         softCap = _softCap;
         hardCap = _hardCap;
 
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         rate = _rate;
 
@@ -562,15 +562,15 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 
         maxAllProfit = _maxAllProfit;
 
-        require(_valueVB.length == _percentVB.length &amp;&amp; _valueVB.length == _freezeTimeVB.length);
+        require(_valueVB.length == _percentVB.length && _valueVB.length == _freezeTimeVB.length);
         bonuses.length = _valueVB.length;
-        for(uint256 i = 0; i &lt; _valueVB.length; i++){
+        for(uint256 i = 0; i < _valueVB.length; i++){
             bonuses[i] = Bonus(_valueVB[i],_percentVB[i],_freezeTimeVB[i]);
         }
 
         require(_percentTB.length == _durationTB.length);
         profits.length = _percentTB.length;
-        for( i = 0; i &lt; _percentTB.length; i++){
+        for( i = 0; i < _percentTB.length; i++){
             profits[i] = Profit(_percentTB[i],_durationTB[i]);
         }
 
@@ -594,9 +594,9 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // Returns the percentage of the bonus on the given date. Constant.
     function getProfitPercentForData(uint256 _timeNow) public constant returns (uint256){
         uint256 allDuration;
-        for(uint8 i = 0; i &lt; profits.length; i++){
+        for(uint8 i = 0; i < profits.length; i++){
             allDuration = allDuration.add(profits[i].duration);
-            if(_timeNow &lt; startTime.add(allDuration)){
+            if(_timeNow < startTime.add(allDuration)){
                 return profits[i].percent;
             }
         }
@@ -604,12 +604,12 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     }
 
     function getBonuses(uint256 _value) public constant returns (uint256,uint256,uint256){
-        if(bonuses.length == 0 || bonuses[0].value &gt; _value){
+        if(bonuses.length == 0 || bonuses[0].value > _value){
             return (0,0,0);
         }
         uint16 i = 1;
-        for(i; i &lt; bonuses.length; i++){
-            if(bonuses[i].value &gt; _value){
+        for(i; i < bonuses.length; i++){
+            if(bonuses[i].value > _value){
                 break;
             }
         }
@@ -617,7 +617,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     }
 
 
-    // Remove the &quot;Pause of exchange&quot;. Available to the manager at any time. If the
+    // Remove the "Pause of exchange". Available to the manager at any time. If the
     // manager refuses to remove the pause, then 30-120 days after the successful
     // completion of the TokenSale, anyone can remove a pause and allow the exchange to continue.
     // The manager does not interfere and will not be able to delay the term.
@@ -629,11 +629,11 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     function tokenUnpause() external {
 
         require(rightAndRoles.onlyRoles(msg.sender,2)
-        || (now &gt; endTime.add(renewal).add(USER_UNPAUSE_TOKEN_TIMEOUT) &amp;&amp; TokenSale == TokenSaleType.round2 &amp;&amp; isFinalized &amp;&amp; goalReached()));
+        || (now > endTime.add(renewal).add(USER_UNPAUSE_TOKEN_TIMEOUT) && TokenSale == TokenSaleType.round2 && isFinalized && goalReached()));
         token.setPause(false);
     }
 
-    // Enable the &quot;Pause of exchange&quot;. Available to the manager until the TokenSale is completed.
+    // Enable the "Pause of exchange". Available to the manager until the TokenSale is completed.
     // The manager cannot turn on the pause, for example, 3 years after the end of the TokenSale.
     // @ Do I have to use the function      no
     // @ When it is possible to call        while Round2 not ended
@@ -655,7 +655,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
         isPausedCrowdsale = mode;
     }
 
-    // For example - After 5 years of the project&#39;s existence, all of us suddenly decided collectively
+    // For example - After 5 years of the project's existence, all of us suddenly decided collectively
     // (company + investors) that it would be more profitable for everyone to switch to another smart
     // contract responsible for tokens. The company then prepares a new token, investors
     // disassemble, study, discuss, etc. After a general agreement, the manager allows any investor:
@@ -690,9 +690,9 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // @ Who can call the function          admin
     function invalidPayments(address[] _beneficiary, uint256[] _value) external {
         require(rightAndRoles.onlyRoles(msg.sender,6));
-        require(endTime.add(renewal).add(KYC_PERIOD) &gt; now);
+        require(endTime.add(renewal).add(KYC_PERIOD) > now);
         require(_beneficiary.length == _value.length);
-        for(uint16 i; i&lt;_beneficiary.length; i++) {
+        for(uint16 i; i<_beneficiary.length; i++) {
             token.rejectTokens(_beneficiary[i],_value[i]);
         }
     }
@@ -706,9 +706,9 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // @ Who can call the function          admins
     function prolong(uint256 _duration) external {
         require(rightAndRoles.onlyRoles(msg.sender,6));
-        require(now &gt; startTime &amp;&amp; now &lt; endTime.add(renewal) &amp;&amp; isInitialized &amp;&amp; !isFinalized);
+        require(now > startTime && now < endTime.add(renewal) && isInitialized && !isFinalized);
         renewal = renewal.add(_duration);
-        require(renewal &lt;= ROUND_PROLONGATE);
+        require(renewal <= ROUND_PROLONGATE);
 
     }
     // If a little more than a year has elapsed (Round2 start date + 400 days), a smart contract
@@ -732,15 +732,15 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // @ Do I have to use the function      no
     // @ When it is possible to call        -
     // @ When it is launched automatically  -
-    // @ Who can call the function          beneficiary &amp; manager
+    // @ Who can call the function          beneficiary & manager
     function distructVault() public {
         bytes32[] memory params = new bytes32[](1);
         params[0] = bytes32(msg.sender);
-        if (rightAndRoles.onlyRoles(msg.sender,4) &amp;&amp; (now &gt; startTime.add(FORCED_REFUND_TIMEOUT1))) {
+        if (rightAndRoles.onlyRoles(msg.sender,4) && (now > startTime.add(FORCED_REFUND_TIMEOUT1))) {
 
             financialStrategy.setup(0,params);
         }
-        if (rightAndRoles.onlyRoles(msg.sender,2) &amp;&amp; (now &gt; startTime.add(FORCED_REFUND_TIMEOUT2))) {
+        if (rightAndRoles.onlyRoles(msg.sender,2) && (now > startTime.add(FORCED_REFUND_TIMEOUT2))) {
             financialStrategy.setup(0,params);
         }
     }
@@ -762,7 +762,7 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     // transfers) to the wallet of BTC, that together with previously received money will exceed the hardcap in total.
     // In this case, we will refund all the amounts above, in order not to exceed the hardcap.
 
-    // Collection of money in BTC will be carried out via one common wallet. The wallet&#39;s address will be published
+    // Collection of money in BTC will be carried out via one common wallet. The wallet's address will be published
     // everywhere (in a white paper, on the TokenSale website, on Telegram, on Bitcointalk, in this code, etc.)
     // Anyone interested can check that the administrator of the smart contract writes down exactly the amount
     // in ETH (in equivalent for BTC) there. In theory, the ability to bypass a smart contract to accept money in
@@ -797,9 +797,9 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
         // DASH Wallet:            XnjajDvQq1C7z2o4EFevRhejc6kRmX1NUp
         // LTC Wallet:             LhHkiwVfoYEviYiLXP5pRK2S1QX5eGrotA
         require(rightAndRoles.onlyRoles(msg.sender,18));
-        bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime.add(renewal));
-        bool withinCap = _value.add(ethWeiRaised) &lt;= hardCap.add(overLimit);
-        require(withinPeriod &amp;&amp; withinCap &amp;&amp; isInitialized &amp;&amp; !isFinalized);
+        bool withinPeriod = (now >= startTime && now <= endTime.add(renewal));
+        bool withinCap = _value.add(ethWeiRaised) <= hardCap.add(overLimit);
+        require(withinPeriod && withinCap && isInitialized && !isFinalized);
         emit PaymentedInOtherCurrency(_token,_value);
         nonEthWeiRaised = _value;
         tokenReserved = _token;
@@ -807,12 +807,12 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
     }
 
     function lokedMint(address _beneficiary, uint256 _value, uint256 _freezeTime) internal {
-        if(_freezeTime &gt; 0){
+        if(_freezeTime > 0){
 
             uint256 totalBloked = token.freezedTokenOf(_beneficiary).add(_value);
             uint256 pastDateUnfreeze = token.defrostDate(_beneficiary);
             uint256 newDateUnfreeze = _freezeTime.add(now);
-            newDateUnfreeze = (pastDateUnfreeze &gt; newDateUnfreeze ) ? pastDateUnfreeze : newDateUnfreeze;
+            newDateUnfreeze = (pastDateUnfreeze > newDateUnfreeze ) ? pastDateUnfreeze : newDateUnfreeze;
 
             token.freezeTokens(_beneficiary,totalBloked,newDateUnfreeze);
         }
@@ -845,11 +845,11 @@ contract Crowdsale is GuidedByRoles, ERC20Provider{
 
         // --------------------------------------------------------------------------------------------
         // *** Scenario 1 - select max from all bonuses + check maxAllProfit
-        //uint256 totalProfit = (ProfitProcent &lt; bonus) ? bonus : ProfitProcent;
+        //uint256 totalProfit = (ProfitProcent < bonus) ? bonus : ProfitProcent;
         // *** Scenario 2 - sum both bonuses + check maxAllProfit
         uint256 totalProfit = bonus.add(ProfitProcent);
         // --------------------------------------------------------------------------------------------
-        totalProfit = (totalProfit &gt; maxAllProfit) ? maxAllProfit : totalProfit;
+        totalProfit = (totalProfit > maxAllProfit) ? maxAllProfit : totalProfit;
 
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate).mul(totalProfit.add(100)).div(100 ether);

@@ -15,13 +15,13 @@ contract IERC20 {
  */
 library SafeMath {
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -37,13 +37,13 @@ contract DrunkCoin is IERC20 {
 	uint8 public decimals;
 	uint256 public rate;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	function DrunkCoin () public {
 		owner = msg.sender;
-		symbol = &quot;DRNK&quot;;
-		name = &quot;DrunkCoin&quot;;
+		symbol = "DRNK";
+		name = "DrunkCoin";
 		decimals = 18;
 		balances[owner] = 1000000 * 1 ether;
 	}
@@ -53,7 +53,7 @@ contract DrunkCoin is IERC20 {
 	}
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value && _value > 0);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -62,7 +62,7 @@ contract DrunkCoin is IERC20 {
 	
 	function give(address[] _persons, uint256 _value) public {
 	    require(msg.sender == owner);
-	    for(uint16 a = 0; a &lt; _persons.length; a++)
+	    for(uint16 a = 0; a < _persons.length; a++)
 	    {
 	        balances[_persons[a]] += _value * 1 ether;
 	    }
@@ -76,7 +76,7 @@ contract DrunkCoin is IERC20 {
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-		require (allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+		require (allowed[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);

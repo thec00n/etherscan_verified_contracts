@@ -2,16 +2,16 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /*  
-/* authors <span class="__cf_email__" data-cfemail="e19380888f98a18d88978492958093cf828e8c">[email&#160;protected]</span>/<span class="__cf_email__" data-cfemail="6a0c0b0404134410020f040d2a06031c0f191e0b1844090507">[email&#160;protected]</span>
+/* authors <span class="__cf_email__" data-cfemail="e19380888f98a18d88978492958093cf828e8c">[email protected]</span>/<span class="__cf_email__" data-cfemail="6a0c0b0404134410020f040d2a06031c0f191e0b1844090507">[email protected]</span>
 /*                 
 /* ==================================================================== */
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -47,10 +47,10 @@ contract Ownable {
 contract AccessAdmin is Ownable {
 
   /// @dev Admin Address
-  mapping (address =&gt; bool) adminContracts;
+  mapping (address => bool) adminContracts;
 
   /// @dev Trust contract
-  mapping (address =&gt; bool) actionContracts;
+  mapping (address => bool) actionContracts;
 
   function setAdminContract(address _addr, bool _useful) public onlyOwner {
     require(_addr != address(0));
@@ -164,7 +164,7 @@ contract BitGuildTrade is AccessAdmin {
   event BuyRareCard(address player, address previous, uint256 rareId,uint256 iPrice);
   event UnitSold(address player, uint256 unitId, uint256 amount);
 
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) unitsOwnedOfPLAT; //cards bought through plat
+  mapping(address => mapping(uint256 => uint256)) unitsOwnedOfPLAT; //cards bought through plat
   function() external payable {
     revert();
   }
@@ -205,7 +205,7 @@ contract BitGuildTrade is AccessAdmin {
   
   function receiveApproval(address _player, uint256 _value, address _tokenContractAddr, bytes _extraData) external {
     require(msg.sender == _tokenContractAddr);
-    require(_extraData.length &gt;=1);
+    require(_extraData.length >=1);
     require(tokenContract.transferFrom(_player, address(this), _value));
     uint256 flag;
     uint256 unitId;
@@ -215,7 +215,7 @@ contract BitGuildTrade is AccessAdmin {
     if (flag==1) {
       buyPLATCards(_player, _value, unitId, amount);  // 1-39
     } else if (flag==3) {
-      buyUpgradeCard(_player, _value, unitId);  // &gt;=1
+      buyUpgradeCard(_player, _value, unitId);  // >=1
     } else if (flag==4) {
       buyRareItem(_player, _value, unitId); //rarecard
     } 
@@ -224,33 +224,33 @@ contract BitGuildTrade is AccessAdmin {
   /// buy normal cards via jade
   function buyBasicCards(uint256 unitId, uint256 amount) external {
     require(cards.getGameStarted());
-    require(amount&gt;=1);
+    require(amount>=1);
     uint256 existing = cards.getOwnedCount(msg.sender,unitId);
     uint256 total = SafeMath.add(existing, amount);
-    if (total &gt; 99) { // Default unit limit
-      require(total &lt;= cards.getMaxCap(msg.sender,unitId)); // Housing upgrades (allow more units)
+    if (total > 99) { // Default unit limit
+      require(total <= cards.getMaxCap(msg.sender,unitId)); // Housing upgrades (allow more units)
     }
 
     uint256 coinProduction;
     uint256 coinCost;
     uint256 ethCost;
-    if (unitId&gt;=1 &amp;&amp; unitId&lt;=39) {    
+    if (unitId>=1 && unitId<=39) {    
       (, coinProduction, coinCost, ethCost,) = schema.getCardInfo(unitId, existing, amount);
-    } else if (unitId&gt;=40) {
+    } else if (unitId>=40) {
       (, coinCost, ethCost,) = schema.getBattleCardInfo(unitId, existing, amount);
     }
-    require(cards.balanceOf(msg.sender) &gt;= coinCost);
+    require(cards.balanceOf(msg.sender) >= coinCost);
     require(ethCost == 0); // Free ether unit
         
     // Update players jade 
     cards.updatePlayersCoinByPurchase(msg.sender, coinCost);
     ///****increase production***/
-    if (coinProduction &gt; 0) {
+    if (coinProduction > 0) {
       cards.increasePlayersJadeProduction(msg.sender,cards.getUnitsProduction(msg.sender, unitId, amount)); 
       cards.setUintCoinProduction(msg.sender,unitId,cards.getUnitsProduction(msg.sender, unitId, amount),true); 
     }
     //players
-    if (cards.getUintsOwnerCount(msg.sender)&lt;=0) {
+    if (cards.getUintsOwnerCount(msg.sender)<=0) {
       cards.AddPlayers(msg.sender);
     }
     cards.setUintsOwnerCount(msg.sender,amount,true);
@@ -261,18 +261,18 @@ contract BitGuildTrade is AccessAdmin {
 
   function buyBasicCards_Migrate(address _addr, uint256 _unitId, uint256 _amount) external onlyAdmin {
     require(cards.getGameStarted());
-    require(_amount&gt;=1);
+    require(_amount>=1);
     uint256 existing = cards.getOwnedCount(_addr,_unitId);
     uint256 total = SafeMath.add(existing, _amount);
-    if (total &gt; 99) { // Default unit limit
-      require(total &lt;= cards.getMaxCap(_addr,_unitId)); // Housing upgrades (allow more units)
+    if (total > 99) { // Default unit limit
+      require(total <= cards.getMaxCap(_addr,_unitId)); // Housing upgrades (allow more units)
     }
     require (_unitId == 41);
     uint256 coinCost;
     uint256 ethCost;
     (, coinCost, ethCost,) = schema.getBattleCardInfo(_unitId, existing, _amount);
     //players
-    if (cards.getUintsOwnerCount(_addr)&lt;=0) {
+    if (cards.getUintsOwnerCount(_addr)<=0) {
       cards.AddPlayers(_addr);
     }
     cards.setUintsOwnerCount(_addr,_amount,true);
@@ -283,36 +283,36 @@ contract BitGuildTrade is AccessAdmin {
 
   function buyPLATCards(address _player, uint256 _platValue, uint256 _cardId, uint256 _amount) internal {
     require(cards.getGameStarted());
-    require(_amount&gt;=1);
+    require(_amount>=1);
     uint256 existing = cards.getOwnedCount(_player,_cardId);
     uint256 total = SafeMath.add(existing, _amount);
-    if (total &gt; 99) { // Default unit limit
-      require(total &lt;= cards.getMaxCap(msg.sender,_cardId)); // Housing upgrades (allow more units)
+    if (total > 99) { // Default unit limit
+      require(total <= cards.getMaxCap(msg.sender,_cardId)); // Housing upgrades (allow more units)
     }
 
     uint256 coinProduction;
     uint256 coinCost;
     uint256 ethCost;
 
-    if (_cardId&gt;=1 &amp;&amp; _cardId&lt;=39) {
+    if (_cardId>=1 && _cardId<=39) {
       coinProduction = schema.unitCoinProduction(_cardId);
       coinCost = schema.getCostForCards(_cardId, existing, _amount);
       ethCost = SafeMath.mul(schema.unitPLATCost(_cardId),_amount);  // get platprice
-    } else if (_cardId&gt;=40) {
+    } else if (_cardId>=40) {
       coinCost = schema.getCostForBattleCards(_cardId, existing, _amount);
       ethCost = SafeMath.mul(schema.unitBattlePLATCost(_cardId),_amount);  // get platprice
     }
 
-    require(ethCost&gt;0);
-    require(SafeMath.add(cards.coinBalanceOf(_player,1),_platValue) &gt;= ethCost);
-    require(cards.balanceOf(_player) &gt;= coinCost);   
+    require(ethCost>0);
+    require(SafeMath.add(cards.coinBalanceOf(_player,1),_platValue) >= ethCost);
+    require(cards.balanceOf(_player) >= coinCost);   
 
     // Update players jade  
     cards.updatePlayersCoinByPurchase(_player, coinCost);
 
-    if (ethCost &gt; _platValue) {
+    if (ethCost > _platValue) {
       cards.setCoinBalance(_player,SafeMath.sub(ethCost,_platValue),1,false);
-    } else if (_platValue &gt; ethCost) {
+    } else if (_platValue > ethCost) {
       // Store overbid in their balance
       cards.setCoinBalance(_player,SafeMath.sub(_platValue,ethCost),1,true);
     } 
@@ -321,12 +321,12 @@ contract BitGuildTrade is AccessAdmin {
     cards.setTotalEtherPool(uint256(SafeMath.div(ethCost,4)),1,true);  // 20% to pool
     cards.setCoinBalance(owner,devFund,1,true);  
     
-    if (coinProduction &gt; 0) {
+    if (coinProduction > 0) {
       cards.increasePlayersJadeProduction(_player, cards.getUnitsProduction(_player, _cardId, _amount)); 
       cards.setUintCoinProduction(_player,_cardId,cards.getUnitsProduction(_player, _cardId, _amount),true); 
     }
     
-    if (cards.getUintsOwnerCount(_player)&lt;=0) {
+    if (cards.getUintsOwnerCount(_player)<=0) {
       cards.AddPlayers(_player);
     }
     cards.setUintsOwnerCount(_player,_amount, true);
@@ -339,7 +339,7 @@ contract BitGuildTrade is AccessAdmin {
   /// buy upgrade cards with ether/Jade
   function buyUpgradeCard(uint256 upgradeId) external payable {
     require(cards.getGameStarted());
-    require(upgradeId&gt;=1);
+    require(upgradeId>=1);
     uint256 existing = cards.getUpgradesOwned(msg.sender,upgradeId);
     
     uint256 coinCost;
@@ -348,13 +348,13 @@ contract BitGuildTrade is AccessAdmin {
     uint256 unitId;
     uint256 upgradeValue;
     (coinCost, ethCost, upgradeClass, unitId, upgradeValue,) = schema.getUpgradeCardsInfo(upgradeId,existing);
-    if (upgradeClass&lt;8) {
-      require(existing&lt;=5); 
+    if (upgradeClass<8) {
+      require(existing<=5); 
     } else {
-      require(existing&lt;=2); 
+      require(existing<=2); 
     }
-    require (coinCost&gt;0 &amp;&amp; ethCost==0);
-    require(cards.balanceOf(msg.sender) &gt;= coinCost);  
+    require (coinCost>0 && ethCost==0);
+    require(cards.balanceOf(msg.sender) >= coinCost);  
     cards.updatePlayersCoinByPurchase(msg.sender, coinCost);
 
     cards.upgradeUnitMultipliers(msg.sender, upgradeClass, unitId, upgradeValue);  
@@ -366,9 +366,9 @@ contract BitGuildTrade is AccessAdmin {
   /// upgrade cards-- jade + plat
   function buyUpgradeCard(address _player, uint256 _platValue,uint256 _upgradeId) internal {
     require(cards.getGameStarted());
-    require(_upgradeId&gt;=1);
+    require(_upgradeId>=1);
     uint256 existing = cards.getUpgradesOwned(_player,_upgradeId);
-    require(existing&lt;=5);  // v1 - v6
+    require(existing<=5);  // v1 - v6
     uint256 coinCost;
     uint256 ethCost;
     uint256 upgradeClass;
@@ -377,23 +377,23 @@ contract BitGuildTrade is AccessAdmin {
     uint256 platCost;
     (coinCost, ethCost, upgradeClass, unitId, upgradeValue,platCost) = schema.getUpgradeCardsInfo(_upgradeId,existing);
 
-    require(platCost&gt;0);
-    if (platCost &gt; 0) {
-      require(SafeMath.add(cards.coinBalanceOf(_player,1),_platValue) &gt;= platCost); 
+    require(platCost>0);
+    if (platCost > 0) {
+      require(SafeMath.add(cards.coinBalanceOf(_player,1),_platValue) >= platCost); 
 
-      if (platCost &gt; _platValue) { // They can use their balance instead
+      if (platCost > _platValue) { // They can use their balance instead
         cards.setCoinBalance(_player, SafeMath.sub(platCost,_platValue),1,false);
-      } else if (platCost &lt; _platValue) {  
+      } else if (platCost < _platValue) {  
         cards.setCoinBalance(_player,SafeMath.sub(_platValue,platCost),1,true);
     } 
       // defund 5%，upgrade card can not be sold，
-      uint256 devFund = uint256(SafeMath.div(platCost, 20)); // 5% fee on purchases (marketing, gameplay &amp; maintenance)
-      cards.setTotalEtherPool(SafeMath.sub(platCost,devFund),1,true); // Rest goes to div pool (Can&#39;t sell upgrades)
+      uint256 devFund = uint256(SafeMath.div(platCost, 20)); // 5% fee on purchases (marketing, gameplay & maintenance)
+      cards.setTotalEtherPool(SafeMath.sub(platCost,devFund),1,true); // Rest goes to div pool (Can't sell upgrades)
       cards.setCoinBalance(owner,devFund,1,true);  
     }
         
      // Update 
-    require(cards.balanceOf(_player) &gt;= coinCost);  
+    require(cards.balanceOf(_player) >= coinCost);  
     cards.updatePlayersCoinByPurchase(_player, coinCost);
     
     //add weight
@@ -401,7 +401,7 @@ contract BitGuildTrade is AccessAdmin {
     cards.setUpgradesOwned(_player,_upgradeId); // upgrade level up
 
      //add user to userlist
-    if (cards.getUintsOwnerCount(_player)&lt;=0) {
+    if (cards.getUintsOwnerCount(_player)<=0) {
       cards.AddPlayers(_player);
     }
  
@@ -418,8 +418,8 @@ contract BitGuildTrade is AccessAdmin {
     
     uint256 ethCost = rare.getRareItemsPLATPrice(_rareId); // get plat cost
     uint256 totalCost = SafeMath.add(cards.coinBalanceOf(_player,1),_platValue);
-    require(totalCost &gt;= ethCost); 
-    // We have to claim buyer/sellder&#39;s goo before updating their production values 
+    require(totalCost >= ethCost); 
+    // We have to claim buyer/sellder's goo before updating their production values 
     cards.updatePlayersCoinByOut(_player);
     cards.updatePlayersCoinByOut(previousOwner);
 
@@ -433,14 +433,14 @@ contract BitGuildTrade is AccessAdmin {
     cards.removeUnitMultipliers(previousOwner, upgradeClass, unitId, upgradeValue); 
 
     // Splitbid/Overbid
-    if (ethCost &gt; _platValue) {
+    if (ethCost > _platValue) {
       cards.setCoinBalance(_player,SafeMath.sub(ethCost,_platValue),1,false);
-    } else if (_platValue &gt; ethCost) {
+    } else if (_platValue > ethCost) {
       // Store overbid in their balance
       cards.setCoinBalance(_player,SafeMath.sub(_platValue,ethCost),1,true);
     }  
     // Distribute ethCost  uint256 devFund = ethCost / 50; 
-    uint256 devFund = uint256(SafeMath.div(ethCost, 20)); // 5% fee on purchases (marketing, gameplay &amp; maintenance)  抽成2%
+    uint256 devFund = uint256(SafeMath.div(ethCost, 20)); // 5% fee on purchases (marketing, gameplay & maintenance)  抽成2%
     uint256 dividends = uint256(SafeMath.div(ethCost,20)); // 5% goes to pool 
 
     cards.setTotalEtherPool(dividends,1,true);  // 5% to pool
@@ -452,7 +452,7 @@ contract BitGuildTrade is AccessAdmin {
     
     cards.setCoinBalance(previousOwner,SafeMath.sub(ethCost,SafeMath.add(dividends,devFund)),1,true);
     
-    if (cards.getUintsOwnerCount(_player)&lt;=0) {
+    if (cards.getUintsOwnerCount(_player)<=0) {
       cards.AddPlayers(_player);
     }
    
@@ -467,7 +467,7 @@ contract BitGuildTrade is AccessAdmin {
   function sellCards( uint256 _unitId, uint256 _amount) external {
     require(cards.getGameStarted());
     uint256 existing = cards.getOwnedCount(msg.sender,_unitId);
-    require(existing &gt;= _amount &amp;&amp; _amount&gt;0); 
+    require(existing >= _amount && _amount>0); 
     existing = SafeMath.sub(existing,_amount);
     uint256 coinChange;
     uint256 decreaseCoin;
@@ -476,7 +476,7 @@ contract BitGuildTrade is AccessAdmin {
     uint256 coinCost;
     uint256 ethCost;
     bool sellable;
-    if (_unitId&gt;=40) { // upgrade card
+    if (_unitId>=40) { // upgrade card
       (schemaUnitId,coinCost,, sellable) = schema.getBattleCardInfo(_unitId, existing, _amount);
       ethCost = SafeMath.mul(schema.unitBattlePLATCost(_unitId),_amount);
     } else {
@@ -484,10 +484,10 @@ contract BitGuildTrade is AccessAdmin {
       ethCost = SafeMath.mul(schema.unitPLATCost(_unitId),_amount); // plat 
     }
     require(sellable);  // can be refunded
-    if (ethCost&gt;0) {
-      require(unitsOwnedOfPLAT[msg.sender][_unitId]&gt;=_amount);
+    if (ethCost>0) {
+      require(unitsOwnedOfPLAT[msg.sender][_unitId]>=_amount);
     }
-    if (coinCost&gt;0) {
+    if (coinCost>0) {
       coinChange = SafeMath.add(cards.balanceOfUnclaimed(msg.sender), SafeMath.div(SafeMath.mul(coinCost,70),100)); // Claim unsaved goo whilst here
     } else {
       coinChange = cards.balanceOfUnclaimed(msg.sender); 
@@ -499,19 +499,19 @@ contract BitGuildTrade is AccessAdmin {
 
     decreaseCoin = cards.getUnitsInProduction(msg.sender, _unitId, _amount);
   
-    if (coinProduction &gt; 0) { 
+    if (coinProduction > 0) { 
       cards.reducePlayersJadeProduction(msg.sender, decreaseCoin);
       //update the speed of jade minning
       cards.setUintCoinProduction(msg.sender,_unitId,decreaseCoin,false); 
     }
 
-    if (ethCost &gt; 0) { // Premium units sell for 75% of buy cost
+    if (ethCost > 0) { // Premium units sell for 75% of buy cost
       cards.setCoinBalance(msg.sender,SafeMath.div(SafeMath.mul(ethCost,70),100),1,true);
     }
 
     cards.setOwnedCount(msg.sender,_unitId,_amount,false); 
     cards.setUintsOwnerCount(msg.sender,_amount,false);
-    if (ethCost&gt;0) {
+    if (ethCost>0) {
       unitsOwnedOfPLAT[msg.sender][_unitId] = SafeMath.sub(unitsOwnedOfPLAT[msg.sender][_unitId],_amount);
     }
     //tell the world
@@ -520,7 +520,7 @@ contract BitGuildTrade is AccessAdmin {
 
   //@notice for player withdraw
   function withdrawEtherFromTrade(uint256 amount) external {
-    require(amount &lt;= cards.coinBalanceOf(msg.sender,1));
+    require(amount <= cards.coinBalanceOf(msg.sender,1));
     cards.setCoinBalance(msg.sender,amount,1,false);
     tokenContract.transfer(msg.sender,amount);
   } 
@@ -528,7 +528,7 @@ contract BitGuildTrade is AccessAdmin {
   //@notice withraw all PLAT by dev
   function withdrawToken(uint256 amount) external onlyOwner {
     uint256 balance = tokenContract.balanceOf(this);
-    require(balance &gt; 0 &amp;&amp; balance &gt;= amount);
+    require(balance > 0 && balance >= amount);
     tokenContract.transfer(msg.sender, amount);
   }
 
@@ -556,9 +556,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -566,7 +566,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -575,7 +575,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

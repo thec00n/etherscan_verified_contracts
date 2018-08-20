@@ -35,10 +35,10 @@ event StatEventA(string msg, address addr);
         }
 
         struct arbiter {
-                mapping (uint =&gt; uint)  gameIndexes; // game handles
+                mapping (uint => uint)  gameIndexes; // game handles
 
                 uint arbToken; // 2 bytes
-                uint gameSlots; // a counter of alloc&#39;d game structs (they can be reused)
+                uint gameSlots; // a counter of alloc'd game structs (they can be reused)
                 uint gamesStarted; // total games started
                 uint gamesCompleted;
                 uint gamesCheated;
@@ -78,10 +78,10 @@ event StatEventA(string msg, address addr);
         SettingStateValue public settingsState = SettingStateValue.debug; 
 
 
-        mapping (address =&gt; arbiter)  arbiters;
-        mapping (uint =&gt; address)  arbiterTokens;
-        mapping (uint =&gt; address)  arbiterIndexes;
-        mapping (uint =&gt; gameInstance)  games;
+        mapping (address => arbiter)  arbiters;
+        mapping (uint => address)  arbiterTokens;
+        mapping (uint => address)  arbiterIndexes;
+        mapping (uint => gameInstance)  games;
 
 
         function E4RowEscrowU() public
@@ -103,7 +103,7 @@ event StatEventA(string msg, address addr);
                 payoutInterval = _interval;
 
                 if (settingsState == SettingStateValue.lockedRelease) {
-                        StatEvent(&quot;Settings Tweaked&quot;);
+                        StatEvent("Settings Tweaked");
                         return;
                 }
 
@@ -117,7 +117,7 @@ event StatEventA(string msg, address addr);
                 rfGas = 20000; 
                 feeGas = 360000; 
 
-                StatEvent(&quot;Settings Changed&quot;);
+                StatEvent("Settings Changed");
 
 
         }
@@ -127,7 +127,7 @@ event StatEventA(string msg, address addr);
         //-----------------------------
         function ArbTokFromHGame(uint _hGame) returns (uint _tok)
         { 
-                _tok =  (_hGame / (2 ** 48)) &amp; 0xffff;
+                _tok =  (_hGame / (2 ** 48)) & 0xffff;
         }
 
 
@@ -136,10 +136,10 @@ event StatEventA(string msg, address addr);
         //-----------------------------
         function HaraKiri()
         {
-                if ((msg.sender == owner) &amp;&amp; (settingsState != SettingStateValue.lockedRelease))
+                if ((msg.sender == owner) && (settingsState != SettingStateValue.lockedRelease))
                           suicide(tokenPartner);
                 else
-                        StatEvent(&quot;Kill attempt failed&quot;);
+                        StatEvent("Kill attempt failed");
         }
 
 
@@ -159,7 +159,7 @@ event StatEventA(string msg, address addr);
         {
                 _valid = false;
                 if (activeGame(_hGame)) {
-                        for (uint i = 0; i &lt; games[_hGame].numPlayers; i++) {
+                        for (uint i = 0; i < games[_hGame].numPlayers; i++) {
                                 if (games[_hGame].players[i] == _addr) {
                                         _valid=true;
                                         _pidx = i;
@@ -175,7 +175,7 @@ event StatEventA(string msg, address addr);
         function validPlayer2(uint _hGame, address _addr) internal  returns( bool _valid, uint _pidx)
         {
                 _valid = false;
-                for (uint i = 0; i &lt; games[_hGame].numPlayers; i++) {
+                for (uint i = 0; i < games[_hGame].numPlayers; i++) {
                         if (games[_hGame].players[i] == _addr) {
                                 _valid=true;
                                 _pidx = i;
@@ -192,7 +192,7 @@ event StatEventA(string msg, address addr);
                 _valid = false;
 
                 if ((arbiters[_addr].registered)
-                        &amp;&amp; (arbiters[_addr].arbToken == _tok)) 
+                        && (arbiters[_addr].arbToken == _tok)) 
                         _valid = true;
         }
 
@@ -222,8 +222,8 @@ event StatEventA(string msg, address addr);
         function activeGame(uint _hGame) internal  returns( bool _valid)
         {
                 _valid = false;
-                if ((_hGame &gt; 0)
-                        &amp;&amp; (games[_hGame].active))
+                if ((_hGame > 0)
+                        && (games[_hGame].active))
                         _valid = true;
         }
 
@@ -242,7 +242,7 @@ event StatEventA(string msg, address addr);
                         throw; // invalid token
                 }
 
-                if (arbTokenExists(_arbToken &amp; 0xffff)) {
+                if (arbTokenExists(_arbToken & 0xffff)) {
                         throw; // Token Already Exists
                 }
 
@@ -250,7 +250,7 @@ event StatEventA(string msg, address addr);
                         throw; // Arb Already Registered
                 }
 
-                if (_numPlayers &gt; MAX_PLAYERS) {
+                if (_numPlayers > MAX_PLAYERS) {
                         throw; // Exceeds Max Players
                 }
 
@@ -259,19 +259,19 @@ event StatEventA(string msg, address addr);
                 arbiters[msg.sender].gamesCheated = 0;
                 arbiters[msg.sender].gamesTimedout = 0;
                 arbiters[msg.sender].locked = false;
-                arbiters[msg.sender].arbToken = _arbToken &amp; 0xffff;
+                arbiters[msg.sender].arbToken = _arbToken & 0xffff;
                 arbiters[msg.sender].numPlayers = _numPlayers;
                 arbiters[msg.sender].registered = true;
 
-                arbiterTokens[(_arbToken &amp; 0xffff)] = msg.sender;
+                arbiterTokens[(_arbToken & 0xffff)] = msg.sender;
                 arbiterIndexes[numArbiters++] = msg.sender;
 
 
                 if (!tokenPartner.call.gas(raGas).value(msg.value)()) {
-                        //Statvent(&quot;Send Error&quot;); // event never registers
+                        //Statvent("Send Error"); // event never registers
                         throw;
                 }
-                StatEventI(&quot;Arb Added&quot;, _arbToken);
+                StatEventI("Arb Added", _arbToken);
         }
 
 
@@ -282,23 +282,23 @@ event StatEventA(string msg, address addr);
         {
                 uint ntok = ArbTokFromHGame(_hGame);
                 if (!validArb(msg.sender, ntok )) {
-                        StatEvent(&quot;Invalid Arb&quot;);
+                        StatEvent("Invalid Arb");
                         return; 
                 }
 
 
                 if (arbLocked(msg.sender)) {
-                        StatEvent(&quot;Arb Locked&quot;);
+                        StatEvent("Arb Locked");
                         return; 
                 }
 
                 arbiter xarb = arbiters[msg.sender];
                 if (_players.length != xarb.numPlayers) { 
-                        StatEvent(&quot;Incorrect num players&quot;);
+                        StatEvent("Incorrect num players");
                         return; 
                 }
 
-                if (_hkMax &gt; 0)
+                if (_hkMax > 0)
                         houseKeep(_hkMax, ntok); 
 
                 if (!games[_hGame].allocd) {
@@ -314,14 +314,14 @@ event StatEventA(string msg, address addr);
                 games[_hGame].payout = 0; 
                 games[_hGame].winner = address(0);
 
-                games[_hGame].numPlayers = _players.length; // we&#39;ll be the judge of how many unique players
-                for (uint i = 0; i&lt; _players.length &amp;&amp; i &lt; MAX_PLAYERS; i++) {
+                games[_hGame].numPlayers = _players.length; // we'll be the judge of how many unique players
+                for (uint i = 0; i< _players.length && i < MAX_PLAYERS; i++) {
                     games[_hGame].players[i] = _players[i];
                     games[_hGame].playerPots[i] = 0;
                 }
 
 
-                StatEventI(&quot;Game Added&quot;, _hGame);
+                StatEventI("Game Added", _hGame);
 
 
         }
@@ -337,14 +337,14 @@ event StatEventA(string msg, address addr);
                 // find game in game id, 
                 if (nGame.active) {
                         _success = true;
-                        for (uint i = 0; i &lt; nGame.numPlayers; i++) {
-                                if (nGame.playerPots[i] &gt; 0) {
+                        for (uint i = 0; i < nGame.numPlayers; i++) {
+                                if (nGame.playerPots[i] > 0) {
                                         address a = nGame.players[i];
                                         uint nsend = nGame.playerPots[i];
                                         nGame.playerPots[i] = 0;
                                         if (!a.call.gas(rfGas).value(nsend)()) {
                                                 houseFeeHoldover += nsend; // cannot refund due to error, give to the house
-                                                StatEventA(&quot;Cannot Refund Address&quot;, a);
+                                                StatEventA("Cannot Refund Address", a);
                                         }
                                 }
                         }
@@ -353,13 +353,13 @@ event StatEventA(string msg, address addr);
                         if (_reason == EndReason.erCheat) {
                                 numGamesCheated++;
                                 arbiters[_arb].gamesCheated++;
-                                StatEvent(&quot;Game Aborted-Cheat&quot;);
+                                StatEvent("Game Aborted-Cheat");
                         } else if (_reason == EndReason.erTimeOut) {
                                 numGamesTimedOut++;
                                 arbiters[_arb].gamesTimedout++;
-                                StatEvent(&quot;Game Aborted-TimeOut&quot;);
+                                StatEvent("Game Aborted-TimeOut");
                         } else 
-                                StatEvent(&quot;Game Aborted!&quot;);
+                                StatEvent("Game Aborted!");
                 }
         }
 
@@ -371,13 +371,13 @@ event StatEventA(string msg, address addr);
         {
 
                 if (!validArb(msg.sender, ArbTokFromHGame(_hGame))) {
-                        StatEvent(&quot;Invalid Arb&quot;);
+                        StatEvent("Invalid Arb");
                         return; // no throw no change made
                 }
 
                 var (valid, pidx) = validPlayer(_hGame, _winner);
                 if (!valid) {
-                        StatEvent(&quot;Invalid Player&quot;);
+                        StatEvent("Invalid Player");
                         return;
                 }
 
@@ -391,13 +391,13 @@ event StatEventA(string msg, address addr);
                     return;
                 }
 
-                for (uint i = 0; i &lt; xgame.numPlayers; i++) {
+                for (uint i = 0; i < xgame.numPlayers; i++) {
                         totalPot += xgame.playerPots[i];
                 }
 
                 uint nportion;
                 uint nremnant;
-                if (totalPot &gt; 0) {
+                if (totalPot > 0) {
                         nportion = totalPot/50; // 2 percent fixed
                         nremnant = totalPot-nportion;
                 } else {
@@ -412,32 +412,32 @@ event StatEventA(string msg, address addr);
                 xgame.winner = _winner;
                 xgame.payout = nremnant;
 
-                if (nportion &gt; 0) {
+                if (nportion > 0) {
                         houseFeeHoldover += nportion;
-                        if ((houseFeeHoldover &gt; houseFeeThreshold)
-                                &amp;&amp; (now &gt; (lastPayoutTime + payoutInterval))) {
+                        if ((houseFeeHoldover > houseFeeThreshold)
+                                && (now > (lastPayoutTime + payoutInterval))) {
                                 uint ntmpho = houseFeeHoldover;
                                 houseFeeHoldover = 0;
                                 lastPayoutTime = now; // reset regardless of succeed/fail
                                 if (!tokenPartner.call.gas(feeGas).value(ntmpho)()) {
                                         houseFeeHoldover = ntmpho; // put it back
-                                        StatEvent(&quot;House-Fee Error1&quot;);
+                                        StatEvent("House-Fee Error1");
                                 } 
                         }
                 }
 
-                for (i = 0; i &lt; xgame.numPlayers; i++) {
+                for (i = 0; i < xgame.numPlayers; i++) {
                         xgame.playerPots[i] = 0;
                 }
 
                 xarb.gamesCompleted++;
                 numGamesCompleted++;
-                if (nremnant &gt; 0) {
+                if (nremnant > 0) {
                         if (!_winner.call.gas(wpGas).value(uint(nremnant))()) {
-                                // StatEvent(&quot;Send Error&quot;);
+                                // StatEvent("Send Error");
                                 throw; // if you cant pay the winner - very bad
                         } else {
-                                StatEventI(&quot;Winner Paid&quot;, _hGame);
+                                StatEventI("Winner Paid", _hGame);
                         }
                 }
         }
@@ -450,7 +450,7 @@ event StatEventA(string msg, address addr);
         {
                 address narb = arbiterTokens[ArbTokFromHGame(_hGame)];
                 if (narb == address(0)) {
-                        StatEvent(&quot;Invalid hGame&quot;);
+                        StatEvent("Invalid hGame");
                         if (settingsState != SettingStateValue.debug)
                                 throw;
                         else
@@ -459,7 +459,7 @@ event StatEventA(string msg, address addr);
 
                 var (valid, pidx) = validPlayer(_hGame, msg.sender);
                 if (!valid) {
-                        StatEvent(&quot;Invalid Player&quot;);
+                        StatEvent("Invalid Player");
                         if (settingsState != SettingStateValue.debug)
                                 throw;
                         else
@@ -469,7 +469,7 @@ event StatEventA(string msg, address addr);
                 games[_hGame].playerPots[pidx] += msg.value;
                 games[_hGame].lastMoved = now;
 
-                StatEventI(&quot;Bet Added&quot;, _hGame);
+                StatEventI("Bet Added", _hGame);
 
         }
 
@@ -480,9 +480,9 @@ event StatEventA(string msg, address addr);
         function arbTokenExists(uint _tok) constant returns (bool _exists)
         {
                 _exists = false;
-                if ((_tok &gt; 0)
-                        &amp;&amp; (arbiterTokens[_tok] != address(0))
-                        &amp;&amp; arbiters[arbiterTokens[_tok]].registered)
+                if ((_tok > 0)
+                        && (arbiterTokens[_tok] != address(0))
+                        && arbiters[arbiterTokens[_tok]].registered)
                         _exists = true;
 
         }
@@ -503,14 +503,14 @@ event StatEventA(string msg, address addr);
         //------------------------------------------------------
         function getArbInfo(uint _idx) constant  returns (address _addr, uint _started, uint _completed, uint _cheated, uint _timedOut) 
         {
-                if (_idx &gt;= numArbiters) {
-                        StatEvent(&quot;Invalid Arb&quot;);
+                if (_idx >= numArbiters) {
+                        StatEvent("Invalid Arb");
                         return;
                 }
                 _addr = arbiterIndexes[_idx];
                 if ((_addr == address(0))
                         || (!arbiters[_addr].registered)) {
-                        StatEvent(&quot;Invalid Arb&quot;);
+                        StatEvent("Invalid Arb");
                         return;
                 }
                 arbiter xarb = arbiters[_addr];
@@ -535,14 +535,14 @@ event StatEventA(string msg, address addr);
                 
          
                 if (msg.sender == owner) {
-                        for (uint ar = 0; (ar &lt; numArbiters) &amp;&amp; (aborted &lt; _max) ; ar++) {
+                        for (uint ar = 0; (ar < numArbiters) && (aborted < _max) ; ar++) {
                             a = arbiterIndexes[ar];
                             xarb = arbiters[a];    
 
-                            for ( gi = 0; (gi &lt; xarb.gameSlots) &amp;&amp; (aborted &lt; _max); gi++) {
+                            for ( gi = 0; (gi < xarb.gameSlots) && (aborted < _max); gi++) {
                                 gameInstance ngame0 = games[xarb.gameIndexes[gi]];
                                 if ((ngame0.active)
-                                    &amp;&amp; ((now - ngame0.lastMoved) &gt; gameTimeOut)) {
+                                    && ((now - ngame0.lastMoved) > gameTimeOut)) {
                                         abortGame(a, xarb.gameIndexes[gi], EndReason.erTimeOut);
                                         ++aborted;
                                 }
@@ -551,14 +551,14 @@ event StatEventA(string msg, address addr);
 
                 } else {
                         if (!validArb(msg.sender, _arbToken))
-                                StatEvent(&quot;Housekeep invalid arbiter&quot;);
+                                StatEvent("Housekeep invalid arbiter");
                         else {
                             a = msg.sender;
                             xarb = arbiters[a];    
-                            for (gi = 0; (gi &lt; xarb.gameSlots) &amp;&amp; (aborted &lt; _max); gi++) {
+                            for (gi = 0; (gi < xarb.gameSlots) && (aborted < _max); gi++) {
                                 gameInstance ngame1 = games[xarb.gameIndexes[gi]];
                                 if ((ngame1.active)
-                                    &amp;&amp; ((now - ngame1.lastMoved) &gt; gameTimeOut)) {
+                                    && ((now - ngame1.lastMoved) > gameTimeOut)) {
                                         abortGame(a, xarb.gameIndexes[gi], EndReason.erTimeOut);
                                         ++aborted;
                                 }
@@ -589,7 +589,7 @@ event StatEventA(string msg, address addr);
         function checkHGame(uint _hGame) constant returns(uint _arbTok, uint _lowWords)
         {
                 _arbTok = ArbTokFromHGame(_hGame);
-                _lowWords = _hGame &amp; 0xffffffffffff;
+                _lowWords = _hGame & 0xffffffffffff;
 
         }
 
@@ -629,7 +629,7 @@ event StatEventA(string msg, address addr);
                 if (owner != msg.sender)  {
                         throw; 
                 } else if (!validArb2(_addr)) {
-                        StatEvent(&quot;invalid arb&quot;);
+                        StatEvent("invalid arb");
                 } else {
                         arbiters[_addr].locked = _lock;
                 }
@@ -644,16 +644,16 @@ event StatEventA(string msg, address addr);
         function flushHouseFees()
         {
                 if (msg.sender != owner) {
-                        StatEvent(&quot;only owner calls this function&quot;);
-                } else if (houseFeeHoldover &gt; 0) {
+                        StatEvent("only owner calls this function");
+                } else if (houseFeeHoldover > 0) {
                         uint ntmpho = houseFeeHoldover;
                         houseFeeHoldover = 0;
                         if (!tokenPartner.call.gas(feeGas).value(ntmpho)()) {
                                 houseFeeHoldover = ntmpho; // put it back
-                                StatEvent(&quot;House-Fee Error2&quot;); 
+                                StatEvent("House-Fee Error2"); 
                         } else {
                                 lastPayoutTime = now;
-                                StatEvent(&quot;House-Fee Paid&quot;);
+                                StatEvent("House-Fee Paid");
                         }
                 }
 
@@ -670,12 +670,12 @@ event StatEventA(string msg, address addr);
                 } 
 
                 if ((settingsState == SettingStateValue.lockedRelease) 
-                        &amp;&amp; (tokenPartner == address(0))) {
+                        && (tokenPartner == address(0))) {
                         tokenPartner = _addr;
-                        StatEvent(&quot;Token Partner Final!&quot;);
+                        StatEvent("Token Partner Final!");
                 } else if (settingsState != SettingStateValue.lockedRelease) {
                         tokenPartner = _addr;
-                        StatEvent(&quot;Token Partner Assigned!&quot;);
+                        StatEvent("Token Partner Assigned!");
                 }
 
         }

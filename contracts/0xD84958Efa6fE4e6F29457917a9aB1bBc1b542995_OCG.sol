@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     //Variables
@@ -96,7 +96,7 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -105,7 +105,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -146,7 +146,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -156,8 +156,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -243,7 +243,7 @@ contract OCGERC20 is StandardToken, Ownable {
         bool _transferAllSupplyToOwner,
         bool _locked
     ) public {
-        standard = &quot;ERC20 0.1&quot;;
+        standard = "ERC20 0.1";
         locked = _locked;
         totalSupply = _totalSupply;
 
@@ -298,7 +298,7 @@ contract OCGERC20 is StandardToken, Ownable {
 
     function transferFee(address _from, address _to, uint256 _value) internal returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -321,7 +321,7 @@ This contract contains basic minting functionality though
 contract MintingERC20 is OCGERC20 {
 
     // Variables
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     // Modifiers
     modifier onlyMinters() {
@@ -346,7 +346,7 @@ contract MintingERC20 is OCGERC20 {
         _locked
     )
     {
-        standard = &quot;MintingERC20 0.1&quot;;
+        standard = "MintingERC20 0.1";
         minters[msg.sender] = true;
     }
 
@@ -381,9 +381,9 @@ contract OCG is MintingERC20 {
 
     address public burnAddress;
 
-    mapping (address =&gt; uint256) public burnAmount;
+    mapping (address => uint256) public burnAmount;
 
-    mapping (address =&gt; uint256) public lastCharge;
+    mapping (address => uint256) public lastCharge;
 
     event TransferFee(address indexed from, uint256 value);
 
@@ -408,7 +408,7 @@ contract OCG is MintingERC20 {
         false,
         _locked
     ) {
-        standard = &quot;OCG 0.1&quot;;
+        standard = "OCG 0.1";
         deployedAt = now;
         require(_burnAddress != address(0));
         burnAddress = _burnAddress;
@@ -434,14 +434,14 @@ contract OCG is MintingERC20 {
     }
 
     function burn(address _address) public onlyOwner {
-        if (burnAmount[_address] &gt; 0) {
+        if (burnAmount[_address] > 0) {
             super.burnInternal(burnAddress, burnAmount[_address]);
             burnAmount[_address] = 0;
         }
     }
 
     function transfer(address _to, uint256 _value) public returns (bool status) {
-        require(locked == false &amp;&amp; msg.sender != burnAddress);
+        require(locked == false && msg.sender != burnAddress);
 
         uint256 valueToTransfer = _value;
 
@@ -451,7 +451,7 @@ contract OCG is MintingERC20 {
             uint256 feeValue = transferFees(msg.sender, _to, _value);
 
             valueToTransfer = _value.sub(feeValue);
-            if (valueToTransfer &gt; balanceOf(msg.sender)) {
+            if (valueToTransfer > balanceOf(msg.sender)) {
                 valueToTransfer = balanceOf(msg.sender);
             }
         }
@@ -462,7 +462,7 @@ contract OCG is MintingERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool status) {
-        require(locked == false &amp;&amp; _from != burnAddress);
+        require(locked == false && _from != burnAddress);
 
         uint256 valueToTransfer = _value;
 
@@ -472,7 +472,7 @@ contract OCG is MintingERC20 {
             uint256 feeValue = transferFees(_from, _to, _value);
 
             valueToTransfer = _value.sub(feeValue);
-            if (valueToTransfer &gt; balanceOf(_from)) {
+            if (valueToTransfer > balanceOf(_from)) {
                 valueToTransfer = balanceOf(_from);
             }
         }
@@ -486,7 +486,7 @@ contract OCG is MintingERC20 {
     function mint(address _addr, uint256 _amount) public onlyMinters returns (uint256) {
         uint256 mintedAmount = super.mint(_addr, _amount);
 
-        if (mintedAmount == _amount &amp;&amp; lastCharge[_addr] == 0 &amp;&amp; _amount &gt; 0) {
+        if (mintedAmount == _amount && lastCharge[_addr] == 0 && _amount > 0) {
             lastCharge[_addr] = now;
         }
 
@@ -494,17 +494,17 @@ contract OCG is MintingERC20 {
     }
 
     function payStorageFee(address _from) internal returns (bool) {
-        require(_from != address(0) &amp;&amp; address(fees) != address(0) &amp;&amp; address(sellableToken) != address(0));
+        require(_from != address(0) && address(fees) != address(0) && address(sellableToken) != address(0));
         uint256 _value = balanceOf(_from);
-        require(sellableToken.freeStorage(_from) &lt;= _value);
+        require(sellableToken.freeStorage(_from) <= _value);
 
         bool status = true;
         uint256 additionalAmount = 0;
 
         if (sellableToken.freeStorage(_from) != 0) {
-            if (deployedAt.add(fees.offPeriod()) &gt;= now) {
+            if (deployedAt.add(fees.offPeriod()) >= now) {
                 _value = _value.sub(sellableToken.freeStorage(_from));
-            } else if (lastCharge[_from] &lt; deployedAt.add(fees.offPeriod())) {
+            } else if (lastCharge[_from] < deployedAt.add(fees.offPeriod())) {
                 additionalAmount = calculateStorageFee(
                     _value.sub(sellableToken.freeStorage(_from)),
                     deployedAt.add(fees.offPeriod()).sub(lastCharge[_from])
@@ -514,7 +514,7 @@ contract OCG is MintingERC20 {
         }
 
         uint256 amount = calculateStorageFee(_value, now.sub(lastCharge[_from])).add(additionalAmount);
-        if (amount != 0 &amp;&amp; balanceOf(_from) &gt;= amount) {
+        if (amount != 0 && balanceOf(_from) >= amount) {
             status = super.transferFee(_from, fees.feeAddress(), amount);
             StorageFee(_from, amount);
         }
@@ -528,7 +528,7 @@ contract OCG is MintingERC20 {
     function calculateStorageFee(uint256 _value, uint256 _period) internal view returns (uint256) {
         uint256 amount = 0;
 
-        if (_period.div(1 days) &gt; 0 &amp;&amp; _value &gt; 0) {
+        if (_period.div(1 days) > 0 && _value > 0) {
             amount = _value.mul(_period.mul(fees.feeAmount()).div(1 years)).div(10);
         }
 
@@ -536,11 +536,11 @@ contract OCG is MintingERC20 {
     }
 
     function transferFees(address _from, address _to, uint256 _value) internal returns (uint256) {
-        require(address(fees) != address(0) &amp;&amp; address(sellableToken) != address(0));
+        require(address(fees) != address(0) && address(sellableToken) != address(0));
 
         bool status = false;
 
-        if (fees.feeAmount() &gt; 0) {
+        if (fees.feeAmount() > 0) {
             status = payStorageFee(_from);
             if (status) {
                 status = payStorageFee(_to);
@@ -548,10 +548,10 @@ contract OCG is MintingERC20 {
         }
 
         uint256 feeValue = 0;
-        if (fees.transferFee() &gt; 0) {
+        if (fees.transferFee() > 0) {
             feeValue = _value.mul(fees.transferFee()).div(uint(10) ** decimals);
         }
-        if (status &amp;&amp; feeValue &gt; 0) {
+        if (status && feeValue > 0) {
             status = super.transferFee(_from, fees.transferFeeAddress(), feeValue);
             TransferFee(_from, feeValue);
         }
@@ -589,18 +589,18 @@ contract OCGFee is Ownable {
     function OCGFee(
         uint256 _offThreshold,
         address _feeAddress,
-        uint256 _feeAmount,//0.5% -&gt; 5
+        uint256 _feeAmount,//0.5% -> 5
         address _transferFeeAddress,
-        uint256 _transferFee //0.04% -&gt; 0.04 * 10 ^ decimals
+        uint256 _transferFee //0.04% -> 0.04 * 10 ^ decimals
     )
         public
     {
-        require(_feeAddress != address(0) &amp;&amp; _feeAmount &gt;= 0 &amp;&amp; _offThreshold &gt; 0);
+        require(_feeAddress != address(0) && _feeAmount >= 0 && _offThreshold > 0);
         offThreshold = _offThreshold;
         feeAddress = _feeAddress;
         feeAmount = _feeAmount;
 
-        require(_transferFeeAddress != address(0) &amp;&amp; _transferFee &gt;= 0);
+        require(_transferFeeAddress != address(0) && _transferFee >= 0);
         transferFeeAddress = _transferFeeAddress;
         transferFee = _transferFee;
     }
@@ -613,7 +613,7 @@ contract OCGFee is Ownable {
     function setStorageFee(
         uint256 _offThreshold,
         address _feeAddress,
-        uint256 _feeAmount //0.5% -&gt; 5
+        uint256 _feeAmount //0.5% -> 5
     ) public onlyOwner {
         require(_feeAddress != address(0));
 
@@ -623,7 +623,7 @@ contract OCGFee is Ownable {
     }
 
     function decreaseThreshold(uint256 _value) public onlySellableContract {
-        if (offThreshold &lt; _value) {
+        if (offThreshold < _value) {
             offThreshold = 0;
         } else {
             offThreshold = offThreshold.sub(_value);
@@ -631,7 +631,7 @@ contract OCGFee is Ownable {
     }
 
     function setTransferFee(address _transferFeeAddress, uint256 _transferFee) public onlyOwner returns (bool) {
-        if (_transferFeeAddress != address(0) &amp;&amp; _transferFee &gt;= 0) {
+        if (_transferFeeAddress != address(0) && _transferFee >= 0) {
             transferFeeAddress = _transferFeeAddress;
             transferFee = _transferFee;
 
@@ -645,7 +645,7 @@ contract OCGFee is Ownable {
 
 contract Multivest is Ownable {
     /* public variables */
-    mapping (address =&gt; bool) public allowedMultivests;
+    mapping (address => bool) public allowedMultivests;
 
     /* events */
     event MultivestSet(address multivest);
@@ -701,7 +701,7 @@ contract SellableToken is Multivest {
 
     uint256 public minInvest;
 
-    mapping (address =&gt; uint256) public freeStorage;
+    mapping (address => uint256) public freeStorage;
 
     modifier onlyOCGContract() {
         require(msg.sender == address(ocg));
@@ -710,11 +710,11 @@ contract SellableToken is Multivest {
 
     function SellableToken(
         address _ocg,
-        uint256 _minInvest //0.1 tokens -&gt; 0.1 * 10 ^ decimals
+        uint256 _minInvest //0.1 tokens -> 0.1 * 10 ^ decimals
     )
         public Multivest(msg.sender)
     {
-        require(_minInvest &gt; 0);
+        require(_minInvest > 0);
         ocg = OCG(_ocg);
 
         minInvest = _minInvest;
@@ -731,15 +731,15 @@ contract SellableToken is Multivest {
     }
 
     function updateFreeStorage(address _address, uint256 _value) public onlyOCGContract {
-        if (freeStorage[_address] &gt; _value) {
+        if (freeStorage[_address] > _value) {
             freeStorage[_address] = _value;
         }
     }
 
     function buy(address _address, uint256 _amount, uint256 _value) internal returns (bool) {
-        require(_address != address(0) &amp;&amp; address(ocg) != address(0));
+        require(_address != address(0) && address(ocg) != address(0));
 
-        if (_amount == 0 || _amount &lt; minInvest || _value == 0) {
+        if (_amount == 0 || _amount < minInvest || _value == 0) {
             return false;
         }
 
@@ -754,9 +754,9 @@ contract SellableToken is Multivest {
 
     function onSuccessfulBuy(address _address, uint256 _value, uint256 _amount) internal {
         soldTokens = soldTokens.add(_amount);
-        if (fees.offThreshold() &gt; 0) {
+        if (fees.offThreshold() > 0) {
             uint256 freeAmount = _amount;
-            if (fees.offThreshold() &lt; _value) {
+            if (fees.offThreshold() < _value) {
                 freeAmount = _amount.sub(_value.sub(fees.offThreshold()).mul(_amount).div(_value));
             }
 
@@ -798,7 +798,7 @@ contract Deposit is Multivest {
     }
 
     function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) internal pure returns (address) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
         return ecrecover(keccak256(prefix, _hash), _v, _r, _s);
     }

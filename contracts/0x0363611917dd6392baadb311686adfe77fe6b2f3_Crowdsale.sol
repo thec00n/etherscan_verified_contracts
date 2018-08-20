@@ -15,12 +15,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,14 +49,14 @@ contract Crowdsale is Ownable {
 
   modifier onlyWhileOpen {
       require(
-        (now &gt;= preICOStartDate &amp;&amp; now &lt; preICOEndDate) || 
-        (now &gt;= ICOStartDate &amp;&amp; now &lt; ICOEndDate)
+        (now >= preICOStartDate && now < preICOEndDate) || 
+        (now >= ICOStartDate && now < ICOEndDate)
       );
       _;
   }
 
   modifier onlyWhileICOOpen {
-      require(now &gt;= ICOStartDate &amp;&amp; now &lt; ICOEndDate);
+      require(now >= ICOStartDate && now < ICOEndDate);
       _;
   }
 
@@ -103,10 +103,10 @@ contract Crowdsale is Ownable {
   uint8 public invitedByReferalBonus = 2; 
 
   // Whitelist
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   // Инвесторы, которые купили токен
-  mapping (address =&gt; uint256) public investors;
+  mapping (address => uint256) public investors;
 
   event TokenPurchase(address indexed buyer, uint256 value, uint256 amount);
 
@@ -119,10 +119,10 @@ contract Crowdsale is Ownable {
     uint256 _ETHUSD
   ) public {
     require(_wallet != address(0));
-    require(_preICOStartDate &gt;= now);
-    require(_preICOEndDate &gt; _preICOStartDate);
-    require(_ICOStartDate &gt; _preICOEndDate);
-    require(_ICOEndDate &gt; _ICOStartDate);
+    require(_preICOStartDate >= now);
+    require(_preICOEndDate > _preICOStartDate);
+    require(_ICOStartDate > _preICOEndDate);
+    require(_ICOEndDate > _ICOStartDate);
 
     wallet = _wallet;
     preICOStartDate = _preICOStartDate;
@@ -136,7 +136,7 @@ contract Crowdsale is Ownable {
 
   // Установить стоимость токена
   function setRate (uint16 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
   }
 
@@ -147,25 +147,25 @@ contract Crowdsale is Ownable {
   
   // Установить дату начала PreICO
   function setPreICOStartDate (uint256 _preICOStartDate) public onlyOwner {
-    require(_preICOStartDate &lt; preICOEndDate);
+    require(_preICOStartDate < preICOEndDate);
     preICOStartDate = _preICOStartDate;
   }
 
   // Установить дату окончания PreICO
   function setPreICOEndDate (uint256 _preICOEndDate) public onlyOwner {
-    require(_preICOEndDate &gt; preICOStartDate);
+    require(_preICOEndDate > preICOStartDate);
     preICOEndDate = _preICOEndDate;
   }
 
   // Установить дату начала ICO
   function setICOStartDate (uint256 _ICOStartDate) public onlyOwner {
-    require(_ICOStartDate &lt; ICOEndDate);
+    require(_ICOStartDate < ICOEndDate);
     ICOStartDate = _ICOStartDate;
   }
 
   // Установить дату окончания PreICO
   function setICOEndDate (uint256 _ICOEndDate) public onlyOwner {
-    require(_ICOEndDate &gt; ICOStartDate);
+    require(_ICOEndDate > ICOStartDate);
     ICOEndDate = _ICOEndDate;
   }
 
@@ -230,7 +230,7 @@ contract Crowdsale is Ownable {
 
   // Добавить несколько адресов в whitelist
   function addManyToWhitelist(address[] _beneficiaries) public onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -242,27 +242,27 @@ contract Crowdsale is Ownable {
 
   // Узнать истек ли срок проведения PreICO
   function hasPreICOClosed() public view returns (bool) {
-    return now &gt; preICOEndDate;
+    return now > preICOEndDate;
   }
 
   // Узнать истек ли срок проведения ICO
   function hasICOClosed() public view returns (bool) {
-    return now &gt; ICOEndDate;
+    return now > ICOEndDate;
   }
 
   // Перевести собранные средства на кошелек для сбора
   function forwardFunds () public onlyOwner {
-    require(now &gt; ICOEndDate);
-    require((preICOWeiRaised.add(ICOWeiRaised)).mul(ETHUSD).div(10**18) &gt;= softcap);
+    require(now > ICOEndDate);
+    require((preICOWeiRaised.add(ICOWeiRaised)).mul(ETHUSD).div(10**18) >= softcap);
 
     wallet.transfer(ICOWeiRaised);
   }
 
   // Вернуть проинвестированные средства, если не был достигнут softcap
   function refund() public {
-    require(now &gt; ICOEndDate);
-    require(preICOWeiRaised.add(ICOWeiRaised).mul(ETHUSD).div(10**18) &lt; softcap);
-    require(investors[msg.sender] &gt; 0);
+    require(now > ICOEndDate);
+    require(preICOWeiRaised.add(ICOWeiRaised).mul(ETHUSD).div(10**18) < softcap);
+    require(investors[msg.sender] > 0);
     
     address investor = msg.sender;
     investor.transfer(investors[investor]);
@@ -273,19 +273,19 @@ contract Crowdsale is Ownable {
 
    // Проверка актуальности PreICO
    function _isPreICO() internal view returns(bool) {
-       return now &gt;= preICOStartDate &amp;&amp; now &lt; preICOEndDate;
+       return now >= preICOStartDate && now < preICOEndDate;
    }
    
    // Проверка актуальности ICO
    function _isICO() internal view returns(bool) {
-       return now &gt;= ICOStartDate &amp;&amp; now &lt; ICOEndDate;
+       return now >= ICOStartDate && now < ICOEndDate;
    }
 
    // Валидация перед покупкой токенов
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view onlyWhileOpen {
     require(_weiAmount != 0);
-    require((preICOWeiRaised.add(ICOWeiRaised).add(_weiAmount)).mul(ETHUSD).div(10**18) &lt;= hardcap);
-    require((_isPreICO() &amp;&amp; whitelist[_beneficiary]) || _isICO());
+    require((preICOWeiRaised.add(ICOWeiRaised).add(_weiAmount)).mul(ETHUSD).div(10**18) <= hardcap);
+    require((_isPreICO() && whitelist[_beneficiary]) || _isICO());
   }
 
   // Подсчет бонусов с учетом бонусов за этап ICO и объем инвестиций
@@ -295,20 +295,20 @@ contract Crowdsale is Ownable {
     uint256 usdAmount = _weiAmount.mul(ETHUSD).div(10**18);
 
     // Считаем бонусы за объем инвестиций
-    if(usdAmount &gt;= 10000000){
+    if(usdAmount >= 10000000){
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(7).div(100));
-    } else if(usdAmount &gt;= 5000000){
+    } else if(usdAmount >= 5000000){
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(5).div(100));
-    } else if(usdAmount &gt;= 1000000){
+    } else if(usdAmount >= 1000000){
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(3).div(100));
     }
     
     // Считаем бонусы за этап ICO
-    if(now &lt; ICOStartDate + 15 days) {
+    if(now < ICOStartDate + 15 days) {
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(20).div(100));
-    } else if(now &lt; ICOStartDate + 28 days) {
+    } else if(now < ICOStartDate + 28 days) {
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(15).div(100));
-    } else if(now &lt; ICOStartDate + 42 days) {
+    } else if(now < ICOStartDate + 42 days) {
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(10).div(100));
     } else {
         tokenAmount = tokenAmount.add(baseTokenAmount.mul(5).div(100));

@@ -26,18 +26,18 @@ contract SafeMath {
     uint256 constant public MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
@@ -56,7 +56,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
     }
 	
@@ -77,9 +77,9 @@ contract TokenRHT is ERC20, SafeMath {
     bool public tokenCreated = false;
 	uint public DateCreateToken;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) public frozenAccount;
-	mapping(address =&gt; bool) public SmartContract_Allowed;
+    mapping(address => uint256) balances;
+    mapping(address => bool) public frozenAccount;
+	mapping(address => bool) public SmartContract_Allowed;
 
     // Initialize
     // Constructor is called only once and can not be called again (Ethereum Solidity specification)
@@ -89,8 +89,8 @@ contract TokenRHT is ERC20, SafeMath {
 
         owner = msg.sender;
         
-		name = &quot;Realthium&quot;;
-        symbol = &quot;RHT&quot;;
+		name = "Realthium";
+        symbol = "RHT";
         decimals = 5;
         totalSupply = 500000000 * 10 ** uint256(decimals);
         balances[owner] = totalSupply;
@@ -99,7 +99,7 @@ contract TokenRHT is ERC20, SafeMath {
         tokenCreated = true;
 
         // Final sanity check to ensure owner balance is greater than zero
-        require(balances[owner] &gt; 0);
+        require(balances[owner] > 0);
 
 		// Date Deploy Contract
 		DateCreateToken = now;
@@ -187,12 +187,12 @@ contract TokenRHT is ERC20, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -203,7 +203,7 @@ contract TokenRHT is ERC20, SafeMath {
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
         require(SmartContract_Allowed[_to]);
 		
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -222,7 +222,7 @@ contract TokenRHT is ERC20, SafeMath {
 	
 	// Destroy tokens amount from another account (Caution!!! the operation is destructive and you can not go back)
     function OWN_burnToken(address _from, uint256 _value)  onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] -= _value;
         totalSupply -= _value;
         emit Burn(_from, _value);
@@ -267,7 +267,7 @@ contract TokenRHT is ERC20, SafeMath {
 
 	// Distribution Token from Admin
 	function OWN_DistributeTokenAdmin_Multi(address[] addresses, uint256 _value, bool freeze) onlyOwner public {
-		for (uint i = 0; i &lt; addresses.length; i++) {
+		for (uint i = 0; i < addresses.length; i++) {
 			//Block / Unlock address handling tokens
 			frozenAccount[addresses[i]] = freeze;
 			emit FrozenFunds(addresses[i], freeze);

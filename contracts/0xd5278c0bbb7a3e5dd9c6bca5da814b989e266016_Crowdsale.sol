@@ -10,7 +10,7 @@ contract Crowdsale {
 
     uint public price;
     token public tokenReward; 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false; 
     bool crowdsaleClosed = false; 
 
@@ -43,11 +43,11 @@ contract Crowdsale {
 }
 
     modifier afterDeadline() {
-          if (now &gt;= deadline) _;
+          if (now >= deadline) _;
           }
 
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -58,7 +58,7 @@ contract Crowdsale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
             }
@@ -67,7 +67,7 @@ contract Crowdsale {
                 }
             }
         }
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             }

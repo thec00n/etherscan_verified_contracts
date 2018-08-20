@@ -65,7 +65,7 @@ contract Uselesslightbulb is Ownable {
   uint count = 0;
 
   function toggle() public payable {
-    require(msg.value &gt;= weiPrice);
+    require(msg.value >= weiPrice);
     count++;//count.add(1);
   }
 

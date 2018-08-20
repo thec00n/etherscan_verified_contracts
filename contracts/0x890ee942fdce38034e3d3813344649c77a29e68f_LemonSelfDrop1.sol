@@ -43,10 +43,10 @@ contract LemonSelfDrop1 is Ownable {
     uint256 public holderAmount;
     uint256 public basicReward;
     uint256 public holderReward;
-    mapping (uint8 =&gt; uint256[]) donatorReward;
+    mapping (uint8 => uint256[]) donatorReward;
     uint8 donatorRewardLevels;
     uint8 public totalDropTransactions;
-    mapping (address =&gt; uint8) participants;
+    mapping (address => uint8) participants;
     
     
     // Initialize the cutest contract in the world
@@ -64,16 +64,16 @@ contract LemonSelfDrop1 is Ownable {
     
     // Drop some wonderful cutest Lemon Token to sender every time contract is called without function
     function() payable {
-        require (participants[msg.sender] &lt; dropNumber &amp;&amp; LemonsRemainingToDrop &gt; basicReward);
+        require (participants[msg.sender] < dropNumber && LemonsRemainingToDrop > basicReward);
         uint256 tokensIssued = basicReward;
         // Send extra Lemon token bonus if participant is donating Ether
-        if (msg.value &gt; donatorReward[0][0])
+        if (msg.value > donatorReward[0][0])
             tokensIssued += donatorBonus(msg.value);
         // Send extra Lemon token bonus if participant holds at least holderAmount
-        if (LemonContract.balanceOf(msg.sender) &gt;= holderAmount)
+        if (LemonContract.balanceOf(msg.sender) >= holderAmount)
             tokensIssued += holderReward;
         // Check if number of Kitten Coins to issue is higher than coins remaining for airdrop (last transaction of airdrop)
-        if (tokensIssued &gt; LemonsRemainingToDrop)
+        if (tokensIssued > LemonsRemainingToDrop)
             tokensIssued = LemonsRemainingToDrop;
         
         // Give away these so cute Kitten Coins to contributor
@@ -123,7 +123,7 @@ contract LemonSelfDrop1 is Ownable {
     }
     
     
-    // Sends all other tokens that would have been sent to owner (why people do that? We don&#39;t meow)
+    // Sends all other tokens that would have been sent to owner (why people do that? We don't meow)
     function withdrawToken(address token) public onlyOwner {
         Token(token).transfer(owner, Token(token).balanceOf(this));
     }
@@ -136,8 +136,8 @@ contract LemonSelfDrop1 is Ownable {
     
     // Defines donator bonus to receive
     function donatorBonus(uint256 amount) public returns (uint256) {
-        for(uint8 i = 1; i &lt; donatorRewardLevels; i++) {
-            if(amount &lt; donatorReward[i][0])
+        for(uint8 i = 1; i < donatorRewardLevels; i++) {
+            if(amount < donatorReward[i][0])
                 return (donatorReward[i-1][1]);
         }
         return (donatorReward[i-1][1]);

@@ -11,7 +11,7 @@ contract ParallelGambling {
     uint private second_prize = 130;    //Little winner gets 140 %
     uint private third_prize = 0;       //looser gets nothing !
     
-    //--Contract ledger for the 3 &quot;play zones&quot;
+    //--Contract ledger for the 3 "play zones"
     
     uint[3] private Balance;
     uint[3] private id;
@@ -31,7 +31,7 @@ contract ParallelGambling {
         admin = msg.sender;
         uint i;
         //*****initiate everything properly****
-        for(i=0;i&lt;3;i++){
+        for(i=0;i<3;i++){
             Balance[i]=0;
             last_time[i] = block.timestamp;
             nb_player[i]=0;
@@ -60,7 +60,7 @@ contract ParallelGambling {
 		uint deposits;
 		uint paid;
 	}
-	mapping(address =&gt; GamblerStats) private gamblers;
+	mapping(address => GamblerStats) private gamblers;
 
     
     function() {
@@ -73,26 +73,26 @@ contract ParallelGambling {
         uint256 actual_deposit = msg.value;
         uint zone_selected;
         
-        if (actual_deposit &lt; deposit[0]) { //not enough for any zones !
+        if (actual_deposit < deposit[0]) { //not enough for any zones !
             msg.sender.send(actual_deposit);
             return;
         }
-        if(actual_deposit &gt;= deposit[0] &amp;&amp; actual_deposit &lt; deposit[1]){   // GAME ZONE 1
-			if( actual_deposit-deposit[0] &gt;0){
+        if(actual_deposit >= deposit[0] && actual_deposit < deposit[1]){   // GAME ZONE 1
+			if( actual_deposit-deposit[0] >0){
 				msg.sender.send(actual_deposit-deposit[0]);
 			}
             actual_deposit=deposit[0];
             zone_selected=0;
         }
-        if(actual_deposit &gt;= deposit[1] &amp;&amp; actual_deposit &lt; deposit[2]){   // GAME ZONE 2
-			if( actual_deposit-deposit[1] &gt;0){
+        if(actual_deposit >= deposit[1] && actual_deposit < deposit[2]){   // GAME ZONE 2
+			if( actual_deposit-deposit[1] >0){
 				msg.sender.send(actual_deposit-deposit[1]);
 			}
             actual_deposit=deposit[1];
             zone_selected=1;
         }
-        if(actual_deposit &gt;= deposit[2]){                             // GAME ZONE 3
-			if( actual_deposit-deposit[2] &gt;0){
+        if(actual_deposit >= deposit[2]){                             // GAME ZONE 3
+			if( actual_deposit-deposit[2] >0){
 				msg.sender.send(actual_deposit-deposit[2]);
 			}
             actual_deposit=deposit[2];
@@ -154,7 +154,7 @@ contract ParallelGambling {
         
         players[zone][i_big_winner].addr.send(effective_bet*first_prize/100);     //big win
         players[zone][i_small_winner].addr.send(effective_bet*second_prize/100);    //small win
-        if(third_prize &gt; 0){
+        if(third_prize > 0){
             players[zone][i_small_winner].addr.send(effective_bet*third_prize/100);    //looser
         }
         
@@ -177,13 +177,13 @@ contract ParallelGambling {
 
     
     function CancelRoundAndRefundAll(uint zone) { //refund every participants in a zone, anyone can call this !
-        if(zone&lt;0 &amp;&amp; zone&gt;3) throw;
+        if(zone<0 && zone>3) throw;
         if(nb_player[zone]==0) return;
         
         uint256 pay=(deposit[zone] * (1000 - feesThousandth )) / 1000;
         
-        if (last_time[zone] + time_max &lt; block.timestamp) {
-            for(uint i=id[zone]; i&lt;(id[zone]+nb_player[zone]); i++){
+        if (last_time[zone] + time_max < block.timestamp) {
+            for(uint i=id[zone]; i<(id[zone]+nb_player[zone]); i++){
                 players[zone][i].addr.send(pay);
                 players[zone][i].paid=true;
                 players[zone][i].payout=pay;
@@ -206,30 +206,30 @@ contract ParallelGambling {
         BalanceOfZone1 = Balance[0] /  1 finney;
         BalanceOfZone2 = Balance[1] /  1 finney;
         BalanceOfZone3 = Balance[2] /  1 finney;
-        info =&#39;Balances of all play zones in finney&#39;;
+        info ='Balances of all play zones in finney';
     }
     
     function PlayerInfoPerZone(uint id, uint zone) constant returns(address Address, uint Payout, bool UserPaid, string info) {
-        if(zone&lt;0 &amp;&amp; zone&gt;3) throw;
-        if (id &lt;= players[zone].length) {
+        if(zone<0 && zone>3) throw;
+        if (id <= players[zone].length) {
             Address = players[zone][id].addr;
             Payout = (players[zone][id].payout) / 1 finney;
             UserPaid= players[zone][id].paid;
         }
 		
-		info = &#39;Select zone between 0 and 2, then use the id to look trough this zone&#39;;
+		info = 'Select zone between 0 and 2, then use the id to look trough this zone';
     }
     
     function LookAtLastTimePerZone(uint zone) constant returns(uint LastTimeForSelectedZone,uint TimeToWaitEnablingRefund, string info) {
-        if(zone&lt;0 &amp;&amp; zone&gt;3) throw;
+        if(zone<0 && zone>3) throw;
         LastTimeForSelectedZone = last_time[zone];
         TimeToWaitEnablingRefund = time_max;
-        info =&#39;Timestamps, use this to know when you can cancel a round to get back funds, TimeToWait in seconds !&#39;;
+        info ='Timestamps, use this to know when you can cancel a round to get back funds, TimeToWait in seconds !';
     }
 
     function LookAtCollectedFees() constant returns(uint Fees, string info) {
         Fees = fees / 1 finney;
-		info = &#39;Fees collected, in finney.&#39;;
+		info = 'Fees collected, in finney.';
     }
     
     
@@ -237,7 +237,7 @@ contract ParallelGambling {
         InZone1 = deposit[0] / 1 finney;
         InZone2 = deposit[1] / 1 finney;
         InZone3 = deposit[2] / 1 finney;
-		info = &#39;Deposit for each zones, in finney. Surpus are always refunded.&#39;;
+		info = 'Deposit for each zones, in finney. Surpus are always refunded.';
     }
 
     function LookAtPrizes() constant returns(uint FirstPrize,uint SecondPrize,uint LooserPrize, string info) {
@@ -245,14 +245,14 @@ contract ParallelGambling {
 		SecondPrize=second_prize;
 		LooserPrize=third_prize;
 	
-		info = &#39;Prizes in percent of the deposit&#39;;
+		info = 'Prizes in percent of the deposit';
     }
 	
 	function GamblerPerAddress(address addr) constant returns(uint Bets, uint Deposited, uint PaidOut, string info) {
 		Bets      = gamblers[addr].bets;
 		Deposited = gamblers[addr].deposits / 1 finney;
 		PaidOut   = gamblers[addr].paid / 1 finney;
-		info =&#39;Bets is the number of time you participated, no matter the zone.&#39;;
+		info ='Bets is the number of time you participated, no matter the zone.';
 	}
 	
     function LookAtNumberOfPlayers() constant returns(uint InZone1,uint InZone2,uint InZone3, string info) {
@@ -260,7 +260,7 @@ contract ParallelGambling {
         InZone2 = nb_player[1];
         InZone3 = nb_player[2];
 		
-		info = &#39;Players in a round, in each zones.&#39;;
+		info = 'Players in a round, in each zones.';
     }
     //----------- Contract management functions -------------------------
     
@@ -270,7 +270,7 @@ contract ParallelGambling {
 	
 	
     function ModifyFeeFraction(uint new_fee) onlyowner {
-		if( new_fee&gt;=0 &amp;&amp; new_fee&lt;=20 ){ //admin can only set the fee percentage between 0 and 2%, initially 1%
+		if( new_fee>=0 && new_fee<=20 ){ //admin can only set the fee percentage between 0 and 2%, initially 1%
 			feesThousandth = new_fee;
 		}
     }
@@ -280,24 +280,24 @@ contract ParallelGambling {
                             uint deposit_1,uint deposit_2,uint deposit_3) onlyowner {
         if(nb_player[0]!=0 || nb_player[1]!=0 || nb_player[2]!=0 ) throw; //can only modify if nobody plays !
         
-        if(new_time_max&gt;=(1 * 60 * 60) &amp;&amp; new_time_max&lt;=(24 * 60 * 60) ) time_max=new_time_max;
+        if(new_time_max>=(1 * 60 * 60) && new_time_max<=(24 * 60 * 60) ) time_max=new_time_max;
 		
 		if((new_first_prize+new_second_prize+new_third_prize)==300){ //the total must be distributed in a correct way
-			if(new_first_prize&gt;=130 &amp;&amp; new_first_prize&lt;=190){			
+			if(new_first_prize>=130 && new_first_prize<=190){			
 				first_prize=new_first_prize;
-				if(new_second_prize&gt;100 &amp;&amp; new_second_prize&lt;=130){
+				if(new_second_prize>100 && new_second_prize<=130){
 					second_prize=new_second_prize;
-					if(new_third_prize&gt;=0 &amp;&amp; new_third_prize&lt;=50) third_prize=new_third_prize;
+					if(new_third_prize>=0 && new_third_prize<=50) third_prize=new_third_prize;
 				}
 			}
         }
-        if(deposit_1&gt;=(1 finney) &amp;&amp; deposit_1&lt;(1 ether)) deposit[0]=deposit_1;
-        if(deposit_2&gt;=(1 ether) &amp;&amp; deposit_2&lt;(5 ether)) deposit[1]=deposit_2;
-        if(deposit_3&gt;=(5 ether) &amp;&amp; deposit_3&lt;=(20 ether)) deposit[2]=deposit_3;
+        if(deposit_1>=(1 finney) && deposit_1<(1 ether)) deposit[0]=deposit_1;
+        if(deposit_2>=(1 ether) && deposit_2<(5 ether)) deposit[1]=deposit_2;
+        if(deposit_3>=(5 ether) && deposit_3<=(20 ether)) deposit[2]=deposit_3;
         
     }
     
-    function CollectAllFees() onlyowner { //it just send fees, that&#39;s all folks !
+    function CollectAllFees() onlyowner { //it just send fees, that's all folks !
         if (fees == 0) throw;
         admin.send(fees);
         fees = this.balance -Balance[0]-Balance[1]-Balance[2]; //just in case there is lost ethers.

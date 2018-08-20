@@ -48,8 +48,8 @@ contract StandardToken is Token {
     /*
      *  Storage
     */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
 
     /*
      *  Public functions
@@ -57,8 +57,8 @@ contract StandardToken is Token {
 
     function transfer(address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[msg.sender] < value)
         revert();  // Balance too low
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -68,8 +68,8 @@ contract StandardToken is Token {
 
     function transferFrom(address from, address to, uint value) public returns (bool) {
         // Do not allow transfer to 0x0 or the token contract itself
-        require((to != 0x0) &amp;&amp; (to != address(this)));
-        if (balances[from] &lt; value || allowances[from][msg.sender] &lt; value)
+        require((to != 0x0) && (to != address(this)));
+        if (balances[from] < value || allowances[from][msg.sender] < value)
         revert(); // Balance or allowance too low
         balances[to] += value;
         balances[from] -= value;
@@ -101,20 +101,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -125,8 +125,8 @@ contract EtherSport is StandardToken {
     /*
      *  Metadata
      */
-    string public constant name = &quot;Ether Sport&quot;;
-    string public constant symbol = &quot;ESC&quot;;
+    string public constant name = "Ether Sport";
+    string public constant symbol = "ESC";
     uint8 public constant decimals = 18;
     uint256 public constant tokenUnit = 10 ** uint256(decimals);
 
@@ -146,11 +146,11 @@ contract EtherSport is StandardToken {
         *  Same as balances[], except used for individual cap calculations,
         *  because users can transfer tokens out during sale and reset token count in balances.
         */
-    mapping (address =&gt; uint256) public purchases;
-    mapping (uint =&gt; address) public allocationsIndex;
-    mapping (address =&gt; uint256) public allocations;
+    mapping (address => uint256) public purchases;
+    mapping (uint => address) public allocationsIndex;
+    mapping (address => uint256) public allocations;
     uint public allocationsLength;
-    mapping (string =&gt; mapping (string =&gt; uint256)) cd; //crowdsaleData;
+    mapping (string => mapping (string => uint256)) cd; //crowdsaleData;
 
     /*
     *  Crowdsale parameters
@@ -178,18 +178,18 @@ contract EtherSport is StandardToken {
     }
 
     modifier respectTimeFrame() {
-        require(block.number &gt;= startBlock);
-        require(block.number &lt; endBlock);
+        require(block.number >= startBlock);
+        require(block.number < endBlock);
         _;
     }
 
     modifier salePeriodCompleted() {
-        require(block.number &gt;= endBlock || assignedSupply.add(escFund).add(minimumPayment) &gt; totalSupply);
+        require(block.number >= endBlock || assignedSupply.add(escFund).add(minimumPayment) > totalSupply);
         _;
     }
 
     modifier isValidState() {
-        require(!isFinalized &amp;&amp; !isStopped);
+        require(!isFinalized && !isStopped);
         _;
     }
 
@@ -214,7 +214,7 @@ contract EtherSport is StandardToken {
     public
     {
         require(_ethFundAddress != 0x0);
-        require(_startBlock &gt; block.number);
+        require(_startBlock > block.number);
 
         owner = msg.sender; // Creator of contract is owner
         isFinalized = false; // Controls pre-sale state through crowdsale state
@@ -232,11 +232,11 @@ contract EtherSport is StandardToken {
         //  4 stage | 3 weeks| 29.11.2017 13:00 UTC | 20.12.2017 13:00 UTC | 20,000,000      | 0.00200      | 500.00           | 0.0005      |
         //  --------|--------|----------------------|----------------------|-----------------|--------------|------------------|-------------|
         //                                                                 | 70,000,000      |
-        cd[&#39;preIco&#39;][&#39;startBlock&#39;] = _startBlock;                 cd[&#39;preIco&#39;][&#39;endBlock&#39;] = _startBlock + _preIcoHeight;     cd[&#39;preIco&#39;][&#39;cap&#39;] = 10 * 10**6 * 10**18; cd[&#39;preIco&#39;][&#39;exRate&#39;] = 200000;
-        cd[&#39;stage1&#39;][&#39;startBlock&#39;] = _startBlock + _stage1Height; cd[&#39;stage1&#39;][&#39;endBlock&#39;] = _startBlock + _stage2Height - 1; cd[&#39;stage1&#39;][&#39;cap&#39;] = 10 * 10**6 * 10**18; cd[&#39;stage1&#39;][&#39;exRate&#39;] = 100000;
-        cd[&#39;stage2&#39;][&#39;startBlock&#39;] = _startBlock + _stage2Height; cd[&#39;stage2&#39;][&#39;endBlock&#39;] = _startBlock + _stage3Height - 1; cd[&#39;stage2&#39;][&#39;cap&#39;] = 15 * 10**6 * 10**18; cd[&#39;stage2&#39;][&#39;exRate&#39;] = 76923;
-        cd[&#39;stage3&#39;][&#39;startBlock&#39;] = _startBlock + _stage3Height; cd[&#39;stage3&#39;][&#39;endBlock&#39;] = _startBlock + _stage4Height - 1; cd[&#39;stage3&#39;][&#39;cap&#39;] = 15 * 10**6 * 10**18; cd[&#39;stage3&#39;][&#39;exRate&#39;] = 58824;
-        cd[&#39;stage4&#39;][&#39;startBlock&#39;] = _startBlock + _stage4Height; cd[&#39;stage4&#39;][&#39;endBlock&#39;] = _startBlock + _endBlockHeight;   cd[&#39;stage4&#39;][&#39;cap&#39;] = 20 * 10**6 * 10**18; cd[&#39;stage4&#39;][&#39;exRate&#39;] = 50000;
+        cd['preIco']['startBlock'] = _startBlock;                 cd['preIco']['endBlock'] = _startBlock + _preIcoHeight;     cd['preIco']['cap'] = 10 * 10**6 * 10**18; cd['preIco']['exRate'] = 200000;
+        cd['stage1']['startBlock'] = _startBlock + _stage1Height; cd['stage1']['endBlock'] = _startBlock + _stage2Height - 1; cd['stage1']['cap'] = 10 * 10**6 * 10**18; cd['stage1']['exRate'] = 100000;
+        cd['stage2']['startBlock'] = _startBlock + _stage2Height; cd['stage2']['endBlock'] = _startBlock + _stage3Height - 1; cd['stage2']['cap'] = 15 * 10**6 * 10**18; cd['stage2']['exRate'] = 76923;
+        cd['stage3']['startBlock'] = _startBlock + _stage3Height; cd['stage3']['endBlock'] = _startBlock + _stage4Height - 1; cd['stage3']['cap'] = 15 * 10**6 * 10**18; cd['stage3']['exRate'] = 58824;
+        cd['stage4']['startBlock'] = _startBlock + _stage4Height; cd['stage4']['endBlock'] = _startBlock + _endBlockHeight;   cd['stage4']['cap'] = 20 * 10**6 * 10**18; cd['stage4']['exRate'] = 50000;
         startBlock = _startBlock;
         endBlock   = _startBlock +_endBlockHeight;
 
@@ -287,44 +287,44 @@ contract EtherSport is StandardToken {
 
     /// @notice Calculate rate based on block number
     function calculateTokenExchangeRate() internal returns (uint256) {
-        if (cd[&#39;preIco&#39;][&#39;startBlock&#39;] &lt;= block.number &amp;&amp; block.number &lt;= cd[&#39;preIco&#39;][&#39;endBlock&#39;]) { return cd[&#39;preIco&#39;][&#39;exRate&#39;]; }
-        if (cd[&#39;stage1&#39;][&#39;startBlock&#39;] &lt;= block.number &amp;&amp; block.number &lt;= cd[&#39;stage1&#39;][&#39;endBlock&#39;]) { return cd[&#39;stage1&#39;][&#39;exRate&#39;]; }
-        if (cd[&#39;stage2&#39;][&#39;startBlock&#39;] &lt;= block.number &amp;&amp; block.number &lt;= cd[&#39;stage2&#39;][&#39;endBlock&#39;]) { return cd[&#39;stage2&#39;][&#39;exRate&#39;]; }
-        if (cd[&#39;stage3&#39;][&#39;startBlock&#39;] &lt;= block.number &amp;&amp; block.number &lt;= cd[&#39;stage3&#39;][&#39;endBlock&#39;]) { return cd[&#39;stage3&#39;][&#39;exRate&#39;]; }
-        if (cd[&#39;stage4&#39;][&#39;startBlock&#39;] &lt;= block.number &amp;&amp; block.number &lt;= cd[&#39;stage4&#39;][&#39;endBlock&#39;]) { return cd[&#39;stage4&#39;][&#39;exRate&#39;]; }
+        if (cd['preIco']['startBlock'] <= block.number && block.number <= cd['preIco']['endBlock']) { return cd['preIco']['exRate']; }
+        if (cd['stage1']['startBlock'] <= block.number && block.number <= cd['stage1']['endBlock']) { return cd['stage1']['exRate']; }
+        if (cd['stage2']['startBlock'] <= block.number && block.number <= cd['stage2']['endBlock']) { return cd['stage2']['exRate']; }
+        if (cd['stage3']['startBlock'] <= block.number && block.number <= cd['stage3']['endBlock']) { return cd['stage3']['exRate']; }
+        if (cd['stage4']['startBlock'] <= block.number && block.number <= cd['stage4']['endBlock']) { return cd['stage4']['exRate']; }
         // in case between Pre-ICO and ICO
         return 0;
     }
 
     function maximumTokensToBuy() constant internal returns (uint256) {
         uint256 maximum = 0;
-        if (cd[&#39;preIco&#39;][&#39;startBlock&#39;] &lt;= block.number) { maximum = maximum.add(cd[&#39;preIco&#39;][&#39;cap&#39;]); }
-        if (cd[&#39;stage1&#39;][&#39;startBlock&#39;] &lt;= block.number) { maximum = maximum.add(cd[&#39;stage1&#39;][&#39;cap&#39;]); }
-        if (cd[&#39;stage2&#39;][&#39;startBlock&#39;] &lt;= block.number) { maximum = maximum.add(cd[&#39;stage2&#39;][&#39;cap&#39;]); }
-        if (cd[&#39;stage3&#39;][&#39;startBlock&#39;] &lt;= block.number) { maximum = maximum.add(cd[&#39;stage3&#39;][&#39;cap&#39;]); }
-        if (cd[&#39;stage4&#39;][&#39;startBlock&#39;] &lt;= block.number) { maximum = maximum.add(cd[&#39;stage4&#39;][&#39;cap&#39;]); }
+        if (cd['preIco']['startBlock'] <= block.number) { maximum = maximum.add(cd['preIco']['cap']); }
+        if (cd['stage1']['startBlock'] <= block.number) { maximum = maximum.add(cd['stage1']['cap']); }
+        if (cd['stage2']['startBlock'] <= block.number) { maximum = maximum.add(cd['stage2']['cap']); }
+        if (cd['stage3']['startBlock'] <= block.number) { maximum = maximum.add(cd['stage3']['cap']); }
+        if (cd['stage4']['startBlock'] <= block.number) { maximum = maximum.add(cd['stage4']['cap']); }
         return maximum.sub(assignedSupply);
     }
 
     /// @notice Create `msg.value` ETH worth of ESC
     /// @dev Only allowed to be called within the timeframe of the sale period
     function claimTokens() respectTimeFrame isValidState payable public {
-        require(msg.value &gt;= minimumPayment);
+        require(msg.value >= minimumPayment);
 
         uint256 tokenExchangeRate = calculateTokenExchangeRate();
         // tokenExchangeRate == 0 mean that now not valid time to take part in crowdsale event
-        require(tokenExchangeRate &gt; 0);
+        require(tokenExchangeRate > 0);
 
         uint256 tokens = msg.value.mul(tokenExchangeRate).div(100);
 
         // Check that we can sell this amount of tokens in the moment
-        require(tokens &lt;= maximumTokensToBuy());
+        require(tokens <= maximumTokensToBuy());
 
-        // Check that we&#39;re not over totals
+        // Check that we're not over totals
         uint256 checkedSupply = assignedSupply.add(tokens);
 
-        // Return money if we&#39;re over total token supply
-        require(checkedSupply.add(escFund) &lt;= totalSupply);
+        // Return money if we're over total token supply
+        require(checkedSupply.add(escFund) <= totalSupply);
 
         balances[msg.sender] = balances[msg.sender].add(tokens);
         purchases[msg.sender] = purchases[msg.sender].add(tokens);
@@ -345,7 +345,7 @@ contract EtherSport is StandardToken {
         Transfer(0x0, escFundAddress, escFund);
 
 
-        for(uint i=0;i&lt;allocationsLength;i++)
+        for(uint i=0;i<allocationsLength;i++)
         {
             balances[allocationsIndex[i]] = balances[allocationsIndex[i]].add(allocations[allocationsIndex[i]]);
             ClaimESC(allocationsIndex[i], allocations[allocationsIndex[i]]);  // Log tokens claimed by Ethersport ESC fund
@@ -355,7 +355,7 @@ contract EtherSport is StandardToken {
         // In the case where not all 70M ESC allocated to crowdfund participants
         // is sold, send the remaining unassigned supply to ESC fund address,
         // which will then be used to fund the user growth pool.
-        if (assignedSupply &lt; totalSupply) {
+        if (assignedSupply < totalSupply) {
             uint256 unassignedSupply = totalSupply.sub(assignedSupply);
             balances[escFundAddress] = balances[escFundAddress].add(unassignedSupply);
             assignedSupply = assignedSupply.add(unassignedSupply);

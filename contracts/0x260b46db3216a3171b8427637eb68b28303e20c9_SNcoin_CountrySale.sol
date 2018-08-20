@@ -58,8 +58,8 @@ contract SNcoin_CountrySale is Owned {
         require (_tokenAddress != 0);
         require (_spenderAddress != 0);
         require (_vaultAddress != 0);
-        require (_newTokenPrice &gt; 0);
-        require (bytes(_country).length &gt; 0);
+        require (_newTokenPrice > 0);
+        require (bytes(_country).length > 0);
         tokenContract = MinimalTokenInterface(_tokenAddress);
         spenderAddress = _spenderAddress;
         vaultAddress = _vaultAddress;
@@ -93,7 +93,7 @@ contract SNcoin_CountrySale is Owned {
     }
 
     function updateTokenPrice(uint _newTokenPrice) public onlyOwner {
-        require(_newTokenPrice &gt; 10**9);
+        require(_newTokenPrice > 10**9);
         tokenPrice = _newTokenPrice;
         return;
     }
@@ -101,8 +101,8 @@ contract SNcoin_CountrySale is Owned {
     function () public payable {
         require (fundingEnabled);
         require (ambassadorAddress != 0);
-        require (tokenPrice &gt; 10**9);
-        require (msg.value &gt;= tokenPrice);
+        require (tokenPrice > 10**9);
+        require (msg.value >= tokenPrice);
 
         totalCollected += msg.value;
         uint ambVal = (20 * msg.value)/100;

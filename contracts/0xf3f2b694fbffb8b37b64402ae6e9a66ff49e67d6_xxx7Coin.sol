@@ -3,10 +3,10 @@ pragma solidity ^0.4.20;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -14,7 +14,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -66,12 +66,12 @@ contract xxx7Coin is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function xxx7Coin() public {
-        symbol = &quot;7xxx&quot;;
-        name = &quot;7xxx.club Coin&quot;;
+        symbol = "7xxx";
+        name = "7xxx.club Coin";
         decimals = 18;
         _totalSupply = 1000000000000000000000000;
         balances[0x3b5b42D77Fb9e70D38C73e2DF3890F76793B3112] = _totalSupply;

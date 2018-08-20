@@ -18,11 +18,11 @@ library SafeMath{
     //Adds 2 numbers, throws on overflow.
     function add(uint256 _x, uint256 _y) internal pure returns (uint256 result){
         result = _x + _y;
-        assert(result &gt;= _x);
+        assert(result >= _x);
         return result;
     }
     function sub(uint256 _x, uint256 _y) internal pure returns (uint256 result){
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         result = _x - _y;
         return result;
     }
@@ -95,8 +95,8 @@ contract ERC223Interface is Haltable, ERC20Interface{
 
 contract PERA is ERC223Interface{
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     //Getter functions are defined automatically for the following variables.
     string public name;
@@ -113,12 +113,12 @@ contract PERA is ERC223Interface{
     }
     /**
      * @notice Underlying transfer function; it is called by public functions later.
-     * @dev This architecture saves &gt;30000 gas as compared to having two independent public functions
+     * @dev This architecture saves >30000 gas as compared to having two independent public functions
      *      for transfer with and without `_data`.
      **/
     function _transfer(address _from, address _to, uint256 _amount, bytes _data) internal returns (bool success){
         require(_to != 0x0);
-        require(_amount &lt;= balanceOf(_from));
+        require(_amount <= balanceOf(_from));
 
         uint256 initialBalances = balanceOf(_from).add(balanceOf(_to));
 
@@ -166,7 +166,7 @@ contract PERA is ERC223Interface{
      **/
     function transferFrom(address _from, address _to, uint256 _amount, bytes _data) stopOnPause public returns (bool success){
         require(_from != 0x0);
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
 
 
         allowed[_from][msg.sender] = allowance(_from, msg.sender).sub(_amount);
@@ -182,7 +182,7 @@ contract PERA is ERC223Interface{
      **/
     function transferFrom(address _from, address _to, uint256 _amount) stopOnPause  public returns (bool success){
         require(_from != 0x0);
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
 
         bytes memory empty;
         allowed[_from][msg.sender] = allowance(_from, msg.sender).sub(_amount);
@@ -192,7 +192,7 @@ contract PERA is ERC223Interface{
     }
 
     /**
-     * @notice gives `_spender` allowance to spend `amount` from sender&#39;s balance.
+     * @notice gives `_spender` allowance to spend `amount` from sender's balance.
      **/
     function approve(address _spender, uint256 _amount) stopOnPause public returns (bool success){
         require(_spender != 0x0);
@@ -219,7 +219,7 @@ contract PERA is ERC223Interface{
             //retrieve the code length/size on target address
             length := extcodesize(_addr)
         }
-      return (length&gt;0);
+      return (length>0);
     }
 
     /**

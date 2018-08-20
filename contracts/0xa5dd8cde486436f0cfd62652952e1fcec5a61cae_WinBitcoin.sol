@@ -8,20 +8,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -90,7 +90,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -111,8 +111,8 @@ contract WinBitcoin is BasicToken,Ownable {
 
    using SafeMath for uint256;
    
-   string public constant name = &quot;WinBitcoin&quot;;
-   string public constant symbol = &quot;WBC&quot;;
+   string public constant name = "WinBitcoin";
+   string public constant symbol = "WBC";
    uint256 public constant decimals = 18;
    uint256 public ratePerWei = 20000;   
    address public ethStore = 0x39977B6c5A0dbb751596280091eE5D733d20A842;
@@ -140,9 +140,9 @@ contract WinBitcoin is BasicToken,Ownable {
         bonus = bonus.div(100);
         
         amount = amount.add(bonus);
-        require(tokenBalances[owner] &gt;= amount);               // checks if it has enough to sell
-        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(amount);                  // adds the amount to buyer&#39;s balance
-        tokenBalances[owner] = tokenBalances[owner].sub(amount);                        // subtracts amount from seller&#39;s balance
+        require(tokenBalances[owner] >= amount);               // checks if it has enough to sell
+        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(amount);                  // adds the amount to buyer's balance
+        tokenBalances[owner] = tokenBalances[owner].sub(amount);                        // subtracts amount from seller's balance
         Transfer(owner, beneficiary, amount);               // execute an event reflecting the change
         ethStore.transfer(msg.value);                       //send the eth to the address where eth should be collected
         REMAINING_SUPPLY = tokenBalances[owner];

@@ -13,20 +13,20 @@ library SafeMath {
 
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;       
     }       
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -91,12 +91,12 @@ contract BTHPoint is ERC20, Ownable {
     uint256 internal _nextUnlockTime;
     uint256 internal _lockupBalance;
 
-    mapping(address =&gt; uint256) internal _balances;    
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal _allowed;
+    mapping(address => uint256) internal _balances;    
+    mapping(address => mapping(address => uint256)) internal _allowed;
 
     function BTHPoint() public {
-        name = &quot;Bithumb Coin Point&quot;;
-        symbol = &quot;BTHP&quot;;
+        name = "Bithumb Coin Point";
+        symbol = "BTHP";
         decimals = 18;        
         _nextUnlockTime = now + UNLOCK_TERM;
 
@@ -116,7 +116,7 @@ contract BTHPoint is ERC20, Ownable {
         require(_to != address(0));
         require(_to != address(this));
         require(msg.sender != address(0));
-        require(_value &lt;= _balances[msg.sender]);
+        require(_value <= _balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         _balances[msg.sender] = _balances[msg.sender].sub(_value);
@@ -137,8 +137,8 @@ contract BTHPoint is ERC20, Ownable {
         require(_from != address(0));
         require(_to != address(0));
         require(_to != address(this));
-        require(_value &lt;= _balances[_from]);
-        require(_value &lt;= _allowed[_from][msg.sender]);
+        require(_value <= _balances[_from]);
+        require(_value <= _allowed[_from][msg.sender]);
 
         _balances[_from] = _balances[_from].sub(_value);
         _balances[_to] = _balances[_to].add(_value);
@@ -148,7 +148,7 @@ contract BTHPoint is ERC20, Ownable {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         _allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -163,7 +163,7 @@ contract BTHPoint is ERC20, Ownable {
     }
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(_value &lt;= _balances[msg.sender]);
+        require(_value <= _balances[msg.sender]);
         address burner = msg.sender;
         _balances[burner] = _balances[burner].sub(_value);
         _totalSupply = _totalSupply.sub(_value);
@@ -180,8 +180,8 @@ contract BTHPoint is ERC20, Ownable {
 
     function unlock() public onlyOwner returns(bool) {
         address tokenHolder = msg.sender;
-        require(_nextUnlockTime &lt;= now);
-        require(_lockupBalance &gt;= 1000000000 * 10 ** uint(decimals));
+        require(_nextUnlockTime <= now);
+        require(_lockupBalance >= 1000000000 * 10 ** uint(decimals));
 
         _nextUnlockTime = _nextUnlockTime.add(UNLOCK_TERM);
 

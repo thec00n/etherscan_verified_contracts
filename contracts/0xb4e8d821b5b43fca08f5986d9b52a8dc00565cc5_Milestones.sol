@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412c28222a38012f2e362d2837246f332e">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660b0f050d1f260809110a0f1003481409">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660b0f050d1f260809110a0f1003481409">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -289,8 +289,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -314,7 +314,7 @@ contract ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e28f8b81899ba28c8d958e8b9487cc908d">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e28f8b81899ba28c8d958e8b9487cc908d">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -333,9 +333,9 @@ contract ABIFundingManager is ABIApplicationAsset {
     uint256 public vaultNum;
     uint256 public LockedVotingTokens;
     bytes32 public currentTask;
-    mapping (bytes32 =&gt; bool) public taskByHash;
-    mapping  (address =&gt; address) public vaultList;
-    mapping  (uint256 =&gt; address) public vaultById;
+    mapping (bytes32 => bool) public taskByHash;
+    mapping  (address => address) public vaultList;
+    mapping  (uint256 => address) public vaultById;
 
     function receivePayment(address _sender, uint8 _payment_method, uint8 _funding_stage) payable public returns(bool);
     function getMyVaultAddress(address _sender) public view returns (address);
@@ -362,7 +362,7 @@ contract ABIFundingManager is ABIApplicationAsset {
 
  * @name        Meetings Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email protected]</a>>
 
  Contains the Meetings Contract code deployed and linked to the Application Entity
 
@@ -381,7 +381,7 @@ contract ABIMeetings is ABIApplicationAsset {
         uint256 duration;
         uint8 index;
     }
-    mapping (uint8 =&gt; Record) public Collection;
+    mapping (uint8 => Record) public Collection;
 }
 
 /*
@@ -390,7 +390,7 @@ contract ABIMeetings is ABIApplicationAsset {
 
  * @name        Proposals Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036e6a60687a436d6c746f6a75662d716c">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036e6a60687a436d6c746f6a75662d716c">[email protected]</a>>
 
  Contains the Proposals Contract code deployed and linked to the Application Entity
 
@@ -446,18 +446,18 @@ contract ABIProposals is ABIApplicationAsset {
     uint256 public VoteCountPerProcess;
     bool public EmergencyFundingReleaseApproved;
 
-    mapping (bytes32 =&gt; uint8) public ActionTypes;
-    mapping (uint8 =&gt; uint256) public ActiveProposalIds;
-    mapping (uint256 =&gt; bool) public ExpiredProposalIds;
-    mapping (uint256 =&gt; ProposalRecord) public ProposalsById;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
-    mapping (uint256 =&gt; mapping (uint256 =&gt; VoteStruct) ) public VotesByProposalId;
-    mapping (uint256 =&gt; mapping (address =&gt; VoteStruct) ) public VotesByCaster;
-    mapping (uint256 =&gt; uint256) public VotesNumByProposalId;
-    mapping (uint256 =&gt; ResultRecord ) public ResultsByProposalId;
-    mapping (uint256 =&gt; uint256) public lastProcessedVoteIdByProposal;
-    mapping (uint256 =&gt; uint256) public ProcessedVotesByProposal;
-    mapping (uint256 =&gt; uint256) public VoteCountAtProcessingStartByProposal;
+    mapping (bytes32 => uint8) public ActionTypes;
+    mapping (uint8 => uint256) public ActiveProposalIds;
+    mapping (uint256 => bool) public ExpiredProposalIds;
+    mapping (uint256 => ProposalRecord) public ProposalsById;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
+    mapping (uint256 => mapping (uint256 => VoteStruct) ) public VotesByProposalId;
+    mapping (uint256 => mapping (address => VoteStruct) ) public VotesByCaster;
+    mapping (uint256 => uint256) public VotesNumByProposalId;
+    mapping (uint256 => ResultRecord ) public ResultsByProposalId;
+    mapping (uint256 => uint256) public lastProcessedVoteIdByProposal;
+    mapping (uint256 => uint256) public ProcessedVotesByProposal;
+    mapping (uint256 => uint256) public VoteCountAtProcessingStartByProposal;
 
     function getRecordState(bytes32 name) public view returns (uint8);
     function getActionType(bytes32 name) public view returns (uint8);
@@ -498,7 +498,7 @@ contract ABIProposals is ABIApplicationAsset {
 
  * @name        Milestones Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e28f8b81899ba28c8d958e8b9487cc908d">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e28f8b81899ba28c8d958e8b9487cc908d">[email protected]</a>>
 
  Contains the Milestones Contract code deployed and linked to the Application Entity
 
@@ -525,14 +525,14 @@ contract Milestones is ApplicationAsset {
         uint256 duration;
         uint256 time_start;                     // start at unixtimestamp
         uint256 last_state_change_time;         // time of last state change
-        uint256 time_end;                       // estimated end time &gt;&gt; can be increased by proposal
+        uint256 time_end;                       // estimated end time >> can be increased by proposal
         uint256 time_ended;                     // actual end time
         uint256 meeting_time;
         uint8 funding_percentage;
         uint8 index;
     }
 
-    mapping (uint8 =&gt; Record) public Collection;
+    mapping (uint8 => Record) public Collection;
     uint8 public currentRecord = 1;
 
     event DebugRecordRequiredChanges( bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required );
@@ -547,39 +547,39 @@ contract Milestones is ApplicationAsset {
     function setAssetStates() internal {
 
         // Contract States
-        EntityStates[&quot;__IGNORED__&quot;]                  = 0;
-        EntityStates[&quot;NEW&quot;]                          = 1;
-        EntityStates[&quot;WAITING&quot;]                      = 2;
+        EntityStates["__IGNORED__"]                  = 0;
+        EntityStates["NEW"]                          = 1;
+        EntityStates["WAITING"]                      = 2;
 
-        EntityStates[&quot;IN_DEVELOPMENT&quot;]               = 5;
+        EntityStates["IN_DEVELOPMENT"]               = 5;
 
-        EntityStates[&quot;WAITING_MEETING_TIME&quot;]         = 10;
-        EntityStates[&quot;DEADLINE_MEETING_TIME_YES&quot;]    = 11;
-        EntityStates[&quot;DEADLINE_MEETING_TIME_FAILED&quot;] = 12;
+        EntityStates["WAITING_MEETING_TIME"]         = 10;
+        EntityStates["DEADLINE_MEETING_TIME_YES"]    = 11;
+        EntityStates["DEADLINE_MEETING_TIME_FAILED"] = 12;
 
-        EntityStates[&quot;VOTING_IN_PROGRESS&quot;]           = 20;
-        // EntityStates[&quot;VOTING_ENDED&quot;]              = 21;
-        EntityStates[&quot;VOTING_ENDED_YES&quot;]             = 22;
-        EntityStates[&quot;VOTING_ENDED_NO&quot;]              = 23;
-        EntityStates[&quot;VOTING_ENDED_NO_FINAL&quot;]        = 25;
+        EntityStates["VOTING_IN_PROGRESS"]           = 20;
+        // EntityStates["VOTING_ENDED"]              = 21;
+        EntityStates["VOTING_ENDED_YES"]             = 22;
+        EntityStates["VOTING_ENDED_NO"]              = 23;
+        EntityStates["VOTING_ENDED_NO_FINAL"]        = 25;
 
-        EntityStates[&quot;VOTING_FUNDS_PROCESSED&quot;]       = 30;
-        EntityStates[&quot;FINAL&quot;]                        = 50;
+        EntityStates["VOTING_FUNDS_PROCESSED"]       = 30;
+        EntityStates["FINAL"]                        = 50;
 
-        EntityStates[&quot;CASHBACK_OWNER_MIA&quot;]           = 99;
-        EntityStates[&quot;DEVELOPMENT_COMPLETE&quot;]         = 250;
+        EntityStates["CASHBACK_OWNER_MIA"]           = 99;
+        EntityStates["DEVELOPMENT_COMPLETE"]         = 250;
 
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
-        RecordStates[&quot;NEW&quot;]             = 1;
-        RecordStates[&quot;IN_PROGRESS&quot;]     = 2;
-        RecordStates[&quot;FINAL&quot;]           = 3;
+        RecordStates["__IGNORED__"]     = 0;
+        RecordStates["NEW"]             = 1;
+        RecordStates["IN_PROGRESS"]     = 2;
+        RecordStates["FINAL"]           = 3;
     }
 
     function runBeforeInitialization() internal requireNotInitialised {
-        FundingManagerEntity = ABIFundingManager( getApplicationAssetAddressByName(&#39;FundingManager&#39;) );
-        MeetingsEntity = ABIMeetings( getApplicationAssetAddressByName(&#39;Meetings&#39;) );
-        ProposalsEntity = ABIProposals( getApplicationAssetAddressByName(&#39;Proposals&#39;) );
+        FundingManagerEntity = ABIFundingManager( getApplicationAssetAddressByName('FundingManager') );
+        MeetingsEntity = ABIMeetings( getApplicationAssetAddressByName('Meetings') );
+        ProposalsEntity = ABIProposals( getApplicationAssetAddressByName('Proposals') );
         EventRunBeforeInit(assetName);
     }
 
@@ -592,15 +592,15 @@ contract Milestones is ApplicationAsset {
     }
 
     function getBylawsProjectDevelopmentStart() public view returns (uint256) {
-        return getAppBylawUint256(&quot;development_start&quot;);
+        return getAppBylawUint256("development_start");
     }
 
     function getBylawsMinTimeInTheFutureForMeetingCreation() public view returns (uint256) {
-        return getAppBylawUint256(&quot;meeting_time_set_req&quot;);
+        return getAppBylawUint256("meeting_time_set_req");
     }
 
     function getBylawsCashBackVoteRejectedDuration() public view returns (uint256) {
-        return getAppBylawUint256(&quot;cashback_investor_no&quot;);
+        return getAppBylawUint256("cashback_investor_no");
     }
 
     /*
@@ -632,7 +632,7 @@ contract Milestones is ApplicationAsset {
         rec.description         = _description;
         rec.duration            = _duration;
         rec.funding_percentage  = _perc;
-        rec.state               = getRecordState(&quot;NEW&quot;);
+        rec.state               = getRecordState("NEW");
         rec.index               = RecordNum;
     }
 
@@ -648,14 +648,14 @@ contract Milestones is ApplicationAsset {
         DebugRecordRequiredChanges( assetName, CurrentRecordState, RecordStateRequired );
         DebugEntityRequiredChanges( assetName, CurrentEntityState, EntityStateRequired );
 
-        if( RecordStateRequired != getRecordState(&quot;__IGNORED__&quot;) ) {
+        if( RecordStateRequired != getRecordState("__IGNORED__") ) {
             // process record changes.
             RecordProcessor(CurrentRecordState, RecordStateRequired);
             DebugCallAgain(2);
             callAgain = true;
         }
 
-        if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+        if(EntityStateRequired != getEntityState("__IGNORED__") ) {
             // process entity changes.
             EntityProcessor(EntityStateRequired);
             DebugCallAgain(1);
@@ -667,9 +667,9 @@ contract Milestones is ApplicationAsset {
 
     function MilestonesCanChange() internal view returns (bool) {
         if(
-            CurrentEntityState == getEntityState(&quot;WAITING&quot;) ||
-            CurrentEntityState == getEntityState(&quot;IN_DEVELOPMENT&quot;) ||
-            CurrentEntityState == getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;)
+            CurrentEntityState == getEntityState("WAITING") ||
+            CurrentEntityState == getEntityState("IN_DEVELOPMENT") ||
+            CurrentEntityState == getEntityState("VOTING_FUNDS_PROCESSED")
         ) {
             return true;
         }
@@ -687,25 +687,25 @@ contract Milestones is ApplicationAsset {
      */
     function getRecordStateRequiredChanges() public view returns (uint8) {
         Record memory record = Collection[currentRecord];
-        uint8 RecordStateRequired = getRecordState(&quot;__IGNORED__&quot;);
+        uint8 RecordStateRequired = getRecordState("__IGNORED__");
 
-        if( ApplicationIsInDevelopment() &amp;&amp; MilestonesCanChange() ) {
+        if( ApplicationIsInDevelopment() && MilestonesCanChange() ) {
 
-            if( record.state == getRecordState(&quot;NEW&quot;) ) {
+            if( record.state == getRecordState("NEW") ) {
 
-                if( getTimestamp() &gt;= record.time_start ) {
-                    RecordStateRequired = getRecordState(&quot;IN_PROGRESS&quot;);
+                if( getTimestamp() >= record.time_start ) {
+                    RecordStateRequired = getRecordState("IN_PROGRESS");
                 }
 
-            } else if( record.state == getRecordState(&quot;IN_PROGRESS&quot;) ) {
+            } else if( record.state == getRecordState("IN_PROGRESS") ) {
 
-                if( getTimestamp() &gt;= record.time_end || ( getTimestamp() &gt;= record.meeting_time &amp;&amp; record.meeting_time &gt; 0 ) ) {
-                    RecordStateRequired = getRecordState(&quot;FINAL&quot;);
+                if( getTimestamp() >= record.time_end || ( getTimestamp() >= record.meeting_time && record.meeting_time > 0 ) ) {
+                    RecordStateRequired = getRecordState("FINAL");
                 }
             }
 
             if( record.state == RecordStateRequired ) {
-                RecordStateRequired = getRecordState(&quot;__IGNORED__&quot;);
+                RecordStateRequired = getRecordState("__IGNORED__");
             }
         }
         return RecordStateRequired;
@@ -717,10 +717,10 @@ contract Milestones is ApplicationAsset {
         var (CurrentRecordState, RecordStateRequired, EntityStateRequired) = getRequiredStateChanges();
         CurrentRecordState = 0;
 
-        if( RecordStateRequired != getRecordState(&quot;__IGNORED__&quot;) ) {
+        if( RecordStateRequired != getRecordState("__IGNORED__") ) {
             hasChanges = true;
         }
-        if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+        if(EntityStateRequired != getEntityState("__IGNORED__") ) {
             hasChanges = true;
         }
 
@@ -743,33 +743,33 @@ contract Milestones is ApplicationAsset {
         // Update our Entity State
         CurrentEntityState = EntityStateRequired;
 
-        if ( CurrentEntityState == getEntityState(&quot;DEADLINE_MEETING_TIME_YES&quot;) ) {
+        if ( CurrentEntityState == getEntityState("DEADLINE_MEETING_TIME_YES") ) {
             // create meeting
-            // Meetings.create(&quot;internal&quot;, &quot;MILESTONE_END&quot;, &quot;&quot;);
+            // Meetings.create("internal", "MILESTONE_END", "");
 
-        } else if( CurrentEntityState == getEntityState(&quot;VOTING_IN_PROGRESS&quot;) ) {
+        } else if( CurrentEntityState == getEntityState("VOTING_IN_PROGRESS") ) {
             // create proposal and start voting on it
             createMilestoneAcceptanceProposal();
 
-        } else if( CurrentEntityState == getEntityState(&quot;WAITING_MEETING_TIME&quot;) ) {
+        } else if( CurrentEntityState == getEntityState("WAITING_MEETING_TIME") ) {
 
             PostponeMeetingIfApproved();
 
-        } else if( CurrentEntityState == getEntityState(&quot;VOTING_ENDED_YES&quot;) ) {
+        } else if( CurrentEntityState == getEntityState("VOTING_ENDED_YES") ) {
 
-        } else if( CurrentEntityState == getEntityState(&quot;VOTING_ENDED_NO&quot;) ) {
+        } else if( CurrentEntityState == getEntityState("VOTING_ENDED_NO") ) {
 
             // possible cashback time starts from now
             MilestoneCashBackTime = getTimestamp();
 
-        } else if( CurrentEntityState == getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;) ) {
+        } else if( CurrentEntityState == getEntityState("VOTING_FUNDS_PROCESSED") ) {
             MilestoneCashBackTime = 0;
             startNextMilestone();
         }
 
     }
 
-    mapping (bytes32 =&gt; bool) public MilestonePostponingHash;
+    mapping (bytes32 => bool) public MilestonePostponingHash;
 
     function PostponeMeetingIfApproved() internal {
         if(MilestonePostponingHash[ bytes32(currentRecord) ] == false ) {
@@ -783,9 +783,9 @@ contract Milestones is ApplicationAsset {
     }
 
     function PostponeForCurrentMilestoneIsApproved() internal view returns ( bool ) {
-        uint8 ProposalActionType = ProposalsEntity.getActionType(&quot;MILESTONE_POSTPONING&quot;);
+        uint8 ProposalActionType = ProposalsEntity.getActionType("MILESTONE_POSTPONING");
         uint8 ProposalRecordState = ProposalsEntity.getCurrentMilestoneProposalStatusForType( ProposalActionType  );
-        if(ProposalRecordState == ProposalsEntity.getRecordState(&quot;VOTING_RESULT_YES&quot;) ) {
+        if(ProposalRecordState == ProposalsEntity.getRecordState("VOTING_RESULT_YES") ) {
             return true;
         }
         return false;
@@ -796,7 +796,7 @@ contract Milestones is ApplicationAsset {
     function afterVoteNoCashBackTime() public view returns ( bool ) {
         uint256 time =  MilestoneCashBackTime + getBylawsCashBackVoteRejectedDuration();
         // after cash back time
-        if(getTimestamp() &gt; time) {
+        if(getTimestamp() > time) {
             return true;
         }
         return false;
@@ -810,7 +810,7 @@ contract Milestones is ApplicationAsset {
         return getHash(1, bytes32(currentRecord), 0);
     }
 
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
     function createMilestoneAcceptanceProposal() internal {
         if(ProposalIdByHash[ getCurrentHash() ] == 0x0 ) {
             ProposalIdByHash[ getCurrentHash() ] = ProposalsEntity.createMilestoneAcceptanceProposal();
@@ -822,14 +822,14 @@ contract Milestones is ApplicationAsset {
     }
 
     function setCurrentMilestoneMeetingTime(uint256 _meeting_time) public onlyDeployer {
-        if ( CurrentEntityState == getEntityState(&quot;WAITING_MEETING_TIME&quot;) ) {
+        if ( CurrentEntityState == getEntityState("WAITING_MEETING_TIME") ) {
             if(MeetingTimeSetFailure() == false ) {
                 Record storage record = Collection[currentRecord];
                 // minimum x days into the future
                 uint256 min = getTimestamp() + getBylawsMinTimeInTheFutureForMeetingCreation();
                 // minimum days before end date
                 uint256 max = record.time_end + 24 * 3600;
-                if(_meeting_time &gt; min &amp;&amp; _meeting_time &lt; max ) {
+                if(_meeting_time > min && _meeting_time < max ) {
                     record.meeting_time = _meeting_time;
                 }
             } else {
@@ -845,9 +845,9 @@ contract Milestones is ApplicationAsset {
 
         // set current record end date etc
         rec.time_ended = getTimestamp();
-        rec.state = getRecordState(&quot;FINAL&quot;);
+        rec.state = getRecordState("FINAL");
 
-        if(currentRecord &lt; RecordNum) {
+        if(currentRecord < RecordNum) {
             // jump to next milestone
             currentRecord++;
 
@@ -939,114 +939,114 @@ contract Milestones is ApplicationAsset {
 
         uint8 CurrentRecordState = record.state;
         uint8 RecordStateRequired = getRecordStateRequiredChanges();
-        uint8 EntityStateRequired = getEntityState(&quot;__IGNORED__&quot;);
+        uint8 EntityStateRequired = getEntityState("__IGNORED__");
 
         if( ApplicationIsInDevelopment() ) {
 
             // Do Entity Checks
 
-            if ( CurrentEntityState == getEntityState(&quot;WAITING&quot;) ) {
+            if ( CurrentEntityState == getEntityState("WAITING") ) {
 
-                if(RecordStateRequired == getRecordState(&quot;IN_PROGRESS&quot;) ) {
+                if(RecordStateRequired == getRecordState("IN_PROGRESS") ) {
                     // both record and entity states need to move to IN_PROGRESS
-                    EntityStateRequired = getEntityState(&quot;IN_DEVELOPMENT&quot;);
+                    EntityStateRequired = getEntityState("IN_DEVELOPMENT");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("IN_DEVELOPMENT") ) {
 
-                EntityStateRequired = getEntityState(&quot;WAITING_MEETING_TIME&quot;);
+                EntityStateRequired = getEntityState("WAITING_MEETING_TIME");
 
-            } else if ( CurrentEntityState == getEntityState(&quot;WAITING_MEETING_TIME&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("WAITING_MEETING_TIME") ) {
 
-                if(record.meeting_time &gt; 0) {
+                if(record.meeting_time > 0) {
 
-                    EntityStateRequired = getEntityState(&quot;DEADLINE_MEETING_TIME_YES&quot;);
+                    EntityStateRequired = getEntityState("DEADLINE_MEETING_TIME_YES");
 
                 } else {
 
                     if(MilestonePostponingHash[ bytes32(currentRecord) ] == false) {
                         if(PostponeForCurrentMilestoneIsApproved()) {
-                            EntityStateRequired = getEntityState(&quot;WAITING_MEETING_TIME&quot;);
+                            EntityStateRequired = getEntityState("WAITING_MEETING_TIME");
                         }
                     }
 
                     if(MeetingTimeSetFailure()) {
                         // Force Owner Missing in Action - Cash Back Procedure
-                        EntityStateRequired = getEntityState(&quot;DEADLINE_MEETING_TIME_FAILED&quot;);
+                        EntityStateRequired = getEntityState("DEADLINE_MEETING_TIME_FAILED");
                     }
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;DEADLINE_MEETING_TIME_FAILED&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("DEADLINE_MEETING_TIME_FAILED") ) {
 
 
-            } else if ( CurrentEntityState == getEntityState(&quot;DEADLINE_MEETING_TIME_YES&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("DEADLINE_MEETING_TIME_YES") ) {
 
                 // create proposal
                 // start voting if time passed
-                if(getTimestamp() &gt;= record.meeting_time ) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_IN_PROGRESS&quot;);
+                if(getTimestamp() >= record.meeting_time ) {
+                    EntityStateRequired = getEntityState("VOTING_IN_PROGRESS");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;VOTING_IN_PROGRESS&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("VOTING_IN_PROGRESS") ) {
 
                 uint8 ProposalRecordState = ProposalsEntity.getProposalState( getCurrentProposalId() );
 
-                if ( ProposalRecordState == ProposalsEntity.getRecordState(&quot;VOTING_RESULT_YES&quot;) ) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_ENDED_YES&quot;);
+                if ( ProposalRecordState == ProposalsEntity.getRecordState("VOTING_RESULT_YES") ) {
+                    EntityStateRequired = getEntityState("VOTING_ENDED_YES");
                 }
 
-                if (ProposalRecordState == ProposalsEntity.getRecordState(&quot;VOTING_RESULT_NO&quot;) ) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_ENDED_NO&quot;);
+                if (ProposalRecordState == ProposalsEntity.getRecordState("VOTING_RESULT_NO") ) {
+                    EntityStateRequired = getEntityState("VOTING_ENDED_NO");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;VOTING_ENDED_YES&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("VOTING_ENDED_YES") ) {
 
-                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;MILESTONE_PROCESS_DONE&quot;)) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;);
+                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("MILESTONE_PROCESS_DONE")) {
+                    EntityStateRequired = getEntityState("VOTING_FUNDS_PROCESSED");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;VOTING_ENDED_NO&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("VOTING_ENDED_NO") ) {
 
                 // check if milestone cashout period has passed and if so process fund releases
                 if(afterVoteNoCashBackTime()) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_ENDED_NO_FINAL&quot;);
+                    EntityStateRequired = getEntityState("VOTING_ENDED_NO_FINAL");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;VOTING_ENDED_NO_FINAL&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("VOTING_ENDED_NO_FINAL") ) {
 
-                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;MILESTONE_PROCESS_DONE&quot;)) {
-                    EntityStateRequired = getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;);
+                if( FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("MILESTONE_PROCESS_DONE")) {
+                    EntityStateRequired = getEntityState("VOTING_FUNDS_PROCESSED");
                 }
 
-            } else if ( CurrentEntityState == getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;) ) {
+            } else if ( CurrentEntityState == getEntityState("VOTING_FUNDS_PROCESSED") ) {
 
 
-                if(currentRecord &lt; RecordNum) {
-                    EntityStateRequired = getEntityState(&quot;IN_DEVELOPMENT&quot;);
+                if(currentRecord < RecordNum) {
+                    EntityStateRequired = getEntityState("IN_DEVELOPMENT");
                 } else {
 
                     if(FundingManagerEntity.getCurrentMilestoneProcessed() == true) {
-                        if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;COMPLETE_PROCESS_DONE&quot;)) {
-                            EntityStateRequired = getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;);
+                        if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("COMPLETE_PROCESS_DONE")) {
+                            EntityStateRequired = getEntityState("DEVELOPMENT_COMPLETE");
                         } else {
-                            EntityStateRequired = getEntityState(&quot;VOTING_FUNDS_PROCESSED&quot;);
+                            EntityStateRequired = getEntityState("VOTING_FUNDS_PROCESSED");
                         }
                     } else {
-                        EntityStateRequired = getEntityState(&quot;IN_DEVELOPMENT&quot;);
+                        EntityStateRequired = getEntityState("IN_DEVELOPMENT");
                     }
                 }
 
             }
             /*
-            else if ( CurrentEntityState == getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;) ) {
+            else if ( CurrentEntityState == getEntityState("DEVELOPMENT_COMPLETE") ) {
 
             }
             */
 
         } else {
 
-            if( CurrentEntityState == getEntityState(&quot;NEW&quot;) ) {
-                EntityStateRequired = getEntityState(&quot;WAITING&quot;);
+            if( CurrentEntityState == getEntityState("NEW") ) {
+                EntityStateRequired = getEntityState("WAITING");
             }
         }
 
@@ -1054,7 +1054,7 @@ contract Milestones is ApplicationAsset {
     }
 
     function ApplicationIsInDevelopment() public view returns(bool) {
-        if( getApplicationState() == getApplicationEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
+        if( getApplicationState() == getApplicationEntityState("IN_DEVELOPMENT") ) {
             return true;
         }
         return false;
@@ -1063,7 +1063,7 @@ contract Milestones is ApplicationAsset {
     function MeetingTimeSetFailure() public view returns (bool) {
         Record memory record = Collection[currentRecord];
         uint256 meetingCreationMaxTime = record.time_end - getBylawsMinTimeInTheFutureForMeetingCreation();
-        if(getTimestamp() &gt;= meetingCreationMaxTime ) {
+        if(getTimestamp() >= meetingCreationMaxTime ) {
             return true;
         }
         return false;

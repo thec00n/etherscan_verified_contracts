@@ -49,18 +49,18 @@ contract EthExploder is Owned {
     
     uint256 public seed; 
     
-    mapping (uint16 =&gt; address) playersSmall; 
-    mapping (uint16 =&gt; address) playersMedium; 
-    mapping (uint16 =&gt; address) playersLarge; 
+    mapping (uint16 => address) playersSmall; 
+    mapping (uint16 => address) playersMedium; 
+    mapping (uint16 => address) playersLarge; 
     
     function enterSmall() payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         jackpotSmall += msg.value; 
         playersSmall[smallCount] = msg.sender; 
         seed += uint256(msg.sender);
         
-        if (smallCount &lt; smallSize-1) { 
+        if (smallCount < smallSize-1) { 
             smallCount++;
         } else { 
             seed += gameCount + mediumCount + largeCount;
@@ -82,13 +82,13 @@ contract EthExploder is Owned {
     }
     
     function enterMedium() payable { 
-        require(msg.value &gt; 0); 
+        require(msg.value > 0); 
         
         jackpotMedium += msg.value; 
         playersMedium[mediumCount] = msg.sender; 
         seed += uint256(msg.sender);
          
-        if (mediumCount &lt; mediumSize-1) { 
+        if (mediumCount < mediumSize-1) { 
             mediumCount++;
         } else { 
             seed += gameCount + smallCount + largeCount;
@@ -111,13 +111,13 @@ contract EthExploder is Owned {
     }
     
     function enterLarge() payable { 
-        require(msg.value &gt; 0); 
+        require(msg.value > 0); 
         
         jackpotLarge += msg.value; 
         playersLarge[largeCount] = msg.sender; 
         seed += uint256(msg.sender);
         
-        if (largeCount &lt; largeSize-1) { 
+        if (largeCount < largeSize-1) { 
             largeCount++; 
         } else { 
             seed += gameCount + mediumCount + largeCount; 

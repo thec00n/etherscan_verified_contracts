@@ -8,9 +8,9 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract EdgelessToken {
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name = &#39;Edgeless&#39;;
-    string public symbol = &#39;EDG&#39;;
+    string public standard = 'ERC20';
+    string public name = 'Edgeless';
+    string public symbol = 'EDG';
     uint8 public decimals = 0; 
     uint256 public totalSupply;
     uint256 public currentInterval = 1;
@@ -19,11 +19,11 @@ contract EdgelessToken {
     address public owner;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /* Defines how many tokens of which addresses are locked in which interval*/
-    mapping(address =&gt; mapping(uint256=&gt;uint256)) public locked;
+    mapping(address => mapping(uint256=>uint256)) public locked;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -39,9 +39,9 @@ contract EdgelessToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (now &lt; startTime) throw; //check if the crowdsale is already over
-        if (balanceOf[msg.sender]-locked[msg.sender][getInterval()] &lt; _value) throw;   // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (now < startTime) throw; //check if the crowdsale is already over
+        if (balanceOf[msg.sender]-locked[msg.sender][getInterval()] < _value) throw;   // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -66,10 +66,10 @@ contract EdgelessToken {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (now &lt; startTime &amp;&amp; _from!=owner) throw; //check if the crowdsale is already over
-        if (balanceOf[_from]-locked[_from][getInterval()] &lt; _value) throw;     // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (now < startTime && _from!=owner) throw; //check if the crowdsale is already over
+        if (balanceOf[_from]-locked[_from][getInterval()] < _value) throw;     // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -88,7 +88,7 @@ contract EdgelessToken {
     
     /* Increase the interval, if sufficient time has passed */
     function getInterval() returns (uint256 interval){
-        if (now &gt; currentInterval * intervalLength + startTime) {
+        if (now > currentInterval * intervalLength + startTime) {
             currentInterval = (now - startTime) / intervalLength + 1;
         }
         return currentInterval;

@@ -34,20 +34,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -63,7 +63,7 @@ contract StandardToken is owned, safeMath {
 }
 
 contract MoyTokenOpenDistribution is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address        public admin = owner;      //admin address
   StandardToken  public tokenContract;     // address of MoibeTV MOY ERC20 Standard Token.
 
@@ -80,7 +80,7 @@ contract MoyTokenOpenDistribution is owned, safeMath {
   uint256 public fundingCap;                          
 
   // loop control, startup and limiters
-  string  public CurrentStatus = &quot;&quot;;                          // current OpenDistribution status
+  string  public CurrentStatus = "";                          // current OpenDistribution status
   uint256 public fundingStartBlock;                           // OpenDistribution start block#
   uint256 public fundingEndBlock;                             // OpenDistribution end block#
   bool    public isOpenDistributionClosed = false;            // OpenDistribution completion boolean
@@ -90,13 +90,13 @@ contract MoyTokenOpenDistribution is owned, safeMath {
   event Transfer(address indexed from, address indexed to, uint256 value); 
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Buy(address indexed _sender, uint256 _eth, uint256 _MOY);
-  mapping(address =&gt; uint256) balancesArray;
-  mapping(address =&gt; uint256) fundValue;
+  mapping(address => uint256) balancesArray;
+  mapping(address => uint256) fundValue;
 
   // default function, map admin
   function MoyOpenDistribution() public onlyOwner {
     admin = msg.sender;
-    CurrentStatus = &quot;Tokens Released, Open Distribution deployed to chain&quot;;
+    CurrentStatus = "Tokens Released, Open Distribution deployed to chain";
   }
 
   // total number of tokens initially
@@ -112,8 +112,8 @@ contract MoyTokenOpenDistribution is owned, safeMath {
   // setup the OpenDistribution parameters
   function setupOpenDistribution(uint256 _fundingStartBlock, uint256 _fundingEndBlock, address _tokenContract, address _budgetWallet) public onlyOwner returns (bytes32 response) {
       if ((msg.sender == admin)
-      &amp;&amp; (!(isOpenDistributionSetup))
-      &amp;&amp; (!(budgetWallet &gt; 0))){
+      && (!(isOpenDistributionSetup))
+      && (!(budgetWallet > 0))){
           // init addresses
           tokenContract = StandardToken(_tokenContract);                             //MoibeTV MOY tokens Smart Contract.
           budgetWallet = _budgetWallet;                 //Budget multisig.
@@ -132,29 +132,29 @@ contract MoyTokenOpenDistribution is owned, safeMath {
           // configure OpenDistribution
           isOpenDistributionSetup = true;
           isOpenDistributionClosed = false;
-          CurrentStatus = &quot;OpenDistribution is setup&quot;;
+          CurrentStatus = "OpenDistribution is setup";
 
           //gas reduction experiment
           setPrice();
-          return &quot;OpenDistribution is setup&quot;;
+          return "OpenDistribution is setup";
       } else if (msg.sender != admin) {
-          return &quot;Not Authorized&quot;;
+          return "Not Authorized";
       } else  {
-          return &quot;Campaign cannot be changed.&quot;;
+          return "Campaign cannot be changed.";
       }
     }
 
-    function setPrice() public {  //Verificar si es necesario que sea p&#250;blica. 
+    function setPrice() public {  //Verificar si es necesario que sea pública. 
 
       //Funding Starts at the 1st Block of the Year. The very 1st block of the year is 4830771 UTC+14(Christmas Islands).      
       //After that, all the CrowdSale is measured in UTC-11(Fiji), to give chance until the very last block of each day.    
-        if (block.number &gt;= fundingStartBlock &amp;&amp; block.number &lt;= fundingStartBlock+11520) { // First Day 300% Bonus, 1 ETH = 3000 MOY.
+        if (block.number >= fundingStartBlock && block.number <= fundingStartBlock+11520) { // First Day 300% Bonus, 1 ETH = 3000 MOY.
         tokensPerEthPrice = 3000; 
-      } else if (block.number &gt;= fundingStartBlock+11521 &amp;&amp; block.number &lt;= fundingStartBlock+46080) { // First Week 200% Bonus, 1 ETH = 2000 MOY.
+      } else if (block.number >= fundingStartBlock+11521 && block.number <= fundingStartBlock+46080) { // First Week 200% Bonus, 1 ETH = 2000 MOY.
         tokensPerEthPrice = 2000; //Regular Price for All Stages.
-      } else if (block.number &gt;= fundingStartBlock+46081 &amp;&amp; block.number &lt;= fundingStartBlock+86400) { // Second Week 150% Bonus, 1 ETH = 1500 MOY.
+      } else if (block.number >= fundingStartBlock+46081 && block.number <= fundingStartBlock+86400) { // Second Week 150% Bonus, 1 ETH = 1500 MOY.
         tokensPerEthPrice = 2000; //Regular Price for All Stages.
-      } else if (block.number &gt;= fundingStartBlock+86401 &amp;&amp; block.number &lt;= fundingEndBlock) { // Regular Sale, final price for all users 1 ETH = 1000 MOY. 
+      } else if (block.number >= fundingStartBlock+86401 && block.number <= fundingEndBlock) { // Regular Sale, final price for all users 1 ETH = 1000 MOY. 
         tokensPerEthPrice = 1000; //Regular Price for All Stages.
       }  
          }
@@ -168,10 +168,10 @@ contract MoyTokenOpenDistribution is owned, safeMath {
     function BuyMOYTokens() public payable {
       // 0. conditions (length, OpenDistribution setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc.)
       require(!(msg.value == 0)
-      &amp;&amp; (isOpenDistributionSetup)
-      &amp;&amp; (block.number &gt;= fundingStartBlock)
-      &amp;&amp; (block.number &lt;= fundingEndBlock)
-      &amp;&amp; (tokensRemaining &gt; 0));
+      && (isOpenDistributionSetup)
+      && (block.number >= fundingStartBlock)
+      && (block.number <= fundingEndBlock)
+      && (tokensRemaining > 0));
 
       // 1. vars
       uint256 rewardTransferAmount = 0;
@@ -192,43 +192,43 @@ contract MoyTokenOpenDistribution is owned, safeMath {
     }
 
     function budgetMultiSigWithdraw(uint256 _amount) public onlyOwner {
-      require(areFundsReleasedToBudget &amp;&amp; (amountRaised &gt;= fundingCap));
+      require(areFundsReleasedToBudget && (amountRaised >= fundingCap));
       budgetWallet.transfer(_amount);
     }
 
     function checkGoalReached() public onlyOwner returns (bytes32 response) { // return OpenDistribution status to owner for each result case, update public constant.
-      // update state &amp; status variables
+      // update state & status variables
       require (isOpenDistributionSetup);
-      if ((amountRaised &lt; fundingCap) &amp;&amp; (block.number &lt;= fundingEndBlock &amp;&amp; block.number &gt;= fundingStartBlock)) { // OpenDistribution in progress waiting for hardcap.
+      if ((amountRaised < fundingCap) && (block.number <= fundingEndBlock && block.number >= fundingStartBlock)) { // OpenDistribution in progress waiting for hardcap.
         areFundsReleasedToBudget = false;
         isOpenDistributionClosed = false;
-        CurrentStatus = &quot;OpenDistribution in progress, waiting to reach goal.&quot;;
-        return &quot;OpenDistribution in progress.&quot;;
-      } else if ((amountRaised &lt; fundingCap) &amp;&amp; (block.number &lt; fundingStartBlock)) { // OpenDistribution has not started.
+        CurrentStatus = "OpenDistribution in progress, waiting to reach goal.";
+        return "OpenDistribution in progress.";
+      } else if ((amountRaised < fundingCap) && (block.number < fundingStartBlock)) { // OpenDistribution has not started.
         areFundsReleasedToBudget = false;
         isOpenDistributionClosed = false;
-        CurrentStatus = &quot;OpenDistribution is setup&quot;;
-        return &quot;OpenDistribution is setup&quot;;
-      } else if ((amountRaised &lt; fundingCap) &amp;&amp; (block.number &gt; fundingEndBlock)) { // OpenDistribution ended, total not achieved.
+        CurrentStatus = "OpenDistribution is setup";
+        return "OpenDistribution is setup";
+      } else if ((amountRaised < fundingCap) && (block.number > fundingEndBlock)) { // OpenDistribution ended, total not achieved.
         areFundsReleasedToBudget = false;
         isOpenDistributionClosed = true;
-        CurrentStatus = &quot;OpenDistribution is Over.&quot;;
-        return &quot;OpenDistribution is Over&quot;;
-      } else if ((amountRaised &gt;= fundingCap) &amp;&amp; (tokensRemaining == 0)) { // Distribution ended, all tokens gone.
+        CurrentStatus = "OpenDistribution is Over.";
+        return "OpenDistribution is Over";
+      } else if ((amountRaised >= fundingCap) && (tokensRemaining == 0)) { // Distribution ended, all tokens gone.
           areFundsReleasedToBudget = true;
           isOpenDistributionClosed = true;
-          CurrentStatus = &quot;Successful OpenDistribution.&quot;;
-          return &quot;Successful OpenDistribution.&quot;;
-      } else if ((amountRaised &gt;= fundingCap) &amp;&amp; (block.number &gt; fundingEndBlock) &amp;&amp; (tokensRemaining &gt; 0)) { // OpenDistribution ended.
+          CurrentStatus = "Successful OpenDistribution.";
+          return "Successful OpenDistribution.";
+      } else if ((amountRaised >= fundingCap) && (block.number > fundingEndBlock) && (tokensRemaining > 0)) { // OpenDistribution ended.
           areFundsReleasedToBudget = true;
           isOpenDistributionClosed = true;
-          CurrentStatus = &quot;Successful OpenDistribution.&quot;;
-          return &quot;Successful OpenDistribution&quot;;
-      } else if ((amountRaised &gt;= fundingCap) &amp;&amp; (tokensRemaining &gt; 0) &amp;&amp; (block.number &lt;= fundingEndBlock)) { // OpenDistribution in progress, objetive achieved!
+          CurrentStatus = "Successful OpenDistribution.";
+          return "Successful OpenDistribution";
+      } else if ((amountRaised >= fundingCap) && (tokensRemaining > 0) && (block.number <= fundingEndBlock)) { // OpenDistribution in progress, objetive achieved!
         areFundsReleasedToBudget = true;
         isOpenDistributionClosed = false;
-        CurrentStatus = &quot;OpenDistribution in Progress, Goal Achieved.&quot;;
-        return &quot;Goal Achieved.&quot;;
+        CurrentStatus = "OpenDistribution in Progress, Goal Achieved.";
+        return "Goal Achieved.";
       }
       setPrice();
     }

@@ -18,7 +18,7 @@ pragma solidity 		^0.4.21	;
 		// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 												
 												
-			string	Compte_1	=	&quot;	une premi&#232;re phrase			&quot;	;	
+			string	Compte_1	=	"	une première phrase			"	;	
 												
 			function	setCompte_1	(	string	newCompte_1	)	public	onlyOwner	{	
 				Compte_1	=	newCompte_1	;					
@@ -33,7 +33,7 @@ pragma solidity 		^0.4.21	;
 		// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 												
 												
-			string	Compte_2	=	&quot;	une premi&#232;re phrase			&quot;	;	
+			string	Compte_2	=	"	une première phrase			"	;	
 												
 			function	setCompte_2	(	string	newCompte_2	)	public	onlyOwner	{	
 				Compte_2	=	newCompte_2	;					
@@ -48,7 +48,7 @@ pragma solidity 		^0.4.21	;
 		// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 												
 												
-			string	Compte_3	=	&quot;	une premi&#232;re phrase			&quot;	;	
+			string	Compte_3	=	"	une première phrase			"	;	
 												
 			function	setCompte_3	(	string	newCompte_3	)	public	onlyOwner	{	
 				Compte_3	=	newCompte_3	;					
@@ -63,7 +63,7 @@ pragma solidity 		^0.4.21	;
 		// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 												
 												
-			string	Compte_4	=	&quot;	une premi&#232;re phrase			&quot;	;	
+			string	Compte_4	=	"	une première phrase			"	;	
 												
 			function	setCompte_4	(	string	newCompte_4	)	public	onlyOwner	{	
 				Compte_4	=	newCompte_4	;					
@@ -77,56 +77,56 @@ pragma solidity 		^0.4.21	;
 												
 												
 //	Descriptif :											
-//	Relev&#233; &#171;&#160;Teneur de Compte&#160;&#187; positions &#171;&#160;OTC-LLV&#160;&#187;											
+//	Relevé « Teneur de Compte » positions « OTC-LLV »											
 //	Edition initiale :											
 //	03.05.2018											
 //												
-//	Teneur de Compte Interm&#233;diaire :											
-//	&#171;&#160;C****** * P******* S********** Soci&#233;t&#233; Autonome et d&#233;centralis&#233;e (D.A.C.)&#160;&#187;											
+//	Teneur de Compte Intermédiaire :											
+//	« C****** * P******* S********** Société Autonome et décentralisée (D.A.C.) »											
 //	Titulaire des comptes (principal) / Groupe											
-//	&#171;&#160;C****** * P******* S********** Soci&#233;t&#233; Autonome et d&#233;centralis&#233;e (D.A.C.)&#160;&#187;											
+//	« C****** * P******* S********** Société Autonome et décentralisée (D.A.C.) »											
 //												
 //	-											
 //	-											
 //	-											
 //	-											
 //												
-//	Place de march&#233; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	Teneur de march&#233; (sans obligation contractuelle) :											
+//	Place de marché :											
+//	« LLV_v30_12 »											
+//	Teneur de marché (sans obligation contractuelle) :											
 //	-											
 //	Courtier / Distributeur :											
 //	-											
 //	Contrepartie centrale :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	D&#233;positaire :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
+//	Dépositaire :											
+//	« LLV_v30_12 »											
 //	Teneur de compte (principal) / Holding :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
 //	Garant :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	&#171;&#160;Chambre de Compensation&#160;&#187; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	Op&#233;rateur &#171;&#160;R&#232;glement-Livraison&#160;&#187; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
+//	« Chambre de Compensation » :											
+//	« LLV_v30_12 »											
+//	Opérateur « Règlement-Livraison » :											
+//	« LLV_v30_12 »											
 //												
-//	Fonctions d&#39;&#233;dition de comptes :											
+//	Fonctions d'édition de comptes :											
 //	Input : [ _Compte_i ]											
-//	Outputs : [ _Compte ; _Contrat ; _Cotation ; _Quantit&#233; ; _Notionnel ; _Deposit ]											
+//	Outputs : [ _Compte ; _Contrat ; _Cotation ; _Quantité ; _Notionnel ; _Deposit ]											
 //												
 //												
-//	&#171;&#160;Compte&#160;&#187;											
-//	Compte du groupe C****** * P*******, par titulaire et ayant-droit-&#233;conomique											
-//	&#171;&#160;Contrat&#160;&#187;											
-//	D&#233;nomination du contrat											
-//	&#171;&#160;Cotation&#160;&#187;											
+//	« Compte »											
+//	Compte du groupe C****** * P*******, par titulaire et ayant-droit-économique											
+//	« Contrat »											
+//	Dénomination du contrat											
+//	« Cotation »											
 //	Cours initial lors de la souscription du contrat											
-//	&#171;&#160;Quantit&#233;&#160;&#187;											
-//	Nombre d&#39;unit&#233;s de compte en volume											
-//	&#171;&#160;Notionnel&#160;&#187;											
+//	« Quantité »											
+//	Nombre d'unités de compte en volume											
+//	« Notionnel »											
 //	Valeur notionnelle totale couverte											
-//	&#171;&#160;Deposit&#160;&#187;											
-//	Montant initial apport&#233; en garantie lors de la souscription du contrat											
+//	« Deposit »											
+//	Montant initial apporté en garantie lors de la souscription du contrat											
 //												
 //												
 //												

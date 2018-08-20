@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -109,8 +109,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -173,7 +173,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -258,9 +258,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SimpleCoinToken is MintableToken {
     
-  string public constant name = &quot;AntiqMall&quot;;
+  string public constant name = "AntiqMall";
    
-  string public constant symbol = &quot;AMT&quot;;
+  string public constant symbol = "AMT";
     
   uint32 public constant decimals = 18;
     
@@ -341,7 +341,7 @@ contract Crowdsale is Ownable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   
   modifier saleIsOn() {
-    require(currentState &lt;= State.ico);
+    require(currentState <= State.ico);
     _;
   }
 
@@ -368,7 +368,7 @@ contract Crowdsale is Ownable {
     tokens = tokens.mul(25).div(100);
     tokens = tokens.sub(bountyTokensCount);
     
-    require(tokens &gt;= 1);
+    require(tokens >= 1);
       
     // update state
     tokensCount = tokensCount.add(tokens);
@@ -386,7 +386,7 @@ contract Crowdsale is Ownable {
   function buyTokens(address beneficiary) public saleIsOn payable {
     require(beneficiary != address(0));
     require(msg.value != 0);
-    require(msg.value &gt;= MIN_WEI_VALUE);
+    require(msg.value >= MIN_WEI_VALUE);
     
     uint256 limit = getLimit();
     
@@ -398,7 +398,7 @@ contract Crowdsale is Ownable {
     
     tokens = tokens.add(bonusTokens);
     
-    require(limit &gt;= tokensCount.add(tokens).sub(bountyTokensCount));
+    require(limit >= tokensCount.add(tokens).sub(bountyTokensCount));
 
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -415,7 +415,7 @@ contract Crowdsale is Ownable {
     if(currentState == State.pre_ico) {
       bonusTokens = _tokens.div(100).mul(PRE_ICO_BONUS);
       
-      if(_weiAmount &gt;= PRE_ICO_SALE_VALUE.mul(1e18)) {
+      if(_weiAmount >= PRE_ICO_SALE_VALUE.mul(1e18)) {
         bonusTokens = _tokens.div(100).mul(PRE_ICO_SALE_BONUS);
       }
     }
@@ -436,16 +436,16 @@ contract Crowdsale is Ownable {
         
         bonusTokens = _tokens.div(100).mul(EARLY_PRE_ICO_SALE_BONUS_0);
         
-        if(_weiAmount &gt;= 0.5*1e18 &amp;&amp; _weiAmount &lt; EARLY_PRE_ICO_SALE_VALUE_1.mul(1e18)) {
+        if(_weiAmount >= 0.5*1e18 && _weiAmount < EARLY_PRE_ICO_SALE_VALUE_1.mul(1e18)) {
             bonusTokens = _tokens.div(100).mul(EARLY_PRE_ICO_SALE_BONUS_1);
         }
-        if(_weiAmount &gt;= EARLY_PRE_ICO_SALE_VALUE_1.mul(1e18) &amp;&amp; _weiAmount &lt; EARLY_PRE_ICO_SALE_VALUE_2.mul(1e18)) {
+        if(_weiAmount >= EARLY_PRE_ICO_SALE_VALUE_1.mul(1e18) && _weiAmount < EARLY_PRE_ICO_SALE_VALUE_2.mul(1e18)) {
             bonusTokens = _tokens.div(100).mul(EARLY_PRE_ICO_SALE_BONUS_2);
         }
-        if(_weiAmount &gt;= EARLY_PRE_ICO_SALE_VALUE_2.mul(1e18) &amp;&amp; _weiAmount &lt; EARLY_PRE_ICO_SALE_VALUE_3.mul(1e18)) {
+        if(_weiAmount >= EARLY_PRE_ICO_SALE_VALUE_2.mul(1e18) && _weiAmount < EARLY_PRE_ICO_SALE_VALUE_3.mul(1e18)) {
             bonusTokens = _tokens.div(100).mul(EARLY_PRE_ICO_SALE_BONUS_3);
         }
-        if(_weiAmount &gt;= EARLY_PRE_ICO_SALE_VALUE_3.mul(1e18)) {
+        if(_weiAmount >= EARLY_PRE_ICO_SALE_VALUE_3.mul(1e18)) {
             bonusTokens = _tokens.div(100).mul(EARLY_PRE_ICO_SALE_BONUS_4);
         }
     }
@@ -454,7 +454,7 @@ contract Crowdsale is Ownable {
   }
   
   function getLimit() private returns(uint256 _limit) {
-    if(currentState &lt;= State.pre_ico) {
+    if(currentState <= State.pre_ico) {
       return PRE_ICO_TOKENS_LIMIT;
     }
     

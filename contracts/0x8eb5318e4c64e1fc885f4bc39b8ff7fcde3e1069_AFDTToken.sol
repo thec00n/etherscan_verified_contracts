@@ -8,10 +8,10 @@ pragma solidity ^0.4.21;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -19,7 +19,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,9 +92,9 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
     uint public _totalSupply;
   
 
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
+    mapping (address => bool) public frozenAccount;
 
      /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -105,7 +105,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     } 
 
@@ -114,8 +114,8 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;AFDT&quot;;
-        name = &quot;AFDChain&quot;;
+        symbol = "AFDT";
+        name = "AFDChain";
         decimals = 8;
         _totalSupply = 2100000000 * 10**uint(decimals);
         owner = 0xDAd085eB10FefC2c2ddac7dc9d22c7DBf1A78480;
@@ -143,8 +143,8 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) onlyPayloadSize(safeMul(2,32)) public  returns (bool success) {
@@ -155,7 +155,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
     // ------------------------------------------------------------------------
@@ -178,8 +178,8 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
     function transferFrom(address from, address to, uint tokens)  onlyPayloadSize(safeMul(3,32)) public returns (bool success) {
 
         require (to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[from] &gt;= tokens);               // Check if the sender has enough
-        require (safeAdd(balances[to] , tokens) &gt;= balances[to]); // Check for overflows
+        require (balances[from] >= tokens);               // Check if the sender has enough
+        require (safeAdd(balances[to] , tokens) >= balances[to]); // Check for overflows
         require(!frozenAccount[from]);                     // Check if sender is frozen
         require(!frozenAccount[to]);                       // Check if recipient is frozen
 
@@ -193,7 +193,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -202,7 +202,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -214,7 +214,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
 
 
 
-     /// @notice `freeze? Prevent | Allow` `from` from sending &amp; receiving tokens
+     /// @notice `freeze? Prevent | Allow` `from` from sending & receiving tokens
     /// @param from Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address from, bool freeze) onlyOwner public {
@@ -226,8 +226,8 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);               // Check if the sender has enough
-        require (safeAdd(balances[_to] , _value) &gt;= balances[_to]); // Check for overflows
+        require (balances[_from] >= _value);               // Check if the sender has enough
+        require (safeAdd(balances[_to] , _value) >= balances[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         
@@ -244,7 +244,7 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] = safeSub(balances[msg.sender], _value); // Subtract from the sender
         _totalSupply = safeSub(_totalSupply, _value); // Updates totalSupply
                      
@@ -261,10 +261,10 @@ contract AFDTToken is TokenERC20, Owned, SafeMath {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = safeSub(balances[_from], _value); // Subtract from the targeted balance
-        allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value); // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value); // Subtract from the sender's allowance
         _totalSupply = safeSub(_totalSupply, _value);  // Update totalSupply
         emit Burn(_from, _value);
         return true;

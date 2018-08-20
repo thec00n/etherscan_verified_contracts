@@ -34,28 +34,28 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
  
 contract GwbToken is ERC223, SafeMath {
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
-    string public name = &quot;GoWeb&quot;;
-    string public symbol = &quot;GWB&quot;;
+    string public name = "GoWeb";
+    string public symbol = "GWB";
     uint8 public decimals = 8;
     uint256 public totalSupply = 7500000000000000;
 
@@ -87,7 +87,7 @@ contract GwbToken is ERC223, SafeMath {
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {        
         if(isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) revert();
+            if (balanceOf(msg.sender) < _value) revert();
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
             balances[_to] = safeAdd(balanceOf(_to), _value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -129,7 +129,7 @@ contract GwbToken is ERC223, SafeMath {
   
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bool isErc20Transfer, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         if (isErc20Transfer)
@@ -141,7 +141,7 @@ contract GwbToken is ERC223, SafeMath {
     
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bool isErc20Transfer, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -160,7 +160,7 @@ contract GwbToken is ERC223, SafeMath {
               //retrieve the size of the code on target address, this needs assembly
               length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
   
     function balanceOf(address _owner) public view returns (uint balance) {

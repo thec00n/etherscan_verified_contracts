@@ -4,8 +4,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract OysterPearl {
     // Public variables of the token
-    string public name = &quot;Oyster Pearl&quot;;
-    string public symbol = &quot;TESTPRL&quot;;
+    string public name = "Oyster Pearl";
+    string public symbol = "TESTPRL";
     uint8 public decimals = 18;
     uint256 public totalSupply;
     uint256 public funds = 0;
@@ -17,10 +17,10 @@ contract OysterPearl {
     uint256 public feeAmount;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -51,7 +51,7 @@ contract OysterPearl {
     
     modifier onlyOwner {
         require(!ownerLock);
-        require(block.number &lt; 8000000);
+        require(block.number < 8000000);
         require(msg.sender == owner);
         _;
     }
@@ -80,7 +80,7 @@ contract OysterPearl {
     }
     
     function bury() public {
-        require(balanceOf[msg.sender] &gt; claimAmount);
+        require(balanceOf[msg.sender] > claimAmount);
         require(!buried[msg.sender]);
         buried[msg.sender] = true;
         claimed[msg.sender] = 1;
@@ -89,8 +89,8 @@ contract OysterPearl {
     
     function claim(address _payout, address _fee) public {
         require(buried[msg.sender]);
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= 60);
-        require(balanceOf[msg.sender] &gt;= claimAmount);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= 60);
+        require(balanceOf[msg.sender] >= claimAmount);
         claimed[msg.sender] = block.timestamp;
         balanceOf[msg.sender] -= claimAmount;
         balanceOf[_payout] -= payAmount;
@@ -100,11 +100,11 @@ contract OysterPearl {
     
     function () payable public {
         require(!saleClosed);
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         uint256 amount = msg.value * 5000;                // calculates the amount
-        require(totalSupply + amount &lt;= (500000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (500000000 * 10 ** uint256(decimals)));
         totalSupply += amount;                            // increases the total supply 
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
         funds += msg.value;                               // track eth amount raised
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
     }
@@ -121,9 +121,9 @@ contract OysterPearl {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -157,7 +157,7 @@ contract OysterPearl {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -204,7 +204,7 @@ contract OysterPearl {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -220,10 +220,10 @@ contract OysterPearl {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

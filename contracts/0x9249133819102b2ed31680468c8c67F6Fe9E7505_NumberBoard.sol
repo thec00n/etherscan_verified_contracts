@@ -12,13 +12,13 @@ contract NumberBoard {
 		uint			currentBid;
 	}
 
-	mapping(uint =&gt; ANumberCard) 	public ownership;
-	mapping(address =&gt; uint[]) 		public ownershipLookup;
+	mapping(uint => ANumberCard) 	public ownership;
+	mapping(address => uint[]) 		public ownershipLookup;
 
 	uint constant					public minPrice = 1 finney;
 	uint							public houseEarnings;
-	mapping(address =&gt; uint)		public earnings;
-	mapping(address =&gt; uint)		public deadbids;
+	mapping(address => uint)		public earnings;
+	mapping(address => uint)		public deadbids;
 
 	address houseOwner;
 
@@ -38,13 +38,13 @@ contract NumberBoard {
 	}
 
 	function hasOwner(uint theNum) constant returns (bool) {
-		return ownership[theNum].owner &gt; 0;
+		return ownership[theNum].owner > 0;
 	}
 
 	function ownedNumbers(address addr) constant returns (uint[]) {
 		uint l = ownershipLookup[addr].length;
 		uint[] memory ret = new uint[](l);
-		for (uint i = 0; i &lt; l; i++) {
+		for (uint i = 0; i < l; i++) {
 			ret[i] = ownershipLookup[addr][i];
 		}
 		return ret;
@@ -54,7 +54,7 @@ contract NumberBoard {
 		require(!hasOwner(theNum));
 		require(!isOwner(msg.sender, theNum));
 
-		ownership[theNum] = ANumberCard(msg.sender, 0, &quot;&quot;, false, 0, 0, 0);
+		ownership[theNum] = ANumberCard(msg.sender, 0, "", false, 0, 0, 0);
 		ownershipLookup[msg.sender].push(theNum);
 		ownership[theNum].lookupIdx = ownershipLookup[msg.sender].length - 1;
 
@@ -90,12 +90,12 @@ contract NumberBoard {
 	}
 
 	function canAcceptBuyNow(uint theNum, address buyer) constant returns (bool) {
-		return ownership[theNum].owner != buyer &amp;&amp; hasBuyNowOffer(theNum);
+		return ownership[theNum].owner != buyer && hasBuyNowOffer(theNum);
 	}
 
 	function placeBuyNowOffer(uint theNum, uint price) {
 		require(isOwner(msg.sender, theNum));
-		require(price &gt;= minPrice);
+		require(price >= minPrice);
 
 		ANumberCard storage numCard = ownership[theNum];
 		numCard.buyNowPrice = price;
@@ -135,10 +135,10 @@ contract NumberBoard {
 	function placeNewBid(uint theNum) payable {
 		require(hasOwner(theNum));
 		require(!isOwner(msg.sender, theNum));
-		require(msg.value &gt;= minPrice);
+		require(msg.value >= minPrice);
 
 		ANumberCard storage numCard = ownership[theNum];
-		require(msg.value &gt; numCard.currentBid + minPrice);
+		require(msg.value > numCard.currentBid + minPrice);
 
 		deadbids[numCard.currentBidder] += numCard.currentBid;
 
@@ -168,7 +168,7 @@ contract NumberBoard {
 		require(isOwner(msg.sender, theNum));
 
 		ANumberCard storage numCard = ownership[theNum];
-		require(numCard.currentBid &gt; 0);
+		require(numCard.currentBid > 0);
 		require(numCard.currentBidder != 0);
 
 		uint amount = numCard.currentBid;

@@ -72,7 +72,7 @@ contract myUsingOracalize is Ownable {
     
     function oraclize_query(string datasource, string arg1, string arg2) internal returns (bytes32 id) {
         uint price = oraclize.getPrice(datasource, oracalize_gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*oracalize_gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*oracalize_gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, oracalize_gaslimit);
     }
     
@@ -85,25 +85,25 @@ contract myUsingOracalize is Ownable {
     }
     
     function oraclize_setNetwork() internal {
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
         }
-        else if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        else if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
         }
-        else if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        else if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
         }
-        else if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        else if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
         }
-        else if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        else if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
         }
-        else if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        else if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
         }
-        else if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        else if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
         }
         else {
@@ -119,22 +119,22 @@ contract myUsingOracalize is Ownable {
     }
 
     // This will not throw error on wrong input, but instead consume large and unknown amount of gas
-    // This should never occure as it&#39;s use with the ShapeShift deposit return value is checked before calling function
+    // This should never occure as it's use with the ShapeShift deposit return value is checked before calling function
     function parseAddr(string _a) internal returns (address){
         bytes memory tmp = bytes(_a);
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -142,7 +142,7 @@ contract myUsingOracalize is Ownable {
 }
 
 /// @title Inter-crypto currency converter
-/// @author Jack Tanner - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f25213b7e790f262c612e2c613a24">[email&#160;protected]</a>&gt;
+/// @author Jack Tanner - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f25213b7e790f262c612e2c613a24">[email protected]</a>>
 contract InterCrypto is Ownable, myUsingOracalize {
     // _______________VARIABLES_______________
     struct Transaction {
@@ -150,10 +150,10 @@ contract InterCrypto is Ownable, myUsingOracalize {
         uint amount;
     }
 
-    mapping (uint =&gt; Transaction) public transactions;
+    mapping (uint => Transaction) public transactions;
     uint transactionCount = 0;
-    mapping (bytes32 =&gt; uint) oracalizeMyId2transactionID;
-    mapping (address =&gt; uint) public recoverable;
+    mapping (bytes32 => uint) oracalizeMyId2transactionID;
+    mapping (address => uint) public recoverable;
 
     // _______________EVENTS_______________
     event TransactionStarted(uint indexed transactionID);
@@ -175,7 +175,7 @@ contract InterCrypto is Ownable, myUsingOracalize {
 
     // Return the price of using Oracalize
     function getInterCryptoPrice() constant public returns (uint) {
-        return oraclize_getPrice(&#39;URL&#39;);
+        return oraclize_getPrice('URL');
     }
 
     // Create a cryptocurrency conversion using Oracalize and Shapeshift return address = msg.sender
@@ -196,7 +196,7 @@ contract InterCrypto is Ownable, myUsingOracalize {
         Transaction memory transaction = transactions[transactionID];
         
         if( bytes(result).length == 0 ) {
-            TransactionAborted(transactionID, &quot;Oracalize return value was invalid, this is probably due to incorrect sendToOtherBlockchain() argments&quot;);
+            TransactionAborted(transactionID, "Oracalize return value was invalid, this is probably due to incorrect sendToOtherBlockchain() argments");
             recoverable[transaction.returnAddress] += transaction.amount;
             transaction.amount = 0;
         }
@@ -208,7 +208,7 @@ contract InterCrypto is Ownable, myUsingOracalize {
             if (depositAddress.send(sendAmount))
                 TransactionSentToShapeShift(transactionID, transaction.returnAddress, depositAddress, sendAmount);
             else {
-                TransactionAborted(transactionID, &quot;transaction to address returned by Oracalize failed&quot;);
+                TransactionAborted(transactionID, "transaction to address returned by Oracalize failed");
                 recoverable[transaction.returnAddress] += sendAmount;
             }
         }
@@ -219,11 +219,11 @@ contract InterCrypto is Ownable, myUsingOracalize {
     function cancelTransaction(uint transactionID) external {
         Transaction memory transaction = transactions[transactionID];
         
-        if (transaction.amount &gt; 0) {
+        if (transaction.amount > 0) {
             require(msg.sender == transaction.returnAddress);
             recoverable[msg.sender] += transaction.amount;
             transaction.amount = 0;
-            TransactionAborted(transactionID, &quot;transaction cancelled by creator&quot;);
+            TransactionAborted(transactionID, "transaction cancelled by creator");
         }
     }
 
@@ -245,37 +245,37 @@ contract InterCrypto is Ownable, myUsingOracalize {
     // Request for a ShapeShift transaction to be made
     function engine(string _coinSymbol, string _toAddress, address _returnAddress) internal returns(uint transactionID) {
         // Example arguments:
-        // &quot;ltc&quot;, &quot;LbZcDdMeP96ko85H21TQii98YFF9RgZg3D&quot;   Litecoin
-        // &quot;btc&quot;, &quot;1L8oRijgmkfcZDYA21b73b6DewLtyYs87s&quot;   Bitcoin
-        // &quot;dash&quot;, &quot;Xoopows17idkTwNrMZuySXBwQDorsezQAx&quot;  Dash
-        // &quot;zec&quot;, &quot;t1N7tf1xRxz5cBK51JADijLDWS592FPJtya&quot;  ZCash
-        // &quot;doge&quot;, &quot;DMAFvwTH2upni7eTau8au6Rktgm2bUkMei&quot;   Dogecoin
+        // "ltc", "LbZcDdMeP96ko85H21TQii98YFF9RgZg3D"   Litecoin
+        // "btc", "1L8oRijgmkfcZDYA21b73b6DewLtyYs87s"   Bitcoin
+        // "dash", "Xoopows17idkTwNrMZuySXBwQDorsezQAx"  Dash
+        // "zec", "t1N7tf1xRxz5cBK51JADijLDWS592FPJtya"  ZCash
+        // "doge", "DMAFvwTH2upni7eTau8au6Rktgm2bUkMei"   Dogecoin
         // See https://info.shapeshift.io/about
         // Test symbol pairs using ShapeShift API (shapeshift.io/validateAddress/[address]/[coinSymbol]) or by creating a test
         // transaction first whenever possible before using it with InterCrypto
         
         transactionID = transactionCount++;
 
-        if (!isValidateParameter(_coinSymbol, 6) || !isValidateParameter(_toAddress, 120)) { // Waves smbol is &quot;waves&quot; , Monero integrated addresses are 106 characters
-            TransactionAborted(transactionID, &quot;input parameters are too long or contain invalid symbols&quot;);
+        if (!isValidateParameter(_coinSymbol, 6) || !isValidateParameter(_toAddress, 120)) { // Waves smbol is "waves" , Monero integrated addresses are 106 characters
+            TransactionAborted(transactionID, "input parameters are too long or contain invalid symbols");
             recoverable[msg.sender] += msg.value;
             return;
         }
         
         uint oracalizePrice = getInterCryptoPrice();
 
-        if (msg.value &gt; oracalizePrice) {
+        if (msg.value > oracalizePrice) {
             Transaction memory transaction = Transaction(_returnAddress, msg.value-oracalizePrice);
             transactions[transactionID] = transaction;
             
-            // Create post data string like &#39; {&quot;withdrawal&quot;:&quot;LbZcDdMeP96ko85H21TQii98YFF9RgZg3D&quot;,&quot;pair&quot;:&quot;eth_ltc&quot;,&quot;returnAddress&quot;:&quot;558999ff2e0daefcb4fcded4c89e07fdf9ccb56c&quot;}&#39;
+            // Create post data string like ' {"withdrawal":"LbZcDdMeP96ko85H21TQii98YFF9RgZg3D","pair":"eth_ltc","returnAddress":"558999ff2e0daefcb4fcded4c89e07fdf9ccb56c"}'
             string memory postData = createShapeShiftTransactionPost(_coinSymbol, _toAddress);
 
             // TODO: send custom gasLimit for retrn transaction equal to the exact cost of __callback. Note that this should only be donewhen the contract is finalized
-            bytes32 myQueryId = oraclize_query(&quot;URL&quot;, &quot;json(https://shapeshift.io/shift).deposit&quot;, postData);
+            bytes32 myQueryId = oraclize_query("URL", "json(https://shapeshift.io/shift).deposit", postData);
             
             if (myQueryId == 0) {
-                TransactionAborted(transactionID, &quot;unexpectedly high Oracalize price when calling oracalize_query&quot;);
+                TransactionAborted(transactionID, "unexpectedly high Oracalize price when calling oracalize_query");
                 recoverable[msg.sender] += msg.value-oracalizePrice;
                 transaction.amount = 0;
                 return;
@@ -284,7 +284,7 @@ contract InterCrypto is Ownable, myUsingOracalize {
             TransactionStarted(transactionID);
         }
         else {
-            TransactionAborted(transactionID, &quot;Not enough Ether sent to cover Oracalize fee&quot;);
+            TransactionAborted(transactionID, "Not enough Ether sent to cover Oracalize fee");
             // transactions[transactionID].amount = 0;
             recoverable[msg.sender] += msg.value;
         }
@@ -294,17 +294,17 @@ contract InterCrypto is Ownable, myUsingOracalize {
     function isValidateParameter(string _parameter, uint maxSize) constant internal returns (bool allowed) {
         bytes memory parameterBytes = bytes(_parameter);
         uint lengthBytes = parameterBytes.length;
-        if (lengthBytes &lt; 1 ||
-            lengthBytes &gt; maxSize) {
+        if (lengthBytes < 1 ||
+            lengthBytes > maxSize) {
             return false;
         }
         
-        for (uint i = 0; i &lt; lengthBytes; i++) {
+        for (uint i = 0; i < lengthBytes; i++) {
             byte b = parameterBytes[i];
             if ( !(
-                (b &gt;= 48 &amp;&amp; b &lt;= 57) || // 0 - 9
-                (b &gt;= 65 &amp;&amp; b &lt;= 90) || // A - Z
-                (b &gt;= 97 &amp;&amp; b &lt;= 122)   // a - z
+                (b >= 48 && b <= 57) || // 0 - 9
+                (b >= 65 && b <= 90) || // A - Z
+                (b >= 97 && b <= 122)   // a - z
             )) {
                 return false;
             }
@@ -317,20 +317,20 @@ contract InterCrypto is Ownable, myUsingOracalize {
 
         uint i = 0;
         uint j;
-        for (j = 0; j &lt; b1.length; j++) bFinal[i++] = b1[j];
-        for (j = 0; j &lt; b2.length; j++) bFinal[i++] = b2[j];
-        for (j = 0; j &lt; b3.length; j++) bFinal[i++] = b3[j];
-        for (j = 0; j &lt; b4.length; j++) bFinal[i++] = b4[j];
-        for (j = 0; j &lt; b5.length; j++) bFinal[i++] = b5[j];
-        for (j = 0; j &lt; b6.length; j++) bFinal[i++] = b6[j];
-        for (j = 0; j &lt; b7.length; j++) bFinal[i++] = b7[j];
+        for (j = 0; j < b1.length; j++) bFinal[i++] = b1[j];
+        for (j = 0; j < b2.length; j++) bFinal[i++] = b2[j];
+        for (j = 0; j < b3.length; j++) bFinal[i++] = b3[j];
+        for (j = 0; j < b4.length; j++) bFinal[i++] = b4[j];
+        for (j = 0; j < b5.length; j++) bFinal[i++] = b5[j];
+        for (j = 0; j < b6.length; j++) bFinal[i++] = b6[j];
+        for (j = 0; j < b7.length; j++) bFinal[i++] = b7[j];
     }
 
     function createShapeShiftTransactionPost(string _coinSymbol, string _toAddress) internal returns (string sFinal) {
-        string memory s1 = &#39; {&quot;withdrawal&quot;:&quot;&#39;;
-        string memory s3 = &#39;&quot;,&quot;pair&quot;:&quot;eth_&#39;;
-        string memory s5 = &#39;&quot;,&quot;returnAddress&quot;:&quot;&#39;;
-        string memory s7 = &#39;&quot;}&#39;;
+        string memory s1 = ' {"withdrawal":"';
+        string memory s3 = '","pair":"eth_';
+        string memory s5 = '","returnAddress":"';
+        string memory s7 = '"}';
 
         bytes memory bFinal = concatBytes(bytes(s1), bytes(_toAddress), bytes(s3), bytes(_coinSymbol), bytes(s5), bytes(addressToBytes(msg.sender)), bytes(s7));
 
@@ -339,10 +339,10 @@ contract InterCrypto is Ownable, myUsingOracalize {
 
         // Authored by https://github.com/axic
     function nibbleToChar(uint nibble) internal returns (uint ret) {
-        if (nibble &gt; 9)
-        return nibble + 87; // nibble + &#39;a&#39;- 10
+        if (nibble > 9)
+        return nibble + 87; // nibble + 'a'- 10
         else
-        return nibble + 48; // &#39;0&#39;
+        return nibble + 48; // '0'
     }
 
     // Authored by https://github.com/axic
@@ -350,17 +350,17 @@ contract InterCrypto is Ownable, myUsingOracalize {
         uint160 tmp = uint160(_address);
 
         // 40 bytes of space, but actually uses 64 bytes
-        string memory holder = &quot;                                        &quot;;
+        string memory holder = "                                        ";
         bytes memory ret = bytes(holder);
 
         // NOTE: this is written in an expensive way, as out-of-order array access
         //       is not supported yet, e.g. we cannot go in reverse easily
         //       (or maybe it is a bug: https://github.com/ethereum/solidity/issues/212)
         uint j = 0;
-        for (uint i = 0; i &lt; 20; i++) {
+        for (uint i = 0; i < 20; i++) {
             uint _tmp = tmp / (2 ** (8*(19-i))); // shr(tmp, 8*(19-i))
-            uint nb1 = (_tmp / 0x10) &amp; 0x0f;     // shr(tmp, 8) &amp; 0x0f
-            uint nb2 = _tmp &amp; 0x0f;
+            uint nb1 = (_tmp / 0x10) & 0x0f;     // shr(tmp, 8) & 0x0f
+            uint nb2 = _tmp & 0x0f;
             ret[j++] = byte(nibbleToChar(nb1));
             ret[j++] = byte(nibbleToChar(nb2));
         }

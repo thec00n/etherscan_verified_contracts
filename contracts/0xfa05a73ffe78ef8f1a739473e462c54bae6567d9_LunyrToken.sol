@@ -31,37 +31,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -72,7 +72,7 @@ contract SafeMath {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="3c4f48595a5d52125b59534e5b597c5f53524f59524f454f12525948">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="3c4f48595a5d52125b59534e5b597c5f53524f59524f454f12525948">[email protected]</span>>
 contract MultiSigWallet {
 
     // flag to determine if address is for a real contract or not
@@ -90,9 +90,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -145,8 +145,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (ownerCount &gt; MAX_OWNER_COUNT) throw;
-        if (_required &gt; ownerCount) throw;
+        if (ownerCount > MAX_OWNER_COUNT) throw;
+        if (_required > ownerCount) throw;
         if (_required == 0) throw;
         if (ownerCount == 0) throw;
         _;
@@ -156,7 +156,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -170,7 +170,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0) throw;
             isOwner[_owners[i]] = true;
         }
@@ -201,13 +201,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -289,7 +289,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -351,7 +351,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -365,9 +365,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if ((pending &amp;&amp; !transactions[i].executed) ||
-                (executed &amp;&amp; transactions[i].executed))
+        for (uint i=0; i<transactionCount; i++)
+            if ((pending && !transactions[i].executed) ||
+                (executed && transactions[i].executed))
                 count += 1;
     }
 
@@ -392,13 +392,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -416,15 +416,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-          if ((pending &amp;&amp; !transactions[i].executed) ||
-              (executed &amp;&amp; transactions[i].executed))
+        for (i=0; i<transactionCount; i++)
+          if ((pending && !transactions[i].executed) ||
+              (executed && transactions[i].executed))
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -465,10 +465,10 @@ contract LUNVault is SafeMath {
         unlockedAtBlockNumber = safeAdd(block.number, numBlocksLocked); // 180 days of blocks later
     }
 
-    /// @notice Transfer locked tokens to Lunyr&#39;s multisig wallet
+    /// @notice Transfer locked tokens to Lunyr's multisig wallet
     function unlock() external {
         // Wait your turn!
-        if (block.number &lt; unlockedAtBlockNumber) throw;
+        if (block.number < unlockedAtBlockNumber) throw;
         // Will fail if allocation (and therefore toTransfer) is 0.
         if (!lunyrToken.transfer(lunyrMultisig, lunyrToken.balanceOf(this))) throw;
     }
@@ -488,16 +488,16 @@ contract LunyrToken is SafeMath, ERC20 {
     enum State{PreFunding, Funding, Success, Failure}
 
     // Token information
-    string public constant name = &quot;Lunyr Token&quot;;
-    string public constant symbol = &quot;LUN&quot;;
+    string public constant name = "Lunyr Token";
+    string public constant symbol = "LUN";
     uint256 public constant decimals = 18;  // decimal places
     uint256 public constant crowdfundPercentOfTotal = 78;
     uint256 public constant vaultPercentOfTotal = 15;
     uint256 public constant lunyrPercentOfTotal = 7;
     uint256 public constant hundredPercent = 100;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Upgrade information
     address public upgradeMaster;
@@ -516,7 +516,7 @@ contract LunyrToken is SafeMath, ERC20 {
     //uint256 public constant tokenCreationMin = safeMul(3 ether, tokensPerEther);
 
     address public lunyrMultisig;
-    LUNVault public timeVault; // Lunyr&#39;s time-locked vault
+    LUNVault public timeVault; // Lunyr's time-locked vault
 
     event Upgrade(address indexed _from, address indexed _to, uint256 _value);
     event Refund(address indexed _from, uint256 _value);
@@ -531,8 +531,8 @@ contract LunyrToken is SafeMath, ERC20 {
 
         if (_lunyrMultisig == 0) throw;
         if (_upgradeMaster == 0) throw;
-        if (_fundingStartBlock &lt;= block.number) throw;
-        if (_fundingEndBlock   &lt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock <= block.number) throw;
+        if (_fundingEndBlock   <= _fundingStartBlock) throw;
         isLunyrToken = true;
         upgradeMaster = _upgradeMaster;
         fundingStartBlock = _fundingStartBlock;
@@ -547,7 +547,7 @@ contract LunyrToken is SafeMath, ERC20 {
         return balances[who];
     }
 
-    /// @notice Transfer `value` LUN tokens from sender&#39;s account
+    /// @notice Transfer `value` LUN tokens from sender's account
     /// `msg.sender` to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -560,7 +560,7 @@ contract LunyrToken is SafeMath, ERC20 {
         if (to == address(upgradeAgent)) throw;
         //if (to == address(upgradeAgent.newToken())) throw;
         uint256 senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= value &amp;&amp; value &gt; 0) {
+        if (senderBalance >= value && value > 0) {
             senderBalance = safeSub(senderBalance, value);
             balances[msg.sender] = senderBalance;
             balances[to] = safeAdd(balances[to], value);
@@ -570,7 +570,7 @@ contract LunyrToken is SafeMath, ERC20 {
         return false;
     }
 
-    /// @notice Transfer `value` LUN tokens from sender &#39;from&#39;
+    /// @notice Transfer `value` LUN tokens from sender 'from'
     /// to provided account address `to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Success
@@ -583,8 +583,8 @@ contract LunyrToken is SafeMath, ERC20 {
         if (to == 0x0) throw;
         if (to == address(upgradeAgent)) throw;
         //if (to == address(upgradeAgent.newToken())) throw;
-        if (balances[from] &gt;= value &amp;&amp;
-            allowed[from][msg.sender] &gt;= value)
+        if (balances[from] >= value &&
+            allowed[from][msg.sender] >= value)
         {
             balances[to] = safeAdd(balances[to], value);
             balances[from] = safeSub(balances[from], value);
@@ -623,7 +623,7 @@ contract LunyrToken is SafeMath, ERC20 {
 
         // Validate input value.
         if (value == 0) throw;
-        if (value &gt; balances[msg.sender]) throw;
+        if (value > balances[msg.sender]) throw;
 
         // update the balances here first before calling out (reentrancy)
         balances[msg.sender] = safeSub(balances[msg.sender], value);
@@ -639,9 +639,9 @@ contract LunyrToken is SafeMath, ERC20 {
     /// @param agent The address of the UpgradeAgent contract
     function setUpgradeAgent(address agent) external {
         if (getState() != State.Success) throw; // Abort if not in Success state.
-        if (agent == 0x0) throw; // don&#39;t set agent to nothing
+        if (agent == 0x0) throw; // don't set agent to nothing
         if (msg.sender != upgradeMaster) throw; // Only a master can designate the next agent
-        if (address(upgradeAgent) != 0x0 &amp;&amp; upgradeAgent.upgradeHasBegun()) throw; // Don&#39;t change the upgrade agent
+        if (address(upgradeAgent) != 0x0 && upgradeAgent.upgradeHasBegun()) throw; // Don't change the upgrade agent
         upgradeAgent = UpgradeAgent(agent);
         // upgradeAgent must be created and linked to LunyrToken after crowdfunding is over
         if (upgradeAgent.originalSupply() != totalSupply) throw;
@@ -668,13 +668,13 @@ contract LunyrToken is SafeMath, ERC20 {
 
     // Crowdfunding:
 
-    // don&#39;t just send ether to the contract expecting to get tokens
+    // don't just send ether to the contract expecting to get tokens
     function() { throw; }
 
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function create() payable external {
         // Abort if not in Funding Active state.
         // The checks are split (instead of using or operator) because it is
@@ -690,8 +690,8 @@ contract LunyrToken is SafeMath, ERC20 {
         // we are creating tokens, so increase the totalSupply
         totalSupply = safeAdd(totalSupply, createdTokens);
 
-        // don&#39;t go over the limit!
-        if (totalSupply &gt; tokenCreationMax) throw;
+        // don't go over the limit!
+        if (totalSupply > tokenCreationMax) throw;
 
         // Assign new tokens to the sender
         balances[msg.sender] = safeAdd(balances[msg.sender], createdTokens);
@@ -707,8 +707,8 @@ contract LunyrToken is SafeMath, ERC20 {
     /// @dev Required state: Success
     function finalizeCrowdfunding() external {
         // Abort if not in Funding Success state.
-        if (getState() != State.Success) throw; // don&#39;t finalize unless we won
-        if (finalizedCrowdfunding) throw; // can&#39;t finalize twice (so sneaky!)
+        if (getState() != State.Success) throw; // don't finalize unless we won
+        if (finalizedCrowdfunding) throw; // can't finalize twice (so sneaky!)
 
         // prevent more creation of tokens
         finalizedCrowdfunding = true;
@@ -753,9 +753,9 @@ contract LunyrToken is SafeMath, ERC20 {
     function getState() public constant returns (State){
       // once we reach success, lock in the state
       if (finalizedCrowdfunding) return State.Success;
-      if (block.number &lt; fundingStartBlock) return State.PreFunding;
-      else if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupply &lt; tokenCreationMax) return State.Funding;
-      else if (totalSupply &gt;= tokenCreationMin) return State.Success;
+      if (block.number < fundingStartBlock) return State.PreFunding;
+      else if (block.number <= fundingEndBlock && totalSupply < tokenCreationMax) return State.Funding;
+      else if (totalSupply >= tokenCreationMin) return State.Success;
       else return State.Failure;
     }
 }

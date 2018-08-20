@@ -18,14 +18,14 @@ contract BlockHashMemory
     
     function getBlockHashOrZero(uint256 blockNumber) external view returns (bytes32 blockHashOrZero)
     {
-        if (blockNumber &gt;= blockHashes.length) return 0x00;
+        if (blockNumber >= blockHashes.length) return 0x00;
         return blockHashes[blockNumber];
     }
     
     function curatorWrite(uint256 startBlockNumber, bytes32[] newHashes) external
     {
         require(msg.sender == curator);
-        for (uint256 i=0; i&lt;newHashes.length; i++)
+        for (uint256 i=0; i<newHashes.length; i++)
         {
             blockHashes[startBlockNumber + i] = newHashes[i];
         }
@@ -34,9 +34,9 @@ contract BlockHashMemory
     function volunteerWrite() external returns (uint256 amountWritten)
     {
         amountWritten = 0;
-        for (uint256 num=block.number-255; num&lt;block.number; num++)
+        for (uint256 num=block.number-255; num<block.number; num++)
         {
-            if (msg.gas &lt; 20000) break;
+            if (msg.gas < 20000) break;
             blockHashes[num] = block.blockhash(num);
             amountWritten++;
         }

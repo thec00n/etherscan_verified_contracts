@@ -11,8 +11,8 @@ contract DailyCoinToken {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -29,8 +29,8 @@ contract DailyCoinToken {
     ) public {
         totalSupply = 300000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;Daily Coin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;DLC&quot;;                               // Set the symbol for display purposes
+        name = "Daily Coin";                                   // Set the name for display purposes
+        symbol = "DLC";                               // Set the symbol for display purposes
     }
 
     /**
@@ -40,9 +40,9 @@ contract DailyCoinToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -76,7 +76,7 @@ contract DailyCoinToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -123,7 +123,7 @@ contract DailyCoinToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -139,10 +139,10 @@ contract DailyCoinToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -191,18 +191,18 @@ contract DailycoinCrowdsale {
 	
 	function getNumTokens(uint256 _value) internal returns (uint256 numTokens) {
 		uint256 multiple = 5000;
-        if (_value &gt;= 10 * 10**18) {
-            if (now &lt;= deadline - 35 days) { // first 10 days
+        if (_value >= 10 * 10**18) {
+            if (now <= deadline - 35 days) { // first 10 days
 				multiple = multiple * 130 / 100;
-			} else if (now &lt;= deadline - 20 days) { // next 15 days
+			} else if (now <= deadline - 20 days) { // next 15 days
 				multiple = multiple * 120 / 100;
 			} else { // 20 last days
 				multiple = multiple * 115 / 100;
 			}
         } else {
-			if (now &lt;= deadline - 35 days) { // first 10 days
+			if (now <= deadline - 35 days) { // first 10 days
 				multiple = multiple * 120 / 100;
-			} else if (now &lt;= deadline - 20 days) {  // next 15 days
+			} else if (now <= deadline - 20 days) {  // next 15 days
 				multiple = multiple * 110 / 100;
 			} else { // 20 last days
 				multiple = multiple * 105 / 100;
@@ -211,7 +211,7 @@ contract DailycoinCrowdsale {
 		return multiple * 10**8 * _value / 10**18;
 	}
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Withdraw the funds
@@ -222,7 +222,7 @@ contract DailycoinCrowdsale {
 		require(beneficiary == msg.sender);
 		require(!crowdsaleClosed);
 		if (beneficiary.send(amountRaised)) {
-			if (totalToSale &gt; tokensSold) {
+			if (totalToSale > tokensSold) {
 				tokenReward.burn(totalToSale - tokensSold);
 			}
 			crowdsaleClosed = true;

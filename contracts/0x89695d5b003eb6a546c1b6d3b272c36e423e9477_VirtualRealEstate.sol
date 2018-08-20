@@ -17,7 +17,7 @@ contract Token {
 // ERC20 Token Implementation
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) public returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -28,7 +28,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -53,19 +53,19 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /*
-    PXLProperty is the ERC20 Cryptocurrency &amp; Cryptocollectable
+    PXLProperty is the ERC20 Cryptocurrency & Cryptocollectable
     * It is a StandardToken ERC20 token and inherits all of that
     * It has the Property structure and holds the Properties
     * It governs the regulators (moderators, admins, root, Property DApps and PixelProperty)
     * It has getters and setts for all data storage
     * It selectively allows access to PXL and Properties based on caller access
     
-    Moderation is handled inside PXLProperty, not by external DApps. It&#39;s up to other apps to respect the flags, however
+    Moderation is handled inside PXLProperty, not by external DApps. It's up to other apps to respect the flags, however
 */
 contract PXLProperty is StandardToken {
     /* Access Level Constants */
@@ -77,27 +77,27 @@ contract PXLProperty is StandardToken {
     uint8 constant LEVEL_2_ROOT = 6;         // 6: Level 2 Root - Can set pixelPropertyContract level [1-5]
     uint8 constant LEVEL_3_ROOT = 7;         // 7: Level 3 Root - Can demote/remove root, transfer root, [1-6]
     uint8 constant LEVEL_PROPERTY_DAPPS = 8; // 8: Property DApps - Power over manipulating Property data
-    uint8 constant LEVEL_PIXEL_PROPERTY = 9; // 9: PixelProperty - Power over PXL generation &amp; Property ownership
+    uint8 constant LEVEL_PIXEL_PROPERTY = 9; // 9: PixelProperty - Power over PXL generation & Property ownership
     /* Flags Constants */
     uint8 constant FLAG_NSFW = 1;
     uint8 constant FLAG_BAN = 2;
     
-    /* Accesser Addresses &amp; Levels */
+    /* Accesser Addresses & Levels */
     address pixelPropertyContract; // Only contract that has control over PXL creation and Property ownership
-    mapping (address =&gt; uint8) public regulators; // Mapping of users/contracts to their control levels
+    mapping (address => uint8) public regulators; // Mapping of users/contracts to their control levels
     
     // Mapping of PropertyID to Property
-    mapping (uint16 =&gt; Property) public properties;
-    // Property Owner&#39;s website
-    mapping (address =&gt; uint256[2]) public ownerWebsite;
-    // Property Owner&#39;s hover text
-    mapping (address =&gt; uint256[2]) public ownerHoverText;
+    mapping (uint16 => Property) public properties;
+    // Property Owner's website
+    mapping (address => uint256[2]) public ownerWebsite;
+    // Property Owner's hover text
+    mapping (address => uint256[2]) public ownerHoverText;
     
     /* ### Ownable Property Structure ### */
     struct Property {
         uint8 flag;
         bool isInPrivateMode; //Whether in private mode for owner-only use or free-use mode to be shared
-        address owner; //Who owns the Property. If its zero (0), then no owner and known as a &quot;system-Property&quot;
+        address owner; //Who owns the Property. If its zero (0), then no owner and known as a "system-Property"
         address lastUpdater; //Who last changed the color of the Property
         uint256[5] colors; //10x10 rgb pixel colors per property. colors[0] is the top row, colors[9] is the bottom row
         uint256 salePrice; //PXL price the owner has the Property on sale for. If zero, then its not for sale.
@@ -108,10 +108,10 @@ contract PXLProperty is StandardToken {
     
     /* ### Regulation Access Modifiers ### */
     modifier regulatorAccess(uint8 accessLevel) {
-        require(accessLevel &lt;= LEVEL_3_ROOT); // Only request moderator, admin or root levels forr regulatorAccess
-        require(regulators[msg.sender] &gt;= accessLevel); // Users must meet requirement
-        if (accessLevel &gt;= LEVEL_1_ADMIN) { //
-            require(regulators[msg.sender] &lt;= LEVEL_3_ROOT); //DApps can&#39;t do Admin/Root stuff, but can set nsfw/ban flags
+        require(accessLevel <= LEVEL_3_ROOT); // Only request moderator, admin or root levels forr regulatorAccess
+        require(regulators[msg.sender] >= accessLevel); // Users must meet requirement
+        if (accessLevel >= LEVEL_1_ADMIN) { //
+            require(regulators[msg.sender] <= LEVEL_3_ROOT); //DApps can't do Admin/Root stuff, but can set nsfw/ban flags
         }
         _;
     }
@@ -131,12 +131,12 @@ contract PXLProperty is StandardToken {
         regulators[msg.sender] = LEVEL_3_ROOT; // Creator set to Level 3 Root
     }
     
-    /* ### Moderator, Admin &amp; Root Functions ### */
+    /* ### Moderator, Admin & Root Functions ### */
     // Moderator Flags
     function setPropertyFlag(uint16 propertyID, uint8 flag) public regulatorAccess(flag == FLAG_NSFW ? LEVEL_1_MODERATOR : LEVEL_2_MODERATOR) {
         properties[propertyID].flag = flag;
         if (flag == FLAG_BAN) {
-            require(properties[propertyID].isInPrivateMode); //Can&#39;t ban an owner&#39;s property if a public user caused the NSFW content
+            require(properties[propertyID].isInPrivateMode); //Can't ban an owner's property if a public user caused the NSFW content
             properties[propertyID].colors = [0, 0, 0, 0, 0];
         }
     }
@@ -144,9 +144,9 @@ contract PXLProperty is StandardToken {
     // Setting moderator/admin/root access
     function setRegulatorAccessLevel(address user, uint8 accessLevel) public regulatorAccess(LEVEL_1_ADMIN) {
         if (msg.sender != user) {
-            require(regulators[msg.sender] &gt; regulators[user]); // You have to be a higher rank than the user you are changing
+            require(regulators[msg.sender] > regulators[user]); // You have to be a higher rank than the user you are changing
         }
-        require(regulators[msg.sender] &gt; accessLevel); // You have to be a higher rank than the role you are setting
+        require(regulators[msg.sender] > accessLevel); // You have to be a higher rank than the role you are setting
         regulators[user] = accessLevel;
     }
     
@@ -167,7 +167,7 @@ contract PXLProperty is StandardToken {
     
     /* ### PropertyDapp Functions ### */
     function setPropertyColors(uint16 propertyID, uint256[5] colors) public propertyDAppAccess() {
-        for(uint256 i = 0; i &lt; 5; i++) {
+        for(uint256 i = 0; i < 5; i++) {
             if (properties[propertyID].colors[i] != colors[i]) {
                 properties[propertyID].colors[i] = colors[i];
             }
@@ -281,14 +281,14 @@ contract PXLProperty is StandardToken {
     
     function burnPXL(address burningUser, uint256 amount) public pixelPropertyAccess() {
         require(burningUser != 0);
-        require(balances[burningUser] &gt;= amount);
+        require(balances[burningUser] >= amount);
         balances[burningUser] -= amount;
         totalSupply -= amount;
     }
     
     function burnPXLRewardPXL(address burner, uint256 toBurn, address rewarder, uint256 toReward) public pixelPropertyAccess() {
-        require(balances[burner] &gt;= toBurn);
-        if (toBurn &gt; 0) {
+        require(balances[burner] >= toBurn);
+        if (toBurn > 0) {
             balances[burner] -= toBurn;
             totalSupply -= toBurn;
         }
@@ -299,8 +299,8 @@ contract PXLProperty is StandardToken {
     } 
     
     function burnPXLRewardPXLx2(address burner, uint256 toBurn, address rewarder1, uint256 toReward1, address rewarder2, uint256 toReward2) public pixelPropertyAccess() {
-        require(balances[burner] &gt;= toBurn);
-        if (toBurn &gt; 0) {
+        require(balances[burner] >= toBurn);
+        if (toBurn > 0) {
             balances[burner] -= toBurn;
             totalSupply -= toBurn;
         }
@@ -344,7 +344,7 @@ contract PXLProperty is StandardToken {
     }
 
     function getPropertyColorsOfRow(uint16 propertyID, uint8 rowIndex) public view returns(uint256) {
-        require(rowIndex &lt;= 9);
+        require(rowIndex <= 9);
         return properties[propertyID].colors[rowIndex];
     }
     
@@ -372,8 +372,8 @@ contract PXLProperty is StandardToken {
     function getPropertyData(uint16 propertyID, uint256 systemSalePriceETH, uint256 systemSalePricePXL) public view returns(address, uint256, uint256, uint256, bool, uint256, uint8) {
         Property memory property = properties[propertyID];
         bool isInPrivateMode = property.isInPrivateMode;
-        //If it&#39;s in private, but it has expired and should be public, set our bool to be public
-        if (isInPrivateMode &amp;&amp; property.becomePublic &lt;= now) { 
+        //If it's in private, but it has expired and should be public, set our bool to be public
+        if (isInPrivateMode && property.becomePublic <= now) { 
             isInPrivateMode = false;
         }
         if (properties[propertyID].owner == 0) {
@@ -409,7 +409,7 @@ contract VirtualRealEstate {
     
     bool initialPropertiesReserved;
     
-    mapping (uint16 =&gt; bool) hasBeenSet;
+    mapping (uint16 => bool) hasBeenSet;
     
     // The amount in % for which a user is paid
     uint8 constant USER_BUY_CUT_PERCENT = 98;
@@ -453,7 +453,7 @@ contract VirtualRealEstate {
     
     // Can only be called on Properties referecing a valid PropertyID
     modifier validPropertyID(uint16 propertyID) {
-        if (propertyID &lt; 10000) {
+        if (propertyID < 10000) {
             _;
         }
     }
@@ -479,7 +479,7 @@ contract VirtualRealEstate {
         if (!initialPropertiesReserved) {
             uint16 xReserved = 45;
             uint16 yReserved = 0;
-            for(uint16 x = 0; x &lt; 10; ++x) {
+            for(uint16 x = 0; x < 10; ++x) {
                 uint16 propertyID = (yReserved) * 100 + (xReserved + x);
                 _transferProperty(propertyID, owner, 0, 0, 0, 0);
             }
@@ -509,7 +509,7 @@ contract VirtualRealEstate {
     // If a Property is private which has expired, make it public
     function tryForcePublic(uint16 propertyID) public validPropertyID(propertyID) { 
         var (isInPrivateMode, becomePublic) = pxlProperty.getPropertyPrivateModeBecomePublic(propertyID);
-        if (isInPrivateMode &amp;&amp; becomePublic &lt; now) {
+        if (isInPrivateMode && becomePublic < now) {
             pxlProperty.setPropertyPrivateMode(propertyID, false);
         }
     }
@@ -534,8 +534,8 @@ contract VirtualRealEstate {
     //Wrapper to call setColors 4 times in one call. Reduces overhead, however still duplicate work everywhere to ensure
     function setColorsX4(uint16[4] propertyIDs, uint256[20] newColors, uint256 PXLToSpendEach) public returns(bool[4]) {
         bool[4] results;
-        for(uint256 i = 0; i &lt; 4; i++) {
-            require(propertyIDs[i] &lt; 10000);
+        for(uint256 i = 0; i < 4; i++) {
+            require(propertyIDs[i] < 10000);
             results[i] = setColors(propertyIDs[i], [newColors[i * 5], newColors[i * 5 + 1], newColors[i * 5 + 2], newColors[i * 5 + 3], newColors[i * 5 + 4]], PXLToSpendEach);
         }
         return results;
@@ -544,8 +544,8 @@ contract VirtualRealEstate {
     //Wrapper to call setColors 8 times in one call. Reduces overhead, however still duplicate work everywhere to ensure
     function setColorsX8(uint16[8] propertyIDs, uint256[40] newColors, uint256 PXLToSpendEach) public returns(bool[8]) {
         bool[8] results;
-        for(uint256 i = 0; i &lt; 8; i++) {
-            require(propertyIDs[i] &lt; 10000);
+        for(uint256 i = 0; i < 8; i++) {
+            require(propertyIDs[i] < 10000);
             results[i] = setColors(propertyIDs[i], [newColors[i * 5], newColors[i * 5 + 1], newColors[i * 5 + 2], newColors[i * 5 + 3], newColors[i * 5 + 4]], PXLToSpendEach);
         }
         return results;
@@ -553,7 +553,7 @@ contract VirtualRealEstate {
     
     // Update a row of image data for a Property, triggering potential payouts if it succeeds
     function setRowColors(uint16 propertyID, uint8 row, uint256 newColorData, uint256 PXLToSpend) public validPropertyID(propertyID) returns(bool) {
-        require(row &lt; 10);
+        require(row < 10);
         uint256 projectedPayout = getProjectedPayout(propertyID);
         if (_tryTriggerPayout(propertyID, PXLToSpend)) {
             pxlProperty.setPropertyRowColor(propertyID, row, newColorData);
@@ -572,15 +572,15 @@ contract VirtualRealEstate {
         uint256 rewardedAmount = 0;
         
         if (setPrivateMode) {
-            //If inprivate, we can extend the duration, otherwise if becomePublic &gt; now it means a free-use user locked it
-            require(propertyIsInPrivateMode || propertyBecomePublic &lt;= now || propertyLastUpdater == msg.sender ); 
-            require(numMinutesPrivate &gt; 0);
-            require(pxlProperty.balanceOf(msg.sender) &gt;= numMinutesPrivate);
+            //If inprivate, we can extend the duration, otherwise if becomePublic > now it means a free-use user locked it
+            require(propertyIsInPrivateMode || propertyBecomePublic <= now || propertyLastUpdater == msg.sender ); 
+            require(numMinutesPrivate > 0);
+            require(pxlProperty.balanceOf(msg.sender) >= numMinutesPrivate);
             // Determines when the Property becomes public, one payout interval per coin burned
-            whenToBecomePublic = (now &lt; propertyBecomePublic ? propertyBecomePublic : now) + PROPERTY_GENERATION_PAYOUT_INTERVAL * numMinutesPrivate;
+            whenToBecomePublic = (now < propertyBecomePublic ? propertyBecomePublic : now) + PROPERTY_GENERATION_PAYOUT_INTERVAL * numMinutesPrivate;
 
             rewardedAmount = getProjectedPayout(propertyIsInPrivateMode, propertyLastUpdate, propertyEarnUntil);
-            if (rewardedAmount &gt; 0 &amp;&amp; propertyLastUpdater != 0) {
+            if (rewardedAmount > 0 && propertyLastUpdater != 0) {
                 pxlProperty.burnPXLRewardPXLx2(msg.sender, numMinutesPrivate, propertyLastUpdater, rewardedAmount, msg.sender, rewardedAmount);
             } else {
                 pxlProperty.burnPXL(msg.sender, numMinutesPrivate);
@@ -588,7 +588,7 @@ contract VirtualRealEstate {
 
         } else {
             // If its in private mode and still has time left, reimburse them for N-1 minutes tokens back
-            if (propertyIsInPrivateMode &amp;&amp; propertyBecomePublic &gt; now) {
+            if (propertyIsInPrivateMode && propertyBecomePublic > now) {
                 pxlProperty.rewardPXL(msg.sender, ((propertyBecomePublic - now) / PROPERTY_GENERATION_PAYOUT_INTERVAL) - 1);
             }
         }
@@ -612,21 +612,21 @@ contract VirtualRealEstate {
         //Must be the first purchase, otherwise do it with PXL from another user
         require(pxlProperty.getPropertyOwner(propertyID) == 0);
         // Must be able to afford the given PXL
-        require(pxlProperty.balanceOf(msg.sender) &gt;= pxlValue);
+        require(pxlProperty.balanceOf(msg.sender) >= pxlValue);
         require(pxlValue != 0);
         
         // Protect against underflow
-        require(pxlValue &lt;= systemSalePricePXL);
+        require(pxlValue <= systemSalePricePXL);
         uint256 pxlLeft = systemSalePricePXL - pxlValue;
         uint256 ethLeft = systemSalePriceETH / systemSalePricePXL * pxlLeft;
         
         // Must have spent enough ETH to cover the ETH left after PXL price was subtracted
-        require(msg.value &gt;= ethLeft);
+        require(msg.value >= ethLeft);
         
         pxlProperty.burnPXLRewardPXL(msg.sender, pxlValue, owner, pxlValue);
         
         systemPXLStepTally += uint16(100 * pxlValue / systemSalePricePXL);
-        if (systemPXLStepTally &gt;= 1000) {
+        if (systemPXLStepTally >= 1000) {
              systemPXLStepCount++;
             systemSalePricePXL += systemSalePricePXL * 9 / systemPXLStepCount / 10;
             systemPXLStepTally -= 1000;
@@ -635,7 +635,7 @@ contract VirtualRealEstate {
         ownerEth += msg.value;
 
         systemETHStepTally += uint16(100 * pxlLeft / systemSalePricePXL);
-        if (systemETHStepTally &gt;= 1000) {
+        if (systemETHStepTally >= 1000) {
             systemETHStepCount++;
             systemSalePriceETH += systemSalePriceETH * 9 / systemETHStepCount / 10;
             systemETHStepTally -= 1000;
@@ -657,13 +657,13 @@ contract VirtualRealEstate {
             propertySalePrice = systemSalePricePXL;
             // Increase system PXL price
             systemPXLStepTally += 100;
-            if (systemPXLStepTally &gt;= 1000) {
+            if (systemPXLStepTally >= 1000) {
                 systemPXLStepCount++;
                 systemSalePricePXL += systemSalePricePXL * 9 / systemPXLStepCount / 10;
                 systemPXLStepTally -= 1000;
             }
         }
-        require(propertySalePrice &lt;= PXLValue);
+        require(propertySalePrice <= PXLValue);
         uint256 amountTransfered = propertySalePrice * USER_BUY_CUT_PERCENT / 100;
         pxlProperty.burnPXLRewardPXLx2(msg.sender, propertySalePrice, propertyOwner, amountTransfered, owner, (propertySalePrice - amountTransfered));        
         _transferProperty(propertyID, msg.sender, 0, propertySalePrice, 0, originalOwner);
@@ -672,11 +672,11 @@ contract VirtualRealEstate {
     // Purchase a system-Property in pure ETH
     function buyPropertyInETH(uint16 propertyID) public validPropertyID(propertyID) payable returns(bool) {
         require(pxlProperty.getPropertyOwner(propertyID) == 0);
-        require(msg.value &gt;= systemSalePriceETH);
+        require(msg.value >= systemSalePriceETH);
         
         ownerEth += msg.value;
         systemETHStepTally += 100;
-        if (systemETHStepTally &gt;= 1000) {
+        if (systemETHStepTally >= 1000) {
             systemETHStepCount++;
             systemSalePriceETH += systemSalePriceETH * 9 / systemETHStepCount / 10;
             systemETHStepTally -= 1000;
@@ -704,8 +704,8 @@ contract VirtualRealEstate {
 
     // Make a public bid and notify a Property owner of your bid. Burn 1 coin
     function makeBid(uint16 propertyID, uint256 bidAmount) public validPropertyID(propertyID) {
-        require(bidAmount &gt; 0);
-        require(pxlProperty.balanceOf(msg.sender) &gt;= 1 + bidAmount);
+        require(bidAmount > 0);
+        require(pxlProperty.balanceOf(msg.sender) >= 1 + bidAmount);
         Bid(propertyID, bidAmount, now);
         pxlProperty.burnPXL(msg.sender, 1);
     }
@@ -714,7 +714,7 @@ contract VirtualRealEstate {
     
     // Contract owner can withdraw up to ownerEth amount
     function withdraw(uint256 amount) public ownerOnly() {
-        if (amount &lt;= ownerEth) {
+        if (amount <= ownerEth) {
             owner.transfer(amount);
             ownerEth -= amount;
         }
@@ -737,7 +737,7 @@ contract VirtualRealEstate {
     function _tryTriggerPayout(uint16 propertyID, uint256 pxlToSpend) private returns(bool) {
         var (propertyFlag, propertyIsInPrivateMode, propertyOwner, propertyLastUpdater, propertySalePrice, propertyLastUpdate, propertyBecomePublic, propertyEarnUntil) = pxlProperty.properties(propertyID);
         //If the Property is in private mode and expired, make it public
-        if (propertyIsInPrivateMode &amp;&amp; propertyBecomePublic &lt;= now) {
+        if (propertyIsInPrivateMode && propertyBecomePublic <= now) {
             pxlProperty.setPropertyPrivateMode(propertyID, false);
             propertyIsInPrivateMode = false;
         }
@@ -746,10 +746,10 @@ contract VirtualRealEstate {
             require(msg.sender == propertyOwner);
             require(propertyFlag != 2);
         //If if its in free-use mode
-        } else if (propertyBecomePublic &lt;= now || propertyLastUpdater == msg.sender) {
+        } else if (propertyBecomePublic <= now || propertyLastUpdater == msg.sender) {
             uint256 pxlSpent = pxlToSpend + 1; //All pxlSpent math uses N+1, so built in for convenience
-            if (isInGracePeriod() &amp;&amp; pxlToSpend &lt; 2) { //If first 3 days and we spent &lt;2 coins, treat it as if we spent 2
-                pxlSpent = 3; //We&#39;re treating it like 2, but it&#39;s N+1 in the math using this
+            if (isInGracePeriod() && pxlToSpend < 2) { //If first 3 days and we spent <2 coins, treat it as if we spent 2
+                pxlSpent = 3; //We're treating it like 2, but it's N+1 in the math using this
             }
             
             uint256 projectedAmount = getProjectedPayout(propertyIsInPrivateMode, propertyLastUpdate, propertyEarnUntil);
@@ -797,17 +797,17 @@ contract VirtualRealEstate {
     }
     
     function getProjectedPayout(bool propertyIsInPrivateMode, uint256 propertyLastUpdate, uint256 propertyEarnUntil) public view returns(uint256) {
-        if (!propertyIsInPrivateMode &amp;&amp; propertyLastUpdate != 0) {
-            uint256 earnedUntil = (now &lt; propertyEarnUntil) ? now : propertyEarnUntil;
+        if (!propertyIsInPrivateMode && propertyLastUpdate != 0) {
+            uint256 earnedUntil = (now < propertyEarnUntil) ? now : propertyEarnUntil;
             uint256 minutesSinceLastColourChange = (earnedUntil - propertyLastUpdate) / PROPERTY_GENERATION_PAYOUT_INTERVAL;
             return minutesSinceLastColourChange * PROPERTY_GENERATES_PER_MINUTE;
-            //return (((now &lt; propertyEarnUntil) ? now : propertyEarnUntil - propertyLastUpdate) / PROPERTY_GENERATION_PAYOUT_INTERVAL) * PROPERTY_GENERATES_PER_MINUTE; //Gave too high number wtf?
+            //return (((now < propertyEarnUntil) ? now : propertyEarnUntil - propertyLastUpdate) / PROPERTY_GENERATION_PAYOUT_INTERVAL) * PROPERTY_GENERATES_PER_MINUTE; //Gave too high number wtf?
         }
         return 0;
     }
     
     // Gets whether the contract is still in the intial grace period where we give extra features to color setters
     function isInGracePeriod() public view returns(bool) {
-        return now &lt;= GRACE_PERIOD_END_TIMESTAMP;
+        return now <= GRACE_PERIOD_END_TIMESTAMP;
     }
 }

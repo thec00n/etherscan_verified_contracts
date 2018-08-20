@@ -7,12 +7,12 @@ pragma solidity ^0.4.13;
 library SafeMath {
     function add(uint256 x, uint256 y) internal returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -28,7 +28,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -130,7 +130,7 @@ contract DGZ is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is DGZ, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -177,7 +177,7 @@ contract StandardToken is DGZ, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -220,8 +220,8 @@ contract DGZToken is StandardToken {
     using SafeMath for uint256;
 
     /*/ Public variables of the token /*/
-    string public constant name = &quot;Dogezer DGZ Token&quot;;
-    string public constant symbol = &quot;DGZ&quot;;
+    string public constant name = "Dogezer DGZ Token";
+    string public constant symbol = "DGZ";
     uint8 public decimals = 8;
     uint256 public totalSupply = 10000000000000000;
 

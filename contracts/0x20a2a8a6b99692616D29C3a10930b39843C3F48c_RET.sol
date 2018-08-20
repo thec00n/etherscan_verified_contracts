@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 contract Blockeds {
-  mapping (address =&gt; bool) blocked;
+  mapping (address => bool) blocked;
 
   event Blocked(address _addr);
   event Unblocked(address _addr);
@@ -36,7 +36,7 @@ contract Blockeds {
     자세한 내용은 GNU General Public License를 참조하십시오.
 
     이 프로그램과 함께 GNU General Public License 사본을 받아야합니다.
-    그렇지 않으면, 참조 : &lt;http://www.gnu.org/licenses/&gt;
+    그렇지 않으면, 참조 : <http://www.gnu.org/licenses/>
  */
 
 /*
@@ -93,12 +93,12 @@ contract ApproveAndCallFallBack {
 
 // 실제 토큰 계약인 기본 컨트롤러는 계약서를 배포하는 msg.sender이므로
 // 이 토큰은 대개 토큰 컨트롤러 계약에 의해 배포되며,
-// Giveth는 &quot;Campaign&quot;을 호출합니다.
+// Giveth는 "Campaign"을 호출합니다.
 contract MiniMeToken is Controlled {
     string public name;                // 토큰 이름 : EX DigixDAO token
     uint8 public decimals;             // 최소 단위의 소수 자릿수
     string public symbol;              // 식별자 EX : e.g. REP
-    string public version = &#39;MMT_0.2&#39;; // 버전 관리 방식
+    string public version = 'MMT_0.2'; // 버전 관리 방식
 
     // @dev `Checkpoint` 블록 번호를 지정된 값에 연결하는 구조이며,
     //                    첨부된 블록 번호는 마지막으로 값을 변경한 번호입니다.
@@ -124,10 +124,10 @@ contract MiniMeToken is Controlled {
 
     // `balances` 이 계약에서 잔액이 변경될 때 변경 사항이 발생한
     //            블록 번호도 맵에 포함되어 있으며 각 주소의 잔액을 추적하는 맵입니다.
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` 모든 ERC20 토큰에서와 같이 추가 전송 권한을 추적합니다.
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // 토큰의 `totalSupply` 기록을 추적합니다.
     Checkpoint[] totalSupplyHistory;
@@ -181,7 +181,7 @@ contract MiniMeToken is Controlled {
         if (msg.sender != controller) {
             require(transfersEnabled);
 
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -196,13 +196,13 @@ contract MiniMeToken is Controlled {
                return;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            var previousBalanceFrom = balanceOfAt(_from, block.number);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            if (isContract(controller)) {
                require(TokenController(controller).onTransfer(_from, _to, _amount));
@@ -211,7 +211,7 @@ contract MiniMeToken is Controlled {
            updateValueAtNow(balances[_from], previousBalanceFrom - _amount);
 
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+           require(previousBalanceTo + _amount >= previousBalanceTo);
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            Transfer(_from, _to, _amount);
@@ -267,7 +267,7 @@ contract MiniMeToken is Controlled {
         returns (uint) {
 
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -281,7 +281,7 @@ contract MiniMeToken is Controlled {
 
     function totalSupplyAt(uint _blockNumber) public constant returns(uint) {
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -324,9 +324,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply);
+        require(curTotalSupply + _amount >= curTotalSupply);
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+        require(previousBalanceTo + _amount >= previousBalanceTo);
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -336,9 +336,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -360,16 +360,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // 실제 값 바로 가기
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // 배열의 값을 2진 검색
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -381,7 +381,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -397,11 +397,11 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function () public payable {
@@ -498,9 +498,9 @@ contract RET is MiniMeToken, Blockeds {
     _tokenFactory,
     0x0,                  // 부모 토큰 없음
     0,                    // 상위의 스냅 샷 블록 번호 없음
-    &quot;Rapide Token&quot;,      // 토큰 이름
+    "Rapide Token",      // 토큰 이름
     18,                   // 십진법
-    &quot;RAP&quot;,                // 상징(심볼)
+    "RAP",                // 상징(심볼)
     false                 // 전송 사용
   ) public {}
 
@@ -512,7 +512,7 @@ contract RET is MiniMeToken, Blockeds {
     return super.transferFrom(_from, _to, _amount);
   }
 
-  // 아래의 4개 기능은 &#39;sudorsabled(하위 설정됨)&#39;로만 활성화됩니다.
+  // 아래의 4개 기능은 'sudorsabled(하위 설정됨)'로만 활성화됩니다.
   // ALL : 3 개의 sudo 레벨
   function generateTokens(address _owner, uint _amount) public onlyController onlySudoEnabled returns (bool) {
     return super.generateTokens(_owner, _amount);
@@ -539,7 +539,7 @@ contract RET is MiniMeToken, Blockeds {
   function generateTokensByList(address[] _owners, uint[] _amounts) public onlyController onlySudoEnabled returns (bool) {
     require(_owners.length == _amounts.length);
 
-    for(uint i = 0; i &lt; _owners.length; i++) {
+    for(uint i = 0; i < _owners.length; i++) {
       generateTokens(_owners[i], _amounts[i]);
     }
 

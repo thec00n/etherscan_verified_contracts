@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -62,7 +62,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -73,7 +73,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -98,8 +98,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -137,10 +137,10 @@ contract AuctionBase {
     uint256 public ownerCut = 375;
 
     // Map to keep a track on number of auctions by an owner
-    mapping (address =&gt; uint256) auctionCounter;
+    mapping (address => uint256) auctionCounter;
 
     // Map from token,owner to their corresponding auction.
-    mapping (address =&gt; mapping (uint256 =&gt; Auction)) tokensAuction;
+    mapping (address => mapping (uint256 => Auction)) tokensAuction;
 
     event AuctionCreated(address tokenAddress, uint256 startingPrice, uint256 endingPrice, uint256 duration, uint256 quantity, uint256 auctionNumber, uint64 startedAt);
     event AuctionWinner(address tokenAddress, uint256 totalPrice, address winner, uint256 quantity, uint256 auctionNumber);
@@ -152,7 +152,7 @@ contract AuctionBase {
     /// @param _totalTokens - Check total tokens being put on auction against user balance
     function _owns(address _tokenAddress, address _claimant, uint256 _totalTokens) internal view returns (bool) {
         StandardToken tokenContract = StandardToken(_tokenAddress);
-        return (tokenContract.balanceOf(_claimant) &gt;= _totalTokens);
+        return (tokenContract.balanceOf(_claimant) >= _totalTokens);
     }
 
     /// @dev Escrows the ERC-20 Token, assigning ownership to this contract.
@@ -182,7 +182,7 @@ contract AuctionBase {
     function _addAuction(address _tokenAddress, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute.
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
         
         AuctionCreated(
             _tokenAddress,
@@ -216,14 +216,14 @@ contract AuctionBase {
         Auction storage auction = tokensAuction[_tokenAddress][_auctionNumber];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenAddress will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
@@ -231,14 +231,14 @@ contract AuctionBase {
         uint256 quantity = auction.tokenQuantity;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenAddress, _auctionNumber);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -248,7 +248,7 @@ contract AuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -278,7 +278,7 @@ contract AuctionBase {
     /// @dev Returns true if the FT (ERC-20) is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an FT (ERC-20) on auction. Broken into two
@@ -294,8 +294,8 @@ contract AuctionBase {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -321,13 +321,13 @@ contract AuctionBase {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -335,7 +335,7 @@ contract AuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -348,14 +348,14 @@ contract AuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
     
@@ -423,11 +423,11 @@ contract ClockAuction is Pausable, AuctionBase {
     /// @dev Constructor creates a reference to the FT (ERC-20) ownership contract
     /// @param _contractAddr - Address of the SaleClockAuction Contract. Setting the variable.
     function ClockAuction(address _contractAddr) public {
-        require(ownerCut &lt;= 10000);
+        require(ownerCut <= 10000);
         cryptiblesAuctionContract = _contractAddr;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the FT (ERC-20) contract, but can be called either by
     ///  the owner or the FT (ERC-20) contract.
@@ -461,11 +461,11 @@ contract ClockAuction is Pausable, AuctionBase {
         // Checking whether user has enough balance
         require(_owns(_tokenAddress, msg.sender, _totalQuantity));
         
-        // We can&#39;t approve our ERC-20 Tokens minted earlier as they will need to be
+        // We can't approve our ERC-20 Tokens minted earlier as they will need to be
         // approved by the owner and not by our contract
         // _approve(_tokenAddress, msg.sender, _tokenQuantity);
 
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -517,7 +517,7 @@ contract ClockAuction is Pausable, AuctionBase {
         _transfer(_tokenAddress, msg.sender, auction.tokenQuantity);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the FT (ERC-20) to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -624,11 +624,11 @@ contract SaleClockAuction is ClockAuction {
     {
         require(_owns(_tokenAddress, msg.sender, _tokenQuantity));
 
-        // We can&#39;t approve our ERC-20 Tokens minted earlier as they will need to be
+        // We can't approve our ERC-20 Tokens minted earlier as they will need to be
         // approved by the owner and not by our contract
         // _approve(_tokenAddress, msg.sender, _tokenQuantity);
 
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -680,7 +680,7 @@ contract SaleClockAuction is ClockAuction {
     /// @dev Function to chnage the OwnerCut only accessible by the Owner of the contract
     /// @param _newCut - Sets the ownerCut to new value
     function setOwnerCut(uint256 _newCut) external onlyOwner {
-        require(_newCut &lt;= 10000);
+        require(_newCut <= 10000);
         ownerCut = _newCut;
     }
 }

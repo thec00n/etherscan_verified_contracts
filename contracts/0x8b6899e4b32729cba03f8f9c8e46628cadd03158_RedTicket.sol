@@ -23,15 +23,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 
 contract RedTicket is owned {
-    string public standard = &#39;RedTicket 1.0&#39;;
-    string public constant name = &quot;RedTicket&quot;;
-    string public constant symbol = &quot;RED&quot;;
+    string public standard = 'RedTicket 1.0';
+    string public constant name = "RedTicket";
+    string public constant symbol = "RED";
     uint8 public constant decimals = 18; 
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -50,9 +50,9 @@ contract RedTicket is owned {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value 
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value 
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
                 
                 balances[msg.sender] -= _value;
                 balances[_to] += _value;
@@ -65,10 +65,10 @@ contract RedTicket is owned {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (!frozenAccount[msg.sender]
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+            && balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
 
                 balances[_from] -= _value;
                 allowed[_from][msg.sender] -= _value;
@@ -114,7 +114,7 @@ contract RedTicket is owned {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) return false; 
+        if (balances[msg.sender] < _value) return false; 
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -122,8 +122,8 @@ contract RedTicket is owned {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value) return false;
-        if (_value &gt; allowed[_from][msg.sender]) return false;
+        if (balances[_from] < _value) return false;
+        if (_value > allowed[_from][msg.sender]) return false;
         balances[_from] -= _value;
         totalSupply -= _value;
         Burn(_from, _value);

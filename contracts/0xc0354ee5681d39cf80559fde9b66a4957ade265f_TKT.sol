@@ -5,42 +5,42 @@ library SafeMath {
         return c;
     }
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
      }
     function add(uint a, uint b) internal returns (uint) {
          uint c = a + b;
-         assert(c &gt;= a);
+         assert(c >= a);
          return c;
      }
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
      }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -56,8 +56,8 @@ contract ERC20 {
 contract TKT  is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;CryptoTickets COIN&quot;;
-    string public symbol = &quot;TKT&quot;;
+    string public name = "CryptoTickets COIN";
+    string public symbol = "TKT";
     uint public decimals = 18;
 
     address public ico;

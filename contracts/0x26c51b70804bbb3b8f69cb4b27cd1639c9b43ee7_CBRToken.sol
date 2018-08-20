@@ -3,12 +3,12 @@ pragma solidity ^0.4.0;
 
 contract CBRToken {
 
-    string public name = &quot;ChangeBotR&quot;;      //  token name
-    string public symbol = &quot;CBR&quot;;           //  token symbol
+    string public name = "ChangeBotR";      //  token name
+    string public symbol = "CBR";           //  token symbol
     uint256 public decimals = 0;            //  token digit
 
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
 
     uint256 private _totalSupply = 0;
     bool public stopped = false;
@@ -25,7 +25,7 @@ contract CBRToken {
     uint public mintC = 0;
 
     modifier hasVote {
-        require((voteA + voteB + voteC) &gt;= 2);
+        require((voteA + voteB + voteC) >= 2);
         _;
         voteA = 0;
         voteB = 0;
@@ -74,8 +74,8 @@ contract CBRToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -83,9 +83,9 @@ contract CBRToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
+        require(allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -113,7 +113,7 @@ contract CBRToken {
     }
 
     function doMint(uint256 _value) isOwner hasVote public {
-        assert(_value &gt; 0 &amp;&amp; _value &lt;= (mintA + mintB + mintC));
+        assert(_value > 0 && _value <= (mintA + mintB + mintC));
         mintA = 0; mintB = 0; mintC = 0;
         balances[msg.sender] += _value;
         _totalSupply += _value;
@@ -129,7 +129,7 @@ contract CBRToken {
     
     function vote(uint v) public {
         uint s = 0;
-        if (v &gt; 0) {s = 1;}
+        if (v > 0) {s = 1;}
         if (msg.sender == ownerA) {voteA = s; Vote(msg.sender, s); return;}
         if (msg.sender == ownerB) {voteB = s; Vote(msg.sender, s); return;}
         if (msg.sender == ownerC) {voteC = s; Vote(msg.sender, s); return;}
@@ -138,14 +138,14 @@ contract CBRToken {
     }
 
     function burn(uint256 _value) public {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);
     }
 
     function destroy(address _addr, uint256 _value) isOwner hasVote public {
-        require(balances[_addr] &gt;= _value);
+        require(balances[_addr] >= _value);
         balances[_addr] -= _value;
         balances[0x0] += _value;
         Transfer(_addr, 0x0, _value);

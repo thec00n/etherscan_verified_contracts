@@ -23,7 +23,7 @@ contract ERCToken {
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 	uint256 public  totalSupply;
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 
 	function allowance(address _owner,address _spender) public view returns(uint256);
 	function transfer(address _to, uint256 _value) public returns (bool success);
@@ -40,18 +40,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,8 +62,8 @@ contract EABToken is ERCToken,Ownable {
     string public name;
     string public symbol;
     uint8 public decimals=18;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => mapping (address => uint256)) internal allowed;
     event FrozenFunds(address target, bool frozen);
 
 
@@ -79,8 +79,8 @@ contract EABToken is ERCToken,Ownable {
  
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         uint previousbalanceOf = balanceOf[_from].add(balanceOf[_to]);
         balanceOf[_from] = balanceOf[_from].sub(_value);
@@ -113,11 +113,11 @@ contract EABToken is ERCToken,Ownable {
       assembly {
            length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]); // Check allowance
+        require(_value <= allowed[_from][msg.sender]); // Check allowance
         allowed[_from][msg.sender]= allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;

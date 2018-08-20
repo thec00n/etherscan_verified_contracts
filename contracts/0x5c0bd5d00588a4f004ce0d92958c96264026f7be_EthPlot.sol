@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,19 +107,19 @@ contract EthPlot is Ownable {
     PlotOwnership[] private ownership;
 
     // Maps from the index in the ownership array to the data for this particular plot (its image and website)
-    mapping(uint256 =&gt; PlotData) private data;
+    mapping(uint256 => PlotData) private data;
 
     // Maps plot ID to a boolean that represents whether or not
     // the image of the plot might be illegal and need to be blocked
     // in the UI of Eth Plot. Defaults to false.
-    mapping (uint256 =&gt; bool) private plotBlockedTags;
+    mapping (uint256 => bool) private plotBlockedTags;
 
-    // Maps plot ID to the plot&#39;s current price price. If price is 0, the plot is not for sale. Price is Wei per pixel.
-    mapping(uint256 =&gt; uint256) private plotIdToPrice;
+    // Maps plot ID to the plot's current price price. If price is 0, the plot is not for sale. Price is Wei per pixel.
+    mapping(uint256 => uint256) private plotIdToPrice;
 
     // Maps plot ID to other plots IDs which which have purchased sections of this plot (a hole).
     // Once a plot has been completely re-purchased, these holes will completely tile over the plot.
-    mapping(uint256 =&gt; uint256[]) private holes;
+    mapping(uint256 => uint256[]) private holes;
     
     //----------------------Constants---------------------//
     uint24 constant private GRID_WIDTH = 250;
@@ -157,7 +157,7 @@ contract EthPlot is Ownable {
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
         ownership.push(PlotOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
-        data[0] = PlotData(&quot;Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg&quot;, &quot;https://www.ethplot.com/&quot;);
+        data[0] = PlotData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
         plotIdToPrice[0] = INITIAL_PLOT_PRICE;
     }
 
@@ -172,7 +172,7 @@ contract EthPlot is Ownable {
     /// @param purchase An array of exactly 4 values which represent the [x,y,width,height] of the plot to purchase
     /// @param purchasedAreas An array of at least 4 values. Each set of 4 values represents a sub-plot which must be purchased for this
     /// plot to be created. If the new plot to purchase overlaps in a non-rectangle pattern, multiple rectangular sub-plots from that
-    /// plot can be specified. The sub-plots must be from existing plots in descending order of that plot&#39;s index
+    /// plot can be specified. The sub-plots must be from existing plots in descending order of that plot's index
     /// @param areaIndices An area of indices into the ownership array which represent which plot the rectangles in purchasedAreas are
     /// coming from. Must be equal to 1/4 the length of purchasedAreas
     /// @param ipfsHash The hash of the image data for this plot stored in ipfs
@@ -190,11 +190,11 @@ contract EthPlot is Ownable {
         // Validate that all of the data makes sense and is valid, then payout the plot sellers
         uint256 initialPurchasePrice = validatePurchaseAndDistributeFunds(purchase, purchasedAreas, areaIndices);
 
-        // After we&#39;ve validated that this purchase is valid, actually put the new plot and info in storage locations
+        // After we've validated that this purchase is valid, actually put the new plot and info in storage locations
         uint256 newPlotIndex = addPlotAndData(purchase, ipfsHash, url, initialBuyoutPriceInWeiPerPixel);
 
         // Now that purchase is completed, update plots that have new holes due to this purchase
-        for (uint256 i = 0; i &lt; areaIndices.length; i++) {
+        for (uint256 i = 0; i < areaIndices.length; i++) {
             holes[areaIndices[i]].push(newPlotIndex);
         }
 
@@ -206,21 +206,21 @@ contract EthPlot is Ownable {
     /// @param plotIndex The index in the ownership array which we are updating. msg.sender must be the owner of this plot
     /// @param newPriceInWeiPerPixel The new price of the plot
     function updatePlotPrice(uint256 plotIndex, uint256 newPriceInWeiPerPixel) external {
-        require(plotIndex &gt;= 0);
-        require(plotIndex &lt; ownership.length);
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
         require(msg.sender == ownership[plotIndex].owner);
 
         plotIdToPrice[plotIndex] = newPriceInWeiPerPixel;
         emit PlotPriceUpdated(plotIndex, newPriceInWeiPerPixel, msg.sender);
     }
 
-    /// @notice Updates the data for a specific plot. This is only allowed by the plot&#39;s owner
+    /// @notice Updates the data for a specific plot. This is only allowed by the plot's owner
     /// @param plotIndex The index in the ownership array which we are updating. msg.sender must be the owner of this plot
     /// @param ipfsHash The hash of the image data for this plot stored in ipfs
     /// @param url The website / url which should be associated with this plot
     function updatePlotData(uint256 plotIndex, string ipfsHash, string url) external {
-        require(plotIndex &gt;= 0);
-        require(plotIndex &lt; ownership.length);
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
         require(msg.sender == ownership[plotIndex].owner);
 
         data[plotIndex] = PlotData(ipfsHash, url);
@@ -244,8 +244,8 @@ contract EthPlot is Ownable {
     /// @param plotIndex The index in the ownership array where the illegal data is located
     /// @param plotBlocked Whether or not this data should be blocked
     function togglePlotBlockedTag(uint256 plotIndex, bool plotBlocked) onlyOwner external {
-        require(plotIndex &gt;= 0);
-        require(plotIndex &lt; ownership.length);
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
         plotBlockedTags[plotIndex] = plotBlocked;
     }
 
@@ -256,7 +256,7 @@ contract EthPlot is Ownable {
     /// @param plotIndex The index in the ownership array to get the plot info for
     /// @return The coordinates of this plot, the owner address, and the current buyout price of it (0 if not for sale)
     function getPlotInfo(uint256 plotIndex) public view returns (uint24 x, uint24 y, uint24 w , uint24 h, address owner, uint256 price) {
-        require(plotIndex &lt; ownership.length);
+        require(plotIndex < ownership.length);
         return (
             ownership[plotIndex].x,
             ownership[plotIndex].y,
@@ -269,9 +269,9 @@ contract EthPlot is Ownable {
     /// @notice Gets the data stored with a specific plot. This includes the website, ipfs hash, and the blocked status of the image
     /// @dev Due to stack too deep issues, to get all the info about a plot, you must also call getPlotInfo in conjunction with this
     /// @param plotIndex The index in the ownership array to get the plot data for
-    /// @return The ipfsHash of the plot&#39;s image, the website associated with the plot, and whether or not its image is blocked
+    /// @return The ipfsHash of the plot's image, the website associated with the plot, and whether or not its image is blocked
     function getPlotData(uint256 plotIndex) public view returns (string ipfsHash, string url, bool plotBlocked) {
-        require(plotIndex &lt; ownership.length);
+        require(plotIndex < ownership.length);
         return (data[plotIndex].url, data[plotIndex].ipfsHash, plotBlockedTags[plotIndex]);
     }
     
@@ -298,17 +298,17 @@ contract EthPlot is Ownable {
         require(purchase.length == 4);
         Geometry.Rect memory plotToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
-        require(plotToPurchase.x &lt; GRID_WIDTH &amp;&amp; plotToPurchase.x &gt;= 0);
-        require(plotToPurchase.y &lt; GRID_HEIGHT &amp;&amp; plotToPurchase.y &gt;= 0);
+        require(plotToPurchase.x < GRID_WIDTH && plotToPurchase.x >= 0);
+        require(plotToPurchase.y < GRID_HEIGHT && plotToPurchase.y >= 0);
 
-        // No need for SafeMath here because we know plotToPurchase.x &amp; plotToPurchase.y are less than 250 (~2^8)
-        require(plotToPurchase.w &gt; 0 &amp;&amp; plotToPurchase.w + plotToPurchase.x &lt;= GRID_WIDTH);
-        require(plotToPurchase.h &gt; 0 &amp;&amp; plotToPurchase.h + plotToPurchase.y &lt;= GRID_HEIGHT);
-        require(plotToPurchase.w * plotToPurchase.h &lt; MAXIMUM_PURCHASE_AREA);
+        // No need for SafeMath here because we know plotToPurchase.x & plotToPurchase.y are less than 250 (~2^8)
+        require(plotToPurchase.w > 0 && plotToPurchase.w + plotToPurchase.x <= GRID_WIDTH);
+        require(plotToPurchase.h > 0 && plotToPurchase.h + plotToPurchase.y <= GRID_HEIGHT);
+        require(plotToPurchase.w * plotToPurchase.h < MAXIMUM_PURCHASE_AREA);
 
-        // Validate the purchasedAreas and the purchasedArea&#39;s indices
-        require(purchasedAreas.length &gt;= 4);
-        require(areaIndices.length &gt; 0);
+        // Validate the purchasedAreas and the purchasedArea's indices
+        require(purchasedAreas.length >= 4);
+        require(areaIndices.length > 0);
         require(purchasedAreas.length % 4 == 0);
         require(purchasedAreas.length / 4 == areaIndices.length);
 
@@ -318,14 +318,14 @@ contract EthPlot is Ownable {
         uint256 totalArea = 0;
         uint256 i = 0;
         uint256 j = 0;
-        for (i = 0; i &lt; areaIndices.length; i++) {
+        for (i = 0; i < areaIndices.length; i++) {
             // Define the rectangle and add it to our collection of them
             Geometry.Rect memory rect = Geometry.Rect(
                 purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
             subPlots[i] = rect;
 
-            require(rect.w &gt; 0);
-            require(rect.h &gt; 0);
+            require(rect.w > 0);
+            require(rect.h > 0);
 
             // Compute the area of this rect and add it to the total area
             totalArea = SafeMath.add(totalArea, SafeMath.mul(rect.w,rect.h));
@@ -337,13 +337,13 @@ contract EthPlot is Ownable {
         require(totalArea == plotToPurchase.w * plotToPurchase.h);
 
         // Next, make sure all of these do not overlap
-        for (i = 0; i &lt; subPlots.length; i++) {
-            for (j = i + 1; j &lt; subPlots.length; j++) {
+        for (i = 0; i < subPlots.length; i++) {
+            for (j = i + 1; j < subPlots.length; j++) {
                 require(!Geometry.doRectanglesOverlap(subPlots[i], subPlots[j]));
             }
         }
 
-        // If we have a matching area, the subPlots are all contained within what we&#39;re purchasing, and none of them overlap,
+        // If we have a matching area, the subPlots are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the plotToPurchase. Next, validate we can purchase all of these and distribute funds
         uint256 remainingBalance = checkHolesAndDistributePurchaseFunds(subPlots, areaIndices);
         uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
@@ -351,7 +351,7 @@ contract EthPlot is Ownable {
     }
 
     /// @notice Checks that the sub-plots which we are purchasing are all valid and then distributes funds to the owners of those sub-plots
-    /// @dev Since we know that the subPlots are contained within plotToPurchase, and that they don&#39;t overlap, we just need go through each one
+    /// @dev Since we know that the subPlots are contained within plotToPurchase, and that they don't overlap, we just need go through each one
     /// and make sure that it is for sale and owned by the appropriate person as specified in areaIndices. We then can calculate how much to
     /// pay out for the sub-plot as well.
     /// @param subPlots Array of sub-plots which tiles the plotToPurchase completely
@@ -367,7 +367,7 @@ contract EthPlot is Ownable {
         // useful in the case that the buyer is overlaping with a single plot in a non-rectangular manner)
         uint256 owedToSeller = 0;
 
-        for (uint256 areaIndicesIndex = 0; areaIndicesIndex &lt; areaIndices.length; areaIndicesIndex++) {
+        for (uint256 areaIndicesIndex = 0; areaIndicesIndex < areaIndices.length; areaIndicesIndex++) {
 
             // Get information about the plot at this index
             uint256 ownershipIndex = areaIndices[areaIndicesIndex];
@@ -379,7 +379,7 @@ contract EthPlot is Ownable {
             require(Geometry.rectContainedInside(subPlots[areaIndicesIndex], currentOwnershipRect));
 
             // Next, verify that none of the holes of this plot ownership overlap with what we are trying to purchase
-            for (uint256 holeIndex = 0; holeIndex &lt; holes[ownershipIndex].length; holeIndex++) {
+            for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
                 PlotOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
                 Geometry.Rect memory holeRect = Geometry.Rect(holePlot.x, holePlot.y, holePlot.w, holePlot.h);
 
@@ -412,7 +412,7 @@ contract EthPlot is Ownable {
 
         // Verify that this plot exists in the plot price mapping with a price.
         uint256 plotPricePerPixel = plotIdToPrice[plotIndex];
-        require(plotPricePerPixel &gt; 0);
+        require(plotPricePerPixel > 0);
 
         return SafeMath.mul(SafeMath.mul(subPlotToPurchase.w, subPlotToPurchase.h), plotPricePerPixel);
     }
@@ -433,8 +433,8 @@ contract EthPlot is Ownable {
         // Take in the input data for the actual grid!
         data[newPlotIndex] = PlotData(ipfsHash, url);
 
-        // Set an initial purchase price for the new plot if it&#39;s greater than 0
-        if (initialBuyoutPriceInWeiPerPixel &gt; 0) {
+        // Set an initial purchase price for the new plot if it's greater than 0
+        if (initialBuyoutPriceInWeiPerPixel > 0) {
             plotIdToPrice[newPlotIndex] = initialBuyoutPriceInWeiPerPixel;
         }
 
@@ -451,7 +451,7 @@ library Geometry {
     }
 
     function doRectanglesOverlap(Rect memory a, Rect memory b) internal pure returns (bool) {
-        return a.x &lt; b.x + b.w &amp;&amp; a.x + a.w &gt; b.x &amp;&amp; a.y &lt; b.y + b.h &amp;&amp; a.y + a.h &gt; b.y;
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     }
 
     // It is assumed that we will have called doRectanglesOverlap before calling this method and we will know they overlap
@@ -459,12 +459,12 @@ library Geometry {
         Rect memory result = Rect(0, 0, 0, 0);
 
         // Take the greater of the x and y values;
-        result.x = a.x &gt; b.x ? a.x : b.x;
-        result.y = a.y &gt; b.y ? a.y : b.y;
+        result.x = a.x > b.x ? a.x : b.x;
+        result.y = a.y > b.y ? a.y : b.y;
 
         // Take the lesser of the x2 and y2 values
-        uint24 resultX2 = a.x + a.w &lt; b.x + b.w ? a.x + a.w : b.x + b.w;
-        uint24 resultY2 = a.y + a.h &lt; b.y + b.h ? a.y + a.h : b.y + b.h;
+        uint24 resultX2 = a.x + a.w < b.x + b.w ? a.x + a.w : b.x + b.w;
+        uint24 resultY2 = a.y + a.h < b.y + b.h ? a.y + a.h : b.y + b.h;
 
         // Set our width and height here
         result.w = resultX2 - result.x;
@@ -474,6 +474,6 @@ library Geometry {
     }
 
     function rectContainedInside(Rect memory inner, Rect memory outer) internal pure returns (bool) {
-        return inner.x &gt;= outer.x &amp;&amp; inner.y &gt;= outer.y &amp;&amp; inner.x + inner.w &lt;= outer.x + outer.w &amp;&amp; inner.y + inner.h &lt;= outer.y + outer.h;
+        return inner.x >= outer.x && inner.y >= outer.y && inner.x + inner.w <= outer.x + outer.w && inner.y + inner.h <= outer.y + outer.h;
     }
 }

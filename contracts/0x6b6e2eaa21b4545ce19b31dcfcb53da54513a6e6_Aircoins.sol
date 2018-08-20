@@ -22,10 +22,10 @@ contract Aircoins{
 
 
 
-	mapping (address =&gt; Coin) public coins;
-	mapping (address =&gt; bool) public coinsAdded;
-	mapping (address =&gt; bool) public userAddressAdded;
-	mapping (address =&gt; string) public messages;
+	mapping (address => Coin) public coins;
+	mapping (address => bool) public coinsAdded;
+	mapping (address => bool) public userAddressAdded;
+	mapping (address => string) public messages;
 
 
 	address[] public coinsAddresses;
@@ -65,7 +65,7 @@ contract Aircoins{
 	
 
 	function registerUsers(address[] _users) onlyOwner {
-		for(uint i = 0; i &lt; _users.length; ++i){
+		for(uint i = 0; i < _users.length; ++i){
 			registerUser(_users[i]);
 		}
 	}
@@ -80,9 +80,9 @@ contract Aircoins{
 		uint _amountGivenToEachUser,
 		uint startIndex,
 		uint endIndex) onlyOwner {
-		require(endIndex &gt; startIndex);
+		require(endIndex > startIndex);
 		token tokenReward = token(_coinAddress);
-		for(uint i = startIndex; i &lt; endIndex;++i){
+		for(uint i = startIndex; i < endIndex;++i){
 			tokenReward.transfer(userAddresses[i],_amountGivenToEachUser);
 		}
 	}

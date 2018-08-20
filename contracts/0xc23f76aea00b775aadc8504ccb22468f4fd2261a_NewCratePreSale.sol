@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-// import &quot;./Pausable.sol&quot;;
-// import &quot;./CratePreSale.sol&quot;;
+// import "./Pausable.sol";
+// import "./CratePreSale.sol";
 
 contract NewCratePreSale {
     
@@ -9,10 +9,10 @@ contract NewCratePreSale {
     // all addresses are included for transparency and easy verification
     // however addresses with no robots (i.e. failed transaction and never bought properly) have been commented out.
     // to view the full list of state assignments, go to etherscan.io/address/{address} and you can view the verified
-    mapping (address =&gt; uint[]) public userToRobots; 
+    mapping (address => uint[]) public userToRobots; 
 
     function _migrate(uint _index) external onlyOwner {
-        bytes4 selector = bytes4(sha3(&quot;setData()&quot;));
+        bytes4 selector = bytes4(sha3("setData()"));
         address a = migrators[_index];
         require(a.delegatecall(selector));
     }
@@ -46,7 +46,7 @@ contract NewCratePreSale {
 
         // Migration Rationale
         // due to solidity issues with enumerability (contract calls cannot return dynamic arrays etc)
-        // no need for trust -&gt; can still use web3 to call the previous contract and check the state
+        // no need for trust -> can still use web3 to call the previous contract and check the state
         // will only change in the future if people send more eth
         // and will be obvious due to change in crate count. Any purchases on the old contract
         // after this contract is deployed will be fully refunded, and those robots bought will be voided. 
@@ -67,29 +67,29 @@ contract NewCratePreSale {
     uint32 public oldCratesSold;
     uint256 public oldPrice;
     uint256 public oldAppreciationRateWei;
-    // mapping (address =&gt; uint32) public userCrateCount; // replaced with more efficient method
+    // mapping (address => uint32) public userCrateCount; // replaced with more efficient method
     
 
     // store the unopened crates of this user
     // actually stores the blocknumber of each crate 
-    mapping (address =&gt; uint[]) public addressToPurchasedBlocks;
+    mapping (address => uint[]) public addressToPurchasedBlocks;
     // store the number of expired crates for each user 
     // i.e. crates where the user failed to open the crate within 256 blocks (~1 hour)
     // these crates will be able to be opened post-launch
-    mapping (address =&gt; uint) public expiredCrates;
+    mapping (address => uint) public expiredCrates;
     // store the part information of purchased crates
 
 
 
     function openAll() public {
         uint len = addressToPurchasedBlocks[msg.sender].length;
-        require(len &gt; 0);
+        require(len > 0);
         uint8 count = 0;
-        // len &gt; i to stop predicatable wraparound
-        for (uint i = len - 1; i &gt;= 0 &amp;&amp; len &gt; i; i--) {
+        // len > i to stop predicatable wraparound
+        for (uint i = len - 1; i >= 0 && len > i; i--) {
             uint crateBlock = addressToPurchasedBlocks[msg.sender][i];
-            require(block.number &gt; crateBlock);
-            // can&#39;t open on the same timestamp
+            require(block.number > crateBlock);
+            // can't open on the same timestamp
             var hash = block.blockhash(crateBlock);
             if (uint(hash) != 0) {
                 // different results for all different crates, even on the same block/same user
@@ -156,18 +156,18 @@ contract NewCratePreSale {
     }
 
     function purchaseCrates(uint8 _cratesToBuy) public payable whenNotPaused {
-        require(now &lt; PRESALE_END_TIMESTAMP); // Check presale is still ongoing.
-        require(_cratesToBuy &lt;= 10); // Can only buy max 10 crates at a time. Don&#39;t be greedy!
-        require(_cratesToBuy &gt;= 1); // Sanity check. Also, you have to buy a crate. 
-        require(cratesSold + _cratesToBuy &lt;= MAX_CRATES_TO_SELL); // Check max crates sold is less than hard limit
+        require(now < PRESALE_END_TIMESTAMP); // Check presale is still ongoing.
+        require(_cratesToBuy <= 10); // Can only buy max 10 crates at a time. Don't be greedy!
+        require(_cratesToBuy >= 1); // Sanity check. Also, you have to buy a crate. 
+        require(cratesSold + _cratesToBuy <= MAX_CRATES_TO_SELL); // Check max crates sold is less than hard limit
         uint256 priceToPay = _calculatePayment(_cratesToBuy);
-         require(msg.value &gt;= priceToPay); // Check buyer sent sufficient funds to purchase
-        if (msg.value &gt; priceToPay) { //overpaid, return excess
+         require(msg.value >= priceToPay); // Check buyer sent sufficient funds to purchase
+        if (msg.value > priceToPay) { //overpaid, return excess
             msg.sender.transfer(msg.value-priceToPay);
         }
         //all good, payment received. increment number sold, price, and generate crate receipts!
         cratesSold += _cratesToBuy;
-      for (uint8 i = 0; i &lt; _cratesToBuy; i++) {
+      for (uint8 i = 0; i < _cratesToBuy; i++) {
             incrementPrice();
             addressToPurchasedBlocks[msg.sender].push(block.number);
         }
@@ -179,7 +179,7 @@ contract NewCratePreSale {
         
         uint256 tempPrice = currentPrice;
 
-        for (uint8 i = 1; i &lt; _cratesToBuy; i++) {
+        for (uint8 i = 1; i < _cratesToBuy; i++) {
             tempPrice += (currentPrice + (appreciationRateWei * i));
         } // for every crate over 1 bought, add current Price and a multiple of the appreciation rate
           // very small edge case of buying 10 when you the appreciation rate is about to halve

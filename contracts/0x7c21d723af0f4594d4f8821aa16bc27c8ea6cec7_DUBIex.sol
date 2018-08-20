@@ -68,9 +68,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -87,7 +87,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,7 +95,7 @@ library SafeMath {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="45372028262a0577">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="45372028262a0577">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -145,8 +145,8 @@ contract DUBIex is ReentrancyGuard {
     uint256 priceB;
   }
 
-  // order id -&gt; order
-  mapping(uint256 =&gt; Order) public orders;
+  // order id -> order
+  mapping(uint256 => Order) public orders;
 
   // weiSend of current tx
   uint256 private weiSend = 0;
@@ -167,20 +167,20 @@ contract DUBIex is ReentrancyGuard {
   function _makeOrder(uint256 id, uint256 amount, address pairA, address pairB, uint256 priceA, uint256 priceB, address maker) internal returns (bool) {
     // validate input
     if (
-      id &lt;= 0 ||
-      amount &lt;= 0 ||
+      id <= 0 ||
+      amount <= 0 ||
       pairA == pairB ||
-      priceA &lt;= 0 ||
-      priceB &lt;= 0 ||
+      priceA <= 0 ||
+      priceB <= 0 ||
       orders[id].id == id
     ) return false;
 
     bool pairAisEther = Utils.isEther(pairA);
     ERC20 tokenA = ERC20(pairA);
 
-    // validate maker&#39;s deposit
-    if (pairAisEther &amp;&amp; (weiSend &lt;= 0 || weiSend &lt; amount)) return false;
-    else if (!pairAisEther &amp;&amp; (tokenA.allowance(maker, this) &lt; amount || tokenA.balanceOf(maker) &lt; amount)) return false;
+    // validate maker's deposit
+    if (pairAisEther && (weiSend <= 0 || weiSend < amount)) return false;
+    else if (!pairAisEther && (tokenA.allowance(maker, this) < amount || tokenA.balanceOf(maker) < amount)) return false;
 
     // update state
     orders[id] = Order(id, maker, amount, pairA, pairB, priceA, priceB);
@@ -202,8 +202,8 @@ contract DUBIex is ReentrancyGuard {
   function _takeOrder(uint256 id, uint256 amount, address taker) internal returns (bool) {
     // validate inputs
     if (
-      id &lt;= 0 ||
-      amount &lt;= 0
+      id <= 0 ||
+      amount <= 0
     ) return false;
     
     // get order
@@ -214,7 +214,7 @@ contract DUBIex is ReentrancyGuard {
     bool pairAisEther = Utils.isEther(order.pairA);
     bool pairBisEther = Utils.isEther(order.pairB);
     // amount of pairA usable
-    uint256 usableAmount = amount &gt; order.amount ? order.amount : amount;
+    uint256 usableAmount = amount > order.amount ? order.amount : amount;
     // amount of pairB maker will receive
     uint256 totalB = usableAmount.mul(order.priceB).div(order.priceA);
 
@@ -222,9 +222,9 @@ contract DUBIex is ReentrancyGuard {
     ERC20 tokenA = ERC20(order.pairA);
     ERC20 tokenB = ERC20(order.pairB);
 
-    // validate taker&#39;s deposit
-    if (pairBisEther &amp;&amp; (weiSend &lt;= 0 || weiSend &lt; totalB)) return false;
-    else if (!pairBisEther &amp;&amp; (tokenB.allowance(taker, this) &lt; totalB || tokenB.balanceOf(taker) &lt; amount)) return false;
+    // validate taker's deposit
+    if (pairBisEther && (weiSend <= 0 || weiSend < totalB)) return false;
+    else if (!pairBisEther && (tokenB.allowance(taker, this) < totalB || tokenB.balanceOf(taker) < amount)) return false;
 
     // update state
     order.amount = order.amount.sub(usableAmount);
@@ -251,7 +251,7 @@ contract DUBIex is ReentrancyGuard {
 
   function _cancelOrder(uint256 id, address maker) internal returns (bool) {
     // validate inputs
-    if (id &lt;= 0) return false;
+    if (id <= 0) return false;
 
     // get order
     Order storage order = orders[id];
@@ -282,7 +282,7 @@ contract DUBIex is ReentrancyGuard {
   function makeOrder(uint256 id, uint256 amount, address pairA, address pairB, uint256 priceA, uint256 priceB) external payable weiSendGuard nonReentrant returns (bool) {
     bool success = _makeOrder(id, amount, pairA, pairB, priceA, priceB, msg.sender);
 
-    if (weiSend &gt; 0) msg.sender.transfer(weiSend);
+    if (weiSend > 0) msg.sender.transfer(weiSend);
 
     return success;
   }
@@ -290,7 +290,7 @@ contract DUBIex is ReentrancyGuard {
   function takeOrder(uint256 id, uint256 amount) external payable weiSendGuard nonReentrant returns (bool) {
     bool success = _takeOrder(id, amount, msg.sender);
 
-    if (weiSend &gt; 0) msg.sender.transfer(weiSend);
+    if (weiSend > 0) msg.sender.transfer(weiSend);
 
     return success;
   }
@@ -302,22 +302,22 @@ contract DUBIex is ReentrancyGuard {
   // multi
   function makeOrders(uint256[] ids, uint256[] amounts, address[] pairAs, address[] pairBs, uint256[] priceAs, uint256[] priceBs) external payable weiSendGuard nonReentrant returns (bool) {
     require(
-      amounts.length == ids.length &amp;&amp;
-      pairAs.length == ids.length &amp;&amp;
-      pairBs.length == ids.length &amp;&amp;
-      priceAs.length == ids.length &amp;&amp;
+      amounts.length == ids.length &&
+      pairAs.length == ids.length &&
+      pairBs.length == ids.length &&
+      priceAs.length == ids.length &&
       priceBs.length == ids.length
     );
 
     bool allSuccess = true;
 
-    for (uint256 i = 0; i &lt; ids.length; i++) {
+    for (uint256 i = 0; i < ids.length; i++) {
       // update if any of the orders failed
-      // the function is like this because &quot;stack too deep&quot; error
-      if (allSuccess &amp;&amp; !_makeOrder(ids[i], amounts[i], pairAs[i], pairBs[i], priceAs[i], priceBs[i], msg.sender)) allSuccess = false;
+      // the function is like this because "stack too deep" error
+      if (allSuccess && !_makeOrder(ids[i], amounts[i], pairAs[i], pairBs[i], priceAs[i], priceBs[i], msg.sender)) allSuccess = false;
     }
 
-    if (weiSend &gt; 0) msg.sender.transfer(weiSend);
+    if (weiSend > 0) msg.sender.transfer(weiSend);
 
     return allSuccess;
   }
@@ -327,14 +327,14 @@ contract DUBIex is ReentrancyGuard {
 
     bool allSuccess = true;
 
-    for (uint256 i = 0; i &lt; ids.length; i++) {
+    for (uint256 i = 0; i < ids.length; i++) {
       bool success = _takeOrder(ids[i], amounts[i], msg.sender);
 
       // update if any of the orders failed
-      if (allSuccess &amp;&amp; !success) allSuccess = success;
+      if (allSuccess && !success) allSuccess = success;
     }
 
-    if (weiSend &gt; 0) msg.sender.transfer(weiSend);
+    if (weiSend > 0) msg.sender.transfer(weiSend);
 
     return allSuccess;
   }
@@ -342,11 +342,11 @@ contract DUBIex is ReentrancyGuard {
   function cancelOrders(uint256[] ids) external nonReentrant returns (bool) {
     bool allSuccess = true;
 
-    for (uint256 i = 0; i &lt; ids.length; i++) {
+    for (uint256 i = 0; i < ids.length; i++) {
       bool success = _cancelOrder(ids[i], msg.sender);
 
       // update if any of the orders failed
-      if (allSuccess &amp;&amp; !success) allSuccess = success;
+      if (allSuccess && !success) allSuccess = success;
     }
 
     return allSuccess;

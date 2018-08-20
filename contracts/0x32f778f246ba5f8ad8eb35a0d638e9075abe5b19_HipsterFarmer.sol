@@ -8,10 +8,10 @@ contract HipsterFarmer{
     uint256 PSNH=5000;
     bool public initialized=false;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryHipster;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryHipster;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
     uint256 public hipstermasterReq=100000;
     function HipsterFarmer() public{
@@ -19,14 +19,14 @@ contract HipsterFarmer{
     }
     function becomeHipstermaster() public{
         require(initialized);
-        require(hatcheryHipster[msg.sender]&gt;=hipstermasterReq);
+        require(hatcheryHipster[msg.sender]>=hipstermasterReq);
         hatcheryHipster[msg.sender]=SafeMath.sub(hatcheryHipster[msg.sender],hipstermasterReq);
         hipstermasterReq=SafeMath.add(hipstermasterReq,100000);//+100k hipsters each time
         ceoAddress=msg.sender;
     }
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -107,7 +107,7 @@ contract HipsterFarmer{
         return SafeMath.mul(secondsPassed,hatcheryHipster[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -131,14 +131,14 @@ library SafeMath {
 
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

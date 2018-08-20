@@ -53,8 +53,8 @@ contract ConflictResolution is ConflictResolutionInterface {
     uint public constant SERVER_TIMEOUT = 6 hours;
     uint public constant PLAYER_TIMEOUT = 6 hours;
 
-    uint8 public constant DICE_LOWER = 1; ///&lt; @dev dice game lower number wins
-    uint8 public constant DICE_HIGHER = 2; ///&lt; @dev dice game higher number wins
+    uint8 public constant DICE_LOWER = 1; ///< @dev dice game lower number wins
+    uint8 public constant DICE_HIGHER = 2; ///< @dev dice game higher number wins
 
     uint public constant MAX_BET_VALUE = 2e16; /// max 0.02 ether bet
     uint public constant MIN_BET_VALUE = 1e13; /// min 0.00001 ether bet
@@ -70,7 +70,7 @@ contract ConflictResolution is ConflictResolutionInterface {
 
     modifier onlyValidBalance(int _balance, uint _gameStake) {
         // safe to cast gameStake as range is fixed
-        require(-int(_gameStake) &lt;= _balance &amp;&amp; _balance &lt;= MAX_BALANCE);
+        require(-int(_gameStake) <= _balance && _balance <= MAX_BALANCE);
         _;
     }
 
@@ -82,18 +82,18 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @return True if bet is valid false otherwise.
      */
     function isValidBet(uint8 _gameType, uint _betNum, uint _betValue) public pure returns(bool) {
-        bool validValue = MIN_BET_VALUE &lt;= _betValue &amp;&amp; _betValue &lt;= MAX_BET_VALUE;
+        bool validValue = MIN_BET_VALUE <= _betValue && _betValue <= MAX_BET_VALUE;
         bool validGame = false;
 
         if (_gameType == DICE_LOWER) {
-            validGame = _betNum &gt; 0 &amp;&amp; _betNum &lt; DICE_RANGE - 1;
+            validGame = _betNum > 0 && _betNum < DICE_RANGE - 1;
         } else if (_gameType == DICE_HIGHER) {
-            validGame = _betNum &gt; 0 &amp;&amp; _betNum &lt; DICE_RANGE - 1;
+            validGame = _betNum > 0 && _betNum < DICE_RANGE - 1;
         } else {
             validGame = false;
         }
 
-        return validValue &amp;&amp; validGame;
+        return validValue && validGame;
     }
 
     /**
@@ -116,8 +116,8 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @param _betNum Bet number.
      * @param _betValue Value of bet.
      * @param _balance Current balance.
-     * @param _serverSeed Server&#39;s seed of current round.
-     * @param _playerSeed Player&#39;s seed of current round.
+     * @param _serverSeed Server's seed of current round.
+     * @param _playerSeed Player's seed of current round.
      * @return New game session balance.
      */
     function endGameConflict(
@@ -135,13 +135,13 @@ contract ConflictResolution is ConflictResolutionInterface {
         onlyValidBalance(_balance, _stake)
         returns(int)
     {
-        assert(_serverSeed != 0 &amp;&amp; _playerSeed != 0);
+        assert(_serverSeed != 0 && _playerSeed != 0);
 
         int newBalance =  processBet(_gameType, _betNum, _betValue, _balance, _serverSeed, _playerSeed);
 
         // do not allow balance below player stake
         int stake = int(_stake); // safe to cast as stake range is fixed
-        if (newBalance &lt; -stake) {
+        if (newBalance < -stake) {
             newBalance = -stake;
         }
 
@@ -172,21 +172,21 @@ contract ConflictResolution is ConflictResolutionInterface {
         onlyValidBalance(_balance, _stake)
         returns(int)
     {
-        require(_endInitiatedTime + SERVER_TIMEOUT &lt;= block.timestamp);
+        require(_endInitiatedTime + SERVER_TIMEOUT <= block.timestamp);
         require(isValidBet(_gameType, _betNum, _betValue)
-                || (_gameType == 0 &amp;&amp; _betNum == 0 &amp;&amp; _betValue == 0 &amp;&amp; _balance == 0));
+                || (_gameType == 0 && _betNum == 0 && _betValue == 0 && _balance == 0));
 
 
         // following casts and calculations are safe as ranges are fixed
         // assume player has lost
         int newBalance = _balance - int(_betValue);
 
-        // penalize player as he didn&#39;t end game
+        // penalize player as he didn't end game
         newBalance -= NOT_ENDED_FINE;
 
         // do not allow balance below player stake
         int stake = int(_stake); // safe to cast as stake range is fixed
-        if (newBalance &lt; -stake) {
+        if (newBalance < -stake) {
             newBalance = -stake;
         }
 
@@ -216,19 +216,19 @@ contract ConflictResolution is ConflictResolutionInterface {
         onlyValidBalance(_balance, _stake)
         returns(int)
     {
-        require(_endInitiatedTime + PLAYER_TIMEOUT &lt;= block.timestamp);
+        require(_endInitiatedTime + PLAYER_TIMEOUT <= block.timestamp);
         require(isValidBet(_gameType, _betNum, _betValue) ||
-                (_gameType == 0 &amp;&amp; _betNum == 0 &amp;&amp; _betValue == 0 &amp;&amp; _balance == 0));
+                (_gameType == 0 && _betNum == 0 && _betValue == 0 && _balance == 0));
 
         int profit = 0;
-        if (_gameType == 0 &amp;&amp; _betNum == 0 &amp;&amp; _betValue == 0 &amp;&amp; _balance == 0) {
+        if (_gameType == 0 && _betNum == 0 && _betValue == 0 && _balance == 0) {
             // player cancelled game without playing
             profit = 0;
         } else {
             profit = calculateProfit(_gameType, _betNum, _betValue); // safe to cast as ranges are limited
         }
 
-        // penalize server as it didn&#39;t end game
+        // penalize server as it didn't end game
         profit += NOT_ENDED_FINE;
 
         return _balance + profit;
@@ -240,8 +240,8 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @param _betNum Bet Number.
      * @param _betValue Value of bet.
      * @param _balance Current balance.
-     * @param _serverSeed Server&#39;s seed
-     * @param _playerSeed Player&#39;s seed
+     * @param _serverSeed Server's seed
+     * @param _playerSeed Player's seed
      * return new balance.
      */
     function processBet(
@@ -303,10 +303,10 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @dev Calculate player profit if player has won for game type 1 (dice lower wins).
      * @param _betNum Bet number of player.
      * @param _betValue Value of bet in gwei.
-     * @return Players&#39; profit.
+     * @return Players' profit.
      */
     function calculateProfitGameType1(uint _betNum, uint _betValue) private pure returns(int) {
-        assert(_betNum &gt; 0 &amp;&amp; _betNum &lt; DICE_RANGE);
+        assert(_betNum > 0 && _betNum < DICE_RANGE);
 
         // safe as ranges are fixed
         uint totalWon = _betValue * DICE_RANGE / _betNum;
@@ -317,10 +317,10 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @dev Calculate player profit if player has won for game type 2 (dice lower wins).
      * @param _betNum Bet number of player.
      * @param _betValue Value of bet in gwei.
-     * @return Players&#39; profit.
+     * @return Players' profit.
      */
     function calculateProfitGameType2(uint _betNum, uint _betValue) private pure returns(int) {
-        assert(_betNum &gt;= 0 &amp;&amp; _betNum &lt; DICE_RANGE - 1);
+        assert(_betNum >= 0 && _betNum < DICE_RANGE - 1);
 
         // safe as ranges are fixed
         uint totalWon = _betValue * DICE_RANGE / (DICE_RANGE - _betNum - 1);
@@ -360,10 +360,10 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @return True if player has won false if he lost.
      */
     function calculateWinnerGameType1(uint _randomNum, uint _betNum) private pure returns(bool) {
-        assert(_betNum &gt; 0 &amp;&amp; _betNum &lt; DICE_RANGE);
+        assert(_betNum > 0 && _betNum < DICE_RANGE);
 
         uint resultNum = _randomNum % DICE_RANGE; // bias is negligible
-        return resultNum &lt; _betNum;
+        return resultNum < _betNum;
     }
 
     /**
@@ -373,10 +373,10 @@ contract ConflictResolution is ConflictResolutionInterface {
      * @return True if player has won false if he lost.
      */
     function calculateWinnerGameType2(uint _randomNum, uint _betNum) private pure returns(bool) {
-        assert(_betNum &gt;= 0 &amp;&amp; _betNum &lt; DICE_RANGE - 1);
+        assert(_betNum >= 0 && _betNum < DICE_RANGE - 1);
 
         uint resultNum = _randomNum % DICE_RANGE; // bias is negligible
-        return resultNum &gt; _betNum;
+        return resultNum > _betNum;
     }
 }
 
@@ -387,7 +387,7 @@ library MathUtil {
      * @return The absolute value of _val.
      */
     function abs(int _val) internal pure returns(uint) {
-        if (_val &lt; 0) {
+        if (_val < 0) {
             return uint(-_val);
         } else {
             return uint(_val);
@@ -398,13 +398,13 @@ library MathUtil {
      * @dev Calculate maximum.
      */
     function max(uint _val1, uint _val2) internal pure returns(uint) {
-        return _val1 &gt;= _val2 ? _val1 : _val2;
+        return _val1 >= _val2 ? _val1 : _val2;
     }
 
     /**
      * @dev Calculate minimum.
      */
     function min(uint _val1, uint _val2) internal pure returns(uint) {
-        return _val1 &lt;= _val2 ? _val1 : _val2;
+        return _val1 <= _val2 ? _val1 : _val2;
     }
 }

@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal  pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,8 +56,8 @@ contract ERC20 is Owned {
 
     uint public totalSupply;
     bool public isStarted = false;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     modifier isStartedOnly() {
         require(isStarted);
@@ -142,7 +142,7 @@ contract Token is ERC20 {
 
     function multimint(address[] dests, uint[] values) public only(owner) isNotStartedOnly returns (uint) {
         uint i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            mint(dests[i], values[i]);
            i += 1;
         }
@@ -153,8 +153,8 @@ contract Token is ERC20 {
 contract TokenWithoutStart is Owned {
     using SafeMath for uint;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -219,7 +219,7 @@ contract TokenWithoutStart is Owned {
 
     function multimint(address[] dests, uint[] values) public only(owner) returns (uint) {
         uint i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            mint(dests[i], values[i]);
            i += 1;
         }
@@ -256,16 +256,16 @@ contract Vesting {
 
     constructor(address[] _team, address _token) {
         token = Token(_token);
-        for(uint i=0; i&lt;_team.length; i++) {
+        for(uint i=0; i<_team.length; i++) {
             team.push(_team[i]);
         }
     }
 
     function makePayouts() {
         require(toSendLeft != 0);
-        if (now &gt; interval*currentStage + distributionStart) {
+        if (now > interval*currentStage + distributionStart) {
 			uint balance = stageAmount/team.length;
-            for(uint i=0; i&lt;team.length; i++) {
+            for(uint i=0; i<team.length; i++) {
                 toSendLeft -= balance;
                 require(token.transfer(team[i], balance));
             }

@@ -51,7 +51,7 @@ contract CrowdWithUs {
 
     // Wait 1 hour after final contract state before allowing contract destruction
     modifier atEndOfLifecycle() {
-        if(!((state == State.ExpiredRefund || state == State.Successful) &amp;&amp; completeAt + 1 hours &lt; now)) {
+        if(!((state == State.ExpiredRefund || state == State.Successful) && completeAt + 1 hours < now)) {
             throw;
         }
         _;
@@ -96,12 +96,12 @@ contract CrowdWithUs {
     }
 
     function checkIfFundingCompleteOrExpired() {
-        if (totalRaised &gt; minimumToRaise) {
+        if (totalRaised > minimumToRaise) {
             state = State.Successful;
             payOut();
 
             // could incentivize sender who initiated state change here
-            } else if ( now &gt; raiseBy )  {
+            } else if ( now > raiseBy )  {
                 state = State.ExpiredRefund; // backers can now collect refunds by calling getRefund(id)
             }
             completeAt = now;
@@ -124,7 +124,7 @@ contract CrowdWithUs {
         inState(State.ExpiredRefund) 
         returns (bool)
         {
-            if (contributions.length &lt;= id || id &lt; 0 || contributions[id].amount == 0 ) {
+            if (contributions.length <= id || id < 0 || contributions[id].amount == 0 ) {
                 throw;
             }
 
@@ -149,7 +149,7 @@ contract CrowdWithUs {
         atEndOfLifecycle()
         {
             selfdestruct(msg.sender);
-            // creator gets all money that hasn&#39;t be claimed
+            // creator gets all money that hasn't be claimed
 
 
         }

@@ -1,5 +1,5 @@
 contract RNG {
-    mapping (address =&gt; uint) nonces;
+    mapping (address => uint) nonces;
     uint public last;
     function RNG() { }
     function RandomNumber() returns(uint) {

@@ -26,13 +26,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -48,7 +48,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -126,7 +126,7 @@ contract Tokenlock is Owned {
     event UnFreezed();
 
     modifier validLock {
-        require(isLocked == 0 || (now &lt; lockStartTime || now &gt; lockEndTime));
+        require(isLocked == 0 || (now < lockStartTime || now > lockEndTime));
         _;
     }
     
@@ -178,9 +178,9 @@ contract Spendcoin is ERC20Interface, Tokenlock {
     uint public _totalSupply;
 
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
 
@@ -192,9 +192,9 @@ contract Spendcoin is ERC20Interface, Tokenlock {
 
     function Spendcoin() public {
 
-        symbol = &quot;SPND&quot;;
+        symbol = "SPND";
 
-        name = &quot;Spendcoin&quot;;
+        name = "Spendcoin";
 
         decimals = 18;
 
@@ -238,9 +238,9 @@ contract Spendcoin is ERC20Interface, Tokenlock {
 
     // ------------------------------------------------------------------------
 
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
 
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
 
     // - 0 value transfers are allowed
 
@@ -264,7 +264,7 @@ contract Spendcoin is ERC20Interface, Tokenlock {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account
+    // from the token owner's account
 
     //
 
@@ -326,7 +326,7 @@ contract Spendcoin is ERC20Interface, Tokenlock {
 
     // Returns the amount of tokens approved by the owner that can be
 
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
 
     // ------------------------------------------------------------------------
 

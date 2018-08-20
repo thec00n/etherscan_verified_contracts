@@ -193,7 +193,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -397,11 +397,11 @@ contract IManagedToken is IToken {
 contract ITokenChanger {
 
     /**
-     * Returns true if &#39;_token&#39; is on of the tokens that are 
+     * Returns true if '_token' is on of the tokens that are 
      * managed by this token changer
      * 
      * @param _token The address being tested
-     * @return Whether the &#39;_token&#39; is part of this token changer
+     * @return Whether the '_token' is part of this token changer
      */
     function isToken(address _token) constant returns (bool);
 
@@ -478,7 +478,7 @@ contract TokenChanger is ITokenChanger, IPausable {
 
 
     /**
-     * Only if &#39;_token&#39; is the left or right token 
+     * Only if '_token' is the left or right token 
      * that of the token changer
      */
     modifier is_token(address _token) {
@@ -490,8 +490,8 @@ contract TokenChanger is ITokenChanger, IPausable {
     /**
      * Construct token changer
      *
-     * @param _tokenLeft Ref to the &#39;left&#39; token smart-contract
-     * @param _tokenRight Ref to the &#39;right&#39; token smart-contract
+     * @param _tokenLeft Ref to the 'left' token smart-contract
+     * @param _tokenRight Ref to the 'right' token smart-contract
      * @param _rate The rate used when changing tokens
      * @param _fee The percentage of tokens that is charged
      * @param _decimals The amount of decimals used for _rate and _fee
@@ -503,18 +503,18 @@ contract TokenChanger is ITokenChanger, IPausable {
         tokenRight = IManagedToken(_tokenRight);
         rate = _rate;
         fee = _fee;
-        precision = _decimals &gt; 0 ? 10**_decimals : 1;
+        precision = _decimals > 0 ? 10**_decimals : 1;
         paused = _paused;
         burn = _burn;
     }
 
     
     /**
-     * Returns true if &#39;_token&#39; is on of the tokens that are 
+     * Returns true if '_token' is on of the tokens that are 
      * managed by this token changer
      * 
      * @param _token The address being tested
-     * @return Whether the &#39;_token&#39; is part of this token changer
+     * @return Whether the '_token' is part of this token changer
      */
     function isToken(address _token) public constant returns (bool) {
         return _token == address(tokenLeft) || _token == address(tokenRight);
@@ -624,7 +624,7 @@ contract TokenChanger is ITokenChanger, IPausable {
      */
     function convert(address _from, address _sender, uint _value) internal {
         require(!paused);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         uint amountToIssue;
         if (_from == address(tokenLeft)) {
@@ -657,7 +657,7 @@ contract TokenChanger is ITokenChanger, IPausable {
  *
  * DRPS as indicated by its ‘S’ designation, maintaining the primary security functions of the DRP token 
  * as outlined within the Dcorp whitepaper. Those who bear DRPS will be entitled to profit sharing in the 
- * form of dividends as per a voting process, and is considered the &quot;Security&quot; token of Dcorp.
+ * form of dividends as per a voting process, and is considered the "Security" token of Dcorp.
  *
  * https://www.dcorp.it/tokenchanger
  *

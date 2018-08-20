@@ -5,10 +5,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -40,17 +40,17 @@ contract TicHTUContract is ERC20Interface{
     uint _totalSupply;
     uint256 public rate;
     address owner;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     
     // ------------------------------------------------------------------------
     // Constructor
-	// @_owner: owner&#39;s address where to keep donations
+	// @_owner: owner's address where to keep donations
     // ------------------------------------------------------------------------
     constructor() public{
-        symbol = &quot;HTU&quot;;
-        name = &quot;HONTUBE&quot;;
+        symbol = "HTU";
+        name = "HONTUBE";
         decimals = 18;
         rate = 500; //OBL per wei
         owner = msg.sender;
@@ -71,12 +71,12 @@ contract TicHTUContract is ERC20Interface{
     }
     
     // ------------------------------------------------------------------------
-    // Transfers the tokens from contracts balance of OBL&#39;s
+    // Transfers the tokens from contracts balance of OBL's
     // ------------------------------------------------------------------------
     function _transfer(address _to, uint _tokens) internal returns (bool success){
         require(_to != 0x0);
 
-        require(balances[_to] + _tokens &gt;= balances[_to]);
+        require(balances[_to] + _tokens >= balances[_to]);
         balances[this] = balances[this].sub(_tokens);
         balances[_to] = balances[_to].add(_tokens);
         emit Transfer(this,_to,_tokens);
@@ -128,7 +128,7 @@ contract TicHTUContract is ERC20Interface{
         rate = _rate;
     }
 	// ------------------------------------------------------------------------
-    // calls ERC20&#39;s transfer function to send tokens to beneficiary
+    // calls ERC20's transfer function to send tokens to beneficiary
     // ------------------------------------------------------------------------
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
         _transfer(_beneficiary,_tokenAmount);

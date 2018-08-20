@@ -6,19 +6,19 @@ contract SoulcoinGems {
 	int constant crr_n = 7; // CRR numerator
 	int constant crr_d = 9; // CRR denominator
 	int constant price_coeff = -0x296ABF784A358468C;
-	string constant public name = &quot;Soulcoin Gem&quot;;
-	string constant public symbol = &quot;SOULGEM&quot;;
+	string constant public name = "Soulcoin Gem";
+	string constant public symbol = "SOULGEM";
 	uint8 constant public decimals = 18;
-	mapping(address =&gt; uint256) public tokenBalance;
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => uint256) public tokenBalance;
+	mapping(address => int256) public payouts;
 	uint256 public totalSupply;
 	int256 totalPayouts;
 
 	uint256 earningsPerToken;
 	uint256 public contractBalance;
 	uint private __totalSupply = 0;
-    mapping (address =&gt; uint) private __balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) private __allowances;
+    mapping (address => uint) private __balanceOf;
+    mapping (address => mapping (address => uint)) private __allowances;
     
 	function SoulcoinGems() public {}
     function totalSupply() constant returns (uint _totalSupply) {
@@ -33,7 +33,7 @@ contract SoulcoinGems {
     }
     
     function transfer(address _to, uint _value) returns (bool success) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf(msg.sender)) {
+        if (_value > 0 && _value <= balanceOf(msg.sender)) {
             __balanceOf[msg.sender] -= _value;
             __balanceOf[_to] += _value;
             return true;
@@ -42,10 +42,10 @@ contract SoulcoinGems {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-        if (__allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            __allowances[_from][msg.sender] &gt;= _value &amp;&amp; 
-            __balanceOf[_from] &gt;= _value) {
+        if (__allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            __allowances[_from][msg.sender] >= _value && 
+            __balanceOf[_from] >= _value) {
             __balanceOf[_from] -= _value;
             __balanceOf[_to] += _value;
             // Missed from the video
@@ -79,7 +79,7 @@ contract SoulcoinGems {
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		totalPayouts += (int256) (balance * scaleFactor);
 		uint value_ = (uint) (balance);
-		if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 		var sender = msg.sender;
 		var res = reserve() - balance;
@@ -90,7 +90,7 @@ contract SoulcoinGems {
 		generateSoul(numTokens);
 
 		var buyerFee = fee * scaleFactor;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			var bonusCoEff =
 			    (scaleFactor - (res + numEther) * numTokens * scaleFactor / (totalSupply + numTokens) / numEther)
 			    * (uint)(crr_d) / (uint)(crr_d-crr_n);
@@ -124,7 +124,7 @@ contract SoulcoinGems {
 	}
 	function fund() payable public {
 	
-		if (msg.value &gt; 0.000001 ether) {
+		if (msg.value > 0.000001 ether) {
 		    contractBalance = add(contractBalance, msg.value);
 			buy();
 		} else {
@@ -161,7 +161,7 @@ contract SoulcoinGems {
 	}
 
 	function buy() internal {
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 		var sender = msg.sender;
 		var fee = div(msg.value, 10);
@@ -171,7 +171,7 @@ contract SoulcoinGems {
 		generateSoul(numTokens);
 
 		var buyerFee = fee * scaleFactor;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			var bonusCoEff =
 			    (scaleFactor - (reserve() + numEther) * numTokens * scaleFactor / (totalSupply + numTokens) / numEther)
 			    * (uint)(crr_d) / (uint)(crr_d-crr_n);
@@ -209,7 +209,7 @@ contract SoulcoinGems {
 		
 		totalPayouts -= payoutDiff;
 		
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			var etherFee = fee * scaleFactor;
 			
 			var rewardPerShare = etherFee / totalSupply;
@@ -252,11 +252,11 @@ contract SoulcoinGems {
 
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -279,10 +279,10 @@ contract SoulcoinGems {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 	
@@ -302,18 +302,18 @@ contract SoulcoinGems {
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
 	function () payable public {
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			fund();
 		} else {
 			withdrawOld(msg.sender);

@@ -2,9 +2,9 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 contract EthVerifyCore{
     address public ceoAddress;
-    mapping(address=&gt;bool) public admins;
-    mapping(address=&gt;bool) public approvedContracts;
-    mapping (address =&gt; bool) private verifiedUsers;
+    mapping(address=>bool) public admins;
+    mapping(address=>bool) public approvedContracts;
+    mapping (address => bool) private verifiedUsers;
     
   modifier onlyCEO() {
     require(msg.sender == ceoAddress);
@@ -32,12 +32,12 @@ contract EthVerifyCore{
         verifiedUsers[user]=true;
     }
     function approveUsers(address[] addresses) public onlyAdmin{
-        for(uint i = 0; i&lt;addresses.length; i++){
+        for(uint i = 0; i<addresses.length; i++){
             verifiedUsers[addresses[i]]=true;
         }
     }
     function disApproveUsers(address[] addresses) public onlyAdmin{
-        for(uint i = 0; i&lt;addresses.length; i++){
+        for(uint i = 0; i<addresses.length; i++){
             verifiedUsers[addresses[i]]=false;
         }
     }

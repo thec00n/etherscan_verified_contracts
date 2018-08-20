@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 contract Registry {
   address owner;
-  mapping (address =&gt; uint) public expirations;
+  mapping (address => uint) public expirations;
   uint public weiPerBlock;
   uint public minBlockPurchase;
 
@@ -16,7 +16,7 @@ contract Registry {
 
   function () payable {
     uint senderExpirationBlock = expirations[msg.sender];
-    if (senderExpirationBlock &gt; 0 &amp;&amp; senderExpirationBlock &lt; block.number) {
+    if (senderExpirationBlock > 0 && senderExpirationBlock < block.number) {
       // The sender already has credit, add to it
       expirations[msg.sender] = senderExpirationBlock + blocksForWei(msg.value);
     } else {
@@ -27,7 +27,7 @@ contract Registry {
   }
 
   function blocksForWei(uint weiValue) returns (uint) {
-    assert(weiValue &gt;= weiPerBlock * minBlockPurchase);
+    assert(weiValue >= weiPerBlock * minBlockPurchase);
     return weiValue / weiPerBlock;
   }
 

@@ -17,7 +17,7 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -30,15 +30,15 @@ contract StandardToken is Token {
         return true;
     }
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract TokentalkMediaToken is StandardToken { 
@@ -50,8 +50,8 @@ contract TokentalkMediaToken is StandardToken {
     function TokentalkMediaToken() {
         balances[msg.sender] = 10000000000000000000; 
         totalSupply = 10000000000000000000;         
-        name = &quot;Tokentalk Media Token&quot;;                  
+        name = "Tokentalk Media Token";                  
         decimals = 8;          
-        symbol = &quot;TMT&quot;;            
+        symbol = "TMT";            
     }
 }

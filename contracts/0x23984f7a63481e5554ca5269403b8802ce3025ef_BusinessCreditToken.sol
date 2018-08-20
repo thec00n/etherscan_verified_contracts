@@ -10,20 +10,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -86,8 +86,8 @@ contract ERC20 {
 contract BusinessCreditTokenBase is ERC20,BusinessCreditStop {
     using SafeMath for uint256;
     uint256                                                     _supply;
-    mapping (address =&gt; uint256)                                _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal  _approvals;
+    mapping (address => uint256)                                _balances;
+    mapping (address => mapping (address => uint256)) internal  _approvals;
     
     
      function totalSupply() public view returns (uint256) {
@@ -117,7 +117,7 @@ contract BusinessCreditTokenBase is ERC20,BusinessCreditStop {
 	*/
     function transfer(address _to, uint256 _value) stoppable public returns (bool) {
         //require(_to != address(0));
-        require(_value &lt;= _balances[msg.sender]);
+        require(_value <= _balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         _balances[msg.sender] = _balances[msg.sender].sub(_value);
@@ -133,8 +133,8 @@ contract BusinessCreditTokenBase is ERC20,BusinessCreditStop {
      */
     function transferFrom(address _from, address _to, uint256 _value) stoppable public returns (bool) {
         //require(_to != address(0));
-        require(_value &lt;= _balances[_from]);
-        require(_value &lt;= _approvals[_from][msg.sender]);
+        require(_value <= _balances[_from]);
+        require(_value <= _approvals[_from][msg.sender]);
 
         _balances[_from] = _balances[_from].sub(_value);
         _balances[_to] = _balances[_to].add(_value);
@@ -147,7 +147,7 @@ contract BusinessCreditTokenBase is ERC20,BusinessCreditStop {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -160,21 +160,21 @@ contract BusinessCreditTokenBase is ERC20,BusinessCreditStop {
 
 }
 contract BusinessCreditToken is BusinessCreditTokenBase{
-    string  public name = &quot;Business Credit Token&quot;;
+    string  public name = "Business Credit Token";
     uint8   public decimals = 18; // standard token precision. override to customize
-    string  public symbol = &#39;BCT&#39;;
-    string  public version = &#39;v0.1&#39;;
+    string  public symbol = 'BCT';
+    string  public version = 'v0.1';
     uint256 supply = 100000000 * 100 * 10 ** 18;// 10, 000, 000, 000
     function BusinessCreditToken() public{
         _balances[msg.sender] = supply;
         _supply = supply;
     }
     modifier burnStopped() {
-        require(_balances[0x0] &lt;= 100000000 * 90 * 10 ** 18);
+        require(_balances[0x0] <= 100000000 * 90 * 10 ** 18);
         _;
     }
     function burn(uint256 _value) onlyOwner stoppable burnStopped public {
-        require(_balances[msg.sender] &gt;= _value);
+        require(_balances[msg.sender] >= _value);
         _balances[msg.sender] = _balances[msg.sender].sub(_value);
         _balances[0x0] = _balances[0x0].add(_value);
         Transfer(msg.sender, 0x0, _value);
@@ -190,7 +190,7 @@ contract BusinessCreditToken is BusinessCreditTokenBase{
 
     function decreaseApproval(address _spender, uint256 _subtractedValue) stoppable public returns (bool) {
         uint256 oldValue = _approvals[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             _approvals[msg.sender][_spender] = 0;
         }
         else {

@@ -105,14 +105,14 @@ contract SafeMath {
        // Check if it is safe to add two numbers
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     // Check if it is safe to subtract two numbers
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a - b;
-        assert(b &lt;= a &amp;&amp; c &lt;= a);
+        assert(b <= a && c <= a);
         return c;
     }
 
@@ -142,7 +142,7 @@ contract PolicyPool is SafeMath, Owned{
     uint256 public policyActiveNum=0;
 
 
-    mapping (uint256 =&gt; uint256) policyInternalID;
+    mapping (uint256 => uint256) policyInternalID;
 
     struct Policy {
         uint256 since;
@@ -206,7 +206,7 @@ contract PolicyPool is SafeMath, Owned{
         //convert msg.data bytes to uint
         uint payload=0;
         
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             uint b = uint(msg.data[131 - i]);
             payload += b * 256**i;
         }
@@ -268,10 +268,10 @@ contract PolicyPool is SafeMath, Owned{
     function withdrawPolicy(uint256 payload, uint256 weiAmount, uint256 fees, address to) public onlyOwner returns (bool success) {
 
         uint id=policyInternalID[payload];
-        require(id&gt;0);
-        require(policies[id].accumulatedIn&gt;0);
-        require(policies[id].since&lt;now);
-        require(weiAmount&lt;policyTokenBalance);
+        require(id>0);
+        require(policies[id].accumulatedIn>0);
+        require(policies[id].since<now);
+        require(weiAmount<policyTokenBalance);
 
         if(!insChainTokenLedger.transfer(to,weiAmount)){revert();}
         policyTokenBalance=safeSub(policyTokenBalance,weiAmount);
@@ -288,12 +288,12 @@ contract PolicyPool is SafeMath, Owned{
     }
 
     function kill() public onlyOwner {
-        if(policyTokenBalance&gt;0){
+        if(policyTokenBalance>0){
             if(!insChainTokenLedger.transfer(owner,policyTokenBalance)){revert();}
             policyTokenBalance=0;
             policyTokenBalanceFromEther=0;
         }
-        if(policyFeeCollector&gt;0){
+        if(policyFeeCollector>0){
             if(!insChainTokenLedger.transfer(owner,policyFeeCollector)){revert();}
             policyFeeCollector=0;
         }
@@ -312,7 +312,7 @@ contract PolicyPool is SafeMath, Owned{
      */
     function newProposal(uint256 payload, address beneficiary, uint256 weiAmount,string claimDescription) onlyOwner public returns(uint256 proposalID){
 
-        require(policyTokenBalance&gt;weiAmount);
+        require(policyTokenBalance>weiAmount);
 
         proposals.length++;
         proposalID = proposals.length-1;
@@ -339,12 +339,12 @@ contract PolicyPool is SafeMath, Owned{
         Proposal storage p = proposals[proposalNumber];
 
         require(!p.executed);                               //it has not already been executed
-        require(p.amount&gt;=refundAmount);                  
+        require(p.amount>=refundAmount);                  
 
         // ...then execute result
         
         uint256 totalReduce = safeAdd(refundAmount,fees);
-        if ( totalReduce&lt;=policyTokenBalance ) {
+        if ( totalReduce<=policyTokenBalance ) {
             // Proposal passed; execute the transaction
 
             p.executed = true; // Avoid recursive calling
@@ -377,7 +377,7 @@ contract PolicyPool is SafeMath, Owned{
     // This function is controlled by agent
     function joinWithCandy(address signer, uint256 payload, uint256 timeStamp) onlyAgent public returns (bool success){
         require(signer!=address(0));
-        require(timeStamp&lt;now);
+        require(timeStamp<now);
         require(policyInternalID[payload] == 0);
         
         if(!getx2Policy(signer, payload, timeStamp, 0)){revert();}
@@ -390,13 +390,13 @@ contract PolicyPool is SafeMath, Owned{
     }
 
     // admin function to transfer in the GETX according to the rate
-    // the admin should transfer &quot;policyTokenBalanceFromEther&quot; to this pool later
+    // the admin should transfer "policyTokenBalanceFromEther" to this pool later
     function settleEtherPolicy(address[] froms, uint256[] payloads, uint256[] timeStamps, uint256[] weiAmounts) onlyOwner public returns(bool success){
         require(froms.length == payloads.length);
         require(payloads.length == weiAmounts.length);
         uint i;
 
-        for (i=0;i&lt;froms.length;i++){
+        for (i=0;i<froms.length;i++){
             if(!getx2Policy(froms[i], payloads[i], timeStamps[i], weiAmounts[i])){revert();}
             // this GETX value must be the same as the ether collector account
             policyTokenBalanceFromEther=safeAdd(policyTokenBalanceFromEther,weiAmounts[i]);

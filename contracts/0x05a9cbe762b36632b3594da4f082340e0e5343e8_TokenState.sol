@@ -211,8 +211,8 @@ contract to the new one.
 contract TokenState is State {
  
     /* ERC20 fields. */
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
  
     /**
      * @dev Constructor
@@ -232,7 +232,7 @@ contract TokenState is State {
      * @param tokenOwner The authorising party.
      * @param spender The authorised party.
      * @param value The total value the authorised party may spend on the
-     * authorising party&#39;s behalf.
+     * authorising party's behalf.
      */
     function setAllowance(address tokenOwner, address spender, uint value)
         external

@@ -115,8 +115,8 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   /// @dev contains all the Cards in the system. Card with ID 0 is invalid.
   Card[] public allCards;
 
-  /// @dev SocialNetworkType -&gt; (SocialId -&gt; CardId)
-  mapping (uint8 =&gt; mapping (uint64 =&gt; uint256)) private socialIdentityMappings;
+  /// @dev SocialNetworkType -> (SocialId -> CardId)
+  mapping (uint8 => mapping (uint64 => uint256)) private socialIdentityMappings;
 
   /// @dev getter for `socialIdentityMappings`
   function socialIdentityToCardId(uint256 _socialNetworkType, uint256 _socialId) public view returns (uint256 cardId) {
@@ -130,7 +130,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
     return cardId;
   }
 
-  mapping (uint8 =&gt; mapping (address =&gt; uint256)) private claimerAddressToCardIdMappings;
+  mapping (uint8 => mapping (address => uint256)) private claimerAddressToCardIdMappings;
 
   /// @dev returns the last Card ID claimed by `_claimerAddress` in network with `_socialNetworkType`
   function lookUpClaimerAddress(uint256 _socialNetworkType, address _claimerAddress) public view returns (uint256 cardId) {
@@ -142,13 +142,13 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   }
 
   /// @dev A mapping from Card ID to the timestamp of the first completed Claim of that Card
-  mapping (uint256 =&gt; uint128) public cardIdToFirstClaimTimestamp;
+  mapping (uint256 => uint128) public cardIdToFirstClaimTimestamp;
 
   /// @dev A mapping from Card ID to the current owner address of that Card
-  mapping (uint256 =&gt; address) public cardIdToOwner;
+  mapping (uint256 => address) public cardIdToOwner;
 
   /// @dev A mapping from owner address to the number of Cards currently owned by it
-  mapping (address =&gt; uint256) internal ownerAddressToCardCount;
+  mapping (address => uint256) internal ownerAddressToCardCount;
 
   function _changeOwnership(address _from, address _to, uint256 _cardId) internal whenNotPaused {
       ownerAddressToCardCount[_to]++;
@@ -219,7 +219,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   }
 
   /// @notice Returns a list of all Card IDs currently owned by `_owner`
-  /// @dev (this thing iterates, don&#39;t call from smart contract code)
+  /// @dev (this thing iterates, don't call from smart contract code)
   function tokensOfOwner(address _owner) external view returns(uint256[] ownerTokens) {
       uint256 tokenCount = ownerAddressToCardCount[_owner];
 
@@ -233,7 +233,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
 
       uint256 cardId;
 
-      for (cardId = 1; cardId &lt;= total; cardId++) {
+      for (cardId = 1; cardId <= total; cardId++) {
           if (cardIdToOwner[cardId] == _owner) {
               result[resultIndex] = cardId;
               resultIndex++;
@@ -269,23 +269,23 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
       _;
   }
 
-  /// @dev mapping from Card ID to information about that card&#39;s last trade
-  mapping (uint256 =&gt; SaleInfo) public cardIdToSaleInfo;
+  /// @dev mapping from Card ID to information about that card's last trade
+  mapping (uint256 => SaleInfo) public cardIdToSaleInfo;
 
   /// @dev mapping from Card ID to the current value stashed away for a future claimer
-  mapping (uint256 =&gt; uint256) public cardIdToStashedPayout;
+  mapping (uint256 => uint256) public cardIdToStashedPayout;
   /// @dev total amount of stashed payouts
   uint256 public totalStashedPayouts;
 
-  /// @dev if we fail to send any value to a Card&#39;s previous owner as part of the
-  /// invite/steal transaction we&#39;ll hold it in this contract. This mapping records the amount
-  /// owed to that &quot;previous owner&quot;.
-  mapping (address =&gt; uint256) public addressToFailedOldOwnerTransferAmount;
+  /// @dev if we fail to send any value to a Card's previous owner as part of the
+  /// invite/steal transaction we'll hold it in this contract. This mapping records the amount
+  /// owed to that "previous owner".
+  mapping (address => uint256) public addressToFailedOldOwnerTransferAmount;
   /// @dev total amount of failed old owner transfers
   uint256 public totalFailedOldOwnerTransferAmounts;
 
-  /// @dev mapping from Card ID to that card&#39;s current perk text
-  mapping (uint256 =&gt; string) public cardIdToPerkText;
+  /// @dev mapping from Card ID to that card's current perk text
+  mapping (uint256 => string) public cardIdToPerkText;
 
   function authorized_setCardPerkText(uint256 _cardId, string _perkText) external requireAuthorizedLogicContract {
     cardIdToPerkText[_cardId] = _perkText;
@@ -332,7 +332,7 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
 
     uint256 stashedPayout = cardIdToStashedPayout[_cardId];
 
-    require(stashedPayout &gt; 0);
+    require(stashedPayout > 0);
 
     cardIdToStashedPayout[_cardId] = 0;
     totalStashedPayouts -= stashedPayout;
@@ -361,7 +361,7 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
     return balance;
   }
 
-  /// @dev the Bursar account can use this to withdraw the contract&#39;s net balance
+  /// @dev the Bursar account can use this to withdraw the contract's net balance
   function bursarPayOutNetContractBalance(address _to) external requireBursar {
       uint256 payout = netContractBalance();
 
@@ -372,12 +372,12 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
       }
   }
 
-  /// @dev Any wallet owed value that&#39;s recorded under `addressToFailedOldOwnerTransferAmount`
+  /// @dev Any wallet owed value that's recorded under `addressToFailedOldOwnerTransferAmount`
   /// can use this function to withdraw that value.
   function withdrawFailedOldOwnerTransferAmount() external whenNotPaused {
       uint256 failedTransferAmount = addressToFailedOldOwnerTransferAmount[msg.sender];
 
-      require(failedTransferAmount &gt; 0);
+      require(failedTransferAmount > 0);
 
       addressToFailedOldOwnerTransferAmount[msg.sender] = 0;
       totalFailedOldOwnerTransferAmounts -= failedTransferAmount;
@@ -411,7 +411,7 @@ contract CryptoFamous is CryptoFamousBase {
     /// @dev Fired whenever a Card is claimed.
     event CardClaimCompleted(uint256 indexed cardId, address previousClaimer, address newClaimer, address indexed owner);
 
-    /// @dev Fired whenever a Card&#39;s perk text is updated.
+    /// @dev Fired whenever a Card's perk text is updated.
     event CardPerkTextUpdated(uint256 indexed cardId, string newPerkText);
 
     /// @notice Reference to the contract that handles the creation and ownership changes between cards.
@@ -458,7 +458,7 @@ contract CryptoFamous is CryptoFamousBase {
     // solhint-disable-next-line var-name-mixedcase
     uint128 public PLATFORM_FEE_RATE = 600; // basis points OF PROFIT
     function _setPlatformFeeRate(uint128 _newPlatformFeeRate) private {
-        require(_newPlatformFeeRate &lt; 10000);
+        require(_newPlatformFeeRate < 10000);
         PLATFORM_FEE_RATE = _newPlatformFeeRate;
     }
 
@@ -485,7 +485,7 @@ contract CryptoFamous is CryptoFamousBase {
 
     // mimicking eth_sign.
     function prefixed(bytes32 hash) private pure returns (bytes32) {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
 
     function claimTwitterId(uint256 _twitterId, address _claimerAddress, uint8 _v, bytes32 _r, bytes32 _s) external whenNotPaused returns (uint256) {
@@ -498,7 +498,7 @@ contract CryptoFamous is CryptoFamousBase {
 
     /// @dev claiming a social identity requires a signature provided by the CryptoFamous backend
     /// to verify the authenticity of the claim. Once a Card is claimed by an address, that address
-    /// has access to the Card&#39;s current and future earnings on the system.
+    /// has access to the Card's current and future earnings on the system.
     function _claimSocialNetworkIdentity(uint256 _socialNetworkType, uint256 _socialId, address _claimerAddress, uint8 _v, bytes32 _r, bytes32 _s) private returns (uint256) {
       uint8 _socialNetworkType8 = uint8(_socialNetworkType);
       require(_socialNetworkType == uint256(_socialNetworkType8));
@@ -540,12 +540,12 @@ contract CryptoFamous is CryptoFamousBase {
         CardClaimCompleted(_cardId, previousClaimer, _claimerAddress, owner);
 
         uint256 stashedPayout = storageContract.cardIdToStashedPayout(_cardId);
-        if (stashedPayout &gt; 0) {
+        if (stashedPayout > 0) {
           _triggerStashedPayoutTransfer(_cardId);
         }
     }
 
-    /// @dev The Card&#39;s perk text is displayed prominently on its profile and will likely be
+    /// @dev The Card's perk text is displayed prominently on its profile and will likely be
     /// used for promotional reasons.
     function setCardPerkText(uint256 _cardId, string _perkText) external whenNotPaused {
       address cardClaimer;
@@ -553,7 +553,7 @@ contract CryptoFamous is CryptoFamousBase {
 
       require(cardClaimer == msg.sender);
 
-      require(bytes(_perkText).length &lt;= 280);
+      require(bytes(_perkText).length <= 280);
 
       _updateCardPerkText(_cardId, _perkText);
       CardPerkTextUpdated(_cardId, _perkText);
@@ -617,7 +617,7 @@ contract CryptoFamous is CryptoFamousBase {
           return _claimIfNeededThenSteal(_socialNetworkTypeToClaim, _socialIdToClaim, _claimerAddress, _v, _r, _s, _socialNetworkTypeToSteal, _socialIdToSteal);
     }
 
-    /// @dev &quot;Convenience&quot; function allowing us to avoid forcing the user to go through an extra
+    /// @dev "Convenience" function allowing us to avoid forcing the user to go through an extra
     /// Ethereum transactions if they really, really want to do their first steal right now.
     function _claimIfNeededThenSteal(
       uint256 _socialNetworkTypeToClaim,
@@ -666,7 +666,7 @@ contract CryptoFamous is CryptoFamousBase {
 
         require(newOwner != address(0));
 
-        // Check for sent value overflow (which realistically wouldn&#39;t happen)
+        // Check for sent value overflow (which realistically wouldn't happen)
         uint128 sentValue = uint128(msg.value);
         require(uint256(sentValue) == msg.value);
 
@@ -689,18 +689,18 @@ contract CryptoFamous is CryptoFamousBase {
         platformFee
         ) = currentPriceInfoOf(_cardId, sentValue);
 
-        require(sentValue &gt;= decayedPrice);
+        require(sentValue >= decayedPrice);
 
         _updateSaleInfo(_cardId, sentValue);
         storageContract.authorized_changeOwnership(oldOwner, newOwner, _cardId);
 
         CardStealCompleted(_cardId, cardClaimer, lastPrice, sentValue, oldOwner, newOwner, totalOwnerPayout, totalCardPayout);
 
-        if (platformFee &gt; 0) {
+        if (platformFee > 0) {
           _recordPlatformFee(platformFee);
         }
 
-        if (totalCardPayout &gt; 0) {
+        if (totalCardPayout > 0) {
             if (cardClaimer == address(0)) {
                 _recordStashedPayout(_cardId, totalCardPayout);
             } else {
@@ -711,7 +711,7 @@ contract CryptoFamous is CryptoFamousBase {
             }
         }
 
-        if (totalOwnerPayout &gt; 0) {
+        if (totalOwnerPayout > 0) {
           if (oldOwner != address(0)) {
               // Because the caller can manipulate the .send to fail, we need a fallback
               if (!oldOwner.send(totalOwnerPayout)) { // solhint-disable-line multiple-sends
@@ -735,12 +735,12 @@ contract CryptoFamous is CryptoFamousBase {
         (lastTimestamp, lastPrice) = storageContract.cardIdToSaleInfo(_cardId);
 
         decayedPrice = decayedPriceFrom(lastPrice, lastTimestamp);
-        require(_sentGrossPrice &gt;= decayedPrice);
+        require(_sentGrossPrice >= decayedPrice);
 
         platformFee = uint128(_sentGrossPrice) * PLATFORM_FEE_RATE / 10000;
         uint128 sentNetPrice = uint128(_sentGrossPrice) - platformFee;
 
-        if (sentNetPrice &gt; lastPrice) {
+        if (sentNetPrice > lastPrice) {
             profit = sentNetPrice - lastPrice;
             ownerProfitTake = profit * OWNER_TAKE_SHARE / 10000;
             cardProfitTake = profit * CARD_TAKE_SHARE / 10000;
@@ -760,7 +760,7 @@ contract CryptoFamous is CryptoFamousBase {
           totalOwnerPayout = 0;
         }
 
-        require(_sentGrossPrice &gt;= (totalCardPayout + totalOwnerPayout + platformFee));
+        require(_sentGrossPrice >= (totalCardPayout + totalOwnerPayout + platformFee));
 
         return (lastPrice, decayedPrice, profit, ownerProfitTake, cardProfitTake, totalOwnerPayout, totalCardPayout, platformFee);
     }
@@ -770,10 +770,10 @@ contract CryptoFamous is CryptoFamousBase {
             decayedPrice = INITIAL_CARD_PRICE;
         } else {
             uint128 startPrice = uint128(_lastPrice) + (uint128(_lastPrice) * PURCHASE_PREMIUM_RATE / 10000);
-            require(startPrice &gt;= uint128(_lastPrice));
+            require(startPrice >= uint128(_lastPrice));
 
             uint128 secondsLapsed;
-            if (now &gt; _lastTimestamp) { // solhint-disable-line not-rely-on-time
+            if (now > _lastTimestamp) { // solhint-disable-line not-rely-on-time
                 secondsLapsed = uint128(now) - uint128(_lastTimestamp); // solhint-disable-line not-rely-on-time
             } else {
                 secondsLapsed = 0;
@@ -781,11 +781,11 @@ contract CryptoFamous is CryptoFamousBase {
             uint128 hoursLapsed = secondsLapsed / 1 hours;
             uint128 totalDecay = (hoursLapsed * (startPrice * HOURLY_VALUE_DECAY_RATE / 10000));
 
-            if (totalDecay &gt; startPrice) {
+            if (totalDecay > startPrice) {
                 decayedPrice = MIN_CARD_PRICE;
             } else {
                 decayedPrice = startPrice - totalDecay;
-                if (decayedPrice &lt; MIN_CARD_PRICE) {
+                if (decayedPrice < MIN_CARD_PRICE) {
                   decayedPrice = MIN_CARD_PRICE;
                 }
             }

@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -98,8 +98,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -136,10 +136,10 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
 
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
@@ -177,7 +177,7 @@ contract TokenERC20 {
     * @param _value the amount to send
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         //allowance[_from][msg.sender] -= _value;
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
@@ -223,7 +223,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -239,10 +239,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -255,10 +255,10 @@ contract TokenERC20 {
 contract ICONIC_NIC is Ownable, TokenERC20 {
     using SafeMath for uint256;
 
-    mapping (address =&gt; bool)    public  frozenAccount;
-    mapping (address =&gt; uint256) public freezingPeriod; // how many days the account must remain frozen?
+    mapping (address => bool)    public  frozenAccount;
+    mapping (address => uint256) public freezingPeriod; // how many days the account must remain frozen?
 
-    mapping (address =&gt; bool) public exchangesAccounts;
+    mapping (address => bool) public exchangesAccounts;
 
     address public bountyManagerAddress; //bounty manager address
     address public bountyManagerDistributionContract = 0x0; // bounty distributor smart contract address
@@ -396,7 +396,7 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     function _isTransferAllowed( address _address ) view public returns (bool)
     {
         /* solium-disable-next-line */
-        if( now &gt;= creationDate + freezingPeriod[_address] * 1 days ){
+        if( now >= creationDate + freezingPeriod[_address] * 1 days ){
             return ( true );
         } else {
             return ( false );
@@ -412,8 +412,8 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                                  // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                  // Check if the sender has enough
-        require (balanceOf[_to].add(_value) &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                  // Check if the sender has enough
+        require (balanceOf[_to].add(_value) > balanceOf[_to]); // Check for overflows
 
         // check if the sender is under a freezing period
         if(_isTransferAllowed(_from)){ 
@@ -499,7 +499,7 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
         uint256 _now = now;
         uint256 result = 0;
 
-        if( _now &lt;= creationDate + freezingPeriod[_address] * 1 days ) {
+        if( _now <= creationDate + freezingPeriod[_address] * 1 days ) {
             // still under the freezing period.
             uint256 finalPeriod = (creationDate + freezingPeriod[_address] * 1 days) / 1 days;
             uint256 currePeriod = _now / 1 days;
@@ -510,7 +510,7 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     }
 
     /**
-    * @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    * @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     * @param target Address to be frozen
     * @param freeze either to freeze it or not
     */
@@ -562,7 +562,7 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     * @param _value the amount to send
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         //allowance[_from][msg.sender] -= _value;
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
@@ -618,7 +618,7 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     * @param _value the amount of money to burn
     */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         return _burn(msg.sender, _value);
     }
 
@@ -644,9 +644,9 @@ contract ICONIC_NIC is Ownable, TokenERC20 {
     * @param _value the amount of tokens to burn
     */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                                     // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);                         // Check allowance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value); // Subtract from the sender&#39;s allowance
+        require(balanceOf[_from] >= _value);                                     // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);                         // Check allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value); // Subtract from the sender's allowance
         return _burn(_from, _value);
     }
 

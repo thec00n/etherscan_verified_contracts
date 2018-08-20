@@ -33,11 +33,11 @@ contract CryptoThreeKingdoms is ERC721{
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
 
   uint256[] private listedTokens;
-  mapping (uint256 =&gt; address) private ownerOfToken;
-  mapping (uint256 =&gt; address) private approvedOfToken;
+  mapping (uint256 => address) private ownerOfToken;
+  mapping (uint256 => address) private approvedOfToken;
 
   function CryptoThreeKingdoms() public {
     owner = msg.sender;
@@ -70,7 +70,7 @@ contract CryptoThreeKingdoms is ERC721{
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -85,11 +85,11 @@ contract CryptoThreeKingdoms is ERC721{
   /* ERC721 */
 
   function name() public view returns (string _name) {
-    return &quot;cryptosanguo.pro&quot;;
+    return "cryptosanguo.pro";
   }
 
   function symbol() public view returns (string _symbol) {
-    return &quot;CSG&quot;;
+    return "CSG";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -99,7 +99,7 @@ contract CryptoThreeKingdoms is ERC721{
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedTokens.length; i++) {
+    for (uint256 i = 0; i < listedTokens.length; i++) {
       if (ownerOf(listedTokens[i]) == _owner) {
         counter++;
       }
@@ -116,7 +116,7 @@ contract CryptoThreeKingdoms is ERC721{
     uint256[] memory Tokens = new uint256[](balanceOf(_owner));
 
     uint256 TokenCounter = 0;
-    for (uint256 i = 0; i &lt; listedTokens.length; i++) {
+    for (uint256 i = 0; i < listedTokens.length; i++) {
       if (ownerOf(listedTokens[i]) == _owner) {
         Tokens[TokenCounter] = listedTokens[i];
         TokenCounter += 1;
@@ -178,7 +178,7 @@ contract CryptoThreeKingdoms is ERC721{
 
   /* Issue */  
   function issueToken(uint256 l, uint256 r) onlyAdmins() public {
-    for (uint256 i = l; i &lt;= r; i++) {
+    for (uint256 i = l; i <= r; i++) {
       if (ownerOf(i) == address(0)) {
         ownerOfToken[i] = msg.sender;
         listedTokens.push(i);
@@ -186,7 +186,7 @@ contract CryptoThreeKingdoms is ERC721{
     }      
   }
   function issueTokenAndTransfer(uint256 l, uint256 r, address to) onlyAdmins() public {
-    for (uint256 i = l; i &lt;= r; i++) {
+    for (uint256 i = l; i <= r; i++) {
       if (ownerOf(i) == address(0)) {
         ownerOfToken[i] = to;
         listedTokens.push(i);
@@ -194,7 +194,7 @@ contract CryptoThreeKingdoms is ERC721{
     }      
   }     
   function issueTokenAndApprove(uint256 l, uint256 r, address to) onlyAdmins() public {
-    for (uint256 i = l; i &lt;= r; i++) {
+    for (uint256 i = l; i <= r; i++) {
       if (ownerOf(i) == address(0)) {
         ownerOfToken[i] = msg.sender;
         approve(to, i);

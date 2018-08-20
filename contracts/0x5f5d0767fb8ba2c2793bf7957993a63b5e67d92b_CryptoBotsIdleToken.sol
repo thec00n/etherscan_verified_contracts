@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -26,7 +26,7 @@ contract Ownable {
 
 contract Extension is Ownable {
 
-    mapping(address =&gt; bool) extensions;
+    mapping(address => bool) extensions;
 
     function addExtension(address _contract) public onlyOwner {
         extensions[_contract] = true;
@@ -48,16 +48,16 @@ contract Extension is Ownable {
 
 contract CryptoBotsIdleToken is Ownable, Extension {
 
-    string public name = &quot;CryptoBots: Idle Token&quot;;
-    string public symbol = &quot;CBIT&quot;;
+    string public name = "CryptoBots: Idle Token";
+    string public symbol = "CBIT";
     uint8 public decimals = 2;
 
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
-    //Event which is triggered to log all transfers to this contract&#39;s event log
+    //Event which is triggered to log all transfers to this contract's event log
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     //Event which is triggered whenever an owner approves a new allowance for a spender.
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -76,7 +76,7 @@ contract CryptoBotsIdleToken is Ownable, Extension {
     function batchTransfer(address[] _to, uint256 _value) public {
         balances[msg.sender] = safeSub(balances[msg.sender], safeMul(_to.length, _value));
 
-        for (uint i = 0; i &lt; _to.length; i++) {
+        for (uint i = 0; i < _to.length; i++) {
             balances[_to[i]] += safeAdd(balances[_to[i]], _value);
             emit Transfer(msg.sender, _to[i], _value);
         }
@@ -86,7 +86,7 @@ contract CryptoBotsIdleToken is Ownable, Extension {
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
 
-        if (hasExtension(_to) == false &amp;&amp; hasExtension(_from) == false) {
+        if (hasExtension(_to) == false && hasExtension(_from) == false) {
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
         }
 
@@ -124,12 +124,12 @@ contract CryptoBotsIdleToken is Ownable, Extension {
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }

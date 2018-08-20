@@ -11,7 +11,7 @@ contract JackPot {
 
     function guess(uint8 number) public payable {
         // each next attempt should be more expensive than previous ones
-        if (hashNumber(number) == secretNumberHash &amp;&amp; msg.value &gt; this.balance) {
+        if (hashNumber(number) == secretNumberHash && msg.value > this.balance) {
             // send the jack pot
             msg.sender.transfer(this.balance + msg.value);
         }

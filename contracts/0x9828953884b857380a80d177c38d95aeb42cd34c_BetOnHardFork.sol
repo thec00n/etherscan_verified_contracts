@@ -21,7 +21,7 @@ contract BetOnHardFork {
         bool bet;
     }
     
-    mapping(address=&gt;Bet) bets;
+    mapping(address=>Bet) bets;
     uint numYesBets;
     uint numNoBets;
     
@@ -36,16 +36,16 @@ contract BetOnHardFork {
     }
     
     function isBetPossible( bool willSucceed ) constant returns(bool) {
-        if( now &gt; betsOverTimeStamp ) return false;
+        if( now > betsOverTimeStamp ) return false;
         
         uint numPossibleBets = buttcoinBalance / buttcoinReward;
         if( willSucceed ) {
-            if( numYesBets &lt; numNoBets ) return true;
-            if( 1 + numYesBets - numNoBets &gt;= numPossibleBets ) return false;
+            if( numYesBets < numNoBets ) return true;
+            if( 1 + numYesBets - numNoBets >= numPossibleBets ) return false;
         }
         else {
-            if( numNoBets &lt; numYesBets ) return true;
-            if( 1 + numNoBets - numYesBets &gt;= numPossibleBets ) return false;
+            if( numNoBets < numYesBets ) return true;
+            if( 1 + numNoBets - numYesBets >= numPossibleBets ) return false;
         }
         
         return (! bets[msg.sender].didBet);
@@ -60,13 +60,13 @@ contract BetOnHardFork {
     }
     
     function claimReward( ) {
-        if( now &gt; twoWeeksAfterHardFork ) throw;
-        if( now &lt; weekAfterHardFork ) throw;
+        if( now > twoWeeksAfterHardFork ) throw;
+        if( now < weekAfterHardFork ) throw;
         if( ! bets[msg.sender].didBet ) throw;
-        bool succ = (block.gaslimit &gt;= gasLimitThreshold );
+        bool succ = (block.gaslimit >= gasLimitThreshold );
         bool shouldPay = false;
-        if( succ &amp;&amp; bets[msg.sender].bet ) shouldPay = true;
-        if( ! succ &amp;&amp; ! bets[msg.sender].bet ) shouldPay = true;
+        if( succ && bets[msg.sender].bet ) shouldPay = true;
+        if( ! succ && ! bets[msg.sender].bet ) shouldPay = true;
         
         if( ! shouldPay ) throw;
         

@@ -1,10 +1,10 @@
 /**
  *  The Monetha token contract complies with the ERC20 standard (see https://github.com/ethereum/EIPs/issues/20).
- *  The owner&#39;s share of tokens is locked for the first year and all tokens not
- *  being sold during the crowdsale but the owner&#39;s share + reserved tokend for bounty, loyalty program and future financing are burned.
+ *  The owner's share of tokens is locked for the first year and all tokens not
+ *  being sold during the crowdsale but the owner's share + reserved tokend for bounty, loyalty program and future financing are burned.
  *  Author: Julia Altenried
  *  Internal audit: Alex Bazhanau, Andrej Ruckij
- *  Audit: Blockchain &amp; Smart Contract Security Group
+ *  Audit: Blockchain & Smart Contract Security Group
  **/
 
 pragma solidity ^0.4.15;
@@ -19,22 +19,22 @@ contract SafeMath {
 	}
 
 	function safeSub(uint a, uint b) internal returns(uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint a, uint b) internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 }
 
 contract MonethaToken is SafeMath {
 	/* Public variables of the token */
-	string constant public standard = &quot;ERC20&quot;;
-	string constant public name = &quot;Monetha&quot;;
-	string constant public symbol = &quot;MTH&quot;;
+	string constant public standard = "ERC20";
+	string constant public name = "Monetha";
+	string constant public symbol = "MTH";
 	uint8 constant public decimals = 5;
 	uint public totalSupply = 40240000000000;
 	uint constant public tokensForIco = 20120000000000;
@@ -49,8 +49,8 @@ contract MonethaToken is SafeMath {
 	bool burned;
 
 	/* This creates an array with all balances */
-	mapping(address =&gt; uint) public balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+	mapping(address => uint) public balanceOf;
+	mapping(address => mapping(address => uint)) public allowance;
 
 
 	/* This generates a public event on the blockchain that will notify clients */
@@ -68,9 +68,9 @@ contract MonethaToken is SafeMath {
 
 	/* Send some of your tokens to a given address */
 	function transfer(address _to, uint _value) returns(bool success) {
-		require(now &gt;= startTime); //check if the crowdsale is already over
-		if (msg.sender == owner &amp;&amp; now &lt; lockReleaseDate) 
-			require(safeSub(balanceOf[msg.sender], _value) &gt;= lockedAmount); //prevent the owner of spending his share of tokens for company, loyalty program and future financing of the company within the first year
+		require(now >= startTime); //check if the crowdsale is already over
+		if (msg.sender == owner && now < lockReleaseDate) 
+			require(safeSub(balanceOf[msg.sender], _value) >= lockedAmount); //prevent the owner of spending his share of tokens for company, loyalty program and future financing of the company within the first year
 		balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value); // Subtract from the sender
 		balanceOf[_to] = safeAdd(balanceOf[_to], _value); // Add the same to the recipient
 		Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
@@ -96,10 +96,10 @@ contract MonethaToken is SafeMath {
 	/* A contract or  person attempts to get the tokens of somebody else.
 	 *  This is only allowed if the token holder approved. */
 	function transferFrom(address _from, address _to, uint _value) returns(bool success) {
-		if (now &lt; startTime) 
+		if (now < startTime) 
 			require(_from == owner); //check if the crowdsale is already over
-		if (_from == owner &amp;&amp; now &lt; lockReleaseDate) 
-			require(safeSub(balanceOf[_from], _value) &gt;= lockedAmount); //prevent the owner of spending his share of tokens for company, loyalty program and future financing of the company within the first year
+		if (_from == owner && now < lockReleaseDate) 
+			require(safeSub(balanceOf[_from], _value) >= lockedAmount); //prevent the owner of spending his share of tokens for company, loyalty program and future financing of the company within the first year
 		var _allowance = allowance[_from][msg.sender];
 		balanceOf[_from] = safeSub(balanceOf[_from], _value); // Subtract from the sender
 		balanceOf[_to] = safeAdd(balanceOf[_to], _value); // Add the same to the recipient
@@ -115,7 +115,7 @@ contract MonethaToken is SafeMath {
 	 *  this ensures that the owner will not posses a majority of the tokens. */
 	function burn() {
 		//if tokens have not been burned already and the ICO ended
-		if (!burned &amp;&amp; now &gt; startTime) {
+		if (!burned && now > startTime) {
 			uint difference = safeSub(balanceOf[owner], reservedAmount);
 			balanceOf[owner] = reservedAmount;
 			totalSupply = safeSub(totalSupply, difference);
@@ -141,7 +141,7 @@ contract MonethaToken is SafeMath {
 	* @param _newStart the new start date
 	**/
 	function setStart(uint _newStart) {
-		require(msg.sender == ico &amp;&amp; _newStart &lt; startTime);
+		require(msg.sender == ico && _newStart < startTime);
 		startTime = _newStart;
 	}
 

@@ -20,7 +20,7 @@ contract TakeoutController {
     }
     
     modifier onlyOwner {
-        require(owner == msg.sender, &quot;Access Denied!&quot;);
+        require(owner == msg.sender, "Access Denied!");
         _;
     }
     
@@ -53,7 +53,7 @@ contract TakeoutController {
         if (_amount == 0) {
             takeoutWallet.transfer(address(this).balance);
         } else {
-            require(_amount &lt;= address(this).balance);
+            require(_amount <= address(this).balance);
             takeoutWallet.transfer(_amount);
         }
     }

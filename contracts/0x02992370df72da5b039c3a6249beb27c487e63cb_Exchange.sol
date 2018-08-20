@@ -78,7 +78,7 @@ contract SafeMath {
 
 	function safeSub( uint a, uint b ) pure internal returns ( uint ) {
 		
-		assert( b &lt;= a );
+		assert( b <= a );
 		return a - b;
 	}
 
@@ -87,7 +87,7 @@ contract SafeMath {
 		uint 	c;
 	
 		c = a + b;
-		assert( c &gt;= a &amp;&amp; c &gt;= b );
+		assert( c >= a && c >= b );
 		return c;
 	}
 }
@@ -108,9 +108,9 @@ contract Token {
 
 contract Exchange is SafeMath, Admin {
 
-	mapping( address =&gt; mapping( address =&gt; uint )) public tokens;
-	mapping( address =&gt; mapping( bytes32 =&gt; bool )) public orders;
-	mapping( bytes32 =&gt; mapping( address =&gt; uint )) public ordersBalance;
+	mapping( address => mapping( address => uint )) public tokens;
+	mapping( address => mapping( bytes32 => bool )) public orders;
+	mapping( bytes32 => mapping( address => uint )) public ordersBalance;
 
 	event Deposit( address token, address user, uint amount, uint balance );
 	event Withdraw( address token, address user, uint amount, uint balance );
@@ -255,7 +255,7 @@ contract Exchange is SafeMath, Admin {
 	}
 
 	function 	assertCompareBalance( uint a, uint b ) pure private {
-		if ( a &gt; b ) {
+		if ( a > b ) {
 			revert();
 		}
 	}

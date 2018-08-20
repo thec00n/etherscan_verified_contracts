@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -201,9 +201,9 @@ contract Crowdsale is Pausable {
    * @return The number of tokens a buyer gets per wei at a given time
    */
   function getCurrentRate() public view returns (uint256) {
-        if (now &lt;= openingTime.add(30 days)) return rate.add(rate*4/10);   // bonus 40% first 30 days
-        if (now &gt; openingTime.add(30 days) &amp;&amp; now &lt;= openingTime.add(60 days)) return rate.add(rate/5);   // bonus 20% first 30 days
-        if (now &gt; openingTime.add(60 days) &amp;&amp; now &lt;= openingTime.add(90 days)) return rate.add(rate/2);   // bonus 10% first 30 days
+        if (now <= openingTime.add(30 days)) return rate.add(rate*4/10);   // bonus 40% first 30 days
+        if (now > openingTime.add(30 days) && now <= openingTime.add(60 days)) return rate.add(rate/5);   // bonus 20% first 30 days
+        if (now > openingTime.add(60 days) && now <= openingTime.add(90 days)) return rate.add(rate/2);   // bonus 10% first 30 days
   }
 
   // -----------------------------------------
@@ -249,7 +249,7 @@ contract Crowdsale is Pausable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
   }
 
   /**
@@ -292,7 +292,7 @@ contract Crowdsale is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -308,7 +308,7 @@ contract Crowdsale is Pausable {
 contract PostDeliveryCrowdsale is Crowdsale {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   /**
    * @dev Withdraw tokens only after crowdsale ends.
@@ -316,7 +316,7 @@ contract PostDeliveryCrowdsale is Crowdsale {
   function withdrawTokens() public {
     require(hasClosed());
     uint256 amount = balances[msg.sender];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[msg.sender] = 0;
     _deliverTokens(msg.sender, amount);
   }

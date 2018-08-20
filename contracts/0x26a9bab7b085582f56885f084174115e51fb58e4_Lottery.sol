@@ -84,7 +84,7 @@ contract Lottery{
      payable public
      {
         //You have to send more than 0.001 ETH
-        require(msg.value &gt;= 1000000000000000);
+        require(msg.value >= 1000000000000000);
         address customerAddress = msg.sender;
 
         //Use deposit to purchase POOH tokens
@@ -92,7 +92,7 @@ contract Lottery{
         emit Deposit(msg.value, msg.sender);
 
         //if entry more than 0.001 ETH
-        if(msg.value &gt; 1000000000000000)
+        if(msg.value > 1000000000000000)
         {
             uint extraTickets = SafeMath.div(msg.value, 1000000000000000); //each additional entry is 0.001 ETH
             
@@ -101,7 +101,7 @@ contract Lottery{
         }
 
          //if when we have a winner...
-        if(ticketNumber &gt;= winningNumber)
+        if(ticketNumber >= winningNumber)
         {
             //sell all tokens and cash out earned dividends
             poohContract.exit();
@@ -130,13 +130,13 @@ contract Lottery{
         return poohContract.myTokens();
     }
 
-     //Lottery&#39;s divs
+     //Lottery's divs
     function myDividends() public view returns(uint256)
     {
         return poohContract.myDividends(true);
     }
 
-   //Lottery&#39;s ETH balance
+   //Lottery's ETH balance
    function ethBalance() public view returns (uint256)
    {
        return address(this).balance;
@@ -230,7 +230,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }

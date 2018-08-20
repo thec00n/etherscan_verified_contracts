@@ -24,7 +24,7 @@ contract Ownable {
 
 
 contract Admin is Ownable {
-  mapping(address =&gt; bool) public adminlist;
+  mapping(address => bool) public adminlist;
 
   event AdminAddressAdded(address addr);
   event AdminAddressRemoved(address addr);
@@ -107,12 +107,12 @@ contract SafeMath {
 
   function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
     uint256 z = x + y;
-    assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+    assert((z >= x) && (z >= y));
     return z;
   }
 
   function safeSubtract(uint256 x, uint256 y) internal pure returns(uint256) {
-    assert(x &gt;= y);
+    assert(x >= y);
     uint256 z = x - y;
     return z;
   }
@@ -124,7 +124,7 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 x, uint256 y) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 z = x / y;
     return z;
   }
@@ -136,16 +136,16 @@ contract StandardToken is ERC20, SafeMath {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public returns (bool){
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
@@ -155,8 +155,8 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     uint _allowance = allowed[_from][msg.sender];
 
@@ -184,10 +184,10 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract WeiToken is StandardToken, Pausable {
-  string public constant name = &quot;WeiToken&quot;;
-  string public constant symbol = &quot;YOUNG&quot;;
+  string public constant name = "WeiToken";
+  string public constant symbol = "YOUNG";
   uint256 public constant decimals = 18;
-  string public version = &quot;1.0&quot;;
+  string public version = "1.0";
 
   uint256 public constant total = 65 * (10**8) * 10**decimals;   // 20 *10^8 HNC total
 
@@ -209,7 +209,7 @@ contract WeiToken is StandardToken, Pausable {
   }
 
   function airdropToAddresses(address[] addrs, uint256 amount) public {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       transfer(addrs[i], amount);
     }
   }

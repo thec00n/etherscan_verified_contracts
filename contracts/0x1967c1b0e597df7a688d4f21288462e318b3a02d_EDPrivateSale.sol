@@ -20,7 +20,7 @@ contract ERC20 {
 /**
  * @title OwnableWithAdmin 
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableWithAdmin {
   address public owner;
@@ -104,9 +104,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -114,7 +114,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -123,12 +123,12 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function uint2str(uint i) internal pure returns (string){
-      if (i == 0) return &quot;0&quot;;
+      if (i == 0) return "0";
       uint j = i;
       uint length;
       while (j != 0){
@@ -188,25 +188,25 @@ contract LockedPrivatesale is OwnableWithAdmin {
   uint256 public step3;
 
   // Buyers total allocation
-  mapping (address =&gt; uint256) public allocationsTotal;
+  mapping (address => uint256) public allocationsTotal;
 
   // User total Claimed
-  mapping (address =&gt; uint256) public totalClaimed;
+  mapping (address => uint256) public totalClaimed;
 
   // List of allocation step 1
-  mapping (address =&gt; uint256) public allocations1;
+  mapping (address => uint256) public allocations1;
 
   // List of allocation step 2
-  mapping (address =&gt; uint256) public allocations2;
+  mapping (address => uint256) public allocations2;
 
   // List of allocation step 3
-  mapping (address =&gt; uint256) public allocations3;
+  mapping (address => uint256) public allocations3;
 
   //Buyers
-  mapping(address =&gt; bool) public buyers;
+  mapping(address => bool) public buyers;
 
   //Buyers who received all there tokens
-  mapping(address =&gt; bool) public buyersReceived;
+  mapping(address => bool) public buyersReceived;
 
   //List of all addresses
   address[] public addresses;
@@ -216,9 +216,9 @@ contract LockedPrivatesale is OwnableWithAdmin {
      
     require(_token != address(0));
 
-    require(_step1 &gt;= now);
-    require(_step2 &gt;= _step1);
-    require(_step3 &gt;= _step2);
+    require(_step1 >= now);
+    require(_step2 >= _step1);
+    require(_step3 >= _step2);
 
     step1       = _step1;
     step2       = _step2;
@@ -243,7 +243,7 @@ contract LockedPrivatesale is OwnableWithAdmin {
     * @param _tokenAmount Amount Allocated tokens + 18 decimals
     */
   function setAllocation (address _recipient, uint256 _tokenAmount) onlyOwnerOrAdmin  public{
-      require(_tokenAmount &gt; 0);      
+      require(_tokenAmount > 0);      
       require(_recipient != address(0)); 
 
       //Check hardCap 
@@ -337,13 +337,13 @@ contract LockedPrivatesale is OwnableWithAdmin {
 
     uint256 _availableTokens = 0;
 
-    if(now &gt;= step1){
+    if(now >= step1){
       _availableTokens = _availableTokens.add(allocations1[_recipient]);
     }
-    if(now &gt;= step2){
+    if(now >= step2){
       _availableTokens = _availableTokens.add(allocations2[_recipient]);
     }
-    if(now &gt;= step3){
+    if(now >= step3){
       _availableTokens = _availableTokens.add(allocations3[_recipient]);
     }
 
@@ -355,11 +355,11 @@ contract LockedPrivatesale is OwnableWithAdmin {
     * @param _recipients Array of addresses to withdraw tokens for
     */
   function distributeManyTokens(address[] _recipients) onlyOwnerOrAdmin public {
-    for (uint256 i = 0; i &lt; _recipients.length; i++) {
+    for (uint256 i = 0; i < _recipients.length; i++) {
 
       //Check if address is buyer 
       //And if the buyer is not already received all the tokens
-      if(buyers[_recipients[i]] &amp;&amp; !buyersReceived[_recipients[i]]){
+      if(buyers[_recipients[i]] && !buyersReceived[_recipients[i]]){
         distributeTokens( _recipients[i]);
       }
     }
@@ -371,11 +371,11 @@ contract LockedPrivatesale is OwnableWithAdmin {
     *
     */
   function distributeAllTokens() onlyOwner public {
-    for (uint256 i = 0; i &lt; addresses.length; i++) {
+    for (uint256 i = 0; i < addresses.length; i++) {
 
       //Check if address is buyer 
       //And if the buyer is not already received all the tokens
-      if(buyers[addresses[i]] &amp;&amp; !buyersReceived[addresses[i]]){
+      if(buyers[addresses[i]] && !buyersReceived[addresses[i]]){
         distributeTokens( addresses[i]);
       }
             
@@ -396,7 +396,7 @@ contract LockedPrivatesale is OwnableWithAdmin {
     */
   function distributeTokens(address _recipient) public {
     //Check date
-    require(now &gt;= step1);
+    require(now >= step1);
     //Check have bought tokens
     require(buyers[_recipient]);
 
@@ -405,7 +405,7 @@ contract LockedPrivatesale is OwnableWithAdmin {
 
     uint256 _availableTokens = 0;
     
-    if(now &gt;= step1  &amp;&amp; now &gt;= step2  &amp;&amp; now &gt;= step3 ){      
+    if(now >= step1  && now >= step2  && now >= step3 ){      
 
       _availableTokens = _availableTokens.add(allocations3[_recipient]); 
       _availableTokens = _availableTokens.add(allocations2[_recipient]);
@@ -420,17 +420,17 @@ contract LockedPrivatesale is OwnableWithAdmin {
       _lastWithdraw = true;
 
 
-    } else if(now &gt;= step1  &amp;&amp; now &gt;= step2 ){
+    } else if(now >= step1  && now >= step2 ){
       
       _availableTokens = _availableTokens.add(allocations2[_recipient]);
       _availableTokens = _availableTokens.add(allocations1[_recipient]); 
 
-      //Reset step 1 &amp; step 2 allocation
+      //Reset step 1 & step 2 allocation
       allocations2[_recipient] = 0;
       allocations1[_recipient] = 0;
 
 
-    }else if(now &gt;= step1){
+    }else if(now >= step1){
 
       _availableTokens = allocations1[_recipient];
 
@@ -440,10 +440,10 @@ contract LockedPrivatesale is OwnableWithAdmin {
 
     }
 
-    require(_availableTokens&gt;0);    
+    require(_availableTokens>0);    
 
     //Check if contract has tokens
-    require(token.balanceOf(this)&gt;=_availableTokens);
+    require(token.balanceOf(this)>=_availableTokens);
 
     //Transfer tokens
     require(token.transfer(_recipient, _availableTokens));
@@ -467,7 +467,7 @@ contract LockedPrivatesale is OwnableWithAdmin {
 
 
   function _validateHardCap(uint256 _tokenAmount) internal view returns (bool) {
-      return tokensTotal.add(_tokenAmount) &lt;= hardCap;
+      return tokensTotal.add(_tokenAmount) <= hardCap;
   }
 
 

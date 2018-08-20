@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,21 +56,21 @@ library Utils {
     uint  constant MAX_DECIMALS = 18;
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        if( dstDecimals &gt;= srcDecimals ) {
-            require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+        if( dstDecimals >= srcDecimals ) {
+            require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals-srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals-dstDecimals)));
         }
     }
 
     // function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-    //     if( srcDecimals &gt;= dstDecimals ) {
-    //         require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+    //     if( srcDecimals >= dstDecimals ) {
+    //         require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty * (10**(srcDecimals - dstDecimals))) / rate;
     //     } else {
-    //         require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+    //         require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty) / (rate * (10**(dstDecimals - srcDecimals)));
     //     }
     // }
@@ -127,7 +127,7 @@ contract ExchangeInterface is ComponentInterface {
      * For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return boolean whether or not the trading pair is supported by this exchange provider
      */
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId)
@@ -139,7 +139,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the _amount.
      * @param uint _minimumRate The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here.
      * @return boolean whether or not the trade succeeded.
      */
@@ -155,7 +155,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of tokens to sell.
      * @param uint _minimumRate The minimum amount of ETH to receive for 1 ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -185,7 +185,7 @@ contract KyberNetworkInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -346,7 +346,7 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
         uint amount = ERC20Extended(_srcAddress) == ETH_TOKEN_ADDRESS ? 10**18 : 10**ERC20Extended(_srcAddress).decimals();
         uint price;
         (price,) = this.getPrice(ERC20Extended(_srcAddress), ERC20Extended(_destAddress), amount);
-        return price &gt; 0;
+        return price > 0;
     }
 
     function enable() external onlyOwner returns(bool){
@@ -369,14 +369,14 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
 
     function buyToken(ERC20Extended _token, uint _amount, uint _minimumRate, address _depositAddress)
     external payable returns(bool) {
-        if (address(this).balance &lt; _amount) {
+        if (address(this).balance < _amount) {
             return false;
         }
         require(msg.value == _amount);
         uint slippageRate;
 
         (, slippageRate) = kyber.getExpectedRate(ETH_TOKEN_ADDRESS, _token, _amount);
-        if(slippageRate &lt; _minimumRate){
+        if(slippageRate < _minimumRate){
             return false;
         }
 
@@ -391,7 +391,7 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
             slippageRate,
             walletId);
 
-        require(_token.balanceOf(_depositAddress) &gt; beforeTokenBalance);
+        require(_token.balanceOf(_depositAddress) > beforeTokenBalance);
 
         return true;
     }
@@ -403,7 +403,7 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
         uint slippageRate;
         (,slippageRate) = kyber.getExpectedRate(_token, ETH_TOKEN_ADDRESS, _amount);
 
-        if(slippageRate &lt; _minimumRate){
+        if(slippageRate < _minimumRate){
             return false;
         }
         slippageRate = _minimumRate;
@@ -418,7 +418,7 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
             slippageRate,
             walletId);
 
-        // require(_token.balanceOf(this) &lt; beforeTokenBalance);
+        // require(_token.balanceOf(this) < beforeTokenBalance);
         // require((beforeTokenBalance - _token.balanceOf(this)) == _amount);
 
         return true;
@@ -426,7 +426,7 @@ contract KyberNetworkAdapter is OlympusExchangeAdapterInterface{
 
     function withdraw(uint amount) external onlyOwner {
 
-        require(amount &lt;= address(this).balance);
+        require(amount <= address(this).balance);
 
         uint sendAmount = amount;
         if (amount == 0){

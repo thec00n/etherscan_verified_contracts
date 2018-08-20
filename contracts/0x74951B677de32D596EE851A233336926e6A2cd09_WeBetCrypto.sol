@@ -7,8 +7,8 @@ pragma solidity ^0.4.18;
  * @dev The WBC ERC-223 Token Contract
  */
 contract WeBetCrypto {
-    string public name = &quot;We Bet Crypto&quot;;
-    string public symbol = &quot;WBA&quot;;
+    string public name = "We Bet Crypto";
+    string public symbol = "WBA";
 	
     address public selfAddress;
     address public admin;
@@ -27,17 +27,17 @@ contract WeBetCrypto {
     bool public isFrozen;
     bool private running;
 	
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) moneySpent;
-    mapping(address =&gt; uint256) monthlyLimit;
-	mapping(address =&gt; uint256) cooldown;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) moneySpent;
+    mapping(address => uint256) monthlyLimit;
+	mapping(address => uint256) cooldown;
 	
-    mapping(address =&gt; bool) isAdded;
-    mapping(address =&gt; bool) claimedBonus;
-	mapping(address =&gt; bool) bannedUser;
-    //mapping(address =&gt; bool) loggedUser;
+    mapping(address => bool) isAdded;
+    mapping(address => bool) claimedBonus;
+	mapping(address => bool) bannedUser;
+    //mapping(address => bool) loggedUser;
 	
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 	
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -62,7 +62,7 @@ contract WeBetCrypto {
     }
     
 	/**
-	 * @notice Ensures system isn&#39;t frozen
+	 * @notice Ensures system isn't frozen
 	 */
     modifier noFreeze() {
         require(!isFrozen);
@@ -70,7 +70,7 @@ contract WeBetCrypto {
     }
     
 	/**
-	 * @notice Ensures player isn&#39;t logged in on platform
+	 * @notice Ensures player isn't logged in on platform
 	 */
     modifier userNotPlaying(address _user) {
         //require(!loggedUser[_user]);
@@ -81,7 +81,7 @@ contract WeBetCrypto {
     }
     
     /**
-     * @notice Ensures player isn&#39;t bannedUser
+     * @notice Ensures player isn't bannedUser
      */
     modifier userNotBanned(address _user) {
         require(!bannedUser[_user]);
@@ -97,7 +97,7 @@ contract WeBetCrypto {
 	        safeSub is required to prevent underflows.
 	 */
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256 z) {
-        assert((z = a - b) &lt;= a);
+        assert((z = a - b) <= a);
     }
 	
 	/**
@@ -123,7 +123,7 @@ contract WeBetCrypto {
     /**
      * @notice Check the name of the token ~ ERC-20 Standard
      * @return {
-					&quot;_name&quot;: &quot;The token name&quot;
+					"_name": "The token name"
 				}
      */
     function name() external constant returns (string _name) {
@@ -133,7 +133,7 @@ contract WeBetCrypto {
 	/**
      * @notice Check the symbol of the token ~ ERC-20 Standard
      * @return {
-					&quot;_symbol&quot;: &quot;The token symbol&quot;
+					"_symbol": "The token symbol"
 				}
      */
     function symbol() external constant returns (string _symbol) {
@@ -143,7 +143,7 @@ contract WeBetCrypto {
     /**
      * @notice Check the decimals of the token ~ ERC-20 Standard
      * @return {
-					&quot;_decimals&quot;: &quot;The token decimals&quot;
+					"_decimals": "The token decimals"
 				}
      */
     function decimals() external constant returns (uint8 _decimals) {
@@ -153,7 +153,7 @@ contract WeBetCrypto {
     /**
      * @notice Check the total supply of the token ~ ERC-20 Standard
      * @return {
-					&quot;_totalSupply&quot;: &quot;Total supply of tokens&quot;
+					"_totalSupply": "Total supply of tokens"
 				}
      */
     function totalSupply() external constant returns (uint256 _totalSupply) {
@@ -164,7 +164,7 @@ contract WeBetCrypto {
      * @notice Query the available balance of an address ~ ERC-20 Standard
 	 * @param _owner The address whose balance we wish to retrieve
      * @return {
-					&quot;balance&quot;: &quot;Balance of the address&quot;
+					"balance": "Balance of the address"
 				}
      */
     function balanceOf(address _owner) external constant returns (uint256 balance) {
@@ -176,7 +176,7 @@ contract WeBetCrypto {
 	 * @param _owner The address who owns the tokens
 	 * @param _spender The address who can withdraw the tokens
 	 * @return {
-					&quot;remaining&quot;: &quot;Remaining withdrawal amount&quot;
+					"remaining": "Remaining withdrawal amount"
 				}
      */
     function allowance(address _owner, address _spender) external constant returns (uint256 remaining) {
@@ -191,7 +191,7 @@ contract WeBetCrypto {
     function eligibleForDividence(address _user) public view returns (bool _success) {
         if (moneySpent[_user] == 0) {
             return false;
-		} else if ((balances[_user] + allowed[selfAddress][_user])/moneySpent[_user] &gt; 20) {
+		} else if ((balances[_user] + allowed[selfAddress][_user])/moneySpent[_user] > 20) {
 		    return false;
         }
         return true;
@@ -201,7 +201,7 @@ contract WeBetCrypto {
      * @notice Transfer tokens from an address to another ~ ERC-20 Standard
 	 * @dev 
 	        Adjusts the monthly limit in case the _from address is the Casino
-	        and ensures that the user isn&#39;t logged in when retrieving funds
+	        and ensures that the user isn't logged in when retrieving funds
 	        so as to prevent against a race attack with the Casino.
      * @param _from The address whose balance we will transfer
      * @param _to The recipient address
@@ -211,7 +211,7 @@ contract WeBetCrypto {
         var _allowance = allowed[_from][_to];
         if (_from == selfAddress) {
             monthlyLimit[_to] = safeSub(monthlyLimit[_to], _value);
-            require(cooldown[_to] &lt; now /*&amp;&amp; !loggedUser[_to]*/);
+            require(cooldown[_to] < now /*&& !loggedUser[_to]*/);
             IOUSupply -= _value;
         }
         balances[_to] = balances[_to]+_value;
@@ -242,7 +242,7 @@ contract WeBetCrypto {
 	 * @param _to The address you wish to send the tokens to
 	 * @param _value The amount of tokens you wish to send
 	 * @return {
-					&quot;success&quot;: &quot;Transaction success&quot;
+					"success": "Transaction success"
 				}
      */
     function transfer(address _to, uint256 _value) external isRunning noFreeze returns (bool success) {
@@ -260,7 +260,7 @@ contract WeBetCrypto {
 	 * @notice Check whether address is a contract ~ ERC-223 Proposed Standard
 	 * @param _address The address to check
 	 * @return {
-					&quot;is_contract&quot;: &quot;Result of query&quot;
+					"is_contract": "Result of query"
 				}
      */
     function isContract(address _address) internal view returns (bool is_contract) {
@@ -268,7 +268,7 @@ contract WeBetCrypto {
         assembly {
             length := extcodesize(_address)
         }
-        return length &gt; 0;
+        return length > 0;
     }
     
     /**
@@ -278,7 +278,7 @@ contract WeBetCrypto {
 	 * @param _value The amount of tokens to transfer
 	 * @param _data Any extra embedded data of the transaction
 	 * @return {
-					&quot;success&quot;: &quot;Transaction success&quot;
+					"success": "Transaction success"
 				}
      */
     function transfer(address _to, uint256 _value, bytes _data) external isRunning noFreeze returns (bool success){
@@ -296,7 +296,7 @@ contract WeBetCrypto {
 	 * @param _to The address to transfer to
 	 * @param _value The amount of tokens to transfer
 	 * @return {
-					&quot;success&quot;: &quot;Transaction success&quot;
+					"success": "Transaction success"
 				}
      */
     function transferToAddress(address _to, uint256 _value) internal returns (bool success) {
@@ -313,7 +313,7 @@ contract WeBetCrypto {
 	 * @param _value The amount of tokens to transfer
 	 * @param _data Any extra embedded data of the transaction
 	 * @return {
-					&quot;success&quot;: &quot;Transaction success&quot;
+					"success": "Transaction success"
 				}
      */
     function transferToContract(address _to, uint256 _value, bytes _data) internal returns (bool success) {
@@ -330,7 +330,7 @@ contract WeBetCrypto {
 	 * @notice Handles Casino deposits ~ Custom ERC-223 Proposed Standard Addition
 	 * @param _value The amount of tokens to transfer
 	 * @return {
-					&quot;success&quot;: &quot;Transaction success&quot;
+					"success": "Transaction success"
 				}
      */
     function transferToSelf(uint256 _value) internal returns (bool success) {
@@ -354,7 +354,7 @@ contract WeBetCrypto {
 	/**
 	 * @notice Check how much Casino withdrawal balance remains for address
 	 * @return {
-					&quot;remaining&quot;: &quot;Withdrawal balance remaining&quot;
+					"remaining": "Withdrawal balance remaining"
 				}
      */
     function checkMonthlyLimit() external constant returns (uint256 remaining) {
@@ -376,7 +376,7 @@ contract WeBetCrypto {
 	/**
 	 * @notice Freeze token circulation - splitProfits internal
 	 * @dev 
-	        Ensures that one doesn&#39;t transfer his total balance mid-split to 
+	        Ensures that one doesn't transfer his total balance mid-split to 
 	        an account later in the split queue in order to receive twice the
 	        monthly profits
 	 */
@@ -450,18 +450,18 @@ contract WeBetCrypto {
     function splitProfits() external {
         uint i;
         if (!isFrozen) {
-            require(now &gt;= relativeDateSave);
+            require(now >= relativeDateSave);
             assetFreeze();
-            require(balances[selfAddress] &gt; 30000000000000);
+            require(balances[selfAddress] > 30000000000000);
             relativeDateSave = now + 30 days;
             currentProfits = ((balances[selfAddress]-30000000000000)/10)*7; 
             amountInCirculation = safeSub(400000000000000, balances[selfAddress]) + IOUSupply;
             currentIteration = 0;
 			actualProfitSplit = 0;
         } else {
-            for (i = currentIteration; i &lt; users.length; i++) {
+            for (i = currentIteration; i < users.length; i++) {
                 monthlyLimit[users[i]] = 1000000000000;
-                if (msg.gas &lt; 250000) {
+                if (msg.gas < 250000) {
                     currentIteration = i;
                     break;
                 }
@@ -500,7 +500,7 @@ contract WeBetCrypto {
 	 * @param _amount The amount to alter it by
 	 */
     function alterBankBalance(address _toAlter, uint256 _amount) internal {
-        if (_amount &gt; allowed[selfAddress][_toAlter]) {
+        if (_amount > allowed[selfAddress][_toAlter]) {
             IOUSupply += (_amount - allowed[selfAddress][_toAlter]);
             moneySpent[_toAlter] += (_amount - allowed[selfAddress][_toAlter]);
 			allowed[selfAddress][_toAlter] = _amount;
@@ -579,9 +579,9 @@ contract WeBetCrypto {
     function() payable external {
         totalFunds = totalFunds + msg.value;
 		address etherTransfer = 0x66AE070A8501E816CA95ac99c4E15C7e132fd289;
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 		require(msg.sender != etherTransfer);
-		require(totalFunds/1 ether &lt; 2000);
+		require(totalFunds/1 ether < 2000);
         addUser(msg.sender);
         uint256 tokenAmount = msg.value/100000000;
 		balances[selfAddress] = balances[selfAddress] - tokenAmount;
@@ -596,7 +596,7 @@ contract WeBetCrypto {
      *      account before distributing 20 WBC
      */
     function claimBonus() external {
-        require(msg.sender.balance/(1000 finney) &gt;= 1 &amp;&amp; !claimedBonus[msg.sender]);
+        require(msg.sender.balance/(1000 finney) >= 1 && !claimedBonus[msg.sender]);
         claimedBonus[msg.sender] = true;
 		allowed[selfAddress][msg.sender] = allowed[selfAddress][msg.sender] + 200000000;
 		IOUSupply += 200000000;

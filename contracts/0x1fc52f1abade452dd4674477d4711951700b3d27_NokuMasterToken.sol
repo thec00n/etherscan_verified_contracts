@@ -71,7 +71,7 @@ contract TokenTimelock {
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) {
         //require(_token != address(0));
         //require(_beneficiary != address(0));
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
 
         token = _token;
         beneficiary = _beneficiary;
@@ -82,10 +82,10 @@ contract TokenTimelock {
     * @notice Transfers tokens held by timelock to beneficiary.
     */
     function release() public {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -102,27 +102,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -189,8 +189,8 @@ contract TokenVesting is Ownable {
     // Flag indicating whether the vesting is revocable or not
     bool public revocable;
 
-    mapping (address =&gt; uint256) public released;
-    mapping (address =&gt; bool) public revoked;
+    mapping (address => uint256) public released;
+    mapping (address => bool) public revoked;
 
     /**
     * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -204,9 +204,9 @@ contract TokenVesting is Ownable {
     */
     function TokenVesting(address _beneficiary, uint256 _startTime, uint256 _cliff, uint256 _duration, bool _revocable) public {
         require(_beneficiary != address(0));
-        require(_startTime &gt;= now);
-        require(_duration &gt; 0);
-        require(_cliff &lt;= _duration);
+        require(_startTime >= now);
+        require(_duration > 0);
+        require(_cliff <= _duration);
 
         beneficiary = _beneficiary;
         startTime = _startTime;
@@ -223,7 +223,7 @@ contract TokenVesting is Ownable {
     */
     function release(ERC20Basic token) public {
         uint256 unreleased = releasableAmount(token);
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         released[token] = released[token].add(unreleased);
 
@@ -254,7 +254,7 @@ contract TokenVesting is Ownable {
     }
 
     /**
-    * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+    * @dev Calculates the amount that has already vested but hasn't been released yet.
     * @param token ERC20 token which is being vested
     */
     function releasableAmount(ERC20Basic token) public constant returns (uint256) {
@@ -269,9 +269,9 @@ contract TokenVesting is Ownable {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released[token]);
 
-        if (now &lt; cliff) {
+        if (now < cliff) {
             return 0;
-        } else if (now &gt;= startTime.add(duration) || revoked[token]) {
+        } else if (now >= startTime.add(duration) || revoked[token]) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(startTime)).div(duration);
@@ -328,7 +328,7 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -364,7 +364,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -379,7 +379,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -393,7 +393,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -430,7 +430,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -474,22 +474,22 @@ contract AdaptableToken is Burnable, Mintable, PausableToken {
 
     uint256 public lockEndBlock;
     
-    mapping (address =&gt; uint256) public initiallyLockedAmount;
+    mapping (address => uint256) public initiallyLockedAmount;
     
     function AdaptableToken(uint256 _transferableFromBlock, uint256 _lockEndBlock) internal {
-        require(_lockEndBlock &gt; _transferableFromBlock);
+        require(_lockEndBlock > _transferableFromBlock);
         transferableFromBlock = _transferableFromBlock;
         lockEndBlock = _lockEndBlock;
     }
 
     modifier canTransfer(address _from, uint _value) {
-        require(block.number &gt;= transferableFromBlock);
+        require(block.number >= transferableFromBlock);
 
-        if (block.number &lt; lockEndBlock) {
+        if (block.number < lockEndBlock) {
             uint256 locked = lockedBalanceOf(_from);
-            if (locked &gt; 0) {
+            if (locked > 0) {
                 uint256 newBalance = balanceOf(_from).sub(_value);
-                require(newBalance &gt;= locked);
+                require(newBalance >= locked);
             }
         }
         _;
@@ -497,8 +497,8 @@ contract AdaptableToken is Burnable, Mintable, PausableToken {
 
     function lockedBalanceOf(address _to) public constant returns(uint256) {
         uint256 locked = initiallyLockedAmount[_to];
-        if (block.number &gt;= lockEndBlock) return 0;
-        else if (block.number &lt;= transferableFromBlock) return locked;
+        if (block.number >= lockEndBlock) return 0;
+        else if (block.number <= transferableFromBlock) return locked;
 
         uint256 releaseForBlock = locked.div(lockEndBlock.sub(transferableFromBlock));
         uint256 released = block.number.sub(transferableFromBlock).mul(releaseForBlock);
@@ -519,7 +519,7 @@ contract AdaptableToken is Burnable, Mintable, PausableToken {
     }
 
     function mintingFinished() public constant returns(bool finished) {
-        return block.number &gt;= transferableFromBlock;
+        return block.number >= transferableFromBlock;
     }
 
     /**
@@ -585,7 +585,7 @@ contract AdaptableToken is Burnable, Mintable, PausableToken {
     * @return A boolean that indicates if the operation was successful.
     */
     function burn(uint256 _amount) public returns (bool burned) {
-        //require(0 &lt; _amount &amp;&amp; _amount &lt;= balances[msg.sender]);
+        //require(0 < _amount && _amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
@@ -616,8 +616,8 @@ contract AdaptableToken is Burnable, Mintable, PausableToken {
     }
 }
 contract NokuMasterToken is AdaptableToken {
-    string public constant name = &quot;NOKU&quot;;
-    string public constant symbol = &quot;NOKU&quot;;
+    string public constant name = "NOKU";
+    string public constant symbol = "NOKU";
     uint8 public constant decimals = 18;
 
     function NokuMasterToken(uint256 _transferableFromBlock, uint256 _lockEndBlock)

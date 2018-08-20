@@ -16,7 +16,7 @@ contract ZethrInterface{
     function withdraw() public;
 }
 
-// Library for figuring out the &quot;tier&quot; (1-7) of a dividend rate
+// Library for figuring out the "tier" (1-7) of a dividend rate
 library ZethrTierLibrary{
     uint constant internal magnitude = 2**64;
     function getTier(uint divRate) internal pure returns (uint){
@@ -26,19 +26,19 @@ library ZethrTierLibrary{
         // We can divide by magnitude
         // Remainder is removed so we only get the actual number we want
         uint actualDiv = divRate; 
-        if (actualDiv &gt;= 30){
+        if (actualDiv >= 30){
             return 6;
-        } else if (actualDiv &gt;= 25){
+        } else if (actualDiv >= 25){
             return 5;
-        } else if (actualDiv &gt;= 20){
+        } else if (actualDiv >= 20){
             return 4;
-        } else if (actualDiv &gt;= 15){
+        } else if (actualDiv >= 15){
             return 3;
-        } else if (actualDiv &gt;= 10){
+        } else if (actualDiv >= 10){
             return 2; 
-        } else if (actualDiv &gt;= 5){
+        } else if (actualDiv >= 5){
             return 1;
-        } else if (actualDiv &gt;= 2){
+        } else if (actualDiv >= 2){
             return 0;
         } else{
             // Impossible
@@ -59,20 +59,20 @@ contract ZethrBankrollBridge{
     address[7] UsedBankrollAddresses; 
 
     // Mapping for easy checking
-    mapping(address =&gt; bool) ValidBankrollAddress;
+    mapping(address => bool) ValidBankrollAddress;
     
     // Set up the tokenbankroll stuff 
     function setupBankrollInterface(address ZethrMainBankrollAddress) internal {
         // Get the bankroll addresses from the main bankroll
         UsedBankrollAddresses = ZethrMainBankroll(ZethrMainBankrollAddress).gameGetTokenBankrollList();
-        for(uint i=0; i&lt;7; i++){
+        for(uint i=0; i<7; i++){
             ValidBankrollAddress[UsedBankrollAddresses[i]] = true;
         }
     }
     
     // Require a function to be called from a *token* bankroll 
     modifier fromBankroll(){
-        require(ValidBankrollAddress[msg.sender], &quot;msg.sender should be a valid bankroll&quot;);
+        require(ValidBankrollAddress[msg.sender], "msg.sender should be a valid bankroll");
         _;
     }
     
@@ -105,13 +105,13 @@ contract ZethrShell is ZethrBankrollBridge{
 contract Zethroll is ZethrShell {
   using SafeMath for uint;
 
-  // Makes sure that player profit can&#39;t exceed a maximum amount,
+  // Makes sure that player profit can't exceed a maximum amount,
   //  that the bet size is valid, and the playerNumber is in range.
   modifier betIsValid(uint _betSize, uint _playerNumber, uint divRate) {
-     require(  calculateProfit(_betSize, _playerNumber) &lt; getMaxProfit(divRate)
-             &amp;&amp; _betSize &gt;= minBet
-             &amp;&amp; _playerNumber &gt;= minNumber
-             &amp;&amp; _playerNumber &lt;= maxNumber);
+     require(  calculateProfit(_betSize, _playerNumber) < getMaxProfit(divRate)
+             && _betSize >= minBet
+             && _playerNumber >= minNumber
+             && _playerNumber <= maxNumber);
     _;
   }
 
@@ -139,8 +139,8 @@ contract Zethroll is ZethrShell {
 
   address public owner;
 
-  mapping (uint =&gt; uint) public contractBalance;
-  mapping (uint =&gt; uint) public maxProfit;
+  mapping (uint => uint) public contractBalance;
+  mapping (uint => uint) public maxProfit;
   uint public houseEdge;
   uint public maxProfitAsPercentOfHouse;
   uint public minBet = 0;
@@ -151,7 +151,7 @@ contract Zethroll is ZethrShell {
 
   // Events
 
-  // Logs bets + output to web3 for precise &#39;payout on win&#39; field in UI
+  // Logs bets + output to web3 for precise 'payout on win' field in UI
   event LogBet(address sender, uint value, uint rollUnder);
 
   // Outputs to web3 UI on bet result
@@ -216,18 +216,18 @@ contract Zethroll is ZethrShell {
   }
 
   // Mapping because a player can do one roll at a time
-  mapping(address =&gt; playerRoll) public playerRolls;
+  mapping(address => playerRoll) public playerRolls;
 
   // The actual roll function
   function _playerRollDice(uint _rollUnder, TKN _tkn, uint userDivRate) private
     gameIsActive
     betIsValid(_tkn.value, _rollUnder, userDivRate)
   {
-    require(_tkn.value &lt; ((2 ** 192) - 1));   // Smaller than the storage of 1 uint192;
-    require(block.number &lt; ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
-    require(userDivRate &lt; (2 ** 8 - 1)); // This should never throw 
+    require(_tkn.value < ((2 ** 192) - 1));   // Smaller than the storage of 1 uint192;
+    require(block.number < ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
+    require(userDivRate < (2 ** 8 - 1)); // This should never throw 
     // Note that msg.sender is the Token Contract Address
-    // and &quot;_from&quot; is the sender of the tokens
+    // and "_from" is the sender of the tokens
 
     playerRoll memory roll = playerRolls[_tkn.sender];
 
@@ -272,12 +272,12 @@ contract Zethroll is ZethrShell {
    */
   function _finishBet(address target) private returns (uint){
     playerRoll memory roll = playerRolls[target];
-    require(roll.tokenValue &gt; 0); // No re-entracy
+    require(roll.tokenValue > 0); // No re-entracy
     require(roll.blockn != block.number);
-    // If the block is more than 255 blocks old, we can&#39;t get the result
+    // If the block is more than 255 blocks old, we can't get the result
     // Also, if the result has already happened, fail as well
     uint result;
-    if (block.number - roll.blockn &gt; 255) {
+    if (block.number - roll.blockn > 255) {
       result = 1000; // Cant win 
     } else {
       // Grab the result - random based ONLY on a past block (future when submitted)
@@ -286,13 +286,13 @@ contract Zethroll is ZethrShell {
 
     uint rollUnder = roll.rollUnder;
 
-    if (result &lt; rollUnder) {
+    if (result < rollUnder) {
       // Player has won!
 
       // Safely map player profit
       uint profit = calculateProfit(roll.tokenValue, rollUnder);
       uint mProfit = getMaxProfit(roll.divRate);
-        if (profit &gt; mProfit){
+        if (profit > mProfit){
             profit = mProfit;
         }
 
@@ -390,7 +390,7 @@ contract Zethroll is ZethrShell {
   onlyOwner
   {
     // Restricts each bet to a maximum profit of 20% contractBalance
-    require(newMaxProfitAsPercent &lt;= 200000);
+    require(newMaxProfitAsPercent <= 200000);
     maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
     setMaxProfit(2);
     setMaxProfit(5);
@@ -453,9 +453,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -463,7 +463,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -472,7 +472,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

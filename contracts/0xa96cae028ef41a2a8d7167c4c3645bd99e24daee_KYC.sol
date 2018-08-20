@@ -13,7 +13,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -48,9 +48,9 @@ contract Ownable {
  */
 contract KYC is Ownable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
   event NewAdmin(address indexed _addr);
@@ -81,7 +81,7 @@ contract KYC is Ownable {
     public
     onlyOwner
   {
-    require(_addr != address(0) &amp;&amp; admin[_addr] == false);
+    require(_addr != address(0) && admin[_addr] == false);
     admin[_addr] = true;
     NewAdmin(_addr);
   }
@@ -93,7 +93,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    require(_addr != address(0) &amp;&amp; registeredAddress[_addr] == false);
+    require(_addr != address(0) && registeredAddress[_addr] == false);
     registeredAddress[_addr] = true;
     Registered(_addr);
   }
@@ -105,8 +105,8 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
-      require(_addrs[i] != address(0) &amp;&amp; registeredAddress[_addrs[i]] == false);
+    for(uint256 i = 0; i < _addrs.length; i++) {
+      require(_addrs[i] != address(0) && registeredAddress[_addrs[i]] == false);
       registeredAddress[_addrs[i]] = true;
       Registered(_addrs[i]);
     }
@@ -131,7 +131,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(registeredAddress[_addrs[i]]);
       registeredAddress[_addrs[i]] = false;
       Unregistered(_addrs[i]);

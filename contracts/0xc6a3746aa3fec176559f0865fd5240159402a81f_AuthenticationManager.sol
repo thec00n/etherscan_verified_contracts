@@ -3,10 +3,10 @@ pragma solidity ^0.4.11;
 /* The authentication manager details user accounts that have access to certain priviledges and keeps a permanent ledger of who has and has had these rights. */
 contract AuthenticationManager {
     /* Map addresses to admins */
-    mapping (address =&gt; bool) adminAddresses;
+    mapping (address => bool) adminAddresses;
 
     /* Map addresses to account readers */
-    mapping (address =&gt; bool) accountReaderAddresses;
+    mapping (address => bool) accountReaderAddresses;
 
     /* Details of all admins that have ever existed */
     address[] adminAudit;
@@ -48,7 +48,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAdmin(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; adminAudit.length; i++)
+        for (uint256 i = 0; i < adminAudit.length; i++)
             if (adminAudit[i] == _address)
                 return true;
         return false;
@@ -61,7 +61,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountReader(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountReaderAudit.length; i++)
+        for (uint256 i = 0; i < accountReaderAudit.length; i++)
             if (accountReaderAudit[i] == _address)
                 return true;
         return false;
@@ -69,7 +69,7 @@ contract AuthenticationManager {
 
     /* Adds a user to our list of admins */
     function addAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -86,11 +86,11 @@ contract AuthenticationManager {
 
     /* Removes a user from our list of admins but keeps them in the history audit */
     function removeAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
-        /* Don&#39;t allow removal of self */
+        /* Don't allow removal of self */
         if (_address == msg.sender)
             throw;
 
@@ -105,7 +105,7 @@ contract AuthenticationManager {
 
     /* Adds a user/contract to our list of account readers */
     function addAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -122,7 +122,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 

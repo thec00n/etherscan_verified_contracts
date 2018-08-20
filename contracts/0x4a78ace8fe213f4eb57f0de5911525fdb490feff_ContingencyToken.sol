@@ -14,13 +14,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -84,11 +84,11 @@ contract StandardToken is Token {
      * - Interger overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -98,8 +98,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -122,9 +122,9 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -143,8 +143,8 @@ contract ContingencyToken is StandardToken, SafeMath {
         Modified version of the FirstBlood.io token and token sale
     */
     
-    string public name = &quot;Contingency Token&quot;;
-    string public symbol = &quot;CTY&quot;;
+    string public name = "Contingency Token";
+    string public symbol = "CTY";
     uint public decimals = 18;
     uint public startBlock = 3100000; //crowdsale start block
     uint public endBlock = 3272800; //crowdsale end block
@@ -170,20 +170,20 @@ contract ContingencyToken is StandardToken, SafeMath {
     /**
      * Security review
      *
-     * - Integer overflow: does not apply, blocknumber can&#39;t grow that high
+     * - Integer overflow: does not apply, blocknumber can't grow that high
      * - Division is the last operation and constant, should not cause issues
      * - Price function plotted https://github.com/Firstbloodio/token/issues/2
      */
     function price() constant returns(uint) {
-        if (block.number&gt;=startBlock &amp;&amp; block.number&lt;startBlock+250) return 170; //function() {
-        if (block.number&lt;startBlock || block.number&gt;endBlock) return 100; //default price
+        if (block.number>=startBlock && block.number<startBlock+250) return 170; //function() {
+        if (block.number<startBlock || block.number>endBlock) return 100; //default price
         return 100 + 4*(endBlock - block.number)/(endBlock - startBlock + 1)*67/4; //crowdsale price
     }
 
     // price() exposed for unit tests
     function testPrice(uint blockNumber) constant returns(uint) {
-        if (blockNumber&gt;=startBlock &amp;&amp; blockNumber&lt;startBlock+250) return 170; //hour one
-        if (blockNumber&lt;startBlock || blockNumber&gt;endBlock) return 100; //default price
+        if (blockNumber>=startBlock && blockNumber<startBlock+250) return 170; //hour one
+        if (blockNumber<startBlock || blockNumber>endBlock) return 100; //default price
         return 100 + 4*(endBlock - blockNumber)/(endBlock - startBlock + 1)*67/4; //crowdsale price
     }
 
@@ -211,14 +211,14 @@ contract ContingencyToken is StandardToken, SafeMath {
      *
      */
     function buyRecipient(address recipient) payable {
-        if (block.number&lt;startBlock || block.number&gt;endBlock || safeAdd(presaleEtherRaised,msg.value)&gt;etherCap || halted) throw;
+        if (block.number<startBlock || block.number>endBlock || safeAdd(presaleEtherRaised,msg.value)>etherCap || halted) throw;
         uint tokens = safeMul(msg.value, price());
         balances[recipient] = safeAdd(balances[recipient], tokens);
         totalSupply = safeAdd(totalSupply, tokens);
         presaleEtherRaised = safeAdd(presaleEtherRaised, msg.value);
 
         //if (!founder.send(msg.value)) throw; //immediately send Ether to founder address
-        //Due to Metamask not sending enough gas with this method, we send ether later with the function &quot;founderWithdraw&quot; below
+        //Due to Metamask not sending enough gas with this method, we send ether later with the function "founderWithdraw" below
 
         Buy(recipient, msg.value, tokens);
     }
@@ -244,7 +244,7 @@ contract ContingencyToken is StandardToken, SafeMath {
      */
     function allocateFounderTokens() {
         if (msg.sender!=founder) throw;
-        if (block.number &lt;= endBlock + founderLockup) throw;
+        if (block.number <= endBlock + founderLockup) throw;
         if (founderAllocated) throw;
         //if (!bountyAllocated || !ecosystemAllocated) throw; // Extra bounty or ecosystem allocation for founders disabled for contingency
         balances[founder] = safeAdd(balances[founder], presaleTokenSupply * founderAllocation / (1 ether));
@@ -297,7 +297,7 @@ contract ContingencyToken is StandardToken, SafeMath {
      * - Test transfer after restricted period
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock + transferLockup &amp;&amp; msg.sender!=founder) throw;
+        if (block.number <= endBlock + transferLockup && msg.sender!=founder) throw;
         return super.transfer(_to, _value);
     }
     /**
@@ -306,7 +306,7 @@ contract ContingencyToken is StandardToken, SafeMath {
      * Prevent transfers until freeze period is over.
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock + transferLockup &amp;&amp; msg.sender!=founder) throw;
+        if (block.number <= endBlock + transferLockup && msg.sender!=founder) throw;
         return super.transferFrom(_from, _to, _value);
     }
 

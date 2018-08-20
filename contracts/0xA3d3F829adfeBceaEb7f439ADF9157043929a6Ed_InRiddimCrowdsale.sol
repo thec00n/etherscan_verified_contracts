@@ -17,8 +17,8 @@ contract InRiddimCrowdsale {
      *  Constants
     /*/
 
-    string public name = &quot;InRiddim&quot;;
-    string public  symbol = &quot;IRDM&quot;;
+    string public name = "InRiddim";
+    string public  symbol = "IRDM";
     uint   public decimals = 18;
 
     uint public constant PRICE = 400; // 400 IRDM per ETH
@@ -49,15 +49,15 @@ contract InRiddimCrowdsale {
     // functions on this contract.
     address public tokenManager;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow;
 
     // Crowdsale manager has exclusive priveleges to burn tokens.
     address public crowdsaleManager;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public isSaler;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public isSaler;
 
     modifier onlyTokenManager() { 
         require(msg.sender == tokenManager); 
@@ -92,15 +92,15 @@ contract InRiddimCrowdsale {
      */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(_value &gt; 0);
-        require(balanceOf[_from] &gt; _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-        require(balanceOf[msg.sender] - _value &lt; balanceOf[msg.sender]);
+        require(_value > 0);
+        require(balanceOf[_from] > _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
+        require(balanceOf[msg.sender] - _value < balanceOf[msg.sender]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         Transfer(_from, _to, _value);
     }
-   // Transfer the balance from owner&#39;s account to another account
+   // Transfer the balance from owner's account to another account
     // only escrow can send token (to send token private sale)
     function transfer(address _to, uint256 _value) public
         onlyEscrow
@@ -118,7 +118,7 @@ contract InRiddimCrowdsale {
         require(currentPhase == Phase.Running);
         require(msg.value != 0);
         uint newTokens = msg.value * PRICE;
-        require (totalSupply + newTokens &lt; TOKEN_SUPPLY_LIMIT);
+        require (totalSupply + newTokens < TOKEN_SUPPLY_LIMIT);
         balanceOf[_buyer] += newTokens;
         totalSupply += newTokens;
         LogBuy(_buyer, newTokens);
@@ -133,7 +133,7 @@ contract InRiddimCrowdsale {
         uint newTokens = msg.value * PRICE;
         uint tokenForSaler = newTokens / 20;
         
-        require(totalSupply + newTokens + tokenForSaler &lt;= TOKEN_SUPPLY_LIMIT);
+        require(totalSupply + newTokens + tokenForSaler <= TOKEN_SUPPLY_LIMIT);
         
         balanceOf[_saler] += tokenForSaler;
         balanceOf[msg.sender] += newTokens;
@@ -174,16 +174,16 @@ contract InRiddimCrowdsale {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         require(canSwitchPhase);
         currentPhase = _nextPhase;
@@ -196,7 +196,7 @@ contract InRiddimCrowdsale {
     {
         require(escrow != 0x0);
         // Available at any phase.
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             escrow.transfer(this.balance);
         }
     }
@@ -205,7 +205,7 @@ contract InRiddimCrowdsale {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentPhase != Phase.Migrating);
         crowdsaleManager = _mgr;
     }

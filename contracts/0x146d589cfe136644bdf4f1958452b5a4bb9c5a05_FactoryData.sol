@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -68,8 +68,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -84,9 +84,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -119,7 +119,7 @@ contract FactoryData is Ownable {
     struct CP {
         string refNumber;
         string name;
-        mapping(address =&gt; bool) factories;
+        mapping(address => bool) factories;
     }
 
     uint256 blocksquareFee = 20;
@@ -128,13 +128,13 @@ contract FactoryData is Ownable {
     uint256 firstBuyersFee = 15;
 
     /* Mappings */
-    mapping(address =&gt; mapping(address =&gt; bool)) whitelisted;
-    mapping(string =&gt; address) countryFactory;
-    mapping(address =&gt; bool) memberOfBS;
-    mapping(address =&gt; uint256) requiredBST;
-    mapping(address =&gt; CP) CPs;
-    mapping(address =&gt; address) noFeeTransfersAccounts;
-    mapping(address =&gt; bool) prestigeAddress;
+    mapping(address => mapping(address => bool)) whitelisted;
+    mapping(string => address) countryFactory;
+    mapping(address => bool) memberOfBS;
+    mapping(address => uint256) requiredBST;
+    mapping(address => CP) CPs;
+    mapping(address => address) noFeeTransfersAccounts;
+    mapping(address => bool) prestigeAddress;
     Token BST;
 
     /**
@@ -206,7 +206,7 @@ contract FactoryData is Ownable {
     **/
     function addNoFeeAddress(address[] _from, address[] _to) public onlyOwner {
         require(_from.length == _to.length);
-        for (uint256 i = 0; i &lt; _from.length; i++) {
+        for (uint256 i = 0; i < _from.length; i++) {
             noFeeTransfersAccounts[_from[i]] = _to[i];
             noFeeTransfersAccounts[_to[i]] = _from[i];
         }
@@ -227,7 +227,7 @@ contract FactoryData is Ownable {
     * @param _addresses Array of addresses to whitelist
     **/
     function addToWhitelist(address _factory, address[] _addresses) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             whitelisted[_factory][_addresses[i]] = true;
         }
     }
@@ -288,7 +288,7 @@ contract FactoryData is Ownable {
     * @return True if address has enough BST, false instead
     **/
     function hasEnoughBST(address _factory, address _address) constant public returns (bool) {
-        return BST.balanceOf(_address) &gt;= requiredBST[_factory];
+        return BST.balanceOf(_address) >= requiredBST[_factory];
     }
 
     /**
@@ -313,7 +313,7 @@ contract FactoryData is Ownable {
     /**
     * @dev get info about certified partner
     * @param _cp Wallet address of certified partner
-    * @return Certified partner&#39;s reference number and name
+    * @return Certified partner's reference number and name
     **/
     function getCP(address _cp) constant public returns (string, string) {
         return (CPs[_cp].refNumber, CPs[_cp].name);

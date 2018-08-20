@@ -31,7 +31,7 @@ contract ERC20 {
 
 contract Ownable {
 
-  // Owner&#39;s address
+  // Owner's address
   address public owner;
 
   /**
@@ -70,8 +70,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -86,9 +86,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -96,7 +96,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -105,7 +105,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -210,7 +210,7 @@ contract Whitelist {
     address public whitelister;
 
     // Whitelist mapping
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     /**
       * @dev The Whitelist constructor sets the original `whitelister` of the contract to the sender
@@ -301,10 +301,10 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
     address public wallet;
 
     // Cumulative wei contributions per address
-    mapping (address =&gt; uint256) public ethBalances;
+    mapping (address => uint256) public ethBalances;
 
     // Cumulative ELP allocations per address
-    mapping (address =&gt; uint256) public elpBalances;
+    mapping (address => uint256) public elpBalances;
 
     // USD/ETH rate
     uint256 public rate;
@@ -337,9 +337,9 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
     * @param _wallet Address of the wallet for contributions
     */
     constructor(uint256 _rate, uint256 _threshold, uint256 _cap, ERC20 _token, address _wallet) public {
-        require(_rate &gt; 0);
-        require(_threshold &gt; 0);
-        require(_cap &gt; 0);
+        require(_rate > 0);
+        require(_threshold > 0);
+        require(_cap > 0);
         require(_token != address(0));
         require(_wallet != address(0));
 
@@ -385,23 +385,23 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
         require(_beneficiary != address(0));
         require(weiAmount != 0);
         weiRaised = weiRaised.add(weiAmount);
-        require(weiRaised &lt;= cap);
+        require(weiRaised <= cap);
 
         uint256 dollars = _getUsdAmount(weiAmount);
         uint256 tokens = _getTokenAmount(dollars);
 
-        // update state &amp; statistics
+        // update state & statistics
         uint256 previousEthBalance = ethBalances[_beneficiary];
         ethBalances[_beneficiary] = ethBalances[_beneficiary].add(weiAmount);
         elpBalances[_beneficiary] = elpBalances[_beneficiary].add(tokens);
         tokensSold = tokensSold.add(tokens);
         usdRaised = usdRaised.add(dollars);
 
-        if (ethBalances[_beneficiary] &gt; threshold) {
+        if (ethBalances[_beneficiary] > threshold) {
             whitelist[_beneficiary] = false;
             // Transfer difference (up to threshold) to wallet
             // if previous balance is lower than threshold
-            if (previousEthBalance &lt; threshold)
+            if (previousEthBalance < threshold)
                 wallet.transfer(threshold - previousEthBalance);
             emit NeedKyc(_beneficiary, weiAmount, ethBalances[_beneficiary]);
         } else {
@@ -422,7 +422,7 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
     */
     function withdraw() external whenWithdrawalEnabled {
         uint256 ethBalance = ethBalances[msg.sender];
-        require(ethBalance &gt; 0);
+        require(ethBalance > 0);
         uint256 elpBalance = elpBalances[msg.sender];
 
         // reentrancy protection
@@ -436,7 +436,7 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
             // Transfer threshold equivalent ELP amount based on average price
             token.transfer(msg.sender, elpBalance.mul(threshold).div(ethBalance));
 
-            if (ethBalance &gt; threshold) {
+            if (ethBalance > threshold) {
                 // Excess amount (over threshold) of contributed ETH is
                 // transferred back to non-whitelisted contributor
                 msg.sender.transfer(ethBalance - threshold);
@@ -449,7 +449,7 @@ contract ElpisCrowdsale is Stoppable, Whitelist {
     * @dev This method can be used by the owner to extract mistakenly sent tokens
     * or Ether sent to this contract.
     * @param _token address The address of the token contract that you want to
-    * recover set to 0 in case you want to extract ether. It can&#39;t be ElpisToken.
+    * recover set to 0 in case you want to extract ether. It can't be ElpisToken.
     */
     function claimTokens(address _token) public onlyOwner {
         require(_token != address(token));

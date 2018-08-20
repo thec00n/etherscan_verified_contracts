@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the Open Longevity Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the Open Longevity Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="e78ec994918e958e89a78988958386918e8983c99592">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="e78ec994918e958e89a78988958386918e8983c99592">[email protected]</span>>
 */
 
 
@@ -66,7 +66,7 @@ contract ERC20 {
  */
 contract KYC is owned {
 
-    mapping (address =&gt; bool) public known;
+    mapping (address => bool) public known;
     address                   public confirmer;
 
     function setConfirmer(address _confirmer) public onlyOwner {
@@ -97,18 +97,18 @@ contract Presale is KYC, ERC20 {
         uint256 amountTokens;
         uint    amountWei;
     }
-    mapping (address =&gt; Investor) public investors;
-    mapping (uint =&gt; address)     public investorsIter;
+    mapping (address => Investor) public investors;
+    mapping (uint => address)     public investorsIter;
     uint                          public numberOfInvestors;
     
     function () payable public {
         require(state == State.Presale);
-        require(now &lt; presaleFinishTime);
-        require(now &gt; ppFinishTime || known[msg.sender]);
+        require(now < presaleFinishTime);
+        require(now > ppFinishTime || known[msg.sender]);
 
         uint valueWei = msg.value;
         uint valueUSD = valueWei * etherPrice / 1000000000000000000;
-        if (collectedUSD + valueUSD &gt; totalLimitUSD) { // don&#39;t need so much ether
+        if (collectedUSD + valueUSD > totalLimitUSD) { // don't need so much ether
             valueUSD = totalLimitUSD - collectedUSD;
             valueWei = valueUSD * 1000000000000000000 / etherPrice;
             require(msg.sender.call.gas(3000000).value(msg.value - valueWei)());
@@ -118,14 +118,14 @@ contract Presale is KYC, ERC20 {
         }
 
         uint256 tokensPer10USD = 100;
-        if (now &lt;= ppFinishTime) {
-            if (valueUSD &gt;= 100000) {
+        if (now <= ppFinishTime) {
+            if (valueUSD >= 100000) {
                 tokensPer10USD = 200;
             } else {
                 tokensPer10USD = 175;
             }
         } else {
-            if (valueUSD &gt;= 100000) {
+            if (valueUSD >= 100000) {
                 tokensPer10USD = 150;
             } else {
                 tokensPer10USD = 130;
@@ -133,13 +133,13 @@ contract Presale is KYC, ERC20 {
         }
 
         uint256 tokens = tokensPer10USD * valueUSD / 10;
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         Investor storage inv = investors[msg.sender];
         if (inv.amountWei == 0) { // new investor
             investorsIter[numberOfInvestors++] = msg.sender;
         }
-        require(inv.amountTokens + tokens &gt; inv.amountTokens); // overflow
+        require(inv.amountTokens + tokens > inv.amountTokens); // overflow
         inv.amountTokens += tokens;
         inv.amountWei += valueWei;
         totalSupply += tokens;
@@ -160,7 +160,7 @@ contract Presale is KYC, ERC20 {
     
     function timeToFinishPresale() public constant returns(uint t) {
         require(state == State.Presale);
-        if (now &gt; presaleFinishTime) {
+        if (now > presaleFinishTime) {
             t = 0;
         } else {
             t = presaleFinishTime - now;
@@ -169,7 +169,7 @@ contract Presale is KYC, ERC20 {
     
     function finishPresale() public onlyOwner {
         require(state == State.Presale);
-        require(now &gt;= presaleFinishTime || collectedUSD == totalLimitUSD);
+        require(now >= presaleFinishTime || collectedUSD == totalLimitUSD);
         require(presaleOwner.call.gas(3000000).value(this.balance)());
         state = State.Finished;
         NewState(state);
@@ -182,9 +182,9 @@ contract Presale is KYC, ERC20 {
 
 contract PresaleToken is Presale {
     
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;OpenLongevity&#39;;
-    string  public symbol      = &quot;YEAR&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'OpenLongevity';
+    string  public symbol      = "YEAR";
     uint8   public decimals    = 0;
 
     function PresaleToken() payable public Presale() {}

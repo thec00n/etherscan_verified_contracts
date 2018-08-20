@@ -12,7 +12,7 @@ contract test
     
     function _bytesToUint(bytes data) internal view returns (uint) {
         uint num = 0;
-        for(uint i = 0; i &lt; data.length; i++) {
+        for(uint i = 0; i < data.length; i++) {
             num += uint(data[i]);
             if(i != data.length - 1)
                 num *= 256;

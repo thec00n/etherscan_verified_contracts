@@ -30,7 +30,7 @@ contract Nine {
   }
 
   function withdrawBalance(uint256 amount) external onlyAgent {
-    msg.sender.transfer(amount &lt;= 0 ? address(this).balance : amount);
+    msg.sender.transfer(amount <= 0 ? address(this).balance : amount);
   }
 
   function setNameValue(uint256 val) external onlyAgent {
@@ -38,8 +38,8 @@ contract Nine {
   }
 
 
-  string public constant name = &quot;TheNineBillionNamesOfGod&quot;;
-  string public constant symbol = &quot;NOG&quot;;
+  string public constant name = "TheNineBillionNamesOfGod";
+  string public constant symbol = "NOG";
   uint256 public constant totalSupply = 9000000000;
 
   struct Name {
@@ -49,9 +49,9 @@ contract Nine {
 
   Name[] names;
 
-  mapping (uint256 =&gt; address) public nameIndexToOwner;
+  mapping (uint256 => address) public nameIndexToOwner;
 
-  mapping (address =&gt; uint256) ownershipTokenCount;
+  mapping (address => uint256) ownershipTokenCount;
 
   event Transfer(address from, address to, uint256 tokenId);
   event Record(address owner, uint256 nameId);
@@ -139,7 +139,7 @@ contract Nine {
 
       uint256 nId;
 
-      for (nId = 1; nId &lt; totalRecord; nId++) {
+      for (nId = 1; nId < totalRecord; nId++) {
         if (nameIndexToOwner[nId] == _owner) {
           result[resultIndex] = nId;
           resultIndex++;
@@ -160,7 +160,7 @@ contract Nine {
 
   function tryToRecord(address _sender, uint256 _value) internal {
     uint times = _value / nameValue;
-    for (uint i = 0; i &lt; times; i++) {
+    for (uint i = 0; i < times; i++) {
       _recordName(_sender);
     }
   }

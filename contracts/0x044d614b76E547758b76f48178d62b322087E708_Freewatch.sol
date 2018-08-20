@@ -6,7 +6,7 @@ contract Freewatch {
 	uint8 public decimals;
 	
     /* Creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 	
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	
@@ -25,9 +25,9 @@ contract Freewatch {
 	
 	/* Send coins */
 	function transfer(address _to, uint256 _value) {
-		if(msg.data.length &lt; (2 * 32) + 4) { revert(); }
+		if(msg.data.length < (2 * 32) + 4) { revert(); }
 		/* Check if sender has balance and for overflows */
-		if (balanceOf[msg.sender] &lt; _value || balanceOf[_to] + _value &lt; balanceOf[_to])
+		if (balanceOf[msg.sender] < _value || balanceOf[_to] + _value < balanceOf[_to])
 			revert();
 		/* Add and subtract new balances */
 		balanceOf[msg.sender] -= _value;

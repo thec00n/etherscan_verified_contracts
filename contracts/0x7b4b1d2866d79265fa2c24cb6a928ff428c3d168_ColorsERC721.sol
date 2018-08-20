@@ -39,9 +39,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -49,7 +49,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,16 +74,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -276,7 +276,7 @@ contract ERC721Token is ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -323,13 +323,13 @@ contract ColorsERC721 is ERC721Token, Ownable {
 
 
   //making tokenId to metadata field
-  mapping(uint256 =&gt; string) tokenIdToColorId;
+  mapping(uint256 => string) tokenIdToColorId;
 
-  //mapping(uint256 =&gt; uint256) tokenToPrice;
+  //mapping(uint256 => uint256) tokenToPrice;
 
   function ColorsERC721() payable public {
-    name = &#39;KulerColor&#39;;
-    mint(&#39;red&#39;);
+    name = 'KulerColor';
+    mint('red');
   }
 
   function tokenMetadata(uint256 _tokenId) constant returns (string){
@@ -344,7 +344,7 @@ contract ColorsERC721 is ERC721Token, Ownable {
     _mint(msg.sender, nextTokenId);
     //tokenToPrice[colorId] = PRICE;
     /*
-    if(msg.value &gt; PRICE) {
+    if(msg.value > PRICE) {
       uint256 excess = msg.value - PRICE;
       msg.sender.transfer(excess);
     }
@@ -354,7 +354,7 @@ contract ColorsERC721 is ERC721Token, Ownable {
   /*
   function claim(uint256 colorId) public payable {
     //uint256 newPrice = getNewPrice(colorId);
-    //require(msg.value &gt;= newPrice);
+    //require(msg.value >= newPrice);
     //tokenToPrice[colorId] = newPrice;
     clearApprovalAndTransfer(colorId, msg.sender);
   }*/

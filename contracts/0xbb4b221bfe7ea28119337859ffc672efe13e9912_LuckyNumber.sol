@@ -27,7 +27,7 @@ contract LuckyNumber {
     }
     
 
-    //explicit getter for &quot;balance&quot;
+    //explicit getter for "balance"
     function getBalance() view external live returns (uint) {
         return this.balance;
     }

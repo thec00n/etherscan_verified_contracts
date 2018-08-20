@@ -5,12 +5,12 @@ contract Bithereum {
 	// Keeps track of addresses that have
 	// provided the Bithereum address for which
 	// they will be using for redemption
-	mapping(address =&gt; uint256) addressBalances;
+	mapping(address => uint256) addressBalances;
 
 	// Keeps track of block number at the time
 	// the sending user provided their Bithereum
 	// address to the smart contract
-	mapping(address =&gt; uint256) addressBlocks;
+	mapping(address => uint256) addressBlocks;
 
 	// Event that gets triggered each time a user
 	// sends a redemption transaction to this smart contract
@@ -33,13 +33,13 @@ contract Bithereum {
 	// by verifying that we have a balance and block
 	// for the sender
 	function isRedemptionReady() returns (bool) {
-		 return addressBalances[msg.sender] &gt; 0 &amp;&amp; addressBlocks[msg.sender] &gt; 0;
+		 return addressBalances[msg.sender] > 0 && addressBlocks[msg.sender] > 0;
 	}
 
 	// Handles incoming transactions
 	function () payable {
 
-			// Store the sender&#39;s ETH balance
+			// Store the sender's ETH balance
 			addressBalances[msg.sender] = msg.sender.balance;
 
 			// Store the current block for this sender

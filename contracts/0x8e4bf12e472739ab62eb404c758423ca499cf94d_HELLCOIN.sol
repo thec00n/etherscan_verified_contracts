@@ -43,27 +43,27 @@ library SaferMath {
   }
 
   function divX(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract BasicToken is ERC20Basic {
   using SaferMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -82,7 +82,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -114,7 +114,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -126,8 +126,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract HELLCOIN is StandardToken, Ownable {
 
-  string public constant name = &quot;HELL COIN&quot;;
-  string public constant symbol = &quot;HELL&quot;;
+  string public constant name = "HELL COIN";
+  string public constant symbol = "HELL";
   uint8 public constant decimals = 8;
 
   uint256 public constant SUPPLY_CAP = 10000000000 * (10 ** uint256(decimals));
@@ -136,7 +136,7 @@ contract HELLCOIN is StandardToken, Ownable {
 
 
   event NoteChanged(string newNote);
-  string public note = &quot;Welcome to Hell&quot;;
+  string public note = "Welcome to Hell";
   function setNote(string note_) public onlyOwner {
       note = note_;
       NoteChanged(note);
@@ -146,13 +146,13 @@ contract HELLCOIN is StandardToken, Ownable {
   event PerformingDrop(uint count);
   function drop(address[] addresses, uint256 amount) public onlyOwner {
     uint256 amt = amount * 10**8;
-    require(amt &gt; 0);
-    require(amt &lt;= SUPPLY_CAP);
+    require(amt > 0);
+    require(amt <= SUPPLY_CAP);
     PerformingDrop(addresses.length);
     
-    assert(addresses.length &lt;= 1000);
-    assert(balances[owner] &gt;= amt * addresses.length);
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    assert(addresses.length <= 1000);
+    assert(balances[owner] >= amt * addresses.length);
+    for (uint i = 0; i < addresses.length; i++) {
       address recipient = addresses[i];
       if(recipient != NULL_ADDRESS) {
         balances[owner] -= amt;

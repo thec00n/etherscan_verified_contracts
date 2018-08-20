@@ -26,7 +26,7 @@ contract PresalePool {
         bool whitelisted;
         bool exists;
     }
-    mapping (address =&gt; ParticipantState) public balances;
+    mapping (address => ParticipantState) public balances;
     uint public poolTotal;
 
     address presaleAddress;
@@ -79,7 +79,7 @@ contract PresalePool {
 
         whitelistAll = true;
 
-        for (uint i = 0; i &lt; _admins.length; i++) {
+        for (uint i = 0; i < _admins.length; i++) {
             var admin = _admins[i];
             if (!isAdmin(admin)) {
                 admins.push(admin);
@@ -113,7 +113,7 @@ contract PresalePool {
     }
 
     function refundPresale() payable public onState(State.Paid) {
-        require(refundable &amp;&amp; msg.value &gt;= poolTotal);
+        require(refundable && msg.value >= poolTotal);
         require(msg.sender == presaleAddress || isAdmin(msg.sender));
         gasFundTotal = msg.value - poolTotal;
         state = State.Failed;
@@ -129,7 +129,7 @@ contract PresalePool {
 
         if (state == State.Open || state == State.Failed) {
             total += balances[msg.sender].contribution;
-            if (gasFundTotal &gt; 0) {
+            if (gasFundTotal > 0) {
                 uint gasRefund = (balances[msg.sender].contribution * gasFundTotal) / (poolTotal);
                 gasFundTotal -= gasRefund;
                 total += gasRefund;
@@ -146,7 +146,7 @@ contract PresalePool {
 
     function withdraw(uint amount) public onState(State.Open) {
         uint total = balances[msg.sender].remaining + balances[msg.sender].contribution;
-        require(total &gt;= amount);
+        require(total >= amount);
         uint debit = min(balances[msg.sender].remaining, amount);
         balances[msg.sender].remaining -= debit;
         debit = amount - debit;
@@ -155,14 +155,14 @@ contract PresalePool {
 
         (balances[msg.sender].contribution, balances[msg.sender].remaining) = getContribution(msg.sender, 0);
         // must respect the minContribution limit
-        require(balances[msg.sender].remaining == 0 || balances[msg.sender].contribution &gt; 0);
+        require(balances[msg.sender].remaining == 0 || balances[msg.sender].contribution > 0);
         msg.sender.transfer(amount);
         Withdrawl(msg.sender, amount);
     }
 
     function transferMyTokens() public onState(State.Paid) noReentrancy {
         uint tokenBalance = token.balanceOf(address(this));
-        require(tokenBalance &gt; 0);
+        require(tokenBalance > 0);
 
         uint participantContribution = balances[msg.sender].contribution;
         uint participantShare = participantContribution * tokenBalance / poolTotal;
@@ -178,14 +178,14 @@ contract PresalePool {
     address[] public failures;
     function transferAllTokens() public onlyAdmins onState(State.Paid) noReentrancy returns (address[]) {
         uint tokenBalance = token.balanceOf(address(this));
-        require(tokenBalance &gt; 0);
+        require(tokenBalance > 0);
         delete failures;
 
-        for (uint i = 0; i &lt; participants.length; i++) {
+        for (uint i = 0; i < participants.length; i++) {
             address participant = participants[i];
             uint participantContribution = balances[participant].contribution;
 
-            if (participantContribution &gt; 0) {
+            if (participantContribution > 0) {
                 uint participantShare = participantContribution * tokenBalance / poolTotal;
 
                 poolTotal -= participantContribution;
@@ -214,20 +214,20 @@ contract PresalePool {
         uint i;
         if (previous) {
             require(toExclude.length == 0);
-            for (i = 0; i &lt; participants.length; i++) {
+            for (i = 0; i < participants.length; i++) {
                 balances[participants[i]].whitelisted = false;
             }
             whitelistAll = false;
         }
 
-        for (i = 0; i &lt; toInclude.length; i++) {
+        for (i = 0; i < toInclude.length; i++) {
             balances[toInclude[i]].whitelisted = true;
         }
 
         address excludedParticipant;
         uint contribution;
         if (previous) {
-            for (i = 0; i &lt; participants.length; i++) {
+            for (i = 0; i < participants.length; i++) {
                 excludedParticipant = participants[i];
                 if (!balances[excludedParticipant].whitelisted) {
                     contribution = balances[excludedParticipant].contribution;
@@ -237,7 +237,7 @@ contract PresalePool {
                 }
             }
         } else {
-            for (i = 0; i &lt; toExclude.length; i++) {
+            for (i = 0; i < toExclude.length; i++) {
                 excludedParticipant = toExclude[i];
                 balances[excludedParticipant].whitelisted = false;
                 contribution = balances[excludedParticipant].contribution;
@@ -251,7 +251,7 @@ contract PresalePool {
     function removeWhitelist() public onlyAdmins stateAllowsConfiguration {
         if (!whitelistAll) {
             whitelistAll = true;
-            for (uint i = 0; i &lt; participants.length; i++) {
+            for (uint i = 0; i < participants.length; i++) {
                 balances[participants[i]].whitelisted = true;
             }
         }
@@ -259,29 +259,29 @@ contract PresalePool {
 
     function setContributionSettings(uint _minContribution, uint _maxContribution, uint _maxPoolTotal) public onlyAdmins stateAllowsConfiguration {
         // we raised the minContribution threshold
-        bool recompute = (minContribution &lt; _minContribution);
+        bool recompute = (minContribution < _minContribution);
         // we lowered the maxContribution threshold
-        recompute = recompute || (maxContribution &gt; _maxContribution);
+        recompute = recompute || (maxContribution > _maxContribution);
         // we did not have a maxContribution threshold and now we do
-        recompute = recompute || (maxContribution == 0 &amp;&amp; _maxContribution &gt; 0);
+        recompute = recompute || (maxContribution == 0 && _maxContribution > 0);
         // we want to make maxPoolTotal lower than the current pool total
-        recompute = recompute || (poolTotal &gt; _maxPoolTotal);
+        recompute = recompute || (poolTotal > _maxPoolTotal);
 
         minContribution = _minContribution;
         maxContribution = _maxContribution;
         maxPoolTotal = _maxPoolTotal;
 
-        if (maxContribution &gt; 0) {
-            require(maxContribution &gt;= minContribution);
+        if (maxContribution > 0) {
+            require(maxContribution >= minContribution);
         }
-        if (maxPoolTotal &gt; 0) {
-            require(maxPoolTotal &gt;= minContribution);
-            require(maxPoolTotal &gt;= maxContribution);
+        if (maxPoolTotal > 0) {
+            require(maxPoolTotal >= minContribution);
+            require(maxPoolTotal >= maxContribution);
         }
 
         if (recompute) {
             poolTotal = 0;
-            for (uint i = 0; i &lt; participants.length; i++) {
+            for (uint i = 0; i < participants.length; i++) {
                 address participant = participants[i];
                 var balance = balances[participant];
                 (balance.contribution, balance.remaining) = getContribution(participant, 0);
@@ -296,7 +296,7 @@ contract PresalePool {
         bool[] memory whitelisted = new bool[](participants.length);
         bool[] memory exists = new bool[](participants.length);
 
-        for (uint i = 0; i &lt; participants.length; i++) {
+        for (uint i = 0; i < participants.length; i++) {
             var balance = balances[participants[i]];
             contribution[i] = balance.contribution;
             remaining[i] = balance.remaining;
@@ -308,7 +308,7 @@ contract PresalePool {
     }
 
     function deposit() internal onState(State.Open) {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             require(included(msg.sender));
             (balances[msg.sender].contribution, balances[msg.sender].remaining) = getContribution(msg.sender, msg.value);
             // must respect the maxContribution and maxPoolTotal limits
@@ -324,7 +324,7 @@ contract PresalePool {
     }
 
     function isAdmin(address addr) internal constant returns (bool) {
-        for (uint i = 0; i &lt; admins.length; i++) {
+        for (uint i = 0; i < admins.length; i++) {
             if (admins[i] == addr) {
                 return true;
             }
@@ -343,20 +343,20 @@ contract PresalePool {
         if (!included(participant)) {
             return (0, total);
         }
-        if (maxContribution &gt; 0) {
+        if (maxContribution > 0) {
             contribution = min(maxContribution, contribution);
         }
-        if (maxPoolTotal &gt; 0) {
+        if (maxPoolTotal > 0) {
             contribution = min(maxPoolTotal - poolTotal, contribution);
         }
-        if (contribution &lt; minContribution) {
+        if (contribution < minContribution) {
             return (0, total);
         }
         return (contribution, total - contribution);
     }
 
     function min(uint a, uint b) internal pure returns (uint _min) {
-        if (a &lt; b) {
+        if (a < b) {
             return a;
         }
         return b;

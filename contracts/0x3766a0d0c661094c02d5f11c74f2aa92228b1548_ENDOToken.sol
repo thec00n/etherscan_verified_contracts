@@ -42,8 +42,8 @@ contract ERC20 {
 contract StandartToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     bool public isStarted = false;
     
@@ -54,7 +54,7 @@ contract StandartToken is ERC20 {
 
     function transfer(address _to, uint256 _value) isStartedOnly public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -69,8 +69,8 @@ contract StandartToken is ERC20 {
   
     function transferFrom(address _from, address _to, uint256 _value) isStartedOnly public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -97,7 +97,7 @@ contract StandartToken is ERC20 {
 
     function decreaseApproval (address _spender, uint _subtractedValue) isStartedOnly public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -115,20 +115,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -136,8 +136,8 @@ library SafeMath {
 
 
 contract ENDOToken is Owned, StandartToken {
-    string public name = &quot;ENDO Token&quot;;
-    string public symbol = &quot;EDT&quot;;
+    string public name = "ENDO Token";
+    string public symbol = "EDT";
     uint public decimals = 18;
 
     address public distributionMinter;

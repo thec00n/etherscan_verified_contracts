@@ -8,13 +8,13 @@ contract SafeMath {
      }
 
      function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal returns (uint) {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 }
@@ -60,14 +60,14 @@ contract Token is SafeMath {
 
 contract StdToken is Token {
      // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint public supply = 0;
 
      // Functions:
      function transfer(address _to, uint256 _value) returns(bool) {
-          require(balances[msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[msg.sender] = safeSub(balances[msg.sender],_value);
           balances[_to] = safeAdd(balances[_to],_value);
@@ -77,9 +77,9 @@ contract StdToken is Token {
      }
 
      function transferFrom(address _from, address _to, uint256 _value) returns(bool){
-          require(balances[_from] &gt;= _value);
-          require(allowed[_from][msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[_from] >= _value);
+          require(allowed[_from][msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[_to] = safeAdd(balances[_to],_value);
           balances[_from] = safeSub(balances[_from],_value);
@@ -118,8 +118,8 @@ contract StdToken is Token {
 contract EthLendToken is StdToken
 {
 /// Fields:
-    string public constant name = &quot;EthLend Token&quot;;
-    string public constant symbol = &quot;LEND&quot;;
+    string public constant name = "EthLend Token";
+    string public constant symbol = "LEND";
     uint public constant decimals = 18;
 
     // this includes DEVELOPERS_BONUS
@@ -154,7 +154,7 @@ contract EthLendToken is StdToken
 
     address public teamTokenBonus = 0;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow = 0;
 
     // Token manager has exclusive priveleges to call administrative
@@ -214,10 +214,10 @@ contract EthLendToken is StdToken
     function buyTokensPresale() public payable onlyInState(State.PresaleRunning)
     {
         // min - 1 ETH
-        require(msg.value &gt;= (1 ether / 1 wei));
+        require(msg.value >= (1 ether / 1 wei));
         uint newTokens = msg.value * PRESALE_PRICE;
 
-        require(presaleSoldTokens + newTokens &lt;= PRESALE_TOKEN_SUPPLY_LIMIT);
+        require(presaleSoldTokens + newTokens <= PRESALE_TOKEN_SUPPLY_LIMIT);
 
         balances[msg.sender] += newTokens;
         supply+= newTokens;
@@ -230,10 +230,10 @@ contract EthLendToken is StdToken
     function buyTokensICO() public payable onlyInState(State.ICORunning)
     {
         // min - 0.01 ETH
-        require(msg.value &gt;= ((1 ether / 1 wei) / 100));
+        require(msg.value >= ((1 ether / 1 wei) / 100));
         uint newTokens = msg.value * getPrice();
 
-        require(totalSoldTokens + newTokens &lt;= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT);
+        require(totalSoldTokens + newTokens <= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT);
 
         balances[msg.sender] += newTokens;
         supply+= newTokens;
@@ -246,11 +246,11 @@ contract EthLendToken is StdToken
     function getPrice()constant returns(uint)
     {
         if(currentState==State.ICORunning){
-             if(icoSoldTokens&lt;(200000000 * (1 ether / 1 wei))){
+             if(icoSoldTokens<(200000000 * (1 ether / 1 wei))){
                   return ICO_PRICE1;
              }
              
-             if(icoSoldTokens&lt;(300000000 * (1 ether / 1 wei))){
+             if(icoSoldTokens<(300000000 * (1 ether / 1 wei))){
                   return ICO_PRICE2;
              }
 
@@ -262,7 +262,7 @@ contract EthLendToken is StdToken
 
     function setState(State _nextState) public onlyTokenManager
     {
-        //setState() method call shouldn&#39;t be entertained after ICOFinished
+        //setState() method call shouldn't be entertained after ICOFinished
         require(currentState != State.ICOFinished);
         
         currentState = _nextState;
@@ -273,7 +273,7 @@ contract EthLendToken is StdToken
 
     function withdrawEther() public onlyTokenManager
     {
-        if(this.balance &gt; 0) 
+        if(this.balance > 0) 
         {
             require(escrow.send(this.balance));
         }

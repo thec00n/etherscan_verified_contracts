@@ -15,16 +15,16 @@ contract Owned {
 	address public owner;
 }
 
-// FrozenToken, a bit like an ECR20 token (though not - as it doesn&#39;t
+// FrozenToken, a bit like an ECR20 token (though not - as it doesn't
 // implement most of the API).
 // All token balances are generally non-transferable.
-// All &quot;tokens&quot; belong to the owner (who is uniquely liquid) at construction.
+// All "tokens" belong to the owner (who is uniquely liquid) at construction.
 // Liquid accounts can make other accounts liquid and send their tokens
 // to other axccounts.
 contract FrozenToken is Owned {
 	event Transfer(address indexed from, address indexed to, uint256 value);
 
-	// this is as basic as can be, only the associated balance &amp; allowances
+	// this is as basic as can be, only the associated balance & allowances
 	struct Account {
 		uint balance;
 		bool liquid;
@@ -77,7 +77,7 @@ contract FrozenToken is Owned {
 
 	// the balance should be available
 	modifier when_owns(address _owner, uint _amount) {
-		require (accounts[_owner].balance &gt;= _amount);
+		require (accounts[_owner].balance >= _amount);
 		_;
 	}
 
@@ -86,20 +86,20 @@ contract FrozenToken is Owned {
 		_;
 	}
 
-	// a value should be &gt; 0
+	// a value should be > 0
 	modifier when_non_zero(uint _value) {
-		require (_value &gt; 0);
+		require (_value > 0);
 		_;
 	}
 
 	// Available token supply
 	uint public totalSupply;
 
-	// Storage and mapping of all balances &amp; allowances
-	mapping (address =&gt; Account) accounts;
+	// Storage and mapping of all balances & allowances
+	mapping (address => Account) accounts;
 
 	// Conventional metadata.
-	string public constant name = &quot;DOT Allocation Indicator&quot;;
-	string public constant symbol = &quot;DOT&quot;;
+	string public constant name = "DOT Allocation Indicator";
+	string public constant symbol = "DOT";
 	uint8 public constant decimals = 3;
 }

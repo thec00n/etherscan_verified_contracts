@@ -41,7 +41,7 @@ contract ERC20Extended is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,7 +98,7 @@ contract Ownable {
 }
 
 contract ComponentContainerInterface {
-    mapping (string =&gt; address) components;
+    mapping (string => address) components;
 
     event ComponentUpdated (string _name, address _componentAddress);
 
@@ -153,8 +153,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -169,9 +169,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -179,7 +179,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -188,7 +188,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -200,7 +200,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -218,7 +218,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -246,7 +246,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -264,8 +264,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -279,7 +279,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -348,7 +348,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -501,14 +501,14 @@ contract Derivative is DerivativeInterface, ComponentContainer, PausableToken {
 
     ERC20Extended internal constant ETH = ERC20Extended(0x00eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee);
     ComponentListInterface internal componentList;
-    string public constant MARKET = &quot;MarketProvider&quot;;
-    string public constant EXCHANGE = &quot;ExchangeProvider&quot;;
-    string public constant WITHDRAW = &quot;WithdrawProvider&quot;;
-    string public constant RISK = &quot;RiskProvider&quot;;
-    string public constant WHITELIST = &quot;WhitelistProvider&quot;;
-    string public constant FEE = &quot;FeeProvider&quot;;
-    string public constant REIMBURSABLE = &quot;Reimbursable&quot;;
-    string public constant REBALANCE = &quot;RebalanceProvider&quot;;
+    string public constant MARKET = "MarketProvider";
+    string public constant EXCHANGE = "ExchangeProvider";
+    string public constant WITHDRAW = "WithdrawProvider";
+    string public constant RISK = "RiskProvider";
+    string public constant WHITELIST = "WhitelistProvider";
+    string public constant FEE = "FeeProvider";
+    string public constant REIMBURSABLE = "Reimbursable";
+    string public constant REBALANCE = "RebalanceProvider";
 
     function initialize (address _componentList) internal {
         require(_componentList != 0x0);
@@ -523,7 +523,7 @@ contract Derivative is DerivativeInterface, ComponentContainer, PausableToken {
 
         // changed.
         require(super.setComponent(_name, componentList.getLatestComponent(_name)));
-        // approve if it&#39;s not Marketplace.
+        // approve if it's not Marketplace.
         if (keccak256(abi.encodePacked(_name)) != keccak256(abi.encodePacked(MARKET))) {
             approveComponent(_name);
         }
@@ -567,7 +567,7 @@ contract ExchangeInterface is ComponentInterface {
      * For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return boolean whether or not the trading pair is supported by this exchange provider
      */
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId)
@@ -579,7 +579,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the _amount.
      * @param uint _minimumRate The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here.
      * @return boolean whether or not the trade succeeded.
      */
@@ -595,7 +595,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of tokens to sell.
      * @param uint _minimumRate The minimum amount of ETH to receive for 1 ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -613,7 +613,7 @@ contract PriceProviderInterface is ComponentInterface {
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
      * @param uint _amount The amount of tokens which is wanted to buy.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return returns the expected and slippage rate for the specified conversion
      */
     function getPrice(ERC20Extended _sourceAddress, ERC20Extended _destAddress, uint _amount, bytes32 _exchangeId)
@@ -627,7 +627,7 @@ contract OlympusExchangeInterface is ExchangeInterface, PriceProviderInterface, 
      * @param uint[] _amounts Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the sum of this array.
      * @param uint[] _minimumRates The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -643,7 +643,7 @@ contract OlympusExchangeInterface is ExchangeInterface, PriceProviderInterface, 
      * @param uint[] _amounts Amount of tokens to sell this token. Make sure the value sent to this function is the same as the sum of this array.
      * @param uint[] _minimumRates The minimum amount of ETH to receive for 1 specified ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -678,10 +678,10 @@ contract WithdrawInterface is ComponentInterface {
 
 contract WhitelistInterface is ComponentInterface {
 
-    // sender -&gt; category -&gt; user -&gt; allowed
-    mapping (address =&gt; mapping(uint8 =&gt; mapping(address =&gt; bool))) public whitelist;
-    // sender -&gt; category -&gt; enabled
-    mapping (address =&gt; mapping(uint8 =&gt; bool)) public enabled;
+    // sender -> category -> user -> allowed
+    mapping (address => mapping(uint8 => mapping(address => bool))) public whitelist;
+    // sender -> category -> enabled
+    mapping (address => mapping(uint8 => bool)) public enabled;
 
     function enable(uint8 _key) external;
     function disable(uint8 _key) external;
@@ -692,7 +692,7 @@ contract WhitelistInterface is ComponentInterface {
 contract MarketplaceInterface is Ownable {
 
     address[] public products;
-    mapping(address =&gt; address[]) public productMappings;
+    mapping(address => address[]) public productMappings;
 
     function getAllProducts() external view returns (address[] allProducts);
     function registerProduct() external returns(bool success);
@@ -746,7 +746,7 @@ contract OlympusIndex is IndexInterface, Derivative {
         WhitelistInterface whitelist = WhitelistInterface(getComponentByName(WHITELIST));
         require(
             msg.sender == owner ||
-            (whitelist.enabled(address(this), uint8(_key)) &amp;&amp; whitelist.isAllowed(uint8(_key), msg.sender) )
+            (whitelist.enabled(address(this), uint8(_key)) && whitelist.isAllowed(uint8(_key), msg.sender) )
         );
         _;
     }
@@ -769,7 +769,7 @@ contract OlympusIndex is IndexInterface, Derivative {
 
     modifier checkWeights(uint[] _weights){
         uint totalWeight;
-        for(uint i = 0; i &lt; _weights.length; i++){
+        for(uint i = 0; i < _weights.length; i++){
             totalWeight += _weights[i];
         }
         require(totalWeight == 100);
@@ -791,7 +791,7 @@ contract OlympusIndex is IndexInterface, Derivative {
         decimals = _decimals;
         description = _description;
         category = _category;
-        version = &quot;1.0&quot;;
+        version = "1.0";
         fundType = DerivativeType.Index;
         tokens = _tokens;
         weights = _weights;
@@ -801,7 +801,7 @@ contract OlympusIndex is IndexInterface, Derivative {
     // ----------------------------- CONFIG -----------------------------
     function initialize(address _componentList, uint _initialFundFee) onlyOwner external payable {
         require(status == DerivativeStatus.New);
-        require(msg.value &gt; 0); // Require some balance for internal opeations as reimbursable
+        require(msg.value > 0); // Require some balance for internal opeations as reimbursable
         require(_componentList != 0x0);
 
         super.initialize(_componentList);
@@ -841,15 +841,15 @@ contract OlympusIndex is IndexInterface, Derivative {
     // Return tokens and amounts
     function getTokensAndAmounts() external view returns(address[], uint[]) {
         uint[] memory _amounts = new uint[](tokens.length);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             _amounts[i] = ERC20Extended(tokens[i]).balanceOf(address(this));
         }
         return (tokens, _amounts);
     }
 
     function changeStatus(DerivativeStatus _status) public onlyOwner returns(bool) {
-        require(_status != DerivativeStatus.New &amp;&amp; status != DerivativeStatus.New &amp;&amp; _status != DerivativeStatus.Closed);
-        require(status != DerivativeStatus.Closed &amp;&amp; _status != DerivativeStatus.Closed);
+        require(_status != DerivativeStatus.New && status != DerivativeStatus.New && _status != DerivativeStatus.Closed);
+        require(status != DerivativeStatus.Closed && _status != DerivativeStatus.Closed);
 
         status = _status;
         emit ChangeStatus(status);
@@ -871,12 +871,12 @@ contract OlympusIndex is IndexInterface, Derivative {
      whitelisted(WhitelistKeys.Investment)
      withoutRisk(msg.sender, address(this), ETH, msg.value, 1)
      returns(bool) {
-        require(status == DerivativeStatus.Active, &quot;The Fund is not active&quot;);
-        require(msg.value &gt;= 10**15, &quot;Minimum value to invest is 0.001 ETH&quot;);
+        require(status == DerivativeStatus.Active, "The Fund is not active");
+        require(msg.value >= 10**15, "Minimum value to invest is 0.001 ETH");
          // Current value is already added in the balance, reduce it
         uint _sharePrice;
 
-        if(totalSupply_ &gt; 0) {
+        if(totalSupply_ > 0) {
             _sharePrice = getPrice() - ( (msg.value * 10 ** decimals ) / totalSupply_);
          } else {
             _sharePrice = INITIAL_VALUE;
@@ -919,7 +919,7 @@ contract OlympusIndex is IndexInterface, Derivative {
         uint _expectedRate;
         uint _balance;
 
-        for (uint16 i = 0; i &lt; tokens.length; i++) {
+        for (uint16 i = 0; i < tokens.length; i++) {
 
             _balance = ERC20(tokens[i]).balanceOf(address(this));
 
@@ -941,7 +941,7 @@ contract OlympusIndex is IndexInterface, Derivative {
     }
 
     function withdrawFee(uint amount) external onlyOwner whenNotPaused returns(bool) {
-        require(accumulatedFee &gt;= amount);
+        require(accumulatedFee >= amount);
         accumulatedFee -= amount;
         msg.sender.transfer(amount);
         return true;
@@ -987,12 +987,12 @@ contract OlympusIndex is IndexInterface, Derivative {
         }
         uint _totalETHToReturn = ( withdrawProvider.getTotalWithdrawAmount() * getPrice()) / 10 ** decimals;
 
-        if(_totalETHToReturn &gt; getETHBalance()) {
+        if(_totalETHToReturn > getETHBalance()) {
             uint _tokenPercentToSell = (( _totalETHToReturn - getETHBalance()) * DENOMINATOR) / getAssetsValue();
             getETHFromTokens(_tokenPercentToSell);
         }
 
-        for(uint8 i = 0; i &lt; _requests.length &amp;&amp; _transfers &lt; maxTransfers ; i++) {
+        for(uint8 i = 0; i < _requests.length && _transfers < maxTransfers ; i++) {
 
 
             (_eth, tokens) = withdrawProvider.withdraw(_requests[i]);
@@ -1026,16 +1026,16 @@ contract OlympusIndex is IndexInterface, Derivative {
         // First check the length
         uint8 length = 0;
         uint[] memory _amounts = new uint[](tokens.length);
-        for (uint8 i = 0; i &lt; tokens.length; i++) {
+        for (uint8 i = 0; i < tokens.length; i++) {
             _amounts[i] = ERC20Extended(tokens[i]).balanceOf(address(this));
-            if(_amounts[i] &gt; 0) {length++;}
+            if(_amounts[i] > 0) {length++;}
         }
 
         ERC20Extended[] memory _tokensWithAmount = new ERC20Extended[](length);
         // Then create they array
         uint8 index = 0;
-        for (uint8 j = 0; j &lt; tokens.length; j++) {
-            if(_amounts[j] &gt; 0) {
+        for (uint8 j = 0; j < tokens.length; j++) {
+            if(_amounts[j] > 0) {
                 _tokensWithAmount[index] = ERC20Extended(tokens[j]);
                 index++;
             }
@@ -1049,7 +1049,7 @@ contract OlympusIndex is IndexInterface, Derivative {
         uint[] memory _sellRates = new uint[]( _tokensToSell.length);
         OlympusExchangeInterface exchange = OlympusExchangeInterface(getComponentByName(EXCHANGE));
 
-        for (uint8 i = 0; i &lt; _tokensToSell.length; i++) {
+        for (uint8 i = 0; i < _tokensToSell.length; i++) {
 
             _amounts[i] = (_tokenPercentage * _tokensToSell[i].balanceOf(address(this)) )/DENOMINATOR;
             ( , _sellRates[i] ) = exchange.getPrice(_tokensToSell[i], ETH, _amounts[i], 0x0);
@@ -1079,7 +1079,7 @@ contract OlympusIndex is IndexInterface, Derivative {
         uint ethBalance = getETHBalance();
         uint totalAmount = 0;
 
-        for(uint8 i = 0; i &lt; tokens.length; i++) {
+        for(uint8 i = 0; i < tokens.length; i++) {
             _amounts[i] = ethBalance * weights[i] / 100;
             _tokensErc20[i] = ERC20Extended(tokens[i]);
             (, _rates[i] ) = exchange.getPrice(ETH,  _tokensErc20[i],  _amounts[i], 0x0);
@@ -1105,7 +1105,7 @@ contract OlympusIndex is IndexInterface, Derivative {
 
         (tokensToSell, amountsToSell, tokensToBuy, amountsToBuy,) = rebalanceProvider.rebalanceGetTokensToSellAndBuy();
         // Sell Tokens
-        for (i = 0; i &lt; tokensToSell.length; i++) {
+        for (i = 0; i < tokensToSell.length; i++) {
             ERC20Extended(tokensToSell[i]).approve(address(exchangeProvider), 0);
             ERC20Extended(tokensToSell[i]).approve(address(exchangeProvider), amountsToSell[i]);
             require(exchangeProvider.sellToken(ERC20Extended(tokensToSell[i]), amountsToSell[i], 0, address(this), 0x0, 0x0));
@@ -1114,7 +1114,7 @@ contract OlympusIndex is IndexInterface, Derivative {
 
         // Buy Tokens
         amountsToBuy = rebalanceProvider.recalculateTokensToBuyAfterSale(address(this).balance - ETHBalanceBefore, amountsToBuy);
-        for (i = 0; i &lt; tokensToBuy.length; i++) {
+        for (i = 0; i < tokensToBuy.length; i++) {
             require(
                 exchangeProvider.buyToken.value(amountsToBuy[i])(ERC20Extended(tokensToBuy[i]), amountsToBuy[i], 0, address(this), 0x0, 0x0)
             );

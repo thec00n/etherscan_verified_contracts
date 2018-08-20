@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,19 +120,19 @@ contract LockableToken is ERC20 {
 contract VinToken is Contactable {
     using SafeMath for uint;
 
-    string constant public name = &quot;VIN&quot;;
-    string constant public symbol = &quot;VIN&quot;;
+    string constant public name = "VIN";
+    string constant public symbol = "VIN";
     uint constant public decimals = 18;
     uint constant public totalSupply = (10 ** 9) * (10 ** decimals); // 1 000 000 000 VIN
     uint constant public lockPeriod1 = 2 years;
     uint constant public lockPeriod2 = 24 weeks;
     uint constant public lockPeriodForBuyers = 12 weeks;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     bool public isActivated = false;
-    mapping (address =&gt; bool) public whitelistedBeforeActivation;
-    mapping (address =&gt; bool) public isPresaleBuyer;
+    mapping (address => bool) public whitelistedBeforeActivation;
+    mapping (address => bool) public isPresaleBuyer;
     address public saleAddress;
     address public founder1Address;
     address public founder2Address;
@@ -151,7 +151,7 @@ contract VinToken is Contactable {
     {
         require(_founder1Address != 0x0);
         require(_founder2Address != 0x0);
-        require(_icoEndTime &gt; _icoStartTime);
+        require(_icoEndTime > _icoStartTime);
         founder1Address = _founder1Address;
         founder2Address = _founder2Address;
         icoStartTime = _icoStartTime;
@@ -167,11 +167,11 @@ contract VinToken is Contactable {
     
     modifier isLockTimeEnded(address from){
         if (from == founder1Address) {
-            require(now &gt; icoEndTime + lockPeriod1);
+            require(now > icoEndTime + lockPeriod1);
         } else if (from == founder2Address) {
-            require(now &gt; icoEndTime + lockPeriod2);
+            require(now > icoEndTime + lockPeriod2);
         } else if (isPresaleBuyer[from]) {
-            require(now &gt; icoEndTime + lockPeriodForBuyers);
+            require(now > icoEndTime + lockPeriodForBuyers);
         }
         _;
     }
@@ -209,7 +209,7 @@ contract VinToken is Contactable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract VinToken is Contactable {
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         
-        // _allowance.sub(_value) will throw if _value &gt; _allowance
+        // _allowance.sub(_value) will throw if _value > _allowance
         allowed[_from][msg.sender] = _allowance.sub(_value);
         Transfer(_from, _to, _value);
 
@@ -264,7 +264,7 @@ contract VinToken is Contactable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) external whenActivated returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -303,7 +303,7 @@ contract VinToken is Contactable {
     }
 
     function setIcoEndTime(uint newTime) external onlyOwner returns (bool) {
-        require(newTime &gt; icoStartTime);
+        require(newTime > icoStartTime);
         icoEndTime = newTime;
         return true;
     }

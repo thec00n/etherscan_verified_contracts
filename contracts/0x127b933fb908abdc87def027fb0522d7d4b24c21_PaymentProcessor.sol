@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,7 +51,7 @@ contract Ownable {
  */
 contract Restricted is Ownable {
 
-    mapping (address =&gt; bool) public isMonethaAddress;
+    mapping (address => bool) public isMonethaAddress;
 
     /**
      *  Restrict methods in such way, that they can be invoked only by monethaAddress account.
@@ -99,7 +99,7 @@ contract Contactable is Ownable{
  */
 contract MerchantDealsHistory is Contactable, Restricted {
 
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
     ///  Merchant identifier hash
     bytes32 public merchantIdHash;
@@ -138,14 +138,14 @@ contract MerchantDealsHistory is Contactable, Restricted {
      *  @param _merchantId Merchant of the acceptor
      */
     function MerchantDealsHistory(string _merchantId) public {
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
         merchantIdHash = keccak256(_merchantId);
     }
 
     /**
      *  recordDeal creates an event of completed deal
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _isSuccess Identifies whether deal was successful or not
@@ -172,8 +172,8 @@ contract MerchantDealsHistory is Contactable, Restricted {
 
     /**
      *  recordDealCancelReason creates an event of not paid deal that was cancelled 
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _dealHash Hashcode of the deal, describing the order (used for deal verification)
@@ -200,8 +200,8 @@ contract MerchantDealsHistory is Contactable, Restricted {
 
 /**
      *  recordDealRefundReason creates an event of not paid deal that was cancelled 
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _dealHash Hashcode of the deal, describing the order (used for deal verification)
@@ -298,22 +298,22 @@ contract Pausable is Ownable {
 
 contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
-    /// Address of merchant&#39;s account, that can withdraw from wallet
+    /// Address of merchant's account, that can withdraw from wallet
     address public merchantAccount;
     
     /// Unique Merchant identifier hash
     bytes32 public merchantIdHash;
 
     /// profileMap stores general information about the merchant
-    mapping (string=&gt;string) profileMap;
+    mapping (string=>string) profileMap;
 
     /// paymentSettingsMap stores payment and order settings for the merchant
-    mapping (string=&gt;string) paymentSettingsMap;
+    mapping (string=>string) paymentSettingsMap;
 
     /// compositeReputationMap stores composite reputation, that compraises from several metrics
-    mapping (string=&gt;uint32) compositeReputationMap;
+    mapping (string=>uint32) compositeReputationMap;
 
     /// number of last digits in compositeReputation for fractional part
     uint8 public constant REPUTATION_DECIMALS = 4;
@@ -324,12 +324,12 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  @param _merchantAccount Address of merchant&#39;s account, that can withdraw from wallet
+     *  @param _merchantAccount Address of merchant's account, that can withdraw from wallet
      *  @param _merchantId Merchant identifier
      */
     function MerchantWallet(address _merchantAccount, string _merchantId) public {
         require(_merchantAccount != 0x0);
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
         
         merchantAccount = _merchantAccount;
         merchantIdHash = keccak256(_merchantId);
@@ -402,14 +402,14 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  Allows merchant to withdraw funds to it&#39;s own account
+     *  Allows merchant to withdraw funds to it's own account
      */
     function withdraw(uint amount) external {
         withdrawTo(msg.sender, amount);
     }
 
     /**
-     *  Allows merchant to change it&#39;s account address
+     *  Allows merchant to change it's account address
      */
     function changeMerchantAccount(address newAccount) external onlyMerchant whenNotPaused {
         merchantAccount = newAccount;
@@ -452,20 +452,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -475,13 +475,13 @@ library SafeMath {
 /**
  *  @title MonethaGateway
  *
- *  MonethaGateway forward funds from order payment to merchant&#39;s wallet and collects Monetha fee.
+ *  MonethaGateway forward funds from order payment to merchant's wallet and collects Monetha fee.
  */
 contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
 
     using SafeMath for uint256;
     
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
     /**
      *  Fee permille of Monetha fee.
@@ -513,9 +513,9 @@ contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
     }
     
     /**
-     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant&#39;s wallet
+     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant's wallet
      *      and collects Monetha fee.
-     *  @param _merchantWallet address of merchant&#39;s wallet for fund transfer
+     *  @param _merchantWallet address of merchant's wallet for fund transfer
      */
     function acceptPayment(address _merchantWallet) external payable onlyMonetha whenNotPaused {
         require(_merchantWallet != 0x0);
@@ -563,12 +563,12 @@ contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
  *  Each Merchant has one PaymentProcessor that ensure payment and order processing with Trust and Reputation
  *
  *  Payment Processor State Transitions:
- *  Null -(addOrder) -&gt; Created
- *  Created -(securePay) -&gt; Paid
- *  Created -(cancelOrder) -&gt; Cancelled
- *  Paid -(refundPayment) -&gt; Refunding
- *  Paid -(processPayment) -&gt; Finalized
- *  Refunding -(withdrawRefund) -&gt; Refunded
+ *  Null -(addOrder) -> Created
+ *  Created -(securePay) -> Paid
+ *  Created -(cancelOrder) -> Cancelled
+ *  Paid -(refundPayment) -> Refunding
+ *  Paid -(processPayment) -> Finalized
+ *  Refunding -(withdrawRefund) -> Refunded
  */
 
 
@@ -576,12 +576,12 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
 
     using SafeMath for uint256;
 
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
     /// MonethaGateway contract for payment processing
     MonethaGateway public monethaGateway;
 
-    /// MerchantDealsHistory contract of acceptor&#39;s merchant
+    /// MerchantDealsHistory contract of acceptor's merchant
     MerchantDealsHistory public merchantHistory;
 
     /// Address of MerchantWallet, where merchant reputation and funds are stored
@@ -590,7 +590,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
     /// Merchant identifier hash, that associates with the acceptor
     bytes32 public merchantIdHash;
 
-    mapping (uint=&gt;Order) public orders;
+    mapping (uint=>Order) public orders;
 
     enum State {Null, Created, Paid, Finalized, Refunding, Refunded, Cancelled}
 
@@ -625,7 +625,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
     /**
      *  payment Processor sets Monetha Gateway
      *  @param _merchantId Merchant of the acceptor
-     *  @param _merchantHistory Address of MerchantDealsHistory contract of acceptor&#39;s merchant
+     *  @param _merchantHistory Address of MerchantDealsHistory contract of acceptor's merchant
      *  @param _monethaGateway Address of MonethaGateway contract for payment processing
      *  @param _merchantWallet Address of MerchantWallet, where merchant reputation and funds are stored
      */
@@ -636,7 +636,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
         MerchantWallet _merchantWallet
     ) public
     {
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
 
         merchantIdHash = keccak256(_merchantId);
 
@@ -661,8 +661,8 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
         uint _orderCreationTime
     ) external onlyMonetha whenNotPaused atState(_orderId, State.Null)
     {
-        require(_orderId &gt; 0);
-        require(_price &gt; 0);
+        require(_orderId > 0);
+        require(_price > 0);
 
         orders[_orderId] = Order({
             state: State.Created,
@@ -689,7 +689,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
     }
 
     /**
-     *  cancelOrder is used when client doesn&#39;t pay and order need to be cancelled.
+     *  cancelOrder is used when client doesn't pay and order need to be cancelled.
      *  @param _orderId Identifier of the order
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
@@ -706,7 +706,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
         external onlyMonetha whenNotPaused
         atState(_orderId, State.Created) transition(_orderId, State.Cancelled)
     {
-        require(bytes(_cancelReason).length &gt; 0);
+        require(bytes(_cancelReason).length > 0);
 
         Order storage order = orders[_orderId];
 
@@ -747,7 +747,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
         external onlyMonetha whenNotPaused
         atState(_orderId, State.Paid) transition(_orderId, State.Refunding)
     {
-        require(bytes(_refundReason).length &gt; 0);
+        require(bytes(_refundReason).length > 0);
 
         Order storage order = orders[_orderId];
 
@@ -770,7 +770,7 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
     }
 
     /**
-     *  withdrawRefund performs fund transfer to the client&#39;s account.
+     *  withdrawRefund performs fund transfer to the client's account.
      *  @param _orderId Identifier of the order
      */
     function withdrawRefund(uint _orderId) 
@@ -868,6 +868,6 @@ contract PaymentProcessor is Pausable, Destructible, Contactable, Restricted {
         );
 
         //update parties Reputation
-        merchantWallet.setCompositeReputation(&quot;total&quot;, _merchantReputation);
+        merchantWallet.setCompositeReputation("total", _merchantReputation);
     }
 }

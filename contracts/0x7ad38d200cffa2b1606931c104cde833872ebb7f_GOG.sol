@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,9 +70,9 @@ contract GOG is owned {
     bool public paused;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // this creates an 2 x 2 array with allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     // This generates a public event on the blockchain that will notify clients transfering of funds
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -93,10 +93,10 @@ contract GOG is owned {
      * Initializes contract with initial supply tokens to the creator of the contract
      */
     constructor() public {
-        totalSupply = 10000000000000000;               // GOG&#39;s total supply is 10 billion with 6 decimals
+        totalSupply = 10000000000000000;               // GOG's total supply is 10 billion with 6 decimals
         balances[msg.sender] = totalSupply;          // Give the creator all initial tokens
-        name = &quot;GoGlobe Token&quot;;                       // Token name is GoGlobe Token
-        symbol = &quot;GOG&quot;;                               // token symbol is GOG
+        name = "GoGlobe Token";                       // Token name is GoGlobe Token
+        symbol = "GOG";                               // token symbol is GOG
     }
 
     /**
@@ -147,7 +147,7 @@ contract GOG is owned {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public onlyUnpaused returns (bool) {
     uint oldValue = allowance[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowance[msg.sender][_spender] = 0;
     } else {
       allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -174,7 +174,7 @@ contract GOG is owned {
         require(_to != address(0));
 
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from].add(balances[_to]);
         // Subtract from the sender
@@ -204,7 +204,7 @@ contract GOG is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnpaused returns (bool) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -216,7 +216,7 @@ contract GOG is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public onlyUnpaused returns (bool) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);            // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -230,10 +230,10 @@ contract GOG is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public onlyUnpaused returns (bool) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                              // Update totalSupply
         emit Burn(_from, _value);
         return true;

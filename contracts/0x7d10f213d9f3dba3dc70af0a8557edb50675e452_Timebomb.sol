@@ -17,22 +17,22 @@ contract Timebomb {
     uint constant minimumPerInterval = 100 finney;
 
     address owner;
-    mapping(address =&gt; bool) preauthorized;
+    mapping(address => bool) preauthorized;
     bool gameStarted;
 
     address public leader;
     uint public deadline;
     bool public prizeClaimed;
 
-    mapping(address =&gt; uint) public investment;
+    mapping(address => uint) public investment;
     uint public totalInvestment;
 
-    mapping(address =&gt; uint) public stake;
+    mapping(address => uint) public stake;
     uint public totalStake;
     uint stakeValue;
 
-    mapping(address =&gt; uint) dividendCredit;
-    mapping(address =&gt; uint) dividendDebit;
+    mapping(address => uint) dividendCredit;
+    mapping(address => uint) dividendDebit;
 
     function Timebomb() public {
         owner = msg.sender;
@@ -52,7 +52,7 @@ contract Timebomb {
     }
 
     function threshold() public view returns (uint) {
-        if (now &lt; deadline) {
+        if (now < deadline) {
             uint _lastTimestamp = deadline.sub(duration);
             uint _elapsed = now.sub(_lastTimestamp);
             uint _interval = intervals.mul(_elapsed).div(duration).add(1);
@@ -63,7 +63,7 @@ contract Timebomb {
     }
 
     function checkForNewLeader(uint _amount) private {
-        if (_amount &gt;= threshold()) {
+        if (_amount >= threshold()) {
             leader = msg.sender;
             deadline = now + duration;
             emit Leader(msg.sender, _amount);
@@ -74,7 +74,7 @@ contract Timebomb {
         checkForNewLeader(_amount);
         uint _tax = _amount.div(depositTaxDivisor);
         uint _amountAfterTax = _amount.sub(_tax);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         uint _stakeIncrement = sqrt(totalStake.mul(totalStake).add(_amountAfterTax)).sub(totalStake);
         investment[msg.sender] = investment[msg.sender].add(_amountAfterTax);
@@ -86,15 +86,15 @@ contract Timebomb {
 
     function deposit() public payable {
         require(preauthorized[msg.sender] || gameStarted);
-        require(now &lt; deadline);
+        require(now < deadline);
         depositHelper(msg.value);
         emit Deposit(msg.sender, msg.value);
     }
 
     function withdraw(uint _amount) public {
-        require(now &lt; deadline);
-        require(_amount &gt; 0);
-        require(_amount &lt;= investment[msg.sender]);
+        require(now < deadline);
+        require(_amount > 0);
+        require(_amount <= investment[msg.sender]);
         checkForNewLeader(_amount);
         uint _tax = _amount.div(withdrawalTaxDivisor);
         uint _amountAfterTax = _amount.sub(_tax);
@@ -104,7 +104,7 @@ contract Timebomb {
         totalInvestment = totalInvestment.sub(_amount);
         stake[msg.sender] = stake[msg.sender].sub(_stakeDecrement);
         totalStake = totalStake.sub(_stakeDecrement);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         dividendCredit[msg.sender] = dividendCredit[msg.sender].add(_dividendCredit);
         uint _creditDebitCancellation = min(dividendCredit[msg.sender], dividendDebit[msg.sender]);
@@ -129,20 +129,20 @@ contract Timebomb {
     }
 
     function reinvest() public {
-        require(now &lt; deadline);
+        require(now < deadline);
         uint _dividends = claimHelper();
         depositHelper(_dividends);
         emit Reinvest(msg.sender, _dividends);
     }
 
     function win() public {
-        require(now &gt;= deadline);
+        require(now >= deadline);
         require(msg.sender == leader);
         require(!prizeClaimed);
         uint _amount = totalInvestment;
         uint _tax = _amount.div(withdrawalTaxDivisor);
         uint _amountAfterTax = _amount.sub(_tax);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         prizeClaimed = true;
         msg.sender.transfer(_amountAfterTax);
@@ -154,13 +154,13 @@ contract Timebomb {
     }
 
     function min(uint x, uint y) private pure returns (uint) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function sqrt(uint x) private pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -189,9 +189,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -199,7 +199,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -208,7 +208,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

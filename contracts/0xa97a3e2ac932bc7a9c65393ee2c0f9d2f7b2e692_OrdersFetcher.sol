@@ -143,25 +143,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -169,7 +169,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -447,10 +447,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -471,7 +471,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -515,7 +515,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -523,17 +523,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -551,14 +551,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -571,17 +571,17 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
     function ascendOrderList(Order.Types _type, uint256 _price, bytes32 _lowestOrderId) public view returns (bytes32 _betterOrderId, bytes32 _worseOrderId) {
         _worseOrderId = _lowestOrderId;
         bool _isWorstPrice;
-        IOrders _orders = IOrders(controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(controller.lookup("Orders"));
         if (_type == Order.Types.Bid) {
-            _isWorstPrice = _price &lt;= _orders.getPrice(_worseOrderId);
+            _isWorstPrice = _price <= _orders.getPrice(_worseOrderId);
         } else if (_type == Order.Types.Ask) {
-            _isWorstPrice = _price &gt;= _orders.getPrice(_worseOrderId);
+            _isWorstPrice = _price >= _orders.getPrice(_worseOrderId);
         }
         if (_isWorstPrice) {
             return (_worseOrderId, _orders.getWorseOrderId(_worseOrderId));
         }
         bool _isBetterPrice = _orders.isBetterPrice(_type, _price, _worseOrderId);
-        while (_isBetterPrice &amp;&amp; _orders.getBetterOrderId(_worseOrderId) != 0 &amp;&amp; _price != _orders.getPrice(_orders.getBetterOrderId(_worseOrderId))) {
+        while (_isBetterPrice && _orders.getBetterOrderId(_worseOrderId) != 0 && _price != _orders.getPrice(_orders.getBetterOrderId(_worseOrderId))) {
             _betterOrderId = _orders.getBetterOrderId(_worseOrderId);
             _isBetterPrice = _orders.isBetterPrice(_type, _price, _betterOrderId);
             if (_isBetterPrice) {
@@ -595,11 +595,11 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
     function descendOrderList(Order.Types _type, uint256 _price, bytes32 _highestOrderId) public view returns (bytes32 _betterOrderId, bytes32 _worseOrderId) {
         _betterOrderId = _highestOrderId;
         bool _isBestPrice;
-        IOrders _orders = IOrders(controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(controller.lookup("Orders"));
         if (_type == Order.Types.Bid) {
-            _isBestPrice = _price &gt; _orders.getPrice(_betterOrderId);
+            _isBestPrice = _price > _orders.getPrice(_betterOrderId);
         } else if (_type == Order.Types.Ask) {
-            _isBestPrice = _price &lt; _orders.getPrice(_betterOrderId);
+            _isBestPrice = _price < _orders.getPrice(_betterOrderId);
         }
         if (_isBestPrice) {
             return (0, _betterOrderId);
@@ -608,7 +608,7 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
             return (_betterOrderId, _orders.getWorseOrderId(_betterOrderId));
         }
         bool _isWorsePrice = _orders.isWorsePrice(_type, _price, _betterOrderId);
-        while (_isWorsePrice &amp;&amp; _orders.getWorseOrderId(_betterOrderId) != 0) {
+        while (_isWorsePrice && _orders.getWorseOrderId(_betterOrderId) != 0) {
             _worseOrderId = _orders.getWorseOrderId(_betterOrderId);
             _isWorsePrice = _orders.isWorsePrice(_type, _price, _worseOrderId);
             if (_isWorsePrice || _price == _orders.getPrice(_orders.getWorseOrderId(_betterOrderId))) {
@@ -620,7 +620,7 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
     }
 
     function findBoundingOrders(Order.Types _type, uint256 _price, bytes32 _bestOrderId, bytes32 _worstOrderId, bytes32 _betterOrderId, bytes32 _worseOrderId) public returns (bytes32, bytes32) {
-        IOrders _orders = IOrders(controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(controller.lookup("Orders"));
         if (_bestOrderId == _worstOrderId) {
             if (_bestOrderId == bytes32(0)) {
                 return (bytes32(0), bytes32(0));
@@ -644,7 +644,7 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
                 _orders.assertIsNotWorsePrice(_type, _price, _worseOrderId);
             }
         }
-        if (_betterOrderId == bytes32(0) &amp;&amp; _worseOrderId == bytes32(0)) {
+        if (_betterOrderId == bytes32(0) && _worseOrderId == bytes32(0)) {
             return (descendOrderList(_type, _price, _bestOrderId));
         } else if (_betterOrderId == bytes32(0)) {
             return (ascendOrderList(_type, _price, _worseOrderId));
@@ -654,7 +654,7 @@ contract OrdersFetcher is Controlled, IOrdersFetcher {
         if (_orders.getWorseOrderId(_betterOrderId) != _worseOrderId) {
             return (descendOrderList(_type, _price, _betterOrderId));
         } else if (_orders.getBetterOrderId(_worseOrderId) != _betterOrderId) {
-            // Coverage: This condition is likely unreachable or at least seems to be. Rather than remove it I&#39;m keeping it for now just to be paranoid
+            // Coverage: This condition is likely unreachable or at least seems to be. Rather than remove it I'm keeping it for now just to be paranoid
             return (ascendOrderList(_type, _price, _worseOrderId));
         }
         return (_betterOrderId, _worseOrderId);

@@ -46,7 +46,7 @@ contract Zlots is ZTHReceivingContract {
     address private ZTHBANKROLL;
     ZTHInterface private     ZTHTKN;
 
-    mapping (uint =&gt; bool) validTokenBet;
+    mapping (uint => bool) validTokenBet;
 
     // Might as well notify everyone when the house takes its cut out.
     event HouseRetrievedTake(
@@ -115,7 +115,7 @@ contract Zlots is ZTHReceivingContract {
 
     constructor(address ZethrAddress, address BankrollAddress) public {
 
-        // Set Zethr &amp; Bankroll address from constructor params
+        // Set Zethr & Bankroll address from constructor params
         ZTHTKNADDR = ZethrAddress;
         ZTHBANKROLL = BankrollAddress;
 
@@ -123,7 +123,7 @@ contract Zlots is ZTHReceivingContract {
         owner         = msg.sender;
         bankroll      = ZTHBANKROLL;
 
-        // Approve &quot;infinite&quot; token transfer to the bankroll, as part of Zethr game requirements.
+        // Approve "infinite" token transfer to the bankroll, as part of Zethr game requirements.
         ZTHTKN = ZTHInterface(ZTHTKNADDR);
         ZTHTKN.approve(ZTHBANKROLL, 2**256 - 1);
         
@@ -158,7 +158,7 @@ contract Zlots is ZTHReceivingContract {
     }
 
     // Mapping because a player can do one spin at a time
-    mapping(address =&gt; playerSpin) public playerSpins;
+    mapping(address => playerSpin) public playerSpins;
 
     // Execute spin.
     function _spinTokens(TKN _tkn) private {
@@ -168,8 +168,8 @@ contract Zlots is ZTHReceivingContract {
         require(validTokenBet[_tkn.value]);
         require(jackpotGuard(_tkn.value));
 
-        require(_tkn.value &lt; ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
-        require(block.number &lt; ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
+        require(_tkn.value < ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
+        require(block.number < ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
 
         address _customerAddress = _tkn.sender;
         uint    _wagered         = _tkn.value;
@@ -219,16 +219,16 @@ contract Zlots is ZTHReceivingContract {
     {
         playerSpin memory spin = playerSpins[target];
 
-        require(spin.tokenValue &gt; 0); // No re-entrancy
+        require(spin.tokenValue > 0); // No re-entrancy
         require(spin.blockn != block.number);
 
         uint profit = 0;
 
-        // If the block is more than 255 blocks old, we can&#39;t get the result
+        // If the block is more than 255 blocks old, we can't get the result
         // Also, if the result has already happened, fail as well
         uint result;
-        if (block.number - spin.blockn &gt; 255) {
-          result = 9999; // Can&#39;t win: default to largest number
+        if (block.number - spin.blockn > 255) {
+          result = 9999; // Can't win: default to largest number
         } else {
 
           // Generate a result - random based ONLY on a past block (future when submitted).
@@ -236,29 +236,29 @@ contract Zlots is ZTHReceivingContract {
           result = random(10000, spin.blockn, target);
         }
 
-        if (result &gt; 4489) {
+        if (result > 4489) {
           // Player has lost.
           emit Loss(target);
           emit LogResult(target, result, profit, spin.tokenValue, false);
         } else {
-            if (result &lt; 29) {
+            if (result < 29) {
                 // Player has won the 25x jackpot
                 profit = SafeMath.mul(spin.tokenValue, 25);
                 emit Jackpot(target);
 
             } else {
-                if (result &lt; 233) {
+                if (result < 233) {
                     // Player has won a 8x multiplier
                     profit = SafeMath.mul(spin.tokenValue, 8);
                     emit EightXMultiplier(target);
                 } else {
 
-                    if (result &lt; 641) {
+                    if (result < 641) {
                         // Player has won their wager back
                         profit = spin.tokenValue;
                         emit ReturnBet(target);
                     } else {
-                        if (result &lt; 1865) {
+                        if (result < 1865) {
                             // Player has won a 2.5x multiplier
                             profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 25), 10);
                             emit TwoAndAHalfXMultiplier(target);
@@ -279,9 +279,9 @@ contract Zlots is ZTHReceivingContract {
     }
 
     // This sounds like a draconian function, but it actually just ensures that the contract has enough to pay out
-    // a jackpot at the rate you&#39;ve selected (i.e. 1250 ZTH for jackpot on a 50 ZTH roll).
+    // a jackpot at the rate you've selected (i.e. 1250 ZTH for jackpot on a 50 ZTH roll).
     // We do this by making sure that 25* your wager is no less than 50% of the amount currently held by the contract.
-    // If not, you&#39;re going to have to use lower betting amounts, we&#39;re afraid!
+    // If not, you're going to have to use lower betting amounts, we're afraid!
     function jackpotGuard(uint _wager)
         public
         view
@@ -289,7 +289,7 @@ contract Zlots is ZTHReceivingContract {
     {
         uint maxProfit = SafeMath.mul(_wager, 25);
         uint halfContractBalance = SafeMath.div(contractBalance, 2);
-        return (maxProfit &lt;= halfContractBalance);
+        return (maxProfit <= halfContractBalance);
     }
 
     // Returns a random number using a specified block number
@@ -362,7 +362,7 @@ contract Zlots is ZTHReceivingContract {
     }
 }
 
-// And here&#39;s the boring bit.
+// And here's the boring bit.
 
 /**
  * @title SafeMath
@@ -386,9 +386,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -396,7 +396,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -405,7 +405,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

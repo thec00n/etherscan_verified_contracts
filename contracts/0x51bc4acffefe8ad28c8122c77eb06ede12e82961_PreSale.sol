@@ -32,9 +32,9 @@ library SafeMath {
    * @param b Second number
    */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
    * @param b Second number
    */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
    */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -171,7 +171,7 @@ contract PreSale  is Ownable {
    * @dev Fallback payable function which executes additional checks and functionality when tokens need to be sent to the investor
    */
   function() payable public {
-    require(msg.value &gt;= minInvestment);   // check for minimum investment amount
+    require(msg.value >= minInvestment);   // check for minimum investment amount
     require(!presalePaused);
     require(!presaleEnded);
     prepareSell(msg.sender, msg.value);
@@ -195,18 +195,18 @@ contract PreSale  is Ownable {
     pricePerToken = pricePerCent.mul(tokenPrice[currentLevel]); // calculate the price for each token in the current level
     toSell = _amount.div(pricePerToken); // calculate the amount to sell
 
-    if (toSell &lt; levelTokens) { // if there is enough tokens left in the current level, sell from it
+    if (toSell < levelTokens) { // if there is enough tokens left in the current level, sell from it
       levelTokens = levelTokens.sub(toSell);
       weiRised = weiRised.add(_amount);
       executeSell(investor, toSell, _amount);
       owner.transfer(_amount);
     } else { // if not, sell from 2 or more different levels
-      while (amount &gt; 0) {
-        if (toSell &gt; levelTokens) {
+      while (amount > 0) {
+        if (toSell > levelTokens) {
           toSell = levelTokens; // sell all the remaining in the level
           sellInWei = toSell.mul(pricePerToken);
           amount = amount.sub(sellInWei);
-          if (currentLevel &lt; 11) { // if is the last level, sell only the tokens left,
+          if (currentLevel < 11) { // if is the last level, sell only the tokens left,
             currentLevel += 1;
             levelTokens = baseTokens;
           } else {
@@ -221,10 +221,10 @@ contract PreSale  is Ownable {
         executeSell(investor, toSell, sellInWei); 
         weiRised = weiRised.add(sellInWei);
         owner.transfer(amount);
-        if (amount &gt; 0) {
+        if (amount > 0) {
           toSell = amount.div(pricePerToken);
         }
-        if (remaining &gt; 0) { // if there is any mount left, it means that is the the last level an there is no more tokens to sell
+        if (remaining > 0) { // if there is any mount left, it means that is the the last level an there is no more tokens to sell
           investor.transfer(remaining);
           owner.transfer(address(this).balance);
           presaleEnded = true;
@@ -261,7 +261,7 @@ contract PreSale  is Ownable {
    */
   function updatePrice(uint256 _ethPrice) private {
     uint256 centBase = 1 * 10 ** 16;
-    require(_ethPrice &gt; 0);
+    require(_ethPrice > 0);
     ethPrice = _ethPrice;
     usdCentValue = centBase.div(_ethPrice);
   }

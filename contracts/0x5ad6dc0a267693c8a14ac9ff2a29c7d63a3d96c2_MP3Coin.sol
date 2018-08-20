@@ -2,11 +2,11 @@ pragma solidity ^0.4.8;
 
 
 contract MP3Coin {
-    string public constant symbol = &quot;MP3&quot;;
+    string public constant symbol = "MP3";
 
-    string public constant name = &quot;MP3 Coin&quot;;
+    string public constant name = "MP3 Coin";
 
-    string public constant slogan = &quot;Make Music Great Again&quot;;
+    string public constant slogan = "Make Music Great Again";
 
     uint public constant decimals = 8;
 
@@ -14,9 +14,9 @@ contract MP3Coin {
 
     address owner;
 
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
 
@@ -37,7 +37,7 @@ contract MP3Coin {
     }
 
     function transfer(address _to, uint _amount) public returns (bool success) {
-        require(_amount &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _amount);
+        require(_amount > 0 && balances[msg.sender] >= _amount);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -45,7 +45,7 @@ contract MP3Coin {
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
-        require(_amount &gt; 0 &amp;&amp; balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount);
+        require(_amount > 0 && balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount);
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -61,19 +61,19 @@ contract MP3Coin {
 
     function distribute(address[] _addresses, uint[] _amounts) public returns (bool success) {
         // Checkout input data
-        require(_addresses.length &lt; 256 &amp;&amp; _addresses.length == _amounts.length);
+        require(_addresses.length < 256 && _addresses.length == _amounts.length);
         // Calculate total amount
         uint totalAmount;
-        for (uint a = 0; a &lt; _amounts.length; a++) {
+        for (uint a = 0; a < _amounts.length; a++) {
             totalAmount += _amounts[a];
         }
         // Checkout account balance
-        require(totalAmount &gt; 0 &amp;&amp; balances[msg.sender] &gt;= totalAmount);
+        require(totalAmount > 0 && balances[msg.sender] >= totalAmount);
         // Deduct amount from sender
         balances[msg.sender] -= totalAmount;
         // Transfer amounts to receivers
-        for (uint b = 0; b &lt; _addresses.length; b++) {
-            if (_amounts[b] &gt; 0) {
+        for (uint b = 0; b < _addresses.length; b++) {
+            if (_amounts[b] > 0) {
                 balances[_addresses[b]] += _amounts[b];
                 Transfer(msg.sender, _addresses[b], _amounts[b]);
             }

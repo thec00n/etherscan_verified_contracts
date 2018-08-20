@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -137,7 +137,7 @@ contract GreatHarmon is Ownable {
     * 这里检测是否在冷却周期内。
     */
     function _isReady(Resident storage _resident) internal view returns (bool) {
-        return (_resident.readyTime &lt;= now);
+        return (_resident.readyTime <= now);
     }
 
     /**
@@ -147,7 +147,7 @@ contract GreatHarmon is Ownable {
     * 则不能再获取basicIncome。
     */
     function _isUnderLimit() internal view returns (bool) {
-        return (balanceOf[msg.sender] &lt;= basicIncomeLimit);
+        return (balanceOf[msg.sender] <= basicIncomeLimit);
     }
 
     //居民加入事件
@@ -160,13 +160,13 @@ contract GreatHarmon is Ownable {
         string identity;  //记录生日、性别等个人信息。类似身份证。
         uint32 prestige;  //声望值，大同世界中，鼓励人们“达则兼济天下”。做更多的好事。将提高声望值。
         uint32 joinDate;  //何时加入。
-        uint32 readyTime; //&quot;Basic income system&quot; 的冷却时间。
+        uint32 readyTime; //"Basic income system" 的冷却时间。
     }
 
     Resident[] public residents;
 
     //存储居民id索引
-    mapping (address =&gt; uint) public idOf;
+    mapping (address => uint) public idOf;
 
     function getResidentNumber() external view returns(uint) {
         return residents.length;
@@ -185,9 +185,9 @@ contract GreatHarmon is Ownable {
     function joinGreatHarmon(string _name, string _identity) public payable returns(uint) {
         //检测是否重复加入。
         require(idOf[msg.sender] == 0);
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             donateMap[msg.sender] += msg.value;
-            Donate(msg.sender, _name, msg.value, &quot;&quot;);
+            Donate(msg.sender, _name, msg.value, "");
         }
         return _createResident(_name, _identity);
     }
@@ -216,7 +216,7 @@ contract GreatHarmon is Ownable {
         dailySupply = _dailySupply;
     }
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenAccount(address target, bool frozen);
@@ -229,13 +229,13 @@ contract GreatHarmon is Ownable {
         FrozenAccount(target, freeze);
     }
 
-    mapping (address =&gt; uint) public donateMap;
+    mapping (address => uint) public donateMap;
 
     event Donate(address sender, string name, uint amount, string text);
 
     // accept ether donate
     function donate(string _text) payable public {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             donateMap[msg.sender] += msg.value;
             Resident memory _resident = residents[idOf[msg.sender]-1];
             Donate(msg.sender, _resident.name, msg.value, _text);
@@ -244,15 +244,15 @@ contract GreatHarmon is Ownable {
 
     // token erc20
     // Public variables of the token
-    string public name = &quot;Great Harmon Coin&quot;;
-    string public symbol = &quot;GHC&quot;;
+    string public name = "Great Harmon Coin";
+    string public symbol = "GHC";
     uint8 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply = 0;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -267,9 +267,9 @@ contract GreatHarmon is Ownable {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -303,7 +303,7 @@ contract GreatHarmon is Ownable {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -330,7 +330,7 @@ contract GreatHarmon is Ownable {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -346,10 +346,10 @@ contract GreatHarmon is Ownable {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

@@ -19,7 +19,7 @@ contract EPOsale is myOwned {
     uint public amountRaised;
     token public contractTokenReward;
     address public contractWallet;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event TakeBackToken(uint amount);
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -44,16 +44,16 @@ contract EPOsale is myOwned {
     }
 
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt;= stopDate);
+        return (now >= startDate && now <= stopDate);
     }
 
     function getRateAt(uint256 at) public constant returns (uint256) {
-        if (at &lt; startDate) {return 0;} 
-        else if (at &lt; (startDate + 168 hours)) {return 3000;} 
-        else if (at &lt; (startDate + 336 hours)) {return 2750;} 
-        else if (at &lt; (startDate + 504 hours)) {return 2625;} 
-        else if (at &lt;= stopDate) {return 2500;} 
-        else if (at &gt; stopDate) {return 0;}
+        if (at < startDate) {return 0;} 
+        else if (at < (startDate + 168 hours)) {return 3000;} 
+        else if (at < (startDate + 336 hours)) {return 2750;} 
+        else if (at < (startDate + 504 hours)) {return 2625;} 
+        else if (at <= stopDate) {return 2500;} 
+        else if (at > stopDate) {return 0;}
     }
 
     function getRateNow() public constant returns (uint256) {
@@ -62,7 +62,7 @@ contract EPOsale is myOwned {
 
     function () public payable {
         require(saleActive());
-        require(msg.value &gt;= 0.05 ether);
+        require(msg.value >= 0.05 ether);
         uint amount = msg.value;
         amountRaised += amount/10000000000000000;
         uint price = 0.00000001 ether/getRateAt(now);
@@ -73,7 +73,7 @@ contract EPOsale is myOwned {
 
     function saleEnd(uint restAmount) public onlyOwner {
         require(!saleActive());
-        require(now &gt; stopDate );
+        require(now > stopDate );
         contractTokenReward.transfer(contractWallet, restAmount);
         TakeBackToken(restAmount);
     }

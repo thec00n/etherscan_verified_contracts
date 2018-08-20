@@ -1,12 +1,12 @@
 pragma solidity 0.4.24;
 
 contract JNS {
-    mapping (string =&gt; address) strToAddr;
-    mapping (address =&gt; string) addrToStr;
+    mapping (string => address) strToAddr;
+    mapping (address => string) addrToStr;
     
     function registerAddress (string _nickname, address _address) public returns (bool) {
-        require (strToAddr[_nickname] == address(0), &quot;Name already registered&quot;);
-        require (keccak256(addrToStr[_address]) == keccak256(&quot;&quot;), &quot;Address already registered&quot;);
+        require (strToAddr[_nickname] == address(0), "Name already registered");
+        require (keccak256(addrToStr[_address]) == keccak256(""), "Address already registered");
         
         strToAddr[_nickname] = _address;
         addrToStr[_address] = _nickname;

@@ -30,17 +30,17 @@ contract EtherealFoundationOwned {
 }
 
 contract GiftzNetworkToken is EtherealFoundationOwned {
-    string public constant CONTRACT_NAME = &quot;GiftzNetworkToken&quot;;
-    string public constant CONTRACT_VERSION = &quot;B&quot;;
+    string public constant CONTRACT_NAME = "GiftzNetworkToken";
+    string public constant CONTRACT_VERSION = "B";
     
-    string public constant name = &quot;itCoin&#174; Black&quot;;
-    string public constant symbol = &quot;ITCB&quot;;
+    string public constant name = "itCoin® Black";
+    string public constant symbol = "ITCB";
     uint256 public constant decimals = 18;  // 18 is the most common number of decimal places
     bool private tradeable;
     uint256 private currentSupply;
-    mapping(address =&gt; uint256) private balances;
-    mapping(address =&gt; mapping(address=&gt; uint256)) private allowed;
-    mapping(address =&gt; bool) private lockedAccounts;  
+    mapping(address => uint256) private balances;
+    mapping(address => mapping(address=> uint256)) private allowed;
+    mapping(address => bool) private lockedAccounts;  
 	
 	/*
 		Incomming Ether
@@ -54,17 +54,17 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
 	event TransferedEth(address indexed _to, uint256 _value);
 	function FoundationTransfer(address _to, uint256 amtEth, uint256 amtToken) public onlyOwner
 	{
-		require(this.balance &gt;= amtEth &amp;&amp; balances[this] &gt;= amtToken );
+		require(this.balance >= amtEth && balances[this] >= amtToken );
 		
-		if(amtEth &gt;0)
+		if(amtEth >0)
 		{
 			_to.transfer(amtEth);
 			TransferedEth(_to, amtEth);
 		}
 		
-		if(amtToken &gt; 0)
+		if(amtToken > 0)
 		{
-			require(balances[_to] + amtToken &gt; balances[_to]);
+			require(balances[_to] + amtToken > balances[_to]);
 			balances[this] -= amtToken;
 			balances[_to] += amtToken;
 			Transfer(this, _to, amtToken);
@@ -89,7 +89,7 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
         
         currentSupply = initialTotalSupply * (10**decimals);
         uint256 totalCreated;
-        for(uint8 i =0; i &lt; addresses.length; i++)
+        for(uint8 i =0; i < addresses.length; i++)
         {
             if(initialBalancesLocked){
                 lockedAccounts[addresses[i]] = true;
@@ -99,7 +99,7 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
         }
         
         
-        if(currentSupply &lt; totalCreated)
+        if(currentSupply < totalCreated)
         {
             selfdestruct(msg.sender);
         }
@@ -113,7 +113,7 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
     event SoldToken(address _buyer, uint256 _value, string note);
     function BuyToken(address _buyer, uint256 _value, string note) public onlyOwner
     {
-		require(balances[this] &gt;= _value &amp;&amp; balances[_buyer] + _value &gt; balances[_buyer]);
+		require(balances[this] >= _value && balances[_buyer] + _value > balances[_buyer]);
 		
         SoldToken( _buyer,  _value,  note);
         balances[this] -= _value;
@@ -150,7 +150,7 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
     }
     function transfer(address _to, uint256 _value) public notLocked returns (bool success) {
         require(tradeable);
-         if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
              Transfer( msg.sender, _to,  _value);
              balances[msg.sender] -= _value;
              balances[_to] += _value;
@@ -160,12 +160,12 @@ contract GiftzNetworkToken is EtherealFoundationOwned {
          }
      }
     function transferFrom(address _from, address _to, uint _value)public notLocked returns (bool success) {
-        require(!lockedAccounts[_from] &amp;&amp; !lockedAccounts[_to]);
+        require(!lockedAccounts[_from] && !lockedAccounts[_to]);
 		require(tradeable);
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
                 
             Transfer( _from, _to,  _value);
                 

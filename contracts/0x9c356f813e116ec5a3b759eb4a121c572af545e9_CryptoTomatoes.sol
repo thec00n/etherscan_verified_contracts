@@ -10,13 +10,13 @@ contract CryptoTomatoes {
 		uint public needToGetFree = 0.001 ether;
 		uint256 public STARTING_SEEDS = 500; 
 		
-		mapping (address =&gt; uint256) public ballanceTomatoes; 
-		mapping (address =&gt; uint256) public claimedSeeds; 
-		mapping (address =&gt; uint256) public lastEvent; 
-		mapping (address =&gt; address) public referrals; 
+		mapping (address => uint256) public ballanceTomatoes; 
+		mapping (address => uint256) public claimedSeeds; 
+		mapping (address => uint256) public lastEvent; 
+		mapping (address => address) public referrals; 
 		
-		mapping (address =&gt; uint256) public totalIn;
-		mapping (address =&gt; uint256) public totalOut;
+		mapping (address => uint256) public totalIn;
+		mapping (address => uint256) public totalOut;
 		
 		uint256 public marketSeeds;
 		uint256 PSN = 10000; 
@@ -33,7 +33,7 @@ contract CryptoTomatoes {
 		}
 		
 		function makeTomatoes(address ref) public {
-        if (referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender) {
+        if (referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender) {
             referrals[msg.sender] = ref;
         }
         uint256 seedsUsed = getMySeeds();
@@ -152,7 +152,7 @@ contract CryptoTomatoes {
     }
 
 		function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 	
 }
@@ -175,9 +175,9 @@ library SafeMath {
 		  * @dev Integer division of two numbers, truncating the quotient.
 		  */
 		  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-			// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+			// assert(b > 0); // Solidity automatically throws when dividing by 0
 			uint256 c = a / b;
-			// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+			// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 			return c;
 		  }
 
@@ -185,7 +185,7 @@ library SafeMath {
 		  * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 		  */
 		  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-			assert(b &lt;= a);
+			assert(b <= a);
 			return a - b;
 		  }
 
@@ -194,7 +194,7 @@ library SafeMath {
 		  */
 		  function add(uint256 a, uint256 b) internal pure returns (uint256) {
 			uint256 c = a + b;
-			assert(c &gt;= a);
+			assert(c >= a);
 			return c;
 		  }
 }

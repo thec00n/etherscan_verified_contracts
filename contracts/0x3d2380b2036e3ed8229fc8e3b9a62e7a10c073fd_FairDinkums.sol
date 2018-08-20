@@ -13,7 +13,7 @@ contract Token {
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -22,7 +22,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -45,8 +45,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -60,15 +60,15 @@ contract FairDinkums is StandardToken {
     uint public startTime;                // Start time of the ICO
     bool public tokenReleased;
     uint256 public totalDividends;
-    mapping (address =&gt; uint256) public lastDividends;
+    mapping (address => uint256) public lastDividends;
     event TokensSold(address Buyer, uint256 Qty);
     
     function FairDinkums() public {
-        balances[msg.sender] = 20000 * 1e18;    // 20&#39;000 max for ICO participants
-        totalSupply = 20000 * 1e18;             // 20&#39;000 max for ICO participants
-        name = &quot;Fair Dinkums&quot;;                  // Fair Dinkums Token
+        balances[msg.sender] = 20000 * 1e18;    // 20'000 max for ICO participants
+        totalSupply = 20000 * 1e18;             // 20'000 max for ICO participants
+        name = "Fair Dinkums";                  // Fair Dinkums Token
         decimals = 18;                          // Same as eth, 18.
-        symbol = &quot;FDK&quot;;                         // Fair Dinkums Token =&gt; FDK
+        symbol = "FDK";                         // Fair Dinkums Token => FDK
         tokensPerEth = 1000;                    // Tokens per eth during ICO
         fundsWallet = msg.sender;               // The owner of the contract gets the ETH to manage
         startTime = now;                        // ICO will run for two weeks from initialisation
@@ -79,13 +79,13 @@ contract FairDinkums is StandardToken {
         // The callback function serves two purposes:
         //   1) to receive eth as a contribution during the ICO, and
         //   2) to collect dividends after the ICO
-        // Using this pattern allows people to interact with the contract without any special API&#39;s
+        // Using this pattern allows people to interact with the contract without any special API's
         if (icoOpen()){
             // If the ICO is still open, then we add the token balance to the contributor
-            require(msg.value &gt; 0 &amp;&amp; msg.value &lt;= 20 ether);
+            require(msg.value > 0 && msg.value <= 20 ether);
             totalEthInWei = totalEthInWei + msg.value;
             uint256 amount = msg.value * tokensPerEth;
-            if ((balances[fundsWallet]) &lt; amount) {
+            if ((balances[fundsWallet]) < amount) {
                 revert();
             }
             TokensSold(msg.sender,amount);
@@ -117,7 +117,7 @@ contract FairDinkums is StandardToken {
 
     function icoOpen() public view returns (bool open) {
         // ICO will be open for the sooner of 2 weeks or the token is declared released by the manager
-        return ((now &lt; (startTime + 4 weeks)) &amp;&amp; !tokenReleased);
+        return ((now < (startTime + 4 weeks)) && !tokenReleased);
     }
     
     modifier released {
@@ -133,7 +133,7 @@ contract FairDinkums is StandardToken {
     function dividendsOwing(address _who) public view returns(uint256 owed) {
         // Concise function to determine the amount of dividends owed to a token holder.
         // Susceptible to small rounding errors which will be lost until the token is destroyed
-        if (totalDividends &gt; lastDividends[_who]){
+        if (totalDividends > lastDividends[_who]){
             uint256 newDividends = totalDividends - lastDividends[_who];
             return ((balances[_who] * newDividends) / totalSupply);
         } else {
@@ -142,8 +142,8 @@ contract FairDinkums is StandardToken {
     }
     
     function updateDivs(address _who, uint256 _owing) internal {
-        if (_owing &gt; 0){
-            if(_owing&lt;=this.balance){
+        if (_owing > 0){
+            if(_owing<=this.balance){
                 _who.transfer(_owing);
             } else {
                 _who.transfer(this.balance);

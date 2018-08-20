@@ -5,14 +5,14 @@ pragma solidity ^0.4.19;
 contract AttoresDigitalCertificates{
    uint public amountInContract;
     
-    mapping (address =&gt; bool) public ownerList;
+    mapping (address => bool) public ownerList;
     
     struct SignatureDetails{
         bytes32 email;
         uint timeStamp;
     }
     
-    mapping (bytes32 =&gt; SignatureDetails) public hashList;
+    mapping (bytes32 => SignatureDetails) public hashList;
     
     uint public constant WEI_PER_ETHER = 1000000000000000000;
     

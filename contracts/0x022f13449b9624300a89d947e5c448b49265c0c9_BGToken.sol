@@ -32,9 +32,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -51,7 +51,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,7 +124,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -142,7 +142,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -218,10 +218,10 @@ contract Pausable is Ownable {
 
   /**
    * @dev called by the owner to set new pause flags
-   * pausedPublic can&#39;t be false while pausedOwnerAdmin is true
+   * pausedPublic can't be false while pausedOwnerAdmin is true
    */
   function pause(bool newPausedPublic, bool newPausedOwnerAdmin) onlyOwner public {
-    require(!(newPausedPublic == false &amp;&amp; newPausedOwnerAdmin == true));
+    require(!(newPausedPublic == false && newPausedOwnerAdmin == true));
 
     pausedPublic = newPausedPublic;
     pausedOwnerAdmin = newPausedOwnerAdmin;
@@ -233,9 +233,9 @@ contract Pausable is Ownable {
 
 contract StandardToken is ERC20, BasicToken, Pausable {
     using SafeMath for uint256;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -268,7 +268,7 @@ contract StandardToken is ERC20, BasicToken, Pausable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -282,7 +282,7 @@ contract StandardToken is ERC20, BasicToken, Pausable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -317,7 +317,7 @@ contract StandardToken is ERC20, BasicToken, Pausable {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public whenNotPaused returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -341,8 +341,8 @@ contract BurnableToken is StandardToken {
     function burn(uint256  _value)
         public onlyOwner
     {
-        require(_value &gt; 0);
-		require(balances[msg.sender] &gt;= _value);
+        require(_value > 0);
+		require(balances[msg.sender] >= _value);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -353,15 +353,15 @@ contract BurnableToken is StandardToken {
 
 contract BGToken is StandardToken , BurnableToken  {
     using SafeMath for uint256;
-    string public constant name = &quot;BlueGold&quot;;
-    string public constant symbol = &quot;BG&quot;;
+    string public constant name = "BlueGold";
+    string public constant symbol = "BG";
     uint8 public constant decimals = 18;	
 	
 	// wallets address for allocation	
 	address public Bounties_Wallet = 0x2805C02FE839210E194Fc4a12DaB683a34Ad95EF; // 5% : Bounty
-	address public Team_Wallet = 0x6C42c4EC37d0F45E2d9C2287f399E14Ea2b3B77d; // 8% : Equity &amp; Team
+	address public Team_Wallet = 0x6C42c4EC37d0F45E2d9C2287f399E14Ea2b3B77d; // 8% : Equity & Team
 	address public OEM_Wallet = 0x278cB54ae3B7851D3262A307cb6780b642A29485; // 10% : Community Builting, Biz Dev
-	address public LA_wallet = 0x1669e7910e27b1400B5567eE360de2c5Ee964859; //8% : Legal &amp; advisors
+	address public LA_wallet = 0x1669e7910e27b1400B5567eE360de2c5Ee964859; //8% : Legal & advisors
 		
 	address public tokenWallet = 0xDb3D4293981adeEC2A258c0b8046eAdb20D3ff13;     
 	uint256 public constant INITIAL_SUPPLY = 100000000 ether;	
@@ -373,13 +373,13 @@ contract BGToken is StandardToken , BurnableToken  {
         totalSupply_ = INITIAL_SUPPLY;
 
 		// InitialDistribution
-		// 31% ---&gt; 31000000
+		// 31% ---> 31000000
 		balances[Bounties_Wallet] = INITIAL_SUPPLY.mul(5).div(100) ;
 		balances[Team_Wallet] = INITIAL_SUPPLY.mul(8).div(100);
 		balances[OEM_Wallet] = INITIAL_SUPPLY.mul(10).div(100) ;
 		balances[LA_wallet] = INITIAL_SUPPLY.mul(8).div(100) ;
 		
-		// 69% ---&gt; 69000000
+		// 69% ---> 69000000
         balances[tokenWallet] = INITIAL_SUPPLY.mul(69).div(100);
 				
         emit Transfer(0x0, Bounties_Wallet, balances[Bounties_Wallet]);
@@ -410,20 +410,20 @@ contract BGToken is StandardToken , BurnableToken  {
      * @dev modifier to allow actions only when ICO end date is not now
      */
 	modifier isRunning {
-        require (endDate &gt;= now);
+        require (endDate >= now);
         _;
     }
 	
     /// @notice Buy tokens from contract by sending ether
     function () payable isRunning public {
-        if (msg.value &lt; 0.001 ether) revert();
+        if (msg.value < 0.001 ether) revert();
         buyTokens();
     }	
 
     /// @notice Buy tokens from contract by sending ether
     function buyTokens() internal {		
 		/// only accept a minimum amount of ETH?
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
         uint256 tokens ;
 		uint256 xAmount = msg.value;
 		uint256 toReturnEth;
@@ -438,16 +438,16 @@ contract BGToken is StandardToken , BurnableToken  {
 		tokens = xAmount.mul(tokenRate);
 		tokens = (tokens.mul(100)).div(100 - (AllBonus));
 		
-		if (balanceIco &lt; tokens) {
+		if (balanceIco < tokens) {
 			toTokensReturn = tokens.sub(balanceIco);
 			toReturnEth = toTokensReturn.mul(tokenRate);
 		}			
 
-		if (tokens &gt; 0 )
+		if (tokens > 0 )
 		{
-			if (balanceIco &lt; tokens) {	
+			if (balanceIco < tokens) {	
 				/// return  ETH
-				if (toReturnEth &lt;= xAmount) 
+				if (toReturnEth <= xAmount) 
 				{
 					msg.sender.transfer(toReturnEth);									
 					_EnvoisTokens(balanceIco, xAmount - toReturnEth);
@@ -480,7 +480,7 @@ contract BGToken is StandardToken , BurnableToken  {
     /// @param _to address to send to
 	/// @param _amount the amount of tokens to send
     function sendTokens(address _to, uint _amount) internal {
-        require(_amount &lt;= balances[tokenWallet]);
+        require(_amount <= balances[tokenWallet]);
         balances[tokenWallet] -= _amount;
         balances[_to] += _amount;
         emit Transfer(tokenWallet, _to, _amount);

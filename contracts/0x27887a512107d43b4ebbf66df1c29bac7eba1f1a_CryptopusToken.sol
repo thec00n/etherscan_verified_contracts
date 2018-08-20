@@ -3,10 +3,10 @@ pragma solidity ^0.4.19;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
   function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
     require(a == 0 || c / a == b);
   }
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -115,13 +115,13 @@ contract CryptopusToken is ERC20Interface, Owned {
 
   bool public saleOngoing;
 
-  mapping(address =&gt; uint8) approved;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => uint8) approved;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
   function CryptopusToken() public {
-    symbol = &quot;CPP&quot;;
-    name = &quot;Cryptopus Token&quot;;
+    symbol = "CPP";
+    name = "Cryptopus Token";
     decimals = 18;
     _totalSupply = 100000000 * 10**uint(decimals);
     saleLimit = 40000000 * 10**uint(decimals);
@@ -275,7 +275,7 @@ contract CryptopusToken is ERC20Interface, Owned {
     uint tokens = uint(
       ERC20Interface(preSaleContract)
         .allowance(msg.sender, this));
-    require(tokens &gt; 0 &amp;&amp;
+    require(tokens > 0 &&
             ERC20Interface(preSaleContract)
               .balanceOf(msg.sender) == tokens);
     ERC20Interface(preSaleContract)
@@ -301,9 +301,9 @@ contract CryptopusToken is ERC20Interface, Owned {
     } else {
       revert();
     }
-    require(msg.value &gt;= tokenPrice);
+    require(msg.value >= tokenPrice);
     uint tokenAmount = msg.value / tokenPrice;
-    require(saleOngoing &amp;&amp; alreadySold.add(tokenAmount) &lt;= saleLimit);
+    require(saleOngoing && alreadySold.add(tokenAmount) <= saleLimit);
     balances[owner] = balances[owner].sub(tokenAmount);
     balances[msg.sender] = balances[msg.sender].add(tokenAmount);
     alreadySold = alreadySold.add(tokenAmount);

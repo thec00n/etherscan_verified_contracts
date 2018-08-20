@@ -51,10 +51,10 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -64,7 +64,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -87,8 +87,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract UGToken is StandardToken {
@@ -98,17 +98,17 @@ contract UGToken is StandardToken {
         throw;
     }
 
-    string public name = &quot;UG Token&quot;;                   //fancy name: eg Simon Bucks
-    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
-    string public symbol = &quot;UGT&quot;;                 //An identifier: eg SBX
-    string public version = &#39;v0.1&#39;;       //ug 0.1 standard. Just an arbitrary versioning scheme.
+    string public name = "UG Token";                   //fancy name: eg Simon Bucks
+    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+    string public symbol = "UGT";                 //An identifier: eg SBX
+    string public version = 'v0.1';       //ug 0.1 standard. Just an arbitrary versioning scheme.
 
     address public founder; // The address of the founder
     uint256 public allocateStartBlock; // The start block number that starts to allocate token to users.
     uint256 public allocateEndBlock; // The end block nubmer that allocate token to users, lasted for a week.
 
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
     function UGToken() {
         founder = msg.sender;
@@ -130,14 +130,14 @@ contract UGToken is StandardToken {
     function transferProxy(address _from, address _to, uint256 _value, uint256 _feeUgt,
         uint8 _v,bytes32 _r, bytes32 _s) returns (bool){
 
-        if(balances[_from] &lt; _feeUgt + _value) throw;
+        if(balances[_from] < _feeUgt + _value) throw;
 
         uint256 nonce = nonces[_from];
         bytes32 h = sha3(_from,_to,_value,_feeUgt,nonce);
         if(_from != ecrecover(h,_v,_r,_s)) throw;
 
-        if(balances[_to] + _value &lt; balances[_to]
-            || balances[msg.sender] + _feeUgt &lt; balances[msg.sender]) throw;
+        if(balances[_to] + _value < balances[_to]
+            || balances[msg.sender] + _feeUgt < balances[msg.sender]) throw;
         balances[_to] += _value;
         Transfer(_from, _to, _value);
 
@@ -185,10 +185,10 @@ contract UGToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
@@ -208,13 +208,13 @@ contract UGToken is StandardToken {
     function allocateTokens(address[] _owners, uint256[] _values) {
 
         if(msg.sender != founder) throw;
-        if(block.number &lt; allocateStartBlock || block.number &gt; allocateEndBlock) throw;
+        if(block.number < allocateStartBlock || block.number > allocateEndBlock) throw;
         if(_owners.length != _values.length) throw;
 
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint256 value = _values[i];
-            if(totalSupply + value &lt;= totalSupply || balances[owner] + value &lt;= balances[owner]) throw;
+            if(totalSupply + value <= totalSupply || balances[owner] + value <= balances[owner]) throw;
             totalSupply += value;
             balances[owner] += value;
         }

@@ -77,7 +77,7 @@ contract AHF_PreSale is Owned {
     }
 
     function () public payable {
-        require (fundingEnabled &amp;&amp; (tokenPrice &gt; 0) &amp;&amp; (msg.value &gt;= tokenPrice));
+        require (fundingEnabled && (tokenPrice > 0) && (msg.value >= tokenPrice));
         
         totalCollected += msg.value;
 

@@ -3,7 +3,7 @@
  * site arbit.top
  * twitter twitter.com/arbitrage_arbit
  * medium medium.com/@arbitrage_arbit
- * contact e-mail <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1170757c787f5170637378653f657e61">[email&#160;protected]</a>
+ * contact e-mail <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1170757c787f5170637378653f657e61">[email protected]</a>
  */
   
   pragma solidity ^0.4.16; 
@@ -33,8 +33,8 @@ contract ARBITRAGE is owned {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -51,8 +51,8 @@ contract ARBITRAGE is owned {
     ) public {
      balanceOf[msg.sender] = 5000000000000000;              // Give the creator all initial tokens
         totalSupply = 5000000000000000;                        // Update total supply
-        name = &#39;ARBITRAGE&#39;;                                   // Set the name for display purposes
-        symbol = &#39;ARBIT&#39;;                               // Set the symbol for display purposes
+        name = 'ARBITRAGE';                                   // Set the name for display purposes
+        symbol = 'ARBIT';                               // Set the symbol for display purposes
         decimals = 8;                              // Set the symbol for display purposes
     }
 
@@ -63,9 +63,9 @@ contract ARBITRAGE is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -96,7 +96,7 @@ contract ARBITRAGE is owned {
     
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -135,7 +135,7 @@ contract ARBITRAGE is owned {
   
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -147,10 +147,10 @@ contract ARBITRAGE is owned {
 
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

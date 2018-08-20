@@ -14,7 +14,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -38,12 +38,12 @@ contract AmbiEnabled {
         return true;
     }
 
-    function immortality() checkAccess(&quot;owner&quot;) returns(bool) {
+    function immortality() checkAccess("owner") returns(bool) {
         isImmortal = true;
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) returns(bool) {
+    function remove() checkAccess("owner") returns(bool) {
         if (isImmortal) {
             return false;
         }
@@ -72,7 +72,7 @@ library StackDepthLib {
 contract Safe {
     // Should always be placed as first modifier!
     modifier noValue {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             // Internal Out Of Gas/Throw: revert this transaction too;
             // Call Stack Depth Limit reached: revert this transaction too;
             // Recursive Call: safe, no any changes applied yet, we are inside of modifier.
@@ -109,7 +109,7 @@ contract Safe {
         if (stackDepthLib == 0x0) {
             throw;
         }
-        if (_depth &gt; 1023) {
+        if (_depth > 1023) {
             throw;
         }
         if (!stackDepthLib.delegatecall(0x32921690, stackDepthLib, _depth)) {
@@ -159,17 +159,17 @@ contract Safe {
  * Version info is provided for historical and informational purposes.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract EventsHistory is AmbiEnabled, Safe {
     // Event emitter signature to address with Event definiton mapping.
-    mapping(bytes4 =&gt; address) public emitters;
+    mapping(bytes4 => address) public emitters;
 
     // Calling contract address to version mapping.
-    mapping(address =&gt; uint) public versions;
+    mapping(address => uint) public versions;
 
     // Version to info mapping.
-    mapping(uint =&gt; VersionInfo) public versionInfo;
+    mapping(uint => VersionInfo) public versionInfo;
 
     // Latest verion number.
     uint public latestVersion;
@@ -193,7 +193,7 @@ contract EventsHistory is AmbiEnabled, Safe {
      *
      * @return success.
      */
-    function addEmitter(bytes4 _eventSignature, address _emitter) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function addEmitter(bytes4 _eventSignature, address _emitter) noValue() checkAccess("admin") returns(bool) {
         if (emitters[_eventSignature] != 0x0) {
             return false;
         }
@@ -213,7 +213,7 @@ contract EventsHistory is AmbiEnabled, Safe {
      *
      * @return success.
      */
-    function addVersion(address _caller, string _name, string _changelog) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function addVersion(address _caller, string _name, string _changelog) noValue() checkAccess("admin") returns(bool) {
         if (versions[_caller] != 0) {
             return false;
         }

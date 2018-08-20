@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,20 +49,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -137,8 +137,8 @@ contract Ledger is Shared {
   using SafeMath for uint;
 
   address public controller;
-  mapping(address =&gt; uint) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balanceOf;
+  mapping (address => mapping (address => uint)) public allowed;
   uint public totalSupply;
 
   function setController(address _address) onlyOwner notFinalized {
@@ -299,17 +299,17 @@ contract Controller is Shared, Pausable {
 
   function withdrawVested(address _withdrawTo) returns (uint amountWithdrawn) {
     require(msg.sender == LIFE_CHANGE_VESTING_WALLET);
-    require(vestingAmount &gt; 0);
+    require(vestingAmount > 0);
     
     uint _elapsed = now.sub(vestingStart);
     uint _rate = vestingAmount.div(vestingDuration);
     uint _unlocked = _rate.mul(_elapsed);
 
-    if (_unlocked &gt; vestingAmount) {
+    if (_unlocked > vestingAmount) {
        _unlocked = vestingAmount;
     }
 
-    if (_unlocked &lt;= vestingPaid) {
+    if (_unlocked <= vestingPaid) {
       amountWithdrawn = 0;
       return;
     }
@@ -325,8 +325,8 @@ contract Controller is Shared, Pausable {
 contract ChristCoin is Shared {
   using SafeMath for uint;
 
-  string public name = &quot;Christ Coin&quot;;
-  string public symbol = &quot;CCLC&quot;;
+  string public name = "Christ Coin";
+  string public symbol = "CCLC";
   uint8 public decimals = 8;
 
   Controller public controller;

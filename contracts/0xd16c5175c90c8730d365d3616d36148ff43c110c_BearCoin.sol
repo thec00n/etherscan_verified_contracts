@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,7 +136,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -174,7 +174,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -209,7 +209,7 @@ contract LimitedTransferToken is ERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -270,7 +270,7 @@ contract BurnableToken is StandardToken {
     function burn(uint _value)
         public
     {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -328,20 +328,20 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 	}
 
 	address[] public addressById;
-	mapping (string =&gt; uint256) idByName;
-	mapping (address =&gt; string) nameByAddress;
+	mapping (string => uint256) idByName;
+	mapping (address => string) nameByAddress;
 
 	// Ether/Wei have the same conversion as Bear/Cub
 	uint256 public constant INITIAL_SUPPLY = 2000000 ether;
 
-	string public constant symbol = &quot;BEAR&quot;;
+	string public constant symbol = "BEAR";
 	uint256 public constant decimals = 18;
-	string public constant name = &quot;BearCoin&quot;;
+	string public constant name = "BearCoin";
 
-	string constant genesis = &quot;CR30001&quot;;
+	string constant genesis = "CR30001";
 	uint256 public genesisBlock = 0;
 
-	mapping (address =&gt; Tether[]) public currentTethers;
+	mapping (address => Tether[]) public currentTethers;
 	address public controller;
 
 	event Tethered(address indexed holder, string holderName, string currency, uint256 amount, uint32 price, uint256 indexed tetherID, uint timestamp, string message);
@@ -365,7 +365,7 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 		if (count == 0) return super.transferableTokens(holder, time);
 
 		uint256 tetheredTokens = 0;
-		for (uint256 i = 0; i &lt; count; i++) {
+		for (uint256 i = 0; i < count; i++) {
 			// All tethers are initialized with an endBlock of 0
 			if (currentTethers[holder][i].endBlock == 0) {
 				tetheredTokens = tetheredTokens.add(_finneyToWei(currentTethers[holder][i].amount));
@@ -389,7 +389,7 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 	// Controller-only functions
 	function addTether(address a, string _currency, uint256 amount, uint32 price, string m) external onlyController whenNotPaused {
 		// Make sure there are enough BearCoins to tether
-		require(transferableTokens(a, 0) &gt;= amount);
+		require(transferableTokens(a, 0) >= amount);
 		bytes5 currency = _stringToBytes5(_currency);
 		uint256 count = currentTethers[a].push(Tether(currency, _weiToFinney(amount), price, uint32(block.number.sub(genesisBlock)), 0));
 		Tethered(a, nameByAddress[a], _currency, amount, price, count - 1, now, m);
@@ -407,7 +407,7 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 		return true;
 	}
 	function controlledBurn(address _from, uint256 _value) external onlyController whenNotPaused returns (bool) {
-		require(_value &gt; 0);
+		require(_value > 0);
 
 		balances[_from] = balances[_from].sub(_value);
 		totalSupply = totalSupply.sub(_value);
@@ -469,19 +469,19 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 		return currentTethers[a][tetherID].currency == _stringToBytes5(currency);
 	}
 	function verifyTetherLoss(address a, uint256 tetherID, uint256 price) public constant returns (bool) {
-		return currentTethers[a][tetherID].price &lt; uint32(price);
+		return currentTethers[a][tetherID].price < uint32(price);
 	}
 	function isRegistered(address a) returns (bool) {
-		return keccak256(nameByAddress[a]) != keccak256(&#39;&#39;);
+		return keccak256(nameByAddress[a]) != keccak256('');
 	}
 
 	// Internal helper functions
 	function _nameValid(string s) internal returns (bool) {
-		return bytes(s).length != 0 &amp;&amp; keccak256(s) != keccak256(genesis) &amp;&amp; bytes(s).length &lt;= 32;
+		return bytes(s).length != 0 && keccak256(s) != keccak256(genesis) && bytes(s).length <= 32;
 	}
 	function _bytes5ToString(bytes5 b) internal returns (string memory s) {
 		bytes memory bs = new bytes(5);
-		for (uint8 i = 0; i &lt; 5; i++) {
+		for (uint8 i = 0; i < 5; i++) {
 			bs[i] = b[i];
 		}
 		s = string(bs);
@@ -494,9 +494,9 @@ contract BearCoin is BurnableToken, MintableToken, LimitedTransferToken, Pausabl
 	function _toLower(string str) internal returns (string) {
 		bytes memory bStr = bytes(str);
 		bytes memory bLower = new bytes(bStr.length);
-		for (uint i = 0; i &lt; bStr.length; i++) {
+		for (uint i = 0; i < bStr.length; i++) {
 			// Uppercase character...
-			if ((bStr[i] &gt;= 65) &amp;&amp; (bStr[i] &lt;= 90)) {
+			if ((bStr[i] >= 65) && (bStr[i] <= 90)) {
 				// So we add 32 to make it lowercase
 				bLower[i] = bytes1(int(bStr[i]) + 32);
 			} else {

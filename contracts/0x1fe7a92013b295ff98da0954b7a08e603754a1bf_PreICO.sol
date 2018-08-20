@@ -19,7 +19,7 @@ contract PreICO {
     
     // public variables
     Contribution[] public contributions;
-    mapping (address =&gt; Contribution) rewardsLedger;
+    mapping (address => Contribution) rewardsLedger;
     
     address beneficiary;
     
@@ -72,9 +72,9 @@ contract PreICO {
 
     // Recieve funds and rewards tokens
     function () payable {
-        if(preICOClosed || msg.value &lt;= 0){ throw; }       // return if pre-ico is closed or received funds are zero
+        if(preICOClosed || msg.value <= 0){ throw; }       // return if pre-ico is closed or received funds are zero
         uint256 amount = msg.value * PRICE;                // calculates the amount of NTRY
-        if (remainingTokens &gt;= amount){
+        if (remainingTokens >= amount){
             amount = addBonuses(amount);
             if (notaryToken.transferFrom(owner, msg.sender, amount)){
                 amountRaised += msg.value;
@@ -117,7 +117,7 @@ contract PreICO {
     function addBonuses(uint256 _amount) returns(uint256){
         uint256 reward;
         var (x, y) = (reward,reward);                // define type at compile at time
-        if(remainingTokens &gt; 2000000 * 1 ether){
+        if(remainingTokens > 2000000 * 1 ether){
             (x, y) = levelOneBonus(_amount);
              reward += x;
             if(y != 0){
@@ -128,7 +128,7 @@ contract PreICO {
                 }
             }
             return reward;
-        }else if(remainingTokens &gt; 1000000 * 1 ether){
+        }else if(remainingTokens > 1000000 * 1 ether){
             (x, y) = levelTwoBonus(_amount);
             if(y != 0){
                 return x+levelThreeBonus(y);
@@ -143,7 +143,7 @@ contract PreICO {
     /// @param _amount NTRY tokens inverster have purchased
     function levelOneBonus(uint256 _amount)returns(uint256,uint256){
         uint256 available = remainingTokens - 2000000 * 1 ether;
-        if(available &gt;= _amount){
+        if(available >= _amount){
             remainingTokens -= _amount;
             return (_amount * 9/4, 0);
         }else{
@@ -156,7 +156,7 @@ contract PreICO {
     /// @param _amount NTRY tokens inverster have purchased
     function levelTwoBonus(uint256 _amount)returns(uint256,uint256){
         uint256 available = remainingTokens - 1000000 * 1 ether;
-        if(available &gt;= _amount){
+        if(available >= _amount){
             remainingTokens -= _amount;
             return (_amount * 2, 0);
         }else{
@@ -172,10 +172,10 @@ contract PreICO {
         return _amount * 13/8;
     } 
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
     
     function checkGoalReached() afterDeadline {
-        if(amountRaised &gt;= fundingGoal){
+        if(amountRaised >= fundingGoal){
             GoalReached(beneficiary, amountRaised);
             returnFunds = false;
             remainingTokens = 0;
@@ -194,7 +194,7 @@ contract PreICO {
      // contributors can safely withdraw their funds
     function safeWithdrawal() afterDeadline {
         if (returnFunds) {
-            if (rewardsLedger[msg.sender].NTRY &gt; 0) {
+            if (rewardsLedger[msg.sender].NTRY > 0) {
                 if(notaryToken.takeBackNTRY(msg.sender, recoveryAccount , rewardsLedger[msg.sender].NTRY)){
                     return;
                 }
@@ -206,7 +206,7 @@ contract PreICO {
                 }
             }
         }
-        if (!returnFunds &amp;&amp; beneficiary == msg.sender) {
+        if (!returnFunds && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {
@@ -218,7 +218,7 @@ contract PreICO {
 
     function mortal() {
         uint256 expire = deadline + (40320 * 1 minutes); 
-        if (now &gt;= expire &amp;&amp; beneficiary == msg.sender){
+        if (now >= expire && beneficiary == msg.sender){
             beneficiary.transfer(amountRaised);
         }
     }

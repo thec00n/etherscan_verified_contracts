@@ -9,7 +9,7 @@ pragma solidity ^0.4.0;
  * Ticket price: 0.1 ETH
  * Jackpot chance:   1 in 8
  * 
- * To participate, send 0.10 ETH to the contract with data &quot;d11711a2&quot;
+ * To participate, send 0.10 ETH to the contract with data "d11711a2"
 */
 contract AddressLottery{
     struct SeedComponents{
@@ -25,7 +25,7 @@ contract AddressLottery{
     
     uint winnerLuckyNumber = 7;
         
-    mapping (address =&gt; bool) participated;
+    mapping (address => bool) participated;
 
 
     function AddressLottery() {

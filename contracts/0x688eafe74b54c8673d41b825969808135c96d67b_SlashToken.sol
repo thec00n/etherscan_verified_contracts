@@ -15,8 +15,8 @@ library SafeMath {
   * @dev Multiplies two numbers, reverts on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // Gas optimization: this is cheaper than requiring &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -32,9 +32,9 @@ library SafeMath {
   * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &gt; 0); // Solidity only automatically asserts when dividing by 0
+    require(_b > 0); // Solidity only automatically asserts when dividing by 0
     uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
 
     return c;
   }
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &lt;= _a);
+    require(_b <= _a);
     uint256 c = _a - _b;
 
     return c;
@@ -54,7 +54,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
     uint256 c = _a + _b;
-    require(c &gt;= _a);
+    require(c >= _a);
 
     return c;
   }
@@ -98,7 +98,7 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   uint8 public constant decimals = 18;
   uint256 public constant ONE_TOKEN = (10 ** uint256(decimals));
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -267,8 +267,8 @@ contract Pausable is Ownable {
  * @dev ERC20 Slash Token (ST)
  */
 contract SlashToken is StandardToken, Pausable {
-  string public constant name = &#39;Slash Token&#39;;                       // Set the token name for display
-  string public constant symbol = &#39;ST&#39;;                                       // Set the token symbol for display
+  string public constant name = 'Slash Token';                       // Set the token name for display
+  string public constant symbol = 'ST';                                       // Set the token symbol for display
   uint256 constant Thousand_Token = 1000 * ONE_TOKEN;
   uint256 constant Million_Token = 1000 * Thousand_Token;
   uint256 constant Billion_Token = 1000 * Million_Token;

@@ -4,11 +4,11 @@ library SafeMath {
     
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -18,7 +18,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -86,7 +86,7 @@ contract Lockable is Owned{
 	event ContractLocked(uint256 _untilBlock, string _reason);
 
 	modifier lockAffected {
-		require(block.number &gt; lockedUntilBlock);
+		require(block.number > lockedUntilBlock);
 		_;
 	}
 
@@ -116,8 +116,8 @@ contract Token is IERC20Token, Lockable {
 	address public crowdsaleContractAddress;
 
 	/* Private variables of the token */
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowances;
 
 	/* Events */
 	event Mint(address indexed _to, uint256 _value);
@@ -137,7 +137,7 @@ contract Token is IERC20Token, Lockable {
 
 	/* Transfers tokens from your address to other */
 	function transfer(address _to, uint256 _value) lockAffected returns (bool success) {
-		require(_to != 0x0 &amp;&amp; _to != address(this));
+		require(_to != 0x0 && _to != address(this));
 		balances[msg.sender] = balances[msg.sender].sub(_value); // Deduct senders balance
 		balances[_to] = balances[_to].add(_value);               // Add recivers blaance
 		Transfer(msg.sender, _to, _value);                       // Raise Transfer event
@@ -153,7 +153,7 @@ contract Token is IERC20Token, Lockable {
 
 	/* A contract attempts to get the coins */
 	function transferFrom(address _from, address _to, uint256 _value)  returns (bool success) {
-		require(_to != 0x0 &amp;&amp; _to != address(this));
+		require(_to != 0x0 && _to != address(this));
 		balances[_from] = balances[_from].sub(_value);                              // Deduct senders balance
 		balances[_to] = balances[_to].add(_value);                                  // Add recipient blaance
 		allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);  // Deduct allowance for this address
@@ -204,8 +204,8 @@ contract SoundcoinsToken is Token {
     address public SoundcoinsAddress;
     /* Balances for ships */
     uint256 public total_SDCC_supply = 0;
-    mapping (address =&gt; uint256) balances_chips;
-    mapping (address =&gt; uint256) holdings_SDC;
+    mapping (address => uint256) balances_chips;
+    mapping (address => uint256) holdings_SDC;
     uint256 holdingsSupply = 0;
 
 
@@ -215,9 +215,9 @@ contract SoundcoinsToken is Token {
     }
     /* Initializes contract */
     function SoundcoinsToken(address _crowdsaleContract) public {
-        standard = &quot;Soundcoins Token  V1.0&quot;;
-        name = &quot;Soundcoins&quot;;
-        symbol = &quot;SDC&quot;;
+        standard = "Soundcoins Token  V1.0";
+        name = "Soundcoins";
+        symbol = "SDC";
         decimals = 0;
         supply = 1000000000;
         _teamAddress = msg.sender;
@@ -252,17 +252,17 @@ contract SoundcoinsToken is Token {
     }
     // See if Address has Enough SDC
     function hasSDC(address _address,uint256 _quantity) public returns (bool success){
-        return (balances[_address] &gt;= _quantity);
+        return (balances[_address] >= _quantity);
     }
 
     // See if Address has Enough SDC
     function hasSDCC(address _address, uint256 _quantity) public returns (bool success){
-        return (chipBalanceOf(_address) &gt;= _quantity);
+        return (chipBalanceOf(_address) >= _quantity);
     }
    /*SDC*/
 
     function createSDC(address _address, uint256 _init_quantity, uint256 _quantity) onlyAuthorized public returns (bool success){
-        require(minableSupply &gt;= 0);
+        require(minableSupply >= 0);
         balances[_address] = balances[_address].add(_quantity);
         availableSupply = availableSupply.add(_quantity);
         holdings_SDC[_address] = holdings_SDC[_address].sub(_init_quantity);
@@ -288,7 +288,7 @@ contract SoundcoinsToken is Token {
     }
 
     function transferChips(address _from, address _to, uint256 _value) onlyAuthorized public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(msg.sender));
+        require(_to != 0x0 && _to != address(msg.sender));
         balances_chips[_from] = balances_chips[_from].sub(_value); // Deduct senders balance
         balances_chips[_to] = balances_chips[_to].add(_value);               // Add recivers blaance
         return true;

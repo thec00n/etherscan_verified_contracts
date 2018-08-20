@@ -78,14 +78,14 @@ contract DrupeICO {
 		uint mainsaleStart, uint mainsaleEnd
 	) public {
 		require(drupe != address(0));
-		require(basePriceN &gt; 0 &amp;&amp; basePriceD &gt; 0);
-		require(refBonusN &gt; 0 &amp;&amp; basePriceD &gt; 0);
-		require(presale1Start &gt; now);
-		require(presale1BonusN &gt; 0 &amp;&amp; presale1BonusD &gt; 0);
-		require(presale2Start &gt; presale1Start);
-		require(presale2BonusN &gt; 0 &amp;&amp; presale2BonusD &gt; 0);
-		require(mainsaleStart &gt; presale2Start);
-		require(mainsaleEnd &gt; mainsaleStart);
+		require(basePriceN > 0 && basePriceD > 0);
+		require(refBonusN > 0 && basePriceD > 0);
+		require(presale1Start > now);
+		require(presale1BonusN > 0 && presale1BonusD > 0);
+		require(presale2Start > presale1Start);
+		require(presale2BonusN > 0 && presale2BonusD > 0);
+		require(mainsaleStart > presale2Start);
+		require(mainsaleEnd > mainsaleStart);
 
 		_owner = msg.sender;
 		_newOwner = address(0);
@@ -108,7 +108,7 @@ contract DrupeICO {
 
 	// Modifier to ensure that a function is only called during the ico:
 	modifier icoOnly() {
-		require(now &gt;= _presale1.start &amp;&amp; now &lt; _mainsale.end);
+		require(now >= _presale1.start && now < _mainsale.end);
 		_;
 	}
 
@@ -123,9 +123,9 @@ contract DrupeICO {
 	// Internal function for determining the current bonus:
 	// (It is assumed that this function is only called during the ico)
 	function _getBonus() internal view returns (Fraction memory bonus) {
-		if (now &lt; _presale2.start) {
+		if (now < _presale2.start) {
 			bonus = _presale1.bonus;
-		} else if (now &lt; _mainsale.start) {
+		} else if (now < _mainsale.start) {
 			bonus = _presale2.bonus;
 		} else {
 			bonus = Fraction({n: 0, d: 1});
@@ -180,7 +180,7 @@ contract DrupeICO {
 
 	// Function that can be used to burn unsold tokens after the ico has ended:
 	function burnUnsoldTokens() public ownerOnly {
-		require(now &gt;= _mainsale.end);
+		require(now >= _mainsale.end);
 		uint unsoldTokens = _drupe.balanceOf(this);
 		_drupe.transfer(address(0), unsoldTokens);
 	}

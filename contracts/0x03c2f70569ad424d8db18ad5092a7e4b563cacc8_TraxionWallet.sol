@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -65,9 +65,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -75,7 +75,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -84,7 +84,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,8 +121,8 @@ contract TraxionWallet is Ownable {
     event TokenPurchase(address indexed beneficiary, uint value, uint amount);
 
     /** Whitelist an address and set max investment **/
-    mapping (address =&gt; bool) public whitelistedAddr;
-    mapping (address =&gt; uint) public totalInvestment;
+    mapping (address => bool) public whitelistedAddr;
+    mapping (address => uint) public totalInvestment;
 
     // -----------------------------------------
     // Crowdsale external interface
@@ -137,14 +137,14 @@ contract TraxionWallet is Ownable {
 
     /** @dev whitelist an Address */
     function whitelistAddress(address[] buyer) external onlyOwner {
-        for (uint i = 0; i &lt; buyer.length; i++) {
+        for (uint i = 0; i < buyer.length; i++) {
             whitelistedAddr[buyer[i]] = true;
         }
     }
 
     /** @dev black list an address **/
     function blacklistAddr(address[] buyer) external onlyOwner {
-        for (uint i = 0; i &lt; buyer.length; i++) {
+        for (uint i = 0; i < buyer.length; i++) {
             whitelistedAddr[buyer[i]] = false;
         }
     }
@@ -186,10 +186,10 @@ contract TraxionWallet is Ownable {
         require(_beneficiary != address(0));
         require(_weiAmount != 0);
 
-        require(_weiAmount &gt;= minInvestment);
+        require(_weiAmount >= minInvestment);
         require(whitelistedAddr[_beneficiary]);
-        require(totalInvestment[_beneficiary].add(_weiAmount) &lt;= investmentUpperBounds);
-        require(weiRaised.add(_weiAmount) &lt;= hardcap);
+        require(totalInvestment[_beneficiary].add(_weiAmount) <= investmentUpperBounds);
+        require(weiRaised.add(_weiAmount) <= hardcap);
     }
 
 

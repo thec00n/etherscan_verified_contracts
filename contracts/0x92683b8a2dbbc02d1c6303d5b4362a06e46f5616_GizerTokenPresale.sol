@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 
 // ----------------------------------------------------------------------------
 //
-// GZR &#39;Gizer Gaming&#39; token presale contract
+// GZR 'Gizer Gaming' token presale contract
 //
 // For details, please visit: http://www.gizer.io
 //
@@ -11,7 +11,7 @@ pragma solidity ^0.4.17;
 
 // ----------------------------------------------------------------------------
 //
-// SafeM (div not needed but kept for completeness&#39; sake)
+// SafeM (div not needed but kept for completeness' sake)
 //
 // ----------------------------------------------------------------------------
 
@@ -19,11 +19,11 @@ library SafeM {
 
   function add(uint a, uint b) public pure returns (uint c) {
     c = a + b;
-    require( c &gt;= a );
+    require( c >= a );
   }
 
   function sub(uint a, uint b) public pure returns (uint c) {
-    require( b &lt;= a );
+    require( b <= a );
     c = a - b;
   }
 
@@ -121,8 +121,8 @@ contract ERC20Token is ERC20Interface, Owned {
   using SafeM for uint;
 
   uint public tokensIssuedTotal = 0;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping (address => uint)) allowed;
 
   // Functions ------------------------
 
@@ -138,11 +138,11 @@ contract ERC20Token is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     // amount sent cannot exceed balance
-    require( balances[msg.sender] &gt;= _amount );
+    require( balances[msg.sender] >= _amount );
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -157,7 +157,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
   function approve(address _spender, uint _amount) public returns (bool success) {
     // approval amount cannot exceed the balance
-    require( balances[msg.sender] &gt;= _amount );
+    require( balances[msg.sender] >= _amount );
       
     // update allowed amount
     allowed[msg.sender][_spender] = _amount;
@@ -167,13 +167,13 @@ contract ERC20Token is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of tokens transfers tokens from the owner&#39;s balance */
+  /* Spender of tokens transfers tokens from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     // balance checks
-    require( balances[_from] &gt;= _amount );
-    require( allowed[_from][msg.sender] &gt;= _amount );
+    require( balances[_from] >= _amount );
+    require( allowed[_from][msg.sender] >= _amount );
 
     // update balances and allowed amount
     balances[_from]            = balances[_from].sub(_amount);
@@ -209,8 +209,8 @@ contract GizerTokenPresale is ERC20Token {
 
   /* Basic token data */
 
-  string public constant name     = &quot;Gizer Gaming Presale Token&quot;;
-  string public constant symbol   = &quot;GZRPRE&quot;;
+  string public constant name     = "Gizer Gaming Presale Token";
+  string public constant symbol   = "GZRPRE";
   uint8  public constant decimals = 6;
 
   /* Wallets */
@@ -256,11 +256,11 @@ contract GizerTokenPresale is ERC20Token {
 
   /* Mappings */
 
-  mapping(address =&gt; uint) public balanceEthPrivate; // private sale Ether
-  mapping(address =&gt; uint) public balanceEthCrowd;   // crowdsale Ether
+  mapping(address => uint) public balanceEthPrivate; // private sale Ether
+  mapping(address => uint) public balanceEthCrowd;   // crowdsale Ether
 
-  mapping(address =&gt; uint) public balancesPrivate; // private sale tokens
-  mapping(address =&gt; uint) public balancesCrowd;   // crowdsale tokens
+  mapping(address => uint) public balancesPrivate; // private sale tokens
+  mapping(address => uint) public balancesCrowd;   // crowdsale tokens
 
   // Events ---------------------------
   
@@ -314,21 +314,21 @@ contract GizerTokenPresale is ERC20Token {
   function privateSaleContribution(address _account, uint _amount) public onlyOwner {
     // checks
     require( _account != address(0x0) );
-    require( atNow() &lt; DATE_PRESALE_END );
-    require( _amount &gt;= MIN_CONTRIBUTION );
-    require( etherReceivedPrivate.add(_amount) &lt;= PRIVATE_SALE_MAX_ETHER );
+    require( atNow() < DATE_PRESALE_END );
+    require( _amount >= MIN_CONTRIBUTION );
+    require( etherReceivedPrivate.add(_amount) <= PRIVATE_SALE_MAX_ETHER );
     
     // same conditions as early presale participants
     uint tokens = TOKETH_PRESALE_ONE.mul(_amount) / 1 ether;
     
     // issue tokens
-    issueTokens(_account, tokens, _amount, true); // true =&gt; private sale
+    issueTokens(_account, tokens, _amount, true); // true => private sale
   }
 
   /* Freeze tokens */
   
   function freezeTokens() public onlyOwner {
-    require( atNow() &gt; DATE_PRESALE_END );
+    require( atNow() > DATE_PRESALE_END );
     tokensFrozen = true;
   }
   
@@ -336,7 +336,7 @@ contract GizerTokenPresale is ERC20Token {
   
   function burnOwnerTokens() public onlyOwner {
     // check if there is anything to burn
-    require( balances[owner] &gt; 0 );
+    require( balances[owner] > 0 );
     
     // update 
     uint tokensBurned = balances[owner];
@@ -362,16 +362,16 @@ contract GizerTokenPresale is ERC20Token {
 
   function buyTokens() private {
     // initial checks
-    require( atNow() &gt; DATE_PRESALE_START &amp;&amp; atNow() &lt; DATE_PRESALE_END );
-    require( msg.value &gt;= MIN_CONTRIBUTION &amp;&amp; msg.value &lt;= MAX_CONTRIBUTION );
-    require( etherReceivedCrowd.add(msg.value) &lt;= FUNDING_PRESALE_MAX );
+    require( atNow() > DATE_PRESALE_START && atNow() < DATE_PRESALE_END );
+    require( msg.value >= MIN_CONTRIBUTION && msg.value <= MAX_CONTRIBUTION );
+    require( etherReceivedCrowd.add(msg.value) <= FUNDING_PRESALE_MAX );
 
     // tokens
     uint tokens;
-    if (presaleContributorCount &lt; CUTOFF_PRESALE_ONE) {
+    if (presaleContributorCount < CUTOFF_PRESALE_ONE) {
       // wave 1
       tokens = TOKETH_PRESALE_ONE.mul(msg.value) / 1 ether;
-    } else if (presaleContributorCount &lt; CUTOFF_PRESALE_TWO) {
+    } else if (presaleContributorCount < CUTOFF_PRESALE_TWO) {
       // wave 2
       tokens = TOKETH_PRESALE_TWO.mul(msg.value) / 1 ether;
     } else {
@@ -381,7 +381,7 @@ contract GizerTokenPresale is ERC20Token {
     presaleContributorCount += 1;
     
     // issue tokens
-    issueTokens(msg.sender, tokens, msg.value, false); // false =&gt; not private sale
+    issueTokens(msg.sender, tokens, msg.value, false); // false => not private sale
   }
   
   /* Issue tokens */
@@ -408,23 +408,23 @@ contract GizerTokenPresale is ERC20Token {
     TokensIssued(_account, _tokens, balances[_account], tokensIssuedCrowd, _isPrivateSale, _amount);
 
     // transfer Ether out
-    if (this.balance &gt; 0) wallet.transfer(this.balance);
+    if (this.balance > 0) wallet.transfer(this.balance);
 
   }
 
   // ERC20 functions ------------------
 
-  /* Override &quot;transfer&quot; */
+  /* Override "transfer" */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
-    require( _to == owner || (!tokensFrozen &amp;&amp; _to == redemptionWallet) );
+    require( _to == owner || (!tokensFrozen && _to == redemptionWallet) );
     return super.transfer(_to, _amount);
   }
   
-  /* Override &quot;transferFrom&quot; */
+  /* Override "transferFrom" */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
-    require( !tokensFrozen &amp;&amp; _to == redemptionWallet );
+    require( !tokensFrozen && _to == redemptionWallet );
     return super.transferFrom(_from, _to, _amount);
   }
 

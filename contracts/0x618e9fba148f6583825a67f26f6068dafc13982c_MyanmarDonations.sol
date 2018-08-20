@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -129,8 +129,8 @@ contract MyanmarDonations is Ownable {
     function() public payable {
         require(msg.value == TOTAL_ETHER_HARD_CAP);
         require(
-            address(this).balance &lt;= TOTAL_ETHER_HARD_CAP,
-            &quot;Contract balance hardcap reachead&quot;
+            address(this).balance <= TOTAL_ETHER_HARD_CAP,
+            "Contract balance hardcap reachead"
         );
     }
 
@@ -139,11 +139,11 @@ contract MyanmarDonations is Ownable {
      * hard cap reached or the campaign reached the final day.
      */
     function finalize() public onlyDonationAddress returns (bool) {
-        require(getSencBalance() &gt;= SENC_HARD_CAP || now &gt;= END_DATE, &quot;SENC hard cap rached OR End date reached&quot;);
-        require(!finalized, &quot;Donation not already finalized&quot;);
+        require(getSencBalance() >= SENC_HARD_CAP || now >= END_DATE, "SENC hard cap rached OR End date reached");
+        require(!finalized, "Donation not already finalized");
         // The Ether balance collected in Wei
         totalSencCollected = getSencBalance();
-        if (totalSencCollected &gt;= SENC_HARD_CAP) {
+        if (totalSencCollected >= SENC_HARD_CAP) {
             // Transfer of donations to the donations address
             DONATION_WALLET.transfer(address(this).balance);
         } else {
@@ -165,7 +165,7 @@ contract MyanmarDonations is Ownable {
      * @param _to the recipient that receives the tokens.
      */
     function claimTokens(address _token, address _to) public onlyDonationAddress {
-        require(_to != address(0), &quot;Wallet format error&quot;);
+        require(_to != address(0), "Wallet format error");
         if (_token == address(0)) {
             _to.transfer(address(this).balance);
             return;
@@ -173,7 +173,7 @@ contract MyanmarDonations is Ownable {
 
         ERC20Basic token = ERC20Basic(_token);
         uint256 balance = token.balanceOf(this);
-        require(token.transfer(_to, balance), &quot;Token transfer unsuccessful&quot;);
+        require(token.transfer(_to, balance), "Token transfer unsuccessful");
     }
 
     /// @notice The `sencToken()` is the getter for the SENC Token.

@@ -11,7 +11,7 @@ contract ERC20 {
 
 contract ViberateBuyer {
   // Koliko ETH je vlozil vsak racun.
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
   // Nagrada za izvedbo nakupa.
   uint256 public buy_bounty;
   // Nagrada za dvig.
@@ -47,7 +47,7 @@ contract ViberateBuyer {
     token = ERC20(_token);
   }
   
-  // V skrajni sili lahko razvijalec ali pa kdorkoli s posebnim geslom aktivira &#39;kill switch&#39;. Po aktivaciji je mozen le se dvig sredstev.
+  // V skrajni sili lahko razvijalec ali pa kdorkoli s posebnim geslom aktivira 'kill switch'. Po aktivaciji je mozen le se dvig sredstev.
   function activate_kill_switch(string password) {
     // Aktiviraj kill switch samo ce ga aktivira razvijalec, ali pa je geslo pravilno.
     require(msg.sender == developer || sha3(password) == password_hash);
@@ -98,7 +98,7 @@ contract ViberateBuyer {
   // Poslje ETHje uporabniku ali pa tokene in nagradi klicatelja funkcije.
   function withdraw(address user){
     // Dvig dovoljen ce smo kupili tokene ali pa cez eno uro po crowdsalu (ce nismo), ali pa ce je aktiviran kill switch.
-    require(bought_tokens || now &gt; earliest_buy_time + 1 hours || kill_switch);
+    require(bought_tokens || now > earliest_buy_time + 1 hours || kill_switch);
     // Ce uporabnik nima denarja koncamo.
     if (balances[user] == 0) return;
     // Ce pogodbi ni uspelo kupiti, potem vrnemo ETH.
@@ -158,8 +158,8 @@ contract ViberateBuyer {
     // Ce smo ze kupili koncamo.
     if (bought_tokens) return;
     // Ce cas se ni dosezen, koncamo.
-    if (now &lt; earliest_buy_time) return;
-    // Ce je aktiviran &#39;kill switch&#39;, koncamo.
+    if (now < earliest_buy_time) return;
+    // Ce je aktiviran 'kill switch', koncamo.
     if (kill_switch) return;
     // Ce razvijalec se ni dodal naslova, potem ne kupujemo.
     require(sale != 0x0);
@@ -184,7 +184,7 @@ contract ViberateBuyer {
     // Vplacila so dovoljena dokler se nismo kupili tokenov.
     require(!bought_tokens);
     // Vplacila so dovoljena dokler nismo dosegli nasega capa.
-    require(this.balance &lt; eth_cap);
+    require(this.balance < eth_cap);
     // Shranimo uporabnikov vlozek.
     balances[msg.sender] += msg.value;
   }

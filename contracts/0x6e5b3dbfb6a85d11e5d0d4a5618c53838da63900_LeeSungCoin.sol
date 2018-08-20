@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
-// LeeSungCoin Made By PinkCherry - <span class="__cf_email__" data-cfemail="d1b8bfa2b0bfb8a5a8a2bab0bf91b6bcb0b8bdffb2bebc">[email&#160;protected]</span>
-// LeeSungCoin Request Question - <span class="__cf_email__" data-cfemail="c3a8acb1a6a2a0acaaadb0acafb6b7aaacad83a4aea2aaafeda0acae">[email&#160;protected]</span>
+// LeeSungCoin Made By PinkCherry - <span class="__cf_email__" data-cfemail="d1b8bfa2b0bfb8a5a8a2bab0bf91b6bcb0b8bdffb2bebc">[email protected]</span>
+// LeeSungCoin Request Question - <span class="__cf_email__" data-cfemail="c3a8acb1a6a2a0acaaadb0acafb6b7aaacad83a4aea2aaafeda0acae">[email protected]</span>
 
 library SafeMath
 {
@@ -22,7 +22,7 @@ library SafeMath
 
   	function sub(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		assert(b &lt;= a);
+		assert(b <= a);
 
 		return a - b;
   	}
@@ -30,7 +30,7 @@ library SafeMath
   	function add(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 
 		return c;
   	}
@@ -88,8 +88,8 @@ contract ERC20Token is ERC20Interface, OwnerHelper
   	uint public tokensIssuedTotal = 0;
   	address public constant burnAddress = 0;
 
-  	mapping(address =&gt; uint) balances;
-  	mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+  	mapping(address => uint) balances;
+  	mapping(address => mapping (address => uint)) allowed;
 
   	function totalSupply() public constant returns (uint)
 	{
@@ -103,7 +103,7 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
 	function transfer(address _to, uint _amount) public returns (bool success)
 	{
-		require( balances[msg.sender] &gt;= _amount );
+		require( balances[msg.sender] >= _amount );
 
 	    balances[msg.sender] = balances[msg.sender].sub(_amount);
 		balances[_to]        = balances[_to].add(_amount);
@@ -115,7 +115,7 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
   	function approve(address _spender, uint _amount) public returns (bool success)
 	{
-		require ( balances[msg.sender] &gt;= _amount );
+		require ( balances[msg.sender] >= _amount );
 
 		allowed[msg.sender][_spender] = _amount;
     		
@@ -126,8 +126,8 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
   	function transferFrom(address _from, address _to, uint _amount) public returns (bool success)
 	{
-		require( balances[_from] &gt;= _amount );
-		require( allowed[_from][msg.sender] &gt;= _amount );
+		require( balances[_from] >= _amount );
+		require( allowed[_from][msg.sender] >= _amount );
 		balances[_from]            = balances[_from].sub(_amount);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
 		balances[_to]              = balances[_to].add(_amount);
@@ -157,8 +157,8 @@ contract LeeSungCoin is ERC20Token
 {
 	uint constant E18 = 10**18;
 
-  	string public constant name 	= &quot;Lee Sung Coin&quot;;
-  	string public constant symbol 	= &quot;LSC&quot;;
+  	string public constant name 	= "Lee Sung Coin";
+  	string public constant symbol 	= "LSC";
   	uint public constant decimals 	= 18;
 
 	address public wallet;
@@ -205,10 +205,10 @@ contract LeeSungCoin is ERC20Token
 	uint public coinBurnIco = 0;
 	uint public coinBurnMkt = 0;
 
-  	mapping(address =&gt; uint) public icoEtherContributed;
-  	mapping(address =&gt; uint) public icoCoinReceived;
-  	mapping(address =&gt; bool) public refundClaimed;
-  	mapping(address =&gt; bool) public coinLocked;
+  	mapping(address => uint) public icoEtherContributed;
+  	mapping(address => uint) public icoCoinReceived;
+  	mapping(address => bool) public refundClaimed;
+  	mapping(address => bool) public coinLocked;
   	
  	event WalletChange(address _newWallet);
   	event AdminWalletChange(address _newAdminWallet);
@@ -249,7 +249,7 @@ contract LeeSungCoin is ERC20Token
 		uint coinBonus = 0;
 		uint coinCap = 0;
 
-		if (nowTime &gt; preSaleFirstStartDate &amp;&amp; nowTime &lt; preSaleFirstEndDate)
+		if (nowTime > preSaleFirstStartDate && nowTime < preSaleFirstEndDate)
 		{
 			saleTime = 1;
 			minEth = preSaleMinEth;
@@ -257,7 +257,7 @@ contract LeeSungCoin is ERC20Token
 			coinCap = preSaleCoinCap;
 		}
 
-		if (nowTime &gt; preSaleSecondStartDate &amp;&amp; nowTime &lt; preSaleSecondEndDate)
+		if (nowTime > preSaleSecondStartDate && nowTime < preSaleSecondEndDate)
 		{
 			saleTime = 2;
 			minEth = preSaleMinEth;
@@ -265,7 +265,7 @@ contract LeeSungCoin is ERC20Token
 			coinCap = preSaleCoinCap;
 		}
 
-		if (nowTime &gt; mainSaleFirstStartDate &amp;&amp; nowTime &lt; mainSaleFirstEndDate)
+		if (nowTime > mainSaleFirstStartDate && nowTime < mainSaleFirstEndDate)
 		{
 			saleTime = 3;
 			minEth = mainSaleMinEth;
@@ -273,7 +273,7 @@ contract LeeSungCoin is ERC20Token
 			coinCap = icoCoinCap;
 		}
 
-		if (nowTime &gt; mainSaleSecondStartDate &amp;&amp; nowTime &lt; mainSaleSecondEndDate)
+		if (nowTime > mainSaleSecondStartDate && nowTime < mainSaleSecondEndDate)
 		{
 			saleTime = 4;
 			minEth = mainSaleMinEth;
@@ -281,14 +281,14 @@ contract LeeSungCoin is ERC20Token
 			coinCap = icoCoinCap;
 		}
 		
-		require( saleTime &gt;= 1 &amp;&amp; saleTime &lt;= 4 );
-		require( msg.value &gt;= minEth );
-		require( icoEtherContributed[msg.sender].add(msg.value) &lt;= maxEth );
+		require( saleTime >= 1 && saleTime <= 4 );
+		require( msg.value >= minEth );
+		require( icoEtherContributed[msg.sender].add(msg.value) <= maxEth );
 
 		coins = coinPerEth.mul(msg.value) / 1 ether;
       	coins = coins.mul(100 + coinBonus) / 100;
 
-		require( coinIssuedIco.add(coins) &lt;= coinCap );
+		require( coinIssuedIco.add(coins) <= coinCap );
 
 		balances[msg.sender]        = balances[msg.sender].add(coins);
 	    icoCoinReceived[msg.sender] = icoCoinReceived[msg.sender].add(coins);
@@ -308,7 +308,7 @@ contract LeeSungCoin is ERC20Token
 
  	function isTransferable() public constant returns (bool transferable)
 	{
-		if ( atNow() &lt; mainSaleSecondEndDate + transferCooldown )
+		if ( atNow() < mainSaleSecondEndDate + transferCooldown )
 		{
 			return false;
 		}
@@ -327,7 +327,7 @@ contract LeeSungCoin is ERC20Token
 	{
 		require( msg.sender == adminWallet || msg.sender == owner );
     		
-		for (uint i = 0; i &lt; _participants.length; i++)
+		for (uint i = 0; i < _participants.length; i++)
 		{
   			coinLocked[_participants[i]] = false;
   			LockRemove(_participants[i]);
@@ -352,7 +352,7 @@ contract LeeSungCoin is ERC20Token
 	{
 		uint coins = _amount * E18;
 		
-		require( coins &lt;= mktCoinCap.sub(coinIssuedMkt) );
+		require( coins <= mktCoinCap.sub(coinIssuedMkt) );
 		
 		balances[_participant] = balances[_participant].add(coins);
 		
@@ -370,8 +370,8 @@ contract LeeSungCoin is ERC20Token
 		uint coins = coinPerEth.mul(_etherValue);
       	coins = coins.mul(100 + privateSaleBonus) / 100;
 
-		require( coins &lt;= icoCoinCap.sub(coinIssuedIco) );
-		require( atNow() &lt; preSaleFirstStartDate );
+		require( coins <= icoCoinCap.sub(coinIssuedIco) );
+		require( atNow() < preSaleFirstStartDate );
 
 		balances[_participant] = balances[_participant].add(coins);
 
@@ -418,7 +418,7 @@ contract LeeSungCoin is ERC20Token
 		require( coinLocked[msg.sender] == false );
 		require( _addresses.length == _amounts.length );
 		
-		for (uint i = 0; i &lt; _addresses.length; i++)
+		for (uint i = 0; i < _addresses.length; i++)
 		{
   			if (coinLocked[_addresses[i]] == false) 
 			{
@@ -432,9 +432,9 @@ contract LeeSungCoin is ERC20Token
 		uint coins;
 		uint amount;
 
-		require( atNow() &gt; mainSaleSecondEndDate );
+		require( atNow() > mainSaleSecondEndDate );
 		require( !refundClaimed[msg.sender] );
-		require( icoEtherContributed[msg.sender] &gt; 0 );
+		require( icoEtherContributed[msg.sender] > 0 );
 
 		coins = icoCoinReceived[msg.sender];
 		amount = icoEtherContributed[msg.sender];

@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -52,12 +52,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -152,7 +152,7 @@ contract RetirePets is AccessControl, SafeMath {
         //check if a pet both exists and is owned by the message sender.
         // This function also returns the petcardSeriesID. 
      
-        if ((petID &lt;= 0) || (petID &gt; petCardData.getTotalPets())) {return 0;}
+        if ((petID <= 0) || (petID > petCardData.getTotalPets())) {return 0;}
         
         address petowner;
         uint8 petcardSeriesID;
@@ -169,13 +169,13 @@ contract RetirePets is AccessControl, SafeMath {
             IPetCardData petCardData = IPetCardData(petCardDataContract);
          // Send this function the petIds of 6 of your Wild Easy (2 star pets) to receive 1 3 star pet. 
          
-         //won&#39;t throw an error if you send a level3 pet, but will still recycle. This is to reduce gas costs for everyone. 
-         if (checkPet(pet1) &lt;5) {revert();}
-         if (checkPet(pet2) &lt;5) {revert();}
-         if (checkPet(pet3) &lt;5) {revert();}
-         if (checkPet(pet4) &lt;5) {revert();}
-         if (checkPet(pet5) &lt;5) {revert();}
-         if (checkPet(pet6) &lt;5) {revert();}
+         //won't throw an error if you send a level3 pet, but will still recycle. This is to reduce gas costs for everyone. 
+         if (checkPet(pet1) <5) {revert();}
+         if (checkPet(pet2) <5) {revert();}
+         if (checkPet(pet3) <5) {revert();}
+         if (checkPet(pet4) <5) {revert();}
+         if (checkPet(pet5) <5) {revert();}
+         if (checkPet(pet6) <5) {revert();}
          
        petCardData.transferPet(msg.sender, address(0), pet1);
        petCardData.transferPet(msg.sender, address(0), pet2);
@@ -192,12 +192,12 @@ contract RetirePets is AccessControl, SafeMath {
          // Send this function the petIds of 6 of your Wild Hard (3 star pets) to receive 1 four star pet. 
          
         
-         if (checkPet(pet1) &lt;9) {revert();}
-         if (checkPet(pet2) &lt;9) {revert();}
-         if (checkPet(pet3) &lt;9) {revert();}
-         if (checkPet(pet4) &lt;9) {revert();}
-         if (checkPet(pet5) &lt;9) {revert();}
-         if (checkPet(pet6) &lt;9) {revert();}
+         if (checkPet(pet1) <9) {revert();}
+         if (checkPet(pet2) <9) {revert();}
+         if (checkPet(pet3) <9) {revert();}
+         if (checkPet(pet4) <9) {revert();}
+         if (checkPet(pet5) <9) {revert();}
+         if (checkPet(pet6) <9) {revert();}
          
        petCardData.transferPet(msg.sender, address(0), pet1);
        petCardData.transferPet(msg.sender, address(0), pet2);
@@ -223,7 +223,7 @@ contract RetirePets is AccessControl, SafeMath {
         
         uint8 _newLuck = getRandomNumber(39,30,msg.sender);
         IPetCardData petCardData = IPetCardData(petCardDataContract);
-        uint64 petId = petCardData.setPet(opponentId+4, msg.sender, &#39;Rover&#39;, _newLuck, _auraRed, _auraYellow, _auraBlue);
+        uint64 petId = petCardData.setPet(opponentId+4, msg.sender, 'Rover', _newLuck, _auraRed, _auraYellow, _auraBlue);
         EventNewPet(petId);
         }
 

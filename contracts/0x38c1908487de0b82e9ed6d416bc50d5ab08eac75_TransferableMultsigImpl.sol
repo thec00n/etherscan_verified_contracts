@@ -1,11 +1,11 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -13,18 +13,18 @@
 pragma solidity 0.4.21;
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Transferable Multisignature Contract
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ce8ede2e5e9e0cce0e3e3fcfee5e2eba2e3feeb">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ce8ede2e5e9e0cce0e3e3fcfee5e2eba2e3feeb">[email protected]</a>>.
 contract TransferableMultsig {
     // Note that address recovered from signatures must be strictly increasing.
     function execute(
@@ -47,11 +47,11 @@ contract TransferableMultsig {
         external;
 }
 /// @title An Implementation of TransferableMultsig。
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc989d92959990bc9093938c8e95929bd2938e9b">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc989d92959990bc9093938c8e95929bd2938e9b">[email protected]</a>>.
 contract TransferableMultsigImpl is TransferableMultsig {
     uint public nonce;                  // (only) mutable state
     uint public threshold;              // immutable state
-    mapping (address =&gt; bool) ownerMap; // immutable state
+    mapping (address => bool) ownerMap; // immutable state
     address[] public owners;            // immutable state
     function TransferableMultsig(
         uint      _threshold,
@@ -139,14 +139,14 @@ contract TransferableMultsigImpl is TransferableMultsig {
         require(_threshold == sigS.length);
         require(_threshold == sigV.length);
         address lastAddr = 0x0; // cannot have 0x0 as an owner
-        for (uint i = 0; i &lt; threshold; i++) {
+        for (uint i = 0; i < threshold; i++) {
             address recovered = ecrecover(
                 txHash,
                 sigV[i],
                 sigR[i],
                 sigS[i]
             );
-            require(recovered &gt; lastAddr &amp;&amp; ownerMap[recovered]);
+            require(recovered > lastAddr && ownerMap[recovered]);
             lastAddr = recovered;
         }
     }
@@ -156,18 +156,18 @@ contract TransferableMultsigImpl is TransferableMultsig {
         )
         internal
     {
-        require(_owners.length &lt;= 10);
-        require(_threshold &lt;= _owners.length);
+        require(_owners.length <= 10);
+        require(_threshold <= _owners.length);
         require(_threshold != 0);
         // remove all current owners from ownerMap.
         address[] memory currentOwners = owners;
-        for (uint i = 0; i &lt; currentOwners.length; i++) {
+        for (uint i = 0; i < currentOwners.length; i++) {
             ownerMap[currentOwners[i]] = false;
         }
         address lastAddr = 0x0;
-        for (i = 0; i &lt; _owners.length; i++) {
+        for (i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
-            require(owner &gt; lastAddr);
+            require(owner > lastAddr);
             ownerMap[owner] = true;
             lastAddr = owner;
         }

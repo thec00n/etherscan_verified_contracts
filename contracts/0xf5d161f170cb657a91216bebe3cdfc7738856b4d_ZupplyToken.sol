@@ -8,13 +8,13 @@ contract SafeMath {
      }
 
      function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal returns (uint) {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 }
@@ -60,14 +60,14 @@ contract Token is SafeMath {
 
 contract StdToken is Token {
      // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint public supply = 0;
 
      // Functions:
      function transfer(address _to, uint256 _value) returns(bool) {
-          require(balances[msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[msg.sender] = safeSub(balances[msg.sender],_value);
           balances[_to] = safeAdd(balances[_to],_value);
@@ -77,9 +77,9 @@ contract StdToken is Token {
      }
 
      function transferFrom(address _from, address _to, uint256 _value) returns(bool){
-          require(balances[_from] &gt;= _value);
-          require(allowed[_from][msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[_from] >= _value);
+          require(allowed[_from][msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[_to] = safeAdd(balances[_to],_value);
           balances[_from] = safeSub(balances[_from],_value);
@@ -118,8 +118,8 @@ contract StdToken is Token {
 contract ZupplyToken is StdToken
 {
 /// Fields:
-    string public name = &quot;ZupplyToken&quot;;
-    string public symbol = &quot;ZUP&quot;;
+    string public name = "ZupplyToken";
+    string public symbol = "ZUP";
     uint public constant decimals = 18;
 
     // this includes DEVELOPERS_BONUS
@@ -154,7 +154,7 @@ contract ZupplyToken is StdToken
     address public teamTokenBonus = 0;
     address public earlyInvestorsBonus = 0;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow = 0;
 
     // Token manager has exclusive priveleges to call administrative
@@ -219,10 +219,10 @@ contract ZupplyToken is StdToken
     function buyTokensPresale() public payable onlyInState(State.PresaleRunning)
     {
         // min - 0.1 ETH
-        require(msg.value &gt;= (1 ether / 1 wei) /10 );
+        require(msg.value >= (1 ether / 1 wei) /10 );
         uint newTokens = msg.value * PRESALE_PRICE;
 
-        require(presaleSoldTokens + newTokens + totalWitdrowedToken &lt;= PRESALE_TOKEN_SUPPLY_LIMIT);
+        require(presaleSoldTokens + newTokens + totalWitdrowedToken <= PRESALE_TOKEN_SUPPLY_LIMIT);
 
         balances[msg.sender] += newTokens;
         supply+= newTokens;
@@ -235,10 +235,10 @@ contract ZupplyToken is StdToken
     function buyTokensICO() public payable onlyInState(State.ICORunning)
     {
         // min - 0.01 ETH
-        require(msg.value &gt;= ((1 ether / 1 wei) / 100));
+        require(msg.value >= ((1 ether / 1 wei) / 100));
         uint newTokens = msg.value * getPrice();
 
-        require(totalSoldTokens + newTokens + totalWitdrowedToken &lt;= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT);
+        require(totalSoldTokens + newTokens + totalWitdrowedToken <= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT);
 
         balances[msg.sender] += newTokens;
         supply+= newTokens;
@@ -259,7 +259,7 @@ contract ZupplyToken is StdToken
 
     function setState(State _nextState) public onlyTokenManager
     {
-        //setState() method call shouldn&#39;t be entertained after ICOFinished
+        //setState() method call shouldn't be entertained after ICOFinished
         require(currentState != State.ICOFinished);
         
         currentState = _nextState;
@@ -270,7 +270,7 @@ contract ZupplyToken is StdToken
 
     function withdrawETH() public onlyTokenManager
     {
-        if(this.balance &gt; 0) 
+        if(this.balance > 0) 
         {
             require(escrow.send(this.balance));
         }
@@ -280,9 +280,9 @@ contract ZupplyToken is StdToken
     function withdrawTokens(uint256 _value) public onlyTokenManager
     {
         require(currentState == State.ICOFinished);
-        if((totalSoldTokens + totalWitdrowedToken + _value) &lt;= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT) 
+        if((totalSoldTokens + totalWitdrowedToken + _value) <= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT) 
         {
-            require(_value &lt;= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT - totalSoldTokens - totalWitdrowedToken);
+            require(_value <= TOTAL_SOLD_TOKEN_SUPPLY_LIMIT - totalSoldTokens - totalWitdrowedToken);
             
             balances[escrow] += _value;
             

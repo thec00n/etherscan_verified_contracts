@@ -92,7 +92,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -107,7 +107,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _from,
@@ -141,9 +141,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -151,7 +151,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -160,7 +160,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -188,7 +188,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -202,21 +202,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -354,7 +354,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -370,14 +370,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -526,19 +526,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -588,7 +588,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -607,7 +607,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -703,7 +703,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -755,7 +755,7 @@ contract Ownable {
 /*
  *  @title CryptoFlower
  *  @dev This is a constrained but compliant ERC725 token implementation with additional genome sequence for each token
- *  @dev rewrites the CanTransfer modifier of OZs&#39; implementation in order to disable transfers
+ *  @dev rewrites the CanTransfer modifier of OZs' implementation in order to disable transfers
  */
 contract CryptoFlower is ERC721Token, Ownable {
 
@@ -763,8 +763,8 @@ contract CryptoFlower is ERC721Token, Ownable {
     bool transfersAllowed = false;
 
     // Storage of flower generator
-    mapping (uint256 =&gt; bytes7) genes;
-    mapping (uint256 =&gt; string) dedication;
+    mapping (uint256 => bytes7) genes;
+    mapping (uint256 => string) dedication;
 
     // event definitions
     event FlowerAwarded(address indexed owner, uint256 tokenID, bytes7 gen);
@@ -802,7 +802,7 @@ contract CryptoFlower is ERC721Token, Ownable {
         genome[0] = generator[0];
         genome[1] = generator[1];
         genome[2] = generator[2];
-        if (uint(generator[3]) + karma &gt;= 255) {
+        if (uint(generator[3]) + karma >= 255) {
             genome[3] = bytes1(255);
         } else {
             genome[3] = bytes1(uint(generator[3]) + karma);
@@ -859,8 +859,8 @@ contract CryptoFlower is ERC721Token, Ownable {
     function bytesToBytes7(bytes1[7] b) private pure returns (bytes7) {
         bytes7 out;
 
-        for (uint i = 0; i &lt; 7; i++) {
-          out |= bytes7(b[i] &amp; 0xFF) &gt;&gt; (i * 8);
+        for (uint i = 0; i < 7; i++) {
+          out |= bytes7(b[i] & 0xFF) >> (i * 8);
         }
 
         return out;
@@ -907,7 +907,7 @@ contract CryptoFlowerRaiser {
     // the owner of the contract
     address public owner;
 
-    // onlyOwner modifier extracted from OZs&#39; Ownable contract
+    // onlyOwner modifier extracted from OZs' Ownable contract
     modifier onlyOwner() {
         require(msg.sender == owner);
         _;
@@ -925,12 +925,12 @@ contract CryptoFlowerRaiser {
      *  @param address _wallet - of the funds destination
      */
     constructor(uint256 _startTime, uint256 _endTime, uint256 _price, address _wallet) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_price != 0x0);
         require(_wallet != 0x0);
 
-        token = new CryptoFlower(&quot;CryptoFlowers&quot;, &quot;FLO&quot;);
+        token = new CryptoFlower("CryptoFlowers", "FLO");
         startTime = _startTime;
         endTime = _endTime;
         price = _price;
@@ -955,16 +955,16 @@ contract CryptoFlowerRaiser {
         require(msg.value != 0);
 
         // check if within buying period
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        require(now >= startTime && now <= endTime);
 
         // increase chance to land a special flower if the participation is high enough
-        if (msg.value &gt;= price) {
+        if (msg.value >= price) {
             uint karma;
-            if (msg.value &gt;= 0.1 ether) {
+            if (msg.value >= 0.1 ether) {
                 karma = 16;
-            } else if (msg.value &gt;= 0.2 ether) {
+            } else if (msg.value >= 0.2 ether) {
                 karma = 32;
-            } else if (msg.value &gt;= 0.5 ether) {
+            } else if (msg.value >= 0.5 ether) {
                 karma = 48;
             }
 
@@ -974,7 +974,7 @@ contract CryptoFlowerRaiser {
             token.mint(beneficiary, generator, karma);
         }
 
-        raised += msg.value; // we don&#39;t care about overflows here ;)
+        raised += msg.value; // we don't care about overflows here ;)
         emit Donation(beneficiary, msg.value, raised);
 
         // forward funds to storage
@@ -987,7 +987,7 @@ contract CryptoFlowerRaiser {
      */
     function finalize() onlyOwner public {
         require(!finalized);
-        require(now &gt; endTime);
+        require(now > endTime);
 
         token.transferOwnership(owner);
 

@@ -20,7 +20,7 @@ contract StarmidFreezeTokens {
 	}
 
 	function refundTokens(address _to, uint _amount) public returns(bool) {
-			require(block.timestamp &gt; 1601510400 &amp;&amp; msg.sender == owner);//Thu, 01 Oct 2020 00:00:00 GMT
+			require(block.timestamp > 1601510400 && msg.sender == owner);//Thu, 01 Oct 2020 00:00:00 GMT
 			StarmidFunc.transfer(_to,_amount);
 			return true;
 		}

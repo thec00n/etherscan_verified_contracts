@@ -110,9 +110,9 @@ contract Sales is Discount {
         require(parrot_owner == address(this));
         
         if(discount[_tokenId] == 0)
-            require(parent.recommendedPrice(quality) &lt;= msg.value);
+            require(parent.recommendedPrice(quality) <= msg.value);
         else
-            require(discount[_tokenId] &lt;= msg.value);
+            require(discount[_tokenId] <= msg.value);
         
         parent.transfer(msg.sender, _tokenId);
     }

@@ -43,10 +43,10 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -67,8 +67,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract ERC223ReceivingContract {
@@ -96,10 +96,10 @@ contract HumanStandardToken is ERC223Interface, StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
@@ -116,7 +116,7 @@ contract HumanStandardToken is ERC223Interface, StandardToken {
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
-      if(codeLength&gt;0) {
+      if(codeLength>0) {
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         receiver.tokenFallback(msg.sender, _value, _data);
       }
@@ -136,7 +136,7 @@ contract HumanStandardToken is ERC223Interface, StandardToken {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -157,20 +157,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -178,8 +178,8 @@ library SafeMath {
 contract LunetToken is HumanStandardToken {
     using SafeMath for uint256;
 
-    string public name = &quot;Lunet&quot;;
-    string public symbol= &quot;LUNET&quot;;
+    string public name = "Lunet";
+    string public symbol= "LUNET";
     uint8 public decimals = 18;
 
     uint256 public tokenCreationCap = 1000000000000000000000000000; // 1 billion LUNETS
@@ -194,7 +194,7 @@ contract LunetToken is HumanStandardToken {
       uint256 timestamp;
     }
 
-    mapping (address =&gt; Stake) public stakes;
+    mapping (address => Stake) public stakes;
 
     function LunetToken() public {
        totalSupply = lunetReserve;
@@ -203,7 +203,7 @@ contract LunetToken is HumanStandardToken {
     }
 
     function stake() external payable {
-      require(msg.value &gt; 0);
+      require(msg.value > 0);
 
       // get stake
       Stake storage stake = stakes[msg.sender];
@@ -223,7 +223,7 @@ contract LunetToken is HumanStandardToken {
       Stake storage stake = stakes[msg.sender];
 
       // check the stake is non-zero
-      require(stake.amount &gt; 0);
+      require(stake.amount > 0);
 
       // copy amount
       uint256 amount = stake.amount;
@@ -243,13 +243,13 @@ contract LunetToken is HumanStandardToken {
       uint256 reward = getReward(msg.sender);
 
       // check that the reward is non-zero
-      if (reward &gt; 0) {
+      if (reward > 0) {
         // reset the timestamp
         Stake storage stake = stakes[msg.sender];
         stake.timestamp = now;
 
         uint256 checkedSupply = totalSupply.add(reward);
-        if (tokenCreationCap &lt; checkedSupply) revert();
+        if (tokenCreationCap < checkedSupply) revert();
 
         // update totalSupply of LUNETS
         totalSupply = checkedSupply;

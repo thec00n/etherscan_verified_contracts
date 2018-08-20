@@ -17,8 +17,8 @@ contract Hellevator {
     uint public queueSize;
 
     address owner;
-    mapping (address =&gt; uint) pendingWithdrawals;
-    mapping (uint =&gt; address) rubes;
+    mapping (address => uint) pendingWithdrawals;
+    mapping (uint => address) rubes;
 
     function Hellevator() public {
         owner = msg.sender;
@@ -53,7 +53,7 @@ contract Hellevator {
     }
 
     function joinTheFray() internal {
-        bool isCheapskate = msg.value &lt; buyin;
+        bool isCheapskate = msg.value < buyin;
 
         if (isCheapskate) {
             return;

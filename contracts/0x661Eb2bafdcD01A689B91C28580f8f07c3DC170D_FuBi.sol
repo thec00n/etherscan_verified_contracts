@@ -28,18 +28,18 @@ contract ERC20 {
 contract FuBi is ERC20 {
 
     // each address in this contract may have tokens, to define balances and store balance of each address we use mapping.
-    mapping (address =&gt; uint256) balances;   
+    mapping (address => uint256) balances;   
     // frozen account mapping to store account which are freeze to do anything
-    mapping (address =&gt; bool) public frozenAccount; //
+    mapping (address => bool) public frozenAccount; //
 
     //address internal owner = 0x4Bce8E9850254A86a1988E2dA79e41Bc6793640d;  
 
     // Owner of this contract will be the creater of the contract
     address public owner;
     // name of this contract and investment fund
-    string public name = &quot;FuBi&quot;;  
+    string public name = "FuBi";  
     // token symbol
-    string public symbol = &quot;Fu&quot;;  
+    string public symbol = "Fu";  
     // decimals (for humans)
     uint8 public decimals = 6;    
     // total supply of tokens it includes 6 zeros extra to handle decimal of 6 places.
@@ -49,7 +49,7 @@ contract FuBi is ERC20 {
     // events that will notifies clints about the freezing accounts and status
     event FrozenFu(address target, bool frozen);
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
     
     bool flag = false;
 
@@ -74,15 +74,15 @@ contract FuBi is ERC20 {
     // transfer tokens from one address to another
     function transfer(address _to, uint _value) returns (bool success)
     {
-         // Check send token value &gt; 0;
-        if(_value &lt;= 0) throw;                                     
+         // Check send token value > 0;
+        if(_value <= 0) throw;                                     
         // Check if the sender has enough
-        if (balances[msg.sender] &lt; _value) throw;                   
+        if (balances[msg.sender] < _value) throw;                   
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to]) throw; 
+        if (balances[_to] + _value < balances[_to]) throw; 
         // Subtract from the sender
         balances[msg.sender] -= _value;                             
-        // Add the same to the recipient, if it&#39;s the contact itself then it signals a sell order of those tokens
+        // Add the same to the recipient, if it's the contact itself then it signals a sell order of those tokens
         balances[_to] += _value;                                    
         // Notify anyone listening that this transfer took place               
         Transfer(msg.sender, _to, _value);                          
@@ -103,9 +103,9 @@ contract FuBi is ERC20 {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint _value) returns(bool success) {
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balances[_from] &lt; _value) throw; // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) throw; // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+        if (balances[_from] < _value) throw; // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) throw; // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
 
         balances[_from] -= _value; // Subtract from the sender
         balances[_to] += _value; // Add the same to the recipient

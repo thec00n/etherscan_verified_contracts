@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a485b5354437a56534c5f494e5b4814595557">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="36505758584f184c5e535851765a5f4053454257441855595b">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a485b5354437a56534c5f494e5b4814595557">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="36505758584f184c5e535851765a5f4053454257441855595b">[email protected]</a>
 /*                 
 /* ==================================================================== */
 
@@ -49,9 +49,9 @@ contract GameConfig {
   }
   
   /** mapping**/
-  mapping(uint256 =&gt; Card) private cardInfo;  //normal card
-  mapping(uint256 =&gt; BattleCard) private battlecardInfo;  //battle card
-  mapping(uint256 =&gt; UpgradeCard) private upgradeInfo;  //upgrade card
+  mapping(uint256 => Card) private cardInfo;  //normal card
+  mapping(uint256 => BattleCard) private battlecardInfo;  //battle card
+  mapping(uint256 => UpgradeCard) private upgradeInfo;  //upgrade card
      
   uint256 public currNumOfCards;  
   uint256 public currNumOfBattleCards;  
@@ -64,7 +64,7 @@ contract GameConfig {
   // Constructor 
   function GameConfig() public {
     owner = msg.sender;
-    versionNo = &quot;20180523&quot;;
+    versionNo = "20180523";
   }
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -153,9 +153,9 @@ contract GameConfig {
       } else {
         return cardInfo[cardId].baseCoinCost + (existing * cardInfo[cardId].coinCostIncreaseHalf * 2);
             }
-    } else if (amount &gt; 1) { 
+    } else if (amount > 1) { 
       uint256 existingCost;
-      if (existing &gt; 0) {
+      if (existing > 0) {
         existingCost = (cardInfo[cardId].baseCoinCost * existing) + (existing * (existing - 1) * cardInfo[cardId].coinCostIncreaseHalf);
       }
       icount = SafeMath.add(existing,amount);  
@@ -172,9 +172,9 @@ contract GameConfig {
       } else {
         return battlecardInfo[cardId].baseCoinCost + (existing * battlecardInfo[cardId].coinCostIncreaseHalf * 2);
             }
-    } else if (amount &gt; 1) {
+    } else if (amount > 1) {
       uint256 existingCost;
-      if (existing &gt; 0) {
+      if (existing > 0) {
         existingCost = (battlecardInfo[cardId].baseCoinCost * existing) + (existing * (existing - 1) * battlecardInfo[cardId].coinCostIncreaseHalf);
       }
       icount = SafeMath.add(existing,amount);  
@@ -203,16 +203,16 @@ contract GameConfig {
     return SafeMath.div(defendingPower,2);
   }
  
-    /// @notice get the production card&#39;s ether cost
+    /// @notice get the production card's ether cost
   function unitEthCost(uint256 cardId) external constant returns (uint256) {
     return cardInfo[cardId].ethCost;
   }
 
-    /// @notice get the battle card&#39;s ether cost
+    /// @notice get the battle card's ether cost
   function unitBattleEthCost(uint256 cardId) external constant returns (uint256) {
     return battlecardInfo[cardId].ethCost;
   }
-  /// @notice get the battle card&#39;s plat cost
+  /// @notice get the battle card's plat cost
   function unitBattlePLATCost(uint256 cardId) external constant returns (uint256) {
     return SafeMath.mul(battlecardInfo[cardId].ethCost,PLATPrice);
   }
@@ -312,7 +312,7 @@ contract GameConfig {
     upgradeClass = upgradeInfo[upgradecardId].upgradeClass;
     cardId = upgradeInfo[upgradecardId].cardId;
     uint8 uflag;
-    if (coinCost &gt;0 ) {
+    if (coinCost >0 ) {
       if (upgradeClass ==0 || upgradeClass ==1 || upgradeClass == 3) {
         uflag = 1;
       } else if (upgradeClass==2 || upgradeClass == 4 || upgradeClass==5 || upgradeClass==7) {
@@ -320,25 +320,25 @@ contract GameConfig {
       } 
     }
   
-    if (coinCost&gt;0 &amp;&amp; existing&gt;=1) {
+    if (coinCost>0 && existing>=1) {
       coinCost = getCostForUprade(upgradecardId, existing, 1);
     }                                                        
-    if (ethCost&gt;0) {
+    if (ethCost>0) {
       if (upgradecardId == 2) {
-        if (existing&gt;=1) { 
+        if (existing>=1) { 
           ethCost = SafeMath.mul(ethCost,2);
         } 
       }
     }else {
       if ((existing ==1 || existing ==4)) {
-        if (ethCost&lt;=0) {                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+        if (ethCost<=0) {                                                                                                                                                                                                                                                                                                                                                                                                                                                 
           ethCost = 0.1 ether;
           coinCost = 0;
       }
     }
     }
     upgradeValue = upgradeInfo[upgradecardId].upgradeValue;
-    if (ethCost&gt;0) {
+    if (ethCost>0) {
       if (uflag==1) {
         upgradeValue = upgradeInfo[upgradecardId].upgradeValue * 2;
       } else if (uflag==2) {
@@ -378,9 +378,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -388,7 +388,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -397,7 +397,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

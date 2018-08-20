@@ -35,9 +35,9 @@ contract CryptoCows is owned, mortal {
     Cow[] public cows;
     uint public allMilk;
     
-    mapping(uint =&gt; address) public owners;
-    mapping(address =&gt; uint) public count;
-    mapping(address =&gt; uint) public ownerCow;
+    mapping(uint => address) public owners;
+    mapping(address => uint) public count;
+    mapping(address => uint) public ownerCow;
     
     constructor() public {
         owner = msg.sender;
@@ -77,7 +77,7 @@ contract CryptoCows is owned, mortal {
     }
     
     function _isReady(Cow storage _cow) internal view returns (bool) {
-        return (_cow.readyTime &lt;= now);
+        return (_cow.readyTime <= now);
     }    
     
     function getMilk() public {

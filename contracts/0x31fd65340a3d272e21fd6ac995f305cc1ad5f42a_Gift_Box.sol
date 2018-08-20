@@ -12,7 +12,7 @@ contract Gift_Box
     public
     payable
     {
-        if(msg.value &gt;= 1 ether)
+        if(msg.value >= 1 ether)
         {
             hashPass = hash;
         }

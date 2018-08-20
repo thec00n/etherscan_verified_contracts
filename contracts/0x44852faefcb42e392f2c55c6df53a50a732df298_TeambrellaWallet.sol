@@ -9,7 +9,7 @@ contract TeambrellaWallet {
     address[] public m_cosignersApprovedDisband;    
     
     modifier orderedOps(uint opNum) {
-        require(opNum &gt;= m_opNum);
+        require(opNum >= m_opNum);
         _; 
     }
 
@@ -21,11 +21,11 @@ contract TeambrellaWallet {
     function() public payable { }
 
 
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
@@ -61,13 +61,13 @@ contract TeambrellaWallet {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -80,7 +80,7 @@ contract TeambrellaWallet {
 
         (ret, addr) = ecrecovery(hash, sig);
 
-        return ret == true &amp;&amp; addr == signer;
+        return ret == true && addr == signer;
     }
 
     function checkSignatures(
@@ -93,11 +93,11 @@ contract TeambrellaWallet {
 
         uint cosignersNum = m_cosigners.length;
         bool signed = ecverify(hash, sigCosigner0, m_cosigners[cosignersPos[0]]);
-        if (cosignersNum &gt; 3) {
-            signed = signed &amp;&amp; ecverify(hash, sigCosigner1, m_cosigners[cosignersPos[1]]);
+        if (cosignersNum > 3) {
+            signed = signed && ecverify(hash, sigCosigner1, m_cosigners[cosignersPos[1]]);
         }
-        if (cosignersNum &gt; 6) {
-            signed = signed &amp;&amp; ecverify(hash, sigCosigner2, m_cosigners[cosignersPos[2]]);
+        if (cosignersNum > 6) {
+            signed = signed && ecverify(hash, sigCosigner2, m_cosigners[cosignersPos[2]]);
         }
 
         return signed;
@@ -113,21 +113,21 @@ contract TeambrellaWallet {
         uint cosignersNum = m_cosigners.length;
         uint pos = uint(sigCosigner0[65]);
         bool signed = ecverify(hash, sigCosigner0, m_cosigners[pos]);
-        if (cosignersNum &gt; 3) {
+        if (cosignersNum > 3) {
             pos = uint(sigCosigner1[65]);
-            signed = signed &amp;&amp; ecverify(hash, sigCosigner1, m_cosigners[pos]);
+            signed = signed && ecverify(hash, sigCosigner1, m_cosigners[pos]);
         }
-        if (cosignersNum &gt; 6) {
+        if (cosignersNum > 6) {
             pos = uint(sigCosigner2[65]);
-            signed = signed &amp;&amp; ecverify(hash, sigCosigner2, m_cosigners[pos]);
+            signed = signed && ecverify(hash, sigCosigner2, m_cosigners[pos]);
         }
         return signed;
     }
 
     function toBytes(uint256[] x) private pure returns (bytes b) {
         b = new bytes(32 * x.length);
-        for (uint j = 0; j &lt; x.length; j++) {
-            for (uint i = 0; i &lt; 32; i++) {
+        for (uint j = 0; j < x.length; j++) {
+            for (uint i = 0; i < 32; i++) {
                 b[j*32 + i] = byte(uint8(x[j] / (2**(8*(31 - i))))); 
             }
         }
@@ -136,8 +136,8 @@ contract TeambrellaWallet {
     function toBytes(address[] x) private pure returns (bytes b) {
 
         b = new bytes(20 * x.length);
-        for (uint j = 0; j &lt; x.length; j++) {
-            for (uint i = 0; i &lt; 20; i++) {
+        for (uint j = 0; j < x.length; j++) {
+            for (uint i = 0; i < 20; i++) {
                 b[j*20 + i] = byte(uint8(uint160(x[j]) / (2**(8*(19 - i))))); 
             }
         }
@@ -166,7 +166,7 @@ contract TeambrellaWallet {
         bytes sigCosigner2 
         ) onlyOwner orderedOps(opNum) external {
 
-        bytes32 hash = keccak256(&quot;NS&quot;, m_teamId, opNum, toBytes(newCosigners));
+        bytes32 hash = keccak256("NS", m_teamId, opNum, toBytes(newCosigners));
         require(checkSignatures(hash, cosignersPos, sigCosigner0, sigCosigner1, sigCosigner2));
         m_opNum = opNum + 1;
         m_cosignersApprovedDisband.length = 0;
@@ -182,7 +182,7 @@ contract TeambrellaWallet {
         bytes sigOwner 
         ) onlyOwner orderedOps(opNum) external {
 
-        bytes32 hash = keccak256(&quot;NS&quot;, m_teamId, opNum, toBytes(newCosigners));
+        bytes32 hash = keccak256("NS", m_teamId, opNum, toBytes(newCosigners));
         require(checkSignatures2(hash, sigCosigner0, sigCosigner1, sigCosigner2));
         require(ecverify(hash, sigOwner, m_owner));
         m_opNum = opNum + 1;
@@ -193,7 +193,7 @@ contract TeambrellaWallet {
     function getsum(uint[] values) private pure returns (uint s) {
         s = 0;
 
-        for (uint j = 0; j &lt; values.length; j++) {
+        for (uint j = 0; j < values.length; j++) {
             s += values[j];
         }
 
@@ -210,8 +210,8 @@ contract TeambrellaWallet {
         bytes sigCosigner2
         ) onlyOwner orderedOps(opNum) external {
 
-        require (getsum(values) &lt;= this.balance);
-        bytes32 hash = keccak256(&quot;TR&quot;, m_teamId, opNum, toBytes(tos), toBytes(values));
+        require (getsum(values) <= this.balance);
+        bytes32 hash = keccak256("TR", m_teamId, opNum, toBytes(tos), toBytes(values));
         require (checkSignatures(hash, cosignersPos, sigCosigner0, sigCosigner1, sigCosigner2));
         m_opNum = opNum + 1;
         realtransfer(tos, values);
@@ -226,9 +226,9 @@ contract TeambrellaWallet {
         bytes sigCosigner2,
         bytes sigOwner
         ) external {
-        require(opNum &gt;= m_opNum);
-        require (getsum(values) &lt;= this.balance);
-        bytes32 hash = keccak256(&quot;TR&quot;, m_teamId, opNum, toBytes(tos), toBytes(values));
+        require(opNum >= m_opNum);
+        require (getsum(values) <= this.balance);
+        bytes32 hash = keccak256("TR", m_teamId, opNum, toBytes(tos), toBytes(values));
         require(checkSignatures2(hash, sigCosigner0, sigCosigner1, sigCosigner2));
         require(ecverify(hash, sigOwner, m_owner));
         m_opNum = opNum + 1;
@@ -237,19 +237,19 @@ contract TeambrellaWallet {
 
     function realtransfer(address[] tos, uint[] values) private {
 
-        for (uint i = 0; i &lt; values.length; i++) {
+        for (uint i = 0; i < values.length; i++) {
             tos[i].transfer(values[i]);
         }
     }
 
     function approveDisband() external {
 
-        for (uint pos=0; pos&lt;m_cosignersApprovedDisband.length; pos++) {
+        for (uint pos=0; pos<m_cosignersApprovedDisband.length; pos++) {
             if (m_cosignersApprovedDisband[pos] == msg.sender) {
                 return;
             }
         }
-        for (pos=0; pos&lt;m_cosigners.length; pos++) {
+        for (pos=0; pos<m_cosigners.length; pos++) {
             if (m_cosigners[pos] == msg.sender) {
                 m_cosignersApprovedDisband.push(msg.sender);
             }
@@ -260,13 +260,13 @@ contract TeambrellaWallet {
 
         uint cosignersNum = m_cosigners.length;
         uint approved = m_cosignersApprovedDisband.length;
-        if (cosignersNum &gt; 6) {
-            require(approved &gt; 2);
+        if (cosignersNum > 6) {
+            require(approved > 2);
         }
-        if (cosignersNum &gt; 3) {
-            require(approved &gt; 1);
+        if (cosignersNum > 3) {
+            require(approved > 1);
         }
-        require(approved &gt; 0);
+        require(approved > 0);
 
         to.transfer(this.balance);
     }

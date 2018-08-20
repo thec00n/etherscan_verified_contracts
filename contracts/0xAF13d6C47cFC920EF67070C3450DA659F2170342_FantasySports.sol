@@ -14,11 +14,11 @@ contract FantasySports {
 	uint constant gcnWinMultipler = 195;
 	uint constant gcnTransferFee = .0001 ether;
 
-	mapping(uint =&gt; address[]) gmapGame_addresses;
-	mapping(uint =&gt; uint[]) gmapGame_wagers;
-	mapping(uint =&gt; uint[]) gmapGame_runningbalances;
-	mapping(uint =&gt; uint) gmapGame_balance;
-	mapping(uint =&gt; uint) gmapGame_expiration;
+	mapping(uint => address[]) gmapGame_addresses;
+	mapping(uint => uint[]) gmapGame_wagers;
+	mapping(uint => uint[]) gmapGame_runningbalances;
+	mapping(uint => uint) gmapGame_balance;
+	mapping(uint => uint) gmapGame_expiration;
 
 	modifier onlyOwner() {
 		require(gadrOwner == msg.sender);
@@ -39,7 +39,7 @@ contract FantasySports {
 	}
 
 	function() payable public {
-		require(msg.value &gt;= .001 ether &amp;&amp; block.timestamp &lt; gmapGame_expiration[gnGameID]);
+		require(msg.value >= .001 ether && block.timestamp < gmapGame_expiration[gnGameID]);
 		gmapGame_addresses[gnGameID].push(msg.sender);
 		gmapGame_wagers[gnGameID].push(msg.value);
 		gmapGame_balance[gnGameID] +=msg.value;
@@ -93,7 +93,7 @@ contract FantasySports {
 	}
 
 	function zRefundAllPlayers() onlyOwner() public {
-		for (uint i = 0; i &lt; gmapGame_addresses[gnGameID].length; i++) {
+		for (uint i = 0; i < gmapGame_addresses[gnGameID].length; i++) {
 			gmapGame_addresses[gnGameID][i].transfer(gmapGame_wagers[gnGameID][i] - gcnTransferFee);
 		}
 	}
@@ -114,15 +114,15 @@ contract FantasySports {
 	function zTransferLosingBets() onlyOwner() public {
 		if (gmapGame_balance[gnGameID] != 0) {
 			uint nOtherBalance = gobjOtherContract.zGetGameBalance();
-			if (gmapGame_balance[gnGameID] &lt;= nOtherBalance) {
+			if (gmapGame_balance[gnGameID] <= nOtherBalance) {
 				gobjOtherContract.zReceiveFunds.value(gmapGame_balance[gnGameID])();
 			} else {
 				if (nOtherBalance != 0) {
 					gobjOtherContract.zReceiveFunds.value(nOtherBalance)();
 				}
-				for (uint i = 0; i &lt; gmapGame_addresses[gnGameID].length; i++) {
-					if (gmapGame_runningbalances[gnGameID][i] &gt; nOtherBalance) {
-						if (gmapGame_runningbalances[gnGameID][i] - nOtherBalance &lt; gmapGame_wagers[gnGameID][i]) {
+				for (uint i = 0; i < gmapGame_addresses[gnGameID].length; i++) {
+					if (gmapGame_runningbalances[gnGameID][i] > nOtherBalance) {
+						if (gmapGame_runningbalances[gnGameID][i] - nOtherBalance < gmapGame_wagers[gnGameID][i]) {
 							gmapGame_addresses[gnGameID][i].transfer( (gmapGame_runningbalances[gnGameID][i] - nOtherBalance) - gcnTransferFee);
 						} else {
 							gmapGame_addresses[gnGameID][i].transfer(gmapGame_wagers[gnGameID][i] - gcnTransferFee);
@@ -137,11 +137,11 @@ contract FantasySports {
 		if (gmapGame_balance[gnGameID] != 0) {
 			uint nPreviousRunningBalance = 0;
 			uint nOtherBalance = gobjOtherContract.zGetGameBalance();
-			for (uint i = 0; i &lt; gmapGame_addresses[gnGameID].length; i++) {
-				if (gmapGame_runningbalances[gnGameID][i] &lt;= nOtherBalance) {
+			for (uint i = 0; i < gmapGame_addresses[gnGameID].length; i++) {
+				if (gmapGame_runningbalances[gnGameID][i] <= nOtherBalance) {
 					gmapGame_addresses[gnGameID][i].transfer((gmapGame_wagers[gnGameID][i] * gcnWinMultipler / 100) - gcnTransferFee);
 				} else {
-					if (nPreviousRunningBalance &lt; nOtherBalance) {
+					if (nPreviousRunningBalance < nOtherBalance) {
 						gmapGame_addresses[gnGameID][i].transfer(((nOtherBalance - nPreviousRunningBalance) * gcnWinMultipler / 100) + (gmapGame_wagers[gnGameID][i] - (nOtherBalance - nPreviousRunningBalance)) - gcnTransferFee);
 					} else {
 						gmapGame_addresses[gnGameID][i].transfer(gmapGame_wagers[gnGameID][i] - gcnTransferFee);

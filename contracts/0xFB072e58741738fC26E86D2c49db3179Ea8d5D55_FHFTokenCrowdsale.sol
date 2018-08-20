@@ -2,9 +2,9 @@ pragma solidity 0.4.18;
 
 contract FHFTokenInterface {
     /* Public parameters of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;Forever Has Fallen&#39;;
-    string public symbol = &#39;FC&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'Forever Has Fallen';
+    string public symbol = 'FC';
     uint8 public decimals = 18;
 
     function approveCrowdsale(address _crowdsaleAddress) external;
@@ -85,7 +85,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -128,7 +128,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
     * @return active - True, if sale is active
     */
     function isICOActive() public constant returns (bool active) {
-        active = ((generalSaleStartDate &lt;= now) &amp;&amp; (now &lt; generalSaleEndDate) &amp;&amp; (!goalReached));
+        active = ((generalSaleStartDate <= now) && (now < generalSaleEndDate) && (!goalReached));
         return active;
     }
 
@@ -148,7 +148,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
 
         // Before Metropolis update require will not refund gas, but
         // for some reason require statement around msg.value always throws
-        assert(msg.value &gt; 0 finney);
+        assert(msg.value > 0 finney);
 
         // Tell everyone about the transfer
         FundTransfer(backerAddress, address(this), amount);
@@ -162,7 +162,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
         // Check that stage wallet has enough tokens. If not, sell the rest and
         // return change.
         uint remainingTokenBalance = token.balanceOf(saleWalletAddress);
-        if (remainingTokenBalance &lt;= tokenAmount) {
+        if (remainingTokenBalance <= tokenAmount) {
             tokenAmount = remainingTokenBalance;
             goalReached = true;
         }
@@ -181,7 +181,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
 
         // Return change (in Wei)
         uint change = amount - acceptedAmount;
-        if (change &gt; 0) {
+        if (change > 0) {
             if (backerAddress.send(change)) {
                 FundTransfer(address(this), backerAddress, change);
             }
@@ -190,13 +190,13 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
     }
 
     /**
-    *  Transfer ETH amount from contract to owner&#39;s address.
+    *  Transfer ETH amount from contract to owner's address.
     *  Can only be used if ICO is closed
     *
     * @param amount - ETH amount to transfer in Wei
     */
     function safeWithdrawal(uint amount) external onlyOwner {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         require(!isICOActive());
 
         if (owner.send(amount)) {
@@ -219,7 +219,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
     */
     function closeMainSaleICO() external onlyOwner {
         require(!isICOActive());
-        require(generalSaleStartDate &lt; now);
+        require(generalSaleStartDate < now);
 
         var amountToMove = token.balanceOf(generalSaleWallet.addr);
         token.transferFrom(generalSaleWallet.addr, playersReserve, amountToMove);
@@ -234,7 +234,7 @@ contract FHFTokenCrowdsale is Owned, CrowdsaleParameters {
     */
     function kill() external onlyOwner {
         require(!isICOActive());
-        if (now &lt; generalSaleStartDate) {
+        if (now < generalSaleStartDate) {
             selfdestruct(owner);
         } else if (token.balanceOf(generalSaleWallet.addr) == 0) {
             FundTransfer(address(this), msg.sender, this.balance);

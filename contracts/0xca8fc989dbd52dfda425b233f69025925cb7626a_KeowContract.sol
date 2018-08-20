@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,9 +33,9 @@ contract BasicTokenERC20 {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (uint8 =&gt; mapping (address =&gt; uint256)) internal whitelist;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (uint8 => mapping (address => uint256)) internal whitelist;
 
     uint256 totalSupply_;
     address public owner_;
@@ -54,7 +54,7 @@ contract BasicTokenERC20 {
 
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0));
-        require(value &lt;= balances[msg.sender]);
+        require(value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -64,8 +64,8 @@ contract BasicTokenERC20 {
     
     function transferFrom(address from, address to, uint256 value) public returns (bool){
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowed[from][msg.sender]);
 
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -102,8 +102,8 @@ contract BasicTokenERC20 {
 
 contract KeowContract is BasicTokenERC20 {    
 
-    string public constant name = &quot;KeowToken&quot;; 
-    string public constant symbol = &quot;KEOW&quot;;
+    string public constant name = "KeowToken"; 
+    string public constant symbol = "KEOW";
     uint public decimals = 18; 
     uint256 public milion = 1000000;
     event TestLog(address indexed from, address indexed to, uint256 value, uint8 state);
@@ -181,19 +181,19 @@ contract KeowContract is BasicTokenERC20 {
     }    
 
     function () public payable {
-        require(state &gt; 0);
-        require(state &lt; 9);
+        require(state > 0);
+        require(state < 9);
         require(msg.sender != 0x0);
         require(msg.value != 0);
         uint256 limit = getMinLimit();
         
-        require(msg.value &gt;= limit);
+        require(msg.value >= limit);
         address beneficiary = msg.sender;
-        require(whitelist[state][beneficiary] &gt;= msg.value);
+        require(whitelist[state][beneficiary] >= msg.value);
         
         uint256 weiAmount = msg.value;
         uint256 tokens = weiAmount.mul(exchangeETH);
-        require(balances[currentWallet] &gt;= tokens);
+        require(balances[currentWallet] >= tokens);
         
         balances[currentWallet] = balances[currentWallet].sub(tokens);
         balances[beneficiary] = balances[beneficiary].add(tokens); 
@@ -225,7 +225,7 @@ contract KeowContract is BasicTokenERC20 {
     }
 
     function withdraw(uint value) public onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
         require(companyWallet != 0x0);        
         companyWallet.transfer(value);
     }

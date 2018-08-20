@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
   
@@ -38,9 +38,9 @@ contract ESZCoin {
     uint8       public      decimals;
     bool        public      globalTransferLock;
 
-    mapping (address =&gt; bool)                           public      accountLock;
-    mapping (address =&gt; uint256)                        public      balances;
-    mapping (address =&gt; mapping(address =&gt; uint256))    public      allowed;
+    mapping (address => bool)                           public      accountLock;
+    mapping (address => uint256)                        public      balances;
+    mapping (address => mapping(address => uint256))    public      allowed;
 
     event Transfer(address indexed _sender, address indexed _recipient, uint256 _amount);
     event Approval(address indexed _owner, address indexed _spender, uint256 _amount);
@@ -70,8 +70,8 @@ contract ESZCoin {
         owner = msg.sender;
         totalSupply = 10000000000000000000000000;
         balances[msg.sender] = totalSupply;
-        name = &quot;ESZCoin&quot;;
-        symbol = &quot;ESZ&quot;;
+        name = "ESZCoin";
+        symbol = "ESZ";
         decimals = 18;
         globalTransferLock = false;
     } 
@@ -161,7 +161,7 @@ contract ESZCoin {
         returns (bool)
     {
         require(accountLock[_owner] == false);
-        require(allowed[_owner][msg.sender] &gt;= _amount);
+        require(allowed[_owner][msg.sender] >= _amount);
         require(transferCheck(_owner, _recipient, _amount));
         allowed[_owner][msg.sender] = allowed[_owner][msg.sender].sub(_amount);
         balances[_owner] = balances[_owner].sub(_amount);
@@ -200,10 +200,10 @@ contract ESZCoin {
         transfersUnlocked
         returns (bool)
     {
-        require(_amount &gt; 0);
-        require(balances[_sender] &gt;= _amount);
-        require(balances[_sender].sub(_amount) &gt;= 0);
-        require(balances[_recipient].add(_amount) &gt; balances[_recipient]);
+        require(_amount > 0);
+        require(balances[_sender] >= _amount);
+        require(balances[_sender].sub(_amount) >= 0);
+        require(balances[_recipient].add(_amount) > balances[_recipient]);
         return true;
     }
 

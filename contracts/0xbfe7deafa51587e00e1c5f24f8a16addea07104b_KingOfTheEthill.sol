@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,10 +61,10 @@ contract KingOfTheEthill {
   uint256 public currentRoundNumber;
   uint256 public currentBidNumber;
   uint256 public maxMessageChars = 140;
-  mapping(uint256 =&gt; address) roundToKing;
-  mapping(uint256 =&gt; uint256) roundToWinnings;
-  mapping(uint256 =&gt; uint256) roundToFinalBid;
-  mapping(uint256 =&gt; string) roundToFinalMessage;
+  mapping(uint256 => address) roundToKing;
+  mapping(uint256 => uint256) roundToWinnings;
+  mapping(uint256 => uint256) roundToFinalBid;
+  mapping(uint256 => string) roundToFinalMessage;
 
   event NewKing(
     uint256 indexed roundNumber,
@@ -85,17 +85,17 @@ contract KingOfTheEthill {
   }
   
   function setDevFee (uint256 _n) onlyOwner() public {
-	  require(_n &gt;= 0 &amp;&amp; _n &lt;= 10);
+	  require(_n >= 0 && _n <= 10);
     devFeePercent = _n;
   }
 
   function setRollover (uint256 _n) onlyOwner() public {
-	  require(_n &gt;= 1 &amp;&amp; _n &lt;= 30);
+	  require(_n >= 1 && _n <= 30);
     rolloverPercent = _n;
   }
 
   function setNextBidExpireBlockLength (uint256 _n) onlyOwner() public {
-	  require(_n &gt;= 10 &amp;&amp; _n &lt;= 10000);
+	  require(_n >= 10 && _n <= 10000);
     nextBidExpireBlockLength = _n;
   }
 
@@ -105,13 +105,13 @@ contract KingOfTheEthill {
 
   function bid (uint256 _roundNumber, string _message) payable public {
     require(!isContract(msg.sender));
-    require(bytes(_message).length &lt;= maxMessageChars);
-    require(msg.value &gt; 0);
+    require(bytes(_message).length <= maxMessageChars);
+    require(msg.value > 0);
     
-    if (_roundNumber == currentRoundNumber &amp;&amp; !roundExpired()) {
+    if (_roundNumber == currentRoundNumber && !roundExpired()) {
       // bid in active round
-      require(msg.value &gt; lastBidAmount);
-    }else if (_roundNumber == (currentRoundNumber+1) &amp;&amp; roundExpired()) {
+      require(msg.value > lastBidAmount);
+    }else if (_roundNumber == (currentRoundNumber+1) && roundExpired()) {
       // first bid of new round, process old round
       var lastRoundPotBalance = this.balance.sub(msg.value);
       uint256 devFee = lastRoundPotBalance.mul(devFeePercent).div(100);
@@ -148,7 +148,7 @@ contract KingOfTheEthill {
   }
 
   function roundExpired() public view returns (bool) {
-    return blocksSinceLastBid() &gt;= bidExpireBlockLength;
+    return blocksSinceLastBid() >= bidExpireBlockLength;
   }
 
   function blocksRemaining() public view returns (uint256) {
@@ -191,6 +191,6 @@ contract KingOfTheEthill {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }

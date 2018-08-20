@@ -24,7 +24,7 @@ contract MultiplyX10 {
   uint public Total_Deposited=0;
   uint public Total_Paid_Out=0;
   uint public Multiplier=10;
-  string public Message=&quot;Welcome Investor! Multiply your ETH Now!&quot;;
+  string public Message="Welcome Investor! Multiply your ETH Now!";
 
 ///:::::::::::::::::::::::::::::::::::::::::::::::::::::::Init
 
@@ -33,19 +33,19 @@ contract MultiplyX10 {
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::Enter
 
   function enter() {
-    if (msg.value &gt; 2 ether) {
+    if (msg.value > 2 ether) {
 
     uint Amount=msg.value;								//set amount to how much the investor deposited
     Total_Investors=depositors.length+1;   					 //count investors
     depositors.length += 1;                        						//increase array lenght
-    depositors[depositors.length-1].EtherAddress = msg.sender; //add net investor&#39;s address
-    depositors[depositors.length-1].Amount = Amount;          //add net investor&#39;s amount
+    depositors[depositors.length-1].EtherAddress = msg.sender; //add net investor's address
+    depositors[depositors.length-1].Amount = Amount;          //add net investor's amount
     Balance += Amount;               						// balance update
     Total_Deposited+=Amount;       						//update deposited Amount
     uint payment;
     uint index=0;
 
-    while (Balance &gt; (depositors[index].Amount * Multiplier) &amp;&amp; index&lt;Total_Investors)
+    while (Balance > (depositors[index].Amount * Multiplier) && index<Total_Investors)
      {
 
 	if(depositors[index].Amount!=0)

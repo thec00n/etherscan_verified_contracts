@@ -15,10 +15,10 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract x32323 is owned{
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) initialized;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) initialized;
 
     event FrozenFunds(address target, bool frozen);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -47,23 +47,23 @@ contract x32323 is owned{
 	initialSupply = maxSupply - totalairdrop;
     balanceOf[msg.sender] = initialSupply;
     totalSupply = initialSupply;
-        name = &quot;Taiwan讚&quot;;
-        symbol = &quot;Tw讚&quot;;         
+        name = "Taiwan讚";
+        symbol = "Tw讚";         
     }
 
     function initialize(address _address) internal returns (bool success) {
 
         if (!initialized[_address]) {
             initialized[_address] = true ;
-            if(totalSupply &lt; airdrop1){
+            if(totalSupply < airdrop1){
                 balanceOf[_address] += 2000;
                 totalSupply += 2000;
             }
-            else if(airdrop1 &lt;= totalSupply &amp;&amp; totalSupply &lt; airdrop2){
+            else if(airdrop1 <= totalSupply && totalSupply < airdrop2){
                 balanceOf[_address] += 800;
                 totalSupply += 800;
             }
-            else if(airdrop2 &lt;= totalSupply &amp;&amp; totalSupply &lt;= airdrop3-300){
+            else if(airdrop2 <= totalSupply && totalSupply <= airdrop3-300){
                 balanceOf[_address] += 300;
                 totalSupply += 300;    
             }
@@ -73,16 +73,16 @@ contract x32323 is owned{
     }
     
     function reward(address _address) internal returns (bool success) {
-	    if (totalSupply &lt; maxSupply) {
-            if(totalSupply &lt; airdrop1){
+	    if (totalSupply < maxSupply) {
+            if(totalSupply < airdrop1){
                 balanceOf[_address] += 1000;
                 totalSupply += 1000;
             }
-            else if(airdrop1 &lt;= totalSupply &amp;&amp; totalSupply &lt; airdrop2){
+            else if(airdrop1 <= totalSupply && totalSupply < airdrop2){
                 balanceOf[_address] += 300;
                 totalSupply += 300;
             }
-            else if(airdrop2 &lt;= totalSupply &amp;&amp; totalSupply &lt; airdrop3){
+            else if(airdrop2 <= totalSupply && totalSupply < airdrop3){
                 balanceOf[_address] += 100;
                 totalSupply += 100;    
             }
@@ -95,8 +95,8 @@ contract x32323 is owned{
     	require(!frozenAccount[_from]);
         require(_to != 0x0);
 
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 	   
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -111,14 +111,14 @@ contract x32323 is owned{
 
     function transfer(address _to, uint256 _value) public {
         
-	if(msg.sender.balance &lt; minBalanceForAccounts)
+	if(msg.sender.balance < minBalanceForAccounts)
             sell((minBalanceForAccounts - msg.sender.balance) / sellPrice);
         _transfer(msg.sender, _to, _value);
     }
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -150,19 +150,19 @@ contract x32323 is owned{
 
     function buy() payable returns (uint amount){
         amount = msg.value / buyPrice;                    // calculates the amount
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
     function sell(uint amount) returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

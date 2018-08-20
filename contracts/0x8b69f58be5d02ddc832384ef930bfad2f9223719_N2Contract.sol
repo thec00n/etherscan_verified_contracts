@@ -92,7 +92,7 @@ contract AccessControl {
   /// @notice This is public rather than external so it can be called by
   ///  derived contracts.
   function unpause() public onlyOwner whenPaused {
-    // can&#39;t unpause if contract was upgraded
+    // can't unpause if contract was upgraded
     paused = false;
   }
 }
@@ -105,20 +105,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -126,7 +126,7 @@ library SafeMath {
 contract BasicToken is AccessControl, ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract BasicToken is AccessControl, ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -207,7 +207,7 @@ contract LockableToken is StandardToken, ReentrancyGuard {
     uint256 releaseTime;
   }
 
-  mapping (uint =&gt; LockedBalance) public lockedBalances;
+  mapping (uint => LockedBalance) public lockedBalances;
   uint public lockedBalanceCount;
 
   event TransferLockedToken(address indexed from, address indexed to, uint256 value, uint256 releaseTime);
@@ -220,8 +220,8 @@ contract LockableToken is StandardToken, ReentrancyGuard {
   * @param _releaseTime The time to be locked.
   */
   function transferLockedToken(address _to, uint256 _value, uint256 _releaseTime) public whenNotPaused nonReentrant returns (bool) {
-    require(_releaseTime &gt; now);
-    //require(_releaseTime.sub(1 years) &lt; now);
+    require(_releaseTime > now);
+    //require(_releaseTime.sub(1 years) < now);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     lockedBalances[lockedBalanceCount] = LockedBalance({owner: _to, value: _value, releaseTime: _releaseTime});
     lockedBalanceCount++;
@@ -235,7 +235,7 @@ contract LockableToken is StandardToken, ReentrancyGuard {
   * @return An uint256 representing the amount owned by the passed address.
   */
   function lockedBalanceOf(address _owner) public constant returns (uint256 value) {
-    for (uint i = 0; i &lt; lockedBalanceCount; i++) {
+    for (uint i = 0; i < lockedBalanceCount; i++) {
       LockedBalance storage lockedBalance = lockedBalances[i];
       if (_owner == lockedBalance.owner) {
         value = value.add(lockedBalance.value);
@@ -250,8 +250,8 @@ contract LockableToken is StandardToken, ReentrancyGuard {
   */
   function releaseLockedBalance() public whenNotPaused returns (uint256 releaseAmount) {
     uint index = 0;
-    while (index &lt; lockedBalanceCount) {
-      if (now &gt;= lockedBalances[index].releaseTime) {
+    while (index < lockedBalanceCount) {
+      if (now >= lockedBalances[index].releaseTime) {
         releaseAmount += lockedBalances[index].value;
         unlockBalanceByIndex(index);
       } else {
@@ -293,13 +293,13 @@ contract ReleaseableToken is LockableToken {
   * @return An uint256 representing the amount.
   */
   function release() public whenNotPaused returns(uint256 _releaseAmount) {
-    require(nextReleaseTime &lt;= now);
+    require(nextReleaseTime <= now);
 
     uint256 releaseAmount = 0;
     uint256 remainderAmount = totalSupply.sub(releasedSupply);
-    if (remainderAmount &gt; 0) {
+    if (remainderAmount > 0) {
       releaseAmount = standardDecimals.mul(nextReleaseAmount);
-      if (releaseAmount &gt; remainderAmount)
+      if (releaseAmount > remainderAmount)
         releaseAmount = remainderAmount;
       releasedSupply = releasedSupply.add(releaseAmount);
       balances[owner] = balances[owner].add(releaseAmount);
@@ -314,8 +314,8 @@ contract ReleaseableToken is LockableToken {
 }
 
 contract N2Contract is ReleaseableToken {
-  string public name = &#39;N2Chain&#39;;
-  string public symbol = &#39;N2C&#39;;
+  string public name = 'N2Chain';
+  string public symbol = 'N2C';
   uint8 public decimals = 4;
 
   // Set in case the core contract is broken and an upgrade is required
@@ -325,7 +325,7 @@ contract N2Contract is ReleaseableToken {
 
   /// @dev Used to mark the smart contract as upgraded, in case there is a serious
   ///  breaking bug. This method does nothing but keep track of the new contract and
-  ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+  ///  emit a message indicating that the new address is set. It's up to clients of this
   ///  contract to update to the new contract address in that case. (This contract will
   ///  be paused indefinitely if such an upgrade takes place.)
   /// @param _v2Address new address
@@ -335,7 +335,7 @@ contract N2Contract is ReleaseableToken {
   }
 
   /// @dev Override unpause so it requires all external contract addresses
-  ///  to be set before contract can be unpaused. Also, we can&#39;t have
+  ///  to be set before contract can be unpaused. Also, we can't have
   ///  newContractAddress set either, because then the contract was upgraded.
   /// @notice This is public rather than external so we can call super.unpause
   ///  without using an expensive CALL.

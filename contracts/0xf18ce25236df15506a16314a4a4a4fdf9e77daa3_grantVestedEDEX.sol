@@ -15,27 +15,27 @@ pragma solidity ^0.4.16;
   }
   
   function safeDiv(uint256 a, uint256 b) internal returns (uint256){
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
   
   function safeSub(uint256 a, uint256 b) internal returns (uint256){
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function safeAdd(uint256 a, uint256 b) internal returns (uint256){
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   // mitigate short address attack
   // https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34
   modifier onlyPayloadSize(uint numWords){
-     assert(msg.data.length &gt;= numWords * 32 + 4);
+     assert(msg.data.length >= numWords * 32 + 4);
      _;
   }
 
@@ -116,8 +116,8 @@ pragma solidity ^0.4.16;
 
   	function changeIcoEndBlock(uint256 newIcoEndBlock){
       	require(msg.sender == beneficiary);
-      	require(block.number &lt; icoEndBlock);
-      	require(block.number &lt; newIcoEndBlock);
+      	require(block.number < icoEndBlock);
+      	require(block.number < newIcoEndBlock);
       	icoEndBlock = newIcoEndBlock;
   	}
 
@@ -127,7 +127,7 @@ pragma solidity ^0.4.16;
 
   	function withdrawal() external{
       	require(msg.sender == beneficiary);
-      	require(block.number &gt; icoEndBlock);
+      	require(block.number > icoEndBlock);
       	uint256 balance = ERC20Token.balanceOf(this);
       	eighth_withdrawal(balance);
       	seventh_withdrawal(balance);
@@ -160,56 +160,56 @@ pragma solidity ^0.4.16;
   	}
  	 
   	function first_withdrawal(uint256 balance) private atPhase(Phases.firstTeamWithdrawal){
-      	require(now &gt; firstTeamWithdrawal);
+      	require(now > firstTeamWithdrawal);
       	uint256 amountToTransfer = balance / 8;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
  	 
   	function second_withdrawal(uint256 balance) private atPhase(Phases.secondTeamWithdrawal){
-      	require(now &gt; secondTeamWithdrawal);
+      	require(now > secondTeamWithdrawal);
       	uint256 amountToTransfer = balance / 7;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
  	 
   	function third_withdrawal(uint256 balance) private atPhase(Phases.thirdTeamWithdrawal){
-      	require(now &gt; thirdTeamWithdrawal);
+      	require(now > thirdTeamWithdrawal);
       	uint256 amountToTransfer = balance / 6;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
   	
   	function fourth_withdrawal(uint256 balance) private atPhase(Phases.fourthTeamWithdrawal){
-      	require(now &gt; fourthTeamWithdrawal);
+      	require(now > fourthTeamWithdrawal);
       	uint256 amountToTransfer = balance / 5;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
   	
   	function fifth_withdrawal(uint256 balance) private atPhase(Phases.fifthTeamWithdrawal){
-      	require(now &gt; fifthTeamWithdrawal);
+      	require(now > fifthTeamWithdrawal);
       	uint256 amountToTransfer = balance / 4;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
   	
   	function sixth_withdrawal(uint256 balance) private atPhase(Phases.sixthTeamWithdrawal){
-      	require(now &gt; sixthTeamWithdrawal);
+      	require(now > sixthTeamWithdrawal);
       	uint256 amountToTransfer = balance / 3;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
   	
   	function seventh_withdrawal(uint256 balance) private atPhase(Phases.seventhTeamWithdrawal){
-      	require(now &gt; seventhTeamWithdrawal);
+      	require(now > seventhTeamWithdrawal);
       	uint256 amountToTransfer = balance / 2;
       	ERC20Token.transfer(beneficiary, amountToTransfer);
       	nextPhase();
   	}
   	
   	function eighth_withdrawal(uint256 balance) private atPhase(Phases.eighthTeamWithdrawal){
-      	require(now &gt; eighthTeamWithdrawal);
+      	require(now > eighthTeamWithdrawal);
       	ERC20Token.transfer(beneficiary, balance);
   	}
 

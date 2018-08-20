@@ -1,6 +1,6 @@
 /* This source code is part of CACIB DocChain registered trademark
 *  It is provided becaused published in the public blockchain of Ethereum.
-*  Reusing this code is forbidden without approbation of CACIB first (<span class="__cf_email__" data-cfemail="a6cfc2c3c7e6c5c78bc5cfc488c5c9cb">[email&#160;protected]</span>)
+*  Reusing this code is forbidden without approbation of CACIB first (<span class="__cf_email__" data-cfemail="a6cfc2c3c7e6c5c78bc5cfc488c5c9cb">[email protected]</span>)
 *  Providing this code in public repository is meant to provide clarity to the mechanism by which the DocChain product works
 *
 *  This contract represents a repository of document hashes linked to their signatories IEthIdentity and is the heart of the DocChain product
@@ -57,8 +57,8 @@ contract eSignature {
         IEthIdentity issuerIdentity;
 
         uint nbSignatories;                             // counter of signatories
-        mapping(address =&gt; bool) signatoryAddresses;    // mapping to know if an address is a signatory
-        mapping(uint =&gt; IEthIdentity) signatories;      // mapping to get a signatory by position
+        mapping(address => bool) signatoryAddresses;    // mapping to know if an address is a signatory
+        mapping(uint => IEthIdentity) signatories;      // mapping to get a signatory by position
     }
 
     /**
@@ -67,7 +67,7 @@ contract eSignature {
      * - A counter to keep track the number of existing documents in the list
      */
     uint public count;
-    mapping(bytes20 =&gt; DocStruct) docs;
+    mapping(bytes20 => DocStruct) docs;
     
     /**
      * This event is used for notifying new document created
@@ -118,13 +118,13 @@ contract eSignature {
      * Create and sign a new document that is represented by its hash
      * Return the id of created signed document
      * - hash: unique hash string of the document content
-     * - ethIdentity: address of EthIdentiy of signer that allow to verify the signer&#39;s authenticity
+     * - ethIdentity: address of EthIdentiy of signer that allow to verify the signer's authenticity
      */
     function newSignedDoc(bytes32 hash, IEthIdentity ethIdentity) public returns (bytes20 docKey) {
-        // Create &amp; sign a new document
+        // Create & sign a new document
         docKey = newDoc(hash, ethIdentity);
         
-        // Verify document &amp; check if it is already signed by the current ethIdentity
+        // Verify document & check if it is already signed by the current ethIdentity
         require(docs[docKey].signatoryAddresses[ethIdentity] == false); // Prevent re-signing document by the same signer
         
         docs[docKey].signatoryAddresses[ethIdentity] = true;
@@ -137,7 +137,7 @@ contract eSignature {
     /**
      * Sign an existing document with a valid IEthIdentity of signer
      * - key: unique id of the created document
-     * - ethIdentity: address of EthIdentiy of signer that allow to verify the signer&#39;s authenticity
+     * - ethIdentity: address of EthIdentiy of signer that allow to verify the signer's authenticity
      */
     function signDoc(bytes20 docKey, IEthIdentity ethIdentity) public {
         
@@ -151,7 +151,7 @@ contract eSignature {
         // Check if valid identity via inter-contract call, limit gas used for this call
         require(ethIdentity.checkOwner.gas(800)(msg.sender)); 
 
-        // Verify document &amp; check if it is already signed by the current ethIdentity
+        // Verify document & check if it is already signed by the current ethIdentity
         require(docs[docKey].signatoryAddresses[ethIdentity] == false); // Prevent re-signing document by the same signer
         
         docs[docKey].signatoryAddresses[ethIdentity] = true;
@@ -163,7 +163,7 @@ contract eSignature {
     
     /**
      * Get the document information by its id key. 
-     * Return a tuple containing the document&#39;s hash, its issuers and number of signatories
+     * Return a tuple containing the document's hash, its issuers and number of signatories
      * - key: a unique id of the created document
      */
     function getDoc(bytes20 docKey) public constant returns (bytes32 hash, IEthIdentity issuer, uint nbSignatories) {
@@ -172,7 +172,7 @@ contract eSignature {
         if (checkExists(docKey)) 
             return (docs[docKey].hash, docs[docKey].issuerIdentity, docs[docKey].nbSignatories);
         else  // returns a tupple saying the key is not valid
-            return (&quot;No a valid key&quot;, IEthIdentity(0x0), 0);
+            return ("No a valid key", IEthIdentity(0x0), 0);
     }
     
     /**
@@ -187,7 +187,7 @@ contract eSignature {
         if (checkExists(docKey)) {
         
             // Check index is not outbound
-            require(index &lt; docs[docKey].nbSignatories);
+            require(index < docs[docKey].nbSignatories);
             
             identity = docs[docKey].signatories[index];
             // Get the signatory information from its identity contract
@@ -195,7 +195,7 @@ contract eSignature {
                     
             return (identity, identityName); 
         } else {
-            return (IEthIdentity(0x0), &quot;&quot;);
+            return (IEthIdentity(0x0), "");
         }    
     }
     
@@ -215,7 +215,7 @@ contract eSignature {
      */
     function bytes32ToString (bytes32 data) internal pure returns (string) {
         bytes memory bytesString = new bytes(32);
-        for (uint j=0; j&lt;32; j++){
+        for (uint j=0; j<32; j++){
             if (data[j] != 0) {
                 bytesString[j] = data[j];
             }

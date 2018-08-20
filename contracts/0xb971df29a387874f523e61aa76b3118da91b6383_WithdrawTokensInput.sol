@@ -22,7 +22,7 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal constant returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
 
     return a - b;
   }
@@ -30,7 +30,7 @@ contract SafeMath {
   function safeAdd(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
 
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
 
     return c;
   }
@@ -48,9 +48,9 @@ contract WithdrawTokensInput is SafeMath {
   uint public numTokensIssued; // Number of tokens issued so far
 
   address public multisig; // external address that will start the minting of the tokens
-  bool public open; // If &quot;multisig&quot; has started the minting or not
+  bool public open; // If "multisig" has started the minting or not
 
-  uint public startDate; // Timestamp in which &quot;multisig&quot; starts the minting. 0 if !open
+  uint public startDate; // Timestamp in which "multisig" starts the minting. 0 if !open
 
   modifier input() {
     require(open);
@@ -82,10 +82,10 @@ contract WithdrawTokensInput is SafeMath {
     numTokensLimit = _numTokens;
   }
 
-  // Creates tokens to &quot;receiver&quot; address following a formula
-  // Only executed if &quot;multisig&quot; has started the minting process
-  // The maximum amount of tokens is &quot;numTokensLimit&quot;
-  // Only executed by &quot;receiver&quot;
+  // Creates tokens to "receiver" address following a formula
+  // Only executed if "multisig" has started the minting process
+  // The maximum amount of tokens is "numTokensLimit"
+  // Only executed by "receiver"
   function withdraw() public input onlyReceiver {
     uint tokensToIssue = safeSub(limit(safeDiv(safeSub(now, startDate), 24 hours)), numTokensIssued);
 
@@ -96,17 +96,17 @@ contract WithdrawTokensInput is SafeMath {
       revert();
   }
 
-  // Number of tokens available to be minted at day &quot;d&quot;
+  // Number of tokens available to be minted at day "d"
   function limit(uint d) public constant returns (uint tokensToIssue) {
 
-    if(d &gt; 3650)
+    if(d > 3650)
       tokensToIssue = numTokensLimit;
     else
-      tokensToIssue = (   (  ( (560791145 * d) &gt;&gt; 10 ) - ( d * (d-1) ) * 75  ) &gt;&gt; 1   ) * 10**18;
+      tokensToIssue = (   (  ( (560791145 * d) >> 10 ) - ( d * (d-1) ) * 75  ) >> 1   ) * 10**18;
   }
 
   // Starts the minting process
-  // Only executed by &quot;multisig&quot;
+  // Only executed by "multisig"
   function submitInput() public onlyMultisig {
     require(!open);
 

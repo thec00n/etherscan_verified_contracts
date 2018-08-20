@@ -48,7 +48,7 @@ contract VeRegistry is Ownable {
 
     //--- Storage
 
-    mapping (string =&gt; Asset) assets;
+    mapping (string => Asset) assets;
 
     //--- Events
 

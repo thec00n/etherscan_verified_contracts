@@ -11,7 +11,7 @@ contract EtherProfile {
         string aboutMe;
     }
 
-    mapping(address =&gt; Profile) addressToProfile;
+    mapping(address => Profile) addressToProfile;
 
     function EtherProfile() public {
         owner = msg.sender;

@@ -1,10 +1,10 @@
 pragma solidity 0.4.23;
 
 // Random lottery
-// Smart contracts can&#39;t bet
+// Smart contracts can't bet
 
 // Pay 0.001 to get a random number
-// If your random number is the highest so far you&#39;re in the lead
+// If your random number is the highest so far you're in the lead
 // If no one beats you in 1 day you can claim your winnnings - the entire balance.
 
 contract RandoLotto {
@@ -21,11 +21,11 @@ contract RandoLotto {
     
     function () public payable {
         require(msg.sender == tx.origin);
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
     
         uint256 randomNumber = uint256(keccak256(blockhash(block.number - 1)));
         
-        if (randomNumber &gt; highScore) {
+        if (randomNumber > highScore) {
             currentWinner = msg.sender;
             lastTimestamp = now;
             highScore = randomNumber;
@@ -33,7 +33,7 @@ contract RandoLotto {
     }
     
     function claimWinnings() public {
-        require(now &gt; lastTimestamp + 1 days);
+        require(now > lastTimestamp + 1 days);
         require(msg.sender == currentWinner);
         
         msg.sender.transfer(address(this).balance);

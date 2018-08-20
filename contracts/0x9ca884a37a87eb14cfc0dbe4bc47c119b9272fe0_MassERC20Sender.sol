@@ -20,7 +20,7 @@ contract MassERC20Sender   {
 
     function multisend(ERC20 _tokenAddr, address[] dests, uint256[] values) onlyOwner public returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             _tokenAddr.transfer(dests[i], values[i]);
             i += 1;
         }

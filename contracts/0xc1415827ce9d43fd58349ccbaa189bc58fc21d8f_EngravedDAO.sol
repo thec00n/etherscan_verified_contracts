@@ -82,7 +82,7 @@ contract EngravedDAO is TokenRecipient {
     uint256 public withdrawStart;
 
     // EGC stored balances for dividends
-    mapping (address =&gt; uint256) internal lockedBalances;
+    mapping (address => uint256) internal lockedBalances;
 
     enum ProposalType {
         TransferOwnership,
@@ -97,7 +97,7 @@ contract EngravedDAO is TokenRecipient {
         bool proposalPassed;
         uint numberOfVotes;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
         ProposalType proposalType;
         uint newFee;
         address newDao;
@@ -110,7 +110,7 @@ contract EngravedDAO is TokenRecipient {
 
     // Modifier that allows only shareholders to vote and create new proposals
     modifier onlyShareholders {
-        require(egcToken.balanceOf(msg.sender) &gt; 0);
+        require(egcToken.balanceOf(msg.sender) > 0);
         _;
     }
 
@@ -148,10 +148,10 @@ contract EngravedDAO is TokenRecipient {
 
     function withdrawDividends() public {
         // Locked balance is positive
-        require(lockedBalances[msg.sender] &gt; 0);
+        require(lockedBalances[msg.sender] > 0);
 
         // On time
-        require(block.timestamp &gt;= withdrawStart + 3 days &amp;&amp; block.timestamp &lt; withdrawStart + 1 weeks);
+        require(block.timestamp >= withdrawStart + 3 days && block.timestamp < withdrawStart + 1 weeks);
 
         uint256 locked = lockedBalances[msg.sender];
         lockedBalances[msg.sender] = 0;
@@ -165,7 +165,7 @@ contract EngravedDAO is TokenRecipient {
 
     function unlockFunds() public {
         // Locked balance is positive
-        require(lockedBalances[msg.sender] &gt; 0);
+        require(lockedBalances[msg.sender] > 0);
 
         uint256 locked = lockedBalances[msg.sender];
         lockedBalances[msg.sender] = 0;
@@ -177,11 +177,11 @@ contract EngravedDAO is TokenRecipient {
     // Lock funds for dividends payment
     function lockFunds(uint _value) public {
         // Three days before the payment date
-        require(block.timestamp &gt;= withdrawStart &amp;&amp; block.timestamp &lt; withdrawStart + 3 days);
+        require(block.timestamp >= withdrawStart && block.timestamp < withdrawStart + 3 days);
 
         lockedBalances[msg.sender] += _value;
 
-        require(egcToken.allowance(msg.sender, this) &gt;= _value);
+        require(egcToken.allowance(msg.sender, this) >= _value);
         require(egcToken.transferFrom(msg.sender, this, _value));
     }
 
@@ -287,14 +287,14 @@ contract EngravedDAO is TokenRecipient {
     function executeProposal(uint proposalNumber) public {
         Proposal storage p = proposals[proposalNumber];
 
-        require(block.timestamp &gt; p.votingDeadline &amp;&amp; !p.executed);
+        require(block.timestamp > p.votingDeadline && !p.executed);
 
         // ...then tally the results
         uint quorum = 0;
         uint yea = 0;
         uint nay = 0;
 
-        for (uint i = 0; i &lt; p.votes.length; ++i) {
+        for (uint i = 0; i < p.votes.length; ++i) {
             Vote storage v = p.votes[i];
             uint voteWeight = egcToken.balanceOf(v.voter);
             quorum += voteWeight;
@@ -305,9 +305,9 @@ contract EngravedDAO is TokenRecipient {
             }
         }
 
-        require(quorum &gt;= minimumQuorum); // Check if a minimum quorum has been reached
+        require(quorum >= minimumQuorum); // Check if a minimum quorum has been reached
 
-        if (yea &gt; nay) {
+        if (yea > nay) {
             // Proposal passed; execute the transaction
 
             p.executed = true;
@@ -331,20 +331,20 @@ contract EngravedDAO is TokenRecipient {
     }
 
     function startIncomeDistribution() public {
-        require(withdrawStart + 90 days &lt; block.timestamp);
+        require(withdrawStart + 90 days < block.timestamp);
 
         uint256 totalSupply = egcToken.totalSupply();
-        require(totalSupply &gt; 0);
+        require(totalSupply > 0);
 
-        // At least 1 wei per XEG so dividend &gt; 0
+        // At least 1 wei per XEG so dividend > 0
         dividend = this.balance * 1e18 / totalSupply;
-        require(dividend &gt;= minAmount);
+        require(dividend >= minAmount);
 
         withdrawStart = block.timestamp;
     }
 
     function tokenExchange(uint _amount) public {
-        require(egrToken.allowance(msg.sender, this) &gt;= _amount);
+        require(egrToken.allowance(msg.sender, this) >= _amount);
         require(egrToken.transferFrom(msg.sender, 0x0, _amount));
         // 100 XEG (18 decimals) per EGR (3 decimals)
         require(egcToken.issue(msg.sender, _amount * 1e17));
@@ -359,7 +359,7 @@ contract EngravedDAO is TokenRecipient {
     }
 
     function transferOwnership(address _newDao) private {
-        require(block.timestamp &gt; withdrawStart + 1 weeks);
+        require(block.timestamp > withdrawStart + 1 weeks);
 
         // Transfer all ether to the new DAO
         DAO(_newDao).payFee.value(this.balance)();

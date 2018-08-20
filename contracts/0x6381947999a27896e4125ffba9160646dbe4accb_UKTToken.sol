@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	
@@ -96,7 +96,7 @@ library AddressTools {
 			codeSize := extcodesize(a)
 		}
 		
-		if(codeSize &gt; 0) {
+		if(codeSize > 0) {
 			return true;
 		}
 		
@@ -153,7 +153,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
@@ -163,7 +163,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -176,7 +176,7 @@ library SafeMath {
 			return 1;
 		}
 		uint c = a ** b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -210,7 +210,7 @@ contract BasicToken is ERC20Basic {
 	
 	using SafeMath for uint256;
 	
-	mapping(address =&gt; uint256) public balances;
+	mapping(address => uint256) public balances;
 	
 	uint256 public totalSupply_;
 	
@@ -230,7 +230,7 @@ contract BasicToken is ERC20Basic {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 		
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -264,9 +264,9 @@ contract BurnableToken is BasicToken {
 	 * @param _value The amount of token to be burned.
 	 */
 	function burn(uint256 _value) public {
-		require(_value &lt;= balances[msg.sender]);
-		// no need to require value &lt;= totalSupply, since that would imply the
-		// sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+		require(_value <= balances[msg.sender]);
+		// no need to require value <= totalSupply, since that would imply the
+		// sender's balance is greater than the totalSupply, which *should* be an assertion failure
 		
 		address burner = msg.sender;
 		balances[burner] = balances[burner].sub(_value);
@@ -296,7 +296,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 	
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	
 	
 	/**
@@ -307,8 +307,8 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 		
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -323,7 +323,7 @@ contract StandardToken is ERC20, BasicToken {
 	 *
 	 * Beware that changing an allowance with this method brings the risk that someone may use both the old
 	 * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	 * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	 * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	 * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	 * @param _spender The address which will spend the funds.
 	 * @param _value The amount of tokens to be spent.
@@ -374,7 +374,7 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -421,7 +421,7 @@ contract ERC223Token is ERC223, StandardToken {
 	/**
 	 * @dev Transfer the specified amount of tokens to the specified address.
 	 *      This function works the same with the previous one
-	 *      but doesn&quot;t contain `_data` param.
+	 *      but doesn"t contain `_data` param.
 	 *      Added due to backwards compatibility reasons.
 	 *
 	 * @param _to    Receiver address
@@ -471,11 +471,11 @@ contract UKTTokenBasic is ERC223, BurnableToken {
 	bool public isAllocated = false;
 	
 	// mapping of string labels to initial allocated addresses
-	mapping(bytes32 =&gt; address) public allocationAddressesTypes;
+	mapping(bytes32 => address) public allocationAddressesTypes;
 	// mapping of addresses to time lock period
-	mapping(address =&gt; uint32) public timelockedAddresses;
+	mapping(address => uint32) public timelockedAddresses;
 	// mapping of addresses to lock flag
-	mapping(address =&gt; bool) public lockedAddresses;
+	mapping(address => bool) public lockedAddresses;
 	
 	
 	function setConfiguration(string _name, string _symbol, uint _totalSupply) external returns (bool);
@@ -497,7 +497,7 @@ contract UKTTokenBasic is ERC223, BurnableToken {
 
 /**
  * @title  Basic UKT token contract
- * @author  Oleg Levshin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf7feede8f3f2f5dbeef8f4e1b6effefaf6b5f5feef">[email&#160;protected]</a>&gt;
+ * @author  Oleg Levshin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf7feede8f3f2f5dbeef8f4e1b6effefaf6b5f5feef">[email protected]</a>>
  */
 contract UKTToken is UKTTokenBasic, ERC223Token, Ownable {
 	
@@ -519,10 +519,10 @@ contract UKTToken is UKTTokenBasic, ERC223Token, Ownable {
 	modifier onlyUnlocked(address _address) {
 		address from = _address != address(0) ? _address : msg.sender;
 		require(
-			lockedAddresses[from] == false &amp;&amp;
+			lockedAddresses[from] == false &&
 			(
 				timelockedAddresses[from] == 0 ||
-				timelockedAddresses[from] &lt;= now
+				timelockedAddresses[from] <= now
 			)
 		);
 		_;
@@ -560,11 +560,11 @@ contract UKTToken is UKTTokenBasic, ERC223Token, Ownable {
 		// not configured yet
 		require(!isConfigured);
 		// not empty name of the token
-		require(bytes(_name).length &gt; 0);
+		require(bytes(_name).length > 0);
 		// not empty ticker symbol of the token
-		require(bytes(_symbol).length &gt; 0);
+		require(bytes(_symbol).length > 0);
 		// pre-defined total supply
-		require(_totalSupply &gt; 0);
+		require(_totalSupply > 0);
 		
 		name = _name;
 		symbol = _symbol;
@@ -594,12 +594,12 @@ contract UKTToken is UKTTokenBasic, ERC223Token, Ownable {
 		require(addresses.length == amounts.length);
 		// sum of the allocating balances should be equal to totalSupply
 		uint balancesSum = 0;
-		for(uint b = 0; b &lt; amounts.length; b++) {
+		for(uint b = 0; b < amounts.length; b++) {
 			balancesSum = balancesSum.add(amounts[b]);
 		}
 		require(balancesSum.withDecimals(decimals) == totalSupply_);
 		
-		for(uint a = 0; a &lt; addresses.length; a++) {
+		for(uint a = 0; a < addresses.length; a++) {
 			balances[addresses[a]] = amounts[a].withDecimals(decimals);
 			allocationAddressesTypes[addressesTypes[a]] = addresses[a];
 			emit InitiallyAllocated(addresses[a], addressesTypes[a], balanceOf(addresses[a]));
@@ -651,7 +651,7 @@ contract UKTToken is UKTTokenBasic, ERC223Token, Ownable {
 		uint32 timelockTillDate
 	) external onlyController returns (bool) {
 		require(allocationAddress != address(0));
-		require(timelockTillDate &gt;= now);
+		require(timelockTillDate >= now);
 		
 		timelockedAddresses[allocationAddress] = timelockTillDate;
 		

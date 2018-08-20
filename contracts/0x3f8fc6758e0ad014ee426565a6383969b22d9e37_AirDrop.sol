@@ -48,7 +48,7 @@ contract AirDrop is Ownable {
     function multisend(address _tokenAddr, address[] dests, uint256 amount) onlyOwner public returns(uint256) {
       
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
           ERC20(_tokenAddr).transfer(dests[i], amount);
           i += 1;
         }

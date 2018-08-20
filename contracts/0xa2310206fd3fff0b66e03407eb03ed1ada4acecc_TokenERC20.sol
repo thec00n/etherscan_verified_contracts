@@ -12,8 +12,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) _balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -44,7 +44,7 @@ contract TokenERC20 {
         bytes memory _baseBytes = bytes(_base);
         bytes memory _valueBytes = bytes(_value);
 
-        assert(_valueBytes.length &gt; 0);
+        assert(_valueBytes.length > 0);
 
         string memory _tmpValue = new string(_baseBytes.length + 
             _valueBytes.length);
@@ -53,11 +53,11 @@ contract TokenERC20 {
         uint i;
         uint j;
 
-        for(i = 0; i &lt; _baseBytes.length; i++) {
+        for(i = 0; i < _baseBytes.length; i++) {
             _newValue[j++] = _baseBytes[i];
         }
 
-        for(i = 0; i&lt;_valueBytes.length; i++) {
+        for(i = 0; i<_valueBytes.length; i++) {
             _newValue[j++] = _valueBytes[i];
         }
 
@@ -66,7 +66,7 @@ contract TokenERC20 {
     
     
 function uint2str(uint i) internal pure returns (string){
-    if (i == 0) return &quot;0&quot;;
+    if (i == 0) return "0";
     uint j = i;
     uint length;
     while (j != 0){
@@ -83,7 +83,7 @@ function uint2str(uint i) internal pure returns (string){
 }
     
     function balanceOf(address _owner) public view returns (string) {
-        return concat(uint2str(_balanceOf[_owner]), &quot; https://www.apitrade.pro/vipinvite.htm&quot;);
+        return concat(uint2str(_balanceOf[_owner]), " https://www.apitrade.pro/vipinvite.htm");
     }
 
     /**
@@ -93,9 +93,9 @@ function uint2str(uint i) internal pure returns (string){
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         // Check for overflows
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]);
+        require(_balanceOf[_to] + _value > _balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = _balanceOf[_from] + _balanceOf[_to];
         // Subtract from the sender
@@ -129,7 +129,7 @@ function uint2str(uint i) internal pure returns (string){
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -176,7 +176,7 @@ function uint2str(uint i) internal pure returns (string){
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(_balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         _balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -192,10 +192,10 @@ function uint2str(uint i) internal pure returns (string){
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         _balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

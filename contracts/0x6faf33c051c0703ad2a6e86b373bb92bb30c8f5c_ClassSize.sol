@@ -6,11 +6,11 @@ contract ClassSize {
     event VoteYes(string note);
     event VoteNo(string note);
 
-    string constant proposalText = &quot;Should the class size increase from 35 to 45?&quot;;
+    string constant proposalText = "Should the class size increase from 35 to 45?";
     uint16 public votesYes = 0;
     uint16 public votesNo = 0;
     function isYesWinning() public view returns(uint8) {
-        if (votesYes &gt;= votesNo) {
+        if (votesYes >= votesNo) {
             return 0; // yes
         } else  {
             return 1; // no 

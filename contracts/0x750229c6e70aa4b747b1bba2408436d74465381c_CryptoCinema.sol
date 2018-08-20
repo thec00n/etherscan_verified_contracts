@@ -28,7 +28,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbdfdecfdefbdac3d2d4d6c1ded595d8d4">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbdfdecfdefbdac3d2d4d6c1ded595d8d4">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -57,18 +57,18 @@ contract CryptoCinema is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;Film&quot;;
-  string public constant SYMBOL = &quot;FilmToken&quot;;
+  string public constant NAME = "Film";
+  string public constant SYMBOL = "FilmToken";
 
   uint256 private startingPrice = 0.01 ether;
 
-  mapping (uint256 =&gt; address) public filmIdToOwner;
+  mapping (uint256 => address) public filmIdToOwner;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public filmIdToApproved;
+  mapping (uint256 => address) public filmIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private filmIdToPrice;
+  mapping (uint256 => uint256) private filmIdToPrice;
 
   /*** DATATYPES ***/
   struct Film {
@@ -95,10 +95,10 @@ contract CryptoCinema is ERC721, Ownable {
   function create18FilmsTokens() public onlyContractOwner {
      uint256 totalFilms = totalSupply();
 	 
-	 require (totalFilms&lt;1); // only 3 tokens for start
+	 require (totalFilms<1); // only 3 tokens for start
 	 
-	 for (uint8 i=1; i&lt;=18; i++)
-		_createFilm(&quot;Film&quot;, address(this), startingPrice);
+	 for (uint8 i=1; i<=18; i++)
+		_createFilm("Film", address(this), startingPrice);
 	
   }
   
@@ -131,7 +131,7 @@ contract CryptoCinema is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 97), 100)); //97% to previous owner
 
@@ -148,7 +148,7 @@ contract CryptoCinema is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, filmIdToPrice[_tokenId], oldOwner, newOwner, films[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
@@ -176,13 +176,13 @@ contract CryptoCinema is ERC721, Ownable {
 	
 	uint256 totalFilms = totalSupply();
 	
-    if (totalFilms == 0 || _startFilmId &gt;= totalFilms) {
+    if (totalFilms == 0 || _startFilmId >= totalFilms) {
         // Return an empty array
       return (new address[](0), new uint256[](0));
     }
 	
 	uint256 indexTo;
-	if (totalFilms &gt; _startFilmId+1000)
+	if (totalFilms > _startFilmId+1000)
 		indexTo = _startFilmId + 1000;
 	else 	
 		indexTo = totalFilms;
@@ -192,7 +192,7 @@ contract CryptoCinema is ERC721, Ownable {
 	address[] memory owners_res = new address[](totalResultFilms);
 	uint256[] memory prices_res = new uint256[](totalResultFilms);
 	
-	for (uint256 filmId = _startFilmId; filmId &lt; indexTo; filmId++) {
+	for (uint256 filmId = _startFilmId; filmId < indexTo; filmId++) {
 	  owners_res[filmId - _startFilmId] = filmIdToOwner[filmId];
 	  prices_res[filmId - _startFilmId] = filmIdToPrice[filmId];
 	}
@@ -211,7 +211,7 @@ contract CryptoCinema is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 filmId;
-      for (filmId = 0; filmId &lt;= totalFilms; filmId++) {
+      for (filmId = 0; filmId <= totalFilms; filmId++) {
         if (filmIdToOwner[filmId] == _owner) {
           result[resultIndex] = filmId;
           resultIndex++;
@@ -273,7 +273,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     filmIdToOwner[_tokenId] = _to;
 
-    // When creating new films _from is 0x0, but we can&#39;t account that address.
+    // When creating new films _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -297,20 +297,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -5,15 +5,15 @@ contract token {
 }
 
 /// @title FairAuction contract
-/// @author Christopher Grant - &lt;<span class="__cf_email__" data-cfemail="86e5eef4eff5f2e9f6eee3f4c6e2e3eaf6eeefa8ebe7f4ede3f2f5">[email&#160;protected]</span>&gt;
+/// @author Christopher Grant - <<span class="__cf_email__" data-cfemail="86e5eef4eff5f2e9f6eee3f4c6e2e3eaf6eeefa8ebe7f4ede3f2f5">[email protected]</span>>
 contract FairAuction {
     /* State */
     address public beneficiary;
     uint public amountRaised; uint public startTime; uint public deadline; uint public memberCount; uint public crowdsaleCap;
     uint256 public tokenSupply;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping (uint =&gt; address) accountIndex;
+    mapping(address => uint256) public balanceOf;
+    mapping (uint => address) accountIndex;
     bool public finalized;
 
     /* Events */
@@ -41,13 +41,13 @@ contract FairAuction {
     /* default function (called whenever funds are sent to the FairAuction) */
     function () payable {
         /* Ensure that auction is ongoing */
-        if (now &lt; startTime) throw;
-        if (now &gt;= deadline) throw;
+        if (now < startTime) throw;
+        if (now >= deadline) throw;
 
         uint amount = msg.value;
 
         /* Ensure that we do not pass the cap */
-        if (amountRaised + amount &gt; crowdsaleCap) throw;
+        if (amountRaised + amount > crowdsaleCap) throw;
 
         uint256 existingBalance = balanceOf[msg.sender];
 
@@ -71,9 +71,9 @@ contract FairAuction {
         if (amountRaised == 0) throw;
 
         /* Auction still ongoing */
-        if (now &lt; deadline) {
-            /* Don&#39;t terminate auction before cap is reached */
-            if (amountRaised &lt; crowdsaleCap) throw;
+        if (now < deadline) {
+            /* Don't terminate auction before cap is reached */
+            if (amountRaised < crowdsaleCap) throw;
         }
 
         /* Snapshot available supply of reward tokens */
@@ -116,7 +116,7 @@ contract FairAuction {
         if (!finalized) throw;
         
         /* Distribute auctioned tokens fairly among a batch of participants. */
-        for (uint i=startIndex; i&lt;=endIndex &amp;&amp; i&lt;memberCount; i++) {
+        for (uint i=startIndex; i<=endIndex && i<memberCount; i++) {
             /* Should not occur */
             if (accountIndex[i] == 0)
                 continue;

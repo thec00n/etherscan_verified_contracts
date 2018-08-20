@@ -38,7 +38,7 @@ contract NoWhammies
 
     function bigMoney() private
     {
-        if(address(this).balance &gt; 1 ether)
+        if(address(this).balance > 1 ether)
         {
             uint256 half = address(this).balance / 2;
 

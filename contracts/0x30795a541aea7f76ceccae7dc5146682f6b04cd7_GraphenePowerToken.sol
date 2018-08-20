@@ -36,11 +36,11 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract GraphenePowerToken is owned{
     
     //************** Token ************//
-	string public standard = &#39;Token 1&#39;;
+	string public standard = 'Token 1';
 
-	string public name = &#39;Graphene Power&#39;;
+	string public name = 'Graphene Power';
 
-	string public symbol = &#39;GRP&#39;;
+	string public symbol = 'GRP';
 
 	uint8 public decimals = 18;
 
@@ -79,10 +79,10 @@ contract GraphenePowerToken is owned{
     bool public transfersEnabled = false;
     
      //*** Balance ***//
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     //*** Alowed ***//
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     //*** Tranfer ***//
     event Transfer(address from, address to, uint256 value);
@@ -111,7 +111,7 @@ contract GraphenePowerToken is owned{
 
 	//*** Payable ***//
     function() payable public {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(msg.sender != 0x0);
         
         uint256 weiAmount;
@@ -125,19 +125,19 @@ contract GraphenePowerToken is owned{
         else if(isIco()){
             wallet=icoAddress;
             
-            if((icoStart+(7*24*60*60)) &gt;= now){
+            if((icoStart+(7*24*60*60)) >= now){
                weiAmount=4000;
             }
-            else if((icoStart+(14*24*60*60)) &gt;= now){
+            else if((icoStart+(14*24*60*60)) >= now){
                  weiAmount=3750;
             }
-            else if((icoStart+(21*24*60*60)) &gt;= now){
+            else if((icoStart+(21*24*60*60)) >= now){
                  weiAmount=3500;
             }
-            else if((icoStart+(28*24*60*60)) &gt;= now){
+            else if((icoStart+(28*24*60*60)) >= now){
                  weiAmount=3250;
             }
-            else if((icoStart+(35*24*60*60)) &gt;= now){
+            else if((icoStart+(35*24*60*60)) >= now){
                  weiAmount=3000;
             }
             else{
@@ -159,7 +159,7 @@ contract GraphenePowerToken is owned{
 	/* Send coins */
 	function transfer(address _to, uint256 _value) public returns (bool success) {
 	    if(transfersEnabled){
-		    require(balanceOf[_to] &gt;= _value);
+		    require(balanceOf[_to] >= _value);
 		    // Subtract from the sender
 		    balanceOf[msg.sender] = (balanceOf[msg.sender] -_value);
 	        balanceOf[_to] =(balanceOf[_to] + _value);
@@ -176,9 +176,9 @@ contract GraphenePowerToken is owned{
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 	    if(transfersEnabled){
 	        // Check if the sender has enough
-		    require(balanceOf[_from] &gt;= _value);
+		    require(balanceOf[_from] >= _value);
 		    // Check allowed
-		    require(_value &lt;= allowed[_from][msg.sender]);
+		    require(_value <= allowed[_from][msg.sender]);
 
 		    // Subtract from the sender
 		    balanceOf[_from] = (balanceOf[_from] - _value);
@@ -232,7 +232,7 @@ contract GraphenePowerToken is owned{
 	
 	//*** Kill Balance ***//
 	function killBalance(uint256 _value) onlyOwner public {
-		if(this.balance &gt; 0) {
+		if(this.balance > 0) {
 		    if(_value==1){
 		        preSaleAddress.transfer(this.balance);
 		        balanceOf[this]=0;
@@ -285,7 +285,7 @@ contract GraphenePowerToken is owned{
 	
 	//*** Is ico ***//
     function isIco() constant public returns (bool ico) {
-		 bool result=((icoStart+(35*24*60*60)) &gt;= now);
+		 bool result=((icoStart+(35*24*60*60)) >= now);
 		 if(enableIco){
 		     return true;
 		 }
@@ -296,7 +296,7 @@ contract GraphenePowerToken is owned{
     
     //*** Is PreSale ***//
     function isPreSale() constant public returns (bool preSale) {
-		bool result=(preSaleEnd &gt;= now);
+		bool result=(preSaleEnd >= now);
 		if(enablePreSale){
 		    return true;
 		}

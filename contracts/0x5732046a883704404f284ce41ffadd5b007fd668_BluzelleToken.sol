@@ -108,7 +108,7 @@ contract OpsManaged is Owned {
 
 
    function isOps(address _address) public view returns (bool) {
-      return (opsAddress != address(0) &amp;&amp; _address == opsAddress);
+      return (opsAddress != address(0) && _address == opsAddress);
    }
 
 
@@ -143,14 +143,14 @@ library Math {
    function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 r = a + b;
 
-      require(r &gt;= a);
+      require(r >= a);
 
       return r;
    }
 
 
    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      require(a &gt;= b);
+      require(a >= b);
 
       return a - b;
    }
@@ -218,8 +218,8 @@ contract ERC20Token is ERC20Interface {
    uint8   private tokenDecimals;
    uint256 internal tokenTotalSupply;
 
-   mapping(address =&gt; uint256) internal balances;
-   mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping(address => uint256) internal balances;
+   mapping(address => mapping (address => uint256)) allowed;
 
 
    function ERC20Token(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply, address _initialTokenHolder) public {
@@ -405,8 +405,8 @@ contract FinalizableToken is ERC20Token, OpsManaged, Finalizable {
 
 contract BluzelleTokenConfig {
 
-    string  public constant TOKEN_SYMBOL      = &quot;BLZ&quot;;
-    string  public constant TOKEN_NAME        = &quot;Bluzelle Token&quot;;
+    string  public constant TOKEN_SYMBOL      = "BLZ";
+    string  public constant TOKEN_NAME        = "Bluzelle Token";
     uint8   public constant TOKEN_DECIMALS    = 18;
 
     uint256 public constant DECIMALSFACTOR    = 10**uint256(TOKEN_DECIMALS);

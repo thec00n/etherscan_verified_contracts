@@ -37,20 +37,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,7 +58,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -108,16 +108,16 @@ contract BethereumERC223 is ERC223Interface {
     using SafeMath for uint256;
 
     /* Contract Constants */
-    string public constant _name = &quot;Bethereum&quot;;
-    string public constant _symbol = &quot;BETHER&quot;;
+    string public constant _name = "Bethereum";
+    string public constant _symbol = "BETHER";
     uint8 public constant _decimals = 18;
 
     /* Contract Variables */
     address public owner;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping (address => uint256)) public allowed;
 
-    /* Constructor initializes the owner&#39;s balance and the supply  */
+    /* Constructor initializes the owner's balance and the supply  */
     function BethereumERC223() {
         owner = msg.sender;
     }
@@ -134,11 +134,11 @@ contract BethereumERC223 is ERC223Interface {
         return balances[_address];
     }
 
-    /* Transfer the balance from the sender&#39;s address to the address _to */
+    /* Transfer the balance from the sender's address to the address _to */
     function transfer(address _to, uint _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-        &amp;&amp; _value &gt; 0
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+        && _value > 0
+        && balances[_to] + _value > balances[_to]) {
             bytes memory empty;
             if(isContract(_to)) {
                 return transferToContract(_to, _value, empty);
@@ -152,10 +152,10 @@ contract BethereumERC223 is ERC223Interface {
 
     /* Withdraws to address _to form the address _from up to the amount _value */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-        &amp;&amp; _value &gt; 0
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+        && allowed[_from][msg.sender] >= _value
+        && _value > 0
+        && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
@@ -194,11 +194,11 @@ contract BethereumERC223 is ERC223Interface {
         return _decimals;
     }
 
-    /* Transfer the balance from the sender&#39;s address to the address _to with data _data */
+    /* Transfer the balance from the sender's address to the address _to with data _data */
     function transfer(address _to, uint _value, bytes _data) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-        &amp;&amp; _value &gt; 0
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+        && _value > 0
+        && balances[_to] + _value > balances[_to]) {
             if(isContract(_to)) {
                 return transferToContract(_to, _value, _data);
             } else {
@@ -237,7 +237,7 @@ contract BethereumERC223 is ERC223Interface {
         assembly {
         length := extcodesize(_address)
         }
-        if(length &gt; 0) {
+        if(length > 0) {
             return true;
         } else {
             return false;
@@ -402,7 +402,7 @@ contract Crowdsale {
 
     function Crowdsale(uint256 _endTime, address _wallet) {
 
-        require(_endTime &gt;= now);
+        require(_endTime >= now);
         require(_wallet != 0x0);
 
         token = createTokenContract();
@@ -433,14 +433,14 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 }
 
@@ -460,7 +460,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -526,7 +526,7 @@ contract BETHERTokenSale is FinalizableCrowdsale {
         // Available only if presale or crowdsale is running.
         require(currentPhase == Phase.CrowdsaleRunning);
         require(_buyer != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(validPurchase());
 
         uint tokensWouldAddTo = 0;
@@ -538,12 +538,12 @@ contract BETHERTokenSale is FinalizableCrowdsale {
 
         weiWouldAddTo = weiRaised.add(weiAmount);
 
-        require(weiWouldAddTo &lt;= TOKEN_SALE_LIMIT);
+        require(weiWouldAddTo <= TOKEN_SALE_LIMIT);
 
         newTokens = addBonusTokens(token.totalSupply(), newTokens);
 
         tokensWouldAddTo = newTokens.add(token.totalSupply());
-        require(tokensWouldAddTo &lt;= TOKENS_FOR_SALE);
+        require(tokensWouldAddTo <= TOKENS_FOR_SALE);
 
         token.mint(_buyer, newTokens);
         TokenPurchase(msg.sender, _buyer, weiAmount, newTokens);

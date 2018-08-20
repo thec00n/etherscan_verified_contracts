@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,17 +61,17 @@ contract ifoodToken is ERC20 {
     uint256 blockNumber;
   }
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // Tokens with time lock
-  // Only when the tokens&#39; blockNumber is less than current block number,
+  // Only when the tokens' blockNumber is less than current block number,
   // can the tokens be minted to the owner
-  mapping(address =&gt; TokensWithLock) lockTokens;
+  mapping(address => TokensWithLock) lockTokens;
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
  
   // Token Info
-  string public name = &quot;Ifoods Token&quot;;
-  string public symbol = &quot;IFOOD&quot;;
+  string public name = "Ifoods Token";
+  string public symbol = "IFOOD";
   uint8 public decimals = 18;
   
   // Token Cap
@@ -127,7 +127,7 @@ contract ifoodToken is ERC20 {
    */
   function transfer(address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -153,8 +153,8 @@ contract ifoodToken is ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -169,7 +169,7 @@ contract ifoodToken is ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
         revert();
     }
     allowed[msg.sender][_spender] = _value;
@@ -229,7 +229,7 @@ contract ifoodToken is ERC20 {
    * @param _durationOfLock the new duration of lock
    */
   function setDurationOfLock(uint256 _durationOfLock) canMint only(ifoodCommunity) public {
-    require(_durationOfLock &gt;= TIMETHRESHOLD);
+    require(_durationOfLock >= TIMETHRESHOLD);
     durationOfLock = _durationOfLock;
     SetDurationOfLock(msg.sender);
   }
@@ -250,14 +250,14 @@ contract ifoodToken is ERC20 {
    * @return True if the tokens are approved of mintting correctly
    */
   function approveMintTokens(address _owner, uint256 _amount) nonZeroAddress(_owner) canMint only(ifoodCommunity) public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     uint256 previousLockTokens = lockTokens[_owner].value;
-    require(previousLockTokens + _amount &gt;= previousLockTokens);
+    require(previousLockTokens + _amount >= previousLockTokens);
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(curTotalSupply + _amount &lt;= totalSupplyCap);  // Check for overflow of total supply cap
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(curTotalSupply + _amount <= totalSupplyCap);  // Check for overflow of total supply cap
     uint256 previousBalanceTo = balanceOf(_owner);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     lockTokens[_owner].value = previousLockTokens.add(_amount);
     uint256 curBlockNumber = getCurrentBlockNumber();
     lockTokens[_owner].blockNumber = curBlockNumber.add(durationOfLock);
@@ -272,9 +272,9 @@ contract ifoodToken is ERC20 {
    * @return True if the tokens are withdrawn correctly
    */
   function withdrawMintTokens(address _owner, uint256 _amount) nonZeroAddress(_owner) canMint only(ifoodCommunity) public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     uint256 previousLockTokens = lockTokens[_owner].value;
-    require(previousLockTokens - _amount &gt;= 0);
+    require(previousLockTokens - _amount >= 0);
     lockTokens[_owner].value = previousLockTokens.sub(_amount);
     if (previousLockTokens - _amount == 0) {
       lockTokens[_owner].blockNumber = 0;
@@ -289,13 +289,13 @@ contract ifoodToken is ERC20 {
    * @return True if the tokens are minted correctly
    */
   function mintTokens(address _owner) canMint only(ifoodDev) nonZeroAddress(_owner) public returns (bool) {
-    require(lockTokens[_owner].blockNumber &lt;= getCurrentBlockNumber());
+    require(lockTokens[_owner].blockNumber <= getCurrentBlockNumber());
     uint256 _amount = lockTokens[_owner].value;
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(curTotalSupply + _amount &lt;= totalSupplyCap);  // Check for overflow of total supply cap
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(curTotalSupply + _amount <= totalSupplyCap);  // Check for overflow of total supply cap
     uint256 previousBalanceTo = balanceOf(_owner);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     
     totalSupply = curTotalSupply.add(_amount);
     balances[_owner] = previousBalanceTo.add(_amount);
@@ -313,10 +313,10 @@ contract ifoodToken is ERC20 {
    * @return True if the tokens are transferred correctly
    */
   function transferForMultiAddresses(address[] _addresses, uint256[] _amounts) canTransfer public returns (bool) {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       require(_addresses[i] != address(0));
-      require(_amounts[i] &lt;= balances[msg.sender]);
-      require(_amounts[i] &gt; 0);
+      require(_amounts[i] <= balances[msg.sender]);
+      require(_amounts[i] > 0);
 
       // SafeMath.sub will throw if there is not enough balance.
       balances[msg.sender] = balances[msg.sender].sub(_amounts[i]);

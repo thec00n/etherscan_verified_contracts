@@ -6,7 +6,7 @@ contract RedEnvelope{
     uint min = 1000000000000000; // 0.001 ETH
     uint max;
     uint256 money;
-    mapping (address =&gt; uint) earned;
+    mapping (address => uint) earned;
     
     function RedEnvelope() {
         owner = msg.sender;
@@ -26,7 +26,7 @@ contract RedEnvelope{
 
     function multiBlockRandomGen(uint seed, uint size) constant returns (uint randomNumber) {
         uint n = 0;
-        for (uint i = 0; i &lt; size; i++){
+        for (uint i = 0; i < size; i++){
             if (uint(sha3(block.blockhash(block.number - i - 1), seed )) % 2 == 0)
                 n += 2 ** i ;
         }
@@ -48,7 +48,7 @@ contract RedEnvelope{
         }
         max = this.balance / remainSize * 2;
         money = randomGen(seed, max);
-        if (money &lt; min) {
+        if (money < min) {
             money = min;
         }
         msg.sender.transfer(money);

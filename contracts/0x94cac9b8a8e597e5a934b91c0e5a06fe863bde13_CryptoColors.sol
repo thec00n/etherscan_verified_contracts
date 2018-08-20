@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,8 +68,8 @@ contract CryptoColors {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoColors&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CLRS&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoColors"; // solhint-disable-line
+  string public constant SYMBOL = "CLRS"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private firstStepLimit =  0.02 ether;
@@ -81,25 +81,25 @@ contract CryptoColors {
 
   /// @dev A mapping from token IDs to the address that owns them. All tokens have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
 
   /// @dev A mapping from owner address to count of tokens that address owns.
   /// Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from TokenIDs to an address that has been approved to call
   /// transferFrom(). Each Token can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public tokenIndexToApproved;
+  mapping (uint256 => address) public tokenIndexToApproved;
 
   /// @dev A mapping from TokenIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private tokenIndexToPrice;
+  mapping (uint256 => uint256) private tokenIndexToPrice;
 
   /// @dev Current referrer balance
-  mapping (address =&gt; uint256) private referrerBalance;
+  mapping (address => uint256) private referrerBalance;
 
   /// @dev A mapping from a token buyer to their referrer
-  mapping (address =&gt; address) private referralToRefferer;
+  mapping (address => address) private referralToRefferer;
 
   /// The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -169,16 +169,16 @@ contract CryptoColors {
 
   /// @dev Returns next token price
   function _calculateNextPrice(uint256 _sellingPrice) private view returns (uint256 price) {
-    if (_sellingPrice &lt; firstStepLimit) {
+    if (_sellingPrice < firstStepLimit) {
       // first stage
       return _sellingPrice.mul(200).div(100);
-    } else if (_sellingPrice &lt; secondStepLimit) {
+    } else if (_sellingPrice < secondStepLimit) {
       // second stage
      return _sellingPrice.mul(135).div(100);
-    } else if (_sellingPrice &lt; thirdStepLimit) {
+    } else if (_sellingPrice < thirdStepLimit) {
       // third stage
       return _sellingPrice.mul(125).div(100);
-    } else if (_sellingPrice &lt; forthStepLimit) {
+    } else if (_sellingPrice < forthStepLimit) {
       // forth stage
       return _sellingPrice.mul(120).div(100);
     } else {
@@ -244,7 +244,7 @@ contract CryptoColors {
   function payoutToReferrer() public payable {
     address referrer = msg.sender;
     uint256 totalAmount = referrerBalance[referrer];
-    if (totalAmount &gt; 0) {
+    if (totalAmount > 0) {
       msg.sender.transfer(totalAmount);
       referrerBalance[referrer] = 0;
       Payout(referrer, totalAmount);
@@ -266,7 +266,7 @@ contract CryptoColors {
     // Safety check to prevent against an unexpected 0x0 default.
     require(_addressNotNull(newOwner));
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = sellingPrice.mul(95).div(100);
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
@@ -299,7 +299,7 @@ contract CryptoColors {
     TokenSold(_tokenId, sellingPrice, tokenIndexToPrice[_tokenId], oldOwner, newOwner, tokens[_tokenId].name);
 
     // Transfer excess back to owner
-    if (purchaseExcess &gt; 0) {
+    if (purchaseExcess > 0) {
       msg.sender.transfer(purchaseExcess);
     }
   }
@@ -342,7 +342,7 @@ contract CryptoColors {
   }
 
   /// @param _owner The owner whose tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Tokens array looking for tokens belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -357,7 +357,7 @@ contract CryptoColors {
       uint256 resultIndex = 0;
 
       uint256 tokenId;
-      for (tokenId = 0; tokenId &lt;= totalTokens; tokenId++) {
+      for (tokenId = 0; tokenId <= totalTokens; tokenId++) {
         if (tokenIndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;
           resultIndex++;
@@ -426,8 +426,8 @@ contract CryptoColors {
     });
     uint256 newTokenId = tokens.push(_token) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newTokenId == uint256(uint32(newTokenId)));
 
     Birth(newTokenId, _name, _owner);
@@ -455,12 +455,12 @@ contract CryptoColors {
 
   /// @dev Assigns ownership of a specific Token to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of tokens is capped to 2^32 we can&#39;t overflow this
+    // Since the number of tokens is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     tokenIndexToOwner[_tokenId] = _to;
 
-    // When creating new tokens _from is 0x0, but we can&#39;t account that address.
+    // When creating new tokens _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

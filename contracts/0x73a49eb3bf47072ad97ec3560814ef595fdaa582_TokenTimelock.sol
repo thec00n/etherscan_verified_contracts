@@ -27,7 +27,7 @@ contract TokenTimelock {
   uint releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint _releaseTime) {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -38,10 +38,10 @@ contract TokenTimelock {
    */
   function claim() {
     require(msg.sender == beneficiary);
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.transfer(beneficiary, amount);
   }

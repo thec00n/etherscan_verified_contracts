@@ -18,9 +18,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -94,7 +94,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -112,7 +112,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -145,8 +145,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -160,7 +160,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -273,8 +273,8 @@ contract MintableToken is StandardToken, Ownable {
 
 
 contract APOToken is MintableToken {
-    string public name = &quot;Advanced Parimutuel Options&quot;;
-    string public symbol = &quot;APO&quot;;
+    string public name = "Advanced Parimutuel Options";
+    string public symbol = "APO";
     uint8 public decimals = 18;
 }
 
@@ -292,7 +292,7 @@ contract TokenTimelock {
     uint256 public releaseTime;
     
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -302,10 +302,10 @@ contract TokenTimelock {
     * @notice Transfers tokens held by timelock to beneficiary.
     */
     function release() public {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -317,7 +317,7 @@ contract RefundVault is Ownable {
     
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
     //  
@@ -398,7 +398,7 @@ contract Crowdsale {
 
     function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public 
     {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -536,7 +536,7 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     event Finalized();
 
     modifier onlyWhileOpen {
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        require(now >= startTime && now <= endTime);
         _;
     }
     
@@ -555,8 +555,8 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
         require(_beneficiary != address(0));
         require(_weiAmount != 0);
-        require(_weiAmount &gt;= minAmount);
-        require(weiRaised.add(_weiAmount) &lt;= hardCap);
+        require(_weiAmount >= minAmount);
+        require(weiRaised.add(_weiAmount) <= hardCap);
     }
     
 
@@ -567,11 +567,11 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     */
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
         // Calculate discount rate
-        if (now &lt;= startTime + 1 * discountPeriod) {
+        if (now <= startTime + 1 * discountPeriod) {
             _tokenAmount = _tokenAmount.mul(125).div(100);
-        } else if ((now &gt; startTime + 1 * discountPeriod) &amp;&amp; (now &lt;= startTime + 2 * discountPeriod))  {
+        } else if ((now > startTime + 1 * discountPeriod) && (now <= startTime + 2 * discountPeriod))  {
             _tokenAmount = _tokenAmount.mul(115).div(100);
-        } else if ((now &gt; startTime + 2 * discountPeriod) &amp;&amp; (now &lt;= startTime + 3 * discountPeriod))  {
+        } else if ((now > startTime + 2 * discountPeriod) && (now <= startTime + 3 * discountPeriod))  {
             _tokenAmount = _tokenAmount.mul(105).div(100);
         }
         
@@ -593,13 +593,13 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     * @return Whether the cap was reached
     */
     function capReached() public view returns (bool) {
-        return weiRaised &gt;= hardCap;
+        return weiRaised >= hardCap;
     }
 
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -654,7 +654,7 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     * @return Whether crowdsale period has elapsed
     */
     function hasClosed() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 
@@ -674,7 +674,7 @@ contract APOTokenCrowdsale is Ownable, Crowdsale  {
     * @return Whether funding goal was reached
     */
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= softCap;
+        return weiRaised >= softCap;
     }
 
 }

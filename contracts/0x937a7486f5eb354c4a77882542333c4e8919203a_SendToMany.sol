@@ -12,7 +12,7 @@ contract SendToMany
     function() payable public
     {
         uint256 amountOfRecipients = recipients.length;
-        for (uint256 i=0; i&lt;amountOfRecipients; i++)
+        for (uint256 i=0; i<amountOfRecipients; i++)
         {
             recipients[i].transfer(msg.value / amountOfRecipients);
         }

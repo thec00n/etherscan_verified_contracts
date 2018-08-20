@@ -38,12 +38,12 @@ library ECRecoveryLibrary {
         }
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
 
         // If the version is correct return the signer address
-        if (v != 27 &amp;&amp; v != 28) {
+        if (v != 27 && v != 28) {
             return (address(0));
         } else {
             // solium-disable-next-line arg-overflow
@@ -53,7 +53,7 @@ library ECRecoveryLibrary {
 
     /**
      * toEthSignedMessageHash
-     * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+     * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
      * @dev and hash the result
      */
     function toEthSignedMessageHash(bytes32 hash)
@@ -64,7 +64,7 @@ library ECRecoveryLibrary {
         // 32 is the length in bytes of hash,
         // enforced by the type signature above
         return keccak256(
-            &quot;\x19Ethereum Signed Message:\n32&quot;,
+            "\x19Ethereum Signed Message:\n32",
             hash
         );
     }
@@ -77,11 +77,11 @@ library ECRecoveryLibrary {
 library SafeMathLibrary {
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     /**
@@ -100,9 +100,9 @@ library SafeMathLibrary {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -110,7 +110,7 @@ library SafeMathLibrary {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -119,7 +119,7 @@ library SafeMathLibrary {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -127,7 +127,7 @@ library SafeMathLibrary {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -216,11 +216,11 @@ contract Token is Pausable {
 
     uint public decimals = 18;
 
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
-    mapping(bytes =&gt; bool) signatures;
+    mapping(bytes => bool) signatures;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -249,7 +249,7 @@ contract Token is Pausable {
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint _value) whenNotPaused public returns (bool) {
-        require(_to != address(0) &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_to != address(0) && _value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -261,12 +261,12 @@ contract Token is Pausable {
     }
 
     function delegatedTransfer(bytes _signature, address _to, uint _value, uint _fee, uint _nonce) whenNotPaused public returns (bool) {
-        require(_to != address(0) &amp;&amp; signatures[_signature] == false);
+        require(_to != address(0) && signatures[_signature] == false);
 
         bytes32 hashedTx = hashDelegatedTransfer(_to, _value, _fee, _nonce);
         address from = hashedTx.recover(_signature);
 
-        require(from != address(0) &amp;&amp; _value.add(_fee) &lt;= balances[from]);
+        require(from != address(0) && _value.add(_fee) <= balances[from]);
 
         balances[from] = balances[from].sub(_value).sub(_fee);
         balances[_to] = balances[_to].add(_value);
@@ -296,8 +296,8 @@ contract Token is Pausable {
      */
     function transferFrom(address _from, address _to, uint _value) whenNotPaused public returns (bool ok) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -314,7 +314,7 @@ contract Token is Pausable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -363,7 +363,7 @@ contract Token is Pausable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -374,7 +374,7 @@ contract Token is Pausable {
 
     function callTokenFallback(address _contract, address _from, uint _value) internal {
         if (isContract(_contract)) {
-            require(contracts[_contract] != address(0) &amp;&amp; balances[_contract] &gt;= contractHoldBalance);
+            require(contracts[_contract] != address(0) && balances[_contract] >= contractHoldBalance);
             TokenReceiver receiver = TokenReceiver(_contract);
             require(receiver.tokenFallback(_from, _value));
         }
@@ -385,11 +385,11 @@ contract Token is Pausable {
         assembly {
             length := extcodesize(_address)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
-    // contract =&gt; owner
-    mapping (address =&gt; address) contracts;
+    // contract => owner
+    mapping (address => address) contracts;
 
     uint contractHoldBalance = 500 * 10 ** decimals;
 
@@ -399,7 +399,7 @@ contract Token is Pausable {
     }
 
     function register(address _contract) whenNotPaused public returns(bool) {
-        require(isContract(_contract) &amp;&amp; contracts[_contract] == address(0) &amp;&amp; balances[msg.sender] &gt;= contractHoldBalance);
+        require(isContract(_contract) && contracts[_contract] == address(0) && balances[msg.sender] >= contractHoldBalance);
         balances[msg.sender] = balances[msg.sender].sub(contractHoldBalance);
         balances[_contract] = balances[_contract].add(contractHoldBalance);
         contracts[_contract] = msg.sender;
@@ -407,7 +407,7 @@ contract Token is Pausable {
     }
 
     function unregister(address _contract) whenNotPaused public returns(bool) {
-        require(isContract(_contract) &amp;&amp; contracts[_contract] == msg.sender);
+        require(isContract(_contract) && contracts[_contract] == msg.sender);
         balances[_contract] = balances[_contract].sub(contractHoldBalance);
         balances[msg.sender] = balances[msg.sender].add(contractHoldBalance);
         delete contracts[_contract];
@@ -416,9 +416,9 @@ contract Token is Pausable {
 }
 
 contract CATT is Token {
-    string public name = &quot;Content Aggregation Transfer Token&quot;;
+    string public name = "Content Aggregation Transfer Token";
 
-    string public symbol = &quot;CATT&quot;;
+    string public symbol = "CATT";
 
     uint public totalSupply = 5000000000 * 10 ** decimals;
 

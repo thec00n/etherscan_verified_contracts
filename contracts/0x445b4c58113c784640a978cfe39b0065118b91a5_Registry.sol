@@ -5,7 +5,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,7 +51,7 @@ contract Ownable {
  * Registry of contracts deployed from ICO Wizard.
  */
 contract Registry is Ownable {
-  mapping (address =&gt; address[]) public deployedContracts;
+  mapping (address => address[]) public deployedContracts;
 
   event Added(address indexed sender, address indexed deployAddress);
 

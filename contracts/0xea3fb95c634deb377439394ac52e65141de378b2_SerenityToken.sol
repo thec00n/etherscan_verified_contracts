@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,19 +72,19 @@ contract IERC20Token {
 contract ERC20Token is IERC20Token {
   using SafeMath for uint256;
 
-  string public standard = &#39;Token 0.1&#39;;
-  string public name = &#39;&#39;;
-  string public symbol = &#39;&#39;;
+  string public standard = 'Token 0.1';
+  string public name = '';
+  string public symbol = '';
   uint8 public decimals = 0;
   uint256 public totalSupply = 0;
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
   function ERC20Token(string _name, string _symbol, uint8 _decimals) public {
-    require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0);
+    require(bytes(_name).length > 0 && bytes(_symbol).length > 0);
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -142,12 +142,12 @@ contract SerenityToken is ISerenityToken, ERC20Token, Owned {
   uint256 public totalProjectToken;
   bool public transfersEnabled = false;
 
-  mapping (address =&gt; bool) private fundingWallets;
+  mapping (address => bool) private fundingWallets;
 
   event Finalize(address indexed _from, uint256 _value);
   event DisableTransfers(address indexed _from);
 
-  function SerenityToken() ERC20Token(&quot;SERENITY&quot;, &quot;SERENITY&quot;, 18) public {
+  function SerenityToken() ERC20Token("SERENITY", "SERENITY", 18) public {
     fundingWallet = msg.sender; 
 
     balanceOf[fundingWallet] = maxSaleToken;

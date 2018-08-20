@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -184,7 +184,7 @@ contract EcoVault is Ownable, Pausable, HasNoEther, CanReclaimToken
     uint256 public constant CONTRIBUTION_END = 1509494400; // 1 Nov, 2018 00:00:00 UTC
     uint256 public constant TIME_LOCK_END = 1525132800; // 1 May, 2018 00:00:00 UTC
 
-    mapping (address =&gt; uint256) public contributions;
+    mapping (address => uint256) public contributions;
     uint256 public totalContributions = 0;
 
     ERC20 public token;
@@ -195,12 +195,12 @@ contract EcoVault is Ownable, Pausable, HasNoEther, CanReclaimToken
     modifier whenAbleToContribute(uint256 _amount)
     {
         require(
-            now &gt; CONTRIBUTION_START &amp;&amp;
-            now &lt; CONTRIBUTION_END &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            contributions[msg.sender].add(_amount) &lt;= MAX_CONTRIBUTION &amp;&amp;
-            totalContributions.add(_amount) &lt;= MAX_TOTAL_CONTRIBUTIONS &amp;&amp;
-            token.allowance(msg.sender, this) &gt;= _amount
+            now > CONTRIBUTION_START &&
+            now < CONTRIBUTION_END &&
+            _amount > 0 &&
+            contributions[msg.sender].add(_amount) <= MAX_CONTRIBUTION &&
+            totalContributions.add(_amount) <= MAX_TOTAL_CONTRIBUTIONS &&
+            token.allowance(msg.sender, this) >= _amount
         );
         _;
     }
@@ -208,8 +208,8 @@ contract EcoVault is Ownable, Pausable, HasNoEther, CanReclaimToken
     modifier whenAbleToWithdraw()
     {
         require(
-            now &gt;= TIME_LOCK_END &amp;&amp;
-            contributions[msg.sender] &gt; 0
+            now >= TIME_LOCK_END &&
+            contributions[msg.sender] > 0
         );
         _;
     }

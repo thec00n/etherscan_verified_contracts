@@ -18,13 +18,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -56,7 +56,7 @@ contract Owned {
  */
 contract Payload {
 	modifier onlyPayloadSize(uint size) {
-		// require(msg.data.length &gt;= size + 4);
+		// require(msg.data.length >= size + 4);
 		_;
   	}
 }
@@ -110,12 +110,12 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	uint256 public totalContributors;
 	uint256 public totalContribution;
 
-	mapping (address =&gt; bool) developers;
-	mapping (address =&gt; uint256) contributions;
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => bool) developers;
+	mapping (address => uint256) contributions;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
-	mapping (address =&gt; bool) freezes;
+	mapping (address => bool) freezes;
 
 	struct SpecialPrice {
         uint256 buyPrice;
@@ -123,7 +123,7 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
         bool exists;
     }
 
-	mapping (address =&gt; SpecialPrice) specialPrices;
+	mapping (address => SpecialPrice) specialPrices;
 
 	uint256 public buyPrice;
 	uint256 public sellPrice;
@@ -142,12 +142,12 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	event Refund(address indexed addr , uint256 value);
 
 	function CryptoToken (string _name, string _symbol, uint8 _decimals, address _wallet, uint256 _totalSupply, uint256 _buyPrice, uint256 _sellPrice) {
-		name = bytes(_name).length &gt; 0 ? _name : &quot;IntelliETH&quot;;
-		symbol = bytes(_symbol).length &gt; 0 ? _symbol : &quot;INETH&quot;;
-		decimals = _decimals &gt; 0 ? _decimals : 18;
+		name = bytes(_name).length > 0 ? _name : "IntelliETH";
+		symbol = bytes(_symbol).length > 0 ? _symbol : "INETH";
+		decimals = _decimals > 0 ? _decimals : 18;
 		wallet = _wallet != 0x0 ? _wallet : 0x634dA488e1E122A9f2ED83e91ccb6Db3414e3984;
 		
-		_totalSupply = _totalSupply &gt; 0 ? _totalSupply : 500000000;
+		_totalSupply = _totalSupply > 0 ? _totalSupply : 500000000;
 
 		totalSupply = _totalSupply * (10 ** uint256(decimals));
 		availSupply = totalSupply;
@@ -155,8 +155,8 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 
 		balances[owner] = totalSupply;
 
-		buyPrice = _buyPrice &gt; 0 ? _buyPrice : 444444444444444;
-		sellPrice = _sellPrice &gt; 0 ? _sellPrice : 0;
+		buyPrice = _buyPrice > 0 ? _buyPrice : 444444444444444;
+		sellPrice = _sellPrice > 0 ? _sellPrice : 0;
 
 		developers[owner] = true;
 		developers[wallet] = true;
@@ -175,8 +175,8 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function transferFrom(address approver, address to, uint256 value) public onlyPayloadSize(3 * 32) returns (bool) {
-		require(allowed[approver][msg.sender] - value &gt;= 0);
-		require(allowed[approver][msg.sender] - value &lt; allowed[approver][msg.sender]);
+		require(allowed[approver][msg.sender] - value >= 0);
+		require(allowed[approver][msg.sender] - value < allowed[approver][msg.sender]);
 
 		allowed[approver][msg.sender] = allowed[approver][msg.sender].sub(value);
 		return _transfer(approver, to, value);
@@ -187,17 +187,17 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function increaseApproval(address spender , uint256 value) public returns (bool) {
-		require(value &gt; 0);
-		require(allowed[msg.sender][spender] + value &gt; allowed[msg.sender][spender]);
+		require(value > 0);
+		require(allowed[msg.sender][spender] + value > allowed[msg.sender][spender]);
 
 		value = allowed[msg.sender][spender].add(value);
 		return _approve(msg.sender , spender , value);
 	}
 
 	function decreaseApproval(address spender , uint256 value) public returns (bool) {
-		require(value &gt; 0);
-		require(allowed[msg.sender][spender] - value &gt;= 0);	
-		require(allowed[msg.sender][spender] - value &lt; allowed[msg.sender][spender]);	
+		require(value > 0);
+		require(allowed[msg.sender][spender] - value >= 0);	
+		require(allowed[msg.sender][spender] - value < allowed[msg.sender][spender]);	
 
 		value = allowed[msg.sender][spender].sub(value);
 		return _approve(msg.sender , spender , value);
@@ -285,7 +285,7 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function buy() public payable returns(uint256) {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		require(tokenStatus == true || developers[msg.sender] == true);
 		require(buyStatus == true);
 
@@ -305,7 +305,7 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function sell(uint256 units) public payable returns(uint256) {
-		require(units &gt; 0);
+		require(units > 0);
 		require(tokenStatus == true || developers[msg.sender] == true);
 		require(sellStatus == true);
 
@@ -319,7 +319,7 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function refund() public payable returns(uint256) {
-		require(contributions[msg.sender] &gt; 0);
+		require(contributions[msg.sender] > 0);
 		require(tokenStatus == true || developers[msg.sender] == true);
 		require(refundStatus == true);
 
@@ -359,11 +359,11 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	function _transfer(address from, address to, uint256 value) private onlyPayloadSize(3 * 32) returns (bool) {
 		require(to != address(0));
 		require(from != to);
-		require(value &gt; 0);
+		require(value > 0);
 
-		require(balances[from] - value &gt;= 0);
-		require(balances[from] - value &lt; balances[from]);
-		require(balances[to] + value &gt; balances[to]);
+		require(balances[from] - value >= 0);
+		require(balances[from] - value < balances[from]);
+		require(balances[to] + value > balances[to]);
 
 		require(freezes[from] == false);
 		require(tokenStatus == true || developers[msg.sender] == true);
@@ -385,7 +385,7 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 	}
 
 	function _approve(address owner, address spender, uint256 value) private returns (bool) {
-		require(value &gt; 0);
+		require(value > 0);
 		allowed[owner][spender] = value;
 		Approval(owner, spender, value);
 		return true;
@@ -393,9 +393,9 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 
 	function _addSupply(address to, uint256 value) private returns (bool) {
 		if(owner == to) {
-			require(availSupply + value &gt; availSupply);
-			require(transSupply - value &gt;= 0);
-			require(transSupply - value &lt; transSupply);
+			require(availSupply + value > availSupply);
+			require(transSupply - value >= 0);
+			require(transSupply - value < transSupply);
 			availSupply = availSupply.add(value);
 			transSupply = transSupply.sub(value);
 			require(balances[owner] == availSupply);
@@ -405,9 +405,9 @@ contract CryptoToken is Owned, Payload, CryptoTokenConstants {
 
 	function _subSupply(address from, uint256 value) private returns (bool) {
 		if(owner == from) {
-			require(availSupply - value &gt;= 0);
-			require(availSupply - value &lt; availSupply);
-			require(transSupply + value &gt; transSupply);
+			require(availSupply - value >= 0);
+			require(availSupply - value < availSupply);
+			require(transSupply + value > transSupply);
 			availSupply = availSupply.sub(value);
 			transSupply = transSupply.add(value);
 			require(balances[owner] == availSupply);

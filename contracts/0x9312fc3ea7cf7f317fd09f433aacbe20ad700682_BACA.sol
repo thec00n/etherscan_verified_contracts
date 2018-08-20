@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,17 +83,17 @@ library SafeMath {
 contract BACA is ERC20,Ownable{
 	using SafeMath for uint256;
 
-	string public constant name=&quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b292e2e0b28242225">[email&#160;protected]</a>&quot;;
-	string public symbol=&quot;BACA&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b292e2e0b28242225">[email protected]</a>";
+	string public symbol="BACA";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 	uint256 public totalSupply;
 
 	uint256 public constant MAX_SUPPLY=410000000000*10**decimals;
 
 	
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	event GetETH(address indexed _from, uint256 _value);
 
 	function BACA(){

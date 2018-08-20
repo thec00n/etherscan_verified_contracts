@@ -21,7 +21,7 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract MyTestToken is owned {
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     bool b_enableTransfer = true;
     uint256 creationDate;
     string public name;
@@ -52,8 +52,8 @@ contract MyTestToken is owned {
     function transfer2(address _to, uint256 _value) public
     {
         require(b_enableTransfer); 
-        //require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        //require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        //require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        //require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         
         _transfer(_to, _value);
     }
@@ -69,27 +69,27 @@ contract MyTestToken is owned {
         }
         if(tipoCongelamento == 1) // 10 minutes
         {
-            if(now &gt;= creationDate + 10 * 1 minutes) _transfer(_to, _value);
+            if(now >= creationDate + 10 * 1 minutes) _transfer(_to, _value);
         }
         if(tipoCongelamento == 2) // 30 minutes
         {
-            if(now &gt;= creationDate + 30 * 1 minutes) _transfer(_to, _value);
+            if(now >= creationDate + 30 * 1 minutes) _transfer(_to, _value);
         }        
         if(tipoCongelamento == 3) // 1 hour
         {
-            if(now &gt;= creationDate + 1 * 1 hours) _transfer(_to, _value);
+            if(now >= creationDate + 1 * 1 hours) _transfer(_to, _value);
         }        
         if(tipoCongelamento == 4) // 2 hours
         {
-            if(now &gt;= creationDate + 2 * 1 hours) _transfer(_to, _value);
+            if(now >= creationDate + 2 * 1 hours) _transfer(_to, _value);
         }        
         if(tipoCongelamento == 5) // 1 day
         {
-            if(now &gt;= creationDate + 1 * 1 days) _transfer(_to, _value);
+            if(now >= creationDate + 1 * 1 days) _transfer(_to, _value);
         }        
         if(tipoCongelamento == 6) // 2 days
         {
-            if(now &gt;= creationDate + 2 * 1 days) _transfer(_to, _value);
+            if(now >= creationDate + 2 * 1 days) _transfer(_to, _value);
         }        
     }
 
@@ -98,26 +98,26 @@ contract MyTestToken is owned {
         // 0 = unfreeze; 1 = frozen by 10 minutes; 2 = frozen by 30 minutes; 3 = frozen by 1 hour
         // 4 = frozen by 2 hours; 5 = frozen by 1 day; 6 = frozen by 2 days
         
-        if(tipoCongelamento == 0) return ( &quot;Tokens free to transfer!&quot;);
-        if(tipoCongelamento == 1) return ( &quot;Tokens frozen by 10 minutes.&quot;);
-        if(tipoCongelamento == 2) return ( &quot;Tokens frozen by 30 minutes.&quot;);
-        if(tipoCongelamento == 3) return ( &quot;Tokens frozen by 1 hour.&quot;);
-        if(tipoCongelamento == 4) return ( &quot;Tokens frozen by 2 hours.&quot;);        
-        if(tipoCongelamento == 5) return ( &quot;Tokens frozen by 1 day.&quot;);        
-        if(tipoCongelamento == 6) return ( &quot;Tokens frozen by 2 days.&quot;);                
+        if(tipoCongelamento == 0) return ( "Tokens free to transfer!");
+        if(tipoCongelamento == 1) return ( "Tokens frozen by 10 minutes.");
+        if(tipoCongelamento == 2) return ( "Tokens frozen by 30 minutes.");
+        if(tipoCongelamento == 3) return ( "Tokens frozen by 1 hour.");
+        if(tipoCongelamento == 4) return ( "Tokens frozen by 2 hours.");        
+        if(tipoCongelamento == 5) return ( "Tokens frozen by 1 day.");        
+        if(tipoCongelamento == 6) return ( "Tokens frozen by 2 days.");                
 
     }
 
     function setFreezingStatus(uint8 _mode) onlyOwner public
     {
-        require(_mode&gt;=0 &amp;&amp; _mode &lt;=6);
+        require(_mode>=0 && _mode <=6);
         tipoCongelamento = _mode;
     }
 
     function _transfer(address _to, uint256 _value) private 
     {
-        require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         
         balanceOf[msg.sender] -= _value;                    // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient

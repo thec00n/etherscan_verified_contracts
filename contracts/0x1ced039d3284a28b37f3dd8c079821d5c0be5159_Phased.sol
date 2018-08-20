@@ -20,7 +20,7 @@ contract Phased is PriceModel {
   // List of prices and list of blocks must have the same length
   // Maximum number of phases is 10
   function Phased(uint[] _prices, uint[] _blocks) {
-    require(_prices.length == _blocks.length &amp;&amp; _prices.length &lt;= 10);
+    require(_prices.length == _blocks.length && _prices.length <= 10);
     require(isSorted(_blocks));
 
     prices = _prices;
@@ -32,9 +32,9 @@ contract Phased is PriceModel {
     // Binary search of the value in the array
     uint min = 0;
     uint max = blocks.length-1;
-    while (max &gt; min) {
+    while (max > min) {
       uint mid = (max + min + 1)/ 2;
-      if (blocks[mid] &lt;= _block) {
+      if (blocks[mid] <= _block) {
         min = mid;
       } else {
         max = mid-1;
@@ -48,8 +48,8 @@ contract Phased is PriceModel {
   function isSorted(uint[] list) internal constant returns (bool sorted) {
     sorted = true;
 
-    for(uint i = 1; i &lt; list.length; i++) {
-      if(list[i-1] &gt; list[i])
+    for(uint i = 1; i < list.length; i++) {
+      if(list[i-1] > list[i])
         sorted = false;
     }
   }

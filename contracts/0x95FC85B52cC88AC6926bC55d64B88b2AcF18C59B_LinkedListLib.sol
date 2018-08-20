@@ -25,7 +25,7 @@ pragma solidity 0.4.21;
  * technology. For further information: modular.network
  *
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -43,7 +43,7 @@ library LinkedListLib {
     bool constant NEXT = true;
 
     struct LinkedList{
-        mapping (uint256 =&gt; mapping (bool =&gt; uint256)) list;
+        mapping (uint256 => mapping (bool => uint256)) list;
     }
 
     /// @dev returns true if the list exists
@@ -67,7 +67,7 @@ library LinkedListLib {
         public
         view returns (bool)
     {
-        if (self.list[_node][PREV] == HEAD &amp;&amp; self.list[_node][NEXT] == HEAD) {
+        if (self.list[_node][PREV] == HEAD && self.list[_node][NEXT] == HEAD) {
             if (self.list[HEAD][NEXT] == _node) {
                 return true;
             } else {
@@ -123,7 +123,7 @@ library LinkedListLib {
     /// @param _node an existing node to search from, e.g. HEAD.
     /// @param _value value to seek
     /// @param _direction direction to seek in
-    //  @return next first node beyond &#39;_node&#39; in direction `_direction`
+    //  @return next first node beyond '_node' in direction `_direction`
     function getSortedSpot(LinkedList storage self, uint256 _node, uint256 _value, bool _direction)
         public view returns (uint256)
     {
@@ -132,7 +132,7 @@ library LinkedListLib {
         bool exists;
         uint256 next;
         (exists,next) = getAdjacent(self, _node, _direction);
-        while  ((next != 0) &amp;&amp; (_value != next) &amp;&amp; ((_value &lt; next) != _direction)) next = self.list[next][_direction];
+        while  ((next != 0) && (_value != next) && ((_value < next) != _direction)) next = self.list[next][_direction];
         return next;
     }
 
@@ -151,7 +151,7 @@ library LinkedListLib {
     /// @param _new  new node to insert
     /// @param _direction direction to insert node in
     function insert(LinkedList storage self, uint256 _node, uint256 _new, bool _direction) internal returns (bool) {
-        if(!nodeExists(self,_new) &amp;&amp; nodeExists(self,_node)) {
+        if(!nodeExists(self,_new) && nodeExists(self,_node)) {
             uint256 c = self.list[_node][_direction];
             createLink(self, _node, _new, _direction);
             createLink(self, _new, c, _direction);

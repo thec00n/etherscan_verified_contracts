@@ -66,25 +66,25 @@ contract Bytes32 {
  * Every request that is made by caller first sent to the specific asset implementation
  * contract, which then calls back to be forwarded onto EToken2.
  *
- * Calls flow: Caller -&gt;
- *             Proxy.func(...) -&gt;
- *             Asset._performFunc(..., Caller.address) -&gt;
- *             Proxy._forwardFunc(..., Caller.address) -&gt;
+ * Calls flow: Caller ->
+ *             Proxy.func(...) ->
+ *             Asset._performFunc(..., Caller.address) ->
+ *             Proxy._forwardFunc(..., Caller.address) ->
  *             Platform.proxyFunc(..., symbol, Caller.address)
  *
- * Generic call flow: Caller -&gt;
- *             Proxy.unknownFunc(...) -&gt;
- *             Asset._performGeneric(..., Caller.address) -&gt;
+ * Generic call flow: Caller ->
+ *             Proxy.unknownFunc(...) ->
+ *             Asset._performGeneric(..., Caller.address) ->
  *             Asset.unknownFunc(...)
  *
  * Asset implementation contract is mutable, but each user have an option to stick with
- * old implementation, through explicit decision made in timely manner, if he doesn&#39;t agree
+ * old implementation, through explicit decision made in timely manner, if he doesn't agree
  * with new rules.
  * Each user have a possibility to upgrade to latest asset contract implementation, without the
  * possibility to rollback.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
     // Assigned EToken2, immutable.
@@ -147,7 +147,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
     }
 
     function recoverTokens(uint _value) onlyAssetOwner() returns(bool) {
-        return this.transferWithReference(msg.sender, _value, &#39;Tokens recovery&#39;);
+        return this.transferWithReference(msg.sender, _value, 'Tokens recovery');
     }
 
     /**
@@ -200,7 +200,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @return success.
      */
     function transfer(address _to, uint _value) returns(bool) {
-        return transferWithReference(_to, _value, &#39;&#39;);
+        return transferWithReference(_to, _value, '');
     }
 
     /**
@@ -210,7 +210,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      *
      * @return success.
      */
@@ -227,7 +227,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @return success.
      */
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return transferToICAPWithReference(_icap, _value, &#39;&#39;);
+        return transferToICAPWithReference(_icap, _value, '');
     }
 
     /**
@@ -237,7 +237,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      *
      * @param _icap recipient ICAP to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      *
      * @return success.
      */
@@ -255,7 +255,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @return success.
      */
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return transferFromWithReference(_from, _to, _value, &#39;&#39;);
+        return transferFromWithReference(_from, _to, _value, '');
     }
 
     /**
@@ -266,7 +266,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      *
      * @return success.
      */
@@ -282,7 +282,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -301,7 +301,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @return success.
      */
     function transferFromToICAP(address _from, bytes32 _icap, uint _value) returns(bool) {
-        return transferFromToICAPWithReference(_from, _icap, _value, &#39;&#39;);
+        return transferFromToICAPWithReference(_from, _icap, _value, '');
     }
 
     /**
@@ -312,7 +312,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @param _from holder address to take from.
      * @param _icap recipient ICAP address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      *
      * @return success.
      */
@@ -328,7 +328,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
      * @param _from holder address to take from.
      * @param _icap recipient ICAP address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a EToken2&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a EToken2's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -415,7 +415,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
 
     // Asset implementation contract address that user decided to stick with.
     // 0x0 means that user uses latest version.
-    mapping(address =&gt; address) userOptOutVersion;
+    mapping(address => address) userOptOutVersion;
 
     /**
      * Only asset implementation contract assigned to sender is allowed to call.
@@ -484,7 +484,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
         if (_newVersion == 0x0) {
             return false;
         }
-        // Don&#39;t apply freeze-time for the initial setup.
+        // Don't apply freeze-time for the initial setup.
         if (latestVersion == 0x0) {
             latestVersion = _newVersion;
             return true;
@@ -522,7 +522,7 @@ contract PolybiusToken is ERC20, AssetProxyInterface, Bytes32 {
         if (pendingVersion == 0x0) {
             return false;
         }
-        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME &gt; now) {
+        if (pendingVersionTimestamp + UPGRADE_FREEZE_TIME > now) {
             return false;
         }
         latestVersion = pendingVersion;

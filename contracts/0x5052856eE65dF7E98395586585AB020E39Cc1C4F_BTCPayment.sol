@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,9 +49,9 @@ contract Owned {
 }
 
 contract KYC is Owned {
-    mapping (address =&gt; mapping (bool =&gt; bool)) public registeredAddress;
+    mapping (address => mapping (bool => bool)) public registeredAddress;
 
-    mapping (address =&gt; bool) public admin;
+    mapping (address => bool) public admin;
 
     event Registered(address indexed _addr);
     event Unregistered(address indexed _addr);
@@ -95,7 +95,7 @@ contract KYC is Owned {
     function register(address _addr, bool _isPresale)
         public
         onlyAdmin {
-        require(_addr != address(0) &amp;&amp; registeredAddress[_addr][_isPresale] == false);
+        require(_addr != address(0) && registeredAddress[_addr][_isPresale] == false);
 
         registeredAddress[_addr][_isPresale] = true;
 
@@ -105,7 +105,7 @@ contract KYC is Owned {
     function registerByList(address[] _addrs, bool _isPresale)
         public
         onlyAdmin {
-        for(uint256 i = 0; i &lt; _addrs.length; i++) {
+        for(uint256 i = 0; i < _addrs.length; i++) {
         register(_addrs[i], _isPresale);
         }
     }
@@ -121,7 +121,7 @@ contract KYC is Owned {
     function unregisterByList(address[] _addrs, bool _isPresale)
         public
         onlyAdmin {
-        for(uint256 i = 0; i &lt; _addrs.length; i++) {
+        for(uint256 i = 0; i < _addrs.length; i++) {
             unregister(_addrs[i], _isPresale);
         }
     }

@@ -131,7 +131,7 @@ contract MineralBase is AccessControl, Pausable {
     // Price of ORE (50 pieces in presale, only 1 afterwards)
     uint64 public orePrice = 1e16;
 
-    mapping(address =&gt; uint) internal ownerOreCount;
+    mapping(address => uint) internal ownerOreCount;
 
     // Constructor
     function MineralBase() public {
@@ -156,7 +156,7 @@ contract MineralBase is AccessControl, Pausable {
     }
 
     function sendOre(address _recipient, uint _amount) external payable {
-        require(balanceOfOre(msg.sender) &gt;= _amount);
+        require(balanceOfOre(msg.sender) >= _amount);
         ownerOreCount[msg.sender] -= _amount;
         ownerOreCount[_recipient] += _amount;
     }
@@ -190,9 +190,9 @@ contract MineralFactory is MineralBase {
         200e16, 180e16, 160e16, 130e16, 100e16,
         80e16, 60e16, 40e16, 20e16, 5e16];
 
-    mapping(address =&gt; uint) internal ownerGemCount;
-    mapping (uint256 =&gt; address) public gemIndexToOwner;
-    mapping (uint256 =&gt; address) public gemIndexToApproved;
+    mapping(address => uint) internal ownerGemCount;
+    mapping (uint256 => address) public gemIndexToOwner;
+    mapping (uint256 => address) public gemIndexToApproved;
 
     Gemstone[] public gemstones;
 
@@ -223,10 +223,10 @@ contract MineralFactory is MineralBase {
         //Chosen category index, 255 for no category selected - when we are out of minerals
         uint8 chosenIdx = 255;
 
-        for (uint8 i = 0; i &lt; mineralCounts.length; i++) {
+        for (uint8 i = 0; i < mineralCounts.length; i++) {
             uint32 value = mineralCounts[i];
             tempSum += value;
-            if (tempSum &gt; position) {
+            if (tempSum > position) {
                 //Mineral counts is 50, so this is safe to do
                 chosenIdx = i;
                 break;
@@ -236,14 +236,14 @@ contract MineralFactory is MineralBase {
     }
 
     function extractOre(string _name) external payable returns (uint8, uint256) {
-        require(gemsLeft &gt; 0);
-        require(msg.value &gt;= EXTRACT_PRICE);
-        require(ownerOreCount[msg.sender] &gt; 0);
+        require(gemsLeft > 0);
+        require(msg.value >= EXTRACT_PRICE);
+        require(ownerOreCount[msg.sender] > 0);
 
         uint32 randomNumber = _getRandomMineralId();
         uint8 categoryIdx = _getCategoryIdx(randomNumber);
 
-        require(categoryIdx &lt; CATEGORY_COUNT);
+        require(categoryIdx < CATEGORY_COUNT);
 
         //Decrease the mineral count for the category
         mineralCounts[categoryIdx] = mineralCounts[categoryIdx] - 1;
@@ -274,7 +274,7 @@ contract MineralFactory is MineralBase {
 
         Gemstone storage gem = gemstones[_gemId];
         require(gem.polishedTime == 0);
-        require(gainedWei &gt;= _getPolishingPrice(gem.category));
+        require(gainedWei >= _getPolishingPrice(gem.category));
 
         gem.polishedTime = uint64(block.timestamp);
     }
@@ -283,8 +283,8 @@ contract MineralFactory is MineralBase {
 // The Ownership contract makes sure the requirements of the NFT are met
 contract MineralOwnership is MineralFactory, ERC721 {
 
-    string public constant name = &quot;CryptoMinerals&quot;;
-    string public constant symbol = &quot;GEM&quot;;
+    string public constant name = "CryptoMinerals";
+    string public constant symbol = "GEM";
 
     function _owns(address _claimant, uint256 _gemId) internal view returns (bool) {
         return gemIndexToOwner[_gemId] == _claimant;
@@ -368,7 +368,7 @@ contract MineralOwnership is MineralFactory, ERC721 {
             uint256 resultIndex = 0;
             uint256 gemId;
 
-            for (gemId = 0; gemId &lt;= totalGems; gemId++) {
+            for (gemId = 0; gemId <= totalGems; gemId++) {
                 if (gemIndexToOwner[gemId] == _owner) {
                     result[resultIndex] = gemId;
                     resultIndex++;
@@ -385,12 +385,12 @@ contract MineralMarket is MineralOwnership {
 
     function buyOre() external payable {
         require(msg.sender != address(0));
-        require(msg.value &gt;= orePrice);
-        require(oresLeft &gt; 0);
+        require(msg.value >= orePrice);
+        require(oresLeft > 0);
 
         uint8 amount;
         if (isPresale) {
-            require(discounts &gt; 0);
+            require(discounts > 0);
             amount = 50;
             discounts--;
         } else {
@@ -403,22 +403,22 @@ contract MineralMarket is MineralOwnership {
     function buyGem(uint _gemId) external payable {
         uint gainedWei = msg.value;
         require(msg.sender != address(0));
-        require(_gemId &lt; gemstones.length);
+        require(_gemId < gemstones.length);
         require(gemIndexToOwner[_gemId] == address(this));
 
         Gemstone storage gem = gemstones[_gemId];
-        require(gainedWei &gt;= gem.price);
+        require(gainedWei >= gem.price);
 
         _transfer(address(this), msg.sender, _gemId);
     }
 
    function mintGem(uint _categoryIdx, string _name, uint256 _colour, bool _polished, uint256 _price) onlyTeamMembers external {
 
-        require(gemsLeft &gt; 0);
-        require(_categoryIdx &lt; CATEGORY_COUNT);
+        require(gemsLeft > 0);
+        require(_categoryIdx < CATEGORY_COUNT);
 
         //Decrease the mineral count for the category if not PROMO gem
-        if (_categoryIdx &lt; CATEGORY_COUNT){
+        if (_categoryIdx < CATEGORY_COUNT){
              mineralCounts[_categoryIdx] = mineralCounts[_categoryIdx] - 1;
         }
 
@@ -446,13 +446,13 @@ contract MineralMarket is MineralOwnership {
     }
 
     function setPrice(uint256 _gemId, uint256 _price) onlyTeamMembers external {
-        require(_gemId &lt; gemstones.length);
+        require(_gemId < gemstones.length);
         Gemstone storage gem = gemstones[_gemId];
         gem.price = uint64(_price);
     }
 
     function setMyPrice(uint256 _gemId, uint256 _price) external {
-        require(_gemId &lt; gemstones.length);
+        require(_gemId < gemstones.length);
         require(gemIndexToOwner[_gemId] == msg.sender);
         Gemstone storage gem = gemstones[_gemId];
         gem.price = uint64(_price);

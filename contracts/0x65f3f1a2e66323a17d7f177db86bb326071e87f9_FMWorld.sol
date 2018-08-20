@@ -110,8 +110,8 @@ contract FMWorld is FMWorldAccessControl {
     
     uint256 public countPartnerPlayers;
 
-    mapping (uint256 =&gt; uint256) public balancesTeams;
-    mapping (address =&gt; uint256) public balancesInternal;
+    mapping (uint256 => uint256) public balancesTeams;
+    mapping (address => uint256) public balancesInternal;
 
     bool public calculatedReward = true;
     uint256 public lastCalculationRewardTime;
@@ -145,7 +145,7 @@ contract FMWorld is FMWorldAccessControl {
     }
 
     function openBoxPlayer(uint256 _league, uint256 _position) external notPause isCalculatedReward payable returns (uint256 _price) {
-        if (now &gt; 1525024800) revert();
+        if (now > 1525024800) revert();
         
         PlayerToken playerToken = PlayerToken(playerTokenAddress);
         CatalogPlayers catalogPlayers = CatalogPlayers(catalogPlayersAddress);
@@ -153,7 +153,7 @@ contract FMWorld is FMWorldAccessControl {
         _price = catalogPlayers.getBoxPrice(_league, _position);
         
         balancesInternal[msg.sender] += msg.value;
-        if (balancesInternal[msg.sender] &lt; _price) {
+        if (balancesInternal[msg.sender] < _price) {
             revert();
         }
         balancesInternal[msg.sender] = balancesInternal[msg.sender] - _price;
@@ -167,7 +167,7 @@ contract FMWorld is FMWorldAccessControl {
         deposits += msg.value / 2;
         catalogPlayers.incrementCountSales(_league, _position);
 
-        if (now - lastCalculationRewardTime &gt; 24 * 60 * 60 &amp;&amp; balanceForReward &gt; 10 ether) {
+        if (now - lastCalculationRewardTime > 24 * 60 * 60 && balanceForReward > 10 ether) {
             calculatedReward = false;
         }
     }
@@ -178,7 +178,7 @@ contract FMWorld is FMWorldAccessControl {
     
     function _requireTalentSkills(uint256 _playerId, PlayerToken playerToken, uint256 _minTalent, uint256 _minSkills) internal view returns(bool) {
         var (_talent, _tactics, _dribbling, _kick, _speed, _pass, _selection) = playerToken.getPlayer(_playerId);
-        if ((_talent &lt; _minTalent) || (_tactics + _dribbling + _kick + _speed + _pass + _selection &lt; _minSkills)) return false; 
+        if ((_talent < _minTalent) || (_tactics + _dribbling + _kick + _speed + _pass + _selection < _minSkills)) return false; 
         return true;
     }
 
@@ -202,7 +202,7 @@ contract FMWorld is FMWorldAccessControl {
         require(team.getPlayerTeam(_playerId) == 0);
         require(team.getOwnerTeam(msg.sender) == 0 || team.getOwnerTeam(msg.sender) == _teamId);
         uint256 _position = playerToken.getPosition(_playerId);
-        require(team.getCountPosition(_teamId, _position) &lt; team.countPlayersInPosition());
+        require(team.getCountPosition(_teamId, _position) < team.countPlayersInPosition());
         require(_requireTalentSkills(_playerId, playerToken, team.getMinTalent(_teamId), team.getMinSkills(_teamId)));
 
         _calcTeamBalance(_teamId, team, playerToken);
@@ -221,7 +221,7 @@ contract FMWorld is FMWorldAccessControl {
     }
 
     function withdraw(address _sendTo, uint _amount) external onlyCEO returns(bool) {
-        if (_amount &gt; deposits) {
+        if (_amount > deposits) {
             return false;
         }
         deposits -= _amount;
@@ -234,7 +234,7 @@ contract FMWorld is FMWorldAccessControl {
             return false;
         }
         uint256 _countPlayers = team.getCountPlayersOfTeam(_teamId);
-        for(uint256 i = 0; i &lt; _countPlayers; i++) {
+        for(uint256 i = 0; i < _countPlayers; i++) {
             uint256 _playerId = team.getPlayerIdOfIndex(_teamId, i);
             address _owner = playerToken.ownerOf(_playerId);
             balancesInternal[_owner] += balancesTeams[_teamId] / _countPlayers;
@@ -246,7 +246,7 @@ contract FMWorld is FMWorldAccessControl {
     function withdrawEther() external returns(bool) {
         Team team = Team(teamAddress);
         uint256 _teamId = team.getOwnerTeam(msg.sender);
-        if (balancesTeams[_teamId] &gt; 0) {
+        if (balancesTeams[_teamId] > 0) {
             PlayerToken playerToken = PlayerToken(playerTokenAddress);
             _calcTeamBalance(_teamId, team, playerToken);
         }
@@ -259,7 +259,7 @@ contract FMWorld is FMWorldAccessControl {
     }
     
     function createPartnerPlayer(uint256 _league, uint256 _position, uint256 _classPlayerId, address _toAddress) external notPause isCalculatedReward onlyC {
-        if (countPartnerPlayers &gt;= 300) revert();
+        if (countPartnerPlayers >= 300) revert();
         
         PlayerToken playerToken = PlayerToken(playerTokenAddress);
         CatalogPlayers catalogPlayers = CatalogPlayers(catalogPlayersAddress);
@@ -272,7 +272,7 @@ contract FMWorld is FMWorldAccessControl {
 
     function calculationTeamsRewards(uint256[] orderTeamsIds) public onlyC {
         Team team = Team(teamAddress);
-        if (team.getCountTeams() &lt; 50) {
+        if (team.getCountTeams() < 50) {
             lastCalculationRewardTime = now;
             calculatedReward = true;
             return;
@@ -282,13 +282,13 @@ contract FMWorld is FMWorldAccessControl {
             revert();
         }
         
-        for(uint256 teamIndex = 0; teamIndex &lt; orderTeamsIds.length - 1; teamIndex++) {
-            if (team.getTeamSumSkills(orderTeamsIds[teamIndex]) &lt; team.getTeamSumSkills(orderTeamsIds[teamIndex + 1])) {
+        for(uint256 teamIndex = 0; teamIndex < orderTeamsIds.length - 1; teamIndex++) {
+            if (team.getTeamSumSkills(orderTeamsIds[teamIndex]) < team.getTeamSumSkills(orderTeamsIds[teamIndex + 1])) {
                 revert();
             }
         }
         uint256 k;
-        for(uint256 i = 1; i &lt; 51; i++) {
+        for(uint256 i = 1; i < 51; i++) {
             if (i == 1) { k = 2000; } 
             else if (i == 2) { k = 1400; }
             else if (i == 3) { k = 1000; }
@@ -296,9 +296,9 @@ contract FMWorld is FMWorldAccessControl {
             else if (i == 5) { k = 500; }
             else if (i == 6) { k = 400; }
             else if (i == 7) { k = 300; }
-            else if (i &gt;= 8 &amp;&amp; i &lt;= 12) { k = 200; }
-            else if (i &gt;= 13 &amp;&amp; i &lt;= 30) { k = 100; }
-            else if (i &gt;= 31) { k = 50; }
+            else if (i >= 8 && i <= 12) { k = 200; }
+            else if (i >= 13 && i <= 30) { k = 100; }
+            else if (i >= 31) { k = 50; }
             balancesTeams[orderTeamsIds[i - 1]] = balanceForReward * k / 10000;
         }
         balanceForReward = 0;
@@ -307,7 +307,7 @@ contract FMWorld is FMWorldAccessControl {
     }
 
     function getSumWithdrawals() public view returns(uint256 sum) {
-        for(uint256 i = 0; i &lt; 51; i++) {
+        for(uint256 i = 0; i < 51; i++) {
              sum += balancesTeams[i + 1];
         }
     }

@@ -36,20 +36,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -277,9 +277,9 @@ contract Pausable is Ownable {
 
 contract SGAToken is MintableToken {	
     
-  string public constant name = &quot;SGA Token&quot;;
+  string public constant name = "SGA Token";
    
-  string public constant symbol = &quot;SGA&quot;;
+  string public constant symbol = "SGA";
     
   uint32 public constant decimals = 18;
 
@@ -325,11 +325,11 @@ contract PurchaseBonusCrowdsale is Pausable {
   }
 
   function removeBonus(uint8 number) onlyOwner {
-    require(number &lt; bonuses.length);
+    require(number < bonuses.length);
 
     delete bonuses[number];
 
-    for (uint i = number; i &lt; bonuses.length - 1; i++) {
+    for (uint i = number; i < bonuses.length - 1; i++) {
       bonuses[i] = bonuses[i+1];
     }
 
@@ -337,7 +337,7 @@ contract PurchaseBonusCrowdsale is Pausable {
   }
 
   function changeBonus(uint8 number, uint limit, uint bonusValue) onlyOwner {
-    require(number &lt; bonuses.length);
+    require(number < bonuses.length);
     Bonus storage bonus = bonuses[number];
 
     bonus.limit = limit;
@@ -345,11 +345,11 @@ contract PurchaseBonusCrowdsale is Pausable {
   }
 
   function insertBonus(uint8 numberAfter, uint limit, uint bonus) onlyOwner {
-    require(numberAfter &lt; bonuses.length);
+    require(numberAfter < bonuses.length);
 
     bonuses.length++;
 
-    for (uint i = bonuses.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = bonuses.length - 2; i > numberAfter; i--) {
       bonuses[i + 1] = bonuses[i];
     }
 
@@ -357,8 +357,8 @@ contract PurchaseBonusCrowdsale is Pausable {
   }
 
   function clearBonuses() onlyOwner {
-    require(bonuses.length &gt; 0);
-    for (uint i = 0; i &lt; bonuses.length; i++) {
+    require(bonuses.length > 0);
+    for (uint i = 0; i < bonuses.length; i++) {
       delete bonuses[i];
     }
     bonuses.length -= bonuses.length;
@@ -366,11 +366,11 @@ contract PurchaseBonusCrowdsale is Pausable {
 
   function getBonus(uint value) constant returns(uint) {
     uint targetBonus = 0;
-    if(value &lt; bonuses[0].limit)
+    if(value < bonuses[0].limit)
       return 0;
-    for (uint i = bonuses.length; i &gt; 0; i--) {
+    for (uint i = bonuses.length; i > 0; i--) {
       Bonus storage bonus = bonuses[i - 1];
-      if (value &gt;= bonus.limit)
+      if (value >= bonus.limit)
         return bonus.bonus;
       else
         targetBonus = bonus.bonus;
@@ -410,7 +410,7 @@ contract Crowdsale is PurchaseBonusCrowdsale {
 
   bool public refundOn = false;
   
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   SGAToken public token = new SGAToken();
 
@@ -449,12 +449,12 @@ contract Crowdsale is PurchaseBonusCrowdsale {
   }
 
   modifier saleIsOn() {
-    require(now &gt;= start &amp;&amp; now &lt; lastSaleDate());
+    require(now >= start && now < lastSaleDate());
     _;
   }
   
   modifier isUnderHardCap() {
-    require(invested &lt;= hardCap);
+    require(invested <= hardCap);
     _;
   }
   
@@ -503,7 +503,7 @@ contract Crowdsale is PurchaseBonusCrowdsale {
   }
 
   function createTokens() whenNotPaused isUnderHardCap saleIsOn payable {
-    require(msg.value &gt;= minPrice);
+    require(msg.value >= minPrice);
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     invested = invested.add(msg.value);
     uint bonusPercent = getBonus(msg.value);
@@ -515,12 +515,12 @@ contract Crowdsale is PurchaseBonusCrowdsale {
   }
 
   function refund() whenNotPaused {
-    require(now &gt; start &amp;&amp; refundOn &amp;&amp; balances[msg.sender] &gt; 0);
+    require(now > start && refundOn && balances[msg.sender] > 0);
     msg.sender.transfer(balances[msg.sender]);
   } 
 
   function finishMinting() public whenNotPaused onlyOwner {
-    if(invested &lt; softCap) {
+    if(invested < softCap) {
       refundOn = true;      
     } else {
       uint secondWalletInvested = invested.mul(secondWalletPercent).div(percentRate);

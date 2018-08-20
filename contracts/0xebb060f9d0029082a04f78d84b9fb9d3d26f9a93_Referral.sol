@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -60,8 +60,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -76,9 +76,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -86,7 +86,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -95,7 +95,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -138,7 +138,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -155,7 +155,7 @@ contract BasicToken is ERC20Basic {
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(_to != address(0));
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -184,7 +184,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -201,8 +201,8 @@ contract StandardToken is ERC20, BasicToken {
         public
         returns (bool)
     {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
 
         balances[_from] = balances[_from].sub(_value);
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -283,7 +283,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -296,9 +296,9 @@ contract StandardToken is ERC20, BasicToken {
 
 contract BlockchainToken is StandardToken, Ownable {
 
-    string public constant name = &#39;Blockchain Token 2.0&#39;;
+    string public constant name = 'Blockchain Token 2.0';
 
-    string public constant symbol = &#39;BCT&#39;;
+    string public constant symbol = 'BCT';
 
     uint32 public constant decimals = 18;
 
@@ -389,9 +389,9 @@ contract MintableToken is StandardToken, Ownable {
     )
         internal
     {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -412,9 +412,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract WealthBuilderToken is MintableToken {
 
-    string public name = &#39;Wealth Builder Token&#39;;
+    string public name = 'Wealth Builder Token';
 
-    string public symbol = &#39;WBT&#39;;
+    string public symbol = 'WBT';
 
     uint32 public decimals = 18;
 
@@ -435,20 +435,20 @@ contract WealthBuilderToken is MintableToken {
 
 contract Data is Ownable {
 
-    // node =&gt; its parent
-    mapping (address =&gt; address) private parent;
+    // node => its parent
+    mapping (address => address) private parent;
 
-    // node =&gt; its status
-    mapping (address =&gt; uint8) public statuses;
+    // node => its status
+    mapping (address => uint8) public statuses;
 
-    // node =&gt; sum of all his child deposits in USD cents
-    mapping (address =&gt; uint) public referralDeposits;
+    // node => sum of all his child deposits in USD cents
+    mapping (address => uint) public referralDeposits;
 
-    // client =&gt; balance in wei*10^(-6) available for withdrawal
-    mapping(address =&gt; uint256) private balances;
+    // client => balance in wei*10^(-6) available for withdrawal
+    mapping(address => uint256) private balances;
 
-    // investor =&gt; balance in wei*10^(-6) available for withdrawal
-    mapping(address =&gt; uint256) private investorBalances;
+    // investor => balance in wei*10^(-6) available for withdrawal
+    mapping(address => uint256) private investorBalances;
 
     function parentOf(address _addr) public constant returns (address) {
         return parent[_addr];
@@ -475,7 +475,7 @@ contract Data is Ownable {
     }
 
     function subtrBalance(address _addr, uint256 amount) onlyOwner public {
-        require(balances[_addr] &gt;= amount);
+        require(balances[_addr] >= amount);
         balances[_addr] -= amount;
     }
 
@@ -484,7 +484,7 @@ contract Data is Ownable {
     }
 
     function subtrInvestorBalance(address _addr, uint256 amount) onlyOwner public {
-        require(investorBalances[_addr] &gt;= amount);
+        require(investorBalances[_addr] >= amount);
         investorBalances[_addr] -= amount;
     }
 
@@ -508,11 +508,11 @@ contract Data is Ownable {
 
 contract Declaration {
 
-    // threshold in USD =&gt; status
-    mapping (uint =&gt; uint8) statusThreshold;
+    // threshold in USD => status
+    mapping (uint => uint8) statusThreshold;
 
-    // status =&gt; (depositsNumber =&gt; percentage / 10)
-    mapping (uint8 =&gt; mapping (uint16 =&gt; uint256)) feeDistribution;
+    // status => (depositsNumber => percentage / 10)
+    mapping (uint8 => mapping (uint16 => uint256)) feeDistribution;
 
     // status thresholds in USD
     uint[8] thresholds = [
@@ -532,7 +532,7 @@ contract Declaration {
 
 
     /**
-     * @dev Set up fee distribution &amp; status thresholds
+     * @dev Set up fee distribution & status thresholds
      */
     function setFeeDistributionsAndStatusThresholds() private {
         // Agent - 0
@@ -569,7 +569,7 @@ contract Declaration {
         private
     {
         statusThreshold[_threshold] = _st;
-        for (uint8 i = 0; i &lt; _percentages.length; i++) {
+        for (uint8 i = 0; i < _percentages.length; i++) {
             feeDistribution[_st][i] = _percentages[i];
         }
     }
@@ -608,7 +608,7 @@ contract Referral is Declaration, Ownable {
     {
         ethUsdRate = _ethUsdRate;
 
-        // instantiate wbtToken &amp; data contracts
+        // instantiate wbtToken & data contracts
         wbtToken = WealthBuilderToken(_wbtToken);
         bctToken = BlockchainToken(_bctToken);
         data = Data(_data);
@@ -634,7 +634,7 @@ contract Referral is Declaration, Ownable {
         uint amount = msg.value;
 
         // if less then 5 deposits
-        if (_depositsCount &lt; 5) {
+        if (_depositsCount < 5) {
 
             uint serviceFee;
 
@@ -642,10 +642,10 @@ contract Referral is Declaration, Ownable {
 
             uint referralFee = amount * referralFees[_depositsCount];
 
-            // distribute deposit fee among users above on the branch &amp; update users&#39; statuses
+            // distribute deposit fee among users above on the branch & update users' statuses
             distribute(data.parentOf(_client), 0, _depositsCount, amount);
 
-            // update balance &amp; number of deposits of user
+            // update balance & number of deposits of user
             uint active = (amount * 100).sub(referralFee).sub(serviceFee);
 
             wbtToken.mint(_client, active / 100 * wbtToken.rate() / wbtToken.mrate());
@@ -667,7 +667,7 @@ contract Referral is Declaration, Ownable {
         public payable
     {
         uint amount = msg.value;
-        // distribute deposit fee among users above on the branch &amp; update users&#39; statuses
+        // distribute deposit fee among users above on the branch & update users' statuses
         distribute(data.parentOf(_client), 0, 0, amount);
 
         bctToken.transfer(_client, amount * ethUsdRate / bctToken.price());
@@ -692,7 +692,7 @@ contract Referral is Declaration, Ownable {
         address node = _node;
         uint prevPercentage = _prevPercentage;
 
-        // distribute deposit fee among users above on the branch &amp; update users&#39; statuses
+        // distribute deposit fee among users above on the branch & update users' statuses
         while(node != address(0)) {
             uint8 status = data.statuses(node);
 
@@ -726,10 +726,10 @@ contract Referral is Declaration, Ownable {
     {
         uint refDep = data.referralDeposits(_node);
 
-        for (uint i = thresholds.length - 1; i &gt; _status; i--) {
+        for (uint i = thresholds.length - 1; i > _status; i--) {
             uint threshold = thresholds[i] * 100;
 
-            if (refDep &gt;= threshold) {
+            if (refDep >= threshold) {
                 data.setStatus(_node, statusThreshold[thresholds[i]]);
                 break;
             }
@@ -822,7 +822,7 @@ contract Referral is Declaration, Ownable {
         public onlyOwner
     {
         uint amount = investor ? data.investorBalanceOf(_addr) : data.balanceOf(_addr);
-        require(amount &gt;= _amount &amp;&amp; address(this).balance &gt;= _amount);
+        require(amount >= _amount && address(this).balance >= _amount);
 
         if (investor) {
             data.subtrInvestorBalance(_addr, _amount * 1000000);
@@ -844,7 +844,7 @@ contract Referral is Declaration, Ownable {
     )
         public onlyOwner
     {
-        require(address(this).balance &gt;= _amount);
+        require(address(this).balance >= _amount);
         _addr.transfer(_amount);
     }
 
@@ -860,7 +860,7 @@ contract Referral is Declaration, Ownable {
     )
         onlyOwner public
     {
-        require(bctToken.balanceOf(this) &gt;= _amount);
+        require(bctToken.balanceOf(this) >= _amount);
         bctToken.transfer(_addr, _amount);
     }
 

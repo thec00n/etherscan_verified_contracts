@@ -33,13 +33,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -59,8 +59,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
@@ -99,21 +99,21 @@ contract StandardToken is ERC20 {
 }
 
 contract T8EXToken is StandardToken {
-	string public constant name = &quot;T8EX Token&quot;;
-    string public constant symbol = &quot;T8EX&quot;;
+	string public constant name = "T8EX Token";
+    string public constant symbol = "T8EX";
     uint8  public constant decimals = 18;
 
 	address public minter; 
 	uint    public tokenSaleEndTime; 
 
 	// token lockup for cornerstone investors
-	mapping(address=&gt;uint) public lockedBalanceCor; 
-	mapping(uint=&gt;address) lockedBalanceCor_index;
+	mapping(address=>uint) public lockedBalanceCor; 
+	mapping(uint=>address) lockedBalanceCor_index;
 	uint lockedBalanceCor_count;
 
 	// token lockup for private investors
-	mapping(address=&gt;uint) public lockedBalancePri; 
-	mapping(uint=&gt;address) lockedBalancePri_index;
+	mapping(address=>uint) public lockedBalancePri; 
+	mapping(uint=>address) lockedBalancePri_index;
 	uint lockedBalancePri_count;
 
 	modifier onlyMinter {
@@ -122,7 +122,7 @@ contract T8EXToken is StandardToken {
 	}
 
 	modifier whenMintable {
-		require (now &lt;= tokenSaleEndTime);
+		require (now <= tokenSaleEndTime);
 		_;
 	}
 
@@ -177,11 +177,11 @@ contract T8EXToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s locked balance liquid when called after lockout period.
+	// Make sender's locked balance liquid when called after lockout period.
 	function makeLiquidCor()
 		onlyMinter
 	{
-		for (uint i=0; i&lt;lockedBalanceCor_count; i++) {
+		for (uint i=0; i<lockedBalanceCor_count; i++) {
 			address investor = lockedBalanceCor_index[i];
 			balances[investor] += lockedBalanceCor[investor];
 			lockedBalanceCor[investor] = 0;
@@ -203,11 +203,11 @@ contract T8EXToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s locked balance liquid when called after lockout period.
+	// Make sender's locked balance liquid when called after lockout period.
 	function makeLiquidPri()
 		onlyMinter
 	{
-		for (uint i=0; i&lt;lockedBalancePri_count; i++) {
+		for (uint i=0; i<lockedBalancePri_count; i++) {
 			address investor = lockedBalancePri_index[i];
 			balances[investor] += lockedBalancePri[investor];
 			lockedBalancePri[investor] = 0;

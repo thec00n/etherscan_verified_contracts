@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 contract NovaAccessControl {
-  mapping (address =&gt; bool) managers;
+  mapping (address => bool) managers;
   address public cfoAddress;
 
   function NovaAccessControl() public {
@@ -36,7 +36,7 @@ contract NovaCoin is NovaAccessControl {
   address supplier;
   // 1:1 convert with currency, so to cent
   uint8 public decimals = 2;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   address public novaContractAddress;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -53,8 +53,8 @@ contract NovaCoin is NovaAccessControl {
 
   function _transfer(address _from, address _to, uint _value) internal {
     require(_to != 0x0);
-    require(balanceOf[_from] &gt;= _value);
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require(balanceOf[_from] >= _value);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
   }

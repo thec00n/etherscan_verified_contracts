@@ -85,12 +85,12 @@ contract LotteryBase {
     }
   
     function toLotteryPool(uint amount) public onlyCFO {
-        require(SpoolAmount &gt;= amount);
+        require(SpoolAmount >= amount);
         SpoolAmount -= amount;
     }
 
     function _isCarousal(uint256 currentTerm) external view returns(bool) {
-       return (currentTerm &gt; 1 &amp;&amp; CLotteries[currentTerm - 2].noFirstReward &amp;&amp; CLotteries[currentTerm - 1].noFirstReward); 
+       return (currentTerm > 1 && CLotteries[currentTerm - 2].noFirstReward && CLotteries[currentTerm - 1].noFirstReward); 
     }
     
 
@@ -108,12 +108,12 @@ contract LotteryGenes is LotteryBase {
         uint8[28] memory geneArray; 
         uint8[7] memory lotteryArray;
         uint index = 0;
-        for (index = 0; index &lt; 28; index++) {
+        for (index = 0; index < 28; index++) {
             uint256 geneItem = gene % (2 ** (5 * (index + 1)));
             geneItem /= (2 ** (5 * index));
             geneArray[index] = uint8(geneItem);
         }
-        for (index = 0; index &lt; 7; index++) {
+        for (index = 0; index < 7; index++) {
             uint size = 4 * index;
             lotteryArray[index] = geneArray[size];
             
@@ -124,7 +124,7 @@ contract LotteryGenes is LotteryBase {
 
     function convertGene(uint8[7] luckyGenes) public pure returns(uint256) {
         uint8[28] memory geneArray;
-        for (uint8 i = 0; i &lt; 28; i++) {
+        for (uint8 i = 0; i < 28; i++) {
             if (i%4 == 0) {
                 geneArray[i] = luckyGenes[i/4];
             } else {
@@ -133,9 +133,9 @@ contract LotteryGenes is LotteryBase {
         }
         uint256 gene = uint256(geneArray[0]);
         
-        for (uint8 index = 1; index &lt; 28; index++) {
+        for (uint8 index = 1; index < 28; index++) {
             uint256 geneItem = uint256(geneArray[index]);
-            gene += geneItem &lt;&lt; (index * 5);
+            gene += geneItem << (index * 5);
         }
         return gene;
     }
@@ -153,13 +153,13 @@ contract SetLottery is LotteryGenes {
 
     function openLottery(uint8 _viewId) public returns(uint8,uint8) {
         uint8 viewId = _viewId;
-        require(viewId &lt; 7);
+        require(viewId < 7);
 
         uint256 currentTerm = CLotteries.length - 1;
         CLottery storage clottery = CLotteries[currentTerm];
 
 
-        if (currentGene == 0 &amp;&amp; clottery.openBlock &gt; 0 &amp;&amp; clottery.isReward == false) {
+        if (currentGene == 0 && clottery.openBlock > 0 && clottery.isReward == false) {
 
             OpenLottery(viewId, clottery.luckyGenes[viewId], currentTerm, 0, 0);
 
@@ -173,7 +173,7 @@ contract SetLottery is LotteryGenes {
             return (clottery.luckyGenes[viewId],2);
         }
 
-        if (currentGene == 0 &amp;&amp; clottery.isReward == true) {
+        if (currentGene == 0 && clottery.isReward == true) {
 
             CLottery memory _clottery;
             _clottery.luckyGenes = [0,0,0,0,0,0,0];
@@ -193,7 +193,7 @@ contract SetLottery is LotteryGenes {
         
         if (currentGene == 6) {
 
-            if (bonusPool.balance &lt;= SpoolAmount) {
+            if (bonusPool.balance <= SpoolAmount) {
 
                 OpenLottery(viewId, clottery.luckyGenes[viewId], currentTerm, 0, 0);
 
@@ -238,14 +238,14 @@ contract SetLottery is LotteryGenes {
         CLottery storage clottery = CLotteries[currentTerm];
 
 
-        if (currentGene == 0 &amp;&amp; clottery.openBlock &gt; 0 &amp;&amp; clottery.isReward == false) {
+        if (currentGene == 0 && clottery.openBlock > 0 && clottery.isReward == false) {
 
 
             OpenCarousel(convertGene(clottery.luckyGenes), currentTerm, clottery.openBlock, clottery.totalAmount);
         }
 
 
-        if (currentGene == 0 &amp;&amp; clottery.openBlock &gt; 0 &amp;&amp; clottery.isReward == true) {
+        if (currentGene == 0 && clottery.openBlock > 0 && clottery.isReward == true) {
             CLottery memory _clottery;
             _clottery.luckyGenes = [0,0,0,0,0,0,0];
             _clottery.totalAmount = uint256(0);
@@ -258,7 +258,7 @@ contract SetLottery is LotteryGenes {
         require (this._isCarousal(currentTerm));
 
         uint256 genes = _getValidRandomGenes();
-        require (genes &gt; 0);
+        require (genes > 0);
         uint8[7] memory luckyGenes = convertGeneArray(genes);
 
         OpenCarousel(genes, currentTerm, block.number, bonusPool.balance);
@@ -275,18 +275,18 @@ contract SetLottery is LotteryGenes {
         uint256 luckyDog = random2();
         uint256 genes = _validGenes(luckyDog);
         uint256 totalSupply = dogCore.totalSupply();
-        if (genes &gt; 0) {
+        if (genes > 0) {
             return genes;
         }  
 
-        uint256 min = (luckyDog &lt; totalSupply-luckyDog) ? (luckyDog - 1) : totalSupply-luckyDog;
-        for (uint256 i = 1; i &lt; min + 1; i++) {
+        uint256 min = (luckyDog < totalSupply-luckyDog) ? (luckyDog - 1) : totalSupply-luckyDog;
+        for (uint256 i = 1; i < min + 1; i++) {
             genes = _validGenes(luckyDog - i);
-            if (genes &gt; 0) {
+            if (genes > 0) {
                 break;
             }
             genes = _validGenes(luckyDog + i);
-            if (genes &gt; 0) {
+            if (genes > 0) {
                     break;
                 }
             }
@@ -294,18 +294,18 @@ contract SetLottery is LotteryGenes {
         if (genes == 0) {
 
             if (min == luckyDog - 1) {
-                for (i = min + luckyDog; i &lt; totalSupply + 1; i++) {
+                for (i = min + luckyDog; i < totalSupply + 1; i++) {
                         genes = _validGenes(i);
-                        if (genes &gt; 0) {
+                        if (genes > 0) {
                             break;
                         }
                     }   
                 }
 
             if (min == totalSupply - luckyDog) {
-                for (i = min; i &lt; luckyDog; i++) {
+                for (i = min; i < luckyDog; i++) {
                         genes = _validGenes(luckyDog - i - 1);
-                        if (genes &gt; 0) {
+                        if (genes > 0) {
                             break;
                         }
                     }   
@@ -319,7 +319,7 @@ contract SetLottery is LotteryGenes {
     function _validGenes(uint256 dogId) internal view returns (uint256) {
 
         var(, , , , , ,generation, genes, variation,) = dogCore.getDog(dogId);
-        if (generation == 0 || dogCore.ownerOf(dogId) == finalLottery || variation &gt; 0) {
+        if (generation == 0 || dogCore.ownerOf(dogId) == finalLottery || variation > 0) {
             return 0;
         } else {
             return genes;
@@ -431,7 +431,7 @@ contract FinalLottery {
         uint256[]       reward;
     }
 
-    mapping(uint256 =&gt; FLottery) flotteries;
+    mapping(uint256 => FLottery) flotteries;
 
     function FinalLottery(address _lcAddress) public {
         lotteryCore = LotteryCore(_lcAddress);
@@ -451,8 +451,8 @@ contract FinalLottery {
 
     function setLotteryDuration(uint256 durationBlocks) public {
         require(msg.sender == dogCore.ceoAddress());
-        require(durationBlocks &gt; 140);
-        require(durationBlocks &lt; block.number);
+        require(durationBlocks > 140);
+        require(durationBlocks < block.number);
         duration = durationBlocks;
     }
 
@@ -466,35 +466,35 @@ contract FinalLottery {
 
         require(address(dogCore) == msg.sender);
 
-        require(totalAmount &gt; 0 &amp;&amp; isReward == false &amp;&amp; openBlock &gt; (block.number-duration));
+        require(totalAmount > 0 && isReward == false && openBlock > (block.number-duration));
  
         var(, , , birthTime, , ,generation,genes, variation,) = dogCore.getDog(_dogId);
 
-        require(birthTime &lt; openBlock);
+        require(birthTime < openBlock);
 
-        require(generation &gt; 0);
+        require(generation > 0);
 
         require(variation == 0);
 
         uint8 _lotteryClass = getLotteryClass(luckyGenes, genes);
  
-        require(_lotteryClass &lt; 7);
+        require(_lotteryClass < 7);
 
         address[] memory owners;
         uint256[] memory dogs;
          (dogs, owners) = _getLuckyList(currentTerm, _lotteryClass);
             
-        for (uint i = 0; i &lt; dogs.length; i++) {
+        for (uint i = 0; i < dogs.length; i++) {
             if (_dogId == dogs[i]) {
 
-                RegisterLottery(_dogId, owner, _lotteryClass,&quot;dog already registered&quot;);
+                RegisterLottery(_dogId, owner, _lotteryClass,"dog already registered");
                  return 5;
             }
         }
 
         _pushLuckyInfo(currentTerm, _lotteryClass, owner, _dogId);
 
-        RegisterLottery(_dogId, owner, _lotteryClass,&quot;successful&quot;);
+        RegisterLottery(_dogId, owner, _lotteryClass,"successful");
         return 0;
     }
 
@@ -503,10 +503,10 @@ contract FinalLottery {
         (luckyGenes, totalAmount, openBlock, isReward, currentTerm) = lotteryCore.getCLottery();
         
 
-        require(openBlock &gt; 0 &amp;&amp; openBlock &lt; (block.number-duration));
+        require(openBlock > 0 && openBlock < (block.number-duration));
 
 
-        require(totalAmount &gt;= lotteryCore.SpoolAmount());
+        require(totalAmount >= lotteryCore.SpoolAmount());
 
 
         if (isReward == true) {
@@ -527,17 +527,17 @@ contract FinalLottery {
             ratio = lotteryRatio;
         }
 
-        for (uint8 i = 0; i &lt; 7; i++) {
+        for (uint8 i = 0; i < 7; i++) {
             address[] memory owners;
             uint256[] memory dogs;
             (dogs, owners) = _getLuckyList(currentTerm, i);
-            if (owners.length &gt; 0) {
+            if (owners.length > 0) {
                     uint256 reward = (legalAmount * ratio * lR[i])/(10000 * owners.length);
                     totalDistribute += reward * owners.length;
 
                     dogCore.sendMoney(dogCore.cfoAddress(),reward * owners.length/10);
                     
-                    for (uint j = 0; j &lt; owners.length; j++) {
+                    for (uint j = 0; j < owners.length; j++) {
                         address gen0Add;
                         if (i == 0) {
 
@@ -645,36 +645,36 @@ contract FinalLottery {
 
     function getLotteryClass(uint8[7] luckyGenesArray, uint256 genes) internal view returns(uint8) {
 
-        if (currentTerm &lt; 0) {
+        if (currentTerm < 0) {
             return 100;
         }
         
         uint8[7] memory dogArray = lotteryCore.convertGeneArray(genes);
         uint8 cnt = 0;
         uint8 lnt = 0;
-        for (uint i = 0; i &lt; 6; i++) {
+        for (uint i = 0; i < 6; i++) {
 
-            if (luckyGenesArray[i] &gt; 0 &amp;&amp; luckyGenesArray[i] == dogArray[i]) {
+            if (luckyGenesArray[i] > 0 && luckyGenesArray[i] == dogArray[i]) {
                 cnt++;
             }
         }
-        if (luckyGenesArray[6] &gt; 0 &amp;&amp; luckyGenesArray[6] == dogArray[6]) {
+        if (luckyGenesArray[6] > 0 && luckyGenesArray[6] == dogArray[6]) {
             lnt = 1;
         }
         uint8 lotclass = 100;
-        if (cnt==6 &amp;&amp; lnt==1) {
+        if (cnt==6 && lnt==1) {
             lotclass = 0;
-        } else if (cnt==6 &amp;&amp; lnt==0) {
+        } else if (cnt==6 && lnt==0) {
             lotclass = 1;
-        } else if (cnt==5 &amp;&amp; lnt==1) {
+        } else if (cnt==5 && lnt==1) {
             lotclass = 2;
-        } else if (cnt==5 &amp;&amp; lnt==0) {
+        } else if (cnt==5 && lnt==0) {
             lotclass = 3;
-        } else if (cnt==4 &amp;&amp; lnt==1) {
+        } else if (cnt==4 && lnt==1) {
             lotclass = 4;
-        } else if (cnt==3 &amp;&amp; lnt==1) {
+        } else if (cnt==3 && lnt==1) {
             lotclass = 5;
-        } else if (cnt==3 &amp;&amp; lnt==0) {
+        } else if (cnt==3 && lnt==0) {
             lotclass = 6;
         } else {
             lotclass = 100;

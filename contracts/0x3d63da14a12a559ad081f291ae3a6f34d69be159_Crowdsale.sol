@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,7 +100,7 @@ contract Crowdsale is Ownable {
 
     // ICO stage
     enum CrowdsaleStage { PreICO, ICO }
-    CrowdsaleStage public stage = CrowdsaleStage.PreICO; // By default it&#39;s Pre Sale
+    CrowdsaleStage public stage = CrowdsaleStage.PreICO; // By default it's Pre Sale
 
     // Token distribution
     uint256 public constant maxTokens           = 50000000*1e18;    // max of GACR tokens
@@ -110,7 +110,7 @@ contract Crowdsale is Ownable {
     uint256 public constant tokensForTeam       = 9000000*1e18;     // 18%
     uint256 public tokensForEcosystem           = 8000000*1e18;     // 16%
 
-    // Start &amp; End time of Crowdsale
+    // Start & End time of Crowdsale
     uint256 startTime   = 1522494000;   // 2018-03-31T11:00:00
     uint256 endTime     = 1539169200;   // 2018-10-10T11:00:00
 
@@ -130,7 +130,7 @@ contract Crowdsale is Ownable {
     uint256 public cap;
 
     // KYC for ICO
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     /**
      * Event for token purchase logging
@@ -159,8 +159,8 @@ contract Crowdsale is Ownable {
      * @param _wallet Address where collected funds will be forwarded to
      */
     constructor(uint256 _cap, uint256 _rate, address _wallet, address _token) public {
-        require(_cap &gt; 0);
-        require(_rate &gt; 0);
+        require(_cap > 0);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         cap = _cap;
@@ -173,7 +173,7 @@ contract Crowdsale is Ownable {
      * @dev Check that sale is on
      */
     modifier saleIsOn() {
-        require(now &gt; startTime &amp;&amp; now &lt; endTime);
+        require(now > startTime && now < endTime);
         _;
     }
 
@@ -191,10 +191,10 @@ contract Crowdsale is Ownable {
 
         require(_beneficiary != address(0));
         require(_weiAmount != 0);
-        require(weiRaised.add(_weiAmount) &lt;= cap);
+        require(weiRaised.add(_weiAmount) <= cap);
 
         require(stage==CrowdsaleStage.PreICO ||
-               (stage==CrowdsaleStage.ICO &amp;&amp; isWhitelisted(_beneficiary)));
+               (stage==CrowdsaleStage.ICO && isWhitelisted(_beneficiary)));
 
         // calculate token amount to be created
         uint256 _tokenAmount = _weiAmount.mul(rate);
@@ -202,36 +202,36 @@ contract Crowdsale is Ownable {
         // bonus calculation
         uint256 bonusTokens = 0;
         if (stage == CrowdsaleStage.PreICO) {
-            if (_tokenAmount &gt;= 50e18 &amp;&amp; _tokenAmount &lt; 3000e18) {
+            if (_tokenAmount >= 50e18 && _tokenAmount < 3000e18) {
                 bonusTokens = _tokenAmount.mul(23).div(100);
-            } else if (_tokenAmount &gt;= 3000e18 &amp;&amp; _tokenAmount &lt; 15000e18) {
+            } else if (_tokenAmount >= 3000e18 && _tokenAmount < 15000e18) {
                 bonusTokens = _tokenAmount.mul(27).div(100);
-            } else if (_tokenAmount &gt;= 15000e18 &amp;&amp; _tokenAmount &lt; 30000e18) {
+            } else if (_tokenAmount >= 15000e18 && _tokenAmount < 30000e18) {
                 bonusTokens = _tokenAmount.mul(30).div(100);
-            } else if (_tokenAmount &gt;= 30000e18) {
+            } else if (_tokenAmount >= 30000e18) {
                 bonusTokens = _tokenAmount.mul(35).div(100);
             }
         } else if (stage == CrowdsaleStage.ICO) {
             uint256 _nowTime = now;
 
-            if (_nowTime &gt;= 1531486800 &amp;&amp; _nowTime &lt; 1532696400) {
+            if (_nowTime >= 1531486800 && _nowTime < 1532696400) {
                 bonusTokens = _tokenAmount.mul(18).div(100);
-            } else if (_nowTime &gt;= 1532696400 &amp;&amp; _nowTime &lt; 1533906000) {
+            } else if (_nowTime >= 1532696400 && _nowTime < 1533906000) {
                 bonusTokens = _tokenAmount.mul(15).div(100);
-            } else if (_nowTime &gt;= 1533906000 &amp;&amp; _nowTime &lt; 1535115600) {
+            } else if (_nowTime >= 1533906000 && _nowTime < 1535115600) {
                 bonusTokens = _tokenAmount.mul(12).div(100);
-            } else if (_nowTime &gt;= 1535115600 &amp;&amp; _nowTime &lt; 1536325200) {
+            } else if (_nowTime >= 1535115600 && _nowTime < 1536325200) {
                 bonusTokens = _tokenAmount.mul(9).div(100);
-            } else if (_nowTime &gt;= 1536325200 &amp;&amp; _nowTime &lt; 1537534800) {
+            } else if (_nowTime >= 1536325200 && _nowTime < 1537534800) {
                 bonusTokens = _tokenAmount.mul(6).div(100);
-            } else if (_nowTime &gt;= 1537534800 &amp;&amp; _nowTime &lt; endTime) {
+            } else if (_nowTime >= 1537534800 && _nowTime < endTime) {
                 bonusTokens = _tokenAmount.mul(3).div(100);
             }
         }
         _tokenAmount += bonusTokens;
 
         // check limit for sale
-        require(tokensForSale &gt;= (token.totalSupply() + _tokenAmount));
+        require(tokensForSale >= (token.totalSupply() + _tokenAmount));
 
         // update state
         weiRaised = weiRaised.add(_weiAmount);
@@ -270,7 +270,7 @@ contract Crowdsale is Ownable {
      * @dev Set new rate (protection from strong volatility)
      */
     function setNewRate(uint _newRate) public onlyOwner {
-        require(_newRate &gt; 0);
+        require(_newRate > 0);
         rate = _newRate;
     }
 
@@ -278,7 +278,7 @@ contract Crowdsale is Ownable {
      * @dev Set hard cap (protection from strong volatility)
      */
     function setHardCap(uint256 _newCap) public onlyOwner {
-        require(_newCap &gt; 0);
+        require(_newCap > 0);
         cap = _newCap;
     }
 
@@ -294,7 +294,7 @@ contract Crowdsale is Ownable {
      * @dev Add/Remove to whitelist array of addresses based on boolean status
      */
     function updateWhitelist(address[] addresses, bool status) public onlyOwner {
-        for (uint256 i = 0; i &lt; addresses.length; i++) {
+        for (uint256 i = 0; i < addresses.length; i++) {
             address contributorAddress = addresses[i];
             whitelist[contributorAddress] = status;
             emit WhitelistUpdate(contributorAddress, status);
@@ -335,7 +335,7 @@ contract Crowdsale is Ownable {
 
         // unsold tokens to ecosystem (perhaps further they will be burnt)
         uint256 unsoldTokens = tokensForSale - token.totalSupply();
-        if (unsoldTokens &gt; 0) {
+        if (unsoldTokens > 0) {
             tokensForEcosystem = tokensForEcosystem + unsoldTokens;
         }
 

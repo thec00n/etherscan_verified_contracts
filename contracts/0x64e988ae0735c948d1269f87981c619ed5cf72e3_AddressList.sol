@@ -66,7 +66,7 @@ contract Claimable is Ownable {
 
 contract AddressList is Claimable {
     string public name;
-    mapping (address =&gt; bool) public onList;
+    mapping (address => bool) public onList;
 
     function AddressList(string _name, bool nullValue) public {
         name = _name;

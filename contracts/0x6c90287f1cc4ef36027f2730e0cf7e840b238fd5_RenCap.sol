@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,8 +60,8 @@ contract StandardToken is ERC20{
     
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -72,7 +72,7 @@ contract StandardToken is ERC20{
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -87,8 +87,8 @@ contract StandardToken is ERC20{
   
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -117,7 +117,7 @@ contract StandardToken is ERC20{
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -133,8 +133,8 @@ contract RenCap is StandardToken {
     
     // Meta data
     
-    string  public constant name        = &quot;RenCap&quot;;
-    string  public constant symbol      = &quot;RNP&quot;;
+    string  public constant name        = "RenCap";
+    string  public constant symbol      = "RNP";
     uint    public constant decimals    = 18;
     uint256 public etherRaised = 0;
     
@@ -202,10 +202,10 @@ contract RenCap is StandardToken {
     modifier onSaleRunning() {
         // Checks, if ICO is running and has not been stopped
         require(
-            (stageOneStart   &lt;= now  &amp;&amp;  now &lt;=   stageOneEnd &amp;&amp; stageOneCap   &gt;= 0 &amp;&amp;  msg.value &lt;= 1000 ether) ||
-            (stageTwoStart   &lt;= now  &amp;&amp;  now &lt;=   stageTwoEnd &amp;&amp; stageTwoCap   &gt;= 0) ||
-            (stageThreeStart &lt;= now  &amp;&amp;  now &lt;= stageThreeEnd &amp;&amp; stageThreeCap &gt;= 0) ||
-            (stageFourStart  &lt;= now  &amp;&amp;  now &lt;=  stageFourEnd &amp;&amp; stageFourCap  &gt;= 0)
+            (stageOneStart   <= now  &&  now <=   stageOneEnd && stageOneCap   >= 0 &&  msg.value <= 1000 ether) ||
+            (stageTwoStart   <= now  &&  now <=   stageTwoEnd && stageTwoCap   >= 0) ||
+            (stageThreeStart <= now  &&  now <= stageThreeEnd && stageThreeCap >= 0) ||
+            (stageFourStart  <= now  &&  now <=  stageFourEnd && stageFourCap  >= 0)
             );
         _;
     }
@@ -215,9 +215,9 @@ contract RenCap is StandardToken {
     // ExchangeRate
     
     function rate() public view returns (uint256) {
-        if (stageOneStart   &lt;= now  &amp;&amp;  now &lt;=   stageOneEnd) return 1500;
-        if (stageTwoStart   &lt;= now  &amp;&amp;  now &lt;=   stageTwoEnd) return 1300;
-        if (stageThreeStart &lt;= now  &amp;&amp;  now &lt;= stageThreeEnd) return 1100;
+        if (stageOneStart   <= now  &&  now <=   stageOneEnd) return 1500;
+        if (stageTwoStart   <= now  &&  now <=   stageTwoEnd) return 1300;
+        if (stageThreeStart <= now  &&  now <= stageThreeEnd) return 1100;
             return 1030;
     }
     
@@ -226,7 +226,7 @@ contract RenCap is StandardToken {
     
     function buyTokens(address _buyer, uint256 _value) internal {
         require(_buyer != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 tokens =  _value.mul(rate());
       
         balances[_buyer] = balances[_buyer].add(tokens);
@@ -241,16 +241,16 @@ contract RenCap is StandardToken {
     // Token Cap Update
 
     function updateCap (uint256 _cap) internal {
-        if (stageOneStart   &lt;= now  &amp;&amp;  now &lt;=   stageOneEnd) {
+        if (stageOneStart   <= now  &&  now <=   stageOneEnd) {
             stageOneCap = stageOneCap.sub(_cap);
         }
-        if (stageTwoStart   &lt;= now  &amp;&amp;  now &lt;=   stageTwoEnd) {
+        if (stageTwoStart   <= now  &&  now <=   stageTwoEnd) {
             stageTwoCap = stageTwoCap.sub(_cap);
         }
-        if (stageThreeStart   &lt;= now  &amp;&amp;  now &lt;=   stageThreeEnd) {
+        if (stageThreeStart   <= now  &&  now <=   stageThreeEnd) {
             stageThreeCap = stageThreeCap.sub(_cap);
         }
-        if (stageFourStart   &lt;= now  &amp;&amp;  now &lt;=   stageFourEnd) {
+        if (stageFourStart   <= now  &&  now <=   stageFourEnd) {
             stageFourCap = stageFourCap.sub(_cap);
         }
     }
@@ -259,7 +259,7 @@ contract RenCap is StandardToken {
     // Fallback function
     
     function () public onSaleRunning payable {
-        require(msg.value &gt;= 100 finney);
+        require(msg.value >= 100 finney);
         buyTokens(msg.sender, msg.value);
     }
   

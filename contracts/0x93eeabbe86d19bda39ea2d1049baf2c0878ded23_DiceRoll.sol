@@ -53,7 +53,7 @@ contract DiceRoll is owned {
 		uint8 seed;
 	}
 
-	mapping (address =&gt; Game) public games;
+	mapping (address => Game) public games;
 	
 	modifier gameIsNotInProgress() {
 		if (gameInProgress(games[msg.sender])) {
@@ -63,7 +63,7 @@ contract DiceRoll is owned {
 	}
 	
 	modifier betValueIsOk() {
-		if (msg.value &lt; minBet || msg.value &gt; maxBet) {
+		if (msg.value < minBet || msg.value > maxBet) {
 			throw; // incorrect bet
 		}
 		_;
@@ -116,18 +116,18 @@ contract DiceRoll is owned {
         log256(bet);
         log8(chance);
 		
-		if(rnd &gt; valueMax){
+		if(rnd > valueMax){
 		    log8(0);
 		    games[msg.sender].state = GameState.PlayerLose;
         } else {
             log8(1);
 		     games[msg.sender].state = GameState.PlayerWon;
 		     if(!msg.sender.send(payout)) {
-	            logStr(&quot;Money is not send.&quot;);
+	            logStr("Money is not send.");
 	        }
         }
         
-        //logState(&quot;state:&quot;, games[msg.sender].state);
+        //logState("state:", games[msg.sender].state);
 	}
 	
 	function randomGen(address player, uint8) internal returns (uint8) {
@@ -140,7 +140,7 @@ contract DiceRoll is owned {
 		Game memory game = games[msg.sender];
         
 		if (game.player == 0) {
-			// game doesn&#39;t exist
+			// game doesn't exist
 			throw;
 		}
 
@@ -151,7 +151,7 @@ contract DiceRoll is owned {
 		Game memory game = games[msg.sender];
         
 		if (game.player == 0) {
-			// game doesn&#39;t exist
+			// game doesn't exist
 			throw;
 		}
 

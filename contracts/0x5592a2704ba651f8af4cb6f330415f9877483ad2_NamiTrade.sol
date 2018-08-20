@@ -19,9 +19,9 @@ contract NamiMultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -74,8 +74,8 @@ contract NamiMultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require(!(ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        require(!(ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0));
         _;
@@ -83,7 +83,7 @@ contract NamiMultiSigWallet {
 
     /// @dev Fallback function allows to deposit ether.
     function() public payable {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             emit Deposit(msg.sender, msg.value);
     }
 
@@ -97,7 +97,7 @@ contract NamiMultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             require(!(isOwner[_owners[i]] || _owners[i] == 0));
             isOwner[_owners[i]] = true;
         }
@@ -127,14 +127,14 @@ contract NamiMultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++) {
+        for (uint i=0; i<owners.length - 1; i++) {
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         emit OwnerRemoval(owner);
     }
@@ -148,7 +148,7 @@ contract NamiMultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -237,7 +237,7 @@ contract NamiMultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -280,7 +280,7 @@ contract NamiMultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
         }
@@ -295,8 +295,8 @@ contract NamiMultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed)
+        for (uint i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed)
                 count += 1;
         }
     }
@@ -322,14 +322,14 @@ contract NamiMultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++) {
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
         }
     }
@@ -348,14 +348,14 @@ contract NamiMultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed) {
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++) {
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }
@@ -382,7 +382,7 @@ contract ERC223ReceivingContract {
     function tokenFallbackExchange(address _from, uint _value, uint _price) public returns (bool success);
 }
 contract PresaleToken {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function burnTokens(address _owner) public;
 }
 
@@ -406,8 +406,8 @@ contract NamiCrowdSale {
      *  Constants
     /*/
 
-    string public name = &quot;Nami ICO&quot;;
-    string public  symbol = &quot;NAC&quot;;
+    string public name = "Nami ICO";
+    string public  symbol = "NAC";
     uint   public decimals = 18;
 
     bool public TRANSFERABLE = false; // default not transferable
@@ -435,7 +435,7 @@ contract NamiCrowdSale {
     // functions on this contract.
     address public escrow;
 
-    // Gathered funds can be withdraw only to namimultisigwallet&#39;s address.
+    // Gathered funds can be withdraw only to namimultisigwallet's address.
     address public namiMultiSigWallet;
 
     // nami presale contract
@@ -448,8 +448,8 @@ contract NamiCrowdSale {
     address public binaryAddress;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     modifier onlyCrowdsaleManager() {
         require(msg.sender == crowdsaleManager); 
@@ -494,9 +494,9 @@ contract NamiCrowdSale {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -508,7 +508,7 @@ contract NamiCrowdSale {
         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // only escrow can send token (to send token private sale)
     function transferForTeam(address _to, uint256 _value) public
         onlyEscrow
@@ -544,7 +544,7 @@ contract NamiCrowdSale {
         onlyTranferable
         returns (bool success)
     {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -641,31 +641,31 @@ contract NamiCrowdSale {
     * 1522281600: Thursday, March 29, 2018 12:00:00 AM
     */
     function getPrice() public view returns (uint price) {
-        if (now &lt; 1517443200) {
+        if (now < 1517443200) {
             // presale
             return 3450;
-        } else if (1517443200 &lt; now &amp;&amp; now &lt;= 1518048000) {
+        } else if (1517443200 < now && now <= 1518048000) {
             // 1st week
             return 2400;
-        } else if (1518048000 &lt; now &amp;&amp; now &lt;= 1518652800) {
+        } else if (1518048000 < now && now <= 1518652800) {
             // 2nd week
             return 2300;
-        } else if (1518652800 &lt; now &amp;&amp; now &lt;= 1519257600) {
+        } else if (1518652800 < now && now <= 1519257600) {
             // 3rd week
             return 2200;
-        } else if (1519257600 &lt; now &amp;&amp; now &lt;= 1519862400) {
+        } else if (1519257600 < now && now <= 1519862400) {
             // 4th week
             return 2100;
-        } else if (1519862400 &lt; now &amp;&amp; now &lt;= 1520467200) {
+        } else if (1519862400 < now && now <= 1520467200) {
             // 5th week
             return 2000;
-        } else if (1520467200 &lt; now &amp;&amp; now &lt;= 1521072000) {
+        } else if (1520467200 < now && now <= 1521072000) {
             // 6th week
             return 1900;
-        } else if (1521072000 &lt; now &amp;&amp; now &lt;= 1521676800) {
+        } else if (1521072000 < now && now <= 1521676800) {
             // 7th week
             return 1800;
-        } else if (1521676800 &lt; now &amp;&amp; now &lt;= 1522281600) {
+        } else if (1521676800 < now && now <= 1522281600) {
             // 8th week
             return 1700;
         } else {
@@ -683,10 +683,10 @@ contract NamiCrowdSale {
         // Available only if presale is running.
         require(currentPhase == Phase.Running);
         // require ICO time or binary option
-        require(now &lt;= 1522281600 || msg.sender == binaryAddress);
+        require(now <= 1522281600 || msg.sender == binaryAddress);
         require(msg.value != 0);
         uint newTokens = msg.value * getPrice();
-        require (totalSupply + newTokens &lt; TOKEN_SUPPLY_LIMIT);
+        require (totalSupply + newTokens < TOKEN_SUPPLY_LIMIT);
         // add new token to buyer
         balanceOf[_buyer] = balanceOf[_buyer].add(newTokens);
         // add new token to totalSupply
@@ -726,16 +726,16 @@ contract NamiCrowdSale {
         onlyEscrow
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         require(canSwitchPhase);
         currentPhase = _nextPhase;
@@ -748,7 +748,7 @@ contract NamiCrowdSale {
     {
         require(namiMultiSigWallet != 0x0);
         // Available at any phase.
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             namiMultiSigWallet.transfer(_amount);
         }
     }
@@ -766,7 +766,7 @@ contract NamiCrowdSale {
     function setCrowdsaleManager(address _mgr) public
         onlyEscrow
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentPhase != Phase.Migrating);
         crowdsaleManager = _mgr;
     }
@@ -777,7 +777,7 @@ contract NamiCrowdSale {
     {
         PresaleToken presale = PresaleToken(namiPresale);
         uint256 newToken = presale.balanceOf(_from);
-        require(newToken &gt; 0);
+        require(newToken > 0);
         // burn old token
         presale.burnTokens(_from);
         // add new token to _to
@@ -829,7 +829,7 @@ contract NamiCrowdSale {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender,_to,_value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallbackExchange(msg.sender, _value, _price);
             emit TransferToExchange(msg.sender, _to, _value, _price);
@@ -858,7 +858,7 @@ contract NamiCrowdSale {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender,_to,_value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallbackBuyer(msg.sender, _value, _buyer);
             emit TransferToBuyer(msg.sender, _to, _value, _buyer);
@@ -878,37 +878,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -943,7 +943,7 @@ contract NamiTrade{
     // functions on this contract.
     address public escrow;
 
-    // Gathered funds can be withdraw only to namimultisigwallet&#39;s address.
+    // Gathered funds can be withdraw only to namimultisigwallet's address.
     address public namiMultiSigWallet;
     
     /// address of Nami token
@@ -974,7 +974,7 @@ contract NamiTrade{
     *
     * list setting function
     */
-    mapping(address =&gt; bool) public isController;
+    mapping(address => bool) public isController;
     
     
     
@@ -1045,7 +1045,7 @@ contract NamiTrade{
     {
         require(namiMultiSigWallet != 0x0);
         // Available at any phase.
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             namiMultiSigWallet.transfer(_amount);
         }
     }
@@ -1059,7 +1059,7 @@ contract NamiTrade{
         require(namiMultiSigWallet != 0x0);
         // Available at any phase.
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
-        if (namiToken.balanceOf(address(this)) &gt; 0) {
+        if (namiToken.balanceOf(address(this)) > 0) {
             namiToken.transfer(namiMultiSigWallet, _amount);
         }
     }
@@ -1079,8 +1079,8 @@ contract NamiTrade{
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////fci token function///////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    string public name = &quot;Nami Trade&quot;;
-    string public symbol = &quot;FCI-Test&quot;;
+    string public name = "Nami Trade";
+    string public symbol = "FCI-Test";
     uint8 public decimals = 18;
     
     uint256 public totalSupply;
@@ -1091,13 +1091,13 @@ contract NamiTrade{
     // time expires of price fci
     uint256 public timeExpires;
     
-    // price fci : if 1 fci = 2 nac =&gt; priceFci = 2000000
+    // price fci : if 1 fci = 2 nac => priceFci = 2000000
     uint public fciDecimals = 1000000;
     uint256 public priceFci;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -1144,7 +1144,7 @@ contract NamiTrade{
      * update price fci daily
      */
      function updatePriceFci(uint _price, uint _timeExpires) onlyController public {
-         require(now &gt; timeExpires);
+         require(now > timeExpires);
          priceFci = _price;
          timeExpires = _timeExpires;
      }
@@ -1156,10 +1156,10 @@ contract NamiTrade{
      */
     function buyFci(address _buyer, uint _valueNac) onlyController public {
         // require fci is Running
-        require(isPause == false &amp;&amp; now &lt; timeExpires);
+        require(isPause == false && now < timeExpires);
         // require buyer not is 0x0 address
         require(_buyer != 0x0);
-        require( _valueNac * fciDecimals &gt; priceFci);
+        require( _valueNac * fciDecimals > priceFci);
         uint fciReceive = (_valueNac.mul(fciDecimals))/priceFci;
         
         // construct fci
@@ -1178,7 +1178,7 @@ contract NamiTrade{
      * user nead to place sell order
      */
     function placeSellFciOrder(uint _valueFci) onlyRunning public {
-        require(balanceOf[msg.sender] &gt;= _valueFci &amp;&amp; _valueFci &gt; 0);
+        require(balanceOf[msg.sender] >= _valueFci && _valueFci > 0);
         _transfer(msg.sender, address(this), _valueFci);
         emit PlaceSellFciOrder(msg.sender, _valueFci, now);
     }
@@ -1190,10 +1190,10 @@ contract NamiTrade{
      */
     function sellFci(address _seller, uint _valueFci) onlyController public {
         // require fci is Running
-        require(isPause == false &amp;&amp; now &lt; timeExpires);
+        require(isPause == false && now < timeExpires);
         // require buyer not is 0x0 address
         require(_seller != 0x0);
-        require(_valueFci * priceFci &gt; fciDecimals);
+        require(_valueFci * priceFci > fciDecimals);
         uint nacReturn = (_valueFci.mul(priceFci))/fciDecimals;
         
         // destroy fci
@@ -1226,8 +1226,8 @@ contract NamiTrade{
     
     uint public currentNetfRound;
     
-    mapping (uint =&gt; RoundNetfRevenue) public NetfRevenue;
-    mapping (uint =&gt; mapping(address =&gt; ShareHolderNETF)) public usersNETF;
+    mapping (uint => RoundNetfRevenue) public NetfRevenue;
+    mapping (uint => mapping(address => ShareHolderNETF)) public usersNETF;
     
     // 1. open Netf round
     /**
@@ -1245,7 +1245,7 @@ contract NamiTrade{
      * only executable if round open and round not withdraw yet
      */
     function depositNetfRevenue(uint _valueNac) onlyController public {
-        require(NetfRevenue[currentNetfRound].isOpen == true &amp;&amp; NetfRevenue[currentNetfRound].withdrawable == false);
+        require(NetfRevenue[currentNetfRound].isOpen == true && NetfRevenue[currentNetfRound].withdrawable == false);
         NetfRevenue[currentNetfRound].currentNAC = NetfRevenue[currentNetfRound].currentNAC.add(_valueNac);
     }
     
@@ -1255,7 +1255,7 @@ contract NamiTrade{
      * only executable if round open and round not withdraw yet
      */
     function withdrawNetfRevenue(uint _valueNac) onlyController public {
-        require(NetfRevenue[currentNetfRound].isOpen == true &amp;&amp; NetfRevenue[currentNetfRound].withdrawable == false);
+        require(NetfRevenue[currentNetfRound].isOpen == true && NetfRevenue[currentNetfRound].withdrawable == false);
         NetfRevenue[currentNetfRound].currentNAC = NetfRevenue[currentNetfRound].currentNAC.sub(_valueNac);
     }
     
@@ -1266,15 +1266,15 @@ contract NamiTrade{
      * controller or investor latch final fci of current round
      */
      function latchTotalFci(uint _roundIndex) onlyController public {
-         require(isPause == true &amp;&amp; NetfRevenue[_roundIndex].isOpen == true);
+         require(isPause == true && NetfRevenue[_roundIndex].isOpen == true);
          require(NetfRevenue[_roundIndex].withdrawable == false);
          NetfRevenue[_roundIndex].totalFci = totalSupply;
      }
      
      function latchFciUserController(uint _roundIndex, address _investor) onlyController public {
-         require(isPause == true &amp;&amp; NetfRevenue[_roundIndex].isOpen == true);
+         require(isPause == true && NetfRevenue[_roundIndex].isOpen == true);
          require(NetfRevenue[_roundIndex].withdrawable == false);
-         require(balanceOf[_investor] &gt; 0);
+         require(balanceOf[_investor] > 0);
          usersNETF[_roundIndex][_investor].stake = balanceOf[_investor];
      }
      
@@ -1282,9 +1282,9 @@ contract NamiTrade{
       * investor can latch Fci by themself
       */
      function latchFciUser(uint _roundIndex) public {
-         require(isPause == true &amp;&amp; NetfRevenue[_roundIndex].isOpen == true);
+         require(isPause == true && NetfRevenue[_roundIndex].isOpen == true);
          require(NetfRevenue[_roundIndex].withdrawable == false);
-         require(balanceOf[msg.sender] &gt; 0);
+         require(balanceOf[msg.sender] > 0);
          usersNETF[_roundIndex][msg.sender].stake = balanceOf[msg.sender];
      }
      
@@ -1294,7 +1294,7 @@ contract NamiTrade{
       * and auto switch to unpause phrase
       */
      function changeWithdrawableNetfRe(uint _roundIndex) onlyController public {
-         require(isPause == true &amp;&amp; NetfRevenue[_roundIndex].isOpen == true);
+         require(isPause == true && NetfRevenue[_roundIndex].isOpen == true);
          NetfRevenue[_roundIndex].withdrawable = true;
          isPause = false;
      }
@@ -1305,9 +1305,9 @@ contract NamiTrade{
       * run by controller
       */
      function withdrawNacNetfReController(uint _roundIndex, address _investor) onlyController public {
-         require(NetfRevenue[_roundIndex].withdrawable == true &amp;&amp; isPause == false &amp;&amp; _investor != 0x0);
-         require(usersNETF[_roundIndex][_investor].stake &gt; 0 &amp;&amp; usersNETF[_roundIndex][_investor].isWithdrawn == false);
-         require(NetfRevenue[_roundIndex].totalFci &gt; 0);
+         require(NetfRevenue[_roundIndex].withdrawable == true && isPause == false && _investor != 0x0);
+         require(usersNETF[_roundIndex][_investor].stake > 0 && usersNETF[_roundIndex][_investor].isWithdrawn == false);
+         require(NetfRevenue[_roundIndex].totalFci > 0);
          // withdraw NAC
          uint nacReturn = ( NetfRevenue[_roundIndex].currentNAC.mul(usersNETF[_roundIndex][_investor].stake) ) / NetfRevenue[_roundIndex].totalFci;
          NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
@@ -1321,9 +1321,9 @@ contract NamiTrade{
       * run by investor
       */
      function withdrawNacNetfRe(uint _roundIndex) public {
-         require(NetfRevenue[_roundIndex].withdrawable == true &amp;&amp; isPause == false);
-         require(usersNETF[_roundIndex][msg.sender].stake &gt; 0 &amp;&amp; usersNETF[_roundIndex][msg.sender].isWithdrawn == false);
-         require(NetfRevenue[_roundIndex].totalFci &gt; 0);
+         require(NetfRevenue[_roundIndex].withdrawable == true && isPause == false);
+         require(usersNETF[_roundIndex][msg.sender].stake > 0 && usersNETF[_roundIndex][msg.sender].isWithdrawn == false);
+         require(NetfRevenue[_roundIndex].totalFci > 0);
          // withdraw NAC
          uint nacReturn = ( NetfRevenue[_roundIndex].currentNAC.mul(usersNETF[_roundIndex][msg.sender].stake) ) / NetfRevenue[_roundIndex].totalFci;
          NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
@@ -1340,9 +1340,9 @@ contract NamiTrade{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -1376,7 +1376,7 @@ contract NamiTrade{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyRunning returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -1447,10 +1447,10 @@ contract NamiTrade{
     }
     
     // NLF Funds
-    mapping(uint =&gt; Round) public NLFunds;
-    mapping(uint =&gt; mapping(address =&gt; mapping(uint =&gt; bool))) public isWithdrawnSubRoundNLF;
-    mapping(uint =&gt; mapping(uint =&gt; SubRound)) public listSubRoundNLF;
-    mapping(uint =&gt; mapping(address =&gt; shareHolderNLF)) public membersNLF;
+    mapping(uint => Round) public NLFunds;
+    mapping(uint => mapping(address => mapping(uint => bool))) public isWithdrawnSubRoundNLF;
+    mapping(uint => mapping(uint => SubRound)) public listSubRoundNLF;
+    mapping(uint => mapping(address => shareHolderNLF)) public membersNLF;
     
     
     event ActivateRound(uint RoundIndex, uint TimeActive);
@@ -1494,7 +1494,7 @@ contract NamiTrade{
         public
     {
         // require current round is not open and pool active
-        require(NLFunds[currentRound].isOpen == false &amp;&amp; NLFunds[currentRound].isActivePool == true);
+        require(NLFunds[currentRound].isOpen == false && NLFunds[currentRound].isActivePool == true);
         // require sub round not open
         require(listSubRoundNLF[currentRound][_subRoundIndex].isOpen == false);
         //
@@ -1565,7 +1565,7 @@ contract NamiTrade{
         require(isWithdrawnSubRoundNLF[currentRound][msg.sender][_subRoundIndex] == false);
         
         // require user have fci
-        require(membersNLF[currentRound][msg.sender].fciNLF &gt; 0);
+        require(membersNLF[currentRound][msg.sender].fciNLF > 0);
         
         // withdraw token
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
@@ -1607,7 +1607,7 @@ contract NamiTrade{
         onlyEscrow
     {
         require(NLFunds[currentRound].isActivePool == true);
-        require(NLFunds[_roundIndex].withdrawable == false &amp;&amp; NLFunds[_roundIndex].isOpen == false);
+        require(NLFunds[_roundIndex].withdrawable == false && NLFunds[_roundIndex].isOpen == false);
         
         NLFunds[_roundIndex].withdrawable = true;
     }
@@ -1620,7 +1620,7 @@ contract NamiTrade{
     function withdrawRound(uint _roundIndex) public {
         require(NLFunds[_roundIndex].withdrawable == true);
         require(membersNLF[currentRound][msg.sender].isWithdrawnRound == false);
-        require(membersNLF[currentRound][msg.sender].fciNLF &gt; 0);
+        require(membersNLF[currentRound][msg.sender].fciNLF > 0);
         
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
         uint nacReturn = NLFunds[currentRound].currentNAC.mul(membersNLF[currentRound][msg.sender].fciNLF).div(NLFunds[currentRound].finalNAC);
@@ -1634,7 +1634,7 @@ contract NamiTrade{
     function withdrawRoundController(uint _roundIndex, address _investor) public onlyController {
         require(NLFunds[_roundIndex].withdrawable == true);
         require(membersNLF[currentRound][_investor].isWithdrawnRound == false);
-        require(membersNLF[currentRound][_investor].fciNLF &gt; 0);
+        require(membersNLF[currentRound][_investor].fciNLF > 0);
         
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
         uint nacReturn = NLFunds[currentRound].currentNAC.mul(membersNLF[currentRound][_investor].fciNLF).div(NLFunds[currentRound].finalNAC);
@@ -1652,13 +1652,13 @@ contract NamiTrade{
      * deposit NAC to NAMI TRADE broker, invest to NETF and NLF funds
      */
     function tokenFallbackExchange(address _from, uint _value, uint _choose) onlyNami public returns (bool success) {
-        require(_choose &lt;= 2);
+        require(_choose <= 2);
         if (_choose == 0) {
             // deposit NAC to nami trade broker
-            require(_value &gt;= minNac);
+            require(_value >= minNac);
             emit Deposit(_from, _value, now);
         } else if(_choose == 1) {
-            require(_value &gt;= minNac &amp;&amp; NLFunds[currentRound].isOpen == true);
+            require(_value >= minNac && NLFunds[currentRound].isOpen == true);
             // invest to NLF funds
             membersNLF[currentRound][_from].fciNLF = membersNLF[currentRound][_from].fciNLF.add(_value);
             NLFunds[currentRound].currentNAC = NLFunds[currentRound].currentNAC.add(_value);
@@ -1666,7 +1666,7 @@ contract NamiTrade{
             emit InvestToNLF(_from, _value, now);
         } else if(_choose == 2) {
             // invest NAC to NETF Funds
-            require(_value &gt;= minNac); // msg.value &gt;= 0.1 ether
+            require(_value >= minNac); // msg.value >= 0.1 ether
             emit PlaceBuyFciOrder(_from, _value, now);
         }
         return true;
@@ -1682,18 +1682,18 @@ contract NamiTrade{
         public
         onlyController
     {
-        require(_amount &gt;= minWithdraw &amp;&amp; _amount &lt;= maxWithdraw);
+        require(_amount >= minWithdraw && _amount <= maxWithdraw);
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
         
         uint previousBalances = namiToken.balanceOf(address(this));
-        require(previousBalances &gt;= _amount);
+        require(previousBalances >= _amount);
         
         // transfer token
         namiToken.transfer(_account, _amount);
         
         // emit event
         emit Withdraw(_account, _amount, now);
-        assert(previousBalances &gt;= namiToken.balanceOf(address(this)));
+        assert(previousBalances >= namiToken.balanceOf(address(this)));
     }
     
     

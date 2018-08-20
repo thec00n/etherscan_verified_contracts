@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -67,9 +67,9 @@ contract owned{
 contract Erc{
     using SafeMath for uint;
     uint public totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
+    mapping (address => bool) public frozenAccount;
     
     uint256 public sellPrice;
     uint256 public buyPrice;
@@ -87,7 +87,7 @@ contract Erc{
     event Disqualified(address targetAD, uint value);
      
     modifier onlyPayloadSize(uint size) {
-    if(msg.data.length &lt; size + 4) {throw;}_;
+    if(msg.data.length < size + 4) {throw;}_;
     }
     
     function _transfer(address _from ,address _to, uint _value) onlyPayloadSize(2 * 32) internal {
@@ -103,7 +103,7 @@ contract Erc{
 contract StandardToken is Erc,owned{
     //check if user illicit activity,freezeAccount and back to totalSupply
     function disqualified(address targetAD, uint _value) onlyAdmin public {
-        require(balances[targetAD] &gt;= _value);  
+        require(balances[targetAD] >= _value);  
         balances[targetAD] -= _value;           
         totalSupply -= _value;                    
         Disqualified(msg.sender, _value);
@@ -131,7 +131,7 @@ contract StandardToken is Erc,owned{
     }
     
     function approve(address _spender, uint _value) {
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
     }
@@ -151,16 +151,16 @@ contract StandardToken is Erc,owned{
     }
     
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice);     // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);     // checks if the contract has enough ether to buy
         Transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);         // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);         // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }
 
 //contract
 contract SOC is StandardToken {
-    string public name = &quot;CADT Token&quot;;
-    string public symbol = &quot;CADT&quot;;
+    string public name = "CADT Token";
+    string public symbol = "CADT";
     uint public decimals = 8;
     uint public INITIAL_SUPPLY = 50000000000000000; // Initial supply is 500,000,000 SOC
 

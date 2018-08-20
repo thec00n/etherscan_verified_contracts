@@ -10,7 +10,7 @@ pragma solidity ^0.4.11;
 //   transaction to this contract address.
 //
 //   NOTE that any ethers sent with this call will fill the coffers of this
-//   gubberment&#39;s token contract.
+//   gubberment's token contract.
 //
 // - If you consider yourself to be in the top 1%, make a donation for world
 //   peace.
@@ -40,7 +40,7 @@ pragma solidity ^0.4.11;
 //   one time.
 //
 // - Any gifts of ERC20 tokens send to this contract will be solemnly accepted
-//   by the gubberment. The treasury will at it&#39;s discretion disburst these 
+//   by the gubberment. The treasury will at it's discretion disburst these 
 //   gifts to friendly officials. Thank you.
 //
 // Token Contract:
@@ -99,7 +99,7 @@ pragma solidity ^0.4.11;
 //   contract.
 //
 // - replaceOfficials([accounts])
-//   The gubberment can sack and replace all it&#39;s treasury officials in one go.
+//   The gubberment can sack and replace all it's treasury officials in one go.
 //
 // Standard ERC20 Functions:
 // - balanceOf(account)
@@ -147,12 +147,12 @@ contract ERC20Token {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Total token supply
@@ -167,12 +167,12 @@ contract ERC20Token {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -197,8 +197,8 @@ contract ERC20Token {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
     function transferFrom(
@@ -206,10 +206,10 @@ contract ERC20Token {
         address _to,
         uint _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -222,7 +222,7 @@ contract ERC20Token {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -242,8 +242,8 @@ contract UselessReserveBank is ERC20Token, Gubberment {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant symbol = &quot;URB&quot;;
-    string public constant name = &quot;Useless Reserve Bank&quot;;
+    string public constant symbol = "URB";
+    string public constant name = "Useless Reserve Bank";
     uint8 public constant decimals = 18;
     
     uint public constant WELFARE_HANDOUT = 1000;
@@ -285,7 +285,7 @@ contract UselessReserveBank is ERC20Token, Gubberment {
     // ------------------------------------------------------------------------
     function philanthropise(string name) payable {
         // Sending something real?
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Calculate the number of tokens
         uint tokens = msg.value * ONEPERCENT_TOKENS_PER_ETH;
@@ -296,10 +296,10 @@ contract UselessReserveBank is ERC20Token, Gubberment {
 
         // Calculate and forward taxes to the treasury
         uint taxAmount = msg.value * TAXRATE / 100;
-        if (taxAmount &gt; 0) {
+        if (taxAmount > 0) {
             totalTaxed += taxAmount;
             uint taxPerOfficial = taxAmount / treasuryOfficials.length;
-            for (uint i = 0; i &lt; treasuryOfficials.length; i++) {
+            for (uint i = 0; i < treasuryOfficials.length; i++) {
                 treasuryOfficials[i].transfer(taxPerOfficial);
             }
         }
@@ -318,7 +318,7 @@ contract UselessReserveBank is ERC20Token, Gubberment {
     // ------------------------------------------------------------------------
     function liquidate(uint amountOfTokens) {
         // Account must have sufficient tokens
-        require(amountOfTokens &lt;= balances[msg.sender]);
+        require(amountOfTokens <= balances[msg.sender]);
 
         // Burn tokens
         balances[msg.sender] -= amountOfTokens;
@@ -328,8 +328,8 @@ contract UselessReserveBank is ERC20Token, Gubberment {
         uint ethersToSend = amountOfTokens / LIQUIDATION_TOKENS_PER_ETH;
 
         // Is there sufficient ETH to support this liquidation?
-        require(ethersToSend &gt; 0 &amp;&amp; 
-            ethersToSend &lt;= (this.balance * (100 - LIQUIDATION_RESERVE_RATIO) / 100));
+        require(ethersToSend > 0 && 
+            ethersToSend <= (this.balance * (100 - LIQUIDATION_RESERVE_RATIO) / 100));
 
         // Log message
         Liquidate(msg.sender, amountOfTokens, totalSupply, 
@@ -349,14 +349,14 @@ contract UselessReserveBank is ERC20Token, Gubberment {
     // ------------------------------------------------------------------------
     function bribe() payable {
         // Briber must be offering something real
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Do we really need to keep track of the total bribes?
         totalBribery += msg.value;
         Bribed(msg.value, totalBribery);
 
         uint bribePerOfficial = msg.value / treasuryOfficials.length;
-        for (uint i = 0; i &lt; treasuryOfficials.length; i++) {
+        for (uint i = 0; i < treasuryOfficials.length; i++) {
             treasuryOfficials[i].transfer(bribePerOfficial);
         }
     }
@@ -368,14 +368,14 @@ contract UselessReserveBank is ERC20Token, Gubberment {
     // ------------------------------------------------------------------------
     function pilfer(uint amount) onlyGubberment {
         // Cannot pilfer more than the contract balance
-        require(amount &gt; this.balance);
+        require(amount > this.balance);
 
         // Do we really need to keep track of the total pilfered amounts?
         totalPilfered += amount;
         Pilfered(amount, totalPilfered, this.balance - amount);
 
         uint amountPerOfficial = amount / treasuryOfficials.length;
-        for (uint i = 0; i &lt; treasuryOfficials.length; i++) {
+        for (uint i = 0; i < treasuryOfficials.length; i++) {
             treasuryOfficials[i].transfer(amountPerOfficial);
         }
     }

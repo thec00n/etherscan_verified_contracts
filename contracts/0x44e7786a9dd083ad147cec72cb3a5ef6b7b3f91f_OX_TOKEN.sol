@@ -18,8 +18,8 @@ contract owned {
 
 contract OX_TOKEN is owned {
  
-  string public constant name = &quot;OX&quot;;
-  string public constant symbol = &quot;OX&quot;; 
+  string public constant name = "OX";
+  string public constant symbol = "OX"; 
  
   event Receipt( address indexed _to,
                  uint _oxen,
@@ -32,7 +32,7 @@ contract OX_TOKEN is owned {
   uint public starttime;
   bool public expanded;
   uint public inCirculation;
-  mapping( address =&gt; uint ) public oxen;
+  mapping( address => uint ) public oxen;
 
   function OX_TOKEN() {
     starttime = 0;
@@ -47,7 +47,7 @@ contract OX_TOKEN is owned {
   function() payable {}
 
   function withdraw( uint amount ) onlyOwner {
-    if (amount &lt;= this.balance)
+    if (amount <= this.balance)
       bool result = owner.send( amount );
   }
 
@@ -82,11 +82,11 @@ contract OX_TOKEN is owned {
   function buyOx() payable {
 
     // min purchase .1 E = 10**17 wei
-    if (!saleOn() || msg.value &lt; 10**17) {
-      throw; // returns customer&#39;s Ether and unused gas
+    if (!saleOn() || msg.value < 10**17) {
+      throw; // returns customer's Ether and unused gas
     }
 
-    // rate: 1 eth &lt;==&gt; 3000 ox
+    // rate: 1 eth <==> 3000 ox
     //
     // to buy: msg.value * 3000 * (100 + bonus)
     //         ---------          -------------
@@ -94,8 +94,8 @@ contract OX_TOKEN is owned {
 
     uint tobuy = (msg.value * 3 * (100 + bonus())) / 10**17;
 
-    if (inCirculation + tobuy &gt; 700000000) {
-      throw; // returns customer&#39;s Ether and unused gas
+    if (inCirculation + tobuy > 700000000) {
+      throw; // returns customer's Ether and unused gas
     }
 
     inCirculation += tobuy;
@@ -104,7 +104,7 @@ contract OX_TOKEN is owned {
   }
 
   function transfer( address to, uint ox ) {
-    if ( ox &gt; oxen[msg.sender] || saleOn() ) {
+    if ( ox > oxen[msg.sender] || saleOn() ) {
       return;
     }
 
@@ -116,17 +116,17 @@ contract OX_TOKEN is owned {
   }
 
   function saleOn() constant returns(bool) {
-    return now - starttime &lt; 31 days;
+    return now - starttime < 31 days;
   }
 
   function bonus() constant returns(uint) {
     uint elapsed = now - starttime;
 
-    if (elapsed &lt; 1 days) return 25;
-    if (elapsed &lt; 1 weeks) return 20;
-    if (elapsed &lt; 2 weeks) return 15;
-    if (elapsed &lt; 3 weeks) return 10;
-    if (elapsed &lt; 4 weeks) return 5;
+    if (elapsed < 1 days) return 25;
+    if (elapsed < 1 weeks) return 20;
+    if (elapsed < 2 weeks) return 15;
+    if (elapsed < 3 weeks) return 10;
+    if (elapsed < 4 weeks) return 5;
     return 0;
   }
 

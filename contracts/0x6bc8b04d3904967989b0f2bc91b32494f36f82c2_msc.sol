@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Global Mobile Industry Service Ecosystem Chain 
  * @dev Developed By Jack 5/13 2018 
- * @dev contact:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4aea5a7afaba1a8b2f6f4f5fc84a3a9a5ada8eaa7aba9">[email&#160;protected]</a>
+ * @dev contact:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4aea5a7afaba1a8b2f6f4f5fc84a3a9a5ada8eaa7aba9">[email protected]</a>
  */
 
 library SafeMath {
@@ -23,13 +23,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,11 +88,11 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -111,12 +111,12 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -143,7 +143,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -159,8 +159,8 @@ contract msc is Ownable, StandardToken {
     uint8 public constant TOKEN_DECIMALS = 18;  // decimals
 
     // Public variables of the token
-    string public name = &quot;Global Mobile Industry Service Ecosystem&quot;;
-    string public symbol = &quot;MSC&quot;;
+    string public name = "Global Mobile Industry Service Ecosystem";
+    string public symbol = "MSC";
     uint8 public decimals = TOKEN_DECIMALS; // 18 decimals is the strongly suggested default, avoid changing it
 
 
@@ -185,12 +185,12 @@ contract msc is Ownable, StandardToken {
     bool public allowTransfers = true; 
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     bool public enableInternalLock = true; 
-    mapping (address =&gt; bool) public internalLockAccount;
+    mapping (address => bool) public internalLockAccount;
 
-    mapping (address =&gt; uint256) public releaseLockAccount;
+    mapping (address => uint256) public releaseLockAccount;
 
 
     event FrozenFunds(address target, bool frozen);
@@ -213,13 +213,13 @@ contract msc is Ownable, StandardToken {
     }
 
     function increaseSoldSaleSupply (uint256 _value) onlyOwner public {
-        require (_value + soldSupply &lt; totalSupply);
+        require (_value + soldSupply < totalSupply);
         soldSupply = soldSupply.add(_value);
         IncreaseSoldSaleSupply(_value);
     }
 
     function decreaseSoldSaleSupply (uint256 _value) onlyOwner public {
-        require (soldSupply - _value &gt; 0);
+        require (soldSupply - _value > 0);
         soldSupply = soldSupply.sub(_value);
         DecreaseSoldSaleSupply(_value);
     }
@@ -273,7 +273,7 @@ contract msc is Ownable, StandardToken {
 
     function transferFromAdmin(address _from, address _to, uint256 _value) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -299,8 +299,8 @@ contract msc is Ownable, StandardToken {
 
     }
     function getAccountLockState(address _target) public view returns(bool) {
-        if(enableInternalLock &amp;&amp; internalLockAccount[_target]){
-            if((releaseLockAccount[_target] &gt; 0)&amp;&amp;(releaseLockAccount[_target]&lt;block.timestamp)){       
+        if(enableInternalLock && internalLockAccount[_target]){
+            if((releaseLockAccount[_target] > 0)&&(releaseLockAccount[_target]<block.timestamp)){       
                 return false;
             }          
             return true;
@@ -311,7 +311,7 @@ contract msc is Ownable, StandardToken {
 
     function internalSellTokenFromAdmin(address _to, uint256 _value, bool _lock, uint256 _releaseTime) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         balances[owner] = balances[owner].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -352,8 +352,8 @@ contract msc is Ownable, StandardToken {
     function () internal payable{
 
         uint256 currentTime = block.timestamp;
-        require((currentTime&gt;crowdsaleStartTime)&amp;&amp;(currentTime&lt;crowdsaleEndTime));
-        require(crowdsaleTotal&gt;0);
+        require((currentTime>crowdsaleStartTime)&&(currentTime<crowdsaleEndTime));
+        require(crowdsaleTotal>0);
 
         require(buy());
 
@@ -367,7 +367,7 @@ contract msc is Ownable, StandardToken {
         uint256 amount = msg.value.mul(buyExchangeRate);
 
         require(!stopBuy);
-        require(amount &lt;= balances[owner]);
+        require(amount <= balances[owner]);
 
         balances[owner] = balances[owner].sub(amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
@@ -382,11 +382,11 @@ contract msc is Ownable, StandardToken {
     function sell(uint256 amount) public {
         uint256 ethAmount = amount.div(sellExchangeRate);
         require(!stopSell);
-        require(this.balance &gt;= ethAmount);      
-        require(ethAmount &gt;= 1);      
+        require(this.balance >= ethAmount);      
+        require(ethAmount >= 1);      
 
-        require(balances[msg.sender] &gt;= amount);                 
-        require(balances[owner] + amount &gt; balances[owner]);       
+        require(balances[msg.sender] >= amount);                 
+        require(balances[owner] + amount > balances[owner]);       
         require(!frozenAccount[msg.sender]);                       
         require(!_isUserInternalLock());                                          
 

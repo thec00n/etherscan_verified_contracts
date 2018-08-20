@@ -6,7 +6,7 @@ contract TimestampService {
         uint    timestamp;
         address sender;
     }
-    mapping(bytes32 =&gt; Timestamp) public timestamps;
+    mapping(bytes32 => Timestamp) public timestamps;
 
     function timestamp(bytes32 hash) public returns (bool) {
         if (timestamps[hash].timestamp != 0) {

@@ -1,5 +1,5 @@
 /// @title The main smart contract for Etherprises LLC, Delaware, U.S. (c)2017 Etherprises LLC
-/// @author Ville Sundell &lt;<span class="__cf_email__" data-cfemail="aecdc1c0dacfcddaeecbdac6cbdcdedcc7ddcbdd80cdc1c3">[email&#160;protected]</span>&gt;
+/// @author Ville Sundell <<span class="__cf_email__" data-cfemail="aecdc1c0dacfcddaeecbdac6cbdcdedcc7ddcbdd80cdc1c3">[email protected]</span>>
 // This source code is available at https://etherscan.io/address/0x0d47d4aea9da60953fd4ae5c47d2165977c7fbea
 // This code (and only this source code, not storage data nor other information/data) is released under CC-0.
 // More source regarding Etherprises LLC can be found at: https://github.com/Etherprises
@@ -17,14 +17,14 @@ contract EtherprisesLLC {
     address[] public series;
     //Listing amendments as a legal prose, starting from 0:
     string[] public prose;
-    //This map makes routing funds to user&#39;s latest series easy and fast:
-    mapping (address =&gt; address) public latestSeriesForUser;
-    //Series&#39; expiring date is specified here as UNIX timestamp:
-    mapping (address =&gt; uint) public expiresAt;
-    //This maps series&#39; name to an address
-    mapping (bytes32 =&gt; address) public seriesByName;
-    //This maps series&#39; address to a name
-    mapping (address =&gt; bytes32) public seriesByAddress;
+    //This map makes routing funds to user's latest series easy and fast:
+    mapping (address => address) public latestSeriesForUser;
+    //Series' expiring date is specified here as UNIX timestamp:
+    mapping (address => uint) public expiresAt;
+    //This maps series' name to an address
+    mapping (bytes32 => address) public seriesByName;
+    //This maps series' address to a name
+    mapping (address => bytes32) public seriesByAddress;
     
     //Events for external monitoring:
     event AmendmentAdded (string newAmendment);
@@ -67,7 +67,7 @@ contract EtherprisesLLC {
     /// @param addr Address of the series we want to check
     /// @return TRUE if series is expired, FALSE otherwise
     function isExpired(address addr) constant returns (bool) {
-        if (expiresAt[addr] &gt; now)
+        if (expiresAt[addr] > now)
             return false;
         else
             return true;
@@ -147,7 +147,7 @@ contract EtherprisesLLC {
         if (latestAddress == 0)
             throw;
 
-        if (latestName &gt; 0)
+        if (latestName > 0)
             if (seriesByName[latestName] == 0)
                 seriesByName[latestName] = latestAddress;
             else
@@ -182,14 +182,14 @@ contract EtherprisesLLC {
     /// @dev Here the fallback function either creates a new series,
     /// or transfers funds to existing one.
     function () payable {
-        if (msg.data.length &gt; 0) {
-            createSeries(msg.data, 0, &quot;&quot;, &quot;&quot;, 0x0);
+        if (msg.data.length > 0) {
+            createSeries(msg.data, 0, "", "", 0x0);
         } else if (latestSeriesForUser[msg.sender] != 0) {
             //This is important to implement as call so we can forward gas
             if (latestSeriesForUser[msg.sender].call.value(msg.value)())
                 DepositMade(latestSeriesForUser[msg.sender], msg.value);
         } else {
-            createSeries(&quot;&quot;, 0, &quot;&quot;, &quot;&quot;, 0x0);
+            createSeries("", 0, "", "", 0x0);
         }
     }
 }

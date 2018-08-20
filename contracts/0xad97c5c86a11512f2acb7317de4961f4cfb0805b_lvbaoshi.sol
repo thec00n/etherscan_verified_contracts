@@ -20,14 +20,14 @@ contract Token {
 
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(_value <= balances[msg.sender]);
+        require(balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -36,9 +36,9 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -68,14 +68,14 @@ contract lvbaoshi is StandardToken {
     }
 
 
-    string public name = &quot;lvbaoshi&quot;;
+    string public name = "lvbaoshi";
 
     uint8 public decimals = 18;
     uint256 private supplyDecimals = 1 * 10 ** uint256(decimals);
 
-    string public symbol = &quot;LBS&quot;;
+    string public symbol = "LBS";
 
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public founder;
 
@@ -89,7 +89,7 @@ contract lvbaoshi is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 

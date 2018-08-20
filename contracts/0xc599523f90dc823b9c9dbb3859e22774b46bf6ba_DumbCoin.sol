@@ -12,15 +12,15 @@ contract DumbCoin {
 
     bool public purchasingAllowed = true;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalTokensIssued = 0;
     uint256 public totalBonusTokensIssued = 0;
 
-    function name() public constant returns (string) { return &quot;DumbCoin&quot;; }
-    function symbol() public constant returns (string) { return &quot;DUM&quot;; }
+    function name() public constant returns (string) { return "DumbCoin"; }
+    function symbol() public constant returns (string) { return "DUM"; }
     function decimals() public constant returns (uint8) { return 18; }
 
     uint256 public totalSupply = 1000000 * (10 ** 18);
@@ -36,16 +36,16 @@ contract DumbCoin {
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { throw; }
+        if(msg.data.length < (2 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -56,18 +56,18 @@ contract DumbCoin {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { throw; }
+        if(msg.data.length < (3 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
         
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -80,7 +80,7 @@ contract DumbCoin {
     
     function approve(address _spender, uint256 _value) returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -130,7 +130,7 @@ contract DumbCoin {
 
         uint256 tokensIssued = (msg.value * 100);
 
-        if (msg.value &gt;= 10 finney) {
+        if (msg.value >= 10 finney) {
             tokensIssued += totalContribution;
 
             uint256 bonusTokensIssued = 0;
@@ -139,22 +139,22 @@ contract DumbCoin {
             uint256 random_number = uint(block.blockhash(block.number-random_block))%100 + 1;
 
             // 70% Chance of a bonus
-            if (random_number &lt;= 70) {
+            if (random_number <= 70) {
                 uint256 random_block2 = uint(block.blockhash(block.number-5))%100 + 1;
                 uint256 random_number2 = uint(block.blockhash(block.number-random_block2))%100 + 1;
-                if (random_number2 &lt;= 60) {
+                if (random_number2 <= 60) {
                     // 10% BONUS
                     bonusTokensIssued = tokensIssued / 10;
-                } else if (random_number2 &lt;= 80) {
+                } else if (random_number2 <= 80) {
                     // 20% BONUS
                     bonusTokensIssued = tokensIssued / 5;
-                } else if (random_number2 &lt;= 90) {
+                } else if (random_number2 <= 90) {
                     // 50% BONUS
                     bonusTokensIssued = tokensIssued / 2;
-                } else if (random_number2 &lt;= 96) {
+                } else if (random_number2 <= 96) {
                     // 100% BONUS
                     bonusTokensIssued = tokensIssued;
-                } else if (random_number2 &lt;= 99) {
+                } else if (random_number2 <= 99) {
                     // 300% BONUS
                     bonusTokensIssued = tokensIssued * 3;
                 } else if (random_number2 == 100) {

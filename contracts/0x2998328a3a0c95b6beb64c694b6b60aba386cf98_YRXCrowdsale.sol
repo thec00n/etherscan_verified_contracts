@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ pragma solidity ^0.4.18;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -75,7 +75,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -104,7 +104,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -115,8 +115,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -130,7 +130,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -271,8 +271,8 @@ contract MintableToken is StandardToken, Ownable {
  * `StandardToken` functions.
  */
 contract YRXToken is MintableToken {
-    string public constant name = &quot;Yoritex Token&quot;;
-    string public constant symbol = &quot;YRX&quot;;
+    string public constant name = "Yoritex Token";
+    string public constant symbol = "YRX";
     uint8 public constant decimals = 18;
     address public crowdsaleAddress;
 
@@ -284,12 +284,12 @@ contract YRXToken is MintableToken {
     }
 
     modifier nonZeroAmount(uint _amount) {                 // Ensures a non-zero amount
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier nonZeroValue() {                              // Ensures a non-zero value is passed
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -322,7 +322,7 @@ contract YRXToken is MintableToken {
     // Function for the Crowdsale to transfer tokens
     // -------------------------------------------------
     function transferFromCrowdsale(address _to, uint256 _amount) external onlyCrowdsale nonZeroAmount(_amount) nonZeroAddress(_to) returns (bool success) {
-        require(balanceOf(crowdsaleAddress) &gt;= _amount);
+        require(balanceOf(crowdsaleAddress) >= _amount);
         decrementBalance(crowdsaleAddress, _amount);
         addToBalance(_to, _amount);
         Transfer(0x0, _to, _amount);
@@ -389,34 +389,34 @@ contract YRXCrowdsale is Ownable {
   }
 
   modifier nonZeroAmount(uint _amount) {                 // Ensures a non-zero amount
-    require(_amount &gt; 0);
+    require(_amount > 0);
     _;
   }
 
   modifier nonZeroValue() {                              // Ensures a non-zero value is passed
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     _;
   }
 
   modifier crowdsaleIsActive() {                         // Ensures the crowdfund is ongoing
-    require(!isFinalised &amp;&amp; (isInPreSale() || isInMainSale()));
+    require(!isFinalised && (isInPreSale() || isInMainSale()));
     _;
   }
 
   function YRXCrowdsale(address _wallet, address _token) public {
 
     /* default start-end periods dates
-      _preSaleStartTime =     &#39;29 Nov 2017 00:00:00 GMT&#39; 1511913600
-      _preSaleEndTime =       &#39;10 Jan 2018 23:59:59 GMT&#39; 1515628799
-      _mainSaleStartTime =    &#39;11 Jan 2018 00:00:00 GMT&#39; 1515628800
-      _mainSaleEndTime =      &#39;11 May 2018 00:00:00 GMT&#39; 1525996800
+      _preSaleStartTime =     '29 Nov 2017 00:00:00 GMT' 1511913600
+      _preSaleEndTime =       '10 Jan 2018 23:59:59 GMT' 1515628799
+      _mainSaleStartTime =    '11 Jan 2018 00:00:00 GMT' 1515628800
+      _mainSaleEndTime =      '11 May 2018 00:00:00 GMT' 1525996800
     */
 
     // check dates
-    require(mainSaleStartTime() &gt;= now);                 // can&#39;t start main sale in the past
-    require(preSaleEndTime() &lt; mainSaleStartTime());      // can&#39;t start main sale before the end of pre-sale
-    require(preSaleStartTime() &lt; preSaleEndTime());       // the end of pre-sale can&#39;t happen before it&#39;s start
-    require(mainSaleStartTime() &lt; mainSaleEndTime());     // the end of main sale can&#39;t happen before it&#39;s start
+    require(mainSaleStartTime() >= now);                 // can't start main sale in the past
+    require(preSaleEndTime() < mainSaleStartTime());      // can't start main sale before the end of pre-sale
+    require(preSaleStartTime() < preSaleEndTime());       // the end of pre-sale can't happen before it's start
+    require(mainSaleStartTime() < mainSaleEndTime());     // the end of main sale can't happen before it's start
 
     // create token contract
     YRX = YRXToken(_token);
@@ -485,11 +485,11 @@ contract YRXCrowdsale is Ownable {
   }
 
   function isInPreSale() public constant returns(bool){
-    return now &gt;= preSaleStartTime() &amp;&amp; now &lt;= preSaleEndTime();
+    return now >= preSaleStartTime() && now <= preSaleEndTime();
   }
 
   function isInMainSale() public constant returns(bool){
-    return now &gt;= mainSaleStartTime() &amp;&amp; now &lt;= mainSaleEndTime();
+    return now >= mainSaleStartTime() && now <= mainSaleEndTime();
   }
 
   function totalSupply() public view returns(uint256){
@@ -510,13 +510,13 @@ contract YRXCrowdsale is Ownable {
     if (isInPreSale()) {
       require(!isPreSaleFinalised);
       tokens = weiAmount * discountRate();
-      require(tokens &lt;= preSaleTokenLeft());
+      require(tokens <= preSaleTokenLeft());
     }
 
     if (isInMainSale()) {
       // tokens with discount
       tokens = weiAmount * discountRate();
-      require(mainSaleTotalSupply + tokens &lt;= mainSaleMaxTokens());
+      require(mainSaleTotalSupply + tokens <= mainSaleMaxTokens());
     }
 
     // update state
@@ -543,10 +543,10 @@ contract YRXCrowdsale is Ownable {
     bool withinMainSalePeriod = isInMainSale();
     if (withinPreSalePeriod) {
       require(!isPreSaleFinalised);
-      require(amount &lt;= preSaleTokenLeft());
+      require(amount <= preSaleTokenLeft());
     }
     if (withinMainSalePeriod) {
-      require(amount &lt;= (mainSaleMaxTokens() - mainSaleTotalSupply));
+      require(amount <= (mainSaleMaxTokens() - mainSaleTotalSupply));
     }
 
     if (withinPreSalePeriod)
@@ -566,9 +566,9 @@ contract YRXCrowdsale is Ownable {
   function finalisePreSale() public onlyOwner {
     require(!isFinalised);
     require(!isPreSaleFinalised);
-    require(now &gt;= preSaleStartTime()); // can finalise presale only after it starts
+    require(now >= preSaleStartTime()); // can finalise presale only after it starts
 
-    if (preSaleTokenLeft() &gt; 0) {
+    if (preSaleTokenLeft() > 0) {
       mainSaleTokensExtra = preSaleTokenLeft();
     }
 
@@ -578,7 +578,7 @@ contract YRXCrowdsale is Ownable {
   // finalase crowdsale (mainsale)
   function finalise() public onlyOwner returns(bool success){
     require(!isFinalised);
-    require(now &gt;= mainSaleStartTime()); // can finalise mainsale (crowdsale) only after it starts
+    require(now >= mainSaleStartTime()); // can finalise mainsale (crowdsale) only after it starts
     AmountRaised(wallet, weiRaised);
     isFinalised = true;
     return true;
@@ -586,7 +586,7 @@ contract YRXCrowdsale is Ownable {
 
   // mint bounty tokens to beneficiary
   function mintBounty(address beneficiary, uint256 amount) public onlyOwner crowdsaleIsActive nonZeroAddress(beneficiary) nonZeroAmount(amount) {
-    require(amount &lt;= (bountyMaxTokens() - bountyTotalSupply));
+    require(amount <= (bountyMaxTokens() - bountyTotalSupply));
 
     bountyTotalSupply += amount;
     if (!YRX.transferFromCrowdsale(beneficiary, amount)) {revert();}

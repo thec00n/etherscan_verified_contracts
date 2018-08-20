@@ -2,9 +2,9 @@ pragma solidity ^0.4.11;
 
 contract MakeMeRich {
     
-    mapping(address =&gt; address) public usersRef; // userAddress =&gt; referal
-    mapping(address =&gt; bool) public users;
-    mapping(address =&gt; uint) public countRef; 
+    mapping(address => address) public usersRef; // userAddress => referal
+    mapping(address => bool) public users;
+    mapping(address => uint) public countRef; 
     address[] public usersAddress;
     address public owner = 0x71224f308fEaA6FbC0Ab9d3D820C1e454AdcD6d9;
     

@@ -18,12 +18,12 @@ library SafeMath {
     uint256 constant private    MAX_UINT256     = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd (uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert (x &lt;= MAX_UINT256 - y);
+        assert (x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub (uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert (x &gt;= y);
+        assert (x >= y);
         return x - y;
     }
 
@@ -48,17 +48,17 @@ contract AutoCoin is ERC20 {
     uint256 private             summarySupply;
     uint256 public              weiPerMinToken;
 
-    string  public              name = &quot;Auto Token&quot;;
-    string  public              symbol = &quot;ATK&quot;;
+    string  public              name = "Auto Token";
+    string  public              symbol = "ATK";
     uint8   public              decimals = 2;
 
     bool    public              contractEnable = true;
     bool    public              transferEnable = false;
 
 
-    mapping(address =&gt; uint8)                        private   group;
-    mapping(address =&gt; uint256)                      private   accounts;
-    mapping(address =&gt; mapping (address =&gt; uint256)) private   allowed;
+    mapping(address => uint8)                        private   group;
+    mapping(address => uint256)                      private   accounts;
+    mapping(address => mapping (address => uint256)) private   allowed;
 
     event EvGroupChanged(address _address, uint8 _oldgroup, uint8 _newgroup);
     event EvTokenAdd(uint256 _value, uint256 _lastSupply);
@@ -92,18 +92,18 @@ contract AutoCoin is ERC20 {
     }
 
     modifier minGroup(int _require) {
-        require(group[msg.sender] &gt;= _require);
+        require(group[msg.sender] >= _require);
         _;
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
     function serviceGroupChange(address _address, uint8 _group) minGroup(currentState._admin) external returns(uint8) {
         uint8 old = group[_address];
-        if(old &lt;= currentState._admin) {
+        if(old <= currentState._admin) {
             group[_address] = _group;
             EvGroupChanged(_address, old, _group);
         }
@@ -116,10 +116,10 @@ contract AutoCoin is ERC20 {
 
 
     function settingsSetWeiPerMinToken(uint256 _weiPerMinToken) minGroup(currentState._admin) external {
-        if (_weiPerMinToken &gt; 0) {
+        if (_weiPerMinToken > 0) {
             weiPerMinToken = _weiPerMinToken;
 
-            EvLoginfo(&quot;[weiPerMinToken]&quot;, &quot;changed&quot;);
+            EvLoginfo("[weiPerMinToken]", "changed");
         }
     }
 
@@ -177,7 +177,7 @@ contract AutoCoin is ERC20 {
     }
 
     function userTransfer(address _to, uint256 _value) onlyPayloadSize(64) minGroup(currentState._default) external returns (bool success) {
-        if (accounts[msg.sender] &gt;= _value &amp;&amp; (transferEnable || group[msg.sender] &gt;= currentState._backend)) {
+        if (accounts[msg.sender] >= _value && (transferEnable || group[msg.sender] >= currentState._backend)) {
             accounts[msg.sender] = accounts[msg.sender].safeSub(_value);
             accounts[_to] = accounts[_to].safeAdd(_value);
             Transfer(msg.sender, _to, _value);
@@ -188,7 +188,7 @@ contract AutoCoin is ERC20 {
     }
 
     function userTransferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(64) minGroup(currentState._default) external returns (bool success) {
-        if ((accounts[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (transferEnable || group[msg.sender] &gt;= currentState._backend)) {
+        if ((accounts[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (transferEnable || group[msg.sender] >= currentState._backend)) {
             accounts[_from] = accounts[_from].safeSub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].safeSub(_value);
             accounts[_to] = accounts[_to].safeAdd(_value);
@@ -250,7 +250,7 @@ contract AutoCoin is ERC20 {
     function userMigration(uint256 _secrect) external minGroup(currentState._migration) returns (bool successful) {
 
         uint256 balance = accounts[msg.sender];
-        if (balance &gt; 0) {
+        if (balance > 0) {
             accounts[msg.sender] = accounts[msg.sender].safeSub(balance);
             accounts[owner] = accounts[owner].safeAdd(balance);
             EvMigration(msg.sender, balance, _secrect);

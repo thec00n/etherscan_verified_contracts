@@ -2,14 +2,14 @@ pragma solidity ^0.4.21;
 
 contract KKToken {
   
-  //地址 -&gt; 余额 的映射
-  mapping (address =&gt; uint256) balances;
-  //地址 -&gt; 允许代币转移的地址及数量 的映射
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  //地址 -> 余额 的映射
+  mapping (address => uint256) balances;
+  //地址 -> 允许代币转移的地址及数量 的映射
+  mapping (address => mapping (address => uint256)) allowed;
   
   //这4个状态变量会自动创建对应public函数
-  string public name = &quot; Kunkun Token&quot;;
-  string public symbol = &quot;KKT&quot;;
+  string public name = " Kunkun Token";
+  string public symbol = "KKT";
   uint8 public decimals = 18;  //建议的默认值
   uint256 public totalSupply;
 
@@ -37,7 +37,7 @@ contract KKToken {
   //发送者调用
   function transfer(address _to, uint256 _value) returns (bool success){
     //检查发送者是否有足够的代币
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -52,7 +52,7 @@ contract KKToken {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
     //检查发送者是否有足够的代币
     //检查接收者是否发送者的允许发送范围内，且发送数量也在对应的允许范围内
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;

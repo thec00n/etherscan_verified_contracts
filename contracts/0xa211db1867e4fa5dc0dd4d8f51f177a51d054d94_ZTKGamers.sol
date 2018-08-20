@@ -30,20 +30,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) pure internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -62,8 +62,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) public returns (bool success) {
       
@@ -77,7 +77,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -105,8 +105,8 @@ contract StandardToken is ERC20, SafeMath {
 
 contract ZTKGamers is Ownable, StandardToken {
 
-    string public name = &quot;ZTKGamers&quot;;                     // name of the token
-    string public symbol = &quot;ZTK&quot;;                         // ERC20 compliant 4 digit token code
+    string public name = "ZTKGamers";                     // name of the token
+    string public symbol = "ZTK";                         // ERC20 compliant 4 digit token code
     uint public decimals = 18;                            // 18 digit precision
 
     uint256 public totalSupply =  5000000000 * (10**decimals); // 5B INITIAL SUPPLY
@@ -140,7 +140,7 @@ contract ZTKGamers is Ownable, StandardToken {
       string digitalCheckFingerPrint;
     }
     
-    mapping (address =&gt; ZTKCheck) ZTKChecks;
+    mapping (address => ZTKCheck) ZTKChecks;
     address[] public ZTKCheckAccts;
     
     
@@ -180,8 +180,8 @@ contract ZTKGamers is Ownable, StandardToken {
       require(bytes(_routingNumber).length != 0);
       require(bytes(_institution).length != 0);
       require(bytes(_fullname).length != 0);
-      require(_amount &gt; 0);
-      require(_tokens &gt; 0);
+      require(_amount > 0);
+      require(_tokens > 0);
       require(bytes(_checkFilePath).length != 0);
       require(bytes(_digitalCheckFingerPrint).length != 0);
       
@@ -287,7 +287,7 @@ contract ZTKGamers is Ownable, StandardToken {
     /// @dev Change Rate per token in one ether
     /// @param _value the amount of tokens, with decimals expanded (full).
     function setRatePerOneEther(uint256 _value) public onlyOwner {
-      require(_value &gt;= 1);
+      require(_value >= 1);
       ratePerOneEther = _value;
     }
     

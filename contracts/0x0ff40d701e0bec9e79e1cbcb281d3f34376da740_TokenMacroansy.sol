@@ -5,10 +5,10 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -95,11 +95,11 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
     uint256 public totalSupply;
     uint256 internal totalSupplyStart;
     //
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping( address =&gt; bool) internal frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping( address => bool) internal frozenAccount;
     //
-    mapping(address =&gt; uint) private msgSndr;
+    mapping(address => uint) private msgSndr;
     //
     address tkn_addr; address ico_addr; address exchg_addr;
     //
@@ -135,8 +135,8 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         balanceOf[msg.sender] = totalSupplyStart;    
         Transfer(address(0), msg.sender, totalSupplyStart);
         //                 
-        name = &quot;TokenMacroansy&quot;;  
-        symbol = &quot;$BEE&quot;;
+        name = "TokenMacroansy";  
+        symbol = "$BEE";
         //  
         allowedIndividualShare = uint(1)*totalSupplyStart/100; 
         allowedPublicShare = uint(20)* totalSupplyStart/100;     
@@ -202,8 +202,8 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         uint valtmp = _value;
         uint _valueA = valtmp;
         valtmp = 0;                       
-        require (balanceOf[_from] &gt;= _valueA);                       
-        require (balanceOf[_to] + _valueA &gt; balanceOf[_to]);                   
+        require (balanceOf[_from] >= _valueA);                       
+        require (balanceOf[_to] + _valueA > balanceOf[_to]);                   
         uint previousBalances = balanceOf[_from] + balanceOf[_to];                               
         balanceOf[_from] = safeSub(balanceOf[_from], _valueA);                                  
         balanceOf[_to] = safeAdd(balanceOf[_to], _valueA); 
@@ -224,7 +224,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         //check sender and receiver allw limits in accordance with ico contract
         bool sucsSlrLmt = _chkSellerLmts( msg.sender, _value);
         bool sucsByrLmt = _chkBuyerLmts( _to, _value);
-        require(sucsSlrLmt == true &amp;&amp; sucsByrLmt == true);
+        require(sucsSlrLmt == true && sucsByrLmt == true);
         //
         uint valtmp = _value;    
         uint _valueTemp = valtmp; 
@@ -251,7 +251,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         uint valtmp = _value;
         uint _valueA = valtmp;
         valtmp = 0;
-        require(_valueA &lt;= allowance[_from][msg.sender]);     
+        require(_valueA <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _valueA);
         _transfer(_from, _to, _valueA);
         _valueA = 0;
@@ -270,7 +270,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         //check sender and receiver allw limits in accordance with ico contract
         bool sucsSlrLmt = _chkSellerLmts( msg.sender, _value);
         bool sucsByrLmt = _chkBuyerLmts( _spender, _value);
-        require(sucsSlrLmt == true &amp;&amp; sucsByrLmt == true);
+        require(sucsSlrLmt == true && sucsByrLmt == true);
         //
         uint valtmp = _value;
         uint _valueA = valtmp;
@@ -305,7 +305,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
 //_________________________________________________________
 //
     /**
-    * @notice `freeze` Prevent | Allow` `target` from sending &amp; receiving tokens
+    * @notice `freeze` Prevent | Allow` `target` from sending & receiving tokens
     * @param target Address to be frozen
     * @param freeze either to freeze it or not
     */
@@ -364,7 +364,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
 
         ICO ico = ICO(_getIcoAddr() );
 
-        require(  msg.value &gt; 0 );
+        require(  msg.value > 0 );
         
         // buy exe at ico
         bool icosuccess;  uint tknsBuyAppr;        
@@ -419,7 +419,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
       (icosuccess , redeemPaymentValue) = ico.redeemCoin( amount, msg.sender, isPreview);
       require( icosuccess == true);  
 
-      require( _getIcoAddr().balance &gt;= safeAdd( ico.getMinBal() , redeemPaymentValue) );
+      require( _getIcoAddr().balance >= safeAdd( ico.getMinBal() , redeemPaymentValue) );
 
       bool sucsTrTk = false; bool pymActSucs = false;
       if(isPreview == false) {
@@ -457,7 +457,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         ( icosuccess ,  sellPaymentValue) = ico.sell( amount, msg.sender, isPreview);
         require( icosuccess == true );
 
-        require( _getIcoAddr().balance &gt;= safeAdd(ico.getMinBal() , sellPaymentValue) );
+        require( _getIcoAddr().balance >= safeAdd(ico.getMinBal() , sellPaymentValue) );
 
         bool sucsTrTk = false; bool pymActSucs = false;
         if(isPreview == false){
@@ -488,7 +488,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
       ICO ico = ICO( _getIcoAddr() );
       uint seriesCapFactor = ico.getSCF();
 
-      if( amountTkns &lt;= balanceOf[seller]  &amp;&amp;  balanceOf[seller] &lt;=  safeDiv(allowedIndividualShare*seriesCapFactor,10**18) ){
+      if( amountTkns <= balanceOf[seller]  &&  balanceOf[seller] <=  safeDiv(allowedIndividualShare*seriesCapFactor,10**18) ){
         success = true;
       }
       return success;
@@ -506,7 +506,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         ICO ico = ICO( _getIcoAddr() );
         uint seriesCapFactor = ico.getSCF();
 
-        if( amountTkns &lt;= safeSub( safeDiv(allowedIndividualShare*seriesCapFactor,10**18), balanceOf[buyer] )) {
+        if( amountTkns <= safeSub( safeDiv(allowedIndividualShare*seriesCapFactor,10**18), balanceOf[buyer] )) {
           success = true;
         } 
         return success;        
@@ -527,8 +527,8 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
       // buyer funds
        ICO ico = ICO( _getIcoAddr() );
        bool sucs2 = false;
-       if( buyer.balance &gt;=  safeAdd( safeMul(amountTkns , priceOfr) , ico.getMinBal() )  )  sucs2 = true;
-       if( sucs1 == true &amp;&amp; sucs2 == true)  success = true;   
+       if( buyer.balance >=  safeAdd( safeMul(amountTkns , priceOfr) , ico.getMinBal() )  )  sucs2 = true;
+       if( sucs1 == true && sucs2 == true)  success = true;   
 
        return success;
     }
@@ -544,7 +544,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
         bool successByrlAFinl;
         (successByrlAFinl) = _chkBuyerLmtsAndFinl( buyer, amountTkns, priceOfr);
         
-        require( successSlrl == true &amp;&amp; successByrlAFinl == true);
+        require( successSlrl == true && successByrlAFinl == true);
 
         return true;
     }
@@ -619,7 +619,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
        
         uint amountTkns = sellersCoinAmountOffer;
         uint priceOfr = sellersPriceOfOneCoinInWEI;	       
-        require( msg.value &gt; 0 &amp;&amp; msg.value &lt;= safeMul(amountTkns, priceOfr ) );
+        require( msg.value > 0 && msg.value <= safeMul(amountTkns, priceOfr ) );
 
       msgSndr[msg.sender] = amountTkns;
 
@@ -789,7 +789,7 @@ contract TokenMacroansy is TokenERC20Interface, SafeMath {
 				}
 				function endOfRewardsConfirmed(bool isEndNow) public onlyOwner{
 
-					if(isEndOk == true &amp;&amp; isEndNow == true) selfdestruct(owner);
+					if(isEndOk == true && isEndNow == true) selfdestruct(owner);
 				}
 			*/
 //_______________________________________________________

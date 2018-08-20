@@ -6,7 +6,7 @@ contract tokenRecipient {function receiveApproval(address _from, uint256 _value,
 
 contract Sponsify {
     /* Public variables of the token */
-    string public standard = &#39;SPO1.0&#39;;
+    string public standard = 'SPO1.0';
 
     string public name;
 
@@ -19,9 +19,9 @@ contract Sponsify {
     address public owner;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -33,9 +33,9 @@ contract Sponsify {
         // Give the creator all initial tokens
         totalSupply = 50000000000;
         // Update total supply
-        name = &quot;SPONSIFY&quot;;
+        name = "SPONSIFY";
         // Set the name for display purposes
-        symbol = &quot;SPO&quot;;
+        symbol = "SPO";
         // Set the symbol for display purposes
         decimals = 2;
         // Amount of decimals for display purposes
@@ -51,9 +51,9 @@ contract Sponsify {
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert();
         // Prevent transfer to 0x0 address
-        if (balanceOf[msg.sender] &lt; _value) revert();
+        if (balanceOf[msg.sender] < _value) revert();
         // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         // Check for overflows
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -84,11 +84,11 @@ contract Sponsify {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();
         // Prevent transfer to 0x0 address
-        if (balanceOf[_from] &lt; _value) revert();
+        if (balanceOf[_from] < _value) revert();
         // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) revert();
+        if (_value > allowance[_from][msg.sender]) revert();
         // Check allowance
         balanceOf[_from] -= _value;
         // Subtract from the sender

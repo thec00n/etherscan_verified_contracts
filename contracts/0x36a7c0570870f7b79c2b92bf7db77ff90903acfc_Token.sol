@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,7 +65,7 @@ contract ERC20 is ERC20Basic {
 contract ShortAddressProtection {
 
     modifier onlyPayloadSize(uint256 numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 }
@@ -77,7 +77,7 @@ contract ShortAddressProtection {
 contract BasicToken is ERC20Basic, ShortAddressProtection {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -86,7 +86,7 @@ contract BasicToken is ERC20Basic, ShortAddressProtection {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic, ShortAddressProtection {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -124,8 +124,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) onlyPayloadSize(2) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -273,7 +273,7 @@ contract MintableToken is StandardToken, Ownable {
      */
     function mint(address _to, uint256 _amount) onlySaleAgent canMint public returns (bool) {
         totalSupply = totalSupply.add(_amount);
-        require(totalSupply &lt;= mintLimit);
+        require(totalSupply <= mintLimit);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
         Transfer(address(0), _to, _amount);
@@ -292,8 +292,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract Token is MintableToken {
-    string public constant name = &quot;PatentCoin&quot;;
-    string public constant symbol = &quot;PTC&quot;;
+    string public constant name = "PatentCoin";
+    string public constant symbol = "PTC";
     uint8 public constant decimals = 6;
 
     function Token() public {
@@ -356,8 +356,8 @@ contract PatentCoinPreICO is Ownable {
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != address(0));
         require(msg.value != 0);
-        require(now &gt; dateStart);
-        require(now &lt;= dateEnd);
+        require(now > dateStart);
+        require(now <= dateEnd);
 
         uint256 weiAmount = msg.value;
 
@@ -367,7 +367,7 @@ contract PatentCoinPreICO is Ownable {
         // update state
         require(token.mint(beneficiary, tokens));
         tokenRaised = tokenRaised.add(tokens);
-        require(tokenRaised &lt;= hardCap);
+        require(tokenRaised <= hardCap);
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
         weiRaised = weiRaised.add(weiAmount);
         forwardFunds();

@@ -12,7 +12,7 @@ contract Crowdsale {
     uint public price;
 	uint public limitTransfer;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 	bool public crowdsalePaused = false;
 
@@ -79,7 +79,7 @@ contract Crowdsale {
      */
     function runCrowdsale()public onlyOwner 
 	{
-		require(now &lt;= deadline);
+		require(now <= deadline);
         crowdsaleClosed = false;
 		crowdsalePaused = false;
     }
@@ -106,7 +106,7 @@ contract Crowdsale {
     function () public payable 
 	{
         require(!crowdsaleClosed);
-		require(now &lt;= deadline);
+		require(now <= deadline);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised    += amount;
@@ -114,7 +114,7 @@ contract Crowdsale {
         tokenReward.transfer(msg.sender, amount / price);
         emit FundTransfer(msg.sender, amount, true);
 		
-		if (amountRaised &gt;= limitTransfer)
+		if (amountRaised >= limitTransfer)
 		{
 			if (beneficiary.send(amountRaised)) 
 			{

@@ -15,7 +15,7 @@ contract Marketplace {
 	 
     token public tokenReward;
 	
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool changePrice = false;
 
     event DepositBeneficiary(address recipient, uint totalAmountRaised);

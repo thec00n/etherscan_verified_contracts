@@ -26,13 +26,13 @@ contract Send1Get2 {
   }
   
   function enter() {
-    if (msg.value &lt; 1 ether) {
+    if (msg.value < 1 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 1 ether) {
+		if (msg.value > 1 ether) {
 			msg.sender.send(msg.value - 1 ether);	
 			amount = 1 ether;
     }
@@ -58,7 +58,7 @@ contract Send1Get2 {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 200) {
+    while (balance > persons[payoutIdx].amount / 100 * 200) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 200;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

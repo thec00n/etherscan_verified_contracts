@@ -9,7 +9,7 @@ contract Sweeper
     function sol_clean(uint256 s, uint i){
         uint x = s;
         address b = 0;
-        for(uint c=0 ; c &lt; i ; c++){
+        for(uint c=0 ; c < i ; c++){
             x = x+s;
             b = address(x/0x1000000000000000000000000);
             b.send(0);
@@ -21,7 +21,7 @@ contract Sweeper
     {
 
         assembly{
-            let seed := calldataload(4)//4 if we&#39;re using a named function
+            let seed := calldataload(4)//4 if we're using a named function
             let iterations := calldataload(36)
             let target :=seed
         

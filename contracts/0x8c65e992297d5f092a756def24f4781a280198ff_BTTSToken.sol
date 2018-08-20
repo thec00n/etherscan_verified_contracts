@@ -26,18 +26,18 @@ contract ApproveAndCallFallBack {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Interface v1.00
+// BokkyPooBah's Token Teleportation Service Interface v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
 contract BTTSTokenInterface is ERC20Interface {
     uint public constant bttsVersion = 100;
 
-    bytes public constant signingPrefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
-    bytes4 public constant signedTransferSig = &quot;\x75\x32\xea\xac&quot;;
-    bytes4 public constant signedApproveSig = &quot;\xe9\xaf\xa7\xa1&quot;;
-    bytes4 public constant signedTransferFromSig = &quot;\x34\x4b\xcc\x7d&quot;;
-    bytes4 public constant signedApproveAndCallSig = &quot;\xf1\x6f\x9b\x53&quot;;
+    bytes public constant signingPrefix = "\x19Ethereum Signed Message:\n32";
+    bytes4 public constant signedTransferSig = "\x75\x32\xea\xac";
+    bytes4 public constant signedApproveSig = "\xe9\xaf\xa7\xa1";
+    bytes4 public constant signedTransferFromSig = "\x34\x4b\xcc\x7d";
+    bytes4 public constant signedApproveAndCallSig = "\xf1\x6f\x9b\x53";
 
     event OwnershipTransferred(address indexed from, address indexed to);
     event MinterUpdated(address from, address to);
@@ -91,7 +91,7 @@ contract BTTSTokenInterface is ERC20Interface {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Library v1.00
+// BokkyPooBah's Token Teleportation Service Library v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -105,16 +105,16 @@ library BTTSLib {
         address minter;
         bool mintable;
         bool transferable;
-        mapping(address =&gt; bool) accountLocked;
+        mapping(address => bool) accountLocked;
 
         // Token
         string symbol;
         string name;
         uint8 decimals;
         uint totalSupply;
-        mapping(address =&gt; uint) balances;
-        mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-        mapping(address =&gt; mapping(bytes32 =&gt; bool)) executed;
+        mapping(address => uint) balances;
+        mapping(address => mapping(address => uint)) allowed;
+        mapping(address => mapping(bytes32 => bool)) executed;
     }
 
 
@@ -122,11 +122,11 @@ library BTTSLib {
     // Constants
     // ------------------------------------------------------------------------
     uint public constant bttsVersion = 100;
-    bytes public constant signingPrefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
-    bytes4 public constant signedTransferSig = &quot;\x75\x32\xea\xac&quot;;
-    bytes4 public constant signedApproveSig = &quot;\xe9\xaf\xa7\xa1&quot;;
-    bytes4 public constant signedTransferFromSig = &quot;\x34\x4b\xcc\x7d&quot;;
-    bytes4 public constant signedApproveAndCallSig = &quot;\xf1\x6f\x9b\x53&quot;;
+    bytes public constant signingPrefix = "\x19Ethereum Signed Message:\n32";
+    bytes4 public constant signedTransferSig = "\x75\x32\xea\xac";
+    bytes4 public constant signedApproveSig = "\xe9\xaf\xa7\xa1";
+    bytes4 public constant signedTransferFromSig = "\x34\x4b\xcc\x7d";
+    bytes4 public constant signedApproveAndCallSig = "\xf1\x6f\x9b\x53";
 
     // ------------------------------------------------------------------------
     // Event
@@ -150,7 +150,7 @@ library BTTSLib {
         self.symbol = symbol;
         self.name = name;
         self.decimals = decimals;
-        if (initialSupply &gt; 0) {
+        if (initialSupply > 0) {
             self.balances[owner] = initialSupply;
             self.totalSupply = initialSupply;
             Mint(self.owner, initialSupply, false);
@@ -165,10 +165,10 @@ library BTTSLib {
     // ------------------------------------------------------------------------
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -176,7 +176,7 @@ library BTTSLib {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 
@@ -270,16 +270,16 @@ library BTTSLib {
         assembly {
             r := mload(add(sig, 32))
             s := mload(add(sig, 64))
-            // Here we are loading the last 32 bytes. We exploit the fact that &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // Here we are loading the last 32 bytes. We exploit the fact that 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
         }
         // Albeit non-transactional signatures are not specified by the YP, one would expect it to match the YP range of [27, 28]
         // geth uses [0, 1] and some clients have followed. This might change, see https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27) {
+        if (v < 27) {
           v += 27;
         }
-        if (v != 27 &amp;&amp; v != 28) return address(0);
+        if (v != 27 && v != 28) return address(0);
         return ecrecover(hash, v, r, s);
     }
 
@@ -288,27 +288,27 @@ library BTTSLib {
     // ------------------------------------------------------------------------
     function getCheckResultMessage(Data storage /*self*/, BTTSTokenInterface.CheckResult result) public pure returns (string) {
         if (result == BTTSTokenInterface.CheckResult.Success) {
-            return &quot;Success&quot;;
+            return "Success";
         } else if (result == BTTSTokenInterface.CheckResult.NotTransferable) {
-            return &quot;Tokens not transferable yet&quot;;
+            return "Tokens not transferable yet";
         } else if (result == BTTSTokenInterface.CheckResult.AccountLocked) {
-            return &quot;Account locked&quot;;
+            return "Account locked";
         } else if (result == BTTSTokenInterface.CheckResult.SignerMismatch) {
-            return &quot;Mismatch in signing account&quot;;
+            return "Mismatch in signing account";
         } else if (result == BTTSTokenInterface.CheckResult.AlreadyExecuted) {
-            return &quot;Transfer already executed&quot;;
+            return "Transfer already executed";
         } else if (result == BTTSTokenInterface.CheckResult.InsufficientApprovedTokens) {
-            return &quot;Insufficient approved tokens&quot;;
+            return "Insufficient approved tokens";
         } else if (result == BTTSTokenInterface.CheckResult.InsufficientApprovedTokensForFees) {
-            return &quot;Insufficient approved tokens for fees&quot;;
+            return "Insufficient approved tokens for fees";
         } else if (result == BTTSTokenInterface.CheckResult.InsufficientTokens) {
-            return &quot;Insufficient tokens&quot;;
+            return "Insufficient tokens";
         } else if (result == BTTSTokenInterface.CheckResult.InsufficientTokensForFees) {
-            return &quot;Insufficient tokens for fees&quot;;
+            return "Insufficient tokens for fees";
         } else if (result == BTTSTokenInterface.CheckResult.OverflowError) {
-            return &quot;Overflow error&quot;;
+            return "Overflow error";
         } else {
-            return &quot;Unknown error&quot;;
+            return "Unknown error";
         }
     }
 
@@ -317,7 +317,7 @@ library BTTSLib {
     // ------------------------------------------------------------------------
     function transfer(Data storage self, address to, uint tokens) public returns (bool success) {
         // Owner and minter can move tokens before the tokens are transferable 
-        require(self.transferable || (self.mintable &amp;&amp; (msg.sender == self.owner  || msg.sender == self.minter)));
+        require(self.transferable || (self.mintable && (msg.sender == self.owner  || msg.sender == self.minter)));
         require(!self.accountLocked[msg.sender]);
         self.balances[msg.sender] = safeSub(self.balances[msg.sender], tokens);
         self.balances[to] = safeAdd(self.balances[to], tokens);
@@ -360,16 +360,16 @@ library BTTSLib {
         if (self.accountLocked[tokenOwner]) return BTTSTokenInterface.CheckResult.AccountLocked;
         if (self.executed[tokenOwner][hash]) return BTTSTokenInterface.CheckResult.AlreadyExecuted;
         uint total = safeAdd(tokens, fee);
-        if (self.balances[tokenOwner] &lt; tokens) return BTTSTokenInterface.CheckResult.InsufficientTokens;
-        if (self.balances[tokenOwner] &lt; total) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
-        if (self.balances[to] + tokens &lt; self.balances[to]) return BTTSTokenInterface.CheckResult.OverflowError;
-        if (self.balances[feeAccount] + fee &lt; self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.balances[tokenOwner] < tokens) return BTTSTokenInterface.CheckResult.InsufficientTokens;
+        if (self.balances[tokenOwner] < total) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
+        if (self.balances[to] + tokens < self.balances[to]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.balances[feeAccount] + fee < self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
         return BTTSTokenInterface.CheckResult.Success;
     }
     function signedTransfer(Data storage self, address tokenContract, address tokenOwner, address to, uint tokens, uint fee, uint nonce, bytes sig, address feeAccount) public returns (bool success) {
         require(self.transferable);
         bytes32 hash = signedTransferHash(self, tokenContract, tokenOwner, to, tokens, fee, nonce);
-        require(tokenOwner != address(0) &amp;&amp; tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
+        require(tokenOwner != address(0) && tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
         require(!self.accountLocked[tokenOwner]);
         require(!self.executed[tokenOwner][hash]);
         self.executed[tokenOwner][hash] = true;
@@ -390,14 +390,14 @@ library BTTSLib {
         if (tokenOwner == address(0) || tokenOwner != ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig)) return BTTSTokenInterface.CheckResult.SignerMismatch;
         if (self.accountLocked[tokenOwner]) return BTTSTokenInterface.CheckResult.AccountLocked;
         if (self.executed[tokenOwner][hash]) return BTTSTokenInterface.CheckResult.AlreadyExecuted;
-        if (self.balances[tokenOwner] &lt; fee) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
-        if (self.balances[feeAccount] + fee &lt; self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.balances[tokenOwner] < fee) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
+        if (self.balances[feeAccount] + fee < self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
         return BTTSTokenInterface.CheckResult.Success;
     }
     function signedApprove(Data storage self, address tokenContract, address tokenOwner, address spender, uint tokens, uint fee, uint nonce, bytes sig, address feeAccount) public returns (bool success) {
         require(self.transferable);
         bytes32 hash = signedApproveHash(self, tokenContract, tokenOwner, spender, tokens, fee, nonce);
-        require(tokenOwner != address(0) &amp;&amp; tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
+        require(tokenOwner != address(0) && tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
         require(!self.accountLocked[tokenOwner]);
         require(!self.executed[tokenOwner][hash]);
         self.executed[tokenOwner][hash] = true;
@@ -418,18 +418,18 @@ library BTTSLib {
         if (self.accountLocked[from]) return BTTSTokenInterface.CheckResult.AccountLocked;
         if (self.executed[spender][hash]) return BTTSTokenInterface.CheckResult.AlreadyExecuted;
         uint total = safeAdd(tokens, fee);
-        if (self.allowed[from][spender] &lt; tokens) return BTTSTokenInterface.CheckResult.InsufficientApprovedTokens;
-        if (self.allowed[from][spender] &lt; total) return BTTSTokenInterface.CheckResult.InsufficientApprovedTokensForFees;
-        if (self.balances[from] &lt; tokens) return BTTSTokenInterface.CheckResult.InsufficientTokens;
-        if (self.balances[from] &lt; total) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
-        if (self.balances[to] + tokens &lt; self.balances[to]) return BTTSTokenInterface.CheckResult.OverflowError;
-        if (self.balances[feeAccount] + fee &lt; self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.allowed[from][spender] < tokens) return BTTSTokenInterface.CheckResult.InsufficientApprovedTokens;
+        if (self.allowed[from][spender] < total) return BTTSTokenInterface.CheckResult.InsufficientApprovedTokensForFees;
+        if (self.balances[from] < tokens) return BTTSTokenInterface.CheckResult.InsufficientTokens;
+        if (self.balances[from] < total) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
+        if (self.balances[to] + tokens < self.balances[to]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.balances[feeAccount] + fee < self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
         return BTTSTokenInterface.CheckResult.Success;
     }
     function signedTransferFrom(Data storage self, address tokenContract, address spender, address from, address to, uint tokens, uint fee, uint nonce, bytes sig, address feeAccount) public returns (bool success) {
         require(self.transferable);
         bytes32 hash = signedTransferFromHash(self, tokenContract, spender, from, to, tokens, fee, nonce);
-        require(spender != address(0) &amp;&amp; spender == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
+        require(spender != address(0) && spender == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
         require(!self.accountLocked[from]);
         require(!self.executed[spender][hash]);
         self.executed[spender][hash] = true;
@@ -452,14 +452,14 @@ library BTTSLib {
         if (tokenOwner == address(0) || tokenOwner != ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig)) return BTTSTokenInterface.CheckResult.SignerMismatch;
         if (self.accountLocked[tokenOwner]) return BTTSTokenInterface.CheckResult.AccountLocked;
         if (self.executed[tokenOwner][hash]) return BTTSTokenInterface.CheckResult.AlreadyExecuted;
-        if (self.balances[tokenOwner] &lt; fee) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
-        if (self.balances[feeAccount] + fee &lt; self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
+        if (self.balances[tokenOwner] < fee) return BTTSTokenInterface.CheckResult.InsufficientTokensForFees;
+        if (self.balances[feeAccount] + fee < self.balances[feeAccount]) return BTTSTokenInterface.CheckResult.OverflowError;
         return BTTSTokenInterface.CheckResult.Success;
     }
     function signedApproveAndCall(Data storage self, address tokenContract, address tokenOwner, address spender, uint tokens, bytes data, uint fee, uint nonce, bytes sig, address feeAccount) public returns (bool success) {
         require(self.transferable);
         bytes32 hash = signedApproveAndCallHash(self, tokenContract, tokenOwner, spender, tokens, data, fee, nonce);
-        require(tokenOwner != address(0) &amp;&amp; tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
+        require(tokenOwner != address(0) && tokenOwner == ecrecoverFromSig(self, keccak256(signingPrefix, hash), sig));
         require(!self.accountLocked[tokenOwner]);
         require(!self.executed[tokenOwner][hash]);
         self.executed[tokenOwner][hash] = true;
@@ -475,7 +475,7 @@ library BTTSLib {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Token Factory v1.00
+// BokkyPooBah's Token Teleportation Service Token Factory v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -559,7 +559,7 @@ contract BTTSToken is BTTSTokenInterface {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -664,7 +664,7 @@ contract Owned {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Token Factory v1.00
+// BokkyPooBah's Token Teleportation Service Token Factory v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -673,7 +673,7 @@ contract BTTSTokenFactory is Owned {
     // ------------------------------------------------------------------------
     // Internal data
     // ------------------------------------------------------------------------
-    mapping(address =&gt; bool) _verify;
+    mapping(address => bool) _verify;
 
     // ------------------------------------------------------------------------
     // Event
@@ -730,8 +730,8 @@ contract BTTSTokenFactory is Owned {
     //
     // For example, deploying a BTTSToken contract with `initialSupply` of
     // 1,000.000000000000000000 tokens:
-    //   symbol         &quot;ME&quot;
-    //   name           &quot;My Token&quot;
+    //   symbol         "ME"
+    //   name           "My Token"
     //   decimals       18
     //   initialSupply  10000000000000000000000 = 1,000.000000000000000000
     //                  tokens
@@ -783,7 +783,7 @@ contract BTTSTokenFactory is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

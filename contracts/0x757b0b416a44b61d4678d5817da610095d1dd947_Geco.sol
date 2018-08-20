@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b)pure internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b)pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b)pure internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -75,7 +75,7 @@ contract AddressHolder {
     address[] internal addresses;
 
     function inArray(address _addr) public view returns(bool){
-        for(uint i = 0; i &lt; addresses.length; i++){
+        for(uint i = 0; i < addresses.length; i++){
             if(_addr == addresses[i]){
                 return true;
             }
@@ -102,10 +102,10 @@ contract Freezable is Ownable{
     bool internal accountsFrozen;
 
     // list of all the admins in the system
-    mapping (address =&gt; bool) internal admins;
+    mapping (address => bool) internal admins;
 
     // list of the frozen accounts
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     constructor() public {
@@ -155,11 +155,11 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
     event Burn(address indexed from, uint value);
 
     /* Actual balances of token holders */
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     uint public totalSupply;
 
     /* approve() allowances */
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
     
     /**
      *
@@ -177,8 +177,8 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
         if(!inArray(_to)){
             addAddress(_to);
         }
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
         require(!frozenAccount[msg.sender]);
         require(!accountsFrozen || admins[msg.sender] == true);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -192,8 +192,8 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
     returns (bool success) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(!frozenAccount[msg.sender]);
         require(!accountsFrozen || admins[msg.sender] == true);
 
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
         //    allowance to zero by calling `approve(_spender, 0)` if it is not
         //    already 0 to mitigate the race condition described here:
         //    https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        //if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        //if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
         require(_value == 0 || allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -253,7 +253,7 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -267,7 +267,7 @@ contract StandardToken is ERC20, SafeMath, Freezable, AddressHolder{
     }
 
     function burn(address from, uint amount) onlyOwner public{
-        require(balances[from] &gt;= amount &amp;&amp; amount &gt; 0);
+        require(balances[from] >= amount && amount > 0);
         balances[from] = safeSub(balances[from],amount);
         totalSupply = safeAdd(totalSupply, amount);
         emit Transfer(from, address(0), amount);
@@ -283,15 +283,15 @@ contract Geco is StandardToken {
     string public name;
     uint8 public decimals; 
     string public symbol;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     uint totalEthInWei;
 
     constructor() public{
         decimals = 18;     // Amount of decimals for display purposes
         totalSupply = 100000000 * 10 ** uint256(decimals);    // Give the creator all initial tokens
         balances[msg.sender] = totalSupply;     // Update total supply
-        name = &quot;GreenEminer&quot;;    // Set the name for display purposes
-        symbol = &quot;GECO&quot;;    // Set the symbol for display purposes
+        name = "GreenEminer";    // Set the name for display purposes
+        symbol = "GECO";    // Set the symbol for display purposes
 
         //add owner to the addresses array
         addAddress(msg.sender);
@@ -303,7 +303,7 @@ contract Geco is StandardToken {
     returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 

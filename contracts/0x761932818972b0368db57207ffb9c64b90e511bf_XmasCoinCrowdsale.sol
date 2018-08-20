@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,7 +120,7 @@ contract Pausable is Ownable {
 
 /**
  * @title TokenDestructible:
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email protected]</span>π.com>
  * @dev Base contract that can be destroyed by owner. All funds in contract including
  * listed tokens will be sent to the owner.
  */
@@ -138,7 +138,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner public {
 
     // Transfer tokens to owner
-    for(uint256 i = 0; i &lt; tokens.length; i++) {
+    for(uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -179,7 +179,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -188,7 +188,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -217,7 +217,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -228,8 +228,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -278,7 +278,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -299,10 +299,10 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract XmasCoin is StandardToken, Ownable, TokenDestructible {
 
-  string public constant name = &quot;XmasCoin&quot;;
-  string public constant symbol = &quot;XMX&quot;;
+  string public constant name = "XmasCoin";
+  string public constant symbol = "XMX";
   uint8 public constant decimals = 18;
-  string public constant version = &quot;1.0&quot;;
+  string public constant version = "1.0";
 
     address public constant partnersWallet = 0x3cEC63f5413aeD639b5903520241BF0ba88dEDbd;
     address public constant bountyWallet = 0x5D7Eaa2d20B51ac8288C49083728b419393cF5eF;
@@ -327,7 +327,7 @@ contract XmasCoin is StandardToken, Ownable, TokenDestructible {
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public onlyOwner {
-        //require(balances[owner]&gt;=_value);
+        //require(balances[owner]>=_value);
         balances[owner] -= _value;
         totalSupply -= _value;
     }
@@ -378,9 +378,9 @@ contract XmasCoinCrowdsale is Ownable, Pausable, TokenDestructible {
   // function to get the price of the token
   // returns how many token units a buyer gets per wei, needs to be divided by 10
   function getRate() public constant returns (uint256) { //(uint8) {
-    if      (block.timestamp &lt;= 1513382399)          return 45000; // 50% bonus
-    else if (block.timestamp &lt;= 1514246399)          return 39000;
-    else if (block.timestamp &lt;= 1514764799)          return 36000;
+    if      (block.timestamp <= 1513382399)          return 45000; // 50% bonus
+    else if (block.timestamp <= 1514246399)          return 39000;
+    else if (block.timestamp <= 1514764799)          return 36000;
     return 30000;
   }
 
@@ -405,7 +405,7 @@ contract XmasCoinCrowdsale is Ownable, Pausable, TokenDestructible {
     //weiRaised = weiRaised.add(weiAmount);
     tokenRaised = tokenRaised.add(tokens);
 
-     if(!((cap.sub(tokenRaised))&gt;=0)) {
+     if(!((cap.sub(tokenRaised))>=0)) {
       revert();
     }
 
@@ -416,9 +416,9 @@ contract XmasCoinCrowdsale is Ownable, Pausable, TokenDestructible {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
     /*	
@@ -427,12 +427,12 @@ contract XmasCoinCrowdsale is Ownable, Pausable, TokenDestructible {
     function finalize() onlyOwner public {
         require(!crowdsaleClosed);
 
-        if(now &lt; endTime) {
+        if(now < endTime) {
             require(tokenRaised == cap);
         }
         require(wallet.send(this.balance));
         uint remains = cap.sub(tokenRaised);
-        if (remains&gt;0) {
+        if (remains>0) {
           token.burn(remains);
         }
 

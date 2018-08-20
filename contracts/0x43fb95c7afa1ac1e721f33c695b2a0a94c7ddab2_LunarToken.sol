@@ -25,11 +25,11 @@ contract LunarToken {
 
   // ERC20-compatible fields
   uint public totalSupply;
-  string public symbol = &quot;LUNA&quot;;
-  string public name = &quot;lunars&quot;;
+  string public symbol = "LUNA";
+  string public name = "lunars";
 
-  mapping (uint =&gt; LunarPlot) public plots;
-  mapping (address =&gt; uint[]) public plotsOwned;
+  mapping (uint => LunarPlot) public plots;
+  mapping (address => uint[]) public plotsOwned;
 
   event Transfer(address indexed _from, address indexed _to, uint id);
   event Purchase(address _from, uint id, uint256 price);
@@ -37,7 +37,7 @@ contract LunarToken {
   event MetadataUpdated(address _from, uint id, string newData);
 
   modifier validID(uint id) {
-    require(id &lt; numPlots);
+    require(id < numPlots);
     require(!plots[id].disabled);
     _;
   }
@@ -73,7 +73,7 @@ contract LunarToken {
     numPlots = _numPlots;
     totalSupply = _numPlots;
     initialPrice = _initialPriceInWei;
-    feePercentage = _feePercentage &gt; 100 ? 100 : _feePercentage;
+    feePercentage = _feePercentage > 100 ? 100 : _feePercentage;
     tradingEnabled = _tradingEnabled;
     subdivisionEnabled = _subdivisionEnabled;
     maxSubdivisions = _maxSubdivisions;
@@ -119,9 +119,9 @@ contract LunarToken {
     LunarPlot plot = plots[id];
 
     if (isUnowned(id)) {
-      require(msg.value &gt;= initialPrice);
+      require(msg.value >= initialPrice);
     } else {
-      require(plot.forSale &amp;&amp; msg.value &gt;= plot.price);
+      require(plot.forSale && msg.value >= plot.price);
     }
 
     if (plot.owner != 0x0) {
@@ -158,7 +158,7 @@ contract LunarToken {
     string metadata2
   ) isOwnerOf(id) subdivisionIsEnabled {
     // Prevent more subdivisions than max
-    require(plots[id].subdivision &lt; maxSubdivisions);
+    require(plots[id].subdivision < maxSubdivisions);
 
     LunarPlot storage oldPlot = plots[id];
 
@@ -210,7 +210,7 @@ contract LunarToken {
   function removePlot(address addr, uint id) private {
     // Copy the last entry to id and then delete the last one
     uint n = plotsOwned[addr].length;
-    for (uint8 i = 0; i &lt; n; i++) {
+    for (uint8 i = 0; i < n; i++) {
       if (plotsOwned[addr][i] == id) {
         // If found, copy the last element to the idx and then delete last element
         plotsOwned[addr][i] = plotsOwned[addr][n - 1];
@@ -244,7 +244,7 @@ contract LunarToken {
   }
 
   function setFeePercentage(uint8 _percentage) ownerOnly {
-    feePercentage = _percentage &gt; 100 ? 100 : _percentage;
+    feePercentage = _percentage > 100 ? 100 : _percentage;
   }
 
   function setInitialPrice(uint _priceInWei) ownerOnly {

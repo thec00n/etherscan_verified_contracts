@@ -34,13 +34,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ contract owned {
 contract TOSMidHoldingContract is owned{
     using SafeERC20 for ERC20;
     using SafeMath for uint;
-    string public constant name = &quot;TOSMidHoldingContract&quot;;
+    string public constant name = "TOSMidHoldingContract";
     uint[6] public releasePercentages = [
         15,  //15%
         35,   //20%
@@ -78,20 +78,20 @@ contract TOSMidHoldingContract is owned{
     uint256 public RELEASE_END                          = RELEASE_START.add(RELEASE_INTERVAL.mul(5));
     ERC20 public tosToken = ERC20(0xFb5a551374B656C6e39787B1D3A03fEAb7f3a98E);
     
-    mapping (address =&gt; uint256) public lockBalanceOf;/// Locked account details
-    mapping (address =&gt; uint256) public amountsRecords;
-    mapping (address =&gt; uint256) public released;
+    mapping (address => uint256) public lockBalanceOf;/// Locked account details
+    mapping (address => uint256) public amountsRecords;
+    mapping (address => uint256) public released;
 
     uint256 public totalLockAmount = 0; 
     function TOSMidHoldingContract() public {}
     function lock(uint256 lockAmount) public {
 
-        require(lockAmount &gt;= 100000 * 10 ** 18); /// &gt; 100,000
-        require(now &lt;= HOLDING_START); 
+        require(lockAmount >= 100000 * 10 ** 18); /// > 100,000
+        require(now <= HOLDING_START); 
 
         uint256 reward = lockAmount.mul(20).div(100);
 
-        require(reward &lt;= (tosToken.balanceOf(this).sub(totalLockAmount)));
+        require(reward <= (tosToken.balanceOf(this).sub(totalLockAmount)));
         tosToken.safeTransferFrom(msg.sender, this, lockAmount);
 
         lockBalanceOf[msg.sender] = lockBalanceOf[msg.sender].add(lockAmount).add(reward);
@@ -103,7 +103,7 @@ contract TOSMidHoldingContract is owned{
         uint256 num = now.sub(RELEASE_START).div(RELEASE_INTERVAL);
 
         uint256 releaseAmount = 0;
-        if (num &gt;= releasePercentages.length.sub(1)) {
+        if (num >= releasePercentages.length.sub(1)) {
             releaseAmount = lockBalanceOf[msg.sender];
             released[msg.sender] = 100;
         }
@@ -112,15 +112,15 @@ contract TOSMidHoldingContract is owned{
             released[msg.sender] = releasePercentages[num];
         }
 
-        require(releaseAmount &gt; 0);
+        require(releaseAmount > 0);
         tosToken.safeTransfer(msg.sender, releaseAmount);
         lockBalanceOf[msg.sender] = lockBalanceOf[msg.sender].sub(releaseAmount);
         totalLockAmount = totalLockAmount.sub(releaseAmount);
     }
 
     function remainingReward() public onlyOwner {
-        require(now &gt; HOLDING_START); 
-        require(tosToken.balanceOf(this) &gt; totalLockAmount);
+        require(now > HOLDING_START); 
+        require(tosToken.balanceOf(this) > totalLockAmount);
         tosToken.safeTransfer(owner, tosToken.balanceOf(this).sub(totalLockAmount));
     }
 }

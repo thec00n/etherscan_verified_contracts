@@ -55,13 +55,13 @@ contract Token {
 contract StandardToken is Token {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         // Not overflow
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -70,12 +70,12 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         // Not overflow
-        require(balances[_to] + _value &gt;= balances[_to]);          
+        require(balances[_to] + _value >= balances[_to]);          
         balances[_to] += _value;    
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }  
 
@@ -99,14 +99,14 @@ contract StandardToken is Token {
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract FlowchainToken is StandardToken, Mintable {
 
     /* Public variables of the token */
-    string public name = &quot;FlowchainCoin&quot;;
-    string public symbol = &quot;FLC&quot;;    
+    string public name = "FlowchainCoin";
+    string public symbol = "FLC";    
     uint8 public decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     address public mintableAddress;
     address public multiSigWallet;    
     address public creator;
@@ -136,7 +136,7 @@ contract FlowchainToken is StandardToken, Mintable {
     /// @return The result of token transfer
     function mintToken(address to, uint256 amount) external returns (bool success) {
         require(msg.sender == mintableAddress);
-        require(balances[multiSigWallet] &gt;= amount);
+        require(balances[multiSigWallet] >= amount);
         balances[multiSigWallet] -= amount;
         balances[to] += amount;
         Transfer(multiSigWallet, to, amount);
@@ -160,7 +160,7 @@ contract FlowchainToken is StandardToken, Mintable {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
 
         ApproveAndCallReceiver(_spender).receiveApproval(msg.sender, _value, this, _extraData);
 

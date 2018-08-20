@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 /*
  * https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/ (VICETOKEN_ICO_IS_A_SCAM)
  * A Token meant to out ViceToken for 90% fake ICO contributions from AION advisors from Ontario Canada
- * Tokken MSB AKA ViceToken AKA Shidan Gouran &amp; Steven Nerayoff - AION
+ * Tokken MSB AKA ViceToken AKA Shidan Gouran & Steven Nerayoff - AION
  * 
  * VICETOKEN LIES: https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/
  * LIARS: https://twitter.com/vitalikbuterin/status/912212689069342720?lang=en
@@ -13,16 +13,16 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract VICETOKEN_ICO_IS_A_SCAM {
     // Public variables of the token
-    string public name = &quot;https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/&quot;;
-    string public symbol = &quot;VICETOKEN_ICO_IS_A_SCAM&quot;;
+    string public name = "https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/";
+    string public symbol = "VICETOKEN_ICO_IS_A_SCAM";
     uint8 public decimals = 18;
     address addy = 0x7a121269E74D349b5ecFccb9cA948549278D0D10;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply = 666666666666666;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This notifies clients about the amount burnt
     event Burn(address indexed from, uint256 value);
@@ -37,8 +37,8 @@ contract VICETOKEN_ICO_IS_A_SCAM {
         totalSupply = 666666666666666 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         addy = address(0x7a121269E74D349b5ecFccb9cA948549278D0D10);
         balanceOf[addy] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/&quot;;                // Set the name for display purposes
-        symbol = &quot;VICETOKEN_ICO_IS_A_SCAM&quot;;                               // Set the symbol for display purposes
+        name = "https://www.reddit.com/r/ethtrader/comments/81jmv0/90_of_the_vicetoken_ico_is_fake/";                // Set the name for display purposes
+        symbol = "VICETOKEN_ICO_IS_A_SCAM";                               // Set the symbol for display purposes
     }
 
     /**
@@ -82,7 +82,7 @@ contract VICETOKEN_ICO_IS_A_SCAM {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -98,10 +98,10 @@ contract VICETOKEN_ICO_IS_A_SCAM {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

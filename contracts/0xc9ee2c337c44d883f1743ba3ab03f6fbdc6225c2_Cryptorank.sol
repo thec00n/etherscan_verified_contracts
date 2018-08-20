@@ -31,7 +31,7 @@ contract Cryptorank{
     //Coin[] public coins;
     Coin[] public coinSorting;//排序数组
     
-    mapping(uint256 =&gt; Round) public rounds;
+    mapping(uint256 => Round) public rounds;
     
     //DiviesInterface constant private Divies = DiviesInterface(0x4a771aa796ba9fd4c5ed3d6e7b6e98270d5de880);
    
@@ -59,23 +59,23 @@ contract Cryptorank{
 	uint256 public ticketPrice = 0.01 ether;//票价
 	
 
-    mapping(string=&gt;bool) have;
+    mapping(string=>bool) have;
 
-    mapping(string=&gt;uint)  cvotes;
+    mapping(string=>uint)  cvotes;
     
-    mapping(uint256 =&gt; uint256) public awardedReward;//已发放的奖励
-    mapping(uint256 =&gt; uint256) public ticketHolderReward;//持票者奖励
-    mapping(address =&gt; uint256) public selfharvest;//占比提成 
-    mapping(address =&gt; uint256) public selfvoteamount;//个人投资总金额
-    mapping(address =&gt; uint256) public selfvotes;//个人票数
-    mapping(address =&gt; uint8) public selfOdds;//中奖概率
-    mapping(address =&gt; uint256) public selfpotprofit;//空投奖励
-    mapping(address =&gt; uint256) public selfcommission;//邀请抽成
-    mapping(address =&gt; string) public playername;
-    mapping(address =&gt; address) public playerreferees;
-    mapping(bytes32 =&gt; uint256) public verifyName;//验证名字是否重复
-    mapping(address =&gt; bool) public pState; //状态 表示地址是否已经注册为会员
-    mapping(address =&gt; uint256) public raisemax;//众筹个人限制在1ether内
+    mapping(uint256 => uint256) public awardedReward;//已发放的奖励
+    mapping(uint256 => uint256) public ticketHolderReward;//持票者奖励
+    mapping(address => uint256) public selfharvest;//占比提成 
+    mapping(address => uint256) public selfvoteamount;//个人投资总金额
+    mapping(address => uint256) public selfvotes;//个人票数
+    mapping(address => uint8) public selfOdds;//中奖概率
+    mapping(address => uint256) public selfpotprofit;//空投奖励
+    mapping(address => uint256) public selfcommission;//邀请抽成
+    mapping(address => string) public playername;
+    mapping(address => address) public playerreferees;
+    mapping(bytes32 => uint256) public verifyName;//验证名字是否重复
+    mapping(address => bool) public pState; //状态 表示地址是否已经注册为会员
+    mapping(address => uint256) public raisemax;//众筹个人限制在1ether内
     
     
      modifier isactivity(uint256 rid){
@@ -121,10 +121,10 @@ contract Cryptorank{
        payable
        isRepeat(_name)
     {
-        require(addcoinslimit &gt; 1);
+        require(addcoinslimit > 1);
         
         if(msg.sender != owner){
-            require(msg.value &gt;= addcoinfee);
+            require(msg.value >= addcoinfee);
             
         }
         
@@ -148,7 +148,7 @@ contract Cryptorank{
         
         coinSorting[cvotes[_name]].votes = coinSorting[cvotes[_name]].votes.add(_votes) ;
         
-        for(uint256 i = 0;i &lt; players.length;i++){
+        for(uint256 i = 0;i < players.length;i++){
             
             address player = players[i];
             
@@ -166,17 +166,17 @@ contract Cryptorank{
        /* delete coinSorting;
         coinSorting.length = 0;
         
-        for(uint256 i = 0;i&lt;coins.length;i++){
+        for(uint256 i = 0;i<coins.length;i++){
           
             coinSorting.push(Coin(coins[i].symbol,coins[i].name,coins[i].votes));
          
         }*/
         
-        for(uint256 i = 0;i&lt; coinSorting.length;i++){
+        for(uint256 i = 0;i< coinSorting.length;i++){
             
-            for(uint256 j = i + 1;j &lt; coinSorting.length;j++){
+            for(uint256 j = i + 1;j < coinSorting.length;j++){
               
-                if(coinSorting[i].votes &lt; coinSorting[j].votes){
+                if(coinSorting[i].votes < coinSorting[j].votes){
                     
                     cvotes[coinSorting[i].name] =  j;
                     cvotes[coinSorting[j].name] =  i;
@@ -223,13 +223,13 @@ contract Cryptorank{
         public
         isactivity(roundid){
         
-        require(raiseethamount &lt; 100 ether);
+        require(raiseethamount < 100 ether);
         
-        require(raisemax[msg.sender].add(msg.value) &lt;= 1 ether);
+        require(raisemax[msg.sender].add(msg.value) <= 1 ether);
         
         uint256 raiseeth;
         
-        if(raiseethamount.add(msg.value) &gt; 100 ether){
+        if(raiseethamount.add(msg.value) > 100 ether){
             
             raiseeth = 100 - raiseethamount;
             
@@ -252,7 +252,7 @@ contract Cryptorank{
         
         uint256 reward = msg.value.mul(51).div(100);
         
-        for(uint256 i = 0;i &lt; players.length;i++){
+        for(uint256 i = 0;i < players.length;i++){
             
             address player = players[i];
             
@@ -308,11 +308,11 @@ contract Cryptorank{
         
         uint256 playersnum = players.length;
         
-        if(playersnum &lt;= 30)
+        if(playersnum <= 30)
            return  ticketPrice.mul(112).div(100);
-        if(playersnum&gt;30 &amp;&amp; playersnum &lt;= 100)
+        if(playersnum>30 && playersnum <= 100)
            return  ticketPrice.mul(103).div(100);
-        if(playersnum &gt; 100)
+        if(playersnum > 100)
            return ticketPrice.mul(101).div(100);
     }
     
@@ -332,7 +332,7 @@ contract Cryptorank{
             (block.number)
             
         )));
-        if((seed - ((seed / 100) * 100)) &lt; selfOdds[msg.sender])
+        if((seed - ((seed / 100) * 100)) < selfOdds[msg.sender])
             return(true);
         else
             return(false);
@@ -344,32 +344,32 @@ contract Cryptorank{
         returns(string){
         
         if(airdrop() == false){
-            return &quot;非常遗憾！没有空投！&quot;;
+            return "非常遗憾！没有空投！";
         }
         else{
-            if(selfvoteamount[msg.sender] &lt;= 1 ether &amp;&amp; rounds[roundid].pot &gt;= 0.1 ether){
+            if(selfvoteamount[msg.sender] <= 1 ether && rounds[roundid].pot >= 0.1 ether){
               
               selfpotprofit[msg.sender] =  selfpotprofit[msg.sender].add(0.1 ether);        }
               
               rounds[roundid].pot = rounds[roundid].pot.sub(0.1 ether);
               
-              return &quot;恭喜获得空投 0.1 ether&quot;;
+              return "恭喜获得空投 0.1 ether";
              }
-            if(1 ether &lt; selfvoteamount[msg.sender] &amp;&amp; selfvoteamount[msg.sender] &lt;= 5 ether &amp;&amp; rounds[roundid].pot &gt;=0.5 ether){
+            if(1 ether < selfvoteamount[msg.sender] && selfvoteamount[msg.sender] <= 5 ether && rounds[roundid].pot >=0.5 ether){
               
               selfpotprofit[msg.sender] = selfpotprofit[msg.sender].add(0.5 ether);
               
               rounds[roundid].pot = rounds[roundid].pot.sub(0.5 ether);
               
-              return &quot;恭喜获得空投 0.5 ether&quot;;
+              return "恭喜获得空投 0.5 ether";
             }
-            if(selfvoteamount[msg.sender] &gt; 5 ether &amp;&amp; rounds[roundid].pot &gt;= 1 ether){
+            if(selfvoteamount[msg.sender] > 5 ether && rounds[roundid].pot >= 1 ether){
               
               selfpotprofit[msg.sender] = selfpotprofit[msg.sender].add(1 ether);
               
               rounds[roundid].pot = rounds[roundid].pot.sub(1 ether);
               
-              return &quot;恭喜获得空投 1 ether&quot;;
+              return "恭喜获得空投 1 ether";
             }
     }
     
@@ -382,13 +382,13 @@ contract Cryptorank{
         
         // calculate time based on number of keys bought
         uint256 _newTime;
-        if (_now &gt; rounds[roundid].end &amp;&amp; rounds[roundid].lastvoter == address(0))
+        if (_now > rounds[roundid].end && rounds[roundid].lastvoter == address(0))
             _newTime = (_votes.mul(voteinterval)).add(_now);
         else
             _newTime = (_votes.mul(voteinterval)).add(rounds[roundid].end);
         
         // compare to max and set new end time
-        if (_newTime &lt; (maxvotetime).add(_now))
+        if (_newTime < (maxvotetime).add(_now))
             rounds[roundid].end = _newTime;
         else
             rounds[roundid].end = maxvotetime.add(_now);
@@ -406,11 +406,11 @@ contract Cryptorank{
         
         uint256 currentticketPrice = ticketPrice;
        
-        require(msg.value &gt;= currentticketPrice);
+        require(msg.value >= currentticketPrice);
         
         string memory ifgetpot = airdrppReward();
         
-        require(now &gt; (rounds[roundid].start + nextRoundCoolingTime) &amp;&amp;(now &lt;= rounds[roundid].end ||rounds[roundid].lastvoter == address(0) ));
+        require(now > (rounds[roundid].start + nextRoundCoolingTime) &&(now <= rounds[roundid].end ||rounds[roundid].lastvoter == address(0) ));
         
           
           selfvoteamount[msg.sender] = selfvoteamount[msg.sender].add(msg.value);
@@ -422,7 +422,7 @@ contract Cryptorank{
           uint256 reward = msg.value.mul(51).div(100);
           
           uint256 _now = now;
-        if(_now - SortingCoinstime &gt;2 hours){
+        if(_now - SortingCoinstime >2 hours){
             SortingCoins();
             SortingCoinstime = _now;
             emit Sortime(msg.sender,_now);
@@ -444,11 +444,11 @@ contract Cryptorank{
     //计算空投中奖概率
     function calculateselfOdd() private {
         
-         if(selfvoteamount[msg.sender] &lt;= 1 ether)
+         if(selfvoteamount[msg.sender] <= 1 ether)
               selfOdds[msg.sender] = 25;
-            if(1 ether &lt; selfvoteamount[msg.sender] &amp;&amp;selfvoteamount[msg.sender] &lt;= 10 ether)
+            if(1 ether < selfvoteamount[msg.sender] &&selfvoteamount[msg.sender] <= 10 ether)
                selfOdds[msg.sender] = 50;
-            if(selfvoteamount[msg.sender] &gt; 10 ether)
+            if(selfvoteamount[msg.sender] > 10 ether)
                selfOdds[msg.sender] = 75;
         
         
@@ -492,11 +492,11 @@ contract Cryptorank{
     //发奖
     function endround() public isactivity(roundid) {
         
-        require(now &gt; rounds[roundid].end &amp;&amp; rounds[roundid].lastvoter != address(0));
+        require(now > rounds[roundid].end && rounds[roundid].lastvoter != address(0));
 
         uint256 reward = rounds[roundid].jackpot;
         
-        for(uint i = 0 ;i&lt; players.length;i++){
+        for(uint i = 0 ;i< players.length;i++){
             
             address player = players[i];
             
@@ -540,14 +540,14 @@ contract Cryptorank{
         public
         payable {
         // make sure name fees paid
-        require (msg.value &gt;= 0.01 ether, &quot;umm.....  you have to pay the name fee&quot;);
+        require (msg.value >= 0.01 ether, "umm.....  you have to pay the name fee");
 
         bytes32 _name = NameFilter.nameFilter(_nameString);
 
-        require(verifyName[_name]!=1 ,&quot;sorry that names already taken&quot;);
+        require(verifyName[_name]!=1 ,"sorry that names already taken");
         
         bool state =   validation_inviter(_inviter);
-        require(state,&quot;注册失败&quot;);
+        require(state,"注册失败");
         if(!pState[msg.sender]){
             
             verifyName[_name] = 1;
@@ -622,7 +622,7 @@ contract Cryptorank{
      //查询是否投票人已经在数组里
      function selectplayer() public view returns(bool){
          
-         for(uint i = 0;i&lt; players.length ;i++){
+         for(uint i = 0;i< players.length ;i++){
              
              if(players[i] == msg.sender)
                return true;
@@ -637,7 +637,7 @@ contract Cryptorank{
     //返回开奖时间
     function getroundendtime() public view returns(uint256){
         
-        if(rounds[roundid].end &gt;= now){
+        if(rounds[roundid].end >= now){
             
             return  rounds[roundid].end - now;
         }
@@ -681,9 +681,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -691,7 +691,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -700,7 +700,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -727,24 +727,24 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
 
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
 
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -758,22 +758,22 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 ||
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
 
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
 
         bytes32 _ret;
         assembly {

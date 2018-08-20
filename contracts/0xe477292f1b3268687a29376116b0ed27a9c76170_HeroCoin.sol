@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -68,7 +68,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -81,7 +81,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -135,13 +135,13 @@ contract HeroCoin is StandardToken {
     //should be constant, but is not, to avoid compiler warning
     address public  rakeEventPlaceholderAddress = 0x0000000000000000000000000000000000000000;
 
-    string public constant name = &quot;Herocoin&quot;;
+    string public constant name = "Herocoin";
 
-    string public constant symbol = &quot;PLAY&quot;;
+    string public constant symbol = "PLAY";
 
     uint8 public constant decimals = 18;
 
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     address public initialHolder;
 
@@ -165,15 +165,15 @@ contract HeroCoin is StandardToken {
 
     uint256 public ETH_HEROCOIN; //number of herocoins per ETH
 
-    mapping (address =&gt; uint256) lastRakePoints;
+    mapping (address => uint256) lastRakePoints;
 
 
     uint256 pointMultiplier = 1e18; //100% = 1*10^18 points
-    uint256 totalRakePoints; //total amount of rakes ever paid out as a points value. increases monotonically, but the number range is 2^256, that&#39;s enough.
+    uint256 totalRakePoints; //total amount of rakes ever paid out as a points value. increases monotonically, but the number range is 2^256, that's enough.
     uint256 unclaimedRakes; //amount of coins unclaimed. acts like a special entry to balances
     uint256 constant percentForSale = 30;
 
-    mapping (address =&gt; bool) public contests; // true if this address holds a contest
+    mapping (address => bool) public contests; // true if this address holds a contest
 
     //this creates the contract and stores the owner. it also passes in 3 addresses to be used later during the lifetime of the contract.
     function HeroCoin(address _stateControl, address _whitelistControl, address _withdraw, address _initialHolder) {
@@ -232,14 +232,14 @@ contract HeroCoin is StandardToken {
 
     //this is the main funding function, it updates the balances of Herocoins during the ICO.
     //no particular incentive schemes have been implemented here
-    //it is only accessible during the &quot;ICO&quot; phase.
+    //it is only accessible during the "ICO" phase.
     function() payable
     requireState(States.Ico)
     {
         require(whitelist[msg.sender] == true);
-        require(this.balance &lt;= weiICOMaximum); //note that msg.value is already included in this.balance
-        require(block.number &lt; endBlock);
-        require(block.number &gt;= startAcceptingFundsBlock);
+        require(this.balance <= weiICOMaximum); //note that msg.value is already included in this.balance
+        require(block.number < endBlock);
+        require(block.number >= startAcceptingFundsBlock);
         uint256 heroCoinIncrease = msg.value * ETH_HEROCOIN;
         balances[initialHolder] -= heroCoinIncrease;
         balances[msg.sender] += heroCoinIncrease;
@@ -262,9 +262,9 @@ contract HeroCoin is StandardToken {
     onlyStateControl
     {
         require(state == States.Initial || state == States.ValuationSet);
-        require(_newWeiICOMaximum &gt; _newWeiICOMinimum);
-        require(block.number + silencePeriod &lt; _newEndBlock);
-        require(block.number &lt; _newEndBlock);
+        require(_newWeiICOMaximum > _newWeiICOMinimum);
+        require(block.number + silencePeriod < _newEndBlock);
+        require(block.number < _newEndBlock);
         weiICOMinimum = _newWeiICOMinimum;
         weiICOMaximum = _newWeiICOMaximum;
         silencePeriod = _silencePeriod;
@@ -279,8 +279,8 @@ contract HeroCoin is StandardToken {
     onlyStateControl
     requireState(States.ValuationSet)
     {
-        require(block.number &lt; endBlock);
-        require(block.number + silencePeriod &lt; endBlock);
+        require(block.number < endBlock);
+        require(block.number + silencePeriod < endBlock);
         startAcceptingFundsBlock = block.number + silencePeriod;
         moveToState(States.Ico);
     }
@@ -290,7 +290,7 @@ contract HeroCoin is StandardToken {
     onlyStateControl
     requireState(States.Ico)
     {
-        if (this.balance &lt; weiICOMinimum) {
+        if (this.balance < weiICOMinimum) {
             moveToState(States.Underfunded);
         }
         else {
@@ -302,8 +302,8 @@ contract HeroCoin is StandardToken {
     function anyoneEndICO()
     requireState(States.Ico)
     {
-        require(block.number &gt; endBlock);
-        if (this.balance &lt; weiICOMinimum) {
+        require(block.number > endBlock);
+        if (this.balance < weiICOMinimum) {
             moveToState(States.Underfunded);
         }
         else {
@@ -358,7 +358,7 @@ contract HeroCoin is StandardToken {
     function requestRefund()
     requireState(States.Underfunded)
     {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         //there is no need for updateAccount(msg.sender) since the token never became active.
         uint256 payout = balances[msg.sender] / ETH_HEROCOIN;
         //reverse calculate the amount to pay out
@@ -417,7 +417,7 @@ contract HeroCoin is StandardToken {
     internal
     returns (bool success) {
 
-        if (balances[_sender] &lt;= _value) {
+        if (balances[_sender] <= _value) {
             return false;
         }
         if (_value != 0) {
@@ -453,7 +453,7 @@ contract HeroCoin is StandardToken {
     function rakesOwing(address _account)
     internal
     constant
-    returns (uint256) {//returns always &gt; 0 value
+    returns (uint256) {//returns always > 0 value
         //how much is _account owed, denominated in points from total supply
         uint256 newRakePoints = totalRakePoints - lastRakePoints[_account];
         //always positive

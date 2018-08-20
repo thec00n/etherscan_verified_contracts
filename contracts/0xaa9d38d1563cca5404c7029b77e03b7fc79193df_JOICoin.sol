@@ -7,13 +7,13 @@ library SafeMath {
   }
 
   function minus(uint a, uint b) public pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) public pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -23,11 +23,11 @@ library SafeMath {
 contract JOICoin {
     using SafeMath for uint;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     uint256 public totalSupply;
-    string public constant name = &quot;JOI Coin&quot;;
-    string public constant symbol = &quot;JOI&quot;;
+    string public constant name = "JOI Coin";
+    string public constant symbol = "JOI";
     uint256 public constant decimals = 18;  // decimal places
     address public master;
 

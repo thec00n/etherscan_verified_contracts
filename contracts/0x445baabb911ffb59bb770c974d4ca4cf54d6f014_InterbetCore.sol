@@ -9,13 +9,13 @@ contract InterbetCore {
 	uint public minMakerBetFund = 100 * 1 finney; // Minimum fund of a maker bet
 
 	uint public maxAllowedTakerBetsPerMakerBet = 100; // Limit the number of taker-bets in 1 maker-bet
-	uint public minAllowedStakeInPercentage = 1; // 100 &#247; maxAllowedTakerBetsPerMakerBet
+	uint public minAllowedStakeInPercentage = 1; // 100 ÷ maxAllowedTakerBetsPerMakerBet
 
 	uint public baseVerifierFee = 1 finney; // Ensure verifier has some minimal profit to cover their gas cost at least
 
 	/* Owner and admins */
 	address private owner;
-	mapping(address =&gt; bool) private admins;
+	mapping(address => bool) private admins;
 
 	modifier onlyOwner() {
 		require(msg.sender == owner);
@@ -111,9 +111,9 @@ contract InterbetCore {
 	}
 
 	uint public makerBetsCount;
-	mapping(uint =&gt; mapping(address =&gt; MakerBet)) private makerBets;
+	mapping(uint => mapping(address => MakerBet)) private makerBets;
 
-	mapping(address =&gt; Verifier) private verifiers;
+	mapping(address => Verifier) private verifiers;
 
 	constructor() public {
 		owner = msg.sender;
@@ -124,9 +124,9 @@ contract InterbetCore {
 		revert();
 	}
 
-	/// Update verifier&#39;s data
+	/// Update verifier's data
 	function updateVerifier(uint feeRate) external {
-		require(feeRate &gt;= 0 &amp;&amp; feeRate &lt;= ((10 ** feeRateDecimals) * 100));
+		require(feeRate >= 0 && feeRate <= ((10 ** feeRateDecimals) * 100));
 
 		Verifier storage verifier = verifiers[msg.sender];
 
@@ -142,9 +142,9 @@ contract InterbetCore {
 	function makeBet(uint makerBetId, uint odds, address trustedVerifier, uint trustedVerifierFeeRate, uint expiry) external payable {
 		uint fund = sub(msg.value, baseVerifierFee);
 
-		require(fund &gt;= minMakerBetFund);
-		require(odds &gt; (10 ** oddsDecimals) &amp;&amp; odds &lt; ((10 ** 8) * (10 ** oddsDecimals)));
-		require(expiry &gt; now);
+		require(fund >= minMakerBetFund);
+		require(odds > (10 ** oddsDecimals) && odds < ((10 ** 8) * (10 ** oddsDecimals)));
+		require(expiry > now);
 
         MakerBet storage makerBet = makerBets[makerBetId][msg.sender];
 
@@ -176,13 +176,13 @@ contract InterbetCore {
     	MakerBet storage makerBet = makerBets[makerBetId][msg.sender];
 		require(makerBet.makerBetId != 0);
 
-    	require(now &lt; makerBet.expiry);
+    	require(now < makerBet.expiry);
 
     	require(makerBet.status == BetStatus.Open || makerBet.status == BetStatus.Paused);
 
     	require(msg.sender == makerBet.maker);
 
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
 		uint oldTotalFund = makerBet.totalFund;
 
@@ -193,12 +193,12 @@ contract InterbetCore {
 
     /// Update odds of a bet
     function updateOdds(uint makerBetId, uint odds) external {
-    	require(odds &gt; (10 ** oddsDecimals) &amp;&amp; odds &lt; ((10 ** 8) * (10 ** oddsDecimals)));
+    	require(odds > (10 ** oddsDecimals) && odds < ((10 ** 8) * (10 ** oddsDecimals)));
 
 		MakerBet storage makerBet = makerBets[makerBetId][msg.sender];
 		require(makerBet.makerBetId != 0);
 
-		require(now &lt; makerBet.expiry);
+		require(now < makerBet.expiry);
 
     	require(makerBet.status == BetStatus.Open || makerBet.status == BetStatus.Paused);
 
@@ -255,7 +255,7 @@ contract InterbetCore {
 		// refund unused fund to maker
 		uint unusedFund = sub(makerBet.totalFund, makerBet.reservedFund);
 
-		if (unusedFund &gt; 0) {
+		if (unusedFund > 0) {
 			makerBet.totalFund = makerBet.reservedFund;
 
 			uint refundAmount = unusedFund;
@@ -280,33 +280,33 @@ contract InterbetCore {
 	function takeBet(uint makerBetId, address maker, uint odds, uint takerBetId) external payable {
 		require(msg.sender != maker);
 
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
 		MakerBet storage makerBet = makerBets[makerBetId][maker];
 		require(makerBet.makerBetId != 0);
 
 		require(msg.sender != makerBet.trustedVerifier.addr);
 
-		require(now &lt; makerBet.expiry);
+		require(now < makerBet.expiry);
 
 		require(makerBet.status == BetStatus.Open);
 
 		require(makerBet.odds == odds);
 
 		// Avoid too many taker-bets in one maker-bet
-		require(makerBet.takerBetsCount &lt; maxAllowedTakerBetsPerMakerBet);
+		require(makerBet.takerBetsCount < maxAllowedTakerBetsPerMakerBet);
 
 		// Avoid too many tiny bets
 		uint minAllowedStake = mul(mul(makerBet.totalFund, (10 ** oddsDecimals)), minAllowedStakeInPercentage) / sub(odds, (10 ** oddsDecimals)) / 100;
 		uint maxAvailableStake = mul(sub(makerBet.totalFund, makerBet.reservedFund), (10 ** oddsDecimals)) / sub(odds, (10 ** oddsDecimals));
-		if (maxAvailableStake &gt;= minAllowedStake) {
-			require(msg.value &gt;= minAllowedStake);
+		if (maxAvailableStake >= minAllowedStake) {
+			require(msg.value >= minAllowedStake);
 		} else {
-			require(msg.value &gt;= sub(maxAvailableStake, (maxAvailableStake / 10)) &amp;&amp; msg.value &lt;= maxAvailableStake);
+			require(msg.value >= sub(maxAvailableStake, (maxAvailableStake / 10)) && msg.value <= maxAvailableStake);
 		}
 
         // If remaining fund is not enough, send the money back.
-		require(msg.value &lt;= maxAvailableStake);
+		require(msg.value <= maxAvailableStake);
 
         makerBet.takerBets.length++;
 		makerBet.takerBets[makerBet.takerBetsCount] = TakerBet(takerBetId, msg.sender, odds, msg.value, false);
@@ -334,7 +334,7 @@ contract InterbetCore {
 				payout = makerBet.totalFund;
 			}
 
-			if (payout &gt; 0) {
+			if (payout > 0) {
 				fullyWithdrawn = true;
 
 				if (!makerBet.maker.send(payout)) {
@@ -353,7 +353,7 @@ contract InterbetCore {
 
 		uint payout = 0;
 
-		for (uint betIndex = 0; betIndex &lt; makerBet.takerBetsCount; betIndex++) {
+		for (uint betIndex = 0; betIndex < makerBet.takerBetsCount; betIndex++) {
 			if (makerBet.takerBets[betIndex].taker == taker) {
 				if (!makerBet.takerBets[betIndex].settled) {
 					makerBet.takerBets[betIndex].settled = true;
@@ -370,13 +370,13 @@ contract InterbetCore {
 			}
 		}
 
-		if (payout &gt; 0) {
+		if (payout > 0) {
 			fullyWithdrawn = true;
 
 			if (!taker.send(payout)) {
 				fullyWithdrawn = false;
 
-				for (uint betIndex2 = 0; betIndex2 &lt; makerBet.takerBetsCount; betIndex2++) {
+				for (uint betIndex2 = 0; betIndex2 < makerBet.takerBetsCount; betIndex2++) {
 					if (makerBet.takerBets[betIndex2].taker == taker) {
 						if (makerBet.takerBets[betIndex2].settled) {
 							makerBet.takerBets[betIndex2].settled = false;
@@ -407,7 +407,7 @@ contract InterbetCore {
 				payout = baseVerifierFee;
 			}
 
-			if (payout &gt; 0) {
+			if (payout > 0) {
 				fullyWithdrawn = true;
 
 		    	if (!makerBet.trustedVerifier.addr.send(payout)) {
@@ -429,7 +429,7 @@ contract InterbetCore {
 
 		require(msg.sender == makerBet.trustedVerifier.addr);
 
-		require(makerBet.totalStake &gt; 0);
+		require(makerBet.totalStake > 0);
 
 		require(makerBet.status != BetStatus.Settled);
 
@@ -493,10 +493,10 @@ contract InterbetCore {
 
     function getTakerBet(uint makerBetId, address maker, uint takerBetId, address taker) external view returns(uint, address, uint, uint, bool) {
     	MakerBet memory makerBet = makerBets[makerBetId][maker];
-    	for (uint betIndex = 0; betIndex &lt; makerBet.takerBetsCount; betIndex++) {
+    	for (uint betIndex = 0; betIndex < makerBet.takerBetsCount; betIndex++) {
 			TakerBet memory takerBet = makerBet.takerBets[betIndex];
 
-			if (takerBet.takerBetId == takerBetId &amp;&amp; takerBet.taker == taker) {
+			if (takerBet.takerBetId == takerBetId && takerBet.taker == taker) {
 				return (takerBet.takerBetId, takerBet.taker, takerBet.odds, takerBet.stake, takerBet.settled);
 			}
 		}
@@ -514,13 +514,13 @@ contract InterbetCore {
   	}
 
   	function sub(uint256 _a, uint256 _b) private pure returns(uint256) {
-    	assert(_b &lt;= _a);
+    	assert(_b <= _a);
     	return _a - _b;
   	}
 
   	function add(uint256 _a, uint256 _b) private pure returns(uint256 c) {
    		c = _a + _b;
-    	assert(c &gt;= _a);
+    	assert(c >= _a);
     	return c;
   	}
 

@@ -7,7 +7,7 @@ pragma solidity ^0.4.8;
 //which is the alloted budget of operation for the earliest funding activities.
 //Every prommissory token is exchangeable for the real superDAO tokens on a one on one basis.
 //Promissiory contract will be deployed with the actual superDAO token contract.
-//Early backers can call the &quot;redeem&quot; function on the actual token contract to exchange promissory tokens for the final tokens.
+//Early backers can call the "redeem" function on the actual token contract to exchange promissory tokens for the final tokens.
 
 /**
  * @title Promisory Token Contract
@@ -37,7 +37,7 @@ contract PromissoryToken {
 
     address founder; //deployer of constitution and PromissoryToken
     bytes32 founderHash; // hash must be confirmed in order to replace founder address
-    mapping(address =&gt; bytes32) tempHashes; // structure to contain new address to hash storage,
+    mapping(address => bytes32) tempHashes; // structure to contain new address to hash storage,
     address cofounder;//helper to aid founder key exchange in case of key loss
     address [] public previousFounders; //list of addresses replaced using the switching process.
     uint constant discountAmount = 60; //discount amount
@@ -47,7 +47,7 @@ contract PromissoryToken {
     uint public promissoryUnits = 3000000; //amount of tokens contants set
     uint public prepaidUnits = 0; //prepaid and set by founder out of 3 million tokens
     uint public claimedUnits = 0; //claimed tokens out of 3 million tokens
-    uint public claimedPrepaidUnits = 0; //claimed tokens out of the early backer&#39;s tokens/prepaidUnits
+    uint public claimedPrepaidUnits = 0; //claimed tokens out of the early backer's tokens/prepaidUnits
     uint public redeemedTokens = 0; //number of tokens out of claimed tokens, redeemed by superDAO token call
     uint public lastPrice = 0; //latest price of token acquired by backer in Wei
     uint public numOfBackers; //number of early backers
@@ -63,8 +63,8 @@ contract PromissoryToken {
 
     address[] public earlyBackerList; //addresses of earliest backers
     address[] public backersAddresses; //addresses of all backers
-    mapping(address =&gt; backerData[]) public backers;// backer address to backer info mapping
-    mapping(address =&gt; bool) public backersRedeemed;
+    mapping(address => backerData[]) public backers;// backer address to backer info mapping
+    mapping(address => bool) public backersRedeemed;
 
     struct withdrawalData {
        uint Amount;
@@ -77,7 +77,7 @@ contract PromissoryToken {
     }
 
     withdrawalData[] public withdrawals; // Data structure specifying withdrawal
-    mapping(address =&gt; mapping(uint =&gt; bool)) public withdrawalsVotes;
+    mapping(address => mapping(uint => bool)) public withdrawalsVotes;
 
     /**
     * @notice Deploy PromissoryToken contract with `msg.sender.address()` as founder with `_prepaidBackers.number()` prepaid backers
@@ -111,7 +111,7 @@ contract PromissoryToken {
     /**
     * @notice Founder address update to `_newFounderAddr.address()` is being requested
     * @dev founderSwitchAddress founder indicates intent to switch addresses with new address,
-    * hash of pass phrase and a &quot;onetime shared phrase shared with coufounder&quot;
+    * hash of pass phrase and a "onetime shared phrase shared with coufounder"
     * @param _founderHash Secret Key to be used to confirm Address update
     * @param _oneTimesharedPhrase Shared pre-hashed Secret key for offline trust to be shared with coFounder to approve Address update
     * @return True if Address switch request successfully created and Temporary hash Values set
@@ -159,9 +159,9 @@ contract PromissoryToken {
         founderCall
         returns (uint)
     {
-        if (_tokenPrice == 0 || _tokenAmount == 0 || claimedPrepaidUnits&gt;0 ||
-            _tokenAmount + prepaidUnits + claimedUnits &gt; promissoryUnits) throw;
-        if (earlyBackerList.length == numOfBackers &amp;&amp; backers[_backer].length == 0) throw ;
+        if (_tokenPrice == 0 || _tokenAmount == 0 || claimedPrepaidUnits>0 ||
+            _tokenAmount + prepaidUnits + claimedUnits > promissoryUnits) throw;
+        if (earlyBackerList.length == numOfBackers && backers[_backer].length == 0) throw ;
         if (backers[_backer].length == 0) {
             earlyBackerList.push(_backer);
             backersAddresses.push(_backer);
@@ -189,11 +189,11 @@ contract PromissoryToken {
         external
         EarliestBackersSet
     {
-        if(backers[msg.sender][_index].prepaid == true &amp;&amp;
-           backers[msg.sender][_index].claimed == false &amp;&amp;
-           backers[msg.sender][_index].tokenAmount == _tokenAmount &amp;&amp;
-           backers[msg.sender][_index].tokenPrice == _boughtTokensPrice &amp;&amp;
-           backers[msg.sender][_index].privateHash == sha3( _privatePhrase, msg.sender) &amp;&amp;
+        if(backers[msg.sender][_index].prepaid == true &&
+           backers[msg.sender][_index].claimed == false &&
+           backers[msg.sender][_index].tokenAmount == _tokenAmount &&
+           backers[msg.sender][_index].tokenPrice == _boughtTokensPrice &&
+           backers[msg.sender][_index].privateHash == sha3( _privatePhrase, msg.sender) &&
            backers[msg.sender][_index].backerRank == _backerRank)
         {
             backers[msg.sender][_index].claimed = true;
@@ -225,7 +225,7 @@ contract PromissoryToken {
 
         uint tokenAmount = (msg.value / discountPrice);//Effect the discount rate 0f 40%
 
-        if (tokenAmount + claimedUnits + prepaidUnits &gt; promissoryUnits) throw;
+        if (tokenAmount + claimedUnits + prepaidUnits > promissoryUnits) throw;
 
         if (backers[msg.sender].length == 0) {
             backersAddresses.push(msg.sender);
@@ -240,7 +240,7 @@ contract PromissoryToken {
     /**
      * @notice checking `_backerAddress.address()` superDAO Token balance: `index`
      * @dev Check Token balance by index of backer, return values can be used to instantiate a backerData struct
-     * @param _backerAddress The Backer&#39;s address
+     * @param _backerAddress The Backer's address
      * @param index The balance to check
      * @return tokenPrice The Price at which the tokens were bought
      * @return tokenAmount The number of tokens that were bought
@@ -270,7 +270,7 @@ contract PromissoryToken {
         withdrawalsVotes[msg.sender][_withdrawalID] = true;
 
         uint backerStake = 0;
-        for (uint i = 0; i &lt; backers[msg.sender].length; i++) {
+        for (uint i = 0; i < backers[msg.sender].length; i++) {
             backerStake += backers[msg.sender][i].tokenAmount;
         }
         withdrawals[_withdrawalID].backerApprovals.push(msg.sender);
@@ -278,9 +278,9 @@ contract PromissoryToken {
 
         WithdrawalVotedEvent(_withdrawalID, msg.sender, backerStake, withdrawals[_withdrawalID].totalStake);
 
-        if(withdrawals[_withdrawalID].totalStake &gt;= (claimedPrepaidUnits + claimedUnits) / 3) {
+        if(withdrawals[_withdrawalID].totalStake >= (claimedPrepaidUnits + claimedUnits) / 3) {
             uint amountPerAddr;
-            bool isMultiPayment = withdrawals[_withdrawalID].destination.length &gt; 1;
+            bool isMultiPayment = withdrawals[_withdrawalID].destination.length > 1;
 
             if(isMultiPayment == false){
                 amountPerAddr = withdrawals[_withdrawalID].Amount;
@@ -292,7 +292,7 @@ contract PromissoryToken {
             withdrawals[_withdrawalID].approved = true;
             withdrawals[_withdrawalID].spent = true;
 
-            for(i = 0; i &lt; withdrawals[_withdrawalID].destination.length; i++){
+            for(i = 0; i < withdrawals[_withdrawalID].destination.length; i++){
                 if(!withdrawals[_withdrawalID].destination[i].send(amountPerAddr)) throw;
             }
 
@@ -315,7 +315,7 @@ contract PromissoryToken {
         external
         founderCall
     {
-        if (this.balance &lt; _totalAmount) throw;
+        if (this.balance < _totalAmount) throw;
 
         uint withdrawalID = withdrawals.length++;
 
@@ -342,7 +342,7 @@ contract PromissoryToken {
 
         uint totalTokens = 0;
 
-        for (uint i = 0; i &lt; backers[_backerAddr].length; i++) {
+        for (uint i = 0; i < backers[_backerAddr].length; i++) {
             if (backers[_backerAddr][i].claimed == false) {
                 return false;
             }
@@ -393,14 +393,14 @@ contract PromissoryToken {
     }
 
     modifier EarliestBackersSet{
-       if(earlyBackerList.length &lt; numOfBackers) throw;
+       if(earlyBackerList.length < numOfBackers) throw;
        _;
     }
 
     modifier MinimumBackersClaimed(){
       if(prepaidUnits == 0 ||
         claimedPrepaidUnits == 0 ||
-        (claimedPrepaidUnits * divisor / prepaidUnits) &lt; minimumPrepaidClaimedPercent) {
+        (claimedPrepaidUnits * divisor / prepaidUnits) < minimumPrepaidClaimedPercent) {
             throw;
         }
       _;

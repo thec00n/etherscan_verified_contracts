@@ -2,7 +2,7 @@ pragma solidity 0.4.23;
 
 // File: contracts/oraclize/usingOraclize.sol
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -10,7 +10,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -23,7 +23,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -90,35 +90,35 @@ contract usingOraclize {
       networkID; // silence the warning and remain backwards compatible
     }
     function oraclize_setNetwork() internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -143,65 +143,65 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -349,25 +349,25 @@ contract usingOraclize {
     }
     function oraclize_query(string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -539,16 +539,16 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -558,15 +558,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -575,19 +575,19 @@ contract usingOraclize {
     function indexOf(string _haystack, string _needle) internal pure returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }
@@ -608,24 +608,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -638,8 +638,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -648,12 +648,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
     function uint2str(uint i) internal pure returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -675,7 +675,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -684,20 +684,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -717,7 +717,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -726,20 +726,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -764,7 +764,7 @@ contract usingOraclize {
     }
 
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        require((_nbytes &gt; 0) &amp;&amp; (_nbytes &lt;= 32));
+        require((_nbytes > 0) && (_nbytes <= 32));
         // Convert from seconds to ledger timer ticks
         _delay *= 10; 
         bytes memory nbytes = new bytes(1);
@@ -787,7 +787,7 @@ contract usingOraclize {
         copyBytes(delay, 24, 8, delay_bytes8, 0);
 
         bytes[4] memory args = [unonce, nbytes, sessionKeyHash, delay];
-        bytes32 queryId = oraclize_query(&quot;random&quot;, args, _customGasLimit);
+        bytes32 queryId = oraclize_query("random", args, _customGasLimit);
         
         bytes memory delay_bytes8_left = new bytes(8);
         
@@ -812,8 +812,8 @@ contract usingOraclize {
         oraclize_randomDS_args[queryId] = commitment;
     }
 
-    mapping(bytes32=&gt;bytes32) oraclize_randomDS_args;
-    mapping(bytes32=&gt;bool) oraclize_randomDS_sessionKeysHashVerified;
+    mapping(bytes32=>bytes32) oraclize_randomDS_args;
+    mapping(bytes32=>bool) oraclize_randomDS_sessionKeysHashVerified;
 
     function verifySig(bytes32 tosignh, bytes dersig, bytes pubkey) internal returns (bool){
         bool sigok;
@@ -856,7 +856,7 @@ contract usingOraclize {
         bytes memory tosign2 = new bytes(1+65+32);
         tosign2[0] = byte(1); //role
         copyBytes(proof, sig2offset-65, 65, tosign2, 1);
-        bytes memory CODEHASH = hex&quot;fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c&quot;;
+        bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1+65);
         sigok = verifySig(sha256(tosign2), sig2, appkey1_pubkey);
 
@@ -864,7 +864,7 @@ contract usingOraclize {
 
 
         // Step 7: verify the APPKEY1 provenance (must be signed by Ledger)
-        bytes memory LEDGERKEY = hex&quot;7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4&quot;;
+        bytes memory LEDGERKEY = hex"7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4";
 
         bytes memory tosign3 = new bytes(1+65);
         tosign3[0] = 0xFE;
@@ -879,8 +879,8 @@ contract usingOraclize {
     }
 
     modifier oraclize_randomDS_proofVerify(bytes32 _queryId, string _result, bytes _proof) {
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        require((_proof[0] == &quot;L&quot;) &amp;&amp; (_proof[1] == &quot;P&quot;) &amp;&amp; (_proof[2] == 1));
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        require((_proof[0] == "L") && (_proof[1] == "P") && (_proof[2] == 1));
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         require(proofVerified);
@@ -889,8 +889,8 @@ contract usingOraclize {
     }
 
     function oraclize_randomDS_proofVerify__returnCode(bytes32 _queryId, string _result, bytes _proof) internal returns (uint8){
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;)||(_proof[1] != &quot;P&quot;)||(_proof[2] != 1)) return 1;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L")||(_proof[1] != "P")||(_proof[2] != 1)) return 1;
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) return 2;
@@ -903,7 +903,7 @@ contract usingOraclize {
         
         require(prefix.length == n_random_bytes);
 
-        for (uint256 i=0; i&lt; n_random_bytes; i++) {
+        for (uint256 i=0; i< n_random_bytes; i++) {
             if (content[i] != prefix[i]) match_ = false;
         }
 
@@ -921,7 +921,7 @@ contract usingOraclize {
         bytes memory sig1 = new bytes(uint(proof[ledgerProofLength+(32+8+1+32)+1])+2);
         copyBytes(proof, ledgerProofLength+(32+8+1+32), sig1.length, sig1, 0);
 
-        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if &#39;result&#39; is the prefix of sha256(sig1)
+        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if 'result' is the prefix of sha256(sig1)
         if (!matchBytes32Prefix(sha256(sig1), result, uint(proof[ledgerProofLength+32+8]))) return false;
 
         // Step 4: commitment match verification, keccak256(delay, nbytes, unonce, sessionKeyHash) == commitment in storage.
@@ -944,7 +944,7 @@ contract usingOraclize {
         copyBytes(proof, ledgerProofLength, 32+8+1+32, tosign1, 0);
         if (!verifySig(sha256(tosign1), sig1, sessionPubkey)) return false;
 
-        // verify if sessionPubkeyHash was verified already, if not.. let&#39;s do it!
+        // verify if sessionPubkeyHash was verified already, if not.. let's do it!
         if (oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] == false){
             oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] = oraclize_randomDS_proofVerify__sessionKeyValidity(proof, sig2offset);
         }
@@ -957,13 +957,13 @@ contract usingOraclize {
         uint minLength = length + toOffset;
 
         // Buffer too small
-        require(to.length &gt;= minLength); // Should be a better way?
+        require(to.length >= minLength); // Should be a better way?
 
         // NOTE: the offset 32 is added to skip the `size` field of both bytes variables
         uint i = 32 + fromOffset;
         uint j = 32 + toOffset;
 
-        while (i &lt; (32 + fromOffset + length)) {
+        while (i < (32 + fromOffset + length)) {
             assembly {
                 let tmp := mload(add(from, i))
                 mstore(add(to, j), tmp)
@@ -976,15 +976,15 @@ contract usingOraclize {
     }
 
     // the following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
-        // FIXME: inline assembly can&#39;t access return values
+        // FIXME: inline assembly can't access return values
         bool ret;
         address addr;
 
@@ -1021,13 +1021,13 @@ contract usingOraclize {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -1036,35 +1036,35 @@ contract usingOraclize {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
           v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
     }
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 // File: mixbytes-solidity/contracts/ownership/multiowned.sol
 
 // Copyright (C) 2017  MixBytes, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 // Code taken from https://github.com/ethereum/dapp-bin/blob/master/wallet/wallet.sol
 // Audit, refactoring and improvements by github.com/Eenae
 
 // @authors:
-// Gav Wood &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8cebcce9f8e4e8e9faa2efe3e1">[email&#160;protected]</a>&gt;
-// inheritable &quot;property&quot; contract that enables methods to be protected by requiring the acquiescence of either a
+// Gav Wood <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8cebcce9f8e4e8e9faa2efe3e1">[email protected]</a>>
+// inheritable "property" contract that enables methods to be protected by requiring the acquiescence of either a
 // single, or, crucially, each of a number of, designated owners.
 // usage:
 // use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by
@@ -1085,7 +1085,7 @@ contract multiowned {
         // count of confirmations needed
         uint yetNeeded;
 
-        // bitmap of confirmations where owner #ownerIndex&#39;s decision corresponds to 2**ownerIndex bit
+        // bitmap of confirmations where owner #ownerIndex's decision corresponds to 2**ownerIndex bit
         uint ownersDone;
 
         // position of this operation key in m_multiOwnedPendingIndex
@@ -1120,18 +1120,18 @@ contract multiowned {
         if (confirmAndCheck(_operation)) {
             _;
         }
-        // Even if required number of confirmations has&#39;t been collected yet,
-        // we can&#39;t throw here - because changes to the state have to be preserved.
+        // Even if required number of confirmations has't been collected yet,
+        // we can't throw here - because changes to the state have to be preserved.
         // But, confirmAndCheck itself will throw in case sender is not an owner.
     }
 
     modifier validNumOwners(uint _numOwners) {
-        require(_numOwners &gt; 0 &amp;&amp; _numOwners &lt;= c_maxOwners);
+        require(_numOwners > 0 && _numOwners <= c_maxOwners);
         _;
     }
 
     modifier multiOwnedValidRequirement(uint _required, uint _numOwners) {
-        require(_required &gt; 0 &amp;&amp; _required &lt;= _numOwners);
+        require(_required > 0 && _required <= _numOwners);
         _;
     }
 
@@ -1152,23 +1152,23 @@ contract multiowned {
 
 	// METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them (msg.sender is not added to the owners!).
     function multiowned(address[] _owners, uint _required)
         public
         validNumOwners(_owners.length)
         multiOwnedValidRequirement(_required, _owners.length)
     {
-        assert(c_maxOwners &lt;= 255);
+        assert(c_maxOwners <= 255);
 
         m_numOwners = _owners.length;
         m_multiOwnedRequired = _required;
 
-        for (uint i = 0; i &lt; _owners.length; ++i)
+        for (uint i = 0; i < _owners.length; ++i)
         {
             address owner = _owners[i];
             // invalid and duplicate addresses are not allowed
-            require(0 != owner &amp;&amp; !isOwner(owner) /* not isOwner yet! */);
+            require(0 != owner && !isOwner(owner) /* not isOwner yet! */);
 
             uint currentOwnerIndex = checkOwnerIndex(i + 1 /* first slot is unused */);
             m_owners[currentOwnerIndex] = owner;
@@ -1266,7 +1266,7 @@ contract multiowned {
     /// @return memory array of owners
     function getOwners() public constant returns (address[]) {
         address[] memory result = new address[](m_numOwners);
-        for (uint i = 0; i &lt; m_numOwners; i++)
+        for (uint i = 0; i < m_numOwners; i++)
             result[i] = getOwner(i);
 
         return result;
@@ -1274,14 +1274,14 @@ contract multiowned {
 
     /// @notice checks if provided address is an owner address
     /// @param _addr address to check
-    /// @return true if it&#39;s an owner
+    /// @return true if it's an owner
     function isOwner(address _addr) public constant returns (bool) {
-        return m_ownerIndex[_addr] &gt; 0;
+        return m_ownerIndex[_addr] > 0;
     }
 
     /// @notice Tests ownership of the current caller.
-    /// @return true if it&#39;s an owner
-    // It&#39;s advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
+    /// @return true if it's an owner
+    // It's advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
     // addOwner/changeOwner and to isOwner.
     function amIOwner() external constant onlyowner returns (bool) {
         return true;
@@ -1296,7 +1296,7 @@ contract multiowned {
     {
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
         var pending = m_multiOwnedPending[_operation];
-        require(pending.ownersDone &amp; ownerIndexBit &gt; 0);
+        require(pending.ownersDone & ownerIndexBit > 0);
 
         assertOperationIsConsistent(_operation);
 
@@ -1317,7 +1317,7 @@ contract multiowned {
         ownerExists(_owner)
         returns (bool)
     {
-        return !(m_multiOwnedPending[_operation].ownersDone &amp; makeOwnerBitmapBit(_owner) == 0);
+        return !(m_multiOwnedPending[_operation].ownersDone & makeOwnerBitmapBit(_owner) == 0);
     }
 
     // INTERNAL METHODS
@@ -1329,14 +1329,14 @@ contract multiowned {
     {
         if (512 == m_multiOwnedPendingIndex.length)
             // In case m_multiOwnedPendingIndex grows too much we have to shrink it: otherwise at some point
-            // we won&#39;t be able to do it because of block gas limit.
+            // we won't be able to do it because of block gas limit.
             // Yes, pending confirmations will be lost. Dont see any security or stability implications.
             // TODO use more graceful approach like compact or removal of clearPending completely
             clearPending();
 
         var pending = m_multiOwnedPending[_operation];
 
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (! isOperationActive(_operation)) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_multiOwnedRequired;
@@ -1349,10 +1349,10 @@ contract multiowned {
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             // ok - check if count is enough to go ahead.
-            assert(pending.yetNeeded &gt; 0);
+            assert(pending.yetNeeded > 0);
             if (pending.yetNeeded == 1) {
                 // enough confirmations: reset and run interior.
                 delete m_multiOwnedPendingIndex[m_multiOwnedPending[_operation].index];
@@ -1375,18 +1375,18 @@ contract multiowned {
     // TODO given that its called after each removal, it could be simplified.
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
             // iterating to the first free slot from the beginning
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
+            while (free < m_numOwners && m_owners[free] != 0) free++;
 
             // iterating to the first occupied slot from the end
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
 
             // swap, if possible, so free slot is located at the end after the swap
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
-                // owners between swapped slots should&#39;t be renumbered - that saves a lot of gas
+                // owners between swapped slots should't be renumbered - that saves a lot of gas
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
                 m_owners[m_numOwners] = 0;
@@ -1397,7 +1397,7 @@ contract multiowned {
     function clearPending() private onlyowner {
         uint length = m_multiOwnedPendingIndex.length;
         // TODO block gas limit
-        for (uint i = 0; i &lt; length; ++i) {
+        for (uint i = 0; i < length; ++i) {
             if (m_multiOwnedPendingIndex[i] != 0)
                 delete m_multiOwnedPending[m_multiOwnedPendingIndex[i]];
         }
@@ -1405,7 +1405,7 @@ contract multiowned {
     }
 
     function checkOwnerIndex(uint ownerIndex) private pure returns (uint) {
-        assert(0 != ownerIndex &amp;&amp; ownerIndex &lt;= c_maxOwners);
+        assert(0 != ownerIndex && ownerIndex <= c_maxOwners);
         return ownerIndex;
     }
 
@@ -1420,17 +1420,17 @@ contract multiowned {
 
 
     function assertOwnersAreConsistent() private constant {
-        assert(m_numOwners &gt; 0);
-        assert(m_numOwners &lt;= c_maxOwners);
+        assert(m_numOwners > 0);
+        assert(m_numOwners <= c_maxOwners);
         assert(m_owners[0] == 0);
-        assert(0 != m_multiOwnedRequired &amp;&amp; m_multiOwnedRequired &lt;= m_numOwners);
+        assert(0 != m_multiOwnedRequired && m_multiOwnedRequired <= m_numOwners);
     }
 
     function assertOperationIsConsistent(bytes32 _operation) private constant {
         var pending = m_multiOwnedPending[_operation];
         assert(0 != pending.yetNeeded);
         assert(m_multiOwnedPendingIndex[pending.index] == _operation);
-        assert(pending.yetNeeded &lt;= m_multiOwnedRequired);
+        assert(pending.yetNeeded <= m_multiOwnedRequired);
     }
 
 
@@ -1447,15 +1447,15 @@ contract multiowned {
 
     // list of owners (addresses),
     // slot 0 is unused so there are no owner which index is 0.
-    // TODO could we save space at the end of the array for the common case of &lt;10 owners? and should we?
+    // TODO could we save space at the end of the array for the common case of <10 owners? and should we?
     address[256] internal m_owners;
 
-    // index on the list of owners to allow reverse lookup: owner address =&gt; index in m_owners
-    mapping(address =&gt; uint) internal m_ownerIndex;
+    // index on the list of owners to allow reverse lookup: owner address => index in m_owners
+    mapping(address => uint) internal m_ownerIndex;
 
 
     // the ongoing operations.
-    mapping(bytes32 =&gt; MultiOwnedOperationPendingState) internal m_multiOwnedPending;
+    mapping(bytes32 => MultiOwnedOperationPendingState) internal m_multiOwnedPending;
     bytes32[] internal m_multiOwnedPendingIndex;
 }
 
@@ -1473,20 +1473,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1512,10 +1512,10 @@ contract EthPriceDependent is usingOraclize, multiowned {
     {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
         if (!_production) {
-            // Use it when testing with testrpc and etherium bridge. Don&#39;t forget to change address
+            // Use it when testing with testrpc and etherium bridge. Don't forget to change address
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
         } else {
-            // Don&#39;t call this while testing as it&#39;s too long and gets in the way
+            // Don't call this while testing as it's too long and gets in the way
             updateETHPriceInCents();
         }
     }
@@ -1527,21 +1527,21 @@ contract EthPriceDependent is usingOraclize, multiowned {
     /// if price is out of bounds - updating attempts continue
     function updateETHPriceInCents() public payable {
         // prohibit running multiple instances of update
-        // however don&#39;t throw any error, because it&#39;s called from __callback as well
+        // however don't throw any error, because it's called from __callback as well
         // and we need to let it update the price anyway, otherwise there is an attack possibility
         if ( !updateRequestExpired() ) {
-            NewOraclizeQuery(&quot;Oraclize request fail. Previous one still pending&quot;);
-        } else if (oraclize_getPrice(&quot;URL&quot;) &gt; this.balance) {
-            NewOraclizeQuery(&quot;Oraclize request fail. Not enough ether&quot;);
+            NewOraclizeQuery("Oraclize request fail. Previous one still pending");
+        } else if (oraclize_getPrice("URL") > this.balance) {
+            NewOraclizeQuery("Oraclize request fail. Not enough ether");
         } else {
             oraclize_query(
                 m_ETHPriceUpdateInterval,
-                &quot;URL&quot;,
-                &quot;json(https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD).0.price_usd&quot;,
+                "URL",
+                "json(https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD).0.price_usd",
                 m_callbackGas
             );
             m_ETHPriceLastUpdateRequest = getTime();
-            NewOraclizeQuery(&quot;Oraclize query was sent&quot;);
+            NewOraclizeQuery("Oraclize query was sent");
         }
     }
 
@@ -1551,7 +1551,7 @@ contract EthPriceDependent is usingOraclize, multiowned {
 
         uint newPrice = parseInt(result).mul(100);
 
-        if (newPrice &gt;= m_ETHPriceLowerBound &amp;&amp; newPrice &lt;= m_ETHPriceUpperBound) {
+        if (newPrice >= m_ETHPriceLowerBound && newPrice <= m_ETHPriceUpperBound) {
             m_ETHPriceInCents = newPrice;
             m_ETHPriceLastUpdate = getTime();
             NewETHPrice(m_ETHPriceInCents);
@@ -1580,7 +1580,7 @@ contract EthPriceDependent is usingOraclize, multiowned {
         m_ETHPriceLowerBound = _price;
     }
 
-    /// @notice set the price of ETH in cents, called in case we don&#39;t get oraclize data
+    /// @notice set the price of ETH in cents, called in case we don't get oraclize data
     ///         for more than double the update interval
     /// @param _price Price in US cents
     function setETHPriceManually(uint _price)
@@ -1622,14 +1622,14 @@ contract EthPriceDependent is usingOraclize, multiowned {
     /// @dev Check that double the update interval has passed
     ///      since last successful price update
     function priceExpired() public view returns (bool) {
-        return (getTime() &gt; m_ETHPriceLastUpdate + 2 * m_ETHPriceUpdateInterval);
+        return (getTime() > m_ETHPriceLastUpdate + 2 * m_ETHPriceUpdateInterval);
     }
 
     /// @dev Check that price update was requested
     ///      more than 1 update interval ago
     ///      NOTE: m_leeway seconds added to offset possible timestamp inaccuracy
     function updateRequestExpired() public view returns (bool) {
-        return ( (getTime() + m_leeway) &gt;= (m_ETHPriceLastUpdateRequest + m_ETHPriceUpdateInterval) );
+        return ( (getTime() + m_leeway) >= (m_ETHPriceLastUpdateRequest + m_ETHPriceUpdateInterval) );
     }
 
     /// @dev to be overridden in tests
@@ -1644,7 +1644,7 @@ contract EthPriceDependent is usingOraclize, multiowned {
     /// @notice unix timestamp of last update
     uint public m_ETHPriceLastUpdate;
     /// @notice unix timestamp of last update request,
-    ///         don&#39;t allow requesting more than once per update interval
+    ///         don't allow requesting more than once per update interval
     uint public m_ETHPriceLastUpdateRequest;
 
     /// @notice lower bound of the ETH price in cents
@@ -1710,11 +1710,11 @@ interface IBoomstarterToken {
 
 // Copyright (C) 2017  MixBytes, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 pragma solidity ^0.4.15;
@@ -1740,7 +1740,7 @@ contract ArgumentsChecker {
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -1776,7 +1776,7 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
 
     event FundTransfer(address backer, uint amount, bool isContribution);
 
-    /// @dev checks that owners didn&#39;t finish the sale yet
+    /// @dev checks that owners didn't finish the sale yet
     modifier onlyIfSaleIsActive() {
         require(m_active == true);
         _;
@@ -1789,9 +1789,9 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
      *       AND that current price is non-zero (updated)
      */
     modifier checkLimitsAndDates() {
-        require((c_dateTo &gt;= getTime()) &amp;&amp;
-                (m_currentTokensSold &lt; c_maximumTokensSold) &amp;&amp;
-                (m_ETHPriceInCents &gt; 0));
+        require((c_dateTo >= getTime()) &&
+                (m_currentTokensSold < c_maximumTokensSold) &&
+                (m_ETHPriceInCents > 0));
         _;
     }
 
@@ -1840,12 +1840,12 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
         onlyIfSaleIsActive
         checkLimitsAndDates
     {
-        // don&#39;t allow to buy anything if price change was too long ago
+        // don't allow to buy anything if price change was too long ago
         // effectively enforcing a sale pause
         require( !priceExpired() );
         address investor = msg.sender;
         uint256 payment = msg.value;
-        require((payment.mul(m_ETHPriceInCents)).div(1 ether) &gt;= c_MinInvestmentInCents);
+        require((payment.mul(m_ETHPriceInCents)).div(1 ether) >= c_MinInvestmentInCents);
 
         /**
          * calculate amount based on ETH/USD rate
@@ -1863,7 +1863,7 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
         uint maxTokensAllowed = c_maximumTokensSold.sub(m_currentTokensSold);
 
         // if amount of tokens we can buy is more than the amount available
-        if (tokenAmount &gt; maxTokensAllowed) {
+        if (tokenAmount > maxTokensAllowed) {
             // price of 1 full token in ether-wei
             // example 60 * 1e18 / 36900 = 0.162 * 1e18 = 0.162 eth
             uint ethPerToken = centsPerToken.mul(1 ether).div(m_ETHPriceInCents);
@@ -1874,7 +1874,7 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
         }
 
         // calculating a 20% bonus if the price of bought tokens is more than $30k
-        if (payment.mul(m_ETHPriceInCents).div(1 ether) &gt;= 3000000) {
+        if (payment.mul(m_ETHPriceInCents).div(1 ether) >= 3000000) {
             tokenAmount = tokenAmount.add(tokenAmount.div(5));
         }
 
@@ -1886,7 +1886,7 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
         m_token.transfer(investor, tokenAmount);
 
         uint change = msg.value.sub(payment);
-        if (change &gt; 0)
+        if (change > 0)
             investor.transfer(change);
 
         FundTransfer(investor, payment, true);
@@ -1907,7 +1907,7 @@ contract BoomstarterPreICO is ArgumentsChecker, ReentrancyGuard, EthPriceDepende
         require( m_nextSale != address(0) );
         // cannot accept ether anymore
         m_active = false;
-        // send remaining oraclize ether to the next sale - we don&#39;t need oraclize anymore
+        // send remaining oraclize ether to the next sale - we don't need oraclize anymore
         EthPriceDependent next = EthPriceDependent(m_nextSale);
         next.topUp.value(this.balance)();
         // transfer all remaining tokens to the next sale account

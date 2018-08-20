@@ -30,7 +30,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -87,20 +87,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -108,13 +108,13 @@ contract XMB is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;XMB&quot;;
-	string public constant symbol=&quot;XMB&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="XMB";
+	string public constant symbol="XMB";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	//总发行10亿
 	uint256 public constant MAX_SUPPLY=1000000000*10**decimals;
 	//初始发行3亿，用于空投和团队保留
@@ -152,7 +152,7 @@ contract XMB is ERC20,Ownable{
     }
 
 	//各个用户的锁仓金额
-	mapping(address=&gt;epoch[]) public lockEpochsMap;
+	mapping(address=>epoch[]) public lockEpochsMap;
 
 
 	function XMB(){
@@ -184,7 +184,7 @@ contract XMB is ERC20,Ownable{
 	}
 
 	modifier totalSupplyNotReached(uint256 _ethContribution,uint rate){
-		assert(totalSupply.add(_ethContribution.mul(rate)) &lt;= MAX_SUPPLY);
+		assert(totalSupply.add(_ethContribution.mul(rate)) <= MAX_SUPPLY);
 		_;
 	}
 
@@ -194,8 +194,8 @@ contract XMB is ERC20,Ownable{
     	onlyOwner 
 	{
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], paySize);
 			airdropSupply = airdropSupply.add(paySize);
         }
@@ -205,12 +205,12 @@ contract XMB is ERC20,Ownable{
 	//允许用户往合约账户打币
 	function () payable external
 	{
-			if(now &gt; stepOneStartTime&amp;&amp;now&lt;=stepOneEndTime){
+			if(now > stepOneStartTime&&now<=stepOneEndTime){
 				processFunding(msg.sender,msg.value,stepOneRate);
 				//设置锁仓
 				uint256 stepOnelockAmount = msg.value.mul(stepOneRate);
 				lockBalance(msg.sender,stepOnelockAmount,stepOneLockEndTime);
-			}else if(now &gt; stepTwoStartTime&amp;&amp;now&lt;=stepTwoEndTime){
+			}else if(now > stepTwoStartTime&&now<=stepTwoEndTime){
 				processFunding(msg.sender,msg.value,stepTwoRate);
 				//设置锁仓
 				uint256 stepTwolockAmount = msg.value.mul(stepTwoRate);
@@ -290,16 +290,16 @@ contract XMB is ERC20,Ownable{
 		//计算锁仓份额
 		epoch[] epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i;i&lt;epochs.length;i++)
+		for(uint256 i;i<epochs.length;i++)
 		{
 			//如果当前时间小于当期结束时间,则此期有效
-			if( now &lt; epochs[i].endTime )
+			if( now < epochs[i].endTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].amount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -321,16 +321,16 @@ contract XMB is ERC20,Ownable{
 		//计算锁仓份额
 		epoch[] epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i;i&lt;epochs.length;i++)
+		for(uint256 i;i<epochs.length;i++)
 		{
 			//如果当前时间小于当期结束时间,则此期有效
-			if( now &lt; epochs[i].endTime )
+			if( now < epochs[i].endTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].amount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 		uint256 _allowance = allowed[_from][msg.sender];
 
 		balances[_from] = balances[_from].sub(_value);

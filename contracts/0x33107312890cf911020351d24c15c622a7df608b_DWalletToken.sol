@@ -17,13 +17,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -31,9 +31,9 @@ contract SafeMath {
 contract DWalletToken is SafeMath {
 
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name = &#39;D-WALLET TOKEN&#39;;
-    string public symbol = &#39;DWT&#39;;
+    string public standard = 'ERC20';
+    string public name = 'D-WALLET TOKEN';
+    string public symbol = 'DWT';
     uint8 public decimals = 0;
     uint256 public totalSupply;
     address public owner;
@@ -45,8 +45,8 @@ contract DWalletToken is SafeMath {
     bool burned;
 
     /* Create an array with all balances so that blockchain will know */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* Generate a public event on the blockchain to notify clients */
@@ -67,8 +67,8 @@ contract DWalletToken is SafeMath {
 
     /* function to send tokens to a given address */
     function transfer(address _to, uint256 _value) returns (bool success){
-        require (now &lt; startTime); //check if the crowdsale is already over
-        require(msg.sender == owner &amp;&amp; now &lt; startTime + 1 years &amp;&amp; safeSub(balanceOf[msg.sender],_value) &lt; 1000000000); //prevent the owner of spending his share of tokens within the first year 
+        require (now < startTime); //check if the crowdsale is already over
+        require(msg.sender == owner && now < startTime + 1 years && safeSub(balanceOf[msg.sender],_value) < 1000000000); //prevent the owner of spending his share of tokens within the first year 
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender],_value);                     // Subtract from the sender
         balanceOf[_to] = safeAdd(balanceOf[_to],_value);                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -85,8 +85,8 @@ contract DWalletToken is SafeMath {
 
     /* Transferfrom function*/
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require (now &lt; startTime &amp;&amp; _from!=owner); //check if the crowdsale is already over 
-        require(_from == owner &amp;&amp; now &lt; startTime + 1 years &amp;&amp; safeSub(balanceOf[_from],_value) &lt; 1000000000);
+        require (now < startTime && _from!=owner); //check if the crowdsale is already over 
+        require(_from == owner && now < startTime + 1 years && safeSub(balanceOf[_from],_value) < 1000000000);
         var _allowance = allowance[_from][msg.sender];
         balanceOf[_from] = safeSub(balanceOf[_from],_value); // Subtract from the sender
         balanceOf[_to] = safeAdd(balanceOf[_to],_value);     // Add the same to the recipient
@@ -102,7 +102,7 @@ contract DWalletToken is SafeMath {
     *  this ensures that the owner will not posses a majority of the tokens. */
     function burn(){
     	//if tokens have not been burned already and the ICO ended
-    	if(!burned &amp;&amp; now&gt;endTime){
+    	if(!burned && now>endTime){
     		uint difference = safeSub(balanceOf[owner], 1024000000);//checked for overflow above
     		balanceOf[owner] = 1024000000;
     		totalSupply = safeSub(totalSupply, difference);

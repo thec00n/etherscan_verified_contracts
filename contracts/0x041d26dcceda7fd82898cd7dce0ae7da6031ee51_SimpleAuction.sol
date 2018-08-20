@@ -13,7 +13,7 @@ contract SimpleAuction {
     uint public highestBid;
 
     // Allowed withdrawals of previous bids
-    mapping(address =&gt; uint) pendingReturns;
+    mapping(address => uint) pendingReturns;
 
     // Set to true at the end, disallows any change
     bool ended;
@@ -49,11 +49,11 @@ contract SimpleAuction {
 
         // Revert the call if the bidding
         // period is over.
-        require(now &lt;= (auctionStart + biddingTime));
+        require(now <= (auctionStart + biddingTime));
 
         // If the bid is not higher, send the
         // money back.
-        require(msg.value &gt; highestBid);
+        require(msg.value > highestBid);
 
         if (highestBidder != 0) {
             // Sending back the money by simply using
@@ -71,7 +71,7 @@ contract SimpleAuction {
     /// Withdraw a bid that was overbid.
     function withdraw() returns (bool) {
         uint amount = pendingReturns[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `send` returns.
@@ -107,7 +107,7 @@ contract SimpleAuction {
         // external contracts.
 
         // 1. Conditions
-        require(now &gt;= (auctionStart + biddingTime)); // auction did not yet end
+        require(now >= (auctionStart + biddingTime)); // auction did not yet end
         require(!ended); // this function has already been called
 
         // 2. Effects

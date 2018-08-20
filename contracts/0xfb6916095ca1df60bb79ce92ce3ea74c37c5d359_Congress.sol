@@ -28,7 +28,7 @@ contract Congress is owned {
         int public majorityMargin;
         Proposal[] public proposals;
         uint public numProposals;
-        mapping(address =&gt; uint) public memberId;
+        mapping(address => uint) public memberId;
         Member[] public members;
 
         address public unicornAddress;
@@ -51,7 +51,7 @@ contract Congress is owned {
                 int currentResult;
                 bytes32 proposalHash;
                 Vote[] votes;
-                mapping(address =&gt; bool) voted;
+                mapping(address => bool) voted;
         }
 
         struct Member {
@@ -80,7 +80,7 @@ contract Congress is owned {
                         voteWeight: 0,
                         canAddProposals: false,
                         memberSince: now,
-                        name: &#39;&#39;
+                        name: ''
                 });
                 if (congressLeader != 0) owner = congressLeader;
 
@@ -179,7 +179,7 @@ contract Congress is owned {
                 p.numberOfVotes += voteWeight; // Increase the number of votes
                 if (supportsProposal) { // If they support the proposal
                         p.currentResult += int(voteWeight); // Increase score
-                } else { // If they don&#39;t
+                } else { // If they don't
                         p.currentResult -= int(voteWeight); // Decrease the score
                 }
                 // Create a log of this event
@@ -189,14 +189,14 @@ contract Congress is owned {
         function executeProposal(uint proposalNumber, bytes transactionBytecode) returns(int result) {
                 Proposal p = proposals[proposalNumber];
                 /* Check if the proposal can be executed */
-                if (now &lt; p.votingDeadline // has the voting deadline arrived?  
+                if (now < p.votingDeadline // has the voting deadline arrived?  
                         || p.executed // has it been already executed? 
                         || p.proposalHash != sha3(p.recipient, p.amount, transactionBytecode) // Does the transaction code match the proposal? 
-                        || p.numberOfVotes &lt; minimumQuorum) // has minimum quorum?
+                        || p.numberOfVotes < minimumQuorum) // has minimum quorum?
                         throw;
 
                 /* execute result */
-                if (p.currentResult &gt; majorityMargin) {
+                if (p.currentResult > majorityMargin) {
                         /* If difference between support and opposition is larger than margin */
                         p.recipient.call.value(p.amount)(transactionBytecode);
                         p.executed = true;
@@ -210,7 +210,7 @@ contract Congress is owned {
         }
 
         function() {
-                if (msg.value &gt; priceOfAUnicornInFinney) {
+                if (msg.value > priceOfAUnicornInFinney) {
                         token unicorn = token(unicornAddress);
                         unicorn.mintToken(msg.sender, msg.value / (priceOfAUnicornInFinney * 1 finney));
                 }
@@ -227,10 +227,10 @@ contract MyToken is owned {
         uint256 public totalSupply;
 
         /* This creates an array with all balances */
-        mapping(address =&gt; uint256) public balanceOf;
-        mapping(address =&gt; bool) public frozenAccount;
-        mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
-        mapping(address =&gt; mapping(address =&gt; uint)) public spentAllowance;
+        mapping(address => uint256) public balanceOf;
+        mapping(address => bool) public frozenAccount;
+        mapping(address => mapping(address => uint)) public allowance;
+        mapping(address => mapping(address => uint)) public spentAllowance;
 
 
         /* This generates a public event on the blockchain that will notify clients */
@@ -249,8 +249,8 @@ contract MyToken is owned {
 
         /* Send coins */
         function transfer(address _to, uint256 _value) {
-                if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough   
-                if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+                if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough   
+                if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
                 if (frozenAccount[msg.sender]) throw; // Check if frozen
                 balanceOf[msg.sender] -= _value; // Subtract from the sender
                 balanceOf[_to] += _value; // Add the same to the recipient            
@@ -269,10 +269,10 @@ contract MyToken is owned {
         }
 
         function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-                if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough   
-                if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+                if (balanceOf[_from] < _value) throw; // Check if the sender has enough   
+                if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
                 if (frozenAccount[_from]) throw; // Check if frozen
-                if (spentAllowance[_from][msg.sender] + _value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+                if (spentAllowance[_from][msg.sender] + _value > allowance[_from][msg.sender]) throw; // Check allowance
                 balanceOf[_from] -= _value; // Subtract from the sender
                 balanceOf[_to] += _value; // Add the same to the recipient            
                 spentAllowance[_from][msg.sender] += _value;

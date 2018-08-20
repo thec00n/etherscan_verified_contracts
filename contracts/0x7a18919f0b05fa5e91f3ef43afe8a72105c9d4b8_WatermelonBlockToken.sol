@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -28,9 +28,9 @@ contract WatermelonBlockToken {
     using SafeMath for uint;
 
     // Public variables of the token
-    string constant public standard = &quot;ERC20&quot;;
-    string constant public name = &quot;WatermelonBlock tokens&quot;;
-    string constant public symbol = &quot;WMB&quot;;
+    string constant public standard = "ERC20";
+    string constant public name = "WatermelonBlock tokens";
+    string constant public symbol = "WMB";
     uint8 constant public decimals = 6;
 
     uint _totalSupply = 400000000e6; // Total supply of 400 million WatermelonBlock tokens
@@ -52,14 +52,14 @@ contract WatermelonBlockToken {
         uint lockupAmount;
     }
     Lockup lockup;
-    mapping(address=&gt;Lockup) lockupParticipants;
+    mapping(address=>Lockup) lockupParticipants;
 
     uint[] lockupTeamSum = [80000000e6,70000000e6,60000000e6,50000000e6,40000000e6,30000000e6,20000000e6,10000000e6];
     uint[] lockupTeamDate = [1535760000,1543622400,1551398400,1559347200,1567296000,1575158400,1583020800,1590969600];
 
     // Array with all balances
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     // Public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint value);
@@ -108,15 +108,15 @@ contract WatermelonBlockToken {
 
     // Send some of your tokens to a given address
     function transfer(address _to, uint _value) returns(bool) {
-        if (lockupParticipants[msg.sender].lockupAmount &gt; 0) {
-            if (now &lt; lockupParticipants[msg.sender].lockupTime) {
-                require(balances[msg.sender].sub(_value) &gt;= lockupParticipants[msg.sender].lockupAmount);
+        if (lockupParticipants[msg.sender].lockupAmount > 0) {
+            if (now < lockupParticipants[msg.sender].lockupTime) {
+                require(balances[msg.sender].sub(_value) >= lockupParticipants[msg.sender].lockupAmount);
             }
         }
         if (msg.sender == teamAddr) {
-            for (uint i = 0; i &lt; lockupTeamDate.length; i++) {
-                if (now &lt; lockupTeamDate[i])
-                    require(balances[msg.sender].sub(_value) &gt;= lockupTeamSum[i]);
+            for (uint i = 0; i < lockupTeamDate.length; i++) {
+                if (now < lockupTeamDate[i])
+                    require(balances[msg.sender].sub(_value) >= lockupTeamSum[i]);
             }
         }
         balances[msg.sender] = balances[msg.sender].sub(_value); // Subtract from the sender
@@ -128,15 +128,15 @@ contract WatermelonBlockToken {
     // A contract or person attempts to get the tokens of somebody else.
     // This is only allowed if the token holder approved.
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        if (lockupParticipants[_from].lockupAmount &gt; 0) {
-            if (now &lt; lockupParticipants[_from].lockupTime) {
-                require(balances[_from].sub(_value) &gt;= lockupParticipants[_from].lockupAmount);
+        if (lockupParticipants[_from].lockupAmount > 0) {
+            if (now < lockupParticipants[_from].lockupTime) {
+                require(balances[_from].sub(_value) >= lockupParticipants[_from].lockupAmount);
             }
         }
         if (_from == teamAddr) {
-            for (uint i = 0; i &lt; lockupTeamDate.length; i++) {
-                if (now &lt; lockupTeamDate[i])
-                    require(balances[_from].sub(_value) &gt;= lockupTeamSum[i]);
+            for (uint i = 0; i < lockupTeamDate.length; i++) {
+                if (now < lockupTeamDate[i])
+                    require(balances[_from].sub(_value) >= lockupTeamSum[i]);
             }
         }
         var _allowed = allowed[_from][msg.sender];

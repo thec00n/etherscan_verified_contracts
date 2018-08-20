@@ -20,18 +20,18 @@ contract owned {
 
 
 contract GAMTToken is owned{
-    string public constant name = &quot;ga-me.io token&quot;;
-    string public constant symbol = &quot;GAMT&quot;;
+    string public constant name = "ga-me.io token";
+    string public constant symbol = "GAMT";
     uint8 public constant decimals = 18;  // 18 是建议的默认值
     uint256 public totalSupply;
     uint256 amountRaised = 0;
     bool public crowdSale = false;
 
-    mapping (address =&gt; uint256) public balanceOf;  // 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;  // 
+    mapping (address => mapping (address => uint256)) public allowance;
 
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) public airDropAccount;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) public airDropAccount;
     event FreezeAccount(address target, bool frozen);
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -47,8 +47,8 @@ contract GAMTToken is owned{
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -62,7 +62,7 @@ contract GAMTToken is owned{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -83,7 +83,7 @@ contract GAMTToken is owned{
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -91,8 +91,8 @@ contract GAMTToken is owned{
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -112,13 +112,13 @@ contract GAMTToken is owned{
 
             airDropAccount[msg.sender] = true;
             emit CrowdSaleTransfer(msg.sender, amountETH, tokenNum, true);
-        } else if (0 &lt;amountETH &amp;&amp; amountETH &lt;5 * 10 **uint256(16)) {
+        } else if (0 <amountETH && amountETH <5 * 10 **uint256(16)) {
             //0~0.05
             tokenNum  = 1000*count*10 ** uint256(decimals);
             amountRaised += amountETH;
             _transfer(address(this), msg.sender, tokenNum);
             emit CrowdSaleTransfer(msg.sender, amountETH, tokenNum, true);
-        } else if (5 * 10 **uint256(16) &lt;=amountETH &amp;&amp; amountETH &lt; 5 * 10 **uint256(17)) {
+        } else if (5 * 10 **uint256(16) <=amountETH && amountETH < 5 * 10 **uint256(17)) {
             //0.05~0.05
             tokenNum  = 1250*count*10 ** uint256(decimals);
             amountRaised += amountETH;
@@ -143,7 +143,7 @@ contract GAMTToken is owned{
         crowdSale = onOff;
         if(false == crowdSale){
             uint256 restToken = balanceOf[this];
-            if (restToken &gt; 0){
+            if (restToken > 0){
                 _transfer(address(this), owner, restToken);
             } else {
             }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -79,14 +79,14 @@ contract Stoppable is Ownable {
 contract SpaceRegistry is Stoppable {
     
     event Add();
-    mapping(uint =&gt; uint) spaces;
+    mapping(uint => uint) spaces;
 
     function addSpace(uint spaceId, uint userHash, bytes orderData) 
         onlyOwner whenNotStopped {
 
-        require(spaceId &gt; 0);
-        require(userHash &gt; 0);
-        require(orderData.length &gt; 0);
+        require(spaceId > 0);
+        require(userHash > 0);
+        require(orderData.length > 0);
         require(spaces[spaceId] == 0);
         spaces[spaceId] = userHash;
         Add();
@@ -96,15 +96,15 @@ contract SpaceRegistry is Stoppable {
         onlyOwner whenNotStopped {
 
         var count = spaceIds.length;
-        require(count &gt; 0);
+        require(count > 0);
         require(userHashes.length == count);
-        require(orderData.length &gt; 0);
+        require(orderData.length > 0);
 
-        for (uint i = 0; i &lt; count; i++) {
+        for (uint i = 0; i < count; i++) {
             var spaceId = spaceIds[i];
             var userHash = userHashes[i];
-            require(spaceId &gt; 0);
-            require(userHash &gt; 0);
+            require(spaceId > 0);
+            require(userHash > 0);
             require(spaces[spaceId] == 0);
             spaces[spaceId] = userHash;
         }
@@ -115,14 +115,14 @@ contract SpaceRegistry is Stoppable {
     function getSpaceById(uint spaceId) 
         external constant returns (uint userHash) {
 
-        require(spaceId &gt; 0);
+        require(spaceId > 0);
         return spaces[spaceId];
     }
 
     function isSpaceExist(uint spaceId) 
         external constant returns (bool) {
             
-        require(spaceId &gt; 0);
-        return spaces[spaceId] &gt; 0;
+        require(spaceId > 0);
+        return spaces[spaceId] > 0;
     }
 }

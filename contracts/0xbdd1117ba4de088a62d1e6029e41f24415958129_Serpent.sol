@@ -1,8 +1,8 @@
 pragma solidity ^0.4.21;
 
 /**
- * @title Serpentio Contract &lt;http://serpentio.com&gt; - April 2018
- * @Author Alber Erre &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58392a3a342d3f37183f35393134763b3735">[email&#160;protected]</a>&gt; &lt;http://albererre.com&gt;
+ * @title Serpentio Contract <http://serpentio.com> - April 2018
+ * @Author Alber Erre <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58392a3a342d3f37183f35393134763b3735">[email protected]</a>> <http://albererre.com>
  * Technical details here: https://medium.com/@alber_erre/serpentio-a-snake-on-the-ethereum-blockchain-non-linear-distribution-scheme-b116bfa187d8
  */
 
@@ -30,20 +30,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -89,7 +89,7 @@ contract Serpent is Ownable {
 	using SafeMath for uint256;
 
 	// everyone should check this measure to find out how much they have earned.
-	mapping (address =&gt; uint256) public investorReturn;
+	mapping (address => uint256) public investorReturn;
 
 	uint256 public SerpenSegmentCount;
 	uint256 public SerpentCountDown;
@@ -115,9 +115,9 @@ contract Serpent is Ownable {
 
 	function Play (string _quote) payable public {
 
-		require (msg.value &gt; 0);
+		require (msg.value > 0);
         require (msg.sender != address(0)); // just in case
-        require (uint256(block.timestamp) &lt; SerpentCountDown); // nobody can play once countdown is finished
+        require (uint256(block.timestamp) < SerpentCountDown); // nobody can play once countdown is finished
 
         address thisAddress = msg.sender;
 		uint256 thisAmmount = msg.value;
@@ -133,22 +133,22 @@ contract Serpent is Ownable {
 
 	// Callback function
 	function () payable public {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
-		Play(&quot;Callback, No quote&quot;);
+		Play("Callback, No quote");
 	}
 
 	function NewSerpent (uint256 _SerpentCountDown) public onlyOwner {
 
 		// this is to avoid deleting current serpent game until the previous game has finished
-		require (uint256(block.timestamp) &gt; SerpentCountDown);
+		require (uint256(block.timestamp) > SerpentCountDown);
 		
 		SerpenSegmentCount = 0;
 		SerpentCountDown = _SerpentCountDown;
 
 		//Collect prime-number reminders from previous game calculations
 		uint256 nonPrimeReminders = 0;
-		for (uint256 p = 0; p &lt; investormapping.length; p++) {
+		for (uint256 p = 0; p < investormapping.length; p++) {
 			nonPrimeReminders.add(investorReturn[investormapping[p]]);
 		}
 		uint256 PrimeReminder = uint256(address(this).balance) - nonPrimeReminders;
@@ -163,16 +163,16 @@ contract Serpent is Ownable {
 		// Start first serpent segment
 	    SerpenSegmentCount = SerpenSegmentCount.add(1);
 	    investormapping.push(SerpentHead);
-	    AddNewSegment(SerpentHead, 1 ether, SerpenSegmentCount, uint256(block.timestamp), &quot;Everything started with Salazar Slytherin&quot;);
+	    AddNewSegment(SerpentHead, 1 ether, SerpenSegmentCount, uint256(block.timestamp), "Everything started with Salazar Slytherin");
 	}
 	
 	
 	function AddNewSegment (address _address, uint256 _amount, uint256 _segmentNumber, uint256 _time, string _quote) internal {
-	    require (_amount &gt; 0); // just in case
+	    require (_amount > 0); // just in case
 
 		// in case this is a new address, add it to mappings, if not, just do nothing
 		uint256 inList = 0;
-		for (uint256 n = 0; n &lt; investormapping.length; n++) {
+		for (uint256 n = 0; n < investormapping.length; n++) {
 			if (investormapping[n] == _address) {
 				inList = 1;
 			}
@@ -190,7 +190,7 @@ contract Serpent is Ownable {
 
 		uint256 individualAmount = _amount.div(investormapping.length);
 
-		for (uint256 a = 0; a &lt; investormapping.length; a++) {
+		for (uint256 a = 0; a < investormapping.length; a++) {
 			investorReturn[investormapping[a]] = investorReturn[investormapping[a]].add(individualAmount); 
 		}
 	}
@@ -199,8 +199,8 @@ contract Serpent is Ownable {
 
 		uint256 currentTime = uint256(block.timestamp);
 		uint256 amountToCollect = getReturns(msg.sender);
-		require (currentTime &gt; SerpentCountDown); // collect if serpent has finished
-		require(address(this).balance &gt;= amountToCollect);
+		require (currentTime > SerpentCountDown); // collect if serpent has finished
+		require(address(this).balance >= amountToCollect);
 
 		address(msg.sender).transfer(amountToCollect);
 		investorReturn[msg.sender] = 0;
@@ -223,7 +223,7 @@ contract Serpent is Ownable {
 	}
 	
 	function SerpentIsRunning () public view returns(bool) {
-		return bool(uint256(block.timestamp) &lt; SerpentCountDown);
+		return bool(uint256(block.timestamp) < SerpentCountDown);
 	}
 
   // End of contract

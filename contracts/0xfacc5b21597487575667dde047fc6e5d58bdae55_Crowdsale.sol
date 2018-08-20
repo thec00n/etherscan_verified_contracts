@@ -67,20 +67,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,7 +88,7 @@ library SafeMath {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -109,7 +109,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -153,7 +153,7 @@ contract Crowdsale is Pausable, PullPayment {
     /* But only 49%  of profit can be distributed this way for bakers who will be first
     */
 
-    uint  public  MAX_INVEST_SHARE = 4900; //  4900 from 10000 is 49%, becouse Soliditi stil don&#39;t support fixed
+    uint  public  MAX_INVEST_SHARE = 4900; //  4900 from 10000 is 49%, becouse Soliditi stil don't support fixed
 
 /* Crowdsale period */
 	uint private constant CROWDSALE_PERIOD = 62 days;
@@ -193,21 +193,21 @@ contract Crowdsale is Pausable, PullPayment {
 	bool public crowdsaleClosed;
 
 	/* Backers Ether indexed by their Ethereum address */
-	mapping(address =&gt; Backer) public backers;
+	mapping(address => Backer) public backers;
 
-    mapping(address =&gt; Potential_Investor) public Potential_Investors; // list of potential investors
+    mapping(address => Potential_Investor) public Potential_Investors; // list of potential investors
 
 
 	/*
 	* Modifiers
 	*/
 	modifier minCapNotReached() {
-		require(!((now &lt; endTime) || coinSentToEther &gt;= MIN_CAP ));
+		require(!((now < endTime) || coinSentToEther >= MIN_CAP ));
 		_;
 	}
 
 	modifier respectTimeFrame() {
-		require(!((now &lt; startTime) || (now &gt; endTime )));
+		require(!((now < startTime) || (now > endTime )));
 		_;
 	}
 
@@ -247,10 +247,10 @@ contract Crowdsale is Pausable, PullPayment {
 	 *	Receives a donation in Ether
 	*/
 	function receiveETH(address beneficiary) internal {
-		require(!(msg.value &lt; MIN_BUY_ETHER)); // Don&#39;t accept funding under a predefined threshold
-        if (multisigEther ==  beneficiary) return ; // Don&#39;t pay tokens if team refund ethers
+		require(!(msg.value < MIN_BUY_ETHER)); // Don't accept funding under a predefined threshold
+        if (multisigEther ==  beneficiary) return ; // Don't pay tokens if team refund ethers
     uint coinToSend = bonus(msg.value.mul(COIN_PER_ETHER));// Compute the number of DARFtoken to send
-		require(!(coinToSend.add(coinSentToEther) &gt; MAX_CAP));
+		require(!(coinToSend.add(coinSentToEther) > MAX_CAP));
 
         Backer backer = backers[beneficiary];
 		coin.transfer(beneficiary, coinToSend); // Transfer DARFtokens right now
@@ -259,13 +259,13 @@ contract Crowdsale is Pausable, PullPayment {
 		backer.weiReceived = backer.weiReceived.add(msg.value); // Update the total wei collected during the crowdfunding for this backer
         multisigEther.send(msg.value);
 
-        if (backer.weiReceived &gt; MIN_INVEST_BUY) {
+        if (backer.weiReceived > MIN_INVEST_BUY) {
 
             // calculate profit share
             uint share = msg.value.mul(10000).div(MIN_INVEST_BUY); // 100 = 1% from 10000
 			// compare to all profit share will LT 49%
 			LogInvestshare(msg.sender,share);
-			if (MAX_INVEST_SHARE &gt; share) {
+			if (MAX_INVEST_SHARE > share) {
 
 				Potential_Investor potential_investor = Potential_Investors[beneficiary];
 				potential_investor.coinSent = backer.coinSent;
@@ -308,14 +308,14 @@ contract Crowdsale is Pausable, PullPayment {
 
 			*/
 
-		if (amount &gt;=  BIGSELL ) {
+		if (amount >=  BIGSELL ) {
 				amount = amount.add(amount.div(10).mul(3));
 		}// bonus 30% to buying  over 50000 DARF
-		if (now &lt; startTime.add(16 days)) return amount.add(amount.div(4));   // bonus 25%
-		if (now &lt; startTime.add(18 days)) return amount.add(amount.div(5));   // bonus 20%
-		if (now &lt; startTime.add(22 days)) return amount.add(amount.div(20).mul(3));   // bonus 15%
-		if (now &lt; startTime.add(25 days)) return amount.add(amount.div(10));   // bonus 10%
-		if (now &lt; startTime.add(28 days)) return amount.add(amount.div(20));   // bonus 5
+		if (now < startTime.add(16 days)) return amount.add(amount.div(4));   // bonus 25%
+		if (now < startTime.add(18 days)) return amount.add(amount.div(5));   // bonus 20%
+		if (now < startTime.add(22 days)) return amount.add(amount.div(20).mul(3));   // bonus 15%
+		if (now < startTime.add(25 days)) return amount.add(amount.div(10));   // bonus 10%
+		if (now < startTime.add(28 days)) return amount.add(amount.div(20));   // bonus 5
 
 
 		return amount;
@@ -326,17 +326,17 @@ contract Crowdsale is Pausable, PullPayment {
 */
 	function finalize() onlyOwner public {
 
-		if (now &lt; endTime) { // Cannot finalise before CROWDSALE_PERIOD or before selling all coins
+		if (now < endTime) { // Cannot finalise before CROWDSALE_PERIOD or before selling all coins
 			require (coinSentToEther == MAX_CAP);
 		}
 
-		require(!(coinSentToEther &lt; MIN_CAP &amp;&amp; now &lt; endTime + 15 days)); // If MIN_CAP is not reached donors have 15days to get refund before we can finalise
+		require(!(coinSentToEther < MIN_CAP && now < endTime + 15 days)); // If MIN_CAP is not reached donors have 15days to get refund before we can finalise
 
 		require(multisigEther.send(this.balance)); // Move the remaining Ether to the multisig address
 
 		uint remains = coin.balanceOf(this);
 		// No burn all of my precisiossss!
-		// if (remains &gt; 0) { // Burn the rest of DARFtokens
+		// if (remains > 0) { // Burn the rest of DARFtokens
 		//	require(coin.burn(remains)) ;
 		//}
 		crowdsaleClosed = true;
@@ -371,7 +371,7 @@ contract Crowdsale is Pausable, PullPayment {
 		var remains = MAX_CAP - coinSentToEther;
 		uint minCoinsToSell = bonus(MIN_BUY_ETHER.mul(COIN_PER_ETHER) / (1 ether));
 
-		require(!(remains &gt; minCoinsToSell));
+		require(!(remains > minCoinsToSell));
 
 		Backer backer = backers[owner];
 		coin.transfer(owner, remains); // Transfer DARFtokens right now
@@ -389,9 +389,9 @@ contract Crowdsale is Pausable, PullPayment {
 
 	/*
   	 * When MIN_CAP is not reach:
-  	 * 1) backer call the &quot;approve&quot; function of the DARFtoken token contract with the amount of all DARFtokens they got in order to be refund
-  	 * 2) backer call the &quot;refund&quot; function of the Crowdsale contract with the same amount of DARFtokens
-   	 * 3) backer call the &quot;withdrawPayments&quot; function of the Crowdsale contract to get a refund in ETH
+  	 * 1) backer call the "approve" function of the DARFtoken token contract with the amount of all DARFtokens they got in order to be refund
+  	 * 2) backer call the "refund" function of the Crowdsale contract with the same amount of DARFtokens
+   	 * 3) backer call the "withdrawPayments" function of the Crowdsale contract to get a refund in ETH
    	 */
 	function refund(uint _value) minCapNotReached public {
 
@@ -404,7 +404,7 @@ contract Crowdsale is Pausable, PullPayment {
 		uint ETHToSend = backers[msg.sender].weiReceived;
 		backers[msg.sender].weiReceived=0;
 
-		if (ETHToSend &gt; 0) {
+		if (ETHToSend > 0) {
 			asyncSend(msg.sender, ETHToSend); // pull payment to get refund in ETH
 		}
 	}
@@ -421,7 +421,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -455,7 +455,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -468,7 +468,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -508,8 +508,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract DARFtoken is StandardToken, Ownable {
-  string public constant name = &quot;DARFtoken&quot;;
-  string public constant symbol = &quot;DAR&quot;;
+  string public constant name = "DARFtoken";
+  string public constant symbol = "DAR";
   uint public constant decimals = 18;
 
 

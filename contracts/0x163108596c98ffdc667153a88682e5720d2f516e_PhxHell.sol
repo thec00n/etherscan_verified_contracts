@@ -6,7 +6,7 @@
      /(_)|(_)\((_)\((_)\  ))((_|(_)
     (_))  _((_)_((_)_((_)/((_)  _
     | _ \| || \ \/ / || (_))| || |
-    |  _/| __ |&gt;  &lt;| __ / -_) || |
+    |  _/| __ |>  <| __ / -_) || |
     |_|  |_||_/_/\_\_||_\___|_||_|
 
     PHXHell - A game of timing and luck.
@@ -36,37 +36,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -81,7 +81,7 @@ contract PhxHell is ERC223ReceivingContract {
     uint constant public stakingRequirement = 5e17;   // 0.5 PHX
     uint constant public period = 1 hours;
 
-    // Event to record the end of a game so it can be added to a &#39;history&#39; page
+    // Event to record the end of a game so it can be added to a 'history' page
     event GameOver(address indexed winner, uint timestamp, uint value);
 
     // Takes PHX address as a parameter so you can point at another contract during testing
@@ -94,12 +94,12 @@ contract PhxHell is ERC223ReceivingContract {
     function payout()
         public {
 
-        // If there&#39;s no pending winner, don&#39;t do anything
+        // If there's no pending winner, don't do anything
         if (lastFunder == 0)
             return;
 
-        // If timer hasn&#39;t expire, don&#39;t do anything
-        if (now.sub(lastFund) &lt; period)
+        // If timer hasn't expire, don't do anything
+        if (now.sub(lastFund) < period)
             return;
 
         uint amount = balance;
@@ -123,8 +123,8 @@ contract PhxHell is ERC223ReceivingContract {
         // Make sure it is PHX we are receiving
         require(msg.sender == phxAddress);
 
-        // Make sure it&#39;s enough PHX
-        require(_value &gt;= stakingRequirement);
+        // Make sure it's enough PHX
+        require(_value >= stakingRequirement);
 
         // Payout if someone won already
         payout();

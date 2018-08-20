@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -42,9 +42,9 @@ contract SHITcoin is IERC20 {
     
     using SafeMath for uint256;
   
-    string public symbol = &#39;SHT&#39;;
+    string public symbol = 'SHT';
 
-    string public name = &#39;SHITcoin&#39;;
+    string public name = 'SHITcoin';
     
     uint8 public constant decimals = 18;
     
@@ -62,7 +62,7 @@ contract SHITcoin is IERC20 {
     uint8 public currentSaleDay = 1; 
     uint8 public currentBonus = 100;
     
-    string public startDate = &#39;2017-09-16 18:00&#39;;
+    string public startDate = '2017-09-16 18:00';
     
     address public owner;
     
@@ -71,8 +71,8 @@ contract SHITcoin is IERC20 {
         _;
     }
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
     function SHITcoin() {
         owner = msg.sender;
@@ -113,8 +113,8 @@ contract SHITcoin is IERC20 {
      */
     function () payable {
         require(
-            msg.value &gt; 0
-            &amp;&amp; purchasingAllowed
+            msg.value > 0
+            && purchasingAllowed
         );
         /*  everything is in wei */
         uint256 baseTokens  = msg.value.mul(tokensPerEther);
@@ -141,7 +141,7 @@ contract SHITcoin is IERC20 {
     
     function setCurrentSaleDayAndBonus(uint8 _day) onlyOwner {
         require(
-            (_day &gt; 0 &amp;&amp; _day &lt; 11) 
+            (_day > 0 && _day < 11) 
         );
 
         currentBonus = 10; 
@@ -153,10 +153,10 @@ contract SHITcoin is IERC20 {
         if(_day==2) {
             currentBonus = 75;
         }
-        if(_day&gt;=3 &amp;&amp; _day&lt;5) {
+        if(_day>=3 && _day<5) {
             currentBonus = 50;
         }
-        if(_day&gt;=5 &amp;&amp; _day&lt;8) {
+        if(_day>=5 && _day<8) {
             currentBonus = 25;
         }
 
@@ -169,11 +169,11 @@ contract SHITcoin is IERC20 {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            (balances[msg.sender] &gt;= _value)
-            &amp;&amp; (_value &gt; 0)
-            &amp;&amp; (_to != address(0))
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to])
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4)
+            (balances[msg.sender] >= _value)
+            && (_value > 0)
+            && (_to != address(0))
+            && (balances[_to].add(_value) >= balances[_to])
+            && (msg.data.length >= (2 * 32) + 4)
         );
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -184,12 +184,12 @@ contract SHITcoin is IERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            (allowed[_from][msg.sender] &gt;= _value) // Check allowance
-            &amp;&amp; (balances[_from] &gt;= _value) // Check if the sender has enough
-            &amp;&amp; (_value &gt; 0) // Don&#39;t allow 0value transfer
-            &amp;&amp; (_to != address(0)) // Prevent transfer to 0x0 address
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to]) // Check for overflows
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4) //mitigates the ERC20 short address attack
+            (allowed[_from][msg.sender] >= _value) // Check allowance
+            && (balances[_from] >= _value) // Check if the sender has enough
+            && (_value > 0) // Don't allow 0value transfer
+            && (_to != address(0)) // Prevent transfer to 0x0 address
+            && (balances[_to].add(_value) >= balances[_to]) // Check for overflows
+            && (msg.data.length >= (2 * 32) + 4) //mitigates the ERC20 short address attack
             //most of these things are not necesary
         );
         balances[_from] = balances[_from].sub(_value);

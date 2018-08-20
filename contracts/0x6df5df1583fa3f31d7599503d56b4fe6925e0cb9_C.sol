@@ -2,13 +2,13 @@ pragma solidity ^0.4.4;
 
 contract C
 {
-    mapping (bytes2 =&gt; string) languageCodeToComment;
+    mapping (bytes2 => string) languageCodeToComment;
     function C() public
     {
-        languageCodeToComment[&quot;ZH&quot;] = &quot;漢字&quot;;
+        languageCodeToComment["ZH"] = "漢字";
     }
     function m() public view returns (string)
     {
-        return languageCodeToComment[&quot;ZH&quot;];
+        return languageCodeToComment["ZH"];
     }
 }

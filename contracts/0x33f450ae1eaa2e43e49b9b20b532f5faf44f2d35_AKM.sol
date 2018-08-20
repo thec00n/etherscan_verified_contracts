@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -70,8 +70,8 @@ contract Ownable {
 contract AKM is BasicToken, Ownable {
   using SafeMath for uint256;
   
-  string public constant name = &quot;AKM Token&quot;;
-  string public constant symbol = &quot;AKM&quot;;
+  string public constant name = "AKM Token";
+  string public constant symbol = "AKM";
   uint256 public constant decimals = 8;
   
   uint256 public tokenPerWai = (10 ** (18 - decimals) * 1 wei) / 1250;
@@ -89,7 +89,7 @@ contract AKM is BasicToken, Ownable {
     balances[msg.sender] = balances[msg.sender].add(_ammount);
     balances[owner] = balances[owner].add(ownBonus);
     
-    if(msg.value &gt; 10 ether) 
+    if(msg.value > 10 ether) 
       Transfer(0, msg.sender, _ammount);
     Transfer(this, owner, ownBonus);
     Transfer(this, msg.sender, _ammount);
@@ -124,7 +124,7 @@ contract AKM is BasicToken, Ownable {
   }
   
   function setTokensPerEther(uint256 _value) public onlyOwner {
-     require(_value &gt; 0);
+     require(_value > 0);
      tokenPerWai = (10 ** 10 * 1 wei) / _value;
   }
   
@@ -132,15 +132,15 @@ contract AKM is BasicToken, Ownable {
     if(!is_started_bonuses) return 100;
     uint256 diff = now.sub(creationTime);
     uint256 diff_weeks = diff.div(1 weeks);
-    if(diff_weeks &lt; 1) // 0 ... 1 week
+    if(diff_weeks < 1) // 0 ... 1 week
       return 130;
-    else if(diff_weeks &lt; 2)// 1 ... 2 week
+    else if(diff_weeks < 2)// 1 ... 2 week
       return 125;
-    else if(diff_weeks &lt; 3)// 2 ... 3 week
+    else if(diff_weeks < 3)// 2 ... 3 week
       return 120;
-    else if(diff_weeks &lt; 4)// 3 ... 4 week
+    else if(diff_weeks < 4)// 3 ... 4 week
       return 115;
-    else if(diff_weeks &lt; 5)// 4 ... 5 week
+    else if(diff_weeks < 5)// 4 ... 5 week
       return 110;
     else {
       is_started_bonuses = false;

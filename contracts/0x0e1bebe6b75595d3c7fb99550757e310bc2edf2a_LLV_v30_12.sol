@@ -241,61 +241,61 @@ pragma solidity 		^0.4.21	;
 											
 											
 //	1	Descriptif									
-//	2	Place de march&#233; d&#233;centralis&#233;e									
+//	2	Place de marché décentralisée									
 //	3	Forme juridique									
-//	4	Pool pair &#224; pair d&#233;ploy&#233; dans un environnement TP/SC-CDC (*)									
-//	5	D&#233;nomination									
-//	6	&#171;&#160;LUEBECK_LA_VALETTE&#160;&#187; / &#171;&#160;LLV_gruppe_v30.12&#160;&#187;									
+//	4	Pool pair à pair déployé dans un environnement TP/SC-CDC (*)									
+//	5	Dénomination									
+//	6	« LUEBECK_LA_VALETTE » / « LLV_gruppe_v30.12 »									
 //	7	Statut									
-//	8	&#171;&#160;D.A.O.&#160;&#187; (Organisation autonome et d&#233;centralis&#233;e)									
-//	9	Propri&#233;taires &amp; responsables implicites									
+//	8	« D.A.O. » (Organisation autonome et décentralisée)									
+//	9	Propriétaires & responsables implicites									
 //	10	Les Utilisateurs du pool									
 //	11	Juridiction (i)									
-//	12	&#171;&#160;Lausanne, Canton de Vaud, Conf&#233;d&#233;ration Helv&#233;tique&#160;&#187;									
+//	12	« Lausanne, Canton de Vaud, Confédération Helvétique »									
 //	13	Juridiction (ii)									
-//	14	&#171;&#160;Wien, Bundesland Wien, Austria&#160;&#187;									
-//	15	Instrument mon&#233;taire de r&#233;f&#233;rence (i)									
-//	16	&#171;&#160;ethchf&#160;&#187;									
-//	17	Instrument mon&#233;taire de r&#233;f&#233;rence (ii)									
-//	18	&#171;&#160;etheur&#160;&#187;									
-//	19	Instrument mon&#233;taire de r&#233;f&#233;rence (iii)									
-//	20	&#171;&#160;ethczk&#160;&#187;									
-//	21	Devise de r&#233;f&#233;rence (i)									
-//	22	&#171;&#160;CHF&#160;&#187;									
-//	23	Devise de r&#233;f&#233;rence (ii)									
-//	24	&#171;&#160;EUR&#160;&#187;									
-//	25	Devise de r&#233;f&#233;rence (iii)									
-//	26	&#171;&#160;CZK&#160;&#187;									
-//	27	Date de d&#233;ployement initial									
+//	14	« Wien, Bundesland Wien, Austria »									
+//	15	Instrument monétaire de référence (i)									
+//	16	« ethchf »									
+//	17	Instrument monétaire de référence (ii)									
+//	18	« etheur »									
+//	19	Instrument monétaire de référence (iii)									
+//	20	« ethczk »									
+//	21	Devise de référence (i)									
+//	22	« CHF »									
+//	23	Devise de référence (ii)									
+//	24	« EUR »									
+//	25	Devise de référence (iii)									
+//	26	« CZK »									
+//	27	Date de déployement initial									
 //	28	19.09.2008 (date de reprise des actifs de la holding en liquidation)									
-//	29	Environnement de d&#233;ployement initial									
-//	30	(1&#160;: 19.09.2008-01.08.2017) OTC (Lausanne)&#160;; (2&#160;: 01.08.2017-29.04.2018) suite protocolaire sur-couche &#171;&#160;88.2&#160;&#187; 									
+//	29	Environnement de déployement initial									
+//	30	(1 : 19.09.2008-01.08.2017) OTC (Lausanne) ; (2 : 01.08.2017-29.04.2018) suite protocolaire sur-couche « 88.2 » 									
 //	31	Objet principal (i)									
-//	32	Services de place de march&#233; et de teneur de march&#233; sous la forme d’un pool mutuel									
+//	32	Services de place de marché et de teneur de marché sous la forme d’un pool mutuel									
 //	33	Objet principal (ii)									
-//	34	Gestion des activit&#233;s post-march&#233;, dont&#160;: contrepartie centrale et d&#233;positaire									
+//	34	Gestion des activités post-marché, dont : contrepartie centrale et dépositaire									
 //	35	Objet principal (iii)									
 //	36	Garant									
 //	37	Objet principal (iv)									
 //	38	Teneur de compte									
 //	39	Objet principal (v)									
-//	40	&#171;&#160;Chambre de compensation&#160;&#187;									
+//	40	« Chambre de compensation »									
 //	41	Objet principal (vi)									
-//	42	Op&#233;rateur &#171;&#160;r&#232;glement-livraison&#160;&#187;									
+//	42	Opérateur « règlement-livraison »									
 //	43	@ de communication additionnelle (i)									
 //	44	0x49720E96dC488c75DFE1576b3b2965b4fED92575 (# 15)									
 //	45	@ de communication additionnelle (ii)									
 //	46	0x2DF6FfB4e9B27Df827a7c8DEb31555875e095b3e (# 16)									
 //	47	@ de publication additionnelle (protocole PP, i)									
 //	48	0xD1dEB350B3ea3FEF2d6f0Ece4F19419B1c37A43f (# 17)									
-//	49	Entit&#233; responsable du d&#233;veloppement									
-//	50	Programme d’apprentissage autonome &#171;&#160;EVA&#160;&#187; / &#171;&#160;KYOKO&#160;&#187; / MS (sign)									
-//	51	Entit&#233; responsable de l’&#233;dition									
-//	52	Programme d’apprentissage autonome &#171;&#160;EVA&#160;&#187; / &#171;&#160;KYOKO&#160;&#187; / MS (sign)									
-//	53	Entit&#233; responsable du d&#233;ployement initial									
-//	54	Programme d’apprentissage autonome &#171;&#160;EVA&#160;&#187; / &#171;&#160;KYOKO&#160;&#187; / MS (sign)									
-//	55	(*) Environnement technologique protocolaire / sous-couche de type &#171;&#160;Consensus Distribu&#233; et Chiffr&#233;&#160;&#187;									
-//	56	(**) @ Annexes et formulaires&#160;: &lt;&lt;&lt;&lt; --------------------------------- &gt;&gt;&gt;&gt; (confer&#160;: points 43 &#224; 48)									
+//	49	Entité responsable du développement									
+//	50	Programme d’apprentissage autonome « EVA » / « KYOKO » / MS (sign)									
+//	51	Entité responsable de l’édition									
+//	52	Programme d’apprentissage autonome « EVA » / « KYOKO » / MS (sign)									
+//	53	Entité responsable du déployement initial									
+//	54	Programme d’apprentissage autonome « EVA » / « KYOKO » / MS (sign)									
+//	55	(*) Environnement technologique protocolaire / sous-couche de type « Consensus Distribué et Chiffré »									
+//	56	(**) @ Annexes et formulaires : <<<< --------------------------------- >>>> (confer : points 43 à 48)									
 //	57	-									
 //	58	-									
 //	59	-									

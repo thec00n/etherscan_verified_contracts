@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -108,7 +108,7 @@ contract Controller is Pausable, IController {
     }
 
     // Track contract ids and contract info
-    mapping (bytes32 =&gt; ContractInfo) private registry;
+    mapping (bytes32 => ContractInfo) private registry;
 
     function Controller() public {
         // Start system as paused
@@ -128,7 +128,7 @@ contract Controller is Pausable, IController {
     }
 
     /*
-     * @dev Update contract&#39;s controller
+     * @dev Update contract's controller
      * @param _id Contract id (keccak256 hash of contract name)
      * @param _controller Controller address
      */

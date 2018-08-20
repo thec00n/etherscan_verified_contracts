@@ -36,7 +36,7 @@ contract DaoAccount
 			     Modifiers
 	***************************/
 
-	modifier noEther() {if (msg.value &gt; 0) throw; _}
+	modifier noEther() {if (msg.value > 0) throw; _}
 
 	modifier onlyOwner() {if (owner != msg.sender) throw; _}
 
@@ -95,13 +95,13 @@ contract DaoAccount
 	}
 
 	function withdraw(uint256 tokens) noEther onlyDaoChallenge {
-		if (tokens == 0 || tokenBalance == 0 || tokenBalance &lt; tokens) throw;
+		if (tokens == 0 || tokenBalance == 0 || tokenBalance < tokens) throw;
 		tokenBalance -= tokens;
 		if(!owner.call.value(tokens * tokenPrice)()) throw;
 	}
 
 	function transfer(uint256 tokens, DaoAccount recipient) noEther onlyDaoChallenge {
-		if (tokens == 0 || tokenBalance == 0 || tokenBalance &lt; tokens) throw;
+		if (tokens == 0 || tokenBalance == 0 || tokenBalance < tokens) throw;
 		tokenBalance -= tokens;
 		recipient.receiveTokens.value(tokens * tokenPrice)(tokens);
 	}
@@ -121,7 +121,7 @@ contract DaoAccount
 		tokenBalance += tokens;
 	}
 
-	// The owner of the challenge can terminate it. Don&#39;t use this in a real DAO.
+	// The owner of the challenge can terminate it. Don't use this in a real DAO.
 	function terminate() noEther onlyChallengeOwner {
 		suicide(challengeOwner);
 	}
@@ -155,20 +155,20 @@ contract DaoChallenge
 	uint256 public tokensToIssue = 0;
 	uint256 public tokenPrice = 1000000000000000; // 1 finney
 
-	mapping (address =&gt; DaoAccount) public daoAccounts;
+	mapping (address => DaoAccount) public daoAccounts;
 
 	/**************************
 			 Private variables
 	***************************/
 
-	// Owner of the challenge; a real DAO doesn&#39;t an owner.
+	// Owner of the challenge; a real DAO doesn't an owner.
 	address challengeOwner;
 
 	/**************************
 					 Modifiers
 	***************************/
 
-	modifier noEther() {if (msg.value &gt; 0) throw; _}
+	modifier noEther() {if (msg.value > 0) throw; _}
 
 	modifier onlyChallengeOwner() {if (challengeOwner != msg.sender) throw; _}
 
@@ -177,7 +177,7 @@ contract DaoChallenge
 	**************************/
 
 	function DaoChallenge () {
-		challengeOwner = msg.sender; // Owner of the challenge. Don&#39;t use this in a real DAO.
+		challengeOwner = msg.sender; // Owner of the challenge. Don't use this in a real DAO.
 	}
 
 	function () noEther {
@@ -190,7 +190,7 @@ contract DaoChallenge
 	function accountFor (address accountOwner, bool createNew) private returns (DaoAccount) {
 		DaoAccount account = daoAccounts[accountOwner];
 
-		if(account == DaoAccount(0x00) &amp;&amp; createNew) {
+		if(account == DaoAccount(0x00) && createNew) {
 			account = new DaoAccount(accountOwner, tokenPrice, challengeOwner);
 			daoAccounts[accountOwner] = account;
 			notifyNewAccount(accountOwner, address(account));
@@ -228,10 +228,10 @@ contract DaoChallenge
 	// deadline: unix timestamp in seconds
 	function issueTokens (uint256 n, uint256 price, uint deadline) noEther onlyChallengeOwner {
 		// Only allow one issuing at a time:
-		if (now &lt; tokenIssueDeadline) throw;
+		if (now < tokenIssueDeadline) throw;
 
-		// Deadline can&#39;t be in the past:
-		if (deadline &lt; now) throw;
+		// Deadline can't be in the past:
+		if (deadline < now) throw;
 
 		// Issue at least 1 token
 		if (n == 0) throw;
@@ -247,13 +247,13 @@ contract DaoChallenge
 	function buyTokens () returns (uint256 tokens) {
 		tokens = msg.value / tokenPrice;
 
-		if (now &gt; tokenIssueDeadline) throw;
-		if (tokensIssued &gt;= tokensToIssue) throw;
+		if (now > tokenIssueDeadline) throw;
+		if (tokensIssued >= tokensToIssue) throw;
 
 		// This hopefully prevents issuing too many tokens
-		// if there&#39;s a race condition:
+		// if there's a race condition:
 		tokensIssued += tokens;
-		if (tokensIssued &gt; tokensToIssue) throw;
+		if (tokensIssued > tokensToIssue) throw;
 
 	  DaoAccount account = accountFor(msg.sender, true);
 		if (account.buyTokens.value(msg.value)() != tokens) throw;
@@ -281,7 +281,7 @@ contract DaoChallenge
 		notifyTransfer(msg.sender, recipient, tokens);
 	}
 
-	// The owner of the challenge can terminate it. Don&#39;t use this in a real DAO.
+	// The owner of the challenge can terminate it. Don't use this in a real DAO.
 	function terminate() noEther onlyChallengeOwner {
 		notifyTerminate(this.balance);
 		suicide(challengeOwner);

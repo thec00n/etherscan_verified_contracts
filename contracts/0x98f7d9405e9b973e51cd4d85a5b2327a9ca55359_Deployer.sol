@@ -9,25 +9,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -174,9 +174,9 @@ contract TokenToTokenSwap {
   /*
   * Constructor - Run by the factory at contract creation
   *
-  * @param &quot;_factory_address&quot;: Address of the factory that created this contract
-  * @param &quot;_creator&quot;: Address of the person who created the contract
-  * @param &quot;_userContract&quot;: Address of the _userContract that is authorized to interact with this contract
+  * @param "_factory_address": Address of the factory that created this contract
+  * @param "_creator": Address of the person who created the contract
+  * @param "_userContract": Address of the _userContract that is authorized to interact with this contract
   */
   function TokenToTokenSwap (address _factory_address, address _creator, address _userContract, uint _start_date) public {
     current_state = SwapState.created;
@@ -194,10 +194,10 @@ contract TokenToTokenSwap {
 
   /*
   * Allows the sender to create the terms for the swap
-  * @param &quot;_amount_a&quot;: Amount of Token A that should be deposited for the notional
-  * @param &quot;_amount_b&quot;: Amount of Token B that should be deposited for the notional
-  * @param &quot;_sender_is_long&quot;: Denotes whether the sender is set as the short or long party
-  * @param &quot;_senderAdd&quot;: States the owner of this side of the contract (does not have to be msg.sender)
+  * @param "_amount_a": Amount of Token A that should be deposited for the notional
+  * @param "_amount_b": Amount of Token B that should be deposited for the notional
+  * @param "_sender_is_long": Denotes whether the sender is set as the short or long party
+  * @param "_senderAdd": States the owner of this side of the contract (does not have to be msg.sender)
   */
   function CreateSwap(
     uint _amount_a,
@@ -207,7 +207,7 @@ contract TokenToTokenSwap {
     ) payable public onlyState(SwapState.created) {
 
     require(
-      msg.sender == creator || (msg.sender == userContract &amp;&amp; _senderAdd == creator)
+      msg.sender == creator || (msg.sender == userContract && _senderAdd == creator)
     );
     factory = Factory_Interface(factory_address);
     setVars();
@@ -245,8 +245,8 @@ contract TokenToTokenSwap {
 
     //Require that all of the information of the swap was entered correctly by the entering party.  Prevents partyA from exiting and changing details
     require(
-      token_a_amount == _amount_a &amp;&amp;
-      token_b_amount == _amount_b &amp;&amp;
+      token_a_amount == _amount_a &&
+      token_b_amount == _amount_b &&
       token_a_party != _senderAdd
     );
 
@@ -276,9 +276,9 @@ contract TokenToTokenSwap {
 
     //Ensure the contract has been funded by tokens a and b within 1 day
     require(
-      now &lt; (enterDate + 86400) &amp;&amp;
-      token_a.balanceOf(address(this)) &gt;= token_a_amount &amp;&amp;
-      token_b.balanceOf(address(this)) &gt;= token_b_amount
+      now < (enterDate + 86400) &&
+      token_a.balanceOf(address(this)) >= token_a_amount &&
+      token_b.balanceOf(address(this)) >= token_b_amount
     );
 
     uint tokenratio = 1;
@@ -287,7 +287,7 @@ contract TokenToTokenSwap {
     (short_token_address,tokenratio) = factory.createToken(token_b_amount, short_party,false,start_date);
     num_DRCT_shorttokens = token_b_amount.div(tokenratio);
     current_state = SwapState.tokenized;
-    if (premium &gt; 0){
+    if (premium > 0){
       if (creator == long_party){
       short_party.transfer(premium);
       }
@@ -303,32 +303,32 @@ contract TokenToTokenSwap {
   * of the Oracle.
   */
   function Calculate() internal {
-    require(now &gt;= end_date + 86400);
+    require(now >= end_date + 86400);
     //Comment out above for testing purposes
     oracle = Oracle_Interface(oracle_address);
     uint start_value = oracle.RetrieveData(start_date);
     uint end_value = oracle.RetrieveData(end_date);
 
     uint ratio;
-    if (start_value &gt; 0 &amp;&amp; end_value &gt; 0)
+    if (start_value > 0 && end_value > 0)
       ratio = (end_value).mul(100000).div(start_value);
-    else if (end_value &gt; 0)
+    else if (end_value > 0)
       ratio = 10e10;
-    else if (start_value &gt; 0)
+    else if (start_value > 0)
       ratio = 0;
     else
       ratio = 100000;
     if (ratio == 100000) {
       share_long = share_short = ratio;
-    } else if (ratio &gt; 100000) {
+    } else if (ratio > 100000) {
       share_long = ((ratio).sub(100000)).mul(multiplier).add(100000);
-      if (share_long &gt;= 200000)
+      if (share_long >= 200000)
         share_short = 0;
       else
         share_short = 200000-share_long;
     } else {
       share_short = SafeMath.sub(100000,ratio).mul(multiplier).add(100000);
-       if (share_short &gt;= 200000)
+       if (share_short >= 200000)
         share_long = 0;
       else
         share_long = 200000- share_short;
@@ -353,7 +353,7 @@ contract TokenToTokenSwap {
       pay_to_long_b = (token_b_amount).div(num_DRCT_shorttokens);
       pay_to_short_b = 0;
       pay_to_long_a = 0;
-    } else if (share_long &gt; 100000) {
+    } else if (share_long > 100000) {
       ratio = SafeMath.min(100000, (share_long).sub(100000));
       pay_to_long_b = (token_b_amount).div(num_DRCT_shorttokens);
       pay_to_short_a = (SafeMath.sub(100000,ratio)).mul(token_a_amount).div(num_DRCT_longtokens).div(100000);
@@ -375,7 +375,7 @@ contract TokenToTokenSwap {
   */
   function forcePay(uint _begin, uint _end) public returns (bool) {
     //Calls the Calculate function first to calculate short and long shares
-    if(current_state == SwapState.tokenized /*&amp;&amp; now &gt; end_date + 86400*/){
+    if(current_state == SwapState.tokenized /*&& now > end_date + 86400*/){
       Calculate();
     }
 
@@ -386,9 +386,9 @@ contract TokenToTokenSwap {
 
     token = DRCT_Token_Interface(long_token_address);
     uint count = token.addressCount(address(this));
-    uint loop_count = count &lt; _end ? count : _end;
+    uint loop_count = count < _end ? count : _end;
     //Indexing begins at 1 for DRCT_Token balances
-    for(uint i = loop_count-1; i &gt;= _begin ; i--) {
+    for(uint i = loop_count-1; i >= _begin ; i--) {
       address long_owner = token.getHolderByIndex(i, address(this));
       uint to_pay_long = token.getBalanceByIndex(i, address(this));
       paySwap(long_owner, to_pay_long, true);
@@ -396,8 +396,8 @@ contract TokenToTokenSwap {
 
     token = DRCT_Token_Interface(short_token_address);
     count = token.addressCount(address(this));
-    loop_count = count &lt; _end ? count : _end;
-    for(uint j = loop_count-1; j &gt;= _begin ; j--) {
+    loop_count = count < _end ? count : _end;
+    for(uint j = loop_count-1; j >= _begin ; j--) {
       address short_owner = token.getHolderByIndex(j, address(this));
       uint to_pay_short = token.getBalanceByIndex(j, address(this));
       paySwap(short_owner, to_pay_short, false);
@@ -415,23 +415,23 @@ contract TokenToTokenSwap {
   /*
   * This function pays the receiver an amount determined by the Calculate function
   *
-  * @param &quot;_receiver&quot;: The recipient of the payout
-  * @param &quot;_amount&quot;: The amount of token the recipient holds
-  * @param &quot;_is_long&quot;: Whether or not the reciever holds a long or short token
+  * @param "_receiver": The recipient of the payout
+  * @param "_amount": The amount of token the recipient holds
+  * @param "_is_long": Whether or not the reciever holds a long or short token
   */
   function paySwap(address _receiver, uint _amount, bool _is_long) internal {
     if (_is_long) {
-      if (pay_to_long_a &gt; 0)
+      if (pay_to_long_a > 0)
         token_a.transfer(_receiver, _amount.mul(pay_to_long_a));
-      if (pay_to_long_b &gt; 0){
+      if (pay_to_long_b > 0){
         token_b.transfer(_receiver, _amount.mul(pay_to_long_b));
       }
         factory.payToken(_receiver,long_token_address);
     } else {
 
-      if (pay_to_short_a &gt; 0)
+      if (pay_to_short_a > 0)
         token_a.transfer(_receiver, _amount.mul(pay_to_short_a));
-      if (pay_to_short_b &gt; 0){
+      if (pay_to_short_b > 0){
         token_b.transfer(_receiver, _amount.mul(pay_to_short_b));
       }
        factory.payToken(_receiver,short_token_address);
@@ -444,21 +444,21 @@ contract TokenToTokenSwap {
   * Once two parties enter the swap, the contract is null after cancelled. Once tokenized however, the contract cannot be ended.
   */
   function Exit() public {
-   if (current_state == SwapState.open &amp;&amp; msg.sender == token_a_party) {
+   if (current_state == SwapState.open && msg.sender == token_a_party) {
       token_a.transfer(token_a_party, token_a_amount);
-      if (premium&gt;0){
+      if (premium>0){
         msg.sender.transfer(premium);
       }
       delete token_a_amount;
       delete token_b_amount;
       delete premium;
       current_state = SwapState.created;
-    } else if (current_state == SwapState.started &amp;&amp; (msg.sender == token_a_party || msg.sender == token_b_party)) {
+    } else if (current_state == SwapState.started && (msg.sender == token_a_party || msg.sender == token_b_party)) {
       if (msg.sender == token_a_party || msg.sender == token_b_party) {
         token_b.transfer(token_b_party, token_b.balanceOf(address(this)));
         token_a.transfer(token_a_party, token_a.balanceOf(address(this)));
         current_state = SwapState.ended;
-        if (premium &gt; 0) { creator.transfer(premium);}
+        if (premium > 0) { creator.transfer(premium);}
       }
     }
   }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -42,7 +42,7 @@ contract Ownable {
 
 
 contract Whitelisting is Ownable {
-    mapping(address =&gt; bool) public isInvestorApproved;
+    mapping(address => bool) public isInvestorApproved;
 
     event Approved(address indexed investor);
     event Disapproved(address indexed investor);
@@ -53,7 +53,7 @@ contract Whitelisting is Ownable {
     }
 
     function approveInvestorsInBulk(address[] toApprove) public onlyOwner {
-        for (uint i=0; i&lt;toApprove.length; i++) {
+        for (uint i=0; i<toApprove.length; i++) {
             isInvestorApproved[toApprove[i]] = true;
             Approved(toApprove[i]);
         }
@@ -65,7 +65,7 @@ contract Whitelisting is Ownable {
     }
 
     function disapproveInvestorsInBulk(address[] toDisapprove) public onlyOwner {
-        for (uint i=0; i&lt;toDisapprove.length; i++) {
+        for (uint i=0; i<toDisapprove.length; i++) {
             delete isInvestorApproved[toDisapprove[i]];
             Disapproved(toDisapprove[i]);
         }

@@ -70,9 +70,9 @@ contract ERC721BuyListing is Ownable {
     }
     ERC721 public sourceContract;
     uint256 public ownerPercentage;
-    mapping (uint256 =&gt; Listing) tokenIdToListing;
+    mapping (uint256 => Listing) tokenIdToListing;
 
-    string constant public version = &quot;1.0.0&quot;;
+    string constant public version = "1.0.0";
     event ListingCreated(uint256 indexed tokenId, uint256 price, uint256 dateStarts, uint256 dateEnds, address indexed seller);
     event ListingCancelled(uint256 indexed tokenId, uint256 dateCancelled);
     event ListingBought(uint256 indexed tokenId, uint256 price, uint256 dateBought, address buyer);
@@ -101,7 +101,7 @@ contract ERC721BuyListing is Ownable {
 
     function createListing(uint256 tokenId, uint256 price, uint256 dateEnds) external {
         require(owns(msg.sender, tokenId));
-        require(price &gt; 0);
+        require(price > 0);
         Listing memory listing = Listing(msg.sender, price, now, dateEnds);
         tokenIdToListing[tokenId] = listing;
         ListingCreated(tokenId, listing.price, now, dateEnds, listing.seller);
@@ -110,7 +110,7 @@ contract ERC721BuyListing is Ownable {
     function buyListing(uint256 tokenId) external payable {
         Listing storage listing = tokenIdToListing[tokenId];
         require(msg.value == listing.price);
-        require(now &lt;= listing.dateEnds);
+        require(now <= listing.dateEnds);
         address seller = listing.seller;
         uint256 currentPrice = listing.price;
         delete tokenIdToListing[tokenId];

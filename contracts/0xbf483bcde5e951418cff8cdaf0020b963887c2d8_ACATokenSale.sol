@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -162,16 +162,16 @@ contract ACAToken is ERC20 {
     address public owner;
     address public admin;
 
-    string public name = &quot;ACA Network Token&quot;;
-    string public symbol = &quot;ACA&quot;;
+    string public name = "ACA Network Token";
+    string public symbol = "ACA";
     uint8 public decimals = 18;
 
     uint256 totalSupply_;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (address => uint256) balances;
 
     bool transferable = false;
-    mapping (address =&gt; bool) internal transferLocked;
+    mapping (address => bool) internal transferLocked;
 
     event Genesis(address owner, uint256 value);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -196,7 +196,7 @@ contract ACAToken is ERC20 {
         require(_to != address(0x0));
         require(_to != address(this));
 
-        if ( _from != owner &amp;&amp; _from != admin ) {
+        if ( _from != owner && _from != admin ) {
             require(transferable);
             require (!transferLocked[_from]);
         }
@@ -205,7 +205,7 @@ contract ACAToken is ERC20 {
 
     // constructor
     function ACAToken(uint256 _totalSupply, address _newAdmin) public {
-        require(_totalSupply &gt; 0);
+        require(_totalSupply > 0);
         require(_newAdmin != address(0x0));
         require(_newAdmin != msg.sender);
 
@@ -258,7 +258,7 @@ contract ACAToken is ERC20 {
     }
 
     function transferAllowed(address _target) public view returns (bool) {
-        return (transferable &amp;&amp; transferLocked[_target] == false);
+        return (transferable && transferLocked[_target] == false);
     }
 
     // token related
@@ -267,7 +267,7 @@ contract ACAToken is ERC20 {
     }
 
     function transfer(address _to, uint256 _value) canTransfer(msg.sender, _to) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -285,8 +285,8 @@ contract ACAToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public canTransfer(_from, _to) returns (bool) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -313,7 +313,7 @@ contract ACAToken is ERC20 {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public canTransfer(msg.sender, _spender) returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -323,9 +323,9 @@ contract ACAToken is ERC20 {
     }
 
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -360,30 +360,30 @@ contract ACATokenSale {
     }
     bool public tokenSaleEnabled = false;
 
-    mapping(address =&gt; bool) public whitelist;
-    mapping(address =&gt; bool) public kyclist;
-    mapping(address =&gt; bool) public whitelistBonus;
+    mapping(address => bool) public whitelist;
+    mapping(address => bool) public kyclist;
+    mapping(address => bool) public whitelistBonus;
 
     uint256 public whitelistBonusClosingTime;
     uint256 public whitelistBonusSent = 0;
     uint256 public whitelistBonusRate;
     uint256 public whitelistBonusAmount;
 
-    mapping (address =&gt; uint256) public sales;
+    mapping (address => uint256) public sales;
     uint256 public softCap;
     uint256 public hardCap;
     uint256 public weiRaised = 0;
 
     RefundVault public vault;
 
-    mapping (address =&gt; address) public referrals;
+    mapping (address => address) public referrals;
     uint256 public referralAmount;
     uint256 public referralRateInviter;
     uint256 public referralRateInvitee;
     uint256 public referralSent = 0;
     bool public referralDone = false;
 
-    mapping (address =&gt; uint256) public bounties;
+    mapping (address => uint256) public bounties;
     uint256 public bountyAmount;
     uint256 public bountySent = 0;
 
@@ -426,7 +426,7 @@ contract ACATokenSale {
 
     modifier onlyWhileOpen {
         require(tokenSaleEnabled == true);
-        require(now &gt;= stages[currentStage].opening &amp;&amp; now &lt;= stages[currentStage].closing);
+        require(now >= stages[currentStage].opening && now <= stages[currentStage].closing);
         _;
     }
 
@@ -448,16 +448,16 @@ contract ACATokenSale {
     }
 
     function isClosed() public view returns (bool) {
-        return now &gt; stages[maxStage - 1].closing;
+        return now > stages[maxStage - 1].closing;
     }
 
     function isGoalReached() public view returns (bool) {
-        return getTotalTokenSold() &gt;= softCap;
+        return getTotalTokenSold() >= softCap;
     }
 
     function getTotalTokenSold() public view returns (uint256) {
         uint256 sold = 0;
-        for ( uint i = 0; i &lt; maxStage; ++i ) {
+        for ( uint i = 0; i < maxStage; ++i ) {
             sold = sold.add(stages[i].sold);
         }
 
@@ -469,7 +469,7 @@ contract ACATokenSale {
     }
 
     function getOpeningTimeByStage(uint _index) public view returns (uint256) {
-        require(_index &lt; maxStage);
+        require(_index < maxStage);
         return stages[_index].opening;
     }
 
@@ -478,7 +478,7 @@ contract ACATokenSale {
     }
 
     function getClosingTimeByStage(uint _index) public view returns (uint256) {
-        require(_index &lt; maxStage);
+        require(_index < maxStage);
         return stages[_index].closing;
     }
 
@@ -487,7 +487,7 @@ contract ACATokenSale {
     }
 
     function getCapacity(uint _index) public view returns (uint256) {
-        require(_index &lt; maxStage);
+        require(_index < maxStage);
         return stages[_index].capacity;
     }
 
@@ -496,7 +496,7 @@ contract ACATokenSale {
     }
 
     function getSold(uint _index) public view returns (uint256) {
-        require(_index &lt; maxStage);
+        require(_index < maxStage);
         return stages[_index].sold;
     }
 
@@ -505,7 +505,7 @@ contract ACATokenSale {
     }
 
     function getRate(uint _index) public view returns (uint256) {
-        require(_index &lt; maxStage);
+        require(_index < maxStage);
         return stages[_index].rate;
     }
 
@@ -519,21 +519,21 @@ contract ACATokenSale {
     
     // setter
     function setSalePeriod(uint _index, uint256 _openingTime, uint256 _closingTime) onlyOwner public {
-        require(_openingTime &gt; now);
-        require(_closingTime &gt; _openingTime);
+        require(_openingTime > now);
+        require(_closingTime > _openingTime);
 
-        require(_index &gt; currentStage);
-        require(_index &lt; stages.length);
+        require(_index > currentStage);
+        require(_index < stages.length);
 
         stages[_index].opening = _openingTime;        
         stages[_index].closing = _closingTime;        
     }
 
     function setRate(uint _index, uint256 _rate) onlyOwner public {
-        require(_index &gt; currentStage);
-        require(_index &lt; stages.length);
+        require(_index > currentStage);
+        require(_index < stages.length);
 
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         stages[_index].rate = _rate;
     }
@@ -566,9 +566,9 @@ contract ACATokenSale {
         require(_admin != address(0));
         require(_wallet != address(0));
 
-        require(_totalSupply &gt; 0);
-        require(_softCap &gt; 0);
-        require(_hardCap &gt; _softCap);
+        require(_totalSupply > 0);
+        require(_softCap > 0);
+        require(_hardCap > _softCap);
 
         admin = _admin;
         wallet = _wallet;
@@ -591,15 +591,15 @@ contract ACATokenSale {
         uint256 _whitelistBonusAmount
     ) onlyOwner public {
         
-        require(_referralAmount &gt; 0);
+        require(_referralAmount > 0);
 
-        require(_referralRateInviter &gt; 0 &amp;&amp; _referralRateInviter &lt; 100);
-        require(_referralRateInvitee &gt; 0 &amp;&amp; _referralRateInvitee &lt; 100);
+        require(_referralRateInviter > 0 && _referralRateInviter < 100);
+        require(_referralRateInvitee > 0 && _referralRateInvitee < 100);
 
-        require(_whitelistBonusClosingTime &gt; now);
-        require(_whitelistBonusRate &gt; 0);
-        require(_whitelistBonusAmount &gt; _whitelistBonusRate);
-        require(_bountyAmount &gt; 0);
+        require(_whitelistBonusClosingTime > now);
+        require(_whitelistBonusRate > 0);
+        require(_whitelistBonusAmount > _whitelistBonusRate);
+        require(_bountyAmount > 0);
 
         referralAmount = _referralAmount;
         referralRateInviter = _referralRateInviter;
@@ -620,22 +620,22 @@ contract ACATokenSale {
         uint256 _rate) onlyOwner public {
         require(tokenSaleEnabled == false);
 
-        require(_openingTime &gt; now);
-        require(_closingTime &gt; _openingTime);
+        require(_openingTime > now);
+        require(_closingTime > _openingTime);
 
-        require(_capacity &gt; 0);
-        require(_capacity &lt; hardCap);
+        require(_capacity > 0);
+        require(_capacity < hardCap);
 
-        require(_minimumWei &gt; 0);
-        require(_maximumWei &gt;= _minimumWei);
+        require(_minimumWei > 0);
+        require(_maximumWei >= _minimumWei);
 
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
-        require(_minimumWei.mul(_rate) &lt; _capacity);
-        require(_maximumWei.mul(_rate) &lt; _capacity);
-        if ( stages.length &gt; 0 ) {
+        require(_minimumWei.mul(_rate) < _capacity);
+        require(_maximumWei.mul(_rate) < _capacity);
+        if ( stages.length > 0 ) {
             StageInfo memory prevStage = stages[stages.length - 1];
-            require(_openingTime &gt; prevStage.closing);
+            require(_openingTime > prevStage.closing);
         }
 
         stages.push(StageInfo(_openingTime, _closingTime, _capacity, _minimumWei, _maximumWei, _rate, 0));
@@ -647,7 +647,7 @@ contract ACATokenSale {
     }
 
     function enableTokenSale() onlyOwner public returns (bool) {
-        require(stages.length &gt; 0);
+        require(stages.length > 0);
         maxStage = stages.length;
 
         tokenSaleEnabled = true;
@@ -661,13 +661,13 @@ contract ACATokenSale {
 
     function updateStage() public returns (uint256) {
         require(tokenSaleEnabled == true);
-        require(currentStage &lt; maxStage);
-        require(now &gt;= stages[currentStage].opening);
+        require(currentStage < maxStage);
+        require(now >= stages[currentStage].opening);
 
         uint256 remains = stages[currentStage].capacity.sub(stages[currentStage].sold);
-        if ( now &gt; stages[currentStage].closing ) {
+        if ( now > stages[currentStage].closing ) {
             uint256 nextStage = currentStage.add(1);
-            if ( remains &gt; 0 &amp;&amp; nextStage &lt; maxStage ) {
+            if ( remains > 0 && nextStage < maxStage ) {
                 stages[nextStage].capacity = stages[nextStage].capacity.add(remains);
                 remains = stages[nextStage].capacity;
             }
@@ -736,20 +736,20 @@ contract ACATokenSale {
 
         require(tokenSaleEnabled == true);
 
-        require(now &gt;= stages[currentStage].opening);
+        require(now >= stages[currentStage].opening);
 
         // lazy execution
         uint256 remains = updateStage();
 
-        require(currentStage &lt; maxStage);
-        require(now &gt;= stages[currentStage].opening &amp;&amp; now &lt;= stages[currentStage].closing);
+        require(currentStage < maxStage);
+        require(now >= stages[currentStage].opening && now <= stages[currentStage].closing);
 
-        require(_weiAmount &gt;= stages[currentStage].minimumWei);
-        require(_weiAmount &lt;= stages[currentStage].maximumWei);
+        require(_weiAmount >= stages[currentStage].minimumWei);
+        require(_weiAmount <= stages[currentStage].maximumWei);
 
         uint256 amount = _getTokenAmount(_weiAmount);
 
-        require(remains &gt; amount);
+        require(remains > amount);
     }
 
     function _postValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
@@ -770,7 +770,7 @@ contract ACATokenSale {
 
         uint256 weiAmount = msg.value;
         address inviter = referrals[_beneficiary];
-        if ( inviter != address(0x0) &amp;&amp; referralDone == false ) {
+        if ( inviter != address(0x0) && referralDone == false ) {
             uint256 baseRate = _getTokenAmountWithoutBonus(weiAmount);
             uint256 referralAmountInviter = baseRate.div(100).mul(referralRateInviter);
             uint256 referralAmountInvitee = baseRate.div(100).mul(referralRateInvitee);
@@ -779,13 +779,13 @@ contract ACATokenSale {
                 referralDone = true;
             }
             else {
-                if ( referralAmountInviter &gt;= referralRemains ) {
+                if ( referralAmountInviter >= referralRemains ) {
                     referralAmountInviter = referralRemains;
                     referralAmountInvitee = 0; // priority to inviter
                     emit ReferralCapReached();
                     referralDone = true;
                 }
-                if ( referralDone == false &amp;&amp; referralAmountInviter &gt;= referralRemains ) {
+                if ( referralDone == false && referralAmountInviter >= referralRemains ) {
                     referralAmountInvitee = referralRemains.sub(referralAmountInviter);
                     emit ReferralCapReached();
                     referralDone = true;
@@ -794,11 +794,11 @@ contract ACATokenSale {
                 uint256 referralAmountTotal = referralAmountInviter.add(referralAmountInvitee);
                 referralSent = referralSent.add(referralAmountTotal);
 
-                if ( referralAmountInviter &gt; 0 ) {
+                if ( referralAmountInviter > 0 ) {
                     _deliverTokens(inviter, referralAmountInviter);
                     emit PurchaseReferral(inviter, referralAmountInviter);
                 }
-                if ( referralAmountInvitee &gt; 0 ) {
+                if ( referralAmountInvitee > 0 ) {
                     _deliverTokens(_beneficiary, referralAmountInvitee);
                     emit PurchaseReferral(_beneficiary, referralAmountInvitee);
                 }
@@ -844,15 +844,15 @@ contract ACATokenSale {
 
     // bounty
     function addBounty(address _address, uint256 _amount) public onlyAdmin isVerified(_address) returns (bool) {
-        require(bountyAmount.sub(bountySent) &gt;= _amount);
+        require(bountyAmount.sub(bountySent) >= _amount);
 
         bountySent = bountySent.add(_amount);
         bounties[_address] = bounties[_address].add(_amount);
         emit BountyUpdated(_address, true, _amount);
     }
     function delBounty(address _address, uint256 _amount) public onlyAdmin isVerified(_address) returns (bool) {
-        require(bounties[_address] &gt;= _amount);
-        require(_amount &gt;= bountySent);
+        require(bounties[_address] >= _amount);
+        require(_amount >= bountySent);
 
         bountySent = bountySent.sub(_amount);
         bounties[_address] = bounties[_address].sub(_amount);
@@ -883,7 +883,7 @@ contract ACATokenSale {
             return;
         }
         
-        if (whitelistBonusAmount.sub(whitelistBonusSent) &gt; whitelistBonusRate ) {
+        if (whitelistBonusAmount.sub(whitelistBonusSent) > whitelistBonusRate ) {
             whitelistBonus[_beneficiary] = true;
 
             whitelistBonusSent = whitelistBonusSent.add(whitelistBonusRate);
@@ -898,22 +898,22 @@ contract ACATokenSale {
     function addToWhitelist(address _beneficiary) external onlyAdmin {
         whitelist[_beneficiary] = true;
 
-        if ( whitelistBonus[_beneficiary] == false &amp;&amp; now &lt; whitelistBonusClosingTime ) {
+        if ( whitelistBonus[_beneficiary] == false && now < whitelistBonusClosingTime ) {
             _deliverWhitelistBonus(_beneficiary);
         }
     }
 
     function addManyToWhitelist(address[] _beneficiaries) external onlyAdmin {
         uint256 i = 0;
-        if ( now &lt; whitelistBonusClosingTime ) {
-            for (i = 0; i &lt; _beneficiaries.length; i++) {
+        if ( now < whitelistBonusClosingTime ) {
+            for (i = 0; i < _beneficiaries.length; i++) {
                 whitelist[_beneficiaries[i]] = true;
                 _deliverWhitelistBonus(_beneficiaries[i]);
             }
             return;
         }
 
-        for (i = 0; i &lt; _beneficiaries.length; i++) {
+        for (i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
@@ -932,7 +932,7 @@ contract ACATokenSale {
     }
 
     function setManyAccountsVerified(address[] _beneficiaries) external onlyAdmin {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             kyclist[_beneficiaries[i]] = true;
         }
     }

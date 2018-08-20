@@ -39,8 +39,8 @@ contract PostManager {
 	uint constant version = 1;                  // Version
 
 	address owner;                              // Creator of the contract
-	mapping(address =&gt; Post) posts;             // Posts
-	mapping(address =&gt; address) administrators; // Administrators
+	mapping(address => Post) posts;             // Posts
+	mapping(address => address) administrators; // Administrators
     
     // MARK:- Events
 	event AdminAdded(address _adminAddress);

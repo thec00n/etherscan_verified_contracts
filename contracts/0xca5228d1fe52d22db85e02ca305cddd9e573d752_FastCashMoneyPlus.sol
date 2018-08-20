@@ -30,8 +30,8 @@ contract FastCashMoneyPlusPermissions {
 
 // Set identifying information
 contract FastCashMoneyPlusBase is FastCashMoneyPlusPermissions {
-  string public name = &quot;FastCashMoneyPlus&quot;;
-  string public symbol = &quot;FASTCASH&quot;;
+  string public name = "FastCashMoneyPlus";
+  string public symbol = "FASTCASH";
   uint8 public decimals = 18;
 
   function updateSymbol(string _newSymbol) external onlyCentralBanker returns (bool success) {
@@ -41,16 +41,16 @@ contract FastCashMoneyPlusBase is FastCashMoneyPlusPermissions {
 }
 
 // Describe the storage mechanism of the contract
-// balanceOf refers to the standard mapping of eth address =&gt; balance
+// balanceOf refers to the standard mapping of eth address => balance
 // routingCodes refer to a shorter, human-readable string (but stored as bytes)
 // routingCodes are used primerally for referal fees, but can also be used to transfer FastCash
 contract FastCashMoneyPlusStorage is FastCashMoneyPlusBase {
-  mapping (bytes32 =&gt; address) public routingCodeMap;
-  mapping (address =&gt; uint) public balanceOf;
+  mapping (bytes32 => address) public routingCodeMap;
+  mapping (address => uint) public balanceOf;
   bytes32[] public routingCodes;
 
   function FastCashMoneyPlusStorage() {
-    bytes32 centralBankerRoutingCode = &quot;electricGOD_POWERvyS4xY69R3aR$&quot;;
+    bytes32 centralBankerRoutingCode = "electricGOD_POWERvyS4xY69R3aR$";
     routingCodes.push(centralBankerRoutingCode);
     routingCodeMap[centralBankerRoutingCode] = msg.sender;
   }
@@ -75,7 +75,7 @@ contract FastCashMoneyPlusStorage is FastCashMoneyPlusBase {
 
 // Maintain ERC20 compliance -- allow other contracts to access accounts
 contract FastCashMoneyPlusAccessControl is FastCashMoneyPlusStorage {
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   event Approval(address indexed _owner, address indexed _spender, uint _value);
 
@@ -92,8 +92,8 @@ contract FastCashMoneyPlusAccessControl is FastCashMoneyPlusStorage {
 /*
 Handle all the logic for selling FastCash to the public
   The total supply is 1000000 FastCash.
-  But, because solidity does not support floating point numbers, we create a &quot;smallest denomination&quot;, equal to 10e-18 FastCash
-  This smallest denomination is called the &quot;MoneyBuck&quot;
+  But, because solidity does not support floating point numbers, we create a "smallest denomination", equal to 10e-18 FastCash
+  This smallest denomination is called the "MoneyBuck"
   Additionally, contracts do not support numbers larger than 2^256 (~1.15e77)
 
   The price of FastCash in WEI increases by 20% every week, up to week 71.
@@ -142,14 +142,14 @@ contract FastCashMoneyPlusSales is FastCashMoneyPlusAccessControl {
 
   function getExchangeRate(uint _week, uint _value, uint _usdwei) public returns (uint) {
     uint __week;
-    if (_week &gt; 71) {
+    if (_week > 71) {
       __week = 71;
     } else {
       __week = _week;
     }
 
     uint extraAdj = 0;
-    if (__week &gt; 50) {
+    if (__week > 50) {
       extraAdj = __week - 50;
     }
 
@@ -173,8 +173,8 @@ contract FastCashMoneyPlusSales is FastCashMoneyPlusAccessControl {
 
     uint moneyBucks = getExchangeRate(_week, _value, USDWEI);
 
-    require(moneyBucks &gt; 0);
-    require(fastCashBank &gt;= moneyBucks);
+    require(moneyBucks > 0);
+    require(fastCashBank >= moneyBucks);
 
     balanceOf[msg.sender] += moneyBucks;
     fastCashBank -= moneyBucks;
@@ -194,7 +194,7 @@ contract FastCashMoneyPlusSales is FastCashMoneyPlusAccessControl {
 
     if (_referal[0] != 0) {
       uint referalFee;
-      if (fastCashBank &gt; (moneyBucks / referalBonus)) {
+      if (fastCashBank > (moneyBucks / referalBonus)) {
         referalFee = moneyBucks / referalBonus;
       } else {
         referalFee = fastCashBank;
@@ -223,9 +223,9 @@ contract FastCashMoneyPlusTransfer is FastCashMoneyPlusSales {
   ) internal returns (bool success) {
     require(_to != address(0));
     require(_to != address(this));
-    require(_amount &gt; 0);
-    require(balanceOf[_from] &gt;= _amount);
-    require(balanceOf[_to] + _amount &gt; balanceOf[_to]);
+    require(_amount > 0);
+    require(balanceOf[_from] >= _amount);
+    require(balanceOf[_to] + _amount > balanceOf[_to]);
 
     balanceOf[_from] -= _amount;
     balanceOf[_to] += _amount;
@@ -240,7 +240,7 @@ contract FastCashMoneyPlusTransfer is FastCashMoneyPlusSales {
   }
 
   function transferFrom(address _from, address _to, uint _amount) external returns (bool success) {
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
 
     bool tranferSuccess = _transfer(_from, _to, _amount);
     if (tranferSuccess) {
@@ -265,9 +265,9 @@ contract FastCashMoneyPlusTransfer is FastCashMoneyPlusSales {
 
   function _transferFromBank(address _to, uint _amount) internal returns (bool success) {
     require(_to != address(0));
-    require(_amount &gt; 0);
-    require(fastCashBank &gt;= _amount);
-    require(balanceOf[_to] + _amount &gt; balanceOf[_to]);
+    require(_amount > 0);
+    require(fastCashBank >= _amount);
+    require(balanceOf[_to] + _amount > balanceOf[_to]);
 
     fastCashBank -= _amount;
     balanceOf[_to] += _amount;

@@ -20,10 +20,10 @@ contract owned {
 
 contract PublicSaleManager is owned {
 
-    mapping (address =&gt; bool) _earlyList;
-    mapping (address =&gt; bool) _whiteList;
-    mapping (address =&gt; uint256) _bonus;
-    mapping (address =&gt; uint256) _contributedETH;
+    mapping (address => bool) _earlyList;
+    mapping (address => bool) _whiteList;
+    mapping (address => uint256) _bonus;
+    mapping (address => uint256) _contributedETH;
 
     address _tokenAddress = 0xAF815e887b039Fc06a8ddDcC7Ec4f57757616Cd2;
     address _deadAddress = 0x000000000000000000000000000000000000dead;
@@ -41,21 +41,21 @@ contract PublicSaleManager is owned {
 
     function addWhitelist(address[] addressList) public onlyOwner {
         // Whitelist is managed manually and addresses are added in batch.
-        for (uint i = 0; i &lt; addressList.length; i++) {
+        for (uint i = 0; i < addressList.length; i++) {
             _whiteList[addressList[i]] = true;
         }
     }
     
     function addEarlylist(address[] addressList) public onlyOwner {
         // Whitelist is managed manually and addresses are added in batch.
-        for (uint i = 0; i &lt; addressList.length; i++) {
+        for (uint i = 0; i < addressList.length; i++) {
             _earlyList[addressList[i]] = true;
         }
     }
 
     function start(uint32 conversionRate) public onlyOwner {
         require(_startTime == 0);
-        require(conversionRate &gt; 1);
+        require(conversionRate > 1);
 
         // Starts the public sale.
         _startTime = now;
@@ -69,7 +69,7 @@ contract PublicSaleManager is owned {
     }
 
     function burnUnsold() public onlyOwner {
-        require(now &gt;= _startTime + (31 days));
+        require(now >= _startTime + (31 days));
 
         // Transfers all un-sold tokens to 0x000...dead.
         ERC20(_tokenAddress).transfer(_deadAddress, ERC20(_tokenAddress).balanceOf(this) - _totalBonus);
@@ -86,33 +86,33 @@ contract PublicSaleManager is owned {
         require(_whiteList[msg.sender] == true || _earlyList[msg.sender] == true);
 
         if (_earlyList[msg.sender]) {
-            require(msg.value + _contributedETH[msg.sender] &lt;= _higherPersonalCap);
+            require(msg.value + _contributedETH[msg.sender] <= _higherPersonalCap);
         } else {
-            require(msg.value + _contributedETH[msg.sender] &lt;= _regularPersonalCap);
+            require(msg.value + _contributedETH[msg.sender] <= _regularPersonalCap);
         }
 
-        require(msg.value &gt;= _minimumAmount);
+        require(msg.value >= _minimumAmount);
 
         // Validates time.
-        require(now &gt; _startTime);
-        require(now &lt; _startTime + (31 days));
+        require(now > _startTime);
+        require(now < _startTime + (31 days));
 
         // Calculates the purchase amount.
         uint256 purchaseAmount = msg.value * _conversionRate;
-        require(_conversionRate &gt; 0 &amp;&amp; purchaseAmount / _conversionRate == msg.value);
+        require(_conversionRate > 0 && purchaseAmount / _conversionRate == msg.value);
 
         // Calculates the bonus amount.
         uint256 bonus = 0;
-        if (_totalSold + purchaseAmount &lt; 5e26) {
+        if (_totalSold + purchaseAmount < 5e26) {
             // 10% bonus for the first 500 million OGT.
             bonus = purchaseAmount / 10;
-        } else if (_totalSold + purchaseAmount &lt; 10e26) {
+        } else if (_totalSold + purchaseAmount < 10e26) {
             // 5% bonus for the first 1 billion OGT.
             bonus = purchaseAmount / 20;
         }
 
         // Checks that we still have enough balance.
-        require(ERC20(_tokenAddress).balanceOf(this) &gt;= _totalBonus + purchaseAmount + bonus);
+        require(ERC20(_tokenAddress).balanceOf(this) >= _totalBonus + purchaseAmount + bonus);
 
         // Transfers the non-bonus part.
         ERC20(_tokenAddress).transfer(msg.sender, purchaseAmount);
@@ -130,10 +130,10 @@ contract PublicSaleManager is owned {
         require(_whiteList[msg.sender] == true || _earlyList[msg.sender] == true);
         
         // Validates bonus.
-        require(_bonus[msg.sender] &gt; 0);
+        require(_bonus[msg.sender] > 0);
 
-        // Transfers the bonus if it&#39;s after 90 days.
-        if (now &gt; _startTime + (90 days)) {
+        // Transfers the bonus if it's after 90 days.
+        if (now > _startTime + (90 days)) {
             ERC20(_tokenAddress).transfer(msg.sender, _bonus[msg.sender]);
             _bonus[msg.sender] = 0;
         }

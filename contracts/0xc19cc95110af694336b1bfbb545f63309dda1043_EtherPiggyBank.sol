@@ -4,12 +4,12 @@ pragma solidity ^0.4.18;
 // EtherPiggyBank
 // (etherpiggybank.com)
 //        
-//   &lt;`--&#39;\&gt;______
-//   /. .  `&#39;     \
-//  (`&#39;)  ,        @
+//   <`--'\>______
+//   /. .  `'     \
+//  (`')  ,        @
 //   `-._,        /
-//      )-)_/--( &gt;  
-//     &#39;&#39;&#39;&#39;  &#39;&#39;&#39;&#39;
+//      )-)_/--( >  
+//     ''''  ''''
 //
 // Invest Ethereum into a long term stable solution where
 // your investment can grow organically as the system expands.
@@ -24,7 +24,7 @@ pragma solidity ^0.4.18;
 // every time someone makes a deposit into the Ether Piggy Bank,
 // they will receive a percentage of that sale in their
 // affiliate commision.
-// You can buy this position off anyone and double it&#39;s current
+// You can buy this position off anyone and double it's current
 // buying price but every 3-7 days (depending on the position),
 // the buying price will halve until it reaches 0.125 ether.
 // Upon buying, the previous investor gets 75% of the buying price,
@@ -33,23 +33,23 @@ pragma solidity ^0.4.18;
 //
 // You will also receive a 5% bonus, which will appear in your
 // affiliate commission, by referring another player to the game 
-// via your referral URL! It&#39;s a HYIP on a smart contract, fully
-// transparent and you&#39;ll never need to worry about an exit scam or
+// via your referral URL! It's a HYIP on a smart contract, fully
+// transparent and you'll never need to worry about an exit scam or
 // someone taking all the money and leaving!
 
 
 contract EtherPiggyBank {
     
     // investment tracking for each address
-    mapping (address =&gt; uint256) public investedETH;
-    mapping (address =&gt; uint256) public lastInvest;
+    mapping (address => uint256) public investedETH;
+    mapping (address => uint256) public lastInvest;
     
     // for referrals and investor positions
-    mapping (address =&gt; uint256) public affiliateCommision;
+    mapping (address => uint256) public affiliateCommision;
     uint256 REF_BONUS = 4; // 4% of the ether invested
-    // goes into the ref address&#39; affiliate commision
+    // goes into the ref address' affiliate commision
     uint256 DEV_TAX = 1; // 1% of all ether invested
-    // goes into the dev address&#39; affiliate commision
+    // goes into the dev address' affiliate commision
     
     uint256 BASE_PRICE = 0.125 ether; // 1/8 ether
     uint256 INHERITANCE_TAX = 75; // 75% will be returned to the
@@ -108,9 +108,9 @@ contract EtherPiggyBank {
     
     function investETH(address referral) public payable {
         
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
         
-        if (getProfit(msg.sender) &gt; 0) {
+        if (getProfit(msg.sender) > 0) {
             uint256 profit = getProfit(msg.sender);
             lastInvest[msg.sender] = now;
             msg.sender.transfer(profit);
@@ -120,11 +120,11 @@ contract EtherPiggyBank {
 
         // handle all of our investor positions first
         bool flaggedRef = (referral == msg.sender || referral == dev); // ref cannot be the sender or the dev
-        for(uint256 i = 0; i &lt; investorPositions.length; i++) {
+        for(uint256 i = 0; i < investorPositions.length; i++) {
             
             InvestorPosition memory position = investorPositions[i];
 
-            // check that our ref isn&#39;t an investor too
+            // check that our ref isn't an investor too
             if (position.investor == referral) {
                 flaggedRef = true;
             }
@@ -138,7 +138,7 @@ contract EtherPiggyBank {
         }
 
         // now for the referral (if we have one)
-        if (!flaggedRef &amp;&amp; referral != 0x0) {
+        if (!flaggedRef && referral != 0x0) {
             uint256 refBonus = SafeMath.div(SafeMath.mul(amount, REF_BONUS), 100); // 4%
             affiliateCommision[referral] = SafeMath.add(affiliateCommision[referral], refBonus);
         }
@@ -165,7 +165,7 @@ contract EtherPiggyBank {
         
         uint256 total = SafeMath.add(capital, profit);
 
-        require(total &gt; 0);
+        require(total > 0);
         investedETH[msg.sender] = 0;
         lastInvest[msg.sender] = now;
         msg.sender.transfer(total);
@@ -176,7 +176,7 @@ contract EtherPiggyBank {
 
         uint256 profit = getProfit(msg.sender);
 
-        require(profit &gt; 0);
+        require(profit > 0);
         lastInvest[msg.sender] = now;
         msg.sender.transfer(profit);
 
@@ -184,7 +184,7 @@ contract EtherPiggyBank {
 
     function withdrawAffiliateCommision() public {
 
-        require(affiliateCommision[msg.sender] &gt; 0);
+        require(affiliateCommision[msg.sender] > 0);
         uint256 commision = affiliateCommision[msg.sender];
         affiliateCommision[msg.sender] = 0;
         msg.sender.transfer(commision);
@@ -195,7 +195,7 @@ contract EtherPiggyBank {
 
         uint256 profit = getProfit(msg.sender);
 
-        require(profit &gt; 0);
+        require(profit > 0);
         lastInvest[msg.sender] = now;
         investedETH[msg.sender] = SafeMath.add(investedETH[msg.sender], profit);
 
@@ -203,14 +203,14 @@ contract EtherPiggyBank {
 
     function inheritInvestorPosition(uint256 index) public payable {
 
-        require(investorPositions.length &gt; index);
+        require(investorPositions.length > index);
         require(msg.sender == tx.origin);
 
         InvestorPosition storage position = investorPositions[index];
         uint256 currentLevel = getCurrentLevel(position.startingLevel, position.startingTime, position.halfLife);
         uint256 currentPrice = getCurrentPrice(currentLevel);
 
-        require(msg.value &gt;= currentPrice);
+        require(msg.value >= currentPrice);
         uint256 purchaseExcess = SafeMath.sub(msg.value, currentPrice);
         position.startingLevel = currentLevel + 1;
         position.startingTime = now;
@@ -244,7 +244,7 @@ contract EtherPiggyBank {
     function getCurrentLevel(uint256 startingLevel, uint256 startingTime, uint256 halfLife) internal view returns(uint256) {
         uint256 timePassed = SafeMath.sub(now, startingTime);
         uint256 levelsPassed = SafeMath.div(timePassed, halfLife);
-        if (startingLevel &lt; levelsPassed) {
+        if (startingLevel < levelsPassed) {
             return 0;
         }
         return SafeMath.sub(startingLevel,levelsPassed);
@@ -291,9 +291,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -301,7 +301,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -310,7 +310,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

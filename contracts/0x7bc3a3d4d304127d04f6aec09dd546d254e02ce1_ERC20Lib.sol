@@ -25,7 +25,7 @@ pragma solidity ^0.4.11;
  * about the application of blockchain technology.
  * For further information: majoolr.io, aragon.one
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -38,8 +38,8 @@ library ERC20Lib {
   using BasicMathLib for uint256;
 
   struct TokenStorage {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint totalSupply;
   }
 
@@ -56,7 +56,7 @@ library ERC20Lib {
     self.balances[msg.sender] = _initial_supply;
   }
 
-  /// @dev Transfer tokens from caller&#39;s account to another account.
+  /// @dev Transfer tokens from caller's account to another account.
   /// @param self Stored token from token contract
   /// @param _to Address to send tokens
   /// @param _value Number of tokens to send
@@ -67,11 +67,11 @@ library ERC20Lib {
 
     (err,balance) = self.balances[msg.sender].minus(_value);
     if(err) {
-      ErrorMsg(&quot;Balance too low for transfer&quot;);
+      ErrorMsg("Balance too low for transfer");
       return false;
     }
     self.balances[msg.sender] = balance;
-    //It&#39;s not possible to overflow token supply
+    //It's not possible to overflow token supply
     self.balances[_to] = self.balances[_to] + _value;
     Transfer(msg.sender, _to, _value);
     return true;
@@ -95,13 +95,13 @@ library ERC20Lib {
 
     (err,balanceOwner) = self.balances[_from].minus(_value);
     if(err) {
-      ErrorMsg(&quot;Balance too low for transfer&quot;);
+      ErrorMsg("Balance too low for transfer");
       return false;
     }
 
     (err,balanceSpender) = _allowance.minus(_value);
     if(err) {
-      ErrorMsg(&quot;Transfer exceeds allowance&quot;);
+      ErrorMsg("Transfer exceeds allowance");
       return false;
     }
     self.balances[_from] = balanceOwner;
@@ -120,7 +120,7 @@ library ERC20Lib {
     return self.balances[_owner];
   }
 
-  /// @dev Authorize an account to send tokens on caller&#39;s behalf
+  /// @dev Authorize an account to send tokens on caller's behalf
   /// @param self Stored token from token contract
   /// @param _spender Address to authorize
   /// @param _value Number of tokens authorized account may send
@@ -135,7 +135,7 @@ library ERC20Lib {
   /// @param self Stored token from token contract
   /// @param _owner Address of token holder
   /// @param _spender Address of authorized spender
-  /// @return remaining Number of tokens spender has left in owner&#39;s account
+  /// @return remaining Number of tokens spender has left in owner's account
   function allowance(TokenStorage storage self, address _owner, address _spender) constant returns (uint256 remaining) {
     return self.allowed[_owner][_spender];
   }
@@ -161,7 +161,7 @@ pragma solidity ^0.4.11;
  * about the application of blockchain technology.
  * For further information: majoolr.io, openzeppelin.org
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -188,7 +188,7 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;times func overflow&quot;);
+      Err("times func overflow");
   }
 
   /// @dev Divides two numbers but checks for 0 in the divisor first.
@@ -205,7 +205,7 @@ library BasicMathLib {
       return(mload(0x40),0x40)
       e:
     }
-    Err(&quot;tried to divide by zero&quot;);
+    Err("tried to divide by zero");
     return (true, 0);
   }
 
@@ -224,7 +224,7 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;plus func overflow&quot;);
+      Err("plus func overflow");
   }
 
   /// @dev Subtracts two numbers and checks for underflow before returning.
@@ -242,6 +242,6 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;minus func underflow&quot;);
+      Err("minus func underflow");
   }
 }

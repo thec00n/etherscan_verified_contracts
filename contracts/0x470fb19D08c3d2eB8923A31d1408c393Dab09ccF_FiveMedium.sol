@@ -23,7 +23,7 @@ contract FiveMedium {
 
 		uint256 timestamp;
 	}
-	mapping (uint256 =&gt; thread) public threads;
+	mapping (uint256 => thread) public threads;
 	uint256 public indexThreads = 1;
 
 	// the replies
@@ -36,7 +36,7 @@ contract FiveMedium {
 
 		uint256 timestamp;
 	}
-	mapping (uint256 =&gt; reply) public replies;
+	mapping (uint256 => reply) public replies;
 	uint256 public indexReplies = 1;
 
 	// last 20 active threads 
@@ -81,7 +81,7 @@ contract FiveMedium {
 	// To create a Thread
 	function createThread(string _text, string _imageUrl) payable public {
 		// collect the fees
-		require(msg.value &gt;= feeNewThread); 
+		require(msg.value >= feeNewThread); 
 		// calculate a new thread ID and post
 		threads[indexThreads] = thread(_text, _imageUrl, 0, 0, now);
 		// add it to our last active threads array
@@ -96,22 +96,22 @@ contract FiveMedium {
 	// To reply to a thread
 	function replyThread(uint256 _replyTo, string _text, string _imageUrl)  payable public {
 		// collect the fees
-		require(msg.value &gt;= feeReplyThread);
-		// make sure you can&#39;t reply to an inexistant thread
-		require(_replyTo &lt; indexThreads &amp;&amp; _replyTo &gt; 0);
+		require(msg.value >= feeReplyThread);
+		// make sure you can't reply to an inexistant thread
+		require(_replyTo < indexThreads && _replyTo > 0);
 		// post the reply with nextReply = 0 (this is the last message in the chain)
 		replies[indexReplies] = reply(_text, _imageUrl, _replyTo, 0, now);
 		// update the thread 
-		if(threads[_replyTo].indexFirstReply == 0){// we&#39;re first
+		if(threads[_replyTo].indexFirstReply == 0){// we're first
 			threads[_replyTo].indexFirstReply = indexReplies;
 			threads[_replyTo].indexLastReply = indexReplies;
 		}
-		else { // we&#39;re not first so we update the previous reply as well
+		else { // we're not first so we update the previous reply as well
 			replies[threads[_replyTo].indexLastReply].nextReply = indexReplies;
 			threads[_replyTo].indexLastReply = indexReplies;
 		}
 		// update the last active threads 
-		for (uint8 i = 0; i &lt; 20; i++) { 
+		for (uint8 i = 0; i < 20; i++) { 
 			if(lastThreads[i] == _replyTo) {
 				break; // already in the list
 			}

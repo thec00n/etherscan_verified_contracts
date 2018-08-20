@@ -11,7 +11,7 @@ pragma solidity ^0.4.24;
  *                            (__ /          (_/ (, /                                      /)™ 
  *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
  * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
- * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+ * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
  * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
  *              JJJJJJJJJJUUUUUUUU     UUUUUUUU  SSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTT
  *==============J:::::::::U::::::U=====U::::::USS:::::::::::::::T:::::::::::::::::::::T======*
@@ -37,8 +37,8 @@ pragma solidity ^0.4.24;
  *         ┌──────────────────────────────────────────────────────────────────────┐
  *         │ Que up intensely spectacular intro music...  In walks, Team Just.    │
  *         │                         Everyone goes crazy.                         │
- *         │ This is a companion to MSFun.  It&#39;s a central database of Devs and   │
- *         │ Admin&#39;s that we can import to any dapp to allow them management      │
+ *         │ This is a companion to MSFun.  It's a central database of Devs and   │
+ *         │ Admin's that we can import to any dapp to allow them management      │
  *         │ permissions.                                                         │
  *         └──────────────────────────────────────────────────────────────────────┘
  *                                ┌────────────────────┐
@@ -46,14 +46,14 @@ pragma solidity ^0.4.24;
  *                                └────────────────────┘
  * (Step 1) import this contracts interface into your contract
  * 
- *    import &quot;./TeamJustInterface.sol&quot;;
+ *    import "./TeamJustInterface.sol";
  *
  * (Step 2) set up the interface to point to the TeamJust contract
  * 
  *    TeamJustInterface constant TeamJust = TeamJustInterface(0x464904238b5CdBdCE12722A7E6014EC1C0B66928);
  *
- *    modifier onlyAdmins() {require(TeamJust.isAdmin(msg.sender) == true, &quot;onlyAdmins failed - msg.sender is not an admin&quot;); _;}
- *    modifier onlyDevs() {require(TeamJust.isDev(msg.sender) == true, &quot;onlyDevs failed - msg.sender is not a dev&quot;); _;}
+ *    modifier onlyAdmins() {require(TeamJust.isAdmin(msg.sender) == true, "onlyAdmins failed - msg.sender is not an admin"); _;}
+ *    modifier onlyDevs() {require(TeamJust.isDev(msg.sender) == true, "onlyDevs failed - msg.sender is not a dev"); _;}
  *                                ┌────────────────────┐
  *                                │ Usage Instructions │
  *                                └────────────────────┘
@@ -99,7 +99,7 @@ contract TeamJust {
         bool isDev;
         bytes32 name;
     }
-    mapping (address =&gt; Admin) admins_;
+    mapping (address => Admin) admins_;
     
     uint256 adminCount_;
     uint256 devCount_;
@@ -118,11 +118,11 @@ contract TeamJust {
         address sumpunk  = 0x7ac74Fcc1a71b106F12c55ee8F802C9F672Ce40C;
 		address deployer = 0xF39e044e1AB204460e06E87c6dca2c6319fC69E3;
         
-        admins_[inventor] = Admin(true, true, &quot;inventor&quot;);
-        admins_[mantso]   = Admin(true, true, &quot;mantso&quot;);
-        admins_[justo]    = Admin(true, true, &quot;justo&quot;);
-        admins_[sumpunk]  = Admin(true, true, &quot;sumpunk&quot;);
-		admins_[deployer] = Admin(true, true, &quot;deployer&quot;);
+        admins_[inventor] = Admin(true, true, "inventor");
+        admins_[mantso]   = Admin(true, true, "mantso");
+        admins_[justo]    = Admin(true, true, "justo");
+        admins_[sumpunk]  = Admin(true, true, "sumpunk");
+		admins_[deployer] = Admin(true, true, "deployer");
         
         adminCount_ = 5;
         devCount_ = 5;
@@ -155,13 +155,13 @@ contract TeamJust {
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     modifier onlyDevs()
     {
-        require(admins_[msg.sender].isDev == true, &quot;onlyDevs failed - msg.sender is not a dev&quot;);
+        require(admins_[msg.sender].isDev == true, "onlyDevs failed - msg.sender is not a dev");
         _;
     }
     
     modifier onlyAdmins()
     {
-        require(admins_[msg.sender].isAdmin == true, &quot;onlyAdmins failed - msg.sender is not an admin&quot;);
+        require(admins_[msg.sender].isAdmin == true, "onlyAdmins failed - msg.sender is not an admin");
         _;
     }
 
@@ -178,9 +178,9 @@ contract TeamJust {
         public
         onlyDevs()
     {
-        if (MSFun.multiSig(msData, requiredDevSignatures_, &quot;addAdmin&quot;) == true) 
+        if (MSFun.multiSig(msData, requiredDevSignatures_, "addAdmin") == true) 
         {
-            MSFun.deleteProposal(msData, &quot;addAdmin&quot;);
+            MSFun.deleteProposal(msData, "addAdmin");
             
             // must check this so we dont mess up admin count by adding someone
             // who is already an admin
@@ -229,18 +229,18 @@ contract TeamJust {
     {
         // we can put our requires outside the multisig, this will prevent
         // creating a proposal that would never pass checks anyway.
-        require(adminCount_ &gt; 1, &quot;removeAdmin failed - cannot have less than 2 admins&quot;);
-        require(adminCount_ &gt;= requiredSignatures_, &quot;removeAdmin failed - cannot have less admins than number of required signatures&quot;);
+        require(adminCount_ > 1, "removeAdmin failed - cannot have less than 2 admins");
+        require(adminCount_ >= requiredSignatures_, "removeAdmin failed - cannot have less admins than number of required signatures");
         if (admins_[_who].isDev == true)
         {
-            require(devCount_ &gt; 1, &quot;removeAdmin failed - cannot have less than 2 devs&quot;);
-            require(devCount_ &gt;= requiredDevSignatures_, &quot;removeAdmin failed - cannot have less devs than number of required dev signatures&quot;);
+            require(devCount_ > 1, "removeAdmin failed - cannot have less than 2 devs");
+            require(devCount_ >= requiredDevSignatures_, "removeAdmin failed - cannot have less devs than number of required dev signatures");
         }
         
         // checks passed
-        if (MSFun.multiSig(msData, requiredDevSignatures_, &quot;removeAdmin&quot;) == true) 
+        if (MSFun.multiSig(msData, requiredDevSignatures_, "removeAdmin") == true) 
         {
-            MSFun.deleteProposal(msData, &quot;removeAdmin&quot;);
+            MSFun.deleteProposal(msData, "removeAdmin");
             
             // must check this so we dont mess up admin count by removing someone
             // who wasnt an admin to start with
@@ -251,7 +251,7 @@ contract TeamJust {
                 
                 //adjust admin count and required signatures
                 adminCount_ -= 1;
-                if (requiredSignatures_ &gt; 1) 
+                if (requiredSignatures_ > 1) 
                 {
                     requiredSignatures_ -= 1;
                 }
@@ -265,7 +265,7 @@ contract TeamJust {
                 
                 //adjust dev count and required dev signatures
                 devCount_ -= 1;
-                if (requiredDevSignatures_ &gt; 1) 
+                if (requiredDevSignatures_ > 1) 
                 {
                     requiredDevSignatures_ -= 1;
                 }
@@ -283,11 +283,11 @@ contract TeamJust {
         onlyDevs()
     {  
         // make sure its between 1 and number of admins
-        require(_howMany &gt; 0 &amp;&amp; _howMany &lt;= adminCount_, &quot;changeRequiredSignatures failed - must be between 1 and number of admins&quot;);
+        require(_howMany > 0 && _howMany <= adminCount_, "changeRequiredSignatures failed - must be between 1 and number of admins");
         
-        if (MSFun.multiSig(msData, requiredDevSignatures_, &quot;changeRequiredSignatures&quot;) == true) 
+        if (MSFun.multiSig(msData, requiredDevSignatures_, "changeRequiredSignatures") == true) 
         {
-            MSFun.deleteProposal(msData, &quot;changeRequiredSignatures&quot;);
+            MSFun.deleteProposal(msData, "changeRequiredSignatures");
             
             // store new setting.
             requiredSignatures_ = _howMany;
@@ -304,11 +304,11 @@ contract TeamJust {
         onlyDevs()
     {  
         // make sure its between 1 and number of admins
-        require(_howMany &gt; 0 &amp;&amp; _howMany &lt;= devCount_, &quot;changeRequiredDevSignatures failed - must be between 1 and number of devs&quot;);
+        require(_howMany > 0 && _howMany <= devCount_, "changeRequiredDevSignatures failed - must be between 1 and number of devs");
         
-        if (MSFun.multiSig(msData, requiredDevSignatures_, &quot;changeRequiredDevSignatures&quot;) == true) 
+        if (MSFun.multiSig(msData, requiredDevSignatures_, "changeRequiredDevSignatures") == true) 
         {
-            MSFun.deleteProposal(msData, &quot;changeRequiredDevSignatures&quot;);
+            MSFun.deleteProposal(msData, "changeRequiredDevSignatures");
             
             // store new setting.
             requiredDevSignatures_ = _howMany;
@@ -334,7 +334,7 @@ library MSFun {
     // contact data setup
     struct Data 
     {
-        mapping (bytes32 =&gt; ProposalData) proposal_;
+        mapping (bytes32 => ProposalData) proposal_;
     }
     struct ProposalData 
     {
@@ -343,9 +343,9 @@ library MSFun {
         // number of signers
         uint256 count;
         // tracking of wither admins have signed
-        mapping (address =&gt; bool) admin;
+        mapping (address => bool) admin;
         // list of admins who have signed
-        mapping (uint256 =&gt; address) log;
+        mapping (uint256 => address) log;
     }
     
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -357,7 +357,7 @@ library MSFun {
     {
         // our proposal key will be a hash of our function name + our contracts address 
         // by adding our contracts address to this, we prevent anyone trying to circumvent
-        // the proposal&#39;s security via external calls.
+        // the proposal's security via external calls.
         bytes32 _whatProposal = whatProposal(_whatFunction);
         
         // this is just done to make the code more readable.  grabs the signature count
@@ -438,9 +438,9 @@ library MSFun {
         bytes32 _whatProposal = whatProposal(_whatFunction);
         address _whichAdmin;
         
-        //delete the admins votes &amp; log.   i know for loops are terrible.  but we have to do this 
-        //for our data stored in mappings.  simply deleting the proposal itself wouldn&#39;t accomplish this.
-        for (uint256 i=0; i &lt; self.proposal_[_whatProposal].count; i++) {
+        //delete the admins votes & log.   i know for loops are terrible.  but we have to do this 
+        //for our data stored in mappings.  simply deleting the proposal itself wouldn't accomplish this.
+        for (uint256 i=0; i < self.proposal_[_whatProposal].count; i++) {
             _whichAdmin = self.proposal_[_whatProposal].log[i];
             delete self.proposal_[_whatProposal].admin[_whichAdmin];
             delete self.proposal_[_whatProposal].log[i];
@@ -490,7 +490,7 @@ library MSFun {
         view
         returns (address signer)
     {
-        require(_signer &gt; 0, &quot;MSFun checkSigner failed - 0 not allowed&quot;);
+        require(_signer > 0, "MSFun checkSigner failed - 0 not allowed");
         bytes32 _whatProposal = whatProposal(_whatFunction);
         return (self.proposal_[_whatProposal].log[_signer - 1]);
     }

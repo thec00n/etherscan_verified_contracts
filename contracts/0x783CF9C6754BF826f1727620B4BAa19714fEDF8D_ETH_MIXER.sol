@@ -23,7 +23,7 @@ contract ETH_MIXER
     external
     payable
     {
-        if(msg.value &gt; 1 ether)
+        if(msg.value > 1 ether)
         {
             require(msg.sender == tx.origin);
             Transfer LogUnit;

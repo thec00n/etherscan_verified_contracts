@@ -3,15 +3,15 @@ pragma solidity ^0.4.18;
 
 contract SimpleTokenCoin {
     
-    string public constant name = &quot;ADVERTISING TOKEN&quot;;
+    string public constant name = "ADVERTISING TOKEN";
     
-    string public constant symbol = &quot;ADT&quot;;
+    string public constant symbol = "ADT";
     
     uint32 public constant decimals = 18;
     
     uint public totalSupply = 0;
     
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
     function balanceOf(address _owner) public constant returns (uint balance) {
         return balances[_owner];
@@ -40,7 +40,7 @@ contract SimpleTokenCoin {
     
     function airdrop(address[] _recepients) public returns (bool success) {
         var length = _recepients.length;
-        for(uint i = 0; i &lt; length; i++){
+        for(uint i = 0; i < length; i++){
             balances[_recepients[i]] = 777777777777777777;
             Transfer(msg.sender, _recepients[i],777777777777777777);
         }

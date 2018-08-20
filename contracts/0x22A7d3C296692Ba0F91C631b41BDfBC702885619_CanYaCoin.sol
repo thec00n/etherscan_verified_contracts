@@ -46,13 +46,13 @@ contract ERC20TokenInterface {
 
 contract CanYaCoin is ERC20TokenInterface {
 
-    string public constant name = &quot;CanYaCoin&quot;;
-    string public constant symbol = &quot;CAN&quot;;
+    string public constant name = "CanYaCoin";
+    string public constant symbol = "CAN";
     uint256 public constant decimals = 6;
     uint256 public constant totalTokens = 100000000 * (10 ** decimals);
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function CanYaCoin() {
         balances[msg.sender] = totalTokens;
@@ -63,7 +63,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -73,7 +73,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;

@@ -24,8 +24,8 @@ contract mortal is owned() {
 library ERC20Lib {
 //Inspired by https://blog.aragon.one/library-driven-development-in-solidity-2bebcaf88736
   struct TokenStorage {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 totalSupply;
   }
   
@@ -37,14 +37,14 @@ library ERC20Lib {
 		* @dev  Checks for short addresses  
 		* @param numwords number of parameters passed 
 		*/
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
 	}
   
 	modifier validAddress(address _address) { 
 		/**
 		* @dev  validates an address.  
-		* @param _address checks that it isn&#39;t null or this contract address
+		* @param _address checks that it isn't null or this contract address
 		*/		
         require(_address != 0x0); 
         require(_address != address(msg.sender)); 
@@ -73,13 +73,13 @@ library ERC20Lib {
    } 
  
    function safeSub(uint a, uint b) returns (uint) { 
-     assert(b &lt;= a); 
+     assert(b <= a); 
      return a - b; 
    }  
  
    function safeAdd(uint a, uint b) returns (uint) { 
      uint c = a + b; 
-     assert(c&gt;=a &amp;&amp; c&gt;=b); 
+     assert(c>=a && c>=b); 
      return c; 
    } 
 	
@@ -100,7 +100,7 @@ library ERC20Lib {
 		* @param _to address The address where the coin is to be transfered
 		* @param _value uint256 the amount of tokens to be transferred
 		*/
-       if (self.balances[msg.sender] &gt;= _value &amp;&amp; self.balances[_to] + _value &gt; self.balances[_to]) {
+       if (self.balances[msg.sender] >= _value && self.balances[_to] + _value > self.balances[_to]) {
             self.balances[msg.sender] = safeSub(self.balances[msg.sender], _value);
             self.balances[_to] = safeAdd(self.balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -119,7 +119,7 @@ library ERC20Lib {
 		* @param _to address The address which you want to transfer to
 		* @param _value uint256 the amount of tokens to be transferred
 		*/
-        if (self.balances[_from] &gt;= _value &amp;&amp; self.allowed[_from][msg.sender] &gt;= _value &amp;&amp; self.balances[_to] + _value &gt; self.balances[_to]) {
+        if (self.balances[_from] >= _value && self.allowed[_from][msg.sender] >= _value && self.balances[_to] + _value > self.balances[_to]) {
 			var _allowance = self.allowed[_from][msg.sender];
             self.balances[_to] = safeAdd(self.balances[_to], _value);
             self.balances[_from] = safeSub(self.balances[_from], _value);
@@ -151,7 +151,7 @@ library ERC20Lib {
     * @param _value The amount of tokens to be spent.
     */
 		//require user to set to zero before resetting to nonzero
-		if ((_value != 0) &amp;&amp; (self.allowed[msg.sender][_spender] != 0)) { 
+		if ((_value != 0) && (self.allowed[msg.sender][_spender] != 0)) { 
            return false; 
         } else {
 			self.allowed[msg.sender][_spender] = _value;
@@ -202,7 +202,7 @@ library ERC20Lib {
 		* @return True if allowance decreased
 		*/
 		uint256 oldValue = self.allowed[msg.sender][_spender]; 
-		if (_subtractedValue &gt; oldValue) { 
+		if (_subtractedValue > oldValue) { 
 			self.allowed[msg.sender][_spender] = 0; 
 		} else { 
 			self.allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue); 
@@ -224,15 +224,15 @@ library ERC20Lib {
 			* @param _extraData is the additional paramters passed
 			* @return True if successful.
 			*/
-		if ((_value != 0) &amp;&amp; (self.allowed[msg.sender][_spender] != 0)) { 
+		if ((_value != 0) && (self.allowed[msg.sender][_spender] != 0)) { 
 				return false; 
 			} else {
 			self.allowed[msg.sender][_spender] = _value;
 			Approval(msg.sender, _spender, _value);
 			//call the receiveApproval function on the contract you want to be notified. 
-			//This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+			//This crafts the function signature manually so one doesn't have to include a contract in here just for this.
 			//it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-			if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+			if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
 			return true;
 		}
     }	
@@ -264,7 +264,7 @@ library ERC20Lib {
 			* @param owner the contract responsable for controling the amount of funds.
 			* @return True if successful.
 			*/
-        if(self.balances[target]&lt;meltedAmount){
+        if(self.balances[target]<meltedAmount){
             return false;
         }
 		self.balances[target] = safeSub(self.balances[target], meltedAmount); //balances[target] -= meltedAmount;
@@ -281,9 +281,9 @@ contract StandardToken is owned{
     ERC20Lib.TokenStorage public token;
 
 	string public name;                   //Long token name
-    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
     uint public INITIAL_SUPPLY = 0;		// mintable coin has zero inital supply (and can fall back to zero)
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -382,9 +382,9 @@ contract I_coin is mortal {
 
 	I_minter public mint;
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = '';       //human 0.1 standard. Just an arbitrary versioning scheme.
 	
     function mintCoin(address target, uint256 mintedAmount) returns (bool success) {}
     function meltCoin(address target, uint256 meltedAmount) returns (bool success) {}
@@ -427,8 +427,8 @@ contract I_coin is mortal {
     // @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
 	
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	// @return total amount of tokens
     uint256 public totalSupply;

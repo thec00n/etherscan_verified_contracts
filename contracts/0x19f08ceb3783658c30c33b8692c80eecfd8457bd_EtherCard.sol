@@ -11,7 +11,7 @@ contract EtherCard {
   
   // Who created this contract
   address public owner;
-  mapping (bytes32 =&gt; Gift) gifts;
+  mapping (bytes32 => Gift) gifts;
   uint256 feeAmount;
 
   function EtherCard() public {
@@ -35,7 +35,7 @@ contract EtherCard {
   function redeemGift(string coupon, address wallet) public returns (uint256) {
       bytes32 hash = keccak256(coupon);
       Gift storage gift = gifts[hash];
-      if ((gift.amount &lt;= 0) || gift.redeemed) {
+      if ((gift.amount <= 0) || gift.redeemed) {
           return 0;
       }
       uint256 amount = gift.amountToRedeem;
@@ -46,7 +46,7 @@ contract EtherCard {
 
   // Called when someone sends ETH to this contract function
   function createGift(bytes32 hashedCoupon) public payable {
-        if (msg.value * 1000 &lt; 1) { // Send minimum 0.001 ETH
+        if (msg.value * 1000 < 1) { // Send minimum 0.001 ETH
             return;
         }
         uint256 calculatedFees = msg.value/feeAmount;

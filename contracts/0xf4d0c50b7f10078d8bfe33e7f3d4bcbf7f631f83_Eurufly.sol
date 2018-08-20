@@ -6,7 +6,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -15,7 +15,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -32,9 +32,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -53,7 +53,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -71,7 +71,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -107,7 +107,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -125,8 +125,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -261,8 +261,8 @@ contract Ownable {
 }
 
 contract Eurufly is StandardToken, Ownable{
-    string  public  constant name = &quot;Eurufly&quot;;
-    string  public  constant symbol = &quot;EUR&quot;;
+    string  public  constant name = "Eurufly";
+    string  public  constant symbol = "EUR";
     uint8   public  constant decimals = 18;
     uint256 public priceOfToken = 2500; // 1 ether = 2500 EUR
   uint256 public icoStartAt ;
@@ -328,7 +328,7 @@ contract Eurufly is StandardToken, Ownable{
   }
   
   function () external payable {
-    require(totalSupply_&lt;= 10 ** 26);
+    require(totalSupply_<= 10 ** 26);
     require(state != STATE.UNKNOWN);
     buyTokens(msg.sender);
   }
@@ -341,14 +341,14 @@ contract Eurufly is StandardToken, Ownable{
     
      require(_beneficiary != address(0x0));
      if(state == STATE.PREPREICO){
-        require(now &gt;= prePreIcoStartAt &amp;&amp; now &lt;= prePreIcoEndAt);
-        require(msg.value &lt;= 10 ether);
+        require(now >= prePreIcoStartAt && now <= prePreIcoEndAt);
+        require(msg.value <= 10 ether);
       }else if(state == STATE.PREICO){
-       require(now &gt;= preIcoStartAt &amp;&amp; now &lt;= preIcoEndAt);
-       require(msg.value &lt;= 15 ether);
+       require(now >= preIcoStartAt && now <= preIcoEndAt);
+       require(msg.value <= 15 ether);
       }else if(state == STATE.POSTICO){
-        require(now &gt;= icoStartAt &amp;&amp; now &lt;= icoEndAt);
-        require(msg.value &lt;= 20 ether);
+        require(now >= icoStartAt && now <= icoEndAt);
+        require(msg.value <= 20 ether);
       }
       
       uint256 weiAmount = msg.value;
@@ -382,7 +382,7 @@ contract Eurufly is StandardToken, Ownable{
     
     function allocate(address user, uint256 amount) public onlyOwner{
        
-        require(totalSupply_.add(amount) &lt;= 10 ** 26 );
+        require(totalSupply_.add(amount) <= 10 ** 26 );
         uint256 tokens = amount * (10 ** 18);
         totalSupply_ = totalSupply_.add(tokens);
         balances[user] = balances[user].add(tokens);

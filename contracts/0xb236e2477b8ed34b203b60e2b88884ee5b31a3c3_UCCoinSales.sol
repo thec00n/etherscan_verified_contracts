@@ -12,27 +12,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,7 +88,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -130,8 +130,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -145,7 +145,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -193,8 +193,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract UCCoin is StandardToken, Ownable {
 
-    string public constant name = &quot;UC Coin&quot;;
-    string public constant symbol = &quot;UCN&quot;;
+    string public constant name = "UC Coin";
+    string public constant symbol = "UCN";
     uint8 public constant decimals = 8;
 
     uint256 public INITIAL_TOKEN_SUPPLY = 500000000 * (10 ** uint256(decimals));
@@ -218,8 +218,8 @@ contract UCCoinSales is UCCoin {
 
     bool public shouldStopCoinSelling = true;
 
-    mapping(address =&gt; uint256) public contributions;
-    mapping(address =&gt; bool) public blacklistAddresses;
+    mapping(address => uint256) public contributions;
+    mapping(address => bool) public blacklistAddresses;
 
     event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
     event UcCoinPriceChanged(uint256 value, uint256 updated);
@@ -238,16 +238,16 @@ contract UCCoinSales is UCCoin {
     function buyUcCoins() payable public {
         require(msg.sender != address(0));
 
-        bool didSetUcCoinValue = UCCOIN_PER_ETHER &gt; 0;
-        require(!shouldStopCoinSelling &amp;&amp; didSetUcCoinValue);
+        bool didSetUcCoinValue = UCCOIN_PER_ETHER > 0;
+        require(!shouldStopCoinSelling && didSetUcCoinValue);
         require(blacklistAddresses[tx.origin] != true);
 
         uint256 weiAmount = msg.value;
 
         uint256 tokens = getUcCoinTokenPerEther().mul(msg.value).div(1 ether);
 
-        require(tokens &gt;= getMinimumSellingUcCoinToken());
-        require(balances[owner] &gt;= tokens);
+        require(tokens >= getMinimumSellingUcCoinToken());
+        require(balances[owner] >= tokens);
 
         weiRaised = weiRaised.add(weiAmount);
 
@@ -261,11 +261,11 @@ contract UCCoinSales is UCCoin {
         TokenPurchase(msg.sender, weiAmount, tokens);
     }
 
-    // convert UC amount per ether -&gt; Token amount per ether
+    // convert UC amount per ether -> Token amount per ether
     function getUcCoinTokenPerEther() internal returns (uint256) {
         return UCCOIN_PER_ETHER * (10 ** uint256(decimals));
     }
-    // convert minium UC amount to purchase -&gt; minimum Token amount to purchase
+    // convert minium UC amount to purchase -> minimum Token amount to purchase
     function getMinimumSellingUcCoinToken() internal returns (uint256) {
         return MINIMUM_SELLING_UCCOIN * (10 ** uint256(decimals));
     }
@@ -273,7 +273,7 @@ contract UCCoinSales is UCCoin {
     // the contract owner sends tokens to the target address
     function sendTokens(address target, uint256 tokenAmount) external onlyOwner returns (bool) {
         require(target != address(0));
-        require(balances[owner] &gt;= tokenAmount);
+        require(balances[owner] >= tokenAmount);
         balances[owner] = balances[owner].sub(tokenAmount);
         balances[target] = balances[target].add(tokenAmount);
 
@@ -282,7 +282,7 @@ contract UCCoinSales is UCCoin {
     // the contract owner can set the coin value per 1 ether
     function setUCCoinPerEther(uint256 coinAmount) external onlyOwner returns (uint256) {
         require(UCCOIN_PER_ETHER != coinAmount);
-        require(coinAmount &gt;= MINIMUM_SELLING_UCCOIN);
+        require(coinAmount >= MINIMUM_SELLING_UCCOIN);
         
         UCCOIN_PER_ETHER = coinAmount;
         UcCoinPriceChanged(UCCOIN_PER_ETHER, now);

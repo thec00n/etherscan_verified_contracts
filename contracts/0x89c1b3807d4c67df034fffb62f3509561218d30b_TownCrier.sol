@@ -46,7 +46,7 @@ contract TownCrier {
         // Start request IDs at 1 for two reasons:
         //   1. We can use 0 to denote an invalid request (ids are unsigned)
         //   2. Storage is more expensive when changing something from zero to non-zero,
-        //      so this means the first request isn&#39;t randomly more expensive.
+        //      so this means the first request isn't randomly more expensive.
         requestCnt = 1;
         requests[0].requester = msg.sender;
         killswitch = false;
@@ -55,7 +55,7 @@ contract TownCrier {
     }
 
     function upgrade(address newAddr) {
-        if (msg.sender == requests[0].requester &amp;&amp; unrespondedCnt == 0) {
+        if (msg.sender == requests[0].requester && unrespondedCnt == 0) {
             newVersion = -int(newAddr);
             killswitch = true;
             Upgrade(newAddr);
@@ -63,7 +63,7 @@ contract TownCrier {
     }
 
     function reset(uint price, uint minGas, uint cancellationGas) public {
-        if (msg.sender == requests[0].requester &amp;&amp; unrespondedCnt == 0) {
+        if (msg.sender == requests[0].requester && unrespondedCnt == 0) {
             GAS_PRICE = price;
             MIN_FEE = price * minGas;
             CANCELLATION_FEE = price * cancellationGas;
@@ -78,13 +78,13 @@ contract TownCrier {
     }
 
     function restart() public {
-        if (msg.sender == requests[0].requester &amp;&amp; newVersion == 0) {
+        if (msg.sender == requests[0].requester && newVersion == 0) {
             killswitch = false;
         }
     }
 
     function withdraw() public {
-        if (msg.sender == requests[0].requester &amp;&amp; unrespondedCnt == 0) {
+        if (msg.sender == requests[0].requester && unrespondedCnt == 0) {
             if (!requests[0].requester.call.value(this.balance)()) {
                 throw;
             }
@@ -105,7 +105,7 @@ contract TownCrier {
             return newVersion;
         }
 
-        if (msg.value &lt; MIN_FEE) {
+        if (msg.value < MIN_FEE) {
             externalCallFlag = true;
             // If the amount of ether sent by the requester is too little or 
             // too much, refund the requester and discard the request.
@@ -135,7 +135,7 @@ contract TownCrier {
 
     function deliver(uint64 requestId, bytes32 paramsHash, uint64 error, bytes32 respData) public {
         if (msg.sender != SGX_ADDRESS ||
-                requestId &lt;= 0 ||
+                requestId <= 0 ||
                 requests[requestId].requester == 0 ||
                 requests[requestId].fee == DELIVERED_FEE_FLAG) {
             // If the response is not delivered by the SGX account or the 
@@ -161,7 +161,7 @@ contract TownCrier {
         requests[requestId].fee = DELIVERED_FEE_FLAG;
         unrespondedCnt--;
 
-        if (error &lt; 2) {
+        if (error < 2) {
             // Either no error occurs, or the requester sent an invalid query.
             // Send the fee to the SGX account for its delivering.
             SGX_ADDRESS.send(fee);         
@@ -174,7 +174,7 @@ contract TownCrier {
 
         uint callbackGas = (fee - MIN_FEE) / tx.gasprice; // gas left for the callback function
         DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData); // log the response information
-        if (callbackGas &gt; msg.gas - 5000) {
+        if (callbackGas > msg.gas - 5000) {
             callbackGas = msg.gas - 5000;
         }
         
@@ -193,7 +193,7 @@ contract TownCrier {
         }
 
         uint fee = requests[requestId].fee;
-        if (requests[requestId].requester == msg.sender &amp;&amp; fee &gt;= CANCELLATION_FEE) {
+        if (requests[requestId].requester == msg.sender && fee >= CANCELLATION_FEE) {
             // If the request was sent by this user and has money left on it,
             // then cancel it.
             requests[requestId].fee = CANCELLED_FEE_FLAG;

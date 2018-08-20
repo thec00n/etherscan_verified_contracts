@@ -17,8 +17,8 @@ contract Token is ERC20 {
     uint8 public decimals;
     uint256 public totalSupply;
 	address public owner;
-    mapping (address=&gt;uint256) balances;
-    mapping (address=&gt;mapping (address=&gt;uint256)) allowed;
+    mapping (address=>uint256) balances;
+    mapping (address=>mapping (address=>uint256)) allowed;
     
     function totalSupply() constant public returns (uint256 supply) {
         supply = totalSupply;
@@ -26,7 +26,7 @@ contract Token is ERC20 {
     function balanceOf(address _owner) constant public returns (uint256 balance) {return balances[_owner];}
     
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        require (balances[msg.sender]&gt;=_amount&amp;&amp;_amount&gt;0&amp;&amp;balances[_to]+_amount&gt;balances[_to]);
+        require (balances[msg.sender]>=_amount&&_amount>0&&balances[_to]+_amount>balances[_to]);
         balances[msg.sender]-=_amount;
         balances[_to]+=_amount;
         emit Transfer(msg.sender,_to,_amount);
@@ -34,7 +34,7 @@ contract Token is ERC20 {
     }
   
     function transferFrom(address _from,address _to,uint256 _amount) public returns (bool success) {
-        require (balances[_from]&gt;=_amount&amp;&amp;allowed[_from][msg.sender]&gt;=_amount&amp;&amp;_amount&gt;0&amp;&amp;balances[_to]+_amount&gt;balances[_to]);
+        require (balances[_from]>=_amount&&allowed[_from][msg.sender]>=_amount&&_amount>0&&balances[_to]+_amount>balances[_to]);
         balances[_from]-=_amount;
         allowed[_from][msg.sender]-=_amount;
         balances[_to]+=_amount;
@@ -60,8 +60,8 @@ contract GDC is Token{
     }
     
     constructor() public{
-        symbol = &quot;GDC&quot;;
-        name = &quot;GOLDENCOIN&quot;;
+        symbol = "GDC";
+        name = "GOLDENCOIN";
         decimals = 4;
         totalSupply = 2000000000000;
         owner = msg.sender;

@@ -8,7 +8,7 @@ pragma solidity 0.4.24;
 interface ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   ///bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -24,7 +24,7 @@ interface ERC721Receiver {
    * @param _from The address which previously owned the token
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -63,13 +63,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -143,13 +143,13 @@ contract MyCryptoChampCore{
     
     Champ[] public champs;
     Item[] public items;
-    mapping (uint =&gt; uint) public leaderboard;
-    mapping (address =&gt; AddressInfo) public addressInfo;
-    mapping (bool =&gt; mapping(address =&gt; mapping (address =&gt; bool))) public tokenOperatorApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenToOwner;
-    mapping (uint =&gt; string) public champToName;
-    mapping (bool =&gt; uint) public tokensForSaleCount;
+    mapping (uint => uint) public leaderboard;
+    mapping (address => AddressInfo) public addressInfo;
+    mapping (bool => mapping(address => mapping (address => bool))) public tokenOperatorApprovals;
+    mapping (bool => mapping(uint => address)) public tokenApprovals;
+    mapping (bool => mapping(uint => address)) public tokenToOwner;
+    mapping (uint => string) public champToName;
+    mapping (bool => uint) public tokensForSaleCount;
     uint public pendingWithdrawal = 0;
 
     function addWithdrawal(address _address, uint _amount) public;
@@ -180,7 +180,7 @@ contract MyCryptoChampCore{
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address internal contractOwner;
@@ -233,7 +233,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -243,8 +243,8 @@ contract ERC721 is Ownable, SupportsInterfaceWithLookup {
 
   using AddressUtils for address;
 
-  string private _ERC721name = &quot;Item&quot;;
-  string private _ERC721symbol = &quot;MXI&quot;;
+  string private _ERC721name = "Item";
+  string private _ERC721symbol = "MXI";
   bool private tokenIsChamp = false;
   address private controllerAddress;
   MyCryptoChampCore core;
@@ -270,43 +270,43 @@ contract ERC721 is Ownable, SupportsInterfaceWithLookup {
   bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
   /**
    * 0x80ac58cd ===
-   *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-   *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-   *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-   *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
    */
 
   bytes4 private constant InterfaceId_ERC721Exists = 0x4f558e79;
   /**
    * 0x4f558e79 ===
-   *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+   *   bytes4(keccak256('exists(uint256)'))
    */
 
    /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
   
   bytes4 constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
-      bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-      bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;));
+      bytes4(keccak256('totalSupply()')) ^
+      bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+      bytes4(keccak256('tokenByIndex(uint256)'));
   */
 
   bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
   /**
      * 0x5b5e139f ===
-     *   bytes4(keccak256(&#39;name()&#39;)) ^
-     *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-     *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+     *   bytes4(keccak256('name()')) ^
+     *   bytes4(keccak256('symbol()')) ^
+     *   bytes4(keccak256('tokenURI(uint256)'))
   */
 
    constructor()
@@ -486,7 +486,7 @@ function transferFrom(
  * @dev Safely transfers the ownership of a given token ID to another address
  * If the target address is a contract, it must implement `onERC721Received`,
  * which is called upon a safe transfer, and return the magic value
- * `bytes4(keccak256(&quot;onERC721Received(address,address,uint,bytes)&quot;))`; otherwise,
+ * `bytes4(keccak256("onERC721Received(address,address,uint,bytes)"))`; otherwise,
  * the transfer is reverted.
  *
  * Requires the msg sender to be the owner, approved, or operator
@@ -503,14 +503,14 @@ function safeTransferFrom(
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
 }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint,bytes)"))`; otherwise,
    * the transfer is reverted.
    * Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -569,26 +569,26 @@ function checkAndCallSafeTransfer(
   }
 
   /// @notice Enumerate valid NFTs
-  /// @dev Throws if `_index` &gt;= `totalSupply()`.
+  /// @dev Throws if `_index` >= `totalSupply()`.
   /// @param _index A counter less than `totalSupply()`
   /// @return The token identifier for the `_index`th NFT,
   ///  (sort order not specified)
   function tokenByIndex(uint _index) external view returns (uint){
     uint tokenIndexesLength = this.totalSupply();
-    require(_index &lt; tokenIndexesLength);
+    require(_index < tokenIndexesLength);
     return _index;
   }
 
   
   /// @notice Enumerate NFTs assigned to an owner
-  /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
   ///  `_owner` is the zero address, representing invalid NFTs.
   /// @param _owner An address where we are interested in NFTs owned by them
   /// @param _index A counter less than `balanceOf(_owner)`
   /// @return The token identifier for the `_index`th NFT assigned to `_owner`,
   ///   (sort order not specified)
   function tokenOfOwnerByIndex(address _owner, uint _index) external view returns (uint){
-      require(_index &gt;= balanceOf(_owner));
+      require(_index >= balanceOf(_owner));
       require(_owner!=address(0));
       
       uint[] memory tokens;
@@ -600,7 +600,7 @@ function checkAndCallSafeTransfer(
           tokens = core.getItemsByOwner(_owner);
       }
       
-      for(uint i = 0; i &lt; tokens.length; i++){
+      for(uint i = 0; i < tokens.length; i++){
           if(i + 1 == _index){
               tokenId = tokens[i];
               break;
@@ -626,8 +626,8 @@ function checkAndCallSafeTransfer(
 
   /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
   /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-  ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-  ///  Metadata JSON Schema&quot;.
+  ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+  ///  Metadata JSON Schema".
   function tokenURI(uint _tokenId) external view returns (string){
     require(exists(_tokenId));
     return core.getTokenURIs(_tokenId,tokenIsChamp);

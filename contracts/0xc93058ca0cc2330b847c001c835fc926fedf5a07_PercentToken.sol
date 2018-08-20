@@ -9,13 +9,13 @@ contract PercentToken {
 
     uint private constant MAX_UINT = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
-    string public constant name = &quot;Percent Token&quot;;
-    string public constant symbol = &quot;%&quot;;
+    string public constant name = "Percent Token";
+    string public constant symbol = "%";
     uint public constant decimals = 1;
     uint public constant totalSupply = 10000681;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     constructor() public {
         balanceOf[msg.sender] = totalSupply;
@@ -26,7 +26,7 @@ contract PercentToken {
         require(to != address(this));
         require(to != 0);
         uint balanceOfMsgSender = balanceOf[msg.sender];
-        require(balanceOfMsgSender &gt;= amount);
+        require(balanceOfMsgSender >= amount);
         balanceOf[msg.sender] = balanceOfMsgSender - amount;
         balanceOf[to] += amount;
         emit Transfer(msg.sender, to, amount);
@@ -37,12 +37,12 @@ contract PercentToken {
         require(to != address(this));
         require(to != 0);
         uint allowanceMsgSender = allowance[from][msg.sender];
-        require(allowanceMsgSender &gt;= amount);
+        require(allowanceMsgSender >= amount);
         if (allowanceMsgSender != MAX_UINT) {
             allowance[from][msg.sender] = allowanceMsgSender - amount;
         }
         uint balanceOfFrom = balanceOf[from];
-        require(balanceOfFrom &gt;= amount);
+        require(balanceOfFrom >= amount);
         balanceOf[from] = balanceOfFrom - amount;
         balanceOf[to] += amount;
         emit Transfer(from, to, amount);

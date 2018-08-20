@@ -21,7 +21,7 @@ contract ERC20Token {
 
     // Send `_value` amount of tokens from address `_from` to address `_to`
     // The `transferFrom` method is used for a withdraw workflow, allowing contracts to send tokens on your behalf, 
-    // for example to &quot;deposit&quot; to a contract address and/or to charge fees in sub-currencies; 
+    // for example to "deposit" to a contract address and/or to charge fees in sub-currencies; 
     // the command should fail unless the `_from` account has deliberately authorized the sender of the message 
     // via some mechanism; we propose these standardized APIs for `approval`:
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
@@ -39,13 +39,13 @@ contract DeepCoinToken is ERC20Token {
     address public initialOwner;
 
     uint256 public supply = 100000000 * 60 * 10 ** 18;  // 6000, 000, 000
-    string  public name = &quot;Deepfin Coin&quot;;
+    string  public name = "Deepfin Coin";
 
     uint8   public decimals = 18;
 
-    string  public symbol = &#39;DFC&#39;;
+    string  public symbol = 'DFC';
 
-    string  public version = &#39;v0.1&#39;;
+    string  public version = 'v0.1';
 
     bool    public transfersEnabled = true;
 
@@ -53,11 +53,11 @@ contract DeepCoinToken is ERC20Token {
 
     uint    public creationTime;
 
-    mapping (address =&gt; uint256) balance;
+    mapping (address => uint256) balance;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) m_allowance;
+    mapping (address => mapping (address => uint256)) m_allowance;
 
-    mapping (address =&gt; uint) jail;
+    mapping (address => uint) jail;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -83,16 +83,16 @@ contract DeepCoinToken is ERC20Token {
         //      http://solidity.readthedocs.io/en/develop/control-structures.html#error-handling-assert-require-revert-and-exceptions
         //      https://ethereum.stackexchange.com/questions/20978/why-do-throw-and-revert-create-different-bytecodes/20981
         if (!transfersEnabled) revert();
-        if (jail[msg.sender] &gt;= block.timestamp) revert();
+        if (jail[msg.sender] >= block.timestamp) revert();
 
         return doTransfer(msg.sender, _to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         if (!transfersEnabled) revert();
-        if (jail[msg.sender] &gt;= block.timestamp || jail[_to] &gt;= block.timestamp || jail[_from] &gt;= block.timestamp) revert();
+        if (jail[msg.sender] >= block.timestamp || jail[_to] >= block.timestamp || jail[_from] >= block.timestamp) revert();
 
-        if (allowance(_from, msg.sender) &lt; _value) return false;
+        if (allowance(_from, msg.sender) < _value) return false;
 
         m_allowance[_from][msg.sender] -= _value;
 
@@ -106,7 +106,7 @@ contract DeepCoinToken is ERC20Token {
     }
 
     function doTransfer(address _from, address _to, uint _value) internal returns (bool success) {
-        if (balance[_from] &gt;= _value &amp;&amp; balance[_to] + _value &gt;= balance[_to]) {
+        if (balance[_from] >= _value && balance[_to] + _value >= balance[_to]) {
             balance[_from] -= _value;
             balance[_to] += _value;
             Transfer(_from, _to, _value);
@@ -119,10 +119,10 @@ contract DeepCoinToken is ERC20Token {
 
     function approve(address _spender, uint256 _value) returns (bool success) {
         if (!transfersEnabled) revert();
-        if (jail[msg.sender] &gt;= block.timestamp || jail[_spender] &gt;= block.timestamp) revert();
+        if (jail[msg.sender] >= block.timestamp || jail[_spender] >= block.timestamp) revert();
 
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowance(msg.sender, _spender) != 0)) revert();
+        if ((_value != 0) && (allowance(msg.sender, _spender) != 0)) revert();
 
         m_allowance[msg.sender][_spender] = _value;
 

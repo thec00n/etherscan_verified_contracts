@@ -2,19 +2,19 @@ pragma solidity ^0.4.15;
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -34,13 +34,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
 
   function transfer(address _to, uint256 _value) returns (bool) {
@@ -87,7 +87,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
 
@@ -140,8 +140,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract ChiliToken is StandardToken, owned {
 
-string public constant name = &quot;CHILI&quot;;
-string public constant symbol = &quot;CHL&quot;;
+string public constant name = "CHILI";
+string public constant symbol = "CHL";
 uint32 public constant decimals = 3;
 uint256 public  exchangeRate=200;
 uint256 public INITIAL_SUPPLY = 100000000 * 1000;
@@ -180,8 +180,8 @@ uint256 public tokensForSiteReg=0;
 uint256 public tokensForCreators=0;
         
 
-mapping(address =&gt; uint256) arrayCreators;
-mapping(address =&gt; uint256) arrayBounty;
+mapping(address => uint256) arrayCreators;
+mapping(address => uint256) arrayBounty;
 
 event PayForServiceETHEvent(address indexed from, uint256 value);
 event PayForServiceCHLEvent(address indexed from, uint256 value);
@@ -218,7 +218,7 @@ function ChiliToken() {
 }
     function SetRate( uint32 newRate)   external returns (bool) {
         require(msg.sender==addressRateAgent) ;
-        require(newRate&gt;0);
+        require(newRate>0);
 	    exchangeRate = newRate;
 	   return true;
      }
@@ -274,9 +274,9 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
   function TransferSellAgentMulti(address[] _toes, uint256 _value) external returns (bool) {
       require(msg.sender==addressSellAgent) ;
       
-       require(  balances[owner]&gt;=_value.mul(_toes.length));
+       require(  balances[owner]>=_value.mul(_toes.length));
       
-      for (uint i = 0; i &lt; _toes.length; i++) {
+      for (uint i = 0; i < _toes.length; i++) {
           
         balances[owner] = balances[owner].sub(_value);
         balances[_toes[i]] = balances[_toes[i]].add(_value);
@@ -293,7 +293,7 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
   
      function TransferSellAgentSiteReg(address _to, uint256 _value) external returns (bool) {
     require(msg.sender==addressSellAgentSiteReg) ;
-    require(tokensForSiteReg&gt;=_value);
+    require(tokensForSiteReg>=_value);
     
 
     tokensForSiteReg = tokensForSiteReg.sub(_value);
@@ -306,9 +306,9 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
   
     function TransferSellAgentSiteRegMulti(address[] _toes, uint256 _value) external returns (bool) {
     require(msg.sender==addressSellAgentSiteReg);
-    require(tokensForSiteReg&gt;=_value.mul(_toes.length));
+    require(tokensForSiteReg>=_value.mul(_toes.length));
     
-     for (uint i = 0; i &lt; _toes.length; i++) {
+     for (uint i = 0; i < _toes.length; i++) {
          
         tokensForSiteReg = tokensForSiteReg.sub(_value);
         balances[_toes[i]] = balances[_toes[i]].add(_value);
@@ -322,8 +322,8 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
   
   function TransferSellAgentBounty(address _to, uint256 _value) external returns (bool) {
     require(msg.sender==addressSellAgentBounty) ;
-    require(tokensForBounty&gt;=_value);
-     require(now&gt;END_ICO_TIMESTAMP );
+    require(tokensForBounty>=_value);
+     require(now>END_ICO_TIMESTAMP );
     
     tokensForBounty = tokensForBounty.sub(_value);
     arrayBounty[_to]=arrayBounty[_to].add(_value);
@@ -334,8 +334,8 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
   
     function TransferSellAgentCreators(address _to, uint256 _value) external returns (bool) {
     require(msg.sender==addressSellAgentCreators) ;
-    require(tokensForCreators&gt;=_value);
-    require(now&gt;END_ICO_TIMESTAMP );
+    require(tokensForCreators>=_value);
+    require(now>END_ICO_TIMESTAMP );
     
     tokensForCreators = tokensForCreators.sub(_value);
     arrayCreators[_to]=arrayCreators[_to].add(_value);
@@ -348,16 +348,16 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
 
   
    modifier isSelling() {
-    require( ((now&gt;START_PRESALE_TIMESTAMP&amp;&amp;now&lt;END_PRESALE_TIMESTAMP ) ||(now&gt;START_PREICO_TIMESTAMP&amp;&amp;now&lt;END_PREICO_TIMESTAMP ) ||(now&gt;START_ICO_TIMESTAMP&amp;&amp;now&lt;END_ICO_TIMESTAMP ) ) );
-     require(balances[owner]&gt;0 );
+    require( ((now>START_PRESALE_TIMESTAMP&&now<END_PRESALE_TIMESTAMP ) ||(now>START_PREICO_TIMESTAMP&&now<END_PREICO_TIMESTAMP ) ||(now>START_ICO_TIMESTAMP&&now<END_ICO_TIMESTAMP ) ) );
+     require(balances[owner]>0 );
     
     
     _;
   }
   
     function transfer(address _to, uint256 _value) returns (bool) {
-        require(!( arrayCreators[msg.sender]&gt;0)||now&gt;LOCKUP_6M_ICO_TIMESTAMP);
-        require(!( arrayBounty[msg.sender]&gt;0) ||now&gt;LOCKUP_3M_ICO_TIMESTAMP);
+        require(!( arrayCreators[msg.sender]>0)||now>LOCKUP_6M_ICO_TIMESTAMP);
+        require(!( arrayBounty[msg.sender]>0) ||now>LOCKUP_3M_ICO_TIMESTAMP);
         
        
         
@@ -373,25 +373,25 @@ function UpdateSellAgentSiteReg(address new_address) onlyOwner {
      uint tokens = exchangeRate.mul(5000).mul(msg.value).div(1 ether);
      uint newBalance=exchangeRate.mul(msg.value+owner.balance).div(1 ether);
 
-if (now&gt;START_PRESALE_TIMESTAMP&amp;&amp;now&lt;END_PRESALE_TIMESTAMP)
+if (now>START_PRESALE_TIMESTAMP&&now<END_PRESALE_TIMESTAMP)
 {
-    require(newBalance&lt;PRESALE_HARDCAP);
+    require(newBalance<PRESALE_HARDCAP);
     
        tokens=tokens.mul(3).div(2);
     
        
 } else 
 
-if (now&gt;START_PREICO_TIMESTAMP&amp;&amp;now&lt;END_PREICO_TIMESTAMP)
+if (now>START_PREICO_TIMESTAMP&&now<END_PREICO_TIMESTAMP)
 {
-    require(newBalance&lt;PREICO_HARDCAP);
+    require(newBalance<PREICO_HARDCAP);
     
       uint bonusTokens = 0;
-        if(now &lt; START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4)) {
+        if(now < START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4)) {
           bonusTokens = tokens.mul(3).div(10);
-        } else if(now &gt;= START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4) &amp;&amp; now &lt; START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(2)) {
+        } else if(now >= START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4) && now < START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(2)) {
           bonusTokens = tokens.div(4);
-        } else if(now &gt;= START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(2) &amp;&amp; now &lt; START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(3)) {
+        } else if(now >= START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(2) && now < START_PREICO_TIMESTAMP + (PREICO_PERIOD * 1 days).div(4).mul(3)) {
           bonusTokens = tokens.div(5);
         } else
         {
@@ -404,16 +404,16 @@ if (now&gt;START_PREICO_TIMESTAMP&amp;&amp;now&lt;END_PREICO_TIMESTAMP)
        
 } else 
      
-     if (now&gt;START_ICO_TIMESTAMP&amp;&amp;now&lt;END_ICO_TIMESTAMP)
+     if (now>START_ICO_TIMESTAMP&&now<END_ICO_TIMESTAMP)
 {
-    require(newBalance&lt;ICO_HARDCAP);
+    require(newBalance<ICO_HARDCAP);
     
       uint bonusTokensICO = 0;
-        if(now &lt; START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4)) {
+        if(now < START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4)) {
           bonusTokensICO = tokens.div(8);
-        } else if(now &gt;= START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4) &amp;&amp; now &lt; START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(2)) {
+        } else if(now >= START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4) && now < START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(2)) {
           bonusTokensICO = tokens.mul(2).div(15);
-        } else if(now &gt;= START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(2) &amp;&amp; now &lt; START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(3)) {
+        } else if(now >= START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(2) && now < START_ICO_TIMESTAMP + (ICO_PERIOD * 1 days).div(4).mul(3)) {
           bonusTokensICO = tokens.div(40);
         } else
         {
@@ -444,7 +444,7 @@ if (now&gt;START_PREICO_TIMESTAMP&amp;&amp;now&lt;END_PREICO_TIMESTAMP)
   }
     function PayForServiceCHL(uint256 _value)  external    {
      
-      require(balances[msg.sender]&gt;=_value&amp;&amp;_value&gt;0);
+      require(balances[msg.sender]>=_value&&_value>0);
       
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[addressPayForService] = balances[addressPayForService].add(_value);
@@ -452,7 +452,7 @@ if (now&gt;START_PREICO_TIMESTAMP&amp;&amp;now&lt;END_PREICO_TIMESTAMP)
       
   }
   function BurnTokensFrom(address _from, uint256 _value) external onlyOwner  {
-    require (balances[_from] &gt;= _value&amp;&amp;_value&gt;0);                
+    require (balances[_from] >= _value&&_value>0);                
    
     balances[_from]  = balances[_from].sub(_value);
     totalSupply =totalSupply.sub(_value);

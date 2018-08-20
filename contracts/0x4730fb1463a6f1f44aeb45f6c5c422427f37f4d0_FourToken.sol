@@ -5,7 +5,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,9 +64,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -111,8 +111,8 @@ contract ERC20Interface {
 contract BaseToken is ERC20Interface {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -139,7 +139,7 @@ contract BaseToken is ERC20Interface {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -154,7 +154,7 @@ contract BaseToken is ERC20Interface {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,8 +176,8 @@ contract BaseToken is ERC20Interface {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract BaseToken is ERC20Interface {
    */
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -293,12 +293,12 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -408,7 +408,7 @@ contract SignedTransferToken is BaseToken {
 
 
   // Mapping of already executed settlements for a given address
-  mapping(address =&gt; mapping(bytes32 =&gt; bool)) executedSettlements;
+  mapping(address => mapping(bytes32 => bool)) executedSettlements;
 
   /**
   * @dev Will settle a pre-signed transfer
@@ -426,7 +426,7 @@ contract SignedTransferToken is BaseToken {
 
     require(_to != address(0));
     require(isValidSignature(_from, calcHash, _v, _r, _s));
-    require(balances[_from] &gt;= total);
+    require(balances[_from] >= total);
     require(!executedSettlements[_from][calcHash]);
 
     executedSettlements[_from][calcHash] = true;
@@ -461,15 +461,15 @@ contract SignedTransferToken is BaseToken {
                                  bytes32[] _r,
                                  bytes32[] _s) public returns (bool) {
     // Make sure all the arrays are of the same length
-    require(_from.length == _to.length &amp;&amp;
-            _to.length ==_values.length &amp;&amp;
-            _values.length == _fees.length &amp;&amp;
-            _fees.length == _nonces.length &amp;&amp;
-            _nonces.length == _v.length &amp;&amp;
-            _v.length == _r.length &amp;&amp;
+    require(_from.length == _to.length &&
+            _to.length ==_values.length &&
+            _values.length == _fees.length &&
+            _fees.length == _nonces.length &&
+            _nonces.length == _v.length &&
+            _v.length == _r.length &&
             _r.length == _s.length);
 
-    for(uint i; i &lt; _from.length; i++) {
+    for(uint i; i < _from.length; i++) {
       transferPreSigned(_from[i],
                         _to[i],
                         _values[i],
@@ -498,13 +498,13 @@ contract SignedTransferToken is BaseToken {
    bytes32 calcHash = calculateManyHash(_from, _tos, _values, _fee, _nonce);
 
    require(isValidSignature(_from, calcHash, _v, _r, _s));
-   require(balances[_from] &gt;= total);
+   require(balances[_from] >= total);
    require(!executedSettlements[_from][calcHash]);
 
    executedSettlements[_from][calcHash] = true;
 
    // transfer to each recipient and take fee at the end
-   for(uint i; i &lt; _tos.length; i++) {
+   for(uint i; i < _tos.length; i++) {
      // Move tokens
      balances[_from] = balances[_from].sub(_values[i]);
      balances[_tos[i]] = balances[_tos[i]].add(_values[i]);
@@ -524,7 +524,7 @@ contract SignedTransferToken is BaseToken {
   function getTotal(address[] _tos, uint256[] _values, uint256 _fee) private view returns (uint256)  {
     uint256 total = _fee;
 
-    for(uint i; i &lt; _tos.length; i++) {
+    for(uint i; i < _tos.length; i++) {
       total = total.add(_values[i]); // sum of all the values + fee
       require(_tos[i] != address(0)); // check that the recipient is a valid address
     }
@@ -551,7 +551,7 @@ contract SignedTransferToken is BaseToken {
   */
   function isValidSignature(address _signer, bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) public pure returns (bool) {
     return _signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, _hash),
+            keccak256("\x19Ethereum Signed Message:\n32", _hash),
             _v,
             _r,
             _s
@@ -609,8 +609,8 @@ contract PausableSignedTransferToken is SignedTransferToken, PausableToken {
 // File: contracts/FourToken.sol
 
 contract FourToken is CappedToken, PausableSignedTransferToken  {
-  string public name = &#39;The 4th Pillar Token&#39;;
-  string public symbol = &#39;FOUR&#39;;
+  string public name = 'The 4th Pillar Token';
+  string public symbol = 'FOUR';
   uint256 public decimals = 18;
 
   // Max supply of 400 million

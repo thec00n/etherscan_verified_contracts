@@ -20,9 +20,9 @@ contract x32323 is owned{
     
 //設定初始值//
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -46,8 +46,8 @@ contract x32323 is owned{
     ) public {
 	totalSupply = 1000000000 * 100 ;
     	balanceOf[msg.sender] = totalSupply ;
-        name = &quot;Leimen coin&quot;;
-        symbol = &quot;Lem&quot;;         
+        name = "Leimen coin";
+        symbol = "Lem";         
     }
     
 //管理權限//
@@ -63,7 +63,7 @@ contract x32323 is owned{
     }
 
     function withdrawal_Lem(uint256 amount)  onlyOwner {
-        require(balanceOf[this] &gt;= amount) ;
+        require(balanceOf[this] >= amount) ;
         balanceOf[this] -= amount ;
         balanceOf[msg.sender] += amount ;
     }
@@ -99,9 +99,9 @@ contract x32323 is owned{
 	    require(!stopped);
         require(_to != 0x0);
         
-        require(_value &gt;= 0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_value >= 0);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
 
@@ -117,7 +117,7 @@ contract x32323 is owned{
 	    }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); 
+        require(_value <= allowance[_from][msg.sender]); 
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -149,7 +149,7 @@ contract x32323 is owned{
         require(price != 0);
 	    require(selling);
         amount = msg.value / price * 100 ;
-        require(balanceOf[this] &gt; amount);           
+        require(balanceOf[this] > amount);           
         balanceOf[msg.sender] += amount;           
         balanceOf[this] -= amount; 
         Transfer(this, msg.sender, amount);         

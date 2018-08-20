@@ -10,13 +10,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -67,17 +67,17 @@ contract Token is SafeMath {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (now &lt; icoEnd + lockedPeriod &amp;&amp; msg.sender != fundsWallet) throw;
-        if (msg.sender == fundsWallet &amp;&amp; now &lt; icoEnd + blockPeriod &amp;&amp; ownerNegTokens &lt; _value) throw; //prevent the owner of spending his share of tokens within the first year
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (now < icoEnd + lockedPeriod && msg.sender != fundsWallet) throw;
+        if (msg.sender == fundsWallet && now < icoEnd + blockPeriod && ownerNegTokens < _value) throw; //prevent the owner of spending his share of tokens within the first year
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
-            if (msg.sender == fundsWallet &amp;&amp; now &lt; icoEnd + blockPeriod) {
+            if (msg.sender == fundsWallet && now < icoEnd + blockPeriod) {
                 ownerNegTokens = safeSub(ownerNegTokens, _value);
             }
             return true;
@@ -86,15 +86,15 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (now &lt; icoEnd + lockedPeriod &amp;&amp; msg.sender != fundsWallet) throw;
-        if (msg.sender == fundsWallet &amp;&amp; now &lt; icoEnd + blockPeriod &amp;&amp; ownerNegTokens &lt; _value) throw;
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (now < icoEnd + lockedPeriod && msg.sender != fundsWallet) throw;
+        if (msg.sender == fundsWallet && now < icoEnd + blockPeriod && ownerNegTokens < _value) throw;
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             Transfer(_from, _to, _value);
-            if (msg.sender == fundsWallet &amp;&amp; now &lt; icoEnd + blockPeriod) {
+            if (msg.sender == fundsWallet && now < icoEnd + blockPeriod) {
                 ownerNegTokens = safeSub(ownerNegTokens, _value);
             }
             return true;
@@ -117,7 +117,7 @@ contract StandardToken is Token {
     
     function burn(){
     	//if tokens have not been burned already and the ICO ended
-    	if(!burned &amp;&amp; now&gt; icoEnd){
+    	if(!burned && now> icoEnd){
     		uint256 difference = tokensToSell;//checked for overflow above
     		balances[fundsWallet] = balances[fundsWallet] - difference;
     		totalSupply = totalSupply - difference;
@@ -126,8 +126,8 @@ contract StandardToken is Token {
     	}
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     
     uint256 public icoStart = 1520244000;
@@ -154,7 +154,7 @@ contract StandardToken is Token {
     string public name;                   
     uint8 public decimals = 18;                
     string public symbol;                 
-    string public version = &#39;H1.0&#39;; 
+    string public version = 'H1.0'; 
     uint256 public unitsOneEthCanBuy;     
     uint256 public totalEthInWei = 0;          
     address public fundsWallet;
@@ -167,15 +167,15 @@ contract EpsToken is StandardToken {
     function EpsToken() {
         balances[msg.sender] = 90000000000000000000000000;              
         totalSupply = 90000000000000000000000000;                     
-        name = &quot;Epsilon&quot;;                                            
-        symbol = &quot;EPS&quot;;                                             
+        name = "Epsilon";                                            
+        symbol = "EPS";                                             
         unitsOneEthCanBuy = 28570;                                      
         fundsWallet = msg.sender;                         
     }
 
     function() payable{
         
-        if (now &lt; icoStart || now &gt; icoEnd || tokensToSell &lt;= 0) {
+        if (now < icoStart || now > icoEnd || tokensToSell <= 0) {
             return;
         }
         
@@ -183,7 +183,7 @@ contract EpsToken is StandardToken {
         uint256 amount = msg.value * unitsOneEthCanBuy;
         uint256 valueInWei = msg.value;
         
-        if (tokensToSell &lt; amount) {
+        if (tokensToSell < amount) {
             amount = tokensToSell;
             valueInWei = amount / unitsOneEthCanBuy;
             msg.sender.transfer(msg.value - valueInWei);
@@ -206,10 +206,10 @@ contract EpsToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

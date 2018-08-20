@@ -14,7 +14,7 @@ contract History  {
 
     // List of addresses controlled by Mechanics, Insurers, Car-Dealers etc. that are 
     // Authorized to log events this Vehicle-History-Log.
-    mapping(address =&gt; bool) public authorizedLoggers;
+    mapping(address => bool) public authorizedLoggers;
 
     // This event is broadcasted when a new maintenance event is logged.
     event EventLogged(string vin, EventType eventType, uint256 mileage, address verifier);
@@ -32,7 +32,7 @@ contract History  {
         string description;   
     }
 
-    mapping (bytes32 =&gt; LedgerEvent[]) events;
+    mapping (bytes32 => LedgerEvent[]) events;
 
     /**
      * Set the owner.

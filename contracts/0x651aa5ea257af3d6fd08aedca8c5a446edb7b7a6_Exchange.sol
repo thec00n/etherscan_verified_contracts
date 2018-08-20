@@ -9,14 +9,14 @@
 
   Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -62,7 +62,7 @@ interface Token {
 
 //solhint-disable-next-line
 /// @title TokenTransferProxy - Transfers tokens on behalf of exchange
-/// @author Ahmed Ali &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e3f16131b1a3e1c170a1817101b06501d1113">[email&#160;protected]</a>&gt;
+/// @author Ahmed Ali <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e3f16131b1a3e1c170a1817101b06501d1113">[email protected]</a>>
 contract TokenTransferProxy {
 
     modifier onlyExchange {
@@ -133,7 +133,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -143,7 +143,7 @@ contract SafeMath {
         returns (uint256)
     {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -152,7 +152,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b)
@@ -160,7 +160,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b)
@@ -168,7 +168,7 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b)
@@ -176,14 +176,14 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
-/// @author Amir Bandeali - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f5e52564d7f0f476f4d50555a5c4b115c5052">[email&#160;protected]</a>&gt;, Will Warren - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="62150b0e0e22521a32100d080701164c010d0f">[email&#160;protected]</a>&gt;
-// Modified by Ahmed Ali &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d899b0b5bdbc98bab1acbeb1b6bda0f6bbb7b5">[email&#160;protected]</a>&gt;
+/// @author Amir Bandeali - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f5e52564d7f0f476f4d50555a5c4b115c5052">[email protected]</a>>, Will Warren - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="62150b0e0e22521a32100d080701164c010d0f">[email protected]</a>>
+// Modified by Ahmed Ali <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d899b0b5bdbc98bab1acbeb1b6bda0f6bbb7b5">[email protected]</a>>
 contract Exchange is SafeMath {
 
     // Error Codes
@@ -194,16 +194,16 @@ contract Exchange is SafeMath {
         INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
     }
 
-    string constant public VERSION = &quot;ETHFX.0.0&quot;;
+    string constant public VERSION = "ETHFX.0.0";
     uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
     uint constant public ETHFINEX_FEE = 400; // Amount - (Amount/fee) is what gets send to user
 
     // address public ZRX_TOKEN_CONTRACT;
     address public TOKEN_TRANSFER_PROXY_CONTRACT;
 
-    // Mappings of orderHash =&gt; amounts of takerTokenAmount filled or cancelled.
-    mapping (bytes32 =&gt; uint) public filled;
-    mapping (bytes32 =&gt; uint) public cancelled;
+    // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
+    mapping (bytes32 => uint) public filled;
+    mapping (bytes32 => uint) public cancelled;
 
     event LogFill(
         address indexed maker,
@@ -257,8 +257,8 @@ contract Exchange is SafeMath {
     */
 
     /// @dev Fills the input order.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
     /// @param shouldThrowOnInsufficientBalanceOrAllowance Test if transfer will fail before attempting.
     /// @param v ECDSA signature parameter v.
@@ -291,7 +291,7 @@ contract Exchange is SafeMath {
         });
 
         require(order.taker == address(0) || order.taker == msg.sender);
-        require(order.makerTokenAmount &gt; 0 &amp;&amp; order.takerTokenAmount &gt; 0 &amp;&amp; fillTakerTokenAmount &gt; 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && fillTakerTokenAmount > 0);
         require(isValidSignature(
             order.maker,
             order.orderHash,
@@ -300,7 +300,7 @@ contract Exchange is SafeMath {
             s
         ));
 
-        if (block.timestamp &gt;= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
@@ -317,7 +317,7 @@ contract Exchange is SafeMath {
             return 0;
         }
 
-        if (!shouldThrowOnInsufficientBalanceOrAllowance &amp;&amp; !isTransferable(order, filledTakerTokenAmount)) {
+        if (!shouldThrowOnInsufficientBalanceOrAllowance && !isTransferable(order, filledTakerTokenAmount)) {
             LogError(uint8(Errors.INSUFFICIENT_BALANCE_OR_ALLOWANCE), order.orderHash);
             return 0;
         }
@@ -342,7 +342,7 @@ contract Exchange is SafeMath {
             filledTakerTokenAmount - safeDiv(filledTakerTokenAmount, ETHFINEX_FEE)
         ));
         // if (order.feeRecipient != address(0)) {
-        //     if (order.makerFee &gt; 0) {
+        //     if (order.makerFee > 0) {
         //         paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
         //         require(transferViaTokenTransferProxy(
         //             ZRX_TOKEN_CONTRACT,
@@ -351,7 +351,7 @@ contract Exchange is SafeMath {
         //             paidMakerFee
         //         ));
         //     }
-        //     if (order.takerFee &gt; 0) {
+        //     if (order.takerFee > 0) {
         //         paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
         //         require(transferViaTokenTransferProxy(
         //             ZRX_TOKEN_CONTRACT,
@@ -379,8 +379,8 @@ contract Exchange is SafeMath {
     }
 
     /// @dev Cancels the input order.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param cancelTakerTokenAmount Desired amount of takerToken to cancel in order.
     /// @return Amount of takerToken cancelled.
     // function cancelOrder(
@@ -405,9 +405,9 @@ contract Exchange is SafeMath {
     //     });
 
     //     require(order.maker == msg.sender);
-    //     require(order.makerTokenAmount &gt; 0 &amp;&amp; order.takerTokenAmount &gt; 0 &amp;&amp; cancelTakerTokenAmount &gt; 0);
+    //     require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && cancelTakerTokenAmount > 0);
 
-    //     if (block.timestamp &gt;= order.expirationTimestampInSec) {
+    //     if (block.timestamp >= order.expirationTimestampInSec) {
     //         LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
     //         return 0;
     //     }
@@ -439,8 +439,8 @@ contract Exchange is SafeMath {
     */
 
     /// @dev Fills an order with specified parameters and ECDSA signature, throws if specified amount not filled entirely.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
@@ -483,7 +483,7 @@ contract Exchange is SafeMath {
         bytes32[] s)
         public
     {
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             fillOrder(
                 orderAddresses[i],
                 orderValues[i],
@@ -512,7 +512,7 @@ contract Exchange is SafeMath {
         bytes32[] s)
         public
     {
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
                 orderAddresses[i],
                 orderValues[i],
@@ -545,7 +545,7 @@ contract Exchange is SafeMath {
         returns (uint)
     {
         uint filledTakerTokenAmount = 0;
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
             filledTakerTokenAmount = safeAdd(filledTakerTokenAmount, fillOrder(
                 orderAddresses[i],
@@ -571,7 +571,7 @@ contract Exchange is SafeMath {
     //     uint[] cancelTakerTokenAmounts)
     //     public
     // {
-    //     for (uint i = 0; i &lt; orderAddresses.length; i++) {
+    //     for (uint i = 0; i < orderAddresses.length; i++) {
     //         cancelOrder(
     //             orderAddresses[i],
     //             orderValues[i],
@@ -585,8 +585,8 @@ contract Exchange is SafeMath {
     */
 
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @return Keccak-256 hash of order.
     function getOrderHash(address[5] orderAddresses, uint[6] orderValues)
         public
@@ -627,14 +627,14 @@ contract Exchange is SafeMath {
         returns (bool)
     {
         return signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+            keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
         );
     }
 
-    /// @dev Checks if rounding error &gt; 0.1%.
+    /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
@@ -651,7 +651,7 @@ contract Exchange is SafeMath {
             safeMul(remainder, 1000000),
             safeMul(numerator, target)
         );
-        return errPercentageTimes1000000 &gt; 1000;
+        return errPercentageTimes1000000 > 1000;
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -720,30 +720,30 @@ contract Exchange is SafeMath {
         //     uint requiredMakerZRX = isMakerTokenZRX ? safeAdd(fillMakerTokenAmount, paidMakerFee) : paidMakerFee;
         //     uint requiredTakerZRX = isTakerTokenZRX ? safeAdd(fillTakerTokenAmount, paidTakerFee) : paidTakerFee;
 
-        //     if (   getBalance(ZRX_TOKEN_CONTRACT, order.maker) &lt; requiredMakerZRX
-        //         || getAllowance(ZRX_TOKEN_CONTRACT, order.maker) &lt; requiredMakerZRX
-        //         || getBalance(ZRX_TOKEN_CONTRACT, taker) &lt; requiredTakerZRX
-        //         || getAllowance(ZRX_TOKEN_CONTRACT, taker) &lt; requiredTakerZRX
+        //     if (   getBalance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
+        //         || getAllowance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
+        //         || getBalance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
+        //         || getAllowance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
         //     ) return false;
 
-        //     if (!isMakerTokenZRX &amp;&amp; (   getBalance(order.makerToken, order.maker) &lt; fillMakerTokenAmount // Don&#39;t double check makerToken if ZRX
-        //                              || getAllowance(order.makerToken, order.maker) &lt; fillMakerTokenAmount)
+        //     if (!isMakerTokenZRX && (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount // Don't double check makerToken if ZRX
+        //                              || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount)
         //     ) return false;
-        //     if (!isTakerTokenZRX &amp;&amp; (   getBalance(order.takerToken, taker) &lt; fillTakerTokenAmount // Don&#39;t double check takerToken if ZRX
-        //                              || getAllowance(order.takerToken, taker) &lt; fillTakerTokenAmount)
+        //     if (!isTakerTokenZRX && (   getBalance(order.takerToken, taker) < fillTakerTokenAmount // Don't double check takerToken if ZRX
+        //                              || getAllowance(order.takerToken, taker) < fillTakerTokenAmount)
         //     ) return false;
-        // } else if (   getBalance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-        //            || getAllowance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-        //            || getBalance(order.takerToken, taker) &lt; fillTakerTokenAmount
-        //            || getAllowance(order.takerToken, taker) &lt; fillTakerTokenAmount
+        // } else if (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount
+        //            || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount
+        //            || getBalance(order.takerToken, taker) < fillTakerTokenAmount
+        //            || getAllowance(order.takerToken, taker) < fillTakerTokenAmount
         // ) return false;
 
         ///////// added code, copied from above ///////
 
-        if (   getBalance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-                   || getAllowance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-                   || getBalance(order.takerToken, taker) &lt; fillTakerTokenAmount
-                   || getAllowance(order.takerToken, taker) &lt; fillTakerTokenAmount
+        if (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount
+                   || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount
+                   || getBalance(order.takerToken, taker) < fillTakerTokenAmount
+                   || getAllowance(order.takerToken, taker) < fillTakerTokenAmount
         ) return false;
 
         return true;

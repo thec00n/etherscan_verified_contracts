@@ -4,7 +4,7 @@ library ConvertStringByte {
   function bytes32ToString(bytes32 x) constant returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
       byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
       if (char != 0) {
           bytesString[charCount] = char;
@@ -12,7 +12,7 @@ library ConvertStringByte {
       }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
       bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);
@@ -33,7 +33,7 @@ library Strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -72,23 +72,23 @@ library Strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -124,7 +124,7 @@ library Strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -147,18 +147,18 @@ library Strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -187,12 +187,12 @@ library Strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -202,7 +202,7 @@ library Strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -241,18 +241,18 @@ library Strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -292,33 +292,33 @@ library Strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -342,7 +342,7 @@ library Strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -368,7 +368,7 @@ library Strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -397,7 +397,7 @@ library Strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -425,7 +425,7 @@ library Strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -452,8 +452,8 @@ library Strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -473,7 +473,7 @@ library Strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -490,8 +490,8 @@ library Strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -513,7 +513,7 @@ library Strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -635,7 +635,7 @@ library Strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -677,20 +677,20 @@ library Strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -704,7 +704,7 @@ library Strings {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -745,9 +745,9 @@ contract Platinum is Ownable {
   using Strings for *;
 
   // ========= 宣告 =========
-  string public version = &quot;0.0.1&quot;;
+  string public version = "0.0.1";
   // 基本單位
-  string public unit = &quot;oz&quot;;
+  string public unit = "oz";
   // 總供給量
   uint256 public total;
   // 存貨
@@ -758,7 +758,7 @@ contract Platinum is Ownable {
     string ipfs;
   }
   bytes32[] public storehouseIndex;
-  mapping (bytes32 =&gt; Bullion) public storehouse;
+  mapping (bytes32 => Bullion) public storehouse;
   // 掛勾貨幣
   address public token;
   // 匯率 1白金：白金幣
@@ -842,9 +842,9 @@ contract Platinum is Ownable {
   function stock(string _index, string _unit, uint256 _amount, string _ipfs) onlyOwner returns (bool) {
     bytes32 _bindex = ConvertStringByte.stringToBytes32(_index);
 
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_unit.toSlice().equals(unit.toSlice()));
-    require(!(storehouse[_bindex].amount &gt; 0));
+    require(!(storehouse[_bindex].amount > 0));
 
     Bullion bullion = storehouse[_bindex];
     bullion.index = _index;
@@ -886,13 +886,13 @@ contract Platinum is Ownable {
   function ship(string _index) onlyOwner returns (bool) {
     bytes32 _bindex = ConvertStringByte.stringToBytes32(_index);
 
-    require(storehouse[_bindex].amount &gt; 0);
+    require(storehouse[_bindex].amount > 0);
     Bullion bullion = storehouse[_bindex];
-    require(total.sub(bullion.amount) &gt;= 0);
+    require(total.sub(bullion.amount) >= 0);
 
     uint256 tmpAmount = bullion.amount;
 
-    for (uint256 index = 0; index &lt; storehouseIndex.length; index++) {
+    for (uint256 index = 0; index < storehouseIndex.length; index++) {
       Bullion _bullion = storehouse[storehouseIndex[index]];
       if (_bullion.index.toSlice().equals(_index.toSlice())) {
         // 從倉儲目錄移除
@@ -989,7 +989,7 @@ contract Platinum is Ownable {
    *  - bool: 執行成功，回傳true
    */
   function setRate(uint256 _rate) onlyOwner returns (bool) {
-    require(_rate &gt; 0);
+    require(_rate > 0);
 
     rate = _rate;
     return true;
@@ -1036,7 +1036,7 @@ contract Platinum is Ownable {
     require(token != 0x0);
     bytes32 _bindex = ConvertStringByte.stringToBytes32(_index);
     uint256 fee = coin.fee();
-    require(storehouse[_bindex].amount &gt; 0);
+    require(storehouse[_bindex].amount > 0);
 
     Bullion bullion = storehouse[_bindex];
     uint256 tokenPrice = convert2PlatinumToken(bullion.amount);
@@ -1051,7 +1051,7 @@ contract Platinum is Ownable {
     require(reduced);
 
     // 減少庫存
-    for (uint256 index = 0; index &lt; storehouseIndex.length; index++) {
+    for (uint256 index = 0; index < storehouseIndex.length; index++) {
       Bullion _bullion = storehouse[storehouseIndex[index]];
       if (_bullion.index.toSlice().equals(_index.toSlice())) {
         // 從倉儲目錄移除
@@ -1085,7 +1085,7 @@ contract Platinum is Ownable {
   // 金條資訊
   function info(string _index) constant returns (string, string, uint256, string) {
     bytes32 _bindex = ConvertStringByte.stringToBytes32(_index);
-    require(storehouse[_bindex].amount &gt; 0);
+    require(storehouse[_bindex].amount > 0);
 
     Bullion bullion = storehouse[_bindex];
 
@@ -1106,20 +1106,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1154,7 +1154,7 @@ contract PlatinumToken is Ownable, ERC20 {
   // ========= 宣告 =========
 
   // 版本
-  string public version = &quot;0.0.1&quot;;
+  string public version = "0.0.1";
   // 名稱
   string public name;
   // 標記
@@ -1164,8 +1164,8 @@ contract PlatinumToken is Ownable, ERC20 {
   // 白金合約地址
   address public platinum;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
   // 總供給量
   uint256 public totalSupply;
   // 手續費
@@ -1200,7 +1200,7 @@ contract PlatinumToken is Ownable, ERC20 {
   }
 
   modifier isOwnerOrPlatinumContract() {
-    require(msg.sender != address(0) &amp;&amp; (msg.sender == platinum || msg.sender == owner));
+    require(msg.sender != address(0) && (msg.sender == platinum || msg.sender == owner));
     _;
   }
 
@@ -1241,8 +1241,8 @@ contract PlatinumToken is Ownable, ERC20 {
    *    - bool: 執行成功回傳true
    */
   function reduce(uint256 amount) isPlatinumContract returns (bool) {
-    require(balances[owner].sub(amount) &gt;= 0);
-    require(totalSupply.sub(amount) &gt;= 0);
+    require(balances[owner].sub(amount) >= 0);
+    require(totalSupply.sub(amount) >= 0);
 
     balances[owner] = balances[owner].sub(amount);
     totalSupply = totalSupply.sub(amount);
@@ -1283,7 +1283,7 @@ contract PlatinumToken is Ownable, ERC20 {
    *  - bool: 執行成功，回傳true
    */
   function setFee(uint256 _fee) onlyOwner returns (bool) {
-    require(_fee &gt;= 0);
+    require(_fee >= 0);
 
     fee = _fee;
     return true;

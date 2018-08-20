@@ -56,35 +56,35 @@ contract usingOraclize {
       networkID; // silence the warning and remain backwards compatible
     }
     function oraclize_setNetwork() internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -109,65 +109,65 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -315,25 +315,25 @@ contract usingOraclize {
     }
     function oraclize_query(string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -505,16 +505,16 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -524,15 +524,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -541,19 +541,19 @@ contract usingOraclize {
     function indexOf(string _haystack, string _needle) internal pure returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }
@@ -574,24 +574,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -604,8 +604,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -614,12 +614,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
     function uint2str(uint i) internal pure returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -641,7 +641,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -650,20 +650,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -683,7 +683,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -692,20 +692,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -730,7 +730,7 @@ contract usingOraclize {
     }
 
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        require((_nbytes &gt; 0) &amp;&amp; (_nbytes &lt;= 32));
+        require((_nbytes > 0) && (_nbytes <= 32));
         // Convert from seconds to ledger timer ticks
         _delay *= 10;
         bytes memory nbytes = new bytes(1);
@@ -753,7 +753,7 @@ contract usingOraclize {
         copyBytes(delay, 24, 8, delay_bytes8, 0);
 
         bytes[4] memory args = [unonce, nbytes, sessionKeyHash, delay];
-        bytes32 queryId = oraclize_query(&quot;random&quot;, args, _customGasLimit);
+        bytes32 queryId = oraclize_query("random", args, _customGasLimit);
 
         bytes memory delay_bytes8_left = new bytes(8);
 
@@ -778,8 +778,8 @@ contract usingOraclize {
         oraclize_randomDS_args[queryId] = commitment;
     }
 
-    mapping(bytes32=&gt;bytes32) oraclize_randomDS_args;
-    mapping(bytes32=&gt;bool) oraclize_randomDS_sessionKeysHashVerified;
+    mapping(bytes32=>bytes32) oraclize_randomDS_args;
+    mapping(bytes32=>bool) oraclize_randomDS_sessionKeysHashVerified;
 
     function verifySig(bytes32 tosignh, bytes dersig, bytes pubkey) internal returns (bool){
         bool sigok;
@@ -822,7 +822,7 @@ contract usingOraclize {
         bytes memory tosign2 = new bytes(1+65+32);
         tosign2[0] = byte(1); //role
         copyBytes(proof, sig2offset-65, 65, tosign2, 1);
-        bytes memory CODEHASH = hex&quot;fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c&quot;;
+        bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1+65);
         sigok = verifySig(sha256(tosign2), sig2, appkey1_pubkey);
 
@@ -830,7 +830,7 @@ contract usingOraclize {
 
 
         // Step 7: verify the APPKEY1 provenance (must be signed by Ledger)
-        bytes memory LEDGERKEY = hex&quot;7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4&quot;;
+        bytes memory LEDGERKEY = hex"7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4";
 
         bytes memory tosign3 = new bytes(1+65);
         tosign3[0] = 0xFE;
@@ -845,8 +845,8 @@ contract usingOraclize {
     }
 
     modifier oraclize_randomDS_proofVerify(bytes32 _queryId, string _result, bytes _proof) {
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        require((_proof[0] == &quot;L&quot;) &amp;&amp; (_proof[1] == &quot;P&quot;) &amp;&amp; (_proof[2] == 1));
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        require((_proof[0] == "L") && (_proof[1] == "P") && (_proof[2] == 1));
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         require(proofVerified);
@@ -855,8 +855,8 @@ contract usingOraclize {
     }
 
     function oraclize_randomDS_proofVerify__returnCode(bytes32 _queryId, string _result, bytes _proof) internal returns (uint8){
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;)||(_proof[1] != &quot;P&quot;)||(_proof[2] != 1)) return 1;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L")||(_proof[1] != "P")||(_proof[2] != 1)) return 1;
 
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) return 2;
@@ -869,7 +869,7 @@ contract usingOraclize {
 
         require(prefix.length == n_random_bytes);
 
-        for (uint256 i=0; i&lt; n_random_bytes; i++) {
+        for (uint256 i=0; i< n_random_bytes; i++) {
             if (content[i] != prefix[i]) match_ = false;
         }
 
@@ -887,7 +887,7 @@ contract usingOraclize {
         bytes memory sig1 = new bytes(uint(proof[ledgerProofLength+(32+8+1+32)+1])+2);
         copyBytes(proof, ledgerProofLength+(32+8+1+32), sig1.length, sig1, 0);
 
-        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if &#39;result&#39; is the prefix of sha256(sig1)
+        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if 'result' is the prefix of sha256(sig1)
         if (!matchBytes32Prefix(sha256(sig1), result, uint(proof[ledgerProofLength+32+8]))) return false;
 
         // Step 4: commitment match verification, keccak256(delay, nbytes, unonce, sessionKeyHash) == commitment in storage.
@@ -910,7 +910,7 @@ contract usingOraclize {
         copyBytes(proof, ledgerProofLength, 32+8+1+32, tosign1, 0);
         if (!verifySig(sha256(tosign1), sig1, sessionPubkey)) return false;
 
-        // verify if sessionPubkeyHash was verified already, if not.. let&#39;s do it!
+        // verify if sessionPubkeyHash was verified already, if not.. let's do it!
         if (oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] == false){
             oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] = oraclize_randomDS_proofVerify__sessionKeyValidity(proof, sig2offset);
         }
@@ -923,13 +923,13 @@ contract usingOraclize {
         uint minLength = length + toOffset;
 
         // Buffer too small
-        require(to.length &gt;= minLength); // Should be a better way?
+        require(to.length >= minLength); // Should be a better way?
 
         // NOTE: the offset 32 is added to skip the `size` field of both bytes variables
         uint i = 32 + fromOffset;
         uint j = 32 + toOffset;
 
-        while (i &lt; (32 + fromOffset + length)) {
+        while (i < (32 + fromOffset + length)) {
             assembly {
                 let tmp := mload(add(from, i))
                 mstore(add(to, j), tmp)
@@ -942,15 +942,15 @@ contract usingOraclize {
     }
 
     // the following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
-        // FIXME: inline assembly can&#39;t access return values
+        // FIXME: inline assembly can't access return values
         bool ret;
         address addr;
 
@@ -987,13 +987,13 @@ contract usingOraclize {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -1002,10 +1002,10 @@ contract usingOraclize {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
           v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
@@ -1028,14 +1028,14 @@ contract BetContract is usingOraclize {
   event LogNewRandomNumber(string result,bytes32 queryId);
   event LogSendBonus(uint id,bytes32 lableId,uint playId,uint content,uint singleMoney,uint mutilple,address user,uint betTime,uint status,uint winMoney);
 
-  mapping (address =&gt; bytes32[]) playerLableList;
-  mapping (bytes32 =&gt; mapping (uint =&gt; uint[7])) betList;
-  mapping (bytes32 =&gt; uint) lableCount;
-  mapping (bytes32 =&gt; uint) lableTime;
-  mapping (bytes32 =&gt; uint) lableStatus;
-  mapping (bytes32 =&gt; uint[3]) openNumberList;
-  mapping (bytes32 =&gt; string) openNumberStr;
-  mapping (bytes32 =&gt; address) lableUser;
+  mapping (address => bytes32[]) playerLableList;
+  mapping (bytes32 => mapping (uint => uint[7])) betList;
+  mapping (bytes32 => uint) lableCount;
+  mapping (bytes32 => uint) lableTime;
+  mapping (bytes32 => uint) lableStatus;
+  mapping (bytes32 => uint[3]) openNumberList;
+  mapping (bytes32 => string) openNumberStr;
+  mapping (bytes32 => address) lableUser;
 
   function BetContract() public {
     owner = msg.sender;
@@ -1055,7 +1055,7 @@ contract BetContract is usingOraclize {
     * uintToString
     */
    function uintToString(uint i) internal  returns (string){
-       if (i == 0) return &quot;0&quot;;
+       if (i == 0) return "0";
        uint j = i;
        uint len;
        while (j != 0){
@@ -1134,9 +1134,9 @@ contract BetContract is usingOraclize {
 
     function doBet(uint[] playid,uint[] betMoney,uint[] betContent,uint mutiply) public payable returns (bytes32) {
       require(onoff==1);
-      require(playid.length &gt; 0);
-      require(mutiply &gt; 0);
-      require(msg.value &gt;= minBet);
+      require(playid.length > 0);
+      require(mutiply > 0);
+      require(msg.value >= minBet);
 
       /* checkBet(playid,betMoney,betContent,mutiply,msg.value); */
 
@@ -1144,25 +1144,25 @@ contract BetContract is usingOraclize {
       bytes32 queryId;
 
         uint oraGasLimit = oraclizeGasLimit;
-        if(playid.length &gt; 1 &amp;&amp; playid.length &lt;= 3){
+        if(playid.length > 1 && playid.length <= 3){
             oraGasLimit = 300000;
-        }else if(playid.length &gt; 3 &amp;&amp; playid.length &lt;= 5){
+        }else if(playid.length > 3 && playid.length <= 5){
             oraGasLimit = 400000;
-        }else if(playid.length &gt; 5 &amp;&amp; playid.length &lt;= 10){
+        }else if(playid.length > 5 && playid.length <= 10){
             oraGasLimit = 600000;
-        }else if(playid.length &gt; 10 &amp;&amp; playid.length &lt;= 15){
+        }else if(playid.length > 10 && playid.length <= 15){
             oraGasLimit = 700000;
-        }else if(playid.length &gt; 15 &amp;&amp; playid.length &lt;= 20){
+        }else if(playid.length > 15 && playid.length <= 20){
             oraGasLimit = 800000;
         }else{
             oraGasLimit = 1000000;
         }
-        LogNewOraclizeQuery(&quot;Oraclize query was sent, standing by for the answer..&quot;,queryId);
-        queryId = oraclize_query(&quot;URL&quot;, &quot;json(https://api.random.org/json-rpc/1/invoke).result.random.data&quot;, &#39;\n{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;generateIntegers&quot;,&quot;params&quot;:{&quot;apiKey&quot;:&quot;8817de90-6e86-4d0d-87ec-3fd9b437f711&quot;,&quot;n&quot;:3,&quot;min&quot;:1,&quot;max&quot;:6,&quot;replacement&quot;:true,&quot;base&quot;:10},&quot;id&quot;:1}&#39;,oraGasLimit);
+        LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..",queryId);
+        queryId = oraclize_query("URL", "json(https://api.random.org/json-rpc/1/invoke).result.random.data", '\n{"jsonrpc":"2.0","method":"generateIntegers","params":{"apiKey":"8817de90-6e86-4d0d-87ec-3fd9b437f711","n":3,"min":1,"max":6,"replacement":true,"base":10},"id":1}',oraGasLimit);
       /* } */
 
        uint[7] tmp ;
-      for(uint i=0;i&lt;playid.length;i++){
+      for(uint i=0;i<playid.length;i++){
         orderId++;
         tmp[0] =orderId;
         tmp[1] =playid[i];
@@ -1178,7 +1178,7 @@ contract BetContract is usingOraclize {
       lableUser[queryId] = msg.sender;
       uint[3] memory codes = [uint(0),0,0];
       openNumberList[queryId] = codes;
-      openNumberStr[queryId] =&quot;0,0,0&quot;;
+      openNumberStr[queryId] ="0,0,0";
       lableStatus[queryId] = 0;
 
       uint index=playerLableList[msg.sender].length++;
@@ -1194,8 +1194,8 @@ contract BetContract is usingOraclize {
       uint totalWin3 = 0;
       uint rate;
       uint i;
-      for(i=0;i&lt;playid.length;i++){
-        if(playid[i] &gt;=1 &amp;&amp; playid[i]&lt;= 8){
+      for(i=0;i<playid.length;i++){
+        if(playid[i] >=1 && playid[i]<= 8){
           totalMoney += betMoney[i] * mutiply;
         }else{
           throw;
@@ -1226,19 +1226,19 @@ contract BetContract is usingOraclize {
         }
       }
       uint maxWin=totalWin1;
-      if(totalWin2 &gt; maxWin){
+      if(totalWin2 > maxWin){
         maxWin=totalWin2;
       }
-      if(totalWin3 &gt; maxWin){
+      if(totalWin3 > maxWin){
         maxWin=totalWin3;
       }
-      require(betTotal &gt;= totalMoney);
+      require(betTotal >= totalMoney);
 
-      require(maxWin &lt; maxProfit);
+      require(maxWin < maxProfit);
     }
 
     function __callback(bytes32 queryId, string result) public onlyOraclize {
-        if (lableCount[queryId] &lt; 1) revert();
+        if (lableCount[queryId] < 1) revert();
       if (msg.sender != oraclize_cbAddress()) revert();
       LogNewRandomNumber(result,queryId);
 
@@ -1246,9 +1246,9 @@ contract BetContract is usingOraclize {
         uint[3] memory codes = [uint(0),0,0];
 
         uint k = 0;
-        for (uint i=0; i&lt;tmp.length; i++){
-            if ((tmp[i] &gt;= 48) &amp;&amp; (tmp[i] &lt;= 57)) {
-                if(k &lt; codes.length){
+        for (uint i=0; i<tmp.length; i++){
+            if ((tmp[i] >= 48) && (tmp[i] <= 57)) {
+                if(k < codes.length){
                     codes[k] = (uint(tmp[i]) - 48);
                     k++;
                 }
@@ -1258,7 +1258,7 @@ contract BetContract is usingOraclize {
         var code1=uintToString(codes[1]);
         var code2=uintToString(codes[2]);
         openNumberList[queryId] = codes;
-        openNumberStr[queryId] = strConcat(code0,&quot;,&quot;,code1,&quot;,&quot;,code2);
+        openNumberStr[queryId] = strConcat(code0,",",code1,",",code2);
 
         
         doCheckBounds(queryId);
@@ -1274,14 +1274,14 @@ contract BetContract is usingOraclize {
       uint len = lableCount[queryId];
 
       address to = lableUser[queryId];
-      for(uint aa = 0 ; aa&lt;len; aa++){
+      for(uint aa = 0 ; aa<len; aa++){
         
         if(betList[queryId][aa][5] == 0){
           totalBet+=betList[queryId][aa][3];
         }
       }
 
-      if(totalBet &gt; 0){
+      if(totalBet > 0){
         to.transfer(totalBet);
       }
       contractBalance=this.balance;
@@ -1297,14 +1297,14 @@ contract BetContract is usingOraclize {
       uint len = lableCount[queryId];
 
       address to = lableUser[queryId];
-      for(uint aa = 0 ; aa&lt;len; aa++){
+      for(uint aa = 0 ; aa<len; aa++){
         
         if(betList[queryId][aa][5] == 2){
           totalWin+=betList[queryId][aa][6];
         }
       }
 
-      if(totalWin &gt; 0){
+      if(totalWin > 0){
           to.transfer(totalWin);
       }
       lableStatus[queryId] = 3;
@@ -1317,19 +1317,19 @@ contract BetContract is usingOraclize {
       uint rates;
       if(betinfo[1] ==1){
           
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2]){
+          if(codes[0] == codes[1] && codes[1] == codes[2]){
             betinfo[5]=1;
           }else{
             uint sum = codes[0]+codes[1]+codes[2];
-            if(sum &gt;= 4 &amp;&amp; sum &lt; 11){
+            if(sum >= 4 && sum < 11){
               sum = 4;
-            }else if(sum &gt;= 11 &amp;&amp; sum &lt; 18){
+            }else if(sum >= 11 && sum < 18){
               sum = 17;
             }else{
               sum = 0;
             }
             betinfo[5]=1;
-            if(sum &gt;0 &amp;&amp; betinfo[2] == sum){
+            if(sum >0 && betinfo[2] == sum){
                 betinfo[5]=2;
                 rates = getPlayRate(betinfo[1],0);
                 betinfo[6]=betinfo[3]*rates/10;
@@ -1338,7 +1338,7 @@ contract BetContract is usingOraclize {
           }
       }else if(betinfo[1] == 2){
           
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2]){
+          if(codes[0] == codes[1] && codes[1] == codes[2]){
             betinfo[5]=1;
           }else{
             uint sums = codes[0]+codes[1]+codes[2];
@@ -1376,7 +1376,7 @@ contract BetContract is usingOraclize {
         }else if(betinfo[1] == 4){
 
           betinfo[5]=1;
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2] ){
+          if(codes[0] == codes[1] && codes[1] == codes[2] ){
             if(codes[0] == betinfo[2]){
               betinfo[5]=2;
               rates = getPlayRate(betinfo[1],0);
@@ -1386,14 +1386,14 @@ contract BetContract is usingOraclize {
         }else if(betinfo[1] == 5){
 
           betinfo[5]=1;
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2] ){
+          if(codes[0] == codes[1] && codes[1] == codes[2] ){
               betinfo[5]=2;
               rates = getPlayRate(betinfo[1],0);
               betinfo[6]=betinfo[3]*rates;
           }
         }else if(betinfo[1] == 6){
 
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2]){
+          if(codes[0] == codes[1] && codes[1] == codes[2]){
             betinfo[5]=1;
           }else{
             betinfo[5]=1;
@@ -1406,13 +1406,13 @@ contract BetContract is usingOraclize {
           }
         }else if(betinfo[1] == 7){
 
-          if(codes[0] == codes[1] &amp;&amp; codes[1] == codes[2]){
+          if(codes[0] == codes[1] && codes[1] == codes[2]){
             betinfo[5]=1;
           }else{
             uint[2] memory haoma = getErbutongHao(betinfo[2]);
             bool atmp=false;
             bool btmp=false;
-            for(uint ai=0;ai&lt;codes.length;ai++){
+            for(uint ai=0;ai<codes.length;ai++){
               if(codes[ai] == haoma[0]){
                 atmp = true;
                 continue;
@@ -1423,7 +1423,7 @@ contract BetContract is usingOraclize {
               }
             }
             betinfo[5]=1;
-            if(atmp &amp;&amp; btmp){
+            if(atmp && btmp){
               betinfo[5]=2;
               rates = getPlayRate(betinfo[1],0);
               betinfo[6]=betinfo[3]*rates;
@@ -1442,7 +1442,7 @@ contract BetContract is usingOraclize {
           if(codes[2] == betinfo[2]){
             tmpp++;
           }
-          if(tmpp &gt; 0){
+          if(tmpp > 0){
             betinfo[5]=2;
             rates = getPlayRate(betinfo[1],tmpp);
             betinfo[6]=betinfo[3]*rates/10;
@@ -1489,22 +1489,22 @@ contract BetContract is usingOraclize {
 
     function getLastBet() public view returns(string,uint[7][]){
       uint len=playerLableList[msg.sender].length;
-      require(len&gt;0);
+      require(len>0);
 
       uint i=len-1;
       bytes32 lastLable = playerLableList[msg.sender][i];
       uint max = lableCount[lastLable];
-      if(max &gt; 50){
+      if(max > 50){
           max = 50;
       }
       uint[7][] memory result = new uint[7][](max) ;
-      var opennum = &quot;&quot;;
-      for(uint a=0;a&lt;max;a++){
+      var opennum = "";
+      for(uint a=0;a<max;a++){
          var ttmp =openNumberStr[lastLable];
          if(a==0){
            opennum =ttmp;
          }else{
-           opennum = strConcat(opennum,&quot;;&quot;,ttmp);
+           opennum = strConcat(opennum,";",ttmp);
          }
 
          result[a] = betList[lastLable][a];
@@ -1519,13 +1519,13 @@ contract BetContract is usingOraclize {
 
     function getLableRecords(bytes32 lable) public view returns(string,uint[7][]){
       uint max = lableCount[lable];
-      if(max &gt; 50){
+      if(max > 50){
           max = 50;
       }
       uint[7][] memory result = new uint[7][](max) ;
-      var opennum=&quot;&quot;;
+      var opennum="";
 
-      for(uint a=0;a&lt;max;a++){
+      for(uint a=0;a<max;a++){
          result[a] = betList[lable][a];
          if(lableStatus[lable] == 1){
            result[a][5]=3;
@@ -1534,7 +1534,7 @@ contract BetContract is usingOraclize {
          if(a==0){
            opennum =ttmp;
          }else{
-           opennum = strConcat(opennum,&quot;;&quot;,ttmp);
+           opennum = strConcat(opennum,";",ttmp);
          }
       }
 
@@ -1543,17 +1543,17 @@ contract BetContract is usingOraclize {
 
     function getAllRecords() public view returns(string,uint[7][]){
         uint len=playerLableList[msg.sender].length;
-        require(len&gt;0);
+        require(len>0);
 
         uint max;
         bytes32 lastLable ;
         uint ss;
 
-        for(uint i1=0;i1&lt;len;i1++){
+        for(uint i1=0;i1<len;i1++){
             ss = len-i1-1;
             lastLable = playerLableList[msg.sender][ss];
             max += lableCount[lastLable];
-            if(100 &lt; max){
+            if(100 < max){
               max = 100;
               break;
             }
@@ -1561,24 +1561,24 @@ contract BetContract is usingOraclize {
 
         uint[7][] memory result = new uint[7][](max) ;
         bytes32[] memory resultlable = new bytes32[](max) ;
-        var opennum=&quot;&quot;;
+        var opennum="";
 
         bool flag=false;
         uint betnums;
         uint j=0;
 
-        for(uint ii=0;ii&lt;len;ii++){
+        for(uint ii=0;ii<len;ii++){
             ss = len-ii-1;
             lastLable = playerLableList[msg.sender][ss];
             betnums = lableCount[lastLable];
-            for(uint k= 0; k&lt;betnums; k++){
-              if(j&lt;max){
+            for(uint k= 0; k<betnums; k++){
+              if(j<max){
                   resultlable[j] = lastLable;
               	 var ttmp =openNumberStr[lastLable];
                  if(j==0){
                    opennum =ttmp;
                  }else{
-                   opennum = strConcat(opennum,&quot;;&quot;,ttmp);
+                   opennum = strConcat(opennum,";",ttmp);
                  }
                   result[j] = betList[lastLable][k];
                   if(lableStatus[lastLable] == 1){
@@ -1641,20 +1641,20 @@ contract BetContract is usingOraclize {
 
     function getLableList() public view returns(string,bytes32[],uint[],uint[],uint){
       uint len=playerLableList[msg.sender].length;
-      require(len&gt;0);
+      require(len>0);
 
       uint max=50;
-      if(len &lt; 50){
+      if(len < 50){
           max = len;
       }
 
       bytes32[] memory lablelist = new bytes32[](max) ;
       uint[] memory labletime = new uint[](max) ;
       uint[] memory lablestatus = new uint[](max) ;
-      var opennum=&quot;&quot;;
+      var opennum="";
 
       bytes32 lastLable ;
-      for(uint i=0;i&lt;max;i++){
+      for(uint i=0;i<max;i++){
           lastLable = playerLableList[msg.sender][max-i-1];
           lablelist[i]=lastLable;
           labletime[i]=lableTime[lastLable];
@@ -1663,7 +1663,7 @@ contract BetContract is usingOraclize {
          if(i==0){
            opennum =ttmp;
          }else{
-           opennum = strConcat(opennum,&quot;;&quot;,ttmp);
+           opennum = strConcat(opennum,";",ttmp);
          }
       }
 
@@ -1674,13 +1674,13 @@ contract BetContract is usingOraclize {
         uint sta = lableStatus[queryId];
         require(sta == 0 || sta == 2);
         uint[3] memory codes = openNumberList[queryId];
-        require(codes[0] &gt; 0);
+        require(codes[0] > 0);
 
         uint len = lableCount[queryId];
 
         uint totalWin;
         address to = lableUser[queryId];
-        for(uint aa = 0 ; aa&lt;len; aa++){
+        for(uint aa = 0 ; aa<len; aa++){
 
           if(sta == 0){
            if(betList[queryId][aa][5] == 0){
@@ -1694,12 +1694,12 @@ contract BetContract is usingOraclize {
 
         lableStatus[queryId] = 2;
 
-        if(totalWin &gt; 0){
-          if(totalWin &lt; this.balance){
+        if(totalWin > 0){
+          if(totalWin < this.balance){
             to.transfer(totalWin);
             lableStatus[queryId] = 3;
           }else{
-              LogNewOraclizeQuery(&quot;sent bouns fail.&quot;,queryId);
+              LogNewOraclizeQuery("sent bouns fail.",queryId);
           }
         }else{
           lableStatus[queryId] = 3;
@@ -1716,13 +1716,13 @@ contract BetContract is usingOraclize {
         uint len=playerLableList[msg.sender].length;
 
       uint max=50;
-      if(len &lt; 50){
+      if(len < 50){
           max = len;
       }
 
       uint sta;
       bytes32 lastLable ;
-      for(uint i=0;i&lt;max;i++){
+      for(uint i=0;i<max;i++){
           lastLable = playerLableList[msg.sender][max-i-1];
           sta = lableStatus[lastLable];
           if(sta == 0 || sta==2){
@@ -1735,18 +1735,18 @@ contract BetContract is usingOraclize {
         uint len=playerLableList[msg.sender].length;
 
       uint max=50;
-      if(len &lt; 50){
+      if(len < 50){
           max = len;
       }
 
       uint sta;
       uint bettime;
       bytes32 lastLable ;
-      for(uint i=0;i&lt;max;i++){
+      for(uint i=0;i<max;i++){
           lastLable = playerLableList[msg.sender][max-i-1];
           sta = lableStatus[lastLable];
           bettime = lableTime[lastLable];
-          if(sta == 0 &amp;&amp; (now - bettime)&gt;600){
+          if(sta == 0 && (now - bettime)>600){
             doCancel(lastLable);
           }
       }

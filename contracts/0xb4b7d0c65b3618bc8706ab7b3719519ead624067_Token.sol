@@ -1,14 +1,14 @@
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 contract Token {
 	event Transfer(address indexed from, address indexed to, uint value);
 	event Approval(address indexed owner, address indexed spender, uint value);
 
-	string constant public name = &quot;Hodl Token&quot;;
-	string constant public symbol = &quot;HODL&quot;;
+	string constant public name = "Hodl Token";
+	string constant public symbol = "HODL";
 	uint8 constant public decimals = 8;
-	mapping (address =&gt; uint) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+	mapping (address => uint) public balanceOf;
+	mapping (address => mapping (address => uint)) public allowance;
 	uint public totalSupply;
 	address public owner;
 
@@ -18,7 +18,7 @@ contract Token {
 
 	function transfer(address to, uint value) returns(bool) {
 		uint bal = balanceOf[msg.sender];
-		require(bal &gt;= value);
+		require(bal >= value);
 		balanceOf[msg.sender] = bal - value;
 		balanceOf[to] = balanceOf[to] + value;
 		Transfer(msg.sender, to, value);
@@ -26,7 +26,7 @@ contract Token {
 	}
 
 	function approve(address spender, uint value) returns(bool) {
-		require(value == 0 || (allowance[msg.sender][spender] == 0 &amp;&amp; balanceOf[msg.sender] &gt;= value));
+		require(value == 0 || (allowance[msg.sender][spender] == 0 && balanceOf[msg.sender] >= value));
 		allowance[msg.sender][spender] = value;
 		Approval(msg.sender, spender, value);
 		return true;
@@ -35,7 +35,7 @@ contract Token {
 	function transferFrom(address owner, address to, uint value) returns(bool) {
 		uint allowed = allowance[owner][msg.sender];
 		uint balance = balanceOf[owner];
-		require(allowed &gt;= value &amp;&amp; balance &gt;= value);
+		require(allowed >= value && balance >= value);
 		allowance[owner][msg.sender] = allowed - value;
 		balanceOf[owner] = balance - value;
 		balanceOf[to] = balanceOf[to] + value;
@@ -49,7 +49,7 @@ contract Token {
 
 	function burn(uint amount) {
 		uint bal = balanceOf[msg.sender];
-		require(bal &gt;= amount);
+		require(bal >= amount);
 		balanceOf[msg.sender] = bal - amount;
 		totalSupply -= amount;
 		Transfer(msg.sender, 0, amount);
@@ -64,11 +64,11 @@ contract Token {
 
 	function multiMint(uint256[] bits) {
 		require(msg.sender == owner);
-		uint256 lomask = (1 &lt;&lt; 96) - 1;
+		uint256 lomask = (1 << 96) - 1;
 		uint created = 0;
-		for (uint i=0; i&lt;bits.length; i++) {
-			address a = address(bits[i]&gt;&gt;96);
-			uint value = bits[i]&amp;lomask;
+		for (uint i=0; i<bits.length; i++) {
+			address a = address(bits[i]>>96);
+			uint value = bits[i]&lomask;
 			balanceOf[a] = balanceOf[a] + value;
 			Transfer(0, a, value);
 			created += value;

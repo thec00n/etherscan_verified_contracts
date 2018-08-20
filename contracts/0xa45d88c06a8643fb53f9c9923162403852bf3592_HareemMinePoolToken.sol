@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -91,7 +91,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) internal returns (bool) {
     //TRANSFER Functionality has been disabled as we wanted to make the token non-tradable
-    //and we are nice people so we don&#39;t want anyone to not get their payout :)
+    //and we are nice people so we don't want anyone to not get their payout :)
     return false;
   }
 
@@ -108,21 +108,21 @@ contract BasicToken is ERC20Basic {
 contract HareemMinePoolToken is BasicToken, Ownable {
 
    using SafeMath for uint256;
-   string public constant name = &quot;HareemMinePool&quot;;
-   string public constant symbol = &quot;HMP&quot;;
+   string public constant name = "HareemMinePool";
+   string public constant symbol = "HMP";
    uint256 public constant decimals = 18;
 
    uint256 constant INITIAL_SUPPLY = 1000 * (10 ** uint256(decimals));
    uint256 public sellPrice = 0.35 * 10 ** 18;  
    uint256 public buyPrice = 0.25 * 10 ** 18; 
   
-   string public constant COLLATERAL_HELD = &quot;1000 ETH&quot;;
+   string public constant COLLATERAL_HELD = "1000 ETH";
    uint payout_worth = 0;
    
    event Debug(string message, uint256 num);
    
-   mapping(address =&gt; uint256) amountLeftToBePaid;
-   mapping(address =&gt; uint256) partialAmtToBePaid;
+   mapping(address => uint256) amountLeftToBePaid;
+   mapping(address => uint256) partialAmtToBePaid;
    
    address[] listAddr;
    
@@ -168,7 +168,7 @@ contract HareemMinePoolToken is BasicToken, Ownable {
     }
     
     function payoutLeft() internal constant returns (uint amount) {
-        for (uint i=0;i&lt;listAddr.length;i++)
+        for (uint i=0;i<listAddr.length;i++)
         {
             amount = amount + amountLeftToBePaid[listAddr[i]];
         }
@@ -177,7 +177,7 @@ contract HareemMinePoolToken is BasicToken, Ownable {
     function doPayout() payable public onlyOwner{
       uint payLeft = payoutLeft();
       uint cashBack = msg.value;
-      require (payLeft&gt;0 &amp;&amp; cashBack &lt;=payLeft);
+      require (payLeft>0 && cashBack <=payLeft);
       uint soldTokens = totalSupply.sub(tokenBalances[owner]);
       cashBack = cashBack.mul(10**18);
       perTokenPayout =cashBack.div(soldTokens);
@@ -189,15 +189,15 @@ contract HareemMinePoolToken is BasicToken, Ownable {
     function makePayments() internal {
         uint exchangeAmount;
         uint customerAmt;
-        for (uint i=0;i&lt;listAddr.length;i++)
+        for (uint i=0;i<listAddr.length;i++)
         {
             uint payAmt = amountLeftToBePaid[listAddr[i]];
-            if (payAmt &gt;0)
+            if (payAmt >0)
             {
                 uint tokensHeld = payAmt.mul(10**18);
                 tokensHeld = tokensHeld.div(sellPrice); // shouldnt this be buyprice?
                 
-                if (tokensHeld &gt;0)
+                if (tokensHeld >0)
                 {
                     uint sendMoney = tokensHeld.mul(perTokenPayout);
                     sendMoney = sendMoney.div(10**decimals);
@@ -216,7 +216,7 @@ contract HareemMinePoolToken is BasicToken, Ownable {
     }
     
     function buy(address beneficiary) payable public returns (uint amount) {
-        require (msg.value.div(buyPrice) &gt;= 1);   
+        require (msg.value.div(buyPrice) >= 1);   
         uint exchangeAmount;
         uint ethStoreAmt;
         (exchangeAmount,ethStoreAmt) = getExchangeAndEthStoreAmount(msg.value); 
@@ -225,9 +225,9 @@ contract HareemMinePoolToken is BasicToken, Ownable {
         //uint tempBuyPrice = buyPrice.mul(10**decimals);
         amount = msg.value.div(buyPrice);                    // calculates the amount
         amount = amount.mul(10**decimals);
-        require(tokenBalances[owner] &gt;= amount);               // checks if it has enough to sell
-        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(amount);                  // adds the amount to buyer&#39;s balance
-        tokenBalances[owner] = tokenBalances[owner].sub(amount);                        // subtracts amount from seller&#39;s balance
+        require(tokenBalances[owner] >= amount);               // checks if it has enough to sell
+        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(amount);                  // adds the amount to buyer's balance
+        tokenBalances[owner] = tokenBalances[owner].sub(amount);                        // subtracts amount from seller's balance
         
         uint earlierBalance =  amountLeftToBePaid[beneficiary];
         uint amountToBePaid = amount.mul(sellPrice);

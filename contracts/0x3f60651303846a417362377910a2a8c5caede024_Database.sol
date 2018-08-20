@@ -5,7 +5,7 @@ contract Database
     address public m_Owner;
     address public m_Owner2;
     address public m_Creator;
-    mapping(address =&gt; mapping(uint256 =&gt; mapping(uint256 =&gt; bytes32))) public m_Data;
+    mapping(address => mapping(uint256 => mapping(uint256 => bytes32))) public m_Data;
 
     modifier OnlyOwner()
     {

@@ -1,5 +1,5 @@
 // Human token smart contract.
-// Developed by Phenom.Team &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f49d9a929bb4849c919a9b99da80919599">[email&#160;protected]</a>&gt;
+// Developed by Phenom.Team <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f49d9a929bb4849c919a9b99da80919599">[email protected]</a>>
 pragma solidity ^0.4.21;
 
 
@@ -20,20 +20,20 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal constant returns(uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal constant returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal constant returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -46,8 +46,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -92,7 +92,7 @@ contract HumanTokenAllocator {
     event PublicAllocationEnabled(uint _timestamp);
     event PublicAllocationDisabled(uint _timestamp);
 
-    mapping(address =&gt; bool) public isController;
+    mapping(address => bool) public isController;
 
     // Allows execution by the owner only     
     modifier onlyOwner {
@@ -146,7 +146,7 @@ contract HumanTokenAllocator {
         require(publicAllocationEnabled);
         uint humanValue = msg.value.mul(rateEth).mul(tokenPerUsdNumerator).div(tokenPerUsdDenominator);
         if (status == Status.secondStage) {
-            require(humanValue &gt;= FIFTY_THOUSANDS_LIMIT);
+            require(humanValue >= FIFTY_THOUSANDS_LIMIT);
         } 
         buy(msg.sender, humanValue);
     }
@@ -174,7 +174,7 @@ contract HumanTokenAllocator {
     *   @dev Function to issues tokens for investors who made purchases in other cryptocurrencies
     *   @param _holder        address the tokens will be issued to
     *   @param _humanValue    number of Human tokens
-    *   @param _txHash        transaction hash of investor&#39;s payment
+    *   @param _txHash        transaction hash of investor's payment
     */
 
     function buyForInvestor(
@@ -196,10 +196,10 @@ contract HumanTokenAllocator {
     function buy(address _holder, uint _humanValue) internal {
         require(status == Status.firstStage || status == Status.secondStage);
         if (status == Status.firstStage) {
-            require(firstStageRaised + _humanValue &lt;= firstStageCap);
+            require(firstStageRaised + _humanValue <= firstStageCap);
             firstStageRaised = firstStageRaised.add(_humanValue);
         } else {
-            require(secondStageRaised + _humanValue &lt;= secondStageCap);
+            require(secondStageRaised + _humanValue <= secondStageCap);
             secondStageRaised = secondStageRaised.add(_humanValue);            
         }
         Human.mintTokens(_holder, _humanValue);
@@ -297,8 +297,8 @@ contract HumanTokenAllocator {
  */
 contract HumanToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Human&quot;;
-    string public symbol = &quot;Human&quot;;
+    string public name = "Human";
+    string public symbol = "Human";
     uint public decimals = 18;
     uint public voteCost = 10**18;
 
@@ -306,7 +306,7 @@ contract HumanToken is ERC20 {
     address public owner;
     address public eventManager;
 
-    mapping (address =&gt; bool) isActiveEvent;
+    mapping (address => bool) isActiveEvent;
             
     //events        
     event EventAdded(address _event);
@@ -392,7 +392,7 @@ contract HumanToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint _value) external onlyOwner {
-       require(_value &gt; 0);
+       require(_value > 0);
        balances[_holder] = balances[_holder].add(_value);
        totalSupply = totalSupply.add(_value);
        Transfer(0x0, _holder, _value);
@@ -401,7 +401,7 @@ contract HumanToken is ERC20 {
   
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint) {
@@ -500,9 +500,9 @@ contract HumanToken is ERC20 {
     address public owner;
     HumanToken public human;
 
-    mapping (address =&gt; uint) public contributions;
-    mapping (address =&gt; bool) public voted;
-    mapping (address =&gt; bool) public claimed;
+    mapping (address => uint) public contributions;
+    mapping (address => bool) public voted;
+    mapping (address => bool) public claimed;
     
 
 
@@ -553,7 +553,7 @@ contract HumanToken is ERC20 {
     function startEvaluating() public onlyOwner {
         require(statusEvent == StatusEvent.Fundraising);
         
-        if (totalRaised &gt;= softCap) {
+        if (totalRaised >= softCap) {
             statusEvent = StatusEvent.Evaluating;
         } else {
             statusEvent = StatusEvent.Failed;
@@ -567,7 +567,7 @@ contract HumanToken is ERC20 {
 
     function finish() public onlyOwner {
         require(statusEvent == StatusEvent.Voting);
-        if (positiveVotes &gt;= negativeVotes) {
+        if (positiveVotes >= negativeVotes) {
             statusEvent = StatusEvent.Finished;
         } else {
             statusEvent = StatusEvent.Failed;
@@ -585,17 +585,17 @@ contract HumanToken is ERC20 {
             contributions[msg.sender] = 0;
         }
 
-        if(voted[msg.sender] &amp;&amp; statusEvent != StatusEvent.Voting) {
+        if(voted[msg.sender] && statusEvent != StatusEvent.Voting) {
             uint _voteCost = human.voteCost();
             contribution = contribution.add(_voteCost);
         }
-        require(contribution &gt; 0);
+        require(contribution > 0);
         require(human.transfer(msg.sender, contribution));
     }
 
     
     function vote(address _voter, bool _proposal) external onlyHuman returns (bool) {
-        require(!voted[_voter] &amp;&amp; statusEvent == StatusEvent.Voting);
+        require(!voted[_voter] && statusEvent == StatusEvent.Voting);
         voted[_voter] = true;
         
         if (_proposal) {

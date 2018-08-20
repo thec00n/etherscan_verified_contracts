@@ -16,20 +16,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization
- *      control functions, this simplifies the implementation of &quot;user permissions&quot;.
+ *      control functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -126,7 +126,7 @@ contract ERC223 {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
         
         /*
@@ -144,15 +144,15 @@ contract ERC223 {
 contract HiroyukiCoinDark is ERC223, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;HiroyukiCoinDark&quot;;
-    string public symbol = &quot;HCD&quot;;
+    string public name = "HiroyukiCoinDark";
+    string public symbol = "HCD";
     uint8 public decimals = 18;
     uint256 public decimalNum = 1e18;
     uint256 public totalSupply = 10e10 * decimalNum;
     uint256 public presaleRate = 1e9;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping (address => uint256)) public allowance;
 
 
     /** 
@@ -188,9 +188,9 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      * @dev Function that is called when a user or another contract wants to transfer funds
      */
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
-        require(_to != address(0) &amp;&amp; _value &gt; 0);
+        require(_to != address(0) && _value > 0);
         if (isContract(_to)) {
-            require(balanceOf[msg.sender] &gt;= _value);
+            require(balanceOf[msg.sender] >= _value);
             balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -203,7 +203,7 @@ contract HiroyukiCoinDark is ERC223, Ownable {
     }
 
     function transfer(address _to, uint _value, bytes _data) public  returns (bool success) {
-        require(_to != address(0) &amp;&amp; _value &gt; 0);
+        require(_to != address(0) && _value > 0);
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
         } else {
@@ -216,7 +216,7 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      *      Added due to backwards compatibility reasons
      */
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(_to != address(0) &amp;&amp; _value &gt; 0);
+        require(_to != address(0) && _value > 0);
         bytes memory empty;
         if (isContract(_to)) {
             return transferToContract(_to, _value, empty);
@@ -232,12 +232,12 @@ contract HiroyukiCoinDark is ERC223, Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         Transfer(msg.sender, _to, _value, _data);
@@ -247,7 +247,7 @@ contract HiroyukiCoinDark is ERC223, Ownable {
 
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -265,9 +265,9 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_to != address(0) &amp;&amp; _value &gt; 0);
-        require(balanceOf[_from] &gt;= _value);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(_to != address(0) && _value > 0);
+        require(balanceOf[_from] >= _value);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
@@ -302,9 +302,9 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      * @param _unitAmount The amount of token to be burned.
      */
     function burn(uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
         _unitAmount = _unitAmount.mul(decimalNum);
-        require(balanceOf[msg.sender] &gt;= _unitAmount);
+        require(balanceOf[msg.sender] >= _unitAmount);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_unitAmount);
         totalSupply = totalSupply.sub(_unitAmount);
         Burn(msg.sender, _unitAmount);
@@ -314,11 +314,11 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      * @dev Function to distribute tokens to the list of addresses by the provided amount
      */
     function distributeAirdrop(address[] addresses, uint256 amount) public returns (bool) {
-        require(amount &gt; 0 &amp;&amp; addresses.length &gt; 0);
+        require(amount > 0 && addresses.length > 0);
         amount = amount.mul(decimalNum);
         uint256 totalAmount = amount.mul(addresses.length);
-        require(balanceOf[msg.sender] &gt;= totalAmount);
-        for (uint j = 0; j &lt; addresses.length; j++) {
+        require(balanceOf[msg.sender] >= totalAmount);
+        for (uint j = 0; j < addresses.length; j++) {
             require(addresses[j] != 0x0);
             Transfer(msg.sender, addresses[j], amount);
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amount);
@@ -328,16 +328,16 @@ contract HiroyukiCoinDark is ERC223, Ownable {
     }
 
     function distributeAirdrop(address[] addresses, uint[] amounts) public returns (bool) {
-        require(addresses.length &gt; 0);
+        require(addresses.length > 0);
         require(addresses.length == amounts.length);
         uint256 totalAmount = 0;
-        for(uint j = 0; j &lt; addresses.length; j++){
-            require(amounts[j] &gt; 0 &amp;&amp; addresses[j] != 0x0);
+        for(uint j = 0; j < addresses.length; j++){
+            require(amounts[j] > 0 && addresses[j] != 0x0);
             amounts[j] = amounts[j].mul(decimalNum);
             totalAmount = totalAmount.add(amounts[j]);
         }
-        require(balanceOf[msg.sender] &gt;= totalAmount);
-        for (j = 0; j &lt; addresses.length; j++) {
+        require(balanceOf[msg.sender] >= totalAmount);
+        for (j = 0; j < addresses.length; j++) {
             require(addresses[j] != 0x0);
             Transfer(msg.sender, addresses[j], amounts[j]);
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amounts[j]);
@@ -354,12 +354,12 @@ contract HiroyukiCoinDark is ERC223, Ownable {
      * @dev fallback function
      */
     function() payable public {
-        require(msg.value &gt; 0);
-        require(presaleRate &gt; 0);
+        require(msg.value > 0);
+        require(presaleRate > 0);
         address _to = msg.sender;
         uint256 numTokens = SafeMath.mul(msg.value, presaleRate);
-        require(numTokens &gt; 0);
-        require(balanceOf[owner] &gt;= numTokens);
+        require(numTokens > 0);
+        require(balanceOf[owner] >= numTokens);
         balanceOf[_to] = balanceOf[_to].add(numTokens);
         balanceOf[owner] = balanceOf[owner].sub(numTokens);
         Transfer(owner, _to, numTokens);

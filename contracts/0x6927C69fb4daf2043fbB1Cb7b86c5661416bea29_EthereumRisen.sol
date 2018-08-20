@@ -10,26 +10,26 @@ contract SafeMath {
     }
 
     function divsm(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function subsm(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function addsm(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function powsm(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -68,7 +68,7 @@ contract Managed is Owned {
 
     event NewManager(address owner, address manager);
 
-    mapping (address =&gt; bool) public manager;
+    mapping (address => bool) public manager;
 
     modifier onlyManager() {
         require(manager[msg.sender] == true || msg.sender == owner);
@@ -116,8 +116,8 @@ contract StandardToken is SafeMath, ERC20  {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /// @dev Returns number of tokens owned by given address.
     function name() public view returns (string) {
@@ -146,12 +146,12 @@ contract StandardToken is SafeMath, ERC20  {
         return balances[_owner];
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(this)); //prevent direct send to contract
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -163,7 +163,7 @@ contract StandardToken is SafeMath, ERC20  {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -218,7 +218,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -283,7 +283,7 @@ contract MintableToken is ERC827Token {
             @param _amount     amount to increase the supply by
         */
         function issue(address _to, uint256 _amount) internal {
-            assert(totalSupply + _amount &lt;= maxSupply); // prevent overflows
+            assert(totalSupply + _amount <= maxSupply); // prevent overflows
             totalSupply +=  _amount;
             balances[_to] += _amount;
             emit Issuance(_amount);
@@ -328,15 +328,15 @@ contract PaymentManager is MintableToken, Owned {
 
     function rateSystem(address _to, uint256 _value) internal returns (bool) {
         uint256 _amount;
-        if(_value &gt;= (1 ether / 1000) &amp;&amp; _value &lt;= 1 ether) {
+        if(_value >= (1 ether / 1000) && _value <= 1 ether) {
             _amount = _value * _price;
         } else
-        if(_value &gt;= 1 ether) {
+        if(_value >= 1 ether) {
              _amount = divsm(powsm(_value, 2), 1 ether) * _price;
         }
         issue(_to, _amount);
         if(paused == false) {
-            if(totalSupply &gt; 1 * 10e9 * 1 * 1 ether) paused = true; // if more then 10 billions stop sell
+            if(totalSupply > 1 * 10e9 * 1 * 1 ether) paused = true; // if more then 10 billions stop sell
         }
         return true;
     }
@@ -360,10 +360,10 @@ contract InvestBox is PaymentManager, Managed {
 
     uint256 constant _day = 24 * 60 * 60 * 1 seconds;
 
-    bytes5 internal _td = bytes5(&quot;day&quot;);
-    bytes5 internal _tw = bytes5(&quot;week&quot;);
-    bytes5 internal _tm = bytes5(&quot;month&quot;);
-    bytes5 internal _ty = bytes5(&quot;year&quot;);
+    bytes5 internal _td = bytes5("day");
+    bytes5 internal _tw = bytes5("week");
+    bytes5 internal _tm = bytes5("month");
+    bytes5 internal _ty = bytes5("year");
 
     uint256 internal _creation;
     uint256 internal _1sty;
@@ -379,7 +379,7 @@ contract InvestBox is PaymentManager, Managed {
         uint256 closed;  // closing time
     }
 
-    mapping (address =&gt; mapping (bytes5 =&gt; invest)) public investInfo;
+    mapping (address => mapping (bytes5 => invest)) public investInfo;
 
     function stringToBytes32(string memory source) internal pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
@@ -420,11 +420,11 @@ contract InvestBox is PaymentManager, Managed {
         if (_t == _tm) _period = 31 * _day;
         if (_t == _ty) _period = 365 * _day;
         invest storage inv = investInfo[_investor][_t];
-        if (_now - inv.created &lt; _period) return 0;
+        if (_now - inv.created < _period) return 0;
         return (_now - inv.created)/_period; // get full days
     }
 
-    /** @dev loop &#39;for&#39; wrapper, where 100,000%, 10^3 decimal */
+    /** @dev loop 'for' wrapper, where 100,000%, 10^3 decimal */
     function loopFor(uint256 _condition, uint256 _data, uint256 _bonus) internal pure returns (uint256 r) {
         assembly {
             for { let i := 0 } lt(i, _condition) { i := add(i, 1) } {
@@ -461,12 +461,12 @@ contract InvestBox is PaymentManager, Managed {
         full_steps = _period/_d;
         last_step = _period - (full_steps * _d);
 
-        for(uint256 i=0; i&lt;full_steps; i++) { // not executed if zero
+        for(uint256 i=0; i<full_steps; i++) { // not executed if zero
             _balance = compaundIntrest(_d, _type, _balance, _created);
             _created += 1 years;
         }
 
-        if(last_step &gt; 0) _balance = compaundIntrest(last_step, _type, _balance, _created);
+        if(last_step > 0) _balance = compaundIntrest(last_step, _type, _balance, _created);
 
         return _balance;
     }
@@ -481,15 +481,15 @@ contract InvestBox is PaymentManager, Managed {
         uint256 _d = 100; // safe divider
         uint256 _bonus = bonusSystem(_type, _created);
 
-        if (_period&gt;_d) {
+        if (_period>_d) {
             full_steps = _period/_d;
             last_step = _period - (full_steps * _d);
-            for(uint256 i=0; i&lt;full_steps; i++) {
+            for(uint256 i=0; i<full_steps; i++) {
                 _balance = loopFor(_d, _balance, _bonus);
             }
-            if(last_step &gt; 0) _balance = loopFor(last_step, _balance, _bonus);
+            if(last_step > 0) _balance = loopFor(last_step, _balance, _bonus);
         } else
-        if (_period&lt;=_d) {
+        if (_period<=_d) {
             _balance = loopFor(_period, _balance, _bonus);
         }
         return _balance;
@@ -499,47 +499,47 @@ contract InvestBox is PaymentManager, Managed {
     function bonusSystem(bytes5 _t, uint256 _now) internal view returns (uint256) {
         uint256 _b;
         if (_t == _td) {
-            if (_now &lt; _1sty) {
-                _b = 600; // 0.6 %/day  // 100.6 % by day =&gt; 887.69 % by year
+            if (_now < _1sty) {
+                _b = 600; // 0.6 %/day  // 100.6 % by day => 887.69 % by year
             } else
-            if (_now &gt;= _1sty &amp;&amp; _now &lt; _2ndy) {
+            if (_now >= _1sty && _now < _2ndy) {
                 _b = 300; // 0.3 %/day
             } else
-            if (_now &gt;= _2ndy) {
+            if (_now >= _2ndy) {
                 _b = 30; // 0.03 %/day
             }
         }
         if (_t == _tw) {
-            if (_now &lt; _1sty) {
-                _b = 5370; // 0.75 %/day =&gt; 5.37 % by week =&gt; 1529.13 % by year
+            if (_now < _1sty) {
+                _b = 5370; // 0.75 %/day => 5.37 % by week => 1529.13 % by year
             } else
-            if (_now &gt;= _1sty &amp;&amp; _now &lt; _2ndy) {
+            if (_now >= _1sty && _now < _2ndy) {
                 _b = 2650; // 0.375 %/day
             } else
-            if (_now &gt;= _2ndy) {
+            if (_now >= _2ndy) {
                 _b = 270; // 0.038 %/day
             }
         }
         if (_t == _tm) {
-            if (_now &lt; _1sty) {
-                _b = 30000; // 0.85 %/day // 130 % by month =&gt; 2196.36 % by year
+            if (_now < _1sty) {
+                _b = 30000; // 0.85 %/day // 130 % by month => 2196.36 % by year
             } else
-            if (_now &gt;= _1sty &amp;&amp; _now &lt; _2ndy) {
+            if (_now >= _1sty && _now < _2ndy) {
 
                 _b = 14050; // 0.425 %/day
             } else
-            if (_now &gt;= _2ndy) {
+            if (_now >= _2ndy) {
                 _b = 1340; // 0.043 %/day
             }
         }
         if (_t == _ty) {
-            if (_now &lt; _1sty) {
+            if (_now < _1sty) {
                 _b = 3678000; // 1 %/day // 3678.34 * 1000 = 3678340 = 3678% by year
             } else
-            if (_now &gt;= _1sty &amp;&amp; _now &lt; _2ndy) {
+            if (_now >= _1sty && _now < _2ndy) {
                 _b = 517470; // 0.5 %/day
             } else
-            if (_now &gt;= _2ndy) {
+            if (_now >= _2ndy) {
                 _b = 20020; // 0.05 %/day
             }
         }
@@ -548,8 +548,8 @@ contract InvestBox is PaymentManager, Managed {
 
     /** @dev make invest */
     function makeInvest(uint256 _value, bytes5 _interval) internal isMintable {
-        require(min_invest &lt;= _value &amp;&amp; _value &lt;= max_invest); // min max condition
-        assert(balances[msg.sender] &gt;= _value &amp;&amp; balances[this] + _value &gt; balances[this]);
+        require(min_invest <= _value && _value <= max_invest); // min max condition
+        assert(balances[msg.sender] >= _value && balances[this] + _value > balances[this]);
         balances[msg.sender] -= _value;
         balances[this] += _value;
         invest storage inv = investInfo[msg.sender][_interval];
@@ -567,7 +567,7 @@ contract InvestBox is PaymentManager, Managed {
         }
         inv.exists = true;
         emit Invested(msg.sender, _value);
-        if(totalSupply &gt; maxSupply) stopMint(); // stop invest
+        if(totalSupply > maxSupply) stopMint(); // stop invest
     }
 
     function makeDailyInvest(uint256 _value) public {
@@ -599,7 +599,7 @@ contract InvestBox is PaymentManager, Managed {
             emit Transfer(this, _to, _value); // tx of begining balance
             emit InvestClosed(_to, _value);
         } else
-        if (_period &gt; 0) {
+        if (_period > 0) {
             // Destruction init
             balances[this] -= _value;
             totalSupply -= _value;
@@ -677,7 +677,7 @@ contract EthereumRisen is InvestBox {
 
     /** init airdrop program if cap will reach сost price */
     function startAirdrop() public onlyOwner {
-        if(address(this).balance &lt; 5 ether &amp;&amp; _airdrop_status == true) revert();
+        if(address(this).balance < 5 ether && _airdrop_status == true) revert();
         issue(airdropWallet, airdropReward);
         _paySize = 999 * 1e16; // 9.99 tokens
         _airdrop_status = true;
@@ -685,23 +685,23 @@ contract EthereumRisen is InvestBox {
 
     /**
         @dev notify owners about their balances was in promo action.
-        @param _holders addresses of the owners to be notified [&quot;address_1&quot;, &quot;address_2&quot;, ..]
+        @param _holders addresses of the owners to be notified ["address_1", "address_2", ..]
      */
     function airdropper(address [] _holders, uint256 _pay_size) public onlyManager {
         if(_pay_size == 0) _pay_size = _paySize; // if empty set default
-        if(_pay_size &lt; 1 * 1e18) revert(); // limit no less then 1 token
+        if(_pay_size < 1 * 1e18) revert(); // limit no less then 1 token
         uint256 count = _holders.length;
-        require(count &lt;= 200);
-        assert(_pay_size * count &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        require(count <= 200);
+        assert(_pay_size * count <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], _pay_size);
         }
     }
 
     function EthereumRisen() public {
 
-        name = &quot;Ethereum Risen&quot;;
-        symbol = &quot;ETR&quot;;
+        name = "Ethereum Risen";
+        symbol = "ETR";
         decimals = 18;
         totalSupply = 0;
         _creation = now;
@@ -711,10 +711,10 @@ contract EthereumRisen is InvestBox {
         PaymentManager.setPrice(10000);
         Managed.setManager(bountyWallet);
         InvestBox.IntervalBytecodes = intervalBytecodes(
-            &quot;0x6461790000&quot;,
-            &quot;0x7765656b00&quot;,
-            &quot;0x6d6f6e7468&quot;,
-            &quot;0x7965617200&quot;
+            "0x6461790000",
+            "0x7765656b00",
+            "0x6d6f6e7468",
+            "0x7965617200"
         );
         InvestBox.setMinMaxInvestValue(1000,100000000);
         issue(bountyWallet, bountyReward);
@@ -722,8 +722,8 @@ contract EthereumRisen is InvestBox {
     }
 
     function() public payable isSuspended {
-        require(msg.value &gt;= (1 ether / 100));
-        if(msg.value &gt;= 5 ether) superManager(msg.sender); // you can make airdrop from this contract
+        require(msg.value >= (1 ether / 100));
+        if(msg.value >= 5 ether) superManager(msg.sender); // you can make airdrop from this contract
         rateSystem(msg.sender, msg.value);
         receivedWais = addsm(receivedWais, msg.value); // count ether which was spent to contract
     }

@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 
-//import &quot;../zeppelin-solidity/contracts/ownership/Ownable.sol&quot;;
+//import "../zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract paperCash {
-	mapping (bytes32 =&gt; uint) grants;
-	mapping (bytes32 =&gt; bool) claimed;
+	mapping (bytes32 => uint) grants;
+	mapping (bytes32 => bool) claimed;
 
 	function createGrant(bytes32 _hashedKey)
 		payable
@@ -13,7 +13,7 @@ contract paperCash {
 		require(grants[_hashedKey] == 0);
 		require(claimed[_hashedKey] == false);
 
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		grants[_hashedKey] = msg.value;
 
 		LogGrantCreated(_hashedKey, msg.value);
@@ -27,7 +27,7 @@ contract paperCash {
 		claimed[hashedKey] = true;
 
 		uint amount = grants[hashedKey];
-		require(amount &gt; 0);
+		require(amount > 0);
 
 		require(msg.sender.send(amount));
 

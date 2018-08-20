@@ -46,7 +46,7 @@ contract Crowdsale is owned {
 
     event FundTransfer(address backer, uint256 amount, bool isContribution);
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     function Crowdsale() {
         preICOLimit = 5000000 * 1 ether;
@@ -64,7 +64,7 @@ contract Crowdsale is owned {
         require (preICOActive || ICOActive);
         uint256 amount = msg.value;
 
-        require (amount &gt;= 0.05 * 1 ether); //0.05 - minimum contribution limit
+        require (amount >= 0.05 * 1 ether); //0.05 - minimum contribution limit
 
         //mintToken method will work only for owner of the token.
         //So we need to execute transferOwnership from the token contract and pass ICO contract address as a parameter.
@@ -84,13 +84,13 @@ contract Crowdsale is owned {
         totalRaised += amount;
         FundTransfer(msg.sender, amount, true);
 
-        if(preICORaised &gt;= preICOLimit)
+        if(preICORaised >= preICOLimit)
         {
             preICOActive = false;
             preICOClosed = true;
         }
         
-        if(totalRaised &gt;= totalLimit)
+        if(totalRaised >= totalLimit)
         {
             preICOActive = false;
             ICOActive = false;
@@ -130,10 +130,10 @@ contract Crowdsale is owned {
 
     //withdrawal raised funds to beneficiary
     function withdrawFunds() onlyOwner {
-	require ((!preICOWithdrawn &amp;&amp; preICOClosed) || (!ICOWithdrawn &amp;&amp; ICOClosed));
+	require ((!preICOWithdrawn && preICOClosed) || (!ICOWithdrawn && ICOClosed));
 
             //withdraw results of preICO
-            if(!preICOWithdrawn &amp;&amp; preICOClosed)
+            if(!preICOWithdrawn && preICOClosed)
             {
                 if (beneficiary.send(preICORaised)) {
                     preICOWithdrawn = true;
@@ -141,7 +141,7 @@ contract Crowdsale is owned {
                 }
             }
             //withdraw results of ICO
-            if(!ICOWithdrawn &amp;&amp; ICOClosed)
+            if(!ICOWithdrawn && ICOClosed)
             {
                 if (beneficiary.send(ICORaised)) {
                     ICOWithdrawn = true;

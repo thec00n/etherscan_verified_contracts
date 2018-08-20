@@ -39,7 +39,7 @@ contract Owned {
     }
     
     // version of this smart contract
-    string public version = &quot;1.10&quot;;
+    string public version = "1.10";
     
     address public owner;
     address public newOwner;
@@ -49,8 +49,8 @@ contract Owned {
     // List of investors with invested amount in ETH
     Investor[] public investors;
     
-    mapping(address =&gt; uint) public mapInvestors;
-    mapping(address =&gt; bool) public founders;
+    mapping(address => uint) public mapInvestors;
+    mapping(address => bool) public founders;
     
     event OwnershipTransferred(address indexed _from, address indexed _to);
     event TranferETH(address indexed _to, uint amount);
@@ -137,8 +137,8 @@ contract ELOVEToken is ERC20Interface, Owned {
     bool icoEnded = false;
     bool kycCompleted = false;
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     uint etherExRate = 2000;
 
@@ -173,11 +173,11 @@ contract ELOVEToken is ERC20Interface, Owned {
     }
 
     function setRoundEnd(uint round, uint newTime) onlyOwner public returns (bool success)  {
-        require(now&lt;newTime);
-        if (round&gt;0) {
-            require(newTime&gt;roundEnd[round-1]);
+        require(now<newTime);
+        if (round>0) {
+            require(newTime>roundEnd[round-1]);
         } else {
-            require(newTime&lt;roundEnd[1]);
+            require(newTime<roundEnd[1]);
         }
 
         roundEnd[round] = newTime;
@@ -191,7 +191,7 @@ contract ELOVEToken is ERC20Interface, Owned {
     // refund ETH to non-KYCed investors
     function refundNonKYCInvestor() onlyOwner public returns (bool success) {
         require(!kycCompleted);
-        for(uint i = 0; i&lt;investors.length; i++) {
+        for(uint i = 0; i<investors.length; i++) {
             if (!investors[i].kyced) {
                 investors[i].sender.transfer(investors[i].amount);    
                 investors[i].amount = 0;
@@ -217,7 +217,7 @@ contract ELOVEToken is ERC20Interface, Owned {
     }
     
     function setLockTime(uint newLockTime) onlyOwner public returns (bool success) {
-        require(now&lt;newLockTime);
+        require(now<newLockTime);
         tokenLockTime = newLockTime;
         return true;
     }
@@ -237,18 +237,18 @@ contract ELOVEToken is ERC20Interface, Owned {
     }
     
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         require(icoEnded);
         // transaction is in tradable period
-        require(now&lt;tokenLockTime);
+        require(now<tokenLockTime);
         // either
-        // - is founder and current time &gt; tokenFounderLockTime
+        // - is founder and current time > tokenFounderLockTime
         // - is not founder but is rewardPoolWallet or sender was kyc-ed
-        require((founders[msg.sender] &amp;&amp; now&gt;tokenFounderLockTime) || (!founders[msg.sender] &amp;&amp; (msg.sender == rewardPoolWallet || mapInvestors[msg.sender] == 0 || investors[mapInvestors[msg.sender]-1].kyced)));
+        require((founders[msg.sender] && now>tokenFounderLockTime) || (!founders[msg.sender] && (msg.sender == rewardPoolWallet || mapInvestors[msg.sender] == 0 || investors[mapInvestors[msg.sender]-1].kyced)));
         // sender either is owner or recipient is not 0x0 address
         require(msg.sender == owner || to != 0x0);
         
@@ -260,7 +260,7 @@ contract ELOVEToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -285,9 +285,9 @@ contract ELOVEToken is ERC20Interface, Owned {
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         require(icoEnded);
         // either
-        // - is founder and current time &gt; tokenFounderLockTime
+        // - is founder and current time > tokenFounderLockTime
         // - is not founder but is rewardPoolWallet or sender was kyc-ed
-        require((founders[from] &amp;&amp; now&gt;tokenFounderLockTime) || (!founders[from] &amp;&amp; (from == rewardPoolWallet || investors[mapInvestors[from]-1].kyced)));
+        require((founders[from] && now>tokenFounderLockTime) || (!founders[from] && (from == rewardPoolWallet || investors[mapInvestors[from]-1].kyced)));
         
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -298,7 +298,7 @@ contract ELOVEToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -306,7 +306,7 @@ contract ELOVEToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -318,17 +318,17 @@ contract ELOVEToken is ERC20Interface, Owned {
     
     function processRound(uint round) internal {
         // Token left for each round must be greater than 0
-        require(roundTokenLeft[round]&gt;0);
+        require(roundTokenLeft[round]>0);
         // calculate number of tokens can be bought, given number of ether from sender, with discount rate accordingly
         var tokenCanBeBought = (msg.value*10**uint(decimals)*etherExRate*(100+roundBonus[round])).div(100*10**18);
-        if (tokenCanBeBought&lt;roundTokenLeft[round]) {
+        if (tokenCanBeBought<roundTokenLeft[round]) {
             balances[owner] = balances[owner] - tokenCanBeBought;
             balances[msg.sender] = balances[msg.sender] + tokenCanBeBought;
             roundTokenLeft[round] = roundTokenLeft[round]-tokenCanBeBought;
             
             Transfer(owner, msg.sender, tokenCanBeBought);
             
-            if (mapInvestors[msg.sender] &gt; 0) {
+            if (mapInvestors[msg.sender] > 0) {
                 // if investors already existed, add amount to the invested sum
                 investors[mapInvestors[msg.sender]-1].amount += msg.value;
             } else {
@@ -343,7 +343,7 @@ contract ELOVEToken is ERC20Interface, Owned {
             
             Transfer(owner, msg.sender, roundTokenLeft[round]);
             
-            if (mapInvestors[msg.sender] &gt; 0) {
+            if (mapInvestors[msg.sender] > 0) {
                 // if investors already existed, add amount to the invested sum
                 investors[mapInvestors[msg.sender]-1].amount += neededEtherToBuy;
             } else {
@@ -362,22 +362,22 @@ contract ELOVEToken is ERC20Interface, Owned {
     function () public payable {
         require(!icoEnded);
         uint currentTime = now;
-        require (currentTime&gt;icoStartDate);
-        require (msg.value&gt;= minInvest &amp;&amp; msg.value&lt;=maxInvest);
+        require (currentTime>icoStartDate);
+        require (msg.value>= minInvest && msg.value<=maxInvest);
         
-        if (currentTime&lt;roundEnd[0]) {
+        if (currentTime<roundEnd[0]) {
             processRound(0);
-        } else if (currentTime&lt;roundEnd[1]) {
+        } else if (currentTime<roundEnd[1]) {
             processRound(1);
-        } else if (currentTime&lt;roundEnd[2]) {
+        } else if (currentTime<roundEnd[2]) {
             processRound(2);
-        } else if (currentTime&lt;roundEnd[3]) {
+        } else if (currentTime<roundEnd[3]) {
             processRound(3);
         } else {
             // crowdsale ends, check success conditions
-            if (this.balance&lt;softcap) {
+            if (this.balance<softcap) {
                 // time to send back funds to investors
-                for(uint i = 0; i&lt;investors.length; i++) {
+                for(uint i = 0; i<investors.length; i++) {
                     investors[i].sender.transfer(investors[i].amount);
                     TranferETH(investors[i].sender, investors[i].amount);
                 }
@@ -401,7 +401,7 @@ contract ELOVEToken is ERC20Interface, Owned {
     }
     
     function withdrawEtherToOwner() onlyOwner public {   
-        require(now&gt;roundEnd[3] &amp;&amp; this.balance&gt;softcap);
+        require(now>roundEnd[3] && this.balance>softcap);
         owner.transfer(this.balance);
         TranferETH(owner, this.balance);
     }
@@ -420,10 +420,10 @@ contract ELOVEToken is ERC20Interface, Owned {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -431,7 +431,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }

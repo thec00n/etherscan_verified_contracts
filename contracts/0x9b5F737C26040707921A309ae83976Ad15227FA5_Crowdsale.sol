@@ -6,31 +6,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -102,7 +102,7 @@ contract ERC20 is ERC20Basic {
 contract PullPayment {
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) public payments;
+  mapping(address => uint) public payments;
   event LogRefundETH(address to, uint value);
   /**
   *  Store sent amount as credit to be pulled, called by payer 
@@ -118,7 +118,7 @@ contract PullPayment {
     if (payment == 0) {
       throw;
     }
-    if (this.balance &lt; payment) {
+    if (this.balance < payment) {
       throw;
     }
     payments[payee] = 0;
@@ -132,13 +132,13 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   /*
    * Fix for the ERC20 short address attack  
   */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -153,11 +153,11 @@ contract BasicToken is ERC20Basic {
   }
 }
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -168,7 +168,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -180,8 +180,8 @@ contract StandardToken is BasicToken, ERC20 {
  *  OrenCoin token contract. Implements
  */
 contract OrenCoin is StandardToken, Ownable {
-  string public constant name = &quot;OrenCoin&quot;;
-  string public constant symbol = &quot;OREN&quot;;
+  string public constant name = "OrenCoin";
+  string public constant symbol = "OREN";
   uint public constant decimals = 8;
   // Constructor
   function OrenCoin() {
@@ -240,16 +240,16 @@ contract Crowdsale is Pausable, PullPayment {
     /* Is crowdsale still on going */
     bool public crowdsaleClosed;
     /* Backers Ether indexed by their Ethereum address */
-    mapping(address =&gt; Backer) public backers;
+    mapping(address => Backer) public backers;
     /*
     * Modifiers
     */
     modifier minCapNotReached() {
-        if ((now &lt; endTime) || coinSentToEther &gt;= MIN_CAP ) throw;
+        if ((now < endTime) || coinSentToEther >= MIN_CAP ) throw;
         _;
     }
     modifier respectTimeFrame() {
-        if ((now &lt; startTime) || (now &gt; endTime )) throw;
+        if ((now < startTime) || (now > endTime )) throw;
         _;
     }
     /*
@@ -282,10 +282,10 @@ contract Crowdsale is Pausable, PullPayment {
      *  Receives a donation in Ether
     */
     function receiveETH(address beneficiary) internal {
-        if (msg.value &lt; MIN_INVEST_ETHER) throw; // Don&#39;t accept funding under a predefined threshold
+        if (msg.value < MIN_INVEST_ETHER) throw; // Don't accept funding under a predefined threshold
         
         uint coinToSend = bonus(msg.value.mul(COIN_PER_ETHER).div(1 ether)); // Compute the number of OrenCoin to send
-        if (coinToSend.add(coinSentToEther) &gt; MAX_CAP) throw;    
+        if (coinToSend.add(coinSentToEther) > MAX_CAP) throw;    
         Backer backer = backers[beneficiary];
         coin.transfer(beneficiary, coinToSend); // Transfer OrenCoins right now 
         backer.coinSent = backer.coinSent.add(coinToSend);
@@ -301,20 +301,20 @@ contract Crowdsale is Pausable, PullPayment {
      *Compute the OrenCoin bonus according to the investment period
      */
     function bonus(uint amount) internal constant returns (uint) {
-        if (coinSentToEther &lt; 20000000000000000) return amount.add(amount.mul(10).div(25));   // bonus 40%
+        if (coinSentToEther < 20000000000000000) return amount.add(amount.mul(10).div(25));   // bonus 40%
         return amount.add(amount.mul(100).div(333)); //bonus 30%
     }
     /*  
      * Finalize the crowdsale, should be called after the refund period
     */
     function finalize() onlyOwner public {
-        if (now &lt; endTime) { // Cannot finalise before CROWDSALE_PERIOD or before selling all coins
+        if (now < endTime) { // Cannot finalise before CROWDSALE_PERIOD or before selling all coins
             if (coinSentToEther == MAX_CAP) {
             } else {
                 throw;
             }
         }
-        if (coinSentToEther &lt; MIN_CAP &amp;&amp; now &lt; endTime + 5 days) throw; // If MIN_CAP is not reached donors have 5days to get refund before we can finalise
+        if (coinSentToEther < MIN_CAP && now < endTime + 5 days) throw; // If MIN_CAP is not reached donors have 5days to get refund before we can finalise
         
 
         if (!multisigEther.send(this.balance)) {
@@ -323,7 +323,7 @@ contract Crowdsale is Pausable, PullPayment {
         
         
         uint remains = coin.balanceOf(this);
-        if (remains &gt; 0) { // Burn the rest of OrenCoins
+        if (remains > 0) { // Burn the rest of OrenCoins
             if (!coin.burn(remains)) throw ;
         }
         crowdsaleClosed = true;
@@ -353,7 +353,7 @@ contract Crowdsale is Pausable, PullPayment {
     function getRemainCoins() onlyOwner public {
         var remains = MAX_CAP - coinSentToEther;
         uint minCoinsToSell = bonus(MIN_INVEST_ETHER.mul(COIN_PER_ETHER) / (1 ether));
-        if(remains &gt; minCoinsToSell) throw;
+        if(remains > minCoinsToSell) throw;
         Backer backer = backers[owner];
         coin.transfer(owner, remains); // Transfer OrenCoins right now 
         backer.coinSent = backer.coinSent.add(remains);
@@ -364,9 +364,9 @@ contract Crowdsale is Pausable, PullPayment {
     }
     /* 
      * When MIN_CAP is not reach:
-     * 1) backer call the &quot;approve&quot; function of the OrenCoin token contract with the amount of all OrenCoins they got in order to be refund
-     * 2) backer call the &quot;refund&quot; function of the Crowdsale contract with the same amount of OrenCoins
-     * 3) backer call the &quot;withdrawPayments&quot; function of the Crowdsale contract to get a refund in ETH
+     * 1) backer call the "approve" function of the OrenCoin token contract with the amount of all OrenCoins they got in order to be refund
+     * 2) backer call the "refund" function of the Crowdsale contract with the same amount of OrenCoins
+     * 3) backer call the "withdrawPayments" function of the Crowdsale contract to get a refund in ETH
      */
     function refund(uint _value) minCapNotReached public {
         
@@ -375,7 +375,7 @@ contract Crowdsale is Pausable, PullPayment {
         if (!coin.burn(_value)) throw ; // token sent for refund are burnt
         uint ETHToSend = backers[msg.sender].weiReceived;
         backers[msg.sender].weiReceived=0;
-        if (ETHToSend &gt; 0) {
+        if (ETHToSend > 0) {
             asyncSend(msg.sender, ETHToSend); // pull payment to get refund in ETH
         }
     }

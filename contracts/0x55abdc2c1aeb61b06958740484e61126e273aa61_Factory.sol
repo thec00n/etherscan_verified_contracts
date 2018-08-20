@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,7 +112,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -146,7 +146,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -403,13 +403,13 @@ contract Factory {
     {
         SomaIco icoContract = SomaIco(icoContractAddress);
         ERC20Basic presaleContract = ERC20Basic(presaleContractAddress);
-        for (uint i = 0; i &lt; buyers.length; i++) {
+        for (uint i = 0; i < buyers.length; i++) {
             address buyer = buyers[i];
-            if (icoContract.balanceOf(buyer) &gt; 0) {
+            if (icoContract.balanceOf(buyer) > 0) {
                 continue;
             }
             uint256 balance = presaleContract.balanceOf(buyer);
-            if (balance &gt; 0) {
+            if (balance > 0) {
                 icoContract.manuallyAssignTokens(buyer, balance);
             }
         }
@@ -419,8 +419,8 @@ contract Factory {
 contract SomaIco is PausableToken {
     using SafeMath for uint256;
 
-    string public name = &quot;Soma Community Token&quot;;
-    string public symbol = &quot;SCT&quot;;
+    string public name = "Soma Community Token";
+    string public symbol = "SCT";
     uint8 public decimals = 18;
 
     address public liquidityReserveWallet; // address where liquidity reserve tokens will be delivered
@@ -454,9 +454,9 @@ contract SomaIco is PausableToken {
         require(newWallet != 0x0);
         require(newMarketingWallet != 0x0);
         require(newLiquidityReserveWallet != 0x0);
-        require(newIcoEtherMinCap &lt;= newIcoEtherMaxCap);
-        require(newIcoEtherMinCap &gt; 0);
-        require(newIcoEtherMaxCap &gt; 0);
+        require(newIcoEtherMinCap <= newIcoEtherMaxCap);
+        require(newIcoEtherMinCap > 0);
+        require(newIcoEtherMaxCap > 0);
 
         pause();
 
@@ -495,16 +495,16 @@ contract SomaIco is PausableToken {
     }
 
     modifier acceptsFunds() {
-        bool hasStarted = icoStartTimestamp != 0 &amp;&amp; now &gt;= icoStartTimestamp;
+        bool hasStarted = icoStartTimestamp != 0 && now >= icoStartTimestamp;
         require(hasStarted);
 
         // ICO is continued over the end date until the min cap is reached
-        bool isIcoInProgress = now &lt;= icoEndTimestamp
+        bool isIcoInProgress = now <= icoEndTimestamp
                 || (icoEndTimestamp == 0) // before dates are set
-                || totalRaised &lt; icoEtherMinCap;
+                || totalRaised < icoEtherMinCap;
         require(isIcoInProgress);
 
-        bool isBelowMaxCap = totalRaised &lt; icoEtherMaxCap;
+        bool isBelowMaxCap = totalRaised < icoEtherMaxCap;
         require(isBelowMaxCap);
 
         _;
@@ -516,7 +516,7 @@ contract SomaIco is PausableToken {
     }
 
     modifier nonZeroPurchase() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -529,9 +529,9 @@ contract SomaIco is PausableToken {
         tokensSold = tokensSold.add(amount);
 
         // sanity safeguard
-        if (tokensSold &gt; totalSupply) {
+        if (tokensSold > totalSupply) {
             // there is a chance that tokens are sold over the supply:
-            // a) when: total presale bonuses &gt; (maxCap - totalRaised) * rate
+            // a) when: total presale bonuses > (maxCap - totalRaised) * rate
             // b) when: last payment goes over the maxCap
             totalSupply = tokensSold;
         }
@@ -540,7 +540,7 @@ contract SomaIco is PausableToken {
     }
 
     function setIcoDates(uint256 newIcoStartTimestamp, uint256 newIcoEndTimestamp) public onlyOwner {
-        require(newIcoStartTimestamp &lt; newIcoEndTimestamp);
+        require(newIcoStartTimestamp < newIcoEndTimestamp);
         require(!isIcoFinished());
         icoStartTimestamp = newIcoStartTimestamp;
         icoEndTimestamp = newIcoEndTimestamp;
@@ -560,8 +560,8 @@ contract SomaIco is PausableToken {
     }
 
     function isIcoFinished() public constant returns (bool icoFinished) {
-        return (totalRaised &gt;= icoEtherMinCap &amp;&amp; icoEndTimestamp != 0 &amp;&amp; now &gt; icoEndTimestamp) ||
-               (totalRaised &gt;= icoEtherMaxCap);
+        return (totalRaised >= icoEtherMinCap && icoEndTimestamp != 0 && now > icoEndTimestamp) ||
+               (totalRaised >= icoEtherMaxCap);
     }
 
     function prepareLiquidityReserve() public onlyOwner {
@@ -569,18 +569,18 @@ contract SomaIco is PausableToken {
         
         uint256 unsoldTokens = totalSupply.sub(tokensSold);
         // make sure there are any unsold tokens to be assigned
-        require(unsoldTokens &gt; 0);
+        require(unsoldTokens > 0);
 
         // try to allocate up to 10% of total sold tokens to Liquidity Reserve fund:
         uint256 liquidityReserveTokens = tokensSold.div(10);
-        if (liquidityReserveTokens &gt; unsoldTokens) {
+        if (liquidityReserveTokens > unsoldTokens) {
             liquidityReserveTokens = unsoldTokens;
         }
         assignTokens(liquidityReserveWallet, liquidityReserveTokens);
         unsoldTokens = unsoldTokens.sub(liquidityReserveTokens);
 
         // if there are still unsold tokens:
-        if (unsoldTokens &gt; 0) {
+        if (unsoldTokens > 0) {
             // decrease  (burn) total supply by the number of unsold tokens:
             totalSupply = totalSupply.sub(unsoldTokens);
         }
@@ -590,7 +590,7 @@ contract SomaIco is PausableToken {
     }
 
     function manuallyAssignTokens(address recipient, uint256 amount) public onlyOwner {
-        require(tokensSold &lt; totalSupply);
+        require(tokensSold < totalSupply);
         assignTokens(recipient, amount);
     }
 
@@ -599,7 +599,7 @@ contract SomaIco is PausableToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public whenNotPaused {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

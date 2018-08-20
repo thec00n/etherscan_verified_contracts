@@ -3,7 +3,7 @@
 // the result back
 contract Owned {
     /// Prevents methods from perfoming any value transfer
-    modifier noEther() {if (msg.value &gt; 0) throw; _}
+    modifier noEther() {if (msg.value > 0) throw; _}
     /// Allows only the owner to call a function
     modifier onlyOwner { if (msg.sender == owner) _ }
 
@@ -49,8 +49,8 @@ contract CrossWhitehatWithdraw is Owned {
     }
 
     function withdraw(address _etcBeneficiary, uint _percentage) returns (uint) {
-        if (_percentage &gt; 100) throw;
-        if (msg.value &lt; price) throw;
+        if (_percentage > 100) throw;
+        if (msg.value < price) throw;
         Operation op = operations[operations.length ++];
         op.dth = msg.sender;
         op.etcBeneficiary = _etcBeneficiary;
@@ -114,7 +114,7 @@ contract CrossWhitehatWithdraw is Owned {
 
     function kill() onlyOwner {
         uint i;
-        for (i=0; i&lt;operations.length; i++) {
+        for (i=0; i<operations.length; i++) {
             Operation op = operations[i];
             op.dth =0;
             op.etcBeneficiary =0;

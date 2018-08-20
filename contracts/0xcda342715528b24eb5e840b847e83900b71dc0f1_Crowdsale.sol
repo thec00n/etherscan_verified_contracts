@@ -17,20 +17,20 @@ library SafeMath {
 	}
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this does not hold
         return c;
     }
     
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 		return c;
     }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -129,16 +129,16 @@ contract MigrationAgent
 contract Token is Pausable{
     using SafeMath for uint256;
     
-    string public constant name = &quot;ZABERcoin&quot;;
-    string public constant symbol = &quot;ZAB&quot;;
+    string public constant name = "ZABERcoin";
+    string public constant symbol = "ZAB";
     uint8 public constant decimals = 18;
     
     uint256 public totalSupply;
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
-    mapping (address =&gt; bool) public unpausedWallet;
+    mapping (address => bool) public unpausedWallet;
     
     bool public mintingFinished = false;
     
@@ -174,7 +174,7 @@ contract Token is Pausable{
     
     // Transfer of tokens from one account to another
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
-        require (_value &gt; 0);
+        require (_value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -205,9 +205,9 @@ contract Token is Pausable{
         var _allowance = allowed[_from][msg.sender];
       
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
       
-        require (_value &gt; 0);
+        require (_value > 0);
       
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -232,19 +232,19 @@ contract Token is Pausable{
 	//        return true;
 	//    }
     
-    // Redefinition of the method of the returning status of the &quot;Exchange pause&quot;. 
+    // Redefinition of the method of the returning status of the "Exchange pause". 
     // Never for the owner of an unpaused wallet.
     function paused() public constant returns(bool) {
-        return super.paused() &amp;&amp; !unpausedWallet[msg.sender];
+        return super.paused() && !unpausedWallet[msg.sender];
     }
     
     
-    // Add a wallet ignoring the &quot;Exchange pause&quot;. Available to the owner of the contract.
+    // Add a wallet ignoring the "Exchange pause". Available to the owner of the contract.
     function addUnpausedWallet(address _wallet) public onlyOwner {
         unpausedWallet[_wallet] = true;
     }
     
-    // Remove the wallet ignoring the &quot;Exchange pause&quot;. Available to the owner of the contract.
+    // Remove the wallet ignoring the "Exchange pause". Available to the owner of the contract.
     function delUnpausedWallet(address _wallet) public onlyOwner {
          unpausedWallet[_wallet] = false;
     }
@@ -260,7 +260,7 @@ contract Token is Pausable{
     function migrate() public
     {
         uint256 value = balances[msg.sender];
-        require(value &gt; 0);
+        require(value > 0);
     
         totalSupply = totalSupply.sub(value);
         totalMigrated = totalMigrated.add(value);
@@ -272,9 +272,9 @@ contract Token is Pausable{
 
 
 // (A3)
-// Contract for freezing of investors&#39; funds. Hence, investors will be able to withdraw money if the 
+// Contract for freezing of investors' funds. Hence, investors will be able to withdraw money if the 
 // round does not attain the softcap. From here the wallet of the beneficiary will receive all the 
-// money (namely, the beneficiary, not the manager&#39;s wallet).
+// money (namely, the beneficiary, not the manager's wallet).
 contract RefundVault is Ownable {
     using SafeMath for uint256;
   
@@ -282,7 +282,7 @@ contract RefundVault is Ownable {
 
 	enum State { Active, Refunding, Closed }
   
-    mapping (uint8 =&gt; mapping (address =&gt; uint256)) public deposited;
+    mapping (uint8 => mapping (address => uint256)) public deposited;
 
     State public state;
   
@@ -362,7 +362,7 @@ contract DistributorRefundVault is RefundVault{
         uint256 allPay = this.balance;
         uint256 forTarget1;
         uint256 forTarget2;
-        if(taxValue &lt;= allPay){
+        if(taxValue <= allPay){
            forTarget1 = taxValue;
            forTarget2 = allPay.sub(taxValue);
            taxValue = 0;
@@ -398,7 +398,7 @@ contract Crowdsale{
     bool public isInitialized = false;
     bool public isPausedCrowdsale = false;
 
-    mapping (uint8 =&gt; address) public wallets;
+    mapping (uint8 => address) public wallets;
 
     uint256 public maxProfit;   // percent from 0 to 90
     uint256 public minProfit;   // percent from 0 to 90
@@ -410,16 +410,16 @@ contract Crowdsale{
 
     // How many tokens (excluding the bonus) are transferred to the investor in exchange for 1 ETH
     // **THOUSANDS** 10^3 for human, 1**3 for Solidity, 1e3 for MyEtherWallet (MEW). 
-    // Example: if 1ETH = 40.5 Token ==&gt; use 40500
+    // Example: if 1ETH = 40.5 Token ==> use 40500
     uint256 public rate;        
       
     // If the round does not attain this value before the closing date, the round is recognized as a 
     // failure and investors take the money back (the founders will not interfere in any way).
-    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: softcap=15ETH ==&gt; use 15**18 (Solidity) or 15e18 (MEW)
+    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: softcap=15ETH ==> use 15**18 (Solidity) or 15e18 (MEW)
     uint256 public softCap;
 
     // The maximum possible amount of income
-    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: hardcap=123.45ETH ==&gt; use 123450**15 (Solidity) or 12345e15 (MEW)
+    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: hardcap=123.45ETH ==> use 123450**15 (Solidity) or 12345e15 (MEW)
     uint256 public hardCap;
 
     // If the last payment is slightly higher than the hardcap, then the usual contracts do 
@@ -432,7 +432,7 @@ contract Crowdsale{
     uint256 public overLimit;
 
     // The minimum possible payment from an investor in ETH. Payments below this value will be rejected.
-    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: minPay=0.1ETH ==&gt; use 100**15 (Solidity) or 100e15 (MEW)
+    // **QUINTILLIONS** 10^18 / 1**18 / 1e18. Example: minPay=0.1ETH ==> use 100**15 (Solidity) or 100e15 (MEW)
     uint256 public minPay;
 
     uint256 ethWeiRaised;
@@ -465,10 +465,10 @@ contract Crowdsale{
         // this via method changeWallet. In the finalization methods it is written which wallet and 
         // what percentage of tokens are received.
 
-        // Receives all the money (when finalizing pre-ICO &amp; ICO)
+        // Receives all the money (when finalizing pre-ICO & ICO)
         wallets[uint8(Roles.beneficiary)] = 0x8d6b447f443ce7cAA12399B60BC9E601D03111f9; 
 
-        // Receives all the tokens for non-ETH investors (when finalizing pre-ICO &amp; ICO)
+        // Receives all the tokens for non-ETH investors (when finalizing pre-ICO & ICO)
         wallets[uint8(Roles.accountant)] = 0x99a280Dc34A996474e5140f34434CE59b5e65879;
 
         // All rights except the rights to receive tokens or money. Has the right to change any other 
@@ -490,7 +490,7 @@ contract Crowdsale{
         // startTime, endDiscountTime, endTime (then you can change it in the setup)
         changePeriod(1510311600, 1511607600, 1511607600);
 
-        // softCap &amp; hardCap (then you can change it in the setup)
+        // softCap & hardCap (then you can change it in the setup)
         changeTargets(0 ether, 51195 ether); // $15 000 000 / $293
 
         // rate (10^3), overLimit (10^18), minPay (10^18) (then you can change it in the setup)
@@ -506,13 +506,13 @@ contract Crowdsale{
 
         token.addUnpausedWallet(msg.sender);
 
-        // The return of funds to investors &amp; pay fee for partner 
+        // The return of funds to investors & pay fee for partner 
         vault = new DistributorRefundVault(0x793ADF4FB1E8a74Dfd548B5E2B5c55b6eeC9a3f8, 10 ether);
     }
 
     // Returns the name of the current round in plain text. Constant.
     function ICOSaleType()  public constant returns(string){
-        return (ICO == ICOType.preSale)?&#39;pre ICO&#39;:&#39;ICO&#39;;
+        return (ICO == ICOType.preSale)?'pre ICO':'ICO';
     }
 
     // Transfers the funds of the investor to the contract of return of funds. Internal.
@@ -524,31 +524,31 @@ contract Crowdsale{
     function validPurchase() internal constant returns (bool) {
 
         // The round started and did not end
-        bool withinPeriod = (now &gt; startTime &amp;&amp; now &lt; endTime);
+        bool withinPeriod = (now > startTime && now < endTime);
 
         // Rate is greater than or equal to the minimum
-        bool nonZeroPurchase = msg.value &gt;= minPay;
+        bool nonZeroPurchase = msg.value >= minPay;
 
         // hardCap is not reached, and in the event of a transaction, it will not be exceeded by more than OverLimit
-        bool withinCap = msg.value &lt;= hardCap.sub(weiRaised()).add(overLimit);
+        bool withinCap = msg.value <= hardCap.sub(weiRaised()).add(overLimit);
 
-        // round is initialized and no &quot;Pause of trading&quot; is set
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; isInitialized &amp;&amp; !isPausedCrowdsale;
+        // round is initialized and no "Pause of trading" is set
+        return withinPeriod && nonZeroPurchase && withinCap && isInitialized && !isPausedCrowdsale;
     }
 
     // Check for the ability to finalize the round. Constant.
     function hasEnded() public constant returns (bool) {
 
-        bool timeReached = now &gt; endTime;
+        bool timeReached = now > endTime;
 
-        bool capReached = weiRaised() &gt;= hardCap;
+        bool capReached = weiRaised() >= hardCap;
 
-        return (timeReached || capReached) &amp;&amp; isInitialized;
+        return (timeReached || capReached) && isInitialized;
     }
 
     // Finalize. Only available to the Manager and the Beneficiary. If the round failed, then 
     // anyone can call the finalization to unlock the return of funds to investors
-    // You must call a function to finalize each round (after the pre-ICO &amp; after the ICO)
+    // You must call a function to finalize each round (after the pre-ICO & after the ICO)
     function finalize() public {
 
         require(wallets[uint8(Roles.manager)] == msg.sender || wallets[uint8(Roles.beneficiary)] == msg.sender || !goalReached());
@@ -570,7 +570,7 @@ contract Crowdsale{
 	        vault.close(wallets[uint8(Roles.beneficiary)]);
 
             // if there is anything to give
-            if (tokenReserved &gt; 0) {
+            if (tokenReserved > 0) {
 
                 // Issue tokens of non-eth investors to Accountant account
                 token.mint(wallets[uint8(Roles.accountant)],tokenReserved);
@@ -644,7 +644,7 @@ contract Crowdsale{
 
         // And the specified start time has not yet come
         // If initialization return an error, check the start date!
-        require(now &lt;= startTime);
+        require(now <= startTime);
 
         initialization();
 
@@ -664,7 +664,7 @@ contract Crowdsale{
 
     // We check whether we collected the necessary minimum funds. Constant.
     function goalReached() public constant returns (bool) {
-        return weiRaised() &gt;= softCap;
+        return weiRaised() >= softCap;
     }
 
     // Customize. The arguments are described in the constructor above.
@@ -684,8 +684,8 @@ contract Crowdsale{
         require(!isInitialized);
 
         // Date and time are correct
-        require(now &lt;= _startTime);
-        require(_endDiscountTime &gt; _startTime &amp;&amp; _endDiscountTime &lt;= _endTime);
+        require(now <= _startTime);
+        require(_endDiscountTime > _startTime && _endDiscountTime <= _endTime);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -702,7 +702,7 @@ contract Crowdsale{
         require(!isInitialized);
 
         // The parameters are correct
-        require(_softCap &lt;= _hardCap);
+        require(_softCap <= _hardCap);
 
         softCap = _softCap;
         hardCap = _hardCap;
@@ -717,7 +717,7 @@ contract Crowdsale{
 
          require(!isInitialized);
 
-         require(_rate &gt; 0);
+         require(_rate > 0);
 
          rate = _rate;
          overLimit = _overLimit;
@@ -733,10 +733,10 @@ contract Crowdsale{
         require(!isInitialized);
 
         // The parameters are correct
-        require(_stepProfit &lt;= _maxProfit.sub(_minProfit));
+        require(_stepProfit <= _maxProfit.sub(_minProfit));
 
         // If not zero steps
-        if(_stepProfit &gt; 0){
+        if(_stepProfit > 0){
             // We will specify the maximum percentage at which it is possible to provide 
             // the specified number of steps without fractional parts
             maxProfit = _maxProfit.sub(_minProfit).div(_stepProfit).mul(_stepProfit).add(_minProfit);
@@ -768,12 +768,12 @@ contract Crowdsale{
     function getProfitPercentForData(uint256 timeNow) public constant returns (uint256)
     {
         // if the discount is 0 or zero steps, or the round does not start, we return the minimum discount
-        if(maxProfit == 0 || stepProfit == 0 || timeNow &gt; endDiscountTime) {
+        if(maxProfit == 0 || stepProfit == 0 || timeNow > endDiscountTime) {
             return minProfit.add(100);
         }
 
         // if the round is over - the maximum
-        if(timeNow&lt;=startTime) {
+        if(timeNow<=startTime) {
             return maxProfit.add(100);
         }
 
@@ -792,33 +792,33 @@ contract Crowdsale{
     }
 
     // The ability to quickly check pre-ICO (only for Round 1, only 1 time). Completes the pre-ICO by 
-    // transferring the specified number of tokens to the Accountant&#39;s wallet. Available to the Manager. 
+    // transferring the specified number of tokens to the Accountant's wallet. Available to the Manager. 
     // Use only if this is provided by the script and white paper. In the normal scenario, it 
     // does not call and the funds are raised normally. We recommend that you delete this 
-    // function entirely, so as not to confuse the auditors. Initialize &amp; Finalize not needed. 
+    // function entirely, so as not to confuse the auditors. Initialize & Finalize not needed. 
     // ** QUINTILIONS **  10^18 / 1**18 / 1e18
     function fastICO(uint256 _totalSupply) public {
       require(wallets[uint8(Roles.manager)] == msg.sender);
-      require(ICO == ICOType.preSale &amp;&amp; !isInitialized);
+      require(ICO == ICOType.preSale && !isInitialized);
       token.mint(wallets[uint8(Roles.accountant)], _totalSupply);
       ICO = ICOType.sale;
     }
     
-    // Remove the &quot;Pause of exchange&quot;. Available to the manager at any time. If the 
+    // Remove the "Pause of exchange". Available to the manager at any time. If the 
     // manager refuses to remove the pause, then 120 days after the successful 
     // completion of the ICO, anyone can remove a pause and allow the exchange to continue. 
     // The manager does not interfere and will not be able to delay the term. 
     // He can only cancel the pause before the appointed time.
     function tokenUnpause() public {
         require(wallets[uint8(Roles.manager)] == msg.sender 
-        	|| (now &gt; endTime + 120 days &amp;&amp; ICO == ICOType.sale &amp;&amp; isFinalized &amp;&amp; goalReached()));
+        	|| (now > endTime + 120 days && ICO == ICOType.sale && isFinalized && goalReached()));
         token.unpause();
     }
 
-    // Enable the &quot;Pause of exchange&quot;. Available to the manager until the ICO is completed.
+    // Enable the "Pause of exchange". Available to the manager until the ICO is completed.
     // The manager cannot turn on the pause, for example, 3 years after the end of the ICO.
     function tokenPause() public {
-        require(wallets[uint8(Roles.manager)] == msg.sender &amp;&amp; !isFinalized);
+        require(wallets[uint8(Roles.manager)] == msg.sender && !isFinalized);
         token.pause();
     }
     
@@ -836,7 +836,7 @@ contract Crowdsale{
         isPausedCrowdsale = false;
     }
 
-    // Checking whether the rights to address ignore the &quot;Pause of exchange&quot;. If the 
+    // Checking whether the rights to address ignore the "Pause of exchange". If the 
     // wallet is included in this list, it can translate tokens, ignoring the pause. By default, 
     // only the following wallets are included: 
     //    - Accountant wallet (he should immediately transfer tokens, but not to non-ETH investors)
@@ -847,7 +847,7 @@ contract Crowdsale{
         return _accountant;
     }
 
-    // For example - After 5 years of the project&#39;s existence, all of us suddenly decided collectively 
+    // For example - After 5 years of the project's existence, all of us suddenly decided collectively 
     // (company + investors) that it would be more profitable for everyone to switch to another smart 
     // contract responsible for tokens. The company then prepares a new token, investors 
     // disassemble, study, discuss, etc. After a general agreement, the manager allows any investor:
@@ -863,13 +863,13 @@ contract Crowdsale{
 	// Change the address for the specified role.
 	// Available to any wallet owner except the observer.
 	// Available to the manager until the round is initialized.
-	// The Observer&#39;s wallet or his own manager can change at any time.
+	// The Observer's wallet or his own manager can change at any time.
     function changeWallet(Roles _role, address _wallet) public
     {
         require(
-        		(msg.sender == wallets[uint8(_role)] &amp;&amp; _role != Roles.observer)
+        		(msg.sender == wallets[uint8(_role)] && _role != Roles.observer)
       		||
-      			(msg.sender == wallets[uint8(Roles.manager)] &amp;&amp; (!isInitialized || _role == Roles.observer))
+      			(msg.sender == wallets[uint8(Roles.manager)] && (!isInitialized || _role == Roles.observer))
       	);
         address oldWallet = wallets[uint8(_role)];
         wallets[uint8(_role)] = _wallet;
@@ -899,7 +899,7 @@ contract Crowdsale{
 	// the deadline this can also include the company as well as investors, depending on who is the first to use the method.
     function distructVault() public {
         require(wallets[uint8(Roles.beneficiary)] == msg.sender);
-        require(now &gt; startTime + 400 days);
+        require(now > startTime + 400 days);
         vault.del(wallets[uint8(Roles.beneficiary)]);
     }
 
@@ -920,7 +920,7 @@ contract Crowdsale{
 	// transfers) to the wallet of BTC, that together with previously received money will exceed the hardcap in total. 
 	// In this case, we will refund all the amounts above, in order not to exceed the hardcap.
 
-	// Collection of money in BTC will be carried out via one common wallet. The wallet&#39;s address will be published 
+	// Collection of money in BTC will be carried out via one common wallet. The wallet's address will be published 
 	// everywhere (in a white paper, on the ICO website, on Telegram, on Bitcointalk, in this code, etc.)
 	// Anyone interested can check that the administrator of the smart contract writes down exactly the amount 
 	// in ETH (in equivalent for BTC) there. In theory, the ability to bypass a smart contract to accept money in 
@@ -946,10 +946,10 @@ contract Crowdsale{
     // ** QUINTILLIONS ** 10^18 / 1**18 / 1e18
     function paymentsInOtherCurrency(uint256 _token, uint256 _value) public {
         require(wallets[uint8(Roles.observer)] == msg.sender);
-        bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        bool withinPeriod = (now >= startTime && now <= endTime);
         
-        bool withinCap = _value.add(ethWeiRaised) &lt;= hardCap.add(overLimit);
-        require(withinPeriod &amp;&amp; withinCap &amp;&amp; isInitialized);
+        bool withinCap = _value.add(ethWeiRaised) <= hardCap.add(overLimit);
+        require(withinPeriod && withinCap && isInitialized);
 
         nonEthWeiRaised = _value;
         tokenReserved = _token;
@@ -1009,7 +1009,7 @@ contract SVTAllocation {
 
     // If the time of freezing expired will return the funds to the owner.
     function unlock() public{
-        require(now &gt;= unlockedAt);
+        require(now >= unlockedAt);
         require(token.transfer(owner,token.balanceOf(this)));
     }
 }

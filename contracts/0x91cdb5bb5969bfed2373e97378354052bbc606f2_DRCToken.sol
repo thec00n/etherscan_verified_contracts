@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -119,7 +119,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -167,7 +167,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -178,8 +178,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -266,9 +266,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -430,7 +430,7 @@ contract Claimable is Ownable {
 /**
  * @title Autonomy
  * @dev Simpler version of an Democracy organization contract
- * @dev the inheritor should implement &#39;initialCongress&#39; at first
+ * @dev the inheritor should implement 'initialCongress' at first
  */
 contract Autonomy is Ownable {
     address public congress;
@@ -473,15 +473,15 @@ interface tokenRecipient {
 }
 
 contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Autonomy {    
-    string public name = &quot;DRC Token&quot;;
-    string public symbol = &quot;DRCT&quot;;
+    string public name = "DRC Token";
+    string public symbol = "DRCT";
     uint8 public decimals = 18;
     uint public INITIAL_SUPPLY = 0;
 
     // add map for recording the accounts that will not be allowed to transfer tokens
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     // record the amount of tokens that have been frozen
-    mapping (address =&gt; uint256) public frozenAmount;
+    mapping (address => uint256) public frozenAmount;
     event FrozenFunds(address indexed _target, bool _frozen);
     event FrozenFundsPartialy(address indexed _target, bool _frozen, uint256 _value);
 
@@ -498,7 +498,7 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
     }
     
     /**
-     * @dev freeze the account&#39;s balance 
+     * @dev freeze the account's balance 
      *
      * by default all the accounts will not be frozen until set freeze value as true. 
      * 
@@ -514,14 +514,14 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
     }
 
     /**
-     * @dev freeze the account&#39;s balance 
+     * @dev freeze the account's balance 
      * 
      * @param _target address the account should be frozen
      * @param _value uint256 the amount of tokens that will be frozen
      */
     function freezeAccountPartialy(address _target, uint256 _value) onlyOwner public {
         require(_target != address(0));
-        require(_value &lt;= balances[_target]);
+        require(_value <= balances[_target]);
 
         frozenAccount[_target] = true;
         frozenAmount[_target] = _value;
@@ -535,7 +535,7 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
      */
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(!frozenAccount[msg.sender] || (_value &lt;= balances[msg.sender].sub(frozenAmount[msg.sender])));
+        require(!frozenAccount[msg.sender] || (_value <= balances[msg.sender].sub(frozenAmount[msg.sender])));
 
         return super.transfer(_to, _value);
     }
@@ -549,7 +549,7 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_from != address(0));
         require(_to != address(0));
-        require(!frozenAccount[_from] || (_value &lt;= balances[_from].sub(frozenAmount[_from])));
+        require(!frozenAccount[_from] || (_value <= balances[_from].sub(frozenAmount[_from])));
 
         return super.transferFrom(_from, _to, _value);
     }
@@ -564,9 +564,9 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
     //     assert(_toMulti.length == _values.length);
 
     //     uint256 i = 0;
-    //     while (i &lt; _toMulti.length) {
+    //     while (i < _toMulti.length) {
     //         require(_toMulti[i] != address(0));
-    //         require(_values[i] &lt;= balances[msg.sender]);
+    //         require(_values[i] <= balances[msg.sender]);
 
     //         // SafeMath.sub will throw if there is not enough balance.
     //         balances[msg.sender] = balances[msg.sender].sub(_values[i]);
@@ -590,10 +590,10 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
     //     assert(_toMulti.length == _values.length);
     
     //     uint256 i = 0;
-    //     while ( i &lt; _toMulti.length) {
+    //     while ( i < _toMulti.length) {
     //         require(_toMulti[i] != address(0));
-    //         require(_values[i] &lt;= balances[_from]);
-    //         require(_values[i] &lt;= allowed[_from][msg.sender]);
+    //         require(_values[i] <= balances[_from]);
+    //         require(_values[i] <= allowed[_from][msg.sender]);
 
     //         // SafeMath.sub will throw if there is not enough balance.
     //         balances[_from] = balances[_from].sub(_values[i]);
@@ -625,10 +625,10 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
      */
     function burnFrom(address _from, uint256 _value) public whenNotPaused returns (bool success) {
         require(_from != address(0));
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply_ = totalSupply_.sub(_value);
         BurnFrom(msg.sender, _from, _value);
         return true;
@@ -644,7 +644,7 @@ contract DRCToken is BurnableToken, MintableToken, PausableToken, Claimable, Aut
      */
     function forceBurnFrom(address _from, uint256 _value) onlyCongress whenNotPaused public returns (bool success) {
         require(_from != address(0));
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough        
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough        
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
         totalSupply_ = totalSupply_.sub(_value);
         BurnFrom(msg.sender, _from, _value);

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
 
-// &#39;interface&#39;:
+// 'interface':
 //  this is expected from another contract,
 //  where tokens (ERC20) are managed
 contract Erc20TokensContract {
@@ -23,20 +23,20 @@ contract ICO {
     // bool erc20TokensContractAddressSet = false;
 
     uint public priceToBuyInFinney; // price in finney (0.001 ETH)
-    uint priceToBuyInWei; // --&gt; to reduce gas in buyTokens
+    uint priceToBuyInWei; // --> to reduce gas in buyTokens
 
     address public owner;
 
-    mapping (address =&gt; bool) public isManager; // holds managers
+    mapping (address => bool) public isManager; // holds managers
 
     // for price chart:
-    mapping (uint =&gt; uint[3]) public priceChange;
-    // number of change =&gt; [priceToBuyInFinney, block.number, block.timestamp]
+    mapping (uint => uint[3]) public priceChange;
+    // number of change => [priceToBuyInFinney, block.number, block.timestamp]
     uint public currentPriceChangeNumber = 0;
 
     // for deals chart:
-    mapping (uint =&gt; uint[4]) public deals;
-    // number of change =&gt; [priceInFinney, quantity, block.number, block.timestamp]
+    mapping (uint => uint[4]) public deals;
+    // number of change => [priceInFinney, quantity, block.number, block.timestamp]
     uint public dealsNumber = 0;
 
     /* ---- Creates contract */
@@ -97,7 +97,7 @@ contract ICO {
     function setManager(address _newManager) returns (bool){
         if (msg.sender == owner) {
             isManager[_newManager] = true;
-            ManagersChanged(&quot;manager added&quot;, _newManager);
+            ManagersChanged("manager added", _newManager);
             return true;
         }
         else throw;
@@ -107,7 +107,7 @@ contract ICO {
     function removeManager(address _manager) returns (bool){
         if (msg.sender == owner) {
             isManager[_manager] = false;
-            ManagersChanged(&quot;manager removed&quot;, _manager);
+            ManagersChanged("manager removed", _manager);
             return true;
         }
         else throw;
@@ -137,35 +137,35 @@ contract ICO {
 
     // ---- buy tokens:
     // if you get message:
-    // &quot;It seems this transaction will fail. If you submit it, it may consume
-    // all the gas you send&quot;,
+    // "It seems this transaction will fail. If you submit it, it may consume
+    // all the gas you send",
     // or
-    // &quot;The contract won&#39;t allow this transaction to be executed&quot;
+    // "The contract won't allow this transaction to be executed"
     // that may be means that price has changed, just wait a few minutes
     // and repeat transaction
     function buyTokens(uint _quantity, uint _priceToBuyInFinney) payable returns (bool){
 
-        if (priceToBuyInFinney &lt;= 0) {throw;}
+        if (priceToBuyInFinney <= 0) {throw;}
         // if priceToBuy == 0 selling stops;
 
-        // if (_priceToBuyInFinney &lt;= 0) {throw;}
-        // if (_quantity &lt;= 0) {throw;}
+        // if (_priceToBuyInFinney <= 0) {throw;}
+        // if (_quantity <= 0) {throw;}
 
         if (priceToBuyInFinney != _priceToBuyInFinney) {
-            //    Result(msg.sender, &quot;transaction failed: price already changed&quot;);
+            //    Result(msg.sender, "transaction failed: price already changed");
             throw;
         }
 
         if (
         (msg.value / priceToBuyInWei) != _quantity
         ) {
-            // Result(msg.sender, &quot;provided sum is not correct for this amount of tokens&quot;);
+            // Result(msg.sender, "provided sum is not correct for this amount of tokens");
             throw;
         }
         // if everything is O.K. make transfer (~ 37046 gas):
         // check balance in token contract:
         uint currentBalance = erc20TokensContract.balanceOf(this);
-        if (erc20TokensContract.balanceOf(this) &lt; _quantity) {throw;}
+        if (erc20TokensContract.balanceOf(this) < _quantity) {throw;}
         else {
             // make transfer
             erc20TokensContract.transfer(msg.sender, _quantity);
@@ -189,10 +189,10 @@ contract ICO {
     function transferTokensTo(address _to, uint _quantity) returns (bool) {
 
         if (msg.sender != owner) {throw;}
-        if (_quantity &lt;= 0) {throw;}
+        if (_quantity <= 0) {throw;}
 
         // check balance in token contract:
-        if (erc20TokensContract.balanceOf(this) &lt; _quantity) {
+        if (erc20TokensContract.balanceOf(this) < _quantity) {
             throw;
 
         }
@@ -218,19 +218,19 @@ contract ICO {
     /* --- functions for ETH */
     function withdraw(uint _sumToWithdrawInFinney) returns (bool) {
         if (msg.sender != owner) {throw;}
-        if (_sumToWithdrawInFinney &lt;= 0) {throw;}
-        if (this.balance &lt; finneyToWei(_sumToWithdrawInFinney)) {
+        if (_sumToWithdrawInFinney <= 0) {throw;}
+        if (this.balance < finneyToWei(_sumToWithdrawInFinney)) {
             throw;
         }
 
         if (msg.sender == owner) {// double check
 
             if (!msg.sender.send(finneyToWei(_sumToWithdrawInFinney))) {// makes withdrawal and returns true or false
-                //  Withdrawal(msg.sender, _sumToWithdrawInFinney, &quot;withdrawal: failed&quot;);
+                //  Withdrawal(msg.sender, _sumToWithdrawInFinney, "withdrawal: failed");
                 return false;
             }
             else {
-                Withdrawal(msg.sender, _sumToWithdrawInFinney, &quot;withdrawal: success&quot;);
+                Withdrawal(msg.sender, _sumToWithdrawInFinney, "withdrawal: success");
                 return true;
             }
         }

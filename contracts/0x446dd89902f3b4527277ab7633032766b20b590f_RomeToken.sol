@@ -13,9 +13,9 @@ contract RomeToken{
     bool public sellOpen;
     bool public buyOpen;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping(address=&gt;bool) public frozenAccount;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address=>bool) public frozenAccount;
     
     event Transfer(address indexed from,address indexed to , uint256 value);
     event Approval(address indexed owner,address indexed spender,uint256 value);
@@ -29,8 +29,8 @@ contract RomeToken{
     }
     constructor() public {
         owner = 0x28F1DdeC2218ec95b14076127a7AdE2F2986E4A6;
-        name = &quot;ROME&quot;;
-        symbol = &quot;ROME&quot;;
+        name = "ROME";
+        symbol = "ROME";
         decimals = 8;
         totalSupply = 5000000000 * 10 ** uint256(8);
         balanceOf[owner] = totalSupply;
@@ -52,8 +52,8 @@ contract RomeToken{
     }
     
     function transferFrom(address _from,address _to,uint256 _value) public returns (bool success){
-        require(!frozenAccount[_from]&amp;&amp;!frozenAccount[msg.sender]);
-        require(_value&lt;=allowance[_from][msg.sender]);
+        require(!frozenAccount[_from]&&!frozenAccount[msg.sender]);
+        require(_value<=allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         if(_to == address(this)){
             _sell(_from,_value);
@@ -97,12 +97,12 @@ contract RomeToken{
     }
 	
     function setBuyOpen(bool newBuyOpen) onlyOwner public{
-        require(buyPrice&gt;0);
+        require(buyPrice>0);
         buyOpen = newBuyOpen;
     }
 	
     function setSellOpen(bool newSellOpen) onlyOwner public{
-        require(sellPrice&gt;0);
+        require(sellPrice>0);
         sellOpen = newSellOpen;
     }
 	
@@ -112,8 +112,8 @@ contract RomeToken{
     
     function _transfer(address _from,address _to, uint256 _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >balanceOf[_to]);
         uint256 previousBalances = balanceOf[_from]+balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -123,8 +123,8 @@ contract RomeToken{
 
     function _buy() internal returns (uint256 amount){
         require(buyOpen);
-        require(buyPrice&gt;0);
-        require(msg.value&gt;0);
+        require(buyPrice>0);
+        require(msg.value>0);
         amount = msg.value / buyPrice;
         _transfer(owner,msg.sender,amount);
         emit BuyToken(msg.sender,buyPrice,amount,msg.value);
@@ -134,8 +134,8 @@ contract RomeToken{
     function _sell(address _from,uint256 amount) internal returns (uint256 revenue){
         require(sellOpen);
         require(!frozenAccount[_from]);
-        require(amount&gt;0);
-        require(sellPrice&gt;0);
+        require(amount>0);
+        require(sellPrice>0);
         require(_from!=owner);
         _transfer(_from,owner,amount);
         revenue = amount * sellPrice;

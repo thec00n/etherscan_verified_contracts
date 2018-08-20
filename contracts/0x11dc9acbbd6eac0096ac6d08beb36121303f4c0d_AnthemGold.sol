@@ -28,7 +28,7 @@ contract EtherTreasuryInterface {
 contract Safe {
     // Should always be placed as first modifier!
     modifier noValue {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             // Internal Out Of Gas/Throw: revert this transaction too;
             // Call Stack Depth Limit reached: revert this transaction too;
             // Recursive Call: safe, no any changes applied yet, we are inside of modifier.
@@ -65,7 +65,7 @@ contract Safe {
         if (stackDepthLib == 0x0) {
             throw;
         }
-        if (_depth &gt; 1023) {
+        if (_depth > 1023) {
             throw;
         }
         if (!stackDepthLib.delegatecall(0x32921690, stackDepthLib, _depth)) {
@@ -112,7 +112,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -137,7 +137,7 @@ contract AmbiEnabled {
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) {
+    function remove() checkAccess("owner") {
         suicide(msg.sender);
     }
 }
@@ -178,7 +178,7 @@ contract Asset is Safe, AmbiEnabled {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        return __transferWithReference(_to, _value, &quot;&quot;);
+        return __transferWithReference(_to, _value, "");
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
@@ -192,7 +192,7 @@ contract Asset is Safe, AmbiEnabled {
     }
 
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return __transferToICAPWithReference(_icap, _value, &quot;&quot;);
+        return __transferToICAPWithReference(_icap, _value, "");
     }
 
     function transferToICAPWithReference(bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -206,7 +206,7 @@ contract Asset is Safe, AmbiEnabled {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return __transferFromWithReference(_from, _to, _value, &quot;&quot;);
+        return __transferFromWithReference(_from, _to, _value, "");
     }
 
     function transferFromWithReference(address _from, address _to, uint _value, string _reference) returns(bool) {
@@ -218,7 +218,7 @@ contract Asset is Safe, AmbiEnabled {
     }
 
     function transferFromToICAP(address _from, bytes32 _icap, uint _value) returns(bool) {
-        return __transferFromToICAPWithReference(_from, _icap, _value, &quot;&quot;);
+        return __transferFromToICAPWithReference(_from, _icap, _value, "");
     }
 
     function transferFromToICAPWithReference(address _from, bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -249,10 +249,10 @@ contract Asset is Safe, AmbiEnabled {
         address owner = multiAsset.owner(symbol);
         uint balance = this.balance;
         bool success = true;
-        if (balance &gt; 0) {
+        if (balance > 0) {
             success = _unsafeSend(owner, balance);
         }
-        return multiAsset.transfer(owner, balanceOf(owner), symbol) &amp;&amp; success;
+        return multiAsset.transfer(owner, balanceOf(owner), symbol) && success;
     }
 }
 
@@ -271,13 +271,13 @@ contract AnthemGold is Asset {
     uint public forwardCallGas = 21000;
     uint public setCosignerCallGas = 21000;
     EtherTreasuryInterface public treasury;
-    mapping(bytes32 =&gt; address) public allowedForwards;
+    mapping(bytes32 => address) public allowedForwards;
 
-    function updateRefundGas() noValue() checkAccess(&quot;setup&quot;) returns(uint) {
+    function updateRefundGas() noValue() checkAccess("setup") returns(uint) {
         uint startGas = msg.gas;
         // just to simulate calculations
         uint refund = (startGas - msg.gas + refundGas) * tx.gasprice;
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return 0;
         }
         // end.
@@ -301,7 +301,7 @@ contract AnthemGold is Asset {
             uint _approve,
             uint _forward,
             uint _setCosigner
-        ) noValue() checkAccess(&quot;setup&quot;) returns(bool)
+        ) noValue() checkAccess("setup") returns(bool)
     {
         transferCallGas = _transfer;
         transferFromCallGas = _transferFrom;
@@ -317,19 +317,19 @@ contract AnthemGold is Asset {
         return true;
     }
 
-    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess(&quot;admin&quot;) returns(bool) {
+    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess("admin") returns(bool) {
         if (_txGasPriceLimit == 0) {
             return false;
         }
         treasury = EtherTreasuryInterface(_treasury);
         txGasPriceLimit = _txGasPriceLimit;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             _safeSend(_treasury, msg.value);
         }
         return true;
     }
 
-    function setForward(bytes4 _msgSig, address _forward) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function setForward(bytes4 _msgSig, address _forward) noValue() checkAccess("admin") returns(bool) {
         allowedForwards[sha3(_msgSig)] = _forward;
         return true;
     }
@@ -339,7 +339,7 @@ contract AnthemGold is Asset {
     }
 
     function _applyRefund(uint _startGas) internal returns(bool) {
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return false;
         }
         uint refund = (_startGas - msg.gas + refundGas) * tx.gasprice;

@@ -7,8 +7,8 @@ contract IntelliShareToken {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -19,8 +19,8 @@ contract IntelliShareToken {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function IntelliShareEco() {
       owner = 0x916c2E6502aC3C6389f3Dfb6b2247F670c692E42;
-      name = &#39;IntelliShare Eco Token&#39;;
-      symbol = &#39;INIE&#39;;
+      name = 'IntelliShare Eco Token';
+      symbol = 'INIE';
       decimals = 18;
       totalSupply = 986000000000000000000000000;  // 0.986 billion
       balanceOf[owner] = 986000000000000000000000000;
@@ -28,7 +28,7 @@ contract IntelliShareToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
@@ -44,8 +44,8 @@ contract IntelliShareToken {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
-      require(allowance[_from][msg.sender] &gt;= _value);
+      require(balanceOf[_from] >= _value);
+      require(allowance[_from][msg.sender] >= _value);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;
@@ -55,7 +55,7 @@ contract IntelliShareToken {
     }
 
     function burn(uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       totalSupply -= _value;
@@ -64,7 +64,7 @@ contract IntelliShareToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
+      require(balanceOf[_from] >= _value);
       require(msg.sender == owner);
 
       balanceOf[_from] -= _value;

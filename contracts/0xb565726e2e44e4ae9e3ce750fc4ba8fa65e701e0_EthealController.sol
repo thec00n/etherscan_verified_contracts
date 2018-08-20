@@ -15,7 +15,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -55,18 +55,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -130,9 +130,9 @@ contract Crowdsale {
    */
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
     startTime = _startTime;
     endTime = _endTime;
@@ -171,17 +171,17 @@ contract Crowdsale {
   }
   // @return true if the transaction can buy tokens
   function validPurchase(uint256 weiAmount) internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = weiAmount != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   // @return true if crowdsale has started
   function hasStarted() public view returns (bool) {
-    return now &gt;= startTime;
+    return now >= startTime;
   }
 }
 /// @dev The token controller contract must implement these functions
@@ -264,7 +264,7 @@ contract Hodler is Ownable {
         bool claimed6M;
         bool claimed9M;
     }
-    mapping (address =&gt; HODL) public hodlerStakes;
+    mapping (address => HODL) public hodlerStakes;
     // total current staking value and hodler addresses
     uint256 public hodlerTotalValue;
     uint256 public hodlerTotalCount;
@@ -288,7 +288,7 @@ contract Hodler is Ownable {
     event LogHodlStartSet(address indexed _setter, uint256 _time);
     /// @dev Only before hodl is started
     modifier beforeHodlStart() {
-        if (hodlerTimeStart == 0 || now &lt;= hodlerTimeStart)
+        if (hodlerTimeStart == 0 || now <= hodlerTimeStart)
             _;
     }
     /// @dev Contructor, it should be created by a TokenController
@@ -323,13 +323,13 @@ contract Hodler is Ownable {
             return;
         
         // add stake and maintain count
-        if (hodlerStakes[_beneficiary].stake == 0 &amp;&amp; _stake &gt; 0) {
+        if (hodlerStakes[_beneficiary].stake == 0 && _stake > 0) {
             hodlerTotalCount = hodlerTotalCount.add(1);
-        } else if (hodlerStakes[_beneficiary].stake &gt; 0 &amp;&amp; _stake == 0) {
+        } else if (hodlerStakes[_beneficiary].stake > 0 && _stake == 0) {
             hodlerTotalCount = hodlerTotalCount.sub(1);
         }
-        uint256 _diff = _stake &gt; hodlerStakes[_beneficiary].stake ? _stake.sub(hodlerStakes[_beneficiary].stake) : hodlerStakes[_beneficiary].stake.sub(_stake);
-        if (_stake &gt; hodlerStakes[_beneficiary].stake) {
+        uint256 _diff = _stake > hodlerStakes[_beneficiary].stake ? _stake.sub(hodlerStakes[_beneficiary].stake) : hodlerStakes[_beneficiary].stake.sub(_stake);
+        if (_stake > hodlerStakes[_beneficiary].stake) {
             hodlerTotalValue = hodlerTotalValue.add(_diff);
         } else {
             hodlerTotalValue = hodlerTotalValue.sub(_diff);
@@ -340,7 +340,7 @@ contract Hodler is Ownable {
     /// @notice Setting hodler start period.
     /// @param _time The time when hodler reward starts counting
     function setHodlerTime(uint256 _time) public onlyOwner beforeHodlStart {
-        require(_time &gt;= now);
+        require(_time >= now);
         hodlerTimeStart = _time;
         hodlerTime3M = _time.add(90 days);
         hodlerTime6M = _time.add(180 days);
@@ -350,12 +350,12 @@ contract Hodler is Ownable {
     /// @notice Invalidates hodler account 
     /// @dev Gets called by EthealController#onTransfer before every transaction
     function invalidate(address _account) public onlyOwner {
-        if (hodlerStakes[_account].stake &gt; 0 &amp;&amp; !hodlerStakes[_account].invalid) {
+        if (hodlerStakes[_account].stake > 0 && !hodlerStakes[_account].invalid) {
             hodlerStakes[_account].invalid = true;
             hodlerTotalValue = hodlerTotalValue.sub(hodlerStakes[_account].stake);
             hodlerTotalCount = hodlerTotalCount.sub(1);
         }
-        // update hodl total values &quot;automatically&quot; - whenever someone sends funds thus
+        // update hodl total values "automatically" - whenever someone sends funds thus
         updateAndGetHodlTotalValue();
     }
     /// @notice Claiming HODL reward for msg.sender
@@ -365,25 +365,25 @@ contract Hodler is Ownable {
     /// @notice Claiming HODL reward for an address
     function claimHodlRewardFor(address _beneficiary) public {
         // only when the address has a valid stake
-        require(hodlerStakes[_beneficiary].stake &gt; 0 &amp;&amp; !hodlerStakes[_beneficiary].invalid);
+        require(hodlerStakes[_beneficiary].stake > 0 && !hodlerStakes[_beneficiary].invalid);
         uint256 _stake = 0;
         
         // update hodl total values
         updateAndGetHodlTotalValue();
         // claim hodl if not claimed
-        if (!hodlerStakes[_beneficiary].claimed3M &amp;&amp; now &gt;= hodlerTime3M) {
+        if (!hodlerStakes[_beneficiary].claimed3M && now >= hodlerTime3M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_3M).div(hodlerTotalValue3M));
             hodlerStakes[_beneficiary].claimed3M = true;
         }
-        if (!hodlerStakes[_beneficiary].claimed6M &amp;&amp; now &gt;= hodlerTime6M) {
+        if (!hodlerStakes[_beneficiary].claimed6M && now >= hodlerTime6M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_6M).div(hodlerTotalValue6M));
             hodlerStakes[_beneficiary].claimed6M = true;
         }
-        if (!hodlerStakes[_beneficiary].claimed9M &amp;&amp; now &gt;= hodlerTime9M) {
+        if (!hodlerStakes[_beneficiary].claimed9M && now >= hodlerTime9M) {
             _stake = _stake.add(hodlerStakes[_beneficiary].stake.mul(TOKEN_HODL_9M).div(hodlerTotalValue9M));
             hodlerStakes[_beneficiary].claimed9M = true;
         }
-        if (_stake &gt; 0) {
+        if (_stake > 0) {
             // increasing claimed tokens
             claimedTokens = claimedTokens.add(_stake);
             // transferring tokens
@@ -396,18 +396,18 @@ contract Hodler is Ownable {
     /// @dev Anyone can call this function and distribute hodl rewards
     /// @param _beneficiaries Array of addresses for which we want to claim hodl rewards
     function claimHodlRewardsFor(address[] _beneficiaries) external {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++)
+        for (uint256 i = 0; i < _beneficiaries.length; i++)
             claimHodlRewardFor(_beneficiaries[i]);
     }
     /// @notice Setting 3 - 6 - 9 months total staking hodl value if time is come
     function updateAndGetHodlTotalValue() public returns (uint) {
-        if (now &gt;= hodlerTime3M &amp;&amp; hodlerTotalValue3M == 0) {
+        if (now >= hodlerTime3M && hodlerTotalValue3M == 0) {
             hodlerTotalValue3M = hodlerTotalValue;
         }
-        if (now &gt;= hodlerTime6M &amp;&amp; hodlerTotalValue6M == 0) {
+        if (now >= hodlerTime6M && hodlerTotalValue6M == 0) {
             hodlerTotalValue6M = hodlerTotalValue;
         }
-        if (now &gt;= hodlerTime9M &amp;&amp; hodlerTotalValue9M == 0) {
+        if (now >= hodlerTime9M && hodlerTotalValue9M == 0) {
             hodlerTotalValue9M = hodlerTotalValue;
             // since we can transfer more tokens to this contract, make it possible to retain more than the predefined limit
             TOKEN_HODL_9M = TokenController(owner).ethealToken().balanceOf(this).sub(TOKEN_HODL_3M).sub(TOKEN_HODL_6M).add(claimedTokens);
@@ -431,8 +431,8 @@ contract TokenVesting is Ownable {
   uint256 public start;
   uint256 public duration;
   bool public revocable;
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
    * _beneficiary, gradually in a linear fashion until _start + _duration. By then all
@@ -444,7 +444,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
     beneficiary = _beneficiary;
     revocable = _revocable;
     duration = _duration;
@@ -457,7 +457,7 @@ contract TokenVesting is Ownable {
    */
   function release(ERC20MiniMe token) public {
     uint256 unreleased = releasableAmount(token);
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
     released[token] = released[token].add(unreleased);
     require(token.transfer(beneficiary, unreleased));
     Released(unreleased);
@@ -478,7 +478,7 @@ contract TokenVesting is Ownable {
     Revoked();
   }
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20MiniMe token which is being vested
    */
   function releasableAmount(ERC20MiniMe token) public view returns (uint256) {
@@ -491,9 +491,9 @@ contract TokenVesting is Ownable {
   function vestedAmount(ERC20MiniMe token) public view returns (uint256) {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -595,10 +595,10 @@ contract EthealController is Pausable, HasNoTokens, TokenController {
     ////////////////
     // Manage crowdsale
     ////////////////
-    /// @notice Set crowdsale address and transfer HEAL tokens from ethealController&#39;s SALE address
+    /// @notice Set crowdsale address and transfer HEAL tokens from ethealController's SALE address
     /// @dev Crowdsale can be only set when the current crowdsale is not active and ethealToken is set
     function setCrowdsaleTransfer(address _sale, uint256 _amount) public onlyOwner {
-        require (_sale != address(0) &amp;&amp; !isCrowdsaleOpen() &amp;&amp; address(ethealToken) != address(0));
+        require (_sale != address(0) && !isCrowdsaleOpen() && address(ethealToken) != address(0));
         crowdsale = Crowdsale(_sale);
         // transfer HEAL tokens to crowdsale account from the account of controller
         require(ethealToken.transferFrom(SALE, _sale, _amount));
@@ -606,14 +606,14 @@ contract EthealController is Pausable, HasNoTokens, TokenController {
     /// @notice Is there a not ended crowdsale?
     /// @return true if there is no crowdsale or the current crowdsale is not yet ended but started
     function isCrowdsaleOpen() public view returns (bool) {
-        return address(crowdsale) != address(0) &amp;&amp; !crowdsale.hasEnded() &amp;&amp; crowdsale.hasStarted();
+        return address(crowdsale) != address(0) && !crowdsale.hasEnded() && crowdsale.hasStarted();
     }
     ////////////////
     // Manage grants
     ////////////////
     /// @notice Grant vesting token to an address
     function createGrant(address _beneficiary, uint256 _start, uint256 _amount, bool _revocable, bool _advisor) public onlyOwner {
-        require(_beneficiary != address(0) &amp;&amp; _amount &gt; 0 &amp;&amp; _start &gt;= now);
+        require(_beneficiary != address(0) && _amount > 0 && _start >= now);
         // create token grant
         if (_advisor) {
             tokenGrants.push(new TokenVesting(_beneficiary, _start, VESTING_ADVISOR_CLIFF, VESTING_ADVISOR_DURATION, _revocable));
@@ -625,13 +625,13 @@ contract EthealController is Pausable, HasNoTokens, TokenController {
     }
     /// @notice Transfer tokens to a grant until it is starting
     function transferToGrant(uint256 _id, uint256 _amount) public onlyOwner {
-        require(_id &lt; tokenGrants.length &amp;&amp; _amount &gt; 0 &amp;&amp; now &lt;= tokenGrants[_id].start());
+        require(_id < tokenGrants.length && _amount > 0 && now <= tokenGrants[_id].start());
         // transfer funds to the grant
         require(ethealToken.transfer(address(tokenGrants[_id]), _amount));
     }
     /// @dev Revoking grant
     function revokeGrant(uint256 _id) public onlyOwner {
-        require(_id &lt; tokenGrants.length);
+        require(_id < tokenGrants.length);
         tokenGrants[_id].revoke(ethealToken);
     }
     /// @notice Returns the token grant count
@@ -648,18 +648,18 @@ contract EthealController is Pausable, HasNoTokens, TokenController {
     }
     /// @notice replaces controller when it was not yet replaced, only multisig can do it
     function setNewController(address _controller) public onlyEthealMultisig {
-        require(_controller != address(0) &amp;&amp; newController == address(0));
+        require(_controller != address(0) && newController == address(0));
         newController = TokenController(_controller);
         ethealToken.changeController(_controller);
         hodlerReward.transferOwnership(_controller);
         // send eth
         uint256 _stake = this.balance;
-        if (_stake &gt; 0) {
+        if (_stake > 0) {
             _controller.transfer(_stake);
         }
         // send tokens
         _stake = ethealToken.balanceOf(this);
-        if (_stake &gt; 0) {
+        if (_stake > 0) {
             ethealToken.transfer(_controller, _stake);
         }
     }
@@ -693,7 +693,7 @@ contract EthealController is Pausable, HasNoTokens, TokenController {
             ethealToken.generateTokens(owner, TOKEN_BOUNTY.add(TOKEN_REFERRAL));
             // community fund
             ethealToken.generateTokens(address(ethealMultisigWallet), TOKEN_COMMUNITY);
-            // team -&gt; grantable
+            // team -> grantable
             ethealToken.generateTokens(address(this), TOKEN_FOUNDERS.add(TOKEN_TEAM));
             // investors
             ethealToken.generateTokens(INVESTOR1, TOKEN_INVESTORS.div(3).mul(2));

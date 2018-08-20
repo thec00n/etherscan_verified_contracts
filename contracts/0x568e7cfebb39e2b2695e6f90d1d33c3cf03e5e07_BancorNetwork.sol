@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -12,11 +12,11 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != address(0));
         _;
@@ -40,7 +40,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -53,7 +53,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -76,7 +76,7 @@ contract Utils {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -132,7 +132,7 @@ contract Owned is IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public view returns (string) {}
     function symbol() public view returns (string) {}
     function decimals() public view returns (uint8) {}
@@ -190,9 +190,9 @@ contract IWhitelist {
     Can be used in conjunction with the contract registry to get contract addresses
 */
 contract ContractIds {
-    bytes32 public constant BANCOR_NETWORK = &quot;BancorNetwork&quot;;
-    bytes32 public constant BANCOR_FORMULA = &quot;BancorFormula&quot;;
-    bytes32 public constant CONTRACT_FEATURES = &quot;ContractFeatures&quot;;
+    bytes32 public constant BANCOR_NETWORK = "BancorNetwork";
+    bytes32 public constant BANCOR_FORMULA = "BancorFormula";
+    bytes32 public constant CONTRACT_FEATURES = "ContractFeatures";
 }
 
 /**
@@ -202,7 +202,7 @@ contract ContractIds {
 */
 contract FeatureIds {
     // converter features
-    uint256 public constant CONVERTER_CONVERSION_WHITELIST = 1 &lt;&lt; 0;
+    uint256 public constant CONVERTER_CONVERSION_WHITELIST = 1 << 0;
 }
 
 /*
@@ -213,10 +213,10 @@ contract ITokenHolder is IOwned {
 }
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned, Utils {
@@ -289,12 +289,12 @@ contract IBancorNetwork {
     in a single transaction by providing a conversion path.
 
     A note on conversion path -
-    Conversion path is a data structure that&#39;s used when converting a token to another token in the bancor network
-    when the conversion cannot necessarily be done by single converter and might require multiple &#39;hops&#39;.
+    Conversion path is a data structure that's used when converting a token to another token in the bancor network
+    when the conversion cannot necessarily be done by single converter and might require multiple 'hops'.
     The path defines which converters should be used and what kind of conversion should be done in each step.
 
-    The path format doesn&#39;t include complex structure and instead, it is represented by a single array
-    in which each &#39;hop&#39; is represented by a 2-tuple - smart token &amp; to token.
+    The path format doesn't include complex structure and instead, it is represented by a single array
+    in which each 'hop' is represented by a 2-tuple - smart token & to token.
     In addition, the first element is always the source token.
     The smart token is only used as a pointer to a converter (since converter addresses are more likely to change).
 
@@ -306,8 +306,8 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     IContractRegistry public registry;          // contract registry contract address
     IBancorGasPriceLimit public gasPriceLimit;  // bancor universal gas price limit contract
 
-    mapping (address =&gt; bool) public etherTokens;       // list of all supported ether tokens
-    mapping (bytes32 =&gt; bool) public conversionHashes;  // list of conversion hashes, to prevent re-use of the same hash
+    mapping (address => bool) public etherTokens;       // list of all supported ether tokens
+    mapping (bytes32 => bool) public conversionHashes;  // list of conversion hashes, to prevent re-use of the same hash
 
     /**
         @dev constructor
@@ -318,9 +318,9 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         registry = _registry;
     }
 
-    // validates a conversion path - verifies that the number of elements is odd and that maximum number of &#39;hops&#39; is 10
+    // validates a conversion path - verifies that the number of elements is odd and that maximum number of 'hops' is 10
     modifier validConversionPath(IERC20Token[] _path) {
-        require(_path.length &gt; 2 &amp;&amp; _path.length &lt;= (1 + 2 * 10) &amp;&amp; _path.length % 2 == 1);
+        require(_path.length > 2 && _path.length <= (1 + 2 * 10) && _path.length % 2 == 1);
         _;
     }
 
@@ -394,16 +394,16 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         bytes32 hash = keccak256(_block, tx.gasprice, _addr, msg.sender, _amount, _path);
 
         // checking that it is the first conversion with the given signature
-        // and that the current block number doesn&#39;t exceeded the maximum block
-        // number that&#39;s allowed with the current signature
-        require(!conversionHashes[hash] &amp;&amp; block.number &lt;= _block);
+        // and that the current block number doesn't exceeded the maximum block
+        // number that's allowed with the current signature
+        require(!conversionHashes[hash] && block.number <= _block);
 
         // recovering the signing address and comparing it to the trusted signer
         // address that was set in the contract
-        bytes32 prefixedHash = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        bytes32 prefixedHash = keccak256("\x19Ethereum Signed Message:\n32", hash);
         bool verified = ecrecover(prefixedHash, _v, _r, _s) == signerAddress;
 
-        // if the signer is the trusted signer - mark the hash so that it can&#39;t
+        // if the signer is the trusted signer - mark the hash so that it can't
         // be used multiple times
         if (verified)
             conversionHashes[hash] = true;
@@ -449,11 +449,11 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     {
         // if ETH is provided, ensure that the amount is identical to _amount and verify that the source token is an ether token
         IERC20Token fromToken = _path[0];
-        require(msg.value == 0 || (_amount == msg.value &amp;&amp; etherTokens[fromToken]));
+        require(msg.value == 0 || (_amount == msg.value && etherTokens[fromToken]));
 
         // if ETH was sent with the call, the source is an ether token - deposit the ETH in it
         // otherwise, we assume we already have the tokens
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             IEtherToken(fromToken).deposit.value(msg.value)();
 
         return convertForInternal(_path, _amount, _minReturn, _for, _block, _v, _r, _s);
@@ -486,12 +486,12 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         uint256 pathEndIndex;
         
         // iterate over the conversion paths
-        for (uint256 i = 0; i &lt; _pathStartIndex.length; i += 1) {
+        for (uint256 i = 0; i < _pathStartIndex.length; i += 1) {
             pathEndIndex = i == (_pathStartIndex.length - 1) ? _paths.length : _pathStartIndex[i + 1];
 
             // copy a single path from _paths into an array
             IERC20Token[] memory path = new IERC20Token[](pathEndIndex - _pathStartIndex[i]);
-            for (uint256 j = _pathStartIndex[i]; j &lt; pathEndIndex; j += 1) {
+            for (uint256 j = _pathStartIndex[i]; j < pathEndIndex; j += 1) {
                 path[j - _pathStartIndex[i]] = _paths[j];
             }
 
@@ -499,11 +499,11 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
             // verify that the source token is an ether token. otherwise ensure that 
             // the source is not an ether token
             IERC20Token fromToken = path[0];
-            require(msg.value == 0 || (_amounts[i] &lt;= msg.value &amp;&amp; etherTokens[fromToken]) || !etherTokens[fromToken]);
+            require(msg.value == 0 || (_amounts[i] <= msg.value && etherTokens[fromToken]) || !etherTokens[fromToken]);
 
             // if ETH was sent with the call, the source is an ether token - deposit the ETH path amount in it.
             // otherwise, we assume we already have the tokens
-            if (msg.value &gt; 0 &amp;&amp; etherTokens[fromToken]) {
+            if (msg.value > 0 && etherTokens[fromToken]) {
                 IEtherToken(fromToken).deposit.value(_amounts[i])();
                 convertedValue += _amounts[i];
             }
@@ -546,7 +546,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         validConversionPath(_path)
         returns (uint256)
     {
-        if (_v == 0x0 &amp;&amp; _r == 0x0 &amp;&amp; _s == 0x0)
+        if (_v == 0x0 && _r == 0x0 && _s == 0x0)
             gasPriceLimit.validateGasPrice(tx.gasprice);
         else
             require(verifyTrustedSender(_path, _amount, _block, _for, _v, _r, _s));
@@ -578,7 +578,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         @param _fromToken   ERC20 token to convert from (the first element in the path)
         @param _for         account that will receive the conversion result
 
-        @return ERC20 token to convert to (the last element in the path) &amp; tokens issued in return
+        @return ERC20 token to convert to (the last element in the path) & tokens issued in return
     */
     function convertByPath(
         IERC20Token[] _path,
@@ -596,17 +596,17 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
 
         // iterate over the conversion path
         uint256 pathLength = _path.length;
-        for (uint256 i = 1; i &lt; pathLength; i += 2) {
+        for (uint256 i = 1; i < pathLength; i += 2) {
             smartToken = ISmartToken(_path[i]);
             toToken = _path[i + 1];
             converter = IBancorConverter(smartToken.owner());
             checkWhitelist(converter, _for, features);
 
-            // if the smart token isn&#39;t the source (from token), the converter doesn&#39;t have control over it and thus we need to approve the request
+            // if the smart token isn't the source (from token), the converter doesn't have control over it and thus we need to approve the request
             if (smartToken != _fromToken)
                 ensureAllowance(_fromToken, converter, _amount);
 
-            // make the conversion - if it&#39;s the last one, also provide the minimum return value
+            // make the conversion - if it's the last one, also provide the minimum return value
             _amount = converter.change(_fromToken, toToken, _amount, i == pathLength - 2 ? _minReturn : 1);
             _fromToken = toToken;
         }
@@ -638,7 +638,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     }
 
     /**
-        @dev claims the caller&#39;s tokens, converts them to any other token in the bancor network
+        @dev claims the caller's tokens, converts them to any other token in the bancor network
         by following a predefined conversion path and transfers the result tokens to a target account
         note that allowance must be set beforehand
 
@@ -674,7 +674,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     }
 
     /**
-        @dev claims the caller&#39;s tokens, converts them to any other token in the bancor network
+        @dev claims the caller's tokens, converts them to any other token in the bancor network
         by following a predefined conversion path and transfers the result tokens back to the sender
         note that allowance must be set beforehand
 
@@ -689,7 +689,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     }
 
     /**
-        @dev utility, checks whether allowance for the given spender exists and approves one if it doesn&#39;t
+        @dev utility, checks whether allowance for the given spender exists and approves one if it doesn't
 
         @param _token   token to check the allowance in
         @param _spender approved address
@@ -697,7 +697,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     */
     function ensureAllowance(IERC20Token _token, address _spender, uint256 _value) private {
         // check if allowance for the given amount already exists
-        if (_token.allowance(this, _spender) &gt;= _value)
+        if (_token.allowance(this, _spender) >= _value)
             return;
 
         // if the allowance is nonzero, must reset it to 0 first

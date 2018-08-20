@@ -5,7 +5,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -385,11 +385,11 @@ contract PausableToken is StandardToken, Pausable {
 
 /**
  * @title Golix Token contract - ERC20 compatible token contract.
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99feeceaedf8eff6feecf0f4f8ebf8fcead9fef4f8f0f5b7faf6f4">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99feeceaedf8eff6feecf0f4f8ebf8fcead9fef4f8f0f5b7faf6f4">[email protected]</a>>
  */
 contract GolixToken is PausableToken, MintableToken {
-    string public constant name = &quot;Golix Token&quot;;
-    string public constant symbol = &quot;GLX&quot;;
+    string public constant name = "Golix Token";
+    string public constant symbol = "GLX";
     uint8 public constant decimals = 18;
 
     /**
@@ -433,7 +433,7 @@ library SafeERC20 {
 
 /**
  * @title VestTokenAllocation contract
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f29587818693849d95879b9f9380939781b2959f939b9edc919d9f">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f29587818693849d95879b9f9380939781b2959f939b9edc919d9f">[email protected]</a>>
  */
 contract VestTokenAllocation is Ownable {
     using SafeMath for uint256;
@@ -445,8 +445,8 @@ contract VestTokenAllocation is Ownable {
     uint256 public allocatedTokens;
     uint256 public canSelfDestruct;
 
-    mapping (address =&gt; uint256) public totalTokensLocked;
-    mapping (address =&gt; uint256) public releasedTokens;
+    mapping (address => uint256) public totalTokensLocked;
+    mapping (address => uint256) public releasedTokens;
 
     ERC20 public golix;
     address public tokenDistribution;
@@ -474,10 +474,10 @@ contract VestTokenAllocation is Ownable {
         )
         public
     {
-        require(_token != address(0) &amp;&amp; _cliff != 0);
-        require(_cliff &lt;= _duration);
-        require(_start &gt; now);
-        require(_canSelfDestruct &gt; _duration.add(_start));
+        require(_token != address(0) && _cliff != 0);
+        require(_cliff <= _duration);
+        require(_start > now);
+        require(_canSelfDestruct > _duration.add(_start));
 
         duration = _duration;
         cliff = _start.add(_cliff);
@@ -501,10 +501,10 @@ contract VestTokenAllocation is Ownable {
         external
         onlyOwnerOrTokenDistributionContract
     {
-        require(totalTokensLocked[beneficiary] == 0 &amp;&amp; beneficiary != address(0)); // can only add once.
+        require(totalTokensLocked[beneficiary] == 0 && beneficiary != address(0)); // can only add once.
 
         allocatedTokens = allocatedTokens.add(allocationValue);
-        require(allocatedTokens &lt;= golix.balanceOf(this));
+        require(allocatedTokens <= golix.balanceOf(this));
 
         totalTokensLocked[beneficiary] = allocationValue;
     }
@@ -515,7 +515,7 @@ contract VestTokenAllocation is Ownable {
     function release() public {
         uint256 unreleased = releasableAmount();
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         releasedTokens[msg.sender] = releasedTokens[msg.sender].add(unreleased);
 
@@ -525,7 +525,7 @@ contract VestTokenAllocation is Ownable {
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      */
     function releasableAmount() public view returns (uint256) {
         return vestedAmount().sub(releasedTokens[msg.sender]);
@@ -537,9 +537,9 @@ contract VestTokenAllocation is Ownable {
     function vestedAmount() public view returns (uint256) {
         uint256 totalBalance = totalTokensLocked[msg.sender];
 
-        if (now &lt; cliff) {
+        if (now < cliff) {
             return 0;
-        } else if (now &gt;= start.add(duration)) {
+        } else if (now >= start.add(duration)) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(start)).div(duration);
@@ -550,10 +550,10 @@ contract VestTokenAllocation is Ownable {
      * @dev allow for selfdestruct possibility and sending funds to owner
      */
     function kill() public onlyOwner {
-        require(now &gt;= canSelfDestruct);
+        require(now >= canSelfDestruct);
         uint256 balance = golix.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             golix.transfer(msg.sender, balance);
         }
 
@@ -601,9 +601,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -639,7 +639,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // creates the token to be sold.
@@ -661,9 +661,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 }
@@ -684,7 +684,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -709,7 +709,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
 /**
  * @title Golix token distribution contract - crowdsale contract for the Golix tokens.
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec8b999f988d9a838b9985818d9e8d899fac8b818d8580c28f8381">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec8b999f988d9a838b9985818d9e8d899fac8b818d8580c28f8381">[email protected]</a>>
  */
 contract GolixTokenDistribution is FinalizableCrowdsale {
     uint256 constant public TOTAL_TOKENS_SUPPLY = 1274240097e18; // 1,274,240,097 tokens
@@ -729,7 +729,7 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
     bool public canFinalizeEarly;
     bool public isStakingPeriod;
 
-    mapping (address =&gt; uint256) public icoContributions;
+    mapping (address => uint256) public icoContributions;
 
     event MintedTokensFor(address indexed investor, uint256 tokensPurchased);
     event GLXStaked(address indexed staker, uint256 amount);
@@ -756,7 +756,7 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
         FinalizableCrowdsale()
         Crowdsale(_startTime, _endTime, _rate, _wallet)
     {
-        require(_marketingWallet != address(0) &amp;&amp; _shareHoldersWallet != address(0));
+        require(_marketingWallet != address(0) && _shareHoldersWallet != address(0));
         require(
             MARKETING_SHARE + SHAREHOLDERS_SHARE + FOUNDERS_SHARE + TOTAL_TOKENS_FOR_CROWDSALE
             == TOTAL_TOKENS_SUPPLY
@@ -779,8 +779,8 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
     {
         require(investorsAddress.length == amountOfTokens.length);
 
-        for (uint256 i = 0; i &lt; investorsAddress.length; i++) {
-            require(token.totalSupply().add(amountOfTokens[i]) &lt;= TOTAL_TOKENS_FOR_CROWDSALE);
+        for (uint256 i = 0; i < investorsAddress.length; i++) {
+            require(token.totalSupply().add(amountOfTokens[i]) <= TOTAL_TOKENS_FOR_CROWDSALE);
 
             token.mint(investorsAddress[i], amountOfTokens[i]);
             icoContributions[investorsAddress[i]] = icoContributions[investorsAddress[i]].add(amountOfTokens[i]);
@@ -808,7 +808,7 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
         public
         onlyOwner
     {
-        require(_teamVestTokenAllocation != address(0) &amp;&amp; _contributorsVestTokenAllocation != address(0));
+        require(_teamVestTokenAllocation != address(0) && _contributorsVestTokenAllocation != address(0));
 
         teamVestTokenAllocation = VestTokenAllocation(_teamVestTokenAllocation);
         contributorsVestTokenAllocation = VestTokenAllocation(_contributorsVestTokenAllocation);
@@ -831,7 +831,7 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
      */
     function stakeGLXForContributors() public {
         uint256 senderGlxBalance = token.balanceOf(msg.sender);
-        require(senderGlxBalance == icoContributions[msg.sender] &amp;&amp; isStakingPeriod);
+        require(senderGlxBalance == icoContributions[msg.sender] && isStakingPeriod);
 
         GolixToken(token).stakeGLX(msg.sender, contributorsVestTokenAllocation);
         contributorsVestTokenAllocation.addVestTokenAllocation(msg.sender, senderGlxBalance);
@@ -864,9 +864,9 @@ contract GolixTokenDistribution is FinalizableCrowdsale {
      */
     function finalization() internal {
         // This must have been set manually prior to finalize() call.
-        require(teamVestTokenAllocation != address(0) &amp;&amp; contributorsVestTokenAllocation != address(0));
+        require(teamVestTokenAllocation != address(0) && contributorsVestTokenAllocation != address(0));
 
-        if (TOTAL_TOKENS_FOR_CROWDSALE &gt; token.totalSupply()) {
+        if (TOTAL_TOKENS_FOR_CROWDSALE > token.totalSupply()) {
             uint256 remainingTokens = TOTAL_TOKENS_FOR_CROWDSALE.sub(token.totalSupply());
             token.mint(contributorsVestTokenAllocation, remainingTokens);
             isStakingPeriod = true;

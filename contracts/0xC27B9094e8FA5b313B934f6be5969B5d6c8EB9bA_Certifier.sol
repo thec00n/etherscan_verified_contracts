@@ -73,10 +73,10 @@ contract Certifier {
     /** @dev Dictionary of all Certificate Contracts issued by the Certifier.
              Stores the Certification key derived from the sha(CertID) and stores the
              address where the coresponding Certificate is stored. */
-    mapping (bytes32 =&gt; address) public CertificateAddresses;
+    mapping (bytes32 => address) public CertificateAddresses;
 
     /** @dev Dictionary that stores which addresses are owned by Certification administrators */
-    mapping (address =&gt; bool) public CertAdmins;
+    mapping (address => bool) public CertAdmins;
 
     /** @dev stores the address of the Global Administrator*/
     address public GlobalAdmin;

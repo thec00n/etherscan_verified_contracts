@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,12 +91,12 @@ contract EtheeraToken is ERC20Interface,Ownable {
 
     using SafeMath for uint256;
    
-    mapping(address =&gt; uint256) tokenBalances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) tokenBalances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
-    string public constant name = &quot;ETHEERA&quot;;
-    string public constant symbol = &quot;ETA&quot;;
+    string public constant name = "ETHEERA";
+    string public constant symbol = "ETA";
     uint256 public constant decimals = 18;
 
    uint256 public constant INITIAL_SUPPLY = 75000000000;
@@ -107,7 +107,7 @@ contract EtheeraToken is ERC20Interface,Ownable {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -132,8 +132,8 @@ contract EtheeraToken is ERC20Interface,Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokenBalances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= tokenBalances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     tokenBalances[_from] = tokenBalances[_from].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
@@ -147,7 +147,7 @@ contract EtheeraToken is ERC20Interface,Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -169,7 +169,7 @@ contract EtheeraToken is ERC20Interface,Ownable {
      
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -203,7 +203,7 @@ contract EtheeraToken is ERC20Interface,Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,7 +214,7 @@ contract EtheeraToken is ERC20Interface,Ownable {
 
      
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -233,9 +233,9 @@ contract EtheeraToken is ERC20Interface,Ownable {
     }
 
     function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
       totalSupply = totalSupply.sub(tokenAmount); 
     }
@@ -291,7 +291,7 @@ contract EtheeraCrowdsale {
   bool ethersSentForRefund = false;
 
   // the buyers of tokens and the amount of ethers they sent in
-  mapping(address=&gt;uint256) usersThatBoughtETA;
+  mapping(address=>uint256) usersThatBoughtETA;
  
   /**
    * event for token purchase logging
@@ -307,7 +307,7 @@ contract EtheeraCrowdsale {
     startTime = _startTime;
     endTime = startTime.add(79 days);
 
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
     require(_wallet != 0x0);
 
     wallet = _wallet;
@@ -332,7 +332,7 @@ contract EtheeraCrowdsale {
     uint256 timeElapsed = now - startTime;
     uint256 timeElapsedInDays = timeElapsed.div(1 days);
      
-    if (timeElapsedInDays &lt;=35)
+    if (timeElapsedInDays <=35)
     {
         //early sale
         //valid for 10-02-2018 to 16-03-2018 i.e. 0 to 35th days
@@ -341,7 +341,7 @@ contract EtheeraCrowdsale {
         bonus = bonus.div(100);
        
     }
-    else if (timeElapsedInDays&gt;35 &amp;&amp; timeElapsedInDays &lt;=50)
+    else if (timeElapsedInDays>35 && timeElapsedInDays <=50)
     {
         //sale
         //from 17.03.2018 - 31.03.2018 i.e. 35th to 50th days
@@ -352,7 +352,7 @@ contract EtheeraCrowdsale {
         
        
     }
-    else if (timeElapsedInDays&gt;50 &amp;&amp; timeElapsedInDays &lt;=64)
+    else if (timeElapsedInDays>50 && timeElapsedInDays <=64)
     {
         //sale
         //from 01.04.2018 - 14.04.2018  i.e. 50th to 64th days
@@ -379,7 +379,7 @@ contract EtheeraCrowdsale {
   //tokens not to be sent to 0x0
   require(beneficiary != 0x0);
 
-  if(hasEnded() &amp;&amp; !isHardCapReached)
+  if(hasEnded() && !isHardCapReached)
   {
       if (!isSoftCapReached)
         refundToBuyers = true;
@@ -398,14 +398,14 @@ contract EtheeraCrowdsale {
     // calculate token amount to be sold
     uint256 tokens = weiAmount.mul(ratePerWei);
   
-    require (tokens&gt;=75 * 10 ** 18);
+    require (tokens>=75 * 10 ** 18);
     
     //Determine bonus
     uint bonus = determineBonus(tokens);
     tokens = tokens.add(bonus);
   
-    //can&#39;t sale tokens more than 52500000000 tokens
-    require(tokens_sold + tokens &lt;= maxTokensForSale * 10 ** 18);
+    //can't sale tokens more than 52500000000 tokens
+    require(tokens_sold + tokens <= maxTokensForSale * 10 ** 18);
   
     //30% of the tokens being sold are being accumulated for the etheera team
     updateTokensForEtheeraTeam(tokens);
@@ -413,12 +413,12 @@ contract EtheeraCrowdsale {
     weiRaised = weiRaised.add(weiAmount);
     
     
-    if (weiRaised &gt;= softCap * 10 ** 18 &amp;&amp; !isSoftCapReached)
+    if (weiRaised >= softCap * 10 ** 18 && !isSoftCapReached)
     {
       isSoftCapReached = true;
     }
   
-    if (weiRaised &gt;= hardCap * 10 ** 18 &amp;&amp; !isHardCapReached)
+    if (weiRaised >= hardCap * 10 ** 18 && !isHardCapReached)
       isHardCapReached = true;
     
     token.mint(wallet, beneficiary, tokens);
@@ -440,33 +440,33 @@ contract EtheeraCrowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
     
     function burnRemainingTokens() internal
     {
         //burn all the unsold tokens as soon as the ICO is ended
         uint balance = token.balanceOf(wallet);
-        require(balance&gt;0);
+        require(balance>0);
         uint tokensForTeam = tokensForReservedFund + tokensForFoundersAndTeam + tokensForAdvisors +tokensForMarketing + tokensForTournament;
         uint tokensToBurn = balance.sub(tokensForTeam);
-        require (balance &gt;=tokensToBurn);
+        require (balance >=tokensToBurn);
         address burnAddress = 0x0;
         token.mint(wallet,burnAddress,tokensToBurn);
     }
     
     function getRefund() public 
     {
-        require(ethersSentForRefund &amp;&amp; usersThatBoughtETA[msg.sender]&gt;0);
+        require(ethersSentForRefund && usersThatBoughtETA[msg.sender]>0);
         uint256 ethersSent = usersThatBoughtETA[msg.sender];
-        require (wallet.balance &gt;= ethersSent);
+        require (wallet.balance >= ethersSent);
         msg.sender.transfer(ethersSent);
         uint256 tokensIHave = token.balanceOf(msg.sender);
         token.mint(msg.sender,0x0,tokensIHave);
@@ -474,8 +474,8 @@ contract EtheeraCrowdsale {
     
     function debitAmountToRefund() public payable 
     {
-        require(hasEnded() &amp;&amp; msg.sender == wallet &amp;&amp; !isSoftCapReached &amp;&amp; !ethersSentForRefund);
-        require(msg.value &gt;=weiRaised);
+        require(hasEnded() && msg.sender == wallet && !isSoftCapReached && !ethersSentForRefund);
+        require(msg.value >=weiRaised);
         ethersSentForRefund = true;
     }
     
@@ -515,7 +515,7 @@ contract EtheeraCrowdsale {
     
     function withdrawTokensForEtheeraTeam(uint256 whoseTokensToWithdraw,address[] whereToSendTokens) public {
         //1 reserved fund, 2 for founders and team, 3 for advisors, 4 for marketing, 5 for tournament
-        require(msg.sender == wallet &amp;&amp; now&gt;=endTime);
+        require(msg.sender == wallet && now>=endTime);
         uint256 lockPeriod = 0;
         uint256 timePassed = now - endTime;
         uint256 tokensToSend = 0;
@@ -524,12 +524,12 @@ contract EtheeraCrowdsale {
         {
           //15 months lockup period
           lockPeriod = 15 days * 30;
-          require(timePassed &gt;= lockPeriod);
-          require (tokensForReservedFund &gt;0);
+          require(timePassed >= lockPeriod);
+          require (tokensForReservedFund >0);
           //allow withdrawal
           tokensToSend = tokensForReservedFund.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -539,12 +539,12 @@ contract EtheeraCrowdsale {
         {
           //10 months lockup period
           lockPeriod = 10 days * 30;
-          require(timePassed &gt;= lockPeriod);
-          require(tokensForFoundersAndTeam &gt; 0);
+          require(timePassed >= lockPeriod);
+          require(tokensForFoundersAndTeam > 0);
           //allow withdrawal
           tokensToSend = tokensForFoundersAndTeam.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }            
@@ -552,10 +552,10 @@ contract EtheeraCrowdsale {
         }
         else if (whoseTokensToWithdraw == 3)
         {
-            require (tokensForAdvisors &gt; 0);
+            require (tokensForAdvisors > 0);
           //allow withdrawal
           tokensToSend = tokensForAdvisors.div(whereToSendTokens.length);        
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -563,11 +563,11 @@ contract EtheeraCrowdsale {
         }
         else if (whoseTokensToWithdraw == 4)
         {
-            require (tokensForMarketing &gt; 0);
+            require (tokensForMarketing > 0);
           //allow withdrawal
           tokensToSend = tokensForMarketing.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }
@@ -575,11 +575,11 @@ contract EtheeraCrowdsale {
         }
         else if (whoseTokensToWithdraw == 5)
         {
-            require (tokensForTournament &gt; 0);
+            require (tokensForTournament > 0);
           //allow withdrawal
           tokensToSend = tokensForTournament.div(whereToSendTokens.length);
                 
-          for (i=0;i&lt;whereToSendTokens.length;i++)
+          for (i=0;i<whereToSendTokens.length;i++)
           {
             token.mint(wallet,whereToSendTokens[i],tokensToSend);
           }

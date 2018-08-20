@@ -21,7 +21,7 @@ contract Ownable {
 }
 
 contract Manageable is Ownable {
-    mapping(address =&gt; bool) public managers;
+    mapping(address => bool) public managers;
 
     event ManagerAdded(address indexed manager);
     event ManagerRemoved(address indexed manager);
@@ -57,8 +57,8 @@ contract MytilcoinStorage is Manageable {
         string author;
     }
 
-    mapping(bytes32 =&gt; Picture) public pictures;
-    mapping(bytes32 =&gt; bool) public hashes;
+    mapping(bytes32 => Picture) public pictures;
+    mapping(bytes32 => bool) public hashes;
 
     event AddPicture(bytes32 indexed hash, uint32 rows, uint32 cols, uint32 width, uint32 height, string image, string name, string author);
     event SetHash(bytes32 indexed hash);
@@ -91,8 +91,8 @@ contract MytilcoinStorage is Manageable {
     function addPicture(string _hash, uint32 _rows, uint32 _cols, uint32 _width, uint32 _height, string _image, string _name, string _author) onlyManager public returns(bool success) {
         bytes32 key = str_to_bytes32(_hash);
 
-        require(!(pictures[key].rows &gt; 0));
-        require(_rows &gt; 0 &amp;&amp; _cols &gt; 0 &amp;&amp; _width &gt; 0 &amp;&amp; _height &gt; 0);
+        require(!(pictures[key].rows > 0));
+        require(_rows > 0 && _cols > 0 && _width > 0 && _height > 0);
         
         pictures[key] = Picture({
             hash: _hash,

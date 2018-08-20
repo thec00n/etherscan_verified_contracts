@@ -12,7 +12,7 @@ contract Coinflip {
     address public owner = msg.sender;
 
     uint public gamesCounter = 0;
-    mapping(uint =&gt; CoinFlipGame) private games;
+    mapping(uint => CoinFlipGame) private games;
     event gameStateChanged(uint gameId, uint state);
     event onWithdraw(uint amount, uint time);
     event onDeposit(uint amount, address from, uint time);
@@ -55,7 +55,7 @@ contract Coinflip {
     }
 
     function withdraw(uint amount) onlyBy(owner) public {
-        require(amount &gt; 0);
+        require(amount > 0);
         owner.transfer(amount);
         onWithdraw(amount, now);
     }
@@ -65,28 +65,28 @@ contract Coinflip {
     }
 
     function setCancelFee(uint newCancelFee) onlyBy(owner) public {
-        require(newCancelFee &gt; 0 &amp;&amp; newCancelFee &lt; 25);
+        require(newCancelFee > 0 && newCancelFee < 25);
         cancelFee = newCancelFee;
     }
 
     function setMinWager(uint newMinWager) onlyBy(owner) public {
-        require(newMinWager &gt; 0);
+        require(newMinWager > 0);
         minWager = newMinWager;
     }
 
     function setMaxDuration(uint newMaxDuration) onlyBy(owner) public {
-        require(newMaxDuration &gt; 0);
+        require(newMaxDuration > 0);
         maxDuration = newMaxDuration;
     }
 
     function setFee(uint newFee) onlyBy(owner) public {
-        require(newFee &lt; 25);
+        require(newFee < 25);
         fee = newFee;
     }
 
     function setJoinDelta(uint newJoinDelta) onlyBy(owner) public {
-        require(newJoinDelta &gt; 0);
-        require(newJoinDelta &lt; 100);
+        require(newJoinDelta > 0);
+        require(newJoinDelta < 100);
         joinDelta = newJoinDelta;
     }
 
@@ -101,7 +101,7 @@ contract Coinflip {
                                                         uint opponentWager,
                                                         address winner,
                                                         uint winAmount) {
-        require(id &lt;= gamesCounter);
+        require(id <= gamesCounter);
         var game = games[id];
         return (
         id,
@@ -120,7 +120,7 @@ contract Coinflip {
     function getGameFees(uint id) public constant returns(  uint gameId,
         uint feeVal,
         uint cancelFeeVal) {
-        require(id &lt;= gamesCounter);
+        require(id <= gamesCounter);
         var game = games[id];
         return (
         id,
@@ -129,7 +129,7 @@ contract Coinflip {
     }
 
     function cancelGame(uint id) public {
-        require(id &lt;= gamesCounter);
+        require(id <= gamesCounter);
         CoinFlipGame storage game = games[id];
         if(msg.sender == game.host) {
             game.state = 3; //cacneled
@@ -138,7 +138,7 @@ contract Coinflip {
             gameStateChanged(id, 3);
         } else {
             require(game.state == 1); //active
-            require((now - game.createTime) &gt;= maxDuration); //outdated
+            require((now - game.createTime) >= maxDuration); //outdated
             require(msg.sender == owner); //server cancel
             gameStateChanged(id, 3);
             game.state = 3; //canceled
@@ -152,16 +152,16 @@ contract Coinflip {
     function joinGame(uint id) public payable {
         var game = games[id];
         require(game.state == 1);
-        require(msg.value &gt;= minWager);
-        require((now - game.createTime) &lt; maxDuration); //not outdated
+        require(msg.value >= minWager);
+        require((now - game.createTime) < maxDuration); //not outdated
         if(msg.value != game.hostWager) {
             uint delta;
-            if( game.hostWager &lt; msg.value ) {
+            if( game.hostWager < msg.value ) {
                 delta = msg.value - game.hostWager;
             } else {
                 delta = game.hostWager - msg.value;
             }
-            require( ((delta * 100) / game.hostWager ) &lt;= joinDelta);
+            require( ((delta * 100) / game.hostWager ) <= joinDelta);
         }
 
         game.state = 2;
@@ -174,8 +174,8 @@ contract Coinflip {
         var hostWagerPercentage = (100 * game.hostWager) / totalAmount;
         game.fee = (totalAmount * fee) / 100;
         var transferAmount = totalAmount - game.fee;
-        require(game.odds &gt;= 0 &amp;&amp; game.odds &lt;= 100);
-        if(hostWagerPercentage &gt; game.odds) {
+        require(game.odds >= 0 && game.odds <= 100);
+        if(hostWagerPercentage > game.odds) {
             game.winner = game.host;
             game.winAmount = transferAmount;
             game.host.transfer(transferAmount);
@@ -188,7 +188,7 @@ contract Coinflip {
 
     function startGame() public payable returns(uint) {
         require(canCreateGames == true);
-        require(msg.value &gt;= minWager);
+        require(msg.value >= minWager);
         gamesCounter++;
         var game = games[gamesCounter];
         gameStateChanged(gamesCounter, 1);

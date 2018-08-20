@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 /*
 Author:     www.purplethrone.com
-Email:      <span class="__cf_email__" data-cfemail="8feef5e6f5cffffafdffe3eafbe7fde0e1eaa1ece0e2">[email&#160;protected]</span>
+Email:      <span class="__cf_email__" data-cfemail="8feef5e6f5cffffafdffe3eafbe7fde0e1eaa1ece0e2">[email protected]</span>
 
 
 */
@@ -10,12 +10,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -44,7 +44,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -55,7 +55,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -80,8 +80,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Ownable {
@@ -117,10 +117,10 @@ function transferOwnership(address newOwner) onlyOwner {
 contract PPCToken is StandardToken,Ownable, SafeMath {
 
     // crowdsale parameters
-    string  public constant name = &quot;PurpleCoin&quot;;
-    string  public constant symbol = &quot;PPC&quot;;
+    string  public constant name = "PurpleCoin";
+    string  public constant symbol = "PPC";
     uint256 public constant decimals = 18;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
     address public constant ethFundDeposit= 0x20D9053d3f7fccC069c9a8e7dDEf5374CD22b6C8;                         // Deposit address for ETH
     bool public emergencyFlag;                                      //  Switched to true in  crownsale end  state
     uint256 public fundingStartBlock;                              //   Starting blocknumber
@@ -150,12 +150,12 @@ contract PPCToken is StandardToken,Ownable, SafeMath {
     */
     function createTokens() internal  {
       if (emergencyFlag) revert();                     //  Revert when the sale is over before time and emergencyFlag is true.
-      if (block.number &gt; fundingEndBlock) revert();   //   If the blocknumber exceed the ending block it will revert
-      if (msg.value&lt;minTokenPurchaseAmount)revert();  //    If someone send 0.08 ether it will fail
+      if (block.number > fundingEndBlock) revert();   //   If the blocknumber exceed the ending block it will revert
+      if (msg.value<minTokenPurchaseAmount)revert();  //    If someone send 0.08 ether it will fail
       uint256 tokenExchangeRate=tokenRate();        //     It will get value depending upon block number and presale cap
       uint256 tokens = safeMult(msg.value, tokenExchangeRate);//  Calculating number of token for sender
       totalSupply = safeAdd(totalSupply, tokens);            //   Add token to total supply
-      if(totalSupply&gt;tokenCreationCap)revert();             //    Check the total supply if it is more then hardcap it will throw
+      if(totalSupply>tokenCreationCap)revert();             //    Check the total supply if it is more then hardcap it will throw
       balances[msg.sender] += tokens;                      //     Adding token to sender account
       forwardfunds();                                     //      forwardfunds to the owner
       CreatePPC(msg.sender, tokens);                      //      Logs sender address and  token creation
@@ -176,7 +176,7 @@ contract PPCToken is StandardToken,Ownable, SafeMath {
     */
     function tokenRate() internal returns (uint256 _tokenPrice){
       // It is a presale it will return price for presale
-      if(block.number&lt;safeAdd(fundingStartBlock,preSaleBlockNumber)&amp;&amp;(totalSupply&lt;tokenCreationPreSaleCap)){
+      if(block.number<safeAdd(fundingStartBlock,preSaleBlockNumber)&&(totalSupply<tokenCreationPreSaleCap)){
           return tokenPreSaleRate;
         }else
             return tokenCrowdsaleRate;
@@ -191,7 +191,7 @@ contract PPCToken is StandardToken,Ownable, SafeMath {
     function mint(address _to, uint256 _amount) external onlyOwner returns (bool) {
       if (emergencyFlag) revert();
       totalSupply = safeAdd(totalSupply,_amount);// Add the minted token to total suppy
-      if(totalSupply&gt;tokenCreationCap)revert();
+      if(totalSupply>tokenCreationCap)revert();
       balances[_to] +=_amount;                 //   Adding token to the input address
       Mint(_to, _amount);                     //    Log the mint with address and token given to particular address
       return true;
@@ -204,7 +204,7 @@ contract PPCToken is StandardToken,Ownable, SafeMath {
     */
     function changeEndBlock(uint256 _newBlock) external onlyOwner returns (uint256 _endblock )
     {   // we are expecting that owner will input number greater than current block.
-        require(_newBlock &gt; fundingStartBlock);
+        require(_newBlock > fundingStartBlock);
         fundingEndBlock = _newBlock;         // New block is assigned to extend the Crowd Sale time
         return fundingEndBlock;
     }

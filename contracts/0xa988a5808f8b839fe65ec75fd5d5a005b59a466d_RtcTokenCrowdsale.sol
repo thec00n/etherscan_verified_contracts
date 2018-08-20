@@ -46,7 +46,7 @@ contract PausableToken is Ownable {
 
 contract AddressWhitelist is Ownable {
     // the addresses that are included in the whitelist
-    mapping (address =&gt; bool) whitelisted;
+    mapping (address => bool) whitelisted;
     
     function isWhitelisted(address addr) view public returns (bool) {
         return whitelisted[addr];
@@ -56,7 +56,7 @@ contract AddressWhitelist is Ownable {
 
     // add these addresses to the whitelist
     function addToWhitelist(address[] addresses) public onlyOwner returns (bool) {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (!whitelisted[addresses[i]]) {
                 whitelisted[addresses[i]] = true;
                 LogWhitelistAdd(addresses[i]);
@@ -70,7 +70,7 @@ contract AddressWhitelist is Ownable {
 
     // remove these addresses from the whitelist
     function removeFromWhitelist(address[] addresses) public onlyOwner returns (bool) {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (whitelisted[addresses[i]]) {
                 whitelisted[addresses[i]] = false;
                 LogWhitelistRemove(addresses[i]);
@@ -116,7 +116,7 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
 
     event Buy(address indexed _sender, uint256 _eth, uint256 _RTC);
     event Refund(address indexed _refunder, uint256 _value);
-    mapping(address =&gt; uint256) fundValue;
+    mapping(address => uint256) fundValue;
 
 
     // convert tokens to decimals
@@ -137,7 +137,7 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
     // setup the CrowdSale parameters
     function setupCrowdsale(uint256 _fundingStartTime) external onlyOwner {
         if ((!(isCrowdSaleSetup))
-            &amp;&amp; (!(beneficiaryWallet &gt; 0))){
+            && (!(beneficiaryWallet > 0))){
             // init addresses
             tokenReward                             = PausableToken(0xdb75BFC1ad984c5CeefA8Ec6394596e20d789034);
             beneficiaryWallet                       = 0xf07bd63C5cf404c2f17ab4F9FA1e13fCCEbc5255;
@@ -170,20 +170,20 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
 
     function setBonusPrice() public constant returns (uint256 bonus) {
         require(isCrowdSaleSetup);
-        require(p1_start + p1_duration &lt;= p2_start);
-        if (now &gt;= fundingStartTime &amp;&amp; now &lt;= p1_start) { // Private sale Bonus 40% = 4,000 RTC  = 1 ETH
+        require(p1_start + p1_duration <= p2_start);
+        if (now >= fundingStartTime && now <= p1_start) { // Private sale Bonus 40% = 4,000 RTC  = 1 ETH
             bonus = 4000;
-        } else if (now &gt; p1_start &amp;&amp; now &lt;= p1_start + p1_duration) { // Phase-1 Bonus 30% = 3,000 RTC  = 1 ETH
+        } else if (now > p1_start && now <= p1_start + p1_duration) { // Phase-1 Bonus 30% = 3,000 RTC  = 1 ETH
             bonus = 3000;
-        } else if (now &gt; p2_start &amp;&amp; now &lt;= p2_start + 1 days ) { // Phase-2 1st day Bonus 25% = 2,500 RTC = 1 ETH
+        } else if (now > p2_start && now <= p2_start + 1 days ) { // Phase-2 1st day Bonus 25% = 2,500 RTC = 1 ETH
             bonus = 2500;
-        } else if (now &gt; p2_start + 1 days &amp;&amp; now &lt;= p2_start + 1 weeks ) { // Phase-2 week-1 Bonus 20% = 2,000 RTC = 1 ETH
+        } else if (now > p2_start + 1 days && now <= p2_start + 1 weeks ) { // Phase-2 week-1 Bonus 20% = 2,000 RTC = 1 ETH
             bonus = 2000;
-        } else if (now &gt; p2_start + 1 weeks &amp;&amp; now &lt;= p2_start + 2 weeks ) { // Phase-2 week-2 Bonus +15% = 1,500 RTC = 1 ETH
+        } else if (now > p2_start + 1 weeks && now <= p2_start + 2 weeks ) { // Phase-2 week-2 Bonus +15% = 1,500 RTC = 1 ETH
             bonus = 1500;
-        } else if (now &gt; p2_start + 2 weeks &amp;&amp; now &lt;= p2_start + 3 weeks ) { // Phase-2 week-3 Bonus +10% = 1,000 RTC = 1 ETH
+        } else if (now > p2_start + 2 weeks && now <= p2_start + 3 weeks ) { // Phase-2 week-3 Bonus +10% = 1,000 RTC = 1 ETH
             bonus = 1000;
-        } else if (now &gt; p2_start + 3 weeks &amp;&amp; now &lt;= fundingEndTime ) { // Phase-2 final week Bonus 5% = 500 RTC = 1 ETH
+        } else if (now > p2_start + 3 weeks && now <= fundingEndTime ) { // Phase-2 final week Bonus 5% = 500 RTC = 1 ETH
             bonus = 500;
         } else {
             revert();
@@ -193,17 +193,17 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
     // p1_duration constant. Only p2 start changes. p2 start cannot be greater than 1 month from p1 end
     function updateDuration(uint256 _newP2Start) external onlyOwner { // function to update the duration of phase-1 and adjust the start time of phase-2
         require(isCrowdSaleSetup
-            &amp;&amp; !(p2_start == _newP2Start)
-            &amp;&amp; !(_newP2Start &gt; p1_start + p1_duration + 30 days)
-            &amp;&amp; (now &lt; p2_start)
-            &amp;&amp; (fundingStartTime + p1_duration &lt; _newP2Start));
+            && !(p2_start == _newP2Start)
+            && !(_newP2Start > p1_start + p1_duration + 30 days)
+            && (now < p2_start)
+            && (fundingStartTime + p1_duration < _newP2Start));
         p2_start = _newP2Start;
         fundingEndTime = p2_start.add(4 weeks);   // 4 week
     }
 
     // default payable function when sending ether to this contract
     function () external payable {
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
         require(msg.data.length == 0);
         
         BuyRTCtokens();
@@ -212,13 +212,13 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
     function BuyRTCtokens() public payable {
         // conditions (length, crowdsale setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc)
         require(!(msg.value == 0)
-        &amp;&amp; (isCrowdSaleSetup)
-        &amp;&amp; (now &gt;= fundingStartTime)
-        &amp;&amp; (now &lt;= fundingEndTime)
-        &amp;&amp; (tokensRemaining &gt; 0));
+        && (isCrowdSaleSetup)
+        && (now >= fundingStartTime)
+        && (now <= fundingEndTime)
+        && (tokensRemaining > 0));
 
         // only whitelisted addresses are allowed during the first day of phase 1
-        if (now &lt;= p1_start) {
+        if (now <= p1_start) {
             assert(isWhitelisted(msg.sender));
         }
         uint256 rewardTransferAmount        = 0;
@@ -232,7 +232,7 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
         rewardBonusTransferAmount       = (msg.value.mul(rewardBonusTransferAmount)); // Since both ether and RTC have 18 decimals, No need of conversion
         rewardTransferAmount            = rewardBaseTransferAmount.add(rewardBonusTransferAmount);
 
-        if (rewardTransferAmount &gt; tokensRemaining) {
+        if (rewardTransferAmount > tokensRemaining) {
             uint256 partialPercentage;
             partialPercentage = tokensRemaining.mul(10**18).div(rewardTransferAmount);
             contributionInWei = contributionInWei.mul(partialPercentage).div(10**18);
@@ -247,54 +247,54 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
         assert(tokenReward.increaseFrozen(msg.sender, rewardBonusTransferAmount));
         tokenReward.transfer(msg.sender, rewardTransferAmount);
         Buy(msg.sender, contributionInWei, rewardTransferAmount);
-        if (refundInWei &gt; 0) {
+        if (refundInWei > 0) {
             msg.sender.transfer(refundInWei);
         }
     }
 
     function beneficiaryMultiSigWithdraw() external onlyOwner {
         checkGoalReached();
-        require(areFundsReleasedToBeneficiary &amp;&amp; (amountRaisedInWei &gt;= fundingMinCapInWei));
+        require(areFundsReleasedToBeneficiary && (amountRaisedInWei >= fundingMinCapInWei));
         beneficiaryWallet.transfer(this.balance);
     }
 
     function checkGoalReached() public returns (bytes32 response) { // return crowdfund status to owner for each result case, update public constant
-        // update state &amp; status variables
+        // update state & status variables
         require (isCrowdSaleSetup);
-        if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.timestamp &lt;= fundingEndTime &amp;&amp; block.timestamp &gt;= fundingStartTime)) { // ICO in progress, under softcap
+        if ((amountRaisedInWei < fundingMinCapInWei) && (block.timestamp <= fundingEndTime && block.timestamp >= fundingStartTime)) { // ICO in progress, under softcap
             areFundsReleasedToBeneficiary = false;
             isCrowdSaleClosed = false;
-            return &quot;In progress (Eth &lt; Softcap)&quot;;
-        } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.timestamp &lt; fundingStartTime)) { // ICO has not started
+            return "In progress (Eth < Softcap)";
+        } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.timestamp < fundingStartTime)) { // ICO has not started
             areFundsReleasedToBeneficiary = false;
             isCrowdSaleClosed = false;
-            return &quot;Crowdsale is setup&quot;;
-        } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.timestamp &gt; fundingEndTime)) { // ICO ended, under softcap
+            return "Crowdsale is setup";
+        } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.timestamp > fundingEndTime)) { // ICO ended, under softcap
             areFundsReleasedToBeneficiary = false;
             isCrowdSaleClosed = true;
-            return &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-        } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining == 0)) { // ICO ended, all tokens gone
+            return "Unsuccessful (Eth < Softcap)";
+        } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining == 0)) { // ICO ended, all tokens gone
             areFundsReleasedToBeneficiary = true;
             isCrowdSaleClosed = true;
-            return &quot;Successful (RTC &gt;= Hardcap)!&quot;;
-        } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (block.timestamp &gt; fundingEndTime) &amp;&amp; (tokensRemaining &gt; 0)) { // ICO ended, over softcap!
+            return "Successful (RTC >= Hardcap)!";
+        } else if ((amountRaisedInWei >= fundingMinCapInWei) && (block.timestamp > fundingEndTime) && (tokensRemaining > 0)) { // ICO ended, over softcap!
             areFundsReleasedToBeneficiary = true;
             isCrowdSaleClosed = true;
-            return &quot;Successful (Eth &gt;= Softcap)!&quot;;
-        } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining &gt; 0) &amp;&amp; (block.timestamp &lt;= fundingEndTime)) { // ICO in progress, over softcap!
+            return "Successful (Eth >= Softcap)!";
+        } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining > 0) && (block.timestamp <= fundingEndTime)) { // ICO in progress, over softcap!
             areFundsReleasedToBeneficiary = true;
             isCrowdSaleClosed = false;
-            return &quot;In progress (Eth &gt;= Softcap)!&quot;;
+            return "In progress (Eth >= Softcap)!";
         }
     }
 
-    function refund() external { // any contributor can call this to have their Eth returned. user&#39;s purchased RTC tokens are burned prior refund of Eth.
+    function refund() external { // any contributor can call this to have their Eth returned. user's purchased RTC tokens are burned prior refund of Eth.
         checkGoalReached();
         //require minCap not reached
-        require ((amountRaisedInWei &lt; fundingMinCapInWei)
-        &amp;&amp; (isCrowdSaleClosed)
-        &amp;&amp; (now &gt; fundingEndTime)
-        &amp;&amp; (fundValue[msg.sender] &gt; 0));
+        require ((amountRaisedInWei < fundingMinCapInWei)
+        && (isCrowdSaleClosed)
+        && (now > fundingEndTime)
+        && (fundValue[msg.sender] > 0));
 
         //refund Eth sent
         uint256 ethRefund = fundValue[msg.sender];
@@ -306,7 +306,7 @@ contract RtcTokenCrowdsale is Ownable, AddressWhitelist {
     }
 
     function burnRemainingTokens() onlyOwner external {
-        require(now &gt; fundingEndTime);
+        require(now > fundingEndTime);
         uint256 tokensToBurn = tokenReward.balanceOf(this);
         tokenReward.burn(tokensToBurn);
     }
@@ -323,20 +323,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

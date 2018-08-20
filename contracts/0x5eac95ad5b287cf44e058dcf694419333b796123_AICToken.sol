@@ -84,9 +84,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,7 +116,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -144,7 +144,7 @@ contract BasicToken is ERC20Basic {
     {
         require(_to != address(0));
         require(_to != msg.sender);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         _preValidateTransfer(msg.sender, _to, _value);
 
@@ -179,7 +179,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken, Ownable {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -196,8 +196,8 @@ contract StandardToken is ERC20, BasicToken, Ownable {
         returns (bool) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         _preValidateTransfer(_from, _to, _value);
 
@@ -244,7 +244,7 @@ contract StandardToken is ERC20, BasicToken, Ownable {
 
     function decreseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -314,7 +314,7 @@ contract LockableToken is MintableToken {
     }
 
     // granted to locks;
-    mapping (address =&gt; Lock[]) public grantedLocks;
+    mapping (address => Lock[]) public grantedLocks;
 
     function addLock(
         address _granted, 
@@ -324,8 +324,8 @@ contract LockableToken is MintableToken {
         public 
         onlyOwner 
     {
-        require(_amount &gt; 0);
-        require(_expiresAt &gt; now);
+        require(_amount > 0);
+        require(_expiresAt > now);
 
         grantedLocks[_granted].push(Lock(_amount, _expiresAt));
     }
@@ -340,7 +340,7 @@ contract LockableToken is MintableToken {
         Lock storage lock = grantedLocks[_granted][_index];
 
         delete grantedLocks[_granted][_index];
-        for (uint i = _index; i &lt; grantedLocks[_granted].length - 1; i++) {
+        for (uint i = _index; i < grantedLocks[_granted].length - 1; i++) {
             grantedLocks[_granted][i] = grantedLocks[_granted][i+1];
         }
         grantedLocks[_granted].length--;
@@ -360,12 +360,12 @@ contract LockableToken is MintableToken {
     {
         require(_to != address(0));
         require(_to != msg.sender);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         uint256 count = _expiresAtList.length;
-        if (count &gt; 0) {
+        if (count > 0) {
             uint256 devidedValue = _value.div(count);
-            for (uint i = 0; i &lt; count; i++) {
+            for (uint i = 0; i < count; i++) {
                 addLock(_to, devidedValue, _expiresAtList[i]);  
             }
         }
@@ -390,7 +390,7 @@ contract LockableToken is MintableToken {
         uint256 lockedAmount = getLockedAmount(_from);
         uint256 balanceAmount = balanceOf(_from);
 
-        require(balanceAmount.sub(lockedAmount) &gt;= _value);
+        require(balanceAmount.sub(lockedAmount) >= _value);
     }
 
 
@@ -405,8 +405,8 @@ contract LockableToken is MintableToken {
         uint256 lockedAmount = 0;
 
         Lock[] storage locks = grantedLocks[_granted];
-        for (uint i = 0; i &lt; locks.length; i++) {
-            if (now &lt; locks[i].expiresAt) {
+        for (uint i = 0; i < locks.length; i++) {
+            if (now < locks[i].expiresAt) {
                 lockedAmount = lockedAmount.add(locks[i].amount);
             }
         }
@@ -421,8 +421,8 @@ contract LockableToken is MintableToken {
 
 contract AICToken is LockableToken {
 
-  string public constant name = &quot;AICRYPTO&quot;;
-  string public constant symbol = &quot;AIC&quot;;
+  string public constant name = "AICRYPTO";
+  string public constant symbol = "AIC";
   uint32 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 10000000000 * (10 ** uint256(decimals));

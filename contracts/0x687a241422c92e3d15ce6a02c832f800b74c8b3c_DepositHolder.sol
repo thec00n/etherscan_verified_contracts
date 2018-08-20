@@ -14,7 +14,7 @@ contract DepositHolder {
     address owner;
     address auditor;
     
-    mapping(bytes16=&gt;Entry) entries;
+    mapping(bytes16=>Entry) entries;
     bytes16 oldestHash;
     bytes16 newestHash;
     
@@ -47,9 +47,9 @@ contract DepositHolder {
      */
     function deposit(bytes16[] values, uint64 deposit) owner_only {
         uint required = values.length * deposit;
-        if(msg.value &lt; required) {
+        if(msg.value < required) {
             throw;
-        } else if(msg.value &gt; required) {
+        } else if(msg.value > required) {
             if(!msg.sender.send(msg.value - required))
                 throw;
         }
@@ -67,7 +67,7 @@ contract DepositHolder {
             entries[newestHash].next = values[0];
         }
         
-        for(uint i = 0; i &lt; values.length - 1; i++) {
+        for(uint i = 0; i < values.length - 1; i++) {
             if(entries[values[i]].expires != 0)
                 throw;
             entries[values[i]] = Entry(values[i + 1], deposit, expires);
@@ -93,10 +93,10 @@ contract DepositHolder {
 
     function recover(uint max) private returns(uint recovered) {
         // Iterate through entries deleting them, until we find one
-        // that&#39;s new enough, or hit the limit.
+        // that's new enough, or hit the limit.
         bytes16 ptr = oldestHash;
         uint count;
-        for(uint i = 0; i &lt; max &amp;&amp; ptr != 0 &amp;&amp; entries[ptr].expires &lt; now; i++) {
+        for(uint i = 0; i < max && ptr != 0 && entries[ptr].expires < now; i++) {
             recovered += entries[ptr].deposit;
             ptr = entries[ptr].next;
             count += 1;
@@ -107,8 +107,8 @@ contract DepositHolder {
             newestHash = 0;
         
         // Deduct any outstanding payouts from the recovered funds
-        if(paidOut &gt; 0) {
-            if(recovered &gt; paidOut) {
+        if(paidOut > 0) {
+            if(recovered > paidOut) {
                 recovered -= paidOut;
                 paidOut = 0;
             } else {
@@ -134,7 +134,7 @@ contract DepositHolder {
         }
         next = hash;
         when = entries[hash].expires;
-        while(next != 0 &amp;&amp; entries[next].expires == when) {
+        while(next != 0 && entries[next].expires == when) {
             count += 1;
             value += entries[next].deposit;
             next = entries[next].next;
@@ -171,7 +171,7 @@ contract DepositHolder {
      * @dev Deletes the contract, if no deposits are held.
      */
     function destroy() owner_only {
-        if(depositCount &gt; 0)
+        if(depositCount > 0)
             throw;
         selfdestruct(msg.sender);
     }

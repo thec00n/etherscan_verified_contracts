@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 contract CpcToken{
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 	address public owner;
     string public name;
     string public symbol;
@@ -8,11 +8,11 @@ contract CpcToken{
 	// total amount of tokens
     uint256 public totalSupply;
 	// `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     constructor () public { 
         owner = msg.sender;                                       // Set owner of contract 
-        name = &quot;CpcToken&quot;;                                        // Set the name for display purposes
-        symbol = &quot;CPCT&quot;;                                          // Set the symbol for display purposes
+        name = "CpcToken";                                        // Set the name for display purposes
+        symbol = "CPCT";                                          // Set the symbol for display purposes
         decimals = 18;                                            // Amount of decimals for display purposes
 		totalSupply = 2000000000000000000000000000;               // Total supply
 		balances[owner] = totalSupply;                            // Set owner balance equal totalsupply 
@@ -29,9 +29,9 @@ contract CpcToken{
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) public returns (bool success) {
-	    require(_value &gt; 0 );                                      // Check send token value &gt; 0;
-		require(balances[msg.sender] &gt;= _value);                   // Check if the sender has enough
-        require(balances[_to] + _value &gt; balances[_to]);           // Check for overflows											
+	    require(_value > 0 );                                      // Check send token value > 0;
+		require(balances[msg.sender] >= _value);                   // Check if the sender has enough
+        require(balances[_to] + _value > balances[_to]);           // Check for overflows											
 		balances[msg.sender] -= _value;                            // Subtract from the sender
 		balances[_to] += _value;                                   // Add the same to the recipient                       
 		 
@@ -46,9 +46,9 @@ contract CpcToken{
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 	  
-	    require(balances[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balances[_to] + _value &gt;= balances[_to]);   // Check for overflows
-        require(_value &lt;= allowed[_from][msg.sender]);      // Check allowance
+	    require(balances[_from] >= _value);                 // Check if the sender has enough
+        require(balances[_to] + _value >= balances[_to]);   // Check for overflows
+        require(_value <= allowed[_from][msg.sender]);      // Check allowance
         balances[_from] -= _value;                         // Subtract from the sender
         balances[_to] += _value;                           // Add the same to the recipient
         allowed[_from][msg.sender] -= _value;
@@ -61,7 +61,7 @@ contract CpcToken{
     /// @param _value The amount of tokens to be approved for transfer
     /// @return Whether the approval was successful or not
     function approve(address _spender, uint256 _value) public returns (bool success) {
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 		return true;

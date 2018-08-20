@@ -16,20 +16,20 @@ library SafeMath {
     }
     
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -97,7 +97,7 @@ contract BurnableCADVToken is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -140,17 +140,17 @@ contract Ownable {
 contract ControlledCrowdSale {
     using SafeMath for uint256;
     
-    mapping (address =&gt; uint256) public deposited;
-    mapping (address =&gt; bool) public unboundedLimit;
+    mapping (address => uint256) public deposited;
+    mapping (address => bool) public unboundedLimit;
     
     uint256 public maxPerUser = 5 ether;
     uint256 public minPerUser = 1 ether / 1000;
     
     
     modifier controlledDonation() {
-        require(msg.value &gt;= minPerUser);
+        require(msg.value >= minPerUser);
         deposited[msg.sender] = deposited[msg.sender].add(msg.value);
-        require(maxPerUser &gt;= deposited[msg.sender] || unboundedLimit[msg.sender]);
+        require(maxPerUser >= deposited[msg.sender] || unboundedLimit[msg.sender]);
         _;
     }
 
@@ -208,7 +208,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      *
      */ 
     function isPhaseValid(uint256 index) public view returns (bool) {
-        return phases[index].expireDate &gt;= now &amp;&amp; (!phases[index].maxAmountEnabled || phases[index].maxAmount &gt; minPerUser);
+        return phases[index].expireDate >= now && (!phases[index].maxAmountEnabled || phases[index].maxAmount > minPerUser);
     } 
     
     
@@ -218,7 +218,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      */
     function currentPhaseId() public view returns (uint256) {
         uint256 index = lastActivePhase;
-        while(index &lt; phases.length-1 &amp;&amp; !isPhaseValid(index)) {
+        while(index < phases.length-1 && !isPhaseValid(index)) {
             index = index +1;
         }
         return index;
@@ -256,7 +256,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
         require(isPhaseValid(phaseId));
         
         if (phases[phaseId].maxAmountEnabled) {
-            if (phases[phaseId].maxAmount &gt;= msg.value) {
+            if (phases[phaseId].maxAmount >= msg.value) {
                 phases[phaseId].maxAmount = phases[phaseId].maxAmount.sub(msg.value);
             } else {
                 phases[phaseId].maxAmount = 0;
@@ -274,7 +274,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      *
      */
     function retrieveFounds() onlyOwner public {
-        require(state == State.Completed || (state == State.Active &amp;&amp; this.balance &gt;= goal));
+        require(state == State.Completed || (state == State.Active && this.balance >= goal));
         state = State.Completed;
         beneficiary.transfer(this.balance);
     }
@@ -286,8 +286,8 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      */
     function startRefunding() public {
         require(state == State.Active);
-        require(this.balance &lt; goal);
-        require(refunduingStartDate &lt; now);
+        require(this.balance < goal);
+        require(refunduingStartDate < now);
         state = State.Refunding;
         RefundsEnabled();
     }
@@ -310,7 +310,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      */
     function refund(address investor) public {
         require(state == State.Refunding);
-        require(deposited[investor] &gt; 0);
+        require(deposited[investor] > 0);
         
         uint256 depositedValue = deposited[investor];
         deposited[investor] = 0;
@@ -324,7 +324,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      */
     function burnCadvsLeftInRefunding() onlyOwner public {
         require(state == State.Refunding);
-        require(token.balanceOf(this) &gt; 0);
+        require(token.balanceOf(this) > 0);
         token.burn(token.balanceOf(this));
     }
     
@@ -334,7 +334,7 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
      */
     function gameOver() onlyOwner public {
         require(!isPhaseValid(currentPhaseId()));
-        require(state == State.Completed || (state == State.Active &amp;&amp; this.balance &gt;= goal));
+        require(state == State.Completed || (state == State.Active && this.balance >= goal));
         token.burn(token.balanceOf(this));
         selfdestruct(beneficiary);
     }
@@ -352,13 +352,13 @@ contract CoinAdvisorCrowdSale is Ownable, ControlledCrowdSale {
     
     function currentState() public view returns (string) {
         if (state == State.Active) {
-            return &quot;Active&quot;;
+            return "Active";
         }
         if (state == State.Completed) {
-            return &quot;Completed&quot;;
+            return "Completed";
         }
         if (state == State.Refunding) {
-            return &quot;Refunding&quot;;
+            return "Refunding";
         }
     }
     

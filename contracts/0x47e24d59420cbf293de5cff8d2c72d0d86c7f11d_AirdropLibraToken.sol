@@ -53,9 +53,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -63,7 +63,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -72,7 +72,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -94,7 +94,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -112,7 +112,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -145,8 +145,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -160,7 +160,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -222,8 +222,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract LibraToken is StandardToken {
 
-    string public constant name = &quot;LibraToken&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;LBA&quot;; // solium-disable-line uppercase
+    string public constant name = "LibraToken"; // solium-disable-line uppercase
+    string public constant symbol = "LBA"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
 
     uint256 public constant INITIAL_SUPPLY = (10 ** 9) * (10 ** uint256(decimals));
@@ -255,12 +255,12 @@ contract AirdropLibraToken is Ownable {
     LibraToken private token;
 
     // List of admins
-    mapping (address =&gt; bool) public airdropAdmins;
+    mapping (address => bool) public airdropAdmins;
 
 
 
     //the map that has been airdropped, key -- address ,value -- amount
-    mapping(address =&gt; uint256) public airdropDoneAmountMap;
+    mapping(address => uint256) public airdropDoneAmountMap;
     //the list that has been airdropped addresses
     address[] public airdropDoneList;
 
@@ -296,7 +296,7 @@ contract AirdropLibraToken is Ownable {
 
 
     modifier onlyWhileAirdropPhaseOpen {
-        require(block.timestamp &gt; airdropStartTime &amp;&amp; block.timestamp &lt; airdropEndTime);
+        require(block.timestamp > airdropStartTime && block.timestamp < airdropEndTime);
         _;
     }
 
@@ -314,11 +314,11 @@ contract AirdropLibraToken is Ownable {
 
 
     function airdropTokens(address _recipient, uint256 amount) public onlyOwnerOrAdmin onlyWhileAirdropPhaseOpen {
-        require(amount &gt; 0);
+        require(amount > 0);
 
         uint256 lbaBalance = token.balanceOf(this);
 
-        require(lbaBalance &gt;= amount);
+        require(lbaBalance >= amount);
 
         require(token.transfer(_recipient, amount));
 
@@ -328,7 +328,7 @@ contract AirdropLibraToken is Ownable {
 
         //update airdropped actually
         uint256 airDropAmountThisAddr = 0;
-        if(airdropDoneAmountMap[_recipient] &gt; 0){
+        if(airdropDoneAmountMap[_recipient] > 0){
             airDropAmountThisAddr = airdropDoneAmountMap[_recipient].add(amount);
         }else{
             airDropAmountThisAddr = amount;
@@ -342,10 +342,10 @@ contract AirdropLibraToken is Ownable {
 
     }
 
-    //batch airdrop, key-- the receiver&#39;s address, value -- receiver&#39;s amount
+    //batch airdrop, key-- the receiver's address, value -- receiver's amount
     function airdropTokensBatch(address[] receivers, uint256[] amounts) public onlyOwnerOrAdmin onlyWhileAirdropPhaseOpen{
-        require(receivers.length &gt; 0 &amp;&amp; receivers.length == amounts.length);
-        for (uint256 i = 0; i &lt; receivers.length; i++){
+        require(receivers.length > 0 && receivers.length == amounts.length);
+        for (uint256 i = 0; i < receivers.length; i++){
             airdropTokens(receivers[i], amounts[i]);
         }
     }
@@ -353,7 +353,7 @@ contract AirdropLibraToken is Ownable {
     function transferOutBalance() public onlyOwner view returns (bool){
         address creator = msg.sender;
         uint256 _balanceOfThis = token.balanceOf(this);
-        if(_balanceOfThis &gt; 0){
+        if(_balanceOfThis > 0){
             LibraToken(token).approve(this, _balanceOfThis);
             LibraToken(token).transferFrom(this, creator, _balanceOfThis);
             return true;
@@ -387,7 +387,7 @@ contract AirdropLibraToken is Ownable {
         return airdropDoneList;
     }
 
-    //get the amount has been dropped by user&#39;s address
+    //get the amount has been dropped by user's address
     function getDoneAirdropAmount(address _addr) public view returns (uint256){
         return airdropDoneAmountMap[_addr];
     }

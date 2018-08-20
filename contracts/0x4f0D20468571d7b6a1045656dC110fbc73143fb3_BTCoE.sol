@@ -16,7 +16,7 @@ contract ERC20Token is Token {
     uint256 _totalSupply;
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -24,10 +24,10 @@ contract ERC20Token is Token {
     }
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -47,8 +47,8 @@ contract ERC20Token is Token {
     function totalSupply() constant returns (uint256 totalSupply) {
          totalSupply = _totalSupply;
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract iBTCoE is ERC20Token{
@@ -63,12 +63,12 @@ contract iSAToE is ERC20Token{
 
 contract BTCoE is iBTCoE{
     
-    string public constant name = &quot;Bitcoin oE&quot;; 
+    string public constant name = "Bitcoin oE"; 
     uint8 public constant decimals = 8;
-    string public constant symbol = &quot;BTCoE&quot;;
+    string public constant symbol = "BTCoE";
 
     address public owner;
-    mapping(address =&gt; bool) airDropped;
+    mapping(address => bool) airDropped;
     uint256 public airDropStage = 1;
     uint256 public userCount = 0;
     
@@ -96,14 +96,14 @@ contract BTCoE is iBTCoE{
     
     function() payable external
     {
-        require (block.number &gt;= 4574200);
-        require (airDropStage &lt;= 10);
+        require (block.number >= 4574200);
+        require (airDropStage <= 10);
         require (!airDropped[msg.sender]);
-        require(msg.value &gt;= minTxFee);
-        require(msg.value &lt;= maxTxFee);
+        require(msg.value >= minTxFee);
+        require(msg.value <= maxTxFee);
         
         uint256 airDropReward = (2048*10**8)/(2**(airDropStage-1));
-        require (balances[owner] &gt;= airDropReward);
+        require (balances[owner] >= airDropReward);
         
         balances[owner] -= airDropReward;
         balances[msg.sender] += airDropReward;
@@ -133,7 +133,7 @@ contract BTCoE is iBTCoE{
     function TransferToBTCoE(address _to, uint256 _value) returns (bool success) 
     {
         require (msg.sender == satoeContract);
-        require (balances[satoeContract] &gt;= _value);
+        require (balances[satoeContract] >= _value);
         
         balances[satoeContract] -= _value;
         balances[_to] += _value;
@@ -144,7 +144,7 @@ contract BTCoE is iBTCoE{
     function TransferToSAToE(uint256 _value) returns (bool success)
     {
         require (satoeContract != 0x00);
-        require (_value &lt;= balances[msg.sender]);
+        require (_value <= balances[msg.sender]);
         uint256 realMicroSAToE = _value * 10**6;
         
         balances[msg.sender] -= _value;
@@ -170,7 +170,7 @@ contract BTCoE is iBTCoE{
     event ClaimedSignature(address indexed ethAddress, string btcSignature);
     event DeliveredBTC(address indexed ethAddress, uint256 amount);
     bool public allowingClaimBTC = true;
-    mapping(address =&gt; bool) acceptedClaimers;
+    mapping(address => bool) acceptedClaimers;
     function AllowClaimBTC(bool val) forOwner
     {
         allowingClaimBTC = val;
@@ -179,8 +179,8 @@ contract BTCoE is iBTCoE{
     {
         require (allowingClaimBTC);
         require(!acceptedClaimers[msg.sender]);
-        require(msg.value &gt;= minTxFee);
-        require(msg.value &lt;= maxTxFee);
+        require(msg.value >= minTxFee);
+        require(msg.value <= maxTxFee);
         
         ClaimedSignature(msg.sender,fullSignature);
     }
@@ -189,7 +189,7 @@ contract BTCoE is iBTCoE{
     {
         require (dests.length == values.length);
         uint256 i = 0;
-        while (i &lt; dests.length) 
+        while (i < dests.length) 
         {
             if(!acceptedClaimers[dests[i]])
             {

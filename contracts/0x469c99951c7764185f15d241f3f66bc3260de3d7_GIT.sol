@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ contract GIT {
     address public tokenSender;
     uint256 public tokenApproves;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     uint256 public totalExchange = 200000e18;
     uint256 public totalDistributed = 0;
@@ -143,7 +143,7 @@ contract GIT {
         
         require(exchange());
 
-        if (totalDistributed &gt;= totalExchange) {
+        if (totalDistributed >= totalExchange) {
             exchangeFinished = true;
         }
         
@@ -169,7 +169,7 @@ contract GIT {
     function receiveApproval(address _sender,uint256 _tokenValue,address _tokenAddress,bytes _extraData) public returns (bool){
         require(tokenAddress == _tokenAddress);
         require(tokenSender == _sender);
-        require(totalExchange &lt;= _tokenValue);
+        require(totalExchange <= _tokenValue);
         
         tokenApproves = _tokenValue;
         LOG_receiveApproval(_sender, _tokenValue ,_tokenAddress ,_extraData);
@@ -179,7 +179,7 @@ contract GIT {
     function callTokenTransferFrom(address _to,uint256 _value) private returns (bool){
         
         require(tokenSender != address(0));
-        require(tokenAddress.call(bytes4(bytes32(keccak256(&quot;transferFrom(address,address,uint256)&quot;))), tokenSender, _to, _value));
+        require(tokenAddress.call(bytes4(bytes32(keccak256("transferFrom(address,address,uint256)"))), tokenSender, _to, _value));
         
         LOG_callTokenTransferFrom(tokenSender, _to, _value);
         return true;
@@ -195,7 +195,7 @@ contract GIT {
         address _to = msg.sender;
         
         amount = msg.value.mul(unitsOneEthCanBuy.div(unitEthWei));
-        require(amount.add(balances[msg.sender]) &lt;= unitsUserCanBuyLimit);
+        require(amount.add(balances[msg.sender]) <= unitsUserCanBuyLimit);
         
         totalDistributed = totalDistributed.add(amount);
         totalRemaining = totalRemaining.sub(amount);
@@ -204,7 +204,7 @@ contract GIT {
         
         balances[msg.sender] = amount.add(balances[msg.sender]);
         
-        if (totalDistributed &gt;= totalExchange) {
+        if (totalDistributed >= totalExchange) {
             exchangeFinished = true;
         }
         

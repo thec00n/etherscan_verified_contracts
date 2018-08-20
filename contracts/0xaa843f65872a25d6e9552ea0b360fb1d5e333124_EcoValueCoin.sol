@@ -22,7 +22,7 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0);
+    require(b > 0);
     uint256 c = a / b;
     return c;
   }
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -108,18 +108,18 @@ contract EcoValueCoin is Ownable {
   event WithdrawnERC20Tokens(address indexed _tokenContract, address indexed _owner, uint256 _balance);
   event WithdrawnEther(address indexed _owner, uint256 _balance);
 
-  string public constant name = &quot;Eco Value Coin&quot;;
-  string public constant symbol = &quot;EVC&quot;;
+  string public constant name = "Eco Value Coin";
+  string public constant symbol = "EVC";
   uint256 public constant decimals = 18;
   uint256 public constant initialSupply = 3300000000 * (10 ** decimals);
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint256) public balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) public balances;
+  mapping(address => mapping (address => uint256)) internal allowed;
 
   //This mapping is used for the token owner and crowdsale contract to 
   //transfer tokens before they are transferable
-  mapping(address =&gt; bool) public transferGrants;
+  mapping(address => bool) public transferGrants;
   //This flag controls the global token transfer
   bool public transferable;
 
@@ -166,7 +166,7 @@ contract EcoValueCoin is Ownable {
   */
   function transfer(address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -182,8 +182,8 @@ contract EcoValueCoin is Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -196,7 +196,7 @@ contract EcoValueCoin is Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -245,7 +245,7 @@ contract EcoValueCoin is Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) canTransfer public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -259,7 +259,7 @@ contract EcoValueCoin is Ownable {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -314,7 +314,7 @@ contract EcoValueCoin is Ownable {
    */
   function withdrawEther() public onlyOwner {
     uint256 totalBalance = this.balance;
-    require(totalBalance &gt; 0);
+    require(totalBalance > 0);
     owner.transfer(totalBalance);
     WithdrawnEther(owner, totalBalance);
   }

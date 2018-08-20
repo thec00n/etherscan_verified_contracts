@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751110011035140d1c1a180f101b5b161a">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751110011035140d1c1a180f101b5b161a">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -46,8 +46,8 @@ contract PokemonPow is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoKotakuPokemonPow&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;PokemonPow&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoKotakuPokemonPow"; // solhint-disable-line
+  string public constant SYMBOL = "PokemonPow"; // solhint-disable-line
 
   uint256 private startingPrice = 0.005 ether;
   uint256 private firstStepLimit =  0.05 ether;
@@ -57,19 +57,19 @@ contract PokemonPow is ERC721 {
 
   /// @dev A mapping from pow IDs to the address that owns them. All pows have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public powIndexToOwner;
+  mapping (uint256 => address) public powIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PowIDs to an address that has been approved to call
   ///  transferFrom(). Each Pow can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public powIndexToApproved;
+  mapping (uint256 => address) public powIndexToApproved;
 
   // @dev A mapping from PowIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private powIndexToPrice;
+  mapping (uint256 => uint256) private powIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -148,7 +148,7 @@ contract PokemonPow is ERC721 {
       powOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -221,7 +221,7 @@ contract PokemonPow is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 gameOwnerPayment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 5), 100));
     uint256 gameItemOwnerPayment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 5), 100));
@@ -229,10 +229,10 @@ contract PokemonPow is ERC721 {
     uint256 purchaseExcess = SafeMath.sub(msg.value,sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       powIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 100);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       powIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 180), 100);
     } else {
@@ -307,7 +307,7 @@ contract PokemonPow is ERC721 {
   }
 
   /// @param _owner The owner whose pow tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire pows array looking for pows belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -322,7 +322,7 @@ contract PokemonPow is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 powId;
-      for (powId = 0; powId &lt;= totalPows; powId++) {
+      for (powId = 0; powId <= totalPows; powId++) {
         if (powIndexToOwner[powId] == _owner) {
           result[resultIndex] = powId;
           resultIndex++;
@@ -390,8 +390,8 @@ contract PokemonPow is ERC721 {
     });
     uint256 newPowId = pows.push(_pow) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPowId == uint256(uint32(newPowId)));
 
     Birth(newPowId, _name, _owner);
@@ -421,19 +421,19 @@ contract PokemonPow is ERC721 {
   This function can be used by the owner of a pow item to modify the price of its pow item.
   */
   function modifyPowPrice(uint _powId, uint256 _newPrice) public {
-      require(_newPrice &gt; 0);
+      require(_newPrice > 0);
       require(powIndexToOwner[_powId] == msg.sender);
       powIndexToPrice[_powId] = _newPrice;
   }
 
   /// @dev Assigns ownership of a specific Pow to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of pow is capped to 2^32 we can&#39;t overflow this
+    // Since the number of pow is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     powIndexToOwner[_tokenId] = _to;
 
-    // When creating new pows _from is 0x0, but we can&#39;t account that address.
+    // When creating new pows _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -463,9 +463,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -473,7 +473,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -482,7 +482,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

@@ -4,7 +4,7 @@ pragma solidity ^0.4.2;
 // Etheroll Functions
 contract DSSafeAddSub {
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
     function safeAdd(uint a, uint b) internal returns (uint) {
         require(safeToAdd(a, b));
@@ -12,7 +12,7 @@ contract DSSafeAddSub {
     }
 
     function safeToSubtract(uint a, uint b) internal returns (bool) {
-        return (b &lt;= a);
+        return (b <= a);
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
@@ -28,10 +28,10 @@ contract MyDice75 is DSSafeAddSub {
     */
     modifier betIsValid(uint _betSize, uint _playerNumber) {
 		
-    require(((((_betSize * (10000-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize &lt;= maxProfit);
+    require(((((_betSize * (10000-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize <= maxProfit);
 
-    require(_playerNumber &lt; maxNumber);
-    require(_betSize &gt;= minBet);
+    require(_playerNumber < maxNumber);
+    require(_betSize >= minBet);
     _;
     }
 
@@ -83,7 +83,7 @@ contract MyDice75 is DSSafeAddSub {
     uint private maxNumber = 10000;
     uint public  underNumber = 7500;
 
-    mapping (address =&gt; uint) playerPendingWithdrawals;
+    mapping (address => uint) playerPendingWithdrawals;
 
     /*
      * events
@@ -130,7 +130,7 @@ contract MyDice75 is DSSafeAddSub {
     /*
      * public function
      * player submit bet
-     * only if game is active &amp; bet is valid can query oraclize and set player vars
+     * only if game is active & bet is valid can query oraclize and set player vars
     */
     function playerRollDice(uint rollUnder) public
         payable
@@ -149,7 +149,7 @@ contract MyDice75 is DSSafeAddSub {
         * send reward
         * if send of reward fails save value to playerPendingWithdrawals
         */
-        if(randReuslt &lt; rollUnder){
+        if(randReuslt < rollUnder){
 
             uint playerProfit = ((((msg.value * (maxNumber-(safeSub(rollUnder,1)))) / (safeSub(rollUnder,1))+msg.value))*houseEdge/houseEdgeDivisor)-msg.value;
 
@@ -186,7 +186,7 @@ contract MyDice75 is DSSafeAddSub {
         * send 1 wei to a losing bet
         * update contract balance to calculate new max bet
         */
-        if(randReuslt &gt;= rollUnder){
+        if(randReuslt >= rollUnder){
 
             LogResult(totalBets, msg.sender, underNumber, randReuslt, msg.value, 0, msg.value,underNumber);
 
@@ -306,7 +306,7 @@ contract MyDice75 is DSSafeAddSub {
 		onlyOwner
     {
         /* restrict to maximum profit of 5% of total house balance*/
-        require(newMaxProfitAsPercent &lt;= 50000);
+        require(newMaxProfitAsPercent <= 50000);
         maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
         setMaxProfit();
     }

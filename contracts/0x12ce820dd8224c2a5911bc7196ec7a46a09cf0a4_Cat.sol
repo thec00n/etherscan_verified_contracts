@@ -6,7 +6,7 @@ pragma solidity ^0.4.16;
  */
 contract Owned {
 
-    /* Owner&#39;s address */
+    /* Owner's address */
     address owner;
 
     /**
@@ -105,13 +105,13 @@ contract Token is ERC20 {
 
     /// Token holders list
     address[] public holders;
-    /* address =&gt; index in array of hodlers, index starts from 1 */
-    mapping(address =&gt; uint256) index;
+    /* address => index in array of hodlers, index starts from 1 */
+    mapping(address => uint256) index;
 
     /* Token holders map */
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     /* Token transfer approvals */
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowances;
+    mapping(address => mapping(address => uint256)) allowances;
 
     /**
      * @dev Constructs Token with given `_name`, `_symbol` and `_decimals`
@@ -143,14 +143,14 @@ contract Token is ERC20 {
     function transfer(address _to, uint256 _value) returns (bool) {
 
         // balance check
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
 
             // transfer
             balances[msg.sender] -= _value;
             balances[_to] += _value;
 
-            // push new holder if _value &gt; 0
-            if (_value &gt; 0 &amp;&amp; index[_to] == 0) {
+            // push new holder if _value > 0
+            if (_value > 0 && index[_to] == 0) {
                 index[_to] = holders.push(_to);
             }
 
@@ -174,8 +174,8 @@ contract Token is ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 
         // approved balance check
-        if (allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balances[_from] &gt;= _value ) {
+        if (allowances[_from][msg.sender] >= _value &&
+            balances[_from] >= _value ) {
 
             // hit approved amount
             allowances[_from][msg.sender] -= _value;
@@ -184,8 +184,8 @@ contract Token is ERC20 {
             balances[_from] -= _value;
             balances[_to] += _value;
 
-            // push new holder if _value &gt; 0
-            if (_value &gt; 0 &amp;&amp; index[_to] == 0) {
+            // push new holder if _value > 0
+            if (_value > 0 && index[_to] == 0) {
                 index[_to] = holders.push(_to);
             }
 
@@ -248,16 +248,16 @@ contract Token is ERC20 {
 
 
 /**
- * @title Cat&#39;s Token, miaow!!!
+ * @title Cat's Token, miaow!!!
  *
- * @dev Defines token with name &quot;Cat&#39;s Token&quot;, symbol &quot;CTS&quot;
+ * @dev Defines token with name "Cat's Token", symbol "CTS"
  * and 3 digits after the point
  */
-contract Cat is Token(&quot;Cat&#39;s Token&quot;, &quot;CTS&quot;, 3), Owned {
+contract Cat is Token("Cat's Token", "CTS", 3), Owned {
 
     /**
      * @dev Emits specified number of tokens. Only owner can emit.
-     * Emitted tokens are credited to owner&#39;s account
+     * Emitted tokens are credited to owner's account
      *
      * @param _value number of emitting tokens
      * @return true if emission succeeded, false otherwise
@@ -265,7 +265,7 @@ contract Cat is Token(&quot;Cat&#39;s Token&quot;, &quot;CTS&quot;, 3), Owned {
     function emit(uint256 _value) onlyOwner returns (bool) {
 
         // overflow check
-        assert(totalSupply + _value &gt;= totalSupply);
+        assert(totalSupply + _value >= totalSupply);
 
         // emission
         totalSupply += _value;

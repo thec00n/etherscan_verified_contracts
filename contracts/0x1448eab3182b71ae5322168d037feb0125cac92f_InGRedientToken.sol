@@ -1,14 +1,14 @@
 pragma solidity ^0.4.18;
 // ----------------------------------------------------------------------------
 // rev rbs eryk 180325
-// &#39;IGR&#39; &#39;InGRedient Token with Fixed Supply Token&#39;  contract
+// 'IGR' 'InGRedient Token with Fixed Supply Token'  contract
 //
 // Symbol      : IGR
 // Name        : InGRedient Token -based on ER20 wiki- Example Fixed Supply Token
 // Total supply: 1,000,000.000000000000000000
 // Decimals    : 3
 //
-// (c) Erick &amp; <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0f2c9c3c1d2c4cf8ee2cfd2c7c5d3e0d5c6c1c2c38ec5c4d58ec2d2">[email&#160;protected]</a>
+// (c) Erick & <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0f2c9c3c1d2c4cf8ee2cfd2c7c5d3e0d5c6c1c2c38ec5c4d58ec2d2">[email protected]</a>
 // ----------------------------------------------------------------------------
 
 
@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -29,7 +29,7 @@ library SafeMath {
     require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
     }
 }
@@ -103,16 +103,16 @@ string public  name;
 uint8 public decimals;
 uint public _totalSupply;
 
-mapping(address =&gt; uint) balances;
-mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+mapping(address => uint) balances;
+mapping(address => mapping(address => uint)) allowed;
 
 
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
 function InGRedientToken() public {
-    symbol = &quot;IGR&quot;;
-    name = &quot;InGRedientToken&quot;;
+    symbol = "IGR";
+    name = "InGRedientToken";
     decimals = 3; //kg is the reference unit but grams is often also used
     _totalSupply = 1000000000000000000000 * 10**uint(decimals);
     balances[owner] = _totalSupply;
@@ -137,7 +137,7 @@ function balanceOf(address tokenOwner) public constant returns (uint balance) {
 
 // ------------------------------------------------------------------------
 // Token owner can approve for `spender` to transferFrom(...) `tokens`
-// from the token owner&#39;s account
+// from the token owner's account
 //
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 // recommends that there are no checks for the approval double-spend attack
@@ -150,8 +150,8 @@ function approve(address spender, uint tokens) public returns (bool success) {
 }
 
 // ------------------------------------------------------------------------
-// Transfer the balance from token owner&#39;s account to `to` account
-// - Owner&#39;s account must have sufficient balance to transfer
+// Transfer the balance from token owner's account to `to` account
+// - Owner's account must have sufficient balance to transfer
 // - 0 value transfers are allowed
 // ------------------------------------------------------------------------
 function transfer(address to, uint tokens) public returns (bool success) {
@@ -181,7 +181,7 @@ return true;
 
 // ------------------------------------------------------------------------
 // Returns the amount of tokens approved by the owner that can be
-// transferred to the spender&#39;s account
+// transferred to the spender's account
 // ------------------------------------------------------------------------
 function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
 return allowed[tokenOwner][spender];
@@ -190,7 +190,7 @@ return allowed[tokenOwner][spender];
 
 // ------------------------------------------------------------------------
 // Token owner can approve for `spender` to transferFrom(...) `tokens`
-// from the token owner&#39;s account. The `spender` contract function
+// from the token owner's account. The `spender` contract function
 // `receiveApproval(...)` is then executed
 // ------------------------------------------------------------------------
 function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -201,7 +201,7 @@ return true;
 }
 
 // ------------------------------------------------------------------------
-// Don&#39;t accept ETH
+// Don't accept ETH
 // ------------------------------------------------------------------------
 function () public payable {
 revert();
@@ -225,7 +225,7 @@ event  FarmerRequestedCertificate(address owner, address certAuth, uint tokens);
 
 // --------------------------------------------------------------------------------------------------
 // routine 10- allows for sale of ingredients along with the respective IGR token transfer ( with url)
-//implementa&#231;&#227;o b&#225;sica da rotina 10  do farmer requests Certicate
+//implementação básica da rotina 10  do farmer requests Certicate
 // --------------------------------------------------------------------------------------------------
 function farmerRequestCertificate(address _certAuth, uint _tokens, string _product,string _IngValueProperty, string _localGPSProduction, uint _dateProduction ) public returns (bool success) {
 // falta implementar uma verif se o end certAuth foi cadastradao anteriormente
@@ -268,7 +268,7 @@ function sellsIngrWithoutDepletion(address to, uint tokens,string _url) public r
 function sellsIntermediateGoodWithDepletion(address to, uint tokens,string _url,uint out2inIngredientPercentage ) public returns (bool success) {
     string memory url=_url; // keep the url of hte InGRedient for later transfer
     //allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(tokens);// falta matar a parte depleted ....depois fazemos
-    require (out2inIngredientPercentage &lt;= 100); // verificar possivel erro se este valor for negativo ou maior que 100(%)
+    require (out2inIngredientPercentage <= 100); // verificar possivel erro se este valor for negativo ou maior que 100(%)
     transfer(to, tokens*out2inIngredientPercentage/100);
     return true;
 }
@@ -281,8 +281,8 @@ function genAddressFromGTIN13date(string _GTIN13,string _YYMMDD) constant return
     }
 
 // ------------------------------------------------------------------------
-//  transferAndWriteUrl- Transfer the balance from token owner&#39;s account to `to` account
-// - Owner&#39;s account must have sufficient balance to transfer
+//  transferAndWriteUrl- Transfer the balance from token owner's account to `to` account
+// - Owner's account must have sufficient balance to transfer
 // - 0 value transfers are allowed
 // since the -url is passed to the function we achieve that this data be written to the block..nothing else needed
 // ------------------------------------------------------------------------
@@ -304,7 +304,7 @@ function comminglerSellsProductSKUWithProRataIngred(address _to, uint _numSKUsSo
         string memory url=_url; // keep the url of hte InGRedient for later transfer
         address c= genAddressFromGTIN13date( _GTIN13, _YYMMDD);//writes to the blockchain address composed of GTIN-13+YYMMDD the qtty IGR in one SKU
         transferAndWriteUrl(c, _qttyIGRinLLSKU, _url);
-        require (_qttyIGRinLLSKU &gt;0); // qtty of Ingredient may not be negative nor zero 
+        require (_qttyIGRinLLSKU >0); // qtty of Ingredient may not be negative nor zero 
         transferAndWriteUrl(_to, (_numSKUsSold-1)*_qttyIGRinLLSKU,_url);// records the transfer of custody of the qtty of SKU each with qttyIGRinLLSKU
         return true;
     }

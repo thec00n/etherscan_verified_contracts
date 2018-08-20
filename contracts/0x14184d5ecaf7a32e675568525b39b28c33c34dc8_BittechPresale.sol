@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -149,7 +149,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
     
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
   uint256 totalSupply_;
   
   function totalSupply() public view returns (uint256) {
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
   
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -197,9 +197,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -211,13 +211,13 @@ contract BurnableToken is BasicToken {
 
 contract StandardToken is ERC20, BurnableToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -251,8 +251,8 @@ contract StandardToken is ERC20, BurnableToken {
 
 contract BittechToken is StandardToken {
 
-  string constant public name = &quot;Bittech Token&quot;;
-  string constant public symbol = &quot;BTECH&quot;;
+  string constant public name = "Bittech Token";
+  string constant public symbol = "BTECH";
   uint256 constant public decimals = 18;
 
   address constant public bountyWallet = 0x8E8d4cdADbc027b192DfF91c77382521B419E5A2;
@@ -305,15 +305,15 @@ contract BittechToken is StandardToken {
 
   function viewTeamTokens() public view returns (uint256) {
 
-    if (block.number &gt;= startTime.add(yearSeconds.div(secsPerBlock))) {
+    if (block.number >= startTime.add(yearSeconds.div(secsPerBlock))) {
       return 3000000;
     }
 
-    if (block.number &gt;= startTime.add(yearSeconds.div(secsPerBlock).mul(2))) {
+    if (block.number >= startTime.add(yearSeconds.div(secsPerBlock).mul(2))) {
       return 6000000;
     }
 
-    if (block.number &gt;= startTime.add(yearSeconds.div(secsPerBlock).mul(3))) {
+    if (block.number >= startTime.add(yearSeconds.div(secsPerBlock).mul(3))) {
       return 9000000;
     }
 
@@ -321,7 +321,7 @@ contract BittechToken is StandardToken {
 
   function getTeamTokens(uint256 _tokens) public onlyTeam {
     uint256 tokens = _tokens.mul(10 ** decimals);
-    require(withdrawTokens.add(tokens) &lt;= viewTeamTokens().mul(10 ** decimals));
+    require(withdrawTokens.add(tokens) <= viewTeamTokens().mul(10 ** decimals));
     transfer(teamWallet, tokens);
     emit Transfer(this, teamWallet, tokens);
     withdrawTokens = withdrawTokens.add(tokens);
@@ -333,8 +333,8 @@ contract BittechPresale is Pausable {
     using SafeMath for uint256;
 
     BittechToken public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint256) public balanceOfUSD;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public balanceOfUSD;
     uint256 constant public tokenHardCap = 5000000000000000000000000; // 5 mln tokens
     uint256 constant public decim = 1000000000000000000; // 10 ** 18
     uint256 public tokensRaised = 0;
@@ -363,16 +363,16 @@ contract BittechPresale is Pausable {
     }
 
     function getBonus(address investor) public view returns (uint256) {
-        if (balanceOfUSD[investor] &lt;= 10000) return 100;
-        else if (balanceOfUSD[investor] &lt;= 30000) return 110;
-        else if (balanceOfUSD[investor] &lt;= 50000) return 120;
-        else if (balanceOfUSD[investor] &lt;= 100000) return 130;
+        if (balanceOfUSD[investor] <= 10000) return 100;
+        else if (balanceOfUSD[investor] <= 30000) return 110;
+        else if (balanceOfUSD[investor] <= 50000) return 120;
+        else if (balanceOfUSD[investor] <= 100000) return 130;
         else return 140;
     }
 
     function buy(address buyer) whenNotPaused whenNotFinished public payable {
         require(buyer != address(0));
-        require(msg.value.mul(ETHUSD) &gt;= minimalPriceUSD.mul(decim).div(1000));
+        require(msg.value.mul(ETHUSD) >= minimalPriceUSD.mul(decim).div(1000));
         
         uint256 tokens = msg.value.mul(ETHUSD).mul(getBonus(buyer)).mul(tokenPricePerUSD).div(100).div(100);
         tokenReward.transfer(buyer, tokens);
@@ -382,7 +382,7 @@ contract BittechPresale is Pausable {
 
         tokensRaised = tokensRaised.add(tokens);
 
-        if (tokensRaised &gt;= tokenHardCap) {
+        if (tokensRaised >= tokenHardCap) {
             presaleFinished = true;
             uint256 tokenBalance = tokenReward.balanceOf(address(this));
             tokenReward.burn(tokenBalance);

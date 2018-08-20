@@ -13,7 +13,7 @@ contract usingOwnership {
   }
 
   function Withdraw(uint _amount) onlyOwner public {
-    if (_amount &gt; this.balance)
+    if (_amount > this.balance)
       _amount = this.balance;
     contract_owner.transfer(_amount);
   }
@@ -38,13 +38,13 @@ contract usingCanvasBoundaries {
   }
 
   function max_index() internal view returns(uint m_index) {
-    if (block.number &gt; max_block_number)
+    if (block.number > max_block_number)
       return max_max_index;
     uint delta = block.number - g_block;
     return delta +
-    ((block.number &lt;= halving[0]) ? delta : halving[0] - g_block) +
-    ((block.number &lt;= halving[1]) ? delta : halving[1] - g_block) +
-    ((block.number &lt;= halving[2]) ? delta : halving[2] - g_block);
+    ((block.number <= halving[0]) ? delta : halving[0] - g_block) +
+    ((block.number <= halving[1]) ? delta : halving[1] - g_block) +
+    ((block.number <= halving[2]) ? delta : halving[2] - g_block);
   }
 
   function HalvingInfo() public view returns(uint genesis_block, uint[] halving_array) {
@@ -61,21 +61,21 @@ contract Etherpixels is usingOwnership, usingCanvasBoundaries {
     address owner;
   }
   
-  mapping(uint =&gt; Pixel) private pixels;
+  mapping(uint => Pixel) private pixels;
 
   event PixelPainted(uint i, address new_owner, address old_owner, uint price, bytes3 new_color);
   event PixelUnavailable(uint i, address new_owner, uint price, bytes3 new_color);
   
   function Paint(uint _index, bytes3 _color) public payable {
-    require(_index &lt;= max_index());
+    require(_index <= max_index());
     paint_pixel(_index, _color, msg.value);
   }
 
   function BatchPaint(uint8 _batch_size, uint[] _index, bytes3[] _color, uint[] _paid) public payable {
     uint remaining = msg.value;
     uint m_i = max_index();
-    for(uint8 i = 0; i &lt; _batch_size; i++) {
-      require(remaining &gt;= _paid[i] &amp;&amp; _index[i] &lt;= m_i);
+    for(uint8 i = 0; i < _batch_size; i++) {
+      require(remaining >= _paid[i] && _index[i] <= m_i);
       paint_pixel(_index[i], _color[i], _paid[i]);
       remaining -= _paid[i];
     }
@@ -86,7 +86,7 @@ contract Etherpixels is usingOwnership, usingCanvasBoundaries {
   }
 
   function LowerStartingPrice(uint _new_starting_price) onlyOwner public {
-    require(_new_starting_price &lt; starting_price);
+    require(_new_starting_price < starting_price);
     starting_price = _new_starting_price;
   }
   
@@ -97,10 +97,10 @@ contract Etherpixels is usingOwnership, usingCanvasBoundaries {
     }
     else {
       uint current_price = p.price == 0 ? starting_price : uint(p.price);
-      if (_paid &lt; current_price * 11 / 10)
+      if (_paid < current_price * 11 / 10)
         PixelUnavailable(_index, msg.sender, current_price, _color);
       else {
-        if (_paid &gt; current_price * 2)
+        if (_paid > current_price * 2)
           _paid = current_price * 2;
         p.price = uint96(_paid);
         require(p.price == _paid); /* casting guard */ 

@@ -11,7 +11,7 @@ pragma solidity ^0.4.21;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 contract DSAuthority {
     function canCall(
@@ -80,14 +80,14 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 contract DSRoles is DSAuth, DSAuthority
 {
-    mapping(address=&gt;bool) _root_users;
-    mapping(address=&gt;bytes32) _user_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bytes32)) _capability_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bool)) _public_capabilities;
+    mapping(address=>bool) _root_users;
+    mapping(address=>bytes32) _user_roles;
+    mapping(address=>mapping(bytes4=>bytes32)) _capability_roles;
+    mapping(address=>mapping(bytes4=>bool)) _public_capabilities;
 
     function getUserRoles(address who)
         public
@@ -128,7 +128,7 @@ contract DSRoles is DSAuth, DSAuthority
     {
         bytes32 roles = getUserRoles(who);
         bytes32 shifted = bytes32(uint256(uint256(2) ** uint256(role)));
-        return bytes32(0) != roles &amp; shifted;
+        return bytes32(0) != roles & shifted;
     }
 
     function canCall(address caller, address code, bytes4 sig)
@@ -141,7 +141,7 @@ contract DSRoles is DSAuth, DSAuthority
         } else {
             bytes32 has_roles = getUserRoles(caller);
             bytes32 needs_one_of = getCapabilityRoles(code, sig);
-            return bytes32(0) != has_roles &amp; needs_one_of;
+            return bytes32(0) != has_roles & needs_one_of;
         }
     }
 
@@ -165,7 +165,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _user_roles[who] = last_roles | shifted;
         } else {
-            _user_roles[who] = last_roles &amp; BITNOT(shifted);
+            _user_roles[who] = last_roles & BITNOT(shifted);
         }
     }
 
@@ -185,7 +185,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _capability_roles[code][sig] = last_roles | shifted;
         } else {
-            _capability_roles[code][sig] = last_roles &amp; BITNOT(shifted);
+            _capability_roles[code][sig] = last_roles & BITNOT(shifted);
         }
 
     }

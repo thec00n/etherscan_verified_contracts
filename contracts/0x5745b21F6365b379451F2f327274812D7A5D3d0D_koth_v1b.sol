@@ -44,25 +44,25 @@ contract koth_v1b {
     }
 
     function () payable public {
-        // Current KOTH can&#39;t bet over themselves
+        // Current KOTH can't bet over themselves
         if (msg.sender == koth) {
             return;
         }
 
-        // We&#39;re past the block target, but new game hasn&#39;t been activated
-        if (lastBlock &gt; 0 &amp;&amp; block.number &gt; lastBlock) {
+        // We're past the block target, but new game hasn't been activated
+        if (lastBlock > 0 && block.number > lastBlock) {
             msg.sender.transfer(msg.value);
             return;
         }
 
         // Check for minimum bet (at least minRaise over current highestBet)
-        if (msg.value &lt; minBet) {
+        if (msg.value < minBet) {
             msg.sender.transfer(msg.value);
             return;
         }
 
         // Check for maximum bet
-        if (msg.value &gt; maxBet) {
+        if (msg.value > maxBet) {
             msg.sender.transfer(msg.value);
             return;
         }
@@ -75,7 +75,7 @@ contract koth_v1b {
 
         // New bets
         minBet = highestBet + minRaise;
-        if (pot &lt; 1 ether) {
+        if (pot < 1 ether) {
             maxBet = 3 * pot;
         } else {
             maxBet = 5 * pot / 4;
@@ -84,7 +84,7 @@ contract koth_v1b {
         // Equation expects pot to be in Ether
         uint potEther = pot/1000000000000000000;
         uint blocksRemaining = (potEther ** 2)/2 - 8*potEther + 37;
-        if (blocksRemaining &lt; 6) {
+        if (blocksRemaining < 6) {
             blocksRemaining = 3;
         }
 
@@ -107,7 +107,7 @@ contract koth_v1b {
 
     // Called to reward current KOTH winner and start new game
     function rewardKoth() public {
-        if (msg.sender == feeAddress &amp;&amp; lastBlock &gt; 0 &amp;&amp; block.number &gt; lastBlock) {
+        if (msg.sender == feeAddress && lastBlock > 0 && block.number > lastBlock) {
             uint fee = pot / 20; // 5%
             KothWin(gameId, betId, koth, highestBet, pot, fee, firstBlock, lastBlock);
 
@@ -117,7 +117,7 @@ contract koth_v1b {
             winner.transfer(netPot);
 
             // Make sure we never go below minPot
-            if (this.balance - fee &gt;= minPot) {
+            if (this.balance - fee >= minPot) {
                 feeAddress.transfer(fee);
             }
         }

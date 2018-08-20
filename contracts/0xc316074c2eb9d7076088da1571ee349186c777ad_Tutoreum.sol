@@ -7,19 +7,19 @@ pragma solidity ^0.4.18;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -74,7 +74,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -133,9 +133,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -143,7 +143,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -152,7 +152,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -166,7 +166,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -184,7 +184,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -215,7 +215,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -226,8 +226,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -241,7 +241,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -290,7 +290,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -319,9 +319,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -374,7 +374,7 @@ contract PeriodicReleaseLock {
     }
 
     uint256 public totalFrozen;
-    mapping (address =&gt; FrozenStatus) public frozenStatuses;
+    mapping (address => FrozenStatus) public frozenStatuses;
 
     // time period between frozen and first release
     uint256 public firstReleasePeriod;
@@ -382,8 +382,8 @@ contract PeriodicReleaseLock {
     uint256 public regularReleasePeriod;
 
     function PeriodicReleaseLock(ERC20Basic _token, uint256 _firstReleasePeriod, uint256 _regularReleasePeriod) public {
-        require(_firstReleasePeriod &gt;= 1 seconds);
-        require(_regularReleasePeriod &gt;= 1 seconds);
+        require(_firstReleasePeriod >= 1 seconds);
+        require(_regularReleasePeriod >= 1 seconds);
 
         token = _token;
         firstReleasePeriod = _firstReleasePeriod;
@@ -405,8 +405,8 @@ contract PeriodicReleaseLock {
      */
     function freeze(address _target, uint256 _frozenAmount, uint256 _releaseAmount) byToken public returns (bool) {
         require(_target != 0x0);
-        require(_frozenAmount &gt; 0);
-        require(_releaseAmount &lt; _frozenAmount);
+        require(_frozenAmount > 0);
+        require(_releaseAmount < _frozenAmount);
 
         totalFrozen = totalFrozen.add(_frozenAmount);
 
@@ -428,7 +428,7 @@ contract PeriodicReleaseLock {
         address target = msg.sender;
 
         FrozenStatus storage frozenStatus = frozenStatuses[target];
-        require(frozenStatus.frozenAmount &gt; 0);
+        require(frozenStatus.frozenAmount > 0);
 
         uint256 actualLastReleaseTimestamp;
 
@@ -438,7 +438,7 @@ contract PeriodicReleaseLock {
             actualLastReleaseTimestamp = frozenStatus.lastReleaseTimestamp + regularReleasePeriod;
         }
 
-        require(now &gt;= actualLastReleaseTimestamp);
+        require(now >= actualLastReleaseTimestamp);
         frozenStatus.lastReleaseTimestamp = actualLastReleaseTimestamp;
 
         uint256 actualReleaseAmount = Math.min256(frozenStatus.frozenAmount, frozenStatus.releaseAmount);
@@ -458,7 +458,7 @@ contract PeriodicReleaseLock {
     */
     function missingTokensFallback() public {
         uint256 missingTokens = token.balanceOf(this).sub(totalFrozen);
-        require(missingTokens &gt; 0);
+        require(missingTokens > 0);
 
         TokenWithOwner tokenWithOwner = TokenWithOwner(token);
 
@@ -467,8 +467,8 @@ contract PeriodicReleaseLock {
 }
 
 contract Tutoreum is Ownable, StandardToken, BurnableToken {
-    string public constant name = &quot;Ecotopia&quot;;
-    string public constant symbol = &quot;ECO&quot;;
+    string public constant name = "Ecotopia";
+    string public constant symbol = "ECO";
     uint8 public constant decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 20000000000 * (10 ** uint256(decimals));
@@ -482,15 +482,15 @@ contract Tutoreum is Ownable, StandardToken, BurnableToken {
     function transferAndFreeze(address _to, PeriodicReleaseLock _lock, uint256 _transferAmount, uint256 _frozenAmount, uint256 _releaseAmount) public {
         require(_lock.token() == this);
 
-        if (_transferAmount &gt; 0) {
+        if (_transferAmount > 0) {
             assert(transfer(_to, _transferAmount));
         }
 
-        if (_frozenAmount &gt; 0) {
+        if (_frozenAmount > 0) {
             assert(transfer(_lock, _frozenAmount));
             assert(_lock.freeze(_to, _frozenAmount, _releaseAmount));
 
-            assert(balances[_lock] &gt;= _lock.totalFrozen());
+            assert(balances[_lock] >= _lock.totalFrozen());
         }
     }
 }

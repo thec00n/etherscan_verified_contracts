@@ -25,7 +25,7 @@ pragma solidity ^0.4.21;
  * technology. For further information: modular.network
  *
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -43,7 +43,7 @@ library LinkedListLib {
     bool constant NEXT = true;
     
     struct LinkedList{
-        mapping (uint256 =&gt; mapping (bool =&gt; uint256)) list;
+        mapping (uint256 => mapping (bool => uint256)) list;
     }
 
     /// @dev returns true if the list exists
@@ -67,7 +67,7 @@ library LinkedListLib {
         internal
         view returns (bool)
     {
-        if (self.list[_node][PREV] == HEAD &amp;&amp; self.list[_node][NEXT] == HEAD) {
+        if (self.list[_node][PREV] == HEAD && self.list[_node][NEXT] == HEAD) {
             if (self.list[HEAD][NEXT] == _node) {
                 return true;
             } else {
@@ -123,7 +123,7 @@ library LinkedListLib {
     /// @param _node an existing node to search from, e.g. HEAD.
     /// @param _value value to seek
     /// @param _direction direction to seek in
-    //  @return next first node beyond &#39;_node&#39; in direction `_direction`
+    //  @return next first node beyond '_node' in direction `_direction`
     function getSortedSpot(LinkedList storage self, uint256 _node, uint256 _value, bool _direction)
         internal view returns (uint256)
     {
@@ -132,7 +132,7 @@ library LinkedListLib {
         bool exists;
         uint256 next;
         (exists,next) = getAdjacent(self, _node, _direction);
-        while  ((next != 0) &amp;&amp; (_value != next) &amp;&amp; ((_value &lt; next) != _direction)) next = self.list[next][_direction];
+        while  ((next != 0) && (_value != next) && ((_value < next) != _direction)) next = self.list[next][_direction];
         return next;
     }
     
@@ -141,7 +141,7 @@ library LinkedListLib {
     /// @param _node an existing node to search from, e.g. HEAD.
     /// @param _value value to seek
     /// @param _direction direction to seek in
-    //  @return next first node beyond &#39;_node&#39; in direction `_direction`
+    //  @return next first node beyond '_node' in direction `_direction`
     function getSortedSpotByFunction(LinkedList storage self, uint256 _node, uint256 _value, bool _direction, function (uint, uint) view returns (bool) smallerComparator, int256 searchLimit)
         internal view returns (uint256 nextNodeIndex, bool found, uint256 sizeEnd)
     {
@@ -150,8 +150,8 @@ library LinkedListLib {
         bool exists;
         uint256 next;
         (exists,next) = getAdjacent(self, _node, _direction);
-        while  ((--searchLimit &gt;= 0) &amp;&amp; (next != 0) &amp;&amp; (_value != next) &amp;&amp; (smallerComparator(_value, next) != _direction)) next = self.list[next][_direction];
-        if(searchLimit &gt;= 0)
+        while  ((--searchLimit >= 0) && (next != 0) && (_value != next) && (smallerComparator(_value, next) != _direction)) next = self.list[next][_direction];
+        if(searchLimit >= 0)
             return (next, true, sizeEnd + 1);
         else return (0, false, sizeEnd); //We exhausted the search limit without finding a position!
     }
@@ -171,7 +171,7 @@ library LinkedListLib {
     /// @param _new  new node to insert
     /// @param _direction direction to insert node in
     function insert(LinkedList storage self, uint256 _node, uint256 _new, bool _direction) internal returns (bool) {
-        if(!nodeExists(self,_new) &amp;&amp; nodeExists(self,_node)) {
+        if(!nodeExists(self,_new) && nodeExists(self,_node)) {
             uint256 c = self.list[_node][_direction];
             createLink(self, _node, _new, _direction);
             createLink(self, _new, c, _direction);
@@ -214,7 +214,7 @@ library LinkedListLib {
 }
 
 // ----------------------------------------------------------------------------
-// &#39;Coke&#39; token contract
+// 'Coke' token contract
 //
 // Deployed to : 0xb9907e0151e8c5937f17d0721953cf1ea114528e
 // Symbol      : COKE
@@ -232,10 +232,10 @@ library LinkedListLib {
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a &amp;&amp; c &gt;= b);
+        require(c >= a && c >= b);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -243,15 +243,15 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
     
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -320,7 +320,7 @@ contract Owned {
 }
 
 // ----------------------------------------------------------------------------
-// Contract &quot;Recoverable&quot;, to allow a failsafe in case of user error, so users can recover their mistakenly sent Tokens or Eth
+// Contract "Recoverable", to allow a failsafe in case of user error, so users can recover their mistakenly sent Tokens or Eth
 // https://github.com/ethereum/dapp-bin/blob/master/library/recoverable.sol
 // ----------------------------------------------------------------------------
 contract Recoverable is Owned {
@@ -495,8 +495,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     //Needed setup for LinkedList needed for the market:
     using LinkedListLib for LinkedListLib.LinkedList;
@@ -508,17 +508,17 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     //Token specific properties:
 
     uint16 public constant yearOfProduction = 1997;
-    string public constant protectedDenominationOfOrigin = &quot;Colombia&quot;;
-    string public constant targetDemographics = &quot;The jet set / Top of the tops&quot;;
-    string public constant securityAudit = &quot;ExtremeAssets Team Ref: XN872 Approved&quot;;
+    string public constant protectedDenominationOfOrigin = "Colombia";
+    string public constant targetDemographics = "The jet set / Top of the tops";
+    string public constant securityAudit = "ExtremeAssets Team Ref: XN872 Approved";
     uint buyRatio; //Ratio to buy from the contract directly
     uint sellRatio; //Ratio to sell from the contract directly
     uint private _factorDecimalsEthToToken;
     uint constant undergroundBunkerReserves = 2500000000000;
-    mapping(address =&gt; uint) changeToReturn; //The change to return to senders (in ETH value (Wei))
-    mapping(address =&gt; uint) gainsToReceive; //The gains to receive (for sellers) (in ETH value (Wei))
-    mapping(address =&gt; uint) tastersReceived; //Number of tokens received as a taster for each address
-    mapping(address =&gt; uint) toFlush; //Keeps address to be flushed (the value stored is the number of the block of when coke can be really flushed from the system)
+    mapping(address => uint) changeToReturn; //The change to return to senders (in ETH value (Wei))
+    mapping(address => uint) gainsToReceive; //The gains to receive (for sellers) (in ETH value (Wei))
+    mapping(address => uint) tastersReceived; //Number of tokens received as a taster for each address
+    mapping(address => uint) toFlush; //Keeps address to be flushed (the value stored is the number of the block of when coke can be really flushed from the system)
 
     event Flushed(address indexed addr);
     event ChangeToReceiveGotten(address indexed addr, uint weiToReceive, uint totalWeiToReceive);
@@ -533,9 +533,9 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint quantity;
         address seller;
     }
-    mapping(address =&gt; mapping(address =&gt; SellOffer)) directOffers; //Direct offers
+    mapping(address => mapping(address => SellOffer)) directOffers; //Direct offers
     LinkedListLib.LinkedList blackMarketOffersSorted;
-    mapping(uint =&gt; SellOfferComplete) public blackMarketOffersMap;
+    mapping(uint => SellOfferComplete) public blackMarketOffersMap;
     uint marketOfferCounter = 0; //Counter that will increment for each offer
 
     uint directOffersComissionRatio = 100; //Ratio of the comission to buy from the contract directly (1%)
@@ -549,7 +549,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         address from;
     }
     LinkedListLib.LinkedList topMessagesSorted;
-    mapping(uint =&gt; Message) public topMessagesMap;
+    mapping(uint => Message) public topMessagesMap;
     uint topMessagesCounter = 0; //Counter that will increment for each message
     int32 maxMessagesTop = 20; //Maximum of top messages at the same time (will keep the N most payed messages)
     Message[] messages;
@@ -581,13 +581,13 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // Constructor
     // ------------------------------------------------------------------------
     function Coke() public {
-        symbol = &quot;Coke&quot;;
-        name = &quot;100 % Pure Cocaine&quot;;
+        symbol = "Coke";
+        name = "100 % Pure Cocaine";
         decimals = 6; //Micrograms
         _totalSupply = 875000000 * (uint(10)**decimals);
         _factorDecimalsEthToToken = uint(10)**(18);
-        buyRatio = 10 * (uint(10)**decimals); //10g &lt;- 1 ETH
-        sellRatio = 20 * (uint(10)**decimals); //20g -&gt; 1 ETH
+        buyRatio = 10 * (uint(10)**decimals); //10g <- 1 ETH
+        sellRatio = 20 * (uint(10)**decimals); //20g -> 1 ETH
         isRatio = true; //Buy and sell prices are ratios (and not simple prices) of how many tokens per 1 ETH
         balances[0] = _totalSupply - undergroundBunkerReserves;
         balances[msg.sender] = undergroundBunkerReserves;
@@ -616,7 +616,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     function transferInt(address from, address to, uint tokens, bool updateTasters) internal returns (bool success) {
         if(updateTasters) {
             //Check if sender has received tasters:
-            if(tastersReceived[from] &gt; 0) {
+            if(tastersReceived[from] > 0) {
                 uint tasterTokens = min(tokens, tastersReceived[from]);
                 tastersReceived[from] = safeSub(tastersReceived[from], tasterTokens);
                 if(to != address(0)) {
@@ -631,8 +631,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public whenNotPaused returns (bool success) {
@@ -641,7 +641,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -672,7 +672,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant whenNotPaused returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -681,7 +681,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public whenNotPaused returns (bool success) {
@@ -717,16 +717,16 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         //Calculate tokens corresponding to the Ether sent:
         uint numTokensToBuy = calculateTokensFromWei(msg.value, buyRatio);
         uint finalNumTokensToBuy = numTokensToBuy;
-        if(numTokensToBuy &gt; balances[0]) {
+        if(numTokensToBuy > balances[0]) {
             //Adjust number of tokens to buy, to those available in stock:
             finalNumTokensToBuy = balances[0];
             //Update change to return for this sender (in Wei):
-            //SAFETY CHECK: No need to use safeSub for (numTokensToBuy - finalNumTokensToBuy), as we already know that numTokensToBuy &gt; finalNumTokensToBuy!
+            //SAFETY CHECK: No need to use safeSub for (numTokensToBuy - finalNumTokensToBuy), as we already know that numTokensToBuy > finalNumTokensToBuy!
             uint ethValueFromTokens = calculateEthValueFromTokens(numTokensToBuy - finalNumTokensToBuy, buyRatio); //In Wei
             changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], ethValueFromTokens );
             emit ChangeToReceiveGotten(msg.sender, ethValueFromTokens, changeToReturn[msg.sender]);
         }
-        if(finalNumTokensToBuy &lt;= balances[0]) {
+        if(finalNumTokensToBuy <= balances[0]) {
             /*
             balances[0] = safeSub(balances[0], finalNumTokensToBuy);
             balances[msg.sender] = safeAdd(balances[msg.sender], finalNumTokensToBuy);
@@ -758,7 +758,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function retrieveChange() public noReentrancy whenNotInEmergencyProtectedMode returns (bool success) {
         uint change = changeToReturn[msg.sender];
-        if(change &gt; 0) {
+        if(change > 0) {
             //Set correct value of change before calling transfer method to avoid reentrance after sending to another contracts:
             changeToReturn[msg.sender] = 0;
             //Send corresponding ETH to sender:
@@ -774,8 +774,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function retrieveGains() public noReentrancy whenNotInEmergencyProtectedMode returns (bool success) {
         uint gains = gainsToReceive[msg.sender];
-        if(gains &gt; 0) {
-            //Set correct value of &quot;gains to receive&quot; before calling transfer method to avoid reentrance attack after possibly sending to another contract:
+        if(gains > 0) {
+            //Set correct value of "gains to receive" before calling transfer method to avoid reentrance attack after possibly sending to another contract:
             gainsToReceive[msg.sender] = 0;
             //Send corresponding ETH to sender:
             msg.sender.transfer(gains);
@@ -789,16 +789,16 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // - User supply of tokens must have enough balance
     // ------------------------------------------------------------------------
     function returnCoke(uint ugToReturn) public noReentrancy whenNotPaused whenNotFlushing returns (bool success) {
-        //require(ugToReturn &lt;= balances[msg.sender]); //Check balance of user
+        //require(ugToReturn <= balances[msg.sender]); //Check balance of user
         //Following require not needed anymore, will just pay the difference!
-        //require(ugToReturn &gt; tastersReceived[msg.sender]); //Check if the mg to return are greater than the ones received as a taster
+        //require(ugToReturn > tastersReceived[msg.sender]); //Check if the mg to return are greater than the ones received as a taster
         //Maximum possible number of mg to return, have to be lower than the balance of the user minus the tasters received:
         uint finalUgToReturnForEth = min(ugToReturn, safeSub(balances[msg.sender], tastersReceived[msg.sender])); //Subtract tasters received from the total amount to return
-        //require(finalUgToReturnForEth &lt;= balances[msg.sender]); //Check balance of user (No need for this extra check, as the minimum garantees at most the value of the balance[] to be returned)
+        //require(finalUgToReturnForEth <= balances[msg.sender]); //Check balance of user (No need for this extra check, as the minimum garantees at most the value of the balance[] to be returned)
         //Calculate tokens corresponding to the Ether sent:
         uint ethToReturn = calculateEthValueFromTokens(finalUgToReturnForEth, sellRatio); //Ethereum to return (in Wei)
         
-        if(ethToReturn &gt; 0) {
+        if(ethToReturn > 0) {
             //Will return eth in exchange for the coke!
             //Receive the coke:
             transfer(address(0), finalUgToReturnForEth);
@@ -850,7 +850,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     }
 
     function lengthAddresses() internal view returns (uint) {
-        return (firstAddress &gt; 0) ? lastAddresses.length : uint(lastAddress + 1);
+        return (firstAddress > 0) ? lastAddresses.length : uint(lastAddress + 1);
     }
 
     // ------------------------------------------------------------------------
@@ -859,7 +859,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // - User supply of tokens must have enough balance
     // ------------------------------------------------------------------------
     function letItRain(uint8 range, uint quantity) public returns (bool success) {
-        require(quantity &lt;= balances[msg.sender]);
+        require(quantity <= balances[msg.sender]);
         if(lengthAddresses() == 0) {
             emit NoAddressesAvailable();
             return false;
@@ -869,10 +869,10 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         byte posAddr = randomHash[1]; //Check position one (to 10, maximum) of randomHash to use for the position(s) in the addresses array
         byte howMany = randomHash[30]; //Check position 30 of randomHash to use for how many addresses base
         
-        uint8 posInt = (uint8(posAddr) + range * 2) % uint8(lengthAddresses()); //SAFETY CHECK: lengthAddresses() can&#39;t be greater than 256!!
-        uint8 howManyInt = uint8(howMany) % uint8(lengthAddresses()); //SAFETY CHECK: lengthAddresses() can&#39;t be greater than 256!!
-        howManyInt = howManyInt &gt; 10 ? 10 : howManyInt; //At maximum distribute to 10 addresses
-        howManyInt = howManyInt &lt; 2 ? 2 : howManyInt; //At minimum distribute to 2 addresses
+        uint8 posInt = (uint8(posAddr) + range * 2) % uint8(lengthAddresses()); //SAFETY CHECK: lengthAddresses() can't be greater than 256!!
+        uint8 howManyInt = uint8(howMany) % uint8(lengthAddresses()); //SAFETY CHECK: lengthAddresses() can't be greater than 256!!
+        howManyInt = howManyInt > 10 ? 10 : howManyInt; //At maximum distribute to 10 addresses
+        howManyInt = howManyInt < 2 ? 2 : howManyInt; //At minimum distribute to 2 addresses
         
         address addr;
         
@@ -889,10 +889,10 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             
             counter++;
             
-            //SAFETY CHECK: As the integer divisions are truncated (--&gt; (quant * howManyInt) &lt;= quantity (always) ), the following code is not needed:
+            //SAFETY CHECK: As the integer divisions are truncated (--> (quant * howManyInt) <= quantity (always) ), the following code is not needed:
             /*
             //we have to ensure, in case of uneven division, to just use at maximum the quantity specified by the user:
-            if(quantity &gt; quant) {
+            if(quantity > quant) {
                 quantity = quantity - quant;
             }
             else {
@@ -900,7 +900,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             }
             */
         }
-        while(quantity &gt; 0 &amp;&amp; counter &lt; howManyInt);
+        while(quantity > 0 && counter < howManyInt);
         
         return true;
     }
@@ -910,7 +910,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // The list of addresses should be gotten from the main ethereum, by checking for addresses used in the latest transactions.
     // ------------------------------------------------------------------------
     function setAddressesForRain(address[] memory addresses) public onlyOwner returns (bool success) {
-        require(addresses.length &lt;= uint(maxAddresses) &amp;&amp; addresses.length &gt; 0);
+        require(addresses.length <= uint(maxAddresses) && addresses.length > 0);
         lastAddresses = addresses;
         firstAddress = 0;
         lastAddress = int32(addresses.length) - 1;
@@ -928,7 +928,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // Will set the Maximum of addresses to be used for making it rain (Maximum of 255 Addresses)
     // ------------------------------------------------------------------------
     function setMaxAddresses(int32 _maxAddresses) public onlyOwner returns (bool success) {
-        require(_maxAddresses &gt; 0 &amp;&amp; _maxAddresses &lt; 256);
+        require(_maxAddresses > 0 && _maxAddresses < 256);
         maxAddresses = _maxAddresses;
         return true;
     }
@@ -1002,12 +1002,12 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function setMaxMarketOffers(int32 _maxMarketOffers) public onlyOwner returns (bool success) {
         uint blackMarketOffersSortedSize = blackMarketOffersSorted.sizeOf();
-        if(blackMarketOffersSortedSize &gt; uint(_maxMarketOffers)) {
+        if(blackMarketOffersSortedSize > uint(_maxMarketOffers)) {
             int32 diff = int32(blackMarketOffersSortedSize - uint(_maxMarketOffers));
-            //require(diff &lt; _maxMarketOffers);
-            require(diff &lt;= int32(blackMarketOffersSortedSize)); //SAFETY CHECK (recommended because of type conversions)!
-            //Do the needed number of Pops to clear the market offers list if _maxMarketOffers (new) &lt; maxMarketOffers (old)
-            while  (diff &gt; 0) {
+            //require(diff < _maxMarketOffers);
+            require(diff <= int32(blackMarketOffersSortedSize)); //SAFETY CHECK (recommended because of type conversions)!
+            //Do the needed number of Pops to clear the market offers list if _maxMarketOffers (new) < maxMarketOffers (old)
+            while  (diff > 0) {
                 uint lastOrder = blackMarketOffersSorted.pop(PREV); //Pops element from the Tail!
                 delete blackMarketOffersMap[lastOrder];
                 diff--;
@@ -1025,28 +1025,28 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     function calculateFactorFlushDifficulty(uint stash) internal pure returns (uint extraBlocks) {
         uint numBlocksToFlush = 10;
         uint16 factor;
-        if(stash &lt; 1000) {
+        if(stash < 1000) {
             factor = 1;
         }
-        else if(stash &lt; 5000) {
+        else if(stash < 5000) {
             factor = 2;
         }
-        else if(stash &lt; 10000) {
+        else if(stash < 10000) {
             factor = 3;
         }
-        else if(stash &lt; 100000) {
+        else if(stash < 100000) {
             factor = 4;
         }
-        else if(stash &lt; 1000000) {
+        else if(stash < 1000000) {
             factor = 5;
         }
-        else if(stash &lt; 10000000) {
+        else if(stash < 10000000) {
             factor = 10;
         }
-        else if(stash &lt; 100000000) {
+        else if(stash < 100000000) {
             factor = 50;
         }
-        else if(stash &lt; 1000000000) {
+        else if(stash < 1000000000) {
             factor = 500;
         }
         else {
@@ -1072,7 +1072,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // Throws away your stash (down the drain ;) ). It can take awhile to be completely flushed. You can send in 0.01 ether to speed up this process.
     // ------------------------------------------------------------------------
     function downTheDrain() public whenNotPaused payable returns (bool success) {
-        if(msg.value &lt; 0.01 ether) {
+        if(msg.value < 0.01 ether) {
             //No hurry, will use default method to flush the coke (will take some time)
             toFlush[msg.sender] = block.number + calculateFactorFlushDifficulty(balances[msg.sender]);
             return true;
@@ -1085,7 +1085,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function flush() public whenNotPaused returns (bool success) {
         //Current block number is already greater than the limit to be flushable?
-        if(block.number &gt;= toFlush[msg.sender]) {
+        if(block.number >= toFlush[msg.sender]) {
             return downTheDrainImmediate();
         }
         else return false;
@@ -1097,8 +1097,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function smallerPriceComparator(uint priceNew, uint nodeNext) internal view returns (bool success) {
         //When comparing ratios the smaller one will be the one with the greater ratio (cheaper price):
-        //return priceNew &lt; blackMarketOffersMap[nodeNext].price;
-        return priceNew &gt; blackMarketOffersMap[nodeNext].price; //If priceNew ratio is greater, it means it is a cheaper offer!
+        //return priceNew < blackMarketOffersMap[nodeNext].price;
+        return priceNew > blackMarketOffersMap[nodeNext].price; //If priceNew ratio is greater, it means it is a cheaper offer!
     }
     
     // ------------------------------------------------------------------------
@@ -1108,9 +1108,9 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // - Seller must have enough balance of tokens
     // ------------------------------------------------------------------------
     function sellToBlackMarket(uint quantity, uint priceRatio) public whenNotPaused whenNotFlushing returns (bool success, uint numOrderCreated) {
-        //require(quantity &lt;= balances[msg.sender]block.number &gt;= toFlush[msg.sender]);
+        //require(quantity <= balances[msg.sender]block.number >= toFlush[msg.sender]);
         //CHeck if user has sufficient balance to do a sell offer:
-        if(quantity &gt; balances[msg.sender]) {
+        if(quantity > balances[msg.sender]) {
             //Seller is missing funds: Abort order:
             emit OrderInsufficientBalance(msg.sender, quantity, balances[msg.sender]);
             return (false, 0);
@@ -1126,7 +1126,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         (nextSpot, foundPosition, sizeNow) = blackMarketOffersSorted.getSortedSpotByFunction(HEAD, priceRatio, NEXT, smallerPriceComparator, maxMarketOffers);
         if(foundPosition) {
             //Create new Sell Offer:
-            uint newNodeNum = ++marketOfferCounter; //SAFETY CHECK: Doesn&#39;t matter if we cycle again from MAX_INT to 0, as we have only 100 maximum offers at a time, so there will never be some overwriting of valid offers!
+            uint newNodeNum = ++marketOfferCounter; //SAFETY CHECK: Doesn't matter if we cycle again from MAX_INT to 0, as we have only 100 maximum offers at a time, so there will never be some overwriting of valid offers!
             blackMarketOffersMap[newNodeNum].quantity = quantity;
             blackMarketOffersMap[newNodeNum].price = priceRatio;
             blackMarketOffersMap[newNodeNum].seller = msg.sender;
@@ -1134,7 +1134,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             //Insert cheaper offer before nextSpot:
             blackMarketOffersSorted.insert(nextSpot, newNodeNum, PREV);
     
-            if(int32(sizeNow) &gt; maxMarketOffers) {
+            if(int32(sizeNow) > maxMarketOffers) {
                 //Delete the tail element so we can keep the same number of max market offers:
                 uint lastIndex = blackMarketOffersSorted.pop(PREV); //Pops and removes last element of the list!
                 delete blackMarketOffersMap[lastIndex];
@@ -1150,7 +1150,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     
     // ------------------------------------------------------------------------
     // Cancel order on the blackmarket to sell a certain quantity of coke at a certain price.
-    // If the seller has various order with the same quantity and priceRatio, and can put parameter &quot;continueAfterFirstMatch&quot; to true, 
+    // If the seller has various order with the same quantity and priceRatio, and can put parameter "continueAfterFirstMatch" to true, 
     // so it will continue and cancel all those black market orders.
     // ------------------------------------------------------------------------
     function cancelSellToBlackMarket(uint quantity, uint priceRatio, bool continueAfterFirstMatch) public whenNotPaused returns (bool success, uint numOrdersCanceled) {
@@ -1169,8 +1169,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             (exists, offerNodeIndex) = blackMarketOffersSorted.getAdjacent(offerNodeIndex, NEXT); //Get next node
             //Analyse current node, to see if it is the one to cancel:
             if(   blackMarketOffersMap[offerNodeIndexToProcess].seller == msg.sender 
-               &amp;&amp; blackMarketOffersMap[offerNodeIndexToProcess].quantity == quantity
-               &amp;&amp; blackMarketOffersMap[offerNodeIndexToProcess].price == priceRatio) {
+               && blackMarketOffersMap[offerNodeIndexToProcess].quantity == quantity
+               && blackMarketOffersMap[offerNodeIndexToProcess].price == priceRatio) {
                    //Cancel current offer:
                    blackMarketOffersSorted.remove(offerNodeIndexToProcess);
                    delete blackMarketOffersMap[offerNodeIndexToProcess];
@@ -1184,7 +1184,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             }
             
         }
-        while(offerNodeIndex != NULL &amp;&amp; exists &amp;&amp; (!matchFound || continueAfterFirstMatch));
+        while(offerNodeIndex != NULL && exists && (!matchFound || continueAfterFirstMatch));
         
         return (success, numOrdersCanceled);
     }
@@ -1197,7 +1197,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint fee = safeDiv(weiToBePayed, marketComissionRatio);
         uint valueForSeller = safeSub(weiToBePayed, fee);
 
-        //Update change values (seller will have to retrieve his/her gains by calling method &quot;retrieveGains&quot; to receive the Eth)
+        //Update change values (seller will have to retrieve his/her gains by calling method "retrieveGains" to receive the Eth)
         gainsToReceive[offerThisRound.seller] = safeAdd(gainsToReceive[offerThisRound.seller], valueForSeller);
         emit GainsGotten(offerThisRound.seller, valueForSeller, gainsToReceive[offerThisRound.seller]);
 
@@ -1210,7 +1210,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         bool forceRemovalOffer = false;
 
         //Check token balance of seller:
-        if(balances[offerThisRound.seller] &lt; quantityToCheck) {
+        if(balances[offerThisRound.seller] < quantityToCheck) {
             //Invalid offer now, user no longer has sufficient balance
             quantityToCheck = balances[offerThisRound.seller];
 
@@ -1220,7 +1220,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
 
         offerThisRound.quantity = quantityToCheck;
 
-        if(offerThisRound.quantity &gt; 0) {
+        if(offerThisRound.quantity > 0) {
             //Seller of this offer will receive his Ether:
 
             //Calculate and update gains:
@@ -1277,7 +1277,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         if(!exists) {
             //Abort buy from market!
             revert(); //Return Eth to buyer!
-            //Maybe in the future, put the buyer offer in a buyer&#39;s offers list!
+            //Maybe in the future, put the buyer offer in a buyer's offers list!
             //TODO: IMPROVEMENTS!
         }
         SellOfferComplete storage offer = blackMarketOffersMap[offerNodeIndex];
@@ -1287,13 +1287,13 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint quantityRound = 0;
 
         //When comparing ratios the smaller one will be the one with the greater ratio (cheaper price):
-        //if(offer.price &gt; priceRatioLimit) {
-        if(offer.price &lt; priceRatioLimit) {
+        //if(offer.price > priceRatioLimit) {
+        if(offer.price < priceRatioLimit) {
             //Abort buy from market! Not one sell offer is cheaper than the priceRatioLimit
             //BlackMarketNoOfferForPrice(priceRatioLimit);
             //return (false, 0);
             revert(); //Return Eth to buyer!
-            //Maybe in the future, put the buyer offer in a buyer&#39;s offers list!
+            //Maybe in the future, put the buyer offer in a buyer's offers list!
             //TODO: IMPROVEMENTS!
         }
         
@@ -1319,7 +1319,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             quantity = safeSub(quantity, quantityRound);
     
             //Check if buyer send enough balance to buy the orders:        
-            if(totalToBePayedWei &gt; msg.value) {
+            if(totalToBePayedWei > msg.value) {
                 emit OrderInsufficientPayment(msg.sender, totalToBePayedWei, msg.value);
                 //Abort transaction!:
                 revert(); //Revert transaction, so Eth send are not transferred, and go back to user!
@@ -1335,28 +1335,28 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     
                 //Check if next order is above the priceRatioLimit set by the buyer:            
                 //When comparing ratios the smaller one will be the one with the greater ratio (cheaper price):
-                //if(offer.price &gt; priceRatioLimit) {
-                if(offer.price &lt; priceRatioLimit) {
-                    //Abort buying more from the seller&#39;s market:
+                //if(offer.price > priceRatioLimit) {
+                if(offer.price < priceRatioLimit) {
+                    //Abort buying more from the seller's market:
                     abort = true;
-                    partial = true; //Partial buy order done! (no sufficient seller offer&#39;s below the priceRatioLimit)
-                    //Maybe in the future, put the buyer offer in a buyer&#39;s offers list!
+                    partial = true; //Partial buy order done! (no sufficient seller offer's below the priceRatioLimit)
+                    //Maybe in the future, put the buyer offer in a buyer's offers list!
                     //TODO: IMPROVEMENTS!
                 }
             }
             else {
-                //Abort buying more from the seller&#39;s market (the end was reached!):
+                //Abort buying more from the seller's market (the end was reached!):
                 abort = true;
             }
         }
-        while (exists &amp;&amp; quantity &gt; 0 &amp;&amp; !abort);
+        while (exists && quantity > 0 && !abort);
         //End Cycle through orders!
 
         //Final operations after checking all orders:
-        if(totalToBePayedWei &lt; msg.value) {
+        if(totalToBePayedWei < msg.value) {
             //Give change back to the buyer:
             //Return change to the buyer (sender of the message in this case)
-            changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], msg.value - totalToBePayedWei); //SAFETY CHECK: No need to use safeSub, as we already know that &quot;msg.value&quot; &gt; &quot;totalToBePayedWei&quot;!
+            changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], msg.value - totalToBePayedWei); //SAFETY CHECK: No need to use safeSub, as we already know that "msg.value" > "totalToBePayedWei"!
             emit ChangeToReceiveGotten(msg.sender, msg.value - totalToBePayedWei, changeToReturn[msg.sender]);
         }
 
@@ -1374,7 +1374,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         (exists, prev, elem) = blackMarketOffersSorted.getNode(HEAD);
         if(exists) {
             uint size = blackMarketOffersSorted.sizeOf();
-            for (uint i = 0; i &lt; size; i++) {
+            for (uint i = 0; i < size; i++) {
               r[i] = elem;
               (exists, elem) = blackMarketOffersSorted.getAdjacent(elem, NEXT);
             }
@@ -1393,7 +1393,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint elem;
         (exists, prev, elem) = blackMarketOffersSorted.getNode(HEAD);
         if(exists) {
-            for (uint i = 0; i &lt; blackMarketOffersSorted.sizeOf(); i++) {
+            for (uint i = 0; i < blackMarketOffersSorted.sizeOf(); i++) {
                 SellOfferComplete storage offer = blackMarketOffersMap[elem];
                 r[i].quantity = offer.quantity;
                 r[i].price = offer.price;
@@ -1411,7 +1411,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         (exists, prev, elem) = blackMarketOffersSorted.getNode(HEAD);
         if(exists) {
             uint size = blackMarketOffersSorted.sizeOf();
-            for (uint i = 0; i &lt; size; i++) {
+            for (uint i = 0; i < size; i++) {
                 SellOfferComplete storage offer = blackMarketOffersMap[elem];
                 quantities[i] = offer.quantity;
                 prices[i] = offer.price;
@@ -1431,7 +1431,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         if(exists) {
             uint size = blackMarketOffersSorted.sizeOf();
             uint j = 0;
-            for (uint i = 0; i &lt; size; i++) {
+            for (uint i = 0; i < size; i++) {
                 SellOfferComplete storage offer = blackMarketOffersMap[elem];
                 if(offer.seller == msg.sender) {
                     quantities[j] = offer.quantity;
@@ -1442,7 +1442,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
                 (exists, elem) = blackMarketOffersSorted.getAdjacent(elem, NEXT);
             }
         }
-        //quantities.length = j; //Memory Arrays can&#39;t be returned with dynamic size, we have to create arrays with a fixed size to be returned!
+        //quantities.length = j; //Memory Arrays can't be returned with dynamic size, we have to create arrays with a fixed size to be returned!
         //prices.length = j;
     }
 
@@ -1451,7 +1451,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // The price ratio is how much micrograms (ug) of material (tokens) the buyer will get per ETH (ug/ETH)
     // ------------------------------------------------------------------------
     function sellToConsumer(address consumer, uint quantity, uint priceRatio) public whenNotPaused whenNotFlushing returns (bool success) {
-        require(consumer != address(0) &amp;&amp; quantity &gt; 0 &amp;&amp; priceRatio &gt; 0);
+        require(consumer != address(0) && quantity > 0 && priceRatio > 0);
         //Mark offer to sell to consumer on registry:
         SellOffer storage offer = directOffers[msg.sender][consumer];
         offer.quantity = quantity;
@@ -1467,7 +1467,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     function cancelSellToConsumer(address consumer) public whenNotPaused returns (bool success) {
         //Check if order exists with the correct values:
         SellOffer memory sellOffer = directOffers[msg.sender][consumer];
-        if(sellOffer.quantity &gt; 0 || sellOffer.price &gt; 0) {
+        if(sellOffer.quantity > 0 || sellOffer.price > 0) {
             //We found matching sell to consumer, delete it to cancel it!
             delete directOffers[msg.sender][consumer];
             emit DirectOfferCancelled(msg.sender, consumer, sellOffer.quantity, sellOffer.price);
@@ -1506,8 +1506,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function buyFromTrusterDealer(address dealer, uint quantity, uint priceRatio) public payable noReentrancy whenNotPaused returns (bool success) {
         //Check up on offer:
-        require(directOffers[dealer][msg.sender].quantity &gt; 0 &amp;&amp; directOffers[dealer][msg.sender].price &gt; 0); //Offer exists?
-        if(quantity &gt; directOffers[dealer][msg.sender].quantity) {
+        require(directOffers[dealer][msg.sender].quantity > 0 && directOffers[dealer][msg.sender].price > 0); //Offer exists?
+        if(quantity > directOffers[dealer][msg.sender].quantity) {
             emit OrderQuantityMismatch(dealer, directOffers[dealer][msg.sender].quantity, quantity);
             changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], msg.value); //Operation aborted: The buyer can get its ether back by using retrieveChange().
             emit ChangeToReceiveGotten(msg.sender, msg.value, changeToReturn[msg.sender]);
@@ -1526,7 +1526,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint weiToBePayed = calculateEthValueFromTokens(quantity, priceRatio);
         
         //Check eth payment from buyer:
-        if(msg.value &lt; weiToBePayed) {
+        if(msg.value < weiToBePayed) {
             emit OrderInsufficientPayment(msg.sender, weiToBePayed, msg.value);
             changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], msg.value); //Operation aborted: The buyer can get its ether back by using retrieveChange().
             emit ChangeToReceiveGotten(msg.sender, msg.value, changeToReturn[msg.sender]);
@@ -1534,7 +1534,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         }
         
         //Check balance from seller:
-        if(quantity &gt; balances[dealer]) {
+        if(quantity > balances[dealer]) {
             //Seller is missing funds: Abort order:
             emit OrderInsufficientBalance(dealer, quantity, balances[dealer]);
             changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], msg.value); //Operation aborted: The buyer can get its ether back by using retrieveChange().
@@ -1543,13 +1543,13 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         }
         
         //Update balances of seller/buyer:
-        balances[dealer] = balances[dealer] - quantity; //SAFETY CHECK: No need to use safeSub, as we already know that &quot;balances[dealer]&quot; &gt;= &quot;quantity&quot;!
+        balances[dealer] = balances[dealer] - quantity; //SAFETY CHECK: No need to use safeSub, as we already know that "balances[dealer]" >= "quantity"!
         balances[msg.sender] = safeAdd(balances[msg.sender], quantity);
         emit Transfer(dealer, msg.sender, quantity);
 
         //Update direct offers registry:
-        if(quantity &lt; directOffers[dealer][msg.sender].quantity) {
-            //SAFETY CHECK: No need to use safeSub, as we already know that &quot;directOffers[dealer][msg.sender].quantity&quot; &gt; &quot;quantity&quot;!
+        if(quantity < directOffers[dealer][msg.sender].quantity) {
+            //SAFETY CHECK: No need to use safeSub, as we already know that "directOffers[dealer][msg.sender].quantity" > "quantity"!
             directOffers[dealer][msg.sender].quantity = directOffers[dealer][msg.sender].quantity - quantity;
         }
         else {
@@ -1562,7 +1562,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint fee = safeDiv(weiToBePayed, directOffersComissionRatio);
         uint valueForSeller = safeSub(weiToBePayed, fee);
         
-        //SAFETY CHECK: Possible Denial of Service, by putting a fallback function impossible to run: No problem! As this is a direct offer between two users, if it doesn&#39;t work the first time, the user can just ignore the offer!
+        //SAFETY CHECK: Possible Denial of Service, by putting a fallback function impossible to run: No problem! As this is a direct offer between two users, if it doesn't work the first time, the user can just ignore the offer!
         //SAFETY CHECK: No Reentrancy possible: Modifier active!
         //SAFETY CHECK: Balances are all updated before transfer, and offer is removed/updated too! Only change is updated later, which is good as user can only retrieve the funds after this operations finishes with success!
         dealer.transfer(valueForSeller);
@@ -1570,8 +1570,8 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         //Set change to the buyer if he sent extra eth:
         uint changeToGive = safeSub(msg.value, weiToBePayed);
 
-        if(changeToGive &gt; 0) {
-            //Update change values (user will have to retrieve the change calling method &quot;retrieveChange&quot; to receive the Eth)
+        if(changeToGive > 0) {
+            //Update change values (user will have to retrieve the change calling method "retrieveChange" to receive the Eth)
             changeToReturn[msg.sender] = safeAdd(changeToReturn[msg.sender], changeToGive);
             emit ChangeToReceiveGotten(msg.sender, changeToGive, changeToReturn[msg.sender]);
         }
@@ -1587,7 +1587,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // Comparator used to compare Eth payed for a message inside the top messages LinkedList
     // ------------------------------------------------------------------------
     function greaterPriceMsgComparator(uint valuePayedNew, uint nodeNext) internal view returns (bool success) {
-        return valuePayedNew &gt; (topMessagesMap[nodeNext].valuePayed);
+        return valuePayedNew > (topMessagesMap[nodeNext].valuePayed);
     }
     
     // ------------------------------------------------------------------------
@@ -1597,11 +1597,11 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function placeMessage(string message, bool anon) public payable whenNotPaused returns (bool success, uint numMsgTop) {
         uint msgSize = bytes(message).length;
-        if(msgSize &gt; maxCharactersMessage) { //Check number of bytes of message
+        if(msgSize > maxCharactersMessage) { //Check number of bytes of message
             //Message is bigger than maximum allowed: Reject message!
             emit ExceededMaximumMessageSize(msgSize, maxCharactersMessage);
             
-            if(msg.value &gt; 0) { //We have Eth to return, so we will return it!
+            if(msg.value > 0) { //We have Eth to return, so we will return it!
                 revert(); //Cancel transaction and Return Eth!
             }
             return (false, 0);
@@ -1619,7 +1619,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         if(foundPosition) {
 
             //Create new Message:
-            uint newNodeNum = ++topMessagesCounter; //SAFETY CHECK: Doesn&#39;t matter if we cycle again from MAX_INT to 0, as we have only 10/20/100 maximum messages at a time, so there will never be some overwriting of valid offers!
+            uint newNodeNum = ++topMessagesCounter; //SAFETY CHECK: Doesn't matter if we cycle again from MAX_INT to 0, as we have only 10/20/100 maximum messages at a time, so there will never be some overwriting of valid offers!
             topMessagesMap[newNodeNum].valuePayed = msg.value;
             topMessagesMap[newNodeNum].msg = message;
             topMessagesMap[newNodeNum].from = anon ? address(0) : msg.sender;
@@ -1627,7 +1627,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
             //Insert more expensive message before nextSpot:
             topMessagesSorted.insert(nextSpot, newNodeNum, PREV);
     
-            if(int32(sizeNow) &gt; maxMessagesTop) {
+            if(int32(sizeNow) > maxMessagesTop) {
                 //Delete the tail element so we can keep the same number of max top messages:
                 uint lastIndex = topMessagesSorted.pop(PREV); //Pops and removes last element of the list!
                 delete topMessagesMap[lastIndex];
@@ -1644,7 +1644,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     }
 
     function lengthMessages() internal view returns (uint) {
-        return (firstMsgGlobal &gt; 0) ? messages.length : uint(lastMsgGlobal + 1);
+        return (firstMsgGlobal > 0) ? messages.length : uint(lastMsgGlobal + 1);
     }
 
     function insertMessage(string message, bool anon) internal {
@@ -1654,7 +1654,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         newMsg.msg = message;
         newMsg.from = anon ? address(0) : msg.sender;
         
-        if(((lastMsgGlobal + 1) &gt;= int32(messages.length) &amp;&amp; int32(messages.length) &lt; maxMessagesGlobal)) {
+        if(((lastMsgGlobal + 1) >= int32(messages.length) && int32(messages.length) < maxMessagesGlobal)) {
             //Still have space in the messages array, add new message at the end:
             messages.push(newMsg);
             //lastMsgGlobal++;
@@ -1666,7 +1666,7 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         //Rotating indexes in case we reach the end of the array!
         uint sizeMessages = lengthMessages(); //lengthMessages() depends on lastMsgGlobal, se we have to keep a temporary copy first!
         lastMsgGlobal = (lastMsgGlobal + 1) % maxMessagesGlobal; 
-        if(lastMsgGlobal &lt;= firstMsgGlobal &amp;&amp; sizeMessages &gt; 0) {
+        if(lastMsgGlobal <= firstMsgGlobal && sizeMessages > 0) {
             firstMsgGlobal = (firstMsgGlobal + 1) % maxMessagesGlobal;
         }
         
@@ -1682,9 +1682,9 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         string memory ab = new string(_ba.length + _bb.length + _bc.length);
         bytes memory ba = bytes(ab);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) ba[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) ba[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) ba[k++] = _bc[i];
+        for (uint i = 0; i < _ba.length; i++) ba[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) ba[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) ba[k++] = _bc[i];
         return string(ba);
     }
 
@@ -1697,13 +1697,13 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         uint countMsg = lengthMessages(); //Take into account if messages was reset, and no new messages have been inserted until now!
         uint indexMsg = uint(firstMsgGlobal);
         bool first = true;
-        while(countMsg &gt; 0) {
+        while(countMsg > 0) {
             if(first) {
                 r = messages[indexMsg].msg;
                 first = false;
             }
             else {
-                r = strConcat(r, &quot; &lt;||&gt; &quot;, messages[indexMsg].msg);
+                r = strConcat(r, " <||> ", messages[indexMsg].msg);
             }
             
             indexMsg = (indexMsg + 1) % uint(maxMessagesGlobal);
@@ -1717,12 +1717,12 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // Will set the Maximum of Global Messages
     // ------------------------------------------------------------------------
     function setMaxMessagesGlobal(int32 _maxMessagesGlobal) public onlyOwner returns (bool success) {
-        if(_maxMessagesGlobal &lt; maxMessagesGlobal) {
+        if(_maxMessagesGlobal < maxMessagesGlobal) {
             //New value will be shorter than old value: reset values:
             //messages.clear(); //No need to clear the array completely (costs gas!): Just reinitialize the pointers!
-            //lastMsgGlobal = firstMsgGlobal &gt; 0 ? int32(messages.length) - 1 : lastMsgGlobal; //The last position will specify the real size of the array, that is, until the firstMsgGlobal is greater than zero, at that time we know the array is full, so the real size is the size of the complete array!
+            //lastMsgGlobal = firstMsgGlobal > 0 ? int32(messages.length) - 1 : lastMsgGlobal; //The last position will specify the real size of the array, that is, until the firstMsgGlobal is greater than zero, at that time we know the array is full, so the real size is the size of the complete array!
             lastMsgGlobal = int32(lengthMessages()) - 1; //The last position will specify the real size of the array, that is, until the firstMsgGlobal is greater than zero, at that time we know the array is full, so the real size is the size of the complete array!
-            if(lastMsgGlobal != -1 &amp;&amp; lastMsgGlobal &gt; (int32(_maxMessagesGlobal) - 1)) {
+            if(lastMsgGlobal != -1 && lastMsgGlobal > (int32(_maxMessagesGlobal) - 1)) {
                 lastMsgGlobal = int32(_maxMessagesGlobal) - 1;
             }
             firstMsgGlobal = 0;
@@ -1737,11 +1737,11 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
     // ------------------------------------------------------------------------
     function setMaxMessagesTop(int32 _maxMessagesTop) public onlyOwner returns (bool success) {
         uint topMessagesSortedSize = topMessagesSorted.sizeOf();
-        if(topMessagesSortedSize &gt; uint(_maxMessagesTop)) {
+        if(topMessagesSortedSize > uint(_maxMessagesTop)) {
             int32 diff = int32(topMessagesSortedSize - uint(_maxMessagesTop));
-            require(diff &lt;= int32(topMessagesSortedSize)); //SAFETY CHECK (recommended because of type conversions)!
-            //Do the needed number of Pops to clear the top message list if _maxMessagesTop (new) &lt; maxMessagesTop (old)
-            while  (diff &gt; 0) {
+            require(diff <= int32(topMessagesSortedSize)); //SAFETY CHECK (recommended because of type conversions)!
+            //Do the needed number of Pops to clear the top message list if _maxMessagesTop (new) < maxMessagesTop (old)
+            while  (diff > 0) {
                 uint lastMsg = topMessagesSorted.pop(PREV); //Pops element from the Tail!
                 delete topMessagesMap[lastMsg];
                 diff--;
@@ -1763,13 +1763,13 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         (exists, prev, elem) = topMessagesSorted.getNode(HEAD);
         if(exists) {
             uint size = min(topMessagesSorted.sizeOf(), 10);
-            for (uint i = 0; i &lt; size; i++) {
+            for (uint i = 0; i < size; i++) {
                 if(first) {
                     r = topMessagesMap[elem].msg;
                     first = false;
                 }
                 else {
-                    r = strConcat(r, &quot; &lt;||&gt; &quot;, topMessagesMap[elem].msg);
+                    r = strConcat(r, " <||> ", topMessagesMap[elem].msg);
                 }
                 (exists, elem) = topMessagesSorted.getAdjacent(elem, NEXT);
             }
@@ -1789,14 +1789,14 @@ contract Coke is ERC20Interface, Owned, Pausable, EmergencyProtectedMode, Recove
         (exists, prev, elem) = topMessagesSorted.getNode(HEAD);
         if(exists) {
             uint size = min(topMessagesSorted.sizeOf(), uint(maxMessagesTop));
-            for (uint i = 0; i &lt; size; i++) {
-                if(i &gt;= 10) {
+            for (uint i = 0; i < size; i++) {
+                if(i >= 10) {
                     if(first) {
                         r = topMessagesMap[elem].msg;
                         first = false;
                     }
                     else {
-                        r = strConcat(r, &quot; &lt;||&gt; &quot;, topMessagesMap[elem].msg);
+                        r = strConcat(r, " <||> ", topMessagesMap[elem].msg);
                     }
                 }
                 (exists, elem) = topMessagesSorted.getAdjacent(elem, NEXT);

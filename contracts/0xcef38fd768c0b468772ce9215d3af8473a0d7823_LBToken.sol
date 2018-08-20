@@ -33,13 +33,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -59,8 +59,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
@@ -99,8 +99,8 @@ contract StandardToken is ERC20 {
 }
 
 contract LBToken is StandardToken {
-	string public constant name = &quot;LB Token&quot;;
-    string public constant symbol = &quot;LB&quot;;
+	string public constant name = "LB Token";
+    string public constant symbol = "LB";
     uint8  public constant decimals = 18;
 
 	address public minter; 
@@ -112,7 +112,7 @@ contract LBToken is StandardToken {
 	}
 
 	modifier whenMintable {
-		require (now &lt;= tokenSaleEndTime);
+		require (now <= tokenSaleEndTime);
 		_;
 	}
 

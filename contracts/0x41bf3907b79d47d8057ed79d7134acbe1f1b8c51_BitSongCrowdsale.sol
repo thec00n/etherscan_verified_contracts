@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -79,18 +79,18 @@ contract BitSongCrowdsale is Ownable{
   uint256 public closingTime;
   uint256 public duration;
 
-  mapping(address =&gt; bool) public approvals;
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => bool) public approvals;
+  mapping(address => uint256) public balances;
 
   event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
   event KycApproved(address indexed beneficiary, address indexed admin, bool status);
   event KycRefused(address indexed beneficiary, address indexed admin, bool status);
 
   modifier onlyKycAdmin() { require(msg.sender == kycAdmin); _; }
-  modifier onlyWhileOpen { require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime); _; }
+  modifier onlyWhileOpen { require(block.timestamp >= openingTime && block.timestamp <= closingTime); _; }
 
   constructor(uint256 _rate, address _wallet, uint256 _duration, uint256 _hardCap, ERC20 _tokenAddress) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_tokenAddress != address(0));
 
@@ -106,12 +106,12 @@ contract BitSongCrowdsale is Ownable{
   }
 
   function buyTokens() public onlyWhileOpen() payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(approvals[msg.sender] == true);
     uint256 weiAmount = msg.value;
     uint256 tokenAmount = weiAmount.mul(rate);
     tokensAllocated = tokensAllocated.add(tokenAmount);
-    assert(tokensAllocated &lt;= hardCap);
+    assert(tokensAllocated <= hardCap);
     weiRaised = weiRaised.add(weiAmount);
     balances[msg.sender] = balances[msg.sender].add(tokenAmount);
     emit TokenPurchase(msg.sender, weiAmount, tokenAmount);
@@ -121,7 +121,7 @@ contract BitSongCrowdsale is Ownable{
   function withdrawTokens() external {
     require(hasClosed());
     uint256 amount = balances[msg.sender];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[msg.sender] = 0;
     token.safeTransferFrom(wallet, msg.sender, amount);
   }
@@ -129,13 +129,13 @@ contract BitSongCrowdsale is Ownable{
   function withdrawTokensFor(address _beneficiary) external {
     require(hasClosed());
     uint256 amount = balances[_beneficiary];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[_beneficiary] = 0;
     token.safeTransferFrom(wallet, _beneficiary, amount);
   }
 
   function hasClosed() public view returns (bool) {
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   function approveAddress(address _beneficiary) external onlyKycAdmin() {
@@ -149,15 +149,15 @@ contract BitSongCrowdsale is Ownable{
   }
 
   function rewardManual(address _beneficiary, uint256 _amount) external onlyOwner() {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_beneficiary != address(0));
     tokensAllocated = tokensAllocated.add(_amount);
-    assert(tokensAllocated &lt;= hardCap);
+    assert(tokensAllocated <= hardCap);
     balances[_beneficiary] = balances[_beneficiary].add(_amount);
   }
 
   function transfer(address _beneficiary, uint256 _amount) external onlyOwner() {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_beneficiary != address(0));
     token.safeTransfer(_beneficiary, _amount);
   }

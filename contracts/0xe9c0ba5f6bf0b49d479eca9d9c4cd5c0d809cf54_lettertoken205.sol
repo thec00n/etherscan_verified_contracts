@@ -19,7 +19,7 @@ interface ERC165 {
 contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
 
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   constructor()
     public
@@ -159,13 +159,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -177,7 +177,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -190,10 +190,10 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
-  mapping (uint256 =&gt; address) internal tokenOwner;
-  mapping (uint256 =&gt; address) internal tokenApprovals;
-  mapping (address =&gt; uint256) internal ownedTokensCount;
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (uint256 => address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenApprovals;
+  mapping (address => uint256) internal ownedTokensCount;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   constructor()
     public
@@ -274,7 +274,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     public
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   function safeTransferFrom(
@@ -371,19 +371,19 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   constructor(string _name, string _symbol) public {
     name_ = _name;
@@ -415,7 +415,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -424,7 +424,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   }
 
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -490,7 +490,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 contract lettertoken205 is ERC721Token {
 
-  constructor() public ERC721Token(&quot;lettertoken205&quot;,&quot;lettertoken205&quot;) { }
+  constructor() public ERC721Token("lettertoken205","lettertoken205") { }
 
   struct Token{
     uint8 data1;
@@ -516,7 +516,7 @@ contract lettertoken205 is ERC721Token {
     _tokenId = tokens.push(_newToken) - 1;
     _mint(msg.sender,_tokenId);
     _setTokenURI(_tokenId, tokenUri);
-    tokenUri=strConcat(tokenUri,&quot;-&quot;);
+    tokenUri=strConcat(tokenUri,"-");
     string memory tokenIdb=uint2str(_tokenId);
     tokenUri=strConcat(tokenUri, tokenIdb);
     emit Create(_tokenId,msg.sender,data1,data2,data3,data4,_newToken.startBlock,tokenUri);
@@ -550,23 +550,23 @@ contract lettertoken205 is ERC721Token {
   }
 
   function createTokenUri(uint8 data1,uint8 data2,uint64 data3,uint64 data4) internal pure returns (string){
-    string memory uri = &quot;https://www.millionetherwords.com/exchange/displaytoken/?s=&quot;;
+    string memory uri = "https://www.millionetherwords.com/exchange/displaytoken/?s=";
     uri = appendUint8ToString(uri,data1);
-    uri = strConcat(uri,&quot;-&quot;);
+    uri = strConcat(uri,"-");
     uri = appendUint8ToString(uri,data2);
-    uri = strConcat(uri,&quot;-&quot;);
+    uri = strConcat(uri,"-");
     string memory data3b=uint2str(data3);
     uri = strConcat(uri,data3b);
-    uri = strConcat(uri,&quot;-&quot;);
+    uri = strConcat(uri,"-");
     string memory data4b=uint2str(data4);
     uri = strConcat(uri,data4b);
    
-    uri = strConcat(uri,&quot;.png&quot;);
+    uri = strConcat(uri,".png");
     return uri;
   }
 
 function uint2str(uint i) internal pure returns (string){
-    if (i == 0) return &quot;0&quot;;
+    if (i == 0) return "0";
     uint j = i;
     uint length;
     while (j != 0){
@@ -594,10 +594,10 @@ function uint2str(uint i) internal pure returns (string){
         bytes memory inStrb = bytes(inStr);
         bytes memory s = new bytes(inStrb.length + i);
         uint j;
-        for (j = 0; j &lt; inStrb.length; j++) {
+        for (j = 0; j < inStrb.length; j++) {
             s[j] = inStrb[j];
         }
-        for (j = 0; j &lt; i; j++) {
+        for (j = 0; j < i; j++) {
             s[j + inStrb.length] = reversed[i - 1 - j];
         }
         str = string(s);
@@ -609,8 +609,8 @@ function uint2str(uint i) internal pure returns (string){
         string memory ab = new string(_ba.length + _bb.length);
         bytes memory bab = bytes(ab);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+        for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
         return string(bab);
     }
 

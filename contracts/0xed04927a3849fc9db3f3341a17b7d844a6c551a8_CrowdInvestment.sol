@@ -1,12 +1,12 @@
 pragma solidity ^0.4.4;
-// &quot;10000000000000000&quot;, &quot;60000000000&quot;, &quot;4000000000000000&quot;
+// "10000000000000000", "60000000000", "4000000000000000"
 // , 0.004 ETH
 contract CrowdInvestment {
     uint private restAmountToInvest;
     uint private maxGasPrice;
     address private creator;
-    mapping(address =&gt; uint) private perUserInvestments;
-    mapping(address =&gt; uint) private additionalCaps;
+    mapping(address => uint) private perUserInvestments;
+    mapping(address => uint) private additionalCaps;
     uint private limitPerInvestor;
 
     function CrowdInvestment(uint totalCap, uint maxGasPriceParam, uint capForEverybody) public {
@@ -17,9 +17,9 @@ contract CrowdInvestment {
     }
 
     function () public payable {
-        require(restAmountToInvest &gt;= msg.value); // общий лимит инвестиций
-        require(tx.gasprice &lt;= maxGasPrice); // лимит на gas price
-        require(getCap(msg.sender) &gt;= msg.value); // лимит на инвестора
+        require(restAmountToInvest >= msg.value); // общий лимит инвестиций
+        require(tx.gasprice <= maxGasPrice); // лимит на gas price
+        require(getCap(msg.sender) >= msg.value); // лимит на инвестора
         restAmountToInvest -= msg.value; // уменьшим общий лимит инвестиций
         perUserInvestments[msg.sender] += msg.value; // запишем инвестицию пользователя
     }
@@ -39,7 +39,7 @@ contract CrowdInvestment {
 
     function addPersonalCaps (address[] memory investors, uint additionalCap) public {
         require(msg.sender == creator);
-        for (uint16 i = 0; i &lt; investors.length; i++) {
+        for (uint16 i = 0; i < investors.length; i++) {
             additionalCaps[investors[i]] += additionalCap;
         }
     }

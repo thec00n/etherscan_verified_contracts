@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,8 +52,8 @@ contract Crowdsale {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate) {
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
 
     token = createTokenContract();
     startTime = _startTime;
@@ -77,7 +77,7 @@ contract Crowdsale {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
-    require(msg.value &gt;= 0.5 ether);
+    require(msg.value >= 0.5 ether);
 
     uint256 weiAmount = msg.value;
 
@@ -95,7 +95,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -146,7 +146,7 @@ contract zHQPreSale is Crowdsale, Ownable {
   uint256 public numberOfPurchasers = 0;
 
   //Who bought for how much
-  mapping(address =&gt; uint256) bought;
+  mapping(address => uint256) bought;
 
   // Total zHQ
   uint256 public zHQNumber = 0;
@@ -181,7 +181,7 @@ contract zHQPreSale is Crowdsale, Ownable {
 
   function refund(address _buyer, uint _weiAmount) onlyOwner public {
     if(msg.sender == owner) {
-      if(bought[_buyer] &gt; 0) {
+      if(bought[_buyer] > 0) {
         _buyer.send(_weiAmount);
         bought[_buyer] = bought[_buyer] - _weiAmount;
       }
@@ -191,7 +191,7 @@ contract zHQPreSale is Crowdsale, Ownable {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
-    require(msg.value &gt;= 0.5 ether);
+    require(msg.value >= 0.5 ether);
 
     uint256 weiAmount = msg.value;
 
@@ -210,7 +210,7 @@ contract zHQPreSale is Crowdsale, Ownable {
   }
 
   //end of sale withdrawl
-  //don&#39;t keep our junk on blockchain
+  //don't keep our junk on blockchain
   function withdraw() public {
     if(msg.sender == dev) {
       selfdestruct(msg.sender);
@@ -230,7 +230,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -261,7 +261,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20Basic, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -276,7 +276,7 @@ contract StandardToken is ERC20Basic, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -327,8 +327,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract zHQToken is MintableToken {
-    string public constant name = &quot;zHQ Token&quot;;
-    string public constant symbol = &quot;zHQ&quot;;
+    string public constant name = "zHQ Token";
+    string public constant symbol = "zHQ";
     uint256 public decimals = 18;
 
     /**

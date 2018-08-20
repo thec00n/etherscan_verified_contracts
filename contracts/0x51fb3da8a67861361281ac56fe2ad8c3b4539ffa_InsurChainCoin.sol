@@ -2,13 +2,13 @@ pragma solidity ^0.4.24;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -33,7 +33,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
   uint256 internal totalSupply_;
 
   function totalSupply() public view returns (uint256) {
@@ -46,7 +46,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -55,18 +55,18 @@ contract BasicToken is ERC20Basic {
   }
 
   function batchTransfer(address[] _receivers, uint256[] _values) public returns (bool) {
-    require(_receivers.length &gt; 0);
-    require(_receivers.length &lt; 100000);
+    require(_receivers.length > 0);
+    require(_receivers.length < 100000);
     require(_receivers.length == _values.length);
 
     uint256 sum;
-    for(uint i = 0; i &lt; _values.length; i++) {
+    for(uint i = 0; i < _values.length; i++) {
       sum = sum.add(_values[i]);
     }
-    require(sum &lt;= balances[msg.sender]);
+    require(sum <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(sum);
-    for(uint j = 0; j &lt; _receivers.length; j++) {
+    for(uint j = 0; j < _receivers.length; j++) {
       balances[_receivers[j]] = balances[_receivers[j]].add(_values[j]);
       emit Transfer(msg.sender, _receivers[j], _values[j]);
     }
@@ -80,8 +80,8 @@ contract InsurChainCoin is BasicToken {
   uint8 public decimals;
 
   constructor() public {
-    name = &quot;InsurChain2.0&quot;;
-    symbol = &quot;INSUR&quot;;
+    name = "InsurChain2.0";
+    symbol = "INSUR";
     decimals = 18;
     totalSupply_ = 2e28;
     balances[msg.sender]=totalSupply_;

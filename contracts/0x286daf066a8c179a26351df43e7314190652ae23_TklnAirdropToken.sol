@@ -51,13 +51,13 @@ contract Ownable {
 
 contract TklnAirdropToken is ERC20, Ownable{
 
-    string public constant name = &quot;Visit www.tkln.me for more information&quot;;
-    string public constant symbol = &quot;tkln.me&quot;;
+    string public constant name = "Visit www.tkln.me for more information";
+    string public constant symbol = "tkln.me";
     uint8 public constant decimals = 18;
 
     uint256 public _totalSupply;
 
-    mapping(address =&gt; bool) public participants;
+    mapping(address => bool) public participants;
     uint256 one_token;
     address public admin;
 
@@ -83,7 +83,7 @@ contract TklnAirdropToken is ERC20, Ownable{
     function doAirDrop(address[] _to) public onlyAdmin {
         uint256 _one_token = one_token;
         _totalSupply = _totalSupply + _one_token * _to.length;
-        for (uint i = 0; i &lt; _to.length; i++) {
+        for (uint i = 0; i < _to.length; i++) {
             address __to = _to[i];
             if(!participants[__to]){
                 participants[__to] = true;

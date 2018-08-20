@@ -14,7 +14,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
     address public publisher;
 
     function MultiOwners() public {
@@ -50,9 +50,9 @@ contract MultiOwners {
 }
 
 contract UserRegistry is MultiOwners, UserRegistryInterface {
-  mapping (address =&gt; bool) internal addresses;
-  mapping (address =&gt; bool) internal identities;
-  mapping (address =&gt; bool) internal system;
+  mapping (address => bool) internal addresses;
+  mapping (address => bool) internal identities;
+  mapping (address => bool) internal system;
 
   function addAddress(address _who) onlyOwner public returns(bool) {
     require(!knownAddress(_who));
@@ -82,7 +82,7 @@ contract UserRegistry is MultiOwners, UserRegistryInterface {
   }
 
   function hasIdentity(address _who) public constant returns(bool) {
-    return knownAddress(_who) &amp;&amp; identities[_who];
+    return knownAddress(_who) && identities[_who];
   }
 
   function systemAddress(address _where) public constant returns(bool) {

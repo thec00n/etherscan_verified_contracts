@@ -3,11 +3,11 @@ pragma solidity ^0.4.19;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
   
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
 
@@ -17,7 +17,7 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -25,7 +25,7 @@ library SafeMath {
 contract Nonpayable {
 
   // ------------------------------------------------------------------------
-  // Don&#39;t accept ETH
+  // Don't accept ETH
   // ------------------------------------------------------------------------
   function () public payable {
     revert();
@@ -53,7 +53,7 @@ contract Regulated is Ownable {
   event Whitelisted(address indexed customer);
   event Blacklisted(address indexed customer);
   
-  mapping(address =&gt; bool) regulationStatus;
+  mapping(address => bool) regulationStatus;
 
   function whitelist(address customer) public onlyOwner {
     regulationStatus[customer] = true;
@@ -94,12 +94,12 @@ contract VaultbankVotingToken is ERC20, Regulated, Nonpayable {
   uint8 public decimals;
   uint public _totalSupply;
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
   function VaultbankVotingToken() public {
-    symbol = &quot;VBV&quot;;
-    name = &quot;Vaultbank Voting Token&quot;;
+    symbol = "VBV";
+    name = "Vaultbank Voting Token";
     decimals = 0;
     _totalSupply = 1000;
 

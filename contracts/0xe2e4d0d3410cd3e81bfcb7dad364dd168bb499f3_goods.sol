@@ -42,9 +42,9 @@ contract goods {
     }
 
     function buy(string datainfo, uint _version, uint16 _count) {
-        if(status != 1) { log(&quot;status != 1&quot;); throw; }
-        if(msg.value &lt; (price * _count)) { log(&quot;msg.value &lt; (price * _count)&quot;); throw; }
-        if(_count &gt; availableCount) { log(&quot;_count &gt; availableCount&quot;); throw; }
+        if(status != 1) { log("status != 1"); throw; }
+        if(msg.value < (price * _count)) { log("msg.value < (price * _count)"); throw; }
+        if(_count > availableCount) { log("_count > availableCount"); throw; }
 
         pendingCount += _count;
 
@@ -53,8 +53,8 @@ contract goods {
     }
 
     function accept(string datainfo, uint _version, uint16 _count) onlyowner {
-        if(_count &gt; availableCount) { log(&quot;_count &gt; availableCount&quot;); return; }
-        if(_count &gt; pendingCount) { log(&quot;_count &gt; pendingCount&quot;); return; }
+        if(_count > availableCount) { log("_count > availableCount"); return; }
+        if(_count > pendingCount) { log("_count > pendingCount"); return; }
         
         pendingCount -= _count;
         availableCount -= _count;
@@ -64,7 +64,7 @@ contract goods {
     }
 
     function reject(string datainfo, uint _version, uint16 _count, address recipient, uint amount) onlyowner {
-        if(_count &gt; pendingCount) { log(&quot;_count &gt; pendingCount&quot;); return; }
+        if(_count > pendingCount) { log("_count > pendingCount"); return; }
 
         pendingCount -= _count;
         //send money back

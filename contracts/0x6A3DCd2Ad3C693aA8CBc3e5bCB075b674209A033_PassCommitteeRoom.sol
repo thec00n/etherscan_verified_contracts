@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with Pass DAO.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with Pass DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -48,7 +48,7 @@ contract PassDao {
     project[] public projects;
 
     // Map with the indexes of the projects
-    mapping (address =&gt; uint) projectID;
+    mapping (address => uint) projectID;
     
     // The address of the meta project
     address metaProject;
@@ -84,7 +84,7 @@ contract PassDao {
 // modifiers
 
     modifier onlyPassCommitteeRoom {if (msg.sender != revisions[0].committeeRoom  
-        &amp;&amp; revisions[0].committeeRoom != 0) throw; _;}
+        && revisions[0].committeeRoom != 0) throw; _;}
     
 // Constructor function
 
@@ -187,12 +187,12 @@ contract PassTokenManagerInterface {
     // Array of token or share holders (used for cloning)
     address[] holders;
     // Map with the indexes of the holders (used for cloning)
-    mapping (address =&gt; uint) holderID;
+    mapping (address => uint) holderID;
     
     // Array with all balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Array with all allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     struct funding {
         // The address which sets partners and manages the funding (not mandatory)
@@ -213,7 +213,7 @@ contract PassTokenManagerInterface {
         uint totalWeiGiven;
     } 
     // Map with the fundings rules for each Dao proposal
-    mapping (uint =&gt; funding) public fundings;
+    mapping (uint => funding) public fundings;
 
     // The index of the last funding and proposal
     uint lastProposalID;
@@ -225,10 +225,10 @@ contract PassTokenManagerInterface {
         uint tokenAmount;
     }
     // Map with the amounts given for each proposal 
-    mapping (uint =&gt; mapping (address =&gt; amountsGiven)) public Given;
+    mapping (uint => mapping (address => amountsGiven)) public Given;
     
     // Map of blocked Dao share accounts. Points to the date when the share holder can transfer shares
-    mapping (address =&gt; uint) public blockedDeadLine; 
+    mapping (address => uint) public blockedDeadLine; 
 
     // @return The client of this manager
     function Client() constant returns (address);
@@ -296,7 +296,7 @@ contract PassTokenManagerInterface {
     /// @return the actual token price in wei
     function TokenPriceInWei(uint _tokenAmount, uint _proposalID) constant returns (uint);
     
-    /// @return The index of the last funding and client&#39;s proposal 
+    /// @return The index of the last funding and client's proposal 
     function LastProposalID() constant returns (uint);
 
     /// @return The number of share or token holders (used for cloning)
@@ -315,7 +315,7 @@ contract PassTokenManagerInterface {
     /// @param  _token True if tokens, false if shares
     /// @param  _transferable True if tokens can be transferred
     /// @param _initialPriceMultiplier Price multiplier without considering any inflation rate
-    /// @param _inflationRate If 0, the token price doesn&#39;t change during the funding
+    /// @param _inflationRate If 0, the token price doesn't change during the funding
     //function PassTokenManager(
     //    address _passDao,
     //    address _clonedFrom,
@@ -369,7 +369,7 @@ contract PassTokenManagerInterface {
     /// @param _initialPriceMultiplier Price multiplier without considering any inflation rate
     /// @param _amountToFund The amount (in wei) of the funding
     /// @param _minutesFundingPeriod Period in minutes of the funding
-    /// @param _inflationRate If 0, the token price doesn&#39;t change during the funding
+    /// @param _inflationRate If 0, the token price doesn't change during the funding
     /// @param _proposalID Index of the client proposal
     function setFundingRules(
         address _moderator,
@@ -513,8 +513,8 @@ contract PassTokenManager is PassTokenManagerInterface {
   
     function AmountToFund(uint _proposalID) constant external returns (uint) {
 
-        if (now &gt; fundings[_proposalID].closingTime
-            || now &lt; fundings[_proposalID].startTime) {
+        if (now > fundings[_proposalID].closingTime
+            || now < fundings[_proposalID].startTime) {
             return 0;   
             } else return fundings[_proposalID].amountToFund;
     }
@@ -526,8 +526,8 @@ contract PassTokenManager is PassTokenManagerInterface {
     function priceDivisor(uint _proposalID, uint _saleDate) constant internal returns (uint) {
         uint _date = _saleDate;
         
-        if (_saleDate &gt; fundings[_proposalID].closingTime) _date = fundings[_proposalID].closingTime;
-        if (_saleDate &lt; fundings[_proposalID].startTime) _date = fundings[_proposalID].startTime;
+        if (_saleDate > fundings[_proposalID].closingTime) _date = fundings[_proposalID].closingTime;
+        if (_saleDate < fundings[_proposalID].startTime) _date = fundings[_proposalID].startTime;
 
         return 100 + 100*fundings[_proposalID].inflationRate*(_date - fundings[_proposalID].startTime)/(100*365 days);
     }
@@ -632,7 +632,7 @@ contract PassTokenManager is PassTokenManagerInterface {
         if (initialTokenSupplyDone) throw;
         
         addHolder(_recipient);
-        if (_recipient != 0 &amp;&amp; _quantity != 0) createTokens(_recipient, _quantity);
+        if (_recipient != 0 && _quantity != 0) createTokens(_recipient, _quantity);
         
         if (_last) initialTokenSupplyDone = true;
         
@@ -648,15 +648,15 @@ contract PassTokenManager is PassTokenManagerInterface {
         
         PassTokenManager _clonedFrom = PassTokenManager(clonedFrom);
         uint _numberOfHolders = _clonedFrom.numberOfHolders();
-        if (_to == 0 || _to &gt; _numberOfHolders) _to = _numberOfHolders;
+        if (_to == 0 || _to > _numberOfHolders) _to = _numberOfHolders;
         
         address _holder;
         uint _balance;
 
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             _holder = _clonedFrom.HolderAddress(i);
             _balance = _clonedFrom.balanceOf(_holder);
-            if (balances[_holder] == 0 &amp;&amp; _balance != 0) {
+            if (balances[_holder] == 0 && _balance != 0) {
                 addHolder(_holder);
                 createTokens(_holder, _balance);
             }
@@ -720,7 +720,7 @@ contract PassTokenManager is PassTokenManagerInterface {
         fundings[_proposalID].fundedAmount = 0;
 
         if (_initialPriceMultiplier == 0) {
-            if (now &lt; fundings[0].closingTime) {
+            if (now < fundings[0].closingTime) {
                 fundings[_proposalID].initialPriceMultiplier = 100*priceMultiplier(lastProposalID)/actualPriceDivisor(lastProposalID);
             } else {
                 fundings[_proposalID].initialPriceMultiplier = 100*priceMultiplier(lastFueledFundingID)/actualPriceDivisor(lastFueledFundingID);
@@ -760,9 +760,9 @@ contract PassTokenManager is PassTokenManagerInterface {
 
         if (_saleDate == 0) _saleDate = now;
 
-        if (_saleDate &gt; fundings[_proposalID].closingTime
-            || _saleDate &lt; fundings[_proposalID].startTime
-            || fundings[_proposalID].totalWeiGiven + _amount &gt; fundings[_proposalID].amountToFund) return;
+        if (_saleDate > fundings[_proposalID].closingTime
+            || _saleDate < fundings[_proposalID].startTime
+            || fundings[_proposalID].totalWeiGiven + _amount > fundings[_proposalID].amountToFund) return;
 
         uint _tokenAmount = TokenAmount(_amount, priceMultiplier(_proposalID), priceDivisor(_proposalID, _saleDate));
         if (_tokenAmount == 0) return;
@@ -795,9 +795,9 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint _amount;
         uint _tokenAmount;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
 
-            if (now &gt; fundings[i].closingTime &amp;&amp; Given[i][_buyer].weiAmount != 0) {
+            if (now > fundings[i].closingTime && Given[i][_buyer].weiAmount != 0) {
                 
                 if (fundings[i].fundedAmount == 0) _amount += Given[i][_buyer].weiAmount;
                 else _tokenAmount += Given[i][_buyer].tokenAmount;
@@ -808,12 +808,12 @@ contract PassTokenManager is PassTokenManagerInterface {
             }
         }
 
-        if (_tokenAmount &gt; 0) {
+        if (_tokenAmount > 0) {
             createTokens(_buyer, _tokenAmount);
             return true;
         }
         
-        if (_amount &gt; 0) {
+        if (_amount > 0) {
             if (!_buyer.send(_amount)) throw;
             Refund(_buyer, _amount);
         } else return true;
@@ -828,13 +828,13 @@ contract PassTokenManager is PassTokenManagerInterface {
 // Funding Moderator functions
 
     function setFundingStartTime(uint _proposalID, uint _startTime) external {
-        if ((msg.sender !=  fundings[_proposalID].moderator) || now &gt; fundings[_proposalID].closingTime) throw;
+        if ((msg.sender !=  fundings[_proposalID].moderator) || now > fundings[_proposalID].closingTime) throw;
         fundings[_proposalID].startTime = _startTime;
     }
 
     function setFundingFueled(uint _proposalID) external {
 
-        if ((msg.sender !=  fundings[_proposalID].moderator) || now &gt; fundings[_proposalID].closingTime) throw;
+        if ((msg.sender !=  fundings[_proposalID].moderator) || now > fundings[_proposalID].closingTime) throw;
 
         closeFunding(_proposalID);
     }
@@ -856,7 +856,7 @@ contract PassTokenManager is PassTokenManagerInterface {
     }
     
     function blockTransfer(address _shareHolder, uint _deadLine) external onlyClient onlyShareManager {
-        if (_deadLine &gt; blockedDeadLine[_shareHolder]) {
+        if (_deadLine > blockedDeadLine[_shareHolder]) {
             blockedDeadLine[_shareHolder] = _deadLine;
         }
     }
@@ -868,11 +868,11 @@ contract PassTokenManager is PassTokenManagerInterface {
         ) internal returns (bool success) {  
 
         if ((transferable)
-            &amp;&amp; now &gt; blockedDeadLine[_from]
-            &amp;&amp; now &gt; blockedDeadLine[_to]
-            &amp;&amp; _to != address(this)
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+            && now > blockedDeadLine[_from]
+            && now > blockedDeadLine[_to]
+            && _to != address(this)
+            && balances[_from] >= _value
+            && balances[_to] + _value > balances[_to]) {
 
             addHolder(_to);
             balances[_from] -= _value;
@@ -894,7 +894,7 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint256 _value
         ) returns (bool success) { 
         
-        if (allowed[_from][msg.sender] &lt; _value
+        if (allowed[_from][msg.sender] < _value
             || !transferFromTo(_from, _to, _value)) throw;
             
         allowed[_from][msg.sender] -= _value;
@@ -933,7 +933,7 @@ contract PassManager is PassTokenManager {
     uint numberOfOrders;
 
     // Map to know if an order was cloned from the precedent manager after an upgrade
-    mapping (uint =&gt; bool) orderCloned;
+    mapping (uint => bool) orderCloned;
     
     function PassManager(
         PassDao _passDao,
@@ -1028,7 +1028,7 @@ contract PassManager is PassTokenManager {
         uint i;
         numberOfOrders += 1;
 
-        if (numberOfOrders &gt; orders.length) i = orders.length++;
+        if (numberOfOrders > orders.length) i = orders.length++;
         else i = numberOfOrders - 1;
         
         orders[i].buyer = _buyer;
@@ -1039,11 +1039,11 @@ contract PassManager is PassTokenManager {
     /// @param _order The index of the order to remove
     function removeOrder(uint _order) internal {
         
-        if (numberOfOrders - 1 &lt; _order) return;
+        if (numberOfOrders - 1 < _order) return;
 
         numberOfOrders -= 1;
-        if (numberOfOrders &gt; 0) {
-            for (uint i = _order; i &lt;= numberOfOrders - 1; i++) {
+        if (numberOfOrders > 0) {
+            for (uint i = _order; i <= numberOfOrders - 1; i++) {
                 orders[i].buyer = orders[i+1].buyer;
                 orders[i].weiGiven = orders[i+1].weiGiven;
             }
@@ -1056,7 +1056,7 @@ contract PassManager is PassTokenManager {
     /// @return Whether the function was successful or not
     function buyTokens() payable returns (bool) {
 
-        if (!transferable || msg.value &lt; 100 finney) throw;
+        if (!transferable || msg.value < 100 finney) throw;
         
         addOrder(msg.sender, msg.value);
         
@@ -1074,10 +1074,10 @@ contract PassManager is PassTokenManager {
         uint _to) returns (uint) {
 
         if (!transferable 
-            || uint(balances[msg.sender]) &lt; _amount 
+            || uint(balances[msg.sender]) < _amount 
             || numberOfOrders == 0) throw;
         
-        if (_to == 0 || _to &gt; numberOfOrders - 1) _to = numberOfOrders - 1;
+        if (_to == 0 || _to > numberOfOrders - 1) _to = numberOfOrders - 1;
         
         
         uint _tokenAmounto;
@@ -1085,21 +1085,21 @@ contract PassManager is PassTokenManager {
         uint _totalAmount;
         uint o = _from;
 
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
 
-            if (_tokenAmount &gt; 0 &amp;&amp; orders[o].buyer != msg.sender) {
+            if (_tokenAmount > 0 && orders[o].buyer != msg.sender) {
 
                 _tokenAmounto = TokenAmount(orders[o].weiGiven, priceMultiplier(0), actualPriceDivisor(0));
 
-                if (_tokenAmount &gt;= _tokenAmounto 
-                    &amp;&amp; transferFromTo(msg.sender, orders[o].buyer, _tokenAmounto)) {
+                if (_tokenAmount >= _tokenAmounto 
+                    && transferFromTo(msg.sender, orders[o].buyer, _tokenAmounto)) {
                             
                     _tokenAmount -= _tokenAmounto;
                     _totalAmount += orders[o].weiGiven;
                     removeOrder(o);
                 }
-                else if (_tokenAmount &lt; _tokenAmounto
-                    &amp;&amp; transferFromTo(msg.sender, orders[o].buyer, _tokenAmount)) {
+                else if (_tokenAmount < _tokenAmounto
+                    && transferFromTo(msg.sender, orders[o].buyer, _tokenAmount)) {
                         
                     _amount = weiAmount(_tokenAmount, priceMultiplier(0), actualPriceDivisor(0));
                     orders[o].weiGiven -= _amount;
@@ -1123,12 +1123,12 @@ contract PassManager is PassTokenManager {
         uint _from,
         uint _to) returns (bool) {
 
-        if (_to == 0 || _to &gt; numberOfOrders) _to = numberOfOrders -1;
+        if (_to == 0 || _to > numberOfOrders) _to = numberOfOrders -1;
         
         uint _totalAmount;
         uint o = _from;
 
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
 
             if (orders[o].buyer == msg.sender) {
                 
@@ -1403,7 +1403,7 @@ contract PassContractor {
         uint amount;
         // A description of the proposal
         string description;
-        // The hash of the proposal&#39;s document
+        // The hash of the proposal's document
         bytes32 hashOfTheDocument;
         // A unix timestamp, denoting the date when the proposal was created
         uint dateOfProposal;
@@ -1446,8 +1446,8 @@ contract PassContractor {
         address _sender,
         uint _proposalID, 
         uint _amount) constant external onlyClient returns (bool) {
-        if (_sender != recipient &amp;&amp; _sender != creator) return;
-        if (_amount &lt;= proposals[_proposalID].amount - proposals[_proposalID].submittedAmount) return true;
+        if (_sender != recipient && _sender != creator) return;
+        if (_amount <= proposals[_proposalID].amount - proposals[_proposalID].submittedAmount) return true;
     }
 
     /// @return The number of proposals     
@@ -1490,7 +1490,7 @@ contract PassContractor {
     /// @notice Function to clone a proposal from the last contractor
     /// @param _amount Amount (in wei) of the proposal
     /// @param _description A description of the proposal
-    /// @param _hashOfTheDocument The hash of the proposal&#39;s document
+    /// @param _hashOfTheDocument The hash of the proposal's document
     /// @param _dateOfProposal A unix timestamp, denoting the date when the proposal was created
     /// @param _orderAmount The sum amount (in wei) ordered for this proposal 
     /// @param _dateOfOrder A unix timestamp, denoting the date of the last order for the approved proposal
@@ -1531,7 +1531,7 @@ contract PassContractor {
     function closeSetup() returns (bool) {
         
         if (smartContractStartDate != 0 
-            || (msg.sender != creator &amp;&amp; msg.sender != Client())) return;
+            || (msg.sender != creator && msg.sender != Client())) return;
 
         smartContractStartDate = now;
 
@@ -1584,8 +1584,8 @@ contract PassContractor {
         bytes32 _hashOfTheDocument
     ) external returns (uint) {
         
-        if (msg.sender == Client() &amp;&amp; _creator != recipient &amp;&amp; _creator != creator) throw;
-        if (msg.sender != Client() &amp;&amp; msg.sender != recipient &amp;&amp; msg.sender != creator) throw;
+        if (msg.sender == Client() && _creator != recipient && _creator != creator) throw;
+        if (msg.sender != Client() && msg.sender != recipient && msg.sender != creator) throw;
 
         if (_amount == 0) throw;
         
@@ -1611,7 +1611,7 @@ contract PassContractor {
         uint _proposalID, 
         uint _amount) onlyClient {
 
-        if (_sender != recipient &amp;&amp; _sender != creator) throw;    
+        if (_sender != recipient && _sender != creator) throw;    
         proposals[_proposalID].submittedAmount += _amount;
         ProposalSubmitted(msg.sender, _amount);
     }
@@ -1628,9 +1628,9 @@ contract PassContractor {
         proposal c = proposals[_proposalID];
         
         uint _sum = c.orderAmount + _orderAmount;
-        if (_sum &gt; c.amount
-            || _sum &lt; c.orderAmount
-            || _sum &lt; _orderAmount) return; 
+        if (_sum > c.amount
+            || _sum < c.orderAmount
+            || _sum < _orderAmount) return; 
 
         c.orderAmount = _sum;
         c.dateOfLastOrder = now;
@@ -1660,7 +1660,7 @@ contract PassContractorCreator {
         bool metaProject;
         // The address of the existing project smart contract
         PassProject passProject;
-        // The name of the project (if the project smart contract doesn&#39;t exist)
+        // The name of the project (if the project smart contract doesn't exist)
         string projectName;
         // A description of the project (can be updated after)
         string projectDescription;
@@ -1688,7 +1688,7 @@ contract PassContractorCreator {
     /// @param _recipient The address of the recipient for withdrawals
     /// @param _metaProject True if meta project
     /// @param _passProject The address of the existing project smart contract
-    /// @param _projectName The name of the project (if the project smart contract doesn&#39;t exist)
+    /// @param _projectName The name of the project (if the project smart contract doesn't exist)
     /// @param _projectDescription A description of the project (can be updated after)
     /// @param _restore True if orders or proposals are to be cloned from other contracts
     /// @return The address of the created contractor smart contract
@@ -1711,7 +1711,7 @@ contract PassContractorCreator {
         else _project = _passProject;
 
         PassContractor _contractor = new PassContractor(_creator, _project, _recipient, _restore);
-        if (!_metaProject &amp;&amp; address(_passProject) == 0 &amp;&amp; !_restore) _project.setProjectManager(address(_contractor));
+        if (!_metaProject && address(_passProject) == 0 && !_restore) _project.setProjectManager(address(_contractor));
         
         uint _contractorID = contractors.length++;
         contractor c = contractors[_contractorID];
@@ -1767,7 +1767,7 @@ contract PassCommitteeRoomInterface {
         uint totalRewardedAmount;
         // A unix timestamp, denoting the end of the voting period
         uint votingDeadline;
-        // True if the proposal&#39;s votes have yet to be counted, otherwise False
+        // True if the proposal's votes have yet to be counted, otherwise False
         bool open; 
         // A unix timestamp, denoting the date of the execution of the approved proposal
         uint dateOfExecution;
@@ -1779,7 +1779,7 @@ contract PassCommitteeRoomInterface {
     // Committees organized to vote for or against a proposal
     Committee[] public Committees; 
     // mapping to indicate if a shareholder has voted at a committee or not
-    mapping (uint =&gt; mapping (address =&gt; bool)) hasVoted;
+    mapping (uint => mapping (address => bool)) hasVoted;
 
     struct Proposal {
         // Index to identify the committee
@@ -1914,7 +1914,7 @@ contract PassCommitteeRoomInterface {
     /// @param _recipient The recipient of the contractor smart contract
     /// @param _metaProject True if meta project
     /// @param _passProject The project smart contract (not mandatory)
-    /// @param _projectName The name of the project (if the project smart contract doesn&#39;t exist)
+    /// @param _projectName The name of the project (if the project smart contract doesn't exist)
     /// @param _projectDescription A description of the project (not mandatory, can be updated after)
     /// @return The contractor smart contract
     function createContractor(
@@ -2162,22 +2162,22 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
 
         if (_minutesFundingPeriod == 0) _minutesFundingPeriod = rulesProposals[0].defaultMinutesFundingPeriod;
 
-        if (address(_contractor) != 0 &amp;&amp; _contractorProposalID != 0) {
+        if (address(_contractor) != 0 && _contractorProposalID != 0) {
             if (_hashOfTheContractorProposalDocument != 0 
                 ||!_contractor.proposalChecked(msg.sender, _contractorProposalID, _amount)) throw;
-            else _proposalDescription = &quot;Proposal checked&quot;;
+            else _proposalDescription = "Proposal checked";
         }
 
-        if ((address(_contractor) != 0 &amp;&amp; _contractorProposalID == 0 &amp;&amp; _hashOfTheContractorProposalDocument == 0)
+        if ((address(_contractor) != 0 && _contractorProposalID == 0 && _hashOfTheContractorProposalDocument == 0)
             || _amount == 0
-            || _minutesFundingPeriod &lt; minMinutesPeriods) throw;
+            || _minutesFundingPeriod < minMinutesPeriods) throw;
 
         uint _proposalID = Proposals.length++;
         Proposal p = Proposals[_proposalID];
 
         p.contractor = _contractor;
         
-        if (_contractorProposalID == 0 &amp;&amp; _hashOfTheContractorProposalDocument != 0) {
+        if (_contractorProposalID == 0 && _hashOfTheContractorProposalDocument != 0) {
             _contractorProposalID = _contractor.newProposal(msg.sender, _amount, _proposalDescription, _hashOfTheContractorProposalDocument);
         }
         p.contractorProposalID = _contractorProposalID;
@@ -2188,7 +2188,7 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
             if (_contractor.Project().ProjectManager() == address(_contractor)) p.amountForTokens = _amount;
             else {
                 p.amount = Balance();
-                if (_amount &gt; p.amount) p.amountForShares = _amount - p.amount;
+                if (_amount > p.amount) p.amountForShares = _amount - p.amount;
                 else p.amount = _amount;
             }
         }
@@ -2242,13 +2242,13 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
         uint _tokenPriceInflationRate) payable returns (uint) {
 
     
-        if (_minQuorumDivisor &lt;= 1
-            || _minQuorumDivisor &gt; 10
-            || _minutesSetProposalPeriod &lt; minMinutesPeriods
-            || _minMinutesDebatePeriod &lt; minMinutesPeriods
-            || _feesRewardInflationRate &gt; maxInflationRate
-            || _tokenPriceInflationRate &gt; maxInflationRate
-            || _defaultMinutesFundingPeriod &lt; minMinutesPeriods) throw; 
+        if (_minQuorumDivisor <= 1
+            || _minQuorumDivisor > 10
+            || _minutesSetProposalPeriod < minMinutesPeriods
+            || _minMinutesDebatePeriod < minMinutesPeriods
+            || _feesRewardInflationRate > maxInflationRate
+            || _tokenPriceInflationRate > maxInflationRate
+            || _defaultMinutesFundingPeriod < minMinutesPeriods) throw; 
         
         uint _rulesProposalID = rulesProposals.length++;
         Rules r = rulesProposals[_rulesProposalID];
@@ -2303,9 +2303,9 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
         if (_minutesDebatingPeriod == 0) _minutesDebatingPeriod = rulesProposals[0].minMinutesDebatePeriod;
         
         if (passDao.ActualCommitteeRoom() != address(this)
-            || msg.value &lt; rulesProposals[0].minCommitteeFees
-            || now + ((rulesProposals[0].minutesSetProposalPeriod + _minutesDebatingPeriod) * 1 minutes) &lt; now
-            || _minutesDebatingPeriod &lt; rulesProposals[0].minMinutesDebatePeriod
+            || msg.value < rulesProposals[0].minCommitteeFees
+            || now + ((rulesProposals[0].minutesSetProposalPeriod + _minutesDebatingPeriod) * 1 minutes) < now
+            || _minutesDebatingPeriod < rulesProposals[0].minMinutesDebatePeriod
             || msg.sender == address(this)) throw;
 
         uint _committeeID = Committees.length++;
@@ -2333,8 +2333,8 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
         Committee b = Committees[_committeeID];
 
         if (hasVoted[_committeeID][msg.sender] 
-            || now &lt; b.setDeadline
-            || now &gt; b.votingDeadline) throw;
+            || now < b.setDeadline
+            || now > b.votingDeadline) throw;
             
         PassManager _shareManager = ShareManager();
 
@@ -2353,7 +2353,7 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
         uint _multiplier = (_a*_balance)/uint(_shareManager.totalSupply());
         uint _divisor = 100 + 100*rulesProposals[0].feesRewardInflationRate*(now - b.setDeadline)/(100*365 days);
         uint _rewardedamount = _multiplier/_divisor;
-        if (b.totalRewardedAmount + _rewardedamount &gt; b.fees) _rewardedamount = b.fees - b.totalRewardedAmount;
+        if (b.totalRewardedAmount + _rewardedamount > b.fees) _rewardedamount = b.fees - b.totalRewardedAmount;
         b.totalRewardedAmount += _rewardedamount;
         if (!msg.sender.send(_rewardedamount)) throw;
 
@@ -2366,7 +2366,7 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
 
         Committee b = Committees[_committeeID];
         
-        if (now &lt; b.votingDeadline || !b.open) return;
+        if (now < b.votingDeadline || !b.open) return;
         
         b.open = false;
 
@@ -2374,16 +2374,16 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
         uint _quantityOfShares;
         PassManager _tokenManager = TokenManager();
 
-        if (100*b.yea &gt; rulesProposals[0].minPercentageOfLikes * uint(_shareManager.totalSupply())) {       
+        if (100*b.yea > rulesProposals[0].minPercentageOfLikes * uint(_shareManager.totalSupply())) {       
             _quantityOfShares = _shareManager.rewardTokensForClient(b.creator, rulesProposals[0].minCommitteeFees);
         }        
 
         uint _sentToDaoManager = b.fees - b.totalRewardedAmount;
-        if (_sentToDaoManager &gt; 0) {
+        if (_sentToDaoManager > 0) {
             if (!address(_shareManager).send(_sentToDaoManager)) throw;
         }
         
-        if (b.yea + b.nay &lt; minQuorum() || b.yea &lt;= b.nay) {
+        if (b.yea + b.nay < minQuorum() || b.yea <= b.nay) {
             if (b.proposalType == ProposalTypes.contractor) Proposals[b.proposalID].open = false;
             ProposalClosed(b.proposalID, b.proposalType, _committeeID, b.totalRewardedAmount, false, _quantityOfShares, _sentToDaoManager);
             return;
@@ -2397,7 +2397,7 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
     
             if (p.contractorProposalID == 0) p.open = false;
             
-            if (p.amountForShares == 0 &amp;&amp; p.amountForTokens == 0) orderToContractor(b.proposalID);
+            if (p.amountForShares == 0 && p.amountForTokens == 0) orderToContractor(b.proposalID);
             else {
                 if (p.amountForShares != 0) {
                     _shareManager.setFundingRules(p.moderator, p.initialSharePriceMultiplier, p.amountForShares, p.minutesFundingPeriod, 0, b.proposalID);
@@ -2432,14 +2432,14 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
 
             Upgrade u = UpgradeProposals[b.proposalID];
 
-            if ((u.newShareManager != 0) &amp;&amp; (u.newShareManager != address(_shareManager))) {
+            if ((u.newShareManager != 0) && (u.newShareManager != address(_shareManager))) {
                 _shareManager.disableTransfer();
-                if (_shareManager.balance &gt; 0) {
+                if (_shareManager.balance > 0) {
                     if (!_shareManager.sendTo(u.newShareManager, _shareManager.balance)) throw;
                 }
             }
 
-            if ((u.newTokenManager != 0) &amp;&amp; (u.newTokenManager != address(_tokenManager))) {
+            if ((u.newTokenManager != 0) && (u.newTokenManager != address(_tokenManager))) {
                 _tokenManager.disableTransfer();
             }
 
@@ -2466,12 +2466,12 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
 
         if (p.amountForShares != 0) {
             _amountForShares = ShareManager().FundedAmount(_proposalID);
-            if (_amountForShares == 0 &amp;&amp; now &lt;= b.dateOfExecution + (p.minutesFundingPeriod * 1 minutes)) return;
+            if (_amountForShares == 0 && now <= b.dateOfExecution + (p.minutesFundingPeriod * 1 minutes)) return;
         }
 
         if (p.amountForTokens != 0) {
             _amountForTokens = TokenManager().FundedAmount(_proposalID);
-            if (_amountForTokens == 0 &amp;&amp; now &lt;= b.dateOfExecution + (p.minutesFundingPeriod * 1 minutes)) return;
+            if (_amountForTokens == 0 && now <= b.dateOfExecution + (p.minutesFundingPeriod * 1 minutes)) return;
         }
         
         p.open = false;   
@@ -2487,10 +2487,10 @@ contract PassCommitteeRoom is PassCommitteeRoomInterface {
 
         if (!p.contractor.order(p.contractorProposalID, _amount)) throw;
         
-        if (p.amount + _amountForShares &gt; 0) {
+        if (p.amount + _amountForShares > 0) {
             if (!ShareManager().sendTo(p.contractor, p.amount + _amountForShares)) throw;
         }
-        if (_amountForTokens &gt; 0) {
+        if (_amountForTokens > 0) {
             if (!TokenManager().sendTo(p.contractor, _amountForTokens)) throw;
         }
 

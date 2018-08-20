@@ -1,12 +1,12 @@
 pragma solidity 0.4.24;
 contract SafeMath {
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -30,9 +30,9 @@ contract HermesBlockTechToken is SafeMath,owned {
     string public symbol;
     uint8 public decimals = 18;
     uint256 public totalSupply; 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Freeze(address indexed from, bool frozen);
     constructor(uint256 initialSupply, string tokenName, string tokenSymbol) public {
@@ -43,9 +43,9 @@ contract HermesBlockTechToken is SafeMath,owned {
     }
     function _transfer(address _from, address _to, uint256 _value) internal {
       require(_to != 0x0);
-      require(_value &gt; 0);
-      require(balanceOf[_from] &gt;= _value);
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+      require(_value > 0);
+      require(balanceOf[_from] >= _value);
+      require(balanceOf[_to] + _value > balanceOf[_to]);
       require(!frozenAccount[_from]);
       require(!frozenAccount[_to]);
       uint previousBalances = SafeMath.safeAdd(balanceOf[_from] , balanceOf[_to]);
@@ -60,12 +60,12 @@ contract HermesBlockTechToken is SafeMath,owned {
     }
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
       require(_to != 0x0);
-      require(_value &gt; 0);
-      require(balanceOf[_from] &gt;= _value);
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+      require(_value > 0);
+      require(balanceOf[_from] >= _value);
+      require(balanceOf[_to] + _value > balanceOf[_to]);
       require(!frozenAccount[_from]);
       require(!frozenAccount[_to]);
-      require(_value &lt;= allowance[_from][msg.sender]); 
+      require(_value <= allowance[_from][msg.sender]); 
       uint previousBalances = SafeMath.safeAdd(balanceOf[_from] , balanceOf[_to]);
       allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender] , _value);
       balanceOf[_from] = SafeMath.safeSub( balanceOf[_from] , _value);
@@ -76,8 +76,8 @@ contract HermesBlockTechToken is SafeMath,owned {
     }
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require(_spender != 0x0);
-        require(_value &gt; 0);
-        require(balanceOf[_spender] &gt;= _value);
+        require(_value > 0);
+        require(balanceOf[_spender] >= _value);
         require(!frozenAccount[msg.sender]);
         require(!frozenAccount[_spender]);
         allowance[msg.sender][_spender] = _value;

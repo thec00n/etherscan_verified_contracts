@@ -42,18 +42,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -101,7 +101,7 @@ contract Crowdsale is Base, Owned {
     uint public bonus = 2000; //20%
     uint public currentPrice;
     address public beneficiary;
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     uint public countMembers = 0;
 
     uint private bonusBase = 10000; //100%;
@@ -173,12 +173,12 @@ contract Crowdsale is Base, Owned {
         only(owner)
     {
         require(
-            currentState != State.STOPPED &amp;&amp; (_newState == State.STOPPED ||
-            (currentState == State.INIT &amp;&amp; _newState == State.BOUNTY
-            || currentState == State.BOUNTY &amp;&amp; _newState == State.PREICO
-            || currentState == State.PREICO &amp;&amp; _newState == State.PREICO_FINISHED
-            || currentState == State.PREICO_FINISHED &amp;&amp; _newState == State.ICO
-            || currentState == State.ICO &amp;&amp; _newState == State.CLOSED))
+            currentState != State.STOPPED && (_newState == State.STOPPED ||
+            (currentState == State.INIT && _newState == State.BOUNTY
+            || currentState == State.BOUNTY && _newState == State.PREICO
+            || currentState == State.PREICO && _newState == State.PREICO_FINISHED
+            || currentState == State.PREICO_FINISHED && _newState == State.ICO
+            || currentState == State.ICO && _newState == State.CLOSED))
         );
 
         if(_newState == State.CLOSED){
@@ -262,9 +262,9 @@ contract Crowdsale is Base, Owned {
         internal
     {
         if(currentState == State.PREICO) {
-            require(totalPreICOSupply.add(transferTokens) &lt;= MAX_PREICO_SUPPLY);
+            require(totalPreICOSupply.add(transferTokens) <= MAX_PREICO_SUPPLY);
         } else if(currentState == State.ICO) {
-            require(totalICOSupply.add(transferTokens) &lt;= MAX_ICO_SUPPLY);
+            require(totalICOSupply.add(transferTokens) <= MAX_ICO_SUPPLY);
         }
     }
     

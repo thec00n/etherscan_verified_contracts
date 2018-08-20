@@ -7,19 +7,19 @@ pragma solidity ^0.4.19;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -45,9 +45,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -64,7 +64,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -221,7 +221,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -239,7 +239,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -269,7 +269,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -280,8 +280,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -295,7 +295,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -344,7 +344,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -432,8 +432,8 @@ contract XClaimable is Claimable {
 }
 
 contract VUULRTokenConfig {
-    string public constant NAME = &quot;Vuulr Token&quot;;
-    string public constant SYMBOL = &quot;VUU&quot;;
+    string public constant NAME = "Vuulr Token";
+    string public constant SYMBOL = "VUU";
     uint8 public constant DECIMALS = 18;
     uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
     uint public constant TOTALSUPPLY = 1000000000 * DECIMALSFACTOR;
@@ -474,7 +474,7 @@ contract VUULRToken is XClaimable, PausableToken, VUULRTokenConfig, Salvageable 
     }
 
     function mint(address _to, uint _amount) canOperate canMint public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= TOTALSUPPLY);
+        require(totalSupply_.add(_amount) <= TOTALSUPPLY);
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);
@@ -532,7 +532,7 @@ contract VUULRVesting is XClaimable, Salvageable {
 
 
     // Vesting schedule attached to a specific address.
-    mapping (address =&gt; VestingSchedule) public vestingSchedules;
+    mapping (address => VestingSchedule) public vestingSchedules;
 
     event VestingScheduleRegistered(address registeredAddress, address theWallet, uint lockPeriod,  uint tokens);
     event Started(uint start);
@@ -557,7 +557,7 @@ contract VUULRVesting is XClaimable, Salvageable {
         emit Started(now);
 
         // catch up on owing transfers
-        if (vestingOwing &gt; 0) {
+        if (vestingOwing > 0) {
             require(vestingToken.transferFrom(vestingWallet, address(this), vestingOwing));
             vestingOwing = 0;
         }
@@ -573,14 +573,14 @@ contract VUULRVesting is XClaimable, Salvageable {
 
         uint _lockPeriod;
 
-        // Let&#39;s not allow the common mistake....
+        // Let's not allow the common mistake....
         require(_newAddress != address(0));
         // Check that beneficiary is not already registered
         require(vestingSchedules[_newAddress].tokens == 0);
 
         // Some lock period sanity checks.
-        require(_numDays &gt; 0);
-        require(_numPeriods &gt; 0);
+        require(_numDays > 0);
+        require(_numPeriods > 0);
 
         _lockPeriod = _numDays * 1 days;
 
@@ -605,7 +605,7 @@ contract VUULRVesting is XClaimable, Salvageable {
     // 1 - n : the timeperiod we are in
     function whichPeriod(address whom, uint time) public view returns (uint period) {
         VestingSchedule memory v = vestingSchedules[whom];
-        if (started &amp;&amp; (v.tokens &gt; 0) &amp;&amp; (time &gt;= v.startTime)) {
+        if (started && (v.tokens > 0) && (time >= v.startTime)) {
             period = Math.min256(1 + (time - v.startTime) / v.lockPeriod,v.numPeriods);
         }
     }
@@ -613,16 +613,16 @@ contract VUULRVesting is XClaimable, Salvageable {
     // Returns the amount of tokens you can withdraw
     function vested(address beneficiary) public view returns (uint _amountVested) {
         VestingSchedule memory _vestingSchedule = vestingSchedules[beneficiary];
-        // If it&#39;s past the end time, the whole amount is available.
-        if ((_vestingSchedule.tokens == 0) || (_vestingSchedule.numPeriods == 0) || (now &lt; _vestingSchedule.startTime)){
+        // If it's past the end time, the whole amount is available.
+        if ((_vestingSchedule.tokens == 0) || (_vestingSchedule.numPeriods == 0) || (now < _vestingSchedule.startTime)){
             return 0;
         }
         uint _end = _vestingSchedule.lockPeriod.mul(_vestingSchedule.numPeriods);
-        if (now &gt;= _vestingSchedule.startTime.add(_end)) {
+        if (now >= _vestingSchedule.startTime.add(_end)) {
             return _vestingSchedule.tokens;
         }
         uint period = now.sub(_vestingSchedule.startTime).div(_vestingSchedule.lockPeriod)+1;
-        if (period &gt;= _vestingSchedule.numPeriods) {
+        if (period >= _vestingSchedule.numPeriods) {
             return _vestingSchedule.tokens;
         }
         uint _lockAmount = _vestingSchedule.tokens.div(_vestingSchedule.numPeriods);
@@ -645,7 +645,7 @@ contract VUULRVesting is XClaimable, Salvageable {
         uint _withdrawable = withdrawable(msg.sender);
         vestingSchedule.amountWithdrawn = _vested;
 
-        if (_withdrawable &gt; 0) {
+        if (_withdrawable > 0) {
             require(vestingToken.transfer(msg.sender, _withdrawable));
             emit Withdraw(msg.sender, _withdrawable);
         }
@@ -658,16 +658,16 @@ contract VUULRVesting is XClaimable, Salvageable {
         uint _refundable = vestingSchedules[_addressToRevoke].tokens.sub(vested(_addressToRevoke));
 
         delete vestingSchedules[_addressToRevoke];
-        if (_withdrawable &gt; 0)
+        if (_withdrawable > 0)
             require(vestingToken.transfer(_addressToRevoke, _withdrawable));
-        if (_refundable &gt; 0)
+        if (_refundable > 0)
             require(vestingToken.transfer(_addressToRefund, _refundable));
         emit VestingRevoked(_addressToRevoke, _withdrawable, _refundable);
     }
 
     function changeVestingAddress(address _oldAddress, address _newAddress) public onlyOwner {
         VestingSchedule memory vestingSchedule = vestingSchedules[_oldAddress];
-        require(vestingSchedule.tokens &gt; 0);
+        require(vestingSchedule.tokens > 0);
         require(_newAddress != 0x0);
         require(vestingSchedules[_newAddress].tokens == 0x0);
 

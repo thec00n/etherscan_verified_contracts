@@ -11,12 +11,12 @@ pragma solidity 0.4.20;
  */
 contract EternalStorage {
 
-    mapping(bytes32 =&gt; uint256) internal uintStorage;
-    mapping(bytes32 =&gt; string) internal stringStorage;
-    mapping(bytes32 =&gt; address) internal addressStorage;
-    mapping(bytes32 =&gt; bytes) internal bytesStorage;
-    mapping(bytes32 =&gt; bool) internal boolStorage;
-    mapping(bytes32 =&gt; int256) internal intStorage;
+    mapping(bytes32 => uint256) internal uintStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => bool) internal boolStorage;
+    mapping(bytes32 => int256) internal intStorage;
 
 }
 
@@ -133,9 +133,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -143,7 +143,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -152,7 +152,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -190,7 +190,7 @@ contract Ownable is EternalStorage {
     * @return the address of the owner
     */
     function owner() public view returns (address) {
-        return addressStorage[keccak256(&quot;owner&quot;)];
+        return addressStorage[keccak256("owner")];
     }
 
     /**
@@ -207,7 +207,7 @@ contract Ownable is EternalStorage {
     */
     function setOwner(address newOwner) internal {
         OwnershipTransferred(owner(), newOwner);
-        addressStorage[keccak256(&quot;owner&quot;)] = newOwner;
+        addressStorage[keccak256("owner")] = newOwner;
     }
 }
 
@@ -227,7 +227,7 @@ pragma solidity 0.4.20;
  */
 contract Claimable is EternalStorage, Ownable {
     function pendingOwner() public view returns (address) {
-        return addressStorage[keccak256(&quot;pendingOwner&quot;)];
+        return addressStorage[keccak256("pendingOwner")];
     }
 
     /**
@@ -244,7 +244,7 @@ contract Claimable is EternalStorage, Ownable {
     */
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0));
-        addressStorage[keccak256(&quot;pendingOwner&quot;)] = newOwner;
+        addressStorage[keccak256("pendingOwner")] = newOwner;
     }
 
     /**
@@ -252,8 +252,8 @@ contract Claimable is EternalStorage, Ownable {
     */
     function claimOwnership() public onlyPendingOwner {
         OwnershipTransferred(owner(), pendingOwner());
-        addressStorage[keccak256(&quot;owner&quot;)] = addressStorage[keccak256(&quot;pendingOwner&quot;)];
-        addressStorage[keccak256(&quot;pendingOwner&quot;)] = address(0);
+        addressStorage[keccak256("owner")] = addressStorage[keccak256("pendingOwner")];
+        addressStorage[keccak256("pendingOwner")] = address(0);
     }
 }
 
@@ -294,8 +294,8 @@ contract UpgradebleStormSender is OwnedUpgradeabilityStorage, Claimable {
     event ClaimedTokens(address token, address owner, uint256 balance);
 
     modifier hasFee() {
-        if (currentFee(msg.sender) &gt; 0) {
-            require(msg.value &gt;= currentFee(msg.sender));
+        if (currentFee(msg.sender) > 0) {
+            require(msg.value >= currentFee(msg.sender));
         }
         _;
     }
@@ -308,41 +308,41 @@ contract UpgradebleStormSender is OwnedUpgradeabilityStorage, Claimable {
         setArrayLimit(200);
         setDiscountStep(0.00005 ether);
         setFee(0.05 ether);
-        boolStorage[keccak256(&quot;rs_multisender_initialized&quot;)] = true;
+        boolStorage[keccak256("rs_multisender_initialized")] = true;
     }
 
     function initialized() public view returns (bool) {
-        return boolStorage[keccak256(&quot;rs_multisender_initialized&quot;)];
+        return boolStorage[keccak256("rs_multisender_initialized")];
     }
  
     function txCount(address customer) public view returns(uint256) {
-        return uintStorage[keccak256(&quot;txCount&quot;, customer)];
+        return uintStorage[keccak256("txCount", customer)];
     }
 
     function arrayLimit() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;arrayLimit&quot;)];
+        return uintStorage[keccak256("arrayLimit")];
     }
 
     function setArrayLimit(uint256 _newLimit) public onlyOwner {
         require(_newLimit != 0);
-        uintStorage[keccak256(&quot;arrayLimit&quot;)] = _newLimit;
+        uintStorage[keccak256("arrayLimit")] = _newLimit;
     }
 
     function discountStep() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;discountStep&quot;)];
+        return uintStorage[keccak256("discountStep")];
     }
 
     function setDiscountStep(uint256 _newStep) public onlyOwner {
         require(_newStep != 0);
-        uintStorage[keccak256(&quot;discountStep&quot;)] = _newStep;
+        uintStorage[keccak256("discountStep")] = _newStep;
     }
 
     function fee() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;fee&quot;)];
+        return uintStorage[keccak256("fee")];
     }
 
     function currentFee(address _customer) public view returns(uint256) {
-        if (fee() &gt; discountRate(msg.sender)) {
+        if (fee() > discountRate(msg.sender)) {
             return fee().sub(discountRate(_customer));
         } else {
             return 0;
@@ -351,7 +351,7 @@ contract UpgradebleStormSender is OwnedUpgradeabilityStorage, Claimable {
 
     function setFee(uint256 _newStep) public onlyOwner {
         require(_newStep != 0);
-        uintStorage[keccak256(&quot;fee&quot;)] = _newStep;
+        uintStorage[keccak256("fee")] = _newStep;
     }
 
     function discountRate(address _customer) public view returns(uint256) {
@@ -361,10 +361,10 @@ contract UpgradebleStormSender is OwnedUpgradeabilityStorage, Claimable {
 
     function multisendToken(address token, address[] _contributors, uint256[] _balances) public hasFee payable {
         uint256 total = 0;
-        require(_contributors.length &lt;= arrayLimit());
+        require(_contributors.length <= arrayLimit());
         ERC20 erc20token = ERC20(token);
         uint8 i = 0;
-        for (i; i &lt; _contributors.length; i++) {
+        for (i; i < _contributors.length; i++) {
             erc20token.transferFrom(msg.sender, _contributors[i], _balances[i]);
             total += _balances[i];
         }
@@ -384,7 +384,7 @@ contract UpgradebleStormSender is OwnedUpgradeabilityStorage, Claimable {
     }
     
     function setTxCount(address customer, uint256 _txCount) private {
-        uintStorage[keccak256(&quot;txCount&quot;, customer)] = _txCount;
+        uintStorage[keccak256("txCount", customer)] = _txCount;
     }
 
 }

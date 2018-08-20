@@ -4,8 +4,8 @@ pragma solidity ^0.4.4;
 // adapted from code provided by u/JonnyLatte
 
 contract TokenInterface {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -29,7 +29,7 @@ contract Token is TokenInterface {
 
     function _transfer(address _to,
                        uint256 _amount) internal returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+        if (balances[msg.sender] >= _amount && _amount > 0) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -42,9 +42,9 @@ contract Token is TokenInterface {
     function _transferFrom(address _from,
                            address _to,
                            uint256 _amount) internal returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
 
             balances[_to] += _amount;
             balances[_from] -= _amount;
@@ -91,14 +91,14 @@ contract DepositSlot {
 }
 
 contract GolemNetworkTokenWrapped is Token {
-    string public constant standard = &quot;Token 0.1&quot;;
-    string public constant name = &quot;Golem Network Token Wrapped&quot;;
-    string public constant symbol = &quot;GNTW&quot;;
+    string public constant standard = "Token 0.1";
+    string public constant name = "Golem Network Token Wrapped";
+    string public constant symbol = "GNTW";
     uint8 public constant decimals = 18;     // same as GNT
 
     address public constant GNT = 0xa74476443119A942dE498590Fe1f2454d7D4aC0d;
 
-    mapping (address =&gt; address) depositSlots;
+    mapping (address => address) depositSlots;
 
     function createPersonalDepositAddress() returns (address depositAddress) {
         if (depositSlots[msg.sender] == 0) {
@@ -120,7 +120,7 @@ contract GolemNetworkTokenWrapped is Token {
         DepositSlot(depositSlot).collect();
 
         uint balance = TokenInterface(GNT).balanceOf(this);
-        if (balance &lt;= totalSupply) throw;
+        if (balance <= totalSupply) throw;
 
         uint freshGNTW = balance - totalSupply;
         totalSupply += freshGNTW;
@@ -147,7 +147,7 @@ contract GolemNetworkTokenWrapped is Token {
 
 
     function withdrawGNT(uint amount) internal {
-        if (balances[msg.sender] &lt; amount) throw;
+        if (balances[msg.sender] < amount) throw;
 
         balances[msg.sender] -= amount;
         totalSupply -= amount;

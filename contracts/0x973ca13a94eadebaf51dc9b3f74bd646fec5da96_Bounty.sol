@@ -3,13 +3,13 @@ pragma solidity ^0.4.0;
 contract Bounty {
     struct Talk {
         uint balance;
-        mapping(address =&gt; uint) witnessedPresenter;
-        mapping(address =&gt; bool) witnessedBy;
+        mapping(address => uint) witnessedPresenter;
+        mapping(address => bool) witnessedBy;
     }
     
     event TalkBounty (bytes32 title);
     
-    mapping(bytes32 =&gt; Talk) public talks;
+    mapping(bytes32 => Talk) public talks;
     
     modifier onlywitness {
         require(msg.sender == 0x07114957EdBcCc1DA265ea2Aa420a1a22e6afF58
@@ -32,7 +32,7 @@ contract Bounty {
     }
     
     function claim(bytes32 title) {
-        if (talks[title].witnessedPresenter[msg.sender] &lt; 2) {
+        if (talks[title].witnessedPresenter[msg.sender] < 2) {
             revert();
         }
         uint amount = talks[title].balance;

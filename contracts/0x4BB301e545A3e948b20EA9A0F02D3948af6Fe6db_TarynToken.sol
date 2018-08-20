@@ -37,36 +37,36 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 contract TarynToken is AccessControlled {
   using SafeMath for uint256;
 
-  string public constant name     = &quot;TarynToken&quot;;
-  string public constant symbol   = &quot;TA&quot;;
+  string public constant name     = "TarynToken";
+  string public constant symbol   = "TA";
   uint8  public constant decimals = 18;
   
   uint256 public constant INITIAL_SUPPLY = 0;
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(uint256 =&gt; address) public addresses;
-  mapping(address =&gt; uint256) public indexes;
+  mapping(address => uint256) balances;
+  mapping(uint256 => address) public addresses;
+  mapping(address => uint256) public indexes;
   //index starts at 1 so that first item has index of 1, which differentiates
   //it from non-existing items with values of 0. 
   uint public index = 1;
@@ -99,7 +99,7 @@ contract TarynToken is AccessControlled {
   event Distribute(address owner, uint256 balance, uint256 value, uint ind);
 
   function distribute() payable public returns(bool){
-   for (uint i = 1; i &lt; index; i++) {
+   for (uint i = 1; i < index; i++) {
      uint256 balance = balances[addresses[i]];
      uint256 giveAmount = balance.mul(msg.value).div(totalSupply);
      Distribute(addresses[i], balance, giveAmount, i);
@@ -141,7 +141,7 @@ contract TarynToken is AccessControlled {
   
   // Allowances
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -153,7 +153,7 @@ contract TarynToken is AccessControlled {
     var _allowance = allowed[_from][msg.sender];
   
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
   
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -208,7 +208,7 @@ contract TarynToken is AccessControlled {
     public
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

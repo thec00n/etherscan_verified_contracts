@@ -18,13 +18,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,13 +79,13 @@ contract INTLToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function INTLToken() public {
-        symbol = &quot;INTL&quot;;
-        name = &quot;INTLToken&quot;;
+        symbol = "INTL";
+        name = "INTLToken";
         decimals = 18;
         _totalSupply = 55000000000000000000000000;
         balances[msg.sender] = _totalSupply;

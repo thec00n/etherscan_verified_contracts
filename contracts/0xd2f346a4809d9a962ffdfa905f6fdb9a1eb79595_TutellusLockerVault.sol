@@ -5,7 +5,7 @@ pragma solidity 0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract Authorizable is Ownable {
     event LogAccess(address authAddress);
     event Grant(address authAddress, bool grant);
 
-    mapping(address =&gt; bool) public auth;
+    mapping(address => bool) public auth;
 
     modifier authorized() {
         LogAccess(msg.sender);
@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -124,7 +124,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -176,7 +176,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -308,8 +308,8 @@ contract MintableToken is StandardToken, Ownable {
  * @dev ERC20 Tutellus Token (TUT)
  */
 contract TutellusToken is MintableToken {
-   string public name = &quot;Tutellus&quot;;
-   string public symbol = &quot;TUT&quot;;
+   string public name = "Tutellus";
+   string public symbol = "TUT";
    uint8 public decimals = 18;
 }
 
@@ -323,15 +323,15 @@ contract TutellusLockerVault is Authorizable {
     uint256 releaseTime;
     TutellusToken token;
 
-    mapping(address =&gt; uint256) public amounts;
-    mapping(address =&gt; bool) public verified;
+    mapping(address => uint256) public amounts;
+    mapping(address => bool) public verified;
 
     function TutellusLockerVault(
         uint256 _releaseTime, 
         address _token
     ) public 
     {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         require(_token != address(0));
         
         releaseTime = _releaseTime;
@@ -347,18 +347,18 @@ contract TutellusLockerVault is Authorizable {
 
     function deposit(address _address, uint256 _amount) authorized public {
         require(_address != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         amounts[_address] += _amount;
         Deposit(_address, _amount);
     }
 
     function release() public returns(bool) {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
         require(verified[msg.sender]);
 
         uint256 amount = amounts[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             amounts[msg.sender] = 0;
             if (!token.transfer(msg.sender, amount)) {
                 amounts[msg.sender] = amount;

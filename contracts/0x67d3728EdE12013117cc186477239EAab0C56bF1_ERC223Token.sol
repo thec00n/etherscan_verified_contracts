@@ -27,8 +27,8 @@ contract ERC223Token
   uint8   public decimals;
   uint256 public totalSupply;
 
-  mapping( address =&gt; uint256 ) balances_;
-  mapping( address =&gt; mapping(address =&gt; uint256) ) allowances_;
+  mapping( address => uint256 ) balances_;
+  mapping( address => mapping(address => uint256) ) allowances_;
 
   // ERC20
   event Approval( address indexed owner,
@@ -108,7 +108,7 @@ contract ERC223Token
   function transferFrom( address from, address to, uint256 value ) public
   returns (bool success)
   {
-    require( value &lt;= allowances_[from][msg.sender] );
+    require( value <= allowances_[from][msg.sender] );
 
     allowances_[from][msg.sender] -= value;
     bytes memory empty;
@@ -181,7 +181,7 @@ contract ERC223Token
   {
     uint length;
     assembly { length := extcodesize(_addr) }
-    return (length &gt; 0);
+    return (length > 0);
   }
 
   function _transfer( address from,
@@ -190,8 +190,8 @@ contract ERC223Token
                       bytes data ) internal
   {
     require( to != 0x0 );
-    require( balances_[from] &gt;= value );
-    require( balances_[to] + value &gt; balances_[to] ); // catch overflow
+    require( balances_[from] >= value );
+    require( balances_[to] + value > balances_[to] ); // catch overflow
 
     balances_[from] -= value;
     balances_[to] += value;

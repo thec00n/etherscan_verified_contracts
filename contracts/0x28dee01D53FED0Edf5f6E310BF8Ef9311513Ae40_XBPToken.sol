@@ -2,7 +2,7 @@ pragma solidity 0.4.19;
 
 contract BaseContract {
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         _;
     }
@@ -44,7 +44,7 @@ contract BaseContract {
     }
 
     modifier validString(string value) {
-        require(bytes(value).length &gt; 0);
+        require(bytes(value).length > 0);
 
         _;
     }
@@ -53,7 +53,7 @@ contract BaseContract {
     // http://vessenes.com/the-erc20-short-address-attack-explained/
     modifier validParamData(uint256 numParams) {
         uint256 expectedDataLength = (numParams * 32) + 4;
-        assert(msg.data.length &gt;= expectedDataLength);
+        assert(msg.data.length >= expectedDataLength);
 
         _;
     }
@@ -62,7 +62,7 @@ contract BaseContract {
         internal
         pure
     {
-        require(index &gt;= 0 &amp;&amp; index &lt; arrayLength);
+        require(index >= 0 && index < arrayLength);
     }
 }
 
@@ -155,7 +155,7 @@ contract TokenRetriever is Owned {
         onlyOwner
     {
         uint256 tokenBalance = _token.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             _token.transfer(owner, tokenBalance);
         }
     }
@@ -183,9 +183,9 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -194,7 +194,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -204,7 +204,7 @@ library SafeMath {
         returns (uint256)
     {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -213,7 +213,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -224,12 +224,12 @@ library SafeMath {
 contract ERC20Token is BaseContract {
     using SafeMath for uint256;
 
-    string public name = &quot;&quot;;
-    string public symbol = &quot;&quot;;
+    string public name = "";
+    string public symbol = "";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -252,7 +252,7 @@ contract ERC20Token is BaseContract {
     /// throws on any error rather then return a false flag to minimize user errors
     /// @param _to      target address
     /// @param _value   transfer amount
-    /// @return true if the transfer was successful, false if it wasn&#39;t
+    /// @return true if the transfer was successful, false if it wasn't
     function transfer(address _to, uint256 _value)
         public
         validParamData(2)
@@ -271,7 +271,7 @@ contract ERC20Token is BaseContract {
     /// @param _from    source address
     /// @param _to      target address
     /// @param _value   transfer amount
-    /// @return true if the transfer was successful, false if it wasn&#39;t
+    /// @return true if the transfer was successful, false if it wasn't
     function transferFrom(address _from, address _to, uint256 _value)
         public
         validParamData(3)
@@ -295,7 +295,7 @@ contract ERC20Token is BaseContract {
     /// once to change the allowance to 0 and secondly to change it to the new allowance value
     /// @param _spender approved address
     /// @param _value   allowance amount
-    /// @return true if the approval was successful, false if it wasn&#39;t
+    /// @return true if the approval was successful, false if it wasn't
     function approve(address _spender, uint256 _value)
         public
         validParamData(2)
@@ -347,7 +347,7 @@ contract XBPToken is BaseContract, Owned, TokenRetriever, ERC20Token {
 
     function XBPToken()
         public
-        ERC20Token(&quot;BlitzPredict&quot;, &quot;XBP&quot;, 18)
+        ERC20Token("BlitzPredict", "XBP", 18)
     {
     }
 

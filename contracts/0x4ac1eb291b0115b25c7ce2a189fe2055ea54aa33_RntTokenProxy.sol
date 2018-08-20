@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="b0c2d5ddd3dff082">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="b0c2d5ddd3dff082">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -135,20 +135,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -158,9 +158,9 @@ contract IRntToken {
 
     uint256 public totalSupply = 1000000000 * (10 ** 18);
 
-    string public name = &quot;RNT Token&quot;;
+    string public name = "RNT Token";
 
-    string public code = &quot;RNT&quot;;
+    string public code = "RNT";
 
 
     function balanceOf() public constant returns (uint256 balance);
@@ -179,13 +179,13 @@ contract RntTokenVault is HasNoEther, Pausable {
 
     uint256 public tokens = 0;
 
-    mapping (bytes16 =&gt; bool) public accountsStatuses;
+    mapping (bytes16 => bool) public accountsStatuses;
 
-    mapping (bytes16 =&gt; uint256) public balances;
+    mapping (bytes16 => uint256) public balances;
 
-    mapping (address =&gt; bool) public allowedAddresses;
+    mapping (address => bool) public allowedAddresses;
 
-    mapping (address =&gt; bytes16) public tokenTransfers;
+    mapping (address => bytes16) public tokenTransfers;
 
 
     function RntTokenVault(address _rntTokenAddress){
@@ -262,7 +262,7 @@ contract RntTokenVault is HasNoEther, Pausable {
 
     /**
     @notice Function for adding tokens to specified account.
-    @dev Account will be registered if it wasn&#39;t. Tokens will not be added to Vault address.
+    @dev Account will be registered if it wasn't. Tokens will not be added to Vault address.
     @param _uuid Uuid of account.
     @param _tokensCount Number of tokens for adding to account.
     @return { true if added, false if not }
@@ -276,7 +276,7 @@ contract RntTokenVault is HasNoEther, Pausable {
 
     /**
     @notice Function for removing tokens from specified account.
-    @dev Function throw exception if account wasn&#39;t registered. Tokens will not be returned to owner address.
+    @dev Function throw exception if account wasn't registered. Tokens will not be returned to owner address.
     @param _uuid Uuid of account.
     @param _tokensCount Number of tokens for adding to account.
     @return { true if added, false if not }
@@ -380,7 +380,7 @@ contract RntTokenProxy is Destructible, Pausable, HasNoEther {
 
     RntTokenVault public rntTokenVault;
 
-    mapping (address =&gt; bool) public allowedAddresses;
+    mapping (address => bool) public allowedAddresses;
 
     function RntTokenProxy(address _tokenAddress, address _vaultAddress, address _defaultAllowed, address _crowdsaleAddress) {
         rntToken = IRntToken(_tokenAddress);
@@ -409,7 +409,7 @@ contract RntTokenProxy is Destructible, Pausable, HasNoEther {
 
     /**
       @notice Function for adding tokens to account.
-      @dev If account wasn&#39;t created, it will be created and tokens will be added. Also this function transfer tokens to address of Valut.
+      @dev If account wasn't created, it will be created and tokens will be added. Also this function transfer tokens to address of Valut.
       @param _uuid Account uuid.
       @param _tokensCount Number of tokens that will be added to account.
      */

@@ -22,10 +22,10 @@ contract Storage {
 
             startPoint = 32 - remainder;
             bytes memory rest = new bytes(32);
-            for(uint i = 0; i &lt; remainder; i++) {
+            for(uint i = 0; i < remainder; i++) {
                 rest[i] = data[data.length - 1][i];
             }
-            for(i = 0; i &lt; startPoint; i++) {
+            for(i = 0; i < startPoint; i++) {
                 rest[remainder + i] = _data[i];
             }
             bytes32 p;
@@ -34,7 +34,7 @@ contract Storage {
             }
             data[data.length - 1] = p;
         }
-        for(i = 0; i &lt; (uint(_data.length - startPoint) / 32); i++) {
+        for(i = 0; i < (uint(_data.length - startPoint) / 32); i++) {
             bytes32 word;
             assembly {
                 word:= mload(add(_data, add(add(32, startPoint), mul(i, 32))))
@@ -56,7 +56,7 @@ contract Storage {
     function erase(uint _entriesToDelete) public {
         require(msg.sender == owner);
         require(readOnly != true);
-        if(data.length &lt; _entriesToDelete) { 
+        if(data.length < _entriesToDelete) { 
             delete data;
         }
         else data.length -= _entriesToDelete;
@@ -71,7 +71,7 @@ contract Storage {
     // affect the contract state, there are no gas costs
     function getData() public view returns (bytes){
         bytes memory result = new bytes(data.length*0x20);
-        for(uint i = 0; i &lt; data.length; i++) {
+        for(uint i = 0; i < data.length; i++) {
             bytes32 word = data[i];
             assembly {
                 mstore(add(result, add(0x20, mul(i, 32))), word)

@@ -1,5 +1,5 @@
 //
-// compiler: solcjs -o ./build/contracts --optimize --abi --bin &lt;this file&gt;
+// compiler: solcjs -o ./build/contracts --optimize --abi --bin <this file>
 //  version: 0.4.15+commit.bbb8e64f.Emscripten.clang
 //
 pragma solidity ^0.4.15;
@@ -43,8 +43,8 @@ contract JBX is owned
   uint8   public decimals;    // ERC20
   uint256 public totalSupply; // ERC20
 
-  mapping( address =&gt; uint256 ) balances_;
-  mapping( address =&gt; mapping(address =&gt; uint256) ) allowances_;
+  mapping( address => uint256 ) balances_;
+  mapping( address => mapping(address => uint256) ) allowances_;
 
   // ERC20
   event Approval( address indexed owner,
@@ -64,14 +64,14 @@ contract JBX is owned
   {
     balances_[msg.sender] = uint256(200000000);
     totalSupply = uint256(200000000);
-    name = &quot;Jbox&quot;;
+    name = "Jbox";
     decimals = uint8(0);
-    symbol = &quot;JBX&quot;;
+    symbol = "JBX";
   }
 
   // Jbox-specific
   function mine( uint256 newTokens ) onlyOwner {
-    if (newTokens + totalSupply &gt; 4e9)
+    if (newTokens + totalSupply > 4e9)
       revert();
 
     totalSupply += newTokens;
@@ -113,7 +113,7 @@ contract JBX is owned
   function transferFrom( address from, address to, uint256 value )
   returns (bool success)
   {
-    require( value &lt;= allowances_[from][msg.sender] );
+    require( value <= allowances_[from][msg.sender] );
 
     allowances_[from][msg.sender] -= value;
     bytes memory empty;
@@ -138,7 +138,7 @@ contract JBX is owned
   // Ethereum Token
   function burn( uint256 value ) returns (bool success)
   {
-    require( balances_[msg.sender] &gt;= value );
+    require( balances_[msg.sender] >= value );
     balances_[msg.sender] -= value;
     totalSupply -= value;
 
@@ -149,8 +149,8 @@ contract JBX is owned
   // Ethereum Token
   function burnFrom( address from, uint256 value ) returns (bool success)
   {
-    require( balances_[from] &gt;= value );
-    require( value &lt;= allowances_[from][msg.sender] );
+    require( balances_[from] >= value );
+    require( value <= allowances_[from][msg.sender] );
 
     balances_[from] -= value;
     allowances_[from][msg.sender] -= value;
@@ -166,8 +166,8 @@ contract JBX is owned
                       bytes data ) internal
   {
     require( to != 0x0 );
-    require( balances_[from] &gt;= value );
-    require( balances_[to] + value &gt; balances_[to] ); // catch overflow
+    require( balances_[from] >= value );
+    require( balances_[to] + value > balances_[to] ); // catch overflow
 
     balances_[from] -= value;
     balances_[to] += value;
@@ -221,6 +221,6 @@ contract JBX is owned
   {
     uint length;
     assembly { length := extcodesize(_addr) }
-    return (length &gt; 0);
+    return (length > 0);
   }
 }

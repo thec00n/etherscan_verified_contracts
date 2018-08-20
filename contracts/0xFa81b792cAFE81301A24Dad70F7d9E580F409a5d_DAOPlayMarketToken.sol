@@ -55,13 +55,13 @@ contract SafeMath {
 
   function sub(uint256 x, uint256 y) internal constant returns (uint256) {
     uint256 z = x - y;
-    assert(z &lt;= x);
+    assert(z <= x);
 	  return z;
   }
 
   function add(uint256 x, uint256 y) internal constant returns (uint256) {
     uint256 z = x + y;
-	  assert(z &gt;= x);
+	  assert(z >= x);
 	  return z;
   }
 	
@@ -77,12 +77,12 @@ contract SafeMath {
   }
 
   function min(uint256 x, uint256 y) internal constant returns (uint256) {
-    uint256 z = x &lt;= y ? x : y;
+    uint256 z = x <= y ? x : y;
 	  return z;
   }
 
   function max(uint256 x, uint256 y) internal constant returns (uint256) {
-    uint256 z = x &gt;= y ? x : y;
+    uint256 z = x >= y ? x : y;
 	  return z;
   }
 }
@@ -114,8 +114,8 @@ contract ERC20 {
 contract StandardToken is ERC20, SafeMath, Ownable{
 	
   uint256 _totalSupply;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) approvals;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) approvals;
   address public crowdsaleAgent;
   bool public released = false;  
   
@@ -186,7 +186,7 @@ contract StandardToken is ERC20, SafeMath, Ownable{
    * @return transfer result
    */   
   function transfer(address _to, uint _value) public canTransfer onlyPayloadSize(2) returns (bool success) {
-    assert(balances[msg.sender] &gt;= _value);
+    assert(balances[msg.sender] >= _value);
     balances[msg.sender] = sub(balances[msg.sender], _value);
     balances[_to] = add(balances[_to], _value);
     
@@ -202,8 +202,8 @@ contract StandardToken is ERC20, SafeMath, Ownable{
    * @return transfer result
    */    
   function transferFrom(address _from, address _to, uint _value) public canTransfer onlyPayloadSize(3) returns (bool success) {
-    assert(balances[_from] &gt;= _value);
-    assert(approvals[_from][msg.sender] &gt;= _value);
+    assert(balances[_from] >= _value);
+    assert(approvals[_from][msg.sender] >= _value);
     approvals[_from][msg.sender] = sub(approvals[_from][msg.sender], _value);
     balances[_from] = sub(balances[_from], _value);
     balances[_to] = add(balances[_to], _value);
@@ -283,7 +283,7 @@ contract DAOPlayMarketToken is StandardToken {
    * @param _symbol Token symbol - should be all caps
    * @param _initialSupply How many tokens we start with
    * @param _decimals Number of decimal places
-   * @param _addr Address for team&#39;s tokens
+   * @param _addr Address for team's tokens
    */
    
   function DAOPlayMarketToken(string _name, string _symbol, uint _initialSupply, uint _decimals, address _addr) public {

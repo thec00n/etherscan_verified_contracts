@@ -1,15 +1,15 @@
 pragma solidity 0.4.18;
 
 /// @title LRC Foundation Icebox Program
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e480858a8d8188a4888b8b94968d8a83ca8b9683">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e480858a8d8188a4888b8b94968d8a83ca8b9683">[email protected]</a>>.
 /// For more information, please visit https://loopring.org.
 
-/// Loopring Foundation&#39;s LRC (20% of total supply) will be locked during the first two years，
+/// Loopring Foundation's LRC (20% of total supply) will be locked during the first two years，
 /// two years later, 1/24 of all locked LRC fund can be unlocked every month.
 
 /// @title ERC20 ERC20 Interface
 /// @dev see https://github.com/ethereum/EIPs/issues/20
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="197d7877707c7559757676696b70777e37766b7e">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="197d7877707c7559757676696b70777e37766b7e">[email protected]</a>>
 contract ERC20 {
     uint public totalSupply;
 
@@ -37,18 +37,18 @@ contract AirDropContract {
         address[] recipients) public {
 
         require(tokenAddress != 0x0);
-        require(amount &gt; 0);
-        require(maxTokenBalance &gt;= minTokenBalance);
-        require(maxEthBalance &gt;= minEthBalance);
+        require(amount > 0);
+        require(maxTokenBalance >= minTokenBalance);
+        require(maxEthBalance >= minEthBalance);
 
         ERC20 token = ERC20(tokenAddress);
 
         uint balance = token.balanceOf(msg.sender);
         uint allowance = token.allowance(msg.sender, address(this));
-        uint available = balance &gt; allowance ? allowance : balance;
+        uint available = balance > allowance ? allowance : balance;
 
-        for (uint i = 0; i &lt; recipients.length; i++) {
-            require(available &gt;= amount);
+        for (uint i = 0; i < recipients.length; i++) {
+            require(available >= amount);
             address recipient = recipients[i];
             if (isQualitifiedAddress(
                 token,
@@ -78,21 +78,21 @@ contract AirDropContract {
         view
         returns (bool result)
     {
-        result = addr != 0x0 &amp;&amp; addr != msg.sender &amp;&amp; !isContract(addr);
+        result = addr != 0x0 && addr != msg.sender && !isContract(addr);
 
         uint ethBalance = addr.balance;
         uint tokenBbalance = token.balanceOf(addr);
 
-        result = result &amp;&amp; (ethBalance&gt;= minEthBalance &amp;&amp;
-            ethBalance &lt;= maxEthBalance &amp;&amp;
-            tokenBbalance &gt;= minTokenBalance &amp;&amp;
-            tokenBbalance &lt;= maxTokenBalance);
+        result = result && (ethBalance>= minEthBalance &&
+            ethBalance <= maxEthBalance &&
+            tokenBbalance >= minTokenBalance &&
+            tokenBbalance <= maxTokenBalance);
     }
 
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function () payable public {

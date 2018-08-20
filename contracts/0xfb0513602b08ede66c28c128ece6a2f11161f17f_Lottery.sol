@@ -78,7 +78,7 @@ contract Lottery{
      payable public
      {
         //You have to send more than 0.01 ETH
-        require(msg.value &gt;= 10000000000000000);
+        require(msg.value >= 10000000000000000);
         address customerAddress = msg.sender;
 
         //Use deposit to purchase POOH tokens
@@ -86,7 +86,7 @@ contract Lottery{
         emit Deposit(msg.value, msg.sender);
 
         //if entry more than 0.01 ETH
-        if(msg.value &gt; 10000000000000000)
+        if(msg.value > 10000000000000000)
         {
             uint extraTickets = SafeMath.div(msg.value, 10000000000000000); //each additional entry is 0.01 ETH
             
@@ -95,7 +95,7 @@ contract Lottery{
         }
 
          //if when we have a winner...
-        if(ticketNumber &gt;= winningNumber)
+        if(ticketNumber >= winningNumber)
         {
             //sell all tokens and cash out earned dividends
             poohContract.exit();
@@ -122,13 +122,13 @@ contract Lottery{
     }
 
 
-     //Lottery&#39;s divs
+     //Lottery's divs
     function myDividends() public view returns(uint256)
     {
         return poohContract.myDividends(true);
     }
 
-   //Lottery&#39;s ETH balance
+   //Lottery's ETH balance
    function ethBalance() public view returns (uint256)
    {
        return address(this).balance;
@@ -148,7 +148,7 @@ contract Lottery{
         resetLottery();
     }
 
-    //If this doesn&#39;t work as expected, cash out and send to owner to disperse ETH back to players
+    //If this doesn't work as expected, cash out and send to owner to disperse ETH back to players
     function emergencyStop()
         onlyOwner()
         public

@@ -59,12 +59,12 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
     }
 
     AbstractENS ens;
-    mapping(bytes32=&gt;Record) records;
+    mapping(bytes32=>Record) records;
 
     modifier only_owner(bytes32 node) {
         if (ens.owner(node) != msg.sender) throw;
@@ -169,8 +169,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) constant returns (uint256 contentType, bytes data) {
         var record = records[node];
-        for(contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for(contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -188,7 +188,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) only_owner(node) {
         // Content types must be powers of 2
-        if (((contentType - 1) &amp; contentType) != 0) throw;
+        if (((contentType - 1) & contentType) != 0) throw;
 
         records[node].abis[contentType] = data;
         ABIChanged(node, contentType);
@@ -244,9 +244,9 @@ pragma solidity ^0.4.18;
 
 contract ENSConstants {
     bytes32 constant public ENS_ROOT = bytes32(0);
-    bytes32 constant public ETH_TLD_LABEL = keccak256(&quot;eth&quot;);
+    bytes32 constant public ETH_TLD_LABEL = keccak256("eth");
     bytes32 constant public ETH_TLD_NODE = keccak256(ENS_ROOT, ETH_TLD_LABEL);
-    bytes32 constant public PUBLIC_RESOLVER_LABEL = keccak256(&quot;resolver&quot;);
+    bytes32 constant public PUBLIC_RESOLVER_LABEL = keccak256("resolver");
     bytes32 constant public PUBLIC_RESOLVER_NODE = keccak256(ETH_TLD_NODE, PUBLIC_RESOLVER_LABEL);
 }
 
@@ -337,8 +337,8 @@ pragma solidity 0.4.18;
 
 
 contract EVMScriptRegistryConstants {
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256(&quot;evmreg.aragonpm.eth&quot;);
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256(&quot;app&quot;), EVMSCRIPT_REGISTRY_APP_ID);
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256("evmreg.aragonpm.eth");
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256("app"), EVMSCRIPT_REGISTRY_APP_ID);
 }
 
 
@@ -354,8 +354,8 @@ pragma solidity 0.4.18;
 
 library ScriptHelpers {
     // To test with JS and compare with actual encoder. Maintaining for reference.
-    // t = function() { return IEVMScriptExecutor.at(&#39;0x4bcdd59d6c77774ee7317fc1095f69ec84421e49&#39;).contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
-    // run = function() { return ScriptHelpers.new().then(sh =&gt; { sh.abiEncode.call(...[].slice.call(arguments)).then(a =&gt; console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
+    // t = function() { return IEVMScriptExecutor.at('0x4bcdd59d6c77774ee7317fc1095f69ec84421e49').contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
+    // run = function() { return ScriptHelpers.new().then(sh => { sh.abiEncode.call(...[].slice.call(arguments)).then(a => console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
     // This is truly not beautiful but lets no daydream to the day solidity gets reflection features
 
     function abiEncode(bytes _a, bytes _b, address[] _c) public pure returns (bytes d) {
@@ -386,7 +386,7 @@ library ScriptHelpers {
     function abiLength(bytes memory _a) internal pure returns (uint256) {
         // 1 for length +
         // memory words + 1 if not divisible for 32 to offset word
-        return 1 + (_a.length / 32) + (_a.length % 32 &gt; 0 ? 1 : 0);
+        return 1 + (_a.length / 32) + (_a.length % 32 > 0 ? 1 : 0);
     }
 
     function abiLength(address[] _a) internal pure returns (uint256) {
@@ -451,9 +451,9 @@ library ScriptHelpers {
     function toBytes(bytes4 _sig) internal pure returns (bytes) {
         bytes memory payload = new bytes(4);
         payload[0] = bytes1(_sig);
-        payload[1] = bytes1(_sig &lt;&lt; 8);
-        payload[2] = bytes1(_sig &lt;&lt; 16);
-        payload[3] = bytes1(_sig &lt;&lt; 24);
+        payload[1] = bytes1(_sig << 8);
+        payload[2] = bytes1(_sig << 16);
+        payload[3] = bytes1(_sig << 24);
         return payload;
     }
 
@@ -463,7 +463,7 @@ library ScriptHelpers {
         uint256 len = _len;
 
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -517,7 +517,7 @@ contract EVMScriptRunner is AppStorage, EVMScriptRegistryConstants {
     }
 
     /**
-    * @dev copies and returns last&#39;s call data. Needs to ABI decode first
+    * @dev copies and returns last's call data. Needs to ABI decode first
     */
     function returnedDataDecoded() internal view returns (bytes ret) {
         assembly {
@@ -623,17 +623,17 @@ contract ACLSyntaxSugar {
 
 contract ACLHelpers {
     function decodeParamOp(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 30));
+        return uint8(_x >> (8 * 30));
     }
 
     function decodeParamId(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 31));
+        return uint8(_x >> (8 * 31));
     }
 
     function decodeParamsList(uint256 _x) internal pure returns (uint32 a, uint32 b, uint32 c) {
         a = uint32(_x);
-        b = uint32(_x &gt;&gt; (8 * 4));
-        c = uint32(_x &gt;&gt; (8 * 8));
+        b = uint32(_x >> (8 * 4));
+        c = uint32(_x >> (8 * 8));
     }
 }
 
@@ -659,7 +659,7 @@ contract AragonApp is AppStorage, Initializable, ACLSyntaxSugar, EVMScriptRunner
 
     function canPerform(address _sender, bytes32 _role, uint256[] params) public view returns (bool) {
         bytes memory how; // no need to init memory as it is never used
-        if (params.length &gt; 0) {
+        if (params.length > 0) {
             uint256 byteLength = params.length * 32;
             assembly {
                 how := params // forced casting

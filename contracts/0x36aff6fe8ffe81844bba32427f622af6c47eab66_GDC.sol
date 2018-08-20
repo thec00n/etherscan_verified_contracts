@@ -4,13 +4,13 @@ contract SafeMath {
     //SafeAdd 是安全加法，这是ERC20标准function
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     //SafeSubtract 是安全减法，这是ERC20标准function
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -49,7 +49,7 @@ contract Token {
 contract StandardToken is Token {
     //转账功能，实现向某个账户转账的功能
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -61,7 +61,7 @@ contract StandardToken is Token {
 
     // 实现从A账户向B账户转账功能，但必须要A账户先允许向B账户的转账金额才可
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -86,17 +86,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
     // 代币余额表，记录下某个地址有多少代币数量
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // 允许转账金额，记录下A地址允许向B地址，转账多少代币
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 // GDC合约，继承自ERC20的标准合约
 contract GDC is StandardToken, SafeMath {
-    string public constant name = &quot;GDC&quot;; //合约名字为GDC
-    string public constant symbol = &quot;GDC&quot;; //合约标示为GDC
+    string public constant name = "GDC"; //合约名字为GDC
+    string public constant symbol = "GDC"; //合约标示为GDC
     uint256 public constant decimals = 18; //合约小数点后18位
-    string public version = &quot;1.0&quot;; //合约版本 1.0
+    string public version = "1.0"; //合约版本 1.0
 
     address  public GDCAcc01;  //GDC合约的账号1
     address  public GDCAcc02;  //GDC合约的账号2
@@ -138,7 +138,7 @@ contract GDC is StandardToken, SafeMath {
 
     // transferLock 代表必须要输入的flag为true的时候，转账才可能生效，否则都会失效
     function transferLock(address _to, uint256 _value, bool flag) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; flag) {
+      if (balances[msg.sender] >= _value && _value > 0 && flag) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);

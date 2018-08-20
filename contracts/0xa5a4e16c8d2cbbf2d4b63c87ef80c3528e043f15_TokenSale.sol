@@ -8,10 +8,10 @@ pragma solidity ^0.4.21;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -19,7 +19,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -75,13 +75,13 @@ contract CCLToken is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function CCLToken() public {
-        symbol = &quot;CCL&quot;;
-        name = &quot;CyClean Token&quot;;
+        symbol = "CCL";
+        name = "CyClean Token";
         decimals = 18;
         _totalSupply = 4000000000000000000000000000; //4,000,000,000
         balances[0xf835bF0285c99102eaedd684b4401272eF36aF65] = _totalSupply;
@@ -186,7 +186,7 @@ contract ICOEngineInterface {
 library SafeMathLib {
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
@@ -200,7 +200,7 @@ library SafeMathLib {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -211,13 +211,13 @@ library SafeMathLib {
 contract KYCBase {
     using SafeMathLib for uint256;
 
-    mapping (address =&gt; bool) public isKycSigner;
-    mapping (uint64 =&gt; uint256) public alreadyPayed;
+    mapping (address => bool) public isKycSigner;
+    mapping (uint64 => uint256) public alreadyPayed;
 
     event KycVerified(address indexed signer, address buyerAddress, uint64 buyerId, uint maxAmount);
     event ThisCheck(KYCBase base, address sender);
     constructor ( address[] kycSigners) internal {
-        for (uint i = 0; i &lt; kycSigners.length; i++) {
+        for (uint i = 0; i < kycSigners.length; i++) {
             isKycSigner[kycSigners[i]] = true;
         }
     }
@@ -249,15 +249,15 @@ contract KYCBase {
         private returns (bool)
     {
         // check the signature
-        bytes32 hash = sha256(abi.encodePacked(&quot;Eidoo icoengine authorization&quot;, this, buyerAddress, buyerId, maxAmount));
+        bytes32 hash = sha256(abi.encodePacked("Eidoo icoengine authorization", this, buyerAddress, buyerId, maxAmount));
         emit ThisCheck(this, msg.sender);
-        //bytes32 hash = sha256(&quot;Eidoo icoengine authorization&quot;, this, buyerAddress, buyerId, maxAmount);
+        //bytes32 hash = sha256("Eidoo icoengine authorization", this, buyerAddress, buyerId, maxAmount);
         address signer = ecrecover(hash, v, r, s);
         if (!isKycSigner[signer]) {
             revert();
         } else {
             uint256 totalPayed = alreadyPayed[buyerId].add(msg.value);
-            require(totalPayed &lt;= maxAmount);
+            require(totalPayed <= maxAmount);
             alreadyPayed[buyerId] = totalPayed;
             emit KycVerified(signer, buyerAddress, buyerId, maxAmount);
             return releaseTokensTo(buyerAddress);
@@ -334,7 +334,7 @@ contract TokenSale is ICOEngineInterface, KYCBase {
     // from KYCBase
     function releaseTokensTo(address buyer) internal returns(bool) {
         //emit SenderCheck(msg.sender);
-        require(now &gt;= startTimeValue &amp;&amp; now &lt; endTimeValue);
+        require(now >= startTimeValue && now < endTimeValue);
         uint amount = msg.value.mul(priceValue);
         remainingTokensValue = remainingTokensValue.sub(amount);
         emit ReleaseTokensToCalledDetail(wallet, buyer, amount, remainingTokensValue);
@@ -348,12 +348,12 @@ contract TokenSale is ICOEngineInterface, KYCBase {
 
     // from ICOEngineInterface
     function started() public view returns(bool) {
-        return now &gt;= startTimeValue;
+        return now >= startTimeValue;
     }
 
     // from ICOEngineInterface
     function ended() public view returns(bool) {
-        return now &gt;= endTimeValue || remainingTokensValue == 0;
+        return now >= endTimeValue || remainingTokensValue == 0;
     }
 
     function senderAllowedFor(address buyer)

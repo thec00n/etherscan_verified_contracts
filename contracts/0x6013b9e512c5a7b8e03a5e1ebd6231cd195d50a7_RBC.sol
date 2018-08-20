@@ -28,8 +28,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -60,9 +60,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -108,7 +108,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -122,7 +122,7 @@ contract TokenERC20 {
 
 contract RBC is owned, TokenERC20 {
 
-    mapping (address =&gt; uint256) public frozenAccount;
+    mapping (address => uint256) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address indexed from, uint256 _value);
@@ -138,8 +138,8 @@ contract RBC is owned, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -147,8 +147,8 @@ contract RBC is owned, TokenERC20 {
 
     /// @param _value amount of token to be burnt by msg.sender
 	function freezeAccount(uint256 _value) onlyOwner returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw; 
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         frozenAccount[msg.sender] += _value;                  // Updates totalSupply
         FrozenFunds(msg.sender, _value);
@@ -156,8 +156,8 @@ contract RBC is owned, TokenERC20 {
     }
 	
 	function unfreezeAccount(uint256 _value) onlyOwner returns (bool success) {
-        if (frozenAccount[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (frozenAccount[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw; 
         frozenAccount[msg.sender] -= _value;                      // Subtract from the sender
 		balanceOf[msg.sender] += _value;
         UnFrozenFunds(msg.sender, _value);

@@ -13,7 +13,7 @@ contract PreTgeExperty {
     bool rejected;
   }
   Contributor[] public contributors;
-  mapping(address =&gt; bool) public isWhitelisted;
+  mapping(address => bool) public isWhitelisted;
   address public managerAddr;
   address public whitelistManagerAddr;
 
@@ -24,7 +24,7 @@ contract PreTgeExperty {
     uint256 amount;
     bool active;
   }
-  mapping (address =&gt; bool) public founders;
+  mapping (address => bool) public founders;
   Tx[] public txs;
 
   // preTGE constructor
@@ -119,7 +119,7 @@ contract PreTgeExperty {
   // view functions
   function getContributionsCount(address addr) view returns (uint count) {
     count = 0;
-    for (uint i = 0; i &lt; contributors.length; ++i) {
+    for (uint i = 0; i < contributors.length; ++i) {
       if (contributors[i].addr == addr) {
         ++count;
       }
@@ -129,7 +129,7 @@ contract PreTgeExperty {
 
   function getContribution(address addr, uint idx) view returns (uint amount, uint timestamp, bool rejected) {
     uint count = 0;
-    for (uint i = 0; i &lt; contributors.length; ++i) {
+    for (uint i = 0; i < contributors.length; ++i) {
       if (contributors[i].addr == addr) {
         if (count == idx) {
           return (contributors[i].amount, contributors[i].timestamp, contributors[i].rejected);

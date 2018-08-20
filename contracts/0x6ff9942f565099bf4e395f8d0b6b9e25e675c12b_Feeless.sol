@@ -32,12 +32,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -47,7 +47,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -58,14 +58,14 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)
+      abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
     );
   }
 }
 contract Feeless {
     
     address internal msgSender;
-    mapping(address =&gt; uint256) public nonces;
+    mapping(address => uint256) public nonces;
     
     modifier feeless {
         if (msgSender == address(0)) {
@@ -80,7 +80,7 @@ contract Feeless {
     function performFeelessTransaction(address sender, address target, bytes data, uint256 nonce, bytes sig) public payable {
         require(this == target);
         
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 hash = keccak256(prefix, keccak256(target, data, nonce));
         msgSender = ECRecovery.recover(hash, sig);
         require(msgSender == sender);

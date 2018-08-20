@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -22,7 +22,7 @@ library GeometricSequence
     using SafeMath for uint256;
     function sumOfNGeom(uint256 basePrice, uint256 owned, uint256 count) internal pure returns (uint256 price)
     {
-        require(count &gt; 0);
+        require(count > 0);
         
         uint256 multiplier = 5;
         
@@ -56,9 +56,9 @@ contract RigIdle is ERC20 {
     struct MinerData 
     {
         // rigs and their upgrades
-        mapping(uint256=&gt;uint256)  rigCount;
-        mapping(int256=&gt;uint256)   rigPctBonus;
-        mapping(int256=&gt;uint256)   rigFlatBonus;
+        mapping(uint256=>uint256)  rigCount;
+        mapping(int256=>uint256)   rigPctBonus;
+        mapping(int256=>uint256)   rigFlatBonus;
         
         uint256 money;
         uint256 lastUpdateTime;
@@ -94,47 +94,47 @@ contract RigIdle is ERC20 {
         uint256 productionBonusPct;
     }
     
-    mapping(uint256=&gt;RigData) private rigData;
+    mapping(uint256=>RigData) private rigData;
     uint256 private numberOfRigs;
 
     // honey pot variables
     uint256 private honeyPotAmount;
     uint256 private devFund;
     uint256 private nextPotDistributionTime;
-    mapping(address =&gt; mapping(uint256 =&gt; uint256)) private minerICOPerCycle;
+    mapping(address => mapping(uint256 => uint256)) private minerICOPerCycle;
     uint256[] private honeyPotPerCycle;
     uint256[] private globalICOPerCycle;
     uint256 private cycleCount;
     
     //booster info
     uint256 private numberOfBoosts;
-    mapping(uint256=&gt;BoostData) private boostData;
+    mapping(uint256=>BoostData) private boostData;
 
     //prestige info
     uint256 private maxPrestige;
-    mapping(uint256=&gt;PrestigeData) prestigeData;
+    mapping(uint256=>PrestigeData) prestigeData;
     
     // miner info
-    mapping(address =&gt; MinerData) private miners;
-    mapping(uint256 =&gt; address)   private indexes;
+    mapping(address => MinerData) private miners;
+    mapping(uint256 => address)   private indexes;
     uint256 private topindex;
     
     address private owner;
     
     // ERC20 functionality
-    mapping(address =&gt; mapping(address =&gt; uint256)) private allowed;
-    string public constant name  = &quot;RigWarsIdle&quot;;
-    string public constant symbol = &quot;RIG&quot;;
+    mapping(address => mapping(address => uint256)) private allowed;
+    string public constant name  = "RigWarsIdle";
+    string public constant symbol = "RIG";
     uint8 public constant decimals = 8;
     uint256 private estimatedSupply;
     
     // referral
-    mapping(address=&gt;address) referrals;
+    mapping(address=>address) referrals;
     
     // Data Store Management
-    mapping(uint256=&gt;uint256) private prestigeFinalizeTime;
-    mapping(uint256=&gt;uint256) private rigFinalizeTime;
-    mapping(uint256=&gt;uint256) private boostFinalizeTime;
+    mapping(uint256=>uint256) private prestigeFinalizeTime;
+    mapping(uint256=>uint256) private rigFinalizeTime;
+    mapping(uint256=>uint256) private boostFinalizeTime;
     
     // ------------------------------------------------------------------------
     // Constructor
@@ -197,7 +197,7 @@ contract RigIdle is ERC20 {
     
     function GetMinerAt(uint256 idx) public constant returns (address minerAddr)
     {
-        require(idx &lt; topindex);
+        require(idx < topindex);
         minerAddr = indexes[idx];
     }
     
@@ -208,9 +208,9 @@ contract RigIdle is ERC20 {
         personalProduction = 0;
         uint256 productionSpeedFlat = m.rigFlatBonus[-1];
         
-        for(uint8 j = 0; j &lt; numberOfRigs; ++j)
+        for(uint8 j = 0; j < numberOfRigs; ++j)
         {
-            if(m.rigCount[j] &gt; 0)
+            if(m.rigCount[j] > 0)
                 personalProduction += (rigData[j].baseOutput + productionSpeedFlat + m.rigFlatBonus[j]) * m.rigCount[j] * (100 + m.rigPctBonus[j]);
             else
                 break;
@@ -240,7 +240,7 @@ contract RigIdle is ERC20 {
         uint256 i = startIdx;
         MinerData storage m = miners[minerAddr];
         
-        for(i = startIdx; i &lt; (startIdx+10) &amp;&amp; i &lt; numberOfRigs; ++i)
+        for(i = startIdx; i < (startIdx+10) && i < numberOfRigs; ++i)
         {
             rigs[i]      = miners[minerAddr].rigCount[i];
             totalProduction[i] = (rigData[i].baseOutput + m.rigFlatBonus[-1] + m.rigFlatBonus[int256(i)]) * ((100 + m.rigPctBonus[int256(i)]) *
@@ -255,7 +255,7 @@ contract RigIdle is ERC20 {
     
     function GetRigData(uint256 idx) public constant returns (uint256 _basePrice, uint256 _baseOutput, uint256 _unlockMultiplier, uint256 _lockTime)
     {
-        require(idx &lt; numberOfRigs);
+        require(idx < numberOfRigs);
         
         _basePrice  = rigData[idx].basePrice;
         _baseOutput = rigData[idx].baseOutput;
@@ -265,7 +265,7 @@ contract RigIdle is ERC20 {
     
     function CalculatePriceofRigs(uint256 idx, uint256 owned, uint256 count) public constant returns (uint256)
     {
-        if(idx &gt;= numberOfRigs)
+        if(idx >= numberOfRigs)
             return 0;
             
         if(owned == 0)
@@ -281,7 +281,7 @@ contract RigIdle is ERC20 {
     
     function GetPrestigeInfo(uint256 idx) public constant returns (uint256 price, uint256 bonusPct, uint256 _lockTime)
     {
-        require(idx &lt; maxPrestige);
+        require(idx < maxPrestige);
         
         price = prestigeData[idx].price;
         bonusPct = prestigeData[idx].productionBonusPct;
@@ -300,7 +300,7 @@ contract RigIdle is ERC20 {
         globalMoney = 0;
         globalHashRate = 0;
         uint i = 0;
-        for(i = 0; i &lt; topindex; ++i)
+        for(i = 0; i < topindex; ++i)
         {
             MinerData storage m = miners[indexes[i]];
             globalMoney += m.money;
@@ -316,7 +316,7 @@ contract RigIdle is ERC20 {
     function GetBoosterData(uint256 idx) public constant returns (int256 rigIdx, uint256 flatBonus, uint256 ptcBonus, 
         uint256 currentPrice, uint256 increasePct, uint256 maxNumber, uint256 _lockTime)
     {
-        require(idx &lt; numberOfBoosts);
+        require(idx < numberOfBoosts);
         
         rigIdx       = boostData[idx].rigIndex;
         flatBonus    = boostData[idx].flatBonus;
@@ -329,21 +329,21 @@ contract RigIdle is ERC20 {
     
     function HasBooster(address addr, uint256 startIdx) public constant returns (uint8[10] hasBoost)
     { 
-        require(startIdx &lt; numberOfBoosts);
+        require(startIdx < numberOfBoosts);
         
         uint j = 0;
         
-        for( ;j &lt; 10 &amp;&amp; (j + startIdx) &lt; numberOfBoosts; ++j)
+        for( ;j < 10 && (j + startIdx) < numberOfBoosts; ++j)
         {
             BoostData storage b = boostData[j + startIdx];
             hasBoost[j] = 0;
-            for(uint i = 0; i &lt; b.totalCount; ++i)
+            for(uint i = 0; i < b.totalCount; ++i)
             {
                if(b.boostHolders[i] == addr)
                     hasBoost[j] = 1;
             }
         }
-        for( ;j &lt; 10; ++j)
+        for( ;j < 10; ++j)
         {
             hasBoost[j] = 0;
         }
@@ -356,9 +356,9 @@ contract RigIdle is ERC20 {
     
     function GetICOData(uint256 idx) public constant returns (uint256 ICOFund, uint256 ICOPot)
     {
-        require(idx &lt;= cycleCount);
+        require(idx <= cycleCount);
         ICOFund = globalICOPerCycle[idx];
-        if(idx &lt; cycleCount)
+        if(idx < cycleCount)
         {
             ICOPot = honeyPotPerCycle[idx];
         } else
@@ -369,9 +369,9 @@ contract RigIdle is ERC20 {
     
     function GetMinerICOData(address miner, uint256 idx) public constant returns (uint256 ICOFund, uint256 ICOShare, uint256 lastClaimIndex)
     {
-        require(idx &lt;= cycleCount);
+        require(idx <= cycleCount);
         ICOFund = minerICOPerCycle[miner][idx];
-        if(idx &lt; cycleCount)
+        if(idx < cycleCount)
         {
             ICOShare = (honeyPotPerCycle[idx] * minerICOPerCycle[miner][idx]) / globalICOPerCycle[idx];
         } else 
@@ -386,18 +386,18 @@ contract RigIdle is ERC20 {
         MinerData storage m = miners[miner];
         
         require(m.lastUpdateTime != 0);
-        require(m.lastPotClaimIndex &lt;= cycleCount);
+        require(m.lastPotClaimIndex <= cycleCount);
         
         uint256 i = m.lastPotClaimIndex;
         uint256 limit = cycleCount;
         
-        if((limit - i) &gt; 30) // more than 30 iterations(days) afk
+        if((limit - i) > 30) // more than 30 iterations(days) afk
             limit = i + 30;
         
         unclaimedPot = 0;
-        for(; i &lt; cycleCount; ++i)
+        for(; i < cycleCount; ++i)
         {
-            if(minerICOPerCycle[msg.sender][i] &gt; 0)
+            if(minerICOPerCycle[msg.sender][i] > 0)
                 unclaimedPot += (honeyPotPerCycle[i] * minerICOPerCycle[msg.sender][i]) / globalICOPerCycle[i];
         }
     }
@@ -418,7 +418,7 @@ contract RigIdle is ERC20 {
         indexes[topindex] = msg.sender;
         ++topindex;
         
-        if(referral != owner &amp;&amp; referral != 0 &amp;&amp; miners[referral].lastUpdateTime != 0)
+        if(referral != owner && referral != 0 && miners[referral].lastUpdateTime != 0)
         {
             referrals[msg.sender] = referral;
             miners[msg.sender].rigCount[0] += 9;
@@ -427,23 +427,23 @@ contract RigIdle is ERC20 {
     
     function UpgradeRig(uint8 rigIdx, uint256 count) external
     {
-        require(rigIdx &lt; numberOfRigs);
-        require(count &gt; 0);
-        require(count &lt;= 512);
-        require(rigFinalizeTime[rigIdx] &lt; block.timestamp);
+        require(rigIdx < numberOfRigs);
+        require(count > 0);
+        require(count <= 512);
+        require(rigFinalizeTime[rigIdx] < block.timestamp);
         require(miners[msg.sender].lastUpdateTime != 0);
         
         MinerData storage m = miners[msg.sender];
         
-        require(m.rigCount[rigIdx] &gt; 0);
-        require(512 &gt;= (m.rigCount[rigIdx] + count));
+        require(m.rigCount[rigIdx] > 0);
+        require(512 >= (m.rigCount[rigIdx] + count));
         
         UpdateMoney(msg.sender);
      
         // the base of geometrical sequence
         uint256 price = GeometricSequence.sumOfNGeom(rigData[rigIdx].basePrice, m.rigCount[rigIdx], count); 
        
-        require(m.money &gt;= price);
+        require(m.money >= price);
         
         m.rigCount[rigIdx] = m.rigCount[rigIdx] + count;
         
@@ -452,21 +452,21 @@ contract RigIdle is ERC20 {
     
     function UnlockRig(uint8 rigIdx) external
     {
-        require(rigIdx &lt; numberOfRigs);
-        require(rigIdx &gt; 0);
-        require(rigFinalizeTime[rigIdx] &lt; block.timestamp);
+        require(rigIdx < numberOfRigs);
+        require(rigIdx > 0);
+        require(rigFinalizeTime[rigIdx] < block.timestamp);
         require(miners[msg.sender].lastUpdateTime != 0);
         
         MinerData storage m = miners[msg.sender];
         
         require(m.rigCount[rigIdx] == 0);
-        require(m.rigCount[rigIdx-1] &gt; 0);
+        require(m.rigCount[rigIdx-1] > 0);
         
         UpdateMoney(msg.sender);
         
         uint256 price = rigData[rigIdx].basePrice * rigData[rigIdx].unlockMultiplier;
         
-        require(m.money &gt;= price);
+        require(m.money >= price);
         
         m.rigCount[rigIdx] = 1;
         m.money -= price;
@@ -475,24 +475,24 @@ contract RigIdle is ERC20 {
     function PrestigeUp() external
     {
         require(miners[msg.sender].lastUpdateTime != 0);
-        require(prestigeFinalizeTime[m.prestigeLevel] &lt; block.timestamp);
+        require(prestigeFinalizeTime[m.prestigeLevel] < block.timestamp);
         
         MinerData storage m = miners[msg.sender];
         
-        require(m.prestigeLevel &lt; maxPrestige);
+        require(m.prestigeLevel < maxPrestige);
         
         UpdateMoney(msg.sender);
         
-        require(m.money &gt;= prestigeData[m.prestigeLevel].price);
+        require(m.money >= prestigeData[m.prestigeLevel].price);
         
         if(referrals[msg.sender] != 0)
         {
             miners[referrals[msg.sender]].money += prestigeData[m.prestigeLevel].price / 2;
         }
         
-        for(uint256 i = 0; i &lt; numberOfRigs; ++i)
+        for(uint256 i = 0; i < numberOfRigs; ++i)
         {
-            if(m.rigCount[i] &gt; 1)
+            if(m.rigCount[i] > 1)
                 m.rigCount[i] = m.rigCount[i] / 2; 
         }
         
@@ -503,7 +503,7 @@ contract RigIdle is ERC20 {
  
     function UpdateMoney(address addr) private
     {
-        require(block.timestamp &gt; miners[addr].lastUpdateTime);
+        require(block.timestamp > miners[addr].lastUpdateTime);
         
         if(miners[addr].lastUpdateTime != 0)
         {
@@ -512,7 +512,7 @@ contract RigIdle is ERC20 {
             uint256 revenue = GetProductionPerSecond(addr);
        
             m.lastUpdateTime = block.timestamp;
-            if(revenue &gt; 0)
+            if(revenue > 0)
             {
                 revenue *= diff;
                 
@@ -527,14 +527,14 @@ contract RigIdle is ERC20 {
     function BuyBooster(uint256 idx) external payable 
     {
         require(miners[msg.sender].lastUpdateTime != 0);
-        require(idx &lt; numberOfBoosts);
-        require(boostFinalizeTime[idx] &lt; block.timestamp);
+        require(idx < numberOfBoosts);
+        require(boostFinalizeTime[idx] < block.timestamp);
         
         BoostData storage b = boostData[idx];
         
-        require(msg.value &gt;= b.priceInWEI);
+        require(msg.value >= b.priceInWEI);
         
-        for(uint i = 0; i &lt; b.totalCount; ++i)
+        for(uint i = 0; i < b.totalCount; ++i)
             if(b.boostHolders[i] == msg.sender)
                 revert();
                 
@@ -558,13 +558,13 @@ contract RigIdle is ERC20 {
         b.boostHolders[b.currentIndex] = msg.sender;
         
         // handle booster bonuses
-        if(m.rigFlatBonus[b.rigIndex] &gt;= b.flatBonus){
+        if(m.rigFlatBonus[b.rigIndex] >= b.flatBonus){
             m.rigFlatBonus[b.rigIndex] -= b.flatBonus;
         } else {
             m.rigFlatBonus[b.rigIndex] = 0;
         }
         
-        if(m.rigPctBonus[b.rigIndex] &gt;= b.percentBonus) {
+        if(m.rigPctBonus[b.rigIndex] >= b.percentBonus) {
             m.rigPctBonus[b.rigIndex] -= b.percentBonus;
         } else {
             m.rigPctBonus[b.rigIndex] = 0;
@@ -575,7 +575,7 @@ contract RigIdle is ERC20 {
         
         // increase booster index
         b.currentIndex += 1;
-        if(b.currentIndex &gt;= b.totalCount)
+        if(b.currentIndex >= b.totalCount)
             b.currentIndex = 0;
     }
     
@@ -585,9 +585,9 @@ contract RigIdle is ERC20 {
     function ReleaseICO() external
     {
         require(miners[msg.sender].lastUpdateTime != 0);
-        require(nextPotDistributionTime &lt;= block.timestamp);
-        require(honeyPotAmount &gt; 0);
-        require(globalICOPerCycle[cycleCount] &gt; 0);
+        require(nextPotDistributionTime <= block.timestamp);
+        require(honeyPotAmount > 0);
+        require(globalICOPerCycle[cycleCount] > 0);
 
         nextPotDistributionTime = block.timestamp + 86400;
 
@@ -603,13 +603,13 @@ contract RigIdle is ERC20 {
     function FundICO(uint amount) external
     {
         require(miners[msg.sender].lastUpdateTime != 0);
-        require(amount &gt; 0);
+        require(amount > 0);
         
         MinerData storage m = miners[msg.sender];
         
         UpdateMoney(msg.sender);
         
-        require(m.money &gt;= amount);
+        require(m.money >= amount);
         
         m.money = (m.money).sub(amount);
         
@@ -622,18 +622,18 @@ contract RigIdle is ERC20 {
         MinerData storage m = miners[msg.sender];
         
         require(miners[msg.sender].lastUpdateTime != 0);
-        require(miners[msg.sender].lastPotClaimIndex &lt; cycleCount);
+        require(miners[msg.sender].lastPotClaimIndex < cycleCount);
         
         uint256 i = m.lastPotClaimIndex;
         uint256 limit = cycleCount;
         
-        if((limit - i) &gt; 30) // more than 30 iterations(days) afk
+        if((limit - i) > 30) // more than 30 iterations(days) afk
             limit = i + 30;
         
         m.lastPotClaimIndex = limit;
-        for(; i &lt; cycleCount; ++i)
+        for(; i < cycleCount; ++i)
         {
-            if(minerICOPerCycle[msg.sender][i] &gt; 0)
+            if(minerICOPerCycle[msg.sender][i] > 0)
                 m.unclaimedPot += (honeyPotPerCycle[i] * minerICOPerCycle[msg.sender][i]) / globalICOPerCycle[i];
         }
     }
@@ -645,10 +645,10 @@ contract RigIdle is ERC20 {
       uint256 _ETHPrice, uint256 _priceIncreasePct, uint256 _totalCount) external
     {
         require(msg.sender == owner);
-        require(idx &lt;= numberOfBoosts);
+        require(idx <= numberOfBoosts);
         
-        if(idx &lt; numberOfBoosts)
-            require(boostFinalizeTime[idx] &gt; block.timestamp); 
+        if(idx < numberOfBoosts)
+            require(boostFinalizeTime[idx] > block.timestamp); 
             
         boostFinalizeTime[idx] = block.timestamp + 7200;
         
@@ -663,7 +663,7 @@ contract RigIdle is ERC20 {
         
         boostData[idx].boostHolders = new address[](_totalCount);
         
-        for(uint256 i = 0; i &lt; _totalCount; ++i)
+        for(uint256 i = 0; i < _totalCount; ++i)
             boostData[idx].boostHolders[i] = owner;
         
         if(idx == numberOfBoosts)    
@@ -673,10 +673,10 @@ contract RigIdle is ERC20 {
     function AddorModifyRig(uint256 idx, uint256 _basePrice, uint256 _baseOutput, uint256 _unlockMultiplier) external
     {
         require(msg.sender == owner);
-        require(idx &lt;= numberOfRigs);
+        require(idx <= numberOfRigs);
         
-        if(idx &lt; numberOfRigs)
-            require(rigFinalizeTime[idx] &gt; block.timestamp); 
+        if(idx < numberOfRigs)
+            require(rigFinalizeTime[idx] > block.timestamp); 
             
         rigFinalizeTime[idx] = block.timestamp + 7200;
         
@@ -691,10 +691,10 @@ contract RigIdle is ERC20 {
     function AddNewPrestige(uint256 idx, uint256 _price, uint256 _bonusPct) public
     {
         require(msg.sender == owner);
-        require(idx &lt;= maxPrestige);
+        require(idx <= maxPrestige);
         
-        if(idx &lt; maxPrestige)
-            require(prestigeFinalizeTime[idx] &gt; block.timestamp); 
+        if(idx < maxPrestige)
+            require(prestigeFinalizeTime[idx] > block.timestamp); 
             
         prestigeFinalizeTime[idx] = block.timestamp + 7200;
         
@@ -712,7 +712,7 @@ contract RigIdle is ERC20 {
     {
         MinerData storage m = miners[msg.sender];
         
-        require(m.unclaimedPot &gt; 0);
+        require(m.unclaimedPot > 0);
         require(m.lastUpdateTime != 0);
         
         uint256 amntToSend = m.unclaimedPot;
@@ -751,7 +751,7 @@ contract RigIdle is ERC20 {
     }
     
      function transfer(address recipient, uint256 amount) public returns (bool) {
-        require(amount &lt;= miners[msg.sender].money);
+        require(amount <= miners[msg.sender].money);
         
         miners[msg.sender].money = (miners[msg.sender].money).sub(amount);
         miners[recipient].money  = (miners[recipient].money).add(amount);
@@ -761,7 +761,7 @@ contract RigIdle is ERC20 {
     }
     
     function transferFrom(address miner, address recipient, uint256 amount) public returns (bool) {
-        require(amount &lt;= allowed[miner][msg.sender] &amp;&amp; amount &lt;= balanceOf(miner));
+        require(amount <= allowed[miner][msg.sender] && amount <= balanceOf(miner));
         
         miners[miner].money        = (miners[miner].money).sub(amount);
         miners[recipient].money    = (miners[recipient].money).add(amount);
@@ -772,7 +772,7 @@ contract RigIdle is ERC20 {
     }
     
     function approve(address approvee, uint256 amount) public returns (bool){
-        require(amount &lt;= miners[msg.sender].money);
+        require(amount <= miners[msg.sender].money);
         
         allowed[msg.sender][approvee] = amount;
         emit Approval(msg.sender, approvee, amount);

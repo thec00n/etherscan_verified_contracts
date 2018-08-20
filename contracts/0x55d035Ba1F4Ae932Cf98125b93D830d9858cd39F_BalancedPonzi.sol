@@ -32,7 +32,7 @@ contract BalancedPonzi {
             throw;
         }
         
-        if (investor &gt; 8) {
+        if (investor > 8) {
             uint ngidx = niceGuys.length;
             niceGuys.length += 1;
             niceGuys[ngidx].addr2 = msg.sender;
@@ -42,7 +42,7 @@ contract BalancedPonzi {
             }
         }
         
-        if (investor &lt; 9) {
+        if (investor < 9) {
             persons.length += 1;
             persons[idx].addr = msg.sender;
         }
@@ -56,7 +56,7 @@ contract BalancedPonzi {
             currentNiceGuy.send(1 ether);
         }
         
-        while (this.balance &gt; 10 ether) {
+        while (this.balance > 10 ether) {
             persons[payoutIdx].addr.send(10 ether);
             payoutIdx += 1;
         }

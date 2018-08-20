@@ -92,16 +92,16 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
     PresalePackage[] packages;
     
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
-    mapping (uint256 =&gt; address) internal tokenApprovals;
-    mapping (address =&gt; uint256) internal ownedTokensCount;
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (uint256 => address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenApprovals;
+    mapping (address => uint256) internal ownedTokensCount;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
     
     RigCraftPresalePackageManager private presaleHandler;
     string URIBase;
     
-    string public constant name = &quot;RigCraftPresalePackage&quot;;
-    string public constant symbol = &quot;RCPT&quot;;
+    string public constant name = "RigCraftPresalePackage";
+    string public constant symbol = "RCPT";
     
     function SetPresaleHandler(address addr) external onlyOwner
     {
@@ -201,7 +201,7 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
     isActive
     isOpen
     {
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data)
@@ -242,7 +242,7 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
     function removeTokenFrom(address _from, uint256 _tokenId) internal 
     {
         require(ownerOf(_tokenId) == _from);
-        require(ownedTokensCount[_from] &gt; 0);
+        require(ownedTokensCount[_from] > 0);
         ownedTokensCount[_from] -= 1;
         tokenOwner[_tokenId] = address(0);
     }
@@ -268,11 +268,11 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
         bytes memory retVal  = new bytes(bytes(tokenNumber).length + bytes(URIBase).length);
         uint i = 0;
         
-        for(i = 0; i &lt; bytes(URIBase).length; ++i)
+        for(i = 0; i < bytes(URIBase).length; ++i)
         {
             retVal[i] = bytes(URIBase)[i];
         }
-        for(i = 0; i &lt; bytes(tokenNumber).length; ++i)
+        for(i = 0; i < bytes(tokenNumber).length; ++i)
         {
             retVal[pos + i] = bytes(tokenNumber)[i];
         }
@@ -282,7 +282,7 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
     
     function uint2str(uint256 i) internal pure returns (string)
     {
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint length;
         while (j != 0){
@@ -316,7 +316,7 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
             // sequentially up to the totalCat count.
             uint256 tokenId;
             
-            for (tokenId = 0; tokenId &lt; packages.length; tokenId++) 
+            for (tokenId = 0; tokenId < packages.length; tokenId++) 
             {
                 if (tokenOwner[tokenId] == _owner) 
                 {
@@ -334,7 +334,7 @@ contract RigCraftPresalePackageToken is ERC721Basic, Administration, ERC721Metad
     **/
     function GetTokenData(uint256 _tokenId) external view returns(uint8 presalePackadeId, uint16 serialNO) 
     {
-        require(_tokenId &lt; packages.length);
+        require(_tokenId < packages.length);
         
         presalePackadeId = packages[_tokenId].packageId;
         serialNO = packages[_tokenId].serialNumber;
@@ -366,8 +366,8 @@ contract RigCraftPresalePackageManager
     uint16[]    public presalePackLimit;
     uint256[]   public presalePackagePrice;
     
-    mapping(address=&gt;uint256) addressRefferedCount;
-    mapping(address=&gt;uint256) addressRefferredSpending;
+    mapping(address=>uint256) addressRefferedCount;
+    mapping(address=>uint256) addressRefferredSpending;
     address[] referralAddressIndex;
     
     uint256 public totalFundsSoFar;
@@ -420,7 +420,7 @@ contract RigCraftPresalePackageManager
     function AddNewPresalePackage(uint16 limit, uint256 price) external 
     {
         require(msg.sender == owner);
-        require(limit &gt; 0);
+        require(limit > 0);
         require(isActive);
         
         presalePackLimit.length += 1;
@@ -436,14 +436,14 @@ contract RigCraftPresalePackageManager
     function BuyPresalePackage(uint8 packageId, address referral) external payable
     {
         require(isActive);
-        require(packageId &lt; presalePackLimit.length);
+        require(packageId < presalePackLimit.length);
         require(msg.sender != referral);
-        require(presalePackLimit[packageId] &gt; presalePackSold[packageId]);
+        require(presalePackLimit[packageId] > presalePackSold[packageId]);
 
         require(presaleTokenContract != RigCraftPresalePackageToken(address(0)));
 
         // check money
-        require(msg.value &gt;= presalePackagePrice[packageId]);
+        require(msg.value >= presalePackagePrice[packageId]);
         
         presalePackSold[packageId]++;
         
@@ -476,7 +476,7 @@ contract RigCraftPresalePackageManager
     
     function GetReferredAt(uint256 idx) external view returns (address)
     {
-        require(idx &lt; referralAddressIndex.length);
+        require(idx < referralAddressIndex.length);
         return referralAddressIndex[idx];
     }
     

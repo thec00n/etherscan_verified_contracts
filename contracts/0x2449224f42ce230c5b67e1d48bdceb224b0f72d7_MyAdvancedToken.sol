@@ -11,13 +11,13 @@ contract owned {
 }
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 contract TokenERC20 {
-    string public name = &quot;DIVMGroup&quot;;
-    string public symbol = &quot;DIVM&quot;;
+    string public name = "DIVMGroup";
+    string public symbol = "DIVM";
     uint8 public decimals = 18;
 	uint256 public initialSupply = 10000;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
     
@@ -27,8 +27,8 @@ contract TokenERC20 {
   }
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  	
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);  	
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -58,7 +58,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(_value <= allowance[_from][msg.sender]);    
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -103,7 +103,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -119,8 +119,8 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              
@@ -137,7 +137,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
 	uint256 public Limit;
 	uint256 public issueOfTokens;
     bool    public TokenSaleStop = false;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 	
     function MyAdvancedToken()  public {
@@ -148,8 +148,8 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt; _value);               
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] > _value);               
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         require(!frozenAccount[_from]);                    
         require(!frozenAccount[_to]);                       
         balanceOf[_from] -= _value;                        
@@ -162,8 +162,8 @@ contract MyAdvancedToken is owned, TokenERC20 {
     /// @param mintedAmount the amount of tokens it will receive
     function mintToken(address target, uint256 mintedAmount) onlyOwner  public  {
 	    require (!TokenSaleStop);
-        require (mintedAmount &lt;= 7000000 * 1 ether - totalSupply);
-        require (totalSupply + mintedAmount &lt;= 7000000 * 1 ether); 
+        require (mintedAmount <= 7000000 * 1 ether - totalSupply);
+        require (totalSupply + mintedAmount <= 7000000 * 1 ether); 
         balanceOf[target] += mintedAmount;
         totalSupply += mintedAmount;
 		issueOfTokens = totalSupply / 1 ether - initialSupply;
@@ -171,7 +171,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -190,27 +190,27 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
     /// @notice Buy tokens from contract by sending ether  
     function () payable public {
-	    require (msg.value * Limit / 1 ether &gt; 1);
+	    require (msg.value * Limit / 1 ether > 1);
 	    require (!TokenSaleStop);
         uint amount = msg.value * 1 ether / buyPriceInWei;               
         _transfer(this, msg.sender, amount);
-        if (this.balance &gt; 2 ether) {
+        if (this.balance > 2 ether) {
 		Bounty.transfer(msg.value / 40);}		
-		if (this.balance &gt; 10 ether) {
+		if (this.balance > 10 ether) {
 		reserveFund.transfer(msg.value / 7);}
     }
 
     function forwardFunds(uint256 withdraw) onlyOwner public {
-	     require (withdraw &gt; 0);
+	     require (withdraw > 0);
          beneficiary.transfer(withdraw * 1 ether);  
   }
 	
     /// @notice Sell `amount` tokens to contract
     /// @param amount  of tokens to be sold
     function sell(uint256 amount) public {
-	    require (amount &gt; Limit);
+	    require (amount > Limit);
 	    require (!TokenSaleStop);
-        require(this.balance &gt;= amount * sellPriceInWei);       
+        require(this.balance >= amount * sellPriceInWei);       
         _transfer(msg.sender, this, amount * 1 ether);              
         msg.sender.transfer(amount * sellPriceInWei);          
     }

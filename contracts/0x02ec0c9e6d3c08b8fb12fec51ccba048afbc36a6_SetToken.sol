@@ -45,7 +45,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -115,7 +115,7 @@ contract DetailedERC20 is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -126,8 +126,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -230,9 +230,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -240,7 +240,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -249,7 +249,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -264,7 +264,7 @@ library SafeMath {
  */
 library AddressArrayUtils {
   function hasValue(address[] addresses, address value) internal returns (bool) {
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
       if (addresses[i] == value) {
         return true;
       }
@@ -292,7 +292,7 @@ contract SetInterface {
   /**
    * @dev Function to convert component into {Set} Tokens
    *
-   * Please note that the user&#39;s ERC20 component must be approved by
+   * Please note that the user's ERC20 component must be approved by
    * their ERC20 contract to transfer their components to this contract.
    *
    * @param _quantity uint The quantity of Sets desired to issue in Wei as a multiple of naturalUnit
@@ -326,7 +326,7 @@ contract SetInterface {
  * @author Felix Feng
  * @dev Implementation of the basic {Set} token.
  */
-contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;STBL&quot;, 18), SetInterface {
+contract SetToken is StandardToken, DetailedERC20("Stable Set", "STBL", 18), SetInterface {
   using SafeMath for uint256;
   using AddressArrayUtils for address[];
 
@@ -345,9 +345,9 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   Component[] public components;
 
   // Mapping of componentHash to isComponent
-  mapping(bytes32 =&gt; bool) internal isComponent;
-  // Mapping of index of component -&gt; user address -&gt; balance
-  mapping(uint =&gt; mapping(address =&gt; uint)) internal unredeemedBalances;
+  mapping(bytes32 => bool) internal isComponent;
+  // Mapping of index of component -> user address -> balance
+  mapping(uint => mapping(address => uint)) internal unredeemedBalances;
 
 
   ///////////////////////////////////////////////////////////
@@ -371,7 +371,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
     // Check that the sender has sufficient components
     // Since the component length is defined ahead of time, this is not
     // an unbounded loop
-    require(balances[msg.sender] &gt;= quantity, &quot;User does not have sufficient balance&quot;);
+    require(balances[msg.sender] >= quantity, "User does not have sufficient balance");
     _;
   }
 
@@ -387,7 +387,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   }
 
   modifier isNonZero(uint _quantity) {
-    require(_quantity &gt; 0);
+    require(_quantity > 0);
     _;
   }
 
@@ -400,13 +400,13 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
     isNonZero(_naturalUnit)
     public {
     // There must be component present
-    require(_components.length &gt; 0, &quot;Component length needs to be great than 0&quot;);
+    require(_components.length > 0, "Component length needs to be great than 0");
 
     // There must be an array of units
-    require(_units.length &gt; 0, &quot;Units must be greater than 0&quot;);
+    require(_units.length > 0, "Units must be greater than 0");
 
     // The number of components must equal the number of units
-    require(_components.length == _units.length, &quot;Component and unit lengths must be the same&quot;);
+    require(_components.length == _units.length, "Component and unit lengths must be the same");
 
     naturalUnit = _naturalUnit;
 
@@ -415,14 +415,14 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
 
     // NOTE: It will be the onus of developers to check whether the addressExists
     // are in fact ERC20 addresses
-    for (uint16 i = 0; i &lt; _units.length; i++) {
+    for (uint16 i = 0; i < _units.length; i++) {
       // Check that all units are non-zero. Negative numbers will underflow
       uint currentUnits = _units[i];
-      require(currentUnits &gt; 0, &quot;Unit declarations must be non-zero&quot;);
+      require(currentUnits > 0, "Unit declarations must be non-zero");
 
       // Check that all addresses are non-zero
       address currentComponent = _components[i];
-      require(currentComponent != address(0), &quot;Components must have non-zero address&quot;);
+      require(currentComponent != address(0), "Components must have non-zero address");
 
       // Check the component has not already been added
       require(!tokenIsComponent(currentComponent));
@@ -444,7 +444,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   /**
    * @dev Function to convert component into {Set} Tokens
    *
-   * Please note that the user&#39;s ERC20 component must be approved by
+   * Please note that the user's ERC20 component must be approved by
    * their ERC20 contract to transfer their components to this contract.
    *
    * @param _quantity uint The quantity of Sets desired to issue in Wei as a multiple of naturalUnit
@@ -453,10 +453,10 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
     isMultipleOfNaturalUnit(_quantity)
     isNonZero(_quantity)
     public returns (bool success) {
-    // Transfers the sender&#39;s components to the contract
+    // Transfers the sender's components to the contract
     // Since the component length is defined ahead of time, this is not
     // an unbounded loop
-    for (uint16 i = 0; i &lt; components.length; i++) {
+    for (uint16 i = 0; i < components.length; i++) {
       address currentComponent = components[i].address_;
       uint currentUnits = components[i].unit_;
 
@@ -493,7 +493,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   {
     burn(_quantity);
 
-    for (uint16 i = 0; i &lt; components.length; i++) {
+    for (uint16 i = 0; i < components.length; i++) {
       address currentComponent = components[i].address_;
       uint currentUnits = components[i].unit_;
 
@@ -535,16 +535,16 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   {
     // Excluded tokens should be less than the number of components
     // Otherwise, use the normal redeem function
-    require(_componentsToExclude &gt; 0, &quot;Excluded components must be non-zero&quot;);
+    require(_componentsToExclude > 0, "Excluded components must be non-zero");
 
     burn(_quantity);
 
-    for (uint16 i = 0; i &lt; components.length; i++) {
+    for (uint16 i = 0; i < components.length; i++) {
       uint transferValue = calculateTransferValue(components[i].unit_, _quantity);
 
       // Exclude tokens if 2 raised to the power of their indexes in the components
       // array results in a non zero value following a bitwise AND
-      if (_componentsToExclude &amp; bytes32(2 ** i) &gt; 0) {
+      if (_componentsToExclude & bytes32(2 ** i) > 0) {
         unredeemedBalances[i][msg.sender] += transferValue;
       } else {
         uint preTransferBalance = ERC20(components[i].address_).balanceOf(this);
@@ -576,14 +576,14 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
     public
     returns (bool success)
   {
-    require(_componentsToRedeem &gt; 0, &quot;Components to redeem must be non-zero&quot;);
+    require(_componentsToRedeem > 0, "Components to redeem must be non-zero");
 
-    for (uint16 i = 0; i &lt; components.length; i++) {
-      if (_componentsToRedeem &amp; bytes32(2 ** i) &gt; 0) {
+    for (uint16 i = 0; i < components.length; i++) {
+      if (_componentsToRedeem & bytes32(2 ** i) > 0) {
         address currentComponent = components[i].address_;
         uint remainingBalance = unredeemedBalances[i][msg.sender];
 
-        // To prevent re-entrancy attacks, decrement the user&#39;s Set balance
+        // To prevent re-entrancy attacks, decrement the user's Set balance
         unredeemedBalances[i][msg.sender] = 0;
 
         require(ERC20(currentComponent).transfer(msg.sender, remainingBalance));
@@ -600,7 +600,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
   ///////////////////////////////////////////////////////////
   function getComponents() public view returns(address[]) {
     address[] memory componentAddresses = new address[](components.length);
-    for (uint16 i = 0; i &lt; components.length; i++) {
+    for (uint16 i = 0; i < components.length; i++) {
         componentAddresses[i] = components[i].address_;
     }
     return componentAddresses;
@@ -608,7 +608,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
 
   function getUnits() public view returns(uint[]) {
     uint[] memory units = new uint[](components.length);
-    for (uint16 i = 0; i &lt; components.length; i++) {
+    for (uint16 i = 0; i < components.length; i++) {
         units[i] = components[i].unit_;
     }
     return units;
@@ -619,7 +619,7 @@ contract SetToken is StandardToken, DetailedERC20(&quot;Stable Set&quot;, &quot;
 
     uint componentIndex;
 
-    for (uint i = 0; i &lt; components.length; i++) {
+    for (uint i = 0; i < components.length; i++) {
       if (components[i].address_ == _componentAddress) {
         componentIndex = i;
       }

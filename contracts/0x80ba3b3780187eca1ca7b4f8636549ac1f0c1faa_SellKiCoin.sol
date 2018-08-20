@@ -54,12 +54,12 @@ contract SellKiCoin is Owned {
   }
   
   function SetMinLot (uint256 newminlot) onlyOwner public {
-    if (newminlot&gt;=5) minLot = newminlot;
+    if (newminlot>=5) minLot = newminlot;
     else revert();
   }
     
   function WithdrawEther(uint256 ethers) onlyOwner public returns (bool ok) {
-    if (this.balance &gt;= ethers) {
+    if (this.balance >= ethers) {
       return owner.send(ethers);
     }
   }
@@ -69,13 +69,13 @@ contract SellKiCoin is Owned {
     uint total = ERC20(token).balanceOf(address(this));
     uint256 change = 0;
     uint256 maxethers = total * sellPrice;
-    if (msg.value &gt; maxethers) {
+    if (msg.value > maxethers) {
       change  = msg.value - maxethers;
     }
-    if (change &gt; 0) {
+    if (change > 0) {
       if (!msg.sender.send(change)) revert();
     }
-    if (tokens &gt; minLot) {
+    if (tokens > minLot) {
       if (!ERC20(token).transfer(msg.sender, tokens)) revert();
       else {
         if (!payto1.send(msg.value*share1/1000)) revert();

@@ -21,10 +21,10 @@ contract BananaBasket is mortal {
     struct BasketState
     {
         //string picHash;
-        mapping (uint=&gt;uint) ratings;
+        mapping (uint=>uint) ratings;
     }
 
-    mapping (string=&gt;BasketState) basketStateHistory;
+    mapping (string=>BasketState) basketStateHistory;
 
     
 
@@ -37,7 +37,7 @@ contract BananaBasket is mortal {
     {
         basketStateHistory[id] = BasketState();
 
-        for (var index = 0;  index &lt; ratings.length; ++index) {
+        for (var index = 0;  index < ratings.length; ++index) {
             basketStateHistory[id].ratings[index + 1] = ratings[index];
         }
 
@@ -50,7 +50,7 @@ contract BananaBasket is mortal {
     returns(uint[5] ratings)
     {
         //pichash = id;
-        for (var index = 0;  index &lt; 5; ++index) {
+        for (var index = 0;  index < 5; ++index) {
             ratings[index] = basketStateHistory[id].ratings[index + 1];
         }
     }

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234746574663425b4a4c4e59464d0d404c">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234746574663425b4a4c4e59464d0d404c">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -87,22 +87,22 @@ contract CryptoCarsRent is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;CryptoCars&quot;;
-  string public constant SYMBOL = &quot;CarsToken&quot;;
+  string public constant NAME = "CryptoCars";
+  string public constant SYMBOL = "CarsToken";
 
   uint256 private startingSellPrice = 0.012 ether;
 
-  mapping (uint256 =&gt; address) public carIdToOwner;
+  mapping (uint256 => address) public carIdToOwner;
 
-  mapping (uint256 =&gt; address) public carIdToRenter;
-  mapping (uint256 =&gt; uint256) public carIdRentStartTime;
+  mapping (uint256 => address) public carIdToRenter;
+  mapping (uint256 => uint256) public carIdRentStartTime;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public carIdToApproved;
+  mapping (uint256 => address) public carIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private carIdToPrice;
-  mapping (uint256 =&gt; uint256) private carIdToProfit;
+  mapping (uint256 => uint256) private carIdToPrice;
+  mapping (uint256 => uint256) private carIdToProfit;
 
   /*** DATATYPES ***/
   struct Car {
@@ -128,8 +128,8 @@ contract CryptoCarsRent is ERC721, Ownable {
 
   function createCarsTokens() public onlyCoOwner {
 
-	for (uint8 car=0; car&lt;21; car++) {
-	   _createCar(&quot;Crypto Car&quot;, address(this), startingSellPrice);
+	for (uint8 car=0; car<21; car++) {
+	   _createCar("Crypto Car", address(this), startingSellPrice);
 	 }
 
   }
@@ -161,7 +161,7 @@ contract CryptoCarsRent is ERC721, Ownable {
 	uint256 renter_payment;
 	uint256 payment;
 	
-	if (now - carIdRentStartTime[_tokenId] &gt; 7200) // 2 hours of rent finished
+	if (now - carIdRentStartTime[_tokenId] > 7200) // 2 hours of rent finished
 		carIdToRenter[_tokenId] = address(0);
 		
 	address renter = carIdToRenter[_tokenId];
@@ -171,13 +171,13 @@ contract CryptoCarsRent is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 	
 	
 
     if (renter != address(0)) {
-		renter_payment = uint256(SafeMath.div(SafeMath.mul(profit, 45), 100)); //45% from profit to car&#39;s renter
-		payment = uint256(SafeMath.sub(SafeMath.div(SafeMath.mul(sellingPrice, 97), 100), renter_payment)); //&#39;97% - renter_payment&#39; to previous owner
+		renter_payment = uint256(SafeMath.div(SafeMath.mul(profit, 45), 100)); //45% from profit to car's renter
+		payment = uint256(SafeMath.sub(SafeMath.div(SafeMath.mul(sellingPrice, 97), 100), renter_payment)); //'97% - renter_payment' to previous owner
 	} else {
 		renter_payment = 0;
 		payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100)); //94% to previous owner
@@ -185,7 +185,7 @@ contract CryptoCarsRent is ERC721, Ownable {
 
 	
     // Next price will in 2 times more.
-	if (sellingPrice &lt; 500 finney) {
+	if (sellingPrice < 500 finney) {
 		carIdToPrice[_tokenId] = SafeMath.mul(sellingPrice, 2); //rice by 100%
 	}
 	else {
@@ -211,21 +211,21 @@ contract CryptoCarsRent is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, carIdToPrice[_tokenId], oldOwner, newOwner, cars[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
   }
 
   function rent(uint256 _tokenId) public payable {
-	require(now - carIdRentStartTime[_tokenId] &gt; 7200); // 2 hours of previous rent finished
+	require(now - carIdRentStartTime[_tokenId] > 7200); // 2 hours of previous rent finished
 	require(msg.sender != carIdToOwner[_tokenId]);
 	
 	uint256 profit = carIdToProfit[_tokenId]; //plannig profit from selling 
 	uint256 rentPrice = uint256(SafeMath.div(SafeMath.mul(profit, 10), 100)); //10% from profit is a rent price
      
     require(_addressNotNull(msg.sender));
-    require(msg.value &gt;= rentPrice);	 
+    require(msg.value >= rentPrice);	 
 	
 	carIdRentStartTime[_tokenId] = now;
 	carIdToRenter[_tokenId] = msg.sender;
@@ -238,7 +238,7 @@ contract CryptoCarsRent is ERC721, Ownable {
       carOwner.transfer(rentPrice); //
     }
 	
-    if (msg.value &gt; rentPrice) { //if excess pay
+    if (msg.value > rentPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, rentPrice);
 		msg.sender.transfer(purchaseExcess);
 	}	
@@ -274,9 +274,9 @@ contract CryptoCarsRent is ERC721, Ownable {
 	uint256[] memory prices_res = new uint256[](totalResultCars);
 	uint256[] memory profits_res = new uint256[](totalResultCars);
 	
-	for (uint256 carId = 0; carId &lt; totalResultCars; carId++) {
+	for (uint256 carId = 0; carId < totalResultCars; carId++) {
 	  owners_res[carId] = carIdToOwner[carId];
-	  if (now - carIdRentStartTime[carId] &lt;= 7200) // 2 hours of rent finished
+	  if (now - carIdRentStartTime[carId] <= 7200) // 2 hours of rent finished
 		renters_res[carId] = carIdToRenter[carId];
 	  else 
 		renters_res[carId] = address(0);
@@ -303,7 +303,7 @@ contract CryptoCarsRent is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 carId;
-      for (carId = 0; carId &lt;= totalCars; carId++) {
+      for (carId = 0; carId <= totalCars; carId++) {
         if (carIdToOwner[carId] == _owner) {
           result[resultIndex] = carId;
           resultIndex++;
@@ -365,7 +365,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     carIdToOwner[_tokenId] = _to;
 
-    // When creating new cars _from is 0x0, but we can&#39;t account that address.
+    // When creating new cars _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

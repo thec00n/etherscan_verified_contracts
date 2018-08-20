@@ -17,9 +17,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -163,8 +163,8 @@ contract NeoWorldCash is ERC223, Pausable {
 
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint) balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
 	
 	string public name;
 	string public symbol;
@@ -177,8 +177,8 @@ contract NeoWorldCash is ERC223, Pausable {
 	// Constructor
 	// ------------------------------------------------------------------------
 	function NeoWorldCash() public {
-		symbol = &quot;NASH&quot;;
-		name = &quot;NEOWORLD CASH&quot;;
+		symbol = "NASH";
+		name = "NEOWORLD CASH";
 		decimals = 18;
 		totalSupply = 100000000000 * 10**uint(decimals);
 		balances[msg.sender] = totalSupply;
@@ -234,12 +234,12 @@ contract NeoWorldCash is ERC223, Pausable {
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return (length&gt;0);
+		return (length>0);
 	}
 
 	//function that is called when transaction target is an address
 	function transferToAddress(address _to, uint _value, bytes _data) private returns (bool) {
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
 		balances[msg.sender] = balanceOf(msg.sender).sub(_value);
 		balances[_to] = balanceOf(_to).add(_value);
 		emit Transfer(msg.sender, _to, _value);
@@ -255,7 +255,7 @@ contract NeoWorldCash is ERC223, Pausable {
 		address owner;
 		(price, owner) = receiver.doTransfer(msg.sender, bytesToUint(_data));
 
-		if (balanceOf(msg.sender) &lt; price) revert();
+		if (balanceOf(msg.sender) < price) revert();
 		balances[msg.sender] = balanceOf(msg.sender).sub(price);
 		balances[owner] = balanceOf(owner).add(price);
 		receiver.tokenFallback(msg.sender, price, _data);
@@ -269,8 +269,8 @@ contract NeoWorldCash is ERC223, Pausable {
 	}  
 
 	function burn(uint256 _value) public returns (bool) {
-		require (_value &gt; 0); 
-		require (balanceOf(msg.sender) &gt;= _value);            // Check if the sender has enough
+		require (_value > 0); 
+		require (balanceOf(msg.sender) >= _value);            // Check if the sender has enough
 		balances[msg.sender] = balanceOf(msg.sender).sub(_value);                      // Subtract from the sender
 		totalSupply = totalSupply.sub(_value);                                // Updates totalSupply
 		emit Burn(msg.sender, _value);
@@ -280,9 +280,9 @@ contract NeoWorldCash is ERC223, Pausable {
 	function bytesToUint(bytes b) private pure returns (uint result) {
 		uint i;
 		result = 0;
-		for (i = 0; i &lt; b.length; i++) {
+		for (i = 0; i < b.length; i++) {
 			uint c = uint(b[i]);
-			if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+			if (c >= 48 && c <= 57) {
 				result = result * 10 + (c - 48);
 			}
 		}
@@ -290,7 +290,7 @@ contract NeoWorldCash is ERC223, Pausable {
 
 	// ------------------------------------------------------------------------
 	// Token owner can approve for `spender` to transferFrom(...) `tokens`
-	// from the token owner&#39;s account
+	// from the token owner's account
 	//
 	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 	// recommends that there are no checks for the approval double-spend attack
@@ -322,14 +322,14 @@ contract NeoWorldCash is ERC223, Pausable {
 
 	// ------------------------------------------------------------------------
 	// Returns the amount of tokens approved by the owner that can be
-	// transferred to the spender&#39;s account
+	// transferred to the spender's account
 	// ------------------------------------------------------------------------
 	function allowance(address tokenOwner, address spender) public constant returns (uint) {
 		return allowed[tokenOwner][spender];
 	}
 
 	// ------------------------------------------------------------------------
-	// Don&#39;t accept ETH
+	// Don't accept ETH
 	// ------------------------------------------------------------------------
 	function () public payable {
 		revert();

@@ -1,7 +1,7 @@
 pragma solidity 0.4.16;
 
 /// @title Multi signature token wallet - Allows multiple parties to approve tokens transfer
-/// @author popofe (Avalon Platform) - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24544b544b424164455245484b4a0a4a51">[email&#160;protected]</a>&gt;
+/// @author popofe (Avalon Platform) - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24544b544b424164455245484b4a0a4a51">[email protected]</a>>
 
 contract MultiSigTokenWallet {
     /// @dev No fallback function to prevent ether deposit
@@ -18,9 +18,9 @@ contract MultiSigTokenWallet {
     event QuorumChange(uint quorum);
 
     enum ActionChoices { AddOwner, ChangeQuorum, DeleteAction, TransferToken, WithdrawOwner}
-    mapping (uint =&gt; Action) public actions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Action) public actions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public quorum;
     uint public actionCount;
@@ -65,16 +65,16 @@ contract MultiSigTokenWallet {
     }
 
     modifier validQuorum(uint ownerCount, uint _quorum) {
-        require (_quorum &lt;= ownerCount &amp;&amp; _quorum &gt; 0);
+        require (_quorum <= ownerCount && _quorum > 0);
         _;
     }
 
     modifier validAction(address  addressField, uint value, ActionChoices actionType) {
-        require ((actionType == ActionChoices.AddOwner &amp;&amp; addressField != 0 &amp;&amp; value == 0)
-                || (actionType == ActionChoices.ChangeQuorum &amp;&amp; addressField == 0 &amp;&amp; value &gt; 0)
-                || (actionType == ActionChoices.DeleteAction &amp;&amp; addressField == 0 &amp;&amp; value &gt; 0)
-                || (actionType == ActionChoices.TransferToken &amp;&amp; addressField != 0 &amp;&amp; value &gt; 0)
-                || (actionType == ActionChoices.WithdrawOwner &amp;&amp; addressField != 0 &amp;&amp; value == 0));
+        require ((actionType == ActionChoices.AddOwner && addressField != 0 && value == 0)
+                || (actionType == ActionChoices.ChangeQuorum && addressField == 0 && value > 0)
+                || (actionType == ActionChoices.DeleteAction && addressField == 0 && value > 0)
+                || (actionType == ActionChoices.TransferToken && addressField != 0 && value > 0)
+                || (actionType == ActionChoices.WithdrawOwner && addressField != 0 && value == 0));
         _;
     }
 
@@ -88,8 +88,8 @@ contract MultiSigTokenWallet {
         public
         validQuorum(_owners.length, _quorum)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
-            require (!isOwner[_owners[i]] &amp;&amp; _owners[i] != 0);
+        for (uint i=0; i<_owners.length; i++) {
+            require (!isOwner[_owners[i]] && _owners[i] != 0);
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -113,9 +113,9 @@ contract MultiSigTokenWallet {
         private
     {
         require (isOwner[owner]);
-        require (owners.length - 1 &gt;= quorum);
+        require (owners.length - 1 >= quorum);
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
@@ -129,7 +129,7 @@ contract MultiSigTokenWallet {
     function changeQuorum(uint _quorum)
         private
     {
-        require (_quorum &gt; 0 &amp;&amp; _quorum &lt;= owners.length);
+        require (_quorum > 0 && _quorum <= owners.length);
         quorum = _quorum;
         QuorumChange(_quorum);
     }
@@ -233,7 +233,7 @@ contract MultiSigTokenWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[actionId][owners[i]])
                 count += 1;
             if (count == quorum)
@@ -271,7 +271,7 @@ contract MultiSigTokenWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[actionId][owners[i]])
                 count += 1;
     }
@@ -285,10 +285,10 @@ contract MultiSigTokenWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;actionCount; i++)
-            if (   ((pending &amp;&amp; !actions[i].executed)
-                    || (executed &amp;&amp; actions[i].executed))
-                &amp;&amp; (!exceptDeleted || !actions[i].deleted))
+        for (uint i=0; i<actionCount; i++)
+            if (   ((pending && !actions[i].executed)
+                    || (executed && actions[i].executed))
+                && (!exceptDeleted || !actions[i].deleted))
                 count += 1;
     }
 
@@ -313,13 +313,13 @@ contract MultiSigTokenWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[actionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -336,10 +336,10 @@ contract MultiSigTokenWallet {
         uint[] memory actionIds;
         uint count = 0;
         uint i;
-        for (i=0; i&lt;actionCount; i++)
-            if (((pending &amp;&amp; !actions[i].executed)
-                 || (executed &amp;&amp; actions[i].executed))
-                &amp;&amp; (!exceptDeleted || !actions[i].deleted))
+        for (i=0; i<actionCount; i++)
+            if (((pending && !actions[i].executed)
+                 || (executed && actions[i].executed))
+                && (!exceptDeleted || !actions[i].deleted))
             {
                 actionIds[count] = i;
                 count += 1;

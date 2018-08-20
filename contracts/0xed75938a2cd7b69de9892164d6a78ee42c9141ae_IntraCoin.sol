@@ -40,9 +40,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,9 +80,9 @@ contract IntraCoin is owned {
     uint8 public decimals = 18;  
     uint256 public totalSupply_;
     
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping (address => bool) public frozenAccount;
   
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -194,7 +194,7 @@ contract IntraCoin is owned {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -221,8 +221,8 @@ contract IntraCoin is owned {
       require(_to != address(0));
       require(!frozenAccount[msg.sender]);    // Check if sending account is frozen
       require(!frozenAccount[_to]);           // Check if To account is frozen
-      require(_value &lt;= balances[msg.sender]);
-      require(balances[_to] + _value &gt; balances[_to]);  //Check for overflows
+      require(_value <= balances[msg.sender]);
+      require(balances[_to] + _value > balances[_to]);  //Check for overflows
       
     _transfer(msg.sender, _to, _value);
   }
@@ -241,9 +241,9 @@ contract IntraCoin is owned {
         // Check if To account is frozen
         require(!frozenAccount[_to]);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         
@@ -266,11 +266,11 @@ contract IntraCoin is owned {
 
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);     //Check if sender has enough
+    require(_value <= balances[_from]);     //Check if sender has enough
     require(!frozenAccount[msg.sender]);     // Check if From account is frozen
     require(!frozenAccount[_from]);          // Check if To account is frozen
     require(!frozenAccount[_to]);            // Check if the sender has enough
-    require(balances[_to] + _value &gt; balances[_to]);   //overflow check
+    require(balances[_to] + _value > balances[_to]);   //overflow check
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -303,8 +303,8 @@ contract IntraCoin is owned {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) onlyOwner public {
-    require(_value &lt;= balances[msg.sender]);
-    require(_value &lt;= totalSupply_);
+    require(_value <= balances[msg.sender]);
+    require(_value <= totalSupply_);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);

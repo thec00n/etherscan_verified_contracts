@@ -52,12 +52,12 @@ contract TokenAdder {
         network.claimAdmin();
         uint i;
 
-        for (i = 0; i &lt; reservePRNewTokens.length; i++) {
+        for (i = 0; i < reservePRNewTokens.length; i++) {
             network.listPairForReserve(reservePR, ETH, reservePRNewTokens[i], true);
             network.listPairForReserve(reservePR, reservePRNewTokens[i], ETH, true);
         }
 
-        for (i = 0; i &lt; reserveKYNewTokens.length; i++) {
+        for (i = 0; i < reserveKYNewTokens.length; i++) {
             network.listPairForReserve(reserveKY, ETH, reserveKYNewTokens[i], true);
             network.listPairForReserve(reserveKY, reserveKYNewTokens[i], ETH, true);
         }

@@ -1,17 +1,17 @@
 contract Tickets {
 
-    string public name = &quot;Kraftwerk&quot;;
-    string public symbol = &quot;KKT&quot;;
+    string public name = "Kraftwerk";
+    string public symbol = "KKT";
     uint8 public decimals = 0;
 
     address[1000] public holders;
-    mapping(uint256 =&gt; bool) public usedTickets;
-    mapping(uint256 =&gt; string) public additionalInfo;
-    mapping(address =&gt; uint[16]) public seatsList;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(uint256 => bool) public usedTickets;
+    mapping(uint256 => string) public additionalInfo;
+    mapping(address => uint[16]) public seatsList;
+    mapping(address => uint256) public balanceOf;
     address[30000] public booking;
-    mapping(address =&gt; uint[16]) public bookingList;
-    mapping(address =&gt; uint256) public amountOfBooked;
+    mapping(address => uint[16]) public bookingList;
+    mapping(address => uint256) public amountOfBooked;
 
     address Manager;
     address ManagerForRate;
@@ -49,9 +49,9 @@ contract Tickets {
 
 
     function allocateTicket(uint256 seatID, address buyer, string infoString) external managerOnly {
-        require(seatID &gt; 0 &amp;&amp; seatID &lt; seatsCount);
+        require(seatID > 0 && seatID < seatsCount);
         require(holders[seatID] == nullAddress);
-        require(balanceOf[buyer] &lt; limitPerHolder);
+        require(balanceOf[buyer] < limitPerHolder);
         require(booking[seatID] == nullAddress);
         createTicket(seatID, buyer);
         additionalInfo[seatID] = infoString;
@@ -60,7 +60,7 @@ contract Tickets {
 
     function createTicket(uint256 seatID, address buyer) internal {
         uint i = 0;
-        for(i = 0; i &lt; limitPerHolder; i++)
+        for(i = 0; i < limitPerHolder; i++)
         {
             if(seatsList[buyer][i] == 0)
             {
@@ -73,7 +73,7 @@ contract Tickets {
     }
 
     function redeemTicket(uint seatID, address holder) external managerOnly{
-        require(seatID &gt; 0 &amp;&amp; seatID &lt; seatsCount);
+        require(seatID > 0 && seatID < seatsCount);
         require(usedTickets[seatID] == false);
         require(holders[seatID] == holder);
         usedTickets[seatID] = true;
@@ -82,16 +82,16 @@ contract Tickets {
     }
 
     function transfer(address holder, address receiver, uint256 seatID) external managerOnly{
-        require(seatID &gt; 0 &amp;&amp; seatID &lt; seatsCount);
+        require(seatID > 0 && seatID < seatsCount);
         require(holders[seatID] == holder);
-        require(balanceOf[receiver] &lt; limitPerHolder);
+        require(balanceOf[receiver] < limitPerHolder);
         require(holder != receiver);
         uint i = 0;
         holders[seatID] = receiver;
         balanceOf[holder] -= 1;
         if(receiver != nullAddress)
         {
-            for(i = 0; i &lt; limitPerHolder; i++)
+            for(i = 0; i < limitPerHolder; i++)
               {
                   if(seatsList[receiver][i] == 0)
                   {
@@ -101,7 +101,7 @@ contract Tickets {
             balanceOf[receiver] += 1;
             seatsList[receiver][i] = seatID;
         }
-        for(i = 0; i &lt; limitPerHolder; i++)
+        for(i = 0; i < limitPerHolder; i++)
         {
             if(seatsList[holder][i] == seatID)
             {
@@ -113,10 +113,10 @@ contract Tickets {
     }
 
     function bookTicket(uint256 seatID, address buyer, string infoString) external managerOnly{
-        require(seatID &gt; 0 &amp;&amp; seatID &lt; seatsCount);
+        require(seatID > 0 && seatID < seatsCount);
         require(holders[seatID] == nullAddress);
         require(booking[seatID] == nullAddress);
-        require(balanceOf[buyer] + amountOfBooked[buyer] &lt; limitPerHolder);
+        require(balanceOf[buyer] + amountOfBooked[buyer] < limitPerHolder);
         uint i = 0;
         booking[seatID] = buyer;
         amountOfBooked[buyer] += 1;
@@ -131,7 +131,7 @@ contract Tickets {
     function cancelReservation(address buyer, uint256 seatID) external managerOnly{
         require(booking[seatID] == buyer);
         uint i = 0;
-        while(i &lt; limitPerHolder) {
+        while(i < limitPerHolder) {
             if (seatID == bookingList[buyer][i]){
               booking[seatID] = nullAddress;
               bookingList[buyer][i] = 0;
@@ -146,8 +146,8 @@ contract Tickets {
 
     function() payable {
         require(amountOfBooked[msg.sender] != 0);
-        require(balanceOf[msg.sender] + amountOfBooked[msg.sender] &lt;= limitPerHolder);
-        require(msg.value &gt;= Ticket_Price * amountOfBooked[msg.sender]);
+        require(balanceOf[msg.sender] + amountOfBooked[msg.sender] <= limitPerHolder);
+        require(msg.value >= Ticket_Price * amountOfBooked[msg.sender]);
         makePayment(msg.sender);
     }
 
@@ -155,7 +155,7 @@ contract Tickets {
         uint i = 0;
         uint seatID;
         string infoString;
-        while(i &lt; limitPerHolder) {
+        while(i < limitPerHolder) {
             if(bookingList[buyer][i] != 0) {
               seatID = bookingList[buyer][i];
               bookingList[buyer][i] = 0;

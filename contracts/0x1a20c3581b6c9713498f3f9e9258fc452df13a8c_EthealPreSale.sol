@@ -15,7 +15,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,18 +85,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -130,9 +130,9 @@ contract Crowdsale {
    */
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
     startTime = _startTime;
     endTime = _endTime;
@@ -171,17 +171,17 @@ contract Crowdsale {
   }
   // @return true if the transaction can buy tokens
   function validPurchase(uint256 weiAmount) internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = weiAmount != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   // @return true if crowdsale has started
   function hasStarted() public view returns (bool) {
-    return now &gt;= startTime;
+    return now >= startTime;
   }
 }
 /**
@@ -192,13 +192,13 @@ contract CappedCrowdsale is Crowdsale {
   using SafeMath for uint256;
   uint256 public cap;
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase(uint256 weiAmount) internal view returns (bool) {
-    return super.validPurchase(weiAmount) &amp;&amp; !capReached();
+    return super.validPurchase(weiAmount) && !capReached();
   }
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
@@ -207,15 +207,15 @@ contract CappedCrowdsale is Crowdsale {
   }
   // @return true if cap has been reached
   function capReached() internal view returns (bool) {
-   return weiRaised &gt;= cap;
+   return weiRaised >= cap;
   }
   // overriding Crowdsale#buyTokens to add partial refund logic
   function buyTokens(address beneficiary) public payable {
      uint256 weiToCap = cap.sub(weiRaised);
-     uint256 weiAmount = weiToCap &lt; msg.value ? weiToCap : msg.value;
+     uint256 weiAmount = weiToCap < msg.value ? weiToCap : msg.value;
      buyTokens(beneficiary, weiAmount);
      uint256 refund = msg.value.sub(weiAmount);
-     if (refund &gt; 0) {
+     if (refund > 0) {
        msg.sender.transfer(refund);
      }
    }
@@ -231,7 +231,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
   event Finalized();
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -278,7 +278,7 @@ contract HasNoTokens is Ownable {
 contract RefundVault is Ownable, HasNoTokens {
   using SafeMath for uint256;
   enum State { Active, Refunding, Closed }
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
   event Closed();
@@ -316,7 +316,7 @@ contract RefundVault is Ownable, HasNoTokens {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -325,11 +325,11 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
   function RefundableCrowdsale(uint256 _goal) {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // If the goal is reached forward the fund to the wallet, 
   // otherwise in addition to sending the funds, we want to
   // call the RefundVault deposit function
@@ -355,7 +355,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     super.finalization();
   }
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 }
 /// @dev The token controller contract must implement these functions
@@ -431,7 +431,7 @@ contract Pausable is Ownable {
 contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     // the token is here
     TokenController public ethealController;
-    // after reaching {weiRaised} &gt;= {softCap}, there is {softCapTime} seconds until the sale closes
+    // after reaching {weiRaised} >= {softCap}, there is {softCapTime} seconds until the sale closes
     // {softCapClose} contains the closing time
     uint256 public rate = 1250;
     uint256 public goal = 333 ether;
@@ -454,12 +454,12 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     // {whitelistDayMaxStake} contains the max stake limits per address for each whitelist sales day
     // {whitelist} contains who can contribute during whitelist period
     uint8 public whitelistDayCount;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (uint8 =&gt; uint256) public whitelistDayMaxStake;
+    mapping (address => bool) public whitelist;
+    mapping (uint8 => uint256) public whitelistDayMaxStake;
     
     // stakes contains contribution stake in wei
     // contributed ETH is calculated on 80% when sending funds with gasprice above maxGasPrice
-    mapping (address =&gt; uint256) public stakes;
+    mapping (address => uint256) public stakes;
     // addresses of contributors to handle finalization after token sale end (refunds or token claims)
     address[] public contributorsKeys; 
     // events for token purchase during sale and claiming tokens after sale
@@ -483,11 +483,11 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @param _goal Minimum funding in wei, below that EVERYONE gets back ALL their
     ///  contributions regardless of maxGasPrice penalty. 
     ///  Eg. someone contributes with 5 ETH, but gets only 4 ETH stakes because
-    ///  sending funds with gasprice over 100Gwei, he will still get back &gt;&gt;5 ETH&lt;&lt;
+    ///  sending funds with gasprice over 100Gwei, he will still get back >>5 ETH<<
     ///  in case of unsuccessful token sale
     /// @param _softCap Softcap in wei, reaching it ends the sale in _softCapTime seconds
     /// @param _softCapTime Seconds until the sale remains open after reaching _softCap
-    /// @param _cap Maximum cap in wei, we can&#39;t raise more funds
+    /// @param _cap Maximum cap in wei, we can't raise more funds
     /// @param _gasPrice Maximum gas price
     /// @param _gasPenalty Penalty in percentage points for calculating stakes, eg. 80 means calculating 
     ///  stakes on 80% if gasprice was higher than _gasPrice
@@ -515,7 +515,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         require(_ethealController != address(0));
         ethealController = TokenController(_ethealController);
         // caps have to be consistent with each other
-        require(_goal &lt;= _softCap &amp;&amp; _softCap &lt;= _cap);
+        require(_goal <= _softCap && _softCap <= _cap);
         softCap = _softCap;
         softCapTime = _softCapTime;
         // this is needed since super constructor wont overwite overriden variables
@@ -533,19 +533,19 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         uint256 weiToCap = howMuchCanXContributeNow(_beneficiary);
         uint256 weiAmount = uint256Min(weiToCap, msg.value);
         // goal is reached
-        if (weiRaised &lt; goal &amp;&amp; weiRaised.add(weiAmount) &gt;= goal) {
+        if (weiRaised < goal && weiRaised.add(weiAmount) >= goal) {
             TokenGoalReached();
         }
         // call the Crowdsale#buyTokens internal function
         buyTokens(_beneficiary, weiAmount);
         // close sale in softCapTime seconds after reaching softCap
-        if (weiRaised &gt;= softCap &amp;&amp; softCapClose == 0) {
+        if (weiRaised >= softCap && softCapClose == 0) {
             softCapClose = now.add(softCapTime);
             TokenSoftCapReached(uint256Min(softCapClose, endTime));
         }
         // handle refund
         uint256 refund = msg.value.sub(weiAmount);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }
@@ -556,7 +556,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         require(_beneficiary != address(0));
         uint256 weiAmount = _weiAmount;
         // check maxGasPricePenalty
-        if (maxGasPrice &gt; 0 &amp;&amp; tx.gasprice &gt; maxGasPrice) {
+        if (maxGasPrice > 0 && tx.gasprice > maxGasPrice) {
             weiAmount = weiAmount.mul(maxGasPricePenalty).div(100);
         }
         // calculate tokens, so we can refund excess tokens to EthealController after token sale
@@ -572,12 +572,12 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @param _weiAmount Contribution amount in wei
     /// @return true if contribution is okay
     function validPurchase(uint256 _weiAmount) internal view returns (bool) {
-        return super.validPurchase(_weiAmount) &amp;&amp; _weiAmount &gt;= minContribution;
+        return super.validPurchase(_weiAmount) && _weiAmount >= minContribution;
     }
     /// @dev Overriding Crowdsale#hasEnded to add soft cap logic
     /// @return true if crowdsale event has ended or a softCapClose time is set and passed
     function hasEnded() public view returns (bool) {
-        return super.hasEnded() || softCapClose &gt; 0 &amp;&amp; now &gt; softCapClose;
+        return super.hasEnded() || softCapClose > 0 && now > softCapClose;
     }
     /// @dev Overriding RefundableCrowdsale#claimRefund to enable anyone to call for any address
     ///  which enables us to refund anyone and also anyone can refund themselves
@@ -592,11 +592,11 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
             // saving token balance for future reference
             tokenSold = tokenBalance; 
             // send back the excess token to ethealController
-            if (_balance &gt; tokenBalance) {
+            if (_balance > tokenBalance) {
                 ethealController.ethealToken().transfer(ethealController.SALE(), _balance.sub(tokenBalance));
             }
-        } else if (!goalReached() &amp;&amp; _balance &gt; 0) {
-            // if token sale is failed, then send back all tokens to ethealController&#39;s sale address
+        } else if (!goalReached() && _balance > 0) {
+            // if token sale is failed, then send back all tokens to ethealController's sale address
             tokenBalance = 0;
             ethealController.ethealToken().transfer(ethealController.SALE(), _balance);
         }
@@ -622,10 +622,10 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         uint256 i = 0;
         uint8 j = 0; // access max daily stakes
         // we override whiteListLimits only if it was supplied as an argument
-        if (_whitelistLimits.length &gt; 0) {
-            // saving whitelist max stake limits for each day -&gt; uint256 maxStakeLimit
+        if (_whitelistLimits.length > 0) {
+            // saving whitelist max stake limits for each day -> uint256 maxStakeLimit
             whitelistDayCount = uint8(_whitelistLimits.length);
-            for (i = 0; i &lt; _whitelistLimits.length; i++) {
+            for (i = 0; i < _whitelistLimits.length; i++) {
                 j = uint8(i.add(1));
                 if (whitelistDayMaxStake[j] != _whitelistLimits[i]) {
                     whitelistDayMaxStake[j] = _whitelistLimits[i];
@@ -634,7 +634,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
             }
         }
         // adding whitelist addresses
-        for (i = 0; i &lt; _add.length; i++) {
+        for (i = 0; i < _add.length; i++) {
             require(_add[i] != address(0));
             
             if (!whitelist[_add[i]]) {
@@ -643,7 +643,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
             }
         }
         // removing whitelist addresses
-        for (i = 0; i &lt; _remove.length; i++) {
+        for (i = 0; i < _remove.length; i++) {
             require(_remove[i] != address(0));
             
             if (whitelist[_remove[i]]) {
@@ -663,7 +663,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     }
     /// @notice Sets minimum goal, soft cap and max cap
     function setCaps(uint256 _goal, uint256 _softCap, uint256 _softCapTime, uint256 _cap) public onlyOwner beforeSale {
-        require(0 &lt; _goal &amp;&amp; _goal &lt;= _softCap &amp;&amp; _softCap &lt;= _cap);
+        require(0 < _goal && _goal <= _softCap && _softCap <= _cap);
         goal = _goal;
         softCap = _softCap;
         softCapTime = _softCapTime;
@@ -671,22 +671,22 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     }
     /// @notice Sets crowdsale start and end time
     function setTimes(uint256 _startTime, uint256 _endTime) public onlyOwner beforeSale {
-        require(_startTime &gt; now &amp;&amp; _startTime &lt; _endTime);
+        require(_startTime > now && _startTime < _endTime);
         startTime = _startTime;
         endTime = _endTime;
     }
     /// @notice Set rate
     function setRate(uint256 _rate) public onlyOwner beforeSale {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
     ////////////////
     // AFTER token sale
     ////////////////
     /// @notice Modifier for cases where sale is failed
-    /// @dev It checks whether we haven&#39;t reach the minimum goal AND whether the contract is finalized
+    /// @dev It checks whether we haven't reach the minimum goal AND whether the contract is finalized
     modifier afterSaleFail() {
-        require(!goalReached() &amp;&amp; isFinalized);
+        require(!goalReached() && isFinalized);
         _;
     }
     /// @notice Modifier for cases where sale is closed and was successful.
@@ -695,7 +695,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     ///  and we have reached our goal
     ///  AND whether the contract is finalized
     modifier afterSaleSuccess() {
-        require(goalReached() &amp;&amp; isFinalized);
+        require(goalReached() && isFinalized);
         _;
     }
     /// @notice Modifier for after sale finalization
@@ -713,7 +713,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @notice Refund several addresses with one call
     /// @param _beneficiaries Array of addresses we want to refund
     function claimRefundsFor(address[] _beneficiaries) external afterSaleFail {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             claimRefundFor(_beneficiaries[i]);
         }
     }
@@ -726,7 +726,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @param _beneficiary Address of the beneficiary who gets the token
     function claimTokenFor(address _beneficiary) public afterSaleSuccess whenNotPaused {
         uint256 stake = stakes[_beneficiary];
-        require(stake &gt; 0);
+        require(stake > 0);
         // set the stake 0 for beneficiary
         stakes[_beneficiary] = 0;
         // calculate token count
@@ -743,13 +743,13 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @dev Anyone can call this function and distribute tokens after successful token sale
     /// @param _beneficiaries Array of addresses for which we want to claim tokens
     function claimTokensFor(address[] _beneficiaries) external afterSaleSuccess {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             claimTokenFor(_beneficiaries[i]);
         }
     }
     /// @notice Get back accidentally sent token from the vault
     function extractVaultTokens(address _token, address _claimer) public onlyOwner afterSale {
-        // it has to have a valid claimer, and either the goal has to be reached or the token can be 0 which means we can&#39;t extract ether if the goal is not reached
+        // it has to have a valid claimer, and either the goal has to be reached or the token can be 0 which means we can't extract ether if the goal is not reached
         require(_claimer != address(0));
         require(goalReached() || _token != address(0));
         vault.extractTokens(_token, _claimer);
@@ -763,7 +763,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     }
     /// @notice How many wei can an ethereum address contribute now.
     /// @dev This function can return 0 when the crowdsale is stopped
-    ///  or the address has maxed the current day&#39;s whitelist cap,
+    ///  or the address has maxed the current day's whitelist cap,
     ///  it is possible, that next day he can contribute
     /// @param _beneficiary Ethereum address
     /// @return Number of wei the _beneficiary can contribute now.
@@ -776,8 +776,8 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         uint256 weiToCap = cap.sub(weiRaised);
         // if this is a whitelist limited period
         uint8 _saleDay = getSaleDayNow();
-        if (_saleDay &lt;= whitelistDayCount) {
-            // address can&#39;t contribute if
+        if (_saleDay <= whitelistDayCount) {
+            // address can't contribute if
             //  it is not whitelisted
             if (!whitelist[_beneficiary]) {
                 return 0;
@@ -785,7 +785,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
             // personal cap is the daily whitelist limit minus the stakes the address already has
             uint256 weiToPersonalCap = whitelistDayMaxStake[_saleDay].sub(stakes[_beneficiary]);
             // calculate for maxGasPrice penalty
-            if (msg.value &gt; 0 &amp;&amp; maxGasPrice &gt; 0 &amp;&amp; tx.gasprice &gt; maxGasPrice) {
+            if (msg.value > 0 && maxGasPrice > 0 && tx.gasprice > maxGasPrice) {
                 weiToPersonalCap = weiToPersonalCap.mul(100).div(maxGasPricePenalty);
             }
             weiToCap = uint256Min(weiToCap, weiToPersonalCap);
@@ -793,7 +793,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         return weiToCap;
     }
     /// @notice For a give date how many 24 hour blocks have ellapsed since token sale start
-    /// @dev _time has to be bigger than the startTime of token sale, otherwise SafeMath&#39;s div will throw.
+    /// @dev _time has to be bigger than the startTime of token sale, otherwise SafeMath's div will throw.
     ///  Within 24 hours of token sale it will return 1, 
     ///  between 24 and 48 hours it will return 2, etc.
     /// @param _time Date in seconds for which we want to know which sale day it is
@@ -808,11 +808,11 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     }
     /// @notice Minimum between two uint8 numbers
     function uint8Min(uint8 a, uint8 b) pure internal returns (uint8) {
-        return a &gt; b ? b : a;
+        return a > b ? b : a;
     }
     /// @notice Minimum between two uint256 numbers
     function uint256Min(uint256 a, uint256 b) pure internal returns (uint256) {
-        return a &gt; b ? b : a;
+        return a > b ? b : a;
     }
     ////////////////
     // Test and contribution web app, NO audit is needed
@@ -820,7 +820,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @notice Was this token sale successful?
     /// @return true if the sale is over and we have reached the minimum goal
     function wasSuccess() view public returns (bool) {
-        return hasEnded() &amp;&amp; goalReached();
+        return hasEnded() && goalReached();
     }
     /// @notice How many contributors we have.
     /// @return Number of different contributor ethereum addresses
@@ -830,7 +830,7 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
     /// @notice Get contributor addresses to manage refunds or token claims.
     /// @dev If the sale is not yet successful, then it searches in the RefundVault.
     ///  If the sale is successful, it searches in contributors.
-    /// @param _pending If true, then returns addresses which didn&#39;t get refunded or their tokens distributed to them
+    /// @param _pending If true, then returns addresses which didn't get refunded or their tokens distributed to them
     /// @param _claimed If true, then returns already refunded or token distributed addresses
     /// @return Array of addresses of contributors
     function getContributors(bool _pending, bool _claimed) view public returns (address[] contributors) {
@@ -839,23 +839,23 @@ contract EthealPreSale is Pausable, CappedCrowdsale, RefundableCrowdsale {
         address[] memory _contributors = new address[](contributorsKeys.length);
         // if we have reached our goal, then search in contributors, since this is what we want to monitor
         if (goalReached()) {
-            for (i = 0; i &lt; contributorsKeys.length; i++) {
-                if (_pending &amp;&amp; stakes[contributorsKeys[i]] &gt; 0 || _claimed &amp;&amp; stakes[contributorsKeys[i]] == 0) {
+            for (i = 0; i < contributorsKeys.length; i++) {
+                if (_pending && stakes[contributorsKeys[i]] > 0 || _claimed && stakes[contributorsKeys[i]] == 0) {
                     _contributors[results] = contributorsKeys[i];
                     results++;
                 }
             }
         } else {
             // otherwise search in the refund vault
-            for (i = 0; i &lt; contributorsKeys.length; i++) {
-                if (_pending &amp;&amp; vault.deposited(contributorsKeys[i]) &gt; 0 || _claimed &amp;&amp; vault.deposited(contributorsKeys[i]) == 0) {
+            for (i = 0; i < contributorsKeys.length; i++) {
+                if (_pending && vault.deposited(contributorsKeys[i]) > 0 || _claimed && vault.deposited(contributorsKeys[i]) == 0) {
                     _contributors[results] = contributorsKeys[i];
                     results++;
                 }
             }
         }
         contributors = new address[](results);
-        for (i = 0; i &lt; results; i++) {
+        for (i = 0; i < results; i++) {
             contributors[i] = _contributors[i];
         }
         return contributors;

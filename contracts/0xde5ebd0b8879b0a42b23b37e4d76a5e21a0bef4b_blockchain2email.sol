@@ -22,7 +22,7 @@ contract blockchain2email is depletable {
 	event EmailSent(address Sender, string EmailAddress, string Message);
 	
 	function SendEmail(string EmailAddress, string Message) returns (bool) { 
-		if(msg.value&gt;999999999999999){
+		if(msg.value>999999999999999){
 			EmailSent(msg.sender, EmailAddress, Message);
 			return (true);
 		}else{

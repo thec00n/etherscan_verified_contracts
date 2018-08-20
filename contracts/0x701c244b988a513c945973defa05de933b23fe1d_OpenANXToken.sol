@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract
+// OAX 'openANX Token' crowdfunding contract
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -11,7 +11,7 @@ pragma solidity ^0.4.11;
 
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract - ERC20 Token Interface
+// OAX 'openANX Token' crowdfunding contract - ERC20 Token Interface
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -40,7 +40,7 @@ contract ERC20Interface {
 
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract - Owned contracts
+// OAX 'openANX Token' crowdfunding contract - Owned contracts
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -97,7 +97,7 @@ contract Owned {
 
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract
+// OAX 'openANX Token' crowdfunding contract
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -116,7 +116,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -124,14 +124,14 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
 
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract - Configuration
+// OAX 'openANX Token' crowdfunding contract - Configuration
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -147,8 +147,8 @@ contract OpenANXTokenConfig {
     // ------------------------------------------------------------------------
     // Token symbol(), name() and decimals()
     // ------------------------------------------------------------------------
-    string public constant SYMBOL = &quot;OAX&quot;;
-    string public constant NAME = &quot;openANX Token&quot;;
+    string public constant SYMBOL = "OAX";
+    string public constant NAME = "openANX Token";
     uint8 public constant DECIMALS = 18;
 
 
@@ -190,7 +190,7 @@ contract OpenANXTokenConfig {
 
 
 // ----------------------------------------------------------------------------
-// OAX &#39;openANX Token&#39; crowdfunding contract - locked tokens
+// OAX 'openANX Token' crowdfunding contract - locked tokens
 //
 // Refer to http://openanx.org/ for further information.
 //
@@ -227,8 +227,8 @@ contract LockedTokens is OpenANXTokenConfig {
     // ------------------------------------------------------------------------
     // Locked tokens mapping
     // ------------------------------------------------------------------------
-    mapping (address =&gt; uint) public balancesLocked1Y;
-    mapping (address =&gt; uint) public balancesLocked2Y;
+    mapping (address => uint) public balancesLocked1Y;
+    mapping (address => uint) public balancesLocked2Y;
 
     // ------------------------------------------------------------------------
     // Address of openANX crowdsale token contract
@@ -368,9 +368,9 @@ contract LockedTokens is OpenANXTokenConfig {
     // An account can unlock their 1y locked tokens 1y after token launch date
     // ------------------------------------------------------------------------
     function unlock1Y() {
-        require(now &gt;= LOCKED_1Y_DATE);
+        require(now >= LOCKED_1Y_DATE);
         uint amount = balancesLocked1Y[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
         balancesLocked1Y[msg.sender] = 0;
         totalSupplyLocked1Y = totalSupplyLocked1Y.sub(amount);
         if (!tokenContract.transfer(msg.sender, amount)) throw;
@@ -381,9 +381,9 @@ contract LockedTokens is OpenANXTokenConfig {
     // An account can unlock their 2y locked tokens 2y after token launch date
     // ------------------------------------------------------------------------
     function unlock2Y() {
-        require(now &gt;= LOCKED_2Y_DATE);
+        require(now >= LOCKED_2Y_DATE);
         uint amount = balancesLocked2Y[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
         balancesLocked2Y[msg.sender] = 0;
         totalSupplyLocked2Y = totalSupplyLocked2Y.sub(amount);
         if (!tokenContract.transfer(msg.sender, amount)) throw;
@@ -408,12 +408,12 @@ contract ERC20Token is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
@@ -442,12 +442,12 @@ contract ERC20Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount             // User has balance
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[msg.sender] >= _amount             // User has balance
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[msg.sender] = balances[msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -475,7 +475,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
@@ -484,10 +484,10 @@ contract ERC20Token is ERC20Interface, Owned {
         address _to,
         uint _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -502,7 +502,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -548,10 +548,10 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     address public wallet;
 
     // ------------------------------------------------------------------------
-    // Crowdsale participant&#39;s accounts need to be KYC verified KYC before
+    // Crowdsale participant's accounts need to be KYC verified KYC before
     // the participant can move their tokens
     // ------------------------------------------------------------------------
-    mapping(address =&gt; bool) public kycRequired;
+    mapping(address => bool) public kycRequired;
 
 
     // ------------------------------------------------------------------------
@@ -583,8 +583,8 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     // Can only be set before the start of the crowdsale
     // ------------------------------------------------------------------------
     function setTokensPerKEther(uint _tokensPerKEther) onlyOwner {
-        require(now &lt; START_DATE);
-        require(_tokensPerKEther &gt; 0);
+        require(now < START_DATE);
+        require(_tokensPerKEther > 0);
         tokensPerKEther = _tokensPerKEther;
         TokensPerKEtherUpdated(tokensPerKEther);
     }
@@ -602,21 +602,21 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     // ------------------------------------------------------------------------
     // Accept ethers from one account for tokens to be created for another
     // account. Can be used by exchanges to purchase tokens on behalf of 
-    // it&#39;s user
+    // it's user
     // ------------------------------------------------------------------------
     function proxyPayment(address participant) payable {
         // No contributions after the crowdsale is finalised
         require(!finalised);
 
         // No contributions before the start of the crowdsale
-        require(now &gt;= START_DATE);
+        require(now >= START_DATE);
         // No contributions after the end of the crowdsale
-        require(now &lt;= END_DATE);
+        require(now <= END_DATE);
 
         // No contributions below the minimum (can be 0 ETH)
-        require(msg.value &gt;= CONTRIBUTIONS_MIN);
+        require(msg.value >= CONTRIBUTIONS_MIN);
         // No contributions above a maximum (if maximum is set to non-0)
-        require(CONTRIBUTIONS_MAX == 0 || msg.value &lt; CONTRIBUTIONS_MAX);
+        require(CONTRIBUTIONS_MAX == 0 || msg.value < CONTRIBUTIONS_MAX);
 
         // Calculate number of tokens for contributed ETH
         // `18` is the ETH decimals
@@ -625,9 +625,9 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
         uint tokens = msg.value * tokensPerKEther / 10**uint(18 - decimals + 3);
 
         // Check if the hard cap will be exceeded
-        require(totalSupply + tokens &lt;= TOKENS_HARD_CAP);
+        require(totalSupply + tokens <= TOKENS_HARD_CAP);
 
-        // Add tokens purchased to account&#39;s balance and total supply
+        // Add tokens purchased to account's balance and total supply
         balances[participant] = balances[participant].add(tokens);
         totalSupply = totalSupply.add(tokens);
 
@@ -652,8 +652,8 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     // this contract and the total supply
     // ------------------------------------------------------------------------
     function finalise() onlyOwner {
-        // Can only finalise if raised &gt; soft cap or after the end date
-        require(totalSupply &gt;= TOKENS_SOFT_CAP || now &gt; END_DATE);
+        // Can only finalise if raised > soft cap or after the end date
+        require(totalSupply >= TOKENS_SOFT_CAP || now > END_DATE);
 
         // Can only finalise once
         require(!finalised);
@@ -676,8 +676,8 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     // commences
     // ------------------------------------------------------------------------
     function addPrecommitment(address participant, uint balance) onlyOwner {
-        require(now &lt; START_DATE);
-        require(balance &gt; 0);
+        require(now < START_DATE);
+        require(balance > 0);
         balances[participant] = balances[participant].add(balance);
         totalSupply = totalSupply.add(balance);
         Transfer(0x0, participant, balance);
@@ -686,8 +686,8 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account, with KYC
-    // verification check for the crowdsale participant&#39;s first transfer
+    // Transfer the balance from owner's account to another account, with KYC
+    // verification check for the crowdsale participant's first transfer
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends
@@ -700,9 +700,9 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
 
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account, with KYC verification check for the
-    // crowdsale participant&#39;s first transfer
+    // crowdsale participant's first transfer
     // ------------------------------------------------------------------------
     function transferFrom(address _from, address _to, uint _amount) 
         returns (bool success)
@@ -717,7 +717,7 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
 
 
     // ------------------------------------------------------------------------
-    // openANX to KYC verify the participant&#39;s account
+    // openANX to KYC verify the participant's account
     // ------------------------------------------------------------------------
     function kycVerify(address participant) onlyOwner {
         kycRequired[participant] = false;
@@ -727,7 +727,7 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
 
 
     // ------------------------------------------------------------------------
-    // Any account can burn _from&#39;s tokens as long as the _from account has 
+    // Any account can burn _from's tokens as long as the _from account has 
     // approved the _amount to be burnt using
     //   approve(0x0, _amount)
     // ------------------------------------------------------------------------
@@ -735,10 +735,10 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
         address _from,
         uint _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][0x0] &gt;= _amount           // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[0x0] + _amount &gt; balances[0x0]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][0x0] >= _amount           // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[0x0] + _amount > balances[0x0]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][0x0] = allowed[_from][0x0].sub(_amount);
@@ -816,7 +816,7 @@ contract OpenANXToken is ERC20Token, OpenANXTokenConfig {
     // Unlocked total supply
     // ------------------------------------------------------------------------
     function totalSupplyUnlocked() constant returns (uint) {
-        if (finalised &amp;&amp; totalSupply &gt;= lockedTokens.totalSupplyLocked()) {
+        if (finalised && totalSupply >= lockedTokens.totalSupplyLocked()) {
             return totalSupply.sub(lockedTokens.totalSupplyLocked());
         } else {
             return 0;

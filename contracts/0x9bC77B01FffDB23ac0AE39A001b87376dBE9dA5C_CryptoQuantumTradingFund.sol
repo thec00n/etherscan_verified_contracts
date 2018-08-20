@@ -24,11 +24,11 @@ contract CryptoQuantumTradingFund is ERC20Interface {
 	}
 
 	function transfer(address to, uint tokens)public returns (bool success) {
-		if (balances[msg.sender] &gt;= tokens &amp;&amp; tokens &gt; 0 &amp;&amp; balances[to] + tokens &gt; balances[to]) {
+		if (balances[msg.sender] >= tokens && tokens > 0 && balances[to] + tokens > balances[to]) {
 			if(msg.sender == creatorsAddress) //创始团队锁定判断
 			{
 				TryUnLockCreatorBalance();
-				if(balances[msg.sender] &lt; (creatorsLocked + tokens))
+				if(balances[msg.sender] < (creatorsLocked + tokens))
 				{
 					return false;
 				}
@@ -43,11 +43,11 @@ contract CryptoQuantumTradingFund is ERC20Interface {
 	}
 
 	function transferFrom(address from, address to, uint tokens)public returns (bool success) {
-		if (balances[from] &gt;= tokens &amp;&amp; allowed[from][msg.sender] &gt;= tokens &amp;&amp; tokens &gt; 0 &amp;&amp; balances[to] + tokens &gt; balances[to]) {
+		if (balances[from] >= tokens && allowed[from][msg.sender] >= tokens && tokens > 0 && balances[to] + tokens > balances[to]) {
 			if(from == creatorsAddress) //创始团队锁定判断
 			{
 				TryUnLockCreatorBalance();
-				if(balances[from] &lt; (creatorsLocked + tokens))
+				if(balances[from] < (creatorsLocked + tokens))
 				{
 					return false;
 				}
@@ -80,8 +80,8 @@ contract CryptoQuantumTradingFund is ERC20Interface {
 
 	// ERC20 //////////////
 		
-    string public name = &quot;CryptoQuantumTradingFund&quot;;
-    string public symbol = &quot;CQTF&quot;;
+    string public name = "CryptoQuantumTradingFund";
+    string public symbol = "CQTF";
     uint8 public decimals = 18;
 	uint256 private fixTotalBalance = 100000000000000000000000000;
 	uint256 private _totalBalance =    92000000000000000000000000;
@@ -89,8 +89,8 @@ contract CryptoQuantumTradingFund is ERC20Interface {
 	
 	address public owner = 0x0;
 	
-    	mapping (address =&gt; uint256) balances;
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    	mapping (address => uint256) balances;
+	mapping(address => mapping (address => uint256)) allowed;
 	
 	uint  constant    private ONE_DAY_TIME_LEN = 86400; //一天的秒数
 	uint  constant    private ONE_YEAR_TIME_LEN = 946080000; //一年的秒数
@@ -119,7 +119,7 @@ contract CryptoQuantumTradingFund is ERC20Interface {
 	
 	//解锁创始团队
 	function TryUnLockCreatorBalance() public {
-		while(unLockIdx &gt; 0 &amp;&amp; block.timestamp &gt;= nextUnLockTime){ //解锁判断
+		while(unLockIdx > 0 && block.timestamp >= nextUnLockTime){ //解锁判断
 			uint256 append = creatorsLocked/unLockIdx;
 			creatorsLocked -= append;
 			

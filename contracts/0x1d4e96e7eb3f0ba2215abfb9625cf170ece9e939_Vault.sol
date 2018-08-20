@@ -19,19 +19,19 @@ interface VaultI {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -47,8 +47,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -63,9 +63,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -73,7 +73,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -82,7 +82,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -150,7 +150,7 @@ contract Ownable {
 
 // File: node_modules/@tokenfoundry/sale-contracts/contracts/Vault.sol
 
-// Adapted from Open Zeppelin&#39;s RefundVault
+// Adapted from Open Zeppelin's RefundVault
 
 /**
  * @title Vault
@@ -166,7 +166,7 @@ contract Vault is VaultI, Ownable {
     // The timestamp of the first deposit
     uint256 public firstDepositTimestamp; 
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     // The amount to be disbursed to the wallet every month
     uint256 public disbursementWei;
@@ -235,18 +235,18 @@ contract Vault is VaultI, Ownable {
         transferToWallet(initialWei);
     }
 
-    /// @dev Called by the owner if the project didn&#39;t deliver the testnet contracts or if we need to stop disbursements for any reasone.
+    /// @dev Called by the owner if the project didn't deliver the testnet contracts or if we need to stop disbursements for any reasone.
     function enableRefunds() onlyOwner external {
         require(state != State.Refunding);
         state = State.Refunding;
         uint256 currentBalance = address(this).balance;
-        refundable = currentBalance &lt;= totalDeposited ? currentBalance : totalDeposited;
+        refundable = currentBalance <= totalDeposited ? currentBalance : totalDeposited;
         emit RefundsEnabled();
     }
 
     /// @dev Refunds ether to the contributors if in the Refunding state.
     function refund(address _contributor) external atState(State.Refunding) {
-        require(deposited[_contributor] &gt; 0);
+        require(deposited[_contributor] > 0);
         uint256 refundAmount = deposited[_contributor].mul(refundable).div(totalDeposited);
         deposited[_contributor] = 0;
         _contributor.transfer(refundAmount);
@@ -262,7 +262,7 @@ contract Vault is VaultI, Ownable {
 
     /// @dev Sends the disbursement amount to the wallet after the disbursement period has passed. Can be called by anyone.
     function sendFundsToWallet() external atState(State.Closed) {
-        require(nextDisbursement &lt;= now);
+        require(nextDisbursement <= now);
 
         if (disbursementDuration == 0) {
             trustedWallet.transfer(address(this).balance);

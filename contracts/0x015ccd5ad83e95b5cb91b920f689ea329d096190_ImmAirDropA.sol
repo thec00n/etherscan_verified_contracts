@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,10 +63,10 @@ contract ImmAirDropA{
     ERC20 public token;
 
     /* @dev To record the different reward amount for each bounty  */
-    mapping(address =&gt; User) public bounties;
+    mapping(address => User) public bounties;
 	
     /* @dev Admin with permission to manage the signed up bounty */
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 	
     function ImmAirDropA(ERC20 _token, address _wallet) public {
         require(_token != address(0));
@@ -87,7 +87,7 @@ contract ImmAirDropA{
     }
 
 	function addAdminWhitelist(address _userlist) public onlyOwner onlyAdmin{
-		if(_userlist != address(0) &amp;&amp; !admins[_userlist]){
+		if(_userlist != address(0) && !admins[_userlist]){
 			admins[_userlist] = true;
 		}
 	}
@@ -103,8 +103,8 @@ contract ImmAirDropA{
 	}
 
     function signupUserWhitelist(address[] _userlist) public onlyAdmin{
-    	require(_userlist.length &gt; 0);
-    	for (uint256 i = 0; i &lt; _userlist.length; i++) {
+    	require(_userlist.length > 0);
+    	for (uint256 i = 0; i < _userlist.length; i++) {
     		address baddr = _userlist[i];
     		if(baddr != address(0)){
     			if(bounties[baddr].user_address != baddr){

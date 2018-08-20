@@ -48,20 +48,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract AIHTeamLockContract {
     using SafeERC20 for ERC20;
     using SafeMath for uint;
 
-    string public constant name = &quot;AIHTeamLockContract&quot;;
+    string public constant name = "AIHTeamLockContract";
     uint256 public constant RELEASE_TIME                   = 1594483200;  //2020/7/12 0:0:0
     uint256 public constant RELEASE_PERIODS                = 90 days;  
 
@@ -91,21 +91,21 @@ contract AIHTeamLockContract {
      */
     function release() public {
         // solium-disable-next-line security/no-block-members
-        require(now &gt;= RELEASE_TIME);
+        require(now >= RELEASE_TIME);
 
         uint256 num = (now - RELEASE_TIME) / RELEASE_PERIODS;
-        require(num + 1 &gt; numOfReleased);
+        require(num + 1 > numOfReleased);
 
         if (amountOfPerRelease == 0) { 
             amountOfPerRelease = AIHToken.balanceOf(this).mul(5).div(100);// 5years
         }
 
         uint256 amount = amountOfPerRelease;
-        if (amountOfPerRelease &gt; AIHToken.balanceOf(this)) {
+        if (amountOfPerRelease > AIHToken.balanceOf(this)) {
             amount = AIHToken.balanceOf(this);
         }
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         AIHToken.safeTransfer(beneficiary, amount);
         numOfReleased = numOfReleased.add(1);   

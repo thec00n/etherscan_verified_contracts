@@ -43,11 +43,11 @@ pragma solidity ^0.4.18;
 
         uint public creationBlock;
 
-        mapping (address =&gt; Checkpoint[]) balances;
+        mapping (address => Checkpoint[]) balances;
 
         uint public preSaleTokenBalances;
 
-        mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+        mapping (address => mapping (address => uint256)) allowed;
 
         Checkpoint[] totalSupplyHistory;
 
@@ -63,7 +63,7 @@ pragma solidity ^0.4.18;
         
         uint public allowedRewardTokens;
 
-        mapping (address =&gt; bool) public frozenAccount;
+        mapping (address => bool) public frozenAccount;
         event FrozenFunds(address target, bool frozen);
         
         modifier canReleaseToken {
@@ -127,12 +127,12 @@ pragma solidity ^0.4.18;
 
         function invest(address _to, uint256 _amount) canReleaseToken onlyRewardManager public returns (bool success) {
             
-            require((_to != 0) &amp;&amp; (_to != address(this)));
+            require((_to != 0) && (_to != address(this)));
 
             bool IsTransferAllowed = false;
 
             if(IsPreSaleEnabled){
-                require(preSaleTokenBalances &gt;= _amount);
+                require(preSaleTokenBalances >= _amount);
                 IsTransferAllowed = true;
                 preSaleTokenBalances = preSaleTokenBalances - _amount;
 
@@ -147,11 +147,11 @@ pragma solidity ^0.4.18;
 
             require(IsTransferAllowed);
             var previousBalanceFrom = balanceOfAt(msg.sender, block.number);
-            require(previousBalanceFrom &gt;= _amount);
+            require(previousBalanceFrom >= _amount);
             updateValueAtNow(balances[msg.sender], previousBalanceFrom - _amount);
 
             var previousBalanceTo = balanceOfAt(_to, block.number);
-            require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+            require(previousBalanceTo + _amount >= previousBalanceTo);
             updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
             if(msg.sender == rewardManager){
@@ -164,7 +164,7 @@ pragma solidity ^0.4.18;
 
         function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
 
-            require(IsSaleEnabled &amp;&amp; !IsPreSaleEnabled);
+            require(IsSaleEnabled && !IsPreSaleEnabled);
 
             if (_amount == 0) {
                 Transfer(_from, _to, _amount);
@@ -172,7 +172,7 @@ pragma solidity ^0.4.18;
             }
 
             if (msg.sender != owner) {
-                require(allowed[_from][msg.sender] &gt;= _amount);
+                require(allowed[_from][msg.sender] >= _amount);
                 allowed[_from][msg.sender] -= _amount;
             }
 
@@ -216,7 +216,7 @@ pragma solidity ^0.4.18;
 
         function balanceOfAt(address _owner, uint _blockNumber) public constant returns (uint) {
 
-            if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
                 if (address(parentToken) != 0) {
                     return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
                 } else {
@@ -230,7 +230,7 @@ pragma solidity ^0.4.18;
 
         function totalSupplyAt(uint _blockNumber) public constant returns(uint) {
 
-            if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
                 if (address(parentToken) != 0) {
                     return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
                 } else {
@@ -244,9 +244,9 @@ pragma solidity ^0.4.18;
 
         function generateTokens(address _owner, uint _amount) public onlyOwner returns (bool) {
             uint curTotalSupply = totalSupply();
-            require(curTotalSupply + _amount &gt;= curTotalSupply);
+            require(curTotalSupply + _amount >= curTotalSupply);
             uint previousBalanceTo = balanceOf(_owner);
-            require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+            require(previousBalanceTo + _amount >= previousBalanceTo);
 
             updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
             updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
@@ -259,9 +259,9 @@ pragma solidity ^0.4.18;
 
         function destroyTokens(address _owner, uint _amount) onlyOwner public returns (bool) {
             uint curTotalSupply = totalSupply();
-            require(curTotalSupply &gt;= _amount);
+            require(curTotalSupply >= _amount);
             uint previousBalanceFrom = balanceOf(_owner);
-            require(previousBalanceFrom &gt;= _amount);
+            require(previousBalanceFrom >= _amount);
             updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
             updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
             Transfer(_owner, 0, _amount);
@@ -284,16 +284,16 @@ pragma solidity ^0.4.18;
             
             if (checkpoints.length == 0) return 0;
 
-            if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+            if (_block >= checkpoints[checkpoints.length-1].fromBlock)
                 return checkpoints[checkpoints.length-1].value;
 
-            if (_block &lt; checkpoints[0].fromBlock) return 0;
+            if (_block < checkpoints[0].fromBlock) return 0;
 
             uint minValue = 0;
             uint maximum = checkpoints.length-1;
-            while (maximum &gt; minValue) {
+            while (maximum > minValue) {
                 uint midddle = (maximum + minValue + 1)/ 2;
-                if (checkpoints[midddle].fromBlock&lt;=_block) {
+                if (checkpoints[midddle].fromBlock<=_block) {
                     minValue = midddle;
                 } else {
                     maximum = midddle-1;
@@ -303,7 +303,7 @@ pragma solidity ^0.4.18;
         }
 
         function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal  {
-            if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+            if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                 Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                 newCheckPoint.fromBlock =  uint128(block.number);
                 newCheckPoint.value = uint128(_value);
@@ -319,11 +319,11 @@ pragma solidity ^0.4.18;
             assembly {
                 size := extcodesize(_addr)
             }
-            return size &gt; 0;
+            return size > 0;
         }
 
         function min(uint a, uint b) pure internal returns (uint) {
-            return a &lt; b ? a : b;
+            return a < b ? a : b;
         }
 
         event Transfer(address indexed _from, address indexed _to, uint256 _amount);

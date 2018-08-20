@@ -1,13 +1,13 @@
 pragma solidity ^0.4.19;
 
 contract TokenERC20 {
-    string public name = &quot;United Vepomzer&quot;;
-    string public symbol = &quot;Vepomzer&quot;;
+    string public name = "United Vepomzer";
+    string public symbol = "Vepomzer";
     uint256 public decimals = 18;
     uint256 public totalSupply = 999999999 * 10 ** decimals;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -18,8 +18,8 @@ contract TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         uint previousBalances = balances[_from] + balances[_to];
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -32,7 +32,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

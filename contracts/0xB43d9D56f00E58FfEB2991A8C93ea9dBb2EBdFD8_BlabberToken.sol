@@ -18,14 +18,14 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 
 		return c;
 	}
@@ -54,14 +54,14 @@ contract BlabberToken is ERC20Interface {
 	uint public _totalSupply = 1250000000000000000000000000;
 
 	bool public isLocked = true;
-	string public constant symbol = &quot;BLA&quot;;
-	string public constant name = &quot;BLABBER Token&quot;;
+	string public constant symbol = "BLA";
+	string public constant name = "BLABBER Token";
 	uint8 public constant decimals = 18;
 
 	address public tokenHolder = 0xB6ED8e4b27928009c407E298C475F937054AE19D;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	modifier onlyAdmin{
 		require(msg.sender == 0x36Aa9a6E0595adfF3C42A23415758a1123381C23);
@@ -86,8 +86,8 @@ contract BlabberToken is ERC20Interface {
 
 	function transfer(address _to, uint256 _value) public returns (bool success) {
 		require(
-			balances[msg.sender] &gt;= _value
-			&amp;&amp; _value &gt; 0
+			balances[msg.sender] >= _value
+			&& _value > 0
 		);
 
 		require(!isLocked || (msg.sender == tokenHolder));
@@ -102,9 +102,9 @@ contract BlabberToken is ERC20Interface {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 		require(
-			allowed[_from][msg.sender] &gt;= _value
-			&amp;&amp; balances[_from] &gt;= _value
-			&amp;&amp; _value &gt; 0
+			allowed[_from][msg.sender] >= _value
+			&& balances[_from] >= _value
+			&& _value > 0
 		);
 
 		require(!isLocked || (msg.sender == tokenHolder));
@@ -136,7 +136,7 @@ contract BlabberToken is ERC20Interface {
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
 
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -152,7 +152,7 @@ contract BlabberToken is ERC20Interface {
 	}
 
 	function burn(uint256 _value) public {
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		require(msg.sender == tokenHolder);
 

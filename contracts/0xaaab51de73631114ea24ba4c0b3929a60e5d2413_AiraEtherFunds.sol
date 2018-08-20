@@ -43,8 +43,8 @@ contract Token is Owned {
     uint8 public decimals;
     
     /* Token approvement system */
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
  
     /**
      * @return available balance of `sender` account (self balance)
@@ -60,7 +60,7 @@ contract Token is Owned {
      */
     function getBalance(address _address) constant returns (uint) {
         return allowance[_address][msg.sender]
-             &gt; balanceOf[_address] ? balanceOf[_address]
+             > balanceOf[_address] ? balanceOf[_address]
                                    : allowance[_address][msg.sender];
     }
  
@@ -81,7 +81,7 @@ contract Token is Owned {
      * @return `true` when transfer done
      */
     function transfer(address _to, uint _value) returns (bool) {
-        if (balanceOf[msg.sender] &gt;= _value) {
+        if (balanceOf[msg.sender] >= _value) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to]        += _value;
             Transfer(msg.sender, _to, _value);
@@ -100,9 +100,9 @@ contract Token is Owned {
      */
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
         var avail = allowance[_from][msg.sender]
-                  &gt; balanceOf[_from] ? balanceOf[_from]
+                  > balanceOf[_from] ? balanceOf[_from]
                                      : allowance[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowance[_from][msg.sender] -= _value;
             balanceOf[_from] -= _value;
             balanceOf[_to]   += _value;
@@ -142,7 +142,7 @@ contract TokenEther is Token {
      * @param _value how many tokens withdraw from balance
      */
     function withdraw(uint _value) {
-        if (balanceOf[msg.sender] &gt;= _value) {
+        if (balanceOf[msg.sender] >= _value) {
             balanceOf[msg.sender] -= _value;
             totalSupply           -= _value;
             if(!msg.sender.send(_value)) throw;
@@ -209,14 +209,14 @@ contract AiraEtherFunds is TokenEther {
         var value = msg.value;
  
         // Get a fee
-        if (fee &gt; 0) {
-            if (value &lt; fee) throw;
+        if (fee > 0) {
+            if (value < fee) throw;
             balanceOf[owner] += fee;
             value            -= fee;
         }
 
         // Refund over limit
-        if (limit &gt; 0 &amp;&amp; value &gt; limit) {
+        if (limit > 0 && value > limit) {
             var refund = value - limit;
             if (!msg.sender.send(refund)) throw;
             value = limit;
@@ -235,7 +235,7 @@ contract AiraEtherFunds is TokenEther {
      */
     function refill() payable returns (bool) {
         // Throw when over limit
-        if (balanceOf[msg.sender] + msg.value &gt; limit) throw;
+        if (balanceOf[msg.sender] + msg.value > limit) throw;
 
         // Refill
         balanceOf[msg.sender] += msg.value;
@@ -249,7 +249,7 @@ contract AiraEtherFunds is TokenEther {
      */
     function () payable {
         // Throw when over limit
-        if (balanceOf[msg.sender] + msg.value &gt; limit) throw;
+        if (balanceOf[msg.sender] + msg.value > limit) throw;
 
         // Refill
         balanceOf[msg.sender] += msg.value;
@@ -263,7 +263,7 @@ contract AiraEtherFunds is TokenEther {
      * @param _value amount of token values to send 
      */
     function airaTransfer(address _from, address _to, uint _value) onlyBot {
-        if (balanceOf[_from] &gt;= _value) {
+        if (balanceOf[_from] >= _value) {
             balanceOf[_from] -= _value;
             balanceOf[_to]   += _value;
             Transfer(_from, _to, _value);
@@ -277,7 +277,7 @@ contract AiraEtherFunds is TokenEther {
      * @param _value amount of token values to send 
      */
     function airaSend(address _from, address _to, uint _value) onlyBot {
-        if (balanceOf[_from] &gt;= _value) {
+        if (balanceOf[_from] >= _value) {
             balanceOf[_from] -= _value;
             totalSupply      -= _value;
             Transfer(_from, _to, _value);

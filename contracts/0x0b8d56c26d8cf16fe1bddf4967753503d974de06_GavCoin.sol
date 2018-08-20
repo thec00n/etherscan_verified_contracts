@@ -41,8 +41,8 @@ contract GavCoin {
     }
     struct Account {
         uint balance;
-        mapping (uint =&gt; Receipt) receipt;
-        mapping (address =&gt; uint) allowanceOf;
+        mapping (uint => Receipt) receipt;
+        mapping (address => uint) allowanceOf;
     }
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -51,9 +51,9 @@ contract GavCoin {
     event Refund(address indexed buyer, uint indexed price, uint indexed amount);
     event NewTranch(uint indexed price);
     
-    modifier when_owns(address _owner, uint _amount) { if (accounts[_owner].balance &lt; _amount) return; _ }
-    modifier when_has_allowance(address _owner, address _spender, uint _amount) { if (accounts[_owner].allowanceOf[_spender] &lt; _amount) return; _ }
-    modifier when_have_active_receipt(uint _price, uint _units) { if (accounts[msg.sender].receipt[_price].units &lt; _units || now &lt; accounts[msg.sender].receipt[_price].activation) return; _ }
+    modifier when_owns(address _owner, uint _amount) { if (accounts[_owner].balance < _amount) return; _ }
+    modifier when_has_allowance(address _owner, address _spender, uint _amount) { if (accounts[_owner].allowanceOf[_spender] < _amount) return; _ }
+    modifier when_have_active_receipt(uint _price, uint _units) { if (accounts[msg.sender].receipt[_price].units < _units || now < accounts[msg.sender].receipt[_price].activation) return; _ }
 
     function balanceOf(address _who) constant returns (uint) { return accounts[_who].balance; }
     
@@ -98,12 +98,12 @@ contract GavCoin {
 
     function buyinInternal(address _who, uint _maxPrice) internal {
         var leftToSpend = msg.value;
-        while (leftToSpend &gt; 0 &amp;&amp; price &lt;= _maxPrice) {
+        while (leftToSpend > 0 && price <= _maxPrice) {
             // How much the remaining tokens of this tranch cost to buy
             var maxCanSpend = price * remaining / base;
-            // How much we will spend - the mininum of what&#39;s left in the tranch
+            // How much we will spend - the mininum of what's left in the tranch
             // to buy and what we have remaining
-            var spend = leftToSpend &gt; maxCanSpend ? maxCanSpend : leftToSpend;
+            var spend = leftToSpend > maxCanSpend ? maxCanSpend : leftToSpend;
             // The number of units we get for spending that
             var units = spend * base / price;
 
@@ -129,7 +129,7 @@ contract GavCoin {
     }
     
     uint public totalSupply;
-    mapping (address =&gt; Account) accounts;
+    mapping (address => Account) accounts;
     
     uint constant base = 1000000;               // tokens are subdivisible by 1000000
     uint constant tranchStep = 1 finney;        // raise price by 1 finney / tranch

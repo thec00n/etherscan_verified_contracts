@@ -82,7 +82,7 @@ contract Arith {
     function jmul(uint _bx, uint _by, uint _bz, uint _n) returns (uint, uint, uint) {
 
         _n = _n % N;
-        if(((_bx == 0) &amp;&amp; (_by == 0)) || (_n == 0)) return(0, 0, 1);
+        if(((_bx == 0) && (_by == 0)) || (_n == 0)) return(0, 0, 1);
 
         uint ax;
         uint ay;
@@ -90,10 +90,10 @@ contract Arith {
         (ax, ay, az) = (0, 0, 1);
         uint b = M;
         
-        while(b &gt; 0) {
+        while(b > 0) {
 
            (ax, ay, az) = jdouble(ax, ay, az);
-           if((_n &amp; b) != 0) {
+           if((_n & b) != 0) {
               
               if(ay == 0) {
                  (ax, ay, az) = (_bx, _by, _bz);
@@ -112,18 +112,18 @@ contract Arith {
         uint o = 1;
         uint bit = M;
         
-        while (bit &gt; 0) {
+        while (bit > 0) {
             uint bitval = 0;
-            if(_e &amp; bit &gt; 0) bitval = 1;
+            if(_e & bit > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 2) &gt; 0) bitval = 1;
+            if(_e & (bit / 2) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 4) &gt; 0) bitval = 1;
+            if(_e & (bit / 4) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 8) &gt; 0) bitval = 1;
+            if(_e & (bit / 8) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bit = (bit / 16);
         }
@@ -178,7 +178,7 @@ contract Arith {
         ex[0] = _x0;
         ey[0] = uint(sha3(_x0));
         uint i = 1;
-        while(i &lt; (_pub_xs.length + 1)) {
+        while(i < (_pub_xs.length + 1)) {
 
            //uint pub_yi = jrecover_y(_pub_xs[i % _pub_xs.length], bit(_pub_ys, i % _pub_xs.length));
            (k1x, k1y, k1z) = ecmul(Gx, Gy, 1, _s[(i - 1) % _pub_xs.length]);
@@ -197,7 +197,7 @@ contract Arith {
            i += 1;
         }
         
-        return((ex[_pub_xs.length] == ex[0]) &amp;&amp; (ey[_pub_xs.length] == ey[0]));
+        return((ex[_pub_xs.length] == ex[0]) && (ey[_pub_xs.length] == ey[0]));
     }
 
     function () {

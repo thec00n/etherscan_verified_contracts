@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,8 +45,8 @@ contract BriskCoin is IERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;BriskCoin&quot;;
-    string public symbol = &quot;BSK&quot;;
+    string public name = "BriskCoin";
+    string public symbol = "BSK";
     uint public decimals = 18;
 
     uint public _totalSupply = 100000000000e18;
@@ -56,10 +56,10 @@ contract BriskCoin is IERC20 {
     uint public _futureSupply = 30000000000e18; // futureUse
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
 
     uint256 public startTime;
 
@@ -107,7 +107,7 @@ contract BriskCoin is IERC20 {
         uint256 weiAmount = msg.value;
         uint tokens = weiAmount.mul(getPrice());
 
-        require(_icoSupply &gt;= tokens);
+        require(_icoSupply >= tokens);
 
         balances[owner] = balances[owner].sub(tokens);
         balances[recipient] = balances[recipient].add(tokens);
@@ -136,7 +136,7 @@ contract BriskCoin is IERC20 {
     // Token distribution to founder, develoment team, partners, charity, and bounty
     function sendFutureSupplyToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _futureSupply &gt;= value
+            to != 0x0 && value > 0 && _futureSupply >= value
         );
 
         balances[owner] = balances[owner].sub(value);
@@ -151,7 +151,7 @@ contract BriskCoin is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -165,7 +165,7 @@ contract BriskCoin is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -180,7 +180,7 @@ contract BriskCoin is IERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -197,13 +197,13 @@ contract BriskCoin is IERC20 {
     // Get current price of a Token
     // @return the price or token value for a ether
     function getPrice() public constant returns (uint result) {
-        if ( now &gt;= startTime  &amp;&amp; now &lt;= startTime + 6 days) {
+        if ( now >= startTime  && now <= startTime + 6 days) {
     	    return PRICE.mul(2);
-    	} else if ( now &gt;= startTime + 16 days  &amp;&amp; now &lt;= startTime + 31 days) {
+    	} else if ( now >= startTime + 16 days  && now <= startTime + 31 days) {
     	    return PRICE.mul(35).div(20);
-    	} else if ( now &gt;= startTime + 41 days  &amp;&amp; now &lt;= startTime + 51 days) {
+    	} else if ( now >= startTime + 41 days  && now <= startTime + 51 days) {
     	    return PRICE.mul(5).div(4);
-    	} else if ( now &gt;= startTime + 61 days &amp;&amp; now &lt;= startTime + 66 days) {
+    	} else if ( now >= startTime + 61 days && now <= startTime + 66 days) {
     	    return PRICE;
     	} else {
     	    return 0;

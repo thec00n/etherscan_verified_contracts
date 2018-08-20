@@ -1,12 +1,12 @@
 /*
  * ERC-20 Standard Token Smart Contract Interface.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="4924202221282025673f25282d2024203b263f092e24282025672a2624">[email&#160;protected]</span>&gt;
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="4924202221282025673f25282d2024203b263f092e24282025672a2624">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -94,7 +94,7 @@ contract Token {
 
 /*
  * Safe Math Smart Contract.  
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="c8a5a1a3a0a9a1a4e6bea4a9aca1a5a1baa7be88afa5a9a1a4e6aba7a5">[email&#160;protected]</span>&gt;
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="c8a5a1a3a0a9a1a4e6bea4a9aca1a5a1baa7be88afa5a9a1a4e6aba7a5">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
@@ -115,7 +115,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -129,7 +129,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -144,14 +144,14 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
 
 /*
  * Abstract Token Smart Contract.  
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="d4b9bdbfbcb5bdb8faa2b8b5b0bdb9bda6bba294b3b9b5bdb8fab7bbb9">[email&#160;protected]</span>&gt;
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="d4b9bdbfbcb5bdb8faa2b8b5b0bdb9bda6bba294b3b9b5bdb8fab7bbb9">[email protected]</span>>
  */
 
 /**
@@ -186,8 +186,8 @@ contract AbstractToken is Token, SafeMath {
    */
   function transfer (address _to, uint256 _value) returns (bool success) {
     uint256 fromBalance = accounts [msg.sender];
-    if (fromBalance &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (fromBalance < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (msg.sender, _to, _value);
@@ -207,14 +207,14 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success) {
     uint256 spenderAllowance = allowances [_from][msg.sender];
-    if (spenderAllowance &lt; _value) return false;
+    if (spenderAllowance < _value) return false;
     uint256 fromBalance = accounts [_from];
-    if (fromBalance &lt; _value) return false;
+    if (fromBalance < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (spenderAllowance, _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (_from, _to, _value);
@@ -257,20 +257,20 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
 
 /*
  * Protos Token Smart Contract.  
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="91fcf8faf9f0f8fdbfe7fdf0f5f8fcf8e3fee7d1f6fcf0f8fdbff2fefc">[email&#160;protected]</span>&gt;
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="91fcf8faf9f0f8fdbfe7fdf0f5f8fcf8e3fee7d1f6fcf0f8fdbff2fefc">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
@@ -313,7 +313,7 @@ contract ProtosToken is AbstractToken {
    * @return name of this token
    */
   function name () constant returns (string result) {
-    return &quot;PROTOS&quot;;
+    return "PROTOS";
   }
 
   /**
@@ -322,7 +322,7 @@ contract ProtosToken is AbstractToken {
    * @return symbol of this token
    */
   function symbol () constant returns (string result) {
-    return &quot;PRTS&quot;;
+    return "PRTS";
   }
 
   /**
@@ -401,8 +401,8 @@ contract ProtosToken is AbstractToken {
   returns (bool success) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &gt; safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
+    if (_value > 0) {
+      if (_value > safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
       accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
       tokenCount = safeAdd (tokenCount, _value);
     }
@@ -418,8 +418,8 @@ contract ProtosToken is AbstractToken {
    */
   function burnTokens (uint256 _value) returns (bool success) {
     uint256 ownerBalance = accounts [msg.sender];
-    if (_value &gt; ownerBalance) return false;
-    else if (_value &gt; 0) {
+    if (_value > ownerBalance) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (ownerBalance, _value);
       tokenCount = safeSub (tokenCount, _value);
       return true;

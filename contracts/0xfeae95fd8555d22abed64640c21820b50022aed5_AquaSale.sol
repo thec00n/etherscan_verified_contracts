@@ -40,20 +40,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract AquaSale is Owned {
     uint256 constant ONE_HUNDRED = 100;
 
     //Internal state
-    mapping (address =&gt; uint) internal buyerBalances;
+    mapping (address => uint) internal buyerBalances;
     
     //Public interface
     
@@ -169,7 +169,7 @@ contract AquaSale is Owned {
     
     ///function accepts Ether and allocates Aqua Tokens to the sender
     function purchaseTokens() public payable {
-        require(!highFundingGoalReached &amp;&amp; now &gt;= startTime );
+        require(!highFundingGoalReached && now >= startTime );
         uint amount = msg.value;
         uint noTokens = amount.div(
             tokenPriceOracle.getAquaTokenAudCentsPrice().mul(tokenPriceOracle.getAudCentWeiPrice())
@@ -188,8 +188,8 @@ contract AquaSale is Owned {
     ///The sending address should be the same address that was used to
     ///participate in crowdsale. The amount will be refunded to this address
     function refund() public {
-        require(!fundingGoalReached &amp;&amp; buyerBalances[msg.sender] &gt; 0
-                &amp;&amp; now &gt;= deadline);
+        require(!fundingGoalReached && buyerBalances[msg.sender] > 0
+                && now >= deadline);
         uint amount = buyerBalances[msg.sender];
         buyerBalances[msg.sender] = 0;
         msg.sender.transfer(amount);
@@ -199,16 +199,16 @@ contract AquaSale is Owned {
     ///iAqua authorized sttaff will call this function to withdraw contributed 
     ///amount (only in case crowdsale is successful)
     function withdraw() onlyOwner public {
-        require( (fundingGoalReached &amp;&amp; now &gt;= deadline) || highFundingGoalReached );
+        require( (fundingGoalReached && now >= deadline) || highFundingGoalReached );
         uint raisedFunds = this.balance;
         uint teamTokens = soldTokens.mul(teamSharePercent).div(ONE_HUNDRED.sub(teamSharePercent));
         uint totalTokens = tokenReward.totalSupply();
-        if (totalTokens &lt; teamTokens.add(soldTokens)) {
+        if (totalTokens < teamTokens.add(soldTokens)) {
             teamTokens = totalTokens.sub(soldTokens);
         }
         tokenReward.transfer(teamTrustAccount, teamTokens);
         uint distributedTokens = teamTokens.add(soldTokens);
-        if (totalTokens &gt; distributedTokens) {
+        if (totalTokens > distributedTokens) {
             tokenReward.burn(totalTokens.sub(distributedTokens));
         }
         tokenReward.startTrading();
@@ -224,18 +224,18 @@ contract AquaSale is Owned {
             if (highFundingGoalReached) {
                 return;
             }
-            if (soldTokens &gt;= highTokensToSellGoal) {
+            if (soldTokens >= highTokensToSellGoal) {
                 highFundingGoalReached = true;
                 GoalReached(this.balance, true);
                 return;
             }
         }
         else {
-            if (soldTokens &gt;= lowTokensToSellGoal) {
+            if (soldTokens >= lowTokensToSellGoal) {
                 fundingGoalReached = true;
                 GoalReached(this.balance, false);
             }
-            if (soldTokens &gt;= highTokensToSellGoal) {
+            if (soldTokens >= highTokensToSellGoal) {
                 highFundingGoalReached = true;
                 GoalReached(this.balance, true);
                 return;

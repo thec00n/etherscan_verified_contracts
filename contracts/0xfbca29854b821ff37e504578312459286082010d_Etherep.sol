@@ -2,21 +2,21 @@ pragma solidity ^0.4.11;
 
 /*  Copyright 2017 GoInto, LLC
 
-    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+    Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
         http://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+    distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
 */
 
 /**
- * Storage contract for Etherep to store ratings and score data.  It&#39;s been 
+ * Storage contract for Etherep to store ratings and score data.  It's been 
  * separated from the main contract because this is much less likely to change
  * than the other parts.  It would allow for upgrading the main contract without
  * losing data.
@@ -30,7 +30,7 @@ contract RatingStore {
     }
 
     bool internal debug;
-    mapping (address =&gt; Score) internal scores;
+    mapping (address => Score) internal scores;
     // The manager with full access
     address internal manager;
     // The contract that has write accees
@@ -69,7 +69,7 @@ contract RatingStore {
 
     /**
      * Set a Score
-     * @param target The address&#39; score we&#39;re setting
+     * @param target The address' score we're setting
      * @param cumulative The cumulative score for the address
      * @param total Total individual ratings for the address
      * @return success If the set was completed successfully
@@ -84,7 +84,7 @@ contract RatingStore {
 
     /**
      * Add a rating
-     * @param target The address&#39; score we&#39;re adding to
+     * @param target The address' score we're adding to
      * @param wScore The weighted rating to add to the score
      * @return success
      */
@@ -98,7 +98,7 @@ contract RatingStore {
 
     /**
      * Get the score for an address
-     * @param target The address&#39; score to return
+     * @param target The address' score to return
      * @return cumulative score
      * @return total ratings
      */
@@ -112,7 +112,7 @@ contract RatingStore {
 
     /**
      * Reset an entire score storage
-     * @param target The address we&#39;re wiping clean
+     * @param target The address we're wiping clean
      */
     function reset(address target) external onlyBy(manager) {
         scores[target] = Score(true, 0,0);
@@ -128,7 +128,7 @@ contract RatingStore {
 
     /**
      * Change the manager
-     * @param newManager The address we&#39;re setting as manager
+     * @param newManager The address we're setting as manager
      */
     function setManager(address newManager) external onlyBy(manager) {
         manager = newManager;
@@ -144,7 +144,7 @@ contract RatingStore {
 
     /**
      * Change the controller
-     * @param newController The address we&#39;re setting as controller
+     * @param newController The address we're setting as controller
      */
     function setController(address newController) external onlyBy(manager) {
         controller = newController;
@@ -179,7 +179,7 @@ contract Etherep {
     uint internal fee;
     address internal storageAddress;
     uint internal waitTime;
-    mapping (address =&gt; uint) internal lastRating;
+    mapping (address => uint) internal lastRating;
 
     /// Events
     event Error(
@@ -210,8 +210,8 @@ contract Etherep {
      * Delay ratings to be at least waitTime apart
      */
     modifier delay() {
-        if (debug == false &amp;&amp; lastRating[msg.sender] &gt; now - waitTime) {
-            Error(msg.sender, &quot;Rating too often&quot;);
+        if (debug == false && lastRating[msg.sender] > now - waitTime) {
+            Error(msg.sender, "Rating too often");
             revert();
         }
         _;
@@ -221,7 +221,7 @@ contract Etherep {
      * Require the minimum fee to be met
      */
     modifier requireFee() {
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
         _;
     }
 
@@ -300,7 +300,7 @@ contract Etherep {
 
     /**
      * Get the manager
-     * @return manager The address of this contract&#39;s manager
+     * @return manager The address of this contract's manager
      */
     function getManager() external constant returns (address) {
         return manager;
@@ -310,19 +310,19 @@ contract Etherep {
      * Drain fees
      */
     function drain() external onlyBy(manager) {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         manager.transfer(this.balance);
     }
 
     /** 
-     * Adds a rating to an address&#39; cumulative score
+     * Adds a rating to an address' cumulative score
      * @param who The address that is being rated
      * @param rating The rating(-5 to 5)
      * @return success If the rating was processed successfully
      */
     function rate(address who, int rating) external payable delay requireFee {
 
-        require(rating &lt;= 5 &amp;&amp; rating &gt;= -5);
+        require(rating <= 5 && rating >= -5);
         require(who != msg.sender);
 
         RatingStore store = RatingStore(storageAddress);
@@ -335,7 +335,7 @@ contract Etherep {
 
         // We need the absolute value
         int absRating = rating;
-        if (absRating &lt; 0) {
+        if (absRating < 0) {
             absRating = -rating;
         }
 
@@ -351,7 +351,7 @@ contract Etherep {
         }
 
         // Calculate the weight if the sender is rated above 0
-        if (senderCumulative &gt; 0) {
+        if (senderCumulative > 0) {
             weight = (((senderCumulative / 5) * absRating) / 10) + multiplier;
         }
         // Otherwise, unweighted

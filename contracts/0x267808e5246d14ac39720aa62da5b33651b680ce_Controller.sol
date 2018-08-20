@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.4;
+pragma solidity >=0.4.4;
 
 //from Zeppelin
 contract SafeMath {
@@ -9,13 +9,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
@@ -88,9 +88,9 @@ contract EventDefinitions {
 
 contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions {
 
-    string public name = &quot;FunFair&quot;;
+    string public name = "FunFair";
     uint8 public decimals = 8;
-    string public symbol = &quot;FUN&quot;;
+    string public symbol = "FUN";
 
     Controller controller;
     address owner;
@@ -138,7 +138,7 @@ contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions {
     onlyPayloadSize(2)
     returns (bool success) {
         //promote safe user behavior
-        if (controller.allowance(msg.sender, _spender) &gt; 0) throw;
+        if (controller.allowance(msg.sender, _spender) > 0) throw;
 
         success = controller.approve(msg.sender, _spender, _value);
         if (success) {
@@ -167,7 +167,7 @@ contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions {
     }
 
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 
@@ -204,7 +204,7 @@ contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions {
 
     function multiTransfer(uint[] bits) onlyOwner notMultilocked {
         if (bits.length % 3 != 0) throw;
-        for (uint i=0; i&lt;bits.length; i += 3) {
+        for (uint i=0; i<bits.length; i += 3) {
             address from = address(bits[i]);
             address to = address(bits[i+1]);
             uint amount = bits[i+2];
@@ -214,7 +214,7 @@ contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions {
 
     function multiApprove(uint[] bits) onlyOwner notMultilocked {
         if (bits.length % 3 != 0) throw;
-        for (uint i=0; i&lt;bits.length; i += 3) {
+        for (uint i=0; i<bits.length; i += 3) {
             address owner = address(bits[i]);
             address spender = address(bits[i+1]);
             uint amount = bits[i+2];
@@ -253,7 +253,7 @@ contract Controller is Owned, Finalizable {
     }
 
     modifier onlyToken() {
-        if (msg.sender != address(token) &amp;&amp; msg.sender != oldToken) throw;
+        if (msg.sender != address(token) && msg.sender != oldToken) throw;
         _;
     }
 
@@ -280,7 +280,7 @@ contract Controller is Owned, Finalizable {
     returns (bool success) {
         assert(msg.sender != oldToken || _from == EtherDelta);
         bool ok = ledger.transfer(_from, _to, _value);
-	if (ok &amp;&amp; msg.sender == oldToken)
+	if (ok && msg.sender == oldToken)
 	    token.controllerTransfer(_from, _to, _value);
 	return ok;
     }
@@ -290,7 +290,7 @@ contract Controller is Owned, Finalizable {
     returns (bool success) {
         assert(msg.sender != oldToken || _from == EtherDelta);
         bool ok = ledger.transferFrom(_spender, _from, _to, _value);
-	if (ok &amp;&amp; msg.sender == oldToken)
+	if (ok && msg.sender == oldToken)
 	    token.controllerTransfer(_from, _to, _value);
 	return ok;
     }
@@ -320,8 +320,8 @@ contract Controller is Owned, Finalizable {
 
 contract Ledger is Owned, SafeMath, Finalizable {
     address public controller;
-    mapping(address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
     uint public totalSupply;
 
     function setController(address _controller) onlyOwner notFinalized {
@@ -336,7 +336,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
     function transfer(address _from, address _to, uint _value)
     onlyController
     returns (bool success) {
-        if (balanceOf[_from] &lt; _value) return false;
+        if (balanceOf[_from] < _value) return false;
 
         balanceOf[_from] = safeSub(balanceOf[_from], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -346,10 +346,10 @@ contract Ledger is Owned, SafeMath, Finalizable {
     function transferFrom(address _spender, address _from, address _to, uint _value)
     onlyController
     returns (bool success) {
-        if (balanceOf[_from] &lt; _value) return false;
+        if (balanceOf[_from] < _value) return false;
 
         var allowed = allowance[_from][_spender];
-        if (allowed &lt; _value) return false;
+        if (allowed < _value) return false;
 
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
         balanceOf[_from] = safeSub(balanceOf[_from], _value);
@@ -361,7 +361,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
     onlyController
     returns (bool success) {
         //require user to set to zero before resetting to nonzero
-        if ((_value != 0) &amp;&amp; (allowance[_owner][_spender] != 0)) {
+        if ((_value != 0) && (allowance[_owner][_spender] != 0)) {
             return false;
         }
 
@@ -381,7 +381,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
     onlyController
     returns (bool success) {
         uint oldValue = allowance[_owner][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[_owner][_spender] = 0;
         } else {
             allowance[_owner][_spender] = safeSub(oldValue, _subtractedValue);
@@ -400,9 +400,9 @@ contract Ledger is Owned, SafeMath, Finalizable {
 
     /*
     function multiMint(uint[] bits) onlyOwner mintingActive {
-        for (uint i=0; i&lt;bits.length; i++) {
-	    address a = address(bits[i]&gt;&gt;96);
-	    uint amount = bits[i]&amp;((1&lt;&lt;96) - 1);
+        for (uint i=0; i<bits.length; i++) {
+	    address a = address(bits[i]>>96);
+	    uint amount = bits[i]&((1<<96) - 1);
 	    mint(a, amount);
         }
     }

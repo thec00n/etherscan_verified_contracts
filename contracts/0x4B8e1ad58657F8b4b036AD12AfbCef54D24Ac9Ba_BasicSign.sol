@@ -13,7 +13,7 @@ contract BasicSign {
     );
 
     address owner;
-    mapping (uint256 =&gt; Document) public documents;
+    mapping (uint256 => Document) public documents;
 
     struct Document {
         address organizer;
@@ -46,7 +46,7 @@ contract BasicSign {
     function addSignature(uint256 docId, bytes16 _type, bytes _sign) {
         Document doc = documents[docId];
         if (doc.organizer != msg.sender) throw;
-        if (doc.signs.length &gt;= 0xFF) throw;
+        if (doc.signs.length >= 0xFF) throw;
         uint idx = doc.signs.push(Sign(msg.sender, _type, _sign));
         Signed(msg.sender, docId, uint8(idx), _type, _sign);
     }

@@ -7,11 +7,11 @@ library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -21,7 +21,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -64,10 +64,10 @@ contract DEVNETCoin is ERC20Interface {
     // people that own our coin.
     uint16 userCount;
     address[] public accounts;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     // mapping of who can withdraw from who.
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; uint) pendingWithdrawals;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => uint) pendingWithdrawals;
     address public val;
     address public tom;
     address public chris;
@@ -77,8 +77,8 @@ contract DEVNETCoin is ERC20Interface {
 
     // Constructor when contract is created. 
     function DEVNETCoin(address _val, address _tom, address _chris, address _hank, address _roger, address _bryan) public {
-      name = &quot;DEVNET|Coin&quot;;
-      symbol = &quot;DEV&quot;;
+      name = "DEVNET|Coin";
+      symbol = "DEV";
       decimals = 18;
       _totalSupply = 24000000 * 10**uint(decimals);
       val = _val;
@@ -147,7 +147,7 @@ contract DEVNETCoin is ERC20Interface {
     }
 
     // returns the amount of tokens approved by the owners that can be transferred to 
-    // the spender&#39;s account. 
+    // the spender's account. 
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
       return allowed[tokenOwner][spender];
     }
@@ -164,17 +164,17 @@ contract DEVNETCoin is ERC20Interface {
 
         uint tokensRemaining = _totalSupply;
         uint tokensBought = 0;
-        require(_totalSupply &gt; 0);
+        require(_totalSupply > 0);
         uint etherReceived = msg.value; 
         
-        if (tokensRemaining &gt;= etherReceived * 100) {
+        if (tokensRemaining >= etherReceived * 100) {
           tokensBought = etherReceived * 100;
           tokensRemaining -= etherReceived;
         } else {
           tokensBought = tokensRemaining;
           tokensRemaining = 0;
         }
-        // make sure sender doesnt already exist.  If they don&#39;t, add new.  
+        // make sure sender doesnt already exist.  If they don't, add new.  
 
         if (balances[msg.sender] == 0) {
           accounts.push(msg.sender);

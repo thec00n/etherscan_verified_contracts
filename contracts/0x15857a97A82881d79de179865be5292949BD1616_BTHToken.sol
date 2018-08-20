@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7cbcad0c5c7d0e4c6ddd0c1d0ccc1d68ac7cbc9">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7cbcad0c5c7d0e4c6ddd0c1d0ccc1d68ac7cbc9">[email protected]</a>
 
 contract BasicAccessControl {
     address public owner;
@@ -18,7 +18,7 @@ contract BasicAccessControl {
     modifier onlyModerators() {
         if (msg.sender != owner) {
             bool found = false;
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == msg.sender) {
                     found = true;
                     break;
@@ -41,7 +41,7 @@ contract BasicAccessControl {
 
     function AddModerator(address _newModerator) onlyOwner public {
         if (_newModerator != address(0)) {
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == _newModerator) {
                     return;
                 }
@@ -52,12 +52,12 @@ contract BasicAccessControl {
     
     function RemoveModerator(address _oldModerator) onlyOwner public {
         uint foundIndex = 0;
-        for (; foundIndex &lt; moderators.length; foundIndex++) {
+        for (; foundIndex < moderators.length; foundIndex++) {
             if (moderators[foundIndex] == _oldModerator) {
                 break;
             }
         }
-        if (foundIndex &lt; moderators.length) {
+        if (foundIndex < moderators.length) {
             moderators[foundIndex] = moderators[moderators.length-1];
             delete moderators[moderators.length-1];
             moderators.length--;
@@ -80,16 +80,16 @@ interface CrossForkCallback {
 contract TokenERC20 {
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -102,7 +102,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true; 
@@ -122,7 +122,7 @@ contract TokenERC20 {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -130,8 +130,8 @@ contract TokenERC20 {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -142,10 +142,10 @@ contract TokenERC20 {
 
 contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     // metadata
-    string public constant name = &quot;Bytether&quot;;
-    string public constant symbol = &quot;BTH&quot;;
+    string public constant name = "Bytether";
+    string public constant symbol = "BTH";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     
     // cross fork data
     enum ForkResultCode { 
@@ -170,11 +170,11 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
         uint createTime;
     }
     uint64 public crossForkCount = 0;
-    uint public referBenefitRate = 10; // 10 btc -&gt; 1 bth
+    uint public referBenefitRate = 10; // 10 btc -> 1 bth
     bool public crossForking = false;
-    mapping (uint64 =&gt; CrossForkData) crossForkMapping;
-    mapping (string =&gt; uint64) crossForkIds;
-    mapping (bytes32 =&gt; uint256) referBenefits; // referCodeHash -&gt; bth amount
+    mapping (uint64 => CrossForkData) crossForkMapping;
+    mapping (string => uint64) crossForkIds;
+    mapping (bytes32 => uint256) referBenefits; // referCodeHash -> bth amount
     address public crossForkDistribution = 0x0; // crossfork contract
     uint256 public constant satoshi_bth_decimals = 10 ** 10;
     
@@ -185,7 +185,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     
     // deposit address
     address public crossForkFundDeposit; // deposit address for cross fork
-    address public bthFundDeposit; // deposit address for user growth pool &amp; marketing
+    address public bthFundDeposit; // deposit address for user growth pool & marketing
     address public developerFundDeposit; // deposit address for developer fund
     
     // fund distribution
@@ -198,7 +198,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     uint256 public sellPrice;
     uint256 public buyPrice;
     bool public trading = false;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     
     // modifier
@@ -264,7 +264,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
             LogClaimReferBenefit(referCodeHash, _receiver, 0, ClaimReferResultCode.SUCCESS);
             return;
         }
-        if (balanceOf[bthFundDeposit] &lt; totalAmount) {
+        if (balanceOf[bthFundDeposit] < totalAmount) {
             LogClaimReferBenefit(referCodeHash, _receiver, 0, ClaimReferResultCode.NOT_ENOUGH_BALANCE);
             return;
         }
@@ -286,7 +286,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
         CrossForkData storage crossForkData = crossForkMapping[requestId];
         uint256 amount = crossForkData.amount;        
         address receiver = crossForkData.receiver;
-        if (balanceOf[receiver] &lt; crossForkData.amount) {
+        if (balanceOf[receiver] < crossForkData.amount) {
             LogRevertCrossFork(btcAddressHash, receiver, requestId, amount, ForkResultCode.NOT_ENOUGH_BALANCE);
             return;
         }
@@ -295,15 +295,15 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
         balanceOf[crossForkData.receiver] -= crossForkData.amount;
         balanceOf[crossForkFundDeposit] += crossForkData.amount;
         crossForkIds[_btcAddress] = 0;
-        crossForkData.btcAddress = &quot;&quot;;
+        crossForkData.btcAddress = "";
         crossForkData.receiver = 0x0;
         crossForkData.amount = 0;
         crossForkData.createTime = 0;
         
         // revert refer claimable amount if possible
-        if (referBenefits[crossForkData.referCodeHash] &gt; 0) {
+        if (referBenefits[crossForkData.referCodeHash] > 0) {
             uint256 deductAmount = crossForkData.amount;
-            if (referBenefits[crossForkData.referCodeHash] &lt; deductAmount) {
+            if (referBenefits[crossForkData.referCodeHash] < deductAmount) {
                 deductAmount = referBenefits[crossForkData.referCodeHash];
             }
             referBenefits[crossForkData.referCodeHash] -= deductAmount;
@@ -344,13 +344,13 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
         crossForkData.amount = _amount*satoshi_bth_decimals;
         
         // add fund for address
-        if (balanceOf[crossForkFundDeposit] &lt; crossForkData.amount) {
+        if (balanceOf[crossForkFundDeposit] < crossForkData.amount) {
             LogCrossFork(_requestId, crossForkData.receiver, crossForkData.amount, ForkResultCode.NOT_ENOUGH_BALANCE);
             return;
         }
         balanceOf[crossForkFundDeposit] -= crossForkData.amount;
         balanceOf[crossForkData.receiver] += crossForkData.amount;
-        if (referBenefitRate &gt; 0) {
+        if (referBenefitRate > 0) {
             crossForkData.referCodeHash = _referCodeHash;
             referBenefits[_referCodeHash] += crossForkData.amount / referBenefitRate;
         }
@@ -360,7 +360,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     
     function triggerCrossFork(string _btcAddress) isCrossForking public returns(ForkResultCode) {
         bytes32 btcAddressHash = keccak256(_btcAddress);
-        if (crossForkIds[_btcAddress] &gt; 0) {
+        if (crossForkIds[_btcAddress] > 0) {
             LogTriggerCrossFork(btcAddressHash, crossForkIds[_btcAddress], ForkResultCode.RECEIVED);
             return ForkResultCode.RECEIVED;
         }
@@ -379,8 +379,8 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt; _value);
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_from] > _value);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -399,7 +399,7 @@ contract BTHToken is BasicAccessControl, TokenERC20, CrossForkCallback {
     }
 
     function sell(uint256 amount) isTrading public {
-        require(this.balance &gt;= amount * sellPrice);
+        require(this.balance >= amount * sellPrice);
         _transfer(msg.sender, this, amount);
         msg.sender.transfer(amount * sellPrice);
     }

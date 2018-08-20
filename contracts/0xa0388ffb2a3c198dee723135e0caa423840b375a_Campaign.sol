@@ -54,7 +54,7 @@ pragma solidity ^0.4.4;
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -64,12 +64,12 @@ Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
+        //Default assumes totalSupply can't be over max (2^256 - 1).
         //If your token leaves out totalSupply and can issue more tokens as time
-        //goes on, you need to check if it doesn&#39;t wrap.
+        //goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -79,8 +79,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -103,8 +103,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 //File: /Users/jbaylina/git/MVP/HumanStandardToken.sol
@@ -122,7 +122,7 @@ Machine-based, rapid creation of many tokens would not necessarily need these
 extra features or will be minted in other manners.
 
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval()
 has occurred.
 
@@ -143,14 +143,14 @@ contract HumanStandardToken is StandardToken {
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include
     them.
-    They allow one to customise the token contract &amp; in no way influences the
+    They allow one to customise the token contract & in no way influences the
     core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //An arbitrary versioning scheme.
+    string public version = 'H0.1';       //An arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -171,13 +171,13 @@ contract HumanStandardToken is StandardToken {
         Approval(msg.sender, _spender, _value);
 
         //call the receiveApproval function on the contract you want to be
-        //notified. This crafts the function signature manually so one doesn&#39;t
+        //notified. This crafts the function signature manually so one doesn't
         //have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed,
         //otherwise one would use vanilla approve instead.
         if(!_spender.call(
-        bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))),
+        bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))),
         msg.sender,
         _value,
         this,
@@ -194,7 +194,7 @@ pragma solidity ^0.4.4;
 
 /// @title CampaignToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract is a clone of ConsenSys&#39;s HumanStandardToken with
+/// @dev This token contract is a clone of ConsenSys's HumanStandardToken with
 /// the approveAndCall function omitted; it is ERC 20 compliant.
 
 contract CampaignToken is HumanStandardToken {
@@ -210,11 +210,11 @@ contract CampaignToken is HumanStandardToken {
 
 /// @notice `CampaignToken()` is the function that deploys a new
 /// HumanStandardToken with the parameters of 0 initial tokens, the name
-/// &quot;CharityDAO Token&quot; the decimal place of the smallest unit being 18, and the
-/// call sign being &quot;GIVE&quot;. It will set the tokenController to be the contract that
+/// "CharityDAO Token" the decimal place of the smallest unit being 18, and the
+/// call sign being "GIVE". It will set the tokenController to be the contract that
 /// calls the function.
 
-    function CampaignToken() HumanStandardToken(0,&quot;CharityDAO Token&quot;,18,&quot;GIVE&quot;) {
+    function CampaignToken() HumanStandardToken(0,"CharityDAO Token",18,"GIVE") {
         tokenController = msg.sender;
     }
 
@@ -247,7 +247,7 @@ contract CampaignToken is HumanStandardToken {
     }
 
 /// @notice `sealed()` checks to see if the the Campaign has been sealed
-/// @return True if the Campaign has been sealed and can&#39;t receive funds
+/// @return True if the Campaign has been sealed and can't receive funds
 
     function sealed() constant returns (bool) {
         return tokenController == 0;
@@ -272,7 +272,7 @@ contract Campaign {
     CampaignToken public tokenContract;  // The new token for this Campaign
     address public vaultContract;       // The address to hold the funds donated
 
-/// @notice &#39;Campaign()&#39; initiates the Campaign by setting its funding
+/// @notice 'Campaign()' initiates the Campaign by setting its funding
 /// parameters and creating the deploying the token contract
 /// @dev There are several checks to make sure the parameters are acceptable
 /// @param _startFundingTime The UNIX time that the Campaign will be able to
@@ -289,9 +289,9 @@ contract Campaign {
         uint _maximumFunding,
         address _vaultContract
     ) {
-        if ((_endFundingTime &lt; now) ||                // Cannot start in the past
-            (_endFundingTime &lt;= _startFundingTime) ||
-            (_maximumFunding &gt; 10000 ether) ||        // The Beta is limited
+        if ((_endFundingTime < now) ||                // Cannot start in the past
+            (_endFundingTime <= _startFundingTime) ||
+            (_maximumFunding > 10000 ether) ||        // The Beta is limited
             (_vaultContract == 0))                    // To prevent burning ETH
             {
             throw;
@@ -328,11 +328,11 @@ contract Campaign {
     function doPayment(address _owner) internal {
 
 // First we check that the Campaign is allowed to receive this donation
-        if ((now&lt;startFundingTime) ||
-            (now&gt;endFundingTime) ||
+        if ((now<startFundingTime) ||
+            (now>endFundingTime) ||
             (tokenContract.tokenController() == 0) ||           // Extra check
             (msg.value == 0) ||
-            (totalCollected + msg.value &gt; maximumFunding))
+            (totalCollected + msg.value > maximumFunding))
         {
             throw;
         }
@@ -359,7 +359,7 @@ contract Campaign {
 /// @dev `seal()` can only be called after the end of the funding period.
 
     function seal() {
-        if (now &lt; endFundingTime) throw;
+        if (now < endFundingTime) throw;
         tokenContract.seal();
     }
 

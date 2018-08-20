@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,17 +38,17 @@ contract Ownable {
 	}
 
 	modifier onlyOwner() {
-		require(msg.sender == owner, &quot;msg.sender == owner&quot;);
+		require(msg.sender == owner, "msg.sender == owner");
 		_;
 	}
 
 	function transferOwnership(address _newOwner) public onlyOwner {
-		require(address(0) != _newOwner, &quot;address(0) != _newOwner&quot;);
+		require(address(0) != _newOwner, "address(0) != _newOwner");
 		newOwner = _newOwner;
 	}
 
 	function acceptOwnership() public {
-		require(msg.sender == newOwner, &quot;msg.sender == newOwner&quot;);
+		require(msg.sender == newOwner, "msg.sender == newOwner");
 		emit OwnershipTransferred(owner, msg.sender);
 		owner = msg.sender;
 		newOwner = address(0);
@@ -66,20 +66,20 @@ contract Refund is Ownable{
     
     tokenInterface public xcc;
     
-    mapping (address =&gt; uint256) public refunds;
+    mapping (address => uint256) public refunds;
     
     constructor(address _xcc) public {
         xcc = tokenInterface(_xcc);
     } 
 
     function () public  {
-        require ( msg.sender == tx.origin, &quot;msg.sender == tx.orgin&quot; );
+        require ( msg.sender == tx.origin, "msg.sender == tx.orgin" );
 		
 		uint256 xcc_amount = xcc.balanceOf(msg.sender);
-		require( xcc_amount &gt; 0, &quot;xcc_amount &gt; 0&quot; );
+		require( xcc_amount > 0, "xcc_amount > 0" );
 		
 		uint256 money = refunds[msg.sender];
-		require( money &gt; 0 , &quot;money &gt; 0&quot; );
+		require( money > 0 , "money > 0" );
 		
 		refunds[msg.sender] = 0;
 		
@@ -94,7 +94,7 @@ contract Refund is Ownable{
     
     function cancelRefund(address _buyer) public onlyOwner {
         uint256 money = refunds[_buyer];
-        require( money &gt; 0 , &quot;money &gt; 0&quot; );
+        require( money > 0 , "money > 0" );
 		refunds[_buyer] = 0;
 		
         owner.transfer(money);

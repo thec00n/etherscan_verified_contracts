@@ -40,12 +40,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -74,7 +74,7 @@ contract Token {
 contract StandardToken is Token {
 
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -82,7 +82,7 @@ contract StandardToken is Token {
 
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -93,7 +93,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -118,8 +118,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract splitterContract is Ownable{
@@ -144,7 +144,7 @@ contract splitterContract is Ownable{
     bool    public thinkMode;
     uint256 public pos;
 
-    mapping (address =&gt; xRec) public theList;
+    mapping (address => xRec) public theList;
 
     l8r[]  afterParty;
 
@@ -172,8 +172,8 @@ contract splitterContract is Ownable{
 
     function stopThinking(uint256 num) onlyOwner {
         thinkMode = false;
-        for (uint256 i = 0; i &lt; num; i++) {
-            if (pos &gt;= afterParty.length) {
+        for (uint256 i = 0; i < num; i++) {
+            if (pos >= afterParty.length) {
                 delete afterParty;
                 return;
             }
@@ -195,7 +195,7 @@ contract splitterContract is Ownable{
         theList[whom] = xRec(true,0x0,last,value);
         theList[last].next = whom;
         last = whom;
-        ev(&quot;add&quot;,whom,value);
+        ev("add",whom,value);
     }
 
     function remove(address whom) internal {
@@ -213,7 +213,7 @@ contract splitterContract is Ownable{
             theList[next].prev = prev;
         }
         theList[whom] = xRec(false,0x0,0x0,0);
-        ev(&quot;remove&quot;,whom,0);
+        ev("remove",whom,0);
     }
 
     function update(address whom, uint256 value) onlyMeOrDDF {
@@ -226,7 +226,7 @@ contract splitterContract is Ownable{
                 add(whom,value);
             } else {
                 theList[whom].val = value;
-                ev(&quot;update&quot;,whom,value);
+                ev("update",whom,value);
             }
             return;
         }
@@ -242,10 +242,10 @@ contract splitterContract is Ownable{
 contract DDFToken is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Digital Developers Fund Token&quot;;
-    string public constant symbol = &quot;DDF&quot;;
+    string public constant name = "Digital Developers Fund Token";
+    string public constant symbol = "DDF";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address for ETH for Domain Development Fund
@@ -292,16 +292,16 @@ contract DDFToken is StandardToken, SafeMath {
     /// @dev Accepts ether and creates new DDFT tokens.
     function createTokens(uint256 _value)  internal {
       if (isFinalized) throw;
-      if (now &lt; fundingStartTime) throw;
-      if (now &gt; fundingEndTime) throw;
+      if (now < fundingStartTime) throw;
+      if (now > fundingEndTime) throw;
       if (msg.value == 0) throw;
 
-      uint256 tokens = safeMult(_value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(_value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       // DA 8/6/2017 to fairly allocate the last few tokens
-      if (tokenCreationCap &lt; checkedSupply) {
-        if (tokenCreationCap &lt;= totalSupply) throw;  // CAP reached no more please
+      if (tokenCreationCap < checkedSupply) {
+        if (tokenCreationCap <= totalSupply) throw;  // CAP reached no more please
         uint256 tokensToAllocate = safeSubtract(tokenCreationCap,totalSupply);
         uint256 tokensToRefund   = safeSubtract(tokens,tokensToAllocate);
         totalSupply = tokenCreationCap;
@@ -324,8 +324,8 @@ contract DDFToken is StandardToken, SafeMath {
     function finalize() external {
       if (isFinalized) throw;
       if (msg.sender != ethFundDeposit) throw; // locks finalize to the ultimate ETH owner
-      if(totalSupply &lt; tokenCreationMin + ddftFund) throw;      // have to sell minimum to move to operational
-      if(now &lt;= fundingEndTime &amp;&amp; totalSupply != tokenCreationCap) throw;
+      if(totalSupply < tokenCreationMin + ddftFund) throw;      // have to sell minimum to move to operational
+      if(now <= fundingEndTime && totalSupply != tokenCreationCap) throw;
       // move to operational
       isFinalized = true;
       // DA 8/6/2017 change send/throw to transfer
@@ -335,8 +335,8 @@ contract DDFToken is StandardToken, SafeMath {
     /// @dev Allows contributors to recover their ether in the case of a failed funding campaign.
     function refund() external {
       if(isFinalized) throw;                       // prevents refund if operational
-      if (now &lt;= fundingEndTime) throw; // prevents refund until sale period is over
-      if(totalSupply &gt;= tokenCreationMin + ddftFund) throw;  // no refunds if we sold enough
+      if (now <= fundingEndTime) throw; // prevents refund until sale period is over
+      if(totalSupply >= tokenCreationMin + ddftFund) throw;  // no refunds if we sold enough
       if(msg.sender == ddftFundDeposit) throw;    // DDF not entitled to a refund
       uint256 ddftVal = balances[msg.sender];
       if (ddftVal == 0) throw;
@@ -345,7 +345,7 @@ contract DDFToken is StandardToken, SafeMath {
       uint256 ethVal = ddftVal / tokenExchangeRate;     // should be safe; previous throws covers edges
       LogRefund(msg.sender, ethVal);               // log it 
       // DA 8/6/2017 change send/throw to transfer
-      msg.sender.transfer(ethVal);                 // if you&#39;re using a contract; make sure it works with .send gas limits
+      msg.sender.transfer(ethVal);                 // if you're using a contract; make sure it works with .send gas limits
     }
 
     // DA 8/6/2017

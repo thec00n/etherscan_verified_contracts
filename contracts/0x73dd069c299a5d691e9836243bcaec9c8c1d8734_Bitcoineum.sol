@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -241,8 +241,8 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    }
 
    // Each guess gets assigned to a block
-   mapping (uint256 =&gt; InternalBlock) public blockData;
-   mapping (uint256 =&gt; mapping (address =&gt; MiningAttempt)) public miningAttempts;
+   mapping (uint256 => InternalBlock) public blockData;
+   mapping (uint256 => mapping (address => MiningAttempt)) public miningAttempts;
 
    // Utility related
 
@@ -255,7 +255,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    }
 
    function external_to_internal_block_number(uint256 _externalBlockNum) public constant returns (uint256) {
-      // blockCreationRate is &gt; 0
+      // blockCreationRate is > 0
       return _externalBlockNum / blockCreationRate;
    }
 
@@ -270,7 +270,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    * this is a single atomic function for getting state
    * rather than scattering it across multiple public calls
    * also returns the current blocks parameters
-   * or default params if it hasn&#39;t been created yet
+   * or default params if it hasn't been created yet
    * This is only called externally
    */
 
@@ -386,13 +386,13 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
      * 0.0000001 % of total difficulty
      */
      uint256 minimum_wei = currentDifficultyWei / divisible_units; 
-     require (msg.value &gt;= minimum_wei);
+     require (msg.value >= minimum_wei);
 
-     /* Let&#39;s bound the value to guard against potential overflow
+     /* Let's bound the value to guard against potential overflow
      * i.e max int, or an underflow bug
      * This is a single attempt
      */
-     require(msg.value &lt;= (1000000 ether));
+     require(msg.value <= (1000000 ether));
      _;
    }
 
@@ -408,7 +408,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    }
 
    function checkMiningActive() public constant returns (bool) {
-      return (totalSupply &lt; maximumSupply);
+      return (totalSupply < maximumSupply);
    }
 
    modifier isMiningActive() {
@@ -417,13 +417,13 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    }
 
    function burn(uint256 value) internal {
-      /* We don&#39;t really care if the burn fails for some
+      /* We don't really care if the burn fails for some
       *  weird reason.
       */
       bool ret = burnAddress.send(value);
       /* If we cannot burn this ether, than the contract might
       *  be under some kind of stack attack.
-      *  Even though it shouldn&#39;t matter, let&#39;s err on the side of
+      *  Even though it shouldn't matter, let's err on the side of
       *  caution and throw in case there is some invalid state.
       */
       require (ret);
@@ -454,7 +454,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
                            initBlock(external_to_internal_block_number(current_external_block()))
                            blockRedeemed(external_to_internal_block_number(current_external_block()))
                            alreadyMined(external_to_internal_block_number(current_external_block()), msg.sender) returns (bool) {
-      /* Let&#39;s immediately adjust the difficulty
+      /* Let's immediately adjust the difficulty
       *  In case an abnormal period of time has elapsed
       *  nobody has been mining etc.
       *  Will let us recover the network even if the
@@ -516,7 +516,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       // The total amount of Wei sent for this mining attempt exceeds the difficulty level
       // So the calculation of percentage keyspace should be done on the total wei.
       uint256 selectedDifficultyWei = 0;
-      if (totalMiningWei &gt; targetDifficultyWei) {
+      if (totalMiningWei > targetDifficultyWei) {
          selectedDifficultyWei = totalMiningWei;
       } else {
          selectedDifficultyWei = targetDifficultyWei; 
@@ -532,7 +532,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       // Underflow to maxint
       max_int = max_int - 1;
 
-      if (intermediate &gt;= divisible_units) {
+      if (intermediate >= divisible_units) {
          return max_int;
       } else {
          return intermediate * (max_int / divisible_units);
@@ -544,19 +544,19 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
        * against the difficulty scale.
        * If they are not we might have an integer overflow
        */
-       require(offset + difficulty &gt;= offset);
+       require(offset + difficulty >= offset);
        return (offset, offset+difficulty);
    }
 
    // Total allocated reward is proportional to burn contribution to limit incentive for
    // hash grinding attacks
    function calculate_proportional_reward(uint256 _baseReward, uint256 _userContributionWei, uint256 _totalCommittedWei) public constant returns (uint256) {
-   require(_userContributionWei &lt;= _totalCommittedWei);
-   require(_userContributionWei &gt; 0);
-   require(_totalCommittedWei &gt; 0);
+   require(_userContributionWei <= _totalCommittedWei);
+   require(_userContributionWei > 0);
+   require(_totalCommittedWei > 0);
       uint256 intermediate = ((_userContributionWei * divisible_units) / _totalCommittedWei);
 
-      if (intermediate &gt;= divisible_units) {
+      if (intermediate >= divisible_units) {
          return _baseReward;
       } else {
          return intermediate * (_baseReward / divisible_units);
@@ -569,7 +569,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       *  Block reward decreases by 50% every 210000 blocks
       */
       uint256 mined_block_period = 0;
-      if (_totalBlocksMined &lt; 210000) {
+      if (_totalBlocksMined < 210000) {
            mined_block_period = 210000;
       } else {
            mined_block_period = _totalBlocksMined;
@@ -580,10 +580,10 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       uint256 total_reward = initial_reward * (10 ** decimals); 
       uint256 i = 1;
       uint256 rewardperiods = mined_block_period / 210000;
-      if (mined_block_period % 210000 &gt; 0) {
+      if (mined_block_period % 210000 > 0) {
          rewardperiods += 1;
       }
-      for (i=1; i &lt; rewardperiods; i++) {
+      for (i=1; i < rewardperiods; i++) {
           total_reward = total_reward / 2;
       }
       return total_reward;
@@ -604,9 +604,9 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
           uint256 lowerBound = _totalWeiExpected / _difficultyScaleMultiplierLimit;
           uint256 upperBound = _totalWeiExpected * _difficultyScaleMultiplierLimit;
 
-          if (_totalWeiCommitted &lt; lowerBound) {
+          if (_totalWeiCommitted < lowerBound) {
               _totalWeiExpected = lowerBound;
-          } else if (_totalWeiCommitted &gt; upperBound) {
+          } else if (_totalWeiCommitted > upperBound) {
               _totalWeiExpected = upperBound;
           } else {
               _totalWeiExpected = _totalWeiCommitted;
@@ -616,7 +616,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
           *  This may halt coin creation, but obviously does not affect
           *  token transactions.
           */
-          if (_totalWeiExpected &lt; _minimumDifficultyThresholdWei) {
+          if (_totalWeiExpected < _minimumDifficultyThresholdWei) {
               _totalWeiExpected = _minimumDifficultyThresholdWei;
           }
 
@@ -631,7 +631,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       * mining attempts
       */
 
-      if ((current_external_block() - lastDifficultyAdjustmentEthereumBlock) &gt; (difficultyAdjustmentPeriod * blockCreationRate)) {
+      if ((current_external_block() - lastDifficultyAdjustmentEthereumBlock) > (difficultyAdjustmentPeriod * blockCreationRate)) {
 
           // Get the new total wei expected via static function
           totalWeiExpected = calculate_next_expected_wei(totalWeiCommitted, totalWeiExpected, minimumDifficultyThresholdWei * difficultyAdjustmentPeriod, difficultyScaleMultiplierLimit);
@@ -726,7 +726,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    * @param _blockNum is the internal block number to check 
    */
    function checkBlockMature(uint256 _blockNum, uint256 _externalblock) constant public returns (bool) {
-     return (_externalblock &gt;= targetBlockNumber(_blockNum));
+     return (_externalblock >= targetBlockNumber(_blockNum));
    }
 
    /**
@@ -736,7 +736,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
 
    function checkRedemptionWindow(uint256 _blockNum, uint256 _externalblock) constant public returns (bool) {
        uint256 _targetblock = targetBlockNumber(_blockNum);
-       return _externalblock &gt;= _targetblock &amp;&amp; _externalblock &lt; (_targetblock + 256);
+       return _externalblock >= _targetblock && _externalblock < (_targetblock + 256);
    }
 
    /** 
@@ -752,7 +752,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
    * @param _blockNum is the internal block number to check
    */
    function checkWinning(uint256 _blockNum) constant public returns (bool) {
-     if (checkMiningAttempt(_blockNum, msg.sender) &amp;&amp; checkBlockMature(_blockNum, current_external_block())) {
+     if (checkMiningAttempt(_blockNum, msg.sender) && checkBlockMature(_blockNum, current_external_block())) {
 
       InternalBlock memory iBlock = blockData[_blockNum];
       uint256 targetBlockNum = targetBlockNumber(iBlock.blockNumber);
@@ -768,7 +768,7 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
       targetBlockHashInt = uint256(keccak256(resolve_block_hash(targetBlockNum)));
    
       // This is the winning condition
-      if ((beginRange &lt; targetBlockHashInt) &amp;&amp; (endRange &gt;= targetBlockHashInt))
+      if ((beginRange < targetBlockHashInt) && (endRange >= targetBlockHashInt))
       {
         return true;
       }
@@ -785,8 +785,8 @@ contract ERC20Mineable is StandardToken, ReentrancyGuard  {
 
 contract Bitcoineum is ERC20Mineable, Transmutable {
 
- string public constant name = &quot;Bitcoineum&quot;;
- string public constant symbol = &quot;BTE&quot;;
+ string public constant name = "Bitcoineum";
+ string public constant symbol = "BTE";
  uint256 public constant decimals = 8;
  uint256 public constant INITIAL_SUPPLY = 0;
 
@@ -799,7 +799,7 @@ contract Bitcoineum is ERC20Mineable, Transmutable {
     maximumSupply = MAX_SUPPLY;
 
     // 0.0001 Ether per block
-    // Difficulty is so low because it doesn&#39;t include
+    // Difficulty is so low because it doesn't include
     // gas prices for execution
     currentDifficultyWei = 100 szabo;
     minimumDifficultyThresholdWei = 100 szabo;
@@ -836,9 +836,9 @@ contract Bitcoineum is ERC20Mineable, Transmutable {
    */
 
   function transmute(address to, uint256 value) nonReentrant returns (bool, uint256) {
-    require(value &gt; 0);
-    require(balances[msg.sender] &gt;= value);
-    require(totalSupply &gt;= value);
+    require(value > 0);
+    require(balances[msg.sender] >= value);
+    require(totalSupply >= value);
     balances[msg.sender] = balances[msg.sender].sub(value);
     totalSupply = totalSupply.sub(value);
     TransmutableInterface target = TransmutableInterface(to);

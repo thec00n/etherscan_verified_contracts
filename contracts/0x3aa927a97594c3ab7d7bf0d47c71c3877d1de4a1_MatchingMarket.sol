@@ -20,11 +20,11 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -37,10 +37,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -49,11 +49,11 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -66,10 +66,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -78,10 +78,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -136,10 +136,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -311,7 +311,7 @@ contract SimpleMarket is EventfulMarket, DSMath {
 
     uint public last_offer_id;
 
-    mapping (uint =&gt; OfferInfo) public offers;
+    mapping (uint => OfferInfo) public offers;
 
     bool locked;
 
@@ -394,7 +394,7 @@ contract SimpleMarket is EventfulMarket, DSMath {
 
         // For backwards semantic compatibility.
         if (quantity == 0 || spend == 0 ||
-            quantity &gt; offer.pay_amt || spend &gt; offer.buy_amt)
+            quantity > offer.pay_amt || spend > offer.buy_amt)
         {
             return false;
         }
@@ -473,9 +473,9 @@ contract SimpleMarket is EventfulMarket, DSMath {
     {
         require(uint128(pay_amt) == pay_amt);
         require(uint128(buy_amt) == buy_amt);
-        require(pay_amt &gt; 0);
+        require(pay_amt > 0);
         require(pay_gem != ERC20(0x0));
-        require(buy_amt &gt; 0);
+        require(buy_amt > 0);
         require(buy_gem != ERC20(0x0));
         require(pay_gem != buy_gem);
 
@@ -545,7 +545,7 @@ contract ExpiringMarket is DSAuth, SimpleMarket {
     }
 
     function isClosed() constant returns (bool closed) {
-        return stopped || getTime() &gt; close_time;
+        return stopped || getTime() > close_time;
     }
 
     function getTime() returns (uint64) {
@@ -575,12 +575,12 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         uint next;  //points to id of next higher offer
         uint prev;  //points to id of previous lower offer
     }
-    mapping(uint =&gt; sortInfo) public _rank;                     //doubly linked lists of sorted offer ids
-    mapping(address =&gt; mapping(address =&gt; uint)) public _best;  //id of the highest offer for a token pair
-    mapping(address =&gt; mapping(address =&gt; uint)) public _span;  //number of offers stored for token pair in sorted orderbook
-    mapping(address =&gt; uint) public _dust;                      //minimum sell amount for a token to avoid dust offers
-    mapping(uint =&gt; uint) public _near;         //next unsorted offer id
-    mapping(bytes32 =&gt; bool) public _menu;      //whitelist tracking which token pairs can be traded
+    mapping(uint => sortInfo) public _rank;                     //doubly linked lists of sorted offer ids
+    mapping(address => mapping(address => uint)) public _best;  //id of the highest offer for a token pair
+    mapping(address => mapping(address => uint)) public _span;  //number of offers stored for token pair in sorted orderbook
+    mapping(address => uint) public _dust;                      //minimum sell amount for a token to avoid dust offers
+    mapping(uint => uint) public _near;         //next unsorted offer id
+    mapping(bytes32 => bool) public _menu;      //whitelist tracking which token pairs can be traded
     uint _head;                                 //first unsorted offer id
 
     //check if token pair is enabled
@@ -622,7 +622,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     //       to put offer in the sorted list.
     //
     // If matching is disabled:
-    //     * calls expiring market&#39;s offer().
+    //     * calls expiring market's offer().
     //     * available to everyone without authorization.
     //     * no sorting is done.
     //
@@ -662,14 +662,14 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         uint buy_amt,    //maker (ask) buy how much
         ERC20 buy_gem,   //maker (ask) buy which token
         uint pos,        //position to insert offer, 0 should be used if unknown
-        bool rounding    //match &quot;close enough&quot; orders?
+        bool rounding    //match "close enough" orders?
     )
     isWhitelist(pay_gem, buy_gem)
     /*NOT synchronized!!! */
     can_offer
     returns (uint)
     {
-        require(_dust[pay_gem] &lt;= pay_amt);
+        require(_dust[pay_gem] <= pay_amt);
 
         if (matchingEnabled) {
           return _matcho(pay_amt, pay_gem, buy_amt, buy_gem, pos, rounding);
@@ -736,7 +736,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     returns (bool)
     {
         require(!isTokenPairWhitelisted(baseToken, quoteToken));
-        require(address(baseToken) != 0x0 &amp;&amp; address(quoteToken) != 0x0);
+        require(address(baseToken) != 0x0 && address(quoteToken) != 0x0);
 
         _menu[sha3(baseToken, quoteToken)] = true;
         LogAddTokenPairWhitelist(baseToken, quoteToken);
@@ -775,7 +775,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     }
 
     //set the minimum sell amount for a token
-    //    Function is used to avoid &quot;dust offers&quot; that have
+    //    Function is used to avoid "dust offers" that have
     //    very small amount of tokens to sell, and it would
     //    cost more gas to accept the offer, than the value
     //    of tokens received.
@@ -822,8 +822,8 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     }
 
     //return the best offer for a token pair
-    //      the best offer is the lowest one if it&#39;s an ask,
-    //      and highest one if it&#39;s a bid offer
+    //      the best offer is the lowest one if it's an ask,
+    //      and highest one if it's a bid offer
     function getBestOffer(ERC20 sell_gem, ERC20 buy_gem) constant returns(uint) {
         return _best[sell_gem][buy_gem];
     }
@@ -848,7 +848,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     }
 
     //get the first unsorted offer that was inserted by a contract
-    //      Contracts can&#39;t calculate the insertion position of their offer because it is not an O(1) operation.
+    //      Contracts can't calculate the insertion position of their offer because it is not an O(1) operation.
     //      Their offers get put in the unsorted list of offers.
     //      Keepers can calculate the insertion position offchain and pass it to the insert() function to insert
     //      the unsorted offer into the sorted list. Unsorted offers will not be matched, but can be bought with buy().
@@ -878,7 +878,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     {
         require(buyEnabled);
 
-        if (amount == offers[id].pay_amt &amp;&amp; isOfferSorted(id)) {
+        if (amount == offers[id].pay_amt && isOfferSorted(id)) {
             //offers[id] must be removed from sorted list because all of it is bought
             _unsort(id);
         }
@@ -891,7 +891,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     internal
     returns (uint)
     {
-        require( id &gt; 0 );
+        require( id > 0 );
 
         address buy_gem = address(offers[id].buy_gem);
         address pay_gem = address(offers[id].pay_gem);
@@ -899,7 +899,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         uint old_top = 0;
 
         // Find the larger-than-id order whose successor is less-than-id.
-        while (top != 0 &amp;&amp; _isLtOrEq(id, top)) {
+        while (top != 0 && _isLtOrEq(id, top)) {
             old_top = top;
             top = _rank[top].prev;
         }
@@ -908,14 +908,14 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
 
     //return true if offers[low] priced less than or equal to offers[high]
     function _isLtOrEq(
-        uint low,   //lower priced offer&#39;s id
-        uint high   //higher priced offer&#39;s id
+        uint low,   //lower priced offer's id
+        uint high   //higher priced offer's id
     )
     internal
     returns (bool)
     {
         return mul(offers[low].buy_amt, offers[high].pay_amt)
-          &gt;= mul(offers[high].buy_amt, offers[low].pay_amt);
+          >= mul(offers[high].buy_amt, offers[low].pay_amt);
     }
 
     //these variables are global only because of solidity local variable limit
@@ -927,7 +927,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         uint t_buy_amt,    //taker buy how much
         ERC20 t_buy_gem,   //taker buy which token
         uint pos,          //position id
-        bool rounding      //match &quot;close enough&quot; orders?
+        bool rounding      //match "close enough" orders?
     )
     internal
     returns (uint id)
@@ -940,21 +940,21 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         require(pos == 0
                || !isActive(pos)
                || t_buy_gem == offers[pos].buy_gem
-                  &amp;&amp; t_pay_gem == offers[pos].pay_gem);
+                  && t_pay_gem == offers[pos].pay_gem);
 
         // there is at least one offer stored for token pair
-        while (_best[t_buy_gem][t_pay_gem] &gt; 0) {
+        while (_best[t_buy_gem][t_pay_gem] > 0) {
             best_maker_id = _best[t_buy_gem][t_pay_gem];
             m_buy_amt = offers[best_maker_id].buy_amt;
             m_pay_amt = offers[best_maker_id].pay_amt;
 
             // Ugly hack to work around rounding errors. Based on the idea that
-            // the furthest the amounts can stray from their &quot;true&quot; values is 1.
+            // the furthest the amounts can stray from their "true" values is 1.
             // Ergo the worst case has t_pay_amt and m_pay_amt at +1 away from
-            // their &quot;correct&quot; values and m_buy_amt and t_buy_amt at -1.
-            // Since (c - 1) * (d - 1) &gt; (a + 1) * (b + 1) is equivalent to
-            // c * d &gt; a * b + a + b + c + d, we write...
-            if (mul(m_buy_amt, t_buy_amt) &gt; mul(t_pay_amt, m_pay_amt) +
+            // their "correct" values and m_buy_amt and t_buy_amt at -1.
+            // Since (c - 1) * (d - 1) > (a + 1) * (b + 1) is equivalent to
+            // c * d > a * b + a + b + c + d, we write...
+            if (mul(m_buy_amt, t_buy_amt) > mul(t_pay_amt, m_pay_amt) +
                 (rounding ? m_buy_amt + t_buy_amt + t_pay_amt + m_pay_amt : 0))
             {
                 break;
@@ -972,7 +972,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
             }
         }
 
-        if (t_buy_amt &gt; 0 &amp;&amp; t_pay_amt &gt; 0) {
+        if (t_buy_amt > 0 && t_pay_amt > 0) {
             //new offer should be created
             id = super.offer(t_pay_amt, t_pay_gem, t_buy_amt, t_buy_gem);
             //insert offer into the sorted list
@@ -1016,7 +1016,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
         if (pos == 0
             || !isActive(pos)
             || !_isLtOrEq(id, pos)
-            || (_rank[pos].prev != 0 &amp;&amp; _isLtOrEq(id, _rank[pos].prev))
+            || (_rank[pos].prev != 0 && _isLtOrEq(id, _rank[pos].prev))
         ) {
             //client did not provide valid position, so we have to find it
             pos = _find(id);
@@ -1061,7 +1061,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
     {
         address buy_gem = address(offers[id].buy_gem);
         address pay_gem = address(offers[id].pay_gem);
-        require(_span[pay_gem][buy_gem] &gt; 0);
+        require(_span[pay_gem][buy_gem] > 0);
 
         //assert id is in the sorted list
         require(_rank[id].next != 0 || _rank[id].prev != 0 || _best[pay_gem][buy_gem] == id);
@@ -1101,7 +1101,7 @@ contract MatchingMarket is MatchingEvents, ExpiringMarket, DSNote {
             _near[id] = 0;              //delete order from unsorted order list
             return true;
         }
-        while (uid &gt; 0 &amp;&amp; uid != id) {  //find offer in unsorted order list
+        while (uid > 0 && uid != id) {  //find offer in unsorted order list
             pre = uid;
             uid = _near[uid];
         }

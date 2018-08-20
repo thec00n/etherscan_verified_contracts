@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -86,9 +86,9 @@ contract Ownable {
 
 
 contract hasHolders {
-    mapping(address =&gt; uint) private holdersId;
+    mapping(address => uint) private holdersId;
     // holder id starts at 1
-    mapping(uint =&gt; address) public holders;
+    mapping(uint => address) public holders;
     uint public holdersCount = 0;
 
     event AddHolder(address indexed holder, uint index);
@@ -109,7 +109,7 @@ contract hasHolders {
     // delete token holder
     function _delHolder(address _holder) internal returns (bool){
         uint id = holdersId[_holder];
-        if (id != 0 &amp;&amp; holdersCount &gt; 0) {
+        if (id != 0 && holdersCount > 0) {
             //replace with last
             holders[id] = holders[holdersCount];
             // delete Holder element
@@ -126,13 +126,13 @@ contract hasHolders {
 
 contract Force is Ownable, hasHolders {
     using SafeMath for uint;
-    string public name = &quot;Force&quot;;
-    string public symbol = &quot;4TH&quot;;
+    string public name = "Force";
+    string public symbol = "4TH";
     uint8 public decimals = 0;
     uint public totalSupply = 100000000;
 
-    mapping(address =&gt; uint) private balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
+    mapping(address => uint) private balances;
+    mapping(address => mapping(address => uint)) private allowed;
 
     string public information; // info
 
@@ -158,8 +158,8 @@ contract Force is Ownable, hasHolders {
     */
     function _transfer(address _from, address _to, uint _value) internal returns (bool){
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(balances[_from] &gt;= _value);
+        require(_value > 0);
+        require(balances[_from] >= _value);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[_from] = balances[_from].sub(_value);
@@ -197,7 +197,7 @@ contract Force is Ownable, hasHolders {
      * @dev Transfer tokens from one address to another
      */
     function transferFrom(address _from, address _to, uint _value) external returns (bool) {
-        require(_value &lt;= allowed[_from][_to]);
+        require(_value <= allowed[_from][_to]);
         allowed[_from][_to] = allowed[_from][_to].sub(_value);
         return _transfer(_from, _to, _value);
     }
@@ -233,7 +233,7 @@ contract Force is Ownable, hasHolders {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) external returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -243,7 +243,7 @@ contract Force is Ownable, hasHolders {
     }
 
     function mint(address _to, uint _amount) external onlyDAO returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);

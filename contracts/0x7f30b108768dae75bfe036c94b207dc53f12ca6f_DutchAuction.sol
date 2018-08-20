@@ -8,7 +8,7 @@ contract Token {
     function transferFrom(address from, address to, uint256 value) returns (bool success);
     function approve(address spender, uint256 value) returns (bool success);
 
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions.
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions.
     //function totalSupply() constant returns (uint256 supply) {};
     function balanceOf(address owner) constant returns (uint256 balance);
     function allowance(address owner, address spender) constant returns (uint256 remaining);
@@ -42,7 +42,7 @@ contract DutchAuction {
     uint public endTime;
     uint public totalReceived;
     uint public finalPrice;
-    mapping (address =&gt; uint) public bids;
+    mapping (address => uint) public bids;
     Stages public stage;
     
     // Bidder whitelist. Entries in the array are whitelisted addresses
@@ -50,7 +50,7 @@ contract DutchAuction {
     // the key. 
     
     address[] public bidderWhitelist; // allows iteration over whitelisted addresses
-    mapping (address =&gt; uint ) public whitelistIndexMap;  // allows fast address lookup
+    mapping (address => uint ) public whitelistIndexMap;  // allows fast address lookup
 
     /*
      *  Enums
@@ -90,9 +90,9 @@ contract DutchAuction {
     }
 
     modifier timedTransitions() {
-        if (stage == Stages.AuctionStarted &amp;&amp; calcTokenPrice() &lt;= calcStopPrice())
+        if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice())
             finalizeAuction();
-        if (stage == Stages.AuctionEnded &amp;&amp; now &gt; endTime + WAITING_PERIOD)
+        if (stage == Stages.AuctionEnded && now > endTime + WAITING_PERIOD)
             stage = Stages.TradingStarted;
         _;
     }
@@ -118,7 +118,7 @@ contract DutchAuction {
         stage = Stages.AuctionDeployed;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param _virtuePlayerPoints token contract address.
     function setup(address _virtuePlayerPoints)
         public
@@ -158,7 +158,7 @@ contract DutchAuction {
         atStage(Stages.AuctionSetUp)
     {
         require(_bidderAddrs.length != 0);
-        for(uint idx = 0; idx&lt;_bidderAddrs.length; idx++) {
+        for(uint idx = 0; idx<_bidderAddrs.length; idx++) {
             addToWhitelist(_bidderAddrs[idx]);
         }
     }
@@ -195,7 +195,7 @@ contract DutchAuction {
         returns (uint)        
     {
         uint count = 0;
-        for (uint i = 0; i&lt; bidderWhitelist.length; i++) {
+        for (uint i = 0; i< bidderWhitelist.length; i++) {
             if (bidderWhitelist[i] != 0)
                 count++;
         }
@@ -216,23 +216,23 @@ contract DutchAuction {
         uint addrCount = whitelistCount();
         if (_count == 0)
             _count = addrCount; 
-        if (_startIdx &gt;= addrCount) {
+        if (_startIdx >= addrCount) {
             _startIdx = 0;
             _count = 0;
-        } else if (_startIdx + _count &gt; addrCount) {
+        } else if (_startIdx + _count > addrCount) {
             _count = addrCount - _startIdx;        
         }
 
         address[] memory results = new address[](_count);
         // skip to startIdx
         uint dynArrayIdx = 0; 
-        while (_startIdx &gt; 0) {
+        while (_startIdx > 0) {
             if (bidderWhitelist[dynArrayIdx++] != 0)
                 _startIdx--;  
         }   
         // copy into results
         uint resultsIdx = 0; 
-        while (resultsIdx &lt; _count) {
+        while (resultsIdx < _count) {
             address addr = bidderWhitelist[dynArrayIdx++];
             if (addr != 0)
                 results[resultsIdx++] = addr;      
@@ -304,10 +304,10 @@ contract DutchAuction {
         // Prevent that more than 90% of tokens are sold. Only relevant if cap not reached.
         uint maxWei = (MAX_TOKENS_SOLD / 10**18) * calcTokenPrice() - totalReceived;
         uint maxWeiBasedOnTotalReceived = ceiling - totalReceived;
-        if (maxWeiBasedOnTotalReceived &lt; maxWei)
+        if (maxWeiBasedOnTotalReceived < maxWei)
             maxWei = maxWeiBasedOnTotalReceived;
         // Only invest maximum possible amount.
-        if (amount &gt; maxWei) {
+        if (amount > maxWei) {
             amount = maxWei;
             // Send change back to receiver address. In case of a ShapeShift bid the user receives the change back directly.
             receiver.transfer(msg.value - amount); // throws on failure

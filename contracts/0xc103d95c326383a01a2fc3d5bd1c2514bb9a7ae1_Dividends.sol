@@ -6,7 +6,7 @@ pragma solidity ^0.4.21;
 // It is suggested you do withdraw once in a while. If someone still finds an attack after this fixed contrat 
 // they are unable the steal any of your withdrawn eth. Withdrawing does not sell your tokens!
 // UI: etherguy.surge.sh/dividend.html
-// Made by EtherGuy, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a6b7aba6b1a4b6ba83aea2aaafeda0acae">[email&#160;protected]</a> 
+// Made by EtherGuy, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a6b7aba6b1a4b6ba83aea2aaafeda0acae">[email protected]</a> 
 // Version 2 of contract. Exploit(s) found by ccashwell in v1, thanks for reporting them!
 
 
@@ -25,11 +25,11 @@ contract Dividends{
     
     bool public StopSell=false; // in case aonther bug is found, stop selling so it is easier to give everyone their tokens back. 
     
-    mapping (address =&gt; uint256) public MyTokens;
-    mapping (address =&gt; uint256) public DividendCollectSince;
+    mapping (address => uint256) public MyTokens;
+    mapping (address => uint256) public DividendCollectSince;
     
     // TKNS / PRICE 
-    mapping(address =&gt; uint256[2]) public SellOrder;
+    mapping(address => uint256[2]) public SellOrder;
     
     // web 
     // returns tokens + price (in wei)
@@ -54,7 +54,7 @@ contract Dividends{
         return (address(this).balance);
     }
     
-    // &gt;MINT IT
+    // >MINT IT
     function Dividends() public {
         dev = msg.sender;
         // EG
@@ -109,16 +109,16 @@ contract Dividends{
     event Sold(address Buyer, address Seller, uint256 price, uint256 tokens);
     // price_max anti-scam arg 
     function Buy(address who, uint256 price_max) public payable {
-       // require(msg.value &gt;= (1 szabo)); // normal amounts pls 
+       // require(msg.value >= (1 szabo)); // normal amounts pls 
         // lookup order by addr 
         require(!StopSell);
-        require(who!=msg.sender &amp;&amp; who!=tx.origin);
+        require(who!=msg.sender && who!=tx.origin);
         uint256[2] storage order = SellOrder[who];
         uint256 amt_available = order[0];
         uint256 price = order[1];
         
         // only buy for certain price 
-        require(price &lt;= price_max);
+        require(price <= price_max);
         
         uint256 excess = 0;
         
@@ -131,7 +131,7 @@ contract Dividends{
         uint256 max = mul(amt_available, price); 
         uint256 currval = msg.value;
         // more than max buy value 
-        if (currval &gt; max){
+        if (currval > max){
             excess = (currval-max);
             currval = max;
         }
@@ -155,7 +155,7 @@ contract Dividends{
         
         // the person with these tokens will also receive dividend over this buy order (this.balance)
         // however the excess is removed, see the excess transfer above 
-     //   if (msg.value &gt; (excess+currval+fee)){
+     //   if (msg.value > (excess+currval+fee)){
       //      msg.sender.transfer(msg.value-excess-currval-fee);
      //   }
 
@@ -174,13 +174,13 @@ contract Dividends{
        
         dev.transfer(fee);
         who.transfer(currval-fee);
-        if ((excess) &gt; 0){
+        if ((excess) > 0){
             msg.sender.transfer(excess);
         }
         // call withdraw with tokens before data change 
         _withdraw(who, MyTokens[who]+take);
         //DividendCollectSince[msg.sender] = (address(this).balance) + TotalPaid;
-        if (sub(MyTokens[msg.sender],take) &gt; 0){
+        if (sub(MyTokens[msg.sender],take) > 0){
             _withdraw(msg.sender,MyTokens[msg.sender]-take);    
         }
         else{
@@ -202,7 +202,7 @@ contract Dividends{
     function _withdraw(address who, uint256 amt) internal{
         // withdraws from amt. 
         // (amt not used in current code, always same value)
-       // if (MyTokens[who] &lt; amt){
+       // if (MyTokens[who] < amt){
         //    revert(); // ??? security check 
        // }
         
@@ -220,7 +220,7 @@ contract Dividends{
     event SellOrderPlaced(address who, uint256 amt, uint256 price);
     function PlaceSellOrder(uint256 amt, uint256 price) public {
         // replaces old order 
-        if (amt &gt; MyTokens[msg.sender]){
+        if (amt > MyTokens[msg.sender]){
             revert(); // ?? more sell than you got 
         }
         SellOrder[msg.sender] = [amt,price];
@@ -228,7 +228,7 @@ contract Dividends{
     }
     
     function ChangeTax(uint16 amt) public {
-        require (amt &lt;= 2500);
+        require (amt <= 2500);
         require(msg.sender == dev);
         Tax=amt;
     }
@@ -241,7 +241,7 @@ contract Dividends{
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     } 
     

@@ -3,9 +3,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="413320282f38012d283724323520336f222e2c">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="52183d3c3c2b7c1427123e3b2437212633207c313d3f">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="413320282f38012d283724323520336f222e2c">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="52183d3c3c2b7c1427123e3b2437212633207c313d3f">[email protected]</a>
 /*                 
 /* ==================================================================== */
 
@@ -29,9 +29,9 @@ contract CaptainKitties {
   KittyInterface kittyContract;
   KittyTokenInterface kittyToken;
   /// @dev Trust contract
-  mapping (address =&gt; bool) actionContracts;
-  mapping (address =&gt; uint256) kittyToCount;
-  mapping (address =&gt; bool) kittyGetOrNot;
+  mapping (address => bool) actionContracts;
+  mapping (address => uint256) kittyToCount;
+  mapping (address => bool) kittyGetOrNot;
  
 
   function CaptainKitties() public {
@@ -53,13 +53,13 @@ contract CaptainKitties {
   function createKitties() external payable {
     uint256 kittycount = kittyContract.balanceOf(msg.sender);
     require(kittyGetOrNot[msg.sender] == false);
-    if (kittycount&gt;=9) {
+    if (kittycount>=9) {
       kittycount=9;
     }
-    if (kittycount&gt;0 &amp;&amp; kittyToCount[msg.sender]==0) {
+    if (kittycount>0 && kittyToCount[msg.sender]==0) {
       kittyToCount[msg.sender] = kittycount;
       kittyGetOrNot[msg.sender] = true;
-      for (uint i=0;i&lt;kittycount;i++) {
+      for (uint i=0;i<kittycount;i++) {
         kittyToken.CreateKittyToken(msg.sender,0, 1);
       }
       //event

@@ -18,13 +18,13 @@ contract IContractFeatures {
     Features can be only enabled/disabled by the contract they are defined for.
 
     Features should be defined by each contract type as bit flags, e.g. -
-    uint256 public constant FEATURE1 = 1 &lt;&lt; 0;
-    uint256 public constant FEATURE2 = 1 &lt;&lt; 1;
-    uint256 public constant FEATURE3 = 1 &lt;&lt; 2;
+    uint256 public constant FEATURE1 = 1 << 0;
+    uint256 public constant FEATURE2 = 1 << 1;
+    uint256 public constant FEATURE3 = 1 << 2;
     ...
 */
 contract ContractFeatures is IContractFeatures {
-    mapping (address =&gt; uint256) private featureFlags;
+    mapping (address => uint256) private featureFlags;
 
     event FeaturesAddition(address indexed _address, uint256 _features);
     event FeaturesRemoval(address indexed _address, uint256 _features);
@@ -44,7 +44,7 @@ contract ContractFeatures is IContractFeatures {
         @return true if the contract supports the feature(s), false if not
     */
     function isSupported(address _contract, uint256 _features) public view returns (bool) {
-        return (featureFlags[_contract] &amp; _features) == _features;
+        return (featureFlags[_contract] & _features) == _features;
     }
 
     /**
@@ -65,7 +65,7 @@ contract ContractFeatures is IContractFeatures {
             if (!isSupported(msg.sender, _features))
                 return;
 
-            featureFlags[msg.sender] &amp;= ~_features;
+            featureFlags[msg.sender] &= ~_features;
 
             emit FeaturesRemoval(msg.sender, _features);
         }

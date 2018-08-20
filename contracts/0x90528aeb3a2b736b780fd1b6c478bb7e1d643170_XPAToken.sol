@@ -11,12 +11,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -66,7 +66,7 @@ contract Token is owned {
 contract StandardToken is SafeMath, Token {
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -78,7 +78,7 @@ contract StandardToken is SafeMath, Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -106,17 +106,17 @@ contract StandardToken is SafeMath, Token {
     }
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract XPAToken is StandardToken {
 
     // metadata
-    string public constant name = &quot;XPlay Token&quot;;
-    string public constant symbol = &quot;XPA&quot;;
+    string public constant name = "XPlay Token";
+    string public constant symbol = "XPA";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address of ETH for XPlay Ltd.
@@ -155,36 +155,36 @@ contract XPAToken is StandardToken {
 
     function () payable {
         assert(!isFinalized);
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt; fundingEndBlock);
-        require(msg.value &gt; 0);
+        require(block.number >= fundingStartBlock);
+        require(block.number < fundingEndBlock);
+        require(msg.value > 0);
 
-        uint256 tokens = safeMult(msg.value, tokenExchangeRate);    // check that we&#39;re not over totals
+        uint256 tokens = safeMult(msg.value, tokenExchangeRate);    // check that we're not over totals
         crowdsaleSupply = safeAdd(crowdsaleSupply, tokens);
 
         // return money if something goes wrong
-        require(tokenCrowdsaleCap &gt;= crowdsaleSupply);
+        require(tokenCrowdsaleCap >= crowdsaleSupply);
 
         balances[msg.sender] += tokens;     // add amount of XPA to sender
-        balances[xpaFundDeposit] = safeSub(balances[xpaFundDeposit], tokens); // subtracts amount from XPlay&#39;s balance
+        balances[xpaFundDeposit] = safeSub(balances[xpaFundDeposit], tokens); // subtracts amount from XPlay's balance
         CreateXPA(msg.sender, tokens);      // logs token creation
 
     }
     /// @dev Accepts ether and creates new XPA tokens.
     function createTokens() payable external {
         assert(!isFinalized);
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt; fundingEndBlock);
-        require(msg.value &gt; 0);
+        require(block.number >= fundingStartBlock);
+        require(block.number < fundingEndBlock);
+        require(msg.value > 0);
 
-        uint256 tokens = safeMult(msg.value, tokenExchangeRate);    // check that we&#39;re not over totals
+        uint256 tokens = safeMult(msg.value, tokenExchangeRate);    // check that we're not over totals
         crowdsaleSupply = safeAdd(crowdsaleSupply, tokens);
 
         // return money if something goes wrong
-        require(tokenCrowdsaleCap &gt;= crowdsaleSupply);
+        require(tokenCrowdsaleCap >= crowdsaleSupply);
 
         balances[msg.sender] += tokens;     // add amount of XPA to sender
-        balances[xpaFundDeposit] = safeSub(balances[xpaFundDeposit], tokens); // subtracts amount from XPlay&#39;s balance
+        balances[xpaFundDeposit] = safeSub(balances[xpaFundDeposit], tokens); // subtracts amount from XPlay's balance
         CreateXPA(msg.sender, tokens);      // logs token creation
     }
 
@@ -204,7 +204,7 @@ contract XPAToken is StandardToken {
         uint256 _fundingStartBlock,
         uint256 _fundingEndBlock) onlyOwner external 
     {
-        assert(block.number &lt; fundingStartBlock);
+        assert(block.number < fundingStartBlock);
         assert(!isFinalized);
       
         // update system parameters

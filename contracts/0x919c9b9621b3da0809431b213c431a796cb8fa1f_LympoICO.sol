@@ -20,13 +20,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -64,7 +64,7 @@ contract LympoICO {
     // How much has been raised by crowdale (in ETH)
     uint public amountRaised;
     // The balances (in ETH) of all token holders
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     // Indicates if the crowdsale has been ended already
     bool public crowdsaleEnded = false;
     // Tokens will be transfered from this address
@@ -90,7 +90,7 @@ contract LympoICO {
             exchange(msg.sender);
     }
     
-    // Make an exchanegment. Only callable if the crowdsale started and hasn&#39;t been ended, also the maxGoal wasn&#39;t reached yet.
+    // Make an exchanegment. Only callable if the crowdsale started and hasn't been ended, also the maxGoal wasn't reached yet.
     // The current token price is looked up by available amount. Bought tokens is transfered to the receiver.
     // The sent value is directly forwarded to a safe wallet.
     function exchange(address receiver) payable {
@@ -98,22 +98,22 @@ contract LympoICO {
         uint price = getPrice();
         uint numTokens = amount.mul(price);
 
-        bool isPreICO = (now &gt;= pre_start &amp;&amp; now &lt;= pre_end);
-        bool isICO = (now &gt;= start &amp;&amp; now &lt;= end);
+        bool isPreICO = (now >= pre_start && now <= pre_end);
+        bool isICO = (now >= start && now <= end);
 
         require(isPreICO || isICO);
-        require(numTokens &gt; 0);
+        require(numTokens > 0);
         if (isPreICO)
         {
-            require(!crowdsaleEnded &amp;&amp; pre_tokensSold.add(numTokens) &lt;= pre_maxGoal);
-            if (pre_tokensSold &lt; pre_amount_stages[0])
-                require(numTokens &lt;= 6000000e18); // max threshold for pre-ICO: 6mil LYM tokens for stage-I
+            require(!crowdsaleEnded && pre_tokensSold.add(numTokens) <= pre_maxGoal);
+            if (pre_tokensSold < pre_amount_stages[0])
+                require(numTokens <= 6000000e18); // max threshold for pre-ICO: 6mil LYM tokens for stage-I
             else
-                require(numTokens &lt;= 12500000e18); // max threshold for pre-ICO: 12.5mil LYM tokens for stage-II
+                require(numTokens <= 12500000e18); // max threshold for pre-ICO: 12.5mil LYM tokens for stage-II
         }
         if (isICO)
         {
-            require(!crowdsaleEnded &amp;&amp; tokensSold.add(numTokens) &lt;= maxGoal);
+            require(!crowdsaleEnded && tokensSold.add(numTokens) <= maxGoal);
         }
 
         wallet.transfer(amount);
@@ -134,10 +134,10 @@ contract LympoICO {
     // Looks up the current token price
     function getPrice() constant returns (uint price) {
         // pre-ICO prices
-        if (now &gt;= pre_start &amp;&amp; now &lt;= pre_end)
+        if (now >= pre_start && now <= pre_end)
         {
-            for(uint i = 0; i &lt; pre_amount_stages.length; i++) {
-                if(pre_tokensSold &lt; pre_amount_stages[i])
+            for(uint i = 0; i < pre_amount_stages.length; i++) {
+                if(pre_tokensSold < pre_amount_stages[i])
                     return pre_prices[i];
             }
             return pre_prices[pre_prices.length-1];
@@ -146,11 +146,11 @@ contract LympoICO {
         return prices[prices.length-1];
     }
 
-    modifier afterDeadline() { if (now &gt;= end) _; }
+    modifier afterDeadline() { if (now >= end) _; }
 
     // Checks if the goal or time limit has been reached and ends the campaign
     function checkGoalReached() afterDeadline {
-        if (pre_tokensSold.add(tokensSold) &gt;= fundingGoal){
+        if (pre_tokensSold.add(tokensSold) >= fundingGoal){
             tokenReward.burn(); // Burn remaining tokens but the reserved ones
             GoalReached(tokenOwner, amountRaised);
         }
@@ -161,9 +161,9 @@ contract LympoICO {
     // Only works after funds have been returned from the wallet.
     function safeWithdrawal() afterDeadline {
         uint amount = balances[msg.sender];
-        if (address(this).balance &gt;= amount) {
+        if (address(this).balance >= amount) {
             balances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 msg.sender.transfer(amount);
                 FundTransfer(msg.sender, amount, false, amountRaised);
             }

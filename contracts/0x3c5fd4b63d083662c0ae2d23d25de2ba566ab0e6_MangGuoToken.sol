@@ -8,20 +8,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -71,9 +71,9 @@ contract MangGuoToken is ERC20,Ownable {
 	string public symbol;
 	uint8 public decimals;
 	uint256 public initial_supply;
-	mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-	mapping (address =&gt; ItemOption[]) toMapOption;
+	mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint256)) allowed;
+	mapping (address => ItemOption[]) toMapOption;
 	
 	//airdrop params
     address public dropAddress;
@@ -103,9 +103,9 @@ contract MangGuoToken is ERC20,Ownable {
 		require(_to != address(0));
 		amount = 0;
 		uint256 nowtime = now;
-		for(uint256 i = 0; i &lt; toMapOption[_to].length; i++) {
-			require(toMapOption[_to][i].releaseAmount &gt; 0);
-			if(nowtime &gt;= toMapOption[_to][i].releaseTime) {
+		for(uint256 i = 0; i < toMapOption[_to].length; i++) {
+			require(toMapOption[_to][i].releaseAmount > 0);
+			if(nowtime >= toMapOption[_to][i].releaseTime) {
 				amount = amount.add(toMapOption[_to][i].releaseAmount);
 			}
 		}
@@ -119,9 +119,9 @@ contract MangGuoToken is ERC20,Ownable {
 	function itemTransfer(address _to) public returns (bool success) {
 		require(_to != address(0));
 		uint256 nowtime = now;
-		for(uint256 i = 0; i &lt; toMapOption[_to].length; i++) {
-			require(toMapOption[_to][i].releaseAmount &gt;= 0);
-			if(nowtime &gt;= toMapOption[_to][i].releaseTime &amp;&amp; balances[_to] + toMapOption[_to][i].releaseAmount &gt; balances[_to]) {
+		for(uint256 i = 0; i < toMapOption[_to].length; i++) {
+			require(toMapOption[_to][i].releaseAmount >= 0);
+			if(nowtime >= toMapOption[_to][i].releaseTime && balances[_to] + toMapOption[_to][i].releaseAmount > balances[_to]) {
 				balances[_to] = balances[_to].add(toMapOption[_to][i].releaseAmount);
 				toMapOption[_to][i].releaseAmount = 0;
 			}
@@ -131,7 +131,7 @@ contract MangGuoToken is ERC20,Ownable {
 	
 	function transfer(address _to,uint _value) public returns (bool success) {
 		itemTransfer(_to);
-		if(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]){
+		if(balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]){
 			balances[msg.sender] = balances[msg.sender].sub(_value);
 			balances[_to] = balances[_to].add(_value);
 			Transfer(msg.sender,_to,_value);
@@ -143,9 +143,9 @@ contract MangGuoToken is ERC20,Ownable {
 	
 	function transferFrom(address _from,address _to,uint _value) public returns (bool success) {
 		itemTransfer(_from);
-		if(balances[_from] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+		if(balances[_from] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
 			if(_from != msg.sender) {
-				require(allowed[_from][msg.sender] &gt; _value);
+				require(allowed[_from][msg.sender] > _value);
 				allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 			}
 			balances[_from] = balances[_from].sub(_value);
@@ -169,7 +169,7 @@ contract MangGuoToken is ERC20,Ownable {
 	
 	function setItemOption(address _to, uint256 _amount, uint256 _releaseTime) public returns (bool success) {
 		require(_to != address(0));
-		if(_amount &gt; 0 &amp;&amp; balances[msg.sender].sub(_amount) &gt;= 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]) {
+		if(_amount > 0 && balances[msg.sender].sub(_amount) >= 0 && balances[_to].add(_amount) > balances[_to]) {
 			balances[msg.sender] = balances[msg.sender].sub(_amount);
 			//Transfer(msg.sender, to, _amount);
 			toMapOption[_to].push(ItemOption(_amount, _releaseTime));
@@ -180,10 +180,10 @@ contract MangGuoToken is ERC20,Ownable {
 	
 	function setItemOptions(address _to, uint256 _amount, uint256 _startTime, uint8 _count) public returns (bool success) {
 		require(_to != address(0));
-		require(_amount &gt; 0);
-		require(_count &gt; 0);
+		require(_amount > 0);
+		require(_count > 0);
 		uint256 releaseTime = _startTime;
-		for(uint8 i = 0; i &lt; _count; i++) {
+		for(uint8 i = 0; i < _count; i++) {
 			releaseTime = releaseTime.add(86400*30);
 			setItemOption(_to, _amount, releaseTime);
 		}
@@ -191,7 +191,7 @@ contract MangGuoToken is ERC20,Ownable {
 	}
 	
 	function resetAirDrop(uint256 _dropAmount, uint256 _dropCount) public onlyOwner returns (bool success) {
-		if(_dropAmount &gt; 0 &amp;&amp; _dropCount &gt; 0) {
+		if(_dropAmount > 0 && _dropCount > 0) {
 			dropAmount = _dropAmount;
 			dropCount = _dropCount;
 			dropOffset = 0;
@@ -207,17 +207,17 @@ contract MangGuoToken is ERC20,Ownable {
 	function airDrop() payable public {
 		require(msg.value == 0 ether);
 		
-		if(balances[msg.sender] == 0 &amp;&amp; dropCount &gt; 0) {
-			if(dropCount &gt; dropOffset) {
+		if(balances[msg.sender] == 0 && dropCount > 0) {
+			if(dropCount > dropOffset) {
 				if(dropAddress != address(0)) {
-					if(balances[dropAddress] &gt;= dropAmount &amp;&amp; balances[msg.sender] + dropAmount &gt; balances[msg.sender]) {
+					if(balances[dropAddress] >= dropAmount && balances[msg.sender] + dropAmount > balances[msg.sender]) {
 						balances[dropAddress] = balances[dropAddress].sub(dropAmount);
 						balances[msg.sender] = balances[msg.sender].add(dropAmount);
 						dropOffset++;
 						Transfer(dropAddress, msg.sender, dropAmount);
 					}
 				} else {
-					if(balances[owner] &gt;= dropAmount &amp;&amp; balances[msg.sender] + dropAmount &gt; balances[msg.sender]) {
+					if(balances[owner] >= dropAmount && balances[msg.sender] + dropAmount > balances[msg.sender]) {
 						balances[owner] = balances[owner].sub(dropAmount);
 						balances[msg.sender] = balances[msg.sender].add(dropAmount);
 						dropOffset++;

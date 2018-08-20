@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -51,7 +51,7 @@ contract LoggedERC20 is Ownable {
     }
 
     /* Public variables of the token */
-    string public standard = &#39;LogValueBlockToken 0.1&#39;;
+    string public standard = 'LogValueBlockToken 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -62,13 +62,13 @@ contract LoggedERC20 is Ownable {
     uint256 public creationBlock;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; LogValueBlock[]) public loggedBalances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => LogValueBlock[]) public loggedBalances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -106,11 +106,11 @@ contract LoggedERC20 is Ownable {
 
         LogValueBlock memory prevLogValueBlock;
 
-        for(uint256 i = 0; i &lt; checkpoints.length; i++) {
+        for(uint256 i = 0; i < checkpoints.length; i++) {
 
             LogValueBlock memory checkpoint = checkpoints[i];
 
-            if(checkpoint.block &gt; block) {
+            if(checkpoint.block > block) {
                 return prevLogValueBlock.value;
             }
 
@@ -144,11 +144,11 @@ contract LoggedERC20 is Ownable {
             return false;
         }
 
-        if(balanceFrom &lt; value) {
+        if(balanceFrom < value) {
             return false;
         }
 
-        if(balanceTo + value &lt;= balanceTo) {
+        if(balanceTo + value <= balanceTo) {
             return false;
         }
 
@@ -198,7 +198,7 @@ contract LoggedERC20 is Ownable {
             return false;
         }
 
-        if(allowance[_from][msg.sender] &lt; _value) {
+        if(allowance[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -232,13 +232,13 @@ contract LoggedReward is Ownable, LoggedERC20 {
 
     bool recycled;
 
-    mapping (address =&gt; bool) claimed;
+    mapping (address => bool) claimed;
     }
 
     /* variables */
     Reward [] public rewards;
 
-    mapping (address =&gt; uint256) rewardsClaimed;
+    mapping (address => uint256) rewardsClaimed;
 
     /* Events */
     event RewardTransfered(uint256 id, address indexed _address, uint256 _block, uint256 _amount, uint256 _totalSupply);
@@ -259,7 +259,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
 
     function addReward(uint256 recycleTime) payable onlyOwner {
         require(msg.sender == owner);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint256 id = rewards.length;
         uint256 _totalSupply = valueAt(loggedTotalSupply, block.number);
@@ -286,7 +286,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
     }
 
     function claimReward(uint256 rewardId) public returns (bool) {
-        if(rewards.length - 1 &lt; rewardId) {
+        if(rewards.length - 1 < rewardId) {
             return false;
         }
 
@@ -300,7 +300,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
             return false;
         }
 
-        if(now &gt;= reward.time + reward.recycleTime) {
+        if(now >= reward.time + reward.recycleTime) {
             return false;
         }
 
@@ -316,7 +316,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
 
         reward.claimedAmount = reward.claimedAmount + claim;
 
-        if (claim &gt; 0) {
+        if (claim > 0) {
             claimedRewardHook(rewardId, msg.sender, claim);
 
             msg.sender.transfer(claim);
@@ -328,9 +328,9 @@ contract LoggedReward is Ownable, LoggedERC20 {
     }
 
     function claimRewards() public {
-        require(rewardsClaimed[msg.sender] &lt; rewards.length);
-        for (uint i = rewardsClaimed[msg.sender]; i &lt; rewards.length; i++) {
-            if ((rewards[i].claimed[msg.sender] == false) &amp;&amp; (rewards[i].recycled == false)) {
+        require(rewardsClaimed[msg.sender] < rewards.length);
+        for (uint i = rewardsClaimed[msg.sender]; i < rewards.length; i++) {
+            if ((rewards[i].claimed[msg.sender] == false) && (rewards[i].recycled == false)) {
                 rewardsClaimed[msg.sender] = i + 1;
                 claimReward(i);
             }
@@ -338,7 +338,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
     }
 
     function recycleReward(uint256 rewardId) public onlyOwner returns (bool success) {
-        if(rewards.length - 1 &lt; rewardId) {
+        if(rewards.length - 1 < rewardId) {
             return false;
         }
 
@@ -354,14 +354,14 @@ contract LoggedReward is Ownable, LoggedERC20 {
     }
 
     function refundUnclaimedEthers(uint256 rewardId) public onlyOwner returns (bool success) {
-        if(rewards.length - 1 &lt; rewardId) {
+        if(rewards.length - 1 < rewardId) {
             return false;
         }
 
         Reward storage reward = rewards[rewardId];
 
         if(reward.recycled == false) {
-            if(now &lt; reward.time + reward.recycleTime) {
+            if(now < reward.time + reward.recycleTime) {
                 return false;
             }
         }
@@ -370,7 +370,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
 
         reward.transferedBack = claimedBackAmount;
 
-        if(claimedBackAmount &gt; 0) {
+        if(claimedBackAmount > 0) {
             owner.transfer(claimedBackAmount);
 
             UnclaimedRewardTransfer(rewardId, claimedBackAmount);
@@ -383,7 +383,7 @@ contract LoggedReward is Ownable, LoggedERC20 {
 }
 
 /*
-    Smart contract with reward functionality &amp; erc20 compatible interface
+    Smart contract with reward functionality & erc20 compatible interface
 */
 contract Inonit is LoggedReward {
     /* events */
@@ -400,14 +400,14 @@ contract Inonit is LoggedReward {
     }
 
     function balanceOf(address _address) returns (uint256) {
-        if(rewards.length &gt; 0) {
+        if(rewards.length > 0) {
             Reward storage reward = rewards[0];
 
             if(reward.recycled) {
                 return 0;
             }
 
-            if(now &gt;= reward.time + reward.recycleTime) {
+            if(now >= reward.time + reward.recycleTime) {
                 return 0;
             }
         }

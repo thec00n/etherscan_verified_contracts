@@ -9,13 +9,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) pure internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -24,7 +24,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -157,17 +157,17 @@ contract Vesting is Ownable {
     function transferTeamTokens(address _recipient, uint _tokensToTransfer) external onlyOwner() {
 
         require(_recipient != 0);       
-        require(now &gt;= 1533081600);  // before Aug 1, 2018 00:00 GMT don&#39;t allow on distribution tokens to the team.
+        require(now >= 1533081600);  // before Aug 1, 2018 00:00 GMT don't allow on distribution tokens to the team.
 
-        require(dateProductCompleted &gt; 0);
-        if (now &lt; dateProductCompleted + 1 years)            // first year after product release
-            require(teamTokensCurrent.add(_tokensToTransfer) &lt;= (teamTokensInitial * 30) / 100);
-        else if (now &lt; dateProductCompleted + 2 years)       // second year after product release
-            require(teamTokensCurrent.add(_tokensToTransfer) &lt;= (teamTokensInitial * 60) / 100);
-        else if (now &lt; dateProductCompleted + 3 years)       // third year after product release
-            require(teamTokensCurrent.add(_tokensToTransfer) &lt;= (teamTokensInitial * 80) / 100);
+        require(dateProductCompleted > 0);
+        if (now < dateProductCompleted + 1 years)            // first year after product release
+            require(teamTokensCurrent.add(_tokensToTransfer) <= (teamTokensInitial * 30) / 100);
+        else if (now < dateProductCompleted + 2 years)       // second year after product release
+            require(teamTokensCurrent.add(_tokensToTransfer) <= (teamTokensInitial * 60) / 100);
+        else if (now < dateProductCompleted + 3 years)       // third year after product release
+            require(teamTokensCurrent.add(_tokensToTransfer) <= (teamTokensInitial * 80) / 100);
         else                                                 // fourth year after product release
-            require(teamTokensCurrent.add(_tokensToTransfer) &lt;= teamTokensInitial);
+            require(teamTokensCurrent.add(_tokensToTransfer) <= teamTokensInitial);
 
         teamTokensCurrent = teamTokensCurrent.add(_tokensToTransfer);  // update released token amount
         
@@ -183,14 +183,14 @@ contract Vesting is Ownable {
     function transferCompanyTokens(address _recipient, uint _tokensToTransfer) external onlyOwner() {
 
         require(_recipient != 0);
-        require(dateICOEnded &gt; 0);       
+        require(dateICOEnded > 0);       
 
-        if (now &lt; dateICOEnded + 1 years)   // first year
-            require(companyTokensCurrent.add(_tokensToTransfer) &lt;= (companyTokensInitial * 50) / 100);
-        else if (now &lt; dateICOEnded + 2 years) // second year
-            require(companyTokensCurrent.add(_tokensToTransfer) &lt;= (companyTokensInitial * 75) / 100);
+        if (now < dateICOEnded + 1 years)   // first year
+            require(companyTokensCurrent.add(_tokensToTransfer) <= (companyTokensInitial * 50) / 100);
+        else if (now < dateICOEnded + 2 years) // second year
+            require(companyTokensCurrent.add(_tokensToTransfer) <= (companyTokensInitial * 75) / 100);
         else                                    // third year                                                                                   
-            require(companyTokensCurrent.add(_tokensToTransfer) &lt;= companyTokensInitial);
+            require(companyTokensCurrent.add(_tokensToTransfer) <= companyTokensInitial);
 
         companyTokensCurrent = companyTokensCurrent.add(_tokensToTransfer);  // update released token amount
 
@@ -230,7 +230,7 @@ contract CrowdSale is  Pausable, Vesting {
     Step public currentStep;  // to move through campaigns and set default values
     uint public minCapTokens;  // minimum amount of tokens to raise for campaign to be successful
 
-    mapping(address =&gt; Backer) public backers; //backer list
+    mapping(address => Backer) public backers; //backer list
     address[] public backersIndex;  // to be able to iterate through backer list
     uint public maxCapEth;  // max cap eth
     uint public maxCapTokens; // max cap tokens
@@ -238,8 +238,8 @@ contract CrowdSale is  Pausable, Vesting {
     uint public refundCount;  // number of contributors receiving refunds
     uint public totalClaimed;  // total of tokens claimed
     uint public totalRefunded;  // total of tokens refunded
-    mapping(address =&gt; uint) public claimed; // tokens claimed by contributors
-    mapping(address =&gt; uint) public refunded; // tokens refunded to contributors
+    mapping(address => uint) public claimed; // tokens claimed by contributors
+    mapping(address => uint) public refunded; // tokens refunded to contributors
 
 
 
@@ -254,7 +254,7 @@ contract CrowdSale is  Pausable, Vesting {
 
     // @notice to verify if action is not performed out of the campaign range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock))
+        if ((block.number < startBlock) || (block.number > endBlock))
             revert();
         _;
     }
@@ -290,13 +290,13 @@ contract CrowdSale is  Pausable, Vesting {
         uint numOfBackersTwo;
         uint numOfBackersMain;
 
-        for (uint i = 0; i &lt; backersIndex.length; i++) {
+        for (uint i = 0; i < backersIndex.length; i++) {
             Backer storage backer = backers[backersIndex[i]];
-            if (backer.weiReceivedOne &gt; 0)
+            if (backer.weiReceivedOne > 0)
                 numOfBackersOne ++;
-            if (backer.weiReceivedTwo &gt; 0)
+            if (backer.weiReceivedTwo > 0)
                 numOfBackersTwo ++;
-            if (backer.weiReceivedMain &gt; 0)
+            if (backer.weiReceivedMain > 0)
                 numOfBackersMain ++;
             }
         return ( numOfBackersOne, numOfBackersTwo, numOfBackersMain, backersIndex.length);
@@ -317,7 +317,7 @@ contract CrowdSale is  Pausable, Vesting {
     // two decimals will be passed as next sets of digits. eg. $300.25 will be passed as 30025
     function setMainSale(uint _ratio) public onlyOwner() {
 
-        require(_ratio &gt; 0);
+        require(_ratio > 0);
         currentStep = Step.FundingMainSale;
         dollarPerEtherRatio = _ratio;
         maxCapTokens = 65e24;
@@ -344,7 +344,7 @@ contract CrowdSale is  Pausable, Vesting {
     // @param _returnPercentage {uint} percentage of return in respect to first presale. e.g 75% would be passed as 75
     function fundContract(uint _returnPercentage) external payable onlyOwner() {
 
-        require(_returnPercentage &gt; 0);
+        require(_returnPercentage > 0);
         require(msg.value == (ethReceivedPresaleOne.mul(_returnPercentage) / 100) + ethReceivedPresaleTwo + ethReceiveMainSale);
         returnPercentage = _returnPercentage;
         currentStep = Step.Refunding;
@@ -363,8 +363,8 @@ contract CrowdSale is  Pausable, Vesting {
     // @param _block  number of blocks representing duration
     function adjustDuration(uint _block) external onlyOwner() {
 
-        require(_block &lt;= 433440);  // 4.3&#215;60&#215;24&#215;70 days 
-        require(_block &gt; block.number.sub(startBlock)); // ensure that endBlock is not set in the past
+        require(_block <= 433440);  // 4.3×60×24×70 days 
+        require(_block > block.number.sub(startBlock)); // ensure that endBlock is not set in the past
         endBlock = startBlock.add(_block);
     }
 
@@ -378,25 +378,25 @@ contract CrowdSale is  Pausable, Vesting {
 
         require(whiteList.isWhiteListed(_contributor));  // ensure that user is whitelisted
         Backer storage backer = backers[_contributor];
-        require (msg.value &gt;= minInvestment);  // ensure that min contributions amount is met
+        require (msg.value >= minInvestment);  // ensure that min contributions amount is met
 
-        if (backer.weiReceivedOne == 0 &amp;&amp; backer.weiReceivedTwo == 0 &amp;&amp; backer.weiReceivedMain == 0)
+        if (backer.weiReceivedOne == 0 && backer.weiReceivedTwo == 0 && backer.weiReceivedMain == 0)
             backersIndex.push(_contributor);
 
         if (currentStep == Step.FundingPresaleOne) {          
             backer.weiReceivedOne = backer.weiReceivedOne.add(msg.value);
             ethReceivedPresaleOne = ethReceivedPresaleOne.add(msg.value); // Update the total Ether received in presale 1
-            require(ethReceivedPresaleOne &lt;= maxCapEth);  // ensure that max cap hasn&#39;t been reached
+            require(ethReceivedPresaleOne <= maxCapEth);  // ensure that max cap hasn't been reached
         }else if (currentStep == Step.FundingPresaleTwo) {           
             backer.weiReceivedTwo = backer.weiReceivedTwo.add(msg.value);
             ethReceivedPresaleTwo = ethReceivedPresaleTwo.add(msg.value);  // Update the total Ether received in presale 2
-            require(ethReceivedPresaleOne + ethReceivedPresaleTwo &lt;= maxCapEth);  // ensure that max cap hasn&#39;t been reached
+            require(ethReceivedPresaleOne + ethReceivedPresaleTwo <= maxCapEth);  // ensure that max cap hasn't been reached
         }else if (currentStep == Step.FundingMainSale) {
             backer.weiReceivedMain = backer.weiReceivedMain.add(msg.value);
             ethReceiveMainSale = ethReceiveMainSale.add(msg.value);  // Update the total Ether received in presale 2
             uint tokensToSend = dollarPerEtherRatio.mul(msg.value) / 62;  // calculate amount of tokens to send for this user 
             totalTokensSold += tokensToSend;
-            require(totalTokensSold &lt;= maxCapTokens);  // ensure that max cap hasn&#39;t been reached
+            require(totalTokensSold <= maxCapTokens);  // ensure that max cap hasn't been reached
         }
         multisig.transfer(msg.value);  // send money to multisignature wallet
 
@@ -413,8 +413,8 @@ contract CrowdSale is  Pausable, Vesting {
         require(currentStep == Step.FundingMainSale);
         // purchasing precise number of tokens might be impractical, thus subtract 1000 tokens so finalization is possible
         // near the end
-        require(block.number &gt;= endBlock || totalTokensSold &gt;= maxCapTokens.sub(1000));
-        require(totalTokensSold &gt;= minCapTokens);
+        require(block.number >= endBlock || totalTokensSold >= maxCapTokens.sub(1000));
+        require(totalTokensSold >= minCapTokens);
         
         companyTokensInitial += maxCapTokens - totalTokensSold; // allocate unsold tokens to the company        
         dateICOEnded = now;
@@ -430,9 +430,9 @@ contract CrowdSale is  Pausable, Vesting {
         Backer storage backerOld = backers[_contributorOld];
         Backer storage backerNew = backers[_contributorNew];
 
-        require(backerOld.weiReceivedOne &gt; 0 || backerOld.weiReceivedTwo &gt; 0 || backerOld.weiReceivedMain &gt; 0); // make sure that contribution has been made to the old address
-        require(backerNew.weiReceivedOne == 0 &amp;&amp; backerNew.weiReceivedTwo == 0 &amp;&amp; backerNew.weiReceivedMain == 0); // make sure that existing address is not used
-        require(backerOld.claimed == false &amp;&amp; backerOld.refunded == false);  // ensure that contributor hasn&#39;t be refunded or claimed the tokens yet
+        require(backerOld.weiReceivedOne > 0 || backerOld.weiReceivedTwo > 0 || backerOld.weiReceivedMain > 0); // make sure that contribution has been made to the old address
+        require(backerNew.weiReceivedOne == 0 && backerNew.weiReceivedTwo == 0 && backerNew.weiReceivedMain == 0); // make sure that existing address is not used
+        require(backerOld.claimed == false && backerOld.refunded == false);  // ensure that contributor hasn't be refunded or claimed the tokens yet
 
         // invalidate old address
         backerOld.claimed = true;
@@ -450,13 +450,13 @@ contract CrowdSale is  Pausable, Vesting {
     // @return true if successful
     function claimTokensForUser(address _backer) internal returns(bool) {        
 
-        require(dateICOEnded &gt; 0); // allow on claiming of tokens if ICO was successful             
+        require(dateICOEnded > 0); // allow on claiming of tokens if ICO was successful             
 
         Backer storage backer = backers[_backer];
 
-        require (!backer.refunded); // if refunded, don&#39;t allow to claim tokens
-        require (!backer.claimed); // if tokens claimed, don&#39;t allow to claim again
-        require (backer.weiReceivedOne &gt; 0 || backer.weiReceivedTwo &gt; 0 || backer.weiReceivedMain &gt; 0);   // only continue if there is any contribution
+        require (!backer.refunded); // if refunded, don't allow to claim tokens
+        require (!backer.claimed); // if tokens claimed, don't allow to claim again
+        require (backer.weiReceivedOne > 0 || backer.weiReceivedTwo > 0 || backer.weiReceivedMain > 0);   // only continue if there is any contribution
 
         claimCount++;
         uint tokensToSend = (dollarPerEtherRatio * backer.weiReceivedOne) / 48;  // determine amount of tokens to send from first presale
@@ -484,7 +484,7 @@ contract CrowdSale is  Pausable, Vesting {
     }
 
 
-    // @notice this function can be called by admin to claim user&#39;s token in case of difficulties
+    // @notice this function can be called by admin to claim user's token in case of difficulties
     // @param _backer {address} user address to claim tokens for
     function adminClaimTokenForUser(address _backer) external onlyOwner() {
         claimTokensForUser(_backer);
@@ -497,7 +497,7 @@ contract CrowdSale is  Pausable, Vesting {
     function refund() external {
 
         require(currentStep == Step.Refunding);                                                          
-        require(totalTokensSold &lt; maxCapTokens/2); // ensure that refund is impossible when more than half of the tokens are sold
+        require(totalTokensSold < maxCapTokens/2); // ensure that refund is impossible when more than half of the tokens are sold
 
         Backer storage backer = backers[msg.sender];
 
@@ -505,7 +505,7 @@ contract CrowdSale is  Pausable, Vesting {
         require (!backer.refunded); // check if user has been already refunded
 
         uint totalEtherReceived = ((backer.weiReceivedOne * returnPercentage) / 100) + backer.weiReceivedTwo + backer.weiReceivedMain;  // return only e.g. 75% from presale one.
-        assert(totalEtherReceived &gt; 0);
+        assert(totalEtherReceived > 0);
 
         backer.refunded = true; // mark contributor as refunded.
         totalRefunded += totalEtherReceived;
@@ -531,7 +531,7 @@ contract CrowdSale is  Pausable, Vesting {
         uint totalEtherReceived = backer.weiReceivedOne + backer.weiReceivedTwo + backer.weiReceivedMain;
 
         require(msg.value == totalEtherReceived); // ensure that exact amount is sent
-        assert(totalEtherReceived &gt; 0);
+        assert(totalEtherReceived > 0);
 
         //adjust amounts received
         ethReceivedPresaleOne -= backer.weiReceivedOne;
@@ -564,7 +564,7 @@ contract CrowdSale is  Pausable, Vesting {
 
     // @notice Failsafe token transfer
     function tokenDrain() external onlyOwner() {
-    if (block.number &gt; endBlock) {
+    if (block.number > endBlock) {
         if (!token.transfer(multisig, token.balanceOf(this)))
                 revert();
         }
@@ -583,7 +583,7 @@ contract Token is ERC20,  Ownable {
     string public name;
     string public symbol;
     uint8 public decimals; // How many decimals to show.
-    string public version = &quot;v0.1&quot;;
+    string public version = "v0.1";
     uint public totalSupply;
     uint public initialSupply;
     bool public locked;
@@ -594,12 +594,12 @@ contract Token is ERC20,  Ownable {
     address public authorized;
 
 
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
 
     // @notice tokens are locked during the ICO. Allow transfer of tokens after ICO.
     modifier onlyUnlocked() {
-        if (msg.sender != crowdSaleAddress &amp;&amp; locked)
+        if (msg.sender != crowdSaleAddress && locked)
             revert();
         _;
     }
@@ -607,7 +607,7 @@ contract Token is ERC20,  Ownable {
 
     // @Notice allow minting of tokens only by authorized users
     modifier onlyAuthorized() {
-        if (msg.sender != owner &amp;&amp; msg.sender != authorized )
+        if (msg.sender != owner && msg.sender != authorized )
             revert();
         _;
     }
@@ -623,8 +623,8 @@ contract Token is ERC20,  Ownable {
         locked = true;  // Lock the transfer function during the crowdsale
         initialSupply = 1e26;
         totalSupply = initialSupply;
-        name = &quot;Narrative&quot;; // Set the name for display purposes
-        symbol = &quot;NRV&quot;; // Set the symbol for display purposes
+        name = "Narrative"; // Set the name for display purposes
+        symbol = "NRV"; // Set the symbol for display purposes
         decimals = 18; // Amount of decimals for display purposes
         crowdSaleAddress = _crowdSaleAddress;
         balances[crowdSaleAddress] = initialSupply;
@@ -660,7 +660,7 @@ contract Token is ERC20,  Ownable {
         // Abort if not in Operational Migration state.
 
         require (migrationAgent != 0);
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         totalMigrated = totalMigrated.add(_value);
@@ -671,7 +671,7 @@ contract Token is ERC20,  Ownable {
     /// @notice Set address of migration target contract and enable migration
     /// process.
     /// @dev Required state: Operational Normal
-    /// @dev State transition: -&gt; Operational Migration
+    /// @dev State transition: -> Operational Migration
     /// @param _agent The address of the MigrationAgent contract
     function setMigrationAgent(address _agent)  external {
         // Abort if not in Operational Normal state.
@@ -692,7 +692,7 @@ contract Token is ERC20,  Ownable {
     // @param _mintedAmount {uint} amount of tokens to be minted
     // @return  {bool} true if successful
     function mint(address _target, uint256 _mintedAmount) public onlyAuthorized() returns(bool) {
-        assert(totalSupply.add(_mintedAmount) &lt;= 1975e23);  // ensure that max amount ever minted should not exceed 197.5 million tokens with 18 decimals
+        assert(totalSupply.add(_mintedAmount) <= 1975e23);  // ensure that max amount ever minted should not exceed 197.5 million tokens with 18 decimals
         balances[_target] = balances[_target].add(_mintedAmount);
         totalSupply = totalSupply.add(_mintedAmount);
         Transfer(0, _target, _mintedAmount);
@@ -706,7 +706,7 @@ contract Token is ERC20,  Ownable {
     function transfer(address _to, uint _value) public onlyUnlocked returns(bool) {
 
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -722,8 +722,8 @@ contract Token is ERC20,  Ownable {
     function transferFrom(address _from, address _to, uint256 _value) public onlyUnlocked returns(bool success) {
 
         require(_to != address(0));
-        require(balances[_from] &gt;= _value); // Check if the sender has enough
-        require(_value &lt;= allowed[_from][msg.sender]); // Check if allowed is greater or equal
+        require(balances[_from] >= _value); // Check if the sender has enough
+        require(_value <= allowed[_from][msg.sender]); // Check if allowed is greater or equal
         balances[_from] -= _value; // Subtract from the sender
         balances[_to] += _value; // Add the same to the recipient
         allowed[_from][msg.sender] -= _value;  // adjust allowed
@@ -743,7 +743,7 @@ contract Token is ERC20,  Ownable {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -777,7 +777,7 @@ contract Token is ERC20,  Ownable {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

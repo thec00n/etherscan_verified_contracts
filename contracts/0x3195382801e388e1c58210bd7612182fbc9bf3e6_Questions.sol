@@ -24,23 +24,23 @@ contract Questions {
     uint public resetVoteKindnessEvery = 5000;
     uint public minVoteWeightK = 1 finney;
     
-    mapping (uint =&gt; Question) public questions;
+    mapping (uint => Question) public questions;
     uint public currentQuestionId = 0;
     
-    // questionId =&gt; creator =&gt; rating
-    mapping (uint =&gt; mapping (address =&gt; Answer)) public answers;
+    // questionId => creator => rating
+    mapping (uint => mapping (address => Answer)) public answers;
     
-    // questionId =&gt; creator =&gt; voter =&gt; true
-    mapping (uint =&gt; mapping (address =&gt; mapping (address =&gt; bool))) public votes;
+    // questionId => creator => voter => true
+    mapping (uint => mapping (address => mapping (address => bool))) public votes;
     
-    // voter =&gt; kindness
-    mapping (address =&gt; int8) public voteKindness;
+    // voter => kindness
+    mapping (address => int8) public voteKindness;
     
-    // user =&gt; vote kindness reset
-    mapping (address =&gt; uint) public voteKindnessReset;
+    // user => vote kindness reset
+    mapping (address => uint) public voteKindnessReset;
     
-    // user =&gt; vote weight
-    mapping (address =&gt; int) public voteWeight;
+    // user => vote weight
+    mapping (address => int) public voteWeight;
     
     event FundTransfer(address backer, uint amount, bool isContribution);
     event PlaceQuestion(
@@ -69,12 +69,12 @@ contract Questions {
     }
     
     function setMinPaymentForAnswer(uint value) external onlyOwner {
-        require(value &lt; minPaymentForAnswer);
+        require(value < minPaymentForAnswer);
         minPaymentForAnswer = value;
     }
     
     function setMaxAbsKindness(int value) external onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
         maxAbsKindness = value;
     }
     
@@ -92,12 +92,12 @@ contract Questions {
     
     function safeAdd(uint a, uint b) private pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function safeSub(uint a, uint b) private pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
@@ -117,17 +117,17 @@ contract Questions {
     }
     
     function placeQuestion(uint paymentForAnswer, uint8 maxAnswers, uint minVoteWeight, string text) external payable {
-        require(maxAnswers &gt; 0 &amp;&amp; maxAnswers &lt;= 32);
+        require(maxAnswers > 0 && maxAnswers <= 32);
         require(msg.value == safeMul(paymentForAnswer, safeAdd(maxAnswers, 1)));
-        require(paymentForAnswer &gt;= safeAdd(minPaymentForAnswer, safeMul(minVoteWeight, minVoteWeightK)));
+        require(paymentForAnswer >= safeAdd(minPaymentForAnswer, safeMul(minVoteWeight, minVoteWeightK)));
         uint len = bytes(text).length;
-        require(len &gt; 0 &amp;&amp; len &lt;= 1024);
+        require(len > 0 && len <= 1024);
         
         uint realPaymentForAnswer = paymentForAnswer / 2;
         uint realPaymentForVote = realPaymentForAnswer / votesForAnswer;
         
         int minVoteWeightI = int(minVoteWeight);
-        require(minVoteWeightI &gt;= 0);
+        require(minVoteWeightI >= 0);
         
         questions[currentQuestionId] = Question({
             creator: msg.sender,
@@ -151,9 +151,9 @@ contract Questions {
         require(questions[questionId].creator != msg.sender);
         require(!answers[questionId][msg.sender].placed);
         uint len = bytes(text).length;
-        require(len &gt; 0 &amp;&amp; len &lt;= 1024);
-        require(questions[questionId].answerCount &lt; questions[questionId].maxAnswers);
-        require(voteWeight[msg.sender] &gt;= questions[questionId].minVoteWeight);
+        require(len > 0 && len <= 1024);
+        require(questions[questionId].answerCount < questions[questionId].maxAnswers);
+        require(voteWeight[msg.sender] >= questions[questionId].minVoteWeight);
         
         questions[questionId].answerCount++;
         answers[questionId][msg.sender] = Answer({
@@ -168,21 +168,21 @@ contract Questions {
         require(questions[questionId].creator != msg.sender);
         require(creator != msg.sender);
         require(answers[questionId][creator].placed);
-        require(answers[questionId][creator].votes &lt; votesForAnswer);
+        require(answers[questionId][creator].votes < votesForAnswer);
         require(!votes[questionId][creator][msg.sender]);
-        require(voteWeight[msg.sender] &gt; 0);
-        require(voteWeight[msg.sender] &gt;= questions[questionId].minVoteWeight);
+        require(voteWeight[msg.sender] > 0);
+        require(voteWeight[msg.sender] >= questions[questionId].minVoteWeight);
         
-        if (voteKindnessReset[msg.sender] + resetVoteKindnessEvery &lt;= block.number) {
+        if (voteKindnessReset[msg.sender] + resetVoteKindnessEvery <= block.number) {
             voteKindness[msg.sender] = 0;
             voteKindnessReset[msg.sender] = block.number;
         }
         
         if (isSpam) {
-            require(voteKindness[msg.sender] &gt; -maxAbsKindness);
+            require(voteKindness[msg.sender] > -maxAbsKindness);
             voteKindness[msg.sender]--;
         } else {
-            require(voteKindness[msg.sender] &lt; maxAbsKindness);
+            require(voteKindness[msg.sender] < maxAbsKindness);
             voteKindness[msg.sender]++;
         }
         
@@ -197,7 +197,7 @@ contract Questions {
         FundTransfer(msg.sender, payment, false);
         
         if (answers[questionId][creator].votes == votesForAnswer) {
-            if (answers[questionId][creator].rating &gt; 0) {
+            if (answers[questionId][creator].rating > 0) {
                 creator.transfer(questions[questionId].paymentForAnswer);
                 FundTransfer(creator, questions[questionId].paymentForAnswer, false);
                 

@@ -23,7 +23,7 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal constant returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
 
     return a - b;
   }
@@ -31,7 +31,7 @@ contract SafeMath {
   function safeAdd(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
 
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
 
     return c;
   }
@@ -61,7 +61,7 @@ contract Escrow is SafeMath, EtherReceiverInterface {
   uint public totalCollected; // total amount of wei collected
 
   modifier locked() {
-    require(block.number &gt;= lockUntil);
+    require(block.number >= lockUntil);
 
     _;
   }
@@ -74,9 +74,9 @@ contract Escrow is SafeMath, EtherReceiverInterface {
     project = _project;
   }
 
-  // Sends the funds collected to the addresses &quot;icofunding&quot; and &quot;project&quot;
+  // Sends the funds collected to the addresses "icofunding" and "project"
   // The ether is distributed following the formula below
-  // Only exeuted after &quot;lockUntil&quot;
+  // Only exeuted after "lockUntil"
   function withdraw() public locked {
     // Calculates the amount to send to each address
     uint fee = getFee(this.balance);
@@ -95,12 +95,12 @@ contract Escrow is SafeMath, EtherReceiverInterface {
     uint slice;
     uint aux;
 
-    for(uint i = 0; i &lt; 2; i++) {
+    for(uint i = 0; i < 2; i++) {
       aux = value;
-      if(value &gt; threshold[i+1])
+      if(value > threshold[i+1])
         aux = threshold[i+1];
 
-      if(threshold[i] &lt; aux) {
+      if(threshold[i] < aux) {
         slice = safeSub(aux, threshold[i]);
 
         fee = safeAdd(fee, safeDiv(safeMul(slice, rate[i]), 100));

@@ -4,8 +4,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract CrisCoin {
     // Public variables of the token
-    string public constant name = &quot;CrisCoin&quot;;
-    string public constant symbol = &quot;CSX&quot;;
+    string public constant name = "CrisCoin";
+    string public constant symbol = "CSX";
     uint8 public constant decimals = 18;
     uint256 public totalSupply;
     address public owner;
@@ -13,8 +13,8 @@ contract CrisCoin {
     
     uint256 initialSupply = 100000;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -33,15 +33,15 @@ contract CrisCoin {
     
     function createTokens() public payable
     {
-        require( msg.value &gt; 0 );
+        require( msg.value > 0 );
         
-        require( msg.value * RATE &gt; msg.value );
+        require( msg.value * RATE > msg.value );
         uint256 tokens = msg.value * RATE;
         
-        require( balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender] );
+        require( balanceOf[msg.sender] + tokens > balanceOf[msg.sender] );
         balanceOf[msg.sender] += tokens;
         
-        require( totalSupply + tokens &gt; totalSupply );
+        require( totalSupply + tokens > totalSupply );
         totalSupply += tokens;
         
         owner.transfer(msg.value);
@@ -50,8 +50,8 @@ contract CrisCoin {
     function _transfer(address _from, address _to, uint _value) internal 
     {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
@@ -67,7 +67,7 @@ contract CrisCoin {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) 
     {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -93,7 +93,7 @@ contract CrisCoin {
 
     function burn(uint256 _value) public returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
@@ -104,8 +104,8 @@ contract CrisCoin {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) 
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

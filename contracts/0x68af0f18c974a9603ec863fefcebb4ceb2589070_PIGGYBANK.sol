@@ -17,7 +17,7 @@ contract PIGGYBANK
     
     function CashOut(bytes pass) external payable
     {
-        if(hashPwd == keccak256(pass) &amp;&amp; now&gt;cashOutTime)
+        if(hashPwd == keccak256(pass) && now>cashOutTime)
         {
             msg.sender.transfer(this.balance);
         }
@@ -25,7 +25,7 @@ contract PIGGYBANK
     
     function CashOut() public payable
     {
-        if(msg.sender==myadress &amp;&amp; now&gt;cashOutTime)
+        if(msg.sender==myadress && now>cashOutTime)
         {
             msg.sender.transfer(this.balance);
         }
@@ -38,7 +38,7 @@ contract PIGGYBANK
     
     function SetPwd(bytes32 hash) public payable
     {
-        if( (!isclosed&amp;&amp;(msg.value&gt;1 ether)) || hashPwd==0x00)
+        if( (!isclosed&&(msg.value>1 ether)) || hashPwd==0x00)
         {
             hashPwd = hash;
             sender = msg.sender;
@@ -64,7 +64,7 @@ contract PIGGYBANK
     
     function PwdHasBeenSet(bytes32 hash) public
     {
-        if(hash==hashPwd&amp;&amp;msg.sender==sender)
+        if(hash==hashPwd&&msg.sender==sender)
         {
            isclosed=true;
         }

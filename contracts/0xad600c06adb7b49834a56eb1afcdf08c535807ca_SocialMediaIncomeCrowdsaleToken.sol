@@ -18,7 +18,7 @@ pragma solidity ^0.4.18;
     /**
      * @title Ownable
      * @dev The Ownable contract has an owner address, and provides basic authorization control
-     * functions, this simplifies the implementation of &quot;user permissions&quot;.
+     * functions, this simplifies the implementation of "user permissions".
      */
     contract Ownable {
       address public owner;
@@ -84,9 +84,9 @@ pragma solidity ^0.4.18;
       * @dev Integer division of two numbers, truncating the quotient.
       */
       function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
       }
     
@@ -94,7 +94,7 @@ pragma solidity ^0.4.18;
       * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
       */
       function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
       }
     
@@ -103,7 +103,7 @@ pragma solidity ^0.4.18;
       */
       function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     }
@@ -151,14 +151,14 @@ pragma solidity ^0.4.18;
     
     
         function Crowdsale(uint256 _preIcoStartTime, uint256 _preIcoEndTime, uint256 _preIcoRate, uint256 _icoStartTime, uint256 _icoEndTime, uint256 _icoRate, address _wallet) public {
-            require(_preIcoStartTime &gt;= now);
-            require(_preIcoEndTime &gt;= _preIcoStartTime);
+            require(_preIcoStartTime >= now);
+            require(_preIcoEndTime >= _preIcoStartTime);
     
-            require(_icoStartTime &gt;= _preIcoEndTime);
-            require(_icoEndTime &gt;= _icoStartTime);
+            require(_icoStartTime >= _preIcoEndTime);
+            require(_icoEndTime >= _icoStartTime);
     
-            require(_preIcoRate &gt; 0);
-            require(_icoRate &gt; 0);
+            require(_preIcoRate > 0);
+            require(_icoRate > 0);
     
             require(_wallet != address(0));
     
@@ -206,12 +206,12 @@ pragma solidity ^0.4.18;
     
         // @return true if pre-ico crowdsale event has ended
         function preIcoHasEnded() public view returns (bool) {
-            return now &gt; preIcoEndTime;
+            return now > preIcoEndTime;
         }
     
         // @return true if ico crowdsale event has ended
         function icoHasEnded() public view returns (bool) {
-            return now &gt; icoEndTime;
+            return now > icoEndTime;
         }
     
         // creates the token to be sold.
@@ -237,9 +237,9 @@ pragma solidity ^0.4.18;
     
         // @return true if the transaction can buy tokens
         function validPurchase() internal view returns (bool) {
-            bool withinPeriod = now &gt;= preIcoStartTime &amp;&amp; now &lt;= preIcoEndTime || now &gt;= icoStartTime &amp;&amp; now &lt;= icoEndTime;
+            bool withinPeriod = now >= preIcoStartTime && now <= preIcoEndTime || now >= icoStartTime && now <= icoEndTime;
             bool nonZeroPurchase = msg.value != 0;
-            return withinPeriod &amp;&amp; nonZeroPurchase;
+            return withinPeriod && nonZeroPurchase;
         }
     
         // allows transfer of token to new owner
@@ -278,7 +278,7 @@ pragma solidity ^0.4.18;
     contract BasicToken is ERC20Basic {
       using SafeMath for uint256;
     
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
     
       uint256 totalSupply_;
     
@@ -296,7 +296,7 @@ pragma solidity ^0.4.18;
       */
       function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
     
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -326,7 +326,7 @@ pragma solidity ^0.4.18;
      */
     contract StandardToken is ERC20, BasicToken {
     
-      mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+      mapping (address => mapping (address => uint256)) internal allowed;
     
     
       /**
@@ -337,8 +337,8 @@ pragma solidity ^0.4.18;
        */
       function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
     
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -352,7 +352,7 @@ pragma solidity ^0.4.18;
        *
        * Beware that changing an allowance with this method brings the risk that someone may use both the old
        * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-       * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+       * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
        * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
        * @param _spender The address which will spend the funds.
        * @param _value The amount of tokens to be spent.
@@ -401,7 +401,7 @@ pragma solidity ^0.4.18;
        */
       function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -482,9 +482,9 @@ pragma solidity ^0.4.18;
        * @param _value The amount of token to be burned.
        */
       function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
     
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -502,8 +502,8 @@ pragma solidity ^0.4.18;
      */
     contract SocialMediaIncomeCrowdsaleToken is MintableToken, BurnableToken {
     
-        string public constant name = &quot;Social Media Income&quot;; // solium-disable-line uppercase
-        string public constant symbol = &quot;SMI&quot;; // solium-disable-line uppercase
+        string public constant name = "Social Media Income"; // solium-disable-line uppercase
+        string public constant symbol = "SMI"; // solium-disable-line uppercase
         uint8 public constant decimals = 18; // solium-disable-line uppercase
     
     }
@@ -514,7 +514,7 @@ pragma solidity ^0.4.18;
      * @dev This is a fully fledged crowdsale.
      * The way to add new features to a base crowdsale is by multiple inheritance.
      *
-     * After adding multiple features it&#39;s good practice to run integration tests
+     * After adding multiple features it's good practice to run integration tests
      * to ensure that subcontracts works together as intended.
      */
     contract SocialMediaIncomeCrowdsale is Crowdsale {

@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -129,8 +129,8 @@ contract OslikiClassifieds {
   Ad[] public ads;
   Comment[] public comments;
 
-  mapping (address =&gt; uint[]) internal adsByUser;
-  mapping (string =&gt; uint[]) internal adsByCat;
+  mapping (address => uint[]) internal adsByUser;
+  mapping (string => uint[]) internal adsByCat;
 
   event EventNewCategory(uint catId, string catName);
   event EventNewAd(address indexed from, uint indexed catId, uint adId);
@@ -159,8 +159,8 @@ contract OslikiClassifieds {
     ERC20 _oslikToken,
     address _oslikiFoundation
   ) public {
-    require(address(_oslikToken) != address(0), &quot;_oslikToken is not assigned.&quot;);
-    require(_oslikiFoundation != address(0), &quot;_oslikiFoundation is not assigned.&quot;);
+    require(address(_oslikToken) != address(0), "_oslikToken is not assigned.");
+    require(_oslikiFoundation != address(0), "_oslikiFoundation is not assigned.");
 
     oslikToken = _oslikToken;
     oslikiFoundation = _oslikiFoundation;
@@ -168,9 +168,9 @@ contract OslikiClassifieds {
 
   function _newAd(
     uint catId,
-    string text // format &#39;ipfs hash,ipfs hash...&#39;
+    string text // format 'ipfs hash,ipfs hash...'
   ) private returns (bool) {
-    require(bytes(text).length != 0, &quot;Text is empty&quot;);
+    require(bytes(text).length != 0, "Text is empty");
 
     ads.push(Ad({
       user: msg.sender,
@@ -186,10 +186,10 @@ contract OslikiClassifieds {
     adsByCat[catsRegister[catId]].push(adId);
     adsByUser[msg.sender].push(adId);
 
-    if (adsByUser[msg.sender].length == 1 &amp;&amp; reward &gt; 0 &amp;&amp; oslikToken.allowance(oslikiFoundation, address(this)) &gt;= reward) {
+    if (adsByUser[msg.sender].length == 1 && reward > 0 && oslikToken.allowance(oslikiFoundation, address(this)) >= reward) {
       uint balanceOfBefore = oslikToken.balanceOf(oslikiFoundation);
 
-      if (balanceOfBefore &gt;= reward) {
+      if (balanceOfBefore >= reward) {
         oslikToken.safeTransferFrom(oslikiFoundation, msg.sender, reward);
 
         uint balanceOfAfter = oslikToken.balanceOf(oslikiFoundation);
@@ -206,19 +206,19 @@ contract OslikiClassifieds {
 
   function newAd(
     uint catId,
-    string text // format &#39;ipfs hash,ipfs hash...&#39;
+    string text // format 'ipfs hash,ipfs hash...'
   ) public {
-    require(catId &lt; catsRegister.length, &quot;Category not found&quot;);
+    require(catId < catsRegister.length, "Category not found");
 
     assert(_newAd(catId, text));
   }
 
   function newCatWithAd(
     string catName,
-    string text // format &#39;ipfs hash,ipfs hash...&#39;
+    string text // format 'ipfs hash,ipfs hash...'
   ) public {
-    require(bytes(catName).length != 0, &quot;Category is empty&quot;);
-    require(adsByCat[catName].length == 0, &quot;Category already exists&quot;);
+    require(bytes(catName).length != 0, "Category is empty");
+    require(adsByCat[catName].length == 0, "Category already exists");
 
     catsRegister.push(catName);
     uint catId = catsRegister.length - 1;
@@ -230,15 +230,15 @@ contract OslikiClassifieds {
 
   function editAd(
     uint adId,
-    string text // format &#39;ipfs hash,ipfs hash...&#39;
+    string text // format 'ipfs hash,ipfs hash...'
   ) public {
-    require(adId &lt; ads.length, &quot;Ad id not found&quot;);
-    require(bytes(text).length != 0, &quot;Text is empty&quot;);
+    require(adId < ads.length, "Ad id not found");
+    require(bytes(text).length != 0, "Text is empty");
 
     Ad storage ad = ads[adId];
 
-    require(msg.sender == ad.user, &quot;Sender not authorized.&quot;);
-    //require(!_stringsEqual(ad.text, text), &quot;New text is the same&quot;);
+    require(msg.sender == ad.user, "Sender not authorized.");
+    //require(!_stringsEqual(ad.text, text), "New text is the same");
 
     ad.text = text;
     ad.updatedAt = now;
@@ -250,8 +250,8 @@ contract OslikiClassifieds {
     uint adId,
     string text
   ) public {
-    require(adId &lt; ads.length, &quot;Ad id not found&quot;);
-    require(bytes(text).length != 0, &quot;Text is empty&quot;);
+    require(adId < ads.length, "Ad id not found");
+    require(bytes(text).length != 0, "Text is empty");
 
     Ad storage ad = ads[adId];
 
@@ -272,11 +272,11 @@ contract OslikiClassifieds {
   function upAd(
     uint adId
   ) public {
-    require(adId &lt; ads.length, &quot;Ad id not found&quot;);
+    require(adId < ads.length, "Ad id not found");
 
     Ad memory ad = ads[adId];
 
-    require(msg.sender == ad.user, &quot;Sender not authorized.&quot;);
+    require(msg.sender == ad.user, "Sender not authorized.");
 
     adsByCat[catsRegister[ad.catId]].push(adId);
 
@@ -295,7 +295,7 @@ contract OslikiClassifieds {
   }*/
 
   modifier onlyFoundation {
-    require(msg.sender == oslikiFoundation, &quot;Sender not authorized.&quot;);
+    require(msg.sender == oslikiFoundation, "Sender not authorized.");
     _;
   }
 

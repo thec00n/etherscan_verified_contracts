@@ -13,24 +13,24 @@ contract OneSingleCoin {
         address _buyer
     );
 
-    mapping (address =&gt; uint) public balance;
+    mapping (address => uint) public balance;
 
     constructor() public {
         currentHodler = msg.sender;
         currentHodlerId = 0;
-        messages.push(&quot;One coin to rule them all&quot;);
+        messages.push("One coin to rule them all");
         price = 8 finney;
         emit Purchased(currentHodlerId, currentHodler);
     }
 
     function buy(string message) public payable returns (bool) {
-        require (msg.value &gt;= price);
+        require (msg.value >= price);
         
-        if (msg.value &gt; price) {
+        if (msg.value > price) {
             balance[msg.sender] += msg.value - price;
         }
         uint256 previousHodlersCount = previousHodlers.length;
-        for (uint256 i = 0; i &lt; previousHodlersCount; i++) {
+        for (uint256 i = 0; i < previousHodlersCount; i++) {
             balance[previousHodlers[i]] += (price * 8 / 100) / previousHodlersCount;
         }
         balance[currentHodler] += price * 92 / 100;

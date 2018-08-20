@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,8 +74,8 @@ contract VLTToken is ERC20Interface {
     uint8 public decimals;
     uint256 public _totalSupply;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -86,8 +86,8 @@ contract VLTToken is ERC20Interface {
     // Constructor
     // ------------------------------------------------------------------------
     function VLTToken() public {
-        symbol = &quot;VAI&quot;;
-        name = &quot;VIOLET&quot;;
+        symbol = "VAI";
+        name = "VIOLET";
         decimals = 18;
         _totalSupply = 250000000 * 10**uint256(decimals);
         balances[owner] = _totalSupply;
@@ -124,7 +124,7 @@ contract VLTToken is ERC20Interface {
         }
         
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -138,7 +138,7 @@ contract VLTToken is ERC20Interface {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -163,8 +163,8 @@ contract VLTToken is ERC20Interface {
         }
 
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract VLTToken is ERC20Interface {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -227,9 +227,9 @@ contract VLTToken is ERC20Interface {
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -245,10 +245,10 @@ contract VLTToken is ERC20Interface {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[_from]);               // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowed allowance
+        require(_value <= balances[_from]);               // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowed allowance
         balances[_from] = balances[_from].sub(_value);  // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         _totalSupply = _totalSupply.sub(_value);                              // Update totalSupply
         Burn(_from, _value);
         Transfer(_from, address(0), _value);
@@ -334,26 +334,26 @@ contract ViolaCrowdsale is Ownable {
   // The token being sold
   VLTToken public violaToken;
 
-  //For keeping track of whitelist address. cap &gt;0 = whitelisted
-  mapping(address=&gt;uint) public maxBuyCap;
+  //For keeping track of whitelist address. cap >0 = whitelisted
+  mapping(address=>uint) public maxBuyCap;
 
   //For checking if address passed KYC
-  mapping(address =&gt; bool)public addressKYC;
+  mapping(address => bool)public addressKYC;
 
   //Total wei sum an address has invested
-  mapping(address=&gt;uint) public investedSum;
+  mapping(address=>uint) public investedSum;
 
   //Total violaToken an address is allocated
-  mapping(address=&gt;uint) public tokensAllocated;
+  mapping(address=>uint) public tokensAllocated;
 
     //Total violaToken an address purchased externally is allocated
-  mapping(address=&gt;uint) public externalTokensAllocated;
+  mapping(address=>uint) public externalTokensAllocated;
 
   //Total bonus violaToken an address is entitled after vesting
-  mapping(address=&gt;uint) public bonusTokensAllocated;
+  mapping(address=>uint) public bonusTokensAllocated;
 
   //Total bonus violaToken an address purchased externally is entitled after vesting
-  mapping(address=&gt;uint) public externalBonusTokensAllocated;
+  mapping(address=>uint) public externalBonusTokensAllocated;
 
   //Store addresses that has registered for crowdsale before (pushed via setWhitelist)
   //Does not mean whitelisted as it can be revoked. Just to track address for loop
@@ -419,8 +419,8 @@ contract ViolaCrowdsale is Ownable {
   //Set inital arguments of the crowdsale
   function initialiseCrowdsale (uint256 _startTime, uint256 _rate, address _tokenAddress, address _wallet) onlyOwner external {
     require(status == State.Deployed);
-    require(_startTime &gt;= now);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_rate > 0);
     require(address(_tokenAddress) != address(0));
     require(_wallet != address(0));
 
@@ -447,7 +447,7 @@ contract ViolaCrowdsale is Ownable {
   function startCrowdsale() external {
     require(withinPeriod());
     require(violaToken != address(0));
-    require(getTokensLeft() &gt; 0);
+    require(getTokensLeft() > 0);
     require(status == State.PendingStart);
 
     status = State.Active;
@@ -506,7 +506,7 @@ contract ViolaCrowdsale is Ownable {
 
   function partialForwardFunds(uint _amountToTransfer) onlyOwner external {
     require(status == State.Ended);
-    require(_amountToTransfer &lt; totalApprovedAmount);
+    require(_amountToTransfer < totalApprovedAmount);
     totalApprovedAmount = totalApprovedAmount.sub(_amountToTransfer);
     
     wallet.transfer(_amountToTransfer);
@@ -519,36 +519,36 @@ contract ViolaCrowdsale is Ownable {
 
 
   function setLeftoverTokensBuffer(uint256 _tokenBuffer) onlyOwner external {
-    require(_tokenBuffer &gt; 0);
-    require(getTokensLeft() &gt;= _tokenBuffer);
+    require(_tokenBuffer > 0);
+    require(getTokensLeft() >= _tokenBuffer);
     leftoverTokensBuffer = _tokenBuffer;
   }
 
   //Set the ether to token rate
   function setRate(uint _rate) onlyOwner external {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
   }
 
   function setBonusTokenRateLevelOne(uint _rate) onlyOwner external {
-    //require(_rate &gt; 0);
+    //require(_rate > 0);
     bonusTokenRateLevelOne = _rate;
     BonusRateChanged();
   }
 
   function setBonusTokenRateLevelTwo(uint _rate) onlyOwner external {
-    //require(_rate &gt; 0);
+    //require(_rate > 0);
     bonusTokenRateLevelTwo = _rate;
     BonusRateChanged();
   }
 
   function setBonusTokenRateLevelThree(uint _rate) onlyOwner external {
-    //require(_rate &gt; 0);
+    //require(_rate > 0);
     bonusTokenRateLevelThree = _rate;
     BonusRateChanged();
   }
   function setBonusTokenRateLevelFour(uint _rate) onlyOwner external {
-    //require(_rate &gt; 0);
+    //require(_rate > 0);
     bonusTokenRateLevelFour = _rate;
     BonusRateChanged();
   }
@@ -569,7 +569,7 @@ contract ViolaCrowdsale is Ownable {
   //@dev cap is in *18 decimals* ( 1 token = 1*10^18)
   
   function setWhitelistAddress( address _investor, uint _cap ) onlyOwner external {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         require(_investor != address(0));
         maxBuyCap[_investor] = _cap;
         registeredAddress.push(_investor);
@@ -583,7 +583,7 @@ contract ViolaCrowdsale is Ownable {
     maxBuyCap[_investor] = 0;
     uint256 weiAmount = investedSum[_investor];
 
-    if (weiAmount &gt; 0) {
+    if (weiAmount > 0) {
       _refund(_investor);
     }
   }
@@ -605,7 +605,7 @@ contract ViolaCrowdsale is Ownable {
     uint256 weiAmount = investedSum[_kycAddress];
     totalApprovedAmount = totalApprovedAmount.sub(weiAmount);
 
-    if (weiAmount &gt; 0) {
+    if (weiAmount > 0) {
       _refund(_kycAddress);
     }
   }
@@ -617,7 +617,7 @@ contract ViolaCrowdsale is Ownable {
 
   //Checks if token has been sold out
     function tokensHasSoldOut() view internal returns (bool) {
-      if (getTokensLeft() &lt;= leftoverTokensBuffer) {
+      if (getTokensLeft() <= leftoverTokensBuffer) {
         return true;
       } else {
         return false;
@@ -626,7 +626,7 @@ contract ViolaCrowdsale is Ownable {
 
       // @return true if the transaction can buy tokens
   function withinPeriod() public view returns (bool) {
-    return now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    return now >= startTime && now <= endTime;
   }
 
   // @return true if crowdsale event has ended
@@ -634,7 +634,7 @@ contract ViolaCrowdsale is Ownable {
     if (status == State.Ended) {
       return true;
     }
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   function getTokensLeft() public view returns (uint) {
@@ -646,10 +646,10 @@ contract ViolaCrowdsale is Ownable {
   }
 
   function getTimeBasedBonusRate() public view returns(uint) {
-    bool bonusDuration1 = now &gt;= startTime &amp;&amp; now &lt;= (startTime + 1 days);  //First 24hr
-    bool bonusDuration2 = now &gt; (startTime + 1 days) &amp;&amp; now &lt;= (startTime + 3 days);//Next 48 hr
-    bool bonusDuration3 = now &gt; (startTime + 3 days) &amp;&amp; now &lt;= (startTime + 10 days);//4th to 10th day
-    bool bonusDuration4 = now &gt; (startTime + 10 days) &amp;&amp; now &lt;= endTime;//11th day onwards
+    bool bonusDuration1 = now >= startTime && now <= (startTime + 1 days);  //First 24hr
+    bool bonusDuration2 = now > (startTime + 1 days) && now <= (startTime + 3 days);//Next 48 hr
+    bool bonusDuration3 = now > (startTime + 3 days) && now <= (startTime + 10 days);//4th to 10th day
+    bool bonusDuration4 = now > (startTime + 10 days) && now <= endTime;//11th day onwards
     if (bonusDuration1) {
       return bonusTokenRateLevelOne;
     } else if (bonusDuration2) {
@@ -700,7 +700,7 @@ contract ViolaCrowdsale is Ownable {
   //Used to buy tokens
   function buyTokens(address investor) internal {
     require(status == State.Active);
-    require(msg.value &gt;= minWeiToPurchase);
+    require(msg.value >= minWeiToPurchase);
 
     uint weiAmount = msg.value;
 
@@ -713,7 +713,7 @@ contract ViolaCrowdsale is Ownable {
   //Internal call to check max user cap
   function checkCapAndRecord(address investor, uint weiAmount) internal {
       uint remaindingCap = maxBuyCap[investor];
-      require(remaindingCap &gt;= weiAmount);
+      require(remaindingCap >= weiAmount);
       maxBuyCap[investor] = remaindingCap.sub(weiAmount);
       investedSum[investor] = investedSum[investor].add(weiAmount);
   }
@@ -726,7 +726,7 @@ contract ViolaCrowdsale is Ownable {
         
         uint tokensToAllocate = tokens.add(bonusTokens);
         
-        require(getTokensLeft() &gt;= tokensToAllocate);
+        require(getTokensLeft() >= tokensToAllocate);
         totalTokensAllocated = totalTokensAllocated.add(tokensToAllocate);
 
         tokensAllocated[investor] = tokensAllocated[investor].add(tokens);
@@ -741,7 +741,7 @@ contract ViolaCrowdsale is Ownable {
 
 
   /**
-   * Functions for refunds &amp; claim tokens
+   * Functions for refunds & claim tokens
    * 
    */
 
@@ -750,7 +750,7 @@ contract ViolaCrowdsale is Ownable {
   //Refund users in case of unsuccessful crowdsale
   function _refund(address _investor) internal {
     uint256 investedAmt = investedSum[_investor];
-    require(investedAmt &gt; 0);
+    require(investedAmt > 0);
 
   
       uint totalInvestorTokens = tokensAllocated[_investor].add(bonusTokensAllocated[_investor]);
@@ -771,9 +771,9 @@ contract ViolaCrowdsale is Ownable {
   function refundPartial(address _investor, uint _refundAmt, uint _tokenAmt, uint _bonusTokenAmt) onlyOwner external {
 
     uint investedAmt = investedSum[_investor];
-    require(investedAmt &gt; _refundAmt);
-    require(tokensAllocated[_investor] &gt; _tokenAmt);
-    require(bonusTokensAllocated[_investor] &gt; _bonusTokenAmt);
+    require(investedAmt > _refundAmt);
+    require(tokensAllocated[_investor] > _tokenAmt);
+    require(bonusTokensAllocated[_investor] > _bonusTokenAmt);
 
     investedSum[_investor] = investedSum[_investor].sub(_refundAmt);
     tokensAllocated[_investor] = tokensAllocated[_investor].sub(_tokenAmt);
@@ -799,7 +799,7 @@ contract ViolaCrowdsale is Ownable {
       address tokenReceiver = msg.sender;
       uint tokensToClaim = getTotalNormalTokensByAddress(tokenReceiver);
 
-      require(tokensToClaim &gt; 0);
+      require(tokensToClaim > 0);
       _clearTotalNormalTokensByAddress(tokenReceiver);
 
       violaToken.transferFrom(owner, tokenReceiver, tokensToClaim);
@@ -811,13 +811,13 @@ contract ViolaCrowdsale is Ownable {
     //Used by investor to claim bonus token
     function claimBonusTokens() external {
       require(hasEnded());
-      require(now &gt;= bonusVestingPeriod);
+      require(now >= bonusVestingPeriod);
       require(addressKYC[msg.sender]);
 
       address tokenReceiver = msg.sender;
       uint tokensToClaim = getTotalBonusTokensByAddress(tokenReceiver);
 
-      require(tokensToClaim &gt; 0);
+      require(tokensToClaim > 0);
       _clearTotalBonusTokensByAddress(tokenReceiver);
 
       violaToken.transferFrom(owner, tokenReceiver, tokensToClaim);
@@ -828,12 +828,12 @@ contract ViolaCrowdsale is Ownable {
     //Used by owner to distribute bonus token
     function distributeBonusTokens(address _tokenReceiver) onlyOwner external {
       require(hasEnded());
-      require(now &gt;= bonusVestingPeriod);
+      require(now >= bonusVestingPeriod);
 
       address tokenReceiver = _tokenReceiver;
       uint tokensToClaim = getTotalBonusTokensByAddress(tokenReceiver);
 
-      require(tokensToClaim &gt; 0);
+      require(tokensToClaim > 0);
       _clearTotalBonusTokensByAddress(tokenReceiver);
 
       transferTokens(tokenReceiver, tokensToClaim);
@@ -849,7 +849,7 @@ contract ViolaCrowdsale is Ownable {
       address tokenReceiver = _tokenReceiver;
       uint tokensToClaim = getTotalNormalTokensByAddress(tokenReceiver);
 
-      require(tokensToClaim &gt; 0);
+      require(tokensToClaim > 0);
       _clearTotalNormalTokensByAddress(tokenReceiver);
 
       transferTokens(tokenReceiver, tokensToClaim);
@@ -861,7 +861,7 @@ contract ViolaCrowdsale is Ownable {
     //For owner to reserve token for presale
     // function reserveTokens(uint _amount) onlyOwner external {
 
-    //   require(getTokensLeft() &gt;= _amount);
+    //   require(getTokensLeft() >= _amount);
     //   totalTokensAllocated = totalTokensAllocated.add(_amount);
     //   totalReservedTokenAllocated = totalReservedTokenAllocated.add(_amount);
 
@@ -871,7 +871,7 @@ contract ViolaCrowdsale is Ownable {
     // function distributePresaleTokens(address _tokenReceiver, uint _amount) onlyOwner external {
     //   require(hasEnded());
     //   require(_tokenReceiver != address(0));
-    //   require(_amount &gt; 0);
+    //   require(_amount > 0);
 
     //   violaToken.transferFrom(owner, _tokenReceiver, _amount);
 
@@ -879,12 +879,12 @@ contract ViolaCrowdsale is Ownable {
 
     // }
 
-    //For external purchases &amp; pre-sale via btc/fiat
+    //For external purchases & pre-sale via btc/fiat
     function externalPurchaseTokens(address _investor, uint _amount, uint _bonusAmount) onlyOwner external {
-      require(_amount &gt; 0);
+      require(_amount > 0);
       uint256 totalTokensToAllocate = _amount.add(_bonusAmount);
 
-      require(getTokensLeft() &gt;= totalTokensToAllocate);
+      require(getTokensLeft() >= totalTokensToAllocate);
       totalTokensAllocated = totalTokensAllocated.add(totalTokensToAllocate);
       totalReservedTokenAllocated = totalReservedTokenAllocated.add(totalTokensToAllocate);
 
@@ -897,7 +897,7 @@ contract ViolaCrowdsale is Ownable {
 
     function refundAllExternalPurchase(address _investor) onlyOwner external {
       require(_investor != address(0));
-      require(externalTokensAllocated[_investor] &gt; 0);
+      require(externalTokensAllocated[_investor] > 0);
 
       uint externalTokens = externalTokensAllocated[_investor];
       uint externalBonusTokens = externalBonusTokensAllocated[_investor];
@@ -915,8 +915,8 @@ contract ViolaCrowdsale is Ownable {
 
     function refundExternalPurchase(address _investor, uint _amountToRefund, uint _bonusAmountToRefund) onlyOwner external {
       require(_investor != address(0));
-      require(externalTokensAllocated[_investor] &gt;= _amountToRefund);
-      require(externalBonusTokensAllocated[_investor] &gt;= _bonusAmountToRefund);
+      require(externalTokensAllocated[_investor] >= _amountToRefund);
+      require(externalBonusTokensAllocated[_investor] >= _bonusAmountToRefund);
 
       uint totalTokensToRefund = _amountToRefund.add(_bonusAmountToRefund);
       externalTokensAllocated[_investor] = externalTokensAllocated[_investor].sub(_amountToRefund);
@@ -937,10 +937,10 @@ contract ViolaCrowdsale is Ownable {
 
     function allocateTopupToken(address _investor, uint _amount, uint _bonusAmount) onlyOwner external {
       require(hasEnded());
-      require(_amount &gt; 0);
+      require(_amount > 0);
       uint256 tokensToAllocate = _amount.add(_bonusAmount);
 
-      require(getTokensLeft() &gt;= tokensToAllocate);
+      require(getTokensLeft() >= tokensToAllocate);
       totalTokensAllocated = totalTokensAllocated.add(_amount);
 
       tokensAllocated[_investor] = tokensAllocated[_investor].add(_amount);

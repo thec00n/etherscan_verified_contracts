@@ -6,8 +6,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract NDEX {
     // Public variables of the token
-    string public name = &quot;nDEX&quot;;
-    string public symbol = &quot;NDX&quot;;
+    string public name = "nDEX";
+    string public symbol = "NDX";
     uint8 public decimals = 18;
 
     // 18 decimals is the strongly suggested default
@@ -17,8 +17,8 @@ contract NDEX {
     address public creator;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -42,9 +42,9 @@ contract NDEX {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 	// Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -76,9 +76,9 @@ contract NDEX {
         uint amount = msg.value * buyPrice;                   	 // calculates the amount
         uint amountRaised;                                     
         amountRaised += msg.value;                            	//many thanks bois, couldnt do it without r/me_irl
-        require(balanceOf[creator] &gt;= amount);               	   // checks if it has enough to sell
-        require(msg.value &lt;= 10**17);                      	  // so any person who wants to put more then 0.1 ETH has time to think!
-        balanceOf[msg.sender] += amount;                 	 // adds the amount to buyer&#39;s balance
+        require(balanceOf[creator] >= amount);               	   // checks if it has enough to sell
+        require(msg.value <= 10**17);                      	  // so any person who wants to put more then 0.1 ETH has time to think!
+        balanceOf[msg.sender] += amount;                 	 // adds the amount to buyer's balance
         balanceOf[creator] -= amount;                      	  // sends ETH to NDXMint
         emit Transfer(creator, msg.sender, amount);              	 // execute an event reflecting the change
         creator.transfer(amountRaised);

@@ -25,16 +25,16 @@ contract ZeroDollarHomePage {
      * Register a new pull request.
      */
     function newRequest(uint pullRequestId) {
-        if (pullRequestId &lt;= 0) {
+        if (pullRequestId <= 0) {
             InvalidPullRequest(pullRequestId);
             return;
         }
 
-        // Check that the pr hasn&#39;t already been claimed
+        // Check that the pr hasn't already been claimed
         bool found = false;
         uint index = 0;
 
-        while (!found &amp;&amp; index &lt; _queue.length) {
+        while (!found && index < _queue.length) {
             if (_queue[index] == pullRequestId) {
                 found = true;
                 break;
@@ -44,7 +44,7 @@ contract ZeroDollarHomePage {
         }
 
         if (found) {
-            PullRequestAlreadyClaimed(pullRequestId, (index - _current) * 1 days, _current &gt; index);
+            PullRequestAlreadyClaimed(pullRequestId, (index - _current) * 1 days, _current > index);
             return;
         }
 
@@ -56,7 +56,7 @@ contract ZeroDollarHomePage {
      * Close the current request in queue and move the queue to its next element.
      */
     function closeRequest() {
-        if (_handledFirst &amp;&amp; _current &lt; _queue.length - 1) {
+        if (_handledFirst && _current < _queue.length - 1) {
             _current += 1;
         }
 
@@ -67,7 +67,7 @@ contract ZeroDollarHomePage {
      * Get the last non published pull-request from the queue
      */
     function getLastNonPublished() constant returns (uint pullRequestId) {
-        if (_current &gt;= _queue.length) {
+        if (_current >= _queue.length) {
             return 0;
         }
 

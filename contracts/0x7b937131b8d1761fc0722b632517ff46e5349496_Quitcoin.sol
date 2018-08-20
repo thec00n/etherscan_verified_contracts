@@ -16,9 +16,9 @@ contract owned {
 
 contract Quitcoin is owned {
 /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &quot;Quitcoin&quot;;
-    string public symbol = &quot;QUIT&quot;;
+    string public standard = 'Token 0.1';
+    string public name = "Quitcoin";
+    string public symbol = "QUIT";
     uint8 public decimals;
     uint256 public totalSupply;
     uint public timeOfLastDistribution;
@@ -37,10 +37,10 @@ contract Quitcoin is owned {
     uint public timeOfLastOwnerWithdrawal = 0;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) public accountClaimedReward;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) public accountClaimedReward;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -62,15 +62,15 @@ contract Quitcoin is owned {
     }
 
     function interestDistribution() {
-	if (now-timeOfLastDistribution &lt; 1 days) throw;
-	if (totalSupply &lt; 4639711657142857143) throw;
-	if (totalSupply &gt; 2*324779816*10**10) throw;
+	if (now-timeOfLastDistribution < 1 days) throw;
+	if (totalSupply < 4639711657142857143) throw;
+	if (totalSupply > 2*324779816*10**10) throw;
 
 	rateOfEmissionPerYear = 846747377428571428;
 
 	uint256 starttotalsupply = totalSupply;
 
-	for (uint i = 0; i &lt; arrayOfNonTrivialAccounts.length; i ++) {
+	for (uint i = 0; i < arrayOfNonTrivialAccounts.length; i ++) {
 	    totalSupply += balanceOf[arrayOfNonTrivialAccounts[i]] * rateOfEmissionPerYear / 365 / starttotalsupply;
 	    balanceOf[arrayOfNonTrivialAccounts[i]] += balanceOf[arrayOfNonTrivialAccounts[i]] * rateOfEmissionPerYear / 365 / starttotalsupply;
 	}
@@ -80,8 +80,8 @@ contract Quitcoin is owned {
 
     function proofOfWork(uint nonce) {
 	uint n = uint(sha3(sha3(sha3(nonce, currentChallenge, msg.sender))));
-	if (n &lt; difficulty) throw;
-	if (totalSupply &gt; 4639711657142857143) throw;
+	if (n < difficulty) throw;
+	if (totalSupply > 4639711657142857143) throw;
 	if (accountClaimedReward[msg.sender]) throw;
 	
 	balanceOf[msg.sender] += rateOfEmissionPerYear/365/24/60/10;
@@ -91,15 +91,15 @@ contract Quitcoin is owned {
 	arrayOfAccountsThatHaveClaimed.push(msg.sender);
 	accountClaimedReward[msg.sender] = true;
 
-	if (balanceOf[msg.sender] &gt; trivialThreshold &amp;&amp; balanceOf[msg.sender] - (rateOfEmissionPerYear/365/24/60/10) &lt;= trivialThreshold) arrayOfNonTrivialAccounts.push(msg.sender);
-	if (numclaimed &gt; 49) {
+	if (balanceOf[msg.sender] > trivialThreshold && balanceOf[msg.sender] - (rateOfEmissionPerYear/365/24/60/10) <= trivialThreshold) arrayOfNonTrivialAccounts.push(msg.sender);
+	if (numclaimed > 49) {
 	    uint timeSinceLastProof = (now-timeOfLastProof);
 	    difficulty = max - (max-difficulty) * (timeSinceLastProof / 5 minutes);
 
 	    timeOfLastProof = now;
 	    currentChallenge = sha3(nonce, currentChallenge, block.blockhash(block.number-1));
 	    numclaimed = 0;
-	    for (uint i = 0; i &lt; arrayOfAccountsThatHaveClaimed.length; i ++) {
+	    for (uint i = 0; i < arrayOfAccountsThatHaveClaimed.length; i ++) {
 		accountClaimedReward[arrayOfAccountsThatHaveClaimed[i]] = false;
 	    }
 	    arrayOfAccountsThatHaveClaimed = new address[](0);
@@ -109,21 +109,21 @@ contract Quitcoin is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
 	if (frozenAccount[msg.sender]) throw;
-	if (totalSupply &lt; 4639711657142857143) throw;
+	if (totalSupply < 4639711657142857143) throw;
 	if (msg.sender == owner) {
-	    if (now - timeOfLastOwnerWithdrawal &gt; 1 days) {
+	    if (now - timeOfLastOwnerWithdrawal > 1 days) {
 		ownerDailyWithdrawal = 0;
 		timeOfLastOwnerWithdrawal = now;
 	    }
-	    if (_value+ownerDailyWithdrawal &gt; 324779816*10**8 || totalSupply &lt; 4747584953171428570) throw;
+	    if (_value+ownerDailyWithdrawal > 324779816*10**8 || totalSupply < 4747584953171428570) throw;
 	    ownerDailyWithdrawal += _value;
 	}
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
-	if (balanceOf[msg.sender] &lt;= trivialThreshold &amp;&amp; balanceOf[msg.sender] + _value &gt; trivialThreshold) {
-	    for (uint i = 0; i &lt; arrayOfNonTrivialAccounts.length; i ++) {
+	if (balanceOf[msg.sender] <= trivialThreshold && balanceOf[msg.sender] + _value > trivialThreshold) {
+	    for (uint i = 0; i < arrayOfNonTrivialAccounts.length; i ++) {
 		if (msg.sender == arrayOfNonTrivialAccounts[i]) {
 		    delete arrayOfNonTrivialAccounts[i];
 		    arrayOfNonTrivialAccounts[i] = arrayOfNonTrivialAccounts[arrayOfNonTrivialAccounts.length-1];
@@ -133,7 +133,7 @@ contract Quitcoin is owned {
 	    }
 	} 
         balanceOf[_to] += _value;                 
-	if (balanceOf[_to] &gt; trivialThreshold &amp;&amp; balanceOf[_to] - _value &lt;= trivialThreshold) arrayOfNonTrivialAccounts.push(_to);
+	if (balanceOf[_to] > trivialThreshold && balanceOf[_to] - _value <= trivialThreshold) arrayOfNonTrivialAccounts.push(_to);
         Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
     }
 
@@ -158,22 +158,22 @@ contract Quitcoin is owned {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
 	if (frozenAccount[_from]) throw;
-	if (totalSupply &lt; 4639711657142857143) throw;
+	if (totalSupply < 4639711657142857143) throw;
 	if (_from == owner) {
-	    if (now - timeOfLastOwnerWithdrawal &gt; 1 days) {
+	    if (now - timeOfLastOwnerWithdrawal > 1 days) {
 		ownerDailyWithdrawal = 0;
 		timeOfLastOwnerWithdrawal = now;
 	    }
-	    if (_value+ownerDailyWithdrawal &gt; 324779816*10**8 || totalSupply &lt; 4747584953171428570) throw;
+	    if (_value+ownerDailyWithdrawal > 324779816*10**8 || totalSupply < 4747584953171428570) throw;
 	    ownerDailyWithdrawal += _value;
 	}
         balanceOf[_from] -= _value;                          // Subtract from the sender
-	if (balanceOf[_from] &lt;= trivialThreshold &amp;&amp; balanceOf[_from] + _value &gt; trivialThreshold) {
-	    for (uint i = 0; i &lt; arrayOfNonTrivialAccounts.length; i ++) {
+	if (balanceOf[_from] <= trivialThreshold && balanceOf[_from] + _value > trivialThreshold) {
+	    for (uint i = 0; i < arrayOfNonTrivialAccounts.length; i ++) {
 		if (_from == arrayOfNonTrivialAccounts[i]) {
 		    delete arrayOfNonTrivialAccounts[i];
 		    arrayOfNonTrivialAccounts[i] = arrayOfNonTrivialAccounts[arrayOfNonTrivialAccounts.length-1];
@@ -183,7 +183,7 @@ contract Quitcoin is owned {
 	    }
 	} 
         balanceOf[_to] += _value;                            
-	if (balanceOf[_to] &gt; trivialThreshold &amp;&amp; balanceOf[_to] - _value &lt;= trivialThreshold) arrayOfNonTrivialAccounts.push(_to);
+	if (balanceOf[_to] > trivialThreshold && balanceOf[_to] - _value <= trivialThreshold) arrayOfNonTrivialAccounts.push(_to);
         allowance[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
@@ -191,8 +191,8 @@ contract Quitcoin is owned {
 
     function raiseTrivialThreshold(uint256 newTrivialThreshold) onlyOwner {
 	trivialThreshold = newTrivialThreshold;
-	for (uint i = arrayOfNonTrivialAccounts.length; i &gt; 0; i --) {
-	    if (balanceOf[arrayOfNonTrivialAccounts[i-1]] &lt;= trivialThreshold) {
+	for (uint i = arrayOfNonTrivialAccounts.length; i > 0; i --) {
+	    if (balanceOf[arrayOfNonTrivialAccounts[i-1]] <= trivialThreshold) {
 		delete arrayOfNonTrivialAccounts[i-1];
 		arrayOfNonTrivialAccounts[i-1] = arrayOfNonTrivialAccounts[arrayOfNonTrivialAccounts.length-1];
 		arrayOfNonTrivialAccounts.length --;

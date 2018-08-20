@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -102,13 +102,13 @@ contract ERC20Basic is Pausable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   address public rubusOrangeAddress;
   uint256 noEther = 0;
 
-  string public name = &quot;Rubus Fund Orange Token&quot;;
+  string public name = "Rubus Fund Orange Token";
   uint8 public decimals = 18;
-  string public symbol = &quot;RTO&quot;;
+  string public symbol = "RTO";
 
   address public enterWallet = 0x73D5f035B8CB58b4aF065d6cE49fC8E7288536F3;
   address public investWallet = 0xD074B636Ccbf1A3482e20b54bF013c1D0c1045b0;
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
   function transfer(address _to, uint256 _value) whenNotPaused returns (bool) {
     
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     if (_to == rubusOrangeAddress) {
 
@@ -174,13 +174,13 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool) {
     
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     if (_to == rubusOrangeAddress) {
 
@@ -263,7 +263,7 @@ contract RubusFundOrangeToken is StandardToken {
   function addEther() payable onlyOwner {}
 
   function deleteInvestorTokens(address investor, uint256 tokens) onlyOwner {
-    require(tokens &lt;= balances[investor]);
+    require(tokens <= balances[investor]);
 
     balances[investor] = balances[investor].sub(tokens);
     totalSupply = totalSupply.sub(tokens);
@@ -285,7 +285,7 @@ contract RubusFundOrangeToken is StandardToken {
     uint256 arrayLength = arrayAddress.length.sub(1);
     uint256 i = 0;
      
-    while (i &lt;= arrayLength) {
+    while (i <= arrayLength) {
         totalSupply = totalSupply.add(arrayAmount[i]);
         balances[arrayAddress[i]] = balances[arrayAddress[i]].add(arrayAmount[i]);
         Transfer(rubusOrangeAddress, arrayAddress[i], arrayAmount[i]);

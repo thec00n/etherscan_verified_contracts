@@ -32,14 +32,14 @@ contract Distributor
     {
         require(val.length==addr.length);
         uint total;
-        for (uint j=0; j&lt;val.length; j++)
+        for (uint j=0; j<val.length; j++)
         {
             require(addr[j]!=0x0);
             total+=val[j];
         }
-        if(msg.value&gt;=total)
+        if(msg.value>=total)
         {
-            for (uint i=0; i&lt;addr.length; i++)
+            for (uint i=0; i<addr.length; i++)
             {
                 addr[i].transfer(val[i]);
             }

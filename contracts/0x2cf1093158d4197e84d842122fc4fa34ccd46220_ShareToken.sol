@@ -2,19 +2,19 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract ShareToken {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     address public corporationContract;
-    mapping (address =&gt; bool) public identityApproved;
-    mapping (address =&gt; bool) public voteLock; // user must keep at least 1 share if they are involved in voting  True=locked
+    mapping (address => bool) public identityApproved;
+    mapping (address => bool) public voteLock; // user must keep at least 1 share if they are involved in voting  True=locked
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     /* This generates a public event on the blockchain that will notify clients */
     //event Transfer(address indexed from, address indexed to, uint256 beforesender, uint256 beforereceiver, uint256 value, uint256 time);
 
@@ -36,7 +36,7 @@ contract ShareToken {
         require(msg.sender == corporationContract);
         _;
     }
-    // Sender: Corporation  ---&gt;
+    // Sender: Corporation  --->
     function ShareToken() {
 
     }
@@ -70,10 +70,10 @@ contract ShareToken {
     }
 
     // /* Send coins */
-    //  must have identityApproved + can&#39;t sell last token using transfer
+    //  must have identityApproved + can't sell last token using transfer
     function transfer(address _to, uint256 _value) public {
-        if (balanceOf[msg.sender] &lt; (_value + 1)) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < (_value + 1)) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         require(identityApproved[_to]);
         uint256 receiver = balanceOf[_to];
         uint256 sender = balanceOf[msg.sender];
@@ -96,9 +96,9 @@ contract ShareToken {
     }
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balanceOf[_from] &lt; (_value + 1)) revert();                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) revert();   // Check allowance
+        if (balanceOf[_from] < (_value + 1)) revert();                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) revert();   // Check allowance
         require(identityApproved[_to]);
         uint256 receiver = balanceOf[_to];
         uint256 sender = balanceOf[_from];

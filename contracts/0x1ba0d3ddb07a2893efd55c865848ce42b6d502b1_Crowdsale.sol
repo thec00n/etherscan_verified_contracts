@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 /* 
- * IGNITE RATINGS &quot;PHASED DISCOUNT&quot; CROWDSALE CONTRACT. COPYRIGHT 2018 TRUSTIC HOLDING INC. Author - Damon Barnard (<span class="__cf_email__" data-cfemail="3a5e5b5755547a535d54534e5f485b4e53545d4914595557">[email&#160;protected]</span>)
+ * IGNITE RATINGS "PHASED DISCOUNT" CROWDSALE CONTRACT. COPYRIGHT 2018 TRUSTIC HOLDING INC. Author - Damon Barnard (<span class="__cf_email__" data-cfemail="3a5e5b5755547a535d54534e5f485b4e53545d4914595557">[email protected]</span>)
  * CONTRACT DEPLOYS A CROWDSALE WITH TIME-BASED REDUCING DISCOUNTS.
  */
 
@@ -31,20 +31,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ contract Crowdsale {
     uint256 public phase6Price; /* PHASE 6 TOKEN PRICE */
     uint256 public startTime; /* CROWDSALE START TIME */
     token public tokenReward; /* IGNT */
-    mapping(address =&gt; uint256) public contributionByAddress;
+    mapping(address => uint256) public contributionByAddress;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -104,10 +104,10 @@ contract Crowdsale {
      */
     function () public payable {
         uint256 amount = msg.value;
-        require(now &gt; startTime);
-        require(amount &lt;= 1000 ether);
+        require(now > startTime);
+        require(amount <= 1000 ether);
 
-        if(now &lt; startTime.add(7 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 1 */
+        if(now < startTime.add(7 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 1 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -116,7 +116,7 @@ contract Crowdsale {
             FundTransfer(msg.sender, amount, true);
         }
 
-        else if(now &gt; startTime.add(7 days) &amp;&amp; now &lt; startTime.add(14 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 2 */
+        else if(now > startTime.add(7 days) && now < startTime.add(14 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 2 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -125,7 +125,7 @@ contract Crowdsale {
             FundTransfer(msg.sender, amount, true);
         }
 
-        else if(now &gt; startTime.add(14 days) &amp;&amp; now &lt; startTime.add(21 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 3 */
+        else if(now > startTime.add(14 days) && now < startTime.add(21 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 3 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -134,7 +134,7 @@ contract Crowdsale {
             FundTransfer(msg.sender, amount, true);
         }
 
-        else if(now &gt; startTime.add(21 days) &amp;&amp; now &lt; startTime.add(28 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 4 */
+        else if(now > startTime.add(21 days) && now < startTime.add(28 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 4 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -143,7 +143,7 @@ contract Crowdsale {
             FundTransfer(msg.sender, amount, true);
         }
 
-        else if(now &gt; startTime.add(28 days) &amp;&amp; now &lt; startTime.add(35 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 5 */
+        else if(now > startTime.add(28 days) && now < startTime.add(35 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 5 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -152,7 +152,7 @@ contract Crowdsale {
             FundTransfer(msg.sender, amount, true);
         }
 
-        else if(now &gt; startTime.add(35 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 6 */
+        else if(now > startTime.add(35 days)) { /* SETS PAYMENT RULES FOR CROWDSALE PHASE 6 */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);

@@ -20,12 +20,12 @@ contract SplitterEthToEtc {
 
     function() {
         //stop too small transactions
-        if (msg.value &lt; lowLimit)
+        if (msg.value < lowLimit)
             throw;
 
         if (amIOnTheFork.forked()) {
             // process with exchange on the FORK chain
-            if (msg.value &lt;= upLimit) {
+            if (msg.value <= upLimit) {
                 // can exchange, send to intermediate
                 if (!intermediate.send(msg.value))
                     throw;

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,17 +64,17 @@ contract SofiaToken is ERC20Interface,Controlled {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     /*
-     * @notice &#39;constructor()&#39; initiates the Token by setting its funding
+     * @notice 'constructor()' initiates the Token by setting its funding
        parameters
      * @param _totalSupply Total supply of tokens
      */
     constructor(uint _totalSupply) public {
-      symbol = &quot;SFX&quot;;
-      name = &quot;Sofia Token&quot;;
+      symbol = "SFX";
+      name = "Sofia Token";
       decimals = 18;
       totalSupply = _totalSupply.mul(1 ether);
       balances[msg.sender] = totalSupply; //transfer all Tokens to contract creator
@@ -102,7 +102,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param spender Token spender
      */
     function allowance(address tokenOwner, address spender) public view returns (uint remaining){
-      if (allowed[tokenOwner][spender] &lt; balances[tokenOwner]) {
+      if (allowed[tokenOwner][spender] < balances[tokenOwner]) {
         return allowed[tokenOwner][spender];
       }
       return balances[tokenOwner];
@@ -124,7 +124,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens to be transfered
      */
     function transferFrom(address from, address to, uint tokens) public returns (bool success){
-      if(allowed[from][msg.sender] &gt; 0 &amp;&amp; allowed[from][msg.sender] &gt;= tokens)
+      if(allowed[from][msg.sender] > 0 && allowed[from][msg.sender] >= tokens)
       {
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         return doTransfer(from,to,tokens);
@@ -139,7 +139,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens to be transfered
      */
     function doTransfer(address from,address to, uint tokens) internal returns (bool success){
-        if( tokens &gt; 0 &amp;&amp; balances[from] &gt;= tokens){
+        if( tokens > 0 && balances[from] >= tokens){
             balances[from] = balances[from].sub(tokens);
             balances[to] = balances[to].add(tokens);
             emit Transfer(from,to,tokens);
@@ -154,7 +154,7 @@ contract SofiaToken is ERC20Interface,Controlled {
      * @param tokens Number of tokens in the allowance
      */
     function approve(address spender, uint tokens) public returns (bool success){
-      if(balances[msg.sender] &gt;= tokens){
+      if(balances[msg.sender] >= tokens){
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender,spender,tokens);
         return true;
@@ -174,7 +174,7 @@ contract SofiaToken is ERC20Interface,Controlled {
    * @param _value The amount of token to be burned.
    */
   function burn(uint _value) public onlyController{
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     emit Burn(msg.sender, _value);

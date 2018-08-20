@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 // ----------------------------------------------------------------------------
-// &#39;Bitway&#39; &#39;ERC20 Token&#39;
+// 'Bitway' 'ERC20 Token'
 // 
 // Name        : Bitway
 // Symbol      : BTWX
 // Max supply  : 21m
 // Decimals    : 18
 //
-// Bitway &quot;BTWX&quot;
+// Bitway "BTWX"
 // ----------------------------------------------------------------------------
 //
 // ----------------------------------------------------------------------------
@@ -16,10 +16,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -27,7 +27,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -53,8 +53,8 @@ contract Bitway is ERC20 {
     
     using SafeMath for uint;
 
-    string public name = &quot;Bitway&quot;;
-    string public symbol = &quot;BTWX&quot;;
+    string public name = "Bitway";
+    string public symbol = "BTWX";
     uint public totalSupply = 0;
     uint8 public decimals = 18;
     uint public RATE = 1000;
@@ -75,8 +75,8 @@ contract Bitway is ERC20 {
     
     address public owner;
     bool public completed = true;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     constructor() public {
     owner = msg.sender;
@@ -101,7 +101,7 @@ contract Bitway is ERC20 {
     // Returns maxSupplyReached True / False
     // ------------------------------------------------------------------------
     function maxSupplyReached() public constant returns (bool) {
-        return stage &gt;= stageTotal;
+        return stage >= stageTotal;
     }
     
     // ------------------------------------------------------------------------
@@ -136,7 +136,7 @@ contract Bitway is ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -146,7 +146,7 @@ contract Bitway is ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner&#39;s account
+    // Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -166,7 +166,7 @@ contract Bitway is ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Returns the amount of tokens approved by the owner that can be transferred to the spender&#39;s account
+    // Returns the amount of tokens approved by the owner that can be transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -179,7 +179,7 @@ contract Bitway is ERC20 {
         require(!maxSupplyReached());
         balances[msg.sender] = balances[msg.sender].add(tokens);
         totalSupply = totalSupply.add(tokens);
-        if (totalSupply &gt;= targetSupply[stage]) {
+        if (totalSupply >= targetSupply[stage]) {
             stage += 1;
         }
         emit Transfer(address(0), msg.sender, tokens);

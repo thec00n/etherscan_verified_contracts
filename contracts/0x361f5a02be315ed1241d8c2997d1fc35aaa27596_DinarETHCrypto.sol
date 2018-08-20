@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,9 +76,9 @@ library SafeMath {
 	contract DinarETHCrypto is ERC20Interface, DinarETHInterface {
 		using SafeMath for uint256;
 	
-		string public symbol = &quot;DNAR&quot;;
-		string public name = &quot;DinarETH&quot;;
-		string public goldCertVerifier = &quot;https://dinareth.io/goldcert/&quot;; //example https://dinareth.io/goldcert/0xdb2996EF3724Ab7205xxxxxxx
+		string public symbol = "DNAR";
+		string public name = "DinarETH";
+		string public goldCertVerifier = "https://dinareth.io/goldcert/"; //example https://dinareth.io/goldcert/0xdb2996EF3724Ab7205xxxxxxx
 		uint8 public constant decimals = 8;
 		uint256 public constant DNARtoGoldXchgRate = 10000000;			 // 1 DNAR = 0.1g Gold
 		uint256 public constant _totalSupply = 9900000000000000;
@@ -87,10 +87,10 @@ library SafeMath {
 		address public owner;
    
 		// Balances for each account
-		mapping(address =&gt; uint256) balances;
+		mapping(address => uint256) balances;
    
 		// Owner of account approves the transfer of an amount to another account
-		mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+		mapping(address => mapping (address => uint256)) allowed;
    
 		// Functions with this modifier can only be executed by the owner
 		modifier onlyOwner() {          
@@ -112,7 +112,7 @@ library SafeMath {
       
 		// This is safety mechanism to allow ETH (if any) in this contract address to be sent to the contract owner
 		function () payable public {
-			if(this.balance &gt; 1000000000000000000){
+			if(this.balance > 1000000000000000000){
 				owner.transfer(this.balance);
 			}
 		}
@@ -127,12 +127,12 @@ library SafeMath {
 			return _totalSupply;
 		}
 	    
-		// Transfer the balance from owner&#39;s account to another account
+		// Transfer the balance from owner's account to another account
 		function transfer(address _to, uint256 _amount) public notThisContract(_to) returns (bool success) {
 			require(_to != 0x0);
-			require(_amount &gt; 0);
-			require(balances[msg.sender] &gt;= _amount);
-			require(balances[_to] + _amount &gt; balances[_to]);
+			require(_amount > 0);
+			require(balances[msg.sender] >= _amount);
+			require(balances[_to] + _amount > balances[_to]);
 			balances[msg.sender] -= _amount;
 			balances[_to] += _amount;		  
 			Transfer(msg.sender, _to, _amount);
@@ -145,10 +145,10 @@ library SafeMath {
 		// Note Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event.
 		function transferFrom( address _from, address _to, uint256 _amount) public notThisContract(_to) returns (bool success) {	
 		
-		   require(balances[_from] &gt;= _amount);
-		   require(allowed[_from][msg.sender] &gt;= _amount);
-		   require(_amount &gt; 0);
-		   require(balances[_to] + _amount &gt; balances[_to]);
+		   require(balances[_from] >= _amount);
+		   require(allowed[_from][msg.sender] >= _amount);
+		   require(_amount > 0);
+		   require(balances[_to] + _amount > balances[_to]);
 		   
 		   balances[_from] -= _amount;
            allowed[_from][msg.sender] -= _amount;
@@ -203,7 +203,7 @@ library SafeMath {
 			
 			uint oldValue = allowed[msg.sender][_spender];
 			
-			if (_subtractedValue &gt; oldValue) {
+			if (_subtractedValue > oldValue) {
 				allowed[msg.sender][_spender] = 0;
 			} else {
 				allowed[msg.sender][_spender] -= _subtractedValue;

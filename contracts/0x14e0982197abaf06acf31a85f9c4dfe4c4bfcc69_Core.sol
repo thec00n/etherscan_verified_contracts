@@ -14,13 +14,13 @@ contract Maths {
     }
 
     function Sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function Add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -32,8 +32,8 @@ contract Owned is Maths {
     address public owner;        
     bool public transfer_status = true;
     uint256 TotalSupply = 750000000;
-    mapping(address =&gt; uint256) UserBalances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public Allowance;
+    mapping(address => uint256) UserBalances;
+    mapping(address => mapping(address => uint256)) public Allowance;
     event OwnershipChanged(address indexed _invoker, address indexed _newOwner);        
     event TransferStatusChanged(bool _newStatus);
     
@@ -73,8 +73,8 @@ contract Core is Owned {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    string public name = &quot;Self Drive Renta&quot;;
-    string public symbol = &quot;SDRT&quot;;
+    string public name = "Self Drive Renta";
+    string public symbol = "SDRT";
     uint256 public decimals = 1;
 
     function Core() public {
@@ -86,11 +86,11 @@ contract Core is Owned {
     function _transferCheck(address _sender, address _recipient, uint256 _amount) private view returns (bool success) {
                          
         require(transfer_status == true);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_recipient != address(0));
-        require(UserBalances[_sender] &gt;= _amount);
-        require(Sub(UserBalances[_sender], _amount) &gt;= 0);
-        require(Add(UserBalances[_recipient], _amount) &gt; UserBalances[_recipient]);
+        require(UserBalances[_sender] >= _amount);
+        require(Sub(UserBalances[_sender], _amount) >= 0);
+        require(Add(UserBalances[_recipient], _amount) > UserBalances[_recipient]);
         
         return true;
 
@@ -110,7 +110,7 @@ contract Core is Owned {
     function transferFrom(address _owner, address _receiver, uint256 _amount) public returns (bool status) {
 
         require(_transferCheck(_owner, _receiver, _amount));
-        require(Sub(Allowance[_owner][msg.sender], _amount) &gt;= 0);
+        require(Sub(Allowance[_owner][msg.sender], _amount) >= 0);
         Allowance[_owner][msg.sender] = Sub(Allowance[_owner][msg.sender], _amount);
         UserBalances[_owner] = Sub(UserBalances[_owner], _amount);
         UserBalances[_receiver] = Add(UserBalances[_receiver], _amount);
@@ -125,7 +125,7 @@ contract Core is Owned {
 
         uint256 i = 0;
 
-        while (i &lt; _destinations.length) {
+        while (i < _destinations.length) {
             transfer(_destinations[i], _values[i]);
             i += 1;
         }
@@ -136,7 +136,7 @@ contract Core is Owned {
 
     function approve(address _spender, uint256 _amount) public returns (bool approved) {
 
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
         Allowance[msg.sender][_spender] = _amount;
         Approval(msg.sender, _spender, _amount);
 

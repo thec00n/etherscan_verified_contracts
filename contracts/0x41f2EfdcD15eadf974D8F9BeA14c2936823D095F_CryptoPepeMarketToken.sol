@@ -28,7 +28,7 @@ contract ERC721 {
 contract CryptoPepeMarketToken is ERC721 {
 
   // Modified CryptoCelebs contract
-  // Note: &quot;Item&quot; refers to a SocialMedia asset.
+  // Note: "Item" refers to a SocialMedia asset.
   
   /*** EVENTS ***/
 
@@ -45,34 +45,34 @@ contract CryptoPepeMarketToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoSocialMedia&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoPepeMarketToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoSocialMedia"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoPepeMarketToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
   uint256 private firstStepLimit =  0.053613 ether;
   uint256 private secondStepLimit = 0.564957 ether;
 
-  mapping (uint256 =&gt; TopOwner) private topOwner;
-  mapping (uint256 =&gt; address) public lastBuyer;
+  mapping (uint256 => TopOwner) private topOwner;
+  mapping (uint256 => address) public lastBuyer;
 
   /*** STORAGE ***/
 
   /// @dev A mapping from item IDs to the address that owns them. All items have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public itemIndexToOwner;
+  mapping (uint256 => address) public itemIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from ItemIDs to an address that has been approved to call
   ///  transferFrom(). Each item can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public itemIndexToApproved;
+  mapping (uint256 => address) public itemIndexToApproved;
 
   // @dev A mapping from ItemIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private itemIndexToPrice;
+  mapping (uint256 => uint256) private itemIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -120,18 +120,18 @@ contract CryptoPepeMarketToken is ERC721 {
     cooAddress = msg.sender;
 
 	// Restored bag holders
-	 _createItem(&quot;Feelsgood&quot;, 0x7d9450A4E85136f46BA3F519e20Fea52f5BEd063,359808729788989630,&quot;&quot;,address(this));
-	_createItem(&quot;Ree&quot;,0x2C3756c4cB4Ff488F666a3856516ba981197f3f3,184801761494400960,&quot;&quot;,address(this));
-	_createItem(&quot;TwoGender&quot;,0xb16948C62425ed389454186139cC94178D0eFbAF,359808729788989630,&quot;&quot;,address(this));
-	_createItem(&quot;Gains&quot;,0xA69E065734f57B73F17b38436f8a6259cCD090Fd,359808729788989630,&quot;&quot;,address(this));
-	_createItem(&quot;Trump&quot;,0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,94916238056430340,&quot;&quot;,address(this));
-	_createItem(&quot;Brain&quot;,0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,94916238056430340,&quot;&quot;,address(this));
-	_createItem(&quot;Illuminati&quot;,0xbd6A9D2C44b571F33Ee2192BD2d46aBA2866405a,94916238056430340,&quot;&quot;,address(this));
-	_createItem(&quot;Hang&quot;,0x2C659bf56012deeEc69Aea6e87b6587664B99550,94916238056430340,&quot;&quot;,address(this));
-	_createItem(&quot;Pepesaur&quot;,0x7d9450A4E85136f46BA3F519e20Fea52f5BEd063,184801761494400960,&quot;&quot;,address(this));
-	_createItem(&quot;BlockChain&quot;,0x2C3756c4cB4Ff488F666a3856516ba981197f3f3,184801761494400960,&quot;&quot;,address(this));
-	_createItem(&quot;Wanderer&quot;,0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,184801761494400960,&quot;&quot;,address(this));
-	_createItem(&quot;Link&quot;,0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,184801761494400960,&quot;&quot;,address(this));
+	 _createItem("Feelsgood", 0x7d9450A4E85136f46BA3F519e20Fea52f5BEd063,359808729788989630,"",address(this));
+	_createItem("Ree",0x2C3756c4cB4Ff488F666a3856516ba981197f3f3,184801761494400960,"",address(this));
+	_createItem("TwoGender",0xb16948C62425ed389454186139cC94178D0eFbAF,359808729788989630,"",address(this));
+	_createItem("Gains",0xA69E065734f57B73F17b38436f8a6259cCD090Fd,359808729788989630,"",address(this));
+	_createItem("Trump",0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,94916238056430340,"",address(this));
+	_createItem("Brain",0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,94916238056430340,"",address(this));
+	_createItem("Illuminati",0xbd6A9D2C44b571F33Ee2192BD2d46aBA2866405a,94916238056430340,"",address(this));
+	_createItem("Hang",0x2C659bf56012deeEc69Aea6e87b6587664B99550,94916238056430340,"",address(this));
+	_createItem("Pepesaur",0x7d9450A4E85136f46BA3F519e20Fea52f5BEd063,184801761494400960,"",address(this));
+	_createItem("BlockChain",0x2C3756c4cB4Ff488F666a3856516ba981197f3f3,184801761494400960,"",address(this));
+	_createItem("Wanderer",0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,184801761494400960,"",address(this));
+	_createItem("Link",0xBcce2CE773bE0250bdDDD4487d927aCCd748414F,184801761494400960,"",address(this));
 
 	// Set top owners.
 	topOwner[1] = TopOwner(0x7d9450A4E85136f46BA3F519e20Fea52f5BEd063,350000000000000000); 
@@ -228,7 +228,7 @@ contract CryptoPepeMarketToken is ERC721 {
 
     // Making sure sent amount is greater than or equal to the sellingPrice
     uint256 msgPrice = msg.value;
-    require(msgPrice &gt;= sellingPrice);
+    require(msgPrice >= sellingPrice);
 
 	// Onwer of the item gets 86%
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 86), 100));
@@ -244,17 +244,17 @@ contract CryptoPepeMarketToken is ERC721 {
 	// Transfer 4% to the last buyer
 	lastBuyer[1].transfer(fourPercentFee);
 
-	// Transfer 4% to the item creator. (Don&#39;t transfer if creator is the contract owner)
+	// Transfer 4% to the item creator. (Don't transfer if creator is the contract owner)
 	if(items[_tokenId].creatoraddress != address(this)){
 		items[_tokenId].creatoraddress.transfer(fourPercentFee);
 	}
 
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       itemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 86);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       itemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 86);
     } else {
@@ -278,11 +278,11 @@ contract CryptoPepeMarketToken is ERC721 {
 	lastBuyer[1] = msg.sender;
 
 	// Set next top owner (If applicable)
-	if(sellingPrice &gt; topOwner[3].price){
-        for(uint8 i = 3; i &gt;= 1; i--){
-            if(sellingPrice &gt; topOwner[i].price){
-                if(i &lt;= 2){ topOwner[3] = topOwner[2]; }
-                if(i &lt;= 1){ topOwner[2] = topOwner[1]; }
+	if(sellingPrice > topOwner[3].price){
+        for(uint8 i = 3; i >= 1; i--){
+            if(sellingPrice > topOwner[i].price){
+                if(i <= 2){ topOwner[3] = topOwner[2]; }
+                if(i <= 1){ topOwner[2] = topOwner[1]; }
                 topOwner[i] = TopOwner(msg.sender, sellingPrice);
                 break;
             }
@@ -336,7 +336,7 @@ contract CryptoPepeMarketToken is ERC721 {
   }
 
   /// @param _owner The owner whose social media tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Items array looking for items belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -351,7 +351,7 @@ contract CryptoPepeMarketToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 itemId;
-      for (itemId = 0; itemId &lt;= totalItems; itemId++) {
+      for (itemId = 0; itemId <= totalItems; itemId++) {
         if (itemIndexToOwner[itemId] == _owner) {
           result[resultIndex] = itemId;
           resultIndex++;
@@ -418,8 +418,8 @@ contract CryptoPepeMarketToken is ERC721 {
     });
     uint256 newItemId = items.push(_item) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newItemId == uint256(uint32(newItemId)));
 
     Birth(newItemId, _name, _owner);
@@ -447,12 +447,12 @@ contract CryptoPepeMarketToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Item to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of items is capped to 2^32 we can&#39;t overflow this
+    // Since the number of items is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     itemIndexToOwner[_tokenId] = _to;
 
-    // When creating new items _from is 0x0, but we can&#39;t account that address.
+    // When creating new items _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -481,9 +481,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -491,7 +491,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -500,7 +500,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

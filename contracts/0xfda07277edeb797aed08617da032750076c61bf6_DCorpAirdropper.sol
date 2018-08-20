@@ -228,7 +228,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -278,7 +278,7 @@ contract Airdropper is TransferableOwnership {
      * @param _values Amounts of tokens that are transferred
      */
     function drop(IToken _token, address[] _recipients, uint[] _values) public only_owner {
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             _token.transfer(_recipients[i], _values[i]);
         }
     }

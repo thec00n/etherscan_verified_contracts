@@ -6,7 +6,7 @@ library AddressUtils {
         uint256 size;
         // solium-disable-line security/no-inline-assembly
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -27,13 +27,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -52,33 +52,33 @@ contract ERC721BasicToken {
     using AddressUtils for address;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721TokenReceiver =
-        bytes4(keccak256(&#39;onERC721Received(address,uint256,bytes)&#39;));
+        bytes4(keccak256('onERC721Received(address,uint256,bytes)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;)) ^
-        bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-        bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;));
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)')) ^
+        bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+        bytes4(keccak256('getApproved(uint256)')) ^
+        bytes4(keccak256('isApprovedForAll(address,address)'));
 
     modifier onlyOwnerOf(uint256 _tokenId) {
         require(tokenOwner[_tokenId] == msg.sender);
@@ -153,7 +153,7 @@ contract ERC721BasicToken {
         external
         canTransfer(_tokenId)
     {
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     function approve(address _approved, uint256 _tokenId) external {
@@ -245,26 +245,26 @@ contract ERC721Token is ERC721BasicToken{
     uint256[] internal allTokens;
 
     // Optional mapping for token URIs
-    mapping(uint256 =&gt; string) internal tokenURIs;
+    mapping(uint256 => string) internal tokenURIs;
 
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
     // Mapping from owner to list of owned token IDs
-    mapping (address =&gt; uint256[]) internal ownedTokens;
+    mapping (address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     bytes4 constant InterfaceSignature_ERC721Metadata =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;tokenURI(uint256)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('tokenURI(uint256)'));
 
     bytes4 constant InterfaceSignature_ERC721Enumerable =
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokenOfOwnerByIndex(address, uint256)&#39;));
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('tokenByIndex(uint256)')) ^
+        bytes4(keccak256('tokenOfOwnerByIndex(address, uint256)'));
 
     function ERC721Token(string _name, string _symbol) public {
         name_ = _name;
@@ -298,7 +298,7 @@ contract ERC721Token is ERC721BasicToken{
     }
 
     function tokenByIndex(uint256 _index) external view returns (uint256) {
-        require(_index &lt; allTokens.length);
+        require(_index < allTokens.length);
         return allTokens[_index];
     }
 
@@ -308,7 +308,7 @@ contract ERC721Token is ERC721BasicToken{
     )
         external view returns (uint256)
     {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -387,7 +387,7 @@ contract owned {
 
 contract HashLand is ERC721Token, owned{
 
-    function HashLand() ERC721Token(&quot;HashLand&quot;, &quot;HSL&quot;) public {}
+    function HashLand() ERC721Token("HashLand", "HSL") public {}
 
     struct LandInfo {
         // Unique key for a land, derived from longitude and latitude
@@ -401,11 +401,11 @@ contract HashLand is ERC721Token, owned{
         uint256 sellPrice;
     }
 
-    mapping(uint256 =&gt; bytes8) landKeyOfId;
-    mapping(bytes8 =&gt; uint256) landIdOfKey;
-    mapping(uint256 =&gt; LandInfo) landInfoOfId;
+    mapping(uint256 => bytes8) landKeyOfId;
+    mapping(bytes8 => uint256) landIdOfKey;
+    mapping(uint256 => LandInfo) landInfoOfId;
 
-    mapping (address =&gt; uint256) pendingWithdrawals;
+    mapping (address => uint256) pendingWithdrawals;
 
     function mintLand(
         address _to,
@@ -544,7 +544,7 @@ contract HashLand is ERC721Token, owned{
         require(_landKey != 0);
 
         require(landInfoOfId[_landId].forSale == true);
-        require(msg.value &gt;= landInfoOfId[_landId].sellPrice);
+        require(msg.value >= landInfoOfId[_landId].sellPrice);
 
         address origin_owner = tokenOwner[_landId];
 

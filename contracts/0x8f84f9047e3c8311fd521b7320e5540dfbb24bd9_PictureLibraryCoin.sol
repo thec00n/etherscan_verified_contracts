@@ -11,7 +11,7 @@ contract PictureLibraryCoin {
 	uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 	// This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -26,8 +26,8 @@ contract PictureLibraryCoin {
         ) public {
 		    totalSupply = initialSupply * 10 ** uint256(decimals);  // Update total supply with the decimal amount
 			balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-			name = &quot;PictureLibraryCoin&quot;;                                   // Set the name for display purposes
-			symbol = &quot;PLC&quot;;                               // Set the symbol for display purposes
+			name = "PictureLibraryCoin";                                   // Set the name for display purposes
+			symbol = "PLC";                               // Set the symbol for display purposes
         }
 
 	/**
@@ -37,9 +37,9 @@ contract PictureLibraryCoin {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

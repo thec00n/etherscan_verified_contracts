@@ -31,18 +31,18 @@ contract ERC20Interface {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Interface v1.00
+// BokkyPooBah's Token Teleportation Service Interface v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
 contract BTTSTokenInterface is ERC20Interface {
     uint public constant bttsVersion = 100;
 
-    bytes public constant signingPrefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
-    bytes4 public constant signedTransferSig = &quot;\x75\x32\xea\xac&quot;;
-    bytes4 public constant signedApproveSig = &quot;\xe9\xaf\xa7\xa1&quot;;
-    bytes4 public constant signedTransferFromSig = &quot;\x34\x4b\xcc\x7d&quot;;
-    bytes4 public constant signedApproveAndCallSig = &quot;\xf1\x6f\x9b\x53&quot;;
+    bytes public constant signingPrefix = "\x19Ethereum Signed Message:\n32";
+    bytes4 public constant signedTransferSig = "\x75\x32\xea\xac";
+    bytes4 public constant signedApproveSig = "\xe9\xaf\xa7\xa1";
+    bytes4 public constant signedTransferFromSig = "\x34\x4b\xcc\x7d";
+    bytes4 public constant signedApproveAndCallSig = "\xf1\x6f\x9b\x53";
 
     event OwnershipTransferred(address indexed from, address indexed to);
     event MinterUpdated(address from, address to);
@@ -99,7 +99,7 @@ contract BTTSTokenInterface is ERC20Interface {
 // Bonus list interface
 // ----------------------------------------------------------------------------
 contract BonusListInterface {
-    mapping(address =&gt; uint) public bonusList;
+    mapping(address => uint) public bonusList;
 }
 
 
@@ -109,10 +109,10 @@ contract BonusListInterface {
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -120,7 +120,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -172,14 +172,14 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
     uint public constant TIER2_BONUS = 20;
     uint public constant TIER3_BONUS = 15;
 
-    // Start 10 Dec 2017 11:00 EST =&gt; 10 Dec 2017 16:00 UTC =&gt; 11 Dec 2017 03:00 AEST
-    // new Date(1512921600 * 1000).toUTCString() =&gt; &quot;Sun, 10 Dec 2017 16:00:00 UTC&quot;
+    // Start 10 Dec 2017 11:00 EST => 10 Dec 2017 16:00 UTC => 11 Dec 2017 03:00 AEST
+    // new Date(1512921600 * 1000).toUTCString() => "Sun, 10 Dec 2017 16:00:00 UTC"
     uint public constant START_DATE = 1512921600;
-    // End 21 Dec 2017 11:00 EST =&gt; 21 Dec 2017 16:00 UTC =&gt; 21 Dec 2017 03:00 AEST
-    // new Date(1513872000 * 1000).toUTCString() =&gt; &quot;Thu, 21 Dec 2017 16:00:00 UTC&quot;
+    // End 21 Dec 2017 11:00 EST => 21 Dec 2017 16:00 UTC => 21 Dec 2017 03:00 AEST
+    // new Date(1513872000 * 1000).toUTCString() => "Thu, 21 Dec 2017 16:00:00 UTC"
     uint public endDate = 1513872000;
 
-    // ETH/USD 9 Dec 2017 11:00 EST =&gt; 9 Dec 2017 16:00 UTC =&gt; 10 Dec 2017 03:00 AEST =&gt; 489.44 from CMC
+    // ETH/USD 9 Dec 2017 11:00 EST => 9 Dec 2017 16:00 UTC => 10 Dec 2017 03:00 AEST => 489.44 from CMC
     uint public usdPerKEther = 489440;
     uint public constant USD_CENT_PER_GZE = 35;
     uint public constant CAP_USD = 35000000;
@@ -191,7 +191,7 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
 
     //  AUD 10,000 = ~ USD 7,500
     uint public lockedAccountThresholdUsd = 7500;
-    mapping(address =&gt; uint) public accountEthAmount;
+    mapping(address => uint) public accountEthAmount;
 
     bool public precommitmentAdjusted;
     bool public finalised;
@@ -208,7 +208,7 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
     function GazeCoinCrowdsale() public {
     }
     function setBTTSToken(address _bttsToken) public onlyOwner {
-        require(now &lt;= START_DATE);
+        require(now <= START_DATE);
         BTTSTokenUpdated(address(bttsToken), _bttsToken);
         bttsToken = BTTSTokenInterface(_bttsToken);
     }
@@ -221,22 +221,22 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
         teamWallet = _teamWallet;
     }
     function setBonusList(address _bonusList) public onlyOwner {
-        require(now &lt;= START_DATE);
+        require(now <= START_DATE);
         BonusListUpdated(address(bonusList), _bonusList);
         bonusList = BonusListInterface(_bonusList);
     }
     function setEndDate(uint _endDate) public onlyOwner {
-        require(_endDate &gt;= now);
+        require(_endDate >= now);
         EndDateUpdated(endDate, _endDate);
         endDate = _endDate;
     }
     function setUsdPerKEther(uint _usdPerKEther) public onlyOwner {
-        require(now &lt;= START_DATE);
+        require(now <= START_DATE);
         UsdPerKEtherUpdated(usdPerKEther, _usdPerKEther);
         usdPerKEther = _usdPerKEther;
     }
     function setLockedAccountThresholdUsd(uint _lockedAccountThresholdUsd) public onlyOwner {
-        require(now &lt;= START_DATE);
+        require(now <= START_DATE);
         LockedAccountThresholdUsdUpdated(lockedAccountThresholdUsd, _lockedAccountThresholdUsd);
         lockedAccountThresholdUsd = _lockedAccountThresholdUsd;
     }
@@ -266,13 +266,13 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
         }
     }
     function () public payable {
-        require((now &gt;= START_DATE &amp;&amp; now &lt;= endDate) || (msg.sender == owner &amp;&amp; msg.value == MIN_CONTRIBUTION_ETH));
-        require(contributedEth &lt; capEth());
-        require(msg.value &gt;= MIN_CONTRIBUTION_ETH);
+        require((now >= START_DATE && now <= endDate) || (msg.sender == owner && msg.value == MIN_CONTRIBUTION_ETH));
+        require(contributedEth < capEth());
+        require(msg.value >= MIN_CONTRIBUTION_ETH);
         uint bonusPercent = getBonusPercent(msg.sender);
         uint ethAmount = msg.value;
         uint ethRefund = 0;
-        if (safeAdd(contributedEth, ethAmount) &gt; capEth()) {
+        if (safeAdd(contributedEth, ethAmount) > capEth()) {
             ethAmount = safeSub(capEth(), contributedEth);
             ethRefund = safeSub(msg.value, ethAmount);
         }
@@ -282,13 +282,13 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
         contributedEth = safeAdd(contributedEth, ethAmount);
         contributedUsd = safeAdd(contributedUsd, usdAmount);
         accountEthAmount[msg.sender] = safeAdd(accountEthAmount[msg.sender], ethAmount);
-        bool lockAccount = accountEthAmount[msg.sender] &gt; lockedAccountThresholdEth();
+        bool lockAccount = accountEthAmount[msg.sender] > lockedAccountThresholdEth();
         bttsToken.mint(msg.sender, gzeAmount, lockAccount);
-        if (ethAmount &gt; 0) {
+        if (ethAmount > 0) {
             wallet.transfer(ethAmount);
         }
         Contributed(msg.sender, ethAmount, ethRefund, accountEthAmount[msg.sender], usdAmount, gzeAmount, contributedEth, contributedUsd, generatedGze, lockAccount);
-        if (ethRefund &gt; 0) {
+        if (ethRefund > 0) {
             msg.sender.transfer(ethRefund);
         }
     }
@@ -302,18 +302,18 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
         contributedEth = safeAdd(contributedEth, ethAmount);
         contributedUsd = safeAdd(contributedUsd, usdAmount);
         accountEthAmount[tokenOwner] = safeAdd(accountEthAmount[tokenOwner], ethAmount);
-        bool lockAccount = accountEthAmount[tokenOwner] &gt; lockedAccountThresholdEth();
+        bool lockAccount = accountEthAmount[tokenOwner] > lockedAccountThresholdEth();
         bttsToken.mint(tokenOwner, gzeAmount, lockAccount);
         Contributed(tokenOwner, ethAmount, ethRefund, accountEthAmount[tokenOwner], usdAmount, gzeAmount, contributedEth, contributedUsd, generatedGze, lockAccount);
     }
     function addPrecommitmentAdjustment(address tokenOwner, uint gzeAmount) public onlyOwner {
-        require(now &gt; endDate || contributedEth &gt;= capEth());
+        require(now > endDate || contributedEth >= capEth());
         require(!finalised);
         uint ethAmount = 0;
         uint usdAmount = 0;
         uint ethRefund = 0;
         generatedGze = safeAdd(generatedGze, gzeAmount);
-        bool lockAccount = accountEthAmount[tokenOwner] &gt; lockedAccountThresholdEth();
+        bool lockAccount = accountEthAmount[tokenOwner] > lockedAccountThresholdEth();
         bttsToken.mint(tokenOwner, gzeAmount, lockAccount);
         precommitmentAdjusted = true;
         Contributed(tokenOwner, ethAmount, ethRefund, accountEthAmount[tokenOwner], usdAmount, gzeAmount, contributedEth, contributedUsd, generatedGze, lockAccount);
@@ -321,19 +321,19 @@ contract GazeCoinCrowdsale is SafeMath, Owned {
     function roundUp(uint a) public pure returns (uint) {
         uint multiple = 10**uint(TOKEN_DECIMALS);
         uint remainder = a % multiple;
-        if (remainder &gt; 0) {
+        if (remainder > 0) {
             return safeSub(safeAdd(a, multiple), remainder);
         }
     }
     function finalise() public onlyOwner {
         require(!finalised);
         require(precommitmentAdjusted);
-        require(now &gt; endDate || contributedEth &gt;= capEth());
+        require(now > endDate || contributedEth >= capEth());
         uint total = safeDiv(safeMul(generatedGze, 100), safeSub(100, TEAM_PERCENT_GZE));
         uint amountTeam = safeDiv(safeMul(total, TEAM_PERCENT_GZE), 100);
         generatedGze = safeAdd(generatedGze, amountTeam);
         uint rounded = roundUp(generatedGze);
-        if (rounded &gt; generatedGze) {
+        if (rounded > generatedGze) {
             uint dust = safeSub(rounded, generatedGze);
             generatedGze = safeAdd(generatedGze, dust);
             amountTeam = safeAdd(amountTeam, dust);

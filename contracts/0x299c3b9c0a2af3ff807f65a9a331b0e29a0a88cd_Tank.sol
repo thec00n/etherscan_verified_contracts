@@ -35,7 +35,7 @@ contract Tank is owned {
         require(tokenList.length == toAddressList.length);
         require(toAddressList.length == amountList.length);
 
-        for (uint i = 0; i &lt; toAddressList.length; i++) {
+        for (uint i = 0; i < toAddressList.length; i++) {
             if (tokenList[i] == 0) {
                 toAddressList[i].transfer(amountList[i]);
             } else {
@@ -47,7 +47,7 @@ contract Tank is owned {
     function withdrawEtherInBatch(address[] toAddressList, uint256[] amountList) public onlyOwner {
         require(toAddressList.length == amountList.length);
 
-        for (uint i = 0; i &lt; toAddressList.length; i++) {
+        for (uint i = 0; i < toAddressList.length; i++) {
             toAddressList[i].transfer(amountList[i]);
         }
     }

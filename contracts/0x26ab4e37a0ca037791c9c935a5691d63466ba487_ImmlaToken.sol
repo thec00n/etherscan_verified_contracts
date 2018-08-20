@@ -14,18 +14,18 @@ library SafeMath {
   function div(uint256 a, uint256 b) pure internal returns (uint256) {
     assert(b != 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -57,7 +57,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -121,8 +121,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -257,13 +257,13 @@ contract Pausable is Ownable {
   uint256 constant MIN_blockedTimeForInvestedTokens = 1521061200; //15.03.2018, 0:00:00
 
   //Addresses pre-ico investors
-  mapping(address =&gt; bool) preIcoAccounts;
+  mapping(address => bool) preIcoAccounts;
 
   //Addresses bounty campaign
-  mapping(address =&gt; bool) bountyAccounts;
+  mapping(address => bool) bountyAccounts;
 
   //Addresses with founders tokens and flag is it blocking transfers from this address
-  mapping(address =&gt; uint) founderAccounts; // 1 - block transfers, 2 - do not block transfers
+  mapping(address => uint) founderAccounts; // 1 - block transfers, 2 - do not block transfers
 
   function Pausable() public {
     blockedTimeForBountyTokens = MIN_blockedTimeForBountyTokens;
@@ -274,7 +274,7 @@ contract Pausable is Ownable {
   * @dev called by owner for changing blockedTimeForBountyTokens
   */
   function changeBlockedTimeForBountyTokens(uint256 _blockedTime) onlyOwner external {
-    require(_blockedTime &lt; MIN_blockedTimeForBountyTokens);
+    require(_blockedTime < MIN_blockedTimeForBountyTokens);
     blockedTimeForBountyTokens = _blockedTime;
   }
 
@@ -282,7 +282,7 @@ contract Pausable is Ownable {
 * @dev called by owner for changing blockedTimeForInvestedTokens
 */
   function changeBlockedTimeForInvestedTokens(uint256 _blockedTime) onlyOwner external {
-    require(_blockedTime &lt; MIN_blockedTimeForInvestedTokens);
+    require(_blockedTime < MIN_blockedTimeForInvestedTokens);
     blockedTimeForInvestedTokens = _blockedTime;
   }
 
@@ -304,11 +304,11 @@ contract Pausable is Ownable {
   }
 
   function getPaused() internal returns (bool) {
-    if (now &gt; blockedTimeForBountyTokens &amp;&amp; now &gt; blockedTimeForInvestedTokens) {
+    if (now > blockedTimeForBountyTokens && now > blockedTimeForInvestedTokens) {
       return false;
     } else {
       uint256 blockedTime = checkTimeForTransfer(msg.sender);
-      return now &lt; blockedTime;
+      return now < blockedTime;
     }
   }
 
@@ -428,7 +428,7 @@ contract MintableToken is PausableToken {
   function multiMintPreico(address[] _dests, uint256[] _values) onlyOwner canMint public returns (uint256) {
     uint256 i = 0;
     uint256 count = _dests.length;
-    while (i &lt; count) {
+    while (i < count) {
       totalSupply = totalSupply.add(_values[i]);
       balances[_dests[i]] = balances[_dests[i]].add(_values[i]);
       addPreIcoAccounts(_dests[i]);
@@ -445,7 +445,7 @@ contract MintableToken is PausableToken {
   function multiMintBounty(address[] _dests, uint256[] _values) onlyOwner canMint public returns (uint256) {
     uint256 i = 0;
     uint256 count = _dests.length;
-    while (i &lt; count) {
+    while (i < count) {
       totalSupply = totalSupply.add(_values[i]);
       balances[_dests[i]] = balances[_dests[i]].add(_values[i]);
       addBountyAccounts(_dests[i]);
@@ -484,9 +484,9 @@ contract TransferableByOwner is StandardToken, Ownable {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferByOwner(address _from, address _to, uint256 _value) onlyOwner public returns (bool) {
-    require(now &lt; OWNER_TRANSFER_TOKENS);
+    require(now < OWNER_TRANSFER_TOKENS);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -503,8 +503,8 @@ contract ImmlaToken is MintableToken, TransferableByOwner {
     /*
      * Token meta data
      */
-    string public constant name = &quot;IMMLA&quot;;
-    string public constant symbol = &quot;IML&quot;;
+    string public constant name = "IMMLA";
+    string public constant symbol = "IML";
     uint8 public constant decimals = 18;
 }
 
@@ -554,19 +554,19 @@ contract ImmlaDistribution is Ownable {
     /**
      * @dev Proposals for mint tokens to some address
      */
-    mapping(address =&gt; Proposal) public proposals;
+    mapping(address => Proposal) public proposals;
 
     struct Proposal {
         address wallet;
         uint256 amount;
         uint256 numberOfVotes;
-        mapping(address =&gt; bool) voted;
+        mapping(address => bool) voted;
     }
 
     /**
      * @dev Members of congress
      */
-    mapping(address =&gt; bool) public congress;
+    mapping(address => bool) public congress;
 
     /**
      * @dev Minimal quorum value
@@ -672,7 +672,7 @@ contract ImmlaDistribution is Ownable {
 
     // low level token purchase function
     function buyTokens() public payable {
-        require(availableEmission &gt; 0);
+        require(availableEmission > 0);
         require(msg.value != 0);
 
         address investor = msg.sender;
@@ -682,14 +682,14 @@ contract ImmlaDistribution is Ownable {
 
         //calculate change
         uint256 tokensChange = 0;
-        if (tokensAmount &gt; availableEmission) {
+        if (tokensAmount > availableEmission) {
             tokensChange = tokensAmount - availableEmission;
             tokensAmount = availableEmission;
         }
 
         //make change
         uint256 weiChange = 0;
-        if (tokensChange &gt; 0) {
+        if (tokensChange > 0) {
             weiChange = tokensChange.div(rate);
             investor.transfer(weiChange);
         }
@@ -713,11 +713,11 @@ contract ImmlaDistribution is Ownable {
    * @dev called by the owner to make additional emission
    */
     function updateAdditionalEmission(uint256 _amount, uint256 _rate) onlyOwner public { // gas 48191
-        require(_amount &gt; 0);
-        require(_amount &lt; (emissionLimit - additionalEmission));
+        require(_amount > 0);
+        require(_amount < (emissionLimit - additionalEmission));
 
         availableEmission = _amount;
-        if (_rate &gt; RATE_MIN) {
+        if (_rate > RATE_MIN) {
             rate = RATE_MIN;
         } else {
             rate = _rate;
@@ -800,11 +800,11 @@ contract ImmlaDistribution is Ownable {
      * @param _amount Amount of tokens
      */
     function proposal(address _wallet, uint256 _amount) onlyCongress public {
-        require(availableEmission &gt; 0);
-        require(_amount &gt; 0);
+        require(availableEmission > 0);
+        require(_amount > 0);
         require(_wallet != 0x0);
         
-        if (proposals[_wallet].amount &gt; 0) {
+        if (proposals[_wallet].amount > 0) {
             require(proposals[_wallet].voted[msg.sender] != true); // If has already voted, cancel
             require(proposals[_wallet].amount == _amount); // If amounts is equal
 
@@ -812,8 +812,8 @@ contract ImmlaDistribution is Ownable {
             proposals[_wallet].numberOfVotes++; // Increase the number of votes
 
             //proposal passed
-            if (proposals[_wallet].numberOfVotes &gt;= minimumQuorum) {
-                if (_amount &gt; availableEmission) {
+            if (proposals[_wallet].numberOfVotes >= minimumQuorum) {
+                if (_amount > availableEmission) {
                     _amount = availableEmission;
                 }
 
@@ -845,12 +845,12 @@ contract ImmlaDistribution is Ownable {
   * @dev called by owner for transfer tokens
   */
     function transferTokens(address _from, address _to, uint256 _amount) onlyOwner public {
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
-        //can&#39;t transfer after OWNER_TRANSFER_TOKENS date (after 1 year)
-        require(now &lt; OWNER_TRANSFER_TOKENS);
+        //can't transfer after OWNER_TRANSFER_TOKENS date (after 1 year)
+        require(now < OWNER_TRANSFER_TOKENS);
 
-        //can&#39;t transfer from and to congressman addresses
+        //can't transfer from and to congressman addresses
         require(!congress[_from]);
         require(!congress[_to]);
 

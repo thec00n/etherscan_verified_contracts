@@ -42,20 +42,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,8 +75,8 @@ interface RailzToken {
 contract RailzTokenSale is Owned {
 	using SafeMath for uint256;
 
-	mapping (address=&gt; uint256) contributors;
-	mapping (address=&gt; uint256) public tokensAllocated;
+	mapping (address=> uint256) contributors;
+	mapping (address=> uint256) public tokensAllocated;
     
 	// start and end timestamps when contributions are allowed  (both inclusive)
 	uint256 public presalestartTime =1528099200 ;     //4th June 8:00 am UTC
@@ -119,7 +119,7 @@ contract RailzTokenSale is Owned {
 	event TokenSalesCapReached(address indexed contributor);
 
 	function RailzTokenSale(RailzToken _addressOfRewardToken, address _wallet) public {        
-  		require(presalestartTime &gt;= now); 
+  		require(presalestartTime >= now); 
   		require(_wallet != address(0));   
         
   		token = RailzToken (_addressOfRewardToken);
@@ -129,15 +129,15 @@ contract RailzTokenSale is Owned {
 
 	// verifies that the gas price is lower than max gas price
 	modifier validGasPrice() {
-		assert(tx.gasprice &lt;= maxGasPrice);
+		assert(tx.gasprice <= maxGasPrice);
 		_;
 	}
 
 	// fallback function  used to buy tokens , this function is called when anyone sends ether to this contract
 	function ()  payable public validGasPrice {  
-		require(msg.sender != address(0));                      //contributor&#39;s address should not be zero00/80
+		require(msg.sender != address(0));                      //contributor's address should not be zero00/80
 		require(msg.value != 0);                                //amount should be greater then zero            
-        require(msg.value&gt;=0.1 ether);                          //minimum contribution is 0.1 eth
+        require(msg.value>=0.1 ether);                          //minimum contribution is 0.1 eth
 		require(isContributionAllowed());                       //Valid time of contribution and cap has not been reached 11
 	
 		// Add to mapping of contributor
@@ -149,7 +149,7 @@ contract RailzTokenSale is Owned {
 		if (isPreTokenSaleActive()) {
 			numberOfTokens = msg.value/presalesTokenPriceInWei;
             numberOfTokens = numberOfTokens * (1e18);
-			require((numberOfTokens + numberOfTokensAllocated) &lt;= presalesCap);			//Check whether remaining tokens are greater than tokens to allocate
+			require((numberOfTokens + numberOfTokensAllocated) <= presalesCap);			//Check whether remaining tokens are greater than tokens to allocate
 
 			tokensAllocated[msg.sender] = tokensAllocated[msg.sender].add(numberOfTokens);
 			numberOfTokensAllocated = numberOfTokensAllocated.add(numberOfTokens);
@@ -163,7 +163,7 @@ contract RailzTokenSale is Owned {
 		} else if (isTokenSaleActive()) {
 			numberOfTokens = msg.value/publicsalesTokenPriceInWei;
 			numberOfTokens = numberOfTokens * (1e18);
-			require((numberOfTokens + numberOfTokensAllocated) &lt;= (presalesCap + publicsalesCap));	//Check whether remaining tokens are greater than tokens to allocate
+			require((numberOfTokens + numberOfTokensAllocated) <= (presalesCap + publicsalesCap));	//Check whether remaining tokens are greater than tokens to allocate
 
 			tokensAllocated[msg.sender] = tokensAllocated[msg.sender].add(numberOfTokens);
 			numberOfTokensAllocated = numberOfTokensAllocated.add(numberOfTokens);
@@ -198,12 +198,12 @@ contract RailzTokenSale is Owned {
 
 	//Pre Token Sale time
 	function isPreTokenSaleActive() internal view returns (bool) {
-		return ((now &gt;= presalestartTime) &amp;&amp; (now &lt;= presaleendTime));  
+		return ((now >= presalestartTime) && (now <= presaleendTime));  
 	}
 
 	//Token Sale time
 	function isTokenSaleActive() internal view returns (bool) {
-		return (now &gt;= (publicsalestartTime) &amp;&amp; (now &lt;= publicsalesendTime));  
+		return (now >= (publicsalestartTime) && (now <= publicsalesendTime));  
 	}
 
 	// Called by owner when preico token cap has been reached
@@ -230,7 +230,7 @@ contract RailzTokenSale is Owned {
 
 	//This function is used to do bulk transfer token to contributor after successful audit manually
 	 function manualBatchTransferToken(uint256[] amount, address[] wallets) public onlyOwner {
-        for (uint256 i = 0; i &lt; wallets.length; i++) {
+        for (uint256 i = 0; i < wallets.length; i++) {
             token.transfer(wallets[i], amount[i]);
 			emit TokensTransferred(wallets[i], amount[i]);
         }
@@ -238,9 +238,9 @@ contract RailzTokenSale is Owned {
 
 	//This function is used to do bulk transfer token to contributor after successful audit
 	 function batchTransferToken(address[] wallets) public onlyOwner {
-        for (uint256 i = 0; i &lt; wallets.length; i++) {
+        for (uint256 i = 0; i < wallets.length; i++) {
 			uint256 amountOfTokens = tokensAllocated[wallets[i]];
-			require(amountOfTokens &gt; 0);
+			require(amountOfTokens > 0);
 			tokensAllocated[wallets[i]]=0;
             token.transfer(wallets[i], amountOfTokens);
 			emit TokensTransferred(wallets[i], amountOfTokens);
@@ -260,9 +260,9 @@ contract RailzTokenSale is Owned {
 
 	// This function check whether ICO is currently active or not
     function checkifCapHasReached() internal {
-    	if (isPreTokenSaleActive() &amp;&amp; (numberOfTokensAllocated &gt; presalesCap))  
+    	if (isPreTokenSaleActive() && (numberOfTokensAllocated > presalesCap))  
         	hasPreTokenSalesCapReached = true;
-     	else if (isTokenSaleActive() &amp;&amp; (numberOfTokensAllocated &gt; (presalesCap + publicsalesCap)))     
+     	else if (isTokenSaleActive() && (numberOfTokensAllocated > (presalesCap + publicsalesCap)))     
         	hasTokenSalesCapReached = true;     	
     }
 

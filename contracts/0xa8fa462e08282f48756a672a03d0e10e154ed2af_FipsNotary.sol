@@ -3,8 +3,8 @@ pragma solidity ^0.4.1;
 contract FipsNotary {
 
     address admin;
-    mapping(bytes20 =&gt; address) ledger;
-    mapping(address =&gt; bool) registrants;
+    mapping(bytes20 => address) ledger;
+    mapping(address => bool) registrants;
 
     event FipsData(bytes20 indexed fips, address indexed publisher, bytes data);
     event FipsRegistration(bytes20 indexed fips, address indexed owner);
@@ -36,7 +36,7 @@ contract FipsNotary {
     }
 
     function fipsPublishData(bytes20 fips, bytes data) {
-        if ((msg.sender != admin) &amp;&amp; (msg.sender != ledger[fips])) {
+        if ((msg.sender != admin) && (msg.sender != ledger[fips])) {
             throw;
         }
         FipsData(fips, msg.sender, data);
@@ -70,7 +70,7 @@ contract FipsNotary {
         if (registrants[msg.sender] != true) {
             throw;
         }
-        for (uint i = 0; i &lt; fips.length; i++) {
+        for (uint i = 0; i < fips.length; i++) {
             fipsAddToLedger(fips[i], owner);
         }
     }
@@ -79,14 +79,14 @@ contract FipsNotary {
         if (registrants[msg.sender] != true) {
             throw;
         }
-        if ((count &lt; 1) || (count &gt; 100)) {
+        if ((count < 1) || (count > 100)) {
             throw;
         }
         bytes20 fips;
-        for (uint i = 1; i &lt;= count; i++) {
+        for (uint i = 1; i <= count; i++) {
             fips = fipsGenerate();
             fipsAddToLedger(fips, owner);
-            if (data.length &gt; 0) {
+            if (data.length > 0) {
                 FipsData(fips, owner, data);
             }
         }

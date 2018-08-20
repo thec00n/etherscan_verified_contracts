@@ -28,20 +28,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -91,7 +91,7 @@ contract FastInvestTokenCrowdsale {
     uint256 constant public RATE_SOFT = 1200;
 
     // The balances in ETH of all investors
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /**
      * Event for token purchase logging
@@ -121,7 +121,7 @@ contract FastInvestTokenCrowdsale {
 
         tokenReward = token(_tokenAddress);
 
-        require(_start &lt; _end);
+        require(_start < _end);
         startTime = _start;
         endTime = _end;
 
@@ -141,10 +141,10 @@ contract FastInvestTokenCrowdsale {
         uint256 tokens = 0;
 
         // Calculate token amount
-        if (tokensSold &lt; SOFT_CAP) {
+        if (tokensSold < SOFT_CAP) {
             tokens = weiAmount.mul(RATE_SOFT);
 
-            if (tokensSold.add(tokens) &gt; SOFT_CAP) {
+            if (tokensSold.add(tokens) > SOFT_CAP) {
                 uint256 softTokens = SOFT_CAP.sub(tokensSold);
                 uint256 amountLeft = weiAmount.sub(softTokens.div(RATE_SOFT));
 
@@ -155,8 +155,8 @@ contract FastInvestTokenCrowdsale {
             tokens = weiAmount.mul(RATE);
         }
 
-        require(tokens &gt; 0);
-        require(tokensSold.add(tokens) &lt;= FUNDING_GOAL);
+        require(tokens > 0);
+        require(tokensSold.add(tokens) <= FUNDING_GOAL);
 
         forwardFunds();
         assert(tokenReward.transferFrom(tokenOwner, beneficiary, tokens));
@@ -177,11 +177,11 @@ contract FastInvestTokenCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool hasTokens = tokensSold &lt; FUNDING_GOAL;
+        bool hasTokens = tokensSold < FUNDING_GOAL;
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hasTokens;
+        return withinPeriod && nonZeroPurchase && hasTokens;
     }
 
     function setStart(uint256 _start) public onlyOwner {
@@ -189,13 +189,13 @@ contract FastInvestTokenCrowdsale {
     }
 
     function setEnd(uint256 _end) public onlyOwner {
-        require(startTime &lt; _end);
+        require(startTime < _end);
         endTime = _end;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 }

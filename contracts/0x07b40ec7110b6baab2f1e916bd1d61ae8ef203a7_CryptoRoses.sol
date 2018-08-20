@@ -13,8 +13,8 @@ contract CryptoRoses {
       string memo;
   }
 
-  mapping (bytes32 =&gt; RoseOwner) roseOwners;
-  mapping (address =&gt; bool) addrWhitelist;
+  mapping (bytes32 => RoseOwner) roseOwners;
+  mapping (address => bool) addrWhitelist;
 
   function CryptoRoses(bytes32 _name) public {
       owner = msg.sender;
@@ -53,13 +53,13 @@ contract CryptoRoses {
       Rose roseType;
 
       // Assign rose 
-      if (amntSent &gt;= ETH_GOLD_ROSE_PRICE) {
+      if (amntSent >= ETH_GOLD_ROSE_PRICE) {
           roseType = Rose.Gold;
-      } else if (amntSent &gt;= ETH_WHITE_ROSE_PRICE) {
+      } else if (amntSent >= ETH_WHITE_ROSE_PRICE) {
           roseType = Rose.White;
-      } else if (amntSent &gt;= ETH_PINK_ROSE_PRICE) {
+      } else if (amntSent >= ETH_PINK_ROSE_PRICE) {
           roseType = Rose.Pink;
-      } else if (amntSent &gt;= ETH_RED_ROSE_PRICE) {
+      } else if (amntSent >= ETH_RED_ROSE_PRICE) {
           roseType = Rose.Pink;
       } else {
           sender.transfer(amntSent);
@@ -91,13 +91,13 @@ contract CryptoRoses {
       Rose roseType;
 
       // Assign rose 
-      if (amntSent &gt;= GRLC_GOLD_ROSE_PRICE) {
+      if (amntSent >= GRLC_GOLD_ROSE_PRICE) {
           roseType = Rose.Gold;
-      } else if (amntSent &gt;= GRLC_WHITE_ROSE_PRICE) {
+      } else if (amntSent >= GRLC_WHITE_ROSE_PRICE) {
           roseType = Rose.White;
-      } else if (amntSent &gt;= GRLC_PINK_ROSE_PRICE) {
+      } else if (amntSent >= GRLC_PINK_ROSE_PRICE) {
           roseType = Rose.Pink;
-      } else if (amntSent &gt;= GRLC_RED_ROSE_PRICE) {
+      } else if (amntSent >= GRLC_RED_ROSE_PRICE) {
           roseType = Rose.Pink;
       } else {          
           return;

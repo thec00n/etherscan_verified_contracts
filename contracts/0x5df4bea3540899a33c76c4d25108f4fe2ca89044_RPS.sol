@@ -34,14 +34,14 @@ contract RPS {
     event GameJoined(address indexed player1, address indexed player2, uint indexed gameId, uint value, uint8 move2, uint gameStart);
     event GameEnded(address indexed player1, address indexed player2, uint indexed gameId, uint value, Result result);
     
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; uint) public totalWon;
-    mapping(address =&gt; uint) public totalLost;
+    mapping(address => uint) public balances;
+    mapping(address => uint) public totalWon;
+    mapping(address => uint) public totalLost;
     
     Game [] public games;
-    mapping(address =&gt; string) public playerNames;
-    mapping(uint =&gt; bool) public nameTaken;
-    mapping(bytes32 =&gt; bool) public secretTaken;
+    mapping(address => string) public playerNames;
+    mapping(uint => bool) public nameTaken;
+    mapping(bytes32 => bool) public secretTaken;
     
     modifier onlyOwner { require(msg.sender == owner1 || msg.sender == owner2); _; }
     modifier notPaused { require(!paused); _; }
@@ -63,7 +63,7 @@ contract RPS {
     }
     
     function totalProfit(address player) constant returns (int) {
-        if (totalLost[player] &gt; totalWon[player]) {
+        if (totalLost[player] > totalWon[player]) {
             return -int(totalLost[player] - totalWon[player]);
         }
         else {
@@ -78,20 +78,20 @@ contract RPS {
         bytes memory nameBytes = bytes(_name);
         uint h = 0;
         uint len = nameBytes.length;
-        if (len &gt; maximumNameLength) {
+        if (len > maximumNameLength) {
             len = maximumNameLength;
         }
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             uint mul = 128;
             byte b = nameBytes[i];
             uint ub = uint(b);
-            if (b &gt;= 48 &amp;&amp; b &lt;= 57) {
+            if (b >= 48 && b <= 57) {
                 // 0-9
                 h = h * mul + ub;
-            } else if (b &gt;= 65 &amp;&amp; b &lt;= 90) {
+            } else if (b >= 65 && b <= 90) {
                 // A-Z
                 h = h * mul + ub;
-            } else if (b &gt;= 97 &amp;&amp; b &lt;= 122) {
+            } else if (b >= 97 && b <= 122) {
                 // fold a-z to A-Z
                 uint upper = ub - 32;
                 h = h * mul + upper;
@@ -106,29 +106,29 @@ contract RPS {
     ///   - no fewer than 1 character
     ///   - no more than 25 characters
     ///   - no characters other than:
-    ///     - &quot;roman&quot; alphabet letters (A-Z and a-z)
+    ///     - "roman" alphabet letters (A-Z and a-z)
     ///     - western digits (0-9)
-    ///     - &quot;safe&quot; punctuation: ! ( ) - . _ SPACE
+    ///     - "safe" punctuation: ! ( ) - . _ SPACE
     ///   - at least one non-punctuation character
     /// Note that we deliberately exclude characters which may cause
     /// security problems for websites and databases if escaping is
-    /// not performed correctly, such as &lt; &gt; &quot; and &#39;.
+    /// not performed correctly, such as < > " and '.
     /// Apologies for the lack of non-English language support.
     function validateNameInternal(string _name) constant internal
     returns (bool allowed) {
         bytes memory nameBytes = bytes(_name);
         uint lengthBytes = nameBytes.length;
-        if (lengthBytes &lt; minimumNameLength ||
-            lengthBytes &gt; maximumNameLength) {
+        if (lengthBytes < minimumNameLength ||
+            lengthBytes > maximumNameLength) {
             return false;
         }
         bool foundNonPunctuation = false;
-        for (uint i = 0; i &lt; lengthBytes; i++) {
+        for (uint i = 0; i < lengthBytes; i++) {
             byte b = nameBytes[i];
             if (
-                (b &gt;= 48 &amp;&amp; b &lt;= 57) || // 0 - 9
-                (b &gt;= 65 &amp;&amp; b &lt;= 90) || // A - Z
-                (b &gt;= 97 &amp;&amp; b &lt;= 122)   // a - z
+                (b >= 48 && b <= 57) || // 0 - 9
+                (b >= 65 && b <= 90) || // A - Z
+                (b >= 97 && b <= 122)   // a - z
             ) {
                 foundNonPunctuation = true;
                 continue;
@@ -160,7 +160,7 @@ contract RPS {
     /// Name must only include upper and lowercase English letters,
     /// numbers, and certain characters: ! ( ) - . _ SPACE
     /// Function will return false if the name is not valid
-    /// or if it&#39;s too similar to a name that&#39;s already taken.
+    /// or if it's too similar to a name that's already taken.
     function setName(string name) returns (bool success) {
         require (validateNameInternal(name));
         uint fuzzyHash = computeNameFuzzyHash(name);
@@ -197,13 +197,13 @@ contract RPS {
     /// encrypted with keccak256(uint move, string secret) and
     /// save the secret so you can reveal your move
     /// after your game is joined.
-    /// It&#39;s very easy to mess up the padding and stuff,
+    /// It's very easy to mess up the padding and stuff,
     /// so you should just use the website.
     //}
     function createGame(bytes32 move, uint val, address player2)
     payable notPaused notExpired returns (uint gameId) {
         deposit();
-        require(balances[msg.sender] &gt;= val);
+        require(balances[msg.sender] >= val);
         require(!secretTaken[move]);
         secretTaken[move] = true;
         balances[msg.sender] -= val;
@@ -229,7 +229,7 @@ contract RPS {
     function joinGame(uint gameId, uint8 move) payable notPaused returns (bool success) {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Created);
-        require(move &gt; 0 &amp;&amp; move &lt;= 3);
+        require(move > 0 && move <= 3);
         if (thisGame.player2 == 0x0) {
             thisGame.player2 = msg.sender;
         }
@@ -249,11 +249,11 @@ contract RPS {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Joined);
         require(thisGame.player1 == msg.sender);
-        require(thisGame.gameStart + revealTime &gt;= now); // It&#39;s not too late to reveal
+        require(thisGame.gameStart + revealTime >= now); // It's not too late to reveal
         require(thisGame.hiddenMove1 == keccak256(uint(move), secret));
         thisGame.move1 = move;
-        if (move &gt; 0 &amp;&amp; move &lt;= 3) {
-            result = Result(((3 + move - thisGame.move2) % 3) + 1); // It works trust me (it&#39;s &#39;cause of math)
+        if (move > 0 && move <= 3) {
+            result = Result(((3 + move - thisGame.move2) % 3) + 1); // It works trust me (it's 'cause of math)
         }
         else { // Player 1 submitted invalid move
             result = Result.Loss;
@@ -286,8 +286,8 @@ contract RPS {
         GameEnded(thisGame.player1, thisGame.player2, gameId, thisGame.value, result);
     }
     
-    /// Use this when you know you&#39;ve lost as player 1 and
-    /// you don&#39;t want to bother with revealing your move.
+    /// Use this when you know you've lost as player 1 and
+    /// you don't want to bother with revealing your move.
     function forfeitGame(uint gameId) notPaused returns (bool success) {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Joined);
@@ -311,7 +311,7 @@ contract RPS {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Joined);
         require(thisGame.player2 == msg.sender);
-        require(thisGame.gameStart + revealTime &lt; now); // Player 1 has failed to reveal in time
+        require(thisGame.gameStart + revealTime < now); // Player 1 has failed to reveal in time
         
         uint fee = (thisGame.value) / feeDivisor; // 0.5% fee taken once for each owner
         balances[owner1] += fee;

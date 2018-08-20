@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,8 +34,8 @@ contract StandardToken {
 
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -46,7 +46,7 @@ contract StandardToken {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -61,8 +61,8 @@ contract StandardToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -89,7 +89,7 @@ contract StandardToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -121,8 +121,8 @@ contract Ownable {
 }
 
 contract HotPotToken is Ownable, StandardToken {
-    string public name    = &quot;HotPotChain&quot;;
-    string public symbol  = &quot;HPC&quot;;
+    string public name    = "HotPotChain";
+    string public symbol  = "HPC";
     uint8 public decimals = 3;
 
     // 21 million in initial supply
@@ -133,7 +133,7 @@ contract HotPotToken is Ownable, StandardToken {
     
     bool public distributionFinished = false;
     
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => bool) public blacklist;
 
     modifier canDistribute() {
         require(!distributionFinished);
@@ -154,7 +154,7 @@ contract HotPotToken is Ownable, StandardToken {
         balances[_to] = balances[_to].add(_amount);
         Transfer(address(0), _to, _amount);
 
-        if (totalAirDrop &lt; airDropNumber) {
+        if (totalAirDrop < airDropNumber) {
             distributionFinished = true;
         }
 
@@ -167,22 +167,22 @@ contract HotPotToken is Ownable, StandardToken {
     
     function airDropTokens() payable canDistribute onlyWhitelist public {
         
-        if (airDropNumber &gt; totalRemaining) {
+        if (airDropNumber > totalRemaining) {
             airDropNumber = totalRemaining;
         }
         
-        require(airDropNumber &lt;= totalRemaining);
+        require(airDropNumber <= totalRemaining);
         
         address investor = msg.sender;
         uint256 toGive = airDropNumber;
         
         distribute(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
 
-        if (totalAirDrop &lt; airDropNumber) {
+        if (totalAirDrop < airDropNumber) {
             distributionFinished = true;
         }
     }

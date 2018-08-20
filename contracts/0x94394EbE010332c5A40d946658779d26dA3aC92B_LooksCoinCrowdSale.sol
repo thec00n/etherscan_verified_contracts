@@ -37,7 +37,7 @@ contract SafeMath {
      */
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -49,7 +49,7 @@ contract SafeMath {
      * @return a - b
      */
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
@@ -77,7 +77,7 @@ contract SafeMath {
     function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 }
@@ -134,24 +134,24 @@ contract StandardToken is ERC20, SafeMath {
      * Mapping from addresses of token holders to the numbers of tokens belonging
      * to these token holders.
      */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
      * Mapping from addresses of token holders to the mapping of addresses of
      * spenders to the allowances set by these token holders to these spenders.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * Mapping from addresses of token holders to the mapping of token amount spent.
      * Use by the token holders to spend their utility tokens.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) spentamount;
+    mapping (address => mapping (address => uint256)) spentamount;
 
     /**
      * Mapping of the addition of the addresse of buyers.
      */
-    mapping (address =&gt; bool) buyerAppended;
+    mapping (address => bool) buyerAppended;
 
     /**
      * Mapping of the addition of addresses of buyers.
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, SafeMath {
     * selling window or promotion period.
     * Usage of the VIP ranking and bid priority will be described on token website.
     */
-    mapping (address =&gt; uint256) viprank;
+    mapping (address => uint256) viprank;
 
     /**
      * Get number of tokens currently belonging to given owner.
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, SafeMath {
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] = safeSub(balances[msg.sender],_value);
         balances[_to] = safeAdd(balances[_to],_value);
         Transfer(msg.sender, _to, _value);
@@ -213,8 +213,8 @@ contract StandardToken is ERC20, SafeMath {
         returns (bool success) {
         require(_to != 0x0);
         if(_from == _to) return false;
-        if (balances[_from] &lt; _value) return false;
-        if (_value &gt; allowed[_from][msg.sender]) return false;
+        if (balances[_from] < _value) return false;
+        if (_value > allowed[_from][msg.sender]) return false;
 
         balances[_from] = safeSub(balances[_from],_value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value);
@@ -237,10 +237,10 @@ contract StandardToken is ERC20, SafeMath {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
            return false;
         }
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         allowed[msg.sender][_spender] = _value;
@@ -327,7 +327,7 @@ contract LooksCoin is StandardToken, Ownable {
      * @return name of this token
      */
     function name() constant returns (string name) {
-      return &quot;LooksCoin&quot;;
+      return "LooksCoin";
     }
 
     /**
@@ -336,7 +336,7 @@ contract LooksCoin is StandardToken, Ownable {
      * @return symbol of this token
      */
     function symbol() constant returns (string symbol) {
-      return &quot;LOOKS&quot;;
+      return "LOOKS";
     }
 
     /**
@@ -360,7 +360,7 @@ contract LooksCoin is StandardToken, Ownable {
      * @return vip rank of the owner of given address
      */
     function getVIPRank(address _to) constant public returns (uint256 rank) {
-        if (balances[_to] &lt; VIP_MINIMUM) {
+        if (balances[_to] < VIP_MINIMUM) {
             return 0;
         }
         return viprank[_to];
@@ -377,7 +377,7 @@ contract LooksCoin is StandardToken, Ownable {
     function updateVIPRank(address _to) returns (uint256 rank) {
         // Contribution timestamp is recorded for VIP rank
         // Recorded timestamp for VIP ranking should always be earlier than current time
-        if (balances[_to] &gt;= VIP_MINIMUM &amp;&amp; viprank[_to] == 0) {
+        if (balances[_to] >= VIP_MINIMUM && viprank[_to] == 0) {
             viprank[_to] = now;
             vips.push(_to);
         }
@@ -396,7 +396,7 @@ contract LooksCoin is StandardToken, Ownable {
     function rewardTokens(address _to, uint256 _value) {
         require(msg.sender == tokenSaleContract || msg.sender == owner);
         assert(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_to] = safeAdd(balances[_to], _value);
         totalSupply = safeAdd(totalSupply, _value);
@@ -413,9 +413,9 @@ contract LooksCoin is StandardToken, Ownable {
      * @return true on success, false on error
      */
     function spend(address _to, uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         assert(_to != 0x0);
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
 
         balances[msg.sender] = safeSub(balances[msg.sender],_value);
         balances[_to] = safeAdd(balances[_to],_value);
@@ -444,8 +444,8 @@ contract LooksCoin is StandardToken, Ownable {
     function burnTokens(address burner, uint256 _value) public returns (bool success) {
         require(msg.sender == burner || msg.sender == owner);
         assert(burner != 0x0);
-        if (_value &gt; totalSupply) return false;
-        if (_value &gt; balances[burner]) return false;
+        if (_value > totalSupply) return false;
+        if (_value > balances[burner]) return false;
         
         balances[burner] = safeSub(balances[burner],_value);
         totalSupply = safeSub(totalSupply,_value);
@@ -589,13 +589,13 @@ contract LooksCoinCrowdSale {
     event WalletUpdated(address newWallet);
 
     /**
-    * saves info if account&#39;s tokens were imported from pre-CrowdSale
+    * saves info if account's tokens were imported from pre-CrowdSale
     */
-    mapping (address =&gt; bool) private importedFromPreSale;
+    mapping (address => bool) private importedFromPreSale;
 
     event TokensImport(address indexed participant, uint256 tokens, uint256 totalImport);
     /**
-    * Imports account&#39;s tokens from pre-Sale. 
+    * Imports account's tokens from pre-Sale. 
     * It can be done only by account owner or CrowdSale manager
     * @param _account Address of account which tokens will be imported
     */
@@ -631,7 +631,7 @@ contract LooksCoinCrowdSale {
     {
         require(currentState == State.Running);
         assert(msg.sender != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Calculate number of tokens for contributed wei
         uint256 tokens = msg.value * TOKEN_PRICE_D / TOKEN_PRICE_N;

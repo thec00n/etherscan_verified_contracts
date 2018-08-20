@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -68,13 +68,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size + 4);
+     assert(msg.data.length >= size + 4);
      _;
   }
 
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -135,7 +135,7 @@ contract StandardToken is BasicToken, ERC20 {
     uint _allowance;
     _allowance = allowed[_from][msg.sender];
 
-    require(_allowance &gt;= _value);
+    require(_allowance >= _value);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -340,7 +340,7 @@ contract TokenTimelock {
   uint public releaseTime;
 
   constructor(ERC20Basic _token, address _beneficiary, uint _releaseTime)  public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -351,10 +351,10 @@ contract TokenTimelock {
    */
   function claim()  public {
     require(msg.sender == beneficiary);
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.transfer(beneficiary, amount);
   }
@@ -368,8 +368,8 @@ contract TokenTimelock {
 contract FactsToken is PausableToken, MintableToken {
   using SafeMath for uint256;
 
-  string public name = &quot;FACTS Token&quot;;
-  string public symbol = &quot;FACTS&quot;;
+  string public name = "FACTS Token";
+  string public symbol = "FACTS";
   uint public decimals = 18;
 
   /**
@@ -384,13 +384,13 @@ contract FactsToken is PausableToken, MintableToken {
     return timelock;
   }
 
-  mapping (address =&gt; string) public  keys;
+  mapping (address => string) public  keys;
   event LogRegister (address user, string key);
   // Value should be a public key.  Read full key import policy.
   // Manually registering requires a base58
   // encoded using the STEEM, BTS, or EOS public key format.
   function register(string key) public {
-      assert(bytes(key).length &lt;= 64);
+      assert(bytes(key).length <= 64);
       keys[msg.sender] = key;
       emit LogRegister(msg.sender, key);
     }

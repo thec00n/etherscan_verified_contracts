@@ -4,12 +4,12 @@ pragma solidity ^0.4.18;
 
 contract BoomerCoin
 {
-    string constant public name = &quot;BoomerCoin&quot;;
-    string constant public symbol = &quot;SSN&quot;;
+    string constant public name = "BoomerCoin";
+    string constant public symbol = "SSN";
     uint8 constant public decimals = 5;
     
-    mapping(address =&gt; uint) public initialBalance;
-    mapping(address =&gt; uint) public boughtTime;
+    mapping(address => uint) public initialBalance;
+    mapping(address => uint) public boughtTime;
     
     uint constant public buyPrice = 12 szabo; //20% higher than the sell price, it takes 6.4 hours to break even
     uint constant public sellPrice = 10 szabo;
@@ -28,7 +28,7 @@ contract BoomerCoin
         uint s = 0;
         uint N = 1;
         uint B = 1;
-        for (uint i = 0; i &lt; p; ++i){
+        for (uint i = 0; i < p; ++i){
             s += k * N / B / (q**i);
             N  = N * (n-i);
             B  = B * (i+1);
@@ -38,8 +38,8 @@ contract BoomerCoin
 
     //grant tokens according to the buy price
     function fund() payable public returns (uint) {
-        require(msg.value &gt; 0.000001 ether);
-        require(msg.value &lt; 200 ether);
+        require(msg.value > 0.000001 ether);
+        require(msg.value < 200 ether);
 
         uint tokens = div(msg.value, buyPrice);
         initialBalance[msg.sender] = add(balanceOf(msg.sender), tokens);
@@ -61,10 +61,10 @@ contract BoomerCoin
             elapsedHours = sub(now, boughtTime[addr]) / 60 / 60;
 
             //technically impossible, but still. defensive code
-            if (elapsedHours &lt; 0) {
+            if (elapsedHours < 0) {
                 elapsedHours = 0;
             }
-            else if (elapsedHours &gt; 1000) {
+            else if (elapsedHours > 1000) {
                 //set cap of 1000 hours (41 days), inflation is beyond runaway at that point with this interest rate
                 elapsedHours = 1000;
             }
@@ -73,7 +73,7 @@ contract BoomerCoin
         uint amount = fracExp(initialBalance[addr], Q, elapsedHours, 8);
 
          //this should never happen, but make sure balance never goes negative
-        if (amount &lt; 0) amount = 0;
+        if (amount < 0) amount = 0;
 
         return amount;
     }
@@ -87,20 +87,20 @@ contract BoomerCoin
 
         uint tokensAvailable = balanceOf(msg.sender);
 
-        require(tokens &gt; 0);
-        require(this.balance &gt; 0); //make sure the contract is solvent
-        require(tokensAvailable &gt; 0);
-        require(tokens &lt;= tokensAvailable);
+        require(tokens > 0);
+        require(this.balance > 0); //make sure the contract is solvent
+        require(tokensAvailable > 0);
+        require(tokens <= tokensAvailable);
 
         uint weiRequested = mul(tokens, sellPrice);
 
-        if (weiRequested &gt; this.balance) {          //if this sell will make the contract insolvent
+        if (weiRequested > this.balance) {          //if this sell will make the contract insolvent
 
             //we still have leftover tokens even if the contract is insolvent
             uint insolventWei = sub(weiRequested, this.balance);
             uint remainingTokens = div(insolventWei, sellPrice);
 
-            //update user&#39;s token balance
+            //update user's token balance
             initialBalance[msg.sender] = remainingTokens;
 
             //reset compound interest time
@@ -112,7 +112,7 @@ contract BoomerCoin
             //reset compound interest time
             boughtTime[msg.sender] = now;
 
-            //update user&#39;s token balance
+            //update user's token balance
             initialBalance[msg.sender] = sub(tokensAvailable, tokens);
             msg.sender.transfer(weiRequested);
         }
@@ -141,20 +141,20 @@ contract BoomerCoin
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

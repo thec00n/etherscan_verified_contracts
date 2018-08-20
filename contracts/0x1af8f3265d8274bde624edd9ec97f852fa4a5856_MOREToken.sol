@@ -1,11 +1,11 @@
 pragma solidity 0.4.20;
 
 contract MOREToken {
-    string  public  symbol = &quot;MORE&quot;;
-    string  public name = &quot;MORE Token&quot;;
+    string  public  symbol = "MORE";
+    string  public name = "MORE Token";
     uint256  public  decimals = 18; 
     uint256  _supply;
-    mapping (address =&gt; uint256) _balances;
+    mapping (address => uint256) _balances;
     
     event Transfer( address indexed from, address indexed to, uint256 value);
 
@@ -22,7 +22,7 @@ contract MOREToken {
     }
     
     function transfer(address dst, uint256 wad) public {
-        require(_balances[msg.sender] &gt;= wad);
+        require(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -32,13 +32,13 @@ contract MOREToken {
     
     function add(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        require(z &gt;= x &amp;&amp; z&gt;=y);
+        require(z >= x && z>=y);
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x - y;
-        require(x &gt;= y &amp;&amp; z &lt;= x);
+        require(x >= y && z <= x);
         return z;
     }
 }

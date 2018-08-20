@@ -30,7 +30,7 @@ contract Token{
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value)public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -41,7 +41,7 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value)public returns 
     (bool success) {
       
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
@@ -64,17 +64,17 @@ contract StandardToken is Token {
     function allowance(address _owner, address _spender)public constant returns (uint256 remaining) {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MICCStandardToken is StandardToken { 
 
     /* Public variables of the token */
     string public name;                   //名称: eg Simon Bucks
-    uint8 public decimals;               //最多的小数位数，How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;               //最多的小数位数，How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;               //token简称: eg SBX
-    string public version = &#39;H0.1&#39;;    //版本
+    string public version = 'H0.1';    //版本
 
     constructor(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol)public {
         balances[msg.sender] = _initialAmount; // 初始token数量给予消息发送者

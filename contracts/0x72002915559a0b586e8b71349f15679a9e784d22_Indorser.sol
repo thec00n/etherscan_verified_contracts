@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -14,7 +14,7 @@ contract Ownable {
    * account.
    */
   function Ownable() {
-    owner = &quot;0x1428452bff9f56D194F63d910cb16E745b9ee048&quot;;
+    owner = "0x1428452bff9f56D194F63d910cb16E745b9ee048";
   }
 
 
@@ -50,9 +50,9 @@ contract Indorser is Ownable {
     function multisend(address _tokenAddr, address[] _to, uint256[] _value)
     returns (bool _success) {
         assert(_to.length == _value.length);
-		assert(_to.length &lt;= 150);
+		assert(_to.length <= 150);
         // loop through to addresses and send value
-		for (uint8 i = 0; i &lt; _to.length; i++) {
+		for (uint8 i = 0; i < _to.length; i++) {
             assert((Token(_tokenAddr).transfer(_to[i], _value[i])) == true);
         }
         return true;

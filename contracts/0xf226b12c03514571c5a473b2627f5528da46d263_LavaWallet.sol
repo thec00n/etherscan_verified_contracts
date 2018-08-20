@@ -40,12 +40,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -78,9 +78,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -88,7 +88,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -97,7 +97,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -181,14 +181,14 @@ contract LavaWallet is Owned {
   using SafeMath for uint;
 
   // balances[tokenContractAddress][EthereumAccountAddress] = 0
-   mapping(address =&gt; mapping (address =&gt; uint256)) balances;
+   mapping(address => mapping (address => uint256)) balances;
 
-   //token =&gt; owner =&gt; spender : amount
-   mapping(address =&gt; mapping (address =&gt; mapping (address =&gt; uint256))) allowed;
+   //token => owner => spender : amount
+   mapping(address => mapping (address => mapping (address => uint256))) allowed;
 
-   mapping(address =&gt; uint256) depositedTokens;
+   mapping(address => uint256) depositedTokens;
 
-   mapping(bytes32 =&gt; uint256) burnedSignatures;
+   mapping(bytes32 => uint256) burnedSignatures;
 
 
   event Deposit(address token, address user, uint amount, uint balance);
@@ -257,7 +257,7 @@ contract LavaWallet is Owned {
 
 
 
-  //Can also be used to remove approval by using a &#39;tokens&#39; value of 0
+  //Can also be used to remove approval by using a 'tokens' value of 0
   function approveTokens(address spender, address token, uint tokens) public returns (bool success) {
       allowed[token][msg.sender][spender] = tokens;
       Approval(msg.sender, token, spender, tokens);
@@ -284,7 +284,7 @@ contract LavaWallet is Owned {
        return true;
    }
 
-   //Nonce is the same thing as a &#39;check number&#39;
+   //Nonce is the same thing as a 'check number'
    //EIP 712
    function getLavaTypedDataHash(bytes methodname, address from, address to, address token, uint256 tokens, uint256 relayerReward,
                                      uint256 expires, uint256 nonce) public constant returns (bytes32)
@@ -311,7 +311,7 @@ contract LavaWallet is Owned {
        if(from != recoveredSignatureSigner) revert();
 
        //make sure the signature has not expired
-       if(block.number &gt; expires) revert();
+       if(block.number > expires) revert();
 
        uint burnedSignature = burnedSignatures[sigHash];
        burnedSignatures[sigHash] = 0x1; //spent
@@ -337,7 +337,7 @@ contract LavaWallet is Owned {
    {
 
 
-       bytes32 sigHash = getLavaTypedDataHash(&#39;approve&#39;,from,to,token,tokens,relayerReward,expires,nonce);
+       bytes32 sigHash = getLavaTypedDataHash('approve',from,to,token,tokens,relayerReward,expires,nonce);
 
        if(!tokenApprovalWithSignature(from,to,token,tokens,relayerReward,expires,sigHash,signature)) revert();
 
@@ -353,7 +353,7 @@ contract LavaWallet is Owned {
 
       //check to make sure that signature == ecrecover signature
 
-      bytes32 sigHash = getLavaTypedDataHash(&#39;transfer&#39;,from,to,token,tokens,relayerReward,expires,nonce);
+      bytes32 sigHash = getLavaTypedDataHash('transfer',from,to,token,tokens,relayerReward,expires,nonce);
 
       if(!tokenApprovalWithSignature(from,to,token,tokens,relayerReward,expires,sigHash,signature)) revert();
 
@@ -372,7 +372,7 @@ contract LavaWallet is Owned {
 
       //check to make sure that signature == ecrecover signature
 
-      bytes32 sigHash = getLavaTypedDataHash(&#39;withdraw&#39;,from,to,token,tokens,relayerReward,expires,nonce);
+      bytes32 sigHash = getLavaTypedDataHash('withdraw',from,to,token,tokens,relayerReward,expires,nonce);
 
       if(!tokenApprovalWithSignature(from,to,token,tokens,relayerReward,expires,sigHash,signature)) revert();
 
@@ -478,7 +478,7 @@ contract LavaWallet is Owned {
      uint undepositedTokens = tokenBalance.sub(depositedTokens[tokenAddress]);
 
      //only allow withdrawing of accidentally deposited tokens
-     assert(tokens &lt;= undepositedTokens);
+     assert(tokens <= undepositedTokens);
 
      if(!ERC20Interface(tokenAddress).transfer(owner, tokens)) revert();
 

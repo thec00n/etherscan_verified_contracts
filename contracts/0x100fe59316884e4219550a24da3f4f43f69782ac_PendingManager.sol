@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -99,7 +99,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -129,20 +129,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -187,28 +187,28 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     struct Member {
         address addr;
         uint groupsCount;
-        mapping(bytes32 =&gt; uint) groupName2index;
-        mapping(uint =&gt; uint) index2globalIndex;
+        mapping(bytes32 => uint) groupName2index;
+        mapping(uint => uint) index2globalIndex;
     }
 
     struct Group {
         bytes32 name;
         uint priority;
         uint membersCount;
-        mapping(address =&gt; uint) memberAddress2index;
-        mapping(uint =&gt; uint) index2globalIndex;
+        mapping(address => uint) memberAddress2index;
+        mapping(uint => uint) index2globalIndex;
     }
 
     uint public membersCount;
-    mapping(uint =&gt; address) public index2memberAddress;
-    mapping(address =&gt; uint) public memberAddress2index;
-    mapping(address =&gt; Member) address2member;
+    mapping(uint => address) public index2memberAddress;
+    mapping(address => uint) public memberAddress2index;
+    mapping(address => Member) address2member;
 
     uint public groupsCount;
-    mapping(uint =&gt; bytes32) public index2groupName;
-    mapping(bytes32 =&gt; uint) public groupName2index;
-    mapping(bytes32 =&gt; Group) groupName2group;
-    mapping(bytes32 =&gt; bool) public groupsBlocked; // if groupName =&gt; true, then couldn&#39;t be used for confirmation
+    mapping(uint => bytes32) public index2groupName;
+    mapping(bytes32 => uint) public groupName2index;
+    mapping(bytes32 => Group) groupName2group;
+    mapping(bytes32 => bool) public groupsBlocked; // if groupName => true, then couldn't be used for confirmation
 
     function() payable public {
         revert();
@@ -317,7 +317,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         Group storage _group = groupName2group[_groupName];
         uint _groupMembersCount = _group.membersCount;
 
-        for (uint _userIdx = 0; _userIdx &lt; _users.length; ++_userIdx) {
+        for (uint _userIdx = 0; _userIdx < _users.length; ++_userIdx) {
             address _user = _users[_userIdx];
             uint _memberIndex = memberAddress2index[_user];
             require(_memberIndex != 0);
@@ -352,7 +352,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         Group storage _group = groupName2group[_groupName];
         uint _groupMembersCount = _group.membersCount;
 
-        for (uint _userIdx = 0; _userIdx &lt; _users.length; ++_userIdx) {
+        for (uint _userIdx = 0; _userIdx < _users.length; ++_userIdx) {
             address _user = _users[_userIdx];
             uint _memberIndex = memberAddress2index[_user];
             uint _groupMemberIndex = _group.memberAddress2index[_user];
@@ -396,7 +396,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     ///
     /// @return status
     function isUserInGroup(bytes32 _groupName, address _user) public view returns (bool) {
-        return isRegisteredUser(_user) &amp;&amp; address2member[_user].groupName2index[_groupName] != 0;
+        return isRegisteredUser(_user) && address2member[_user].groupName2index[_groupName] != 0;
     }
 
     /// @notice Check is group exist
@@ -414,7 +414,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     function getGroups() public view returns (bytes32[] _groups) {
         uint _groupsCount = groupsCount;
         _groups = new bytes32[](_groupsCount);
-        for (uint _groupIdx = 0; _groupIdx &lt; _groupsCount; ++_groupIdx) {
+        for (uint _groupIdx = 0; _groupIdx < _groupsCount; ++_groupIdx) {
             _groups[_groupIdx] = index2groupName[_groupIdx + 1];
         }
     }
@@ -436,7 +436,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         }
 
         _members = new address[](_membersCount);
-        for (uint _userIdx = 0; _userIdx &lt; _membersCount; ++_userIdx) {
+        for (uint _userIdx = 0; _userIdx < _membersCount; ++_userIdx) {
             uint _memberIdx = _group.index2globalIndex[_userIdx + 1];
             _members[_userIdx] = index2memberAddress[_memberIdx];
         }
@@ -459,7 +459,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         }
 
         _groups = new bytes32[](_groupsCount);
-        for (uint _groupIdx = 0; _groupIdx &lt; _groupsCount; ++_groupIdx) {
+        for (uint _groupIdx = 0; _groupIdx < _groupsCount; ++_groupIdx) {
             uint _groupNameIdx = _member.index2globalIndex[_groupIdx + 1];
             _groups[_groupIdx] = index2groupName[_groupNameIdx];
         }
@@ -585,8 +585,8 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     struct Policy {
         uint groupsCount;
-        mapping(uint =&gt; Requirements) participatedGroups; // index =&gt; globalGroupIndex
-        mapping(bytes32 =&gt; uint) groupName2index; // groupName =&gt; localIndex
+        mapping(uint => Requirements) participatedGroups; // index => globalGroupIndex
+        mapping(bytes32 => uint) groupName2index; // groupName => localIndex
         
         uint totalAcceptedLimit;
         uint totalDeclinedLimit;
@@ -595,8 +595,8 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         address contractAddress;
 
         uint securesCount;
-        mapping(uint =&gt; uint) index2txIndex;
-        mapping(uint =&gt; uint) txIndex2index;
+        mapping(uint => uint) index2txIndex;
+        mapping(uint => uint) txIndex2index;
     }
 
     struct Vote {
@@ -611,24 +611,24 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         uint alreadyAccepted;
         uint alreadyDeclined;
         
-        mapping(address =&gt; Vote) votes; // member address =&gt; vote
-        mapping(bytes32 =&gt; uint) acceptedCount; // groupName =&gt; how many from group has already accepted
-        mapping(bytes32 =&gt; uint) declinedCount; // groupName =&gt; how many from group has already declined
+        mapping(address => Vote) votes; // member address => vote
+        mapping(bytes32 => uint) acceptedCount; // groupName => how many from group has already accepted
+        mapping(bytes32 => uint) declinedCount; // groupName => how many from group has already declined
     }
 
     address public accessManager;
 
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => bool) public authorized;
 
     uint public policiesCount;
-    mapping(uint =&gt; bytes32) public index2PolicyId; // index =&gt; policy hash
-    mapping(bytes32 =&gt; uint) public policyId2Index; // policy hash =&gt; index
-    mapping(bytes32 =&gt; Policy) policyId2policy; // policy hash =&gt; policy struct
+    mapping(uint => bytes32) public index2PolicyId; // index => policy hash
+    mapping(bytes32 => uint) public policyId2Index; // policy hash => index
+    mapping(bytes32 => Policy) policyId2policy; // policy hash => policy struct
 
     uint public txCount;
-    mapping(uint =&gt; bytes32) public index2txKey;
-    mapping(bytes32 =&gt; uint) public txKey2index; // tx key =&gt; index
-    mapping(bytes32 =&gt; Guard) txKey2guard;
+    mapping(uint => bytes32) public index2txKey;
+    mapping(bytes32 => uint) public txKey2index; // tx key => index
+    mapping(bytes32 => Guard) txKey2guard;
 
     /// @dev Execution is allowed only by authorized contract
     modifier onlyAuthorized {
@@ -637,9 +637,9 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         }
     }
 
-    /// @dev Pending Manager&#39;s constructor
+    /// @dev Pending Manager's constructor
     ///
-    /// @param _accessManager access manager&#39;s address
+    /// @param _accessManager access manager's address
     function PendingManager(address _accessManager) public {
         require(_accessManager != 0x0);
         accessManager = _accessManager;
@@ -651,7 +651,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Update access manager address
     ///
-    /// @param _accessManager access manager&#39;s address
+    /// @param _accessManager access manager's address
     function setAccessManager(address _accessManager) external onlyContractOwner returns (uint) {
         require(_accessManager != 0x0);
         accessManager = _accessManager;
@@ -660,7 +660,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Sign in contract
     ///
-    /// @param _contract contract&#39;s address
+    /// @param _contract contract's address
     function signIn(address _contract) external onlyContractOwner returns (uint) {
         require(_contract != 0x0);
         authorized[_contract] = true;
@@ -669,7 +669,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Sign out contract
     ///
-    /// @param _contract contract&#39;s address
+    /// @param _contract contract's address
     function signOut(address _contract) external onlyContractOwner returns (uint) {
         require(_contract != 0x0);
         delete authorized[_contract];
@@ -681,7 +681,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     ///
     /// @param _sig target method signature
     /// @param _contract target contract address
-    /// @param _groupName group&#39;s name
+    /// @param _groupName group's name
     /// @param _acceptLimit accepted vote limit
     /// @param _declineLimit decline vote limit
     ///
@@ -738,7 +738,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     /// @notice Remove policy rule
     /// Can be called only by contract owner
     ///
-    /// @param _groupName group&#39;s name
+    /// @param _groupName group's name
     ///
     /// @return code
     function removePolicyRule(
@@ -880,7 +880,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
-        if (_guard.votes[msg.sender].groupName != bytes32(0) &amp;&amp; _guard.votes[msg.sender].accepted) {
+        if (_guard.votes[msg.sender].groupName != bytes32(0) && _guard.votes[msg.sender].accepted) {
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
@@ -926,7 +926,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
-        if (_guard.votes[msg.sender].groupName != bytes32(0) &amp;&amp; !_guard.votes[msg.sender].accepted) {
+        if (_guard.votes[msg.sender].groupName != bytes32(0) && !_guard.votes[msg.sender].accepted) {
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
@@ -1037,7 +1037,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         _acceptLimits = new uint[](_policyGroupsCount);
         _declineLimits = new uint[](_policyGroupsCount);
 
-        for (uint _idx = 0; _idx &lt; _policyGroupsCount; ++_idx) {
+        for (uint _idx = 0; _idx < _policyGroupsCount; ++_idx) {
             Requirements storage _requirements = _policy.participatedGroups[_idx + 1];
             _groupNames[_idx] = _requirements.groupName;
             _acceptLimits[_idx] = _requirements.acceptLimit;
@@ -1076,8 +1076,8 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         uint[] _states
     ) {
         uint _count = txCount;
-        require(_fromIdx &lt; _count);
-        _maxLen = (_fromIdx + _maxLen &lt;= _count) ? _maxLen : (_count - _fromIdx);
+        require(_fromIdx < _count);
+        _maxLen = (_fromIdx + _maxLen <= _count) ? _maxLen : (_count - _fromIdx);
 
         _txKeys = new bytes32[](_maxLen);
         _policyHashes = new bytes32[](_maxLen);
@@ -1085,7 +1085,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         _alreadyDeclined = new uint[](_maxLen);
         _states = new uint[](_maxLen);
         uint _pointer = 0;
-        for (uint _txIdx = _fromIdx; _txIdx &lt; _fromIdx + _maxLen; ++_fromIdx) {
+        for (uint _txIdx = _fromIdx; _txIdx < _fromIdx + _maxLen; ++_fromIdx) {
             bytes32 _txKey = index2txKey[_txIdx + 1];
             _txKeys[_pointer] = _txKey;
 
@@ -1122,7 +1122,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         _acceptLimit = new uint[](_groupsCount);
         _declinedCount = new uint[](_groupsCount);
         _declineLimit = new uint[](_groupsCount);
-        for (uint _groupIdx = 0; _groupIdx &lt; _groupsCount; ++_groupIdx) {
+        for (uint _groupIdx = 0; _groupIdx < _groupsCount; ++_groupIdx) {
             Requirements storage _requirement = _policy.participatedGroups[_groupIdx];
             bytes32 _groupName = _requirement.groupName;
             _groupNames[_groupIdx] = _groupName;
@@ -1160,9 +1160,9 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     }
 
     function _updateTxState(Policy storage _policy, Guard storage _guard, uint confirmedAmount, uint declineAmount) private {
-        if (declineAmount != 0 &amp;&amp; _guard.state != GuardState.Decline) {
+        if (declineAmount != 0 && _guard.state != GuardState.Decline) {
             _guard.state = GuardState.Decline;
-        } else if (confirmedAmount &gt;= _policy.groupsCount &amp;&amp; _guard.state != GuardState.Confirmed) {
+        } else if (confirmedAmount >= _policy.groupsCount && _guard.state != GuardState.Confirmed) {
             _guard.state = GuardState.Confirmed;
         } else if (_guard.state != GuardState.InProcess) {
             _guard.state = GuardState.InProcess;

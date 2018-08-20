@@ -8,20 +8,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b)public pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b)public pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b)public pure returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -48,14 +48,14 @@ contract ERC20Interface {
 contract ERC20 is ERC20Interface,SafeMath {
 
     // ?????????????balanceOf????
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     // allowed?????????????????address?? ????????????(?????address)?????uint256??
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     constructor(string _name) public {
-       name = _name;  // &quot;UpChain&quot;;
-       symbol = &quot;CONG&quot;;
+       name = _name;  // "UpChain";
+       symbol = "CONG";
        decimals = 4;
        totalSupply = 100000000000000;
        balanceOf[msg.sender] = totalSupply;
@@ -64,8 +64,8 @@ contract ERC20 is ERC20Interface,SafeMath {
   // ???
   function transfer(address _to, uint256 _value) returns (bool success) {
       require(_to != address(0));
-      require(balanceOf[msg.sender] &gt;= _value);
-      require(balanceOf[ _to] + _value &gt;= balanceOf[ _to]);   // ??????
+      require(balanceOf[msg.sender] >= _value);
+      require(balanceOf[ _to] + _value >= balanceOf[ _to]);   // ??????
 
       balanceOf[msg.sender] =SafeMath.safeSub(balanceOf[msg.sender],_value) ;
       balanceOf[_to] =SafeMath.safeAdd(balanceOf[_to] ,_value);
@@ -79,9 +79,9 @@ contract ERC20 is ERC20Interface,SafeMath {
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
       require(_to != address(0));
-      require(allowed[_from][msg.sender] &gt;= _value);
-      require(balanceOf[_from] &gt;= _value);
-      require(balanceOf[ _to] + _value &gt;= balanceOf[ _to]);
+      require(allowed[_from][msg.sender] >= _value);
+      require(balanceOf[_from] >= _value);
+      require(balanceOf[ _to] + _value >= balanceOf[ _to]);
 
       balanceOf[_from] =SafeMath.safeSub(balanceOf[_from],_value) ;
       balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to],_value);
@@ -149,7 +149,7 @@ contract SelfDesctructionContract {
 
 contract AdvanceToken is ERC20, owned,SelfDesctructionContract{
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event AddSupply(uint amount);
     event FrozenFunds(address target, bool frozen);
@@ -179,7 +179,7 @@ contract AdvanceToken is ERC20, owned,SelfDesctructionContract{
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(allowed[_from][msg.sender] >= _value);
         success =  _transfer(_from, _to, _value);
         allowed[_from][msg.sender] =SafeMath.safeSub(allowed[_from][msg.sender],_value) ;
   }
@@ -188,8 +188,8 @@ contract AdvanceToken is ERC20, owned,SelfDesctructionContract{
       require(_to != address(0));
       require(!frozenAccount[_from]);
 
-      require(balanceOf[_from] &gt;= _value);
-      require(balanceOf[ _to] + _value &gt;= balanceOf[ _to]);
+      require(balanceOf[_from] >= _value);
+      require(balanceOf[ _to] + _value >= balanceOf[ _to]);
 
       balanceOf[_from] =SafeMath.safeSub(balanceOf[_from],_value) ;
       balanceOf[_to] =SafeMath.safeAdd(balanceOf[_to],_value) ;
@@ -199,7 +199,7 @@ contract AdvanceToken is ERC20, owned,SelfDesctructionContract{
   }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         totalSupply =SafeMath.safeSub(totalSupply,_value) ;
         balanceOf[msg.sender] =SafeMath.safeSub(balanceOf[msg.sender],_value) ;
@@ -209,8 +209,8 @@ contract AdvanceToken is ERC20, owned,SelfDesctructionContract{
     }
 
     function burnFrom(address _from, uint256 _value)  public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         totalSupply =SafeMath.safeSub(totalSupply,_value) ;
         balanceOf[msg.sender] =SafeMath.safeSub(balanceOf[msg.sender], _value);

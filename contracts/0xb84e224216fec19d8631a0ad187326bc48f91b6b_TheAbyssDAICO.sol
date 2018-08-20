@@ -17,7 +17,7 @@ interface ISimpleCrowdsale {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -210,13 +210,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -238,7 +238,7 @@ contract LockedTokens is SafeMath {
 
     IERC20Token public token;
     address public crowdsaleAddress;
-    mapping(address =&gt; Tokens[]) public walletTokens;
+    mapping(address => Tokens[]) public walletTokens;
 
     /**
      * @dev LockedTokens constructor
@@ -265,10 +265,10 @@ contract LockedTokens is SafeMath {
      * @dev Called by owner of locked tokens to release them
      */
     function releaseTokens() public {
-        require(walletTokens[msg.sender].length &gt; 0);
+        require(walletTokens[msg.sender].length > 0);
 
-        for(uint256 i = 0; i &lt; walletTokens[msg.sender].length; i++) {
-            if(!walletTokens[msg.sender][i].released &amp;&amp; now &gt;= walletTokens[msg.sender][i].lockEndTime) {
+        for(uint256 i = 0; i < walletTokens[msg.sender].length; i++) {
+            if(!walletTokens[msg.sender][i].released && now >= walletTokens[msg.sender][i].lockEndTime) {
                 walletTokens[msg.sender][i].released = true;
                 token.transfer(msg.sender, walletTokens[msg.sender][i].amount);
                 TokensUnlocked(msg.sender, walletTokens[msg.sender][i].amount);
@@ -282,12 +282,12 @@ contract LockedTokens is SafeMath {
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has owners addresses and provides basic authorization control
- * functions, this simplifies the implementation of &quot;users permissions&quot;.
+ * functions, this simplifies the implementation of "users permissions".
  */
 contract MultiOwnable {
     address public manager; // address used to set owners
     address[] public owners;
-    mapping(address =&gt; bool) public ownerByAddress;
+    mapping(address => bool) public ownerByAddress;
 
     event SetOwners(address[] owners);
 
@@ -313,12 +313,12 @@ contract MultiOwnable {
     }
 
     function _setOwners(address[] _owners) internal {
-        for(uint256 i = 0; i &lt; owners.length; i++) {
+        for(uint256 i = 0; i < owners.length; i++) {
             ownerByAddress[owners[i]] = false;
         }
 
 
-        for(uint256 j = 0; j &lt; _owners.length; j++) {
+        for(uint256 j = 0; j < _owners.length; j++) {
             ownerByAddress[_owners[j]] = true;
         }
         owners = _owners;
@@ -337,12 +337,12 @@ contract MultiOwnable {
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20Token is IERC20Token, SafeMath {
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -352,7 +352,7 @@ contract ERC20Token is IERC20Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -455,7 +455,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transfer(_to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(msg.sender, _to, _value);
         }
         return success;
@@ -463,7 +463,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transferFrom(_from, _to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(_from, _to, _value);
         }
         return success;
@@ -496,7 +496,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function destroy(address _from, uint256 _value) external {
         require(ownerByAddress[msg.sender] || msg.sender == _from);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         totalSupply = safeSub(totalSupply, _value);
         balances[_from] = safeSub(balances[_from], _value);
         Transfer(_from, address(0), _value);
@@ -531,7 +531,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -560,7 +560,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 contract TransferLimitedToken is ManagedToken {
     uint256 public constant LIMIT_TRANSFERS_PERIOD = 365 days;
 
-    mapping(address =&gt; bool) public limitedWallets;
+    mapping(address => bool) public limitedWallets;
     uint256 public limitEndDate;
     address public limitedWalletsManager;
     bool public isLimitEnabled;
@@ -578,7 +578,7 @@ contract TransferLimitedToken is ManagedToken {
      * @param _to To address
      */
     modifier canTransfer(address _from, address _to)  {
-        require(now &gt;= limitEndDate || !isLimitEnabled || (!limitedWallets[_from] &amp;&amp; !limitedWallets[_to]));
+        require(now >= limitEndDate || !isLimitEnabled || (!limitedWallets[_from] && !limitedWallets[_to]));
         _;
     }
 
@@ -689,10 +689,10 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     ICrowdsaleReservationFund public reservationFund;
     LockedTokens public lockedTokens;
 
-    mapping(address =&gt; bool) public whiteList;
-    mapping(address =&gt; bool) public privilegedList;
-    mapping(address =&gt; AdditionalBonusState) public additionalBonusOwnerState;
-    mapping(address =&gt; uint256) public userTotalContributed;
+    mapping(address => bool) public whiteList;
+    mapping(address => bool) public privilegedList;
+    mapping(address => AdditionalBonusState) public additionalBonusOwnerState;
+    mapping(address => uint256) public userTotalContributed;
 
     address public bnbTokenWallet;
     address public referralTokenWallet;
@@ -709,7 +709,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     IERC20Token public bnbToken;
     uint256 public BNB_HARD_CAP = 300000 ether; // 300K BNB
     uint256 public BNB_MIN_CONTRIB = 1000 ether; // 1K BNB
-    mapping(address =&gt; uint256) public bnbContributions;
+    mapping(address => uint256) public bnbContributions;
     uint256 public totalBNBContributed = 0;
     bool public bnbWithdrawEnabled = false;
 
@@ -738,7 +738,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     }
 
     modifier checkTime() {
-        require(now &gt;= SALE_START_TIME &amp;&amp; now &lt;= SALE_END_TIME);
+        require(now >= SALE_START_TIME && now <= SALE_END_TIME);
         _;
     }
 
@@ -786,22 +786,22 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
      */
     function isValidContribution() internal view returns(bool) {
         uint256 currentUserContribution = safeAdd(msg.value, userTotalContributed[msg.sender]);
-        if(whiteList[msg.sender] &amp;&amp; msg.value &gt;= ETHER_MIN_CONTRIB) {
-            if(now &lt;= MAX_CONTRIB_CHECK_END_TIME &amp;&amp; currentUserContribution &gt; ETHER_MAX_CONTRIB ) {
+        if(whiteList[msg.sender] && msg.value >= ETHER_MIN_CONTRIB) {
+            if(now <= MAX_CONTRIB_CHECK_END_TIME && currentUserContribution > ETHER_MAX_CONTRIB ) {
                     return false;
             }
             return true;
 
         }
-        if(privilegedList[msg.sender] &amp;&amp; msg.value &gt;= ETHER_MIN_CONTRIB_PRIVATE) {
-            if(now &lt;= MAX_CONTRIB_CHECK_END_TIME &amp;&amp; currentUserContribution &gt; ETHER_MAX_CONTRIB_PRIVATE ) {
+        if(privilegedList[msg.sender] && msg.value >= ETHER_MIN_CONTRIB_PRIVATE) {
+            if(now <= MAX_CONTRIB_CHECK_END_TIME && currentUserContribution > ETHER_MAX_CONTRIB_PRIVATE ) {
                     return false;
             }
             return true;
         }
 
-        if(token.limitedWallets(msg.sender) &amp;&amp; msg.value &gt;= ETHER_MIN_CONTRIB_USA) {
-            if(now &lt;= MAX_CONTRIB_CHECK_END_TIME &amp;&amp; currentUserContribution &gt; ETHER_MAX_CONTRIB_USA) {
+        if(token.limitedWallets(msg.sender) && msg.value >= ETHER_MIN_CONTRIB_USA) {
+            if(now <= MAX_CONTRIB_CHECK_END_TIME && currentUserContribution > ETHER_MAX_CONTRIB_USA) {
                     return false;
             }
             return true;
@@ -814,7 +814,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
      * @dev Check hard cap overflow
      */
     function validateCap() internal view returns(bool){
-        if(msg.value &lt;= safeSub(hardCap, totalEtherContributed)) {
+        if(msg.value <= safeSub(hardCap, totalEtherContributed)) {
             return true;
         }
         return false;
@@ -824,8 +824,8 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
      * @dev Set token price once before start of crowdsale
      */
     function setTokenPrice(uint256 _tokenPriceNum, uint256 _tokenPriceDenom) public onlyOwner {
-        require(tokenPriceNum == 0 &amp;&amp; tokenPriceDenom == 0);
-        require(_tokenPriceNum &gt; 0 &amp;&amp; _tokenPriceDenom &gt; 0);
+        require(tokenPriceNum == 0 && tokenPriceDenom == 0);
+        require(_tokenPriceNum > 0 && _tokenPriceDenom > 0);
         tokenPriceNum = _tokenPriceNum;
         tokenPriceDenom = _tokenPriceDenom;
     }
@@ -862,11 +862,11 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         if(token.limitedWallets(msg.sender)) {
             return false;
         }
-        if(!whiteList[msg.sender] &amp;&amp; !privilegedList[msg.sender]) {
+        if(!whiteList[msg.sender] && !privilegedList[msg.sender]) {
             return false;
         }
         uint256 amount = bnbToken.allowance(msg.sender, address(this));
-        if(amount &lt; BNB_MIN_CONTRIB || safeAdd(totalBNBContributed, amount) &gt; BNB_HARD_CAP) {
+        if(amount < BNB_MIN_CONTRIB || safeAdd(totalBNBContributed, amount) > BNB_HARD_CAP) {
             return false;
         }
         return true;
@@ -880,13 +880,13 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         uint256 numerator = 0;
         uint256 denominator = 100;
 
-        if(now &lt; BONUS_WINDOW_1_END_TIME) {
+        if(now < BONUS_WINDOW_1_END_TIME) {
             numerator = 25;
-        } else if(now &lt; BONUS_WINDOW_2_END_TIME) {
+        } else if(now < BONUS_WINDOW_2_END_TIME) {
             numerator = 15;
-        } else if(now &lt; BONUS_WINDOW_3_END_TIME) {
+        } else if(now < BONUS_WINDOW_3_END_TIME) {
             numerator = 10;
-        } else if(now &lt; BONUS_WINDOW_4_END_TIME) {
+        } else if(now < BONUS_WINDOW_4_END_TIME) {
             numerator = 5;
         } else {
             numerator = 0;
@@ -959,11 +959,11 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     }
 
     function processReservationContribution(address contributor, uint256 amount) private checkTime checkCap {
-        require(amount &gt;= ETHER_MIN_CONTRIB);
+        require(amount >= ETHER_MIN_CONTRIB);
 
-        if(now &lt;= MAX_CONTRIB_CHECK_END_TIME) {
+        if(now <= MAX_CONTRIB_CHECK_END_TIME) {
             uint256 currentUserContribution = safeAdd(amount, reservationFund.contributionsOf(contributor));
-            require(currentUserContribution &lt;= ETHER_MAX_CONTRIB);
+            require(currentUserContribution <= ETHER_MAX_CONTRIB);
         }
         uint256 bonusNum = 0;
         uint256 bonusDenom = 100;
@@ -971,7 +971,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         uint256 tokenBonusAmount = 0;
         uint256 tokenAmount = safeDiv(safeMul(amount, tokenPriceNum), tokenPriceDenom);
 
-        if(bonusNum &gt; 0) {
+        if(bonusNum > 0) {
             tokenBonusAmount = safeDiv(safeMul(tokenAmount, bonusNum), bonusDenom);
         }
 
@@ -999,7 +999,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         uint256 tokenBonusAmount = 0;
         uint256 tokenAmount = safeDiv(safeMul(amountBNB, BNB_TOKEN_PRICE_NUM), BNB_TOKEN_PRICE_DENOM);
         rawTokenSupply = safeAdd(rawTokenSupply, tokenAmount);
-        if(bonusNum &gt; 0) {
+        if(bonusNum > 0) {
             tokenBonusAmount = safeDiv(safeMul(tokenAmount, bonusNum), bonusDenom);
         }
 
@@ -1030,7 +1030,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         uint256 tokenAmount = safeDiv(safeMul(amount, tokenPriceNum), tokenPriceDenom);
         rawTokenSupply = safeAdd(rawTokenSupply, tokenAmount);
 
-        if(bonusNum &gt; 0) {
+        if(bonusNum > 0) {
             tokenBonusAmount = safeDiv(safeMul(tokenAmount, bonusNum), bonusDenom);
         }
 
@@ -1053,7 +1053,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
         uint256 tokenBonusAmount
     ) external payable checkCap {
         require(msg.sender == address(reservationFund));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         rawTokenSupply = safeAdd(rawTokenSupply, tokenAmount);
         processPayment(contributor, msg.value, tokenAmount, tokenBonusAmount, false);
     }
@@ -1080,12 +1080,12 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     }
 
     /**
-     * @dev Finalize crowdsale if we reached hard cap or current time &gt; SALE_END_TIME
+     * @dev Finalize crowdsale if we reached hard cap or current time > SALE_END_TIME
      */
     function finalizeCrowdsale() public onlyOwner {
         if(
-            totalEtherContributed &gt;= safeSub(hardCap, 1000 ether) ||
-            (now &gt;= SALE_END_TIME &amp;&amp; totalEtherContributed &gt;= softCap)
+            totalEtherContributed >= safeSub(hardCap, 1000 ether) ||
+            (now >= SALE_END_TIME && totalEtherContributed >= softCap)
         ) {
             fund.onCrowdsaleEnd();
             reservationFund.onCrowdsaleEnd();
@@ -1119,7 +1119,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
             uint256 bountyTokenAmount = safeDiv(suppliedTokenAmount, 60); // 1%
             token.issue(bountyTokenWallet, bountyTokenAmount);
             token.finishIssuance();
-        } else if(now &gt;= SALE_END_TIME) {
+        } else if(now >= SALE_END_TIME) {
             // Enable fund`s crowdsale refund if soft cap is not reached
             fund.enableCrowdsaleRefund();
             reservationFund.onCrowdsaleEnd();
@@ -1134,7 +1134,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
     function withdrawBNB() public onlyOwner {
         require(bnbWithdrawEnabled);
         // BNB transfer
-        if(bnbToken.balanceOf(address(this)) &gt; 0) {
+        if(bnbToken.balanceOf(address(this)) > 0) {
             bnbToken.transfer(bnbTokenWallet, bnbToken.balanceOf(address(this)));
         }
     }
@@ -1144,7 +1144,7 @@ contract TheAbyssDAICO is Ownable, SafeMath, Pausable, ISimpleCrowdsale {
      */
     function refundBNBContributor() public {
         require(bnbRefundEnabled);
-        require(bnbContributions[msg.sender] &gt; 0);
+        require(bnbContributions[msg.sender] > 0);
         uint256 amount = bnbContributions[msg.sender];
         bnbContributions[msg.sender] = 0;
         bnbToken.transfer(msg.sender, amount);

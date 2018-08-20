@@ -7,14 +7,14 @@ interface ERC721Enumerable /* is ERC721 */ {
     function totalSupply() public view returns (uint256);
 
     /// @notice Enumerate valid NFTs
-    /// @dev Throws if `_index` &gt;= `totalSupply()`.
+    /// @dev Throws if `_index` >= `totalSupply()`.
     /// @param _index A counter less than `totalSupply()`
     /// @return The token identifier for the `_index`th NFT,
     ///  (sort order not specified)
     function tokenByIndex(uint256 _index) external view returns (uint256);
 
     /// @notice Enumerate NFTs assigned to an owner
-    /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+    /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
     ///  `_owner` is the zero address, representing invalid NFTs.
     /// @param _owner An address where we are interested in NFTs owned by them
     /// @param _index A counter less than `balanceOf(_owner)`
@@ -32,8 +32,8 @@ interface ERC721Metadata /* is ERC721 */ {
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string);
 }
 
@@ -80,26 +80,26 @@ interface ERC721TokenReceiver {
     /// @param _from The sending address
     /// @param _tokenId The NFT identifier which is being transfered
     /// @param _data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     ///  unless throwing
 	function onERC721Received(address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
 }
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -112,17 +112,17 @@ contract LicenseAccessControl {
   event Unpaused();
 
   /**
-   * @notice CEO&#39;s address FOOBAR
+   * @notice CEO's address FOOBAR
    */
   address public ceoAddress;
 
   /**
-   * @notice CFO&#39;s address
+   * @notice CFO's address
    */
   address public cfoAddress;
 
   /**
-   * @notice COO&#39;s address
+   * @notice COO's address
    */
   address public cooAddress;
 
@@ -220,7 +220,7 @@ contract LicenseAccessControl {
 
   /**
    * @notice Sets a new withdrawalAddress
-   * @param _newWithdrawalAddress - the address where we&#39;ll send the funds
+   * @param _newWithdrawalAddress - the address where we'll send the funds
    */
   function setWithdrawalAddress(address _newWithdrawalAddress) external onlyCEO {
     require(_newWithdrawalAddress != address(0));
@@ -316,7 +316,7 @@ contract LicenseBase is LicenseAccessControl {
   /** anyone **/
 
   /**
-   * @notice Get a license&#39;s productId
+   * @notice Get a license's productId
    * @param _licenseId the license id
    */
   function licenseProductId(uint256 _licenseId) public view returns (uint256) {
@@ -324,7 +324,7 @@ contract LicenseBase is LicenseAccessControl {
   }
 
   /**
-   * @notice Get a license&#39;s attributes
+   * @notice Get a license's attributes
    * @param _licenseId the license id
    */
   function licenseAttributes(uint256 _licenseId) public view returns (uint256) {
@@ -332,7 +332,7 @@ contract LicenseBase is LicenseAccessControl {
   }
 
   /**
-   * @notice Get a license&#39;s issueTime
+   * @notice Get a license's issueTime
    * @param _licenseId the license id
    */
   function licenseIssuedTime(uint256 _licenseId) public view returns (uint256) {
@@ -340,7 +340,7 @@ contract LicenseBase is LicenseAccessControl {
   }
 
   /**
-   * @notice Get a license&#39;s issueTime
+   * @notice Get a license's issueTime
    * @param _licenseId the license id
    */
   function licenseExpirationTime(uint256 _licenseId) public view returns (uint256) {
@@ -356,7 +356,7 @@ contract LicenseBase is LicenseAccessControl {
   }
 
   /**
-   * @notice Get a license&#39;s info
+   * @notice Get a license's info
    * @param _licenseId the license id
    */
   function licenseInfo(uint256 _licenseId)
@@ -418,7 +418,7 @@ contract AffiliateProgram is Pausable {
   event AffiliateCredit(
     // The address of the affiliate
     address affiliate,
-    // The store&#39;s ID of what was sold (e.g. a tokenId)
+    // The store's ID of what was sold (e.g. a tokenId)
     uint256 productId,
     // The amount owed this affiliate in this sale
     uint256 amount
@@ -429,10 +429,10 @@ contract AffiliateProgram is Pausable {
   event RateChanged(uint256 rate, uint256 amount);
 
   // @notice A mapping from affiliate address to their balance
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
 
   // @notice A mapping from affiliate address to the time of last deposit
-  mapping (address =&gt; uint256) public lastDepositTimes;
+  mapping (address => uint256) public lastDepositTimes;
 
   // @notice The last deposit globally
   uint256 public lastDepositTime;
@@ -451,7 +451,7 @@ contract AffiliateProgram is Pausable {
   uint256 public baselineRate = 0;
 
   // @notice A mapping from whitelisted referrals to their individual rates
-  mapping (address =&gt; uint256) public whitelistRates;
+  mapping (address => uint256) public whitelistRates;
 
   // @notice The maximum rate for any affiliate
   // @dev overrides individual rates. This can be used to clip the rate used in bulk, if necessary
@@ -477,7 +477,7 @@ contract AffiliateProgram is Pausable {
   }
 
   /**
-   * @dev AffiliateProgram constructor - keeps the address of it&#39;s parent store
+   * @dev AffiliateProgram constructor - keeps the address of it's parent store
    * and pauses the contract
    */
   function AffiliateProgram(address _storeAddress) public {
@@ -503,7 +503,7 @@ contract AffiliateProgram is Pausable {
    *  To that end, if the whitelistRate is exactly 1bp, we use that as a signal for blacklisting
    *  and return a rate of zero. The upside is that we can completely turn off
    *  sending transactions to a particular address when this is needed. The
-   *  downside is that you can&#39;t issued 1/100th of a percent commission.
+   *  downside is that you can't issued 1/100th of a percent commission.
    *  However, since this is such a small amount its an acceptable tradeoff.
    *
    *  This implementation does not use the _productId, _pruchaseId,
@@ -522,7 +522,7 @@ contract AffiliateProgram is Pausable {
     returns (uint256)
   {
     uint256 whitelistedRate = whitelistRates[_affiliate];
-    if(whitelistedRate &gt; 0) {
+    if(whitelistedRate > 0) {
       // use 1 bp as a blacklist signal
       if(whitelistedRate == 1) {
         return 0;
@@ -557,13 +557,13 @@ contract AffiliateProgram is Pausable {
       _productId,
       _purchaseId,
       _purchaseAmount);
-    require(rate &lt;= hardCodedMaximumRate);
+    require(rate <= hardCodedMaximumRate);
     return (_purchaseAmount.mul(rate)).div(10000);
   }
 
   /**
    * @notice credit an affiliate for a purchase
-   * @dev credit accepts eth and credits the affiliate&#39;s balance for the amount
+   * @dev credit accepts eth and credits the affiliate's balance for the amount
    *
    * @param _affiliate - the address of the affiliate to credit
    * @param _purchaseId - the purchaseId of the sale
@@ -576,7 +576,7 @@ contract AffiliateProgram is Pausable {
     whenNotPaused
     payable
   {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(_affiliate != address(0));
     balances[_affiliate] += msg.value;
     lastDepositTimes[_affiliate] = now; // solium-disable-line security/no-block-members
@@ -593,7 +593,7 @@ contract AffiliateProgram is Pausable {
    * @param _to - the address to transfer ETH to
    */
   function _performWithdraw(address _from, address _to) private {
-    require(balances[_from] &gt; 0);
+    require(balances[_from] > 0);
     uint256 balanceValue = balances[_from];
     balances[_from] = 0;
     _to.transfer(balanceValue);
@@ -602,7 +602,7 @@ contract AffiliateProgram is Pausable {
 
   /**
    * @notice withdraw
-   * @dev withdraw the msg.sender&#39;s balance
+   * @dev withdraw the msg.sender's balance
    */
   function withdraw() public whenNotPaused {
     _performWithdraw(msg.sender, msg.sender);
@@ -610,7 +610,7 @@ contract AffiliateProgram is Pausable {
 
   /**
    * @notice withdraw from a specific account
-   * @dev withdrawFrom allows the owner to withdraw an affiliate&#39;s unclaimed
+   * @dev withdrawFrom allows the owner to withdraw an affiliate's unclaimed
    * ETH, after the alotted time.
    *
    * This function can be called even if the contract is paused
@@ -620,7 +620,7 @@ contract AffiliateProgram is Pausable {
    */
   function withdrawFrom(address _affiliate, address _to) onlyOwner public {
     // solium-disable-next-line security/no-block-members
-    require(now &gt; lastDepositTimes[_affiliate].add(commissionExpiryTime));
+    require(now > lastDepositTimes[_affiliate].add(commissionExpiryTime));
     _performWithdraw(_affiliate, _to);
   }
 
@@ -639,7 +639,7 @@ contract AffiliateProgram is Pausable {
    */
   function retire(address _to) onlyOwner whenPaused public {
     // solium-disable-next-line security/no-block-members
-    require(now &gt; lastDepositTime.add(commissionExpiryTime));
+    require(now > lastDepositTime.add(commissionExpiryTime));
     _to.transfer(this.balance);
     retired = true;
   }
@@ -653,7 +653,7 @@ contract AffiliateProgram is Pausable {
    * @param _rate - the rate, in basis-points (1/100th of a percent) to give this affiliate in each sale. NOTE: a rate of exactly 1 is the signal to blacklist this affiliate. That is, a rate of 1 will set the commission to 0.
    */
   function whitelist(address _affiliate, uint256 _rate) onlyOwner public {
-    require(_rate &lt;= hardCodedMaximumRate);
+    require(_rate <= hardCodedMaximumRate);
     whitelistRates[_affiliate] = _rate;
     Whitelisted(_affiliate, _rate);
   }
@@ -661,10 +661,10 @@ contract AffiliateProgram is Pausable {
   /**
    * @notice set the rate for non-whitelisted affiliates
    * @dev setBaselineRate - sets the baseline rate for any affiliate that is not whitelisted
-   * @param _newRate - the rate, in bp (1/100th of a percent) to give any non-whitelisted affiliate. Set to zero to &quot;turn off&quot;
+   * @param _newRate - the rate, in bp (1/100th of a percent) to give any non-whitelisted affiliate. Set to zero to "turn off"
    */
   function setBaselineRate(uint256 _newRate) onlyOwner public {
-    require(_newRate &lt;= hardCodedMaximumRate);
+    require(_newRate <= hardCodedMaximumRate);
     baselineRate = _newRate;
     RateChanged(0, _newRate);
   }
@@ -675,7 +675,7 @@ contract AffiliateProgram is Pausable {
    * @param _newRate - the rate, in bp (1/100th of a percent)
    */
   function setMaximumRate(uint256 _newRate) onlyOwner public {
-    require(_newRate &lt;= hardCodedMaximumRate);
+    require(_newRate <= hardCodedMaximumRate);
     maximumRate = _newRate;
     RateChanged(1, _newRate);
   }
@@ -744,7 +744,7 @@ contract LicenseInventory is LicenseBase {
   uint256[] public allProductIds;
 
   // @notice A mapping from product ids to Products
-  mapping (uint256 =&gt; Product) public products;
+  mapping (uint256 => Product) public products;
 
   /*** internal ***/
 
@@ -768,7 +768,7 @@ contract LicenseInventory is LicenseBase {
     internal
   {
     require(_productDoesNotExist(_productId));
-    require(_initialInventoryQuantity &lt;= _supply);
+    require(_initialInventoryQuantity <= _supply);
 
     Product memory _product = Product({
       id: _productId,
@@ -801,10 +801,10 @@ contract LicenseInventory is LicenseBase {
     require(_productExists(_productId));
     uint256 newInventoryLevel = products[_productId].available.add(_inventoryAdjustment);
 
-    // A supply of &quot;0&quot; means &quot;unlimited&quot;. Otherwise we need to ensure that we&#39;re not over-creating this product
-    if(products[_productId].supply &gt; 0) {
+    // A supply of "0" means "unlimited". Otherwise we need to ensure that we're not over-creating this product
+    if(products[_productId].supply > 0) {
       // you have to take already sold into account
-      require(products[_productId].sold.add(newInventoryLevel) &lt;= products[_productId].supply);
+      require(products[_productId].sold.add(newInventoryLevel) <= products[_productId].supply);
     }
 
     products[_productId].available = newInventoryLevel;
@@ -817,8 +817,8 @@ contract LicenseInventory is LicenseBase {
   {
     require(_productExists(_productId));
     uint256 newInventoryLevel = products[_productId].available.sub(_inventoryAdjustment);
-    // unnecessary because we&#39;re using SafeMath and an unsigned int
-    // require(newInventoryLevel &gt;= 0);
+    // unnecessary because we're using SafeMath and an unsigned int
+    // require(newInventoryLevel >= 0);
     products[_productId].available = newInventoryLevel;
   }
 
@@ -842,7 +842,7 @@ contract LicenseInventory is LicenseBase {
 
   function _purchaseOneUnitInStock(uint256 _productId) internal {
     require(_productExists(_productId));
-    require(availableInventoryOf(_productId) &gt; 0);
+    require(availableInventoryOf(_productId) > 0);
 
     // lower inventory
     _decrementInventory(_productId, 1);
@@ -869,7 +869,7 @@ contract LicenseInventory is LicenseBase {
    * @param _productId - the id of the product to use (cannot be changed)
    * @param _initialPrice - the starting price (price can be changed)
    * @param _initialInventoryQuantity - the initial inventory (inventory can be changed)
-   * @param _supply - the total supply - use `0` for &quot;unlimited&quot; (cannot be changed)
+   * @param _supply - the total supply - use `0` for "unlimited" (cannot be changed)
    */
   function createProduct(
     uint256 _productId,
@@ -1049,7 +1049,7 @@ contract LicenseInventory is LicenseBase {
    * of dealing with excess refunds). This method is public so that clients can
    * read the exact amount our contract expects to receive.
    *
-   * @param _productId - the product we&#39;re calculating for
+   * @param _productId - the product we're calculating for
    * @param _numCycles - the number of cycles to calculate for
    */
   function costForProductCycles(uint256 _productId, uint256 _numCycles)
@@ -1064,10 +1064,10 @@ contract LicenseInventory is LicenseBase {
    * @notice returns if this product is a subscription or not
    * @dev Some products are subscriptions and others are not. An interval of 0
    * means the product is not a subscription
-   * @param _productId - the product we&#39;re checking
+   * @param _productId - the product we're checking
    */
   function isSubscriptionProduct(uint256 _productId) public view returns (bool) {
-    return intervalOf(_productId) &gt; 0;
+    return intervalOf(_productId) > 0;
   }
 
 }
@@ -1090,9 +1090,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -1100,7 +1100,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -1109,7 +1109,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1131,35 +1131,35 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner address to operator address to approval
-  mapping (address =&gt; mapping (address =&gt; bool)) private operatorApprovals;
+  mapping (address => mapping (address => bool)) private operatorApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /*** Constants ***/
   // Configure these for your own deployment
-  string public constant NAME = &quot;Dottabot&quot;;
-  string public constant SYMBOL = &quot;DOTTA&quot;;
-  string public tokenMetadataBaseURI = &quot;https://api.dottabot.com/&quot;;
+  string public constant NAME = "Dottabot";
+  string public constant SYMBOL = "DOTTA";
+  string public tokenMetadataBaseURI = "https://api.dottabot.com/";
 
   /**
-   * @notice token&#39;s name
+   * @notice token's name
    */
   function name() external pure returns (string) {
     return NAME;
   }
 
   /**
-   * @notice symbols&#39;s name
+   * @notice symbols's name
    */
   function symbol() external pure returns (string) {
     return SYMBOL;
@@ -1221,7 +1221,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
   * @return The token identifier for the `_index`th NFT
   */
   function tokenByIndex(uint256 _index) external view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return _index;
   }
 
@@ -1246,7 +1246,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
 
   /**
   * @notice Enumerate NFTs assigned to an owner
-  * @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  * @dev Throws if `_index` >= `balanceOf(_owner)` or if
   *  `_owner` is the zero address, representing invalid NFTs.
   * @param _owner An address where we are interested in NFTs owned by them
   * @param _index A counter less than `balanceOf(_owner)`
@@ -1257,7 +1257,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
     view
     returns (uint256 _tokenId)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -1347,7 +1347,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
   }
 
   /**
-  * @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage all your assets
+  * @notice Enable or disable approval for a third party ("operator") to manage all your assets
   * @dev Emits the ApprovalForAll event
   * @param _to Address to add to the set of authorized operators.
   * @param _approved True if the operators is approved, false to revoke approval
@@ -1431,9 +1431,9 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
   * operator, or the approved address for this NFT. Throws if `_from` is
   * not the current owner. Throws if `_to` is the zero address. Throws if
   * `_tokenId` is not a valid NFT. When transfer is complete, this function
-  * checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+  * checks if `_to` is a smart contract (code size > 0). If so, it calls
   * `onERC721Received` on `_to` and throws if the return value is not
-  * `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+  * `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
   * @param _from The current owner of the NFT
   * @param _to The new owner
   * @param _tokenId The NFT to transfer
@@ -1455,14 +1455,14 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
       bytes4 tokenReceiverResponse = ERC721TokenReceiver(_to).onERC721Received.gas(50000)(
         _from, _tokenId, _data
       );
-      require(tokenReceiverResponse == bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)));
+      require(tokenReceiverResponse == bytes4(keccak256("onERC721Received(address,uint256,bytes)")));
     }
   }
 
   /*
    * @notice Transfers the ownership of an NFT from one address to another address
    * @dev This works identically to the other function with an extra data parameter,
-   *  except this function just sets data to &quot;&quot;
+   *  except this function just sets data to ""
    * @param _from The current owner of the NFT
    * @param _to The new owner
    * @param _tokenId The NFT to transfer
@@ -1475,7 +1475,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
     external
     whenNotPaused
   {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
@@ -1559,7 +1559,7 @@ contract LicenseOwnership is LicenseInventory, ERC721, ERC165, ERC721Metadata, E
   function _isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -1607,7 +1607,7 @@ contract LicenseSale is LicenseOwnership {
       require(_numCycles != 0);
     }
 
-    // Non-subscription products have an expiration time of 0, meaning &quot;no-expiration&quot;
+    // Non-subscription products have an expiration time of 0, meaning "no-expiration"
     uint256 expirationTime = isSubscriptionProduct(_productId) ?
       now.add(intervalOf(_productId).mul(_numCycles)) : // solium-disable-line security/no-block-members
       0;
@@ -1646,8 +1646,8 @@ contract LicenseSale is LicenseOwnership {
       _productId,
       _licenseId,
       _purchaseAmount);
-    if(affiliateCut &gt; 0) {
-      require(affiliateCut &lt; _purchaseAmount);
+    if(affiliateCut > 0) {
+      require(affiliateCut < _purchaseAmount);
       affiliateProgram.credit.value(affiliateCut)(_affiliate, _licenseId);
     }
   }
@@ -1678,8 +1678,8 @@ contract LicenseSale is LicenseOwnership {
 
   function _affiliateProgramIsActive() internal view returns (bool) {
     return
-      affiliateProgram != address(0) &amp;&amp;
-      affiliateProgram.storeAddress() == address(this) &amp;&amp;
+      affiliateProgram != address(0) &&
+      affiliateProgram.storeAddress() == address(this) &&
       !affiliateProgram.paused();
   }
 
@@ -1734,7 +1734,7 @@ contract LicenseSale is LicenseOwnership {
   * @dev Requires that the value sent is exactly the price of the product
   * @param _productId - the product to purchase
   * @param _numCycles - the number of cycles being purchased. This number should be `1` for non-subscription products and the number of cycles for subscriptions.
-  * @param _assignee - the address to assign the purchase to (doesn&#39;t have to be msg.sender)
+  * @param _assignee - the address to assign the purchase to (doesn't have to be msg.sender)
   * @param _affiliate - the address to of the affiliate - use address(0) if none
   */
   function purchase(
@@ -1753,17 +1753,17 @@ contract LicenseSale is LicenseOwnership {
     require(_assignee != address(0));
     // msg.value can be zero: free products are supported
 
-    // Don&#39;t bother dealing with excess payments. Ensure the price paid is
+    // Don't bother dealing with excess payments. Ensure the price paid is
     // accurate. No more, no less.
     require(msg.value == costForProductCycles(_productId, _numCycles));
 
-    // Non-subscription products should send a _numCycle of 1 -- you can&#39;t buy a
+    // Non-subscription products should send a _numCycle of 1 -- you can't buy a
     // multiple quantity of a non-subscription product with this function
     if(!isSubscriptionProduct(_productId)) {
       require(_numCycles == 1);
     }
 
-    // this can, of course, be gamed by malicious miners. But it&#39;s adequate for our application
+    // this can, of course, be gamed by malicious miners. But it's adequate for our application
     // Feel free to add your own strategies for product attributes
     // solium-disable-next-line security/no-block-members, zeppelin/no-arithmetic-operations
     uint256 attributes = uint256(keccak256(block.blockhash(block.number-1)))^_productId^(uint256(_assignee));
@@ -1775,8 +1775,8 @@ contract LicenseSale is LicenseOwnership {
       _affiliate);
 
     if(
-      priceOf(_productId) &gt; 0 &amp;&amp;
-      _affiliate != address(0) &amp;&amp;
+      priceOf(_productId) > 0 &&
+      _affiliate != address(0) &&
       _affiliateProgramIsActive()
     ) {
       _handleAffiliate(
@@ -1814,10 +1814,10 @@ contract LicenseSale is LicenseOwnership {
     _performRenewal(_tokenId, _numCycles);
 
     if(
-      renewalCost &gt; 0 &amp;&amp;
-      licenseAffiliate(_tokenId) != address(0) &amp;&amp;
-      _affiliateProgramIsActive() &amp;&amp;
-      licenseIssuedTime(_tokenId).add(renewalsCreditAffiliatesFor) &gt; now
+      renewalCost > 0 &&
+      licenseAffiliate(_tokenId) != address(0) &&
+      _affiliateProgramIsActive() &&
+      licenseIssuedTime(_tokenId).add(renewalsCreditAffiliatesFor) > now
     ) {
       _handleAffiliate(
         licenseAffiliate(_tokenId),
@@ -1867,28 +1867,28 @@ library Strings {
       string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
       bytes memory babcde = bytes(abcde);
       uint k = 0;
-      for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-      for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-      for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-      for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-      for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+      for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+      for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+      for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+      for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+      for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
       return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     function uint2str(uint i) internal pure returns (string) {
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){

@@ -13,7 +13,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -109,8 +109,8 @@ contract SimpleSale is Ownable,Pausable {
     uint256 public startTime = 1505998800;
     uint256 public stopTime = 1508590800;
 
-    mapping (address =&gt; uint256) public deposits;
-    mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
+    mapping (address => uint256) public deposits;
+    mapping (address => bool) public authorised; // just to annoy the heck out of americans
 
     /**
      * @dev throws if person sending is not contract owner or cs role
@@ -125,9 +125,9 @@ contract SimpleSale is Ownable,Pausable {
      */
     modifier onlyAuthorised() {
         require (authorised[msg.sender] || freeForAll);
-        require (msg.value &gt; 0);
-        require (now &gt;= startTime);
-        require (now &lt;= stopTime);
+        require (msg.value > 0);
+        require (now >= startTime);
+        require (now <= stopTime);
         require (!saleFinished);
         require(!paused);
         _;
@@ -152,7 +152,7 @@ contract SimpleSale is Ownable,Pausable {
      * @dev authorise a lot of accounts in one go
      */
     function authoriseManyAccounts(address[] many) onlyCSorOwner {
-        for (uint256 i = 0; i &lt; many.length; i++) {
+        for (uint256 i = 0; i < many.length; i++) {
             authorised[many[i]] = true;
         }
     }

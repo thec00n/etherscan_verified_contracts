@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -242,7 +242,7 @@ contract BurnableToken is StandardToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -258,7 +258,7 @@ contract BurnableToken is StandardToken {
  * @dev ERC20 Hamster Marketplace Token Network Token (HMT)
  *
  * HMT Tokens are divisible by 1e8 (100,000,000) base
- * units referred to as &#39;Grains&#39;.
+ * units referred to as 'Grains'.
  *
  * HMT are displayed using 8 decimal places of precision.
  *
@@ -274,12 +274,12 @@ contract BurnableToken is StandardToken {
  */
 contract HamsterMarketplaceToken is BurnableToken, Pausable {
 
-  string public constant name = &#39;Hamster Marketplace Token&#39;;                   // Set the token name for display
-  string public constant symbol = &#39;HMT&#39;;                                       // Set the token symbol for display
+  string public constant name = 'Hamster Marketplace Token';                   // Set the token name for display
+  string public constant symbol = 'HMT';                                       // Set the token symbol for display
   uint8 public constant decimals = 8;                                          // Set the number of decimals for display
   uint256 constant INITIAL_SUPPLY = 10000000 * 10**uint256(decimals);          // 10 Million HMT specified in Grains
   uint256 public sellPrice;
-  mapping(address =&gt; uint256) bonuses;
+  mapping(address => uint256) bonuses;
   uint8 public freezingPercentage;
   uint32 public constant unfreezingTimestamp = 1550534400;                     // 2019, February, 19, 00:00:00 UTC
 
@@ -305,7 +305,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
    */
   function transfer(address _to, uint256 _value) whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 &gt;= _value);
+    require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 >= _value);
     return super.transfer(_to, _value);
   }
 
@@ -317,7 +317,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
    */
   function transferWithBonuses(address _to, uint256 _value, uint256 _bonus) onlyOwner returns (bool) {
     require(_to != address(0));
-    require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 &gt;= _value + _bonus);
+    require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 >= _value + _bonus);
     bonuses[_to] = bonuses[_to].add(_bonus);
     return super.transfer(_to, _value + _bonus);
   }
@@ -335,8 +335,8 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
    * @param _percentage uint8 Percentage of bonus tokens to be left frozen
    */
   function setFreezingPercentage(uint8 _percentage) onlyOwner returns (bool) {
-    require(_percentage &lt; freezingPercentage);
-    require(now &lt; unfreezingTimestamp);
+    require(_percentage < freezingPercentage);
+    require(now < unfreezingTimestamp);
     freezingPercentage = _percentage;
     return true;
   }
@@ -345,7 +345,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
    * @dev Unfreeze all bonus tokens
    */
   function unfreezeBonuses() returns (bool) {
-    require(now &gt;= unfreezingTimestamp);
+    require(now >= unfreezingTimestamp);
     freezingPercentage = 0;
     return true;
   }
@@ -358,7 +358,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
    */
   function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(balances[_from] - bonuses[_from] * freezingPercentage / 100 &gt;= _value);
+    require(balances[_from] - bonuses[_from] * freezingPercentage / 100 >= _value);
     return super.transferFrom(_from, _to, _value);
   }
 
@@ -383,7 +383,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
   * @param newSellPrice New purchase price
   */
   function setPrice(uint256 newSellPrice) external onlyOwner returns (bool success) {
-      require(newSellPrice &gt; 0);
+      require(newSellPrice > 0);
       sellPrice = newSellPrice;
       return true;
   }
@@ -393,11 +393,11 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
     * @param amount Number of tokens
     */
   function sell(uint256 amount) external returns (uint256 revenue){
-      require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 &gt;= amount);           // Checks if the sender has enough to sell
-      balances[this] = balances[this].add(amount);                                                        // Adds the amount to owner&#39;s balance
-      balances[msg.sender] = balances[msg.sender].sub(amount);                                            // Subtracts the amount from seller&#39;s balance
+      require(balances[msg.sender] - bonuses[msg.sender] * freezingPercentage / 100 >= amount);           // Checks if the sender has enough to sell
+      balances[this] = balances[this].add(amount);                                                        // Adds the amount to owner's balance
+      balances[msg.sender] = balances[msg.sender].sub(amount);                                            // Subtracts the amount from seller's balance
       revenue = amount.mul(sellPrice);                                                                    // Calculate the seller reward
-      msg.sender.transfer(revenue);                                                                       // Sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+      msg.sender.transfer(revenue);                                                                       // Sends ether to the seller: it's important to do this last to prevent recursion attacks
       Transfer(msg.sender, this, amount);                                                                 // Executes an event reflecting on the change
       return revenue;                                                                                     // Ends function and returns
   }
@@ -407,7 +407,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
   * @param amount Number of tokens
   */
   function getTokens(uint256 amount) onlyOwner external returns (bool success) {
-      require(balances[this] &gt;= amount);
+      require(balances[this] >= amount);
       balances[msg.sender] = balances[msg.sender].add(amount);
       balances[this] = balances[this].sub(amount);
       Transfer(this, msg.sender, amount);
@@ -426,7 +426,7 @@ contract HamsterMarketplaceToken is BurnableToken, Pausable {
   * @param amount Number of tokens
   */
   function getEther(uint256 amount) onlyOwner external returns (bool success) {
-      require(amount &gt; 0);
+      require(amount > 0);
       msg.sender.transfer(amount);
       return true;
   }

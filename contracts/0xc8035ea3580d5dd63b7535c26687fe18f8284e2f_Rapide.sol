@@ -11,8 +11,8 @@ contract Rapide {
     uint256 public totalSupply; 
 
     // 모든 균형을 갖춘 배열을 생성합니다. 
-    mapping (address =&gt; uint256) public balanceOf; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; 
+    mapping (address => uint256) public balanceOf; 
+    mapping (address => mapping (address => uint256)) public allowance; 
 
     // 이것은 블록체인에서 클라이언트에게 알려주는 공개 이벤트를 생성합니다 
     event Transfer(address indexed from, address indexed to, uint256 value); 
@@ -43,9 +43,9 @@ contract Rapide {
         // Prevent transfer to 0x0 address. Use burn() instead 
         require(_to != 0x0); 
         // 발신자 점검 
-        require(balanceOf[_from] &gt;= _value); 
+        require(balanceOf[_from] >= _value); 
         // 오버플로 확인 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require(balanceOf[_to] + _value > balanceOf[_to]); 
         // 미래의 주장을 위해 이것을 저장하십시오 
         uint previousBalances = balanceOf[_from] + balanceOf[_to]; 
         // 발신자에서 차감 
@@ -72,7 +72,7 @@ contract Rapide {
      * _value 전송할 금액 
      */ 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) { 
-        require(_value &lt;= allowance[_from][msg.sender]);     // 허용량 체크 
+        require(_value <= allowance[_from][msg.sender]);     // 허용량 체크 
         allowance[_from][msg.sender] -= _value; 
         _transfer(_from, _to, _value); 
         return true; 
@@ -110,7 +110,7 @@ contract Rapide {
      * @param _value 소각되는 금액 
      */ 
     function burn(uint256 _value) public returns (bool success) { 
-        require(balanceOf[msg.sender] &gt;= _value);   // 보낸 사람이 충분히 있는지 확인하십시오. 
+        require(balanceOf[msg.sender] >= _value);   // 보낸 사람이 충분히 있는지 확인하십시오. 
         balanceOf[msg.sender] -= _value;            // 발신자에게서 뺍니다. 
         totalSupply -= _value;                      // 총 발행량 업데이트 
         Burn(msg.sender, _value); 
@@ -123,8 +123,8 @@ contract Rapide {
      * @param _value 소각되는 금액 
      */ 
     function burnFrom(address _from, uint256 _value) public returns (bool success) { 
-        require(balanceOf[_from] &gt;= _value);                // 목표 잔액이 충분한 지 확인하십시오. 
-        require(_value &lt;= allowance[_from][msg.sender]);    // 수당 확인 
+        require(balanceOf[_from] >= _value);                // 목표 잔액이 충분한 지 확인하십시오. 
+        require(_value <= allowance[_from][msg.sender]);    // 수당 확인 
         balanceOf[_from] -= _value;                         // 목표 잔액에서 차감 
         allowance[_from][msg.sender] -= _value;             // 발송인의 허용량에서 차감 
         totalSupply -= _value;                              // 총 발행량 업데이트 

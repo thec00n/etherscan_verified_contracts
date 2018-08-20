@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,9 +107,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -117,7 +117,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -126,7 +126,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -143,7 +143,7 @@ contract Upgradable is Ownable, Pausable {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -202,17 +202,17 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// the particular contract by the particular auditor.
     /// Map key is: keccack256(auditor address, contract codeHash)
     /// @dev codeHash is a sha3 from the contract byte code
-    mapping (bytes32 =&gt; uint) public rewards;
+    mapping (bytes32 => uint) public rewards;
 
     /// @dev Maps auditor and code hash to the outcome of the audit of
     /// the particular contract by the particular auditor.
     /// Map key is: keccack256(auditor address, contract codeHash)
     /// @dev codeHash is a sha3 from the contract byte code
-    mapping (bytes32 =&gt; uint8) public auditOutcomes;
+    mapping (bytes32 => uint8) public auditOutcomes;
 
     /// @dev Maps requestor, auditor and codeHash to an AuditRequest
     /// Map key is: keccack256(auditor address, requestor address, contract codeHash)
-    mapping (bytes32 =&gt; AuditRequest) public auditRequests;
+    mapping (bytes32 => AuditRequest) public auditRequests;
 
     /// @dev event fired upon successul audit request
     event AuditRequested(address auditor, address bidder, bytes32 codeHash, uint amount, uint expireDate);
@@ -230,9 +230,9 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     {
         require(_auditor != 0x0);
         // audit request cannot expire too quickly or last too long
-        require(_auditTime &gt;= MIN_AUDIT_TIME);
-        require(_auditTime &lt;= MAX_AUDIT_TIME);
-        require(msg.value &gt; 0);
+        require(_auditTime >= MIN_AUDIT_TIME);
+        require(_auditTime <= MAX_AUDIT_TIME);
+        require(msg.value > 0);
 
         bytes32 hashAuditorCode = keccak256(_auditor, _codeHash);
 
@@ -258,7 +258,7 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
             // Request already exists. Increasing value
             request.amount = request.amount.add(msg.value);
             // if new expireDate is later than existing one - increase the existing one
-            if ( expireDate &gt; request.expireDate )
+            if ( expireDate > request.expireDate )
                 request.expireDate = expireDate;
             // event returns the total request value and its expireDate
             emit AuditRequested(_auditor, msg.sender, _codeHash, request.amount, request.expireDate);
@@ -279,8 +279,8 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
 
         bytes32 hashAuditorRequestorCode = keccak256(_auditor, msg.sender, _codeHash);
         AuditRequest storage request = auditRequests[hashAuditorRequestorCode];
-        require(request.amount &gt; 0);
-        require(now &gt; request.expireDate);
+        require(request.amount > 0);
+        require(now > request.expireDate);
 
         uint amount = request.amount;
         delete request.amount;
@@ -321,7 +321,7 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// @notice ability for owner to change the service commmission
     /// @param _newCommission new commision percentage
     function changeCommission(uint _newCommission) public onlyOwner whenNotPaused {
-        require(_newCommission &lt;= MAX_COMMISION);
+        require(_newCommission <= MAX_COMMISION);
         require(_newCommission != commission);
         commission = _newCommission;
         emit NewCommission(commission);
@@ -337,12 +337,12 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// @param _amount amount to withdraw
     function withdrawCommission(uint _amount) public onlyOwner {
         // cannot withdraw money reserved for requests
-        require(_amount &lt;= availableCommission);
+        require(_amount <= availableCommission);
         availableCommission = availableCommission.sub(_amount);
         msg.sender.transfer(_amount);
     }
 
-    /// @dev Override unpause so we can&#39;t have newContractAddress set,
+    /// @dev Override unpause so we can't have newContractAddress set,
     ///  because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.
@@ -353,7 +353,7 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
         super.unpause();
     }
 
-    /// @notice We don&#39;t welcome tips &amp; donations
+    /// @notice We don't welcome tips & donations
     function() payable public {
         revert();
     }

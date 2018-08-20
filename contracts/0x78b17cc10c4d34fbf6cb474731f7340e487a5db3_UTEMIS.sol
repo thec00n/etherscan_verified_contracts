@@ -13,10 +13,10 @@ contract UTEMIS{
     uint                                            public constant VALUE_OF_UTS         = 666666599999 wei;
 
     // Token name
-    string                                          public constant TOKEN_NAME           = &quot;UTEMIS&quot;;
+    string                                          public constant TOKEN_NAME           = "UTEMIS";
     
     // Symbol token
-    string                                          public constant TOKEN_SYMBOL         = &quot;UTS&quot;;
+    string                                          public constant TOKEN_SYMBOL         = "UTS";
 
     // Total supply of tokens
     uint256                                         public constant TOTAL_SUPPLY         = 1 * 10 ** 12;    
@@ -42,7 +42,7 @@ contract UTEMIS{
     uint                                            public startTime;
 
     //Balances
-    mapping(address =&gt; uint256)                     public balance_;
+    mapping(address => uint256)                     public balance_;
 
     //Remaining tokens to offer during the ico
     uint                                            public remaining;    
@@ -75,7 +75,7 @@ contract UTEMIS{
     }
 
     //Array for investors
-    mapping(address =&gt; Investors) private investorsList;     
+    mapping(address => Investors) private investorsList;     
     address[] private investorsAddress;
 
     //Events
@@ -84,8 +84,8 @@ contract UTEMIS{
     event FundTransfer(address backer , uint amount , address investor);
 
     //Safe math
-    function safeSub(uint a , uint b) internal pure returns (uint){assert(b &lt;= a);return a - b;}  
-    function safeAdd(uint a , uint b) internal pure returns (uint){uint c = a + b;assert(c&gt;=a &amp;&amp; c&gt;=b);return c;}
+    function safeSub(uint a , uint b) internal pure returns (uint){assert(b <= a);return a - b;}  
+    function safeAdd(uint a , uint b) internal pure returns (uint){uint c = a + b;assert(c>=a && c>=b);return c;}
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -94,19 +94,19 @@ contract UTEMIS{
     
     modifier icoStarted(){
         require(ico_started == true);
-        require(now &lt;= deadLine);
-        require(now &gt;= START_ICO);
+        require(now <= deadLine);
+        require(now >= START_ICO);
         _;
     }
 
     modifier icoStopped(){
         require(ico_started == false);
-        require(now &gt; deadLine);
+        require(now > deadLine);
         _;        
     }
 
     modifier minValue(){
-        require(msg.value &gt;= MIN_ACCEPTED_VALUE);
+        require(msg.value >= MIN_ACCEPTED_VALUE);
         _;
     }
 
@@ -129,8 +129,8 @@ contract UTEMIS{
      */
     function _transfer(address _from , address _to , uint _value) internal{        
         require(_to != 0x0);                                                        //Prevent send tokens to 0x0 address        
-        require(balance_[_from] &gt;= _value);                                          //Check if the sender have enough tokens        
-        require(balance_[_to] + _value &gt; balance_[_to]);                              //Check for overflows        
+        require(balance_[_from] >= _value);                                          //Check if the sender have enough tokens        
+        require(balance_[_to] + _value > balance_[_to]);                              //Check for overflows        
         balance_[_from]         = safeSub(balance_[_from] , _value);                 //Subtract from the source ( sender )        
         balance_[_to]           = safeAdd(balance_[_to]   , _value);                 //Add tokens to destination        
         uint previousBalance    = balance_[_from] + balance_[_to];                    //To make assert        
@@ -149,7 +149,7 @@ contract UTEMIS{
     }
     
     /**
-     * ERC20 Function to know&#39;s the balances
+     * ERC20 Function to know's the balances
      *
      * @param  _owner           Address to check
      * @return uint             Returns the balance of indicated address
@@ -168,7 +168,7 @@ contract UTEMIS{
         address[] memory addr = new address[](length);
         uint[] memory amount  = new uint[](length);
         uint[] memory when    = new uint[](length);
-        for(uint i = 0; i &lt; length; i++){
+        for(uint i = 0; i < length; i++){
             address key = investorsAddress[i];
             addr[i]     = key;
             amount[i]   = investorsList[key].amount;
@@ -196,12 +196,12 @@ contract UTEMIS{
         uint8 _bonus  = 0;                                                          //Assign bonus to 
         uint8 _bonusPerInvestion = 0;
         uint  starter = now - START_ICO;                                            //To control end time of bonus
-        for(uint i = 0; i &lt; bonusTime.length; i++){                                 //For loop
-            if(starter &lt;= bonusTime[i]){                                            //If the starter are greater than bonusTime, the bonus will be 0                
-                if(_ethers &gt;= 5 ether &amp;&amp; _ethers &lt; 10 ether){
+        for(uint i = 0; i < bonusTime.length; i++){                                 //For loop
+            if(starter <= bonusTime[i]){                                            //If the starter are greater than bonusTime, the bonus will be 0                
+                if(_ethers >= 5 ether && _ethers < 10 ether){
                     _bonusPerInvestion = bonusPerInvestion_5[i];
                 }
-                if(_ethers &gt; 10 ether){
+                if(_ethers > 10 ether){
                     _bonusPerInvestion = bonusPerInvestion_10[i];
                 }
                 _bonus = bonusBenefit[i];                                           //Asign amount of bonus to bonus_ variable                                
@@ -270,9 +270,9 @@ contract UTEMIS{
      * 
      */
     function giveBackEthers() public onlyOwner icoStopped{
-        require(this.balance &gt;= ethers_collected);                                         //Require that the contract have ethers 
+        require(this.balance >= ethers_collected);                                         //Require that the contract have ethers 
         uint length = investorsAddress.length;                                             //Length of array    
-        for(uint i = 0; i &lt; length; i++){
+        for(uint i = 0; i < length; i++){
             address investorA = investorsAddress[i];            
             uint amount       = investorsList[investorA].amount;
             if(address(beneficiary) == 0){
@@ -297,7 +297,7 @@ contract UTEMIS{
             investorsList[msg.sender] = Investors(msg.value , now);                 //Store investors info        
         }
         
-        if(amount_actually_invested &gt; 0){                                           //If amount invested are greater than 0
+        if(amount_actually_invested > 0){                                           //If amount invested are greater than 0
             investorsList[msg.sender].amount += msg.value;                          //Increase the amount invested
             investorsList[msg.sender].when    = now;                                //Change the last time invested
         }
@@ -306,8 +306,8 @@ contract UTEMIS{
         remaining -= tokensToSend;                                                  //Subtract the tokens to send to remaining tokens        
         _transfer(owner , msg.sender , tokensToSend);                               //Transfer tokens to investor
         
-        require(balance_[owner] &gt;= (TOTAL_SUPPLY - ICO_SUPPLY));                     //Requires not selling more tokens than those proposed in the ico        
-        require(balance_[owner] &gt;= tokensToSend);
+        require(balance_[owner] >= (TOTAL_SUPPLY - ICO_SUPPLY));                     //Requires not selling more tokens than those proposed in the ico        
+        require(balance_[owner] >= tokensToSend);
         
         if(address(beneficiary) == 0){                                              //Check if beneficiary is not setted
             beneficiary = owner;                                                    //If not, set the beneficiary to owner
@@ -327,7 +327,7 @@ contract UTEMIS{
      * @param  timetoextend  Time in miliseconds to extend ico     
      */
     function extendICO(uint timetoextend) onlyOwner external{
-        require(timetoextend &gt; 0);
+        require(timetoextend > 0);
         deadLine+= timetoextend;
     }
     

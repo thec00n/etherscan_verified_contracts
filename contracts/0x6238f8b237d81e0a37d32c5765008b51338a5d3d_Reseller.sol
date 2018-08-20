@@ -24,7 +24,7 @@ contract MainSale {
 
 contract Reseller {
   // Store the amount of PAY claimed by each account.
-  mapping (address =&gt; uint256) public pay_claimed;
+  mapping (address => uint256) public pay_claimed;
   // Total claimed PAY of all accounts.
   uint256 public total_pay_claimed;
   
@@ -43,9 +43,9 @@ contract Reseller {
   
   // Withdraws PAY claimed by the user.
   function withdraw() {
-    // Store the user&#39;s amount of claimed PAY as the amount of PAY to withdraw.
+    // Store the user's amount of claimed PAY as the amount of PAY to withdraw.
     uint256 pay_to_withdraw = pay_claimed[msg.sender];
-    // Update the user&#39;s amount of claimed PAY first to prevent recursive call.
+    // Update the user's amount of claimed PAY first to prevent recursive call.
     pay_claimed[msg.sender] = 0;
     // Update the total amount of claimed PAY.
     total_pay_claimed -= pay_to_withdraw;
@@ -56,7 +56,7 @@ contract Reseller {
   // Claims PAY at a price determined by the block number.
   function claim() payable {
     // Verify ICO is over.
-    if(block.number &lt; 3930000) throw;
+    if(block.number < 3930000) throw;
     // Calculate current sale price (PAY per ETH) based on block number.
     uint256 pay_per_eth = (block.number - 3930000) / 10;
     // Calculate amount of PAY user can purchase.
@@ -64,7 +64,7 @@ contract Reseller {
     // Retrieve current PAY balance of contract.
     uint256 contract_pay_balance = token.balanceOf(address(this));
     // Verify the contract has enough remaining unclaimed PAY.
-    if((contract_pay_balance - total_pay_claimed) &lt; pay_to_claim) throw;
+    if((contract_pay_balance - total_pay_claimed) < pay_to_claim) throw;
     // Update the amount of PAY claimed by the user.
     pay_claimed[msg.sender] += pay_to_claim;
     // Update the total amount of PAY claimed by all users.

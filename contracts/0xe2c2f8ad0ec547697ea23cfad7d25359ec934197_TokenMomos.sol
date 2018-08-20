@@ -18,12 +18,12 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenMomos is owned{
 
-    string public name = &quot;Momocoin&quot;;
-    string public symbol = &quot;MOMO&quot;;
+    string public name = "Momocoin";
+    string public symbol = "MOMO";
     uint8 public decimals = 18;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     uint256 public totalSupply;
 
@@ -31,10 +31,10 @@ contract TokenMomos is owned{
     uint256 public timeOfLastProof;                             
     uint256 public difficulty = 10**32;   
     
-    // Esto genera un evento p&#250;blico en el blockchain que notificar&#225; a los clientes
+    // Esto genera un evento público en el blockchain que notificará a los clientes
     event Transfer(address indexed from, address indexed to, uint256 value); //Va de ley, no quitar
     
-    // Esto genera un evento p&#250;blico en el blockchain que notificar&#225; a los clientes
+    // Esto genera un evento público en el blockchain que notificará a los clientes
     event Approval(address indexed _owner, address indexed _spender, uint256 _value); //Va de ley, no quitar
 
     // Esto notifica a los clientes sobre la cantidad quemada
@@ -47,20 +47,20 @@ contract TokenMomos is owned{
     }
 
     function _transfer(address _from, address _to, uint _value) internal {
-        // Impedir la transferencia a la direcci&#243;n 0x0.
+        // Impedir la transferencia a la dirección 0x0.
         require(_to != 0x0);
         // Verifica si el remitente tiene suficiente
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
          // Verificar desbordamientos
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        // Guarda esto para una afirmaci&#243;n en el futuro
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        // Guarda esto para una afirmación en el futuro
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
          // Resta del remitente
         balanceOf[_from] -= _value;
         // Agregue lo mismo al destinatario
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
-         // Los asertos se usan para usar an&#225;lisis est&#225;ticos para encontrar errores en su c&#243;digo. Nunca deber&#237;an fallar
+         // Los asertos se usan para usar análisis estáticos para encontrar errores en su código. Nunca deberían fallar
         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
     }
 
@@ -70,7 +70,7 @@ contract TokenMomos is owned{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -91,7 +91,7 @@ contract TokenMomos is owned{
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Verifica si el remitente tiene suficiente
+        require(balanceOf[msg.sender] >= _value);   // Verifica si el remitente tiene suficiente
         balanceOf[msg.sender] -= _value;            // Resta del remitente
         totalSupply -= _value;                      // Actualiza totalSupply
         emit Burn(msg.sender, _value);
@@ -99,8 +99,8 @@ contract TokenMomos is owned{
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Verifica si el saldo objetivo es suficiente
-        require(_value &lt;= allowance[_from][msg.sender]);    // Verifique la asignaci&#243;n
+        require(balanceOf[_from] >= _value);                // Verifica si el saldo objetivo es suficiente
+        require(_value <= allowance[_from][msg.sender]);    // Verifique la asignación
         balanceOf[_from] -= _value;                         // Resta del saldo objetivo
         allowance[_from][msg.sender] -= _value;             // Resta del subsidio del remitente
         totalSupply -= _value;                              // Actualizar totalSupply
@@ -109,7 +109,7 @@ contract TokenMomos is owned{
     }
 
     function () external {
-        revert();     // Previene el env&#237;o accidental de &#233;ter
+        revert();     // Previene el envío accidental de éter
     }
     
     function giveBlockReward() public {
@@ -118,9 +118,9 @@ contract TokenMomos is owned{
 
     function proofOfWork(uint256 nonce) public{
         bytes8 n = bytes8(keccak256(abi.encodePacked(nonce, currentChallenge)));    
-        require(n &gt;= bytes8(difficulty));                   
+        require(n >= bytes8(difficulty));                   
         uint256 timeSinceLastProof = (now - timeOfLastProof);  
-        require(timeSinceLastProof &gt;=  5 seconds);         
+        require(timeSinceLastProof >=  5 seconds);         
         balanceOf[msg.sender] += timeSinceLastProof / 60 seconds;  
         difficulty = difficulty * 10 minutes / timeSinceLastProof + 1; 
         timeOfLastProof = now;                              

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 
 contract DiscordLink {
-    mapping (bytes =&gt; address) private linkage;
+    mapping (bytes => address) private linkage;
     
     function setLink(bytes didHash) {
         require(linkage[didHash] == 0x0);

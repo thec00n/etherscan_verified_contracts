@@ -40,9 +40,9 @@ interface ERC721 /* is ERC165 */ {
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -51,7 +51,7 @@ interface ERC721 /* is ERC165 */ {
 
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;
+    ///  except this function just sets data to ""
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -77,7 +77,7 @@ interface ERC721 /* is ERC165 */ {
     /// @param _tokenId The NFT to approve
     function approve(address _approved, uint256 _tokenId) external;
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+    /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your assets.
     /// @dev Throws unless `msg.sender` is the current NFT owner.
     /// @dev Emits the ApprovalForAll event
@@ -108,14 +108,14 @@ interface ERC721Enumerable /* is ERC721 */ {
   function totalSupply() external view returns (uint256);
 
   /// @notice Enumerate valid NFTs
-  /// @dev Throws if `_index` &gt;= `totalSupply()`.
+  /// @dev Throws if `_index` >= `totalSupply()`.
   /// @param _index A counter less than `totalSupply()`
   /// @return The token identifier for the `_index`th NFT,
   ///  (sort order not specified)
   function tokenByIndex(uint256 _index) external view returns (uint256);
 
   /// @notice Enumerate NFTs assigned to an owner
-  /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
   ///  `_owner` is the zero address, representing invalid NFTs.
   /// @param _owner An address where we are interested in NFTs owned by them
   /// @param _index A counter less than `balanceOf(_owner)`
@@ -136,8 +136,8 @@ interface ERC721Metadata /* is ERC721 */ {
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string);
 }
 
@@ -152,7 +152,7 @@ interface ERC721TokenReceiver {
     /// @param _from The sending address 
     /// @param _tokenId The NFT identifier which is being transferred
     /// @param data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     ///  unless throwing
     function onERC721Received(address _from, uint256 _tokenId, bytes data) external returns(bytes4);
 }
@@ -191,7 +191,7 @@ contract Controllable is Ownable {
     // Mapping of a contract address to its position in the list of active
     // contracts. This allows an O(1) look-up of the contract address compared
     // to a linear search within an array.
-    mapping(address =&gt; uint256) private contractIndices;
+    mapping(address => uint256) private contractIndices;
 
     // The list of contracts that are allowed to call the contract-restricted
     // methods of contracts that extend this `Controllable` contract.
@@ -325,11 +325,11 @@ library Tools {
         // First loop over the left string, and afterwards over the right
         // string to assign each character to its proper location in the new
         // string.
-        for (uint i = 0; i &lt; stringLeftBytes.length; i++) {
+        for (uint i = 0; i < stringLeftBytes.length; i++) {
             resultBytes[k++] = stringLeftBytes[i];
         }
 
-        for (i = 0; i &lt; stringRightBytes.length; i++) {
+        for (i = 0; i < stringRightBytes.length; i++) {
             resultBytes[k++] = stringRightBytes[i];
         }
 
@@ -351,12 +351,12 @@ library Tools {
      */
     function uint256ToBytes32(uint256 value) internal pure returns (bytes32) {
         if (value == 0) {
-            return &#39;0&#39;;
+            return '0';
         }
 
         bytes32 resultBytes;
 
-        while (value &gt; 0) {
+        while (value > 0) {
             resultBytes = bytes32(uint(resultBytes) / (2 ** 8));
             resultBytes |= bytes32(((value % 10) + 48) * 2 ** (8 * 31));
             value /= 10;
@@ -385,7 +385,7 @@ library Tools {
     function bytes32ToString(bytes32 data) internal pure returns (string) {
         bytes memory bytesString = new bytes(32);
 
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             bytes1 char = bytes1(bytes32(uint256(data) * 2 ** (8 * i)));
 
             if (char != 0) {
@@ -412,7 +412,7 @@ interface PartialOwnership {
 /**
  * Ethergotchi Ownership Contract
  *
- * This contract governs the &quot;non-fungible tokens&quot; (NFTs) that represent the
+ * This contract governs the "non-fungible tokens" (NFTs) that represent the
  * various Ethergotchi owned by players within Aethia.
  *
  * The NFTs are implemented according to the standard described in EIP-721 as
@@ -432,28 +432,28 @@ contract EthergotchiOwnershipV2 is
     ERC721Metadata
 {
     // Direct mapping to keep track of token owners.
-    mapping(uint256 =&gt; address) private ownerByTokenId;
+    mapping(uint256 => address) private ownerByTokenId;
 
     // Mapping that keeps track of all tokens owned by a specific address. This
     // allows for iteration by owner, and is implemented to be able to comply
     // with the enumeration methods described in the ERC721Enumerable interface.
-    mapping(address =&gt; uint256[]) private tokenIdsByOwner;
+    mapping(address => uint256[]) private tokenIdsByOwner;
 
-    // Mapping that keeps track of a token&quot;s position in an owner&quot;s list of
+    // Mapping that keeps track of a token"s position in an owner"s list of
     // tokens. This allows for constant time look-ups within the list, instead
     // of needing to iterate the list of tokens.
-    mapping(uint256 =&gt; uint256) private ownerTokenIndexByTokenId;
+    mapping(uint256 => uint256) private ownerTokenIndexByTokenId;
 
     // Mapping that keeps track of addresses that are approved to make a
     // transfer of a token. Approval can only be given to a single address, but
     // can be overridden for modification or retraction purposes.
-    mapping(uint256 =&gt; address) private approvedTransfers;
+    mapping(uint256 => address) private approvedTransfers;
 
     // Mapping that keeps track of operators that are allowed to perform
     // actions on behalf of another address. An address is allowed to set more
     // than one operator. Operators can perform all actions on behalf on an
     // address, *except* for setting a different operator.
-    mapping(address =&gt; mapping(address =&gt; bool)) private operators;
+    mapping(address => mapping(address => bool)) private operators;
 
     // Total number of tokens governed by this contract. This allows for the
     // enumeration of all tokens, provided that tokens are created with their
@@ -464,7 +464,7 @@ contract EthergotchiOwnershipV2 is
     // implements the `supportsInterface` method to check whether other types
     // of standard interfaces are supported.
     bytes4 private constant INTERFACE_SIGNATURE_ERC165 = bytes4(
-        keccak256(&quot;supportsInterface(bytes4)&quot;)
+        keccak256("supportsInterface(bytes4)")
     );
 
     // The ERC-165 identifier of the ERC-721 interface. This contract
@@ -472,15 +472,15 @@ contract EthergotchiOwnershipV2 is
     // this identifier to supply the correct answer to a call to
     // `supportsInterface`.
     bytes4 private constant INTERFACE_SIGNATURE_ERC721 = bytes4(
-        keccak256(&quot;balanceOf(address)&quot;) ^
-        keccak256(&quot;ownerOf(uint256)&quot;) ^
-        keccak256(&quot;safeTransferFrom(address,address,uint256,bytes)&quot;) ^
-        keccak256(&quot;safeTransferFrom(address,address,uint256)&quot;) ^
-        keccak256(&quot;transferFrom(address,address,uint256)&quot;) ^
-        keccak256(&quot;approve(address,uint256)&quot;) ^
-        keccak256(&quot;setApprovalForAll(address,bool)&quot;) ^
-        keccak256(&quot;getApproved(uint256)&quot;) ^
-        keccak256(&quot;isApprovedForAll(address,address)&quot;)
+        keccak256("balanceOf(address)") ^
+        keccak256("ownerOf(uint256)") ^
+        keccak256("safeTransferFrom(address,address,uint256,bytes)") ^
+        keccak256("safeTransferFrom(address,address,uint256)") ^
+        keccak256("transferFrom(address,address,uint256)") ^
+        keccak256("approve(address,uint256)") ^
+        keccak256("setApprovalForAll(address,bool)") ^
+        keccak256("getApproved(uint256)") ^
+        keccak256("isApprovedForAll(address,address)")
     );
 
     // The ERC-165 identifier of the ERC-721 Enumerable interface. This
@@ -488,18 +488,18 @@ contract EthergotchiOwnershipV2 is
     // uses this identifier to supply the correct answer to a call to
     // `supportsInterface`.
     bytes4 private constant INTERFACE_SIGNATURE_ERC721_ENUMERABLE = bytes4(
-        keccak256(&quot;totalSupply()&quot;) ^
-        keccak256(&quot;tokenByIndex(uint256)&quot;) ^
-        keccak256(&quot;tokenOfOwnerByIndex(address,uint256)&quot;)
+        keccak256("totalSupply()") ^
+        keccak256("tokenByIndex(uint256)") ^
+        keccak256("tokenOfOwnerByIndex(address,uint256)")
     );
 
     // The ERC-165 identifier of the ERC-721 Metadata interface. This contract
     // implements all methods of the ERC-721 Metadata interface, and uses the
     // identifier to supply the correct answer to a `supportsInterface` call.
     bytes4 private constant INTERFACE_SIGNATURE_ERC721_METADATA = bytes4(
-        keccak256(&quot;name()&quot;) ^
-        keccak256(&quot;symbol()&quot;) ^
-        keccak256(&quot;tokenURI(uint256)&quot;)
+        keccak256("name()") ^
+        keccak256("symbol()") ^
+        keccak256("tokenURI(uint256)")
     );
 
     // The ERC-165 identifier of the ERC-721 Token Receiver interface. This
@@ -507,7 +507,7 @@ contract EthergotchiOwnershipV2 is
     // response given by the receiving contracts, if the `safeTransferFrom`
     // method is used.
     bytes4 private constant INTERFACE_SIGNATURE_ERC721_TOKEN_RECEIVER = bytes4(
-        keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)
+        keccak256("onERC721Received(address,uint256,bytes)")
     );
 
     event Transfer(
@@ -570,13 +570,13 @@ contract EthergotchiOwnershipV2 is
             operators[tokenOwner][msg.sender]
         );
 
-        // Check against accidental transfers to the common &quot;wrong&quot; addresses.
+        // Check against accidental transfers to the common "wrong" addresses.
         // This includes the zero address, this ownership contract address, and
-        // &quot;non-transfers&quot; where the same address is filled in for both `_from`
+        // "non-transfers" where the same address is filled in for both `_from`
         // and `_to`.
         require(
-            _to != address(0) &amp;&amp;
-            _to != address(this) &amp;&amp;
+            _to != address(0) &&
+            _to != address(this) &&
             _to != _from
         );
 
@@ -631,7 +631,7 @@ contract EthergotchiOwnershipV2 is
     {
         // Safety checks to prevent contracts from calling this method without
         // setting the proper arguments.
-        require(_tokenId != 0 &amp;&amp; _owner != address(0));
+        require(_tokenId != 0 && _owner != address(0));
 
         _add(_tokenId, _owner);
 
@@ -661,7 +661,7 @@ contract EthergotchiOwnershipV2 is
      *
      * Technically more interfaces are supported, as some interfaces may be
      * subsets of the supported interfaces. This check is only to be used to
-     * verify whether &quot;standard interfaces&quot; are supported.
+     * verify whether "standard interfaces" are supported.
      */
     function supportsInterface(
         bytes4 interfaceID
@@ -687,7 +687,7 @@ contract EthergotchiOwnershipV2 is
      * differently by their owners.
      */
     function name() external pure returns (string) {
-        return &quot;Ethergotchi&quot;;
+        return "Ethergotchi";
     }
 
     /**
@@ -699,7 +699,7 @@ contract EthergotchiOwnershipV2 is
      * in the `PHOENIX` patch of Aethia to prevent confusion with older tokens.
      */
     function symbol() external pure returns (string) {
-        return &quot;ETHERGOTCHI&quot;;
+        return "ETHERGOTCHI";
     }
 
     /**
@@ -725,7 +725,7 @@ contract EthergotchiOwnershipV2 is
         bytes32 tokenIdBytes = Tools.uint256ToBytes32(_tokenId);
 
         return Tools.concatenate(
-            &quot;https://aethia.co/ethergotchi/&quot;,
+            "https://aethia.co/ethergotchi/",
             Tools.bytes32ToString(tokenIdBytes)
         );
     }
@@ -762,7 +762,7 @@ contract EthergotchiOwnershipV2 is
      * Parameters
      * ----------
      * _tokenId : uint256
-     *     The identifier of the token of which to get the owner&quot;s address.
+     *     The identifier of the token of which to get the owner"s address.
      *
      * Returns
      * -------
@@ -836,7 +836,7 @@ contract EthergotchiOwnershipV2 is
      * ------
      * This method does exactly the same as calling the `safeTransferFrom`
      * method with the `data` parameter set to an empty bytes value:
-     *  `safeTransferFrom(_from, _to, _tokenId, &quot;&quot;)`
+     *  `safeTransferFrom(_from, _to, _tokenId, "")`
      */
     function safeTransferFrom(
         address _from,
@@ -848,7 +848,7 @@ contract EthergotchiOwnershipV2 is
     {
         // Call the internal `_safeTransferFrom` method to avoid duplicating
         // the transfer code.
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
@@ -1035,7 +1035,7 @@ contract EthergotchiOwnershipV2 is
      * identifier.
      */
     function tokenByIndex(uint256 _index) external view returns (uint256) {
-        require(_index &lt; totalTokens);
+        require(_index < totalTokens);
 
         return _index;
     }
@@ -1048,12 +1048,12 @@ contract EthergotchiOwnershipV2 is
      * _owner : address
      *     The address of the owner of which to get the token of.
      * _index : uint256
-     *     The index of the token in the given owner&quot;s list of token.
+     *     The index of the token in the given owner"s list of token.
      *
      * Returns
      * -------
      * uint256
-     *     The identifier of the token at given index of an owner&quot;s list of
+     *     The identifier of the token at given index of an owner"s list of
      *     tokens.
      */
     function tokenOfOwnerByIndex(
@@ -1064,7 +1064,7 @@ contract EthergotchiOwnershipV2 is
         view
         returns (uint256)
     {
-        require(_index &lt; tokenIdsByOwner[_owner].length);
+        require(_index < tokenIdsByOwner[_owner].length);
 
         return tokenIdsByOwner[_owner][_index];
     }
@@ -1086,7 +1086,7 @@ contract EthergotchiOwnershipV2 is
      * ------
      * This method works as long as the `Serenity` update of Ethereum has not
      * been deployed. At the time of writing, contracts cannot set their code
-     * size to zero, nor can &quot;normal&quot; addresses set their code size to anything
+     * size to zero, nor can "normal" addresses set their code size to anything
      * non-zero. With `Serenity` the idea will be that each and every address
      * is an contract, effectively rendering this method.
      */
@@ -1097,7 +1097,7 @@ contract EthergotchiOwnershipV2 is
             size := extcodesize(_address)
         }
 
-        return size &gt; 0;
+        return size > 0;
     }
 
     /**
@@ -1131,7 +1131,7 @@ contract EthergotchiOwnershipV2 is
         onlyValidTransfers(_from, _to, _tokenId)
     {
         // Call the method that performs the actual transfer. All common cases
-        // of &quot;wrong&quot; transfers have already been checked at this point. The
+        // of "wrong" transfers have already been checked at this point. The
         // internal transfer method does no checking.
         _transfer(_to, _tokenId);
 
@@ -1140,12 +1140,12 @@ contract EthergotchiOwnershipV2 is
         if (_isContract(_to)) {
 
             // Assume the receiving party has implemented ERC721TokenReceiver,
-            // as otherwise the &quot;unsafe&quot; `transferFrom` method should have been
+            // as otherwise the "unsafe" `transferFrom` method should have been
             // called instead.
             ERC721TokenReceiver _receiver = ERC721TokenReceiver(_to);
 
             // The response returned by `onERC721Received` of the receiving
-            // contract&quot;s `on *must* be equal to the magic number defined by
+            // contract"s `on *must* be equal to the magic number defined by
             // the ERC-165 signature of `ERC721TokenReceiver`. If this is not
             // the case, the transaction will be reverted.
             require(
@@ -1184,7 +1184,7 @@ contract EthergotchiOwnershipV2 is
         // removal of the token from the side that currently owns the token:
         //  1: the owner has two or more tokens; or
         //  2: the owner has one token.
-        if (tokenIdsByOwner[_from].length &gt; 1) {
+        if (tokenIdsByOwner[_from].length > 1) {
 
             // Get the index of the token that has to be removed from the list
             // of tokens owned by the current owner.
@@ -1192,7 +1192,7 @@ contract EthergotchiOwnershipV2 is
 
             // To keep the list of tokens without gaps, and thus reducing the
             // gas cost associated with interacting with the list, the last
-            // token in the owner&quot;s list of tokens is moved to fill the gap
+            // token in the owner"s list of tokens is moved to fill the gap
             // created by removing the token.
             uint256 tokenIndexToMove = tokenIdsByOwner[_from].length - 1;
 
@@ -1212,7 +1212,7 @@ contract EthergotchiOwnershipV2 is
 
         // Add the token to the list of tokens owned by `_to`. Items are always
         // added to the very end of the list. This makes the token index of the
-        // new token within the owner&quot;s list of tokens equal to the length of
+        // new token within the owner"s list of tokens equal to the length of
         // the list minus one as Solidity is a zero-based language. This token
         // index is then set for this token identifier.
         tokenIdsByOwner[_to].push(_tokenId);
@@ -1220,7 +1220,7 @@ contract EthergotchiOwnershipV2 is
 
         // Set the direct ownership information of the token to the new owner
         // after all other ownership-related mappings have been updated to make
-        // sure the &quot;side&quot; data is correct.
+        // sure the "side" data is correct.
         ownerByTokenId[_tokenId] = _to;
 
         // Remove the approved address of this token. It may be the case there
@@ -1255,7 +1255,7 @@ contract EthergotchiOwnershipV2 is
         ownerByTokenId[_tokenId] = _owner;
         tokenIdsByOwner[_owner].push(_tokenId);
 
-        // Update the mapping that keeps track of a token&quot;s index within the
+        // Update the mapping that keeps track of a token"s index within the
         // list of tokens owned by each owner. At the time of addition a token
         // is always added to the end of the list, and will thus always equal
         // the number of tokens already in the list, minus one, because the
@@ -1287,7 +1287,7 @@ contract EthergotchiOwnershipV2 is
      *
      * Notice
      * ------
-     * This method is limited in use to ensure no &#39;malicious&#39; calls are made.
+     * This method is limited in use to ensure no 'malicious' calls are made.
      * Additionally, this method writes to a contract state variable to keep
      * track of how many tokens have been migrated.
      */
@@ -1295,7 +1295,7 @@ contract EthergotchiOwnershipV2 is
         // Ensure that the migrate function can *only* be called in a specific
         // time period. This period ranges from Saturday, March 24th, 00:00:00
         // UTC until Sunday, March 25th, 23:59:59 UTC.
-        require(1521849600 &lt;= now &amp;&amp; now &lt;= 1522022399);
+        require(1521849600 <= now && now <= 1522022399);
 
         // Get the maximum number of tokens handed out by the previous
         // ownership contract.
@@ -1307,15 +1307,15 @@ contract EthergotchiOwnershipV2 is
         // It is possible that the final transaction has a higher end index
         // than there are a number of tokens. In this case, the end index is
         // reduced to ensure no non-existent tokens are migrated.
-        if (endIndex &gt;= formerTokenCount) {
+        if (endIndex >= formerTokenCount) {
             endIndex = formerTokenCount;
         }
 
         // Loop through the token identifiers to migrate in this transaction.
-        // Token identifiers are equivalent to their &#39;index&#39;, as identifiers
+        // Token identifiers are equivalent to their 'index', as identifiers
         // start at zero (with the zeroth token being owned by the zero
         // address), and are incremented by one for each new token.
-        for (uint256 i = migrationIndex; i &lt; endIndex; i++) {
+        for (uint256 i = migrationIndex; i < endIndex; i++) {
             address tokenOwner;
 
             // There was a malicious account that acquired over 400 eggs via
@@ -1335,7 +1335,7 @@ contract EthergotchiOwnershipV2 is
             // previous ownership contract.
             _add(i, tokenOwner);
 
-            // Log the token transfer. In this case where the token is &#39;newly&#39;
+            // Log the token transfer. In this case where the token is 'newly'
             // created, but actually transferred from a previous contract, the
             // `_from` address is set to the previous contract address, to
             // signify a migration.
@@ -1364,13 +1364,13 @@ contract EthergotchiOwnershipV2 is
      */
     function _isExcluded(uint256 _gotchiId) internal pure returns (bool) {
         return
-            1247 &lt;= _gotchiId &amp;&amp; _gotchiId &lt;= 1688 &amp;&amp;
-            _gotchiId != 1296 &amp;&amp;
-            _gotchiId != 1297 &amp;&amp;
-            _gotchiId != 1479 &amp;&amp;
-            _gotchiId != 1492 &amp;&amp;
-            _gotchiId != 1550 &amp;&amp;
-            _gotchiId != 1551 &amp;&amp;
+            1247 <= _gotchiId && _gotchiId <= 1688 &&
+            _gotchiId != 1296 &&
+            _gotchiId != 1297 &&
+            _gotchiId != 1479 &&
+            _gotchiId != 1492 &&
+            _gotchiId != 1550 &&
+            _gotchiId != 1551 &&
             _gotchiId != 1555;
     }
 }

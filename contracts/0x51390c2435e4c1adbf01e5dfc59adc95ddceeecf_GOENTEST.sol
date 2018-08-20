@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -57,7 +57,7 @@ contract BasicToken is ERC20Basic {
   */
     function transfer(address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -100,7 +100,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -114,8 +114,8 @@ contract StandardToken is ERC20, BasicToken {
         uint _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        require (_value &lt;= _allowance);
-        require(_value &gt; 0);
+        require (_value <= _allowance);
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -182,10 +182,10 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract GOENTEST is StandardToken {
 
-    string public constant name = &quot;goentesttoken&quot;;
-    string public constant symbol = &quot;GOENTEST&quot;;
-    // string public constant name = &quot;gttoken&quot;;
-    // string public constant symbol = &quot;GTT&quot;;
+    string public constant name = "goentesttoken";
+    string public constant symbol = "GOENTEST";
+    // string public constant name = "gttoken";
+    // string public constant symbol = "GTT";
     uint public constant decimals = 18; // 18位小数
 
     uint public constant INITIAL_SUPPLY =  10000000000 * (10 ** decimals); // 100000000000000000000000000（100亿）
@@ -240,7 +240,7 @@ contract lockStorehouseToken is ERC20 {
         // limitMaxSupply = 3000000000 * (10 ** decimals);
     }
     
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
     function approve(address _spender, uint _value) public returns (bool){}
     
@@ -252,7 +252,7 @@ contract lockStorehouseToken is ERC20 {
     
     function transfer(address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -262,8 +262,8 @@ contract lockStorehouseToken is ERC20 {
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require (_value &gt; 0);
-        require(_value &lt;= balances[_from]);
+        require (_value > 0);
+        require(_value <= balances[_from]);
         
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -282,7 +282,7 @@ contract lockStorehouseToken is ERC20 {
     modifier checkBalance {
         if(!released){
             oldBalance = getBalance();
-            if(oldBalance &gt; limitMaxSupply){
+            if(oldBalance > limitMaxSupply){
                 oldBalance = limitMaxSupply;
             }
         }
@@ -300,14 +300,14 @@ contract lockStorehouseToken is ERC20 {
         releaseSupply = SafeMath.mul(SafeMath.div(oldBalance, 1000), per);
         
         // 释放金额必须小于等于当前合同余额
-        if(SafeMath.mul(releasedCount, releaseSupply) &lt;= oldBalance){
+        if(SafeMath.mul(releasedCount, releaseSupply) <= oldBalance){
             // if(per == 1000){
             //     _lockMonth = SafeMath.div(lockMonth, 12);
             //     _baseDate = 1 years;
                 
             // }
             
-            // if(per &lt; 1000){
+            // if(per < 1000){
             //     _lockMonth = lockMonth;
             //     _baseDate = 30 days;
             //     // _baseDate = 1 minutes;
@@ -319,7 +319,7 @@ contract lockStorehouseToken is ERC20 {
             monthUnit = SafeMath.mul(lockMonth, 30 days);
             cliffTime = SafeMath.add(startTime, monthUnit);
         
-            if(now &gt; cliffTime){
+            if(now > cliffTime){
                 
                 tokenReward.transfer(beneficial, releaseSupply);
                 

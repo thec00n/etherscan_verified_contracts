@@ -28,13 +28,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -44,7 +44,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
@@ -140,8 +140,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract TtestaryToken is MintableToken {
     
-    string public constant name = &quot;Ttestary&quot;;
-    string public constant symbol = &quot;TTARY&quot;;
+    string public constant name = "Ttestary";
+    string public constant symbol = "TTARY";
     uint32 public constant decimals = 18;
     
 }
@@ -170,12 +170,12 @@ contract Ttestary is Ownable {
     }
 
     modifier saleIsOn() {
-    	require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+    	require(now > start && now < start + period * 1 days);
     	_;
     }
 	
     modifier isUnderHardCap() {
-        require(eth_addr.balance &lt;= hardcap);
+        require(eth_addr.balance <= hardcap);
         _;
     }
  
@@ -190,7 +190,7 @@ contract Ttestary is Ownable {
         eth_addr.transfer(msg.value);
         uint tokens = rate.mul(msg.value).div(1 ether);
         uint bonusTokens = 0;
-        if(now &lt; start + (period * 1 days).div(5)) {
+        if(now < start + (period * 1 days).div(5)) {
           bonusTokens = tokens.div(5);
         } else {
           bonusTokens = 0;

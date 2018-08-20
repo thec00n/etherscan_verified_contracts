@@ -16,13 +16,13 @@ contract ERC20 {
 
 
 /// @title Basic ERC20 token contract implementation.
-/// @dev Based on OpenZeppelin&#39;s StandardToken.
+/// @dev Based on OpenZeppelin's StandardToken.
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -32,7 +32,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md#approve (see NOTE)
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -110,37 +110,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function toPower2(uint256 a) internal pure returns (uint256) {
@@ -150,7 +150,7 @@ library SafeMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         uint256 c = (a + 1) / 2;
         uint256 b = a;
-        while (c &lt; b) {
+        while (c < b) {
             b = c;
             c = (a / c + c) / 2;
         }
@@ -195,15 +195,15 @@ contract Standard677Token is ERC677, BasicToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions,
-/// this simplifies the implementation of &quot;user permissions&quot;.
-/// @dev Based on OpenZeppelin&#39;s Ownable.
+/// this simplifies the implementation of "user permissions".
+/// @dev Based on OpenZeppelin's Ownable.
 
 contract Ownable {
     address public owner;
@@ -413,8 +413,8 @@ contract EllipseMarketMaker is TokenOwnable {
   /// @dev Constructor calling the library contract using delegate.
   function EllipseMarketMaker(address _mmLib, address _token1, address _token2) public {
     require(_mmLib != address(0));
-    // Signature of the mmLib&#39;s constructor function
-    // bytes4 sig = bytes4(keccak256(&quot;constructor(address,address,address)&quot;));
+    // Signature of the mmLib's constructor function
+    // bytes4 sig = bytes4(keccak256("constructor(address,address,address)"));
     bytes4 sig = 0x6dd23b5b;
 
     // 3 arguments of size 32
@@ -447,7 +447,7 @@ contract EllipseMarketMaker is TokenOwnable {
   /// @dev gets called when no other function matches, delegate to the lib contract.
   function() public {
     address _mmLib = mmLib;
-    if (msg.data.length &gt; 0) {
+    if (msg.data.length > 0) {
       assembly {
         calldatacopy(0xff, 0, calldatasize)
         let retVal := delegatecall(gas, _mmLib, 0xff, calldatasize, 0, 0x20)
@@ -523,8 +523,8 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
   }
 
 
-  // map of Market Maker owners: token address =&gt; currency struct
-  mapping (address =&gt; CurrencyStruct) public currencyMap;
+  // map of Market Maker owners: token address => currency struct
+  mapping (address => CurrencyStruct) public currencyMap;
   // address of the deployed CLN contract (ERC20 Token)
   address public clnAddress;
   // address of the deployed elipse market maker contract
@@ -586,7 +586,7 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
                                   uint256 _clnAmount) public
                                   tokenIssuerOnly(_token, msg.sender)
                                   returns (uint256 _subTokenAmount) {
-  	require(_clnAmount &gt; 0);
+  	require(_clnAmount > 0);
   	address marketMakerAddress = getMarketMakerAddressFromToken(_token);
   	require(ERC20(clnAddress).transferFrom(msg.sender, this, _clnAmount));
   	require(ERC20(clnAddress).approve(marketMakerAddress, _clnAmount));
@@ -651,7 +651,7 @@ contract CurrencyFactory is Standard223Receiver, TokenHolder {
   /// @dev implementation for standard 223 reciver.
   /// @param _token address of the token used with transferAndCall.
   function supportsToken(address _token) public constant returns (bool) {
-  	return (clnAddress == _token || currencyMap[_token].totalSupply &gt; 0);
+  	return (clnAddress == _token || currencyMap[_token].totalSupply > 0);
   }
 
   /// @dev helper function to get the market maker address form token
@@ -695,7 +695,7 @@ contract IssuanceFactory is CurrencyFactory {
   uint256 public totalCLNcustodian;
 
   //map of Market Maker owners
-  mapping (address =&gt; IssuanceStruct) public issueMap;
+  mapping (address => IssuanceStruct) public issueMap;
   // total supply of CLN
   uint256 public CLNTotalSupply;
 
@@ -706,26 +706,26 @@ contract IssuanceFactory is CurrencyFactory {
 
   // sale has begun based on time and status
   modifier saleOpen(address _token) {
-  	require(now &gt;= issueMap[_token].startTime &amp;&amp; issueMap[_token].endTime &gt;= now);
-    require(issueMap[_token].clnRaised &lt; issueMap[_token].hardcap);
+  	require(now >= issueMap[_token].startTime && issueMap[_token].endTime >= now);
+    require(issueMap[_token].clnRaised < issueMap[_token].hardcap);
   	_;
   }
 
   // sale is passed its endtime
   modifier hasEnded(address _token) {
-    require(issueMap[_token].endTime &lt; now);
+    require(issueMap[_token].endTime < now);
   	_;
   }
 
   // sale considered successful when it raised equal to or more than the softcap
   modifier saleWasSuccessfull(address _token) {
-  	require(issueMap[_token].clnRaised &gt;= issueMap[_token].reserve);
+  	require(issueMap[_token].clnRaised >= issueMap[_token].reserve);
   	_;
   }
 
    // sale considerd failed when it raised less than the softcap
   modifier saleHasFailed(address _token) {
-  	require(issueMap[_token].clnRaised &lt; issueMap[_token].reserve);
+  	require(issueMap[_token].clnRaised < issueMap[_token].reserve);
   	_;
   }
 
@@ -760,9 +760,9 @@ contract IssuanceFactory is CurrencyFactory {
                             uint8 _decimals,
                             uint256 _totalSupply) public
                             returns (address) {
-    require(_startTime &gt; now);
-    require(_durationTime &gt; 0);
-	require(_hardcap &gt; 0);
+    require(_startTime > now);
+    require(_durationTime > 0);
+	require(_hardcap > 0);
 
     uint256 R2 = IEllipseMarketMaker(mmLibAddress).calcReserve(_reserveAmount, CLNTotalSupply, _totalSupply);
     uint256 targetPrice = IEllipseMarketMaker(mmLibAddress).getPrice(_reserveAmount, R2, CLNTotalSupply, _totalSupply);
@@ -802,7 +802,7 @@ contract IssuanceFactory is CurrencyFactory {
 						uint256 _clnAmount) public
 						saleOpen(_token)
 						returns (uint256 releaseAmount) {
-	require(_clnAmount &gt; 0);
+	require(_clnAmount > 0);
     address marketMakerAddress = getMarketMakerAddressFromToken(_token);
 
     // how much do we need to actually send to market maker of the incomming amount
@@ -829,7 +829,7 @@ contract IssuanceFactory is CurrencyFactory {
 						tokenPayable
 						saleOpen(_token)
 						returns (uint256 releaseAmount) {
-  	require(tkn.value &gt; 0 &amp;&amp; msg.sender == clnAddress);
+  	require(tkn.value > 0 && msg.sender == clnAddress);
     //check if we need to send cln to mm or save it
     uint256 transferToReserveAmount;
     uint256 participationAmount;
@@ -843,7 +843,7 @@ contract IssuanceFactory is CurrencyFactory {
     CLNRaised(_token, tkn.sender, participationAmount);
     require(ERC20(_token).transfer(tkn.sender, releaseAmount));
     // send CLN change to the participent since its transferAndCall
-    if (tkn.value &gt; participationAmount)
+    if (tkn.value > participationAmount)
        require(ERC20(clnAddress).transfer(tkn.sender, tkn.value.sub(participationAmount)));
   }
 
@@ -880,13 +880,13 @@ contract IssuanceFactory is CurrencyFactory {
   							saleHasFailed(_token)
   							marketClosed(_token)
   							returns (bool) {
-	require(_ccAmount &gt; 0);
+	require(_ccAmount > 0);
 	// exchange CC for CLN throuh Market Maker
   	address marketMakerAddress = getMarketMakerAddressFromToken(_token);
   	require(ERC20(_token).transferFrom(msg.sender, this, _ccAmount));
   	uint256 factoryCCAmount = ERC20(_token).balanceOf(this);
   	require(ERC20(_token).approve(marketMakerAddress, factoryCCAmount));
-  	require(MarketMaker(marketMakerAddress).change(_token, factoryCCAmount, clnAddress) &gt; 0);
+  	require(MarketMaker(marketMakerAddress).change(_token, factoryCCAmount, clnAddress) > 0);
 
   	uint256 returnAmount = _ccAmount.mul(PRECISION).div(issueMap[_token].targetPrice);
     issueMap[_token].clnRaised = issueMap[_token].clnRaised.sub(returnAmount);
@@ -905,12 +905,12 @@ contract IssuanceFactory is CurrencyFactory {
 					saleHasFailed(msg.sender)
 					marketClosed(msg.sender)
 					returns (bool) {
-	require(tkn.value &gt; 0);
+	require(tkn.value > 0);
   	// if we have CC time to thorw it to the Market Maker
   	address marketMakerAddress = getMarketMakerAddressFromToken(msg.sender);
   	uint256 factoryCCAmount = ERC20(msg.sender).balanceOf(this);
   	require(ERC20(msg.sender).approve(marketMakerAddress, factoryCCAmount));
-  	require(MarketMaker(marketMakerAddress).change(msg.sender, factoryCCAmount, clnAddress) &gt; 0);
+  	require(MarketMaker(marketMakerAddress).change(msg.sender, factoryCCAmount, clnAddress) > 0);
 
   	uint256 returnAmount = tkn.value.mul(PRECISION).div(issueMap[msg.sender].targetPrice);
     issueMap[msg.sender].clnRaised = issueMap[msg.sender].clnRaised.sub(returnAmount);
@@ -966,7 +966,7 @@ contract IssuanceFactory is CurrencyFactory {
                             uint256 _S2,
                             uint256 _R2) public view
                             returns (bool) {
- 	  return (_S2 &gt; _R2 &amp;&amp; _S2.sub(_R2).mul(PRECISION) &gt;= _hardcap.mul(_price));
+ 	  return (_S2 > _R2 && _S2.sub(_R2).mul(PRECISION) >= _hardcap.mul(_price));
   }
 
 
@@ -986,7 +986,7 @@ contract IssuanceFactory is CurrencyFactory {
                             uint256 _amount,
                             address _marketMakerAddress) private
                             returns (uint256) {
-  	if (_amount &gt; 0) {
+  	if (_amount > 0) {
 	  	require(ERC20(_token).approve(_marketMakerAddress, _amount));
 	  	return MarketMaker(_marketMakerAddress).change(_token, _amount, _token2);
 	  }
@@ -998,8 +998,8 @@ contract IssuanceFactory is CurrencyFactory {
   /// @param _clnAmount amount of cln the user wants to participate with
   /// @param _token address token address for this issuance (same as CC adress)
   /// @return {
-  ///	&quot;transferToReserveAmount&quot;: ammount of CLN to transfer to reserves
-  ///	&quot;participationAmount&quot;: ammount of CLN that the sender will participate with in the sale
+  ///	"transferToReserveAmount": ammount of CLN to transfer to reserves
+  ///	"participationAmount": ammount of CLN that the sender will participate with in the sale
   ///}
   function getParticipationAmounts(uint256 _clnAmount,
                                    address _token) private view
@@ -1008,7 +1008,7 @@ contract IssuanceFactory is CurrencyFactory {
     uint256 reserve = issueMap[_token].reserve;
     uint256 hardcap = issueMap[_token].hardcap;
     participationAmount = SafeMath.min256(_clnAmount, hardcap.sub(clnRaised));
-    if (reserve &gt; clnRaised) {
+    if (reserve > clnRaised) {
       transferToReserveAmount = SafeMath.min256(participationAmount, reserve.sub(clnRaised));
     }
   }
@@ -1025,13 +1025,13 @@ contract IssuanceFactory is CurrencyFactory {
     view
     returns (uint _count)
   {
-    for (uint i = 0; i &lt; tokens.length; i++) {
+    for (uint i = 0; i < tokens.length; i++) {
       IssuanceStruct memory issuance = issueMap[tokens[i]];
-      if ((_pending &amp;&amp; issuance.startTime &gt; now)
-        || (_started &amp;&amp; now &gt;= issuance.startTime &amp;&amp; issuance.endTime &gt;= now &amp;&amp; issuance.clnRaised &lt; issuance.hardcap)
-        || (_successful &amp;&amp; issuance.endTime &lt; now &amp;&amp; issuance.clnRaised &gt;= issuance.reserve)
-        || (_successful &amp;&amp; issuance.endTime &gt;= now &amp;&amp; issuance.clnRaised == issuance.hardcap)
-        || (_failed &amp;&amp; issuance.endTime &lt; now &amp;&amp; issuance.clnRaised &lt; issuance.reserve))
+      if ((_pending && issuance.startTime > now)
+        || (_started && now >= issuance.startTime && issuance.endTime >= now && issuance.clnRaised < issuance.hardcap)
+        || (_successful && issuance.endTime < now && issuance.clnRaised >= issuance.reserve)
+        || (_successful && issuance.endTime >= now && issuance.clnRaised == issuance.hardcap)
+        || (_failed && issuance.endTime < now && issuance.clnRaised < issuance.reserve))
         _count += 1;
     }
   }
@@ -1051,20 +1051,20 @@ contract IssuanceFactory is CurrencyFactory {
     view
     returns (address[] _issuanceIds)
   {
-	require(_limit &gt;= 1);
-	require(_limit &lt;= 100);
+	require(_limit >= 1);
+	require(_limit <= 100);
     _issuanceIds = new address[](_limit);
     uint filteredIssuancesCount = 0;
 	uint retrieveIssuancesCount = 0;
-    for (uint i = 0; i &lt; tokens.length; i++) {
+    for (uint i = 0; i < tokens.length; i++) {
       IssuanceStruct memory issuance = issueMap[tokens[i]];
-      if ((_pending &amp;&amp; issuance.startTime &gt; now)
-        || (_started &amp;&amp; now &gt;= issuance.startTime &amp;&amp; issuance.endTime &gt;= now &amp;&amp; issuance.clnRaised &lt; issuance.hardcap)
-        || (_successful &amp;&amp; issuance.endTime &lt; now &amp;&amp; issuance.clnRaised &gt;= issuance.reserve)
-        || (_successful &amp;&amp; issuance.endTime &gt;= now &amp;&amp; issuance.clnRaised == issuance.hardcap)
-        || (_failed &amp;&amp; issuance.endTime &lt; now &amp;&amp; issuance.clnRaised &lt; issuance.reserve))
+      if ((_pending && issuance.startTime > now)
+        || (_started && now >= issuance.startTime && issuance.endTime >= now && issuance.clnRaised < issuance.hardcap)
+        || (_successful && issuance.endTime < now && issuance.clnRaised >= issuance.reserve)
+        || (_successful && issuance.endTime >= now && issuance.clnRaised == issuance.hardcap)
+        || (_failed && issuance.endTime < now && issuance.clnRaised < issuance.reserve))
       {
-		if (filteredIssuancesCount &gt;= _offset) {
+		if (filteredIssuancesCount >= _offset) {
 			_issuanceIds[retrieveIssuancesCount] = tokens[i];
 			retrieveIssuancesCount += 1;
 		}
@@ -1075,9 +1075,9 @@ contract IssuanceFactory is CurrencyFactory {
       }
     }
 
-	if (retrieveIssuancesCount &lt; _limit) {
+	if (retrieveIssuancesCount < _limit) {
 		address[] memory _issuanceIdsTemp = new address[](retrieveIssuancesCount);
-		for (i = 0; i &lt; retrieveIssuancesCount; i++) {
+		for (i = 0; i < retrieveIssuancesCount; i++) {
 			_issuanceIdsTemp[i] = _issuanceIds[i];
 		}
 		return _issuanceIdsTemp;
@@ -1090,10 +1090,10 @@ contract IssuanceFactory is CurrencyFactory {
   function transferAnyERC20Token(address _tokenAddress, uint256 _amount) public onlyOwner returns (bool success) {
     if (_tokenAddress == clnAddress) {
       uint256 excessCLN = ERC20(clnAddress).balanceOf(this).sub(totalCLNcustodian);
-      require(excessCLN &lt;= _amount);
+      require(excessCLN <= _amount);
     }
 
-    if (issueMap[_tokenAddress].hardcap &gt; 0) {
+    if (issueMap[_tokenAddress].hardcap > 0) {
       require(MarketMaker(currencyMap[_tokenAddress].mmAddress).isOpenForPublic());
     }
     return ERC20(_tokenAddress).transfer(owner, _amount);

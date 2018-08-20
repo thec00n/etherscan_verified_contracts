@@ -2,13 +2,13 @@ pragma solidity ^ 0.4.19;
 
 library SafeMath {
 	function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -30,7 +30,7 @@ contract StandardToken is ERC20 {
 
 	function transfer(address _to, uint256 _value) public returns(bool success) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -39,8 +39,8 @@ contract StandardToken is ERC20 {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -71,7 +71,7 @@ contract StandardToken is ERC20 {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -81,29 +81,29 @@ contract StandardToken is ERC20 {
 	}
 	
 	function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         Burn(msg.sender, _value);
         return true;
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         Burn(_from, _value);
         return true;
     }
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 }
 
 contract BCT is StandardToken {
 
-	string public name = &#39;BIShiCaiJing Token&#39;;
-	string public symbol = &#39;BCT&#39;;
+	string public name = 'BIShiCaiJing Token';
+	string public symbol = 'BCT';
 	uint8 public decimals = 18;
 	uint256 public totalSupply = 1000000000 * 10 ** uint256(decimals);
 
@@ -118,7 +118,7 @@ contract BCT is StandardToken {
 	function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns(bool success) {
 		allowed[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
-		if (!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+		if (!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
 			throw;
 		}
 		return true;

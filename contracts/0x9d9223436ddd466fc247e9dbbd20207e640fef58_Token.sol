@@ -50,12 +50,12 @@ library SafeMath {
     return c;
   }
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,14 +79,14 @@ contract ERC20 {
 }
 contract Token is Pausable, ERC20 {
   using SafeMath for uint;
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
-  mapping(address =&gt; uint) public balanceOfLocked;
-  mapping(address =&gt; bool) public addressLocked;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) internal allowed;
+  mapping(address => uint) public balanceOfLocked;
+  mapping(address => bool) public addressLocked;
   uint public unlocktime;
   bool manualUnlock;
   address public crowdsaleAddress = 0;
-  function Token() ERC20(&quot;Olive&quot;, &quot;OLE&quot;, 18) public {
+  function Token() ERC20("Olive", "OLE", 18) public {
     manualUnlock = false;
     unlocktime = 1527868800;
     totalSupply = 10000000000 * 10 ** uint(decimals);
@@ -96,12 +96,12 @@ contract Token is Pausable, ERC20 {
     crowdsaleAddress = crowdsale;
   }
   function isLocked() view public returns (bool) {
-    return (now &lt; unlocktime &amp;&amp; !manualUnlock);
+    return (now < unlocktime && !manualUnlock);
   }
   modifier lockCheck(address from, uint value) { 
     require(addressLocked[from] == false);
     if (isLocked()) {
-      require(value &lt;= balances[from] - balanceOfLocked[from]);
+      require(value <= balances[from] - balanceOfLocked[from]);
     } else {
       balanceOfLocked[from] = 0; 
     }
@@ -119,7 +119,7 @@ contract Token is Pausable, ERC20 {
   }
   function transfer(address _to, uint _value) lockCheck(msg.sender, _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -137,8 +137,8 @@ contract Token is Pausable, ERC20 {
   }
   function transferFrom(address _from, address _to, uint _value) public lockCheck(_from, _value) whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -160,7 +160,7 @@ contract Token is Pausable, ERC20 {
   }
   function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

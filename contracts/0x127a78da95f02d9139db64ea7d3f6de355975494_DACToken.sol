@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 
 contract DACToken {
 
-    string public name = &quot;Decentralized Accessible Content&quot;;
-    string public symbol = &quot;DAC&quot;;
+    string public name = "Decentralized Accessible Content";
+    string public symbol = "DAC";
     uint256 public decimals = 6;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 30000000000000000;
     bool public stopped = false;
@@ -34,8 +34,8 @@ contract DACToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning isValidAddress public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -43,9 +43,9 @@ contract DACToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning isValidAddress public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -73,18 +73,18 @@ contract DACToken {
     }
 
     function airdrop(address[] _DACusers,uint256[] _values) isRunning public {
-        require(_DACusers.length &gt; 0);
+        require(_DACusers.length > 0);
         require(_DACusers.length == _values.length);
         uint256 amount = 0;
         uint i = 0;
-        for (i = 0; i &lt; _DACusers.length; i++) {
-            require(amount + _values[i] &gt;= amount);
+        for (i = 0; i < _DACusers.length; i++) {
+            require(amount + _values[i] >= amount);
             amount += _values[i];  
         }
-        require(balanceOf[msg.sender] &gt;= amount);
+        require(balanceOf[msg.sender] >= amount);
         balanceOf[msg.sender] -= amount;
-        for (i = 0; i &lt; _DACusers.length; i++) {
-            require(balanceOf[_DACusers[i]] + _values[i] &gt;= balanceOf[_DACusers[i]]);
+        for (i = 0; i < _DACusers.length; i++) {
+            require(balanceOf[_DACusers[i]] + _values[i] >= balanceOf[_DACusers[i]]);
             balanceOf[_DACusers[i]] += _values[i];
             emit Transfer(msg.sender, _DACusers[i], _values[i]);
         }

@@ -33,12 +33,12 @@ contract SmartRoulette
     uint256 private SmartRouletteLimit = 1;
 
    // last game index for player (used for fast access)
-   mapping (address =&gt; uint64) private gambleIndex;   
+   mapping (address => uint64) private gambleIndex;   
    
    // 
    uint8 defaultMinCreditsOnBet; 
    //
-   mapping (uint8 =&gt; uint8) private minCreditsOnBet;
+   mapping (uint8 => uint8) private minCreditsOnBet;
 
    struct Gamble
    {
@@ -100,13 +100,13 @@ contract SmartRoulette
 
    function changeSettings(uint256 NewSmartRouletteLimit, uint64 NewMaxBetsPerBlock, uint8 NewBlockDelay, uint8 MinCreditsOnBet50, uint8 MinCreditsOnBet33, uint8 NewDefaultMinCreditsOnBet) onlyDeveloper
    {
-     if (NewSmartRouletteLimit &gt; 0) SmartRouletteLimit = NewSmartRouletteLimit;
+     if (NewSmartRouletteLimit > 0) SmartRouletteLimit = NewSmartRouletteLimit;
 
      BlockDelay = NewBlockDelay;     
 
      if (NewMaxBetsPerBlock != 0) maxBetsPerBlock = NewMaxBetsPerBlock;     
 
-      if (MinCreditsOnBet50 &gt; 0)
+      if (MinCreditsOnBet50 > 0)
       {
         minCreditsOnBet[uint8(BetTypes.low)] = MinCreditsOnBet50;
         minCreditsOnBet[uint8(BetTypes.high)] = MinCreditsOnBet50;
@@ -116,7 +116,7 @@ contract SmartRoulette
         minCreditsOnBet[uint8(BetTypes.even)] = MinCreditsOnBet50;
       }  
 
-      if (MinCreditsOnBet33 &gt; 0)
+      if (MinCreditsOnBet33 > 0)
       {
         minCreditsOnBet[uint8(BetTypes.dozen1)] = MinCreditsOnBet33;
         minCreditsOnBet[uint8(BetTypes.dozen2)] = MinCreditsOnBet33;
@@ -126,7 +126,7 @@ contract SmartRoulette
         minCreditsOnBet[uint8(BetTypes.column3)] = MinCreditsOnBet33;
       }
 
-      if (NewDefaultMinCreditsOnBet &gt; 0) defaultMinCreditsOnBet = NewDefaultMinCreditsOnBet;
+      if (NewDefaultMinCreditsOnBet > 0) defaultMinCreditsOnBet = NewDefaultMinCreditsOnBet;
 
      updateMaxBet();
    }
@@ -151,7 +151,7 @@ contract SmartRoulette
       return (bet+1)*256 + (wheelResult+1);
    }
 
-   // n form 1 &lt;= to &lt;= 32
+   // n form 1 <= to <= 32
    function getBetValue(bytes32 values, uint8 n) private constant returns (uint256)
    {
         // bet in credits (1..256) 
@@ -160,19 +160,19 @@ contract SmartRoulette
          // check min bet
         uint8 minCredits = minCreditsOnBet[n];
         if (minCredits == 0) minCredits = defaultMinCreditsOnBet;
-        if (bet &lt; minCredits) throw;
+        if (bet < minCredits) throw;
         
         // bet in wei
         bet = currentMaxBet*bet/256;
-        if (bet &gt; currentMaxBet) throw;         
+        if (bet > currentMaxBet) throw;         
 
         return bet;        
    }
 
    function getBetValueByGamble(Gamble gamble, uint8 n) private constant returns (uint256) 
    {
-      if (n&lt;=32) return getBetValue(gamble.values, n);
-      if (n&lt;=64) return getBetValue(gamble.values2, n-32);
+      if (n<=32) return getBetValue(gamble.values, n);
+      if (n<=64) return getBetValue(gamble.values2, n-32);
       // there are 64 maximum unique bets (positions) in one game
       throw;
    }
@@ -202,7 +202,7 @@ contract SmartRoulette
 
     modifier onlyDeveloperOrOperator() 
     {
-       if (msg.sender != developer &amp;&amp; msg.sender != operator) throw;
+       if (msg.sender != developer && msg.sender != operator) throw;
        _;
     }
 
@@ -234,7 +234,7 @@ contract SmartRoulette
    {              
        uint256 totalBetsValue = 0; 
        uint8 nPlayerBetNo = 0;
-       for(uint8 i=0; i &lt; maxTypeBets;i++) 
+       for(uint8 i=0; i < maxTypeBets;i++) 
         if (isBitSet(g.bets, i))
         {
           totalBetsValue += getBetValueByGamble(g, nPlayerBetNo+1);
@@ -247,7 +247,7 @@ contract SmartRoulette
    function totalBetCount(Gamble g) private constant returns (uint256)
    {              
        uint256 totalBets = 0; 
-       for(uint8 i=0; i &lt; maxTypeBets;i++) 
+       for(uint8 i=0; i < maxTypeBets;i++) 
         if (isBitSet(g.bets, i)) totalBets++;          
        return totalBets;   
    }
@@ -256,28 +256,28 @@ contract SmartRoulette
    {
        if (ContractState == false)
        {
-         ErrorLog(msg.sender, &quot;ContractDisabled&quot;);
+         ErrorLog(msg.sender, "ContractDisabled");
          if (msg.sender.send(msg.value) == false) throw;
          return;
        } 
 
-       if (nbBetsCurrentBlock &gt;= maxBetsPerBlock) 
+       if (nbBetsCurrentBlock >= maxBetsPerBlock) 
        {
-         ErrorLog(msg.sender, &quot;checkNbBetsCurrentBlock&quot;);
+         ErrorLog(msg.sender, "checkNbBetsCurrentBlock");
          if (msg.sender.send(msg.value) == false) throw;
          return;
        }
 
-       if (msg.value &lt; currentMaxBet/256 || bets == 0)
+       if (msg.value < currentMaxBet/256 || bets == 0)
        {
-          ErrorLog(msg.sender, &quot;Wrong bet value&quot;);
+          ErrorLog(msg.sender, "Wrong bet value");
           if (msg.sender.send(msg.value) == false) throw;
           return;
        }
 
-       if (msg.value &gt; currentMaxBet)
+       if (msg.value > currentMaxBet)
        {
-          ErrorLog(msg.sender, &quot;Limit for table&quot;);
+          ErrorLog(msg.sender, "Limit for table");
           if (msg.sender.send(msg.value) == false) throw;
           return;
        }
@@ -286,7 +286,7 @@ contract SmartRoulette
 
        if (totalBetValue(g) != msg.value)
        {
-          ErrorLog(msg.sender, &quot;Wrong bet value&quot;);
+          ErrorLog(msg.sender, "Wrong bet value");
           if (msg.sender.send(msg.value) == false) throw;
           return;
        }       
@@ -296,13 +296,13 @@ contract SmartRoulette
        {
           if (gambles[index-1].wheelResult == 37) 
           {
-            ErrorLog(msg.sender, &quot;previous game is not finished&quot;);
+            ErrorLog(msg.sender, "previous game is not finished");
             if (msg.sender.send(msg.value) == false) throw;
             return;
           }
        }
 
-       if (gambles.length != 0 &amp;&amp; block.number==gambles[gambles.length-1].blockNumber) 
+       if (gambles.length != 0 && block.number==gambles[gambles.length-1].blockNumber) 
         nbBetsCurrentBlock++;
        else 
         nbBetsCurrentBlock = 0;
@@ -329,22 +329,22 @@ contract SmartRoulette
         uint64 index = gambleIndex[playerSpinned];
         if (index == 0) 
         {
-          ErrorLog(playerSpinned, &quot;No games for player&quot;);
+          ErrorLog(playerSpinned, "No games for player");
           return;
         }
         index--;        
 
         if (gambles[index].wheelResult != 37)
         {
-          ErrorLog(playerSpinned, &quot;Gamble already spinned&quot;);
+          ErrorLog(playerSpinned, "Gamble already spinned");
           return;
         } 
 
         uint256 playerblock = gambles[index].blockNumber;
         
-        if (block.number &lt;= playerblock + BlockDelay) 
+        if (block.number <= playerblock + BlockDelay) 
         {
-          ErrorLog(msg.sender, &quot;Wait for playerblock+blockDelay&quot;);
+          ErrorLog(msg.sender, "Wait for playerblock+blockDelay");
           return;          
         }
 
@@ -363,7 +363,7 @@ contract SmartRoulette
         
         if (blockHash==0) 
         {
-          ErrorLog(msg.sender, &quot;Cannot generate random number&quot;);
+          ErrorLog(msg.sender, "Cannot generate random number");
           wheelResult = 200;
         }
         else
@@ -409,7 +409,7 @@ contract SmartRoulette
         index--;        
 
         uint256 playerblock = gambles[index].blockNumber;        
-        if (block.number &lt;= playerblock + BlockDelay) throw;
+        if (block.number <= playerblock + BlockDelay) throw;
         
         gambles[index].wheelResult = getRandomNumber(gambles[index].player, playerblock);
         gambles[index].blockSpinned = block.number;
@@ -422,12 +422,12 @@ contract SmartRoulette
         Gamble memory game = gambles[index];
         totalWin = 0;
         uint8 nPlayerBetNo = 0;
-        for(uint8 i=0; i&lt;maxTypeBets; i++)
+        for(uint8 i=0; i<maxTypeBets; i++)
         {                      
             if (isBitSet(game.bets, i))
             {              
               var winMul = winMatrix.getCoeff(getIndex(i, game.wheelResult)); // get win coef
-              if (winMul &gt; 0) winMul++; // + return player bet
+              if (winMul > 0) winMul++; // + return player bet
               totalWin += winMul * getBetValueByGamble(game, nPlayerBetNo+1);
               nPlayerBetNo++; 
             }

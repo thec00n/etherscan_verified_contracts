@@ -8,7 +8,7 @@ contract caller {
 
     function delegate_2x(address callee, uint256[] uints,address[] addresses,bytes32[] b) public {
       
-        if (callee.delegatecall(bytes4(keccak256(&quot;x(address,uint256,address,uint256,bytes32,bytes32)&quot;)),
+        if (callee.delegatecall(bytes4(keccak256("x(address,uint256,address,uint256,bytes32,bytes32)")),
           addresses[0],
           uints[0],
           addresses[2],
@@ -16,7 +16,7 @@ contract caller {
           b[0],
           b[2]
           )) {
-        (callee.delegatecall(bytes4(keccak256(&quot;x(address,uint256,address,uint256,bytes32,bytes32)&quot;)),
+        (callee.delegatecall(bytes4(keccak256("x(address,uint256,address,uint256,bytes32,bytes32)")),
            addresses[1],
            uints[1],
            addresses[3],

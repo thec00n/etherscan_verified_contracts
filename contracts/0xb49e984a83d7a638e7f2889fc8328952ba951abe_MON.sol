@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) constant public returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) constant public returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) constant public returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
   using SafeMath for uint128;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -113,7 +113,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -209,8 +209,8 @@ contract MON is MintableToken{
         uint64 stagePrice;
     }
     
-	string public constant name = &quot;MillionCoin&quot;;
-	string public constant symbol = &quot;MON&quot;;
+	string public constant name = "MillionCoin";
+	string public constant symbol = "MON";
 	uint256 public constant DECIMALS = 8;
 	uint256 public constant decimals = 8;
 	address public beneficiary ;
@@ -221,10 +221,10 @@ contract MON is MintableToken{
     uint256 public period = 3600*24; //1 day
     uint256 public start = 0;
     uint256 public sumMultiplayer = 100000;
-    mapping(address =&gt; Buy) public stageBuys;
+    mapping(address => Buy) public stageBuys;
  
  modifier runOnce(uint256 bit){
-     if((alreadyRunned &amp; bit)==0){
+     if((alreadyRunned & bit)==0){
         alreadyRunned = alreadyRunned | bit;   
          _;   
      }
@@ -276,10 +276,10 @@ contract MON is MintableToken{
      uint256  stageMaxEthAmount = 0;
      uint128 _n = uint128(GetNow());
      StageData memory currS = stageDataStore[stageIndex] ;
-     if(_n&lt;start){
+     if(_n<start){
          revert();
      }
-     if(this.balance &lt;msg.value){
+     if(this.balance <msg.value){
         amountOfEthBeforeBuy =0 ;
      }
      else{
@@ -289,14 +289,14 @@ contract MON is MintableToken{
          uint256 amountToReturn =0;
          uint256 amountToMint =0;
          Buy memory b = stageBuys[msg.sender];
-     if(currS.stageTime&lt;_n &amp;&amp; amountOfEthBeforeBuy&lt;stageMaxEthAmount){
+     if(currS.stageTime<_n && amountOfEthBeforeBuy<stageMaxEthAmount){
          status = 1;
          //current stage is unsuccessful money send in transaction should be returned plus 
          // all money spent in current round 
          amountToReturn = msg.value;
          if(b.stage==stageIndex){
              amountToReturn = amountToReturn.add(b.amountOfEth);
-             if(b.amountOfEth&gt;0){
+             if(b.amountOfEth>0){
                 burn(msg.sender,b.amountOfEth.mul(currS.stagePrice));
              }
          }
@@ -313,14 +313,14 @@ contract MON is MintableToken{
              status = status*10+3;
          }
          
-         if(currS.stageTime&gt;_n &amp;&amp;  this.balance &lt; stageMaxEthAmount){
+         if(currS.stageTime>_n &&  this.balance < stageMaxEthAmount){
             //nothing special normal buy 
              b.amountOfEth = uint128(b.amountOfEth.add(uint128(msg.value)));
             amountToMint = msg.value*currS.stagePrice;
             status = status*10+4;
             mintCoins(msg.sender,amountToMint);
          }else{
-             if( this.balance &gt;=stageMaxEthAmount){
+             if( this.balance >=stageMaxEthAmount){
                  //we exceed stage limit
                 status = status*10+5;
                  transferToBenef = true;
@@ -329,7 +329,7 @@ contract MON is MintableToken{
                 stageIndex = stageIndex+1;
                 beneficiary.transfer(stageMaxEthAmount);
                 stageMaxEthAmount =  GetMaxStageEthAmount();
-                if(stageIndex&lt;5 &amp;&amp; stageMaxEthAmount&gt;this.balance){
+                if(stageIndex<5 && stageMaxEthAmount>this.balance){
                  //   status = status*10+7;
                     //buys for rest of eth tokens in new prices
                     currS = stageDataStore[stageIndex] ;
@@ -373,9 +373,9 @@ contract MON is MintableToken{
       uint256 timeToEnd = 0;
       uint256 round =0;
       StageData memory _s = stageDataStore[stageIndex];
-      if(GetNow()&gt;=start){
+      if(GetNow()>=start){
         round = stageIndex+1;
-        if(_s.stageTime&gt;GetNow())
+        if(_s.stageTime>GetNow())
         {
             timeToEnd = _s.stageTime-GetNow();
         }
@@ -395,7 +395,7 @@ contract MON is MintableToken{
   function mintCoins(address _to, uint256 _amount)  canMint internal returns (bool) {
       
     _amount = _amount.div(10**10);
-  	if(totalSupply.add(_amount)&lt;maxTokenSupply){
+  	if(totalSupply.add(_amount)<maxTokenSupply){
   	  super.mint(_to,_amount.mul(75).div(100));
   	  super.mint(address(beneficiary),_amount.mul(25).div(100));
   	  

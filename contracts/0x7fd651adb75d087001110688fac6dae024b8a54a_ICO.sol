@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,7 +66,7 @@ contract ERC20 is ERC20Basic {
 contract ShortAddressProtection {
 
     modifier onlyPayloadSize(uint256 numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 }
@@ -78,7 +78,7 @@ contract ShortAddressProtection {
 contract BasicToken is ERC20Basic, ShortAddressProtection {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     /**
     * @dev transfer token for a specified address
@@ -87,7 +87,7 @@ contract BasicToken is ERC20Basic, ShortAddressProtection {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic, ShortAddressProtection {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     /**
@@ -127,8 +127,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -142,7 +142,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) onlyPayloadSize(2) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,8 +290,8 @@ contract MintableToken is Ownable, StandardToken {
 }
 
 contract Token is MintableToken {
-    string public constant name = &quot;TOKPIE&quot;;
-    string public constant symbol = &quot;TKP&quot;;
+    string public constant name = "TOKPIE";
+    string public constant symbol = "TKP";
     uint8 public constant decimals = 18;
 }
 
@@ -345,7 +345,7 @@ contract Pausable is Ownable {
  */
 contract WhitelistedCrowdsale is Ownable {
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     /**
      * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -368,7 +368,7 @@ contract WhitelistedCrowdsale is Ownable {
      * @param _beneficiaries Addresses to be added to the whitelist
      */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
@@ -388,7 +388,7 @@ contract FinalizableCrowdsale is Pausable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -418,7 +418,7 @@ contract RefundVault is Ownable {
 
     enum State {Active, Refunding, Closed}
 
-    mapping(address =&gt; uint256) public deposited;
+    mapping(address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -506,8 +506,8 @@ contract preICO is FinalizableCrowdsale, WhitelistedCrowdsale {
      * @dev _maxEtherPerInvestor should be 10 ether
      */
     function preICO(address _token, address _wallet, uint256 _startDate, uint256 _endDate) public {
-        require(_token != address(0) &amp;&amp; _wallet != address(0));
-        require(_endDate &gt; _startDate);
+        require(_token != address(0) && _wallet != address(0));
+        require(_endDate > _startDate);
         startDate = _startDate;
         endDate = _endDate;
         token = Token(_token);
@@ -529,7 +529,7 @@ contract preICO is FinalizableCrowdsale, WhitelistedCrowdsale {
      * @return Whether funding goal was reached
      */
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= softCap;
+        return weiRaised >= softCap;
     }
 
     /**
@@ -561,7 +561,7 @@ contract preICO is FinalizableCrowdsale, WhitelistedCrowdsale {
         uint256 tokens = weiAmount.mul(rate);
 
         // Minimum contribution level in TKP tokens for each investor = 100 TKP
-        require(tokens &gt;= 100 * (10 ** 18));
+        require(tokens >= 100 * (10 ** 18));
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -578,12 +578,12 @@ contract preICO is FinalizableCrowdsale, WhitelistedCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        return !isFinalized &amp;&amp; now &gt;= startDate &amp;&amp; msg.value != 0;
+        return !isFinalized && now >= startDate && msg.value != 0;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return (now &gt; endDate || weiRaised &gt;= hardCap);
+        return (now > endDate || weiRaised >= hardCap);
     }
 }
 
@@ -605,7 +605,7 @@ contract ICO is Pausable, WhitelistedCrowdsale {
 
     address public wallet;
 
-    mapping(address =&gt; uint256) public deposited;
+    mapping(address => uint256) public deposited;
 
     /**
      * event for token purchase logging
@@ -624,9 +624,9 @@ contract ICO is Pausable, WhitelistedCrowdsale {
      * @dev _hardCap should be 8700 ether
      */
     function ICO(address _token, address _wallet, uint256 _startDate, uint256 _endDate, uint256 _hardCap) public {
-        require(_token != address(0) &amp;&amp; _wallet != address(0));
-        require(_endDate &gt; _startDate);
-        require(_hardCap &gt; 0);
+        require(_token != address(0) && _wallet != address(0));
+        require(_endDate > _startDate);
+        require(_hardCap > 0);
         startDate = _startDate;
         endDate = _endDate;
         hardCap = _hardCap;
@@ -640,18 +640,18 @@ contract ICO is Pausable, WhitelistedCrowdsale {
     }
 
     function getRate() public view returns (uint256) {
-        if (now &lt; startDate || hasEnded()) return 0;
+        if (now < startDate || hasEnded()) return 0;
 
         // Period: from June 01, 2018 @ UTC 0:01 to June 7, 2018 @ UTC 23:59; Price: 1 ETH = 1840 TKP
-        if (now &gt;= startDate &amp;&amp; now &lt; startDate + 604680) return 1840;
+        if (now >= startDate && now < startDate + 604680) return 1840;
         // Period: from June 08, 2018 @ UTC 0:00 to June 14, 2018 @ UTC 23:59; Price: 1 ETH = 1760 TKP
-        if (now &gt;= startDate + 604680 &amp;&amp; now &lt; startDate + 1209480) return 1760;
+        if (now >= startDate + 604680 && now < startDate + 1209480) return 1760;
         // Period: from June 15, 2018 @ UTC 0:00 to June 21, 2018 @ UTC 23:59; Price: 1 ETH = 1680 TKP
-        if (now &gt;= startDate + 1209480 &amp;&amp; now &lt; startDate + 1814280) return 1680;
+        if (now >= startDate + 1209480 && now < startDate + 1814280) return 1680;
         // Period: from June 22, 2018 @ UTC 0:00 to June 28, 2018 @ UTC 23:59; Price: 1 ETH = 1648 TKP
-        if (now &gt;= startDate + 1814280 &amp;&amp; now &lt; startDate + 2419080) return 1648;
+        if (now >= startDate + 1814280 && now < startDate + 2419080) return 1648;
         // Period: from June 29, 2018 @ UTC 0:00 to July 5, 2018 @ UTC 23:59; Price: 1 ETH = 1600 TKP
-        if (now &gt;= startDate + 2419080) return 1600;
+        if (now >= startDate + 2419080) return 1600;
     }
 
     // fallback function can be used to buy tokens
@@ -671,7 +671,7 @@ contract ICO is Pausable, WhitelistedCrowdsale {
         uint256 tokens = weiAmount.mul(getRate());
 
         // Minimum contribution level in TKP tokens for each investor = 100 TKP
-        require(tokens &gt;= 100 * (10 ** 18));
+        require(tokens >= 100 * (10 ** 18));
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -682,12 +682,12 @@ contract ICO is Pausable, WhitelistedCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        return now &gt;= startDate &amp;&amp; msg.value != 0;
+        return now >= startDate && msg.value != 0;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return (now &gt; endDate || weiRaised &gt;= hardCap);
+        return (now > endDate || weiRaised >= hardCap);
     }
 }
 
@@ -710,8 +710,8 @@ contract postICO is Ownable {
     uint256 public FTST;
 
     // Save complete of transfers (due to schedule) to these wallets 
-    mapping(uint8 =&gt; bool) completedE;
-    mapping(uint8 =&gt; bool) completedBC;
+    mapping(uint8 => bool) completedE;
+    mapping(uint8 => bool) completedBC;
 
     uint256 public paymentSizeE;
     uint256 public paymentSizeB;
@@ -735,7 +735,7 @@ contract postICO is Ownable {
         require(_walletC != address(0));
         require(_walletF != address(0));
         require(_walletG != address(0));
-        require(_endICODate &gt;= now);
+        require(_endICODate >= now);
 
         token = Token(_token);
         endICODate = _endICODate;
@@ -748,7 +748,7 @@ contract postICO is Ownable {
     }
 
     function finish() onlyOwner public {
-        require(now &gt; endICODate);
+        require(now > endICODate);
         require(!finished);
         require(token.saleAgent() == address(this));
 
@@ -788,62 +788,62 @@ contract postICO is Ownable {
 
     function claimTokensE(uint8 order) onlyOwner public {
         require(finished);
-        require(order &gt;= 1 &amp;&amp; order &lt;= 8);
+        require(order >= 1 && order <= 8);
         require(!completedE[order]);
 
         // On January 03, 2019 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 1) {
             // Thursday, 3 January 2019 г., 23:59:00
-            require(now &gt;= endICODate + 15724800);
+            require(now >= endICODate + 15724800);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On July 05, 2019 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 2) {
             // Friday, 5 July 2019 г., 23:59:00
-            require(now &gt;= endICODate + 31536000);
+            require(now >= endICODate + 31536000);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On January 03, 2020 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 3) {
             // Friday, 3 January 2020 г., 23:59:00
-            require(now &gt;= endICODate + 47260800);
+            require(now >= endICODate + 47260800);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On July 04, 2020 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 4) {
             // Saturday, 4 July 2020 г., 23:59:00
-            require(now &gt;= endICODate + 63072000);
+            require(now >= endICODate + 63072000);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On January 02, 2021 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 5) {
             // Saturday, 2 January 2021 г., 23:59:00
-            require(now &gt;= endICODate + 78796800);
+            require(now >= endICODate + 78796800);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On July 04, 2021 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 6) {
             // Sunday, 4 July 2021 г., 23:59:00
-            require(now &gt;= endICODate + 94608000);
+            require(now >= endICODate + 94608000);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
         // On January 02, 2022 @ UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 7) {
             // Sunday, 2 January 2022 г., 23:59:00
-            require(now &gt;= endICODate + 110332800);
+            require(now >= endICODate + 110332800);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
-        // On July 04, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f2d2f2d2d5f">[email&#160;protected]</a> UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
+        // On July 04, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f2d2f2d2d5f">[email protected]</a> UTC 23:59 = FTST*2625/100000 (2.625% of final total supply of tokens) to the wallet [E].
         if (order == 8) {
             // Monday, 4 July 2022 г., 23:59:00
-            require(now &gt;= endICODate + 126144000);
+            require(now >= endICODate + 126144000);
             token.transfer(walletE, paymentSizeE);
             completedE[order] = true;
         }
@@ -851,13 +851,13 @@ contract postICO is Ownable {
 
     function claimTokensBC(uint8 order) onlyOwner public {
         require(finished);
-        require(order &gt;= 1 &amp;&amp; order &lt;= 4);
+        require(order >= 1 && order <= 4);
         require(!completedBC[order]);
 
         // On January 03, 2019 @ UTC 23:59 = FTST*25/10000 (0.25% of final total supply of tokens) to the wallet [B] and FTST*215/10000 (2.15% of final total supply of tokens) to the wallet [C].
         if (order == 1) {
             // Thursday, 3 January 2019 г., 23:59:00
-            require(now &gt;= endICODate + 15724800);
+            require(now >= endICODate + 15724800);
             token.transfer(walletB, paymentSizeB);
             token.transfer(walletC, paymentSizeC);
             completedBC[order] = true;
@@ -865,7 +865,7 @@ contract postICO is Ownable {
         // On July 05, 2019 @ UTC 23:59 = FTST*25/10000 (0.25% of final total supply of tokens) to the wallet [B] and FTST*215/10000 (2.15% of final total supply of tokens) to the wallet [C].
         if (order == 2) {
             // Friday, 5 July 2019 г., 23:59:00
-            require(now &gt;= endICODate + 31536000);
+            require(now >= endICODate + 31536000);
             token.transfer(walletB, paymentSizeB);
             token.transfer(walletC, paymentSizeC);
             completedBC[order] = true;
@@ -873,7 +873,7 @@ contract postICO is Ownable {
         // On January 03, 2020 @ UTC 23:59 = FTST*25/10000 (0.25% of final total supply of tokens) to the wallet [B] and FTST*215/10000 (2.15% of final total supply of tokens) to the wallet [C].
         if (order == 3) {
             // Friday, 3 January 2020 г., 23:59:00
-            require(now &gt;= endICODate + 47260800);
+            require(now >= endICODate + 47260800);
             token.transfer(walletB, paymentSizeB);
             token.transfer(walletC, paymentSizeC);
             completedBC[order] = true;
@@ -881,7 +881,7 @@ contract postICO is Ownable {
         // On July 04, 2020 @ UTC 23:59 = FTST*25/10000 (0.25% of final total supply of tokens) to the wallet [B] and FTST*215/10000 (2.15% of final total supply of tokens) to the wallet [C].
         if (order == 4) {
             // Saturday, 4 July 2020 г., 23:59:00
-            require(now &gt;= endICODate + 63072000);
+            require(now >= endICODate + 63072000);
             token.transfer(walletB, paymentSizeB);
             token.transfer(walletC, paymentSizeC);
             completedBC[order] = true;
@@ -923,7 +923,7 @@ contract Controller is Ownable {
     }
 
     function startICO() onlyOwner public {
-        require(now &gt; pre.endDate());
+        require(now > pre.endDate());
         require(state == State.PRE_ICO);
         require(token.owner() == address(this));
         token.setSaleAgent(ico);
@@ -931,7 +931,7 @@ contract Controller is Ownable {
     }
 
     function startPostICO() onlyOwner public {
-        require(now &gt; ico.endDate());
+        require(now > ico.endDate());
         require(state == State.ICO);
         require(token.owner() == address(this));
         token.setSaleAgent(post);

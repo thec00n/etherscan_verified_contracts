@@ -37,9 +37,9 @@ contract BlockBase{
     }
     
     Block[] blocks;
-    mapping (uint256 =&gt; address) public blockIndexToOwner;
-    mapping (address =&gt; uint256) public ownershipTokenCount;
-    mapping (uint256 =&gt; address) public blockIndexToApproved;
+    mapping (uint256 => address) public blockIndexToOwner;
+    mapping (address => uint256) public ownershipTokenCount;
+    mapping (uint256 => address) public blockIndexToApproved;
     SaleAuction public saleAuction;
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         ownershipTokenCount[_to]++;
@@ -94,7 +94,7 @@ contract AuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
@@ -145,14 +145,14 @@ contract AuctionBase {
        
         // Check that the bid is greater than or equal to the current price
         uint256 price = auction.sellPrice;
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
         
         // Tell the world!
@@ -238,20 +238,20 @@ contract SaleAuction is AuctionBase {
 }
 
 contract BlockOwnership is BlockBase, ERC721 {
-  string public constant name = &quot;CryptoBlocks&quot;;
-  string public constant symbol = &quot;CB&quot;;
+  string public constant name = "CryptoBlocks";
+  string public constant symbol = "CB";
 
   bytes4 constant InterfaceSignature_ERC721 =
-      bytes4(keccak256(&#39;name()&#39;)) ^
-      bytes4(keccak256(&#39;symbol()&#39;)) ^
-      bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-      bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-      bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-      bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-      bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-      bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+      bytes4(keccak256('name()')) ^
+      bytes4(keccak256('symbol()')) ^
+      bytes4(keccak256('totalSupply()')) ^
+      bytes4(keccak256('balanceOf(address)')) ^
+      bytes4(keccak256('ownerOf(uint256)')) ^
+      bytes4(keccak256('approve(address,uint256)')) ^
+      bytes4(keccak256('transfer(address,uint256)')) ^
+      bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+      bytes4(keccak256('tokensOfOwner(address)')) ^
+      bytes4(keccak256('tokenMetadata(uint256,string)'));
       
       function _owns(address _claimant, uint256 _tokenId) internal constant returns (bool) {
           return blockIndexToOwner[_tokenId] == _claimant;
@@ -305,7 +305,7 @@ contract BlockOwnership is BlockBase, ERC721 {
               uint256 resultIndex = 0;
               uint256 blockId;
   
-              for (blockId = 1; blockId &lt;= totalBlocks; blockId++) {
+              for (blockId = 1; blockId <= totalBlocks; blockId++) {
                   if (blockIndexToOwner[blockId] == _owner) {
                       result[resultIndex] = blockId;
                       resultIndex++;
@@ -333,7 +333,7 @@ contract BlockCoreOne is BlockOwnership {
     address[16] public owners;
     address public beneficiary = msg.sender;
 
-    mapping (uint256 =&gt; address) public blockIndexToOwner;
+    mapping (uint256 => address) public blockIndexToOwner;
     uint256 public gen0CreatedCount;
 
     uint256 public constant BLOCK_BASIC_PRICE = 10 finney;
@@ -344,7 +344,7 @@ contract BlockCoreOne is BlockOwnership {
     function buyBlock(string _position, uint256 _w, uint256 _h, uint256 _generation, uint256 _unitPrice) public payable returns(uint256 blockID) {
         uint256 price = computeBlockPrice(_w, _h, _unitPrice);
         uint256 _bidAmount = msg.value;
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
         uint256 blockId = _createBlock(_w, _h, _generation, _position, address(this));
         
         _approve(blockId, saleAuction);

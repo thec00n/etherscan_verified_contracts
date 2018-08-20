@@ -49,7 +49,7 @@ P3Dcontract_.withdraw();
 }
 // amount of divs available
 uint256 private ethtosend;
-mapping(address =&gt; uint256) public ticketsavailable;  
+mapping(address => uint256) public ticketsavailable;  
 uint256 public ticket1price =  1 finney;
 uint256 public tickets10price =  5 finney;
 uint256 public tickets100price =  25 finney;
@@ -78,43 +78,43 @@ function amountofp3d() external view returns(uint256){
 }
 
 function buy1ticket () public payable{
-    require(msg.value &gt;= ticket1price);
+    require(msg.value >= ticket1price);
     ticketsavailable[msg.sender] += 1;
     emit onTicketPurchase(msg.sender,1);
 }
 function buy10tickets () public payable{
-    require(msg.value &gt;= tickets10price);
+    require(msg.value >= tickets10price);
     ticketsavailable[msg.sender] += 10;
     emit onTicketPurchase(msg.sender,10);
 }
 function buy100tickets () public payable{
-    require(msg.value &gt;= tickets100price);
+    require(msg.value >= tickets100price);
     ticketsavailable[msg.sender] += 100;
     emit onTicketPurchase(msg.sender,100);
 }
 function buy1ktickets () public payable{
-    require(msg.value &gt;= tickets1kprice);
+    require(msg.value >= tickets1kprice);
     ticketsavailable[msg.sender] += 1000;
     emit onTicketPurchase(msg.sender,1000);
 }
 function buy10ktickets () public payable{
-    require(msg.value &gt;= tickets10kprice);
+    require(msg.value >= tickets10kprice);
     ticketsavailable[msg.sender] += 10000;
     emit onTicketPurchase(msg.sender,10000);
 }
 function buy100ktickets () public payable{
-    require(msg.value &gt;= tickets100kprice);
+    require(msg.value >= tickets100kprice);
     ticketsavailable[msg.sender] += 100000;
     emit onTicketPurchase(msg.sender,100000);
 }
 
 function onlyHarvest(uint256 amt) public payable{
     div = harvestabledivs();
-    require(amt &gt; 0);
-    require(msg.value &gt; 0);
-    require(msg.value * 2 &gt;= amt);
-    require(div &gt; amt);
-    require(ticketsavailable[msg.sender] &gt;= 2);
+    require(amt > 0);
+    require(msg.value > 0);
+    require(msg.value * 2 >= amt);
+    require(div > amt);
+    require(ticketsavailable[msg.sender] >= 2);
     ethtosend = amt;
     claimdivs();
     ticketsavailable[msg.sender] -= 2;
@@ -123,11 +123,11 @@ function onlyHarvest(uint256 amt) public payable{
 }
 function ExpandandHarvest(uint256 amt) public payable{
     div = harvestabledivs();
-    require(amt &gt; 0);
-    require(msg.value &gt; 0);
-    require(msg.value * 2 &gt;= amt);
-    require(div &gt; amt);
-    require(ticketsavailable[msg.sender] &gt;= 1);
+    require(amt > 0);
+    require(msg.value > 0);
+    require(msg.value * 2 >= amt);
+    require(div > amt);
+    require(ticketsavailable[msg.sender] >= 1);
     //1% to owner
     ethtosend = this.balance /100;
     owner.transfer(ethtosend);
@@ -140,7 +140,7 @@ function ExpandandHarvest(uint256 amt) public payable{
     emit onHarvest(msg.sender,ethtosend);
 }
 function Expand() public {
-    require(ticketsavailable[msg.sender] &gt;= 1);
+    require(ticketsavailable[msg.sender] >= 1);
     //1% to owner
     ethtosend = this.balance /100;
     owner.transfer(ethtosend);

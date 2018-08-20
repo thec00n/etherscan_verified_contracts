@@ -7,19 +7,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,8 +37,8 @@ contract HAND{
 
     address privateSaleAdd = 0x85e4FE33c590b8A5812fBF926a0f9fe64E6d8b35;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     
       
@@ -51,8 +51,8 @@ contract HAND{
         uint256 period;
     }
     
-    mapping (address =&gt; founderLock) public founderLockance;
-    mapping (address =&gt; bool) isFreezed;
+    mapping (address => founderLock) public founderLockance;
+    mapping (address => bool) isFreezed;
     
 
     
@@ -65,15 +65,15 @@ contract HAND{
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
     */
-    string public name = &quot;ShowHand&quot;;               //fancy name: eg Simon Bucks
+    string public name = "ShowHand";               //fancy name: eg Simon Bucks
     uint8 public decimals = 0;                     //How many decimals to show.
-    string public symbol = &quot;HAND&quot;;                 //An identifier: eg SBX
+    string public symbol = "HAND";                 //An identifier: eg SBX
 
     /**
       * @dev Fix for the ERC20 short address attack.
       */
       modifier onlyPayloadSize(uint size) {
-          require(msg.data.length &gt;= size + 4);
+          require(msg.data.length >= size + 4);
           _;
       }
       modifier  onlyOwner() { 
@@ -142,11 +142,11 @@ contract HAND{
         _totalSupply = _initialAmount;
       }
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         require(isFreezed[msg.sender]==false);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -155,12 +155,12 @@ contract HAND{
         }
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -186,9 +186,9 @@ contract HAND{
     function multisend(address[] addrs,  uint256 _value)
     {
         uint length = addrs.length;
-        require(_value * length &lt;= balances[msg.sender]);
+        require(_value * length <= balances[msg.sender]);
         uint i = 0;
-        while (i &lt; length) {
+        while (i < length) {
            transfer(addrs[i], _value);
            i ++;
         }
@@ -213,8 +213,8 @@ contract HAND{
     
     // allow locked token to be obtained for founder 
     function unlockFounder () {
-        require(now &gt;= founderLockance[msg.sender].startTime + (founderLockance[msg.sender].totalRound - founderLockance[msg.sender].remainRound + 1) * founderLockance[msg.sender].period);
-        require(founderLockance[msg.sender].remainRound &gt; 0);
+        require(now >= founderLockance[msg.sender].startTime + (founderLockance[msg.sender].totalRound - founderLockance[msg.sender].remainRound + 1) * founderLockance[msg.sender].period);
+        require(founderLockance[msg.sender].remainRound > 0);
         uint256 changeAmount = founderLockance[msg.sender].amount.div(founderLockance[msg.sender].remainRound);
         balances[msg.sender] += changeAmount;
         founderLockance[msg.sender].amount -= changeAmount;
@@ -230,7 +230,7 @@ contract HAND{
         isFreezed[_target] = false;
     }
     function ownerUnlock (address _target, uint256 _value) onlyOwner {
-        require(founderLockance[_target].amount &gt;= _value);
+        require(founderLockance[_target].amount >= _value);
         founderLockance[_target].amount -= _value;
         balances[_target] += _value;
         _initialAmount += _value;
@@ -262,9 +262,9 @@ contract HAND{
       }
     // fallback function for receive ETH during ICO
     function () payable inIco{
-        require(msg.value &gt;= 10**18);
+        require(msg.value >= 10**18);
         uint256 tokenChange = (msg.value * exchangeRate).div(10**18);
-        require(tokenChange &lt;= publicToken);
+        require(tokenChange <= publicToken);
         balances[msg.sender] += tokenChange;
         publicToken = publicToken.sub(tokenChange);
       }

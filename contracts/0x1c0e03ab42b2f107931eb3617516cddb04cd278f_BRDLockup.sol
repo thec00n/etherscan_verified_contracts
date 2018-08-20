@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,8 +134,8 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner public returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    bool _correctInterval = now &gt;= unlockDate &amp;&amp; now.sub(unlockDate) &gt; currentInterval.mul(intervalDuration);
-    bool _validInterval = currentInterval &lt; numIntervals;
+    bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool _validInterval = currentInterval < numIntervals;
     if (!_correctInterval || !_validInterval)
       return false;
 
@@ -146,7 +146,7 @@ contract BRDLockup is Ownable {
     uint _allocationsIndex = allocations.length;
 
     // loop through every allocation
-    for (uint _i = 0; _i &lt; _allocationsIndex; _i++) {
+    for (uint _i = 0; _i < _allocationsIndex; _i++) {
       // the current reward for the allocation at index `i`
       uint256 _amountToReward;
 
@@ -177,7 +177,7 @@ contract BRDLockup is Ownable {
   // reward the beneficiary at `_index`
   function unlock(uint _index) onlyOwner public returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
     // ensure the beneficiary is not rewarded twice during the same interval
-    if (allocations[_index].currentInterval &lt; currentInterval) {
+    if (allocations[_index].currentInterval < currentInterval) {
       // record the currentInterval so the above check is useful
       allocations[_index].currentInterval = currentInterval;
       // subtract the reward from their remaining balance
@@ -198,7 +198,7 @@ contract BRDLockup is Ownable {
 
   // add a new allocation to the lockup
   function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner public {
-    require(now &lt; unlockDate);
+    require(now < unlockDate);
     allocations.push(
       Allocation(
         _beneficiary,

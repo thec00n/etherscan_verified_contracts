@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,13 +65,13 @@ contract BasicToken {
 
 contract EdenToken is BasicToken, owned {
     using SafeMath for uint256;
-    string public name = &quot;Eden Token&quot;;
-    string public symbol= &quot;EDT&quot;;
+    string public name = "Eden Token";
+    string public symbol= "EDT";
     uint8 public decimals = 2;
     uint256 public totalSupply = 200000000;  
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;  
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;  
+    mapping (address => bool) public frozenAccount;
 
     constructor() public {
         totalSupply = totalSupply * 10 ** uint256(decimals);
@@ -93,8 +93,8 @@ contract EdenToken is BasicToken, owned {
     
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to !=  address(0));
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
@@ -112,7 +112,7 @@ contract EdenToken is BasicToken, owned {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(!frozenAccount[msg.sender]);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);    
         return true;
@@ -132,7 +132,7 @@ contract EdenToken is BasicToken, owned {
 
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool){
         uint256 oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowance[msg.sender][_spender] = 0;
         } 
         else {
@@ -151,7 +151,7 @@ contract EdenToken is BasicToken, owned {
     }
     
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         emit Burn(msg.sender, _value);
@@ -159,7 +159,7 @@ contract EdenToken is BasicToken, owned {
     }
 
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
+        require(balanceOf[_from] >= _value);                
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              

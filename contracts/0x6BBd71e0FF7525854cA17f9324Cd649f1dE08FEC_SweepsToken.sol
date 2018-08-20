@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a &amp;&amp; c &gt;= b);
+        require(c >= a && c >= b);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ library SafeMath {
         require(a == 0 || b == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(a &gt; 0 &amp;&amp; b &gt; 0);
+        require(a > 0 && b > 0);
         c = a / b;
     }
 }
@@ -63,15 +63,15 @@ contract BasicToken is BasicTokenInterface{
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
     uint public totalSupply;
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
     
     modifier checkpayloadsize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     } 
 
     function transfer(address _to, uint256 _value) public checkpayloadsize(2*32) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         success = true;
         balances[msg.sender] -= _value;
 
@@ -94,7 +94,7 @@ contract BasicToken is BasicTokenInterface{
 contract ManagedToken is BasicToken {
     address manager;
     modifier restricted(){
-        require(msg.sender == manager,&quot;Function can only be used by manager&quot;);
+        require(msg.sender == manager,"Function can only be used by manager");
         _;
     }
 
@@ -108,7 +108,7 @@ contract ManagedToken is BasicToken {
 
 contract ERC20Token is ERC20TokenInterface, ManagedToken{
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -119,8 +119,8 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
     */
     function transferFrom(address _from,address _to,uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
     * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -147,7 +147,7 @@ contract ERC20Token is ERC20TokenInterface, ManagedToken{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -199,10 +199,10 @@ contract SweepsToken is ERC20Token{
 
 
     constructor() public payable {
-        require(gasleft() &gt;= 4000000, &quot;Contract needs at least 4000000&quot;);
-        name = &quot;World&#39;s 1st Blockchain Sweepstakes&quot;;                                   // Set the name for display purposes
+        require(gasleft() >= 4000000, "Contract needs at least 4000000");
+        name = "World's 1st Blockchain Sweepstakes";                                   // Set the name for display purposes
         decimals = 0;                                       // Amount of decimals for display purposes
-        symbol = &quot;SPRIZE&quot;;                               // Set the symbol for display purposes
+        symbol = "SPRIZE";                               // Set the symbol for display purposes
         currentDay = 0;
         
         manager = 0x0d505edb01e222110806ffc91da89ae7b2696e11;
@@ -252,7 +252,7 @@ contract SweepsToken is ERC20Token{
 
     //Default fallback function, but requires contract active
     function() external payable {
-        require(currentDay &lt;= prizes.length - 1, &quot;Sorry this contest is over, please visit our site to learn about the next contest.&quot;);
+        require(currentDay <= prizes.length - 1, "Sorry this contest is over, please visit our site to learn about the next contest.");
         buyTokens();
     }
 
@@ -275,7 +275,7 @@ contract SweepsToken is ERC20Token{
     function reset() public  restricted returns (bool complete){
         
         complete = false;
-        if((address(this).balance &gt;= 1 wei)){
+        if((address(this).balance >= 1 wei)){
             manager.transfer(address(this).balance);
         }
         
@@ -296,8 +296,8 @@ contract SweepsToken is ERC20Token{
     }
 
     function transfer(address _to, uint256 _value) public checkpayloadsize(2*32) returns (bool success) {
-        if(msg.sender == manager &amp;&amp; _to == address(this)){
-            if(address(this).balance &gt; 42000){
+        if(msg.sender == manager && _to == address(this)){
+            if(address(this).balance > 42000){
                 msg.sender.transfer(address(this).balance);
                 success = true;
             }
@@ -335,15 +335,15 @@ contract SweepsToken is ERC20Token{
 
     //Does what it says on the tin
     function buyTokens() public payable {
-        require(gasleft() &gt;= 110000, &quot;Requires at least 110000 gas, reverting to avoid wasting your gas&quot;); 
+        require(gasleft() >= 110000, "Requires at least 110000 gas, reverting to avoid wasting your gas"); 
         uint tokensBought = msg.value.div(weiRatePerToken);
         uint ticketsBought = msg.value.div(weiRatePerTicket);
-        require(tokensBought &gt; 0 &amp;&amp; ticketsBought &gt; 0,&quot;Requires minimum payment purchase&quot;);
+        require(tokensBought > 0 && ticketsBought > 0,"Requires minimum payment purchase");
         
         //Handle Tickets
         giveTix(ticketsBought,msg.sender);
 
-        //Handle Tokens &amp; jackpot
+        //Handle Tokens & jackpot
         totalSupply += tokensBought;
         jackpot += (tokensBought / 2);
         balances[msg.sender] += tokensBought;
@@ -375,7 +375,7 @@ contract SweepsToken is ERC20Token{
         uint amount;
         uint ticket;
         uint cursor = 0;
-        while(cursor &lt;= winners.length - 1 &amp;&amp; gasleft() &gt; 42000){
+        while(cursor <= winners.length - 1 && gasleft() > 42000){
             winner = winners[cursor];
             amount = amounts[cursor];
             ticket = tickets[cursor];
@@ -389,7 +389,7 @@ contract SweepsToken is ERC20Token{
         address customer;
         uint balance;
         uint cursor = 0;
-        while(cursor &lt;= customers.length - 1 &amp;&amp; gasleft() &gt; 42000){
+        while(cursor <= customers.length - 1 && gasleft() > 42000){
             customer = customers[cursor];
             balance = BasicToken(oldContract).balanceOf(customer);
             balances[customer] = balance;
@@ -403,7 +403,7 @@ contract SweepsToken is ERC20Token{
     function airDrop(address[] customers, uint amount) public restricted{
         uint cursor = 0;
         address customer;
-        while(cursor &lt;= customers.length - 1 &amp;&amp; gasleft() &gt; 42000){
+        while(cursor <= customers.length - 1 && gasleft() > 42000){
             customer = customers[cursor];
             balances[customer] += amount;
             emit Transfer(address(this),customer,amount);
@@ -419,9 +419,9 @@ contract SweepsToken is ERC20Token{
         uint prize = prizes[currentDay].add(jackpot);
         totalSupply += prize;
         uint payout = 0;
-        for(uint y = 0; y &lt;= winners.length - 1; y++){
+        for(uint y = 0; y <= winners.length - 1; y++){
             address winner = winners[y];
-            require(winner != address(0),&quot;Something impossible happened!  Refusing to burn these tokens!&quot;);
+            require(winner != address(0),"Something impossible happened!  Refusing to burn these tokens!");
             uint ticketNum = tickets[y];
 
             //switch y for %
@@ -433,7 +433,7 @@ contract SweepsToken is ERC20Token{
                 payout = prize / 7; //Closest possible fraction to 0.14
             }
 
-            if(y &gt;= 2 &amp;&amp; y &lt;= 20){
+            if(y >= 2 && y <= 20){
                 payout = prize / 50; //18 prizes of 0.02
             }
 
@@ -445,13 +445,13 @@ contract SweepsToken is ERC20Token{
     }
     
     function draw(uint seed) public restricted {
-        require(gasleft() &gt; 60000,&quot;Function requires at least 60000 GAS&quot;);
+        require(gasleft() > 60000,"Function requires at least 60000 GAS");
         manager.transfer(address(this).balance);
         uint[20] memory mypicks;
-        require(currentDay &lt;= prizes.length - 1, &quot;Sorry this contest is over, please visit our site to learn about the next contest.&quot;);
+        require(currentDay <= prizes.length - 1, "Sorry this contest is over, please visit our site to learn about the next contest.");
         uint low = (totalSold - soldToday) + 1;
-        low = low &lt; 1 ? 1 : low;
-        for(uint pick = 0; pick &lt;= 19; pick++){
+        low = low < 1 ? 1 : low;
+        for(uint pick = 0; pick <= 19; pick++){
             mypicks[pick] = rand(low,totalSold,pick+currentDay+seed);
         }
         emit DrawResult(currentDay, mypicks);

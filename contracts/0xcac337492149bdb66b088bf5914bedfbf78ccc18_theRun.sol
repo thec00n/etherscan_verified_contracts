@@ -9,9 +9,9 @@ contract theRun {
         //Fees are necessary and set very low, to maintain the website. The fees will decrease each time they are collected.
         //Fees are just here to maintain the website at beginning, and will progressively go to 0% :)
         uint private fees = 0;
-        uint private feeFrac = 20; //Fraction for fees in per&quot;thousand&quot;, not percent, so 20 is 2%
+        uint private feeFrac = 20; //Fraction for fees in per"thousand", not percent, so 20 is 2%
         
-        uint private PotFrac = 30; //For the WinningPot ,30=&gt; 3% are collected. This is fixed.
+        uint private PotFrac = 30; //For the WinningPot ,30=> 3% are collected. This is fixed.
         
         
         address private admin;
@@ -38,11 +38,11 @@ contract theRun {
         //--initiated function
         function init() private {
             uint deposit=msg.value;
-            if (msg.value &lt; 500 finney) { //only participation with &gt;1 ether accepted
+            if (msg.value < 500 finney) { //only participation with >1 ether accepted
                     msg.sender.send(msg.value);
                     return;
             }
-            if (msg.value &gt; 20 ether) { //only participation with &lt;20 ether accepted
+            if (msg.value > 20 ether) { //only participation with <20 ether accepted
                     msg.sender.send(msg.value- (20 ether));
                     deposit=20 ether;
             }
@@ -55,10 +55,10 @@ contract theRun {
                 
 
                 uint total_multiplier=Min_multiplier; //initiate total_multiplier
-                if(Balance &lt; 1 ether &amp;&amp; players.length&gt;1){
+                if(Balance < 1 ether && players.length>1){
                     total_multiplier+=100; // + 10 %
                 }
-                if( (players.length % 10)==0 &amp;&amp; players.length&gt;1 ){ //Every 10th participant gets a 10% bonus, play smart !
+                if( (players.length % 10)==0 && players.length>1 ){ //Every 10th participant gets a 10% bonus, play smart !
                     total_multiplier+=100; // + 10 %
                 }
                 
@@ -70,9 +70,9 @@ contract theRun {
                 fees += (deposit * feeFrac) / 1000; // collect maintenance fees 2%
                 Balance += (deposit * (1000 - ( feeFrac + PotFrac ))) / 1000; // update balance
 
-                // Winning the Pot :) Condition : paying at least 1 people with deposit &gt; 2 ether and having luck !
-                if(  ( deposit &gt; 1 ether ) &amp;&amp; (deposit &gt; players[Payout_id].payout) ){ 
-                    uint roll = random(100); //take a random number between 1 &amp; 100
+                // Winning the Pot :) Condition : paying at least 1 people with deposit > 2 ether and having luck !
+                if(  ( deposit > 1 ether ) && (deposit > players[Payout_id].payout) ){ 
+                    uint roll = random(100); //take a random number between 1 & 100
                     if( roll % 10 == 0 ){ //if lucky : Chances : 1 out of 10 ! 
                         msg.sender.send(WinningPot); // Bravo !
                         WinningPot=0;
@@ -81,7 +81,7 @@ contract theRun {
                 }
                 
                 //Classic payout for the participants
-                while ( Balance &gt; players[Payout_id].payout ) {
+                while ( Balance > players[Payout_id].payout ) {
                     Last_Payout = players[Payout_id].payout;
                     players[Payout_id].addr.send(Last_Payout); //pay the man, please !
                     Balance -= players[Payout_id].payout; //update the balance
@@ -158,7 +158,7 @@ function Total_of_Players() constant returns(uint NumberOfPlayers) {
 }
 
 function PlayerInfo(uint id) constant returns(address Address, uint Payout, bool UserPaid) {
-    if (id &lt;= players.length) {
+    if (id <= players.length) {
         Address = players[id].addr;
         Payout = players[id].payout / 1 wei;
         UserPaid=players[id].paid;

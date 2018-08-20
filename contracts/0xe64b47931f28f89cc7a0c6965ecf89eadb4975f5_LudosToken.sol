@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -73,9 +73,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -83,7 +83,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -92,7 +92,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -123,7 +123,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -141,7 +141,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -168,7 +168,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -179,8 +179,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -296,7 +296,7 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -307,7 +307,7 @@ contract CappedToken is MintableToken {
     * @return A boolean that indicates if the operation was successful.
     */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= cap);
+        require(totalSupply_.add(_amount) <= cap);
         return super.mint(_to, _amount);
     }
 
@@ -355,7 +355,7 @@ contract Pausable is Ownable {
 
 contract PausableToken is StandardToken, Pausable {
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
@@ -391,11 +391,11 @@ contract PausableToken is StandardToken, Pausable {
         require(!frozenAccount[msg.sender]);
         uint cnt = _receivers.length;
         uint256 amount = uint256(cnt).mul(_value);
-        require(cnt &gt; 0 &amp;&amp; cnt &lt;= 500);
-        require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= amount);
+        require(cnt > 0 && cnt <= 500);
+        require(_value > 0 && balances[msg.sender] >= amount);
     
         balances[msg.sender] = balances[msg.sender].sub(amount);
-        for (uint i = 0; i &lt; cnt; i++) {
+        for (uint i = 0; i < cnt; i++) {
             require (_receivers[i] != 0x0);
             balances[_receivers[i]] = balances[_receivers[i]].add(_value);
             emit Transfer(msg.sender, _receivers[i], _value);
@@ -412,18 +412,18 @@ contract PausableToken is StandardToken, Pausable {
         require(!frozenAccount[msg.sender]);
         uint cnt = _receivers.length;
         require(cnt == _values.length);
-        require(cnt &gt; 0 &amp;&amp; cnt &lt;= 500);
+        require(cnt > 0 && cnt <= 500);
         
         uint256 amount = 0;
-        for (uint i = 0; i &lt; cnt; i++) {
+        for (uint i = 0; i < cnt; i++) {
             require (_values[i] != 0);
             amount = amount.add(_values[i]);
         }
         
-        require(balances[msg.sender] &gt;= amount);
+        require(balances[msg.sender] >= amount);
     
         balances[msg.sender] = balances[msg.sender].sub(amount);
-        for (uint j = 0; j &lt; cnt; j++) {
+        for (uint j = 0; j < cnt; j++) {
             require (_receivers[j] != 0x0);
             balances[_receivers[j]] = balances[_receivers[j]].add(_values[j]);
             emit Transfer(msg.sender, _receivers[j], _values[j]);
@@ -437,7 +437,7 @@ contract PausableToken is StandardToken, Pausable {
     * @param _freeze To freeze or not.
     */
     function batchFreeze(address[] _addresses, bool _freeze) onlyOwner public {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             frozenAccount[_addresses[i]] = _freeze;
             emit FrozenFunds(_addresses[i], _freeze);
         }
@@ -445,8 +445,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract LudosToken is CappedToken, PausableToken {
-    string public constant name = &quot;Ludos Protocol&quot;;
-    string public constant symbol = &quot;LUD&quot;;
+    string public constant name = "Ludos Protocol";
+    string public constant symbol = "LUD";
     uint8 public constant decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 0;

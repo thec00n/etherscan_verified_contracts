@@ -9,14 +9,14 @@ library SafeMath {
 }
 
 contract token {
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   function transfer(address _to, uint256 _value) external;
 }
 
 contract ICOCrowdsale {
   using SafeMath for uint256;
   token public tokenReward;
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
 
   uint public beginTime;
   uint public endTime;
@@ -41,7 +41,7 @@ contract ICOCrowdsale {
     uint amount = msg.value;
 
     require(amount % 10 ** 17 == 0);
-    require(now &gt;= beginTime &amp;&amp; now &lt;= endTime);
+    require(now >= beginTime && now <= endTime);
     tokenReward.transfer(msg.sender, amount.mul(1000));
 
     emit Transfer(msg.sender, amount);

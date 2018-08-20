@@ -16,7 +16,7 @@ library IterableMapping
 {
   struct itmap
   {
-    mapping(address =&gt; IndexValue) data;
+    mapping(address => IndexValue) data;
     KeyFlag[] keys;
     uint size;
   }
@@ -26,7 +26,7 @@ library IterableMapping
   {
     uint keyIndex = self.data[key].keyIndex;
     self.data[key].value = value;
-    if (keyIndex &gt; 0)
+    if (keyIndex > 0)
       return true;
     else
     {
@@ -48,7 +48,7 @@ library IterableMapping
   }
   function contains(itmap storage self, address key) returns (bool)
   {
-    return self.data[key].keyIndex &gt; 0;
+    return self.data[key].keyIndex > 0;
   }
   function iterate_start(itmap storage self) returns (uint keyIndex)
   {
@@ -56,12 +56,12 @@ library IterableMapping
   }
   function iterate_valid(itmap storage self, uint keyIndex) returns (bool)
   {
-    return keyIndex &lt; self.keys.length;
+    return keyIndex < self.keys.length;
   }
   function iterate_next(itmap storage self, uint keyIndex) returns (uint r_keyIndex)
   {
     keyIndex++;
-    while (keyIndex &lt; self.keys.length &amp;&amp; self.keys[keyIndex].deleted)
+    while (keyIndex < self.keys.length && self.keys[keyIndex].deleted)
       keyIndex++;
     return keyIndex;
   }
@@ -86,10 +86,10 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 
 	function transfer(address to, uint tokens)public returns (bool success) {
-		if (balances[msg.sender] &gt;= tokens &amp;&amp; tokens &gt; 0 &amp;&amp; balances[to] + tokens &gt; balances[to]) {
-            if(lockedUsers[msg.sender].lockedTokens &gt; 0){
+		if (balances[msg.sender] >= tokens && tokens > 0 && balances[to] + tokens > balances[to]) {
+            if(lockedUsers[msg.sender].lockedTokens > 0){
                 TryUnLockBalance(msg.sender);
-                if(balances[msg.sender] - tokens &lt; lockedUsers[msg.sender].lockedTokens)
+                if(balances[msg.sender] - tokens < lockedUsers[msg.sender].lockedTokens)
                 {
                     return false;
                 }
@@ -106,11 +106,11 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 
 	function transferFrom(address from, address to, uint tokens)public returns (bool success) {
-		if (balances[from] &gt;= tokens &amp;&amp; allowed[from].data[to].value &gt;= tokens &amp;&amp; tokens &gt; 0 &amp;&amp; balances[to] + tokens &gt; balances[to]) {
-            if(lockedUsers[from].lockedTokens &gt; 0)
+		if (balances[from] >= tokens && allowed[from].data[to].value >= tokens && tokens > 0 && balances[to] + tokens > balances[to]) {
+            if(lockedUsers[from].lockedTokens > 0)
             {
                 TryUnLockBalance(from);
-                if(balances[from] - tokens &lt; lockedUsers[from].lockedTokens)
+                if(balances[from] - tokens < lockedUsers[from].lockedTokens)
                 {
                     return false;
                 }
@@ -136,8 +136,8 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 	
 		
-    string public name = &quot;ExhibationLinkingCoin&quot;;
-    string public symbol = &quot;EXLC&quot;;
+    string public name = "ExhibationLinkingCoin";
+    string public symbol = "EXLC";
     uint8 public decimals = 18;
 	uint256 private totalEXLCSupply = 10000000000000000000000000000;
 	uint256 private _totalBalance = totalEXLCSupply;
@@ -153,10 +153,10 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	address public auther_user = 0x0;
 	address public operater = 0x0;
 	
-    mapping (address =&gt; uint256) balances;
-    mapping(address =&gt; IterableMapping.itmap) allowed;
+    mapping (address => uint256) balances;
+    mapping(address => IterableMapping.itmap) allowed;
 
-	mapping(address =&gt; LockUser) lockedUsers;
+	mapping(address => LockUser) lockedUsers;
 	
 	
  	uint  constant    private ONE_DAY_TIME_LEN = 86400;
@@ -189,7 +189,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	uint32 sendToIdx = 0;
 	
 	function safeToNextIdx() internal{
-        if (sendToIdx &gt;= MAX_UINT32){
+        if (sendToIdx >= MAX_UINT32){
 			sendToIdx = 1;
 		}
         else{
@@ -200,7 +200,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
     constructor() public {
 		owner = msg.sender;
 		mineBalanceArry[0] = 1000000000000000000000000;
-		for(uint i=1; i&lt;30; i++){
+		for(uint i=1; i<30; i++){
 			mineBalanceArry[i] = mineBalanceArry[i-1] * 99 / 100;
 		}
 		mineBalance = taskTotalBalance;
@@ -210,7 +210,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 	
 	function StartIco() public {
-		if ((msg.sender != operater &amp;&amp; msg.sender != auther_user &amp;&amp; msg.sender != owner) || isIcoStart) 
+		if ((msg.sender != operater && msg.sender != auther_user && msg.sender != owner) || isIcoStart) 
 		{
 		    revert();
 		}
@@ -220,7 +220,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 	
 	function StopIco() public {
-		if ((msg.sender != operater &amp;&amp; msg.sender != auther_user &amp;&amp; msg.sender != owner) || isIcoFinished) 
+		if ((msg.sender != operater && msg.sender != auther_user && msg.sender != owner) || isIcoFinished) 
 		{
 		    revert();
 		}
@@ -242,7 +242,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			}
 		
 			coin = msg.value * icoPrice / 1 ether;
-			if(coin &gt; icoTotalBalance)
+			if(coin > icoTotalBalance)
 			{
 				revert();
 			}
@@ -265,9 +265,9 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	        revert();
 	    }
 	    LockUser storage user = lockedUsers[target];
-	    if(user.lockedIdx &gt; 0 &amp;&amp; user.lockedTokens &gt; 0)
+	    if(user.lockedIdx > 0 && user.lockedTokens > 0)
 	    {
-	        if(block.timestamp &gt;= user.lockedTime)
+	        if(block.timestamp >= user.lockedTime)
 	        {
 	            if(user.lockedIdx == 1)
 	            {
@@ -293,7 +293,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	        revert();
 	    }
 	    LockUser storage user = lockedUsers[target];
-	    if(user.lockedIdx &gt; 0 &amp;&amp; user.lockedTokens &gt; 0)
+	    if(user.lockedIdx > 0 && user.lockedTokens > 0)
 	    {
 	        return user.lockedTime;
 	    }
@@ -302,20 +302,20 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 
 	function miningEveryDay() public{
-		if (msg.sender != operater &amp;&amp; msg.sender != auther_user &amp;&amp; msg.sender != owner) 
+		if (msg.sender != operater && msg.sender != auther_user && msg.sender != owner) 
 		{
 		    revert();
 		}
 		uint day = uint((block.timestamp - lastUnlockMineBalanceTime) / ONE_DAY_TIME_LEN);
-		if(day &gt; 0){
+		if(day > 0){
 			int max_while = 30;
 			uint256 val;
-			while(day &gt; 0 &amp;&amp; max_while &gt; 0 &amp;&amp; mineTotalBalance &gt; 0){
+			while(day > 0 && max_while > 0 && mineTotalBalance > 0){
 				max_while--;
 				day -= 1;
 				dayIdx += 1;
 				val = mineBalanceArry[(dayIdx/365) % 30];
-				if(mineTotalBalance &gt;= val)
+				if(mineTotalBalance >= val)
 				{
 					mineBalance += val;
 					mineTotalBalance -= val;
@@ -336,7 +336,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 	function sendMinerByOwner(address _to, uint256 _value) public {
 	
-		if (msg.sender != operater &amp;&amp; msg.sender != auther_user &amp;&amp; msg.sender != owner) 
+		if (msg.sender != operater && msg.sender != auther_user && msg.sender != owner) 
 		{
 		    revert();
 		}
@@ -346,7 +346,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 		}
 		
 		
-		if(_value &gt; mineBalance){
+		if(_value > mineBalance){
 			revert();
 		}
 		
@@ -363,7 +363,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 
 	function sendICOByOwner(address _to, uint256 _value) public {
-		if (msg.sender != operater &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != auther_user) 
+		if (msg.sender != operater && msg.sender != owner && msg.sender != auther_user) 
 		{
 		    revert();
 		}
@@ -372,12 +372,12 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			revert();
 		}
 		
-		if(!isIcoFinished &amp;&amp; isIcoStart)
+		if(!isIcoFinished && isIcoStart)
 		{
 			revert();
 		}		
 
-		if(_value &gt; icoTotalBalance){
+		if(_value > icoTotalBalance){
 			revert();
 		}
 
@@ -393,7 +393,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 	
 	function sendCreatorByOwner(address _to, uint256 _value) public {
-		if (msg.sender != operater &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != auther_user) 
+		if (msg.sender != operater && msg.sender != owner && msg.sender != auther_user) 
 		{
 		    revert();
 		}
@@ -402,7 +402,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			revert();
 		}
 		
-		if(_value &gt; creatorsTotalBalance){
+		if(_value > creatorsTotalBalance){
 			revert();
 		}
 		
@@ -424,7 +424,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	}
 
 	function sendJigouByOwner(address _to, uint256 _value) public {
-		if (msg.sender != operater &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != auther_user) 
+		if (msg.sender != operater && msg.sender != owner && msg.sender != auther_user) 
 		{
 		    revert();
 		}
@@ -433,7 +433,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			revert();
 		}
 		
-		if(_value &gt; jiGouTotalBalance){
+		if(_value > jiGouTotalBalance){
 			revert();
 		}
 		
@@ -456,7 +456,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 	function sendMarketByOwner(address _to, uint256 _value) public {
 	
-		if (msg.sender != operater &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != auther_user) 
+		if (msg.sender != operater && msg.sender != owner && msg.sender != auther_user) 
 		{
 		    revert();
 		}
@@ -465,7 +465,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			revert();
 		}
 		
-		if(_value &gt; marketorsTotalBalance){
+		if(_value > marketorsTotalBalance){
 			revert();
 		}
 		
@@ -483,7 +483,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 
 	function sendBussinessByOwner(address _to, uint256 _value) public {
 	
-		if (msg.sender != operater &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != auther_user) 
+		if (msg.sender != operater && msg.sender != owner && msg.sender != auther_user) 
 		{
 		    revert();
 		}
@@ -492,7 +492,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 			revert();
 		}
 		
-		if(_value &gt; businessersTotalBalance){
+		if(_value > businessersTotalBalance){
 			revert();
 		}
 		
@@ -516,7 +516,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
 	
 	
 	function changeAutherOwner(address newOwner) public {
-		if ((msg.sender != owner &amp;&amp; msg.sender != auther_user) || newOwner == 0x0) 
+		if ((msg.sender != owner && msg.sender != auther_user) || newOwner == 0x0) 
 		{
 		    revert();
 		}
@@ -555,7 +555,7 @@ contract ExhibationLinkingCoin is ERC20Interface {
     }
 	
 	function setOperater(address op) public {
-		if ((msg.sender != owner &amp;&amp; msg.sender != auther_user &amp;&amp; msg.sender != operater) || op == 0x0) 
+		if ((msg.sender != owner && msg.sender != auther_user && msg.sender != operater) || op == 0x0) 
 		{
 		    revert();
 		}

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,10 +72,10 @@ contract WhitelistSale is Owned {
     // Each day, users are allowed to buy up to a certain (cummulative) limit of MANA.
 
     // This mapping stores the addresses for whitelisted users
-    mapping(address =&gt; bool) public whitelisted;
+    mapping(address => bool) public whitelisted;
 
     // Used to calculate the current limit
-    mapping(address =&gt; uint256) public bought;
+    mapping(address => uint256) public bought;
 
     // The initial values allowed per day are copied from this array
     uint256[6] public limitPerDay;
@@ -131,8 +131,8 @@ contract WhitelistSale is Owned {
     }
 
     modifier onlyIfActive {
-        require(getDay() &gt;= 0);
-        require(getDay() &lt; 6);
+        require(getDay() >= 0);
+        require(getDay() < 6);
         _;
     }
 
@@ -143,12 +143,12 @@ contract WhitelistSale is Owned {
         uint day = getDay();
         uint256 allowedForSender = limitPerDay[day] - bought[msg.sender];
 
-        if (msg.value &gt; allowedForSender) revert();
+        if (msg.value > allowedForSender) revert();
 
         uint256 balanceInMana = manaToken.balanceOf(address(this));
 
         uint orderInMana = msg.value * manaPerEth;
-        if (orderInMana &gt; balanceInMana) revert();
+        if (orderInMana > balanceInMana) revert();
 
         bought[msg.sender] = SafeMath.add(bought[msg.sender], msg.value);
         manaToken.transfer(beneficiary, orderInMana);
@@ -171,8 +171,8 @@ contract WhitelistSale is Owned {
 
     // Batch add users
     function addManyUsers(address[] users) onlyOwner {
-        require(users.length &lt; 10000);
-        for (uint index = 0; index &lt; users.length; index++) {
+        require(users.length < 10000);
+        for (uint index = 0; index < users.length; index++) {
              whitelisted[users[index]] = true;
              LogUserAdded(users[index]);
         }

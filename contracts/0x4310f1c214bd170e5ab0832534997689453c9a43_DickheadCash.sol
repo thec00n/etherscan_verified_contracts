@@ -46,16 +46,16 @@ contract ERC20TokenInterface {
 
 contract DickheadCash is ERC20TokenInterface {
 
-    string public constant name = &quot;DickheadCash&quot;;
-    string public constant symbol = &quot;DICK&quot;;
+    string public constant name = "DickheadCash";
+    string public constant symbol = "DICK";
     uint256 public constant decimals = 0;
     uint256 public totalTokens = 1 * (10 ** decimals);
     uint8 public constant MAX_TRANSFERS = 7;
 
-    mapping (address =&gt; bool) public received;
-    mapping (address =&gt; uint8) public transfers;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => bool) public received;
+    mapping (address => uint8) public transfers;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
 
     function DickheadCash() {
@@ -72,8 +72,8 @@ contract DickheadCash is ERC20TokenInterface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (_value &gt; 1) return false;
-        if (transfers[msg.sender] &gt;= MAX_TRANSFERS) return false;
+        if (_value > 1) return false;
+        if (transfers[msg.sender] >= MAX_TRANSFERS) return false;
         if (received[_to]) return false;
         if (received[msg.sender]) {
             balances[_to] = _value;

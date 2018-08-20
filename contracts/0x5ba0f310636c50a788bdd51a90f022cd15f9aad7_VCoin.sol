@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ contract ERC20Token is ERC20 {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -108,8 +108,8 @@ contract ERC20Token is ERC20 {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /**
@@ -151,13 +151,13 @@ contract ERC677Token is ERC677, ERC20Token {
         assembly {
             len := extcodesize(_addr)
         }
-        return len &gt; 0;
+        return len > 0;
     }
 }
 
 contract Splitable is ERC677Token, Ownable {
     uint32 public split;
-    mapping (address =&gt; uint32) public splits;
+    mapping (address => uint32) public splits;
 
     event Split(address indexed addr, uint32 multiplyer);
 
@@ -166,7 +166,7 @@ contract Splitable is ERC677Token, Ownable {
     }
 
     function splitShare() onlyOwner public {
-        require(split * 2 &gt;= split);
+        require(split * 2 >= split);
         if (split == 0) split = 2;
         else split *= 2;
         claimShare();
@@ -232,7 +232,7 @@ contract Splitable is ERC677Token, Ownable {
 
 contract Lockable is ERC20Token, Ownable {
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) public lockAmounts;
+    mapping (address => uint256) public lockAmounts;
 
     // function lock(address to, uint amount) public onlyOwner {
     //     lockAmounts[to] = lockAmounts[to].add(amount);
@@ -251,12 +251,12 @@ contract Lockable is ERC20Token, Ownable {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value + lockAmounts[msg.sender]);
+        require(balances[msg.sender] >= _value + lockAmounts[msg.sender]);
         return super.transfer(_to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value + lockAmounts[_from]);
+        require(balances[_from] >= _value + lockAmounts[_from]);
         return super.transferFrom(_from, _to, _value);
     }
 }
@@ -266,8 +266,8 @@ contract VCoin is ERC677Token, Ownable, Splitable, Lockable {
     event Purchase(uint32 indexed purchaseNo, address from, uint value, bytes data);
 
     constructor() public {
-        symbol = &quot;VICT&quot;;
-        name = &quot;Victory Token&quot;;
+        symbol = "VICT";
+        name = "Victory Token";
         decimals = 18;
         _totalSupply = 1000000000 * 10**uint(decimals);
 

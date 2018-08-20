@@ -12,10 +12,10 @@ contract ERC20 {
 }
 
 contract FBT is ERC20 {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bytes1) addresslevels;
-    mapping (address =&gt; uint256) feebank;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bytes1) addresslevels;
+    mapping (address => uint256) feebank;
  
     uint256 public totalSupply;
     uint256 public pieceprice;
@@ -26,7 +26,7 @@ contract FBT is ERC20 {
     address dev2 = 0xD7E9aB6a7a5f303D3Cd17DcaEFF254D87757a1F8;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -37,7 +37,7 @@ contract FBT is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -64,7 +64,7 @@ contract FBT is ERC20 {
    
     function refundFees() {
         uint256 refund = 200000*tx.gasprice;
-        if (feebank[msg.sender]&gt;=refund) {
+        if (feebank[msg.sender]>=refund) {
             msg.sender.transfer(refund);
             feebank[msg.sender]-=refund;
         }       
@@ -79,12 +79,12 @@ contract FrostByte is FBT {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;0.4&#39;;
+    string public version = '0.4';
   
     function FrostByte() {
-        name = &quot;FrostByte&quot;;
+        name = "FrostByte";
         decimals = 4;
-        symbol = &quot;FBT&quot;;
+        symbol = "FBT";
         pieceprice = 1 ether / 256;
         datestart = now;
     }
@@ -92,7 +92,7 @@ contract FrostByte is FBT {
     function () payable {
         bytes1 addrLevel = getAddressLevel();
         uint256 generateprice = getPrice(addrLevel);
-        if (msg.value&lt;generateprice) revert();
+        if (msg.value<generateprice) revert();
 
         uint256 seventy = msg.value / 100 * 30;
         uint256 dev = seventy / 2;
@@ -125,12 +125,12 @@ contract FrostByte is FBT {
     }
    
     function getAddressLevel() returns (bytes1 res) {
-        if (addresslevels[msg.sender]&gt;0) return addresslevels[msg.sender];
+        if (addresslevels[msg.sender]>0) return addresslevels[msg.sender];
       
         bytes1 highest = 0;
-        for (uint256 i=0;i&lt;20;i++) {
+        for (uint256 i=0;i<20;i++) {
             bytes1 c = bytes1(uint8(uint(msg.sender) / (2**(8*(19 - i)))));
-            if (bytes1(c)&gt;highest) highest=c;
+            if (bytes1(c)>highest) highest=c;
            
         }
       
@@ -142,7 +142,7 @@ contract FrostByte is FBT {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }

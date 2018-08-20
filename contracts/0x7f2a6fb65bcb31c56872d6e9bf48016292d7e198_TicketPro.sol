@@ -1,13 +1,13 @@
-//params (fee set to 0 so it&#39;s free):
-//  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], &quot;MJ comeback&quot;, 1603152000, &quot;21/10/2020&quot;, &quot;MGM grand&quot;, &quot;MJC&quot;, 1000
-// &quot;0x000000000000000000000000000000000000000000000000016a6075a7170002&quot;, 27, &quot;0xE26D930533CF5E36051C576E1988D096727F28A4AB638DBE7729BCC067BD06C8&quot;, &quot;0x76EBAA64A541D1DE054F4B63B586E7FEB485C1B3E85EA463F873CA69307EEEAA&quot;
+//params (fee set to 0 so it's free):
+//  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "MJ comeback", 1603152000, "21/10/2020", "MGM grand", "MJC", 1000
+// "0x000000000000000000000000000000000000000000000000016a6075a7170002", 27, "0xE26D930533CF5E36051C576E1988D096727F28A4AB638DBE7729BCC067BD06C8", "0x76EBAA64A541D1DE054F4B63B586E7FEB485C1B3E85EA463F873CA69307EEEAA"
 
 pragma solidity ^0.4.17;
 contract TicketPro
 {
     uint totalTickets;
-    mapping(address =&gt; uint16[]) inventory;
-    mapping(address =&gt; uint) spent;
+    mapping(address => uint16[]) inventory;
+    mapping(address => uint) spent;
     uint16 ticketIndex = 0; //to track mapping in tickets
     uint expiryTimeStamp;
     address organiser;
@@ -27,7 +27,7 @@ contract TicketPro
     modifier eventNotExpired()
     {
         //not perfect but probably good enough
-        if(block.timestamp &gt; expiryTimeStamp)
+        if(block.timestamp > expiryTimeStamp)
         {
             revert();
         }
@@ -77,8 +77,8 @@ contract TicketPro
     {
         bytes memory bytesString = new bytes(data.length * 32);
         uint urlLength;
-        for (uint i=0; i&lt;data.length; i++) {
-            for (uint j=0; j&lt;32; j++) {
+        for (uint i=0; i<data.length; i++) {
+            for (uint j=0; j<32; j++) {
                 byte char = byte((data[i] * 2 ** (8 * j)));
                 if (char != 0) {
                     bytesString[urlLength] = char;
@@ -87,7 +87,7 @@ contract TicketPro
             }
         }
         bytes memory bytesStringTrimmed = new bytes(urlLength);
-        for (i=0; i&lt;urlLength; i++) {
+        for (i=0; i<urlLength; i++) {
             bytesStringTrimmed[i] = bytesString[i];
         }
         return string(bytesStringTrimmed);
@@ -104,9 +104,9 @@ contract TicketPro
         bytes32 digest = keccak256(prefix, message);
         address seller = ecrecover(digest, v, r, s);
         require(msg.value == priceOfAllTickets);
-        for(uint i = 0; i &lt; ticketIndices.length; i++)
+        for(uint i = 0; i < ticketIndices.length; i++)
             require(inventory[seller][i] != 0); //should revert if arrayOutOfBounds
-        for(uint j = 0; j &lt; ticketIndices.length; j++)
+        for(uint j = 0; j < ticketIndices.length; j++)
         {
             inventory[msg.sender].push(inventory[seller][j]);
             inventory[seller][j] = 0;
@@ -146,7 +146,7 @@ contract TicketPro
 
     function isContractExpired() public view returns (bool)
     {
-        if(block.timestamp &gt; expiryTimeStamp)
+        if(block.timestamp > expiryTimeStamp)
         {
             return true;
         }
@@ -162,8 +162,8 @@ contract TicketPro
     {
         //one array element equals one ticket
         require(inventory[msg.sender].length -
-            spent[msg.sender] &lt; ticketIndices.length);
-        for(uint i = 0; i &lt; ticketIndices.length; i++)
+            spent[msg.sender] < ticketIndices.length);
+        for(uint i = 0; i < ticketIndices.length; i++)
         {
             require(inventory[msg.sender][i] != 0);
             //pushes each element with ordering
@@ -180,8 +180,8 @@ contract TicketPro
         bool isOrganiser = msg.sender == organiser;
         //one array element equals one ticket
         require(inventory[_from].length -
-            spent[_from] &lt; ticketIndices.length || isOrganiser);
-        for(uint i = 0; i &lt; ticketIndices.length; i++)
+            spent[_from] < ticketIndices.length || isOrganiser);
+        for(uint i = 0; i < ticketIndices.length; i++)
         {
             require(inventory[msg.sender][i] != 0 || isOrganiser);
             //pushes each element with ordering

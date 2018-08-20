@@ -15,7 +15,7 @@ pragma solidity ^0.4.18;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // File: contracts/interface/Controlled.sol
@@ -50,7 +50,7 @@ contract Burnable is Controlled {
   /// as well as by a burner. But burner could use the onlt his/her address as
   /// a target.
   modifier onlyControllerOrBurner(address target) {
-    assert(msg.sender == controller || (msg.sender == burner &amp;&amp; msg.sender == target));
+    assert(msg.sender == controller || (msg.sender == burner && msg.sender == target));
     _;
   }
 
@@ -115,10 +115,10 @@ contract ERC20Token {
 ///  will reduce contract sise and gas cost
 contract MiniMeTokenI is ERC20Token, Burnable {
 
-  string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+  string public name;                //The Token's name: e.g. DigixDAO Tokens
   uint8 public decimals;             //Number of decimals of the smallest unit
   string public symbol;              //An identifier: e.g. REP
-  string public version = &quot;MMT_0.1&quot;; //An arbitrary versioning scheme
+  string public version = "MMT_0.1"; //An arbitrary versioning scheme
 
 ///////////////////
 // ERC20 Methods
@@ -234,7 +234,7 @@ contract Distribution is Controlled, TokenController {
 
   MiniMeTokenI public token;
 
-  address public reserveWallet; // Team&#39;s wallet address
+  address public reserveWallet; // Team's wallet address
 
   uint256 public totalSupplyCap; // Total Token supply to be generated
   uint256 public totalReserve; // A number of tokens to reserve for the team/bonuses
@@ -242,11 +242,11 @@ contract Distribution is Controlled, TokenController {
   uint256 public finalizedBlock;
 
   /// Record all transaction details for all minting operations
-  mapping (address =&gt; Transaction[]) allTransactions;
+  mapping (address => Transaction[]) allTransactions;
 
   /// @param _token Address of the SEN token contract
   ///  the contribution finalizes.
-  /// @param _reserveWallet Team&#39;s wallet address to distribute reserved pool
+  /// @param _reserveWallet Team's wallet address to distribute reserved pool
   /// @param _totalSupplyCap Maximum amount of tokens to generate during the contribution
   /// @param _totalReserve A number of tokens to reserve for the team/bonuses
   function Distribution(
@@ -262,7 +262,7 @@ contract Distribution is Controlled, TokenController {
     token = MiniMeTokenI(_token);
     reserveWallet = _reserveWallet;
 
-    require(_totalReserve &lt; _totalSupplyCap);
+    require(_totalReserve < _totalSupplyCap);
     totalSupplyCap = _totalSupplyCap;
     totalReserve = _totalReserve;
 
@@ -276,7 +276,7 @@ contract Distribution is Controlled, TokenController {
 
   /// @notice This method can be called the distribution cap is reached only
   function finalize() public onlyController {
-    assert(token.totalSupply() &gt;= distributionCap());
+    assert(token.totalSupply() >= distributionCap());
 
     // Mint reserve pool
     doMint(reserveWallet, totalReserve);
@@ -302,7 +302,7 @@ contract Distribution is Controlled, TokenController {
   {
     require(_th != 0x0);
 
-    require(_amount + token.totalSupply() &lt;= distributionCap());
+    require(_amount + token.totalSupply() <= distributionCap());
 
     doMint(_th, _amount);
     addTransaction(

@@ -5,7 +5,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -85,37 +85,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint a, uint b) internal constant returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint a, uint b) internal constant returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -134,7 +134,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane(CrowdsaleToken token) public constant returns (bool);
@@ -199,15 +199,15 @@ contract GenericCrowdsale is Haltable {
   bool public requireCustomerId = false;
 
   /** How many ETH each address has invested in this crowdsale */
-  mapping (address =&gt; uint) public investedAmountOf;
+  mapping (address => uint) public investedAmountOf;
 
   /** How many tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint) public tokenAmountOf;
+  mapping (address => uint) public tokenAmountOf;
 
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => bool) public earlyParticipantWhitelist;
 
-  /** This is for manual testing of the interaction with the owner&#39;s wallet. You can set it to any value and inspect this in a blockchain explorer to see that crowdsale interaction works. */
+  /** This is for manual testing of the interaction with the owner's wallet. You can set it to any value and inspect this in a blockchain explorer to see that crowdsale interaction works. */
   uint8 public ownerTestValue;
 
   /** State machine
@@ -234,16 +234,16 @@ contract GenericCrowdsale is Haltable {
   // Address early participation whitelist status changed
   event Whitelisted(address addr, bool status);
 
-  // Crowdsale&#39;s finalize function has been called
+  // Crowdsale's finalize function has been called
   event Finalized();
 
 
   function GenericCrowdsale(address team_multisig, uint start, uint end, uint min_goal) internal {
     setMultisig(team_multisig);
 
-    // Don&#39;t mess the dates
-    require(start != 0 &amp;&amp; end != 0);
-    require(block.number &lt; start &amp;&amp; start &lt; end);
+    // Don't mess the dates
+    require(start != 0 && end != 0);
+    require(block.number < start && start < end);
     startsAt = start;
     endsAt = end;
 
@@ -252,7 +252,7 @@ contract GenericCrowdsale is Haltable {
   }
 
   /**
-   * Don&#39;t expect to just send in money and get tokens.
+   * Don't expect to just send in money and get tokens.
    */
   function() payable {
     require(false);
@@ -269,7 +269,7 @@ contract GenericCrowdsale is Haltable {
    *
    */
   function investInternal(address receiver, uint128 customerId) stopInEmergency notFinished private {
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if (getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
       require(earlyParticipantWhitelist[receiver]);
@@ -292,7 +292,7 @@ contract GenericCrowdsale is Haltable {
 
     // Return excess of money
     uint weiToReturn = msg.value.sub(weiAllowedAmount);
-    if (weiToReturn &gt; 0) {
+    if (weiToReturn > 0) {
       msg.sender.transfer(weiToReturn);
     }
   }
@@ -304,7 +304,7 @@ contract GenericCrowdsale is Haltable {
 
   /** 
    *  Calculate the amount of tokens that correspond to the received amount.
-   *  When there&#39;s an excedent due to rounding error, it should be returned to allow refunding.
+   *  When there's an excedent due to rounding error, it should be returned to allow refunding.
    */
   function calculatePrice(uint weiAmount, address customer) internal constant returns (uint tokenAmount);
 
@@ -421,7 +421,7 @@ contract GenericCrowdsale is Haltable {
    * The team can transfer the funds back on the smart contract in the case that the minimum goal was not reached.
    */
   function loadRefund() public payable inState(State.Failure) stopInEmergency {
-    require(msg.value &gt;= weiRaised);
+    require(msg.value >= weiRaised);
     require(weiRefunded == 0);
     uint excedent = msg.value.sub(weiRaised);
     loadedRefund = loadedRefund.add(msg.value.sub(excedent));
@@ -444,7 +444,7 @@ contract GenericCrowdsale is Haltable {
    * @return true if the crowdsale has raised enough money to be a success
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   function isCrowdsaleFull() internal constant returns (bool full);
@@ -464,10 +464,10 @@ contract GenericCrowdsale is Haltable {
    */
   function getState() public constant returns (State) {
     if (finalized) return State.Finalized;
-    else if (block.number &lt; startsAt) return State.PreFunding;
-    else if (block.number &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.number < startsAt) return State.PreFunding;
+    else if (block.number <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -522,7 +522,7 @@ contract CappedCrowdsale is GenericCrowdsale {
 
   function setFundingCap(uint newCap) internal onlyOwner notFinished {
     weiFundingCap = newCap;
-    require(weiFundingCap &gt;= minimumFundingGoal);
+    require(weiFundingCap >= minimumFundingGoal);
     FundingCapSet(weiFundingCap);
   }
 }
@@ -567,7 +567,7 @@ contract FractionalERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * Obsolete. Removed this check based on:
@@ -575,7 +575,7 @@ contract BasicToken is ERC20Basic {
    * @dev Fix for the ERC20 short address attack.
    *
    * modifier onlyPayloadSize(uint size) {
-   *    require(msg.data.length &gt;= size + 4);
+   *    require(msg.data.length >= size + 4);
    *    _;
    * }
    */
@@ -614,7 +614,7 @@ contract StandardToken is BasicToken, ERC20 {
   /* Token supply got increased and a new owner received these tokens */
   event Minted(address receiver, uint amount);
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -631,7 +631,7 @@ contract StandardToken is BasicToken, ERC20 {
     uint _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require(_value &lt;= _allowance);
+    // require(_value <= _allowance);
     // SafeMath uses assert instead of require though, beware when using an analysis tool
 
     balances[_to] = balances[_to].add(_value);
@@ -648,7 +648,7 @@ contract StandardToken is BasicToken, ERC20 {
    */
   function approve(address _spender, uint _value) public returns (bool success) {
 
-    // To change the approve amount you first have to reduce the addresses&#39;
+    // To change the approve amount you first have to reduce the addresses'
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -693,7 +693,7 @@ contract StandardToken is BasicToken, ERC20 {
 
       uint oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = oldVal.sub(_subtractedValue);
@@ -716,7 +716,7 @@ contract ReleasableToken is StandardToken, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Set the contract that can call release and make the token transferable.
@@ -725,7 +725,7 @@ contract ReleasableToken is StandardToken, Ownable {
    * it can only be called by a corresponding exposed API in the crowdsale contract in case of input error.
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
-    // We don&#39;t do interface check here as we might want to have a normal wallet address to act as a release agent.
+    // We don't do interface check here as we might want to have a normal wallet address to act as a release agent.
     releaseAgent = addr;
   }
 
@@ -794,7 +794,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state);
 
@@ -804,7 +804,7 @@ contract MintableToken is StandardToken, Ownable {
     // Cannot create a token without supply and no minting
     require(_mintable || _initialSupply != 0);
     // Create initially all balance on the team multisig
-    if (_initialSupply &gt; 0)
+    if (_initialSupply > 0)
         mintInternal(_multisig, _initialSupply);
     // No more new supply allowed after the token creation
     mintingFinished = !_mintable;
@@ -864,7 +864,7 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract UpgradeAgent {
 
-  /** This value should be the same as the original token&#39;s total supply */
+  /** This value should be the same as the original token's total supply */
   uint public originalSupply;
 
   /** Interface to ensure the contract is correctly configured */
@@ -911,7 +911,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -940,7 +940,7 @@ contract UpgradeableToken is StandardToken {
    */
   function upgrade(uint value) public {
     UpgradeState state = getUpgradeState();
-    // Ensure it&#39;s not called in a bad state
+    // Ensure it's not called in a bad state
     require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading);
 
     // Validate input value.
@@ -1043,7 +1043,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Fra
    * This token must be created through a team multisig wallet, so that it is owned by that wallet.
    *
    * @param _name Token name
-   * @param _symbol Token symbol - typically it&#39;s all caps
+   * @param _symbol Token symbol - typically it's all caps
    * @param _initialSupply How many tokens we start with
    * @param _decimals Number of decimal places
    * @param _mintable Are new tokens created over the crowdsale or do we distribute only the initial supply? Note that when the token becomes transferable the minting always ends.
@@ -1067,7 +1067,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Fra
    * Allow upgrade agent functionality to kick in only if the crowdsale was a success.
    */
   function canUpgrade() public constant returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
   /**
@@ -1089,8 +1089,8 @@ contract Crowdsale is CappedCrowdsale {
   uint private constant token_initial_supply = 0;
   uint8 private constant token_decimals = 16;
   bool private constant token_mintable = true;
-  string private constant token_name = &quot;Ribbits&quot;;
-  string private constant token_symbol = &quot;RNT&quot;;
+  string private constant token_name = "Ribbits";
+  string private constant token_symbol = "RNT";
 
   uint private constant fundingCap = uint(100000000 * (10 ** 18)) / 2700;
 
@@ -1099,7 +1099,7 @@ contract Crowdsale is CappedCrowdsale {
   uint private constant decimalTokensPerWei20Eth = 26;
   uint private constant decimalTokensPerWei50Eth = 27;
 
-  mapping (address =&gt; bool) public discountedInvestors;
+  mapping (address => bool) public discountedInvestors;
 
 
   function Crowdsale(address team_multisig, uint start, uint end) GenericCrowdsale(team_multisig, start, end, minimum_funding) public {
@@ -1116,17 +1116,17 @@ contract Crowdsale is CappedCrowdsale {
 
   // These two setters are present only to correct block numbers if they are off from their target date by more than, say, a day
   function setStartingBlock(uint startingBlock) public onlyOwner inState(State.PreFunding) {
-    require(startingBlock &gt; block.number &amp;&amp; startingBlock &lt; endsAt);
+    require(startingBlock > block.number && startingBlock < endsAt);
     startsAt = startingBlock;
   }
 
   function setEndingBlock(uint endingBlock) public onlyOwner notFinished {
-    require(endingBlock &gt; block.number &amp;&amp; endingBlock &gt; startsAt);
+    require(endingBlock > block.number && endingBlock > startsAt);
     endsAt = endingBlock;
   }
 
   modifier notLessThan2Eth() {
-    require(investedAmountOf[msg.sender].add(msg.value) &gt;= 2 * (10**18));
+    require(investedAmountOf[msg.sender].add(msg.value) >= 2 * (10**18));
     _;
   }
 
@@ -1134,9 +1134,9 @@ contract Crowdsale is CappedCrowdsale {
   function calculatePrice(uint weiAmount, address customer) internal constant returns (uint) {
     uint investedAmount = investedAmountOf[customer].add(weiAmount);
     uint decimalTokensPerWei;
-    if (investedAmount &lt;= 20 * (10**18) &amp;&amp; !discountedInvestors[customer]) {
+    if (investedAmount <= 20 * (10**18) && !discountedInvestors[customer]) {
       decimalTokensPerWei = decimalTokensPerWei2Eth;
-    } else if (investedAmount &lt;= 50 * (10**18)) {
+    } else if (investedAmount <= 50 * (10**18)) {
       decimalTokensPerWei = decimalTokensPerWei20Eth;
     } else {
       decimalTokensPerWei = decimalTokensPerWei50Eth;
@@ -1165,11 +1165,11 @@ contract Crowdsale is CappedCrowdsale {
     // Then, we check the funding cap
     if (weiFundingCap == 0) return tentativeAmount;
     uint total = tentativeAmount.add(weiRaised);
-    if (total &lt; weiFundingCap) return tentativeAmount;
+    if (total < weiFundingCap) return tentativeAmount;
     else return weiFundingCap.sub(weiRaised);
   }
 
   function isCrowdsaleFull() internal constant returns (bool) {
-    return weiFundingCap &gt; 0 &amp;&amp; weiRaised &gt;= weiFundingCap;
+    return weiFundingCap > 0 && weiRaised >= weiFundingCap;
   }
 }

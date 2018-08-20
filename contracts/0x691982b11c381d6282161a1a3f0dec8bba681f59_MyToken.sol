@@ -17,8 +17,8 @@ contract Token
 	string internal _name;
 	uint8 internal _decimals;	
     uint256 internal _totalSupply;
-   	mapping(address =&gt;uint) internal _balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint)) internal _allowances;
+   	mapping(address =>uint) internal _balanceOf;
+	mapping(address => mapping(address => uint)) internal _allowances;
 
     function Token(string symbol, string name, uint8 decimals, uint totalSupply) public{
 	    _symbol = symbol;
@@ -62,10 +62,10 @@ contract Admined{
     }
 }
 
-contract MyToken is Admined, ERC20,Token(&quot;TTL&quot;,&quot;Talent Token&quot;,8,50000000)
+contract MyToken is Admined, ERC20,Token("TTL","Talent Token",8,50000000)
 {
-   	mapping(address =&gt;uint) private _balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) private _allowances;
+   	mapping(address =>uint) private _balanceOf;
+    mapping(address => mapping(address => uint)) private _allowances;
 	bool public transferAllowed = false;
     
     modifier whenTransferAllowed() 
@@ -85,7 +85,7 @@ contract MyToken is Admined, ERC20,Token(&quot;TTL&quot;,&quot;Talent Token&quot
 	}
 
 	function transfer(address _to, uint _value)whenTransferAllowed public returns (bool success){
-        	require(_to!=address(0) &amp;&amp; _value &lt;= balanceOf(msg.sender));{
+        	require(_to!=address(0) && _value <= balanceOf(msg.sender));{
             _balanceOf[msg.sender]-= _value;
            	_balanceOf[_to]+=_value;
 			Transfer(msg.sender, _to, _value);
@@ -95,7 +95,7 @@ contract MyToken is Admined, ERC20,Token(&quot;TTL&quot;,&quot;Talent Token&quot
     	}	
     
 	function transferFrom(address _from, address _to, uint _value)whenTransferAllowed public returns(bool success){
-        require(balanceOf(_from)&gt;=_value &amp;&amp; _value&lt;= _allowances[_from][msg.sender]);
+        require(balanceOf(_from)>=_value && _value<= _allowances[_from][msg.sender]);
         {
 			_balanceOf[_from]-=_value;
     		_balanceOf[_to]+=_value;
@@ -120,7 +120,7 @@ contract MyToken is Admined, ERC20,Token(&quot;TTL&quot;,&quot;Talent Token&quot
     }
 
  function burn(uint256 _value) public returns (bool) {
-        require(_value &lt;= _balanceOf[msg.sender]);
+        require(_value <= _balanceOf[msg.sender]);
         _balanceOf[msg.sender] -= _value;
         _totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -128,8 +128,8 @@ contract MyToken is Admined, ERC20,Token(&quot;TTL&quot;,&quot;Talent Token&quot
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_value &lt;= _balanceOf[_from]);
-        require(_value &lt;= _allowances[_from][msg.sender]);
+        require(_value <= _balanceOf[_from]);
+        require(_value <= _allowances[_from][msg.sender]);
         _balanceOf[_from] -= _value;
         _allowances[_from][msg.sender] -= _value;
         _totalSupply -= _value;

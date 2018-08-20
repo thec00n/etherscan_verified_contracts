@@ -42,7 +42,7 @@ contract Multiowned {
 
     // METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlyManyOwners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlyManyOwners" transactions
     // as well as the selection of addresses capable of confirming them.
     function Multiowned() public{
         m_numOwners = 1;
@@ -54,11 +54,11 @@ contract Multiowned {
     // Revokes a prior confirmation of the given operation
     function revoke(bytes32 _operation) external {
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
         uint ownerIndexBit = 2**ownerIndex;
         var pending = m_pending[_operation];
-        if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+        if (pending.ownersDone & ownerIndexBit > 0) {
             pending.yetNeeded++;
             pending.ownersDone -= ownerIndexBit;
             Revoke(msg.sender, _operation);
@@ -82,9 +82,9 @@ contract Multiowned {
         if (isOwner(_owner)) return;
 
         clearPending();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             reorganizeOwners();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             return;
         m_numOwners++;
         m_owners[m_numOwners] = uint(_owner);
@@ -95,7 +95,7 @@ contract Multiowned {
     function removeOwner(address _owner) onlyManyOwners(keccak256(msg.data)) external {
         uint ownerIndex = m_ownerIndex[uint(_owner)];
         if (ownerIndex == 0) return;
-        if (m_required &gt; m_numOwners - 1) return;
+        if (m_required > m_numOwners - 1) return;
 
         m_owners[ownerIndex] = 0;
         m_ownerIndex[uint(_owner)] = 0;
@@ -105,14 +105,14 @@ contract Multiowned {
     }
     
     function changeRequirement(uint _newRequired) onlyManyOwners(keccak256(msg.data)) external {
-        if (_newRequired &gt; m_numOwners) return;
+        if (_newRequired > m_numOwners) return;
         m_required = _newRequired;
         clearPending();
         RequirementChanged(_newRequired,keccak256(msg.data));
     }
 
     function isOwner(address _addr) view public returns (bool){
-        return m_ownerIndex[uint(_addr)] &gt; 0;
+        return m_ownerIndex[uint(_addr)] > 0;
     }
     
     //when the voting is complate, hasConfirmed return false
@@ -121,12 +121,12 @@ contract Multiowned {
         var pending = m_pending[_operation];
         uint ownerIndex = m_ownerIndex[uint(_owner)];
 
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return false;
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        return !(pending.ownersDone &amp; ownerIndexBit == 0);
+        return !(pending.ownersDone & ownerIndexBit == 0);
     }
     
     // INTERNAL METHODS
@@ -134,11 +134,11 @@ contract Multiowned {
     function confirmAndCheck(bytes32 _operation) internal returns (bool) {
         // determine what index the present sender is:
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
 
         var pending = m_pending[_operation];
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_required;
@@ -149,11 +149,11 @@ contract Multiowned {
         }
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             Confirmation(msg.sender, _operation);
             // ok - check if count is enough to go ahead.
-            if (pending.yetNeeded &lt;= 1) {
+            if (pending.yetNeeded <= 1) {
                 // enough confirmations: reset and run interior.
                 delete m_pendingIndex[m_pending[_operation].index];
                 delete m_pending[_operation];
@@ -170,11 +170,11 @@ contract Multiowned {
 
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            while (free < m_numOwners && m_owners[free] != 0) free++;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
@@ -185,7 +185,7 @@ contract Multiowned {
     
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i)
+        for (uint i = 0; i < length; ++i)
             if (m_pendingIndex[i] != 0)
                 delete m_pending[m_pendingIndex[i]];
         delete m_pendingIndex;
@@ -202,9 +202,9 @@ contract Multiowned {
     uint[256] m_owners;
     uint constant c_maxOwners = 250;
     // index on the list of owners to allow reverse lookup
-    mapping(uint =&gt; uint) m_ownerIndex;
+    mapping(uint => uint) m_ownerIndex;
     // the ongoing operations.
-    mapping(bytes32 =&gt; PendingState) m_pending;
+    mapping(bytes32 => PendingState) m_pending;
     bytes32[] m_pendingIndex;
 }
 
@@ -258,11 +258,11 @@ contract StandardToken is Token {
     uint256 constant MAX_UINT256 = 2**256 - 1;
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -271,12 +271,12 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -298,8 +298,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -321,7 +321,7 @@ contract UGCoin is Multiowned, StandardToken {
     
     /* transfer UGC to DAS */
     function freeze(uint256 _amount) external returns (bool success){
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         coinPool += _amount;
         balances[msg.sender] -= _amount;
         Freeze(msg.sender, _amount);
@@ -330,8 +330,8 @@ contract UGCoin is Multiowned, StandardToken {
 
     /* transfer UGC from DAS */
     function defreeze(address _userAddr, uint256 _amount) onlyOwner external returns (bool success){
-        require(balances[msg.sender] &gt;= _amount); //msg.sender is a owner
-        require(coinPool &gt;= _amount);
+        require(balances[msg.sender] >= _amount); //msg.sender is a owner
+        require(coinPool >= _amount);
         balances[_userAddr] += _amount;
         balances[msg.sender] -= _amount;
         ownersLoan[msg.sender] += _amount;
@@ -340,9 +340,9 @@ contract UGCoin is Multiowned, StandardToken {
     }
 
     function returnToOwner(address _ownerAddr, uint256 _amount) onlyManyOwners(keccak256(msg.data)) external returns (bool success){
-        require(coinPool &gt;= _amount);
+        require(coinPool >= _amount);
         require(isOwner(_ownerAddr));
-        require(ownersLoan[_ownerAddr] &gt;= _amount);
+        require(ownersLoan[_ownerAddr] >= _amount);
         balances[_ownerAddr] += _amount;
         coinPool -= _amount;
         ownersLoan[_ownerAddr] -= _amount;
@@ -351,7 +351,7 @@ contract UGCoin is Multiowned, StandardToken {
     }
     
     function destroy(uint256 _amount) external returns (bool success){
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] -= _amount;
         totalSupply -= _amount;
         Destroy(msg.sender, _amount);
@@ -368,19 +368,19 @@ contract UGCoin is Multiowned, StandardToken {
         Approval(msg.sender, _spender, _value);
 
         //call the receiveApproval function on the contract you want to be notified. 
-        //This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
-    string public name = &quot;UG Coin&quot;;
+    string public name = "UG Coin";
     uint8 public decimals = 18;
-    string public symbol = &quot;UGC&quot;;
-    string public version = &quot;v0.1&quot;;
+    string public symbol = "UGC";
+    string public version = "v0.1";
     uint256 public initialAmount = (10 ** 9) * (10 ** 18);
     uint256 public coinPool = 0;      // coinPool is a pool for freezing UGC
-    mapping (address =&gt; uint256) ownersLoan;      // record the amount of UGC paid by oweners for freezing UGC
+    mapping (address => uint256) ownersLoan;      // record the amount of UGC paid by oweners for freezing UGC
 
 }

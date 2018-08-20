@@ -26,8 +26,8 @@ contract Owned{
 //https://github.com/etcrelay/ether-transfer
 contract EtherTransfer is Owned{
 
-    //&quot;If you are good at something, never do it for free&quot; - Joker
-    //Fee is 0.1% (it&#39;s mean you send 1 ETH fee is 0.001 ETH)
+    //"If you are good at something, never do it for free" - Joker
+    //Fee is 0.1% (it's mean you send 1 ETH fee is 0.001 ETH)
     //Notice Fee is not include transaction fee
     uint constant Fee = 1;
     uint constant Decs = 1000;
@@ -36,14 +36,14 @@ contract EtherTransfer is Owned{
     event ETHTransfer(address indexed From,address indexed To, uint Value);
     event ETCTransfer(address indexed From,address indexed To, uint Value);
     
-    //Is Vitalik Buterin on the Fork ? &gt;_&lt;
+    //Is Vitalik Buterin on the Fork ? >_<
     AmIOnTheFork IsHeOnTheFork = AmIOnTheFork(0x2bd2326c993dfaef84f696526064ff22eba5b362);
 
     //Only send ETH
     function SendETH(address ETHAddress) returns(bool){
         uint Value = msg.value - (msg.value*Fee/Decs);
         //It is forked chain ETH
-        if(IsHeOnTheFork.forked() &amp;&amp; ETHAddress.send(Value)){
+        if(IsHeOnTheFork.forked() && ETHAddress.send(Value)){
             ETHTransfer(msg.sender, ETHAddress, Value);
             return true;
         }
@@ -55,7 +55,7 @@ contract EtherTransfer is Owned{
     function SendETC(address ETCAddress) returns(bool){
         uint Value = msg.value - (msg.value*Fee/Decs);
         //It is non-forked chain ETC
-        if(!IsHeOnTheFork.forked() &amp;&amp; ETCAddress.send(Value)){
+        if(!IsHeOnTheFork.forked() && ETCAddress.send(Value)){
             ETCTransfer(msg.sender, ETCAddress, Value);
             return true;
         }
@@ -70,7 +70,7 @@ contract EtherTransfer is Owned{
 
     //I get rich lol, ez
     function WithDraw() OnlyOwner returns(bool){
-        if(this.balance &gt; 0 &amp;&amp; Owner.send(this.balance)){
+        if(this.balance > 0 && Owner.send(this.balance)){
             return true;
         }
         throw;

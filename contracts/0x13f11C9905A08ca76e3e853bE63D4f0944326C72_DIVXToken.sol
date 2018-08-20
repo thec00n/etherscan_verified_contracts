@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x));
+      assert((z >= x));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal constant returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       return x - y;
     }
 
@@ -42,7 +42,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -53,7 +53,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -78,17 +78,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract DIVXToken is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Divi Exchange Token&quot;;
-    string public constant symbol = &quot;DIVX&quot;;
+    string public constant name = "Divi Exchange Token";
+    string public constant symbol = "DIVX";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // owner address
     address public fundDeposit;      // deposit address for ETH and DIVX for the project
@@ -105,7 +105,7 @@ contract DIVXToken is StandardToken, SafeMath {
     // Since we have different exchange rates at different stages, we need to keep track
     // of how much ether (in units of Wei) each address contributed in case that we need
     // to issue a refund
-    mapping (address =&gt; uint256) private weiBalances;
+    mapping (address => uint256) private weiBalances;
 
     // We need to keep track of how much ether (in units of Wei) has been contributed
     uint256 public totalReceivedWei;
@@ -161,28 +161,28 @@ contract DIVXToken is StandardToken, SafeMath {
     // overriden methods
 
     // Overridden method to check that the minimum was reached (no refund is possible
-    // after that, so transfer of tokens shouldn&#39;t be a problem)
+    // after that, so transfer of tokens shouldn't be a problem)
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(totalReceivedWei &gt;= receivedWeiMin);
+      require(totalReceivedWei >= receivedWeiMin);
       return super.transfer(_to, _value);
     }
 
     // Overridden method to check that the minimum was reached (no refund is possible
-    // after that, so transfer of tokens shouldn&#39;t be a problem)
+    // after that, so transfer of tokens shouldn't be a problem)
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(totalReceivedWei &gt;= receivedWeiMin);
+      require(totalReceivedWei >= receivedWeiMin);
       return super.transferFrom(_from, _to, _value);
     }
 
     /// @dev Accepts ether and creates new DIVX tokens.
     function createTokens() payable external isNotPaused {
-      require(block.number &gt;= fundingStartBlock);
-      require(block.number &lt;= fundingEndBlock);
-      require(msg.value &gt; 0);
+      require(block.number >= fundingStartBlock);
+      require(block.number <= fundingEndBlock);
+      require(msg.value > 0);
 
-      // Check that this transaction wouldn&#39;t exceed the ETH cap
+      // Check that this transaction wouldn't exceed the ETH cap
       uint256 checkedReceivedWei = safeAdd(totalReceivedWei, msg.value);
-      require(checkedReceivedWei &lt;= receivedWeiCap);
+      require(checkedReceivedWei <= receivedWeiCap);
 
       // Calculate how many tokens (in units of Wei) should be awarded
       // on this transaction
@@ -195,9 +195,9 @@ contract DIVXToken is StandardToken, SafeMath {
       totalReceivedWei = checkedReceivedWei;
 
       // Only update our accounting of how much ETH this contributor has sent us if
-      // we&#39;re already on the public sale (since private sale contributions are going
-      // to be used before the end of end of the sale period, they don&#39;t get a refund)
-      if (block.number &gt;= firstXRChangeBlock) weiBalances[msg.sender] += msg.value;
+      // we're already on the public sale (since private sale contributions are going
+      // to be used before the end of end of the sale period, they don't get a refund)
+      if (block.number >= firstXRChangeBlock) weiBalances[msg.sender] += msg.value;
 
       // Increment the total supply of tokens and then deposit the tokens
       // to the contributor
@@ -214,11 +214,11 @@ contract DIVXToken is StandardToken, SafeMath {
 
     /// @dev Allows to transfer ether from the contract to the multisig wallet
     function withdrawWei(uint256 _value) external onlyOwner isNotPaused {
-      require(_value &lt;= this.balance);
+      require(_value <= this.balance);
 
       // Allow withdrawal during the private sale, but after that, only allow
       // withdrawal if we already met the minimum
-      require((block.number &lt; firstXRChangeBlock) || (totalReceivedWei &gt;= receivedWeiMin));
+      require((block.number < firstXRChangeBlock) || (totalReceivedWei >= receivedWeiMin));
 
       // send the eth to the project multisig wallet
       fundDeposit.transfer(_value);
@@ -251,19 +251,19 @@ contract DIVXToken is StandardToken, SafeMath {
     /// @dev Allows contributors to recover their ether in the case of a failed funding campaign
     function refund() external {
       // prevents refund until sale period is over
-      require(block.number &gt; fundingEndBlock);
+      require(block.number > fundingEndBlock);
       // Refunds are only available if the minimum was not reached
-      require(totalReceivedWei &lt; receivedWeiMin);
+      require(totalReceivedWei < receivedWeiMin);
 
       // Retrieve how much DIVX (in units of Wei) this account has
        uint256 divxVal = balances[msg.sender];
-       require(divxVal &gt; 0);
+       require(divxVal > 0);
 
       // Retrieve how much ETH (in units of Wei) this account contributed
       uint256 weiVal = weiBalances[msg.sender];
-      require(weiVal &gt; 0);
+      require(weiVal > 0);
 
-      // Destroy this contributor&#39;s tokens and reduce the total supply
+      // Destroy this contributor's tokens and reduce the total supply
       balances[msg.sender] = 0;
       totalSupply = safeSubtract(totalSupply, divxVal);
 
@@ -281,9 +281,9 @@ contract DIVXToken is StandardToken, SafeMath {
 
       // Retrieve how much DIVX (in units of Wei) this account has
       uint256 divxVal = balances[msg.sender];
-       require(divxVal &gt; 0);
+       require(divxVal > 0);
 
-      // Move the tokens of the caller to the project&#39;s address
+      // Move the tokens of the caller to the project's address
       assert(super.transfer(fundDeposit, divxVal));
 
       // Log the redeeming of this tokens
@@ -292,11 +292,11 @@ contract DIVXToken is StandardToken, SafeMath {
 
     /// @dev Returns the current token price
     function getCurrentTokenPrice() private constant returns (uint256 currentPrice) {
-      if (block.number &lt; firstXRChangeBlock) {
+      if (block.number < firstXRChangeBlock) {
         return privateExchangeRate;
-      } else if (block.number &lt; secondXRChangeBlock) {
+      } else if (block.number < secondXRChangeBlock) {
         return firstExchangeRate;
-      } else if (block.number &lt; thirdXRChangeBlock) {
+      } else if (block.number < thirdXRChangeBlock) {
         return secondExchangeRate;
       } else {
         return thirdExchangeRate;

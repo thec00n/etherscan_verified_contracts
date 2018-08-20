@@ -46,7 +46,7 @@ contract wolkair is Owned {
     function multisend(address[] dests, uint256[] values) onlyOwner returns (uint256) {
         uint256 i = 0;
         require(dests.length == values.length);
-        while (i &lt; dests.length) { 
+        while (i < dests.length) { 
            ERC20(wolkAddress).transfer(dests[i], values[i] * 10**18);
            i += 1;
         }

@@ -29,7 +29,7 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -62,8 +62,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -73,7 +73,7 @@ contract Lambo is StandardToken {
     string public name;                
     uint8 public decimals;           
     string public symbol;                
-    string public version = &quot;1.0&quot;; 
+    string public version = "1.0"; 
     uint256 public unitsOneEthCanBuy;    
     uint256 public totalEthInWei;         
     address public fundsWallet;           
@@ -82,9 +82,9 @@ contract Lambo is StandardToken {
     function Lambo() {
         balances[msg.sender] = 10000000000000000000000000000;               
         totalSupply = 10000000000000000000000000000;                        
-        name = &quot;Lambo&quot;;                                              
+        name = "Lambo";                                              
         decimals = 18;                                               
-        symbol = &quot;LAMBO&quot;;                                            
+        symbol = "LAMBO";                                            
                                             
         fundsWallet = msg.sender;                                   
                           
@@ -93,7 +93,7 @@ contract Lambo is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if (!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {throw;}
+        if (!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {throw;}
         return true;
     }
 }

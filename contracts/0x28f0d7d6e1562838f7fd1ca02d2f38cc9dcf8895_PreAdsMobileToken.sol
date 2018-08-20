@@ -4,7 +4,7 @@ pragma solidity ^0.4.8;
 
 contract SafeMath {
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -82,11 +82,11 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         if (isFrozen) revert();
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -96,12 +96,12 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (isFrozen) revert();
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -122,8 +122,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract PreAdsMobileToken is StandardToken, SafeMath {
@@ -133,13 +133,13 @@ contract PreAdsMobileToken is StandardToken, SafeMath {
     /*
         NOTE:
         The following variables are OPTIONAL vanities. One does not have to include them.
-        They allow one to customise the token contract &amp; in no way influences the core functionality.
+        They allow one to customise the token contract & in no way influences the core functionality.
         Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     // contracts
     address public ethFundDeposit;      // deposit address for ETH for AdsMobile
@@ -186,22 +186,22 @@ contract PreAdsMobileToken is StandardToken, SafeMath {
     /// @dev Accepts ether and creates new ADS tokens.
     function createTokens() public payable {
         if (isFinalized) revert();
-        if (block.number &lt; fundingStartBlock) revert();
-        if (block.number &gt; fundingEndBlock) revert();
+        if (block.number < fundingStartBlock) revert();
+        if (block.number > fundingEndBlock) revert();
         if (msg.value == 0) revert();
-        uint256 tokensWithOutBonus = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
-        if (tokensWithOutBonus &lt; tokenCreationMinPayment) revert();
+        uint256 tokensWithOutBonus = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
+        if (tokensWithOutBonus < tokenCreationMinPayment) revert();
         uint256 checkedSupplyWithOutBonus = safeAdd(totalSupplyWithOutBonus, tokensWithOutBonus);
         // return money if something goes wrong
-        if (tokenCreationCapWithOutBonus &lt; checkedSupplyWithOutBonus) revert();  // odd fractions won&#39;t be found
+        if (tokenCreationCapWithOutBonus < checkedSupplyWithOutBonus) revert();  // odd fractions won't be found
         totalSupplyWithOutBonus = checkedSupplyWithOutBonus;
 
         uint256 tokens = tokensWithOutBonus;
-        if(tokens &gt;= tokenNeedForBonusLevel0) {
+        if(tokens >= tokenNeedForBonusLevel0) {
             tokens = safeDiv(tokens, 100);
             tokens = safeMult(tokens, bonusLevel0PercentModifier);
         } else {
-            if(tokens &gt;= tokenNeedForBonusLevel1) {
+            if(tokens >= tokenNeedForBonusLevel1) {
                 tokens = safeDiv(tokens, 100);
                 tokens = safeMult(tokens, bonusLevel1PercentModifier);
             }
@@ -238,7 +238,7 @@ contract PreAdsMobileToken is StandardToken, SafeMath {
     function finalize() external {
         if (isFinalized) revert();
         if (msg.sender != ethFundDeposit) revert(); // locks finalize to the ultimate ETH owner
-        if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupplyWithOutBonus &lt; tokenCreationCapWithOutBonus - tokenCreationMinPayment) revert();
+        if (block.number <= fundingEndBlock && totalSupplyWithOutBonus < tokenCreationCapWithOutBonus - tokenCreationMinPayment) revert();
         // move to operational
         if (!ethFundDeposit.send(this.balance)) revert();  // send the eth to AdsMobile
         isFinalized = true;

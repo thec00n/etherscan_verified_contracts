@@ -3,12 +3,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -16,7 +16,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -55,7 +55,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -96,8 +96,8 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
 
     /* Private variables of the token */
     uint256 supply = 0;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     event Mint(address indexed _to, uint256 _value);
     event Burn(address indexed _from, uint _value);
@@ -182,9 +182,9 @@ contract NewsTokenContract is ERC20Token {
 
   /* Initializes contract */
   function NewsTokenContract() public {
-    name = &quot;NewsToken&quot;;
-    symbol = &quot;NWS&quot;;
+    name = "NewsToken";
+    symbol = "NWS";
     decimals = 18;
-    lockFromSelf(5170000, &quot;Lock before crowdsale starts&quot;);
+    lockFromSelf(5170000, "Lock before crowdsale starts");
   }
 }

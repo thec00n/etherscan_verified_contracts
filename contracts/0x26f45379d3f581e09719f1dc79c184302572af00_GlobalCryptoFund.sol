@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,7 +77,7 @@ contract GlobalCryptoFund is Owned, GlobalToken {
 	address public minter;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
 	modifier onlyMinter {
 		require(msg.sender == minter);
@@ -90,8 +90,8 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function GlobalCryptoFund() {
-		name = &quot;GlobalCryptoFund&quot;;                    								// Set the name for display purposes
-        symbol = &quot;GCF&quot;;                												// Set the symbol for display purposes
+		name = "GlobalCryptoFund";                    								// Set the name for display purposes
+        symbol = "GCF";                												// Set the symbol for display purposes
         decimals = 18;                          									// Amount of decimals for display purposes
         totalSupply = 0;                									// Update total supply
         balanceOf[msg.sender] = totalSupply;       									// Give the creator all initial tokens
@@ -104,8 +104,8 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               						// Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                						// Check if the sender has enough
-        require (balanceOf[_to].add(_value) &gt;= balanceOf[_to]); 						// Check for overflows
+        require (balanceOf[_from] >= _value);                						// Check if the sender has enough
+        require (balanceOf[_to].add(_value) >= balanceOf[_to]); 						// Check for overflows
         require(_to != address(this));
         balanceOf[_from] = balanceOf[_from].sub(_value);                         	// Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);                           		// Add the same to the recipient
@@ -128,7 +128,7 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     
 	event Burn(address indexed from, uint256 value);
     function burn(uint256 _value) onlyMinter returns (bool success) {
-        require (balanceOf[msg.sender] &gt;= _value);            					// Check if the sender has enough
+        require (balanceOf[msg.sender] >= _value);            					// Check if the sender has enough
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);              // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                                	// Updates totalSupply
         Burn(msg.sender, _value);

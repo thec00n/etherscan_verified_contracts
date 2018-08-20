@@ -47,7 +47,7 @@ contract ERC20 {
 /// @title WizzleInfinityHelper contract
 contract CCAirdropper is Mortal {
     
-    mapping (address =&gt; bool) public whitelisted;
+    mapping (address => bool) public whitelisted;
     ERC20 public token;
 
     constructor(address _token) public {
@@ -61,7 +61,7 @@ contract CCAirdropper is Mortal {
     function airdrop(address[] dests, uint256[] values) public onlyOwner returns (uint256) {
         require(dests.length == values.length);
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             token.transfer(dests[i], values[i]);
             i += 1;
         }

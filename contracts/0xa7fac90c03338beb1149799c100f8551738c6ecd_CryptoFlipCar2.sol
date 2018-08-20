@@ -11,13 +11,13 @@ library SafeMath {
   }
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,12 +148,12 @@ contract CryptoFlipCar2 is Manageable {
 /*********************************************** VARS ***********************************************/
   uint256 private whaleCard;
 
-  mapping(uint256 =&gt; Race) private racesMap;
-  mapping(uint256 =&gt; uint256) private companiesMap;
-  mapping(uint256 =&gt; uint256) private makesMap;
-  mapping(uint256 =&gt; Car) private carsMap;
+  mapping(uint256 => Race) private racesMap;
+  mapping(uint256 => uint256) private companiesMap;
+  mapping(uint256 => uint256) private makesMap;
+  mapping(uint256 => Car) private carsMap;
 
-  mapping(uint256 =&gt; mapping(uint256 =&gt; Advert)) private adsMap;
+  mapping(uint256 => mapping(uint256 => Advert)) private adsMap;
 
   uint256 public carCount;
   uint256 public makeCount;
@@ -263,7 +263,7 @@ contract CryptoFlipCar2 is Manageable {
     finishedRaceCount++; 
     
     racesMap[_raceId].player2Data = _packPlayerData(msg.sender, _cardId);
-    address player1 = address(racesMap[_raceId].player1Data &amp; ADDR_M);
+    address player1 = address(racesMap[_raceId].player1Data & ADDR_M);
 
     uint256 winner = _getRNGValue(_raceId);
     address winnerAddr = (winner == 1) ? player1 : msg.sender;
@@ -377,11 +377,11 @@ contract CryptoFlipCar2 is Manageable {
 
   function ownerOf(uint256 cardType, uint256 cardId) public view returns(address cardOwner) {
     if (cardType == TYPE_WHALE) {
-      cardOwner = address(whaleCard &amp; ADDR_M);
+      cardOwner = address(whaleCard & ADDR_M);
     } else if (cardType == TYPE_COMPANY) {
-      cardOwner = address(companiesMap[cardId] &amp; ADDR_M);
+      cardOwner = address(companiesMap[cardId] & ADDR_M);
     } else if (cardType == TYPE_MAKE) {
-      cardOwner = address(makesMap[cardId] &amp; ADDR_M);
+      cardOwner = address(makesMap[cardId] & ADDR_M);
     } else if (cardType == TYPE_CAR) {
       cardOwner = carsMap[cardId].owners[0];
     }
@@ -411,7 +411,7 @@ contract CryptoFlipCar2 is Manageable {
   }
   
   function addAd(address _ownerAddr, uint256 _price, uint256 _cardType, uint256 _cardId, string _text, string _link) public onlyAdmin {
-    require(_addrNotNull(_ownerAddr) &amp;&amp; (_price != 0));
+    require(_addrNotNull(_ownerAddr) && (_price != 0));
     uint256 _data = _packItemData(_ownerAddr, _price);
     adsMap[_cardType][_cardId] = Advert({text: _text, link: _link, data: _data});
   }
@@ -430,11 +430,11 @@ contract CryptoFlipCar2 is Manageable {
 
   function _editPriceOf(uint256 cardType, uint256 cardId, uint256 _newPrice) private {
     if (cardType == TYPE_WHALE) {
-      whaleCard = (~(PRICE_M*ADDR_S) &amp; whaleCard) | ((_newPrice &amp; PRICE_M) * ADDR_S);
+      whaleCard = (~(PRICE_M*ADDR_S) & whaleCard) | ((_newPrice & PRICE_M) * ADDR_S);
     } else if (cardType == TYPE_COMPANY) {
-      companiesMap[cardId] = (~(PRICE_M*ADDR_S) &amp; companiesMap[cardId]) | ((_newPrice &amp; PRICE_M) * ADDR_S);
+      companiesMap[cardId] = (~(PRICE_M*ADDR_S) & companiesMap[cardId]) | ((_newPrice & PRICE_M) * ADDR_S);
     } else if (cardType == TYPE_MAKE) {
-      makesMap[cardId] = (~(MAKE_PRICE_M*MAKE_PRICE_S) &amp; makesMap[cardId]) | ((_newPrice &amp; MAKE_PRICE_M) * MAKE_PRICE_S);
+      makesMap[cardId] = (~(MAKE_PRICE_M*MAKE_PRICE_S) & makesMap[cardId]) | ((_newPrice & MAKE_PRICE_M) * MAKE_PRICE_S);
     } else if (cardType == TYPE_CAR) {
       carsMap[cardId].price = _newPrice;
     }
@@ -442,11 +442,11 @@ contract CryptoFlipCar2 is Manageable {
 
   function _priceOf(uint256 cardType, uint256 cardId) private view returns(uint256 _price) {
     if (cardType == TYPE_WHALE) {
-      _price = (PRICE_M &amp; (whaleCard / ADDR_S));
+      _price = (PRICE_M & (whaleCard / ADDR_S));
     } else if (cardType == TYPE_COMPANY) {
-      _price = (PRICE_M &amp; (companiesMap[cardId] / ADDR_S));
+      _price = (PRICE_M & (companiesMap[cardId] / ADDR_S));
     } else if (cardType == TYPE_MAKE) {
-      _price = (MAKE_PRICE_M &amp; (makesMap[cardId] / MAKE_PRICE_S));
+      _price = (MAKE_PRICE_M & (makesMap[cardId] / MAKE_PRICE_S));
     } else if (cardType == TYPE_CAR) {
       _price = carsMap[cardId].price;
     }
@@ -466,11 +466,11 @@ contract CryptoFlipCar2 is Manageable {
     address seller = ownerOf(cardType, cardId);
     if ( newOwner == seller) {
     } else if (cardType == TYPE_WHALE) {
-      whaleCard = (~(ADDR_M) &amp; whaleCard) | (uint256(newOwner) &amp; ADDR_M);
+      whaleCard = (~(ADDR_M) & whaleCard) | (uint256(newOwner) & ADDR_M);
     } else if (cardType == TYPE_COMPANY) {
-      companiesMap[cardId] = (~(ADDR_M) &amp; companiesMap[cardId]) | (uint256(newOwner) &amp; ADDR_M);
+      companiesMap[cardId] = (~(ADDR_M) & companiesMap[cardId]) | (uint256(newOwner) & ADDR_M);
     } else if (cardType == TYPE_MAKE) {
-      makesMap[cardId] = (~(ADDR_M) &amp; makesMap[cardId]) | (uint256(newOwner) &amp; ADDR_M);
+      makesMap[cardId] = (~(ADDR_M) & makesMap[cardId]) | (uint256(newOwner) & ADDR_M);
     } else if (cardType == TYPE_CAR) {
       carsMap[cardId].owners[3] = carsMap[cardId].owners[2];
       carsMap[cardId].owners[2] = carsMap[cardId].owners[1];    
@@ -481,7 +481,7 @@ contract CryptoFlipCar2 is Manageable {
   }
 
   function _pay(address _to, uint256 _value) private {
-    if ( _addrNotNull(_to) &amp;&amp; _value != 0) {
+    if ( _addrNotNull(_to) && _value != 0) {
       _to.transfer(_value);
     }
   }
@@ -503,26 +503,26 @@ contract CryptoFlipCar2 is Manageable {
   }
 
   function _packItemData(address itemOwner, uint256 price) public pure returns(uint256) {
-    uint256 _data = (~(ADDR_M) &amp; _data) | (uint256(itemOwner) &amp; ADDR_M);
-    _data = (~(PRICE_M*ADDR_S) &amp; _data) | ((price &amp; PRICE_M) * ADDR_S);
+    uint256 _data = (~(ADDR_M) & _data) | (uint256(itemOwner) & ADDR_M);
+    _data = (~(PRICE_M*ADDR_S) & _data) | ((price & PRICE_M) * ADDR_S);
     return(_data);
   }
   
   function _unpackItemData(uint256 _data) private pure returns(address itemOwner, uint256 price) {
-    itemOwner = address(_data &amp; ADDR_M);
-    price = PRICE_M &amp; (_data / ADDR_S);
+    itemOwner = address(_data & ADDR_M);
+    price = PRICE_M & (_data / ADDR_S);
   }
 
   function _packMakeData(address makeOwner, uint256 price, uint256 companyId) private pure returns(uint256 _data) {
-    _data = (~(ADDR_M) &amp; _data) | (uint256(makeOwner) &amp; ADDR_M);
-    _data = (~(COMPANY_ID_M*ADDR_S) &amp; _data) | ((companyId &amp; COMPANY_ID_M) * ADDR_S);
-    _data = (~(MAKE_PRICE_M*MAKE_PRICE_S) &amp; _data) | ((price &amp; MAKE_PRICE_M) * MAKE_PRICE_S);
+    _data = (~(ADDR_M) & _data) | (uint256(makeOwner) & ADDR_M);
+    _data = (~(COMPANY_ID_M*ADDR_S) & _data) | ((companyId & COMPANY_ID_M) * ADDR_S);
+    _data = (~(MAKE_PRICE_M*MAKE_PRICE_S) & _data) | ((price & MAKE_PRICE_M) * MAKE_PRICE_S);
   }
 
   function _unpackMakeData(uint256 _data) private pure returns(address makeOwner, uint256 companyId, uint256 price) {
-    makeOwner = address(_data &amp; ADDR_M);
-    companyId = COMPANY_ID_M &amp; (_data / ADDR_S);
-    price = (MAKE_PRICE_M &amp; (_data / MAKE_PRICE_S));
+    makeOwner = address(_data & ADDR_M);
+    companyId = COMPANY_ID_M & (_data / ADDR_S);
+    price = (MAKE_PRICE_M & (_data / MAKE_PRICE_S));
   }
 
   function _purchaseCar(uint256 _cardId) private {
@@ -542,7 +542,7 @@ contract CryptoFlipCar2 is Manageable {
     
     uint256 sellerCommission = car.price - ((oldCarFee * _oldOwnersOf(_cardId)) + (2 * parentFee) + devFee + whaleFee);
 
-    uint256 companyId = COMPANY_ID_M &amp; (makesMap[car.makeId] / ADDR_S);
+    uint256 companyId = COMPANY_ID_M & (makesMap[car.makeId] / ADDR_S);
 
     emit CardPurchased(TYPE_CAR, _cardId, msg.sender, car.owners[0], car.price);
 
@@ -639,46 +639,46 @@ contract CryptoFlipCar2 is Manageable {
 
 /****************************************** PRIVATE RACE ********************************************/
   function _packPlayerData(address player, uint256 id) private pure returns(uint256 playerData) {
-    playerData = (~(ADDR_M) &amp; playerData) | (uint256(player) &amp; ADDR_M);
-    playerData = (~(RACE_ID_M*ADDR_S) &amp; playerData) | ((id &amp; RACE_ID_M) * ADDR_S);
+    playerData = (~(ADDR_M) & playerData) | (uint256(player) & ADDR_M);
+    playerData = (~(RACE_ID_M*ADDR_S) & playerData) | ((id & RACE_ID_M) * ADDR_S);
   }
 
   function _unpackPlayerData(uint256 playerData) private pure returns(address player, uint256 id) {
-    player = address(playerData &amp; ADDR_M);
-    id = (RACE_ID_M &amp; (playerData / ADDR_S));
+    player = address(playerData & ADDR_M);
+    id = (RACE_ID_M & (playerData / ADDR_S));
   }
 
   function _packRaceData(uint256 _bet, uint256 _winner, uint256 _pinkslip, uint256 _state) private pure returns(uint256 _raceData) {
-    _raceData = (~(RACE_BET_M) &amp; _raceData) | (_bet &amp; RACE_BET_M);
-    _raceData = (~(WINNER_M*RACE_WINNER_S) &amp; _raceData) | ((_winner &amp; WINNER_M) * RACE_WINNER_S);
-    _raceData = (~(PINKSLIP_M*PINKSLIP_S) &amp; _raceData) | ((_pinkslip &amp; PINKSLIP_M) * PINKSLIP_S);
-    _raceData = (~(STATE_M*STATE_S) &amp; _raceData) | ((_state &amp; STATE_M) * STATE_S);
+    _raceData = (~(RACE_BET_M) & _raceData) | (_bet & RACE_BET_M);
+    _raceData = (~(WINNER_M*RACE_WINNER_S) & _raceData) | ((_winner & WINNER_M) * RACE_WINNER_S);
+    _raceData = (~(PINKSLIP_M*PINKSLIP_S) & _raceData) | ((_pinkslip & PINKSLIP_M) * PINKSLIP_S);
+    _raceData = (~(STATE_M*STATE_S) & _raceData) | ((_state & STATE_M) * STATE_S);
   }
 
   function _unpackRaceData(uint256 _raceData) private pure returns(uint256 bet, uint256 winner, bool pinkslip, uint256 state) {
-    bet = _raceData &amp; RACE_BET_M;
-    winner = (WINNER_M &amp; (_raceData / RACE_WINNER_S));
-    pinkslip = (PINKSLIP_M &amp; (_raceData / PINKSLIP_S)) != 0;
-    state = (STATE_M &amp; (_raceData / STATE_S));
+    bet = _raceData & RACE_BET_M;
+    winner = (WINNER_M & (_raceData / RACE_WINNER_S));
+    pinkslip = (PINKSLIP_M & (_raceData / PINKSLIP_S)) != 0;
+    state = (STATE_M & (_raceData / STATE_S));
   }
   
   function _unpackRaceFinishData(uint256 _raceData) private pure returns(uint256 bet, bool pinkslip) {
-    bet = _raceData &amp; RACE_BET_M;
-    pinkslip = (PINKSLIP_M &amp; (_raceData / PINKSLIP_S)) != 0;
+    bet = _raceData & RACE_BET_M;
+    pinkslip = (PINKSLIP_M & (_raceData / PINKSLIP_S)) != 0;
   }
   
   function _updateRaceWinner(uint256 raceId, uint256 winner) private {
-    racesMap[raceId].metaData = (~(STATE_M*STATE_S) &amp; racesMap[raceId].metaData) | ((RACE_FINISHED &amp; STATE_M) * STATE_S);
-    racesMap[raceId].metaData = (~(WINNER_M*RACE_WINNER_S) &amp; racesMap[raceId].metaData) | ((winner &amp; WINNER_M) * RACE_WINNER_S);
+    racesMap[raceId].metaData = (~(STATE_M*STATE_S) & racesMap[raceId].metaData) | ((RACE_FINISHED & STATE_M) * STATE_S);
+    racesMap[raceId].metaData = (~(WINNER_M*RACE_WINNER_S) & racesMap[raceId].metaData) | ((winner & WINNER_M) * RACE_WINNER_S);
   }
 
   function _raceOpened(uint256 raceData) private pure returns (bool opened) {
-    uint256 state = (STATE_M &amp; (raceData / STATE_S));
+    uint256 state = (STATE_M & (raceData / STATE_S));
     opened = ((state == RACE_OPENED));
   }
 
   function _getRacerCar(uint256 playerData) private pure returns (uint256 id) {
-    id = (RACE_ID_M &amp; (playerData / ADDR_S));
+    id = (RACE_ID_M & (playerData / ADDR_S));
   }
 
   function _getRNGValue(uint256 id) private view returns(uint256 winner) {
@@ -688,11 +688,11 @@ contract CryptoFlipCar2 is Manageable {
     uint256 _totalValue = p1Price.add(p2Price); 
     
     uint256 blockToCheck = block.number - 1;
-    uint256 weight = (p1Price.mul(2) &lt; _totalValue) ? _totalValue/2 : p1Price;
+    uint256 weight = (p1Price.mul(2) < _totalValue) ? _totalValue/2 : p1Price;
     //uint256 ratio = ((2**256)-1)/_totalValue;
     uint256 ratio = 115792089237316195423570985008687907853269984665640564039457584007913129639935/_totalValue;
     bytes32 blockHash = blockhash(blockToCheck);
-    winner = (uint256(keccak256(abi.encodePacked(blockHash))) &gt; weight*ratio) ? 2 : 1;
+    winner = (uint256(keccak256(abi.encodePacked(blockHash))) > weight*ratio) ? 2 : 1;
   }
 /****************************************************************************************************/
 }

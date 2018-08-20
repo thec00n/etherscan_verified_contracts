@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -138,11 +138,11 @@ contract ETHERCExchange is Ownable {
     uint256 public feeTake;
 
     // mapping of token addresses to mapping of account balances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public tokens;
+    mapping (address => mapping (address => uint256)) public tokens;
     // mapping of order hash to status cancelled
-    mapping (bytes32 =&gt; bool) public cancelledOrders;
+    mapping (bytes32 => bool) public cancelledOrders;
     // mapping order hashes to uints (amount of order that has been filled)
-    mapping (bytes32 =&gt; uint256) public orderFills;
+    mapping (bytes32 => uint256) public orderFills;
 
     //Logging events
     event Deposit(address token, address user, uint256 amount, uint256 balance);
@@ -186,7 +186,7 @@ contract ETHERCExchange is Ownable {
     }
 
     function withdraw(uint256 _amount) public {
-        require(tokens[address(0)][msg.sender] &gt;= _amount);
+        require(tokens[address(0)][msg.sender] >= _amount);
 
         tokens[address(0)][msg.sender] = tokens[address(0)][msg.sender].sub(_amount);
         msg.sender.transfer(_amount);
@@ -195,7 +195,7 @@ contract ETHERCExchange is Ownable {
 
     function withdrawToken(address _token, uint256 _amount) public {
         require(_token != address(0));
-        require(tokens[_token][msg.sender] &gt;= _amount);
+        require(tokens[_token][msg.sender] >= _amount);
 
         tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
         if (!Token(_token).transfer(msg.sender, _amount)) revert();
@@ -207,17 +207,17 @@ contract ETHERCExchange is Ownable {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Trading &amp; Order
+    // Trading & Order
     ////////////////////////////////////////////////////////////////////////////////
 
     function trade(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive, uint256 _expires, uint256 _nonce, address _maker, uint8 _v, bytes32 _r, bytes32 _s, uint256 _amountTrade) public {
         uint256 executionGasLimit = msg.gas;
         bytes32 orderHash = getOrderHash(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _maker);
 
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, orderHash), _v, _r, _s) != _maker ||
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", orderHash), _v, _r, _s) != _maker ||
             cancelledOrders[orderHash] ||
-            block.number &gt; _expires ||
-            orderFills[orderHash].add(_amountTrade) &gt; _amountGet
+            block.number > _expires ||
+            orderFills[orderHash].add(_amountTrade) > _amountGet
         ) revert();
 
         tradeBalances(_tokenGet, _amountGet, _tokenGive, _amountGive, _maker, _amountTrade);
@@ -237,9 +237,9 @@ contract ETHERCExchange is Ownable {
         if (feeModifiers != address(0)) {
             uint256 feeMakeDiscount; uint256 feeTakeDiscount; uint256 feeRebate;
             (feeMakeDiscount, feeTakeDiscount, feeRebate) = FeeModifiersInterface(feeModifiers).tradingFeeModifiers(_maker, msg.sender);
-            if (feeMakeValue &gt; 0 &amp;&amp; feeMakeDiscount &gt; 0 &amp;&amp; feeMakeDiscount &lt;= 100 ) feeMakeValue = feeMakeValue.mul(100 - feeMakeDiscount) / 100;
-            if (feeTakeValue &gt; 0 &amp;&amp; feeTakeDiscount &gt; 0 &amp;&amp; feeTakeDiscount &lt;= 100 ) feeTakeValue = feeTakeValue.mul(100 - feeTakeDiscount) / 100;
-            if (feeTakeValue &gt; 0 &amp;&amp; feeRebate &gt; 0 &amp;&amp; feeRebate &lt;= 100) feeRebateValue = feeTakeValue.mul(feeRebate) / 100;
+            if (feeMakeValue > 0 && feeMakeDiscount > 0 && feeMakeDiscount <= 100 ) feeMakeValue = feeMakeValue.mul(100 - feeMakeDiscount) / 100;
+            if (feeTakeValue > 0 && feeTakeDiscount > 0 && feeTakeDiscount <= 100 ) feeTakeValue = feeTakeValue.mul(100 - feeTakeDiscount) / 100;
+            if (feeTakeValue > 0 && feeRebate > 0 && feeRebate <= 100) feeRebateValue = feeTakeValue.mul(feeRebate) / 100;
         }
 
         tokens[_tokenGet][msg.sender] = tokens[_tokenGet][msg.sender].sub(_amountTrade.add(feeTakeValue));
@@ -252,8 +252,8 @@ contract ETHERCExchange is Ownable {
     function validateTrade(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive, uint256 _expires, uint256 _nonce, address _maker, uint8 _v, bytes32 _r, bytes32 _s, uint256 _amountTrade, address _taker) public view returns (uint8) {
         uint256 feeTakeValue = calculateTakerFee(_taker, _amountTrade);
 
-        if (_amountTrade.add(feeTakeValue) &gt; tokens[_tokenGet][_taker]) return 1;
-        if (availableVolume(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _maker, _v, _r, _s) &lt; _amountTrade) return 2;
+        if (_amountTrade.add(feeTakeValue) > tokens[_tokenGet][_taker]) return 1;
+        if (availableVolume(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _maker, _v, _r, _s) < _amountTrade) return 2;
         return 0;
     }
 
@@ -262,7 +262,7 @@ contract ETHERCExchange is Ownable {
 
         uint256 feeDiscount; uint256 feeRebate;
         (feeDiscount, feeRebate) = getAccountFeeModifiers(_taker);
-        if (feeTakeValue &gt; 0 &amp;&amp; feeDiscount &gt; 0 &amp;&amp; feeDiscount &lt;= 100 ) feeTakeValue = feeTakeValue.mul(100 - feeDiscount) / 100;
+        if (feeTakeValue > 0 && feeDiscount > 0 && feeDiscount <= 100 ) feeTakeValue = feeTakeValue.mul(100 - feeDiscount) / 100;
 
         return feeTakeValue;
     }
@@ -274,16 +274,16 @@ contract ETHERCExchange is Ownable {
     function availableVolume(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive, uint256 _expires, uint256 _nonce, address _maker, uint8 _v, bytes32 _r, bytes32 _s) public view returns (uint256) {
         bytes32 orderHash = getOrderHash(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, _maker);
 
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, orderHash), _v, _r, _s) != _maker ||
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", orderHash), _v, _r, _s) != _maker ||
             cancelledOrders[orderHash] ||
-            block.number &gt; _expires ||
-            _amountGet &lt;= orderFills[orderHash]
+            block.number > _expires ||
+            _amountGet <= orderFills[orderHash]
         ) return 0;
 
         uint256[2] memory available;
         available[0] = _amountGet.sub(orderFills[orderHash]);
         available[1] = tokens[_tokenGive][_maker].mul(_amountGet) / _amountGive;
-        if (available[0] &lt; available[1]) return available[0];
+        if (available[0] < available[1]) return available[0];
         return available[1];
     }
 
@@ -294,7 +294,7 @@ contract ETHERCExchange is Ownable {
 
     function cancelOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive, uint256 _expires, uint256 _nonce, uint8 _v, bytes32 _r, bytes32 _s) public {
         bytes32 orderHash = getOrderHash(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, msg.sender);
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, orderHash), _v, _r, _s) != msg.sender) revert();
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", orderHash), _v, _r, _s) != msg.sender) revert();
 
         cancelledOrders[orderHash] = true;
         Cancel(_tokenGet, _amountGet, _tokenGive, _amountGive, _expires, _nonce, msg.sender, _v, _r, _s, orderHash, orderFills[orderHash]);

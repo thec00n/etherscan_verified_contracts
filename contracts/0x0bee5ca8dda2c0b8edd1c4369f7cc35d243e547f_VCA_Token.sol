@@ -24,20 +24,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -70,7 +70,7 @@ contract BasicToken is ERC20Basic {
 	*/
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 	*/
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 	/**
 	* @dev Transfer tokens from one address to another
@@ -120,8 +120,8 @@ contract StandardToken is ERC20, BasicToken {
 	*/
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
 	*
 	* Beware that changing an allowance with this method brings the risk that someone may use both the old
 	* and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	* race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	* race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	* https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	* @param _spender The address which will spend the funds.
 	* @param _value The amount of tokens to be spent.
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
 	/**
 	* @title Ownable
 	* @dev The Ownable contract has an owner address, and provides basic authorization control
-	* functions, this simplifies the implementation of &quot;user permissions&quot;.
+	* functions, this simplifies the implementation of "user permissions".
 	*/
 contract Ownable {
   address public owner;
@@ -224,8 +224,8 @@ contract Ownable {
 	* @dev VCA_Token is StandardToken, Ownable
 	*/
 contract VCA_Token is StandardToken, Ownable {
-  string public constant name = &quot;Virtual Cash&quot;;
-  string public constant symbol = &quot;VCA&quot;;
+  string public constant name = "Virtual Cash";
+  string public constant symbol = "VCA";
   uint256 public constant decimals = 8;
 
   uint256 public constant UNIT = 10 ** decimals;
@@ -284,32 +284,32 @@ contract VCA_Token is StandardToken, Ownable {
 
   function calcBonus(uint256 _amount) internal view returns (uint256) {
 	              uint256 bonusPercentage = 35;
-    if (now &gt; bonus35end) bonusPercentage = 32;
-    if (now &gt; bonus32end) bonusPercentage = 29;
-    if (now &gt; bonus29end) bonusPercentage = 26;
-    if (now &gt; bonus26end) bonusPercentage = 23;
-    if (now &gt; bonus23end) bonusPercentage = 20;
-    if (now &gt; bonus20end) bonusPercentage = 17;
-    if (now &gt; bonus17end) bonusPercentage = 14;
-    if (now &gt; bonus14end) bonusPercentage = 11;
-    if (now &gt; bonus11end) bonusPercentage = 9;
-    if (now &gt; bonus09end) bonusPercentage = 6;
-    if (now &gt; bonus06end) bonusPercentage = 3;
-    if (now &gt; bonus03end) bonusPercentage = 0;
+    if (now > bonus35end) bonusPercentage = 32;
+    if (now > bonus32end) bonusPercentage = 29;
+    if (now > bonus29end) bonusPercentage = 26;
+    if (now > bonus26end) bonusPercentage = 23;
+    if (now > bonus23end) bonusPercentage = 20;
+    if (now > bonus20end) bonusPercentage = 17;
+    if (now > bonus17end) bonusPercentage = 14;
+    if (now > bonus14end) bonusPercentage = 11;
+    if (now > bonus11end) bonusPercentage = 9;
+    if (now > bonus09end) bonusPercentage = 6;
+    if (now > bonus06end) bonusPercentage = 3;
+    if (now > bonus03end) bonusPercentage = 0;
     return _amount * bonusPercentage / 100;
   }
 
   function buyTokens() public payable {
-    require(now &lt; endDate);
-    require(now &gt;= startDate);
-    require(msg.value &gt; 0);
+    require(now < endDate);
+    require(now >= startDate);
+    require(msg.value > 0);
 
     uint256 amount = msg.value * UNIT / tokenPrice;
     uint256 bonus = calcBonus(msg.value) * UNIT / tokenPrice;
     
     totalSupply = totalSupply.add(amount);
     
-    require(totalSupply &lt;= maxSupply);
+    require(totalSupply <= maxSupply);
 
     totalWeiReceived = totalWeiReceived.add(msg.value);
 
@@ -319,7 +319,7 @@ contract VCA_Token is StandardToken, Ownable {
     
     Transfer(address(0x0), msg.sender, amount);
 
-    if (bonus &gt; 0) {
+    if (bonus > 0) {
       Transfer(companyWallet, msg.sender, bonus);
       balances[companyWallet] -= bonus;
       balances[msg.sender] = balances[msg.sender].add(bonus);
@@ -336,9 +336,9 @@ contract VCA_Token is StandardToken, Ownable {
 	* This function is used to transfer tokens that have been bought through other means (credit card, bitcoin, etc), and to burn tokens after the sale.
 	*/
   function sendTokens(address receiver, uint256 tokens) public onlyAdmin {
-    require(now &lt; endDate);
-    require(now &gt;= startDate);
-    require(totalSupply + tokens * UNIT &lt;= maxSupply);
+    require(now < endDate);
+    require(now >= startDate);
+    require(totalSupply + tokens * UNIT <= maxSupply);
 
     uint256 amount = tokens * UNIT;
     balances[receiver] += amount;

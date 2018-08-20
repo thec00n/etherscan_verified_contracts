@@ -22,8 +22,8 @@ contract ERC20 {
  */
 contract MainstreetToken is ERC20 {
     
-    mapping (address =&gt; uint) ownerMIT;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) ownerMIT;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalMIT;
     uint public start;
     
@@ -41,14 +41,14 @@ contract MainstreetToken is ERC20 {
     }
     
     modifier isActive() {
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             throw;
         }
         _;
     }
 
     modifier isNotActive() {
-        if (!testing &amp;&amp; block.timestamp &gt;= start) {
+        if (!testing && block.timestamp >= start) {
             throw;
         }
         _;
@@ -62,25 +62,25 @@ contract MainstreetToken is ERC20 {
     }
 
     modifier senderHasSufficient(uint MIT) {
-        if (ownerMIT[msg.sender] &lt; MIT) {
+        if (ownerMIT[msg.sender] < MIT) {
             throw;
         }
         _;
     }
 
     modifier transferApproved(address from, uint MIT) {
-        if (allowed[from][msg.sender] &lt; MIT || ownerMIT[from] &lt; MIT) {
+        if (allowed[from][msg.sender] < MIT || ownerMIT[from] < MIT) {
             throw;
         }
         _;
     }
 
     modifier allowanceIsZero(address spender, uint value) {
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         // allowance to zero by calling `approve(_spender,0)` if it is not
         // already 0 to mitigate the race condition described here:
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((value != 0) &amp;&amp; (allowed[msg.sender][spender] != 0)) {
+        if ((value != 0) && (allowed[msg.sender][spender] != 0)) {
             throw;
         }
         _;
@@ -96,7 +96,7 @@ contract MainstreetToken is ERC20 {
     /**
      * @dev Constructor.
      * @param _mainstreetCrowdfund Address of crowdfund contract.
-     * @param _intellisys Address to receive intellisys&#39; tokens.
+     * @param _intellisys Address to receive intellisys' tokens.
      * @param _start Timestamp when the token becomes active.
      */
     function MainstreetToken(address _mainstreetCrowdfund, address _intellisys, uint _start, bool _testing) {

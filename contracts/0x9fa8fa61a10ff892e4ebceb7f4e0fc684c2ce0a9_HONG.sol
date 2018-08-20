@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the HONG.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the HONG.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -24,8 +24,8 @@ along with the HONG.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 contract HongConfiguration {
     uint public closingTime;
     uint public weiPerInitialHONG = 10**16;
-    string public name = &quot;HONG&quot;;
-    string public symbol = &quot;Ħ&quot;;
+    string public name = "HONG";
+    string public symbol = "Ħ";
     uint8 public decimals = 0;
     uint public maxBountyTokens = 2 * (10**6);
     uint public closingTimeExtensionPeriod = 30 days;
@@ -54,8 +54,8 @@ contract ErrorHandler {
 }
 
 contract TokenInterface is ErrorHandler {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public tokensCreated;
 
     function balanceOf(address _owner) constant returns (uint256 balance);
@@ -65,24 +65,24 @@ contract TokenInterface is ErrorHandler {
 
     // Modifier that allows only token holders to trigger
     modifier onlyTokenHolders {
-        if (balanceOf(msg.sender) == 0) doThrow(&quot;onlyTokenHolders&quot;); else {_}
+        if (balanceOf(msg.sender) == 0) doThrow("onlyTokenHolders"); else {_}
     }
 }
 
 contract Token is TokenInterface {
     // Protects users by preventing the execution of method calls that
     // inadvertently also transferred ether
-    modifier noEther() {if (msg.value &gt; 0) doThrow(&quot;noEther&quot;); else{_}}
-    modifier hasEther() {if (msg.value &lt;= 0) doThrow(&quot;hasEther&quot;); else{_}}
+    modifier noEther() {if (msg.value > 0) doThrow("noEther"); else{_}}
+    modifier hasEther() {if (msg.value <= 0) doThrow("hasEther"); else{_}}
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
     }
 
     function transfer(address _to, uint256 _amount) noEther returns (bool success) {
-        if (_amount &lt;= 0) return false;
-        if (balances[msg.sender] &lt; _amount) return false;
-        if (balances[_to] + _amount &lt; balances[_to]) return false;
+        if (_amount <= 0) return false;
+        if (balances[msg.sender] < _amount) return false;
+        if (balances[_to] + _amount < balances[_to]) return false;
 
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -101,12 +101,12 @@ contract OwnedAccount is ErrorHandler {
     event evPayOut(address msg_sender, uint msg_value, address indexed _recipient, uint _amount);
 
     modifier onlyOwner() {
-        if (msg.sender != owner) doThrow(&quot;onlyOwner&quot;);
+        if (msg.sender != owner) doThrow("onlyOwner");
         else {_}
     }
 
     modifier noEther() {
-        if (msg.value &gt; 0) doThrow(&quot;noEther&quot;);
+        if (msg.value > 0) doThrow("noEther");
         else {_}
     }
 
@@ -121,7 +121,7 @@ contract OwnedAccount is ErrorHandler {
     function payOutAmount(address _recipient, uint _amount) internal onlyOwner noEther {
         // send does not forward enough gas to see that this is a managed account call
         if (!_recipient.call.value(_amount)())
-            doThrow(&quot;payOut:sendFailed&quot;);
+            doThrow("payOut:sendFailed");
         else
             evPayOut(msg.sender, msg.value, _recipient, _amount);
     }
@@ -222,8 +222,8 @@ contract TokenCreationInterface is HongConfiguration {
     address public managementBodyAddress;
 
     ExtraBalanceWallet public extraBalanceWallet;
-    mapping (address =&gt; uint256) weiGiven;
-    mapping (address =&gt; uint256) public taxPaid;
+    mapping (address => uint256) weiGiven;
+    mapping (address => uint256) public taxPaid;
 
     function createTokenProxy(address _tokenHolder) internal returns (bool success);
     function refundMyIcoInvestment();
@@ -241,29 +241,29 @@ contract GovernanceInterface is ErrorHandler, HongConfiguration {
     bool public isFundLocked;
     bool public isFundReleased;
 
-    modifier notLocked() {if (isFundLocked) doThrow(&quot;notLocked&quot;); else {_}}
-    modifier onlyLocked() {if (!isFundLocked) doThrow(&quot;onlyLocked&quot;); else {_}}
-    modifier notReleased() {if (isFundReleased) doThrow(&quot;notReleased&quot;); else {_}}
-    modifier onlyHarvestEnabled() {if (!isHarvestEnabled) doThrow(&quot;onlyHarvestEnabled&quot;); else {_}}
-    modifier onlyDistributionNotInProgress() {if (isDistributionInProgress) doThrow(&quot;onlyDistributionNotInProgress&quot;); else {_}}
-    modifier onlyDistributionNotReady() {if (isDistributionReady) doThrow(&quot;onlyDistributionNotReady&quot;); else {_}}
-    modifier onlyDistributionReady() {if (!isDistributionReady) doThrow(&quot;onlyDistributionReady&quot;); else {_}}
+    modifier notLocked() {if (isFundLocked) doThrow("notLocked"); else {_}}
+    modifier onlyLocked() {if (!isFundLocked) doThrow("onlyLocked"); else {_}}
+    modifier notReleased() {if (isFundReleased) doThrow("notReleased"); else {_}}
+    modifier onlyHarvestEnabled() {if (!isHarvestEnabled) doThrow("onlyHarvestEnabled"); else {_}}
+    modifier onlyDistributionNotInProgress() {if (isDistributionInProgress) doThrow("onlyDistributionNotInProgress"); else {_}}
+    modifier onlyDistributionNotReady() {if (isDistributionReady) doThrow("onlyDistributionNotReady"); else {_}}
+    modifier onlyDistributionReady() {if (!isDistributionReady) doThrow("onlyDistributionReady"); else {_}}
     modifier onlyCanIssueBountyToken(uint _amount) {
-        if (bountyTokensCreated + _amount &gt; maxBountyTokens){
-            doThrow(&quot;hitMaxBounty&quot;);
+        if (bountyTokensCreated + _amount > maxBountyTokens){
+            doThrow("hitMaxBounty");
         }
         else {_}
     }
     modifier onlyFinalFiscalYear() {
         // Only call harvest() in the final fiscal year
-        if (currentFiscalYear &lt; 4) doThrow(&quot;currentFiscalYear&lt;4&quot;); else {_}
+        if (currentFiscalYear < 4) doThrow("currentFiscalYear<4"); else {_}
     }
     modifier notFinalFiscalYear() {
         // Token holders cannot freeze fund at the 4th Fiscal Year after passing `kickoff(4)` voting
-        if (currentFiscalYear &gt;= 4) doThrow(&quot;currentFiscalYear&gt;=4&quot;); else {_}
+        if (currentFiscalYear >= 4) doThrow("currentFiscalYear>=4"); else {_}
     }
     modifier onlyNotFrozen() {
-        if (isFreezeEnabled) doThrow(&quot;onlyNotFrozen&quot;); else {_}
+        if (isFreezeEnabled) doThrow("onlyNotFrozen"); else {_}
     }
 
     bool public isDayThirtyChecked;
@@ -272,7 +272,7 @@ contract GovernanceInterface is ErrorHandler, HongConfiguration {
     uint256 public bountyTokensCreated;
     uint public currentFiscalYear;
     uint public lastKickoffDate;
-    mapping (uint =&gt; bool) public isKickoffEnabled;
+    mapping (uint => bool) public isKickoffEnabled;
     bool public isFreezeEnabled;
     bool public isHarvestEnabled;
     bool public isDistributionInProgress;
@@ -302,7 +302,7 @@ contract GovernanceInterface is ErrorHandler, HongConfiguration {
 
 contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
     modifier onlyManagementBody {
-        if(msg.sender != address(managementBodyAddress)) {doThrow(&quot;onlyManagementBody&quot;);} else {_}
+        if(msg.sender != address(managementBodyAddress)) {doThrow("onlyManagementBody");} else {_}
     }
 
     function TokenCreation(
@@ -325,17 +325,17 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         uint remainingWei = msg.value;
         uint tokensAvailable = tokensAvailableAtCurrentTier();
         if (tokensAvailable == 0) {
-            doThrow(&quot;noTokensToSell&quot;);
+            doThrow("noTokensToSell");
             return false;
         }
 
         // Sell tokens in batches based on the current price.
-        while (remainingWei &gt;= weiPerLatestHONG) {
+        while (remainingWei >= weiPerLatestHONG) {
             uint tokensRequested = remainingWei / weiPerLatestHONG;
             uint tokensToSellInBatch = min(tokensAvailable, tokensRequested);
 
             // special case.  Allow the last purchase to go over the max
-            if (tokensAvailable == 0 &amp;&amp; tokensCreated == maxTokensToCreate) {
+            if (tokensAvailable == 0 && tokensCreated == maxTokensToCreate) {
                 tokensToSellInBatch = tokensRequested;
             }
 
@@ -356,7 +356,7 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
             tokensAvailable = tokensAvailableAtCurrentTier();
         }
 
-        // the caller will still pay this amount, even though it didn&#39;t buy any tokens.
+        // the caller will still pay this amount, even though it didn't buy any tokens.
         weiGiven[_tokenHolder] += remainingWei;
 
         // when the caller is paying more than 10**16 wei (0.01 Ether) per token, the extra is basically a tax.
@@ -367,16 +367,16 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         tryToLockFund();
 
         // External calls
-        if (totalTaxLevied &gt; 0) {
+        if (totalTaxLevied > 0) {
             if (!extraBalanceWallet.send(totalTaxLevied)){
-                doThrow(&quot;extraBalance:sendFail&quot;);
+                doThrow("extraBalance:sendFail");
                 return;
             }
         }
 
         // Events.  Safe to publish these now that we know it all worked
         evCreatedToken(msg.sender, msg.value, _tokenHolder, tokensSupplied);
-        if (!wasMinTokensReached &amp;&amp; isMinTokensReached()) evMinTokensReached(msg.sender, msg.value, tokensCreated);
+        if (!wasMinTokensReached && isMinTokensReached()) evMinTokensReached(msg.sender, msg.value, tokensCreated);
         if (isFundLocked) evLockFund(msg.sender, msg.value);
         if (isFundReleased) evReleaseFund(msg.sender, msg.value);
         return true;
@@ -385,11 +385,11 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
     function refundMyIcoInvestment() noEther notLocked onlyTokenHolders {
         // 1: Preconditions
         if (weiGiven[msg.sender] == 0) {
-            doThrow(&quot;noWeiGiven&quot;);
+            doThrow("noWeiGiven");
             return;
         }
-        if (balances[msg.sender] &gt; tokensCreated) {
-            doThrow(&quot;invalidTokenCount&quot;);
+        if (balances[msg.sender] > tokensCreated) {
+            doThrow("invalidTokenCount");
             return;
          }
 
@@ -414,21 +414,21 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         // If that works, then do a refund
         if (!msg.sender.send(amountToRefund)) {
             evRefund(msg.sender, msg.value, msg.sender, amountToRefund, false);
-            doThrow(&quot;refund:SendFailed&quot;);
+            doThrow("refund:SendFailed");
             return;
         }
 
         evRefund(msg.sender, msg.value, msg.sender, amountToRefund, true);
-        if (!wasMinTokensReached &amp;&amp; isMinTokensReached()) evMinTokensReached(msg.sender, msg.value, tokensCreated);
+        if (!wasMinTokensReached && isMinTokensReached()) evMinTokensReached(msg.sender, msg.value, tokensCreated);
     }
 
     // Using a function rather than a state variable, as it reduces the risk of inconsistent state
     function isMinTokensReached() constant returns (bool) {
-        return tokensCreated &gt;= minTokensToCreate;
+        return tokensCreated >= minTokensToCreate;
     }
 
     function isMaxTokensReached() constant returns (bool) {
-        return tokensCreated &gt;= maxTokensToCreate;
+        return tokensCreated >= maxTokensToCreate;
     }
 
     function mgmtIssueBountyToken(
@@ -469,7 +469,7 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         extraBalanceWallet.payBalanceToReturnWallet();
 
         // transfer _mgmtPercentage of returns to mgmt Wallet
-        if (_mgmtPercentage &gt; 0) returnWallet.payManagementBodyPercent(_mgmtPercentage);
+        if (_mgmtPercentage > 0) returnWallet.payManagementBodyPercent(_mgmtPercentage);
         returnWallet.switchToDistributionMode(tokensCreated + bountyTokensCreated);
 
         // Token holder can claim the remaining fund (the total amount harvested/ to be distributed) starting from here
@@ -479,12 +479,12 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
 
     function payBalanceToReturnWallet() internal {
         if (!returnWallet.send(this.balance))
-            doThrow(&quot;payBalanceToReturnWallet:sendFailed&quot;);
+            doThrow("payBalanceToReturnWallet:sendFailed");
             return;
     }
 
     function min(uint a, uint b) constant internal returns (uint) {
-        return (a &lt; b) ? a : b;
+        return (a < b) ? a : b;
     }
 
     function tryToLockFund() internal {
@@ -498,8 +498,8 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         // Case A
         isFundLocked = isMaxTokensReached();
 
-        // if we&#39;ve reached the 30 day mark, try to lock the fund
-        if (!isFundLocked &amp;&amp; !isDayThirtyChecked &amp;&amp; (now &gt;= closingTime)) {
+        // if we've reached the 30 day mark, try to lock the fund
+        if (!isFundLocked && !isDayThirtyChecked && (now >= closingTime)) {
             if (isMinTokensReached()) {
                 // Case B
                 isFundLocked = true;
@@ -507,8 +507,8 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
             isDayThirtyChecked = true;
         }
 
-        // if we&#39;ve reached the 60 day mark, try to lock the fund
-        if (!isFundLocked &amp;&amp; !isDaySixtyChecked &amp;&amp; (now &gt;= (closingTime + closingTimeExtensionPeriod))) {
+        // if we've reached the 60 day mark, try to lock the fund
+        if (!isFundLocked && !isDaySixtyChecked && (now >= (closingTime + closingTimeExtensionPeriod))) {
             if (isMinTokensReached()) {
                 // Case C
                 isFundLocked = true;
@@ -516,7 +516,7 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
             isDaySixtyChecked = true;
         }
 
-        if (isDaySixtyChecked &amp;&amp; !isMinTokensReached()) {
+        if (isDaySixtyChecked && !isMinTokensReached()) {
             // Case D
             // Mark the release state. No fund should be accepted anymore
             isFundReleased = true;
@@ -527,12 +527,12 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
         uint tierThreshold = (_currentTier+1) * _tokensPerTier;
 
         // never go above maxTokensToCreate, which could happen if the max is not a multiple of _tokensPerTier
-        if (tierThreshold &gt; maxTokensToCreate) {
+        if (tierThreshold > maxTokensToCreate) {
             tierThreshold = maxTokensToCreate;
         }
 
         // this can happen on the final purchase in the last tier
-        if (_tokensCreated &gt; tierThreshold) {
+        if (_tokensCreated > tierThreshold) {
             return 0;
         }
 
@@ -545,7 +545,7 @@ contract TokenCreation is TokenCreationInterface, Token, GovernanceInterface {
 
     function getCurrentTier() constant returns (uint8) {
         uint8 tier = (uint8) (tokensCreated / tokensPerTier);
-        return (tier &gt; 4) ? 4 : tier;
+        return (tier > 4) ? 4 : tier;
     }
 
     function pricePerTokenAtCurrentTier() constant returns (uint) {
@@ -572,10 +572,10 @@ contract HONGInterface is ErrorHandler, HongConfiguration {
     address public managementBodyAddress;
 
     // 3 most important votings in blockchain
-    mapping (uint =&gt; mapping (address =&gt; uint)) public votedKickoff;
-    mapping (address =&gt; uint) public votedFreeze;
-    mapping (address =&gt; uint) public votedHarvest;
-    mapping (uint =&gt; uint256) public supportKickoffQuorum;
+    mapping (uint => mapping (address => uint)) public votedKickoff;
+    mapping (address => uint) public votedFreeze;
+    mapping (address => uint) public votedHarvest;
+    mapping (uint => uint256) public supportKickoffQuorum;
     uint256 public supportFreezeQuorum;
     uint256 public supportHarvestQuorum;
     uint public totalInitialBalance;
@@ -625,13 +625,13 @@ contract HONG is HONGInterface, Token, TokenCreation {
         extraBalanceWallet = new ExtraBalanceWallet(address(returnWallet));
 
         if (address(extraBalanceWallet) == 0)
-            doThrow(&quot;extraBalanceWallet:0&quot;);
+            doThrow("extraBalanceWallet:0");
         if (address(returnWallet) == 0)
-            doThrow(&quot;returnWallet:0&quot;);
+            doThrow("returnWallet:0");
         if (address(rewardWallet) == 0)
-            doThrow(&quot;rewardWallet:0&quot;);
+            doThrow("rewardWallet:0");
         if (address(managementFeeWallet) == 0)
-            doThrow(&quot;managementFeeWallet:0&quot;);
+            doThrow("managementFeeWallet:0");
     }
 
     function () returns (bool success) {
@@ -640,7 +640,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
             return createTokenProxy(msg.sender);
         }
         else {
-            evRecord(msg.sender, msg.value, &quot;Recevied ether from ManagedAccount&quot;);
+            evRecord(msg.sender, msg.value, "Recevied ether from ManagedAccount");
             return true;
         }
     }
@@ -656,25 +656,25 @@ contract HONG is HONGInterface, Token, TokenCreation {
      * Voting for some critical steps, on blockchain
      */
     function voteToKickoffNewFiscalYear() onlyTokenHolders noEther onlyLocked {
-        // this is the only valid fiscal year parameter, so there&#39;s no point in letting the caller pass it in.
-        // Best case is they get it wrong and we throw, worst case is the get it wrong and there&#39;s some exploit
+        // this is the only valid fiscal year parameter, so there's no point in letting the caller pass it in.
+        // Best case is they get it wrong and we throw, worst case is the get it wrong and there's some exploit
         uint _fiscal = currentFiscalYear + 1;
 
         if(!isKickoffEnabled[1]){  // if the first fiscal year is not kicked off yet
             // accept voting
 
-        }else if(currentFiscalYear &lt;= 3){  // if there was any kickoff() enabled before already
+        }else if(currentFiscalYear <= 3){  // if there was any kickoff() enabled before already
 
-            if(lastKickoffDate + lastKickoffDateBuffer &lt; now){ // 2 months from the end of the fiscal year
+            if(lastKickoffDate + lastKickoffDateBuffer < now){ // 2 months from the end of the fiscal year
                 // accept voting
             }else{
                 // we do not accept early kickoff
-                doThrow(&quot;kickOff:tooEarly&quot;);
+                doThrow("kickOff:tooEarly");
                 return;
             }
         }else{
             // do not accept kickoff anymore after the 4th year
-            doThrow(&quot;kickOff:4thYear&quot;);
+            doThrow("kickOff:4thYear");
             return;
         }
 
@@ -685,7 +685,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
 
 
         uint threshold = (kickoffQuorumPercent*(tokensCreated + bountyTokensCreated)) / 100;
-        if(supportKickoffQuorum[_fiscal] &gt; threshold) {
+        if(supportKickoffQuorum[_fiscal] > threshold) {
             if(_fiscal == 1){
                 // transfer fund in extraBalance to main account
                 extraBalanceWallet.returnBalanceToMainAccount();
@@ -695,7 +695,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
                 uint fundToReserve = (totalInitialBalance * mgmtFeePercentage) / 100;
                 annualManagementFee = fundToReserve / 4;
                 if(!managementFeeWallet.send(fundToReserve)){
-                    doThrow(&quot;kickoff:ManagementFeePoolWalletFail&quot;);
+                    doThrow("kickoff:ManagementFeePoolWalletFail");
                     return;
                 }
 
@@ -719,7 +719,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
         votedFreeze[msg.sender] = balances[msg.sender];
 
         uint threshold = ((tokensCreated + bountyTokensCreated) * freezeQuorumPercent) / 100;
-        if(supportFreezeQuorum &gt; threshold){
+        if(supportFreezeQuorum > threshold){
             isFreezeEnabled = true;
             distributeDownstream(0);
             evFreeze(msg.sender, msg.value);
@@ -738,7 +738,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
         votedHarvest[msg.sender] = balances[msg.sender];
 
         uint threshold = ((tokensCreated + bountyTokensCreated) * harvestQuorumPercent) / 100;
-        if(supportHarvestQuorum &gt; threshold) {
+        if(supportHarvestQuorum > threshold) {
             isHarvestEnabled = true;
             evHarvest(msg.sender, msg.value);
         }
@@ -760,14 +760,14 @@ contract HONG is HONGInterface, Token, TokenCreation {
             return;
         }
 
-        if(_amount &gt;= this.balance){
-            doThrow(&quot;failed:mgmtInvestProject: amount &gt;= actualBalance&quot;);
+        if(_amount >= this.balance){
+            doThrow("failed:mgmtInvestProject: amount >= actualBalance");
             return;
         }
 
         // send the balance (_amount) to _projectWallet
         if (!_projectWallet.call.value(_amount)()) {
-            doThrow(&quot;failed:mgmtInvestProject: cannot send to _projectWallet&quot;);
+            doThrow("failed:mgmtInvestProject: cannot send to _projectWallet");
             return;
         }
 
@@ -777,8 +777,8 @@ contract HONG is HONGInterface, Token, TokenCreation {
     function transfer(address _to, uint256 _value) returns (bool success) {
 
         // Update kickoff voting record for the next fiscal year for an address, and the total quorum
-        if(currentFiscalYear &lt; 4){
-            if(votedKickoff[currentFiscalYear+1][msg.sender] &gt; _value){
+        if(currentFiscalYear < 4){
+            if(votedKickoff[currentFiscalYear+1][msg.sender] > _value){
                 votedKickoff[currentFiscalYear+1][msg.sender] -= _value;
                 supportKickoffQuorum[currentFiscalYear+1] -= _value;
             }else{
@@ -788,7 +788,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
         }
 
         // Update Freeze and Harvest voting records for an address, and the total quorum
-        if(votedFreeze[msg.sender] &gt; _value){
+        if(votedFreeze[msg.sender] > _value){
             votedFreeze[msg.sender] -= _value;
             supportFreezeQuorum -= _value;
         }else{
@@ -796,7 +796,7 @@ contract HONG is HONGInterface, Token, TokenCreation {
             votedFreeze[msg.sender] = 0;
         }
 
-        if(votedHarvest[msg.sender] &gt; _value){
+        if(votedHarvest[msg.sender] > _value){
             votedHarvest[msg.sender] -= _value;
             supportHarvestQuorum -= _value;
         }else{
@@ -804,13 +804,13 @@ contract HONG is HONGInterface, Token, TokenCreation {
             votedHarvest[msg.sender] = 0;
         }
 
-        if (isFundLocked &amp;&amp; super.transfer(_to, _value)) {
+        if (isFundLocked && super.transfer(_to, _value)) {
             return true;
         } else {
             if(!isFundLocked){
-                doThrow(&quot;failed:transfer: isFundLocked is false&quot;);
+                doThrow("failed:transfer: isFundLocked is false");
             }else{
-                doThrow(&quot;failed:transfer: cannot send send to _projectWallet&quot;);
+                doThrow("failed:transfer: cannot send send to _projectWallet");
             }
             return;
         }

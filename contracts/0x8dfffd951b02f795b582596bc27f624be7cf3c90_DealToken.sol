@@ -22,30 +22,30 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }  
 }
 
@@ -70,13 +70,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size + 4);
+     assert(msg.data.length >= size + 4);
      _;
   }
 
@@ -124,7 +124,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -137,7 +137,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -178,7 +178,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -354,12 +354,12 @@ contract DealToken is MintableToken, BurnableToken {
     /*
       Sets the name of the token
     */
-    string public constant name = &quot;Deal Token&quot;;
+    string public constant name = "Deal Token";
 
     /*
       Sets the symbol of the token
     */
-    string public constant symbol = &quot;DEAL&quot;;
+    string public constant symbol = "DEAL";
 
     uint8 public constant decimals = 8;
     uint public constant initialSupply = 30000000000000000; //300M

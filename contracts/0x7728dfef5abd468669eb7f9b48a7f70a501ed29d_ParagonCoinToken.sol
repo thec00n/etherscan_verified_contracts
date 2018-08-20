@@ -17,7 +17,7 @@ pragma solidity ^0.4.11;
     function safeAdd (uint256 x, uint256 y)
     constant internal
     returns (uint256 z) {
-      require (x &lt;= MAX_UINT256 - y);
+      require (x <= MAX_UINT256 - y);
       return x + y;
     }
 
@@ -31,7 +31,7 @@ pragma solidity ^0.4.11;
     function safeSub (uint256 x, uint256 y)
     constant internal
     returns (uint256 z) {
-      require(x &gt;= y);
+      require(x >= y);
       return x - y;
     }
 
@@ -46,14 +46,14 @@ pragma solidity ^0.4.11;
     constant internal
     returns (uint256 z) {
       if (y == 0) return 0; // Prevent division by zero at the next line
-      require (x &lt;= MAX_UINT256 / y);
+      require (x <= MAX_UINT256 / y);
       return x * y;
     }
   }
 
   /**
    * ERC-20 standard token interface, as defined
-   * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+   * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
    */
   contract Token {
     /**
@@ -179,8 +179,8 @@ pragma solidity ^0.4.11;
     function transfer (address _to, uint256 _value) returns (bool success) {
       uint256 feeTotal = fee();
 
-      if (accounts [msg.sender] &lt; _value) return false;
-      if (_value &gt; feeTotal &amp;&amp; msg.sender != _to) {
+      if (accounts [msg.sender] < _value) return false;
+      if (_value > feeTotal && msg.sender != _to) {
         accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
         
         accounts [_to] = safeAdd (accounts [_to], safeSub(_value, feeTotal));
@@ -206,13 +206,13 @@ pragma solidity ^0.4.11;
     returns (bool success) {
       uint256 feeTotal = fee();
 
-      if (allowances [_from][msg.sender] &lt; _value) return false;
-      if (accounts [_from] &lt; _value) return false;
+      if (allowances [_from][msg.sender] < _value) return false;
+      if (accounts [_from] < _value) return false;
 
       allowances [_from][msg.sender] =
         safeSub (allowances [_from][msg.sender], _value);
 
-      if (_value &gt; feeTotal &amp;&amp; _from != _to) {
+      if (_value > feeTotal && _from != _to) {
         accounts [_from] = safeSub (accounts [_from], _value);
 
         
@@ -265,13 +265,13 @@ pragma solidity ^0.4.11;
      * Mapping from addresses of token holders to the numbers of tokens belonging
      * to these token holders.
      */
-    mapping (address =&gt; uint256) accounts;
+    mapping (address => uint256) accounts;
 
     /**
      * Mapping from addresses of token holders to the mapping of addresses of
      * spenders to the allowances set by these token holders to these spenders.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
   }
 
   contract ParagonCoinToken is AbstractToken {
@@ -310,7 +310,7 @@ pragma solidity ^0.4.11;
      * @return name of this token
      */
     function name () constant returns (string name) {
-      return &quot;PRG&quot;;
+      return "PRG";
     }
 
     /**
@@ -319,7 +319,7 @@ pragma solidity ^0.4.11;
      * @return symbol of this token
      */
     function symbol () constant returns (string symbol) {
-      return &quot;PRG&quot;;
+      return "PRG";
     }
 
 
@@ -411,8 +411,8 @@ pragma solidity ^0.4.11;
      * @return true on success, false on error
      */
     function burnTokens (uint256 _value) returns (bool success) {
-      if (_value &gt; accounts [msg.sender]) return false;
-      else if (_value &gt; 0) {
+      if (_value > accounts [msg.sender]) return false;
+      else if (_value > 0) {
         accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
         tokensCount = safeSub (tokensCount, _value);
         return true;

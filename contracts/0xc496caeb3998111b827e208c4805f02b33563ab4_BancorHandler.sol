@@ -91,7 +91,7 @@ contract Token is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -137,7 +137,7 @@ contract BancorHandler is ExchangeHandler, Ownable {
     uint256 constant MAX_UINT = 2**256 - 1;
 
     modifier onlyTotle() {
-        require(msg.sender == totlePrimary, &quot;BancorHandler - Only TotlePrimary allowed to call this function&quot;);
+        require(msg.sender == totlePrimary, "BancorHandler - Only TotlePrimary allowed to call this function");
         _;
     }
 
@@ -195,9 +195,9 @@ contract BancorHandler is ExchangeHandler, Ownable {
     ) internal returns (uint256 amountObtained, address destinationToken) {
         // Find the length of the conversion path
         uint256 len;
-        for(len = 1; len &lt; orderAddresses.length; len++) {
+        for(len = 1; len < orderAddresses.length; len++) {
             if(orderAddresses[len] == 0) {
-                require(len &gt; 1, &quot;BancorHandler - Invalid conversion path&quot;);
+                require(len > 1, "BancorHandler - Invalid conversion path");
                 destinationToken = orderAddresses[len - 1];
                 len--;
                 break;
@@ -210,7 +210,7 @@ contract BancorHandler is ExchangeHandler, Ownable {
         address[] memory conversionPath = new address[](len);
 
         // Move the contents from orderAddresses to conversionPath
-        for(uint256 i = 0; i &lt; len; i++) {
+        for(uint256 i = 0; i < len; i++) {
             conversionPath[i] = orderAddresses[i + 1];
         }
 
@@ -219,7 +219,7 @@ contract BancorHandler is ExchangeHandler, Ownable {
     }
 
     function transferTokenToSender(address token, uint256 amount) internal {
-        require(Token(token).transfer(msg.sender, amount), &quot;BancorHandler - Failed to transfer token to msg.sender&quot;);
+        require(Token(token).transfer(msg.sender, amount), "BancorHandler - Failed to transfer token to msg.sender");
     }
 
     function transferEtherToSender(uint256 amount) internal {
@@ -228,7 +228,7 @@ contract BancorHandler is ExchangeHandler, Ownable {
 
     function approveExchange(address exchange, address token) internal {
         if(Token(token).allowance(address(this), exchange) == 0) {
-            require(Token(token).approve(exchange, MAX_UINT), &quot;BancorHandler - Failed to approve token&quot;);
+            require(Token(token).approve(exchange, MAX_UINT), "BancorHandler - Failed to approve token");
         }
     }
 
@@ -241,7 +241,7 @@ contract BancorHandler is ExchangeHandler, Ownable {
     }
 
     function setTotle(address _totlePrimary) external onlyOwner {
-        require(_totlePrimary != address(0), &quot;Invalid address for totlePrimary&quot;);
+        require(_totlePrimary != address(0), "Invalid address for totlePrimary");
         totlePrimary = _totlePrimary;
     }
 
@@ -252,6 +252,6 @@ contract BancorHandler is ExchangeHandler, Ownable {
         assembly {
             size := extcodesize(sender)
         }
-        require(size &gt; 0, &quot;BancorHandler - can only send ether from another contract&quot;);
+        require(size > 0, "BancorHandler - can only send ether from another contract");
     }
 }

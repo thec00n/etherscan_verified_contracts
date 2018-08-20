@@ -19,7 +19,7 @@ contract AssetInterface {
  * Receives calls from the proxy, and calls back immediatly without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Asset is AssetInterface {
     // Assigned asset proxy contract, immutable.
@@ -220,7 +220,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -242,7 +242,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -253,7 +253,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
 
 contract AssetWithAmbi is Asset, Ambi2EnabledFull {
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; (ambi2.hasRole(this, _role, _sender()))) {
+        if (address(ambi2) != 0x0 && (ambi2.hasRole(this, _role, _sender()))) {
             _;
         }
     }
@@ -270,46 +270,46 @@ contract AssetProxy {
  * @title EToken2 Asset with whitelist implementation contract.
  */
 contract AssetWithWhitelist is AssetWithAmbi {
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
     uint public restrictionExpiraton;
     bool public restrictionRemoved;
 
     event Error(bytes32 _errorText);
 
-    function allowTransferFrom(address _from) onlyRole(&#39;admin&#39;) returns(bool) {
+    function allowTransferFrom(address _from) onlyRole('admin') returns(bool) {
         whitelist[_from] = true;
         return true;
     }
 
-    function blockTransferFrom(address _from) onlyRole(&#39;admin&#39;) returns(bool) {
+    function blockTransferFrom(address _from) onlyRole('admin') returns(bool) {
         whitelist[_from] = false;
         return true;
     }
 
     function transferIsAllowed(address _from) constant returns(bool) {
-        return restrictionRemoved || whitelist[_from] || (now &gt;= restrictionExpiraton);
+        return restrictionRemoved || whitelist[_from] || (now >= restrictionExpiraton);
     }
 
-    function removeRestriction() onlyRole(&#39;admin&#39;) returns(bool) {
+    function removeRestriction() onlyRole('admin') returns(bool) {
         restrictionRemoved = true;
         return true;
     }
 
     modifier transferAllowed(address _sender) {
         if (!transferIsAllowed(_sender)) {
-            Error(&#39;Transfer not allowed&#39;);
+            Error('Transfer not allowed');
             return;
         }
         _;
     }
 
-    function setExpiration(uint _time) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setExpiration(uint _time) onlyRole('admin') returns(bool) {
         if (restrictionExpiraton != 0) {
-            Error(&#39;Expiration time already set&#39;);
+            Error('Expiration time already set');
             return false;
         }
-        if (_time &lt; now) {
-            Error(&#39;Expiration time invalid&#39;);
+        if (_time < now) {
+            Error('Expiration time invalid');
             return false;
         }
         restrictionExpiraton = _time;

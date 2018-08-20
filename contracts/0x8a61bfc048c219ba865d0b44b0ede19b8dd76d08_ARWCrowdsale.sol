@@ -60,24 +60,24 @@ contract ARWCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         uint _amount = amount / 10;
 
         // period 1 : 50%
-        if(now &gt; 1521936000 &amp;&amp; now &lt; 1523746801) {
+        if(now > 1521936000 && now < 1523746801) {
             amount += _amount * 5;
         }
         
         // period 2 : 30%
-        if(now &gt; 1523746800 &amp;&amp; now &lt; 1525129201) {
+        if(now > 1523746800 && now < 1525129201) {
             amount += _amount * 3;
         }
 
         // Pperiod 3 : 10%
-        if(now &gt; 1525129200 &amp;&amp; now &lt; 1527289200) {
+        if(now > 1525129200 && now < 1527289200) {
             amount += _amount;
         }
 

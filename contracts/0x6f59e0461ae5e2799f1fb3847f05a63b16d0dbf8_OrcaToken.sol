@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -188,7 +188,7 @@ contract TokenRecoverable is Ownable {
 
     function recoverTokens(ERC20Basic token, address to, uint256 amount) public onlyOwner {
         uint256 balance = token.balanceOf(address(this));
-        require(balance &gt;= amount);
+        require(balance >= amount);
         token.safeTransfer(to, amount);
     }
 }
@@ -300,12 +300,12 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     uint256 internal mTotalSupply;
 
 
-    mapping(address =&gt; uint) internal mBalances;
-    mapping(address =&gt; mapping(address =&gt; bool)) internal mAuthorized;
+    mapping(address => uint) internal mBalances;
+    mapping(address => mapping(address => bool)) internal mAuthorized;
 
     address[] internal mDefaultOperators;
-    mapping(address =&gt; bool) internal mIsDefaultOperator;
-    mapping(address =&gt; mapping(address =&gt; bool)) internal mRevokedDefaultOperator;
+    mapping(address => bool) internal mIsDefaultOperator;
+    mapping(address => mapping(address => bool)) internal mRevokedDefaultOperator;
 
     /* -- Constructor -- */
     //
@@ -317,13 +317,13 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
         mName = _name;
         mSymbol = _symbol;
         mTotalSupply = 0;
-        require(_granularity &gt;= 1);
+        require(_granularity >= 1);
         mGranularity = _granularity;
 
         mDefaultOperators = _defaultOperators;
-        for (uint i = 0; i &lt; mDefaultOperators.length; i++) { mIsDefaultOperator[mDefaultOperators[i]] = true; }
+        for (uint i = 0; i < mDefaultOperators.length; i++) { mIsDefaultOperator[mDefaultOperators[i]] = true; }
 
-        setInterfaceImplementation(&quot;ERC777Token&quot;, this);
+        setInterfaceImplementation("ERC777Token", this);
     }
 
     /* -- ERC777 Interface Implementation -- */
@@ -353,10 +353,10 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     /// @param _to The address of the recipient
     /// @param _amount The number of tokens to be sent
     function send(address _to, uint256 _amount, bytes _userData) public {
-        doSend(msg.sender, msg.sender, _to, _amount, _userData, &quot;&quot;, true);
+        doSend(msg.sender, msg.sender, _to, _amount, _userData, "", true);
     }
 
-    /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`&#39;s tokens.
+    /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
     /// @param _operator The operator that wants to be Authorized
     function authorizeOperator(address _operator) public {
         require(_operator != msg.sender);
@@ -368,7 +368,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
         emit AuthorizedOperator(_operator, msg.sender);
     }
 
-    /// @notice Revoke a third party `_operator`&#39;s rights to manage (send) `msg.sender`&#39;s tokens.
+    /// @notice Revoke a third party `_operator`'s rights to manage (send) `msg.sender`'s tokens.
     /// @param _operator The operator that wants to be Revoked
     function revokeOperator(address _operator) public {
         require(_operator != msg.sender);
@@ -387,7 +387,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     function isOperatorFor(address _operator, address _tokenHolder) public constant returns (bool) {
         return (_operator == _tokenHolder
             || mAuthorized[_operator][_tokenHolder]
-            || (mIsDefaultOperator[_operator] &amp;&amp; !mRevokedDefaultOperator[_operator][_tokenHolder]));
+            || (mIsDefaultOperator[_operator] && !mRevokedDefaultOperator[_operator][_tokenHolder]));
     }
 
     /// @notice Send `_amount` of tokens on behalf of the address `from` to the address `to`.
@@ -402,7 +402,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     }
 
     function burn(uint256 _amount, bytes _holderData) public {
-        doBurn(msg.sender, msg.sender, _amount, _holderData, &quot;&quot;);
+        doBurn(msg.sender, msg.sender, _amount, _holderData, "");
     }
 
     function operatorBurn(address _tokenHolder, uint256 _amount, bytes _holderData, bytes _operatorData) public {
@@ -413,7 +413,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     /* -- Helper Functions -- */
     //
     /// @notice Internal function that ensures `_amount` is multiple of the granularity
-    /// @param _amount The quantity that want&#39;s to be checked
+    /// @param _amount The quantity that want's to be checked
     function requireMultiple(uint256 _amount) internal view {
         require(_amount.div(mGranularity).mul(mGranularity) == _amount);
     }
@@ -455,7 +455,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
         callSender(_operator, _from, _to, _amount, _userData, _operatorData);
 
         require(_to != address(0));          // forbid sending to 0x0 (=burning)
-        require(mBalances[_from] &gt;= _amount); // ensure enough funds
+        require(mBalances[_from] >= _amount); // ensure enough funds
 
         mBalances[_from] = mBalances[_from].sub(_amount);
         mBalances[_to] = mBalances[_to].add(_amount);
@@ -475,7 +475,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
         internal
     {
         requireMultiple(_amount);
-        require(balanceOf(_tokenHolder) &gt;= _amount);
+        require(balanceOf(_tokenHolder) >= _amount);
 
         mBalances[_tokenHolder] = mBalances[_tokenHolder].sub(_amount);
         mTotalSupply = mTotalSupply.sub(_amount);
@@ -507,7 +507,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     )
         internal
     {
-        address recipientImplementation = interfaceAddr(_to, &quot;ERC777TokensRecipient&quot;);
+        address recipientImplementation = interfaceAddr(_to, "ERC777TokensRecipient");
         if (recipientImplementation != 0) {
             ERC777TokensRecipient(recipientImplementation).tokensReceived(
                 _operator, _from, _to, _amount, _userData, _operatorData);
@@ -536,7 +536,7 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
     )
         internal
     {
-        address senderImplementation = interfaceAddr(_from, &quot;ERC777TokensSender&quot;);
+        address senderImplementation = interfaceAddr(_from, "ERC777TokensSender");
         if (senderImplementation == 0) { return; }
         ERC777TokensSender(senderImplementation).tokensToSend(_operator, _from, _to, _amount, _userData, _operatorData);
     }
@@ -545,8 +545,8 @@ contract ERC777BaseToken is ERC777Token, ERC820Implementer {
 contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
     bool internal mErc20compatible;
 
-    mapping(address =&gt; mapping(address =&gt; bool)) internal mAuthorized;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal mAllowed;
+    mapping(address => mapping(address => bool)) internal mAuthorized;
+    mapping(address => mapping(address => uint256)) internal mAllowed;
 
     constructor(
         string _name,
@@ -557,7 +557,7 @@ contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
         internal ERC777BaseToken(_name, _symbol, _granularity, _defaultOperators)
     {
         mErc20compatible = true;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, this);
+        setInterfaceImplementation("ERC20Token", this);
     }
 
     /// @notice This modifier is applied to erc20 obsolete methods that are
@@ -575,9 +575,9 @@ contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
     /// @notice ERC20 backwards compatible transfer.
     /// @param _to The address of the recipient
     /// @param _amount The number of tokens to be transferred
-    /// @return `true`, if the transfer can&#39;t be done, it should fail.
+    /// @return `true`, if the transfer can't be done, it should fail.
     function transfer(address _to, uint256 _amount) public erc20 returns (bool success) {
-        doSend(msg.sender, msg.sender, _to, _amount, &quot;&quot;, &quot;&quot;, false);
+        doSend(msg.sender, msg.sender, _to, _amount, "", "", false);
         return true;
     }
 
@@ -585,13 +585,13 @@ contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
     /// @param _from The address holding the tokens being transferred
     /// @param _to The address of the recipient
     /// @param _amount The number of tokens to be transferred
-    /// @return `true`, if the transfer can&#39;t be done, it should fail.
+    /// @return `true`, if the transfer can't be done, it should fail.
     function transferFrom(address _from, address _to, uint256 _amount) public erc20 returns (bool success) {
-        require(_amount &lt;= mAllowed[_from][msg.sender]);
+        require(_amount <= mAllowed[_from][msg.sender]);
 
         // Cannot be after doSend because of tokensReceived re-entry
         mAllowed[_from][msg.sender] = mAllowed[_from][msg.sender].sub(_amount);
-        doSend(msg.sender, _from, _to, _amount, &quot;&quot;, &quot;&quot;, false);
+        doSend(msg.sender, _from, _to, _amount, "", "", false);
         return true;
     }
 
@@ -599,7 +599,7 @@ contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
     ///  `msg.sender` approves `_spender` to spend `_amount` tokens on its behalf.
     /// @param _spender The address of the account able to transfer the tokens
     /// @param _amount The number of tokens to be approved for transfer
-    /// @return `true`, if the approve can&#39;t be done, it should fail.
+    /// @return `true`, if the approve can't be done, it should fail.
     function approve(address _spender, uint256 _amount) public erc20 returns (bool success) {
         mAllowed[msg.sender][_spender] = _amount;
         emit Approval(msg.sender, _spender, _amount);
@@ -642,8 +642,8 @@ contract ERC777ERC20BaseToken is ERC20Token, ERC777BaseToken {
 contract OrcaToken is TokenRecoverable, ERC777ERC20BaseToken {
     using SafeMath for uint256;
 
-    string private constant name_ = &quot;ORCA Token&quot;;
-    string private constant symbol_ = &quot;ORCA&quot;;
+    string private constant name_ = "ORCA Token";
+    string private constant symbol_ = "ORCA";
     uint256 private constant granularity_ = 1;
 
     bool public throwOnIncompatibleContract = true;
@@ -656,8 +656,8 @@ contract OrcaToken is TokenRecoverable, ERC777ERC20BaseToken {
 
     /// @notice Constructor to create a OrcaToken
     constructor() public ERC777ERC20BaseToken(name_, symbol_, granularity_, new address[](0)) {
-        setInterfaceImplementation(&quot;ERC20Token&quot;, address(this));
-        setInterfaceImplementation(&quot;ERC777Token&quot;, address(this));
+        setInterfaceImplementation("ERC20Token", address(this));
+        setInterfaceImplementation("ERC777Token", address(this));
     }
 
     modifier canMint() {
@@ -679,14 +679,14 @@ contract OrcaToken is TokenRecoverable, ERC777ERC20BaseToken {
     ///  by the owner.
     function disableERC20() public onlyOwner {
         mErc20compatible = false;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, 0x0);
+        setInterfaceImplementation("ERC20Token", 0x0);
     }
 
     /// @notice Re enables the ERC20 interface. This function can only be called
     ///  by the owner.
     function enableERC20() public onlyOwner {
         mErc20compatible = true;
-        setInterfaceImplementation(&quot;ERC20Token&quot;, this);
+        setInterfaceImplementation("ERC20Token", this);
     }
 
     function send(address _to, uint256 _amount, bytes _userData) public canTrade {
@@ -717,7 +717,7 @@ contract OrcaToken is TokenRecoverable, ERC777ERC20BaseToken {
         mTotalSupply = mTotalSupply.add(_amount);
         mBalances[_tokenHolder] = mBalances[_tokenHolder].add(_amount);
 
-        callRecipient(msg.sender, 0x0, _tokenHolder, _amount, &quot;&quot;, _operatorData, false);
+        callRecipient(msg.sender, 0x0, _tokenHolder, _amount, "", _operatorData, false);
 
         emit Minted(msg.sender, _tokenHolder, _amount, _operatorData);
         if (mErc20compatible) { emit Transfer(0x0, _tokenHolder, _amount); }
@@ -772,11 +772,11 @@ contract OrcaToken is TokenRecoverable, ERC777ERC20BaseToken {
         bytes _operatorData,
         bool _preventLocking
     ) internal {
-        address recipientImplementation = interfaceAddr(_to, &quot;ERC777TokensRecipient&quot;);
+        address recipientImplementation = interfaceAddr(_to, "ERC777TokensRecipient");
         if (recipientImplementation != 0) {
             ERC777TokensRecipient(recipientImplementation).tokensReceived(
                 _operator, _from, _to, _amount, _userData, _operatorData);
-        } else if (throwOnIncompatibleContract &amp;&amp; _preventLocking) {
+        } else if (throwOnIncompatibleContract && _preventLocking) {
             require(isRegularAddress(_to));
         }
     }

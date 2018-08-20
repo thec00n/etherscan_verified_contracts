@@ -38,7 +38,7 @@ contract ICO is owned {
                 uint _tokpereth ) public
   {
     require( isContract(_erc20) );
-    require( _tokpereth &gt; 0 );
+    require( _tokpereth > 0 );
 
     if (_treasury != address(0)) require( isContract(_treasury) );
 
@@ -58,8 +58,8 @@ contract ICO is owned {
   function setMinimum( uint newmin ) public onlyOwner { minfinney = newmin; }
 
   function() public payable {
-    require( msg.value &gt;= minfinney );
-    if (now &lt; start || now &gt; (start + duration)) revert();
+    require( msg.value >= minfinney );
+    if (now < start || now > (start + duration)) revert();
 
     // quantity =
     //   amountinwei * tokpereth/weipereth * (bonus+100)/100
@@ -67,14 +67,14 @@ contract ICO is owned {
     // = msg.value * tokpereth/1e20 * (bonus+100)
 
     // NOTE: this calculation does not take decimals into account, because
-    //       in MOB case there aren&#39;t any (decimals == 0)
+    //       in MOB case there aren't any (decimals == 0)
     uint qty =
       multiply( divide( multiply( msg.value,
                                   tokpereth ),
                         1e20),
                 (bonus() + 100) );
 
-    if (qty &gt; tokenSC.balanceOf(address(this)) || qty &lt; 1)
+    if (qty > tokenSC.balanceOf(address(this)) || qty < 1)
       revert();
 
     tokenSC.transfer( msg.sender, qty );
@@ -84,13 +84,13 @@ contract ICO is owned {
 
   // unsold tokens can be claimed by owner after sale ends
   function claimUnsold() public onlyOwner {
-    if ( now &lt; (start + duration) ) revert();
+    if ( now < (start + duration) ) revert();
 
     tokenSC.transfer( owner, tokenSC.balanceOf(address(this)) );
   }
 
   function withdraw( uint amount ) public onlyOwner returns (bool) {
-    require ( treasury == address(0) &amp;&amp; amount &lt;= address(this).balance );
+    require ( treasury == address(0) && amount <= address(this).balance );
     return owner.send( amount );
   }
 
@@ -100,7 +100,7 @@ contract ICO is owned {
   function isContract( address _a ) constant private returns (bool) {
     uint ecs;
     assembly { ecs := extcodesize(_a) }
-    return ecs &gt; 0;
+    return ecs > 0;
   }
 
   // ref: github.com/OpenZeppelin/zeppelin-solidity/

@@ -9,10 +9,10 @@ pragma solidity ^0.4.20;
 * //*** Developed By:
 *   _____       _         _         _ ___ _         
 *  |_   _|__ __| |_  _ _ (_)__ __ _| | _ (_)___ ___ 
-*    | |/ -_) _| &#39; \| &#39; \| / _/ _` | |   / (_-&lt;/ -_)
+*    | |/ -_) _| ' \| ' \| / _/ _` | |   / (_-</ -_)
 *    |_|\___\__|_||_|_||_|_\__\__,_|_|_|_\_/__/\___|
 *   
-*   &#169; 2018 TechnicalRise.  Written in March 2018.  
+*   © 2018 TechnicalRise.  Written in March 2018.  
 *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
 *   https://www.reddit.com/user/TechnicalRise/
 *  
@@ -34,13 +34,13 @@ contract SimplePHXSalesContract {
     uint public ScaleFactor = 10 ** 18;  
     
     // Array of offerors
-    mapping(uint256 =&gt; address) public offerors;
-	mapping(address =&gt; uint256) public AddrNdx;
+    mapping(uint256 => address) public offerors;
+	mapping(address => uint256) public AddrNdx;
     uint public nxtAddr;
     
 	// Array between each address and their tokens offered and buy prices.
-	mapping(address =&gt; uint256) public tokensOffered;
-	mapping(address =&gt; uint256) public pricePerToken; // In qWeiPerRise (need to multiply by 10 ** 36 to get it to ETH / PHX)
+	mapping(address => uint256) public tokensOffered;
+	mapping(address => uint256) public pricePerToken; // In qWeiPerRise (need to multiply by 10 ** 36 to get it to ETH / PHX)
 
     ERC20Token public phxCoin;
 
@@ -70,9 +70,9 @@ contract SimplePHXSalesContract {
         uint Ndx = AddrNdx[_offeror];
         nxtAddr--;
 
-        // If this isn&#39;t the only offer, reshuffle the array
+        // If this isn't the only offer, reshuffle the array
         // Moving the last entry to the middle of the list
-        if (nxtAddr &gt; 1) {
+        if (nxtAddr > 1) {
             offerors[Ndx] = offerors[nxtAddr];
             AddrNdx[offerors[nxtAddr]] = Ndx;
             delete offerors[nxtAddr];
@@ -93,7 +93,7 @@ contract SimplePHXSalesContract {
         require(_humanSender(msg.sender));
         address _offeror = offerors[_ndx];
         uint _purchasePrice = tokensOffered[_offeror] * pricePerToken[_offeror] * ScaleFactor;
-        require(msg.value &gt;= _purchasePrice);
+        require(msg.value >= _purchasePrice);
         phxCoin.transfer(msg.sender, tokensOffered[_offeror]);
         _offeror.transfer(_purchasePrice);
         _canceloffer(_offeror);
@@ -124,12 +124,12 @@ contract SimplePHXSalesContract {
     function () payable public {
     }
     
-    // Determine if the &quot;_from&quot; address is a contract
+    // Determine if the "_from" address is a contract
     function _humanSender(address _from) private view returns (bool) {
       uint codeLength;
       assembly {
           codeLength := extcodesize(_from)
       }
-      return (codeLength == 0); // If this is &quot;true&quot; sender is most likely a Wallet
+      return (codeLength == 0); // If this is "true" sender is most likely a Wallet
     }
 }

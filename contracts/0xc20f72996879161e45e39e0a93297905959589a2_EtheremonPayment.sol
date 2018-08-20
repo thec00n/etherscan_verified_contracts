@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10737f7e64717364505564787562757d7f7e3e737f7d">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10737f7e64717364505564787562757d7f7e3e737f7d">[email protected]</a>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -247,7 +247,7 @@ contract EtheremonPayment is EtheremonEnum, BasicAccessControl, SafeMath {
     // helper
     function getRandom(uint8 maxRan, uint8 index, address priAddress) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1)) + uint256(priAddress);
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -256,7 +256,7 @@ contract EtheremonPayment is EtheremonEnum, BasicAccessControl, SafeMath {
     // admin
     function withdrawToken(address _sendTo, uint _amount) onlyModerators requireTokenContract external {
         ERC20Interface token = ERC20Interface(tokenContract);
-        if (_amount &gt; token.balanceOf(address(this))) {
+        if (_amount > token.balanceOf(address(this))) {
             revert();
         }
         token.transfer(_sendTo, _amount);
@@ -293,17 +293,17 @@ contract EtheremonPayment is EtheremonEnum, BasicAccessControl, SafeMath {
         }
         
         // can not keep too much etheremon 
-        if (data.getMonsterDexSize(_trainer) &gt; maxDexSize)
+        if (data.getMonsterDexSize(_trainer) > maxDexSize)
             revert();
 
         uint requiredToken = class.price/tokenPrice;
-        if (_tokens &lt; requiredToken)
+        if (_tokens < requiredToken)
             revert();
 
         // add monster
         uint64 objId = data.addMonsterObj(_classId, _trainer, _name);
         // generate base stat for the previous one
-        for (uint i=0; i &lt; STAT_COUNT; i+= 1) {
+        for (uint i=0; i < STAT_COUNT; i+= 1) {
             uint8 value = getRandom(STAT_MAX, uint8(i), lastHunter) + data.getElementInArrayType(ArrayType.STAT_START, uint64(_classId), i);
             data.addElementToArrayType(ArrayType.STAT_BASE, objId, value);
         }
@@ -327,13 +327,13 @@ contract EtheremonPayment is EtheremonEnum, BasicAccessControl, SafeMath {
         TransformInterface transform = TransformInterface(transformContract);
         if (_type == uint32(PayServiceType.FAST_HATCHING)) {
             // remove hatching time 
-            if (_tokens &lt; fastHatchingPrice)
+            if (_tokens < fastHatchingPrice)
                 revert();
             transform.removeHatchingTimeWithToken(_trainer);
             
             return fastHatchingPrice;
         } else if (_type == uint32(PayServiceType.RANDOM_EGG)) {
-            if (_tokens &lt; buyEggPrice)
+            if (_tokens < buyEggPrice)
                 revert();
             transform.buyEggWithToken(_trainer);
 

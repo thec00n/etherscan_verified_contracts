@@ -34,7 +34,7 @@ contract Utils {
 	function Utils() {
 	}
 
-	// Validates an address - currently only checks that it isn&#39;t null
+	// Validates an address - currently only checks that it isn't null
 	modifier validAddress(address _address) {
 		require(_address != 0x0);
 		_;
@@ -68,7 +68,7 @@ contract Crowdsale is owned,Utils {
     address founderAddress;
     
     //***Balance***//
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     //*** Tranfer ***//
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -90,38 +90,38 @@ contract Crowdsale is owned,Utils {
     
     //*** Is ico closed ***//
     function isIcoClosed() constant returns (bool closed) {
-		return ((icoStart+(35*24*60*60)) &gt;= now);
+		return ((icoStart+(35*24*60*60)) >= now);
 	}
     
     //*** Is preSale closed ***//
     function isPreSaleClosed() constant returns (bool closed) {
-		return (preSaleEnd &gt;= now);
+		return (preSaleEnd >= now);
 	}
 	
 	//*** Get Bounty Tokens ***//
 	function getBountyTokens() onlyOwner{
-	    require(bountyTokens&gt;0);
+	    require(bountyTokens>0);
 	    payment(bountyAddress,bountyTokens);
 	    bountyTokens=0;
 	}
 	
 	//*** Get Founders Tokens ***//
 	function getFoundersTokens() onlyOwner{
-	    require(founderTokens&gt;0);
+	    require(founderTokens>0);
 	    payment(founderAddress,founderTokens);
 	    founderTokens=0;
 	}
 	
 	//*** Get Advisers,Consultants Tokens ***//
 	function getAdvisersConsultantsTokens() onlyOwner{
-	    require(advisersConsultantTokens&gt;0);
+	    require(advisersConsultantTokens>0);
 	    payment(advisersConsultantsAddress,advisersConsultantTokens);
 	    advisersConsultantTokens=0;
 	}
 	
 	//*** Payment ***//
     function payment(address _from,uint256 _tokens) internal{
-        if(balanceOf[this] &gt; _tokens){
+        if(balanceOf[this] > _tokens){
             balanceOf[msg.sender] += _tokens;
             balanceOf[this] -= _tokens;
             Transfer(this, _from, _tokens);
@@ -130,41 +130,41 @@ contract Crowdsale is owned,Utils {
     
     //*** Payable ***//
     function() payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         
         if(!isPreSaleClosed()){
             uint256 tokensPreSale = preSaleTotalTokens * msg.value / 1000000000000000000;
-            require(preSaleTotalTokens &gt;= tokensPreSale);
+            require(preSaleTotalTokens >= tokensPreSale);
             payment(msg.sender,tokensPreSale);
         }
         else if(!isIcoClosed()){
-             if((icoStart+(7*24*60*60)) &gt;= now){
+             if((icoStart+(7*24*60*60)) >= now){
                  uint256 tokensWeek1 = 4000 * msg.value / 1000000000000000000;
-                 require(icoSaleTotalTokens &gt;= tokensWeek1);
+                 require(icoSaleTotalTokens >= tokensWeek1);
                  payment(msg.sender,tokensWeek1);
                  icoSaleTotalTokens-=tokensWeek1;
             }
-            else if((icoStart+(14*24*60*60)) &gt;= now){
+            else if((icoStart+(14*24*60*60)) >= now){
                  uint256 tokensWeek2 = 3750 * msg.value / 1000000000000000000;
-                 require(icoSaleTotalTokens &gt;= tokensWeek2);
+                 require(icoSaleTotalTokens >= tokensWeek2);
                  payment(msg.sender,tokensWeek2);
                  icoSaleTotalTokens-=tokensWeek2;
             }
-            else if((icoStart+(21*24*60*60)) &gt;= now){
+            else if((icoStart+(21*24*60*60)) >= now){
                  uint256 tokensWeek3 = 3500 * msg.value / 1000000000000000000;
-                 require(icoSaleTotalTokens &gt;= tokensWeek3);
+                 require(icoSaleTotalTokens >= tokensWeek3);
                  payment(msg.sender,tokensWeek3);
                  icoSaleTotalTokens-=tokensWeek3;
             }
-            else if((icoStart+(28*24*60*60)) &gt;= now){
+            else if((icoStart+(28*24*60*60)) >= now){
                  uint256 tokensWeek4 = 3250 * msg.value / 1000000000000000000;
-                 require(icoSaleTotalTokens &gt;= tokensWeek4);
+                 require(icoSaleTotalTokens >= tokensWeek4);
                  payment(msg.sender,tokensWeek4);
                  icoSaleTotalTokens-=tokensWeek4;
             }
-            else if((icoStart+(35*24*60*60)) &gt;= now){
+            else if((icoStart+(35*24*60*60)) >= now){
                  uint256 tokensWeek5 = 3000 * msg.value / 1000000000000000000;
-                 require(icoSaleTotalTokens &gt;= tokensWeek5);
+                 require(icoSaleTotalTokens >= tokensWeek5);
                  payment(msg.sender, tokensWeek5);
                  icoSaleTotalTokens-=tokensWeek5;
             }
@@ -175,18 +175,18 @@ contract Crowdsale is owned,Utils {
 contract GraphenePowerToken is Crowdsale {
     
     /* Public variables of the token */
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
 
-	string public name = &#39;Graphene Power&#39;;
+	string public name = 'Graphene Power';
 
-	string public symbol = &#39;GRP&#39;;
+	string public symbol = 'GRP';
 
 	uint8 public decimals = 18;
 
 	uint256 _totalSupply =500000000;
 
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 
 	/* This generates a public event on the blockchain that will notify clients */
 	event Transfer(address from, address to, uint256 value);
@@ -201,7 +201,7 @@ contract GraphenePowerToken is Crowdsale {
 	/*** Send coins ***/
 	function transfer(address _to, uint256 _value) returns (bool success) {
 		if (transfersEnable) {
-	       require(balanceOf[msg.sender] &gt;= _value);
+	       require(balanceOf[msg.sender] >= _value);
            balanceOf[msg.sender] -= _value;
            balanceOf[_to] += _value;
            Transfer(msg.sender, _to, _value);

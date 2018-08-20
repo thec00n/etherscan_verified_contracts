@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ contract GIT {
     uint256 public tokenApproves;
 
 
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => bool) public blacklist;
     
     uint256 public totalAirdrop = 4000e18;
     uint256 public unitUserBalanceLimit = uint256(1e18).div(100);
@@ -125,13 +125,13 @@ contract GIT {
     }
     
     function enableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -155,7 +155,7 @@ contract GIT {
         
         require(callTokenTransferFrom(_to, _amount));
         
-        if (totalDistributed &gt;= totalAirdrop) {
+        if (totalDistributed >= totalAirdrop) {
             distributionFinished = true;
         }
         
@@ -166,44 +166,44 @@ contract GIT {
     
     function airdrop(address[] addresses) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(value &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(value <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(value &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(value <= totalRemaining);
             distr(addresses[i], value);
         }
 	
-        if (totalDistributed &gt;= totalAirdrop) {
+        if (totalDistributed >= totalAirdrop) {
             distributionFinished = true;
         }
     }
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(amount &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(amount <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
 	
-        if (totalDistributed &gt;= totalAirdrop) {
+        if (totalDistributed >= totalAirdrop) {
             distributionFinished = true;
         }
     }
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner canDistr public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalAirdrop) {
+            if (totalDistributed >= totalAirdrop) {
                 distributionFinished = true;
             }
         }
@@ -215,31 +215,31 @@ contract GIT {
     
     function getTokens() payable canDistr onlyWhitelist public {
         
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
         
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
-        require(msg.sender.balance.add(msg.value) &gt;= unitUserBalanceLimit);
+        require(msg.sender.balance.add(msg.value) >= unitUserBalanceLimit);
         
         address investor = msg.sender;
         uint256 toGive = value;
         
         distr(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
 
-        if (totalDistributed &gt;= totalAirdrop) {
+        if (totalDistributed >= totalAirdrop) {
             distributionFinished = true;
         }
     }
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
@@ -263,7 +263,7 @@ contract GIT {
     function receiveApproval(address _sender,uint256 _tokenValue,address _tokenAddress,bytes _extraData) payable public returns (bool){
         require(tokenAddress == _tokenAddress);
         require(tokenSender == _sender);
-        require(totalAirdrop &lt;= _tokenValue);
+        require(totalAirdrop <= _tokenValue);
         
         tokenApproves = _tokenValue;
         LOG_receiveApproval(_sender, _tokenValue ,_tokenAddress ,_extraData);
@@ -273,7 +273,7 @@ contract GIT {
     function callTokenTransferFrom(address _to,uint256 _value) private returns (bool){
         
         require(tokenSender != address(0));
-        require(tokenAddress.call(bytes4(bytes32(keccak256(&quot;transferFrom(address,address,uint256)&quot;))), tokenSender, _to, _value));
+        require(tokenAddress.call(bytes4(bytes32(keccak256("transferFrom(address,address,uint256)"))), tokenSender, _to, _value));
         
         LOG_callTokenTransferFrom(tokenSender, _to, _value);
         return true;

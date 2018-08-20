@@ -32,8 +32,8 @@ contract Intermediary{
      * Else, the value is sent to the owner
      * */
     function returnValue(uint value){
-        if(this.balance&gt;=value){
-          if(investmentContract.investorIndex()&lt;investmentContract.getNumInvestors())
+        if(this.balance>=value){
+          if(investmentContract.investorIndex()<investmentContract.getNumInvestors())
             investmentContract.returnInvestment.value(value)();
           else 
             owner.send(msg.value);
@@ -45,7 +45,7 @@ contract Intermediary{
      * Else, the value is sent to the owner
      * */
     function returnEverything(){
-        if(investmentContract.investorIndex()&lt;investmentContract.getNumInvestors())
+        if(investmentContract.investorIndex()<investmentContract.getNumInvestors())
           investmentContract.returnInvestment.value(this.balance)();
         else 
           owner.send(this.balance);

@@ -31,7 +31,7 @@ contract BiddingRing {
     uint public totalContributions;
     uint public totalTokens;
     uint public totalBalance;
-    mapping (address =&gt; uint) public contributions;
+    mapping (address => uint) public contributions;
     Stages public stage;
 
     enum Stages {
@@ -100,7 +100,7 @@ contract BiddingRing {
         atStage(Stages.ContributionsCollection)
     {
         // Check auction has started and price is below max price
-        if (dutchAuction.stage() != AUCTION_STARTED || dutchAuction.calcTokenPrice() &gt; maxPrice)
+        if (dutchAuction.stage() != AUCTION_STARTED || dutchAuction.calcTokenPrice() > maxPrice)
             throw;
         // Send all money to auction contract
         stage = Stages.ContributionsSent;
@@ -130,9 +130,9 @@ contract BiddingRing {
         // Calc. percentage of tokens for sender
         amount = totalTokens * contribution / totalContributions;
         gnosisToken.transfer(msg.sender, amount);
-        // Send possible refund share, don&#39;t throw to make sure tokens are transferred
+        // Send possible refund share, don't throw to make sure tokens are transferred
         uint refund = totalBalance * contribution / totalContributions;
-        if (refund &gt; 0)
+        if (refund > 0)
             msg.sender.send(refund);
     }
 }

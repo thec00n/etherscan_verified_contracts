@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   bool transferAllowed = false;
 
@@ -76,7 +76,7 @@ contract BasicToken is ERC20Basic, Ownable {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(transferAllowed);
 
     // SafeMath.sub will throw if there is not enough balance.
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic, Ownable {
 contract StandardToken is ERC20, BasicToken {
   using SafeMath for uint256;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -110,8 +110,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(transferAllowed);
 
     balances[_from] = balances[_from].sub(_value);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -150,8 +150,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract MatToken is Ownable, StandardToken {
-  string public constant name = &quot;MiniApps Token&quot;;
-  string public constant symbol = &quot;MAT&quot;;
+  string public constant name = "MiniApps Token";
+  string public constant symbol = "MAT";
   uint   public constant decimals = 18;
   
   // token units
@@ -171,9 +171,9 @@ contract MatBonus is MatToken {
   uint256 public constant TOTAL_SUPPLY_BOTTOM_BOUND = 11600 * THOUSAND_MAT;
 
   function calcBonus(uint256 tokens) internal returns (uint256){
-    if (totalSupply &lt;= TOTAL_SUPPLY_BOTTOM_BOUND)
+    if (totalSupply <= TOTAL_SUPPLY_BOTTOM_BOUND)
       return tokens.mul(8).div(100);
-    else if (totalSupply &gt; TOTAL_SUPPLY_BOTTOM_BOUND &amp;&amp; totalSupply &lt;= TOTAL_SUPPLY_UPPER_BOUND)
+    else if (totalSupply > TOTAL_SUPPLY_BOTTOM_BOUND && totalSupply <= TOTAL_SUPPLY_UPPER_BOUND)
       return tokens.mul(5).div(100);
     else
       return 0;
@@ -213,14 +213,14 @@ contract MatBase is Ownable, MatToken, MatBonus {
   uint256 public rate;
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   event Mint(address indexed purchaser, uint256 amount);
   event Bonus(address indexed purchaser,uint256 amount);
   function mint(address _to, uint256 _tokens) internal returns (bool) {
     totalSupply = totalSupply.add(_tokens);
-    require(totalSupply &lt;= whiteListLimit);
-    require(totalSupply &lt;= MAT_TOTAL_SUPPLY_LIMIT);
+    require(totalSupply <= whiteListLimit);
+    require(totalSupply <= MAT_TOTAL_SUPPLY_LIMIT);
 
     balances[_to] = balances[_to].add(_tokens);
     Mint(_to, _tokens);
@@ -235,9 +235,9 @@ contract MatBase is Ownable, MatToken, MatBonus {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   /**
    * event for token purchase logging
@@ -256,12 +256,12 @@ contract MatBase is Ownable, MatToken, MatBonus {
 
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
-    buyTokensReferral(beneficiary, &quot;&quot;);
+    buyTokensReferral(beneficiary, "");
   }
 
   // low level token purchase function
   function buyTokensReferral(address beneficiary, string referral) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(beneficiary != 0x0);
     require(validPurchase());
 
@@ -289,7 +289,7 @@ contract MatBase is Ownable, MatToken, MatBonus {
     WLS status;
     uint256  reserved;
   }
-  mapping ( address =&gt; FundReservation ) whitelist;
+  mapping ( address => FundReservation ) whitelist;
 
   function stopWhitelistReservetion() onlyOwner public { 
     whiteListLimit = MAT_TOTAL_SUPPLY_LIMIT; 
@@ -302,13 +302,13 @@ contract MatBase is Ownable, MatToken, MatBonus {
   function buyTokenWL(uint256 tokens) internal returns (bool)
   { 
     require(isWhitelistOn);
-    require(now &gt;= startTime);
+    require(now >= startTime);
     if (whitelist[msg.sender].status == WLS.listed) {
       uint256 reservation = whitelist[msg.sender].reserved;
       uint256 low = reservation.mul(9).div(10);
       uint256 upper = reservation.mul(11).div(10);
       
-      if( low &lt;= msg.value &amp;&amp; msg.value &lt;= upper) {
+      if( low <= msg.value && msg.value <= upper) {
         whitelist[msg.sender].status == WLS.fulfilled;
         uint256 bonus = tokens / 10;
         mint(msg.sender, bonus);
@@ -321,7 +321,7 @@ contract MatBase is Ownable, MatToken, MatBonus {
   event White(address indexed to, uint256 reservation);
   function regWL(address wlmember, uint256 reservation) onlyOwner public returns (bool status)
   {
-    require(now &lt; endTime);
+    require(now < endTime);
     require(whitelist[wlmember].status == WLS.notlisted);
     
     whitelist[wlmember].status = WLS.listed;
@@ -340,16 +340,16 @@ contract MatBase is Ownable, MatToken, MatBonus {
    * @param _tokens The amount of presale tokens to be minted on crowdsale, the rest transfer from partners pool
    */
   function convert(address _to, uint256 _pretokens, uint256 _tokens) onlyOwner public returns (bool){
-    require(now &lt;= endTime);
+    require(now <= endTime);
     require(_to != address(0));
-    require(_pretokens &gt;=  _tokens);
+    require(_pretokens >=  _tokens);
     
     mint(_to, _tokens); //implicit transfer event
     
     uint256 theRest = _pretokens.sub(_tokens);
-    require(balances[PARTNERS_WALLET] &gt;= theRest);
+    require(balances[PARTNERS_WALLET] >= theRest);
     
-    if (theRest &gt; 0) {
+    if (theRest > 0) {
       balances[PARTNERS_WALLET] = balances[PARTNERS_WALLET].sub(theRest);
       balances[_to] = balances[_to].add(theRest);
       Transfer(PARTNERS_WALLET, _to, theRest); //explicit transfer event

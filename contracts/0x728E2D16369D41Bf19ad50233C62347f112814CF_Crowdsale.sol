@@ -64,7 +64,7 @@ contract Puller {
 
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) public payments;
+  mapping(address => uint) public payments;
 
   event LogRefundETH(address to, uint value);
 
@@ -81,7 +81,7 @@ contract Puller {
       throw;
     }
 
-    if (this.balance &lt; payment) {
+    if (this.balance < payment) {
       throw;
     }
 
@@ -98,10 +98,10 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
@@ -130,7 +130,7 @@ contract StandardToken is BasicToken, ERC20 {
   }
 
   function approve(address _spender, uint _value) {
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -141,8 +141,8 @@ contract StandardToken is BasicToken, ERC20 {
 }
 
 contract Token is StandardToken, Own {
-  string public constant name = &quot;TribeToken&quot;;
-  string public constant symbol = &quot;TRIBE&quot;;
+  string public constant name = "TribeToken";
+  string public constant symbol = "TRIBE";
   uint public constant decimals = 6;
 
   // Token constructor
@@ -202,12 +202,12 @@ contract Crowdsale is Pause, Puller {
 	bool public refundsOpen;
 
 	// Backers Ether indexed by their Ethereum address
-	mapping(address =&gt; Backer) public backers;
+	mapping(address => Backer) public backers;
 
 
 	//MODIFIERS
 	modifier respectTimeFrame() {
-		if ((now &lt; startTime) || (now &gt; endTime )) throw;
+		if ((now < startTime) || (now > endTime )) throw;
 		_;
 	}
 	
@@ -242,10 +242,10 @@ contract Crowdsale is Pause, Puller {
 
 	// Main function on ETH receive
 	function receiveETH(address beneficiary) internal {
-		if (msg.value &lt; MIN_INVEST_ETHER) throw; // Do not accept investment if the amount is lower than the minimum allowed investment
+		if (msg.value < MIN_INVEST_ETHER) throw; // Do not accept investment if the amount is lower than the minimum allowed investment
 		
 		uint coinToSend = bonus(msg.value.mul(COIN_PER_ETHER).div(1 ether)); // Calculate the amount of tokens to send
-		if (coinToSend.add(coinSentToEther) &gt; MAX_CAP) throw;	
+		if (coinToSend.add(coinSentToEther) > MAX_CAP) throw;	
 
 		Backer backer = backers[beneficiary];
 		coin.transfer(beneficiary, coinToSend); // Transfer TRIBE
@@ -264,7 +264,7 @@ contract Crowdsale is Pause, Puller {
 
 	// Bonus function for the first week
 	function bonus(uint amount) internal constant returns (uint) {
-		if (now &lt; startTime.add(7 days)) return amount.add(amount.div(5));   // bonus 20%
+		if (now < startTime.add(7 days)) return amount.add(amount.div(5));   // bonus 20%
 		return amount;
 	}
 
@@ -273,13 +273,13 @@ contract Crowdsale is Pause, Puller {
 
         // Check if the crowdsale has ended or if the old tokens have been sold
     if(coinSentToEther != MAX_CAP){
-        if (now &lt; endTime)  throw; // If Crowdsale still running
+        if (now < endTime)  throw; // If Crowdsale still running
     }
 		
 		if (!multisigEther.send(this.balance)) throw; // Move the remaining Ether to the multisig address
 		
 		uint remains = coin.balanceOf(this);
-		if (remains &gt; 0) {
+		if (remains > 0) {
       coinToBurn = coinToBurn.add(remains);
       // Transfer remains to owner to burn
       coin.transfer(owner, remains);
@@ -319,9 +319,9 @@ contract Crowdsale is Pause, Puller {
 	}
 
 	//Refund function when minimum cap isnt reached, this is step is step 2, THIS FUNCTION ONLY AVAILABLE AFTER BEING ENABLED.
-	//STEP1: From TRIBE token contract use &quot;approve&quot; function with the amount of TRIBE you got in total.
-	//STEP2: From TRIBE crowdsale contract use &quot;refund&quot; function with the amount of TRIBE you got in total.
-	//STEP3: From TRIBE crowdsale contract use &quot;withdrawPayement&quot; function to recieve the ETH.
+	//STEP1: From TRIBE token contract use "approve" function with the amount of TRIBE you got in total.
+	//STEP2: From TRIBE crowdsale contract use "refund" function with the amount of TRIBE you got in total.
+	//STEP3: From TRIBE crowdsale contract use "withdrawPayement" function to recieve the ETH.
 	function refund(uint _value) refundStatus public {
 		
 		if (_value != backers[msg.sender].coinSent) throw; // compare value from backer balance
@@ -331,7 +331,7 @@ contract Crowdsale is Pause, Puller {
 		uint ETHToSend = backers[msg.sender].weiReceived;
 		backers[msg.sender].weiReceived=0;
 
-		if (ETHToSend &gt; 0) {
+		if (ETHToSend > 0) {
 			asyncSend(msg.sender, ETHToSend); // pull payment to get refund in ETH
 		}
 	}
@@ -345,31 +345,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {

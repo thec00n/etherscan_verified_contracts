@@ -11,7 +11,7 @@
  *
  *  Since many people will likely not care about the actual sticker, ownership
  *  and all that jazz, this has been designed to be very gas effecient from the
- *  project owner&#39;s point of view.
+ *  project owner's point of view.
  *
  *  When a new series is minted, the entire series manifest is made public, along with
  *  a list of faux owners. Each faux owner is an address, for which there exists a
@@ -65,7 +65,7 @@ contract ReverseRegistrar {
 
 contract StickerRegistry {
 
-    // namehash(&#39;addr.reverse&#39;)
+    // namehash('addr.reverse')
     bytes32 constant RR_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
     event seriesCreated(bytes32 indexed nodehash);
@@ -95,14 +95,14 @@ contract StickerRegistry {
         uint256 currentCount;
 
         // Maps a serial number to an owner
-        mapping (uint256 =&gt; address) owners;
+        mapping (uint256 => address) owners;
     }
 
     AbstractENS _ens;
 
     address _owner;
 
-    mapping (bytes32 =&gt; Series) _series;
+    mapping (bytes32 => Series) _series;
 
 
     function StickerRegistry(address ens) {
@@ -164,7 +164,7 @@ contract StickerRegistry {
 
         Series storage series = _series[nodehash];
 
-        if (itemIndex &gt;= series.initialCount) { return false; }
+        if (itemIndex >= series.initialCount) { return false; }
 
         // Already claimed
         if (series.owners[itemIndex] != 0) { return false; }
@@ -183,7 +183,7 @@ contract StickerRegistry {
     function claim(bytes32 nodehash, uint256 itemIndex, address owner, uint8 sigV, bytes32 sigR, bytes32 sigS,  bytes32[] merkleProof) returns (bool success) {
         Series storage series = _series[nodehash];
 
-        if (itemIndex &gt;= series.initialCount) { return false; }
+        if (itemIndex >= series.initialCount) { return false; }
 
         // Already claimed
         if (series.owners[itemIndex] != 0) { return false; }
@@ -195,8 +195,8 @@ contract StickerRegistry {
 
         // Verify the merkle proof
         bytes32 node = keccak256(nodehash, itemIndex, bytes32(fauxOwner));
-        for (uint16 i = 0; i &lt; merkleProof.length; i++) {
-            if ((path &amp; 0x01) == 1) {
+        for (uint16 i = 0; i < merkleProof.length; i++) {
+            if ((path & 0x01) == 1) {
                 node = keccak256(merkleProof[i], node);
             } else {
                 node = keccak256(node, merkleProof[i]);

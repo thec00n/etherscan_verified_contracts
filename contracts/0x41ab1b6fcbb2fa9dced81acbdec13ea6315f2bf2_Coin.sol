@@ -25,7 +25,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   /* Current Owner */
@@ -83,13 +83,13 @@ contract SafeMathLib {
   }
 
   function safeSub(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 }
@@ -105,8 +105,8 @@ contract SafeMathLib {
  * Steps are
  * - Upgradeabletoken.upgradeMaster calls UpgradeableToken.setUpgradeAgent()
  * - Individual token holders can now call UpgradeableToken.upgrade()
- *   -&gt; This results to call UpgradeAgent.upgradeFrom() that issues new tokens
- *   -&gt; UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
+ *   -> This results to call UpgradeAgent.upgradeFrom() that issues new tokens
+ *   -> UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
  *
  * Upgrade agent itself can be the token contract, or just a middle man contract doing the heavy lifting.
  */
@@ -140,10 +140,10 @@ contract UpgradeAgent {
 contract StandardToken is ERC20, SafeMathLib {
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
 
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, SafeMathLib {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+    require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)));
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -212,7 +212,7 @@ contract XinfinUpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -327,7 +327,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -347,7 +347,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -398,10 +398,10 @@ contract Coin is XinfinUpgradeableToken, ReleasableToken {
   event UpdatedTokenInformation(string newName, string newSymbol);
 
   /* name of the token */
-  string public name = &quot;XinFin XDCE&quot;;
+  string public name = "XinFin XDCE";
 
   /* symbol of the token */
-  string public symbol = &quot;XDCE&quot;;
+  string public symbol = "XDCE";
 
   /* token decimals to handle fractions */
   uint public decimals = 18;
@@ -440,7 +440,7 @@ contract Coin is XinfinUpgradeableToken, ReleasableToken {
 
 
   function sendTokensToOwner(uint _tokens) onlyOwner returns (bool ok){
-      require(balances[contractAddress] &gt;= _tokens);
+      require(balances[contractAddress] >= _tokens);
       balances[contractAddress] = safeSub(balances[contractAddress],_tokens);
       balances[owner] = safeAdd(balances[owner],_tokens);
       return true;
@@ -449,7 +449,7 @@ contract Coin is XinfinUpgradeableToken, ReleasableToken {
 
   /* single address */
   function sendTokensToInvestors(address _investor, uint _tokens) onlyOwner returns (bool ok){
-      require(balances[contractAddress] &gt;= _tokens);
+      require(balances[contractAddress] >= _tokens);
       onSaleTokens = safeSub(onSaleTokens, _tokens);
       balances[contractAddress] = safeSub(balances[contractAddress],_tokens);
       balances[_investor] = safeAdd(balances[_investor],_tokens);
@@ -464,7 +464,7 @@ contract Coin is XinfinUpgradeableToken, ReleasableToken {
   */
   function dispenseTokensToInvestorAddressesByValue(address[] _addresses, uint[] _value) onlyOwner returns (bool ok){
      require(_addresses.length == _value.length);
-     for(uint256 i=0; i&lt;_addresses.length; i++){
+     for(uint256 i=0; i<_addresses.length; i++){
         onSaleTokens = safeSub(onSaleTokens, _value[i]);
         balances[_addresses[i]] = safeAdd(balances[_addresses[i]], _value[i]);
         balances[contractAddress] = safeSub(balances[contractAddress], _value[i]);
@@ -484,11 +484,11 @@ contract Coin is XinfinUpgradeableToken, ReleasableToken {
 
  function setPublicSaleParams(uint _tokensForPublicSale, uint _min, uint _max, bool _crowdsaleStatus ) onlyOwner {
     require(_tokensForPublicSale != 0);
-    require(_tokensForPublicSale &lt;= onSaleTokens);
+    require(_tokensForPublicSale <= onSaleTokens);
     tokensForPublicSale = _tokensForPublicSale;
     isCrowdsaleOpen=_crowdsaleStatus;
-    require(_min &gt;= 0);
-    require(_max &gt; 0);
+    require(_min >= 0);
+    require(_max > 0);
     minETH = _min;
     maxETH = _max;
  }
@@ -514,8 +514,8 @@ function decreaseSupply(uint value) onlyOwner returns (bool) {
 }
 
   function setMinAndMaxEthersForPublicSale(uint _min, uint _max) onlyOwner{
-      require(_min &gt;= 0);
-      require(_max &gt; 0);
+      require(_min >= 0);
+      require(_max > 0);
       minETH = _min;
       maxETH = _max;
   }
@@ -541,12 +541,12 @@ function decreaseSupply(uint value) onlyOwner returns (bool) {
     require(isCrowdsaleOpen);
     //require(whitelistedAddress[msg.sender]);
 
-    require(weiAmount &gt;= minETH);
-    require(weiAmount &lt;= maxETH);
+    require(weiAmount >= minETH);
+    require(weiAmount <= maxETH);
 
     _tokenAmount =  safeMul(weiAmount,multiplier) / pricePerToken;
 
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
 
     //safe sub will automatically handle overflows
     tokensForPublicSale = safeSub(tokensForPublicSale, _tokenAmount);

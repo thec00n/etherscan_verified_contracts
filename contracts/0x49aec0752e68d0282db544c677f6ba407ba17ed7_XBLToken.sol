@@ -16,8 +16,8 @@ pragma solidity ^0.4.8;
     event Burn(address indexed from, uint256 value);
     
     // And we begin:
-    string public constant symbol = &quot;XBL&quot;;
-    string public constant name = &quot;Billionaire Token&quot;;
+    string public constant symbol = "XBL";
+    string public constant name = "Billionaire Token";
     uint8 public constant decimals = 18;
     uint256 _totalSupply = 3333333000000000000000000;    // 3,333,333 tokens with 18 decimal places.
     uint256 _totalBurned = 0;                            // Total burned initially starts at 0.
@@ -26,10 +26,10 @@ pragma solidity ^0.4.8;
     address public owner;
   
     /* Dictionary containing balances for each account */
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
   
     /* Owner of account can approve (allow) the transfer of an amount to another account */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
   
      // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() 
@@ -64,12 +64,12 @@ pragma solidity ^0.4.8;
         return balances[_owner];
      }
   
-     /* Transfer the balance from owner&#39;s account to another account. */
+     /* Transfer the balance from owner's account to another account. */
      function transfer(address _to, uint256 _amount) returns (bool success) 
      {
         if (_to == 0x0) throw;      /* Prevents transferring to 0x0 addresses. Use burn() instead. */
 
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) 
+        if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) 
         {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -84,7 +84,7 @@ pragma solidity ^0.4.8;
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -92,7 +92,7 @@ pragma solidity ^0.4.8;
      {
         if (_to == 0x0) throw;      /* Prevents transferring to 0x0 addresses. Use burn() instead. */
 
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) 
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) 
         {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -123,7 +123,7 @@ pragma solidity ^0.4.8;
 
     function burn(uint256 _value) returns (bool success) 
     {
-        if (balances[msg.sender] &lt; _value) throw;            // Check if the sender has enough
+        if (balances[msg.sender] < _value) throw;            // Check if the sender has enough
         balances[msg.sender] -= _value;                      // Subtract from the sender
         /* Updating indicator variables */
         _totalSupply -= _value;          
@@ -135,8 +135,8 @@ pragma solidity ^0.4.8;
 
     function burnFrom(address _from, uint256 _value) returns (bool success) 
     {
-        if (balances[_from] &lt; _value) throw;                // Check if the sender has enough
-        if (_value &gt; allowed[_from][msg.sender]) throw;     // Check allowance
+        if (balances[_from] < _value) throw;                // Check if the sender has enough
+        if (_value > allowed[_from][msg.sender]) throw;     // Check allowance
         balances[_from] -= _value;                          // Subtract from the sender
         /* Updating indicator variables */
         _totalSupply -= _value;                           

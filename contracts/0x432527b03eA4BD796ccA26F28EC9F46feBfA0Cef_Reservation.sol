@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -207,9 +207,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -217,7 +217,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -226,7 +226,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -241,13 +241,13 @@ pragma solidity ^0.4.19;
 contract KYCBase {
     using SafeMath for uint256;
 
-    mapping (address =&gt; bool) public isKycSigner;
-    mapping (uint64 =&gt; uint256) public alreadyPayed;
+    mapping (address => bool) public isKycSigner;
+    mapping (uint64 => uint256) public alreadyPayed;
 
     event KycVerified(address indexed signer, address buyerAddress, uint64 buyerId, uint maxAmount);
 
     function KYCBase(address [] kycSigners) internal {
-        for (uint i = 0; i &lt; kycSigners.length; i++) {
+        for (uint i = 0; i < kycSigners.length; i++) {
             isKycSigner[kycSigners[i]] = true;
         }
     }
@@ -279,13 +279,13 @@ contract KYCBase {
         private returns (bool)
     {
         // check the signature
-        bytes32 hash = sha256(&quot;Eidoo icoengine authorization&quot;, this, buyerAddress, buyerId, maxAmount);
+        bytes32 hash = sha256("Eidoo icoengine authorization", this, buyerAddress, buyerId, maxAmount);
         address signer = ecrecover(hash, v, r, s);
         if (!isKycSigner[signer]) {
             revert();
         } else {
             uint256 totalPayed = alreadyPayed[buyerId].add(msg.value);
-            require(totalPayed &lt;= maxAmount);
+            require(totalPayed <= maxAmount);
             alreadyPayed[buyerId] = totalPayed;
             KycVerified(signer, buyerAddress, buyerId, maxAmount);
             return releaseTokensTo(buyerAddress);
@@ -340,7 +340,7 @@ contract ICOEngineInterface {
  * @dev Base crowdsale contract to be inherited by the UacCrowdsale and Reservation contracts.
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a73747c755a6c7b76737e736e63767b78693475687d">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a73747c755a6c7b76737e736e63767b78693475687d">[email protected]</a>>
  */
 pragma solidity ^0.4.19;
 
@@ -386,8 +386,8 @@ contract CrowdsaleBase is Pausable, CanReclaimToken, ICOEngineInterface, KYCBase
         public
         KYCBase(_kycSigners)
     {
-        require(_end &gt;= _start);
-        require(_cap &gt; 0);
+        require(_end >= _start);
+        require(_cap > 0);
 
         start = _start;
         end = _end;
@@ -403,7 +403,7 @@ contract CrowdsaleBase is Pausable, CanReclaimToken, ICOEngineInterface, KYCBase
      * @return False if the ico is not started, true if the ico is started and running, true if the ico is completed.
      */
     function started() public view returns(bool) {
-        if (block.timestamp &gt;= start) {
+        if (block.timestamp >= start) {
             return true;
         } else {
             return false;
@@ -415,7 +415,7 @@ contract CrowdsaleBase is Pausable, CanReclaimToken, ICOEngineInterface, KYCBase
      * @return False if the ico is not started, false if the ico is started and running, true if the ico is completed.
      */
     function ended() public view returns(bool) {
-        if (block.timestamp &gt;= end) {
+        if (block.timestamp >= end) {
             return true;
         } else {
             return false;
@@ -478,7 +478,7 @@ contract CrowdsaleBase is Pausable, CanReclaimToken, ICOEngineInterface, KYCBase
         uint256 weiAmount = msg.value;
         uint256 tokenAmount = weiAmount.mul(price());
 
-        if (tokenAmount &gt;= availableTokens) {
+        if (tokenAmount >= availableTokens) {
             capReached = true;
             overflowTokens = tokenAmount.sub(availableTokens);
             tokenAmount = tokenAmount.sub(overflowTokens);
@@ -509,8 +509,8 @@ contract CrowdsaleBase is Pausable, CanReclaimToken, ICOEngineInterface, KYCBase
      * @return true If the transaction can buy tokens.
      */
     function validPurchase() internal view returns (bool) {
-        require(!paused &amp;&amp; !capReached);
-        require(block.timestamp &gt;= start &amp;&amp; block.timestamp &lt;= end);
+        require(!paused && !capReached);
+        require(block.timestamp >= start && block.timestamp <= end);
 
         return true;
     }
@@ -558,8 +558,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -572,7 +572,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -588,7 +588,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -619,7 +619,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -634,9 +634,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -659,7 +659,7 @@ pragma solidity ^0.4.18;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -677,7 +677,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -713,7 +713,7 @@ pragma solidity ^0.4.18;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -724,8 +724,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -739,7 +739,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -788,7 +788,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -888,7 +888,7 @@ contract PausableToken is StandardToken, Pausable {
  * @title Ubiatar Coin token
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2f464149406f594e43464b465b56434e4d5c01405d48">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2f464149406f594e43464b465b56434e4d5c01405d48">[email protected]</a>>
  */
 pragma solidity ^0.4.19;
 
@@ -897,8 +897,8 @@ pragma solidity ^0.4.19;
 
 
 contract UacToken is CanReclaimToken, MintableToken, PausableToken {
-    string public constant name = &quot;Ubiatar Coin&quot;;
-    string public constant symbol = &quot;UAC&quot;;
+    string public constant name = "Ubiatar Coin";
+    string public constant symbol = "UAC";
     uint8 public constant decimals = 18;
 
     /**
@@ -916,7 +916,7 @@ contract UacToken is CanReclaimToken, MintableToken, PausableToken {
  * @dev A token holder contract that allows the release of tokens to the UbiatarPlay Wallet.
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="61080f070e2117000d08050815180d0003124f0e1306">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="61080f070e2117000d08050815180d0003124f0e1306">[email protected]</a>>
  */
 
 pragma solidity ^0.4.19;
@@ -977,7 +977,7 @@ contract UbiatarPlayVault {
      */
     function release() public {
         uint256 unreleased = releasableAmount();
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         released = released.add(unreleased);
 
@@ -985,7 +985,7 @@ contract UbiatarPlayVault {
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      */
     function releasableAmount() public view returns (uint256) {
         return vestedAmount().sub(released);
@@ -997,8 +997,8 @@ contract UbiatarPlayVault {
     function vestedAmount() public view returns (uint256) {
         uint256 vested = 0;
 
-        for (uint256 i = 0; i &lt; vesting_offsets.length; i = i.add(1)) {
-            if (block.timestamp &gt; start.add(vesting_offsets[i])) {
+        for (uint256 i = 0; i < vesting_offsets.length; i = i.add(1)) {
+            if (block.timestamp > start.add(vesting_offsets[i])) {
                 vested = vested.add(vesting_amounts[i]);
             }
         }
@@ -1015,7 +1015,7 @@ contract UbiatarPlayVault {
  * @dev A token holder contract that allows multiple beneficiaries to extract their tokens after a given release time.
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bed7d0d8d1fec8dfd2d7dad7cac7d2dfdccd90d1ccd9">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bed7d0d8d1fec8dfd2d7dad7cac7d2dfdccd90d1ccd9">[email protected]</a>>
  */
 pragma solidity ^0.4.17;
 
@@ -1048,7 +1048,7 @@ contract PresaleTokenVault {
     Investment[] public investments;
 
     // key: investor address; value: index in investments array.
-    mapping(address =&gt; uint256) public investorLUT;
+    mapping(address => uint256) public investorLUT;
 
     function init(address[] beneficiaries, uint256[] balances, uint256 startTime, address _token) public {
         // makes sure this function is only called once
@@ -1061,19 +1061,19 @@ contract PresaleTokenVault {
 
         token = ERC20Basic(_token);
 
-        for (uint256 i = 0; i &lt; beneficiaries.length; i = i.add(1)) {
+        for (uint256 i = 0; i < beneficiaries.length; i = i.add(1)) {
             investorLUT[beneficiaries[i]] = investments.length;
             investments.push(Investment(beneficiaries[i], balances[i], 0));
         }
     }
 
     /**
-     * @dev Allows a sender to transfer vested tokens to the beneficiary&#39;s address.
+     * @dev Allows a sender to transfer vested tokens to the beneficiary's address.
      * @param beneficiary The address that will receive the vested tokens.
      */
     function release(address beneficiary) public {
         uint256 unreleased = releasableAmount(beneficiary);
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         uint256 investmentIndex = investorLUT[beneficiary];
         investments[investmentIndex].released = investments[investmentIndex].released.add(unreleased);
@@ -1081,14 +1081,14 @@ contract PresaleTokenVault {
     }
 
     /**
-     * @dev Transfers vested tokens to the sender&#39;s address.
+     * @dev Transfers vested tokens to the sender's address.
      */
     function release() public {
         release(msg.sender);
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      * @param beneficiary The address that will receive the vested tokens.
      */
     function releasableAmount(address beneficiary) public view returns (uint256) {
@@ -1107,12 +1107,12 @@ contract PresaleTokenVault {
 
         uint256 vested = 0;
 
-        if (block.timestamp &gt;= start) {
-            // after start -&gt; 1/3 released (fixed)
+        if (block.timestamp >= start) {
+            // after start -> 1/3 released (fixed)
             vested = investments[investmentIndex].totalBalance.div(3);
         }
-        if (block.timestamp &gt;= cliff &amp;&amp; block.timestamp &lt; end) {
-            // after cliff -&gt; linear vesting over time
+        if (block.timestamp >= cliff && block.timestamp < end) {
+            // after cliff -> linear vesting over time
             uint256 p1 = investments[investmentIndex].totalBalance.div(3);
             uint256 p2 = investments[investmentIndex].totalBalance;
 
@@ -1133,8 +1133,8 @@ contract PresaleTokenVault {
 
             vested = vested.add(d_token.mul(time).div(d_time));
         }
-        if (block.timestamp &gt;= end) {
-            // after end -&gt; all vested
+        if (block.timestamp >= end) {
+            // after end -> all vested
             vested = investments[investmentIndex].totalBalance;
         }
         return vested;
@@ -1146,7 +1146,7 @@ contract PresaleTokenVault {
  * @title UacCrowdsale
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670e0901082711060b0e030e131e0b06051449081500">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670e0901082711060b0e030e131e0b06051449081500">[email protected]</a>>
  */
 pragma solidity ^0.4.19;
 
@@ -1255,7 +1255,7 @@ contract UacCrowdsale is CrowdsaleBase {
 
         uint256 totalPresaleBalance = 0;
         uint256 balancesLength = balances.length;
-        for(uint256 i = 0; i &lt; balancesLength; i++) {
+        for(uint256 i = 0; i < balancesLength; i++) {
             totalPresaleBalance = totalPresaleBalance.add(balances[i]);
         }
 
@@ -1268,11 +1268,11 @@ contract UacCrowdsale is CrowdsaleBase {
      * @return Price as tokens/ether.
      */
     function price() public view returns (uint256 _price) {
-        if (block.timestamp &lt;= start.add(BONUS_DURATION_1)) {
+        if (block.timestamp <= start.add(BONUS_DURATION_1)) {
             return tokenPerEth.mul(BONUS_TIER1).div(1e2);
-        } else if (block.timestamp &lt;= start.add(BONUS_DURATION_2)) {
+        } else if (block.timestamp <= start.add(BONUS_DURATION_2)) {
             return tokenPerEth.mul(BONUS_TIER2).div(1e2);
-        } else if (block.timestamp &lt;= start.add(BONUS_DURATION_3)) {
+        } else if (block.timestamp <= start.add(BONUS_DURATION_3)) {
             return tokenPerEth.mul(BONUS_TIER3).div(1e2);
         }
         return tokenPerEth;
@@ -1306,7 +1306,7 @@ contract UacCrowdsale is CrowdsaleBase {
      * @dev Allows the owner to close the crowdsale manually before the end time.
      */
     function closeCrowdsale() public onlyOwner {
-        require(block.timestamp &gt;= START_TIME &amp;&amp; block.timestamp &lt; END_TIME);
+        require(block.timestamp >= START_TIME && block.timestamp < END_TIME);
         didOwnerEndCrowdsale = true;
     }
 
@@ -1314,7 +1314,7 @@ contract UacCrowdsale is CrowdsaleBase {
      * @dev Allows the owner to unpause tokens, stop minting and transfer ownership of the token contract.
      */
     function finalise() public onlyOwner {
-        require(didOwnerEndCrowdsale || block.timestamp &gt; end || capReached);
+        require(didOwnerEndCrowdsale || block.timestamp > end || capReached);
         token.finishMinting();
         token.unpause();
 
@@ -1331,7 +1331,7 @@ contract UacCrowdsale is CrowdsaleBase {
  * @title Reservation
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5cccbc3cae5d3c4c9ccc1ccd1dcc9c4c7d68bcad7c2">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5cccbc3cae5d3c4c9ccc1ccd1dcc9c4c7d68bcad7c2">[email protected]</a>>
  */
 pragma solidity ^0.4.19;
 

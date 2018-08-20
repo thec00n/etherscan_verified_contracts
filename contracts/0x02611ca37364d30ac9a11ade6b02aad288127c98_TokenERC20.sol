@@ -16,21 +16,21 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,14 +40,14 @@ contract TokenERC20   {
 	
     using SafeMath for uint256;
     
-    string public constant name       = &quot;AVATRS&quot;;
-    string public constant symbol     = &quot;NAVS&quot;;
+    string public constant name       = "AVATRS";
+    string public constant symbol     = "NAVS";
     uint32 public constant decimals   = 18;
     uint256 public totalSupply;
     address public admin              = 0x9Ef4a2CaA82D396d7B8c244DE57212E0fE332C73;
  
-    mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+	mapping(address => mapping (address => uint256)) internal allowed;
  
 	event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -68,7 +68,7 @@ contract TokenERC20   {
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
  
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -78,8 +78,8 @@ contract TokenERC20   {
 	
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);	
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);	
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -106,7 +106,7 @@ contract TokenERC20   {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

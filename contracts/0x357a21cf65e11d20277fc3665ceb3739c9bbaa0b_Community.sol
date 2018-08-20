@@ -22,7 +22,7 @@ contract Community is owned {
 
   event Receipt( address indexed sender, uint value );
 
-  string  public name_; // &quot;IT&quot;, &quot;KO&quot;, ...
+  string  public name_; // "IT", "KO", ...
   address public manager_;
   uint    public bonus_;
   uint    public start_;
@@ -43,7 +43,7 @@ contract Community is owned {
   }
 
   function setTimes( uint _start, uint _end ) public onlyOwner {
-    require( _end &gt; _start );
+    require( _end > _start );
 
     start_ = _start;
     end_ = _end;
@@ -51,7 +51,7 @@ contract Community is owned {
 
   // set gas limit to something greater than 24073
   function() public payable {
-    require( now &gt;= start_ &amp;&amp; now &lt;= end_ );
+    require( now >= start_ && now <= end_ );
 
     owner.transfer( msg.value );
 

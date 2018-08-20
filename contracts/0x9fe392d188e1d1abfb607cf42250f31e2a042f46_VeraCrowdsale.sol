@@ -7,19 +7,19 @@ pragma solidity ^0.4.24;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -34,8 +34,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -50,9 +50,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -60,7 +60,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ library SafeMath {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -96,7 +96,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -137,13 +137,13 @@ library Roles {
  * @dev See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -245,7 +245,7 @@ contract TransferableTokenIface {
  * @title CrowdSale contract for Vera.jobs
  * @dev Keep the list of investors passed KYC, receive ethers to fallback,
  * calculate correspinding amount of tokens, add bonus (depending on the deposit size)
- * then transfers tokens to the investor&#39;s account
+ * then transfers tokens to the investor's account
  * @author OnGrid Systems
  */
 contract VeraCrowdsale is RBAC {
@@ -262,7 +262,7 @@ contract VeraCrowdsale is RBAC {
   uint256 public centsRaised;
 
   // Amount of tokens distributed by this contract.
-  // Note: doesn&#39;t include previous phases of tokensale.
+  // Note: doesn't include previous phases of tokensale.
   uint256 public tokensSold;
 
   // Address of VERA ERC-20 token contract
@@ -275,9 +275,9 @@ contract VeraCrowdsale is RBAC {
   address public wallet;
 
   // constants defining roles for access control
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
-  string public constant ROLE_BACKEND = &quot;backend&quot;;
-  string public constant ROLE_KYC_VERIFIED_INVESTOR = &quot;kycVerified&quot;;
+  string public constant ROLE_ADMIN = "admin";
+  string public constant ROLE_BACKEND = "backend";
+  string public constant ROLE_KYC_VERIFIED_INVESTOR = "kycVerified";
 
   // Value bonus configuration
   struct AmountBonus {
@@ -325,7 +325,7 @@ contract VeraCrowdsale is RBAC {
 
   /**
    * @dev modifier to scope access of backend keys stored on
-   * investor&#39;s portal
+   * investor's portal
    * // reverts if called not by backend
    */
   modifier onlyBackend()
@@ -336,7 +336,7 @@ contract VeraCrowdsale is RBAC {
 
   /**
    * @dev modifier allowing calls from investors successfully passed KYC verification
-   * // reverts if called by investor who didn&#39;t pass KYC via investor&#39;s portal
+   * // reverts if called by investor who didn't pass KYC via investor's portal
    */
   modifier onlyKYCVerifiedInvestor()
   {
@@ -357,9 +357,9 @@ contract VeraCrowdsale is RBAC {
   )
     public
   {
-    require(_token != address(0), &quot;Need token contract address&quot;);
-    require(_priceOracle != address(0), &quot;Need price oracle contract address&quot;);
-    require(_wallet != address(0), &quot;Need wallet address&quot;);
+    require(_token != address(0), "Need token contract address");
+    require(_priceOracle != address(0), "Need price oracle contract address");
+    require(_wallet != address(0), "Need wallet address");
     addRole(msg.sender, ROLE_ADMIN);
     token = _token;
     priceOracle = _priceOracle;
@@ -390,12 +390,12 @@ contract VeraCrowdsale is RBAC {
    */
   function withdrawTokens(address _to) public onlyAdmin {
     uint256 amount = token.balanceOf(address(this));
-    require(amount &gt; 0, &quot;no tokens on the contract&quot;);
+    require(amount > 0, "no tokens on the contract");
     token.transfer(_to, amount);
   }
 
   /**
-   * @dev Called when investor&#39;s portal (backend) receives non-ethereum payment
+   * @dev Called when investor's portal (backend) receives non-ethereum payment
    * @param _investor address of investor
    * @param _cents received deposit amount in cents
    */
@@ -421,9 +421,9 @@ contract VeraCrowdsale is RBAC {
   {
     uint256 bonusTotal;
     uint256 bonusIds;
-    for (uint i = 0; i &lt; amountBonuses.length; i++) {
-      if (_cents &gt;= amountBonuses[i].amountFrom &amp;&amp;
-      _cents &lt;= amountBonuses[i].amountTo) {
+    for (uint i = 0; i < amountBonuses.length; i++) {
+      if (_cents >= amountBonuses[i].amountFrom &&
+      _cents <= amountBonuses[i].amountTo) {
         bonusTotal += amountBonuses[i].bonusPercent;
         bonusIds += amountBonuses[i].id;
       }
@@ -440,7 +440,7 @@ contract VeraCrowdsale is RBAC {
     uint256 tokens = _cents.mul(10 ** 18).div(tokenPriceInCents);
     (uint256 bonusPercent, ) = computeBonuses(_cents);
     uint256 bonusTokens = tokens.mul(bonusPercent).div(100);
-    if (_cents &gt;= minDepositInCents) {
+    if (_cents >= minDepositInCents) {
       return tokens.add(bonusTokens);
     }
   }
@@ -490,7 +490,7 @@ contract VeraCrowdsale is RBAC {
   }
 
   /**
-   * @dev Mark investor&#39;s address as KYC-verified person
+   * @dev Mark investor's address as KYC-verified person
    * @param addr address
    */
   function addKycVerifiedInvestor(address addr)
@@ -519,7 +519,7 @@ contract VeraCrowdsale is RBAC {
   function buyTokens(address _investor, uint256 _cents) internal {
     (uint256 bonusPercent, uint256 bonusIds) = computeBonuses(_cents);
     uint256 tokens = computeTokens(_cents);
-    require(tokens &gt; 0, &quot;value is not enough&quot;);
+    require(tokens > 0, "value is not enough");
     token.transfer(_investor, tokens);
     centsRaised = centsRaised.add(_cents);
     tokensSold = tokensSold.add(tokens);

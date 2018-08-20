@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -76,20 +76,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -195,7 +195,7 @@ contract CRCToken is StandardToken,Ownable{
 	//the base info of the token 
 	string public name;
 	string public symbol;
-	string public constant version = &quot;1.0&quot;;
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 	uint256 public constant MAX_SUPPLY = 500000000 * 10**decimals;
@@ -243,8 +243,8 @@ contract CRCToken is StandardToken,Ownable{
 	// uint256 public
 
 	function CRCToken(){
-		name = &quot;CRCToken&quot;;
-		symbol =&quot;CRC&quot;;
+		name = "CRCToken";
+		symbol ="CRC";
 
 		etherProceedsAccount = 0x5390f9D18A7131aC9C532C1dcD1bEAb3e8A44cbF;
 		crcWithdrawAccount = 0xb353425bA4FE2670DaC1230da934498252E692bD;
@@ -262,34 +262,34 @@ contract CRCToken is StandardToken,Ownable{
 
 
 	modifier beforeFundingStartBlock(){
-		assert(getCurrentBlockNum() &lt; fundingStartBlock);
+		assert(getCurrentBlockNum() < fundingStartBlock);
 		_;
 	}
 
 	modifier notBeforeFundingStartBlock(){
-		assert(getCurrentBlockNum() &gt;= fundingStartBlock);
+		assert(getCurrentBlockNum() >= fundingStartBlock);
 		_;
 	}
 	modifier notAfterFundingEndBlock(){
-		assert(getCurrentBlockNum() &lt; fundingEndBlock);
+		assert(getCurrentBlockNum() < fundingEndBlock);
 		_;
 	}
 	modifier notBeforeTeamKeepingLockEndBlock(){
-		assert(getCurrentBlockNum() &gt;= teamKeepingLockEndBlock);
+		assert(getCurrentBlockNum() >= teamKeepingLockEndBlock);
 		_;
 	}
 
 	modifier totalSupplyNotReached(uint256 _ethContribution,uint rate){
-		assert(totalSupply.add(_ethContribution.mul(rate)) &lt;= MAX_SUPPLY);
+		assert(totalSupply.add(_ethContribution.mul(rate)) <= MAX_SUPPLY);
 		_;
 	}
 	modifier allOfferingNotReached(uint256 _ethContribution,uint rate){
-		assert(allOfferingSupply.add(_ethContribution.mul(rate)) &lt;= allOfferingQuota);
+		assert(allOfferingSupply.add(_ethContribution.mul(rate)) <= allOfferingQuota);
 		_;
 	}	 
 
 	modifier privateOfferingCapNotReached(uint256 _ethContribution){
-		assert(privateOfferingSupply.add(_ethContribution.mul(privateOfferingExchangeRate)) &lt;= privateOfferingCap);
+		assert(privateOfferingSupply.add(_ethContribution.mul(privateOfferingExchangeRate)) <= privateOfferingCap);
 		_;
 	}	 
 	
@@ -320,7 +320,7 @@ contract CRCToken is StandardToken,Ownable{
 
 
 	function () payable external{
-		if(getCurrentBlockNum()&lt;=fundingStartBlock){
+		if(getCurrentBlockNum()<=fundingStartBlock){
 			processPrivateFunding(msg.sender);
 		}else{
 			processEthPulicFunding(msg.sender);
@@ -356,8 +356,8 @@ contract CRCToken is StandardToken,Ownable{
 	   crcWithdrawAccountOnly
 	   notBeforeTeamKeepingLockEndBlock
 	{
-		assert(teamWithdrawSupply.add(tokenAmount)&lt;=teamKeepingQuota);
-		assert(totalSupply.add(tokenAmount)&lt;=MAX_SUPPLY);
+		assert(teamWithdrawSupply.add(tokenAmount)<=teamKeepingQuota);
+		assert(totalSupply.add(tokenAmount)<=MAX_SUPPLY);
 		teamWithdrawSupply=teamWithdrawSupply.add(tokenAmount);
 		totalSupply=totalSupply.add(tokenAmount);
 		balances[msg.sender]+=tokenAmount;
@@ -367,8 +367,8 @@ contract CRCToken is StandardToken,Ownable{
 	function communityContributionWithdraw(uint256 tokenAmount) external
 	    crcWithdrawAccountOnly
 	{
-		assert(communityContributionSupply.add(tokenAmount)&lt;=communityContributionQuota);
-		assert(totalSupply.add(tokenAmount)&lt;=MAX_SUPPLY);
+		assert(communityContributionSupply.add(tokenAmount)<=communityContributionQuota);
+		assert(totalSupply.add(tokenAmount)<=MAX_SUPPLY);
 		communityContributionSupply=communityContributionSupply.add(tokenAmount);
 		totalSupply=totalSupply.add(tokenAmount);
 		balances[msg.sender] += tokenAmount;

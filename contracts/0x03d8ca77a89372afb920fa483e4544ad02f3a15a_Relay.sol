@@ -13,7 +13,7 @@ contract Ownable {
      /*
       @title Ownable
       @dev The Ownable contract has an owner address, and provides basic authorization control
-      functions, this simplifies the implementation of &quot;user permissions&quot;.
+      functions, this simplifies the implementation of "user permissions".
     */
 
   address public owner;
@@ -100,7 +100,7 @@ contract Relay is Pausable{
     
     /** Modifier allowing execution only if received value is greater than zero */
     modifier isMinimum(){
-        require(msg.value &lt;= 2 ether);
+        require(msg.value <= 2 ether);
         _;
     }
 }

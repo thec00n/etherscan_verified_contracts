@@ -8,7 +8,7 @@ contract EthBird {
     uint currentHighScore = 0;
     uint contestStartTime = now;
     
-    mapping(address =&gt; bool) paidUsers;
+    mapping(address => bool) paidUsers;
     
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -20,7 +20,7 @@ contract EthBird {
     }
     
     function payEntryFee() public payable  {
-        if (msg.value &gt;= 0.01 ether) {
+        if (msg.value >= 0.01 ether) {
             paidUsers[msg.sender] = true;
         }
     }
@@ -43,11 +43,11 @@ contract EthBird {
     
     function recordHighScore(uint score, address userToScore)  public onlyOwner returns (address) {
         if(paidUsers[userToScore]){
-            if(score &gt; 0 &amp;&amp; score &gt;= currentHighScore){
+            if(score > 0 && score >= currentHighScore){
                 highScoreUser = userToScore;
                 currentHighScore = score;
             }
-            if(now &gt;= contestStartTime + 1 days){
+            if(now >= contestStartTime + 1 days){
                 awardHighScore();   
             }
         }

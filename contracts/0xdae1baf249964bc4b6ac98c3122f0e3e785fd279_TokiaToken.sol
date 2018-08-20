@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -58,7 +58,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -127,7 +127,7 @@ contract TokenTimelock {
     uint64 public releaseTime;
 
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) public {
-        require(_releaseTime &gt; uint64(block.timestamp));
+        require(_releaseTime > uint64(block.timestamp));
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -137,10 +137,10 @@ contract TokenTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(uint64(block.timestamp) &gt;= releaseTime);
+        require(uint64(block.timestamp) >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -155,7 +155,7 @@ contract TokenTimelock {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -165,8 +165,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -215,7 +215,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -240,8 +240,8 @@ contract Owned {
 }
 
 contract TokiaToken is StandardToken, Owned {
-    string public constant name = &quot;TokiaToken&quot;;
-    string public constant symbol = &quot;TKA&quot;;
+    string public constant name = "TokiaToken";
+    string public constant symbol = "TKA";
     uint8 public constant decimals = 18;
 
     /// Maximum tokens to be allocated.
@@ -253,7 +253,7 @@ contract TokiaToken is StandardToken, Owned {
     /// Base exchange rate is set to 1 ETH = 714 TKA.
     uint256 public constant BASE_RATE = 714;
 
-    /// seconds since 01.01.1970 to 04.12.2017 (both 00:00:00 o&#39;clock UTC)
+    /// seconds since 01.01.1970 to 04.12.2017 (both 00:00:00 o'clock UTC)
     /// presale start time
     uint64 private constant date04Dec2017 = 1512345600;
 
@@ -278,7 +278,7 @@ contract TokiaToken is StandardToken, Owned {
     /// token trading opening time (01.05.2018)
     uint64 private constant date01May2018 = 1525219199;
 
-    /// no tokens can be ever issued when this is set to &quot;true&quot;
+    /// no tokens can be ever issued when this is set to "true"
     bool public tokenSaleClosed = false;
 
     /// contract to be called to release the Tokia team tokens
@@ -291,8 +291,8 @@ contract TokiaToken is StandardToken, Owned {
     event Issue(uint64 issueIndex, address addr, uint256 tokenAmount);
 
     modifier inProgress {
-        require(totalSupply &lt; TOKENS_SALE_HARD_CAP
-            &amp;&amp; !tokenSaleClosed);
+        require(totalSupply < TOKENS_SALE_HARD_CAP
+            && !tokenSaleClosed);
         _;
     }
 
@@ -304,7 +304,7 @@ contract TokiaToken is StandardToken, Owned {
 
     /// Require that the end of the sale has passed (time is 01 May 2018 or later)
     modifier tradingOpen {
-        require(uint64(block.timestamp) &gt; date01May2018);
+        require(uint64(block.timestamp) > date01May2018);
         _;
     }
 
@@ -321,7 +321,7 @@ contract TokiaToken is StandardToken, Owned {
     /// @param _beneficiary Address that newly issued token will be sent to.
     function purchaseTokens(address _beneficiary) public payable inProgress {
         // only accept a minimum amount of ETH?
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
 
         uint256 tokens = computeTokenAmount(msg.value);
         doIssueTokens(_beneficiary, tokens);
@@ -335,9 +335,9 @@ contract TokiaToken is StandardToken, Owned {
     /// @param _addresses the amounts of tokens, with decimals expanded (full).
     function issueTokensMulti(address[] _addresses, uint256[] _tokens) public onlyOwner inProgress {
         require(_addresses.length == _tokens.length);
-        require(_addresses.length &lt;= 100);
+        require(_addresses.length <= 100);
 
-        for (uint256 i = 0; i &lt; _tokens.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _tokens.length; i = i.add(1)) {
             doIssueTokens(_addresses[i], _tokens[i].mul(10**uint256(decimals)));
         }
     }
@@ -358,7 +358,7 @@ contract TokiaToken is StandardToken, Owned {
         // compute without actually increasing it
         uint256 increasedTotalSupply = totalSupply.add(_tokens);
         // roll back if hard cap reached
-        require(increasedTotalSupply &lt;= TOKENS_SALE_HARD_CAP);
+        require(increasedTotalSupply <= TOKENS_SALE_HARD_CAP);
 
         // increase token total supply
         totalSupply = increasedTotalSupply;
@@ -395,9 +395,9 @@ contract TokiaToken is StandardToken, Owned {
     /// @param tokenBase the base tokens amount computed only against the base rate
     /// @return integer representing the percentage discount
     function getAmountDiscountPercentage(uint256 tokenBase) internal pure returns (uint8) {
-        if(tokenBase &gt;= 1500 * 10**uint256(decimals)) return 9;
-        if(tokenBase &gt;= 1000 * 10**uint256(decimals)) return 5;
-        if(tokenBase &gt;= 500 * 10**uint256(decimals)) return 3;
+        if(tokenBase >= 1500 * 10**uint256(decimals)) return 9;
+        if(tokenBase >= 1000 * 10**uint256(decimals)) return 5;
+        if(tokenBase >= 500 * 10**uint256(decimals)) return 3;
         return 0;
     }
 
@@ -416,7 +416,7 @@ contract TokiaToken is StandardToken, Owned {
         ];
 
         /// round determined by conjunction of both time and total sold tokens
-        while(roundNum &lt; 4 &amp;&amp; totalSupply &gt; roundCaps[roundNum]) {
+        while(roundNum < 4 && totalSupply > roundCaps[roundNum]) {
             roundNum++;
         }
     }
@@ -425,13 +425,13 @@ contract TokiaToken is StandardToken, Owned {
     /// @return the index of the current sale tier by date.
     function currentRoundIndexByDate() internal view returns (uint8 roundNum) {
         uint64 _now = uint64(block.timestamp);
-        require(_now &lt;= date15Mar2018);
+        require(_now <= date15Mar2018);
 
         roundNum = 0;
-        if(_now &gt; date01Mar2018) roundNum = 4;
-        if(_now &gt; date15Feb2018) roundNum = 3;
-        if(_now &gt; date01Feb2018) roundNum = 2;
-        if(_now &gt; date01Jan2018) roundNum = 1;
+        if(_now > date01Mar2018) roundNum = 4;
+        if(_now > date15Feb2018) roundNum = 3;
+        if(_now > date01Feb2018) roundNum = 2;
+        if(_now > date01Jan2018) roundNum = 1;
         return roundNum;
     }
 
@@ -441,7 +441,7 @@ contract TokiaToken is StandardToken, Owned {
         uint256 teamTokens = totalSupply.mul(25).div(100);
 
         /// check for rounding errors when cap is reached
-        if(totalSupply.add(teamTokens) &gt; HARD_CAP) {
+        if(totalSupply.add(teamTokens) > HARD_CAP) {
             teamTokens = HARD_CAP.sub(totalSupply);
         }
 

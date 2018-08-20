@@ -4,7 +4,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -55,7 +55,7 @@ contract tokenRecipient {
 }
 
 contract Token {
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 }
 
@@ -86,7 +86,7 @@ contract QWoodDAO is Ownable, tokenRecipient {
     uint numberOfVotes;
     bytes32 proposalHash;
     Vote[] votes;
-    mapping (address =&gt; bool) voted;
+    mapping (address => bool) voted;
   }
 
   struct Vote {
@@ -96,7 +96,7 @@ contract QWoodDAO is Ownable, tokenRecipient {
 
   // Modifier that allows only shareholders to vote and create new proposals
   modifier onlyShareholders {
-    require(sharesTokenAddress.balanceOf(msg.sender) &gt; minShare);
+    require(sharesTokenAddress.balanceOf(msg.sender) > minShare);
     _;
   }
 
@@ -245,9 +245,9 @@ contract QWoodDAO is Ownable, tokenRecipient {
   function executeProposal(uint proposalNumber, bytes transactionBytecode) public {
     Proposal storage p = proposals[proposalNumber];
 
-    require(now &gt; p.minExecutionDate                                             // If it is past the voting deadline
-    &amp;&amp; !p.executed                                                          // and it has not already been executed
-    &amp;&amp; p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode)); // and the supplied code matches the proposal...
+    require(now > p.minExecutionDate                                             // If it is past the voting deadline
+    && !p.executed                                                          // and it has not already been executed
+    && p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode)); // and the supplied code matches the proposal...
 
 
     // ...then tally the results
@@ -255,7 +255,7 @@ contract QWoodDAO is Ownable, tokenRecipient {
     uint yea = 0;
     uint nay = 0;
 
-    for (uint i = 0; i &lt;  p.votes.length; ++i) {
+    for (uint i = 0; i <  p.votes.length; ++i) {
       Vote storage v = p.votes[i];
       uint voteWeight = sharesTokenAddress.balanceOf(v.voter);
       quorum += voteWeight;
@@ -266,9 +266,9 @@ contract QWoodDAO is Ownable, tokenRecipient {
       }
     }
 
-    require(quorum &gt;= minimumQuorum); // Check if a minimum quorum has been reached
+    require(quorum >= minimumQuorum); // Check if a minimum quorum has been reached
 
-    if (yea &gt; nay ) {
+    if (yea > nay ) {
       // Proposal passed; execute the transaction
 
       p.executed = true;

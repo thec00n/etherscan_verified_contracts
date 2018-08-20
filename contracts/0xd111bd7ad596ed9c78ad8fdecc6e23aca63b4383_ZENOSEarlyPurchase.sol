@@ -6,13 +6,13 @@ contract AbstractZENOSCrowdsale {
 
 /// @title EarlyPurchase contract - Keep track of purchased amount by Early Purchasers
 /// Project by ZENOS Team (http://www.thezenos.com/)
-/// This smart contract developed by Starbase - Token funding &amp; payment Platform for innovative projects &lt;support[at]starbase.co&gt;
+/// This smart contract developed by Starbase - Token funding & payment Platform for innovative projects <support[at]starbase.co>
 
 contract ZENOSEarlyPurchase {
     /*
      *  Properties
      */
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;ETH&#39;;    // Ether
+    string public constant PURCHASE_AMOUNT_UNIT = 'ETH';    // Ether
     address public owner;
     EarlyPurchase[] public earlyPurchases;
     uint public earlyPurchaseClosedAt;
@@ -43,8 +43,8 @@ contract ZENOSEarlyPurchase {
     }
 
     modifier onlyBeforeCrowdsale() {
-        if (address(zenOSCrowdsale) != 0 &amp;&amp;
-            zenOSCrowdsale.crowdsaleStartingBlock() &gt; 0)
+        if (address(zenOSCrowdsale) != 0 &&
+            zenOSCrowdsale.crowdsaleStartingBlock() > 0)
         {
             throw;
         }
@@ -52,7 +52,7 @@ contract ZENOSEarlyPurchase {
     }
 
     modifier onlyEarlyPurchaseTerm() {
-        if (earlyPurchaseClosedAt &gt; 0) {
+        if (earlyPurchaseClosedAt > 0) {
             throw;
         }
         _;
@@ -66,14 +66,14 @@ contract ZENOSEarlyPurchase {
     /*
      *  Contract functions
      */
-    /// @dev Returns early purchased amount by purchaser&#39;s address
+    /// @dev Returns early purchased amount by purchaser's address
     /// @param purchaser Purchaser address
     function purchasedAmountBy(address purchaser)
         external
         constant
         returns (uint amount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             if (earlyPurchases[i].purchaser == purchaser) {
                 amount += earlyPurchases[i].amount;
             }
@@ -85,7 +85,7 @@ contract ZENOSEarlyPurchase {
         constant
         returns (uint totalAmount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             totalAmount += earlyPurchases[i].amount;
         }
     }
@@ -110,7 +110,7 @@ contract ZENOSEarlyPurchase {
         returns (bool)
     {
 
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
@@ -127,7 +127,7 @@ contract ZENOSEarlyPurchase {
         earlyPurchaseClosedAt = now;
     }
 
-    /// @dev Setup function sets external crowdsale contract&#39;s address
+    /// @dev Setup function sets external crowdsale contract's address
     /// @param zenOSCrowdsaleAddress Token address
     function setup(address zenOSCrowdsaleAddress)
         external

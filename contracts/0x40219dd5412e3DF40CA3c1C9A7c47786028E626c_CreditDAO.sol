@@ -27,12 +27,12 @@ contract CreditDAO {
         bool electionsFinished;
 
         uint nextCandidateIndex;
-        mapping(uint =&gt; address) candidateIndex;
-        mapping(address =&gt; uint) candidateAddyToIndexMap;
-        mapping(uint =&gt; uint) candidateVotes;
-        mapping(address =&gt; bool) candidates;
+        mapping(uint => address) candidateIndex;
+        mapping(address => uint) candidateAddyToIndexMap;
+        mapping(uint => uint) candidateVotes;
+        mapping(address => bool) candidates;
 
-        mapping(address =&gt; bool) userHasVoted;
+        mapping(address => bool) userHasVoted;
 
         address maxVotes;
         uint numOfMaxVotes;
@@ -40,7 +40,7 @@ contract CreditDAO {
     }
 
     uint public nextElectionIndex;
-    mapping(uint =&gt; Election) public elections;
+    mapping(uint => Election) public elections;
 
     address public creditCEO;
     uint public mandateInBlocks = 927530;
@@ -63,7 +63,7 @@ contract CreditDAO {
 
     // Election part
     function createNewElections() {
-        require(elections[nextElectionIndex - 1].endBlock + mandateInBlocks &lt; block.number);
+        require(elections[nextElectionIndex - 1].endBlock + mandateInBlocks < block.number);
 
         elections[nextElectionIndex].startBlock = block.number;
         elections[nextElectionIndex].endBlock = block.number + blocksPerMonth;
@@ -74,7 +74,7 @@ contract CreditDAO {
     }
 
     function sumbitForElection() {
-        require(elections[nextElectionIndex - 1].endBlock &gt; block.number);
+        require(elections[nextElectionIndex - 1].endBlock > block.number);
         require(!elections[nextElectionIndex - 1].candidates[msg.sender]);
 
         uint nextCandidateId = elections[nextElectionIndex].nextCandidateIndex;
@@ -86,7 +86,7 @@ contract CreditDAO {
     }
 
     function vote(address _participant) {
-        require(elections[nextElectionIndex - 1].endBlock &gt; block.number);
+        require(elections[nextElectionIndex - 1].endBlock > block.number);
         
         uint avaliableBalance;
         uint lockedBalance;
@@ -94,7 +94,7 @@ contract CreditDAO {
         uint lockedUntilBlock; 
         uint lastBlockClaimed; 
         (avaliableBalance, lockedBalance, bondMultiplier, lockedUntilBlock, lastBlockClaimed) = creditBitContract.getAccountData(msg.sender);
-        require(lockedUntilBlock &gt;= elections[nextElectionIndex - 1].endBlock);
+        require(lockedUntilBlock >= elections[nextElectionIndex - 1].endBlock);
         require(!elections[nextElectionIndex - 1].userHasVoted[msg.sender]);
         uint candidateId = elections[nextElectionIndex - 1].candidateAddyToIndexMap[_participant];
         elections[nextElectionIndex - 1].candidateVotes[candidateId] += lockedBalance;
@@ -102,14 +102,14 @@ contract CreditDAO {
     }
 
     function finishElections(uint _iterations) {
-        require(elections[nextElectionIndex - 1].endBlock &lt; block.number);
+        require(elections[nextElectionIndex - 1].endBlock < block.number);
         require(!elections[nextElectionIndex - 1].electionsFinished);
 
         uint curentVotes;
         uint nextCandidateId = elections[nextElectionIndex - 1].idProcessed;
-        for (uint cnt = 0; cnt &lt; _iterations; cnt++) {
+        for (uint cnt = 0; cnt < _iterations; cnt++) {
             curentVotes = elections[nextElectionIndex - 1].candidateVotes[nextCandidateId];
-            if (curentVotes &gt; elections[nextElectionIndex - 1].numOfMaxVotes) {
+            if (curentVotes > elections[nextElectionIndex - 1].numOfMaxVotes) {
                 elections[nextElectionIndex - 1].maxVotes = elections[nextElectionIndex - 1].candidateIndex[nextCandidateId];
                 elections[nextElectionIndex - 1].numOfMaxVotes = curentVotes;
             }

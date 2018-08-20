@@ -4,16 +4,16 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract SuretlyToken {
 
-  string public constant standard = &#39;Token 0.1&#39;;
-  string public constant name = &quot;Suretly&quot;;
-  string public constant symbol = &quot;SUR&quot;;
+  string public constant standard = 'Token 0.1';
+  string public constant name = "Suretly";
+  string public constant symbol = "SUR";
   uint8 public constant decimals = 8;
   uint256 public totalSupply = 237614 * 100000000;
 
   address public owner;
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event NewOwner(address _newOwner);
@@ -34,8 +34,8 @@ contract SuretlyToken {
   function transfer(address _to, uint256 _value) {
     require(_to != 0x0);
     require(_to != address(this));
-    assert(!(balanceOf[msg.sender] &lt; _value));
-    assert(!(balanceOf[_to] + _value &lt; balanceOf[_to]));
+    assert(!(balanceOf[msg.sender] < _value));
+    assert(!(balanceOf[_to] + _value < balanceOf[_to]));
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
     Transfer(msg.sender, _to, _value);
@@ -44,9 +44,9 @@ contract SuretlyToken {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     require(_to != 0x0);
     require(_to != address(this));
-    assert(!(balanceOf[_from] &lt; _value));
-    assert(!(balanceOf[_to] + _value &lt; balanceOf[_to]));
-    assert(!(_value &gt; allowance[_from][msg.sender]));
+    assert(!(balanceOf[_from] < _value));
+    assert(!(balanceOf[_to] + _value < balanceOf[_to]));
+    assert(!(_value > allowance[_from][msg.sender]));
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
     allowance[_from][msg.sender] -= _value;
@@ -68,7 +68,7 @@ contract SuretlyToken {
   }
 
   function burn(uint256 _value) returns (bool success) {
-    assert(!(balanceOf[msg.sender] &lt; _value));
+    assert(!(balanceOf[msg.sender] < _value));
     balanceOf[msg.sender] -= _value;
     totalSupply -= _value;
     Burn(msg.sender, _value);
@@ -76,8 +76,8 @@ contract SuretlyToken {
   }
 
   function burnFrom(address _from, uint256 _value) returns (bool success) {
-    assert(!(balanceOf[_from] &lt; _value));
-    assert(!(_value &gt; allowance[_from][msg.sender]));
+    assert(!(balanceOf[_from] < _value));
+    assert(!(_value > allowance[_from][msg.sender]));
     balanceOf[_from] -= _value;
     totalSupply -= _value;
     Burn(_from, _value);

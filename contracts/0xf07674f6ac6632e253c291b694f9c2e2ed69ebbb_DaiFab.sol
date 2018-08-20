@@ -13,7 +13,7 @@ pragma solidity ^0.4.18;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -87,11 +87,11 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
 
 contract DSGuardEvents {
     event LogPermit(
@@ -110,7 +110,7 @@ contract DSGuardEvents {
 contract DSGuard is DSAuth, DSAuthority, DSGuardEvents {
     bytes32 constant public ANY = bytes32(uint(-1));
 
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; mapping (bytes32 =&gt; bool))) acl;
+    mapping (bytes32 => mapping (bytes32 => mapping (bytes32 => bool))) acl;
 
     function canCall(
         address src_, address dst_, bytes4 sig
@@ -148,7 +148,7 @@ contract DSGuard is DSAuth, DSAuthority, DSGuardEvents {
 }
 
 contract DSGuardFactory {
-    mapping (address =&gt; bool)  public  isGuard;
+    mapping (address => bool)  public  isGuard;
 
     function newGuard() public returns (DSGuard guard) {
         guard = new DSGuard();
@@ -173,18 +173,18 @@ contract DSGuardFactory {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
 
 contract DSRoles is DSAuth, DSAuthority
 {
-    mapping(address=&gt;bool) _root_users;
-    mapping(address=&gt;bytes32) _user_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bytes32)) _capability_roles;
-    mapping(address=&gt;mapping(bytes4=&gt;bool)) _public_capabilities;
+    mapping(address=>bool) _root_users;
+    mapping(address=>bytes32) _user_roles;
+    mapping(address=>mapping(bytes4=>bytes32)) _capability_roles;
+    mapping(address=>mapping(bytes4=>bool)) _public_capabilities;
 
     function getUserRoles(address who)
         public
@@ -225,7 +225,7 @@ contract DSRoles is DSAuth, DSAuthority
     {
         bytes32 roles = getUserRoles(who);
         bytes32 shifted = bytes32(uint256(uint256(2) ** uint256(role)));
-        return bytes32(0) != roles &amp; shifted;
+        return bytes32(0) != roles & shifted;
     }
 
     function canCall(address caller, address code, bytes4 sig)
@@ -238,7 +238,7 @@ contract DSRoles is DSAuth, DSAuthority
         } else {
             var has_roles = getUserRoles(caller);
             var needs_one_of = getCapabilityRoles(code, sig);
-            return bytes32(0) != has_roles &amp; needs_one_of;
+            return bytes32(0) != has_roles & needs_one_of;
         }
     }
 
@@ -262,7 +262,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _user_roles[who] = last_roles | shifted;
         } else {
-            _user_roles[who] = last_roles &amp; BITNOT(shifted);
+            _user_roles[who] = last_roles & BITNOT(shifted);
         }
     }
 
@@ -282,7 +282,7 @@ contract DSRoles is DSAuth, DSAuthority
         if( enabled ) {
             _capability_roles[code][sig] = last_roles | shifted;
         } else {
-            _capability_roles[code][sig] = last_roles &amp; BITNOT(shifted);
+            _capability_roles[code][sig] = last_roles & BITNOT(shifted);
         }
 
     }
@@ -290,7 +290,7 @@ contract DSRoles is DSAuth, DSAuthority
 }
 
 ////// lib/ds-spell/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -303,7 +303,7 @@ contract DSRoles is DSAuth, DSAuthority
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -346,32 +346,32 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -390,10 +390,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -434,13 +434,13 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
-/* import &#39;ds-math/math.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
+/* import 'ds-note/note.sol'; */
+/* import 'ds-math/math.sol'; */
 
 contract DSThing is DSAuth, DSNote, DSMath {
 
@@ -466,12 +466,12 @@ contract DSThing is DSAuth, DSNote, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &quot;ds-note/note.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
+/* import "ds-note/note.sol"; */
 
 contract DSStop is DSNote, DSAuth {
 
@@ -493,7 +493,7 @@ contract DSStop is DSNote, DSAuth {
 ////// lib/ds-token/lib/erc20/src/erc20.sol
 /// erc20.sol -- API for the ERC20 token standard
 
-// See &lt;https://github.com/ethereum/EIPs/issues/20&gt;.
+// See <https://github.com/ethereum/EIPs/issues/20>.
 
 // This file likely does not meet the threshold of originality
 // required for copyright to apply.  As a result, this is free and
@@ -534,17 +534,17 @@ contract ERC20 is ERC20Events {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;erc20/erc20.sol&quot;; */
-/* import &quot;ds-math/math.sol&quot;; */
+/* import "erc20/erc20.sol"; */
+/* import "ds-math/math.sol"; */
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) public {
         _balances[msg.sender] = supply;
@@ -606,13 +606,13 @@ contract DSTokenBase is ERC20, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-stop/stop.sol&quot;; */
+/* import "ds-stop/stop.sol"; */
 
-/* import &quot;./base.sol&quot;; */
+/* import "./base.sol"; */
 
 contract DSToken is DSTokenBase(0), DSStop {
 
@@ -639,7 +639,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -673,7 +673,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; _approvals[guy][msg.sender] != uint(-1)) {
+        if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -683,7 +683,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) public auth {
         name = name_;
@@ -706,11 +706,11 @@ contract DSToken is DSTokenBase(0), DSStop {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-thing/thing.sol&#39;; */
+/* import 'ds-thing/thing.sol'; */
 
 contract DSValue is DSThing {
     bool    has;
@@ -735,9 +735,9 @@ contract DSValue is DSThing {
 ////// src/vox.sol
 /// vox.sol -- target price feed
 
-// Copyright (C) 2016, 2017  Nikolai Mushegian &lt;<span class="__cf_email__" data-cfemail="600e090b0f0c010920040110100815024e030f0d">[email&#160;protected]</span>&gt;
-// Copyright (C) 2016, 2017  Daniel Brockman &lt;<span class="__cf_email__" data-cfemail="a1c5c0cfc8c4cde1c5c0d1d1c9d4c38fc2cecc">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017        Rain Break &lt;<span class="__cf_email__" data-cfemail="0577646c6b677760646e45776c766070752b6b6071">[email&#160;protected]</span>&gt;
+// Copyright (C) 2016, 2017  Nikolai Mushegian <<span class="__cf_email__" data-cfemail="600e090b0f0c010920040110100815024e030f0d">[email protected]</span>>
+// Copyright (C) 2016, 2017  Daniel Brockman <<span class="__cf_email__" data-cfemail="a1c5c0cfc8c4cde1c5c0d1d1c9d4c38fc2cecc">[email protected]</span>>
+// Copyright (C) 2017        Rain Break <<span class="__cf_email__" data-cfemail="0577646c6b677760646e45776c766070752b6b6071">[email protected]</span>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -750,11 +750,11 @@ contract DSValue is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;ds-thing/thing.sol&quot;; */
+/* import "ds-thing/thing.sol"; */
 
 contract SaiVox is DSThing {
     uint256  _par;
@@ -775,7 +775,7 @@ contract SaiVox is DSThing {
     }
 
     function mold(bytes32 param, uint val) public note auth {
-        if (param == &#39;way&#39;) _way = val;
+        if (param == 'way') _way = val;
     }
 
     // Dai Target Price (ref per dai)
@@ -804,25 +804,25 @@ contract SaiVox is DSThing {
 
         if (how == 0) return;  // optimised
         var wag = int128(how * age);
-        _way = inj(prj(_way) + (fix &lt; _par ? wag : -wag));
+        _way = inj(prj(_way) + (fix < _par ? wag : -wag));
     }
 
     function inj(int128 x) internal pure returns (uint256) {
-        return x &gt;= 0 ? uint256(x) + RAY
+        return x >= 0 ? uint256(x) + RAY
             : rdiv(RAY, RAY + uint256(-x));
     }
     function prj(uint256 x) internal pure returns (int128) {
-        return x &gt;= RAY ? int128(x - RAY)
+        return x >= RAY ? int128(x - RAY)
             : int128(RAY) - int128(rdiv(RAY, x));
     }
 }
 
 ////// src/tub.sol
-/// tub.sol -- simplified CDP engine (baby brother of `vat&#39;)
+/// tub.sol -- simplified CDP engine (baby brother of `vat')
 
-// Copyright (C) 2017  Nikolai Mushegian &lt;<span class="__cf_email__" data-cfemail="0a64636165666b634a6e6b7a7a627f6824696567">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Daniel Brockman &lt;<span class="__cf_email__" data-cfemail="375356595e525b77535647475f42551954585a">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Rain Break &lt;<span class="__cf_email__" data-cfemail="acdecdc5c2cedec9cdc7ecdec5dfc9d9dc82c2c9d8">[email&#160;protected]</span>&gt;
+// Copyright (C) 2017  Nikolai Mushegian <<span class="__cf_email__" data-cfemail="0a64636165666b634a6e6b7a7a627f6824696567">[email protected]</span>>
+// Copyright (C) 2017  Daniel Brockman <<span class="__cf_email__" data-cfemail="375356595e525b77535647475f42551954585a">[email protected]</span>>
+// Copyright (C) 2017  Rain Break <<span class="__cf_email__" data-cfemail="acdecdc5c2cedec9cdc7ecdec5dfc9d9dc82c2c9d8">[email protected]</span>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -835,15 +835,15 @@ contract SaiVox is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;ds-thing/thing.sol&quot;; */
-/* import &quot;ds-token/token.sol&quot;; */
-/* import &quot;ds-value/value.sol&quot;; */
+/* import "ds-thing/thing.sol"; */
+/* import "ds-token/token.sol"; */
+/* import "ds-value/value.sol"; */
 
-/* import &quot;./vox.sol&quot;; */
+/* import "./vox.sol"; */
 
 contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
@@ -883,7 +883,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  rum;  // Total normalised debt
 
     uint256                   public  cupi;
-    mapping (bytes32 =&gt; Cup)  public  cups;
+    mapping (bytes32 => Cup)  public  cups;
 
     struct Cup {
         address  lad;      // CDP owner
@@ -963,12 +963,12 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--Risk-parameter-config-------------------------------------------
 
     function mold(bytes32 param, uint val) public note auth {
-        if      (param == &#39;cap&#39;) cap = val;
-        else if (param == &#39;mat&#39;) { require(val &gt;= RAY); mat = val; }
-        else if (param == &#39;tax&#39;) { require(val &gt;= RAY); drip(); tax = val; }
-        else if (param == &#39;fee&#39;) { require(val &gt;= RAY); drip(); fee = val; }
-        else if (param == &#39;axe&#39;) { require(val &gt;= RAY); axe = val; }
-        else if (param == &#39;gap&#39;) { require(val &gt;= WAD); gap = val; }
+        if      (param == 'cap') cap = val;
+        else if (param == 'mat') { require(val >= RAY); mat = val; }
+        else if (param == 'tax') { require(val >= RAY); drip(); tax = val; }
+        else if (param == 'fee') { require(val >= RAY); drip(); fee = val; }
+        else if (param == 'axe') { require(val >= RAY); axe = val; }
+        else if (param == 'gap') { require(val >= WAD); gap = val; }
         else return;
     }
 
@@ -1007,7 +1007,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function join(uint wad) public note {
         require(!off);
-        require(ask(wad) &gt; 0);
+        require(ask(wad) > 0);
         require(gem.transferFrom(msg.sender, this, ask(wad)));
         skr.mint(msg.sender, wad);
     }
@@ -1062,7 +1062,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var pro = rmul(tag(), ink(cup));
         var con = rmul(vox.par(), tab(cup));
         var min = rmul(con, mat);
-        return pro &gt;= min;
+        return pro >= min;
     }
 
 
@@ -1085,20 +1085,20 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         cups[cup].ink = add(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
-        require(cups[cup].ink == 0 || cups[cup].ink &gt; 0.005 ether);
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
     function free(bytes32 cup, uint wad) public note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         skr.push(msg.sender, wad);
         require(safe(cup));
-        require(cups[cup].ink == 0 || cups[cup].ink &gt; 0.005 ether);
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
 
     function draw(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
-        require(rdiv(wad, chi()) &gt; 0);
+        require(rdiv(wad, chi()) > 0);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         rum = add(rum, rdiv(wad, chi()));
@@ -1107,7 +1107,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
-        require(sai.totalSupply() &lt;= cap);
+        require(sai.totalSupply() <= cap);
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
@@ -1121,7 +1121,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.burn(msg.sender, wad);
 
         var (val, ok) = pep.peek();
-        if (ok &amp;&amp; val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
+        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
     function shut(bytes32 cup) public note {
@@ -1145,7 +1145,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         // Amount owed in SKR, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
 
-        if (owe &gt; cups[cup].ink) {
+        if (owe > cups[cup].ink) {
             owe = cups[cup].ink;
         }
 
@@ -1156,7 +1156,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     //------------------------------------------------------------------
 
     function cage(uint fit_, uint jam) public note auth {
-        require(!off &amp;&amp; fit_ != 0);
+        require(!off && fit_ != 0);
         off = true;
         axe = RAY;
         gap = WAD;
@@ -1172,9 +1172,9 @@ contract SaiTub is DSThing, SaiTubEvents {
 ////// src/tap.sol
 /// tap.sol -- liquidation engine (see also `vow`)
 
-// Copyright (C) 2017  Nikolai Mushegian &lt;<span class="__cf_email__" data-cfemail="c3adaaa8acafa2aa83a7a2b3b3abb6a1eda0acae">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Daniel Brockman &lt;<span class="__cf_email__" data-cfemail="abcfcac5c2cec7ebcfcadbdbc3dec985c8c4c6">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Rain Break &lt;<span class="__cf_email__" data-cfemail="6517040c0b071700040e25170c160010154b0b0011">[email&#160;protected]</span>&gt;
+// Copyright (C) 2017  Nikolai Mushegian <<span class="__cf_email__" data-cfemail="c3adaaa8acafa2aa83a7a2b3b3abb6a1eda0acae">[email protected]</span>>
+// Copyright (C) 2017  Daniel Brockman <<span class="__cf_email__" data-cfemail="abcfcac5c2cec7ebcfcadbdbc3dec985c8c4c6">[email protected]</span>>
+// Copyright (C) 2017  Rain Break <<span class="__cf_email__" data-cfemail="6517040c0b071700040e25170c160010154b0b0011">[email protected]</span>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1187,11 +1187,11 @@ contract SaiTub is DSThing, SaiTubEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;./tub.sol&quot;; */
+/* import "./tub.sol"; */
 
 contract SaiTap is DSThing {
     DSToken  public  sai;
@@ -1232,7 +1232,7 @@ contract SaiTap is DSThing {
     }
 
     function mold(bytes32 param, uint val) public note auth {
-        if (param == &#39;gap&#39;) gap = val;
+        if (param == 'gap') gap = val;
     }
 
     // Cancel debt
@@ -1258,7 +1258,7 @@ contract SaiTap is DSThing {
         return rmul(wad, wmul(s2s(), gap));
     }
     function flip(uint wad) internal {
-        require(ask(wad) &gt; 0);
+        require(ask(wad) > 0);
         skr.push(msg.sender, wad);
         sai.pull(msg.sender, ask(wad));
         heal();
@@ -1266,7 +1266,7 @@ contract SaiTap is DSThing {
     function flop(uint wad) internal {
         skr.mint(sub(wad, fog()));
         flip(wad);
-        require(joy() == 0);  // can&#39;t flop into surplus
+        require(joy() == 0);  // can't flop into surplus
     }
     function flap(uint wad) internal {
         heal();
@@ -1275,7 +1275,7 @@ contract SaiTap is DSThing {
     }
     function bust(uint wad) public note {
         require(!off);
-        if (wad &gt; fog()) flop(wad);
+        if (wad > fog()) flop(wad);
         else flip(wad);
     }
     function boom(uint wad) public note {
@@ -1309,9 +1309,9 @@ contract SaiTap is DSThing {
 ////// src/top.sol
 /// top.sol -- global settlement manager
 
-// Copyright (C) 2017  Nikolai Mushegian &lt;<span class="__cf_email__" data-cfemail="0967606266656860496d687979617c6b276a6664">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Daniel Brockman &lt;<span class="__cf_email__" data-cfemail="adc9ccc3c4c8c1edc9ccddddc5d8cf83cec2c0">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Rain Break &lt;<span class="__cf_email__" data-cfemail="4f3d2e26212d3d2a2e240f3d263c2a3a3f61212a3b">[email&#160;protected]</span>&gt;
+// Copyright (C) 2017  Nikolai Mushegian <<span class="__cf_email__" data-cfemail="0967606266656860496d687979617c6b276a6664">[email protected]</span>>
+// Copyright (C) 2017  Daniel Brockman <<span class="__cf_email__" data-cfemail="adc9ccc3c4c8c1edc9ccddddc5d8cf83cec2c0">[email protected]</span>>
+// Copyright (C) 2017  Rain Break <<span class="__cf_email__" data-cfemail="4f3d2e26212d3d2a2e240f3d263c2a3a3f61212a3b">[email protected]</span>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1324,12 +1324,12 @@ contract SaiTap is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;./tub.sol&quot;; */
-/* import &quot;./tap.sol&quot;; */
+/* import "./tub.sol"; */
+/* import "./tap.sol"; */
 
 contract SaiTop is DSThing {
     SaiVox   public  vox;
@@ -1367,7 +1367,7 @@ contract SaiTop is DSThing {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint price) internal {
-        require(!tub.off() &amp;&amp; price != 0);
+        require(!tub.off() && price != 0);
         caged = era();
 
         tub.drip();  // collect remaining fees
@@ -1394,8 +1394,8 @@ contract SaiTop is DSThing {
 
     function flow() public note {
         require(tub.off());
-        var empty = tub.din() == 0 &amp;&amp; tap.fog() == 0;
-        var ended = era() &gt; caged + cooldown;
+        var empty = tub.din() == 0 && tap.fog() == 0;
+        var ended = era() > caged + cooldown;
         require(empty || ended);
         tub.flow();
     }
@@ -1408,9 +1408,9 @@ contract SaiTop is DSThing {
 ////// src/mom.sol
 /// mom.sol -- admin manager
 
-// Copyright (C) 2017  Nikolai Mushegian &lt;<span class="__cf_email__" data-cfemail="503e393b3f3c313910343120203825327e333f3d">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Daniel Brockman &lt;<span class="__cf_email__" data-cfemail="d3b7b2bdbab6bf93b7b2a3a3bba6b1fdb0bcbe">[email&#160;protected]</span>&gt;
-// Copyright (C) 2017  Rain &lt;<span class="__cf_email__" data-cfemail="304251595e524255515b704259435545401e5e5544">[email&#160;protected]</span>&gt;
+// Copyright (C) 2017  Nikolai Mushegian <<span class="__cf_email__" data-cfemail="503e393b3f3c313910343120203825327e333f3d">[email protected]</span>>
+// Copyright (C) 2017  Daniel Brockman <<span class="__cf_email__" data-cfemail="d3b7b2bdbab6bf93b7b2a3a3bba6b1fdb0bcbe">[email protected]</span>>
+// Copyright (C) 2017  Rain <<span class="__cf_email__" data-cfemail="304251595e524255515b704259435545401e5e5544">[email protected]</span>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1423,14 +1423,14 @@ contract SaiTop is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &#39;ds-thing/thing.sol&#39;; */
-/* import &#39;./tub.sol&#39;; */
-/* import &#39;./top.sol&#39;; */
-/* import &#39;./tap.sol&#39;; */
+/* import 'ds-thing/thing.sol'; */
+/* import './tub.sol'; */
+/* import './top.sol'; */
+/* import './tap.sol'; */
 
 contract SaiMom is DSThing {
     SaiTub  public  tub;
@@ -1444,39 +1444,39 @@ contract SaiMom is DSThing {
     }
     // Debt ceiling
     function setCap(uint wad) public note auth {
-        tub.mold(&quot;cap&quot;, wad);
+        tub.mold("cap", wad);
     }
     // Liquidation ratio
     function setMat(uint ray) public note auth {
-        tub.mold(&quot;mat&quot;, ray);
+        tub.mold("mat", ray);
         var axe = tub.axe();
         var mat = tub.mat();
-        require(axe &gt;= RAY &amp;&amp; axe &lt;= mat);
+        require(axe >= RAY && axe <= mat);
     }
     // Stability fee
     function setTax(uint ray) public note auth {
-        tub.mold(&quot;tax&quot;, ray);
+        tub.mold("tax", ray);
         var tax = tub.tax();
-        require(RAY &lt;= tax);
-        require(tax &lt; 1000001100000000000000000000);  // 10% / day
+        require(RAY <= tax);
+        require(tax < 1000001100000000000000000000);  // 10% / day
     }
     // Governance fee
     function setFee(uint ray) public note auth {
-        tub.mold(&quot;fee&quot;, ray);
+        tub.mold("fee", ray);
         var fee = tub.fee();
-        require(RAY &lt;= fee);
-        require(fee &lt; 1000001100000000000000000000);  // 10% / day
+        require(RAY <= fee);
+        require(fee < 1000001100000000000000000000);  // 10% / day
     }
     // Liquidation fee
     function setAxe(uint ray) public note auth {
-        tub.mold(&quot;axe&quot;, ray);
+        tub.mold("axe", ray);
         var axe = tub.axe();
         var mat = tub.mat();
-        require(axe &gt;= RAY &amp;&amp; axe &lt;= mat);
+        require(axe >= RAY && axe <= mat);
     }
     // Join/Exit Spread
     function setTubGap(uint wad) public note auth {
-        tub.mold(&quot;gap&quot;, wad);
+        tub.mold("gap", wad);
     }
     // ETH/USD Feed
     function setPip(DSValue pip_) public note auth {
@@ -1492,16 +1492,16 @@ contract SaiMom is DSThing {
     }
     // Boom/Bust Spread
     function setTapGap(uint wad) public note auth {
-        tap.mold(&quot;gap&quot;, wad);
+        tap.mold("gap", wad);
         var gap = tap.gap();
-        require(gap &lt;= 1.05 ether);
-        require(gap &gt;= 0.95 ether);
+        require(gap <= 1.05 ether);
+        require(gap >= 0.95 ether);
     }
     // Rate of change of target price (per second)
     function setWay(uint ray) public note auth {
-        require(ray &lt; 1000001100000000000000000000);  // 10% / day
-        require(ray &gt;  999998800000000000000000000);
-        vox.mold(&quot;way&quot;, ray);
+        require(ray < 1000001100000000000000000000);  // 10% / day
+        require(ray >  999998800000000000000000000);
+        vox.mold("way", ray);
     }
     function setHow(uint ray) public note auth {
         vox.tune(ray);
@@ -1511,13 +1511,13 @@ contract SaiMom is DSThing {
 ////// src/fab.sol
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &#39;ds-token/token.sol&#39;; */
-/* import &#39;ds-guard/guard.sol&#39;; */
-/* import &#39;ds-roles/roles.sol&#39;; */
-/* import &#39;ds-value/value.sol&#39;; */
+/* import "ds-auth/auth.sol"; */
+/* import 'ds-token/token.sol'; */
+/* import 'ds-guard/guard.sol'; */
+/* import 'ds-roles/roles.sol'; */
+/* import 'ds-value/value.sol'; */
 
-/* import &#39;./mom.sol&#39;; */
+/* import './mom.sol'; */
 
 contract GemFab {
     function newTok(bytes32 name) public returns (DSToken token) {
@@ -1603,12 +1603,12 @@ contract DaiFab is DSAuth {
 
     function makeTokens() public auth {
         require(step == 0);
-        sai = gemFab.newTok(&#39;DAI&#39;);
-        sin = gemFab.newTok(&#39;SIN&#39;);
-        skr = gemFab.newTok(&#39;PETH&#39;);
-        sai.setName(&#39;Dai Stablecoin v1.0&#39;);
-        sin.setName(&#39;SIN&#39;);
-        skr.setName(&#39;Pooled Ether&#39;);
+        sai = gemFab.newTok('DAI');
+        sin = gemFab.newTok('SIN');
+        skr = gemFab.newTok('PETH');
+        sai.setName('Dai Stablecoin v1.0');
+        sin.setName('SIN');
+        skr.setName('Pooled Ether');
         step += 1;
     }
 
@@ -1650,14 +1650,14 @@ contract DaiFab is DSAuth {
     function configParams() public auth {
         require(step == 3);
 
-        tub.mold(&quot;cap&quot;, 0);
-        tub.mold(&quot;mat&quot;, ray(1.5  ether));
-        tub.mold(&quot;axe&quot;, ray(1.13 ether));
-        tub.mold(&quot;fee&quot;, 1000000000158153903837946257);  // 0.5% / year
-        tub.mold(&quot;tax&quot;, ray(1 ether));
-        tub.mold(&quot;gap&quot;, 1 ether);
+        tub.mold("cap", 0);
+        tub.mold("mat", ray(1.5  ether));
+        tub.mold("axe", ray(1.13 ether));
+        tub.mold("fee", 1000000000158153903837946257);  // 0.5% / year
+        tub.mold("tax", ray(1 ether));
+        tub.mold("gap", 1 ether);
 
-        tap.mold(&quot;gap&quot;, 0.97 ether);
+        tap.mold("gap", 0.97 ether);
 
         step += 1;
     }
@@ -1705,34 +1705,34 @@ contract DaiFab is DSAuth {
         mom.setAuthority(authority);
         mom.setOwner(0);
 
-        dad.permit(top, tub, S(&quot;cage(uint256,uint256)&quot;));
-        dad.permit(top, tub, S(&quot;flow()&quot;));
-        dad.permit(top, tap, S(&quot;cage(uint256)&quot;));
+        dad.permit(top, tub, S("cage(uint256,uint256)"));
+        dad.permit(top, tub, S("flow()"));
+        dad.permit(top, tap, S("cage(uint256)"));
 
-        dad.permit(tub, skr, S(&#39;mint(address,uint256)&#39;));
-        dad.permit(tub, skr, S(&#39;burn(address,uint256)&#39;));
+        dad.permit(tub, skr, S('mint(address,uint256)'));
+        dad.permit(tub, skr, S('burn(address,uint256)'));
 
-        dad.permit(tub, sai, S(&#39;mint(address,uint256)&#39;));
-        dad.permit(tub, sai, S(&#39;burn(address,uint256)&#39;));
+        dad.permit(tub, sai, S('mint(address,uint256)'));
+        dad.permit(tub, sai, S('burn(address,uint256)'));
 
-        dad.permit(tub, sin, S(&#39;mint(address,uint256)&#39;));
+        dad.permit(tub, sin, S('mint(address,uint256)'));
 
-        dad.permit(tap, sai, S(&#39;mint(address,uint256)&#39;));
-        dad.permit(tap, sai, S(&#39;burn(address,uint256)&#39;));
-        dad.permit(tap, sai, S(&#39;burn(uint256)&#39;));
-        dad.permit(tap, sin, S(&#39;burn(uint256)&#39;));
+        dad.permit(tap, sai, S('mint(address,uint256)'));
+        dad.permit(tap, sai, S('burn(address,uint256)'));
+        dad.permit(tap, sai, S('burn(uint256)'));
+        dad.permit(tap, sin, S('burn(uint256)'));
 
-        dad.permit(tap, skr, S(&#39;mint(uint256)&#39;));
-        dad.permit(tap, skr, S(&#39;burn(uint256)&#39;));
-        dad.permit(tap, skr, S(&#39;burn(address,uint256)&#39;));
+        dad.permit(tap, skr, S('mint(uint256)'));
+        dad.permit(tap, skr, S('burn(uint256)'));
+        dad.permit(tap, skr, S('burn(address,uint256)'));
 
-        dad.permit(mom, vox, S(&quot;mold(bytes32,uint256)&quot;));
-        dad.permit(mom, vox, S(&quot;tune(uint256)&quot;));
-        dad.permit(mom, tub, S(&quot;mold(bytes32,uint256)&quot;));
-        dad.permit(mom, tap, S(&quot;mold(bytes32,uint256)&quot;));
-        dad.permit(mom, tub, S(&quot;setPip(address)&quot;));
-        dad.permit(mom, tub, S(&quot;setPep(address)&quot;));
-        dad.permit(mom, tub, S(&quot;setVox(address)&quot;));
+        dad.permit(mom, vox, S("mold(bytes32,uint256)"));
+        dad.permit(mom, vox, S("tune(uint256)"));
+        dad.permit(mom, tub, S("mold(bytes32,uint256)"));
+        dad.permit(mom, tap, S("mold(bytes32,uint256)"));
+        dad.permit(mom, tub, S("setPip(address)"));
+        dad.permit(mom, tub, S("setPep(address)"));
+        dad.permit(mom, tub, S("setVox(address)"));
 
         dad.setOwner(0);
         step += 1;

@@ -41,7 +41,7 @@ contract GoldeaBonusCalculator is BonusCalculator, Ownable {
     uint public start;
     uint public end;
     uint constant period = 86400 * 7;
-    mapping (uint =&gt; uint8) bonuses;
+    mapping (uint => uint8) bonuses;
 
     function GoldeaBonusCalculator(uint256 _start, uint256 _end) {
         start = _start;
@@ -52,8 +52,8 @@ contract GoldeaBonusCalculator is BonusCalculator, Ownable {
     }
 
     function getBonus() constant returns (uint) {
-        assert(now &gt; start);
-        assert(now &lt; end);
+        assert(now > start);
+        assert(now < end);
 
         uint week = (now - start) / period;
         uint8 foundBonus = bonuses[week];

@@ -2,23 +2,23 @@ contract Medbaby {
   
     /* Public variables of the token */
     string public standard;
-    string public name = &quot;Medbaby&quot;;
-    string public symbol = &quot;MDBY&quot;;
+    string public name = "Medbaby";
+    string public symbol = "MDBY";
     uint8 public decimals = 3;
     uint256 public initialSupply = 300000000000;
     uint256 public totalSupply = 200000000000;
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function Medbaby() {
 
          initialSupply = 300000000000;
-         name =&quot;Medbaby&quot;;
+         name ="Medbaby";
         decimals = 2;
-         symbol = &quot;MDBY&quot;;
+         symbol = "MDBY";
         
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
@@ -27,8 +27,8 @@ contract Medbaby {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
       

@@ -18,7 +18,7 @@ contract ERC20 {
 
 contract Reseller {
   // Store the amount of SNT claimed by each account.
-  mapping (address =&gt; uint256) public snt_claimed;
+  mapping (address => uint256) public snt_claimed;
   // Total claimed SNT of all accounts.
   uint256 public total_snt_claimed;
   
@@ -29,9 +29,9 @@ contract Reseller {
   
   // Withdraws SNT claimed by the user.
   function withdraw() {
-    // Store the user&#39;s amount of claimed SNT as the amount of SNT to withdraw.
+    // Store the user's amount of claimed SNT as the amount of SNT to withdraw.
     uint256 snt_to_withdraw = snt_claimed[msg.sender];
-    // Update the user&#39;s amount of claimed SNT first to prevent recursive call.
+    // Update the user's amount of claimed SNT first to prevent recursive call.
     snt_claimed[msg.sender] = 0;
     // Update the total amount of claimed SNT.
     total_snt_claimed -= snt_to_withdraw;
@@ -42,7 +42,7 @@ contract Reseller {
   // Claims SNT at a price determined by the block number.
   function claim() payable {
     // Verify ICO is over.
-    if(block.number &lt; 3915000) throw;
+    if(block.number < 3915000) throw;
     // Calculate current sale price (SNT per ETH) based on block number.
     uint256 snt_per_eth = (block.number - 3915000) * 2;
     // Calculate amount of SNT user can purchase.
@@ -50,7 +50,7 @@ contract Reseller {
     // Retrieve current SNT balance of contract.
     uint256 contract_snt_balance = token.balanceOf(address(this));
     // Verify the contract has enough remaining unclaimed SNT.
-    if((contract_snt_balance - total_snt_claimed) &lt; snt_to_claim) throw;
+    if((contract_snt_balance - total_snt_claimed) < snt_to_claim) throw;
     // Update the amount of SNT claimed by the user.
     snt_claimed[msg.sender] += snt_to_claim;
     // Update the total amount of SNT claimed by all users.

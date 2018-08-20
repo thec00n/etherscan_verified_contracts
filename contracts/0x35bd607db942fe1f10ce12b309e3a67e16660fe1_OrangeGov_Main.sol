@@ -3,16 +3,16 @@ pragma solidity ^0.4.9;
 contract OrangeGov_Main {
     address public currentContract;
     
-	mapping(address=&gt;mapping(string=&gt;bool)) permissions;
-	mapping(address=&gt;mapping(string=&gt;bool)) userStatuses;
-	mapping(string=&gt;address) contractIDs;
-	mapping(string=&gt;bool) contractIDExists;
+	mapping(address=>mapping(string=>bool)) permissions;
+	mapping(address=>mapping(string=>bool)) userStatuses;
+	mapping(string=>address) contractIDs;
+	mapping(string=>bool) contractIDExists;
 	address[] contractArray; //the contracts in the above 2 tables
 	function OrangeGov_Main () {
-	    permissions[msg.sender][&quot;all&quot;]=true;
+	    permissions[msg.sender]["all"]=true;
 	}
 	function getHasPermission(address user, string permissionName, string userStatusAllowed) returns (bool hasPermission){ //for use between contracts
-	    return permissions[msg.sender][permissionName]||permissions[msg.sender][&quot;all&quot;]||userStatuses[msg.sender][userStatusAllowed];
+	    return permissions[msg.sender][permissionName]||permissions[msg.sender]["all"]||userStatuses[msg.sender][userStatusAllowed];
 	}
 	function getContractByID(string ID) returns (address addr,bool exists){ //for use between contracts
 	    return (contractIDs[ID],contractIDExists[ID]);
@@ -26,7 +26,7 @@ contract OrangeGov_Main {
     }
     
     function removeFromContractIDArray(address contractToRemove) {
-        for (uint x=0;x&lt;contractArray.length-1;x++) {
+        for (uint x=0;x<contractArray.length-1;x++) {
             if (contractArray[x]==contractToRemove) {
                 contractArray[x]=contractArray[contractArray.length-1];
 	            contractArray.length--;
@@ -35,7 +35,7 @@ contract OrangeGov_Main {
         }
     }
     
-	function addContract(string ID,bytes code) permissionRequired(&quot;addContract&quot;,&quot;&quot;){
+	function addContract(string ID,bytes code) permissionRequired("addContract",""){
 	    address addr;
         assembly {
             addr := create(0,add(code,0x20), mload(code))
@@ -44,41 +44,41 @@ contract OrangeGov_Main {
         address oldAddr = contractIDs[ID];
 	    contractIDs[ID]=addr;
 	    contractIDExists[ID]=true;
-	    oldAddr.call.gas(msg.gas)(bytes4(sha3(&quot;changeCurrentContract(address)&quot;)),addr); //if there was a previous contract, tell it the new one&#39;s address
-	    addr.call.gas(msg.gas)(bytes4(sha3(&quot;tellPreviousContract(address)&quot;)),oldAddr); //feed it the address of the previous contract
+	    oldAddr.call.gas(msg.gas)(bytes4(sha3("changeCurrentContract(address)")),addr); //if there was a previous contract, tell it the new one's address
+	    addr.call.gas(msg.gas)(bytes4(sha3("tellPreviousContract(address)")),oldAddr); //feed it the address of the previous contract
 	    removeFromContractIDArray(addr);
 	    contractArray.length++;
 	    contractArray[contractArray.length-1]=addr;
 	}
-	function removeContract(string ID) permissionRequired(&quot;removeContract&quot;,&quot;&quot;){
+	function removeContract(string ID) permissionRequired("removeContract",""){
 	    contractIDExists[ID]=false;
-	    contractIDs[ID].call.gas(msg.gas)(bytes4(sha3(&quot;changeCurrentContract(address)&quot;)),currentContract); //make sure people using know it&#39;s out of service
+	    contractIDs[ID].call.gas(msg.gas)(bytes4(sha3("changeCurrentContract(address)")),currentContract); //make sure people using know it's out of service
 	    removeFromContractIDArray(contractIDs[ID]);
 	}
-	function update(bytes code) permissionRequired(&quot;update&quot;,&quot;&quot;){
+	function update(bytes code) permissionRequired("update",""){
 	    address addr;
         assembly {
             addr := create(0,add(code,0x20), mload(code))
             jumpi(invalidJumpLabel,iszero(extcodesize(addr)))
         }
-        addr.call.gas(msg.gas)(bytes4(sha3(&quot;tellPreviousContract(address)&quot;)),currentContract);
+        addr.call.gas(msg.gas)(bytes4(sha3("tellPreviousContract(address)")),currentContract);
         currentContract = addr;
-        for (uint x=0;x&lt;contractArray.length-1;x++) {
-            contractArray[x].call.gas(msg.gas)(bytes4(sha3(&quot;changeMain(address)&quot;)),currentContract);
+        for (uint x=0;x<contractArray.length-1;x++) {
+            contractArray[x].call.gas(msg.gas)(bytes4(sha3("changeMain(address)")),currentContract);
         }
 	}
 	function tellPreviousContract(address prev) { //called in the update process
 	    
 	}
-	function spendEther(address addr, uint256 weiAmt) permissionRequired(&quot;spendEther&quot;,&quot;&quot;){
+	function spendEther(address addr, uint256 weiAmt) permissionRequired("spendEther",""){
 	    if (!addr.send(weiAmt)) throw;
 	}
-	function givePermission(address addr, string permission) permissionRequired(&quot;givePermission&quot;,&quot;&quot;){
-	    if (getHasPermission(msg.sender,permission,&quot;&quot;)){
+	function givePermission(address addr, string permission) permissionRequired("givePermission",""){
+	    if (getHasPermission(msg.sender,permission,"")){
 	        permissions[addr][permission]=true;
 	    }
 	}
-	function removePermission(address addr, string permission) permissionRequired(&quot;removePermission&quot;,&quot;&quot;){
+	function removePermission(address addr, string permission) permissionRequired("removePermission",""){
 	    permissions[addr][permission]=false;
 	}
 }

@@ -10,7 +10,7 @@ contract BonusDealer {
     Token public nexium;
     uint public totalDistributed;
     address[] public paidAddress;
-    mapping(address =&gt; uint) public paid;
+    mapping(address => uint) public paid;
     
     struct Bonus {
         uint bonusInNxc;
@@ -61,7 +61,7 @@ contract BonusDealer {
     
     function recursiveCalculation() internal returns(uint){
         var i = 8;
-        while (i != 0 &amp;&amp; bonuses[i].step &gt; nxcBought) i--;
+        while (i != 0 && bonuses[i].step > nxcBought) i--;
         nxcBought -= bonuses[i].step;
         return bonuses[i].bonusInNxc;
     }
@@ -70,7 +70,7 @@ contract BonusDealer {
         if (msg.sender != owner) throw;
         if (paid[backer] == 0) paidAddress[paidAddress.length++] = msg.sender;
         uint totalToPay = bonusCalculation(totalNxcBought);
-        if(totalToPay &lt;= paid[backer]) throw;
+        if(totalToPay <= paid[backer]) throw;
         totalToPay -= paid[backer];
         if (!nexium.transfer(backer, totalToPay)) throw;
         paid[backer] += totalToPay;

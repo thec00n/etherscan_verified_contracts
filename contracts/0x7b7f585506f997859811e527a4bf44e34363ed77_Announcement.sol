@@ -6,7 +6,7 @@ pragma solidity ^0.4.11;
 // See https://github.com/secure-vote/ann.sol/ for the readme and license
 // 
 // This contract allows publishers to push out announcements cryptographically.
-// Before the contract recognizes them, they must be &quot;thumbs up&quot;ed by one or
+// Before the contract recognizes them, they must be "thumbs up"ed by one or
 // more third parties. Those third parties can also raise the alarm if they
 // believe the announcement was made illegitimately.
 //
@@ -25,26 +25,26 @@ contract Announcement {
         uint256 nAudits;
         uint256 nAlarms;
         Message msg;
-        mapping (address =&gt; bool) auditedBy;
-        mapping (address =&gt; bool) alarmedBy;
+        mapping (address => bool) auditedBy;
+        mapping (address => bool) alarmedBy;
     }
 
     address public owner;
-    mapping(address =&gt; bool) public auditors;
+    mapping(address => bool) public auditors;
     address[] public auditorsList;
     uint256 public nAuditors;
     uint256 public nAuditorsRequired = 1;
     uint256 public nAuditorsAlarm = 1;
     uint256 public nAlarms = 0;
     uint256[] public alarms;
-    mapping(uint256 =&gt; bool) public alarmRaised;
+    mapping(uint256 => bool) public alarmRaised;
 
     uint256 public nMsg = 0;
-    mapping(uint256 =&gt; Message) public msgMap;
+    mapping(uint256 => Message) public msgMap;
 
     uint256 public nMsgsWaiting = 0;
-    mapping(uint256 =&gt; MessageAwaitingAudit) msgsWaiting;
-    mapping(uint256 =&gt; bool) public msgsWaitingDone;
+    mapping(uint256 => MessageAwaitingAudit) msgsWaiting;
+    mapping(uint256 => bool) public msgsWaitingDone;
 
 
     modifier isOwner() {
@@ -59,10 +59,10 @@ contract Announcement {
 
 
     function Announcement(address[] _auditors, uint256 _nAuditorsRequired, uint256 _nAuditorsAlarm) {
-        require(_nAuditorsRequired &gt;= 1);
-        require(_nAuditorsAlarm &gt;= 1);
+        require(_nAuditorsRequired >= 1);
+        require(_nAuditorsAlarm >= 1);
 
-        for (uint256 i = 0; i &lt; _auditors.length; i++) {
+        for (uint256 i = 0; i < _auditors.length; i++) {
             auditors[_auditors[i]] = true;
             auditorsList.push(_auditors[i]);
         }
@@ -74,7 +74,7 @@ contract Announcement {
     }
 
     function addAnn (string ipfsHash) isOwner external {
-        require(bytes(ipfsHash).length &gt; 0);
+        require(bytes(ipfsHash).length > 0);
         msgQPut(ipfsHash);
     }
 
@@ -100,10 +100,10 @@ contract Announcement {
         }
 
         // have we reached the right number of auditors and not triggered an alarm?
-        if (msgWaiting.nAudits &gt;= nAuditorsRequired &amp;&amp; msgWaiting.nAlarms &lt; nAuditorsAlarm) {
+        if (msgWaiting.nAudits >= nAuditorsRequired && msgWaiting.nAlarms < nAuditorsAlarm) {
             // then remove msg from queue and add to messages
             addMsgFinal(msgWaiting.msg, msgWaitingN);
-        } else if (msgWaiting.nAlarms &gt;= nAuditorsAlarm) {
+        } else if (msgWaiting.nAlarms >= nAuditorsAlarm) {
             msgsWaitingDone[msgWaitingN] = true;
             alarmRaised[msgWaitingN] = true;
             alarms.push(msgWaitingN);

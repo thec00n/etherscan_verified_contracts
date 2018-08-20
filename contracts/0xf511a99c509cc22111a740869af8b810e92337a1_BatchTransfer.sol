@@ -23,7 +23,7 @@ contract ERC20 {
 contract BatchTransfer {
     address private _owner;
     address private _erc20_address;
-    mapping(address =&gt; bool) private _authed_addresses;
+    mapping(address => bool) private _authed_addresses;
 
     constructor(address erc20_address) public {
         _owner = msg.sender;
@@ -32,12 +32,12 @@ contract BatchTransfer {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == _owner, &quot;require owner permission&quot;);
+        require(msg.sender == _owner, "require owner permission");
         _;
     }
 
     modifier onlyAuthed() {
-        require(_authed_addresses[msg.sender], &quot;require auth permission&quot;);
+        require(_authed_addresses[msg.sender], "require auth permission");
         _;
     }
 
@@ -52,14 +52,14 @@ contract BatchTransfer {
     }
 
     /**
-        convinient function for read token&#39;s owner
+        convinient function for read token's owner
      */
     function owner() public view returns (address) {
         return _owner;
     }
 
     /**
-        convinient function for read token&#39;s erc20Address
+        convinient function for read token's erc20Address
      */
     function erc20Address() public view returns (address) {
         return _erc20_address;
@@ -81,8 +81,8 @@ contract BatchTransfer {
         please check requirement before you invoke  
      */
     function transferFrom(address token_holder, address[] token_receivers, uint256[] values) public onlyAuthed returns (bool) {
-        require(token_receivers.length == values.length, &quot;token_receiver&#39;s size must eq value&#39;s size&quot;);
-        require(token_receivers.length &gt; 0, &quot;token_receiver&#39;s length must gt 0&quot;);
+        require(token_receivers.length == values.length, "token_receiver's size must eq value's size");
+        require(token_receivers.length > 0, "token_receiver's length must gt 0");
         
         uint length = token_receivers.length;
 
@@ -91,24 +91,24 @@ contract BatchTransfer {
         uint value = 0;
         uint total_value = 0;
 
-        for(i = 0; i &lt; length; ++i) {
+        for(i = 0; i < length; ++i) {
             value = values[i];
-            require(value &gt; 0, &quot;value must gt 0&quot;);
+            require(value > 0, "value must gt 0");
             total_value += value;
         }
         
         ERC20 token_contract = ERC20(_erc20_address);
         uint256 holder_balance = token_contract.balanceOf(token_holder);
-        require(holder_balance &gt;= total_value, &quot;balance of holder must gte total_value&quot;);
+        require(holder_balance >= total_value, "balance of holder must gte total_value");
         uint256 my_allowance = token_contract.allowance(token_holder, this);
-        require(my_allowance &gt;= total_value, &quot;allowance to contract must gte total_value&quot;);
+        require(my_allowance >= total_value, "allowance to contract must gte total_value");
 
         // perform real transfer; require all transaction success; if one fail, all fail
-        for(i = 0; i &lt; length; ++i) {
+        for(i = 0; i < length; ++i) {
             address token_receiver = token_receivers[i];
             value = values[i];
             bool is_success = token_contract.transferFrom(token_holder, token_receiver, value);
-            require(is_success, &quot;transaction should be success&quot;);
+            require(is_success, "transaction should be success");
         }
 
         return true;

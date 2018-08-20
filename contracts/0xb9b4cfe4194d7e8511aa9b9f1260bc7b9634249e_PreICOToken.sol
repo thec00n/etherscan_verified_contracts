@@ -19,20 +19,20 @@ contract RegaUtils {
   // Overflow checked math
   function safeAdd( uint256 x, uint256 y ) internal returns( uint256 ) {
     uint256 z = x + y;
-    assert( z &gt;= x );
+    assert( z >= x );
     return z;
   }
 
   function safeSub( uint256 x, uint256 y ) internal returns( uint256 ) {
-    assert( x &gt;= y);
+    assert( x >= y);
     return x - y;
   }
 }
 
 contract ERC20Token is IERC20Token, RegaUtils {
   uint256 public totalSupply = 0;
-  mapping( address =&gt; uint256 ) public balanceOf;
-  mapping( address =&gt; mapping( address =&gt; uint256 ) ) public allowance;
+  mapping( address => uint256 ) public balanceOf;
+  mapping( address => mapping( address => uint256 ) ) public allowance;
 
   event Transfer( address indexed _from, address indexed _to, uint256 _value );
   event Approval( address indexed _owner, address indexed _spender, uint256 _value );
@@ -74,8 +74,8 @@ contract IApplyPreICO {
 
 contract PreICOToken is ERC20Token {
 
-  string public constant name = &quot;REGA Risk Sharing preICO Token&quot;;
-  string public constant symbol = &quot;RST-P&quot;;
+  string public constant name = "REGA Risk Sharing preICO Token";
+  string public constant symbol = "RST-P";
   uint8 public constant decimals = 10;
 
   address public board;
@@ -102,7 +102,7 @@ contract PreICOToken is ERC20Token {
   }
 
   modifier opened() {
-    require(!closed &amp;&amp; weiForToken &gt; 0 &amp;&amp; totalSupply &lt; tokensLimit);
+    require(!closed && weiForToken > 0 && totalSupply < tokensLimit);
     _;
   }
 
@@ -159,9 +159,9 @@ contract PreICOToken is ERC20Token {
 
   function issueInternal(address to, uint256 amount, bool returnExcess) internal {
     uint tokens = amount / weiForToken;
-    require( weiForToken &gt; 0 &amp;&amp; safeAdd(totalSupply, tokens) &lt; tokensLimit &amp;&amp; (balanceOf[to] &lt; notMoreThan || notMoreThan == 0) &amp;&amp; safeAdd(balanceOf[to], tokens) &gt;= notLessThan );
+    require( weiForToken > 0 && safeAdd(totalSupply, tokens) < tokensLimit && (balanceOf[to] < notMoreThan || notMoreThan == 0) && safeAdd(balanceOf[to], tokens) >= notLessThan );
     uint sendBack = 0;
-    if( notMoreThan &gt; 0 &amp;&amp; safeAdd(balanceOf[to], tokens) &gt; notMoreThan ) {
+    if( notMoreThan > 0 && safeAdd(balanceOf[to], tokens) > notMoreThan ) {
       tokens = notMoreThan - balanceOf[to];
       sendBack = amount - tokens * weiForToken;
     }
@@ -170,7 +170,7 @@ contract PreICOToken is ERC20Token {
     balanceOf[to] = safeAdd(balanceOf[to], tokens);
     totalSupply = safeAdd(totalSupply, tokens);
     holders.push(to);
-    if( returnExcess &amp;&amp; sendBack &gt; 0 &amp;&amp; sendBack &lt; amount )
+    if( returnExcess && sendBack > 0 && sendBack < amount )
       to.transfer( sendBack );
     Issuance(to, tokens, amount, returnExcess ? sendBack : 0);
     Transfer( this, to, tokens );
@@ -187,7 +187,7 @@ contract PreICOToken is ERC20Token {
   function sendToRstForAddress( address from ) internal {
     require( closed );
     uint amount = balanceOf[from];
-    if( amount &gt; 0 ) {
+    if( amount > 0 ) {
       balanceOf[from] = 0;
       rst.applyTokens( from, amount );
       Transfer( from, rst, amount );

@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,7 +121,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f3d2a222c200f7d">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f3d2a222c200f7d">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -159,7 +159,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4032252d232f0072">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4032252d232f0072">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -208,7 +208,7 @@ contract Destructible is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -217,7 +217,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -246,7 +246,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -257,8 +257,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -272,7 +272,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -307,7 +307,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -365,7 +365,7 @@ contract MintableToken is StandardToken, Ownable {
 //====== AGRE Contracts =====
 
 /**
-* @title TradeableToken can be bought and sold from/to it&#39;s own contract during it&#39;s life time
+* @title TradeableToken can be bought and sold from/to it's own contract during it's life time
 * Sold tokens and Ether received to buy tokens are collected during specified period and then time comes
 * contract owner should specify price for the last period and send tokens/ether to their new owners.
 */
@@ -392,19 +392,19 @@ contract TradeableToken is StandardToken, Ownable {
     uint256 public currentPeriodEtherCollected; //How much ether was collected (to buy tokens) during current period and waiting for distribution
     uint256 public currentPeriodTokenCollected; //How much tokens was collected (to sell tokens) during current period and waiting for distribution
 
-    mapping(address =&gt; uint256) receivedEther;  //maps address of buyer to amount of ether he sent
-    mapping(address =&gt; uint256) soldTokens;     //maps address of seller to amount of tokens he sent
+    mapping(address => uint256) receivedEther;  //maps address of buyer to amount of ether he sent
+    mapping(address => uint256) soldTokens;     //maps address of seller to amount of tokens he sent
 
     uint32 constant MILLI_PERCENT_DIVIDER = 100*1000;
-    uint32 public buyFeeMilliPercent;           //The buyer&#39;s fee in a thousandth of percent. So, if buyer&#39;s fee = 5%, then buyFeeMilliPercent = 5000 and if without buyer shoud receive 200 tokens with fee it will receive 200 - (200 * 5000 / MILLI_PERCENT_DIVIDER)
-    uint32 public sellFeeMilliPercent;          //The seller&#39;s fee in a thousandth of percent. (see above)
+    uint32 public buyFeeMilliPercent;           //The buyer's fee in a thousandth of percent. So, if buyer's fee = 5%, then buyFeeMilliPercent = 5000 and if without buyer shoud receive 200 tokens with fee it will receive 200 - (200 * 5000 / MILLI_PERCENT_DIVIDER)
+    uint32 public sellFeeMilliPercent;          //The seller's fee in a thousandth of percent. (see above)
 
     uint256 public minBuyAmount;                //Minimal amount of ether to buy
     uint256 public minSellAmount;               //Minimal amount of tokens to sell
 
     modifier canBuyAndSell() {
         require(currentState == State.Collecting);
-        require(now &lt; currentPeriodEndTimestamp);
+        require(now < currentPeriodEndTimestamp);
         _;
     }
 
@@ -418,7 +418,7 @@ contract TradeableToken is StandardToken, Ownable {
     * @notice Send Ether to buy tokens
     */
     function() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         buy(msg.sender, msg.value);
     }    
 
@@ -445,7 +445,7 @@ contract TradeableToken is StandardToken, Ownable {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         if( (_to == address(this)) || (_to == 0) ){
             var _allowance = allowed[_from][msg.sender];
-            require (_value &lt;= _allowance);
+            require (_value <= _allowance);
             allowed[_from][msg.sender] = _allowance.sub(_value);
             return sell(_from, _value);
         }else{
@@ -459,7 +459,7 @@ contract TradeableToken is StandardToken, Ownable {
     * @param amount The amount to be transferred.
     */
     function buy(address who, uint256 amount) canBuyAndSell internal returns(bool){
-        require(amount &gt;= minBuyAmount);
+        require(amount >= minBuyAmount);
         currentPeriodEtherCollected = currentPeriodEtherCollected.add(amount);
         receivedEther[who] = receivedEther[who].add(amount);  //if this is first operation from this address, initial value of receivedEther[to] == 0
         Sale(who, amount);
@@ -472,7 +472,7 @@ contract TradeableToken is StandardToken, Ownable {
     * @param amount The amount to be transferred.
     */
     function sell(address who, uint256 amount) canBuyAndSell internal returns(bool){
-        require(amount &gt;= minSellAmount);
+        require(amount >= minSellAmount);
         currentPeriodTokenCollected = currentPeriodTokenCollected.add(amount);
         soldTokens[who] = soldTokens[who].add(amount);  //if this is first operation from this address, initial value of soldTokens[to] == 0
         totalSupply = totalSupply.sub(amount);
@@ -485,7 +485,7 @@ contract TradeableToken is StandardToken, Ownable {
     * @param _buyFeeMilliPercent fee in thousandth of percent (5% = 5000)
     */
     function setBuyFee(uint32 _buyFeeMilliPercent) onlyOwner public {
-        require(_buyFeeMilliPercent &lt; MILLI_PERCENT_DIVIDER);
+        require(_buyFeeMilliPercent < MILLI_PERCENT_DIVIDER);
         buyFeeMilliPercent = _buyFeeMilliPercent;
     }
     /**
@@ -493,7 +493,7 @@ contract TradeableToken is StandardToken, Ownable {
     * @param _sellFeeMilliPercent fee in thousandth of percent (5% = 5000)
     */
     function setSellFee(uint32 _sellFeeMilliPercent) onlyOwner public {
-        require(_sellFeeMilliPercent &lt; MILLI_PERCENT_DIVIDER);
+        require(_sellFeeMilliPercent < MILLI_PERCENT_DIVIDER);
         sellFeeMilliPercent = _sellFeeMilliPercent;
     }
     /**
@@ -526,7 +526,7 @@ contract TradeableToken is StandardToken, Ownable {
     function startDistribution(uint256 _currentPeriodRate) onlyOwner public {
         require(currentState != State.Distribution);    //owner should not be able to change rate after distribution is started, ensures that everyone have the same rate
         require(_currentPeriodRate != 0);                //something has to be distributed!
-        //require(now &gt;= currentPeriodEndTimestamp)     //DO NOT require period end timestamp passed, because there can be some situations when it is neede to end it sooner. But this should be done with extremal care, because of possible race condition between new sales/purshases and currentPeriodRate definition
+        //require(now >= currentPeriodEndTimestamp)     //DO NOT require period end timestamp passed, because there can be some situations when it is neede to end it sooner. But this should be done with extremal care, because of possible race condition between new sales/purshases and currentPeriodRate definition
 
         currentState = State.Distribution;
         currentPeriodRate = _currentPeriodRate;
@@ -538,8 +538,8 @@ contract TradeableToken is StandardToken, Ownable {
     */
     function distributeTokens(address[] buyers) onlyOwner public {
         require(currentState == State.Distribution);
-        require(currentPeriodRate &gt; 0);
-        for(uint256 i=0; i &lt; buyers.length; i++){
+        require(currentPeriodRate > 0);
+        for(uint256 i=0; i < buyers.length; i++){
             address buyer = buyers[i];
             require(buyer != address(0));
             uint256 etherAmount = receivedEther[buyer];
@@ -564,8 +564,8 @@ contract TradeableToken is StandardToken, Ownable {
     */
     function distributeEther(address[] sellers) onlyOwner payable public {
         require(currentState == State.Distribution);
-        require(currentPeriodRate &gt; 0);
-        for(uint256 i=0; i &lt; sellers.length; i++){
+        require(currentPeriodRate > 0);
+        for(uint256 i=0; i < sellers.length; i++){
             address seller = sellers[i];
             require(seller != address(0));
             uint256 tokenAmount = soldTokens[seller];
@@ -585,7 +585,7 @@ contract TradeableToken is StandardToken, Ownable {
     }
 
     function startCollecting(uint256 _collectingEndTimestamp) onlyOwner public {
-        require(_collectingEndTimestamp &gt; now);      //Need some time for collection
+        require(_collectingEndTimestamp > now);      //Need some time for collection
         require(currentState == State.Distribution);    //Do not allow to change collection terms after it is started
         require(currentPeriodEtherCollected == 0);      //All sold tokens are distributed
         require(currentPeriodTokenCollected == 0);      //All redeemed tokens are paid
@@ -598,8 +598,8 @@ contract TradeableToken is StandardToken, Ownable {
 }
 
 contract AGREToken is TradeableToken, MintableToken, HasNoContracts, HasNoTokens { //MintableToken is StandardToken, Ownable
-    string public symbol = &quot;AGRE&quot;;
-    string public name = &quot;Aggregate Coin&quot;;
+    string public symbol = "AGRE";
+    string public name = "Aggregate Coin";
     uint8 public constant decimals = 18;
 
     address public founder;    //founder address to allow him transfer tokens while minting
@@ -645,7 +645,7 @@ contract AGRECrowdsale is Ownable, Destructible {
     * verifies that the gas price is lower than maxGasPrice
     */
     modifier validGasPrice() {
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
         _;
     }
     /**
@@ -654,8 +654,8 @@ contract AGRECrowdsale is Ownable, Destructible {
     */
     function AGRECrowdsale(uint256 _startTimestamp, uint256 _endTimestamp, uint256 _rate, uint256 _hardCap, 
         uint256 _ownerTokens, uint32 _buyFeeMilliPercent, uint32 _sellFeeMilliPercent, uint256 _minBuyAmount, uint256 _minSellAmount) public {
-        require(_startTimestamp &lt; _endTimestamp);
-        require(_rate &gt; 0);
+        require(_startTimestamp < _endTimestamp);
+        require(_rate > 0);
 
         startTimestamp = _startTimestamp;
         endTimestamp = _endTimestamp;
@@ -669,8 +669,8 @@ contract AGRECrowdsale is Ownable, Destructible {
 
     function () payable validGasPrice public {
         require(crowdsaleOpen());
-        require(msg.value &gt; 0);
-        require(collectedEther.add(msg.value) &lt;= hardCap);
+        require(msg.value > 0);
+        require(collectedEther.add(msg.value) <= hardCap);
 
         collectedEther = collectedEther.add(msg.value);
         uint256 buyerTokens = rate.mul(msg.value);
@@ -678,7 +678,7 @@ contract AGRECrowdsale is Ownable, Destructible {
     }
 
     function crowdsaleOpen() public constant returns(bool){
-        return (rate &gt; 0) &amp;&amp; (collectedEther &lt; hardCap) &amp;&amp; (startTimestamp &lt;= now) &amp;&amp; (now &lt;= endTimestamp);
+        return (rate > 0) && (collectedEther < hardCap) && (startTimestamp <= now) && (now <= endTimestamp);
     }
 
     /**
@@ -695,13 +695,13 @@ contract AGRECrowdsale is Ownable, Destructible {
         rate = 0;   //this makes crowdsaleOpen() return false;
         token.finishMinting();
         token.transferOwnership(owner);
-        if(this.balance &gt; 0) owner.transfer(this.balance);    
+        if(this.balance > 0) owner.transfer(this.balance);    
     }
     /**
     * @notice Claim collected ether without closing crowdsale
     */
     function claimEther() public onlyOwner {
-        if(this.balance &gt; 0) owner.transfer(this.balance);
+        if(this.balance > 0) owner.transfer(this.balance);
     }
 
 }

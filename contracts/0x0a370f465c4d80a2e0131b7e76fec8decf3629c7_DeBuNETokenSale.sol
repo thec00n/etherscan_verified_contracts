@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,20 +72,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
   * @dev Transfer tokens from one address to another
@@ -219,8 +219,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract DeBuNeToken is MintableToken {
   // Coin Properties
-  string public name = &quot;DeBuNe&quot;;
-  string public symbol = &quot;DBN&quot;;
+  string public name = "DeBuNe";
+  string public symbol = "DBN";
   uint256 public decimals = 18;
 
   // Special propeties
@@ -331,7 +331,7 @@ contract DeBuNETokenSale is Ownable {
 
   bool    public freeForAll = false;
 
-  mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
+  mapping (address => bool) public authorised; // just to annoy the heck out of americans
 
   event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
 
@@ -363,15 +363,15 @@ contract DeBuNETokenSale is Ownable {
   * @dev Calculates the amount of bonus coins the buyer gets
    */
   function getRateAt(uint256 at) internal returns (uint256) {
-    if (at &lt; (tier1Timestamp))
+    if (at < (tier1Timestamp))
       return 100;
       minContribution = 50 ether;  
       maxContribution = 5000 ether;
-    if (at &lt; (tier2Timestamp))
+    if (at < (tier2Timestamp))
       return 67;
       minContribution = 25 ether;
       maxContribution = 2500 ether;
-     if (at &lt; (tier3Timestamp))
+     if (at < (tier3Timestamp))
       return 50;
       minContribution = 1 ether;
       maxContribution = 100 ether;
@@ -380,9 +380,9 @@ contract DeBuNETokenSale is Ownable {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp)
+    if (now > endTimestamp)
       return true;
-    if (tokenRaised &gt;= tokensForSale)
+    if (tokenRaised >= tokensForSale)
       return true; // if we reach the tokensForSale
     return false;
  }
@@ -403,11 +403,11 @@ contract DeBuNETokenSale is Ownable {
   */
   modifier onlyAuthorised() {
     require (authorised[msg.sender] || freeForAll);
-    require (now &gt;= startTimestamp);
+    require (now >= startTimestamp);
     require (!(hasEnded()));
     require (HardwareWallet != 0x0);
-    require (msg.value &gt; 1 finney);
-    require(tokensForSale &gt; tokenRaised); // check we are not over the number of tokensForSale
+    require (msg.value > 1 finney);
+    require(tokensForSale > tokenRaised); // check we are not over the number of tokensForSale
     _;
   }
   /**
@@ -421,7 +421,7 @@ contract DeBuNETokenSale is Ownable {
   * @dev authorise a lot of accounts in one go
   */
   function authoriseManyAccounts(address[] many) onlyCSorAdmin public {
-    for (uint256 i = 0; i &lt; many.length; i++) {
+    for (uint256 i = 0; i < many.length; i++) {
       authorised[many[i]] = true;
     }
   }
@@ -488,7 +488,7 @@ contract DeBuNETokenSale is Ownable {
     require(hasEnded());
     // assign the rest of the 100M tokens to the reserve
     uint unassigned;
-    if(maxTokens &gt; tokenRaised) {
+    if(maxTokens > tokenRaised) {
       unassigned  = maxTokens.sub(tokenRaised);
       token.mint(HardwareWallet,unassigned);
     }

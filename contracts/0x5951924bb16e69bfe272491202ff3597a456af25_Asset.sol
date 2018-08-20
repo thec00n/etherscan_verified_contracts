@@ -5,7 +5,7 @@ Token Contract with batch assignments
 ERC-20 Token Standar Compliant - ConsenSys
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="97f1b9f6f9e3f8f9fef8b9f6fcf2fbd7f0faf6fefbb9f4f8fa">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="97f1b9f6f9e3f8f9fef8b9f6fcf2fbd7f0faf6fefbb9f4f8fa">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -16,13 +16,13 @@ MIT PGP KEY ID: 078E41CB
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -43,7 +43,7 @@ contract admined { //This token contract is administered
     }
 
     modifier endOfLock() { //A modifier to lock transactions until finish of time (or being allowed)
-        require(now &gt; lockThreshold || msg.sender == allowedAddr);
+        require(now > lockThreshold || msg.sender == allowedAddr);
         _;
     }
 
@@ -58,7 +58,7 @@ contract admined { //This token contract is administered
     }
 
     function setLock(uint _timeInMins) onlyAdmin public { //Only the admin can set a lock on transfers
-        require(_timeInMins &gt; 0);
+        require(_timeInMins > 0);
         uint mins = _timeInMins * 1 minutes;
         lockThreshold = SafeMath.add(now,mins);
         SetLock(lockThreshold);
@@ -75,15 +75,15 @@ contract admined { //This token contract is administered
 contract Token is admined {
 
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //Balances mapping
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //Allowance mapping
+    mapping (address => uint256) balances; //Balances mapping
+    mapping (address => mapping (address => uint256)) allowed; //Allowance mapping
 
     function balanceOf(address _owner) public constant returns (uint256 bal) {
         return balances[_owner];
     }
 
     function transfer(address _to, uint256 _value) endOfLock public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -91,7 +91,7 @@ contract Token is admined {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) endOfLock public returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         balances[_from] = SafeMath.sub(balances[_from], _value);
         allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -123,8 +123,8 @@ contract Token is admined {
     }
     //This is an especial Admin-only function to make massive tokens assignments
     function batch(address[] data,uint256 amount) onlyAdmin public { //It takes an array of addresses and an amount
-        require(balances[this] &gt;= data.length*amount); //The contract must hold the needed tokens
-        for (uint i=0; i&lt;data.length; i++) { //It moves over the array
+        require(balances[this] >= data.length*amount); //The contract must hold the needed tokens
+        for (uint i=0; i<data.length; i++) { //It moves over the array
             address target = data[i]; //Take an address
             balances[target] = SafeMath.add(balances[target], amount); //Add an amount to the target address
             balances[this] = SafeMath.sub(balances[this], amount); //Sub that amount from the contract
@@ -144,7 +144,7 @@ contract Asset is admined, Token {
     string public name;
     uint8 public decimals = 18;
     string public symbol;
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
     uint256 initialAmount = 80000000000000000000000000; //80Million tonkens to be created
 
     function Asset(

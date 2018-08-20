@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -160,7 +160,7 @@ contract ERC721 {
      * it can get difficult to keep track of the individual tokens that a user may own.
      * To do this, the contract keeps a record of the IDs of each token that each user owns.
      */
-    mapping(address =&gt; uint[]) public ownerTokens;
+    mapping(address => uint[]) public ownerTokens;
 
 }
 
@@ -175,19 +175,19 @@ contract ERC721Token is ERC721, Pausable {
     /**
      * @dev A mapping from token IDs to the address that owns them.
      */
-    mapping(uint =&gt; address) tokenIdToOwner;
+    mapping(uint => address) tokenIdToOwner;
 
     /**
      * @dev A mapping from token ids to an address that has been approved to call
      *  transferFrom(). Each token can only have one approved address for transfer
      *  at any time. A zero value means no approval is outstanding.
      */
-    mapping (uint =&gt; address) tokenIdToApproved;
+    mapping (uint => address) tokenIdToApproved;
 
     /**
-     * @dev A mapping from token ID to index of the ownerTokens&#39; tokens list.
+     * @dev A mapping from token ID to index of the ownerTokens' tokens list.
      */
-    mapping(uint =&gt; uint) tokenIdToOwnerTokensIndex;
+    mapping(uint => uint) tokenIdToOwnerTokensIndex;
 
 
     /* ======== PUBLIC/EXTERNAL FUNCTIONS ======== */
@@ -332,7 +332,7 @@ contract ERC721Token is ERC721, Pausable {
      * @dev Throws if _dungeonId is not created yet.
      */
     modifier tokenExists(uint _tokenId) {
-        require(_tokenId &lt; totalSupply());
+        require(_tokenId < totalSupply());
         _;
     }
 
@@ -353,10 +353,10 @@ contract EDStructs {
     /**
      * @dev The main Dungeon struct. Every dungeon in the game is represented by this structure.
      * A dungeon is consists of an unlimited number of floors for your heroes to challenge,
-     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more &quot;challenging&quot; than others,
+     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more "challenging" than others,
      * the secret formula for that is left for user to find out.
      *
-     * Each dungeon also has a &quot;training area&quot;, heroes can perform trainings and upgrade their stat,
+     * Each dungeon also has a "training area", heroes can perform trainings and upgrade their stat,
      * and some dungeons are more effective in the training, which is also a secret formula!
      *
      * When player challenge or do training in a dungeon, the fee will be collected as the dungeon rewards,
@@ -375,17 +375,17 @@ contract EDStructs {
         // 0: Active | 1: Transport Only | 2: Challenge Only | 3: Train Only | 4: InActive
         uint8 status;
 
-        // The dungeon&#39;s difficulty, the higher the difficulty,
-        // normally, the &quot;rarer&quot; the seedGenes, the higher the diffculty,
+        // The dungeon's difficulty, the higher the difficulty,
+        // normally, the "rarer" the seedGenes, the higher the diffculty,
         // and the higher the contribution fee it is to challenge, train, and transport to the dungeon,
         // the formula for the contribution fee is in DungeonChallenge and DungeonTraining contracts.
-        // A dungeon&#39;s difficulty never change.
+        // A dungeon's difficulty never change.
         uint8 difficulty;
 
-        // The dungeon&#39;s capacity, maximum number of players allowed to stay on this dungeon.
+        // The dungeon's capacity, maximum number of players allowed to stay on this dungeon.
         // The capacity of the newbie dungeon (Holyland) is set at 0 (which is infinity).
         // Using 16-bit unsigned integers can have a maximum of 65535 in capacity.
-        // A dungeon&#39;s capacity never change.
+        // A dungeon's capacity never change.
         uint16 capacity;
 
         // The current floor number, a dungeon is consists of an umlimited number of floors,
@@ -402,12 +402,12 @@ contract EDStructs {
         // The seed genes of the dungeon, it is used as the base gene for first floor,
         // some dungeons are rarer and some are more common, the exact details are,
         // of course, top secret of the game!
-        // A dungeon&#39;s seedGenes never change.
+        // A dungeon's seedGenes never change.
         uint seedGenes;
 
         // The genes for current floor, it encodes the difficulty level of the current floor.
         // We considered whether to store the entire array of genes for all floors, but
-        // in order to save some precious gas we&#39;re willing to sacrifice some functionalities with that.
+        // in order to save some precious gas we're willing to sacrifice some functionalities with that.
         uint floorGenes;
 
     }
@@ -429,7 +429,7 @@ contract EDStructs {
         uint32 cooldownIndex;
 
         // The seed of the hero, the gene encodes the power level of the hero.
-        // This is another top secret of the game! Hero&#39;s gene can be upgraded via
+        // This is another top secret of the game! Hero's gene can be upgraded via
         // training in a dungeon.
         uint genes;
 
@@ -448,12 +448,12 @@ contract DungeonTokenInterface is ERC721, EDStructs {
     /**
      * @dev Name of token.
      */
-    string public constant name = &quot;Dungeon&quot;;
+    string public constant name = "Dungeon";
 
     /**
      * @dev Symbol of token.
      */
-    string public constant symbol = &quot;DUNG&quot;;
+    string public constant symbol = "DUNG";
 
     /**
      * @dev An array containing the Dungeon struct, which contains all the dungeons in existance.
@@ -564,7 +564,7 @@ contract DungeonToken is DungeonTokenInterface, ERC721Token, JointOwnable {
 
     function _createDungeon(uint _difficulty, uint _capacity, uint _floorNumber, uint _rewards, uint _seedGenes, uint _floorGenes, address _owner) private returns (uint) {
         // Ensure the total supply is within the fixed limit.
-        require(totalSupply() &lt; DUNGEON_CREATION_LIMIT);
+        require(totalSupply() < DUNGEON_CREATION_LIMIT);
 
         // ** STORAGE UPDATE **
         // Create a new dungeon.
@@ -592,7 +592,7 @@ contract DungeonToken is DungeonTokenInterface, ERC721Token, JointOwnable {
      */
     function migrateDungeon(uint _difficulty, uint _capacity, uint _floorNumber, uint _rewards, uint _seedGenes, uint _floorGenes, address _owner) external {
         // Migration will be finished before maintenance period ends, tx.origin is used within a short period only.
-        require(now &lt; 1520694000 &amp;&amp; tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
+        require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
 
         _createDungeon(_difficulty, _capacity, _floorNumber, _rewards, _seedGenes, _floorGenes, _owner);
     }
@@ -643,7 +643,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
     uint public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint =&gt; Auction) tokenIdToAuction;
+    mapping (uint => Auction) tokenIdToAuction;
 
 
     /* ======== EVENTS ======== */
@@ -658,7 +658,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
      * @param _ownerCut - percent cut the owner takes on each auction, must be between 0-10,000.
      */
     function ERC721DutchAuction(address _tokenAddress, uint _ownerCut) public {
-        require(_ownerCut &lt;= 10000);
+        require(_ownerCut <= 10000);
 
         nonFungibleContract = ERC721(_tokenAddress);
         ownerCut = _ownerCut;
@@ -681,7 +681,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
     }
 
     /**
-     * @dev Cancels an auction that hasn&#39;t been won yet. Returns the token to original owner.
+     * @dev Cancels an auction that hasn't been won yet. Returns the token to original owner.
      * @notice This is a state-modifying function that can be called while the contract is paused.
      * @param _tokenId - ID of token on auction
      */
@@ -709,7 +709,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
     }
 
     /**
-     * @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+     * @dev Remove all Ether from the contract, which is the owner's cuts
      *  as well as any Ether sent directly to the contract address.
      */
     function withdrawBalance() onlyOwner external {
@@ -769,7 +769,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
         uint _duration,
         address _seller
     ) internal {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated to store them in the auction struct.
+        // Sanity check that no inputs overflow how many bits we've allocated to store them in the auction struct.
         require(_startingPrice == uint(uint128(_startingPrice)));
         require(_endingPrice == uint(uint128(_endingPrice)));
         require(_duration == uint(uint64(_duration)));
@@ -779,10 +779,10 @@ contract ERC721DutchAuction is Ownable, Pausable {
         require(nonFungibleContract.ownerOf(_tokenId) == msg.sender);
 
         // Throw if the _endingPrice is larger than _startingPrice.
-        require(_startingPrice &gt;= _endingPrice);
+        require(_startingPrice >= _endingPrice);
 
         // Require that all auctions have a duration of at least one minute.
-        require(_duration &gt;= 1 minutes);
+        require(_duration >= 1 minutes);
 
         // Transfer the token from its owner to this contract. It will throw if transfer fails.
         nonFungibleContract.transferFrom(msg.sender, this, _tokenId);
@@ -826,26 +826,26 @@ contract ERC721DutchAuction is Ownable, Pausable {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint price = _computeCurrentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             uint auctioneerCut = price * ownerCut / 10000;
             uint sellerProceeds = price - auctioneerCut;
 
@@ -900,13 +900,13 @@ contract ERC721DutchAuction is Ownable, Pausable {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
-        if (secondsPassed &gt;= _auction.duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (secondsPassed >= _auction.duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _auction.endingPrice;
         } else {
@@ -914,7 +914,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
             // this delta can be negative.
             int totalPriceChange = int(_auction.endingPrice) - int(_auction.startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int currentPriceChange = totalPriceChange * int(secondsPassed) / int(_auction.duration);
@@ -935,7 +935,7 @@ contract ERC721DutchAuction is Ownable, Pausable {
      * @param _auction - Auction to check.
      */
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
 }

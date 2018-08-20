@@ -31,7 +31,7 @@ contract HolyPiggyStorage {
     uint256 tribute;
   }
   Wish[] wishes;
-  mapping(address =&gt; uint256[]) wishesIdx;
+  mapping(address => uint256[]) wishesIdx;
 
   address godAddress;
   address serviceProvider;
@@ -102,15 +102,15 @@ contract HolyPiggy is HolyPiggyStorage, Owned {
   }
 
   function postWish(bytes name, bytes content) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(serviceProvider != address(0));
     // (1+n/d)t = v  solve for n/d*t, which is the fee
     // t = d/(n+d)*v
     // fee = n/(n+d)*v
     uint256 serviceFee = msg.value * serviceFeeNumerator / (serviceFeeDenominator + serviceFeeNumerator);
     uint256 tribute = msg.value - serviceFee;
-    require(tribute &gt; minimumWishTribute);
-    assert(accumulatedServiceFee + serviceFee &gt; accumulatedServiceFee);
+    require(tribute > minimumWishTribute);
+    assert(accumulatedServiceFee + serviceFee > accumulatedServiceFee);
     
     uint256 id = wishes.length;
     var wish = Wish(name, content, now, tribute);

@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39c83969d89968383969f9a9dde809c9f9a979a878ab3c2ddcaddc3">[email&#160;protected]</a>/contracts/math/SafeMath.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39c83969d89968383969f9a9dde809c9f9a979a878ab3c2ddcaddc3">[email protected]</a>/contracts/math/SafeMath.sol
  */
 
 /**
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,20 +46,20 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f7988792998d928787929b9e99da84989b9e939e838eb7c6d9ced9c7">[email&#160;protected]</a>/contracts/ownership/Ownable.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f7988792998d928787929b9e99da84989b9e939e838eb7c6d9ced9c7">[email protected]</a>/contracts/ownership/Ownable.sol
  */
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,7 +98,7 @@ contract Ownable {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fbe4f1faeef1e4e4f1f8fdfab9e7fbf8fdf0fde0edd4a5baadbaa4">[email&#160;protected]</a>/contracts/token/ERC20/ERC20Basic.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fbe4f1faeef1e4e4f1f8fdfab9e7fbf8fdf0fde0edd4a5baadbaa4">[email protected]</a>/contracts/token/ERC20/ERC20Basic.sol
  */
 
 /**
@@ -115,7 +115,7 @@ contract ERC20Basic {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cba4bbaea5b1aebbbbaea7a2a5e6b8a4a7a2afa2bfb28bfae5f2e5fb">[email&#160;protected]</a>/contracts/token/ERC20/ERC20.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cba4bbaea5b1aebbbbaea7a2a5e6b8a4a7a2afa2bfb28bfae5f2e5fb">[email protected]</a>/contracts/token/ERC20/ERC20.sol
  */
 
 /**
@@ -131,7 +131,7 @@ contract ERC20 is ERC20Basic {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f19e81949f8b948181949d989fdc829e9d9895988588b1c0dfc8dfc1">[email&#160;protected]</a>/contracts/token/ERC20/BasicToken.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f19e81949f8b948181949d989fdc829e9d9895988588b1c0dfc8dfc1">[email protected]</a>/contracts/token/ERC20/BasicToken.sol
  */
 
 /**
@@ -141,7 +141,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -159,7 +159,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract BasicToken is ERC20Basic {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa5baafa4b0afbabaafa6a3a4e7b9a5a6a3aea3beb38afbe4f3e4fa">[email&#160;protected]</a>/contracts/token/ERC20/StandardToken.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa5baafa4b0afbabaafa6a3a4e7b9a5a6a3aea3beb38afbe4f3e4fa">[email protected]</a>/contracts/token/ERC20/StandardToken.sol
  */
 
 /**
@@ -192,7 +192,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -203,8 +203,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -218,7 +218,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -267,7 +267,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -280,7 +280,7 @@ contract StandardToken is ERC20, BasicToken {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2cdd2c7ccd8c7d2d2c7cecbcc8fd1cdcecbc6cbd6dbe2938c9b8c92">[email&#160;protected]</a>/contracts/token/ERC20/BurnableToken.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2cdd2c7ccd8c7d2d2c7cecbcc8fd1cdcecbc6cbd6dbe2938c9b8c92">[email protected]</a>/contracts/token/ERC20/BurnableToken.sol
  */
 
 /**
@@ -300,9 +300,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -313,7 +313,7 @@ contract BurnableToken is BasicToken {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f897889d96829d88889d949196d58b9794919c918c81b8c9d6c1d6c8">[email&#160;protected]</a>/contracts/token/ERC20/MintableToken.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f897889d96829d88889d949196d58b9794919c918c81b8c9d6c1d6c8">[email protected]</a>/contracts/token/ERC20/MintableToken.sol
  */
 
 /**
@@ -361,7 +361,7 @@ contract MintableToken is StandardToken, Ownable {
 
 
 /**
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39c83969d89968383969f9a9dde809c9f9a979a878ab3c2ddcaddc3">[email&#160;protected]</a>/contracts/token/ERC20/CappedToken.sol
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39c83969d89968383969f9a9dde809c9f9a979a878ab3c2ddcaddc3">[email protected]</a>/contracts/token/ERC20/CappedToken.sol
  */
 
 /**
@@ -373,7 +373,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -384,7 +384,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -396,8 +396,8 @@ contract CappedToken is MintableToken {
  * AWARE Token, totalSupply 100000000000000000
  */
 contract AwareToken is BurnableToken, CappedToken(100000000000000000) {
-    string public name = &quot;AWARE Token&quot;;
-    string public symbol = &quot;AT&quot;;
+    string public name = "AWARE Token";
+    string public symbol = "AT";
     uint8 public decimals = 8;
 
     function burn(uint256 _value) onlyOwner public {

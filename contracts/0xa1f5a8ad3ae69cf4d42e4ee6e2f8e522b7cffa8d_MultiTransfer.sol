@@ -26,15 +26,15 @@ contract MultiTransfer {
 
     uint256 sum = 0;
 
-    for (uint256 i = 0; i &lt; _to.length; i++) {
+    for (uint256 i = 0; i < _to.length; i++) {
       require(_to[i] != address(0));
       sum += _value[i];
     }
 
-    assert(balanceOf(_token, msg.sender) &gt;= sum);
+    assert(balanceOf(_token, msg.sender) >= sum);
 
 
-    for (i = 0; i &lt; _to.length; i++) {
+    for (i = 0; i < _to.length; i++) {
       ERC20Basic(_token).transfer(_to[i], _value[i]);
     }
 

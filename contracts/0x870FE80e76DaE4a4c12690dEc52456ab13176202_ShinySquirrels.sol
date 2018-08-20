@@ -53,9 +53,9 @@ PlayerEntry[] private players;
 uint[] theLine;
 
 // individual player totals
-mapping(address =&gt; PlayerStat) private playerStats;
+mapping(address => PlayerStat) private playerStats;
 
-// Shiny new contract, no copy &amp; paste here!
+// Shiny new contract, no copy & paste here!
 function ShinySquirrels() {
     owner = msg.sender;
 }
@@ -104,7 +104,7 @@ function entryPayout(uint index) constant private returns(uint payout) {
 
 // the payout amount still due to this entry in line
 function entryPayoutDue(uint index) constant private returns(uint payoutDue) {
-    // subtract the amount they&#39;ve been paid from the total they are to receive
+    // subtract the amount they've been paid from the total they are to receive
     payoutDue = entryPayout(index) - players[theLine[index]].paid;
 }
  
@@ -133,7 +133,7 @@ function play() {
     uint deposit = msg.value; // in wei
      
     // validate deposit is in range
-    if(deposit &lt; minDeposit || deposit &gt; maxDeposit) {
+    if(deposit < minDeposit || deposit > maxDeposit) {
         msg.sender.send(deposit);
         return;
     }
@@ -152,22 +152,22 @@ function play() {
         fee        += 1;
         stars      += 1;
          
-        if(deposit &lt; 1 ether) {
-            multiplier  -= multiplier &gt;= 7 ? 7 : multiplier;
-            fee         -= fee        &gt;= 1 ? 1 : 0;
+        if(deposit < 1 ether) {
+            multiplier  -= multiplier >= 7 ? 7 : multiplier;
+            fee         -= fee        >= 1 ? 1 : 0;
             shinyThings += 1;
         }
-        if(deposit &gt;= 1 &amp;&amp; waitingForPayout() &gt;= 10) {
+        if(deposit >= 1 && waitingForPayout() >= 10) {
             // at least 10 players waiting
             skip += 4;
             fee  += 3;
         }
-        if(deposit &gt;= 2 ether &amp;&amp; deposit &lt;= 3 ether) {
+        if(deposit >= 2 ether && deposit <= 3 ether) {
             multiplier += 3;
             fee        += 2;
             hearts     += 1;
         }
-        if(deposit &gt;= 3 ether) {
+        if(deposit >= 3 ether) {
             stars += 1;
         }
 
@@ -176,13 +176,13 @@ function play() {
         fee        += 2;
         squirrels  += 1;
 
-        if(deposit &lt; 1 ether) {
+        if(deposit < 1 ether) {
             multiplier += 6;
             fee        += 3;
             squirrels  += 1;
         }
-        if(deposit &gt;= 2 ether) {
-            if(waitingForPayout() &gt;= 20) {
+        if(deposit >= 2 ether) {
+            if(waitingForPayout() >= 20) {
                 // at least 20 players waiting
                 skip        += waitingForPayout() / 2; // skip half of them
                 fee         += 2;
@@ -193,9 +193,9 @@ function play() {
             fee        += 4;
             hearts     += 1;
         }
-        if(deposit &gt;= 4 ether) {
+        if(deposit >= 4 ether) {
             multiplier += 1;
-            fee       -= fee &gt;= 1 ? 1 : 0;
+            fee       -= fee >= 1 ? 1 : 0;
             skip      += 1;
             hearts    += 1;
             stars     += 1;
@@ -206,14 +206,14 @@ function play() {
         fee        += 6;
         sprockets  += 1;
          
-        if(waitingForPayout() &gt;= 10) {
+        if(waitingForPayout() >= 10) {
             // at least 10 players waiting
-            multiplier -= multiplier &gt;= 8 ? 8 : multiplier;
-            fee        -= fee &gt;= 1 ? 1 : 0;
+            multiplier -= multiplier >= 8 ? 8 : multiplier;
+            fee        -= fee >= 1 ? 1 : 0;
             skip       += 1;
             squirrels  += 1;
         }
-        if(deposit &gt;= 3 ether) {
+        if(deposit >= 3 ether) {
             multiplier  += 2;
             skip        += 1;
             stars       += 1;
@@ -227,13 +227,13 @@ function play() {
         }
      
     } else if (players.length % 5 == 3) {
-        multiplier  -= multiplier &gt;= 5 ? 5 : multiplier; // on noes!
+        multiplier  -= multiplier >= 5 ? 5 : multiplier; // on noes!
         fee         += 0;
         skip        += 3; // oh yay!
         shinyThings += 1;
          
-        if(deposit &lt; 1 ether) {
-            multiplier -= multiplier &gt;= 5 ? 5 : multiplier;
+        if(deposit < 1 ether) {
+            multiplier -= multiplier >= 5 ? 5 : multiplier;
             fee        += 2;
             skip       += 5;
             squirrels  += 1;
@@ -255,15 +255,15 @@ function play() {
      
     } else if (players.length % 5 == 4) {
         multiplier += 2;
-        fee        -= fee &gt;= 1 ? 1 : fee;
+        fee        -= fee >= 1 ? 1 : fee;
         squirrels  += 1;
          
-        if(deposit &lt; 1 ether) {
+        if(deposit < 1 ether) {
             multiplier += 3;
             fee        += 2;
             skip       += 3;
         }
-        if(deposit &gt;= 2 ether) {
+        if(deposit >= 2 ether) {
             multiplier += 2;
             fee        += 2;
             skip       += 1;
@@ -276,7 +276,7 @@ function play() {
             shinyThings += 1;
             sprockets   += 1;
         }
-        if(deposit &gt;= 3 ether) {
+        if(deposit >= 3 ether) {
             multiplier += 1;
             fee        += 1;
             skip       += 1;
@@ -303,7 +303,7 @@ function play() {
     skip += playerStats[msg.sender].squirrels;
      
     // one squirrel ran away!
-    playerStats[msg.sender].squirrels -= playerStats[msg.sender].squirrels &gt;= 1 ? 1 : 0;
+    playerStats[msg.sender].squirrels -= playerStats[msg.sender].squirrels >= 1 ? 1 : 0;
      
     // got stars? 2% multiplier bonus for every star!
     multiplier += playerStats[msg.sender].stars * 2;
@@ -313,40 +313,40 @@ function play() {
      
     // got sprockets? 1% multiplier bonus and -1% fee for every sprocket!
     multiplier += playerStats[msg.sender].sprockets;
-    fee        -= fee &gt; playerStats[msg.sender].sprockets ? playerStats[msg.sender].sprockets : fee;
+    fee        -= fee > playerStats[msg.sender].sprockets ? playerStats[msg.sender].sprockets : fee;
      
     // got shiny things? skip 1 more player and -1% fee!
-    if(playerStats[msg.sender].shinyThings &gt;= 1) {
+    if(playerStats[msg.sender].shinyThings >= 1) {
         skip += 1;
-        fee  -= fee &gt;= 1 ? 1 : 0;
+        fee  -= fee >= 1 ? 1 : 0;
     }
      
     // got a heart, star, squirrel, shiny thin, and sprocket?!? 50% bonus multiplier!!!
-    if(playerStats[msg.sender].hearts &gt;= 1 &amp;&amp; playerStats[msg.sender].stars &gt;= 1 &amp;&amp; playerStats[msg.sender].squirrels &gt;= 1 &amp;&amp; playerStats[msg.sender].shinyThings &gt;= 1 &amp;&amp; playerStats[msg.sender].sprockets &gt;= 1) {
+    if(playerStats[msg.sender].hearts >= 1 && playerStats[msg.sender].stars >= 1 && playerStats[msg.sender].squirrels >= 1 && playerStats[msg.sender].shinyThings >= 1 && playerStats[msg.sender].sprockets >= 1) {
         multiplier += 30;
     }
      
     // got a heart and a star? trade them for +20% multiplier!!!
-    if(playerStats[msg.sender].hearts &gt;= 1 &amp;&amp; playerStats[msg.sender].stars &gt;= 1) {
+    if(playerStats[msg.sender].hearts >= 1 && playerStats[msg.sender].stars >= 1) {
         multiplier                     += 15;
         playerStats[msg.sender].hearts -= 1;
         playerStats[msg.sender].stars  -= 1;
     }
      
     // got a sprocket and a shiny thing? trade them for 5 squirrels!
-    if(playerStats[msg.sender].sprockets &gt;= 1 &amp;&amp; playerStats[msg.sender].shinyThings &gt;= 1) {
+    if(playerStats[msg.sender].sprockets >= 1 && playerStats[msg.sender].shinyThings >= 1) {
         playerStats[msg.sender].squirrels   += 5;
         playerStats[msg.sender].sprockets   -= 1;
         playerStats[msg.sender].shinyThings -= 1;
     }
 
     // stay within profitable and safe limits
-    if(multiplier &gt; maxMultiplier) {
+    if(multiplier > maxMultiplier) {
         multiplier == maxMultiplier;
     }
     
     // keep power players in check so regular players can still win some too
-    if(waitingForPayout() &gt; 15 &amp;&amp; skip &gt; waitingForPayout()/2) {
+    if(waitingForPayout() > 15 && skip > waitingForPayout()/2) {
         // limit skip to half of waiting players
         skip = waitingForPayout() / 2;
     }
@@ -394,8 +394,8 @@ function play() {
     // rolling payouts occur as long as the balance is above zero
     uint nextPayout = entryPayoutDue(currentPosition);
     uint payout;
-    while(balance &gt; 0) {
-        if(nextPayout &lt;= balance) {
+    while(balance > 0) {
+        if(nextPayout <= balance) {
             // the balance is great enough to pay the entire next balance due
             // pay the balance due
             payout = nextPayout;
@@ -413,7 +413,7 @@ function play() {
         balance    -= payout;
         totalPaid  += payout;
         // move to the next position in line if the last entry got paid out completely
-        if(balance &gt; 0) {
+        if(balance > 0) {
             currentPosition++;
             nextPayout = entryPayoutDue(currentPosition);
         }
@@ -425,20 +425,20 @@ function play() {
 // return the the number of positions skipped and the index of the vacant position in line
 function skipInLine(uint skip, uint currentLineIndex) private returns (uint skipped, uint newLineIndex) {
     // check for at least 1 player in line plus this new entry
-    if(skip &gt; 0 &amp;&amp; waitingForPayout() &gt; 2) {
-        // -2 because we don&#39;t want to count the new empty slot at the end of the list
-        if(skip &gt; waitingForPayout()-2) {
+    if(skip > 0 && waitingForPayout() > 2) {
+        // -2 because we don't want to count the new empty slot at the end of the list
+        if(skip > waitingForPayout()-2) {
             skip = waitingForPayout()-2;
         }
 
         // move entries forward one by one
         uint i = 0;
-        while(i &lt; skip) {
+        while(i < skip) {
             theLine[currentLineIndex-i] = theLine[currentLineIndex-1-i];
             i++;
         }
         
-        // don&#39;t leave a duplicate copy of the last entry processed
+        // don't leave a duplicate copy of the last entry processed
         delete(theLine[currentLineIndex-i]);
         
         // the newly vacant position is i slots from the end
@@ -465,7 +465,7 @@ function collectFees() {
         throw;
     }
     // game balance will always be zero due to automatic rolling payouts
-    if(address(this).balance &gt; balance + feeBalance) {
+    if(address(this).balance > balance + feeBalance) {
         // collect any funds outside of the game balance
         feeBalance = address(this).balance - balance;
     }
@@ -476,11 +476,11 @@ function collectFees() {
 function updateSettings(uint newMultiplier, uint newMaxMultiplier, uint newFee, uint newMinDeposit, uint newMaxDeposit, bool collect) {
     // adjust the base settings within a small and limited range as the game matures and ether prices change
     if(msg.sender != owner) throw;
-    if(newMultiplier &lt; 80 || newMultiplier &gt; 120) throw;
-    if(maxMultiplier &lt; 125 || maxMultiplier &gt; 200) throw;
-    if(newFee &lt; 0 || newFee &gt; 15) throw;
-    if(minDeposit &lt; 1 finney || minDeposit &gt; 1 ether) throw;
-    if(maxDeposit &lt; 1 finney || maxDeposit &gt; 25 ether) throw;
+    if(newMultiplier < 80 || newMultiplier > 120) throw;
+    if(maxMultiplier < 125 || maxMultiplier > 200) throw;
+    if(newFee < 0 || newFee > 15) throw;
+    if(minDeposit < 1 finney || minDeposit > 1 ether) throw;
+    if(maxDeposit < 1 finney || maxDeposit > 25 ether) throw;
     if(collect) collectFees();
     baseMultiplier = newMultiplier;
     maxMultiplier = newMaxMultiplier;

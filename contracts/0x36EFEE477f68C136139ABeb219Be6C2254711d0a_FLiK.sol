@@ -21,7 +21,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract FLiK is owned {
     /* Public variables of the token */
-    string public standard = &#39;FLiK 0.1&#39;;
+    string public standard = 'FLiK 0.1';
     string public name;
     string public symbol;
     uint8 public decimals = 14;
@@ -31,8 +31,8 @@ contract FLiK is owned {
     uint256 public icoTill;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -58,7 +58,7 @@ contract FLiK is owned {
 
         Transfer(this, msg.sender, balanceOf[msg.sender]);
 
-        if(_icoSince == 0 &amp;&amp; _icoTill == 0) {
+        if(_icoSince == 0 && _icoTill == 0) {
             icoSince = 1503187200;
             icoTill = 1505865600;
         }
@@ -72,8 +72,8 @@ contract FLiK is owned {
     function transfer(address _to, uint256 _value) {
         require(locked == false);                            // Check if smart contract is locked
 
-        require(balanceOf[msg.sender] &gt;= _value);            // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);   // Check for overflows
+        require(balanceOf[msg.sender] >= _value);            // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);   // Check for overflows
 
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
@@ -83,9 +83,9 @@ contract FLiK is owned {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(locked == false);                            // Check if smart contract is locked
-        require(balanceOf[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);   // Check for overflows
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(balanceOf[_from] >= _value);                 // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);   // Check for overflows
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
@@ -97,12 +97,12 @@ contract FLiK is owned {
 
     function buy(uint256 ethers, uint256 time) internal {
         require(locked == false);                            // Check if smart contract is locked
-        require(time &gt;= icoSince &amp;&amp; time &lt;= icoTill);        // check for ico dates
-        require(ethers &gt; 0);                                 // check if ethers is greater than zero
+        require(time >= icoSince && time <= icoTill);        // check for ico dates
+        require(ethers > 0);                                 // check if ethers is greater than zero
 
         uint amount = ethers / buyPrice;
 
-        require(balanceOf[this] &gt;= amount);                  // check if smart contract has sufficient number of tokens
+        require(balanceOf[this] >= amount);                  // check if smart contract has sufficient number of tokens
 
         balanceOf[msg.sender] += amount;
         balanceOf[this] -= amount;
@@ -115,7 +115,7 @@ contract FLiK is owned {
     }
 
     function internalIcoFinished(uint256 time) internal returns (bool) {
-        if(time &gt; icoTill) {
+        if(time > icoTill) {
             uint256 unsoldTokens = balanceOf[this];
 
             balanceOf[owner] += unsoldTokens;

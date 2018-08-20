@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -111,7 +111,7 @@ contract CustomToken is Pausable{
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -149,9 +149,9 @@ contract CustomToken is Pausable{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
         // Subtract from the sender
@@ -169,10 +169,10 @@ contract CustomToken is Pausable{
 /******************************************/
 
 contract GMCToken is CustomToken {
-    string tokenName        = &quot;GMCToken&quot;;        // Set the name for display purposes
-    string tokenSymbol      = &quot;GMC&quot;;             // Set the symbol for display purposes
+    string tokenName        = "GMCToken";        // Set the name for display purposes
+    string tokenSymbol      = "GMC";             // Set the symbol for display purposes
         
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -185,8 +185,8 @@ contract GMCToken is CustomToken {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] = balanceOf[_from].sub(_value);    // Subtract from the sender
@@ -204,7 +204,7 @@ contract GMCToken is CustomToken {
         emit Transfer(this, msg.sender, mintSupply);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -220,7 +220,7 @@ contract GMCToken is CustomToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);                       // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);                       // Check if the sender has enough
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);      // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                          // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -236,7 +236,7 @@ contract GMCToken is CustomToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                    // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                    // Check if the targeted balance is enough
         balanceOf[_from] = balanceOf[_from].sub(_value);        // Subtract from the targeted balance
         totalSupply = totalSupply.sub(_value);                  // Update totalSupply
         emit Burn(_from, _value);

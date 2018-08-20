@@ -7,7 +7,7 @@ This Contract is distributed WITHOUT ANY WARRANTY; without even the implied warr
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 You should have received a copy of the GNU lesser General Public License
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.18;
@@ -19,23 +19,23 @@ contract ERC20TokenCPN
 
     ///ERC20 PARAMETRS///
     
-    string public constant name = &quot;STAR COUPON&quot;;
-    string public constant symbol = &quot;CPN&quot;;
+    string public constant name = "STAR COUPON";
+    string public constant symbol = "CPN";
     uint8 public constant decimals = 0;
     
     ///*ERC20 PARAMETRS///
 
     address public regulator;
-    uint8 public regulatorStatus; /* 0 - stop; 1 - start; 2 - constant regulator and constant status &#39;start&#39;; */
+    uint8 public regulatorStatus; /* 0 - stop; 1 - start; 2 - constant regulator and constant status 'start'; */
     uint internal amount;
 
     struct agent
     {
         uint balance;
-        mapping (address =&gt; uint) allowed;
-        uint8 permission; /* 0 - user; 1 - changeAgentPermission () / changeRegulator () / changeRegulatoryStatus (); 2 - changeRegulatoryStatus () &#39;2&#39;; 3 - destroy; */
+        mapping (address => uint) allowed;
+        uint8 permission; /* 0 - user; 1 - changeAgentPermission () / changeRegulator () / changeRegulatoryStatus (); 2 - changeRegulatoryStatus () '2'; 3 - destroy; */
     }
-    mapping (address =&gt; agent) internal agents;
+    mapping (address => agent) internal agents;
 
 ///*PARAMETRS///
 
@@ -69,7 +69,7 @@ contract ERC20TokenCPN
     {
         if (regulatorStatus != 2)
         {
-            if ((agents[msg.sender].permission == 1) &amp;&amp; (_permission &gt;= 0 &amp;&amp; _permission &lt;= 3) &amp;&amp; (msg.sender != _agent))
+            if ((agents[msg.sender].permission == 1) && (_permission >= 0 && _permission <= 3) && (msg.sender != _agent))
             {
                 agents[_agent].permission = _permission;
                 Management (msg.sender, 1, _agent, _permission);
@@ -97,7 +97,7 @@ contract ERC20TokenCPN
     {
         if (regulatorStatus != 2)
         {
-            if (((agents[msg.sender].permission == 1) &amp;&amp; (_status == 0 || _status == 1)) || ((agents[msg.sender].permission == 2) &amp;&amp; (_status == 2)))
+            if (((agents[msg.sender].permission == 1) && (_status == 0 || _status == 1)) || ((agents[msg.sender].permission == 2) && (_status == 2)))
             {
                 regulatorStatus = _status;
                 Management (msg.sender, 3, regulator, _status);
@@ -109,7 +109,7 @@ contract ERC20TokenCPN
     
     function destroy (address _to) public
     {
-        if ((agents[msg.sender].permission == 3) &amp;&amp; (regulatorStatus != 2))
+        if ((agents[msg.sender].permission == 3) && (regulatorStatus != 2))
         {
             selfdestruct(_to);
         }
@@ -122,7 +122,7 @@ contract ERC20TokenCPN
 
     function mint (address _to, uint _value) public returns (bool success)
     {
-        if ((msg.sender == regulator) &amp;&amp; (regulatorStatus == 1 || regulatorStatus == 2) &amp;&amp; (amount + _value &gt; amount))
+        if ((msg.sender == regulator) && (regulatorStatus == 1 || regulatorStatus == 2) && (amount + _value > amount))
         {
             amount += _value;
             agents[msg.sender].balance += _value;
@@ -135,7 +135,7 @@ contract ERC20TokenCPN
 
     function burn (address _to, uint _value) public returns (bool success)
     {
-        if ((msg.sender == regulator) &amp;&amp; (regulatorStatus == 1 || regulatorStatus == 2) &amp;&amp; (agents[_to].balance &gt;= _value))
+        if ((msg.sender == regulator) && (regulatorStatus == 1 || regulatorStatus == 2) && (agents[_to].balance >= _value))
         {
             Transfer (_to, msg.sender, _value);
             agents[_to].balance -= _value;
@@ -160,7 +160,7 @@ contract ERC20TokenCPN
 
     function transfer (address _to, uint _value) public returns (bool success)
     {
-        if (agents[msg.sender].balance &gt;= _value &amp;&amp; agents[_to].balance + _value &gt;= agents[_to].balance)
+        if (agents[msg.sender].balance >= _value && agents[_to].balance + _value >= agents[_to].balance)
         {
             agents[msg.sender].balance -= _value; 
             agents[_to].balance += _value;
@@ -172,7 +172,7 @@ contract ERC20TokenCPN
     
     function transferFrom (address _from, address _to, uint _value) public returns (bool success)
     {
-        if (agents[_from].allowed[msg.sender] &gt;= _value &amp;&amp; agents[_from].balance &gt;= _value &amp;&amp; agents[_to].balance + _value &gt;= agents[_to].balance)
+        if (agents[_from].allowed[msg.sender] >= _value && agents[_from].balance >= _value && agents[_to].balance + _value >= agents[_to].balance)
         {
             agents[_from].allowed[msg.sender] -= _value;
             agents[_from].balance -= _value; 
@@ -185,7 +185,7 @@ contract ERC20TokenCPN
 
     function approve (address _spender, uint _value) public returns (bool success)
     {
-        if (_value &gt; 0)
+        if (_value > 0)
         {
             agents[msg.sender].allowed[_spender] = _value;
             Approval (msg.sender, _spender, _value);

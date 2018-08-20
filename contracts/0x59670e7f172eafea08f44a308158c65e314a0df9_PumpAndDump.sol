@@ -18,7 +18,7 @@ contract PumpAndDump {
     address[] investors;
   }
 
-  mapping (uint16 =&gt; Coin) coins;
+  mapping (uint16 => Coin) coins;
 
   constructor() public {
     owner = msg.sender;
@@ -34,7 +34,7 @@ contract PumpAndDump {
   }
 
   function isCoinIdUnique(uint16 newId) private constant returns (bool) {
-    for (uint i = 0; i &lt; coinIds.length; i++) {
+    for (uint i = 0; i < coinIds.length; i++) {
       if (coinIds[i] == newId) {
         return false;
       }
@@ -44,9 +44,9 @@ contract PumpAndDump {
 
 
   function createCoin(uint16 id, string name) public payable {
-    require(msg.value &gt;= newCoinFee);
-    require(id &lt; 17576); // 26*26*26
-    require(bytes(name).length &gt; 0);
+    require(msg.value >= newCoinFee);
+    require(id < 17576); // 26*26*26
+    require(bytes(name).length > 0);
     require(isCoinIdUnique(id));
     devFees += msg.value - defaultCoinPrice;
     coins[id].exists = true;
@@ -83,7 +83,7 @@ contract PumpAndDump {
   }
 
   function isSenderInvestor(address sender, address[] investors) private pure returns (bool) {
-    for (uint i = 0; i &lt; investors.length; i++) {
+    for (uint i = 0; i < investors.length; i++) {
       if (investors[i] == sender) {
         return true;
       }
@@ -92,7 +92,7 @@ contract PumpAndDump {
   }
 
   function buyCoin(uint16 coinId) public payable {
-    require(msg.value &gt;= coins[coinId].price);
+    require(msg.value >= coins[coinId].price);
     require(coins[coinId].exists);
     require(!isSenderInvestor(msg.sender, coins[coinId].investors));
     coins[coinId].investors.push(msg.sender);
@@ -111,7 +111,7 @@ contract PumpAndDump {
       delete coins[coinId].investors[0];
     } else {
       uint secondLastIndex = coins[coinId].investors.length - 1;
-      for (uint j = investorIndex; j &lt; secondLastIndex; j++) {
+      for (uint j = investorIndex; j < secondLastIndex; j++) {
         coins[coinId].investors[j] = coins[coinId].investors[j - 1];
       }
     }
@@ -122,7 +122,7 @@ contract PumpAndDump {
     bool senderIsInvestor = false;
     uint investorIndex = 0;
     require(coins[coinId].exists);
-    for (uint i = 0; i &lt; coins[coinId].investors.length; i++) {
+    for (uint i = 0; i < coins[coinId].investors.length; i++) {
       if (coins[coinId].investors[i] == msg.sender) {
         senderIsInvestor = true;
         investorIndex = i;

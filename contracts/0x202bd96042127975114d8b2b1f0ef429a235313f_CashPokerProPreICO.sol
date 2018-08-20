@@ -24,20 +24,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -46,7 +46,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -131,14 +131,14 @@ contract Pausable is Ownable {
 contract CashPokerProPreICO is Ownable, Pausable {
     using SafeMath for uint;
 
-    /* The party who holds the full token pool and has approve()&#39;ed tokens for this crowdsale */
+    /* The party who holds the full token pool and has approve()'ed tokens for this crowdsale */
     address public tokenWallet = 0x774d91ac35f4e2f94f0e821a03c6eaff8ad4c138;
 	
     uint public tokensSold;
 
     uint public weiRaised;
 
-    mapping (address =&gt; uint256) public purchasedTokens;
+    mapping (address => uint256) public purchasedTokens;
      
     uint public investorCount;
 
@@ -171,19 +171,19 @@ contract CashPokerProPreICO is Ownable, Pausable {
 
     // low level token purchase function
     function buyTokens(address beneficiary) whenNotPaused payable {
-        require(startTime &lt;= now &amp;&amp; now &lt;= endTime);
+        require(startTime <= now && now <= endTime);
 
         uint weiAmount = msg.value;
 
-        require(weiAmount &gt;= minInvest);
+        require(weiAmount >= minInvest);
 
         uint tokenAmountEnable = tokensLimit.sub(tokensSold);
 
-        require(tokenAmountEnable &gt; 0);
+        require(tokenAmountEnable > 0);
 
         uint tokenAmount = weiAmount / price * 1 ether;
 
-        if (tokenAmount &gt; tokenAmountEnable) {
+        if (tokenAmount > tokenAmountEnable) {
             tokenAmount = tokenAmountEnable;
             weiAmount = tokenAmount * price / 1 ether;
             msg.sender.transfer(msg.value - weiAmount);
@@ -209,7 +209,7 @@ contract CashPokerProPreICO is Ownable, Pausable {
     function transfer(address to, uint amount) onlyOwner {
         uint tokenAmountEnable = tokensLimit.sub(tokensSold);
 
-        if (amount &gt; tokenAmountEnable) amount = tokenAmountEnable;
+        if (amount > tokenAmountEnable) amount = tokenAmountEnable;
 
         require(token.transferFrom(tokenWallet, to, amount));
 

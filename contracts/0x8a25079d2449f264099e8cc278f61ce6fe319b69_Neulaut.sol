@@ -6,10 +6,10 @@ contract Neulaut {
     uint256 public fee = 15*10**18; // 15 NUA
     uint256 public burn = 10**19; // 10 NUA
     address owner;
-    string public name = &quot;Neulaut&quot;;
+    string public name = "Neulaut";
     uint8 public decimals = 18;
-    string public symbol = &quot;NUA&quot;;
-    mapping (address =&gt; uint256) balances;
+    string public symbol = "NUA";
+    mapping (address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
 
@@ -23,8 +23,8 @@ contract Neulaut {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(_value &gt; fee+burn);
-        require(balances[msg.sender] &gt;= _value);
+        require(_value > fee+burn);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += (_value - fee - burn);
         balances[owner] += fee;

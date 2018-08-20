@@ -42,7 +42,7 @@ contract Whitelist is owned {
     require( int(-1) != ix );
 
     // deletion leaves a gap - shuffle higher elements down one
-    for ( uint jx = uint(ix); jx &lt; members_.length - 1; jx++)
+    for ( uint jx = uint(ix); jx < members_.length - 1; jx++)
       members_[jx] = members_[jx+1];
 
     delete members_[members_.length - 1];
@@ -51,7 +51,7 @@ contract Whitelist is owned {
 
   function toIndex( address who ) internal constant returns (int)
   {
-    for( uint ix = 0; ix &lt; members_.length; ix++ )
+    for( uint ix = 0; ix < members_.length; ix++ )
       if (members_[ix] == who) return int(ix);
 
     return int(-1);

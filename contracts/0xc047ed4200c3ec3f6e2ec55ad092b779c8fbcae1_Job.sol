@@ -59,20 +59,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -124,17 +124,17 @@ contract Job {
         description = _description;
         escrowAdmin = _escrowAdmin;
 
-        pushMilestone(0, &quot;&quot;, &quot;&quot;, 0, false);
+        pushMilestone(0, "", "", 0, false);
     }
 
     function addGeneralMilestone(string _title, string _description, uint64 _deadline) onlyCustomer external{
-        require(_deadline &gt; now);
+        require(_deadline > now);
         pushMilestone(0, _title, _description, _deadline, false);
     }
     function addSubMilestone(uint16 _parent, string _title, string _description, uint64 _deadline, bool _requiresCustomerApproval) external {
-        require(_parent &gt; 0 &amp;&amp; _parent &lt; milestones.length);
+        require(_parent > 0 && _parent < milestones.length);
         Milestone storage parent = milestones[_parent];
-        require(parent.acceptedProposal &gt;= 0);
+        require(parent.acceptedProposal >= 0);
         address generalContractor = parent.proposals[uint16(parent.acceptedProposal)].contractor;
         assert(generalContractor!= address(0));
         require(msg.sender == generalContractor);
@@ -142,8 +142,8 @@ contract Job {
     }
 
     function addProposal(uint16 milestone, uint256 _amount, string _description) external {
-        require(milestone &lt; milestones.length);
-        require(_amount &gt; 0);
+        require(milestone < milestones.length);
+        require(_amount > 0);
         milestones[milestone].proposals.push(Proposal({
             contractor: msg.sender,
             amount: _amount,
@@ -153,34 +153,34 @@ contract Job {
     }
 
     function getProposal(uint16 milestone, uint16 proposal) view public returns(address contractor, uint256 amount, string description){
-        require(milestone &lt; milestones.length);
+        require(milestone < milestones.length);
         Milestone storage m = milestones[milestone];
-        require(proposal &lt; m.proposals.length);
+        require(proposal < m.proposals.length);
         Proposal storage p = m.proposals[proposal];
         return (p.contractor, p.amount, p.description);
     }
     function getProposalAmount(uint16 milestone, uint16 proposal) view public returns(uint256){
-        require(milestone &lt; milestones.length);
+        require(milestone < milestones.length);
         Milestone storage m = milestones[milestone];
-        require(proposal &lt; m.proposals.length);
+        require(proposal < m.proposals.length);
         Proposal storage p = m.proposals[proposal];
         return p.amount;
     }
     function getProposalContractor(uint16 milestone, uint16 proposal) view public returns(address){
-        require(milestone &lt; milestones.length);
+        require(milestone < milestones.length);
         Milestone storage m = milestones[milestone];
-        require(proposal &lt; m.proposals.length);
+        require(proposal < m.proposals.length);
         Proposal storage p = m.proposals[proposal];
         return p.contractor;
     }
 
 
     function confirmProposalAndTransferFunds(uint16 milestone, uint16 proposal) onlyCustomer external returns(bool){
-        require(milestone &lt; milestones.length);
+        require(milestone < milestones.length);
         Milestone storage m = milestones[milestone];
-        require(m.deadline &gt; now);
+        require(m.deadline > now);
 
-        require(proposal &lt; m.proposals.length);
+        require(proposal < m.proposals.length);
         Proposal storage p = m.proposals[proposal];
         m.acceptedProposal = int16(proposal);
 
@@ -188,18 +188,18 @@ contract Job {
         return true;
     }
     function markDone(uint16 _milestone) external {
-        require(_milestone &lt; milestones.length);
+        require(_milestone < milestones.length);
         Milestone storage m = milestones[_milestone];
-        assert(m.acceptedProposal &gt;= 0);
+        assert(m.acceptedProposal >= 0);
         Proposal storage p = m.proposals[uint16(m.acceptedProposal)];        
         require(msg.sender == p.contractor);
         require(m.done == false);
         m.done = true;
     }
     function approveAndPayout(uint16 _milestone) onlyCustomer external{
-        require(_milestone &lt; milestones.length);
+        require(_milestone < milestones.length);
         Milestone storage m = milestones[_milestone];
-        require(m.acceptedProposal &gt;= 0);
+        require(m.acceptedProposal >= 0);
         //require(m.done);  //We do not require this right now
         m.customerApproved = true;
         Proposal storage p = m.proposals[uint16(m.acceptedProposal)];

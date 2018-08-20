@@ -4,8 +4,8 @@ library SafeMath {
 
  
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,9 +84,9 @@ using SafeMath for uint256;
     uint256 public totalSupply;
     uint256 public releaseTime;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -107,9 +107,9 @@ using SafeMath for uint256;
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balanceOf[_from].add(balanceOf[_to]);
         // Subtract from the sender
@@ -122,7 +122,7 @@ using SafeMath for uint256;
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
         require(!frozenAccount[_to]);
         _transfer(msg.sender, _to, _value);
         return true;
@@ -134,10 +134,10 @@ using SafeMath for uint256;
     }
   
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -146,7 +146,7 @@ using SafeMath for uint256;
     function distributeToken(address[] addresses, uint256[] _value) public onlyOwner returns (bool success){
         //require(msg.sender == owner);
         assert (addresses.length == _value.length);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             _transfer(msg.sender, addresses[i], _value[i]);
         }
         return true;
@@ -154,7 +154,7 @@ using SafeMath for uint256;
     
     function burn(uint256 _value) public onlyOwner returns (bool success) {
         //require(msg.sender == owner);
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);            // Subtract from the sender
         totalSupply =totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -164,11 +164,11 @@ using SafeMath for uint256;
 
     function burnFrom(address _from, uint256 _value) public onlyOwner returns (bool success) {
         //require(msg.sender == owner);
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
         require(!frozenAccount[_from]);
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] = balanceOf[_from].sub(_value);                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                              // Update totalSupply
         emit Burn(_from, _value);
         emit Transfer(msg.sender, 0x0 , _value);
@@ -201,7 +201,7 @@ using SafeMath for uint256;
         require(!frozenAccount[_spender]);
         require(!frozenAccount[msg.sender]);
         uint256 oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
           allowance[msg.sender][_spender] = 0;
         } else {
           allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);

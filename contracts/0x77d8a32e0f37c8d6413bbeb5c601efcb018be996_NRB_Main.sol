@@ -59,7 +59,7 @@ contract WhiteListAccess {
     }
     
     address public owner;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     modifier onlyBy(address who) { require(msg.sender == who); _; }
     modifier onlyOwner {require(msg.sender == owner); _;}
@@ -103,7 +103,7 @@ contract NRB_Common is WhiteListAccess {
 // ----------------------------------------------------------------------------
 
 contract NRB_Main is NRB_Common {
-    mapping(address =&gt; uint) raisedAmount;
+    mapping(address => uint) raisedAmount;
     bool _init;
 
     function NRB_Main() public {
@@ -190,7 +190,7 @@ contract NRB_Main is NRB_Common {
         (_time, _userid, _userindex, _paid, _user) = NRB_Users(USERS_address).getUserNumbersOnToken(_token, _index);
         uint _balance = _paid * 10;
         uint _userbalance = getUserBalanceOnToken(_token, _user);
-        if (_userbalance &lt; _balance) {
+        if (_userbalance < _balance) {
             _balance = _userbalance;
         }
         return (_time, _balance, _paid, _userid, _userindex);
@@ -223,11 +223,11 @@ contract NRB_Main is NRB_Common {
         address _addrs;
         uint _length = NRB_Tokens(TOKENS_address).getTokenListLength();
         uint _balance;
-        for (uint i = 0; i&lt;_length; i++) {
+        for (uint i = 0; i<_length; i++) {
             _addrs = NRB_Tokens(TOKENS_address).getTokenAddressByIndex(i);
             if (_addrs == ETH_address) {continue;}
             _balance = ERC20Interface(_addrs).balanceOf(address(this));
-            if (_balance &gt; 0) {
+            if (_balance > 0) {
                 ERC20Interface(_addrs).transfer(owner, _balance);
             }
         }

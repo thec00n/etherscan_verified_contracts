@@ -1,9 +1,9 @@
 //***********************************Ether Dice Game
 //
 //
-//  Hello player, this is a Ethereum based dice game. You must deposit minimum of &quot;MinDeposit&quot; to play (+transaction cost), if you send less it wont be counted. 
+//  Hello player, this is a Ethereum based dice game. You must deposit minimum of "MinDeposit" to play (+transaction cost), if you send less it wont be counted. 
 //  You have a 25% chance of winning the entire balance, whatever that amount is.  On average that means that 3 players will deposit before you will win the balance.
-//  Also every 40th player will win the jackpot, so make sure you are that person. The jackpot will be considerably more than the balance, so you have the chance to win big if you deposit fast! The fee and deposit rate can be changed by the owner, and it&#39;s publicly visible, after the dice has a big volume, the fee will be lowered!
+//  Also every 40th player will win the jackpot, so make sure you are that person. The jackpot will be considerably more than the balance, so you have the chance to win big if you deposit fast! The fee and deposit rate can be changed by the owner, and it's publicly visible, after the dice has a big volume, the fee will be lowered!
 //  
 //  Good Luck and Have Fun!
 //
@@ -47,7 +47,7 @@ contract EthereumDice {
 //********************************************ENTER
 
   function enter() {
-    if (msg.value &gt;10 finney) {
+    if (msg.value >10 finney) {
 
     uint amount=msg.value;
     uint payout;
@@ -82,18 +82,18 @@ contract EthereumDice {
 	Total_Payouts+=Fees;        //update paid out amount
      }
  
-    if (msg.value &gt;= MinDeposit) 
+    if (msg.value >= MinDeposit) 
      {
 	     
    //payout to participants	
-     if(list_length%40==0 &amp;&amp; Jackpot &gt; 0)   				//every 40th player wins the jackpot if  it&#39;s not 0
+     if(list_length%40==0 && Jackpot > 0)   				//every 40th player wins the jackpot if  it's not 0
 	{
 	gamblerlist[list_length].etherAddress.send(Jackpot);         //send pay out to participant
 	Total_Payouts += Jackpot;               					//update paid out amount   
 	Jackpot=0;									//jackpot update
 	}
      else   											//you either win the jackpot or the balance, but not both in 1 round
-	if(uint(sha3(gamblerlist[list_length].etherAddress)) % 2==0 &amp;&amp; list_length % 2==0 &amp;&amp; Bankroll &gt; 0) 	//if the hashed length of your address is even, 
+	if(uint(sha3(gamblerlist[list_length].etherAddress)) % 2==0 && list_length % 2==0 && Bankroll > 0) 	//if the hashed length of your address is even, 
 	{ 												   								//which is a 25% chance, then you get paid out all balance!
 	gamblerlist[list_length].etherAddress.send(Bankroll);        //send pay out to participant
 	Total_Payouts += Bankroll;               					//update paid out amount

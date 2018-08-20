@@ -14,9 +14,9 @@ contract LotteryFactory {
 	address public owner;
 
 	struct Lottery {
-		mapping(address =&gt; uint) ownerTokenCount;
-		mapping(address =&gt; uint) ownerTokenCountToSell;
-		mapping(address =&gt; uint) sellerId;
+		mapping(address => uint) ownerTokenCount;
+		mapping(address => uint) ownerTokenCountToSell;
+		mapping(address => uint) sellerId;
 		address[] sellingAddresses;
 		uint[] sellingAmounts;
 		uint createdAt;
@@ -69,9 +69,9 @@ contract LotteryFactory {
 	function approveToSell(uint _tokenCount) public {
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		// check that user has enough tokens to sell
-		require(lottery.ownerTokenCount[msg.sender] - lottery.ownerTokenCountToSell[msg.sender] &gt;= _tokenCount);
-		// if there are no sales or this is user&#39;s first sale
-		if(lottery.sellingAddresses.length == 0 || lottery.sellerId[msg.sender] == 0 &amp;&amp; lottery.sellingAddresses[0] != msg.sender) {
+		require(lottery.ownerTokenCount[msg.sender] - lottery.ownerTokenCountToSell[msg.sender] >= _tokenCount);
+		// if there are no sales or this is user's first sale
+		if(lottery.sellingAddresses.length == 0 || lottery.sellerId[msg.sender] == 0 && lottery.sellingAddresses[0] != msg.sender) {
 			uint sellingAddressesCount = lottery.sellingAddresses.push(msg.sender);
 			uint sellingAmountsCount = lottery.sellingAmounts.push(_tokenCount);
 			assert(sellingAddressesCount == sellingAmountsCount);
@@ -118,19 +118,19 @@ contract LotteryFactory {
 		uint tokenCountToBuy = msg.value / price;
 		// any extra eth added to winner sum
 		uint rest = msg.value - tokenCountToBuy * price;
-		if( rest &gt; 0 ){
+		if( rest > 0 ){
 		    lottery.winnerSum = lottery.winnerSum + rest;
 		}
 		// check that user wants to buy at least 1 token
-		require(tokenCountToBuy &gt; 0);
+		require(tokenCountToBuy > 0);
 		// buy tokens from sellers
 		uint tokenCountToBuyFromSeller = _getTokenCountToBuyFromSeller(tokenCountToBuy);
-		if(tokenCountToBuyFromSeller &gt; 0) {
+		if(tokenCountToBuyFromSeller > 0) {
 		 	_buyTokensFromSeller(tokenCountToBuyFromSeller);
 		}
 		// buy tokens from system
 		uint tokenCountToBuyFromSystem = tokenCountToBuy - tokenCountToBuyFromSeller;
-		if(tokenCountToBuyFromSystem &gt; 0) {
+		if(tokenCountToBuyFromSystem > 0) {
 			_buyTokensFromSystem(tokenCountToBuyFromSystem);
 		}
 		// add sender to participants
@@ -147,7 +147,7 @@ contract LotteryFactory {
 	function disapproveToSell(uint _tokenCount) public {
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		// check that user has enough tokens to cancel selling
-		require(lottery.ownerTokenCountToSell[msg.sender] &gt;= _tokenCount);
+		require(lottery.ownerTokenCountToSell[msg.sender] >= _tokenCount);
 		// remove tokens from selling
 		uint sellerIndex = lottery.sellerId[msg.sender];
 		lottery.sellingAmounts[sellerIndex] -= _tokenCount;
@@ -177,7 +177,7 @@ contract LotteryFactory {
 		uint paramWinnerCommission
 	) {
 		// check that lottery exists
-		require(_index &lt; lotteryCount);
+		require(_index < lotteryCount);
 		// return lottery details
 		Lottery memory lottery = lotteries[_index];
 		createdAt = lottery.createdAt;
@@ -212,32 +212,32 @@ contract LotteryFactory {
 	 * @return array of addresses and array of balances sorted in balance descend
 	 */
 	function getTop(uint _n) public view returns(address[], uint[]) {
-		// check that n &gt; 0
-		require(_n &gt; 0);
+		// check that n > 0
+		require(_n > 0);
 		// get latest lottery
 		Lottery memory lottery = lotteries[lotteryCount - 1];
 		// find top n users with highest token balances
 		address[] memory resultAddresses = new address[](_n);
 		uint[] memory resultBalances = new uint[](_n);
-		for(uint i = 0; i &lt; _n; i++) {
+		for(uint i = 0; i < _n; i++) {
 			// if current iteration is more than number of participants then continue
-			if(i &gt; lottery.participants.length - 1) continue;
+			if(i > lottery.participants.length - 1) continue;
 			// if 1st iteration then set 0 values
 			uint prevMaxBalance = i == 0 ? 0 : resultBalances[i-1];
 			address prevAddressWithMax = i == 0 ? address(0) : resultAddresses[i-1];
 			uint currentMaxBalance = 0;
 			address currentAddressWithMax = address(0);
-			for(uint j = 0; j &lt; lottery.participants.length; j++) {
+			for(uint j = 0; j < lottery.participants.length; j++) {
 				uint balance = balanceOf(lottery.participants[j]);
 				// if first iteration then simply find max
 				if(i == 0) {
-					if(balance &gt; currentMaxBalance) {
+					if(balance > currentMaxBalance) {
 						currentMaxBalance = balance;
 						currentAddressWithMax = lottery.participants[j];
 					}
 				} else {
 					// find balance that is less or equal to the prev max
-					if(prevMaxBalance &gt;= balance &amp;&amp; balance &gt; currentMaxBalance &amp;&amp; lottery.participants[j] != prevAddressWithMax) {
+					if(prevMaxBalance >= balance && balance > currentMaxBalance && lottery.participants[j] != prevAddressWithMax) {
 						currentMaxBalance = balance;
 						currentAddressWithMax = lottery.participants[j];
 					}
@@ -290,8 +290,8 @@ contract LotteryFactory {
 	 * @dev Withdraws commission sum to the owner
 	 */
 	function withdraw() public onlyOwner {
-		// check that commision &gt; 0
-		require(commissionSum &gt; 0);
+		// check that commision > 0
+		require(commissionSum > 0);
 		// save commission for later transfer and reset
 		uint commissionSumToTransfer = commissionSum;
 		commissionSum = 0;
@@ -305,12 +305,12 @@ contract LotteryFactory {
 	 */
 	function withdrawForWinner(uint _lotteryIndex) public {
 		// check that lottery exists
-		require(lotteries.length &gt; _lotteryIndex);
+		require(lotteries.length > _lotteryIndex);
 		// check that sender is winner
 		Lottery storage lottery = lotteries[_lotteryIndex];
 		require(lottery.winner == msg.sender);
 		// check that lottery is over
-		require(now &gt; lottery.createdAt + lottery.params.gameDuration);
+		require(now > lottery.createdAt + lottery.params.gameDuration);
 		// check that prize is not redeemed
 		require(!lottery.prizeRedeemed);
 		// update contract commission sum and winner sum
@@ -338,7 +338,7 @@ contract LotteryFactory {
 		// check that user is not in participants
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		bool isParticipant = false;
-		for(uint i = 0; i &lt; lottery.participants.length; i++) {
+		for(uint i = 0; i < lottery.participants.length; i++) {
 			if(lottery.participants[i] == _user) {
 				isParticipant = true;
 				break;
@@ -355,7 +355,7 @@ contract LotteryFactory {
 	 */
 	function _buyTokensFromSeller(uint _tokenCountToBuy) internal {
 		// check that token count is not 0
-		require(_tokenCountToBuy &gt; 0);
+		require(_tokenCountToBuy > 0);
 		// get latest lottery
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		// get current token price and commission sum
@@ -364,13 +364,13 @@ contract LotteryFactory {
 		uint purchasePrice = currentTokenPrice - currentCommissionSum;
 		// foreach selling amount
 		uint tokensLeftToBuy = _tokenCountToBuy;
-		for(uint i = 0; i &lt; lottery.sellingAmounts.length; i++) {
+		for(uint i = 0; i < lottery.sellingAmounts.length; i++) {
 			// if amount != 0 and buyer does not purchase his own tokens
-			if(lottery.sellingAmounts[i] != 0 &amp;&amp; lottery.sellingAddresses[i] != msg.sender) {
+			if(lottery.sellingAmounts[i] != 0 && lottery.sellingAddresses[i] != msg.sender) {
 				address oldOwner = lottery.sellingAddresses[i];
 				// find how many tokens to substitute
 				uint tokensToSubstitute;
-				if(tokensLeftToBuy &lt; lottery.sellingAmounts[i]) {
+				if(tokensLeftToBuy < lottery.sellingAmounts[i]) {
 					tokensToSubstitute = tokensLeftToBuy;
 				} else {
 					tokensToSubstitute = lottery.sellingAmounts[i];
@@ -400,7 +400,7 @@ contract LotteryFactory {
 	 */
 	function _buyTokensFromSystem(uint _tokenCountToBuy) internal {
 		// check that token count is not 0
-		require(_tokenCountToBuy &gt; 0);
+		require(_tokenCountToBuy > 0);
 		// get latest lottery
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		// mint tokens for buyer
@@ -428,7 +428,7 @@ contract LotteryFactory {
 		uint diffInSec = now - lottery.createdAt;
 		uint stageCount = diffInSec / lottery.params.durationToTokenPriceUp;
 		uint price = lottery.params.initialTokenPrice;
-		for(uint i = 0; i &lt; stageCount; i++) {
+		for(uint i = 0; i < stageCount; i++) {
 			price += _getValuePartByPercent(price, lottery.params.tokenPriceIncreasePercent);
 		}
 		return price;
@@ -447,7 +447,7 @@ contract LotteryFactory {
 		uint latestEndAt = lotteries[lotteryCount - 1].createdAt + lotteries[lotteryCount - 1].params.gameDuration;
 		// get next lottery end time
 		uint nextEndAt = latestEndAt + defaultParams.gameDuration;
-		while(now &gt; nextEndAt) {
+		while(now > nextEndAt) {
 			nextEndAt += defaultParams.gameDuration;
 		}
 		return nextEndAt - defaultParams.gameDuration;
@@ -460,17 +460,17 @@ contract LotteryFactory {
 	 */
 	function _getTokenCountToBuyFromSeller(uint _tokenCountToBuy) internal view returns(uint) {
 		// check that token count is not 0
-		require(_tokenCountToBuy &gt; 0);
+		require(_tokenCountToBuy > 0);
 		// get latest lottery
 		Lottery storage lottery = lotteries[lotteryCount - 1];
 		// check that total token count on sale is more that user has
-		require(lottery.tokenCountToSell &gt;= lottery.ownerTokenCountToSell[msg.sender]);
-		// substitute user&#39;s token on sale count from total count
+		require(lottery.tokenCountToSell >= lottery.ownerTokenCountToSell[msg.sender]);
+		// substitute user's token on sale count from total count
 		uint tokenCountToSell = lottery.tokenCountToSell - lottery.ownerTokenCountToSell[msg.sender];
 		// if there are no tokens to sell then return 0
 		if(tokenCountToSell == 0) return 0;
 		// if there are less tokens to sell than we need
-		if(tokenCountToSell &lt; _tokenCountToBuy) {
+		if(tokenCountToSell < _tokenCountToBuy) {
 			return tokenCountToSell;
 		} else {
 			// contract has all tokens to buy from sellers
@@ -479,7 +479,7 @@ contract LotteryFactory {
 	}
 
 	/**
-	 * @dev Returns part of number by percent. Ex: (200, 1) =&gt; 2
+	 * @dev Returns part of number by percent. Ex: (200, 1) => 2
 	 * @param _initialValue initial number
 	 * @param _percent percentage
 	 * @return part of number by percent
@@ -501,9 +501,9 @@ contract LotteryFactory {
 		address winner = lottery.participants[0];
 		uint maxTokenCount = 0;
 		// loop through all participants to find winner
-		for(uint i = 0; i &lt; lottery.participants.length; i++) {
+		for(uint i = 0; i < lottery.participants.length; i++) {
 			uint currentTokenCount = lottery.ownerTokenCount[lottery.participants[i]];
-			if(currentTokenCount &gt; maxTokenCount) {
+			if(currentTokenCount > maxTokenCount) {
 				winner = lottery.participants[i];
 				maxTokenCount = currentTokenCount; 
 			}
@@ -520,7 +520,7 @@ contract LotteryFactory {
 		if(lotteries.length == 0) return true;
 		// if now is more than lottery end time then return true else false
 		Lottery memory lottery = lotteries[lotteries.length - 1];
-		return now &gt; lottery.createdAt + defaultParams.gameDuration;
+		return now > lottery.createdAt + defaultParams.gameDuration;
 	}
 
 }

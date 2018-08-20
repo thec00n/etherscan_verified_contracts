@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -31,7 +31,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -143,10 +143,10 @@ contract StandardToken is Token, Pausable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -195,7 +195,7 @@ contract StandardToken is Token, Pausable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -232,7 +232,7 @@ contract StandardToken is Token, Pausable {
     function decreaseApproval(address _spender, uint _subtractedValue)
     returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -249,7 +249,7 @@ contract Status {
     uint public weiRaised;
 
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTimeTwo;
+        return now > endTimeTwo;
     }
 }
 
@@ -262,7 +262,7 @@ contract FinalizableCrowdsale is Ownable, Status {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner  public {
     require(!isFinalized);
@@ -288,7 +288,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public escrow;
   State public state;
 
@@ -342,7 +342,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     vault = new RefundVault(_escrow);
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -369,15 +369,15 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
 
 contract LCD is StandardToken, Status, RefundableCrowdsale {
 
-    string public constant name = &quot;LCD Token&quot;;
-    string public constant symbol = &quot;LCD&quot;;
+    string public constant name = "LCD Token";
+    string public constant symbol = "LCD";
     uint256 public constant decimals = 2;
     uint256 public constant tokenCreationCap = 100000000 * 10 ** decimals;
     uint256 public constant tokenCreationCapOne = 75000000 * 10 ** decimals;
@@ -410,17 +410,17 @@ contract LCD is StandardToken, Status, RefundableCrowdsale {
 
     function createTokens() internal {
         uint multiplier = 10 ** decimals;
-        if (now &gt;= startTimeOne &amp;&amp; now &lt;= endTimeOne) {
+        if (now >= startTimeOne && now <= endTimeOne) {
             uint256 tokens = msg.value.div(oneTokenInWei) * multiplier;
             uint256 checkedSupply = totalSupply.add(tokens);
-            if(checkedSupply &lt;= tokenCreationCapOne) {
+            if(checkedSupply <= tokenCreationCapOne) {
                 addTokens(tokens, 40);
                 updateStage();
             }
-        } else if (currentStage == Stage.Two || now &gt;= startTimeTwo &amp;&amp; now &lt;= endTimeTwo) {
+        } else if (currentStage == Stage.Two || now >= startTimeTwo && now <= endTimeTwo) {
             tokens = msg.value.div(oneTokenInWei) * multiplier;
             checkedSupply = totalSupply.add(tokens);
-            if (checkedSupply &lt;= tokenCreationCap) {
+            if (checkedSupply <= tokenCreationCap) {
                 addTokens(tokens, 0);
             }
         } else {
@@ -429,13 +429,13 @@ contract LCD is StandardToken, Status, RefundableCrowdsale {
     }
 
     function updateStage() internal {
-        if (totalSupply &gt;= tokenCreationCapOne) {
+        if (totalSupply >= tokenCreationCapOne) {
             currentStage = Stage.Two;
         }
     }
 
     function addTokens(uint256 tokens, uint sale) internal {
-        if (sale &gt; 0) {
+        if (sale > 0) {
             tokens += tokens / 100 * sale;
         }
         balances[msg.sender] += tokens;
@@ -447,7 +447,7 @@ contract LCD is StandardToken, Status, RefundableCrowdsale {
 
     function setTokenPrice(uint256 _tokenPrice) external onlyOwner {
         oneTokenInWei = _tokenPrice;
-        PriceChanged(&quot;New price is&quot;, _tokenPrice);
+        PriceChanged("New price is", _tokenPrice);
     }
 
     function changeStageTwo() external onlyOwner {

@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -127,7 +127,7 @@ contract ERC20Basic {
 
 /**
  * @title HolderBase
- * @notice HolderBase handles data &amp; funcitons for token or ether holders.
+ * @notice HolderBase handles data & funcitons for token or ether holders.
  * HolderBase contract can distribute only one of ether or token.
  */
 contract HolderBase is Ownable {
@@ -160,21 +160,21 @@ contract HolderBase is Ownable {
     require(!initialized);
     require(holders.length == 0);
     require(_addrs.length != 0);
-    require(_addrs.length &lt;= MAX_HOLDERS);
+    require(_addrs.length <= MAX_HOLDERS);
     require(_addrs.length == _ratios.length);
 
     uint256 accRatio;
 
-    for(uint8 i = 0; i &lt; _addrs.length; i++) {
+    for(uint8 i = 0; i < _addrs.length; i++) {
       if (_addrs[i] != address(0)) {
-        // address will be 0x00 in case of &quot;crowdsale&quot;.
+        // address will be 0x00 in case of "crowdsale".
         holders.push(Holder(_addrs[i], _ratios[i]));
       }
 
       accRatio = accRatio.add(uint256(_ratios[i]));
     }
 
-    require(accRatio &lt;= coeff);
+    require(accRatio <= coeff);
 
     initialized = true;
   }
@@ -185,13 +185,13 @@ contract HolderBase is Ownable {
    * function of RefundVault contract.
    */
   function distribute() internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     uint256 balance = this.balance;
 
-    require(balance &gt; 0, &quot;No ether to distribute&quot;);
+    require(balance > 0, "No ether to distribute");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = balance.mul(uint256(holders[i].ratio)).div(coeff);
 
       holders[i].addr.transfer(holderAmount);
@@ -204,10 +204,10 @@ contract HolderBase is Ownable {
    * @dev Distribute ERC20 token to `holder`s according to ratio.
    */
   function distributeToken(ERC20Basic _token, uint256 _targetTotalSupply) internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = _targetTotalSupply.mul(uint256(holders[i].ratio)).div(coeff);
       deliverTokens(_token, holders[i].addr, holderAmount);
     }
@@ -284,7 +284,7 @@ contract Locker is Ownable {
   enum State { Init, Ready, Active, Drawn }
 
   struct Beneficiary {
-    uint ratio;             // ratio based on Locker&#39;s initial balance.
+    uint ratio;             // ratio based on Locker's initial balance.
     uint withdrawAmount;    // accumulated tokens beneficiary released
     bool releaseAllTokens;
   }
@@ -300,7 +300,7 @@ contract Locker is Ownable {
    *     |         . |
    *     |       .   |
    *     |     .     |
-   *     +===+=======+----*----------&gt; time
+   *     +===+=======+----*----------> time
    *     Locker  First    Last
    *  Activated  Release  Release
    *
@@ -314,7 +314,7 @@ contract Locker is Ownable {
    *     |                     |
    *  30 |            _________|
    *     |           |
-   *     +===+=======+---------+----------*------&gt; time
+   *     +===+=======+---------+----------*------> time
    *     Locker   First        Second     Last
    *  Activated   Release      Release    Release
    *
@@ -360,9 +360,9 @@ contract Locker is Ownable {
   uint public initialBalance;
   uint public withdrawAmount; // total amount of tokens released
 
-  mapping (address =&gt; Beneficiary) public beneficiaries;
-  mapping (address =&gt; Release) public releases;  // beneficiary&#39;s lock
-  mapping (address =&gt; bool) public locked; // whether beneficiary&#39;s lock is instantiated
+  mapping (address => Beneficiary) public beneficiaries;
+  mapping (address => Release) public releases;  // beneficiary's lock
+  mapping (address => bool) public locked; // whether beneficiary's lock is instantiated
 
   uint public numBeneficiaries;
   uint public numLocks;
@@ -375,7 +375,7 @@ contract Locker is Ownable {
   }
 
   modifier onlyBeneficiary(address _addr) {
-    require(beneficiaries[_addr].ratio &gt; 0);
+    require(beneficiaries[_addr].ratio > 0);
     _;
   }
 
@@ -393,8 +393,8 @@ contract Locker is Ownable {
 
     uint accRatio;
 
-    for(uint i = 0; i &lt; numBeneficiaries; i++) {
-      require(_ratios[i] &gt; 0);
+    for(uint i = 0; i < numBeneficiaries; i++) {
+      require(_ratios[i] > 0);
       beneficiaries[_beneficiaries[i]].ratio = _ratios[i];
 
       accRatio = accRatio.add(_ratios[i]);
@@ -410,7 +410,7 @@ contract Locker is Ownable {
     require(numLocks == numBeneficiaries); // double check : assert all releases are recorded
 
     initialBalance = token.balanceOf(this);
-    require(initialBalance &gt; 0);
+    require(initialBalance > 0);
 
     activeTime = now; // solium-disable-line security/no-block-members
 
@@ -475,9 +475,9 @@ contract Locker is Ownable {
     require(_releaseRatios[len - 1] == coeff);
 
     // check two array are ascending sorted
-    for(i = 0; i &lt; len - 1; i++) {
-      require(_releaseTimes[i] &lt; _releaseTimes[i + 1]);
-      require(_releaseRatios[i] &lt; _releaseRatios[i + 1]);
+    for(i = 0; i < len - 1; i++) {
+      require(_releaseTimes[i] < _releaseTimes[i + 1]);
+      require(_releaseRatios[i] < _releaseRatios[i + 1]);
     }
 
     // 2 release times for straight locking type
@@ -552,10 +552,10 @@ contract Locker is Ownable {
     uint lastTime = _r.releaseTimes[1];
 
     // solium-disable security/no-block-members
-    require(now &gt;= firstTime); // pass if can release
+    require(now >= firstTime); // pass if can release
     // solium-enable security/no-block-members
 
-    if(now &gt;= lastTime) { // inclusive to reduce calculation
+    if(now >= lastTime) { // inclusive to reduce calculation
       releasableAmount = totalReleasableAmount;
     } else {
       // releasable amount at first time
@@ -589,14 +589,14 @@ contract Locker is Ownable {
     uint releaseRatio;
 
     // reverse order for short curcit
-    for(uint i = _r.releaseTimes.length - 1; i &gt;= 0; i--) {
-      if (now &gt;= _r.releaseTimes[i]) {
+    for(uint i = _r.releaseTimes.length - 1; i >= 0; i--) {
+      if (now >= _r.releaseTimes[i]) {
         releaseRatio = _r.releaseRatios[i];
         break;
       }
     }
 
-    require(releaseRatio &gt; 0);
+    require(releaseRatio > 0);
 
     releasableAmount = getPartialAmount(
       releaseRatio,
@@ -628,7 +628,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -804,7 +804,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     uint256 weiAmount = msg.value;
 
     uint256 toFund = calculateToFund(beneficiary, weiAmount);
-    require(toFund &gt; 0);
+    require(toFund > 0);
 
     uint256 toReturn = weiAmount.sub(toFund);
 
@@ -816,7 +816,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     // update state
     weiRaised = weiRaised.add(toFund);
 
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       msg.sender.transfer(toReturn);
     }
 
@@ -829,7 +829,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -860,13 +860,13 @@ contract BaseCrowdsale is HolderBase, Pausable {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /// @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return capReached || now &gt; endTime; // solium-disable-line security/no-block-members
+    bool capReached = weiRaised >= cap;
+    return capReached || now > endTime; // solium-disable-line security/no-block-members
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -883,9 +883,9 @@ contract BaseCrowdsale is HolderBase, Pausable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime; // solium-disable-line security/no-block-members
+    bool withinPeriod = now >= startTime && now <= endTime; // solium-disable-line security/no-block-members
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   /**
@@ -897,7 +897,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     uint256 toFund;
     uint256 postWeiRaised = weiRaised.add(_weiAmount);
 
-    if (postWeiRaised &gt; cap) {
+    if (postWeiRaised > cap) {
       toFund = cap.sub(weiRaised);
     } else {
       toFund = _weiAmount;
@@ -992,7 +992,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
  */
 contract BlockIntervalCrowdsale is BaseCrowdsale {
   uint256 public blockInterval;
-  mapping (address =&gt; uint256) public recentBlock;
+  mapping (address => uint256) public recentBlock;
 
   function BlockIntervalCrowdsale(uint256 _blockInterval) public {
     require(_blockInterval != 0);
@@ -1003,8 +1003,8 @@ contract BlockIntervalCrowdsale is BaseCrowdsale {
    * @return true if the block number is over the block internal.
    */
   function validPurchase() internal view returns (bool) {
-    bool withinBlock = recentBlock[msg.sender].add(blockInterval) &lt; block.number;
-    return withinBlock &amp;&amp; super.validPurchase();
+    bool withinBlock = recentBlock[msg.sender].add(blockInterval) < block.number;
+    return withinBlock && super.validPurchase();
   }
 
   /**
@@ -1052,8 +1052,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   */
   function setBonusesForTimes(uint32[] times, uint32[] values) public onlyOwner {
     require(times.length == values.length);
-    for (uint i = 0; i + 1 &lt; times.length; i++) {
-      require(times[i] &lt; times[i+1]);
+    for (uint i = 0; i + 1 < times.length; i++) {
+      require(times[i] < times[i+1]);
     }
 
     BONUS_TIMES = times;
@@ -1073,8 +1073,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   */
   function setBonusesForAmounts(uint128[] amounts, uint32[] values) public onlyOwner {
     require(amounts.length == values.length);
-    for (uint i = 0; i + 1 &lt; amounts.length; i++) {
-      require(amounts[i] &gt; amounts[i+1]);
+    for (uint i = 0; i + 1 < amounts.length; i++) {
+      require(amounts[i] > amounts[i+1]);
     }
 
     BONUS_AMOUNTS = amounts;
@@ -1107,10 +1107,10 @@ contract BonusCrowdsale is BaseCrowdsale {
   * @return bonus percentage scaled by 10
   */
   function computeTimeBonus() public view returns(uint256) {
-    require(now &gt;= startTime); // solium-disable-line security/no-block-members
+    require(now >= startTime); // solium-disable-line security/no-block-members
 
-    for (uint i = 0; i &lt; BONUS_TIMES.length; i++) {
-      if (now &lt;= BONUS_TIMES[i]) { // solium-disable-line security/no-block-members
+    for (uint i = 0; i < BONUS_TIMES.length; i++) {
+      if (now <= BONUS_TIMES[i]) { // solium-disable-line security/no-block-members
         return BONUS_TIMES_VALUES[i];
       }
     }
@@ -1123,8 +1123,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   * @return bonus percentage scaled by 10
   */
   function computeAmountBonus(uint256 weiAmount) public view returns(uint256) {
-    for (uint i = 0; i &lt; BONUS_AMOUNTS.length; i++) {
-      if (weiAmount &gt;= BONUS_AMOUNTS[i]) {
+    for (uint i = 0; i < BONUS_AMOUNTS.length; i++) {
+      if (weiAmount >= BONUS_AMOUNTS[i]) {
         return BONUS_AMOUNTS_VALUES[i];
       }
     }
@@ -1155,10 +1155,10 @@ contract FinishMintingCrowdsale is BaseCrowdsale {
  */
 contract KYC is Ownable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
 
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
 
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
@@ -1213,7 +1213,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(_addrs[i] != address(0));
 
       registeredAddress[_addrs[i]] = true;
@@ -1243,7 +1243,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       registeredAddress[_addrs[i]] = false;
 
       emit Unregistered(_addrs[i]);
@@ -1278,7 +1278,7 @@ contract KYCCrowdsale is BaseCrowdsale {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -1296,7 +1296,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -1325,7 +1325,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -1343,8 +1343,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -1358,7 +1358,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -1427,7 +1427,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -1531,7 +1531,7 @@ contract MintableBaseCrowdsale is BaseCrowdsale {
 
 /**
  * @title StagedCrowdsale
- * @notice StagedCrowdsale seperates sale period with start time &amp; end time.
+ * @notice StagedCrowdsale seperates sale period with start time & end time.
  * For each period, seperate max cap and kyc could be setup.
  * Both startTime and endTime are inclusive.
  */
@@ -1545,7 +1545,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     uint128 cap;
     uint128 maxPurchaseLimit;
     uint128 minPurchaseLimit;
-    uint128 weiRaised; // stage&#39;s weiAmount raised
+    uint128 weiRaised; // stage's weiAmount raised
     uint32 startTime;
     uint32 endTime;
     bool kyc;
@@ -1553,7 +1553,7 @@ contract StagedCrowdsale is KYCCrowdsale {
 
   function StagedCrowdsale(uint _numPeriods) public {
     numPeriods = uint8(_numPeriods);
-    require(numPeriods &gt; 0);
+    require(numPeriods > 0);
   }
 
   function initStages(
@@ -1569,16 +1569,16 @@ contract StagedCrowdsale is KYCCrowdsale {
 
     require(stages.length == 0);
     // solium-disable
-    require(len == _startTimes.length &amp;&amp;
-      len == _endTimes.length &amp;&amp;
-      len == _capRatios.length &amp;&amp;
-      len == _maxPurchaseLimits.length &amp;&amp;
-      len == _minPurchaseLimits.length &amp;&amp;
+    require(len == _startTimes.length &&
+      len == _endTimes.length &&
+      len == _capRatios.length &&
+      len == _maxPurchaseLimits.length &&
+      len == _minPurchaseLimits.length &&
       len == _kycs.length);
     // solium-enable
 
-    for (uint i = 0; i &lt; len; i++) {
-      require(_endTimes[i] &gt;= _startTimes[i]);
+    for (uint i = 0; i < len; i++) {
+      require(_endTimes[i] >= _startTimes[i]);
 
       uint stageCap;
 
@@ -1609,9 +1609,9 @@ contract StagedCrowdsale is KYCCrowdsale {
     onSale = true;
     Stage memory p;
 
-    for (currentStage = 0; currentStage &lt; stages.length; currentStage++) {
+    for (currentStage = 0; currentStage < stages.length; currentStage++) {
       p = stages[currentStage];
-      if (p.startTime &lt;= now &amp;&amp; now &lt;= p.endTime) {
+      if (p.startTime <= now && now <= p.endTime) {
         return;
       }
     }
@@ -1624,7 +1624,7 @@ contract StagedCrowdsale is KYCCrowdsale {
    */
   function saleFinished() public view returns (bool) {
     require(stages.length == numPeriods);
-    return stages[stages.length - 1].endTime &lt; now;
+    return stages[stages.length - 1].endTime < now;
   }
 
 
@@ -1634,8 +1634,8 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check stages are overlapped.
-    for (uint8 i = 0; i &lt; stages.length - 1; i++) {
-      if (stages[i].endTime &gt;= stages[i + 1].startTime) {
+    for (uint8 i = 0; i < stages.length - 1; i++) {
+      if (stages[i].endTime >= stages[i + 1].startTime) {
         return false;
       }
     }
@@ -1664,18 +1664,18 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check min purchase limit of the period
-    require(weiAmount &gt;= uint(p.minPurchaseLimit));
+    require(weiAmount >= uint(p.minPurchaseLimit));
 
     // reduce up to max purchase limit of the period
-    if (p.maxPurchaseLimit != 0 &amp;&amp; weiAmount &gt; uint(p.maxPurchaseLimit)) {
+    if (p.maxPurchaseLimit != 0 && weiAmount > uint(p.maxPurchaseLimit)) {
       weiAmount = uint(p.maxPurchaseLimit);
     }
 
-    // pre-calculate `toFund` with the period&#39;s cap
-    if (p.cap &gt; 0) {
+    // pre-calculate `toFund` with the period's cap
+    if (p.cap > 0) {
       uint256 postWeiRaised = uint256(p.weiRaised).add(weiAmount);
 
-      if (postWeiRaised &gt; p.cap) {
+      if (postWeiRaised > p.cap) {
         weiAmount = uint256(p.cap).sub(p.weiRaised);
       }
     }
@@ -1739,7 +1739,7 @@ contract AlphaconCrowdsale is BaseCrowdsale, MintableBaseCrowdsale, BonusCrowdsa
   }
 
   function parseAddress(bytes32 b) internal pure returns (address) {
-    return address(b &amp; 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
+    return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
   function init(bytes32[] args) public {
@@ -1753,12 +1753,12 @@ contract AlphaconCrowdsale is BaseCrowdsale, MintableBaseCrowdsale, BonusCrowdsa
     address _locker = address(args[7]);
     address _nextTokenOwner = address(args[8]);
 
-    require(_endTime &gt; _startTime);
-    require(_rate &gt; 0);
-    require(_cap &gt; 0);
-    require(_goal &gt; 0);
-    require(_cap &gt; _goal);
-    require(_crowdsaleRatio &gt; 0);
+    require(_endTime > _startTime);
+    require(_rate > 0);
+    require(_cap > 0);
+    require(_goal > 0);
+    require(_cap > _goal);
+    require(_crowdsaleRatio > 0);
     require(_vault != address(0));
     require(_locker != address(0));
     require(_nextTokenOwner != address(0));

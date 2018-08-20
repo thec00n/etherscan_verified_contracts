@@ -44,13 +44,13 @@ contract MyTokenShr {
 
     function issuetender(address _to, uint tender, uint256 _value) onlyfromcompany {
 
-        for(uint i=0;i&lt;activeTenders.length;i++){
+        for(uint i=0;i<activeTenders.length;i++){
             if(activeTenders[i].id == tender){
                 if(activeTenders[i].reservedFor == 0 ||
                     activeTenders[i].reservedFor == _to ){
                         uint stake = _value / activeTenders[i].priceOfStake;
-                        if(activeTenders[i].maxstake-activeTenders[i].usedstake &gt;= stake){
-                            if (balanceOf[_to] + stake &lt; balanceOf[_to]) throw; // Check for overflows
+                        if(activeTenders[i].maxstake-activeTenders[i].usedstake >= stake){
+                            if (balanceOf[_to] + stake < balanceOf[_to]) throw; // Check for overflows
                             balanceOf[_to] += stake;                            // Add the same to the recipient
 							totalSupply += stake;
 							updateBalance(_to,balanceOf[_to]);
@@ -64,7 +64,7 @@ contract MyTokenShr {
         }
     }
 	function destroyToken(address _from, uint _amo) {
-		if(balanceOf[_from] &lt; _amo) throw;
+		if(balanceOf[_from] < _amo) throw;
 		balanceOf[_from] -= _amo;
 		updateBalance(_from,balanceOf[_from]);
 		totalSupply -= _amo;
@@ -79,7 +79,7 @@ contract MyTokenShr {
 		//_stake zu verteilen..
 		//totalSupply  anteile..
 		//balanceOf  ... mein stake..
-		for(uint i;i&lt;userCnt;i++){
+		for(uint i;i<userCnt;i++){
 			uint earning = _stake * balanceByID[i].balamce / totalSupply;
 			balanceByID[i].earning += earning;
 		}
@@ -99,14 +99,14 @@ contract MyTokenShr {
 	//
 	// The Real Token Code..
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals = 8;
     uint256 public totalSupply = 0;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 
 
@@ -117,8 +117,8 @@ contract MyTokenShr {
 		uint balamce;
 
 	}	
-	mapping (address  =&gt; balance) public balanceByAd;
-	mapping (uint =&gt; balance) public balanceByID;
+	mapping (address  => balance) public balanceByAd;
+	mapping (uint => balance) public balanceByID;
 	uint userCnt=0;
 	
 	function updateBalance(address _addr, uint _bal){
@@ -140,8 +140,8 @@ contract MyTokenShr {
     
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
 
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
@@ -202,8 +202,8 @@ contract SlotMachine {
 	//Load/Unload Calls for Company..
 	function closeBooks() {
 		if(msg.sender != CompanyAddress) throw; //Only Internal Call..
-		if(earnings &lt;= 0) throw;
-		if(this.balance &lt; maxReserve) return;
+		if(earnings <= 0) throw;
+		if(this.balance < maxReserve) return;
 		uint inc=this.balance-maxReserve;
 		bool res = Company(CompanyAddress).send(inc);
 	}
@@ -224,11 +224,11 @@ contract SlotMachine {
 		
 		//ok here goes the game..
 		uint einsatz=msg.value;
-		if(einsatz * winFaktor &gt; this.balance) throw; //cant do this game..
+		if(einsatz * winFaktor > this.balance) throw; //cant do this game..
 		
 		//Play the game..
 		uint nr = now; //block.number;
-		uint y = nr &amp; 3;
+		uint y = nr & 3;
 		
 		uint win = 0;
 		if(y==0) wins[0]++;
@@ -237,7 +237,7 @@ contract SlotMachine {
 		
 		earnings += int(msg.value);
 
-		if(win &gt; 0) { // half win..
+		if(win > 0) { // half win..
 			bool res = msg.sender.send(win);
 			earnings -= int(win);		
 		}
@@ -247,7 +247,7 @@ contract SlotMachine {
 		_y=y;
 		
 		//Final.. Cleanup.. and so on..
-		if(this.balance &lt; minReserve){
+		if(this.balance < minReserve){
 			Company(CompanyAddress).requestFillUp(sollReserve-this.balance);
 		}
 
@@ -285,9 +285,9 @@ contract Globals {
 // wird in Company eingebunden..
 // verwaltet das Board.. das Board besteht aus 3 Adressen,
 // die mit einem Voting mechanismus von den ShareHolden (MyShareToken)
-// gew&#195;&#194;&#195;&#194;&#195;&#194;&#195;&#194;&#164;hlt und ausgetauscht werden
+// gewÃÂÃÂÃÂÃÂ¤hlt und ausgetauscht werden
 // 
-// Board Member k&#195;&#194;&#195;&#194;&#195;&#194;&#195;&#194;&#182;nnen verschiedene Tasks ausl&#195;&#194;&#195;&#194;&#195;&#194;&#195;&#194;&#182;sen
+// Board Member kÃÂÃÂÃÂÃÂ¶nnen verschiedene Tasks auslÃÂÃÂÃÂÃÂ¶sen
 // und Parameter einstellen.
 contract Board is Globals{
 	
@@ -295,7 +295,7 @@ contract Board is Globals{
     address[3] public Board;
 	    
     function _isBoardMember(address c) returns(bool){
-        for(uint i=0;i&lt;Board.length;i++){
+        for(uint i=0;i<Board.length;i++){
             if(Board[i] == c) return true;
         }
         return false;
@@ -316,7 +316,7 @@ contract Board is Globals{
         uint givenstakes;
     	int ergebnis;
 		bool active;
-        mapping (address =&gt; bool)  voted;
+        mapping (address => bool)  voted;
 	}
     
     Proposal[] Proposals;
@@ -330,7 +330,7 @@ contract Board is Globals{
 		 Asupply = myShareToken.totalSupply();
 		 Abmb = _isBoardMember(msg.sender);
 		
-		if(( Abalance &gt; ( Asupply / 1000 )) || 
+		if(( Abalance > ( Asupply / 1000 )) || 
                 _isBoardMember(msg.sender)){
                    	Proposals.push(Proposal(_nmbr, _place, 0, 0, true));
         }
@@ -338,8 +338,8 @@ contract Board is Globals{
 	
 	function killBoardProposal(uint _place, address _nmbr) public{
 		if(  _isBoardMember(msg.sender)){
- 			for(var i=0;i&lt;Proposals.length;i++){
-				if((Proposals[i].placeInBoard == _place) &amp;&amp; 
+ 			for(var i=0;i<Proposals.length;i++){
+				if((Proposals[i].placeInBoard == _place) && 
 			   		(Proposals[i].newBoardMember == _nmbr) ){
 					delete Proposals[i];
 				}
@@ -348,9 +348,9 @@ contract Board is Globals{
 	}
      
     function voteBoardProposal(uint _place, address _nmbr, bool pro) public {
-		for(var i=0;i&lt;Proposals.length;i++){
-			if((Proposals[i].placeInBoard == _place) &amp;&amp; 
-			   (Proposals[i].newBoardMember == _nmbr) &amp;&amp; 
+		for(var i=0;i<Proposals.length;i++){
+			if((Proposals[i].placeInBoard == _place) && 
+			   (Proposals[i].newBoardMember == _nmbr) && 
 			   (Proposals[i].active == true) ){
 				
         		if(Proposals[i].voted[msg.sender]) throw; //already voted..
@@ -364,8 +364,8 @@ contract Board is Globals{
         		Proposals[i].voted[msg.sender] = true;
        
         		//finale checks..
-				if( myShareToken.totalSupply() / 2 &lt; Proposals[i].givenstakes) { //more then 50% voted.. finish..
-            		if(Proposals[i].ergebnis &gt; 0)      { // ergebnis positiv.. tausche boardmember aus..
+				if( myShareToken.totalSupply() / 2 < Proposals[i].givenstakes) { //more then 50% voted.. finish..
+            		if(Proposals[i].ergebnis > 0)      { // ergebnis positiv.. tausche boardmember aus..
 
 						Board[_place] = _nmbr;
 
@@ -402,7 +402,7 @@ contract SlotMachineMngr is Board{	//
 	function _slotAddNew(address _addr) public onlybyboardmember {
 		if(addSlotBy != 0) throw;
 		
-		if(BudgetSlot &lt; startSlotAt) return;
+		if(BudgetSlot < startSlotAt) return;
 				
 		addSlotBy = msg.sender;
 		newSlotAddr = _addr;
@@ -441,7 +441,7 @@ contract ProjectMngr is Board {
 	function _projectAddNew(address _addr, uint _budget) public onlybyboardmember {
 		if(addProjectBy != 0) throw;
 		
-		if(BudgetProject &lt; _budget) return;
+		if(BudgetProject < _budget) return;
 		
 		newProjectBudget = _budget;
 		addProjectBy = msg.sender;
@@ -472,16 +472,16 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
 	    
 	function fillUpSlot(uint _id, uint _amo){
 		uint ts = _amo;
-		if(ts&lt;=BudgetSlot){BudgetSlot -= ts; ts=0;}
+		if(ts<=BudgetSlot){BudgetSlot -= ts; ts=0;}
 		else {ts -= BudgetSlot; BudgetSlot = 0;}
 
-		if(ts&gt;0){
-			if(ts&lt;=BudgetReserve){BudgetReserve -= ts; ts=0;}
+		if(ts>0){
+			if(ts<=BudgetReserve){BudgetReserve -= ts; ts=0;}
 			else {ts -= BudgetReserve; BudgetReserve = 0;}
 		}
 		
-		if(ts&gt;0){
-			if(ts&lt;=BudgetProject){BudgetProject -= ts; ts=0;}
+		if(ts>0){
+			if(ts<=BudgetProject){BudgetProject -= ts; ts=0;}
 			else {ts -= BudgetProject; BudgetProject = 0;}
 		}
 	}
@@ -490,13 +490,13 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
 	}
 	function requestFillUp(uint _amo){
 		//From SlotMachine?
-		for(uint i=0;i&lt;Slots.length;i++){
+		for(uint i=0;i<Slots.length;i++){
 			if(Slots[i] == msg.sender){
 				fillUpSlot(i, _amo);
 				return;
 			}
 		}
-		for(uint x=0;x&lt;Projects.length;x++){
+		for(uint x=0;x<Projects.length;x++){
 			if(Projects[x] == msg.sender){
 				fillUpProject(x, _amo);
 				return;
@@ -510,10 +510,10 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
 	function _addPools(address _backer, address _share){
 
 		myShareToken = MyTokenShr(_share);
-		myShareToken.initContract(&quot;SMShares&quot;,&quot;XXSMS&quot;, 0.1 ether, 1);
+		myShareToken.initContract("SMShares","XXSMS", 0.1 ether, 1);
 
         myBackerToken = MyTokenShr(_backer);
-		myBackerToken.initContract(&quot;SMBShares&quot;,&quot;XXSMBS&quot;, 12000000 ether, 1);
+		myBackerToken.initContract("SMBShares","XXSMBS", 12000000 ether, 1);
 		
 	}
 	
@@ -521,23 +521,23 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
 	// Taks fuer Abrechnung..
 	//							
 	function _dispatchEarnings() {
-		if(IncomeShare &gt; 0) {
+		if(IncomeShare > 0) {
 			myShareToken.registerEarnings(IncomeShare);
 			IncomeShare=0;
 		}
-		if(IncomeBacker &gt; 0 ) {
+		if(IncomeBacker > 0 ) {
 			myBackerToken.registerEarnings(IncomeBacker);
 			IncomeBacker=0;
 		}
 	}
 	
 	function _closeBooks() {
-		for(var i=0;i&lt;Slots.length;i++){
+		for(var i=0;i<Slots.length;i++){
 			Slots[i].closeBooks();
 		}
 	}
 	function _dumpToCompany() {
-		for(var i=0;i&lt;Slots.length;i++){
+		for(var i=0;i<Slots.length;i++){
 			Slots[i].dumpOut();			
 		}
 	}
@@ -551,17 +551,17 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
 		uint earn;
 		if(_what == pool.backer_token){
 			 earn = myBackerToken.balanceOf(msg.sender);
-			if(earn&lt;_amo)throw;
+			if(earn<_amo)throw;
 			if(msg.sender.send(_amo)) myBackerToken.destroyToken(msg.sender,_amo);
 		}
 		if(_what == pool.backer_earn){
 			 earn = myBackerToken.queryEarnings(msg.sender);
-			if(earn&lt;_amo)throw;
+			if(earn<_amo)throw;
 			if(msg.sender.send(_amo)) myBackerToken.bookEarnings(msg.sender, _amo);
 		}
 		if(_what == pool.share_earn){
 			 earn = myBackerToken.queryEarnings(msg.sender);
-			if(earn&lt;_amo)throw;
+			if(earn<_amo)throw;
 			if(msg.sender.send(_amo)) myBackerToken.bookEarnings(msg.sender, _amo);
 		}
 		
@@ -590,7 +590,7 @@ contract Company  is Globals, Board, SlotMachineMngr, ProjectMngr {//, managedby
     
 	// Geldeingang ohne weitere Parameter..
 	function(){ 
-		for(uint i=0;i&lt;Slots.length;i++){
+		for(uint i=0;i<Slots.length;i++){
 			if(Slots[i] == msg.sender){
 				bookEarnings();
 				return;

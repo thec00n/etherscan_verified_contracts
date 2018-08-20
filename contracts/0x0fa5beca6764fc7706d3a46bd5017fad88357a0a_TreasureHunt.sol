@@ -48,7 +48,7 @@ contract TreasureHunt is Ownable {
     /// Balance of the treausure hunt reward pool
     uint public pot;
 
-    /// @notice Balance of administrator&#39;s fee
+    /// @notice Balance of administrator's fee
     uint public ownersBalance;
 
     /// Marks the time of victory
@@ -65,21 +65,21 @@ contract TreasureHunt is Ownable {
 
     /// Container for submitted location info
     struct KeyLog {
-        /// Location key XOR&#39;d with a user password
+        /// Location key XOR'd with a user password
         uint encryptKey;
         /// Block number of submission
         uint block;
     }
 
-    /// Record of each hunter&#39;s progress
-    mapping(address =&gt; mapping(uint =&gt; KeyLog)) public hunters;
+    /// Record of each hunter's progress
+    mapping(address => mapping(uint => KeyLog)) public hunters;
     
     /// @notice Triggered when a hunter has won and the hunt is over
     /// @param winner The address of the victor
     event WonEvent(address winner);
 
     /// @notice Number of locations in the hunt
-    /// @dev Useful for testing, since public arrays don&#39;t expose length
+    /// @dev Useful for testing, since public arrays don't expose length
     /// @return length of locations array
     function locationsLength() public view returns (uint) {
         return locations.length;
@@ -92,11 +92,11 @@ contract TreasureHunt is Ownable {
     }
 
     /// @notice Admin function to update the location at `index`
-    /// @dev Throws if index is &gt;= locations.length
+    /// @dev Throws if index is >= locations.length
     /// @param index The index of the location to update
     /// @param _location The new location
     function setLocation(uint index, uint _location) onlyOwner public {
-        require(index &lt; locations.length);
+        require(index < locations.length);
         locations[index] = _location;
     }
 
@@ -112,17 +112,17 @@ contract TreasureHunt is Ownable {
         cost = _cost;
     }
 
-    /// @notice Submit a location key XOR&#39;d with a password for later verification
+    /// @notice Submit a location key XOR'd with a password for later verification
     /// @notice The message value must be greater than `cost`
     /// @param encryptKey A location key encrypted with a user password
     /// @param locationNumber The index of the location
     function submitLocation(uint encryptKey, uint8 locationNumber) public payable {
 
         require(encryptKey != 0);
-        require(locationNumber &lt; locations.length);
+        require(locationNumber < locations.length);
 
         if (!grace) {
-            require(msg.value &gt;= cost);
+            require(msg.value >= cost);
             uint contribution = cost - cost / 10; // avoid integer rounding issues
             ownersBalance += cost - contribution;
             pot += contribution;
@@ -139,17 +139,17 @@ contract TreasureHunt is Ownable {
 
         uint lastBlock = 0;
         bool won = true;
-        for (uint i; i &lt; locations.length; i++) {
+        for (uint i; i < locations.length; i++) {
             
             // Make sure locations were visited in order
-            require(hunters[msg.sender][i].block &gt; lastBlock);
+            require(hunters[msg.sender][i].block > lastBlock);
             lastBlock = hunters[msg.sender][i].block;
 
             // Skip removed locations
             if (locations[i] != 0) {
                 uint storedVal = uint(keccak256(abi.encodePacked(hunters[msg.sender][i].encryptKey ^ decryptKeys[i])));
                 
-                won = won &amp;&amp; (locations[i] == storedVal);
+                won = won && (locations[i] == storedVal);
             }
         }
 
@@ -176,7 +176,7 @@ contract TreasureHunt is Ownable {
     /// @notice Reset the hunt if the grace period is over
     function resetWinner() public {
         require(grace);
-        require(now &gt; timeOfWin + 30 days);
+        require(now > timeOfWin + 30 days);
         grace = false;
         winner = 0;
         ownersBalance = 0;

@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -94,7 +94,7 @@ contract VesaPreICO is Ownable {
     uint public constant price = 2142857142857140;
     uint public constant minSum = 142857142900000000;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool public fundingGoalReached = false;
     bool public crowdsaleClosed = false;
 
@@ -113,11 +113,11 @@ contract VesaPreICO is Ownable {
         tokenReward = token(0xb1c74c1D82824428e484072069041deD079eD921);
     }
 
-    function isAfterDeadline() internal view returns (bool) { return now &gt;= deadline; } 
+    function isAfterDeadline() internal view returns (bool) { return now >= deadline; } 
 
-    function isSoftCapAchieved() internal view returns (bool) { return amountRaised &gt;= fundingGoal; } 
+    function isSoftCapAchieved() internal view returns (bool) { return amountRaised >= fundingGoal; } 
 
-    function isHardCapAchieved() internal view returns (bool) { return amountRaised &gt;= fundingGoalHardCap; }
+    function isHardCapAchieved() internal view returns (bool) { return amountRaised >= fundingGoalHardCap; }
 
     function isCompanyCanBeFinished() internal view returns (bool) { return isAfterDeadline() || isHardCapAchieved(); }
 
@@ -128,7 +128,7 @@ contract VesaPreICO is Ownable {
     function getPrice() public view returns (uint) {
         require(!crowdsaleClosed);
 
-        if ( now &gt;= (start + bonusPeriodDurationInHours.mul(1 hours))) {
+        if ( now >= (start + bonusPeriodDurationInHours.mul(1 hours))) {
             return price;
         } else {
             uint hoursLeft = now.sub(start).div(1 hours);
@@ -139,13 +139,13 @@ contract VesaPreICO is Ownable {
     function getBonus(uint amount) public view returns (uint) {
         require(!crowdsaleClosed);
 
-        if (amount &lt; 2857142857000000000) { return 0; }                                       // &lt; 2.857142857
-        if (amount &gt;= 2857142857000000000 &amp;&amp; amount &lt; 7142857143000000000) { return 6; }      // 2.857142857-7,142857143 ETH
-        if (amount &gt;= 7142857143000000000 &amp;&amp; amount &lt; 14285714290000000000) { return 8; }     // 7,142857143-14,28571429 ETH
-        if (amount &gt;= 14285714290000000000 &amp;&amp; amount &lt; 25000000000000000000) { return 10; }   // 14,28571429-25 ETH
-        if (amount &gt;= 25000000000000000000 &amp;&amp; amount &lt; 85000000000000000000) { return 15; }   // 25-85 ETH
-        if (amount &gt;= 85000000000000000000 &amp;&amp; amount &lt; 285000000000000000000) { return 17; }  // 85-285 ETH
-        if (amount &gt;= 285000000000000000000) { return 20; }                                   // &gt;285 ETH
+        if (amount < 2857142857000000000) { return 0; }                                       // < 2.857142857
+        if (amount >= 2857142857000000000 && amount < 7142857143000000000) { return 6; }      // 2.857142857-7,142857143 ETH
+        if (amount >= 7142857143000000000 && amount < 14285714290000000000) { return 8; }     // 7,142857143-14,28571429 ETH
+        if (amount >= 14285714290000000000 && amount < 25000000000000000000) { return 10; }   // 14,28571429-25 ETH
+        if (amount >= 25000000000000000000 && amount < 85000000000000000000) { return 15; }   // 25-85 ETH
+        if (amount >= 85000000000000000000 && amount < 285000000000000000000) { return 17; }  // 85-285 ETH
+        if (amount >= 285000000000000000000) { return 20; }                                   // >285 ETH
     }
 
     /**
@@ -155,7 +155,7 @@ contract VesaPreICO is Ownable {
      */
     function () public payable {
         require(!crowdsaleClosed);
-        require(msg.value &gt; minSum);
+        require(msg.value > minSum);
         uint amount = msg.value;
         balanceOf[msg.sender].add(amount);
         amountRaised = amountRaised.add(amount);
@@ -176,7 +176,7 @@ contract VesaPreICO is Ownable {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() public companyCanBeFinished {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -194,7 +194,7 @@ contract VesaPreICO is Ownable {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -203,7 +203,7 @@ contract VesaPreICO is Ownable {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

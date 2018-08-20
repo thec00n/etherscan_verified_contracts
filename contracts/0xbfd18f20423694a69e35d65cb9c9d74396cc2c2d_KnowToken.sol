@@ -13,18 +13,18 @@ library SafeMath {
         return a / b;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 contract Ownable {
-    mapping (uint256 =&gt; address) public owner;
+    mapping (uint256 => address) public owner;
     address[] public allOwner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -81,8 +81,8 @@ contract KNBaseToken is ERC20 {
     uint8 public decimals;
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     constructor(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply) public{
         name = _name;
@@ -101,8 +101,8 @@ contract KNBaseToken is ERC20 {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value);
-        require(balances[_to].add(_value) &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to].add(_value) > balances[_to]);
 
 
         uint256 previousBalances = balances[_from].add(balances[_to]);
@@ -118,7 +118,7 @@ contract KNBaseToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -135,7 +135,7 @@ contract KNBaseToken is ERC20 {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         emit Burn(msg.sender, _value);
@@ -143,8 +143,8 @@ contract KNBaseToken is ERC20 {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -154,7 +154,7 @@ contract KNBaseToken is ERC20 {
     }
 }
 
-contract KnowToken is KNBaseToken(&quot;Know Token&quot;, &quot;KN&quot;, 18, 7795482309000000000000000000), Ownable {
+contract KnowToken is KNBaseToken("Know Token", "KN", 18, 7795482309000000000000000000), Ownable {
 
     uint256 internal privateToken = 389774115000000000000000000;
     uint256 internal preSaleToken = 1169322346000000000000000000;
@@ -164,7 +164,7 @@ contract KnowToken is KNBaseToken(&quot;Know Token&quot;, &quot;KN&quot;, 18, 77
     address public founderAddress;
     bool public unlockAllTokens;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool unfrozen);
     event UnLockAllTokens(bool unlock);
@@ -177,8 +177,8 @@ contract KnowToken is KNBaseToken(&quot;Know Token&quot;, &quot;KN&quot;, 18, 77
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != address(0));                               
-        require (balances[_from] &gt;= _value);               
-        require (balances[_to].add(_value) &gt;= balances[_to]); 
+        require (balances[_from] >= _value);               
+        require (balances[_to].add(_value) >= balances[_to]); 
         require(!frozenAccount[_from] || unlockAllTokens);
 
         balances[_from] = balances[_from].sub(_value);                  

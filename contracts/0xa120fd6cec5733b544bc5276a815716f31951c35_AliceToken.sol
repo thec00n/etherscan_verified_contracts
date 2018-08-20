@@ -71,15 +71,15 @@ contract Owned {
 
 contract AliceToken is Token, Owned {
 
-    string public name = &quot;Alice Token&quot;;
+    string public name = "Alice Token";
     uint8 public decimals = 2;
-    string public symbol = &quot;ALT&quot;;
-    string public version = &#39;ALT 1.0&#39;;
+    string public symbol = "ALT";
+    string public version = 'ALT 1.0';
 
 
     function transfer(address _to, uint256 _value) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -87,7 +87,7 @@ contract AliceToken is Token, Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -110,7 +110,7 @@ contract AliceToken is Token, Owned {
     }
 
     function mint(address _to, uint256 _value) onlyOwner {
-        if (totalSupply + _value &lt; totalSupply) throw;
+        if (totalSupply + _value < totalSupply) throw;
             totalSupply += _value;
             balances[_to] += _value;
 
@@ -118,15 +118,15 @@ contract AliceToken is Token, Owned {
     }
 
     function destroy(address _from, uint256 _value) onlyOwner {
-        if (balances[_from] &lt; _value || _value &lt; 0) throw;
+        if (balances[_from] < _value || _value < 0) throw;
             totalSupply -= _value;
             balances[_from] -= _value;
 
             DestroyEvent(_from, _value);
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event MintEvent(address indexed to, uint value);
     event DestroyEvent(address indexed from, uint value);

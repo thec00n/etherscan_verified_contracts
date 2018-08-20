@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,9 +88,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -98,7 +98,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -107,7 +107,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,12 +120,12 @@ contract LockingContract is Ownable {
   event ReducedLockingTime(uint256 _newUnlockTime);
 
   ERC20 public tokenContract;
-  mapping(address =&gt; uint256) public tokens;
+  mapping(address => uint256) public tokens;
   uint256 public totalTokens;
   uint256 public unlockTime;
 
   function isLocked() public view returns(bool) {
-    return now &lt; unlockTime;
+    return now < unlockTime;
   }
 
   modifier onlyWhenUnlocked() {
@@ -139,7 +139,7 @@ contract LockingContract is Ownable {
   }
 
   function LockingContract(ERC20 _tokenContract, uint256 _lockingDuration) public {
-    require(_lockingDuration &gt; 0);
+    require(_lockingDuration > 0);
     unlockTime = now.add(_lockingDuration);
     tokenContract = _tokenContract;
   }
@@ -150,7 +150,7 @@ contract LockingContract is Ownable {
 
   // Should only be done from another contract.
   // To ensure that the LockingContract can release all noted tokens later,
-  // one should mint/transfer tokens to the LockingContract&#39;s account prior to noting
+  // one should mint/transfer tokens to the LockingContract's account prior to noting
   function noteTokens(address _beneficiary, uint256 _tokenAmount) external onlyOwner onlyWhenLocked {
     uint256 tokenBalance = tokenContract.balanceOf(this);
     require(tokenBalance == totalTokens.add(_tokenAmount));
@@ -169,8 +169,8 @@ contract LockingContract is Ownable {
   }
 
   function reduceLockingTime(uint256 _newUnlockTime) public onlyOwner onlyWhenLocked {
-    require(_newUnlockTime &gt;= now);
-    require(_newUnlockTime &lt; unlockTime);
+    require(_newUnlockTime >= now);
+    require(_newUnlockTime < unlockTime);
     unlockTime = _newUnlockTime;
     ReducedLockingTime(_newUnlockTime);
   }

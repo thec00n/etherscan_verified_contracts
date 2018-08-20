@@ -1,8 +1,8 @@
 /*
- * Written by Jesse Busman (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa93949c95ba909f89988f89d4999597">[email&#160;protected]</a>) on 2017-11-30.
+ * Written by Jesse Busman (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa93949c95ba909f89988f89d4999597">[email protected]</a>) on 2017-11-30.
  * This software is provided as-is without warranty of any kind, express or implied.
  * This software is provided without any limitation to use, copy modify or distribute.
- * The user takes sole and complete responsibility for the consequences of this software&#39;s use.
+ * The user takes sole and complete responsibility for the consequences of this software's use.
  * Github repository: https://github.com/JesseBusman/SoliditySet
  */
 
@@ -17,15 +17,15 @@ library SetLibrary
     }
     struct Set
     {
-        mapping(uint256 =&gt; ArrayIndexAndExistsFlag) valuesMapping;
+        mapping(uint256 => ArrayIndexAndExistsFlag) valuesMapping;
         uint256[] values;
     }
     function add(Set storage self, uint256 value) public returns (bool added)
     {
-        // If the value is already in the set, we don&#39;t need to do anything
+        // If the value is already in the set, we don't need to do anything
         if (self.valuesMapping[value].exists == true) return false;
         
-        // Remember that the value is in the set, and remember the value&#39;s array index
+        // Remember that the value is in the set, and remember the value's array index
         self.valuesMapping[value] = ArrayIndexAndExistsFlag({index: self.values.length, exists: true});
         
         // Add the value to the array of unique values
@@ -39,7 +39,7 @@ library SetLibrary
     }
     function remove(Set storage self, uint256 value) public returns (bool removed)
     {
-        // If the value is not in the set, we don&#39;t need to do anything
+        // If the value is not in the set, we don't need to do anything
         if (self.valuesMapping[value].exists == false) return false;
         
         // Remember that the value is not in the set
@@ -47,8 +47,8 @@ library SetLibrary
         
         // Now we need to remove the value from the array. To prevent leaking
         // storage space, we move the last value in the array into the spot that
-        // contains the element we&#39;re removing.
-        if (self.valuesMapping[value].index &lt; self.values.length-1)
+        // contains the element we're removing.
+        if (self.valuesMapping[value].index < self.values.length-1)
         {
             uint256 valueToMove = self.values[self.values.length-1];
             uint256 indexToMoveItTo = self.valuesMapping[value].index;
@@ -57,7 +57,7 @@ library SetLibrary
         }
         
         // Now we remove the last element from the array, because we just duplicated it.
-        // We don&#39;t free the storage allocation of the removed last element,
+        // We don't free the storage allocation of the removed last element,
         // because it will most likely be used again by a call to add().
         // De-allocating and re-allocating storage space costs more gas than
         // just keeping it allocated and unused.
@@ -77,7 +77,7 @@ library SetLibrary
         return self.values.length;
     }
     
-    // Also accept address and bytes32 types, so the user doesn&#39;t have to cast.
+    // Also accept address and bytes32 types, so the user doesn't have to cast.
     function add(Set storage self, address value) public returns (bool added) { return add(self, uint256(value)); }
     function add(Set storage self, bytes32 value) public returns (bool added) { return add(self, uint256(value)); }
     function contains(Set storage self, address value) public view returns (bool contained) { return contains(self, uint256(value)); }

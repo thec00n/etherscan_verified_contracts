@@ -41,9 +41,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -51,7 +51,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -60,7 +60,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -166,7 +166,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -184,7 +184,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -228,7 +228,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -239,8 +239,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -254,7 +254,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -303,7 +303,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -326,12 +326,12 @@ contract ERC223Token is StandardToken, Claimable {
 	/*!	Whitelisting addresses of smart contracts which have
 
 	 */
-	mapping (address =&gt; bool) public whiteListContracts;
+	mapping (address => bool) public whiteListContracts;
 
 	/*!	Per user: whitelisting addresses of smart contracts which have
 
 	 */
-	mapping (address =&gt; mapping (address =&gt; bool) ) public userWhiteListContracts;
+	mapping (address => mapping (address => bool) ) public userWhiteListContracts;
 
 	function setERC223Activated(bool _activate) public onlyOwner {
 		erc223Activated = _activate;
@@ -351,7 +351,7 @@ contract ERC223Token is StandardToken, Claimable {
 			codeLength := extcodesize(_to)
 		}
 
-		if (codeLength&gt;0) {
+		if (codeLength>0) {
 			ERC223Receiver receiver = ERC223Receiver(_to);
 			receiver.tokenFallback(msg.sender, _value, _data);
 		}
@@ -360,8 +360,8 @@ contract ERC223Token is StandardToken, Claimable {
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		bool ok = super.transfer(_to, _value);
 		if (erc223Activated
-			&amp;&amp; whiteListContracts[_to] ==false
-			&amp;&amp; userWhiteListContracts[msg.sender][_to] ==false) {
+			&& whiteListContracts[_to] ==false
+			&& userWhiteListContracts[msg.sender][_to] ==false) {
 			bytes memory empty;
 			checkAndInvokeReceiver(_to, _value, empty);
 		}
@@ -371,8 +371,8 @@ contract ERC223Token is StandardToken, Claimable {
 	function transfer(address _to, uint256 _value, bytes _data) public returns (bool) {
 		bool ok = super.transfer(_to, _value);
 		if (erc223Activated
-			&amp;&amp; whiteListContracts[_to] ==false
-			&amp;&amp; userWhiteListContracts[msg.sender][_to] ==false) {
+			&& whiteListContracts[_to] ==false
+			&& userWhiteListContracts[msg.sender][_to] ==false) {
 			checkAndInvokeReceiver(_to, _value, _data);
 		}
 		return ok;
@@ -381,9 +381,9 @@ contract ERC223Token is StandardToken, Claimable {
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		bool ok = super.transferFrom(_from, _to, _value);
 		if (erc223Activated
-			&amp;&amp; whiteListContracts[_to] ==false
-			&amp;&amp; userWhiteListContracts[_from][_to] ==false
-			&amp;&amp; userWhiteListContracts[msg.sender][_to] ==false) {
+			&& whiteListContracts[_to] ==false
+			&& userWhiteListContracts[_from][_to] ==false
+			&& userWhiteListContracts[msg.sender][_to] ==false) {
 			bytes memory empty;
 			checkAndInvokeReceiver(_to, _value, empty);
 		}
@@ -393,9 +393,9 @@ contract ERC223Token is StandardToken, Claimable {
 	function transferFrom(address _from, address _to, uint256 _value, bytes _data) public returns (bool) {
 		bool ok = super.transferFrom(_from, _to, _value);
 		if (erc223Activated
-			&amp;&amp; whiteListContracts[_to] ==false
-			&amp;&amp; userWhiteListContracts[_from][_to] ==false
-			&amp;&amp; userWhiteListContracts[msg.sender][_to] ==false) {
+			&& whiteListContracts[_to] ==false
+			&& userWhiteListContracts[_from][_to] ==false
+			&& userWhiteListContracts[msg.sender][_to] ==false) {
 			checkAndInvokeReceiver(_to, _value, _data);
 		}
 		return ok;
@@ -420,9 +420,9 @@ contract BurnableToken is ERC223Token {
 	 * @param _value The amount of token to be burned.
 	 */
 	function burnTokenBurn(uint256 _value) public onlyOwner {
-		require(_value &lt;= balances[msg.sender]);
-		// no need to require value &lt;= totalSupply, since that would imply the
-		// sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+		require(_value <= balances[msg.sender]);
+		// no need to require value <= totalSupply, since that would imply the
+		// sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
 		address burner = msg.sender;
 		balances[burner] = balances[burner].sub(_value);
@@ -443,7 +443,7 @@ contract HoldersToken is BurnableToken {
 		other contracts can communicate with or to do operations
 		with all holders of tokens
 	 */
-	mapping (address =&gt; bool) public isHolder;
+	mapping (address => bool) public isHolder;
 	address [] public holders;
 
 	function addHolder(address _addr) internal returns (bool) {
@@ -538,15 +538,15 @@ contract MigratoryToken is HoldersToken {
 		Can be called only by owner (onlyOwner)
 	 */
 	function migrateHolders(uint256 count) public onlyOwner returns (bool) {
-		require(count &gt; 0);
+		require(count > 0);
 		require(migrationAgent != 0x0);
 		// Calculate bounds for processing
 		count = migrationCountComplete.add(count);
-		if (count &gt; holders.length) {
+		if (count > holders.length) {
 			count = holders.length;
 		}
 		// Process migration
-		for (uint256 i = migrationCountComplete; i &lt; count; i++) {
+		for (uint256 i = migrationCountComplete; i < count; i++) {
 			address holder = holders[i];
 			uint value = balances[holder];
 			balances[holder] = balances[holder].sub(value);
@@ -577,8 +577,8 @@ contract FollowCoin is MigratoryToken {
 	/*!	Contructor
 	 */
 	function FollowCoin() public {
-		name = &quot;FollowCoin&quot;;
-		symbol = &quot;FLLW&quot;;
+		name = "FollowCoin";
+		symbol = "FLLW";
 		decimals = 18;
 		totalSupply_ = 515547535173959076174820000;
 		balances[owner] = totalSupply_;
@@ -611,17 +611,17 @@ contract FollowCoin is MigratoryToken {
 		require(_tos.length == _values.length);
 		bytes memory return_values = new bytes(_tos.length);
 
-		for (uint256 i = 0; i &lt; _tos.length; i++) {
+		for (uint256 i = 0; i < _tos.length; i++) {
 			address _to = _tos[i];
 			uint256 _value = _values[i];
-			return_values[i] = byte(48); //&#39;0&#39;
+			return_values[i] = byte(48); //'0'
 
-			if (_to != address(0) &amp;&amp;
-				_value &lt;= balances[msg.sender]) {
+			if (_to != address(0) &&
+				_value <= balances[msg.sender]) {
 
 				bool ok = transfer(_to, _value);
 				if (ok) {
-					return_values[i] = byte(49); //&#39;1&#39;
+					return_values[i] = byte(49); //'1'
 				}
 			}
 		}

@@ -20,13 +20,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -94,10 +94,10 @@ contract VestedToken {
     // When aside tokens have been minted ?
     uint public asideTokensMintDate;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     
-    modifier transferAllowed { require(asideTokensHaveBeenMinted &amp;&amp; now &gt; asideTokensMintDate + TOKEN_TRADABLE_DELAY); _; }
+    modifier transferAllowed { require(asideTokensHaveBeenMinted && now > asideTokensMintDate + TOKEN_TRADABLE_DELAY); _; }
     
     // Get the balance from an address
     function balanceOf(address _owner) public constant returns (uint256) { return balances[_owner]; }  
@@ -107,7 +107,7 @@ contract VestedToken {
         require(_to != 0x0);
         
         // founders wallets is blocked 1 year
-        if (msg.sender == vestedAddress &amp;&amp; (now &lt; (asideTokensMintDate + VESTING_DELAY))) { revert(); }
+        if (msg.sender == vestedAddress && (now < (asideTokensMintDate + VESTING_DELAY))) { revert(); }
 
         return privateTransfer(_to, _value);
     }
@@ -118,7 +118,7 @@ contract VestedToken {
         require(_to != 0x0);
         
         // founders wallet is blocked 1 year
-        if (_from == vestedAddress &amp;&amp; (now &lt; (asideTokensMintDate + VESTING_DELAY))) { revert(); }
+        if (_from == vestedAddress && (now < (asideTokensMintDate + VESTING_DELAY))) { revert(); }
 
         uint256 _allowance = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value);
@@ -160,10 +160,10 @@ contract VestedToken {
  */
 contract WhitelistsRegistration is Ownable {
     // List of whitelisted addresses for KYC under 10 ETH
-    mapping(address =&gt; bool) silverWhiteList;
+    mapping(address => bool) silverWhiteList;
     
     // List of whitelisted addresses for KYC over 10 ETH
-    mapping(address =&gt; bool) goldWhiteList;
+    mapping(address => bool) goldWhiteList;
     
     // Different stage from the ICO
     enum WhiteListState {
@@ -210,14 +210,14 @@ contract WhitelistsRegistration is Ownable {
     
     // Change registration status for several addresses in the whitelist for KYC under 10 ETH
     function massChangeRegistrationStatusForSilverWhiteList(address[] _targets, bool _isRegistered) public onlyOwnerOrWhiteLister {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeRegistrationStatusForSilverWhiteList(_targets[i], _isRegistered);
         }
     } 
     
     // Change registration status for several addresses in the whitelist for KYC over 10 ETH
     function massChangeRegistrationStatusForGoldWhiteList(address[] _targets, bool _isRegistered) public onlyOwnerOrWhiteLister {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeRegistrationStatusForGoldWhiteList(_targets[i], _isRegistered);
         }
     }
@@ -239,8 +239,8 @@ contract WhitelistsRegistration is Ownable {
  */
 contract BCDToken is VestedToken, WhitelistsRegistration {
     
-    string public constant name = &quot;Blockchain Certified Data Token&quot;;
-    string public constant symbol = &quot;BCDT&quot;;
+    string public constant name = "Blockchain Certified Data Token";
+    string public constant symbol = "BCDT";
     uint public constant decimals = 18;
 
     // Maximum contribution in ETH for silver whitelist 
@@ -264,7 +264,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
 
     // Different stage from the ICO
     enum State {
-        // ICO isn&#39;t started yet, initial state
+        // ICO isn't started yet, initial state
         Init,
         // Presale has started
         PresaleRunning,
@@ -301,7 +301,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
     uint private constant FOUNDERS_ALLOCATION_PER_MILLE_RATIO =  30;
     
     // List of contributors/contribution in ETH
-    mapping(address =&gt; uint256) contributors;
+    mapping(address => uint256) contributors;
 
     // Use to allow function call only if currentState is the one specified
     modifier inStateInit()
@@ -331,10 +331,10 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
         require(currentState == State.PresaleRunning || currentState == State.Round1Running || currentState == State.Round2Running);
 
         // min transaction is 0.1 ETH
-        if (msg.value &lt; 100 finney) { revert(); }
+        if (msg.value < 100 finney) { revert(); }
 
-        // If you&#39;re not in any whitelist, you cannot continue
-        if (!silverWhiteList[msg.sender] &amp;&amp; !goldWhiteList[msg.sender]) {
+        // If you're not in any whitelist, you cannot continue
+        if (!silverWhiteList[msg.sender] && !goldWhiteList[msg.sender]) {
             revert();
         }
 
@@ -347,11 +347,11 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
         // Address is only in the silver whitelist: contribution is capped
         if (!goldWhiteList[msg.sender]) {
             // Check if address has already contributed for maximum allowance
-            if (contributors[msg.sender] &gt;= MAX_ETHER_FOR_SILVER_WHITELIST) {
+            if (contributors[msg.sender] >= MAX_ETHER_FOR_SILVER_WHITELIST) {
                 revert();
             }
             // limit the total contribution to MAX_ETHER_FOR_SILVER_WHITELIST
-            if (contributors[msg.sender].add(ethToUse) &gt; MAX_ETHER_FOR_SILVER_WHITELIST) {
+            if (contributors[msg.sender].add(ethToUse) > MAX_ETHER_FOR_SILVER_WHITELIST) {
                 ethToUse = MAX_ETHER_FOR_SILVER_WHITELIST.sub(contributors[msg.sender]);
             }
         }
@@ -361,7 +361,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
         uint rate = getBCDTRateForCurrentRound();
 
         // If cap of the round has been reached
-        if (ethAvailable &lt;= ethToUse) {
+        if (ethAvailable <= ethToUse) {
             // End the round
             privateSetState(getEndedStateForCurrentRound());
             // Only available ethers will be used to reach the cap
@@ -381,20 +381,20 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
         contributors[msg.sender] = contributors[msg.sender].add(ethToUse);
         
         // Send back the unused ethers        
-        if (ethToUse &lt; ethSent) {
+        if (ethToUse < ethSent) {
             msg.sender.transfer(ethSent.sub(ethToUse));
         }
         // Log token transfer operation
         Transfer(0x0, msg.sender, tokenToSend); 
     }
 
-    // Allow contributors to withdraw after the end of the ICO if the softcap hasn&#39;t been reached
+    // Allow contributors to withdraw after the end of the ICO if the softcap hasn't been reached
     function withdraw() public inStateRound2Finished {
         // Only contributors with positive ETH balance could Withdraw
         if(contributors[msg.sender] == 0) { revert(); }
         
         // Withdraw is possible only if softcap has not been reached
-        require(etherRaisedDuringICO &lt; softCap);
+        require(etherRaisedDuringICO < softCap);
         
         // Get how much ethers sender has contribute
         uint256 ethToSendBack = contributors[msg.sender];
@@ -413,10 +413,10 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
     function mintAsideTokens() public onlyOwner inStateRound2Finished {
 
         // Reserve, community and founders address have to be set before mint aside tokens
-        require((reserveAddress != 0x0) &amp;&amp; (communityAddress != 0x0) &amp;&amp; (vestedAddress != 0x0));
+        require((reserveAddress != 0x0) && (communityAddress != 0x0) && (vestedAddress != 0x0));
 
         // Aside tokens can be minted only if softcap is reached
-        require(this.balance &gt;= softCap);
+        require(this.balance >= softCap);
 
         // Revert if aside tokens have already been minted 
         if (asideTokensHaveBeenMinted) { revert(); }
@@ -445,7 +445,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
     }
     
     function setTokenAsideAddresses(address _reserveAddress, address _communityAddress, address _founderAddress) public onlyOwner {
-        require(_reserveAddress != 0x0 &amp;&amp; _communityAddress != 0x0 &amp;&amp; _founderAddress != 0x0);
+        require(_reserveAddress != 0x0 && _communityAddress != 0x0 && _founderAddress != 0x0);
 
         // Revert when aside tokens have already been minted 
         if (asideTokensHaveBeenMinted) { revert(); }
@@ -458,7 +458,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
     function updateCapsAndRate(uint _presaleCapInETH, uint _round1CapInETH, uint _softCapInETH, uint _rateETH_BCDT) public onlyOwner inStateInit {
             
         // Caps and rate are updatable until ICO starts
-        require(_round1CapInETH &gt; _presaleCapInETH);
+        require(_round1CapInETH > _presaleCapInETH);
         require(_rateETH_BCDT != 0);
         
         presaleCap = _presaleCapInETH * 1 ether;
@@ -509,7 +509,7 @@ contract BCDToken is VestedToken, WhitelistsRegistration {
     
     function privateSetState(State _newState) private {
         // no way to go back    
-        if(_newState &lt;= currentState) { revert(); }
+        if(_newState <= currentState) { revert(); }
         
         currentState = _newState;
         StateChanged(now, currentState);

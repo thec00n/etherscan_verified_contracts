@@ -21,8 +21,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract Trabet_Coin is owned {
     // Public variables of the token
-    string public name = &quot;Trabet Coin&quot;;
-    string public symbol = &quot;TC&quot;;
+    string public name = "Trabet Coin";
+    string public symbol = "TC";
     uint8 public decimals = 4;
     uint256 public totalSupply = 7000000 * 10 ** uint256(decimals);
 
@@ -32,9 +32,9 @@ contract Trabet_Coin is owned {
     address public crowdsaleAgent;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
    
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -73,9 +73,9 @@ contract Trabet_Coin is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Check if sender is frozen
         require(!frozenAccount[_from]);
         // Check if recipient is frozen
@@ -113,7 +113,7 @@ contract Trabet_Coin is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) canTransfer public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -160,7 +160,7 @@ contract Trabet_Coin is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -176,10 +176,10 @@ contract Trabet_Coin is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -194,7 +194,7 @@ contract Trabet_Coin is owned {
         emit Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -250,7 +250,7 @@ contract Trabet_Coin_PreICO is owned, Killable {
     bool public reFunding = false;
 
     /// How much ETH each address has invested to this crowdsale
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     /// A new investment was made
     event Invested(address investor, uint weiAmount, uint tokenAmount);
@@ -270,8 +270,8 @@ contract Trabet_Coin_PreICO is owned, Killable {
 
     function investInternal(address receiver, address refer) private {
         require(!finalized);
-        require(startsAt &lt;= now &amp;&amp; endsAt &gt; now);
-        require(msg.value &gt;= 100000000000000);
+        require(startsAt <= now && endsAt > now);
+        require(msg.value >= 100000000000000);
 
         if(investedAmountOf[receiver] == 0) {
             // A new investor
@@ -294,7 +294,7 @@ contract Trabet_Coin_PreICO is owned, Killable {
             refer.transfer(msg.value/10);
         }
 
-        // Transfer Fund to owner&#39;s address
+        // Transfer Fund to owner's address
         beneficiary.transfer(address(this).balance);
 
     }
@@ -321,7 +321,7 @@ contract Trabet_Coin_PreICO is owned, Killable {
     }
     function setRate(uint value) onlyOwner public {
         require(!finalized);
-        require(value &gt; 0);
+        require(value > 0);
         emit RateChanged(TokenPerETH, value);
         TokenPerETH = value;
     }

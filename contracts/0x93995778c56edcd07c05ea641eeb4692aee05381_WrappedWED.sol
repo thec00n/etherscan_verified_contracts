@@ -39,16 +39,16 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
         //require Wednesday(3)
         uint8 dayOfWeek = uint8((now / 86400 + 4) % 7);
         require(dayOfWeek == 3);
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -58,13 +58,13 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
         //require Wednesday(3)
         uint8 dayOfWeek = uint8((now / 86400 + 4) % 7);
         require(dayOfWeek == 3);
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -87,13 +87,13 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract WednesdayCoin is StandardToken {
 
     function() {
@@ -106,24 +106,24 @@ contract WednesdayCoin is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;WED2.0&#39;;       //WED 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'WED2.0';       //WED 0.1 standard. Just an arbitrary versioning scheme.
 
     function WednesdayCoin() {
         balances[msg.sender] = 21000000000000000000000000000;
         // Give the creator all initial tokens (100000 for example)
         totalSupply = 21000000000000000000000000000;
         // Update total supply (100000 for example)
-        name = &quot;Wednesday Coin&quot;;
+        name = "Wednesday Coin";
         // Set the name for display purposes
         decimals = 18;
         // Amount of decimals for display purposes
-        symbol = &quot;WED&quot;;
+        symbol = "WED";
         // Set the symbol for display purposes
     }
 
@@ -132,10 +132,10 @@ contract WednesdayCoin is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if (!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {throw;}
+        if (!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {throw;}
         return true;
     }
 }
@@ -149,10 +149,10 @@ contract WednesdayCoin is StandardToken {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -160,7 +160,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -235,8 +235,8 @@ contract WrappedWED is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Total supply
@@ -253,8 +253,8 @@ contract WrappedWED is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -266,7 +266,7 @@ contract WrappedWED is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -297,7 +297,7 @@ contract WrappedWED is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -327,8 +327,8 @@ contract WrappedWED is ERC20Interface, Owned {
     WednesdayCoin wed;
 
     function WrappedWED(address coinAddr) public {
-        symbol = &quot;WWC&quot;;
-        name = &quot;Wrapped Wednesday Coin&quot;;
+        symbol = "WWC";
+        name = "Wrapped Wednesday Coin";
         decimals = 18;
         _totalSupply = 0;
 	      wed = WednesdayCoin(coinAddr);
@@ -345,7 +345,7 @@ contract WrappedWED is ERC20Interface, Owned {
     }
 
      function unwrap(uint amount) {
-      require(balances[msg.sender] &gt;= amount);
+      require(balances[msg.sender] >= amount);
       _totalSupply = _totalSupply.sub(amount);
       balances[msg.sender] = balances[msg.sender].sub(amount);
       wed.transfer(msg.sender, amount);

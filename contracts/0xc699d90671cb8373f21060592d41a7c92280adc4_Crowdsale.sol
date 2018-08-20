@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -105,9 +105,9 @@ contract Crowdsale is Ownable {
   uint hardcap;  
   Token public token;
   // balances for softcap
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
   // balances for softcap
-  mapping(address =&gt; uint) public balancesToken;  
+  mapping(address => uint) public balancesToken;  
   // The token being offered
 
   // start and end timestamps where investments are allowed (both inclusive)
@@ -210,22 +210,22 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum amount in ETH
-    require(weiAmount &gt;= minQuanValues);
+    require(weiAmount >= minQuanValues);
     //maximum amount in ETH
-    require(weiAmount.add(balances[msg.sender]) &lt;= maxQuanValues);    
+    require(weiAmount.add(balances[msg.sender]) <= maxQuanValues);    
     //hard cap
     address _this = this;
-    require(hardcap &gt; _this.balance);
+    require(hardcap > _this.balance);
 
     //Pre-sale
-    if (now &gt;= startPreSale &amp;&amp; now &lt; endPreSale &amp;&amp; totalPreSale &lt; maxPreSale){
+    if (now >= startPreSale && now < endPreSale && totalPreSale < maxPreSale){
       tokens = weiAmount.mul(ratePreSale);
-	  if (maxPreSale.sub(totalPreSale) &lt;= tokens){
+	  if (maxPreSale.sub(totalPreSale) <= tokens){
 	    endPreSale = now;
 	    startIco = now;
 	    endIco = startIco + 6 * 7 * 1 days; 
 	  }
-      if (maxPreSale.sub(totalPreSale) &lt; tokens){
+      if (maxPreSale.sub(totalPreSale) < tokens){
         tokens = maxPreSale.sub(totalPreSale); 
         weiAmount = tokens.div(ratePreSale);
         backAmount = msg.value.sub(weiAmount);
@@ -234,9 +234,9 @@ contract Crowdsale is Ownable {
     }
        
     //ico   
-    if (now &gt;= startIco &amp;&amp; now &lt; endIco &amp;&amp; totalIco &lt; maxIco){
+    if (now >= startIco && now < endIco && totalIco < maxIco){
       tokens = weiAmount.mul(rateIco);
-      if (maxIco.sub(totalIco) &lt; tokens){
+      if (maxIco.sub(totalIco) < tokens){
         tokens = maxIco.sub(totalIco); 
         weiAmount = tokens.div(rateIco);
         backAmount = msg.value.sub(weiAmount);
@@ -244,18 +244,18 @@ contract Crowdsale is Ownable {
       totalIco = totalIco.add(tokens);
     }        
 
-    require(tokens &gt; 0);
+    require(tokens > 0);
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     balancesToken[msg.sender] = balancesToken[msg.sender].add(tokens);
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     emit TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
   }
   function getToken() public{
     address _this = this;
-    require(_this.balance &gt;= softcap &amp;&amp; now &gt; endIco); 
+    require(_this.balance >= softcap && now > endIco); 
     uint value = balancesToken[msg.sender];
     balancesToken[msg.sender] = 0;
     token.transfer(msg.sender, value);
@@ -263,8 +263,8 @@ contract Crowdsale is Ownable {
   
   function refund() public{
     address _this = this;
-    require(_this.balance &lt; softcap &amp;&amp; now &gt; endIco);
-    require(balances[msg.sender] &gt; 0);
+    require(_this.balance < softcap && now > endIco);
+    require(balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -272,13 +272,13 @@ contract Crowdsale is Ownable {
   
   function transferTokenToMultisig(address _address) public onlyOwner {
     address _this = this;
-    require(_this.balance &gt;= softcap &amp;&amp; now &gt; endIco);  
+    require(_this.balance >= softcap && now > endIco);  
     token.transfer(_address, token.balanceOf(_this));
   }   
   
   function transferEthToMultisig() public onlyOwner {
     address _this = this;
-    require(_this.balance &gt;= softcap &amp;&amp; now &gt; endIco);  
+    require(_this.balance >= softcap && now > endIco);  
     wallet.transfer(_this.balance);
   }  
 }

@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -113,7 +113,7 @@ contract AirDrop is Ownable {
     uint public airDropAmount;
 
     // the mapping to judge whether each address has already been airDropped
-    mapping ( address =&gt; bool ) public invalidAirDrop;
+    mapping ( address => bool ) public invalidAirDrop;
 
     // flag to stop airdrop
     bool public stop = false;
@@ -135,9 +135,9 @@ contract AirDrop is Ownable {
     * @param _tokenAddress The address of token.
     */
     function AirDrop(uint256 _startTime, uint256 _endTime, uint _airDropAmount, address _tokenAddress) public {
-        require(_startTime &gt;= now &amp;&amp;
-            _endTime &gt;= _startTime &amp;&amp;
-            _airDropAmount &gt; 0 &amp;&amp;
+        require(_startTime >= now &&
+            _endTime >= _startTime &&
+            _airDropAmount > 0 &&
             _tokenAddress != address(0)
         );
         startTime = _startTime;
@@ -153,9 +153,9 @@ contract AirDrop is Ownable {
     */
     function isValidAirDropForAll() public view returns (bool) {
         bool validNotStop = !stop;
-        bool validAmount = erc20.balanceOf(this) &gt;= airDropAmount;
-        bool validPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        return validNotStop &amp;&amp; validAmount &amp;&amp; validPeriod;
+        bool validAmount = erc20.balanceOf(this) >= airDropAmount;
+        bool validPeriod = now >= startTime && now <= endTime;
+        return validNotStop && validAmount && validPeriod;
     }
 
     /**
@@ -164,10 +164,10 @@ contract AirDrop is Ownable {
     */
     function isValidAirDropForIndividual() public view returns (bool) {
         bool validNotStop = !stop;
-        bool validAmount = erc20.balanceOf(this) &gt;= airDropAmount;
-        bool validPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool validAmount = erc20.balanceOf(this) >= airDropAmount;
+        bool validPeriod = now >= startTime && now <= endTime;
         bool validAmountForIndividual = !invalidAirDrop[msg.sender];
-        return validNotStop &amp;&amp; validAmount &amp;&amp; validPeriod &amp;&amp; validAmountForIndividual;
+        return validNotStop && validAmount && validPeriod && validAmountForIndividual;
     }
 
     /**
@@ -203,7 +203,7 @@ contract AirDrop is Ownable {
     * @param _address The address of EOA that can receive token from this contract.
     */
     function withdraw(address _address) public onlyOwner {
-        require(stop || now &gt; endTime);
+        require(stop || now > endTime);
         require(_address != address(0));
         uint tokenBalanceOfContract = erc20.balanceOf(this);
         require(erc20.transfer(_address, tokenBalanceOfContract));

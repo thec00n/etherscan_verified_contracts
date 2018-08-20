@@ -42,20 +42,20 @@ contract AICoin is ERC20Interface {
    * ******************************/
 
   /* Token constants */
-  string public constant name = &#39;AICoin&#39;;
-  string public constant symbol = &#39;XAI&#39;;
+  string public constant name = 'AICoin';
+  string public constant symbol = 'XAI';
   uint8 public constant decimals = 8;
-  string public constant smallestUnit = &#39;Hofstadter&#39;;
+  string public constant smallestUnit = 'Hofstadter';
 
   /* Token internal data */
   address m_administrator;
   uint256 m_totalSupply;
 
   /* Current balances for each account */
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /* Account holder approves the transfer of an amount to another account */
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   /* One-time create function: initialize the supply and set the admin address */
   function AICoin (uint256 _initialSupply) {
@@ -79,12 +79,12 @@ contract AICoin is ERC20Interface {
     return balances[_owner];
   }
 
-  /* Transfer an amount from the owner&#39;s account to an indicated account */
+  /* Transfer an amount from the owner's account to an indicated account */
   function transfer(address _to, uint256 _amount) returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]
-        &amp;&amp; (! accountHasCurrentVote(msg.sender))) {
+    if (balances[msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]
+        && (! accountHasCurrentVote(msg.sender))) {
       balances[msg.sender] -= _amount;
       balances[_to] += _amount;
       Transfer(msg.sender, _to, _amount);
@@ -96,17 +96,17 @@ contract AICoin is ERC20Interface {
 
   /* Send _value amount of tokens from address _from to address _to
    * The transferFrom method is used for a withdraw workflow, allowing contracts to send
-   * tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+   * tokens on your behalf, for example to "deposit" to a contract address and/or to charge
    * fees in sub-currencies; the command should fail unless the _from account has
    * deliberately authorized the sender of the message via some mechanism; we propose
    * these standardized APIs for approval:
    */
   function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-    if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]
-        &amp;&amp; (! accountHasCurrentVote(_from))) {
+    if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]
+        && (! accountHasCurrentVote(_from))) {
       balances[_from] -= _amount;
       allowed[_from][msg.sender] -= _amount;
       balances[_to] += _amount;
@@ -153,9 +153,9 @@ contract AICoin is ERC20Interface {
   }
 
   uint32 public numBallots = 0; // 1-indexed for readability
-  mapping (uint32 =&gt; string) public ballotNames;
-  mapping (uint32 =&gt; BallotDetails) public ballotDetails;
-  mapping (uint32 =&gt; mapping (uint32 =&gt; string) ) public ballotOptions;
+  mapping (uint32 => string) public ballotNames;
+  mapping (uint32 => BallotDetails) public ballotDetails;
+  mapping (uint32 => mapping (uint32 => string) ) public ballotOptions;
 
   /* Create a new ballot and set the basic details (proposal description, dates)
    * The ballot still need to have options added and then to be sealed
@@ -181,7 +181,7 @@ contract AICoin is ERC20Interface {
     require(msg.sender == m_administrator);
 
     /* verify that the ballot exists */
-    require(_ballotId &gt; 0 &amp;&amp; _ballotId &lt;= numBallots);
+    require(_ballotId > 0 && _ballotId <= numBallots);
 
     /* update the ballot object */
     ballotNames[_ballotId] = _proposal;
@@ -197,7 +197,7 @@ contract AICoin is ERC20Interface {
     require(msg.sender == m_administrator);
 
     /* verify that the ballot exists */
-    require(_ballotId &gt; 0 &amp;&amp; _ballotId &lt;= numBallots);
+    require(_ballotId > 0 && _ballotId <= numBallots);
 
     /* cannot change a ballot once it is sealed */
     if(isBallotSealed(_ballotId)) {
@@ -218,7 +218,7 @@ contract AICoin is ERC20Interface {
     require(msg.sender == m_administrator);
 
     /* verify that the ballot exists */
-    require(_ballotId &gt; 0 &amp;&amp; _ballotId &lt;= numBallots);
+    require(_ballotId > 0 && _ballotId <= numBallots);
 
     /* cannot change a ballot once it is sealed */
     if(isBallotSealed(_ballotId)) {
@@ -226,7 +226,7 @@ contract AICoin is ERC20Interface {
     }
 
     /* validate the ballot option */
-    require(_optionId &gt; 0 &amp;&amp; _optionId &lt;= ballotDetails[_ballotId].numOptions);
+    require(_optionId > 0 && _optionId <= ballotDetails[_ballotId].numOptions);
 
     /* update the ballot option */
     ballotOptions[_ballotId][_optionId] = _option;
@@ -240,7 +240,7 @@ contract AICoin is ERC20Interface {
     require(msg.sender == m_administrator);
 
     /* verify that the ballot exists */
-    require(_ballotId &gt; 0 &amp;&amp; _ballotId &lt;= numBallots);
+    require(_ballotId > 0 && _ballotId <= numBallots);
 
     /* cannot change a ballot once it is sealed */
     if(isBallotSealed(_ballotId)) {
@@ -256,13 +256,13 @@ contract AICoin is ERC20Interface {
    */
   function isBallotInProgress(uint32 _ballotId) private constant returns (bool) {
     return (isBallotSealed(_ballotId)
-            &amp;&amp; ballotDetails[_ballotId].start &lt;= now
-            &amp;&amp; ballotDetails[_ballotId].end &gt;= now);
+            && ballotDetails[_ballotId].start <= now
+            && ballotDetails[_ballotId].end >= now);
   }
 
   /* Function to determine if a ballot has ended, based on its end date */
   function hasBallotEnded(uint32 _ballotId) private constant returns (bool) {
-    return (ballotDetails[_ballotId].end &lt; now);
+    return (ballotDetails[_ballotId].end < now);
   }
 
   /* Function to determine if a ballot has been sealed, which means it has been
@@ -276,8 +276,8 @@ contract AICoin is ERC20Interface {
    * VOTING data / functions
    * ******************************/
 
-  mapping (uint32 =&gt; mapping (address =&gt; uint256) ) public ballotVoters;
-  mapping (uint32 =&gt; mapping (uint32 =&gt; uint256) ) public ballotVoteCount;
+  mapping (uint32 => mapping (address => uint256) ) public ballotVoters;
+  mapping (uint32 => mapping (uint32 => uint256) ) public ballotVoteCount;
 
   /* function to allow a coin holder add to the vote count of an option in an
    * active ballot. The votes added equals the balance of the account. Once this is called successfully
@@ -292,7 +292,7 @@ contract AICoin is ERC20Interface {
   function vote(uint32 _ballotId, uint32 _selectedOptionId) {
 
     /* verify that the ballot exists */
-    require(_ballotId &gt; 0 &amp;&amp; _ballotId &lt;= numBallots);
+    require(_ballotId > 0 && _ballotId <= numBallots);
 
     /* Ballot must be in progress in order to vote */
     require(isBallotInProgress(_ballotId));
@@ -302,10 +302,10 @@ contract AICoin is ERC20Interface {
      * If the difference is zero, this attempt to vote will fail.
      */
     uint256 votableBalance = balanceOf(msg.sender) - ballotVoters[_ballotId][msg.sender];
-    require(votableBalance &gt; 0);
+    require(votableBalance > 0);
 
     /* validate the ballot option */
-    require(_selectedOptionId &gt; 0 &amp;&amp; _selectedOptionId &lt;= ballotDetails[_ballotId].numOptions);
+    require(_selectedOptionId > 0 && _selectedOptionId <= ballotDetails[_ballotId].numOptions);
 
     /* update the vote count and record the voter */
     ballotVoteCount[_ballotId][_selectedOptionId] += votableBalance;
@@ -314,13 +314,13 @@ contract AICoin is ERC20Interface {
 
   /* function to determine if an address has already voted in a given ballot */
   function hasAddressVotedInBallot(uint32 _ballotId, address _voter) constant returns (bool hasVoted) {
-    return ballotVoters[_ballotId][_voter] &gt; 0;
+    return ballotVoters[_ballotId][_voter] > 0;
   }
 
   /* function to determine if an account has voted in any current ballot */
   function accountHasCurrentVote(address _voter) constant returns (bool) {
-    for(uint32 id = 1; id &lt;= numBallots; id++) {
-      if (isBallotInProgress(id) &amp;&amp; hasAddressVotedInBallot(id, _voter)) {
+    for(uint32 id = 1; id <= numBallots; id++) {
+      if (isBallotInProgress(id) && hasAddressVotedInBallot(id, _voter)) {
         return true;
       }
     }

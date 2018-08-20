@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -139,7 +139,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -208,7 +208,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -226,8 +226,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -240,7 +240,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -307,7 +307,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -435,14 +435,14 @@ contract PausableToken is StandardToken, Pausable {
  *
  *Copyright 2018 GameCell
  *
- *Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ *Licensed under the Apache License, Version 2.0 (the "License");
  *you may not use this file except in compliance with the License.
  *You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *Unless required by applicable law or agreed to in writing, software
- *distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ *distributed under the License is distributed on an "AS IS" BASIS,
  *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *See the License for the specific language governing permissions and
  *limitations under the License.
@@ -454,9 +454,9 @@ contract GameTestToken is PausableToken
   using SafeMath for uint256;
   
   // ERC20 constants
-  string public name=&quot;Game Test Token&quot;;
-  string public symbol=&quot;GTT&quot;;
-  string public standard=&quot;ERC20&quot;;
+  string public name="Game Test Token";
+  string public symbol="GTT";
+  string public standard="ERC20";
   
   uint8 public constant decimals = 2; // solium-disable-line uppercase
   
@@ -464,7 +464,7 @@ contract GameTestToken is PausableToken
   
   event ReleaseTarget(address target);
     
-  mapping(address =&gt; TimeLock[]) public allocations;
+  mapping(address => TimeLock[]) public allocations;
   
   struct TimeLock
   {
@@ -501,15 +501,15 @@ contract GameTestToken is PausableToken
           return false;
       }
       
-      if (balances[sender] &lt; sub_value)
+      if (balances[sender] < sub_value)
       {
           return false;
       }
       
       uint256 alllock_sum = 0;
-      for (uint j=0; j&lt;allocations[sender].length; j++)
+      for (uint j=0; j<allocations[sender].length; j++)
       {
-          if (allocations[sender][j].time &gt;= block.timestamp)
+          if (allocations[sender][j].time >= block.timestamp)
           {
               alllock_sum = alllock_sum.add(allocations[sender][j].balance);
           }
@@ -517,14 +517,14 @@ contract GameTestToken is PausableToken
       
       uint256 can_unlock = balances[sender].sub(alllock_sum);
       
-      return can_unlock &gt;= sub_value;
+      return can_unlock >= sub_value;
   }
   
   function subAllocation(address sender) private
   {
-      for (uint j=0; j&lt;allocations[sender].length; j++)
+      for (uint j=0; j<allocations[sender].length; j++)
       {
-          if (allocations[sender][j].time &lt; block.timestamp)
+          if (allocations[sender][j].time < block.timestamp)
           {
               allocations[sender][j].balance = 0;
           }
@@ -535,21 +535,21 @@ contract GameTestToken is PausableToken
   {
       require(times.length == balanceRequires.length);
       uint256 sum = 0;
-      for (uint x=0; x&lt;balanceRequires.length; x++)
+      for (uint x=0; x<balanceRequires.length; x++)
       {
-          require(balanceRequires[x]&gt;0);
+          require(balanceRequires[x]>0);
           sum = sum.add(balanceRequires[x]);
       }
       
-      require(total_value &gt;= sum);
+      require(total_value >= sum);
       
-      require(balances[msg.sender]&gt;=sum);
+      require(balances[msg.sender]>=sum);
 
-      for (uint i=0; i&lt;times.length; i++)
+      for (uint i=0; i<times.length; i++)
       {
           bool find = false;
           
-          for (uint j=0; j&lt;allocations[_address].length; j++)
+          for (uint j=0; j<allocations[_address].length; j++)
           {
               if (allocations[_address][j].time == times[i])
               {
@@ -570,9 +570,9 @@ contract GameTestToken is PausableToken
   
   function releaseAllocation(address target)  public onlyOwner 
   {
-      require(balances[target] &gt; 0);
+      require(balances[target] > 0);
       
-      for (uint j=0; j&lt;allocations[target].length; j++)
+      for (uint j=0; j<allocations[target].length; j++)
       {
           allocations[target][j].balance = 0;
       }

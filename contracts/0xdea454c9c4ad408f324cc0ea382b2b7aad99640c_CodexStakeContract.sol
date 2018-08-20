@@ -52,7 +52,7 @@ contract CodexStakeContractInterface is ERC900 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -150,8 +150,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -166,9 +166,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -176,7 +176,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -185,7 +185,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -204,7 +204,7 @@ pragma solidity 0.4.24;
  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-900.md
  */
 contract ERC900BasicStakeContract is ERC900 {
-  // @TODO: deploy this separately so we don&#39;t have to deploy it multiple times for each contract
+  // @TODO: deploy this separately so we don't have to deploy it multiple times for each contract
   using SafeMath for uint256;
 
   // Token used for staking
@@ -213,12 +213,12 @@ contract ERC900BasicStakeContract is ERC900 {
   // The default duration of stake lock-in (in seconds)
   uint256 public defaultLockInDuration;
 
-  // To save on gas, rather than create a separate mapping for totalStakedFor &amp; personalStakes,
+  // To save on gas, rather than create a separate mapping for totalStakedFor & personalStakes,
   //  both data structures are stored in a single mapping for a given addresses.
   //
-  // It&#39;s possible to have a non-existing personalStakes, but have tokens in totalStakedFor
+  // It's possible to have a non-existing personalStakes, but have tokens in totalStakedFor
   //  if other users are staking on behalf of a given address.
-  mapping (address =&gt; StakeContract) public stakeHolders;
+  mapping (address => StakeContract) public stakeHolders;
 
   // Struct for personal stakes (i.e., stakes made by this address)
   // unlockedTimestamp - when the stake unlocks (in seconds since Unix epoch)
@@ -255,7 +255,7 @@ contract ERC900BasicStakeContract is ERC900 {
   modifier canStake(address _address, uint256 _amount) {
     require(
       stakingToken.transferFrom(_address, this, _amount),
-      &quot;Stake required&quot;);
+      "Stake required");
 
     _;
   }
@@ -378,7 +378,7 @@ contract ERC900BasicStakeContract is ERC900 {
 
   /**
    * @notice MUST return true if the optional history functions are implemented, otherwise false
-   * @dev Since we don&#39;t implement the optional interface, this always returns false
+   * @dev Since we don't implement the optional interface, this always returns false
    * @return bool Whether or not the optional history functions are implemented
    */
   function supportsHistory() public pure returns (bool) {
@@ -405,7 +405,7 @@ contract ERC900BasicStakeContract is ERC900 {
     uint256[] memory actualAmounts = new uint256[](arraySize);
     address[] memory stakedFor = new address[](arraySize);
 
-    for (uint256 i = stakeContract.personalStakeIndex; i &lt; stakeContract.personalStakes.length; i++) {
+    for (uint256 i = stakeContract.personalStakeIndex; i < stakeContract.personalStakes.length; i++) {
       uint256 index = i - stakeContract.personalStakeIndex;
       unlockedTimestamps[index] = stakeContract.personalStakes[i].unlockedTimestamp;
       actualAmounts[index] = stakeContract.personalStakes[i].actualAmount;
@@ -468,21 +468,21 @@ contract ERC900BasicStakeContract is ERC900 {
   {
     Stake storage personalStake = stakeHolders[msg.sender].personalStakes[stakeHolders[msg.sender].personalStakeIndex];
 
-    // Check that the current stake has unlocked &amp; matches the unstake amount
+    // Check that the current stake has unlocked & matches the unstake amount
     require(
-      personalStake.unlockedTimestamp &lt;= block.timestamp,
-      &quot;The current stake hasn&#39;t unlocked yet&quot;);
+      personalStake.unlockedTimestamp <= block.timestamp,
+      "The current stake hasn't unlocked yet");
 
     require(
       personalStake.actualAmount == _amount,
-      &quot;The unstake amount does not match the current stake&quot;);
+      "The unstake amount does not match the current stake");
 
     // Transfer the staked tokens from this contract back to the sender
     // Notice that we are using transfer instead of transferFrom here, so
     //  no approval is needed beforehand.
     require(
       stakingToken.transfer(msg.sender, _amount),
-      &quot;Unable to withdraw stake&quot;);
+      "Unable to withdraw stake");
 
     stakeHolders[personalStake.stakedFor].totalStakedFor = stakeHolders[personalStake.stakedFor]
       .totalStakedFor.sub(personalStake.actualAmount);
@@ -504,21 +504,21 @@ contract ERC900BasicStakeContract is ERC900 {
  * @title ERC900 Credits-based staking implementation
  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-900.md
  *
- * Notice that credits aren&#39;t lost when tokens are unstaked--only when credits are spent.
+ * Notice that credits aren't lost when tokens are unstaked--only when credits are spent.
  * This means that after the initial lock in duration expires, a user can re-stake those tokens
  *  for more credits.
- * Another important note: spendCredits can only be called by the contract&#39;s owner. This
+ * Another important note: spendCredits can only be called by the contract's owner. This
  *  is meant to be another smart contract. For example, the smart contract can offer call
- *  spendCredits to reduce a user&#39;s credit balance in place of spending real tokens.
+ *  spendCredits to reduce a user's credit balance in place of spending real tokens.
  */
 contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
 
   // NOTE: Credits do not have decimal places
   // Users cannot own fractional credits
-  mapping (address =&gt; uint256) public creditBalances;
+  mapping (address => uint256) public creditBalances;
 
   /**
-   * @dev Returns the balance of credits at a user&#39;s address.
+   * @dev Returns the balance of credits at a user's address.
    * @param _user address The address to check.
    * @return uint256 The credit balance.
    */
@@ -534,7 +534,7 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
 
   /**
    * @dev Spends credits for a user. Only callable by the owner. Reverts if the
-   *  user doesn&#39;t have enough credits.
+   *  user doesn't have enough credits.
    * @param _user address The address that owns the credits being spent.
    * @param _amount uint256 The number of credits to spend.
    */
@@ -546,8 +546,8 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     onlyOwner
   {
     require(
-      creditBalances[_user] &gt;= _amount,
-      &quot;Insufficient balance&quot;);
+      creditBalances[_user] >= _amount,
+      "Insufficient balance");
 
     creditBalances[_user] = creditBalances[_user].sub(_amount);
   }
@@ -600,7 +600,7 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
   }
 
   /**
-   * @dev Stakes tokens from the caller for a given user &amp; duration, and rewards that user with credits.
+   * @dev Stakes tokens from the caller for a given user & duration, and rewards that user with credits.
    * Reverts if less than 1 token is being staked, or if the duration specified is less than the default.
    * @param _user address The address the tokens are staked for
    * @param _amount uint256 The number of tokens to stake
@@ -616,8 +616,8 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     public
   {
     require(
-      _lockInDuration &gt;= defaultLockInDuration,
-      &quot;Insufficient stake duration&quot;);
+      _lockInDuration >= defaultLockInDuration,
+      "Insufficient stake duration");
 
     super.createStake(
       _user,
@@ -648,8 +648,8 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     uint256 divisor = 1 ether;
 
     require(
-      _amount &gt;= divisor,
-      &quot;Insufficient amount&quot;);
+      _amount >= divisor,
+      "Insufficient amount");
 
     // NOTE: Truncation is intentional here
     // If a user stakes for less than the minimum duration, they are awarded with 0 credits

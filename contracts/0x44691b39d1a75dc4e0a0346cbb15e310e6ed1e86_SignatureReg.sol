@@ -1,4 +1,4 @@
-//! A decentralised registry of 4-bytes signatures =&gt; method mappings
+//! A decentralised registry of 4-bytes signatures => method mappings
 //! By Parity Team (Ethcore), 2016.
 //! Released under the Apache Licence 2.
 
@@ -19,7 +19,7 @@ contract Owned {
 
 contract SignatureReg is Owned {
   // mapping of signatures to entries
-  mapping (bytes4 =&gt; string) public entries;
+  mapping (bytes4 => string) public entries;
 
   // the total count of registered signatures
   uint public totalSignatures = 0;
@@ -35,7 +35,7 @@ contract SignatureReg is Owned {
 
   // constructor with self-registration
   function SignatureReg() {
-    register(&#39;register(string)&#39;);
+    register('register(string)');
   }
 
   // registers a method mapping
@@ -43,7 +43,7 @@ contract SignatureReg is Owned {
     return _register(bytes4(sha3(_method)), _method);
   }
 
-  // internal register function, signature =&gt; method
+  // internal register function, signature => method
   function _register(bytes4 _signature, string _method) internal when_unregistered(_signature) returns (bool) {
     entries[_signature] = _method;
     totalSignatures = totalSignatures + 1;

@@ -16,13 +16,13 @@ contract SafeMath {
   }
 
   function sub2(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
      return a - b;
    }
 
   function add2(uint256 a, uint256 b) internal pure returns (uint256) {
      uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
      return c;
    }
 }
@@ -49,12 +49,12 @@ contract ERC223ReceivingContract {
 
 contract StandardToken is ERC20, ERC223, SafeMath {
 
-   mapping(address =&gt; uint256) balances;
-   mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+   mapping(address => uint256) balances;
+   mapping (address => mapping (address => uint256)) internal allowed;
 
    function transfer(address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender]);
+     require(_value <= balances[msg.sender]);
      balances[msg.sender] = sub2(balances[msg.sender], _value);
      balances[_to] = add2(balances[_to], _value);
      Transfer(msg.sender, _to, _value);
@@ -67,8 +67,8 @@ contract StandardToken is ERC20, ERC223, SafeMath {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = sub2(balances[_from], _value);
      balances[_to] = add2(balances[_to], _value);
@@ -95,7 +95,7 @@ contract StandardToken is ERC20, ERC223, SafeMath {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
      uint oldValue = allowed[msg.sender][_spender];
-     if (_subtractedValue &gt; oldValue) {
+     if (_subtractedValue > oldValue) {
        allowed[msg.sender][_spender] = 0;
      } else {
        allowed[msg.sender][_spender] = sub2(oldValue, _subtractedValue);
@@ -105,7 +105,7 @@ contract StandardToken is ERC20, ERC223, SafeMath {
    }
    
     function transfer(address _to, uint _value, bytes _data) public {
-        require(_value &gt; 0 );
+        require(_value > 0 );
         if(isContract(_to)) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
@@ -121,14 +121,14 @@ contract StandardToken is ERC20, ERC223, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
     
 }
 
 contract CmoudCoin is StandardToken {
-   string public name = &#39;CmoudCoin&#39;;
-   string public symbol = &#39;CMD&#39;;
+   string public name = 'CmoudCoin';
+   string public symbol = 'CMD';
    uint public decimals = 0;
    uint public INITIAL_SUPPLY = 1000000000000;
 

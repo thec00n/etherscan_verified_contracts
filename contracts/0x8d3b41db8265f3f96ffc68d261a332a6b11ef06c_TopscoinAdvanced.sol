@@ -20,10 +20,10 @@ contract admined {
 
 contract Topscoin {
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) public allowance;
 	// balanceOf[address] = 5;
-	string public standard = &quot;Topscoin v1.0&quot;;
+	string public standard = "Topscoin v1.0";
 	string public name;
 	string public symbol;
 	uint8 public decimals; 
@@ -40,8 +40,8 @@ contract Topscoin {
 	}
 
 	function transfer(address _to, uint256 _value) public {
-		require(balanceOf[msg.sender] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
+		require(balanceOf[msg.sender] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
 		//if(admin)
 
 		balanceOf[msg.sender] -= _value;
@@ -55,9 +55,9 @@ contract Topscoin {
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-		require(balanceOf[_from] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
-		require(_value &lt; allowance[_from][msg.sender]) ;
+		require(balanceOf[_from] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
+		require(_value < allowance[_from][msg.sender]) ;
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += _value;
 		allowance[_from][msg.sender] -= _value;
@@ -72,7 +72,7 @@ contract TopscoinAdvanced is admined, Topscoin{
 	uint256 minimumBalanceForAccounts = 5 finney;
 	uint256 public sellPrice;
 	uint256 public buyPrice;
-	mapping (address =&gt; bool) public frozenAccount;
+	mapping (address => bool) public frozenAccount;
 
 	event FrozenFund(address target, bool frozen);
 
@@ -99,12 +99,12 @@ contract TopscoinAdvanced is admined, Topscoin{
 	}
 
 	function transfer(address _to, uint256 _value) public {
-		if(msg.sender.balance &lt; minimumBalanceForAccounts)
+		if(msg.sender.balance < minimumBalanceForAccounts)
 		sell((minimumBalanceForAccounts - msg.sender.balance)/sellPrice);
 
 		require(frozenAccount[msg.sender]) ;
-		require(balanceOf[msg.sender] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
+		require(balanceOf[msg.sender] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
 		//if(admin)
 
 		balanceOf[msg.sender] -= _value;
@@ -114,9 +114,9 @@ contract TopscoinAdvanced is admined, Topscoin{
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 		require(frozenAccount[_from]) ;
-		require(balanceOf[_from] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
-		require(_value &lt; allowance[_from][msg.sender]) ;
+		require(balanceOf[_from] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
+		require(_value < allowance[_from][msg.sender]) ;
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += _value;
 		allowance[_from][msg.sender] -= _value;
@@ -132,14 +132,14 @@ contract TopscoinAdvanced is admined, Topscoin{
 
 	function buy() payable  public {
 		uint256 amount = (msg.value/(1 ether)) / buyPrice;
-		require(balanceOf[this] &gt; amount) ;
+		require(balanceOf[this] > amount) ;
 		balanceOf[msg.sender] += amount;
 		balanceOf[this] -= amount;
 		Transfer(this, msg.sender, amount);
 	}
 
 	function sell(uint256 amount) public {
-		require(balanceOf[msg.sender] &gt; amount) ;
+		require(balanceOf[msg.sender] > amount) ;
 		balanceOf[this] +=amount;
 		balanceOf[msg.sender] -= amount;
 		if(!msg.sender.send(amount * sellPrice * 1 ether)){
@@ -160,9 +160,9 @@ contract TopscoinAdvanced is admined, Topscoin{
 	function proofOfWork(uint nonce) public {
 		bytes8 n = bytes8(keccak256(nonce, currentChallenge));
 
-		require(n &gt; bytes8(difficulty)) ;
+		require(n > bytes8(difficulty)) ;
 		uint timeSinceLastBlock = (now - timeOfLastProof);
-		require(timeSinceLastBlock &gt; 5 seconds) ;
+		require(timeSinceLastBlock > 5 seconds) ;
 
 		balanceOf[msg.sender] += timeSinceLastBlock / 60 seconds;
 		difficulty = difficulty * 10 minutes / timeOfLastProof + 1;

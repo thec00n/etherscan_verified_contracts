@@ -67,14 +67,14 @@ interface ExchangeHandler {
 
   Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -144,7 +144,7 @@ contract ZXToken {
 }
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
-/// @author Amir Bandeali - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed8c80849faddd95bd9f8287888e99c38e8280">[email&#160;protected]</a>&gt;, Will Warren - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb9c828787abdb93bb9984818e889fc5888486">[email&#160;protected]</a>&gt;
+/// @author Amir Bandeali - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed8c80849faddd95bd9f8287888e99c38e8280">[email protected]</a>>, Will Warren - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb9c828787abdb93bb9984818e889fc5888486">[email protected]</a>>
 contract ZeroExTokenTransferProxy is ZXOwnable {
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
@@ -163,7 +163,7 @@ contract ZeroExTokenTransferProxy is ZXOwnable {
         _;
     }
 
-    mapping (address =&gt; bool) public authorized;
+    mapping (address => bool) public authorized;
     address[] public authorities;
 
     event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
@@ -193,7 +193,7 @@ contract ZeroExTokenTransferProxy is ZXOwnable {
         targetAuthorized(target)
     {
         delete authorized[target];
-        for (uint i = 0; i &lt; authorities.length; i++) {
+        for (uint i = 0; i < authorities.length; i++) {
             if (authorities[i] == target) {
                 authorities[i] = authorities[authorities.length - 1];
                 authorities.length -= 1;
@@ -249,35 +249,35 @@ contract ZXSafeMath {
     }
 
     function safeSub(uint a, uint b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal constant returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
-/// @author Amir Bandeali - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdaca0a4bf8dfdb59dbfa2a7a8aeb9e3aea2a0">[email&#160;protected]</a>&gt;, Will Warren - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b7c6267674b3b735b7964616e687f25686466">[email&#160;protected]</a>&gt;
+/// @author Amir Bandeali - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdaca0a4bf8dfdb59dbfa2a7a8aeb9e3aea2a0">[email protected]</a>>, Will Warren - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b7c6267674b3b735b7964616e687f25686466">[email protected]</a>>
 contract ZeroExExchange is ZXSafeMath {
 
     // Error Codes
@@ -288,15 +288,15 @@ contract ZeroExExchange is ZXSafeMath {
         INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
     }
 
-    string constant public VERSION = &quot;1.0.0&quot;;
+    string constant public VERSION = "1.0.0";
     uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
 
     address public ZRX_TOKEN_CONTRACT;
     address public TOKEN_TRANSFER_PROXY_CONTRACT;
 
-    // Mappings of orderHash =&gt; amounts of takerTokenAmount filled or cancelled.
-    mapping (bytes32 =&gt; uint) public filled;
-    mapping (bytes32 =&gt; uint) public cancelled;
+    // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
+    mapping (bytes32 => uint) public filled;
+    mapping (bytes32 => uint) public cancelled;
 
     event LogFill(
         address indexed maker,
@@ -349,8 +349,8 @@ contract ZeroExExchange is ZXSafeMath {
     */
 
     /// @dev Fills the input order.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
     /// @param shouldThrowOnInsufficientBalanceOrAllowance Test if transfer will fail before attempting.
     /// @param v ECDSA signature parameter v.
@@ -383,7 +383,7 @@ contract ZeroExExchange is ZXSafeMath {
         });
 
         require(order.taker == address(0) || order.taker == msg.sender);
-        require(order.makerTokenAmount &gt; 0 &amp;&amp; order.takerTokenAmount &gt; 0 &amp;&amp; fillTakerTokenAmount &gt; 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && fillTakerTokenAmount > 0);
         require(isValidSignature(
             order.maker,
             order.orderHash,
@@ -392,7 +392,7 @@ contract ZeroExExchange is ZXSafeMath {
             s
         ));
 
-        if (block.timestamp &gt;= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
@@ -409,7 +409,7 @@ contract ZeroExExchange is ZXSafeMath {
             return 0;
         }
 
-        if (!shouldThrowOnInsufficientBalanceOrAllowance &amp;&amp; !isTransferable(order, filledTakerTokenAmount)) {
+        if (!shouldThrowOnInsufficientBalanceOrAllowance && !isTransferable(order, filledTakerTokenAmount)) {
             LogError(uint8(Errors.INSUFFICIENT_BALANCE_OR_ALLOWANCE), order.orderHash);
             return 0;
         }
@@ -431,7 +431,7 @@ contract ZeroExExchange is ZXSafeMath {
             filledTakerTokenAmount
         ));
         if (order.feeRecipient != address(0)) {
-            if (order.makerFee &gt; 0) {
+            if (order.makerFee > 0) {
                 paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
@@ -440,7 +440,7 @@ contract ZeroExExchange is ZXSafeMath {
                     paidMakerFee
                 ));
             }
-            if (order.takerFee &gt; 0) {
+            if (order.takerFee > 0) {
                 paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
@@ -468,8 +468,8 @@ contract ZeroExExchange is ZXSafeMath {
     }
 
     /// @dev Cancels the input order.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param cancelTakerTokenAmount Desired amount of takerToken to cancel in order.
     /// @return Amount of takerToken cancelled.
     function cancelOrder(
@@ -494,9 +494,9 @@ contract ZeroExExchange is ZXSafeMath {
         });
 
         require(order.maker == msg.sender);
-        require(order.makerTokenAmount &gt; 0 &amp;&amp; order.takerTokenAmount &gt; 0 &amp;&amp; cancelTakerTokenAmount &gt; 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && cancelTakerTokenAmount > 0);
 
-        if (block.timestamp &gt;= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
@@ -528,8 +528,8 @@ contract ZeroExExchange is ZXSafeMath {
     */
 
     /// @dev Fills an order with specified parameters and ECDSA signature, throws if specified amount not filled entirely.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
@@ -572,7 +572,7 @@ contract ZeroExExchange is ZXSafeMath {
         bytes32[] s)
         public
     {
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             fillOrder(
                 orderAddresses[i],
                 orderValues[i],
@@ -601,7 +601,7 @@ contract ZeroExExchange is ZXSafeMath {
         bytes32[] s)
         public
     {
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
                 orderAddresses[i],
                 orderValues[i],
@@ -634,7 +634,7 @@ contract ZeroExExchange is ZXSafeMath {
         returns (uint)
     {
         uint filledTakerTokenAmount = 0;
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
             filledTakerTokenAmount = safeAdd(filledTakerTokenAmount, fillOrder(
                 orderAddresses[i],
@@ -660,7 +660,7 @@ contract ZeroExExchange is ZXSafeMath {
         uint[] cancelTakerTokenAmounts)
         public
     {
-        for (uint i = 0; i &lt; orderAddresses.length; i++) {
+        for (uint i = 0; i < orderAddresses.length; i++) {
             cancelOrder(
                 orderAddresses[i],
                 orderValues[i],
@@ -674,8 +674,8 @@ contract ZeroExExchange is ZXSafeMath {
     */
 
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
-    /// @param orderAddresses Array of order&#39;s maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order&#39;s makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @return Keccak-256 hash of order.
     function getOrderHash(address[5] orderAddresses, uint[6] orderValues)
         public
@@ -716,14 +716,14 @@ contract ZeroExExchange is ZXSafeMath {
         returns (bool)
     {
         return signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+            keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
         );
     }
 
-    /// @dev Checks if rounding error &gt; 0.1%.
+    /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
@@ -740,7 +740,7 @@ contract ZeroExExchange is ZXSafeMath {
             safeMul(remainder, 1000000),
             safeMul(numerator, target)
         );
-        return errPercentageTimes1000000 &gt; 1000;
+        return errPercentageTimes1000000 > 1000;
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -809,22 +809,22 @@ contract ZeroExExchange is ZXSafeMath {
             uint requiredMakerZRX = isMakerTokenZRX ? safeAdd(fillMakerTokenAmount, paidMakerFee) : paidMakerFee;
             uint requiredTakerZRX = isTakerTokenZRX ? safeAdd(fillTakerTokenAmount, paidTakerFee) : paidTakerFee;
 
-            if (   getBalance(ZRX_TOKEN_CONTRACT, order.maker) &lt; requiredMakerZRX
-                || getAllowance(ZRX_TOKEN_CONTRACT, order.maker) &lt; requiredMakerZRX
-                || getBalance(ZRX_TOKEN_CONTRACT, taker) &lt; requiredTakerZRX
-                || getAllowance(ZRX_TOKEN_CONTRACT, taker) &lt; requiredTakerZRX
+            if (   getBalance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
+                || getAllowance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
+                || getBalance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
+                || getAllowance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
             ) return false;
 
-            if (!isMakerTokenZRX &amp;&amp; (   getBalance(order.makerToken, order.maker) &lt; fillMakerTokenAmount // Don&#39;t double check makerToken if ZRX
-                                     || getAllowance(order.makerToken, order.maker) &lt; fillMakerTokenAmount)
+            if (!isMakerTokenZRX && (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount // Don't double check makerToken if ZRX
+                                     || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount)
             ) return false;
-            if (!isTakerTokenZRX &amp;&amp; (   getBalance(order.takerToken, taker) &lt; fillTakerTokenAmount // Don&#39;t double check takerToken if ZRX
-                                     || getAllowance(order.takerToken, taker) &lt; fillTakerTokenAmount)
+            if (!isTakerTokenZRX && (   getBalance(order.takerToken, taker) < fillTakerTokenAmount // Don't double check takerToken if ZRX
+                                     || getAllowance(order.takerToken, taker) < fillTakerTokenAmount)
             ) return false;
-        } else if (   getBalance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-                   || getAllowance(order.makerToken, order.maker) &lt; fillMakerTokenAmount
-                   || getBalance(order.takerToken, taker) &lt; fillTakerTokenAmount
-                   || getAllowance(order.takerToken, taker) &lt; fillTakerTokenAmount
+        } else if (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount
+                   || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount
+                   || getBalance(order.takerToken, taker) < fillTakerTokenAmount
+                   || getAllowance(order.takerToken, taker) < fillTakerTokenAmount
         ) return false;
 
         return true;
@@ -879,9 +879,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -889,7 +889,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -898,7 +898,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -908,7 +908,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -984,7 +984,7 @@ contract ZeroExHandler is ExchangeHandler {
     address wethAddress;
     address public exchangeAddress;
     uint constant MAX_UINT = 2**256 - 1;
-    mapping(address =&gt; bool) public tokenAllowanceSet;
+    mapping(address => bool) public tokenAllowanceSet;
 
     event Order(
         address[8] addrs,
@@ -1032,9 +1032,9 @@ contract ZeroExHandler is ExchangeHandler {
         bytes32 r,
         bytes32 s
     ) external payable returns (uint256) {
-        require(orderUsable(orderAddresses, orderValues), &quot;0xHandler - buy order validation failed&quot;);
-        require(orderAddresses[3] == wethAddress, &quot;0xHandler - ordAddr[3] != wethAddress for buy&quot;);
-        require(amountToFill == msg.value, &quot;0xHandler - amountToFill != msg.value for buy&quot;);
+        require(orderUsable(orderAddresses, orderValues), "0xHandler - buy order validation failed");
+        require(orderAddresses[3] == wethAddress, "0xHandler - ordAddr[3] != wethAddress for buy");
+        require(amountToFill == msg.value, "0xHandler - amountToFill != msg.value for buy");
         DepositToken(wethAddress).deposit.value(amountToFill)();
         address[5] memory newAddresses = convertAddressFormat(orderAddresses);
         bytes32 orderHash = ZeroExExchange(exchangeAddress).getOrderHash(newAddresses, orderValues);
@@ -1043,7 +1043,7 @@ contract ZeroExHandler is ExchangeHandler {
         uint receivedAmount = getPartialAmount(amountToFill, orderValues[1], orderValues[0]);
         require(
             Token(newAddresses[2]).transfer(msg.sender, receivedAmount),
-            &quot;0xHandler - failed to transfer bought tokens&quot;
+            "0xHandler - failed to transfer bought tokens"
         );
         return receivedAmount;
     }
@@ -1060,8 +1060,8 @@ contract ZeroExHandler is ExchangeHandler {
         bytes32 r,
         bytes32 s
     ) external returns (uint256) {
-        require(orderUsable(orderAddresses, orderValues), &quot;0xHandler - sell order validation failed&quot;);
-        require(orderAddresses[2] == wethAddress, &quot;0xHandler - ordAddr[3] != wethAddress for sell&quot;);
+        require(orderUsable(orderAddresses, orderValues), "0xHandler - sell order validation failed");
+        require(orderAddresses[2] == wethAddress, "0xHandler - ordAddr[3] != wethAddress for sell");
         address[5] memory newAddresses = convertAddressFormat(orderAddresses);
         setAllowance(orderAddresses[3]);
         ZeroExExchange(exchangeAddress).fillOrder(newAddresses, orderValues, amountToFill, false, v, r, s);
@@ -1075,7 +1075,7 @@ contract ZeroExHandler is ExchangeHandler {
         if(!tokenAllowanceSet[token]) {
             require(
                 Token(token).approve(ZeroExExchange(exchangeAddress).TOKEN_TRANSFER_PROXY_CONTRACT(), MAX_UINT),
-                &quot;0xHandler - token approval failed&quot;
+                "0xHandler - token approval failed"
             );
             tokenAllowanceSet[token] = true;
         }
@@ -1086,10 +1086,10 @@ contract ZeroExHandler is ExchangeHandler {
         uint256[6] orderValues
     ) internal returns (bool) {
         return (
-            (orderAddresses[1] == address(0) ||    // Order&#39;s taker is anybody
-            orderAddresses[1] == address(this)) &amp;&amp; // Or the order&#39;s taker is this handler
-            orderValues[3] == 0 &amp;&amp;                 // takerFees are 0
-            orderValues[4] &gt; block.timestamp       // Order is not expired
+            (orderAddresses[1] == address(0) ||    // Order's taker is anybody
+            orderAddresses[1] == address(this)) && // Or the order's taker is this handler
+            orderValues[3] == 0 &&                 // takerFees are 0
+            orderValues[4] > block.timestamp       // Order is not expired
         );
     }
 
@@ -1102,7 +1102,7 @@ contract ZeroExHandler is ExchangeHandler {
     }
 
     function convertAddressFormat(address[8] oldFormat) internal pure returns (address[5] newFormat) {
-        for(uint256 i = 0; i &lt; newFormat.length; i++) {
+        for(uint256 i = 0; i < newFormat.length; i++) {
             newFormat[i] = oldFormat[i];
         }
     }

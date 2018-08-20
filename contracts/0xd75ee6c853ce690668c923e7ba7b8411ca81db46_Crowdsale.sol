@@ -9,8 +9,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) 
             return 0;
@@ -24,7 +24,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,7 +56,7 @@ contract Crowdsale {
     Token public tokenReward;                   // Token contract being distributed 
 
     // Map of crowdsale participants, address as key and Participant structure as value
-    mapping(address =&gt; Participant) public participants;    
+    mapping(address => Participant) public participants;    
 
     // This is a type for a single Participant
     struct Participant {
@@ -67,8 +67,8 @@ contract Crowdsale {
 
     event FundTransfer(address to, uint amount);
 
-    modifier afterIcoDeadline() { if (now &gt;= icoDeadline) _; }
-    modifier afterTokensClaimableDeadline() { if (now &gt;= tokensClaimableAfter) _; }
+    modifier afterIcoDeadline() { if (now >= icoDeadline) _; }
+    modifier afterTokensClaimableDeadline() { if (now >= tokensClaimableAfter) _; }
     modifier onlyOwner() { require(msg.sender == owner); _; }
 
     /**
@@ -102,11 +102,11 @@ contract Crowdsale {
      *      - There are enough tokens to sell in contract (Tokens in contract minus tokensSold)
      */
     function() payable public {
-        require(now &lt; icoDeadline);
+        require(now < icoDeadline);
         require(participants[msg.sender].whitelisted);             
-        require(msg.value &gt;= 0.01 ether); 
+        require(msg.value >= 0.01 ether); 
         uint256 tokensToBuy = SafeMath.mul(msg.value, tokensPerWei);
-        require(tokensToBuy &lt;= SafeMath.sub(tokenReward.balanceOf(this), tokensSold));
+        require(tokensToBuy <= SafeMath.sub(tokenReward.balanceOf(this), tokensSold));
         participants[msg.sender].tokens = SafeMath.add(participants[msg.sender].tokens, tokensToBuy);      
         amountRaisedInWei = SafeMath.add(amountRaisedInWei, msg.value);
         tokensSold = SafeMath.add(tokensSold, tokensToBuy);
@@ -134,7 +134,7 @@ contract Crowdsale {
     * Note-2: Use this function for more than one address to save transaction fee
     */ 
     function addAddressesToWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             participants[addresses[i]].whitelisted = true;   
         }
     }
@@ -145,7 +145,7 @@ contract Crowdsale {
     * Note-2: Use this function for more than one address to save transaction fee
     */ 
     function removeAddressesFromWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             participants[addresses[i]].whitelisted = false;   
         }
     }

@@ -23,13 +23,13 @@ contract owned {
 // Functions for safe operation with input values (subtraction and addition)
 library SafeMath {
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ contract AdvancedToken is ERC20, owned {
     using SafeMath for uint256;
 
     // Stores the balances of all holders of the tokens, including the owner of the contract
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
 
     // The event informs that N tokens have been destroyed
     event Burn(address indexed from, uint256 value);
@@ -67,7 +67,7 @@ contract AdvancedToken is ERC20, owned {
 
     // Burns tokens on the contract, without affecting the token holders and the owner of the contract
     function burnTokens(uint256 _value) public onlyOwner {
-        require(balances[this] &gt; 0);
+        require(balances[this] > 0);
         balances[this] = balances[this].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(this, _value);
@@ -75,7 +75,7 @@ contract AdvancedToken is ERC20, owned {
 
     // Withdraws tokens from the contract if they accidentally or on purpose was it placed there
     function withdrawTokens(uint256 _value) public onlyOwner {
-        require(balances[this] &gt; 0 &amp;&amp; balances[this] &gt;= _value);
+        require(balances[this] > 0 && balances[this] >= _value);
         balances[this] = balances[this].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         Transfer(this, msg.sender, _value);
@@ -83,7 +83,7 @@ contract AdvancedToken is ERC20, owned {
 
     // Withdraws all the ether from the contract to the owner account
     function withdrawEther(uint256 _value) public onlyOwner {
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
         owner.transfer(_value);
     }
 }
@@ -121,8 +121,8 @@ contract ICO is AdvancedToken {
 
     // The function of purchasing tokens
     function () private payable crowdsaleState {
-        require(msg.value &gt;= 0.0001 ether);
-        require(now &gt;= startTime);
+        require(msg.value >= 0.0001 ether);
+        require(now >= startTime);
         uint256 currentMaxSupply;
         uint256 tokensPerEther = 5000;
         uint256 _tokens = tokensPerEther * msg.value;
@@ -134,9 +134,9 @@ contract ICO is AdvancedToken {
             // PRE-SALE supply limit
             currentMaxSupply = presaleMaxSupply;
             // For the tests replace days to minutes
-            if (now &lt;= startTime + 1 days) {
+            if (now <= startTime + 1 days) {
                 bonus = 25;
-            } else if (now &lt;= startTime + 2 days) {
+            } else if (now <= startTime + 2 days) {
                 bonus = 20;
             }
         // ICO supply limit
@@ -147,12 +147,12 @@ contract ICO is AdvancedToken {
         _tokens += _tokens * bonus / 100;
         uint256 restTokens = currentMaxSupply - totalSupply;
         // If supplied tokens more that the rest of the tokens, will refund the excess ether
-        if (_tokens &gt; restTokens) {
+        if (_tokens > restTokens) {
             uint256 bonusTokens = restTokens - restTokens / (100 + bonus) * 100;
             // The wei that the investor will spend for this purchase
             uint256 spentWei = (restTokens - bonusTokens) / tokensPerEther;
             // Verify that not return more than the incoming ether
-            assert(spentWei &lt; msg.value);
+            assert(spentWei < msg.value);
             // Will refund extra ether
             msg.sender.transfer(msg.value - spentWei);
             _tokens = restTokens;
@@ -190,11 +190,11 @@ contract ICO is AdvancedToken {
 contract TESTERIUM2 is ICO {
     using SafeMath for uint256;
 
-    string public constant name     = &quot;ZAREK TOKEN&quot;;
-    string public constant symbol   = &quot;€XPLAY&quot;;
+    string public constant name     = "ZAREK TOKEN";
+    string public constant symbol   = "€XPLAY";
     uint8  public constant decimals = 18;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping (address => mapping (address => uint256)) private allowed;
 
     function balanceOf(address _who) public constant returns (uint256 available) {
         return balances[_who];
@@ -206,7 +206,7 @@ contract TESTERIUM2 is ICO {
 
     function transfer(address _to, uint256 _value) public activeState returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -215,7 +215,7 @@ contract TESTERIUM2 is ICO {
 
     function transferFrom(address _from, address _to, uint256 _value) public activeState returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -225,7 +225,7 @@ contract TESTERIUM2 is ICO {
 
     function approve(address _spender, uint256 _value) public activeState returns (bool success) {
         require(_spender != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;

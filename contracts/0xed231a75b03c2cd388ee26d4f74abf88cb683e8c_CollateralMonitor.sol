@@ -16,7 +16,7 @@ pragma solidity ^0.4.24;
 contract Havven {
     uint public price;
     uint public issuanceRatio;
-    mapping(address =&gt; uint) public nominsIssued;
+    mapping(address => uint) public nominsIssued;
     function balanceOf(address account) public view returns (uint);
     function totalSupply() public view returns (uint);
     function availableHavvens(address account) public view returns (uint);
@@ -51,7 +51,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return x + y &gt;= y;
+        return x + y >= y;
     }
 
     /**
@@ -62,7 +62,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(x + y &gt;= y);
+        require(x + y >= y);
         return x + y;
     }
 
@@ -74,7 +74,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return y &lt;= x;
+        return y <= x;
     }
 
     /**
@@ -85,7 +85,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(y &lt;= x);
+        require(y <= x);
         return x - y;
     }
 
@@ -198,7 +198,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max(uint a, uint b) 
@@ -206,7 +206,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 }
 
@@ -335,7 +335,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
         onlyOwner
         public
     {
-        for (uint i = 0; i &lt; issuers.length; i++) {
+        for (uint i = 0; i < issuers.length; i++) {
             require(issuers[i] != issuer);
         }
         issuers.push(issuer);
@@ -345,7 +345,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
         onlyOwner
         external
     {
-        for (uint i = 0; i &lt; issuers.length; i++) {
+        for (uint i = 0; i < issuers.length; i++) {
             pushIssuer(newIssuers[i]);
         }
     }
@@ -355,7 +355,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
         external
     {
         uint length = issuers.length;
-        require(index &lt; length);
+        require(index < length);
         issuers[index] = issuers[length - 1];
         delete issuers[length - 1];
     }
@@ -398,7 +398,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
     {
         uint sum;
         uint limit = min(sumLimit, issuers.length);
-        for (uint i = 0; i &lt; limit; i++) {
+        for (uint i = 0; i < limit; i++) {
             sum += collateral(issuers[i]);
         } 
         return sum;
@@ -504,7 +504,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
     {
         uint sum;
         uint limit = min(maxIssuers, issuers.length);
-        for (uint i = 0; i &lt; limit; i++) {
+        for (uint i = 0; i < limit; i++) {
             sum += havven.nominsIssued(issuers[i]);
         }
         return safeDiv_dec(sum,
@@ -553,7 +553,7 @@ contract CollateralMonitor is Owned, SafeDecimalMath {
     {
         uint sum;
         uint limit = min(maxIssuers, issuers.length);
-        for (uint i = 0; i &lt; limit; i++) {
+        for (uint i = 0; i < limit; i++) {
             address issuer = issuers[i];
             sum += safeSub(collateral(issuer), havven.availableHavvens(issuer));
         }

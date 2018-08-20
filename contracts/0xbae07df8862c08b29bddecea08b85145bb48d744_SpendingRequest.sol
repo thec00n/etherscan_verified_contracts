@@ -1,5 +1,5 @@
 /* 
-MicroDAO V0.0.2 - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6cbc3e6d2cec9d4d5d2c3c88bdcc9c3d4c8c3d488c5c9cb">[email&#160;protected]</a>&gt;
+MicroDAO V0.0.2 - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6cbc3e6d2cec9d4d5d2c3c88bdcc9c3d4c8c3d488c5c9cb">[email protected]</a>>
 ===========================================================
 Simplified DAO allowing to do initial funding.
 - Funders are able to specify how long to keep funds in.
@@ -20,7 +20,7 @@ Each Spending needs to be approved by share holders (Vote)
 */
 
 contract SpendingRequest {
-	string public name=&quot;SpendingRequest 4 MicroDAO&quot;;
+	string public name="SpendingRequest 4 MicroDAO";
 	 address public creator;
 	 string public description;
 	 uint256 public request_until;
@@ -28,7 +28,7 @@ contract SpendingRequest {
 		
 	 option[] public  options;
  	 address public dao;
-	 mapping(address=&gt;bool) public voted;
+	 mapping(address=>bool) public voted;
 	 bool public voting_started;
 	 bool public executed;
 	 address public result_payto;
@@ -45,7 +45,7 @@ contract SpendingRequest {
 	
 	function SpendingRequest () {
 		creator=msg.sender;
-		addOption(&quot;NN&quot;,address(0x9707F3C9ca3C554A6E6d31B71A3C03d7017063F4),2);
+		addOption("NN",address(0x9707F3C9ca3C554A6E6d31B71A3C03d7017063F4),2);
 		setDAO(address(0x683c53084d997e6056c555f85f031f8317e26c2b));		
 		vote_until=now+(86400*1);
 		request_until=now+(86400*100);		
@@ -61,7 +61,7 @@ contract SpendingRequest {
 		if(voting_started) throw;
  		if(dao!=0) throw;
 		MicroDAO d = MicroDAO(_dao);
-		if(d.balanceOf(creator)&lt;1) throw;
+		if(d.balanceOf(creator)<1) throw;
 		dao=_dao;		
 	}
 	
@@ -73,7 +73,7 @@ contract SpendingRequest {
 	
 	function vote(uint256 option,bool veto) {		
 		if(voted[msg.sender]) throw;
-		if(now&lt;vote_until) throw;
+		if(now<vote_until) throw;
 		voting_started=true;
 		MicroDAO d = MicroDAO(dao);
 		if(!veto) options[option].votes_pro+=d.balanceOf(msg.sender);	else options[option].votes_veto+=d.balanceOf(msg.sender);
@@ -105,16 +105,16 @@ contract MicroDAO
 	bool public initialFunding;	
 	uint256 public sharesRaised;
 	uint public lockInDays;	
-	string public name =&quot;MicroDAO&quot;;
-	string public symbol =&quot;E/&quot;;
+	string public name ="MicroDAO";
+	string public symbol ="E/";
 	uint256 public fundingGoal;
 	uint256 public balanceFinney;
 	uint256 public directorLockUntil;
 	uint256 public directorLockDays;
 	uint256 public directorTransferShareRequired;
-	mapping (address =&gt; uint256) public balanceOf;		
-	mapping (address =&gt; uint256) public fundsExpire;
-	mapping (address =&gt; uint256) public blockedtransfer;
+	mapping (address => uint256) public balanceOf;		
+	mapping (address => uint256) public fundsExpire;
+	mapping (address => uint256) public blockedtransfer;
 	
 	
 	address[] public funders;
@@ -143,11 +143,11 @@ contract MicroDAO
 	
 	function blockTransfer(address a,uint256 until) {
 		bool found=false;
-		for(var i=0;((i&lt;allowances.length)&amp;&amp;(found==false));i++) {
+		for(var i=0;((i<allowances.length)&&(found==false));i++) {
 			if(allowances[i]==msg.sender) found=true;
 		}
 		if(found) {
-			if(blockedtransfer[a]&gt;until) {
+			if(blockedtransfer[a]>until) {
 				blockedtransfer[a]=until;
 			}
 		}
@@ -155,8 +155,8 @@ contract MicroDAO
 	
 	function setDirectorLock(uint256 number_of_days,uint256 requiredShares) {
 		if(msg.sender!=director) throw; 
-		if(requiredShares&gt;sharesRaised) throw;
-		if(number_of_days&gt;365) number_of_days=365;
+		if(requiredShares>sharesRaised) throw;
+		if(number_of_days>365) number_of_days=365;
 		
 		
 		directorLockDays=number_of_days;
@@ -167,13 +167,13 @@ contract MicroDAO
 		// Dead Director check ...		
 		if(msg.sender==director) {
 			director=director;
-			directorName=&quot;&quot;;
-			directorJurisdication=&quot;&quot;;
+			directorName="";
+			directorJurisdication="";
 			initialFunding=true;
-		} else if((now&gt;directorLockUntil)&amp;&amp;(balanceOf[msg.sender]&gt;directorTransferShareRequired)) {
+		} else if((now>directorLockUntil)&&(balanceOf[msg.sender]>directorTransferShareRequired)) {
 			director=msg.sender;
-			directorName=&quot;&quot;;
-			directorJurisdication=&quot;&quot;;
+			directorName="";
+			directorJurisdication="";
 			initialFunding=true;
 		}
 	}
@@ -204,21 +204,21 @@ contract MicroDAO
 		if(msg.sender!=director) throw;	
 		SpendingRequest s = SpendingRequest(spendingRequest);		
 		if(s.executed()) throw;
-		if(s.vote_until()&lt;now) throw; 
+		if(s.vote_until()<now) throw; 
 		allowances.push(s);		
 	}
 	
 	function executeSpendingRequests() {
-		for(var i=0;i&lt;allowances.length;i++) {
+		for(var i=0;i<allowances.length;i++) {
 			SpendingRequest s =SpendingRequest(allowances[i]);
 			if(!s.executed()) {
-				if((s.vote_until()&lt;now)&amp;&amp;(s.request_until()&gt;now)) {
+				if((s.vote_until()<now)&&(s.request_until()>now)) {
 					s.execute();
 					directorLockUntil=now+(86400*directorLockDays);
-					if(s.result_amount()&gt;0) {
+					if(s.result_amount()>0) {
 						if(s.result_payto()!=0) {
 							s.result_payto().send(s.result_amount()*1 ether);
-							bookings.push(booking(now,0,s.result_amount()*1 ether,s.result_payto(),&quot;Executed SpendingRequest&quot;));
+							bookings.push(booking(now,0,s.result_amount()*1 ether,s.result_payto(),"Executed SpendingRequest"));
 						}
 					}
 				}
@@ -228,7 +228,7 @@ contract MicroDAO
 	
 	function myFundsExpireIn(uint256 number_of_days) {
 		var exp=now+(86400*number_of_days);
-		if(exp&gt;fundsExpire[msg.sender]) fundsExpire[msg.sender]=exp; else throw;
+		if(exp>fundsExpire[msg.sender]) fundsExpire[msg.sender]=exp; else throw;
 	}
 		
 	function closeFunding() {
@@ -239,8 +239,8 @@ contract MicroDAO
 	
 	function checkExpiredfunds() {
 		if(!initialFunding) return;
-		for(var i=0;i&lt;funders.length;i++) {
-			if((fundsExpire[funders[i]]&gt;0)&amp;&amp;((fundsExpire[funders[i]]&lt;now))) {
+		for(var i=0;i<funders.length;i++) {
+			if((fundsExpire[funders[i]]>0)&&((fundsExpire[funders[i]]<now))) {
 				var amount=balanceOf[funders[i]]*1 finney;				
 				Transfer(funders[i],this,balanceOf[funders[i]]);
 				sharesRaised-=balanceOf[funders[i]];
@@ -251,9 +251,9 @@ contract MicroDAO
 	}
 	
 	function transfer(address _to, uint256 _value) {
-		if(blockedtransfer[msg.sender]&gt;now) throw;
-		if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+		if(blockedtransfer[msg.sender]>now) throw;
+		if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
 		if(balanceOf[_to]==0) {
@@ -263,20 +263,20 @@ contract MicroDAO
     }
 	
 	function() {	
-		 var funding_type=&quot;Incomming&quot;;			
+		 var funding_type="Incomming";			
 			var finneys=msg.value/1 finney;
 			if(initialFunding) {
 				
 				if(balanceOf[msg.sender]==0) {
 					funders.push(msg.sender);
 				}		
-				if(msg.value&lt;100 finney) throw;
+				if(msg.value<100 finney) throw;
 				
 				fundsExpire[msg.sender]=now+(lockInDays*86400);
 				balanceOf[msg.sender]+=finneys;
 				Transfer(this,msg.sender,finneys);
 				sharesRaised+=finneys;
-				funding_type=&quot;Initial Funding&quot;;
+				funding_type="Initial Funding";
 			}
 			bookings.push(booking(now,msg.value,0,msg.sender,funding_type));
 			balanceFinney=this.balance/1 finney;

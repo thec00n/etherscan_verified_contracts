@@ -84,9 +84,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,7 +127,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -135,7 +135,7 @@ library AddressUtils {
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -148,7 +148,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -184,7 +184,7 @@ library Roles {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -261,7 +261,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -279,8 +279,8 @@ contract RBACWithAdmin is RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
-  string public constant ROLE_PAUSE_ADMIN = &quot;pauseAdmin&quot;;
+  string public constant ROLE_ADMIN = "admin";
+  string public constant ROLE_PAUSE_ADMIN = "pauseAdmin";
 
   /**
    * @dev modifier to scope access to admins
@@ -370,21 +370,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -450,8 +450,8 @@ contract ERC721BasicToken is ERC721Basic {
 
     if (getApproved(_tokenId) != address(0) || _to != address(0)) {
       tokenApprovals[_tokenId] = _to;
-        if (msg.value &gt; 0 &amp;&amp; _to != address(0))  _to.transfer(msg.value);
-        if (msg.value &gt; 0 &amp;&amp; _to == address(0))  owner.transfer(msg.value);
+        if (msg.value > 0 && _to != address(0))  _to.transfer(msg.value);
+        if (msg.value > 0 && _to == address(0))  owner.transfer(msg.value);
         
       emit Approval(owner, _to, _tokenId);
     }
@@ -503,7 +503,7 @@ contract ERC721BasicToken is ERC721Basic {
     clearApproval(_from, _tokenId);
     removeTokenFrom(_from, _tokenId);
     addTokenTo(_to, _tokenId);
-    if (msg.value &gt; 0) _to.transfer(msg.value);
+    if (msg.value > 0) _to.transfer(msg.value);
 
     emit Transfer(_from, _to, _tokenId);
   }
@@ -512,7 +512,7 @@ contract ERC721BasicToken is ERC721Basic {
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -528,14 +528,14 @@ contract ERC721BasicToken is ERC721Basic {
     payable
     canTransfer(_tokenId)
   {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -658,7 +658,7 @@ contract ERC721BasicToken is ERC721Basic {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -673,7 +673,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -698,19 +698,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  // mapping(uint256 =&gt; string) internal tokenURIs;
+  // mapping(uint256 => string) internal tokenURIs;
 
   /**
   * @dev Constructor function
@@ -741,14 +741,14 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @dev Throws if the token ID does not exist. May return an empty string.
   * @param _tokenId uint256 ID of the token to query
   */
-   bytes constant firstPartURI = &quot;https://www.dragonseth.com/image/&quot;;
+   bytes constant firstPartURI = "https://www.dragonseth.com/image/";
     
     function tokenURI(uint256  _tokenId) external view returns (string) {
         require(exists(_tokenId));
         bytes memory tmpBytes = new bytes(96);
         uint256 i = 0;
         uint256 tokenId = _tokenId;
-        // for same use case need &quot;if (tokenId == 0)&quot; 
+        // for same use case need "if (tokenId == 0)" 
         while (tokenId != 0) {
             uint256 remainderDiv = tokenId % 10;
             tokenId = tokenId / 10;
@@ -757,13 +757,13 @@ contract ERC721Token is ERC721, ERC721BasicToken {
  
         bytes memory resaultBytes = new bytes(firstPartURI.length + i);
         
-        for (uint256 j = 0; j &lt; firstPartURI.length; j++) {
+        for (uint256 j = 0; j < firstPartURI.length; j++) {
             resaultBytes[j] = firstPartURI[j];
         }
         
         i--;
         
-        for (j = 0; j &lt;= i; j++) {
+        for (j = 0; j <= i; j++) {
             resaultBytes[j + firstPartURI.length] = tmpBytes[i - j];
         }
         
@@ -783,7 +783,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list owned by the requested address
   */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -802,7 +802,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list
   */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -1043,7 +1043,7 @@ contract ReentrancyGuard {
 }
 
 
-contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;DragonsETH&quot;), DragonsETH_GC, ReentrancyGuard {
+contract DragonsETH is ERC721Token("DragonsETH.com Dragon", "DragonsETH"), DragonsETH_GC, ReentrancyGuard {
     uint256 public totalDragons;
     uint256 public liveDragons;
     struct Dragon {
@@ -1056,7 +1056,7 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
     }
 
     Dragon[] public dragons;
-    mapping(uint256 =&gt; string) public dragonName;
+    mapping(uint256 => string) public dragonName;
     
    
     constructor(address _wallet, address _necropolisContract, address _dragonsStatsContract) public {
@@ -1078,7 +1078,7 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
    
     function add2MarketPlace(uint256 _dragonID, uint256 _dragonPrice, uint256 _endBlockNumber) external canTransfer(_dragonID)  {
         require(dragons[_dragonID].stage != 0); // dragon not dead
-        if (dragons[_dragonID].stage &gt;= 2) {
+        if (dragons[_dragonID].stage >= 2) {
             checkDragonStatus(_dragonID, 2);
         }
         address dragonOwner = ownerOf(_dragonID);
@@ -1098,7 +1098,7 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         canTransfer(_dragonID) 
     {
         require(dragons[_dragonID].stage != 0); // dragon not dead
-        if (dragons[_dragonID].stage &gt;= 2) {
+        if (dragons[_dragonID].stage >= 2) {
             checkDragonStatus(_dragonID, 2);
         }
         address dragonOwner = ownerOf(_dragonID);
@@ -1109,13 +1109,13 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
     
     function addRandomFight2Death(uint256 _dragonID) external payable nonReentrant canTransfer(_dragonID)   {
         checkDragonStatus(_dragonID, adultDragonStage);
-        if (priceRandomFight2Death &gt; 0) {
-            require(msg.value &gt;= priceRandomFight2Death);
+        if (priceRandomFight2Death > 0) {
+            require(msg.value >= priceRandomFight2Death);
             wallet.transfer(priceRandomFight2Death);
-            if (msg.value - priceRandomFight2Death &gt; 0) 
+            if (msg.value - priceRandomFight2Death > 0) 
                 msg.sender.transfer(msg.value - priceRandomFight2Death);
         } else {
-            if (msg.value &gt; 0) 
+            if (msg.value > 0) 
                 msg.sender.transfer(msg.value);
         }
         address dragonOwner = ownerOf(_dragonID);
@@ -1130,12 +1130,12 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         canTransfer(_yourDragonID) 
     {
         checkDragonStatus(_yourDragonID, adultDragonStage);
-        if (priceSelectFight2Death &gt; 0) {
-            require(msg.value &gt;= priceSelectFight2Death);
+        if (priceSelectFight2Death > 0) {
+            require(msg.value >= priceSelectFight2Death);
             address(selectFight2DeathContract).transfer(priceSelectFight2Death);
-            if (msg.value - priceSelectFight2Death &gt; 0) msg.sender.transfer(msg.value - priceSelectFight2Death);
+            if (msg.value - priceSelectFight2Death > 0) msg.sender.transfer(msg.value - priceSelectFight2Death);
         } else {
-            if (msg.value &gt; 0) 
+            if (msg.value > 0) 
                 msg.sender.transfer(msg.value);
         }
         address dragonOwner = ownerOf(_yourDragonID);
@@ -1160,13 +1160,13 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         uint240 _gen2
     ) 
         external 
-        onlyRole(&quot;CreateContract&quot;) 
+        onlyRole("CreateContract") 
     {
         totalDragons++;
         liveDragons++;
         _mint(_to, totalDragons);
         uint256[2] memory twoGen;
-        if (_parentOne == 0 &amp;&amp; _parentTwo == 0 &amp;&amp; _gen1 == 0 &amp;&amp; _gen2 == 0) {
+        if (_parentOne == 0 && _parentTwo == 0 && _gen1 == 0 && _gen2 == 0) {
             twoGen = genRNGContractAddress.getNewGens(_to, totalDragons);
         } else {
             twoGen[0] = _gen1;
@@ -1188,8 +1188,8 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         dragonsStatsContract.setBirthBlock(totalDragons);
     }
     
-    function changeDragonGen(uint256 _dragonID, uint256 _gen, uint8 _which) external onlyRole(&quot;ChangeContract&quot;) {
-        require(dragons[_dragonID].stage &gt;= 2); // dragon not dead and not egg
+    function changeDragonGen(uint256 _dragonID, uint256 _gen, uint8 _which) external onlyRole("ChangeContract") {
+        require(dragons[_dragonID].stage >= 2); // dragon not dead and not egg
         if (_which == 0) {
             dragons[_dragonID].gen1 = _gen;
         } else {
@@ -1199,14 +1199,14 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
     
     function birthDragon(uint256 _dragonID) external canTransfer(_dragonID) {
         require(dragons[_dragonID].stage != 0); // dragon not dead
-        require(dragons[_dragonID].nextBlock2Action &lt;= block.number);
+        require(dragons[_dragonID].nextBlock2Action <= block.number);
         dragons[_dragonID].stage = 2;
     }
     
     function matureDragon(uint256 _dragonID) external canTransfer(_dragonID) {
         require(stageThirdBegin);
         checkDragonStatus(_dragonID, 2);
-        require(dragonsStatsContract.getDragonFight(_dragonID) &gt;= needFightToAdult);
+        require(dragonsStatsContract.getDragonFight(_dragonID) >= needFightToAdult);
         dragons[_dragonID].stage = 3;
         
     }
@@ -1231,7 +1231,7 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
     function killDragonDeathContract(address _lastOwner, uint256 _dragonID, uint256 _deathReason) 
         external 
         canTransfer(_dragonID) 
-        onlyRole(&quot;DeathContract&quot;) 
+        onlyRole("DeathContract") 
     {
         checkDragonStatus(_dragonID, 2);
         dragons[_dragonID].stage = 0;
@@ -1246,10 +1246,10 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
     
     function decraseTimeToAction(uint256 _dragonID) external payable nonReentrant canTransfer(_dragonID) {
         require(dragons[_dragonID].stage != 0); // dragon not dead
-        require(msg.value &gt;= priceDecraseTime2Action);
-        require(dragons[_dragonID].nextBlock2Action &gt; block.number);
+        require(msg.value >= priceDecraseTime2Action);
+        require(dragons[_dragonID].nextBlock2Action > block.number);
         uint256 maxBlockCount = dragons[_dragonID].nextBlock2Action - block.number;
-        if (msg.value &gt; maxBlockCount * priceDecraseTime2Action) {
+        if (msg.value > maxBlockCount * priceDecraseTime2Action) {
             msg.sender.transfer(msg.value - maxBlockCount * priceDecraseTime2Action);
             wallet.transfer(maxBlockCount * priceDecraseTime2Action);
             dragons[_dragonID].nextBlock2Action = 0;
@@ -1268,17 +1268,17 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         checkDragonStatus(_dragonID, 2);
         if (bytes(dragonName[_dragonID]).length == 0) {
             dragonName[_dragonID] = _newName;
-            if (msg.value &gt; 0) 
+            if (msg.value > 0) 
                 msg.sender.transfer(msg.value);
         } else {
             if (priceChangeName == 0) {
                 dragonName[_dragonID] = _newName;
-                if (msg.value &gt; 0) 
+                if (msg.value > 0) 
                     msg.sender.transfer(msg.value);
             } else {
-                require(msg.value &gt;= priceChangeName);
+                require(msg.value >= priceChangeName);
                 wallet.transfer(priceChangeName);
-                if (msg.value - priceChangeName &gt; 0) 
+                if (msg.value - priceChangeName > 0) 
                     msg.sender.transfer(msg.value - priceChangeName);
                 dragonName[_dragonID] = _newName;
             }
@@ -1289,17 +1289,17 @@ contract DragonsETH is ERC721Token(&quot;DragonsETH.com Dragon&quot;, &quot;Drag
         require(dragons[_dragonID].stage != 0); // dragon not dead
         // dragon not in action and not in rest  and not egg
         require(
-            dragons[_dragonID].nextBlock2Action &lt;= block.number &amp;&amp; 
-            dragons[_dragonID].currentAction == 0 &amp;&amp; 
-            dragons[_dragonID].stage &gt;= _stage
+            dragons[_dragonID].nextBlock2Action <= block.number && 
+            dragons[_dragonID].currentAction == 0 && 
+            dragons[_dragonID].stage >= _stage
         );
     }
     
-    function setCurrentAction(uint256 _dragonID, uint8 _currentAction) external onlyRole(&quot;ActionContract&quot;) {
+    function setCurrentAction(uint256 _dragonID, uint8 _currentAction) external onlyRole("ActionContract") {
         dragons[_dragonID].currentAction = _currentAction;
     }
     
-    function setTime2Rest(uint256 _dragonID, uint256 _addNextBlock2Action) external onlyRole(&quot;ActionContract&quot;) {
+    function setTime2Rest(uint256 _dragonID, uint256 _addNextBlock2Action) external onlyRole("ActionContract") {
         dragons[_dragonID].nextBlock2Action = block.number + _addNextBlock2Action;
     }
 }

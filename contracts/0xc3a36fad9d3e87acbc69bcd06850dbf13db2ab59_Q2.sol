@@ -77,9 +77,9 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -88,7 +88,7 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -98,7 +98,7 @@ library SafeMath {
     returns (uint256)
   {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,9 +114,9 @@ contract StandardToken is ERC20 {
     // Prevent transfer to 0x0 address. Use burn() instead
     require(_to != address(0));
     // Check if the sender has enough
-    require(balances[_from] &gt;= _value);
+    require(balances[_from] >= _value);
     // Check for overflows
-    require(balances[_to] + _value &gt; balances[_to]);
+    require(balances[_to] + _value > balances[_to]);
     // Save this for an assertion in the future
     uint256 previousBalances = balances[_from] + balances[_to];
     // Subtract from the sender
@@ -152,7 +152,7 @@ contract StandardToken is ERC20 {
    * @param _value the amount to send
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+    require(_value <= allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] -= _value;
     return _transfer(_from, _to, _value);
   }
@@ -179,8 +179,8 @@ contract StandardToken is ERC20 {
     return allowed[_owner][_spender];
   }
 
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 }
 
 // File: contracts/RoyaltyToken.sol
@@ -189,7 +189,7 @@ contract StandardToken is ERC20 {
 contract RoyaltyToken is StandardToken {
   using SafeMath for uint256;
   // restricted addresses	
-  mapping(address =&gt; bool) public restrictedAddresses;
+  mapping(address => bool) public restrictedAddresses;
   
   event RestrictedStatusChanged(address indexed _address, bool status);
 
@@ -198,7 +198,7 @@ contract RoyaltyToken is StandardToken {
     uint256 lastRoyaltyPoint;
   }
 
-  mapping(address =&gt; Account) public accounts;
+  mapping(address => Account) public accounts;
   uint256 public totalRoyalty;
   uint256 public unclaimedRoyalty;
 
@@ -219,15 +219,15 @@ contract RoyaltyToken is StandardToken {
   function updateAccount(address account) internal {
     uint256 owing = RoyaltysOwing(account);
     accounts[account].lastRoyaltyPoint = totalRoyalty;
-    if (owing &gt; 0) {
+    if (owing > 0) {
       unclaimedRoyalty = unclaimedRoyalty.sub(owing);
       accounts[account].balance = accounts[account].balance.add(owing);
     }
   }
 
   function disburse() public payable {
-    require(totalSupply &gt; 0);
-    require(msg.value &gt; 0);
+    require(totalSupply > 0);
+    require(msg.value > 0);
 
     uint256 newRoyalty = msg.value;
     totalRoyalty = totalRoyalty.add(newRoyalty);
@@ -270,7 +270,7 @@ contract RoyaltyToken is StandardToken {
 
     // retrieve Royalty amount
     uint256 RoyaltyAmount = accounts[msg.sender].balance;
-    require(RoyaltyAmount &gt; 0);
+    require(RoyaltyAmount > 0);
     accounts[msg.sender].balance = 0;
 
     // transfer Royalty amount
@@ -283,14 +283,14 @@ contract RoyaltyToken is StandardToken {
 contract Q2 is Ownable, RoyaltyToken {
   using SafeMath for uint256;
 
-  string public name = &quot;Q2&quot;;
-  string public symbol = &quot;Q2&quot;;
+  string public name = "Q2";
+  string public symbol = "Q2";
   uint8 public decimals = 18;
 
   bool public whitelist = true;
 
   // whitelist addresses
-  mapping(address =&gt; bool) public whitelistedAddresses;
+  mapping(address => bool) public whitelistedAddresses;
 
   // token creation cap
   uint256 public creationCap = 15000000 * (10 ** 18); // 15M
@@ -314,7 +314,7 @@ contract Q2 is Ownable, RoyaltyToken {
 
   // eth wallet
   address public ethWallet;
-  mapping (uint8 =&gt; Stage) stages;
+  mapping (uint8 => Stage) stages;
 
   // current state info
   uint8 public currentStage;
@@ -327,10 +327,10 @@ contract Q2 is Ownable, RoyaltyToken {
   }
 
   function mintTokens(address to, uint256 value) internal {
-    require(value &gt; 0);
+    require(value > 0);
     balances[to] = balances[to].add(value);
     totalSupply = totalSupply.add(value);
-    require(totalSupply &lt;= creationCap);
+    require(totalSupply <= creationCap);
 
     // broadcast event
     emit MintTokens(to, value);
@@ -342,13 +342,13 @@ contract Q2 is Ownable, RoyaltyToken {
 
   function buyTokens() public payable {
     require(whitelist==false || whitelistedAddresses[msg.sender] == true);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
     Stage memory stage = stages[currentStage];
-    require(block.number &gt;= stage.startBlock &amp;&amp; block.number &lt;= stage.endBlock);
+    require(block.number >= stage.startBlock && block.number <= stage.endBlock);
 
     uint256 tokens = msg.value * stage.exchangeRate;
-    require(totalSupply.add(tokens) &lt;= stage.cap);
+    require(totalSupply.add(tokens) <= stage.cap);
 
     mintTokens(msg.sender, tokens);
   }
@@ -359,13 +359,13 @@ contract Q2 is Ownable, RoyaltyToken {
     uint256 _startBlock,
     uint256 _endBlock
   ) public onlyOwner {
-    require(_exchangeRate &gt; 0 &amp;&amp; _cap &gt; 0);
-    require(_startBlock &gt; block.number);
-    require(_startBlock &lt; _endBlock);
+    require(_exchangeRate > 0 && _cap > 0);
+    require(_startBlock > block.number);
+    require(_startBlock < _endBlock);
 
-    // stop current stage if it&#39;s running
+    // stop current stage if it's running
     Stage memory currentObj = stages[currentStage];
-    if (currentObj.endBlock &gt; 0) {
+    if (currentObj.endBlock > 0) {
       // broadcast stage end event
       emit StageEnded(currentStage, totalSupply, address(this).balance);
     }
@@ -430,16 +430,16 @@ interface TokenRecipient {
 
 contract Quarters is Ownable, StandardToken {
   // Public variables of the token
-  string public name = &quot;Quarters&quot;;
-  string public symbol = &quot;Q&quot;;
+  string public name = "Quarters";
+  string public symbol = "Q";
   uint8 public decimals = 0; // no decimals, only integer quarters
 
   uint16 public ethRate = 4000; // Quarters/ETH
   uint256 public tranche = 40000; // Number of Quarters in initial tranche
 
   // List of developers
-  // address -&gt; status
-  mapping (address =&gt; bool) public developers;
+  // address -> status
+  mapping (address => bool) public developers;
 
   uint256 public outstandingQuarters;
   address public q2;
@@ -460,8 +460,8 @@ contract Quarters is Ownable, StandardToken {
   uint32 public microRate = 25;
 
   // rewards related storage
-  mapping (address =&gt; uint256) public rewards;    // rewards earned, but not yet collected
-  mapping (address =&gt; uint256) public trueBuy;    // tranche rewards are set based on *actual* purchases of Quarters
+  mapping (address => uint256) public rewards;    // rewards earned, but not yet collected
+  mapping (address => uint256) public trueBuy;    // tranche rewards are set based on *actual* purchases of Quarters
 
   uint256 public rewardAmount = 40;
 
@@ -508,7 +508,7 @@ contract Quarters is Ownable, StandardToken {
 
   function setEthRate (uint16 rate) onlyOwner public {
     // Ether price is set in Wei
-    require(rate &gt; 0);
+    require(rate > 0);
     ethRate = rate;
     emit EthRateChanged(ethRate, rate);
   }
@@ -523,27 +523,27 @@ contract Quarters is Ownable, StandardToken {
   function adjustWithdrawRate(uint32 mega2, uint32 megaRate2, uint32 large2, uint32 largeRate2, uint32 medium2, uint32 mediumRate2, uint32 small2, uint32 smallRate2, uint32 microRate2) onlyOwner public {
     // the values (mega, large, medium, small) are multiples, e.g., 20x, 100x, 10000x
     // the rates (megaRate, etc.) are percentage points, e.g., 150 is 150% of the remaining etherPool
-    if (mega2 &gt; 0 &amp;&amp; megaRate2 &gt; 0) {
+    if (mega2 > 0 && megaRate2 > 0) {
       mega = mega2;
       megaRate = megaRate2;
     }
 
-    if (large2 &gt; 0 &amp;&amp; largeRate2 &gt; 0) {
+    if (large2 > 0 && largeRate2 > 0) {
       large = large2;
       largeRate = largeRate2;
     }
 
-    if (medium2 &gt; 0 &amp;&amp; mediumRate2 &gt; 0) {
+    if (medium2 > 0 && mediumRate2 > 0) {
       medium = medium2;
       mediumRate = mediumRate2;
     }
 
-    if (small2 &gt; 0 &amp;&amp; smallRate2 &gt; 0){
+    if (small2 > 0 && smallRate2 > 0){
       small = small2;
       smallRate = smallRate2;
     }
 
-    if (microRate2 &gt; 0) {
+    if (microRate2 > 0) {
       microRate = microRate2;
     }
   }
@@ -552,13 +552,13 @@ contract Quarters is Ownable, StandardToken {
    * adjust tranche for next cycle
    */
   function adjustNextTranche (uint8 numerator, uint8 denominator) onlyOwner public {
-    require(numerator &gt; 0 &amp;&amp; denominator &gt; 0);
+    require(numerator > 0 && denominator > 0);
     trancheNumerator = numerator;
     trancheDenominator = denominator;
   }
 
   function adjustTranche(uint256 tranche2) onlyOwner public {
-    require(tranche2 &gt; 0);
+    require(tranche2 > 0);
     tranche = tranche2;
   }
 
@@ -571,11 +571,11 @@ contract Quarters is Ownable, StandardToken {
     uint256 _reward = 0;
     if (rewards[_address] == 0) {
       _reward = rewardAmount;
-    } else if (rewards[_address] &lt; tranche) {
+    } else if (rewards[_address] < tranche) {
       _reward = trueBuy[_address] * rewardNumerator / rewardDenominator;
     }
 
-    if (_reward &gt; 0) {
+    if (_reward > 0) {
       // update rewards record
       rewards[_address] = tranche;
 
@@ -586,7 +586,7 @@ contract Quarters is Ownable, StandardToken {
       outstandingQuarters += _reward;
 
       uint256 spentETH = (_reward * (10 ** 18)) / ethRate;
-      if (reserveETH &gt;= spentETH) {
+      if (reserveETH >= spentETH) {
           reserveETH -= spentETH;
         } else {
           reserveETH = 0;
@@ -637,7 +637,7 @@ contract Quarters is Ownable, StandardToken {
    * @param _value the amount of money to burn
    */
   function burn(uint256 _value) public returns (bool success) {
-    require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+    require(balances[msg.sender] >= _value);   // Check if the sender has enough
     balances[msg.sender] -= _value;            // Subtract from the sender
     totalSupply -= _value;                     // Updates totalSupply
     outstandingQuarters -= _value;              // Update outstanding quarters
@@ -657,10 +657,10 @@ contract Quarters is Ownable, StandardToken {
    * @param _value the amount of money to burn
    */
   function burnFrom(address _from, uint256 _value) public returns (bool success) {
-    require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-    require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+    require(balances[_from] >= _value);                // Check if the targeted balance is enough
+    require(_value <= allowed[_from][msg.sender]);     // Check allowance
     balances[_from] -= _value;                         // Subtract from the targeted balance
-    allowed[_from][msg.sender] -= _value;              // Subtract from the sender&#39;s allowance
+    allowed[_from][msg.sender] -= _value;              // Subtract from the sender's allowance
     totalSupply -= _value;                      // Update totalSupply
     outstandingQuarters -= _value;              // Update outstanding quarters
     emit Burn(_from, _value);
@@ -685,13 +685,13 @@ contract Quarters is Ownable, StandardToken {
   function buyFor(address buyer) payable public {
     uint256 _value =  _buy(buyer);
 
-    // allow donor (msg.sender) to spend buyer&#39;s tokens
+    // allow donor (msg.sender) to spend buyer's tokens
     allowed[buyer][msg.sender] += _value;
     emit Approval(buyer, msg.sender, _value);
   }
 
   function _changeTrancheIfNeeded() internal {
-    if (totalSupply &gt;= tranche) {
+    if (totalSupply >= tranche) {
       // change tranche size for next cycle
       tranche = (tranche * trancheNumerator) / trancheDenominator;
 
@@ -706,7 +706,7 @@ contract Quarters is Ownable, StandardToken {
 
     uint256 nq = (msg.value * ethRate) / (10 ** 18);
     require(nq != 0);
-    if (nq &gt; tranche) {
+    if (nq > tranche) {
       nq = tranche;
     }
 
@@ -724,7 +724,7 @@ contract Quarters is Ownable, StandardToken {
     // log rate change
     emit BaseRateChanged(getBaseRate(), tranche, outstandingQuarters, address(this).balance, totalSupply);
 
-    // transfer owner&#39;s cut
+    // transfer owner's cut
     Q2(q2).disburse.value(msg.value * 15 / 100)();
 
     // return nq
@@ -732,7 +732,7 @@ contract Quarters is Ownable, StandardToken {
   }
 
   /**
-   * Transfer allowance from other address&#39;s allowance
+   * Transfer allowance from other address's allowance
    *
    * Send `_value` tokens to `_to` in behalf of `_from`
    *
@@ -742,11 +742,11 @@ contract Quarters is Ownable, StandardToken {
    */
   function transferAllowance(address _from, address _to, uint256 _value) public returns (bool success) {
     updatePlayerRewards(_from);
-    require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+    require(_value <= allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] -= _value;
 
     if (_transfer(_from, _to, _value)) {
-      // allow msg.sender to spend _to&#39;s tokens
+      // allow msg.sender to spend _to's tokens
       allowed[_to][msg.sender] += _value;
       emit Approval(_to, msg.sender, _value);
       return true;
@@ -756,15 +756,15 @@ contract Quarters is Ownable, StandardToken {
   }
 
   function withdraw(uint256 value) onlyActiveDeveloper public {
-    require(balances[msg.sender] &gt;= value);
+    require(balances[msg.sender] >= value);
 
     uint256 baseRate = getBaseRate();
-    require(baseRate &gt; 0); // check if base rate &gt; 0
+    require(baseRate > 0); // check if base rate > 0
 
     uint256 earnings = value * baseRate;
     uint256 rate = getRate(value); // get rate from value and tranche
     uint256 earningsWithBonus = (rate * earnings) / 100;
-    if (earningsWithBonus &gt; address(this).balance) {
+    if (earningsWithBonus > address(this).balance) {
       earnings = address(this).balance;
     } else {
       earnings = earningsWithBonus;
@@ -793,7 +793,7 @@ contract Quarters is Ownable, StandardToken {
   }
 
   function getBaseRate () view public returns (uint256) {
-    if (outstandingQuarters &gt; 0) {
+    if (outstandingQuarters > 0) {
       return (address(this).balance - reserveETH) / outstandingQuarters;
     }
 
@@ -801,13 +801,13 @@ contract Quarters is Ownable, StandardToken {
   }
 
   function getRate (uint256 value) view public returns (uint32) {
-    if (value * mega &gt; tranche) {  // size &amp; rate for mega developer
+    if (value * mega > tranche) {  // size & rate for mega developer
       return megaRate;
-    } else if (value * large &gt; tranche) {   // size &amp; rate for large developer
+    } else if (value * large > tranche) {   // size & rate for large developer
       return largeRate;
-    } else if (value * medium &gt; tranche) {  // size and rate for medium developer
+    } else if (value * medium > tranche) {  // size and rate for medium developer
       return mediumRate;
-    } else if (value * small &gt; tranche){  // size and rate for small developer
+    } else if (value * small > tranche){  // size and rate for small developer
       return smallRate;
     }
 
@@ -832,7 +832,7 @@ contract Quarters is Ownable, StandardToken {
   function migrate() public {
     require(migrationTarget != address(0));
     uint256 _amount = balances[msg.sender];
-    require(_amount &gt; 0);
+    require(_amount > 0);
     balances[msg.sender] = 0;
 
     totalSupply = totalSupply - _amount;

@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -122,11 +122,11 @@ contract Crowdsale is Ownable {
   uint8 public icoDiscountPercentageLevel3;
 
   function Crowdsale(uint256 _startTimePre, uint256 _endTimePre, uint256 _startTimeIco, uint256 _endTimeIco, uint32 _rate, address _wallet, address _tokenAddress, address _helperAddress) {
-    require(_startTimePre &gt;= now);
-    require(_endTimePre &gt;= _startTimePre);
-    require(_startTimeIco &gt;= _endTimePre);
-    require(_endTimeIco &gt;= _startTimeIco);
-    require(_rate &gt; 0);
+    require(_startTimePre >= now);
+    require(_endTimePre >= _startTimePre);
+    require(_startTimeIco >= _endTimePre);
+    require(_endTimeIco >= _startTimeIco);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_tokenAddress != address(0));
     require(_helperAddress != address(0));
@@ -151,7 +151,7 @@ contract Crowdsale is Ownable {
   /// @dev Set the rate of ETH - EUR
   /// @param _rate Rate of ETH - EUR
   function setRate(uint32 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
   }
 
@@ -166,22 +166,22 @@ contract Crowdsale is Ownable {
     require(beneficiary != address(0));
     require(helper.isWhitelisted(beneficiary));
     uint256 weiAmount = msg.value;
-    require(weiAmount &gt; 0);
+    require(weiAmount > 0);
     uint256 tokenAmount = 0;
     if (isPresale()) {
       /// Minimum contribution of 1 ether during presale
-      require(weiAmount &gt;= 1 ether); 
+      require(weiAmount >= 1 ether); 
       tokenAmount = getTokenAmount(weiAmount, preDiscountPercentage);
       uint256 newTokensSoldPre = tokensSoldPre.add(tokenAmount);
-      require(newTokensSoldPre &lt;= preCap);
+      require(newTokensSoldPre <= preCap);
       tokensSoldPre = newTokensSoldPre;
     } else if (isIco()) {
       uint8 discountPercentage = getIcoDiscountPercentage();
       tokenAmount = getTokenAmount(weiAmount, discountPercentage);
       /// Minimum contribution 1 token during ICO
-      require(tokenAmount &gt;= 10**18); 
+      require(tokenAmount >= 10**18); 
       uint256 newTokensSoldIco = tokensSoldIco.add(tokenAmount);
-      require(newTokensSoldIco &lt;= icoCap);
+      require(newTokensSoldIco <= icoCap);
       tokensSoldIco = newTokensSoldIco;
     } else {
       /// Stop execution and return remaining gas
@@ -192,9 +192,9 @@ contract Crowdsale is Ownable {
 
   /// @dev Internal function used for calculating ICO discount percentage depending on levels
   function getIcoDiscountPercentage() internal constant returns (uint8) {
-    if (tokensSoldIco &lt;= icoDiscountLevel1) {
+    if (tokensSoldIco <= icoDiscountLevel1) {
       return icoDiscountPercentageLevel1;
-    } else if (tokensSoldIco &lt;= icoDiscountLevel1.add(icoDiscountLevel2)) {
+    } else if (tokensSoldIco <= icoDiscountLevel1.add(icoDiscountLevel2)) {
       return icoDiscountPercentageLevel2;
     } else { 
       return icoDiscountPercentageLevel3; //for everything else
@@ -204,7 +204,7 @@ contract Crowdsale is Ownable {
   /// @dev Internal function used to calculate amount of tokens based on discount percentage
   function getTokenAmount(uint256 weiAmount, uint8 discountPercentage) internal constant returns (uint256) {
     /// Less than 100 to avoid division with zero
-    require(discountPercentage &gt;= 0 &amp;&amp; discountPercentage &lt; 100); 
+    require(discountPercentage >= 0 && discountPercentage < 100); 
     uint256 baseTokenAmount = weiAmount.mul(rate);
     uint256 tokenAmount = baseTokenAmount.mul(10000).div(100 - discountPercentage);
     return tokenAmount;
@@ -222,7 +222,7 @@ contract Crowdsale is Ownable {
   /// @dev Used to change presale cap (maximum tokens sold during presale)
   /// @param _preCap Presale cap
   function changePresaleCap(uint256 _preCap) public onlyOwner {
-    require(_preCap &gt; 0);
+    require(_preCap > 0);
     PresaleCapChanged(owner, _preCap);
     preCap = _preCap;
   }
@@ -230,7 +230,7 @@ contract Crowdsale is Ownable {
   /// @dev Used to change presale discount percentage
   /// @param _preDiscountPercentage Presale discount percentage
   function changePresaleDiscountPercentage(uint8 _preDiscountPercentage) public onlyOwner {
-    require(_preDiscountPercentage &gt;= 0 &amp;&amp; _preDiscountPercentage &lt; 100);
+    require(_preDiscountPercentage >= 0 && _preDiscountPercentage < 100);
     PresaleDiscountPercentageChanged(owner, _preDiscountPercentage);
     preDiscountPercentage = _preDiscountPercentage;
   }
@@ -239,7 +239,7 @@ contract Crowdsale is Ownable {
   /// @param _startTimePre Start time of presale
   /// @param _endTimePre End time of presale
   function changePresaleTimeRange(uint256 _startTimePre, uint256 _endTimePre) public onlyOwner {
-    require(_endTimePre &gt;= _startTimePre);
+    require(_endTimePre >= _startTimePre);
     PresaleTimeRangeChanged(owner, _startTimePre, _endTimePre);
     startTimePre = _startTimePre;
     endTimePre = _endTimePre;
@@ -248,7 +248,7 @@ contract Crowdsale is Ownable {
   /// @dev Used to change ICO cap in case the hard cap has been reached
   /// @param _icoCap ICO cap
   function changeIcoCap(uint256 _icoCap) public onlyOwner {
-    require(_icoCap &gt; 0);
+    require(_icoCap > 0);
     IcoCapChanged(owner, _icoCap);
     icoCap = _icoCap;
   }
@@ -257,7 +257,7 @@ contract Crowdsale is Ownable {
   /// @param _startTimeIco Start time of ICO
   /// @param _endTimeIco End time of ICO
   function changeIcoTimeRange(uint256 _startTimeIco, uint256 _endTimeIco) public onlyOwner {
-    require(_endTimeIco &gt;= _startTimeIco);
+    require(_endTimeIco >= _startTimeIco);
     IcoTimeRangeChanged(owner, _startTimeIco, _endTimeIco);
     startTimeIco = _startTimeIco;
     endTimeIco = _endTimeIco;
@@ -267,7 +267,7 @@ contract Crowdsale is Ownable {
   /// @param _icoDiscountLevel1 Amount of tokens in first phase
   /// @param _icoDiscountLevel2 Amount of tokens in second phase
   function changeIcoDiscountLevels(uint256 _icoDiscountLevel1, uint256 _icoDiscountLevel2) public onlyOwner {
-    require(_icoDiscountLevel1 &gt; 0 &amp;&amp; _icoDiscountLevel2 &gt; 0);
+    require(_icoDiscountLevel1 > 0 && _icoDiscountLevel2 > 0);
     IcoDiscountLevelsChanged(owner, _icoDiscountLevel1, _icoDiscountLevel2);
     icoDiscountLevel1 = _icoDiscountLevel1;
     icoDiscountLevel2 = _icoDiscountLevel2;
@@ -278,9 +278,9 @@ contract Crowdsale is Ownable {
   /// @param _icoDiscountPercentageLevel2 Discount percentage of phase 2
   /// @param _icoDiscountPercentageLevel3 Discount percentage of phase 3
   function changeIcoDiscountPercentages(uint8 _icoDiscountPercentageLevel1, uint8 _icoDiscountPercentageLevel2, uint8 _icoDiscountPercentageLevel3) public onlyOwner {
-    require(_icoDiscountPercentageLevel1 &gt;= 0 &amp;&amp; _icoDiscountPercentageLevel1 &lt; 100);
-    require(_icoDiscountPercentageLevel2 &gt;= 0 &amp;&amp; _icoDiscountPercentageLevel2 &lt; 100);
-    require(_icoDiscountPercentageLevel3 &gt;= 0 &amp;&amp; _icoDiscountPercentageLevel3 &lt; 100);
+    require(_icoDiscountPercentageLevel1 >= 0 && _icoDiscountPercentageLevel1 < 100);
+    require(_icoDiscountPercentageLevel2 >= 0 && _icoDiscountPercentageLevel2 < 100);
+    require(_icoDiscountPercentageLevel3 >= 0 && _icoDiscountPercentageLevel3 < 100);
     IcoDiscountPercentagesChanged(owner, _icoDiscountPercentageLevel1, _icoDiscountPercentageLevel2, _icoDiscountPercentageLevel3);
     icoDiscountPercentageLevel1 = _icoDiscountPercentageLevel1;
     icoDiscountPercentageLevel2 = _icoDiscountPercentageLevel2;
@@ -289,22 +289,22 @@ contract Crowdsale is Ownable {
 
   /// @dev Check if presale is active
   function isPresale() public constant returns (bool) {
-    return now &gt;= startTimePre &amp;&amp; now &lt;= endTimePre;
+    return now >= startTimePre && now <= endTimePre;
   }
 
   /// @dev Check if ICO is active
   function isIco() public constant returns (bool) {
-    return now &gt;= startTimeIco &amp;&amp; now &lt;= endTimeIco;
+    return now >= startTimeIco && now <= endTimeIco;
   }
 
   /// @dev Check if presale has ended
   function hasPresaleEnded() public constant returns (bool) {
-    return now &gt; endTimePre;
+    return now > endTimePre;
   }
 
   /// @dev Check if ICO has ended
   function hasIcoEnded() public constant returns (bool) {
-    return now &gt; endTimeIco;
+    return now > endTimeIco;
   }
 
   /// @dev Amount of tokens that have been sold during both presale and ICO phase

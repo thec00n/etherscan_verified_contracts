@@ -1,6 +1,6 @@
 /**
  * Die THE STONE COIN AG sichert zu, dass die von ihr im Rahmen der Token-Ausgabe netto (=nach Abzug ihrer Kosten/Steuern) 
- * vereinnahmten Mittel in den Aufbau und dauerhaften Betrieb eines europ&#228;ischen Immobilienportfolios – unter Ber&#252;cksichtigung 
+ * vereinnahmten Mittel in den Aufbau und dauerhaften Betrieb eines europäischen Immobilienportfolios – unter Berücksichtigung 
  * internationaler Chancen – investiert werden (REAL SHIELD).
  * 
  * The THE STONE COIN AG assures that the net funds (= after their costs and taxes) raised by the initial STONE COIN sales 
@@ -96,9 +96,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -115,7 +115,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -135,7 +135,7 @@ pragma solidity ^0.4.21;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -153,7 +153,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ pragma solidity ^0.4.21;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -199,8 +199,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -263,7 +263,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,7 +301,7 @@ contract ERC827Token is ERC827, StandardToken {
    * @dev Beware that changing an allowance with this method brings the risk that
    * @dev someone may use both the old and the new allowance by unfortunate
    * @dev transaction ordering. One possible solution to mitigate this race condition
-   * @dev is to first reduce the spender&#39;s allowance to 0 and set the desired value
+   * @dev is to first reduce the spender's allowance to 0 and set the desired value
    * @dev afterwards:
    * @dev https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    *
@@ -427,7 +427,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -554,7 +554,7 @@ contract PausableToken is StandardToken, Pausable {
  * @title Stone Coin
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741d1a121b340215181d101d000d181516075a1b0613">[email&#160;protected]</a>&gt;
+ * @author Validity Labs AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741d1a121b340215181d101d000d181516075a1b0613">[email protected]</a>>
  */
 
 pragma solidity ^0.4.21;
@@ -566,13 +566,13 @@ pragma solidity ^0.4.21;
  * @dev Constructor of StoToken that instantiates a new PausableToken
  */
 contract StoToken is PausableToken, ERC827Token {
-    string public constant name = &quot;Stone Coin&quot;;
-    string public constant symbol = &quot;STO&quot;;
+    string public constant name = "Stone Coin";
+    string public constant symbol = "STO";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_BALANCE = 10**6 * 10**uint256(decimals);     // 1 million STO tokens
 
     function StoToken(address _owner, address initialAccount) public {
-        require(_owner != address(0) &amp;&amp; initialAccount != address(0) &amp;&amp; _owner != initialAccount);
+        require(_owner != address(0) && initialAccount != address(0) && _owner != initialAccount);
         owner = _owner;
         balances[initialAccount] = INITIAL_BALANCE;
         totalSupply_ = INITIAL_BALANCE;

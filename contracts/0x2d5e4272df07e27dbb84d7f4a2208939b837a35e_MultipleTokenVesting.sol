@@ -5,7 +5,7 @@ pragma solidity 0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -309,8 +309,8 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts/ZerochainToken.sol
 
 contract ZerochainToken is MintableToken {
-    string public constant name = &quot;0chain&quot;;
-    string public constant symbol = &quot;ZCN&quot;;
+    string public constant name = "0chain";
+    string public constant symbol = "ZCN";
     uint8 public constant decimals = 10;
 }
 
@@ -370,7 +370,7 @@ contract Pausable is Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -383,7 +383,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -425,13 +425,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -439,7 +439,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -556,7 +556,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -586,9 +586,9 @@ contract MultipleTokenVesting is Pausable, RBAC {
     event Airdrop(address indexed beneficiary);
 
     // beneficiaries of tokens with respective amounts of tokens to be released
-    mapping (address =&gt; uint256) public beneficiaries;
+    mapping (address => uint256) public beneficiaries;
     // beneficiaries of tokens with respective amounts of tokens already released
-    mapping (address =&gt; uint256) public released;
+    mapping (address => uint256) public released;
 
     ZerochainToken public token;
 
@@ -599,7 +599,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
     bool public canIssueIndividual = true;
 
     uint256 public constant AIRDROP_AMOUNT = 10 * (10 ** 10);
-    string public constant UTILITY_ROLE = &quot;utility&quot;;
+    string public constant UTILITY_ROLE = "utility";
     address public utilityAccount;
     uint256 public hardCap;
 
@@ -618,9 +618,9 @@ contract MultipleTokenVesting is Pausable, RBAC {
     )
     public
     {
-        require(_cliff &lt;= _duration);
+        require(_cliff <= _duration);
         require(_utilityAccount != address(0));
-        require(_hardCap &gt; 0);
+        require(_hardCap > 0);
 
         token = new ZerochainToken();
         duration = _duration;
@@ -663,7 +663,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
         require(beneficiary != address(0));
         require(amount != 0);
         require(canIssueIndividual);
-        require(token.totalSupply().add(amount) &lt;= hardCap);
+        require(token.totalSupply().add(amount) <= hardCap);
 
         token.mint(beneficiary, amount);
     }
@@ -679,7 +679,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
         uint256[] _amounts
     ) public onlyRole(UTILITY_ROLE) whenNotPaused {
         require(_beneficiaries.length == _amounts.length);
-        for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint i = 0; i < _beneficiaries.length; i++) {
             addVestingForBeneficiary(_beneficiaries[i], _amounts[i]);
         }
     }
@@ -688,7 +688,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
         address[] _beneficiaries
     ) public onlyRole(UTILITY_ROLE) whenNotPaused {
         require(isActive);
-        for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint i = 0; i < _beneficiaries.length; i++) {
             release(_beneficiaries[i]);
         }
     }
@@ -697,15 +697,15 @@ contract MultipleTokenVesting is Pausable, RBAC {
         address[] _beneficiaries
     ) public onlyRole(UTILITY_ROLE) whenNotPaused {
         require(isActive);
-        require(block.timestamp &gt;= cliff);
-        for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+        require(block.timestamp >= cliff);
+        for (uint i = 0; i < _beneficiaries.length; i++) {
             require(_beneficiaries[i] != address(0));
             airdrop(_beneficiaries[i]);
         }
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      */
     function releasableAmount() public view returns (uint256) {
         return _releasableAmount(msg.sender);
@@ -727,7 +727,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
 
         uint256 unreleased = _releasableAmount(beneficiary);
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         released[beneficiary] = released[beneficiary].add(unreleased);
 
@@ -747,9 +747,9 @@ contract MultipleTokenVesting is Pausable, RBAC {
         uint256 _amount
     ) internal {
         require(_beneficiary != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(beneficiaries[_beneficiary] == 0);
-        require(token.totalSupply().add(_amount) &lt;= hardCap);
+        require(token.totalSupply().add(_amount) <= hardCap);
 
         beneficiaries[_beneficiary] = _amount;
         token.mint(this, _amount);
@@ -759,7 +759,7 @@ contract MultipleTokenVesting is Pausable, RBAC {
     function airdrop(
         address _beneficiary
     ) internal {
-        require(token.totalSupply().add(AIRDROP_AMOUNT) &lt;= hardCap);
+        require(token.totalSupply().add(AIRDROP_AMOUNT) <= hardCap);
 
         token.mint(_beneficiary, AIRDROP_AMOUNT);
         Airdrop(_beneficiary);
@@ -770,9 +770,9 @@ contract MultipleTokenVesting is Pausable, RBAC {
     ) internal view returns (uint256) {
         uint256 totalBalance = beneficiaries[beneficiary];
 
-        if (block.timestamp &lt; cliff) {
+        if (block.timestamp < cliff) {
             return 0;
-        } else if (block.timestamp &gt;= start.add(duration)) {
+        } else if (block.timestamp >= start.add(duration)) {
             return totalBalance;
         } else {
             return totalBalance.mul(block.timestamp.sub(start)).div(duration);

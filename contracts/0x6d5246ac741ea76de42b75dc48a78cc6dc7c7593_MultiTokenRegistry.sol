@@ -11,7 +11,7 @@ interface IDeployer {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,7 +121,7 @@ contract MultiTokenRegistry is Pausable {
     event NewDeployer(uint256 indexed index, address indexed oldDeployer, address indexed newDeployer);
 
     address[] public multitokens;
-    mapping(uint256 =&gt; IDeployer) public deployers;
+    mapping(uint256 => IDeployer) public deployers;
 
     function multitokensCount() public view returns(uint256) {
         return multitokens.length;

@@ -1,5 +1,5 @@
 contract TRMBalancesP1 {
-    mapping(address =&gt; bool) public oldBalances;
+    mapping(address => bool) public oldBalances;
     
     function TRMBalancesP1() {
         oldBalances[0xc5c9bc6cbf8b3bef23f82e0c838e1ae0ee0f3e77]= true;

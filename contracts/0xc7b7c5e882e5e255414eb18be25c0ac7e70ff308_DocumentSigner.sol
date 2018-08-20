@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
 contract DocumentSigner {
-    mapping(string =&gt; address[]) signatureMap;
+    mapping(string => address[]) signatureMap;
     
     function sign(string _documentHash) public {
         signatureMap[_documentHash].push(msg.sender);

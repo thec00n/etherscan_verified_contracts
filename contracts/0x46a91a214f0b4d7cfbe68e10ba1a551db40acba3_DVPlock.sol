@@ -16,13 +16,13 @@ library SafeMath {
   }
 
  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,8 +95,8 @@ contract DVPlock is Ownable{
 
   ERC20 public token;
   address public sponsor;
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public withdrawAmounts;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public withdrawAmounts;
   uint256 public tokenTotal;
   uint256 public releaseTime;
 
@@ -130,13 +130,13 @@ contract DVPlock is Ownable{
 
   function addInvestor(address investor,uint256 amount) onlyOwner public returns(bool result){
       if(releaseTime!=0){
-          require(block.timestamp &lt; releaseTime);
+          require(block.timestamp < releaseTime);
       }
       require(tokenTotal == token.balanceOf(this));
       balances[investor] = balances[investor].add(amount);
       tokenTotal = tokenTotal.add(amount);
 
-      if(tokenTotal&gt;token.balanceOf(this)){
+      if(tokenTotal>token.balanceOf(this)){
           token.safeTransferFrom(msg.sender,this,amount);
       }
       return true;
@@ -146,8 +146,8 @@ contract DVPlock is Ownable{
   
   function release() public {
     require(releaseTime!=0);
-    require(block.timestamp &gt;= releaseTime);
-    require(balances[msg.sender] &gt; 0);
+    require(block.timestamp >= releaseTime);
+    require(balances[msg.sender] > 0);
 
     //60*60*24*30*3 second = 1 quarter,If the time difference is more than 1 quarters, it means that it has been released 1 times.
     uint256 released_times = (block.timestamp-releaseTime).div(60*60*24*30*3); 
@@ -155,10 +155,10 @@ contract DVPlock is Ownable{
     uint256 lock_quarter = 0;
     
     if(msg.sender!=sponsor){
-        //The white paper stipulates that investors&#39; balance needs to be locked up for 1.5 years and released on a quarterly average.So 1.5 years =18 months =6 quarter
+        //The white paper stipulates that investors' balance needs to be locked up for 1.5 years and released on a quarterly average.So 1.5 years =18 months =6 quarter
         lock_quarter = 6 ;
     }else{
-         //The white paper stipulates that sponsor&#39; balance needs to be locked up for 3 years and released on a quarterly average.So 3 years =36 months =12 quarter
+         //The white paper stipulates that sponsor' balance needs to be locked up for 3 years and released on a quarterly average.So 3 years =36 months =12 quarter
         lock_quarter = 12;
     }
     
@@ -166,7 +166,7 @@ contract DVPlock is Ownable{
         withdrawAmounts[msg.sender]= balances[msg.sender].div(lock_quarter);
     }
     
-    if(released_times&gt;=lock_quarter){
+    if(released_times>=lock_quarter){
         _amount = balances[msg.sender];
     }else{
         _amount = balances[msg.sender].sub(withdrawAmounts[msg.sender].mul(lock_quarter.sub(released_times+1)));

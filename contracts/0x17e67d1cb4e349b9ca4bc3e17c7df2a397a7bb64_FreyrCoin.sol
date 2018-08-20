@@ -16,12 +16,12 @@ contract Token {
 
 contract FreyrCoin is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
-    string constant public name = &quot;Freyr Coin&quot;;
-    string constant public symbol = &quot;FREC&quot;;
+    string constant public name = "Freyr Coin";
+    string constant public symbol = "FREC";
     uint8 constant public decimals = 18;
 
     function FreyrCoin()
@@ -35,7 +35,7 @@ contract FreyrCoin is Token {
         public
         returns (bool)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             throw;
         }
         balances[msg.sender] -= _value;
@@ -48,7 +48,7 @@ contract FreyrCoin is Token {
         public
         returns (bool)
     {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             throw;
         }
         balances[_to] += _value;

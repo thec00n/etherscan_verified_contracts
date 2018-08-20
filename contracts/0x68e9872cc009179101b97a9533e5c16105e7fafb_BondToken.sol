@@ -1,5 +1,5 @@
 // Bond Film Platform Token smart contract.
-// Developed by Phenom.Team &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365f58505976465e5358595b184253575b">[email&#160;protected]</a>&gt;
+// Developed by Phenom.Team <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365f58505976465e5358595b184253575b">[email protected]</a>>
 pragma solidity ^0.4.18;
 
 /**
@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,8 +46,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -66,8 +66,8 @@ contract ERC20 {
  */
 contract BondToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Bond Film Platform&quot;;
-    string public symbol = &quot;BFP&quot;;
+    string public name = "Bond Film Platform";
+    string public symbol = "BFP";
     uint public decimals = 18;
 
     // Ico contract address
@@ -120,7 +120,7 @@ contract BondToken is ERC20 {
     function mint(address _holder, uint _value) 
         private
         returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[_holder] = balances[_holder].add(_value);
         totalSupply = totalSupply.add(_value);
         Transfer(address(0), _holder, _value);
@@ -146,7 +146,7 @@ contract BondToken is ERC20 {
     *   @dev Function to issues tokens for investors
     *   @param _holder     address the tokens will be issued to
     *   @param _value        number of BFP tokens
-    *   @param _txHash       transaction hash of investor&#39;s payment
+    *   @param _txHash       transaction hash of investor's payment
     */
     function buyForInvestor(
         address _holder, 
@@ -173,7 +173,7 @@ contract BondToken is ERC20 {
         external
         onlyAirDropManager {
         require(_to.length == _amount.length);
-        for (uint i = 0; i &lt; _to.length; i++) {
+        for (uint i = 0; i < _to.length; i++) {
             require(_to[i] != address(0));
             require(mint(_to[i], _amount[i]));
         }
@@ -201,7 +201,7 @@ contract BondToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _holder, uint _value) external onlyOwner {
-        require(balances[_holder] &gt; 0);
+        require(balances[_holder] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_holder] = balances[_holder].sub(_value);
         Burn(_holder, _value);
@@ -209,7 +209,7 @@ contract BondToken is ERC20 {
 
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint) {

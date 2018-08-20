@@ -52,7 +52,7 @@ interface ABIO_ICO{
 }
 
 contract ABIO_BaseICO is Haltable{
-    mapping(address =&gt; uint256) ethBalances;
+    mapping(address => uint256) ethBalances;
 
     uint public weiRaised;//total raised in wei
     uint public abioSold;//amount of ABIO sold
@@ -98,15 +98,15 @@ contract ABIO_BaseICO is Haltable{
 
          /**
           * @notice Called everytime we receive a contribution in ETH.
-          * @dev Tokens are immediately transferred to the contributor, even if goal doesn&#39;t get reached.
+          * @dev Tokens are immediately transferred to the contributor, even if goal doesn't get reached.
           */
          function () payable stopOnPause{
-             require(now &lt; deadline);
-             require(msg.value &gt;= minInvestment);
+             require(now < deadline);
+             require(msg.value >= minInvestment);
              uint amount = msg.value;
              ethBalances[msg.sender] += amount;
              weiRaised += amount;
-             if(!fundingGoalReached &amp;&amp; weiRaised &gt;= fundingGoal){goalReached();}
+             if(!fundingGoalReached && weiRaised >= fundingGoal){goalReached();}
 
              uint ABIOAmount = amount / weiPerABIO ;
              abioToken.transfer(msg.sender, ABIOAmount);
@@ -130,7 +130,7 @@ contract ABIO_BaseICO is Haltable{
 
          /**
          * @notice Burns tokens leftover from an ICO round.
-         * @dev This can be called by anyone after deadline since it&#39;s an essential and inevitable part.
+         * @dev This can be called by anyone after deadline since it's an essential and inevitable part.
          */
          function burnRestTokens() afterDeadline{
                  require(!restTokensBurned);
@@ -139,12 +139,12 @@ contract ABIO_BaseICO is Haltable{
          }
 
          function isRunning() view returns (bool){
-             return (now &lt; deadline);
+             return (now < deadline);
          }
 
          function goalReached() internal;
 
-         modifier afterDeadline() { if (now &gt;= deadline) _; }
+         modifier afterDeadline() { if (now >= deadline) _; }
 }
 contract ABIO_preICO is ABIO_BaseICO{
     address ICOAddress;
@@ -170,7 +170,7 @@ contract ABIO_preICO is ABIO_BaseICO{
         require(_addr != 0x0);
         ICOAddress = _addr;
         ICO = ABIO_ICO(_addr);
-        if(!fundingGoalReached &amp;&amp; weiRaised + ICO.weiRaised() &gt;= fundingGoal){goalReached();}
+        if(!fundingGoalReached && weiRaised + ICO.weiRaised() >= fundingGoal){goalReached();}
         finalDeadline = ICO.deadline();
     }
 
@@ -180,9 +180,9 @@ contract ABIO_preICO is ABIO_BaseICO{
     }
 
     /**
-    * @notice supposed to be called by ICO Contract IF `fundingGoal` wasn&#39;t reached during PreICO to notify it
-    * @dev !!Funds can&#39;t be deposited to treasury if `fundingGoal` isn&#39;t called before main ICO ends!!
-    * @dev This is, at max., called once! If this contract doesn&#39;t know ICOAddress by that time, we rely on the check in `supplyICOContract()`
+    * @notice supposed to be called by ICO Contract IF `fundingGoal` wasn't reached during PreICO to notify it
+    * @dev !!Funds can't be deposited to treasury if `fundingGoal` isn't called before main ICO ends!!
+    * @dev This is, at max., called once! If this contract doesn't know ICOAddress by that time, we rely on the check in `supplyICOContract()`
     */
     function extGoalReached() afterDeadline external{
         require(ICOAddress != 0x0); //ICO was supplied
@@ -193,15 +193,15 @@ contract ABIO_preICO is ABIO_BaseICO{
     /**
      * @notice Lets participants withdraw the funds if `fundingGoal` was missed.
      * @notice Lets treasury collect the funds if `fundingGoal` was reached.
-     * @dev The contract is obligated to return the ETH to contributors if `fundingGoal` isn&#39;t reached,
+     * @dev The contract is obligated to return the ETH to contributors if `fundingGoal` isn't reached,
      *      so we have to wait until the end for a user withdrawal.
      * @dev The treasury can withdraw right after `fundingGoal` is reached.
      */
     function safeWithdrawal() afterDeadline stopOnPause{
-        if (!fundingGoalReached &amp;&amp; now &gt;= finalDeadline) {
+        if (!fundingGoalReached && now >= finalDeadline) {
             uint amount = ethBalances[msg.sender];
             ethBalances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     emit FundsWithdrawn(msg.sender, amount);
                 } else {
@@ -209,7 +209,7 @@ contract ABIO_preICO is ABIO_BaseICO{
                 }
             }
         }
-        else if (fundingGoalReached &amp;&amp; treasury == msg.sender) {
+        else if (fundingGoalReached && treasury == msg.sender) {
             if (treasury.send(weiRaised)) {
                 emit FundsWithdrawn(treasury, weiRaised);
             } else if (treasury.send(address(this).balance)){

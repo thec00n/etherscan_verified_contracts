@@ -36,20 +36,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -195,7 +195,7 @@ contract BurnableToken is StandardToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -208,9 +208,9 @@ contract BurnableToken is StandardToken {
 
 contract Misscoin is BurnableToken {
     
-  string public constant name = &quot;Misscoin&quot;;
+  string public constant name = "Misscoin";
    
-  string public constant symbol = &quot;MISC&quot;;
+  string public constant symbol = "MISC";
     
   uint32 public constant decimals = 18;
 
@@ -242,9 +242,9 @@ contract Crowdsale is Ownable {
 
   uint128 constant WAD = 10 ** 18;
 
-  mapping (uint =&gt; mapping (address =&gt; uint))  public  userBuys;
-  mapping (uint =&gt; uint)                       public  dailyTotals;
-  mapping (uint =&gt; mapping (address =&gt; bool))  public  claimed;
+  mapping (uint => mapping (address => uint))  public  userBuys;
+  mapping (uint => uint)                       public  dailyTotals;
+  mapping (uint => mapping (address => bool))  public  claimed;
 
    function Crowdsale() {
       multisig = 0x49B25aDDdd6503d275375C7c261A444862360396;
@@ -254,7 +254,7 @@ contract Crowdsale is Ownable {
     }
 
   modifier saleIsOn() {
-    require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+    require(now > start && now < start + period * 1 days);
     _;
   }
 
@@ -278,7 +278,7 @@ contract Crowdsale is Ownable {
         z = cast((uint256(x) * WAD + y / 2) / y);
     }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
    function cast(uint256 x) constant internal returns (uint128 z) {
@@ -295,29 +295,29 @@ contract Crowdsale is Ownable {
 
   function dayFor(uint timestamp) constant returns (uint) {
 
-        return timestamp &lt; start
+        return timestamp < start
             ? 0
             : sub(timestamp, start) / 24 hours + 1;
   }
 
   function buyWithLimit(uint day, uint limit) payable saleIsOn {
-        assert(time() &gt;= start &amp;&amp; today() &lt;= period);
-        assert(msg.value &gt;= 0.001 ether);
+        assert(time() >= start && today() <= period);
+        assert(msg.value >= 0.001 ether);
         
-        assert(day &gt;= today());
-        assert(day &lt;= period);
+        assert(day >= today());
+        assert(day <= period);
 
         userBuys[day][msg.sender] += msg.value;
         dailyTotals[day] += msg.value;
 
         if (limit != 0) {
-            assert(dailyTotals[day] &lt;= limit);
+            assert(dailyTotals[day] <= limit);
         }
 
   }
 
     function addtokens() onlyOwner{
-      assert(today() &gt;= 149 &amp;&amp; !addtok);
+      assert(today() >= 149 && !addtok);
       token.transfer(0x49B25aDDdd6503d275375C7c261A444862360396, 100000000 * 1 ether);
       addtok=true;
     }
@@ -331,7 +331,7 @@ contract Crowdsale is Ownable {
     }
   
   function claim(uint day) saleIsOn {
-        assert(today() &gt; day);
+        assert(today() > day);
 
         if (claimed[day][msg.sender] || dailyTotals[day] == 0) {
             return;
@@ -350,13 +350,13 @@ contract Crowdsale is Ownable {
   } 
 
   function claimAll() {
-        for (uint i = 0; i &lt; today(); i++) {
+        for (uint i = 0; i < today(); i++) {
             claim(i);
         }
   }
 
   function collect() onlyOwner{
-        assert(today() &gt; 0); // Prevent recycling during window 0
+        assert(today() > 0); // Prevent recycling during window 0
         multisig.transfer(this.balance);
   }
 

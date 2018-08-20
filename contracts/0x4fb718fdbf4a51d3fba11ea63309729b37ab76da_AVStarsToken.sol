@@ -57,8 +57,8 @@ contract AVStarsToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;AVStars&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;AVS&quot;; // solhint-disable-line
+  string public constant NAME = "AVStars"; // solhint-disable-line
+  string public constant SYMBOL = "AVS"; // solhint-disable-line
 
   uint256 private startingPrice = 0.3 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 30000;
@@ -67,19 +67,19 @@ contract AVStarsToken is ERC721 {
 
   /// @dev A mapping from person IDs to the address that owns them. All persons have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public personIndexToOwner;
+  mapping (uint256 => address) public personIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PersonIDs to an address that has been approved to call
   ///  transferFrom(). Each Person can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public personIndexToApproved;
+  mapping (uint256 => address) public personIndexToApproved;
 
   // @dev A mapping from PersonIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private personIndexToPrice;
+  mapping (uint256 => uint256) private personIndexToPrice;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -162,14 +162,14 @@ contract AVStarsToken is ERC721 {
     uint64 _cooldownTime,
     string _slogan,
     uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address personOwner = _owner;
     if (personOwner == address(0)) {
       personOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -189,7 +189,7 @@ contract AVStarsToken is ERC721 {
       _name,
       0,
       uint64(now),
-      &quot;&quot;, 
+      "", 
       address(this), 
       startingPrice);
   }
@@ -265,15 +265,15 @@ contract AVStarsToken is ERC721 {
     // Making sure token owner is not sending to self
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     Person storage person = persons[_tokenId];
-    require(person.cooldownTime&lt;uint64(now));
+    require(person.cooldownTime<uint64(now));
     uint256 payment = sellingPrice.mul(95).div(100);
     uint256 devCut = msg.value.sub(payment);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       person.basePrice = personIndexToPrice[_tokenId];
       personIndexToPrice[_tokenId] = sellingPrice.mul(300).div(200);
@@ -297,8 +297,8 @@ contract AVStarsToken is ERC721 {
   function activity(uint256 _tokenId, uint256 _type) public payable {
     require(isPaused == false);
     require(personIndexToOwner[_tokenId] == msg.sender);
-    require(personIndexToPrice[_tokenId] &gt;= 2000000000000000000);
-    require(_type &lt;= 2);
+    require(personIndexToPrice[_tokenId] >= 2000000000000000000);
+    require(_type <= 2);
     uint256 _hours;
 
     // type, 0 for movie, 1 for beach, 2 for trip 
@@ -311,20 +311,20 @@ contract AVStarsToken is ERC721 {
     }
 
     uint256 payment = personIndexToPrice[_tokenId].div(80).mul(_hours);
-    require(msg.value &gt;= payment);
+    require(msg.value >= payment);
     uint64 startTime;
 
     Person storage person = persons[_tokenId];
     
     person.satisfaction += _hours.mul(1);
-    if (person.satisfaction &gt; 100) {
+    if (person.satisfaction > 100) {
       person.satisfaction = 100;
     }
     uint256 newPrice;
     person.basePrice = person.basePrice.add(payment);
     newPrice = person.basePrice.mul(120+uint256(person.satisfaction)).div(100);
     personIndexToPrice[_tokenId] = newPrice;
-    if (person.cooldownTime &gt; now) {
+    if (person.cooldownTime > now) {
       startTime = person.cooldownTime;
       person.cooldownTime = startTime +  uint64(_hours) * 1 hours;
       
@@ -386,7 +386,7 @@ contract AVStarsToken is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -401,7 +401,7 @@ contract AVStarsToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 personId;
-      for (personId = 0; personId &lt;= totalPersons; personId++) {
+      for (personId = 0; personId <= totalPersons; personId++) {
         if (personIndexToOwner[personId] == _owner) {
           result[resultIndex] = personId;
           resultIndex++;
@@ -476,8 +476,8 @@ contract AVStarsToken is ERC721 {
     });
     uint256 newPersonId = persons.push(_person) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPersonId == uint256(uint32(newPersonId)));
 
     Birth(
@@ -511,12 +511,12 @@ contract AVStarsToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Person to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of persons is capped to 2^32 we can&#39;t overflow this
+    // Since the number of persons is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     personIndexToOwner[_tokenId] = _to;
 
-    // When creating new persons _from is 0x0, but we can&#39;t account that address.
+    // When creating new persons _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -545,9 +545,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -555,7 +555,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -564,7 +564,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

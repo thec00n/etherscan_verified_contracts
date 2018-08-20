@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;SYB&#39; tokens contract
+// 'SYB' tokens contract
 //
 // Deployed to : 0x17960C1b7d0bdED335E22e5D8584eCAd96Cf3FB2
 // Symbol      : SYBTOK
@@ -13,10 +13,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -24,7 +24,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -76,12 +76,12 @@ contract SYB is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function SYB() public {
-        symbol = &quot;SYBTOK&quot;;
-        name = &quot;SYB Tokens&quot;;
+        symbol = "SYBTOK";
+        name = "SYB Tokens";
         decimals = 0;
         _totalSupply = 2779530283277761;
         balances[0x17960C1b7d0bdED335E22e5D8584eCAd96Cf3FB2] = _totalSupply;

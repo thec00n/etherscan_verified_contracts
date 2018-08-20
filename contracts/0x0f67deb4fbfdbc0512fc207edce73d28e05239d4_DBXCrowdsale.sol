@@ -60,19 +60,19 @@ contract DBXCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         uint _amount = amount / 20;
         
         // period 1 : 35%
-        if(now &gt; 1518220800 &amp;&amp; now &lt; 1518652800) {
+        if(now > 1518220800 && now < 1518652800) {
             amount += _amount * 7;
         }
         
         // period 2 : 10%
-        if(now &gt; 1518652800 &amp;&amp; now &lt; 1519862400) {
+        if(now > 1518652800 && now < 1519862400) {
             amount += _amount * 2;
         }
 

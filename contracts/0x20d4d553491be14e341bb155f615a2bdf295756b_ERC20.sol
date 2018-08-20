@@ -1,13 +1,13 @@
 pragma solidity ^0.4.8;
 
 /// @title ERC20 Token
-/// @author Melonport AG &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="265243474b664b434a4948564954520845494b">[email&#160;protected]</a>&gt;
+/// @author Melonport AG <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="265243474b664b434a4948564954520845494b">[email protected]</a>>
 /// @notice Original taken from https://github.com/ethereum/EIPs/issues/20
 /// @notice Checked against integer overflow
 contract ERC20 {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -16,7 +16,7 @@ contract ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -39,9 +39,9 @@ contract ERC20 {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -66,7 +66,7 @@ contract ERC20 {
     }
 
     function mint(uint _value) onlyowner(msg.sender) {
-        if (balances[owner] + _value &lt; balances[owner]) {
+        if (balances[owner] + _value < balances[owner]) {
             // overflow
             throw;
         }
@@ -76,7 +76,7 @@ contract ERC20 {
     }
 
     function burn(uint _value) onlyowner(msg.sender) {
-        if (balances[owner] &lt; _value) {
+        if (balances[owner] < _value) {
             throw;
         }
         balances[owner] -= _value;

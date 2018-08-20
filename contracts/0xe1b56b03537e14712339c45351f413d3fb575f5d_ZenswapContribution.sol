@@ -27,7 +27,7 @@ contract ZenswapContribution is Ownable {
     uint256 public amountEthRaised = 0;
     uint256 public availableTokens;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     
     /**
@@ -50,7 +50,7 @@ contract ZenswapContribution is Ownable {
         
         uint256 amount = msg.value;
         uint256 tokens = amount * amountTokensPerEth;
-        require(availableTokens &gt;= amount);
+        require(availableTokens >= amount);
         
         balanceOf[msg.sender] += amount;
         availableTokens -= tokens;
@@ -60,11 +60,11 @@ contract ZenswapContribution is Ownable {
     }
 
     /**
-     * Withdraw an &quot;amount&quot; of available tokens in the contract
+     * Withdraw an "amount" of available tokens in the contract
      * 
      */
     function withdrawAvailableToken(address _address, uint amount) public onlyOwner {
-        require(availableTokens &gt;= amount);
+        require(availableTokens >= amount);
         availableTokens -= amount;
         tokenReward.transfer(_address, amount);
     }

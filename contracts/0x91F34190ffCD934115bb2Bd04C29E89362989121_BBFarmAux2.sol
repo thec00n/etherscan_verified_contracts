@@ -28,7 +28,7 @@ interface BBFarmInterface {
 
 contract BBFarmAux2 {
     function _ballotIdToNamespace(uint ballotId) internal pure returns (bytes4) {
-        return bytes4(ballotId &gt;&gt; 224);
+        return bytes4(ballotId >> 224);
     }
     
     function getBBFarmAddressFromBallotId(IndexInterface ix, uint256 ballotId) internal view returns (address) {

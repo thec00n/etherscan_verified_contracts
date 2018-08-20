@@ -33,7 +33,7 @@ contract etherlist_top {
   
   function enter() {
 
-  if(msg.value &gt; 5000000000000000000){
+  if(msg.value > 5000000000000000000){
     msg.sender.send(msg.value);
     return;
   }
@@ -44,10 +44,10 @@ contract etherlist_top {
 	   
 	   uint i = 0;
 	   uint i2 = rand_num;
-	   while(i &lt; participants.length){
-	     if(balance &gt; 0){
-		if(participants.length - participants[i2].lastPayment &gt; 3 || participants[i2].lastPayment == 0)
-		 if(participants[i2].amount &gt;= balance){
+	   while(i < participants.length){
+	     if(balance > 0){
+		if(participants.length - participants[i2].lastPayment > 3 || participants[i2].lastPayment == 0)
+		 if(participants[i2].amount >= balance){
 		   participants[i2].etherAddress.send(balance);
 		   participants[i2].paid += balance;
 		   participants[i2].lastPayment = participants.length +1;
@@ -64,7 +64,7 @@ contract etherlist_top {
 		   break;
 		
 		 i2 += rand_num + 1;
-		 if(i2 &gt; participants.length)
+		 if(i2 > participants.length)
 		    i2 = i2 % participants.length;	   
 	     i += 1;
 	   }

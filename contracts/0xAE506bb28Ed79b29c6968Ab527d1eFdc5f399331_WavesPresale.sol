@@ -7,7 +7,7 @@ contract WavesPresale {
         uint date;
     }
 
-    mapping (bytes16 =&gt; Sale[]) public sales;
+    mapping (bytes16 => Sale[]) public sales;
     uint32 public numberOfSales;
     uint public totalTokens;
 

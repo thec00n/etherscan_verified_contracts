@@ -16,7 +16,7 @@ contract MasterRegistry {
 
         // Keeps the solidity source of the registry
         // Storing the source on the blockchain is expensive but it is worth it. 
-        // Previous version didn&#39;t store and was able to rebuild the registry
+        // Previous version didn't store and was able to rebuild the registry
         // source from its parameters. But this showed to be problematic in 
         // some cases.
         string source; 
@@ -25,21 +25,21 @@ contract MasterRegistry {
         // solidity source for those old registries will be unavailable.
     }
 
-    // Maps registry&#39;s address to its record.
-    mapping (address =&gt; RegistryAttributes) public registries;
+    // Maps registry's address to its record.
+    mapping (address => RegistryAttributes) public registries;
     uint public numRegistries;
 
-    // Keeps a list of all registries&#39; addresses
+    // Keeps a list of all registries' addresses
     address[] public addresses;
 
-    // maps owner -&gt; list of registries&#39; addresses
-    mapping (address =&gt; address[]) public indexedByOwner;
+    // maps owner -> list of registries' addresses
+    mapping (address => address[]) public indexedByOwner;
 
-    // maps tag -&gt; list of registries&#39; addresses
-    mapping (bytes32 =&gt; address[]) public indexedByTag;
+    // maps tag -> list of registries' addresses
+    mapping (bytes32 => address[]) public indexedByTag;
 
-    // maps name -&gt; list of registries&#39; addresses
-    mapping (string =&gt; address[]) indexedByName; // cant use public here because it&#39;s indexed by string
+    // maps name -> list of registries' addresses
+    mapping (string => address[]) indexedByName; // cant use public here because it's indexed by string
 
     modifier onlyOwner(address regAddress) {
         if (registries[regAddress].owner != msg.sender) throw;
@@ -60,7 +60,7 @@ contract MasterRegistry {
 
     function addRegistryIntoTagsIndex(address regAddress) internal {
         bytes32[] tags = registries[regAddress].tags;
-        for (uint i = 0; i &lt; tags.length; i++) {
+        for (uint i = 0; i < tags.length; i++) {
             address[] regs = indexedByTag[tags[i]];
             regs.length++;
             regs[regs.length - 1] = regAddress;
@@ -99,7 +99,7 @@ contract MasterRegistry {
 
     function removeRegistryFromOwnerIndex(address regAddress) internal {
         address[] regs = indexedByOwner[msg.sender];
-        for (uint i = 0; i &lt; regs.length; i++) {
+        for (uint i = 0; i < regs.length; i++) {
             if (regs[i] == regAddress) {
                 regs[i] = regs[regs.length - 1];
                 regs.length--;
@@ -110,7 +110,7 @@ contract MasterRegistry {
 
     function removeRegistryFromNameIndex(address regAddress) internal {
         address[] regs = indexedByName[registries[regAddress].name];
-        for (uint j = 0; j &lt; regs.length; j++) {
+        for (uint j = 0; j < regs.length; j++) {
             if (regs[j] == regAddress) {
                 regs[j] = regs[regs.length - 1];
                 regs.length--;
@@ -121,9 +121,9 @@ contract MasterRegistry {
 
     function removeRegistryFromTagsIndex(address regAddress) internal {
         uint numTags = registries[regAddress].tags.length;
-        for (uint k = 0; k &lt; numTags; k++) {
+        for (uint k = 0; k < numTags; k++) {
             address[] regs = indexedByTag[registries[regAddress].tags[k]];
-            for (uint l = 0; l &lt; regs.length; l++) {
+            for (uint l = 0; l < regs.length; l++) {
                 if (regs[l] == regAddress) {
                     regs[l] = regs[regs.length - 1];
                     regs.length--;
@@ -191,7 +191,7 @@ contract MasterRegistry {
     // into this new one and fix old registries creation_time (which
     // are now inside the registry itself).
     function setTime(address regAddress, uint time) {
-        if (now &lt; 1469830946) { // Valid up to 29-Jul-2016 19:22:26
+        if (now < 1469830946) { // Valid up to 29-Jul-2016 19:22:26
             registries[regAddress].creationTime = time;
         }
     }

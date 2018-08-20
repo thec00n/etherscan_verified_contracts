@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,8 +290,8 @@ contract StandardToken is ERC20, BasicToken {
 // File: contracts/Token.sol
 
 contract Token is StandardToken, Pausable {
-    string constant public name = &quot;Bace Token&quot;;
-    string constant public symbol = &quot;BACE&quot;;
+    string constant public name = "Bace Token";
+    string constant public symbol = "BACE";
     uint8 constant public decimals =  18;
 
     uint256 constant public INITIAL_TOTAL_SUPPLY = 100 * 1E6 * (uint256(10) ** (decimals));
@@ -363,7 +363,7 @@ contract Token is StandardToken, Pausable {
     * @dev Function is needed for Refund investors ETH, if pre-ICO has failed.
     */
     function refund(address _to, uint256 _value) onlyIco public {
-        require(_value &lt;= balances[_to]);
+        require(_value <= balances[_to]);
 
         address addr = _to;
         balances[addr] = balances[addr].sub(_value);
@@ -379,7 +379,7 @@ contract Token is StandardToken, Pausable {
  * @dev Whitelist for wallets.
 */
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) whitelist;
+    mapping(address => bool) whitelist;
 
     uint256 public whitelistLength = 0;
 	
@@ -440,7 +440,7 @@ contract Whitelist is Ownable {
 
 /**
  * @title Whitelistable contract.
- * @dev Contract that can be embedded in another contract, to add functionality &quot;whitelist&quot;.
+ * @dev Contract that can be embedded in another contract, to add functionality "whitelist".
  */
 
 
@@ -495,7 +495,7 @@ contract Crowdsale is Pausable, Whitelistable {
 
     /**
      * @dev test mode.
-     * @dev if test mode is &quot;true&quot; allows to change caps in an deployed contract
+     * @dev if test mode is "true" allows to change caps in an deployed contract
      */
     bool private testMode;
 
@@ -551,7 +551,7 @@ contract Crowdsale is Pausable, Whitelistable {
     /**
      * @dev Map of investors. Key = address, Value = Total ETH at PreIco.
      */
-    mapping(address =&gt; uint256) public preIcoInvestors;
+    mapping(address => uint256) public preIcoInvestors;
 
     /**
      * @dev Array of addresses of investors at PreIco.
@@ -561,7 +561,7 @@ contract Crowdsale is Pausable, Whitelistable {
     /**
      * @dev Map of investors. Key = address, Value = Total ETH at Ico.
      */
-    mapping(address =&gt; uint256) public icoInvestors;
+    mapping(address => uint256) public icoInvestors;
 
     /**
      * @dev Array of addresses of investors at Ico.
@@ -586,7 +586,7 @@ contract Crowdsale is Pausable, Whitelistable {
     /**
      * @dev Map of investors. Key = address, Value = Total tokens at PreIco.
      */
-    mapping(address =&gt; uint256) public preIcoTokenHolders;
+    mapping(address => uint256) public preIcoTokenHolders;
 
     /**
      * @dev Array of addresses of investors.
@@ -596,7 +596,7 @@ contract Crowdsale is Pausable, Whitelistable {
     /**
      * @dev Map of investors. Key = address, Value = Total tokens at PreIco.
      */
-    mapping(address =&gt; uint256) public icoTokenHolders;
+    mapping(address => uint256) public icoTokenHolders;
 
     /**
      * @dev Array of addresses of investors.
@@ -667,9 +667,9 @@ contract Crowdsale is Pausable, Whitelistable {
         bool _testMode
     ) public Whitelistable()
     {
-        require(_angelInvestorsWallet != address(0) &amp;&amp; _foundersWallet != address(0) &amp;&amp; _backendWallet != address(0) &amp;&amp; _withdrawalWallet != address(0));
-        require(_startTimePreIco &gt;= now &amp;&amp; _endTimePreIco &gt; _startTimePreIco);
-        require(_maxInvestments != 0 &amp;&amp; _minInvestments != 0 &amp;&amp; _maxInvestments &gt; _minInvestments);
+        require(_angelInvestorsWallet != address(0) && _foundersWallet != address(0) && _backendWallet != address(0) && _withdrawalWallet != address(0));
+        require(_startTimePreIco >= now && _endTimePreIco > _startTimePreIco);
+        require(_maxInvestments != 0 && _minInvestments != 0 && _maxInvestments > _minInvestments);
 
         ////////////////////////////
         //Live cycle block init
@@ -725,7 +725,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if Ico Failed.
      */
     function isIcoFailed() public view returns (bool) {
-        return isIcoFinish() &amp;&amp; icoSoldTokens.add(preIcoSoldTokens) &lt; minCap;
+        return isIcoFinish() && icoSoldTokens.add(preIcoSoldTokens) < minCap;
     }
 
     /**
@@ -733,7 +733,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if Ico Success.
      */
     function isIcoSuccess() public view returns (bool) {
-        return isIcoFinish() &amp;&amp; icoSoldTokens.add(preIcoSoldTokens) &gt;= minCap;
+        return isIcoFinish() && icoSoldTokens.add(preIcoSoldTokens) >= minCap;
     }
 
     /**
@@ -741,7 +741,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if PreIco Stage now.
      */
     function isPreIcoStage() public view returns (bool) {
-        return now &gt; preIcoStartTime &amp;&amp; now &lt; preIcoFinishTime;
+        return now > preIcoStartTime && now < preIcoFinishTime;
     }
 
     /**
@@ -749,7 +749,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if Ico Stage now.
      */
     function isIcoStage() public view returns (bool) {
-        return icoInstalled &amp;&amp; now &gt; icoStartTime &amp;&amp; now &lt; icoFinishTime;
+        return icoInstalled && now > icoStartTime && now < icoFinishTime;
     }
 
     /**
@@ -757,7 +757,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if PreIco Finished.
      */
     function isPreIcoFinish() public view returns (bool) {
-        return now &gt; preIcoFinishTime;
+        return now > preIcoFinishTime;
     }
 
     /**
@@ -765,7 +765,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if Ico Finished.
      */
     function isIcoFinish() public view returns (bool) {
-        return icoInstalled &amp;&amp; now &gt; icoFinishTime;
+        return icoInstalled && now > icoFinishTime;
     }
 
     /**
@@ -773,7 +773,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @return bool true if guard Interval finished.
      */
     function guardIntervalFinished() public view returns (bool) {
-        return now &gt; icoFinishTime.add(guardInterval);
+        return now > icoFinishTime.add(guardInterval);
     }
 
     /**
@@ -782,7 +782,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @param _endTimeIco The Ico end time.
      */
     function setStartTimeIco(uint256 _startTimeIco, uint256 _endTimeIco) onlyOwner public {
-        require(_startTimeIco &gt;= now &amp;&amp; _endTimeIco &gt; _startTimeIco &amp;&amp; _startTimeIco &gt; preIcoFinishTime);
+        require(_startTimeIco >= now && _endTimeIco > _startTimeIco && _startTimeIco > preIcoFinishTime);
 
         icoStartTime = _startTimeIco;
         icoFinishTime = _endTimeIco;
@@ -814,7 +814,7 @@ contract Crowdsale is Pausable, Whitelistable {
 
     /**
      * @dev Add information about the investment at the PreIco stage.
-     * @param _addr Investor&#39;s address.
+     * @param _addr Investor's address.
      * @param _weis Amount of wei(1 ETH = 1 * 10 ** 18 wei) received.
      * @param _tokens Amount of Token for investor.
      */
@@ -824,7 +824,7 @@ contract Crowdsale is Pausable, Whitelistable {
         }
         preIcoTokenHolders[_addr] = preIcoTokenHolders[_addr].add(_tokens);
         preIcoSoldTokens = preIcoSoldTokens.add(_tokens);
-        if (_weis &gt; 0) {
+        if (_weis > 0) {
             if (preIcoInvestors[_addr] == 0) {
                 preIcoInvestorsAddresses.push(_addr);
             }
@@ -835,7 +835,7 @@ contract Crowdsale is Pausable, Whitelistable {
 
     /**
      * @dev Add information about the investment at the Ico stage.
-     * @param _addr Investor&#39;s address.
+     * @param _addr Investor's address.
      * @param _weis Amount of wei(1 ETH = 1 * 10 ** 18 wei) received.
      * @param _tokens Amount of Token for investor.
      */
@@ -845,7 +845,7 @@ contract Crowdsale is Pausable, Whitelistable {
         }
         icoTokenHolders[_addr] = icoTokenHolders[_addr].add(_tokens);
         icoSoldTokens = icoSoldTokens.add(_tokens);
-        if (_weis &gt; 0) {
+        if (_weis > 0) {
             if (icoInvestors[_addr] == 0) {
                 icoInvestorsAddresses.push(_addr);
             }
@@ -870,23 +870,23 @@ contract Crowdsale is Pausable, Whitelistable {
 
     /**
      * @dev Function processing new investments.
-     * @param _addr Investor&#39;s address.
+     * @param _addr Investor's address.
      * @param _amount The amount of wei(1 ETH = 1 * 10 ** 18 wei) received.
      */
     function acceptInvestments(address _addr, uint256 _amount) private whenWhitelisted(msg.sender) whenNotPaused {
-        require(_addr != address(0) &amp;&amp; _amount &gt;= minInvestments);
+        require(_addr != address(0) && _amount >= minInvestments);
 
         bool preIco = isPreIcoStage();
         bool ico = isIcoStage();
 
         require(preIco || ico);
-        require((preIco &amp;&amp; tokensRemainingPreIco() &gt; 0) || (ico &amp;&amp; tokensRemainingIco() &gt; 0));
+        require((preIco && tokensRemainingPreIco() > 0) || (ico && tokensRemainingIco() > 0));
 
         uint256 intermediateEthInvestment;
         uint256 ethSurrender = 0;
         uint256 currentEth = preIco ? preIcoInvestors[_addr] : icoInvestors[_addr];
 
-        if (currentEth.add(_amount) &gt; maxInvestments) {
+        if (currentEth.add(_amount) > maxInvestments) {
             intermediateEthInvestment = maxInvestments.sub(currentEth);
             ethSurrender = ethSurrender.add(_amount.sub(intermediateEthInvestment));
         } else {
@@ -900,7 +900,7 @@ contract Crowdsale is Pausable, Whitelistable {
         uint256 weiToAccept;
         uint256 tokensToSell;
 
-        if (currentTokens.add(intermediateTokenInvestment) &gt; tokensRemaining) {
+        if (currentTokens.add(intermediateTokenInvestment) > tokensRemaining) {
             tokensToSell = tokensRemaining;
             weiToAccept = tokensToSell.div(currentRate);
             ethSurrender = ethSurrender.add(intermediateEthInvestment.sub(weiToAccept));
@@ -917,7 +917,7 @@ contract Crowdsale is Pausable, Whitelistable {
 
         token.transferFromIco(_addr, tokensToSell);
 
-        if (ethSurrender &gt; 0) {
+        if (ethSurrender > 0) {
             msg.sender.transfer(ethSurrender);
         }
     }
@@ -925,28 +925,28 @@ contract Crowdsale is Pausable, Whitelistable {
     /**
      * @dev Function can be used to buy tokens by third-party investors.
      * @dev Only the owner or the backend can call this function.
-     * @param _addr Investor&#39;s address.
+     * @param _addr Investor's address.
      * @param _value Amount of Token for investor.
      */
     function thirdPartyInvestments(address _addr, uint256 _value) public  whenWhitelisted(_addr) whenNotPaused {
         require(msg.sender == backendWallet || msg.sender == owner);
-        require(_addr != address(0) &amp;&amp; _value &gt; 0);
+        require(_addr != address(0) && _value > 0);
 
         bool preIco = isPreIcoStage();
         bool ico = isIcoStage();
 
         require(preIco || ico);
-        require((preIco &amp;&amp; tokensRemainingPreIco() &gt; 0) || (ico &amp;&amp; tokensRemainingIco() &gt; 0));
+        require((preIco && tokensRemainingPreIco() > 0) || (ico && tokensRemainingIco() > 0));
 
         uint256 currentRate = preIco ? exchangeRatePreIco : exchangeRateIco;
         uint256 currentTokens = preIco ? preIcoTokenHolders[_addr] : icoTokenHolders[_addr];
 
-        require(maxInvestments.mul(currentRate) &gt;= currentTokens.add(_value));
-        require(minInvestments.mul(currentRate) &lt;= _value);
+        require(maxInvestments.mul(currentRate) >= currentTokens.add(_value));
+        require(minInvestments.mul(currentRate) <= _value);
 
         uint256 tokensRemaining = preIco ? tokensRemainingPreIco() : tokensRemainingIco();
 
-        require(tokensRemaining &gt;= _value);
+        require(tokensRemaining >= _value);
 
         if (preIco) {
             addInvestInfoPreIco(_addr, 0, _value);
@@ -962,7 +962,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @param _weiAmount The amount of raised funds to withdraw.
      */
     function forwardFunds(uint256 _weiAmount) public onlyOwner {
-        require(isIcoSuccess() || (isIcoFailed() &amp;&amp; guardIntervalFinished()));
+        require(isIcoSuccess() || (isIcoFailed() && guardIntervalFinished()));
         withdrawalWallet.transfer(_weiAmount);
     }
 
@@ -972,7 +972,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @dev Function returns ETH for sender if it is a member of Ico or(and) PreIco.
      */
     function refund() public {
-        require(isIcoFailed() &amp;&amp; !guardIntervalFinished());
+        require(isIcoFailed() && !guardIntervalFinished());
 
         uint256 ethAmountPreIco = preIcoInvestors[msg.sender];
         uint256 ethAmountIco = icoInvestors[msg.sender];
@@ -982,7 +982,7 @@ contract Crowdsale is Pausable, Whitelistable {
         uint256 tokensAmountIco = icoTokenHolders[msg.sender];
         uint256 tokensAmount = tokensAmountPreIco.add(tokensAmountIco);
 
-        require(ethAmount &gt; 0 &amp;&amp; tokensAmount &gt; 0);
+        require(ethAmount > 0 && tokensAmount > 0);
 
         preIcoInvestors[msg.sender] = 0;
         icoInvestors[msg.sender] = 0;
@@ -1028,7 +1028,7 @@ contract Crowdsale is Pausable, Whitelistable {
      * @param _newMinCap new MinCap,
      */
     function setMinCap(uint256 _newMinCap) public onlyOwner isTestMode {
-        require(now &lt; preIcoFinishTime);
+        require(now < preIcoFinishTime);
         minCap = _newMinCap;
     }
 
@@ -1037,8 +1037,8 @@ contract Crowdsale is Pausable, Whitelistable {
      * @param _newPreIcoHardCap new PreIco HardCap,
      */
     function setPreIcoHardCap(uint256 _newPreIcoHardCap) public onlyOwner isTestMode {
-        require(now &lt; preIcoFinishTime);
-        require(_newPreIcoHardCap &lt;= hardCapIco);
+        require(now < preIcoFinishTime);
+        require(_newPreIcoHardCap <= hardCapIco);
         hardCapPreIco = _newPreIcoHardCap;
     }
 
@@ -1047,8 +1047,8 @@ contract Crowdsale is Pausable, Whitelistable {
      * @param _newIcoHardCap new Ico HardCap,
      */
     function setIcoHardCap(uint256 _newIcoHardCap) public onlyOwner isTestMode {
-        require(now &lt; preIcoFinishTime);
-        require(_newIcoHardCap &gt; hardCapPreIco);
+        require(now < preIcoFinishTime);
+        require(_newIcoHardCap > hardCapPreIco);
         hardCapIco = _newIcoHardCap;
     }
 

@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -59,10 +59,10 @@ contract FishbankBoosters is Ownable {
 
     Booster[] public boosters;
     bool public implementsERC721 = true;
-    string public name = &quot;Fishbank Boosters&quot;;
-    string public symbol = &quot;FISHB&quot;;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
+    string public name = "Fishbank Boosters";
+    string public symbol = "FISHB";
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
     address public fishbank;
     address public chests;
     address public auction;
@@ -136,7 +136,7 @@ contract FishbankBoosters is Ownable {
     }
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 

@@ -13,29 +13,29 @@ library SafeMath {
 	}
 
 	function sub(uint a, uint b) internal returns(uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint a, uint b) internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	function max64(uint64 a, uint64 b) internal constant returns(uint64) {
-		return a &gt;= b ? a : b;
+		return a >= b ? a : b;
 	}
 
 	function min64(uint64 a, uint64 b) internal constant returns(uint64) {
-		return a &lt; b ? a : b;
+		return a < b ? a : b;
 	}
 
 	function max256(uint256 a, uint256 b) internal constant returns(uint256) {
-		return a &gt;= b ? a : b;
+		return a >= b ? a : b;
 	}
 
 	function min256(uint256 a, uint256 b) internal constant returns(uint256) {
-		return a &lt; b ? a : b;
+		return a < b ? a : b;
 	}
 
 	function assert(bool assertion) internal {
@@ -54,10 +54,10 @@ contract ERC20Basic {
 
 contract BasicToken is ERC20Basic {
 	using SafeMath 	for uint;
-	mapping(address =&gt; uint) balances;
+	mapping(address => uint) balances;
 
 	modifier onlyPayloadSize(uint size) {
-		if(msg.data.length &lt; size + 4) {
+		if(msg.data.length < size + 4) {
 			throw;
 		}
 		_;
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
 }
 
 contract StandardToken is BasicToken, ERC20 {
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => mapping(address => uint)) allowed;
 	function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
 		var _allowance = allowed[_from][msg.sender];
 		balances[_to] = balances[_to].add(_value);
@@ -93,7 +93,7 @@ contract StandardToken is BasicToken, ERC20 {
 	}
 
 	function approve(address _spender, uint _value) {
-		if((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+		if((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 		allowed[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
 	}
@@ -105,8 +105,8 @@ contract StandardToken is BasicToken, ERC20 {
 }
 
 contract TXToken is StandardToken {
-	string public constant symbol = &quot;TX&quot;;
-	string public constant name = &quot;Tian Xiao&quot;;
+	string public constant symbol = "TX";
+	string public constant name = "Tian Xiao";
 	uint8 public constant decimals = 18;
 	address public target;
 	

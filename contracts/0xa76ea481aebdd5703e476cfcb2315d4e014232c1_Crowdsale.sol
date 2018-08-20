@@ -11,7 +11,7 @@ contract J8TTokenConfig {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -147,7 +147,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -237,7 +237,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -263,8 +263,8 @@ contract BurnableToken is StandardToken {
 //////////////////////////////////////////////////////////////////////
 
 contract J8TToken is J8TTokenConfig, BurnableToken, Ownable {
-    string public constant name            = &quot;J8T Token&quot;;
-    string public constant symbol          = &quot;J8T&quot;;
+    string public constant name            = "J8T Token";
+    string public constant symbol          = "J8T";
     uint256 public constant decimals       = TOKEN_DECIMALS;
     uint256 public constant INITIAL_SUPPLY = 1500000000 * (10 ** uint256(decimals));
 
@@ -424,10 +424,10 @@ contract Ledger is ACLManaged {
     }
 
     // Map of adresses that purchased tokens on the presale phase
-    mapping(address =&gt; Allocation) public presaleAllocations;
+    mapping(address => Allocation) public presaleAllocations;
 
     // Map of adresses that purchased tokens on the private phase
-    mapping(address =&gt; Allocation) public partnerAllocations;
+    mapping(address => Allocation) public partnerAllocations;
 
     // Reference to the J8TToken contract
     J8TToken public tokenContract;
@@ -503,7 +503,7 @@ contract Ledger is ACLManaged {
         require(_contributor != address(0));
         require(_contributor != address(this));
 
-        // Can&#39;t revoke  an allocation if the contribution phase is not in the ContributionPhase enum
+        // Can't revoke  an allocation if the contribution phase is not in the ContributionPhase enum
         ContributionPhase _contributionPhase = ContributionPhase(_phase);
         require(_contributionPhase == ContributionPhase.PreSaleContribution ||
                 _contributionPhase == ContributionPhase.PartnerContribution);
@@ -521,10 +521,10 @@ contract Ledger is ACLManaged {
 
         // The granted amount allocation must be less that the current token supply on the contract
         uint256 currentSupply = tokenContract.balanceOf(address(this));
-        require(grantedAllocation &lt;= currentSupply);
+        require(grantedAllocation <= currentSupply);
 
         // Updates the total private allocation substracting the amount of tokens that has been revoked
-        require(grantedAllocation &lt;= totalPrivateAllocation);
+        require(grantedAllocation <= totalPrivateAllocation);
         totalPrivateAllocation = totalPrivateAllocation.sub(grantedAllocation);
         
         // We sent back the amount of tokens that has been revoked to the corwdsale contract
@@ -541,10 +541,10 @@ contract Ledger is ACLManaged {
         require(_contributor != address(0));
         require(_contributor != address(this));
 
-        // Can&#39;t create or update an allocation if the amount of tokens to be allocated is not greater than zero
-        require(_amount &gt; 0);
+        // Can't create or update an allocation if the amount of tokens to be allocated is not greater than zero
+        require(_amount > 0);
 
-        // Can&#39;t create an allocation if the contribution phase is not in the ContributionPhase enum
+        // Can't create an allocation if the contribution phase is not in the ContributionPhase enum
         ContributionPhase _contributionPhase = ContributionPhase(_phase);
         require(_contributionPhase == ContributionPhase.PreSaleContribution ||
                 _contributionPhase == ContributionPhase.PartnerContribution);
@@ -594,23 +594,23 @@ contract Ledger is ACLManaged {
         // We need to check if the contributor has made a contribution on each
         // phase, presale and partner
         Allocation storage presaleA = presaleAllocations[msg.sender];
-        if (presaleA.amountGranted &gt; 0 &amp;&amp; canClaimPresaleTokens) {
+        if (presaleA.amountGranted > 0 && canClaimPresaleTokens) {
             amountToTransfer = amountToTransfer.add(presaleA.amountGranted);
             presaleA.amountGranted = 0;
         }
 
         Allocation storage partnerA = partnerAllocations[msg.sender];
-        if (partnerA.amountGranted &gt; 0 &amp;&amp; canClaimPartnerTokens) {
+        if (partnerA.amountGranted > 0 && canClaimPartnerTokens) {
             amountToTransfer = amountToTransfer.add(partnerA.amountGranted);
             partnerA.amountGranted = 0;
         }
 
         // The amount to transfer must greater than zero
-        require(amountToTransfer &gt; 0);
+        require(amountToTransfer > 0);
 
         // The amount to transfer must be less or equal to the current supply
         uint256 currentSupply = tokenContract.balanceOf(address(this));
-        require(amountToTransfer &lt;= currentSupply);
+        require(amountToTransfer <= currentSupply);
         
         // Transfer the token allocation to contributor
         require(tokenContract.transfer(msg.sender, amountToTransfer));
@@ -627,7 +627,7 @@ contract Ledger is ACLManaged {
 
         // BONUS PHASE 1
         Allocation storage presale = presaleAllocations[msg.sender];
-        if (presale.amountBonusGranted &gt; 0 &amp;&amp; !presale.hasClaimedBonusTokens &amp;&amp; canClaimPresaleBonusTokensPhase1) {
+        if (presale.amountBonusGranted > 0 && !presale.hasClaimedBonusTokens && canClaimPresaleBonusTokensPhase1) {
             uint256 amountPresale = presale.amountBonusGranted.div(2);
             amountToTransfer = amountPresale;
             presale.amountBonusGranted = amountPresale;
@@ -635,7 +635,7 @@ contract Ledger is ACLManaged {
         }
 
         Allocation storage partner = partnerAllocations[msg.sender];
-        if (partner.amountBonusGranted &gt; 0 &amp;&amp; !partner.hasClaimedBonusTokens &amp;&amp; canClaimPartnerBonusTokensPhase1) {
+        if (partner.amountBonusGranted > 0 && !partner.hasClaimedBonusTokens && canClaimPartnerBonusTokensPhase1) {
             uint256 amountPartner = partner.amountBonusGranted.div(2);
             amountToTransfer = amountToTransfer.add(amountPartner);
             partner.amountBonusGranted = amountPartner;
@@ -643,22 +643,22 @@ contract Ledger is ACLManaged {
         }
 
         // BONUS PHASE 2
-        if (presale.amountBonusGranted &gt; 0 &amp;&amp; canClaimPresaleBonusTokensPhase2) {
+        if (presale.amountBonusGranted > 0 && canClaimPresaleBonusTokensPhase2) {
             amountToTransfer = amountToTransfer.add(presale.amountBonusGranted);
             presale.amountBonusGranted = 0;
         }
 
-        if (partner.amountBonusGranted &gt; 0 &amp;&amp; canClaimPartnerBonusTokensPhase2) {
+        if (partner.amountBonusGranted > 0 && canClaimPartnerBonusTokensPhase2) {
             amountToTransfer = amountToTransfer.add(partner.amountBonusGranted);
             partner.amountBonusGranted = 0;
         }
 
         // The amount to transfer must greater than zero
-        require(amountToTransfer &gt; 0);
+        require(amountToTransfer > 0);
 
         // The amount to transfer must be less or equal to the current supply
         uint256 currentSupply = tokenContract.balanceOf(address(this));
-        require(amountToTransfer &lt;= currentSupply);
+        require(amountToTransfer <= currentSupply);
         
         // Transfer the token allocation to contributor
         require(tokenContract.transfer(msg.sender, amountToTransfer));
@@ -671,7 +671,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPresaleTokens(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPresaleTokens;
         canClaimPresaleTokens = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPresaleTokens&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPresaleTokens', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -679,7 +679,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPartnerTokens(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPartnerTokens;
         canClaimPartnerTokens = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPartnerTokens&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPartnerTokens', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -687,7 +687,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPresaleBonusTokensPhase1(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPresaleBonusTokensPhase1;
         canClaimPresaleBonusTokensPhase1 = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPresaleBonusTokensPhase1&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPresaleBonusTokensPhase1', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -695,7 +695,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPresaleBonusTokensPhase2(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPresaleBonusTokensPhase2;
         canClaimPresaleBonusTokensPhase2 = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPresaleBonusTokensPhase2&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPresaleBonusTokensPhase2', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -703,7 +703,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPartnerBonusTokensPhase1(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPartnerBonusTokensPhase1;
         canClaimPartnerBonusTokensPhase1 = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPartnerBonusTokensPhase1&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPartnerBonusTokensPhase1', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -711,7 +711,7 @@ contract Ledger is ACLManaged {
     function setCanClaimPartnerBonusTokensPhase2(bool _canClaimTokens) external onlyAdmin returns (bool) {
         bool _oldCanClaim = canClaimPartnerBonusTokensPhase2;
         canClaimPartnerBonusTokensPhase2 = _canClaimTokens;
-        CanClaimTokensUpdated(msg.sender, &#39;canClaimPartnerBonusTokensPhase2&#39;, _oldCanClaim, _canClaimTokens);
+        CanClaimTokensUpdated(msg.sender, 'canClaimPartnerBonusTokensPhase2', _oldCanClaim, _canClaimTokens);
         return true;
     }
 
@@ -772,10 +772,10 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
     //  CannotContribute: Cannot contribute in any phase (uint8  - 0)
     //  PreSaleContributor: Can contribute on both pre-sale and pubic sale phases (uint8  - 1)
     //  PublicSaleContributor: Can contribute on he public sale phase (uint8  - 2)
-    mapping(address =&gt; WhitelistPermission) public whitelist;
+    mapping(address => WhitelistPermission) public whitelist;
 
     // Map of addresses that has already contributed on the token sale
-    mapping(address =&gt; bool) public hasContributed;
+    mapping(address => bool) public hasContributed;
 
     enum WhitelistPermission {
         CannotContribute, PreSaleContributor, PublicSaleContributor 
@@ -843,9 +843,9 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         uint256 _max_contribution = MAX_CONTRIBUTION_WEIS;
         uint256 _tokensPerEther   = INITIAL_TOKENS_PER_ETHER;
 
-        require(_start &gt; currentTime());
-        require(_end &gt; _start);
-        require(_tokensPerEther &gt; 0);
+        require(_start > currentTime());
+        require(_end > _start);
+        require(_tokensPerEther > 0);
         require(address(_tokenContract) != address(0));
         require(address(_ledgerContract) != address(0));
         require(_wallet != address(0));
@@ -867,7 +867,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
     // Updates the tokenPerEther propety with the new _tokensPerEther value
     function setTokensPerEther(uint256 _tokensPerEther) external onlyAdmin onlyBeforeSale returns (bool) {
-        require(_tokensPerEther &gt; 0);
+        require(_tokensPerEther > 0);
 
         uint256 _oldValue = tokensPerEther;
         tokensPerEther = _tokensPerEther;
@@ -878,8 +878,8 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
     // Updates the startTimestamp propety with the new _start value
     function setStartTimestamp(uint256 _start) external onlyAdmin returns (bool) {
-        require(_start &lt; endTimestamp);
-        require(_start &gt; currentTime());
+        require(_start < endTimestamp);
+        require(_start > currentTime());
 
         uint256 _oldValue = startTimestamp;
         startTimestamp = _start;
@@ -891,7 +891,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
     // Updates the endTimestamp propety with the new _end value
     function setEndTimestamp(uint256 _end) external onlyAdmin returns (bool) {
-        require(_end &gt; startTimestamp);
+        require(_end > startTimestamp);
 
         uint256 _oldValue = endTimestamp;
         endTimestamp = _end;
@@ -915,7 +915,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
     // Updates the minContribution propety with the new _newMinControbution value
     function setMinContribution(uint256 _newMinContribution) external onlyAdmin returns (bool) {
-        require(_newMinContribution &lt;= maxContribution);
+        require(_newMinContribution <= maxContribution);
 
         uint256 _oldValue = minContribution;
         minContribution = _newMinContribution;
@@ -927,7 +927,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
     // Updates the maxContribution propety with the new _newMaxContribution value
     function setMaxContribution(uint256 _newMaxContribution) external onlyAdmin returns (bool) {
-        require(_newMaxContribution &gt; minContribution);
+        require(_newMaxContribution > minContribution);
 
         uint256 _oldValue = maxContribution;
         maxContribution = _newMaxContribution;
@@ -953,8 +953,8 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
         uint256 luckys = ledgerContract.revokeAllocation(_contributor, _contributorPhase);
         
-        require(luckys &gt; 0);
-        require(luckys &lt;= totalTokensSold);
+        require(luckys > 0);
+        require(luckys <= totalTokensSold);
         
         totalTokensSold = totalTokensSold.sub(luckys);
         
@@ -964,8 +964,8 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
     // Adds a new presale allocation for the contributor with address _contributor
     // We can only allocate presale before the token sale has been initialized
     function addPresale(address _contributor, uint256 _tokens, uint256 _bonus, uint8 _contributorPhase) external onlyAdminAndOps onlyBeforeSale returns (bool) {
-        require(_tokens &gt; 0);
-        require(_bonus &gt; 0);
+        require(_tokens > 0);
+        require(_bonus > 0);
 
         // Converts the amount of tokens to our smallest J8T value, lucky
         uint256 luckys = _tokens.mul(J8T_DECIMALS_FACTOR);
@@ -974,7 +974,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
 
         uint256 availableTokensToPurchase = tokenContract.balanceOf(address(this));
         
-        require(totalTokens &lt;= availableTokensToPurchase);
+        require(totalTokens <= availableTokensToPurchase);
 
         // Insert the new allocation to the Ledger
         require(ledgerContract.addAllocation(_contributor, luckys, bonusLuckys, _contributorPhase));
@@ -1004,11 +1004,11 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         // The contributor address must be whitelisted in order to be able to purchase tokens
         require(contributorCanContribute(contributor));
         // The weiAmount must be greater or equal than minContribution
-        require(weiAmount &gt;= minContribution);
+        require(weiAmount >= minContribution);
         // The weiAmount cannot be greater than maxContribution
-        require(weiAmount &lt;= maxContribution);
+        require(weiAmount <= maxContribution);
         // The availableTokensToPurchase must be greater than 0
-        require(totalTokensSold &lt; TOKEN_SALE_SUPPLY);
+        require(totalTokensSold < TOKEN_SALE_SUPPLY);
         uint256 availableTokensToPurchase = TOKEN_SALE_SUPPLY.sub(totalTokensSold);
 
         // We need to convert the tokensPerEther to luckys (10**8)
@@ -1025,7 +1025,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         
         // If the token purchase amount is bigger than the remaining token allocation
         // we can only sell the remainging tokens and refund the unused amount of eth
-        if (availableTokensToPurchase &lt; tokensAmount) {
+        if (availableTokensToPurchase < tokensAmount) {
             tokensToPurchase = availableTokensToPurchase;
             weiAmount = tokensToPurchase.mul(ETH_DECIMALS_FACTOR).div(luckyPerEther);
             refund = msg.value.sub(weiAmount);
@@ -1040,7 +1040,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         require(tokenContract.transfer(contributor, tokensToPurchase));
 
         // Issue a refund for any unused ether 
-        if (refund &gt; 0) {
+        if (refund > 0) {
             contributor.transfer(refund);
         }
 
@@ -1078,7 +1078,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         require(_permission == WhitelistPermission.PreSaleContributor || _permission == WhitelistPermission.PublicSaleContributor || _permission == WhitelistPermission.CannotContribute);
         require(!saleHasFinished());
 
-        for(uint i = 0; i &lt; _accounts.length; ++i) {
+        for(uint i = 0; i < _accounts.length; ++i) {
             require(_accounts[i] != address(0));
             whitelist[_accounts[i]] = _permission;
             WhiteListUpdated(msg.sender, _accounts[i], _permission);
@@ -1118,7 +1118,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
             return true;
         }
 
-        if (endTimestamp &lt; currentTime()) {
+        if (endTimestamp < currentTime()) {
             return true;
         }
 
@@ -1130,19 +1130,19 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
     }
 
     modifier onlyBeforeSale() {
-        require(currentTime() &lt; startTimestamp);
+        require(currentTime() < startTimestamp);
         _;
     }
 
     modifier onlyDuringSale() {
         uint256 _currentTime = currentTime();
-        require(startTimestamp &lt; _currentTime);
-        require(_currentTime &lt; endTimestamp);
+        require(startTimestamp < _currentTime);
+        require(_currentTime < endTimestamp);
         _;
     }
 
     modifier onlyPostSale() {
-        require(endTimestamp &lt; currentTime());
+        require(endTimestamp < currentTime());
         _;
     }
 
@@ -1165,7 +1165,7 @@ contract Crowdsale is ACLManaged, CrowdsaleConfig {
         isFinalized = true;
 
         
-        if (totalTokensSold &lt; TOKEN_SALE_SUPPLY) {
+        if (totalTokensSold < TOKEN_SALE_SUPPLY) {
             uint256 toBurn = TOKEN_SALE_SUPPLY.sub(totalTokensSold);
             tokenContract.burn(toBurn);
             Burned(msg.sender, toBurn, currentTime());

@@ -9,15 +9,15 @@
 *                 
 * //*** This Game Pays The Last One To Bid Before The Time Runs Out
 *
-* &quot;Now I am become Death, the destroyer of worlds&quot;
+* "Now I am become Death, the destroyer of worlds"
 *  
 * //*** Developed By:
 *   _____       _         _         _ ___ _         
 *  |_   _|__ __| |_  _ _ (_)__ __ _| | _ (_)___ ___ 
-*    | |/ -_) _| &#39; \| &#39; \| / _/ _` | |   / (_-&lt;/ -_)
+*    | |/ -_) _| ' \| ' \| / _/ _` | |   / (_-</ -_)
 *    |_|\___\__|_||_|_||_|_\__\__,_|_|_|_\_/__/\___|
 *   
-*   &#169; 2018 TechnicalRise.  Written in March 2018.  
+*   © 2018 TechnicalRise.  Written in March 2018.  
 *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
 *   https://www.reddit.com/user/TechnicalRise/
 *  
@@ -47,17 +47,17 @@ contract EthAnte {
 	    TechnicalRise.transfer(_fee);
 	    
 	    // If they sent nothing or almost nothing, 
-	    // merely extend the time but don&#39;t make them
+	    // merely extend the time but don't make them
 	    // eligible to win (Note that there is a trick 
 	    // play available here)
-	    if(_val &lt; 9900 szabo) {
+	    if(_val < 9900 szabo) {
 	        timeOut += 2 minutes;
 	        return;
 	    }
 	    
 	    // If the transaction is after the timer 
 	    // runs out pay the winner
-	    if (timeOut &lt;= now) {
+	    if (timeOut <= now) {
 	        lastBidder.transfer(kBalance - _val);
 	        kBalance = _val;
 	        timeOut = now;

@@ -17,7 +17,7 @@ contract EZTanks{
         address tankOwner;
         uint256 earningsIndex; 
         
-        // buying &amp; selling 
+        // buying & selling 
         bool inAuction;
         uint256 currAuction;
     }
@@ -119,11 +119,11 @@ contract EZTanks{
     uint256 newTankID = 1;
     uint256 newAuctionID = 1;
     
-    mapping (uint256 =&gt; TankType) baseTanks;
-    mapping (uint256 =&gt; TankObject) tanks; //maps tankID to tanks
-    mapping (address =&gt; uint256[]) userTanks;
-    mapping (uint =&gt; AuctionObject) auctions; //maps auctionID to auction
-    mapping (address =&gt; uint) balances; 
+    mapping (uint256 => TankType) baseTanks;
+    mapping (uint256 => TankObject) tanks; //maps tankID to tanks
+    mapping (address => uint256[]) userTanks;
+    mapping (uint => AuctionObject) auctions; //maps auctionID to auction
+    mapping (address => uint) balances; 
 
     // MODIFIERS HERE
     modifier isOwner {
@@ -186,24 +186,24 @@ contract EZTanks{
     
     // fee from auctioning
     function changeFeeAmt (uint8 _amt) public isOwner {
-        require(_amt &gt; 0 &amp;&amp; _amt &lt; 100);
+        require(_amt > 0 && _amt < 100);
         feeAmt = _amt;
     }
 
     // rate to fund tournament
     function changeTournamentTaxAmt (uint8 _rate) public isOwner {
-        require(_rate &gt; 0 &amp;&amp; _rate &lt; 100);
+        require(_rate > 0 && _rate < 100);
         tournamentTaxRate = _rate;
     }
 
     function changeTeamSize(uint8 _size) public isOwner {
-        require(_size &gt; 0);
+        require(_size > 0);
         teamSize = _size;
     }
 
     // cost to enter battle
     function changeBattleFee(uint256 _fee) public isOwner {
-        require(_fee &gt; 0);
+        require(_fee > 0);
         battleFee = _fee;
     }
     
@@ -212,7 +212,7 @@ contract EZTanks{
     function delTankFromUser(address user, uint256 value) internal {
         uint l = userTanks[user].length;
 
-        for(uint i=0; i&lt;l; i++){
+        for(uint i=0; i<l; i++){
             if(userTanks[user][i] == value){
                 delete userTanks[user][i];
                 userTanks[user][i] = userTanks[user][l-1];
@@ -226,9 +226,9 @@ contract EZTanks{
 
     function withdraw (uint256 _amount) public payable {
         // validity checks
-        require (_amount &gt;= 0); 
-        require (this.balance &gt;= _amount); 
-        require (balances[msg.sender] &gt;= _amount); 
+        require (_amount >= 0); 
+        require (this.balance >= _amount); 
+        require (balances[msg.sender] >= _amount); 
         
         // return everything is withdrawing 0
         if (_amount == 0){
@@ -243,14 +243,14 @@ contract EZTanks{
     
     
     function auctionTank (uint _tankID, uint _startPrice, uint _endPrice, uint256 _duration) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require (_tankID > 0 && _tankID < newTankID);
         require (tanks[_tankID].tankOwner == msg.sender);
         require (!tanks[_tankID].inBattle);
         require (!tanks[_tankID].inAuction);
         require (tanks[_tankID].currAuction == 0);
-        require (_startPrice &gt;= _endPrice);
-        require (_startPrice &gt; 0 &amp;&amp; _endPrice &gt;= 0);
-        require (_duration &gt; 0);
+        require (_startPrice >= _endPrice);
+        require (_startPrice > 0 && _endPrice >= 0);
+        require (_duration > 0);
         
         auctions[newAuctionID] = AuctionObject(_tankID, _startPrice, _endPrice, now, _duration, true);
         tanks[_tankID].inAuction = true;
@@ -264,17 +264,17 @@ contract EZTanks{
     // buy tank from auction
     function bid (uint256 _tankID) public payable {
         // validity checks
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID); // check if tank is valid
+        require (_tankID > 0 && _tankID < newTankID); // check if tank is valid
         require (tanks[_tankID].inAuction == true); // check if tank is currently in auction
         
         
         uint256 auctionID = tanks[_tankID].currAuction;
         uint256 currPrice = getCurrAuctionPriceAuctionID(auctionID);
         
-        require (currPrice &gt;= 0); 
-        require (msg.value &gt;= currPrice); 
+        require (currPrice >= 0); 
+        require (msg.value >= currPrice); 
         
-        if(msg.value &gt; currPrice){
+        if(msg.value > currPrice){
             balances[msg.sender] += (msg.value - currPrice);
         }
 
@@ -305,7 +305,7 @@ contract EZTanks{
     }
     
     function cancelAuction (uint256 _tankID) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID); 
+        require (_tankID > 0 && _tankID < newTankID); 
         require (tanks[_tankID].inAuction); 
         require (tanks[_tankID].tankOwner == msg.sender); 
         
@@ -318,11 +318,11 @@ contract EZTanks{
     }
 
     function buyTank (uint32 _typeID) public payable {
-        require(_typeID &gt; 0 &amp;&amp; _typeID &lt; newTypeID);
-        require (baseTanks[_typeID].currPrice &gt; 0 &amp;&amp; msg.value &gt; 0); 
-        require (msg.value &gt;= baseTanks[_typeID].currPrice); 
+        require(_typeID > 0 && _typeID < newTypeID);
+        require (baseTanks[_typeID].currPrice > 0 && msg.value > 0); 
+        require (msg.value >= baseTanks[_typeID].currPrice); 
         
-        if (msg.value &gt; baseTanks[_typeID].currPrice){
+        if (msg.value > baseTanks[_typeID].currPrice){
             balances[msg.sender] += msg.value - baseTanks[_typeID].currPrice;
         }
         
@@ -357,9 +357,9 @@ contract EZTanks{
     //cashing out the money that a tank has earned
     function cashOutTank (uint256 _tankID) public {
         // validity checks
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID); 
+        require (_tankID > 0 && _tankID < newTankID); 
         require (tanks[_tankID].tankOwner == msg.sender);
-        require (!tanks[_tankID].inAuction &amp;&amp; tanks[_tankID].currAuction == 0);
+        require (!tanks[_tankID].inAuction && tanks[_tankID].currAuction == 0);
         require (!tanks[_tankID].inBattle);
 
         
@@ -368,8 +368,8 @@ contract EZTanks{
 
         uint256 amount = getCashOutAmount(_tankID);
 
-        require (this.balance &gt;= amount); 
-        require (amount &gt; 0);
+        require (this.balance >= amount); 
+        require (amount > 0);
         
         require(tanks[_tankID].tankOwner.send(amount));
         tanks[_tankID].earningsIndex = numTanks;
@@ -377,24 +377,24 @@ contract EZTanks{
         EventCashOutTank (msg.sender, amount);
     }
     
-    // 0 -&gt; health, 1 -&gt; attack, 2 -&gt; armor, 3 -&gt; speed
+    // 0 -> health, 1 -> attack, 2 -> armor, 3 -> speed
     function upgradeTank (uint256 _tankID, uint8 _upgradeChoice) public payable {
         // validity checks
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID); 
+        require (_tankID > 0 && _tankID < newTankID); 
         require (tanks[_tankID].tankOwner == msg.sender); 
         require (!tanks[_tankID].inAuction);
         require (!tanks[_tankID].inBattle);
-        require (_upgradeChoice &gt;= 0 &amp;&amp; _upgradeChoice &lt; 4); 
+        require (_upgradeChoice >= 0 && _upgradeChoice < 4); 
         
         // no overflow!
-        require(tanks[_tankID].upgrades[_upgradeChoice] + 1 &gt; tanks[_tankID].upgrades[_upgradeChoice]);
+        require(tanks[_tankID].upgrades[_upgradeChoice] + 1 > tanks[_tankID].upgrades[_upgradeChoice]);
 
         uint256 upgradePrice = baseTanks[tanks[_tankID].typeID].startPrice / 4;
-        require (msg.value &gt;= upgradePrice); 
+        require (msg.value >= upgradePrice); 
 
         tanks[_tankID].upgrades[_upgradeChoice]++; 
 
-        if(msg.value &gt; upgradePrice){
+        if(msg.value > upgradePrice){
             balances[msg.sender] += msg.value-upgradePrice; 
         }
 
@@ -407,13 +407,13 @@ contract EZTanks{
     }
 
     function battle(uint256 _tankID) public payable {
-        require(_tankID &gt;0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID >0 && _tankID < newTankID);
         require(tanks[_tankID].tankOwner == msg.sender);
         require(!tanks[_tankID].inAuction);
         require(!tanks[_tankID].inBattle);
-        require(msg.value &gt;= battleFee);
+        require(msg.value >= battleFee);
 
-        if(msg.value &gt; battleFee){
+        if(msg.value > battleFee){
             balances[msg.sender] += (msg.value - battleFee);
         }
 
@@ -431,7 +431,7 @@ contract EZTanks{
         }
 
         // add to teams
-        if(battleTeams.length &lt; 2*teamSize - 1){
+        if(battleTeams.length < 2*teamSize - 1){
             battleTeams.push(_tankID);
             tanks[_tankID].inBattle = true;
 
@@ -443,7 +443,7 @@ contract EZTanks{
             uint256[4] memory teamB;
             uint256[4] memory temp;
 
-            for(uint i=0; i&lt;teamSize; i++){
+            for(uint i=0; i<teamSize; i++){
                 temp = getCurrentStats(battleTeams[i]);
                 teamA[0] += temp[0];
                 teamA[1] += temp[1];
@@ -461,8 +461,8 @@ contract EZTanks{
             uint256 diffA = teamA[1] - teamB[2];
             uint256 diffB = teamB[1] - teamA[2];
             
-            diffA = diffA &gt; 0 ? diffA : 1;
-            diffB = diffB &gt; 0 ? diffB : 1;
+            diffA = diffA > 0 ? diffA : 1;
+            diffB = diffB > 0 ? diffB : 1;
 
             uint256 teamAScore = teamB[0] / (diffA * teamA[3]);
             uint256 teamBScore = teamA[0] / (diffB * teamB[3]);
@@ -478,18 +478,18 @@ contract EZTanks{
             uint256 toDistribute = tournamentAmt / teamSize;
             tournamentAmt -= teamSize*toDistribute;
 
-            if(teamAScore &lt;= teamBScore){
-                for(i=0; i&lt;teamSize; i++){
+            if(teamAScore <= teamBScore){
+                for(i=0; i<teamSize; i++){
                     balances[tanks[battleTeams[i]].tankOwner] += toDistribute;   
                 }
             } else {
-                for(i=0; i&lt;teamSize; i++){
+                for(i=0; i<teamSize; i++){
                     balances[tanks[battleTeams[teamSize+i]].tankOwner] += toDistribute;   
                 }
                    
             }
 
-            for(i=0; i&lt;2*teamSize; i++){
+            for(i=0; i<2*teamSize; i++){
                 tanks[battleTeams[i]].inBattle = false;
                 tanks[battleTeams[i]].exp++;
             }
@@ -501,13 +501,13 @@ contract EZTanks{
     }
 
     function quitBattle(uint256 _tankID) public {
-        require(_tankID &gt;0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID >0 && _tankID < newTankID);
         require(tanks[_tankID].tankOwner == msg.sender);
         require(tanks[_tankID].inBattle);
         
         uint l = battleTeams.length;
 
-        for(uint i=0; i&lt;l; i++){
+        for(uint i=0; i<l; i++){
             if(battleTeams[i] == _tankID){
                 EventQuitBattle(msg.sender, _tankID);
 
@@ -539,7 +539,7 @@ contract EZTanks{
     }
 
     function getTankOwner(uint256 _tankID) public constant returns (address) {
-        require(_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID > 0 && _tankID < newTankID);
         return tanks[_tankID].tankOwner;
     }
 
@@ -548,17 +548,17 @@ contract EZTanks{
     }
 
     function getTankType(uint256 _tankID) public constant returns (uint256) {
-        require(_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID > 0 && _tankID < newTankID);
         return tanks[_tankID].typeID;
     }
 
     function getCurrTypePrice(uint256 _typeID) public constant returns (uint256) {
-        require(_typeID &gt; 0 &amp;&amp; _typeID &lt; newTypeID);
+        require(_typeID > 0 && _typeID < newTypeID);
         return baseTanks[_typeID].currPrice;
     }
 
     function getNumTanksType(uint256 _typeID) public constant returns (uint256) {
-        require(_typeID &gt; 0 &amp;&amp; _typeID &lt; newTypeID);
+        require(_typeID > 0 && _typeID < newTypeID);
         return baseTanks[_typeID].numTanks;
     }
     
@@ -567,12 +567,12 @@ contract EZTanks{
     }
 
     function checkTankAuction(uint256 _tankID) public constant returns (bool) {
-        require(0 &lt; _tankID &amp;&amp; _tankID &lt; newTankID);
+        require(0 < _tankID && _tankID < newTankID);
         return tanks[_tankID].inAuction;
     }
 
     function getCurrAuctionPriceAuctionID(uint256 _auctionID) public constant returns (uint256){
-        require(_auctionID &gt; 0 &amp;&amp; _auctionID &lt; newAuctionID);
+        require(_auctionID > 0 && _auctionID < newAuctionID);
 
         AuctionObject memory currAuction = auctions[_auctionID];
 
@@ -581,7 +581,7 @@ contract EZTanks{
         uint256 diff = ((currAuction.startPrice-currAuction.endPrice) / (currAuction.duration)) * (now-currAuction.startTime);
 
 
-        if (currPrice-diff &lt; currAuction.endPrice || diff &gt; currPrice){ 
+        if (currPrice-diff < currAuction.endPrice || diff > currPrice){ 
             currPrice = currAuction.endPrice;  
         } else {
             currPrice -= diff;
@@ -592,7 +592,7 @@ contract EZTanks{
 
     // returns [tankID, currPrice, alive]
     function getAuction(uint256 _auctionID) public constant returns (uint256[3]){
-        require(_auctionID &gt; 0 &amp;&amp; _auctionID &lt; newAuctionID);
+        require(_auctionID > 0 && _auctionID < newAuctionID);
 
         uint256 tankID = auctions[_auctionID].tank;
         uint256 currPrice = getCurrAuctionPriceAuctionID(_auctionID);
@@ -607,20 +607,20 @@ contract EZTanks{
     }
  
     function getUpgradePrice(uint256 _tankID) public constant returns (uint256) {
-        require(_tankID &gt;0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID >0 && _tankID < newTankID);
         return baseTanks[tanks[_tankID].typeID].startPrice / 4;
     }
 
     // [health, attack, armor, speed]
     function getUpgradeAmt(uint256 _tankID) public constant returns (uint8[4]) {
-        require(_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID > 0 && _tankID < newTankID);
 
         return tanks[_tankID].upgrades;
     }
 
     // [health, attack, armor, speed]
     function getCurrentStats(uint256 _tankID) public constant returns (uint256[4]) {
-        require(_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID > 0 && _tankID < newTankID);
 
         TankType memory baseType = baseTanks[tanks[_tankID].typeID];
         uint8[4] memory upgrades = tanks[_tankID].upgrades;
@@ -635,7 +635,7 @@ contract EZTanks{
     }
 
     function inBattle(uint256 _tankID) public constant returns (bool) {
-        require(_tankID &gt; 0 &amp;&amp; _tankID &lt; newTankID);
+        require(_tankID > 0 && _tankID < newTankID);
         return tanks[_tankID].inBattle;
     }
 
@@ -648,7 +648,7 @@ contract EZTanks{
     }
 
     function donate() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         tournamentAmt += msg.value;
     }
 
@@ -670,7 +670,7 @@ contract EZTanks{
     
     // [startPrice, currPrice, earnings, baseHealth, baseAttack, baseArmor, baseSpeed, numTanks] 
     function getBaseTypeStats(uint256 _typeID) public constant returns (uint256[8]){
-        require(0 &lt; _typeID &amp;&amp; _typeID &lt; newTypeID);
+        require(0 < _typeID && _typeID < newTypeID);
         uint256[8] memory out;
 
         out[0] = baseTanks[_typeID].startPrice;
@@ -686,7 +686,7 @@ contract EZTanks{
     }
 
     function getCashOutAmount(uint256 _tankID) public constant returns (uint256) {
-        require(0 &lt; _tankID &amp;&amp; _tankID &lt; newTankID);
+        require(0 < _tankID && _tankID < newTankID);
 
         uint256 tankType = tanks[_tankID].typeID;
         uint256 earnings = baseTanks[tankType].earnings;
@@ -698,7 +698,7 @@ contract EZTanks{
 
     // returns [exp, next]
     function getExp(uint256 _tankID) public constant returns (uint8[2]){
-        require(0&lt;_tankID &amp;&amp; _tankID &lt; newTankID);
+        require(0<_tankID && _tankID < newTankID);
 
         uint8[2] memory out;
         out[0] = tanks[_tankID].exp;

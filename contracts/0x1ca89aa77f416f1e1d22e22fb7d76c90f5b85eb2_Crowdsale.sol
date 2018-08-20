@@ -12,20 +12,20 @@ pragma solidity ^0.4.11;
       }
 
       function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
       }
 
       function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
       }
 
       function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     }
@@ -60,7 +60,7 @@ pragma solidity ^0.4.11;
     contract BasicToken is ERC20Basic {
       using SafeMath for uint256;
 
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
 
       /**
       * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ pragma solidity ^0.4.11;
      */
     contract StandardToken is ERC20, BasicToken {
 
-      mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping (address => mapping (address => uint256)) allowed;
 
 
       /**
@@ -112,7 +112,7 @@ pragma solidity ^0.4.11;
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -165,7 +165,7 @@ pragma solidity ^0.4.11;
       function decreaseApproval (address _spender, uint _subtractedValue) 
         returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -179,7 +179,7 @@ pragma solidity ^0.4.11;
     /**
      * @title Ownable
      * @dev The Ownable contract has an owner address, and provides basic authorization control
-     * functions, this simplifies the implementation of &quot;user permissions&quot;.
+     * functions, this simplifies the implementation of "user permissions".
      */
     contract Ownable {
       address public owner;
@@ -221,7 +221,7 @@ pragma solidity ^0.4.11;
 
 contract RewardToken is StandardToken, Ownable {
     bool public payments = false;
-    mapping(address =&gt; uint256) public rewards;
+    mapping(address => uint256) public rewards;
     uint public payment_time = 0;
     uint public payment_amount = 0;
 
@@ -229,7 +229,7 @@ contract RewardToken is StandardToken, Ownable {
 
     function payment() payable onlyOwner {
         require(payments);
-        require(msg.value &gt;= 0.01 * 1 ether);
+        require(msg.value >= 0.01 * 1 ether);
 
         payment_time = now;
         payment_amount = this.balance;
@@ -237,9 +237,9 @@ contract RewardToken is StandardToken, Ownable {
 
     function _reward(address _to) private returns (bool) {
         require(payments);
-        require(rewards[_to] &lt; payment_time);
+        require(rewards[_to] < payment_time);
 
-        if(balances[_to] &gt; 0) {
+        if(balances[_to] > 0) {
 			uint amount = payment_amount.mul(balances[_to]).div( totalSupply);
 
 			require(_to.send(amount));
@@ -258,8 +258,8 @@ contract RewardToken is StandardToken, Ownable {
 
     function transfer(address _to, uint256 _value) returns (bool) {
 		if(payments) {
-			if(rewards[msg.sender] &lt; payment_time) require(_reward(msg.sender));
-			if(rewards[_to] &lt; payment_time) require(_reward(_to));
+			if(rewards[msg.sender] < payment_time) require(_reward(msg.sender));
+			if(rewards[_to] < payment_time) require(_reward(_to));
 		}
 
         return super.transfer(_to, _value);
@@ -267,8 +267,8 @@ contract RewardToken is StandardToken, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 		if(payments) {
-			if(rewards[_from] &lt; payment_time) require(_reward(_from));
-			if(rewards[_to] &lt; payment_time) require(_reward(_to));
+			if(rewards[_from] < payment_time) require(_reward(_from));
+			if(rewards[_to] < payment_time) require(_reward(_to));
 		}
 
         return super.transferFrom(_from, _to, _value);
@@ -278,8 +278,8 @@ contract RewardToken is StandardToken, Ownable {
 contract CottageToken is RewardToken {
     using SafeMath for uint;
 
-    string public name = &quot;Cottage Token&quot;;
-    string public symbol = &quot;CTG&quot;;
+    string public name = "Cottage Token";
+    string public symbol = "CTG";
     uint256 public decimals = 18;
 
     bool public mintingFinished = false;
@@ -315,8 +315,8 @@ contract CottageToken is RewardToken {
     }
 
     function commandMintBonus(address _to) onlyOwner {
-        require(mintingFinished &amp;&amp; !commandGetBonus);
-        require(now &gt; commandGetBonusTime);
+        require(mintingFinished && !commandGetBonus);
+        require(now > commandGetBonusTime);
 
         commandGetBonus = true;
 
@@ -338,7 +338,7 @@ contract Crowdsale is Ownable {
     
     uint public startPreICO = 1511762400; // Mon, 27 Nov 2017 06:00:00 GMT
     uint public endPreICO = 1514354400; // Wed, 27 Dec 2017 06:00:00 GMT
-    uint public bonusPreICO = 200  ether; // If &gt; 200 ETH - bonus 20%, if &lt; 200 ETH - bonus 12% 
+    uint public bonusPreICO = 200  ether; // If > 200 ETH - bonus 20%, if < 200 ETH - bonus 12% 
      
     uint public startICO = 1517464800; // Thu, 01 Feb 2018 06:00:00 GMT
     uint public endICOp1 = 1518069600; //  Thu, 08 Feb 2018 06:00:00 GMT
@@ -362,35 +362,35 @@ contract Crowdsale is Ownable {
 
     function doPurchase() payable {
         
-        require((now &gt;= startPreICO &amp;&amp; now &lt; endPreICO) || (now &gt;= startICO &amp;&amp; now &lt; endICO));
-        require(collectedFunds &lt; hardCap);
-        require(msg.value &gt; 0);
+        require((now >= startPreICO && now < endPreICO) || (now >= startICO && now < endICO));
+        require(collectedFunds < hardCap);
+        require(msg.value > 0);
         require(!crowdsaleFinished);
         
         uint rest = 0;
         uint tokensAmount = 0;
         uint sum = msg.value;
         
-        if(sum &gt; hardCap.sub(collectedFunds) ) {
+        if(sum > hardCap.sub(collectedFunds) ) {
            sum =  hardCap.sub(collectedFunds);
            rest =  msg.value - sum; 
         }
         
-        if(now &gt;= startPreICO &amp;&amp; now &lt; endPreICO){
-            if(msg.value &gt;= bonusPreICO){
+        if(now >= startPreICO && now < endPreICO){
+            if(msg.value >= bonusPreICO){
                 tokensAmount = sum.mul(tokenETHAmount).mul(120).div(100); // Bonus 20% 
             } else {
                 tokensAmount = sum.mul(tokenETHAmount).mul(112).div(100); // Bonus 12%
             }
         }
         
-        if(now &gt;= startICO &amp;&amp; now &lt; endICOp1){
+        if(now >= startICO && now < endICOp1){
              tokensAmount = sum.mul(tokenETHAmount).mul(110).div(100);  // Bonus 10%
-        } else if (now &gt;= endICOp1 &amp;&amp; now &lt; endICOp2) {
+        } else if (now >= endICOp1 && now < endICOp2) {
             tokensAmount = sum.mul(tokenETHAmount).mul(108).div(100);   // Bonus 8%
-        } else if (now &gt;= endICOp2 &amp;&amp; now &lt; endICOp3) {
+        } else if (now >= endICOp2 && now < endICOp3) {
             tokensAmount = sum.mul(tokenETHAmount).mul(105).div(100);  // Bonus 5%
-        } else if (now &gt;= endICOp3 &amp;&amp; now &lt; endICO) {
+        } else if (now >= endICOp3 && now < endICO) {
             tokensAmount = sum.mul(tokenETHAmount);
         }
 

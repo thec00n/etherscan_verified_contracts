@@ -1,7 +1,7 @@
 contract Owned {
 
     address public owner;
-    mapping (address =&gt; bool) public isAdmin;
+    mapping (address => bool) public isAdmin;
 
     function Owned() {
         owner = msg.sender;
@@ -40,7 +40,7 @@ contract Owned {
 contract SoupToken is Owned {
 
 
-    string public standard = &#39;SoupToken 30/06&#39;;
+    string public standard = 'SoupToken 30/06';
 
     string public name;
 
@@ -50,9 +50,9 @@ contract SoupToken is Owned {
 
     uint public minBalanceForAccounts = 5 finney;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (uint =&gt; address[]) public ordersFor;
+    mapping (uint => address[]) public ordersFor;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -78,15 +78,15 @@ contract SoupToken is Owned {
         totalSupply += mintedAmount;
         Transfer(0, owner, mintedAmount);
         Transfer(owner, target, mintedAmount);
-        if (target.balance &lt; minBalanceForAccounts) target.transfer(minBalanceForAccounts - target.balance);
+        if (target.balance < minBalanceForAccounts) target.transfer(minBalanceForAccounts - target.balance);
     }
 
     function transfer(address _to, uint256 _value){
         if (_to == 0x0) throw;
         // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw;
+        if (balanceOf[msg.sender] < _value) throw;
         // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         // Check for overflows
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -99,9 +99,9 @@ contract SoupToken is Owned {
     function transferFrom(address _from, address _to, uint256 _value) onlyAdmin returns (bool success){
         if (_to == 0x0) throw;
         // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw;
+        if (balanceOf[_from] < _value) throw;
         // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         // Check for overflows
         balanceOf[_from] -= _value;
         // Subtract from the sender
@@ -112,7 +112,7 @@ contract SoupToken is Owned {
     }
 
     function burnFrom(address _from, uint256 _value) onlyAdmin returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;
+        if (balanceOf[_from] < _value) throw;
         // Check if the sender has enough
         balanceOf[_from] -= _value;
         // Subtract from the sender
@@ -124,7 +124,7 @@ contract SoupToken is Owned {
 
     function checkIfAlreadyOrderedForDay(uint day, address user) internal constant returns (bool){
         var orders = ordersFor[day];
-        for (uint i = 0; i &lt; orders.length; i++) {
+        for (uint i = 0; i < orders.length; i++) {
             if (orders[i] == user) {
                 return true;
             }
@@ -134,7 +134,7 @@ contract SoupToken is Owned {
 
     function findOrderIndexForAddress(uint day, address user) internal constant returns (uint){
         var orders = ordersFor[day];
-        for (uint i = 0; i &lt; orders.length; i++) {
+        for (uint i = 0; i < orders.length; i++) {
             if (orders[i] == user) {
                 return i;
             }
@@ -147,7 +147,7 @@ contract SoupToken is Owned {
     function orderForDays(bool[] weekdays) returns (bool success) {
 
         uint totalOrders = 0;
-        for (uint i = 0; i &lt; weekdays.length; i++) {
+        for (uint i = 0; i < weekdays.length; i++) {
             var isOrdering = weekdays[i];
             //check if the user already ordered for that day
             if (checkIfAlreadyOrderedForDay(i, msg.sender)) {
@@ -167,7 +167,7 @@ contract SoupToken is Owned {
                 //do nothing otherwise
             }
             // rollback transaction if totalOrders exceeds balance
-            if (balanceOf[msg.sender] &lt; totalOrders) {
+            if (balanceOf[msg.sender] < totalOrders) {
                 throw;
             }
         }
@@ -176,7 +176,7 @@ contract SoupToken is Owned {
 
     function burnSoupTokensForDay(uint day) onlyAdmin returns (bool success) {
 
-        for (uint i = 0; i &lt; ordersFor[day].length; i++) {
+        for (uint i = 0; i < ordersFor[day].length; i++) {
             if (ordersFor[day][i] == 0x0) {
                 continue;
             }

@@ -31,18 +31,18 @@ contract ERC20 {
 contract Studio is ERC20 {
 
 
-    string public standard = &#39;STUDIO 1.0&#39;;
+    string public standard = 'STUDIO 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
     
     address public owner;
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
     uint accountCount;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed spender, uint value);
     event Message ( address a, uint256 amount );
@@ -55,8 +55,8 @@ contract Studio is ERC20 {
         appendTokenHolders( msg.sender );
         balanceOf[msg.sender] =  supply;
         totalSupply = supply; // 
-        name = &quot;STUDIO&quot;; // Set the name for display purposes
-        symbol = &quot;STDO&quot;; // Set the symbol for display purposes
+        name = "STUDIO"; // Set the name for display purposes
+        symbol = "STDO"; // Set the symbol for display purposes
         decimals = 0; // Amount of decimals for display purposes
         owner = msg.sender;
         
@@ -98,8 +98,8 @@ contract Studio is ERC20 {
     
     function transfer(address _to, uint256 _value) returns(bool ok) {
         if (_to == 0x0) throw; 
-        if (balanceOf[msg.sender] &lt; _value) throw; 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw; 
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         appendTokenHolders(_to);
         balanceOf[msg.sender] -= _value; 
@@ -133,9 +133,9 @@ contract Studio is ERC20 {
  
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         if (_to == 0x0) throw;  
-        if (balanceOf[_from] &lt; _value) throw;  
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw;  
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw; 
         appendTokenHolders(_to);
         balanceOf[_from] -= _value; 
         balanceOf[_to] += _value; 
@@ -145,7 +145,7 @@ contract Studio is ERC20 {
     }
   
     function burn(uint256 _value) returns(bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw; 
+        if (balanceOf[msg.sender] < _value) throw; 
         balanceOf[msg.sender] -= _value; 
         totalSupply -= _value; 
         Burn(msg.sender, _value);
@@ -154,8 +154,8 @@ contract Studio is ERC20 {
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
     
-        if (balanceOf[_from] &lt; _value) throw; 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
         balanceOf[_from] -= _value; 
         totalSupply -= _value; 
         Burn(_from, _value);

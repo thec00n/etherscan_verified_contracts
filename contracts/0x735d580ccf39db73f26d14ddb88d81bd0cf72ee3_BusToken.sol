@@ -19,20 +19,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -158,8 +158,8 @@ contract ERC20 {
     using SafeMath for uint256;
 
     // private
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 _totalSupply;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -182,7 +182,7 @@ contract ERC20 {
     // @param _value The amount to be transferred.
     function transfer(address _to, uint256 _value) returns (bool) {
         require(_to != 0x0 );
-        require(_value &gt; 0 );
+        require(_value > 0 );
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -198,7 +198,7 @@ contract ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         require(_from != 0x0 );
         require(_to != 0x0 );
-        require(_value &gt; 0 );
+        require(_value > 0 );
 
         var _allowance = allowed[_from][msg.sender];
 
@@ -251,7 +251,7 @@ contract StandardToken is ERC20 {
  *
  */
 contract FreezableToken is StandardToken, Ownable {
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) public frozenAccounts;
     event FrozenFunds(address target, bool frozen);
 
     // @dev freeze account or unfreezen.
@@ -290,10 +290,10 @@ contract BusToken is Claimable, Contactable, HasNoEther, FreezableToken {
 
         _totalSupply = _supply;
         balances[msg.sender] = _supply;
-        name = &quot;Bitconch Coin&quot;;
-        symbol = &quot;BUS&quot;;
+        name = "Bitconch Coin";
+        symbol = "BUS";
         decimals = _decimals;
-        contactInformation = &quot;Bitconch Contact Email:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a03040c052a08031e0905040902440305">[email&#160;protected]</a>&quot;;
+        contactInformation = "Bitconch Contact Email:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a03040c052a08031e0905040902440305">[email protected]</a>";
     }
 }
 
@@ -318,9 +318,9 @@ contract BusTokenLock is Ownable, HasNoEther {
         bool claimed;
     }
 
-    mapping(address =&gt; balance[]) public balances;
+    mapping(address => balance[]) public balances;
     // @dev How many tokens investors have claimed
-    mapping(address =&gt; uint256) public claimed;
+    mapping(address => uint256) public claimed;
 
     // @dev token
     FreezableToken public token;
@@ -349,7 +349,7 @@ contract BusTokenLock is Ownable, HasNoEther {
     // @dev Add investor
     function addInvestor(address investor, uint256 _amount, uint256 hour) public onlyOwner {
         require(investor != 0x0);
-        require(_amount &gt; 0); // No empty buys
+        require(_amount > 0); // No empty buys
 
         uint256 amount = _amount *(10**token.decimals());
         if(balances[investor].length == 0) {
@@ -360,12 +360,12 @@ contract BusTokenLock is Ownable, HasNoEther {
         tokensAllocatedTotal += amount;
         tokensAtLeastHold += amount;
         // Do not lock if the given tokens are not on this contract
-        require(token.balanceOf(address(this)) &gt;= tokensAtLeastHold);
+        require(token.balanceOf(address(this)) >= tokensAtLeastHold);
 
         Invested(investor, amount, hour);
     }
 
-    // @dev can only withdraw rest of investor&#39;s tokens
+    // @dev can only withdraw rest of investor's tokens
     function withdrawLeftTokens() onlyOwner {
         token.transfer(owner, token.balanceOf(address(this))-tokensAtLeastHold);
     }
@@ -382,15 +382,15 @@ contract BusTokenLock is Ownable, HasNoEther {
     }
 
     function withdraw(address investor) internal {
-        require(balances[investor].length &gt; 0);
+        require(balances[investor].length > 0);
 
         uint256 nowTS = now;
         uint256 withdrawTotal;
-        for (uint i = 0; i &lt; balances[investor].length; i++){
+        for (uint i = 0; i < balances[investor].length; i++){
             if(balances[investor][i].claimed){
                 continue;
             }
-            if(nowTS&lt;balances[investor][i].freezeEndAt){
+            if(nowTS<balances[investor][i].freezeEndAt){
                 continue;
             }
 
@@ -402,7 +402,7 @@ contract BusTokenLock is Ownable, HasNoEther {
         totalClaimed += withdrawTotal;
         token.transfer(investor, withdrawTotal);
         tokensAtLeastHold -= withdrawTotal;
-        require(token.balanceOf(address(this)) &gt;= tokensAtLeastHold);
+        require(token.balanceOf(address(this)) >= tokensAtLeastHold);
 
         Distributed(investor, withdrawTotal);
     }

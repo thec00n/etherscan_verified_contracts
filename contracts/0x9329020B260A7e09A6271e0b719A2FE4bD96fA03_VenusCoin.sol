@@ -6,31 +6,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -97,13 +97,13 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   /*
    * Fix for the ERC20 short address attack  
   */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -118,11 +118,11 @@ contract BasicToken is ERC20Basic {
   }
 }
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -133,7 +133,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -145,8 +145,8 @@ contract StandardToken is BasicToken, ERC20 {
  *  VenusCoin token contract. Implements
  */
 contract VenusCoin is StandardToken, Ownable {
-  string public constant name = &quot;VenusCoin&quot;;
-  string public constant symbol = &quot;Venus&quot;;
+  string public constant name = "VenusCoin";
+  string public constant symbol = "Venus";
   uint public constant decimals = 0;
   // Constructor
   function VenusCoin() {
@@ -192,8 +192,8 @@ contract Tokensale is Pausable {
     uint public coinSentToEther;
     /* Tokensale start time */
     uint public startTime;
-    /*  Beneficiar&#39;s Ether indexed by Ethereum address */
-    mapping(address =&gt; Beneficiar) public beneficiars;
+    /*  Beneficiar's Ether indexed by Ethereum address */
+    mapping(address => Beneficiar) public beneficiars;
   
     /*
      * Event
@@ -214,15 +214,15 @@ contract Tokensale is Pausable {
         receiveETH(msg.sender);
     }
     /* 
-     * To call to start the Token&#39;s sale
+     * To call to start the Token's sale
      */
     function start() onlyOwner {
-        if (startTime != 0) throw; // Token&#39;s sale was already started
+        if (startTime != 0) throw; // Token's sale was already started
         startTime = now ;              
     }
     
     function receiveETH(address beneficiary) internal {
-        if (msg.value &lt; MIN_ACCEPT_ETHER) throw; // Don&#39;t accept funding under a predefined threshold
+        if (msg.value < MIN_ACCEPT_ETHER) throw; // Don't accept funding under a predefined threshold
         
         uint coinToSend = bonus(msg.value.mul(COIN_PER_ETHER).div(1 ether)); // Compute the number of VenusCoin to send 
         Beneficiar beneficiar = beneficiars[beneficiary];
@@ -240,7 +240,7 @@ contract Tokensale is Pausable {
      *Compute the VenusCoin bonus according to the bonus period
      */
     function bonus(uint amount) internal constant returns (uint) {
-        if (now &lt; startTime.add(2 days)) return amount.add(amount.div(10));   // bonus 10%
+        if (now < startTime.add(2 days)) return amount.add(amount.div(10));   // bonus 10%
         return amount;
     }
     

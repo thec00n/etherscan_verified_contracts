@@ -16,7 +16,7 @@ contract TimeLock {
             throw;
         }
         
-        if (block.timestamp-depositTime&lt;20*60){
+        if (block.timestamp-depositTime<20*60){
             throw;
         }
         

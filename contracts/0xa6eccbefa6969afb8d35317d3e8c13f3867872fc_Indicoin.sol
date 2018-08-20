@@ -11,12 +11,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -46,7 +46,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -57,7 +57,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -82,16 +82,16 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract Indicoin is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Indicoin&quot;;
-    string public constant symbol = &quot;INDI&quot;;
+    string public constant name = "Indicoin";
+    string public constant symbol = "INDI";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address for ETH for Indicoin Developers
@@ -139,15 +139,15 @@ contract Indicoin is StandardToken, SafeMath {
     /// @dev Accepts ether and creates new INDI tokens.
     function createTokens() payable external {
       if (isFinalized) revert();
-      if (now &lt; fundingStartTime) revert();
-      if (now &gt; fundingEndTime) revert();
+      if (now < fundingStartTime) revert();
+      if (now > fundingEndTime) revert();
       if (msg.value == 0) revert();
 
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       // return money if something goes wrong
-      if (tokenCreationCap &lt; checkedSupply) revert();  // odd fractions won&#39;t be found
+      if (tokenCreationCap < checkedSupply) revert();  // odd fractions won't be found
 
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here
@@ -158,8 +158,8 @@ contract Indicoin is StandardToken, SafeMath {
     function finalize() external {
       if (isFinalized) revert();
       if (msg.sender != ethFundDeposit) revert(); // locks finalize to the ultimate ETH owner
-      if(totalSupply &lt; tokenCreationMin) revert();      // have to sell minimum to move to operational
-      if(now &lt;= fundingEndTime &amp;&amp; totalSupply != tokenCreationCap) revert();
+      if(totalSupply < tokenCreationMin) revert();      // have to sell minimum to move to operational
+      if(now <= fundingEndTime && totalSupply != tokenCreationCap) revert();
       // move to operational
       isFinalized = true;
       if(!ethFundDeposit.send(this.balance)) revert();  // send the eth to Indicoin developers
@@ -168,8 +168,8 @@ contract Indicoin is StandardToken, SafeMath {
     /// @dev Allows contributors to recover their ether in the case of a failed funding campaign.
     function refund() external {
       if(isFinalized) revert();                       // prevents refund if operational
-      if (now &lt;= fundingEndTime) revert(); // prevents refund until sale period is over
-      if(totalSupply &gt;= tokenCreationMin) revert();  // no refunds if we sold enough
+      if (now <= fundingEndTime) revert(); // prevents refund until sale period is over
+      if(totalSupply >= tokenCreationMin) revert();  // no refunds if we sold enough
       if(msg.sender == indiFundAndSocialVaultDeposit) revert();    // Indicoin developers not entitled to a refund
       uint256 indiVal = balances[msg.sender];
       if (indiVal == 0) revert();
@@ -177,7 +177,7 @@ contract Indicoin is StandardToken, SafeMath {
       totalSupply = safeSubtract(totalSupply, indiVal); // extra safe
       uint256 ethVal = indiVal / tokenExchangeRate;     // should be safe; previous throws covers edges
       LogRefund(msg.sender, ethVal);               // log it 
-      if (!msg.sender.send(ethVal)) revert();       // if you&#39;re using a contract; make sure it works with .send gas limits
+      if (!msg.sender.send(ethVal)) revert();       // if you're using a contract; make sure it works with .send gas limits
     }
 
 }

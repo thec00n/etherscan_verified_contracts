@@ -32,7 +32,7 @@ contract Ethertag {
     }
 
     function getMessage(uint i) public view returns(string text, uint value, uint8 red, uint8 green, uint8 blue) {
-        require(i&lt;messages.length);
+        require(i<messages.length);
         return (
             messages[i].text, 
             messages[i].value,
@@ -43,8 +43,8 @@ contract Ethertag {
     }
   
     function addMessage(string m, uint8 r, uint8 g, uint8 b) public payable {
-        require(msg.value &gt;= minValue);
-        require(bytes(m).length &lt;= maxTextLength);
+        require(msg.value >= minValue);
+        require(bytes(m).length <= maxTextLength);
         messages.push(message(m, msg.value, rgb(r,g,b)));
         emit newMessage(
             messages.length-1,

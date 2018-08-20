@@ -15,7 +15,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -75,9 +75,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,7 +106,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -124,7 +124,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -164,7 +164,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -175,8 +175,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -239,7 +239,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -251,8 +251,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract QIUToken is StandardToken,Ownable {
-    string public name = &#39;QIUToken&#39;;
-    string public symbol = &#39;QIU&#39;;
+    string public name = 'QIUToken';
+    string public symbol = 'QIU';
     uint8 public decimals = 0;
     uint public INITIAL_SUPPLY = 5000000000;
     uint public eth2qiuRate = 10000;
@@ -278,7 +278,7 @@ contract QIUToken is StandardToken,Ownable {
     function ownerTransferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(tx.origin == owner); // only the owner can call the method.
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -293,7 +293,7 @@ contract QIUToken is StandardToken,Ownable {
     */
     function originTransfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[tx.origin]);
+        require(_value <= balances[tx.origin]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[tx.origin] = balances[tx.origin].sub(_value);
@@ -305,7 +305,7 @@ contract QIUToken is StandardToken,Ownable {
     event ExchangeForETH(address fromAddr,address to,uint qiuAmount,uint ethAmount);
     function exchangeForETH(uint qiuAmount) public returns (bool){
         uint ethAmount = qiuAmount * 1000000000000000000 / eth2qiuRate; // only accept multiple of 100
-        require(this.balance &gt;= ethAmount);
+        require(this.balance >= ethAmount);
         balances[this] = balances[this].add(qiuAmount);
         balances[msg.sender] = balances[msg.sender].sub(qiuAmount);
         msg.sender.transfer(ethAmount);
@@ -316,7 +316,7 @@ contract QIUToken is StandardToken,Ownable {
     event ExchangeForQIU(address fromAddr,address to,uint qiuAmount,uint ethAmount);
     function exchangeForQIU() payable public returns (bool){
         uint qiuAmount = msg.value * eth2qiuRate / 1000000000000000000;
-        require(qiuAmount &lt;= balances[this]);
+        require(qiuAmount <= balances[this]);
         balances[this] = balances[this].sub(qiuAmount);
         balances[msg.sender] = balances[msg.sender].add(qiuAmount);
         ExchangeForQIU(this,msg.sender,qiuAmount,msg.value);
@@ -329,7 +329,7 @@ contract QIUToken is StandardToken,Ownable {
         account.transfer(this.balance);
     }*/
     function getETHBalance() public view returns (uint) {
-        return this.balance; // balance is &quot;inherited&quot; from the address type
+        return this.balance; // balance is "inherited" from the address type
     }
 }
 
@@ -362,8 +362,8 @@ contract SoccerGamblingV_QIU is Ownable {
         BettingInfo[] bettingsInfo;
     }
 
-    mapping (uint =&gt; GamblingPartyInfo) public gamblingPartiesInfo;
-    mapping (uint =&gt; uint[]) public matchId2PartyId;
+    mapping (uint => GamblingPartyInfo) public gamblingPartiesInfo;
+    mapping (uint => uint[]) public matchId2PartyId;
     uint private _nextGamblingPartyId;
     uint private _nextBettingInfoId;
     QIUToken public _internalToken;
@@ -396,16 +396,16 @@ contract SoccerGamblingV_QIU is Ownable {
         else if (buySide==2)
             losePay = losePay.add((gpInfo.drawPayRate.mul(bettingAmount)).div(gpInfo.payRateScale));
         uint mostPay = 0;
-        for (uint idx = 0; idx&lt;gpInfo.bettingsInfo.length; idx++) {
+        for (uint idx = 0; idx<gpInfo.bettingsInfo.length; idx++) {
             BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
-            if (bInfo.buyHome &amp;&amp; (buySide==0))
+            if (bInfo.buyHome && (buySide==0))
                 mostPay = mostPay.add((gpInfo.homePayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
-            else if (bInfo.buyAway &amp;&amp; (buySide==1))
+            else if (bInfo.buyAway && (buySide==1))
                 mostPay = mostPay.add((gpInfo.awayPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
-            else if (bInfo.buyDraw &amp;&amp; (buySide==2))
+            else if (bInfo.buyDraw && (buySide==2))
                 mostPay = mostPay.add((gpInfo.drawPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
         }
-        if (mostPay + losePay &gt; gpInfo.bonusPool)
+        if (mostPay + losePay > gpInfo.bonusPool)
             return false;
         else 
             return true;
@@ -413,8 +413,8 @@ contract SoccerGamblingV_QIU is Ownable {
 
     event NewBettingSucceed(address fromAddr,uint newBettingInfoId);
     function betting(uint gamblingPartyId,uint8 buySide,uint bettingAmount) public {
-        require(bettingAmount &gt; 0);
-        require(_internalToken.balanceOf(msg.sender) &gt;= bettingAmount);
+        require(bettingAmount > 0);
+        require(_internalToken.balanceOf(msg.sender) >= bettingAmount);
         GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
         require(gpInfo.isEnded == false);
         require(gpInfo.isLockedForBet == false);
@@ -444,16 +444,16 @@ contract SoccerGamblingV_QIU is Ownable {
          uint remainingAmountAway,
          uint remainingAmountDraw
         ) {
-        for (uint8 buySide = 0;buySide&lt;3;buySide++){
+        for (uint8 buySide = 0;buySide<3;buySide++){
             GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
             uint bonusPool = gpInfo.bonusPool;
-            for (uint idx = 0; idx&lt;gpInfo.bettingsInfo.length; idx++) {
+            for (uint idx = 0; idx<gpInfo.bettingsInfo.length; idx++) {
                 BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
-                if (bInfo.buyHome &amp;&amp; (buySide==0))
+                if (bInfo.buyHome && (buySide==0))
                     bonusPool = bonusPool.sub((gpInfo.homePayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
-                else if (bInfo.buyAway &amp;&amp; (buySide==1))
+                else if (bInfo.buyAway && (buySide==1))
                     bonusPool = bonusPool.sub((gpInfo.awayPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
-                else if (bInfo.buyDraw &amp;&amp; (buySide==2))
+                else if (bInfo.buyDraw && (buySide==2))
                     bonusPool = bonusPool.sub((gpInfo.drawPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale));
             }
             if (buySide == 0)
@@ -468,7 +468,7 @@ contract SoccerGamblingV_QIU is Ownable {
     event MatchAllGPsLock(address fromAddr,uint matchId,bool isLocked);
     function lockUnlockMatchGPForBetting(uint matchId,bool lock) public {
         uint[] storage gamblingPartyIds = matchId2PartyId[matchId];
-        for (uint idx = 0;idx &lt; gamblingPartyIds.length;idx++) {
+        for (uint idx = 0;idx < gamblingPartyIds.length;idx++) {
             lockUnlockGamblingPartyForBetting(gamblingPartyIds[idx],lock);
         }
         MatchAllGPsLock(msg.sender,matchId,lock);        
@@ -522,23 +522,23 @@ contract SoccerGamblingV_QIU is Ownable {
         GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
         gpId = gpInfo.id;
         baseBonusPool = gpInfo.baseBonusPool;
-        for (uint idx = 0; idx &lt; gpInfo.bettingsInfo.length; idx++) {
+        for (uint idx = 0; idx < gpInfo.bettingsInfo.length; idx++) {
             BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
             if (bInfo.buyHome){
                 homeSalesAmount += bInfo.bettingAmount;
-                if (gpInfo.isEnded &amp;&amp; (gpInfo.finalScoreHome &gt; gpInfo.finalScoreAway)){
+                if (gpInfo.isEnded && (gpInfo.finalScoreHome > gpInfo.finalScoreAway)){
                     homeSalesEarnings = homeSalesEarnings - int(bInfo.bettingAmount*gpInfo.homePayRate/gpInfo.payRateScale);
                 }else
                     homeSalesEarnings += int(bInfo.bettingAmount);
             } else if (bInfo.buyAway){
                 awaySalesAmount += bInfo.bettingAmount;
-                if (gpInfo.isEnded &amp;&amp; (gpInfo.finalScoreHome &lt; gpInfo.finalScoreAway)){
+                if (gpInfo.isEnded && (gpInfo.finalScoreHome < gpInfo.finalScoreAway)){
                     awaySalesEarnings = awaySalesEarnings - int(bInfo.bettingAmount*gpInfo.awayPayRate/gpInfo.payRateScale);
                 }else
                     awaySalesEarnings += int(bInfo.bettingAmount);
             } else if (bInfo.buyDraw){
                 drawSalesAmount += bInfo.bettingAmount;
-                if (gpInfo.isEnded &amp;&amp; (gpInfo.finalScoreHome == gpInfo.finalScoreAway)){
+                if (gpInfo.isEnded && (gpInfo.finalScoreHome == gpInfo.finalScoreAway)){
                     drawSalesEarnings = drawSalesEarnings - int(bInfo.bettingAmount*gpInfo.drawPayRate/gpInfo.payRateScale);
                 }else
                     drawSalesEarnings += int(bInfo.bettingAmount);
@@ -551,23 +551,23 @@ contract SoccerGamblingV_QIU is Ownable {
             dealerEarnings = int(gpInfo.bonusPool);
             return;
         }
-        if (homeSalesEarnings &gt; 0){
+        if (homeSalesEarnings > 0){
             commission = homeSalesEarnings * int(_commissionNumber) / int(_commissionScale);
             homeSalesEarnings -= commission;
         }
-        if (awaySalesEarnings &gt; 0){
+        if (awaySalesEarnings > 0){
             commission = awaySalesEarnings * int(_commissionNumber) / int(_commissionScale);
             awaySalesEarnings -= commission;
         }
-        if (drawSalesEarnings &gt; 0){
+        if (drawSalesEarnings > 0){
             commission = drawSalesEarnings * int(_commissionNumber) / int(_commissionScale);
             drawSalesEarnings -= commission;
         }
-        if (homeSalesEarnings &lt; 0)
+        if (homeSalesEarnings < 0)
             dealerEarnings = int(gpInfo.bonusPool) + homeSalesEarnings;
-        if (awaySalesEarnings &lt; 0)
+        if (awaySalesEarnings < 0)
             dealerEarnings = int(gpInfo.bonusPool) + awaySalesEarnings;
-        if (drawSalesEarnings &lt; 0)
+        if (drawSalesEarnings < 0)
             dealerEarnings = int(gpInfo.bonusPool) + drawSalesEarnings;
         commission = dealerEarnings * int(_commissionNumber) / int(_commissionScale);
         dealerEarnings -= commission;
@@ -582,7 +582,7 @@ contract SoccerGamblingV_QIU is Ownable {
                                                             uint mBaseBonusPool
                                                         )
     {
-        for (uint idx = 0; idx&lt;matchId2PartyId[matchId].length; idx++) {
+        for (uint idx = 0; idx<matchId2PartyId[matchId].length; idx++) {
             uint gamblingPartyId = matchId2PartyId[matchId][idx];
             var (,homeSalesAmount,,awaySalesAmount,,drawSalesAmount,,dealerEarnings,baseBonusPool) = getGamblingPartySummarizeInfo(gamblingPartyId);
             mHomeSalesAmount += homeSalesAmount;
@@ -596,7 +596,7 @@ contract SoccerGamblingV_QIU is Ownable {
 
     function getSumOfGamblingPartiesBonusPool(uint matchId) public view returns (uint) {
         uint sum = 0;
-        for (uint idx = 0; idx&lt;matchId2PartyId[matchId].length; idx++) {
+        for (uint idx = 0; idx<matchId2PartyId[matchId].length; idx++) {
             uint gamblingPartyId = matchId2PartyId[matchId][idx];
             GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
             sum += gpInfo.bonusPool;
@@ -608,21 +608,21 @@ contract SoccerGamblingV_QIU is Ownable {
         int winLose = 0;
         GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
         require(gpInfo.isEnded);
-        for (uint idx = 0; idx &lt; gpInfo.bettingsInfo.length; idx++) {
+        for (uint idx = 0; idx < gpInfo.bettingsInfo.length; idx++) {
             BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
             if (bInfo.bettingOwner == bettingOwner) {
-                if ((gpInfo.finalScoreHome &gt; gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyHome)) {
+                if ((gpInfo.finalScoreHome > gpInfo.finalScoreAway) && (bInfo.buyHome)) {
                     winLose += int(gpInfo.homePayRate * bInfo.bettingAmount / gpInfo.payRateScale);
-                } else if ((gpInfo.finalScoreHome &lt; gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyAway)) {
+                } else if ((gpInfo.finalScoreHome < gpInfo.finalScoreAway) && (bInfo.buyAway)) {
                     winLose += int(gpInfo.awayPayRate * bInfo.bettingAmount / gpInfo.payRateScale);
-                } else if ((gpInfo.finalScoreHome == gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyDraw)) {
+                } else if ((gpInfo.finalScoreHome == gpInfo.finalScoreAway) && (bInfo.buyDraw)) {
                     winLose += int(gpInfo.drawPayRate * bInfo.bettingAmount / gpInfo.payRateScale);
                 } else {
                     winLose -= int(bInfo.bettingAmount);
                 }
             }
         }   
-        if (winLose &gt; 0){
+        if (winLose > 0){
             int commission = winLose * int(_commissionNumber) / int(_commissionScale);
             winLose -= commission;
         }
@@ -633,14 +633,14 @@ contract SoccerGamblingV_QIU is Ownable {
         int winLose = 0;
         GamblingPartyInfo storage gpInfo = gamblingPartiesInfo[gamblingPartyId];
         require(gpInfo.isEnded);
-        for (uint idx = 0; idx &lt; gpInfo.bettingsInfo.length; idx++) {
+        for (uint idx = 0; idx < gpInfo.bettingsInfo.length; idx++) {
             BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
             if (bInfo.id == bettingId) {
-                if ((gpInfo.finalScoreHome &gt; gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyHome)) {
+                if ((gpInfo.finalScoreHome > gpInfo.finalScoreAway) && (bInfo.buyHome)) {
                     winLose += int(gpInfo.homePayRate * bInfo.bettingAmount / gpInfo.payRateScale);
-                } else if ((gpInfo.finalScoreHome &lt; gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyAway)) {
+                } else if ((gpInfo.finalScoreHome < gpInfo.finalScoreAway) && (bInfo.buyAway)) {
                     winLose += int(gpInfo.awayPayRate * bInfo.bettingAmount / gpInfo.payRateScale);
-                } else if ((gpInfo.finalScoreHome == gpInfo.finalScoreAway) &amp;&amp; (bInfo.buyDraw)) {
+                } else if ((gpInfo.finalScoreHome == gpInfo.finalScoreAway) && (bInfo.buyDraw)) {
                     winLose += int(gpInfo.drawPayRate * bInfo.bettingAmount / gpInfo.payRateScale);
                 } else {
                     winLose -= int(bInfo.bettingAmount);
@@ -648,7 +648,7 @@ contract SoccerGamblingV_QIU is Ownable {
                 break;
             }
         }   
-        if (winLose &gt; 0){
+        if (winLose > 0){
             int commission = winLose * int(_commissionNumber) / int(_commissionScale);
             winLose -= commission;
         }
@@ -666,8 +666,8 @@ contract SoccerGamblingV_QIU is Ownable {
         ) public
         {
         address sender = msg.sender;
-        require(basePool &gt; 0);
-        require(_internalToken.balanceOf(sender) &gt;= basePool);
+        require(basePool > 0);
+        require(_internalToken.balanceOf(sender) >= basePool);
         uint newId = _nextGamblingPartyId;
         gamblingPartiesInfo[newId].id = newId;
         gamblingPartiesInfo[newId].dealerAddress = sender;
@@ -690,7 +690,7 @@ contract SoccerGamblingV_QIU is Ownable {
     event MatchAllGPsEnded(address fromAddr,uint matchId);
     function endMatch(uint matchId,int homeScore,int awayScore) public {
         uint[] storage gamblingPartyIds = matchId2PartyId[matchId];
-        for (uint idx = 0;idx &lt; gamblingPartyIds.length;idx++) {
+        for (uint idx = 0;idx < gamblingPartyIds.length;idx++) {
             endGamblingParty(gamblingPartyIds[idx],homeScore,awayScore);
         }
         MatchAllGPsEnded(msg.sender,matchId);        
@@ -704,22 +704,22 @@ contract SoccerGamblingV_QIU is Ownable {
         gpInfo.finalScoreAway = awayScore;
         gpInfo.isEnded = true;
         int flag = -1;
-        if (homeScore &gt; awayScore)
+        if (homeScore > awayScore)
             flag = 0;
-        else if (homeScore &lt; awayScore)
+        else if (homeScore < awayScore)
             flag = 1;
         else
             flag = 2;
         uint commission; // variable for commission caculation.
         uint bonusPool = gpInfo.bonusPool;
-        for (uint idx = 0; idx &lt; gpInfo.bettingsInfo.length; idx++) {
+        for (uint idx = 0; idx < gpInfo.bettingsInfo.length; idx++) {
             BettingInfo storage bInfo = gpInfo.bettingsInfo[idx];
             uint transferAmount = 0;
-            if (flag == 0 &amp;&amp; bInfo.buyHome)
+            if (flag == 0 && bInfo.buyHome)
                 transferAmount = (gpInfo.homePayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale);
-            if (flag == 1 &amp;&amp; bInfo.buyAway)
+            if (flag == 1 && bInfo.buyAway)
                 transferAmount = (gpInfo.awayPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale);
-            if (flag == 2 &amp;&amp; bInfo.buyDraw)
+            if (flag == 2 && bInfo.buyDraw)
                 transferAmount = (gpInfo.drawPayRate.mul(bInfo.bettingAmount)).div(gpInfo.payRateScale);
             if (transferAmount != 0) {
                 bonusPool = bonusPool.sub(transferAmount);
@@ -729,7 +729,7 @@ contract SoccerGamblingV_QIU is Ownable {
                 _internalToken.ownerTransferFrom(this,owner,commission);
             }
         }    
-        if (bonusPool &gt; 0) {
+        if (bonusPool > 0) {
             uint amount = bonusPool;
             // subs the commission
             commission = (amount.mul(_commissionNumber)).div(_commissionScale);
@@ -741,6 +741,6 @@ contract SoccerGamblingV_QIU is Ownable {
     }
 
     function getETHBalance() public view returns (uint) {
-        return this.balance; // balance is &quot;inherited&quot; from the address type
+        return this.balance; // balance is "inherited" from the address type
     }
 }

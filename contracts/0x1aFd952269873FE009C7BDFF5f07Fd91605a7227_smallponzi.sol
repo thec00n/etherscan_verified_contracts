@@ -26,13 +26,13 @@ contract smallponzi {
   }
   
   function enter() {
-    if (msg.value &lt; 1/100 ether) {
+    if (msg.value < 1/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 3 ether) {
+		if (msg.value > 3 ether) {
 			msg.sender.send(msg.value - 3 ether);	
 			amount = 3 ether;
     }
@@ -58,7 +58,7 @@ contract smallponzi {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 133) {
+    while (balance > persons[payoutIdx].amount / 100 * 133) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 133;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

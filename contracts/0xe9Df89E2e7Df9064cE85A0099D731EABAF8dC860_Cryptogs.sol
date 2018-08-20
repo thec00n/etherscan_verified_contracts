@@ -8,15 +8,15 @@ pragma solidity ^0.4.15;
 
 
 //adapted from https://github.com/ethereum/EIPs/issues/721
-// thanks to Dieter Shirley &amp;&amp; http://axiomzen.co
+// thanks to Dieter Shirley && http://axiomzen.co
 
 contract NFT {
 
   function NFT() public { }
 
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
-  mapping (address =&gt; uint256) ownershipTokenCount;
-  mapping (uint256 =&gt; address) public tokenIndexToApproved;
+  mapping (uint256 => address) public tokenIndexToOwner;
+  mapping (address => uint256) ownershipTokenCount;
+  mapping (uint256 => address) public tokenIndexToApproved;
 
   function transfer(address _to,uint256 _tokenId) external {
       require(_to != address(0));
@@ -80,7 +80,7 @@ contract NFT {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,12 +120,12 @@ contract Ownable {
 
 contract Cryptogs is NFT, Ownable {
 
-    string public constant name = &quot;Cryptogs&quot;;
-    string public constant symbol = &quot;POGS&quot;;
+    string public constant name = "Cryptogs";
+    string public constant symbol = "POGS";
 
-    string public constant purpose = &quot;ETHDenver&quot;;
-    string public constant contact = &quot;https://cryptogs.io&quot;;
-    string public constant author = &quot;Austin Thomas Griffith&quot;;
+    string public constant purpose = "ETHDenver";
+    string public constant contact = "https://cryptogs.io";
+    string public constant author = "Austin Thomas Griffith";
 
     uint8 public constant FLIPPINESS = 64;
     uint8 public constant FLIPPINESSROUNDBONUS = 16;
@@ -143,14 +143,14 @@ contract Cryptogs is NFT, Ownable {
     function Cryptogs() public {
       //0 index should be a blank item owned by no one
       Item memory _item = Item({
-        image: &quot;&quot;
+        image: ""
       });
       items.push(_item);
     }
 
     address public slammerTime;
     function setSlammerTime(address _slammerTime) public onlyOwner returns (bool){
-      //in order to trust that this contract isn&#39;t sending a players tokens
+      //in order to trust that this contract isn't sending a players tokens
       // to a different contract, the slammertime contract is set once and
       // only once -- at deploy
       require(slammerTime==address(0));
@@ -162,7 +162,7 @@ contract Cryptogs is NFT, Ownable {
       bytes32 image;
       //perhaps some are harder to flip over?
       //perhaps some have magical metadata?
-      //I don&#39;t know, it&#39;s late and I&#39;m weird
+      //I don't know, it's late and I'm weird
     }
 
     Item[] private items;
@@ -231,13 +231,13 @@ contract Cryptogs is NFT, Ownable {
 
     function buyPack(uint256 packId) public payable returns (bool) {
       //make sure pack is for sale
-      require( packs[packId].price &gt; 0 );
+      require( packs[packId].price > 0 );
       //make sure they sent in enough value
-      require( msg.value &gt;= packs[packId].price );
+      require( msg.value >= packs[packId].price );
       //right away set price to 0 to avoid some sort of reentrance
       packs[packId].price=0;
       //give tokens to owner
-      for(uint8 i=0;i&lt;10;i++){
+      for(uint8 i=0;i<10;i++){
         tokenIndexToOwner[packs[packId].tokens[i]]=msg.sender;
         _transfer(0, msg.sender, packs[packId].tokens[i]);
       }
@@ -249,7 +249,7 @@ contract Cryptogs is NFT, Ownable {
 
     //lets keep a count of how many of a specific image is created too
     //that will allow us to calculate rarity on-chain if we want
-    mapping (bytes32 =&gt; uint256) public tokensOfImage;
+    mapping (bytes32 => uint256) public tokensOfImage;
 
     function getToken(uint256 _id) public view returns (address owner,bytes32 image,uint256 copies) {
       image = items[_id].image;
@@ -271,8 +271,8 @@ contract Cryptogs is NFT, Ownable {
 
     }
 
-    mapping (bytes32 =&gt; Stack) public stacks;
-    mapping (bytes32 =&gt; bytes32) public stackCounter;
+    mapping (bytes32 => Stack) public stacks;
+    mapping (bytes32 => bytes32) public stackCounter;
 
     function stackOwner(bytes32 _stack) public constant returns (address owner) {
       return stacks[_stack].owner;
@@ -349,7 +349,7 @@ contract Cryptogs is NFT, Ownable {
       require(msg.sender==stacks[_stack].owner);
       //make sure there is no mode set yet
       require(mode[_stack]==0);
-      //make sure they aren&#39;t trying to cancel a counterstack using this function
+      //make sure they aren't trying to cancel a counterstack using this function
       require(stackCounter[_stack]==0x00000000000000000000000000000000);
 
       delete stacks[_stack];
@@ -373,13 +373,13 @@ contract Cryptogs is NFT, Ownable {
     }
     event CancelCounterStack(address indexed _sender,uint256 indexed timestamp,bytes32 indexed _stack,bytes32 _counterstack);
 
-    mapping (bytes32 =&gt; bytes32) public counterOfStack;
-    mapping (bytes32 =&gt; uint8) public mode;
-    mapping (bytes32 =&gt; uint8) public round;
-    mapping (bytes32 =&gt; uint32) public lastBlock;
-    mapping (bytes32 =&gt; uint32) public commitBlock;
-    mapping (bytes32 =&gt; address) public lastActor;
-    mapping (bytes32 =&gt; uint256[10]) public mixedStack;
+    mapping (bytes32 => bytes32) public counterOfStack;
+    mapping (bytes32 => uint8) public mode;
+    mapping (bytes32 => uint8) public round;
+    mapping (bytes32 => uint32) public lastBlock;
+    mapping (bytes32 => uint32) public commitBlock;
+    mapping (bytes32 => address) public lastActor;
+    mapping (bytes32 => uint256[10]) public mixedStack;
 
     //tx 3: of a game, player one approves counter stack and transfers everything in
     function acceptCounterStack(bytes32 _stack, bytes32 _counterStack) public returns (bool) {
@@ -417,7 +417,7 @@ contract Cryptogs is NFT, Ownable {
     }
     event AcceptCounterStack(address indexed _sender,bytes32 indexed _stack, bytes32 indexed _counterStack);
 
-    mapping (bytes32 =&gt; bytes32) public commit;
+    mapping (bytes32 => bytes32) public commit;
 
     function getMixedStack(bytes32 _stack) external view returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256){
       uint256[10] thisStack = mixedStack[_stack];
@@ -426,15 +426,15 @@ contract Cryptogs is NFT, Ownable {
 
     //tx 4: player one commits and flips coin up
     //at this point, the timeout goes into effect and if any transaction including
-    //the coin flip don&#39;t come back in time, we need to allow the other party
+    //the coin flip don't come back in time, we need to allow the other party
     //to withdraw all tokens... this keeps either player from refusing to
     //reveal their commit. (every tx from here on out needs to update the lastBlock and lastActor)
-    //and in the withdraw function you check currentblock-lastBlock &gt; timeout = refund to lastActor
+    //and in the withdraw function you check currentblock-lastBlock > timeout = refund to lastActor
     //and by refund I mean let them withdraw if they want
     //we could even have a little timer on the front end that tells you how long your opponnet has
     //before they will forfet
     function startCoinFlip(bytes32 _stack, bytes32 _counterStack, bytes32 _commit) public returns (bool) {
-      //make sure it&#39;s the owner of the first stack (player one) doing the flip
+      //make sure it's the owner of the first stack (player one) doing the flip
       require(stacks[_stack].owner==msg.sender);
       //the counter must be a counter of stack 1
       require(stackCounter[_counterStack]==_stack);
@@ -452,7 +452,7 @@ contract Cryptogs is NFT, Ownable {
 
     //tx5: player one ends coin flip with reveal
     function endCoinFlip(bytes32 _stack, bytes32 _counterStack, bytes32 _reveal) public returns (bool) {
-      //make sure it&#39;s the owner of the first stack (player one) doing the flip
+      //make sure it's the owner of the first stack (player one) doing the flip
       require(stacks[_stack].owner==msg.sender);
       //the counter must be a counter of stack 1
       require(stackCounter[_counterStack]==_stack);
@@ -462,12 +462,12 @@ contract Cryptogs is NFT, Ownable {
 
       //make sure that we are on a later block than the commit block
       // (added 3/5/2018)
-      require(uint32(block.number)&gt;commitBlock[_stack]);
+      require(uint32(block.number)>commitBlock[_stack]);
 
       //make sure hash of reveal == commit
       if(keccak256(_reveal)!=commit[_stack]){
         //commit/reveal failed.. this can happen if they
-        //reload, so don&#39;t punish, just go back to the
+        //reload, so don't punish, just go back to the
         //start of the coin flip stage
         mode[_stack]=1;
         CoinFlipFail(_stack);
@@ -499,10 +499,10 @@ contract Cryptogs is NFT, Ownable {
     //tx6 next player raises slammer
     function raiseSlammer(bytes32 _stack, bytes32 _counterStack, bytes32 _commit) public returns (bool) {
       if(lastActor[_stack]==stacks[_stack].owner){
-        //it is player2&#39;s turn
+        //it is player2's turn
         require(stacks[_counterStack].owner==msg.sender);
       }else{
-        //it is player1&#39;s turn
+        //it is player1's turn
         require(stacks[_stack].owner==msg.sender);
       }
       //the counter must be a counter of stack 1
@@ -523,10 +523,10 @@ contract Cryptogs is NFT, Ownable {
     //tx7 player throws slammer
     function throwSlammer(bytes32 _stack, bytes32 _counterStack, bytes32 _reveal) public returns (bool) {
       if(lastActor[_stack]==stacks[_stack].owner){
-        //it is player2&#39;s turn
+        //it is player2's turn
         require(stacks[_counterStack].owner==msg.sender);
       }else{
-        //it is player1&#39;s turn
+        //it is player1's turn
         require(stacks[_stack].owner==msg.sender);
       }
       //the counter must be a counter of stack 1
@@ -537,12 +537,12 @@ contract Cryptogs is NFT, Ownable {
 
       //make sure that we are on a later block than the commit block
       // (added 3/5/2018)
-      require(uint32(block.number)&gt;commitBlock[_stack]);
+      require(uint32(block.number)>commitBlock[_stack]);
 
       uint256[10] memory flipped;
       if(keccak256(_reveal)!=commit[_stack]){
         //commit/reveal failed.. this can happen if they
-        //reload, so don&#39;t punish, just go back to the
+        //reload, so don't punish, just go back to the
         //start of the slammer raise
         mode[_stack]=3;
         throwSlammerEvent(_stack,msg.sender,address(0),flipped);
@@ -569,12 +569,12 @@ contract Cryptogs is NFT, Ownable {
         // oh man, that smells like reentrance --  I think the mode would actually break that right?
         bool done=true;
         uint8 randIndex = 0;
-        for(uint8 i=0;i&lt;10;i++){
-          if(mixedStack[_stack][i]&gt;0){
+        for(uint8 i=0;i<10;i++){
+          if(mixedStack[_stack][i]>0){
             //there is still a pog here, check for flip
             uint8 thisFlipper = uint8(pseudoRandomHash[randIndex++]);
             //DebugFlip(pseudoRandomHash,i,randIndex,thisFlipper,FLIPPINESS);
-            if(thisFlipper&lt;(FLIPPINESS+round[_stack]*FLIPPINESSROUNDBONUS)){
+            if(thisFlipper<(FLIPPINESS+round[_stack]*FLIPPINESSROUNDBONUS)){
               //ITS A FLIP!
                uint256 tempId = mixedStack[_stack][i];
                flipped[i]=tempId;
@@ -627,15 +627,15 @@ contract Cryptogs is NFT, Ownable {
       //the counter must be a counter of stack 1
       require( stackCounter[_counterStack]==_stack );
       require( counterOfStack[_stack]==_counterStack );
-      //the bad guy shouldn&#39;t be able to drain
+      //the bad guy shouldn't be able to drain
       require( lastActor[_stack]==msg.sender );
       //must be after timeout period
-      require( block.number - lastBlock[_stack] &gt;= TIMEOUTBLOCKS);
+      require( block.number - lastBlock[_stack] >= TIMEOUTBLOCKS);
       //game must still be going
-      require( mode[_stack]&lt;9 );
+      require( mode[_stack]<9 );
 
-      for(uint8 i=0;i&lt;10;i++){
-        if(mixedStack[_stack][i]&gt;0){
+      for(uint8 i=0;i<10;i++){
+        if(mixedStack[_stack][i]>0){
           uint256 tempId = mixedStack[_stack][i];
           mixedStack[_stack][i]=0;
           SlammerTime slammerTimeContract = SlammerTime(slammerTime);
@@ -674,7 +674,7 @@ contract Cryptogs is NFT, Ownable {
             uint256 total = totalSupply();
             uint256 resultIndex = 0;
             uint256 id;
-            for (id = 1; id &lt;= total; id++) {
+            for (id = 1; id <= total; id++) {
                 if (tokenIndexToOwner[id] == _owner) {
                     result[resultIndex] = id;
                     resultIndex++;
@@ -685,7 +685,7 @@ contract Cryptogs is NFT, Ownable {
     }
 
     function withdraw(uint256 _amount) public onlyOwner returns (bool) {
-      require(this.balance &gt;= _amount);
+      require(this.balance >= _amount);
       assert(owner.send(_amount));
       return true;
     }

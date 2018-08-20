@@ -65,13 +65,13 @@ contract PlayerToken is ERC20 {
     uint8 constant internal referrerFee_ = 1; // for all token buys (but not sells)
 
     // ERC20 data structures
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     // Player Exchange Data Structures
     address[] public tokenHolders;
-    mapping(address =&gt; uint256) public addressToTokenHolderIndex; // Helps to gas-efficiently remove shareholders, by swapping last index
-    mapping(address =&gt; int256) public totalCost; // To hold the total expenditure of each address, profit tracking
+    mapping(address => uint256) public addressToTokenHolderIndex; // Helps to gas-efficiently remove shareholders, by swapping last index
+    mapping(address => int256) public totalCost; // To hold the total expenditure of each address, profit tracking
 
     // ERC20 Properties
     uint256 totalSupply_;
@@ -128,23 +128,23 @@ contract PlayerToken is ERC20 {
         symbol = _symbol;
 
         // Purchase promotional player shares - we purchase initial shares (the same way users do) as prizes for promos/competitions/giveaways
-        if (_promoSharesQuantity &gt; 0) {
+        if (_promoSharesQuantity > 0) {
             _buyTokens(msg.value, _promoSharesQuantity, _owner, address(0));
         }
     }
 
     // **External Exchange**
     function buyTokens(uint8 _amount, address _referredBy) payable external whenNotPaused {
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= 100, &quot;Valid token amount required between 1 and 100&quot;);
-        require(msg.value &gt; 0, &quot;Provide a valid fee&quot;); 
+        require(_amount > 0 && _amount <= 100, "Valid token amount required between 1 and 100");
+        require(msg.value > 0, "Provide a valid fee"); 
         // solium-disable-next-line security/no-tx-origin
-        require(msg.sender == tx.origin, &quot;Only valid users are allowed to buy tokens&quot;); 
+        require(msg.sender == tx.origin, "Only valid users are allowed to buy tokens"); 
         _buyTokens(msg.value, _amount, msg.sender, _referredBy);
     }
 
     function sellTokens(uint8 _amount) external {
-        require(_amount &gt; 0, &quot;Valid sell amount required&quot;);
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount > 0, "Valid sell amount required");
+        require(_amount <= balances[msg.sender]);
         _sellTokens(_amount, msg.sender);
     }
 
@@ -159,17 +159,17 @@ contract PlayerToken is ERC20 {
 
         (_totalCost, _processingFee, _originalOwnerFee, _dividendPoolFee, _referrerFee) = calculateTokenBuyPrice(_amount);
 
-        require(_ethSent &gt;= _totalCost, &quot;Invalid fee to buy tokens&quot;);
+        require(_ethSent >= _totalCost, "Invalid fee to buy tokens");
 
         // Send to original card owner if available
-        // If we don&#39;t have an original owner we move this fee into the dividend pool
+        // If we don't have an original owner we move this fee into the dividend pool
         if (originalOwner_ != address(0)) {
             originalOwner_.transfer(_originalOwnerFee);
         } else {
             _dividendPoolFee = _dividendPoolFee.add(_originalOwnerFee);
         }
 
-        // Send to the referrer - if we don&#39;t have a referrer we move this fee into the dividend pool
+        // Send to the referrer - if we don't have a referrer we move this fee into the dividend pool
         if (_referredBy != address(0)) {
             _referredBy.transfer(_referrerFee);
         } else {
@@ -211,7 +211,7 @@ contract PlayerToken is ERC20 {
         // Burn the sellers shares
         _burnPlayerTokensFrom(_seller, _amount);
 
-        // Track ownership of token holders if the user no longer has tokens let&#39;s remove them
+        // Track ownership of token holders if the user no longer has tokens let's remove them
         // we do this semi-efficently by swapping the last index
         if (balanceOf(_seller) == 0) {
             removeFromTokenHolders(_seller);
@@ -243,7 +243,7 @@ contract PlayerToken is ERC20 {
         uint tokenCost = calculateTokenOnlyBuyPrice(_amount);
 
         // We now need to apply fees on top of this
-        // In all cases we apply fees - but if there&#39;s no original owner or referrer
+        // In all cases we apply fees - but if there's no original owner or referrer
         // these go into the dividend pool
         _processingFee = SafeMath.div(SafeMath.mul(tokenCost, processingFee_), 100);
         _originalOwnerFee = SafeMath.div(SafeMath.mul(tokenCost, originalOwnerFee_), 100);
@@ -285,7 +285,7 @@ contract PlayerToken is ERC20 {
         uint totalBuyPrice = (amountMultiplied / 2) * (2 * startingPrice + (_amount - 1) * incrementalTokenPrice_) / multiplier;
 
         // Should never *concievably* occur, but more effecient than Safemaths on the entire formula
-        assert(totalBuyPrice &gt;= startingPrice); 
+        assert(totalBuyPrice >= startingPrice); 
         return totalBuyPrice;
     }
 
@@ -322,7 +322,7 @@ contract PlayerToken is ERC20 {
         address[] memory addresses = new address[](tokenHolderCount);
         uint[] memory shares = new uint[](tokenHolderCount);
 
-        for (uint i = 0; i &lt; tokenHolderCount; i++) {
+        for (uint i = 0; i < tokenHolderCount; i++) {
             addresses[i] = tokenHolders[i];
             shares[i] = balanceOf(tokenHolders[i]);
         }
@@ -330,7 +330,7 @@ contract PlayerToken is ERC20 {
         return (addresses, shares);
     }
 
-    // In cases where there&#39;s bugs in the exchange contract we need a way to re-point
+    // In cases where there's bugs in the exchange contract we need a way to re-point
     function setExchangeContractAddress(address _exchangeContract) external onlyOwner {
         exchangeContract_ = _exchangeContract;
     }
@@ -347,26 +347,26 @@ contract PlayerToken is ERC20 {
     }
 
     function setSellDividendPercentageFee(uint8 _dividendPoolFee) external onlyOwnerOrExchange {
-        // We&#39;ll need some flexibility to alter this as the right dividend structure helps promote gameplay
+        // We'll need some flexibility to alter this as the right dividend structure helps promote gameplay
         // This pushes users to buy players who are performing well to grab divs rather than just getting in early to new players being released
-        require(_dividendPoolFee &lt;= 50, &quot;Max of 50% is assignable to the pool&quot;);
+        require(_dividendPoolFee <= 50, "Max of 50% is assignable to the pool");
         dividendSellPoolFee_ = _dividendPoolFee;
     }
 
     function setBuyDividendPercentageFee(uint8 _dividendPoolFee) external onlyOwnerOrExchange {
-        require(_dividendPoolFee &lt;= 50, &quot;Max of 50% is assignable to the pool&quot;);
+        require(_dividendPoolFee <= 50, "Max of 50% is assignable to the pool");
         dividendBuyPoolFee_ = _dividendPoolFee;
     }
 
     // Can be called by anyone, in which case we could use a another contract to set the original owner whenever it changes on blockchainfootball.co
     function setOriginalOwner(uint256 _playerCardId, address _address) external {
-        require(playerId_ &gt; 0, &quot;Player ID must be set on the contract&quot;);
+        require(playerId_ > 0, "Player ID must be set on the contract");
         
-        // As we call .transfer() on buys to send original owners divs we need to make sure this can&#39;t be DOS&#39;d through setting the
+        // As we call .transfer() on buys to send original owners divs we need to make sure this can't be DOS'd through setting the
         // original owner as a smart contract and then reverting any transfer() calls
         // while it would be silly to reject divs it is a valid DOS scenario
         // solium-disable-next-line security/no-tx-origin
-        require(msg.sender == tx.origin, &quot;Only valid users are able to set original ownership&quot;); 
+        require(msg.sender == tx.origin, "Only valid users are able to set original ownership"); 
        
         address _cardOwner;
         uint256 _playerId;
@@ -374,9 +374,9 @@ contract PlayerToken is ERC20 {
 
         (_playerId,_cardOwner,,_isFirstGeneration) = bcfContract_.playerCards(_playerCardId);
 
-        require(_isFirstGeneration, &quot;Card must be an original&quot;);
-        require(_playerId == playerId_, &quot;Card must tbe the same player this contract relates to&quot;);
-        require(_cardOwner == _address, &quot;Card must be owned by the address provided&quot;);
+        require(_isFirstGeneration, "Card must be an original");
+        require(_playerId == playerId_, "Card must tbe the same player this contract relates to");
+        require(_cardOwner == _address, "Card must be owned by the address provided");
         
         // All good, set the address as the original owner, happy div day \o/
         originalOwner_ = _address;
@@ -415,8 +415,8 @@ contract PlayerToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         // Track ownership of token holders - only if this is the first time the user is buying these player shares
         if (balanceOf(_to) == 0) {
@@ -427,7 +427,7 @@ contract PlayerToken is ERC20 {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
 
-        // Track ownership of token holders if the user no longer has tokens let&#39;s remove them
+        // Track ownership of token holders if the user no longer has tokens let's remove them
         // we do this semi-efficently by swapping the last index
         if (balanceOf(msg.sender) == 0) {
             removeFromTokenHolders(msg.sender);
@@ -443,9 +443,9 @@ contract PlayerToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Track ownership of token holders - only if this is the first time the user is buying these player shares
         if (balanceOf(_to) == 0) {
@@ -457,7 +457,7 @@ contract PlayerToken is ERC20 {
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 
-        // Track ownership of token holders if the user no longer has tokens let&#39;s remove them
+        // Track ownership of token holders if the user no longer has tokens let's remove them
         // we do this semi-efficently by swapping the last index
         if (balanceOf(_from) == 0) {
             removeFromTokenHolders(_from);
@@ -513,13 +513,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -550,8 +550,8 @@ contract PlayerExchangeCore {
 
     // Data Store
     PlayerToken[] public playerTokenContracts_; // Holds a list of all player token contracts
-    DividendWinner[] public dividendWinners_; // Holds a list of dividend winners (player contract id&#39;s, not users)
-    mapping(address =&gt; uint256) public addressToDividendBalance;
+    DividendWinner[] public dividendWinners_; // Holds a list of dividend winners (player contract id's, not users)
+    mapping(address => uint256) public addressToDividendBalance;
 
     // Modifiers
     modifier onlyOwner() {
@@ -638,7 +638,7 @@ contract PlayerExchangeCore {
         uint playerContractCount = totalPlayerTokenContracts();
         address[] memory addresses = new address[](playerContractCount);
 
-        for (uint i = 0; i &lt; playerContractCount; i++) {
+        for (uint i = 0; i < playerContractCount; i++) {
             addresses[i] = address(playerTokenContracts_[i]);
         }
 
@@ -647,7 +647,7 @@ contract PlayerExchangeCore {
 
     /* Safeguard function to quickly pause a stack of contracts */
     function pausePlayerContracts(uint startIndex, uint endIndex) onlyOwnerOrReferee external {
-        for (uint i = startIndex; i &lt; endIndex; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             PlayerToken playerTokenContract = playerTokenContracts_[i];
             if (!playerTokenContract.paused()) {
                 playerTokenContract.pause();
@@ -656,7 +656,7 @@ contract PlayerExchangeCore {
     }
 
     function unpausePlayerContracts(uint startIndex, uint endIndex) onlyOwnerOrReferee external {
-        for (uint i = startIndex; i &lt; endIndex; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             PlayerToken playerTokenContract = playerTokenContracts_[i];
             if (playerTokenContract.paused()) {
                 playerTokenContract.unpause();
@@ -665,14 +665,14 @@ contract PlayerExchangeCore {
     }
 
     function setSellDividendPercentageFee(uint8 _fee, uint startIndex, uint endIndex) onlyOwner external {
-        for (uint i = startIndex; i &lt; endIndex; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             PlayerToken playerTokenContract = playerTokenContracts_[i];
             playerTokenContract.setSellDividendPercentageFee(_fee);
         }
     }
 
     function setBuyDividendPercentageFee(uint8 _fee, uint startIndex, uint endIndex) onlyOwner external {
-        for (uint i = startIndex; i &lt; endIndex; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             PlayerToken playerTokenContract = playerTokenContracts_[i];
             playerTokenContract.setBuyDividendPercentageFee(_fee);
         }
@@ -698,7 +698,7 @@ contract PlayerExchangeCore {
 
         PlayerToken playerTokenContract;
 
-        for (uint i = 0; i &lt; playerContractCount; i++) {
+        for (uint i = 0; i < playerContractCount; i++) {
             playerTokenContract = playerTokenContracts_[i];
             playerTokenContractIds[i] = i;
             (totalTokens[i], totalCost[i], totalValue[i]) = playerTokenContract.portfolioSummary(_address);
@@ -719,18 +719,18 @@ contract PlayerExchangeCore {
         external 
         onlyOwnerOrReferee 
     {
-        require(_playerContractIds.length &gt; 0, &quot;Must have valid player contracts to award divs to&quot;);
+        require(_playerContractIds.length > 0, "Must have valid player contracts to award divs to");
         require(_playerContractIds.length == _totalPlayerTokens.length);
         require(_totalPlayerTokens.length == _individualPlayerAllocationPcs.length);
-        require(_totalPrizePoolAllocationPc &gt; 0);
-        require(_totalPrizePoolAllocationPc &lt;= 100);
+        require(_totalPrizePoolAllocationPc > 0);
+        require(_totalPrizePoolAllocationPc <= 100);
         
         // Calculate how much dividends we have allocated
         uint dailyDivPrizePool = SafeMath.div(SafeMath.mul(getTotalDividendPool(), _totalPrizePoolAllocationPc), 100);
 
         // Iteration here should be fine as there should concievably only ever be 3 or 4 winning players each day
         uint8 totalPlayerAllocationPc = 0;
-        for (uint8 i = 0; i &lt; _playerContractIds.length; i++) {
+        for (uint8 i = 0; i < _playerContractIds.length; i++) {
             totalPlayerAllocationPc += _individualPlayerAllocationPcs[i];
 
             // Calculate from the total daily pool how much is assigned to owners of this player
@@ -764,8 +764,8 @@ contract PlayerExchangeCore {
 
     function allocateDividendsToWinners(uint _dividendWinnerId, address[] _winners, uint[] _tokenAllocation) external onlyOwnerOrReferee {
         DividendWinner storage divWinner = dividendWinners_[_dividendWinnerId];
-        require(divWinner.totalTokens &gt; 0); // Basic check to make sure we don&#39;t access a 0&#39;d struct
-        require(divWinner.tokensProcessed &lt; divWinner.totalTokens);
+        require(divWinner.totalTokens > 0); // Basic check to make sure we don't access a 0'd struct
+        require(divWinner.tokensProcessed < divWinner.totalTokens);
         require(_winners.length == _tokenAllocation.length);
 
         uint totalEthAssigned;
@@ -773,7 +773,7 @@ contract PlayerExchangeCore {
         uint ethAllocation;
         address winner;
 
-        for (uint i = 0; i &lt; _winners.length; i++) {
+        for (uint i = 0; i < _winners.length; i++) {
             winner = _winners[i];
             ethAllocation = _tokenAllocation[i].mul(divWinner.perTokenEthValue);
             addressToDividendBalance[winner] = addressToDividendBalance[winner].add(ethAllocation);
@@ -784,15 +784,15 @@ contract PlayerExchangeCore {
         // Update balancePendingWithdrawal_ - this allows us to get an accurate reflection of the div pool
         balancePendingWithdrawal_ = balancePendingWithdrawal_.add(totalEthAssigned);
 
-        // As we will likely cause this function in batches this allows us to make sure we don&#39;t oversettle (failsafe)
+        // As we will likely cause this function in batches this allows us to make sure we don't oversettle (failsafe)
         divWinner.tokensProcessed = divWinner.tokensProcessed.add(totalTokensAllocatedEth);
 
         // This should never occur, but a failsafe for when automated div payments are rolled out
-        require(divWinner.tokensProcessed &lt;= divWinner.totalTokens);
+        require(divWinner.tokensProcessed <= divWinner.totalTokens);
     }
 
     function withdrawDividends() external {
-        require(addressToDividendBalance[msg.sender] &gt; 0, &quot;Must have a valid dividend balance&quot;);
+        require(addressToDividendBalance[msg.sender] > 0, "Must have a valid dividend balance");
         uint senderBalance = addressToDividendBalance[msg.sender];
         addressToDividendBalance[msg.sender] = 0;
         balancePendingWithdrawal_ = balancePendingWithdrawal_.sub(senderBalance);

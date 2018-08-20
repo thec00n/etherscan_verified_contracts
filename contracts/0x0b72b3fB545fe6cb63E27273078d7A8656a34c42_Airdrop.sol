@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,7 +113,7 @@ contract Airdrop is Ownable, Destroyable {
     address public hell;
     address[] public addresses;
     Token public token;
-    mapping(address =&gt; Beneficiary) public beneficiaries;
+    mapping(address => Beneficiary) public beneficiaries;
 
 
     /*
@@ -205,7 +205,7 @@ contract Airdrop is Ownable, Destroyable {
      */
     function registerBeneficiaries(address[] _beneficiaries) public
     onlyOwner {
-        for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint i = 0; i < _beneficiaries.length; i++) {
             addBeneficiary(_beneficiaries[i]);
         }
     }
@@ -236,11 +236,11 @@ contract Airdrop is Ownable, Destroyable {
         uint256 totalBalance = 0;
         uint256 totalAirdrop = 0;
         uint256 airdrops = 0;
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             Beneficiary storage beneficiary = beneficiaries[addresses[i]];
             beneficiary.balance = token.balanceOf(addresses[i]);
             totalBalance = totalBalance.add(beneficiary.balance);
-            if (beneficiary.balance &gt; 0) {
+            if (beneficiary.balance > 0) {
                 beneficiary.airdrop = (beneficiary.balance.mul(airdropLimit).div(currentCirculating));
                 totalAirdrop = totalAirdrop.add(beneficiary.airdrop);
                 airdrops = airdrops.add(1);
@@ -260,10 +260,10 @@ contract Airdrop is Ownable, Destroyable {
     wasNotAirdropped {
         uint256 airdrops = 0;
         uint256 totalAirdrop = 0;
-        for (uint256 i = 0; i &lt; addresses.length; i++)
+        for (uint256 i = 0; i < addresses.length; i++)
         {
             Beneficiary storage beneficiary = beneficiaries[addresses[i]];
-            if (beneficiary.airdrop &gt; 0) {
+            if (beneficiary.airdrop > 0) {
                 require(token.transfer(addresses[i], beneficiary.airdrop));
                 totalAirdrop = totalAirdrop.add(beneficiary.airdrop);
                 airdrops = airdrops.add(1);
@@ -282,7 +282,7 @@ contract Airdrop is Ownable, Destroyable {
      */
     function clean() public
     onlyOwner {
-        for (uint256 i = 0; i &lt; addresses.length; i++)
+        for (uint256 i = 0; i < addresses.length; i++)
         {
             Beneficiary storage beneficiary = beneficiaries[addresses[i]];
             beneficiary.balance = 0;

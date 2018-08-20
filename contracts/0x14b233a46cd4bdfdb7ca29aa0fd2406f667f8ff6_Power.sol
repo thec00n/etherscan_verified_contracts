@@ -43,7 +43,7 @@ contract ControllerInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
  
 contract Ownable {
@@ -96,8 +96,8 @@ contract Power is Ownable, ERC20Basic {
 
   event Slashing(address indexed holder, uint value, bytes32 data);
 
-  string public name = &quot;Acebusters Power&quot;;
-  string public symbol = &quot;ABP&quot;;
+  string public name = "Acebusters Power";
+  string public symbol = "ABP";
   uint256 public decimals = 12;
 
 
@@ -123,7 +123,7 @@ contract Power is Ownable, ERC20Basic {
   }
 
   function powerUp(address _holder, uint256 _value) public onlyOwner {
-    // NTZ transfered from user&#39;s balance to power pool
+    // NTZ transfered from user's balance to power pool
     Transfer(address(0), _holder, _value);
   }
 

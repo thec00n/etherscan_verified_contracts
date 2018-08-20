@@ -14,7 +14,7 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title GUNS Crowdsale Contract - GeoFounders.com
@@ -40,7 +40,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -51,7 +51,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -76,8 +76,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -85,10 +85,10 @@ contract StandardToken is Token {
 contract GUNS is StandardToken {
 
     // metadata
-    string public constant name = &quot;GeoUnits&quot;;
-    string public constant symbol = &quot;GUNS&quot;;
+    string public constant name = "GeoUnits";
+    string public constant symbol = "GUNS";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public hostAccount;       // address that kicks off the crowdsale
@@ -111,13 +111,13 @@ contract GUNS is StandardToken {
     // safely add
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     // safely subtract
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -156,14 +156,14 @@ contract GUNS is StandardToken {
         require(address(hostAccount) != 0x0);                      // initialization check
 
         if (isFinalized) throw;                                    // crowdsale state check
-        if (block.number &lt; fundingStartBlock) throw;               // within start block check
-        if (block.number &gt; fundingEndBlock) throw;                 // within end block check
+        if (block.number < fundingStartBlock) throw;               // within start block check
+        if (block.number > fundingEndBlock) throw;                 // within end block check
         if (msg.value == 0) throw;                                 // person actually sent ETH check
 
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);   // calculate num of tokens purchased
         uint256 checkedSupply = safeAdd(totalSupply, tokens);      // calculate total supply if purchased
 
-        if (tokenCreationCap &lt; checkedSupply) throw;               // if exceeding token max, cancel order
+        if (tokenCreationCap < checkedSupply) throw;               // if exceeding token max, cancel order
 
         totalSupply = checkedSupply;                               // update totalSupply
         balances[msg.sender] += tokens;                            // update token balance for payer
@@ -177,13 +177,13 @@ contract GUNS is StandardToken {
     function finalize() external {
         //if (isFinalized) throw;                                                        // check crowdsale state is false
         if (msg.sender != ethFundDeposit) throw;                                         // check caller is ETH deposit address
-        //if (totalSupply &lt; tokenCreationMin) throw;                                     // check minimum is met
-        if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupply &lt; tokenCreationCap) throw;    // check past end block unless at creation cap
+        //if (totalSupply < tokenCreationMin) throw;                                     // check minimum is met
+        if (block.number <= fundingEndBlock && totalSupply < tokenCreationCap) throw;    // check past end block unless at creation cap
 
         if (!ethFundDeposit.send(this.balance)) throw;                                   // send account balance to ETH deposit address
         
         uint256 remainingSupply = safeSubtract(tokenCreationCap, totalSupply);           // calculate remaining tokens to reach fixed supply
-        if (remainingSupply &gt; 0) {                                                       // if remaining supply left
+        if (remainingSupply > 0) {                                                       // if remaining supply left
             uint256 updatedSupply = safeAdd(totalSupply, remainingSupply);               // calculate total supply with remaining supply
             totalSupply = updatedSupply;                                                 // update totalSupply
             balances[gunsFundDeposit] += remainingSupply;                                // manually update devs token balance
@@ -196,8 +196,8 @@ contract GUNS is StandardToken {
     // legacy code to enable refunds if min token supply not met (not possible with fixed supply)
     function refund() external {
         if (isFinalized) throw;                               // check crowdsale state is false
-        if (block.number &lt;= fundingEndBlock) throw;           // check crowdsale still running
-        if (totalSupply &gt;= tokenCreationMin) throw;           // check creation min was not met
+        if (block.number <= fundingEndBlock) throw;           // check crowdsale still running
+        if (totalSupply >= tokenCreationMin) throw;           // check creation min was not met
         if (msg.sender == gunsFundDeposit) throw;             // do not allow dev refund
 
         uint256 gunsVal = balances[msg.sender];               // get callers token balance
@@ -217,13 +217,13 @@ contract GUNS is StandardToken {
     function mistakenTokens() external {
         if (msg.sender != ethFundDeposit) throw;                // check caller is ETH deposit address
         
-        if (balances[this] &gt; 0) {                               // if contract has tokens
+        if (balances[this] > 0) {                               // if contract has tokens
             Transfer(this, gunsFundDeposit, balances[this]);    // log transfer event
             balances[gunsFundDeposit] += balances[this];        // send tokens to dev tokens address
             balances[this] = 0;                                 // zero out contract token balance
         }
 
-        if (balances[0x0] &gt; 0) {                                // if empty address has tokens
+        if (balances[0x0] > 0) {                                // if empty address has tokens
             Transfer(0x0, gunsFundDeposit, balances[0x0]);      // log transfer event
             balances[gunsFundDeposit] += balances[0x0];         // send tokens to dev tokens address
             balances[0x0] = 0;                                  // zero out empty address token balance

@@ -35,13 +35,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,12 +77,12 @@ library SafeERC20 {
 contract StandardToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
  function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -96,8 +96,8 @@ contract StandardToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract StandardToken is ERC20 {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -142,17 +142,17 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   constructor(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
   }
 
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -184,13 +184,13 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract YiqiniuToken is MintableToken {
-    string public constant name		= &#39;YiqiniuToken&#39;;
-    string public constant symbol	= &#39;YQN&#39;;
+    string public constant name		= 'YiqiniuToken';
+    string public constant symbol	= 'YQN';
     uint256 public constant decimals	= 18;
     event Burned(address indexed burner, uint256 value);
     
     function burn(uint256 _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -224,8 +224,8 @@ contract YiqiniuCrowdsale is Ownable, CrowdsaleConfig{
     uint256 public goalSale;
     uint256 public totalPurchased = 0;
     bool public CrowdsaleEnabled = false;
-    mapping(address =&gt; bool) public isVerified;
-    mapping(address =&gt; uint256) public tokensPurchased;
+    mapping(address => bool) public isVerified;
+    mapping(address => uint256) public tokensPurchased;
     uint256 public maxTokenPurchase = 100000 * MIN_TOKEN_UNIT;
     uint256 public minTokenPurchase = 1 * MIN_TOKEN_UNIT;
     TokenTimelock public AgencyLock1;
@@ -281,35 +281,35 @@ contract YiqiniuCrowdsale is Ownable, CrowdsaleConfig{
     }
     
     function buyTokens(address participant) internal canCrowdsale {
-        require(now &gt;= startTime);
-        require(now &lt; endTime);
+        require(now >= startTime);
+        require(now < endTime);
         require(msg.value != 0);
         require(isVerified[participant]);
         uint256 weiAmount = msg.value;
         uint256 tokens = weiAmount.mul(rate);
         
         tokensPurchased[participant] = tokensPurchased[participant].add(tokens);
-        require(tokensPurchased[participant] &gt;= minTokenPurchase);
-        require(tokensPurchased[participant] &lt;= maxTokenPurchase);
+        require(tokensPurchased[participant] >= minTokenPurchase);
+        require(tokensPurchased[participant] <= maxTokenPurchase);
         
         totalPurchased = totalPurchased.add(tokens);
         token.safeTransfer(participant, tokens);
     }
     
     function setTokenPrice(uint256 _tokenRate) public onlyOwner {
-        require(now &gt; startTime);
-        require(_tokenRate &gt; 0);
+        require(now > startTime);
+        require(_tokenRate > 0);
         rate = _tokenRate;
     }
     
     function setLimitTokenPurchase(uint256 _minToken, uint256 _maxToken) public onlyOwner {
-        require(goalSale &gt;= maxTokenPurchase);
+        require(goalSale >= maxTokenPurchase);
         minTokenPurchase = _minToken;
         maxTokenPurchase = _maxToken;
     }
 
     function addVerified (address[] _ads) public onlyOwner {
-        for(uint i = 0; i &lt; _ads.length; i++){
+        for(uint i = 0; i < _ads.length; i++){
             isVerified[_ads[i]] = true;
         }
     }
@@ -319,7 +319,7 @@ contract YiqiniuCrowdsale is Ownable, CrowdsaleConfig{
     }
     
     function close() onlyOwner public {
-        require(now &gt;= endTime || totalPurchased &gt;= goalSale);
+        require(now >= endTime || totalPurchased >= goalSale);
         token.burn(token.balanceOf(this));
         WALLET_ADDR.transfer(address(this).balance);
    }

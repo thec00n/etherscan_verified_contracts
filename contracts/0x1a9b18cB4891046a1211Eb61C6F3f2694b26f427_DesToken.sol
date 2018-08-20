@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -86,7 +86,7 @@ contract Ownable {
 contract Transferable is Ownable {
 
   bool public transfersAllowed = false;
-  mapping(address =&gt; bool) allowedTransfersTo;
+  mapping(address => bool) allowedTransfersTo;
 
   function Transferable() {
     allowedTransfersTo[msg.sender] = true;
@@ -126,13 +126,13 @@ contract Transferable is Ownable {
 contract BasicToken is ERC20Basic, Transferable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -167,7 +167,7 @@ contract BasicToken is ERC20Basic, Transferable {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -180,7 +180,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -225,8 +225,8 @@ contract StandardToken is BasicToken, ERC20 {
  */
 contract DesToken is StandardToken {
 
-  string public name = &quot;DES Token&quot;;
-  string public symbol = &quot;DES&quot;;
+  string public name = "DES Token";
+  string public symbol = "DES";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 35000000 * 1 ether;
 

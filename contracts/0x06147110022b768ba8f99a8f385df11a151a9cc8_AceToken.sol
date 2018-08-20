@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -232,7 +232,7 @@ contract MintableToken is StandardToken, Ownable {
 // Copyright (c) 2017 TokenStars
 // Made by Aler Denisov
 // Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the &quot;Software&quot;), to deal
+// of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
@@ -241,7 +241,7 @@ contract MintableToken is StandardToken, Ownable {
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-// THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -284,7 +284,7 @@ contract StarTokenInterface is MintableToken {
 // Copyright (c) 2017 TokenStars
 // Made by Aler Denisov
 // Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the &quot;Software&quot;), to deal
+// of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
@@ -293,7 +293,7 @@ contract StarTokenInterface is MintableToken {
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-// THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -311,8 +311,8 @@ contract AceToken is StarTokenInterface {
     using SafeMath for uint256;
     
     // ERC20 constants
-    string public constant name = &quot;ACE Token&quot;;
-    string public constant symbol = &quot;ACE&quot;;
+    string public constant name = "ACE Token";
+    string public constant symbol = "ACE";
     uint public constant decimals = 0;
 
     // Minting constants
@@ -332,7 +332,7 @@ contract AceToken is StarTokenInterface {
 
     // Transfer rules
     bool public transferAllowed = false;
-    mapping (address=&gt;bool) public specialAllowed;
+    mapping (address=>bool) public specialAllowed;
 
     // Transfer rules events
     // event TransferAllowed();
@@ -383,7 +383,7 @@ contract AceToken is StarTokenInterface {
     }
 
     /**
-    * @dev Doesn&#39;t allow to send funds on contract!
+    * @dev Doesn't allow to send funds on contract!
     */
     function () payable public {
         require(false);
@@ -436,14 +436,14 @@ contract AceToken is StarTokenInterface {
     * @return A boolean that indicates if the operation was successful.
     */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         totalSupply = totalSupply.add(_amount);
         investorSupply = investorSupply.add(_amount);
         freeToExtraMinting = freeToExtraMinting.add(_amount);
 
         // Prevent to emit more than sale hardcap!
-        assert(investorSupply &lt;= MAXSOLD_SUPPLY);
-        assert(totalSupply &lt;= HARDCAPPED_SUPPLY);
+        assert(investorSupply <= MAXSOLD_SUPPLY);
+        assert(totalSupply <= HARDCAPPED_SUPPLY);
 
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
@@ -456,7 +456,7 @@ contract AceToken is StarTokenInterface {
     * @dev Mint extra token to corresponding token and community holders
     */
     function extraMint() onlyOwner canMint public returns (bool) {
-      require(freeToExtraMinting &gt; 0);
+      require(freeToExtraMinting > 0);
 
       uint256 onePercent = freeToExtraMinting / DISTRIBUTION_INVESTORS;
       uint256 teamPart = onePercent * DISTRIBUTION_TEAM;
@@ -469,8 +469,8 @@ contract AceToken is StarTokenInterface {
       uint256 leftToNextMinting = freeToExtraMinting % DISTRIBUTION_INVESTORS;
       freeToExtraMinting = leftToNextMinting;
 
-      assert(totalSupply &lt;= HARDCAPPED_SUPPLY);
-      assert(extraSupply &lt;= HARDCAPPED_SUPPLY.sub(MAXSOLD_SUPPLY));
+      assert(totalSupply <= HARDCAPPED_SUPPLY);
+      assert(extraSupply <= HARDCAPPED_SUPPLY.sub(MAXSOLD_SUPPLY));
 
       balances[teamTokensHolder] = balances[teamTokensHolder].add(teamPart);
       balances[communityTokensHolder] = balances[communityTokensHolder].add(communityPart);
@@ -501,7 +501,7 @@ contract AceToken is StarTokenInterface {
      */
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

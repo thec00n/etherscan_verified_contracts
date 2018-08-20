@@ -10,11 +10,11 @@ library UTF8 {
     function getStringLength(string str) internal pure returns(int256 length) {
         uint256 i = 0;
         bytes memory str_rep = bytes(str);
-        while(i &lt; str_rep.length) {
-            if (str_rep[i] &gt;&gt; 7 == 0)         i += 1;
-            else if (str_rep[i] &gt;&gt; 5 == 0x6)  i += 2;
-            else if (str_rep[i] &gt;&gt; 4 == 0xE)  i += 3;
-            else if (str_rep[i] &gt;&gt; 3 == 0x1E) i += 4;
+        while(i < str_rep.length) {
+            if (str_rep[i] >> 7 == 0)         i += 1;
+            else if (str_rep[i] >> 5 == 0x6)  i += 2;
+            else if (str_rep[i] >> 4 == 0xE)  i += 3;
+            else if (str_rep[i] >> 3 == 0x1E) i += 4;
             else                              i += 1;
             length++;
         }
@@ -111,8 +111,8 @@ contract Control is Ownable {
      * Withdraw balance
      */
     function withdrawBalance(address recipient, uint256 value) external onlyOwner {
-        require(value &gt; 0);
-        require(value &lt; address(this).balance);
+        require(value > 0);
+        require(value < address(this).balance);
         recipient.transfer(value);
     }
 }
@@ -142,11 +142,11 @@ contract Storage {
     // General stars storage
     Star[] internal stars;
 
-    // Stars at zIndex area (gid =&gt; zIndex =&gt; count)
-    mapping(uint8 =&gt; mapping(uint8 =&gt; uint16)) internal zCount;    
+    // Stars at zIndex area (gid => zIndex => count)
+    mapping(uint8 => mapping(uint8 => uint16)) internal zCount;    
 
-    // Stars positions (gid =&gt; zIndex =&gt; box =&gt; starId)
-    mapping(uint8 =&gt; mapping(uint8 =&gt; mapping(uint16 =&gt; uint256))) private positions;    
+    // Stars positions (gid => zIndex => box => starId)
+    mapping(uint8 => mapping(uint8 => mapping(uint16 => uint256))) private positions;    
 
 
     /**
@@ -157,7 +157,7 @@ contract Storage {
             owner: owner,
             gid: gid, zIndex: zIndex, box: box, inbox: inbox,
             stype: stype, color: color,
-            price: price, sell: 0, deleted: false, name: &quot;&quot;, message: &quot;&quot;
+            price: price, sell: 0, deleted: false, name: "", message: ""
         });
         uint256 starId = stars.push(_star) - 1;
         placeStar(gid, zIndex, box, starId);
@@ -185,7 +185,7 @@ contract Storage {
     function setStarDeleted(uint256 starId) internal {
         stars[starId].deleted = true;
         setStarSellPrice(starId, 0);
-        setStarNameMessage(starId, &quot;&quot;, &quot;&quot;);
+        setStarNameMessage(starId, "", "");
         setStarNewOwner(starId, address(0));
 
         Star storage _star = stars[starId];
@@ -221,7 +221,7 @@ contract Storage {
     }
 
     function starExists(uint256 starId) internal view returns(bool) {
-        return starId &gt; 0 &amp;&amp; starId &lt; stars.length &amp;&amp; stars[starId].deleted == false;
+        return starId > 0 && starId < stars.length && stars[starId].deleted == false;
     }
 
     function isStarOwner(uint256 starId, address owner) internal view returns(bool) {
@@ -247,8 +247,8 @@ contract Validation is Priced, Storage {
     uint16  private boxSize    = 20;  // Universe box size
     uint8   private inboxXY    = 100;
 
-    // Available box count in each z index (zIndex =&gt; count)
-    mapping(uint8 =&gt; uint16) private boxes;
+    // Available box count in each z index (zIndex => count)
+    mapping(uint8 => uint16) private boxes;
 
 
     /**
@@ -304,11 +304,11 @@ contract Validation is Priced, Storage {
      * Validate star parameters
      */
     function isValidGid(uint8 gid) internal view returns(bool) {
-        return gid &gt; 0 &amp;&amp; gid &lt;= gidMax;
+        return gid > 0 && gid <= gidMax;
     }
 
     function isValidZ(uint16 z) internal view returns(bool) {
-        return z &gt;= zMin &amp;&amp; z &lt;= zMax;
+        return z >= zMin && z <= zMax;
     }
 
     function isValidBox(uint8 gid, uint8 zIndex, uint16 box) internal view returns(bool) {
@@ -320,11 +320,11 @@ contract Validation is Priced, Storage {
      * Check name and message length
      */
     function isValidNameLength(string name) internal view returns(bool) {
-        return UTF8.getStringLength(name) &lt;= lName;
+        return UTF8.getStringLength(name) <= lName;
     }
 
     function isValidMessageLength(string message) internal view returns(bool) {
-        return UTF8.getStringLength(message) &lt;= lMessage;
+        return UTF8.getStringLength(message) <= lMessage;
     }
 
 
@@ -332,8 +332,8 @@ contract Validation is Priced, Storage {
      * Check is valid msg value
      */
     function isValidMsgValue(uint256 price) internal returns(bool) {
-        if (msg.value &lt; price) return false;
-        if (msg.value &gt; price)
+        if (msg.value < price) return false;
+        if (msg.value > price)
             msg.sender.transfer(msg.value - price);
         return true;
     }
@@ -367,7 +367,7 @@ contract Validation is Priced, Storage {
 
         uint8 ii   = maxIRandom;
         bool valid = false;
-        while (!valid &amp;&amp; ii &gt; 0) {
+        while (!valid && ii > 0) {
             randBox = getRandom16(0, boxCount);
             valid   = isValidBox(gid, zIndex, randBox);
             ii--;
@@ -399,7 +399,7 @@ contract Stars is Control, Validation {
     function Stars() public {
         // Add star with zero index
         uint256 starId = addStar(address(0), 0, 0, 0, 0, 0, 0, 0);
-        setStarNameMessage(starId, &quot;Universe&quot;, &quot;Big Bang!&quot;);
+        setStarNameMessage(starId, "Universe", "Big Bang!");
     }
 
 
@@ -482,7 +482,7 @@ contract Stars is Control, Validation {
         // Exists and owned star
         require(starExists(starId));
         require(isStarOwner(starId, msg.sender));
-        require(sellPrice &lt; 10**28);
+        require(sellPrice < 10**28);
 
         // Set star sell price
         setStarSellPrice(starId, sellPrice);
@@ -519,7 +519,7 @@ contract Stars is Control, Validation {
         // Exists and NOT owner
         require(starExists(starId));
         require(!isStarOwner(starId, msg.sender));
-        require(stars[starId].sell &gt; 0);
+        require(stars[starId].sell > 0);
 
         // Get sell commission and check value
         uint256 commission = getCommission(stars[starId].price);

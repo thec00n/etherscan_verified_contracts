@@ -55,7 +55,7 @@ contract Zethell is ZTHReceivingContract {
     // What time did the most recent clock reset happen?
     uint    public gameStarted;
     
-    // What time will the game end if the clock isn&#39;t reset?
+    // What time will the game end if the clock isn't reset?
     uint    public gameEnds;
     
     // Is betting allowed? (Administrative function, in the event of unforeseen bugs)
@@ -65,8 +65,8 @@ contract Zethell is ZTHReceivingContract {
     address private ZTHBANKROLL;
     ZTHInterface private     ZTHTKN;
 
-    mapping (uint =&gt; bool) validTokenBet;
-    mapping (uint =&gt; uint) tokenToTimer;
+    mapping (uint => bool) validTokenBet;
+    mapping (uint => uint) tokenToTimer;
 
     // Fire an event whenever the clock runs out and a winner is determined.
     event GameEnded(
@@ -105,7 +105,7 @@ contract Zethell is ZTHReceivingContract {
 
     constructor(address ZethrAddress, address BankrollAddress) public {
 
-        // Set Zethr &amp; Bankroll address from constructor params
+        // Set Zethr & Bankroll address from constructor params
         ZTHTKNADDR = ZethrAddress;
         ZTHBANKROLL = BankrollAddress;
 
@@ -114,7 +114,7 @@ contract Zethell is ZTHReceivingContract {
         bankroll      = ZTHBANKROLL;
         currentWinner = ZTHBANKROLL;
 
-        // Approve &quot;infinite&quot; token transfer to the bankroll, as part of Zethr game requirements.
+        // Approve "infinite" token transfer to the bankroll, as part of Zethr game requirements.
         ZTHTKN = ZTHInterface(ZTHTKNADDR);
         ZTHTKN.approve(ZTHBANKROLL, 2**256 - 1);
 
@@ -124,7 +124,7 @@ contract Zethell is ZTHReceivingContract {
         validTokenBet[25e18] = true;
         validTokenBet[50e18] = true;
 
-        // Logarithmically decreasing time &#39;bonus&#39; associated with higher amounts of ZTH staked.
+        // Logarithmically decreasing time 'bonus' associated with higher amounts of ZTH staked.
         tokenToTimer[5e18]  = 24 hours;
         tokenToTimer[10e18] = 18 hours;
         tokenToTimer[25e18] = 10 hours;
@@ -153,7 +153,7 @@ contract Zethell is ZTHReceivingContract {
     // Next - if the game has already ended (i.e. your bet was too late and the clock ran out)
     //   the staked tokens from the previous game are transferred to the winner, the timers are
     //   reset, and the game begins anew.
-    // If you&#39;re simply resetting the clock, the timers are reset accordingly and you are designated
+    // If you're simply resetting the clock, the timers are reset accordingly and you are designated
     //   the current winner. A 1% cut will be taken for the house, and the rest deposited in the prize
     //   pool which everyone will be playing for. No second place prizes here!
     function _stakeTokens(TKN _tkn) private {
@@ -162,7 +162,7 @@ contract Zethell is ZTHReceivingContract {
         require(_zthToken(msg.sender));
         require(validTokenBet[_tkn.value]);
         
-        if (now &gt; gameEnds) { _settleAndRestart(); }
+        if (now > gameEnds) { _settleAndRestart(); }
 
         address _customerAddress = _tkn.sender;
         uint    _wagered         = _tkn.value;
@@ -187,15 +187,15 @@ contract Zethell is ZTHReceivingContract {
 
     // In the event of a game restart, subtract the tokens which were being played for from the balance,
     //   transfer them to the winner (if the number of tokens is greater than zero: sly edge case).
-    // If there is *somehow* any Ether in the contract - again, please don&#39;t - it is transferred to the
+    // If there is *somehow* any Ether in the contract - again, please don't - it is transferred to the
     //   bankroll and reinvested into Zethr at the standard 33% rate.
     function _settleAndRestart() private {
         gameActive      = false;
         uint payment = tokensInPlay/2;
         contractBalance = contractBalance.sub(payment);
 
-        if (tokensInPlay &gt; 0) { ZTHTKN.transfer(currentWinner, payment);
-            if (address(this).balance &gt; 0){
+        if (tokensInPlay > 0) { ZTHTKN.transfer(currentWinner, payment);
+            if (address(this).balance > 0){
                 ZTHBANKROLL.transfer(address(this).balance);
             }}
 
@@ -259,7 +259,7 @@ contract Zethell is ZTHReceivingContract {
     }
 }
 
-// And here&#39;s the boring bit.
+// And here's the boring bit.
 
 /**
  * @title SafeMath
@@ -283,9 +283,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -293,7 +293,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -302,7 +302,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

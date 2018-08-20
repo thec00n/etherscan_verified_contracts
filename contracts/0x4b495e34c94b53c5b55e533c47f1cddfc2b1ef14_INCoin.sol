@@ -45,7 +45,7 @@ contract ERC20Token is Token
 
     function transfer(address _to, uint256 _value) returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -55,7 +55,7 @@ contract ERC20Token is Token
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -81,8 +81,8 @@ contract ERC20Token is Token
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract INCoin is ERC20Token
@@ -95,15 +95,15 @@ contract INCoin is ERC20Token
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;1.0&#39;;
+    string public version = '1.0';
 
     function INCoin ()
     {
         balances[msg.sender] = 10000000000000000000;
         totalSupply = 10000000000000000000;
-        name = &#39;INCoin&#39;;
+        name = 'INCoin';
         decimals = 6;
-        symbol = &#39;INC&#39;;
+        symbol = 'INC';
     }
 
     function add(uint256 _value) onlyowner  returns (bool success)
@@ -115,7 +115,7 @@ contract INCoin is ERC20Token
 
     function burn(uint256 _value) onlyowner  returns (bool success)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         totalSupply -= _value;

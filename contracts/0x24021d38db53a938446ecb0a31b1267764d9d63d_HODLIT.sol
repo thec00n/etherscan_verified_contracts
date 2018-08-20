@@ -19,7 +19,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -37,7 +37,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -59,7 +59,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -70,8 +70,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -85,7 +85,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -134,7 +134,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -191,20 +191,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -212,8 +212,8 @@ library SafeMath {
 
 contract HODLIT is StandardToken, Ownable {
   using SafeMath for uint256;
-  string public name = &quot;HODL INCENTIVE TOKEN&quot;;
-  string public symbol = &quot;HIT&quot;;
+  string public name = "HODL INCENTIVE TOKEN";
+  string public symbol = "HIT";
   uint256 public decimals = 18;
   uint256 public multiplicator = 10 ** decimals;
   uint256 public totalSupply;
@@ -226,10 +226,10 @@ contract HODLIT is StandardToken, Ownable {
   uint256 public hardCap = SafeMath.mul(100000000, multiplicator);
   uint256 public ICDCap = SafeMath.mul(20000000, multiplicator);
 
-  mapping (address =&gt; uint256) public etherBalances;
-  mapping (address =&gt; bool) public ICDClaims;
-  mapping (address =&gt; uint256) public referrals;
-  mapping (address =&gt; bool) public bonusReceived;
+  mapping (address => uint256) public etherBalances;
+  mapping (address => bool) public ICDClaims;
+  mapping (address => uint256) public referrals;
+  mapping (address => bool) public bonusReceived;
 
 
   uint256 public regStartTime = 1519848000; // 28 feb 2018 20:00 GMT
@@ -243,17 +243,17 @@ contract HODLIT is StandardToken, Ownable {
   address public ERC721Address;
 
   modifier forRegistration {
-    require(block.timestamp &gt;= regStartTime &amp;&amp; block.timestamp &lt; regStopTime);
+    require(block.timestamp >= regStartTime && block.timestamp < regStopTime);
     _;
   }
 
   modifier forICD {
-    require(block.timestamp &gt;= ICDStartTime &amp;&amp; block.timestamp &lt; ICDStopTime);
+    require(block.timestamp >= ICDStartTime && block.timestamp < ICDStopTime);
     _;
   }
 
   modifier forERC721 {
-    require(msg.sender == ERC721Address &amp;&amp; block.timestamp &gt;= PCDStartTime);
+    require(msg.sender == ERC721Address && block.timestamp >= PCDStartTime);
     _;
   }
 
@@ -279,11 +279,11 @@ contract HODLIT is StandardToken, Ownable {
 
   function registerEtherBalance(address _referral) external forRegistration {
     require(
-      msg.sender.balance &gt; 0.2 ether &amp;&amp;
-      etherBalances[msg.sender] == 0 &amp;&amp;
+      msg.sender.balance > 0.2 ether &&
+      etherBalances[msg.sender] == 0 &&
       _referral != msg.sender
     );
-    if (_referral != address(0) &amp;&amp; referrals[_referral] &lt; maxReferrals) {
+    if (_referral != address(0) && referrals[_referral] < maxReferrals) {
       referrals[_referral]++;
     }
     registeredUsers++;
@@ -292,8 +292,8 @@ contract HODLIT is StandardToken, Ownable {
 
   function claimTokens() external forICD {
     require(ICDClaims[msg.sender] == false);
-    require(etherBalances[msg.sender] &gt; 0);
-    require(etherBalances[msg.sender] &lt;= msg.sender.balance + 50 finney);
+    require(etherBalances[msg.sender] > 0);
+    require(etherBalances[msg.sender] <= msg.sender.balance + 50 finney);
     ICDClaims[msg.sender] = true;
     claimedUsers++;
     require(mintICD(msg.sender, computeReward(etherBalances[msg.sender])));
@@ -306,7 +306,7 @@ contract HODLIT is StandardToken, Ownable {
   }
 
   function declareCheaters(address[] _cheaters) external onlyOwner {
-    for (uint256 i = 0; i &lt; _cheaters.length; i++) {
+    for (uint256 i = 0; i < _cheaters.length; i++) {
       require(_cheaters[i] != address(0));
       ICDClaims[_cheaters[i]] = false;
       etherBalances[_cheaters[i]] = 0;
@@ -315,7 +315,7 @@ contract HODLIT is StandardToken, Ownable {
 
   function mintPCD(address _to, uint256 _amount) external forERC721 returns(bool) {
     require(_to != address(0));
-    require(_amount + totalSupply &lt;= hardCap);
+    require(_amount + totalSupply <= hardCap);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     etherBalances[_to] = _to.balance;
@@ -324,75 +324,75 @@ contract HODLIT is StandardToken, Ownable {
   }
 
   function claimTwitterBonus() external forICD {
-    require(balances[msg.sender] &gt; 0 &amp;&amp; !bonusReceived[msg.sender]);
+    require(balances[msg.sender] > 0 && !bonusReceived[msg.sender]);
     bonusReceived[msg.sender] = true;
     mintICD(msg.sender, multiplicator.mul(20));
   }
 
   function claimReferralBonus() external forICD {
-    require(referrals[msg.sender] &gt; 0 &amp;&amp; balances[msg.sender] &gt; 0);
+    require(referrals[msg.sender] > 0 && balances[msg.sender] > 0);
     uint256 cache = referrals[msg.sender];
     referrals[msg.sender] = 0;
     mintICD(msg.sender, SafeMath.mul(cache * 20, multiplicator));
   }
 
   function computeReward(uint256 _amount) internal view returns(uint256) {
-    if (_amount &lt; 1 ether) return SafeMath.mul(20, multiplicator);
-    if (_amount &lt; 2 ether) return SafeMath.mul(100, multiplicator);
-    if (_amount &lt; 3 ether) return SafeMath.mul(240, multiplicator);
-    if (_amount &lt; 4 ether) return SafeMath.mul(430, multiplicator);
-    if (_amount &lt; 5 ether) return SafeMath.mul(680, multiplicator);
-    if (_amount &lt; 6 ether) return SafeMath.mul(950, multiplicator);
-    if (_amount &lt; 7 ether) return SafeMath.mul(1260, multiplicator);
-    if (_amount &lt; 8 ether) return SafeMath.mul(1580, multiplicator);
-    if (_amount &lt; 9 ether) return SafeMath.mul(1900, multiplicator);
-    if (_amount &lt; 10 ether) return SafeMath.mul(2240, multiplicator);
-    if (_amount &lt; 11 ether) return SafeMath.mul(2560, multiplicator);
-    if (_amount &lt; 12 ether) return SafeMath.mul(2890, multiplicator);
-    if (_amount &lt; 13 ether) return SafeMath.mul(3210, multiplicator);
-    if (_amount &lt; 14 ether) return SafeMath.mul(3520, multiplicator);
-    if (_amount &lt; 15 ether) return SafeMath.mul(3830, multiplicator);
-    if (_amount &lt; 16 ether) return SafeMath.mul(4120, multiplicator);
-    if (_amount &lt; 17 ether) return SafeMath.mul(4410, multiplicator);
-    if (_amount &lt; 18 ether) return SafeMath.mul(4680, multiplicator);
-    if (_amount &lt; 19 ether) return SafeMath.mul(4950, multiplicator);
-    if (_amount &lt; 20 ether) return SafeMath.mul(5210, multiplicator);
-    if (_amount &lt; 21 ether) return SafeMath.mul(5460, multiplicator);
-    if (_amount &lt; 22 ether) return SafeMath.mul(5700, multiplicator);
-    if (_amount &lt; 23 ether) return SafeMath.mul(5930, multiplicator);
-    if (_amount &lt; 24 ether) return SafeMath.mul(6150, multiplicator);
-    if (_amount &lt; 25 ether) return SafeMath.mul(6360, multiplicator);
-    if (_amount &lt; 26 ether) return SafeMath.mul(6570, multiplicator);
-    if (_amount &lt; 27 ether) return SafeMath.mul(6770, multiplicator);
-    if (_amount &lt; 28 ether) return SafeMath.mul(6960, multiplicator);
-    if (_amount &lt; 29 ether) return SafeMath.mul(7140, multiplicator);
-    if (_amount &lt; 30 ether) return SafeMath.mul(7320, multiplicator);
-    if (_amount &lt; 31 ether) return SafeMath.mul(7500, multiplicator);
-    if (_amount &lt; 32 ether) return SafeMath.mul(7660, multiplicator);
-    if (_amount &lt; 33 ether) return SafeMath.mul(7820, multiplicator);
-    if (_amount &lt; 34 ether) return SafeMath.mul(7980, multiplicator);
-    if (_amount &lt; 35 ether) return SafeMath.mul(8130, multiplicator);
-    if (_amount &lt; 36 ether) return SafeMath.mul(8270, multiplicator);
-    if (_amount &lt; 37 ether) return SafeMath.mul(8410, multiplicator);
-    if (_amount &lt; 38 ether) return SafeMath.mul(8550, multiplicator);
-    if (_amount &lt; 39 ether) return SafeMath.mul(8680, multiplicator);
-    if (_amount &lt; 40 ether) return SafeMath.mul(8810, multiplicator);
-    if (_amount &lt; 41 ether) return SafeMath.mul(8930, multiplicator);
-    if (_amount &lt; 42 ether) return SafeMath.mul(9050, multiplicator);
-    if (_amount &lt; 43 ether) return SafeMath.mul(9170, multiplicator);
-    if (_amount &lt; 44 ether) return SafeMath.mul(9280, multiplicator);
-    if (_amount &lt; 45 ether) return SafeMath.mul(9390, multiplicator);
-    if (_amount &lt; 46 ether) return SafeMath.mul(9500, multiplicator);
-    if (_amount &lt; 47 ether) return SafeMath.mul(9600, multiplicator);
-    if (_amount &lt; 48 ether) return SafeMath.mul(9700, multiplicator);
-    if (_amount &lt; 49 ether) return SafeMath.mul(9800, multiplicator);
-    if (_amount &lt; 50 ether) return SafeMath.mul(9890, multiplicator);
+    if (_amount < 1 ether) return SafeMath.mul(20, multiplicator);
+    if (_amount < 2 ether) return SafeMath.mul(100, multiplicator);
+    if (_amount < 3 ether) return SafeMath.mul(240, multiplicator);
+    if (_amount < 4 ether) return SafeMath.mul(430, multiplicator);
+    if (_amount < 5 ether) return SafeMath.mul(680, multiplicator);
+    if (_amount < 6 ether) return SafeMath.mul(950, multiplicator);
+    if (_amount < 7 ether) return SafeMath.mul(1260, multiplicator);
+    if (_amount < 8 ether) return SafeMath.mul(1580, multiplicator);
+    if (_amount < 9 ether) return SafeMath.mul(1900, multiplicator);
+    if (_amount < 10 ether) return SafeMath.mul(2240, multiplicator);
+    if (_amount < 11 ether) return SafeMath.mul(2560, multiplicator);
+    if (_amount < 12 ether) return SafeMath.mul(2890, multiplicator);
+    if (_amount < 13 ether) return SafeMath.mul(3210, multiplicator);
+    if (_amount < 14 ether) return SafeMath.mul(3520, multiplicator);
+    if (_amount < 15 ether) return SafeMath.mul(3830, multiplicator);
+    if (_amount < 16 ether) return SafeMath.mul(4120, multiplicator);
+    if (_amount < 17 ether) return SafeMath.mul(4410, multiplicator);
+    if (_amount < 18 ether) return SafeMath.mul(4680, multiplicator);
+    if (_amount < 19 ether) return SafeMath.mul(4950, multiplicator);
+    if (_amount < 20 ether) return SafeMath.mul(5210, multiplicator);
+    if (_amount < 21 ether) return SafeMath.mul(5460, multiplicator);
+    if (_amount < 22 ether) return SafeMath.mul(5700, multiplicator);
+    if (_amount < 23 ether) return SafeMath.mul(5930, multiplicator);
+    if (_amount < 24 ether) return SafeMath.mul(6150, multiplicator);
+    if (_amount < 25 ether) return SafeMath.mul(6360, multiplicator);
+    if (_amount < 26 ether) return SafeMath.mul(6570, multiplicator);
+    if (_amount < 27 ether) return SafeMath.mul(6770, multiplicator);
+    if (_amount < 28 ether) return SafeMath.mul(6960, multiplicator);
+    if (_amount < 29 ether) return SafeMath.mul(7140, multiplicator);
+    if (_amount < 30 ether) return SafeMath.mul(7320, multiplicator);
+    if (_amount < 31 ether) return SafeMath.mul(7500, multiplicator);
+    if (_amount < 32 ether) return SafeMath.mul(7660, multiplicator);
+    if (_amount < 33 ether) return SafeMath.mul(7820, multiplicator);
+    if (_amount < 34 ether) return SafeMath.mul(7980, multiplicator);
+    if (_amount < 35 ether) return SafeMath.mul(8130, multiplicator);
+    if (_amount < 36 ether) return SafeMath.mul(8270, multiplicator);
+    if (_amount < 37 ether) return SafeMath.mul(8410, multiplicator);
+    if (_amount < 38 ether) return SafeMath.mul(8550, multiplicator);
+    if (_amount < 39 ether) return SafeMath.mul(8680, multiplicator);
+    if (_amount < 40 ether) return SafeMath.mul(8810, multiplicator);
+    if (_amount < 41 ether) return SafeMath.mul(8930, multiplicator);
+    if (_amount < 42 ether) return SafeMath.mul(9050, multiplicator);
+    if (_amount < 43 ether) return SafeMath.mul(9170, multiplicator);
+    if (_amount < 44 ether) return SafeMath.mul(9280, multiplicator);
+    if (_amount < 45 ether) return SafeMath.mul(9390, multiplicator);
+    if (_amount < 46 ether) return SafeMath.mul(9500, multiplicator);
+    if (_amount < 47 ether) return SafeMath.mul(9600, multiplicator);
+    if (_amount < 48 ether) return SafeMath.mul(9700, multiplicator);
+    if (_amount < 49 ether) return SafeMath.mul(9800, multiplicator);
+    if (_amount < 50 ether) return SafeMath.mul(9890, multiplicator);
     return SafeMath.mul(10000, multiplicator);
   }
 
   function mintICD(address _to, uint256 _amount) internal returns(bool) {
     require(_to != address(0));
-    require(_amount + ICDSupply &lt;= ICDCap);
+    require(_amount + ICDSupply <= ICDCap);
     totalSupply = totalSupply.add(_amount);
     ICDSupply = ICDSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);

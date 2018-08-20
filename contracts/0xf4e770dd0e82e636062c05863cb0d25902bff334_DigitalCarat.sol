@@ -16,11 +16,11 @@ library ECRecovery {
       v := byte(0, mload(add(sig, 96)))
     }
 
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -31,10 +31,10 @@ library ECRecovery {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -42,7 +42,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -70,8 +70,8 @@ contract ERC20 is ERC20Interface {
 
     uint _totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function totalSupply() public view returns (uint) {
@@ -126,7 +126,7 @@ contract ERC891 is ERC20 {
     using ECRecovery for bytes32;
 
     uint public constant maxReward = 50 * 10**18;
-    mapping(address =&gt; bool) internal claimed;
+    mapping(address => bool) internal claimed;
 
     function claim() public {
         claimFor(msg.sender);
@@ -136,7 +136,7 @@ contract ERC891 is ERC20 {
         require(!claimed[_address]);
         
         uint reward = checkFind(_address);
-        require(reward &gt; 0);
+        require(reward > 0);
         
         claimed[_address]   = true;
         balances[_address]  = balances[_address].add(reward);
@@ -149,19 +149,19 @@ contract ERC891 is ERC20 {
 
     function checkFind(address _address) pure public returns(uint) {
         uint maxBitRun  = 0;
-        uint data       = uint(bytes10(_address) &amp; 0x3ffff);
+        uint data       = uint(bytes10(_address) & 0x3ffff);
         
-        while (data &gt; 0) {
-            maxBitRun = maxBitRun + uint(data &amp; 1);
-            data = uint(data &amp; 1) == 1 ? data &gt;&gt; 1 : 0;
+        while (data > 0) {
+            maxBitRun = maxBitRun + uint(data & 1);
+            data = uint(data & 1) == 1 ? data >> 1 : 0;
         }
         
-        return maxReward &gt;&gt; (18 - maxBitRun);
+        return maxReward >> (18 - maxBitRun);
     }
 
     function claimWithSignature(bytes _sig) public {
         bytes32 hash = bytes32(keccak256(abi.encodePacked(
-            &quot;\x19Ethereum Signed Message:\n32&quot;,
+            "\x19Ethereum Signed Message:\n32",
             keccak256(abi.encodePacked(msg.sender))
         )));
         
@@ -174,8 +174,8 @@ contract ERC891 is ERC20 {
 }
 
 contract DigitalCarat is ERC891 {
-    string  public constant name        = &quot;Digital Carat&quot;;
-    string  public constant symbol      = &quot;DCD&quot;;
+    string  public constant name        = "Digital Carat";
+    string  public constant symbol      = "DCD";
     uint    public constant decimals    = 18;
     uint    public version              = 0;
 }

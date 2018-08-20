@@ -31,8 +31,8 @@ pragma solidity ^0.4.11;
    
   contract ImmutableShares is ERC20Interface {
       
-     string public constant symbol = &quot;CSH&quot;;
-      string public constant name = &quot;Cryptex Shares&quot;;
+     string public constant symbol = "CSH";
+      string public constant name = "Cryptex Shares";
       uint8 public constant decimals = 0;
       uint256 _totalSupply = 53000000;
       uint256 public totalSupply;
@@ -43,13 +43,13 @@ pragma solidity ^0.4.11;
       address public owner;
    
       // Balances for each account
-      mapping(address =&gt; uint256) public balances;
+      mapping(address => uint256) public balances;
    
       // Owner of account approves the transfer of an amount to another account
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       // dividends paid per share
-      mapping (address =&gt; uint256) public dividendsPaidPerShare;
+      mapping (address => uint256) public dividendsPaidPerShare;
    
       // Functions with this modifier can only be executed by the owner
       modifier onlyOwner() {
@@ -70,7 +70,7 @@ pragma solidity ^0.4.11;
 function isContract(address addr) returns (bool) {
   uint size;
   assembly { size := extcodesize(addr) }
-  return size &gt; 0;
+  return size > 0;
   addr=addr;
 }
 
@@ -82,17 +82,17 @@ function isContract(address addr) returns (bool) {
 //withdraw function
    function withdrawMyDividend() payable {
    bool IsContract = isContract(msg.sender);
-   if((balances[msg.sender] &gt; 0) &amp;&amp; (!IsContract)){
+   if((balances[msg.sender] > 0) && (!IsContract)){
      uint256 AmountToSendPerShare = TotalDividendsPerShare - dividendsPaidPerShare[msg.sender];
      dividendsPaidPerShare[msg.sender] = TotalDividendsPerShare;
-  if((balances[msg.sender]*AmountToSendPerShare) &gt; 0){
+  if((balances[msg.sender]*AmountToSendPerShare) > 0){
      msg.sender.transfer(balances[msg.sender]*AmountToSendPerShare);}
 }
 
-if((balances[msg.sender] &gt; 0) &amp;&amp; (IsContract)){
+if((balances[msg.sender] > 0) && (IsContract)){
      uint256 AmountToSendPerShareEx = TotalDividendsPerShare - dividendsPaidPerShare[msg.sender];
      dividendsPaidPerShare[msg.sender] = TotalDividendsPerShare;
-     if((balances[msg.sender]*AmountToSendPerShareEx) &gt; 0){
+     if((balances[msg.sender]*AmountToSendPerShareEx) > 0){
      fallbackAccount.transfer(balances[msg.sender]*AmountToSendPerShareEx);}
 }
 
@@ -100,10 +100,10 @@ if((balances[msg.sender] &gt; 0) &amp;&amp; (IsContract)){
 
 //pay receiver’s dividends
   function payReceiver(address ReceiverAddress) payable {
-   if(balances[ReceiverAddress] &gt; 0){
+   if(balances[ReceiverAddress] > 0){
      uint256 AmountToSendPerShare = TotalDividendsPerShare - dividendsPaidPerShare[ReceiverAddress];
      dividendsPaidPerShare[ReceiverAddress] = TotalDividendsPerShare;
-     if((balances[ReceiverAddress]*AmountToSendPerShare) &gt; 0){
+     if((balances[ReceiverAddress]*AmountToSendPerShare) > 0){
      ReceiverAddress.transfer(balances[ReceiverAddress]*AmountToSendPerShare);}
 }
 
@@ -118,11 +118,11 @@ if((balances[msg.sender] &gt; 0) &amp;&amp; (IsContract)){
           return balances[_owner];
       }
    
-      // Transfer the balance from owner&#39;s account to another account
+      // Transfer the balance from owner's account to another account
       function transfer(address _to, uint256 _amount) returns (bool success) {
-          if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
        
        withdrawMyDividend();
        payReceiver(_to);
@@ -142,7 +142,7 @@ if((balances[msg.sender] &gt; 0) &amp;&amp; (IsContract)){
    
       // Send _value amount of tokens from address _from to address _to
       // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-      // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+      // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
       // fees in sub-currencies; the command should fail unless the _from account has
       // deliberately authorized the sender of the message via some mechanism; we propose
       // these standardized APIs for approval:
@@ -151,10 +151,10 @@ if((balances[msg.sender] &gt; 0) &amp;&amp; (IsContract)){
           address _to,
           uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
 
        withdrawMyDividend();
        payReceiver(_to);

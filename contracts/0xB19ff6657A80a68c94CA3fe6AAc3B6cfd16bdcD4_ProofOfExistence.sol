@@ -7,14 +7,14 @@ contract ProofOfExistence{
     /* ---- Public variables: */
     string public created;
     address public manager; // account that adds info to this smartcontract
-    uint256 public index;   // record&#39;s numbers and number of records
-    mapping (uint256 =&gt; Doc) public docs; // index =&gt; Doc
+    uint256 public index;   // record's numbers and number of records
+    mapping (uint256 => Doc) public docs; // index => Doc
     // to get Doc obj call ProofOfExistence.docs(index);
 
     /* ---- Stored document structure: */
 
     struct Doc {
-        string publisher; // publisher&#39;s email
+        string publisher; // publisher's email
         uint256 publishedOnUnixTime; // block timestamp (block.timestamp)
         uint256 publishedInBlockNumber; // block.number
         string text; // text of the document
@@ -24,12 +24,12 @@ contract ProofOfExistence{
 
     function ProofOfExistence(){
         manager = msg.sender;
-        created = &quot;cryptonomica.net&quot;;
+        created = "cryptonomica.net";
         index = 0; //
     }
 
     /* ---- Event:  */
-    // This generates a public event on the blockchain that will notify clients. In &#39;Mist&#39; SmartContract page enable &#39;Watch contract events&#39;
+    // This generates a public event on the blockchain that will notify clients. In 'Mist' SmartContract page enable 'Watch contract events'
     event DocumentAdded(uint256 indexed index,
                         string indexed publisher,
                         uint256 publishedOnUnixTime,

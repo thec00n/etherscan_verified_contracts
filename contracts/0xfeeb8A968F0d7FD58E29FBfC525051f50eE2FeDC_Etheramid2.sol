@@ -10,8 +10,8 @@ contract Etheramid2 {
         uint totalPayout;
     }
     
-    mapping (address =&gt; Participant) Tree;
-    mapping (uint =&gt; address) Index;
+    mapping (address => Participant) Tree;
+    mapping (uint => address) Index;
 	
 	uint Count = 0;
     address public top;
@@ -34,12 +34,12 @@ contract Etheramid2 {
 		address itself; 
 		uint totalPayout;
 		(inviter, itself, totalPayout) = eth1.getParticipantById(id);
-		if ((Tree[itself].inviter != 0x0) || (id &gt;= oldUserCount)) throw;
+		if ((Tree[itself].inviter != 0x0) || (id >= oldUserCount)) throw;
 		addParticipant(inviter, itself, totalPayout);
 	}
 	
     function getParticipantById (uint id) constant public returns ( address inviter, address itself, uint totalPayout ){
-		if (id &gt;= Count) throw;
+		if (id >= Count) throw;
 		address ida = Index[id];
         inviter = Tree[ida].inviter;
         itself = Tree[ida].itself;
@@ -65,7 +65,7 @@ contract Etheramid2 {
     
     function enter(address inviter) public {
         uint amount = msg.value;
-        if ((amount &lt; contribution) || (Tree[msg.sender].inviter != 0x0) || (Tree[inviter].inviter == 0x0)) {
+        if ((amount < contribution) || (Tree[msg.sender].inviter != 0x0) || (Tree[inviter].inviter == 0x0)) {
             msg.sender.send(msg.value);
             throw;
         }
@@ -74,7 +74,7 @@ contract Etheramid2 {
         address next = inviter;
         uint rest = amount;
         uint level = 1;
-        while ( (next != top) &amp;&amp; (level &lt; 7) ){
+        while ( (next != top) && (level < 7) ){
             uint toSend = rest/2;
             next.send(toSend);
             Tree[next].totalPayout += toSend;

@@ -81,8 +81,8 @@ contract CryptoRomeAuction is CryptoRomeControl {
     function createAuction(uint256 _startTime, uint256 _startingPrice, uint256 _duration, uint256 _extensionTime, address _wallet, uint256 _tokenId) public onlyOwner {
         require(nonFungibleContract.ownerOf(_tokenId) == owner);
         require(_wallet != address(0));
-        require(_duration &gt; 0);
-        require(_duration &gt;= _extensionTime);
+        require(_duration > 0);
+        require(_duration >= _extensionTime);
         auctionStart = _startTime;
         startingPrice = _startingPrice;
         auctionEnd = (SafeMath.add(auctionStart, _duration));
@@ -100,7 +100,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     // Escrows the NFT, assigning ownership to this contract.
@@ -115,21 +115,21 @@ contract CryptoRomeAuction is CryptoRomeControl {
 
     function auctionStarted() public view returns (bool) {
         if (auctionStart != 0) {
-          return now &gt; auctionStart;
+          return now > auctionStart;
         } else {
           return false;
         }
     }
 
     function auctionExpired() public view returns (bool) {
-        return now &gt; auctionEnd;
+        return now > auctionEnd;
     }
 
     function bid() public payable {
         require(!_isContract(msg.sender));
         require(auctionStarted());
         require(!auctionExpired());
-        require(msg.value &gt;= (highestBid + 10000000000000000));
+        require(msg.value >= (highestBid + 10000000000000000));
 
         if (highestBid != 0) {
             if (!highestBidIsCC) {
@@ -137,7 +137,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
             }
         }
 
-        if (now &gt; SafeMath.sub(auctionEnd, extensionTime)) {
+        if (now > SafeMath.sub(auctionEnd, extensionTime)) {
             // If within extention time window, extend auction
             auctionEnd = SafeMath.add(now,extensionTime);
         }
@@ -145,7 +145,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
         highestBidder = msg.sender;
         highestBid = msg.value;
         highestBidIsCC = false;
-        highestBidderCC = &quot;&quot;;
+        highestBidderCC = "";
 
         emit Bid(msg.sender, msg.value);
     }
@@ -153,7 +153,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
     function bidCC(uint256 value, bytes32 userId) onlyOwner public {
         require(auctionStarted());
         require(!auctionExpired());
-        require(value &gt;= (highestBid + 10000000000000000));
+        require(value >= (highestBid + 10000000000000000));
 
         if (highestBid != 0) {
             if (!highestBidIsCC) {
@@ -162,7 +162,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
             }
         }
 
-        if (now &gt; SafeMath.sub(auctionEnd, extensionTime)) {
+        if (now > SafeMath.sub(auctionEnd, extensionTime)) {
             // If within extention time window, extend auction
             auctionEnd = SafeMath.add(now,extensionTime);
         }
@@ -189,7 +189,7 @@ contract CryptoRomeAuction is CryptoRomeControl {
     function approveTransfer(uint256 approved, address winnerAddress) public onlyOwner {
         require(ended);
         // Follow-up step for CC transfer that needs approval
-        if (approved &gt; 0) {
+        if (approved > 0) {
             _transfer(winnerAddress, tokenId);
         } else {
             _transfer(owner, tokenId);
@@ -215,16 +215,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   /**
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   /**
@@ -232,7 +232,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

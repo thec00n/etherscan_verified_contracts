@@ -2,13 +2,13 @@ pragma solidity ^0.4.11;
 
 // One Token to rule them all, One Token to find them, One Token to bring them all and in the darkness bind them
 contract TheOneToken {
-    string public standard = &#39;The One Token&#39;;
-    string public name = &#39;The One Token&#39;;
-    string public symbol = &#39;TOKEN&#39;;
+    string public standard = 'The One Token';
+    string public name = 'The One Token';
+    string public symbol = 'TOKEN';
     
     uint8 public decimals = 0;
     uint256 public totalSupply = 1;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     address public owner;
     address public tokenBearer;
@@ -34,10 +34,10 @@ contract TheOneToken {
         balanceOf[tokenBearer] = 1;
     }
     
-    // It came to me. It&#39;s mine, my own, my love, my precious.
+    // It came to me. It's mine, my own, my love, my precious.
     // # Send more than the last steal value to steal token
     function () payable {
-        require(msg.value &gt; lastStealValue);
+        require(msg.value > lastStealValue);
         lastStealValue = msg.value;
         passToken(msg.sender);
     }
@@ -45,7 +45,7 @@ contract TheOneToken {
     // One does not simply walk into Mordor..
     function tossIntoTheFire() {
         require(msg.sender == tokenBearer);
-        require(block.number &gt; 5800000);
+        require(block.number > 5800000);
         
         // Are you sure you want to destroy it?
         suicide(owner);

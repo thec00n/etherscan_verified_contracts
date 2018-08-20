@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b)pure internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b)pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b)pure internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -94,11 +94,11 @@ contract Ownable {
 contract StandardToken is ERC20, SafeMath, ERC223Interface {
 
     /* Actual balances of token holders */
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     uint public totalSupply;
 
     /* approve() allowances */
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
     /**
      *
      * Fix for the ERC20 short address attack
@@ -106,7 +106,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
      * http://vessenes.com/the-erc20-short-address-attack-explained/
      */
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) {
+        if(msg.data.length < size + 4) {
             revert();
         }
         _;
@@ -128,7 +128,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
     returns (bool success) 
     {
         require(_to != address(0));
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             // Standard function transfer similar to ERC20 transfer with no _data .
             // Added due to backwards compatibility reasons .
             uint codeLength;
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
             }
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
-            if(codeLength&gt;0) {
+            if(codeLength>0) {
                 ContractReceiver receiver = ContractReceiver(_to);
                 receiver.tokenFallback(msg.sender, _value, _data);
             }
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
     returns (bool success)
     {
         require(_to != address(0));
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             uint codeLength;
             bytes memory empty;
             assembly {
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
 
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
-            if(codeLength&gt;0) {
+            if(codeLength>0) {
                 ContractReceiver receiver = ContractReceiver(_to);
                 receiver.tokenFallback(msg.sender, _value, empty);
             }
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
     returns (bool success) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         uint _allowance = allowed[_from][msg.sender];
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
         //    allowance to zero by calling `approve(_spender, 0)` if it is not
         //    already 0 to mitigate the race condition described here:
         //    https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        //if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        //if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
         require(_value == 0 || allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, SafeMath, ERC223Interface {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -255,8 +255,8 @@ contract CoSoundToken is StandardToken, Ownable {
         decimals = 18;     // Amount of decimals for display purposes
         totalSupply = 1200000000 * 10 ** uint256(decimals);     // Update total supply
         balances[msg.sender] = totalSupply;    // Give the creator all initial tokens
-        name = &quot;Cosound&quot;;    // Set the name for display purposes
-        symbol = &quot;CSND&quot;;    // Set the symbol for display purposes
+        name = "Cosound";    // Set the name for display purposes
+        symbol = "CSND";    // Set the symbol for display purposes
     }
 
     /* Approves and then calls the receiving contract */
@@ -265,7 +265,7 @@ contract CoSoundToken is StandardToken, Ownable {
     returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 
@@ -281,7 +281,7 @@ contract CoSoundToken is StandardToken, Ownable {
     returns (bool success)
     {
         require(_to != address(0));
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             emit Transfer(msg.sender, _to, _value);

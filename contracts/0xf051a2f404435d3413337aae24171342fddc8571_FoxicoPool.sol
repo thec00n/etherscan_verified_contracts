@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,10 +52,10 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
-    mapping(address =&gt; bool)  internal owners;
+    mapping(address => bool)  internal owners;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -93,8 +93,8 @@ contract Ownable {
 contract FoxicoPool is Ownable {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) public deposited;
-  mapping (address =&gt; uint256) public claimed;
+  mapping (address => uint256) public deposited;
+  mapping (address => uint256) public claimed;
 
 
   // start and end timestamps where investments are allowed (both inclusive)
@@ -126,8 +126,8 @@ contract FoxicoPool is Ownable {
   }
 
   function FoxicoPool(uint256 _startTime, uint256 _endTime, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_wallet != address(0));
 
     startTime = _startTime;
@@ -155,15 +155,15 @@ contract FoxicoPool is Ownable {
 
   
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 
   // send ether to the fund collection wallet
   function forwardFunds() onlyOwner public {
-    require(now &gt;= endTime);
+    require(now >= endTime);
     wallet.transfer(address(this).balance);
   }
 
@@ -178,8 +178,8 @@ contract FoxicoPool is Ownable {
 
   function refundFunds(address _wallet) internal {
     require(_wallet != address(0));
-    require(deposited[_wallet] &gt; 0);
-    require(now &lt; endTime);
+    require(deposited[_wallet] > 0);
+    require(now < endTime);
 
     uint256 depositedValue = deposited[_wallet];
     deposited[_wallet] = 0;

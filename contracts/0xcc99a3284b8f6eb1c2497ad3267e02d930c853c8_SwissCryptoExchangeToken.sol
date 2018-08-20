@@ -19,7 +19,7 @@ contract Manageable {
    * @dev Checks if the msg.sender is the manager.
    */
   modifier onlyManager() { 
-    require (msg.sender == manager &amp;&amp; manager != 0x0);
+    require (msg.sender == manager && manager != 0x0);
     _; 
   }
 }
@@ -84,7 +84,7 @@ contract Versionable is Activatable {
    *      createdAt unix timestamp to current block timestamp.
    */
   function Versionable (string _name, string _version, uint256 _identifier) public {
-    require (bytes(_name).length != 0x0 &amp;&amp; bytes(_version).length != 0x0 &amp;&amp; _identifier &gt; 0);
+    require (bytes(_name).length != 0x0 && bytes(_version).length != 0x0 && _identifier > 0);
 
     // Set variables.
     name = _name;
@@ -99,7 +99,7 @@ contract Versionable is Activatable {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -144,9 +144,9 @@ contract ContractManagementSystem is Ownable {
   event UpgradedContract (uint256 contractIdentifier, address indexed oldContractAddress, address indexed newContractAddress);
   event RollbackedContract (uint256 contractIdentifier, address indexed fromContractAddress, address indexed toContractAddress);
 
-  mapping (uint256 =&gt; mapping (address =&gt; bool)) public managedContracts;
-  mapping (uint256 =&gt; address) public activeContracts;
-  mapping (uint256 =&gt; bool) migrationLocks;
+  mapping (uint256 => mapping (address => bool)) public managedContracts;
+  mapping (uint256 => address) public activeContracts;
+  mapping (uint256 => bool) migrationLocks;
 
   /**
    * @dev Ensure no locks are in place for the given contract identifier.
@@ -175,7 +175,7 @@ contract ContractManagementSystem is Ownable {
     activeContract = activeContracts[contractIdentifier];
 
     // Ensure the address is set and the contract is active.
-    require(activeContract != 0x0 &amp;&amp; Activatable(activeContract).active());
+    require(activeContract != 0x0 && Activatable(activeContract).active());
   }
 
   /**
@@ -190,7 +190,7 @@ contract ContractManagementSystem is Ownable {
     returns (bool)
   {
     // Validate the function arguments.
-    require(contractIdentifier != 0x0 &amp;&amp; contractAddress != 0x0);
+    require(contractIdentifier != 0x0 && contractAddress != 0x0);
 
     return managedContracts[contractIdentifier][contractAddress];
   }
@@ -207,7 +207,7 @@ contract ContractManagementSystem is Ownable {
     onlyWithoutLock(contractIdentifier)
   {
     // Validate the function arguments.
-    require(contractIdentifier != 0x0 &amp;&amp; newContractAddress != 0x0);
+    require(contractIdentifier != 0x0 && newContractAddress != 0x0);
     
     // Lock the contractIdentifier.
     migrationLocks[contractIdentifier] = true;
@@ -254,7 +254,7 @@ contract ContractManagementSystem is Ownable {
     onlyWithoutLock(contractIdentifier)
   {
     // Validate the function arguments.
-    require(contractIdentifier != 0x0 &amp;&amp; toContractAddress != 0x0);
+    require(contractIdentifier != 0x0 && toContractAddress != 0x0);
 
     // Lock the contractIdentifier.
     migrationLocks[contractIdentifier] = true;
@@ -262,10 +262,10 @@ contract ContractManagementSystem is Ownable {
     // To contract should match the given contractIdentifier.
     require(contractIdentifier == Versionable(toContractAddress).identifier());
 
-    // Rollback &quot;to&quot; contract should be managed and inactive.
-    require (!Activatable(toContractAddress).active() &amp;&amp; existsManagedContract(contractIdentifier, toContractAddress));
+    // Rollback "to" contract should be managed and inactive.
+    require (!Activatable(toContractAddress).active() && existsManagedContract(contractIdentifier, toContractAddress));
 
-    // Get the rollback &quot;from&quot; contract for given identifier. Will fail if there is no active contract.
+    // Get the rollback "from" contract for given identifier. Will fail if there is no active contract.
     address fromContractAddress = activeContracts[contractIdentifier];
 
     // Swap the states.
@@ -317,20 +317,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -362,9 +362,9 @@ contract SwissCryptoExchangeToken is ERC20Basic, Versionable {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  string public constant symbol = &quot;SCX&quot;;
+  string public constant symbol = "SCX";
   uint8 public constant decimals = 0;
 
   uint256 internal constant COMPANY_CONTRACT_ID = 101;
@@ -377,9 +377,9 @@ contract SwissCryptoExchangeToken is ERC20Basic, Versionable {
   function SwissCryptoExchangeToken (address initialShareholderAddress, uint256 initialAmount, address _manager)
     public
     Manageable (_manager)
-    Versionable (&quot;SwissCryptoExchangeToken&quot;, &quot;1.0.0&quot;, 1)
+    Versionable ("SwissCryptoExchangeToken", "1.0.0", 1)
   {
-    require(initialAmount &gt; 0);
+    require(initialAmount > 0);
     require(initialShareholderAddress != 0x0);
 
     balances[initialShareholderAddress] = initialAmount;
@@ -410,7 +410,7 @@ contract SwissCryptoExchangeToken is ERC20Basic, Versionable {
   */
   function transfer(address _to, uint256 _value) public isActive onlyCompany returns (bool) {
     require(_to != 0x0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -427,7 +427,7 @@ contract SwissCryptoExchangeToken is ERC20Basic, Versionable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public isActive onlyCompany returns (bool) {
     require(_to != 0x0);
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);

@@ -5,12 +5,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -39,7 +39,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -75,16 +75,16 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract ICEToken is StandardToken, SafeMath {
 
-    string public constant name = &quot;IDICE&quot;;
-    string public constant symbol = &quot;ICE&quot;;
+    string public constant name = "IDICE";
+    string public constant symbol = "ICE";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     address public ethFundDeposit;
     address public iceFundDeposit;
@@ -95,8 +95,8 @@ contract ICEToken is StandardToken, SafeMath {
     uint256 public constant iceFund = 500 * (10**3) * 10**decimals;
 
     function tokenRate() constant returns(uint) {
-        if (block.number&gt;=fundingStartBlock &amp;&amp; block.number&lt;fundingStartBlock+252) return 200;
-        if (block.number&gt;=fundingStartBlock &amp;&amp; block.number&lt;fundingStartBlock+36878) return 170; // first week
+        if (block.number>=fundingStartBlock && block.number<fundingStartBlock+252) return 200;
+        if (block.number>=fundingStartBlock && block.number<fundingStartBlock+36878) return 170; // first week
         return 130;
     }
 
@@ -126,15 +126,15 @@ contract ICEToken is StandardToken, SafeMath {
 
     function makeTokens() payable  {
       if (isFinalized) throw;
-      if (block.number &lt; fundingStartBlock) throw;
-      if (block.number &gt; fundingEndBlock) throw;
+      if (block.number < fundingStartBlock) throw;
+      if (block.number > fundingEndBlock) throw;
       if (msg.value == 0) throw;
 
       uint256 tokens = safeMult(msg.value, tokenRate());
 
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-      if (tokenCreationCap &lt; checkedSupply) throw;
+      if (tokenCreationCap < checkedSupply) throw;
 
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;
@@ -149,7 +149,7 @@ contract ICEToken is StandardToken, SafeMath {
       if (isFinalized) throw;
       if (msg.sender != ethFundDeposit) throw;
 
-      if(block.number &lt;= fundingEndBlock &amp;&amp; totalSupply != tokenCreationCap) throw;
+      if(block.number <= fundingEndBlock && totalSupply != tokenCreationCap) throw;
 
       isFinalized = true;
       if(!ethFundDeposit.send(this.balance)) throw;

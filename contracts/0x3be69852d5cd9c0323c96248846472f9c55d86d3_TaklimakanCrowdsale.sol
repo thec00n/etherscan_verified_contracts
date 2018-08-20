@@ -65,7 +65,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -76,9 +76,9 @@ contract Owned {
 }
 
 contract TKLNToken is Owned, CrowdsaleParameters {
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;Taklimakan&#39;;
-    string public symbol = &#39;TKLN&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'Taklimakan';
+    string public symbol = 'TKLN';
     uint8 public decimals = 18;
     uint256 public totalSupply = 0;
     bool public transfersEnabled = true;
@@ -110,7 +110,7 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
     /* Token and records */
     TKLNToken private token;
     uint public totalCollected = 0;
-    mapping (address =&gt; uint256) private investmentRecords;
+    mapping (address => uint256) private investmentRecords;
 
     /* Events */
     event TokenSale(address indexed tokenReceiver, uint indexed etherAmount, uint indexed tokenAmount, uint tokensPerEther);
@@ -141,7 +141,7 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
     * @return active - True, if sale is active
     */
     function isICOActive() public constant returns (bool active) {
-        active = ((saleStartTimestamp &lt;= now) &amp;&amp; (now &lt; saleStopTimestamp) &amp;&amp; (!goalReached));
+        active = ((saleStartTimestamp <= now) && (now < saleStopTimestamp) && (!goalReached));
         return active;
     }
 
@@ -161,7 +161,7 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
 
         // Before Metropolis update require will not refund gas, but
         // for some reason require statement around msg.value always throws
-        assert(msg.value &gt; 0 finney);
+        assert(msg.value > 0 finney);
 
         // Tell everyone about the transfer
         FundTransfer(bakerAddress, address(this), amount);
@@ -169,25 +169,25 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
         // Calculate tokens per ETH for this tier
         uint tokensPerEth = 16500;
 
-        if (amount &lt; 3 ether)
+        if (amount < 3 ether)
             tokensPerEth = 15000;
-        else if (amount &lt; 7 ether)
+        else if (amount < 7 ether)
             tokensPerEth = 15150;
-        else if (amount &lt; 15 ether)
+        else if (amount < 15 ether)
             tokensPerEth = 15300;
-        else if (amount &lt; 30 ether)
+        else if (amount < 30 ether)
             tokensPerEth = 15450;
-        else if (amount &lt; 75 ether)
+        else if (amount < 75 ether)
             tokensPerEth = 15600;
-        else if (amount &lt; 150 ether)
+        else if (amount < 150 ether)
             tokensPerEth = 15750;
-        else if (amount &lt; 250 ether)
+        else if (amount < 250 ether)
             tokensPerEth = 15900;
-        else if (amount &lt; 500 ether)
+        else if (amount < 500 ether)
             tokensPerEth = 16050;
-        else if (amount &lt; 750 ether)
+        else if (amount < 750 ether)
             tokensPerEth = 16200;
-        else if (amount &lt; 1000 ether)
+        else if (amount < 1000 ether)
             tokensPerEth = 16350;
 
         tokensPerEth = tokensPerEth * stageBonus;
@@ -199,7 +199,7 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
         // Check that stage wallet has enough tokens. If not, sell the rest and
         // return change.
         uint remainingTokenBalance = token.balanceOf(saleWalletAddress) / tokenMultiplier;
-        if (remainingTokenBalance &lt; tokenAmount) {
+        if (remainingTokenBalance < tokenAmount) {
             tokenAmount = remainingTokenBalance;
             goalReached = true;
         }
@@ -214,7 +214,7 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
 
         // Return change
         uint change = amount - acceptedAmount;
-        if (change &gt; 0) {
+        if (change > 0) {
             if (bakerAddress.send(change)) {
                 FundTransfer(address(this), bakerAddress, change);
             }
@@ -227,13 +227,13 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
     }
 
     /**
-    *  Transfer ETH amount from contract to owner&#39;s address.
+    *  Transfer ETH amount from contract to owner's address.
     *  Can only be used if ICO is closed
     *
     * @param amount - ETH amount to transfer in Wei
     */
     function safeWithdrawal(uint amount) external onlyOwner {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         require(!isICOActive());
 
         if (owner.send(amount)) {
@@ -267,12 +267,12 @@ contract TaklimakanCrowdsale is Owned, CrowdsaleParameters {
     *  Sends a refund to the sender who calls this method.
     */
     function refund() external {
-        require((now &gt; saleStopTimestamp) &amp;&amp; (totalCollected &lt; CrowdsaleParameters.minimumICOCap * 1e18));
-        require(investmentRecords[msg.sender] &gt; 0);
+        require((now > saleStopTimestamp) && (totalCollected < CrowdsaleParameters.minimumICOCap * 1e18));
+        require(investmentRecords[msg.sender] > 0);
 
         var amountToReturn = investmentRecords[msg.sender];
 
-        require(this.balance &gt;= amountToReturn);
+        require(this.balance >= amountToReturn);
 
         investmentRecords[msg.sender] = 0;
         msg.sender.transfer(amountToReturn);

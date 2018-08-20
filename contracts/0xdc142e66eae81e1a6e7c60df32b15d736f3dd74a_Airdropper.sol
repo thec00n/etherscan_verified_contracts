@@ -56,7 +56,7 @@ contract Airdropper is Ownable {
 
     function multisend(address[] dests) public onlyOwner returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            require(token.transfer(dests[i], numOfTokens));
            i += 1;
         }
@@ -68,10 +68,10 @@ contract Airdropper is Ownable {
     }
 
     //Function to get the locked tokens back, in case of any issue
-    //Return the tokens to the owner&#39;s address
+    //Return the tokens to the owner's address
     function withdrawRemainingTokens() public onlyOwner  {
         uint contractTokenBalance = token.balanceOf(this);
-        require(contractTokenBalance &gt; 0);        
+        require(contractTokenBalance > 0);        
         token.transfer(owner, contractTokenBalance);
     }
 
@@ -80,7 +80,7 @@ contract Airdropper is Ownable {
     function withdrawERC20ToOwner(address _erc20) public onlyOwner {
         ERC20 erc20Token = ERC20(_erc20);
         uint contractTokenBalance = erc20Token.balanceOf(this);
-        require(contractTokenBalance &gt; 0);
+        require(contractTokenBalance > 0);
         erc20Token.transfer(owner, contractTokenBalance);
     }
 

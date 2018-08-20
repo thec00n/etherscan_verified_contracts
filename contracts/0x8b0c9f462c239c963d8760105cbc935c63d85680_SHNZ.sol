@@ -36,13 +36,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -67,16 +67,16 @@ contract SHNZ is ERC20, Ownable {
     
     uint256 private tokensSold;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
   
     event TokensIssued(address from, address to, uint256 amount);
 
     function SHNZ() public {
         totalSupply = 1000000000000000000;
         decimals = 8;
-        name = &quot;ShizzleNizzle&quot;;
-        symbol = &quot;SHNZ&quot;;
+        name = "ShizzleNizzle";
+        symbol = "SHNZ";
         balances[this] = totalSupply;
     }
 
@@ -85,7 +85,7 @@ contract SHNZ is ERC20, Ownable {
     }
 
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -103,7 +103,7 @@ contract SHNZ is ERC20, Ownable {
     }
     
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -112,8 +112,8 @@ contract SHNZ is ERC20, Ownable {
     }
     
     function issueTokens(address _to, uint256 _amount) public onlyOwner {
-        require(_to != 0x0 &amp;&amp; _amount &gt; 0);
-        if(balances[this] &lt;= _amount) {
+        require(_to != 0x0 && _amount > 0);
+        if(balances[this] <= _amount) {
             balances[_to] = balances[_to].add(balances[this]);
             Transfer(0x0, _to, balances[this]);
             balances[this] = 0;

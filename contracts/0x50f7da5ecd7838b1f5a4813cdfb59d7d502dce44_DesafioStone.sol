@@ -10,7 +10,7 @@ contract DesafioStone {
   
   function o_algoritmo(uint a) constant returns (uint) {
     uint s = 0;
-    for (uint i = 0; i &lt; 21; ++i)
+    for (uint i = 0; i < 21; ++i)
       s += i;
     return a == s / 5 ? 1 : 0;
   }
@@ -41,7 +41,7 @@ contract DesafioStone {
 
   function o_minerador(uint a) constant returns (uint) {
     bytes32 hash = sha3(a);
-    for (uint i = 0; i &lt; 32; ++i)
+    for (uint i = 0; i < 32; ++i)
       if (hash[i] != 0)
         break;
     return i;
@@ -52,21 +52,21 @@ contract DesafioStone {
     uint[16] memory x = [uint(0),1,1,0,0,1,1,0,0,1,1,0,0,1,1,0];
     uint[16] memory y = [uint(0),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-    for (uint k = 0; k &lt; 16; ++k)
+    for (uint k = 0; k < 16; ++k)
       x[k] = inicio / (2 ** k) % 2;
 
-    for (uint t = 0; t &lt; 8; ++t) {
-      for (uint p = 0; p &lt; 16; ++p)
+    for (uint t = 0; t < 8; ++t) {
+      for (uint p = 0; p < 16; ++p)
         y[p] = r[(p == 0 ? 0 : x[p-1]) + x[p] * 2 + (p == 15 ? 0 : x[p+1]) * 4];
-      for (uint q = 0; q &lt; 16; ++q)
+      for (uint q = 0; q < 16; ++q)
         x[q] = y[q];
     }
 
     uint s = 0;
-    for (uint i = 0; i &lt; 16; ++i)
+    for (uint i = 0; i < 16; ++i)
       s += x[i];
 
-    return s &lt;= 9 ? 0 : s &lt;= 13 ? 1 : s &lt;= 15 ? 4 : 8;
+    return s <= 9 ? 0 : s <= 13 ? 1 : s <= 15 ? 4 : 8;
   }
 
   function o_labirinto(uint acoes) constant returns (uint) {
@@ -74,7 +74,7 @@ contract DesafioStone {
     uint x = 6;
     uint y = 11;
 
-    for (uint i = 0; i &lt; 64; ++i) {
+    for (uint i = 0; i < 64; ++i) {
       uint acao = acoes / (2 ** (256 - (i+1)*4)) % 0x10;
 
       if (acao == 0) y -= 1;
@@ -94,7 +94,7 @@ contract DesafioStone {
   }
 
   function o_deus(bytes32 a, bytes32 b) constant returns (uint) {
-    return a != b &amp;&amp; sha3(a) == sha3(b) ? 999999999 : 0;
+    return a != b && sha3(a) == sha3(b) ? 999999999 : 0;
   }
 
   function responder
@@ -124,7 +124,7 @@ contract DesafioStone {
     pontos += o_automata(k);
     pontos += o_labirinto(l);
     address desafiado = 0xD12A749b6585Cb7605Aeb89455CD33aAeda1EbDB;
-    if (pontos &gt;= 20)
+    if (pontos >= 20)
       if (desafiado.send(this.balance))
         return;
   }

@@ -29,8 +29,8 @@ contract ERC20Standard {
 }
 
 contract KKToken is ERC20Standard {
-    string public constant symbol = &quot;KK&quot;;
-    string public constant name = &quot;KKCOIN&quot;;
+    string public constant symbol = "KK";
+    string public constant name = "KKCOIN";
     uint256 public constant decimals = 8;
 
     uint256 public _totalSupply = 10 ** 18; // equal to 10^10 KK
@@ -39,10 +39,10 @@ contract KKToken is ERC20Standard {
     address public owner;
 
     // Balances KK for each account
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => mapping (address => uint256)) private allowed;
 
     /// @dev Constructor
     function KKToken() public {
@@ -63,9 +63,9 @@ contract KKToken is ERC20Standard {
 
     /// @return Transfer status
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp;
-             (_amount &gt;= 0) &amp;&amp; 
-             (balances[_to] + _amount &gt; balances[_to]) ) {  
+        if ( (balances[msg.sender] >= _amount) &&
+             (_amount >= 0) && 
+             (balances[_to] + _amount > balances[_to]) ) {  
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -79,10 +79,10 @@ contract KKToken is ERC20Standard {
     // Send _value amount of tokens from address _from to address _to
     // these standardized APIs for approval:
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

@@ -44,7 +44,7 @@ interface ERC721TokenReceiver {
     /// @param _from The sending address
     /// @param _tokenId The NFT identifier which is being transfered
     /// @param _data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     ///  unless throwing
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
 }
@@ -71,9 +71,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -81,7 +81,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -90,7 +90,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,7 +98,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -156,28 +156,28 @@ library Strings {
       string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
       bytes memory babcde = bytes(abcde);
       uint k = 0;
-      for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-      for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-      for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-      for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-      for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+      for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+      for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+      for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+      for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+      for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
       return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     function uint2str(uint i) internal pure returns (string) {
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -206,31 +206,31 @@ interface ERC721Metadata /* is ERC721 */ {
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string);
 }
 contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   using SafeMath for uint256;
 
-  string public constant NAME = &quot;EtherLoot&quot;;
-  string public constant SYMBOL = &quot;ETLT&quot;;
-  string public tokenMetadataBaseURI = &quot;http://api.etherloot.moonshadowgames.com/tokenmetadata/&quot;;
+  string public constant NAME = "EtherLoot";
+  string public constant SYMBOL = "ETLT";
+  string public tokenMetadataBaseURI = "http://api.etherloot.moonshadowgames.com/tokenmetadata/";
 
   struct AddressAndTokenIndex {
     address owner;
     uint32 tokenIndex;
   }
 
-  mapping (uint256 =&gt; AddressAndTokenIndex) private tokenOwnerAndTokensIndex;
+  mapping (uint256 => AddressAndTokenIndex) private tokenOwnerAndTokensIndex;
 
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
-  mapping (address =&gt; mapping (address =&gt; bool)) private operatorApprovals;
+  mapping (address => mapping (address => bool)) private operatorApprovals;
 
-  mapping (address =&gt; bool) private approvedContractAddresses;
+  mapping (address => bool) private approvedContractAddresses;
 
   bool approvedContractsFinalized = false;
 
@@ -277,7 +277,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @param _tokenId uint256 ID of the token to validate its ownership belongs to msg.sender
   */
   modifier onlyOwnerOf(uint256 _tokenId) {
-    require(ownerOf(_tokenId) == msg.sender, &quot;not owner&quot;);
+    require(ownerOf(_tokenId) == msg.sender, "not owner");
     _;
   }
 
@@ -287,7 +287,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @return uint256 representing the amount owned by the passed address
   */
   function balanceOf(address _owner) public view returns (uint256) {
-    require(_owner != address(0), &quot;null owner&quot;);
+    require(_owner != address(0), "null owner");
     return ownedTokens[_owner].length;
   }
 
@@ -302,7 +302,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
 
   /**
   * @notice Enumerate NFTs assigned to an owner
-  * @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  * @dev Throws if `_index` >= `balanceOf(_owner)` or if
   *  `_owner` is the zero address, representing invalid NFTs.
   * @param _owner An address where we are interested in NFTs owned by them
   * @param _index A counter less than `balanceOf(_owner)`
@@ -313,7 +313,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
     view
     returns (uint256 _tokenId)
   {
-    require(_index &lt; balanceOf(_owner), &quot;invalid index&quot;);
+    require(_index < balanceOf(_owner), "invalid index");
     return ownedTokens[_owner][_index];
   }
 
@@ -324,7 +324,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   */
   function ownerOf(uint256 _tokenId) public view returns (address) {
     address _owner = tokenOwnerAndTokensIndex[_tokenId].owner;
-    require(_owner != address(0), &quot;invalid owner&quot;);
+    require(_owner != address(0), "invalid owner");
     return _owner;
   }
 
@@ -398,7 +398,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
     onlyOwnerOf(_tokenId)
   {
     address _owner = ownerOf(_tokenId);
-    require(_to != _owner, &quot;already owns&quot;);
+    require(_to != _owner, "already owns");
     if (getApproved(_tokenId) != 0 || _to != 0) {
       tokenApprovals[_tokenId] = _to;
       emit Approval(_owner, _to, _tokenId);
@@ -406,7 +406,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   }
 
   /**
-  * @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage all your assets
+  * @notice Enable or disable approval for a third party ("operator") to manage all your assets
   * @dev Emits the ApprovalForAll event
   * @param _to Address to add to the set of authorized operators.
   * @param _approved True if the operators is approved, false to revoke approval
@@ -428,8 +428,8 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   function approveAll(address _to)
     public
   {
-    require(_to != msg.sender, &quot;cant approve yourself&quot;);
-    require(_to != address(0), &quot;invalid owner&quot;);
+    require(_to != msg.sender, "cant approve yourself");
+    require(_to != address(0), "invalid owner");
     operatorApprovals[msg.sender][_to] = true;
     emit ApprovalForAll(msg.sender, _to, true);
   }
@@ -444,7 +444,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   function disapproveAll(address _to)
     public
   {
-    require(_to != msg.sender, &quot;cant unapprove yourself&quot;);
+    require(_to != msg.sender, "cant unapprove yourself");
     delete operatorApprovals[msg.sender][_to];
     emit ApprovalForAll(msg.sender, _to, false);
   }
@@ -456,7 +456,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   function takeOwnership(uint256 _tokenId)
    external
   {
-    require(isSenderApprovedFor(_tokenId), &quot;not approved&quot;);
+    require(isSenderApprovedFor(_tokenId), "not approved");
     _clearApprovalAndTransfer(ownerOf(_tokenId), msg.sender, _tokenId);
   }
 
@@ -476,8 +476,8 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   {
     address tokenOwner = ownerOf(_tokenId);
     require(isSenderApprovedFor(_tokenId) || 
-      (approvedContractAddresses[msg.sender] &amp;&amp; tokenOwner == tx.origin), &quot;not an approved sender&quot;);
-    require(tokenOwner == _from, &quot;wrong owner&quot;);
+      (approvedContractAddresses[msg.sender] && tokenOwner == tx.origin), "not an approved sender");
+    require(tokenOwner == _from, "wrong owner");
     _clearApprovalAndTransfer(ownerOf(_tokenId), _to, _tokenId);
   }
 
@@ -487,9 +487,9 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * operator, or the approved address for this NFT. Throws if `_from` is
   * not the current owner. Throws if `_to` is the zero address. Throws if
   * `_tokenId` is not a valid NFT. When transfer is complete, this function
-  * checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+  * checks if `_to` is a smart contract (code size > 0). If so, it calls
   * `onERC721Received` on `_to` and throws if the return value is not
-  * `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+  * `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
   * @param _from The current owner of the NFT
   * @param _to The new owner
   * @param _tokenId The NFT to transfer
@@ -503,20 +503,20 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   )
     public
   {
-    require(_to != address(0), &quot;invalid target address&quot;);
+    require(_to != address(0), "invalid target address");
     transferFrom(_from, _to, _tokenId);
     if (_isContract(_to)) {
       bytes4 tokenReceiverResponse = ERC721TokenReceiver(_to).onERC721Received.gas(50000)(
         _from, _tokenId, _data
       );
-      require(tokenReceiverResponse == bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)), &quot;invalid receiver respononse&quot;);
+      require(tokenReceiverResponse == bytes4(keccak256("onERC721Received(address,uint256,bytes)")), "invalid receiver respononse");
     }
   }
 
   /*
    * @notice Transfers the ownership of an NFT from one address to another address
    * @dev This works identically to the other function with an extra data parameter,
-   *  except this function just sets data to &quot;&quot;
+   *  except this function just sets data to ""
    * @param _from The current owner of the NFT
    * @param _to The new owner
    * @param _tokenId The NFT to transfer
@@ -528,7 +528,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   )
     external
   {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
@@ -566,7 +566,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   function mint(address _to, uint256 _tokenId) public {
     require(
       approvedContractAddresses[msg.sender] ||
-      msg.sender == owner, &quot;minter not approved&quot;
+      msg.sender == owner, "minter not approved"
     );
     _mint(_to, _tokenId);
   }
@@ -577,8 +577,8 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @param _tokenId uint256 ID of the token to be minted by the msg.sender
   */
   function _mint(address _to, uint256 _tokenId) internal {
-    require(_to != address(0), &quot;invalid target address&quot;);
-    require(tokenOwnerAndTokensIndex[_tokenId].owner == address(0), &quot;token already exists&quot;);
+    require(_to != address(0), "invalid target address");
+    require(tokenOwnerAndTokensIndex[_tokenId].owner == address(0), "token already exists");
     _addToken(_to, _tokenId);
     emit Transfer(0x0, _to, _tokenId);
   }
@@ -590,9 +590,9 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function _clearApprovalAndTransfer(address _from, address _to, uint256 _tokenId) internal {
-    require(_to != address(0), &quot;invalid target address&quot;);
-    require(_to != ownerOf(_tokenId), &quot;already owns&quot;);
-    require(ownerOf(_tokenId) == _from, &quot;wrong owner&quot;);
+    require(_to != address(0), "invalid target address");
+    require(_to != ownerOf(_tokenId), "already owns");
+    require(ownerOf(_tokenId) == _from, "wrong owner");
 
     _clearApproval(_from, _tokenId);
     _removeToken(_from, _tokenId);
@@ -605,7 +605,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function _clearApproval(address _owner, uint256 _tokenId) private {
-    require(ownerOf(_tokenId) == _owner, &quot;wrong owner&quot;);
+    require(ownerOf(_tokenId) == _owner, "wrong owner");
     if (tokenApprovals[_tokenId] != 0) {
       tokenApprovals[_tokenId] = 0;
       emit Approval(_owner, 0, _tokenId);
@@ -621,8 +621,8 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
     uint256 newTokenIndex = ownedTokens[_to].length;
     ownedTokens[_to].push(_tokenId);
 
-    // I don&#39;t expect anyone to own 4 billion tokens, but just in case...
-    require(newTokenIndex == uint256(uint32(newTokenIndex)), &quot;overflow&quot;);
+    // I don't expect anyone to own 4 billion tokens, but just in case...
+    require(newTokenIndex == uint256(uint32(newTokenIndex)), "overflow");
 
     tokenOwnerAndTokensIndex[_tokenId] = AddressAndTokenIndex({owner: _to, tokenIndex: uint32(newTokenIndex)});
   }
@@ -633,7 +633,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   * @param _tokenId uint256 ID of the token to be removed from the tokens list of the given address
   */
   function _removeToken(address _from, uint256 _tokenId) private {
-    require(ownerOf(_tokenId) == _from, &quot;wrong owner&quot;);
+    require(ownerOf(_tokenId) == _from, "wrong owner");
 
     uint256 tokenIndex = tokenOwnerAndTokensIndex[_tokenId].tokenIndex;
     uint256 lastTokenIndex = ownedTokens[_from].length.sub(1);
@@ -648,7 +648,7 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
   function _isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 /**
@@ -657,23 +657,23 @@ contract ERC721SlimToken is Ownable, ERC721, ERC165, ERC721Metadata {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function smax256(int256 a, int256 b) internal pure returns (int256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 }
 
@@ -798,16 +798,16 @@ contract CryptoBoss is ContractAccessControl {
   }
 
   struct Encounter {
-    mapping (address =&gt; ParticipantData) participantData;
+    mapping (address => ParticipantData) participantData;
     address[] participants;
   }
 
   //encounterId is the starting block number / encounterBlockDuration
-  mapping (uint =&gt; Encounter) encountersById;
+  mapping (uint => Encounter) encountersById;
 
-  mapping (uint =&gt; address) winnerPerDay;
-  mapping (uint =&gt; mapping (address =&gt; uint)) dayToAddressToScore;
-  mapping (uint =&gt; bool) dailyLootClaimedPerDay;
+  mapping (uint => address) winnerPerDay;
+  mapping (uint => mapping (address => uint)) dayToAddressToScore;
+  mapping (uint => bool) dailyLootClaimedPerDay;
 
    uint constant encounterBlockDuration = 80;
    uint constant blocksInADay = 5760;
@@ -865,7 +865,7 @@ contract CryptoBoss is ContractAccessControl {
     uint participantCount = 0;
     etherPot = 0;
 
-    for (uint encounterId = getFirstEncounterIdFromDay(day); encounterId &lt; getFirstEncounterIdFromDay(day+1); encounterId++)
+    for (uint encounterId = getFirstEncounterIdFromDay(day); encounterId < getFirstEncounterIdFromDay(day+1); encounterId++)
     {
       address[] storage participants = encountersById[encounterId].participants;
       participantCount += participants.length;
@@ -877,11 +877,11 @@ contract CryptoBoss is ContractAccessControl {
 
     participantCount = 0;
 
-    for (encounterId = getFirstEncounterIdFromDay(day); encounterId &lt; getFirstEncounterIdFromDay(day+1); encounterId++)
+    for (encounterId = getFirstEncounterIdFromDay(day); encounterId < getFirstEncounterIdFromDay(day+1); encounterId++)
     {
       participants = encountersById[encounterId].participants;
-      mapping (address =&gt; ParticipantData) participantData = encountersById[encounterId].participantData;
-      for (uint i = 0; i &lt; participants.length; i++)
+      mapping (address => ParticipantData) participantData = encountersById[encounterId].participantData;
+      for (uint i = 0; i < participants.length; i++)
       {
         address participant = participants[i];
         entryAddresses[participantCount] = participant;
@@ -898,7 +898,7 @@ contract CryptoBoss is ContractAccessControl {
     uint firstEncounterId = day * blocksInADay / encounterBlockDuration;
     uint firstEncounterIdTomorrow = ((day+1) * blocksInADay / encounterBlockDuration);
     uint etherPot = 0;
-    for (uint encounterId = firstEncounterId; encounterId &lt; firstEncounterIdTomorrow; encounterId++)
+    for (uint encounterId = firstEncounterId; encounterId < firstEncounterIdTomorrow; encounterId++)
     {
       etherPot += participateDailyLootContribution * encountersById[encounterId].participants.length;
     }
@@ -945,17 +945,17 @@ contract CryptoBoss is ContractAccessControl {
     uint winnerIndex = numParticipants;
 
     // binary search for a value winnerIndex where
-    // winnerDamageValue &lt; cumulativeDamage[winnerIndex] and 
-    // winnerDamageValue &gt;= cumulativeDamage[winnerIndex-1]
+    // winnerDamageValue < cumulativeDamage[winnerIndex] and 
+    // winnerDamageValue >= cumulativeDamage[winnerIndex-1]
 
     uint min = 0;
     uint max = numParticipants - 1;
-    while(max &gt;= min) {
+    while(max >= min) {
       uint guess = (min+max)/2;
-      if (guess &gt; 0 &amp;&amp; winnerDamageValue &lt; encounter.participantData[encounter.participants[guess-1]].cumulativeDamage) {
+      if (guess > 0 && winnerDamageValue < encounter.participantData[encounter.participants[guess-1]].cumulativeDamage) {
         max = guess-1;
       }
-      else if (winnerDamageValue &gt;= encounter.participantData[encounter.participants[guess]].cumulativeDamage) {
+      else if (winnerDamageValue >= encounter.participantData[encounter.participants[guess]].cumulativeDamage) {
         min = guess+1;
       } else {
         winnerIndex = guess;
@@ -964,7 +964,7 @@ contract CryptoBoss is ContractAccessControl {
 
     }
 
-    require(winnerIndex &lt; numParticipants, &quot;error in binary search&quot;);
+    require(winnerIndex < numParticipants, "error in binary search");
 
     winnerAddress = encounter.participants[winnerIndex];
   }
@@ -973,10 +973,10 @@ contract CryptoBoss is ContractAccessControl {
       
     uint blockToHash = (encounterId+1)*encounterBlockDuration - 1;
     
-    require(block.number &gt; blockToHash);
+    require(block.number > blockToHash);
     
     uint diff = block.number - (blockToHash+1);
-    if (diff &gt; 255) {
+    if (diff > 255) {
         blockToHash += (diff/256)*256;
     }
     
@@ -1024,36 +1024,36 @@ contract CryptoBoss is ContractAccessControl {
   function constructWeaponTokenIdForWinner(uint rand, uint numParticipants) pure internal returns (uint) {
 
     uint rarity = 0;
-    if (numParticipants &gt; 1) rarity = 1;
-    if (numParticipants &gt; 10) rarity = 2;
+    if (numParticipants > 1) rarity = 1;
+    if (numParticipants > 10) rarity = 2;
 
     return constructWeaponTokenId(rand, rarity, 0);
   }
 
   function getWeaponRarityFromTokenId(uint tokenId) pure internal returns (uint) {
-    return tokenId &amp; 0xff;
+    return tokenId & 0xff;
   }  
 
   // damageType: 0=physical 1=magic 2=water 3=earth 4=fire
   function getWeaponDamageFromTokenId(uint tokenId, uint damageType) pure internal returns (uint) {
-    return ((tokenId &gt;&gt; (64 + damageType*8)) &amp; 0xff);
+    return ((tokenId >> (64 + damageType*8)) & 0xff);
   }  
 
   function getPureWeaponDamageFromTokenId(uint tokenId) pure internal returns (uint) {
-    return ((tokenId &gt;&gt; (56)) &amp; 0xff);
+    return ((tokenId >> (56)) & 0xff);
   }  
 
   function getMonsterDefenseFromDna(uint monsterDna, uint damageType) pure internal returns (uint) {
-    return ((monsterDna &gt;&gt; (64 + damageType*8)) &amp; 0xff);
+    return ((monsterDna >> (64 + damageType*8)) & 0xff);
   }
 
 
   // constant lookup table
 
-  bytes10 constant elementsAvailableForCommon =     hex&quot;01020408100102040810&quot;;   // Each byte has 1 bit set
-  bytes10 constant elementsAvailableForRare =       hex&quot;030506090A0C11121418&quot;;   // Each byte has 2 bits set
-  bytes10 constant elementsAvailableForEpic =       hex&quot;070B0D0E131516191A1C&quot;;   // 3 bits
-  bytes10 constant elementsAvailableForLegendary =  hex&quot;0F171B1D1E0F171B1D1E&quot;;   // 4 bits
+  bytes10 constant elementsAvailableForCommon =     hex"01020408100102040810";   // Each byte has 1 bit set
+  bytes10 constant elementsAvailableForRare =       hex"030506090A0C11121418";   // Each byte has 2 bits set
+  bytes10 constant elementsAvailableForEpic =       hex"070B0D0E131516191A1C";   // 3 bits
+  bytes10 constant elementsAvailableForLegendary =  hex"0F171B1D1E0F171B1D1E";   // 4 bits
 
   // rarity 0: common (1 element)
   // rarity 1: rare (2 elements)
@@ -1061,7 +1061,7 @@ contract CryptoBoss is ContractAccessControl {
   // rarity 3: legendary (4 elements)
   // rarity 4: ultimate (all 5 elements)
   function constructWeaponTokenId(uint rand, uint rarity, uint pureDamage) pure internal returns (uint) {
-    uint lootTokenId = (rand &amp; 0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000) + rarity;
+    uint lootTokenId = (rand & 0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000) + rarity;
 
     bytes10[4] memory elementsAvailablePerRarity = [
       elementsAvailableForCommon,
@@ -1072,18 +1072,18 @@ contract CryptoBoss is ContractAccessControl {
 
     bytes10 elementsAvailable = elementsAvailablePerRarity[rarity];
     // Select a random byte in elementsAvailable
-    uint8 elementsUsed = uint8(elementsAvailable[((rand &gt;&gt; 104) &amp; 0xffff) % 10]);
+    uint8 elementsUsed = uint8(elementsAvailable[((rand >> 104) & 0xffff) % 10]);
     // The bits of elementsUsed represent which elements we will allow this weapon to deal damage for
     // Zero out the other element damages
-    for (uint i = 0; i &lt; 5; i++) {
-      if ((elementsUsed &amp; (1 &lt;&lt; i)) == 0) {
-        lootTokenId = lootTokenId &amp; ~(0xff &lt;&lt; (64 + i*8));
+    for (uint i = 0; i < 5; i++) {
+      if ((elementsUsed & (1 << i)) == 0) {
+        lootTokenId = lootTokenId & ~(0xff << (64 + i*8));
       }
     }
 
     pureDamage = Math.min256(100, pureDamage);
 
-    lootTokenId = lootTokenId | (pureDamage &lt;&lt; 56);
+    lootTokenId = lootTokenId | (pureDamage << 56);
 
     return lootTokenId;
   }
@@ -1125,24 +1125,24 @@ contract CryptoBoss is ContractAccessControl {
     rarity = Math.min256(rarity, getWeaponRarityFromTokenId(sacrificeTokenId2));
     rarity = Math.min256(rarity, getWeaponRarityFromTokenId(sacrificeTokenId3));
     rarity = Math.min256(rarity, getWeaponRarityFromTokenId(sacrificeTokenId4)) + 1;
-    require(rarity &lt; 5, &quot;cant forge an ultimate weapon&quot;);
+    require(rarity < 5, "cant forge an ultimate weapon");
     return uint8(rarity);
   }
 
   function participate(uint encounterId, uint weaponTokenId,
     uint sacrificeTokenId1, uint sacrificeTokenId2, uint sacrificeTokenId3, uint sacrificeTokenId4) public whenNotPaused payable {
-    require(msg.value &gt;= participateFee);  // half goes to dev, half goes to ether pot
+    require(msg.value >= participateFee);  // half goes to dev, half goes to ether pot
 
-    require(encounterId == block.number / encounterBlockDuration, &quot;a new encounter is available&quot;);
+    require(encounterId == block.number / encounterBlockDuration, "a new encounter is available");
 
     Encounter storage encounter = encountersById[encounterId];
 
-    require(encounter.participantData[msg.sender].damage == 0, &quot;you are already participating&quot;);
+    require(encounter.participantData[msg.sender].damage == 0, "you are already participating");
 
     uint damage = 1;
     // weaponTokenId of zero means they are using their fists
     if (weaponTokenId != 0) {
-      require(tokenContract.ownerOf(weaponTokenId) == msg.sender, &quot;you dont own that weapon&quot;);
+      require(tokenContract.ownerOf(weaponTokenId) == msg.sender, "you dont own that weapon");
       damage = weaponTokenIdToDamageForEncounter(weaponTokenId, encounterId);
     }
 
@@ -1150,13 +1150,13 @@ contract CryptoBoss is ContractAccessControl {
     uint newScore = dayToAddressToScore[day][msg.sender] + damage;
     dayToAddressToScore[day][msg.sender] = newScore;
 
-    if (newScore &gt; dayToAddressToScore[day][winnerPerDay[day]] &amp;&amp;
+    if (newScore > dayToAddressToScore[day][winnerPerDay[day]] &&
       winnerPerDay[day] != msg.sender) {
       winnerPerDay[day] = msg.sender;
     }
 
     uint cumulativeDamage = damage;
-    if (encounter.participants.length &gt; 0) {
+    if (encounter.participants.length > 0) {
       cumulativeDamage = cumulativeDamage + encounter.participantData[encounter.participants[encounter.participants.length-1]].cumulativeDamage;
     }
 
@@ -1187,19 +1187,19 @@ contract CryptoBoss is ContractAccessControl {
     uint lootTokenId;
     uint consolationPrizeTokenId;
     (winnerAddress, lootTokenId, consolationPrizeTokenId, , ,,) = getEncounterResults(encounterId, player);
-    require(winnerAddress == player, &quot;player is not the winner&quot;);
+    require(winnerAddress == player, "player is not the winner");
 
     ParticipantData storage participantData = encountersById[encounterId].participantData[player];
 
-    require(!participantData.lootClaimed, &quot;loot already claimed&quot;);
+    require(!participantData.lootClaimed, "loot already claimed");
 
     participantData.lootClaimed = true;
     tokenContract.mint(player, lootTokenId);
 
     // The winner also gets a consolation prize
-    // It&#39;s possible he called claimConsolationPrizeLoot first, so allow that
+    // It's possible he called claimConsolationPrizeLoot first, so allow that
 
-    require(consolationPrizeTokenId != 0, &quot;consolation prize invalid&quot;);
+    require(consolationPrizeTokenId != 0, "consolation prize invalid");
 
     if (!participantData.consolationPrizeClaimed) {
         participantData.consolationPrizeClaimed = true;
@@ -1237,10 +1237,10 @@ contract CryptoBoss is ContractAccessControl {
 
   function claimConsolationPrizeLoot(uint encounterId, address player) public whenNotPaused {
     uint lootTokenId = getConsolationPrizeTokenId(encounterId, player);
-    require(lootTokenId != 0, &quot;player didnt participate&quot;);
+    require(lootTokenId != 0, "player didnt participate");
 
     ParticipantData storage participantData = encountersById[encounterId].participantData[player];
-    require(!participantData.consolationPrizeClaimed, &quot;consolation prize already claimed&quot;);
+    require(!participantData.consolationPrizeClaimed, "consolation prize already claimed");
 
     participantData.consolationPrizeClaimed = true;
     tokenContract.mint(player, lootTokenId);

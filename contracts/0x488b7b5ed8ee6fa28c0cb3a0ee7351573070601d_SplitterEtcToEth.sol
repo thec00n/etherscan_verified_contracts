@@ -13,7 +13,7 @@ contract SplitterEtcToEth {
 
     address intermediate;
     address owner;
-    mapping (uint64 =&gt; Received) public received;
+    mapping (uint64 => Received) public received;
     uint64 public seq = 1;
 
     // there is a limit accepted by exchange
@@ -29,7 +29,7 @@ contract SplitterEtcToEth {
 
     function() {
         //stop too small transactions
-        if (msg.value &lt; lowLimit) throw;
+        if (msg.value < lowLimit) throw;
 
         // always return value from FORK chain
         if (amIOnTheFork.forked()) {
@@ -38,7 +38,7 @@ contract SplitterEtcToEth {
         // process with exchange on the CLASSIC chain
         } else {
             // check that received less or equal to conversion up limit
-            if (msg.value &lt;= upLimit) {
+            if (msg.value <= upLimit) {
                 if (!intermediate.send(msg.value)) throw;
                 uint64 id = seq++;
                 received[id] = Received(msg.sender, msg.value);

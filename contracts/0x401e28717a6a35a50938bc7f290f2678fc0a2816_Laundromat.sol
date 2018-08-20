@@ -1,7 +1,7 @@
 /* Deployment:
 Owner: 0xeb5fa6cbf2aca03a0df228f2df67229e2d3bd01e
 Last address: 0x401e28717a6a35a50938bc7f290f2678fc0a2816
-ABI: [{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;gotParticipants&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_signature&quot;,&quot;type&quot;:&quot;uint256[]&quot;},{&quot;name&quot;:&quot;_x0&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_Ix&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_Iy&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;withdrawStart&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;pubkeys2&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;payment&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;pubkeys1&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;participants&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;withdrawStep&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;withdrawFinal&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_pubkey1&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_pubkey2&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;deposit&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_participants&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_payment&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:false,&quot;type&quot;:&quot;fallback&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;message&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;name&quot;:&quot;LogDebug&quot;,&quot;type&quot;:&quot;event&quot;}]
+ABI: [{"constant":true,"inputs":[],"name":"gotParticipants","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_signature","type":"uint256[]"},{"name":"_x0","type":"uint256"},{"name":"_Ix","type":"uint256"},{"name":"_Iy","type":"uint256"}],"name":"withdrawStart","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"pubkeys2","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"payment","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"pubkeys1","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"participants","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdrawStep","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdrawFinal","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_pubkey1","type":"uint256"},{"name":"_pubkey2","type":"uint256"}],"name":"deposit","outputs":[],"payable":true,"type":"function"},{"inputs":[{"name":"_participants","type":"uint256"},{"name":"_payment","type":"uint256"}],"type":"constructor"},{"payable":false,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"LogDebug","type":"event"}]
 Optimized: yes
 Solidity version: v0.4.4
 */
@@ -46,8 +46,8 @@ contract Laundromat {
     
     address internal constant arithAddress = 0x600ad7b57f3e6aeee53acb8704a5ed50b60cacd6;
     ArithLib private arithContract;
-    mapping (uint =&gt; WithdrawInfo) private withdraws;
-    mapping (uint =&gt; bool) private consumed;
+    mapping (uint => WithdrawInfo) private withdraws;
+    mapping (uint => bool) private consumed;
 
     uint public participants = 0;
     uint public payment = 0;
@@ -81,7 +81,7 @@ contract Laundromat {
     //add new participant to the mixing
     function deposit(uint _pubkey1, uint _pubkey2) payable {
         //if(msg.value != payment) throw;
-        if(gotParticipants &gt;= participants) throw;
+        if(gotParticipants >= participants) throw;
 
         pubkeys1.push(_pubkey1);
         pubkeys2.push(_pubkey2);
@@ -90,7 +90,7 @@ contract Laundromat {
 
     //get funds from the mixer. Requires valid signature.
     function withdrawStart(uint[] _signature, uint _x0, uint _Ix, uint _Iy) {
-        if(gotParticipants &lt; participants) throw;
+        if(gotParticipants < participants) throw;
         if(consumed[uint(sha3([_Ix, _Iy]))]) throw;
 
         WithdrawInfo withdraw = withdraws[uint(msg.sender)];
@@ -113,8 +113,8 @@ contract Laundromat {
         WithdrawInfo withdraw = withdraws[uint(msg.sender)];
 
         //throw if existing witdhraw not started
-        if(withdraw.step &lt; 1) throw;
-        if(withdraw.step &gt; participants) throw;
+        if(withdraw.step < 1) throw;
+        if(withdraw.step > participants) throw;
         if(consumed[uint(sha3([withdraw.Ix, withdraw.Iy]))]) throw;
 
         uint k1x;
@@ -162,12 +162,12 @@ contract Laundromat {
         if(consumed[uint(sha3([withdraw.Ix, withdraw.Iy]))]) throw;
         if(withdraw.ring1[participants] != withdraw.ring1[0]) {
             
-            LogDebug(&quot;Wrong signature&quot;);
+            LogDebug("Wrong signature");
             return false;
         }
         if(withdraw.ring2[participants] != withdraw.ring2[0]) {
             
-            LogDebug(&quot;Wrong signature&quot;);
+            LogDebug("Wrong signature");
             return false;
         }
         

@@ -83,9 +83,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -93,7 +93,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -102,7 +102,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -144,7 +144,7 @@ interface Kyber {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -193,7 +193,7 @@ contract KyberHandler is ExchangeHandler, Ownable {
     bytes32 constant public kyberHash = 0xff4ab868fec98e1be4e10e14add037a8056132cf492bec627457a78c21f7531f;
 
     modifier onlyTotle() {
-        require(msg.sender == totlePrimary, &quot;KyberHandler - Only TotlePrimary allowed to call this function&quot;);
+        require(msg.sender == totlePrimary, "KyberHandler - Only TotlePrimary allowed to call this function");
         _;
     }
 
@@ -230,7 +230,7 @@ contract KyberHandler is ExchangeHandler, Ownable {
         bytes32 r, // ignore
         bytes32 s // ignore
     ) external payable onlyTotle returns (uint256) {
-        require(msg.value == orderValues[0], &quot;KyberHandler - msg.value != ordVal[0] for buy&quot;);
+        require(msg.value == orderValues[0], "KyberHandler - msg.value != ordVal[0] for buy");
 
         uint256 tokenAmountObtained = trade(
             ETH_TOKEN_ADDRESS, // ERC20 src
@@ -243,7 +243,7 @@ contract KyberHandler is ExchangeHandler, Ownable {
         );
 
         // If Kyber has sent us back some excess ether
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             msg.sender.transfer(this.balance);
         }
 
@@ -262,7 +262,7 @@ contract KyberHandler is ExchangeHandler, Ownable {
 
         require(
             Token(orderAddresses[0]).approve(resolveExchangeAddress(), orderValues[0]),
-            &quot;KyberHandler - unable to approve token for sell&quot;
+            "KyberHandler - unable to approve token for sell"
         );
 
         uint256 etherAmountObtained = trade(
@@ -318,7 +318,7 @@ contract KyberHandler is ExchangeHandler, Ownable {
     }
 
     function setTotle(address _totlePrimary) external onlyOwner {
-        require(_totlePrimary != address(0x0), &quot;Invalid address for totlePrimary&quot;);
+        require(_totlePrimary != address(0x0), "Invalid address for totlePrimary");
         totlePrimary = _totlePrimary;
     }
 
@@ -329,6 +329,6 @@ contract KyberHandler is ExchangeHandler, Ownable {
         assembly {
             size := extcodesize(sender)
         }
-        require(size &gt; 0, &quot;KyberHandler - can only send ether from another contract&quot;);
+        require(size > 0, "KyberHandler - can only send ether from another contract");
     }
 }

@@ -26,13 +26,13 @@ contract theultimatepyramid {
   }
   
   function enter() {
-    if (msg.value &lt; 80/100 ether) {
+    if (msg.value < 80/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 40 ether) {
+		if (msg.value > 40 ether) {
 			msg.sender.send(msg.value - 40 ether);	
 			amount = 40 ether;
     }
@@ -58,7 +58,7 @@ contract theultimatepyramid {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 180) {
+    while (balance > persons[payoutIdx].amount / 100 * 180) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 180;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

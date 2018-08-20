@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 ///EtherMinerals
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325657465772534a5b5d5f48575c1c515d">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325657465772534a5b5d5f48575c1c515d">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     function approve(address _to, uint256 _tokenId) public;
     function balanceOf(address _owner) public view returns (uint256 balance);
@@ -35,8 +35,8 @@ contract EtherMinerals is ERC721 {
   }
 
   /*** CONSTANTS ***/
-  string public constant NAME = &quot;EtherMinerals&quot;;
-  string public constant SYMBOL = &quot;MINERAL&quot;;
+  string public constant NAME = "EtherMinerals";
+  string public constant SYMBOL = "MINERAL";
   
   uint256 private startingPrice = 0.01 ether;
   uint256 private firstStepLimit =  0.15 ether;
@@ -45,15 +45,15 @@ contract EtherMinerals is ERC721 {
   bool public gameOpen = false;
 
   /*** STORAGE ***/
-  mapping (address =&gt; uint256) private ownerCount;
-  mapping (uint256 =&gt; address) public lastBuyer;
+  mapping (address => uint256) private ownerCount;
+  mapping (uint256 => address) public lastBuyer;
 
   address public ceoAddress;
-  mapping (uint256 =&gt; address) public extra;
+  mapping (uint256 => address) public extra;
   
   uint256 mineral_count;
  
-  mapping (uint256 =&gt; Mineral) private minerals;
+  mapping (uint256 => Mineral) private minerals;
 
   /*** ACCESS MODIFIERS ***/
   modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
@@ -136,7 +136,7 @@ contract EtherMinerals is ERC721 {
     bytes32[] memory names = new bytes32[](mineral_count);
     address[] memory owners = new address[](mineral_count);
     uint256[] memory prices = new uint256[](mineral_count);
-    for(uint256 _id = 0; _id &lt; mineral_count; _id++){
+    for(uint256 _id = 0; _id < mineral_count; _id++){
       ids[_id] = _id;
       names[_id] = minerals[_id].name;
       owners[_id] = minerals[_id].owner;
@@ -157,7 +157,7 @@ contract EtherMinerals is ERC721 {
 
     require(mineral.owner != msg.sender);
     require(msg.sender != address(0));  
-    require(msg.value &gt;= mineral.price);
+    require(msg.value >= mineral.price);
 
     uint256 excess = SafeMath.sub(msg.value, mineral.price);
     uint256 reward = uint256(SafeMath.div(SafeMath.mul(mineral.price, 90), 100));
@@ -171,10 +171,10 @@ contract EtherMinerals is ERC721 {
     mineral.last_price = mineral.price;
     address _old_owner = mineral.owner;
     
-    if (mineral.price &lt; firstStepLimit) {
+    if (mineral.price < firstStepLimit) {
       // first stage
       mineral.price = SafeMath.div(SafeMath.mul(mineral.price, 200), 90);
-    } else if (mineral.price &lt; secondStepLimit) {
+    } else if (mineral.price < secondStepLimit) {
       // second stage
       mineral.price = SafeMath.div(SafeMath.mul(mineral.price, 118), 90);
     } else {
@@ -200,7 +200,7 @@ contract EtherMinerals is ERC721 {
     } else {
       uint256[] memory result = new uint256[](tokenCount);
       uint256 resultIndex = 0;
-      for (uint256 mineralId = 0; mineralId &lt;= totalSupply(); mineralId++) {
+      for (uint256 mineralId = 0; mineralId <= totalSupply(); mineralId++) {
         if (minerals[mineralId].owner == _owner) {
           result[resultIndex] = mineralId;
           resultIndex++;
@@ -240,23 +240,23 @@ contract EtherMinerals is ERC721 {
   }
  
   function createAllTokens() public onlyCEO{
-    createMineral(&quot;Emerald&quot;, 10000000000000000);
-    createMineral(&quot;Opal&quot;, 10000000000000000);
-    createMineral(&quot;Diamond&quot;, 10000000000000000);
-    createMineral(&quot;Bismuth&quot;, 10000000000000000);
-    createMineral(&quot;Amethyst&quot;, 10000000000000000);
-    createMineral(&quot;Gold&quot;, 10000000000000000);
-    createMineral(&quot;Fluorite&quot;, 10000000000000000);
-    createMineral(&quot;Ruby&quot;, 10000000000000000);
-    createMineral(&quot;Sapphire&quot;, 10000000000000000);
-    createMineral(&quot;Pascoite&quot;, 10000000000000000);
-    createMineral(&quot;Karpatite&quot;, 10000000000000000);
-    createMineral(&quot;Uvarovite&quot;, 10000000000000000);
-    createMineral(&quot;Kryptonite&quot;, 10000000000000000);
-    createMineral(&quot;Good ol&#39; Rock&quot;, 10000000000000000);
-    createMineral(&quot;Malachite&quot;, 10000000000000000);
-    createMineral(&quot;Silver&quot;, 10000000000000000);
-    createMineral(&quot;Burmese Tourmaline&quot; ,10000000000000000);
+    createMineral("Emerald", 10000000000000000);
+    createMineral("Opal", 10000000000000000);
+    createMineral("Diamond", 10000000000000000);
+    createMineral("Bismuth", 10000000000000000);
+    createMineral("Amethyst", 10000000000000000);
+    createMineral("Gold", 10000000000000000);
+    createMineral("Fluorite", 10000000000000000);
+    createMineral("Ruby", 10000000000000000);
+    createMineral("Sapphire", 10000000000000000);
+    createMineral("Pascoite", 10000000000000000);
+    createMineral("Karpatite", 10000000000000000);
+    createMineral("Uvarovite", 10000000000000000);
+    createMineral("Kryptonite", 10000000000000000);
+    createMineral("Good ol' Rock", 10000000000000000);
+    createMineral("Malachite", 10000000000000000);
+    createMineral("Silver", 10000000000000000);
+    createMineral("Burmese Tourmaline" ,10000000000000000);
     }
 
   /*** PRIVATE METHODS ***/
@@ -302,12 +302,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

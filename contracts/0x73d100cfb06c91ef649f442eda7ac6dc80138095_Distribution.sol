@@ -79,13 +79,13 @@ contract Claimable is Ownable {
 }
 
 contract Whitelist is Ownable {
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     require(whitelist[msg.sender]);
@@ -112,7 +112,7 @@ contract Whitelist is Ownable {
    * false if all addresses were already in the whitelist
    */
   function addAddressesToWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (addAddressToWhitelist(addrs[i])) {
         success = true;
       }
@@ -123,7 +123,7 @@ contract Whitelist is Ownable {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address addr) onlyOwner public returns(bool success) {
     if (whitelist[addr]) {
@@ -137,10 +137,10 @@ contract Whitelist is Ownable {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (removeAddressFromWhitelist(addrs[i])) {
         success = true;
       }
@@ -201,17 +201,17 @@ contract Distribution is CanReclaimToken, Claimable, Whitelist {
 
     function setReceivers(address[] _receivers, uint256 _amount) onlyWhitelisted external {
         // Be conservative about the size.
-        require(_receivers.length &lt;= 80);
-        require(_amount &gt; 0);
+        require(_receivers.length <= 80);
+        require(_amount > 0);
 
         receivers = _receivers;
         amount = _amount;
     }
 
     function distribute() onlyWhitelisted external {
-        require(receivers.length &gt; 0);
-        require(amount &gt; 0);
-        for (uint256 i = 0; i &lt; receivers.length; ++i) {
+        require(receivers.length > 0);
+        require(amount > 0);
+        for (uint256 i = 0; i < receivers.length; ++i) {
             address beneficiary = receivers[i];
             token.safeTransfer(beneficiary, amount);
             emit Distributed(beneficiary, amount);
@@ -226,9 +226,9 @@ contract Distribution is CanReclaimToken, Claimable, Whitelist {
         uint256 batchAmount
     ) onlyWhitelisted external
     {
-        require(batchReceivers.length &gt; 0);
-        require(batchAmount &gt; 0);
-        for (uint256 i = 0; i &lt; batchReceivers.length; ++i) {
+        require(batchReceivers.length > 0);
+        require(batchAmount > 0);
+        for (uint256 i = 0; i < batchReceivers.length; ++i) {
             address beneficiary = batchReceivers[i];
             token.safeTransfer(beneficiary, batchAmount);
             emit Distributed(beneficiary, batchAmount);

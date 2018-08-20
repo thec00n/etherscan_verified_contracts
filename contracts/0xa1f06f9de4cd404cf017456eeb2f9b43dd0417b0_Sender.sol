@@ -48,7 +48,7 @@ contract admined {
 contract Sender is admined {
     
     token public ERC20Token;
-    mapping (address =&gt; bool) public flag; //Balances mapping
+    mapping (address => bool) public flag; //Balances mapping
     uint256 public price; //with all decimals
     
     function Sender (token _addressOfToken, uint256 _initialPrice) public {

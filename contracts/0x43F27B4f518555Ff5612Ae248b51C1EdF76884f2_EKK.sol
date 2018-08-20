@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,7 +45,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 /**
@@ -123,9 +123,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -200,12 +200,12 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 */
 contract EKK is ERC20Token {
 
-    string public name = &#39;EKK Token&#39;;
+    string public name = 'EKK Token';
     uint8 public decimals = 18;
-    string public symbol = &#39;EKK&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'EKK';
+    string public version = '1';
     uint256 public totalSupply = 2000000000 * 10**uint256(decimals);      //initial token creation
-    uint256 public publicAllocation = 1000000000 * 10 ** uint(decimals);  // 50%  Token sales &amp; Distribution
+    uint256 public publicAllocation = 1000000000 * 10 ** uint(decimals);  // 50%  Token sales & Distribution
     uint256 public growthReserve = 700000000 * 10 ** uint(decimals);      // 35%  Platform Growth Reserve
     uint256 public marketingAllocation= 100000000 * 10 ** uint(decimals);  // 5%   Markting/Promotion
     uint256 public teamAllocation = 160000000 *10 ** uint(decimals);      // 8%   Team
@@ -245,9 +245,9 @@ contract EKK is ERC20Token {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[this] &gt;= _value &amp;&amp; publicAllocation &gt;= _value);
+        require(balances[this] >= _value && publicAllocation >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[this].add(balances[_to]);
         // Subtract from the sender
@@ -263,7 +263,7 @@ contract EKK is ERC20Token {
 
     function growthReserveTokenSend(address to, uint256 _value) onlyAdmin public  {
         uint256 value = _value * 10 ** uint(decimals);
-        require(to != 0x0 &amp;&amp; growthReserve &gt;= value);
+        require(to != 0x0 && growthReserve >= value);
         balances[this] = balances[this].sub(value);
         balances[to] = balances[to].add(value);
         growthReserve = growthReserve.sub(value);
@@ -272,7 +272,7 @@ contract EKK is ERC20Token {
 
     function marketingAllocationTokenSend(address to, uint256 _value) onlyAdmin public  {
         uint256 value = _value * 10 ** uint(decimals);
-        require(to != 0x0 &amp;&amp; marketingAllocation &gt;= value);
+        require(to != 0x0 && marketingAllocation >= value);
         balances[this] = balances[this].sub(value);
         balances[to] = balances[to].add(value);
         marketingAllocation = marketingAllocation.sub(value);
@@ -281,7 +281,7 @@ contract EKK is ERC20Token {
 
     function teamAllocationTokenSend(address to, uint256 _value) onlyAdmin public  {
         uint256 value = _value * 10 ** uint(decimals);
-        require(to != 0x0 &amp;&amp; teamAllocation &gt;= value);
+        require(to != 0x0 && teamAllocation >= value);
         balances[this] = balances[this].sub(value);
         balances[to] = balances[to].add(value);
         teamAllocation = teamAllocation.sub(value);
@@ -290,7 +290,7 @@ contract EKK is ERC20Token {
 
     function advisorsAllocationTokenSend(address to, uint256 _value) onlyAdmin public  {
         uint256 value = _value * 10 ** uint(decimals);
-        require(to != 0x0 &amp;&amp; advisorsAllocation &gt;= value);
+        require(to != 0x0 && advisorsAllocation >= value);
         balances[this] = balances[this].sub(value);
         balances[to] = balances[to].add(value);
         advisorsAllocation = advisorsAllocation.sub(value);

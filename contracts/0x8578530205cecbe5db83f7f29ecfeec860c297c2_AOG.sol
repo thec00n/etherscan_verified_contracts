@@ -27,22 +27,22 @@ library SafeMath {
 
  
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -62,7 +62,7 @@ contract BasicToken is ERC20Basic {
  
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -82,12 +82,12 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -118,7 +118,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -134,8 +134,8 @@ contract AOG is StandardToken {
     
     using SafeMath for uint256;
 
-    string public name = &quot;AOG&quot;;
-    string public symbol = &quot;AOG&quot;;
+    string public name = "AOG";
+    string public symbol = "AOG";
     uint256 public decimals = 18;
 
     uint256 public totalSupply = 2700000000 * (uint256(10) ** decimals);
@@ -150,8 +150,8 @@ contract AOG is StandardToken {
     bool public PRE_ICO_ON;
     bool public ICO_ON;
     
-    string public PreIcoMessage = &quot;Coming Soon&quot;;
-    string public IcoMessage    = &quot;Not Started&quot;;
+    string public PreIcoMessage = "Coming Soon";
+    string public IcoMessage    = "Not Started";
     
     uint256 public totalRaised; // total ether raised (in wei)
     uint256 public totalRaisedIco; // total ether raised (in wei)
@@ -230,7 +230,7 @@ contract AOG is StandardToken {
         require(owner == msg.sender);
         require(PRE_ICO_ON == false);
         PRE_ICO_ON = true;
-        PreIcoMessage = &quot;PRE ICO RUNNING&quot;;
+        PreIcoMessage = "PRE ICO RUNNING";
         startTimestamp = _startTimestamp;
         minCap = _minCap;
         maxCap = _maxCap;
@@ -242,7 +242,7 @@ contract AOG is StandardToken {
         require(owner == msg.sender);
         require(PRE_ICO_ON == true);
         PRE_ICO_ON = false;
-        PreIcoMessage = &quot;Finish&quot;;
+        PreIcoMessage = "Finish";
         
         return true;
     }
@@ -253,8 +253,8 @@ contract AOG is StandardToken {
         require(ICO_ON == false);
         ICO_ON = true;
         PRE_ICO_ON = false;
-        PreIcoMessage = &quot;Finish&quot;;
-        IcoMessage = &quot;ICO RUNNING&quot;;
+        PreIcoMessage = "Finish";
+        IcoMessage = "ICO RUNNING";
         
         startTimestampIco = _startTimestampIco;
         minCapIco = _minCapIco;
@@ -275,10 +275,10 @@ contract AOG is StandardToken {
         {
             totalRaised = totalRaised.add(msg.value);
         
-        if(totalRaised &gt;= maxCap || (now &gt;= (startTimestamp + durationSeconds) &amp;&amp; totalRaised &gt;= minCap))
+        if(totalRaised >= maxCap || (now >= (startTimestamp + durationSeconds) && totalRaised >= minCap))
             {
                 PRE_ICO_ON = false;
-                PreIcoMessage = &quot;Finish&quot;;
+                PreIcoMessage = "Finish";
             }
             
         }
@@ -289,10 +289,10 @@ contract AOG is StandardToken {
         {
             totalRaisedIco = totalRaisedIco.add(msg.value);
            
-            if(totalRaisedIco &gt;= maxCapIco || (now &gt;= (startTimestampIco + durationSecondsIco) &amp;&amp; totalRaisedIco &gt;= minCapIco))
+            if(totalRaisedIco >= maxCapIco || (now >= (startTimestampIco + durationSecondsIco) && totalRaisedIco >= minCapIco))
             {
                 ICO_ON = false;
-                IcoMessage = &quot;Finish&quot;;
+                IcoMessage = "Finish";
             }
         } 
         
@@ -304,17 +304,17 @@ contract AOG is StandardToken {
         
         if(PRE_ICO_ON == true)
         {
-             require(now &gt;= startTimestamp);
-             require(now &lt;= (startTimestamp + durationSeconds) || totalRaised &lt; minCap);
-             require(totalRaised &lt;= maxCap);
+             require(now >= startTimestamp);
+             require(now <= (startTimestamp + durationSeconds) || totalRaised < minCap);
+             require(totalRaised <= maxCap);
              _;
         }
         
         if(ICO_ON == true)
         {
-            require(now &gt;= startTimestampIco);
-            require(now &lt;= (startTimestampIco + durationSecondsIco) || totalRaisedIco &lt; minCapIco);
-            require(totalRaisedIco &lt;= maxCapIco);
+            require(now >= startTimestampIco);
+            require(now <= (startTimestampIco + durationSecondsIco) || totalRaisedIco < minCapIco);
+            require(totalRaisedIco <= maxCapIco);
             _;
         }
         
@@ -342,18 +342,18 @@ contract AOG is StandardToken {
         uint256 tokenAmount;
         uint256 standardRateDaysWise;
         
-        if (now &lt;= startTimestampIco + 7 days) {
+        if (now <= startTimestampIco + 7 days) {
              
             standardRateDaysWise = calculateIcoBonus(weiAmount,1,1); // Rate
             return tokenAmount = weiAmount.mul(standardRateDaysWise);  // Number of coin
              
-         } else if (now &gt;= startTimestampIco + 7 days &amp;&amp; now &lt;= startTimestampIco + 14 days) {
+         } else if (now >= startTimestampIco + 7 days && now <= startTimestampIco + 14 days) {
               
               standardRateDaysWise = calculateIcoBonus(weiAmount,1,2); // Rate 
                
               return tokenAmount = weiAmount.mul(standardRateDaysWise);
              
-         } else if (now &gt;= startTimestampIco + 14 days) {
+         } else if (now >= startTimestampIco + 14 days) {
              
                standardRateDaysWise = calculateIcoBonus(weiAmount,1,3);
               
@@ -369,27 +369,27 @@ contract AOG is StandardToken {
      
     // 0.1 to 4.99 eth
     
-        if(userAmount &gt;= 100000000000000000 &amp;&amp; userAmount &lt; 5000000000000000000)
+        if(userAmount >= 100000000000000000 && userAmount < 5000000000000000000)
         {
                 return 7000;
         } 
-        else if(userAmount &gt;= 5000000000000000000 &amp;&amp; userAmount &lt; 15000000000000000000)
+        else if(userAmount >= 5000000000000000000 && userAmount < 15000000000000000000)
         {
                 return 8000;
         }
-        else if(userAmount &gt;= 15000000000000000000 &amp;&amp; userAmount &lt; 30000000000000000000)
+        else if(userAmount >= 15000000000000000000 && userAmount < 30000000000000000000)
         {
                return 9000;
         }
-        else if(userAmount &gt;= 30000000000000000000 &amp;&amp; userAmount &lt; 60000000000000000000)
+        else if(userAmount >= 30000000000000000000 && userAmount < 60000000000000000000)
         {
                 return 10000;
         }
-        else if(userAmount &gt;= 60000000000000000000 &amp;&amp; userAmount &lt; 100000000000000000000)
+        else if(userAmount >= 60000000000000000000 && userAmount < 100000000000000000000)
         {
                return 11250;
         }
-        else if(userAmount &gt;= 100000000000000000000)
+        else if(userAmount >= 100000000000000000000)
         {
                 return 12500;
         }
@@ -400,7 +400,7 @@ contract AOG is StandardToken {
     {
             // 0.1 to 4.99 eth 
     
-        if(userAmount &gt;= 100000000000000000 &amp;&amp; userAmount &lt; 5000000000000000000)
+        if(userAmount >= 100000000000000000 && userAmount < 5000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -416,7 +416,7 @@ contract AOG is StandardToken {
                 }
             
         } 
-        else if(userAmount &gt;= 5000000000000000000 &amp;&amp; userAmount &lt; 15000000000000000000)
+        else if(userAmount >= 5000000000000000000 && userAmount < 15000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -432,7 +432,7 @@ contract AOG is StandardToken {
                 }
             
         }
-        else if(userAmount &gt;= 15000000000000000000 &amp;&amp; userAmount &lt; 30000000000000000000)
+        else if(userAmount >= 15000000000000000000 && userAmount < 30000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -448,7 +448,7 @@ contract AOG is StandardToken {
                 }
             
         }
-        else if(userAmount &gt;= 30000000000000000000 &amp;&amp; userAmount &lt; 60000000000000000000)
+        else if(userAmount >= 30000000000000000000 && userAmount < 60000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -464,7 +464,7 @@ contract AOG is StandardToken {
                 }
             
         }
-        else if(userAmount &gt;= 60000000000000000000 &amp;&amp; userAmount &lt; 100000000000000000000)
+        else if(userAmount >= 60000000000000000000 && userAmount < 100000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -480,7 +480,7 @@ contract AOG is StandardToken {
                 }
             
         }
-        else if(userAmount &gt;= 100000000000000000000)
+        else if(userAmount >= 100000000000000000000)
         {
                 if(_sno == 1) // 1-7 Days
                 {
@@ -518,7 +518,7 @@ contract AOG is StandardToken {
     function BurnToken(address _from) public returns(bool success)
     {
         require(owner == msg.sender);
-        require(balances[_from] &gt; 0);   // Check if the sender has enough
+        require(balances[_from] > 0);   // Check if the sender has enough
         uint _value = balances[_from];
         balances[_from] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply

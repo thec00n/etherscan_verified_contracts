@@ -3,16 +3,16 @@
            `+hMMMMMMMMMMMMMMMMMMMMMMh+`           
          .yMMMMMMMmyo/:----:/oymMMMMMMMy.         
        `sMMMMMMy/`              `/yMMMMMMs`       
-      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** Secure Email &amp; File Storage for Ethereum Community ***
+      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** Secure Email & File Storage for Ethereum Community ***
      /MMMMMy`   .sNMMMMMMMMMMMMmo.   `yMMMMM/       
-    :MMMMM+   `yMMMMMMNmddmMMMMMMMs`   +MMMMM:      &#39;SAFE&#39; TOKENS SALE IS IN PROGRESS!
+    :MMMMM+   `yMMMMMMNmddmMMMMMMMs`   +MMMMM:      'SAFE' TOKENS SALE IS IN PROGRESS!
     mMMMMo   .NMMMMNo-  ``  -sNMMMMm.   oMMMMm      
    /MMMMm   `mMMMMy`  `hMMm:  `hMMMMm    mMMMM/     https://safe.ad
    yMMMMo   +MMMMd    .NMMM+    mMMMM/   oMMMMy     
    hMMMM/   sMMMMs     :MMy     yMMMMo   /MMMMh     Live project with thousands of active users!
    yMMMMo   +MMMMd     yMMN`   `mMMMM:   oMMMMy   
-   /MMMMm   `mMMMMh`  `MMMM/   +MMMMd    mMMMM/     In late 2018 Safe services will be paid by &#39;SAFE&#39; tokens only!
-    mMMMMo   .mMMMMNs-`&#39;`&#39;`    /MMMMm- `sMMMMm    
+   /MMMMm   `mMMMMh`  `MMMM/   +MMMMd    mMMMM/     In late 2018 Safe services will be paid by 'SAFE' tokens only!
+    mMMMMo   .mMMMMNs-`'`'`    /MMMMm- `sMMMMm    
     :MMMMM+   `sMMMMMMMmmmmy.   hMMMMMMMMMMMN-      
      /MMMMMy`   .omMMMMMMMMMy    +mMMMMMMMMy.     
       -NMMMMNo`    ./oyhhhho`      ./oso+:`       
@@ -42,7 +42,7 @@ contract SafePromo {
 
 		require(msg.sender == owner);
 
-		for(uint256 i = 0; i &lt; _recipients.length; i++){
+		for(uint256 i = 0; i < _recipients.length; i++){
 
 			_recipients[i].transfer(7777777777);
 			emit Transfer(address(this), _recipients[i], 77777777777);

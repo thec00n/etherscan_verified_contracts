@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -56,16 +56,16 @@ contract CheToken is Ownable{
     
     using SafeMath for uint256;
     
-    string public constant name       = &quot;CheGuevara&quot;;
-    string public constant symbol     = &quot;Che&quot;;
+    string public constant name       = "CheGuevara";
+    string public constant symbol     = "Che";
     uint32 public constant decimals   = 18;
     uint256 public totalSupply        = 19671009000 ether;
     uint256 public currentTotalSupply = 0;
     uint256 startBalance              = 19286.14 ether;
     
-    mapping(address =&gt; bool) touched;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => bool) touched;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
         function CheToken() public {
         balances[msg.sender] = startBalance * 201411;
@@ -79,14 +79,14 @@ contract CheToken is Ownable{
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
 
-        if( !touched[msg.sender] &amp;&amp; currentTotalSupply &lt; totalSupply ){
+        if( !touched[msg.sender] && currentTotalSupply < totalSupply ){
             uint256 _nvalue = 2014.1114 ether;
             balances[msg.sender] = balances[msg.sender].add( startBalance );
             touched[msg.sender] = true;
             currentTotalSupply = currentTotalSupply.add( startBalance ).add(_nvalue);
         }
         
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value).add(_nvalue);
@@ -99,15 +99,15 @@ contract CheToken is Ownable{
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
         
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
-        if( !touched[_from] &amp;&amp; currentTotalSupply &lt; totalSupply ){
+        if( !touched[_from] && currentTotalSupply < totalSupply ){
             touched[_from] = true;
             balances[_from] = balances[_from].add( startBalance );
             currentTotalSupply = currentTotalSupply.add( startBalance );
         }
         
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -138,7 +138,7 @@ contract CheToken is Ownable{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -150,7 +150,7 @@ contract CheToken is Ownable{
 
     function getBalance(address _a) internal constant returns(uint256)
     {
-        if( currentTotalSupply &lt; totalSupply ){
+        if( currentTotalSupply < totalSupply ){
             if( touched[_a] )
                 return balances[_a];
             else

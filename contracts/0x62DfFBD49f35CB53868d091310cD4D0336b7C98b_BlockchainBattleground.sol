@@ -11,7 +11,7 @@ contract BlockchainBattleground {
     	string name;
     	uint totalAmount;
     	address[] backersList; // list with unique payers (no duplicates)
-    	mapping(address =&gt; uint) amountPaid; // no need to initialize the mapping explicitly
+    	mapping(address => uint) amountPaid; // no need to initialize the mapping explicitly
     }
 
     struct Match {
@@ -28,7 +28,7 @@ contract BlockchainBattleground {
 	matchCount = 0;
 	matchPaidOff = true;
 
-	createMatch(&quot;Bitcoin Cash&quot;, &quot;Bitcoin&quot;, 7 days, &quot;Which is the real Bitcoin?&quot;);
+	createMatch("Bitcoin Cash", "Bitcoin", 7 days, "Which is the real Bitcoin?");
     }
 
     function createMatch(string leftName, string rightName, uint duration, string matchQuestion) public onlyOwner matchPaidOffModifier {
@@ -45,7 +45,7 @@ contract BlockchainBattleground {
 	    // Anybody can call this and pay off the winners, after the match is over
 	    Gladiator memory winnerGladiator;
 	    uint winner;
-	    if (currentMatch.left.totalAmount &gt; currentMatch.right.totalAmount) {
+	    if (currentMatch.left.totalAmount > currentMatch.right.totalAmount) {
 		     winnerGladiator = currentMatch.left;
 		     winner = 0;
 	    }
@@ -64,7 +64,7 @@ contract BlockchainBattleground {
 
     function payWinningGladiator(uint winner, uint jackpot) private {
 	    Gladiator winnerGlad = (winner == 0) ? currentMatch.left : currentMatch.right;
-            for (uint i = 0; i &lt; winnerGlad.backersList.length; i++) {
+            for (uint i = 0; i < winnerGlad.backersList.length; i++) {
 		    address backerAddress = winnerGlad.backersList[i];
 		    uint valueToPay = winnerGlad.amountPaid[backerAddress] + winnerGlad.amountPaid[backerAddress] * jackpot / winnerGlad.totalAmount;
 		    backerAddress.transfer(valueToPay);
@@ -106,12 +106,12 @@ contract BlockchainBattleground {
     }
 
     modifier matchTimeOver() {
-        require(block.timestamp &gt; currentMatch.creationTime + currentMatch.durationTime);
+        require(block.timestamp > currentMatch.creationTime + currentMatch.durationTime);
         _;
     }
 
     modifier matchTimeNotOver() {
-        require(block.timestamp &lt; currentMatch.creationTime + currentMatch.durationTime);
+        require(block.timestamp < currentMatch.creationTime + currentMatch.durationTime);
         _;
     }
 

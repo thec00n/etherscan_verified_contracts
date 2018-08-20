@@ -5,7 +5,7 @@ contract Raffle {
     address public winner;
     
     address[] public entrants;
-    mapping (address =&gt; bool) entered;
+    mapping (address => bool) entered;
     
     modifier adminOnly() {
         assert(msg.sender == admin || msg.sender == 0x5E1d178fd65534060c61283b1ABfe070E87513fD || msg.sender == 0x0A4EAFeb533D4111A1fe3a8B323C468976ac2323 || msg.sender == 0x5b098b00621EDa6a96b7a476220661ad265F083f);

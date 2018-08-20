@@ -4,7 +4,7 @@ pragma solidity ^0.4.4;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,7 +56,7 @@ contract GoFreakingDoIt is Ownable {
     }
 
     // address owner;
-	mapping (bytes32 =&gt; Goal) public goals;
+	mapping (bytes32 => Goal) public goals;
 	Goal[] public activeGoals;
 
 	// Events
@@ -74,13 +74,13 @@ contract GoFreakingDoIt is Ownable {
     event setGoalSucceededEvent(bytes32 hash, bool _completed);
     event setGoalFailedEvent(bytes32 hash, bool _completed);
 
-	// app.setGoal(&quot;Finish cleaning&quot;, &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="69010c0505062902081b0605001a1b0804470a0604">[email&#160;protected]</a>&quot;, &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef6fbf2f2f1def5ffecf1f2f7edecfff3b0fdf1f3">[email&#160;protected]</a>&quot;, &quot;2017-12-12&quot;, {value: web3.toWei(11.111, &#39;ether&#39;)})
-	// app.setGoal(&quot;Finish cleaning&quot;, &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac2cfc6c6c5eac1cbd8c5c6c3d9d8cbc784c9c5c7">[email&#160;protected]</a>&quot;, &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3aba6afafac83a8a2b1acafaab0b1a2aeeda0acae">[email&#160;protected]</a>&quot;, &quot;2017-12-12&quot;, {value: web3.toWei(11.111, &#39;ether&#39;), from: web3.eth.accounts[1]})
+	// app.setGoal("Finish cleaning", "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="69010c0505062902081b0605001a1b0804470a0604">[email protected]</a>", "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef6fbf2f2f1def5ffecf1f2f7edecfff3b0fdf1f3">[email protected]</a>", "2017-12-12", {value: web3.toWei(11.111, 'ether')})
+	// app.setGoal("Finish cleaning", "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac2cfc6c6c5eac1cbd8c5c6c3d9d8cbc784c9c5c7">[email protected]</a>", "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3aba6afafac83a8a2b1acafaab0b1a2aeeda0acae">[email protected]</a>", "2017-12-12", {value: web3.toWei(11.111, 'ether'), from: web3.eth.accounts[1]})
 	function setGoal(string _description, string _supervisorEmail, string _creatorEmail, string _deadline) payable returns (bytes32, address, string, uint, string, string, string) {
-		require(msg.value &gt; 0);
-		require(keccak256(_description) != keccak256(&#39;&#39;));
-		require(keccak256(_creatorEmail) != keccak256(&#39;&#39;));
-		require(keccak256(_deadline) != keccak256(&#39;&#39;));
+		require(msg.value > 0);
+		require(keccak256(_description) != keccak256(''));
+		require(keccak256(_creatorEmail) != keccak256(''));
+		require(keccak256(_deadline) != keccak256(''));
 
 		bytes32 hash = keccak256(msg.sender, _description, msg.value, _deadline);
 
@@ -108,16 +108,16 @@ contract GoFreakingDoIt is Ownable {
 	    return activeGoals.length;
 	}
 
-	// app.setEmailSent(&quot;0x00f2484d16ad04b395c6261b978fb21f0c59210d98e9ac361afc4772ab811393&quot;, {from: web3.eth.accounts[1]})
+	// app.setEmailSent("0x00f2484d16ad04b395c6261b978fb21f0c59210d98e9ac361afc4772ab811393", {from: web3.eth.accounts[1]})
 	function setEmailSent(uint _index, bytes32 _hash) onlyOwner {
-		assert(goals[_hash].amount &gt; 0);
+		assert(goals[_hash].amount > 0);
 
 		goals[_hash].emailSent = true;
 		activeGoals[_index].emailSent = true;
 	}
 
 	function setGoalSucceeded(uint _index, bytes32 _hash) onlyOwner {
-		assert(goals[_hash].amount &gt; 0);
+		assert(goals[_hash].amount > 0);
 
 		goals[_hash].completed = true;
 		activeGoals[_index].completed = true;
@@ -127,9 +127,9 @@ contract GoFreakingDoIt is Ownable {
 		setGoalSucceededEvent(_hash, true);
 	}
 
-	// app.setGoalFailed(0, &#39;0xf7a1a8aa52aeaaaa353ab49ab5cd735f3fd02598b4ff861b314907a414121ba4&#39;)
+	// app.setGoalFailed(0, '0xf7a1a8aa52aeaaaa353ab49ab5cd735f3fd02598b4ff861b314907a414121ba4')
 	function setGoalFailed(uint _index, bytes32 _hash) {
-		assert(goals[_hash].amount &gt; 0);
+		assert(goals[_hash].amount > 0);
 		// assert(goals[_hash].emailSent == true);
 
 		goals[_hash].completed = false;
@@ -140,7 +140,7 @@ contract GoFreakingDoIt is Ownable {
 		setGoalFailedEvent(_hash, false);
 	}
 
-	// Fallback function in case someone sends ether to the contract so it doesn&#39;t get lost
+	// Fallback function in case someone sends ether to the contract so it doesn't get lost
 	function() payable {}
 
     function kill() onlyOwner { 

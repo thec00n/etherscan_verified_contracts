@@ -31,8 +31,8 @@ interface ENS {
 contract SvEnsRegistrar {
     ENS public ens;
     bytes32 public rootNode;
-    mapping (bytes32 =&gt; bool) knownNodes;
-    mapping (address =&gt; bool) admins;
+    mapping (bytes32 => bool) knownNodes;
+    mapping (address => bool) admins;
     address public owner;
 
 
@@ -59,7 +59,7 @@ contract SvEnsRegistrar {
     }
 
     function remAdmin(address oldAdmin) req(admins[msg.sender]) external {
-        require(oldAdmin != msg.sender &amp;&amp; oldAdmin != owner);
+        require(oldAdmin != msg.sender && oldAdmin != owner);
         admins[oldAdmin] = false;
     }
 
@@ -72,7 +72,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */
@@ -81,7 +81,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnodeStr The label to register.
      * @param _owner The address of the new owner.
      */
@@ -92,7 +92,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * INTERNAL - Register a name that&#39;s not currently registered
+     * INTERNAL - Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */

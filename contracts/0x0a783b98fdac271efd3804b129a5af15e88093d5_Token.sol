@@ -10,9 +10,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the goico_kasko2go Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the goico_kasko2go Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="4821663b3e213a212608383a273e2d3a662127">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="4821663b3e213a212608383a273e2d3a662127">[email protected]</span>>
 */
 
 pragma solidity ^0.4.19;
@@ -49,18 +49,18 @@ contract BaseERC20 {
 
 contract Token is owned {
 
-    string  public standard = &#39;Token 0.1&#39;;
-    string  public name     = &#39;_K2G&#39;;
-    string  public symbol   = &#39;_K2G&#39;;
+    string  public standard = 'Token 0.1';
+    string  public name     = '_K2G';
+    string  public symbol   = '_K2G';
     uint8   public decimals = 8;
 
     uint                      public totalSupply;
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
 
     uint                      public numberOfInvestors;
-    mapping (address =&gt; bool) public investors;
-    mapping (address =&gt; uint) public depositedCPT;
-    mapping (address =&gt; uint) public depositedWei;
+    mapping (address => bool) public investors;
+    mapping (address => uint) public depositedCPT;
+    mapping (address => uint) public depositedWei;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -101,8 +101,8 @@ contract Token is owned {
     function () payable public {
         require(state==State.Started);
         uint tokens = msg.value / tokenPriceInWei * 100000000;
-        require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]); // overflow
+        require(tokens > 0);
         depositedWei[msg.sender]+=msg.value;
         balanceOf[msg.sender] += tokens;
         if (!investors[msg.sender]) {
@@ -119,8 +119,8 @@ contract Token is owned {
         // decimals in K2G and PROOF are the same and equal 8
         uint tokens = (_valueCPT * 10000) / 238894; // 1 K2G = 23,8894 CPT
         depositedCPT[_who]+=_valueCPT;
-        require(balanceOf[_who] + tokens &gt; balanceOf[_who]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
+        require(tokens > 0);
         balanceOf[_who] += tokens;
         totalSupply += tokens;
         if (!investors[_who]) {

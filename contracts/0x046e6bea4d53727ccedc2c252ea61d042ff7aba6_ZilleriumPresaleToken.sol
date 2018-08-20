@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -150,11 +150,11 @@ contract ZilleriumPresaleToken is ERC20, Ownable {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
-  string public constant name = &quot;Zillerium Presale Token&quot;;
-  string public constant symbol = &quot;ZILL&quot;;
+  string public constant name = "Zillerium Presale Token";
+  string public constant symbol = "ZILL";
   uint8 public constant decimals = 18;
   bool public mintingFinished = false;
 
@@ -327,10 +327,10 @@ contract ZilleriumPresale is Pausable {
   function validPurchase() internal constant returns (bool) {
 
     uint256 weiAmount = weiRaised.add(msg.value);
-    bool notSmallAmount = msg.value &gt;= minInvestment;
-    bool withinCap = weiAmount.mul(rate) &lt;= cap;
+    bool notSmallAmount = msg.value >= minInvestment;
+    bool withinCap = weiAmount.mul(rate) <= cap;
 
-    return (notSmallAmount &amp;&amp; withinCap);
+    return (notSmallAmount && withinCap);
   }
 
   //allow owner to finalize the presale once the presale is ended
@@ -352,7 +352,7 @@ contract ZilleriumPresale is Pausable {
 
   //return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = (weiRaised.mul(rate) &gt;= cap);
+    bool capReached = (weiRaised.mul(rate) >= cap);
     return capReached;
   }
 

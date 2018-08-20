@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Ether Refundable Prize
+// BokkyPooBah's Ether Refundable Prize
 //
 // A gift token backed by ethers. Designed to incentivise The DAO refund
 // withdrawals, but can be used for any other purposes
@@ -21,7 +21,7 @@ pragma solidity ^0.4.8;
 // +90 days     +365 days           0.0015     0.0010
 // +365 days    forever          1000.0000     0.0010
 //
-// Based on Vlad&#39;s Safe Token Sale Mechanism Contract
+// Based on Vlad's Safe Token Sale Mechanism Contract
 // - https://medium.com/@Vlad_Zamfir/a-safe-token-sale-mechanism-8d73c430ddd1
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
@@ -52,10 +52,10 @@ contract ERC20Token is Owned {
     uint256 _totalSupply = 0;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Get the total token supply
     function totalSupply() constant returns (uint256 totalSupply) {
@@ -69,9 +69,9 @@ contract ERC20Token is Owned {
 
     // Send _value amount of tokens to address _to
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -93,18 +93,18 @@ contract ERC20Token is Owned {
         return true;
     }
 
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     function transferFrom(
         address _from,
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -116,7 +116,7 @@ contract ERC20Token is Owned {
     }
 
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     function allowance(
         address _owner, 
         address _spender
@@ -135,8 +135,8 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant symbol = &quot;BERP&quot;;
-    string public constant name = &quot;BokkyPooBah&#180;s Ether Refundable Prize&quot;;
+    string public constant symbol = "BERP";
+    string public constant name = "BokkyPooBah´s Ether Refundable Prize";
     uint8 public constant decimals = 18;
 
     uint256 public deployedAt;
@@ -160,15 +160,15 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     }
 
     function buyPriceAt(uint256 at) constant returns (uint256) {
-        if (at &lt; (deployedAt + 7 days)) {
+        if (at < (deployedAt + 7 days)) {
             return 10 * 10**14;
-        } else if (at &lt; (deployedAt + 30 days)) {
+        } else if (at < (deployedAt + 30 days)) {
             return 11 * 10**14;
-        } else if (at &lt; (deployedAt + 60 days)) {
+        } else if (at < (deployedAt + 60 days)) {
             return 12 * 10**15;
-        } else if (at &lt; (deployedAt + 90 days)) {
+        } else if (at < (deployedAt + 90 days)) {
             return 13 * 10**15;
-        } else if (at &lt; (deployedAt + 365 days)) {
+        } else if (at < (deployedAt + 365 days)) {
             return 15 * 10**16;
         } else {
             return 10**21;
@@ -198,7 +198,7 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     }
 
     function buyTokens() payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint tokens = msg.value * 1 ether / buyPrice();
             _totalSupply += tokens;
             balances[msg.sender] += tokens;
@@ -215,7 +215,7 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     // Sell tokens to the contract
     // ------------------------------------------------------------------------
     function sellTokens(uint256 amountOfTokens) {
-        if (amountOfTokens &gt; balances[msg.sender]) throw;
+        if (amountOfTokens > balances[msg.sender]) throw;
         balances[msg.sender] -= amountOfTokens;
         _totalSupply -= amountOfTokens;
         uint256 ethersToSend = amountOfTokens * sellPrice() / 1 ether;
@@ -243,7 +243,7 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     // ------------------------------------------------------------------------
     function ownerWithdraw(uint256 amount) onlyOwner {
         uint256 maxWithdrawalAmount = amountOfEthersOwnerCanWithdraw();
-        if (amount &gt; maxWithdrawalAmount) {
+        if (amount > maxWithdrawalAmount) {
             amount = maxWithdrawalAmount;
         }
         if (!owner.send(amount)) throw;
@@ -258,7 +258,7 @@ contract BokkyPooBahsEtherRefundablePrize is ERC20Token {
     function amountOfEthersOwnerCanWithdraw() constant returns (uint256) {
         uint256 etherBalance = this.balance;
         uint256 ethersSupportingTokens = _totalSupply * sellPrice() / 1 ether;
-        if (etherBalance &gt; ethersSupportingTokens) {
+        if (etherBalance > ethersSupportingTokens) {
             return etherBalance - ethersSupportingTokens;
         } else {
             return 0;

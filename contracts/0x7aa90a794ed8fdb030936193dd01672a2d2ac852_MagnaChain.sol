@@ -29,13 +29,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
    /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -46,9 +46,9 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32)  public returns (bool) {
     require (_to != address(0));
-    require (_value &gt; 0);
-    require (balances[msg.sender] &gt;= _value); // Check if the sender has enough
-    //require (balances[_to] + _value &gt; balances[_to]); // Check for overflows
+    require (_value > 0);
+    require (balances[msg.sender] >= _value); // Check if the sender has enough
+    //require (balances[_to] + _value > balances[_to]); // Check for overflows
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -76,7 +76,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -87,10 +87,10 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32)  public returns (bool) {
     require(_to != address(0));
-    require (_value &gt; 0);
-    require (balances[_from] &gt;= _value); // Check if the sender has enough
-    //require (balances[_to] + _value &gt; balances[_to]); // Check for overflows
-    require (_value &lt;= allowed[_from][msg.sender]); // Check allowance  
+    require (_value > 0);
+    require (balances[_from] >= _value); // Check if the sender has enough
+    //require (balances[_to] + _value > balances[_to]); // Check for overflows
+    require (_value <= allowed[_from][msg.sender]); // Check allowance  
 
     uint256 _allowance = allowed[_from][msg.sender];
 
@@ -106,7 +106,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -178,20 +178,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -201,13 +201,13 @@ library SafeMath {
 // It is a ERC20 token
 contract MagnaChain is StandardToken, Ownable{
     
-    string public version = &quot;1.0&quot;;
-    string public name = &quot;MagnaChain&quot;;
-    string public symbol = &quot;MGC&quot;;
+    string public version = "1.0";
+    string public name = "MagnaChain";
+    string public symbol = "MGC";
     uint8 public  decimals = 18;
 
-    mapping(address=&gt;uint256)  lockedBalance;
-    mapping(address=&gt;uint)     timeRelease; 
+    mapping(address=>uint256)  lockedBalance;
+    mapping(address=>uint)     timeRelease; 
     
     uint256 internal constant INITIAL_SUPPLY = 20 * 100 * (10**6) * (10 **18);
     uint256 internal constant MAX_TIME = 60*60*24*365*5;
@@ -236,22 +236,22 @@ contract MagnaChain is StandardToken, Ownable{
     // transfer to and lock it
     function transferAndLock(address _to, uint256 _value, uint _releaseTime) onlyPayloadSize(3 * 32) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(_value &gt; 0);
-        require(_releaseTime &gt; now &amp;&amp; _releaseTime &lt;= now + MAX_TIME);
+        require(_value <= balances[msg.sender]);
+        require(_value > 0);
+        require(_releaseTime > now && _releaseTime <= now + MAX_TIME);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
        
         //if preLock can release 
         uint preRelease = timeRelease[_to];
-        if (preRelease &lt;= now &amp;&amp; preRelease != 0x0) {
+        if (preRelease <= now && preRelease != 0x0) {
             balances[_to] = balances[_to].add(lockedBalance[_to]);
             lockedBalance[_to] = 0;
         }
 
         lockedBalance[_to] = lockedBalance[_to].add(_value);
-        timeRelease[_to] =  _releaseTime &gt;= timeRelease[_to] ? _releaseTime : timeRelease[_to]; 
+        timeRelease[_to] =  _releaseTime >= timeRelease[_to] ? _releaseTime : timeRelease[_to]; 
         Transfer(msg.sender, _to, _value);
         Lock(_to, _value, _releaseTime);
         return true;
@@ -262,8 +262,8 @@ contract MagnaChain is StandardToken, Ownable{
    */
    function unlock() public constant returns (bool success){
         uint256 amount = lockedBalance[msg.sender];
-        require(amount &gt; 0);
-        require(now &gt;= timeRelease[msg.sender]);
+        require(amount > 0);
+        require(now >= timeRelease[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].add(amount);
         lockedBalance[msg.sender] = 0;
@@ -281,8 +281,8 @@ contract MagnaChain is StandardToken, Ownable{
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
     
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

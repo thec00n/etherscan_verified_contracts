@@ -26,9 +26,9 @@ contract Shaycoin is owned {
     uint256 public price = 200000000000000;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (uint256 =&gt; address) public depositIndex;
-    mapping (address =&gt; bool) public depositBool;
+    mapping (address => uint256) public balanceOf;
+    mapping (uint256 => address) public depositIndex;
+    mapping (address => bool) public depositBool;
     uint256 public indexTracker = 0;
 
     // This generates a public event on the blockchain that will notify clients
@@ -53,11 +53,11 @@ contract Shaycoin is owned {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
-        if (_to != address(this) &amp;&amp; !depositBool[_to]) {
+        if (_to != address(this) && !depositBool[_to]) {
            depositIndex[indexTracker] = _to;
            depositBool[_to] = true;
            indexTracker += 1;
@@ -68,7 +68,7 @@ contract Shaycoin is owned {
     /// @notice Buy tokens from contract by sending ether
     function buy() payable public {
         uint256 amount = 10 ** decimals * msg.value / price;               // calculates the amount
-        if (amount &gt; balanceOf[this]) {
+        if (amount > balanceOf[this]) {
             totalSupply += amount - balanceOf[this];
             balanceOf[this] = amount;
         }
@@ -78,9 +78,9 @@ contract Shaycoin is owned {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * price / 10 ** decimals);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * price / 10 ** decimals);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);                                    // makes the transfers
-        msg.sender.transfer(amount * price / 10 ** decimals);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * price / 10 ** decimals);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 
     function donate() payable public {
@@ -94,7 +94,7 @@ contract Shaycoin is owned {
 
     /* Function to recover the funds on the contract */
     function killAndRefund() onlyOwner public {
-        for (uint256 i = 0; i &lt; indexTracker; i++) {
+        for (uint256 i = 0; i < indexTracker; i++) {
             depositIndex[i].transfer(balanceOf[depositIndex[i]] * price / 10 ** decimals);
         }
         selfdestruct(owner);

@@ -9,23 +9,23 @@ contract ITransferable {
 @title PLAY Token
 
 ERC20 Token with additional mint functionality.
-A &quot;controller&quot; (initialized to the contract creator) has exclusive permission to mint.
+A "controller" (initialized to the contract creator) has exclusive permission to mint.
 The controller address can be changed until locked.
 
 Implementation based on https://github.com/ConsenSys/Tokens
 */
 contract PlayToken {
     uint256 public totalSupply = 0;
-    string public name = &quot;PLAY&quot;;
+    string public name = "PLAY";
     uint8 public decimals = 18;
-    string public symbol = &quot;PLY&quot;;
-    string public version = &#39;1&#39;;
+    string public symbol = "PLY";
+    string public version = '1';
 
     address public controller;
     bool public controllerLocked = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -40,7 +40,7 @@ contract PlayToken {
         controller = _controller;
     }
 
-    /** Sets a new controller address if the current controller isn&#39;t locked */
+    /** Sets a new controller address if the current controller isn't locked */
     function setController(address _newController) onlyController {
         require(! controllerLocked);
         controller = _newController;
@@ -63,11 +63,11 @@ contract PlayToken {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        /* Additional Restriction: don&#39;t accept token payments to the contract itself and to address 0 in order to avoid most
+        /* Additional Restriction: don't accept token payments to the contract itself and to address 0 in order to avoid most
          token losses by mistake - as is discussed in https://github.com/ethereum/EIPs/issues/223 */
-        require((_to != 0) &amp;&amp; (_to != address(this)));
+        require((_to != 0) && (_to != address(this)));
 
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -75,7 +75,7 @@ contract PlayToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -102,10 +102,10 @@ contract PlayToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        /* call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        /* call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead. */
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

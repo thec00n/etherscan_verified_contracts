@@ -29,7 +29,7 @@ interface ERC223ReceivingContract {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -108,7 +108,7 @@ contract Vesting is Ownable, ERC223ReceivingContract {
      */
     function withdraw(uint _amount) public onlyOwner {
         uint availableTokens = ERC223(token).balanceOf(this) - lockedAmount();
-        require(_amount &lt;= availableTokens);
+        require(_amount <= availableTokens);
         ERC223(token).transfer(msg.sender, _amount);
         Withdraw(msg.sender, _amount);
     }
@@ -125,16 +125,16 @@ contract Vesting is Ownable, ERC223ReceivingContract {
     /**
      * @dev Internal function that tells how many tokens are locked at the moment.
      * @return {
-     *    &quot;lockedTokens&quot;: &quot;amount of locked tokens&quot;
+     *    "lockedTokens": "amount of locked tokens"
      * }
      */
     function lockedAmount() internal view returns (uint) {
-        if (now &lt; FIRST_UNLOCK) {
+        if (now < FIRST_UNLOCK) {
             return TOTAL_TOKENS;  
         }
 
         uint quarters = (now - FIRST_UNLOCK) / 0.25 years; // quarters past
-        uint effectiveQuarters = quarters &lt;= 12 ? quarters : 12; // all tokens unlocked in 3 years after FIRST_UNLOCK
+        uint effectiveQuarters = quarters <= 12 ? quarters : 12; // all tokens unlocked in 3 years after FIRST_UNLOCK
         uint locked = TOTAL_TOKENS * (7500 - effectiveQuarters * 625) / 10000; // unlocks 25% plus 6.25% per quarter
 
         return locked;

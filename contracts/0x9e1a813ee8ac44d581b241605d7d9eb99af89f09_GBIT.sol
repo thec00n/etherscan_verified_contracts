@@ -8,13 +8,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -64,8 +64,8 @@ contract GBIT is SafeMath {
     uint256 public takeFee = 1; //percentage times (1 ether)
     uint256 public lastFreeBlock = 500000000;
 
-    mapping (bytes32 =&gt; uint256) public sellOrderBalances; //a hash of available order balances holds a number of tokens
-    mapping (bytes32 =&gt; uint256) public buyOrderBalances; //a hash of available order balances. holds a number of eth
+    mapping (bytes32 => uint256) public sellOrderBalances; //a hash of available order balances holds a number of tokens
+    mapping (bytes32 => uint256) public buyOrderBalances; //a hash of available order balances. holds a number of eth
 
     event MakeBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, address indexed buyer);
 
@@ -90,13 +90,13 @@ contract GBIT is SafeMath {
 
     function changeGBTAddress(address gbtAddress_) public {
         require(msg.sender == admin);
-        require(block.number &gt; GBT(gbtAddress).expirationBlock());
+        require(block.number > GBT(gbtAddress).expirationBlock());
         gbtAddress = gbtAddress_;
     }
 
     function changeLastFreeBlock(uint256 _lastFreeBlock) public {
         require(msg.sender == admin);
-        require(_lastFreeBlock &gt; block.number + 100); //announce at least 100 blocks ahead
+        require(_lastFreeBlock > block.number + 100); //announce at least 100 blocks ahead
         lastFreeBlock = _lastFreeBlock;
     }
 
@@ -107,13 +107,13 @@ contract GBIT is SafeMath {
 
     function changeMakeFee(uint256 makeFee_) public {
         require(msg.sender == admin);
-        require(makeFee_ &lt; makeFee);
+        require(makeFee_ < makeFee);
         makeFee = makeFee_;
     }
 
     function changeTakeFee(uint256 takeFee_) public {
         require(msg.sender == admin);
-        require(takeFee_ &lt; takeFee);
+        require(takeFee_ < takeFee);
         takeFee = takeFee_;
     }
 
@@ -156,7 +156,7 @@ contract GBIT is SafeMath {
         sellOrderBalances[h] = safeAdd(sellOrderBalances[h], tokenAmount);
 
         // Check allowance.  -- Done after updating balance bc it makes a call to an untrusted contract.
-        require(tokenAmount &lt;= ERC20Interface(token).allowance(msg.sender, this));
+        require(tokenAmount <= ERC20Interface(token).allowance(msg.sender, this));
 
         // Grab the token.
         if (!ERC20Interface(token).transferFrom(msg.sender, this, tokenAmount)) {
@@ -222,7 +222,7 @@ contract GBIT is SafeMath {
         // Does the buyer (maker) have enough money in the contract?
         uint256 unvestedMakeFee = calculateFee(transactionWeiAmountNoFee, makeFee);
         uint256 totalTransactionWeiAmount = safeAdd(transactionWeiAmountNoFee, unvestedMakeFee);
-        require(buyOrderBalances[h] &gt;= totalTransactionWeiAmount);
+        require(buyOrderBalances[h] >= totalTransactionWeiAmount);
 
 
         // Calculate the actual vested fees.
@@ -236,10 +236,10 @@ contract GBIT is SafeMath {
 
 
         // Did the seller send enough tokens?  -- This check is here bc it calls to an untrusted contract.
-        require(ERC20Interface(token).allowance(msg.sender, this) &gt;= totalTokens);
+        require(ERC20Interface(token).allowance(msg.sender, this) >= totalTokens);
 
         // Send buyer their tokens and any fee refund.
-        if (currentMakeFee &lt; unvestedMakeFee) {// the buyer got a fee discount. Send the refund.
+        if (currentMakeFee < unvestedMakeFee) {// the buyer got a fee discount. Send the refund.
             uint256 refundAmount = safeSub(unvestedMakeFee, currentMakeFee);
             if (!buyer.send(refundAmount)) {
                 revert();
@@ -250,7 +250,7 @@ contract GBIT is SafeMath {
         }
 
         // Grab our fee.
-        if (safeAdd(currentTakeFee, currentMakeFee) &gt; 0) {
+        if (safeAdd(currentTakeFee, currentMakeFee) > 0) {
             if (!feeAccount.send(safeAdd(currentTakeFee, currentMakeFee))) {
                 revert();
             }
@@ -276,7 +276,7 @@ contract GBIT is SafeMath {
         uint256 currentTakeFee = feeFromTotalCostForAccount(msg.value, takeFee, msg.sender);
         uint256 transactionWeiAmountNoFee = safeSub(msg.value, currentTakeFee);
         uint256 totalTokens = safeMul(transactionWeiAmountNoFee, tokenAmount) / weiAmount;
-        require(sellOrderBalances[h] &gt;= totalTokens);
+        require(sellOrderBalances[h] >= totalTokens);
 
         // Calculate total vested fee.
         uint256 currentMakeFee = calculateFeeForAccount(transactionWeiAmountNoFee, makeFee, seller);
@@ -295,7 +295,7 @@ contract GBIT is SafeMath {
         }
 
         // Take our fee.
-        if (totalFee &gt; 0) {
+        if (totalFee > 0) {
             if (!feeAccount.send(totalFee)) {
                 revert();
             }

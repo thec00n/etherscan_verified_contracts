@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,12 +107,12 @@ contract NonZero {
     }
 
     modifier nonZeroAmount(uint _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier nonZeroValue() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -124,15 +124,15 @@ contract TripCoin is ERC20, Ownable, NonZero {
     using SafeMath for uint;
 
 /////////////////////// TOKEN INFORMATION ///////////////////////
-    string public constant name = &quot;TripCoin&quot;;
-    string public constant symbol = &quot;TRIP&quot;;
+    string public constant name = "TripCoin";
+    string public constant symbol = "TRIP";
 
     uint8 public decimals = 3;
     
-    // Mapping to keep user&#39;s balances
-    mapping (address =&gt; uint256) balances;
-    // Mapping to keep user&#39;s allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    // Mapping to keep user's balances
+    mapping (address => uint256) balances;
+    // Mapping to keep user's allowances
+    mapping (address => mapping (address => uint256)) allowed;
 
 /////////////////////// VARIABLE INITIALIZATION ///////////////////////
     
@@ -195,7 +195,7 @@ contract TripCoin is ERC20, Ownable, NonZero {
 
     // Transfer
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        require(balanceOf(msg.sender) &gt;= _amount);
+        require(balanceOf(msg.sender) >= _amount);
         addToBalance(_to, _amount);
         decrementBalance(msg.sender, _amount);
         Transfer(msg.sender, _to, _amount);
@@ -204,7 +204,7 @@ contract TripCoin is ERC20, Ownable, NonZero {
 
     // Transfer from one address to another (need allowance to be called first)
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
         decrementBalance(_from, _amount);
         addToBalance(_to, _amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -220,7 +220,7 @@ contract TripCoin is ERC20, Ownable, NonZero {
         return true;
     }
 
-    // Get an address&#39;s TripCoin allowance
+    // Get an address's TripCoin allowance
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
@@ -263,7 +263,7 @@ contract TripCoin is ERC20, Ownable, NonZero {
 
     // Function for the presale to transfer tokens
     function transferFromPresale(address _to, uint256 _amount) onlyOwner nonZeroAmount(_amount) nonZeroAddress(_to) returns (bool success) {
-        require(balanceOf(owner) &gt;= _amount);
+        require(balanceOf(owner) >= _amount);
         decrementBalance(owner, _amount);
         addToBalance(_to, _amount);
         Transfer(0x0, _to, _amount);
@@ -271,16 +271,16 @@ contract TripCoin is ERC20, Ownable, NonZero {
     }
       // Function for the ico to transfer tokens
     function transferFromIco(address _to, uint256 _amount) onlyOwner nonZeroAmount(_amount) nonZeroAddress(_to) returns (bool success) {
-        require(balanceOf(owner) &gt;= _amount);
+        require(balanceOf(owner) >= _amount);
         decrementBalance(owner, _amount);
         addToBalance(_to, _amount);
         Transfer(0x0, _to, _amount);
         return true;
     }
     function getRate() public constant returns (uint price) {
-        if (now &gt; presaleStartsAt &amp;&amp; now &lt; presaleEndsAt ) {
+        if (now > presaleStartsAt && now < presaleEndsAt ) {
            return 1500; 
-        } else if (now &gt; icoStartsAt &amp;&amp; now &lt; icoEndsAt) {
+        } else if (now > icoStartsAt && now < icoEndsAt) {
            return 1000; 
         } 
     }       

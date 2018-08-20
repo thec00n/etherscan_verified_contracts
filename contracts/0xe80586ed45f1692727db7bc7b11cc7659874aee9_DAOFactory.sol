@@ -26,20 +26,20 @@ pragma solidity 0.4.18;
 
 
 contract KernelConstants {
-    bytes32 constant public CORE_NAMESPACE = keccak256(&quot;core&quot;);
-    bytes32 constant public APP_BASES_NAMESPACE = keccak256(&quot;base&quot;);
-    bytes32 constant public APP_ADDR_NAMESPACE = keccak256(&quot;app&quot;);
+    bytes32 constant public CORE_NAMESPACE = keccak256("core");
+    bytes32 constant public APP_BASES_NAMESPACE = keccak256("base");
+    bytes32 constant public APP_ADDR_NAMESPACE = keccak256("app");
 
-    bytes32 constant public KERNEL_APP_ID = keccak256(&quot;kernel.aragonpm.eth&quot;);
+    bytes32 constant public KERNEL_APP_ID = keccak256("kernel.aragonpm.eth");
     bytes32 constant public KERNEL_APP = keccak256(CORE_NAMESPACE, KERNEL_APP_ID);
 
-    bytes32 constant public ACL_APP_ID = keccak256(&quot;acl.aragonpm.eth&quot;);
+    bytes32 constant public ACL_APP_ID = keccak256("acl.aragonpm.eth");
     bytes32 constant public ACL_APP = keccak256(APP_ADDR_NAMESPACE, ACL_APP_ID);
 }
 
 
 contract KernelStorage is KernelConstants {
-    mapping (bytes32 =&gt; address) public apps;
+    mapping (bytes32 => address) public apps;
 }
 
 //File: contracts/acl/ACLSyntaxSugar.sol
@@ -124,17 +124,17 @@ contract ACLSyntaxSugar {
 
 contract ACLHelpers {
     function decodeParamOp(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 30));
+        return uint8(_x >> (8 * 30));
     }
 
     function decodeParamId(uint256 _x) internal pure returns (uint8 b) {
-        return uint8(_x &gt;&gt; (8 * 31));
+        return uint8(_x >> (8 * 31));
     }
 
     function decodeParamsList(uint256 _x) internal pure returns (uint32 a, uint32 b, uint32 c) {
         a = uint32(_x);
-        b = uint32(_x &gt;&gt; (8 * 4));
-        c = uint32(_x &gt;&gt; (8 * 8));
+        b = uint32(_x >> (8 * 4));
+        c = uint32(_x >> (8 * 8));
     }
 }
 
@@ -226,7 +226,7 @@ contract DelegateProxy {
     function isContract(address _target) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(_target) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -251,13 +251,13 @@ contract AppProxyBase is IAppProxy, AppStorage, DelegateProxy, KernelConstants {
         appId = _appId;
 
         // Implicit check that kernel is actually a Kernel
-        // The EVM doesn&#39;t actually provide a way for us to make sure, but we can force a revert to
+        // The EVM doesn't actually provide a way for us to make sure, but we can force a revert to
         // occur if the kernel is set to 0x0 or a non-code address when we try to call a method on
         // it.
         address appCode = getAppBase(appId);
 
         // If initialize payload is provided, it will be executed
-        if (_initializePayload.length &gt; 0) {
+        if (_initializePayload.length > 0) {
             require(isContract(appCode));
             // Cannot make delegatecall as a delegateproxy.delegatedFwd as it
             // returns ending execution context and halts contract deployment
@@ -271,7 +271,7 @@ contract AppProxyBase is IAppProxy, AppStorage, DelegateProxy, KernelConstants {
 
     function () payable public {
         address target = getCode();
-        require(target != 0); // if app code hasn&#39;t been set yet, don&#39;t call
+        require(target != 0); // if app code hasn't been set yet, don't call
         delegatedFwd(target, msg.data);
     }
 }
@@ -380,7 +380,7 @@ pragma solidity 0.4.18;
 
 
 contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSyntaxSugar {
-    bytes32 constant public APP_MANAGER_ROLE = keccak256(&quot;APP_MANAGER_ROLE&quot;);
+    bytes32 constant public APP_MANAGER_ROLE = keccak256("APP_MANAGER_ROLE");
 
     /**
     * @dev Initialize can only be called once. It saves the block number in which it was initialized.
@@ -403,7 +403,7 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
     * @dev Create a new instance of an app linked to this kernel and set its base
     *      implementation if it was not already set
     * @param _name Name of the app
-    * @param _appBase Address of the app&#39;s base implementation
+    * @param _appBase Address of the app's base implementation
     * @return AppProxy instance
     */
     function newAppInstance(bytes32 _name, address _appBase) auth(APP_MANAGER_ROLE, arr(APP_BASES_NAMESPACE, _name)) public returns (IAppProxy appProxy) {
@@ -415,7 +415,7 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
     * @dev Create a new pinned instance of an app linked to this kernel and set
     *      its base implementation if it was not already set
     * @param _name Name of the app
-    * @param _appBase Address of the app&#39;s base implementation
+    * @param _appBase Address of the app's base implementation
     * @return AppProxy instance
     */
     function newPinnedAppInstance(bytes32 _name, address _appBase) auth(APP_MANAGER_ROLE, arr(APP_BASES_NAMESPACE, _name)) public returns (IAppProxy appProxy) {
@@ -500,7 +500,7 @@ contract Kernel is IKernel, KernelStorage, Initializable, AppProxyFactory, ACLSy
         address kernel = getApp(KERNEL_APP);
         uint256 size;
         assembly { size := extcodesize(kernel) }
-        require(size &gt; 0);
+        require(size > 0);
     }
 }
 
@@ -542,8 +542,8 @@ pragma solidity 0.4.18;
 
 
 contract EVMScriptRegistryConstants {
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256(&quot;evmreg.aragonpm.eth&quot;);
-    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256(&quot;app&quot;), EVMSCRIPT_REGISTRY_APP_ID);
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP_ID = keccak256("evmreg.aragonpm.eth");
+    bytes32 constant public EVMSCRIPT_REGISTRY_APP = keccak256(keccak256("app"), EVMSCRIPT_REGISTRY_APP_ID);
 }
 
 
@@ -559,8 +559,8 @@ pragma solidity 0.4.18;
 
 library ScriptHelpers {
     // To test with JS and compare with actual encoder. Maintaining for reference.
-    // t = function() { return IEVMScriptExecutor.at(&#39;0x4bcdd59d6c77774ee7317fc1095f69ec84421e49&#39;).contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
-    // run = function() { return ScriptHelpers.new().then(sh =&gt; { sh.abiEncode.call(...[].slice.call(arguments)).then(a =&gt; console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
+    // t = function() { return IEVMScriptExecutor.at('0x4bcdd59d6c77774ee7317fc1095f69ec84421e49').contract.execScript.getData(...[].slice.call(arguments)).slice(10).match(/.{1,64}/g) }
+    // run = function() { return ScriptHelpers.new().then(sh => { sh.abiEncode.call(...[].slice.call(arguments)).then(a => console.log(a.slice(2).match(/.{1,64}/g)) ) }) }
     // This is truly not beautiful but lets no daydream to the day solidity gets reflection features
 
     function abiEncode(bytes _a, bytes _b, address[] _c) public pure returns (bytes d) {
@@ -591,7 +591,7 @@ library ScriptHelpers {
     function abiLength(bytes memory _a) internal pure returns (uint256) {
         // 1 for length +
         // memory words + 1 if not divisible for 32 to offset word
-        return 1 + (_a.length / 32) + (_a.length % 32 &gt; 0 ? 1 : 0);
+        return 1 + (_a.length / 32) + (_a.length % 32 > 0 ? 1 : 0);
     }
 
     function abiLength(address[] _a) internal pure returns (uint256) {
@@ -656,9 +656,9 @@ library ScriptHelpers {
     function toBytes(bytes4 _sig) internal pure returns (bytes) {
         bytes memory payload = new bytes(4);
         payload[0] = bytes1(_sig);
-        payload[1] = bytes1(_sig &lt;&lt; 8);
-        payload[2] = bytes1(_sig &lt;&lt; 16);
-        payload[3] = bytes1(_sig &lt;&lt; 24);
+        payload[1] = bytes1(_sig << 8);
+        payload[2] = bytes1(_sig << 16);
+        payload[3] = bytes1(_sig << 24);
         return payload;
     }
 
@@ -668,7 +668,7 @@ library ScriptHelpers {
         uint256 len = _len;
 
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -722,7 +722,7 @@ contract EVMScriptRunner is AppStorage, EVMScriptRegistryConstants {
     }
 
     /**
-    * @dev copies and returns last&#39;s call data. Needs to ABI decode first
+    * @dev copies and returns last's call data. Needs to ABI decode first
     */
     function returnedDataDecoded() internal view returns (bytes ret) {
         assembly {
@@ -768,7 +768,7 @@ contract AragonApp is AppStorage, Initializable, ACLSyntaxSugar, EVMScriptRunner
 
     function canPerform(address _sender, bytes32 _role, uint256[] params) public view returns (bool) {
         bytes memory how; // no need to init memory as it is never used
-        if (params.length &gt; 0) {
+        if (params.length > 0) {
             uint256 byteLength = params.length * 32;
             assembly {
                 how := params // forced casting
@@ -793,14 +793,14 @@ interface ACLOracle {
 
 
 contract ACL is IACL, AragonApp, ACLHelpers {
-    bytes32 constant public CREATE_PERMISSIONS_ROLE = keccak256(&quot;CREATE_PERMISSIONS_ROLE&quot;);
+    bytes32 constant public CREATE_PERMISSIONS_ROLE = keccak256("CREATE_PERMISSIONS_ROLE");
 
     // whether a certain entity has a permission
-    mapping (bytes32 =&gt; bytes32) permissions; // 0 for no permission, or parameters id
-    mapping (bytes32 =&gt; Param[]) public permissionParams;
+    mapping (bytes32 => bytes32) permissions; // 0 for no permission, or parameters id
+    mapping (bytes32 => Param[]) public permissionParams;
 
     // who is the manager of a permission
-    mapping (bytes32 =&gt; address) permissionManager;
+    mapping (bytes32 => address) permissionManager;
 
     enum Op { NONE, EQ, NEQ, GT, LT, GTE, LTE, NOT, AND, OR, XOR, IF_ELSE, RET } // op types
 
@@ -808,7 +808,7 @@ contract ACL is IACL, AragonApp, ACLHelpers {
         uint8 id;
         uint8 op;
         uint240 value; // even though value is an uint240 it can store addresses
-        // in the case of 32 byte hashes losing 2 bytes precision isn&#39;t a huge deal
+        // in the case of 32 byte hashes losing 2 bytes precision isn't a huge deal
         // op and id take less than 1 byte each so it can be kept in 1 sstore
     }
 
@@ -844,7 +844,7 @@ contract ACL is IACL, AragonApp, ACLHelpers {
     }
 
     /**
-    * @dev Creates a permission that wasn&#39;t previously set. Access is limited by the ACL.
+    * @dev Creates a permission that wasn't previously set. Access is limited by the ACL.
     *      If a created permission is removed it is possible to reset it with createPermission.
     * @notice Create a new permission granting `_entity` the ability to perform actions of role `_role` on `_app` (setting `_manager` as the permission manager)
     * @param _entity Address of the whitelisted entity that will be able to perform the role
@@ -885,7 +885,7 @@ contract ACL is IACL, AragonApp, ACLHelpers {
     {
         require(!hasPermission(_entity, _app, _role));
 
-        bytes32 paramsHash = _params.length &gt; 0 ? _saveParams(_params) : EMPTY_PARAM_HASH;
+        bytes32 paramsHash = _params.length > 0 ? _saveParams(_params) : EMPTY_PARAM_HASH;
         _setPermission(_entity, _app, _role, paramsHash);
     }
 
@@ -949,12 +949,12 @@ contract ACL is IACL, AragonApp, ACLHelpers {
 
     function hasPermission(address _who, address _where, bytes32 _what, uint256[] memory _how) public view returns (bool) {
         bytes32 whoParams = permissions[permissionHash(_who, _where, _what)];
-        if (whoParams != bytes32(0) &amp;&amp; evalParams(whoParams, _who, _where, _what, _how)) {
+        if (whoParams != bytes32(0) && evalParams(whoParams, _who, _where, _what, _how)) {
             return true;
         }
 
         bytes32 anyParams = permissions[permissionHash(ANY_ENTITY, _where, _what)];
-        if (anyParams != bytes32(0) &amp;&amp; evalParams(anyParams, ANY_ENTITY, _where, _what, _how)) {
+        if (anyParams != bytes32(0) && evalParams(anyParams, ANY_ENTITY, _where, _what, _how)) {
             return true;
         }
 
@@ -991,7 +991,7 @@ contract ACL is IACL, AragonApp, ACLHelpers {
         Param[] storage params = permissionParams[paramHash];
 
         if (params.length == 0) { // params not saved before
-            for (uint256 i = 0; i &lt; _encodedParams.length; i++) {
+            for (uint256 i = 0; i < _encodedParams.length; i++) {
                 uint256 encodedParam = _encodedParams[i];
                 Param memory param = Param(decodeParamId(encodedParam), decodeParamOp(encodedParam), uint240(encodedParam));
                 params.push(param);
@@ -1025,7 +1025,7 @@ contract ACL is IACL, AragonApp, ACLHelpers {
         uint256[] _how
     ) internal view returns (bool)
     {
-        if (_paramId &gt;= permissionParams[_paramsHash].length) {
+        if (_paramId >= permissionParams[_paramsHash].length) {
             return false; // out of bounds
         }
 
@@ -1051,14 +1051,14 @@ contract ACL is IACL, AragonApp, ACLHelpers {
         } else if (param.id == PARAM_VALUE_PARAM_ID) {
             value = uint256(param.value);
         } else {
-            if (param.id &gt;= _how.length) {
+            if (param.id >= _how.length) {
                 return false;
             }
             value = uint256(uint240(_how[param.id])); // force lost precision
         }
 
         if (Op(param.op) == Op.RET) {
-            return uint256(value) &gt; 0;
+            return uint256(value) > 0;
         }
 
         return compare(value, Op(param.op), comparedTo);
@@ -1079,18 +1079,18 @@ contract ACL is IACL, AragonApp, ACLHelpers {
             return !r1;
         }
 
-        if (r1 &amp;&amp; Op(_param.op) == Op.OR) {
+        if (r1 && Op(_param.op) == Op.OR) {
             return true;
         }
 
-        if (!r1 &amp;&amp; Op(_param.op) == Op.AND) {
+        if (!r1 && Op(_param.op) == Op.AND) {
             return false;
         }
 
         bool r2 = evalParam(_paramsHash, v2, _who, _where, _what, _how);
 
         if (Op(_param.op) == Op.XOR) {
-            return (r1 &amp;&amp; !r2) || (!r1 &amp;&amp; r2);
+            return (r1 && !r2) || (!r1 && r2);
         }
 
         return r2; // both or and and depend on result of r2 after checks
@@ -1099,10 +1099,10 @@ contract ACL is IACL, AragonApp, ACLHelpers {
     function compare(uint256 _a, Op _op, uint256 _b) internal pure returns (bool) {
         if (_op == Op.EQ)  return _a == _b;                              // solium-disable-line lbrace
         if (_op == Op.NEQ) return _a != _b;                              // solium-disable-line lbrace
-        if (_op == Op.GT)  return _a &gt; _b;                               // solium-disable-line lbrace
-        if (_op == Op.LT)  return _a &lt; _b;                               // solium-disable-line lbrace
-        if (_op == Op.GTE) return _a &gt;= _b;                              // solium-disable-line lbrace
-        if (_op == Op.LTE) return _a &lt;= _b;                              // solium-disable-line lbrace
+        if (_op == Op.GT)  return _a > _b;                               // solium-disable-line lbrace
+        if (_op == Op.LT)  return _a < _b;                               // solium-disable-line lbrace
+        if (_op == Op.GTE) return _a >= _b;                              // solium-disable-line lbrace
+        if (_op == Op.LTE) return _a <= _b;                              // solium-disable-line lbrace
         return false;
     }
 
@@ -1167,7 +1167,7 @@ contract EVMScriptRegistry is IEVMScriptRegistry, EVMScriptRegistryConstants, Ar
     function getScriptExecutor(bytes _script) public view returns (address) {
         uint256 id = _script.getSpecId();
 
-        if (id == 0 || id &gt;= executors.length) {
+        if (id == 0 || id >= executors.length) {
             return address(0);
         }
 
@@ -1194,7 +1194,7 @@ contract CallsScript is IEVMScriptExecutor {
 
     /**
     * @notice Executes a number of call scripts
-    * @param _script [ specId (uint32) ] many calls with this structure -&gt;
+    * @param _script [ specId (uint32) ] many calls with this structure ->
     *    [ to (address: 20 bytes) ] [ calldataLength (uint32: 4 bytes) ] [ calldata (calldataLength bytes) ]
     * @param _input Input is ignored in callscript
     * @param _blacklist Addresses the script cannot call to, or will revert.
@@ -1202,10 +1202,10 @@ contract CallsScript is IEVMScriptExecutor {
     */
     function execScript(bytes _script, bytes _input, address[] _blacklist) external returns (bytes) {
         uint256 location = SCRIPT_START_LOCATION; // first 32 bits are spec id
-        while (location &lt; _script.length) {
+        while (location < _script.length) {
             address contractAddress = _script.addressAt(location);
             // Check address being called is not blacklist
-            for (uint i = 0; i &lt; _blacklist.length; i++) {
+            for (uint i = 0; i < _blacklist.length; i++) {
                 require(contractAddress != _blacklist[i]);
             }
 
@@ -1262,14 +1262,14 @@ contract DelegateScript is IEVMScriptExecutor {
     */
     function delegate(address _addr, bytes memory _input) internal returns (bytes memory output) {
         require(isContract(_addr));
-        require(_addr.delegatecall(_input.length &gt; 0 ? _input : defaultInput()));
+        require(_addr.delegatecall(_input.length > 0 ? _input : defaultInput()));
         return returnedData();
     }
 
     function isContract(address _target) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(_target) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function defaultInput() internal pure returns (bytes) {
@@ -1277,7 +1277,7 @@ contract DelegateScript is IEVMScriptExecutor {
     }
 
     /**
-    * @dev copies and returns last&#39;s call data
+    * @dev copies and returns last's call data
     */
     function returnedData() internal view returns (bytes ret) {
         assembly {
@@ -1301,7 +1301,7 @@ pragma solidity 0.4.18;
 contract DeployDelegateScript is DelegateScript {
     uint256 constant internal SCRIPT_START_LOCATION = 4;
 
-    mapping (bytes32 =&gt; address) cache;
+    mapping (bytes32 => address) cache;
 
     /**
     * @notice Executes script by delegatecall into a deployed contract (exec() function)

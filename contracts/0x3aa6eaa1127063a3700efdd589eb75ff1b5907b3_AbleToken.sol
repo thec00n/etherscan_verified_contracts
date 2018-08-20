@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -46,37 +46,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -114,13 +114,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -156,7 +156,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -169,7 +169,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -259,12 +259,12 @@ contract MintableToken is StandardToken, Ownable {
  * @dev The main ABLE token contract
  * 
  * ABI 
- * [{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;mintingFinished&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;bool&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;name&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;string&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_spender&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;approve&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;totalSupply&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_from&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_to&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;transferFrom&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [],&quot;name&quot;: &quot;startTrading&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;decimals&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_to&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_amount&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;mint&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;bool&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;tradingStarted&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;bool&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_owner&quot;,&quot;type&quot;: &quot;address&quot;}],&quot;name&quot;: &quot;balanceOf&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;balance&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [],&quot;name&quot;: &quot;stopTrading&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [],&quot;name&quot;: &quot;finishMinting&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;bool&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;owner&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;address&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [],&quot;name&quot;: &quot;symbol&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;&quot;,&quot;type&quot;: &quot;string&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_to&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;transfer&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: true,&quot;inputs&quot;: [{&quot;name&quot;: &quot;_owner&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;name&quot;: &quot;_spender&quot;,&quot;type&quot;: &quot;address&quot;}],&quot;name&quot;: &quot;allowance&quot;,&quot;outputs&quot;: [{&quot;name&quot;: &quot;remaining&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;view&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;constant&quot;: false,&quot;inputs&quot;: [{&quot;name&quot;: &quot;newOwner&quot;,&quot;type&quot;: &quot;address&quot;}],&quot;name&quot;: &quot;transferOwnership&quot;,&quot;outputs&quot;: [],&quot;payable&quot;: false,&quot;stateMutability&quot;: &quot;nonpayable&quot;,&quot;type&quot;: &quot;function&quot;},{&quot;anonymous&quot;: false,&quot;inputs&quot;: [{&quot;indexed&quot;: true,&quot;name&quot;: &quot;to&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;indexed&quot;: false,&quot;name&quot;: &quot;value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;Mint&quot;,&quot;type&quot;: &quot;event&quot;},{&quot;anonymous&quot;: false,&quot;inputs&quot;: [],&quot;name&quot;: &quot;MintFinished&quot;,&quot;type&quot;: &quot;event&quot;},{&quot;anonymous&quot;: false,&quot;inputs&quot;: [{&quot;indexed&quot;: true,&quot;name&quot;: &quot;owner&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;indexed&quot;: true,&quot;name&quot;: &quot;spender&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;indexed&quot;: false,&quot;name&quot;: &quot;value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;Approval&quot;,&quot;type&quot;: &quot;event&quot;},{&quot;anonymous&quot;: false,&quot;inputs&quot;: [{&quot;indexed&quot;: true,&quot;name&quot;: &quot;from&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;indexed&quot;: true,&quot;name&quot;: &quot;to&quot;,&quot;type&quot;: &quot;address&quot;},{&quot;indexed&quot;: false,&quot;name&quot;: &quot;value&quot;,&quot;type&quot;: &quot;uint256&quot;}],&quot;name&quot;: &quot;Transfer&quot;,&quot;type&quot;: &quot;event&quot;}]
+ * [{"constant": true,"inputs": [],"name": "mintingFinished","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [],"name": "name","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "_spender","type": "address"},{"name": "_value","type": "uint256"}],"name": "approve","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "totalSupply","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "_from","type": "address"},{"name": "_to","type": "address"},{"name": "_value","type": "uint256"}],"name": "transferFrom","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [],"name": "startTrading","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "_to","type": "address"},{"name": "_amount","type": "uint256"}],"name": "mint","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "tradingStarted","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [{"name": "_owner","type": "address"}],"name": "balanceOf","outputs": [{"name": "balance","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [],"name": "stopTrading","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [],"name": "finishMinting","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "","type": "address"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [],"name": "symbol","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "_to","type": "address"},{"name": "_value","type": "uint256"}],"name": "transfer","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "_owner","type": "address"},{"name": "_spender","type": "address"}],"name": "allowance","outputs": [{"name": "remaining","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "newOwner","type": "address"}],"name": "transferOwnership","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"anonymous": false,"inputs": [{"indexed": true,"name": "to","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Mint","type": "event"},{"anonymous": false,"inputs": [],"name": "MintFinished","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"name": "owner","type": "address"},{"indexed": true,"name": "spender","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Approval","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"name": "from","type": "address"},{"indexed": true,"name": "to","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Transfer","type": "event"}]
  */
 contract AbleToken is MintableToken {
 
-  string public name = &quot;ABLE Token&quot;;
-  string public symbol = &quot;ABLE&quot;;
+  string public name = "ABLE Token";
+  string public symbol = "ABLE";
   uint public decimals = 18;
 
   bool public tradingStarted = false;

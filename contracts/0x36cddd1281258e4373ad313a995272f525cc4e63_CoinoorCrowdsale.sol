@@ -142,40 +142,40 @@ contract CoinoorCrowdsale {
      */
     function toTokens(uint256 _wei) returns (uint256 amount) {
         uint256 rate = 0;
-        if (stage != Stages.Ended &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end) {
+        if (stage != Stages.Ended && now >= start && now <= end) {
 
             // Check for preico
-            if (now &lt;= start + ratePreICOEnd) {
+            if (now <= start + ratePreICOEnd) {
                 rate = ratePreICO;
             }
 
             // Check for waiting period
-            else if (now &lt;= start + rateWaitingEnd) {
+            else if (now <= start + rateWaitingEnd) {
                 rate = rateWaiting;
             }
 
             // Check for angelday
-            else if (now &lt;= start + rateAngelDayEnd) {
+            else if (now <= start + rateAngelDayEnd) {
                 rate = rateAngelDay;
             }
 
             // Check first week
-            else if (now &lt;= start + rateFirstWeekEnd) {
+            else if (now <= start + rateFirstWeekEnd) {
                 rate = rateFirstWeek;
             }
 
             // Check second week
-            else if (now &lt;= start + rateSecondWeekEnd) {
+            else if (now <= start + rateSecondWeekEnd) {
                 rate = rateSecondWeek;
             }
 
             // Check third week
-            else if (now &lt;= start + rateThirdWeekEnd) {
+            else if (now <= start + rateThirdWeekEnd) {
                 rate = rateThirdWeek;
             }
 
             // Check last week
-            else if (now &lt;= start + rateLastWeekEnd) {
+            else if (now <= start + rateLastWeekEnd) {
                 rate = rateLastWeek;
             }
         }
@@ -189,7 +189,7 @@ contract CoinoorCrowdsale {
      * the stage to Ended
      */
     function endCrowdsale() atStage(Stages.InProgress) {
-        require(now &gt; end);
+        require(now > end);
 
         stage = Stages.Ended;
         if (!token.unlock()) {
@@ -213,26 +213,26 @@ contract CoinoorCrowdsale {
     function () payable atStage(Stages.InProgress) {
 
         // Crowdsale not started yet
-        require(now &gt;= start);
+        require(now >= start);
 
         // Crowdsale expired
-        require(now &lt;= end);
+        require(now <= end);
 
         // Enforce min amount
-        require(msg.value &gt;= minAcceptedAmount);
+        require(msg.value >= minAcceptedAmount);
  
         address sender = msg.sender;
         uint256 received = msg.value;
         uint256 valueInTokens = toTokens(received);
 
         // Period between pre-ico and ico
-        require(valueInTokens &gt; 0);
+        require(valueInTokens > 0);
 
         // Track
         raised += received;
 
         // Check max supply
-        if (token.totalSupply() + valueInTokens &gt;= maxSupply) {
+        if (token.totalSupply() + valueInTokens >= maxSupply) {
             stage = Stages.Ended;
         }
 

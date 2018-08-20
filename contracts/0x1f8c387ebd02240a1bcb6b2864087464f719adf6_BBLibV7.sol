@@ -64,17 +64,17 @@ library BBLibV7 {
     struct DB {
         // Maps to store ballots, along with corresponding log of voters.
         // Should only be modified through internal functions
-        mapping (uint256 =&gt; Vote) votes;
+        mapping (uint256 => Vote) votes;
         uint256 nVotesCast;
 
         // we need replay protection for proxy ballots - this will let us check against a sequence number
         // note: votes directly from a user ALWAYS take priority b/c they do not have sequence numbers
         // (sequencing is done by Ethereum itself via the tx nonce).
-        mapping (address =&gt; uint32) sequenceNumber;
+        mapping (address => uint32) sequenceNumber;
 
-        // NOTE - We don&#39;t actually want to include the encryption PublicKey because _it&#39;s included in the ballotSpec_.
-        // It&#39;s better to ensure ppl actually have the ballot spec by not including it in the contract.
-        // Plus we&#39;re already storing the hash of the ballotSpec anyway...
+        // NOTE - We don't actually want to include the encryption PublicKey because _it's included in the ballotSpec_.
+        // It's better to ensure ppl actually have the ballot spec by not including it in the contract.
+        // Plus we're already storing the hash of the ballotSpec anyway...
 
         // Private key to be set after ballot conclusion - curve25519
         bytes32 ballotEncryptionSeckey;
@@ -89,11 +89,11 @@ library BBLibV7 {
         // extradata if we need it - allows us to upgrade spechash format, etc
         bytes16 extraData;
 
-        // allow tracking of sponsorship for this ballot &amp; connection to index
+        // allow tracking of sponsorship for this ballot & connection to index
         Sponsor[] sponsors;
         IxIface index;
 
-        // deprecation flag - doesn&#39;t actually do anything besides signal that this contract is deprecated;
+        // deprecation flag - doesn't actually do anything besides signal that this contract is deprecated;
         bool deprecated;
 
         address ballotOwner;
@@ -103,7 +103,7 @@ library BBLibV7 {
 
     // ** Modifiers -- note, these are functions here to allow use as a lib
     function requireBallotClosed(DB storage db) internal view {
-        require(now &gt; BPackedUtils.packedToEndTime(db.packed), &quot;!b-closed&quot;);
+        require(now > BPackedUtils.packedToEndTime(db.packed), "!b-closed");
     }
 
     function requireBallotOpen(DB storage db) internal view {
@@ -111,33 +111,33 @@ library BBLibV7 {
         uint64 startTs;
         uint64 endTs;
         (, startTs, endTs) = BPackedUtils.unpackAll(db.packed);
-        require(_n &gt;= startTs &amp;&amp; _n &lt; endTs, &quot;!b-open&quot;);
-        require(db.deprecated == false, &quot;b-deprecated&quot;);
+        require(_n >= startTs && _n < endTs, "!b-open");
+        require(db.deprecated == false, "b-deprecated");
     }
 
     function requireBallotOwner(DB storage db) internal view {
-        require(msg.sender == db.ballotOwner, &quot;!b-owner&quot;);
+        require(msg.sender == db.ballotOwner, "!b-owner");
     }
 
     function requireTesting(DB storage db) internal view {
-        require(isTesting(BPackedUtils.packedToSubmissionBits(db.packed)), &quot;!testing&quot;);
+        require(isTesting(BPackedUtils.packedToSubmissionBits(db.packed)), "!testing");
     }
 
     /* Library meta */
 
     function getVersion() external pure returns (uint) {
-        // even though this is constant we want to make sure that it&#39;s actually
-        // callable on Ethereum so we don&#39;t accidentally package the constant code
+        // even though this is constant we want to make sure that it's actually
+        // callable on Ethereum so we don't accidentally package the constant code
         // in with an SC using BBLib. This function _must_ be external.
         return BB_VERSION;
     }
 
     /* Functions */
 
-    // &quot;Constructor&quot; function - init core params on deploy
+    // "Constructor" function - init core params on deploy
     // timestampts are uint64s to give us plenty of room for millennia
     function init(DB storage db, bytes32 _specHash, uint256 _packed, IxIface ix, address ballotOwner, bytes16 extraData) external {
-        require(db.specHash == bytes32(0), &quot;b-exists&quot;);
+        require(db.specHash == bytes32(0), "b-exists");
 
         db.index = ix;
         db.ballotOwner = ballotOwner;
@@ -151,23 +151,23 @@ library BBLibV7 {
         if (_testing) {
             emit TestingEnabled();
         } else {
-            require(endTs &gt; now, &quot;bad-end-time&quot;);
+            require(endTs > now, "bad-end-time");
 
             // 0x1ff2 is 0001111111110010 in binary
             // by ANDing with subBits we make sure that only bits in positions 0,2,3,13,14,15
             // can be used. these correspond to the option flags at the top, and ETH ballots
-            // that are enc&#39;d or plaintext.
-            require(sb &amp; 0x1ff2 == 0, &quot;bad-sb&quot;);
+            // that are enc'd or plaintext.
+            require(sb & 0x1ff2 == 0, "bad-sb");
 
             // if we give bad submission bits (e.g. all 0s) then refuse to deploy ballot
             bool okaySubmissionBits = 1 == (isEthNoEnc(sb) ? 1 : 0) + (isEthWithEnc(sb) ? 1 : 0);
-            require(okaySubmissionBits, &quot;!valid-sb&quot;);
+            require(okaySubmissionBits, "!valid-sb");
 
             // take the max of the start time provided and the blocks timestamp to avoid a DoS against recent token holders
             // (which someone might be able to do if they could set the timestamp in the past)
-            startTs = startTs &gt; now ? startTs : uint64(now);
+            startTs = startTs > now ? startTs : uint64(now);
         }
-        require(_specHash != bytes32(0), &quot;null-specHash&quot;);
+        require(_specHash != bytes32(0), "null-specHash");
         db.specHash = _specHash;
 
         db.packed = BPackedUtils.pack(sb, startTs, endTs);
@@ -189,7 +189,7 @@ library BBLibV7 {
     /* getters */
 
     function getVote(DB storage db, uint id) internal view returns (bytes32 voteData, address sender, bytes extra, uint castTs) {
-        return (db.votes[id].voteData, address(db.votes[id].castTsAndSender), db.votes[id].extra, uint(db.votes[id].castTsAndSender) &gt;&gt; 160);
+        return (db.votes[id].voteData, address(db.votes[id].castTsAndSender), db.votes[id].extra, uint(db.votes[id].castTsAndSender) >> 160);
     }
 
     function getSequenceNumber(DB storage db, address voter) internal view returns (uint32) {
@@ -197,7 +197,7 @@ library BBLibV7 {
     }
 
     function getTotalSponsorship(DB storage db) internal view returns (uint total) {
-        for (uint i = 0; i &lt; db.sponsors.length; i++) {
+        for (uint i = 0; i < db.sponsors.length; i++) {
             total += db.sponsors[i].amount;
         }
     }
@@ -214,7 +214,7 @@ library BBLibV7 {
         // after a voter submits a transaction personally - effectivley disables proxy
         // ballots. You can _always_ submit a new vote _personally_ with this scheme.
         if (db.sequenceNumber[msg.sender] != MAX_UINT32) {
-            // using an IF statement here let&#39;s us save 4800 gas on repeat votes at the cost of 20k extra gas initially
+            // using an IF statement here let's us save 4800 gas on repeat votes at the cost of 20k extra gas initially
             db.sequenceNumber[msg.sender] = MAX_UINT32;
         }
     }
@@ -242,7 +242,7 @@ library BBLibV7 {
         return _submitProxyVote(db, proxyReq, extra, true);
     }
 
-    // Boundaries for constructing the msg we&#39;ll validate the signature of
+    // Boundaries for constructing the msg we'll validate the signature of
     function _submitProxyVote(DB storage db, bytes32[5] proxyReq, bytes extra, bool submitAlways) internal returns (address voter) {
         // a proxy vote (where the vote is submitted (i.e. tx fee paid by someone else)
         // docs for datastructs: https://github.com/secure-vote/tokenvote/blob/master/Docs/DataStructs.md
@@ -251,7 +251,7 @@ library BBLibV7 {
         bytes32 s = proxyReq[1];
         uint8 v = uint8(proxyReq[2][0]);
         // converting to uint248 will truncate the first byte, and we can then convert it to a bytes31.
-        // we truncate the first byte because it&#39;s the `v` parm used above
+        // we truncate the first byte because it's the `v` parm used above
         bytes31 proxyReq2 = bytes31(uint248(proxyReq[2]));
         // proxyReq[3] is ballotId - required for verifying sig but not used for anything else
         bytes32 ballotId = proxyReq[3];
@@ -264,8 +264,8 @@ library BBLibV7 {
         voter = ecrecover(msgHash, v, r, s);
 
         // we need to make sure that this is the most recent vote the voter made, and that it has
-        // not been seen before. NOTE: we&#39;ve already validated the BBFarm namespace before this, so
-        // we know it&#39;s meant for _this_ ballot.
+        // not been seen before. NOTE: we've already validated the BBFarm namespace before this, so
+        // we know it's meant for _this_ ballot.
         uint32 sequence = uint32(proxyReq2);  // last 4 bytes of proxyReq2 - the sequence number
         _proxyReplayProtection(db, voter, sequence);
 
@@ -285,8 +285,8 @@ library BBLibV7 {
         id = db.nVotesCast;
         db.votes[id].voteData = voteData;
         // pack the casting ts right next to the sender
-        db.votes[id].castTsAndSender = bytes32(sender) ^ bytes32(now &lt;&lt; 160);
-        if (extra.length &gt; 0) {
+        db.votes[id].castTsAndSender = bytes32(sender) ^ bytes32(now << 160);
+        if (extra.length > 0) {
             db.votes[id].extra = extra;
         }
         db.nVotesCast += 1;
@@ -297,7 +297,7 @@ library BBLibV7 {
         // we want the replay protection sequence number to be STRICTLY MORE than what
         // is stored in the mapping. This means we can set sequence to MAX_UINT32 to disable
         // any future votes.
-        require(db.sequenceNumber[voter] &lt; sequence, &quot;bad-sequence-n&quot;);
+        require(db.sequenceNumber[voter] < sequence, "bad-sequence-n");
         db.sequenceNumber[voter] = sequence;
     }
 
@@ -317,7 +317,7 @@ library BBLibV7 {
 
     /* Submission Bits (Ballot Classifications) */
 
-    // do (bits &amp; SETTINGS_MASK) to get just operational bits (as opposed to testing or official flag)
+    // do (bits & SETTINGS_MASK) to get just operational bits (as opposed to testing or official flag)
     uint16 constant SETTINGS_MASK = 0xFFFF ^ USE_TESTING ^ IS_OFFICIAL ^ IS_BINDING;
 
     function isEthNoEnc(uint16 submissionBits) pure internal returns (bool) {
@@ -329,27 +329,27 @@ library BBLibV7 {
     }
 
     function isOfficial(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; IS_OFFICIAL) == IS_OFFICIAL;
+        return (submissionBits & IS_OFFICIAL) == IS_OFFICIAL;
     }
 
     function isBinding(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; IS_BINDING) == IS_BINDING;
+        return (submissionBits & IS_BINDING) == IS_BINDING;
     }
 
     function isTesting(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; USE_TESTING) == USE_TESTING;
+        return (submissionBits & USE_TESTING) == USE_TESTING;
     }
 
     function qualifiesAsCommunityBallot(uint16 submissionBits) pure internal returns (bool) {
         // if submissionBits AND any of the bits that make this _not_ a community
         // ballot is equal to zero that means none of those bits were active, so
         // it could be a community ballot
-        return (submissionBits &amp; (IS_BINDING | IS_OFFICIAL | USE_ENC)) == 0;
+        return (submissionBits & (IS_BINDING | IS_OFFICIAL | USE_ENC)) == 0;
     }
 
     function checkFlags(uint16 submissionBits, uint16 expected) pure internal returns (bool) {
         // this should ignore ONLY the testing/flag bits - all other bits are significant
-        uint16 sBitsNoSettings = submissionBits &amp; SETTINGS_MASK;
+        uint16 sBitsNoSettings = submissionBits & SETTINGS_MASK;
         // then we want ONLY expected
         return sBitsNoSettings == expected;
     }
@@ -363,11 +363,11 @@ library BPackedUtils {
     uint256 constant endTimeMask   = 0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000;
 
     function packedToSubmissionBits(uint256 packed) internal pure returns (uint16) {
-        return uint16(packed &gt;&gt; 128);
+        return uint16(packed >> 128);
     }
 
     function packedToStartTime(uint256 packed) internal pure returns (uint64) {
-        return uint64(packed &gt;&gt; 64);
+        return uint64(packed >> 64);
     }
 
     function packedToEndTime(uint256 packed) internal pure returns (uint64) {
@@ -375,25 +375,25 @@ library BPackedUtils {
     }
 
     function unpackAll(uint256 packed) internal pure returns (uint16 submissionBits, uint64 startTime, uint64 endTime) {
-        submissionBits = uint16(packed &gt;&gt; 128);
-        startTime = uint64(packed &gt;&gt; 64);
+        submissionBits = uint16(packed >> 128);
+        startTime = uint64(packed >> 64);
         endTime = uint64(packed);
     }
 
     function pack(uint16 sb, uint64 st, uint64 et) internal pure returns (uint256 packed) {
-        return uint256(sb) &lt;&lt; 128 | uint256(st) &lt;&lt; 64 | uint256(et);
+        return uint256(sb) << 128 | uint256(st) << 64 | uint256(et);
     }
 
     function setSB(uint256 packed, uint16 newSB) internal pure returns (uint256) {
-        return (packed &amp; sbMask) | uint256(newSB) &lt;&lt; 128;
+        return (packed & sbMask) | uint256(newSB) << 128;
     }
 
     // function setStartTime(uint256 packed, uint64 startTime) internal pure returns (uint256) {
-    //     return (packed &amp; startTimeMask) | uint256(startTime) &lt;&lt; 64;
+    //     return (packed & startTimeMask) | uint256(startTime) << 64;
     // }
 
     function setEndTime(uint256 packed, uint64 endTime) internal pure returns (uint256) {
-        return (packed &amp; endTimeMask) | uint256(endTime);
+        return (packed & endTimeMask) | uint256(endTime);
     }
 }
 
@@ -414,7 +414,7 @@ library IxLib {
      * methods in the lib to do this instead (which means the code
      * is inserted into other contracts inline, without a `delegatecall`.
      *
-     * For this reason it&#39;s crucial to have no methods in IxLib with the
+     * For this reason it's crucial to have no methods in IxLib with the
      * same name as methods in IxIface
      */
 
@@ -427,7 +427,7 @@ library IxLib {
     /* Global Ix data */
 
     function getBBFarmFromBallotID(IxIface ix, uint256 ballotId) internal view returns (BBFarmIface) {
-        bytes4 bbNamespace = bytes4(ballotId &gt;&gt; 48);
+        bytes4 bbNamespace = bytes4(ballotId >> 48);
         uint8 bbFarmId = ix.getBBFarmID(bbNamespace);
         return ix.getBBFarm(bbFarmId);
     }
@@ -454,7 +454,7 @@ library IxLib {
 
     function accountPremiumAndInGoodStanding(IxIface ix, bytes32 democHash) internal view returns (bool) {
         IxPaymentsIface payments = ix.getPayments();
-        return payments.accountInGoodStanding(democHash) &amp;&amp; payments.getPremiumStatus(democHash);
+        return payments.accountInGoodStanding(democHash) && payments.getPremiumStatus(democHash);
     }
 
     function payForDemocracy(IxIface ix, bytes32 democHash) internal {
@@ -521,18 +521,18 @@ contract safeSend {
     bool private txMutex3847834;
 
     // we want to be able to call outside contracts (e.g. the admin proxy contract)
-    // but reentrency is bad, so here&#39;s a mutex.
+    // but reentrency is bad, so here's a mutex.
     function doSafeSend(address toAddr, uint amount) internal {
-        doSafeSendWData(toAddr, &quot;&quot;, amount);
+        doSafeSendWData(toAddr, "", amount);
     }
 
     function doSafeSendWData(address toAddr, bytes data, uint amount) internal {
-        require(txMutex3847834 == false, &quot;ss-guard&quot;);
+        require(txMutex3847834 == false, "ss-guard");
         txMutex3847834 = true;
         // we need to use address.call.value(v)() because we want
         // to be able to send to other contracts, even with no data,
         // which might use more than 2300 gas in their fallback function.
-        require(toAddr.call.value(amount)(data), &quot;ss-failed&quot;);
+        require(toAddr.call.value(amount)(data), "ss-failed");
         txMutex3847834 = false;
     }
 }
@@ -580,12 +580,12 @@ contract owned {
     event OwnerChanged(address newOwner);
 
     modifier only_owner() {
-        require(msg.sender == owner, &quot;only_owner: forbidden&quot;);
+        require(msg.sender == owner, "only_owner: forbidden");
         _;
     }
 
     modifier owner_or(address addr) {
-        require(msg.sender == addr || msg.sender == owner, &quot;!owner-or&quot;);
+        require(msg.sender == addr || msg.sender == owner, "!owner-or");
         _;
     }
 
@@ -621,8 +621,8 @@ contract CommunityAuctionSimple is owned, CommAuctionIface {
         uint ts;
     }
 
-    mapping (address =&gt; Record[]) public ballotLog;
-    mapping (address =&gt; address) public upgrades;
+    mapping (address => Record[]) public ballotLog;
+    mapping (address => address) public upgrades;
 
     function getNextPrice(bytes32) external view returns (uint) {
         return commBallotPriceWei;
@@ -652,7 +652,7 @@ contract controlledIface {
 }
 
 contract hasAdmins is owned {
-    mapping (uint =&gt; mapping (address =&gt; bool)) admins;
+    mapping (uint => mapping (address => bool)) admins;
     uint public currAdminEpoch = 0;
     bool public adminsDisabledForever = false;
     address[] adminLog;
@@ -663,8 +663,8 @@ contract hasAdmins is owned {
     event AdminDisabledForever();
 
     modifier only_admin() {
-        require(adminsDisabledForever == false, &quot;admins must not be disabled&quot;);
-        require(isAdmin(msg.sender), &quot;only_admin: forbidden&quot;);
+        require(adminsDisabledForever == false, "admins must not be disabled");
+        require(isAdmin(msg.sender), "only_admin: forbidden");
         _;
     }
 
@@ -686,13 +686,13 @@ contract hasAdmins is owned {
 
     function upgradeMeAdmin(address newAdmin) only_admin() external {
         // note: already checked msg.sender has admin with `only_admin` modifier
-        require(msg.sender != owner, &quot;owner cannot upgrade self&quot;);
+        require(msg.sender != owner, "owner cannot upgrade self");
         _setAdmin(msg.sender, false);
         _setAdmin(newAdmin, true);
     }
 
     function setAdmin(address a, bool _givePerms) only_admin() external {
-        require(a != msg.sender &amp;&amp; a != owner, &quot;cannot change your own (or owner&#39;s) permissions&quot;);
+        require(a != msg.sender && a != owner, "cannot change your own (or owner's) permissions");
         _setAdmin(a, _givePerms);
     }
 
@@ -751,16 +751,16 @@ contract EnsOwnerProxy is hasAdmins {
     }
 
     function fwdToENS(bytes data) only_owner() external {
-        require(address(ens).call(data), &quot;fwding to ens failed&quot;);
+        require(address(ens).call(data), "fwding to ens failed");
     }
 
     function fwdToResolver(bytes data) only_owner() external {
-        require(address(resolver).call(data), &quot;fwding to resolver failed&quot;);
+        require(address(resolver).call(data), "fwding to resolver failed");
     }
 }
 
 contract permissioned is owned, hasAdmins {
-    mapping (address =&gt; bool) editAllowed;
+    mapping (address => bool) editAllowed;
     bool public adminLockdown = false;
 
     event PermissionError(address editAddr);
@@ -771,12 +771,12 @@ contract permissioned is owned, hasAdmins {
     event AdminLockdown();
 
     modifier only_editors() {
-        require(editAllowed[msg.sender], &quot;only_editors: forbidden&quot;);
+        require(editAllowed[msg.sender], "only_editors: forbidden");
         _;
     }
 
     modifier no_lockdown() {
-        require(adminLockdown == false, &quot;no_lockdown: check failed&quot;);
+        require(adminLockdown == false, "no_lockdown: check failed");
         _;
     }
 
@@ -821,7 +821,7 @@ contract upgradePtr {
     address ptr = address(0);
 
     modifier not_upgraded() {
-        require(ptr == address(0), &quot;upgrade pointer is non-zero&quot;);
+        require(ptr == address(0), "upgrade pointer is non-zero");
         _;
     }
 
@@ -893,7 +893,7 @@ contract ixBackendEvents {
 
 library SafeMath {
     function subToZero(uint a, uint b) internal pure returns (uint) {
-        if (a &lt; b) {  // then (a - b) would overflow
+        if (a < b) {  // then (a - b) would overflow
             return 0;
         }
         return a - b;
@@ -932,7 +932,7 @@ contract BBFarmIface is BBFarmEvents, permissioned, hasVersion, payoutAllC {
 
     /* foreign network integration */
 
-    // requires version &gt;= 3;
+    // requires version >= 3;
     function getVotingNetworkDetails() external view returns (bytes32);
 
     /* init a ballot */
@@ -944,7 +944,7 @@ contract BBFarmIface is BBFarmEvents, permissioned, hasVersion, payoutAllC {
                        , address bbAdmin
                        , bytes24 extraData
                        ) external returns (uint ballotId);
-    // requires v3+; also isn&#39;t supported on all networks
+    // requires v3+; also isn't supported on all networks
     function initBallotProxy(uint8 v, bytes32 r, bytes32 s, bytes32[4] params) external returns (uint256 ballotId);
 
     /* Sponsorship of ballots */
@@ -996,7 +996,7 @@ contract BBFarm is BBFarmIface {
 
     uint constant VERSION = 3;
 
-    mapping (uint224 =&gt; BBLibV7.DB) dbs;
+    mapping (uint224 => BBLibV7.DB) dbs;
     // note - start at 100 to avoid any test for if 0 is a valid ballotId
     // also gives us some space to play with low numbers if we want.
     uint nBallots = 0;
@@ -1005,7 +1005,7 @@ contract BBFarm is BBFarmIface {
 
     modifier req_namespace(uint ballotId) {
         // bytes4() will take the _first_ 4 bytes
-        require(bytes4(ballotId &gt;&gt; 224) == NAMESPACE, &quot;bad-namespace&quot;);
+        require(bytes4(ballotId >> 224) == NAMESPACE, "bad-namespace");
         _;
     }
 
@@ -1013,7 +1013,7 @@ contract BBFarm is BBFarmIface {
 
     constructor() payoutAllC(msg.sender) public {
         // this bbFarm requires v5 of BBLib (note: v4 deprecated immediately due to insecure submitProxyVote)
-        // note: even though we can&#39;t test for this in coverage, this has stopped me deploying to kovan with the wrong version tho, so I consider it tested :)
+        // note: even though we can't test for this in coverage, this has stopped me deploying to kovan with the wrong version tho, so I consider it tested :)
         assert(BBLibV7.getVersion() == 7);
         emit BBFarmInit(NAMESPACE);
     }
@@ -1044,7 +1044,7 @@ contract BBFarm is BBFarmIface {
 
     function getVotingNetworkDetails() external view returns (bytes32) {
         // 0 in either chainId or networkId spot indicate the local chain
-        return bytes32(uint(0) &lt;&lt; 192 | uint(0) &lt;&lt; 160 | uint160(address(this)));
+        return bytes32(uint(0) << 192 | uint(0) << 160 | uint160(address(this)));
     }
 
     /* db lookup helper */
@@ -1063,7 +1063,7 @@ contract BBFarm is BBFarmIface {
                        , bytes24 extraData
                 ) only_editors() external returns (uint ballotId) {
         // calculate the ballotId based on the last 224 bits of the specHash.
-        ballotId = uint224(specHash) ^ (uint256(NAMESPACE) &lt;&lt; 224);
+        ballotId = uint224(specHash) ^ (uint256(NAMESPACE) << 224);
         // we need to call the init functions on our libraries
         getDb(ballotId).init(specHash, packed, ix, bbAdmin, bytes16(uint128(extraData)));
         nBallots += 1;
@@ -1072,8 +1072,8 @@ contract BBFarm is BBFarmIface {
     }
 
     function initBallotProxy(uint8, bytes32, bytes32, bytes32[4]) external returns (uint256) {
-        // this isn&#39;t supported on the deployed BBFarm
-        revert(&quot;initBallotProxy not implemented&quot;);
+        // this isn't supported on the deployed BBFarm
+        revert("initBallotProxy not implemented");
     }
 
     /* Sponsorship */
@@ -1119,7 +1119,7 @@ contract BBFarm is BBFarmIface {
         BBLibV7.DB storage db = getDb(ballotId);
         uint packed = db.packed;
         return (
-            db.getSequenceNumber(voter) &gt; 0,
+            db.getSequenceNumber(voter) > 0,
             db.nVotesCast,
             db.ballotEncryptionSeckey,
             BPackedUtils.packedToSubmissionBits(packed),
@@ -1248,7 +1248,7 @@ contract SVIndex is IxIface {
     // generated from: `address public controller;`
     bytes4 constant CONTROLLER_SIG = 0xf77c4791;
 
-    /* backend &amp; other SC storage */
+    /* backend & other SC storage */
 
     IxBackendIface backend;
     IxPaymentsIface payments;
@@ -1256,18 +1256,18 @@ contract SVIndex is IxIface {
     BBFarmIface[] bbFarms;
     CommAuctionIface commAuction;
     // mapping from bbFarm namespace to bbFarmId
-    mapping (bytes4 =&gt; uint8) bbFarmIdLookup;
-    mapping (uint8 =&gt; bool) deprecatedBBFarms;
+    mapping (bytes4 => uint8) bbFarmIdLookup;
+    mapping (uint8 => bool) deprecatedBBFarms;
 
     //* MODIFIERS /
 
     modifier onlyDemocOwner(bytes32 democHash) {
-        require(msg.sender == backend.getDOwner(democHash), &quot;!d-owner&quot;);
+        require(msg.sender == backend.getDOwner(democHash), "!d-owner");
         _;
     }
 
     modifier onlyDemocEditor(bytes32 democHash) {
-        require(backend.isDEditor(democHash, msg.sender), &quot;!d-editor&quot;);
+        require(backend.isDEditor(democHash, msg.sender), "!d-editor");
         _;
     }
 
@@ -1303,14 +1303,14 @@ contract SVIndex is IxIface {
         ensOwnerPx.upgradeMeAdmin(nextSC);
         commAuction.upgradeMe(nextSC);
 
-        for (uint i = 0; i &lt; bbFarms.length; i++) {
+        for (uint i = 0; i < bbFarms.length; i++) {
             bbFarms[i].upgradeMe(nextSC);
         }
     }
 
     function _addBBFarm(bytes4 bbNamespace, BBFarmIface _bbFarm) internal returns (uint8 bbFarmId) {
         uint256 bbFarmIdLong = bbFarms.length;
-        require(bbFarmIdLong &lt; 2**8, &quot;too-many-farms&quot;);
+        require(bbFarmIdLong < 2**8, "too-many-farms");
         bbFarmId = uint8(bbFarmIdLong);
 
         bbFarms.push(_bbFarm);
@@ -1322,22 +1322,22 @@ contract SVIndex is IxIface {
     function addBBFarm(BBFarmIface bbFarm) only_owner() external returns (uint8 bbFarmId) {
         bytes4 bbNamespace = bbFarm.getNamespace();
 
-        require(bbNamespace != bytes4(0), &quot;bb-farm-namespace&quot;);
-        require(bbFarmIdLookup[bbNamespace] == 0 &amp;&amp; bbNamespace != bbFarms[0].getNamespace(), &quot;bb-namespace-used&quot;);
+        require(bbNamespace != bytes4(0), "bb-farm-namespace");
+        require(bbFarmIdLookup[bbNamespace] == 0 && bbNamespace != bbFarms[0].getNamespace(), "bb-namespace-used");
 
         bbFarmId = _addBBFarm(bbNamespace, bbFarm);
     }
 
     function setABackend(bytes32 toSet, address newSC) only_owner() external {
         emit SetBackend(toSet, newSC);
-        if (toSet == bytes32(&quot;payments&quot;)) {
+        if (toSet == bytes32("payments")) {
             payments = IxPaymentsIface(newSC);
-        } else if (toSet == bytes32(&quot;backend&quot;)) {
+        } else if (toSet == bytes32("backend")) {
             backend = IxBackendIface(newSC);
-        } else if (toSet == bytes32(&quot;commAuction&quot;)) {
+        } else if (toSet == bytes32("commAuction")) {
             commAuction = CommAuctionIface(newSC);
         } else {
-            revert(&quot;404&quot;);
+            revert("404");
         }
     }
 
@@ -1379,7 +1379,7 @@ contract SVIndex is IxIface {
     //* DEMOCRACY FUNCTIONS - INDIVIDUAL */
 
     function dInit(address defaultErc20, bool disableErc20OwnerClaim) not_upgraded() external payable returns (bytes32) {
-        require(msg.value &gt;= payments.getMinWeiForDInit());
+        require(msg.value >= payments.getMinWeiForDInit());
         bytes32 democHash = backend.dInit(defaultErc20, msg.sender, disableErc20OwnerClaim);
         payments.payForDemocracy.value(msg.value)(democHash);
         return democHash;
@@ -1402,12 +1402,12 @@ contract SVIndex is IxIface {
     function dOwnerErc20Claim(bytes32 democHash) external {
         address erc20 = backend.getDErc20(democHash);
         // test if we can call the erc20.owner() method, etc
-        // also limit gas use to 3000 because we don&#39;t know what they&#39;ll do with it
+        // also limit gas use to 3000 because we don't know what they'll do with it
         // during testing both owned and controlled could be called from other contracts for 2525 gas.
         if (erc20.call.gas(3000)(OWNER_SIG)) {
-            require(msg.sender == owned(erc20).owner.gas(3000)(), &quot;!erc20-owner&quot;);
+            require(msg.sender == owned(erc20).owner.gas(3000)(), "!erc20-owner");
         } else if (erc20.call.gas(3000)(CONTROLLER_SIG)) {
-            require(msg.sender == controlledIface(erc20).controller.gas(3000)(), &quot;!erc20-controller&quot;);
+            require(msg.sender == controlledIface(erc20).controller.gas(3000)(), "!erc20-controller");
         } else {
             revert();
         }
@@ -1463,7 +1463,7 @@ contract SVIndex is IxIface {
     /* Add and Deploy Ballots */
 
     // manually add a ballot - only the owner can call this
-    // WARNING - it&#39;s required that we make ABSOLUTELY SURE that
+    // WARNING - it's required that we make ABSOLUTELY SURE that
     // ballotId is valid and can resolve via the appropriate BBFarm.
     // this function _DOES NOT_ validate that everything else is done.
     function dAddBallot(bytes32 democHash, uint ballotId, uint256 packed)
@@ -1476,16 +1476,16 @@ contract SVIndex is IxIface {
 
 
     function _deployBallot(bytes32 democHash, bytes32 specHash, bytes32 extraData, uint packed, bool checkLimit, bool alreadySentTx) internal returns (uint ballotId) {
-        require(BBLibV7.isTesting(BPackedUtils.packedToSubmissionBits(packed)) == false, &quot;b-testing&quot;);
+        require(BBLibV7.isTesting(BPackedUtils.packedToSubmissionBits(packed)) == false, "b-testing");
 
         // the most significant byte of extraData signals the bbFarm to use.
         uint8 bbFarmId = uint8(extraData[0]);
-        require(deprecatedBBFarms[bbFarmId] == false, &quot;bb-dep&quot;);
+        require(deprecatedBBFarms[bbFarmId] == false, "bb-dep");
         BBFarmIface _bbFarm = bbFarms[bbFarmId];
 
-        // anything that isn&#39;t a community ballot counts towards the basic limit.
+        // anything that isn't a community ballot counts towards the basic limit.
         // we want to check in cases where
-        // the ballot doesn&#39;t qualify as a community ballot
+        // the ballot doesn't qualify as a community ballot
         // OR (the ballot qualifies as a community ballot
         //     AND the admins have _disabled_ community ballots).
         bool countTowardsLimit = checkLimit;
@@ -1496,8 +1496,8 @@ contract SVIndex is IxIface {
             _accountOkayChecks(democHash, endTime);
         }
 
-        if (!performedSend &amp;&amp; msg.value &gt; 0 &amp;&amp; alreadySentTx == false) {
-            // refund if we haven&#39;t send value anywhere (which might happen if someone accidentally pays us)
+        if (!performedSend && msg.value > 0 && alreadySentTx == false) {
+            // refund if we haven't send value anywhere (which might happen if someone accidentally pays us)
             doSafeSend(msg.sender, msg.value);
         }
 
@@ -1517,13 +1517,13 @@ contract SVIndex is IxIface {
 
     function dDeployCommunityBallot(bytes32 democHash, bytes32 specHash, bytes32 extraData, uint128 packedTimes) external payable {
         uint price = commAuction.getNextPrice(democHash);
-        require(msg.value &gt;= price, &quot;!cb-fee&quot;);
+        require(msg.value >= price, "!cb-fee");
 
         doSafeSend(payments.getPayTo(), price);
         doSafeSend(msg.sender, msg.value - price);
 
         bool canProceed = backend.getDCommBallotsEnabled(democHash) || !payments.accountInGoodStanding(democHash);
-        require(canProceed, &quot;!cb-enabled&quot;);
+        require(canProceed, "!cb-enabled");
 
         uint256 packed = BPackedUtils.setSB(uint256(packedTimes), (USE_ETH | USE_NO_ENC));
 
@@ -1555,56 +1555,56 @@ contract SVIndex is IxIface {
         // must be positive due to ending in future check
         uint256 secsToEndTime = endTime - now;
         // require ballots end no more than twice the time left on the democracy
-        require(secsLeft * 2 &gt; secsToEndTime, &quot;unpaid&quot;);
+        require(secsLeft * 2 > secsToEndTime, "unpaid");
     }
 
     function _basicBallotLimitOperations(bytes32 democHash, BBFarmIface _bbFarm) internal returns (bool shouldCount, bool performedSend) {
-        // if we&#39;re an official ballot and the democ is basic, ensure the democ
-        // isn&#39;t over the ballots/mo limit
+        // if we're an official ballot and the democ is basic, ensure the democ
+        // isn't over the ballots/mo limit
         if (payments.getPremiumStatus(democHash) == false) {
             uint nBallotsAllowed = payments.getBasicBallotsPer30Days();
             uint nBallotsBasicCounted = backend.getDCountedBasicBallotsN(democHash);
 
-            // if the democ has less than nBallotsAllowed then it&#39;s guarenteed to be okay
-            if (nBallotsAllowed &gt; nBallotsBasicCounted) {
+            // if the democ has less than nBallotsAllowed then it's guarenteed to be okay
+            if (nBallotsAllowed > nBallotsBasicCounted) {
                 // and we should count this ballot
                 return (true, false);
             }
 
             // we want to check the creation timestamp of the nth most recent ballot
-            // where n is the # of ballots allowed per month. Note: there isn&#39;t an off
-            // by 1 error here because if 1 ballots were allowed per month then we&#39;d want
+            // where n is the # of ballots allowed per month. Note: there isn't an off
+            // by 1 error here because if 1 ballots were allowed per month then we'd want
             // to look at the most recent ballot, so nBallotsBasicCounted-1 in this case.
             // similarly, if X ballots were allowed per month we want to look at
             // nBallotsBasicCounted-X. There would thus be (X-1) ballots that are _more_
-            // recent than the one we&#39;re looking for.
+            // recent than the one we're looking for.
             uint earlyBallotId = backend.getDCountedBasicBallotID(democHash, nBallotsBasicCounted - nBallotsAllowed);
             uint earlyBallotTs = _bbFarm.getCreationTs(earlyBallotId);
 
             // if the earlyBallot was created more than 30 days in the past we should
             // count the new ballot
-            if (earlyBallotTs &lt; now - 30 days) {
+            if (earlyBallotTs < now - 30 days) {
                 return (true, false);
             }
 
-            // at this point it may be the case that we shouldn&#39;t allow the ballot
-            // to be created. (It&#39;s an official ballot for a basic tier democracy
+            // at this point it may be the case that we shouldn't allow the ballot
+            // to be created. (It's an official ballot for a basic tier democracy
             // where the Nth most recent ballot was created within the last 30 days.)
             // We should now check for payment
             uint extraBallotFee = payments.getBasicExtraBallotFeeWei();
-            require(msg.value &gt;= extraBallotFee, &quot;!extra-b-fee&quot;);
+            require(msg.value >= extraBallotFee, "!extra-b-fee");
 
-            // now that we know they&#39;ve paid the fee, we should send Eth to `payTo`
+            // now that we know they've paid the fee, we should send Eth to `payTo`
             // and return the remainder.
             uint remainder = msg.value - extraBallotFee;
             doSafeSend(address(payments), extraBallotFee);
             doSafeSend(msg.sender, remainder);
             emit PaymentMade([extraBallotFee, remainder]);
-            // only in this case (for basic) do we want to return false - don&#39;t count towards the
-            // limit because it&#39;s been paid for here.
+            // only in this case (for basic) do we want to return false - don't count towards the
+            // limit because it's been paid for here.
             return (false, true);
 
-        } else {  // if we&#39;re premium we don&#39;t count ballots
+        } else {  // if we're premium we don't count ballots
             return (false, false);
         }
     }
@@ -1664,7 +1664,7 @@ contract SVIndexBackend is IxBackendIface {
         bool communityBallotsDisabled;
         bool erc20OwnerClaimDisabled;
         uint editorEpoch;
-        mapping (uint =&gt; mapping (address =&gt; bool)) editors;
+        mapping (uint => mapping (address => bool)) editors;
         uint256[] allBallots;
         uint256[] includedBasicBallots;  // the IDs of official ballots
 
@@ -1684,20 +1684,20 @@ contract SVIndexBackend is IxBackendIface {
 
     struct CategoriesIx {
         uint nCategories;
-        mapping(uint =&gt; Category) categories;
+        mapping(uint => Category) categories;
     }
 
-    mapping (bytes32 =&gt; Democ) democs;
-    mapping (bytes32 =&gt; CategoriesIx) democCategories;
-    mapping (bytes13 =&gt; bytes32) democPrefixToHash;
-    mapping (address =&gt; bytes32[]) erc20ToDemocs;
+    mapping (bytes32 => Democ) democs;
+    mapping (bytes32 => CategoriesIx) democCategories;
+    mapping (bytes13 => bytes32) democPrefixToHash;
+    mapping (address => bytes32[]) erc20ToDemocs;
     bytes32[] democList;
 
     // allows democ admins to store arbitrary data
     // this lets us (for example) set particular keys to signal cerain
     // things to client apps s.t. the admin can turn them on and off.
     // arbitraryData[democHash][key]
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; bytes)) arbitraryData;
+    mapping (bytes32 => mapping (bytes32 => bytes)) arbitraryData;
 
     /* constructor */
 
@@ -1763,7 +1763,7 @@ contract SVIndexBackend is IxBackendIface {
     /* user democ admin functions */
 
     function dInit(address defaultErc20, address initOwner, bool disableErc20OwnerClaim) only_editors() external returns (bytes32 democHash) {
-        // generating the democHash in this way guarentees it&#39;ll be unique/hard-to-brute-force
+        // generating the democHash in this way guarentees it'll be unique/hard-to-brute-force
         // (particularly because prevBlockHash and now are part of the hash)
         democHash = keccak256(abi.encodePacked(democList.length, blockhash(block.number-1), defaultErc20, now));
         _addDemoc(democHash, defaultErc20, initOwner, disableErc20OwnerClaim);
@@ -1787,11 +1787,11 @@ contract SVIndexBackend is IxBackendIface {
     function setDOwnerFromClaim(bytes32 democHash, address newOwner) only_editors() external {
         Democ storage d = democs[democHash];
         // make sure that the owner claim is enabled (i.e. the disabled flag is false)
-        require(d.erc20OwnerClaimDisabled == false, &quot;!erc20-claim&quot;);
+        require(d.erc20OwnerClaimDisabled == false, "!erc20-claim");
         // set owner and editor
         d.owner = newOwner;
         d.editors[d.editorEpoch][newOwner] = true;
-        // disable the ability to claim now that it&#39;s done
+        // disable the ability to claim now that it's done
         d.erc20OwnerClaimDisabled = true;
         emit DemocOwnerSet(democHash, newOwner);
         emit DemocClaimed(democHash);
@@ -1861,7 +1861,7 @@ contract SVIndexBackend is IxBackendIface {
         uint localBallotId = democs[democHash].allBallots.length;
         democs[democHash].allBallots.push(ballotId);
 
-        // do this for anything that doesn&#39;t qualify as a community ballot
+        // do this for anything that doesn't qualify as a community ballot
         if (countTowardsLimit) {
             democs[democHash].includedBasicBallots.push(ballotId);
         }
@@ -1944,7 +1944,7 @@ contract SVIndexBackend is IxBackendIface {
     /* util for calculating editor key */
 
     function _calcEditorKey(bytes key) internal pure returns (bytes) {
-        return abi.encodePacked(&quot;editor.&quot;, key);
+        return abi.encodePacked("editor.", key);
     }
 }
 
@@ -2017,7 +2017,7 @@ contract SVPayments is IxPaymentsIface {
         uint _ethValue;
     }
 
-    // this is an address that&#39;s only allowed to make minor edits
+    // this is an address that's only allowed to make minor edits
     // e.g. setExchangeRate, setDenyPremium, giveTimeToDemoc
     address public minorEditsAddr;
 
@@ -2029,13 +2029,13 @@ contract SVPayments is IxPaymentsIface {
 
     uint minWeiForDInit = 1;  // minimum 1 wei - match existing behaviour in SVIndex
 
-    mapping (bytes32 =&gt; Account) accounts;
+    mapping (bytes32 => Account) accounts;
     PaymentLog[] payments;
 
     // can set this on freeExtension democs to deny them premium upgrades
-    mapping (bytes32 =&gt; bool) denyPremium;
+    mapping (bytes32 => bool) denyPremium;
     // this is used for non-profits or organisations that have perpetual licenses, etc
-    mapping (bytes32 =&gt; bool) freeExtension;
+    mapping (bytes32 => bool) freeExtension;
 
 
     /* BREAK GLASS IN CASE OF EMERGENCY */
@@ -2044,7 +2044,7 @@ contract SVPayments is IxPaymentsIface {
     // contracts are compromised? (e.g. by a leaked privkey)
     address public emergencyAdmin;
     function emergencySetOwner(address newOwner) external {
-        require(msg.sender == emergencyAdmin, &quot;!emergency-owner&quot;);
+        require(msg.sender == emergencyAdmin, "!emergency-owner");
         owner = newOwner;
     }
     /* END BREAK GLASS */
@@ -2067,7 +2067,7 @@ contract SVPayments is IxPaymentsIface {
 
     function _modAccountBalance(bytes32 democHash, uint additionalSeconds) internal {
         uint prevPaidTill = accounts[democHash].paidUpTill;
-        if (prevPaidTill &lt; now) {
+        if (prevPaidTill < now) {
             prevPaidTill = now;
         }
 
@@ -2097,7 +2097,7 @@ contract SVPayments is IxPaymentsIface {
     /* account management */
 
     function payForDemocracy(bytes32 democHash) external payable {
-        require(msg.value &gt; 0, &quot;need to send some ether to make payment&quot;);
+        require(msg.value > 0, "need to send some ether to make payment");
 
         uint additionalSeconds = weiBuysHowManySeconds(msg.value);
 
@@ -2105,7 +2105,7 @@ contract SVPayments is IxPaymentsIface {
             additionalSeconds /= premiumMultiplier;
         }
 
-        if (additionalSeconds &gt;= 1) {
+        if (additionalSeconds >= 1) {
             _modAccountBalance(democHash, additionalSeconds);
         }
         payments.push(PaymentLog(false, democHash, additionalSeconds, msg.value));
@@ -2115,23 +2115,23 @@ contract SVPayments is IxPaymentsIface {
     }
 
     function doFreeExtension(bytes32 democHash) external {
-        require(freeExtension[democHash], &quot;!free&quot;);
+        require(freeExtension[democHash], "!free");
         uint newPaidUpTill = now + 60 days;
         accounts[democHash].paidUpTill = newPaidUpTill;
         emit FreeExtension(democHash);
     }
 
     function downgradeToBasic(bytes32 democHash) only_editors() external {
-        require(accounts[democHash].isPremium, &quot;!premium&quot;);
+        require(accounts[democHash].isPremium, "!premium");
         accounts[democHash].isPremium = false;
         // convert premium minutes to basic
         uint paidTill = accounts[democHash].paidUpTill;
         uint timeRemaining = SafeMath.subToZero(paidTill, now);
         // if we have time remaining: convert it
-        if (timeRemaining &gt; 0) {
+        if (timeRemaining > 0) {
             // prevent accounts from downgrading if they have time remaining
             // and upgraded less than 24hrs ago
-            require(accounts[democHash].lastUpgradeTs &lt; (now - 24 hours), &quot;downgrade-too-soon&quot;);
+            require(accounts[democHash].lastUpgradeTs < (now - 24 hours), "downgrade-too-soon");
             timeRemaining *= premiumMultiplier;
             accounts[democHash].paidUpTill = now + timeRemaining;
         }
@@ -2139,14 +2139,14 @@ contract SVPayments is IxPaymentsIface {
     }
 
     function upgradeToPremium(bytes32 democHash) only_editors() external {
-        require(denyPremium[democHash] == false, &quot;upgrade-denied&quot;);
-        require(!accounts[democHash].isPremium, &quot;!basic&quot;);
+        require(denyPremium[democHash] == false, "upgrade-denied");
+        require(!accounts[democHash].isPremium, "!basic");
         accounts[democHash].isPremium = true;
         // convert basic minutes to premium minutes
         uint paidTill = accounts[democHash].paidUpTill;
         uint timeRemaining = SafeMath.subToZero(paidTill, now);
-        // if we have time remaning then convert it - otherwise don&#39;t need to do anything
-        if (timeRemaining &gt; 0) {
+        // if we have time remaning then convert it - otherwise don't need to do anything
+        if (timeRemaining > 0) {
             timeRemaining /= premiumMultiplier;
             accounts[democHash].paidUpTill = now + timeRemaining;
         }
@@ -2157,7 +2157,7 @@ contract SVPayments is IxPaymentsIface {
     /* account status - getters */
 
     function accountInGoodStanding(bytes32 democHash) external view returns (bool) {
-        return accounts[democHash].paidUpTill &gt;= now;
+        return accounts[democHash].paidUpTill >= now;
     }
 
     function getSecondsRemaining(bytes32 democHash) external view returns (uint) {
@@ -2364,13 +2364,13 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
     }
 
     ENSIface ens;
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -2430,7 +2430,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) public only_owner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) &amp; contentType) == 0);
+        require(((contentType - 1) & contentType) == 0);
 
         records[node].abis[contentType] = data;
         emit ABIChanged(node, contentType);
@@ -2489,8 +2489,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes data) {
         Record storage record = records[node];
-        for (contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -2619,7 +2619,7 @@ library BytesLib {
     function concatStorage(bytes storage _preBytes, bytes memory _postBytes) internal {
         assembly {
             // Read the first 32 bytes of _preBytes storage, which is the length
-            // of the array. (We don&#39;t need to use the offset into the slot
+            // of the array. (We don't need to use the offset into the slot
             // because arrays use the entire slot.)
             let fslot := sload(_preBytes_slot)
             // Arrays of 31 bytes or less have an even value in their slot,
@@ -2633,7 +2633,7 @@ library BytesLib {
             let mlength := mload(_postBytes)
             let newlength := add(slength, mlength)
             // slength can contain both the length and contents of the array
-            // if length &lt; 32 bytes so let&#39;s prepare for that
+            // if length < 32 bytes so let's prepare for that
             // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
             switch add(lt(slength, 32), lt(newlength, 32))
             case 2 {
@@ -2754,7 +2754,7 @@ library BytesLib {
     }
 
     function slice(bytes _bytes, uint _start, uint _length) internal  pure returns (bytes) {
-        require(_bytes.length &gt;= (_start + _length));
+        require(_bytes.length >= (_start + _length));
 
         bytes memory tempBytes;
 
@@ -2769,15 +2769,15 @@ library BytesLib {
                 // word read from the original array. To read it, we calculate
                 // the length of that partial word and start copying that many
                 // bytes into the array. The first word we copy will start with
-                // data we don&#39;t care about, but the last `lengthmod` bytes will
+                // data we don't care about, but the last `lengthmod` bytes will
                 // land at the beginning of the contents of the new array. When
-                // we&#39;re done copying, we overwrite the full first word with
+                // we're done copying, we overwrite the full first word with
                 // the actual length of the slice.
                 let lengthmod := and(_length, 31)
 
                 // The multiplication in the next line is necessary
                 // because when slicing multiples of 32 bytes (lengthmod == 0)
-                // the following copy loop was copying the origin&#39;s length
+                // the following copy loop was copying the origin's length
                 // and then ending prematurely not copying everything it should.
                 let mc := add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
                 let end := add(mc, _length)
@@ -2799,7 +2799,7 @@ library BytesLib {
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
             }
-            //if we want a zero-length slice let&#39;s just return a zero-length array
+            //if we want a zero-length slice let's just return a zero-length array
             default {
                 tempBytes := mload(0x40)
 
@@ -2811,7 +2811,7 @@ library BytesLib {
     }
 
     function toAddress(bytes _bytes, uint _start) internal  pure returns (address) {
-        require(_bytes.length &gt;= (_start + 20));
+        require(_bytes.length >= (_start + 20));
         address tempAddress;
 
         assembly {
@@ -2822,7 +2822,7 @@ library BytesLib {
     }
 
     function toUint(bytes _bytes, uint _start) internal  pure returns (uint256) {
-        require(_bytes.length &gt;= (_start + 32));
+        require(_bytes.length >= (_start + 32));
         uint256 tempUint;
 
         assembly {
@@ -2838,12 +2838,12 @@ library BytesLib {
         assembly {
             let length := mload(_preBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(length, mload(_postBytes))
             case 1 {
-                // cb is a circuit breaker in the for loop since there&#39;s
+                // cb is a circuit breaker in the for loop since there's
                 //  no said feature for inline assembly loops
-                // cb = 1 - don&#39;t breaker
+                // cb = 1 - don't breaker
                 // cb = 0 - break
                 let cb := 1
 
@@ -2853,7 +2853,7 @@ library BytesLib {
                 for {
                     let cc := add(_postBytes, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc &lt; end) + cb == 2)
+                // while(uint(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -2885,11 +2885,11 @@ library BytesLib {
             let slength := div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
             let mlength := mload(_postBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(slength, mlength)
             case 1 {
                 // slength can contain both the length and contents of the array
-                // if length &lt; 32 bytes so let&#39;s prepare for that
+                // if length < 32 bytes so let's prepare for that
                 // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
                 if iszero(iszero(slength)) {
                     switch lt(slength, 32)
@@ -2903,9 +2903,9 @@ library BytesLib {
                         }
                     }
                     default {
-                        // cb is a circuit breaker in the for loop since there&#39;s
+                        // cb is a circuit breaker in the for loop since there's
                         //  no said feature for inline assembly loops
-                        // cb = 1 - don&#39;t breaker
+                        // cb = 1 - don't breaker
                         // cb = 0 - break
                         let cb := 1
 
@@ -2917,7 +2917,7 @@ library BytesLib {
                         let end := add(mc, mlength)
 
                         // the next line is the loop condition:
-                        // while(uint(mc &lt; end) + cb == 2)
+                        // while(uint(mc < end) + cb == 2)
                         for {} eq(add(lt(mc, end), cb), 2) {
                             sc := add(sc, 1)
                             mc := add(mc, 0x20)

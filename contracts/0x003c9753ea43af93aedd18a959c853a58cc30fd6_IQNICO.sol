@@ -11,20 +11,20 @@ library SafeMath {
   }
   
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ contract IQNICO is Ownable {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /**
      * Constrctor function
@@ -88,7 +88,7 @@ contract IQNICO is Ownable {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () public payable {
-        require(now &lt; deadline &amp;&amp; now &gt;= START);
+        require(now < deadline && now >= START);
         uint256 amount = msg.value;
         uint256 tokens = amount * EXCHANGE_RATE;
         uint256 bonus = getBonus(tokens);
@@ -103,29 +103,29 @@ contract IQNICO is Ownable {
     
     function getBonus(uint256 _tokens) public constant returns (uint256) {
 
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
         
-        if (START &lt;= now &amp;&amp; now &lt; START + 1 days) {
+        if (START <= now && now < START + 1 days) {
 
             return _tokens.mul(30).div(100); // 30% first day
 
-        } else if (START &lt;= now &amp;&amp; now &lt; START + 1 weeks) {
+        } else if (START <= now && now < START + 1 weeks) {
 
             return _tokens.div(4); // 25% first week
 
-        } else if (START + 1 weeks &lt;= now &amp;&amp; now &lt; START + 2 weeks) {
+        } else if (START + 1 weeks <= now && now < START + 2 weeks) {
 
             return _tokens.div(5); // 20% second week
 
-        } else if (START + 2 weeks &lt;= now &amp;&amp; now &lt; START + 3 weeks) {
+        } else if (START + 2 weeks <= now && now < START + 3 weeks) {
 
             return _tokens.mul(15).div(100); // 15% third week
 
-        } else if (START + 3 weeks &lt;= now &amp;&amp; now &lt; START + 4 weeks) {
+        } else if (START + 3 weeks <= now && now < START + 4 weeks) {
 
             return _tokens.div(10); // 10% fourth week
 
-        } else if (START + 4 weeks &lt;= now &amp;&amp; now &lt; START + 5 weeks) {
+        } else if (START + 4 weeks <= now && now < START + 5 weeks) {
 
             return _tokens.div(20); // 5% fifth week
 
@@ -137,7 +137,7 @@ contract IQNICO is Ownable {
     }
 
     modifier afterDeadline() { 
-        require(now &gt;= deadline);
+        require(now >= deadline);
         _; 
     }
     

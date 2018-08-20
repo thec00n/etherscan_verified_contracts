@@ -13,8 +13,8 @@ contract DPOS {
         bool choice;
     }
 
-    mapping (uint =&gt; VoteItem) public voteItems;
-    mapping (uint =&gt; VoteRecord[]) public voteRecords;
+    mapping (uint => VoteItem) public voteItems;
+    mapping (uint => VoteRecord[]) public voteRecords;
 
     event Create(uint indexed _id, string indexed _content);
     event Vote(uint indexed _id, address indexed _voter, bool indexed _choice);

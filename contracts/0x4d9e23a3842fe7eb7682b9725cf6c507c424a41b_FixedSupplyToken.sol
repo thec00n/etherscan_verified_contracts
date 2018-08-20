@@ -11,8 +11,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -27,9 +27,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ contract FixedSupplyToken is ERC20Interface {
     string public name;
     uint8 public decimals;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     modifier onlyPayloadSize(uint size) {
         assert(msg.data.length == size + 4);
@@ -84,8 +84,8 @@ contract FixedSupplyToken is ERC20Interface {
     }
 
     constructor() public {
-        symbol = &quot;CAR&quot;;
-        name = &quot;CarBlock.io&quot;;
+        symbol = "CAR";
+        name = "CarBlock.io";
         decimals = 18;
         totalSupply = 1800000000 * 10**uint(decimals);
         balances[msg.sender] = totalSupply;
@@ -102,13 +102,13 @@ contract FixedSupplyToken is ERC20Interface {
 
 
     /**
-     * Transfer the balance from token owner&#39;s account to `to` account
-     * - Owner&#39;s account must have sufficient balance to transfer
+     * Transfer the balance from token owner's account to `to` account
+     * - Owner's account must have sufficient balance to transfer
      * - 0 value transfers are allowed
      */
     function transfer(address to, uint256 tokens) onlyPayloadSize(2 * 32) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -121,7 +121,7 @@ contract FixedSupplyToken is ERC20Interface {
 
     /**
      * Token owner can approve for `spender` to transferFrom(...) `tokens`
-     * from the token owner&#39;s account
+     * from the token owner's account
      *
      * https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
      * recommends that there are no checks for the approval double-spend attack
@@ -145,8 +145,8 @@ contract FixedSupplyToken is ERC20Interface {
      */
     function transferFrom(address from, address to, uint256 tokens) onlyPayloadSize(3 * 32) public returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
 
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -160,7 +160,7 @@ contract FixedSupplyToken is ERC20Interface {
 
     /**
      * Returns the amount of tokens approved by the owner that can be
-     * transferred to the spender&#39;s account
+     * transferred to the spender's account
      */
     function allowance(address tokenOwner, address spender) public view returns (uint256 remaining) {
         return allowed[tokenOwner][spender];
@@ -168,7 +168,7 @@ contract FixedSupplyToken is ERC20Interface {
 
 
     /**
-     * Don&#39;t accept ETH
+     * Don't accept ETH
      */
     function () public payable {
         revert();

@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 // -------------------------------------------------
 // 0.4.13+commit.0fb4cb1a
 // [Assistive Reality ARX token ETH cap presale contract]
-// [Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3340475255557352415c5d5f5a5d561d5a5c">[email&#160;protected]</a> for any queries]
+// [Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3340475255557352415c5d5f5a5d561d5a5c">[email protected]</a> for any queries]
 // [Join us in changing the world]
 // [aronline.io]
 // -------------------------------------------------
@@ -38,20 +38,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -74,7 +74,7 @@ contract ERC20Interface is owned, safeMath {
 }
 
 contract ARXpresale is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address         public admin                   = owner;     // admin address
   ERC20Interface  public tokenReward;                         // address of the token used as reward
 
@@ -83,14 +83,14 @@ contract ARXpresale is owned, safeMath {
   address public beneficiaryWallet;                           // beneficiaryMultiSig (founder group) or wallet account, live is 0x00F959866E977698D14a36eB332686304a4d6AbA
   uint256 public tokensPerEthPrice;                           // set initial value floating priceVar 1,500 tokens per Eth
 
-  // uint256 values for min,max caps &amp; tracking
+  // uint256 values for min,max caps & tracking
   uint256 public amountRaisedInWei;                           // 0 initially (0)
   uint256 public fundingMinCapInWei;                          // 100 ETH (10%) (100 000 000 000 000 000 000)
   uint256 public fundingMaxCapInWei;                          // 1,000 ETH in Wei (1000 000 000 000 000 000 000)
   uint256 public fundingRemainingAvailableInEth;              // ==((fundingMaxCapInWei - amountRaisedInWei)/1 ether); (resolution will only be to integer)
 
   // loop control, ICO startup and limiters
-  string  public currentStatus                   = &quot;&quot;;        // current presale status
+  string  public currentStatus                   = "";        // current presale status
   uint256 public fundingStartBlock;                           // presale start block#
   uint256 public fundingEndBlock;                             // presale end block#
   bool    public isPresaleClosed                 = false;     // presale completion boolean
@@ -102,20 +102,20 @@ contract ARXpresale is owned, safeMath {
   event Refund(address indexed _refunder, uint256 _value);
   event Burn(address _from, uint256 _value);
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; uint256) fundValue;
+  mapping(address => uint256) balances;
+  mapping(address => uint256) fundValue;
 
   // default function, map admin
   function ARXpresale() onlyOwner {
     admin = msg.sender;
-    currentStatus = &quot;presale deployed to chain&quot;;
+    currentStatus = "presale deployed to chain";
   }
 
   // setup the presale parameters
   function Setuppresale(uint256 _fundingStartBlock, uint256 _fundingEndBlock) onlyOwner returns (bytes32 response) {
       if ((msg.sender == admin)
-      &amp;&amp; (!(isPresaleSetup))
-      &amp;&amp; (!(beneficiaryWallet &gt; 0))){
+      && (!(isPresaleSetup))
+      && (!(beneficiaryWallet > 0))){
           // init addresses
           tokenReward                             = ERC20Interface(0xb0D926c1BC3d78064F3e1075D5bD9A24F35Ae6C5);   // mainnet is 0xb0D926c1BC3d78064F3e1075D5bD9A24F35Ae6C5
           beneficiaryWallet                       = 0xd93333f8cb765397A5D0d0e0ba53A2899B48511f;                   // mainnet is 0xd93333f8cb765397A5D0d0e0ba53A2899B48511f
@@ -136,32 +136,32 @@ contract ARXpresale is owned, safeMath {
           // configure presale
           isPresaleSetup                          = true;
           isPresaleClosed                         = false;
-          currentStatus                           = &quot;presale is setup&quot;;
+          currentStatus                           = "presale is setup";
 
           //gas reduction experiment
           setPrice();
-          return &quot;presale is setup&quot;;
+          return "presale is setup";
       } else if (msg.sender != admin) {
-          return &quot;not authorized&quot;;
+          return "not authorized";
       } else  {
-          return &quot;campaign cannot be changed&quot;;
+          return "campaign cannot be changed";
       }
     }
 
     function setPrice() {
       // Price configuration mainnet:
-      // Day 0-1 Price   1 ETH = 8000 ARX [blocks: start    -&gt; s+3600]  0 - +24hr
-      // Day 1-3 Price   1 ETH = 7250 ARX [blocks: s+3601   -&gt; s+10800] +24hr - +72hr
-      // Day 3-5 Price   1 ETH = 6750 ARX [blocks: s+10801  -&gt; s+18000] +72hr - +120hr
-      // Dau 5-7 Price   1 ETH = 6250 ARX [blocks: s+18001  -&gt; &lt;=fundingEndBlock] = +168hr (168/24 = 7 [x])
+      // Day 0-1 Price   1 ETH = 8000 ARX [blocks: start    -> s+3600]  0 - +24hr
+      // Day 1-3 Price   1 ETH = 7250 ARX [blocks: s+3601   -> s+10800] +24hr - +72hr
+      // Day 3-5 Price   1 ETH = 6750 ARX [blocks: s+10801  -> s+18000] +72hr - +120hr
+      // Dau 5-7 Price   1 ETH = 6250 ARX [blocks: s+18001  -> <=fundingEndBlock] = +168hr (168/24 = 7 [x])
 
-      if (block.number &gt;= fundingStartBlock &amp;&amp; block.number &lt;= fundingStartBlock+3600) { // 8000 ARX Day 1 level only
+      if (block.number >= fundingStartBlock && block.number <= fundingStartBlock+3600) { // 8000 ARX Day 1 level only
         tokensPerEthPrice=8000;
-      } else if (block.number &gt;= fundingStartBlock+3601 &amp;&amp; block.number &lt;= fundingStartBlock+10800) { // 7250 ARX Day 2,3
+      } else if (block.number >= fundingStartBlock+3601 && block.number <= fundingStartBlock+10800) { // 7250 ARX Day 2,3
         tokensPerEthPrice=7250;
-      } else if (block.number &gt;= fundingStartBlock+10801 &amp;&amp; block.number &lt;= fundingStartBlock+18000) { // 6750 ARX Day 4,5
+      } else if (block.number >= fundingStartBlock+10801 && block.number <= fundingStartBlock+18000) { // 6750 ARX Day 4,5
         tokensPerEthPrice=6750;
-      } else if (block.number &gt;= fundingStartBlock+18001 &amp;&amp; block.number &lt;= fundingEndBlock) { // 6250 ARX Day 6,7
+      } else if (block.number >= fundingStartBlock+18001 && block.number <= fundingEndBlock) { // 6250 ARX Day 6,7
         tokensPerEthPrice=6250;
       } else {
         tokensPerEthPrice=6250; // default back out to this value instead of failing to return or return 0/halting;
@@ -177,10 +177,10 @@ contract ARXpresale is owned, safeMath {
     function BuyARXtokens() payable {
       // 0. conditions (length, presale setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc)
       require(!(msg.value == 0)
-      &amp;&amp; (isPresaleSetup)
-      &amp;&amp; (block.number &gt;= fundingStartBlock)
-      &amp;&amp; (block.number &lt;= fundingEndBlock)
-      &amp;&amp; !(safeAdd(amountRaisedInWei,msg.value) &gt; fundingMaxCapInWei));
+      && (isPresaleSetup)
+      && (block.number >= fundingStartBlock)
+      && (block.number <= fundingEndBlock)
+      && !(safeAdd(amountRaisedInWei,msg.value) > fundingMaxCapInWei));
 
       // 1. vars
       uint256 rewardTransferAmount    = 0;
@@ -201,43 +201,43 @@ contract ARXpresale is owned, safeMath {
     }
 
     function beneficiaryMultiSigWithdraw(uint256 _amount) onlyOwner {
-      require(amountRaisedInWei &gt;= fundingMinCapInWei);
+      require(amountRaisedInWei >= fundingMinCapInWei);
       beneficiaryWallet.transfer(_amount);
     }
 
     function checkGoalandPrice() onlyOwner returns (bytes32 response) {
-      // update state &amp; status variables
+      // update state & status variables
       require (isPresaleSetup);
-      if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt;= fundingEndBlock &amp;&amp; block.number &gt;= fundingStartBlock)) { // presale in progress, under softcap
-        currentStatus = &quot;In progress (Eth &lt; Softcap)&quot;;
-        return &quot;In progress (Eth &lt; Softcap)&quot;;
-      } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt; fundingStartBlock)) { // presale has not started
-        currentStatus = &quot;presale is setup&quot;;
-        return &quot;presale is setup&quot;;
-      } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock)) { // presale ended, under softcap
-        currentStatus = &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-        return &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-      } else if (amountRaisedInWei &gt;= fundingMaxCapInWei) {  // presale successful, at hardcap!
-          currentStatus = &quot;Successful (ARX &gt;= Hardcap)!&quot;;
-          return &quot;Successful (ARX &gt;= Hardcap)!&quot;;
-      } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock)) { // presale ended, over softcap!
-          currentStatus = &quot;Successful (Eth &gt;= Softcap)!&quot;;
-          return &quot;Successful (Eth &gt;= Softcap)!&quot;;
-      } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (block.number &lt;= fundingEndBlock)) { // presale in progress, over softcap!
-        currentStatus = &quot;In progress (Eth &gt;= Softcap)!&quot;;
-        return &quot;In progress (Eth &gt;= Softcap)!&quot;;
+      if ((amountRaisedInWei < fundingMinCapInWei) && (block.number <= fundingEndBlock && block.number >= fundingStartBlock)) { // presale in progress, under softcap
+        currentStatus = "In progress (Eth < Softcap)";
+        return "In progress (Eth < Softcap)";
+      } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number < fundingStartBlock)) { // presale has not started
+        currentStatus = "presale is setup";
+        return "presale is setup";
+      } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number > fundingEndBlock)) { // presale ended, under softcap
+        currentStatus = "Unsuccessful (Eth < Softcap)";
+        return "Unsuccessful (Eth < Softcap)";
+      } else if (amountRaisedInWei >= fundingMaxCapInWei) {  // presale successful, at hardcap!
+          currentStatus = "Successful (ARX >= Hardcap)!";
+          return "Successful (ARX >= Hardcap)!";
+      } else if ((amountRaisedInWei >= fundingMinCapInWei) && (block.number > fundingEndBlock)) { // presale ended, over softcap!
+          currentStatus = "Successful (Eth >= Softcap)!";
+          return "Successful (Eth >= Softcap)!";
+      } else if ((amountRaisedInWei >= fundingMinCapInWei) && (block.number <= fundingEndBlock)) { // presale in progress, over softcap!
+        currentStatus = "In progress (Eth >= Softcap)!";
+        return "In progress (Eth >= Softcap)!";
       }
       setPrice();
     }
 
-    function refund() { // any contributor can call this to have their Eth returned. user&#39;s purchased ARX tokens are burned prior refund of Eth.
+    function refund() { // any contributor can call this to have their Eth returned. user's purchased ARX tokens are burned prior refund of Eth.
       //require minCap not reached
-      require ((amountRaisedInWei &lt; fundingMinCapInWei)
-      &amp;&amp; (isPresaleClosed)
-      &amp;&amp; (block.number &gt; fundingEndBlock)
-      &amp;&amp; (fundValue[msg.sender] &gt; 0));
+      require ((amountRaisedInWei < fundingMinCapInWei)
+      && (isPresaleClosed)
+      && (block.number > fundingEndBlock)
+      && (fundValue[msg.sender] > 0));
 
-      //burn user&#39;s token ARX token balance, refund Eth sent
+      //burn user's token ARX token balance, refund Eth sent
       uint256 ethRefund = fundValue[msg.sender];
       balances[msg.sender] = 0;
       fundValue[msg.sender] = 0;
@@ -249,13 +249,13 @@ contract ARXpresale is owned, safeMath {
     }
 
     function withdrawRemainingTokens(uint256 _amountToPull) onlyOwner {
-      require(block.number &gt;= fundingEndBlock);
+      require(block.number >= fundingEndBlock);
       tokenReward.transfer(msg.sender, _amountToPull);
     }
 
     function updateStatus() onlyOwner {
-      require((block.number &gt;= fundingEndBlock) || (amountRaisedInWei &gt;= fundingMaxCapInWei));
+      require((block.number >= fundingEndBlock) || (amountRaisedInWei >= fundingMaxCapInWei));
       isPresaleClosed = true;
-      currentStatus = &quot;packagesale is closed&quot;;
+      currentStatus = "packagesale is closed";
     }
   }

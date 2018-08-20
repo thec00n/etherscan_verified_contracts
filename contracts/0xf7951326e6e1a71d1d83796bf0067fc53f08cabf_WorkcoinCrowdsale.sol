@@ -11,20 +11,20 @@ contract SafeMath
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -93,8 +93,8 @@ contract ERC20 is ERC20I, SafeMath
     uint256 public totalSupply;
     string  public version;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /// @dev Returns number of tokens owned by given address.
     function name() public view returns (string) {
@@ -132,7 +132,7 @@ contract ERC20 is ERC20I, SafeMath
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
       require(_to != address(0x0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
 
       balances[msg.sender] = sub(balances[msg.sender], _value);
       balances[_to] = add(balances[_to], _value);
@@ -148,8 +148,8 @@ contract ERC20 is ERC20I, SafeMath
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[_from]);
-      require(_value &lt;= allowed[_from][msg.sender]);
+      require(_value <= balances[_from]);
+      require(_value <= allowed[_from][msg.sender]);
 
       balances[_from] = sub(balances[_from], _value);
       balances[_to] = add(balances[_to], _value);
@@ -163,7 +163,7 @@ contract ERC20 is ERC20I, SafeMath
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -212,7 +212,7 @@ contract ERC20 is ERC20I, SafeMath
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = sub(oldValue, _subtractedValue);
@@ -273,7 +273,7 @@ contract MintableToken is ERC20, Ownable
         @param _amount     amount to increase the supply by
     */
     function issue(address _to, uint256 _amount) public onlyOwner {
-        require(maxSupply &gt;= totalSupply + _amount);
+        require(maxSupply >= totalSupply + _amount);
         totalSupply +=  _amount;
         balances[_to] += _amount;
         emit Issuance(_amount);
@@ -357,7 +357,7 @@ contract Workcoin is PausableToken {
         returns (bool)
     {
         require(_to != address(0x0));
-        require(_value &lt;= balances[this]);
+        require(_value <= balances[this]);
         balances[this] = sub(balances[this], _value);
         balances[_to] = add(balances[_to], _value);
         emit Transfer(this, _to, _value);
@@ -392,7 +392,7 @@ contract Workcoin is PausableToken {
 
     /**
         @dev mass transfer
-        @param _holders addresses of the owners to be notified [&quot;address_1&quot;, &quot;address_2&quot;, ..]
+        @param _holders addresses of the owners to be notified ["address_1", "address_2", ..]
      */
     function massTransfer(address [] _holders, uint256 [] _payments)
         public
@@ -401,8 +401,8 @@ contract Workcoin is PausableToken {
     {
         uint256 hl = _holders.length;
         uint256 pl = _payments.length;
-        require(hl &lt;= 100 &amp;&amp; hl == pl);
-        for (uint256 i = 0; i &lt; hl; i++) {
+        require(hl <= 100 && hl == pl);
+        for (uint256 i = 0; i < hl; i++) {
             transfer(_holders[i], _payments[i]);
         }
         return true;
@@ -413,10 +413,10 @@ contract Workcoin is PausableToken {
     */
     function Workcoin() public
     {
-        name = &quot;Workcoin&quot;;
-        symbol = &quot;WRR&quot;;
+        name = "Workcoin";
+        symbol = "WRR";
         decimals = 18;
-        version = &quot;1.3&quot;;
+        version = "1.3";
         issue(this, 1e7 * 1e18);
     }
 
@@ -429,7 +429,7 @@ contract Helper {
         returns (string)
     {
         bytes memory b = new bytes(20);
-        for (uint i = 0; i &lt; 20; i++)
+        for (uint i = 0; i < 20; i++)
             b[i] = byte(uint8(uint(x) / (2**(8*(19 - i)))));
         return string(b);
     }
@@ -455,7 +455,7 @@ contract WorkcoinCrowdsale is Ownable, SafeMath, Helper {
     uint256 public receivedETH;
     uint256 public price;
 
-    mapping (uint256 =&gt; Investment) public payments;
+    mapping (uint256 => Investment) public payments;
 
     /**
         @dev contract constructor
@@ -533,7 +533,7 @@ contract WorkcoinCrowdsale is Ownable, SafeMath, Helper {
     function confirmSell(uint256 _amount) internal view
         returns (bool)
     {
-        if (Crowd.tokens &lt; _amount) {
+        if (Crowd.tokens < _amount) {
             return false;
         }
         return true;
@@ -561,7 +561,7 @@ contract WorkcoinCrowdsale is Ownable, SafeMath, Helper {
         if (conf) {
             result = bonusValue;
             sell(sender, bonusValue);
-            if (now &gt;= Crowd.endDate) {
+            if (now >= Crowd.endDate) {
                 saleStat = false;
                 emit CrowdSaleFinished(); // if time is up
             }
@@ -625,10 +625,10 @@ contract WorkcoinCrowdsale is Ownable, SafeMath, Helper {
     )
         internal
     {
-        require(bytes(currency).length != 0 &amp;&amp;
-                investorEthAddr != 0x0 &amp;&amp;
-                bytes(txHash).length != 0 &amp;&amp;
-                investedAmount != 0 &amp;&amp;
+        require(bytes(currency).length != 0 &&
+                investorEthAddr != 0x0 &&
+                bytes(txHash).length != 0 &&
+                investedAmount != 0 &&
                 investorEthAddr != 0);
         setId();
         uint256 id = getId();
@@ -677,12 +677,12 @@ contract WorkcoinCrowdsale is Ownable, SafeMath, Helper {
     */
     function() public payable
     {
-        assert(msg.value &gt;= 1 ether / 10);
-        require(Crowd.startDate &lt;= now);
+        assert(msg.value >= 1 ether / 10);
+        require(Crowd.startDate <= now);
 
         if (saleIsOn() == true) {
             address(tokenAddress).transfer(msg.value); // transfer to the general contract
-            paymentManager(&quot;eth&quot;, msg.sender, toString(tx.origin), msg.value, msg.value);
+            paymentManager("eth", msg.sender, toString(tx.origin), msg.value, msg.value);
             receivedETH = add(receivedETH, msg.value);
         } else {
             revert();

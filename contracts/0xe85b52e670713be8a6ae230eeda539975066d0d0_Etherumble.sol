@@ -29,7 +29,7 @@ contract Etherumble {
     }
 
     modifier hasValue() {
-        require(msg.value &gt;= 10000000000000000 &amp;&amp; nbUsers &lt; 19); //0.01 ether min
+        require(msg.value >= 10000000000000000 && nbUsers < 19); //0.01 ether min
         _;
     }
 
@@ -68,7 +68,7 @@ contract Etherumble {
     
 
     function() public payable hasValue {
-        checkinter();//first check if it&#39;s a good block for ending a game. this way there is no new user after the winner block hash is calculated
+        checkinter();//first check if it's a good block for ending a game. this way there is no new user after the winner block hash is calculated
         players[nbUsers] = msg.sender;
         bets[nbUsers] = msg.value;
         
@@ -84,10 +84,10 @@ contract Etherumble {
         uint sum = 0;
         uint winningNumber = uint(block.blockhash(block.number - 1)) % totalBets;
 
-        for (uint i = 0; i &lt; nbUsers; i++) {
+        for (uint i = 0; i < nbUsers; i++) {
             sum += users[i].amount;
 
-            if (sum &gt;= winningNumber) {
+            if (sum >= winningNumber) {
                 // destroy this contract and send the balance to users[i]
                 withrawWin(users[i].addPlayer,winningNumber);
                 return;
@@ -121,14 +121,14 @@ contract Etherumble {
 
     function checkinter() internal{ //this can be called by anyone if the timmer freez
         //check block time
-        if (endBlock &lt;= block.number &amp;&amp; endBlock != 0) {
+        if (endBlock <= block.number && endBlock != 0) {
             endLottery();
         }
     }
     
     function callback() public isOwner{ //this can be called by anyone if the timmer freez
         //check block time
-        if (endBlock &lt;= block.number &amp;&amp; endBlock != 0) {
+        if (endBlock <= block.number && endBlock != 0) {
             endLottery();
         }
     }

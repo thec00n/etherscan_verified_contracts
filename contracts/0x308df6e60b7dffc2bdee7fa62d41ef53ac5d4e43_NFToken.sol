@@ -19,9 +19,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,16 +65,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -381,8 +381,8 @@ contract NFToken is ERC721Token, CommonEth {
     }
 
     //所有tokens
-    mapping(uint =&gt; TokenModel)  tokens;
-    mapping(string =&gt; uint)  idOfSerial;
+    mapping(uint => TokenModel)  tokens;
+    mapping(string => uint)  idOfSerial;
 
     //每次交易后价格上涨
     uint RISE_RATE = 110;
@@ -421,20 +421,20 @@ contract NFToken is ERC721Token, CommonEth {
         //确认投入金额
         require(msg.value == CARVE_UP_INPUT);
         //确认 这张卡的本轮只用一次
-        for (uint8 i = 0; i &lt; carverUpIndex; i++) {
+        for (uint8 i = 0; i < carverUpIndex; i++) {
             require(carveUpTokens[i] != _tokenId);
         }
         //按当前索引进入队列
         carveUpTokens[carverUpIndex] = _tokenId;
 
-        //日志&amp;事件
+        //日志&事件
         JoinCarveUp(msg.sender, _tokenId, msg.value);
         //第10人出现,结算了
         if (carverUpIndex % 10 == 9) {
             //索引归0
             carverUpIndex = 0;
             uint theLoserIndex = (now % 10 + (now / 10 % 10) + (now / 100 % 10) + (now / 1000 % 10)) % 10;
-            for (uint8 j = 0; j &lt; 10; j++) {
+            for (uint8 j = 0; j < 10; j++) {
                 if (j != theLoserIndex) {
                     uint bonus = CARVE_UP_INPUT * 110 / 100;
                     ownerOf(carveUpTokens[j]).transfer(bonus);
@@ -443,7 +443,7 @@ contract NFToken is ERC721Token, CommonEth {
                     CarveUpBonus(ownerOf(carveUpTokens[j]), carveUpTokens[j], 0);
                 }
             }
-            //日志&amp;事件
+            //日志&事件
             //CarveUpDone(theLoserIndex, carveUpTokens[0], carveUpTokens[1], carveUpTokens[2], carveUpTokens[3], carveUpTokens[4], carveUpTokens[5], carveUpTokens[6], carveUpTokens[7], carveUpTokens[8], carveUpTokens[9]);
             carveUpTokens = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         } else {
@@ -456,15 +456,15 @@ contract NFToken is ERC721Token, CommonEth {
     function buy(uint _id) public payable onlyLiveMode returns (bool){
         TokenModel storage token = tokens[_id];
         require(token.price != 0);
-        require(token.openTime &lt; now);
+        require(token.openTime < now);
         //检查价格
-        require(msg.value &gt;= token.price);
+        require(msg.value >= token.price);
         //付钱给出让转
         ownerOf(_id).transfer(token.price * (100 - 2 * SALE_FEE_RATE) / 100);
         //给用户分成
-        if (totalSupply() &gt; 1) {
+        if (totalSupply() > 1) {
             uint bonus = token.price * SALE_FEE_RATE / 100 / (totalSupply() - 1);
-            for (uint i = 1; i &lt;= totalSupply(); i++) {
+            for (uint i = 1; i <= totalSupply(); i++) {
                 if (i != _id) {
                     ownerOf(i).transfer(bonus);
                     TransferBonus(ownerOf(i), i, bonus);
@@ -474,7 +474,7 @@ contract NFToken is ERC721Token, CommonEth {
         //转让
         clearApprovalAndTransfer(ownerOf(_id), msg.sender, _id);
         //价格上涨
-        if (token.price &lt; 1 ether) {
+        if (token.price < 1 ether) {
             token.price = token.price * RISE_RATE_FAST / 100;
         } else {
             token.price = token.price * RISE_RATE / 100;
@@ -491,7 +491,7 @@ contract NFToken is ERC721Token, CommonEth {
 
     //更新未出售中的token
     function updateUnsold(string serial, uint _price, uint _openTime) public onlyCOO returns (bool){
-        require(idOfSerial[serial] &gt; 0);
+        require(idOfSerial[serial] > 0);
         TokenModel storage token = tokens[idOfSerial[serial]];
         require(token.lastTime == token.createTime);
         token.price = _price;
@@ -502,7 +502,7 @@ contract NFToken is ERC721Token, CommonEth {
 
     //生成新的token
     function __createNewToken(address _to, string serial, uint createTime, uint price, uint lastTime, uint openTime) private returns (TokenModel){
-        require(price &gt; 0);
+        require(price > 0);
         require(idOfSerial[serial] == 0);
         uint id = totalSupply() + 1;
         idOfSerial[serial] = id;
@@ -526,7 +526,7 @@ contract NFToken is ERC721Token, CommonEth {
     //财务提现
     function withdrawContractEther(uint withdrawAmount) public onlyCFO {
         uint256 balance = this.balance;
-        require(balance - carverUpIndex * CARVE_UP_INPUT &gt; withdrawAmount);
+        require(balance - carverUpIndex * CARVE_UP_INPUT > withdrawAmount);
         cfoAddress.transfer(withdrawAmount);
     }
 

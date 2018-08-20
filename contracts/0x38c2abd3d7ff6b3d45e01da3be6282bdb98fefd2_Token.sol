@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
  */
 contract Restriction {
 	address internal owner = msg.sender;
-	mapping(address =&gt; bool) internal granted;
+	mapping(address => bool) internal granted;
 
 	modifier onlyOwner {
 		require(msg.sender == owner);
@@ -16,7 +16,7 @@ contract Restriction {
 	* @param _owner New owner
 	*/
 	function changeOwner(address _owner) external onlyOwner {
-		require(_owner != address(0) &amp;&amp; _owner != owner);
+		require(_owner != address(0) && _owner != owner);
 		owner = _owner;
 		ChangeOwner(owner);
 	}
@@ -39,7 +39,7 @@ contract BasicToken is Restriction {
 	uint8 public decimals = 0;
 	uint256 public totalSupply = 0;
 
-	mapping(address =&gt; uint256) private balances;
+	mapping(address => uint256) private balances;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);	
 
@@ -71,7 +71,7 @@ contract BasicToken is Restriction {
 	* @return returns true on success or throw on failure
 	*/
 	function transfer(address _to, uint256 _amount) external returns (bool) {
-		return _transfer(msg.sender, _to, _amount, &quot;&quot;);
+		return _transfer(msg.sender, _to, _amount, "");
 	}
 	/**
 	* @dev Transfer tokens to a specified holder.
@@ -93,12 +93,12 @@ contract BasicToken is Restriction {
 	*/
 	function _transfer(address _from, address _to, uint256 _amount, bytes _data) internal returns (bool) {
 		require(_to != address(0)
-			&amp;&amp; _to != address(this)
-			&amp;&amp; _from != address(0)
-			&amp;&amp; _from != _to
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; balances[_from] &gt;= _amount
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to]
+			&& _to != address(this)
+			&& _from != address(0)
+			&& _from != _to
+			&& _amount > 0
+			&& balances[_from] >= _amount
+			&& balances[_to] + _amount > balances[_to]
 		);
 		balances[_from] -= _amount;
 		balances[_to] += _amount;
@@ -106,7 +106,7 @@ contract BasicToken is Restriction {
 		assembly {
 			size := extcodesize(_to)
 		}
-		if(size &gt; 0){
+		if(size > 0){
 			TokenReceiver(_to).tokenFallback(msg.sender, _amount, _data);
 		}
 		Transfer(_from, _to, _amount);
@@ -118,7 +118,7 @@ contract BasicToken is Restriction {
 	* @return returns true on success or throw on failure
 	*/
 	function _mintTokens(uint256 _amount) internal onlyOwner returns (bool success){
-		require(totalSupply + _amount &gt; totalSupply);
+		require(totalSupply + _amount > totalSupply);
 		totalSupply += _amount;
 		balances[msg.sender] += _amount;
 		Transfer(address(0), msg.sender, _amount);
@@ -130,7 +130,7 @@ contract BasicToken is Restriction {
 	* @return returns true on success or throw on failure
 	*/
 	function _burnTokens(uint256 _amount) internal returns (bool success){
-		require(balances[msg.sender] &gt; _amount);
+		require(balances[msg.sender] > _amount);
 		totalSupply -= _amount;
 		balances[owner] -= _amount;
 		Transfer(msg.sender, address(0), _amount);
@@ -139,7 +139,7 @@ contract BasicToken is Restriction {
 }
 
 contract ERC20Compatible {
-	mapping(address =&gt; mapping(address =&gt; uint256)) private allowed;
+	mapping(address => mapping(address => uint256)) private allowed;
 
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);	
 	function _transfer(address _from, address _to, uint256 _amount, bytes _data) internal returns (bool success);
@@ -161,8 +161,8 @@ contract ERC20Compatible {
 	*/
 	function approve(address _spender, uint256 _amount) external returns (bool success) {
 		require( _spender != address(0) 
-			&amp;&amp; _spender != msg.sender 
-			&amp;&amp; (_amount == 0 || allowed[msg.sender][_spender] == 0)
+			&& _spender != msg.sender 
+			&& (_amount == 0 || allowed[msg.sender][_spender] == 0)
 		);
 		allowed[msg.sender][_spender] = _amount;
 		Approval(msg.sender, _spender, _amount);
@@ -176,9 +176,9 @@ contract ERC20Compatible {
 	* @return returns true on success or throw on failure
 	*/
 	function transferFrom(address _from, address _to, uint256 _amount) external returns (bool success) {
-		require(allowed[_from][msg.sender] &gt;= _amount);
+		require(allowed[_from][msg.sender] >= _amount);
 		allowed[_from][msg.sender] -= _amount;
-		return _transfer(_from, _to, _amount, &quot;&quot;);
+		return _transfer(_from, _to, _amount, "");
 	}
 }
 
@@ -204,8 +204,8 @@ contract Regulatable is Restriction {
 }
 
 contract Token is ERC20Compatible, Regulatable, BasicToken {
-	string private constant NAME = &quot;Crypto USD&quot;;
-	string private constant SYMBOL = &quot;USDc&quot;;
+	string private constant NAME = "Crypto USD";
+	string private constant SYMBOL = "USDc";
 	uint8 private constant DECIMALS = 2;
 	uint256 private constant SUPPLY = 201205110 * uint256(10) ** DECIMALS;
 	

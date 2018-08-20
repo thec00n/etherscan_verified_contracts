@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -108,7 +108,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -119,8 +119,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -169,7 +169,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -191,8 +191,8 @@ contract MigrationAgent {
  */
 contract SPXToken is StandardToken {
 
-  string public constant name = &quot;SP8DE Token&quot;;
-  string public constant symbol = &quot;SPX&quot;;
+  string public constant name = "SP8DE Token";
+  string public constant symbol = "SPX";
   uint8 public constant decimals = 18;
   address public ico;
   
@@ -216,8 +216,8 @@ contract SPXToken is StandardToken {
   // Create tokens
   function mint(address holder, uint value) public {
     require(msg.sender == ico);
-    require(value &gt; 0);
-    require(totalSupply + value &lt;= TOKEN_LIMIT);
+    require(value > 0);
+    require(totalSupply + value <= TOKEN_LIMIT);
 
     balances[holder] += value;
     totalSupply += value;
@@ -251,8 +251,8 @@ contract SPXToken is StandardToken {
   // Token migration
   function migrate(uint value) external {
     require(migrationAgent != 0);
-    require(value &gt; 0);
-    require(value &lt;= balances[msg.sender]);
+    require(value > 0);
+    require(value <= balances[msg.sender]);
 
     balances[msg.sender] -= value;
     totalSupply -= value;
@@ -307,7 +307,7 @@ contract SpadeIco {
   event TokenWin(address indexed buyer, uint256 tokens, uint256 jackpot);
 
   function SpadeIco(address _team, address _icoAgent, address _migrationMaster) public {
-    require(_team != address(0) &amp;&amp; _icoAgent != address(0) &amp;&amp; _migrationMaster != address(0));  
+    require(_team != address(0) && _icoAgent != address(0) && _migrationMaster != address(0));  
     migrationMaster = _migrationMaster;
     team = _team;
     icoAgent = _icoAgent;
@@ -328,9 +328,9 @@ contract SpadeIco {
     icoState = IcoState.IcoFinished;
     
     uint256 amountWithFoundation = SafeMath.add(token.totalSupply(), TOKENS_FOUNDATION);
-    if (amountWithFoundation &gt; token.TOKEN_LIMIT()) {
+    if (amountWithFoundation > token.TOKEN_LIMIT()) {
       uint256 foundationToMint = token.TOKEN_LIMIT() - token.totalSupply();
-      if (foundationToMint &gt; 0) {
+      if (foundationToMint > 0) {
         token.mint(foundation, foundationToMint);
       }
     } else {
@@ -339,7 +339,7 @@ contract SpadeIco {
         uint mintedTokens = token.totalSupply();
     
         uint remaining = token.TOKEN_LIMIT() - mintedTokens;
-        if (remaining &gt; 0) {
+        if (remaining > 0) {
           token.mint(other, remaining);
         }
     }
@@ -364,11 +364,11 @@ contract SpadeIco {
 
   function convertPresaleTokens(address buyer, uint256 tokens, uint256 factor, string txHash) external icoAgentOnly returns (uint) {
     require(buyer != address(0));
-    require(tokens &gt; 0);
+    require(tokens > 0);
     require(validState());
 
     uint256 tokensToSell = SafeMath.add(tokensSold, tokens);
-    require(tokensToSell &lt;= TOKENS_FOR_SALE);
+    require(tokensToSell <= TOKENS_FOR_SALE);
     tokensSold = tokensToSell;            
 
     token.mint(buyer, tokens);
@@ -377,7 +377,7 @@ contract SpadeIco {
 
   function creditJackpotTokens(address buyer, uint256 tokens, uint256 jackpot) external icoAgentOnly returns (uint) {
     require(buyer != address(0));
-    require(tokens &gt; 0);
+    require(tokens > 0);
     require(validState());
 
     token.mint(buyer, tokens);
@@ -386,11 +386,11 @@ contract SpadeIco {
 
   function buyTokens(address buyer, uint256 tokens, uint256 factor, string txHash) external icoAgentOnly returns (uint) {
     require(buyer != address(0));
-    require(tokens &gt; 0);
+    require(tokens > 0);
     require(validState());
 
     uint256 tokensToSell = SafeMath.add(tokensSold, tokens);
-    require(tokensToSell &lt;= TOKENS_FOR_SALE);
+    require(tokensToSell <= TOKENS_FOR_SALE);
     tokensSold = tokensToSell;            
 
     token.mint(buyer, tokens);
@@ -398,6 +398,6 @@ contract SpadeIco {
   }
 
   function validState() internal view returns (bool) {
-    return icoState == IcoState.IcoStarted &amp;&amp; !isPaused;
+    return icoState == IcoState.IcoStarted && !isPaused;
   }
 }

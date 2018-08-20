@@ -4,7 +4,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -53,20 +53,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -117,7 +117,7 @@ contract Drainable is Ownable {
 
 
 contract ADXRegistry is Ownable, Drainable {
-	string public name = &quot;AdEx Registry&quot;;
+	string public name = "AdEx Registry";
 
 	// Structure:
 	// AdUnit (advertiser) - a unit of a single advertisement
@@ -126,14 +126,14 @@ contract ADXRegistry is Ownable, Drainable {
 	// Channel (publisher) - group of properties ; not vital
 	// Each Account is linked to all the items they own through the Account struct
 
-	mapping (address =&gt; Account) public accounts;
+	mapping (address => Account) public accounts;
 
 	// XXX: mostly unused, because solidity does not allow mapping with enum as primary type.. :( we just use uint
 	enum ItemType { AdUnit, AdSlot, Campaign, Channel }
 
 	// uint here corresponds to the ItemType
-	mapping (uint =&gt; uint) public counts;
-	mapping (uint =&gt; mapping (uint =&gt; Item)) public items;
+	mapping (uint => uint) public counts;
+	mapping (uint => mapping (uint => Item)) public items;
 
 	// Publisher or Advertiser (could be both)
 	struct Account {		
@@ -147,7 +147,7 @@ contract ADXRegistry is Ownable, Drainable {
 		bytes32 signature; // signature in the off-blockchain state channel
 		
 		// Items, by type, then in an array of numeric IDs	
-		mapping (uint =&gt; uint[]) items;
+		mapping (uint => uint[]) items;
 	}
 
 	// Sub-item, such as AdUnit, AdSlot, Campaign, Channel
@@ -229,7 +229,7 @@ contract ADXRegistry is Ownable, Drainable {
 	}
 
 	// NOTE
-	// There&#39;s no real point of un-registering items
+	// There's no real point of un-registering items
 	// Campaigns need to be kept anyway, as well as ad units
 	// END NOTE
 
@@ -296,24 +296,24 @@ contract ADXRegistry is Ownable, Drainable {
 
 
 contract ADXExchange is Ownable, Drainable {
-	string public name = &quot;AdEx Exchange&quot;;
+	string public name = "AdEx Exchange";
 
 	ERC20 public token;
 	ADXRegistry public registry;
 
 	uint public bidsCount;
 
-	mapping (uint =&gt; Bid) bidsById;
-	mapping (uint =&gt; uint[]) bidsByAdunit; // bids set out by ad unit
-	mapping (uint =&gt; uint[]) bidsByAdslot; // accepted by publisher, by ad slot
+	mapping (uint => Bid) bidsById;
+	mapping (uint => uint[]) bidsByAdunit; // bids set out by ad unit
+	mapping (uint => uint[]) bidsByAdslot; // accepted by publisher, by ad slot
 
 	// TODO: some properties in the bid structure - achievedPoints/peers for example - are not used atm
 	
 	// CONSIDER: the bid having a adunitType so that this can be filtered out
-	// WHY IT&#39;S NOT IMPORTANT: you can get bids by ad units / ad slots, which is filter enough already considering we know their types
+	// WHY IT'S NOT IMPORTANT: you can get bids by ad units / ad slots, which is filter enough already considering we know their types
 
 	// CONSIDER: locking ad units / ad slots or certain properties from them so that bids cannot be ruined by editing them
-	// WHY IT&#39;S NOT IMPORTANT: from a game theoretical point of view there&#39;s no incentive to do that
+	// WHY IT'S NOT IMPORTANT: from a game theoretical point of view there's no incentive to do that
 
 	// corresponds to enum types in ADXRegistry
 	uint constant ADUNIT = 0;
@@ -424,7 +424,7 @@ contract ADXExchange is Ownable, Drainable {
 		(advertiser,adIpfs,,) = registry.getItem(ADUNIT, _adunitId);
 		(advertiserWallet,,,) = registry.getAccount(advertiser);
 
-		// XXX: maybe it could be a feature to allow advertisers bidding on other advertisers&#39; ad units, but it will complicate things...
+		// XXX: maybe it could be a feature to allow advertisers bidding on other advertisers' ad units, but it will complicate things...
 		require(advertiser == msg.sender);
 
 		Bid memory bid;
@@ -540,7 +540,7 @@ contract ADXExchange is Ownable, Drainable {
 			bid.advertiserReportIpfs = _report;
 		}
 
-		if (bid.confirmedByAdvertiser &amp;&amp; bid.confirmedByPublisher) {
+		if (bid.confirmedByAdvertiser && bid.confirmedByPublisher) {
 			bid.state = BidState.Completed;
 			LogBidCompleted(bid.id, bid.advertiserReportIpfs, bid.publisherReportIpfs);
 		}
@@ -572,8 +572,8 @@ contract ADXExchange is Ownable, Drainable {
 		onlyBidState(_bidId, BidState.Accepted)
 	{
 		Bid storage bid = bidsById[_bidId];
-		require(bid.requiredExecTime &gt; 0); // you can&#39;t refund if you haven&#39;t set a timeout
-		require(SafeMath.add(bid.acceptedTime, bid.requiredExecTime) &lt; now);
+		require(bid.requiredExecTime > 0); // you can't refund if you haven't set a timeout
+		require(SafeMath.add(bid.acceptedTime, bid.requiredExecTime) < now);
 
 		bid.state = BidState.Expired;
 		require(token.transfer(bid.advertiserWallet, bid.amount));
@@ -597,7 +597,7 @@ contract ADXExchange is Ownable, Drainable {
 		uint count = 0;
 		uint i;
 
-		for (i = 0; i &lt; arr.length; i++) {
+		for (i = 0; i < arr.length; i++) {
 			var id = arr[i];
 			var bid = bidsById[id];
 			if (bid.state == state) {
@@ -607,7 +607,7 @@ contract ADXExchange is Ownable, Drainable {
 		}
 
 		_all = new uint[](count);
-		for (i = 0; i &lt; count; i++) _all[i] = all[i];
+		for (i = 0; i < count; i++) _all[i] = all[i];
 	}
 
 	function getAllBidsByAdunit(uint _adunitId) 

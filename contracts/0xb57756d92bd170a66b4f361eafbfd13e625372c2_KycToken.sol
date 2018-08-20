@@ -30,7 +30,7 @@ interface ERC721Enumerable {
 
   /**
    * @dev Returns the token identifier for the `_index`th NFT assigned to `_owner`. Sort order is
-   * not specified. It throws if `_index` &gt;= `balanceOf(_owner)` or if `_owner` is the zero address,
+   * not specified. It throws if `_index` >= `balanceOf(_owner)` or if `_owner` is the zero address,
    * representing invalid NFTs.
    * @param _owner An address where we are interested in NFTs owned by them.
    * @param _index A counter less than `balanceOf(_owner)`.
@@ -114,8 +114,8 @@ interface ERC721 {
    * @notice Throws unless `msg.sender` is the current owner, an authorized operator, or the
    * approved address for this NFT. Throws if `_from` is not the current owner. Throws if `_to` is
    * the zero address. Throws if `_tokenId` is not a valid NFT. When transfer is complete, this
-   * function checks if `_to` is a smart contract (code size &gt; 0). If so, it calls `onERC721Received`
-   * on `_to` and throws if the return value is not `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+   * function checks if `_to` is a smart contract (code size > 0). If so, it calls `onERC721Received`
+   * on `_to` and throws if the return value is not `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
    * @param _from The current owner of the NFT.
    * @param _to The new owner.
    * @param _tokenId The NFT to transfer.
@@ -132,7 +132,7 @@ interface ERC721 {
   /**
    * @dev Transfers the ownership of an NFT from one address to another address.
    * @notice This works identically to the other function with an extra data parameter, except this
-   * function just sets data to &quot;&quot;
+   * function just sets data to ""
    * @param _from The current owner of the NFT.
    * @param _to The new owner.
    * @param _tokenId The NFT to transfer.
@@ -175,8 +175,8 @@ interface ERC721 {
     external;
 
   /**
-   * @dev Enables or disables approval for a third party (&quot;operator&quot;) to manage all of
-   * `msg.sender`&#39;s assets. It also emits the ApprovalForAll event.
+   * @dev Enables or disables approval for a third party ("operator") to manage all of
+   * `msg.sender`'s assets. It also emits the ApprovalForAll event.
    * @notice The contract MUST allow multiple operators per owner.
    * @param _operator Address to add to the set of authorized operators.
    * @param _approved True if the operators is approved, false to revoke approval.
@@ -225,7 +225,7 @@ interface ERC721TokenReceiver {
    * @dev Handle the receipt of a NFT. The ERC721 smart contract calls this function on the
    * recipient after a `transfer`. This function MAY throw to revert and reject the transfer. Return
    * of other than the magic value MUST result in the transaction being reverted.
-   * Returns `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))` unless throwing.
+   * Returns `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))` unless throwing.
    * @notice The contract address is always the message sender. A wallet/broker/auction application
    * MUST implement the wallet interface if it will accept safe transfers.
    * @param _operator The address which called `safeTransferFrom` function.
@@ -287,8 +287,8 @@ library SafeMath {
     returns (uint256)
   {
     uint256 c = _a / _b;
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -305,7 +305,7 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -323,7 +323,7 @@ library SafeMath {
     returns (uint256)
   {
     uint256 c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 
@@ -411,7 +411,7 @@ library AddressUtils {
      * contracts then.
      */
     assembly { size := extcodesize(_addr) } // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -450,7 +450,7 @@ contract SupportsInterface is
    * @dev Mapping of supported intefraces.
    * @notice You must not set element 0xffffffff to true.
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev Contract constructor.
@@ -493,26 +493,26 @@ contract NFToken is
   /**
    * @dev A mapping from NFT ID to the address that owns it.
    */
-  mapping (uint256 =&gt; address) internal idToOwner;
+  mapping (uint256 => address) internal idToOwner;
 
   /**
    * @dev Mapping from NFT ID to approved address.
    */
-  mapping (uint256 =&gt; address) internal idToApprovals;
+  mapping (uint256 => address) internal idToApprovals;
 
    /**
    * @dev Mapping from owner address to count of his tokens.
    */
-  mapping (address =&gt; uint256) internal ownerToNFTokenCount;
+  mapping (address => uint256) internal ownerToNFTokenCount;
 
   /**
    * @dev Mapping from owner address to mapping of operator addresses.
    */
-  mapping (address =&gt; mapping (address =&gt; bool)) internal ownerToOperators;
+  mapping (address => mapping (address => bool)) internal ownerToOperators;
 
   /**
    * @dev Magic value of a smart contract that can recieve NFT.
-   * Equal to: bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;)).
+   * Equal to: bytes4(keccak256("onERC721Received(address,address,uint256,bytes)")).
    */
   bytes4 constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
 
@@ -645,8 +645,8 @@ contract NFToken is
    * @notice Throws unless `msg.sender` is the current owner, an authorized operator, or the
    * approved address for this NFT. Throws if `_from` is not the current owner. Throws if `_to` is
    * the zero address. Throws if `_tokenId` is not a valid NFT. When transfer is complete, this
-   * function checks if `_to` is a smart contract (code size &gt; 0). If so, it calls `onERC721Received`
-   * on `_to` and throws if the return value is not `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+   * function checks if `_to` is a smart contract (code size > 0). If so, it calls `onERC721Received`
+   * on `_to` and throws if the return value is not `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
    * @param _from The current owner of the NFT.
    * @param _to The new owner.
    * @param _tokenId The NFT to transfer.
@@ -666,7 +666,7 @@ contract NFToken is
   /**
    * @dev Transfers the ownership of an NFT from one address to another address.
    * @notice This works identically to the other function with an extra data parameter, except this
-   * function just sets data to &quot;&quot;
+   * function just sets data to ""
    * @param _from The current owner of the NFT.
    * @param _to The new owner.
    * @param _tokenId The NFT to transfer.
@@ -678,7 +678,7 @@ contract NFToken is
   )
     external
   {
-    _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    _safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
@@ -730,9 +730,9 @@ contract NFToken is
   }
 
   /**
-   * @dev Enables or disables approval for a third party (&quot;operator&quot;) to manage all of
-   * `msg.sender`&#39;s assets. It also emits the ApprovalForAll event.
-   * @notice This works even if sender doesn&#39;t own any tokens at the time.
+   * @dev Enables or disables approval for a third party ("operator") to manage all of
+   * `msg.sender`'s assets. It also emits the ApprovalForAll event.
+   * @notice This works even if sender doesn't own any tokens at the time.
    * @param _operator Address to add to the set of authorized operators.
    * @param _approved True if the operators is approved, false to revoke approval.
    */
@@ -901,7 +901,7 @@ contract NFToken is
    internal
   {
     require(idToOwner[_tokenId] == _from);
-    assert(ownerToNFTokenCount[_from] &gt; 0);
+    assert(ownerToNFTokenCount[_from] > 0);
     ownerToNFTokenCount[_from] = ownerToNFTokenCount[_from].sub(1);
     delete idToOwner[_tokenId];
   }
@@ -944,17 +944,17 @@ contract NFTokenEnumerable is
   /**
    * @dev Mapping from owner address to a list of owned NFT IDs.
    */
-  mapping(uint256 =&gt; uint256) internal idToIndex;
+  mapping(uint256 => uint256) internal idToIndex;
 
   /**
    * @dev Mapping from owner to list of owned NFT IDs.
    */
-  mapping(address =&gt; uint256[]) internal ownerToIds;
+  mapping(address => uint256[]) internal ownerToIds;
 
   /**
    * @dev Mapping from NFT ID to its index in the owner tokens list.
    */
-  mapping(uint256 =&gt; uint256) internal idToOwnerIndex;
+  mapping(uint256 => uint256) internal idToOwnerIndex;
 
   /**
    * @dev Contract constructor.
@@ -997,7 +997,7 @@ contract NFTokenEnumerable is
   )
     internal
   {
-    assert(tokens.length &gt; 0);
+    assert(tokens.length > 0);
     super._burn(_owner, _tokenId);
 
     uint256 tokenIndex = idToIndex[_tokenId];
@@ -1025,7 +1025,7 @@ contract NFTokenEnumerable is
    internal
   {
     super.removeNFToken(_from, _tokenId);
-    assert(ownerToIds[_from].length &gt; 0);
+    assert(ownerToIds[_from].length > 0);
 
     uint256 tokenToRemoveIndex = idToOwnerIndex[_tokenId];
     uint256 lastTokenIndex = ownerToIds[_from].length.sub(1);
@@ -1079,14 +1079,14 @@ contract NFTokenEnumerable is
     view
     returns (uint256)
   {
-    require(_index &lt; tokens.length);
+    require(_index < tokens.length);
     return tokens[_index];
   }
 
   /**
-   * @dev returns the n-th NFT ID from a list of owner&#39;s tokens.
-   * @param _owner Token owner&#39;s address.
-   * @param _index Index number representing n-th token in owner&#39;s list of tokens.
+   * @dev returns the n-th NFT ID from a list of owner's tokens.
+   * @param _owner Token owner's address.
+   * @param _index Index number representing n-th token in owner's list of tokens.
    */
   function tokenOfOwnerByIndex(
     address _owner,
@@ -1096,7 +1096,7 @@ contract NFTokenEnumerable is
     view
     returns (uint256)
   {
-    require(_index &lt; ownerToIds[_owner].length);
+    require(_index < ownerToIds[_owner].length);
     return ownerToIds[_owner][_index];
   }
 
@@ -1129,7 +1129,7 @@ interface ERC721Metadata {
   /**
    * @dev Returns a distinct Uniform Resource Identifier (URI) for a given asset. It Throws if
    * `_tokenId` is not a valid NFT. URIs are defined in RFC3986. The URI may point to a JSON file
-   * that conforms to the &quot;ERC721 Metadata JSON Schema&quot;.
+   * that conforms to the "ERC721 Metadata JSON Schema".
    */
   function tokenURI(uint256 _tokenId)
     external
@@ -1161,11 +1161,11 @@ contract NFTokenMetadata is
   /**
    * @dev Mapping from NFT ID to metadata uri.
    */
-  mapping (uint256 =&gt; string) internal idToUri;
+  mapping (uint256 => string) internal idToUri;
 
   /**
    * @dev Contract constructor.
-   * @notice When implementing this contract don&#39;t forget to set nftName and nftSymbol.
+   * @notice When implementing this contract don't forget to set nftName and nftSymbol.
    */
   constructor()
     public
@@ -1269,22 +1269,22 @@ contract Xcert is NFTokenEnumerable, NFTokenMetadata {
   /**
    * @dev Maps NFT ID to proof.
    */
-  mapping (uint256 =&gt; string) internal idToProof;
+  mapping (uint256 => string) internal idToProof;
 
   /**
    * @dev Maps NFT ID to protocol config.
    */
-  mapping (uint256 =&gt; bytes32[]) internal config;
+  mapping (uint256 => bytes32[]) internal config;
 
   /**
    * @dev Maps NFT ID to convention data.
    */
-  mapping (uint256 =&gt; bytes32[]) internal data;
+  mapping (uint256 => bytes32[]) internal data;
 
   /**
    * @dev Maps address to authorization of contract.
    */
-  mapping (address =&gt; bool) internal addressToAuthorized;
+  mapping (address => bool) internal addressToAuthorized;
 
   /**
    * @dev Emits when an address is authorized to some contract control or the authorization is revoked.
@@ -1307,7 +1307,7 @@ contract Xcert is NFTokenEnumerable, NFTokenMetadata {
 
   /**
    * @dev Contract constructor.
-   * @notice When implementing this contract don&#39;t forget to set nftConventionId, nftName and
+   * @notice When implementing this contract don't forget to set nftConventionId, nftName and
    * nftSymbol.
    */
   constructor()
@@ -1337,8 +1337,8 @@ contract Xcert is NFTokenEnumerable, NFTokenMetadata {
     external
     isAuthorized()
   {
-    require(_config.length &gt; 0);
-    require(bytes(_proof).length &gt; 0);
+    require(_config.length > 0);
+    require(bytes(_proof).length > 0);
     super._mint(_to, _id);
     super._setTokenUri(_id, _uri);
     idToProof[_id] = _proof;
@@ -1386,7 +1386,7 @@ contract Xcert is NFTokenEnumerable, NFTokenMetadata {
     view
     returns(bytes32 value)
   {
-    require(_index &lt; data[_tokenId].length);
+    require(_index < data[_tokenId].length);
     value = data[_tokenId][_index];
   }
 
@@ -1458,7 +1458,7 @@ contract MutableXcert is Xcert {
 
   /**
    * @dev Contract constructor.
-   * @notice When implementing this contract don&#39;t forget to set nftConventionId, nftName and
+   * @notice When implementing this contract don't forget to set nftConventionId, nftName and
    * nftSymbol.
    */
   constructor()
@@ -1504,7 +1504,7 @@ contract PausableXcert is Xcert {
 
   /**
    * @dev Contract constructor.
-   * @notice When implementing this contract don&#39;t forget to set nftConventionId, nftName,
+   * @notice When implementing this contract don't forget to set nftConventionId, nftName,
    * nftSymbol and isPaused.
    */
   constructor()
@@ -1522,7 +1522,7 @@ contract PausableXcert is Xcert {
   )
   {
     address owner = idToOwner[_tokenId];
-    require(!isPaused &amp;&amp; (
+    require(!isPaused && (
       owner == msg.sender
       || getApproved(_tokenId) == msg.sender
       || ownerToOperators[owner][msg.sender])
@@ -1557,7 +1557,7 @@ contract RevokableXcert is Xcert {
 
   /**
    * @dev Contract constructor.
-   * @notice When implementing this contract don&#39;t forget to set nftConventionId, nftName and
+   * @notice When implementing this contract don't forget to set nftConventionId, nftName and
    * nftSymbol.
    */
   constructor()
@@ -1596,8 +1596,8 @@ contract KycToken is
   constructor()
     public
   {
-    nftName = &quot;0xcert KYC&quot;;
-    nftSymbol = &quot;KYC&quot;;
+    nftName = "0xcert KYC";
+    nftSymbol = "KYC";
     nftConventionId = 0xfc3ee448;
     isPaused = true;
   }

@@ -34,7 +34,7 @@ contract BasicWhitelist is Whitelist, Administrated {
     address[] public whitelist;
 
     //Up to 65536 users in list
-    mapping(address =&gt; uint16) public wlIndex;
+    mapping(address => uint16) public wlIndex;
 
 
     function BasicWhitelist()
@@ -59,9 +59,9 @@ contract BasicWhitelist is Whitelist, Administrated {
         public
         onlyAdministrator
     {
-        require(_wlAddresses.length &lt;= 256);
+        require(_wlAddresses.length <= 256);
 
-        for (uint8 i = 0; i &lt; _wlAddresses.length; i++) {
+        for (uint8 i = 0; i < _wlAddresses.length; i++) {
             add(_wlAddresses[i]);
         }
     }
@@ -75,7 +75,7 @@ contract BasicWhitelist is Whitelist, Administrated {
             uint16 index = wlIndex[_wlAddress];
             wlIndex[_wlAddress] = 0;
 
-            for ( uint16 i = index; i &lt; ( whitelist.length - 1 ); i++) {
+            for ( uint16 i = index; i < ( whitelist.length - 1 ); i++) {
                 whitelist[i] = whitelist[i + 1];
             }
 
@@ -89,9 +89,9 @@ contract BasicWhitelist is Whitelist, Administrated {
         public
         onlyAdministrator
     {
-        require(_wlAddresses.length &lt;= 256);
+        require(_wlAddresses.length <= 256);
 
-        for (uint8 i = 0; i &lt; _wlAddresses.length; i++) {
+        for (uint8 i = 0; i < _wlAddresses.length; i++) {
             remove(_wlAddresses[i]);
         }
     }
@@ -111,9 +111,9 @@ contract BasicWhitelist is Whitelist, Administrated {
         constant
         returns(bool)
     {
-        return whitelist.length &gt; 0
-                &amp;&amp; (
-                    wlIndex[_checkAddress] &gt; 0
+        return whitelist.length > 0
+                && (
+                    wlIndex[_checkAddress] > 0
                     || whitelist[wlIndex[_checkAddress]] == _checkAddress
                    );
     }

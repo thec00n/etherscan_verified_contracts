@@ -11,12 +11,12 @@ pragma solidity 0.4.20;
  */
 contract EternalStorage {
 
-    mapping(bytes32 =&gt; uint256) internal uintStorage;
-    mapping(bytes32 =&gt; string) internal stringStorage;
-    mapping(bytes32 =&gt; address) internal addressStorage;
-    mapping(bytes32 =&gt; bytes) internal bytesStorage;
-    mapping(bytes32 =&gt; bool) internal boolStorage;
-    mapping(bytes32 =&gt; int256) internal intStorage;
+    mapping(bytes32 => uint256) internal uintStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => bool) internal boolStorage;
+    mapping(bytes32 => int256) internal intStorage;
 
 }
 
@@ -252,7 +252,7 @@ pragma solidity 0.4.20;
 /**
  * @title EternalStorageProxy
  * @dev This proxy holds the storage of the token contract and delegates every call to the current implementation set.
- * Besides, it allows to upgrade the token&#39;s behaviour towards further implementations, and provides basic
+ * Besides, it allows to upgrade the token's behaviour towards further implementations, and provides basic
  * authorization control functionalities
  */
 contract EternalStorageProxyForStormMultisender is OwnedUpgradeabilityProxy, EternalStorage {

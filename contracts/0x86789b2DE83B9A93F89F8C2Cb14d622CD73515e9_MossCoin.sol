@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,11 +66,11 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
  
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -84,12 +84,12 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -116,7 +116,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -131,11 +131,11 @@ contract StandardToken is ERC20, BasicToken {
 contract FreezableToken is StandardToken, Ownable {
     event Freeze(address indexed who, uint256 end);
 
-    mapping(address=&gt;uint256) freezeEnd;
+    mapping(address=>uint256) freezeEnd;
 
     function freeze(address _who, uint256 _end) onlyOwner public {
         require(_who != address(0));
-        require(_end &gt;= freezeEnd[_who]);
+        require(_end >= freezeEnd[_who]);
 
         freezeEnd[_who] = _end;
 
@@ -143,7 +143,7 @@ contract FreezableToken is StandardToken, Ownable {
     }
 
     modifier notFrozen(address _who) {
-        require(freezeEnd[_who] &lt; now);
+        require(freezeEnd[_who] < now);
         _;
     }
 
@@ -171,7 +171,7 @@ contract UpgradableToken is StandardToken, Ownable {
     function upgrade(uint256 _value) external {
         assert(upgradeAgent != address(0));
         require(_value != 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -191,7 +191,7 @@ contract UpgradableToken is StandardToken, Ownable {
 contract CrowdsaleToken is StandardToken, Ownable {
     using SafeMath for uint256;
     address public crowdsale;
-    mapping (address =&gt; uint256) public waiting;
+    mapping (address => uint256) public waiting;
     uint256 public saled;
 
     event Sale(address indexed to, uint256 value);
@@ -212,7 +212,7 @@ contract CrowdsaleToken is StandardToken, Ownable {
 
     function sale(address _to, uint256 _value) public onlyCrowdsale returns (bool) {
         require(_to != address(0));
-        assert(saled.add(_value) &lt;= balances[owner]);
+        assert(saled.add(_value) <= balances[owner]);
 
         saled = saled.add(_value);
         waiting[_to] = waiting[_to].add(_value);
@@ -220,7 +220,7 @@ contract CrowdsaleToken is StandardToken, Ownable {
         return true;
     }
 
-    // send waiting tokens to customer&#39;s balance
+    // send waiting tokens to customer's balance
     function release(address _to) external onlyOwner {
         require(_to != address(0));
 
@@ -246,7 +246,7 @@ contract BurnableToken is BasicToken, Ownable {
     event Burn(uint256 value);
 
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         balances[owner] = balances[owner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -255,8 +255,8 @@ contract BurnableToken is BasicToken, Ownable {
 }
 
 contract MossCoin is FreezableToken, UpgradableToken, CrowdsaleToken, BurnableToken {
-    string public constant name = &quot;Moss Coin&quot;;
-    string public constant symbol = &quot;MOC&quot;;
+    string public constant name = "Moss Coin";
+    string public constant symbol = "MOC";
     uint8 public constant decimals = 18;
 
     function MossCoin(uint256 _amount) public

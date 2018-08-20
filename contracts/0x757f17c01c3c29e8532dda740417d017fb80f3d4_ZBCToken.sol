@@ -15,19 +15,19 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 
 	uint256 public totalSupply;
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     modifier when_can_transfer(address _from, uint256 _value) {
-        if (balances[_from] &gt;= _value) _;
+        if (balances[_from] >= _value) _;
     }
 
     modifier when_can_receive(address _recipient, uint256 _value) {
-        if (balances[_recipient] + _value &gt; balances[_recipient]) _;
+        if (balances[_recipient] + _value > balances[_recipient]) _;
     }
 
     modifier when_is_allowed(address _from, address _delegate, uint256 _value) {
-        if (allowed[_from][_delegate] &gt;= _value) _;
+        if (allowed[_from][_delegate] >= _value) _;
     }
 
     function transfer(address _recipient, uint256 _value)
@@ -72,8 +72,8 @@ contract StandardToken is ERC20 {
 contract ZBCToken is StandardToken {
 
 	//FIELDS
-	string public name = &quot;ZBCoin&quot;;
-    string public symbol = &quot;ZBC&quot;;
+	string public name = "ZBCoin";
+    string public symbol = "ZBC";
     uint public decimals = 3;
 
 	//ZBC Token total supply - included decimals below
@@ -82,7 +82,7 @@ contract ZBCToken is StandardToken {
 	//ASSIGNED IN INITIALIZATION
 	address public ownerAddress;  // Address of the contract owner. 
 	bool public halted;           // halts the controller if true.
-	mapping(address =&gt; uint256) public issuedTokens;
+	mapping(address => uint256) public issuedTokens;
 
 	modifier only_owner() {
 		if (msg.sender != ownerAddress) throw;

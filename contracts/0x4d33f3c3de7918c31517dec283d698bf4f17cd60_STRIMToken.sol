@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ contract ContractReceiver{
 contract ERC23BasicToken {
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value, bytes data);
 
@@ -103,7 +103,7 @@ contract ERC23BasicToken {
               //retrieve the size of the code on target address, this needs assembly
               length := extcodesize(_addr)
           }
-          if(length&gt;0) {
+          if(length>0) {
               return true;
           }
           else {
@@ -115,14 +115,14 @@ contract ERC23BasicToken {
 // Standard ERC23 token, backward compatible with ERC20 standards.
 // Based on code by open-zeppelin: https://github.com/OpenZeppelin/zeppelin-solidity.git
 contract ERC23StandardToken is ERC23BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     event Approval (address indexed owner, address indexed spender, uint256 value);
 
     function transferFrom(address _from, address _to, uint256 _value) {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -136,7 +136,7 @@ contract ERC23StandardToken is ERC23BasicToken {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -153,14 +153,14 @@ contract ERC23StandardToken is ERC23BasicToken {
 contract STRIMToken is ERC23StandardToken {
 
     // metadata
-    string public constant name = &quot;STRIM Token&quot;;
-    string public constant symbol = &quot;STR&quot;;
+    string public constant name = "STRIM Token";
+    string public constant symbol = "STR";
     uint256 public constant decimals = 18;
     uint256 public fundsFromPreSale;
-    string public version = &quot;0.4&quot;;
+    string public version = "0.4";
     bool public halted; //Halt crowdsale in emergency
     bool public isFinalized; // switched to true in operational state
-	mapping(address =&gt; uint256) exchangeRate;
+	mapping(address => uint256) exchangeRate;
     uint256 public fundingStartBlock;
     uint256 public fundingEndBlock;
     uint256 public constant tokenExchangeRatePreSale = 10000; // 10000 STR tokens for 1 eth at the presale
@@ -241,10 +241,10 @@ contract STRIMToken is ERC23StandardToken {
     //mint Tokens. Accepts ether and creates new STR tokens.
     function createTokens(address recipient) public payable whenNotHalted {
         require(!isFinalized);
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingEndBlock);
-		require (totalSupply &lt; tokenCreationMaxCap);
-        require(msg.value &gt; 0);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingEndBlock);
+		require (totalSupply < tokenCreationMaxCap);
+        require(msg.value > 0);
 
         uint256 retRate = returnRate();
 
@@ -264,11 +264,11 @@ contract STRIMToken is ERC23StandardToken {
 
     //Return rate of token against ether.
     function returnRate() public constant returns(uint256) {
-        if (block.number &lt; fundingStartBlock.add(5000)) {
+        if (block.number < fundingStartBlock.add(5000)) {
             return tokenExchangeRatePreSale;
-        } else if (totalSupply.sub(fundsFromPreSale) &lt; tokenCreationMinMile1) {
+        } else if (totalSupply.sub(fundsFromPreSale) < tokenCreationMinMile1) {
             return tokenExchangeRateMile1;
-        } else if (totalSupply.sub(fundsFromPreSale) &lt; tokenCreationMinMile2) {
+        } else if (totalSupply.sub(fundsFromPreSale) < tokenCreationMinMile2) {
             return tokenExchangeRateMile2;
         } else {
             return tokenExchangeRateMile3;  
@@ -277,8 +277,8 @@ contract STRIMToken is ERC23StandardToken {
 
     function finalize() external onlyTeam{
         require(!isFinalized);//check if already ran        
-        require(totalSupply &gt;= tokenCreationMinMile1); // have to sell minimum to move to operational
-        require(block.number &gt; fundingEndBlock || totalSupply &gt;= tokenCreationMaxCap);//don&#39;t end before ico period ends or max cap reached
+        require(totalSupply >= tokenCreationMinMile1); // have to sell minimum to move to operational
+        require(block.number > fundingEndBlock || totalSupply >= tokenCreationMaxCap);//don't end before ico period ends or max cap reached
 
         uint256 strVal = totalSupply.div(2);
         balances[strFundDeposit] = strVal; // deposit Strim share
@@ -291,11 +291,11 @@ contract STRIMToken is ERC23StandardToken {
     }
 
     function sendPreSaleETH() external onlyTeam{        
-        require(block.number &gt; fundingStartBlock.add(5000)); //check if the presale passed the 2 day limit 
-        require(fundsFromPreSale &gt; 0); //make sure that there are funds to transfer
+        require(block.number > fundingStartBlock.add(5000)); //check if the presale passed the 2 day limit 
+        require(fundsFromPreSale > 0); //make sure that there are funds to transfer
 
         uint256 ethFromPreSale = fundsFromPreSale.div(10000); //convert from tokens to ether
-        fundsFromPreSale = 0; //revert to initial state so it can&#39;t be reused 
+        fundsFromPreSale = 0; //revert to initial state so it can't be reused 
 
         if (!ethFundDeposit.send(ethFromPreSale)) revert(); // send the eth raised for the pre sale to Strim Team
 
@@ -304,17 +304,17 @@ contract STRIMToken is ERC23StandardToken {
     // Allows contributors to recover their ether in the case of a failed funding campaign.
     function refund() external {
         require(!isFinalized); // prevents refund if operational
-        require(block.number &gt; fundingEndBlock); // prevents refund until sale period is over
-        require(totalSupply &lt; tokenCreationMinMile1); // no refunds if we sold enough
+        require(block.number > fundingEndBlock); // prevents refund until sale period is over
+        require(totalSupply < tokenCreationMinMile1); // no refunds if we sold enough
         require(msg.sender != strFundDeposit); // Strim not entitled to a refund
         
-        if (exchangeRate[msg.sender] &gt; 0) {  //presale ether is non refundable as it will be used for marketing during the ICO period
+        if (exchangeRate[msg.sender] > 0) {  //presale ether is non refundable as it will be used for marketing during the ICO period
 		    uint256 strVal = balances[msg.sender];
             balances[msg.sender] = 0; //if refunded delete the users tokens
             totalSupply = totalSupply.sub(strVal); // extra safe
        	    uint256 ethVal = strVal / exchangeRate[msg.sender]; // should be safe; considering it never reached the first milestone;
             LogRefund(msg.sender, ethVal); // log it 
-            if (!msg.sender.send(ethVal)) revert(); // if you&#39;re using a contract; make sure it works with .send gas limits
+            if (!msg.sender.send(ethVal)) revert(); // if you're using a contract; make sure it works with .send gas limits
 		}
     }
 

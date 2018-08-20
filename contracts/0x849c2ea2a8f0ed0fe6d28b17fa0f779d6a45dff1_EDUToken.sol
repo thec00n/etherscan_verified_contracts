@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,7 +44,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -97,7 +97,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -129,10 +129,10 @@ contract EDUToken is StandardToken {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
     // GENERAL INFORMATION ABOUT THE TOKEN
-    string public constant name = &quot;EDU Token&quot;;
-    string public constant symbol = &quot;EDU&quot;;
+    string public constant name = "EDU Token";
+    string public constant symbol = "EDU";
     uint256 public constant decimals = 4;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // CONSTANTS
     // Purchase limits
@@ -183,10 +183,10 @@ contract EDUToken is StandardToken {
     uint256 public totalWEIInvested = 0;                                        // Total WEI invested
     uint256 public totalEDUSLeft = 0;                                           // Total EDU left
     uint256 public totalEDUSAllocated = 0;                                      // Total EDU allocated
-    mapping (address =&gt; uint256) public WEIContributed;                         // Total WEI Per Account
+    mapping (address => uint256) public WEIContributed;                         // Total WEI Per Account
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Functions with this modifier can only be executed by the owner of following smart contract
     modifier onlyOwner() {
@@ -198,7 +198,7 @@ contract EDUToken is StandardToken {
 
     // Minimal contribution which will be processed is 0.5 ETH
     modifier minimalContribution() {
-        require(500000000000000000 &lt;= msg.value);
+        require(500000000000000000 <= msg.value);
         _;
     }
 
@@ -211,7 +211,7 @@ contract EDUToken is StandardToken {
              (msg.sender == sigBountyProgramAddress) ) {
             _;
         } else {
-            if((block.timestamp &gt; preSaleStartTime &amp;&amp; block.timestamp &lt; preSaleEndTime) || (block.timestamp &gt; saleStartTime &amp;&amp; block.timestamp &lt; saleEndTime)) {
+            if((block.timestamp > preSaleStartTime && block.timestamp < preSaleEndTime) || (block.timestamp > saleStartTime && block.timestamp < saleEndTime)) {
                 revert();
             } else {
                 _;
@@ -222,7 +222,7 @@ contract EDUToken is StandardToken {
     // Freeze EDU tokens for TeamAndAdvisers for 1 year after the end of the presale
     modifier freezeTeamAndAdvisersEDUTokens(address _address) {
         if (_address == sigTeamAndAdvisersAddress) {
-            if (LockEDUTeam &gt; block.timestamp) { revert(); }
+            if (LockEDUTeam > block.timestamp) { revert(); }
         }
         _;
     }
@@ -281,33 +281,33 @@ contract EDUToken is StandardToken {
         // Initial amounts
         uint256 amountOfEDU = 0;
 
-        if (block.timestamp &gt; preSaleStartTime &amp;&amp; block.timestamp &lt; preSaleEndTime) {
+        if (block.timestamp > preSaleStartTime && block.timestamp < preSaleEndTime) {
             amountOfEDU = amountInWei.mul(EDU_PER_ETH_EARLY_PRE_SALE).div(100000000000000);
-            if(!(WEIContributed[msg.sender] &gt; 0)) {
+            if(!(WEIContributed[msg.sender] > 0)) {
                 amountOfEDU += EDU_KYC_BONUS;  // Bonus for KYC procedure
             }
-            if (earlyPresaleEDUSupply &gt; 0 &amp;&amp; earlyPresaleEDUSupply &gt;= amountOfEDU) {
+            if (earlyPresaleEDUSupply > 0 && earlyPresaleEDUSupply >= amountOfEDU) {
                 require(updateEDUBalanceFunc(presaleAddress, amountOfEDU));
                 earlyPresaleEDUSupply = earlyPresaleEDUSupply.sub(amountOfEDU);
-            } else if (PresaleEDUSupply &gt; 0) {
+            } else if (PresaleEDUSupply > 0) {
                 if (earlyPresaleEDUSupply != 0) {
                     PresaleEDUSupply = PresaleEDUSupply.add(earlyPresaleEDUSupply);
                     earlyPresaleEDUSupply = 0;
                 }
                 amountOfEDU = amountInWei.mul(EDU_PER_ETH_PRE_SALE).div(100000000000000);
-                if(!(WEIContributed[msg.sender] &gt; 0)) {
+                if(!(WEIContributed[msg.sender] > 0)) {
                     amountOfEDU += EDU_KYC_BONUS;
                 }
-                require(PresaleEDUSupply &gt;= amountOfEDU);
+                require(PresaleEDUSupply >= amountOfEDU);
                 require(updateEDUBalanceFunc(presaleAddress, amountOfEDU));
                 PresaleEDUSupply = PresaleEDUSupply.sub(amountOfEDU);
             } else {
                 revert();
             }
-        } else if (block.timestamp &gt; saleStartTime &amp;&amp; block.timestamp &lt; saleEndTime) {
+        } else if (block.timestamp > saleStartTime && block.timestamp < saleEndTime) {
             // Sale period
             amountOfEDU = amountInWei.mul(EDU_PER_ETH_SALE).div(100000000000000);
-            require(totalEDUSLeft &gt;= amountOfEDU);
+            require(totalEDUSLeft >= amountOfEDU);
             require(updateEDUBalanceFunc(saleAddress, amountOfEDU));
         } else {
             // Outside contribution period
@@ -316,10 +316,10 @@ contract EDUToken is StandardToken {
 
         // Update total WEI Invested
         totalWEIInvested = totalWEIInvested.add(amountInWei);
-        assert(totalWEIInvested &gt; 0);
+        assert(totalWEIInvested > 0);
         // Update total WEI Invested by account
         uint256 contributedSafe = WEIContributed[msg.sender].add(amountInWei);
-        assert(contributedSafe &gt; 0);
+        assert(contributedSafe > 0);
         WEIContributed[msg.sender] = contributedSafe;
 
         // Transfer contributions to Open Source University
@@ -341,10 +341,10 @@ contract EDUToken is StandardToken {
         totalEDUSAllocated += _amountOfEDU;
 
         // Validate EDU allocation
-        if (totalEDUSAllocated &lt;= TotalEDUSupply &amp;&amp; totalEDUSAllocated &gt; 0) {
+        if (totalEDUSAllocated <= TotalEDUSupply && totalEDUSAllocated > 0) {
             // Update user EDU balance
             uint256 balanceSafe = balances[msg.sender].add(_amountOfEDU);
-            assert(balanceSafe &gt; 0);
+            assert(balanceSafe > 0);
             balances[msg.sender] = balanceSafe;
             uint256 balanceDiv = balances[_from].sub(_amountOfEDU);
             balances[_from] = balanceDiv;
@@ -415,9 +415,9 @@ contract EDUToken is StandardToken {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) freezeDuringEDUtokenSale freezeTeamAndAdvisersEDUTokens(msg.sender) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -429,15 +429,15 @@ contract EDUToken is StandardToken {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from, address _to, uint256 _amount) freezeDuringEDUtokenSale freezeTeamAndAdvisersEDUTokens(_from) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

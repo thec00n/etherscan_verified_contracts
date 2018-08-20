@@ -4,7 +4,7 @@ contract FourWaySplit {
 
   // balances and account list are publicly visible
 
-  mapping(address =&gt; uint) public beneficiaryBalance;
+  mapping(address => uint) public beneficiaryBalance;
   address[4] public beneficiaryList;
 
   // emit events for real-time listeners and state history
@@ -31,7 +31,7 @@ contract FourWaySplit {
     if(msg.value==0) throw;
 
     // ignoring values not evenly divisible by 4. We round down and keep the change.
-    // (No way to remove the loose change, so it&#39;s effectively destroyed.)
+    // (No way to remove the loose change, so it's effectively destroyed.)
 
     uint forth = msg.value / 4;
 
@@ -47,7 +47,7 @@ contract FourWaySplit {
     public
     returns(bool success)
   {
-    if(beneficiaryBalance[msg.sender] &lt; amount) throw; // insufficient funds
+    if(beneficiaryBalance[msg.sender] < amount) throw; // insufficient funds
     beneficiaryBalance[msg.sender] -= amount;          // Optimistic accounting.
     if(!msg.sender.send(amount)) throw;                // failed to transfer funds
     LogWithdrawal(msg.sender, amount);

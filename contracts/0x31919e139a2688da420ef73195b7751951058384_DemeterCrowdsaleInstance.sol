@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startBlock, uint256 _endBlock, uint256 _rate, address _wallet) {
-    require(_startBlock &gt;= block.number);
-    require(_endBlock &gt;= _startBlock);
-    require(_rate &gt; 0);
+    require(_startBlock >= block.number);
+    require(_endBlock >= _startBlock);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -108,14 +108,14 @@ contract Crowdsale {
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return block.number &gt; endBlock;
+    return block.number > endBlock;
   }
 
 
@@ -125,17 +125,17 @@ contract WhiteListCrowdsale is Crowdsale {
   using SafeMath for uint256;
 
   uint256 public whiteListEndBlock;
-  mapping(address =&gt; bool) isWhiteListed;
+  mapping(address => bool) isWhiteListed;
 
   event InvestorWhiteListAddition(address investor);
 
   function WhiteListCrowdsale(uint256 _whiteListEndBlock) {
-    require(_whiteListEndBlock &gt; startBlock);
+    require(_whiteListEndBlock > startBlock);
     whiteListEndBlock = _whiteListEndBlock;
   }
 
   function addToWhiteList(address investor) public {
-    require(startBlock &gt; block.number);
+    require(startBlock > block.number);
     require(!isWhiteListed[investor]);
     require(investor != 0);
 
@@ -151,7 +151,7 @@ contract WhiteListCrowdsale is Crowdsale {
   }
 
   function validWhiteListedPurchase(address beneficiary) internal constant returns (bool) {
-    return isWhiteListed[beneficiary] || whiteListEndBlock &lt;= block.number;
+    return isWhiteListed[beneficiary] || whiteListEndBlock <= block.number;
   }
 
 }
@@ -164,14 +164,14 @@ contract BonusWhiteListCrowdsale is WhiteListCrowdsale {
   event BonusWhiteList(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function BonusWhiteListCrowdsale(uint256 _bonusWhiteListRate) {
-    require(_bonusWhiteListRate &gt; 0);
+    require(_bonusWhiteListRate > 0);
     bonusWhiteListRate = _bonusWhiteListRate;
   }
 
   function buyTokens(address beneficiary) payable {
     super.buyTokens(beneficiary);
 
-    if(whiteListEndBlock &gt; block.number &amp;&amp; isWhiteListed[beneficiary]){
+    if(whiteListEndBlock > block.number && isWhiteListed[beneficiary]){
       uint256 weiAmount = msg.value;
       uint256 bonusTokens = weiAmount.mul(rate).mul(bonusWhiteListRate).div(100);
       token.mint(beneficiary, bonusTokens);
@@ -184,7 +184,7 @@ contract BonusWhiteListCrowdsale is WhiteListCrowdsale {
 contract ReferedCrowdsale is WhiteListCrowdsale {
   using SafeMath for uint256;
 
-  mapping(address =&gt; address) referrals;
+  mapping(address => address) referrals;
 
   event ReferredInvestorAddition(address whiteListedInvestor, address referredInvestor);
 
@@ -215,14 +215,14 @@ contract BonusReferrerCrowdsale is ReferedCrowdsale, BonusWhiteListCrowdsale {
   event BonusReferred(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function BonusReferrerCrowdsale(uint256 _bonusReferredRate) {
-    require(_bonusReferredRate &gt; 0 &amp;&amp; _bonusReferredRate &lt; bonusWhiteListRate);
+    require(_bonusReferredRate > 0 && _bonusReferredRate < bonusWhiteListRate);
     bonusReferredRate = _bonusReferredRate;
   }
 
   function buyTokens(address beneficiary) payable {
     super.buyTokens(beneficiary);
 
-    if(whiteListEndBlock &gt; block.number &amp;&amp; referrals[beneficiary] != 0x0){
+    if(whiteListEndBlock > block.number && referrals[beneficiary] != 0x0){
       uint256 weiAmount = msg.value;
       uint256 bonusReferrerTokens = weiAmount.mul(rate).mul(bonusWhiteListRate - bonusReferredRate).div(100);
       uint256 bonusReferredTokens = weiAmount.mul(rate).mul(bonusReferredRate).div(100);
@@ -252,7 +252,7 @@ contract PartialOwnershipCrowdsale is BonusReferrerCrowdsale {
     uint256 weiAmount = msg.value;
     uint256 investorTokens = weiAmount.mul(rate);
     uint256 companyTokens = investorTokens.mul(100 - percentToInvestor).div(percentToInvestor);
-    if(whiteListEndBlock &gt; block.number &amp;&amp; (referrals[beneficiary] != 0x0 || isWhiteListed[beneficiary])){
+    if(whiteListEndBlock > block.number && (referrals[beneficiary] != 0x0 || isWhiteListed[beneficiary])){
       companyTokens = companyTokens.sub(investorTokens.mul(bonusWhiteListRate).div(100));
     }
 
@@ -268,21 +268,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -356,7 +356,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -407,12 +407,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -439,7 +439,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -515,7 +515,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -555,7 +555,7 @@ contract TimeBlockedToken is ERC20, Ownable {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer() {
-    require(block.number &gt; endBlock);
+    require(block.number > endBlock);
     _;
   }
 
@@ -585,7 +585,7 @@ contract TimeBlockedToken is ERC20, Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -598,7 +598,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -674,7 +674,7 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract DemeterToken is MintableToken, TimeBlockedToken {
-  string public name = &quot;Demeter&quot;;
-  string public symbol = &quot;DMT&quot;;
+  string public name = "Demeter";
+  string public symbol = "DMT";
   uint256 public decimals = 18;
 }

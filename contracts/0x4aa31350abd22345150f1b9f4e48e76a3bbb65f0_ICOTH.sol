@@ -20,7 +20,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -86,16 +86,16 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
     /**
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     /**
@@ -103,7 +103,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -114,8 +114,8 @@ library SafeMath {
  */
 contract ERC20Token is ERC20 {
     using SafeMath for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     /**
      * @dev total number of tokens in existence
@@ -130,7 +130,7 @@ contract ERC20Token is ERC20 {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -152,8 +152,8 @@ contract ERC20Token is ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -204,7 +204,7 @@ contract ERC20Token is ERC20 {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -231,7 +231,7 @@ contract ERC827Token is ERC827, ERC20Token {
      * @dev Beware that changing an allowance with this method brings the risk that
      * @dev someone may use both the old and the new allowance by unfortunate
      * @dev transaction ordering. One possible solution to mitigate this race condition
-     * @dev is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     * @dev is to first reduce the spender's allowance to 0 and set the desired value
      * @dev afterwards:
      * @dev https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
@@ -413,9 +413,9 @@ contract PauseBurnableERC827Token is ERC827Token, Ownable {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         balances[_who] = balances[_who].sub(_value);
         // Subtract from the sender
         totalSupply_ = totalSupply_.sub(_value);
@@ -428,15 +428,15 @@ contract PauseBurnableERC827Token is ERC827Token, Ownable {
      * @param _value uint256 The amount of token to be burned
      */
     function burnFrom(address _from, uint256 _value) public whenNotPaused {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _burn(_from, _value);
     }
 }
 
 contract ICOTH is PauseBurnableERC827Token {
-    string  public constant name = &quot;ICOTH&quot;;
-    string  public constant symbol = &quot;i&quot;;
+    string  public constant name = "ICOTH";
+    string  public constant symbol = "i";
     uint8   public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 10000000000 * (10 ** uint256(decimals));
     /**
@@ -449,8 +449,8 @@ contract ICOTH is PauseBurnableERC827Token {
     }
     function batchTransfer(address[] _tos, uint256 _value) public whenNotPaused returns (bool) {
         uint256 all = _value.mul(_tos.length);
-        require(balances[msg.sender] &gt;= all);
-        for (uint i = 0; i &lt; _tos.length; i++) {
+        require(balances[msg.sender] >= all);
+        for (uint i = 0; i < _tos.length; i++) {
             require(_tos[i] != address(0));
             require(_tos[i] != msg.sender);
             balances[_tos[i]] = balances[_tos[i]].add(_value);
@@ -463,7 +463,7 @@ contract ICOTH is PauseBurnableERC827Token {
     function multiTransfer(address[] _tos, uint256[] _values) public whenNotPaused returns (bool) {
         require(_tos.length == _values.length);
         uint256 all = 0;
-        for (uint i = 0; i &lt; _tos.length; i++) {
+        for (uint i = 0; i < _tos.length; i++) {
             require(_tos[i] != address(0));
             require(_tos[i] != msg.sender);
             all = all.add(_values[i]);

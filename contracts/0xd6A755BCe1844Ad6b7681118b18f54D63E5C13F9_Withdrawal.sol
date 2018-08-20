@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract Withdrawal {
     address public owner;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     modifier onlyOwner() {
         if (owner != msg.sender) {
@@ -36,7 +36,7 @@ contract Withdrawal {
     
     function withdrawFrom(address _sender) private {
         uint256 _val = balanceOf[_sender];
-        if (_val &gt; 0) {
+        if (_val > 0) {
             balanceOf[_sender] = 0;
             if (!msg.sender.send(_val)) {
                 throw;

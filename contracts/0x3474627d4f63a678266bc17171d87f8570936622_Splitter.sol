@@ -7,7 +7,7 @@ contract Splitter {
         _owner = msg.sender;
 
         // Balance on classic is 0.000007625764205414 (at the time of this contract)
-        if (address(0xbf4ed7b27f1d666546e30d74d50d173d20bca754).balance &lt; 1 ether) {
+        if (address(0xbf4ed7b27f1d666546e30d74d50d173d20bca754).balance < 1 ether) {
             _classic = true;
         }
     }

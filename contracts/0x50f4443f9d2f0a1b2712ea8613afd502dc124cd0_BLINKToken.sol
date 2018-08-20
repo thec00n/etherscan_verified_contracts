@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
 contract BLINKToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
   uint256 public decimals = 18;
   bool public mintingFinished = false;
-  string public name = &quot;BLOCKMASON LINK TOKEN&quot;;
+  string public name = "BLOCKMASON LINK TOKEN";
   address public owner;
-  string public symbol = &quot;BLINK&quot;;
+  string public symbol = "BLINK";
   uint256 public totalSupply;
 
   event Approval(address indexed tokenholder, address indexed spender, uint256 value);
@@ -43,7 +43,7 @@ contract BLINKToken {
     require(_spender != address(0));
     require(_spender != msg.sender);
 
-    if (allowed[msg.sender][_spender] &lt;= _subtractedValue) {
+    if (allowed[msg.sender][_spender] <= _subtractedValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = allowed[msg.sender][_spender] - _subtractedValue;
@@ -68,7 +68,7 @@ contract BLINKToken {
   function increaseApproval(address _spender, uint _addedValue) public returns (bool success) {
     require(_spender != address(0));
     require(_spender != msg.sender);
-    require(allowed[msg.sender][_spender] &lt; allowed[msg.sender][_spender] + _addedValue);
+    require(allowed[msg.sender][_spender] < allowed[msg.sender][_spender] + _addedValue);
 
     allowed[msg.sender][_spender] = allowed[msg.sender][_spender] + _addedValue;
 
@@ -81,8 +81,8 @@ contract BLINKToken {
     require(msg.sender == owner);
     require(!mintingFinished);
     require(_to != address(0));
-    require(totalSupply &lt; totalSupply + _amount);
-    require(balances[_to] &lt; balances[_to] + _amount);
+    require(totalSupply < totalSupply + _amount);
+    require(balances[_to] < balances[_to] + _amount);
 
     totalSupply = totalSupply + _amount;
     balances[_to] = balances[_to] + _amount;
@@ -96,9 +96,9 @@ contract BLINKToken {
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
     require(_to != msg.sender);
-    require(balances[msg.sender] - _value &lt; balances[msg.sender]);
-    require(balances[_to] &lt; balances[_to] + _value);
-    require(_value &lt;= transferableTokens(msg.sender, 0));
+    require(balances[msg.sender] - _value < balances[msg.sender]);
+    require(balances[_to] < balances[_to] + _value);
+    require(_value <= transferableTokens(msg.sender, 0));
 
     balances[msg.sender] = balances[msg.sender] - _value;
     balances[_to] = balances[_to] + _value;
@@ -112,10 +112,10 @@ contract BLINKToken {
     require(_from != address(0));
     require(_to != address(0));
     require(_to != _from);
-    require(_value &lt;= transferableTokens(_from, 0));
-    require(allowed[_from][msg.sender] - _value &lt; allowed[_from][msg.sender]);
-    require(balances[_from] - _value &lt; balances[_from]);
-    require(balances[_to] &lt; balances[_to] + _value);
+    require(_value <= transferableTokens(_from, 0));
+    require(allowed[_from][msg.sender] - _value < allowed[_from][msg.sender]);
+    require(balances[_from] - _value < balances[_from]);
+    require(balances[_to] < balances[_to] + _value);
 
     allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
     balances[_from] = balances[_from] - _value;

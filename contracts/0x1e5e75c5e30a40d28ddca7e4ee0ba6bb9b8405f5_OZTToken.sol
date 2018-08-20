@@ -10,7 +10,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -86,25 +86,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function minimum( uint a, uint b) internal returns ( uint result) {
-    if ( a &lt;= b ) {
+    if ( a <= b ) {
       result = a;
     }
     else {
@@ -116,7 +116,7 @@ library SafeMath {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
 contract OZTToken is StandardToken, Ownable {
 
 	/* Overriding some ERC20 variables */
-	string public constant name      = &quot;OZTToken&quot;;
-	string public constant symbol    = &quot;OZT&quot;;
+	string public constant name      = "OZTToken";
+	string public constant symbol    = "OZT";
 	uint256 public constant decimals = 18;
 
 	uint256 public constant MAX_NUM_OZT_TOKENS    =  730000000 * 10 ** decimals;
@@ -210,18 +210,18 @@ contract OZTToken is StandardToken, Ownable {
 	int public constant DEFROST_MONTHS = 3;
 
 	/*
-		modalit&#233;s de sorties des advisors investisseurs ou des earlybirds j’opte pour
-		- un Freeze &#224; 6 mois puis au bout du 6&#232;me mois
+		modalités de sorties des advisors investisseurs ou des earlybirds j’opte pour
+		- un Freeze à 6 mois puis au bout du 6ème mois
 		- possible de sortir du capital de 50% du montant investi
-		- puis par la suite 5% tous les mois ce qui nous donnera une sortie effective au bout de 10 mois et au total &#231;a fera donc 16 mois
+		- puis par la suite 5% tous les mois ce qui nous donnera une sortie effective au bout de 10 mois et au total ça fera donc 16 mois
 	*/
 
 	uint public constant DEFROST_FACTOR = 20;
 
 	// Fields that can be changed by functions
 	address[] public vIcedBalances;
-	mapping (address =&gt; uint256) public icedBalances_frosted;
-    mapping (address =&gt; uint256) public icedBalances_defrosted;
+	mapping (address => uint256) public icedBalances_frosted;
+    mapping (address => uint256) public icedBalances_defrosted;
 
 	// Variable usefull for verifying that the assignedSupply matches that totalSupply
 	uint256 public assignedSupply;
@@ -258,9 +258,9 @@ contract OZTToken is StandardToken, Ownable {
   function batchAssignTokens(address[] _vaddr, uint[] _vamounts, uint[] _vDefrostClass ) onlyOwner {
 
 			require ( batchAssignStopped == false );
-			require ( _vaddr.length == _vamounts.length &amp;&amp; _vaddr.length == _vDefrostClass.length);
+			require ( _vaddr.length == _vamounts.length && _vaddr.length == _vDefrostClass.length);
 			//Looping into input arrays to assign target amount to each given address
-			for (uint index=0; index&lt;_vaddr.length; index++) {
+			for (uint index=0; index<_vaddr.length; index++) {
 
 				address toAddress = _vaddr[index];
 				uint amount = SafeMath.mul(_vamounts[index], 10 ** decimals);
@@ -304,33 +304,33 @@ contract OZTToken is StandardToken, Ownable {
 
 	function canDefrost() constant returns (bool){
 		int numMonths = elapsedMonthsFromICOStart();
-		return  numMonths &gt; DEFROST_MONTHS &amp;&amp;
-							uint(numMonths) &lt;= SafeMath.add(uint(DEFROST_MONTHS),  DEFROST_FACTOR/2+1);
+		return  numMonths > DEFROST_MONTHS &&
+							uint(numMonths) <= SafeMath.add(uint(DEFROST_MONTHS),  DEFROST_FACTOR/2+1);
 	}
 
 	function defrostTokens(uint fromIdx, uint toIdx) onlyDefrosterOrOwner {
 
-		require(now&gt;START_ICO_TIMESTAMP);
+		require(now>START_ICO_TIMESTAMP);
 		require(stopDefrost == false);
-		require(fromIdx&gt;=0 &amp;&amp; toIdx&lt;=vIcedBalances.length);
-		if(fromIdx==0 &amp;&amp; toIdx==0){
+		require(fromIdx>=0 && toIdx<=vIcedBalances.length);
+		if(fromIdx==0 && toIdx==0){
 			fromIdx = 0;
 			toIdx = vIcedBalances.length;
 		}
 
 		int monthsElapsedFromFirstDefrost = elapsedMonthsFromICOStart() - DEFROST_MONTHS;
-		require(monthsElapsedFromFirstDefrost&gt;0);
+		require(monthsElapsedFromFirstDefrost>0);
 		uint monthsIndex = uint(monthsElapsedFromFirstDefrost);
-		//require(monthsIndex&lt;=DEFROST_FACTOR);
+		//require(monthsIndex<=DEFROST_FACTOR);
 		require(canDefrost() == true);
 
 		/*
-			if monthsIndex == 1 =&gt; defrost 50%
-			else if monthsIndex &lt;= 10  defrost 5%
+			if monthsIndex == 1 => defrost 50%
+			else if monthsIndex <= 10  defrost 5%
 		*/
 
 		// Looping into the iced accounts
-        for (uint index = fromIdx; index &lt; toIdx; index++) {
+        for (uint index = fromIdx; index < toIdx; index++) {
 
 			address currentAddress = vIcedBalances[index];
             uint256 amountTotal = SafeMath.add(icedBalances_frosted[currentAddress], icedBalances_defrosted[currentAddress]);
@@ -343,7 +343,7 @@ contract OZTToken is StandardToken, Ownable {
 			}
             uint256 amountToRelease = SafeMath.sub(targetDeFrosted, icedBalances_defrosted[currentAddress]);
 
-		    if (amountToRelease &gt; 0 &amp;&amp; targetDeFrosted &gt; 0) {
+		    if (amountToRelease > 0 && targetDeFrosted > 0) {
                 icedBalances_frosted[currentAddress] = SafeMath.sub(icedBalances_frosted[currentAddress], amountToRelease);
                 icedBalances_defrosted[currentAddress] = SafeMath.add(icedBalances_defrosted[currentAddress], amountToRelease);
 				transfer(currentAddress, amountToRelease);

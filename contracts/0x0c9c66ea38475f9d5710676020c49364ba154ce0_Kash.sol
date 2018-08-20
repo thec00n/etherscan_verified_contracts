@@ -28,7 +28,7 @@ contract ERC20 {
 contract Kash is ERC20 {
 
 
-    string public standard = &#39;KASH 1.1&#39;;
+    string public standard = 'KASH 1.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -36,11 +36,11 @@ contract Kash is ERC20 {
   
     
    
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
     uint accountCount;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
    
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -55,8 +55,8 @@ contract Kash is ERC20 {
         appendTokenHolders( msg.sender );
         balanceOf[msg.sender] =  supply;
         totalSupply = supply; // 
-        name = &quot;KASH&quot;; // Set the name for display purposes
-        symbol = &quot;KASH&quot;; // Set the symbol for display purposes
+        name = "KASH"; // Set the name for display purposes
+        symbol = "KASH"; // Set the symbol for display purposes
         decimals = 8; // Amount of decimals for display purposes
  
         
@@ -100,8 +100,8 @@ contract Kash is ERC20 {
     
     function transfer(address _to, uint256 _value) returns(bool ok) {
         if (_to == 0x0) throw; 
-        if (balanceOf[msg.sender] &lt; _value) throw; 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw; 
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         appendTokenHolders(_to);
         balanceOf[msg.sender] -= _value; 
@@ -136,9 +136,9 @@ contract Kash is ERC20 {
  
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         if (_to == 0x0) throw;  
-        if (balanceOf[_from] &lt; _value) throw;  
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw;  
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw; 
         appendTokenHolders(_to);
         balanceOf[_from] -= _value; 
         balanceOf[_to] += _value; 
@@ -149,7 +149,7 @@ contract Kash is ERC20 {
     }
   
     function burn(uint256 _value) returns(bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw; 
+        if (balanceOf[msg.sender] < _value) throw; 
         balanceOf[msg.sender] -= _value; 
         totalSupply -= _value; 
         Burn(msg.sender, _value);
@@ -158,8 +158,8 @@ contract Kash is ERC20 {
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
     
-        if (balanceOf[_from] &lt; _value) throw; 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
         balanceOf[_from] -= _value; 
         allowance[_from][msg.sender] -= _value; 
         totalSupply -= _value; 

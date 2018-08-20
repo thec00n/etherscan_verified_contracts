@@ -37,7 +37,7 @@ contract RES is CloseIfBug {
         uint public totalSupply;
 
         /* This creates an array with all balances */
-        mapping(address =&gt; uint256) public balanceOf;
+        mapping(address => uint256) public balanceOf;
 
         /* This generates a public event on the blockchain that will notify clients */
         event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,8 +50,8 @@ contract RES is CloseIfBug {
         /* Initializes contract with name, symbol and decimals */
 
         function RES() {
-                name = &quot;RES&quot;;
-                symbol = &quot;RES&quot;;
+                name = "RES";
+                symbol = "RES";
                 decimals = 18;
         }
 
@@ -62,7 +62,7 @@ contract RES is CloseIfBug {
         }
 
         function sell(uint256 _value) public {
-                if (balanceOf[msg.sender] &lt; _value) throw;
+                if (balanceOf[msg.sender] < _value) throw;
                 balanceOf[msg.sender] -= _value;
 
                 if (!msg.sender.send(_value)) throw;
@@ -82,17 +82,17 @@ contract SwarmRedistribution is CloseIfBug, RES {
                 uint timeStamp;
         }
 
-        mapping(address =&gt; dividendPathway[]) public dividendPathways;
+        mapping(address => dividendPathway[]) public dividendPathways;
 
-        mapping(address =&gt; bool) public isHuman;
+        mapping(address => bool) public isHuman;
 
-        mapping(address =&gt; uint256) public totalBasicIncome;
+        mapping(address => uint256) public totalBasicIncome;
 
         uint taxRate;
         uint exchangeRate;
 
         address[] humans;
-        mapping(address =&gt; bool) inHumans;
+        mapping(address => bool) inHumans;
 
         event Swarm(address indexed leaf, address indexed node, uint256 share);
 
@@ -112,8 +112,8 @@ contract SwarmRedistribution is CloseIfBug, RES {
                 if (_to == msg.sender) throw;
 
                 /* if the sender doenst have enough balance then stop */
-                if (balanceOf[msg.sender] &lt; _value) throw;
-                if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+                if (balanceOf[msg.sender] < _value) throw;
+                if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 
                 /* Calculate tax */
                 uint256 taxCollected = _value * taxRate / 1000;
@@ -128,7 +128,7 @@ contract SwarmRedistribution is CloseIfBug, RES {
 
                 iterateThroughSwarm(_to, now, taxCollected);
 
-                if (humans.length &gt; 0) {
+                if (humans.length > 0) {
                         doSwarm(_to, taxCollected);
                         sentAmount = _value;
                 } else sentAmount = _value - taxCollected; /* Return tax */
@@ -145,22 +145,22 @@ contract SwarmRedistribution is CloseIfBug, RES {
 
 
         function iterateThroughSwarm(address _node, uint _timeStamp, uint _taxCollected) internal {
-                for (uint i = 0; i &lt; dividendPathways[_node].length; i++) {
+                for (uint i = 0; i < dividendPathways[_node].length; i++) {
 
                         uint timeStamp = dividendPathways[_node][i].timeStamp;
-                        if (timeStamp &lt;= _timeStamp) {
+                        if (timeStamp <= _timeStamp) {
 
                                 address node = dividendPathways[_node][i].from;
 
                                 if (
-                                        isHuman[node] == true &amp;&amp;
+                                        isHuman[node] == true &&
                                         inHumans[node] == false
                                 ) {
                                         humans.push(node);
                                         inHumans[node] = true;
                                 }
 
-                                if (dividendPathways[_node][i].amount - _taxCollected &gt; 0) {
+                                if (dividendPathways[_node][i].amount - _taxCollected > 0) {
                                         dividendPathways[_node][i].amount -= _taxCollected;
                                 } else removeDividendPathway(_node, i);
 
@@ -173,7 +173,7 @@ contract SwarmRedistribution is CloseIfBug, RES {
 
                 uint256 share = _taxCollected / humans.length;
 
-                for (uint i = 0; i &lt; humans.length; i++) {
+                for (uint i = 0; i < humans.length; i++) {
 
                         balanceOf[humans[i]] += share;
                         totalBasicIncome[humans[i]] += share;
@@ -188,7 +188,7 @@ contract SwarmRedistribution is CloseIfBug, RES {
 
         function removeDividendPathway(address node, uint index) internal {
                 delete dividendPathways[node][index];
-                for (uint i = index; i &lt; dividendPathways[node].length - 1; i++) {
+                for (uint i = index; i < dividendPathways[node].length - 1; i++) {
                         dividendPathways[node][i] = dividendPathways[node][i + 1];
                 }
                 dividendPathways[node].length--;

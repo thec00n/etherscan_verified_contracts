@@ -2,8 +2,8 @@ pragma solidity ^0.4.13;
 // -------------------------------------------------
 // 0.4.13+commit.0fb4cb1a
 // EthPoker.io ERC20 PKT token contract
-// Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3150555c585f71544559415e5a54431f585e">[email&#160;protected]</a> for any query
-// GET READY FOR LIFT OFF 03/January/17 (Bitcoin&#39;s Anniversary)
+// Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3150555c585f71544559415e5a54431f585e">[email protected]</a> for any query
+// GET READY FOR LIFT OFF 03/January/17 (Bitcoin's Anniversary)
 // -------------------------------------------------
 // ERC Token Standard #20 Interface https://github.com/ethereum/EIPs/issues/20
 // -------------------------------------------------
@@ -19,20 +19,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-      safeAssert(b &gt; 0);
+      safeAssert(b > 0);
       uint256 c = a / b;
       safeAssert(a == b * c + a % b);
       return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-      safeAssert(b &lt;= a);
+      safeAssert(b <= a);
       return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
       uint256 c = a + b;
-      safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+      safeAssert(c>=a && c>=b);
       return c;
   }
 
@@ -56,15 +56,15 @@ contract ERC20Interface is safeMath {
 
 contract PKTToken is safeMath, ERC20Interface {
   // token setup variables
-  string  public constant standard              = &quot;PKT&quot;;
-  string  public constant name                  = &quot;ethPoker&quot;;
-  string  public constant symbol                = &quot;PKT&quot;;
+  string  public constant standard              = "PKT";
+  string  public constant name                  = "ethPoker";
+  string  public constant symbol                = "PKT";
   uint8   public constant decimals              = 4;                                  // 4 decimals for usability
   uint256 public constant totalSupply           = 100000000000;                       // 10 million + 4 decimals (presale maximum capped) static supply
 
   // token mappings
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   // ERC20 standard token possible events, matched to ICO and preSale contracts
   event Buy(address indexed _sender, uint256 _eth, uint256 _PKT);
@@ -79,9 +79,9 @@ contract PKTToken is safeMath, ERC20Interface {
   // ERC20 token transfer function with additional safety
   function transfer(address _to, uint256 _amount) returns (bool success) {
       require(!(_to == 0x0));
-      if ((balances[msg.sender] &gt;= _amount)
-      &amp;&amp; (_amount &gt; 0)
-      &amp;&amp; ((safeAdd(balances[_to],_amount) &gt; balances[_to]))) {
+      if ((balances[msg.sender] >= _amount)
+      && (_amount > 0)
+      && ((safeAdd(balances[_to],_amount) > balances[_to]))) {
           balances[msg.sender] = safeSub(balances[msg.sender], _amount);
           balances[_to] = safeAdd(balances[_to], _amount);
           Transfer(msg.sender, _to, _amount);
@@ -97,10 +97,10 @@ contract PKTToken is safeMath, ERC20Interface {
       address _to,
       uint256 _amount) returns (bool success) {
       require(!(_to == 0x0));
-      if ((balances[_from] &gt;= _amount)
-      &amp;&amp; (allowed[_from][msg.sender] &gt;= _amount)
-      &amp;&amp; (_amount &gt; 0)
-      &amp;&amp; (safeAdd(balances[_to],_amount) &gt; balances[_to])) {
+      if ((balances[_from] >= _amount)
+      && (allowed[_from][msg.sender] >= _amount)
+      && (_amount > 0)
+      && (safeAdd(balances[_to],_amount) > balances[_to])) {
           balances[_from] = safeSub(balances[_from], _amount);
           allowed[_from][msg.sender] = safeSub((allowed[_from][msg.sender]),_amount);
           balances[_to] = safeAdd(balances[_to], _amount);
@@ -140,7 +140,7 @@ contract PKTToken is safeMath, ERC20Interface {
   function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
       uint oldValue = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);

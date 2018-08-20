@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 /**
  * @title xBounty Pre-seed token sale ICO Smart Contract.
- * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe5e6fbeae1ebfdeecfece7e6fbfbe0ebeea1ece0e2">[email&#160;protected]</a>
+ * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe5e6fbeae1ebfdeecfece7e6fbfbe0ebeea1ece0e2">[email protected]</a>
  */
 /**
  * @title SafeMath
@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -41,7 +41,7 @@ library SafeMath {
  */
 contract ERC20Basic {
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     function balanceOf(address _owner) public constant returns (uint256) { return balances[_owner]; }
     //Transfer is disabled
     //function transfer(address to, uint256 value) public returns (bool);
@@ -52,7 +52,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -136,8 +136,8 @@ contract Pausable is Ownable {
 contract XBTokenSale is ERC20Basic, Pausable {
 
     using SafeMath for uint256;
-    string public constant name = &quot;XB Token&quot;;
-    string public constant symbol = &quot;XB&quot;;
+    string public constant name = "XB Token";
+    string public constant symbol = "XB";
     uint256 public constant decimals = 18;
 
     // address where funds are collected
@@ -186,7 +186,7 @@ contract XBTokenSale is ERC20Basic, Pausable {
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);
 
-        require(presaleSoldTokens + tokens &lt;= TOTAL_XB_TOKEN_FOR_PRE_SALE);
+        require(presaleSoldTokens + tokens <= TOTAL_XB_TOKEN_FOR_PRE_SALE);
         presaleSoldTokens = presaleSoldTokens.add(tokens);
 
         // update state

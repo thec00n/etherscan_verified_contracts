@@ -24,11 +24,11 @@ contract CanSend {
   function multisend (address _token, address[] _recipients, uint256[] _amounts) public {
     require(_token != address(0));
     require(_recipients.length != 0);
-    require(_recipients.length &lt;= MAX_RECIPIENTS);
+    require(_recipients.length <= MAX_RECIPIENTS);
     require(_recipients.length == _amounts.length);
     ERC20 tokenToSend = ERC20(_token);
     uint256 totalSent = 0;
-    for (uint8 i = 0; i &lt; _recipients.length; i++) {
+    for (uint8 i = 0; i < _recipients.length; i++) {
       require(tokenToSend.transferFrom(msg.sender, _recipients[i], _amounts[i]));
       totalSent += _amounts[i];
     }

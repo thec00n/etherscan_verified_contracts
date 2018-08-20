@@ -1,5 +1,5 @@
 // Copyright New Alchemy Limited, 2017. All rights reserved.
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 // Just the bits of ERC20 that we need.
 contract Token {
@@ -137,20 +137,20 @@ contract Sale {
     function () payable {
         // only accept contributions from receiver contracts
         require(msg.sender == address(r0) || msg.sender == address(r1) || msg.sender == address(r2));
-        require(block.timestamp &gt;= start);
+        require(block.timestamp >= start);
 
-        // if we&#39;ve gone past the softcap, make sure the sale
+        // if we've gone past the softcap, make sure the sale
         // stays open for no longer than SOFTCAP_TIME past the current block
-        if (this.balance &gt; softcap &amp;&amp; block.timestamp &lt; end &amp;&amp; (end - block.timestamp) &gt; SOFTCAP_TIME)
+        if (this.balance > softcap && block.timestamp < end && (end - block.timestamp) > SOFTCAP_TIME)
             end = block.timestamp + SOFTCAP_TIME;
 
-        // If we&#39;ve reached end-of-sale conditions, accept
+        // If we've reached end-of-sale conditions, accept
         // this as the last contribution and emit the EndSale event.
         // (Technically this means we allow exactly one contribution
         // after the end of the sale.)
-        // Conversely, if we haven&#39;t started the sale yet, emit
+        // Conversely, if we haven't started the sale yet, emit
         // the StartSale event.
-        if (block.timestamp &gt; end || this.balance &gt; cap) {
+        if (block.timestamp > end || this.balance > cap) {
             require(live);
             live = false;
             emitEnd();
@@ -197,7 +197,7 @@ contract Sale {
 
     // withdraw some of the Ether
     function withdrawSome(uint value) onlyOwner {
-        require(value &lt;= this.balance);
+        require(value <= this.balance);
         msg.sender.transfer(value);
     }
 

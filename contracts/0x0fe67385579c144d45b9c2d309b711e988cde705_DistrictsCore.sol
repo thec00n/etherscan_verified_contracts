@@ -2,7 +2,7 @@ pragma solidity ^ 0.4.19;
 
 // DopeRaider Districts Contract
 // by gasmasters.io
-// contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95e1f0f4f8d5f1fae5f0e7f4fcf1f0e7bbf6faf8">[email&#160;protected]</a>
+// contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95e1f0f4f8d5f1fae5f0e7f4fcf1f0e7bbf6faf8">[email protected]</a>
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
 contract ERC721 {
@@ -58,7 +58,7 @@ contract NarcosCoreInterface is ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -165,7 +165,7 @@ contract DistrictsAdmin is Ownable, Pausable {
 
   /// @dev Used to mark the smart contract as upgraded, in case there is a serious
   ///  breaking bug. This method does nothing but keep track of the new contract and
-  ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+  ///  emit a message indicating that the new address is set. It's up to clients of this
   ///  contract to update to the new contract address in that case.
   /// @param _v2Address new address
   function setNewAddress(address _v2Address) public onlyOwner whenPaused {
@@ -265,10 +265,10 @@ contract DistrictsCore is DistrictsAdmin {
     string name;
   }
 
-  District[8] public districts; // there is no &#39;0&#39; district - this will be used to indicate no exit
+  District[8] public districts; // there is no '0' district - this will be used to indicate no exit
 
   // for keeping track of who is where
-  mapping(uint256 =&gt; uint8) narcoIndexToLocation;
+  mapping(uint256 => uint8) narcoIndexToLocation;
 
   function DistrictsCore() public {
   }
@@ -353,8 +353,8 @@ contract DistrictsCore is DistrictsAdmin {
 
   // function to be called when wanting to add funds to all districts
   function floatEconony() public payable onlyOwner {
-        if(msg.value&gt;0){
-          for (uint district=1;district&lt;8;district++){
+        if(msg.value>0){
+          for (uint district=1;district<8;district++){
               districts[district].weedPot+=(msg.value/14);
               districts[district].cokePot+=(msg.value/14);
             }
@@ -363,7 +363,7 @@ contract DistrictsCore is DistrictsAdmin {
 
   // function to be called when wanting to add funds to a district
   function distributeRevenue(uint256 _district , uint8 _splitW, uint8 _splitC) public payable onlyDopeRaiderContract {
-        if(msg.value&gt;0){
+        if(msg.value>0){
          _distributeRevenue(msg.value, _district, _splitW, _splitC);
         }
   }
@@ -389,7 +389,7 @@ contract DistrictsCore is DistrictsAdmin {
           districts[_district].cokePot+=(districtRevenue/100)*_splitC;
 
           // distribute federal revenue
-           for (uint district=1;district&lt;8;district++){
+           for (uint district=1;district<8;district++){
               districts[district].weedPot+=(federalRevenue/14);
               districts[district].cokePot+=(federalRevenue/14);
             }
@@ -399,7 +399,7 @@ contract DistrictsCore is DistrictsAdmin {
   }
 
   function withdrawFees() external onlyOwner {
-        if (currentDevFees&lt;=address(this).balance){
+        if (currentDevFees<=address(this).balance){
           currentDevFees = 0;
           msg.sender.transfer(currentDevFees);
         }
@@ -429,18 +429,18 @@ contract DistrictsCore is DistrictsAdmin {
     ) = narcoCore.getNarco(_narcoId);
 
     require(getNarcoLocation(_narcoId) == uint8(_district)); // right place to buy
-    require(uint8(_quantity) &gt; 0 &amp;&amp; districts[_district].isStocked[_itemIndex] == true); // there is enough of it
-    require(marketItems[_itemIndex].levelRequired &lt;= narcoLevel || _district==7); //  must be level to buy this item or black market
-    require(narcoCore.getRemainingCapacity(_narcoId) &gt;= _quantity || _itemIndex&gt;=6); // narco can carry it or not a consumable
+    require(uint8(_quantity) > 0 && districts[_district].isStocked[_itemIndex] == true); // there is enough of it
+    require(marketItems[_itemIndex].levelRequired <= narcoLevel || _district==7); //  must be level to buy this item or black market
+    require(narcoCore.getRemainingCapacity(_narcoId) >= _quantity || _itemIndex>=6); // narco can carry it or not a consumable
 
-    // progression through the upgrades for non consumable items (&gt;=6)
-    if (_itemIndex&gt;=6) {
+    // progression through the upgrades for non consumable items (>=6)
+    if (_itemIndex>=6) {
       if (marketItems[_itemIndex].skillAffected!=5){
             // regular items
-            require (marketItems[_itemIndex].levelRequired==0 || narcoSkills[marketItems[_itemIndex].skillAffected]&lt;marketItems[_itemIndex].upgradeAmount);
+            require (marketItems[_itemIndex].levelRequired==0 || narcoSkills[marketItems[_itemIndex].skillAffected]<marketItems[_itemIndex].upgradeAmount);
           }else{
             // capacity has 20 + requirement
-            require (narcoSkills[5]&lt;20+marketItems[_itemIndex].upgradeAmount);
+            require (narcoSkills[5]<20+marketItems[_itemIndex].upgradeAmount);
       }
     }
 
@@ -453,15 +453,15 @@ contract DistrictsCore is DistrictsAdmin {
       costPrice = max(districts[_district].marketPrices[1], (((districts[_district].cokePot / districts[_district].cokeAmountHere)/100)*(100+spreadPercent))) * _quantity;
     }
 
-    require(msg.value &gt;= costPrice); // paid enough?
+    require(msg.value >= costPrice); // paid enough?
     // ok purchase here
-    if (_itemIndex &gt; 1 &amp;&amp; _itemIndex &lt; 6) {
+    if (_itemIndex > 1 && _itemIndex < 6) {
       // consumable
       narcoCore.updateConsumable(_narcoId, _itemIndex - 2, uint8(narcoConsumables[_itemIndex - 2] + _quantity));
        _distributeRevenue(costPrice, _district , 50, 50);
     }
 
-    if (_itemIndex &gt;= 6) {
+    if (_itemIndex >= 6) {
         // skills boost
         // check which skill is updated by this item
         narcoCore.updateSkill(
@@ -485,7 +485,7 @@ contract DistrictsCore is DistrictsAdmin {
     }
 
     // allow overbid
-    if (msg.value&gt;costPrice){
+    if (msg.value>costPrice){
         msg.sender.transfer(msg.value-costPrice);
     }
 
@@ -494,7 +494,7 @@ contract DistrictsCore is DistrictsAdmin {
 
   function sellItem(uint256 _narcoId, uint256 _district, uint256 _itemIndex, uint256 _quantity) public whenNotPaused{
     require(narcoCore.ownerOf(_narcoId) == msg.sender); // must be owner
-    require(_itemIndex &lt; marketItems.length &amp;&amp; _district &lt; 8 &amp;&amp; _district &gt; 0 &amp;&amp; _quantity &gt; 0); // valid item and district and quantity
+    require(_itemIndex < marketItems.length && _district < 8 && _district > 0 && _quantity > 0); // valid item and district and quantity
 
     uint256 narcoWeedTotal;
     uint256 narcoCokeTotal;
@@ -515,7 +515,7 @@ contract DistrictsCore is DistrictsAdmin {
 
     require(getNarcoLocation(_narcoId) == _district); // right place to buy
     // at this time only weed and coke can be sold to the contract
-    require((_itemIndex == 0 &amp;&amp; narcoWeedTotal &gt;= _quantity) || (_itemIndex == 1 &amp;&amp; narcoCokeTotal &gt;= _quantity));
+    require((_itemIndex == 0 && narcoWeedTotal >= _quantity) || (_itemIndex == 1 && narcoCokeTotal >= _quantity));
 
     uint256 salePrice = 0;
 
@@ -525,7 +525,7 @@ contract DistrictsCore is DistrictsAdmin {
     if (_itemIndex == 1) {
       salePrice = districts[_district].cokePot / districts[_district].cokeAmountHere;  // Smeti calc this is the sell price (contract buys)
     }
-    require(salePrice &gt; 0); // yeah that old chestnut lol
+    require(salePrice > 0); // yeah that old chestnut lol
 
     // do the updates
     if (_itemIndex == 0) {
@@ -547,10 +547,10 @@ contract DistrictsCore is DistrictsAdmin {
 
 
   // allow a Narco to travel between districts
-  // travelling is done by taking &quot;exit&quot; --&gt; index into the loctions
+  // travelling is done by taking "exit" --> index into the loctions
   function travelTo(uint256 _narcoId, uint256 _exitId) public payable whenNotPaused{
     require(narcoCore.ownerOf(_narcoId) == msg.sender); // must be owner
-    require((msg.value &gt;= travelPrice &amp;&amp; _exitId &lt; 7) || (msg.value &gt;= airLiftPrice &amp;&amp; _exitId==7));
+    require((msg.value >= travelPrice && _exitId < 7) || (msg.value >= airLiftPrice && _exitId==7));
 
     // exitId ==7 is a special exit for airlifting narcos back to their home location
 
@@ -575,7 +575,7 @@ contract DistrictsCore is DistrictsAdmin {
     ) = narcoCore.getNarco(_narcoId);
 
     // travel cooldown must have expired and narco must have some gas
-    require(now&gt;narcoCooldowns[0] &amp;&amp; narcoConsumables[0]&gt;0);
+    require(now>narcoCooldowns[0] && narcoConsumables[0]>0);
 
     uint8 sourceLocation = getNarcoLocation(_narcoId);
     District storage sourceDistrict = districts[sourceLocation]; // find out source
@@ -585,13 +585,13 @@ contract DistrictsCore is DistrictsAdmin {
     uint256 localWeedTotal = districts[sourceLocation].weedAmountHere;
     uint256 localCokeTotal = districts[sourceLocation].cokeAmountHere;
 
-    if (narcoWeedTotal &lt; localWeedTotal) {
+    if (narcoWeedTotal < localWeedTotal) {
       districts[sourceLocation].weedAmountHere -= narcoWeedTotal;
     } else {
       districts[sourceLocation].weedAmountHere = 1; // always drop to 1
     }
 
-    if (narcoCokeTotal &lt; localCokeTotal) {
+    if (narcoCokeTotal < localCokeTotal) {
       districts[sourceLocation].cokeAmountHere -= narcoCokeTotal;
     } else {
       districts[sourceLocation].cokeAmountHere = 1; // always drop to 1
@@ -599,7 +599,7 @@ contract DistrictsCore is DistrictsAdmin {
 
     // do the move
     uint8 targetLocation = getNarcoHomeLocation(_narcoId);
-    if (_exitId&lt;7){
+    if (_exitId<7){
       targetLocation =  uint8(sourceDistrict.exits[_exitId]);
     }
 
@@ -623,7 +623,7 @@ contract DistrictsCore is DistrictsAdmin {
     // Travel risk
      uint64 bustChance=random(50+(5*narcoSkills[0])); // 0  = speed skill
 
-     if (bustChance&lt;=bustRange){
+     if (bustChance<=bustRange){
       busted(_narcoId,targetLocation,narcoWeedTotal,narcoCokeTotal);
      }
 
@@ -649,7 +649,7 @@ contract DistrictsCore is DistrictsAdmin {
 
   function hijack(uint256 _hijackerId, uint256 _victimId)  public payable whenNotPaused{
     require(narcoCore.ownerOf(_hijackerId) == msg.sender); // must be owner
-    require(msg.value &gt;= hijackPrice);
+    require(msg.value >= hijackPrice);
 
     // has the victim escaped?
     if (getNarcoLocation(_hijackerId)!=getNarcoLocation(_victimId)){
@@ -699,9 +699,9 @@ contract DistrictsCore is DistrictsAdmin {
 
       // victim is not in home location , or is officer lardass
       require(getNarcoLocation(_victimId)!=victimHomeLocation || _victimId==0);
-      require(hijackerConsumables[3] &gt;0); // narco has ammo
+      require(hijackerConsumables[3] >0); // narco has ammo
 
-      require(now&gt;hijackerCooldowns[3]); // must be outside cooldown
+      require(now>hijackerCooldowns[3]); // must be outside cooldown
 
       // consume the ammo
       narcoCore.updateConsumable(_hijackerId, 3 , hijackerConsumables[3]-1);
@@ -710,7 +710,7 @@ contract DistrictsCore is DistrictsAdmin {
       // 3 = attackIndex
       // 4 = defenseIndex
 
-      if (uint8(random((hijackerSkills[3]+victimSkills[4]))+1) &gt;victimSkills[4]) {
+      if (uint8(random((hijackerSkills[3]+victimSkills[4]))+1) >victimSkills[4]) {
         // successful hijacking
 
         doHijack(_hijackerId  , _victimId , victimWeedTotal , victimCokeTotal);
@@ -745,18 +745,18 @@ contract DistrictsCore is DistrictsAdmin {
         uint16 stolenWeed = uint16(min(hijackerCapacity - stolenCoke, (victimWeedTotal/2))); // steal 50%
 
         // 50% chance to start with weed
-        if (random(100)&gt;50){
+        if (random(100)>50){
            stolenWeed = uint16(min(hijackerCapacity , (victimWeedTotal/2))); // steal 50%
            stolenCoke = uint16(min(hijackerCapacity - stolenWeed, (victimCokeTotal/2))); // steal 50
         }
 
         // steal some loot this calculation tbd
         // for now just take all coke / weed
-        if (stolenWeed&gt;0){
+        if (stolenWeed>0){
           narcoCore.updateWeedTotal(_hijackerId, true, stolenWeed);
           narcoCore.updateWeedTotal(_victimId,false, stolenWeed);
         }
-        if (stolenCoke&gt;0){
+        if (stolenCoke>0){
           narcoCore.updateCokeTotal(_hijackerId, true , stolenCoke);
           narcoCore.updateCokeTotal(_victimId,false, stolenCoke);
         }
@@ -776,10 +776,10 @@ contract DistrictsCore is DistrictsAdmin {
    }
 
    function min(uint a, uint b) private pure returns (uint) {
-            return a &lt; b ? a : b;
+            return a < b ? a : b;
    }
    function max(uint a, uint b) private pure returns (uint) {
-            return a &gt; b ? a : b;
+            return a > b ? a : b;
    }
 
   // never call this from a contract
@@ -790,7 +790,7 @@ contract DistrictsCore is DistrictsAdmin {
     uint256[] memory result = new uint256[](tokenCount);
     uint256 narcoId;
     uint256 resultIndex = 0;
-    for (narcoId = 0; narcoId &lt;= totalNarcos; narcoId++) {
+    for (narcoId = 0; narcoId <= totalNarcos; narcoId++) {
       if (getNarcoLocation(narcoId) == _loc) {
         result[resultIndex] = narcoId;
         resultIndex++;
@@ -802,7 +802,7 @@ contract DistrictsCore is DistrictsAdmin {
   function numberOfNarcosByDistrict(uint8 _loc) public view returns(uint256 number) {
     uint256 count = 0;
     uint256 narcoId;
-    for (narcoId = 0; narcoId &lt;= narcoCore.totalSupply(); narcoId++) {
+    for (narcoId = 0; narcoId <= narcoCore.totalSupply(); narcoId++) {
       if (getNarcoLocation(narcoId) == _loc) {
         count++;
       }

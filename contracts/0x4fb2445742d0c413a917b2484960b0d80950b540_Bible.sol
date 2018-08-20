@@ -5,12 +5,12 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract SafeMath {
     function add(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function subtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -29,19 +29,19 @@ contract ERC20 {
 
 contract Bible is ERC20, SafeMath {
 
-    string public name = &quot;Bible&quot;;      //  token name
-    string public symbol = &quot;GIB&quot;;           //  token symbol
+    string public name = "Bible";      //  token name
+    string public symbol = "GIB";           //  token symbol
     uint256 public decimals = 18;            //  token digit
     uint256 public totalSupply = 0;
-    string public version = &quot;1.0.0&quot;;
+    string public version = "1.0.0";
     address creator = 0x0;
     /**
      *  0 : init, 1 : limited, 2 : running, 3 : finishing
      */
     uint8 public tokenStatus = 0;
       
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     function Bible() public {
         creator = msg.sender;
@@ -82,8 +82,8 @@ contract Bible is ERC20, SafeMath {
     }
     
     function _transfer(address _from, address _to, uint _value) isRunning validAddress internal {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         uint previousBalances = SafeMath.add(balanceOf[_from], balanceOf[_to]);
         balanceOf[_from] = SafeMath.subtract(balanceOf[_from], _value);
         balanceOf[_to] = SafeMath.add(balanceOf[_to], _value);
@@ -97,7 +97,7 @@ contract Bible is ERC20, SafeMath {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -118,7 +118,7 @@ contract Bible is ERC20, SafeMath {
     }
     
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -126,10 +126,10 @@ contract Bible is ERC20, SafeMath {
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;

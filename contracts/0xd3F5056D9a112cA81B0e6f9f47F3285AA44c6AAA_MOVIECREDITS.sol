@@ -1,6 +1,6 @@
 /**
-*MOVIECREDITS: &quot;P2P PAYMENT SYSTEM FOR THE MOVIE INDUSTRY..&quot;
- * CONTRACT CREATOR: MOVIECREDITS/TEAM &amp;  CRYPTO7.BIZ
+*MOVIECREDITS: "P2P PAYMENT SYSTEM FOR THE MOVIE INDUSTRY.."
+ * CONTRACT CREATOR: MOVIECREDITS/TEAM &  CRYPTO7.BIZ
  * The MOVIECREDITS (EMVC) token contract complies with the ERC20 standard
 ** (see https://github.com/ethereum/EIPs/issues/20).
  *CENSORSHIP PROTECTION=TRUE| DECIMALS=2
@@ -15,20 +15,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 	
 	function safeSub(uint a, uint b) internal returns (uint) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   }
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
     	uint c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   }
 	function assert(bool assertion) internal {
@@ -59,7 +59,7 @@ contract ERC20Moviecredits{
 contract MOVIECREDITS is ERC20Moviecredits, SafeMath{
 
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 public totalSupply;
 
@@ -69,7 +69,7 @@ contract MOVIECREDITS is ERC20Moviecredits, SafeMath{
 	}
 
    //** * @dev Fix for the ERC20 short address attack. */
- modifier onlyPayloadSize(uint size) { if(msg.data.length &lt; size + 4) { throw; } _; } 
+ modifier onlyPayloadSize(uint size) { if(msg.data.length < size + 4) { throw; } _; } 
 
  function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) { 
  balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -77,7 +77,7 @@ contract MOVIECREDITS is ERC20Moviecredits, SafeMath{
 	    Transfer(msg.sender,_to,_value); }
 
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
@@ -105,7 +105,7 @@ contract MOVIECREDITS is ERC20Moviecredits, SafeMath{
 	uint256 public endTime;
 
 	modifier during_offering_time(){
-		if (now &gt;= endTime){
+		if (now >= endTime){
 			return;
 
 		}else{
@@ -132,8 +132,8 @@ contract MOVIECREDITS is ERC20Moviecredits, SafeMath{
 		return;
 		}
 	}
-	string 	public name = &quot;MOVIECREDITS (EMVC)&quot;;
-	string 	public symbol = &quot;EMVC&quot;;
+	string 	public name = "MOVIECREDITS (EMVC)";
+	string 	public symbol = "EMVC";
 	uint 	public decimals = 2;
 	uint256 public INITIAL_SUPPLY = 6000000000;
     

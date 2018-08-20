@@ -34,12 +34,12 @@ contract Token {
 }
 contract StdToken is Token {
 // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint256 public allSupply = 0;
 // Functions:
      function transfer(address _to, uint256 _value) returns (bool success) {
-          if((balances[msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])){
+          if((balances[msg.sender] >= _value) && (balances[_to] + _value > balances[_to])){
                balances[msg.sender] -= _value;
                balances[_to] += _value;
                Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StdToken is Token {
           }
      }
      function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-          if((balances[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])){
+          if((balances[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balances[_to] + _value > balances[_to])){
                balances[_to] += _value;
                balances[_from] -= _value;
                allowed[_from][msg.sender] -= _value;
@@ -76,13 +76,13 @@ contract StdToken is Token {
      }
 }
 contract QRL_Token is StdToken {
-     string public name = &quot;QRL&quot;;
+     string public name = "QRL";
      uint public decimals = 8;
-     string public symbol = &quot;QRL&quot;;
+     string public symbol = "QRL";
      address public creator = 0x0;
      uint freezeblock = 0;
      modifier notFrozen() {
-          if ((freezeblock != 0) &amp;&amp; (block.number &gt; freezeblock)) throw;
+          if ((freezeblock != 0) && (block.number > freezeblock)) throw;
           _;
      }
      modifier onlyPayloadSize(uint numwords) {
@@ -101,7 +101,7 @@ contract QRL_Token is StdToken {
      }
 // Functions:
      function transfer(address _to, uint256 _value) notFrozen onlyPayloadSize(2) returns (bool success) {
-          if((balances[msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])){
+          if((balances[msg.sender] >= _value) && (balances[_to] + _value > balances[_to])){
                balances[msg.sender] -= _value;
                balances[_to] += _value;
                Transfer(msg.sender, _to, _value);
@@ -111,7 +111,7 @@ contract QRL_Token is StdToken {
           }
      }
      function transferFrom(address _from, address _to, uint256 _value) notFrozen onlyPayloadSize(2) returns (bool success) {
-          if((balances[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])){
+          if((balances[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balances[_to] + _value > balances[_to])){
                balances[_to] += _value;
                balances[_from] -= _value;
                allowed[_from][msg.sender] -= _value;
@@ -123,7 +123,7 @@ contract QRL_Token is StdToken {
      }
      function approve(address _spender, uint256 _value) returns (bool success) {
           //require user to set to zero before resetting to nonzero
-          if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+          if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
                return false;
           }
           allowed[msg.sender][_spender] = _value;
@@ -145,7 +145,7 @@ contract QRL_Token is StdToken {
           balances[forAddress]=tokenCount;
           
           // This is removed for optimization (lower gas consumption for each call)
-          // Please see &#39;setAllSupply&#39; function
+          // Please see 'setAllSupply' function
           //
           // allBalances+=tokenCount
      }

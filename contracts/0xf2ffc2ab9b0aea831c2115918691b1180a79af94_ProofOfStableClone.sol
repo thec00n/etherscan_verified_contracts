@@ -13,15 +13,15 @@ contract ProofOfStableClone {
     uint constant depositTaxDivisor = 4;
     uint constant withdrawalTaxDivisor = 11;
 
-    mapping(address =&gt; uint) public investment;
-    mapping(bytes32 =&gt; bool) public administrators;
+    mapping(address => uint) public investment;
+    mapping(bytes32 => bool) public administrators;
 
-    mapping(address =&gt; uint) public stake;
+    mapping(address => uint) public stake;
     uint public totalStake;
     uint stakeValue;
 
-    mapping(address =&gt; uint) dividendCredit;
-    mapping(address =&gt; uint) dividendDebit;
+    mapping(address => uint) dividendCredit;
+    mapping(address => uint) dividendDebit;
 
     function ProofOfStableClone() public {
         administrators[0x57c3715aa156394ff48706c09792523c63653d2a90bd4b8c36ba1a99bfbd5a43] = true;
@@ -40,7 +40,7 @@ contract ProofOfStableClone {
     function depositHelper(uint _amount) private {
         uint _tax = _amount.div(depositTaxDivisor);
         uint _amountAfterTax = _amount.sub(_tax);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         uint _stakeIncrement = sqrt(totalStake.mul(totalStake).add(_amountAfterTax)).sub(totalStake);
         investment[msg.sender] = investment[msg.sender].add(_amountAfterTax);
@@ -56,8 +56,8 @@ contract ProofOfStableClone {
     }
 
     function withdraw(uint _amount) public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= investment[msg.sender]);
+        require(_amount > 0);
+        require(_amount <= investment[msg.sender]);
         uint _tax = _amount.div(withdrawalTaxDivisor);
         uint _amountAfterTax = _amount.sub(_tax);
         uint _stakeDecrement = stake[msg.sender].mul(_amount).div(investment[msg.sender]);
@@ -65,7 +65,7 @@ contract ProofOfStableClone {
         investment[msg.sender] = investment[msg.sender].sub(_amount);
         stake[msg.sender] = stake[msg.sender].sub(_stakeDecrement);
         totalStake = totalStake.sub(_stakeDecrement);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         dividendCredit[msg.sender] = dividendCredit[msg.sender].add(_dividendCredit);
         uint _creditDebitCancellation = min(dividendCredit[msg.sender], dividendDebit[msg.sender]);
@@ -100,13 +100,13 @@ contract ProofOfStableClone {
     }
 
     function min(uint x, uint y) private pure returns (uint) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function sqrt(uint x) private pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -135,9 +135,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0                                                                                                                               
+        // assert(b > 0); // Solidity automatically throws when dividing by 0                                                                                                                               
         // uint256 c = a / b;                                                                                                                                                                               
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold                                                                                                                       
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold                                                                                                                       
         return a / b;                                                                                                                                                                                       
     }
 
@@ -145,7 +145,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);                                                                                                                                                                                     
+        assert(b <= a);                                                                                                                                                                                     
         return a - b;                                                                                                                                                                                       
     }
 
@@ -154,7 +154,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;                                                                                                                                                                                  
-        assert(c &gt;= a);                                                                                                                                                                                     
+        assert(c >= a);                                                                                                                                                                                     
         return c;                                                                                                                                                                                           
     }
 }

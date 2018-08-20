@@ -6,7 +6,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -125,9 +125,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -135,7 +135,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -144,7 +144,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -157,7 +157,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -175,7 +175,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -221,7 +221,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -232,8 +232,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -296,7 +296,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -354,19 +354,19 @@ contract MintableToken is StandardToken, Ownable {
 
 
 contract ThinkCoin is MintableToken {
-  string public name = &quot;ThinkCoin&quot;;
-  string public symbol = &quot;TCO&quot;;
+  string public name = "ThinkCoin";
+  string public symbol = "TCO";
   uint8 public decimals = 18;
   uint256 public cap;
 
   function ThinkCoin(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // override
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
     return super.mint(_to, _amount);
   }
 
@@ -400,12 +400,12 @@ contract LockingContract is Ownable {
   event ReducedLockingTime(uint256 _newUnlockTime);
 
   ERC20 public tokenContract;
-  mapping(address =&gt; uint256) public tokens;
+  mapping(address => uint256) public tokens;
   uint256 public totalTokens;
   uint256 public unlockTime;
 
   function isLocked() public view returns(bool) {
-    return now &lt; unlockTime;
+    return now < unlockTime;
   }
 
   modifier onlyWhenUnlocked() {
@@ -419,7 +419,7 @@ contract LockingContract is Ownable {
   }
 
   function LockingContract(ERC20 _tokenContract, uint256 _lockingDuration) public {
-    require(_lockingDuration &gt; 0);
+    require(_lockingDuration > 0);
     unlockTime = now.add(_lockingDuration);
     tokenContract = _tokenContract;
   }
@@ -430,7 +430,7 @@ contract LockingContract is Ownable {
 
   // Should only be done from another contract.
   // To ensure that the LockingContract can release all noted tokens later,
-  // one should mint/transfer tokens to the LockingContract&#39;s account prior to noting
+  // one should mint/transfer tokens to the LockingContract's account prior to noting
   function noteTokens(address _beneficiary, uint256 _tokenAmount) external onlyOwner onlyWhenLocked {
     uint256 tokenBalance = tokenContract.balanceOf(this);
     require(tokenBalance == totalTokens.add(_tokenAmount));
@@ -449,8 +449,8 @@ contract LockingContract is Ownable {
   }
 
   function reduceLockingTime(uint256 _newUnlockTime) public onlyOwner onlyWhenLocked {
-    require(_newUnlockTime &gt;= now);
-    require(_newUnlockTime &lt; unlockTime);
+    require(_newUnlockTime >= now);
+    require(_newUnlockTime < unlockTime);
     unlockTime = _newUnlockTime;
     ReducedLockingTime(_newUnlockTime);
   }
@@ -475,8 +475,8 @@ contract Crowdsale is Ownable, Pausable {
   LockingContract public lockingContract;
   address public proposer; // proposes mintages of tokens
   address public approver; // approves proposed mintages
-  mapping(address =&gt; uint256) public mintProposals;
-  mapping(address =&gt; uint256) public mintLockedProposals;
+  mapping(address => uint256) public mintProposals;
+  mapping(address => uint256) public mintLockedProposals;
   uint256 public proposedTotal = 0;
   uint256 public saleCap;
   uint256 public saleStartTime;
@@ -490,13 +490,13 @@ contract Crowdsale is Ownable, Pausable {
                      uint256 _saleStartTime,
                      uint256 _saleEndTime
                      ) public {
-    require(_saleCap &gt; 0);
-    require(_saleStartTime &lt; _saleEndTime);
-    require(_saleEndTime &gt; now);
-    require(_lockingPeriod &gt; 0);
+    require(_saleCap > 0);
+    require(_saleStartTime < _saleEndTime);
+    require(_saleEndTime > now);
+    require(_lockingPeriod > 0);
     require(_proposer != _approver);
-    require(_saleStartTime &gt;= now);
-    require(_saleCap &lt;= _token.cap());
+    require(_saleStartTime >= now);
+    require(_saleCap <= _token.cap());
     require(address(_token) != 0x0);
 
     token = _token;
@@ -509,17 +509,17 @@ contract Crowdsale is Ownable, Pausable {
   }
 
   modifier saleStarted() {
-    require(now &gt;= saleStartTime);
+    require(now >= saleStartTime);
     _;
   }
 
   modifier saleNotEnded() {
-    require(now &lt; saleEndTime);
+    require(now < saleEndTime);
     _;
   }
 
   modifier saleEnded() {
-    require(now &gt;= saleEndTime);
+    require(now >= saleEndTime);
     _;
   }
 
@@ -535,7 +535,7 @@ contract Crowdsale is Ownable, Pausable {
 
   function exceedsSaleCap(uint256 _additionalAmount) internal view returns(bool) {
     uint256 totalSupply = token.totalSupply();
-    return totalSupply.add(_additionalAmount) &gt; saleCap;
+    return totalSupply.add(_additionalAmount) > saleCap;
   }
 
   modifier notExceedingSaleCap(uint256 _amount) {
@@ -545,7 +545,7 @@ contract Crowdsale is Ownable, Pausable {
 
   function proposeMint(address _beneficiary, uint256 _tokenAmount) public onlyProposer saleStarted saleNotEnded
                                                                           notExceedingSaleCap(proposedTotal.add(_tokenAmount)) {
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
     require(mintProposals[_beneficiary] == 0);
     proposedTotal = proposedTotal.add(_tokenAmount);
     mintProposals[_beneficiary] = _tokenAmount;
@@ -554,7 +554,7 @@ contract Crowdsale is Ownable, Pausable {
 
   function proposeMintLocked(address _beneficiary, uint256 _tokenAmount) public onlyProposer saleStarted saleNotEnded
                                                                          notExceedingSaleCap(proposedTotal.add(_tokenAmount)) {
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
     require(mintLockedProposals[_beneficiary] == 0);
     proposedTotal = proposedTotal.add(_tokenAmount);
     mintLockedProposals[_beneficiary] = _tokenAmount;
@@ -573,7 +573,7 @@ contract Crowdsale is Ownable, Pausable {
 
   function approveMint(address _beneficiary, uint256 _tokenAmount) public onlyApprover saleStarted
                                                                    notExceedingSaleCap(_tokenAmount) {
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
     require(mintProposals[_beneficiary] == _tokenAmount);
     mintProposals[_beneficiary] = 0;
     token.mint(_beneficiary, _tokenAmount);
@@ -582,7 +582,7 @@ contract Crowdsale is Ownable, Pausable {
 
   function approveMintLocked(address _beneficiary, uint256 _tokenAmount) public onlyApprover saleStarted
                                                                          notExceedingSaleCap(_tokenAmount) {
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
     require(mintLockedProposals[_beneficiary] == _tokenAmount);
     mintLockedProposals[_beneficiary] = 0;
     token.mint(lockingContract, _tokenAmount);
@@ -591,7 +591,7 @@ contract Crowdsale is Ownable, Pausable {
   }
 
   function mintAllocation(address _beneficiary, uint256 _tokenAmount) public onlyOwner saleEnded {
-    require(_tokenAmount &gt; 0);
+    require(_tokenAmount > 0);
     token.mint(_beneficiary, _tokenAmount);
     MintedAllocation(_beneficiary, _tokenAmount);
   }

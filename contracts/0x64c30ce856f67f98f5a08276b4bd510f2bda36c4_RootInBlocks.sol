@@ -32,7 +32,7 @@ contract Ownable {
 
 contract RootInBlocks is Ownable {
 
-  mapping(string =&gt; uint) map;
+  mapping(string => uint) map;
 
   event Added(
     string hash,

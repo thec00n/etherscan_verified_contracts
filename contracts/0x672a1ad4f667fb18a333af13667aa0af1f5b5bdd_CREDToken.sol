@@ -27,20 +27,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -112,8 +112,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -269,7 +269,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -280,7 +280,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -329,8 +329,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -343,7 +343,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -359,7 +359,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -390,7 +390,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -405,9 +405,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -431,7 +431,7 @@ contract MonthlyTokenVesting is TokenVesting {
 
 
     function release(ERC20Basic token) public onlyOwner {
-        require(now &gt;= previousTokenVesting + 30 days);
+        require(now >= previousTokenVesting + 30 days);
         super.release(token);
         previousTokenVesting = now;
     }
@@ -444,9 +444,9 @@ contract CREDToken is CappedToken {
      * Constant fields
      */
 
-    string public constant name = &quot;Verify Token&quot;;
+    string public constant name = "Verify Token";
     uint8 public constant decimals = 18;
-    string public constant symbol = &quot;CRED&quot;;
+    string public constant symbol = "CRED";
 
     /**
      * Immutable state variables
@@ -496,7 +496,7 @@ contract CREDToken is CappedToken {
     }
 
     modifier afterReserveUnlockTime {
-        require(now &gt;= reserveUnlockTime);
+        require(now >= reserveUnlockTime);
         _;
     }
 
@@ -533,21 +533,21 @@ contract CREDToken is CappedToken {
     // _value has to be bounded not to overflow.
     function mintAdvisorsTokens(uint256 _value) public onlyOwner canMint {
         require(advisorsLocked == 0);
-        require(_value.add(totalSupply) &lt;= cap);
+        require(_value.add(totalSupply) <= cap);
         advisorsLocked = _value;
         MintLocked(advisorsWallet, _value);
     }
 
     function mintTeamTokens(uint256 _value) public onlyOwner canMint {
         require(teamLocked == 0);
-        require(_value.add(totalSupply) &lt;= cap);
+        require(_value.add(totalSupply) <= cap);
         teamLocked = _value;
         MintLocked(teamWallet, _value);
     }
 
     function mintReserveTokens(uint256 _value) public onlyOwner canMint {
         require(reserveLocked == 0);
-        require(_value.add(totalSupply) &lt;= cap);
+        require(_value.add(totalSupply) <= cap);
         reserveLocked = _value;
         MintLocked(reserveWallet, _value);
     }
@@ -556,9 +556,9 @@ contract CREDToken is CappedToken {
     /// Finalise any minting operations. Resets the owner and causes normal tokens
     /// to be frozen. Also begins the countdown for locked-up tokens.
     function finalise() public onlyOwner {
-        require(reserveLocked &gt; 0);
-        require(teamLocked &gt; 0);
-        require(advisorsLocked &gt; 0);
+        require(reserveLocked > 0);
+        require(teamLocked > 0);
+        require(advisorsLocked > 0);
 
         advisorsVesting = new MonthlyTokenVesting(advisorsWallet, now, 92 days, 2 years, false);
         mint(advisorsVesting, advisorsLocked);
@@ -571,15 +571,15 @@ contract CREDToken is CappedToken {
 
     // Causes tokens to be liquid 1 week after the tokensale is completed
     function unfreeze() public {
-        require(unfreezeTime &gt; 0);
-        require(now &gt;= unfreezeTime);
+        require(unfreezeTime > 0);
+        require(now >= unfreezeTime);
         locked = false;
     }
 
 
     /// Unlock any now freeable tokens that are locked up for team and reserve accounts .
     function unlockTeamAndReserveTokens() public whenLiquid afterReserveUnlockTime unlockReserveAndTeamOnce {
-        require(totalSupply.add(teamLocked).add(reserveLocked) &lt;= cap);
+        require(totalSupply.add(teamLocked).add(reserveLocked) <= cap);
 
         totalSupply = totalSupply.add(teamLocked).add(reserveLocked);
         balances[teamWallet] = balances[teamWallet].add(teamLocked);

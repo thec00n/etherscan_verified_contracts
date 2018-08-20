@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -142,7 +142,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -173,7 +173,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -184,8 +184,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -305,8 +305,8 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract ICOToken is MintableToken, Pausable {
 
-  string public constant name = &quot;IPCHAIN Token&quot;;
-  string public constant symbol = &quot;IP&quot;;
+  string public constant name = "IPCHAIN Token";
+  string public constant symbol = "IP";
   uint8 public constant decimals = 18;
 
 
@@ -347,9 +347,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -402,14 +402,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -429,7 +429,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -460,21 +460,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -509,7 +509,7 @@ contract ICOCrowdsale is Ownable, Pausable, FinalizableCrowdsale {
     FinalizableCrowdsale()
     Crowdsale(_startTime, _endTime, NORMAL_RATE, _wallet)
   {
-    require((_endTime-_startTime) &gt; (15 * 1 days));
+    require((_endTime-_startTime) > (15 * 1 days));
     require(_tokenAddress != address(0x0));
     tokenAddress = _tokenAddress;
     token = createTokenContract();
@@ -535,37 +535,37 @@ contract ICOCrowdsale is Ownable, Pausable, FinalizableCrowdsale {
 
   function buyTokens(address beneficiary) public payable {
     uint256 minContributionAmount = 1 finney; // 0.001 ETH
-    require(msg.value &gt;= minContributionAmount);
+    require(msg.value >= minContributionAmount);
     super.buyTokens(beneficiary);
   }
 
   function getRate() internal constant returns(uint256) {
     // Pre-sale Period
-    if (now &lt; (startTime + PRESALE_DURATION)) {
-      require(weiRaised &lt;= PRESALE_CAP);
+    if (now < (startTime + PRESALE_DURATION)) {
+      require(weiRaised <= PRESALE_CAP);
       return PRESALE_RATE;
     }
 
     // Main sale
-    require(now &gt;= MAIN_SALE_START);
+    require(now >= MAIN_SALE_START);
 
     // First Bonus Period
-    if (weiRaised &lt;= BONUS_1_CAP) {
+    if (weiRaised <= BONUS_1_CAP) {
         return BONUS_1_RATE;
     }
 
     // Second Bonus Period
-    if (weiRaised &lt;= BONUS_2_CAP) {
+    if (weiRaised <= BONUS_2_CAP) {
         return BONUS_2_RATE;
     }
 
     // Third Bonus Period
-    if (weiRaised &lt;= BONUS_3_CAP) {
+    if (weiRaised <= BONUS_3_CAP) {
         return BONUS_3_RATE;
     }
 
     // Fourth Bonus Period
-    if (weiRaised &lt;= BONUS_4_CAP) {
+    if (weiRaised <= BONUS_4_CAP) {
         return BONUS_4_RATE;
     }
 

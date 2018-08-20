@@ -10,33 +10,33 @@ contract FsTkCMultiSigWallet {
     // initialized
     bool public initialized = false;
 
-    // committeesMap               = committees&#39; addresses -&gt; indices
-    // committeesArray             = index -&gt; committee&#39;s address
+    // committeesMap               = committees' addresses -> indices
+    // committeesArray             = index -> committee's address
     // committeesArrayIndexCounter = counter for committeesArray
     // committeesNumber            = number of committees
     // committeesArray [ committeesMap [ testAddress ] ] == 0x0 ? NotCommittee : IsCommittee
-    mapping (address =&gt; uint256) public committeesMap;
+    mapping (address => uint256) public committeesMap;
     address[] public committeesArray;
     uint256 public committeesArrayIndexCounter = 0;
     uint256 public committeesNumber = 0;
 
     // committeeJoinVotes  = votes for joining a committee
     // committeeKickVotes  = votes for kicking a committee
-    // committeeJoinVoters = newCommittee    -&gt; voter -&gt; voted
-    // committeeKickVoters = kickedCommittee -&gt; voter -&gt; voted
-    mapping (address =&gt; uint256) public committeeJoinVotes;
-    mapping (address =&gt; uint256) public committeeKickVotes;
-    mapping (address =&gt; mapping (address =&gt; bool)) public committeeJoinVoters;
-    mapping (address =&gt; mapping (address =&gt; bool)) public committeeKickVoters;
+    // committeeJoinVoters = newCommittee    -> voter -> voted
+    // committeeKickVoters = kickedCommittee -> voter -> voted
+    mapping (address => uint256) public committeeJoinVotes;
+    mapping (address => uint256) public committeeKickVotes;
+    mapping (address => mapping (address => bool)) public committeeJoinVoters;
+    mapping (address => mapping (address => bool)) public committeeKickVoters;
 
-    // txCounter = this multigis wallet&#39;s tx counter
+    // txCounter = this multigis wallet's tx counter
     uint256 public txCounter = 0;
 
-    // txTaskMap = tx&#39;s index to the task
-    mapping (uint256 =&gt; Task) public txTaskMap;
+    // txTaskMap = tx's index to the task
+    mapping (uint256 => Task) public txTaskMap;
 
     // tokenTransferFunctionIdentifierMap = sha3(ercVersion) to function identifier
-    mapping (bytes32 =&gt; bytes4) public tokenTransferFunctionIdentifierMap;
+    mapping (bytes32 => bytes4) public tokenTransferFunctionIdentifierMap;
 
     // tx task structure
     struct Task {
@@ -46,7 +46,7 @@ contract FsTkCMultiSigWallet {
         address tokenContractAddress;
         bytes4  functionIdentifier;
         uint256 acceptedCounter;
-        mapping (address =&gt; bool) acceptedCommitteesMap;
+        mapping (address => bool) acceptedCommitteesMap;
         bool    completed;
     }
 
@@ -62,7 +62,7 @@ contract FsTkCMultiSigWallet {
         addCommitteeToMapAndArray(deployer);
 
         // set default erc20 token function identifier
-        setTokenTransferIdentifier(&quot;erc20&quot;, 0xa9059cbb);
+        setTokenTransferIdentifier("erc20", 0xa9059cbb);
 
         initialized = true;
     }
@@ -76,7 +76,7 @@ contract FsTkCMultiSigWallet {
         committeesNumber++;
 
         committeeJoinVotes[_newCommittee] = 0;
-        for (uint i = 0; i &lt; committeesArrayIndexCounter; i++) {
+        for (uint i = 0; i < committeesArrayIndexCounter; i++) {
             if (committeesArray[i] != address(0)) {
                 committeeJoinVoters[_newCommittee][committeesArray[i]] = false;
             }
@@ -96,7 +96,7 @@ contract FsTkCMultiSigWallet {
         committeesNumber--;
 
         committeeKickVotes[_kickedCommittee] = 0;
-        for (uint i = 0; i &lt; committeesArrayIndexCounter; i++) {
+        for (uint i = 0; i < committeesArrayIndexCounter; i++) {
             if (committeesArray[i] != address(0)) {
                 committeeKickVoters[_kickedCommittee][committeesArray[i]] = false;
             }
@@ -193,7 +193,7 @@ contract FsTkCMultiSigWallet {
     // task type 2
     event TransferEtherInitiationEvent (uint256 txNumber, address initiator, address to, uint256 weiValue);
     function transferEtherInitiation (address _to, uint256 _weiValue) onlyCommitteesAfterInitialization public returns (bool) {
-        require(_weiValue &lt;= this.balance);
+        require(_weiValue <= this.balance);
 
         txTaskMap[txCounter] = Task({
             taskType: 2,

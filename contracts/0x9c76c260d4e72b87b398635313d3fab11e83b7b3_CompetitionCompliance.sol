@@ -153,7 +153,7 @@ contract CompetitionCompliance is ComplianceInterface, DBC, Owned {
         view
         returns (bool)
     {
-        return CompetitionInterface(competitionAddress).isWhitelisted(x) &amp;&amp; CompetitionInterface(competitionAddress).isCompetitionActive();
+        return CompetitionInterface(competitionAddress).isWhitelisted(x) && CompetitionInterface(competitionAddress).isCompetitionActive();
     }
 
 

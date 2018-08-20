@@ -46,14 +46,14 @@ contract XaurumProxyERC20 is ERC20TokenInterface {
     address dev;
 
     /* Public variables of the token */
-    string public standard = &#39;XaurumERCProxy&#39;;
-    string public name = &#39;Xaurum&#39;;
-    string public symbol = &#39;XAUR&#39;;
+    string public standard = 'XaurumERCProxy';
+    string public name = 'Xaurum';
+    string public symbol = 'XAUR';
     uint8 public decimals = 8;
 
 
     modifier isWorking(){
-        if (xaurumProxyWorking &amp;&amp; !xaurumTokenReference.lockdown()){
+        if (xaurumProxyWorking && !xaurumTokenReference.lockdown()){
             _
         }
     }
@@ -155,9 +155,9 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 contract XaurumToken {
     
     /* Public variables of the token */
-    string public standard = &#39;Xaurum v1.0&#39;;
-    string public name = &#39;Xaurum&#39;;
-    string public symbol = &#39;XAUR&#39;;
+    string public standard = 'Xaurum v1.0';
+    string public name = 'Xaurum';
+    string public symbol = 'XAUR';
     uint8 public decimals = 8;
 
     uint256 public totalSupply = 0;
@@ -166,9 +166,9 @@ contract XaurumToken {
     uint256 numberOfCoinages;
 
     /* Private variabiles for the token */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint) lockedAccounts;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint) lockedAccounts;
 
     /* Events */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -312,11 +312,11 @@ contract XaurumToken {
     function transfer(address _to, uint256 _amount) returns (bool status) {
         uint256 goldFee = dataContract.goldFee();
 
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;                                  // Check if the sender has enough
-            balances[_to] + _amount &gt; balances[_to] &amp;&amp;                          // Check for overflows
-            _amount &gt; goldFee &amp;&amp;                                                // Check if there is something left after burning fee
-            !lockdown &amp;&amp;                                                        // Check if coin is on lockdown
-            lockedAccounts[msg.sender] &lt;= block.number) {                       // Check if the account is locked
+        if (balances[msg.sender] >= _amount &&                                  // Check if the sender has enough
+            balances[_to] + _amount > balances[_to] &&                          // Check for overflows
+            _amount > goldFee &&                                                // Check if there is something left after burning fee
+            !lockdown &&                                                        // Check if coin is on lockdown
+            lockedAccounts[msg.sender] <= block.number) {                       // Check if the account is locked
             balances[msg.sender] -= _amount;                                    // Subtract from the sender minus the fee
             balances[_to] += (_amount - goldFee );                              // Add the same to the recipient
             Transfer(msg.sender, _to, (_amount - goldFee ));                    // Notify anyone listening that this transfer took place
@@ -331,12 +331,12 @@ contract XaurumToken {
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool status) {
         uint256 goldFee = dataContract.goldFee();
 
-        if (balances[_from] &gt;= _amount &amp;&amp;                                  // Check if the sender has enough
-            balances[_to] + _amount &gt; balances[_to] &amp;&amp;                          // Check for overflows
-            _amount &gt; goldFee &amp;&amp;                                                // Check if there is something left after burning fee
-            !lockdown &amp;&amp;                                                        // Check if coin is on lockdown
-            lockedAccounts[_from] &lt;= block.number) {                       // Check if the account is locked
-            if (_amount &gt; allowed[_from][msg.sender]){                          // Check allowance
+        if (balances[_from] >= _amount &&                                  // Check if the sender has enough
+            balances[_to] + _amount > balances[_to] &&                          // Check for overflows
+            _amount > goldFee &&                                                // Check if there is something left after burning fee
+            !lockdown &&                                                        // Check if coin is on lockdown
+            lockedAccounts[_from] <= block.number) {                       // Check if the account is locked
+            if (_amount > allowed[_from][msg.sender]){                          // Check allowance
                 return false;
             }
             balances[_from] -= _amount;                                    // Subtract from the sender minus the fee
@@ -377,11 +377,11 @@ contract XaurumToken {
 
         uint256 goldFee = dataContract.goldFee();
 
-        if (balances[_source] &gt;= _amount &amp;&amp;                                     // Check if the sender has enough
-            balances[_to] + _amount &gt; balances[_to] &amp;&amp;                          // Check for overflows
-            _amount &gt; goldFee &amp;&amp;                                                // Check if there is something left after burning fee
-            !lockdown &amp;&amp;                                                        // Check if coin is on lockdown
-            lockedAccounts[_source] &lt;= block.number) {                          // Check if the account is locked
+        if (balances[_source] >= _amount &&                                     // Check if the sender has enough
+            balances[_to] + _amount > balances[_to] &&                          // Check for overflows
+            _amount > goldFee &&                                                // Check if there is something left after burning fee
+            !lockdown &&                                                        // Check if coin is on lockdown
+            lockedAccounts[_source] <= block.number) {                          // Check if the account is locked
             
             balances[_source] -= _amount;                                       // Subtract from the sender minus the fee
             balances[_to] += (_amount - goldFee );                              // Add the same to the recipient
@@ -402,13 +402,13 @@ contract XaurumToken {
 
         uint256 goldFee = dataContract.goldFee();
 
-        if (balances[_from] &gt;= _amount &amp;&amp;                                       // Check if the sender has enough
-            balances[_to] + _amount &gt; balances[_to] &amp;&amp;                          // Check for overflows
-            _amount &gt; goldFee &amp;&amp;                                                // Check if there is something left after burning fee
-            !lockdown &amp;&amp;                                                        // Check if coin is on lockdown
-            lockedAccounts[_from] &lt;= block.number) {                            // Check if the account is locked
+        if (balances[_from] >= _amount &&                                       // Check if the sender has enough
+            balances[_to] + _amount > balances[_to] &&                          // Check for overflows
+            _amount > goldFee &&                                                // Check if there is something left after burning fee
+            !lockdown &&                                                        // Check if coin is on lockdown
+            lockedAccounts[_from] <= block.number) {                            // Check if the account is locked
 
-            if (_amount &gt; allowed[_from][_source]){                             // Check allowance
+            if (_amount > allowed[_from][_source]){                             // Check allowance
                 return (false, 0, 0, 0, 0, 0); 
             }               
 
@@ -440,7 +440,7 @@ contract XaurumToken {
     
     /* Lock account for X amount of blocks */
     function lockAccount(uint _block) returns (bool answer){
-        if (lockedAccounts[msg.sender] &lt; block.number + _block){
+        if (lockedAccounts[msg.sender] < block.number + _block){
             lockedAccounts[msg.sender] = block.number + _block;
             return true;
         }
@@ -448,7 +448,7 @@ contract XaurumToken {
     }
 
     function isAccountLocked(address _accountAddress) returns (bool){
-        if (lockedAccounts[_accountAddress] &gt; block.number){
+        if (lockedAccounts[_accountAddress] > block.number){
             return true;
         }
         return false;
@@ -463,9 +463,9 @@ contract XaurumToken {
         uint256 xaurForGasLimit = dataContract.xaurForGasLimit();
         uint256 weiForXau = dataContract.weiForXau();
 
-        if (balances[msg.sender] &gt; xaurForGasLimit &amp;&amp; 
-            balances[xaurForGasCurrator] &lt; balances[xaurForGasCurrator]  + xaurForGasLimit &amp;&amp;
-            this.balance &gt; dataContract.weiForXau()) {
+        if (balances[msg.sender] > xaurForGasLimit && 
+            balances[xaurForGasCurrator] < balances[xaurForGasCurrator]  + xaurForGasLimit &&
+            this.balance > dataContract.weiForXau()) {
             if (_to.send(dataContract.weiForXau())){
                 balances[msg.sender] -= xaurForGasLimit;
                 balances[xaurForGasCurrator] += xaurForGasLimit;
@@ -506,14 +506,14 @@ contract XaurumToken {
     /// Coinage region
     ///
     function doCoinage(address[] _coinageAddresses, uint256[] _coinageAmounts, uint256 _usdAmount, uint256 _xaurCoined, uint256 _goldBought) returns (bool){
-        if (msg.sender == address(coinageContract) &amp;&amp; 
+        if (msg.sender == address(coinageContract) && 
             _coinageAddresses.length == _coinageAmounts.length){
             
             totalSupply += _xaurCoined;
             totalGoldSupply += _goldBought;
             numberOfCoinages += 1;
             Coinage(numberOfCoinages, _usdAmount, _xaurCoined, _goldBought, totalGoldSupply, totalSupply);
-            for (uint256 cnt = 0; cnt &lt; _coinageAddresses.length; cnt++){
+            for (uint256 cnt = 0; cnt < _coinageAddresses.length; cnt++){
                 balances[_coinageAddresses[cnt]] += _coinageAmounts[cnt]; 
             }
             return true;
@@ -588,7 +588,7 @@ contract XaurmProxyContract{
     /* Proxy Contract */
     
     address[] approvedProxys; 
-    mapping (address =&gt; bool) proxyList;
+    mapping (address => bool) proxyList;
     
     /* Adds new proxy to proxy lists and grants him the permission to use transferViaProxy */
     function addNewProxy(address _proxyAdress){

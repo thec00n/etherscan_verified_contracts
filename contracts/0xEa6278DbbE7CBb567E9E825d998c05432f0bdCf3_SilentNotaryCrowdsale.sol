@@ -9,37 +9,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 /// @title ERC20 interface see https://github.com/ethereum/EIPs/issues/20
@@ -108,8 +108,8 @@ contract Killable is Ownable {
 }
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
 contract SilentNotaryToken is SafeMath, ERC20, Killable {
-  string constant public name = &quot;Silent Notary Token&quot;;
-  string constant public symbol = &quot;SNTR&quot;;
+  string constant public name = "Silent Notary Token";
+  string constant public symbol = "SNTR";
   uint constant public decimals = 4;
   /// Buyout price
   uint constant public buyOutPrice = 200 finney;
@@ -123,13 +123,13 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
     bool exist;
   }
   /// Holder balances
-  mapping(address =&gt; Balance) public balances;
+  mapping(address => Balance) public balances;
   /// Contract that is allowed to create new tokens and allows unlift the transfer limits on this token
   address public crowdsaleAgent;
   /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
   bool public released = false;
   /// approve() allowances
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /// @dev Limit token transfer until the crowdsale is over.
   modifier canTransfer() {
@@ -162,7 +162,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
   /// @param size payload size
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
   }
 
@@ -185,7 +185,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
 
   /// Fallback method
   function() payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     Deposit(msg.sender, msg.value);
   }
   /// @dev Create new tokens and allocate them to an address. Only callably by a crowdsale contract
@@ -270,8 +270,8 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param _amount wei for buyout tokens
   function buyout(address _holder, uint _amount) onlyOwner addIfNotExist(msg.sender) external  {
     require(_holder != msg.sender);
-    require(this.balance &gt;= _amount);
-    require(buyOutPrice &lt;= _amount);
+    require(this.balance >= _amount);
+    require(buyOutPrice <= _amount);
 
     uint multiplier = 10 ** decimals;
     uint buyoutTokens = safeDiv(safeMul(_amount, multiplier), buyOutPrice);
@@ -327,10 +327,10 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
  bool public finalized;
 
  ///  How much ETH each address has invested to this crowdsale
- mapping (address =&gt; uint256) public investedAmountOf;
+ mapping (address => uint256) public investedAmountOf;
 
  ///  How much tokens this crowdsale has credited for each investor address
- mapping (address =&gt; uint256) public tokenAmountOf;
+ mapping (address => uint256) public tokenAmountOf;
 
  /// if the funding goal is not reached, investors may withdraw their funds
  uint public constant FUNDING_GOAL = 1000 ether;
@@ -399,7 +399,7 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
    startsAt = _start;
  }
 
- /// @dev Don&#39;t expect to just send in money and get tokens.
+ /// @dev Don't expect to just send in money and get tokens.
  function() payable {
    buy();
  }
@@ -408,13 +408,13 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
   /// @param receiver The Ethereum address who receives the tokens
  function investInternal(address receiver) stopInEmergency private {
    require(getState() == State.Funding);
-   require(msg.value &gt;= MIN_INVESTEMENT);
+   require(msg.value >= MIN_INVESTEMENT);
 
    uint weiAmount = msg.value;
 
    var multiplier = 10 ** token.decimals();
    uint tokenAmount = safeDiv(safeMul(weiAmount, multiplier), tokenPrice);
-   assert(tokenAmount &gt; 0);
+   assert(tokenAmount > 0);
 
    if(investedAmountOf[receiver] == 0) {
       // A new investor
@@ -432,12 +432,12 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
    tokenPrice = newPrice;
 
    assignTokens(receiver, tokenAmount);
-   if(weiRaised &lt;= MULTISIG_WALLET_GOAL)
+   if(weiRaised <= MULTISIG_WALLET_GOAL)
      multisigWallet.transfer(weiAmount);
    else {
      int remain = int(weiAmount - weiRaised - MULTISIG_WALLET_GOAL);
 
-     if(remain &gt; 0) {
+     if(remain > 0) {
        multisigWallet.transfer(uint(remain));
        weiAmount = safeSub(weiAmount, uint(remain));
      }
@@ -475,7 +475,7 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
  function finalizeCrowdsale() internal {
    var multiplier = 10 ** token.decimals();
    uint investorTokens = safeMul(INVESTOR_TOKENS, multiplier);
-   if(investorTokens &gt; tokensSold)
+   if(investorTokens > tokensSold)
      assignTokens(teamWallet, safeSub(investorTokens, tokensSold));
    token.releaseTokenTransfer();
  }
@@ -506,18 +506,18 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
      return State.Finalized;
    if (address(token) == 0 || address(multisigWallet) == 0)
      return State.Preparing;
-   if (now &gt;= startsAt &amp;&amp; now &lt; startsAt + icoDuration &amp;&amp; !isCrowdsaleFull())
+   if (now >= startsAt && now < startsAt + icoDuration && !isCrowdsaleFull())
      return State.Funding;
    if (isMinimumGoalReached())
        return State.Success;
-   if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised)
+   if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
      return State.Refunding;
    return State.Failure;
  }
 
  /// @dev Prolongate ICO if owner decide it
  function prolongate() public onlyOwner {
-   require(icoDuration &lt; DURATION * 2);
+   require(icoDuration < DURATION * 2);
    icoDuration += DURATION;
  }
 
@@ -528,22 +528,22 @@ contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
    int multiplier = int(10**token.decimals());
    int coefficient = int(safeDiv(totalRaisedTokens, TOTAL_TOKENS_FOR_PRICE)) - multiplier;
    int priceDifference = coefficient * int(MAX_PRICE - MIN_PRICE) / multiplier;
-   assert(int(MAX_PRICE) &gt;= -priceDifference);
+   assert(int(MAX_PRICE) >= -priceDifference);
    return uint(priceDifference + int(MAX_PRICE));
  }
 
   /// @dev Minimum goal was reached
   /// @return true if the crowdsale has raised enough money to be a succes
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= FUNDING_GOAL;
+    return weiRaised >= FUNDING_GOAL;
   }
 
   /// @dev Check crowdsale limit
   /// @return limit reached result
   function isCrowdsaleFull() public constant returns (bool) {
-    return tokenPrice &gt;= MAX_PRICE
-      || tokensSold &gt;= safeMul(TOTAL_TOKENS_FOR_PRICE,  10 ** token.decimals())
-      || now &gt; startsAt + icoDuration;
+    return tokenPrice >= MAX_PRICE
+      || tokensSold >= safeMul(TOTAL_TOKENS_FOR_PRICE,  10 ** token.decimals())
+      || now > startsAt + icoDuration;
   }
 
    /// @dev Dynamically create tokens and assign them to the investor.

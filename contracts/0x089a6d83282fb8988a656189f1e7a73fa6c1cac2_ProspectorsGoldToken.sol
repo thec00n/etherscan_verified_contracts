@@ -20,15 +20,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -36,10 +36,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -48,15 +48,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -64,10 +64,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -76,10 +76,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -134,10 +134,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -175,8 +175,8 @@ contract DSMath {
 
 contract TokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function totalSupply() constant returns (uint256) {
         return _supply;
@@ -189,7 +189,7 @@ contract TokenBase is ERC20, DSMath {
     }
     
     function transfer(address to, uint value) returns (bool) {
-        assert(_balances[msg.sender] &gt;= value);
+        assert(_balances[msg.sender] >= value);
         
         _balances[msg.sender] = sub(_balances[msg.sender], value);
         _balances[to] = add(_balances[to], value);
@@ -200,8 +200,8 @@ contract TokenBase is ERC20, DSMath {
     }
     
     function transferFrom(address from, address to, uint value) returns (bool) {
-        assert(_balances[from] &gt;= value);
-        assert(_approvals[from][msg.sender] &gt;= value);
+        assert(_balances[from] >= value);
+        assert(_approvals[from][msg.sender] >= value);
         
         _approvals[from][msg.sender] = sub(_approvals[from][msg.sender], value);
         _balances[from] = sub(_balances[from], value);
@@ -271,8 +271,8 @@ contract Migrable is TokenBase, Owned
 }
 
 contract ProspectorsGoldToken is TokenBase, Owned, Migrable {
-    string public constant name = &quot;Prospectors Gold&quot;;
-    string public constant symbol = &quot;PGL&quot;;
+    string public constant name = "Prospectors Gold";
+    string public constant symbol = "PGL";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     address private game_address = 0xb1; // Address 0xb1 is provably non-transferrable. Game tokens will be moved to game platform after developing
@@ -297,7 +297,7 @@ contract ProspectorsGoldToken is TokenBase, Owned, Migrable {
     //override and prevent transfer if crowdsale fails
     function transfer(address to, uint value) returns (bool)
     {
-        if (locked == true &amp;&amp; msg.sender != address(crowdsale)) revert();
+        if (locked == true && msg.sender != address(crowdsale)) revert();
         return super.transfer(to, value);
     }
     
@@ -311,7 +311,7 @@ contract ProspectorsGoldToken is TokenBase, Owned, Migrable {
     //unlock transfers if crowdsale success
     function unlock() returns (bool)
     {
-        if (locked == true &amp;&amp; crowdsale.is_success() == true)
+        if (locked == true && crowdsale.is_success() == true)
         {
             locked = false;
             return true;
@@ -356,7 +356,7 @@ contract ProspectorsGoldToken is TokenBase, Owned, Migrable {
     //adding tokens to crowdsale, bounty, game and prospectors team
     function mint_for(address addr, uint amount) private
     {
-        if (_balances[this] &gt;= amount)
+        if (_balances[this] >= amount)
         {
             _balances[this] = sub(_balances[this], amount);
             _balances[addr] = add(_balances[addr], amount);

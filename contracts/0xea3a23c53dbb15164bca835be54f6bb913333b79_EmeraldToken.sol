@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,10 +61,10 @@ contract StandardToken is ERC20 {
   using SafeMath for uint;
 
   /* Actual balances of token holders */
-  mapping (address =&gt; uint) balances;
+  mapping (address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool) {
@@ -78,7 +78,7 @@ contract StandardToken is ERC20 {
    * http://vessenes.com/the-erc20-short-address-attack-explained/
    */
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -88,7 +88,7 @@ contract StandardToken is ERC20 {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -102,7 +102,7 @@ contract StandardToken is ERC20 {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool) {
-    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][_to] &gt;= _value);
+    require(balances[_from] >= _value && allowed[_from][_to] >= _value);
     allowed[_from][_to] = allowed[_from][_to].sub(_value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner = msg.sender;
@@ -184,7 +184,7 @@ contract EmeraldToken is StandardToken, Ownable {
   string public symbol;
   uint public decimals;
 
-  mapping (address =&gt; bool) public producers;
+  mapping (address => bool) public producers;
 
   bool public released = false;
 
@@ -212,7 +212,7 @@ contract EmeraldToken is StandardToken, Ownable {
   }
 
   function EmeraldToken(string _name, string _symbol, uint _decimals) {
-    require(_decimals &gt; 0);
+    require(_decimals > 0);
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -222,7 +222,7 @@ contract EmeraldToken is StandardToken, Ownable {
   }
 
   /*
-  * Sets a producer&#39;s status
+  * Sets a producer's status
   * Distribution contract can be a producer
   */
   function setProducer(address _addr, bool _status) onlyOwner {

@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -60,14 +60,14 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // used for airdrop
   uint256 airdropTotalSupply;
   uint256 airdropCurrentSupply;
   uint256 airdropNum; // airdrop number for each account
   // store if the address is touched for airdrop
-  mapping(address =&gt; bool) touched; 
+  mapping(address => bool) touched; 
 
   /**
    * Internal transfer, only can be called by this contract
@@ -76,7 +76,7 @@ contract BasicToken is ERC20Basic {
     // add airdrop to address _from
     initialize(_from);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     // add airdrop to address _to
     initialize(_to);
@@ -110,7 +110,7 @@ contract BasicToken is ERC20Basic {
 
   // internal privats
   function initialize(address _address) internal returns (bool success) {
-    if (airdropCurrentSupply &lt; airdropTotalSupply &amp;&amp; !touched[_address]) {
+    if (airdropCurrentSupply < airdropTotalSupply && !touched[_address]) {
       touched[_address] = true;
       airdropCurrentSupply = airdropCurrentSupply.add(airdropNum);
       balances[_address] = balances[_address].add(airdropNum);
@@ -120,7 +120,7 @@ contract BasicToken is ERC20Basic {
   }
 
   function getBalance(address _address) internal view returns (uint256) {
-    if (airdropCurrentSupply &lt; airdropTotalSupply &amp;&amp; !touched[_address]) {
+    if (airdropCurrentSupply < airdropTotalSupply && !touched[_address]) {
       return balances[_address].add(airdropNum);
     } else {
       return balances[_address];
@@ -132,7 +132,7 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     _transfer(_from, _to, _value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value the amount of money to burn
    */
   function burn(uint256 _value) public returns (bool success) {
-    require(balanceOf(msg.sender) &gt;= _value); // Check if the sender has enough
+    require(balanceOf(msg.sender) >= _value); // Check if the sender has enough
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     emit Burn(msg.sender, _value);
@@ -221,10 +221,10 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value the amount of money to burn
    */
   function burnFrom(address _from, uint256 _value) public returns (bool success) {
-    require(balanceOf(_from) &gt;= _value); // Check if the targeted balance is enough
-    require(_value &lt;= allowance(_from, msg.sender)); // Check allowance
+    require(balanceOf(_from) >= _value); // Check if the targeted balance is enough
+    require(_value <= allowance(_from, msg.sender)); // Check allowance
     balances[_from] = balances[_from].sub(_value); // Subtract from the targeted balance
-    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender&#39;s allowance
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender's allowance
     totalSupply = totalSupply.sub(_value); // Update totalSupply
     emit Burn(_from, _value);
     return true;

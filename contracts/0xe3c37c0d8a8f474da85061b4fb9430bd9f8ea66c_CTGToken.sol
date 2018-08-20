@@ -23,7 +23,7 @@ library SafeMath {
    * SafeMath sub function
    **/
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
@@ -32,7 +32,7 @@ library SafeMath {
    **/
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ contract ERC20Basic {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * BasicToken transfer function
@@ -99,7 +99,7 @@ contract ERC20 is ERC20Basic {
  * @notice https://github.com/ethereum/EIPs/issues/20
  */
 contract Token is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   
   /**
    * Token transferFrom function
@@ -153,8 +153,8 @@ contract Token is ERC20, BasicToken {
  * @dev Simple ERC20 Token with standard token functions.
  */
 contract CTGToken is Token {
-  string public constant NAME = &quot;CoinTruth Gold&quot;;
-  string public constant SYMBOL = &quot;CTG&quot;;
+  string public constant NAME = "CoinTruth Gold";
+  string public constant SYMBOL = "CTG";
   uint256 public constant DECIMALS = 18;
 
   uint256 public constant INITIAL_SUPPLY = 1000000000 * 10**18;

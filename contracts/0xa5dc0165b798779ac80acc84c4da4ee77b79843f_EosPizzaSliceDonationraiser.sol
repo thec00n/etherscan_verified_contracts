@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
 *   END: 18 MAY 2018
 *
 *   This is for the fun. Thank you token factory for your smart contract inspiration.
-*   Jummy &amp; crusty. Get your &#127829;EPS while it&#39;s hot. 
+*   Jummy & crusty. Get your 🍕EPS while it's hot. 
 *
 *   https://eos.pizza
 *
@@ -34,10 +34,10 @@ pragma solidity ^0.4.18;
  */
 contract EosPizzaSliceConfig {
     // The name of the token.
-    string constant NAME = &quot;EOS.Pizza&quot;;
+    string constant NAME = "EOS.Pizza";
 
     // The symbol of the token.
-    string constant SYMBOL = &quot;EPS&quot;;
+    string constant SYMBOL = "EPS";
 
     // The number of decimals for the token.
     uint8 constant DECIMALS = 18;  // Same as ethers.
@@ -72,13 +72,13 @@ contract ERC20TokenInterface {
 library SafeMath {
     function plus(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
 
     function minus(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -108,17 +108,17 @@ contract ERC20Token is ERC20TokenInterface {
     using SafeMath for uint;
 
     // Token account balances.
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
 
     // Delegated number of tokens to transfer.
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
 
 
     /**
      * @dev Checks the balance of a certain address.
      *
-     * @param _account The address which&#39;s balance will be checked.
+     * @param _account The address which's balance will be checked.
      *
      * @return Returns the balance of the `_account` address.
      */
@@ -135,7 +135,7 @@ contract ERC20Token is ERC20TokenInterface {
      * @return Whether the transfer was successful or not.
      */
     function transfer(address _to, uint _value) public returns (bool success) {
-        if (balances[msg.sender] &lt; _value || _value == 0) {
+        if (balances[msg.sender] < _value || _value == 0) {
 
             return false;
         }
@@ -159,7 +159,7 @@ contract ERC20Token is ERC20TokenInterface {
      * @return Whether the transfer was successful or not.
      */
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value || _value == 0) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value || _value == 0) {
             return false;
         }
 
@@ -284,14 +284,14 @@ contract Freezable is HasOwner {
   }
 
   /**
-   * @dev Allows the owner to &quot;freeze&quot; the contract.
+   * @dev Allows the owner to "freeze" the contract.
    */
   function freeze() onlyOwner public {
     frozen = true;
   }
 
   /**
-   * @dev Allows the owner to &quot;unfreeze&quot; the contract.
+   * @dev Allows the owner to "unfreeze" the contract.
    */
   function unfreeze() onlyOwner public {
     frozen = false;
@@ -386,7 +386,7 @@ contract EosPizzaSlice is EosPizzaSliceConfig, HasOwner, FreezableERC20Token {
  * @dev The static configuration for the EOS Pizza Slice donationraiser.
  */
 contract EosPizzaSliceDonationraiserConfig is EosPizzaSliceConfig {
-    // The number of &#127829; per 1 ETH.
+    // The number of 🍕 per 1 ETH.
     uint constant CONVERSION_RATE = 100000;
 
     // The public sale hard cap of the donationraiser.
@@ -399,16 +399,16 @@ contract EosPizzaSliceDonationraiserConfig is EosPizzaSliceConfig {
     uint constant END_DATE =  1526603720;
 
 
-    // Total number of tokens locked for the &#127829; core team.
+    // Total number of tokens locked for the 🍕 core team.
     uint constant TOKENS_LOCKED_CORE_TEAM = 35 * (10**6) * DECIMALS_FACTOR;
 
-    // Total number of tokens locked for &#127829; advisors.
+    // Total number of tokens locked for 🍕 advisors.
     uint constant TOKENS_LOCKED_ADVISORS = 125 * (10**5) * DECIMALS_FACTOR;
 
-    // The release date for tokens locked for the &#127829; core team.
+    // The release date for tokens locked for the 🍕 core team.
     uint constant TOKENS_LOCKED_CORE_TEAM_RELEASE_DATE = END_DATE + 1 days;
 
-    // The release date for tokens locked for &#127829; advisors.
+    // The release date for tokens locked for 🍕 advisors.
     uint constant TOKENS_LOCKED_ADVISORS_RELEASE_DATE = END_DATE + 1 days;
 
     // Total number of tokens locked for bounty program.
@@ -440,12 +440,12 @@ contract TokenSafe {
         // The release date for the locked tokens
         // Note: Unix timestamp fits uint32, however block.timestamp is uint
         uint releaseDate;
-        // The balances for the &#127829; locked token accounts.
-        mapping (address =&gt; uint) balances;
+        // The balances for the 🍕 locked token accounts.
+        mapping (address => uint) balances;
     }
 
     // The account bundles of locked tokens grouped by release date
-    mapping (uint8 =&gt; AccountsBundle) public bundles;
+    mapping (uint8 => AccountsBundle) public bundles;
 
     // The `ERC20TokenInterface` contract.
     ERC20TokenInterface token;
@@ -490,9 +490,9 @@ contract TokenSafe {
      */
     function releaseAccount(uint8 _type, address _account) internal {
         var bundle = bundles[_type];
-        require(now &gt;= bundle.releaseDate);
+        require(now >= bundle.releaseDate);
         uint tokens = bundle.balances[_account];
-        require(tokens &gt; 0);
+        require(tokens > 0);
         bundle.balances[_account] = 0;
         bundle.lockedTokens = bundle.lockedTokens.minus(tokens);
         if (!token.transfer(_account, tokens)) {
@@ -528,7 +528,7 @@ contract EosPizzaSliceSafe is TokenSafe, EosPizzaSliceDonationraiserConfig {
             TOKENS_LOCKED_CORE_TEAM_RELEASE_DATE
         );
 
-        // Accounts with tokens locked for the &#127829; core team.
+        // Accounts with tokens locked for the 🍕 core team.
         addLockedAccount(CORE_TEAM, 0x3ce215b2e4dC9D2ba0e2fC5099315E4Fa05d8AA2, 35 * (10**6) * DECIMALS_FACTOR);
 
 
@@ -540,7 +540,7 @@ contract EosPizzaSliceSafe is TokenSafe, EosPizzaSliceDonationraiserConfig {
             TOKENS_LOCKED_ADVISORS_RELEASE_DATE
         );
 
-        // Accounts with &#127829; tokens locked for advisors.
+        // Accounts with 🍕 tokens locked for advisors.
         addLockedAccount(ADVISORS, 0xC0e321E9305c21b72F5Ee752A9E8D9eCD0f2e2b1, 25 * (10**5) * DECIMALS_FACTOR);
         addLockedAccount(ADVISORS, 0x55798CF234FEa760b0591537517C976FDb0c53Ba, 25 * (10**5) * DECIMALS_FACTOR);
         addLockedAccount(ADVISORS, 0xbc732e73B94A5C4a8f60d0D98C4026dF21D500f5, 25 * (10**5) * DECIMALS_FACTOR);
@@ -562,14 +562,14 @@ contract EosPizzaSliceSafe is TokenSafe, EosPizzaSliceDonationraiserConfig {
     }
 
     /**
-     * @dev Allows core team account &#127829; tokens to be released.
+     * @dev Allows core team account 🍕 tokens to be released.
      */
     function releaseCoreTeamAccount() public {
         releaseAccount(CORE_TEAM, msg.sender);
     }
 
     /**
-     * @dev Allows advisors account &#127829; tokens to be released.
+     * @dev Allows advisors account 🍕 tokens to be released.
      */
     function releaseAdvisorsAccount() public {
         releaseAccount(ADVISORS, msg.sender);
@@ -581,7 +581,7 @@ contract EosPizzaSliceSafe is TokenSafe, EosPizzaSliceDonationraiserConfig {
 contract Whitelist is HasOwner
 {
     // Whitelist mapping
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     /**
      * @dev The constructor.
@@ -607,7 +607,7 @@ contract Whitelist is HasOwner
      * @param _status The new status to apply
      */
     function setWhitelistEntries(address[] _entries, bool _status) internal {
-        for (uint32 i = 0; i &lt; _entries.length; ++i) {
+        for (uint32 i = 0; i < _entries.length; ++i) {
             whitelist[_entries[i]] = _status;
         }
     }
@@ -645,7 +645,7 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
     // The address of the account which will receive the funds gathered by the donationraiser.
     address public beneficiary;
 
-    // The number of &#127829; participants will receive per 1 ETH.
+    // The number of 🍕 participants will receive per 1 ETH.
     uint public conversionRate;
 
     // Donationraiser start date.
@@ -690,9 +690,9 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
     event BeneficiaryChange(address _beneficiary);
 
     /**
-     * @dev The event fires when the number of &#127829;EPS per 1 ETH is changed.
+     * @dev The event fires when the number of 🍕EPS per 1 ETH is changed.
      *
-     * @param _conversionRate The new number of &#127829;EPS per 1 ETH.
+     * @param _conversionRate The new number of 🍕EPS per 1 ETH.
      */
     event ConversionRateChange(uint _conversionRate);
 
@@ -727,7 +727,7 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
 
         eosPizzaSliceSafe = new EosPizzaSliceSafe(this);
 
-        // Freeze the transfers for the duration of the donationraiser. Removed this, you can immediately transfer your &#127829;EPS to any ether address you like!
+        // Freeze the transfers for the duration of the donationraiser. Removed this, you can immediately transfer your 🍕EPS to any ether address you like!
         // freeze();
     }
 
@@ -745,13 +745,13 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
     }
 
     /**
-     * @dev Sets converstion rate of 1 ETH to &#127829;EPS. Can only be changed before the donationraiser starts.
+     * @dev Sets converstion rate of 1 ETH to 🍕EPS. Can only be changed before the donationraiser starts.
      *
      * @param _conversionRate The new number of EOS Pizza Slices per 1 ETH.
      */
     function setConversionRate(uint _conversionRate) public onlyOwner {
-        require(now &lt; startDate);
-        require(_conversionRate &gt; 0);
+        require(now < startDate);
+        require(_conversionRate > 0);
 
         conversionRate = _conversionRate;
         individualLimit = INDIVIDUAL_ETHER_LIMIT * _conversionRate;
@@ -762,7 +762,7 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
 
 
     /**
-     * @dev The default function which will fire every time someone sends ethers to this contract&#39;s address.
+     * @dev The default function which will fire every time someone sends ethers to this contract's address.
      */
     function() public payable {
         buyTokens();
@@ -774,18 +774,18 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
     //function buyTokens() public payable onlyWhitelisted {
     function buyTokens() public payable {
         require(!finalized);
-        require(now &gt;= startDate);
-        require(now &lt;= endDate);
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);  // gas price limit
-        require(msg.value &gt;= minimumContribution);  // required minimum contribution
-        require(tokensSold &lt;= hardCap);
+        require(now >= startDate);
+        require(now <= endDate);
+        require(tx.gasprice <= MAX_GAS_PRICE);  // gas price limit
+        require(msg.value >= minimumContribution);  // required minimum contribution
+        require(tokensSold <= hardCap);
 
         // Calculate the number of tokens the buyer will receive.
         uint tokens = msg.value.mul(conversionRate);
         balances[msg.sender] = balances[msg.sender].plus(tokens);
 
         // Ensure that the individual contribution limit has not been reached
-        require(balances[msg.sender] &lt;= individualLimit);
+        require(balances[msg.sender] <= individualLimit);
 
 
 
@@ -809,7 +809,7 @@ contract EosPizzaSliceDonationraiser is EosPizzaSlice, EosPizzaSliceDonationrais
      * @dev Finalize the donationraiser if `endDate` has passed or if `hardCap` is reached.
      */
     function finalize() public onlyOwner {
-        require((totalSupply &gt;= hardCap) || (now &gt;= endDate));
+        require((totalSupply >= hardCap) || (now >= endDate));
         require(!finalized);
 
         address contractAddress = this;

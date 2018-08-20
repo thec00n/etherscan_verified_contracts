@@ -97,11 +97,11 @@ contract DSStop is DSNote, DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint x, uint y) internal pure returns (uint z) {
@@ -151,8 +151,8 @@ contract Coin is ERC20, DSStop {
     string public symbol;
     uint8 public decimals = 18;
     uint256 internal c_totalSupply;
-    mapping(address =&gt; uint256) internal c_balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal c_approvals;
+    mapping(address => uint256) internal c_balances;
+    mapping(address => mapping(address => uint256)) internal c_approvals;
 
     function init(uint256 token_supply, string token_name, string token_symbol) internal {
         c_balances[msg.sender] = token_supply;
@@ -178,10 +178,10 @@ contract Coin is ERC20, DSStop {
     }
 
     function approve(address _spender, uint256 _value) public stoppable returns (bool) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         require(_value == 0 || c_approvals[msg.sender][_spender] == 0);
         // uint never less than 0. The negative number will become to a big positive number
-        require(_value &lt; c_totalSupply);
+        require(_value < c_totalSupply);
 
         c_approvals[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -195,14 +195,14 @@ contract Coin is ERC20, DSStop {
 
 contract FreezerAuthority is DSAuthority {
     address[] internal c_freezers;
-    // sha3(&quot;setFreezing(address,uint256,uint256,uint8)&quot;).slice(0,10)
+    // sha3("setFreezing(address,uint256,uint256,uint8)").slice(0,10)
     bytes4 constant setFreezingSig = bytes4(0x51c3b8a6);
-    // sha3(&quot;transferAndFreezing(address,uint256,uint256,uint256,uint8)&quot;).slice(0,10)
+    // sha3("transferAndFreezing(address,uint256,uint256,uint256,uint8)").slice(0,10)
     bytes4 constant transferAndFreezingSig = bytes4(0xb8a1fdb6);
 
     function canCall(address caller, address, bytes4 sig) public view returns (bool) {
         // freezer can call setFreezing, transferAndFreezing
-        if (isFreezer(caller) &amp;&amp; (sig == setFreezingSig || sig == transferAndFreezingSig)) {
+        if (isFreezer(caller) && (sig == setFreezingSig || sig == transferAndFreezingSig)) {
             return true;
         } else {
             return false;
@@ -211,16 +211,16 @@ contract FreezerAuthority is DSAuthority {
 
     function addFreezer(address freezer) public {
         int i = indexOf(c_freezers, freezer);
-        if (i &lt; 0) {
+        if (i < 0) {
             c_freezers.push(freezer);
         }
     }
 
     function removeFreezer(address freezer) public {
         int index = indexOf(c_freezers, freezer);
-        if (index &gt;= 0) {
+        if (index >= 0) {
             uint i = uint(index);
-            while (i &lt; c_freezers.length - 1) {
+            while (i < c_freezers.length - 1) {
                 c_freezers[i] = c_freezers[i + 1];
             }
             c_freezers.length--;
@@ -230,7 +230,7 @@ contract FreezerAuthority is DSAuthority {
     /** Finds the index of a given value in an array. */
     function indexOf(address[] values, address value) internal pure returns (int) {
         uint i = 0;
-        while (i &lt; values.length) {
+        while (i < values.length) {
             if (values[i] == value) {
                 return int(i);
             }
@@ -240,7 +240,7 @@ contract FreezerAuthority is DSAuthority {
     }
 
     function isFreezer(address addr) public constant returns (bool) {
-        return indexOf(c_freezers, addr) &gt;= 0;
+        return indexOf(c_freezers, addr) >= 0;
     }
 }
 
@@ -253,7 +253,7 @@ contract FreezableCoin is Coin, DSMath {
     }
 
     // freezing account list
-    mapping(address =&gt; FreezingNode[]) internal c_freezing_list;
+    mapping(address => FreezingNode[]) internal c_freezing_list;
 
     constructor(uint256 token_supply, string token_name, string token_symbol) public {
         init(token_supply, token_name, token_symbol);
@@ -277,9 +277,9 @@ contract FreezableCoin is Coin, DSMath {
 
         // find first expired index
         uint left = 0;
-        while (left &lt; length) {
+        while (left < length) {
             // not freezing any more
-            if (nodes[left].end_stamp &lt;= block.timestamp) {
+            if (nodes[left].end_stamp <= block.timestamp) {
                 break;
             }
             left++;
@@ -287,9 +287,9 @@ contract FreezableCoin is Coin, DSMath {
 
         // next frozen index
         uint right = left + 1;
-        while (left &lt; length &amp;&amp; right &lt; length) {
+        while (left < length && right < length) {
             // still freezing
-            if (nodes[right].end_stamp &gt; block.timestamp) {
+            if (nodes[right].end_stamp > block.timestamp) {
                 nodes[left] = nodes[right];
                 left++;
             }
@@ -306,8 +306,8 @@ contract FreezableCoin is Coin, DSMath {
         uint length = nodes.length;
         uint total_coins = balanceOf(addr);
 
-        for (uint i = 0; i &lt; length; ++i) {
-            if (nodes[i].end_stamp &gt; block.timestamp) {
+        for (uint i = 0; i < length; ++i) {
+            if (nodes[i].end_stamp > block.timestamp) {
                 total_coins = sub(total_coins, nodes[i].num_coins);
             }
         }
@@ -324,12 +324,12 @@ contract FreezableCoin is Coin, DSMath {
     }
 
     function setFreezing(address addr, uint end_stamp, uint num_coins, uint8 freezing_type) auth stoppable public {
-        require(block.timestamp &lt; end_stamp);
+        require(block.timestamp < end_stamp);
         // uint never less than 0. The negative number will become to a big positive number
-        require(num_coins &lt; c_totalSupply);
+        require(num_coins < c_totalSupply);
         clearExpiredFreezing(addr);
         uint valid_balance = validBalanceOf(addr);
-        require(valid_balance &gt;= num_coins);
+        require(valid_balance >= num_coins);
 
         FreezingNode memory node = FreezingNode(end_stamp, num_coins, freezing_type);
         c_freezing_list[addr].push(node);
@@ -339,8 +339,8 @@ contract FreezableCoin is Coin, DSMath {
 
     function transferAndFreezing(address _to, uint256 _value, uint256 freeze_amount, uint end_stamp, uint8 freezing_type) auth stoppable public returns (bool) {
         // uint never less than 0. The negative number will become to a big positive number
-        require(_value &lt; c_totalSupply);
-        require(freeze_amount &lt;= _value);
+        require(_value < c_totalSupply);
+        require(freeze_amount <= _value);
 
         transfer(_to, _value);
         setFreezing(_to, end_stamp, freeze_amount, freezing_type);
@@ -349,13 +349,13 @@ contract FreezableCoin is Coin, DSMath {
     }
 
     function transfer(address _to, uint256 _value) stoppable public returns (bool) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         // uint never less than 0. The negative number will become to a big positive number
-        require(_value &lt; c_totalSupply);
+        require(_value < c_totalSupply);
         clearExpiredFreezing(msg.sender);
         uint from_coins = validBalanceOf(msg.sender);
 
-        require(from_coins &gt;= _value);
+        require(from_coins >= _value);
 
         c_balances[msg.sender] = sub(c_balances[msg.sender], _value);
         c_balances[_to] = add(c_balances[_to], _value);
@@ -366,13 +366,13 @@ contract FreezableCoin is Coin, DSMath {
 
     function transferFrom(address _from, address _to, uint256 _value) stoppable public returns (bool) {
         // uint never less than 0. The negative number will become to a big positive number
-        require(_value &lt; c_totalSupply);
-        require(c_approvals[_from][msg.sender] &gt;= _value);
+        require(_value < c_totalSupply);
+        require(c_approvals[_from][msg.sender] >= _value);
 
         clearExpiredFreezing(_from);
         uint from_coins = validBalanceOf(_from);
 
-        require(from_coins &gt;= _value);
+        require(from_coins >= _value);
 
         c_approvals[_from][msg.sender] = sub(c_approvals[_from][msg.sender], _value);
         c_balances[_from] = sub(c_balances[_from], _value);

@@ -20,15 +20,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -36,10 +36,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -48,15 +48,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -64,10 +64,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -76,10 +76,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -134,10 +134,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -175,8 +175,8 @@ contract DSMath {
 
 contract TokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function totalSupply() constant returns (uint256) {
         return _supply;
@@ -189,7 +189,7 @@ contract TokenBase is ERC20, DSMath {
     }
     
     function transfer(address to, uint value) returns (bool) {
-        assert(_balances[msg.sender] &gt;= value);
+        assert(_balances[msg.sender] >= value);
         
         _balances[msg.sender] = sub(_balances[msg.sender], value);
         _balances[to] = add(_balances[to], value);
@@ -200,8 +200,8 @@ contract TokenBase is ERC20, DSMath {
     }
     
     function transferFrom(address from, address to, uint value) returns (bool) {
-        assert(_balances[from] &gt;= value);
-        assert(_approvals[from][msg.sender] &gt;= value);
+        assert(_balances[from] >= value);
+        assert(_approvals[from][msg.sender] >= value);
         
         _approvals[from][msg.sender] = sub(_approvals[from][msg.sender], value);
         _balances[from] = sub(_balances[from], value);
@@ -264,8 +264,8 @@ contract Migrable is TokenBase, Owned
 }
 
 contract CrowdCoin is TokenBase, Owned, Migrable {
-    string public constant name = &quot;Crowd Coin&quot;;
-    string public constant symbol = &quot;CRC&quot;;
+    string public constant name = "Crowd Coin";
+    string public constant symbol = "CRC";
     uint8 public constant decimals = 18; 
 
     uint public constant pre_ico_allocation = 10000000 * WAD;
@@ -281,7 +281,7 @@ contract CrowdCoin is TokenBase, Owned, Migrable {
 
     function transfer(address to, uint value) returns (bool)
     {
-        if (locked == true &amp;&amp; msg.sender != address(ico) &amp;&amp; msg.sender != address(pre_ico)) revert();
+        if (locked == true && msg.sender != address(ico) && msg.sender != address(pre_ico)) revert();
         return super.transfer(to, value);
     }
     
@@ -306,7 +306,7 @@ contract CrowdCoin is TokenBase, Owned, Migrable {
 
     function init_ico(address _ico) onlyOwner
     {
-        if (address(0) != address(ico) || address(0) == address(pre_ico) || _balances[pre_ico] &gt; 0) revert();
+        if (address(0) != address(ico) || address(0) == address(pre_ico) || _balances[pre_ico] > 0) revert();
         ico = CrowdCoinICO(_ico);
         mint_tokens(ico, ico_allocation);
     }
@@ -341,7 +341,7 @@ contract CrowdCoin is TokenBase, Owned, Migrable {
     function burn_balance(address addr) private
     {
         uint amount = _balances[addr];
-        if (amount &gt; 0)
+        if (amount > 0)
         {
             _balances[addr] = 0;
             _supply = sub(_supply, amount);
@@ -362,7 +362,7 @@ contract CrowdCoinManualSell
 
     function transfer_coins(address _to, uint _value) public
     {
-        if (msg.sender != owner_1 &amp;&amp; msg.sender != owner_2) revert();
+        if (msg.sender != owner_1 && msg.sender != owner_2) revert();
         token.transfer(_to, _value);
         ManualPurchase(msg.sender, _to, _value);
     }
@@ -374,7 +374,7 @@ contract CrowdCoinManualSell
 
     modifier has_value
     {
-        if (msg.value &lt; 0.01 ether) revert();
+        if (msg.value < 0.01 ether) revert();
         _;
     }
 }
@@ -384,35 +384,35 @@ contract CrowdCoinSaleBonus
     function get_bonus(uint buy_amount) internal returns(uint)
     {
         uint bonus = 0;
-        if (buy_amount &gt;= 100000 ether)
+        if (buy_amount >= 100000 ether)
         {
             bonus = 30;            
         }
-        else if (buy_amount &gt;= 50000 ether)
+        else if (buy_amount >= 50000 ether)
         {
             bonus = 25;            
         }
-        else if (buy_amount &gt;= 30000 ether)
+        else if (buy_amount >= 30000 ether)
         {
             bonus = 23;            
         }
-        else if (buy_amount &gt;= 20000 ether)
+        else if (buy_amount >= 20000 ether)
         {
             bonus = 20;            
         }
-        else if (buy_amount &gt;= 13000 ether)
+        else if (buy_amount >= 13000 ether)
         {
             bonus = 18;            
         }
-        else if (buy_amount &gt;= 8000 ether)
+        else if (buy_amount >= 8000 ether)
         {
             bonus = 15;            
         }
-        else if (buy_amount &gt;= 5000 ether)
+        else if (buy_amount >= 5000 ether)
         {
             bonus = 13;            
         }
-        else if (buy_amount &gt;= 3000 ether)
+        else if (buy_amount >= 3000 ether)
         {
             bonus = 10;            
         }
@@ -441,7 +441,7 @@ contract CrowdCoinPreICO is Owned, DSMath, CrowdCoinSaleBonus, CrowdCoinManualSe
         can_buy = wadd(can_buy, cast(get_bonus(can_buy)));
         var buy_amount = cast(min(can_buy, my_token_balance()));
 
-        if (can_buy &gt; buy_amount) revert();
+        if (can_buy > buy_amount) revert();
 
         total_raised = add(total_raised, msg.value);
 
@@ -460,19 +460,19 @@ contract CrowdCoinICO is Owned, DSMath, CrowdCoinSaleBonus, CrowdCoinManualSell
     uint public constant goal = 350 ether;
     uint256 public constant default_price = 0.005 * 10**18;
     
-    mapping (uint =&gt; uint256) public price;
+    mapping (uint => uint256) public price;
 
-    mapping(address =&gt; uint) funded; //needed to save amounts of ETH for refund
+    mapping(address => uint) funded; //needed to save amounts of ETH for refund
     
     modifier in_time //allows send eth only when crowdsale is active
     {
-        if (time() &lt; start_time || time() &gt; end_time)  revert();
+        if (time() < start_time || time() > end_time)  revert();
         _;
     }
 
     function successfully_closed() public constant returns (bool)
     {
-        return time() &gt; start_time &amp;&amp; (time() &gt; end_time || my_token_balance() == 0) &amp;&amp; total_raised &gt;= goal;
+        return time() > start_time && (time() > end_time || my_token_balance() == 0) && total_raised >= goal;
     }
     
     function time() public constant returns (uint)
@@ -505,7 +505,7 @@ contract CrowdCoinICO is Owned, DSMath, CrowdCoinSaleBonus, CrowdCoinManualSell
         can_buy = wadd(can_buy, cast(get_bonus(can_buy)));
         var buy_amount = cast(min(can_buy, my_token_balance()));
 
-        if (can_buy &gt; buy_amount) revert();
+        if (can_buy > buy_amount) revert();
 
         total_raised = add(total_raised, msg.value);
         funded[msg.sender] = add(funded[msg.sender], msg.value);
@@ -515,9 +515,9 @@ contract CrowdCoinICO is Owned, DSMath, CrowdCoinSaleBonus, CrowdCoinManualSell
     
     function refund()
     {
-        if (total_raised &gt;= goal || time() &lt; end_time) revert();
+        if (total_raised >= goal || time() < end_time) revert();
         var amount = funded[msg.sender];
-        if (amount &gt; 0)
+        if (amount > 0)
         {
             funded[msg.sender] = 0;
             msg.sender.transfer(amount);
@@ -526,7 +526,7 @@ contract CrowdCoinICO is Owned, DSMath, CrowdCoinSaleBonus, CrowdCoinManualSell
     
     function collect() //collect eth by devs if min goal reached
     {
-        if (total_raised &lt; goal) revert();
+        if (total_raised < goal) revert();
         dev_multisig.transfer(this.balance);
     }
     
@@ -546,9 +546,9 @@ contract CrowdDevAllocation is Owned
     uint public initial_time;
     address tokens_multisig;
 
-    mapping(uint =&gt; bool) public unlocked;
-    mapping(uint =&gt; uint) public unlock_times;
-    mapping(uint =&gt; uint) unlock_values;
+    mapping(uint => bool) public unlocked;
+    mapping(uint => uint) public unlock_times;
+    mapping(uint => uint) unlock_values;
     
     function CrowdDevAllocation(address _token)
     {
@@ -572,7 +572,7 @@ contract CrowdDevAllocation is Owned
 
     function unlock(uint part)
     {
-        if (unlocked[part] == true || block.timestamp &lt; initial_time + unlock_times[part] || unlock_values[part] == 0) revert();
+        if (unlocked[part] == true || block.timestamp < initial_time + unlock_times[part] || unlock_values[part] == 0) revert();
         token.transfer(tokens_multisig, unlock_values[part]);
         unlocked[part] = true;
     }

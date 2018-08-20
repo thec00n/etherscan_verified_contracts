@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -101,7 +101,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -142,8 +142,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -220,8 +220,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract BBIToken is StandardToken {
 
-    string  public constant name    = &quot;Beluga Banking Infrastructure Token&quot;;
-    string  public constant symbol  = &quot;BBI&quot;;
+    string  public constant name    = "Beluga Banking Infrastructure Token";
+    string  public constant symbol  = "BBI";
     uint256 public constant decimals= 18;   
     
     uint  public totalUsed   = 0;
@@ -348,18 +348,18 @@ contract BBIToken is StandardToken {
            if ( msg.sender == addressICOManager) { return super.transfer(_to, _value); }           
 
            // Team can transfer upto 50% of tokens after six months of ICO end date 
-           if ( !halted &amp;&amp;  msg.sender == addressTeam &amp;&amp;  SafeMath.sub(balances[msg.sender], _value) &gt;= tokensTeam/2 &amp;&amp; (now &gt; icoEndDate + SECONDS_IN_YEAR/2) ) 
+           if ( !halted &&  msg.sender == addressTeam &&  SafeMath.sub(balances[msg.sender], _value) >= tokensTeam/2 && (now > icoEndDate + SECONDS_IN_YEAR/2) ) 
                 { return super.transfer(_to, _value); }         
 
            // Community can transfer upto 50% of tokens after six months of ICO end date
-           if ( !halted &amp;&amp;  msg.sender == addressCommunity &amp;&amp;  SafeMath.sub(balances[msg.sender], _value) &gt;= tokensCommunity/2 &amp;&amp; (now &gt; icoEndDate + SECONDS_IN_YEAR/2) )
+           if ( !halted &&  msg.sender == addressCommunity &&  SafeMath.sub(balances[msg.sender], _value) >= tokensCommunity/2 && (now > icoEndDate + SECONDS_IN_YEAR/2) )
                 { return super.transfer(_to, _value); }            
            
            // ICO investors can transfer after the ICO period
-           if ( !halted &amp;&amp; identifyAddress(msg.sender) == icoInvestors &amp;&amp; now &gt; icoEndDate ) { return super.transfer(_to, _value); }
+           if ( !halted && identifyAddress(msg.sender) == icoInvestors && now > icoEndDate ) { return super.transfer(_to, _value); }
            
            // All can transfer after a year from ICO end date 
-           if ( !halted &amp;&amp; now &gt; icoEndDate + SECONDS_IN_YEAR) { return super.transfer(_to, _value); }
+           if ( !halted && now > icoEndDate + SECONDS_IN_YEAR) { return super.transfer(_to, _value); }
 
         return false;
          
@@ -371,18 +371,18 @@ contract BBIToken is StandardToken {
            if ( msg.sender == addressICOManager) { return super.transferFrom(_from,_to, _value); }
 
            // Team can transfer upto 50% of tokens after six months of ICO end date 
-           if ( !halted &amp;&amp;  msg.sender == addressTeam &amp;&amp;  SafeMath.sub(balances[msg.sender], _value) &gt;= tokensTeam/2 &amp;&amp; (now &gt; icoEndDate + SECONDS_IN_YEAR/2) ) 
+           if ( !halted &&  msg.sender == addressTeam &&  SafeMath.sub(balances[msg.sender], _value) >= tokensTeam/2 && (now > icoEndDate + SECONDS_IN_YEAR/2) ) 
                 { return super.transferFrom(_from,_to, _value); }
            
            // Community can transfer upto 50% of tokens after six months of ICO end date
-           if ( !halted &amp;&amp;  msg.sender == addressCommunity &amp;&amp;  SafeMath.sub(balances[msg.sender], _value) &gt;= tokensCommunity/2 &amp;&amp; (now &gt; icoEndDate + SECONDS_IN_YEAR/2)) 
+           if ( !halted &&  msg.sender == addressCommunity &&  SafeMath.sub(balances[msg.sender], _value) >= tokensCommunity/2 && (now > icoEndDate + SECONDS_IN_YEAR/2)) 
                 { return super.transferFrom(_from,_to, _value); }      
 
            // ICO investors can transfer after the ICO period
-           if ( !halted &amp;&amp; identifyAddress(msg.sender) == icoInvestors &amp;&amp; now &gt; icoEndDate ) { return super.transferFrom(_from,_to, _value); }
+           if ( !halted && identifyAddress(msg.sender) == icoInvestors && now > icoEndDate ) { return super.transferFrom(_from,_to, _value); }
 
            // All can transfer after a year from ICO end date 
-           if ( !halted &amp;&amp; now &gt; icoEndDate + SECONDS_IN_YEAR) { return super.transferFrom(_from,_to, _value); }
+           if ( !halted && now > icoEndDate + SECONDS_IN_YEAR) { return super.transferFrom(_from,_to, _value); }
 
         return false;
     }
@@ -399,7 +399,7 @@ contract BBIToken is StandardToken {
      */
 
     function  burn(uint256 _value)  onlyManager public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough BBI
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough BBI
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply_ -= _value;                    // Updates totalSupply
         return true;
@@ -416,22 +416,22 @@ contract BBIToken is StandardToken {
             require(_buyer != 0x0);
 
             // msg value should be more than 0
-            require(_value &gt; 0);
+            require(_value > 0);
 
             // if not halted
             require(!halted);
 
             // Now is before ICO end date 
-            require(now &lt; icoEndDate);
+            require(now < icoEndDate);
 
             // total tokens is price (1ETH = 960 tokens) multiplied by the ether value provided 
             uint tokens = (SafeMath.mul(_value, 960));
 
             // total used + tokens should be less than maximum available for sale
-            require(SafeMath.add(totalUsed, tokens) &lt; balances[addressICOManager]);
+            require(SafeMath.add(totalUsed, tokens) < balances[addressICOManager]);
 
             // Ether raised + new value should be less than the Ether cap
-            require(SafeMath.add(etherRaised, _value) &lt; etherCap);
+            require(SafeMath.add(etherRaised, _value) < etherCap);
             
             balances[_buyer] = SafeMath.add( balances[_buyer], tokens);
             balances[addressICOManager] = SafeMath.sub(balances[addressICOManager], tokens);

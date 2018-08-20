@@ -65,15 +65,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -81,10 +81,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -93,15 +93,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -109,10 +109,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -121,10 +121,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -179,10 +179,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -275,8 +275,8 @@ contract DSValue is DSThing {
 // File: contracts/Oracle/Medianizer.sol
 
 contract Medianizer is DSValue {
-    mapping (bytes12 =&gt; address) public values;
-    mapping (address =&gt; bytes12) public indexes;
+    mapping (bytes12 => address) public values;
+    mapping (address => bytes12) public indexes;
     bytes12 public next = 0x1;
 
     uint96 public min = 0x1;
@@ -291,7 +291,7 @@ contract Medianizer is DSValue {
     function set(bytes12 pos, address wat) note auth {
         if (pos == 0x0) throw;
 
-        if (wat != 0 &amp;&amp; indexes[wat] != 0) throw;
+        if (wat != 0 && indexes[wat] != 0) throw;
 
         indexes[values[pos]] = 0; // Making sure to remove a possible existing address in that position
 
@@ -331,18 +331,18 @@ contract Medianizer is DSValue {
     function compute() constant returns (bytes32, bool) {
         bytes32[] memory wuts = new bytes32[](uint96(next) - 1);
         uint96 ctr = 0;
-        for (uint96 i = 1; i &lt; uint96(next); i++) {
+        for (uint96 i = 1; i < uint96(next); i++) {
             if (values[bytes12(i)] != 0) {
                 var (wut, wuz) = DSValue(values[bytes12(i)]).peek();
                 if (wuz) {
-                    if (ctr == 0 || wut &gt;= wuts[ctr - 1]) {
+                    if (ctr == 0 || wut >= wuts[ctr - 1]) {
                         wuts[ctr] = wut;
                     } else {
                         uint96 j = 0;
-                        while (wut &gt;= wuts[j]) {
+                        while (wut >= wuts[j]) {
                             j++;
                         }
-                        for (uint96 k = ctr; k &gt; j; k--) {
+                        for (uint96 k = ctr; k > j; k--) {
                             wuts[k] = wuts[k - 1];
                         }
                         wuts[j] = wut;
@@ -352,7 +352,7 @@ contract Medianizer is DSValue {
             }
         }
 
-        if (ctr &lt; min) return (val, false);
+        if (ctr < min) return (val, false);
 
         bytes32 value;
         if (ctr % 2 == 0) {
@@ -373,11 +373,11 @@ contract Medianizer is DSValue {
 
 // Copyright (C) 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -390,13 +390,13 @@ contract PriceFeed is DSThing {
     function peek() public view
         returns (bytes32, bool)
     {
-        return (bytes32(val), now &lt; zzz);
+        return (bytes32(val), now < zzz);
     }
 
     function read() public view
         returns (bytes32)
     {
-        assert(now &lt; zzz);
+        assert(now < zzz);
         return bytes32(val);
     }
 
@@ -404,7 +404,7 @@ contract PriceFeed is DSThing {
     {
         val = val_;
         zzz = zzz_;
-        bool ret = med_.call(bytes4(keccak256(&quot;poke()&quot;)));
+        bool ret = med_.call(bytes4(keccak256("poke()")));
         ret;
     }
 
@@ -438,7 +438,7 @@ contract PriceOracleInterface {
     }
 
     /// @dev constructor of the contract
-    /// @param _priceFeedSource address of price Feed Source -&gt; should be maker feeds Medianizer contract
+    /// @param _priceFeedSource address of price Feed Source -> should be maker feeds Medianizer contract
     function PriceOracleInterface(
         address _owner,
         address _priceFeedSource
@@ -488,7 +488,7 @@ contract PriceOracleInterface {
         // even if the price is compromised
         uint priceUint = uint256(price)/(1 ether);
         if (priceUint == 0) return 1;
-        if (priceUint &gt; 1000000) return 1000000; 
+        if (priceUint > 1000000) return 1000000; 
         return priceUint;
     }  
 }

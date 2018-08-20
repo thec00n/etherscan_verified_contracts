@@ -15,13 +15,13 @@ contract IERC20 {
 library SafeMathLib {
 
   function minus(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMathLib {
 /**
  * @title Ownable
  * @notice The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -74,13 +74,13 @@ contract Erc20 is IERC20, Ownable {
     
     uint256 public constant totalTokenSupply = 100000000 * 10**18;
 
-    string public name = &quot;Dontoshi Token&quot;;
-    string public symbol = &quot;DTD&quot;;
+    string public name = "Dontoshi Token";
+    string public symbol = "DTD";
     uint8 public constant decimals = 18;
     
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     //approved[owner][spender]
-    mapping(address =&gt; mapping(address =&gt; uint256)) approved;
+    mapping(address => mapping(address => uint256)) approved;
     
     function Erc20() {
         balances[msg.sender] = totalTokenSupply;
@@ -97,8 +97,8 @@ contract Erc20 is IERC20, Ownable {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         balances[_from] = balances[_from].minus(_value);    // Subtract from the sender
         balances[_to] = balances[_to].plus(_value);         // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -121,7 +121,7 @@ contract Erc20 is IERC20, Ownable {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require (_value &lt;= approved[_from][msg.sender]);     // Check allowance
+        require (_value <= approved[_from][msg.sender]);     // Check allowance
         approved[_from][msg.sender] = approved[_from][msg.sender].minus(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -133,7 +133,7 @@ contract Erc20 is IERC20, Ownable {
      * @param _value the amount to send
      */
     function approve(address _spender, uint256 _value) returns (bool success) {
-        if(balances[msg.sender] &gt;= _value) {
+        if(balances[msg.sender] >= _value) {
             approved[msg.sender][_spender] = _value;
             Approval(msg.sender, _spender, _value);
             return true;

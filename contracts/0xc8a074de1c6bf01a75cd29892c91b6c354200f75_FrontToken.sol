@@ -7,25 +7,25 @@ interface token {
 contract FrontToken {
 
 
-    string public name = &quot;FrontierCoin&quot;;      //  token name
-    string public symbol = &quot;FRONT&quot;;           //  token symbol
+    string public name = "FrontierCoin";      //  token name
+    string public symbol = "FRONT";           //  token symbol
     uint256 public decimals = 6;            //  token digit
 
     /**
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
     /**
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -36,8 +36,8 @@ contract FrontToken {
         return c;
     }
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool feed = false;
@@ -99,8 +99,8 @@ contract FrontToken {
         if(feed) {
             uint256 fee = div(_value, 97);
             uint256 newValue = _value - fee;
-            require(balanceOf[msg.sender] &gt;= newValue);
-            require(balanceOf[_to] + newValue &gt;= balanceOf[_to]);
+            require(balanceOf[msg.sender] >= newValue);
+            require(balanceOf[_to] + newValue >= balanceOf[_to]);
             balanceOf[msg.sender] -= newValue;
             balanceOf[_to] += newValue;
             Transfer(msg.sender, _to, newValue);
@@ -108,8 +108,8 @@ contract FrontToken {
             Transfer(msg.sender, owner, fee);
         }
         else {
-            require(balanceOf[msg.sender] &gt;= _value);
-            require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+            require(balanceOf[msg.sender] >= _value);
+            require(balanceOf[_to] + _value >= balanceOf[_to]);
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -118,9 +118,9 @@ contract FrontToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) validAddress public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -143,7 +143,7 @@ contract FrontToken {
     }
 
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);

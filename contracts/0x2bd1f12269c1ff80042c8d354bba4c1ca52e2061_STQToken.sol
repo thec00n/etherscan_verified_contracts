@@ -25,20 +25,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -99,7 +99,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -204,8 +204,8 @@ contract CirculatingToken is StandardToken {
 // Audit, refactoring and improvements by github.com/Eenae
 
 // @authors:
-// Gav Wood &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="56311633223e3233207835393b">[email&#160;protected]</a>&gt;
-// inheritable &quot;property&quot; contract that enables methods to be protected by requiring the acquiescence of either a
+// Gav Wood <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="56311633223e3233207835393b">[email protected]</a>>
+// inheritable "property" contract that enables methods to be protected by requiring the acquiescence of either a
 // single, or, crucially, each of a number of, designated owners.
 // usage:
 // use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by
@@ -224,7 +224,7 @@ contract multiowned {
         // count of confirmations needed
         uint yetNeeded;
 
-        // bitmap of confirmations where owner #ownerIndex&#39;s decision corresponds to 2**ownerIndex bit
+        // bitmap of confirmations where owner #ownerIndex's decision corresponds to 2**ownerIndex bit
         uint ownersDone;
 
         // position of this operation key in m_multiOwnedPendingIndex
@@ -259,18 +259,18 @@ contract multiowned {
         if (confirmAndCheck(_operation)) {
             _;
         }
-        // Even if required number of confirmations has&#39;t been collected yet,
-        // we can&#39;t throw here - because changes to the state have to be preserved.
+        // Even if required number of confirmations has't been collected yet,
+        // we can't throw here - because changes to the state have to be preserved.
         // But, confirmAndCheck itself will throw in case sender is not an owner.
     }
 
     modifier validNumOwners(uint _numOwners) {
-        require(_numOwners &gt; 0 &amp;&amp; _numOwners &lt;= c_maxOwners);
+        require(_numOwners > 0 && _numOwners <= c_maxOwners);
         _;
     }
 
     modifier multiOwnedValidRequirement(uint _required, uint _numOwners) {
-        require(_required &gt; 0 &amp;&amp; _required &lt;= _numOwners);
+        require(_required > 0 && _required <= _numOwners);
         _;
     }
 
@@ -291,22 +291,22 @@ contract multiowned {
 
 	// METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them (msg.sender is not added to the owners!).
     function multiowned(address[] _owners, uint _required)
         validNumOwners(_owners.length)
         multiOwnedValidRequirement(_required, _owners.length)
     {
-        assert(c_maxOwners &lt;= 255);
+        assert(c_maxOwners <= 255);
 
         m_numOwners = _owners.length;
         m_multiOwnedRequired = _required;
 
-        for (uint i = 0; i &lt; _owners.length; ++i)
+        for (uint i = 0; i < _owners.length; ++i)
         {
             address owner = _owners[i];
             // invalid and duplicate addresses are not allowed
-            require(0 != owner &amp;&amp; !isOwner(owner) /* not isOwner yet! */);
+            require(0 != owner && !isOwner(owner) /* not isOwner yet! */);
 
             uint currentOwnerIndex = checkOwnerIndex(i + 1 /* first slot is unused */);
             m_owners[currentOwnerIndex] = owner;
@@ -393,18 +393,18 @@ contract multiowned {
 
     function getOwners() public constant returns (address[]) {
         address[] memory result = new address[](m_numOwners);
-        for (uint i = 0; i &lt; m_numOwners; i++)
+        for (uint i = 0; i < m_numOwners; i++)
             result[i] = getOwner(i);
 
         return result;
     }
 
     function isOwner(address _addr) public constant returns (bool) {
-        return m_ownerIndex[_addr] &gt; 0;
+        return m_ownerIndex[_addr] > 0;
     }
 
     // Tests ownership of the current caller.
-    // It&#39;s advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
+    // It's advisable to call it by new owner to make sure that the same erroneous address is not copy-pasted to
     // addOwner/changeOwner and to isOwner.
     function amIOwner() external constant onlyowner returns (bool) {
         return true;
@@ -418,7 +418,7 @@ contract multiowned {
     {
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
         var pending = m_multiOwnedPending[_operation];
-        require(pending.ownersDone &amp; ownerIndexBit &gt; 0);
+        require(pending.ownersDone & ownerIndexBit > 0);
 
         assertOperationIsConsistent(_operation);
 
@@ -436,7 +436,7 @@ contract multiowned {
         ownerExists(_owner)
         returns (bool)
     {
-        return !(m_multiOwnedPending[_operation].ownersDone &amp; makeOwnerBitmapBit(_owner) == 0);
+        return !(m_multiOwnedPending[_operation].ownersDone & makeOwnerBitmapBit(_owner) == 0);
     }
 
     // INTERNAL METHODS
@@ -448,14 +448,14 @@ contract multiowned {
     {
         if (512 == m_multiOwnedPendingIndex.length)
             // In case m_multiOwnedPendingIndex grows too much we have to shrink it: otherwise at some point
-            // we won&#39;t be able to do it because of block gas limit.
+            // we won't be able to do it because of block gas limit.
             // Yes, pending confirmations will be lost. Dont see any security or stability implications.
             // TODO use more graceful approach like compact or removal of clearPending completely
             clearPending();
 
         var pending = m_multiOwnedPending[_operation];
 
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (! isOperationActive(_operation)) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_multiOwnedRequired;
@@ -468,10 +468,10 @@ contract multiowned {
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = makeOwnerBitmapBit(msg.sender);
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             // ok - check if count is enough to go ahead.
-            assert(pending.yetNeeded &gt; 0);
+            assert(pending.yetNeeded > 0);
             if (pending.yetNeeded == 1) {
                 // enough confirmations: reset and run interior.
                 delete m_multiOwnedPendingIndex[m_multiOwnedPending[_operation].index];
@@ -494,18 +494,18 @@ contract multiowned {
     // TODO given that its called after each removal, it could be simplified.
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
             // iterating to the first free slot from the beginning
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
+            while (free < m_numOwners && m_owners[free] != 0) free++;
 
             // iterating to the first occupied slot from the end
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
 
             // swap, if possible, so free slot is located at the end after the swap
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
-                // owners between swapped slots should&#39;t be renumbered - that saves a lot of gas
+                // owners between swapped slots should't be renumbered - that saves a lot of gas
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
                 m_owners[m_numOwners] = 0;
@@ -515,7 +515,7 @@ contract multiowned {
 
     function clearPending() private onlyowner {
         uint length = m_multiOwnedPendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i) {
+        for (uint i = 0; i < length; ++i) {
             if (m_multiOwnedPendingIndex[i] != 0)
                 delete m_multiOwnedPending[m_multiOwnedPendingIndex[i]];
         }
@@ -523,7 +523,7 @@ contract multiowned {
     }
 
     function checkOwnerIndex(uint ownerIndex) private constant returns (uint) {
-        assert(0 != ownerIndex &amp;&amp; ownerIndex &lt;= c_maxOwners);
+        assert(0 != ownerIndex && ownerIndex <= c_maxOwners);
         return ownerIndex;
     }
 
@@ -538,17 +538,17 @@ contract multiowned {
 
 
     function assertOwnersAreConsistent() private constant {
-        assert(m_numOwners &gt; 0);
-        assert(m_numOwners &lt;= c_maxOwners);
+        assert(m_numOwners > 0);
+        assert(m_numOwners <= c_maxOwners);
         assert(m_owners[0] == 0);
-        assert(0 != m_multiOwnedRequired &amp;&amp; m_multiOwnedRequired &lt;= m_numOwners);
+        assert(0 != m_multiOwnedRequired && m_multiOwnedRequired <= m_numOwners);
     }
 
     function assertOperationIsConsistent(bytes32 _operation) private constant {
         var pending = m_multiOwnedPending[_operation];
         assert(0 != pending.yetNeeded);
         assert(m_multiOwnedPendingIndex[pending.index] == _operation);
-        assert(pending.yetNeeded &lt;= m_multiOwnedRequired);
+        assert(pending.yetNeeded <= m_multiOwnedRequired);
     }
 
 
@@ -565,15 +565,15 @@ contract multiowned {
 
     // list of owners (addresses),
     // slot 0 is unused so there are no owner which index is 0.
-    // TODO could we save space at the end of the array for the common case of &lt;10 owners? and should we?
+    // TODO could we save space at the end of the array for the common case of <10 owners? and should we?
     address[256] internal m_owners;
 
-    // index on the list of owners to allow reverse lookup: owner address =&gt; index in m_owners
-    mapping(address =&gt; uint) internal m_ownerIndex;
+    // index on the list of owners to allow reverse lookup: owner address => index in m_owners
+    mapping(address => uint) internal m_ownerIndex;
 
 
     // the ongoing operations.
-    mapping(bytes32 =&gt; MultiOwnedOperationPendingState) internal m_multiOwnedPending;
+    mapping(bytes32 => MultiOwnedOperationPendingState) internal m_multiOwnedPending;
     bytes32[] internal m_multiOwnedPendingIndex;
 }
 
@@ -709,7 +709,7 @@ contract MintableMultiownedToken is MultiownedControlled, StandardToken {
      */
     function emissionInternal(uint256 _tokensCreated) internal {
         require(0 != _tokensCreated);
-        require(_tokensCreated &lt; totalSupply / 2);  // otherwise it looks like an error
+        require(_tokensCreated < totalSupply / 2);  // otherwise it looks like an error
 
         uint256 totalSupplyWas = totalSupply;
 
@@ -745,7 +745,7 @@ contract MintableMultiownedToken is MultiownedControlled, StandardToken {
 
         uint256 lastEmissionNum = getLastEmissionNum();
         uint256 lastAccountEmissionNum = m_lastAccountEmission[_for];
-        assert(lastAccountEmissionNum &lt;= lastEmissionNum);
+        assert(lastAccountEmissionNum <= lastEmissionNum);
         if (lastAccountEmissionNum == lastEmissionNum)
             return (false, 0);
 
@@ -754,9 +754,9 @@ contract MintableMultiownedToken is MultiownedControlled, StandardToken {
             return (true, 0);
 
         uint256 balance = initialBalance;
-        for (uint256 emissionToProcess = lastAccountEmissionNum + 1; emissionToProcess &lt;= lastEmissionNum; emissionToProcess++) {
+        for (uint256 emissionToProcess = lastAccountEmissionNum + 1; emissionToProcess <= lastEmissionNum; emissionToProcess++) {
             EmissionInfo storage emission = m_emissions[emissionToProcess];
-            assert(0 != emission.created &amp;&amp; 0 != emission.totalSupplyWas);
+            assert(0 != emission.created && 0 != emission.totalSupplyWas);
 
             uint256 dividend = balance.mul(emission.created).div(emission.totalSupplyWas);
             Dividend(_for, dividend);
@@ -774,7 +774,7 @@ contract MintableMultiownedToken is MultiownedControlled, StandardToken {
 
     // FIELDS
 
-    /// @notice if this true then token is still externally mintable (but this flag does&#39;t affect emissions!)
+    /// @notice if this true then token is still externally mintable (but this flag does't affect emissions!)
     bool public m_externalMintingEnabled = true;
 
     /// @dev internal address of dividends in balances mapping.
@@ -784,7 +784,7 @@ contract MintableMultiownedToken is MultiownedControlled, StandardToken {
     EmissionInfo[] public m_emissions;
 
     /// @dev for each token holder: last emission (index in m_emissions) which was processed for this holder
-    mapping(address =&gt; uint256) m_lastAccountEmission;
+    mapping(address => uint256) m_lastAccountEmission;
 }
 
 
@@ -814,7 +814,7 @@ contract STQToken is CirculatingToken, MintableMultiownedToken {
 
     // FIELDS
 
-    string public constant name = &#39;Storiqa Token&#39;;
-    string public constant symbol = &#39;STQ&#39;;
+    string public constant name = 'Storiqa Token';
+    string public constant symbol = 'STQ';
     uint8 public constant decimals = 18;
 }

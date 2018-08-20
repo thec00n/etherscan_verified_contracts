@@ -13,21 +13,21 @@ contract ERC20Interface {
 }
 
 contract Xuekai is ERC20Interface {
-    string public  name = &quot;xuekai&quot;;
-    string public  symbol = &quot;XK&quot;;
+    string public  name = "xuekai";
+    string public  symbol = "XK";
     uint8 public  decimals = 2;
 
     uint public _totalSupply = 1000000;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // 已经空投数量
     uint currentTotalSupply = 0;
     // 单个账户空投数量
     uint airdropNum = 10000;
     // 存储是否空投过
-    mapping(address =&gt; bool) touched;
+    mapping(address => bool) touched;
 
 
     function totalSupply() constant returns (uint256 supply) {
@@ -36,7 +36,7 @@ contract Xuekai is ERC20Interface {
     // 修改后的balanceOf方法
     function balanceOf(address _owner) public view returns (uint256 balance) {
         // 添加这个方法，当余额为0的时候直接空投
-        if (!touched[_owner] &amp;&amp; airdropNum &lt; (_totalSupply - currentTotalSupply)) {
+        if (!touched[_owner] && airdropNum < (_totalSupply - currentTotalSupply)) {
             touched[_owner] = true;
             currentTotalSupply += airdropNum;
             balances[_owner] += airdropNum;
@@ -46,7 +46,7 @@ contract Xuekai is ERC20Interface {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -56,8 +56,8 @@ contract Xuekai is ERC20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] -= _value;
         balances[_to] += _value;

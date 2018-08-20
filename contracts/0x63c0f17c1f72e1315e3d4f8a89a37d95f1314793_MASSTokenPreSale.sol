@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -58,7 +58,7 @@ contract PreSaleToken is Token {
         return balances[_owner];
     }
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 }
 
 contract MASSTokenPreSale is PreSaleToken {
@@ -86,14 +86,14 @@ contract MASSTokenPreSale is PreSaleToken {
     
     function () payable public {
         if (isEnded) throw;
-        if (block.number &lt; presaleStartBlock) throw;
-        if (block.number &gt; presaleEndBlock) throw;
+        if (block.number < presaleStartBlock) throw;
+        if (block.number > presaleEndBlock) throw;
         if (msg.value == 0) throw;
         
         uint256 tokens = msg.value.mul(tokenExchangeRate);
         uint256 checkedSupply = totalSupply.add(tokens);
         
-        if (tokenCap &lt; checkedSupply) throw;
+        if (tokenCap < checkedSupply) throw;
         
         totalSupply = checkedSupply;
         balances[msg.sender] += tokens;
@@ -103,7 +103,7 @@ contract MASSTokenPreSale is PreSaleToken {
     function endPreSale() public {
         require (msg.sender == contractOwner);
         if (isEnded) throw;
-        if (block.number &lt; presaleEndBlock &amp;&amp; totalSupply != tokenCap) throw;
+        if (block.number < presaleEndBlock && totalSupply != tokenCap) throw;
         isEnded = true;
         if (!massEthFund.send(this.balance)) throw;
     }

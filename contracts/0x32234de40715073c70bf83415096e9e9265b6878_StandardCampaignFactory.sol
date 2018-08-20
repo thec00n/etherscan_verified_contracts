@@ -11,7 +11,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Campaign contract interface for WeiFund standard campaigns
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4cacdc7cf8ac0cbc0d7cbcae4c7cbcad7c1cad7ddd78acac1d0">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4cacdc7cf8ac0cbc0d7cbcae4c7cbcad7c1cad7ddd78acac1d0">[email protected]</a>>
 contract Campaign {
   /// @notice the creater and operator of the campaign
   /// @return the Ethereum standard account address of the owner specified
@@ -87,7 +87,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title The campaign enhancer interface contract for build enhancer contracts.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9d7d0dad297ddd6ddcad6d7f9dad6d7cadcd7cac0ca97d7dccd">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9d7d0dad297ddd6ddcad6d7f9dad6d7cadcd7cac0ca97d7dccd">[email protected]</a>>
 contract Enhancer {
   /// @notice enables the setting of the campaign, if any
   /// @dev allow the owner to set the campaign
@@ -115,7 +115,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title A single owned campaign contract for instantiating ownership properties.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="056b6c666e2b616a61766a6b45666a6b76606b767c762b6b6071">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="056b6c666e2b616a61766a6b45666a6b76606b767c762b6b6071">[email protected]</a>>
 contract Owned {
   // only the owner can use this method
   modifier onlyowner() {
@@ -144,7 +144,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Claim contract interface.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5cbccc6ce8bc1cac1d6cacbe5c6cacbd6c0cbd6dcd68bcbc0d1">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5cbccc6ce8bc1cac1d6cacbe5c6cacbd6c0cbd6dcd68bcbc0d1">[email protected]</a>>
 contract Claim {
   /// @return returns the claim ABI solidity method for this claim
   function claimMethodABI() constant public returns (string) {}
@@ -166,7 +166,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title The balance claim interface contract, used for defining balance claims.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5937303a32773d363d2a3637193a36372a3c372a202a77373c2d">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5937303a32773d363d2a3637193a36372a3c372a202a77373c2d">[email protected]</a>>
 contract BalanceClaimInterface {
   /// @dev used to claim balance of the balance claim
   function claimBalance() public {}
@@ -174,7 +174,7 @@ contract BalanceClaimInterface {
 
 
 /// @title The balance claim, used for sending balances owed to a claim contract.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="640a0d070f4a000b00170b0a24070b0a17010a171d174a0a0110">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="640a0d070f4a000b00170b0a24070b0a17010a171d174a0a0110">[email protected]</a>>
 contract BalanceClaim is Owned, Claim, BalanceClaimInterface {
   /// @notice receive funds
   function () payable public {}
@@ -194,7 +194,7 @@ contract BalanceClaim is Owned, Claim, BalanceClaimInterface {
 
   // the claim method ABI metadata for user interfaces, written in standard
   // solidity ABI method format
-  string constant public claimMethodABI = &quot;claimBalance()&quot;;
+  string constant public claimMethodABI = "claimBalance()";
 }
 
 /*
@@ -211,14 +211,14 @@ pragma solidity ^0.4.4;
 
 
 /// @title Private Service Registry - used to register generated service contracts.
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef0f7fdf5b0faf1faedf1f0defdf1f0edfbf0ede7edb0f0fbea">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef0f7fdf5b0faf1faedf1f0defdf1f0edfbf0ede7edb0f0fbea">[email protected]</a>>
 contract PrivateServiceRegistryInterface {
-  /// @notice register the service &#39;_service&#39; with the private service registry
+  /// @notice register the service '_service' with the private service registry
   /// @param _service the service contract to be registered
-  /// @return the service ID &#39;serviceId&#39;
+  /// @return the service ID 'serviceId'
   function register(address _service) internal returns (uint256 serviceId) {}
 
-  /// @notice is the service in question &#39;_service&#39; a registered service with this registry
+  /// @notice is the service in question '_service' a registered service with this registry
   /// @param _service the service contract address
   /// @return either yes (true) the service is registered or no (false) the service is not
   function isService(address _service) public constant returns (bool) {}
@@ -240,15 +240,15 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
 
   modifier isRegisteredService(address _service) {
     // does the service exist in the registry, is the service address not empty
-    if (services.length &gt; 0) {
-      if (services[ids[_service]] == _service &amp;&amp; _service != address(0)) {
+    if (services.length > 0) {
+      if (services[ids[_service]] == _service && _service != address(0)) {
         _;
       }
     }
   }
 
   modifier isNotRegisteredService(address _service) {
-    // if the service &#39;_service&#39; is not a registered service
+    // if the service '_service' is not a registered service
     if (!isService(_service)) {
       _;
     }
@@ -261,13 +261,13 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
     // create service ID by increasing services length
     serviceId = services.length++;
 
-    // set the new service ID to the &#39;_service&#39; address
+    // set the new service ID to the '_service' address
     services[serviceId] = _service;
 
-    // set the ids store to link to the &#39;serviceId&#39; created
+    // set the ids store to link to the 'serviceId' created
     ids[_service] = serviceId;
 
-    // fire the &#39;ServiceRegistered&#39; event
+    // fire the 'ServiceRegistered' event
     ServiceRegistered(msg.sender, _service);
   }
 
@@ -280,7 +280,7 @@ contract PrivateServiceRegistry is PrivateServiceRegistryInterface {
   }
 
   address[] public services;
-  mapping(address =&gt; uint256) public ids;
+  mapping(address => uint256) public ids;
 }
 
 
@@ -309,7 +309,7 @@ Specified Contracts
 
 
 /// @title Standard Campaign -- enables generic crowdsales that disperse digital assets
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e10171d15501a111a0d11103e1d11100d1b100d070d50101b0a">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e10171d15501a111a0d11103e1d11100d1b100d070d50101b0a">[email protected]</a>>
 contract StandardCampaign is Owned, Campaign {
   // the three possible states
   enum Stages {
@@ -336,8 +336,8 @@ contract StandardCampaign is Owned, Campaign {
     // if the msg value is zero or amount raised plus the curent message value
     // is greater than the funding cap, then throw error
     if (msg.value == 0
-      || amountRaised + msg.value &gt; fundingCap
-      || amountRaised + msg.value &lt; amountRaised) {
+      || amountRaised + msg.value > fundingCap
+      || amountRaised + msg.value < amountRaised) {
       throw;
     } else {
       // carry on with state changing operations
@@ -379,23 +379,23 @@ contract StandardCampaign is Owned, Campaign {
   // the current campaign stage
   function stage() public constant returns (uint256) {
     // if current time is less than the expiry, the crowdfund is operational
-    if (block.number &lt; expiry
-      &amp;&amp; earlySuccess == false
-      &amp;&amp; amountRaised &lt; fundingCap) {
+    if (block.number < expiry
+      && earlySuccess == false
+      && amountRaised < fundingCap) {
       return uint256(Stages.CrowdfundOperational);
 
-    // if n &gt;= e and aR &lt; fG then the crowdfund is a failure
-    } else if(block.number &gt;= expiry
-      &amp;&amp; earlySuccess == false
-      &amp;&amp; amountRaised &lt; fundingGoal) {
+    // if n >= e and aR < fG then the crowdfund is a failure
+    } else if(block.number >= expiry
+      && earlySuccess == false
+      && amountRaised < fundingGoal) {
       return uint256(Stages.CrowdfundFailure);
 
-    // if n &gt;= e and aR &gt;= fG or aR &gt;= fC or early success triggered
+    // if n >= e and aR >= fG or aR >= fC or early success triggered
     // then the crowdfund is a success (enhancers can trigger early success)
     // early success is generally used for TokenCap enforcement
-    } else if((block.number &gt;= expiry &amp;&amp; amountRaised &gt;= fundingGoal)
+    } else if((block.number >= expiry && amountRaised >= fundingGoal)
       || earlySuccess == true
-      || amountRaised &gt;= fundingCap) {
+      || amountRaised >= fundingCap) {
       return uint256(Stages.CrowdfundSuccess);
     }
   }
@@ -580,32 +580,32 @@ contract StandardCampaign is Owned, Campaign {
   // the contributions data store, where all contributions are notated
   Contribution[] public contributions;
 
-  // all contribution ID&#39;s of a specific sender
-  mapping(address =&gt; uint256[]) public contributionsBySender;
+  // all contribution ID's of a specific sender
+  mapping(address => uint256[]) public contributionsBySender;
 
   // the refund BalanceClaim address of a specific refund claim
-  // maps the (contribution ID =&gt; refund claim address)
-  mapping(uint256 =&gt; address) public refundClaimAddress;
+  // maps the (contribution ID => refund claim address)
+  mapping(uint256 => address) public refundClaimAddress;
 
   // maps the contribution ID to a bool (has the refund been claimed for this
   // contribution)
-  mapping(uint256 =&gt; bool) public refundsClaimed;
+  mapping(uint256 => bool) public refundsClaimed;
 
   // the human readable name of the Campaign, for metadata
   string public name;
 
   // the contract version number, if any
-  string constant public version = &quot;0.1.0&quot;;
+  string constant public version = "0.1.0";
 
   // the contribution method ABI as a string, written in standard solidity
-  // ABI format, this is generally used so that UI&#39;s can understand the campaign
-  string constant public contributeMethodABI = &quot;contributeMsgValue(uint256[]):(uint256)&quot;;
+  // ABI format, this is generally used so that UI's can understand the campaign
+  string constant public contributeMethodABI = "contributeMsgValue(uint256[]):(uint256)";
 
   // the payout to beneficiary ABI, written in standard solidity ABI format
-  string constant public payoutMethodABI = &quot;payoutToBeneficiary()&quot;;
+  string constant public payoutMethodABI = "payoutToBeneficiary()";
 
   // the refund method ABI, written in standard solidity ABI format
-  string constant public refundMethodABI = &quot;claimRefundOwed(uint256):(address)&quot;;
+  string constant public refundMethodABI = "claimRefundOwed(uint256):(address)";
 }
 
 /*
@@ -621,7 +621,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Empty Enhancer - used to test enhanced standard campaign contracts
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e20272d25602a212a3d21200e2d21203d2b203d373d60202b3a">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e20272d25602a212a3d21200e2d21203d2b203d373d60202b3a">[email protected]</a>>
 contract EmptyEnhancer is Enhancer {
   /// @dev notate contribution data, and trigger early success if need be
   function notate(address _sender, uint256 _value, uint256 _blockNumber, uint256[] _amounts)
@@ -641,7 +641,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Enhanced Standard Campaign Factory - used to generate and register standard campaigns
-/// @author Nick Dodson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd93949e96d39992998e9293bd9e92938e98938e848ed3939889">[email&#160;protected]</a>&gt;
+/// @author Nick Dodson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd93949e96d39992998e9293bd9e92938e98938e848ed3939889">[email protected]</a>>
 contract StandardCampaignFactory is PrivateServiceRegistry {
   function createStandardCampaign(string _name,
     uint256 _expiry,

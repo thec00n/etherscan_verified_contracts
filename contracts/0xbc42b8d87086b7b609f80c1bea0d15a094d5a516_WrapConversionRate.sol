@@ -54,7 +54,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -73,31 +73,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -111,8 +111,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -183,7 +183,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -194,7 +194,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -208,7 +208,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -219,7 +219,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -276,7 +276,7 @@ contract VolumeImbalanceRecorder is Withdrawable {
                             // before halting trade
     }
 
-    mapping(address =&gt; TokenControlInfo) internal tokenControlInfo;
+    mapping(address => TokenControlInfo) internal tokenControlInfo;
 
     struct TokenImbalanceData {
         int  lastBlockBuyUnitsImbalance;
@@ -286,7 +286,7 @@ contract VolumeImbalanceRecorder is Withdrawable {
         uint lastRateUpdateBlock;
     }
 
-    mapping(address =&gt; mapping(uint=&gt;uint)) public tokenImbalanceData;
+    mapping(address => mapping(uint=>uint)) public tokenImbalanceData;
 
     function VolumeImbalanceRecorder(address _admin) public {
         require(_admin != address(0));
@@ -360,21 +360,21 @@ contract VolumeImbalanceRecorder is Withdrawable {
     }
 
     function setGarbageToVolumeRecorder(ERC20 token) internal {
-        for (uint i = 0; i &lt; SLIDING_WINDOW_SIZE; i++) {
+        for (uint i = 0; i < SLIDING_WINDOW_SIZE; i++) {
             tokenImbalanceData[token][i] = 0x1;
         }
     }
 
     function getImbalanceInRange(ERC20 token, uint startBlock, uint endBlock) internal view returns(int buyImbalance) {
         // check the imbalance in the sliding window
-        require(startBlock &lt;= endBlock);
+        require(startBlock <= endBlock);
 
         buyImbalance = 0;
 
-        for (uint windowInd = 0; windowInd &lt; SLIDING_WINDOW_SIZE; windowInd++) {
+        for (uint windowInd = 0; windowInd < SLIDING_WINDOW_SIZE; windowInd++) {
             TokenImbalanceData memory perBlockData = decodeTokenImbalanceData(tokenImbalanceData[token][windowInd]);
 
-            if (perBlockData.lastBlock &lt;= endBlock &amp;&amp; perBlockData.lastBlock &gt;= startBlock) {
+            if (perBlockData.lastBlock <= endBlock && perBlockData.lastBlock >= startBlock) {
                 buyImbalance += int(perBlockData.lastBlockBuyUnitsImbalance);
             }
         }
@@ -391,15 +391,15 @@ contract VolumeImbalanceRecorder is Withdrawable {
         uint startBlock = rateUpdateBlock;
         uint endBlock = currentBlock;
 
-        for (uint windowInd = 0; windowInd &lt; SLIDING_WINDOW_SIZE; windowInd++) {
+        for (uint windowInd = 0; windowInd < SLIDING_WINDOW_SIZE; windowInd++) {
             TokenImbalanceData memory perBlockData = decodeTokenImbalanceData(tokenImbalanceData[token][windowInd]);
 
-            if (perBlockData.lastBlock &lt;= endBlock &amp;&amp; perBlockData.lastBlock &gt;= startBlock) {
+            if (perBlockData.lastBlock <= endBlock && perBlockData.lastBlock >= startBlock) {
                 imbalanceInRange += perBlockData.lastBlockBuyUnitsImbalance;
             }
 
             if (perBlockData.lastRateUpdateBlock != rateUpdateBlock) continue;
-            if (perBlockData.lastBlock &lt; latestBlock) continue;
+            if (perBlockData.lastBlock < latestBlock) continue;
 
             latestBlock = perBlockData.lastBlock;
             buyImbalance = perBlockData.totalBuyUnitsImbalance;
@@ -440,17 +440,17 @@ contract VolumeImbalanceRecorder is Withdrawable {
 
     function encodeTokenImbalanceData(TokenImbalanceData data) internal pure returns(uint) {
         // check for overflows
-        require(data.lastBlockBuyUnitsImbalance &lt; int(POW_2_64 / 2));
-        require(data.lastBlockBuyUnitsImbalance &gt; int(-1 * int(POW_2_64) / 2));
-        require(data.lastBlock &lt; POW_2_64);
-        require(data.totalBuyUnitsImbalance &lt; int(POW_2_64 / 2));
-        require(data.totalBuyUnitsImbalance &gt; int(-1 * int(POW_2_64) / 2));
-        require(data.lastRateUpdateBlock &lt; POW_2_64);
+        require(data.lastBlockBuyUnitsImbalance < int(POW_2_64 / 2));
+        require(data.lastBlockBuyUnitsImbalance > int(-1 * int(POW_2_64) / 2));
+        require(data.lastBlock < POW_2_64);
+        require(data.totalBuyUnitsImbalance < int(POW_2_64 / 2));
+        require(data.totalBuyUnitsImbalance > int(-1 * int(POW_2_64) / 2));
+        require(data.lastRateUpdateBlock < POW_2_64);
 
         // do encoding
-        uint result = uint(data.lastBlockBuyUnitsImbalance) &amp; (POW_2_64 - 1);
+        uint result = uint(data.lastBlockBuyUnitsImbalance) & (POW_2_64 - 1);
         result |= data.lastBlock * POW_2_64;
-        result |= (uint(data.totalBuyUnitsImbalance) &amp; (POW_2_64 - 1)) * POW_2_64 * POW_2_64;
+        result |= (uint(data.totalBuyUnitsImbalance) & (POW_2_64 - 1)) * POW_2_64 * POW_2_64;
         result |= data.lastRateUpdateBlock * POW_2_64 * POW_2_64 * POW_2_64;
 
         return result;
@@ -459,9 +459,9 @@ contract VolumeImbalanceRecorder is Withdrawable {
     function decodeTokenImbalanceData(uint input) internal pure returns(TokenImbalanceData) {
         TokenImbalanceData memory data;
 
-        data.lastBlockBuyUnitsImbalance = int(int64(input &amp; (POW_2_64 - 1)));
-        data.lastBlock = uint(uint64((input / POW_2_64) &amp; (POW_2_64 - 1)));
-        data.totalBuyUnitsImbalance = int(int64((input / (POW_2_64 * POW_2_64)) &amp; (POW_2_64 - 1)));
+        data.lastBlockBuyUnitsImbalance = int(int64(input & (POW_2_64 - 1)));
+        data.lastBlock = uint(uint64((input / POW_2_64) & (POW_2_64 - 1)));
+        data.totalBuyUnitsImbalance = int(int64((input / (POW_2_64 * POW_2_64)) & (POW_2_64 - 1)));
         data.lastRateUpdateBlock = uint(uint64((input / (POW_2_64 * POW_2_64 * POW_2_64))));
 
         return data;
@@ -508,7 +508,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     } */
     uint public validRateDurationInBlocks = 10; // rates are valid for this amount of blocks
     ERC20[] internal listedTokens;
-    mapping(address=&gt;TokenData) internal tokenData;
+    mapping(address=>TokenData) internal tokenData;
     bytes32[] internal tokenRatesCompactData;
     uint public numTokensInCurrentCompactData = 0;
     address public reserveContract;
@@ -545,12 +545,12 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
 
         require(buy.length == sell.length);
         require(indices.length == buy.length);
-        require(blockNumber &lt;= 0xFFFFFFFF);
+        require(blockNumber <= 0xFFFFFFFF);
 
         uint bytes14Offset = BYTES_14_OFFSET;
 
-        for (uint i = 0; i &lt; indices.length; i++) {
-            require(indices[i] &lt; tokenRatesCompactData.length);
+        for (uint i = 0; i < indices.length; i++) {
+            require(indices[i] < tokenRatesCompactData.length);
             uint data = uint(buy[i]) | uint(sell[i]) * bytes14Offset | (blockNumber * (bytes14Offset * bytes14Offset));
             tokenRatesCompactData[indices[i]] = bytes32(data);
         }
@@ -573,7 +573,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
         require(sell.length == buy.length);
         require(sell.length == indices.length);
 
-        for (uint ind = 0; ind &lt; tokens.length; ind++) {
+        for (uint ind = 0; ind < tokens.length; ind++) {
             require(tokenData[tokens[ind]].listed);
             tokenData[tokens[ind]].baseBuyRate = baseBuy[ind];
             tokenData[tokens[ind]].baseSellRate = baseSell[ind];
@@ -594,8 +594,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     {
         require(xBuy.length == yBuy.length);
         require(xSell.length == ySell.length);
-        require(xBuy.length &lt;= MAX_STEPS_IN_FUNCTION);
-        require(xSell.length &lt;= MAX_STEPS_IN_FUNCTION);
+        require(xBuy.length <= MAX_STEPS_IN_FUNCTION);
+        require(xSell.length <= MAX_STEPS_IN_FUNCTION);
         require(tokenData[token].listed);
 
         tokenData[token].buyRateQtyStepFunction = StepFunction(xBuy, yBuy);
@@ -614,8 +614,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     {
         require(xBuy.length == yBuy.length);
         require(xSell.length == ySell.length);
-        require(xBuy.length &lt;= MAX_STEPS_IN_FUNCTION);
-        require(xSell.length &lt;= MAX_STEPS_IN_FUNCTION);
+        require(xBuy.length <= MAX_STEPS_IN_FUNCTION);
+        require(xSell.length <= MAX_STEPS_IN_FUNCTION);
         require(tokenData[token].listed);
 
         tokenData[token].buyRateImbalanceStepFunction = StepFunction(xBuy, yBuy);
@@ -666,7 +666,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
         bytes32 compactData = tokenRatesCompactData[tokenData[token].compactDataArrayIndex];
 
         uint updateRateBlock = getLast4Bytes(compactData);
-        if (currentBlockNumber &gt;= updateRateBlock + validRateDurationInBlocks) return 0; // rate is expired
+        if (currentBlockNumber >= updateRateBlock + validRateDurationInBlocks) return 0; // rate is expired
         // check imbalance
         int totalImbalance;
         int blockImbalance;
@@ -721,8 +721,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
             rate = addBps(rate, extraBps);
         }
 
-        if (abs(totalImbalance) &gt;= getMaxTotalImbalance(token)) return 0;
-        if (abs(blockImbalance + imbalanceQty) &gt;= getMaxPerBlockImbalance(token)) return 0;
+        if (abs(totalImbalance) >= getMaxTotalImbalance(token)) return 0;
+        if (abs(blockImbalance + imbalanceQty) >= getMaxPerBlockImbalance(token)) return 0;
 
         return rate;
     }
@@ -813,24 +813,24 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
 
     function executeStepFunction(StepFunction f, int x) internal pure returns(int) {
         uint len = f.y.length;
-        for (uint ind = 0; ind &lt; len; ind++) {
-            if (x &lt;= f.x[ind]) return f.y[ind];
+        for (uint ind = 0; ind < len; ind++) {
+            if (x <= f.x[ind]) return f.y[ind];
         }
 
         return f.y[len-1];
     }
 
     function addBps(uint rate, int bps) internal pure returns(uint) {
-        require(rate &lt;= MAX_RATE);
-        require(bps &gt;= MIN_BPS_ADJUSTMENT);
-        require(bps &lt;= MAX_BPS_ADJUSTMENT);
+        require(rate <= MAX_RATE);
+        require(bps >= MIN_BPS_ADJUSTMENT);
+        require(bps <= MAX_BPS_ADJUSTMENT);
 
         uint maxBps = 100 * 100;
         return (rate * uint(int(maxBps) + bps)) / maxBps;
     }
 
     function abs(int x) internal pure returns(uint) {
-        if (x &lt; 0)
+        if (x < 0)
             return uint(-1 * x);
         else
             return uint(x);
@@ -856,7 +856,7 @@ contract WrapperBase is Withdrawable {
         wrappedContract = _wrappedContract;
         admin = _admin;
 
-        for (uint i = 0; i &lt; _numDataInstances; i++){
+        for (uint i = 0; i < _numDataInstances; i++){
             addDataInstance();
         }
     }
@@ -875,16 +875,16 @@ contract WrapperBase is Withdrawable {
     }
 
     function setNewData(uint dataIndex) internal {
-        require(dataIndex &lt; dataInstances.length);
+        require(dataIndex < dataInstances.length);
         dataInstances[dataIndex].lastSetNonce++;
         dataInstances[dataIndex].approveSignatureArray.length = 0;
     }
 
     function addSignature(uint dataIndex, uint signedNonce, address signer) internal returns(bool allSigned) {
-        require(dataIndex &lt; dataInstances.length);
+        require(dataIndex < dataInstances.length);
         require(dataInstances[dataIndex].lastSetNonce == signedNonce);
 
-        for(uint i = 0; i &lt; dataInstances[dataIndex].approveSignatureArray.length; i++) {
+        for(uint i = 0; i < dataInstances[dataIndex].approveSignatureArray.length; i++) {
             if (signer == dataInstances[dataIndex].approveSignatureArray[i]) revert();
         }
         dataInstances[dataIndex].approveSignatureArray.push(signer);
@@ -901,7 +901,7 @@ contract WrapperBase is Withdrawable {
     }
 
     function getDataTrackingParameters(uint index) internal view returns (address[], uint) {
-        require(index &lt; dataInstances.length);
+        require(index < dataInstances.length);
         return(dataInstances[index].approveSignatureArray, dataInstances[index].lastSetNonce);
     }
 }
@@ -1035,7 +1035,7 @@ contract WrapConversionRate is WrapperBase {
 
         uint minimalRecordResolution;
 
-        for (uint i = 0; i &lt; tokenInfoTokenList.length; i++) {
+        for (uint i = 0; i < tokenInfoTokenList.length; i++) {
             (minimalRecordResolution, , ) =
                 conversionRates.getTokenControlInfo(tokenInfoTokenList[i]);
             require(minimalRecordResolution != 0);
@@ -1048,9 +1048,9 @@ contract WrapConversionRate is WrapperBase {
     }
 
     function getControlInfoPerToken (uint index) public view returns(ERC20 token, uint _maxPerBlockImbalance, uint _maxTotalImbalance) {
-        require (tokenInfoTokenList.length &gt; index);
-        require (tokenInfoPerBlockImbalance.length &gt; index);
-        require (tokenInfoMaxTotalImbalance.length &gt; index);
+        require (tokenInfoTokenList.length > index);
+        require (tokenInfoPerBlockImbalance.length > index);
+        require (tokenInfoMaxTotalImbalance.length > index);
 
         return(tokenInfoTokenList[index], tokenInfoPerBlockImbalance[index], tokenInfoMaxTotalImbalance[index]);
     }
@@ -1079,7 +1079,7 @@ contract WrapConversionRate is WrapperBase {
     //valid duration blocks
     ///////////////////////
     function setValidDurationData(uint validDurationBlocks) public onlyOperator {
-        require(validDurationBlocks &gt; 5);
+        require(validDurationBlocks > 5);
 
         //update data tracking
         setNewData(validDurationIndex);

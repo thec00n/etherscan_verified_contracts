@@ -42,7 +42,7 @@ contract Broker {
 
   struct Item{
     string name;
-    // At least 0.1 Finney, because it&#39;s the fee to the developer
+    // At least 0.1 Finney, because it's the fee to the developer
     uint   price;
     // this could be a link to an Web page explaining about this item
     string detail;
@@ -144,11 +144,11 @@ contract Broker {
     inState(State.Created)
     onlyCreator
   {
-    require(price &gt; minimumdeveloperfee);
+    require(price > minimumdeveloperfee);
     item.name = name;
     item.price = price;
     item.detail = detail;
-    developerfee = (price/1000)&lt;minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
+    developerfee = (price/1000)<minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
     emit ItemInfoChanged(name, price, detail, developerfee);
   }
 
@@ -172,7 +172,7 @@ contract Broker {
   {
     address[] memory buyers = new address[](buyinfo.length);
     //uint val = address(this).balance / buyinfo.length;
-    for (uint256 x = 0; x &lt; buyinfo.length; x++) {
+    for (uint256 x = 0; x < buyinfo.length; x++) {
       buyers[x] = buyinfo[x].buyer;
     }
     return (buyers);
@@ -212,7 +212,7 @@ contract Broker {
     emit SellerChanged(seller);
   }
 
-  // We will have some &#39;peculiar&#39; list of documents
+  // We will have some 'peculiar' list of documents
   // for each deals. 
   // For ex, for House we will require
   // proof of documents about the basic information of the House,
@@ -236,7 +236,7 @@ contract Broker {
   {
     require(state != State.Finished);
     require(state != State.Locked);
-    if(index&lt;item.documents.length){
+    if(index<item.documents.length){
       item.documents[index].state = FileState.Invalidated;
     }
   }
@@ -246,7 +246,7 @@ contract Broker {
     onlyBroker
     inState(State.Created)
   {
-    // if(index&lt;item.documents.length){
+    // if(index<item.documents.length){
     //   item.documents[index].state = FileState.Confirmed;
     // }
     emit Validated();
@@ -258,9 +258,9 @@ contract Broker {
     private
   {
       require(state != State.Finished);
-      if(buyinfo.length&gt;0){
+      if(buyinfo.length>0){
           uint val = address(this).balance / buyinfo.length;
-          for (uint256 x = 0; x &lt; buyinfo.length; x++) {
+          for (uint256 x = 0; x < buyinfo.length; x++) {
               if(buyinfo[x].completed==false){
                 buyinfo[x].buyer.transfer(val);
               }
@@ -301,7 +301,7 @@ contract Broker {
     payable
   {
       if(bBrokerRequired){
-        if(state != State.Validated &amp;&amp; state != State.Locked){
+        if(state != State.Validated && state != State.Locked){
           return;
         }
       }
@@ -329,8 +329,8 @@ contract Broker {
     onlyBroker
     inState(State.Locked)
   {
-      if(buyinfo.length&gt;0){
-          for (uint256 x = 0; x &lt; buyinfo.length; x++) {
+      if(buyinfo.length>0){
+          for (uint256 x = 0; x < buyinfo.length; x++) {
               confirmReceivedAt(x);
           }
       }
@@ -348,8 +348,8 @@ contract Broker {
     inState(State.Locked)
   {
       // In this case the broker is confirming one by one,
-      // the other purchase should go on. So we don&#39;t change the status.
-      if(index&gt;=buyinfo.length)
+      // the other purchase should go on. So we don't change the status.
+      if(index>=buyinfo.length)
         return;
       if(buyinfo[index].completed)
         return;

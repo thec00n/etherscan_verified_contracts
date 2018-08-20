@@ -10,18 +10,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a &amp;&amp; c&gt;=b);
+    assert(c >= a && c>=b);
     return c;
   }
 }
@@ -47,17 +47,17 @@ contract GREMToken is ERC20Interface {
   using SafeMath for uint;
 
   // State variables
-  string public symbol = &#39;GREM&#39;;
-  string public name = &#39;GREM&#39;;
+  string public symbol = 'GREM';
+  string public name = 'GREM';
   uint public decimals = 8;
   address public owner;
   uint public totalSupply = 200000000 * (10 ** 8);
   bool public emergencyFreeze;
   
   // mappings
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint) ) allowed;
-  mapping (address =&gt; bool) frozen;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint) ) allowed;
+  mapping (address => bool) frozen;
   
 
   // constructor
@@ -99,7 +99,7 @@ contract GREMToken is ERC20Interface {
   // ------------------------------------------------------------------------
   function transfer(address _to, uint _value) unfreezed(_to) unfreezed(msg.sender) noEmergencyFreeze() public returns (bool success) {
     require(_to != 0x0);
-    require(balances[msg.sender] &gt;= _value); 
+    require(balances[msg.sender] >= _value); 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
@@ -111,7 +111,7 @@ contract GREMToken is ERC20Interface {
   // ------------------------------------------------------------------------
   /* 
 		While changing approval, the allowed must be changed to 0 than then to updated value
-		The smart contract doesn&#39;t enforces this due to backward competibility but requires frontend to do the validations
+		The smart contract doesn't enforces this due to backward competibility but requires frontend to do the validations
    */
   function approve(address _spender, uint _value) unfreezed(_spender) unfreezed(msg.sender) noEmergencyFreeze() public returns (bool success) {
     allowed[msg.sender][_spender] = _value;
@@ -132,11 +132,11 @@ contract GREMToken is ERC20Interface {
     }
 
   // ------------------------------------------------------------------------
-  // Transferred approved amount from other&#39;s account
+  // Transferred approved amount from other's account
   // ------------------------------------------------------------------------
   function transferFrom(address _from, address _to, uint _value) unfreezed(_to) unfreezed(_from) unfreezed(msg.sender) noEmergencyFreeze() public returns (bool success) {
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require (_value &lt;= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require (_value <= balances[_from]);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -149,7 +149,7 @@ contract GREMToken is ERC20Interface {
   // Burn (Destroy tokens)
   // ------------------------------------------------------------------------
   function burn(uint256 _value) unfreezed(msg.sender) public returns (bool success) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] -= _value;
     totalSupply -= _value;
     emit Burn(msg.sender, _value);

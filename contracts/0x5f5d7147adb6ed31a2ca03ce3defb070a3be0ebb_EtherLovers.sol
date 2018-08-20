@@ -20,7 +20,7 @@ contract EtherLovers {
   }
 
   function declareLove(string lover1, string lover2) public payable {
-    if (msg.value &gt;= requiredFee) {
+    if (msg.value >= requiredFee) {
       LoversAdded(lover1, lover2);
     } else {
       throw;

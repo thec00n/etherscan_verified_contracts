@@ -27,11 +27,11 @@ contract DSMath {
 
 	// Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-	// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+	// Licensed under the Apache License, Version 2.0 (the "License").
 	// You may not use this file except in compliance with the License.
 
 	// Unless required by applicable law or agreed to in writing, software
-	// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+	// distributed under the License is distributed on an "AS IS" BASIS,
 	// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
     
 	// /*
@@ -39,19 +39,19 @@ contract DSMath {
     //  */
 
     function hmore(uint128 x, uint128 y) constant internal returns (bool) {
-        return x&gt;y;
+        return x>y;
     }
 
     function hless(uint128 x, uint128 y) constant internal returns (bool) {
-        return x&lt;y;
+        return x<y;
     }
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -63,11 +63,11 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     // /*
@@ -144,7 +144,7 @@ contract I_Pricer {
     uint128 public lastPrice;
     I_minter public mint;
     string public sURL;
-    mapping (bytes32 =&gt; uint) RevTransaction;
+    mapping (bytes32 => uint) RevTransaction;
     function __callback(bytes32 myid, string result) {}
     function queryCost() constant returns (uint128 _value) {}
     function QuickPrice() payable {}
@@ -163,9 +163,9 @@ contract I_coin is mortal {
 
 	I_minter public mint;
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = '';       //human 0.1 standard. Just an arbitrary versioning scheme.
 	
     function mintCoin(address target, uint256 mintedAmount) returns (bool success) {}
     function meltCoin(address target, uint256 meltedAmount) returns (bool success) {}
@@ -208,8 +208,8 @@ contract I_coin is mortal {
     // @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
 	
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	// @return total amount of tokens
     uint256 public totalSupply;
@@ -220,14 +220,14 @@ contract DSBaseActor {
    /*
    Copyright 2016 Nexus Development, LLC
 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
@@ -265,7 +265,7 @@ contract DSBaseActor {
 /** @title canFreeze. */
 contract canFreeze is owned { 
 	//Copyright (c) 2017 GenkiFS
-	//Basically a &quot;break glass in case of emergency&quot;
+	//Basically a "break glass in case of emergency"
     bool public frozen=false;
     modifier LockIfFrozen() {
         if (!frozen){
@@ -306,7 +306,7 @@ contract oneWrite {
 contract pricerControl is canFreeze {
 	//  Copyright (c) 2017 GenkiFS
 	//  Controls the Pricer contract for minter.  Allows updates to be made in the future by swapping the pricer contract
-	//  Although this is not expected, web addresses, API&#39;s, new oracles could require adjusments to the pricer contract
+	//  Although this is not expected, web addresses, API's, new oracles could require adjusments to the pricer contract
 	//  A delay of 2 days is implemented to allow coinholders to redeem their coins if they do not agree with the new contract
 	//  A new pricer contract unfreezes the minter (allowing a live price to be used)
     I_Pricer public pricer;
@@ -326,9 +326,9 @@ contract pricerControl is canFreeze {
     }  
 
     modifier updates() {
-        if (now &gt; releaseTime  &amp;&amp; pricer != future){
+        if (now > releaseTime  && pricer != future){
             update();
-            //log0(&#39;Updating&#39;);
+            //log0('Updating');
         }
         _;
     }
@@ -370,7 +370,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
     uint128 public Multiplier;//=15*10**(17); // default ratio for Risk price
     uint128 public levToll=5*10**(18-1);//0.5  // this plus the multiplier defines the maximum leverage
     uint128 public mintFee = 2*10**(18-3); //0.002 Used to pay oricalize and for marketing contract which is in both parties interest.
-    mapping (uint =&gt; Trans[]) public pending; // A mapping of pending transactions
+    mapping (uint => Trans[]) public pending; // A mapping of pending transactions
 
     event EventCreateStatic(address indexed _from, uint128 _value, uint _transactionID, uint _Price); 
     event EventRedeemStatic(address indexed _from, uint128 _value, uint _transactionID, uint _Price); 
@@ -382,11 +382,11 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
         // CONSTRUCTOR  
         Currency=_currency;
         Multiplier = _Multiplier;
-        // can&#39;t add new contracts here as it gives out of gas messages.  Too much code.
+        // can't add new contracts here as it gives out of gas messages.  Too much code.
     }	
 
 	function () {
-        //if ETH is just sent to this address then we cannot determine if it&#39;s for StatiCoins or RiskCoins, so send it back.
+        //if ETH is just sent to this address then we cannot determine if it's for StatiCoins or RiskCoins, so send it back.
         revert();
     }
 
@@ -409,7 +409,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @return transaction ID which can be viewed in the pending mapping
         */
 		_TransID=NewCoinInternal(msg.sender,cast(msg.value),Action.NewStatic);
-		//log0(&#39;NewStatic&#39;);
+		//log0('NewStatic');
     }
 	
     function NewStaticAdr(address _user) 
@@ -423,7 +423,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @return transaction ID which can be viewed in the pending mapping
         */
 		_TransID=NewCoinInternal(_user,cast(msg.value),Action.NewStatic);
-		//log0(&#39;NewStatic&#39;);
+		//log0('NewStatic');
     }
 	
     function NewRisk() 
@@ -436,7 +436,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @return transaction ID which can be viewed in the pending mapping
           */
 		_TransID=NewCoinInternal(msg.sender,cast(msg.value),Action.NewRisk);
-        //log0(&#39;NewRisk&#39;);
+        //log0('NewRisk');
     }
 
     function NewRiskAdr(address _user) 
@@ -450,7 +450,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @return transaction ID which can be viewed in the pending mapping
           */
 		_TransID=NewCoinInternal(_user,cast(msg.value),Action.NewRisk);
-        //log0(&#39;NewRisk&#39;);
+        //log0('NewRisk');
     }
 
     function RetRisk(uint128 _Quantity) 
@@ -472,7 +472,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
             //Only returned when Risk price is positive
 			_TransID=RetCoinInternal(_Quantity,cast(msg.value),msg.sender,Action.RetRisk);
         }
-		//log0(&#39;RetRisk&#39;);
+		//log0('RetRisk');
     }
 
     function RetStatic(uint128 _Quantity) 
@@ -493,11 +493,11 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
             //Static can be returned at any time
 			_TransID=RetCoinInternal(_Quantity,cast(msg.value),msg.sender,Action.RetStatic);
         }
-		//log0(&#39;RetStatic&#39;);
+		//log0('RetStatic');
     }
 	
 	//****************************//
-	// Constant functions (Ones that don&#39;t write to the blockchain)
+	// Constant functions (Ones that don't write to the blockchain)
 
     function StaticEthAvailable() 
 			constant 
@@ -539,7 +539,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 			//Return the default price of _currentPrice * Multiplier
             return wmul( _currentPrice , Multiplier); 
         } else {
-            if(hmore( wmul(_ETHTotal , _currentPrice),_StaticTotal)){ //_ETHTotal*_currentPrice&gt;_StaticTotal
+            if(hmore( wmul(_ETHTotal , _currentPrice),_StaticTotal)){ //_ETHTotal*_currentPrice>_StaticTotal
 				//Risk price is positive
                 return wdiv(wsub(wmul(_ETHTotal , _currentPrice) , _StaticTotal) , _RiskTotal); // (_ETHTotal * _currentPrice) - _StaticTotal) / _RiskTotal
             } else  {
@@ -574,7 +574,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 		/** @dev Returns the ratio at which Riskcoin grows in value for the equivalent growth in ETH price
 		* @return ratio
         */
-        if(Risk.totalSupply()&gt;0){
+        if(Risk.totalSupply()>0){
             return wdiv(cast(this.balance) , cast(Risk.totalSupply())); //  this.balance/Risk.totalSupply
         }else{
             return 0;
@@ -587,7 +587,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 		/** @dev Returns the current price at which the Risk price goes negative
 		* @return Risk price in underlying per ETH
         */ 
-        if(this.balance&gt;0){
+        if(this.balance>0){
             return wdiv(cast(Static.totalSupply()) , cast(this.balance)); //Static.totalSupply / this.balance
         }else{
             return 0;            
@@ -632,7 +632,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
         if(0==_Price||frozen){ //If there is an error in pricing or contract is frozen, use the old price
             _Price=lastPrice;
         } else {
-			if(Static.totalSupply()&gt;0 &amp;&amp; Risk.totalSupply()&gt;0) {// dont update if there are coins missing
+			if(Static.totalSupply()>0 && Risk.totalSupply()>0) {// dont update if there are coins missing
 				lastPrice=_Price; // otherwise update the last price
 			}
         }
@@ -667,9 +667,9 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @param _Price Current 24 hour average price as returned by the oracle in the pricer contract.
           * @return function returns nothing, but adds StatiCoins to the users address and events are created
         */
-		//log0(&#39;NewStatic&#39;);
+		//log0('NewStatic');
             
-            //if(Action.NewStatic&lt;&gt;_details.action){revert();}  //already checked
+            //if(Action.NewStatic<>_details.action){revert();}  //already checked
 			
 			uint128 CurRiskPrice=RiskPrice(_Price);
 			uint128 AmountReturn;
@@ -698,15 +698,15 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 			}
 			
 			//Static can be added when Risk price is positive and leverage is below the limit
-            if(CurRiskPrice &gt; 0  &amp;&amp; StaticAvail&gt;0 ){
+            if(CurRiskPrice > 0  && StaticAvail>0 ){
                 // Dont create if CurRiskPrice is 0 or there is no Static available (leverage is too high)
-				//log0(&#39;leverageOK&#39;);
+				//log0('leverageOK');
                 Static.mintCoin(_details.holder, uint256(wmul(AmountMint , _Price))); //request coins from the Static creator contract
                 EventCreateStatic(_details.holder, wmul(AmountMint , _Price), _TransID, _Price); // Event giving the holder address, coins created, transaction id, and price 
 				PendingETH=wsub(PendingETH,AmountMint);
             } 
 
-			if (AmountReturn&gt;0) {
+			if (AmountReturn>0) {
                 // return some money because not enough StatiCoins are available
 				bytes memory calldata; // define a blank `bytes`
                 exec(_details.holder,calldata, AmountReturn);  //Refund ETH from this contract
@@ -722,8 +722,8 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @param _Price Current 24 hour average price as returned by the oracle in the pricer contract.
           * @return function returns nothing, but adds Riskcoins to the users address and events are created
         */
-        //log0(&#39;NewRisk&#39;);
-        //if(Action.NewRisk&lt;&gt;_details.action){revert();}  //already checked
+        //log0('NewRisk');
+        //if(Action.NewRisk<>_details.action){revert();}  //already checked
 		// Get the Risk price using the amount of ETH in the contract before this transaction existed
 		uint128 CurRiskPrice;
 		if(wless(cast(this.balance),PendingETH)){
@@ -731,12 +731,12 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 		} else {
 			CurRiskPrice=RiskPrice(_Price,cast(Static.totalSupply()),cast(Risk.totalSupply()),wsub(cast(this.balance),PendingETH));
 		}
-        if(CurRiskPrice&gt;0){
+        if(CurRiskPrice>0){
             uint128 quantity=wdiv(wmul(_details.amount , _Price),CurRiskPrice);  // No of Riskcoins =  _details.amount * _Price / CurRiskPrice
             Risk.mintCoin(_details.holder, uint256(quantity) );  //request coins from the Riskcoin creator contract
             EventCreateRisk(_details.holder, quantity, _TransID, _Price); // Event giving the holder address, coins created, transaction id, and price 
         } else {
-            // Don&#39;t create if CurRiskPrice is 0, Return all the ETH originally sent
+            // Don't create if CurRiskPrice is 0, Return all the ETH originally sent
             bytes memory calldata; // define a blank `bytes`
             exec(_details.holder,calldata, _details.amount);
         }
@@ -749,10 +749,10 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @param _details Structure holding the amount sent (in ETH), the address of the person to sent to, and the type of request.
           * @param _TransID ID of the transaction (as stored in this contract).
           * @param _Price Current 24 hour average price as returned by the oracle in the pricer contract.
-          * @return function returns nothing, but removes StatiCoins from the user&#39;s address, sends ETH and events are created
+          * @return function returns nothing, but removes StatiCoins from the user's address, sends ETH and events are created
         */
-		//if(Action.RetStatic&lt;&gt;_details.action){revert();}  //already checked
-		//log0(&#39;RetStatic&#39;);
+		//if(Action.RetStatic<>_details.action){revert();}  //already checked
+		//log0('RetStatic');
 		uint128 _ETHReturned;
 		if(0==Risk.totalSupply()){_Price=lastPrice;} //No Risk coins for balance so use fixed price
         _ETHReturned = wdiv(_details.amount , _Price); //_details.amount / _Price
@@ -784,13 +784,13 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
           * @param _Price Current 24 hour average price as returned by the oracle in the Pricer contract.
           * @return function returns nothing, but removes StatiCoins from the users address, sends ETH and events are created
         */        
-		//if(Action.RetRisk&lt;&gt;_details.action){revert();}  //already checked
-		//log0(&#39;RetRisk&#39;);
+		//if(Action.RetRisk<>_details.action){revert();}  //already checked
+		//log0('RetRisk');
         uint128 _ETHReturned;
 		uint128 CurRiskPrice;
 		//if(0==Static.totalSupply()){_Price=lastPrice};// no StatiCoins, so all Risk coins are worth the same.  // _ETHReturned = _details.amount / _RiskTotal * _ETHTotal
 		CurRiskPrice=RiskPrice(_Price);
-        if(CurRiskPrice&gt;0){
+        if(CurRiskPrice>0){
             _ETHReturned = wdiv( wmul(_details.amount , CurRiskPrice) , _Price); // _details.amount * CurRiskPrice / _Price
             if (Risk.meltCoin(_details.holder,_details.amount )){
                 // Coins are deducted first, will add back if returning ETH goes wrong.
@@ -808,7 +808,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
                 }
             } 
         }  else {
-            // Risk price is zero so can&#39;t do anything.  Call back and delete the transaction from the contract
+            // Risk price is zero so can't do anything.  Call back and delete the transaction from the contract
         }
     }
 
@@ -843,7 +843,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 		uint128 refund;
         uint128 Fee=pricer.queryCost();  //Get the cost of querying the pricer contract
 		if(wless(_AmountETH,Fee)){
-			revert();  //log0(&#39;Not enough ETH to mint&#39;);
+			revert();  //log0('Not enough ETH to mint');
 			} else {
 			refund=wsub(_AmountETH,Fee);//Returning coins has had too much ETH sent, so return it.
 		}
@@ -871,7 +871,7 @@ contract minter is I_minter, DSBaseActor, oneWrite, pricerControl, DSMath{ //
 		require(IsWallet(_user));
 		uint128 toCredit;
         uint128 Fee=wmax(wmul(_amount,mintFee),pricer.queryCost()); // fee is the maxium of the pricer query cost and a mintFee% of value sent
-        if(wless(_amount,Fee)) revert(); //log0(&#39;Not enough ETH to mint&#39;);
+        if(wless(_amount,Fee)) revert(); //log0('Not enough ETH to mint');
 		TransID++;
         uint PricerID = pricer.requestPrice.value(uint256(Fee))(TransID); //Ask the pricer to return the price
 		toCredit=wsub(_amount,Fee);

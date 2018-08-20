@@ -20,13 +20,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -67,12 +67,12 @@ contract Owned {
 contract ERC20Token is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalToken;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -81,8 +81,8 @@ contract ERC20Token is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -115,8 +115,8 @@ contract ERC20Token is ERC20 {
  */
 contract MockBITO is ERC20Token, Owned {
 
-    string  public constant name     = &quot;Mock BITO&quot;;
-    string  public constant symbol   = &quot;MBITO&quot;;
+    string  public constant name     = "Mock BITO";
+    string  public constant symbol   = "MBITO";
     uint256 public constant decimals = 18;
 
     uint256 public constant initialToken = 500000000 * (10 ** decimals);

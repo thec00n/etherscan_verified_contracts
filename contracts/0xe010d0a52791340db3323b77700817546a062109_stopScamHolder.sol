@@ -23,7 +23,7 @@ function stopScamHolder(address _tokenAddress) {
 }
 
 function tokensBack() onlyOwner public {
-    if(now &gt; endTime){
+    if(now > endTime){
         sharesTokenAddress.transfer(owner, sharesTokenAddress.balanceOf(this));
     }
     tokenFree = sharesTokenAddress.balanceOf(this);

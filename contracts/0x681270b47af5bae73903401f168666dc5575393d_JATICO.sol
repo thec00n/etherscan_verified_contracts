@@ -8,20 +8,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 	
 	function safeSub(uint a, uint b) internal returns (uint) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   }
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
     	uint c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   }
 	function assert(bool assertion) internal {
@@ -47,12 +47,12 @@ contract ERC20{
 contract JATICO is ERC20, SafeMath{
 
 	
-	mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	uint256 public totalSupply;
-	string 	public name = &quot;Just Another Ethereum Token&quot;;
-	string 	public symbol = &quot;JAT&quot;;
+	string 	public name = "Just Another Ethereum Token";
+	string 	public symbol = "JAT";
 	uint 	public decimals = 3;
 	uint256 public INITIAL_SUPPLY = 32000000;
 	uint256 public price;
@@ -99,7 +99,7 @@ contract JATICO is ERC20, SafeMath{
 	}
 
 	modifier during_offering_time(){
-		if (now &gt;= endTime){
+		if (now >= endTime){
 			throw;
 		}else{
 			_;

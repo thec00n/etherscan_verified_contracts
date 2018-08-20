@@ -52,18 +52,18 @@ contract Vote is Ownable {
     uint public totalVotes;
 
     // mapping of candidate IDs to votes
-    mapping (uint =&gt; uint) public voteCount;
+    mapping (uint => uint) public voteCount;
     // mapping of scerets to vote status
-    mapping (bytes32 =&gt; bool) internal canVote;
+    mapping (bytes32 => bool) internal canVote;
     // counter/mapping of candidates
     uint public nextCandidateId = 1;
-    mapping (uint =&gt; Candidate) public candidateDirectory;
+    mapping (uint => Candidate) public candidateDirectory;
 
     function Vote(uint _salt, string _voteName, bytes32[] approvedHashes) public {
         salt = _salt;
         voteName = _voteName;
         totalVotes = approvedHashes.length;
-        for (uint i; i &lt; approvedHashes.length; i++) {
+        for (uint i; i < approvedHashes.length; i++) {
             canVote[approvedHashes[i]] = true;
         }
     }

@@ -57,26 +57,26 @@ contract DSAuth is DSAuthEvents {
 
 library DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -95,10 +95,10 @@ library DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -147,16 +147,16 @@ contract Accounting {
     
     //keeping track of total ETH and token balances
     uint public totalETH;
-    mapping (address =&gt; uint) public totalTokenBalances;
+    mapping (address => uint) public totalTokenBalances;
 
     struct Account {
         bytes32 name;
         uint balanceETH;
-        mapping (address =&gt; uint) tokenBalances;
+        mapping (address => uint) tokenBalances;
     }
 
     Account base = Account({
-        name: &quot;Base&quot;,
+        name: "Base",
         balanceETH: 0       
     });
 
@@ -193,7 +193,7 @@ contract Accounting {
     function sendETH(Account storage a, address _to, uint _value) 
     internal noReentrance 
     {
-        require(a.balanceETH &gt;= _value);
+        require(a.balanceETH >= _value);
         require(_to != address(0));
         
         a.balanceETH = a.balanceETH.sub(_value);
@@ -207,7 +207,7 @@ contract Accounting {
     function transact(Account storage a, address _to, uint _value, bytes data) 
     internal noReentrance 
     {
-        require(a.balanceETH &gt;= _value);
+        require(a.balanceETH >= _value);
         require(_to != address(0));
         
         a.balanceETH = a.balanceETH.sub(_value);
@@ -221,7 +221,7 @@ contract Accounting {
     function sendToken(Account storage a, address _token, address _to, uint _value) 
     internal noReentrance 
     {
-        require(a.tokenBalances[_token] &gt;= _value);
+        require(a.tokenBalances[_token] >= _value);
         require(_to != address(0));
         
         a.tokenBalances[_token] = a.tokenBalances[_token].sub(_value);
@@ -234,7 +234,7 @@ contract Accounting {
     function transferETH(Account storage _from, Account storage _to, uint _value) 
     internal 
     {
-        require(_from.balanceETH &gt;= _value);
+        require(_from.balanceETH >= _value);
         _from.balanceETH = _from.balanceETH.sub(_value);
         _to.balanceETH = _to.balanceETH.add(_value);
         emit ETHTransferred(_from.name, _to.name, _value);
@@ -243,20 +243,20 @@ contract Accounting {
     function transferToken(Account storage _from, Account storage _to, address _token, uint _value)
     internal
     {
-        require(_from.tokenBalances[_token] &gt;= _value);
+        require(_from.tokenBalances[_token] >= _value);
         _from.tokenBalances[_token] = _from.tokenBalances[_token].sub(_value);
         _to.tokenBalances[_token] = _to.tokenBalances[_token].add(_value);
         emit TokenTransferred(_from.name, _to.name, _token, _value);
     }
 
     function balanceETH(Account storage toAccount,  uint _value) internal {
-        require(address(this).balance &gt;= totalETH.add(_value));
+        require(address(this).balance >= totalETH.add(_value));
         depositETH(toAccount, address(this), _value);
     }
 
     function balanceToken(Account storage toAccount, address _token, uint _value) internal noReentrance {
         uint balance = ERC20(_token).balanceOf(this);
-        require(balance &gt;= totalTokenBalances[_token].add(_value));
+        require(balance >= totalTokenBalances[_token].add(_value));
 
         toAccount.tokenBalances[_token] = toAccount.tokenBalances[_token].add(_value);
         emit TokenDeposited(toAccount.name, _token, address(this), _value);
@@ -283,7 +283,7 @@ contract ButtonBase is DSAuth, Accounting {
     uint public startingPrice = 2 finney;
     uint internal _priceMultiplier = 106 * 10 **16;
     uint32 internal _n = 4; //increase the price after every n presses
-    uint32 internal _period = 30 minutes;// what&#39;s the period for pressing the button
+    uint32 internal _period = 30 minutes;// what's the period for pressing the button
     uint internal _newCampaignFraction = ONE_PERCENT_WAD; //1%
     uint internal _devFraction = 10 * ONE_PERCENT_WAD - _newCampaignFraction; //9%
     uint internal _charityFraction = 5 * ONE_PERCENT_WAD; //5%
@@ -294,35 +294,35 @@ contract ButtonBase is DSAuth, Accounting {
     ///Internal accounts to hold value:
     Account revenue = 
     Account({
-        name: &quot;Revenue&quot;,
+        name: "Revenue",
         balanceETH: 0
     });
 
     Account nextCampaign = 
     Account({
-        name: &quot;Next Campaign&quot;,
+        name: "Next Campaign",
         balanceETH: 0       
     });
 
     Account charity = 
     Account({
-        name: &quot;Charity&quot;,
+        name: "Charity",
         balanceETH: 0
     });
 
     ///Accounts of winners
-    mapping (address =&gt; Account) winners;
+    mapping (address => Account) winners;
 
     /// Function modifier to put limits on how values can be set
     modifier limited(uint value, uint min, uint max) {
-        require(value &gt;= min &amp;&amp; value &lt;= max);
+        require(value >= min && value <= max);
         _;
     }
 
     /// A function modifier which limits how often a function can be executed
-    mapping (bytes4 =&gt; uint) internal _lastExecuted;
+    mapping (bytes4 => uint) internal _lastExecuted;
     modifier timeLimited(uint _howOften) {
-        require(_lastExecuted[msg.sig].add(_howOften) &lt;= now);
+        require(_lastExecuted[msg.sig].add(_howOften) <= now);
         _lastExecuted[msg.sig] = now;
         _;
     }
@@ -367,12 +367,12 @@ contract ButtonBase is DSAuth, Accounting {
 
     ///Getters:
 
-    ///Check if there&#39;s an active campaign
+    ///Check if there's an active campaign
     function active() public view returns(bool) {
         if(campaigns.length == 0) { 
             return false;
         } else {
-            return campaigns[lastCampaignID].deadline &gt;= now;
+            return campaigns[lastCampaignID].deadline >= now;
         }
     }
 
@@ -428,7 +428,7 @@ contract ButtonBase is DSAuth, Accounting {
         }
     }
 
-    /// The latest jackpot fraction - note the fractions can be changed, but they don&#39;t affect any currently running campaign
+    /// The latest jackpot fraction - note the fractions can be changed, but they don't affect any currently running campaign
     function jackpotFraction() public view returns(uint) {
         if(active()) {
             return campaigns[lastCampaignID].jackpotFraction;
@@ -482,7 +482,7 @@ contract ButtonBase is DSAuth, Accounting {
         }
     }
 
-    /// How much time is left in seconds if there&#39;s a running campaign
+    /// How much time is left in seconds if there's a running campaign
     function timeLeft() external view returns(uint) {
         if (active()) {
             return campaigns[lastCampaignID].deadline - now;
@@ -491,7 +491,7 @@ contract ButtonBase is DSAuth, Accounting {
         }
     }
 
-    /// What is the latest campaign&#39;s deadline
+    /// What is the latest campaign's deadline
     function deadline() external view returns(uint64) {
         return campaigns[lastCampaignID].deadline;
     }
@@ -515,7 +515,7 @@ contract ButtonBase is DSAuth, Accounting {
         return campaigns[campaignID].lastPresser;
     }
 
-    /// The current (or next) campaign&#39;s jackpot
+    /// The current (or next) campaign's jackpot
     function jackpot() external view returns(uint) {
         if(active()){
             return campaigns[lastCampaignID].total.balanceETH.wmul(campaigns[lastCampaignID].jackpotFraction);
@@ -593,13 +593,13 @@ contract ButtonBase is DSAuth, Accounting {
 
     /// Withdrawal function for winners
     function withdrawJackpot() public {
-        require(winners[msg.sender].balanceETH &gt; 0, &quot;Nothing to withdraw!&quot;);
+        require(winners[msg.sender].balanceETH > 0, "Nothing to withdraw!");
         sendETH(winners[msg.sender], msg.sender, winners[msg.sender].balanceETH);
     }
 
     /// Any winner can chose to donate their jackpot
     function donateJackpot() public {
-        require(winners[msg.sender].balanceETH &gt; 0, &quot;Nothing to donate!&quot;);
+        require(winners[msg.sender].balanceETH > 0, "Nothing to donate!");
         transferETH(winners[msg.sender], charity, winners[msg.sender].balanceETH);
     }
 
@@ -609,9 +609,9 @@ contract ButtonBase is DSAuth, Accounting {
     }
 
     /// Dev charity transfer function - sends all of the charity balance to the pre-set charity address
-    /// Note that there&#39;s nothing stopping the devs to wait and set the charity beneficiary to their own address
+    /// Note that there's nothing stopping the devs to wait and set the charity beneficiary to their own address
     /// and drain the charity balance for themselves. We would not do that as it would not make sense and it would
-    /// damage our reputation, but this is the only &quot;weak&quot; spot of the contract where it requires trust in the devs
+    /// damage our reputation, but this is the only "weak" spot of the contract where it requires trust in the devs
     function sendCharityETH(bytes callData) public auth {
         // donation receiver might be a contract, so transact instead of a simple send
         transact(charity, charityBeneficiary, charity.balanceETH, callData);
@@ -663,9 +663,9 @@ contract ButtonBase is DSAuth, Accounting {
     auth
     limited(_devF.add(_charityF).add(_newCampF), 0, ONE_WAD) // up to 100% - charity fraction could be set to 100% for special occasions
     timeLimited(2 weeks) { // can only be changed once every 4 weeks
-        require(_charityF &lt;= ONE_WAD); // charity fraction can be up to 100%
-        require(_devF &lt;= 20 * ONE_PERCENT_WAD); //can&#39;t set the dev fraction to more than 20%
-        require(_newCampF &lt;= 10 * ONE_PERCENT_WAD);//less than 10%
+        require(_charityF <= ONE_WAD); // charity fraction can be up to 100%
+        require(_devF <= 20 * ONE_PERCENT_WAD); //can't set the dev fraction to more than 20%
+        require(_newCampF <= 10 * ONE_PERCENT_WAD);//less than 10%
         _devFraction = _devF;
         _charityFraction = _charityF;
         _newCampaignFraction = _newCampF;
@@ -705,7 +705,7 @@ contract TheButton is ButtonBase {
             _press(c);//register press
             depositETH(c.total, msg.sender, msg.value);// handle ETH
         } else { //if inactive (after deadline)
-            require(!stopped, &quot;Contract stopped!&quot;);//make sure we&#39;re not stopped
+            require(!stopped, "Contract stopped!");//make sure we're not stopped
             if(!c.finalized) {//if not finalized
                 _finalizeCampaign(c);// finalize last campaign
             } 
@@ -718,12 +718,12 @@ contract TheButton is ButtonBase {
     }
 
     function start() external payable auth {
-        require(stopped, &quot;Already started!&quot;);
+        require(stopped, "Already started!");
         stopped = false;
         
         if(campaigns.length != 0) {//if there was a past campaign
             ButtonCampaign storage c = campaigns[lastCampaignID];
-            require(c.finalized, &quot;Last campaign not finalized!&quot;);//make sure it was finalized
+            require(c.finalized, "Last campaign not finalized!");//make sure it was finalized
         }             
         _newCampaign();//start new campaign
         c = campaigns[lastCampaignID];
@@ -733,7 +733,7 @@ contract TheButton is ButtonBase {
 
     ///Stopping will only affect new campaigns, not already running ones
     function stop() external auth {
-        require(!stopped, &quot;Already stopped!&quot;);
+        require(!stopped, "Already stopped!");
         stopped = true;
     }
     
@@ -752,8 +752,8 @@ contract TheButton is ButtonBase {
 
     //Press logic
     function _press(ButtonCampaign storage c) internal {
-        require(c.deadline &gt;= now, &quot;After deadline!&quot;);//must be before the deadline
-        require(msg.value &gt;= c.price, &quot;Not enough value!&quot;);// must have at least the price value
+        require(c.deadline >= now, "After deadline!");//must be before the deadline
+        require(msg.value >= c.price, "Not enough value!");// must have at least the price value
         c.presses += 1;//no need for safe math, as it is not a critical calculation
         c.lastPresser = msg.sender;
              
@@ -767,8 +767,8 @@ contract TheButton is ButtonBase {
 
     /// starting a new campaign
     function _newCampaign() internal {
-        require(!active(), &quot;A campaign is already running!&quot;);
-        require(_devFraction.add(_charityFraction).add(_jackpotFraction).add(_newCampaignFraction) == ONE_WAD, &quot;Accounting is incorrect!&quot;);
+        require(!active(), "A campaign is already running!");
+        require(_devFraction.add(_charityFraction).add(_jackpotFraction).add(_newCampaignFraction) == ONE_WAD, "Accounting is incorrect!");
         
         uint _campaignID = campaigns.length++;
         ButtonCampaign storage c = campaigns[_campaignID];
@@ -783,15 +783,15 @@ contract TheButton is ButtonBase {
         c.deadline = uint64(now.add(_period));
         c.n = _n;
         c.period = _period;
-        c.total.name = keccak256(abi.encodePacked(&quot;Total&quot;, lastCampaignID));//setting the name of the campaign&#39;s accaount     
+        c.total.name = keccak256(abi.encodePacked("Total", lastCampaignID));//setting the name of the campaign's accaount     
         transferETH(nextCampaign, c.total, nextCampaign.balanceETH);
         emit Started(c.total.balanceETH, _period, lastCampaignID); 
     }
 
     /// Finalize campaign logic
     function _finalizeCampaign(ButtonCampaign storage c) internal {
-        require(c.deadline &lt; now, &quot;Before deadline!&quot;);
-        require(!c.finalized, &quot;Already finalized!&quot;);
+        require(c.deadline < now, "Before deadline!");
+        require(!c.finalized, "Already finalized!");
         
         if(c.presses != 0) {//If there were presses
             uint totalBalance = c.total.balanceETH;
@@ -815,7 +815,7 @@ contract TheButton is ButtonBase {
         } 
         // if there will be no next campaign
         if(stopped) {
-            //transfer leftover to devs&#39; base account
+            //transfer leftover to devs' base account
             transferETH(c.total, base, c.total.balanceETH);
         } else {
             //otherwise transfer to next campaign

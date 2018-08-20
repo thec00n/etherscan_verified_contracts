@@ -3,10 +3,10 @@ pragma solidity ^0.4.23;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -95,16 +95,16 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
     uint256 public rate=5000000;
 
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;SHPC&quot;;
-        name = &quot;ShoppingCoin&quot;;
+        symbol = "SHPC";
+        name = "ShoppingCoin";
         decimals = 18;
         bonusEnds = now + 1 hours;
         endDate = now + 7 weeks;
@@ -132,8 +132,8 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -146,7 +146,7 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns
 (bool success) {
@@ -175,7 +175,7 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -184,7 +184,7 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data)public returns (bool success) {
@@ -198,7 +198,7 @@ contract ShoppingCoin is ERC20Interface, Owned, SafeMath {
     // 25000 SHPC Tokens per 0.005 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(msg.value &gt;= 0.005 ether);
+        require(msg.value >= 0.005 ether);
         uint256 tokens=safeMul(msg.value,rate); 
         balances[msg.sender] = safeAdd(balances[msg.sender], tokens);
         _totalSupply = safeSub(_totalSupply, tokens);

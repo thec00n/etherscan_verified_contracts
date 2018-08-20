@@ -64,20 +64,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,7 +87,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -151,15 +151,15 @@ contract Contactable is Ownable{
 contract PlayHallToken is ERC223, Contactable {
     using SafeMath for uint;
 
-    string constant public name = &quot;PlayHall Token&quot;;
-    string constant public symbol = &quot;PHT&quot;;
+    string constant public name = "PlayHall Token";
+    string constant public symbol = "PHT";
     uint constant public decimals = 18;
 
     bool public isActivated = false;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
-    mapping (address =&gt; bool) public freezedList;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) internal allowed;
+    mapping (address => bool) public freezedList;
     
     // address, who is allowed to issue new tokens (presale and sale contracts)
     address public minter;
@@ -206,7 +206,7 @@ contract PlayHallToken is ERC223, Contactable {
     */
     function transfer(address _to, uint _value, bytes _data) public whenActivated returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(!freezedList[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -252,8 +252,8 @@ contract PlayHallToken is ERC223, Contactable {
      */
     function transferFrom(address _from, address _to, uint _value, bytes _data) public whenActivated returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(!freezedList[_from]);
 
         balances[_from] = balances[_from].sub(_value);
@@ -275,7 +275,7 @@ contract PlayHallToken is ERC223, Contactable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -325,7 +325,7 @@ contract PlayHallToken is ERC223, Contactable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -362,7 +362,7 @@ contract PlayHallToken is ERC223, Contactable {
     }
     
     /**
-     * Minter can pass it&#39;s role to another address
+     * Minter can pass it's role to another address
      */
     function setMinter(address _minter) external onlyMinter {
         require(_minter != 0x0);
@@ -390,6 +390,6 @@ contract PlayHallToken is ERC223, Contactable {
               //retrieve the size of the code on target address, this needs assembly
               length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 }

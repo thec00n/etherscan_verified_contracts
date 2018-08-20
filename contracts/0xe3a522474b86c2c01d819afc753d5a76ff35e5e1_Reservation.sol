@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -144,12 +144,12 @@ contract PricingStrategy {
         uint _threshold1,
         uint _threshold2
     ) {
-        require(_rate0 &gt; 0);
-        require(_rate1 &gt; 0);
-        require(_rate2 &gt; 0);
-        require(_minimumWeiAmount &gt; 0);
-        require(_threshold1 &gt; 0);
-        require(_threshold2 &gt; 0);
+        require(_rate0 > 0);
+        require(_rate1 > 0);
+        require(_rate2 > 0);
+        require(_minimumWeiAmount > 0);
+        require(_threshold1 > 0);
+        require(_threshold2 > 0);
 
         rate0 = _rate0;
         rate1 = _rate1;
@@ -168,15 +168,15 @@ contract PricingStrategy {
     function calculateTokenAmount(uint weiAmount) public constant returns (uint tokenAmount) {
         uint bonusRate = 0;
 
-        if (weiAmount &gt;= minimumWeiAmount) {
+        if (weiAmount >= minimumWeiAmount) {
             bonusRate = rate0;
         }
 
-        if (weiAmount &gt;= threshold1) {
+        if (weiAmount >= threshold1) {
             bonusRate = rate1;
         }
 
-        if (weiAmount &gt;= threshold2) {
+        if (weiAmount >= threshold2) {
             bonusRate = rate2;
         }
 
@@ -230,13 +230,13 @@ contract Reservation is Pausable {
     uint public weiRefunded = 0;
 
     /** How much ETH each address has invested to this reservation */
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     /** How much tokens this reservation has credited for each investor address */
-    mapping (address =&gt; uint256) public tokenAmountOf;
+    mapping (address => uint256) public tokenAmountOf;
 
     /** Addresses that are allowed to invest even before ICO offical opens. Only for testing purpuses. */
-    mapping (address =&gt; bool) public earlyParticipantWhitelist;
+    mapping (address => bool) public earlyParticipantWhitelist;
 
     /** State machine
     *
@@ -275,7 +275,7 @@ contract Reservation is Pausable {
         require(_multisigWallet != 0);
         require(_start != 0);
         require(_end != 0);
-        require(_start &lt; _end);
+        require(_start < _end);
         require(_tokensHardCap != 0);
 
         token = IMintableToken(_token);
@@ -304,7 +304,7 @@ contract Reservation is Pausable {
     */
     function invest(address receiver) whenNotPaused payable {
 
-        // Determine if it&#39;s a good time to accept investment from this participant
+        // Determine if it's a good time to accept investment from this participant
         if (getState() == State.PreFunding) {
             // Are we whitelisted for early deposit
             require(earlyParticipantWhitelist[receiver]);
@@ -318,7 +318,7 @@ contract Reservation is Pausable {
         uint tokenAmount = pricingStrategy.calculateTokenAmount(weiAmount);
 
         // Dust transaction
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
 
         if (investedAmountOf[receiver] == 0) {
             // A new investor
@@ -366,7 +366,7 @@ contract Reservation is Pausable {
     */
     function setEndsAt(uint time) onlyOwner {
 
-        require(now &lt;= time);
+        require(now <= time);
 
         endsAt = time;
         EndsAtChanged(endsAt);
@@ -380,7 +380,7 @@ contract Reservation is Pausable {
     function setPricingStrategy(address _pricingStrategy) onlyOwner {
         pricingStrategy = PricingStrategy(_pricingStrategy);
 
-        // Don&#39;t allow setting bad agent
+        // Don't allow setting bad agent
         require(pricingStrategy.isPricingStrategy());
     }
 
@@ -393,7 +393,7 @@ contract Reservation is Pausable {
     */
     function setMultisig(address addr) public onlyOwner {
 
-        require(investorCount &lt;= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
+        require(investorCount <= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
 
         multisigWallet = addr;
     }
@@ -404,7 +404,7 @@ contract Reservation is Pausable {
     * The team can transfer the funds back on the smart contract in the case the minimum goal was not reached..
     */
     function loadRefund() public payable inState(State.Failure) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         loadedRefund = loadedRefund.add(msg.value);
     }
@@ -417,7 +417,7 @@ contract Reservation is Pausable {
     */
     function refund() public inState(State.Refunding) {
         uint256 weiValue = investedAmountOf[msg.sender];
-        require(weiValue &gt; 0);
+        require(weiValue > 0);
 
         investedAmountOf[msg.sender] = 0;
         weiRefunded = weiRefunded.add(weiValue);
@@ -434,13 +434,13 @@ contract Reservation is Pausable {
     function getState() public constant returns (State) {
         if (address(pricingStrategy) == 0)
             return State.Preparing;
-        else if (block.timestamp &lt; startsAt)
+        else if (block.timestamp < startsAt)
             return State.PreFunding;
-        else if (block.timestamp &lt;= endsAt &amp;&amp; !isReservationFull())
+        else if (block.timestamp <= endsAt && !isReservationFull())
             return State.Funding;
         else if (isMinimumGoalReached())
             return State.Success;
-        else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised)
+        else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
             return State.Refunding;
         else
             return State.Failure;
@@ -450,18 +450,18 @@ contract Reservation is Pausable {
     * @return true if the reservation has raised enough money to be a successful.
     */
     function isMinimumGoalReached() public constant returns (bool reached) {
-        return weiRaised &gt;= minimumFundingGoal;
+        return weiRaised >= minimumFundingGoal;
     }
 
     /**
     * Called from invest() to confirm if the curret investment does not break our cap rule.
     */
     function isBreakingCap(uint tokensSoldTotal) constant returns (bool) {
-        return tokensSoldTotal &gt; tokensHardCap;
+        return tokensSoldTotal > tokensHardCap;
     }
 
     function isReservationFull() public constant returns (bool) {
-        return tokensSold &gt;= tokensHardCap;
+        return tokensSold >= tokensHardCap;
     }
 
     //

@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9dddccddcf9d8c1d0d6d4c3dcd797dad6">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9dddccddcf9d8c1d0d6d4c3dcd797dad6">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -99,20 +99,20 @@ contract DoggyEthPics is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;DoggyEthPics&quot;;
-  string public constant SYMBOL = &quot;DoggyPicsToken&quot;;
+  string public constant NAME = "DoggyEthPics";
+  string public constant SYMBOL = "DoggyPicsToken";
 
   uint256 private startingPrice = 0.01 ether;
 
-  mapping (uint256 =&gt; address) public doggyIdToOwner;
+  mapping (uint256 => address) public doggyIdToOwner;
 
-  mapping (uint256 =&gt; address) public doggyIdToDivs;
+  mapping (uint256 => address) public doggyIdToDivs;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public doggyIdToApproved;
+  mapping (uint256 => address) public doggyIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private doggyIdToPrice;
+  mapping (uint256 => uint256) private doggyIdToPrice;
 
   /*** DATATYPES ***/
   struct Doggy {
@@ -137,9 +137,9 @@ contract DoggyEthPics is ERC721, Ownable {
   }
 
   function create3DoggiesTokens() public onlyContractOwner { //migration
-	  _createDoggy(&quot;EthDoggy&quot;, 0xe6c58f8e459fe570afff5b4622990ea1744f0e28, 384433593750000000);
-	  _createDoggy(&quot;EthDoggy&quot;, 0x5632ca98e5788eddb2397757aa82d1ed6171e5ad, 384433593750000000);
-	  _createDoggy(&quot;EthDoggy&quot;, 0x7cd84443027d2e19473c3657f167ada34417654f, 576650390625000000);
+	  _createDoggy("EthDoggy", 0xe6c58f8e459fe570afff5b4622990ea1744f0e28, 384433593750000000);
+	  _createDoggy("EthDoggy", 0x5632ca98e5788eddb2397757aa82d1ed6171e5ad, 384433593750000000);
+	  _createDoggy("EthDoggy", 0x7cd84443027d2e19473c3657f167ada34417654f, 576650390625000000);
 	
   }
   
@@ -172,7 +172,7 @@ contract DoggyEthPics is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 9), 10)); //90% to previous owner
     uint256 divs_payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 1), 20)); //5% divs
@@ -196,23 +196,23 @@ contract DoggyEthPics is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, doggyIdToPrice[_tokenId], oldOwner, newOwner, doggies[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
   }
   
   function changeDoggy(uint256 _tokenId) public payable { //
-    require(doggyIdToPrice[_tokenId] &gt;= 500 finney);
+    require(doggyIdToPrice[_tokenId] >= 500 finney);
 	
-    require(doggyIdToOwner[_tokenId] == msg.sender &amp;&amp; msg.value == 20 finney); //tax 0.02eth for change
+    require(doggyIdToOwner[_tokenId] == msg.sender && msg.value == 20 finney); //tax 0.02eth for change
 	
 	uint256 newPrice1 =  uint256(SafeMath.div(SafeMath.mul(doggyIdToPrice[_tokenId], 3), 10)); //30%
 	uint256 newPrice2 =  uint256(SafeMath.div(SafeMath.mul(doggyIdToPrice[_tokenId], 7), 10)); //70%
     
     //get two doggies within one
-	createDoggyToken(&quot;EthDoggy&quot;, newPrice1);
-	createDoggyToken(&quot;EthDoggy&quot;, newPrice2);
+	createDoggyToken("EthDoggy", newPrice1);
+	createDoggyToken("EthDoggy", newPrice2);
 	
 	doggyIdToOwner[_tokenId] = address(this); //return changed doggy to doggypics
 	doggyIdToPrice[_tokenId] = 10 finney;
@@ -243,13 +243,13 @@ contract DoggyEthPics is ERC721, Ownable {
 	
 	uint256 totalDoggies = totalSupply();
 	
-    if (totalDoggies == 0 || _startDoggyId &gt;= totalDoggies) {
+    if (totalDoggies == 0 || _startDoggyId >= totalDoggies) {
         // Return an empty array
       return (new address[](0),new address[](0),new uint256[](0));
     }
 	
 	uint256 indexTo;
-	if (totalDoggies &gt; _startDoggyId+1000)
+	if (totalDoggies > _startDoggyId+1000)
 		indexTo = _startDoggyId + 1000;
 	else 	
 		indexTo = totalDoggies;
@@ -260,7 +260,7 @@ contract DoggyEthPics is ERC721, Ownable {
 	address[] memory divs_res = new address[](totalResultDoggies);
 	uint256[] memory prices_res = new uint256[](totalResultDoggies);
 	
-	for (uint256 doggyId = _startDoggyId; doggyId &lt; indexTo; doggyId++) {
+	for (uint256 doggyId = _startDoggyId; doggyId < indexTo; doggyId++) {
 	  owners_res[doggyId - _startDoggyId] = doggyIdToOwner[doggyId];
 	  divs_res[doggyId - _startDoggyId] = doggyIdToDivs[doggyId];
 	  prices_res[doggyId - _startDoggyId] = doggyIdToPrice[doggyId];
@@ -280,7 +280,7 @@ contract DoggyEthPics is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 doggyId;
-      for (doggyId = 0; doggyId &lt;= totalDoggies; doggyId++) {
+      for (doggyId = 0; doggyId <= totalDoggies; doggyId++) {
         if (doggyIdToOwner[doggyId] == _owner) {
           result[resultIndex] = doggyId;
           resultIndex++;
@@ -331,7 +331,7 @@ contract DoggyEthPics is ERC721, Ownable {
 
     doggyIdToPrice[newDoggyId] = _price;
 	
-	if (newDoggyId&lt;3) //migration
+	if (newDoggyId<3) //migration
 		doggyIdToDivs[newDoggyId] = address(this); //dividents address;
 	else 
 		doggyIdToDivs[newDoggyId] = _owner; //dividents address;
@@ -347,7 +347,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     doggyIdToOwner[_tokenId] = _to;
 
-    // When creating new doggies _from is 0x0, but we can&#39;t account that address.
+    // When creating new doggies _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

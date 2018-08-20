@@ -18,13 +18,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -149,14 +149,14 @@ contract CLIXToken is ERC20, Ownable, Pausable {
     
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt; bool) public blacklisted;
-    mapping (address =&gt; bool) public hasReceived;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public whitelist;
+    mapping (address => bool) public blacklisted;
+    mapping (address => bool) public hasReceived;
 
-    string public name = &quot;CLIXToken&quot;;
-    string public symbol = &quot;CLIX&quot;;
+    string public name = "CLIXToken";
+    string public symbol = "CLIX";
     
     uint public decimals = 18;
     uint256 private totalSupply_ = 200000000e18;
@@ -202,7 +202,7 @@ contract CLIXToken is ERC20, Ownable, Pausable {
     
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
@@ -226,25 +226,25 @@ contract CLIXToken is ERC20, Ownable, Pausable {
     }
     
     function enableWhitelist(address[] addresses) public onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             whitelist[addresses[i]] = true;
         }
     }
 
     function disableWhitelist(address[] addresses) public onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             whitelist[addresses[i]] = false;
         }
     }
     
     function enableBlacklist(address[] addresses) public onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklisted[addresses[i]] = true;
         }
     }
     
     function disableBlacklist(address[] addresses) public onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklisted[addresses[i]] = false;
         }
     }
@@ -265,7 +265,7 @@ contract CLIXToken is ERC20, Ownable, Pausable {
         emit Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalDistributed &gt;= totalSupply_) {
+        if (totalDistributed >= totalSupply_) {
             distributionFinished = true;
         }
     }
@@ -277,7 +277,7 @@ contract CLIXToken is ERC20, Ownable, Pausable {
         onlyWhitelist 
         whenNotPaused 
     {
-        require(tokenRate &lt;= totalRemaining);
+        require(tokenRate <= totalRemaining);
         
         /* Buyer has previously received their free tokens so this time we 
         calculate how many tokens to send based on the amount of eth sent to the 
@@ -293,11 +293,11 @@ contract CLIXToken is ERC20, Ownable, Pausable {
             distributeToken(msg.sender, tokenRate);
         }
 
-        if (!hasReceived[msg.sender] &amp;&amp; tokenRate &gt; 0) {
+        if (!hasReceived[msg.sender] && tokenRate > 0) {
             hasReceived[msg.sender] = true;
         }
 
-        if (totalDistributed &gt;= totalSupply_) {
+        if (totalDistributed >= totalSupply_) {
             distributionFinished = true;
         }
     }
@@ -313,7 +313,7 @@ contract CLIXToken is ERC20, Ownable, Pausable {
         returns (bool success) 
     {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Transfer(msg.sender, _to, _amount);
@@ -332,8 +332,8 @@ contract CLIXToken is ERC20, Ownable, Pausable {
         returns (bool success) 
     {
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -350,7 +350,7 @@ contract CLIXToken is ERC20, Ownable, Pausable {
         returns (bool success) 
     {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;

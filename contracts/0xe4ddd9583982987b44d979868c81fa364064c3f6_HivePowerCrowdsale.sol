@@ -38,9 +38,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -124,9 +124,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -153,7 +153,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -201,7 +201,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -337,8 +337,8 @@ contract MintableToken is StandardToken, Ownable {
 contract HVT is MintableToken, BurnableToken {
   using SafeMath for uint256;
 
-  string public name = &quot;HiVe Token&quot;;
-  string public symbol = &quot;HVT&quot;;
+  string public name = "HiVe Token";
+  string public symbol = "HVT";
   uint8 public decimals = 18;
 
   enum State {Blocked,Burnable,Transferable}
@@ -390,9 +390,9 @@ contract HVT is MintableToken, BurnableToken {
     require(state == State.Transferable);
     require(_to.length == _amount.length);
     uint256 totalAmount = arraySum(_amount);
-    require(totalAmount &lt;= balances[msg.sender]);
+    require(totalAmount <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(totalAmount);
-    for(uint i;i &lt; _to.length;i++){
+    for(uint i;i < _to.length;i++){
       balances[_to[i]] = balances[_to[i]].add(_amount[i]);
       Transfer(msg.sender,_to[i],_amount[i]);
     }
@@ -402,9 +402,9 @@ contract HVT is MintableToken, BurnableToken {
   function batchTransferSame(address[] _to, uint256 _amount) public {
     require(state == State.Transferable);
     uint256 totalAmount = _amount.mul(_to.length);
-    require(totalAmount &lt;= balances[msg.sender]);
+    require(totalAmount <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(totalAmount);
-    for(uint i;i &lt; _to.length;i++){
+    for(uint i;i < _to.length;i++){
       balances[_to[i]] = balances[_to[i]].add(_amount);
       Transfer(msg.sender,_to[i],_amount);
     }
@@ -413,7 +413,7 @@ contract HVT is MintableToken, BurnableToken {
   // get sum of array values
   function arraySum(uint256[] _amount) internal pure returns(uint256){
     uint256 totalAmount;
-    for(uint i;i &lt; _amount.length;i++){
+    for(uint i;i < _amount.length;i++){
       totalAmount = totalAmount.add(_amount[i]);
     }
     return totalAmount;
@@ -457,20 +457,20 @@ contract ICOEngineInterface {
 
 // File: contracts/KYCBase.sol
 
-//import &quot;./SafeMath.sol&quot;;
+//import "./SafeMath.sol";
 
 
 // Abstract base contract
 contract KYCBase {
     using SafeMath for uint256;
 
-    mapping (address =&gt; bool) public isKycSigner;
-    mapping (uint64 =&gt; uint256) public alreadyPayed;
+    mapping (address => bool) public isKycSigner;
+    mapping (uint64 => uint256) public alreadyPayed;
 
     event KycVerified(address indexed signer, address buyerAddress, uint64 buyerId, uint maxAmount);
 
     function KYCBase(address [] kycSigners) internal {
-        for (uint i = 0; i &lt; kycSigners.length; i++) {
+        for (uint i = 0; i < kycSigners.length; i++) {
             isKycSigner[kycSigners[i]] = true;
         }
     }
@@ -502,13 +502,13 @@ contract KYCBase {
         private returns (bool)
     {
         // check the signature
-        bytes32 hash = sha256(&quot;Eidoo icoengine authorization&quot;, this, buyerAddress, buyerId, maxAmount);
+        bytes32 hash = sha256("Eidoo icoengine authorization", this, buyerAddress, buyerId, maxAmount);
         address signer = ecrecover(hash, v, r, s);
         if (!isKycSigner[signer]) {
             revert();
         } else {
             uint256 totalPayed = alreadyPayed[buyerId].add(msg.value);
-            require(totalPayed &lt;= maxAmount);
+            require(totalPayed <= maxAmount);
             alreadyPayed[buyerId] = totalPayed;
             KycVerified(signer, buyerAddress, buyerId, maxAmount);
             return releaseTokensTo(buyerAddress);
@@ -534,7 +534,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -617,7 +617,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -627,10 +627,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -741,13 +741,13 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
     {
         require(_token != address(0));
         require(_wallet != address(0));
-        require(_startTime &gt; now);
-        require(_endTime &gt; _startTime);
+        require(_startTime > now);
+        require(_endTime > _startTime);
         require(_prices.length == _caps.length);
 
-        for (uint256 i=0; i &lt; _caps.length -1; i++)
+        for (uint256 i=0; i < _caps.length -1; i++)
         {
-          require(_caps[i+1].sub(_caps[i]) &gt; _overshoot.mul(_prices[i]));
+          require(_caps[i+1].sub(_caps[i]) > _overshoot.mul(_prices[i]));
         }
 
         token = HVT(_token);
@@ -776,7 +776,7 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
       uint numTimelocks = 4;
       uint amount = foundersTokens / numTimelocks; //amount of token per vault
       uint256 releaseTime = endTime;
-      for(uint256 i=0; i &lt; numTimelocks; i++)
+      for(uint256 i=0; i < numTimelocks; i++)
       {
         // update releaseTime according to the step
         releaseTime = releaseTime.add(stepLockedToken);
@@ -813,13 +813,13 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
         uint tokenRaised = totalTokens - remainingTokens;
 
         //check if tokens exceed the amount of tokens that can be minted
-        if (tokenRaised.add(tokens) &gt; currentCap)
+        if (tokenRaised.add(tokens) > currentCap)
         {
           tokens = currentCap.sub(tokenRaised);
           weiAmount = tokens.div(currentPrice);
           weiBack = msg.value - weiAmount;
         }
-        //require(tokenRaised.add(tokens) &lt;= currentCap);
+        //require(tokenRaised.add(tokens) <= currentCap);
 
         weiRaised = weiRaised + weiAmount;
         remainingTokens = remainingTokens.sub(tokens);
@@ -828,7 +828,7 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
         token.mint(buyer, tokens);
         forwardFunds(weiAmount);
 
-        if (weiBack&gt;0)
+        if (weiBack>0)
         {
           msg.sender.transfer(weiBack);
           SentBack(msg.sender, weiBack);
@@ -845,18 +845,18 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
     /**
      * @dev finalize an ICO in dependency on the goal reaching:
      * 1) reached goal (successful ICO):
-     * -&gt; release sold token for the transfers
-     * -&gt; close the vault
-     * -&gt; close the ICO successfully
+     * -> release sold token for the transfers
+     * -> close the vault
+     * -> close the ICO successfully
      * 2) not reached goal (not successful ICO):
-     * -&gt; call finalizeNOK()
+     * -> call finalizeNOK()
      */
     function finalize() onlyOwner public {
       require(state == State.Running);
       require(ended());
 
       // Check the soft goal reaching
-      if(weiRaised &gt;= goal) {
+      if(weiRaised >= goal) {
         // if goal reached
 
         // stop the minting
@@ -880,8 +880,8 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
 
     /**
      * @dev finalize an unsuccessful ICO:
-     * -&gt; enable the refund
-     * -&gt; close the ICO not successfully
+     * -> enable the refund
+     * -> close the ICO not successfully
      */
      function finalizeNOK() onlyOwner public {
        // run checks again because this is a public function
@@ -908,8 +908,8 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
     // get the next cap as a function of the amount of sold token
     function getCap() public view returns(uint){
       uint tokenRaised=totalTokens-remainingTokens;
-      for (uint i=0;i&lt;caps.length-1;i++){
-        if (tokenRaised &lt; caps[i])
+      for (uint i=0;i<caps.length-1;i++){
+        if (tokenRaised < caps[i])
         {
           // allow for a an overshoot (only when bonus is applied)
           uint tokenPerOvershoot = overshoot * prices[i];
@@ -922,12 +922,12 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
 
     // from ICOEngineInterface
     function started() public view returns(bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     // from ICOEngineInterface
     function ended() public view returns(bool) {
-        return now &gt;= endTime || remainingTokens == 0;
+        return now >= endTime || remainingTokens == 0;
     }
 
     function startTime() public view returns(uint) {
@@ -949,8 +949,8 @@ contract HivePowerCrowdsale is Ownable, ICOEngineInterface, KYCBase {
     // return the price as number of tokens released for each ether
     function price() public view returns(uint){
       uint tokenRaised=totalTokens-remainingTokens;
-      for (uint i=0;i&lt;caps.length-1;i++){
-        if (tokenRaised &lt; caps[i])
+      for (uint i=0;i<caps.length-1;i++){
+        if (tokenRaised < caps[i])
         {
           return(prices[i]);
         }

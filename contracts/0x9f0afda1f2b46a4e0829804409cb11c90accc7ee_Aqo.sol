@@ -1,12 +1,12 @@
 pragma solidity ^0.4.19;
 
 contract Aqo {
-    string public constant name = &quot;Aqo&quot;; // ERC20
-    string public constant symbol = &quot;AQO&quot;; // ERC20
+    string public constant name = "Aqo"; // ERC20
+    string public constant symbol = "AQO"; // ERC20
     uint8 public constant decimals = 18; // ERC20
     uint256 public totalSupply; // ERC20
-    mapping (address =&gt; uint256) public balanceOf; // ERC20
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; // ERC20 
+    mapping (address => uint256) public balanceOf; // ERC20
+    mapping (address => mapping (address => uint256)) public allowance; // ERC20 
 
     event Transfer(address indexed from, address indexed to, uint256 value); // ERC20
     event Approval(address indexed owner, address indexed spender, uint256 value); // ERC20
@@ -19,9 +19,9 @@ contract Aqo {
 
     // ERC20
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         if (_to == address(this)) {
-            if (_value &gt; address(this).balance) {
+            if (_value > address(this).balance) {
                 _value = address(this).balance;
             }
             balanceOf[msg.sender] -= _value;
@@ -37,10 +37,10 @@ contract Aqo {
 
     // ERC20
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(allowance[_from][msg.sender] &gt;= _value);
-        require(balanceOf[_from] &gt;= _value);
+        require(allowance[_from][msg.sender] >= _value);
+        require(balanceOf[_from] >= _value);
         if (_to == address(this)) {
-            if (_value &gt; address(this).balance) {
+            if (_value > address(this).balance) {
                 _value = address(this).balance;
             }
             allowance[_from][msg.sender] -= _value;

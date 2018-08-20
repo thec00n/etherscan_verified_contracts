@@ -8,20 +8,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns(uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -113,7 +113,7 @@ contract Presale is SafeMath, Pausable {
 
 
     uint multiplier = 10000000000;              // to provide 10 decimal values
-    mapping(address =&gt; Backer) public backers;  // backer list accessible through address
+    mapping(address => Backer) public backers;  // backer list accessible through address
     address[] public backersIndex;              // order list of backer to be able to itarate through when distributing the tokens. 
 
 
@@ -126,7 +126,7 @@ contract Presale is SafeMath, Pausable {
 
     // @notice to verify if action is not performed out of the campaing time range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) revert();
+        if ((block.number < startBlock) || (block.number > endBlock)) revert();
         _;
     }
 
@@ -150,7 +150,7 @@ contract Presale is SafeMath, Pausable {
         tokenPriceWei = 720000000000000;// price of token expressed in Wei 
     }
 
-    // @notice to obtain number of contributors so later &quot;front end&quot; can loop through backersIndex and 
+    // @notice to obtain number of contributors so later "front end" can loop through backersIndex and 
     // triggger transfer of tokens
     // @return  {uint} true if transaction was successful
     function numberOfBackers() constant returns(uint) {
@@ -165,7 +165,7 @@ contract Presale is SafeMath, Pausable {
     // {fallback function}
     // @notice It will call internal function which handels allocation of Ether and calculates SOCX tokens.
     function () payable {
-        if (block.number &gt; endBlock) revert();
+        if (block.number > endBlock) revert();
         handleETH(msg.sender);
     }
 
@@ -193,11 +193,11 @@ contract Presale is SafeMath, Pausable {
     // @return res {bool} true if transaction was successful
     function handleETH(address _backer) internal stopInEmergency respectTimeFrame returns(bool res) {
 
-        if (msg.value &lt; minContributeETH) revert();                     // stop when required minimum is not sent
+        if (msg.value < minContributeETH) revert();                     // stop when required minimum is not sent
         uint SOCXToSend = (msg.value / tokenPriceWei) * multiplier; // calculate number of tokens
 
         
-        if (safeAdd(SOCXSentToETH, SOCXToSend) &gt; maxCap) revert();  // ensure that max cap hasn&#39;t been reached yet
+        if (safeAdd(SOCXSentToETH, SOCXToSend) > maxCap) revert();  // ensure that max cap hasn't been reached yet
 
         Backer storage backer = backers[_backer];                   // access backer record
         backer.SOCXSent = safeAdd(backer.SOCXSent, SOCXToSend);     // calculate number of tokens sent by backer
@@ -217,7 +217,7 @@ contract Presale is SafeMath, Pausable {
     // if successfull it will transfer collected Ether into predetermined multisig wallet or address
     function finalize() onlyBy(owner) {
 
-        if (block.number &lt; endBlock &amp;&amp; SOCXSentToETH &lt; maxCap) revert();
+        if (block.number < endBlock && SOCXSentToETH < maxCap) revert();
 
         if (!multisigETH.send(this.balance)) revert();
         presaleClosed = true;

@@ -23,9 +23,9 @@ return c;
 * @dev Integer division of two numbers, truncating the quotient.
 */
 function div(uint256 a, uint256 b) internal pure returns (uint256) {
-// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+// assert(b > 0); // Solidity automatically throws when dividing by 0
 uint256 c = a / b;
-// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 return c;
 }
 
@@ -33,7 +33,7 @@ return c;
 * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 */
 function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 
@@ -42,7 +42,7 @@ return a - b;
 */
 function add(uint256 a, uint256 b) internal pure returns (uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }
@@ -66,12 +66,12 @@ uint public publicBattlepm1;
 uint public publicBattlepm2;
 address guesser;
 bool public publicbattlestart;
-mapping(uint =&gt; address[]) pokemonGuessPlayers;
-mapping(uint =&gt; uint) pokemonGuessNumber;
-mapping(uint =&gt; uint) pokemonGuessPrize;
-mapping(address =&gt; uint) playerGuessPM1Number;
-mapping(address =&gt; uint) playerGuessPM2Number;
-mapping(uint =&gt; uint) battleCD;
+mapping(uint => address[]) pokemonGuessPlayers;
+mapping(uint => uint) pokemonGuessNumber;
+mapping(uint => uint) pokemonGuessPrize;
+mapping(address => uint) playerGuessPM1Number;
+mapping(address => uint) playerGuessPM2Number;
+mapping(uint => uint) battleCD;
 uint public pbWinner;
 
 address cpAddress = 0x77fA1D1Ded3F4bed737e9aE870a6f3605445df9c;
@@ -171,14 +171,14 @@ totalGuess = totalPool.div(100);
 function donateToPool() public payable{
 // The pool will make this game maintain forever, 1% of prize goto each publicbattle and
 // gain 1% of each publicbattle back before distributePrizes
-require(msg.value &gt;= 0);
+require(msg.value >= 0);
 totalPool = totalPool + msg.value;
 
 }
 
 function guess(uint _pokemonId) public payable{
 require(isPaused == false);
-assert(msg.value &gt; 0);
+assert(msg.value > 0);
 assert(_pokemonId == publicBattlepm1 || _pokemonId == publicBattlepm2);
 
 uint256 calcValue = msg.value;
@@ -230,18 +230,18 @@ playerGuessPM2Number[msg.sender]  = calcValue;
 
 }
 
-if(pokemonGuessNumber[publicBattlepm1] + pokemonGuessNumber[publicBattlepm2] &gt; 20){
+if(pokemonGuessNumber[publicBattlepm1] + pokemonGuessNumber[publicBattlepm2] > 20){
 startpublicBattle(publicBattlepm1, publicBattlepm2);
 }
 
 }
 
 function startpublicBattle(uint _pokemon1, uint _pokemon2) internal {
-require(publicBattlepm1 != 99999 &amp;&amp; publicBattlepm2 != 99999);
+require(publicBattlepm1 != 99999 && publicBattlepm2 != 99999);
 uint256 i = uint256(sha256(block.timestamp, block.number-i-1)) % 100 +1;
 uint256 threshold = dataCalc(_pokemon1, _pokemon2);
 
-if(i &lt;= threshold){
+if(i <= threshold){
 pbWinner = publicBattlepm1;
 }else{
 pbWinner = publicBattlepm2;
@@ -254,7 +254,7 @@ distributePrizes();
 function distributePrizes() internal{
 // return 1% to the balance to keep public battle forever
 totalGuess = totalGuess - totalGuess.div(100);
-for(uint counter=0; counter &lt; pokemonGuessPlayers[pbWinner].length; counter++){
+for(uint counter=0; counter < pokemonGuessPlayers[pbWinner].length; counter++){
 guesser = pokemonGuessPlayers[pbWinner][counter];
 if(pbWinner == publicBattlepm1){
 guesser.transfer(playerGuessPM1Number[guesser].mul(totalGuess).div(pokemonGuessPrize[pbWinner]));
@@ -274,7 +274,7 @@ del = publicBattlepm2;
 del = publicBattlepm1;
 }
 
-for(uint cdel1=0; cdel1 &lt; pokemonGuessPlayers[pbWinner].length; cdel1++){
+for(uint cdel1=0; cdel1 < pokemonGuessPlayers[pbWinner].length; cdel1++){
 guesser = pokemonGuessPlayers[pbWinner][cdel1];
 if(pbWinner == publicBattlepm1){
 delete playerGuessPM1Number[guesser];
@@ -283,7 +283,7 @@ delete playerGuessPM2Number[guesser];
 }
 }
 
-for(uint cdel=0; cdel &lt; pokemonGuessPlayers[del].length; cdel++){
+for(uint cdel=0; cdel < pokemonGuessPlayers[del].length; cdel++){
 guesser = pokemonGuessPlayers[del][cdel];
 if(del == publicBattlepm1){
 delete playerGuessPM1Number[guesser];
@@ -300,7 +300,7 @@ pokemonGuessPrize[publicBattlepm1]=0;
 pokemonGuessPrize[publicBattlepm2]=0;
 delete pokemonGuessPlayers[publicBattlepm2];
 delete pokemonGuessPlayers[publicBattlepm1];
-//for(counter=0; counter &lt; pokemonGuessPlayers[pbWinner].length; counter++){
+//for(counter=0; counter < pokemonGuessPlayers[pbWinner].length; counter++){
 //pokemonGuessPlayers[counter].length = 0;
 //}
 counter = 0;
@@ -322,17 +322,17 @@ uint256 threshold = _pokemontotal1.mul(100).div(_pokemontotal1+_pokemontotal2);
 uint256 pokemonlevel1 = pokemonContract.levels(_pokemon1);
 uint256 pokemonlevel2 = pokemonContract.levels(_pokemon2);
 uint leveldiff = pokemonlevel1 - pokemonlevel2;
-if(pokemonlevel1 &gt;= pokemonlevel2){
+if(pokemonlevel1 >= pokemonlevel2){
 threshold = threshold.mul(11**leveldiff).div(10**leveldiff);
 
 }else{
 //return (100 - dataCalc(_pokemon2, _pokemon1));
 threshold = 100 - dataCalc(_pokemon2, _pokemon1);
 }
-if(threshold &gt; 90){
+if(threshold > 90){
 threshold = 90;
 }
-if(threshold &lt; 10){
+if(threshold < 10){
 threshold = 10;
 }
 
@@ -404,7 +404,7 @@ return pokemonGuessNumber[_pokemonId];
 }
 
 function getPokemonCD(uint _pokemonId) public view returns(uint _pokemonCD){
-if(battleCD[_pokemonId] &lt;= now){
+if(battleCD[_pokemonId] <= now){
 return 0;
 }else{
 return battleCD[_pokemonId] - now;
@@ -412,18 +412,18 @@ return battleCD[_pokemonId] - now;
 }
 
 function initialPokemonInfo() public onlyContractCreator{
-addPokemonDetails(&quot;PikaChu&quot; ,1, 300);
-addPokemonDetails(&quot;Ninetales&quot;,1,505);
-addPokemonDetails(&quot;Charizard&quot; ,2, 534);
-addPokemonDetails(&quot;Eevee&quot;,0,325);
-addPokemonDetails(&quot;Jigglypuff&quot; ,0, 270);
-addPokemonDetails(&quot;Pidgeot&quot;,2,469);
-addPokemonDetails(&quot;Aerodactyl&quot; ,2, 515);
-addPokemonDetails(&quot;Bulbasaur&quot;,0,318);
-addPokemonDetails(&quot;Abra&quot; ,0, 310);
-addPokemonDetails(&quot;Gengar&quot;,2,500);
-addPokemonDetails(&quot;Hoothoot&quot; ,0, 262);
-addPokemonDetails(&quot;Goldeen&quot;,0,320);
+addPokemonDetails("PikaChu" ,1, 300);
+addPokemonDetails("Ninetales",1,505);
+addPokemonDetails("Charizard" ,2, 534);
+addPokemonDetails("Eevee",0,325);
+addPokemonDetails("Jigglypuff" ,0, 270);
+addPokemonDetails("Pidgeot",2,469);
+addPokemonDetails("Aerodactyl" ,2, 515);
+addPokemonDetails("Bulbasaur",0,318);
+addPokemonDetails("Abra" ,0, 310);
+addPokemonDetails("Gengar",2,500);
+addPokemonDetails("Hoothoot" ,0, 262);
+addPokemonDetails("Goldeen",0,320);
 
 }
 

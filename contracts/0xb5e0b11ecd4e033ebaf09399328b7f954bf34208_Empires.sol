@@ -35,7 +35,7 @@ contract Empires is Ownable {
 
     Flag emptyFlag;
 
-    mapping (uint16 =&gt; Flag[]) public cntry_flgs;
+    mapping (uint16 => Flag[]) public cntry_flgs;
 
     function getRate () external view returns (uint) {
         return curr_rate;
@@ -74,7 +74,7 @@ contract Empires is Ownable {
 
     function regSpots (uint16 cntryId, uint16 numOfSpots, bytes32 stxt) external payable {
 
-        require (numOfSpots &gt; 0 &amp;&amp; numOfSpots &lt;= 600);
+        require (numOfSpots > 0 && numOfSpots <= 600);
 
         uint i;
         uint j;
@@ -82,17 +82,17 @@ contract Empires is Ownable {
         uint flagCompleted;
 
         // check active flag exists:
-        if (cntry_flgs[cntryId].length &gt; 0) {
+        if (cntry_flgs[cntryId].length > 0) {
           
             require(msg.value == cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotRate * numOfSpots);
 
             i = cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotOwner.length;
 
-            if (600-i &gt;= numOfSpots) {
+            if (600-i >= numOfSpots) {
 
                 j = numOfSpots;
 
-                while (j &gt; 0) {
+                while (j > 0) {
 
                     regSpot(cntryId, stxt);
                     j --;
@@ -106,7 +106,7 @@ contract Empires is Ownable {
                 j1 = 600-i;
                 j = numOfSpots - j1;
 
-                while (j1 &gt; 0) {
+                while (j1 > 0) {
 
                     regSpot(cntryId, stxt);
                     j1 --;
@@ -125,7 +125,7 @@ contract Empires is Ownable {
 
                 i = 0;
 
-                while (j &gt; 0) {
+                while (j > 0) {
 
                     regSpot(cntryId, stxt);
                     j --;
@@ -144,7 +144,7 @@ contract Empires is Ownable {
             i = 0;
             j = numOfSpots;
 
-            while (j &gt; 0) {
+            while (j > 0) {
 
                 regSpot(cntryId, stxt);
                 j --;
@@ -168,7 +168,7 @@ contract Empires is Ownable {
 
     function getActiveFlag(uint16 cntryId) external view returns (address[],bytes32[],uint,uint,uint16) {
       // check active flag exists:
-        if (cntry_flgs[cntryId].length &gt; 0) {
+        if (cntry_flgs[cntryId].length > 0) {
             return (cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotOwner, 
             cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotTxt, 
             cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotRate, 
@@ -194,7 +194,7 @@ contract Empires is Ownable {
 
     function getActiveFlagRate(uint16 cntryId) external view returns (uint) {
         // check active flag exists:
-        if (cntry_flgs[cntryId].length &gt; 0) {
+        if (cntry_flgs[cntryId].length > 0) {
             return cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotRate;
         } else {
             return curr_rate;
@@ -202,7 +202,7 @@ contract Empires is Ownable {
     }
 
     function getCountrySpots(uint16 cntryId) external view returns (uint) {
-        if (cntry_flgs[cntryId].length &gt; 0) {
+        if (cntry_flgs[cntryId].length > 0) {
             return (cntry_flgs[cntryId].length-1)*600 + cntry_flgs[cntryId][cntry_flgs[cntryId].length-1].spotOwner.length;
         } else {
             return 0;

@@ -68,8 +68,8 @@ contract CryptoRomeControl is Ownable {
 contract Centurions is ERC721, CryptoRomeControl {
 
     // Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;CryptoRomeCenturion&quot;;
-    string public constant symbol = &quot;CROMEC&quot;;
+    string public constant name = "CryptoRomeCenturion";
+    string public constant symbol = "CROMEC";
 
     struct Centurion {
         uint256 level;
@@ -135,9 +135,9 @@ contract Centurions is ERC721, CryptoRomeControl {
     string internal tokenURIs;
 
     // Map of Centurion to the owner
-    mapping (uint256 =&gt; address) public centurionIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) centurionIndexToApproved;
+    mapping (uint256 => address) public centurionIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) centurionIndexToApproved;
 
     modifier onlyOwnerOf(uint256 _tokenId) {
         require(centurionIndexToOwner[_tokenId] == msg.sender);
@@ -187,8 +187,8 @@ contract Centurions is ERC721, CryptoRomeControl {
     }
 
     function purchaseCenturion(uint256 _tokenId) whenNotPaused public payable {
-        require(allCenturionTokens[_tokenId].askingPrice &gt; 0);
-        require(msg.value &gt;= allCenturionTokens[_tokenId].askingPrice);
+        require(allCenturionTokens[_tokenId].askingPrice > 0);
+        require(msg.value >= allCenturionTokens[_tokenId].askingPrice);
         allCenturionTokens[_tokenId].askingPrice = 0;
         uint256 fee = devFee(msg.value);
         ceoWallet.transfer(fee);
@@ -215,7 +215,7 @@ contract Centurions is ERC721, CryptoRomeControl {
         uint256 newCenturionId = allCenturionTokens.push(_centurion) - 1;
 
         // Only 1000 centurions should ever exist (0-999)
-        require(newCenturionId &lt; 1000);
+        require(newCenturionId < 1000);
         _transfer(0, _owner, newCenturionId);
         return newCenturionId;
     }
@@ -239,8 +239,8 @@ contract Centurions is ERC721, CryptoRomeControl {
     function addExperience(uint256 _tokenId, uint256 _exp) public whenNotPaused onlyOwner returns (uint256) {
         require(exists(_tokenId));
         allCenturionTokens[_tokenId].experience = SafeMath.add(allCenturionTokens[_tokenId].experience, _exp);
-        for (uint256 i = allCenturionTokens[_tokenId].level; i &lt; 50; i++) {
-            if (allCenturionTokens[_tokenId].experience &gt;= expForLevels[i]) {
+        for (uint256 i = allCenturionTokens[_tokenId].level; i < 50; i++) {
+            if (allCenturionTokens[_tokenId].experience >= expForLevels[i]) {
                allCenturionTokens[_tokenId].level = allCenturionTokens[_tokenId].level + 1;
             } else {
                 break;
@@ -319,7 +319,7 @@ contract Centurions is ERC721, CryptoRomeControl {
             uint256 resultIndex = 0;
             uint256 centurionId;
 
-            for (centurionId = 0; centurionId &lt; totalCenturions; centurionId++) {
+            for (centurionId = 0; centurionId < totalCenturions; centurionId++) {
                 if (centurionIndexToOwner[centurionId] == _owner) {
                     result[resultIndex] = centurionId;
                     resultIndex++;
@@ -347,16 +347,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   /**
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   /**
@@ -364,7 +364,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

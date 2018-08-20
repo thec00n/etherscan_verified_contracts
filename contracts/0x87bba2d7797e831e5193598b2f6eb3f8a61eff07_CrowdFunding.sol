@@ -12,13 +12,13 @@ contract CrowdFunding {
         uint numFunders;
         uint amount;
         uint deadline;
-        mapping (uint =&gt; Funder) funders;
-        mapping (address =&gt; uint) balances;
+        mapping (uint => Funder) funders;
+        mapping (address => uint) balances;
     }
-    //Declares a state variable &#39;numCampaigns&#39;
+    //Declares a state variable 'numCampaigns'
     uint numCampaigns;
     //Creates a mapping of Campaign datatypes
-    mapping (uint =&gt; Campaign) campaigns;
+    mapping (uint => Campaign) campaigns;
     //first function sets up a new campaign
     function newCampaign(address beneficiary, uint goal, uint deadline) returns (uint campaignID) {
         campaignID = numCampaigns++; // campaignID is return variable
@@ -38,7 +38,7 @@ contract CrowdFunding {
     // checks if the goal or time limit has been reached and ends the campaign
     function checkGoalReached(uint campaignID) returns (bool reached) {
         Campaign c = campaigns[campaignID];
-        if (c.amount &gt;= c.fundingGoal){
+        if (c.amount >= c.fundingGoal){
             uint i = 0;
             uint f = c.numFunders;
             c.beneficiary.send(c.amount);
@@ -47,14 +47,14 @@ contract CrowdFunding {
             c.fundingGoal = 0;
             c.deadline = 0;
             c.numFunders = 0;
-            while (i &lt;= f){
+            while (i <= f){
                 c.funders[i].addr = 0;
                 c.funders[i].amount = 0;
                 i++;
             }
         return true;
         }
-        if (c.deadline &lt;= block.number){
+        if (c.deadline <= block.number){
             uint j = 0;
             uint n = c.numFunders;
             c.beneficiary = 0;
@@ -62,7 +62,7 @@ contract CrowdFunding {
             c.numFunders = 0;
             c.deadline = 0;
             c.amount = 0;
-            while (j &lt;= n){
+            while (j <= n){
                 c.funders[j].addr.send(c.funders[j].amount);
                 c.funders[j].addr = 0;
                 c.funders[j].amount = 0;

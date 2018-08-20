@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,20 +49,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,12 +149,12 @@ contract NonZero {
     }
 
     modifier nonZeroAmount(uint _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier nonZeroValue() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -163,7 +163,7 @@ contract NonZero {
     modifier onlyPayloadSize(uint size) {
 	// we assert the msg data is greater than or equal to, because
 	// a multisgi wallet will be greater than standard payload size of 64 bits
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
      _;
    } 
 }
@@ -173,15 +173,15 @@ contract FuelToken is ERC20, Ownable, NonZero {
     using SafeMath for uint;
 
 /////////////////////// TOKEN INFORMATION ///////////////////////
-    string public constant name = &quot;Fuel Token&quot;;
-    string public constant symbol = &quot;FUEL&quot;;
+    string public constant name = "Fuel Token";
+    string public constant symbol = "FUEL";
 
     uint8 public decimals = 18;
     
-    // Mapping to keep user&#39;s balances
-    mapping (address =&gt; uint256) balances;
-    // Mapping to keep user&#39;s allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    // Mapping to keep user's balances
+    mapping (address => uint256) balances;
+    // Mapping to keep user's allowances
+    mapping (address => mapping (address => uint256)) allowed;
 
 /////////////////////// VARIABLE INITIALIZATION ///////////////////////
     
@@ -227,13 +227,13 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Ensure actions can only happen after crowdfund ends
     modifier notBeforeCrowdfundEnds(){
-        require(now &gt;= crowdfundEndsAt);
+        require(now >= crowdfundEndsAt);
         _;
     }
 
     // Ensure vesting period is over
     modifier checkVanbexTeamVestingPeriod() {
-        assert(now &gt;= vanbexTeamVestingPeriod);
+        assert(now >= vanbexTeamVestingPeriod);
         _;
     }
 
@@ -247,7 +247,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Transfer
     function transfer(address _to, uint256 _amount) notBeforeCrowdfundEnds returns (bool success) {
-        require(balanceOf(msg.sender) &gt;= _amount);
+        require(balanceOf(msg.sender) >= _amount);
         addToBalance(_to, _amount);
         decrementBalance(msg.sender, _amount);
         Transfer(msg.sender, _to, _amount);
@@ -256,7 +256,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Transfer from one address to another (need allowance to be called first)
     function transferFrom(address _from, address _to, uint256 _amount) notBeforeCrowdfundEnds returns (bool success) {
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
         decrementBalance(_from, _amount);
         addToBalance(_to, _amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -272,7 +272,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
         return true;
     }
 
-    // Get an address&#39;s FUEL allowance
+    // Get an address's FUEL allowance
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
@@ -314,7 +314,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Function for the Crowdfund to transfer tokens
     function transferFromCrowdfund(address _to, uint256 _amount) onlyCrowdfund nonZeroAmount(_amount) nonZeroAddress(_to) returns (bool success) {
-        require(balanceOf(crowdfundAddress) &gt;= _amount);
+        require(balanceOf(crowdfundAddress) >= _amount);
         decrementBalance(crowdfundAddress, _amount);
         addToBalance(_to, _amount);
         Transfer(0x0, _to, _amount);
@@ -323,7 +323,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Release Vanbex team supply after vesting period is finished.
     function releaseVanbexTeamTokens() checkVanbexTeamVestingPeriod onlyOwner returns(bool success) {
-        require(vanbexTeamSupply &gt; 0);
+        require(vanbexTeamSupply > 0);
         addToBalance(vanbexTeamAddress, vanbexTeamSupply);
         Transfer(0x0, vanbexTeamAddress, vanbexTeamSupply);
         vanbexTeamSupply = 0;
@@ -345,9 +345,9 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Finalize crowdfund. If there are leftover FUEL, let them overflow to the be sold at 1$ on the platform
     function finalizeCrowdfund() external onlyCrowdfund {
-        require(presaleFinalized == true &amp;&amp; crowdfundFinalized == false);
+        require(presaleFinalized == true && crowdfundFinalized == false);
         uint256 amount = balanceOf(crowdfundAddress);
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balances[crowdfundAddress] = 0;
             addToBalance(platformAddress, amount);
             Transfer(crowdfundAddress, platformAddress, amount);
@@ -359,7 +359,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
 
     // Function to send FUEL to presale investors
     function deliverPresaleFuelBalances(address[] _batchOfAddresses, uint[] _amountOfFuel) external onlyOwner returns (bool success) {
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             deliverPresaleFuelBalance(_batchOfAddresses[i], _amountOfFuel[i]);            
         }
         return true;
@@ -368,7 +368,7 @@ contract FuelToken is ERC20, Ownable, NonZero {
     // All presale purchases will be delivered. If one address has contributed more than once,
     // his contribution will be aggregated
     function deliverPresaleFuelBalance(address _accountHolder, uint _amountOfBoughtFuel) internal onlyOwner {
-        require(presaleAmountRemaining &gt; 0);
+        require(presaleAmountRemaining > 0);
         addToBalance(_accountHolder, _amountOfBoughtFuel);
         Transfer(0x0, _accountHolder, _amountOfBoughtFuel);
         presaleAmountRemaining = presaleAmountRemaining.sub(_amountOfBoughtFuel);    

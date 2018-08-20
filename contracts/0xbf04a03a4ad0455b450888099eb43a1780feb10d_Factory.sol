@@ -1,6 +1,6 @@
 /* 
    Deposits are managed by a separate contract. Withdraws are manual, and can be automated 
-   with the &quot;Account&quot; contracts. Manual withdrawals are since The DAO recommended as best practice for 
+   with the "Account" contracts. Manual withdrawals are since The DAO recommended as best practice for 
    security of Solidity based Smart Contracts,
    
    https://blog.ethereum.org/2016/06/19/thinking-smart-contract-security/
@@ -15,7 +15,7 @@ contract RegistrationDeposits {
     DepositGovernance public governance;
     address registrationContract;
     
-    mapping(address =&gt; uint256) deposit;
+    mapping(address => uint256) deposit;
     
     function RegistrationDeposits(address _depositGovernance, address _registrationContract) {
         governance = DepositGovernance(_depositGovernance);

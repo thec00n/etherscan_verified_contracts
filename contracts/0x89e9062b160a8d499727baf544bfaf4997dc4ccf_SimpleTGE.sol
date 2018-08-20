@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,7 +92,7 @@ contract SimpleTGE is Ownable {
   // how long the TRS subscription is open after the TGE.
   uint256 public TRSOffset = 5 days;
 
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   address[] public contributors;
   struct Contribution {
@@ -100,10 +100,10 @@ contract SimpleTGE is Ownable {
     uint256 weiContributed;
   }
 
-  mapping (address =&gt; Contribution)  public contributions;
+  mapping (address => Contribution)  public contributions;
 
   modifier whilePublicTGEIsActive() {
-    require(block.timestamp &gt;= publicTGEStartBlockTimeStamp &amp;&amp; block.timestamp &lt;= publicTGEEndBlockTimeStamp);
+    require(block.timestamp >= publicTGEStartBlockTimeStamp && block.timestamp <= publicTGEEndBlockTimeStamp);
     _;
   }
 
@@ -113,8 +113,8 @@ contract SimpleTGE is Ownable {
   }
 
   function blacklistAddresses(address[] addrs) external onlyOwner returns(bool) {
-    require(addrs.length &lt;= 100);
-    for (uint i = 0; i &lt; addrs.length; i++) {
+    require(addrs.length <= 100);
+    for (uint i = 0; i < addrs.length; i++) {
       require(addrs[i] != address(0));
       whitelist[addrs[i]] = false;
     }
@@ -122,8 +122,8 @@ contract SimpleTGE is Ownable {
   }
 
   function whitelistAddresses(address[] addrs) external onlyOwner returns(bool) {
-    require(addrs.length &lt;= 100);
-    for (uint i = 0; i &lt; addrs.length; i++) {
+    require(addrs.length <= 100);
+    for (uint i = 0; i < addrs.length; i++) {
       require(addrs[i] != address(0));
       whitelist[addrs[i]] = true;
     }
@@ -145,12 +145,12 @@ contract SimpleTGE is Ownable {
     uint256 _totalCapInWei
   ) public 
   {
-    require(_publicTGEStartBlockTimeStamp &gt;= block.timestamp);
-    require(_publicTGEEndBlockTimeStamp &gt; _publicTGEStartBlockTimeStamp);
+    require(_publicTGEStartBlockTimeStamp >= block.timestamp);
+    require(_publicTGEEndBlockTimeStamp > _publicTGEStartBlockTimeStamp);
     require(_fundsWallet != address(0));
-    require(_individualCapInWei &gt; 0);
-    require(_individualCapInWei &lt;= _totalCapInWei);
-    require(_totalCapInWei &gt; 0);
+    require(_individualCapInWei > 0);
+    require(_individualCapInWei <= _totalCapInWei);
+    require(_totalCapInWei > 0);
 
     fundsWallet = _fundsWallet;
     publicTGEStartBlockTimeStamp = _publicTGEStartBlockTimeStamp;
@@ -161,8 +161,8 @@ contract SimpleTGE is Ownable {
 
   // allows changing the individual cap.
   function changeIndividualCapInWei(uint256 _individualCapInWei) onlyOwner external returns(bool) {
-      require(_individualCapInWei &gt; 0);
-      require(_individualCapInWei &lt; totalCapInWei);
+      require(_individualCapInWei > 0);
+      require(_individualCapInWei < totalCapInWei);
       individualCapInWei = _individualCapInWei;
       return true;
   }
@@ -172,8 +172,8 @@ contract SimpleTGE is Ownable {
     // validations
     require(msg.sender != address(0));
     require(msg.value != 0);
-    require(weiRaised.add(msg.value) &lt;= totalCapInWei);
-    require(contributions[msg.sender].weiContributed.add(msg.value) &lt;= individualCapInWei);
+    require(weiRaised.add(msg.value) <= totalCapInWei);
+    require(contributions[msg.sender].weiContributed.add(msg.value) <= individualCapInWei);
     // if we have not received any WEI from this address until now, then we add this address to contributors list.
     if (contributions[msg.sender].weiContributed == 0) {
       contributors.push(msg.sender);
@@ -198,15 +198,15 @@ contract SimpleTGE is Ownable {
   }
 
   // Vesting logic
-  // The following cases are checked for _beneficiary&#39;s actions:
+  // The following cases are checked for _beneficiary's actions:
   function vest(bool _vestingDecision) external isWhitelisted returns(bool) {
     bool existingDecision = contributions[msg.sender].hasVested;
     require(existingDecision != _vestingDecision);
-    require(block.timestamp &gt;= publicTGEStartBlockTimeStamp);
-    require(contributions[msg.sender].weiContributed &gt; 0);
+    require(block.timestamp >= publicTGEStartBlockTimeStamp);
+    require(contributions[msg.sender].weiContributed > 0);
     // Ensure vesting cannot be done once TRS starts
-    if (block.timestamp &gt; publicTGEEndBlockTimeStamp) {
-      require(block.timestamp.sub(publicTGEEndBlockTimeStamp) &lt;= TRSOffset);
+    if (block.timestamp > publicTGEEndBlockTimeStamp) {
+      require(block.timestamp.sub(publicTGEEndBlockTimeStamp) <= TRSOffset);
     }
     contributions[msg.sender].hasVested = _vestingDecision;
     return true;

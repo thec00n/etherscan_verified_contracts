@@ -3,12 +3,12 @@ pragma solidity ^0.4.17;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -50,7 +50,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -221,17 +221,17 @@ contract ClaimSponsoredMedals is AccessControl, SafeMath  {
 
 function claimMedals (uint16 leaderboardId) public  {
     
-    //Function can be called by anyone, as long as the medals haven&#39;t already been claimed, the leaderboard is closed, and it&#39;s past the end time. 
+    //Function can be called by anyone, as long as the medals haven't already been claimed, the leaderboard is closed, and it's past the end time. 
     
            ISponsoredLeaderboardData sponsoredLeaderboardData = ISponsoredLeaderboardData(sponsoredLeaderboardDataContract);  
-        if ((leaderboardId &lt; 0 ) || (leaderboardId &gt; sponsoredLeaderboardData.getTotalLeaderboards())) {revert();}
+        if ((leaderboardId < 0 ) || (leaderboardId > sponsoredLeaderboardData.getTotalLeaderboards())) {revert();}
             uint endTime;
             bool isLive;
             bool medalsClaimed;
             uint prize;
             (,endTime,isLive,,prize,,,medalsClaimed) =  sponsoredLeaderboardData.getLeaderboard(leaderboardId);
             if (isLive == true) {revert();} 
-            if (now &lt; endTime) {revert();}
+            if (now < endTime) {revert();}
             if (medalsClaimed = true) {revert();}
             sponsoredLeaderboardData.setMedalsClaimed(leaderboardId);
             
@@ -265,34 +265,34 @@ function claimMedals (uint16 leaderboardId) public  {
              medalData._createMedal(owner4,0);
              return;
             }
-            if ((prize &gt; 10000000000000000) &amp;&amp; (prize &lt;= 50000000000000000)) {
+            if ((prize > 10000000000000000) && (prize <= 50000000000000000)) {
              medalData._createMedal(owner1, 5);
              medalData._createMedal(owner2, 4);
              medalData._createMedal(owner3,3);
              medalData._createMedal(owner4,3);
              return;
             }
-               if ((prize &gt; 50000000000000000) &amp;&amp; (prize &lt;= 100000000000000000)) {
+               if ((prize > 50000000000000000) && (prize <= 100000000000000000)) {
              medalData._createMedal(owner1, 6);
              medalData._createMedal(owner2, 5);
              medalData._createMedal(owner3,4);
              medalData._createMedal(owner4,4);
              return;
             }
-                 if ((prize &gt; 100000000000000000) &amp;&amp; (prize &lt;= 250000000000000000)) {
+                 if ((prize > 100000000000000000) && (prize <= 250000000000000000)) {
              medalData._createMedal(owner1, 9);
              medalData._createMedal(owner2, 6);
              medalData._createMedal(owner3,5);
              medalData._createMedal(owner4,5);
              return;
             }
-                if ((prize &gt; 250000000000000000  ) &amp;&amp; (prize &lt;= 500000000000000000)) {
+                if ((prize > 250000000000000000  ) && (prize <= 500000000000000000)) {
              medalData._createMedal(owner1,10);
              medalData._createMedal(owner2, 9);
              medalData._createMedal(owner3,6);
              medalData._createMedal(owner4,6);
             }
-                if (prize  &gt; 500000000000000000)   {
+                if (prize  > 500000000000000000)   {
              medalData._createMedal(owner1, 11);
              medalData._createMedal(owner2, 10);
              medalData._createMedal(owner3,9);

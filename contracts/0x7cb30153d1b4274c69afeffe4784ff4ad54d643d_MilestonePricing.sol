@@ -61,13 +61,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -159,7 +159,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public constant returns (bool);
@@ -226,10 +226,10 @@ contract Crowdsale is Haltable {
   bool public finalized;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -274,8 +274,8 @@ contract Crowdsale is Haltable {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if(startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if(startsAt >= endsAt) {
         throw;
     }
 
@@ -284,7 +284,7 @@ contract Crowdsale is Haltable {
   }
 
   /**
-   * Don&#39;t expect to just send in money and get tokens.
+   * Don't expect to just send in money and get tokens.
    */
   function() payable {
     throw;
@@ -372,7 +372,7 @@ contract Crowdsale is Haltable {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!finalizeAgent.isFinalizeAgent()) {
       throw;
     }
@@ -386,7 +386,7 @@ contract Crowdsale is Haltable {
   function setPricingStrategy(PricingStrategy _pricingStrategy) onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!pricingStrategy.isPricingStrategy()) {
       throw;
     }
@@ -420,7 +420,7 @@ contract Crowdsale is Haltable {
    * @return true if the crowdsale has raised enough money to be a succes
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -433,10 +433,10 @@ contract Crowdsale is Haltable {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -534,7 +534,7 @@ contract MilestonePricing is PricingStrategy {
     preicoPrice = _preicoPrice;
 
     // Need to have tuples, length check
-    if(_milestones.length % 2 == 1 || _milestones.length &gt;= MAX_MILESTONE*2) {
+    if(_milestones.length % 2 == 1 || _milestones.length >= MAX_MILESTONE*2) {
       throw;
     }
 
@@ -542,12 +542,12 @@ contract MilestonePricing is PricingStrategy {
 
     uint lastTimestamp = 0;
 
-    for(uint i=0; i&lt;_milestones.length/2; i++) {
+    for(uint i=0; i<_milestones.length/2; i++) {
       milestones[i].time = _milestones[i*2];
       milestones[i].price = _milestones[i*2+1];
 
       // No invalid steps
-      if((lastTimestamp != 0) &amp;&amp; (milestones[i].time &lt;= lastTimestamp)) {
+      if((lastTimestamp != 0) && (milestones[i].time <= lastTimestamp)) {
         throw;
       }
 
@@ -589,7 +589,7 @@ contract MilestonePricing is PricingStrategy {
 
   function isSane(address _crowdsale) public constant returns(bool) {
     Crowdsale crowdsale = Crowdsale(_crowdsale);
-    return crowdsale.startsAt() == getPricingStartsAt() &amp;&amp; crowdsale.endsAt() == getPricingEndsAt();
+    return crowdsale.startsAt() == getPricingStartsAt() && crowdsale.endsAt() == getPricingEndsAt();
   }
 
   /**
@@ -601,8 +601,8 @@ contract MilestonePricing is PricingStrategy {
     uint i;
     uint price;
 
-    for(i=0; i&lt;milestones.length; i++) {
-      if(now &lt; milestones[i].time) {
+    for(i=0; i<milestones.length; i++) {
+      if(now < milestones[i].time) {
         return milestones[i-1];
       }
     }

@@ -45,7 +45,7 @@ contract EthereumHole {
     bool public gameIsOver;
 
     function EthereumHole() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         gameIsOver = false;
         pot = msg.value;
         leader = msg.sender;
@@ -56,7 +56,7 @@ contract EthereumHole {
     function computeDeadline() internal view returns (uint) {
         uint _durationDecrease = DURATION_DECREASE_PER_ETHER.mul(pot.div(1 ether));
         uint _duration;
-        if (MINIMUM_DURATION.add(_durationDecrease) &gt; BASE_DURATION) {
+        if (MINIMUM_DURATION.add(_durationDecrease) > BASE_DURATION) {
             _duration = MINIMUM_DURATION;
         } else {
             _duration = BASE_DURATION.sub(_durationDecrease);
@@ -65,7 +65,7 @@ contract EthereumHole {
     }
 
     modifier endGameIfNeeded {
-        if (now &gt; deadline &amp;&amp; !gameIsOver) {
+        if (now > deadline && !gameIsOver) {
             Winner(now, leader, pot, deadline);
             leader.transfer(pot);
             gameIsOver = true;
@@ -74,9 +74,9 @@ contract EthereumHole {
     }
 
     function bid() public payable endGameIfNeeded {
-        if (msg.value &gt; 0 &amp;&amp; !gameIsOver) {
+        if (msg.value > 0 && !gameIsOver) {
             pot = pot.add(msg.value);
-            if (msg.value &gt;= min_bid) {
+            if (msg.value >= min_bid) {
                 leader = msg.sender;
                 deadline = computeDeadline();
                 NewLeader(now, leader, pot, deadline);
@@ -107,9 +107,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -117,7 +117,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -126,7 +126,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

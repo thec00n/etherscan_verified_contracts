@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) pure internal  returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) pure internal  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,11 +78,11 @@ contract StandardToken is Token {
         validTransfer
        	returns (bool success) 
     {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-    	require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+    	require(balances[msg.sender] >= _value);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
         balances[_to] = SafeMath.add(balances[_to],_value);
         Transfer(msg.sender, _to, _value);
@@ -95,8 +95,8 @@ contract StandardToken is Token {
       	returns (bool success)
       {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-	    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+	    require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         balances[_from] = SafeMath.sub(balances[_from], _value);
         allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -109,7 +109,7 @@ contract StandardToken is Token {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -119,8 +119,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier validTransfer()
     {
@@ -136,13 +136,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -166,10 +166,10 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
@@ -255,7 +255,7 @@ contract Disbursement {
             startDate = now;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses
+    /// @dev Setup function sets external contracts' addresses
     /// @param _token Token address
     function setup(Token _token)
         public
@@ -276,7 +276,7 @@ contract Disbursement {
         isSetUp
     {
         uint maxTokens = calcMaxWithdraw();
-        if (_value &gt; maxTokens)
+        if (_value > maxTokens)
             revert();
         withdrawnTokens = SafeMath.add(withdrawnTokens, _value);
         token.transfer(_to, _value);
@@ -291,9 +291,9 @@ contract Disbursement {
     {
         uint maxTokens = SafeMath.mul(SafeMath.add(token.balanceOf(this), withdrawnTokens), SafeMath.sub(now,startDate)) / disbursementPeriod;
         //uint maxTokens = (token.balanceOf(this) + withdrawnTokens) * (now - startDate) / disbursementPeriod;
-        if (withdrawnTokens &gt;= maxTokens || startDate &gt; now)
+        if (withdrawnTokens >= maxTokens || startDate > now)
             return 0;
-        if (SafeMath.sub(maxTokens, withdrawnTokens) &gt; token.totalSupply())
+        if (SafeMath.sub(maxTokens, withdrawnTokens) > token.totalSupply())
             return token.totalSupply();
         return SafeMath.sub(maxTokens, withdrawnTokens);
     }
@@ -311,8 +311,8 @@ contract Sale {
     uint public constant MAX_PRIVATE = 750200000000000000;
 
     uint8 public constant DECIMALS = 9;
-    string public constant NAME = &quot;Leverj&quot;;
-    string public constant SYMBOL = &quot;LEV&quot;;
+    string public constant NAME = "Leverj";
+    string public constant SYMBOL = "LEV";
     address public owner;
     address public whitelistAdmin;
     address public wallet;
@@ -325,8 +325,8 @@ contract Sale {
     bool public setupCompleteFlag = false;
     bool public emergencyFlag = false;
     address[] public disbursements;
-    mapping(address =&gt; uint) public whitelistRegistrants;
-    mapping(address =&gt; bool) public whitelistRegistrantsFlag;
+    mapping(address => uint) public whitelistRegistrants;
+    mapping(address => bool) public whitelistRegistrantsFlag;
     bool public publicSale = false;
 
     // PUBLIC FUNCTIONS
@@ -365,21 +365,21 @@ contract Sale {
         uint excessAmount = msg.value % price_in_wei;
 
         if (!publicSale){
-            require(whitelistRegistrants[msg.sender] &gt; 0 );
+            require(whitelistRegistrants[msg.sender] > 0 );
             uint tempWhitelistAmount = whitelistRegistrants[msg.sender];
-            if (purchaseAmount &gt; whitelistRegistrants[msg.sender]){
+            if (purchaseAmount > whitelistRegistrants[msg.sender]){
                 uint extra = SafeMath.sub(purchaseAmount,whitelistRegistrants[msg.sender]);
                 purchaseAmount = whitelistRegistrants[msg.sender];
                 excessAmount = SafeMath.add(excessAmount,extra*price_in_wei);
             }
             whitelistRegistrants[msg.sender] = SafeMath.sub(whitelistRegistrants[msg.sender], purchaseAmount);
-            assert(whitelistRegistrants[msg.sender] &lt; tempWhitelistAmount);
+            assert(whitelistRegistrants[msg.sender] < tempWhitelistAmount);
         }  
 
         // Cannot purchase more tokens than this contract has available to sell
-        require(purchaseAmount &lt;= token.balanceOf(this));
+        require(purchaseAmount <= token.balanceOf(this));
         // Return any excess msg.value
-        if (excessAmount &gt; 0){
+        if (excessAmount > 0){
             msg.sender.transfer(excessAmount);
         }
         // Forward received ether minus any excessAmount to the wallet
@@ -419,12 +419,12 @@ contract Sale {
         saleNotEnded
     { 
         assert(!setupCompleteFlag);
-        assert(_beneficiariesTokens.length &lt; 11);
+        assert(_beneficiariesTokens.length < 11);
         assert(_beneficiaries.length == _beneficiariesTokens.length);
         assert(_beneficiariesTokens.length == _timelockStarts.length);
         assert(_timelockStarts.length == _periods.length);
-        for(uint i = 0; i &lt; _beneficiaries.length; i++) {
-            require(privateAllocated + _beneficiariesTokens[i] &lt;= MAX_PRIVATE);
+        for(uint i = 0; i < _beneficiaries.length; i++) {
+            require(privateAllocated + _beneficiariesTokens[i] <= MAX_PRIVATE);
             privateAllocated = SafeMath.add(privateAllocated, _beneficiariesTokens[i]);
             address beneficiary = _beneficiaries[i];
             uint beneficiaryTokens = _beneficiariesTokens[i];
@@ -438,7 +438,7 @@ contract Sale {
             disbursements.push(disbursement);
             TransferredTimelockedTokens(beneficiary, disbursement, beneficiaryTokens);
         }
-        assert(token.balanceOf(this) &gt;= (SafeMath.sub(TOTAL_SUPPLY, MAX_PRIVATE)));
+        assert(token.balanceOf(this) >= (SafeMath.sub(TOTAL_SUPPLY, MAX_PRIVATE)));
     }
 
     function distributePresaleTokens(address[] _buyers, uint[] _amounts)
@@ -447,15 +447,15 @@ contract Sale {
         saleNotEnded
     {
         assert(!setupCompleteFlag);
-        require(_buyers.length &lt; 11);
+        require(_buyers.length < 11);
         require(_buyers.length == _amounts.length);
-        for(uint i=0; i &lt; _buyers.length; i++){
-            require(SafeMath.add(privateAllocated, _amounts[i]) &lt;= MAX_PRIVATE);
+        for(uint i=0; i < _buyers.length; i++){
+            require(SafeMath.add(privateAllocated, _amounts[i]) <= MAX_PRIVATE);
             assert(token.transfer(_buyers[i], _amounts[i]));
             privateAllocated = SafeMath.add(privateAllocated, _amounts[i]);
             PurchasedTokens(_buyers[i], _amounts[i]);
         }
-        assert(token.balanceOf(this) &gt;= (SafeMath.sub(TOTAL_SUPPLY, MAX_PRIVATE)));
+        assert(token.balanceOf(this) >= (SafeMath.sub(TOTAL_SUPPLY, MAX_PRIVATE)));
     }
 
     function removeTransferLock()
@@ -471,9 +471,9 @@ contract Sale {
         onlyOwner
     {
         uint refund = SafeMath.mul(token.balanceOf(_tokenHolder),price_in_wei);
-        require(msg.value &gt;= refund);
+        require(msg.value >= refund);
         uint excessAmount = SafeMath.sub(msg.value, refund);
-        if (excessAmount &gt; 0) {
+        if (excessAmount > 0) {
             msg.sender.transfer(excessAmount);
         }
 
@@ -527,7 +527,7 @@ contract Sale {
         onlyOwner
         notFrozen
     {
-        require(block.number &lt;= _newBlock &amp;&amp; _newBlock &lt; startBlock);
+        require(block.number <= _newBlock && _newBlock < startBlock);
         freezeBlock = SafeMath.sub(_newBlock , SafeMath.sub(startBlock, freezeBlock));
         startBlock = _newBlock;
     }
@@ -544,9 +544,9 @@ contract Sale {
         onlyWhitelistAdmin
         saleNotEnded
     {
-        assert(_purchaser.length &lt; 11 );
+        assert(_purchaser.length < 11 );
         assert(_purchaser.length == _amount.length);
-        for(uint i = 0; i &lt; _purchaser.length; i++) {
+        for(uint i = 0; i < _purchaser.length; i++) {
             whitelistRegistrants[_purchaser[i]] = _amount[i];
             whitelistRegistrantsFlag[_purchaser[i]] = true;
             
@@ -564,11 +564,11 @@ contract Sale {
 
     // MODIFIERS
     modifier saleEnded {
-        require(block.number &gt;= endBlock);
+        require(block.number >= endBlock);
         _;
     }
     modifier saleNotEnded {
-        require(block.number &lt; endBlock);
+        require(block.number < endBlock);
         _;
     }
     modifier onlyOwner {
@@ -580,11 +580,11 @@ contract Sale {
         _;
     }
     modifier notFrozen {
-        require(block.number &lt; freezeBlock);
+        require(block.number < freezeBlock);
         _;
     }
     modifier saleInProgress {
-        require(block.number &gt;= startBlock &amp;&amp; block.number &lt; endBlock);
+        require(block.number >= startBlock && block.number < endBlock);
         _;
     }
     modifier setupComplete {
@@ -596,13 +596,13 @@ contract Sale {
         _;
     }
     modifier checkBlockNumberInputs(uint _freeze, uint _start, uint _end) {
-        require(_freeze &gt;= block.number
-        &amp;&amp; _start &gt;= _freeze
-        &amp;&amp; _end &gt;= _start);
+        require(_freeze >= block.number
+        && _start >= _freeze
+        && _end >= _start);
         _;
     }
     modifier validPrice(uint _price){
-        require(_price &gt; 0);
+        require(_price > 0);
         _;
     }
 }

@@ -1,21 +1,21 @@
 pragma solidity ^0.4.16;
 
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="e08d898b8881898cce968c8184898d89928f96a0878d81898cce838f8d">[email&#160;protected]</span>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="e08d898b8881898cce968c8184898d89928f96a0878d81898cce838f8d">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
 /*
  * ERC-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="d1bcb8bab9b0b8bdffa7bdb0b5b8bcb8a3bea791b6bcb0b8bdffb2bebc">[email&#160;protected]</span>&gt;
+ * Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="d1bcb8bab9b0b8bdffa7bdb0b5b8bcb8a3bea791b6bcb0b8bdffb2bebc">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -102,8 +102,8 @@ contract Token {
 }
 
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="274a4e4c4f464e4b09514b46434e4a4e55485167404a464e4b0944484a">[email&#160;protected]</span>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="274a4e4c4f464e4b09514b46434e4a4e55485167404a464e4b0944484a">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
@@ -124,7 +124,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -138,7 +138,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -153,7 +153,7 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -190,8 +190,8 @@ contract AbstractToken is Token, SafeMath {
    * @return true if tokens were transferred successfully, false otherwise
    */
   function transfer (address _to, uint256 _value) returns (bool success) {
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -210,13 +210,13 @@ contract AbstractToken is Token, SafeMath {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success) {
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -259,13 +259,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
@@ -317,7 +317,7 @@ contract CGCoinsToken is AbstractToken {
    * @return name of this token
    */
   function name () constant returns (string result) {
-    return &quot;CGCOINS&quot;;
+    return "CGCOINS";
   }
 
   /**
@@ -326,7 +326,7 @@ contract CGCoinsToken is AbstractToken {
    * @return symbol of this token
    */
   function symbol () constant returns (string result) {
-    return &quot;CGC&quot;;
+    return "CGC";
   }
 
   /**
@@ -392,8 +392,8 @@ contract CGCoinsToken is AbstractToken {
    * @return true on success, false on error
    */
   function burnTokens (uint256 _value) returns (bool success) {
-    if (_value &gt; accounts [msg.sender]) return false;
-    else if (_value &gt; 0) {
+    if (_value > accounts [msg.sender]) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       tokenCount = safeSub (tokenCount, _value);
       return true;
@@ -411,8 +411,8 @@ contract CGCoinsToken is AbstractToken {
     returns (bool success) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &gt; safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
+    if (_value > 0) {
+      if (_value > safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
       accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
       tokenCount = safeAdd (tokenCount, _value);
     }

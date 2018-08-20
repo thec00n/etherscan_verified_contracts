@@ -56,9 +56,9 @@ contract DragonBase is Ownable {
 
     uint256 dragonsOnSaleCount = 0;
 
-    mapping (uint256 =&gt; address) public dragonIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) public dragonIndexToApproved;
+    mapping (uint256 => address) public dragonIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) public dragonIndexToApproved;
 
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         ownershipTokenCount[_to]++;
@@ -111,17 +111,17 @@ contract DragonBase is Ownable {
 contract ERC721Metadata {
     function getMetadata(uint256 _tokenId, string) public view returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -129,24 +129,24 @@ contract ERC721Metadata {
 
 
 contract DragonOwnership is DragonBase, ERC721 {
-    string public constant name = &quot;DragonBit&quot;;
-    string public constant symbol = &quot;DB&quot;;
+    string public constant name = "DragonBit";
+    string public constant symbol = "DB";
     ERC721Metadata public erc721Metadata;
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint256,string)'));
 
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
     {
@@ -235,7 +235,7 @@ contract DragonOwnership is DragonBase, ERC721 {
             uint256 resultIndex = 0;
             uint256 dragonId;
 
-            for (dragonId = 0; dragonId &lt; totalDragons; dragonId++) {
+            for (dragonId = 0; dragonId < totalDragons; dragonId++) {
                 if (_owns(_owner, dragonId)) {
                     result[resultIndex] = dragonId;
                     resultIndex++;
@@ -255,7 +255,7 @@ contract DragonOwnership is DragonBase, ERC721 {
             uint256 resultIndex = 0;
             uint256 dragonId;
 
-            for (dragonId = 0; dragonId &lt; totalDragons; dragonId++) {
+            for (dragonId = 0; dragonId < totalDragons; dragonId++) {
                 if (_owns(address(0), dragonId)) {
                     result[resultIndex] = dragonId;
                     resultIndex++;
@@ -277,8 +277,8 @@ contract DragonOwnership is DragonBase, ERC721 {
             uint256 resultIndex = 0;
             uint256 dragonId;
 
-            for (dragonId = 0; dragonId &lt; totalDragons; dragonId++) {
-                if (!_owns(address(0), dragonId) &amp;&amp; !_owns(address(msg.sender), dragonId)) {
+            for (dragonId = 0; dragonId < totalDragons; dragonId++) {
+                if (!_owns(address(0), dragonId) && !_owns(address(msg.sender), dragonId)) {
                     result[resultIndex] = dragonId;
                     resultIndex++;
                 }
@@ -290,7 +290,7 @@ contract DragonOwnership is DragonBase, ERC721 {
 
     function _memcpy(uint _dest, uint _src, uint _len) private view {
         // Copy word-length chunks while possible
-        for(; _len &gt;= 32; _len -= 32) {
+        for(; _len >= 32; _len -= 32) {
             assembly {
                 mstore(_dest, mload(_src))
             }
@@ -395,7 +395,7 @@ contract DragonCore is DragonOwnership {
       address dragonOwner = dragonIndexToOwner[_id];
 
       require(dragonOwner == address(0));
-      require(msg.value &gt;= d.price);
+      require(msg.value >= d.price);
 
       Birth(msg.sender, _id);
 
@@ -459,7 +459,7 @@ contract DragonFight is DragonCore, Random {
         uint64 ownerValue = random(uint64(_ownerDragonAmount), _step);
         uint64 opponentValue = random(uint64(_opponentDragonAmount), _step);
 
-        return ownerValue &gt; opponentValue;
+        return ownerValue > opponentValue;
     }
 }
 

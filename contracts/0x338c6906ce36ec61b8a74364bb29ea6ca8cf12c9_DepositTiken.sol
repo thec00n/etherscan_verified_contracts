@@ -24,20 +24,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -55,7 +55,7 @@ contract DepositTiken is Owned {
     
     // сохранить баланс на счетах пользователя
     
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
     event SomeEvent(address indexed from, address indexed to, uint value, bytes32 status);
     constructor () public {
@@ -85,11 +85,11 @@ contract DepositTiken is Owned {
         address _this = this;
         contractBalance = _this.balance;
         
-        emit SomeEvent(msg.sender, this, _value, &quot;buy&quot;);
+        emit SomeEvent(msg.sender, this, _value, "buy");
     }
     
     function sell (uint256 countTokens) public {
-        require(balances[msg.sender] - countTokens &gt;= 0);
+        require(balances[msg.sender] - countTokens >= 0);
         
         uint _value = countTokens.mul(_sellprice).div(10**18);
         
@@ -98,7 +98,7 @@ contract DepositTiken is Owned {
         _tokens -= countTokens;
         balances[msg.sender] -= countTokens;
         
-        if(_tokens &gt; 0) {
+        if(_tokens > 0) {
             _sellprice = _money.mul(10**18).mul(99).div(_tokens).div(100);
         }
         
@@ -107,7 +107,7 @@ contract DepositTiken is Owned {
         
         msg.sender.transfer(_value);
         
-        emit SomeEvent(msg.sender, this, _value, &quot;sell&quot;);
+        emit SomeEvent(msg.sender, this, _value, "sell");
     }
     function getPrice() public constant returns (uint bid, uint ask) {
         bid = _sellprice.mul(100).div(95);

@@ -72,8 +72,8 @@ contract ERC721 {
 contract BCFData is BCFBase, ERC721 {
 
     // MetaData
-    string public constant NAME = &quot;BlockchainFootball&quot;;
-    string public constant SYMBOL = &quot;BCF&quot;;
+    string public constant NAME = "BlockchainFootball";
+    string public constant SYMBOL = "BCF";
 
     struct Player {
 
@@ -87,7 +87,7 @@ contract BCFData is BCFBase, ERC721 {
         uint8 physical;
         uint8 form; // No plans to use this atm but offers useful dynamic attribute -- NOT used in v1 of match engine
 
-        // Level could be stored as an enum but plain ol&#39; uint gives us more flexibility to introduce new levels in future
+        // Level could be stored as an enum but plain ol' uint gives us more flexibility to introduce new levels in future
         uint8 level; // 1 = Superstar, 2 = Legend, 3 = Gold, 4 = Silver
         bytes position; // Shortcode - GK, LB, CB, RB, RW, RM, LW, LM, CM, CDM, CAM, ST
         string name; // First and last - arbitrary-length, hence string over bytes32
@@ -105,15 +105,15 @@ contract BCFData is BCFBase, ERC721 {
     PlayerCard[] public playerCards;
 
     // Utility mappings to make trading players and checking ownership gas-efficient
-    mapping(address =&gt; uint[]) internal ownerToCardsOwned;
-    mapping(uint =&gt; uint) internal cardIdToOwnerArrayIndex;
+    mapping(address => uint[]) internal ownerToCardsOwned;
+    mapping(uint => uint) internal cardIdToOwnerArrayIndex;
 
     // Extended attributes -- for now these are just an indexed list of values. Metadata will describe what each index represents.
-    mapping(uint =&gt; uint8[]) public playerIdToExtendedAttributes; // Each index a single unique value &gt; 0 and &lt; 100
+    mapping(uint => uint8[]) public playerIdToExtendedAttributes; // Each index a single unique value > 0 and < 100
 
     // ERC721
     // Note: The standard is still in draft mode, so these are best efforts implementation based
-    // on currently direction of the community and existing contracts which reside in the &quot;wild&quot;
+    // on currently direction of the community and existing contracts which reside in the "wild"
     function implementsERC721() public pure returns (bool) {
         return true;
     }
@@ -147,7 +147,7 @@ contract BCFData is BCFBase, ERC721 {
         require(ownsPlayerCard(_from, _tokenId));
         require(isApprovedForTransferTo(_to, _tokenId));
         
-        // As we&#39;ve validate we can now call the universal transfer method
+        // As we've validate we can now call the universal transfer method
         transferUnconditionally(_from, _to, _tokenId);
     }
 
@@ -156,7 +156,7 @@ contract BCFData is BCFBase, ERC721 {
         require(_to != address(this));
         require(ownsPlayerCard(msg.sender, _tokenId));
     
-        // As we&#39;ve validate we can now call the universal transfer method
+        // As we've validate we can now call the universal transfer method
         transferUnconditionally(msg.sender, _to, _tokenId);
     }
 
@@ -193,7 +193,7 @@ contract BCFData is BCFBase, ERC721 {
     function transferUnconditionally(address _from, address _to, uint _cardId) internal {
         
         if (_from != address(0)) {
-            // Remove from current owner list first, otherwise we&#39;ll end up with invalid indexes
+            // Remove from current owner list first, otherwise we'll end up with invalid indexes
             playerCards[_cardId].approvedForTransfer = address(0);
             removeCardFromOwnersList(_from, _cardId);
         }
@@ -217,15 +217,15 @@ contract BCFData is BCFBase, ERC721 {
     }
 
     function setPlayerForm(uint _playerId, uint8 _form) external whenNotPaused onlyEditor {
-        require(players[_playerId].form &gt; 0); // Check the player and form exist
-        require(_form &gt; 0 &amp;&amp; _form &lt;= 200); // Max value is players can double their form
+        require(players[_playerId].form > 0); // Check the player and form exist
+        require(_form > 0 && _form <= 200); // Max value is players can double their form
         players[_playerId].form = _form;
     }
 
     function createPlayerCard(uint _playerId, address _newOwner, bool isFirstOfKind) internal returns (uint) {
-        require(_playerId &gt; 0); // disallow player cards for the first card - Thiago Messi
+        require(_playerId > 0); // disallow player cards for the first card - Thiago Messi
         Player storage _player = players[_playerId];
-        require(_player.overall &gt; 0); // Make sure the player exists
+        require(_player.overall > 0); // Make sure the player exists
 
         PlayerCard memory _cardInstance = PlayerCard({
              playerId: _playerId,
@@ -236,7 +236,7 @@ contract BCFData is BCFBase, ERC721 {
 
         uint cardId = playerCards.push(_cardInstance) - 1;
 
-        // We send it with 0x0 FROM address so we don&#39;t reduce the total number of cards associated with this address 
+        // We send it with 0x0 FROM address so we don't reduce the total number of cards associated with this address 
         transferUnconditionally(0, _newOwner, cardId);
 
         return cardId;
@@ -286,24 +286,24 @@ contract BCFData is BCFBase, ERC721 {
         require(owner != address(0));
 
         // This function will return early if it finds any instance of a cardId not owned
-        for (uint i = 0; i &lt; _cardIds.length; i++) {
+        for (uint i = 0; i < _cardIds.length; i++) {
             if (!ownsPlayerCard(owner, _cardIds[i])) {
                 return false;
             }
         }
 
-        // Get&#39;s here, must own all cardIds
+        // Get's here, must own all cardIds
         return true;
     }
 
     // Extended attributes
     function setExtendedPlayerAttributesForPlayer(uint playerId, uint8[] attributes) external whenNotPaused onlyEditor {
-        require(playerId &gt; 0);
+        require(playerId > 0);
         playerIdToExtendedAttributes[playerId] = attributes;
     }
 
     function getExtendedAttributesForPlayer(uint playerId) public view returns (uint8[]) {
-        require(playerId &gt; 0);
+        require(playerId > 0);
         return playerIdToExtendedAttributes[playerId];
     }
 }
@@ -335,7 +335,7 @@ contract BCFBuyMarket is BCFData {
         uint[] memory cardIds = new uint[](playerIds.length);
 
         // Create the players and store an array of their Ids
-        for (uint i = 0; i &lt; playerIds.length; i++) {
+        for (uint i = 0; i < playerIds.length; i++) {
             uint cardId = createPlayerCard(playerIds[i], newOwner, false);
             cardIds[i] = cardId;
         }
@@ -430,14 +430,14 @@ contract BCFAuction is Pausable {
     ERC721 public dataStore;
     uint256 public auctioneerCut;
 
-    mapping (uint256 =&gt; CardAuction) playerCardIdToAuction;
+    mapping (uint256 => CardAuction) playerCardIdToAuction;
 
     event AuctionCreated(uint256 cardId, uint256 startPrice, uint256 endPrice, uint256 duration);
     event AuctionSuccessful(uint256 cardId, uint256 finalPrice, address winner);
     event AuctionCancelled(uint256 cardId);
 
     function BCFAuction(address dataStoreAddress, uint cutValue) public {
-        require(cutValue &lt;= 10000); // 100% == 10,000
+        require(cutValue <= 10000); // 100% == 10,000
         auctioneerCut = cutValue;
 
         ERC721 candidateDataStoreContract = ERC721(dataStoreAddress);
@@ -525,7 +525,7 @@ contract BCFAuction is Pausable {
     }
 
     function _addAuction(uint256 cardId, CardAuction auction) internal {
-        require(auction.duration &gt;= 1 minutes &amp;&amp; auction.duration &lt;= 14 days);
+        require(auction.duration >= 1 minutes && auction.duration <= 14 days);
         playerCardIdToAuction[cardId] = auction;
         AuctionCreated(cardId, auction.startPrice, auction.endPrice, auction.duration);
     }
@@ -541,7 +541,7 @@ contract BCFAuction is Pausable {
     }
 
     function isOnAuction(CardAuction storage auction) internal view returns (bool) {
-        return (auction.startedAt &gt; 0);
+        return (auction.startedAt > 0);
     }
 
     function _bid(uint256 cardId, uint256 bidAmount) internal returns (uint256) {
@@ -549,12 +549,12 @@ contract BCFAuction is Pausable {
         require(isOnAuction(auction));
 
         uint256 price = currentPrice(auction);
-        require(bidAmount &gt;= price);
+        require(bidAmount >= price);
 
         address seller = auction.seller;
         _removeAuction(cardId);
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 handlerCut = calculateAuctioneerCut(price);
             uint256 sellerProceeds = price - handlerCut;
             seller.transfer(sellerProceeds);
@@ -570,7 +570,7 @@ contract BCFAuction is Pausable {
 
     function currentPrice(CardAuction storage auction) internal view returns (uint256) {
         uint256 secondsPassed = 0;
-        if (now &gt; auction.startedAt) {
+        if (now > auction.startedAt) {
             secondsPassed = now - auction.startedAt;
         }
 
@@ -582,7 +582,7 @@ contract BCFAuction is Pausable {
         pure
         returns (uint256)
     {
-        if (secondsElapsed &gt;= duration) {
+        if (secondsElapsed >= duration) {
             return endPrice;
         } 
 
@@ -594,7 +594,7 @@ contract BCFAuction is Pausable {
     }
 
     function calculateAuctioneerCut(uint256 sellPrice) internal view returns (uint256) {
-        // 10,000 = 100%, ownerCut required&#39;d &lt;= 10,000 in the constructor so no requirement to validate here
+        // 10,000 = 100%, ownerCut required'd <= 10,000 in the constructor so no requirement to validate here
         uint finalCut = sellPrice * auctioneerCut / 10000;
         return finalCut;
     }    
@@ -653,16 +653,16 @@ contract BCFSeeding is BCFTransferMarket {
         internal 
         returns (uint) 
     {
-        require(_overall &gt; 0 &amp;&amp; _overall &lt; 100);
-        require(_pace &gt; 0 &amp;&amp; _pace &lt; 100);
-        require(_shooting &gt; 0 &amp;&amp; _shooting &lt; 100);
-        require(_passing &gt; 0 &amp;&amp; _passing &lt; 100);
-        require(_dribbling &gt; 0 &amp;&amp; _dribbling &lt; 100);
-        require(_defending &gt; 0 &amp;&amp; _defending &lt; 100);
-        require(_physical &gt; 0 &amp;&amp; _physical &lt; 100);
-        require(_level &gt; 0 &amp;&amp; _level &lt; 100);
-        require(_position.length &gt; 0);
-        require(bytes(_fullName).length &gt; 0);
+        require(_overall > 0 && _overall < 100);
+        require(_pace > 0 && _pace < 100);
+        require(_shooting > 0 && _shooting < 100);
+        require(_passing > 0 && _passing < 100);
+        require(_dribbling > 0 && _dribbling < 100);
+        require(_defending > 0 && _defending < 100);
+        require(_physical > 0 && _physical < 100);
+        require(_level > 0 && _level < 100);
+        require(_position.length > 0);
+        require(bytes(_fullName).length > 0);
         
         Player memory _playerInstance = Player({
             overall: _overall,
@@ -766,8 +766,8 @@ contract BCFMain is BCFSeeding {
         editor = msg.sender;
         paused = true;
 
-        // We need to create an unacquirable index 0 player so we can use playerId &gt; 0 check for valid playerCard structs
-        createPlayer(1, 4, 4, 2, 3, 5, 2, 11, &quot;CAM&quot;, &quot;Thiago Messi&quot;);
+        // We need to create an unacquirable index 0 player so we can use playerId > 0 check for valid playerCard structs
+        createPlayer(1, 4, 4, 2, 3, 5, 2, 11, "CAM", "Thiago Messi");
     }
 
     function() external payable {

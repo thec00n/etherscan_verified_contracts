@@ -39,18 +39,18 @@ contract TheGame {
     function contribute_toTheGame() returns(bool) {
         uint amount = msg.value;
         // Check if the minimum amount if reached
-        if (amount &lt; 1 / 2 ether) {
+        if (amount < 1 / 2 ether) {
             msg.sender.send(msg.value);
             return false;
         }
         // If the player sends more than 25 ETH it is returned to him
-        if (amount &gt; 25 ether) {
+        if (amount > 25 ether) {
             msg.sender.send(msg.value - 25 ether);
             amount = 25 ether;
         }
 
         // Check if the game is still on
-        if (regeneration + SIX_HOURS &lt; block.timestamp) {
+        if (regeneration + SIX_HOURS < block.timestamp) {
             // Send the jacpot to the last 3 players
             // If noone send ETH in the last 6 hours nothing happens
             if (totalplayers == 1) {
@@ -60,7 +60,7 @@ contract TheGame {
                 // If two players sent ETH the jacpot is split between them
                 playersAddresses[playersAddresses.length - 1].send(jackpot * 70 / 100);
                 playersAddresses[playersAddresses.length - 2].send(jackpot * 30 / 100);
-            } else if (totalplayers &gt;= 3) {
+            } else if (totalplayers >= 3) {
                 // If there is 3 or more players
                 playersAddresses[playersAddresses.length - 1].send(jackpot * 70 / 100);
                 playersAddresses[playersAddresses.length - 2].send(jackpot * 20 / 100);
@@ -105,7 +105,7 @@ contract TheGame {
             // The player takes 3%
             collectedFee += amount * 3 / 100;
 
-while (playersAmounts[lastPlayerPaid] &lt; (address(this).balance - jackpot - collectedFee) &amp;&amp; lastPlayerPaid &lt;= totalplayers) {
+while (playersAmounts[lastPlayerPaid] < (address(this).balance - jackpot - collectedFee) && lastPlayerPaid <= totalplayers) {
                 playersAddresses[lastPlayerPaid].send(playersAmounts[lastPlayerPaid]);
                 amountAlreadyPaidBack += playersAmounts[lastPlayerPaid];
                 lastPlayerPaid += 1;

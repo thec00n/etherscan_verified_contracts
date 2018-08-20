@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,19 +40,19 @@ library SafeMath {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -123,7 +123,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -327,9 +327,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -347,7 +347,7 @@ contract BurnableToken is BasicToken {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -358,8 +358,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -373,7 +373,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -422,7 +422,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -435,7 +435,7 @@ contract StandardToken is ERC20, BasicToken {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="5624333b35391664">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="5624333b35391664">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -487,7 +487,7 @@ contract DelayedClaimable is Claimable {
    * @param _end The latest time ownership can be claimed.
    */
   function setLimits(uint256 _start, uint256 _end) onlyOwner public {
-    require(_start &lt;= _end);
+    require(_start <= _end);
     end = _end;
     start = _start;
   }
@@ -498,7 +498,7 @@ contract DelayedClaimable is Claimable {
    * the specified start and end time.
    */
   function claimOwnership() onlyPendingOwner public {
-    require((block.number &lt;= end) &amp;&amp; (block.number &gt;= start));
+    require((block.number <= end) && (block.number >= start));
     OwnershipTransferred(owner, pendingOwner);
     owner = pendingOwner;
     pendingOwner = address(0);
@@ -509,7 +509,7 @@ contract DelayedClaimable is Claimable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="d4a6b1b9b7bb94e6">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="d4a6b1b9b7bb94e6">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -534,7 +534,7 @@ contract HasNoContracts is Ownable {
  */
 library Roles {
     struct Role {
-        mapping (address =&gt; bool) bearer;
+        mapping (address => bool) bearer;
     }
 
     /**
@@ -547,7 +547,7 @@ library Roles {
     }
 
     /**
-     * @dev remove an address&#39; access to this role
+     * @dev remove an address' access to this role
      */
     function remove(Role storage role, address addr)
         internal
@@ -588,13 +588,13 @@ library Roles {
  *      See //contracts/examples/RBACExample.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
     using Roles for Roles.Role;
 
-    mapping (string =&gt; Roles.Role) private roles;
+    mapping (string => Roles.Role) private roles;
 
     event RoleAdded(address addr, string roleName);
     event RoleRemoved(address addr, string roleName);
@@ -602,7 +602,7 @@ contract RBAC {
     /**
      * A constant role name for indicating admins.
      */
-    string public constant ROLE_ADMIN = &quot;admin&quot;;
+    string public constant ROLE_ADMIN = "admin";
 
     /**
      * @dev constructor. Sets msg.sender as admin by default
@@ -720,7 +720,7 @@ contract RBAC {
      */
     // modifier onlyRoles(string[] roleNames) {
     //     bool hasAnyRole = false;
-    //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+    //     for (uint8 i = 0; i < roleNames.length; i++) {
     //         if (hasRole(msg.sender, roleNames[i])) {
     //             hasAnyRole = true;
     //             break;
@@ -735,7 +735,7 @@ contract RBAC {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="e795828a8488a7d5">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="e795828a8488a7d5">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -778,7 +778,7 @@ contract Contactable is Ownable{
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="ec9e89818f83acde">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="ec9e89818f83acde">[email protected]</span>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -796,8 +796,8 @@ contract NoOwner is HasNoEther, HasNoTokens, HasNoContracts {
  */
 contract SimpleToken is StandardToken {
 
-  string public constant name = &quot;SimpleToken&quot;;
-  string public constant symbol = &quot;SIM&quot;;
+  string public constant name = "SimpleToken";
+  string public constant symbol = "SIM";
   uint8 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 10000 * (10 ** uint256(decimals));
@@ -861,7 +861,7 @@ contract Migrations is Ownable {
 
 /**
  * @title TokenDestructible:
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="2351464e404c6311">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="2351464e404c6311">[email protected]</span>π.com>
  * @dev Base contract that can be destroyed by owner. All funds in contract including
  * listed tokens will be sent to the owner.
  */
@@ -879,7 +879,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner public {
 
     // Transfer tokens to owner
-    for(uint256 i = 0; i &lt; tokens.length; i++) {
+    for(uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -944,7 +944,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -955,7 +955,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -967,7 +967,7 @@ contract CappedToken is MintableToken {
 // @notice  even
 // if the contract is not payable.
 // @notice To use, construct the contract with the target as argument.
-// @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="35475058565a755b504053405b511b5a4752">[email&#160;protected]</span>&gt;
+// @author Remco Bloemen <<span class="__cf_email__" data-cfemail="35475058565a755b504053405b511b5a4752">[email protected]</span>>
 contract ForceEther  {
 
   function ForceEther() public payable { }
@@ -1054,7 +1054,7 @@ contract InbotControlled is RBAC {
     /**
      * A constant role name for indicating vendor.
      */
-    string public constant ROLE_VENDOR = &quot;vendor&quot;;
+    string public constant ROLE_VENDOR = "vendor";
 }
 
 contract InbotContract is InbotControlled, TokenDestructible, CanReclaimToken, Pausable {
@@ -1092,11 +1092,11 @@ contract InbotContract is InbotControlled, TokenDestructible, CanReclaimToken, P
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function wmul(uint x, uint y) internal pure returns (uint z) {
@@ -1147,7 +1147,7 @@ contract InbotToken is InbotContract, MintableToken, BurnableToken, PausableToke
             codeLength := extcodesize(_to)
         }
 
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(_from, _value, _data);
         }
@@ -1158,13 +1158,13 @@ contract InbotToken is InbotContract, MintableToken, BurnableToken, PausableToke
 	}
 
 	/**
-	* @dev Function which allows to mint tokens from another &quot;admin&quot; address. 
+	* @dev Function which allows to mint tokens from another "admin" address. 
 	* @param _to The address that will receive the minted tokens.
 	* @param _amount The amount of tokens to mint.
 	* @return A boolean that indicates if the operation was successful.
 	*/
 	function mint(address _to, uint256 _amount) public onlyAdmin canMint returns (bool) {
-		// TODO: a hook to allow other contracts call &quot;mint&quot; without applying parent modifiers
+		// TODO: a hook to allow other contracts call "mint" without applying parent modifiers
 		totalSupply = totalSupply.add(_amount);
 		balances[_to] = balances[_to].add(_amount);
 		Mint(_to, _amount);
@@ -1224,7 +1224,7 @@ contract InbotToken is InbotContract, MintableToken, BurnableToken, PausableToke
 /** 
  * @title InToken (Inbot Token) contract. 
 */
-contract InToken is InbotToken(&quot;InToken&quot;, &quot;IN&quot;, 18) {
+contract InToken is InbotToken("InToken", "IN", 18) {
 	uint public constant MAX_SUPPLY = 13*RAY;
 
 	function InToken() public {
@@ -1237,7 +1237,7 @@ contract InToken is InbotToken(&quot;InToken&quot;, &quot;IN&quot;, 18) {
 	* @return A boolean that indicates if the operation was successful.
 	*/
 	function mint(address _to, uint256 _amount) onlyAdmin canMint public returns (bool) {
-		require(totalSupply.add(_amount) &lt;= MAX_SUPPLY);
+		require(totalSupply.add(_amount) <= MAX_SUPPLY);
 
 		return super.mint(_to, _amount);
 	}

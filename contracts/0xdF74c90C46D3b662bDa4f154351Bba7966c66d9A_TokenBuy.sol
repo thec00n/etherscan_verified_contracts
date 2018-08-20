@@ -22,32 +22,32 @@ interface ACOTokenCrowdsale {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity 0.4.23;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     // function max(uint x, uint y) internal pure returns (uint z) {
-    //     return x &gt;= y ? x : y;
+    //     return x >= y ? x : y;
     // }
     // function imin(int x, int y) internal pure returns (int z) {
-    //     return x &lt;= y ? x : y;
+    //     return x <= y ? x : y;
     // }
     // function imax(int x, int y) internal pure returns (int z) {
-    //     return x &gt;= y ? x : y;
+    //     return x >= y ? x : y;
     // }
 
     // uint constant WAD = 10 ** 18;
@@ -66,10 +66,10 @@ contract DSMath {
     //     z = add(mul(x, RAY), y / 2) / y;
     // }
 
-    // // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // // This famous algorithm is called "exponentiation by squaring"
     // // and calculates x^n with x as fixed-point and n as regular unsigned.
     // //
-    // // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // // It's O(log n), instead of O(n) for naive repeated multiplication.
     // //
     // // These facts are why it works:
     // //
@@ -99,7 +99,7 @@ contract DSMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -211,7 +211,7 @@ contract ERC20Basic {
 
 /**
  * @title TokenDestructible:
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="acdec9c1cfc3ec9e">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="acdec9c1cfc3ec9e">[email protected]</span>π.com>
  * @dev Base contract that can be destroyed by owner. All funds in contract including
  * listed tokens will be sent to the owner.
  */
@@ -229,7 +229,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner public {
 
     // Transfer tokens to owner
-    for (uint256 i = 0; i &lt; tokens.length; i++) {
+    for (uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -344,7 +344,7 @@ contract TokenBuy is Pausable, Claimable, TokenDestructible, DSMath {
     ERC20Basic public tokenContract;
 
     /// @notice Map of contributors and their token balances
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     /// @notice List of contributors to the sale
     address[] public contributors;
@@ -421,13 +421,13 @@ contract TokenBuy is Pausable, Claimable, TokenDestructible, DSMath {
         crowdsaleContract.buyTokens.value(msg.value)(me);
         uint newBalance = tokenContract.balanceOf(me);
 
-        require(newBalance &gt; previousBalance); // Fail on underflow or purchase of 0
+        require(newBalance > previousBalance); // Fail on underflow or purchase of 0
         return newBalance - previousBalance;
     }
 
     /// @notice Allows users to collect purchased tokens after the sale.
     /// @param recipient the address to collect tokens for
-    /// @dev Here we don&#39;t transfer zero tokens but this is an arbitrary decision.
+    /// @dev Here we don't transfer zero tokens but this is an arbitrary decision.
     function collectFor(address recipient) private {
         uint tokensOwned = balances[recipient];
         if (tokensOwned == 0) return;
@@ -441,13 +441,13 @@ contract TokenBuy is Pausable, Claimable, TokenDestructible, DSMath {
     /// @param max the maximum number of members to process (for gas purposes)
     function collectAll(uint8 max) public returns (uint8 collected) {
         max = uint8(min(max, contributors.length));
-        require(max &gt; 0, &quot;can&#39;t collect for zero users&quot;);
+        require(max > 0, "can't collect for zero users");
 
         uint index = contributors.length - 1;
-        for(uint offset = 0; offset &lt; max; ++offset) {
+        for(uint offset = 0; offset < max; ++offset) {
             address recipient = contributors[index - offset];
 
-            if (balances[recipient] &gt; 0) {
+            if (balances[recipient] > 0) {
                 collected++;
                 collectFor(recipient);
             }
@@ -458,7 +458,7 @@ contract TokenBuy is Pausable, Claimable, TokenDestructible, DSMath {
 
     /// @notice Shuts down the contract
     function destroy(address[] tokens) onlyOwner public {
-        require(now &gt; unlockTime || (contributorCount() == 0 &amp;&amp; paused));
+        require(now > unlockTime || (contributorCount() == 0 && paused));
 
         super.destroy(tokens);
     }

@@ -5,7 +5,7 @@ contract ZastrinPay {
   /*
    * Author: Mahesh Murthy
    * Company: Zastrin, Inc
-   * Contact: <span class="__cf_email__" data-cfemail="6f020e070a1c072f150e1c1b1d0601410c0002">[email&#160;protected]</span>
+   * Contact: <span class="__cf_email__" data-cfemail="6f020e070a1c072f150e1c1b1d0601410c0002">[email protected]</span>
    */
 
   address public owner;
@@ -18,8 +18,8 @@ contract ZastrinPay {
     bool cashedOut;
   }
 
-  mapping(uint =&gt; bool) coursesOffered;
-  mapping(address =&gt; mapping(uint =&gt; paymentInfo)) customers;
+  mapping(uint => bool) coursesOffered;
+  mapping(address => mapping(uint => paymentInfo)) customers;
 
   uint fallbackAmount;
 
@@ -48,9 +48,9 @@ contract ZastrinPay {
   }
 
   function getRefund(uint _courseId) public {
-    require(customers[msg.sender][_courseId].userId &gt; 0);
+    require(customers[msg.sender][_courseId].userId > 0);
     require(customers[msg.sender][_courseId].refunded == false);
-    require(customers[msg.sender][_courseId].purchasedAt + (3 hours) &gt; now);
+    require(customers[msg.sender][_courseId].purchasedAt + (3 hours) > now);
     customers[msg.sender][_courseId].refunded = true;
     msg.sender.transfer(customers[msg.sender][_courseId].amount);
     RefundPayment(_courseId, customers[msg.sender][_courseId].userId, msg.sender);
@@ -59,7 +59,7 @@ contract ZastrinPay {
   function cashOut(address _customer, uint _courseId) public onlyOwner {
     require(customers[_customer][_courseId].refunded == false);
     require(customers[_customer][_courseId].cashedOut == false);
-    require(customers[_customer][_courseId].purchasedAt + (3 hours) &lt; now);
+    require(customers[_customer][_courseId].purchasedAt + (3 hours) < now);
     customers[_customer][_courseId].cashedOut = true;
     owner.transfer(customers[_customer][_courseId].amount);
   }

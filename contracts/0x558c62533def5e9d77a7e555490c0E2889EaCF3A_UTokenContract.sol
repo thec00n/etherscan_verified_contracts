@@ -69,9 +69,9 @@ contract ERC20Token {
 contract UTokenContract is ERC20Token, Owned{
 
     /* Public variables of the token */
-    string  public constant standard = &quot;U Token V1.0&quot;;
-    string  public constant name = &quot;U Token&quot;;
-    string  public constant symbol = &quot;UT&quot;;
+    string  public constant standard = "U Token V1.0";
+    string  public constant name = "U Token";
+    string  public constant symbol = "UT";
     uint256 public constant decimals = 6;
     uint256 private constant etherChange = 10**18;
     
@@ -80,8 +80,8 @@ contract UTokenContract is ERC20Token, Owned{
     uint256 public totalRemainSupply;
     uint256 public UTExchangeRate;
     bool    public crowdsaleIsOpen;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
     address public multisigAddress;
     /* Events */
     event mintToken(address indexed _to, uint256 _value);
@@ -120,8 +120,8 @@ contract UTokenContract is ERC20Token, Owned{
 
     /* Transfers tokens from your address to other */
     function transfer(address _to, uint256 _value)public returns (bool success) {
-        require (balances[msg.sender] &gt; _value);            // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt; balances[_to]);   // Throw if owerflow detected
+        require (balances[msg.sender] > _value);            // Throw if sender has insufficient balance
+        require (balances[_to] + _value > balances[_to]);   // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance 
         Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -145,9 +145,9 @@ contract UTokenContract is ERC20Token, Owned{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value)public returns (bool success) {      
-        require (balances[_from] &gt; _value);                // Throw if sender does not have enough balance     
-        require (balances[_to] + _value &gt; balances[_to]);  // Throw if overflow detected    
-        require (_value &gt; allowances[_from][msg.sender]);  // Throw if you do not have allowance       
+        require (balances[_from] > _value);                // Throw if sender does not have enough balance     
+        require (balances[_to] + _value > balances[_to]);  // Throw if overflow detected    
+        require (_value > allowances[_from][msg.sender]);  // Throw if you do not have allowance       
         balances[_from] -= _value;                          // Deduct senders balance    
         balances[_to] += _value;                            // Add recipient blaance         
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address         
@@ -169,8 +169,8 @@ contract UTokenContract is ERC20Token, Owned{
     
     /* Issue new tokens */     
     function mintUTToken(address _to, uint256 _amount) internal { 
-        require (balances[_to] + _amount &gt; balances[_to]);      // Check for overflows
-        require (totalRemainSupply &gt; _amount);
+        require (balances[_to] + _amount > balances[_to]);      // Check for overflows
+        require (totalRemainSupply > _amount);
         totalRemainSupply -= _amount;                           // Update total supply
         balances[_to] += _amount;                               // Set minted coins to target
         mintToken(_to, _amount);                                // Create Mint event       
@@ -183,7 +183,7 @@ contract UTokenContract is ERC20Token, Owned{
     
     /* Destroy tokens from owners account */
     function burnTokens(address _addr, uint256 _amount)public onlyOwner {
-        require (balances[msg.sender] &lt; _amount);               // Throw if you do not have enough balance
+        require (balances[msg.sender] < _amount);               // Throw if you do not have enough balance
         totalRemainSupply += _amount;                           // Deduct totalSupply
         balances[_addr] -= _amount;                             // Destroy coins on senders wallet
         burnToken(_addr, _amount);                              // Raise Burn event

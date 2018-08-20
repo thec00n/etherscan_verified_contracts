@@ -33,20 +33,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -60,7 +60,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -90,7 +90,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -176,9 +176,9 @@ contract Ownable {
 
 contract AgrolotToken is StandardToken {
     
-  string public constant name = &quot;Agrolot Token&quot;;
+  string public constant name = "Agrolot Token";
    
-  string public constant symbol = &quot;AGLT&quot;;
+  string public constant symbol = "AGLT";
     
   uint32 public constant decimals = 18;
 
@@ -258,25 +258,25 @@ contract Crowdsale is Ownable {
   }
 
   modifier saleIsOn() {
-    require ((now &gt; startPresale &amp;&amp; now &lt; startPresale + (periodPresale * 1 days)) || (now &gt; startSale &amp;&amp; now &lt; startSale + (periodSale * 1 days)));
+    require ((now > startPresale && now < startPresale + (periodPresale * 1 days)) || (now > startSale && now < startSale + (periodSale * 1 days)));
     
     _;
   }
 
   function createTokens() saleIsOn payable {
-    require(msg.value &gt;= minPaymentWei);
+    require(msg.value >= minPaymentWei);
     uint tokens = rate.mul(msg.value).div(1 ether);
     uint bonusTokens = 0;
-    if (now &lt;= startPresale + (periodPresale * 1 days)) {
-        require(totalTokensSold.add(tokens) &lt;= maxCapTokenPresale);
+    if (now <= startPresale + (periodPresale * 1 days)) {
+        require(totalTokensSold.add(tokens) <= maxCapTokenPresale);
         bonusTokens = tokens.div(100).mul(50);
     } else {
-        require(totalTokensSold.add(tokens) &lt;= maxCapTokenTotal);
-        if(now &lt; startSale + (15 * 1 days)) {
+        require(totalTokensSold.add(tokens) <= maxCapTokenTotal);
+        if(now < startSale + (15 * 1 days)) {
             bonusTokens = tokens.div(100).mul(25);
-        } else if(now &lt; startSale + (25 * 1 days)) {
+        } else if(now < startSale + (25 * 1 days)) {
             bonusTokens = tokens.div(100).mul(15);
-        } else if(now &lt; startSale + (35 * 1 days)) {
+        } else if(now < startSale + (35 * 1 days)) {
             bonusTokens = tokens.div(100).mul(7);
         }
     }
@@ -294,14 +294,14 @@ contract Crowdsale is Ownable {
   
  
   function getVIATokens() public {
-    require(now &gt; startSale + (91 * 1 days));
+    require(now > startSale + (91 * 1 days));
     address contractAddress = address(this);
     uint allTokens = token.balanceOf(contractAddress).sub(restrictedTeam);
     token.transfer(restricted_address, allTokens);
   }
   
   function getTeamTokens() public {
-    require(now &gt; startSale + (180 * 1 days));
+    require(now > startSale + (180 * 1 days));
     
     token.transfer(restricted_address, restrictedTeam);
   }

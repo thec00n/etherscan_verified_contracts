@@ -8,7 +8,7 @@
 **   but WITHOUT ANY WARRANTY; without even the implied warranty of
 **   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 **   GNU lesser General Public License for more details.
-**   &lt;http://www.gnu.org/licenses/&gt;.
+**   <http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.2;
@@ -19,7 +19,7 @@ contract SignedDigitalAsset {
     // Name of the institution (for reference purposes only)
     string public institution;
     // Storage for linking the signatures to the digital fingerprints
-	mapping (bytes32 =&gt; string) fingerprintSignatureMapping;
+	mapping (bytes32 => string) fingerprintSignatureMapping;
 
     // Event functionality
 	event SignatureAdded(string digitalFingerprint, string signature, uint256 timestamp);
@@ -43,7 +43,7 @@ contract SignedDigitalAsset {
 	function removeSignature(string digitalFingerprint)
         isOwner {
         // Replaces an existing Signature with empty string
-		fingerprintSignatureMapping[sha3(digitalFingerprint)] = &quot;&quot;;
+		fingerprintSignatureMapping[sha3(digitalFingerprint)] = "";
 	}
 
     // Returns the corresponding signature for a specified digital fingerprint

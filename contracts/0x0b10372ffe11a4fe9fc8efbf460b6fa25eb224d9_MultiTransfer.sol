@@ -4,7 +4,7 @@ contract ERC20 {
 }       
 contract MultiTransfer {
     function multiTransfer(ERC20 token, address[] _addresses, uint256 amount) public {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             token.transfer(_addresses[i], amount);
         }
     }

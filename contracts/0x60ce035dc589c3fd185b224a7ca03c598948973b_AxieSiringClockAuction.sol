@@ -63,9 +63,9 @@ interface IERC721Base /* is IERC165  */ {
   ///  operator, or the approved address for this NFT. Throws if `_from` is
   ///  not the current owner. Throws if `_to` is the zero address. Throws if
   ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-  ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+  ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
   ///  `onERC721Received` on `_to` and throws if the return value is not
-  ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+  ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
   /// @param _from The current owner of the NFT
   /// @param _to The new owner
   /// @param _tokenId The NFT to transfer
@@ -101,7 +101,7 @@ interface IERC721Base /* is IERC165  */ {
   /// @param _tokenId The NFT to approve
   function approve(address _approved, uint256 _tokenId) external payable;
 
-  /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+  /// @notice Enable or disable approval for a third party ("operator") to manage
   ///  all your asset.
   /// @dev Emits the ApprovalForAll event
   /// @param _operator Address to add to the set of authorized operators.
@@ -126,7 +126,7 @@ interface IERC721Base /* is IERC165  */ {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -215,7 +215,7 @@ contract Pausable is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="0f7d6a626c604f3d">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="0f7d6a626c604f3d">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -306,7 +306,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="c6b4a3aba5a986f4">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="c6b4a3aba5a986f4">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -352,7 +352,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
   AxieIncubatorInterface incubatorContract;
 
   // Map from Axie ID to their corresponding auction.
-  mapping (uint256 =&gt; Auction) public auctions;
+  mapping (uint256 => Auction) public auctions;
 
   event AuctionCreated(
     uint256 indexed _axieId,
@@ -376,7 +376,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
   /// @param _ownerCut - percent cut the owner takes on each auction, must be
   ///  between 0-10,000.
   constructor(uint256 _ownerCut) public {
-    require(_ownerCut &lt;= 10000);
+    require(_ownerCut <= 10000);
     ownerCut = _ownerCut;
   }
 
@@ -386,12 +386,12 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
   // Modifiers to check that inputs can be safely stored with a certain
   // number of bits. We use constants and multiple modifiers to save gas.
   modifier canBeStoredWith64Bits(uint256 _value) {
-    require(_value &lt;= 18446744073709551615);
+    require(_value <= 18446744073709551615);
     _;
   }
 
   modifier canBeStoredWith128Bits(uint256 _value) {
-    require(_value &lt; 340282366920938463463374607431768211455);
+    require(_value < 340282366920938463463374607431768211455);
     _;
   }
 
@@ -524,7 +524,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
     return _axieId;
   }
 
-  /// @dev Cancels an auction that hasn&#39;t been won yet.
+  /// @dev Cancels an auction that hasn't been won yet.
   ///  Returns the NFT to original owner.
   /// @notice This is a state-modifying function that can
   ///  be called while the contract is paused.
@@ -555,7 +555,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
   /// @dev Returns true if the NFT is on auction.
   /// @param _auction - Auction to check.
   function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-    return (_auction.startedAt &gt; 0);
+    return (_auction.startedAt > 0);
   }
 
   /// @dev Returns current price of an NFT on auction. Broken into two
@@ -573,8 +573,8 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
 
     // A bit of insurance against negative values (or wraparound).
     // Probably not necessary (since Ethereum guarantees that the
-    // now variable doesn&#39;t ever go backwards).
-    if (now &gt; _auction.startedAt) {
+    // now variable doesn't ever go backwards).
+    if (now > _auction.startedAt) {
       _secondsPassed = now - _auction.startedAt;
     }
 
@@ -600,13 +600,13 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
     pure
     returns (uint256)
   {
-    // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+    // NOTE: We don't use SafeMath (or similar) in this function because
     //  all of our external functions carefully cap the maximum values for
     //  time (at 64-bits) and currency (at 128-bits). _duration is
     //  also known to be non-zero (see the require() statement in
     //  _addAuction()).
-    if (_secondsPassed &gt;= _duration) {
-      // We&#39;ve reached the end of the dynamic pricing portion
+    if (_secondsPassed >= _duration) {
+      // We've reached the end of the dynamic pricing portion
       // of the auction, just return the end price.
       return _endingPrice;
     } else {
@@ -614,7 +614,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
       // this delta can be negative.
       int256 _totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-      // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+      // This multiplication can't overflow, _secondsPassed will easily fit within
       // 64-bits, and _totalPriceChange will easily fit within 128-bits, their product
       // will always fit within 256-bits.
       int256 _currentPriceChange = _totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -640,7 +640,7 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
   {
     // Require that all auctions have a duration of
     // at least one minute. (Keeps our math from getting hairy!).
-    require(_auction.duration &gt;= 1 minutes);
+    require(_auction.duration >= 1 minutes);
 
     auctions[_axieId] = _auction;
 
@@ -684,14 +684,14 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
     coreContract.transferFrom(this, _receiver, _axieId);
   }
 
-  /// @dev Computes owner&#39;s cut of a sale.
+  /// @dev Computes owner's cut of a sale.
   /// @param _price - Sale price of NFT.
   function _computeCut(uint256 _price) internal view returns (uint256) {
-    // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+    // NOTE: We don't use SafeMath (or similar) in this function because
     //  all of our entry functions carefully cap the maximum values for
-    //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+    //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
     //  statement in the ClockAuction constructor). The result of this
-    //  function is always guaranteed to be &lt;= _price.
+    //  function is always guaranteed to be <= _price.
     return _price * ownerCut / 10000;
   }
 
@@ -710,25 +710,25 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
     uint256 _price = _getCurrentPrice(_auction);
     uint256 _priceWithFee = _price + incubatorContract.breedingFee();
 
-    // Technically this shouldn&#39;t happen as `_price` fits in 128 bits.
+    // Technically this shouldn't happen as `_price` fits in 128 bits.
     // However, we could set `breedingFee` to a very large number accidentally.
-    assert(_priceWithFee &gt;= _price);
+    assert(_priceWithFee >= _price);
 
-    require(_bidAmount &gt;= _priceWithFee);
+    require(_bidAmount >= _priceWithFee);
 
     // Grab a reference to the seller before the auction struct
     // gets deleted.
     address _seller = _auction.seller;
 
     // The bid is good! Remove the auction before sending the fees
-    // to the sender so we can&#39;t have a reentrancy attack.
+    // to the sender so we can't have a reentrancy attack.
     _removeAuction(_sireId);
 
     // Transfer proceeds to seller (if there are any!)
-    if (_price &gt; 0) {
-      //  Calculate the auctioneer&#39;s cut.
+    if (_price > 0) {
+      //  Calculate the auctioneer's cut.
       // (NOTE: _computeCut() is guaranteed to return a
-      //  value &lt;= price, so this subtraction can&#39;t go negative.)
+      //  value <= price, so this subtraction can't go negative.)
       uint256 _auctioneerCut = _computeCut(_price);
       uint256 _sellerProceeds = _price - _auctioneerCut;
 
@@ -738,12 +738,12 @@ contract AxieSiringClockAuction is HasNoContracts, HasNoTokens, Pausable {
       // a contract with an invalid fallback function. We explicitly
       // guard against reentrancy attacks by removing the auction
       // before calling transfer(), and the only thing the seller
-      // can DoS is the sale of their own asset! (And if it&#39;s an
+      // can DoS is the sale of their own asset! (And if it's an
       // accident, they can call cancelAuction().)
       _seller.transfer(_sellerProceeds);
     }
 
-    if (_bidAmount &gt; _priceWithFee) {
+    if (_bidAmount > _priceWithFee) {
       // Calculate any excess funds included with the bid. If the excess
       // is anything worth worrying about, transfer it back to bidder.
       // NOTE: We checked above that the bid amount is greater than or

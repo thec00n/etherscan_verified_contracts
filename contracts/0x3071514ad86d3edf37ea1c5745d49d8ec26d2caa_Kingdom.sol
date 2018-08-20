@@ -1,14 +1,14 @@
 contract Kingdom {
     
     struct City {
-        mapping(uint =&gt; uint) resources; //food, wood, stone, iron, gold, ... special
-        mapping(uint =&gt; mapping(uint =&gt; uint)) map;
-        mapping(uint =&gt; uint) resourceFactors; //population, food, wood, stone, iron, gold, woodWork, mason, blacksmith, goldforge, spirit, prestige
+        mapping(uint => uint) resources; //food, wood, stone, iron, gold, ... special
+        mapping(uint => mapping(uint => uint)) map;
+        mapping(uint => uint) resourceFactors; //population, food, wood, stone, iron, gold, woodWork, mason, blacksmith, goldforge, spirit, prestige
         uint populationNeeded;
         uint mapX;      //expansion of the map along the x diagonal
         uint mapY;      //expansion of the map along the y diagonal
         uint lastClaimResources;                //when did the user last claim his resources  
-        mapping(uint =&gt; uint) lastClaimItems;   //when did the user last claim his special items
+        mapping(uint => uint) lastClaimItems;   //when did the user last claim his special items
         bool initiatet;
     }
     
@@ -30,11 +30,11 @@ contract Kingdom {
     uint    public buildings_total;
     uint    public sell_id;
     
-    mapping(address =&gt; mapping(uint =&gt; uint)) marketplacePrices;
-    mapping(address =&gt; mapping(uint =&gt; uint)) marketplaceID;
+    mapping(address => mapping(uint => uint)) marketplacePrices;
+    mapping(address => mapping(uint => uint)) marketplaceID;
         
-    mapping(address =&gt; City) kingdoms;      //users kingdoms
-    mapping(uint =&gt; Building) buildings;    //list of possible buildings
+    mapping(address => City) kingdoms;      //users kingdoms
+    mapping(uint => Building) buildings;    //list of possible buildings
     
     
     //Constructor
@@ -110,13 +110,13 @@ contract Kingdom {
     }
     
     function newLeader() public {
-        if(kingdoms[msg.sender].resourceFactors[10] &gt; kingSpirit){
+        if(kingdoms[msg.sender].resourceFactors[10] > kingSpirit){
             kingSpirit = kingdoms[msg.sender].resourceFactors[10];
             king = msg.sender;
             NewLeader(msg.sender, kingSpirit, 0);
         }
         //try to claim the smaller throne
-        if(kingdoms[msg.sender].resourceFactors[11] &gt; queenPrestige){
+        if(kingdoms[msg.sender].resourceFactors[11] > queenPrestige){
             queenPrestige = kingdoms[msg.sender].resourceFactors[11];
             queen = msg.sender;
             NewLeader(msg.sender, queenPrestige, 1);
@@ -145,13 +145,13 @@ contract Kingdom {
     
     //build building at location (posx,posy)
     function buildAt(uint xpos, uint ypos, uint building) public {
-        require(kingdoms[msg.sender].resources[buildings[building].resource0] &gt;= buildings[building].price0
-        &amp;&amp;      kingdoms[msg.sender].resources[buildings[building].resource1] &gt;= buildings[building].price1
-        &amp;&amp;      kingdoms[msg.sender].mapX &gt; xpos
-        &amp;&amp;      kingdoms[msg.sender].mapY &gt; ypos
-        &amp;&amp;      (kingdoms[msg.sender].populationNeeded &lt;= kingdoms[msg.sender].resourceFactors[0] || building == 1)
-        &amp;&amp;      building &gt; 0 &amp;&amp; building &lt;= buildings_total
-        &amp;&amp;      kingdoms[msg.sender].map[xpos][ypos] == 0);
+        require(kingdoms[msg.sender].resources[buildings[building].resource0] >= buildings[building].price0
+        &&      kingdoms[msg.sender].resources[buildings[building].resource1] >= buildings[building].price1
+        &&      kingdoms[msg.sender].mapX > xpos
+        &&      kingdoms[msg.sender].mapY > ypos
+        &&      (kingdoms[msg.sender].populationNeeded <= kingdoms[msg.sender].resourceFactors[0] || building == 1)
+        &&      building > 0 && building <= buildings_total
+        &&      kingdoms[msg.sender].map[xpos][ypos] == 0);
         
         kingdoms[msg.sender].populationNeeded += 5;
         kingdoms[msg.sender].map[xpos][ypos] = building;
@@ -172,7 +172,7 @@ contract Kingdom {
     
     //expand map in direction x
     function expandX() public payable{
-        assert(msg.value &gt;= 300000000000000*(kingdoms[msg.sender].mapY));
+        assert(msg.value >= 300000000000000*(kingdoms[msg.sender].mapY));
         owner.transfer(msg.value);
         kingdoms[msg.sender].mapX += 1;
         ExpandX(msg.sender);
@@ -180,7 +180,7 @@ contract Kingdom {
     
     //expand map in direction Y
     function expandY() public payable{
-        assert(msg.value &gt;= 300000000000000*(kingdoms[msg.sender].mapX));
+        assert(msg.value >= 300000000000000*(kingdoms[msg.sender].mapX));
         owner.transfer(msg.value);
         kingdoms[msg.sender].mapY += 1;
         ExpandY(msg.sender);
@@ -190,7 +190,7 @@ contract Kingdom {
     //claim resources
     function claimBasicResources() public {
         //can claim every 2 hours - basic resources
-        assert(now &gt;= kingdoms[msg.sender].lastClaimResources + 1 * 1 hours);
+        assert(now >= kingdoms[msg.sender].lastClaimResources + 1 * 1 hours);
         kingdoms[msg.sender].resources[0] += kingdoms[msg.sender].resourceFactors[1];
         kingdoms[msg.sender].resources[1] += kingdoms[msg.sender].resourceFactors[2];
         kingdoms[msg.sender].resources[2] += kingdoms[msg.sender].resourceFactors[3];
@@ -204,21 +204,21 @@ contract Kingdom {
     event Items(address sender, uint item);
     function claimSpecialResource(uint shopIndex) public {
         //can claim every 5 hours - special items
-        assert(now &gt;= kingdoms[msg.sender].lastClaimItems[shopIndex] + 3 * 1 hours
-        &amp;&amp;     shopIndex &gt; 5
-        &amp;&amp;     shopIndex &lt; 10);
-        for (uint item = 0; item &lt; kingdoms[msg.sender].resourceFactors[shopIndex]; item++){
+        assert(now >= kingdoms[msg.sender].lastClaimItems[shopIndex] + 3 * 1 hours
+        &&     shopIndex > 5
+        &&     shopIndex < 10);
+        for (uint item = 0; item < kingdoms[msg.sender].resourceFactors[shopIndex]; item++){
             //get pseudo random number
             uint select = ((now-(item+shopIndex))%13);
             uint finalI = 0;
             //award the item to player
-            if(select &lt; 6){
+            if(select < 6){
                 finalI = ((shopIndex-6)*4)+5;   //
             }
-            else if(select &lt; 10){
+            else if(select < 10){
                 finalI = ((shopIndex-6)*4)+6;   //
             }
-            else if(select &lt; 12){
+            else if(select < 12){
                 finalI = ((shopIndex-6)*4)+7;   //
             }
             else {
@@ -233,11 +233,11 @@ contract Kingdom {
     event SellItem (address sender, uint item, uint price, uint sell_id);
     
     function sellItem(uint item, uint price) public {
-        assert( item &gt;= 0
-        &amp;&amp;      item &lt;= 27
-        &amp;&amp;      marketplacePrices[msg.sender][item] == 0
-        &amp;&amp;      price &gt; 0
-        &amp;&amp;      kingdoms[msg.sender].resources[item] &gt; 0);
+        assert( item >= 0
+        &&      item <= 27
+        &&      marketplacePrices[msg.sender][item] == 0
+        &&      price > 0
+        &&      kingdoms[msg.sender].resources[item] > 0);
         
         marketplacePrices[msg.sender][item] = price;
         marketplaceID[msg.sender][item] = sell_id;
@@ -250,8 +250,8 @@ contract Kingdom {
     event BuyItem (address buyer, uint item, uint sell_id);
     
     function buyItem (address seller, uint item) public payable {
-        assert( msg.value &gt;= marketplacePrices[seller][item]
-                &amp;&amp; marketplacePrices[seller][item] &gt; 0
+        assert( msg.value >= marketplacePrices[seller][item]
+                && marketplacePrices[seller][item] > 0
         );
         
         kingdoms[msg.sender].resources[item] += 1; 
@@ -266,10 +266,10 @@ contract Kingdom {
     }
     
     function buySpecialBuilding (uint xpos, uint ypos, uint building) public payable {
-        require(kingdoms[msg.sender].mapX &gt;= xpos
-        &amp;&amp;      kingdoms[msg.sender].mapY &gt;= ypos
-        &amp;&amp;      ((msg.value &gt;= 100000000000000000 &amp;&amp; building == 97) || (msg.value &gt;= 1000000000000000000 &amp;&amp; building == 98) || (msg.value &gt;= 5000000000000000000 &amp;&amp; building == 99))
-        &amp;&amp;      kingdoms[msg.sender].map[xpos][ypos] == 0);
+        require(kingdoms[msg.sender].mapX >= xpos
+        &&      kingdoms[msg.sender].mapY >= ypos
+        &&      ((msg.value >= 100000000000000000 && building == 97) || (msg.value >= 1000000000000000000 && building == 98) || (msg.value >= 5000000000000000000 && building == 99))
+        &&      kingdoms[msg.sender].map[xpos][ypos] == 0);
         
         kingdoms[msg.sender].map[xpos][ypos] = building;
         

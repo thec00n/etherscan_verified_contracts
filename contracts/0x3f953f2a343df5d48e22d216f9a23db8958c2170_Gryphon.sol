@@ -14,12 +14,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract Ownable {
 contract RefundVault is Ownable {
     using SafeMath for uint256;
     enum State { Active, Refunding, Closed }
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
     event Closed();
@@ -89,15 +89,15 @@ contract Gryphon is ERC20, Ownable {
 
     RefundVault public vault;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) vested;
-    mapping(address =&gt; uint256) total_vested;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) vested;
+    mapping(address => uint256) total_vested;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 totalSupply_;
 
-    string public name = &#39;Gryphon&#39;;
-    string public symbol = &#39;GXC&#39;;
+    string public name = 'Gryphon';
+    string public symbol = 'GXC';
     uint256 public decimals = 4;
     uint256 public initialSupply = 2000000000;
 
@@ -128,7 +128,7 @@ contract Gryphon is ERC20, Ownable {
     State public crowdSaleState;
 
     modifier nonZero() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -202,9 +202,9 @@ contract Gryphon is ERC20, Ownable {
 
     function transferTokens(address _recipient, uint256 tokens_in_cents) internal returns (bool) {
         require(
-            tokens_in_cents &gt; 0
-            &amp;&amp; _recipient != owner
-            &amp;&amp; tokens_in_cents &lt; balances[owner]
+            tokens_in_cents > 0
+            && _recipient != owner
+            && tokens_in_cents < balances[owner]
         );
 
         balances[owner] = balances[owner].sub(tokens_in_cents);
@@ -217,18 +217,18 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function getVested(address _beneficiary) public returns (uint256) {
-        require(balances[_beneficiary]&gt;0);
+        require(balances[_beneficiary]>0);
         if (_beneficiary == owner){
 
             vested[owner] = balances[owner];
             total_vested[owner] = balances[owner];
 
-        } else if (block.timestamp &lt; start) {
+        } else if (block.timestamp < start) {
 
             vested[_beneficiary] = 0;
             total_vested[_beneficiary] = 0;
 
-        } else if (block.timestamp &gt;= start.add(duration)) {
+        } else if (block.timestamp >= start.add(duration)) {
 
             total_vested[_beneficiary] = balances[_beneficiary];
             vested[_beneficiary] = balances[_beneficiary];
@@ -240,7 +240,7 @@ contract Gryphon is ERC20, Ownable {
                 total_vested[_beneficiary] = vested_now;
 
             }
-            if(vested_now &gt; total_vested[_beneficiary]){
+            if(vested_now > total_vested[_beneficiary]){
                 vested[_beneficiary] = vested[_beneficiary].add(vested_now.sub(total_vested[_beneficiary]));
                 total_vested[_beneficiary] = vested_now;
             }
@@ -249,11 +249,11 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function transfer(address _to, uint256 _tokens_in_cents) public returns (bool) {
-        require(_tokens_in_cents &gt; 0);
+        require(_tokens_in_cents > 0);
         require(_to != msg.sender);
         getVested(msg.sender);
-        require(balances[msg.sender] &gt;= _tokens_in_cents);
-        require(vested[msg.sender] &gt;= _tokens_in_cents);
+        require(balances[msg.sender] >= _tokens_in_cents);
+        require(vested[msg.sender] >= _tokens_in_cents);
 
         if(balanceOf(_to) == 0) {
             investorCount++;
@@ -272,12 +272,12 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function transferFrom(address _from, address _to, uint256 _tokens_in_cents) public returns (bool success) {
-        require(_tokens_in_cents &gt; 0);
+        require(_tokens_in_cents > 0);
         require(_from != _to);
         getVested(_from);
-        require(balances[_from] &gt;= _tokens_in_cents);
-        require(vested[_from] &gt;= _tokens_in_cents);
-        require(allowed[_from][msg.sender] &gt;= _tokens_in_cents);
+        require(balances[_from] >= _tokens_in_cents);
+        require(vested[_from] >= _tokens_in_cents);
+        require(allowed[_from][msg.sender] >= _tokens_in_cents);
 
         if(balanceOf(_to) == 0) {
             investorCount++;
@@ -298,7 +298,7 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function approve(address _spender, uint256 _tokens_in_cents) returns (bool success) {
-        require(vested[msg.sender] &gt;= _tokens_in_cents);
+        require(vested[msg.sender] >= _tokens_in_cents);
         allowed[msg.sender][_spender] = _tokens_in_cents;
         Approval(msg.sender, _spender, _tokens_in_cents);
         return true;
@@ -309,7 +309,7 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function calculateTokens(uint256 _amount) internal returns (uint256 tokens){
-        if(crowdSaleState == State.Preparing &amp;&amp; isPreSalePeriod()) {
+        if(crowdSaleState == State.Preparing && isPreSalePeriod()) {
             crowdSaleState = State.PreSale;
         }
         if(isCrowdSaleStatePreSale()) {
@@ -351,26 +351,26 @@ contract Gryphon is ERC20, Ownable {
     }
 
     function isPreSalePeriod() public constant returns (bool) {
-        if(preSaleRaised &gt; preSaleMaxCapInWei || now &gt;= presaleEndTimestamp) {
+        if(preSaleRaised > preSaleMaxCapInWei || now >= presaleEndTimestamp) {
             crowdSaleState = State.PresaleFinalized;
             return false;
         } else {
-            return now &gt; presaleStartTimestamp;
+            return now > presaleStartTimestamp;
         }
     }
 
     function isICOPeriod() public constant returns (bool) {
-        if (icoRaised &gt; icoHardCapInWei || now &gt;= icoEndTimestamp){
+        if (icoRaised > icoHardCapInWei || now >= icoEndTimestamp){
             crowdSaleState = State.ICOFinalized;
             return false;
         } else {
-            return now &gt; icoStartTimestamp;
+            return now > icoStartTimestamp;
         }
     }
 
     function endCrowdSale() public onlyOwner {
-        require(now &gt;= icoEndTimestamp || icoRaised &gt;= icoSoftCapInWei);
-        if(icoRaised &gt;= icoSoftCapInWei){
+        require(now >= icoEndTimestamp || icoRaised >= icoSoftCapInWei);
+        if(icoRaised >= icoSoftCapInWei){
             crowdSaleState = State.Success;
             vault.close();
         } else {

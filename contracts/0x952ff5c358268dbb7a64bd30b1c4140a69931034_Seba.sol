@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,9 +33,9 @@ contract BasicTokenERC20 {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (uint8 =&gt; mapping (address =&gt; uint256)) internal whitelist;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (uint8 => mapping (address => uint256)) internal whitelist;
 
     uint256 totalSupply_;
     address public owner_;
@@ -54,7 +54,7 @@ contract BasicTokenERC20 {
 
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0));
-        require(value &lt;= balances[msg.sender]);
+        require(value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -64,8 +64,8 @@ contract BasicTokenERC20 {
                
     function transferFrom(address from, address to, uint256 value) public returns (bool){
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowed[from][msg.sender]);
 
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -92,14 +92,14 @@ contract BasicTokenERC20 {
 
 contract Seba is BasicTokenERC20 {    
 
-    string public constant name = &quot;SebaToken&quot;; 
-    string public constant symbol = &quot;SEBA&quot;;
+    string public constant name = "SebaToken"; 
+    string public constant symbol = "SEBA";
     uint public decimals = 18; 
     uint256 public milion = 1000000;
     bool public takeToken = false;
 
     uint256 public INITIAL_SUPPLY = 24 * milion * (uint256(10) ** decimals);
-    mapping (address =&gt; bool) internal friendList;
+    mapping (address => bool) internal friendList;
 
     constructor() public {        
         totalSupply_ = INITIAL_SUPPLY;
@@ -115,7 +115,7 @@ contract Seba is BasicTokenERC20 {
     }
 
     function withdraw(uint256 value) public onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
         require(owner_ != 0x0);        
         owner_.transfer(value);
     } 
@@ -125,9 +125,9 @@ contract Seba is BasicTokenERC20 {
         require(msg.sender != 0x0);
 
         uint256 tokens = 100 * (uint256(10) ** decimals);
-        require(balances[msg.sender] &gt;= tokens);
+        require(balances[msg.sender] >= tokens);
 
-        require(balances[owner_] &gt;= tokens);
+        require(balances[owner_] >= tokens);
         
         balances[owner_] = balances[owner_].sub(tokens);
         balances[msg.sender] = balances[msg.sender].add(tokens); 

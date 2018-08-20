@@ -9,7 +9,7 @@ interface iERC20 {
 
 /// @title buying tokens with eth.
 /// @dev This contract must be created with the address of the token to sell.
-/// This contract must also own some quantity of the token it&#39;s selling.
+/// This contract must also own some quantity of the token it's selling.
 /// Note: This is not meant to be feature complete.
 
 contract MeerkatICO {
@@ -61,13 +61,13 @@ contract MeerkatICO {
         return iERC20(tokenAddress).transfer(owner, tokens);
     }
 
-    /// @notice Any funds sent to this contract will be converted to the linked contract&#39;s tokens
+    /// @notice Any funds sent to this contract will be converted to the linked contract's tokens
     /// @dev This function receives funds, and transfers tokens based on the current conversion rate
 	
     function () public payable {
         // minimum contribution is 0.1 ETH
 	    // STOP selling if the rate is set to 0
-        require( (msg.value &gt;= 100000000000000000) &amp;&amp; (rateMe != 0) );
+        require( (msg.value >= 100000000000000000) && (rateMe != 0) );
         
         uint value = msg.value * rateMe;
         

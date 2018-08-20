@@ -3,7 +3,7 @@ pragma solidity ^0.4.10;
 // The Timereum Project
 
 // TMED
-// ERC-20 token snapshot of TME (&quot;TMED&quot;). TMEX will be a layer on top of this contract.
+// ERC-20 token snapshot of TME ("TMED"). TMEX will be a layer on top of this contract.
 // Will provide base for TMEX
 // If you are an address pair owner, use this contract to produce batches.
 // Then convert to timereumX
@@ -26,14 +26,14 @@ address public devAddress; // For doing imports
 
 bool importsComplete; // Locked when devs have updated all balances
 
-mapping (address =&gt; uint256) public burnAmountAllowed;
+mapping (address => uint256) public burnAmountAllowed;
 
-mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping(address => mapping (address => uint256)) allowed;
 
 // Balances for each account
-mapping(address =&gt; uint256) balances;
+mapping(address => uint256) balances;
 
-mapping (address =&gt; uint256) public numRewardsAvailable;
+mapping (address => uint256) public numRewardsAvailable;
 
 // TMEX address info
 bool public TMEXAddressSet;
@@ -46,8 +46,8 @@ event Transfer(address indexed from, address indexed to, uint256 value);
 event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 function tmed() {
-name = &quot;tmed&quot;;
-symbol = &quot;TMED&quot;;
+name = "tmed";
+symbol = "TMED";
 decimals = 18;
 startTime=1500307354; //Time contract went online.
 devAddress=0x85196Da9269B24bDf5FfD2624ABB387fcA05382B; // Set the dev import address
@@ -69,19 +69,19 @@ function balanceOf(address _owner) constant returns (uint256 balance) {
 function transfer(address _to, uint256 _value) { 
 if (!frozen){
     
-    if (balances[msg.sender] &lt; _value) revert();
-    if (balances[_to] + _value &lt; balances[_to]) revert();
+    if (balances[msg.sender] < _value) revert();
+    if (balances[_to] + _value < balances[_to]) revert();
 
     if (returnIsParentAddress(_to))     {
         if (msg.sender==returnChildAddressForParent(_to))  {
-            if (numRewardsAvailable[msg.sender]&gt;0)    {
+            if (numRewardsAvailable[msg.sender]>0)    {
                 uint256 currDate=block.timestamp;
                 uint256 returnMaxPerBatchGenerated=5000000000000000000000; //max 5000 coins per batch
                 uint256 deployTime=10*365*86400; //10 years
                 uint256 secondsSinceStartTime=currDate-startTime;
                 uint256 maximizationTime=deployTime+startTime;
                 uint256 coinsPerBatchGenerated;
-                if (currDate&gt;=maximizationTime)  {
+                if (currDate>=maximizationTime)  {
                     coinsPerBatchGenerated=returnMaxPerBatchGenerated;
                 } else  {
                     uint256 b=(returnMaxPerBatchGenerated/4);
@@ -111,10 +111,10 @@ function transferFrom(
         address _to,
         uint256 _amount
 ) returns (bool success) {
-    if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;

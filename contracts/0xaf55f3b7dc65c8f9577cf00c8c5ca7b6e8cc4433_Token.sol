@@ -25,28 +25,28 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
   /**
   * @dev transfer token for a specified address
@@ -67,7 +67,7 @@ contract StandardToken is ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -146,8 +146,8 @@ contract Token is StandardToken, Ownable {
 
     uint256 public cap;
     uint256 public issuedTokens;
-    string public name = &quot;Enter-Coin&quot;;
-    string public symbol = &quot;ENTRC&quot;;
+    string public name = "Enter-Coin";
+    string public symbol = "ENTRC";
     uint public decimals = 8;
     uint public INITIAL_SUPPLY = 100000000 * (10**decimals);
     address founder; 
@@ -196,24 +196,24 @@ contract Token is StandardToken, Ownable {
   // bonus based on the current time
   function applyBonus(uint256 tokens) internal constant returns (uint256) {
 
-    if ( (now &lt; (contractDeployedTime + 14 days)) &amp;&amp; (issuedTokens &lt; (3500000*mf)) ) {
+    if ( (now < (contractDeployedTime + 14 days)) && (issuedTokens < (3500000*mf)) ) {
 
       return tokens.mul(20).div(10); // 100% bonus
       
-    } else if ((now &lt; (contractDeployedTime + 20 days)) &amp;&amp; (issuedTokens &lt; (13500000*mf)) ) {
+    } else if ((now < (contractDeployedTime + 20 days)) && (issuedTokens < (13500000*mf)) ) {
     
       return tokens.mul(15).div(10); // 50% bonus
     
 
-    } else if ((now &lt; (contractDeployedTime + 26 days)) &amp;&amp; (issuedTokens &lt; (23500000*mf)) ) {
+    } else if ((now < (contractDeployedTime + 26 days)) && (issuedTokens < (23500000*mf)) ) {
 
       return tokens.mul(13).div(10); // 30% bonus
 
-    } else if ((now &lt; (contractDeployedTime + 32 days)) &amp;&amp; (issuedTokens &lt; (33500000*mf)) ) {
+    } else if ((now < (contractDeployedTime + 32 days)) && (issuedTokens < (33500000*mf)) ) {
 
       return tokens.mul(12).div(10); // 20% bonus
 
-    } else if ((now &lt; (contractDeployedTime + 38 days)) &amp;&amp; (issuedTokens &lt; (43500000*mf)) ) {
+    } else if ((now < (contractDeployedTime + 38 days)) && (issuedTokens < (43500000*mf)) ) {
       return tokens.mul(11).div(10); // 10% bonus
 
     } 
@@ -233,7 +233,7 @@ contract Token is StandardToken, Ownable {
   }
 
   function startCrowdsale(uint interval) onlyOwner {
-    if ( endBlock &lt; block.number ) {
+    if ( endBlock < block.number ) {
       endBlock = block.number;  // normalize the end block
     }
 
@@ -258,7 +258,7 @@ contract Token is StandardToken, Ownable {
     tokens = applyBonus(tokens);
     
     // check if the tokens are more than the cap
-    require(issuedTokens.add(tokens) &lt;= cap);
+    require(issuedTokens.add(tokens) <= cap);
     // update state
     weiRaised = weiRaised.add(weiAmount);
     issuedTokens = issuedTokens.add(tokens);
@@ -292,14 +292,14 @@ contract Token is StandardToken, Ownable {
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; isCrowdSaleRunning;
+    return withinPeriod && nonZeroPurchase && isCrowdSaleRunning;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-      return (block.number &gt; endBlock) || !isCrowdSaleRunning;
+      return (block.number > endBlock) || !isCrowdSaleRunning;
   }
 
 }

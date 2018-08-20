@@ -85,10 +85,10 @@ contract StandardToken is Token {
     bool public locked;
 
     // DCORP token balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // DCORP token allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
 
     /** 
@@ -117,12 +117,12 @@ contract StandardToken is Token {
         }
 
         // Check if the sender has enough tokens
-        if (balances[msg.sender] &lt; _value) { 
+        if (balances[msg.sender] < _value) { 
             throw;
         }        
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to])  { 
+        if (balances[_to] + _value < balances[_to])  { 
             throw;
         }
 
@@ -152,17 +152,17 @@ contract StandardToken is Token {
         }
 
         // Check if the sender has enough
-        if (balances[_from] &lt; _value) { 
+        if (balances[_from] < _value) { 
             throw;
         }
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to]) { 
+        if (balances[_to] + _value < balances[_to]) { 
             throw;
         }
 
         // Check allowance
-        if (_value &gt; allowed[_from][msg.sender]) { 
+        if (_value > allowed[_from][msg.sender]) { 
             throw;
         }
 
@@ -226,13 +226,13 @@ contract StandardToken is Token {
 contract DRPToken is Owned, StandardToken {
 
     // Ethereum token standaard
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
 
     // Full name
-    string public name = &quot;DCORP&quot;;        
+    string public name = "DCORP";        
     
     // Symbol
-    string public symbol = &quot;DRP&quot;;
+    string public symbol = "DRP";
 
     // No decimal points
     uint8 public decimals = 2;
@@ -301,12 +301,12 @@ contract DRPToken is Owned, StandardToken {
         }
 
         // Enforce max distribution rounds
-        if (incentiveDistributionRound &gt; incentiveDistributionMaxRounds) {
+        if (incentiveDistributionRound > incentiveDistributionMaxRounds) {
             throw;
         }
 
         // Enforce time interval
-        if (now &lt; incentiveDistributionDate) {
+        if (now < incentiveDistributionDate) {
             throw;
         }
 
@@ -314,11 +314,11 @@ contract DRPToken is Owned, StandardToken {
         uint256 denominator = 1;
 
         // Incentive decreased each round
-        if (incentiveDistributionRound &gt; 1) {
+        if (incentiveDistributionRound > 1) {
             denominator = incentiveDistributionRoundDenominator**(incentiveDistributionRound - 1);
         }
 
-        for (uint256 i = 0; i &lt; incentives.length; i++) {
+        for (uint256 i = 0; i < incentives.length; i++) {
 
             // totalSupplyToDate * (percentage * 10^3) / 10^3 / denominator
             uint256 amount = totalSupplyToDate * incentives[i].percentage / 10**3 / denominator; 
@@ -351,7 +351,7 @@ contract DRPToken is Owned, StandardToken {
 
 
     /**
-     * Issues `_value` new tokens to `_recipient` (_value &lt; 0 guarantees that tokens are never removed)
+     * Issues `_value` new tokens to `_recipient` (_value < 0 guarantees that tokens are never removed)
      *
      * @param _recipient The address to which the tokens will be issued
      * @param _value The amount of new tokens to issue
@@ -360,7 +360,7 @@ contract DRPToken is Owned, StandardToken {
     function issue(address _recipient, uint256 _value) onlyOwner returns (bool success) {
 
         // Guarantee positive 
-        if (_value &lt; 0) {
+        if (_value < 0) {
             throw;
         }
 

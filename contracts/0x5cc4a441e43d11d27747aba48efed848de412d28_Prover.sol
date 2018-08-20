@@ -9,7 +9,7 @@ contract Prover {
     }
     
     // {address: {dataHash1: Entry1, dataHash2: Entry2, ...}, ...}
-    mapping (address =&gt; mapping (bytes32 =&gt; Entry)) public ledger;
+    mapping (address => mapping (bytes32 => Entry)) public ledger;
     
     // public functions for adding and deleting entries
     function addEntry(bytes32 dataHash) payable {
@@ -27,7 +27,7 @@ contract Prover {
     
     // internals for adding and deleting entries
     function _addEntry(bytes32 dataHash) internal {
-        // check that the entry doesn&#39;t exist
+        // check that the entry doesn't exist
         assert(!ledger[msg.sender][dataHash].exists);
         // initialize values
         ledger[msg.sender][dataHash].exists = true;
@@ -39,7 +39,7 @@ contract Prover {
         assert(ledger[msg.sender][dataHash].exists);
         uint256 rebate = ledger[msg.sender][dataHash].value;
         delete ledger[msg.sender][dataHash];
-        if (rebate &gt; 0) {
+        if (rebate > 0) {
             msg.sender.transfer(rebate);
         }
     }

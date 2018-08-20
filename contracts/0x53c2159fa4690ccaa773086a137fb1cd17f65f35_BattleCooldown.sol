@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -52,12 +52,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -158,10 +158,10 @@ uint32 public bestAngel = 120;
         uint64 experience;
         (,,,,experience,,,,,,) = angelCardData.getAngel(angelID);
        if (experience == bestAngel) {return 43200;}
-        if (safeSubtract(bestAngel, experience) &gt; 120) {return 0;}
-         if (safeSubtract(bestAngel, experience) &gt; 90) {return 3600;}
-         if (safeSubtract(bestAngel, experience) &gt; 60) {return 21600;}
-         if (safeSubtract(bestAngel, experience) &gt; 30) {return 28800;}
+        if (safeSubtract(bestAngel, experience) > 120) {return 0;}
+         if (safeSubtract(bestAngel, experience) > 90) {return 3600;}
+         if (safeSubtract(bestAngel, experience) > 60) {return 21600;}
+         if (safeSubtract(bestAngel, experience) > 30) {return 28800;}
          return 43200;
         
     }

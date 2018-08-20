@@ -20,8 +20,8 @@ contract Leimen is owned{
     
 //設定初始值//
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event FrozenFunds(address target, bool frozen);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -37,13 +37,13 @@ contract Leimen is owned{
     function Leimen() public {
 	    totalSupply = 1000000000 * 100 ;
     	balanceOf[msg.sender] = totalSupply ;
-        name = &quot;Leimen coin&quot;;
-        symbol = &quot;Leim&quot;;         
+        name = "Leimen coin";
+        symbol = "Leim";         
     }
     
 //管理權限//
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     uint256 public eth_amount ;
     bool public stoptransfer ;
     bool public stopsell;
@@ -59,7 +59,7 @@ contract Leimen is owned{
     }
 
     function withdraw_Leim(uint256 amount)  onlyOwner {
-        require(balanceOf[this] &gt;= amount) ;
+        require(balanceOf[this] >= amount) ;
         balanceOf[this] -= amount ;
         balanceOf[msg.sender] += amount ;
     }
@@ -85,8 +85,8 @@ contract Leimen is owned{
     }
     
     function burn(uint256 _value) onlyOwner {
-        require(_value &gt; 0);
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(_value > 0);
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -99,9 +99,9 @@ contract Leimen is owned{
 	    require(!stoptransfer);
         require(_to != 0x0);
         
-        require(_value &gt;= 0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_value >= 0);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
 
@@ -117,7 +117,7 @@ contract Leimen is owned{
 	    }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); 
+        require(_value <= allowance[_from][msg.sender]); 
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -148,7 +148,7 @@ contract Leimen is owned{
     function buy() payable returns (uint amount){
 	    require(!stopsell);
         amount = msg.value * eth_amount  / (10 ** 16) ;
-        require(balanceOf[this] &gt;= amount);           
+        require(balanceOf[this] >= amount);           
         balanceOf[msg.sender] += amount;           
         balanceOf[this] -= amount; 
         Transfer(this, msg.sender, amount);         

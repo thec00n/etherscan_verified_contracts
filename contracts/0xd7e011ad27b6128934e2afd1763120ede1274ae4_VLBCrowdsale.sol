@@ -7,7 +7,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -145,7 +145,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -189,7 +189,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -204,7 +204,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -218,7 +218,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -255,7 +255,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint _subtractedValue)
     returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -278,25 +278,25 @@ contract StandardToken is ERC20, BasicToken {
 library SafeMath {
     function mul(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a * b;
-        if (a != 0 &amp;&amp; c / a != b) revert();
+        if (a != 0 && c / a != b) revert();
         return c;
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        if (b &gt; a) revert();
+        if (b > a) revert();
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        if (c &lt; a) revert();
+        if (c < a) revert();
         return c;
     }
 }
@@ -312,8 +312,8 @@ contract VLBToken is StandardToken, Ownable {
     /**
      * @dev ERC20 descriptor variables
      */
-    string public constant name = &quot;VLB Tokens&quot;;
-    string public constant symbol = &quot;VLB&quot;;
+    string public constant name = "VLB Tokens";
+    string public constant symbol = "VLB";
     uint8 public decimals = 18;
 
     /**
@@ -436,7 +436,7 @@ contract VLBToken is StandardToken, Ownable {
         require(!isFinished);
         uint256 crowdsaleLeftovers = balanceOf(crowdsaleTokensWallet);
         
-        if (crowdsaleLeftovers &gt; 0) {
+        if (crowdsaleLeftovers > 0) {
             totalSupply = totalSupply.sub(crowdsaleLeftovers).sub(wingsTokensReserv);
             wingsTokensReward = totalSupply.div(100);
             totalSupply = totalSupply.add(wingsTokensReward);
@@ -483,7 +483,7 @@ contract VLBRefundVault is Ownable {
     enum State {Active, Refunding, Closed}
     State public state;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public constant wallet = 0x02D408bc203921646ECA69b555524DF3c7f3a8d7;
 
@@ -668,12 +668,12 @@ contract VLBCrowdsale is Ownable, Pausable {
      */
     function validPurchase(uint256 _value) internal constant returns (bool) {
         bool nonZeroPurchase = _value != 0;
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool withinCap = weiRaised.add(_value) &lt;= cap;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool withinCap = weiRaised.add(_value) <= cap;
         // For presale we want to decline all payments less then minPresaleAmount
-        bool withinAmount = now &gt;= startTime + 5 days || msg.value &gt;= minPresaleAmount;
+        bool withinAmount = now >= startTime + 5 days || msg.value >= minPresaleAmount;
 
-        return nonZeroPurchase &amp;&amp; withinPeriod &amp;&amp; withinCap &amp;&amp; withinAmount;
+        return nonZeroPurchase && withinPeriod && withinCap && withinAmount;
     }
 
     /**
@@ -681,8 +681,8 @@ contract VLBCrowdsale is Ownable, Pausable {
      * @return true if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        bool capReached = weiRaised &gt;= cap;
-        bool timeIsUp = now &gt; endTime;
+        bool capReached = weiRaised >= cap;
+        bool timeIsUp = now > endTime;
         return timeIsUp || capReached;
     }
 
@@ -720,26 +720,26 @@ contract VLBCrowdsale is Ownable, Pausable {
      * @dev check if hard cap goal is reached
      */
     function goalReached() public constant returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
     /**
      * @dev returns current token price based on current presale time frame
      */
     function getConversionRate() public constant returns (uint256) {
-        if (now &gt;= startTime + 20 days) {
+        if (now >= startTime + 20 days) {
             return 650;
             // 650        Crowdasle Part 4
-        } else if (now &gt;= startTime + 15 days) {
+        } else if (now >= startTime + 15 days) {
             return 715;
             // 650 + 10%. Crowdasle Part 3
-        } else if (now &gt;= startTime + 10 days) {
+        } else if (now >= startTime + 10 days) {
             return 780;
             // 650 + 20%. Crowdasle Part 2
-        } else if (now &gt;= startTime + 5 days) {
+        } else if (now >= startTime + 5 days) {
             return 845;
             // 650 + 30%. Crowdasle Part 1
-        } else if (now &gt;= startTime) {
+        } else if (now >= startTime) {
             return 910;
             // 650 + 40%. Presale
         }

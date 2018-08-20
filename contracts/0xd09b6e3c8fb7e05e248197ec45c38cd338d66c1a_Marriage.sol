@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 
 /// @author Jordi Baylina
-/// Auditors: Griff Green &amp; psdev
+/// Auditors: Griff Green & psdev
 /// @notice Based on http://hudsonjameson.com/ethereummarriage/
 /// License: GNU-3
 
@@ -78,7 +78,7 @@ contract Marriage is Owned
     }
 
     modifier areMarried {
-        require(sha3(marriageStatus) == sha3(&quot;Married&quot;));
+        require(sha3(marriageStatus) == sha3("Married"));
         _;
     }
 
@@ -107,16 +107,16 @@ contract Marriage is Owned
         partner2 = _partner2;
         marriageDate = now;
         vows = _vows;
-        marriageStatus = &quot;Married&quot;;
-        majorEvents.push(Event(now, &quot;Marriage&quot;, vows, url));
-        MajorEvent(&quot;Marrigage&quot;, vows, url);
+        marriageStatus = "Married";
+        majorEvents.push(Event(now, "Marriage", vows, url));
+        MajorEvent("Marrigage", vows, url);
     }
 
     // Set the marriage status if it changes
     function setStatus(string status, string url) onlyOwner
     {
         marriageStatus = status;
-        setMajorEvent(&quot;Changed Status&quot;, status, url);
+        setMajorEvent("Changed Status", status, url);
     }
 
     // Set the IPFS hash of the image of the couple
@@ -127,7 +127,7 @@ contract Marriage is Owned
     }
 
     function sendMessage(string nameFrom, string text, string url) payable areMarried {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             owner.transfer(this.balance);
         }
         messages.push(Message(now, nameFrom, text, url, msg.value));

@@ -10,7 +10,7 @@ pragma solidity ^0.4.21;
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -23,7 +23,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -65,13 +65,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -79,7 +79,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -196,7 +196,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -216,10 +216,10 @@ contract RBAC {
  */
 contract ButtonClickRBAC is RBAC {
 
-    string constant ROLE_FINANCE = &quot;finance&quot;;
+    string constant ROLE_FINANCE = "finance";
 
     /**
-     * @dev Access modifier, which restricts functions to only the &quot;finance&quot; role
+     * @dev Access modifier, which restricts functions to only the "finance" role
      */
     modifier onlyFinance() {
         checkRole(msg.sender, ROLE_FINANCE);
@@ -248,7 +248,7 @@ contract ButtonClickGameControls is ButtonClickRBAC {
     uint256 public minimumFee;
 
     /**
-     * Defines how many blocks must elapse before the game can be &quot;won&quot;
+     * Defines how many blocks must elapse before the game can be "won"
      *
      * http://solidity.readthedocs.io/en/develop/contracts.html?#visibility-and-getters
      */
@@ -263,21 +263,21 @@ contract ButtonClickGameControls is ButtonClickRBAC {
     }
 
     /**
-     * @dev Changes the required number of blocks for victory. This may ONLY be called by the &quot;admin&quot; role
+     * @dev Changes the required number of blocks for victory. This may ONLY be called by the "admin" role
      */
     function setRequiredBlocksElapsedForVictory(uint256 _requiredBlocksElapsedForVictory) external onlyAdmin {
         requiredBlocksElapsedForVictory = _requiredBlocksElapsedForVictory;
     }
     
     /**
-     * @dev Changes the minimum fee. This may ONLY be called by the &quot;finance&quot; role
+     * @dev Changes the minimum fee. This may ONLY be called by the "finance" role
      */
     function setMinimumFee(uint256 _minimumFee) external onlyFinance {
         minimumFee = _minimumFee;
     }
 
     /**
-     * @dev Withdraws the available balance. This may ONLY be called by the &quot;finance&quot; role
+     * @dev Withdraws the available balance. This may ONLY be called by the "finance" role
      */
     function withdrawBalance() external onlyFinance {
         msg.sender.transfer(address(this).balance);
@@ -293,19 +293,19 @@ contract ButtonClickGameControls is ButtonClickRBAC {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -394,7 +394,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -423,9 +423,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -433,7 +433,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -442,7 +442,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -457,7 +457,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba; 
@@ -472,7 +472,7 @@ contract ERC721Receiver {
    * @param _from The sending address 
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -487,21 +487,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
   
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba; 
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -626,7 +626,7 @@ contract ERC721BasicToken is ERC721Basic {
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -634,14 +634,14 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -759,19 +759,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs 
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
   * @dev Constructor function
@@ -825,7 +825,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list owned by the requested address
   */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -844,7 +844,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list
   */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -927,7 +927,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 // File: contracts/ButtonClickGame.sol
 
-contract ButtonClickGame is ERC721Token(&quot;The Ether Button&quot;, &quot;Butt&quot;), ButtonClickGameControls {
+contract ButtonClickGame is ERC721Token("The Ether Button", "Butt"), ButtonClickGameControls {
 
     /**
      * @dev This event is fired whenever a user clicks on a button, thereby creating a click
@@ -946,7 +946,7 @@ contract ButtonClickGame is ERC721Token(&quot;The Ether Button&quot;, &quot;Butt
         // Tracks how far the user was away from the desired block (0 is optimal)
         uint64 blocksAwayFromDesiredBlock;
 
-        // Defines the &quot;generation&quot; of this game. This gets incremented whenever the button is clicked
+        // Defines the "generation" of this game. This gets incremented whenever the button is clicked
         // at the desired block
         uint64 clickGeneration;
 
@@ -970,7 +970,7 @@ contract ButtonClickGame is ERC721Token(&quot;The Ether Button&quot;, &quot;Butt
     uint256 public gameGeneration = 1;
 
     /**
-     * Defines the block number at which a click will &quot;win&quot;
+     * Defines the block number at which a click will "win"
      *
      * http://solidity.readthedocs.io/en/develop/contracts.html?#visibility-and-getters
      */
@@ -981,16 +981,16 @@ contract ButtonClickGame is ERC721Token(&quot;The Ether Button&quot;, &quot;Butt
      * during. Regardless of whether a user transfers his/her click token, we only allow a 
      * single button click per game generation
      */
-    mapping (address =&gt; uint256) public addressLastClickedForGeneration;
+    mapping (address => uint256) public addressLastClickedForGeneration;
 
     /**
-     * A mapping from the number &quot;remaining blocks&quot; (eg 19 blocks left) to the number of clicks
-     * clicks that occurred at this &quot;remaining blocks&quot; total
+     * A mapping from the number "remaining blocks" (eg 19 blocks left) to the number of clicks
+     * clicks that occurred at this "remaining blocks" total
      */
-    mapping (uint8 =&gt; uint256) public numberOfClicksAtBlocksRemaining;
+    mapping (uint8 => uint256) public numberOfClicksAtBlocksRemaining;
 
     /**
-     * @dev This method contains the core game logic, tracking a distinct button &quot;click&quot; event and 
+     * @dev This method contains the core game logic, tracking a distinct button "click" event and 
      * saving all relevant metadata associated with it. This method will generate both a ButtonClick 
      * and Transfer event. Callers can ONLY call this method a single time per game generation.
      *
@@ -998,21 +998,21 @@ contract ButtonClickGame is ERC721Token(&quot;The Ether Button&quot;, &quot;Butt
      */
     function clickButton() external isStarted payable returns (uint256) {
         // Avoid spamming the game with a minimum fee
-        require(msg.value &gt;= minimumFee);
+        require(msg.value >= minimumFee);
 
-        // Don&#39;t allow the game to be played indefinitely
-        require(gameGeneration &lt;= 65535);
+        // Don't allow the game to be played indefinitely
+        require(gameGeneration <= 65535);
 
         // Require that the user has never click the button previously this round
-        require(addressLastClickedForGeneration[msg.sender] &lt; gameGeneration);
+        require(addressLastClickedForGeneration[msg.sender] < gameGeneration);
 
-        // Immediately bump the user&#39;s last button click to this generation
+        // Immediately bump the user's last button click to this generation
         addressLastClickedForGeneration[msg.sender] = gameGeneration;
 
         // Ensure that 0 is the effective floor for elapsed blocks
-        // Math.max256 won&#39;t work due to integer underflow, which will give a huge number if block.number &gt; blockNumberForVictory
+        // Math.max256 won't work due to integer underflow, which will give a huge number if block.number > blockNumberForVictory
         uint256 _blocksAwayFromDesiredBlock;
-        if (blockNumberForVictory &gt; block.number) {
+        if (blockNumberForVictory > block.number) {
             _blocksAwayFromDesiredBlock = blockNumberForVictory - block.number;
         } else {
             _blocksAwayFromDesiredBlock = 0;

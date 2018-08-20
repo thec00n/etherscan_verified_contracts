@@ -37,10 +37,10 @@ contract IntermediateVault  {
       throw;
   }
 
-  /// @notice Transfer locked tokens to Lunyr&#39;s multisig wallet
+  /// @notice Transfer locked tokens to Lunyr's multisig wallet
   function unlock() public {
     // Wait your turn!
-    if(now &lt; unlockedAt) throw;
+    if(now < unlockedAt) throw;
 
     // StandardToken will throw in the case of transaction fails
     if(!teamMultisig.send(address(this).balance)) throw; // Should this forward gas, since we trust the wallet?

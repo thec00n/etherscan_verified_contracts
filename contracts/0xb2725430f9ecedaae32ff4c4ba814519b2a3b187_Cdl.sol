@@ -3,13 +3,13 @@ pragma solidity ^ 0.4.19;
 ---------------------------------------------------
 Let’s play. If you win, we’ll give you the answer.
 ---------------------------------------------------
-       /&#175;&#175;\
-   /&#175;&#175;&#175; \\\\_
-  ///&amp;&amp;&amp;   \\\
-/&amp;&amp;//&amp;&amp;&amp;// ///__
-\&amp;&amp;&amp;&amp;///&amp;&amp;// // \
- \//&amp;&amp;//&amp;&amp;&amp;&amp;   //
-  &#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;
+       /¯¯\
+   /¯¯¯ \\\\_
+  ///&&&   \\\
+/&&//&&&// ///__
+\&&&&///&&// // \
+ \//&&//&&&&   //
+  ¯¯¯¯¯¯¯¯¯¯¯¯¯
 
  _______
 |      |\
@@ -23,7 +23,7 @@ Let’s play. If you win, we’ll give you the answer.
 #,         ,#
  ##       ##
   ###, ,###
-   &#39;#####&#39;
+   '#####'
 /##### #####/
 #   #   #   #
  ###     ###
@@ -58,16 +58,16 @@ contract Cdl {
     uint public roundPrice = 0;
     uint private roundToSharesPrice=0;
     address public roundLeader;
-    mapping(address =&gt; uint) public accountRounds;
-    mapping(address =&gt; uint) public accountShares;
-    mapping(address =&gt; uint) public accountSharesOut;
-    mapping(address =&gt; uint) public accountKeys;
+    mapping(address => uint) public accountRounds;
+    mapping(address => uint) public accountShares;
+    mapping(address => uint) public accountSharesOut;
+    mapping(address => uint) public accountKeys;
     address[] roundAddress;
     address public owner;
     uint public ownerEth = 0;
     function doStart() public payable returns(uint) {
         require(round == 0);
-        require(runTime &lt;= 0);
+        require(runTime <= 0);
         require(
             msg.sender == 0xbEBA30E7F05581fd7330A58743b0331BD7dd5508 ||
             msg.sender == 0x479F9dFAdaF30Fba069d8a9f017D881C648B5ac0 ||
@@ -89,13 +89,13 @@ contract Cdl {
 
     function buyKey() public payable newRoundIfNeeded returns(uint) {
       
-            require(msg.value &gt; 0);
+            require(msg.value > 0);
             uint _msgValue = msg.value;
             uint _amountToShares = _msgValue.div(100).mul(configPerShares); 
             uint _amountToFund = _msgValue.div(100).mul(configPerFund); 
             uint _amountToPot = _msgValue.sub(_amountToShares).sub(_amountToFund);
              uint _keys = _msgValue.div(roundPrice);
-            require(configMaxKeys &gt;= _keys); 
+            require(configMaxKeys >= _keys); 
 			ownerEth=ownerEth.add(_amountToFund);
             fundoShares(_amountToShares); 
             roundEth = roundEth.add(_msgValue);
@@ -109,7 +109,7 @@ contract Cdl {
             funComputeRoundTime(_keys); 
             roundLeader = msg.sender;
 
-            if (accountKeys[msg.sender] &lt;= 0 || accountRounds[msg.sender] != round) roundAddress.push(msg.sender);
+            if (accountKeys[msg.sender] <= 0 || accountRounds[msg.sender] != round) roundAddress.push(msg.sender);
             if (accountRounds[msg.sender] == round) {
                 accountKeys[msg.sender] = accountKeys[msg.sender].add(_keys);
             } else {
@@ -122,9 +122,9 @@ contract Cdl {
         }
 
     function withdrawl() public payable newRoundIfNeeded returns(uint) {
-        require(accountShares[msg.sender] &gt; 0);
+        require(accountShares[msg.sender] > 0);
         uint _withdraw = accountShares[msg.sender].sub(accountSharesOut[msg.sender]);
-        require(_withdraw &gt; 0);
+        require(_withdraw > 0);
         accountSharesOut[msg.sender] = accountSharesOut[msg.sender].add(_withdraw);
         msg.sender.transfer(_withdraw);
         return _withdraw;
@@ -140,18 +140,18 @@ contract Cdl {
             msg.sender == 0x57854E9293789854dF8fCfDd3AD845bf15e35BBc ||
             msg.sender == 0x968F54Fd6edDEEcEBfE2B0CA45BfEe82D2629BfE
         );
-        require(ownerEth&gt; 0);
+        require(ownerEth> 0);
         msg.sender.transfer(ownerEth);
 		ownerEth=0;
         return ownerEth;
     }
 
     modifier newRoundIfNeeded {
-        require(runTime &gt; 0);
-        require(now &gt; runTime);
-        require(round &gt; 0);
+        require(runTime > 0);
+        require(now > runTime);
+        require(round > 0);
       
-        if (now &gt; roundTime) {
+        if (now > roundTime) {
             uint _nextPot = 0;
             uint _leaderEarnings = roundPot.sub(_nextPot);
             accountShares[roundLeader] = accountShares[roundLeader].add(_leaderEarnings);
@@ -174,28 +174,28 @@ contract Cdl {
 
     function funComputeRoundTime(uint keys) private {
         uint _now = now;
-        if (_now &gt;= roundTime)
+        if (_now >= roundTime)
             roundTime = (configTimeInc.mul(keys)).add(_now);
         else
             roundTime = (configTimeInc.mul(keys)).add(roundTime);
 
-        if (roundTime &gt;= (configTimeMax).add(_now))
+        if (roundTime >= (configTimeMax).add(_now))
             roundTime = (configTimeMax).add(_now);
         allTime = allTime.add(configTimeInc.mul(keys));
     }
 
     function funComputeRoundPrice() private {
-            if (roundKeys &gt; 0) roundPrice = configRoundKey.add(roundKeys.mul(configRoundKeyAdd));
-            if (roundKeys &lt;= 0 || roundPrice &lt;= configRoundKey) roundPrice = configRoundKey;
+            if (roundKeys > 0) roundPrice = configRoundKey.add(roundKeys.mul(configRoundKeyAdd));
+            if (roundKeys <= 0 || roundPrice <= configRoundKey) roundPrice = configRoundKey;
         }
 
     function fundoShares(uint _amountToShares) private {
         roundToSharesPrice=0;
-        require(_amountToShares &gt; roundKeys);
+        require(_amountToShares > roundKeys);
          roundToSharesPrice = _amountToShares.div(roundKeys);
-        for (uint i = 0; i &lt; roundAddress.length; i++) {
+        for (uint i = 0; i < roundAddress.length; i++) {
             address _address = roundAddress[i];
-            if (accountRounds[_address] == round &amp;&amp; _address != owner) {
+            if (accountRounds[_address] == round && _address != owner) {
                  accountShares[_address] = accountShares[_address].add(roundToSharesPrice.mul(accountKeys[_address]));
             }
         }
@@ -211,7 +211,7 @@ library SafeXHD {
                 return 0;
             }
             uint c = a / b;
-            // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+            // assert(a == b * c + a % b); // There is no case in which this doesn't hold
             return c;
         }
      
@@ -225,13 +225,13 @@ library SafeXHD {
         }
       
     function sub(uint a, uint b) internal pure returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 

@@ -27,7 +27,7 @@ library SafeMath {
     */
     function ADD (uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
         @return difference of a and b
     */
     function SUB (uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     
@@ -82,9 +82,9 @@ contract StandardToken is ERC20, Ownable{
     uint256 _totalSupply = 10000000000; 
 
     //Balances for each account
-    mapping (address =&gt; uint256)  balances;
+    mapping (address => uint256)  balances;
     //Owner of the account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //Notifies users about the amount burnt
     event Burn(address indexed _from, uint256 _value);
@@ -103,7 +103,7 @@ contract StandardToken is ERC20, Ownable{
         return balances[_owner];
     }
 
-    //Transfer the balance from owner&#39;s account to another account
+    //Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
         external
         notZeroAddress(_to)
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, Ownable{
         returns (bool success)
     {
         //Require allowance to be not too big
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
         balances[_from] = balances[_from].SUB(_amount);
         balances[_to] = balances[_to].ADD(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].SUB(_amount);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, Ownable{
         returns (bool success)
     {
         uint256 increased = allowed[msg.sender][_spender].ADD(_addedValue);
-        require(increased &lt;= balances[msg.sender]);
+        require(increased <= balances[msg.sender]);
         //Cannot approve more coins then you have
         allowed[msg.sender][_spender] = increased;
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, Ownable{
         returns (bool success)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.SUB(_subtractedValue);
@@ -197,9 +197,9 @@ contract SecondLIFE is StandardToken {
     }
 
     //Name of the token
-    string public constant name = &quot;SecondLIFE&quot;;
+    string public constant name = "SecondLIFE";
     //Symbol of WolfCoin
-    string public constant symbol = &quot;SLF&quot;;
+    string public constant symbol = "SLF";
     //Number of decimals of WolfCoin
     uint8 public constant decimals = 2;
 

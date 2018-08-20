@@ -2,14 +2,14 @@
 
   Copyright 2017 TGC Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -27,37 +27,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -95,13 +95,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -138,7 +138,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -151,7 +151,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -170,7 +170,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -191,10 +191,10 @@ contract StandardToken is BasicToken, ERC20 {
 
 /// @title TGC Protocol Token.
 /// For more information about this token sale, please visit http://mijunyun.com
-/// @author lengfeng - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117d747f7677747f76517c787b647f68647f3f727e7c">[email&#160;protected]</a>&gt;, tianlong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed99848c838182838aad8084879883949883c38e8280">[email&#160;protected]</a>&gt;.
+/// @author lengfeng - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117d747f7677747f76517c787b647f68647f3f727e7c">[email protected]</a>>, tianlong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed99848c838182838aad8084879883949883c38e8280">[email protected]</a>>.
 contract TGCToken is StandardToken {
-    string public constant NAME = &quot;Tigercoin&quot;;
-    string public constant SYMBOL = &quot;TGC&quot;;
+    string public constant NAME = "Tigercoin";
+    string public constant SYMBOL = "TGC";
     uint public constant DECIMALS = 18;
 
     /// During token sale, we use one consistent price: 1000 TGC/ETH.
@@ -292,16 +292,16 @@ contract TGCToken is StandardToken {
         if (!saleStarted()) {
             _;
         } else {
-            InvalidState(&quot;Sale has not started yet&quot;);
+            InvalidState("Sale has not started yet");
             throw;
         }
     }
 
     modifier inProgress {
-        if (saleStarted() &amp;&amp; !saleEnded()) {
+        if (saleStarted() && !saleEnded()) {
             _;
         } else {
-            InvalidState(&quot;Sale is not in progress&quot;);
+            InvalidState("Sale is not in progress");
             throw;
         }
     }
@@ -310,7 +310,7 @@ contract TGCToken is StandardToken {
         if (saleEnded()) {
             _;
         } else {
-            InvalidState(&quot;Sale is not ended yet&quot;);
+            InvalidState("Sale is not ended yet");
             throw;
         }
     }
@@ -336,7 +336,7 @@ contract TGCToken is StandardToken {
     /// @dev Start the token sale.
     /// @param _firstblock The block from which the sale will start.
     function start(uint _firstblock) public onlyOwner beforeStart {
-        if (_firstblock &lt;= block.number) {
+        if (_firstblock <= block.number) {
             // Must specify a block in the future.
             throw;
         }
@@ -347,7 +347,7 @@ contract TGCToken is StandardToken {
 
     /// @dev Triggers unsold tokens to be issued to `target` address.
     function close() public onlyOwner afterEnd {
-        if (totalEthReceived &lt; GOAL) {
+        if (totalEthReceived < GOAL) {
             SaleFailed();
         } else {
             SaleSucceeded();
@@ -369,14 +369,14 @@ contract TGCToken is StandardToken {
     /// @param recipient Address that newly issued token will be sent to.
     function issueToken(address recipient) payable inProgress {
         // We only accept minimum purchase of 0.01 ETH.
-        assert(msg.value &gt;= 0.01 ether);
+        assert(msg.value >= 0.01 ether);
 
         // We only accept maximum purchase of 35 ETH.
-        assert(msg.value &lt;= 35 ether);
+        assert(msg.value <= 35 ether);
 
-        // We only accept totalEthReceived &lt; HARD_CAP
+        // We only accept totalEthReceived < HARD_CAP
         uint ethReceived = totalEthReceived + msg.value;
-        assert(ethReceived &lt;= HARD_CAP);
+        assert(ethReceived <= HARD_CAP);
 
         uint tokens = computeTokenAmount(msg.value);
         totalEthReceived = totalEthReceived.add(msg.value);
@@ -407,7 +407,7 @@ contract TGCToken is StandardToken {
         uint phase = (block.number - firstblock).div(BLOCKS_PER_PHASE);
 
         // A safe check
-        if (phase &gt;= bonusPercentages.length) {
+        if (phase >= bonusPercentages.length) {
             phase = bonusPercentages.length - 1;
         }
 
@@ -419,21 +419,21 @@ contract TGCToken is StandardToken {
 
     /// @return true if sale has started, false otherwise.
     function saleStarted() constant returns (bool) {
-        return (firstblock &gt; 0 &amp;&amp; block.number &gt;= firstblock);
+        return (firstblock > 0 && block.number >= firstblock);
     }
 
     /// @return true if sale has ended, false otherwise.
     function saleEnded() constant returns (bool) {
-        return firstblock &gt; 0 &amp;&amp; (saleDue() || hardCapReached());
+        return firstblock > 0 && (saleDue() || hardCapReached());
     }
 
     /// @return true if sale is due when the last phase is finished.
     function saleDue() constant returns (bool) {
-        return block.number &gt;= firstblock + BLOCKS_PER_PHASE * NUM_OF_PHASE;
+        return block.number >= firstblock + BLOCKS_PER_PHASE * NUM_OF_PHASE;
     }
 
     /// @return true if the hard cap is reached.
     function hardCapReached() constant returns (bool) {
-        return totalEthReceived &gt;= HARD_CAP;
+        return totalEthReceived >= HARD_CAP;
     }
 }

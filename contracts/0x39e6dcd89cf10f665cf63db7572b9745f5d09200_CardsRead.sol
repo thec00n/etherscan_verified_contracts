@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The MagicAcademy Project.  All rights reserved.
 /* 
-/* https://www.magicacademy.io One of the world&#39;s first idle strategy games of blockchain 
+/* https://www.magicacademy.io One of the world's first idle strategy games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f587949c9b8cb5999c839086819487db969a98">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7a1a6a9a9bee9bdafa2a9a087abaeb1a2b4b3a6b5e9a4a8aa">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f587949c9b8cb5999c839086819487db969a98">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7a1a6a9a9bee9bdafa2a9a087abaeb1a2b4b3a6b5e9a4a8aa">[email protected]</a>
 /*                 
 /* ==================================================================== */
 interface CardsInterface {
@@ -79,7 +79,7 @@ contract CardsRead {
     uint256[] memory itemNumber = new uint256[](len);
 
     uint256 i;
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       itemId[i] = startId;
       itemNumber[i] = cards.getOwnedCount(_owner,startId);
       i++;
@@ -98,7 +98,7 @@ contract CardsRead {
     uint256[] memory itemNumber = new uint256[](len);
 
     uint256 i;
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       itemId[i] = startId;
       itemNumber[i] = cards.getOwnedCount(_owner,startId);
       i++;
@@ -117,7 +117,7 @@ contract CardsRead {
     uint256[] memory itemNumber = new uint256[](len);
 
     uint256 i;
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       itemId[i] = startId;
       itemNumber[i] = cards.getUpgradesOwned(_owner,startId);
       i++;
@@ -139,7 +139,7 @@ contract CardsRead {
         preValue = schema.unitCoinProduction(unitId);
         afterValue   = preValue + productionGain;
       } 
-    }else { // &gt;= 1
+    }else { // >= 1
       if (upgradeClass == 0) {
         productionGain = (cards.getOwnedCount(player,unitId) * upgradeValue * (10 + cards.getUnitCoinProductionMultiplier(player,unitId)));
         preValue = cards.getUintCoinProduction(player,unitId);
@@ -161,7 +161,7 @@ contract CardsRead {
     uint256[] memory units = new uint256[](len);
         
     uint256 i;
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       units[i] = cards.getOwnedCount(msg.sender,startId);
       i++;
       startId++;
@@ -172,7 +172,7 @@ contract CardsRead {
     uint256[] memory battles = new uint256[](len);
     
     i=0; //reset for battle cards
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       battles[i] = cards.getOwnedCount(msg.sender,startId);
       i++;
       startId++;
@@ -184,7 +184,7 @@ contract CardsRead {
     len = SafeMath.add(SafeMath.sub(endId,startId),1);
     uint256[] memory upgrades = new uint256[](len);
 
-    while (startId &lt;= endId) {
+    while (startId <= endId) {
       upgrades[i] = cards.getUpgradesOwned(msg.sender,startId);
       i++;
       startId++;
@@ -219,9 +219,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -229,7 +229,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -238,7 +238,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

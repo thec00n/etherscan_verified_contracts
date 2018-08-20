@@ -19,30 +19,30 @@ interface ContractReceiver {
 contract SafeMath {
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
 }
 }
 
@@ -51,14 +51,14 @@ contract RUNEToken is SafeMath
 {
     
     // Rune Characteristics
-  string  public name = &quot;Rune&quot;;
-  string  public symbol  = &quot;RUNE&quot;;
+  string  public name = "Rune";
+  string  public symbol  = "RUNE";
   uint256   public decimals  = 18;
   uint256 public totalSupply  = 1000000000 * (10 ** decimals);
 
     // Mapping
-  mapping( address =&gt; uint256 ) balances_;
-  mapping( address =&gt; mapping(address =&gt; uint256) ) allowances_;
+  mapping( address => uint256 ) balances_;
+  mapping( address => mapping(address => uint256) ) allowances_;
   
   // Minting event
   function RUNEToken() public {
@@ -126,7 +126,7 @@ contract RUNEToken is SafeMath
   function transferFrom( address from, address to, uint256 value ) public
   returns (bool success)
   {
-    require( value &lt;= allowances_[from][msg.sender] );
+    require( value <= allowances_[from][msg.sender] );
 
     allowances_[from][msg.sender] -= value;
     bytes memory empty;
@@ -184,7 +184,7 @@ contract RUNEToken is SafeMath
   {
     uint length;
     assembly { length := extcodesize(_addr) }
-    return (length &gt; 0);
+    return (length > 0);
   }
 
   function _transfer( address from,
@@ -193,8 +193,8 @@ contract RUNEToken is SafeMath
                       bytes data ) internal
   {
     require( to != 0x0 );
-    require( balances_[from] &gt;= value );
-    require( balances_[to] + value &gt; balances_[to] ); // catch overflow
+    require( balances_[from] >= value );
+    require( balances_[to] + value > balances_[to] ); // catch overflow
 
     balances_[from] -= value;
     balances_[to] += value;
@@ -213,7 +213,7 @@ contract RUNEToken is SafeMath
   function burn( uint256 value ) public
   returns (bool success)
   {
-    require( balances_[msg.sender] &gt;= value );
+    require( balances_[msg.sender] >= value );
     balances_[msg.sender] -= value;
     totalSupply -= value;
 
@@ -225,8 +225,8 @@ contract RUNEToken is SafeMath
   function burnFrom( address from, uint256 value ) public
   returns (bool success)
   {
-    require( balances_[from] &gt;= value );
-    require( value &lt;= allowances_[from][msg.sender] );
+    require( balances_[from] >= value );
+    require( value <= allowances_[from][msg.sender] );
 
     balances_[from] -= value;
     allowances_[from][msg.sender] -= value;

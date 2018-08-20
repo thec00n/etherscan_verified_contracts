@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -103,8 +103,8 @@ contract VestingFund is Ownable {
    */
   function VestingFund(address _beneficiary, uint256 _start, uint256 _quarters, address _token) public {
     
-    require(_beneficiary != address(0) &amp;&amp; _token != address(0));
-    require(_quarters &gt; 0);
+    require(_beneficiary != address(0) && _token != address(0));
+    require(_quarters > 0);
 
     beneficiary = _beneficiary;
     quarters = _quarters;
@@ -117,7 +117,7 @@ contract VestingFund is Ownable {
    */
   function release() public {
     uint256 unreleased = releasableAmount();
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released = released.add(unreleased);
     token.safeTransfer(beneficiary, unreleased);
@@ -126,7 +126,7 @@ contract VestingFund is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    */
   function releasableAmount() public view returns(uint256) {
     return vestedAmount().sub(released);
@@ -139,14 +139,14 @@ contract VestingFund is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released);
 
-    if (now &lt; start) {
+    if (now < start) {
       return 0;
     }
 
     uint256 dT = now.sub(start); // time passed since start
     uint256 dQuarters = dT.div(90 days); // quarters passed
 
-    if (dQuarters &gt;= quarters) {
+    if (dQuarters >= quarters) {
       return totalBalance; // return everything if vesting period ended
     } else {
       return totalBalance.mul(dQuarters).div(quarters); // ammount = total * (quarters passed / total quarters)

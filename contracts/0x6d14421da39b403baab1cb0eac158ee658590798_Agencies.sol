@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
 contract Agencies {
-  mapping (address =&gt; string) private agencyOfOwner;
-  mapping (string =&gt; address) private ownerOfAgency;
+  mapping (address => string) private agencyOfOwner;
+  mapping (string => address) private ownerOfAgency;
 
   event Set (string indexed _agency, address indexed _owner);
   event Unset (string indexed _agency, address indexed _owner);
@@ -19,13 +19,13 @@ contract Agencies {
   }
 
   function set (string _agency) public {
-    require(bytes(_agency).length &gt; 2);
+    require(bytes(_agency).length > 2);
     require(ownerOf(_agency) == address(0));
 
     address owner = msg.sender;
     string storage oldAgency = agencyOfOwner[owner];
 
-    if (bytes(oldAgency).length &gt; 0) {
+    if (bytes(oldAgency).length > 0) {
       Unset(oldAgency, owner);
       delete ownerOfAgency[oldAgency];
     }
@@ -36,7 +36,7 @@ contract Agencies {
   }
 
   function unset () public {
-    require(bytes(agencyOfOwner[msg.sender]).length &gt; 0);
+    require(bytes(agencyOfOwner[msg.sender]).length > 0);
 
     address owner = msg.sender;
     string storage oldAgency = agencyOfOwner[owner];

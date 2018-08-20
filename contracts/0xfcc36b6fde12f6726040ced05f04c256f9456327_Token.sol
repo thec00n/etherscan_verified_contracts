@@ -44,13 +44,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -67,9 +67,9 @@ contract Token is SafeMath, owned {
     string public symbol;      //  token symbol
     uint public decimals = 8;  //  token digit
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-    mapping (address =&gt; uint) limitAddress;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => uint) limitAddress;
 
     uint public totalSupply = 1 * 10000 * 10000 * 10 ** uint256(decimals);
 
@@ -109,8 +109,8 @@ contract Token is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -118,7 +118,7 @@ contract Token is SafeMath, owned {
     }
 
     function batchtransfer(address[] _to, uint256[] _amount) public returns(bool success) {
-        for(uint i = 0; i &lt; _to.length; i++){
+        for(uint i = 0; i < _to.length; i++){
             require(transfer(_to[i], _amount[i]));
         }
         return true;
@@ -140,9 +140,9 @@ contract Token is SafeMath, owned {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -175,7 +175,7 @@ contract Token is SafeMath, owned {
         // send token 1:10000
         uint supply = _amount;
         // overflow
-        if(balanceOf[this] &lt; supply) {
+        if(balanceOf[this] < supply) {
             supply = balanceOf[this];
         }
         require(transferInner(_to, supply));
@@ -187,7 +187,7 @@ contract Token is SafeMath, owned {
         public
         onlyOwner
     {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         msg.sender.transfer(amount);
     }
 

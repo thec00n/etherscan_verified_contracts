@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -125,9 +125,9 @@ contract Pausable is Ownable {
 contract QKL is ERC20,Pausable{
 	using SafeMath for uint256;
 
-	string public constant name=&quot;QKL&quot;;
-	string public symbol=&quot;QKL&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="QKL";
+	string public symbol="QKL";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 	uint256 public totalSupply;
 
@@ -139,11 +139,11 @@ contract QKL is ERC20,Pausable{
         uint256 lockAmount;
     }
 
-    mapping(address=&gt;epoch[]) public lockEpochsMap;
+    mapping(address=>epoch[]) public lockEpochsMap;
 
 	
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	event GetETH(address indexed _from, uint256 _value);
 	event Burn(address indexed burner, uint256 value);
 
@@ -157,7 +157,7 @@ contract QKL is ERC20,Pausable{
     *销毁代币,用户只能自己销毁自己的
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -192,16 +192,16 @@ contract QKL is ERC20,Pausable{
 		//计算锁仓份额
 		epoch[] epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
 			//如果当前时间小于当期结束时间,则此期有效
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -222,16 +222,16 @@ contract QKL is ERC20,Pausable{
 		//计算锁仓份额
 		epoch[] epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
 			//如果当前时间小于当期结束时间,则此期有效
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 
 		uint256 _allowance = allowed[_from][msg.sender];
 

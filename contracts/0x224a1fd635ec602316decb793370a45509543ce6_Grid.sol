@@ -36,14 +36,14 @@ contract Grid {
   }
 
   // The state of the pixel grid
-  mapping(uint32 =&gt; Pixel) pixels;
+  mapping(uint32 => Pixel) pixels;
 
   // The state of all users who have transacted with this contract
-  mapping(address =&gt; uint) pendingWithdrawals;
+  mapping(address => uint) pendingWithdrawals;
 
   // An optional message that is shown in some parts of the UI and in the
   // details pane of every owned pixel
-  mapping(address =&gt; string) messages;
+  mapping(address => string) messages;
 
   //============================================================================
   // Events
@@ -80,7 +80,7 @@ contract Grid {
   }
 
   function getKey(uint16 row, uint16 col) constant returns (uint32) {
-    require(row &lt; size &amp;&amp; col &lt; size);
+    require(row < size && col < size);
     return uint32(SafeMath.add(SafeMath.mul(row, size), col));
   }
 
@@ -140,7 +140,7 @@ contract Grid {
   }
 
   function withdraw() {
-    if (pendingWithdrawals[msg.sender] &gt; 0) {
+    if (pendingWithdrawals[msg.sender] > 0) {
       uint amount = pendingWithdrawals[msg.sender];
       pendingWithdrawals[msg.sender] = 0;
       msg.sender.transfer(amount);
@@ -151,7 +151,7 @@ contract Grid {
     uint balance = pendingWithdrawals[msg.sender];
     // Return instead of letting getKey throw here to correctly refund the
     // transaction by updating the user balance in user.pendingWithdrawal
-    if (row &gt;= size || col &gt;= size) {
+    if (row >= size || col >= size) {
       pendingWithdrawals[msg.sender] = SafeMath.add(balance, msg.value);
       return;
     }
@@ -162,7 +162,7 @@ contract Grid {
 
     // Return instead of throw here to correctly refund the transaction by
     // updating the user balance in user.pendingWithdrawal
-    if (msg.value &lt; price) {
+    if (msg.value < price) {
       pendingWithdrawals[msg.sender] = SafeMath.add(balance, msg.value);
       return;
     }
@@ -201,7 +201,7 @@ contract Grid {
     uint32 key = getKey(row, col);
     // The owner can only lower the price. Price increases are determined by
     // the global incrementRate
-    require(pixels[key].price &gt; newPrice);
+    require(pixels[key].price > newPrice);
 
     pixels[key].price = newPrice;
     PixelPrice(row, col, pixels[key].owner, newPrice);
@@ -224,20 +224,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

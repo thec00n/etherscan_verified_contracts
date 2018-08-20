@@ -15,37 +15,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
     }
     
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
     }
     
 }
@@ -77,7 +77,7 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * transfer token for a specified address
@@ -86,8 +86,8 @@ contract BasicToken is ERC20 {
     */
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
             );
         if (transferlocked) {
             throw;
@@ -112,7 +112,7 @@ contract BasicToken is ERC20 {
 /**
  *  Ownable
  * The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * Thanks https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract Ownable {
@@ -153,7 +153,7 @@ contract Ownable {
  */
 contract StandardToken is BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -164,16 +164,16 @@ contract StandardToken is BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         require(
-            allowed[_from][msg.sender] &gt;=_value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowed[_from][msg.sender] >=_value
+            && balances[_from] >= _value
+            && _value > 0
             );
         if (transferlocked) {
             throw;
         }
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowed);
+        // require (_value <= _allowed);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -260,10 +260,10 @@ contract MintburnToken is StandardToken, Ownable {
     return true;
   }
    function burnFrom(address _from, uint256 _value) onlyOwner returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -292,10 +292,10 @@ contract MintburnToken is StandardToken, Ownable {
  */
 
 contract CareerXonToken is MintburnToken{
-    string public constant name = &quot;CareerXon&quot;;
-    string public constant symbol = &quot;CRN&quot;;
+    string public constant name = "CareerXon";
+    string public constant symbol = "CRN";
     uint public constant decimals = 18;
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
     uint256 public maxSupply = 1500000000000000000000000;
     //15,000,000 CareerXon tokens max supply
 
@@ -315,21 +315,21 @@ contract CareerXonToken is MintburnToken{
     uint256 public raisedForEther = 0;
 
     modifier inActivePeriod() {
-        require((startPreSale &lt; now &amp;&amp; now &lt;= endPreSale) || (startICO &lt; now &amp;&amp; now &lt;= endICO));
+        require((startPreSale < now && now <= endPreSale) || (startICO < now && now <= endICO));
         _;
     }
     
     //prevent short address attack
 
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) revert();
+        if(msg.data.length < size + 4) revert();
         _;
 
     }
 
     function CareerXonToken(uint _startP, uint _endP, uint _startI, uint _endI) {
-        require(_startP &lt; _endP);
-        require(_startI &lt; _endI);
+        require(_startP < _endP);
+        require(_startI < _endI);
         
 
         //12,900,000 for eth supply
@@ -360,11 +360,11 @@ contract CareerXonToken is MintburnToken{
         _;
     }
     
-    //Allows owner to stop &amp; start presale.
+    //Allows owner to stop & start presale.
     //For PreSale starting date visit http://careerxon.com.
     
     function setupPeriodForPreSale(uint _start, uint _end) onlyOwner {
-        require(_start &lt; _end);
+        require(_start < _end);
         startPreSale = _start;
         endPreSale = _end;
     }
@@ -374,7 +374,7 @@ contract CareerXonToken is MintburnToken{
     //Left over OR unsold coins will be burned.
     
     function setupPeriodForICO(uint _start, uint _end) onlyOwner {
-        require(_start &lt; _end);
+        require(_start < _end);
         startICO = _start;
         endICO = _end;
     }
@@ -387,7 +387,7 @@ contract CareerXonToken is MintburnToken{
     // token auto purchase function
     function buyTokens(address _youraddress) inActivePeriod payable {
         require(_youraddress != 0x0);
-        require(msg.value &gt;= minTransactionAmount);
+        require(msg.value >= minTransactionAmount);
 
         uint256 weiAmount = msg.value;
 
@@ -428,13 +428,13 @@ contract CareerXonToken is MintburnToken{
     function getBonus(uint256 _tokens) constant returns (uint256 bonus) {
         require(_tokens != 0);
         if (1 == getCurrentPeriod()) {
-            if (startPreSale &lt;= now &amp;&amp; now &lt; startPreSale + 1 days) {
+            if (startPreSale <= now && now < startPreSale + 1 days) {
                 return _tokens.div(2);
-            } else if (startPreSale + 1 days &lt;= now &amp;&amp; now &lt; startPreSale + 2 days ) {
+            } else if (startPreSale + 1 days <= now && now < startPreSale + 2 days ) {
                 return _tokens.div(3);
-            } else if (startPreSale + 2 days &lt;= now &amp;&amp; now &lt; startPreSale + 3 days ) {
+            } else if (startPreSale + 2 days <= now && now < startPreSale + 3 days ) {
                 return _tokens.div(5);
-            }else if (startPreSale + 3 days &lt;= now &amp;&amp; now &lt; startPreSale + 4 days ) {
+            }else if (startPreSale + 3 days <= now && now < startPreSale + 4 days ) {
                 return _tokens.div(10);
             }
         }
@@ -446,16 +446,16 @@ contract CareerXonToken is MintburnToken{
     *        Day 1: +20% bonus
     *        Day 2: +10% bonus
     *        Day 3: +5% bonus
-    *        Day 4 &amp; onwards: No bonuses
+    *        Day 4 & onwards: No bonuses
     */
     function getBonustwo(uint256 _tokens) constant returns (uint256 bonus) {
         require(_tokens != 0);
         if (2 == getCurrentPeriod()) {
-            if (startICO &lt;= now &amp;&amp; now &lt; startICO + 1 days) {
+            if (startICO <= now && now < startICO + 1 days) {
                 return _tokens.div(5);
-            } else if (startICO + 1 days &lt;= now &amp;&amp; now &lt; startICO + 2 days ) {
+            } else if (startICO + 1 days <= now && now < startICO + 2 days ) {
                 return _tokens.div(10);
-            } else if (startICO + 2 days &lt;= now &amp;&amp; now &lt; startICO + 3 days ) {
+            } else if (startICO + 2 days <= now && now < startICO + 3 days ) {
                 return _tokens.mul(5).div(100);
             }
         }
@@ -463,11 +463,11 @@ contract CareerXonToken is MintburnToken{
         return 0;
     }
 
-    //start date &amp; end date of presale and future ICO
+    //start date & end date of presale and future ICO
     function getCurrentPeriod() inActivePeriod constant returns (uint){
-        if ((startPreSale &lt; now &amp;&amp; now &lt;= endPreSale)) {
+        if ((startPreSale < now && now <= endPreSale)) {
             return 1;
-        } else if ((startICO &lt; now &amp;&amp; now &lt;= endICO)) {
+        } else if ((startICO < now && now <= endICO)) {
             return 2;
         } else {
             return 0;

@@ -23,8 +23,8 @@ contract EtherToTheMoon {
  // We are creating a publically accessible database for all
  // the bids that we will recieve. We are mapping address of
  // each sender to the value inside it.
- mapping(address =&gt; uint) public users;
- richData[10] public richDatabase; // [0] = Richest &amp; [9] = Poorest
+ mapping(address => uint) public users;
+ richData[10] public richDatabase; // [0] = Richest & [9] = Poorest
 
  // Function to be called when anyone sends us money. We take the money
  // in wei and add it to his total bid.
@@ -32,13 +32,13 @@ contract EtherToTheMoon {
    // Add value to his total amount.
    users[msg.sender] += msg.value;
    totalContribution += msg.value;
-   if(users[msg.sender] &gt;= users[richDatabase[9].sender] ){
+   if(users[msg.sender] >= users[richDatabase[9].sender] ){
      richData[] memory arr = new richData[](10);
      bool updated = false;
      uint j = 0;
-     for (uint i = 0; i &lt; 10; i++) {
+     for (uint i = 0; i < 10; i++) {
        if(j == 10) break;
-       if(!updated &amp;&amp; users[msg.sender] &gt; richDatabase[i].amount) {
+       if(!updated && users[msg.sender] > richDatabase[i].amount) {
          richData memory newData;
          newData.amount = users[msg.sender];
          newData.message = message;
@@ -55,7 +55,7 @@ contract EtherToTheMoon {
          j++;
        }
      }
-     for(i = 0; i &lt; 10; i++) {
+     for(i = 0; i < 10; i++) {
          richDatabase[i] = arr[i];
        }
    }
@@ -69,7 +69,7 @@ contract EtherToTheMoon {
      uint[] memory amounts = new uint[](length);
      bytes32[] memory statuses = new bytes32[](length);
 
-     for (uint i = 0; i &lt; length; i++)
+     for (uint i = 0; i < length; i++)
      {
          senders[i] = (richDatabase[i].sender);
          amounts[i] = (richDatabase[i].amount);
@@ -78,7 +78,7 @@ contract EtherToTheMoon {
      return (senders, amounts, statuses);
  }
  function withdraw(address _to, uint _amount) onlyOwner external payable{
-     require(_amount &lt;= totalContribution);
+     require(_amount <= totalContribution);
      totalContribution -= _amount;
      _to.transfer(_amount);
  }

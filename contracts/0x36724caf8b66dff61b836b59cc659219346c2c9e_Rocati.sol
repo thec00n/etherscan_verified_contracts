@@ -17,28 +17,28 @@ contract owned {
     }
 
     // Lista dei Notai autorizzati
-    mapping (address =&gt; bool) public notaioAccounts;
+    mapping (address => bool) public notaioAccounts;
 
     modifier onlyNotaio {
-        // Verifico che l&#39;esecutore sia un Notaio autorizzato
+        // Verifico che l'esecutore sia un Notaio autorizzato
         require(isNotaio(msg.sender));
         _;
     }
 
     /// @notice Mostra lo stato di autorizzazione del Notaio
-    /// @param target l&#39;indirizzo da verificare se presente nella lista dei Notai autorizzati
+    /// @param target l'indirizzo da verificare se presente nella lista dei Notai autorizzati
     function isNotaio(address target) public view returns (bool status) {
         return notaioAccounts[target];
     }
 
     /// @notice Aggiunge un nuovo Notaio autorizzato
-    /// @param target l&#39;indirizzo da aggiungere nella lista dei Notai autorizzati
+    /// @param target l'indirizzo da aggiungere nella lista dei Notai autorizzati
     function setNotaio(address target) onlyOwner public {
         notaioAccounts[target] = true;
     }
 
     /// @notice Rimuove un vecchio Notaio
-    /// @param target l&#39;indirizzo da rimuovere dalla lista dei Notai autorizzati
+    /// @param target l'indirizzo da rimuovere dalla lista dei Notai autorizzati
     function unsetNotaio(address target) onlyOwner public {
         notaioAccounts[target] = false;
     }
@@ -48,14 +48,14 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenERC20 {
     // Informazioni sul Coin
-    string public name = &quot;Rocati&quot;;
-    string public symbol = &quot;Ʀ&quot;;
+    string public name = "Rocati";
+    string public symbol = "Ʀ";
     uint8 public decimals = 18;
     uint256 public totalSupply = 50000000 * 10 ** uint256(decimals);
 
     // Bilanci
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // Notifiche
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -74,8 +74,8 @@ contract TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
         // Controlli di sicurezza
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Salva lo stato corrente per verificarlo dopo il trasferimento
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Trasferimento del Coin con notifica
@@ -89,7 +89,7 @@ contract TokenERC20 {
     /**
      * Transfer tokens
      *
-     * Invia `_value` Coin dal proprio account all&#39;indirizzo `_to`
+     * Invia `_value` Coin dal proprio account all'indirizzo `_to`
      *
      * @param _to The address of the recipient
      * @param _value the amount to send
@@ -101,7 +101,7 @@ contract TokenERC20 {
     /**
      * Transfer tokens from other address
      *
-     * Invia `_value` Coin dall&#39;account `_from` all&#39;indirizzo `_to`
+     * Invia `_value` Coin dall'account `_from` all'indirizzo `_to`
      *
      * @param _from The address of the sender
      * @param _to The address of the recipient
@@ -109,7 +109,7 @@ contract TokenERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Controlli di sicurezza
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Trasferimento del Coin con notifica
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -138,7 +138,7 @@ contract TokenERC20 {
      */
     function burn(uint256 _value) public returns (bool success) {
         // Controlli di sicurezza
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // Eliminazione del Coin con notifica
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
@@ -156,12 +156,12 @@ contract Rocati is owned, TokenERC20 {
     function Rocati() TokenERC20() public {}
 
     /// @notice Genera `newAmount` nuovi Coin da inviare a `target` che deve essere un Notaio
-    /// @param newAmount la quantit&#224; di nuovi Coin da generare
-    /// @param target l&#39;indirizzo che a cui inviare i nuovi Coin
+    /// @param newAmount la quantità di nuovi Coin da generare
+    /// @param target l'indirizzo che a cui inviare i nuovi Coin
     function transferNewCoin(address target, uint256 newAmount) onlyOwner public {
         // Controlli di sicurezza
         require(isNotaio(target));
-        require(balanceOf[target] + newAmount &gt; balanceOf[target]);
+        require(balanceOf[target] + newAmount > balanceOf[target]);
         // Generazione e trasferimento del nuovo Coin con notifiche
         balanceOf[target] += newAmount;
         totalSupply += newAmount;

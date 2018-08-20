@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,10 +128,10 @@ contract MusicContract {
     uint counter = 0;
     address public wallet;
     
-    mapping (uint=&gt;Voter[]) musicVoterList;
-    mapping (uint=&gt;Sponsor[]) musicSponsorList;
+    mapping (uint=>Voter[]) musicVoterList;
+    mapping (uint=>Sponsor[]) musicSponsorList;
    
-    mapping (uint=&gt;Music) musicList;
+    mapping (uint=>Music) musicList;
     uint localIntAsPerNeed;
     address localAddressAsPerNeed;
     Voter[] voters;
@@ -156,7 +156,7 @@ contract MusicContract {
     function UploadMusic(uint muId, string lnk, address muPublicKey,bool unlocktype,uint amount, uint uploadTokenAmount) public
     {
         require(msg.sender == wallet);
-        token.mint(muPublicKey,wallet,uploadTokenAmount*10**18);    //tokens deducted from advertiser&#39;s wallet
+        token.mint(muPublicKey,wallet,uploadTokenAmount*10**18);    //tokens deducted from advertiser's wallet
         
         require(musicList[muId].musicId == 0);
       //Add to music struct
@@ -216,7 +216,7 @@ contract MusicContract {
         
         
         //doing sponsor payout            
-        for (counter=0;counter&lt;sponsors.length;counter++)
+        for (counter=0;counter<sponsors.length;counter++)
         {
             //Find the percentage
             localIntAsPerNeed = sponsors[counter].amountPaid.mul(100);
@@ -230,11 +230,11 @@ contract MusicContract {
         
         
         //doing voter payout
-        if (voters.length&gt;0)
+        if (voters.length>0)
         {
             uint perVoterPayout = voterPayout.div(voters.length);
                
-            for (counter=0;counter&lt;voters.length;counter++)
+            for (counter=0;counter<voters.length;counter++)
             {
                 token.mint(wallet, voters[counter].publicKey, perVoterPayout);
                 voters[counter].amountEarned = voters[counter].amountEarned.add(perVoterPayout);
@@ -280,7 +280,7 @@ contract MusicContract {
         systemPayout = systemPayout.div(100);
         
         //doing voter payout     
-        for (j=0;j&lt;voters.length;j++)
+        for (j=0;j<voters.length;j++)
         {
             token.mint(wallet,voters[j].publicKey, perVoterPayout);
             voters[j].amountEarned = voters[j].amountEarned.add(perVoterPayout);
@@ -290,7 +290,7 @@ contract MusicContract {
         //doing musician payout
         token.mint(wallet,musicObj.musician,musicianPayout);
         musicObj.amountToBePaid = musicObj.amountToBePaid.sub(musicianPayout);
-        //logString(&quot;musician payout done&quot;);
+        //logString("musician payout done");
         
         //catering for system payout - not doing manual transfer as all the tokens are already in the wallet
         musicObj.amountToBePaid = musicObj.amountToBePaid.sub(systemPayout);
@@ -302,8 +302,8 @@ contract MusicContract {
         require(msg.sender == wallet);
         require(musicList[musId].musicId == musId);
         require(musicList[musId].isUnlocked == true);
-        require(musicList[musId].amountToBePaid &gt; 0);
-        require(token.balanceOf(wallet)&gt;=musicList[musId].amountToBePaid);
+        require(musicList[musId].amountToBePaid > 0);
+        require(token.balanceOf(wallet)>=musicList[musId].amountToBePaid);
         bool unlock = musicList[musId].marketType;
         if (unlock == false)
         {
@@ -322,11 +322,11 @@ contract MusicContract {
     {
         //msg.sender is the sponsor
         sponsorAmount = sponsorAmount * 10 ** 18;
-        require(token.balanceOf(sponsorAddress) &gt; sponsorAmount);   
+        require(token.balanceOf(sponsorAddress) > sponsorAmount);   
         require (musicList[musId].musicId == musId);
         require  (musicList[musId].isUnlocked == false);
         require(musicList[musId].marketType == false);
-        require (musicList[musId].amountLeftForUnlock&gt;=sponsorAmount);
+        require (musicList[musId].amountLeftForUnlock>=sponsorAmount);
         token.mint(sponsorAddress,wallet,sponsorAmount);
         
         musicList[musId].amountLeftForUnlock = musicList[musId].amountLeftForUnlock.sub(sponsorAmount);
@@ -348,10 +348,10 @@ contract MusicContract {
     {
         require(musicList[musId].musicId == musId);
         require(musicList[musId].isUnlocked == false);
-        //logString(&quot;music found&quot;);
+        //logString("music found");
         voter = Voter({publicKey: voterPublicKey, amountEarned : 0});
         musicVoterList[musId].push(voter);
-        //logString(&quot;voter added&quot;);
+        //logString("voter added");
     }
     function unlockVoterMusic(uint musId) public
     {

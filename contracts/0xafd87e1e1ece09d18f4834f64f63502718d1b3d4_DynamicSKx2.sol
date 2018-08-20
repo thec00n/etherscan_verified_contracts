@@ -30,7 +30,7 @@ contract DynamicSKx2 {
         }
 
         modifier onlyPositiveSend {
-            require(msg.value &gt; 0);
+            require(msg.value > 0);
             _;
         }
         struct Participant {
@@ -44,12 +44,12 @@ contract DynamicSKx2 {
         function() public payable onlyPositiveSend {
             participants.push(Participant(msg.sender, (msg.value * multiplier) / 100));
             uint balance = msg.value;
-            while (balance &gt; 0) {
-                uint payoutToSend = balance &lt; participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
+            while (balance > 0) {
+                uint payoutToSend = balance < participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
                 participants[payoutOrder].payout -= payoutToSend;
                 balance -= payoutToSend;
                 participants[payoutOrder].etherAddress.transfer(payoutToSend);
-                if(balance &gt; 0){
+                if(balance > 0){
                     payoutOrder += 1;
                 }
             }
@@ -69,7 +69,7 @@ contract DynamicSKx2 {
         }
 
         function participantDetails(uint orderInPyramid) view public returns(address Address, uint Payout) {
-                if (orderInPyramid &lt;= participants.length) {
+                if (orderInPyramid <= participants.length) {
                         Address = participants[orderInPyramid].etherAddress;
                         Payout = participants[orderInPyramid].payout;
                 }

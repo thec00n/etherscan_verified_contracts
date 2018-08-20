@@ -12,13 +12,13 @@ contract ERC20Interface {
 }
 
 contract StdToken is ERC20Interface {
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint public supply = 0;
 
      function transfer(address _to, uint256 _value) returns(bool) {
-          require(balances[msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[msg.sender] -= _value;
           balances[_to] += _value;
@@ -28,9 +28,9 @@ contract StdToken is ERC20Interface {
      }
 
      function transferFrom(address _from, address _to, uint256 _value) returns(bool){
-          require(balances[_from] &gt;= _value);
-          require(allowed[_from][msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[_from] >= _value);
+          require(allowed[_from][msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[_to] += _value;
           balances[_from] -= _value;
@@ -64,8 +64,8 @@ contract StdToken is ERC20Interface {
 
 contract myToken is StdToken
 {
-    string public constant name = &quot;168 Token&quot;;
-    string public constant symbol = &quot;168&quot;;
+    string public constant name = "168 Token";
+    string public constant symbol = "168";
     uint public constant decimals = 18;
     uint public constant TOKEN_SUPPLY_LIMIT = 1000000 * (1 ether / 1 wei);
     uint public constant MANAGER_SUPPLY = 650000 * (1 ether / 1 wei);
@@ -87,11 +87,11 @@ contract myToken is StdToken
 
     function buyTokens() public payable
     {
-        require(msg.value &gt;= ((1 ether / 1 wei) / 100));
+        require(msg.value >= ((1 ether / 1 wei) / 100));
 
         uint newTokens = msg.value * ICO_PRICE;
 
-        require(supply + newTokens &lt;= TOKEN_SUPPLY_LIMIT);
+        require(supply + newTokens <= TOKEN_SUPPLY_LIMIT);
 
         tokenManager.transfer(msg.value);
 

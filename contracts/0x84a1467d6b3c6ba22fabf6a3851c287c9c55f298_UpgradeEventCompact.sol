@@ -18,7 +18,7 @@ contract Governable {
 
   modifier onlyAdmins() {
     bool isAdmin = false;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (msg.sender == admins[i]) {
         isAdmin = true;
       }
@@ -28,23 +28,23 @@ contract Governable {
   }
 
   function addAdmin(address _admin) public onlyAdmins {
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       require(_admin != admins[i]);
     }
-    require(admins.length &lt; 10);
+    require(admins.length < 10);
     admins[admins.length++] = _admin;
   }
 
   function removeAdmin(address _admin) public onlyAdmins {
     uint256 pos = admins.length;
-    for (uint256 i = 0; i &lt; admins.length; i++) {
+    for (uint256 i = 0; i < admins.length; i++) {
       if (_admin == admins[i]) {
         pos = i;
       }
     }
-    require(pos &lt; admins.length);
+    require(pos < admins.length);
     // if not last element, switch with last
-    if (pos &lt; admins.length - 1) {
+    if (pos < admins.length - 1) {
       admins[pos] = admins[admins.length - 1];
     }
     // then cut off the tail
@@ -73,31 +73,31 @@ contract StorageEnabled {
 
   // all Nutz balances
   function babzBalanceOf(address _owner) constant returns (uint256) {
-    return Storage(storageAddr).getBal(&#39;Nutz&#39;, _owner);
+    return Storage(storageAddr).getBal('Nutz', _owner);
   }
   function _setBabzBalanceOf(address _owner, uint256 _newValue) internal {
-    Storage(storageAddr).setBal(&#39;Nutz&#39;, _owner, _newValue);
+    Storage(storageAddr).setBal('Nutz', _owner, _newValue);
   }
   // active supply - sum of balances above
   function activeSupply() constant returns (uint256) {
-    return Storage(storageAddr).getUInt(&#39;Nutz&#39;, &#39;activeSupply&#39;);
+    return Storage(storageAddr).getUInt('Nutz', 'activeSupply');
   }
   function _setActiveSupply(uint256 _newActiveSupply) internal {
-    Storage(storageAddr).setUInt(&#39;Nutz&#39;, &#39;activeSupply&#39;, _newActiveSupply);
+    Storage(storageAddr).setUInt('Nutz', 'activeSupply', _newActiveSupply);
   }
   // burn pool - inactive supply
   function burnPool() constant returns (uint256) {
-    return Storage(storageAddr).getUInt(&#39;Nutz&#39;, &#39;burnPool&#39;);
+    return Storage(storageAddr).getUInt('Nutz', 'burnPool');
   }
   function _setBurnPool(uint256 _newBurnPool) internal {
-    Storage(storageAddr).setUInt(&#39;Nutz&#39;, &#39;burnPool&#39;, _newBurnPool);
+    Storage(storageAddr).setUInt('Nutz', 'burnPool', _newBurnPool);
   }
   // power pool - inactive supply
   function powerPool() constant returns (uint256) {
-    return Storage(storageAddr).getUInt(&#39;Nutz&#39;, &#39;powerPool&#39;);
+    return Storage(storageAddr).getUInt('Nutz', 'powerPool');
   }
   function _setPowerPool(uint256 _newPowerPool) internal {
-    Storage(storageAddr).setUInt(&#39;Nutz&#39;, &#39;powerPool&#39;, _newPowerPool);
+    Storage(storageAddr).setUInt('Nutz', 'powerPool', _newPowerPool);
   }
 
 
@@ -110,41 +110,41 @@ contract StorageEnabled {
 
   // all power balances
   function powerBalanceOf(address _owner) constant returns (uint256) {
-    return Storage(storageAddr).getBal(&#39;Power&#39;, _owner);
+    return Storage(storageAddr).getBal('Power', _owner);
   }
 
   function _setPowerBalanceOf(address _owner, uint256 _newValue) internal {
-    Storage(storageAddr).setBal(&#39;Power&#39;, _owner, _newValue);
+    Storage(storageAddr).setBal('Power', _owner, _newValue);
   }
 
   function outstandingPower() constant returns (uint256) {
-    return Storage(storageAddr).getUInt(&#39;Power&#39;, &#39;outstandingPower&#39;);
+    return Storage(storageAddr).getUInt('Power', 'outstandingPower');
   }
 
   function _setOutstandingPower(uint256 _newOutstandingPower) internal {
-    Storage(storageAddr).setUInt(&#39;Power&#39;, &#39;outstandingPower&#39;, _newOutstandingPower);
+    Storage(storageAddr).setUInt('Power', 'outstandingPower', _newOutstandingPower);
   }
 
   function authorizedPower() constant returns (uint256) {
-    return Storage(storageAddr).getUInt(&#39;Power&#39;, &#39;authorizedPower&#39;);
+    return Storage(storageAddr).getUInt('Power', 'authorizedPower');
   }
 
   function _setAuthorizedPower(uint256 _newAuthorizedPower) internal {
-    Storage(storageAddr).setUInt(&#39;Power&#39;, &#39;authorizedPower&#39;, _newAuthorizedPower);
+    Storage(storageAddr).setUInt('Power', 'authorizedPower', _newAuthorizedPower);
   }
 
 
   function downs(address _user) constant public returns (uint256 total, uint256 left, uint256 start) {
-    uint256 rawBytes = Storage(storageAddr).getBal(&#39;PowerDown&#39;, _user);
+    uint256 rawBytes = Storage(storageAddr).getBal('PowerDown', _user);
     start = uint64(rawBytes);
-    left = uint96(rawBytes &gt;&gt; (64));
-    total = uint96(rawBytes &gt;&gt; (96 + 64));
+    left = uint96(rawBytes >> (64));
+    total = uint96(rawBytes >> (96 + 64));
     return;
   }
 
   function _setDownRequest(address _holder, uint256 total, uint256 left, uint256 start) internal {
-    uint256 result = uint64(start) + (left &lt;&lt; 64) + (total &lt;&lt; (96 + 64));
-    Storage(storageAddr).setBal(&#39;PowerDown&#39;, _holder, result);
+    uint256 result = uint64(start) + (left << 64) + (total << (96 + 64));
+    Storage(storageAddr).setBal('PowerDown', _holder, result);
   }
 
 }
@@ -223,7 +223,7 @@ contract ERC20 is ERC223Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -262,8 +262,8 @@ contract Power is Ownable, ERC20Basic {
 
   event Slashing(address indexed holder, uint value, bytes32 data);
 
-  string public name = &quot;Acebusters Power&quot;;
-  string public symbol = &quot;ABP&quot;;
+  string public name = "Acebusters Power";
+  string public symbol = "ABP";
   uint256 public decimals = 12;
 
 
@@ -289,7 +289,7 @@ contract Power is Ownable, ERC20Basic {
   }
 
   function powerUp(address _holder, uint256 _value) public onlyOwner {
-    // NTZ transfered from user&#39;s balance to power pool
+    // NTZ transfered from user's balance to power pool
     Transfer(address(0), _holder, _value);
   }
 
@@ -323,13 +323,13 @@ contract Power is Ownable, ERC20Basic {
 
 contract Storage is Ownable {
     struct Crate {
-        mapping(bytes32 =&gt; uint256) uints;
-        mapping(bytes32 =&gt; address) addresses;
-        mapping(bytes32 =&gt; bool) bools;
-        mapping(address =&gt; uint256) bals;
+        mapping(bytes32 => uint256) uints;
+        mapping(bytes32 => address) addresses;
+        mapping(bytes32 => bool) bools;
+        mapping(address => uint256) bals;
     }
 
-    mapping(bytes32 =&gt; Crate) crates;
+    mapping(bytes32 => Crate) crates;
 
     function setUInt(bytes32 _crate, bytes32 _key, uint256 _value) onlyOwner {
         crates[_crate].uints[_key] = _value;
@@ -398,7 +398,7 @@ contract NutzEnabled is Pausable, StorageEnabled {
 
   // allowances according to ERC20
   // not written to storage, as not very critical
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   function allowance(address _owner, address _spender) constant returns (uint256) {
     return allowed[_owner][_spender];
@@ -412,7 +412,7 @@ contract NutzEnabled is Pausable, StorageEnabled {
   function _transfer(address _from, address _to, uint256 _amountBabz, bytes _data) internal {
     require(_to != address(this));
     require(_to != address(0));
-    require(_amountBabz &gt; 0);
+    require(_amountBabz > 0);
     require(_from != _to);
     _setBabzBalanceOf(_from, babzBalanceOf(_from).sub(_amountBabz));
     _setBabzBalanceOf(_to, babzBalanceOf(_to).add(_amountBabz));
@@ -495,7 +495,7 @@ contract PullPayment is Ownable {
   uint public spentToday;
 
   // 8bytes date, 24 bytes value
-  mapping(address =&gt; uint256) internal payments;
+  mapping(address => uint256) internal payments;
 
   modifier onlyNutz() {
     require(msg.sender == ControllerInterface(owner).nutzAddr());
@@ -513,7 +513,7 @@ contract PullPayment is Ownable {
 
   function paymentOf(address _owner) constant returns (uint256 value, uint256 date) {
     value = uint192(payments[_owner]);
-    date = (payments[_owner] &gt;&gt; 192);
+    date = (payments[_owner] >> 192);
     return;
   }
 
@@ -526,21 +526,21 @@ contract PullPayment is Ownable {
   function changeWithdrawalDate(address _owner, uint256 _newDate)  public onlyOwner {
     // allow to withdraw immediately
     // move witdrawal date more days into future
-    payments[_owner] = (_newDate &lt;&lt; 192) + uint192(payments[_owner]);
+    payments[_owner] = (_newDate << 192) + uint192(payments[_owner]);
   }
 
   function asyncSend(address _dest) public payable onlyNutz {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 newValue = msg.value.add(uint192(payments[_dest]));
     uint256 newDate;
     if (isUnderLimit(msg.value)) {
-      uint256 date = payments[_dest] &gt;&gt; 192;
-      newDate = (date &gt; now) ? date : now;
+      uint256 date = payments[_dest] >> 192;
+      newDate = (date > now) ? date : now;
     } else {
       newDate = now.add(3 days);
     }
     spentToday = spentToday.add(msg.value);
-    payments[_dest] = (newDate &lt;&lt; 192) + uint192(newValue);
+    payments[_dest] = (newDate << 192) + uint192(newValue);
   }
 
 
@@ -549,8 +549,8 @@ contract PullPayment is Ownable {
     uint256 amountWei = uint192(payments[untrustedRecipient]);
 
     require(amountWei != 0);
-    require(now &gt;= (payments[untrustedRecipient] &gt;&gt; 192));
-    require(this.balance &gt;= amountWei);
+    require(now >= (payments[untrustedRecipient] >> 192));
+    require(this.balance >= amountWei);
 
     payments[untrustedRecipient] = 0;
 
@@ -564,12 +564,12 @@ contract PullPayment is Ownable {
   /// @param amount Amount to withdraw.
   /// @return Returns if amount is under daily limit.
   function isUnderLimit(uint amount) internal returns (bool) {
-    if (now &gt; lastDay.add(24 hours)) {
+    if (now > lastDay.add(24 hours)) {
       lastDay = now;
       spentToday = 0;
     }
-    // not using safe math because we don&#39;t want to throw;
-    if (spentToday + amount &gt; dailyLimit || spentToday + amount &lt; spentToday) {
+    // not using safe math because we don't want to throw;
+    if (spentToday + amount > dailyLimit || spentToday + amount < spentToday) {
       return false;
     }
     return true;
@@ -586,14 +586,14 @@ contract Nutz is Ownable, ERC20 {
 
   event Sell(address indexed seller, uint256 value);
 
-  string public name = &quot;Acebusters Nutz&quot;;
+  string public name = "Acebusters Nutz";
   // acebusters units:
   // 10^12 - Nutz   (NTZ)
   // 10^9 - Jonyz
   // 10^6 - Helcz
   // 10^3 - Pascalz
   // 10^0 - Babz
-  string public symbol = &quot;NTZ&quot;;
+  string public symbol = "NTZ";
   uint256 public decimals = 12;
 
   // returns balances of active holders
@@ -639,7 +639,7 @@ contract Nutz is Ownable, ERC20 {
     assembly {
       codeLength := extcodesize(_to)
     }
-    if(codeLength&gt;0) {
+    if(codeLength>0) {
       ERC223ReceivingContract untrustedReceiver = ERC223ReceivingContract(_to);
       // untrusted contract call
       untrustedReceiver.tokenFallback(_from, _value, _data);
@@ -655,13 +655,13 @@ contract Nutz is Ownable, ERC20 {
   function powerDown(address powerAddr, address _holder, uint256 _amountBabz) public onlyOwner {
     bytes memory empty;
     _checkDestination(powerAddr, _holder, _amountBabz, empty);
-    // NTZ transfered from power pool to user&#39;s balance
+    // NTZ transfered from power pool to user's balance
     Transfer(powerAddr, _holder, _amountBabz);
   }
 
 
   function asyncSend(address _pullAddr, address _dest, uint256 _amountWei) public onlyOwner {
-    assert(_amountWei &lt;= this.balance);
+    assert(_amountWei <= this.balance);
     PullPayInterface(_pullAddr).asyncSend.value(_amountWei)(_dest);
   }
 
@@ -706,11 +706,11 @@ contract Nutz is Ownable, ERC20 {
   function () public payable {
     uint256 price = ControllerInterface(owner).ceiling();
     purchase(price);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
   }
 
   function purchase(uint256 _price) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 amountBabz = ControllerInterface(owner).purchase(msg.sender, msg.value, _price);
     Transfer(owner, msg.sender, amountBabz);
     bytes memory empty;
@@ -763,39 +763,39 @@ contract MarketEnabled is NutzEnabled {
     }
     uint256 maxFloor = activeSupply().mul(1000000).div(nutzAddr.balance); // 1,000,000 WEI, used as price factor
     // return max of maxFloor or salePrice
-    return maxFloor &gt;= salePrice ? maxFloor : salePrice;
+    return maxFloor >= salePrice ? maxFloor : salePrice;
   }
 
   function moveCeiling(uint256 _newPurchasePrice) public onlyAdmins {
-    require(_newPurchasePrice &lt;= salePrice);
+    require(_newPurchasePrice <= salePrice);
     purchasePrice = _newPurchasePrice;
   }
 
   function moveFloor(uint256 _newSalePrice) public onlyAdmins {
-    require(_newSalePrice &gt;= purchasePrice);
+    require(_newSalePrice >= purchasePrice);
     // moveFloor fails if the administrator tries to push the floor so low
     // that the sale mechanism is no longer able to buy back all tokens at
     // the floor price if those funds were to be withdrawn.
-    if (_newSalePrice &lt; INFINITY) {
-      require(nutzAddr.balance &gt;= activeSupply().mul(1000000).div(_newSalePrice)); // 1,000,000 WEI, used as price factor
+    if (_newSalePrice < INFINITY) {
+      require(nutzAddr.balance >= activeSupply().mul(1000000).div(_newSalePrice)); // 1,000,000 WEI, used as price factor
     }
     salePrice = _newSalePrice;
   }
 
   function purchase(address _sender, uint256 _value, uint256 _price) public onlyNutz whenNotPaused returns (uint256) {
     // disable purchases if purchasePrice set to 0
-    require(purchasePrice &gt; 0);
+    require(purchasePrice > 0);
     require(_price == purchasePrice);
 
     uint256 amountBabz = purchasePrice.mul(_value).div(1000000); // 1,000,000 WEI, used as price factor
     // avoid deposits that issue nothing
     // might happen with very high purchase price
-    require(amountBabz &gt; 0);
+    require(amountBabz > 0);
 
     // make sure power pool grows proportional to economy
     uint256 activeSup = activeSupply();
     uint256 powPool = powerPool();
-    if (powPool &gt; 0) {
+    if (powPool > 0) {
       uint256 powerShare = powPool.mul(amountBabz).div(activeSup.add(burnPool()));
       _setPowerPool(powPool.add(powerShare));
     }
@@ -811,11 +811,11 @@ contract MarketEnabled is NutzEnabled {
     require(_price == effectiveFloor);
 
     uint256 amountWei = _amountBabz.mul(1000000).div(effectiveFloor);  // 1,000,000 WEI, used as price factor
-    require(amountWei &gt; 0);
+    require(amountWei > 0);
     // make sure power pool shrinks proportional to economy
     uint256 powPool = powerPool();
     uint256 activeSup = activeSupply();
-    if (powPool &gt; 0) {
+    if (powPool > 0) {
       uint256 powerShare = powPool.mul(_amountBabz).div(activeSup.add(burnPool()));
       _setPowerPool(powPool.sub(powerShare));
     }
@@ -827,11 +827,11 @@ contract MarketEnabled is NutzEnabled {
 
   // withdraw excessive reserve - i.e. milestones
   function allocateEther(uint256 _amountWei, address _beneficiary) public onlyAdmins {
-    require(_amountWei &gt; 0);
+    require(_amountWei > 0);
     // allocateEther fails if allocating those funds would mean that the
     // sale mechanism is no longer able to buy back all tokens at the floor
     // price if those funds were to be withdrawn.
-    require(nutzAddr.balance.sub(_amountWei) &gt;= activeSupply().mul(1000000).div(salePrice)); // 1,000,000 WEI, used as price factor
+    require(nutzAddr.balance.sub(_amountWei) >= activeSupply().mul(1000000).div(salePrice)); // 1,000,000 WEI, used as price factor
     Nutz(nutzAddr).asyncSend(pullAddr, _beneficiary, _amountWei);
   }
 
@@ -863,7 +863,7 @@ contract PowerEnabled is MarketEnabled {
   }
 
   function setMaxPower(uint256 _maxPower) public onlyAdmins {
-    require(outstandingPower() &lt;= _maxPower &amp;&amp; _maxPower &lt; authorizedPower());
+    require(outstandingPower() <= _maxPower && _maxPower < authorizedPower());
     maxPower = _maxPower;
   }
 
@@ -885,7 +885,7 @@ contract PowerEnabled is MarketEnabled {
     uint256 totalBabz = completeSupply();
     if (authorizedPow == 0) {
       // during the first capital increase, set value directly as authorized shares
-      _setAuthorizedPower((_amountPower &gt; 0) ? _amountPower : _amountBabz.add(totalBabz));
+      _setAuthorizedPower((_amountPower > 0) ? _amountPower : _amountBabz.add(totalBabz));
     } else {
       // in later increases, expand authorized shares at same rate like economy
       _setAuthorizedPower(authorizedPow.mul(totalBabz.add(_amountBabz)).div(totalBabz));
@@ -926,9 +926,9 @@ contract PowerEnabled is MarketEnabled {
     uint256 amountPow = _amountBabz.mul(authorizedPow).div(totalBabz);
     // check pow limits
     uint256 outstandingPow = outstandingPower();
-    require(outstandingPow.add(amountPow) &lt;= maxPower);
+    require(outstandingPow.add(amountPow) <= maxPower);
     uint256 powBal = powerBalanceOf(_from).add(amountPow);
-    require(powBal &gt;= authorizedPow.div(MIN_SHARE_OF_POWER));
+    require(powBal >= authorizedPow.div(MIN_SHARE_OF_POWER));
 
     if (_sender != _from) {
       allowed[_from][_sender] = allowed[_from][_sender].sub(_amountBabz);
@@ -945,22 +945,22 @@ contract PowerEnabled is MarketEnabled {
   function powerTotalSupply() constant returns (uint256) {
     uint256 issuedPower = authorizedPower().div(2);
     // return max of maxPower or issuedPower
-    return maxPower &gt;= issuedPower ? maxPower : issuedPower;
+    return maxPower >= issuedPower ? maxPower : issuedPower;
   }
 
   function _vestedDown(uint256 _total, uint256 _left, uint256 _start, uint256 _now) internal constant returns (uint256) {
-    if (_now &lt;= _start) {
+    if (_now <= _start) {
       return 0;
     }
     // calculate amountVested
     // amountVested is amount that can be withdrawn according to time passed
     uint256 timePassed = _now.sub(_start);
-    if (timePassed &gt; downtime) {
+    if (timePassed > downtime) {
      timePassed = downtime;
     }
     uint256 amountVested = _total.mul(timePassed).div(downtime);
     uint256 amountFrozen = _total.sub(amountVested);
-    if (_left &lt;= amountFrozen) {
+    if (_left <= amountFrozen) {
       return 0;
     }
     return _left.sub(amountFrozen);
@@ -969,7 +969,7 @@ contract PowerEnabled is MarketEnabled {
   function createDownRequest(address _owner, uint256 _amountPower) public onlyPower whenNotPaused {
     // prevent powering down tiny amounts
     // when powering down, at least completeSupply/minShare Power should be claimed
-    require(_amountPower &gt;= authorizedPower().div(MIN_SHARE_OF_POWER));
+    require(_amountPower >= authorizedPower().div(MIN_SHARE_OF_POWER));
     _setPowerBalanceOf(_owner, powerBalanceOf(_owner).sub(_amountPower));
 
     var (, left, ) = downs(_owner);
@@ -984,7 +984,7 @@ contract PowerEnabled is MarketEnabled {
 
     // prevent power down in tiny steps
     uint256 minStep = total.div(10);
-    require(left &lt;= minStep || minStep &lt;= amountPow);
+    require(left <= minStep || minStep <= amountPow);
 
     // calculate token amount representing share of power
     uint256 amountBabz = amountPow.mul(completeSupply()).div(authorizedPower());
@@ -1019,20 +1019,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1134,12 +1134,12 @@ contract UpgradeEventCompact {
     Ownable(nutzAddr).transferOwnership(nextController);
     Ownable(powerAddr).transferOwnership(nextController);
     // transfer ownership of storage to next controller
-    Storage(storageAddr).setUInt(&#39;Nutz&#39;, &#39;powerPool&#39;, newPowerPool);
+    Storage(storageAddr).setUInt('Nutz', 'powerPool', newPowerPool);
     Ownable(storageAddr).transferOwnership(nextController);
     // if intended, transfer ownership of pull payment account
     Ownable(nextPullPayment).transferOwnership(nextController);
     // resume next controller
-    if (maxPower &gt; 0) {
+    if (maxPower > 0) {
       next.setMaxPower(maxPower);
     }
     next.setDowntime(downtime);

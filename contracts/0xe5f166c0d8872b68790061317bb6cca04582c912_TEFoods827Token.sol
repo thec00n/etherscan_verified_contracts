@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,21 +72,21 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   using SafeMath for uint;
 
-  string public constant name = &quot;TE-FOOD&quot;;
-  string public constant symbol = &quot;TFD&quot;;
+  string public constant name = "TE-FOOD";
+  string public constant symbol = "TFD";
   uint8 public constant decimals = 18;
   uint constant _totalSupply = 1000000000 * 1 ether;
   uint public transferrableTime = 9999999999;
   uint _vestedSupply;
   uint _circulatingSupply;
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping(address => uint)) allowed;
 
   struct vestedBalance {
     address addr;
     uint balance;
   }
-  mapping (uint =&gt; vestedBalance[]) vestingMap;
+  mapping (uint => vestedBalance[]) vestingMap;
 
 
 
@@ -99,7 +99,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function allocateTokens (address addr, uint amount) public onlyOwner returns (bool) {
     require (addr != 0x00);
-    require (amount &gt; 0);
+    require (amount > 0);
     balances[0x00] = balances[0x00].sub(amount);
     balances[addr] = balances[addr].add(amount);
     _circulatingSupply = _circulatingSupply.add(amount);
@@ -110,8 +110,8 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function allocateVestedTokens (address addr, uint amount, uint vestingPeriod) public onlyOwner returns (bool) {
     require (addr != 0x00);
-    require (amount &gt; 0);
-    require (vestingPeriod &gt; 0);
+    require (amount > 0);
+    require (vestingPeriod > 0);
     balances[0x00] = balances[0x00].sub(amount);
     vestingMap[vestingPeriod].push( vestedBalance (addr,amount) );
     _vestedSupply = _vestedSupply.add(amount);
@@ -120,11 +120,11 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function releaseVestedTokens (uint vestingPeriod) public {
-    require (now &gt;= transferrableTime.add(vestingPeriod));
-    require (vestingMap[vestingPeriod].length &gt; 0);
-    require (vestingMap[vestingPeriod][0].balance &gt; 0);
+    require (now >= transferrableTime.add(vestingPeriod));
+    require (vestingMap[vestingPeriod].length > 0);
+    require (vestingMap[vestingPeriod][0].balance > 0);
     var v = vestingMap[vestingPeriod];
-    for (uint8 i = 0; i &lt; v.length; i++) {
+    for (uint8 i = 0; i < v.length; i++) {
       balances[v[i].addr] = balances[v[i].addr].add(v[i].balance);
       _circulatingSupply = _circulatingSupply.add(v[i].balance);
       _vestedSupply = _vestedSupply.sub(v[i].balance);
@@ -154,7 +154,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function vestedBalanceOf(address tokenOwner, uint vestingPeriod) public constant returns (uint balance) {
     var v = vestingMap[vestingPeriod];
-    for (uint8 i = 0; i &lt; v.length; i++) {
+    for (uint8 i = 0; i < v.length; i++) {
       if (v[i].addr == tokenOwner) return v[i].balance;
     }
     return 0;
@@ -165,9 +165,9 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function transfer(address to, uint tokens) public returns (bool success) {
-    require (now &gt;= transferrableTime);
+    require (now >= transferrableTime);
     require (to != address(this));
-    require (balances[msg.sender] &gt;= tokens);
+    require (balances[msg.sender] >= tokens);
     balances[msg.sender] = balances[msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
     Transfer(msg.sender, to, tokens);
@@ -175,7 +175,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function approve(address spender, uint tokens) public returns (bool success) {
-    require (now &gt;= transferrableTime);
+    require (now >= transferrableTime);
     require (spender != address(this));
     allowed[msg.sender][spender] = tokens;
     Approval(msg.sender, spender, tokens);
@@ -183,9 +183,9 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-    require (now &gt;= transferrableTime);
+    require (now >= transferrableTime);
     require (to != address(this));
-    require (allowed[from][msg.sender] &gt;= tokens);
+    require (allowed[from][msg.sender] >= tokens);
     balances[from] = balances[from].sub(tokens);
     allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);

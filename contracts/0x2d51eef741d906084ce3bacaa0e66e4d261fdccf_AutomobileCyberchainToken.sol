@@ -14,13 +14,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -84,11 +84,11 @@ contract StandardToken is Token {
      * - Interger overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -98,8 +98,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -122,9 +122,9 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -137,8 +137,8 @@ contract StandardToken is Token {
  */
 contract AutomobileCyberchainToken is StandardToken, SafeMath {
 
-    string public name = &quot;Automobile Cyberchain Token&quot;;
-    string public symbol = &quot;AMCC&quot;;
+    string public name = "Automobile Cyberchain Token";
+    string public symbol = "AMCC";
     uint public decimals = 18;
     uint preSalePrice  = 32000;
     uint crowSalePrice = 20000;
@@ -174,8 +174,8 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
 
 
     function price() constant returns(uint) {
-        if (block.number&lt;startBlock || block.number &gt; endBlock) return 0; //this will not happen according to the buyToken block check, but still set it to 0.
-        else if (block.number&gt;=startBlock &amp;&amp; block.number&lt;startBlock+prePeriod) return preSalePrice; //pre-ICO
+        if (block.number<startBlock || block.number > endBlock) return 0; //this will not happen according to the buyToken block check, but still set it to 0.
+        else if (block.number>=startBlock && block.number<startBlock+prePeriod) return preSalePrice; //pre-ICO
         else  return crowSalePrice; // default-ICO
     }
 
@@ -189,9 +189,9 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
 
     // Buy entry point
     function buy(address recipient, uint256 value) public payable {
-        if (value&gt; msg.value) throw;
+        if (value> msg.value) throw;
 
-        if (value &lt; msg.value) {
+        if (value < msg.value) {
             require(msg.sender.call.value(msg.value - value)()); //refund the extra ether
         }
         buyToken(recipient, value);
@@ -199,14 +199,14 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
 
 
     function buyToken(address recipient, uint256 value) internal {
-        if (block.number&lt;startBlock || block.number&gt;endBlock || safeAdd(totalEtherRaised,value)&gt;etherCap || halted) throw;
-        if (block.number&gt;=startBlock &amp;&amp; block.number&lt;=startBlock+prePeriod &amp;&amp; safeAdd(totalEtherRaised,value) &gt; preEtherCap) throw; //preSale Cap limitation
+        if (block.number<startBlock || block.number>endBlock || safeAdd(totalEtherRaised,value)>etherCap || halted) throw;
+        if (block.number>=startBlock && block.number<=startBlock+prePeriod && safeAdd(totalEtherRaised,value) > preEtherCap) throw; //preSale Cap limitation
         uint tokens = safeMul(value, price());
         balances[recipient] = safeAdd(balances[recipient], tokens);
         totalSupply = safeAdd(totalSupply, tokens);
         totalEtherRaised = safeAdd(totalEtherRaised, value);
 
-        if (block.number&lt;=startBlock+prePeriod) {
+        if (block.number<=startBlock+prePeriod) {
             presaleTokenSupply = safeAdd(presaleTokenSupply, tokens);
         }
         Transfer(address(0), recipient, tokens); //Transaction record for token perchaise
@@ -249,7 +249,7 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
     }
 
     function withdrawExtraToken(address recipient) public {
-      require(msg.sender == founder &amp;&amp; block.number &gt; endBlock &amp;&amp; totalSupply &lt; maxToken);
+      require(msg.sender == founder && block.number > endBlock && totalSupply < maxToken);
 
       uint256 leftTokens = safeSub(maxToken, totalSupply);
       balances[recipient] = safeAdd(balances[recipient], leftTokens);
@@ -269,7 +269,7 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
      * - Test transfer after restricted period
      */
     // function transfer(address _to, uint256 _value) returns (bool success) {
-    //     if (block.number &lt;= startBlock + transferLockup &amp;&amp; msg.sender!=founder) throw;
+    //     if (block.number <= startBlock + transferLockup && msg.sender!=founder) throw;
     //     return super.transfer(_to, _value);
     // }
 
@@ -280,7 +280,7 @@ contract AutomobileCyberchainToken is StandardToken, SafeMath {
      * Prevent transfers until freeze period is over.
      */
     // function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    //     if (block.number &lt;= startBlock + transferLockup &amp;&amp; msg.sender!=founder) throw;
+    //     if (block.number <= startBlock + transferLockup && msg.sender!=founder) throw;
     //     return super.transferFrom(_from, _to, _value);
     // }
 }

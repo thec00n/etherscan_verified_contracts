@@ -17,7 +17,7 @@ contract Token {
 
 contract TokenStoreBalances {
 
-  // Fallback function, don&#39;t accept any ETH
+  // Fallback function, don't accept any ETH
   function() public payable {
     revert();
   }
@@ -34,7 +34,7 @@ contract TokenStoreBalances {
     assembly { tokenCode := extcodesize(token) } // contract code size
 
    // is it a contract and does it implement balanceOf
-    if(tokenCode &gt; 0 &amp;&amp; token.call(bytes4(0x70a08231), user)) {    // bytes4(keccak256(&quot;balanceOf(address)&quot;)) == bytes4(0x70a08231)
+    if(tokenCode > 0 && token.call(bytes4(0x70a08231), user)) {    // bytes4(keccak256("balanceOf(address)")) == bytes4(0x70a08231)
       return Token(token).balanceOf(user);
     } else {
       return 0; // not a valid token, return 0 instead of error
@@ -52,7 +52,7 @@ contract TokenStoreBalances {
     Exchange ex = Exchange(exchange);
     uint[] memory balances = new uint[](tokens.length * 2);
 
-    for(uint i = 0; i &lt; tokens.length; i++) {
+    for(uint i = 0; i < tokens.length; i++) {
       uint j = i * 2;
       balances[j] = ex.balanceOf(tokens[i], user);
       if(tokens[i] != address(0x0)) {

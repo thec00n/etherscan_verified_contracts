@@ -9,37 +9,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -122,7 +122,7 @@ contract ERC20Basic {
 
 contract ERC20 is ERC20Basic {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   function allowance(address owner, address spender) constant returns (uint);
   function transferFrom(address from, address to, uint value) returns (bool);
@@ -148,7 +148,7 @@ contract GrantsControlled {
 contract LimitedTransferToken is ERC20 {
   // Checks whether it can transfer or otherwise throws.
   modifier canTransfer(address _sender, uint _value) {
-   if (_value &gt; transferableTokens(_sender, uint64(now))) throw;
+   if (_value > transferableTokens(_sender, uint64(now))) throw;
    _;
   }
 
@@ -187,10 +187,10 @@ contract Controlled {
 contract MiniMeToken is ERC20, Controlled {
     using SafeMath for uint;
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -219,10 +219,10 @@ contract MiniMeToken is ERC20, Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -300,7 +300,7 @@ contract MiniMeToken is ERC20, Controlled {
             if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         }
         return doTransfer(_from, _to, _amount);
@@ -319,7 +319,7 @@ contract MiniMeToken is ERC20, Controlled {
                return true;
            }
 
-           if (parentSnapShotBlock &gt;= block.number) throw;
+           if (parentSnapShotBlock >= block.number) throw;
 
            // Do not allow transfer to 0x0 or the token contract itself
            if ((_to == 0) || (_to == address(this))) throw;
@@ -327,7 +327,7 @@ contract MiniMeToken is ERC20, Controlled {
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -352,7 +352,7 @@ contract MiniMeToken is ERC20, Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -371,7 +371,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_amount!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
         // Alerts the token controller of the approve function call
         if (isContract(controller)) {
@@ -439,7 +439,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -464,7 +464,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -541,10 +541,10 @@ contract MiniMeToken is ERC20, Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply.sub(_amount));
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom.sub(_amount));
         Transfer(_owner, 0, _amount);
         return true;
@@ -574,16 +574,16 @@ contract MiniMeToken is ERC20, Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -599,7 +599,7 @@ contract MiniMeToken is ERC20, Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -618,15 +618,15 @@ contract MiniMeToken is ERC20, Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -732,7 +732,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -755,11 +755,11 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
   ) onlyGrantsController public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    if (_cliff &lt; _start || _vesting &lt; _cliff) {
+    if (_cliff < _start || _vesting < _cliff) {
       throw;
     }
 
-    if (tokenGrantsCount(_to) &gt; MAX_GRANTS_PER_ADDRESS) throw;   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    if (tokenGrantsCount(_to) > MAX_GRANTS_PER_ADDRESS) throw;   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint count = grants[_to].push(
                 TokenGrant(
@@ -803,7 +803,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
     grants[_holder][_grantId] = grants[_holder][grants[_holder].length.sub(1)];
     grants[_holder].length -= 1;
 
-    // This will call MiniMe&#39;s doTransfer method, so token is transferred according to
+    // This will call MiniMe's doTransfer method, so token is transferred according to
     // MiniMe Token logic
     doTransfer(_holder, receiver, nonVested);
 
@@ -816,7 +816,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
    */
     function revokeAllTokenGrants(address _holder) {
         var grandsCount = tokenGrantsCount(_holder);
-        for (uint i = 0; i &lt; grandsCount; i++) {
+        for (uint i = 0; i < grandsCount; i++) {
           revokeTokenGrant(_holder, 0);
         }
     }
@@ -825,7 +825,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -834,7 +834,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -876,7 +876,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -887,12 +887,12 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = SafeMath.div(
@@ -962,7 +962,7 @@ contract VestedToken is LimitedTransferToken, GrantsControlled {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = SafeMath.max64(grants[holder][i].vesting, date);
     }
   }
@@ -1003,9 +1003,9 @@ contract District0xNetworkToken is MiniMeToken, VestedToken {
             _tokenFactory,
             0x0,                        // no parent token
             0,                          // no snapshot block number from parent
-            &quot;district0x Network Token&quot;, // Token name
+            "district0x Network Token", // Token name
             18,                         // Decimals
-            &quot;DNT&quot;,                      // Symbol
+            "DNT",                      // Symbol
             true                        // Enable transfers
             )
     {
@@ -1074,7 +1074,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
 
     bool public tokenTransfersEnabled = false;                          // DNT token transfers will be enabled manually
                                                                         // after first contribution period
-                                                                        // Can&#39;t be disabled back
+                                                                        // Can't be disabled back
     struct Contributor {
         uint amount;                        // Amount of ETH contributed by an address in given contribution period
         bool isCompensated;                 // Whether this contributor received DNT token for ETH contribution
@@ -1092,7 +1092,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     bool public hardCapReached;                                // If hard cap was reached
     uint public totalContributed;                              // Total amount of ETH contributed in given period
     address[] public contributorsKeys;                         // Addresses of all contributors in given contribution period
-    mapping (address =&gt; Contributor) public contributors;
+    mapping (address => Contributor) public contributors;
 
     event onContribution(uint totalContributed, address indexed contributor, uint amount,
         uint contributorsCount);
@@ -1122,10 +1122,10 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
 
     // @notice Returns true if contribution period is currently running
     function isContribPeriodRunning() constant returns (bool) {
-        return !hardCapReached &amp;&amp;
-               isEnabled &amp;&amp;
-               startTime &lt;= now &amp;&amp;
-               endTime &gt; now;
+        return !hardCapReached &&
+               isEnabled &&
+               startTime <= now &&
+               endTime > now;
     }
 
     function contribute()
@@ -1144,8 +1144,8 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         payable
         stopInEmergency
     {
-        require(tx.gasprice &lt;= maxGasPrice);
-        require(msg.value &gt;= minContribAmount);
+        require(tx.gasprice <= maxGasPrice);
+        require(msg.value >= minContribAmount);
         require(isContribPeriodRunning());
 
         uint contribValue = msg.value;
@@ -1158,16 +1158,16 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         uint newTotalContributed = totalContributed;
 
         // Soft cap was reached
-        if (newTotalContributed &gt;= softCapAmount &amp;&amp;
-            oldTotalContributed &lt; softCapAmount)
+        if (newTotalContributed >= softCapAmount &&
+            oldTotalContributed < softCapAmount)
         {
             softCapReached = true;
             endTime = afterSoftCapDuration.add(now);
             onSoftCapReached(endTime);
         }
         // Hard cap was reached
-        if (newTotalContributed &gt;= hardCapAmount &amp;&amp;
-            oldTotalContributed &lt; hardCapAmount)
+        if (newTotalContributed >= hardCapAmount &&
+            oldTotalContributed < hardCapAmount)
         {
             hardCapReached = true;
             endTime = now;
@@ -1187,7 +1187,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         contributors[contributor].amount = contributors[contributor].amount.add(contribValue);
 
         multisigWallet.transfer(contribValue);
-        if (excessContribValue &gt; 0) {
+        if (excessContribValue > 0) {
             msg.sender.transfer(excessContribValue);
         }
         onContribution(newTotalContributed, contributor, contribValue, contributorsKeys.length);
@@ -1204,7 +1204,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         onlyOwner
     {
         require(isEnabled);
-        require(endTime &lt; now);
+        require(endTime < now);
 
         uint i = offset;
         uint compensatedCount = 0;
@@ -1214,7 +1214,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
             .mul(1000000000000000000)
             .div(totalContributed);
 
-        while (i &lt; contributorsCount &amp;&amp; compensatedCount &lt; limit) {
+        while (i < contributorsCount && compensatedCount < limit) {
             address contributorAddress = contributorsKeys[i];
             if (!contributors[contributorAddress].isCompensated) {
                 uint amountContributed = contributors[contributorAddress].amount;
@@ -1234,7 +1234,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
 
     // @notice Method for setting up contribution period
     //  Only owner should be able to execute
-    //  Setting first contribution period sets up vesting for founders &amp; advisors
+    //  Setting first contribution period sets up vesting for founders & advisors
     //  Contribution period should still not be enabled after calling this method
     // @param softCapAmount Soft Cap in wei
     // @param afterSoftCapDuration Number of seconds till the end of sale in the moment of reaching soft cap (unless reaching hard cap)
@@ -1250,11 +1250,11 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     )
         onlyOwner
     {
-        require(_softCapAmount &gt; 0);
-        require(_hardCapAmount &gt; _softCapAmount);
-        require(_afterSoftCapDuration &gt; 0);
-        require(_startTime &gt; now);
-        require(_endTime &gt; _startTime);
+        require(_softCapAmount > 0);
+        require(_hardCapAmount > _softCapAmount);
+        require(_afterSoftCapDuration > 0);
+        require(_startTime > now);
+        require(_endTime > _startTime);
         require(!isEnabled);
 
         softCapAmount = _softCapAmount;
@@ -1267,7 +1267,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         district0xNetworkToken.revokeAllTokenGrants(founder2);
         district0xNetworkToken.revokeAllTokenGrants(earlySponsor);
 
-        for (uint j = 0; j &lt; advisers.length; j++) {
+        for (uint j = 0; j < advisers.length; j++) {
             district0xNetworkToken.revokeAllTokenGrants(advisers[j]);
         }
 
@@ -1295,7 +1295,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     function enableContribPeriod()
         onlyMultisig
     {
-        require(startTime &gt; now);
+        require(startTime > now);
         isEnabled = true;
     }
 
@@ -1306,8 +1306,8 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     function setMinContribAmount(uint _minContribAmount)
         onlyOwner
     {
-        require(_minContribAmount &gt; 0);
-        require(startTime &gt; now);
+        require(_minContribAmount > 0);
+        require(startTime > now);
         minContribAmount = _minContribAmount;
     }
 
@@ -1318,8 +1318,8 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     function setMaxGasPrice(uint _maxGasPrice)
         onlyOwner
     {
-        require(_maxGasPrice &gt; 0);
-        require(startTime &gt; now);
+        require(_maxGasPrice > 0);
+        require(startTime > now);
         maxGasPrice = _maxGasPrice;
     }
 
@@ -1352,7 +1352,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
     function enableDistrict0xNetworkTokenTransfers()
         onlyOwner
     {
-        require(endTime &lt; now);
+        require(endTime < now);
         tokenTransfersEnabled = true;
     }
 
@@ -1397,7 +1397,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
 
     /*
      Following constant methods are used for tests and contribution web app
-     They don&#39;t impact logic of contribution contract, therefor DOES NOT NEED TO BE AUDITED
+     They don't impact logic of contribution contract, therefor DOES NOT NEED TO BE AUDITED
      */
 
     // Used by contribution front-end to obtain contribution period properties
@@ -1427,14 +1427,14 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         returns (bool, address, address, address, address, address[] _advisers, bool, uint)
     {
         _advisers = new address[](advisers.length);
-        for (uint i = 0; i &lt; advisers.length; i++) {
+        for (uint i = 0; i < advisers.length; i++) {
             _advisers[i] = advisers[i];
         }
         return (stopped, multisigWallet, founder1, founder2, earlySponsor, _advisers, tokenTransfersEnabled,
             maxGasPrice);
     }
 
-    // Used by contribution front-end to obtain contributor&#39;s properties
+    // Used by contribution front-end to obtain contributor's properties
     function getContributor(address contributorAddress)
         constant
         returns(uint, bool, uint)
@@ -1458,7 +1458,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         uint resultsCount = 0;
         uint[] memory _contributorIndexes = new uint[](limit);
 
-        while (i &lt; contributorsCount &amp;&amp; resultsCount &lt; limit) {
+        while (i < contributorsCount && resultsCount < limit) {
             if (!contributors[contributorsKeys[i]].isCompensated) {
                 _contributorIndexes[resultsCount] = i;
                 resultsCount++;
@@ -1467,7 +1467,7 @@ contract District0xContribution is Pausable, HasNoTokens, TokenController {
         }
 
         contributorIndexes = new uint[](resultsCount);
-        for (i = 0; i &lt; resultsCount; i++) {
+        for (i = 0; i < resultsCount; i++) {
             contributorIndexes[i] = _contributorIndexes[i];
         }
         return contributorIndexes;

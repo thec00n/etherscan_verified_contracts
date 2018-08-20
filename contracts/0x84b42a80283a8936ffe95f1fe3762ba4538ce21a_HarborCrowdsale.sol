@@ -13,7 +13,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -53,18 +53,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ contract Haltable is Ownable {
     _;
   }
   modifier stopNonOwnersInEmergency {
-    require(!halted &amp;&amp; msg.sender == owner);
+    require(!halted && msg.sender == owner);
     _;
   }
   modifier onlyInEmergency {
@@ -105,7 +105,7 @@ contract Haltable is Ownable {
 contract RefundVault is Ownable {
   using SafeMath for uint256;
   enum State { Active, Refunding, Closed }
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   
   address public wallet;
   State public state;
@@ -146,7 +146,7 @@ contract RefundVault is Ownable {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -187,7 +187,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -198,7 +198,7 @@ contract StandardToken is ERC20, BasicToken {
     require(_to != address(0));
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -245,7 +245,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,11 +262,11 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract HarborToken is StandardToken, Ownable {
   //define HarborToken
-  string public constant name = &quot;HarborToken&quot;;
-  string public constant symbol = &quot;HBR&quot;;
+  string public constant name = "HarborToken";
+  string public constant symbol = "HBR";
   uint8 public constant decimals = 18;
    /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
   event Mint(address indexed to, uint256 amount);
   event MintOpened();
   event MintFinished();
@@ -309,7 +309,7 @@ contract HarborToken is StandardToken, Ownable {
    * @return A boolean that indicates if the burn up was successful.
    */
   function burn(address _addr,uint256 _amount) onlyMintAgent canMint  returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     totalSupply = totalSupply.sub(_amount);
     balances[_addr] = balances[_addr].sub(_amount);
     BurnToken(_addr,_amount);
@@ -363,7 +363,7 @@ contract HarborCrowdsale is Haltable {
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
   //project assign budget amount per inventer
-  mapping (address =&gt; uint256) public projectBuget;
+  mapping (address => uint256) public projectBuget;
   //event for crowdsale end
   event Finalized();
   /**
@@ -377,11 +377,11 @@ contract HarborCrowdsale is Haltable {
     // Crowdsale end time has been changed
   event EndsAtChanged(uint newEndsAt);
   function HarborCrowdsale(uint256 _startTime, uint256 _endTime,  address _wallet, uint256 _cap, uint256 _minimumFundingGoal) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_wallet != 0x0);
-    require(_cap &gt; 0);
-    require(_minimumFundingGoal &gt; 0);
+    require(_cap > 0);
+    require(_minimumFundingGoal > 0);
     token = createTokenContract();
     startTime = _startTime;
     endTime = _endTime;
@@ -411,13 +411,13 @@ contract HarborCrowdsale is Haltable {
         return buyPriceAt(now);
     }
     function buyPriceAt(uint at) constant returns (uint) {
-        if (at &lt; startTime) {
+        if (at < startTime) {
             return 0;
-        } else if (at &lt; (startTime + 1 days)) {
+        } else if (at < (startTime + 1 days)) {
             return 2200;
-        } else if (at &lt; (startTime + 7 days)) {
+        } else if (at < (startTime + 7 days)) {
             return 2100;
-        } else if (at &lt;= endTime) {
+        } else if (at <= endTime) {
             return 2000;
         } else {
             return 0;
@@ -427,12 +427,12 @@ contract HarborCrowdsale is Haltable {
   function buyTokens(address beneficiary) payable stopInEmergency {
     require(beneficiary != 0x0);
     require(validPurchase());
-    require(buyPrice() &gt; 0);
+    require(buyPrice() > 0);
     uint256 weiAmount = msg.value;
     uint256 price = buyPrice();
     // calculate token amount to be created
     uint256 tokens = weiAmount.mul(price);
-    //founder &amp; financial services stake (investor token *2/3)
+    //founder & financial services stake (investor token *2/3)
     uint256 projectTokens = tokens.mul(2);
     projectTokens = projectTokens.div(3);
     //update state
@@ -450,15 +450,15 @@ contract HarborCrowdsale is Haltable {
   }
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinCap = weiRaised &lt;= cap;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+    bool withinCap = weiRaised <= cap;
+    return withinPeriod && nonZeroPurchase && withinCap;
   }
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return (now &gt; endTime) || capReached;
+    bool capReached = weiRaised >= cap;
+    return (now > endTime) || capReached;
   }
    /**
    *  called after crowdsale ends, to do some extra finalization
@@ -495,7 +495,7 @@ contract HarborCrowdsale is Haltable {
     token.burn(wallet,_hbr_project);
   }
   function minFundingGoalReached() public constant returns (bool) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
   /**
    * Allow crowdsale owner to close early or extend the crowdsale.
@@ -504,7 +504,7 @@ contract HarborCrowdsale is Haltable {
    * It may be delay if the crowdsale is interrupted or paused for unexpected reasons.
    */
   function setEndsAt(uint time) onlyOwner {
-    require(now &lt;= time);
+    require(now <= time);
     endTime = time;
     EndsAtChanged(endTime);
   }

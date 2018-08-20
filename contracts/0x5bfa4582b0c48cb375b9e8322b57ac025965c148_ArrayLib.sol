@@ -1,7 +1,7 @@
 pragma solidity 0.4.8;
 library ArrayLib{
   function findAddress(address a, address[] storage arry) returns (int){
-    for (uint i = 0 ; i &lt; arry.length ; i++){
+    for (uint i = 0 ; i < arry.length ; i++){
       if(arry[i] == a){return int(i);}
     }
     return -1;

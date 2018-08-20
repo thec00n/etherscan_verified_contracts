@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,20 +102,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -175,7 +175,7 @@ contract GoldFees is Ownable {
             }
             maxRate = newN;
             pow *= 2;
-        } while (pow &lt; 2000);
+        } while (pow < 2000);
         
     }
 
@@ -186,10 +186,10 @@ contract GoldFees is Ownable {
     }
     
     function rateForDays(uint256 numDays) public view returns (uint256 rate) {
-        if (numDays &lt;= maxDays) {
+        if (numDays <= maxDays) {
             uint r = rateN ** numDays;
             uint d = rateD * numDays;
-            if (d &gt; 18) {
+            if (d > 18) {
                 uint div = 10 ** (d-18);
                 rate = r / div;
             } else {
@@ -233,7 +233,7 @@ contract GoldFees is Ownable {
             return;
         }
         amount = (rateForDays(numberOfDays) * startAmount) / (1 ether);
-        if ((fee == 0) &amp;&amp; (amount != 0)) 
+        if ((fee == 0) && (amount != 0)) 
             amount--;
         fee = startAmount.sub(amount);
     }
@@ -269,7 +269,7 @@ contract GBTBasic {
 	}
 
 	/*Creates an array with all balances*/
-	mapping (address =&gt; Balance) public balances;
+	mapping (address => Balance) public balances;
 	
     struct Allocation { 
         uint256     amount;
@@ -298,13 +298,13 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
         oldToken = _oldToken;
 		// now migrate the non balance stuff
 		uint x;
-		for (x = 0; x &lt; oldToken.aotLength(); x++) {
+		for (x = 0; x < oldToken.aotLength(); x++) {
 			Allocation memory al;
 			(al.amount, al.date) = oldToken.allocationsOverTime(x);
 			allocationsOverTime.push(al);
 		}
 		allocationsOverTime[3].amount = allocationsOverTime[3].amount.sub(delta);
-		for (x = 0; x &lt; oldToken.currentAllocationLength(); x++) {
+		for (x = 0; x < oldToken.currentAllocationLength(); x++) {
 			(al.amount, al.date) = oldToken.currentAllocations(x);
 			al.amount = al.amount.sub(delta);
 			currentAllocations.push(al);
@@ -319,7 +319,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		// amount = 1003203581831868623088;
 
 		// Get values of first minting at second minting date
-		// feeCalc(1512646845,1513855345,528359800000000000000) =&gt; (527954627221032516031,405172778967483969)
+		// feeCalc(1512646845,1513855345,528359800000000000000) => (527954627221032516031,405172778967483969)
 
 		mintedGBT.date = 1515700247;
 		mintedGBT.amount = 1529313490861692541644;
@@ -335,7 +335,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 	  (minted,mFees) = calcFees(mintedGBT.date,now,mintedGBT.amount);
 	  (uminted,umFees) = calcFees(unmintedGBT.date,now,unmintedGBT.amount);
 	  (allocated,aFees) = calcFees(currentAllocations[0].date,now,currentAllocations[0].amount);
-	  if (minted+allocated&gt;uminted) {
+	  if (minted+allocated>uminted) {
 	  	return minted.add(allocated).sub(uminted);
 	  } else {
 		return 0;
@@ -349,8 +349,8 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
   event TokenMinted(address destination, uint256 amount);
   event TokenBurned(address source, uint256 amount);
   
-	string public name = &quot;GOLDX&quot;;
-	string public symbol = &quot;GOLDX&quot;;
+	string public name = "GOLDX";
+	string public symbol = "GOLDX";
 	uint256 constant public  decimals = 18;  // same as ETH
 	uint256 constant public  hgtDecimals = 8;
 		
@@ -362,7 +362,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 	address		     public HGT;					// HGT contract address
 
 	function updateMaxAllocation(uint256 newMax) public onlyOwner {
-		require(newMax &gt; 38 * 10**5 * 10**decimals);
+		require(newMax > 38 * 10**5 * 10**decimals);
 		maxAllocation = newMax;
 	}
 
@@ -378,8 +378,8 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 	}
 
 	
-	mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-    mapping (address =&gt; bool) updated;
+	mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => bool) updated;
 
     GBTBasic oldToken;
 
@@ -431,7 +431,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		(val,fees) = calcFees(lu,now,am);
 		// calculate update based on accrued disbursals
 	    pos = ne;
-		if ((pos &lt; currentAllocations.length) &amp;&amp; (al != 0)) {
+		if ((pos < currentAllocations.length) && (al != 0)) {
 			cAmount = currentAllocations[ne].amount.mul(al).div( allocationPool);
 			(cVal,cFees) = calcFees(currentAllocations[ne].date,now,cAmount);
 		} 
@@ -468,15 +468,15 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		require(partPos == 0);
 		uint256 thisAllocation = newAllocation;
 
-		require(totAllocation &lt; maxAllocation);		// cannot allocate more than this;
+		require(totAllocation < maxAllocation);		// cannot allocate more than this;
 
-		if (currentAllocations.length &gt; partAllocations.length) {
+		if (currentAllocations.length > partAllocations.length) {
 			partAllocations = currentAllocations;
 		}
 
-		if (totAllocation + thisAllocation &gt; maxAllocation) {
+		if (totAllocation + thisAllocation > maxAllocation) {
 			thisAllocation = maxAllocation.sub(totAllocation);
-			log0(&quot;max alloc reached&quot;);
+			log0("max alloc reached");
 		}
 		totAllocation = totAllocation.add(thisAllocation);
 
@@ -490,7 +490,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		// add this record to the end of currentAllocations
 		partL = partAllocations.push(newDiv);
 		// update all other records with calcs from last record
-		if (partAllocations.length &lt; 2) { // no fees to consider
+		if (partAllocations.length < 2) { // no fees to consider
 			PartComplete();
 			currentAllocations = partAllocations;
 			FeeOnAllocation(0,now);
@@ -500,7 +500,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		// The only fees that need to be collected are the fees on location zero.
 		// Since they are the last calculated = they come out with the break
 		//
-		for (partPos = partAllocations.length - 2; partPos &gt;= 0; partPos-- ) {
+		for (partPos = partAllocations.length - 2; partPos >= 0; partPos-- ) {
 			(partAllocations[partPos].amount,partFees) = calcFees(partAllocations[partPos].date,now,partAllocations[partPos].amount);
 
 			partAllocations[partPos].amount = partAllocations[partPos].amount.add(partAllocations[partL - 1].amount);
@@ -522,9 +522,9 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 		public 
 		onlyMinter 
 	{
-		require(numSteps &gt; 0);
-		require(partPos &gt; 0);
-		for (uint i = 0; i &lt; numSteps; i++ ) {
+		require(numSteps > 0);
+		require(partPos > 0);
+		for (uint i = 0; i < numSteps; i++ ) {
 			partPos--;
 			(partAllocations[partPos].amount,partFees) = calcFees(partAllocations[partPos].date,now,partAllocations[partPos].amount);
 			partAllocations[partPos].amount = partAllocations[partPos].amount.add(partAllocations[partL - 1].amount);
@@ -603,7 +603,7 @@ contract GoldBackedToken is Ownable, ERC20, Pausable, GBTBasic, Reclaimable {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowance[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowance[msg.sender][_spender] = 0;
     } else {
       allowance[msg.sender][_spender] = oldValue.sub(_subtractedValue);

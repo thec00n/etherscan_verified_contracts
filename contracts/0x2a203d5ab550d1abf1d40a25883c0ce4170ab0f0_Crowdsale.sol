@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ contract Crowdsale {
 
   token tokenReward;
 
-  mapping (address =&gt; uint) public contributions;
+  mapping (address => uint) public contributions;
   
 
 
@@ -116,145 +116,145 @@ contract Crowdsale {
 
     uint256 weiAmount = msg.value;
 
-    if(tokensSold &lt; 10000*10**6){
+    if(tokensSold < 10000*10**6){
       price = 300;      
-    }else if(tokensSold &lt; 20000*10**6){
+    }else if(tokensSold < 20000*10**6){
       price = 284;
-    }else if(tokensSold &lt; 30000*10**6){
+    }else if(tokensSold < 30000*10**6){
       price = 269;
-    }else if(tokensSold &lt; 40000*10**6){
+    }else if(tokensSold < 40000*10**6){
       price = 256;
-    }else if(tokensSold &lt; 50000*10**6){
+    }else if(tokensSold < 50000*10**6){
       price = 244;
-    }else if(tokensSold &lt; 60000*10**6){
+    }else if(tokensSold < 60000*10**6){
       price = 233;
-    }else if(tokensSold &lt; 70000*10**6){
+    }else if(tokensSold < 70000*10**6){
       price = 223;
-    }else if(tokensSold &lt; 80000*10**6){
+    }else if(tokensSold < 80000*10**6){
       price = 214;
-    }else if(tokensSold &lt; 90000*10**6){
+    }else if(tokensSold < 90000*10**6){
       price = 205;
-    }else if(tokensSold &lt; 100000*10**6){
+    }else if(tokensSold < 100000*10**6){
       price = 197;
-    }else if(tokensSold &lt; 110000*10**6){
+    }else if(tokensSold < 110000*10**6){
       price = 189;
-    }else if(tokensSold &lt; 120000*10**6){
+    }else if(tokensSold < 120000*10**6){
       price = 182;
-    }else if(tokensSold &lt; 130000*10**6){
+    }else if(tokensSold < 130000*10**6){
       price = 175;
-    }else if(tokensSold &lt; 140000*10**6){
+    }else if(tokensSold < 140000*10**6){
       price = 168;
-    }else if(tokensSold &lt; 150000*10**6){
+    }else if(tokensSold < 150000*10**6){
       price = 162;
-    }else if(tokensSold &lt; 160000*10**6){
+    }else if(tokensSold < 160000*10**6){
       price = 156;
-    }else if(tokensSold &lt; 170000*10**6){
+    }else if(tokensSold < 170000*10**6){
       price = 150;
-    }else if(tokensSold &lt; 180000*10**6){
+    }else if(tokensSold < 180000*10**6){
       price = 145;
-    }else if(tokensSold &lt; 190000*10**6){
+    }else if(tokensSold < 190000*10**6){
       price = 140;
-    }else if(tokensSold &lt; 200000*10**6){
+    }else if(tokensSold < 200000*10**6){
       price = 135;
-    }else if(tokensSold &lt; 210000*10**6){
+    }else if(tokensSold < 210000*10**6){
       price = 131;
-    }else if(tokensSold &lt; 220000*10**6){
+    }else if(tokensSold < 220000*10**6){
       price = 127;
-    }else if(tokensSold &lt; 230000*10**6){
+    }else if(tokensSold < 230000*10**6){
       price = 123;
-    }else if(tokensSold &lt; 240000*10**6){
+    }else if(tokensSold < 240000*10**6){
       price = 120;
-    }else if(tokensSold &lt; 250000*10**6){
+    }else if(tokensSold < 250000*10**6){
       price = 117;
-    }else if(tokensSold &lt; 260000*10**6){
+    }else if(tokensSold < 260000*10**6){
       price = 114;
-    }else if(tokensSold &lt; 270000*10**6){
+    }else if(tokensSold < 270000*10**6){
       price = 111;
-    }else if(tokensSold &lt; 280000*10**6){
+    }else if(tokensSold < 280000*10**6){
       price = 108;
-    }else if(tokensSold &lt; 290000*10**6){
+    }else if(tokensSold < 290000*10**6){
       price = 105;
-    }else if(tokensSold &lt; 300000*10**6){
+    }else if(tokensSold < 300000*10**6){
       price = 102;
-    }else if(tokensSold &lt; 310000*10**6){
+    }else if(tokensSold < 310000*10**6){
       price = 100;
-    }else if(tokensSold &lt; 320000*10**6){
+    }else if(tokensSold < 320000*10**6){
       price = 98;
-    }else if(tokensSold &lt; 330000*10**6){
+    }else if(tokensSold < 330000*10**6){
       price = 96;
-    }else if(tokensSold &lt; 340000*10**6){
+    }else if(tokensSold < 340000*10**6){
       price = 94;
-    }else if(tokensSold &lt; 350000*10**6){
+    }else if(tokensSold < 350000*10**6){
       price = 92;
-    }else if(tokensSold &lt; 360000*10**6){
+    }else if(tokensSold < 360000*10**6){
       price = 90;
-    }else if(tokensSold &lt; 370000*10**6){
+    }else if(tokensSold < 370000*10**6){
       price = 88;
-    }else if(tokensSold &lt; 380000*10**6){
+    }else if(tokensSold < 380000*10**6){
       price = 86;
-    }else if(tokensSold &lt; 390000*10**6){
+    }else if(tokensSold < 390000*10**6){
       price = 84;
-    }else if(tokensSold &lt; 400000*10**6){
+    }else if(tokensSold < 400000*10**6){
       price = 82;
-    }else if(tokensSold &lt; 410000*10**6){
+    }else if(tokensSold < 410000*10**6){
       price = 80;
-    }else if(tokensSold &lt; 420000*10**6){
+    }else if(tokensSold < 420000*10**6){
       price = 78;
-    }else if(tokensSold &lt; 430000*10**6){
+    }else if(tokensSold < 430000*10**6){
       price = 76;
-    }else if(tokensSold &lt; 440000*10**6){
+    }else if(tokensSold < 440000*10**6){
       price = 74;
-    }else if(tokensSold &lt; 450000*10**6){
+    }else if(tokensSold < 450000*10**6){
       price = 72;
-    }else if(tokensSold &lt; 460000*10**6){
+    }else if(tokensSold < 460000*10**6){
       price = 70;
-    }else if(tokensSold &lt; 470000*10**6){
+    }else if(tokensSold < 470000*10**6){
       price = 68;
-    }else if(tokensSold &lt; 480000*10**6){
+    }else if(tokensSold < 480000*10**6){
       price = 66;
-    }else if(tokensSold &lt; 490000*10**6){
+    }else if(tokensSold < 490000*10**6){
       price = 64;
-    }else if(tokensSold &lt; 500000*10**6){
+    }else if(tokensSold < 500000*10**6){
       price = 62;
-    }else if(tokensSold &lt; 510000*10**6){
+    }else if(tokensSold < 510000*10**6){
       price = 60;
-    }else if(tokensSold &lt; 520000*10**6){
+    }else if(tokensSold < 520000*10**6){
       price = 58;
-    }else if(tokensSold &lt; 530000*10**6){
+    }else if(tokensSold < 530000*10**6){
       price = 57;
-    }else if(tokensSold &lt; 540000*10**6){
+    }else if(tokensSold < 540000*10**6){
       price = 56;
-    }else if(tokensSold &lt; 550000*10**6){
+    }else if(tokensSold < 550000*10**6){
       price = 55;
-    }else if(tokensSold &lt; 560000*10**6){
+    }else if(tokensSold < 560000*10**6){
       price = 54;
-    }else if(tokensSold &lt; 570000*10**6){
+    }else if(tokensSold < 570000*10**6){
       price = 53;
-    }else if(tokensSold &lt; 580000*10**6){
+    }else if(tokensSold < 580000*10**6){
       price = 52;
-    }else if(tokensSold &lt; 590000*10**6){
+    }else if(tokensSold < 590000*10**6){
       price = 51;
-    }else if(tokensSold &lt; 600000*10**6){
+    }else if(tokensSold < 600000*10**6){
       price = 50;
-    }else if(tokensSold &lt; 610000*10**6){
+    }else if(tokensSold < 610000*10**6){
       price = 49;
-    }else if(tokensSold &lt; 620000*10**6){
+    }else if(tokensSold < 620000*10**6){
       price = 48;
-    }else if(tokensSold &lt; 630000*10**6){
+    }else if(tokensSold < 630000*10**6){
       price = 47;
-    }else if(tokensSold &lt; 640000*10**6){
+    }else if(tokensSold < 640000*10**6){
       price = 46;
-    }else if(tokensSold &lt; 650000*10**6){
+    }else if(tokensSold < 650000*10**6){
       price = 45;
-    }else if(tokensSold &lt; 660000*10**6){
+    }else if(tokensSold < 660000*10**6){
       price = 44;
-    }else if(tokensSold &lt; 670000*10**6){
+    }else if(tokensSold < 670000*10**6){
       price = 43;
-    }else if(tokensSold &lt; 680000*10**6){
+    }else if(tokensSold < 680000*10**6){
       price = 42;
-    }else if(tokensSold &lt; 690000*10**6){
+    }else if(tokensSold < 690000*10**6){
       price = 41;
-    }else if(tokensSold &lt; 700000*10**6){
+    }else if(tokensSold < 700000*10**6){
       price = 40;
     }
     //the price above is Token per ETH
@@ -263,7 +263,7 @@ contract Crowdsale {
     
     
 
-    require(tokens &gt;= 1 * 10 ** 6); //1 token minimum
+    require(tokens >= 1 * 10 ** 6); //1 token minimum
 
 
     // update state
@@ -289,7 +289,7 @@ contract Crowdsale {
   function validPurchase() internal constant returns (bool) {
     bool withinPeriod = started;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function withdrawTokens(uint256 _amount) {

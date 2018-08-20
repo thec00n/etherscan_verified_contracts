@@ -27,11 +27,11 @@ contract DappReg is Owned {
   struct Dapp {
     bytes32 id;
     address owner;
-    mapping (bytes32 =&gt; bytes32) meta;
+    mapping (bytes32 => bytes32) meta;
   }
 
   modifier when_fee_paid {
-    if (msg.value &lt; fee) throw;
+    if (msg.value < fee) throw;
     _;
   }
 
@@ -41,7 +41,7 @@ contract DappReg is Owned {
   }
 
   modifier either_owner(bytes32 _id) {
-    if (dapps[_id].owner != msg.sender &amp;&amp; owner != msg.sender) throw;
+    if (dapps[_id].owner != msg.sender && owner != msg.sender) throw;
     _;
   }
 
@@ -55,7 +55,7 @@ contract DappReg is Owned {
   event Registered(bytes32 indexed id, address indexed owner);
   event Unregistered(bytes32 indexed id);
 
-  mapping (bytes32 =&gt; Dapp) dapps;
+  mapping (bytes32 => Dapp) dapps;
   bytes32[] ids;
 
   uint public fee = 1 ether;

@@ -1,11 +1,11 @@
 pragma solidity ^ 0.4 .11;
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="48293a292b2026212c0826273c2c273c66262d3c">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="48293a292b2026212c0826273c2c273c66262d3c">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -13,11 +13,11 @@ pragma solidity ^ 0.4 .11;
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -32,7 +32,7 @@ pragma solidity ^ 0.4 .11;
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 library strings {
@@ -43,7 +43,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -82,23 +82,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -134,7 +134,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -157,18 +157,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -197,12 +197,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -212,7 +212,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -251,18 +251,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -302,33 +302,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -352,7 +352,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -378,7 +378,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -407,7 +407,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -435,7 +435,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -462,8 +462,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -483,7 +483,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -500,8 +500,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -523,7 +523,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -645,7 +645,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -687,20 +687,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -760,16 +760,16 @@ library StringUtils {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
+        if (b.length < minLength) minLength = b.length;
         //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -783,19 +783,19 @@ library StringUtils {
     {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+        if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
             return -1;
-        else if(h.length &gt; (2**128 -1)) // since we have to be able to return -1 (if the char isn&#39;t found or input error), this function must return an &quot;int&quot; type with a max length of (2^128 - 1)
+        else if(h.length > (2**128 -1)) // since we have to be able to return -1 (if the char isn't found or input error), this function must return an "int" type with a max length of (2^128 - 1)
             return -1;                                  
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0]) // found the first char of b
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex]) // search until the chars don&#39;t match or until we reach the end of a or b
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) // search until the chars don't match or until we reach the end of a or b
                     {
                         subindex++;
                     }   
@@ -839,7 +839,7 @@ contract Cents is ERC20 {
     using strings for *;
     
     /* Public variables of the token */
-    string public standard = &#39;Token 1.0&#39;;
+    string public standard = 'Token 1.0';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -860,15 +860,15 @@ contract Cents is ERC20 {
 
 
     /* This creates an array with all balances */
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
-    mapping( address =&gt;bool ) public accountFreeze;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
+    mapping( address =>bool ) public accountFreeze;
     uint accountCount;
     
   
     
    
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -894,8 +894,8 @@ contract Cents is ERC20 {
         balanceOf[msg.sender] = _initialSupply; // Give the creator all initial tokens
         totalSupply = _initialSupply; // Update total supply
         initialSupply = _initialSupply;
-        name = &quot;Cents&quot;; // Set the name for display purposes
-        symbol = &quot;Cents&quot;; // Set the symbol for display purposes
+        name = "Cents"; // Set the name for display purposes
+        symbol = "Cents"; // Set the symbol for display purposes
         decimals = decimalUnits; // Amount of decimals for display purposes
        
         owner   = msg.sender;
@@ -919,14 +919,14 @@ contract Cents is ERC20 {
     
     function setZeroMarker( address _tokenholder  ) private {
         
-        if (balanceOf[ _tokenholder ]  &gt;0 ) return;
+        if (balanceOf[ _tokenholder ]  >0 ) return;
         CentsPool Centspool = CentsPool (  Centspooladdress ); 
         Centspool.setZeroMarker ( _tokenholder );
     
     }
     
     
-    // Function allows for external access to tokenHoler&#39;s Balance
+    // Function allows for external access to tokenHoler's Balance
     function balanceOf(address tokenHolder) constant returns(uint256) {
 
         return balanceOf[tokenHolder];
@@ -967,9 +967,9 @@ contract Cents is ERC20 {
     /* Send coins */
     function transfer(address _to, uint256 _value) returns(bool ok) {
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         if ( accountFreeze[ msg.sender ]  ) throw;
         
        
@@ -1016,9 +1016,9 @@ contract Cents is ERC20 {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
         if ( accountFreeze[ _from ]  ) throw;
         
         
@@ -1039,8 +1039,8 @@ contract Cents is ERC20 {
     }
   
     function burn(uint256 _value) returns(bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-        if ( (totalSupply - _value) &lt;  ( initialSupply / 2 ) ) throw;
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        if ( (totalSupply - _value) <  ( initialSupply / 2 ) ) throw;
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(msg.sender, _value);
@@ -1049,9 +1049,9 @@ contract Cents is ERC20 {
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
     
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
-        if ( (totalSupply - _value) &lt;  ( initialSupply / 2 )) throw;
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
+        if ( (totalSupply - _value) <  ( initialSupply / 2 )) throw;
         balanceOf[_from] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(_from, _value);
@@ -1138,18 +1138,18 @@ event ZeroBalance ( string _i  , uint256 loopcount );
 
 
 
-mapping ( uint256 =&gt; address ) public tokenAddress;
-mapping ( address =&gt; string ) public tokenSymbol;
-mapping ( address =&gt; uint256 ) public tokenBalance;
+mapping ( uint256 => address ) public tokenAddress;
+mapping ( address => string ) public tokenSymbol;
+mapping ( address => uint256 ) public tokenBalance;
 
 
 
-mapping ( address =&gt; tokenHolderBalances[] ) public thBalances;
-//mapping ( address =&gt; uint256 ) public zeromarkers;
-mapping ( address =&gt; bool ) public zeromarker;
+mapping ( address => tokenHolderBalances[] ) public thBalances;
+//mapping ( address => uint256 ) public zeromarkers;
+mapping ( address => bool ) public zeromarker;
 
-mapping ( address =&gt; uint256 ) public tokenHolderInfoSync;
-mapping ( address =&gt; uint256 ) public tokenHolderPaymentSync;
+mapping ( address => uint256 ) public tokenHolderInfoSync;
+mapping ( address => uint256 ) public tokenHolderPaymentSync;
 
 function CentsPool( address _pegaddress,  address _CentsToken ){
     
@@ -1203,7 +1203,7 @@ function syncsync( address __tokenholder , bool slowsync ){
         
         uint256 count = PEGC.tokenCount() - tokenHolderInfoSync [ _tokenholder ] ;
         
-        if ( count &lt; 1 ) return;
+        if ( count < 1 ) return;
         
         uint256 _balance = CentsToken.balanceOf( _tokenholder );
         count = PEGC.tokenCount();
@@ -1214,7 +1214,7 @@ function syncsync( address __tokenholder , bool slowsync ){
             zeromarker[ _tokenholder ] = false;
             
             tokenHolderInfoSync [ _tokenholder ] = count; 
-            ZeroBalance ( &quot;HadZeroBalance&quot; ,  0 );
+            ZeroBalance ( "HadZeroBalance" ,  0 );
             return;  }
         
        
@@ -1225,7 +1225,7 @@ function syncsync( address __tokenholder , bool slowsync ){
             
           
            
-            if ( slowsync ){  if ( count &lt; slowsyncamount ) throw;
+            if ( slowsync ){  if ( count < slowsyncamount ) throw;
             
                              count = slowsyncamount + tokenHolderInfoSync [ _tokenholder ];
             }
@@ -1233,8 +1233,8 @@ function syncsync( address __tokenholder , bool slowsync ){
             uint256 tokensperCents;
             
              
-            for ( uint i = tokenHolderInfoSync [ _tokenholder ]  ; i&lt; count; i++){
-                ZeroBalance ( &quot;NotAZeroBalance&quot; , i );   
+            for ( uint i = tokenHolderInfoSync [ _tokenholder ]  ; i< count; i++){
+                ZeroBalance ( "NotAZeroBalance" , i );   
                 SubToken subtoken = SubToken ( PEGC.getTokenAddress ( i ));
                 uint256 share = subtoken.share();
                 tokensperCents = share/_totalCentssupply;
@@ -1268,7 +1268,7 @@ function syncsync( address __tokenholder , bool slowsync ){
         
         uint256 count = tokenHolderInfoSync [ msg.sender ] - tokenHolderPaymentSync [ msg.sender ] ;
         
-        if ( count &lt; 1 ) return;
+        if ( count < 1 ) return;
         
         uint256 _balance = CentsToken.balanceOf( msg.sender );
         uint256 _totalCentssupply = CentsToken.initialSupply();
@@ -1277,7 +1277,7 @@ function syncsync( address __tokenholder , bool slowsync ){
             
           
            
-            if ( slowsync ){  if ( count &lt; slowsyncamount ) throw;
+            if ( slowsync ){  if ( count < slowsyncamount ) throw;
             
                              count = slowsyncamount + tokenHolderPaymentSync [ msg.sender ];
             }
@@ -1285,7 +1285,7 @@ function syncsync( address __tokenholder , bool slowsync ){
             uint256 tokensperCents;
             
                 
-            for ( uint i = tokenHolderPaymentSync [ msg.sender ]  ; i&lt; count; i++){
+            for ( uint i = tokenHolderPaymentSync [ msg.sender ]  ; i< count; i++){
                 
                 if ( thBalances[msg.sender ][ i ].balance == 0 ) i = i + thBalances[msg.sender ][ i ].marker -1 ;
                 

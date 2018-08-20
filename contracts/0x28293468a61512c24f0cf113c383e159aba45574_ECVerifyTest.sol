@@ -27,16 +27,16 @@ contract ECVerifyTest {
         assembly {
             r := mload(add(sig, 32))
             s := mload(add(sig, 64))
-            // Here we are loading the last 32 bytes. We exploit the fact that &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // Here we are loading the last 32 bytes. We exploit the fact that 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
         }
         // Albeit non-transactional signatures are not specified by the YP, one would expect it to match the YP range of [27, 28]
         // geth uses [0, 1] and some clients have followed. This might change, see https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27) {
+        if (v < 27) {
           v += 27;
         }
-        if (v != 27 &amp;&amp; v != 28) return address(0);
+        if (v != 27 && v != 28) return address(0);
         return ecrecover(hash, v, r, s);
     }
 

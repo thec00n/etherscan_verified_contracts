@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,8 +184,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract OpportyToken is StandardToken {
 
-  string public constant name = &quot;OpportyToken&quot;;
-  string public constant symbol = &quot;OPP&quot;;
+  string public constant name = "OpportyToken";
+  string public constant symbol = "OPP";
   uint8 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 1000000000 * (10 ** uint256(decimals));
@@ -204,7 +204,7 @@ contract OpportyToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -301,11 +301,11 @@ contract HoldPresaleContract is Ownable {
     bool withdrawed;
   }
 
-  mapping(address =&gt; Holder) public holderList;
-  mapping(uint =&gt; address) private holderIndexes;
+  mapping(address => Holder) public holderList;
+  mapping(uint => address) private holderIndexes;
 
-  mapping (uint =&gt; address) private assetOwners;
-  mapping (address =&gt; uint) private assetOwnersIndex;
+  mapping (uint => address) private assetOwners;
+  mapping (address => uint) private assetOwnersIndex;
   uint public assetOwnersIndexes;
 
   uint private holderIndex;
@@ -314,7 +314,7 @@ contract HoldPresaleContract is Ownable {
   event Hold(address sender, address contributor, uint amount, uint8 holdPeriod);
 
   modifier onlyAssetsOwners() {
-    require(assetOwnersIndex[msg.sender] &gt; 0);
+    require(assetOwnersIndex[msg.sender] > 0);
     _;
   }
 
@@ -351,8 +351,8 @@ contract HoldPresaleContract is Ownable {
   function unlockTokens() external {
     address contributor = msg.sender;
 
-    if (holderList[contributor].isActive &amp;&amp; !holderList[contributor].withdrawed) {
-      if (now &gt;= holderList[contributor].holdPeriodTimestamp) {
+    if (holderList[contributor].isActive && !holderList[contributor].withdrawed) {
+      if (now >= holderList[contributor].holdPeriodTimestamp) {
         if ( OppToken.transfer( msg.sender, holderList[contributor].tokens ) ) {
           holderList[contributor].withdrawed = true;
           TokensTransfered(contributor,  holderList[contributor].tokens);
@@ -424,8 +424,8 @@ contract OpportyPresale is Pausable {
     bool payed;
   }
 
-  mapping(address =&gt; WhitelistContributor) public whiteList;
-  mapping(uint =&gt; address) private whitelistIndexes;
+  mapping(address => WhitelistContributor) public whiteList;
+  mapping(uint => address) private whitelistIndexes;
   uint private whitelistIndex;
 
   /* constructor */
@@ -486,17 +486,17 @@ contract OpportyPresale is Pausable {
 
   function() whenNotPaused public payable {
     require(state == SaleState.SALE);
-    require(msg.value &gt;= 0.3 ether);
+    require(msg.value >= 0.3 ether);
     require(whiteList[msg.sender].isActive);
 
-    if (now &gt; endDate) {
+    if (now > endDate) {
       state = SaleState.ENDED;
       msg.sender.transfer(msg.value);
       return ;
     }
 
     WhitelistContributor memory contrib = whiteList[msg.sender];
-    require(contrib.invAmount &lt;= msg.value || contrib.payed);
+    require(contrib.invAmount <= msg.value || contrib.payed);
 
     if(whiteList[msg.sender].payed == false) {
       whiteList[msg.sender].payed = true;
@@ -522,7 +522,7 @@ contract OpportyPresale is Pausable {
   function sendTokensToHold() public onlyOwner {
     require(state == SaleState.ENDED);
 
-    require(getBalanceContract() &gt;= tokenRaised);
+    require(getBalanceContract() >= tokenRaised);
 
     if (token.transfer(holdContract, tokenRaised )) {
       tokensTransferredToHold = true;
@@ -550,7 +550,7 @@ contract OpportyPresale is Pausable {
 
   function setEndSaleDate(uint date) public onlyOwner {
     require(state == SaleState.NEW);
-    require(date &gt; now);
+    require(date > now);
     uint oldEndDate = endSaleDate;
     endSaleDate = date;
     ManualChangeEndDate(oldEndDate, date);
@@ -558,7 +558,7 @@ contract OpportyPresale is Pausable {
 
   function setEndDate(uint date) public onlyOwner {
     require(state == SaleState.NEW || state == SaleState.SALE);
-    require(date &gt; now);
+    require(date > now);
     uint oldEndDate = endDate;
     endDate = date;
     ManualChangeEndDate(oldEndDate, date);
@@ -596,13 +596,13 @@ contract OpportySaleBonus is Ownable {
 
   /**
   * @dev constructor
-  * 20% &#39;1st 24 hours&#39;
-  * 15% &#39;2-4 days&#39;
-  * 12% &#39;5-9 days&#39;
-  * 10% &#39;10-14 days&#39;
-  * 8%  &#39;15-19 days&#39;
-  * 5%  &#39;20-24 days&#39;
-  * 0%  &#39;25-28 days&#39;
+  * 20% '1st 24 hours'
+  * 15% '2-4 days'
+  * 12% '5-9 days'
+  * 10% '10-14 days'
+  * 8%  '15-19 days'
+  * 5%  '20-24 days'
+  * 0%  '25-28 days'
   */
   function OpportySaleBonus(uint _startDate) {
     startDate = _startDate;
@@ -626,22 +626,22 @@ contract OpportySaleBonus is Ownable {
  * @return token bonus
  */
   function calculateBonusForHours(uint256 _tokens) returns(uint256) {
-    if (now &gt;= startDate &amp;&amp; now &lt;= firstBonusPhase ) {
+    if (now >= startDate && now <= firstBonusPhase ) {
       return _tokens.mul(firstExtraBonus).div(100);
     } else
-    if (now &lt;= secondBonusPhase ) {
+    if (now <= secondBonusPhase ) {
       return _tokens.mul(secondExtraBonus).div(100);
     } else
-    if (now &lt;= thirdBonusPhase ) {
+    if (now <= thirdBonusPhase ) {
       return _tokens.mul(thirdExtraBonus).div(100);
     } else
-    if (now &lt;= fourBonusPhase ) {
+    if (now <= fourBonusPhase ) {
       return _tokens.mul(fourExtraBonus).div(100);
     } else
-    if (now &lt;= fifthBonusPhase ) {
+    if (now <= fifthBonusPhase ) {
       return _tokens.mul(fifthExtraBonus).div(100);
     } else
-    if (now &lt;= sixthBonusPhase ) {
+    if (now <= sixthBonusPhase ) {
       return _tokens.mul(sixthExtraBonus).div(100);
     } else
     return 0;
@@ -661,22 +661,22 @@ contract OpportySaleBonus is Ownable {
  * @dev return current bonus percent
  */
   function getBonus() public constant returns (uint) {
-    if (now &gt;= startDate &amp;&amp; now &lt;= firstBonusPhase ) {
+    if (now >= startDate && now <= firstBonusPhase ) {
       return firstExtraBonus;
     } else
-    if ( now &lt;= secondBonusPhase ) {
+    if ( now <= secondBonusPhase ) {
       return secondExtraBonus;
     } else
-    if ( now &lt;= thirdBonusPhase ) {
+    if ( now <= thirdBonusPhase ) {
       return thirdExtraBonus;
     } else
-    if ( now &lt;= fourBonusPhase ) {
+    if ( now <= fourBonusPhase ) {
       return fourExtraBonus;
     } else
-    if ( now &lt;= fifthBonusPhase ) {
+    if ( now <= fifthBonusPhase ) {
       return fifthExtraBonus;
     } else
-    if ( now &lt;= sixthBonusPhase ) {
+    if ( now <= sixthBonusPhase ) {
       return sixthExtraBonus;
     } else
     return 0;
@@ -732,14 +732,14 @@ contract OpportySale is Pausable {
   enum SaleState  { NEW, SALE, ENDED }
   SaleState private state;
 
-  mapping(address =&gt; ContributorData) public contributorList;
+  mapping(address => ContributorData) public contributorList;
   uint private nextContributorIndex;
   uint private nextContributorToClaim;
   uint private nextContributorToTransferTokens;
 
-  mapping(uint =&gt; address) private contributorIndexes;
-  mapping(address =&gt; bool) private hasClaimedEthWhenFail; //address who got a refund
-  mapping(address =&gt; bool) private hasWithdrawedTokens; //address who got a tokens
+  mapping(uint => address) private contributorIndexes;
+  mapping(address => bool) private hasClaimedEthWhenFail; //address who got a refund
+  mapping(address => bool) private hasWithdrawedTokens; //address who got a tokens
 
   /* Events */
   event CrowdsaleStarted(uint blockNumber);
@@ -784,7 +784,7 @@ contract OpportySale is Pausable {
 
   function setStartDate(uint date) onlyOwner {
     require(state == SaleState.NEW);
-    require(date &lt; endDate);
+    require(date < endDate);
     uint oldStartDate = startDate;
     startDate = date;
     bonus.changeStartDate(date);
@@ -792,7 +792,7 @@ contract OpportySale is Pausable {
   }
   function setEndDate(uint date) onlyOwner {
     require(state == SaleState.NEW || state == SaleState.SALE);
-    require(date &gt; now &amp;&amp; date &gt; startDate);
+    require(date > now && date > startDate);
     uint oldEndDate = endDate;
     endDate = date;
     ManualChangeEndDate(oldEndDate, date);
@@ -829,19 +829,19 @@ contract OpportySale is Pausable {
    * @return false when contract does not accept tokens
    */
   function checkCrowdsaleState() internal returns (bool){
-    if (getEthRaised() &gt;= HARDCAP &amp;&amp; state != SaleState.ENDED) {
+    if (getEthRaised() >= HARDCAP && state != SaleState.ENDED) {
       state = SaleState.ENDED;
       HardCapReached(block.number); // Close the crowdsale
       CrowdsaleEnded(block.number);
       return true;
     }
 
-    if(now &gt; startDate &amp;&amp; now &lt;= endDate) {
-      if (state == SaleState.SALE &amp;&amp; checkBalanceContract() &gt;= minimumTokensToStart ) {
+    if(now > startDate && now <= endDate) {
+      if (state == SaleState.SALE && checkBalanceContract() >= minimumTokensToStart ) {
         return true;
       }
     } else {
-      if (state != SaleState.ENDED &amp;&amp; now &gt; endDate) {
+      if (state != SaleState.ENDED && now > endDate) {
         state = SaleState.ENDED;
         CrowdsaleEnded(block.number);
         return true;
@@ -855,18 +855,18 @@ contract OpportySale is Pausable {
    */
   function processTransaction(address _contributor, uint _amount) internal {
 
-    require(msg.value &gt;= minimalContribution);
+    require(msg.value >= minimalContribution);
 
     uint maxContribution = calculateMaxContribution();
     uint contributionAmount = _amount;
     uint returnAmount = 0;
 
-    if (maxContribution &lt; _amount) {
+    if (maxContribution < _amount) {
       contributionAmount = maxContribution;
       returnAmount = _amount - maxContribution;
     }
     uint ethrai = getEthRaised() ;
-    if (ethrai + contributionAmount &gt;= SOFTCAP &amp;&amp; SOFTCAP &gt; ethrai) {
+    if (ethrai + contributionAmount >= SOFTCAP && SOFTCAP > ethrai) {
       SoftCapReached(block.number);
     }
 
@@ -886,7 +886,7 @@ contract OpportySale is Pausable {
     uint tokenAmount  = contributionAmount.div(price);
     uint timeBonus    = bonus.calculateBonusForHours(tokenAmount);
 
-    if (tokenAmount &gt; 0) {
+    if (tokenAmount > 0) {
       contributorList[_contributor].tokensIssued += tokenAmount.add(timeBonus);
       contributorList[_contributor].bonusAmount += timeBonus;
       totalTokens += tokenAmount.add(timeBonus);
@@ -918,9 +918,9 @@ contract OpportySale is Pausable {
     uint cbalance = checkBalanceContract();
 
     require (cbalance != 0);
-    require (withdrawedTokens &gt;= totalTokens || getEthRaised() &lt; SOFTCAP);
+    require (withdrawedTokens >= totalTokens || getEthRaised() < SOFTCAP);
 
-    if (getEthRaised() &gt;= SOFTCAP) {
+    if (getEthRaised() >= SOFTCAP) {
       if (releasedTokens == true) {
         if (token.transfer(msg.sender, cbalance ) ) {
           TokensTransferedToOwner(msg.sender , cbalance );
@@ -948,9 +948,9 @@ contract OpportySale is Pausable {
    */
   function getTokens() whenNotPaused {
     uint er =  getEthRaised();
-    require((now &gt; endDate &amp;&amp; er &gt;= SOFTCAP )  || ( er &gt;= HARDCAP)  );
+    require((now > endDate && er >= SOFTCAP )  || ( er >= HARDCAP)  );
     require(state == SaleState.ENDED);
-    require(contributorList[msg.sender].tokensIssued &gt; 0);
+    require(contributorList[msg.sender].tokensIssued > 0);
     require(!hasWithdrawedTokens[msg.sender]);
 
     uint tokenCount = contributorList[msg.sender].tokensIssued;
@@ -964,13 +964,13 @@ contract OpportySale is Pausable {
   }
   function batchReturnTokens(uint _numberOfReturns) onlyOwner whenNotPaused {
     uint er = getEthRaised();
-    require((now &gt; endDate &amp;&amp; er &gt;= SOFTCAP )  || (er &gt;= HARDCAP)  );
+    require((now > endDate && er >= SOFTCAP )  || (er >= HARDCAP)  );
     require(state == SaleState.ENDED);
 
     address currentParticipantAddress;
     uint tokensCount;
 
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
       currentParticipantAddress = contributorIndexes[nextContributorToTransferTokens];
       if (currentParticipantAddress == 0x0) return;
       if (!hasWithdrawedTokens[currentParticipantAddress]) {
@@ -991,8 +991,8 @@ contract OpportySale is Pausable {
    * @dev if crowdsale is unsuccessful, investors can claim refunds here
    */
   function refund() whenNotPaused {
-    require(now &gt; endDate &amp;&amp; getEthRaised() &lt; SOFTCAP);
-    require(contributorList[msg.sender].contributionAmount &gt; 0);
+    require(now > endDate && getEthRaised() < SOFTCAP);
+    require(contributorList[msg.sender].contributionAmount > 0);
     require(!hasClaimedEthWhenFail[msg.sender]);
 
     uint ethContributed = contributorList[msg.sender].contributionAmount;
@@ -1004,10 +1004,10 @@ contract OpportySale is Pausable {
     }
   }
   function batchReturnEthIfFailed(uint _numberOfReturns) onlyOwner whenNotPaused {
-    require(now &gt; endDate &amp;&amp; getEthRaised() &lt; SOFTCAP);
+    require(now > endDate && getEthRaised() < SOFTCAP);
     address currentParticipantAddress;
     uint contribution;
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
       currentParticipantAddress = contributorIndexes[nextContributorToClaim];
       if (currentParticipantAddress == 0x0) return;
       if (!hasClaimedEthWhenFail[currentParticipantAddress]) {
@@ -1029,7 +1029,7 @@ contract OpportySale is Pausable {
    */
   function withdrawEth() {
     require(this.balance != 0);
-    require(getEthRaised() &gt;= SOFTCAP);
+    require(getEthRaised() >= SOFTCAP);
     require(msg.sender == wallet);
     uint bal = this.balance;
     wallet.transfer(bal);
@@ -1038,7 +1038,7 @@ contract OpportySale is Pausable {
 
   function withdrawRemainingBalanceForManualRecovery() onlyOwner {
     require(this.balance != 0);
-    require(now &gt; endDate);
+    require(now > endDate);
     require(contributorIndexes[nextContributorToClaim] == 0x0);
     msg.sender.transfer(this.balance);
   }
@@ -1047,9 +1047,9 @@ contract OpportySale is Pausable {
    * @dev Manual start crowdsale.
    */
   function startCrowdsale() onlyOwner  {
-    require(now &gt; startDate &amp;&amp; now &lt;= endDate);
+    require(now > startDate && now <= endDate);
     require(state == SaleState.NEW);
-    require(checkBalanceContract() &gt;= minimumTokensToStart);
+    require(checkBalanceContract() >= minimumTokensToStart);
 
     state = SaleState.SALE;
     CrowdsaleStarted(block.number);
@@ -1100,7 +1100,7 @@ contract OpportySale is Pausable {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endDate || state == SaleState.ENDED;
+    return now > endDate || state == SaleState.ENDED;
   }
 
   function getTokenBalance() constant returns (uint) {
@@ -1111,7 +1111,7 @@ contract OpportySale is Pausable {
    * @dev return current bonus percent
    */
   function getCurrentBonus() public constant returns (uint) {
-    if(now &gt; endDate || state == SaleState.ENDED) {
+    if(now > endDate || state == SaleState.ENDED) {
       return 0;
     }
     return bonus.getBonus();

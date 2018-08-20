@@ -68,7 +68,7 @@ contract Administered is Owned {
     // ------------------------------------------------------------------------
     // Mapping of administrators
     // ------------------------------------------------------------------------
-    mapping (address =&gt; bool) public administrators;
+    mapping (address => bool) public administrators;
 
     // ------------------------------------------------------------------------
     // Add and delete adminstrator events
@@ -118,7 +118,7 @@ contract GazeCoinCrowdsaleWhitelist is Administered {
     // ------------------------------------------------------------------------
     // The whitelist, true for enabled, false for disabled
     // ------------------------------------------------------------------------
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     // ------------------------------------------------------------------------
     // Events
@@ -139,7 +139,7 @@ contract GazeCoinCrowdsaleWhitelist is Administered {
     function enable(address[] _addresses) public onlyAdministrator {
         require(!sealed);
         require(_addresses.length != 0);
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             require(_addresses[i] != 0x0);
             if (!whitelist[_addresses[i]]) {
                 whitelist[_addresses[i]] = true;
@@ -155,7 +155,7 @@ contract GazeCoinCrowdsaleWhitelist is Administered {
     function disable(address[] _addresses) public onlyAdministrator {
         require(!sealed);
         require(_addresses.length != 0);
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             require(_addresses[i] != 0x0);
             if (whitelist[_addresses[i]]) {
                 whitelist[_addresses[i]] = false;
@@ -175,7 +175,7 @@ contract GazeCoinCrowdsaleWhitelist is Administered {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers - no payable modifier
+    // Don't accept ethers - no payable modifier
     // ------------------------------------------------------------------------
     function () public {
     }

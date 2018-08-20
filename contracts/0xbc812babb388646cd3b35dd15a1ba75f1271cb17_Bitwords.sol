@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,7 +49,7 @@ contract Ownable {
  * safetly deposit/receive ether and interact with the Bitwords platform.
  */ 
 contract Bitwords is Ownable {
-    mapping(address =&gt; uint) public advertiserBalances;
+    mapping(address => uint) public advertiserBalances;
     
     // The bitwords address, where all the 30% cut is received ETH
     address public bitwordsWithdrawlAddress = 0xe4eecf51618e1ec3c07837e8bee39f0a33d1eb2b;
@@ -77,7 +77,7 @@ contract Bitwords is Ownable {
      * @param cut   the amount of cut that Bitwords takes.
      */
     function setBitwordsCut (uint cut) onlyOwner public {
-        require(cut &lt;= 30, &quot;cut cannot be more than 30%&quot;);
+        require(cut <= 30, "cut cannot be more than 30%");
         bitwordsCutOutof100 = cut;
     }
     
@@ -90,16 +90,16 @@ contract Bitwords is Ownable {
      * @param cpc           The cost-per-click
      * @param publisher     The address of the publisher from whom we should credit ether
      * 
-     * TODO: have the advertiser&#39;s signature also involved.
+     * TODO: have the advertiser's signature also involved.
      */ 
     function chargeAdvertiser (address advertiser, uint clicks, uint cpc, address publisher) onlyOwner public {
         uint cost = clicks * cpc;
         
         // Bail if the advertiser does not have enough balance.
-        if (advertiserBalances[advertiser] - cost &lt;= 0) return;
+        if (advertiserBalances[advertiser] - cost <= 0) return;
         
         // Bail if bitwords takes more than a 30% cut.
-        if (bitwordsCutOutof100 &gt; 30) return;
+        if (bitwordsCutOutof100 > 30) return;
         
         advertiserBalances[advertiser] -= cost;
         
@@ -124,7 +124,7 @@ contract Bitwords is Ownable {
     function refundAdveriser (uint amount) public {
         // Ensure that the advertiser has enough balance to refund the smart 
         // contract
-        require(advertiserBalances[msg.sender] - amount &gt;= 0, &quot;Insufficient balance&quot;);
+        require(advertiserBalances[msg.sender] - amount >= 0, "Insufficient balance");
         
         // deduct balance and send the ether
         advertiserBalances[msg.sender] -= amount;

@@ -75,10 +75,10 @@ contract DSStop is DSNote, DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
@@ -105,9 +105,9 @@ contract ERC20 is ERC20Events {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; uint256)                       _frozens;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => uint256)                       _frozens;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     constructor(uint supply) public {
         _balances[msg.sender] = supply;
@@ -158,7 +158,7 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract DSToken is DSTokenBase(60000000000000000000000000), DSStop {
 
-    string  public  symbol = &quot;HER&quot;;
+    string  public  symbol = "HER";
     uint8  public  decimals = 18; 
     event Freeze(address indexed guy, uint wad);
 
@@ -171,9 +171,9 @@ contract DSToken is DSTokenBase(60000000000000000000000000), DSStop {
         stoppable
         returns (bool)
     {
-        require(_balances[src] - _frozens[src] &gt;= wad);
+        require(_balances[src] - _frozens[src] >= wad);
         
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -185,13 +185,13 @@ contract DSToken is DSTokenBase(60000000000000000000000000), DSStop {
         return true;
     }
     function freezeAccount(address guy, uint wad) public auth {
-        require(_balances[guy] &gt;= wad);
+        require(_balances[guy] >= wad);
         
         _frozens[guy] = add(0, wad);
         emit Freeze(guy, wad);
     }
 
-    string   public  name = &quot;Herdius&quot;;
+    string   public  name = "Herdius";
 
     function setName(string name_) public auth {
         name = name_;

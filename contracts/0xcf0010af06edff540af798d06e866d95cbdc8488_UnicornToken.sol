@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -189,23 +189,23 @@ contract UnicornBase is UnicornAccessControl {
     uint256 private lastUnicornId;
 
     //Mapping from unicorn ID to Unicorn struct
-    mapping(uint256 =&gt; Unicorn) public unicorns;
+    mapping(uint256 => Unicorn) public unicorns;
 
     // Mapping from unicorn ID to owner
-    mapping(uint256 =&gt; address) private unicornOwner;
+    mapping(uint256 => address) private unicornOwner;
 
     // Mapping from unicorn ID to approved address
-    mapping(uint256 =&gt; address) private unicornApprovals;
+    mapping(uint256 => address) private unicornApprovals;
 
     // Mapping from owner to list of owned unicorn IDs
-    mapping(address =&gt; uint256[]) private ownedUnicorns;
+    mapping(address => uint256[]) private ownedUnicorns;
 
     // Mapping from unicorn ID to index of the owner unicorns list
-    // т.е. ID уникорна =&gt; порядковый номер в списке владельца
-    mapping(uint256 =&gt; uint256) private ownedUnicornsIndex;
+    // т.е. ID уникорна => порядковый номер в списке владельца
+    mapping(uint256 => uint256) private ownedUnicornsIndex;
 
     // Mapping from unicorn ID to approval for GeneLab
-    mapping(uint256 =&gt; bool) private unicornApprovalsForGeneLab;
+    mapping(uint256 => bool) private unicornApprovalsForGeneLab;
 
     modifier onlyOwnerOf(uint256 _unicornId) {
         require(owns(msg.sender, _unicornId));
@@ -397,7 +397,7 @@ contract UnicornBase is UnicornAccessControl {
             birthTime : uint64(now),
             freezingEndTime : 0,
             freezingTourEndTime: 0,
-            name: &#39;&#39;
+            name: ''
             });
         emit Transfer(0x0, _owner, _unicornId);
         return _unicornId;
@@ -405,7 +405,7 @@ contract UnicornBase is UnicornAccessControl {
 
 
     function owns(address _claimant, uint256 _unicornId) public view returns (bool) {
-        return ownerOf(_unicornId) == _claimant &amp;&amp; ownerOf(_unicornId) != address(0);
+        return ownerOf(_unicornId) == _claimant && ownerOf(_unicornId) != address(0);
     }
 
 
@@ -417,17 +417,17 @@ contract UnicornBase is UnicornAccessControl {
 
 
     function fromHexChar(uint8 _c) internal pure returns (uint8) {
-        return _c - (_c &lt; 58 ? 48 : (_c &lt; 97 ? 55 : 87));
+        return _c - (_c < 58 ? 48 : (_c < 97 ? 55 : 87));
     }
 
 
     function getUnicornGenByte(uint _unicornId, uint _byteNo) public view returns (uint8) {
-        uint n = _byteNo &lt;&lt; 1; // = _byteNo * 2
-        //        require(unicorns[_unicornId].gene.length &gt;= n + 1);
-        if (unicorns[_unicornId].gene.length &lt; n + 1) {
+        uint n = _byteNo << 1; // = _byteNo * 2
+        //        require(unicorns[_unicornId].gene.length >= n + 1);
+        if (unicorns[_unicornId].gene.length < n + 1) {
             return 0;
         }
-        return fromHexChar(uint8(unicorns[_unicornId].gene[n])) &lt;&lt; 4 | fromHexChar(uint8(unicorns[_unicornId].gene[n + 1]));
+        return fromHexChar(uint8(unicorns[_unicornId].gene[n])) << 4 | fromHexChar(uint8(unicorns[_unicornId].gene[n + 1]));
     }
 
 
@@ -493,7 +493,7 @@ contract UnicornBase is UnicornAccessControl {
     //change freezing time for candy
     function minusFreezingTime(uint _unicornId, uint64 _time) onlyBreeding public {
         //не минусуем на уже размороженных конях
-        require(unicorns[_unicornId].freezingEndTime &gt; now);
+        require(unicorns[_unicornId].freezingEndTime > now);
         //не используем safeMath, т.к. subFreezingTime в теории не должен быть больше now %)
         unicorns[_unicornId].freezingEndTime -= _time;
     }
@@ -501,24 +501,24 @@ contract UnicornBase is UnicornAccessControl {
     //change tour freezing time for candy
     function minusTourFreezingTime(uint _unicornId, uint64 _time) onlyBreeding public {
         //не минусуем на уже размороженных конях
-        require(unicorns[_unicornId].freezingTourEndTime &gt; now);
+        require(unicorns[_unicornId].freezingTourEndTime > now);
         //не используем safeMath, т.к. subTourFreezingTime в теории не должен быть больше now %)
         unicorns[_unicornId].freezingTourEndTime -= _time;
     }
 
     function isUnfreezed(uint _unicornId) public view returns (bool) {
-        return (unicorns[_unicornId].birthTime &gt; 0 &amp;&amp; unicorns[_unicornId].freezingEndTime &lt;= uint64(now));
+        return (unicorns[_unicornId].birthTime > 0 && unicorns[_unicornId].freezingEndTime <= uint64(now));
     }
 
     function isTourUnfreezed(uint _unicornId) public view returns (bool) {
-        return (unicorns[_unicornId].birthTime &gt; 0 &amp;&amp; unicorns[_unicornId].freezingTourEndTime &lt;= uint64(now));
+        return (unicorns[_unicornId].birthTime > 0 && unicorns[_unicornId].freezingTourEndTime <= uint64(now));
     }
 
 }
 
 contract UnicornToken is UnicornBase {
-    string public constant name = &quot;UnicornGO&quot;;
-    string public constant symbol = &quot;UNG&quot;;
+    string public constant name = "UnicornGO";
+    string public constant symbol = "UNG";
 
     function UnicornToken(address _unicornManagementAddress) UnicornAccessControl(_unicornManagementAddress) public {
 

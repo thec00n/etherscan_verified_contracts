@@ -36,11 +36,11 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract GPowerToken is owned{
     
     //************** Token ************//
-	string public standard = &#39;Token 1&#39;;
+	string public standard = 'Token 1';
 
-	string public name = &#39;GPower&#39;;
+	string public name = 'GPower';
 
-	string public symbol = &#39;GRP&#39;;
+	string public symbol = 'GRP';
 
 	uint8 public decimals = 18;
 
@@ -81,11 +81,11 @@ contract GPowerToken is owned{
     uint256 newCourceSale=0;
     
      //*** Balance ***//
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public balanceOfPreSale;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public balanceOfPreSale;
     
     //*** Alowed ***//
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     //*** Tranfer ***//
     event Transfer(address from, address to, uint256 value);
@@ -113,7 +113,7 @@ contract GPowerToken is owned{
 	
 	//*** Payable ***//
     function() payable public {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(msg.sender != 0x0);
         
         if(!stopSale){
@@ -121,7 +121,7 @@ contract GPowerToken is owned{
             uint256 tokens;
             wallet=owner;
         
-             if(newCourceSale&gt;0){
+             if(newCourceSale>0){
                     weiAmount=newCourceSale;
                 }
                     
@@ -132,19 +132,19 @@ contract GPowerToken is owned{
             else if(isIco()){
                 wallet=icoAddress;
             
-                if((icoStart+(7*24*60*60)) &gt;= now){
+                if((icoStart+(7*24*60*60)) >= now){
                     weiAmount=4000;
                 }
-                else if((icoStart+(14*24*60*60)) &gt;= now){
+                else if((icoStart+(14*24*60*60)) >= now){
                     weiAmount=3750;
                 }
-                else if((icoStart+(21*24*60*60)) &gt;= now){
+                else if((icoStart+(21*24*60*60)) >= now){
                     weiAmount=3500;
                 }
-                else if((icoStart+(28*24*60*60)) &gt;= now){
+                else if((icoStart+(28*24*60*60)) >= now){
                     weiAmount=3250;
                 }
-                else if((icoStart+(35*24*60*60)) &gt;= now){
+                else if((icoStart+(35*24*60*60)) >= now){
                     weiAmount=3000;
                 }
                 else{
@@ -162,14 +162,14 @@ contract GPowerToken is owned{
         wallet.transfer(msg.value);
         }
         else{
-                require(0&gt;1);
+                require(0>1);
              }
 	}
 	
 	/* Send coins */
 	function transfer(address _to, uint256 _value) public returns (bool success) {
 	    if(transfersEnabled || msg.sender==owner){
-		    require(balanceOf[msg.sender] &gt;= _value*1000000000000000000);
+		    require(balanceOf[msg.sender] >= _value*1000000000000000000);
 		    // Subtract from the sender
 		    balanceOf[msg.sender]-= _value*1000000000000000000;
 	        balanceOf[_to] += _value*1000000000000000000;
@@ -185,7 +185,7 @@ contract GPowerToken is owned{
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 	    if(transfersEnabled || msg.sender==owner){
 	        // Check if the sender has enough
-		    require(balanceOf[_from] &gt;= _value*1000000000000000000);
+		    require(balanceOf[_from] >= _value*1000000000000000000);
 		    // Check allowed
 
 		    // Subtract from the sender
@@ -212,7 +212,7 @@ contract GPowerToken is owned{
 	}
 	
 	function transferArrayBalanceForPreSale(address[] addrs,uint256[] values) public onlyOwner returns(bool result){
-	    for(uint i=0;i&lt;addrs.length;i++){
+	    for(uint i=0;i<addrs.length;i++){
 	        transfer(addrs[i],values[i]*1000000000000000000);
 	    }
 	    return true;
@@ -246,7 +246,7 @@ contract GPowerToken is owned{
 	 //*** Get Balance for owner(tranfer for sale) ***//
     function GetBalanceOwnerForTransfer(uint256 value) onlyOwner public{
         require(msg.sender==owner);
-        if(totalSupply&gt;=value*1000000000000000000){
+        if(totalSupply>=value*1000000000000000000){
             balanceOf[this]-= value*1000000000000000000;
 	        balanceOf[owner] += value*1000000000000000000;
 	        totalSupply-=value*1000000000000000000;
@@ -257,7 +257,7 @@ contract GPowerToken is owned{
 	
 	//*** Kill Tokens For GPower***//
 	function killTokensForGPower() onlyOwner public{
-	    if(bountyTokens&gt;0){
+	    if(bountyTokens>0){
 	        Transfer(this,bountyAddress,bountyTokens*1000000000000000000);
             Transfer(this,founderAddress,founderTokens*1000000000000000000);
             Transfer(this,advisersConsultantsAddress,advisersConsultantTokens*1000000000000000000);
@@ -307,7 +307,7 @@ contract GPowerToken is owned{
 	
 	//*** Is ico ***//
     function isIco() constant public returns (bool ico) {
-		 bool result=((icoStart+(35*24*60*60)) &gt;= now);
+		 bool result=((icoStart+(35*24*60*60)) >= now);
 		 if(enableIco){
 		     return true;
 		 }
@@ -318,7 +318,7 @@ contract GPowerToken is owned{
     
     //*** Is PreSale ***//
     function isPreSale() constant public returns (bool preSale) {
-		bool result=(preSaleEnd &gt;= now);
+		bool result=(preSaleEnd >= now);
 		if(enablePreSale){
 		    return true;
 		}

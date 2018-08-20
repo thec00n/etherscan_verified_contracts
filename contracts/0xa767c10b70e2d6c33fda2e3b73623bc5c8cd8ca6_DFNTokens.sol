@@ -3,10 +3,10 @@ contract DFNTokens {
   string public name;
 
   // mapping from address to balance
-  mapping(address =&gt; uint) public balance;
+  mapping(address => uint) public balance;
 
   // set of addresses that are authorized to transfer
-  mapping(address =&gt; bool) public authorizedToTransfer;
+  mapping(address => bool) public authorizedToTransfer;
 
   // owner (authorized to do anything)
   address public owner;
@@ -24,13 +24,13 @@ contract DFNTokens {
   // list of addresses with balances
   address[] public addrList;
   // test if address has ever had a non-zero balance
-  mapping(address =&gt; bool) public seen;
+  mapping(address => bool) public seen;
   // number of addresses that ever had a non-zero balance
   uint public nAddresses = 0;
 
   // Constructor
   function DFNTokens() public {
-      name = &quot;DFINITY Genesis&quot;;
+      name = "DFINITY Genesis";
 
       // set owner
       owner = msg.sender;
@@ -62,7 +62,7 @@ contract DFNTokens {
 
   // Transfer DFN
   function TransferDFN(address from, address to, uint amt) onlyauthorized alive public {
-    require(0 &lt; amt &amp;&amp; amt &lt;= balance[from]);
+    require(0 < amt && amt <= balance[from]);
 
     // transfer balance
     balance[to] += amt;
@@ -94,7 +94,7 @@ function Notarize(bytes32 hash) onlyowner alive public {
 // Freeze contract
 function Freeze() onlyowner alive public {
     // Freeze if this is the second call within 20 blocks
-    if (freezeHeight &gt; 0 &amp;&amp; block.number &lt; freezeHeight + 20) { frozen = true; }
+    if (freezeHeight > 0 && block.number < freezeHeight + 20) { frozen = true; }
 
     // Otherwise set block number of latest freeze request
     freezeHeight = block.number;

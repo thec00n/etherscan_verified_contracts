@@ -68,8 +68,8 @@ contract MultiCertifier is Owned, Certifier {
 	function addDelegate(address _new) public only_owner { delegates[_new] = true; }
 	function removeDelegate(address _old) public only_owner { delete delegates[_old]; }
 
-	mapping (address =&gt; Certification) certs;
-	mapping (address =&gt; bool) delegates;
+	mapping (address => Certification) certs;
+	mapping (address => bool) delegates;
 
 	/// Unused interface methods.
 	function get(address, string) public constant returns (bytes32) {}
@@ -105,8 +105,8 @@ contract VouchFor {
         public
     {
         uint count = vouchers[_what].length;
-        require (count &gt; 0);
-        require (_index &lt; count);
+        require (count > 0);
+        require (_index < count);
         require (vouchers[_what][_index] == msg.sender);
         if (_index != count - 1) {
             vouchers[_what][_index] = vouchers[_what][count - 1];
@@ -120,6 +120,6 @@ contract VouchFor {
         _;
     }
     
-    mapping (bytes32 =&gt; address[]) public vouchers;
+    mapping (bytes32 => address[]) public vouchers;
     Certifier public certifier;
 }

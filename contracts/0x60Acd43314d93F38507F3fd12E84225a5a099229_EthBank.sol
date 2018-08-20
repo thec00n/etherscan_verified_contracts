@@ -1,8 +1,8 @@
 //***********************************ETH BANK
 //
-// It&#39;s an EthBank, every depositor earns interest on their deposits when a new depositor joins!
+// It's an EthBank, every depositor earns interest on their deposits when a new depositor joins!
 //
-// The interest rate is defined by the &quot;Interest_Rate&quot; variable, and is initially set to 2%, and may be changed later!
+// The interest rate is defined by the "Interest_Rate" variable, and is initially set to 2%, and may be changed later!
 //
 // The Bank will exist for long because it only pays out when the balance is above 60%. And if the balance is below 80% it pays out only half the interest.
 //
@@ -30,7 +30,7 @@ contract EthBank {
   uint public Total_Deposited=0;
   uint public Total_Paid_Out=0;
   uint public Interest_Rate=2; // the interest rate payout for deposits!
-string public Message=&quot;Welcome to EthBank&quot;;
+string public Message="Welcome to EthBank";
 	
   address public owner;
 
@@ -52,7 +52,7 @@ string public Message=&quot;Welcome to EthBank&quot;;
 //********************************************ENTER
 
   function enter() {
-    if (msg.value &gt; 200 finney) {
+    if (msg.value > 200 finney) {
 
     uint amount=msg.value;
 
@@ -77,7 +77,7 @@ string public Message=&quot;Welcome to EthBank&quot;;
      if (Fees != 0) 
      {
 	uint minimal= 1990 finney;
-	if(Fees&lt;minimal)
+	if(Fees<minimal)
 	{
       	owner.send(Fees);		//send fee to owner
 	Total_Paid_Out+=Fees;        //update paid out amount
@@ -86,8 +86,8 @@ string public Message=&quot;Welcome to EthBank&quot;;
 	{
 	uint Times= Fees/minimal;
 
-	for(uint i=0; i&lt;Times;i++)   // send the Fees out in packets compatible to EthVentures dividend function
-	if(Fees&gt;0)
+	for(uint i=0; i<Times;i++)   // send the Fees out in packets compatible to EthVentures dividend function
+	if(Fees>0)
 	{
 	owner.send(minimal);		//send fee to owner
 	Total_Paid_Out+=Fees;        //update paid out amount
@@ -100,12 +100,12 @@ string public Message=&quot;Welcome to EthBank&quot;;
     uint payout;
     uint nr=0;
 
-if(Total_Deposited * 80/100 &lt; Balance )  //if balance is at 80% or higher, then pay depositors
+if(Total_Deposited * 80/100 < Balance )  //if balance is at 80% or higher, then pay depositors
 {
   
 
 	
-    while (Balance &gt; depositors[nr].amount * Interest_Rate/100 &amp;&amp; nr&lt;depositors.length)  //exit condition to avoid infinite loop
+    while (Balance > depositors[nr].amount * Interest_Rate/100 && nr<depositors.length)  //exit condition to avoid infinite loop
     { 
       payout = depositors[nr].amount *Interest_Rate/100;                           //calculate pay out
       depositors[nr].etherAddress.send(payout);                        		//send pay out to participant
@@ -114,16 +114,16 @@ if(Total_Deposited * 80/100 &lt; Balance )  //if balance is at 80% or higher, th
       nr += 1;                                                                         //go to next participant
     }
     
-	Message=&quot;The Full Interest has been paid to Depositors!&quot;;
+	Message="The Full Interest has been paid to Depositors!";
 } 
 else  
 {
-if(Total_Deposited * 60/100 &lt; Balance )  //if balance is at 60% or higher, then pay depositors with half interest
+if(Total_Deposited * 60/100 < Balance )  //if balance is at 60% or higher, then pay depositors with half interest
 {
   
 
 	
-    while (Balance &gt; depositors[nr].amount * Interest_Rate/200 &amp;&amp; nr&lt;depositors.length)  //exit condition to avoid infinite loop
+    while (Balance > depositors[nr].amount * Interest_Rate/200 && nr<depositors.length)  //exit condition to avoid infinite loop
     { 
       payout = depositors[nr].amount *Interest_Rate/200;                           //calculate pay out
       depositors[nr].etherAddress.send(payout);                        		//send pay out to participant
@@ -132,9 +132,9 @@ if(Total_Deposited * 60/100 &lt; Balance )  //if balance is at 60% or higher, th
       nr += 1;                                                                         //go to next participant
     }
     
-	Message=&quot;Funds are between 60% and 80%, so only Half Interest has been paid!&quot;;
+	Message="Funds are between 60% and 80%, so only Half Interest has been paid!";
 } 
-else Message=&quot;Funds are below 60%, no interest payout until new Depositors join!&quot;;
+else Message="Funds are below 60%, no interest payout until new Depositors join!";
 
 
 
@@ -148,7 +148,7 @@ else Message=&quot;Funds are below 60%, no interest payout until new Depositors 
   function Set_Interest_Rate(uint new_interest) onlyowner  //set new interest rate
 	{
       	Interest_Rate = new_interest;
-	Message=&quot;The Bank has changed it&#39;s Interest Rates!&quot;;
+	Message="The Bank has changed it's Interest Rates!";
   	}
 
 }

@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -322,8 +322,8 @@ contract PausableToken is StandardToken, Pausable {
 
 contract BrickblockToken is PausableToken {
 
-  string public constant name = &quot;BrickblockToken&quot;;
-  string public constant symbol = &quot;BBK&quot;;
+  string public constant name = "BrickblockToken";
+  string public constant symbol = "BBK";
   uint256 public constant initialSupply = 500 * (10 ** 6) * (10 ** uint256(decimals));
   uint256 public companyTokens;
   uint256 public bonusTokens;
@@ -349,7 +349,7 @@ contract BrickblockToken is PausableToken {
   modifier supplyAvailable(uint256 _value) {
     uint256 _distributedTokens = initialSupply.sub(balances[this].add(bonusTokens));
     uint256 _maxDistributedAmount = initialSupply.mul(contributorsShare).div(100);
-    require(_distributedTokens.add(_value) &lt;= _maxDistributedAmount);
+    require(_distributedTokens.add(_value) <= _maxDistributedAmount);
     _;
   }
 
@@ -374,7 +374,7 @@ contract BrickblockToken is PausableToken {
   }
 
   // For worst case scenarios, e.g. when a vulnerability in this contract would be discovered and we would have to deploy a new contract
-  // This is only for visibility purposes to publicly indicate that we consider this contract &quot;dead&quot; and don&#39;t intend to re-activate it ever again
+  // This is only for visibility purposes to publicly indicate that we consider this contract "dead" and don't intend to re-activate it ever again
   function toggleDead()
     external
     onlyOwner
@@ -391,7 +391,7 @@ contract BrickblockToken is PausableToken {
   {
     uint _size;
     assembly { _size := extcodesize(addr) }
-    return _size &gt; 0;
+    return _size > 0;
   }
 
   // Fountain contract address could change over time, so we need the ability to update its address
@@ -437,7 +437,7 @@ contract BrickblockToken is PausableToken {
     return true;
   }
 
-  // Calculate the shares for company, bonus &amp; contibutors based on the intial totalSupply of 500.000.000 tokens - not what is left over after burning
+  // Calculate the shares for company, bonus & contibutors based on the intial totalSupply of 500.000.000 tokens - not what is left over after burning
   function finalizeTokenSale()
     external
     onlyOwner

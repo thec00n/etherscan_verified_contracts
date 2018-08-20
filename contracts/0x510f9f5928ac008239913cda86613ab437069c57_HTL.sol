@@ -16,12 +16,12 @@ contract SafeMath {
     
     function add(uint256 a, uint256 b) public pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function sub(uint256 a, uint256 b) public pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -32,17 +32,17 @@ contract SafeMath {
     }
 
     function div(uint256 a, uint256 b) public pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 }
 
 contract StandardToken is IERC20 {
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     SafeMath safeMath = new SafeMath();
 
@@ -55,7 +55,7 @@ contract StandardToken is IERC20 {
     }
 
     function transfer(address _to, uint256 _value) external returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+        require(_value > 0 && balances[msg.sender] >= _value);
         balances[msg.sender] = safeMath.sub(balances[msg.sender], _value);
         balances[_to] = safeMath.add(balances[_to], _value);
         emit Transfer(msg.sender, _to, _value);
@@ -63,7 +63,7 @@ contract StandardToken is IERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value);
+        require(_value > 0 && allowed[_from][msg.sender] >= _value && balances[_from] >= _value);
         balances[_from] = safeMath.sub(balances[_from], _value);
         balances[_to] = safeMath.add(balances[_to], _value);
         allowed[_from][msg.sender] = safeMath.sub(allowed[_from][msg.sender], _value);
@@ -107,15 +107,15 @@ contract OwnableToken is StandardToken {
     }
     
     function account(address _from, address _to, uint256 _value) onlyOwner public {
-        require(_from != address(0) &amp;&amp; _to != address(0));
-        require(_value &gt; 0 &amp;&amp; balances[_from] &gt;= _value);
+        require(_from != address(0) && _to != address(0));
+        require(_value > 0 && balances[_from] >= _value);
         balances[_from] = safeMath.sub(balances[_from], _value);
         balances[_to] = safeMath.add(balances[_to], _value);
         emit Transfer(_from, _to, _value);
     }
     
     function make(uint256 _value) public payable onlyOwner returns (bool success) {
-        require(_value &gt; 0x0);
+        require(_value > 0x0);
 
         balances[msg.sender] = safeMath.add(balances[msg.sender], _value);
         totalSupply = safeMath.add(totalSupply, _value);
@@ -124,8 +124,8 @@ contract OwnableToken is StandardToken {
     }
     
     function burn(uint256 _value) public payable onlyOwner returns (bool success) {
-        require(_value &gt; 0x0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0x0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeMath.sub(balances[msg.sender], _value);
         totalSupply = safeMath.sub(totalSupply, _value);
@@ -140,8 +140,8 @@ contract OwnableToken is StandardToken {
 
 contract HTL is OwnableToken {
     
-    string public constant symbol = &quot;HTL&quot;;
-    string public constant name = &quot;HT Charge Link&quot;;
+    string public constant symbol = "HTL";
+    string public constant name = "HT Charge Link";
     uint8 public constant decimals = 8;
     
     function HTL() public payable {

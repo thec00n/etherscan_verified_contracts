@@ -4,17 +4,17 @@ pragma solidity ^0.4.20;
 // An ERC223 standard
 //
 // author: SPIKE Team
-// Contact: <span class="__cf_email__" data-cfemail="8be8e7eee6eee5cbf8fbe2e0e2e5eca5e2e4">[email&#160;protected]</span>
+// Contact: <span class="__cf_email__" data-cfemail="8be8e7eee6eee5cbf8fbe2e0e2e5eca5e2e4">[email protected]</span>
 
 library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 
@@ -71,8 +71,8 @@ contract BasicSPIKE is ERC223 {
     using SafeMath for uint256;
     
     uint256 public constant decimals = 10;
-    string public constant symbol = &quot;SPIKE&quot;;
-    string public constant name = &quot;Spiking&quot;;
+    string public constant symbol = "SPIKE";
+    string public constant name = "Spiking";
     uint256 public _totalSupply = 5 * 10 ** 19; // total supply is 5*10^19 unit, equivalent to 5 Billion SPIKE
 
     // Owner of this contract
@@ -83,10 +83,10 @@ contract BasicSPIKE is ERC223 {
     bool public tradable = false;
 
     // Balances SPIKE for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
             
     /**
      * Functions with this modifier can only be executed by the owner
@@ -119,7 +119,7 @@ contract BasicSPIKE is ERC223 {
         return _totalSupply;
     }
         
-    /// @dev Gets account&#39;s balance
+    /// @dev Gets account's balance
     /// @param _addr Address of the account
     /// @return Account balance
     function balanceOf(address _addr) 
@@ -140,7 +140,7 @@ contract BasicSPIKE is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
  
     /// @dev Transfers the balance from msg.sender to an account
@@ -212,7 +212,7 @@ contract BasicSPIKE is ERC223 {
          
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -278,10 +278,10 @@ contract SPIKE is BasicSPIKE {
     uint256 public _originalBuyPrice = 80000 * 10**10; // original buy 1ETH = 80000 SPIKE = 80000 * 10**10 unit
 
     // List of approved investors
-    mapping(address =&gt; bool) private approvedInvestorList;
+    mapping(address => bool) private approvedInvestorList;
     
     // deposit
-    mapping(address =&gt; uint256) private deposit;
+    mapping(address => uint256) private deposit;
     
     // icoPercent
     uint256 public _icoPercent = 30;
@@ -321,9 +321,9 @@ contract SPIKE is BasicSPIKE {
      * total deposit must less than equal maximumBuyPrice
      */
     modifier validValue(){
-        // require value &gt;= _minimumBuy AND total deposit of msg.sender &lt;= maximumBuyPrice
-        require ( (msg.value &gt;= _minimumBuy) &amp;&amp;
-                ( (deposit[msg.sender].add(msg.value)) &lt;= _maximumBuy) );
+        // require value >= _minimumBuy AND total deposit of msg.sender <= maximumBuyPrice
+        require ( (msg.value >= _minimumBuy) &&
+                ( (deposit[msg.sender].add(msg.value)) <= _maximumBuy) );
         _;
     }
 
@@ -342,7 +342,7 @@ contract SPIKE is BasicSPIKE {
     validValue
     validInvestor {
         uint256 requestedUnits = (msg.value * _originalBuyPrice) / 10**18;
-        require(balances[owner] &gt;= requestedUnits);
+        require(balances[owner] >= requestedUnits);
         // prepare transfer data
         balances[owner] = balances[owner].sub(requestedUnits);
         balances[msg.sender] = balances[msg.sender].add(requestedUnits);
@@ -352,7 +352,7 @@ contract SPIKE is BasicSPIKE {
         
         // check total and auto turnOffSale
         totalTokenSold = totalTokenSold.add(requestedUnits);
-        if (totalTokenSold &gt;= _icoSupply){
+        if (totalTokenSold >= _icoSupply){
             _selling = false;
         }
         
@@ -397,11 +397,11 @@ contract SPIKE is BasicSPIKE {
     }
 
     /// @dev Updates buy price (owner ONLY)
-    /// @param newBuyPrice New buy price (in UNIT) 1ETH &lt;=&gt; 80,000 SPKIE = 100,000.0000000000 unit
+    /// @param newBuyPrice New buy price (in UNIT) 1ETH <=> 80,000 SPKIE = 100,000.0000000000 unit
     function setBuyPrice(uint256 newBuyPrice) 
     onlyOwner 
     public {
-        require(newBuyPrice&gt;0);
+        require(newBuyPrice>0);
         _originalBuyPrice = newBuyPrice; // unit
         // control _maximumBuy_USD = 10,000 USD, SPIKE price is 0.01USD
         // maximumBuy_SPIKE = 1000,000 SPIKE = 1000,000,0000000000 unit = 10^16
@@ -432,7 +432,7 @@ contract SPIKE is BasicSPIKE {
     function addInvestorList(address[] newInvestorList)
     onlyOwner
     public {
-        for (uint256 i = 0; i &lt; newInvestorList.length; i++){
+        for (uint256 i = 0; i < newInvestorList.length; i++){
             approvedInvestorList[newInvestorList[i]] = true;
         }
     }
@@ -442,7 +442,7 @@ contract SPIKE is BasicSPIKE {
     function removeInvestorList(address[] investorList)
     onlyOwner
     public {
-        for (uint256 i = 0; i &lt; investorList.length; i++){
+        for (uint256 i = 0; i < investorList.length; i++){
             approvedInvestorList[investorList[i]] = false;
         }
     }
@@ -471,9 +471,9 @@ contract MultiSigWallet {
     event RequirementChange(uint required);
     event CoinCreation(address coin);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -535,8 +535,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        if (   ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0)
             revert();
@@ -547,7 +547,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -561,7 +561,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
                 revert();
             isOwner[_owners[i]] = true;
@@ -592,13 +592,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -612,7 +612,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -699,7 +699,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -742,7 +742,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -756,9 +756,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -783,13 +783,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -807,15 +807,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
     

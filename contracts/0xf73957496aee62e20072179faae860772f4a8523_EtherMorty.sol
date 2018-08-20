@@ -14,7 +14,7 @@ contract EtherMorty {
         require(isEnabled);
         require(initialized);
         uint currenPrice = SafeMath.add(SafeMath.div(SafeMath.mul(lastPrice, 4),100),lastPrice);
-        require(msg.value &gt; currenPrice);
+        require(msg.value > currenPrice);
         
         uint256 timeSpent = SafeMath.sub(now, snatchedOn);
         userReferralEggs[superPowerFulDragonOwner] += SafeMath.mul(hatchingSpeed,timeSpent);
@@ -44,14 +44,14 @@ contract EtherMorty {
     bool public initialized=false;
     address public ceoAddress = 0xdf4703369ecE603a01e049e34e438ff74Cd96D66;
     
-    mapping (address =&gt; uint256) public iceDragons;
-    mapping (address =&gt; uint256) public premiumDragons;
-    mapping (address =&gt; uint256) public normalDragon;
-    mapping (address =&gt; uint256) public userHatchRate;
+    mapping (address => uint256) public iceDragons;
+    mapping (address => uint256) public premiumDragons;
+    mapping (address => uint256) public normalDragon;
+    mapping (address => uint256) public userHatchRate;
     
-    mapping (address =&gt; uint256) public userReferralEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public userReferralEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     
     uint256 public marketEggs;
     uint256 public contractStarted;
@@ -116,7 +116,7 @@ contract EtherMorty {
         require(userHatchRate[msg.sender] != 0);
         uint dragonPrice = getDragonPrice(userHatchRate[msg.sender], address(this).balance);
         uint dragonAmount = SafeMath.div(msg.value, dragonPrice);
-        require(dragonAmount &gt; 0);
+        require(dragonAmount > 0);
         
         ceoAddress.transfer(calculatePercentage(msg.value,30));
         premiumDragons[msg.sender] += dragonAmount;
@@ -127,7 +127,7 @@ contract EtherMorty {
         require(userHatchRate[msg.sender] != 0);
         uint dragonPrice = getDragonPrice(userHatchRate[msg.sender], address(this).balance) * 8;
         uint dragonAmount = SafeMath.div(msg.value, dragonPrice);
-        require(dragonAmount &gt; 0);
+        require(dragonAmount > 0);
         
         ceoAddress.transfer(calculatePercentage(msg.value,30));
         iceDragons[msg.sender] += dragonAmount;
@@ -136,7 +136,7 @@ contract EtherMorty {
     function hatchEggs(address ref) public {
         require(initialized);
         
-        if(referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender) {
+        if(referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender) {
             referrals[msg.sender] = ref;
         }
         
@@ -227,9 +227,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -237,7 +237,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -246,7 +246,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

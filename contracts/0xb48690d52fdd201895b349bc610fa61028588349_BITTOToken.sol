@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,9 +85,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -95,7 +95,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,8 +128,8 @@ contract PoSTokenStandard {
 contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;BITTO Token&quot;;
-    string public symbol = &quot;BITTO&quot;;
+    string public name = "BITTO Token";
+    string public symbol = "BITTO";
     uint public decimals = 18;
 
     uint public chainStartTime; //chain start time
@@ -144,16 +144,16 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     uint public maxTotalSupply;
     uint public totalInitialSupply;
 
-    mapping(address =&gt; bool) public noPOSRewards;
+    mapping(address => bool) public noPOSRewards;
 
     struct transferInStruct {
         uint128 amount;
         uint64 time;
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; transferInStruct[]) transferIns;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => transferInStruct[]) transferIns;
 
     event Burn(address indexed burner, uint256 value);
 
@@ -161,12 +161,12 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     modifier canPoSMint() {
-        require(totalSupply &lt; maxTotalSupply);
+        require(totalSupply < maxTotalSupply);
         _;
     }
 
@@ -188,7 +188,7 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
-        if (transferIns[msg.sender].length &gt; 0)
+        if (transferIns[msg.sender].length > 0)
             delete transferIns[msg.sender];
         uint64 _now = uint64(now);
         transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
@@ -210,13 +210,13 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
         Transfer(_from, _to, _value);
-        if (transferIns[_from].length &gt; 0)
+        if (transferIns[_from].length > 0)
             delete transferIns[_from];
         uint64 _now = uint64(now);
         transferIns[_from].push(transferInStruct(uint128(balances[_from]),_now));
@@ -238,13 +238,13 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
 
     function mint() canPoSMint public returns (bool) {
         // minimum stake of 5000 BITTO is required to earn staking.
-        if (balances[msg.sender] &lt; 5000 ether)
+        if (balances[msg.sender] < 5000 ether)
             return false;
-        if (transferIns[msg.sender].length &lt;= 0)
+        if (transferIns[msg.sender].length <= 0)
             return false;
 
         uint reward = getProofOfStakeReward(msg.sender);
-        if (reward &lt;= 0)
+        if (reward <= 0)
             return false;
 
         totalSupply = totalSupply.add(reward);
@@ -278,12 +278,12 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     }
 
     function getProofOfStakeReward(address _address) internal returns (uint) {
-        require((now &gt;= stakeStartTime) &amp;&amp; (stakeStartTime &gt; 0));
+        require((now >= stakeStartTime) && (stakeStartTime > 0));
         require(!noPOSRewards[_address]);
 
         uint _now = now;
         uint _coinAge = getCoinAge(_address, _now);
-        if (_coinAge &lt;= 0)
+        if (_coinAge <= 0)
             return 0;
 
         // uint interest = maxMintProofOfStake;
@@ -302,15 +302,15 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     }
 
     function getCoinAge(address _address, uint _now) internal returns (uint _coinAge) {
-        if (transferIns[_address].length &lt;= 0)
+        if (transferIns[_address].length <= 0)
             return 0;
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++) {
-            if (_now &lt; uint(transferIns[_address][i].time).add(stakeMinAge))
+        for (uint i = 0; i < transferIns[_address].length; i++) {
+            if (_now < uint(transferIns[_address][i].time).add(stakeMinAge))
                 continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            if ( nCoinSeconds &gt; stakeMaxAge )
+            if ( nCoinSeconds > stakeMaxAge )
                 nCoinSeconds = stakeMaxAge;
 
             _coinAge = _coinAge.add(uint(transferIns[_address][i].amount) * nCoinSeconds.div(1 days));
@@ -319,12 +319,12 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     }
 
     function ownerSetStakeStartTime(uint timestamp) onlyOwner public {
-        require((stakeStartTime &lt;= 0) &amp;&amp; (timestamp &gt;= chainStartTime));
+        require((stakeStartTime <= 0) && (timestamp >= chainStartTime));
         stakeStartTime = timestamp;
     }
 
     function ownerBurnToken(uint _value) onlyOwner public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         delete transferIns[msg.sender];
@@ -342,9 +342,9 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -356,25 +356,25 @@ contract BITTOToken is ERC20,PoSTokenStandard,Ownable {
 
     /* Batch token transfer. Used by contract creator to distribute initial tokens to holders */
     function batchTransfer(address[] _recipients, uint[] _values) onlyOwner public returns (bool) {
-        require(_recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require(_recipients.length > 0 && _recipients.length == _values.length);
 
         uint total = 0;
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             total = total.add(_values[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
         uint64 _now = uint64(now);
-        for (uint j = 0; j &lt; _recipients.length; j++) {
+        for (uint j = 0; j < _recipients.length; j++) {
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             transferIns[_recipients[j]].push(transferInStruct(uint128(_values[j]),_now));
             Transfer(msg.sender, _recipients[j], _values[j]);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(total);
-        if (transferIns[msg.sender].length &gt; 0)
+        if (transferIns[msg.sender].length > 0)
             delete transferIns[msg.sender];
-        if (balances[msg.sender] &gt; 0)
+        if (balances[msg.sender] > 0)
             transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
 
         return true;

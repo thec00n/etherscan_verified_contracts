@@ -9,7 +9,7 @@ contract test {
     string[12] public human_readable_blockhash;
     
     modifier one_time_use {
-        require(keccak256(abi.encodePacked(human_readable_blockhash[0])) == keccak256(abi.encodePacked(&quot;&quot;)));
+        require(keccak256(abi.encodePacked(human_readable_blockhash[0])) == keccak256(abi.encodePacked("")));
         _;
     }
     
@@ -19,7 +19,7 @@ contract test {
         bytes6[] memory word_sequence = new bytes6[](wordcount);
         word_sequence = wordbot_contract.getWords(wordcount);
         
-        for(uint i = 0; i&lt;wordcount; i++) {
+        for(uint i = 0; i<wordcount; i++) {
             bytes6 word = word_sequence[i];
             bytes memory toBytes = new bytes(6);
             assembly {

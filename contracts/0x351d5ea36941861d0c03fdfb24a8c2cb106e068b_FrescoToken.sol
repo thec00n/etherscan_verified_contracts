@@ -22,13 +22,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -107,13 +107,13 @@ contract FrescoToken is ERC20, Pauseable {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
     uint256 _totalSupply;    
     
 
-    string public constant name = &quot;FRESCO&quot;;
-    string public constant symbol = &quot;FRES&quot;;
+    string public constant name = "FRESCO";
+    string public constant symbol = "FRES";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY =   500000000 * (10 ** uint256(decimals));
     
@@ -134,7 +134,7 @@ contract FrescoToken is ERC20, Pauseable {
 
     function transfer(address _to, uint256 _value) external whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -149,8 +149,8 @@ contract FrescoToken is ERC20, Pauseable {
 
     function transferFrom(address _from, address _to, uint256 _value) external whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -172,7 +172,7 @@ contract FrescoToken is ERC20, Pauseable {
     }
 
     function decreaseApproval(address _spender, uint _subValue) public whenNotPaused returns (bool) {
-        if (_subValue &gt;= allowed[msg.sender][_spender]) {
+        if (_subValue >= allowed[msg.sender][_spender]) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = allowed[msg.sender][_spender].sub(_subValue);
@@ -187,7 +187,7 @@ contract FrescoToken is ERC20, Pauseable {
 
     event Burn(address indexed burner, uint256 value);
     function burn(uint256 _value) public whenNotPaused {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         _totalSupply = _totalSupply.sub(_value);

@@ -16,7 +16,7 @@ contract Redeem {
   uint[] startPrice = [7,7,7,13,13,13,13,13,17,17];
   bool running = true;
 
-  mapping (uint =&gt; Item) items;
+  mapping (uint => Item) items;
   uint[] itemIndices;
   function soldItems() view public returns (uint[]) { return itemIndices; }
 
@@ -37,11 +37,11 @@ contract Redeem {
 
   function itemAt(uint _idx) view public returns (uint iItem, address owner, uint price, uint nextPrice, string slogan) {
     Item memory item = items[_idx];
-    if (item.price &gt; 0) {
+    if (item.price > 0) {
       return (_idx, item.owner, item.price, item.nextPrice, item.slogan);
     } else {
       uint p = startPrice[_idx % startPrice.length];
-      return (_idx, item.owner, p, nextPriceOf(p), &quot;&quot;);
+      return (_idx, item.owner, p, nextPriceOf(p), "");
     }
   }
 
@@ -52,9 +52,9 @@ contract Redeem {
       item.nextPrice = nextPriceOf(item.price);
       itemIndices.push(_idx);
     }
-    require(item.price &gt; 0);
+    require(item.price > 0);
     uint curWei = item.price * 1e15;
-    require(curWei &lt;= msg.value);
+    require(curWei <= msg.value);
     address oldOwner = item.owner;
     uint oldPrice = item.price;
     if (item.owner != 0x0) {
@@ -70,8 +70,8 @@ contract Redeem {
   }
 
   function nextPriceOf(uint _price) view internal returns (uint) {
-    for (uint i = 0; i&lt;priceUps.length; ++i) {
-      if (i &gt;= priceMilestones.length || _price &lt; priceMilestones[i])
+    for (uint i = 0; i<priceUps.length; ++i) {
+      if (i >= priceMilestones.length || _price < priceMilestones[i])
         return _price * priceUps[i] / 1000;
     }
     require(false); //should not happen
@@ -79,8 +79,8 @@ contract Redeem {
   }
   
   function cutOf(uint _price) view internal returns (uint) {
-    for (uint i = 0; i&lt;cuts.length; ++i) {
-      if (i &gt;= priceMilestones.length || _price &lt; priceMilestones[i])
+    for (uint i = 0; i<cuts.length; ++i) {
+      if (i >= priceMilestones.length || _price < priceMilestones[i])
         return cuts[i];
     }
     require(false); //should not happen
@@ -96,14 +96,14 @@ contract Redeem {
   }
 
   function changeParameters(uint[] _startPrice, uint[] _priceMilestones, uint[] _priceUps, uint[] _cuts) onlyAdmin public {
-    require(_startPrice.length &gt; 0);
+    require(_startPrice.length > 0);
     require(_priceUps.length == _priceMilestones.length + 1);
     require(_priceUps.length == _cuts.length);
-    for (uint i = 0; i&lt;_priceUps.length; ++i) {
-      require(_cuts[i] &lt;= 1000);
-      require(_priceUps[i] &gt; 1000 + _cuts[i]);
-      if (i &lt; _priceMilestones.length-1) {
-        require(_priceMilestones[i] &lt; _priceMilestones[i+1]);
+    for (uint i = 0; i<_priceUps.length; ++i) {
+      require(_cuts[i] <= 1000);
+      require(_priceUps[i] > 1000 + _cuts[i]);
+      if (i < _priceMilestones.length-1) {
+        require(_priceMilestones[i] < _priceMilestones[i+1]);
       }
     }
     startPrice = _startPrice;

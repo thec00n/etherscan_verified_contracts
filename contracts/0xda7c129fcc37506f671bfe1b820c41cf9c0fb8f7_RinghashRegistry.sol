@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -18,8 +18,8 @@
 pragma solidity ^0.4.15;
 
 /// @title Token Register Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c2c6c7cec5c0c8c7cee9c5c6c6d9dbc0c7ce87c6dbce">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="badedbd4d3dfd6fad6d5d5cac8d3d4dd94d5c8dd">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c2c6c7cec5c0c8c7cee9c5c6c6d9dbc0c7ce87c6dbce">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="badedbd4d3dfd6fad6d5d5cac8d3d4dd94d5c8dd">[email protected]</a>>.
 library Uint8Lib {
     function xorReduce(
         uint8[] arr,
@@ -30,14 +30,14 @@ library Uint8Lib {
         returns (uint8 res) {
 
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
            res ^= arr[i];
         }
     }
 }
 
 /// @title Token Register Contract
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761217181f131a361a191906041f181158190411">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761217181f131a361a191906041f181158190411">[email protected]</a>>.
 library ErrorLib {
 
     event Error(string message);
@@ -56,8 +56,8 @@ library ErrorLib {
 }
 
 /// @title Token Register Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed8682838a81848c838aad8182829d9f84838ac3829f8a">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c686d626569604c6063637c7e65626b22637e6b">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed8682838a81848c838aad8182829d9f84838ac3829f8a">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c686d626569604c6063637c7e65626b22637e6b">[email protected]</a>>.
 library Bytes32Lib {
 
     function xorReduce(
@@ -69,7 +69,7 @@ library Bytes32Lib {
         returns (bytes32 res) {
 
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             res = _xor(res, arr[i]);
         }
     }
@@ -83,7 +83,7 @@ library Bytes32Lib {
         returns (bytes32 res) {
 
         bytes memory temp = new bytes(32);
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             temp[i] = bs1[i] ^ bs2[i];
         }
         string memory str = string(temp);
@@ -105,10 +105,10 @@ contract RinghashRegistry {
         uint block;
     }
 
-    mapping (bytes32 =&gt; Submission) submissions;
+    mapping (bytes32 => Submission) submissions;
 
     function RinghashRegistry(uint _blocksToLive) public {
-        require(_blocksToLive &gt; 0);
+        require(_blocksToLive > 0);
         blocksToLive = _blocksToLive;
     }
 
@@ -129,7 +129,7 @@ contract RinghashRegistry {
             sList);
 
         canSubmit(ringhash, feeRecepient)
-            .orThrow(&quot;Ringhash submitted&quot;);
+            .orThrow("Ringhash submitted");
 
         submissions[ringhash] = Submission(feeRecepient, block.number);
     }
@@ -144,11 +144,11 @@ contract RinghashRegistry {
 
         var submission = submissions[ringhash];
         return (submission.feeRecepient == address(0)
-            || submission.block + blocksToLive &lt; block.number
+            || submission.block + blocksToLive < block.number
             || submission.feeRecepient == feeRecepient);
     }
 
-    /// @return True if a ring&#39;s hash has ever been submitted; false otherwise.
+    /// @return True if a ring's hash has ever been submitted; false otherwise.
     function ringhashFound(bytes32 ringhash)
         public
         constant
@@ -171,9 +171,9 @@ contract RinghashRegistry {
         returns (bytes32) {
 
         (ringSize == vList.length - 1
-            &amp;&amp; ringSize == rList.length - 1
-            &amp;&amp; ringSize == sList.length - 1)
-            .orThrow(&quot;invalid ring data&quot;);
+            && ringSize == rList.length - 1
+            && ringSize == sList.length - 1)
+            .orThrow("invalid ring data");
 
         return keccak256(
             // feeRecepient,

@@ -20,7 +20,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -56,7 +56,7 @@ contract SafeMath {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address owner) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -112,7 +112,7 @@ contract Owned is IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string name) { name; }
     function symbol() public constant returns (string symbol) { symbol; }
     function decimals() public constant returns (uint8 decimals) { decimals; }
@@ -133,10 +133,10 @@ contract ITokenHolder is IOwned {
 }
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned {
@@ -146,7 +146,7 @@ contract TokenHolder is ITokenHolder, Owned {
     function TokenHolder() {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -189,18 +189,18 @@ contract ISmartToken is ITokenHolder, IERC20Token {
 /*
     The smart token controller is an upgradable part of the smart token that allows
     more functionality as well as fixes for bugs/exploits.
-    Once it accepts ownership of the token, it becomes the token&#39;s sole controller
+    Once it accepts ownership of the token, it becomes the token's sole controller
     that can execute any of its functions.
 
     To upgrade the controller, ownership must be transferred to a new controller, along with
     any relevant data.
 
     The smart token must be set on construction and cannot be changed afterwards.
-    Wrappers are provided (as opposed to a single &#39;execute&#39; function) for each of the token&#39;s functions, for easier access.
+    Wrappers are provided (as opposed to a single 'execute' function) for each of the token's functions, for easier access.
 
     Note that the controller can transfer token ownership to a new controller that
-    doesn&#39;t allow executing any function on the token, for a trustless solution.
-    Doing that will also remove the owner&#39;s ability to upgrade the controller.
+    doesn't allow executing any function on the token, for a trustless solution.
+    Doing that will also remove the owner's ability to upgrade the controller.
 */
 contract SmartTokenController is TokenHolder {
     ISmartToken public token;   // smart token
@@ -214,13 +214,13 @@ contract SmartTokenController is TokenHolder {
         token = _token;
     }
 
-    // ensures that the controller is the token&#39;s owner
+    // ensures that the controller is the token's owner
     modifier active() {
         assert(token.owner() == address(this));
         _;
     }
 
-    // ensures that the controller is not the token&#39;s owner
+    // ensures that the controller is not the token's owner
     modifier inactive() {
         assert(token.owner() != address(this));
         _;
@@ -256,7 +256,7 @@ contract SmartTokenController is TokenHolder {
     }
 
     /**
-        @dev allows the owner to execute the token&#39;s issue function
+        @dev allows the owner to execute the token's issue function
 
         @param _to         account to receive the new amount
         @param _amount     amount to increase the supply by
@@ -266,7 +266,7 @@ contract SmartTokenController is TokenHolder {
     }
 
     /**
-        @dev allows the owner to execute the token&#39;s destroy function
+        @dev allows the owner to execute the token's destroy function
 
         @param _from       account to remove the amount from
         @param _amount     amount to decrease the supply by
@@ -309,7 +309,7 @@ contract ITokenChanger {
 /*
     Open issues:
     - Add miner front-running attack protection. The issue is somewhat mitigated by the use of _minReturn when changing
-    - Possibly add getters for reserve fields so that the client won&#39;t need to rely on the order in the struct
+    - Possibly add getters for reserve fields so that the client won't need to rely on the order in the struct
 */
 
 /*
@@ -334,12 +334,12 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         bool isSet;                     // used to tell if the mapping element is defined
     }
 
-    string public version = &#39;0.1&#39;;
-    string public changerType = &#39;bancor&#39;;
+    string public version = '0.1';
+    string public changerType = 'bancor';
 
     IBancorFormula public formula;                  // bancor calculation formula contract
     address[] public reserveTokens;                 // ERC20 standard token addresses
-    mapping (address =&gt; Reserve) public reserves;   // reserve token addresses -&gt; reserve data
+    mapping (address => Reserve) public reserves;   // reserve token addresses -> reserve data
     uint8 private totalReserveRatio = 0;            // used to prevent increasing the total reserve ratio above 100% efficiently
 
     // triggered when a change between two tokens occurs
@@ -363,7 +363,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
 
     // verifies that an amount is greater than zero
     modifier validAmount(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
@@ -381,7 +381,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
 
     // validates reserve ratio range
     modifier validReserveRatio(uint8 _ratio) {
-        require(_ratio &gt; 0 &amp;&amp; _ratio &lt;= 100);
+        require(_ratio > 0 && _ratio <= 100);
         _;
     }
 
@@ -448,7 +448,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         notThis(_token)
         validReserveRatio(_ratio)
     {
-        require(_token != address(token) &amp;&amp; !reserves[_token].isSet &amp;&amp; totalReserveRatio + _ratio &lt;= 100); // validate input
+        require(_token != address(token) && !reserves[_token].isSet && totalReserveRatio + _ratio <= 100); // validate input
 
         reserves[_token].virtualBalance = 0;
         reserves[_token].ratio = _ratio;
@@ -466,7 +466,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         @param _reserveToken           address of the reserve token
         @param _ratio                  constant reserve ratio, 1-100
         @param _enableVirtualBalance   true to enable virtual balance for the reserve, false to disable it
-        @param _virtualBalance         new reserve&#39;s virtual balance
+        @param _virtualBalance         new reserve's virtual balance
     */
     function updateReserve(IERC20Token _reserveToken, uint8 _ratio, bool _enableVirtualBalance, uint256 _virtualBalance)
         public
@@ -475,7 +475,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         validReserveRatio(_ratio)
     {
         Reserve reserve = reserves[_reserveToken];
-        require(totalReserveRatio - reserve.ratio + _ratio &lt;= 100); // validate input
+        require(totalReserveRatio - reserve.ratio + _ratio <= 100); // validate input
 
         totalReserveRatio = totalReserveRatio - reserve.ratio + _ratio;
         reserve.ratio = _ratio;
@@ -500,7 +500,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
     }
 
     /**
-        @dev returns the reserve&#39;s virtual balance if one is defined, otherwise returns the actual balance
+        @dev returns the reserve's virtual balance if one is defined, otherwise returns the actual balance
 
         @param _reserveToken    reserve token contract address
 
@@ -623,7 +623,7 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         validAmount(_minReturn)
         returns (uint256 amount) {
         amount = getPurchaseReturn(_reserveToken, _depositAmount);
-        assert(amount != 0 &amp;&amp; amount &gt;= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
+        assert(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
 
         // update virtual balance if relevant
         Reserve reserve = reserves[_reserveToken];
@@ -650,23 +650,23 @@ contract BancorChanger is ITokenChanger, SmartTokenController, SafeMath {
         public
         validAmount(_minReturn)
         returns (uint256 amount) {
-        require(_sellAmount &lt;= token.balanceOf(msg.sender)); // validate input
+        require(_sellAmount <= token.balanceOf(msg.sender)); // validate input
 
         amount = getSaleReturn(_reserveToken, _sellAmount);
-        assert(amount != 0 &amp;&amp; amount &gt;= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
+        assert(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
 
         uint256 reserveBalance = getReserveBalance(_reserveToken);
-        assert(amount &lt;= reserveBalance); // ensure that the trade won&#39;t result in negative reserve
+        assert(amount <= reserveBalance); // ensure that the trade won't result in negative reserve
 
         uint256 tokenSupply = token.totalSupply();
-        assert(amount &lt; reserveBalance || _sellAmount == tokenSupply); // ensure that the trade will only deplete the reserve if the total supply is depleted as well
+        assert(amount < reserveBalance || _sellAmount == tokenSupply); // ensure that the trade will only deplete the reserve if the total supply is depleted as well
 
         // update virtual balance if relevant
         Reserve reserve = reserves[_reserveToken];
         if (reserve.isVirtualBalanceEnabled)
             reserve.virtualBalance = safeSub(reserve.virtualBalance, amount);
 
-        token.destroy(msg.sender, _sellAmount); // destroy _sellAmount from the caller&#39;s balance in the smart token
+        token.destroy(msg.sender, _sellAmount); // destroy _sellAmount from the caller's balance in the smart token
         assert(_reserveToken.transfer(msg.sender, amount)); // transfer funds to the caller in the reserve token
                                                             // note that it might fail if the actual reserve balance is smaller than the virtual balance
         Change(token, _reserveToken, msg.sender, _sellAmount, amount);

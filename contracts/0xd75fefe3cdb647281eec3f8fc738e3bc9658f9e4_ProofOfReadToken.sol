@@ -7,14 +7,14 @@ contract ParityProofOfSMSInterface {
 contract ProofOfReadToken {
     ParityProofOfSMSInterface public proofOfSms;
     
-    //maps reader addresses to a map of story num =&gt; have claimed readership
-    mapping (address =&gt; mapping(uint256 =&gt; bool)) public readingRegister;
+    //maps reader addresses to a map of story num => have claimed readership
+    mapping (address => mapping(uint256 => bool)) public readingRegister;
     //article hash to key hash
-    mapping (string =&gt; bytes32) articleKeyHashRegister; 
+    mapping (string => bytes32) articleKeyHashRegister; 
     //story num to article hash
-    mapping (uint256 =&gt; string) public publishedRegister; 
+    mapping (uint256 => string) public publishedRegister; 
     //set the max number of claimable tokens for each article
-    mapping (string =&gt; uint256) remainingTokensForArticle;
+    mapping (string => uint256) remainingTokensForArticle;
 
     uint256 public numArticlesPublished;
     address public publishingOwner;
@@ -25,13 +25,13 @@ contract ProofOfReadToken {
     string ipfsGateway;
 
     /* ERC20 fields */
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     event Transfer (address indexed from, address indexed to, uint256 value);
     event Approval (address indexed _owner, address indexed _spender, uint256 _value);
@@ -51,7 +51,7 @@ contract ProofOfReadToken {
         name = tokenName;
         symbol = tokenSymbol;
         decimals = decimalUnits;
-        ipfsGateway = &quot;http://ipfs.io/ipfs/&quot;;
+        ipfsGateway = "http://ipfs.io/ipfs/";
         proofOfSms = ParityProofOfSMSInterface(0x9ae98746EB8a0aeEe5fF2b6B15875313a986f103);
     }
     
@@ -61,14 +61,14 @@ contract ProofOfReadToken {
         if (msg.sender != publishingOwner) {
             PublishResult(1);
             throw;
-        } else if (numTokens &gt; maxTokensPerArticle) {
+        } else if (numTokens > maxTokensPerArticle) {
             PublishResult(2);
             throw;
-        } else if (block.timestamp - timeOfLastPublish &lt; minSecondsBetweenPublishing) {
+        } else if (block.timestamp - timeOfLastPublish < minSecondsBetweenPublishing) {
             PublishResult(3);
             throw;
         } else if (articleKeyHashRegister[articleHash] != 0) {
-            PublishResult(4);  //can&#39;t republish same article
+            PublishResult(4);  //can't republish same article
             throw;
         }
         
@@ -83,19 +83,19 @@ contract ProofOfReadToken {
     /*Claim a token for an article */
     function claimReadership(uint256 articleNum, string key) {
         
-        if (shieldsUp &amp;&amp; !proofOfSms.certified(msg.sender)) {
+        if (shieldsUp && !proofOfSms.certified(msg.sender)) {
             ClaimResult(1); //missing sms certification
              throw;
         } else if (readingRegister[msg.sender][articleNum]) {
             ClaimResult(2); // user alread claimed
             throw; 
-        } else if (remainingTokensForArticle[publishedRegister[articleNum]] &lt;= 0) {
+        } else if (remainingTokensForArticle[publishedRegister[articleNum]] <= 0) {
             ClaimResult(3); //article out of tokens
             throw;
         } else if (keccak256(key) != articleKeyHashRegister[publishedRegister[articleNum]]) {
             ClaimResult(4); //incorrect key
             throw; 
-        } else if (balanceOf[msg.sender] + 1 &lt; balanceOf[msg.sender]) {
+        } else if (balanceOf[msg.sender] + 1 < balanceOf[msg.sender]) {
             ClaimResult(5); //overflow error
             throw;
         } 
@@ -119,8 +119,8 @@ contract ProofOfReadToken {
     
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) return false;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false; // Check for overflows
+        if (balanceOf[msg.sender] < _value) return false;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false; // Check for overflows
         balanceOf[msg.sender] -= _value;                            // Subtract from the sender
         balanceOf[_to] += _value;                                   // Add the same to the recipient
         /* Notify anyone listening that this transfer took place */
@@ -137,9 +137,9 @@ contract ProofOfReadToken {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address.
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;

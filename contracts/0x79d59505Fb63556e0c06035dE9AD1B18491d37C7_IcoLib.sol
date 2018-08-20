@@ -29,12 +29,12 @@ library SafeMath {
     /* Internals */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert( c &gt;= a );
+        assert( c >= a );
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a - b;
-        assert( c &lt;= a );
+        assert( c <= a );
         return c;
     }
     function mul(uint256 a, uint256 b) internal pure returns(uint256 c) {
@@ -64,8 +64,8 @@ contract Token is Owned {
     /* Declarations */
     using SafeMath for uint256;
     /* Variables */
-    string  public name = &quot;Inlock token&quot;;
-    string  public symbol = &quot;ILK&quot;;
+    string  public name = "Inlock token";
+    string  public symbol = "ILK";
     uint8   public decimals = 8;
     uint256 public totalSupply = 44e16;
     address public libAddress;
@@ -112,9 +112,9 @@ contract Ico is Owned {
         uint256 claimedAmount;
     }
     /* Variables */
-    mapping(address =&gt; bool) public KYC;
-    mapping(address =&gt; bool) public transferRight;
-    mapping(address =&gt; vesting_s) public vesting;
+    mapping(address => bool) public KYC;
+    mapping(address => bool) public transferRight;
+    mapping(address => vesting_s) public vesting;
     phaseType public currentPhase;
     uint256   public currentRate;
     uint256   public currentRateM = 1e3;
@@ -314,7 +314,7 @@ contract IcoLib is Ico {
             delete vesting[_beneficiary];
             emit VestingDefined(_beneficiary, 0, 0, 0);
         } else {
-            require( _endBlock &gt; _startBlock );
+            require( _endBlock > _startBlock );
             vesting[_beneficiary] = vesting_s(
                 _amount,
                 _startBlock,
@@ -329,32 +329,32 @@ contract IcoLib is Ico {
         uint256 _reward;
         bool    _subResult;
         ( _subResult, _reward ) = calcVesting(msg.sender);
-        require( _subResult &amp;&amp; _reward &gt; 0 );
+        require( _subResult && _reward > 0 );
         vesting[msg.sender].claimedAmount = vesting[msg.sender].claimedAmount.add(_reward);
         require( token.transfer(msg.sender, _reward) );
     }
     function setKYC(address[] _on, address[] _off) external {
         uint256 i;
         require( msg.sender == setKYCAddress );
-        for ( i=0 ; i&lt;_on.length ; i++ ) {
+        for ( i=0 ; i<_on.length ; i++ ) {
             KYC[_on[i]] = true;
         }
-        for ( i=0 ; i&lt;_off.length ; i++ ) {
+        for ( i=0 ; i<_off.length ; i++ ) {
             delete KYC[_off[i]];
         }
     }
     function setTransferRight(address[] _allow, address[] _disallow) external forOwner {
         uint256 i;
-        for ( i=0 ; i&lt;_allow.length ; i++ ) {
+        for ( i=0 ; i<_allow.length ; i++ ) {
             transferRight[_allow[i]] = true;
         }
-        for ( i=0 ; i&lt;_disallow.length ; i++ ) {
+        for ( i=0 ; i<_disallow.length ; i++ ) {
             delete transferRight[_disallow[i]];
         }
     }
     function setCurrentRate(uint256 _currentRate) external {
         require( msg.sender == setRateAddress );
-        require( _currentRate &gt;= currentRateM );
+        require( _currentRate >= currentRateM );
         currentRate = _currentRate;
     }
     function setCurrentPhase(phaseType _phase) external forOwner {
@@ -364,9 +364,9 @@ contract IcoLib is Ico {
         uint256 i;
         uint256 _totalReward;
         require( msg.sender == offchainUploaderAddress );
-        require( currentPhase != phaseType.pause &amp;&amp; currentPhase != phaseType.finish );
+        require( currentPhase != phaseType.pause && currentPhase != phaseType.finish );
         require( _beneficiaries.length ==  _rewards.length );
-        for ( i=0 ; i&lt;_rewards.length ; i++ ) {
+        for ( i=0 ; i<_rewards.length ; i++ ) {
             _totalReward = _totalReward.add(_rewards[i]);
             emit Brought(msg.sender, _beneficiaries[i], 0, _rewards[i]);
         }
@@ -390,7 +390,7 @@ contract IcoLib is Ico {
         );
         require( KYC[msg.sender] );
         ( _subResult, _reward ) = calculateReward(msg.value);
-        require( _reward &gt; 0 &amp;&amp; _subResult );
+        require( _reward > 0 && _subResult );
         thisBalance = thisBalance.sub(_reward);
         require( owner.send(msg.value) );
         if ( currentPhase == phaseType.privateSale1 ) {
@@ -416,60 +416,60 @@ contract IcoLib is Ico {
             return;
         }
         if ( currentPhase == phaseType.privateSale1 ) {
-            if        ( _amount &gt;=  25e13 ) {
+            if        ( _amount >=  25e13 ) {
                 _reward = _amount.mul(142).div(100);
-            } else if ( _amount &gt;=  10e13 ) {
+            } else if ( _amount >=  10e13 ) {
                 _reward = _amount.mul(137).div(100);
-            } else if ( _amount &gt;=   2e13 ) {
+            } else if ( _amount >=   2e13 ) {
                 _reward = _amount.mul(133).div(100);
             }
-            if ( _reward &gt; 0 &amp;&amp; privateSale1Hardcap &lt; _reward ) {
+            if ( _reward > 0 && privateSale1Hardcap < _reward ) {
                 _reward = 0;
             }
         } else if ( currentPhase == phaseType.privateSale2 ) {
-            if        ( _amount &gt;= 125e13 ) {
+            if        ( _amount >= 125e13 ) {
                 _reward = _amount.mul(129).div(100);
-            } else if ( _amount &gt;= 100e13 ) {
+            } else if ( _amount >= 100e13 ) {
                 _reward = _amount.mul(124).div(100);
-            } else if ( _amount &gt;=  10e13 ) {
+            } else if ( _amount >=  10e13 ) {
                 _reward = _amount.mul(121).div(100);
             }
-            if ( _reward &gt; 0 &amp;&amp; privateSale2Hardcap &lt; _reward ) {
+            if ( _reward > 0 && privateSale2Hardcap < _reward ) {
                 _reward = 0;
             }
         } else if ( currentPhase == phaseType.sales1 ) {
-            if        ( _amount &gt;=   1e13 ) {
+            if        ( _amount >=   1e13 ) {
                 _reward = _amount.mul(117).div(100);
             }
         } else if ( currentPhase == phaseType.sales2 ) {
-            if        ( _amount &gt;=   1e13 ) {
+            if        ( _amount >=   1e13 ) {
                 _reward = _amount.mul(112).div(100);
             }
         } else if ( currentPhase == phaseType.sales3 ) {
-            if        ( _amount &gt;=   1e13 ) {
+            if        ( _amount >=   1e13 ) {
                 _reward = _amount.mul(109).div(100);
             }
         } else if ( currentPhase == phaseType.sales4 ) {
-            if        ( _amount &gt;=   1e13 ) {
+            if        ( _amount >=   1e13 ) {
                 _reward = _amount.mul(102).div(100);
             }
         } else if ( currentPhase == phaseType.preFinish ) {
             _reward = _amount;
         }
-        if ( thisBalance &lt; _reward ) {
+        if ( thisBalance < _reward ) {
             _reward = 0;
         }
     }
     function calcVesting(address _owner) public view returns(bool _success, uint256 _reward) {
         vesting_s memory _vesting = vesting[_owner];
-        if ( _vesting.amount == 0 || block.number &lt; _vesting.startBlock ) {
+        if ( _vesting.amount == 0 || block.number < _vesting.startBlock ) {
             return ( true, 0 );
         }
         _reward = _vesting.amount.mul( block.number.sub(_vesting.startBlock) ).div( _vesting.endBlock.sub(_vesting.startBlock) );
-        if ( _reward &gt; _vesting.amount ) {
+        if ( _reward > _vesting.amount ) {
             _reward = _vesting.amount;
         }
-        if ( _reward &lt;= _vesting.claimedAmount ) {
+        if ( _reward <= _vesting.claimedAmount ) {
             return ( true, 0 );
         }
         return ( true, _reward.sub(_vesting.claimedAmount) );

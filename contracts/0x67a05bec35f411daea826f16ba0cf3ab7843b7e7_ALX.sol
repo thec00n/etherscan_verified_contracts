@@ -14,7 +14,7 @@ pragma solidity ^0.4.24;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
  */
@@ -32,20 +32,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -84,11 +84,11 @@ contract ALXERC20 is Ownable {
     using SafeMath for uint256;
 
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
-    mapping (address =&gt; mapping (uint256 =&gt; timeHold)) internal requestWithdraws;
+    mapping (address => mapping (uint256 => timeHold)) internal requestWithdraws;
    
  
 
@@ -109,7 +109,7 @@ contract ALXERC20 is Ownable {
     uint256 public roundCounter=0;
     
     /* Public variables for the ERC20 token */
-    string public constant standard = &quot;ERC20 ALX&quot;;
+    string public constant standard = "ERC20 ALX";
     uint8 public constant decimals = 8; // hardcoded to be a constant
     uint256 public totalSupply;
     string public name;
@@ -141,8 +141,8 @@ contract ALXERC20 is Ownable {
     function transfer(address _to, uint256 _value) public returns (bool) {
 
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(block.timestamp&gt;icoEnd);
+        require(_value <= balances[msg.sender]);
+        require(block.timestamp>icoEnd);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -160,9 +160,9 @@ contract ALXERC20 is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(block.timestamp&gt;icoEnd);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(block.timestamp>icoEnd);
         balances[_from] = balances[_from].sub(_value);
 
         uint256 fee=(_value*transactionFee)/1000;
@@ -198,7 +198,7 @@ contract ALXERC20 is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -299,13 +299,13 @@ contract ALX is ALXERC20 {
 
         uint256 tokenM=0;
         
-        if (block.timestamp -  requestWithdraws[msg.sender][roundCounter].time[i] &gt; holdTime &amp;&amp; block.timestamp -  requestWithdraws[msg.sender][roundCounter].time[i] &lt; holdMax){
+        if (block.timestamp -  requestWithdraws[msg.sender][roundCounter].time[i] > holdTime && block.timestamp -  requestWithdraws[msg.sender][roundCounter].time[i] < holdMax){
                 ethAmount += tokenPrice * requestWithdraws[msg.sender][roundCounter].amount[i];
                 tokenM +=requestWithdraws[msg.sender][roundCounter].amount[i];
         }
     
         ethAmount=ethAmount/tokenUnit;
-        require(ethAmount &gt; 0);
+        require(ethAmount > 0);
 
         emit LogWithdrawal(msg.sender, ethAmount);
 
@@ -338,7 +338,7 @@ contract ALX is ALXERC20 {
     event LogWithdrawal(address receiver, uint amount);
 
     function requestWithdraw(uint256 value) public {
-      require(value &lt;= balances[msg.sender]);
+      require(value <= balances[msg.sender]);
 
       delete requestWithdraws[msg.sender][roundCounter];
 
@@ -356,7 +356,7 @@ contract ALX is ALXERC20 {
     }
 
     function buy() public payable {
-        require(msg.value&gt;=minPrice);
+        require(msg.value>=minPrice);
         tokenAmount = (msg.value * tokenUnit) / tokenPrice ;  // calculates the amount
         
         transferBuy(msg.sender, tokenAmount);

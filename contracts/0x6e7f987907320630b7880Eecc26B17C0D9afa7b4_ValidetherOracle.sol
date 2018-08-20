@@ -1,9 +1,9 @@
 contract ValidetherOracle {
 
   //  Name of the institution to Ethereum address of the institution
-  mapping (string =&gt; address) nameToAddress;
+  mapping (string => address) nameToAddress;
     //  Ethereum address of the institution to Name of the institution
-  mapping (address =&gt; string) addressToName;
+  mapping (address => string) addressToName;
 
   address admin;
 
@@ -30,7 +30,7 @@ contract ValidetherOracle {
   /*
     Function which validates an institution address and returns its name
     @param institutionAddress Ethereum Address of the institution
-    @return &quot;&quot; if the address is not valid and the institution name if the address is valid.
+    @return "" if the address is not valid and the institution name if the address is valid.
     */
   function getInstitutionByAddress(address institutionAddress) constant returns(string) {
     return addressToName[institutionAddress];

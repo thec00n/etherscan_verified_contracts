@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -65,7 +65,7 @@ contract Crowdsale {
 
   KairosToken public token;
 
-  mapping(address =&gt; uint256) etherBlance;
+  mapping(address => uint256) etherBlance;
 
   uint256 public decimals;
   uint256 public icoMinCap;
@@ -98,8 +98,8 @@ contract Crowdsale {
   function finalize() external {
     if(isFinalized) throw;
     if(msg.sender != ethOwner) throw; // locks finalize to the ultimate ETH owner
-    //if(totalSupply &lt; icoMinCap) throw;      // have to sell minimum to move to operational
-    if(block.number &lt;= icoEndBlock) throw;
+    //if(totalSupply < icoMinCap) throw;      // have to sell minimum to move to operational
+    if(block.number <= icoEndBlock) throw;
     
     // move to operational
     isFinalized = true;
@@ -109,7 +109,7 @@ contract Crowdsale {
 
   function refund(){
     if(isFinalized) throw;
-    if(block.number &lt;= icoEndBlock) throw;
+    if(block.number <= icoEndBlock) throw;
     if(msg.sender == token.getOwner() ) throw;
 
     uint256 userBalance = token.balanceOf(msg.sender);
@@ -133,10 +133,10 @@ contract Crowdsale {
 
 
   function () payable {
-    if(isFinalized &amp;&amp; msg.value &lt;= 0) throw;
+    if(isFinalized && msg.value <= 0) throw;
 
-    if(block.number &lt; icoStartBlock) throw;
-    if(block.number &gt; icoEndBlock) throw;
+    if(block.number < icoStartBlock) throw;
+    if(block.number > icoEndBlock) throw;
 
     // storing user ethers;
     etherBlance[msg.sender] += msg.value;
@@ -163,11 +163,11 @@ contract Crowdsale {
   // Calculating bonus percentage 
   function getPercentage() private constant returns (uint){
     uint duration = now.sub(icoStartTime);
-    if(duration &gt; 21 days){
+    if(duration > 21 days){
       return 0;
-    } else if(duration &lt;= 21 days &amp;&amp; duration &gt; 14 days){
+    } else if(duration <= 21 days && duration > 14 days){
       return 1;
-    } else if(duration &lt;= 14 days &amp;&amp; duration &gt; 7 days){
+    } else if(duration <= 14 days && duration > 7 days){
       return 3;
     } else {
       return 5;
@@ -180,13 +180,13 @@ contract Crowdsale {
 
   // calculating 2nd level bonus
   function level2Bonus(uint256 tokens) private constant returns(uint256) {
-      if(tokens &gt; 1000000){
+      if(tokens > 1000000){
         return 5;   
-      }else if(tokens &lt;= 999999 &amp;&amp; tokens &gt;= 100000){
+      }else if(tokens <= 999999 && tokens >= 100000){
         return 3;
-      }else if(tokens &lt;= 99999 &amp;&amp; tokens &gt;= 50000 ){
+      }else if(tokens <= 99999 && tokens >= 50000 ){
         return 2;
-      }else if( tokens &lt;= 49999 &amp;&amp; tokens &gt;= 10000){
+      }else if( tokens <= 49999 && tokens >= 10000){
         return 1;
       }
       return 0;

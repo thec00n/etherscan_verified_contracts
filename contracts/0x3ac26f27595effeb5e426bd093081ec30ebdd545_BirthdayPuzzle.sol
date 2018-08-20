@@ -28,7 +28,7 @@ contract BirthdayPuzzle is owned {
 
         base %= modulus;
 
-        while (exponent &gt; 0) {
+        while (exponent > 0) {
             if (exponent % 2 == 1) {
                 result = (result * base) % modulus;
             }

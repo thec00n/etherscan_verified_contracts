@@ -32,11 +32,11 @@ contract Fibonzi{
         bool used;
     }
 
-    mapping(uint8 =&gt; Player) players;
-    mapping(uint8 =&gt; Pool) pools;
-    mapping(address =&gt; uint8) playersWallets;
-    mapping(address =&gt; Token[]) playersToken;
-    mapping(address =&gt; uint) playersBalance;
+    mapping(uint8 => Player) players;
+    mapping(uint8 => Pool) pools;
+    mapping(address => uint8) playersWallets;
+    mapping(address => Token[]) playersToken;
+    mapping(address => uint) playersBalance;
     
     event PlayerCreated(uint8 indexed playerId, address indexed wallet,uint timestamp);
     event PlayerBalance(uint8 indexed playerId, uint playerBalance, uint timestamp);
@@ -55,11 +55,11 @@ contract Fibonzi{
     }
     
     function openPool(uint8 poolId) payable{
-        assert(poolCount &gt;= poolId);
-        assert(playersWallets[msg.sender] &gt; 0);
+        assert(poolCount >= poolId);
+        assert(playersWallets[msg.sender] > 0);
         assert(msg.sender == players[playersWallets[msg.sender]].wallet);
-        assert(msg.value &gt;= pools[poolId].price);
-        assert(getPlayerUsableTokensCount() &gt; 0);
+        assert(msg.value >= pools[poolId].price);
+        assert(getPlayerUsableTokensCount() > 0);
         assert(usePlayerToken());
         
         var price = pools[poolId].price;
@@ -69,7 +69,7 @@ contract Fibonzi{
         pools[poolId].owner = players[playersWallets[msg.sender]].playerId;
         
         //return the change if any
-        if(msg.value &gt; pools[poolId].price){
+        if(msg.value > pools[poolId].price){
             players[playersWallets[msg.sender]].wallet.transfer(msg.value - pools[poolId].price);
         }
         
@@ -78,18 +78,18 @@ contract Fibonzi{
         PoolJoined(poolId,playersWallets[msg.sender],pools[poolId].price,now);
         poolJoinedCount++;
         
-        if(fiboIndex &lt;= fiboMax){
+        if(fiboIndex <= fiboMax){
             createPoolIfNeeded();
         }
     }
     
     function joinPool(uint8 poolId) payable{
-        assert(poolCount &gt;= poolId);
-        assert(playersWallets[msg.sender] &gt; 0);
+        assert(poolCount >= poolId);
+        assert(playersWallets[msg.sender] > 0);
         assert(msg.sender == players[playersWallets[msg.sender]].wallet);
         assert(players[playersWallets[msg.sender]].playerId != pools[poolId].owner);
-        assert(msg.value &gt;= pools[poolId].price);
-        assert( (pools[poolId].owner == owner &amp;&amp; poolCount == 1) || (pools[poolId].owner != players[0].playerId));
+        assert(msg.value >= pools[poolId].price);
+        assert( (pools[poolId].owner == owner && poolCount == 1) || (pools[poolId].owner != players[0].playerId));
         
         //send the amount to the owner
         uint price = pools[poolId].price;
@@ -102,7 +102,7 @@ contract Fibonzi{
         pools[poolId].owner = players[playersWallets[msg.sender]].playerId;
         
         //return the change if any
-        if(msg.value &gt; pools[poolId].price){
+        if(msg.value > pools[poolId].price){
             players[playersWallets[msg.sender]].wallet.transfer(msg.value - pools[poolId].price);
         }
         
@@ -111,7 +111,7 @@ contract Fibonzi{
         PoolJoined(poolId,playersWallets[msg.sender],pools[poolId].price,now);
         poolJoinedCount++;
         
-        if(fiboIndex &lt;= fiboMax){
+        if(fiboIndex <= fiboMax){
             createPoolIfNeeded();
         }
         //give token to the current player
@@ -119,18 +119,18 @@ contract Fibonzi{
     }
     
     function distributeReward(uint price) internal{
-        if(tokenCount - tokenUsed &gt; 0){
+        if(tokenCount - tokenUsed > 0){
             tokenToReward = tokenCount - tokenUsed;
             uint share = (price*20/100)/(tokenCount - tokenUsed);
             currentShare = share;
-            for(uint8 i=0; i&lt; playerCount;i++){
+            for(uint8 i=0; i< playerCount;i++){
                 uint count = 0;
-                for(uint8 j=0;j&lt; playersToken[players[i+1].wallet].length;j++){
+                for(uint8 j=0;j< playersToken[players[i+1].wallet].length;j++){
                     if(!playersToken[players[i+1].wallet][j].used){
                        count++; 
                     }
                 }
-                if(count &gt; 0){
+                if(count > 0){
                     players[i+1].playerBalance += share*count;
                     playersBalance[players[i+1].wallet] = players[i+1].playerBalance;
                     PlayerBalance(players[i+1].playerId,players[i+1].playerBalance,now);   
@@ -138,7 +138,7 @@ contract Fibonzi{
             }
         }
         else{
-            // no token owner =&gt; send to owner
+            // no token owner => send to owner
             players[playersWallets[owner]].playerBalance += (price*20/100);
             playersBalance[owner] = players[playersWallets[owner]].playerBalance;
             PlayerBalance(players[playersWallets[owner]].playerId,players[playersWallets[owner]].playerBalance,now);   
@@ -146,12 +146,12 @@ contract Fibonzi{
     }
     
     function withdraw(){
-        assert(playersWallets[msg.sender] &gt; 0);
-        assert(getPlayerUsableTokensCount()&gt;10);
-        assert(playersBalance[msg.sender] &gt;0);
+        assert(playersWallets[msg.sender] > 0);
+        assert(getPlayerUsableTokensCount()>10);
+        assert(playersBalance[msg.sender] >0);
         
         players[playersWallets[msg.sender]].wallet.transfer(playersBalance[msg.sender]);
-        for(uint i=0;i&lt;10;i++){
+        for(uint i=0;i<10;i++){
             usePlayerToken();
         }
         players[playersWallets[msg.sender]].playerBalance = 0;
@@ -168,7 +168,7 @@ contract Fibonzi{
     }
     
     function createPlayer() returns (uint256){
-        for(uint8 i=0; i&lt; playerCount;i++){
+        for(uint8 i=0; i< playerCount;i++){
             assert(players[i+1].wallet != msg.sender);
         }
         
@@ -181,14 +181,14 @@ contract Fibonzi{
     
     function createPoolIfNeeded() internal{
         var currentFibo = getFibo(fiboIndex);
-        if(poolJoinedCount &gt; currentFibo){
+        if(poolJoinedCount > currentFibo){
             fiboIndex++;
             createPoolIfNeeded();
         }
         else if(poolJoinedCount == currentFibo){
-            if(currentFibo &gt; poolCount){
+            if(currentFibo > poolCount){
                 poolToCreate = currentFibo - poolCount;
-                for(uint i=0; i&lt; poolToCreate; i++){
+                for(uint i=0; i< poolToCreate; i++){
                     createPool();
                     //add Token to the player who generates the pools
                     createPlayerToken();
@@ -210,7 +210,7 @@ contract Fibonzi{
     }
     
     function getFibo(uint n) internal returns (uint){
-        if(n&lt;=1){
+        if(n<=1){
             return n;
         }
         else{
@@ -220,7 +220,7 @@ contract Fibonzi{
     
     function getPlayerUsableTokensCount() internal returns (uint8){
         uint8 count = 0;
-        for(uint8 i=0;i&lt; playersToken[msg.sender].length;i++){
+        for(uint8 i=0;i< playersToken[msg.sender].length;i++){
             if(!playersToken[msg.sender][i].used){
                count++; 
             }
@@ -230,8 +230,8 @@ contract Fibonzi{
     
     function usePlayerToken() internal returns (bool){
         var used = false;
-        for(uint8 i=0;i&lt; playersToken[msg.sender].length;i++){
-            if(!playersToken[msg.sender][i].used &amp;&amp; !used){
+        for(uint8 i=0;i< playersToken[msg.sender].length;i++){
+            if(!playersToken[msg.sender][i].used && !used){
                 playersToken[msg.sender][i].used = true;
                 used = true;
                 tokenUsed++;

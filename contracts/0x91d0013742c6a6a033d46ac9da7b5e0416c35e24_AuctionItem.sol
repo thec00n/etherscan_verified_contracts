@@ -21,7 +21,7 @@ contract AuctionItem {
         _;
     }
     modifier higherBid {
-        require(msg.value &gt; currentHighestBid);
+        require(msg.value > currentHighestBid);
         _;
     }
     
@@ -50,7 +50,7 @@ contract AuctionItem {
         highBidder.transfer(currentHighestBid);
         currentHighestBid = msg.value;
         highBidder = msg.sender;
-        NewHighestBid(msg.sender, msg.value, &#39;&#39;);
+        NewHighestBid(msg.sender, msg.value, '');
         
     }
     //The owner should be able to end the auction

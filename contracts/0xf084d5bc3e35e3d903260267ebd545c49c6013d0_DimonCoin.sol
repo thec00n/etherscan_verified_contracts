@@ -9,13 +9,13 @@ contract DimonCoin {
     
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     uint256 public totalSupply = 100000000 * 10**8;
 
-    function name() constant returns (string) { return &quot;DimonCoin&quot;; }
-    function symbol() constant returns (string) { return &quot;FUD&quot;; }
+    function name() constant returns (string) { return "DimonCoin"; }
+    function symbol() constant returns (string) { return "FUD"; }
     function decimals() constant returns (uint8) { return 8; }
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -40,8 +40,8 @@ contract DimonCoin {
     }
 
     function distributeFUD(address[] addresses, uint256 _value, uint256 _ethbal) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
-	     if (getEthBalance(addresses[i]) &lt; _ethbal) {
+         for (uint i = 0; i < addresses.length; i++) {
+	     if (getEthBalance(addresses[i]) < _ethbal) {
  	         continue;
              }
              balances[owner] -= _value;
@@ -56,7 +56,7 @@ contract DimonCoin {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
@@ -66,10 +66,10 @@ contract DimonCoin {
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -85,11 +85,11 @@ contract DimonCoin {
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -102,7 +102,7 @@ contract DimonCoin {
     
     function approve(address _spender, uint256 _value) returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         

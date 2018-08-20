@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 /*
- &#169; bitad.io
+ © bitad.io
   2017
 */
 
@@ -12,31 +12,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -62,11 +62,11 @@ contract newToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
 
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -82,7 +82,7 @@ contract newToken is ERC20Basic {
 }
 
 contract BitcoinToken is newToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
     balances[_to] = balances[_to].add(_value);
@@ -91,7 +91,7 @@ contract BitcoinToken is newToken, ERC20 {
     Transfer(_from, _to, _value);
   }
   function approve(address _spender, uint _value) {
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -103,8 +103,8 @@ contract BitcoinToken is newToken, ERC20 {
 contract BTAcoin is BitcoinToken {
   uint public constant decimals = 10;
   uint256 public initialSupply;
-  string public constant name = &quot;Bitcoin advets&quot;;
-  string public constant symbol = &quot;BTA&quot;;
+  string public constant name = "Bitcoin advets";
+  string public constant symbol = "BTA";
   function BTAcoin () { 
      totalSupply = 11000000 * 10 ** decimals;
       balances[0xB2478a6bE00391Cc7C4D3383C41Cb376f2AcfCf8] = totalSupply; 
@@ -114,4 +114,4 @@ contract BTAcoin is BitcoinToken {
   }
 }
 
-// &#169;  bitad.io
+// ©  bitad.io

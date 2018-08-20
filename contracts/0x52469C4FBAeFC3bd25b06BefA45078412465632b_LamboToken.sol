@@ -35,7 +35,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -122,20 +122,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -151,7 +151,7 @@ library SafeMath {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -272,7 +272,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -311,8 +311,8 @@ contract LamboToken is MintableToken, LimitedTransferToken {
 
     event Burn(address indexed burner, uint indexed value);
 
-    string public constant symbol = &quot;LMBO&quot;;
-    string public constant name = &quot;Lambo Seed Token&quot;;
+    string public constant symbol = "LMBO";
+    string public constant name = "Lambo Seed Token";
     uint8 public constant decimals = 18;
 
     function transferableTokens(address holder, uint64 time) constant public returns (uint256) {//transfers still happening soon
@@ -321,8 +321,8 @@ contract LamboToken is MintableToken, LimitedTransferToken {
     }
 
     function burn(uint _value) canTransfer(msg.sender, _value) public {//todo canTransfer(msg.sender, _value), remove public?
-        require(_value &gt; 0);
-        require(_value &gt;= balanceOf(burner));
+        require(_value > 0);
+        require(_value >= balanceOf(burner));
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -371,9 +371,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startBlock, uint256 _endBlock, uint256 _rate, address _wallet) {
-    require(_startBlock &gt;= block.number);
-    require(_endBlock &gt;= _startBlock);
-    require(_rate &gt; 0);
+    require(_startBlock >= block.number);
+    require(_endBlock >= _startBlock);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -423,14 +423,14 @@ contract Crowdsale {
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return block.number &gt; endBlock;
+    return block.number > endBlock;
   }
 
 
@@ -447,7 +447,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner {
     require(!isFinalized);
@@ -477,21 +477,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -501,7 +501,7 @@ contract CappedCrowdsale is Crowdsale {
 
 contract LamboPresale is CappedCrowdsale {
 
-  mapping(address =&gt; uint) private balances;
+  mapping(address => uint) private balances;
 
   function LamboPresale(uint256 _startBlock, uint256 _endBlock, uint256 _rate, address _wallet)
   CappedCrowdsale(5000 ether)
@@ -567,7 +567,7 @@ contract LamboCrowdsale is Crowdsale, CappedCrowdsale, FinalizableCrowdsale {
 
   function presalePurchase(address[] presales, address _presaleAddress) internal {
     LamboPresale lamboPresale = LamboPresale(_presaleAddress);
-    for (uint i = 0; i &lt; presales.length; i++) {
+    for (uint i = 0; i < presales.length; i++) {
         address presalePurchaseAddress = presales[i];
         uint256 contributionAmmount = 0;//presale contributions tracked differently than main sale
         uint256 presalePurchaseTokens = lamboPresale.balanceOf(presalePurchaseAddress);

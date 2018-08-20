@@ -23,37 +23,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -65,8 +65,8 @@ contract UnicornRefunds {
   address public owner = msg.sender;
   uint public pricePerUnicorn = 1 finney;
   uint public rewardUnicornAmount = 100;
-  mapping(address =&gt; uint) allowedAmounts;
-  mapping(address =&gt; bool) rewardClaimed;
+  mapping(address => uint) allowedAmounts;
+  mapping(address => bool) rewardClaimed;
 
   event RewardClaimed(address indexed _who, uint _bookingIndex);
   event UnicornsSold(address indexed _who, uint _unicornCount, uint _unicornCost, uint _paymentTotal);
@@ -84,9 +84,9 @@ contract UnicornRefunds {
   function claimReward(uint _bookingIndex) {
     UnicornRanch ranch = UnicornRanch(unicornRanchAddress);
     var (unicornCount, visitType, , , state, , completedCount) = ranch.getBooking(msg.sender, _bookingIndex);
-    require(state == UnicornRanch.VisitState.Completed); // Must be a visit that&#39;s completed (not in progress or repossessed)
+    require(state == UnicornRanch.VisitState.Completed); // Must be a visit that's completed (not in progress or repossessed)
     require(visitType != UnicornRanch.VisitType.Spa); // Must be longer than a Spa visit
-    require(completedCount &gt; unicornCount); // Must have triggered the &quot;birth&quot; conditions so the user went home with more than what they send in
+    require(completedCount > unicornCount); // Must have triggered the "birth" conditions so the user went home with more than what they send in
     require(rewardClaimed[msg.sender] == false); // Must not have already claimed the reward
       
     rewardClaimed[msg.sender] = true;
@@ -99,7 +99,7 @@ contract UnicornRefunds {
    * Sell back a number of unicorn tokens, in exchange for ether.
    */
   function sell(uint _unicornCount) {
-    require(_unicornCount &gt; 0);
+    require(_unicornCount > 0);
     allowedAmounts[msg.sender] = allowedAmounts[msg.sender].sub(_unicornCount);
     ERC20Token cardboardUnicorns = ERC20Token(cardboardUnicornTokenAddress);
     cardboardUnicorns.transferFrom(msg.sender, owner, _unicornCount); // Transfer the actual asset
@@ -152,11 +152,11 @@ contract UnicornRefunds {
   }
   
   function withdraw() onlyOwner {
-    owner.transfer(this.balance); // Send all ether in this contract to this contract&#39;s owner
+    owner.transfer(this.balance); // Send all ether in this contract to this contract's owner
   }
   function withdrawForeignTokens(address _tokenContract) onlyOwner {
     ERC20Token token = ERC20Token(_tokenContract);
-    token.transfer(owner, token.balanceOf(address(this))); // Send all owned tokens to this contract&#39;s owner
+    token.transfer(owner, token.balanceOf(address(this))); // Send all owned tokens to this contract's owner
   }
   
 }

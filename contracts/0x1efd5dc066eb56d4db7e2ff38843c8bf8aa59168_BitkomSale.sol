@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -149,7 +149,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -158,7 +158,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -187,7 +187,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -271,8 +271,8 @@ contract StandardToken is ERC20, BasicToken {
 contract BitkomToken is StandardToken, Ownable {
 
     // Constants
-    string  public constant name = &quot;Bitkom Token&quot;;
-    string  public constant symbol = &quot;BTT&quot;;
+    string  public constant name = "Bitkom Token";
+    string  public constant symbol = "BTT";
     uint8   public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 50000000 * 1 ether;
     uint256 public constant CROWDSALE_ALLOWANCE =  33500000 * 1 ether;
@@ -351,7 +351,7 @@ contract BitkomToken is StandardToken, Ownable {
      */
     function setCrowdsale(address _crowdsaleAddr, uint256 _amountForSale) external onlyOwner {
         require(!transferEnabled);
-        require(_amountForSale &lt;= crowdsaleAllowance);
+        require(_amountForSale <= crowdsaleAllowance);
 
         // if 0, then full available crowdsale supply is assumed
         uint amount = (_amountForSale == 0) ? crowdsaleAllowance : _amountForSale;
@@ -405,11 +405,11 @@ contract BitkomToken is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
         require(transferEnabled || msg.sender == owner);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -454,8 +454,8 @@ contract BitkomSale is Pausable {
 
     BitkomToken public tokenReward;     // The token being sold
 
-    mapping (address =&gt; uint256) public balanceOf;   // tracks the amount of wei contributed by address during all sales
-    mapping (address =&gt; bool) refunded; // tracks the status of refunding for each address
+    mapping (address => uint256) public balanceOf;   // tracks the amount of wei contributed by address during all sales
+    mapping (address => bool) refunded; // tracks the status of refunding for each address
 
     // Events
     event CapReached(address _beneficiary, uint _weiRaised);
@@ -464,9 +464,9 @@ contract BitkomSale is Pausable {
     event Refunded(address indexed holder, uint256 amount);
 
     // Modifiers
-    modifier beforeDeadline()   { require (currentTime() &lt; deadline); _; }
-    modifier afterDeadline()    { require (currentTime() &gt;= deadline); _; }
-    modifier afterStartTime()   { require (currentTime() &gt;= startTime); _; }
+    modifier beforeDeadline()   { require (currentTime() < deadline); _; }
+    modifier afterDeadline()    { require (currentTime() >= deadline); _; }
+    modifier afterStartTime()   { require (currentTime() >= startTime); _; }
     modifier saleNotClosed()    { require (!saleClosed); _; }
     modifier softCapRaised()    { require (softcapReached); _; }
 
@@ -494,9 +494,9 @@ contract BitkomSale is Pausable {
         address addressOfTokenUsedAsReward
     ) public 
     {      
-        require(ifSuccessfulSendTo != address(0) &amp;&amp; ifSuccessfulSendTo != address(this));
-        require(addressOfTokenUsedAsReward != address(0) &amp;&amp; addressOfTokenUsedAsReward != address(this));
-        require(durationInDays &gt; 0);
+        require(ifSuccessfulSendTo != address(0) && ifSuccessfulSendTo != address(this));
+        require(addressOfTokenUsedAsReward != address(0) && addressOfTokenUsedAsReward != address(this));
+        require(durationInDays > 0);
         beneficiary = ifSuccessfulSendTo;
         fundingCap = fundingCapInEthers * 1 ether;
         startTime = start;
@@ -520,13 +520,13 @@ contract BitkomSale is Pausable {
         nonReentrant
     {
         uint amount = msg.value;
-        require(amount &gt;= MIN_CONTRIBUTION);
+        require(amount >= MIN_CONTRIBUTION);
 
         weiRaised = weiRaised.add(amount);
 
-        //require(weiRaised &lt;= fundingCap);
+        //require(weiRaised <= fundingCap);
         // if we overflow the fundingCap, transfer the overflow amount
-        if (weiRaised &gt; fundingCap) {
+        if (weiRaised > fundingCap) {
             uint overflow = weiRaised.sub(fundingCap);
             amount = amount.sub(overflow);
             weiRaised = fundingCap;
@@ -543,7 +543,7 @@ contract BitkomSale is Pausable {
         soldTokens = soldTokens.add(tokensAmountForUser);
 
         // 1 - вернуть лишние бабки и отдать токены чтоб их было впритык
-        if (soldTokens &gt; TOKEN_HARDCAP) {
+        if (soldTokens > TOKEN_HARDCAP) {
             uint256 overflowInTokens = soldTokens.sub(TOKEN_HARDCAP);
             uint256 overflowInWei = (overflowInTokens.div(bonus)).div(RATE);
             amount = amount.sub(overflowInWei);
@@ -558,7 +558,7 @@ contract BitkomSale is Pausable {
         }
 
 
-        // Update the sender&#39;s balance of wei contributed and the total amount raised
+        // Update the sender's balance of wei contributed and the total amount raised
         balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);
 
         // Transfer the tokens from the crowdsale supply to the sender
@@ -568,7 +568,7 @@ contract BitkomSale is Pausable {
 
         FundTransfer(msg.sender, amount, true);
 
-        if (soldTokens &gt;= softCapInTokens &amp;&amp; !softcapReached) {
+        if (soldTokens >= softCapInTokens && !softcapReached) {
             softcapReached = true;
             SoftcapReached(beneficiary, weiRaised);
         }
@@ -588,7 +588,7 @@ contract BitkomSale is Pausable {
      * The owner can call this function to withdraw the funds that
      * have been sent to this contract. The funds will be sent to
      * the beneficiary specified when the crowdsale was created.
-     * ONLY IF SOLDTOKENS &gt;= SOFTCAPINTOKENS !!!!!!!!!!!!!!!!!!
+     * ONLY IF SOLDTOKENS >= SOFTCAPINTOKENS !!!!!!!!!!!!!!!!!!
      */
     function ownerSafeWithdrawal() external onlyOwner softCapRaised nonReentrant {
         uint balanceToSend = this.balance;
@@ -626,11 +626,11 @@ contract BitkomSale is Pausable {
      * Returns the bonus value.
     */
     function calculateBonus() internal constant returns (uint) {
-        if (soldTokens &gt;= 0 &amp;&amp; soldTokens &lt;= 10000000 * 1 ether) {
+        if (soldTokens >= 0 && soldTokens <= 10000000 * 1 ether) {
             return 4;
-        } else if (soldTokens &gt; 10000000 * 1 ether &amp;&amp; soldTokens &lt;= 20000000 * 1 ether) {
+        } else if (soldTokens > 10000000 * 1 ether && soldTokens <= 20000000 * 1 ether) {
             return 3;
-        } else if (soldTokens &gt; 20000000 * 1 ether &amp;&amp; soldTokens &lt;= 30000000 * 1 ether) {
+        } else if (soldTokens > 20000000 * 1 ether && soldTokens <= 30000000 * 1 ether) {
             return 2;
         } else {
             return 1;
@@ -642,10 +642,10 @@ contract BitkomSale is Pausable {
         require(refunded[msg.sender] == false);
 
         uint256 balance = this.balanceOf(msg.sender);
-        require(balance &gt; 0);
+        require(balance > 0);
 
         uint refund = balance;
-        if (refund &gt; this.balance) {
+        if (refund > this.balance) {
             refund = this.balance;
         }
 

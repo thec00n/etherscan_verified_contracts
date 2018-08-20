@@ -12,18 +12,18 @@ pragma solidity ^0.4.18;
  }
   
   contract LTCD is ERC20 {
-    string public constant symbol = &quot;LTCD&quot;;
-    string public constant name = &quot;Litecoin Dark&quot;;
+    string public constant symbol = "LTCD";
+    string public constant name = "Litecoin Dark";
     uint8 public constant decimals = 8;
     uint256 _totalSupply = 8400000 * 10**8;
 
     address public owner;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
      
   
   	modifier notPaused{
-    	require(now &gt; 1510700400 || msg.sender == owner);
+    	require(now > 1510700400 || msg.sender == owner);
     	_;
 	 }
 
@@ -47,8 +47,8 @@ pragma solidity ^0.4.18;
     }
  
     function transfer(address _to, uint256 _amount) public notPaused returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[msg.sender] >= _amount 
+            && _amount > 0) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -64,10 +64,10 @@ pragma solidity ^0.4.18;
         address _to,
         uint256 _amount
     ) public notPaused returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

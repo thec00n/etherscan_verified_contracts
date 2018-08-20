@@ -34,12 +34,12 @@ contract Pause is Owned {
 contract SafeMath {
 	function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
 		uint256 c = _a + _b;
-		assert(c &gt;= _a);
+		assert(c >= _a);
 		return c;
 	}
 
 	function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-		assert(_a &gt;= _b);
+		assert(_a >= _b);
 		return _a - _b;
 	}
 
@@ -66,19 +66,19 @@ contract IToken {
 }
 
 contract Token is IToken, SafeMath, Owned, Pause {
-	string public constant standard = &#39;0.1&#39;;
-	string public name = &#39;&#39;;
-	string public symbol = &#39;&#39;;
+	string public constant standard = '0.1';
+	string public name = '';
+	string public symbol = '';
 	uint8 public decimals = 0;
 	uint256 public totalSupply = 0;
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) public allowance;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 	constructor(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply) public {
-		require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0);
+		require(bytes(_name).length > 0 && bytes(_symbol).length > 0);
 
 		name = _name;
 		symbol = _symbol;
@@ -99,7 +99,7 @@ contract Token is IToken, SafeMath, Owned, Pause {
 
 	function transfer(address _to, uint256 _value) public validAddress(_to) returns (bool) {
 		require(isNotPaused());
-		assert(balanceOf[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+		assert(balanceOf[msg.sender] >= _value && _value > 0);
 
 		balanceOf[msg.sender] = sub(balanceOf[msg.sender], _value);
 		balanceOf[_to] = add(balanceOf[_to], _value);
@@ -111,8 +111,8 @@ contract Token is IToken, SafeMath, Owned, Pause {
 
 	function transferFrom(address _from, address _to, uint256 _value) public validAddress(_from) validAddress(_to) returns (bool) {
 		require(isNotPaused());
-		assert(balanceOf[_from] &gt;= _value &amp;&amp; _value &gt; 0);
-		assert(allowance[_from][msg.sender] &gt;= _value);
+		assert(balanceOf[_from] >= _value && _value > 0);
+		assert(allowance[_from][msg.sender] >= _value);
 
 		allowance[_from][msg.sender] = sub(allowance[_from][msg.sender], _value);
 
@@ -128,7 +128,7 @@ contract Token is IToken, SafeMath, Owned, Pause {
 		require(isNotPaused());
 
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            transfer(dests[i], values[i]);
            i += 1;
         }

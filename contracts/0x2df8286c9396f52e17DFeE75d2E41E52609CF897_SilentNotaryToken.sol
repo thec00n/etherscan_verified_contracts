@@ -49,44 +49,44 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
 contract SilentNotaryToken is SafeMath, ERC20, Killable {
-  string constant public name = &quot;Silent Notary Token&quot;;
-  string constant public symbol = &quot;SNTR&quot;;
+  string constant public name = "Silent Notary Token";
+  string constant public symbol = "SNTR";
   uint constant public decimals = 4;
   /// Buyout price
   uint constant public BUYOUT_PRICE = 20e10;
@@ -100,13 +100,13 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
     bool exist;
   }
   /// Holder balances
-  mapping(address =&gt; Balance) public balances;
+  mapping(address => Balance) public balances;
   /// Contract that is allowed to create new tokens and allows unlift the transfer limits on this token
   address public crowdsaleAgent;
   /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
   bool public released = false;
   /// approve() allowances
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /// @dev Limit token transfer until the crowdsale is over.
   modifier canTransfer() {
@@ -139,7 +139,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
   /// @param size payload size
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
   }
 
@@ -162,7 +162,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
 
   /// Fallback method
   function() payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     Deposit(msg.sender, msg.value);
   }
   /// @dev Create new tokens and allocate them to an address. Only callably by a crowdsale contract
@@ -248,8 +248,8 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param _amount wei for buyout tokens
   function buyout(address _holder, uint _amount) onlyOwner addIfNotExist(msg.sender) external  {
     require(_holder != msg.sender);
-    require(this.balance &gt;= _amount);
-    require(BUYOUT_PRICE &lt;= _amount);
+    require(this.balance >= _amount);
+    require(BUYOUT_PRICE <= _amount);
 
     uint multiplier = 10 ** decimals;
     uint buyoutTokens = safeDiv(safeMul(_amount, multiplier), BUYOUT_PRICE);

@@ -20,8 +20,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,12 +88,12 @@ contract TokenSale {
   // address of the TOTE token original smart contract
   address public tokenContractAddress = 0x42be9831FFF77972c1D0E1eC0aA9bdb3CaA04D47;
   
-  // address of TokenBurn contract to &quot;burn&quot; unsold tokens
+  // address of TokenBurn contract to "burn" unsold tokens
   // for further details, review the TokenBurn contract and verify code on Etherscan
   address public tokenBurnAddress = 0xadCa18DC9489C5FE5BdDf1A8a8C2623B66029198;
   
   // address of EthRaised contract, that will be used to distribute funds 
-  // raised by the token sale. Added as &quot;wallet address&quot;
+  // raised by the token sale. Added as "wallet address"
   address public ethRaisedAddress = 0x9F73D808807c71Af185FEA0c1cE205002c74123C;
   
   uint public preIcoPhaseCountdown;       // used for website tokensale
@@ -172,11 +172,11 @@ contract TokenSale {
     preIcoPhaseCountdown = openingTime;
     icoPhaseCountdown = closingTime;
     
-    // after 14 days the &quot;post-tokensale&quot; header section of the homepage 
+    // after 14 days the "post-tokensale" header section of the homepage 
     // on the website will be removed based on this time
     postIcoPhaseCountdown = closingTime.add(14 days);
     
-    emit Deployed(&quot;Ethertote Token Sale contract deployed&quot;, now);
+    emit Deployed("Ethertote Token Sale contract deployed", now);
   }
   
   
@@ -193,7 +193,7 @@ contract TokenSale {
   
   // confirm if The Token Sale has finished
   function tokenSaleHasFinished() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   // this function will send any unsold tokens to the null TokenBurn contract address
@@ -202,23 +202,23 @@ contract TokenSale {
       require(tokenSaleIsPaused == false);
       require(tokenSaleHasFinished() == true);
       token.transfer(tokenBurnAddress, tokenSaleTokenBalance());
-      emit TokensBurned(&quot;tokens sent to TokenBurn contract&quot;, now);
+      emit TokensBurned("tokens sent to TokenBurn contract", now);
   }
 
 
 
   // function to temporarily pause token sale if needed
   function pauseTokenSale() onlyAdmin public {
-      // confirm the token sale hasn&#39;t already completed
+      // confirm the token sale hasn't already completed
       require(tokenSaleHasFinished() == false);
       
-      // confirm the token sale isn&#39;t already paused
+      // confirm the token sale isn't already paused
       require(tokenSaleIsPaused == false);
       
       // pause the sale and note the time of the pause
       tokenSaleIsPaused = true;
       tokenSalePausedTime = now;
-      emit SalePaused(&quot;token sale has been paused&quot;, now);
+      emit SalePaused("token sale has been paused", now);
   }
   
     // function to resume token sale
@@ -247,7 +247,7 @@ contract TokenSale {
       postIcoPhaseCountdown = closingTime.add(14 days);
       // now resume the token sale
       tokenSaleIsPaused = false;
-      emit SaleResumed(&quot;token sale has now resumed&quot;, now);
+      emit SaleResumed("token sale has now resumed", now);
   }
   
 
@@ -290,18 +290,18 @@ contract TokenSale {
   function buyTokens(address buyer) public payable {
     
     // check Crowdsale is open (can disable for testing)
-    require(openingTime &lt;= block.timestamp);
-    require(block.timestamp &lt; closingTime);
+    require(openingTime <= block.timestamp);
+    require(block.timestamp < closingTime);
     
     // minimum purchase of 100 tokens (0.1 eth)
-    require(msg.value &gt;= minSpend);
+    require(msg.value >= minSpend);
     
     // maximum purchase per transaction to allow broader
     // token distribution during tokensale
-    require(msg.value &lt;= maxSpend);
+    require(msg.value <= maxSpend);
     
     // stop sales of tokens if token balance is 0
-    require(tokenSaleTokenBalance() &gt; 0);
+    require(tokenSaleTokenBalance() > 0);
     
     // stop sales of tokens if Token sale is paused
     require(tokenSaleIsPaused == false);
@@ -315,7 +315,7 @@ contract TokenSale {
     
     // check that the amount of eth being sent by the buyer 
     // does not exceed the equivalent number of tokens remaining
-    require(tokens &lt;= tokenSaleTokenBalance());
+    require(tokens <= tokenSaleTokenBalance());
 
     // update state
     weiRaised = weiRaised.add(weiAmount);

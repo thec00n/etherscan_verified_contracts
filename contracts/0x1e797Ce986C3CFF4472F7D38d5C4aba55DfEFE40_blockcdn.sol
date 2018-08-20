@@ -1,7 +1,7 @@
 pragma solidity ^0.4.2;
 contract blockcdn {
-    mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; uint256) fundValue;
+    mapping (address => uint256) balances;
+	mapping (address => uint256) fundValue;
 	address public owner;
     string public name;
     string public symbol;
@@ -50,29 +50,29 @@ contract blockcdn {
     /*send ethereum and get BCDN*/
     function buyBlockCDN() payable returns (bool success){
 		if(msg.sender == owner) throw;
-        if(now &gt; closeTime) throw; 
-        if(now &lt; startTime) throw;
+        if(now > closeTime) throw; 
+        if(now < startTime) throw;
         if(isFundedMax) throw;
         uint256 token = 0;
-        if(closeTime - 2 weeks &gt; now) {
+        if(closeTime - 2 weeks > now) {
              token = msg.value;
         }else {
             uint day = (now - (closeTime - 2 weeks))/(2 days) + 1;
             token = msg.value;
-            while( day &gt; 0) {
+            while( day > 0) {
                 token  =   token * 95 / 100 ;    
                 day -= 1;
             }
         }
         
         balances[msg.sender] += token;
-        if(balances[owner] &lt; token) 
+        if(balances[owner] < token) 
             return false;
         balances[owner] -= token;
-        if(this.balance &gt;= minFundedValue) {
+        if(this.balance >= minFundedValue) {
             isFundedMini = true;
         }
-        if(this.balance &gt;= maxFundedValue) {
+        if(this.balance >= maxFundedValue) {
             isFundedMax = true;   
         }
 		fundValue[msg.sender] += msg.value;
@@ -92,14 +92,14 @@ contract blockcdn {
 		return fundValue[_owner];
 	}
 
-    /*refund &#39;msg.sender&#39; in the case the Token Sale didn&#39;t reach ite minimum 
+    /*refund 'msg.sender' in the case the Token Sale didn't reach ite minimum 
     funding goal*/
     function reFund() payable returns (bool success) {
-        if(now &lt;= closeTime) throw;     
+        if(now <= closeTime) throw;     
 		if(isFundedMini) throw;             
 		uint256 value = fundValue[msg.sender];
 		fundValue[msg.sender] = 0;
-		if(value &lt;= 0) throw;
+		if(value <= 0) throw;
         if(!msg.sender.send(value)) 
             throw;
         balances[owner] +=  balances[msg.sender];
@@ -109,14 +109,14 @@ contract blockcdn {
     }
 
 	
-	/*refund _fundaddr in the case the Token Sale didn&#39;t reach ite minimum 
+	/*refund _fundaddr in the case the Token Sale didn't reach ite minimum 
     funding goal*/
 	function reFundByOther(address _fundaddr) payable returns (bool success) {
-	    if(now &lt;= closeTime) throw;    
+	    if(now <= closeTime) throw;    
 		if(isFundedMini) throw;           
 		uint256 value = fundValue[_fundaddr];
 		fundValue[_fundaddr] = 0;
-		if(value &lt;= 0) throw;
+		if(value <= 0) throw;
         if(!_fundaddr.send(value)) throw;
         balances[owner] += balances[_fundaddr];
         balances[_fundaddr] = 0;
@@ -127,10 +127,10 @@ contract blockcdn {
     
     /* Send coins */
     function transfer(address _to, uint256 _value) payable returns (bool success) {
-        if(_value &lt;= 0 ) throw;                                      // Check send token value &gt; 0;
-		if (balances[msg.sender] &lt; _value) throw;                    // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) throw;           // Check for overflows
-		if(now &lt; closeTime ) {										 // unclosed allowed retrieval, Closed fund allow transfer   
+        if(_value <= 0 ) throw;                                      // Check send token value > 0;
+		if (balances[msg.sender] < _value) throw;                    // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) throw;           // Check for overflows
+		if(now < closeTime ) {										 // unclosed allowed retrieval, Closed fund allow transfer   
 			if(_to == address(this)) {
 				fundValue[msg.sender] -= _value;
 				balances[msg.sender] -= _value;
@@ -152,9 +152,9 @@ contract blockcdn {
     /*send reward*/
     function sendRewardBlockCDN(address rewarder, uint256 value) payable returns (bool success) {
         if(msg.sender != owner) throw;
-		if(now &lt;= closeTime) throw;        
+		if(now <= closeTime) throw;        
 		if(!isFundedMini) throw;               
-        if( balances[owner] &lt; value) throw;
+        if( balances[owner] < value) throw;
         balances[rewarder] += value;
         uint256 halfValue  = value / 2;
         balances[owner] -= halfValue;
@@ -176,9 +176,9 @@ contract blockcdn {
     
     /*withDraw ethereum when closed fund*/
     function withDrawEth(uint256 value) payable returns (bool success) {
-        if(now &lt;= closeTime ) throw;
+        if(now <= closeTime ) throw;
         if(!isFundedMini) throw;
-        if(this.balance &lt; value) throw;
+        if(this.balance < value) throw;
         if(msg.sender != owner) throw;
         if(!msg.sender.send(value))
             return false;

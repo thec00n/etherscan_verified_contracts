@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
 contract FundariaBonusFund {
     
-    mapping(address=&gt;uint) public ownedBonus; // storing bonus wei
-    mapping(address=&gt;int) public investorsAccounts; // Fundaria investors accounts
+    mapping(address=>uint) public ownedBonus; // storing bonus wei
+    mapping(address=>int) public investorsAccounts; // Fundaria investors accounts
     uint public finalTimestampOfBonusPeriod; // when the bonus period ends
     address registeringContractAddress; // contract which can register investors accounts
     address public fundariaTokenBuyAddress; // address of FundariaTokenBuy contract
@@ -22,7 +22,7 @@ contract FundariaBonusFund {
     
     // condition for method to be executed only by bonus owner
     modifier onlyBonusOwner { 
-        if(ownedBonus[msg.sender]&gt;0) _; 
+        if(ownedBonus[msg.sender]>0) _; 
     }
     
     function setFundariaTokenBuyAddress(address _fundariaTokenBuyAddress) onlyCreator {
@@ -35,14 +35,14 @@ contract FundariaBonusFund {
     
     // availability for creator address to set when bonus period ends, but not later then current end moment
     function setFinalTimestampOfBonusPeriod(uint _finalTimestampOfBonusPeriod) onlyCreator {
-        if(finalTimestampOfBonusPeriod==0 || _finalTimestampOfBonusPeriod&lt;finalTimestampOfBonusPeriod)
+        if(finalTimestampOfBonusPeriod==0 || _finalTimestampOfBonusPeriod<finalTimestampOfBonusPeriod)
             finalTimestampOfBonusPeriod = _finalTimestampOfBonusPeriod;    
     }
     
     
     // bonus creator can withdraw their wei after bonus period ended
     function withdrawBonus() onlyBonusOwner {
-        if(now&gt;finalTimestampOfBonusPeriod) {
+        if(now>finalTimestampOfBonusPeriod) {
             var bonusValue = ownedBonus[msg.sender];
             ownedBonus[msg.sender] = 0;
             BonusWithdrawn(msg.sender, bonusValue);
@@ -59,7 +59,7 @@ contract FundariaBonusFund {
 
     // bonus owner can transfer their bonus wei to any investor account before bonus period ended
     function fillInvestorAccountWithBonus(address accountAddress) onlyBonusOwner {
-        if(investorsAccounts[accountAddress]==-1 || investorsAccounts[accountAddress]&gt;0) {
+        if(investorsAccounts[accountAddress]==-1 || investorsAccounts[accountAddress]>0) {
             var bonusValue = ownedBonus[msg.sender];
             ownedBonus[msg.sender] = 0;
             if(investorsAccounts[accountAddress]==-1) investorsAccounts[accountAddress]==0; 

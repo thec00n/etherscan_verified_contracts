@@ -8,21 +8,21 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
 
 contract HXC is SafeMath {
 
-    string public name = &quot;HXC&quot;;        //  token name
-    string public symbol = &quot;HXC&quot;;      //  token symbol
+    string public name = "HXC";        //  token name
+    string public symbol = "HXC";      //  token symbol
     uint public decimals = 18;           //  token digit
 
     address public admin = 0x0;
@@ -32,8 +32,8 @@ contract HXC is SafeMath {
 
 
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     modifier isAdmin 
     {
@@ -77,8 +77,8 @@ contract HXC is SafeMath {
         validAddress(_to) 
         returns (bool success)
     {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -91,9 +91,9 @@ contract HXC is SafeMath {
         validAddress(_to)
         returns (bool success) 
     {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
+        require(allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;

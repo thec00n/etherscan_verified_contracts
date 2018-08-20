@@ -31,7 +31,7 @@ contract CryptoRoulette {
     }
 
     function play(uint256 number) payable public {
-        require(msg.value &gt;= betPrice &amp;&amp; number &lt;= 10);
+        require(msg.value >= betPrice && number <= 10);
 
         Game game;
         game.player = msg.sender;
@@ -49,7 +49,7 @@ contract CryptoRoulette {
     }
 
     function kill() public {
-        if (msg.sender == ownerAddr &amp;&amp; now &gt; lastPlayed + 6 hours) {
+        if (msg.sender == ownerAddr && now > lastPlayed + 6 hours) {
             suicide(msg.sender);
         }
     }

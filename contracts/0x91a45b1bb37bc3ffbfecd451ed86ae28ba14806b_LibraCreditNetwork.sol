@@ -25,10 +25,10 @@ contract LibraCreditNetwork is ERC20 {
   uint8 public _decimals;
   uint256 _totalSupply; 
   
-  string private _version = &#39;0.1&#39;;
+  string private _version = '0.1';
   
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
   
   function () {
         //if ether is sent to this address, send it back.
@@ -36,8 +36,8 @@ contract LibraCreditNetwork is ERC20 {
   }
   	
   function LibraCreditNetwork() {                           
-        _name = &quot;Libra Credit Network&quot;;            
-        _symbol = &quot;LBA&quot;;                                    
+        _name = "Libra Credit Network";            
+        _symbol = "LBA";                                    
         _decimals = 18;                  		
         _totalSupply = 1000000000000000000000000000; 
         balances[msg.sender] = _totalSupply;
@@ -71,7 +71,7 @@ contract LibraCreditNetwork is ERC20 {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] -= _value;
@@ -97,8 +97,8 @@ contract LibraCreditNetwork is ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] -= _value;
     balances[_to] += _value;
@@ -112,7 +112,7 @@ contract LibraCreditNetwork is ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.

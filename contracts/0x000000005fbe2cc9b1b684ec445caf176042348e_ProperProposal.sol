@@ -31,11 +31,11 @@ contract Vote is ERC20, TokenRescue {
     address public owner = 0x4a6f6B9fF1fc974096f9063a45Fd12bD5B928AD1;
 
     uint8 public constant decimals = 1;
-    string public symbol = &quot;FV&quot;;
-    string public name = &quot;FinneyVote&quot;;
+    string public symbol = "FV";
+    string public name = "FinneyVote";
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) approved;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) approved;
 
     function totalSupply() external constant returns (uint256) {
         return supply;
@@ -52,7 +52,7 @@ contract Vote is ERC20, TokenRescue {
         return approved[_owner][_spender];
     }
     function transfer(address _to, uint256 _value) external returns (bool) {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         balances[msg.sender] -= _value;
@@ -61,8 +61,8 @@ contract Vote is ERC20, TokenRescue {
         return true;
     }
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
-        if (balances[_from] &lt; _value
-         || approved[_from][msg.sender] &lt; _value
+        if (balances[_from] < _value
+         || approved[_from][msg.sender] < _value
          || _value == 0) {
             return false;
         }
@@ -80,7 +80,7 @@ contract Vote is ERC20, TokenRescue {
     }
     // vote5 and vote1 are available for future use
     function vote5(address _voter, address _votee) external {
-        require(balances[_voter] &gt;= 10);
+        require(balances[_voter] >= 10);
         require(accountRegistry.canVoteOnProposal(_voter, msg.sender));
         balances[_voter] -= 10;
         balances[owner] += 5;
@@ -89,7 +89,7 @@ contract Vote is ERC20, TokenRescue {
         Transfer(_voter, _votee, 5);
     }
     function vote1(address _voter, address _votee) external {
-        require(balances[_voter] &gt;= 10);
+        require(balances[_voter] >= 10);
         require(accountRegistry.canVoteOnProposal(_voter, msg.sender));
         balances[_voter] -= 10;
         balances[owner] += 9;
@@ -98,7 +98,7 @@ contract Vote is ERC20, TokenRescue {
         Transfer(_voter, _votee, 1);
     }
     function vote9(address _voter, address _votee) external {
-        require(balances[_voter] &gt;= 10);
+        require(balances[_voter] >= 10);
         require(accountRegistry.canVoteOnProposal(_voter, msg.sender));
         balances[_voter] -= 10;
         balances[owner] += 1;
@@ -155,7 +155,7 @@ contract ProperProposal is ProposalInterface, TokenRescue {
         uint256 count;
     }
     Argument[] public arguments;
-    mapping (address =&gt; uint256) public votes;
+    mapping (address => uint256) public votes;
     Vote public constant voteToken = Vote(0x000000002647e16d9BaB9e46604D75591D289277);
 
     function getPosition(address _user)
@@ -269,7 +269,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
         address voucher;//nominated this account for PROPOSER
         address devoucher;//denounced this account for PROPOSER
     }
-    mapping (address =&gt; Account) accounts;
+    mapping (address => Account) accounts;
 
     function AccountRegistry()
     public
@@ -304,15 +304,15 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     function registerCabal(CabalInterface _cabal)
     external {
         Account storage account = accounts[_cabal];
-        require(account.membership &amp; (PENDING_CABAL | CABAL) == 0);
+        require(account.membership & (PENDING_CABAL | CABAL) == 0);
         account.membership |= PENDING_CABAL;
     }
 
     function confirmCabal(CabalInterface _cabal)
     external {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage account = accounts[_cabal];
-        require(account.membership &amp; PENDING_CABAL != 0);
+        require(account.membership & PENDING_CABAL != 0);
         account.membership ^= (CABAL | PENDING_CABAL);
         Cabal(_cabal);
     }
@@ -322,7 +322,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     {
         require(msg.value == registrationDeposit);
         Account storage account = accounts[msg.sender];
-        require(account.membership &amp; VOTER == 0);
+        require(account.membership & VOTER == 0);
         account.lastAccess = now;
         account.membership |= VOTER;
         token.grant(msg.sender, 40);
@@ -334,8 +334,8 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     external
     {
         Account storage account = accounts[msg.sender];
-        require(account.membership &amp; VOTER != 0);
-        require(account.lastAccess + 7 days &lt;= now);
+        require(account.membership & VOTER != 0);
+        require(account.lastAccess + 7 days <= now);
         account.membership ^= VOTER;
         account.lastAccess = 0;
         // the MANDATORY transfer keeps population() meaningful
@@ -362,62 +362,62 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     external view
     returns (bool)
     {
-        return accounts[_voter].lastAccess + 7 days &lt;= now;
+        return accounts[_voter].lastAccess + 7 days <= now;
     }
 
     function canVoteOnProposal(address _voter, address _proposal)
     external view
     returns (bool)
     {
-        return accounts[_voter].membership &amp; VOTER != 0
-            &amp;&amp; accounts[_proposal].membership &amp; PROPOSAL != 0;
+        return accounts[_voter].membership & VOTER != 0
+            && accounts[_proposal].membership & PROPOSAL != 0;
     }
 
     function canVote(address _voter)
     external view
     returns (bool)
     {
-        return accounts[_voter].membership &amp; VOTER != 0;
+        return accounts[_voter].membership & VOTER != 0;
     }
 
     function isProposal(address _proposal)
     external view
     returns (bool)
     {
-        return accounts[_proposal].membership &amp; PROPOSAL != 0;
+        return accounts[_proposal].membership & PROPOSAL != 0;
     }
 
     function isPendingProposal(address _proposal)
     external view
     returns (bool)
     {
-        return accounts[_proposal].membership &amp; PENDING_PROPOSAL != 0;
+        return accounts[_proposal].membership & PENDING_PROPOSAL != 0;
     }
 
     function isPendingCabal(address _account)
     external view
     returns (bool)
     {
-        return accounts[_account].membership &amp; PENDING_CABAL != 0;
+        return accounts[_account].membership & PENDING_CABAL != 0;
     }
 
     function isCabal(address _account)
     external view
     returns (bool)
     {
-        return accounts[_account].membership &amp; CABAL != 0;
+        return accounts[_account].membership & CABAL != 0;
     }
 
     // under no condition should you let anyone control two BOARD accounts
     function appoint(address _board, string _vouch)
     external {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage candidate = accounts[_board];
-        if (candidate.membership &amp; BOARD != 0) {
+        if (candidate.membership & BOARD != 0) {
             return;
         }
         address appt = candidate.appointer;
-        if (accounts[appt].membership &amp; BOARD == 0) {
+        if (accounts[appt].membership & BOARD == 0) {
             candidate.appointer = msg.sender;
             Nominated(_board, _vouch);
             return;
@@ -432,13 +432,13 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
 
     function denounce(address _board, string _reason)
     external {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage board = accounts[_board];
-        if (board.membership &amp; BOARD == 0) {
+        if (board.membership & BOARD == 0) {
             return;
         }
         address dncr = board.denouncer;
-        if (accounts[dncr].membership &amp; BOARD == 0) {
+        if (accounts[dncr].membership & BOARD == 0) {
             board.denouncer = msg.sender;
             Denounced(_board, _reason);
             return;
@@ -453,13 +453,13 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
 
     function vouchProposer(address _proposer, string _vouch)
     external {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage candidate = accounts[_proposer];
-        if (candidate.membership &amp; PROPOSER != 0) {
+        if (candidate.membership & PROPOSER != 0) {
             return;
         }
         address appt = candidate.voucher;
-        if (accounts[appt].membership &amp; BOARD == 0) {
+        if (accounts[appt].membership & BOARD == 0) {
             candidate.voucher = msg.sender;
             Vouch(_proposer, _vouch);
             return;
@@ -474,13 +474,13 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
 
     function devouchProposer(address _proposer, string _devouch)
     external {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage candidate = accounts[_proposer];
-        if (candidate.membership &amp; PROPOSER == 0) {
+        if (candidate.membership & PROPOSER == 0) {
             return;
         }
         address appt = candidate.devoucher;
-        if (accounts[appt].membership &amp; BOARD == 0) {
+        if (accounts[appt].membership & BOARD == 0) {
             candidate.devoucher = msg.sender;
             Devouch(_proposer, _devouch);
             return;
@@ -489,7 +489,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
             return;
         }
         Devouch(_proposer, _devouch);
-        candidate.membership &amp;= ~PROPOSER;
+        candidate.membership &= ~PROPOSER;
         Shutdown(_proposer);
     }
 
@@ -509,7 +509,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     returns (ProposalInterface)
     {
         ProperProposal proposal;
-        bytes memory clone = hex&quot;600034603b57602f80600f833981f3600036818037808036816f5fbe2cc9b1b684ec445caf176042348e5af415602c573d81803e3d81f35b80fd&quot;;
+        bytes memory clone = hex"600034603b57602f80600f833981f3600036818037808036816f5fbe2cc9b1b684ec445caf176042348e5af415602c573d81803e3d81f35b80fd";
         assembly {
             let data := add(clone, 0x20)
             proposal := create(0, data, 58)
@@ -522,7 +522,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
 
     function sudoPropose(ProposalInterface _proposal)
     external {
-        require(accounts[msg.sender].membership &amp; PROPOSER != 0);
+        require(accounts[msg.sender].membership & PROPOSER != 0);
         uint8 membership = accounts[_proposal].membership;
         require(membership == 0);
         accounts[_proposal].membership = PROPOSAL;
@@ -537,16 +537,16 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     external
     {
         Account storage account = accounts[_proposal];
-        require(account.membership &amp; (PENDING_PROPOSAL | PROPOSAL) == 0);
+        require(account.membership & (PENDING_PROPOSAL | PROPOSAL) == 0);
         account.membership |= PENDING_PROPOSAL;
     }
 
     function confirmProposal(ProposalInterface _proposal)
     external
     {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage account = accounts[_proposal];
-        require(account.membership &amp; PENDING_PROPOSAL != 0);
+        require(account.membership & PENDING_PROPOSAL != 0);
         account.membership ^= (PROPOSAL | PENDING_PROPOSAL);
         Proposal(_proposal);
     }
@@ -558,10 +558,10 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     external payable
     {
         require(msg.value == proposalCensorshipFee);
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage account = accounts[_proposal];
-        require(account.membership &amp; PROPOSAL != 0);
-        account.membership &amp;= ~PROPOSAL;
+        require(account.membership & PROPOSAL != 0);
+        account.membership &= ~PROPOSAL;
         burn.transfer(proposalCensorshipFee);
         BannedProposal(_proposal, _reason);
     }
@@ -570,20 +570,20 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     function rejectProposal(ProposalInterface _proposal)
     external
     {
-        require(accounts[msg.sender].membership &amp; BOARD != 0);
+        require(accounts[msg.sender].membership & BOARD != 0);
         Account storage account = accounts[_proposal];
-        require(account.membership &amp; PENDING_PROPOSAL != 0);
-        account.membership &amp;= PENDING_PROPOSAL;
+        require(account.membership & PENDING_PROPOSAL != 0);
+        account.membership &= PENDING_PROPOSAL;
     }
 
     // this code lives here instead of in the token so that it can be upgraded with account registry migration
     function faucet()
     external {
         Account storage account = accounts[msg.sender];
-        require(account.membership &amp; VOTER != 0);
+        require(account.membership & VOTER != 0);
         uint256 lastAccess = account.lastAccess;
         uint256 grant = (now - lastAccess) / 72 minutes;
-        if (grant &gt; 40) {
+        if (grant > 40) {
             grant = 40;
             account.lastAccess = now;
         } else {
@@ -596,7 +596,7 @@ contract AccountRegistry is AccountRegistryInterface, TokenRescue {
     external view
     returns (uint256) {
         uint256 grant = (now - accounts[_account].lastAccess) / 72 minutes;
-        if (grant &gt; 40) {
+        if (grant > 40) {
             grant = 40;
         }
         return grant;

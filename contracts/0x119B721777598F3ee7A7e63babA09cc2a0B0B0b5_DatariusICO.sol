@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,8 +33,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -208,13 +208,13 @@ contract DatariusICO {
 
     function buy(address _investor, uint _datValue) internal {
        require((status == Status.PreIcoStarted) || (status == Status.IcoStarted));
-       require(_datValue &gt; 0);
+       require(_datValue > 0);
 
        uint bonus = getBonus(_datValue);
 
        uint total = _datValue.add(bonus);
 
-       require(Sold + total &lt;= Tokens_For_Sale);
+       require(Sold + total <= Tokens_For_Sale);
        dat.mint(_investor, total);
        Sold = Sold.add(_datValue);
     }
@@ -227,27 +227,27 @@ contract DatariusICO {
             bonus = _value.mul(35).div(100);
             return bonus;
        } else {
-            if(time &lt;= startTime + 6 hours)
+            if(time <= startTime + 6 hours)
             {
 
                   bonus = _value.mul(30).div(100);
                   return bonus;
             }
 
-            if(time &lt;= startTime + 12 hours)
+            if(time <= startTime + 12 hours)
             {
                   bonus = _value.mul(25).div(100);
                   return bonus;
             }
 
-            if(time &lt;= startTime + 24 hours)
+            if(time <= startTime + 24 hours)
             {
 
                   bonus = _value.mul(20).div(100);
                   return bonus;
             }
 
-            if(time &lt;= startTime + 48 hours)
+            if(time <= startTime + 48 hours)
             {
 
                   bonus = _value.mul(10).div(100);
@@ -269,8 +269,8 @@ contract DatariusICO {
 contract DAT  is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;Datarius Token&quot;;
-    string public symbol = &quot;DAT&quot;;
+    string public name = "Datarius Token";
+    string public symbol = "DAT";
     uint public decimals = 18;
 
     address public ico;
@@ -287,7 +287,7 @@ contract DAT  is ERC20 {
 
 
     function mint(address _holder, uint _value) external icoOnly {
-       require(_value &gt; 0);
+       require(_value > 0);
        balances[_holder] = balances[_holder].add(_value);
        totalSupply = totalSupply.add(_value);
        Transfer(0x0, _holder, _value);

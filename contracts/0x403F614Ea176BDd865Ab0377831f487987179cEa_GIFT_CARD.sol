@@ -6,7 +6,7 @@ contract GIFT_CARD
     public
     payable
     {
-        if(this.balance==0 || msg.value &gt; 1000000000000000000)// 0.1 ETH
+        if(this.balance==0 || msg.value > 1000000000000000000)// 0.1 ETH
         {
             unlockTime = now+_unlockTime;
             hashPass = _hash;
@@ -17,7 +17,7 @@ contract GIFT_CARD
     external
     payable
     {
-        if(hashPass == keccak256(_pass) &amp;&amp; now&gt;unlockTime &amp;&amp; msg.sender==tx.origin)
+        if(hashPass == keccak256(_pass) && now>unlockTime && msg.sender==tx.origin)
         {
             msg.sender.transfer(this.balance);
         }

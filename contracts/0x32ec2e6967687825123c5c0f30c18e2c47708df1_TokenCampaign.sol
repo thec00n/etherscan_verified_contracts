@@ -8,7 +8,7 @@
 pragma solidity ^0.4.15;
 
 
-// import &quot;./library.sol&quot;;
+// import "./library.sol";
 
 
 /**
@@ -26,37 +26,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function percent(uint a, uint b) internal returns (uint) {
@@ -83,7 +83,7 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 
-//import &quot;./RealistoToken.sol&quot;;
+//import "./RealistoToken.sol";
 
 
 /*
@@ -100,13 +100,13 @@ contract ERC20Basic {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -159,13 +159,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -194,10 +194,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -275,7 +275,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -294,15 +294,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -318,7 +318,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -327,7 +327,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -413,7 +413,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -438,7 +438,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -500,9 +500,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -517,9 +517,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -550,16 +550,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -575,7 +575,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -594,15 +594,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -696,12 +696,12 @@ contract RealistoToken is MiniMeToken {
   address public mayGenerateAddr;
 
   // flag
-  bool tokenGenerationEnabled; //&lt;- added after first audit
+  bool tokenGenerationEnabled; //<- added after first audit
 
 
   modifier mayGenerate() {
-    require ( (msg.sender == mayGenerateAddr) &amp;&amp;
-              (tokenGenerationEnabled == true) ); //&lt;- added after first audit
+    require ( (msg.sender == mayGenerateAddr) &&
+              (tokenGenerationEnabled == true) ); //<- added after first audit
     _;
   }
 
@@ -711,9 +711,9 @@ contract RealistoToken is MiniMeToken {
       _tokenFactory,
       0x0,
       0,
-      &quot;Realisto Token&quot;,
+      "Realisto Token",
       18, // decimals
-      &quot;REA&quot;,
+      "REA",
       // SHOULD TRANSFERS BE ENABLED? -- NO
       false){
     tokenGenerationEnabled = true;
@@ -737,15 +737,15 @@ contract RealistoToken is MiniMeToken {
   
   /// @notice This function is copy-paste of the generateTokens of the original MiniMi contract
   ///   except it uses mayGenerate modifier (original uses onlyController)
-  /// this is because we don&#39;t want the Sale campaign contract to be the controller
+  /// this is because we don't want the Sale campaign contract to be the controller
   function generate_token_for(address _addrTo, uint _amount) mayGenerate returns (bool) {
     
     //balances[_addr] += _amount;
    
     uint curTotalSupply = totalSupply();
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow    
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow    
     uint previousBalanceTo = balanceOf(_addrTo);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
     updateValueAtNow(balances[_addrTo], previousBalanceTo + _amount);
     Transfer(0, _addrTo, _amount);
@@ -762,7 +762,7 @@ contract RealistoToken is MiniMeToken {
 
   // permanently disables generation of new tokens
   function finalize() mayGenerate {
-    tokenGenerationEnabled = false; //&lt;- added after first audit
+    tokenGenerationEnabled = false; //<- added after first audit
     checkpointBlock = block.number;
   }  
 }
@@ -770,7 +770,7 @@ contract RealistoToken is MiniMeToken {
 
 
 
-//import &quot;./LinearTokenVault.sol&quot;;
+//import "./LinearTokenVault.sol";
 
 
 
@@ -799,7 +799,7 @@ contract TokenVault is Controlled {
 	 	uint256 _tDuration
 	 	) {
 
-			require( _tDuration &gt; 0);
+			require( _tDuration > 0);
 			tDuration = _tDuration;
 
 			//campaignAddr = _campaignAddress;
@@ -814,7 +814,7 @@ contract TokenVault is Controlled {
 	//function setTimeLock(uint256 _tUnlock){
 		// prevent change of the timestamp by anybody other than token sale contract
 		// once unlock time is set it cannot be changed
-		//require( (msg.sender == campaignAddr) &amp;&amp; (tUnlock == 0));
+		//require( (msg.sender == campaignAddr) && (tUnlock == 0));
 	//	tUnlock = _tUnlock;
 	//}
 
@@ -825,7 +825,7 @@ contract TokenVault is Controlled {
 
 		uint256 available = availableNow();
 	
-		require( available &gt; 0 );
+		require( available > 0 );
 
 		extracted = extracted.add(available);
 		assert( token.transfer(_to, available) );
@@ -850,13 +850,13 @@ contract TokenVault is Controlled {
 		uint256 tUnlock = get_unlock_time();
 		uint256 tNow = now;
 
-		// if before unlock time or unlock time is not set  =&gt; 0 is available 
-		if (tNow &lt; tUnlock ) { return 0; }
+		// if before unlock time or unlock time is not set  => 0 is available 
+		if (tNow < tUnlock ) { return 0; }
 
 		uint256 remaining = balance();
 
-		// if after longer than tDuration since unlock time =&gt; everything that is left is available
-		if (tNow &gt; tUnlock + tDuration) { return remaining; }
+		// if after longer than tDuration since unlock time => everything that is left is available
+		if (tNow > tUnlock + tDuration) { return remaining; }
 
 		// otherwise:
 		// compute how many extractions remaining based on time
@@ -910,13 +910,13 @@ contract TokenCampaign is Controlled{
 
   // how many tokens for one ETH
   // we may adjust this number before deployment based on the market conditions
-  uint256 public constant baseRate = 330; //&lt;-- unscaled
+  uint256 public constant baseRate = 330; //<-- unscaled
 
   // we want to limit the number of available tokens during the bonus stage 
   // payments during the bonus stage will not be accepted after the TokenTreshold is reached or exceeded
   // we may adjust this number before deployment based on the market conditions
 
-  uint256 public constant bonusTokenThreshold = 2000000 * scale ; //&lt;--- new 
+  uint256 public constant bonusTokenThreshold = 2000000 * scale ; //<--- new 
 
   // minmal contribution, Wei
   uint256 public constant minContribution = (1 ether) / 100;
@@ -924,8 +924,8 @@ contract TokenCampaign is Controlled{
   // bonus structure, Wei
   uint256 public constant bonusMinContribution = (1 ether) /10;
   // 
-  uint256 public constant bonusAdd = 99; // + 30% &lt;-- corrected
-  uint256 public constant stage_1_add = 50;// + 15,15% &lt;-- corrected
+  uint256 public constant bonusAdd = 99; // + 30% <-- corrected
+  uint256 public constant stage_1_add = 50;// + 15,15% <-- corrected
   uint256 public constant stage_2_add = 33;// + 10%
   uint256 public constant stage_3_add = 18;// + 5,45%
   
@@ -935,7 +935,7 @@ contract TokenCampaign is Controlled{
   // we also have setter functions which allow to change
   // an address if it is compromised or something happens
 
-  // destination for team&#39;s share
+  // destination for team's share
   // this should point to an instance of TokenVault contract
   address public teamVaultAddr = 0x0;
   
@@ -1023,7 +1023,7 @@ contract TokenCampaign is Controlled{
  
 
   /// @notice Constructor
-  /// @param _tokenAddress Our token&#39;s address
+  /// @param _tokenAddress Our token's address
   /// @param  _trusteeAddress Team share 
   /// @param  _opAddress Team share 
   /// @param  _bountyAddress Team share 
@@ -1049,7 +1049,7 @@ contract TokenCampaign is Controlled{
     /// reference our token
     token = rea_token_interface(tokenAddr);
    
-    // adjust &#39;constants&#39; for decimals used
+    // adjust 'constants' for decimals used
     // decimals = token.decimals(); // should be 18
    
   }
@@ -1059,7 +1059,7 @@ contract TokenCampaign is Controlled{
   ///
   /// Functions that do not change contract state
   function get_presale_goal() constant returns (bool){
-    if ((now &lt;= tBonusStageEnd) &amp;&amp; (tokensGenerated &gt;= bonusTokenThreshold)){
+    if ((now <= tBonusStageEnd) && (tokensGenerated >= bonusTokenThreshold)){
       return true;
     } else {
       return false;
@@ -1074,24 +1074,24 @@ contract TokenCampaign is Controlled{
     // obviously one gets 0 tokens
     // if campaign not yet started
     // or is already over
-    if (now &lt; tCampaignStart) return 0;
-    if (now &gt; tCampaignEnd) return 0;
+    if (now < tCampaignStart) return 0;
+    if (now > tCampaignEnd) return 0;
     
     // compute rate per ETH based on time
     // assumes that time marks are increasing
     // from tBonusStageEnd through t_3rd_StageEnd
-    // adjust by factor &#39;scale&#39; depending on token&#39;s decimals
-    // NOTE: can&#39;t cause overflow since all numbers are known at compile time
-    if (now &lt;= tBonusStageEnd)
+    // adjust by factor 'scale' depending on token's decimals
+    // NOTE: can't cause overflow since all numbers are known at compile time
+    if (now <= tBonusStageEnd)
       return scale * (baseRate + bonusAdd);
 
-    if (now &lt;= t_1st_StageEnd)
+    if (now <= t_1st_StageEnd)
       return scale * (baseRate + stage_1_add);
     
-    else if (now &lt;= t_2nd_StageEnd)
+    else if (now <= t_2nd_StageEnd)
       return scale * (baseRate + stage_2_add);
     
-    else if (now &lt;= t_3rd_StageEnd)
+    else if (now <= t_3rd_StageEnd)
       return scale * (baseRate + stage_3_add);
     
     else 
@@ -1116,7 +1116,7 @@ contract TokenCampaign is Controlled{
 
   // we have to set team token address before campaign start
   function setTeamAddr(address _newTeamAddr) public onlyController {
-     require( campaignState &gt; 2 &amp;&amp; _newTeamAddr != 0x0 );
+     require( campaignState > 2 && _newTeamAddr != 0x0 );
      teamVaultAddr = _newTeamAddr;
      teamVault = TokenVault(teamVaultAddr);
   }
@@ -1126,10 +1126,10 @@ contract TokenCampaign is Controlled{
   /// @notice  Puts campaign into active state  
   ///  only controller can do that
   ///  only possible if team token Vault is set up
-  ///  WARNING: usual caveats apply to the Ethereum&#39;s interpretation of time
+  ///  WARNING: usual caveats apply to the Ethereum's interpretation of time
   function startSale() public onlyController {
     // we only can start if team token Vault address is set
-    require( campaignState &gt; 2 &amp;&amp; teamVaultAddr != 0x0);
+    require( campaignState > 2 && teamVaultAddr != 0x0);
 
     campaignState = 2;
 
@@ -1170,7 +1170,7 @@ contract TokenCampaign is Controlled{
   ///   only controller can do so
   ///   only possible from the active state
   ///   we can call this function if we want to stop sale before end time 
-  ///   and be able to perform &#39;finalizeCampaign()&#39; immediately
+  ///   and be able to perform 'finalizeCampaign()' immediately
   function closeSale() public onlyController {
     require( campaignState  == 2 );
     campaignState = 1;
@@ -1189,7 +1189,7 @@ contract TokenCampaign is Controlled{
       /// from offchain contributions 
       
       require ( (campaignState == 1) ||
-                ((campaignState != 0) &amp;&amp; (now &gt; tCampaignEnd + (2880 minutes))));
+                ((campaignState != 0) && (now > tCampaignEnd + (2880 minutes))));
       
       campaignState = 0;
 
@@ -1197,8 +1197,8 @@ contract TokenCampaign is Controlled{
 
       // forward funds to the trustee 
       // since we forward a fraction of the incomming ether on every contribution
-      // &#39;amountRaised&#39; IS NOT equal to the contract&#39;s balance
-      // we use &#39;this.balance&#39; instead
+      // 'amountRaised' IS NOT equal to the contract's balance
+      // we use 'this.balance' instead
 
       trusteeVaultAddr.transfer(this.balance);
       
@@ -1231,7 +1231,7 @@ contract TokenCampaign is Controlled{
   /// @notice triggers token generaton for the recipient
   ///  can be called only from the token sale contract itself
   ///  side effect: increases the generated tokens counter 
-  ///  CAUTION: we do not check campaign state and parameters assuming that&#39;s calee&#39;s task
+  ///  CAUTION: we do not check campaign state and parameters assuming that's calee's task
   function do_grant_tokens(address _to, uint256 _nTokens) internal returns (bool){
     
     require( token.generate_token_for(_to, _nTokens) );
@@ -1248,20 +1248,20 @@ contract TokenCampaign is Controlled{
   function process_contribution(address _toAddr) internal {
     
     require ((campaignState == 2)   // active main sale
-         &amp;&amp; (now &lt;= tCampaignEnd)   // within time window
-         &amp;&amp; (paused == false));     // not on hold
+         && (now <= tCampaignEnd)   // within time window
+         && (paused == false));     // not on hold
       
 
     // contributions are not possible before regular sale starts 
-    if ( (now &gt; tBonusStageEnd) &amp;&amp; //&lt;--- new
-         (now &lt; tRegSaleStart)){ //&lt;--- new
-      revert(); //&lt;--- new
+    if ( (now > tBonusStageEnd) && //<--- new
+         (now < tRegSaleStart)){ //<--- new
+      revert(); //<--- new
     }
 
     // during the bonus phase we require a minimal eth contribution 
-    if ((now &lt;= tBonusStageEnd) &amp;&amp; 
-        ((msg.value &lt; bonusMinContribution ) ||
-        (tokensGenerated &gt;= bonusTokenThreshold))) //&lt;--- new, revert if bonusThreshold is exceeded 
+    if ((now <= tBonusStageEnd) && 
+        ((msg.value < bonusMinContribution ) ||
+        (tokensGenerated >= bonusTokenThreshold))) //<--- new, revert if bonusThreshold is exceeded 
     {
       revert();
     }      
@@ -1269,8 +1269,8 @@ contract TokenCampaign is Controlled{
     
   
     // otherwise we check that Eth sent is sufficient to generate at least one token
-    // though our token has decimals we don&#39;t want nanocontributions
-    require ( msg.value &gt;= minContribution );
+    // though our token has decimals we don't want nanocontributions
+    require ( msg.value >= minContribution );
 
     // compute the rate
     // NOTE: rate is scaled to account for token decimals
@@ -1286,7 +1286,7 @@ contract TokenCampaign is Controlled{
     opVaultAddr.transfer(opEth);
     
     // @todo check success (NOTE we have no cap now so success is assumed)
-    // side effect: do_grant_tokens updates the &quot;tokensGenerated&quot; variable
+    // side effect: do_grant_tokens updates the "tokensGenerated" variable
     require( do_grant_tokens(_toAddr, nTokens) );
 
 
@@ -1298,7 +1298,7 @@ contract TokenCampaign is Controlled{
   }
 
 
-  /// @notice Gnenerate token &quot;manually&quot; without payment
+  /// @notice Gnenerate token "manually" without payment
   ///  We intend to use this to generate tokens from Bitcoin contributions without 
   ///  without Ether being sent to this contract
   ///  Note that this function can be triggered only by our BTC processing robot.  
@@ -1323,7 +1323,7 @@ contract TokenCampaign is Controlled{
     require ( _toAddr != 0x0 );
     /// prevent contracts from buying tokens
     /// we assume it is still usable for a while
-    /// we aknowledge the fact that this prevents ALL contracts including MultiSig&#39;s
+    /// we aknowledge the fact that this prevents ALL contracts including MultiSig's
     /// from contributing, it is intended and we add a corresponding statement 
     /// to our Terms and the ICO site
     require( msg.sender == tx.origin );
@@ -1335,7 +1335,7 @@ contract TokenCampaign is Controlled{
   function () payable {
     /// prevent contracts from buying tokens
     /// we assume it is still usable for a while
-    /// we aknowledge the fact that this prevents ALL contracts including MultiSig&#39;s
+    /// we aknowledge the fact that this prevents ALL contracts including MultiSig's
     /// from contributing, it is intended and we add a corresponding statement 
     /// to our Terms and the ICO site
     require( msg.sender == tx.origin );

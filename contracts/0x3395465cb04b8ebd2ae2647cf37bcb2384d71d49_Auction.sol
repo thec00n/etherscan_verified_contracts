@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract Base {
         globalLocked = false;     
     }
 
-    mapping (address =&gt; uint256) public userEtherOf;    
+    mapping (address => uint256) public userEtherOf;    
     
     function userRefund() public  returns(bool _result) {            
         return _userRefund(msg.sender);
@@ -80,7 +80,7 @@ contract Base {
         require (_to != 0x0);  
         lock();
         uint256 amount = userEtherOf[msg.sender];   
-        if(amount &gt; 0) {
+        if(amount > 0) {
             userEtherOf[msg.sender] = 0;
             _to.transfer(amount); 
             _result = true;
@@ -123,9 +123,9 @@ contract Beneficial is Base {
         require (_to != 0x0);  
         lock();
         uint256 amount = userEtherOf[msg.sender];   
-        if(amount &gt; 0){
+        if(amount > 0){
             userEtherOf[msg.sender] = 0;
-            if(shareholderIsToken &amp;&amp; msg.sender == shareholder){       
+            if(shareholderIsToken && msg.sender == shareholder){       
                 IDividendToken token = IDividendToken(shareholder);
                 token.profitOrgPay.value(amount)();
             }
@@ -148,15 +148,15 @@ contract Auction is Beneficial {
     }
    
     int public gameIndex = 1;                      
-    mapping(int =&gt; address) public indexGameOf;    
+    mapping(int => address) public indexGameOf;    
 
     function _addIndexGame(address _gameAddr) private {
             indexGameOf[gameIndex] = _gameAddr;
             gameIndex ++;
     }
    
-    mapping(address =&gt; bool) public whiteListOf;    
-    mapping (uint64 =&gt; address) public indexAddress;    
+    mapping(address => bool) public whiteListOf;    
+    mapping (uint64 => address) public indexAddress;    
 
     event OnWhiteListChange(address indexed _Addr, address _operator, bool _result,  uint _eventTime, uint _eventId);
 
@@ -190,7 +190,7 @@ contract Auction is Beneficial {
         bool emptyGameBanker;   
     } 
 
-    mapping (address =&gt; AuctionObj) public auctionObjOf;   
+    mapping (address => AuctionObj) public auctionObjOf;   
 
     event OnSetAuctionObj(uint indexed _auctionId, address indexed  _objAddr, uint256 _beginTime, uint256 _endTime, uint _bankerTime, bool _result, uint _code, uint _eventTime, uint _eventId);
 
@@ -212,16 +212,16 @@ contract Auction is Beneficial {
     function _setAuctionObj(address _gameAddr, uint256 _auctionEndTime, uint _bankerTime)  private  returns (bool _result) {   
         _result = false;
         require(_gameAddr != 0x0);
-        require(now &lt; _auctionEndTime);
-        //require(minBankTime &lt;= _bankerTime);
-        //require(_bankerTime &lt; 10 years);
+        require(now < _auctionEndTime);
+        //require(minBankTime <= _bankerTime);
+        //require(_bankerTime < 10 years);
         if(!isWhiteListGame(_gameAddr)) {               
             emit OnSetAuctionObj(auctionId, _gameAddr, now,  _auctionEndTime, _bankerTime, false, 1, now, getEventId()) ;
             return;
         }     
       
         AuctionObj storage ao = auctionObjOf[_gameAddr];
-        if(ao.endTime &lt;= now &amp;&amp; !ao.emptyGameBanker) {   
+        if(ao.endTime <= now && !ao.emptyGameBanker) {   
             AuctionObj memory  newAO = AuctionObj({
                 id: auctionId,
                 objAddr: _gameAddr,
@@ -248,19 +248,19 @@ contract Auction is Beneficial {
         _result = false;
         require(_objAddr != 0x0);
 		AuctionObj storage ao = auctionObjOf[_objAddr];
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
-        if(10**16 &gt; _price){                 
+        if(10**16 > _price){                 
             emit OnBid(ao.id, msg.sender, _objAddr,  _price, false, 3, now, getEventId());
             return;
         }
-        if(userEtherOf[msg.sender] &lt; _price){                 
+        if(userEtherOf[msg.sender] < _price){                 
             emit OnBid(ao.id, msg.sender, _objAddr,  _price, false, 1, now, getEventId());
             return;
         }
-        if(now &lt; ao.endTime) {                 
-            if(_price &gt; ao.price) {            
+        if(now < ao.endTime) {                 
+            if(_price > ao.price) {            
                 userEtherOf[msg.sender] = userEtherOf[msg.sender].sub(_price);          
                 userEtherOf[ao.winnerAddr] = userEtherOf[ao.winnerAddr].add(ao.price);    
                 ao.price = _price;
@@ -283,9 +283,9 @@ contract Auction is Beneficial {
         //require(isWhiteListGame(_gameAddr));      
         lock();
         AuctionObj storage ao = auctionObjOf[_gameAddr];
-        if(ao.id &gt; 0 &amp;&amp; ao.endTime &lt;= now) {                                         
+        if(ao.id > 0 && ao.endTime <= now) {                                         
             IGame g = IGame(_gameAddr);
-            if(g.bankerEndTime() &lt; now &amp;&amp; g.canSetBanker()){                      
+            if(g.bankerEndTime() < now && g.canSetBanker()){                      
                 _result = g.setBanker(ao.winnerAddr,  now,  now.add(ao.bankerTime));     
                 if(_result){
 					emit OnSetGameBanker(ao.id, _gameAddr, _result, 0, now, getEventId());
@@ -305,7 +305,7 @@ contract Auction is Beneficial {
     }
     
     function () public payable {
-        if(msg.value &gt; 0) {          
+        if(msg.value > 0) {          
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
     }

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-//import &#39;./lib/safeMath.sol&#39;;
+//import './lib/safeMath.sol';
 /**
  * @title SafeMath
  * @dev Math operations with safety checks that throw on error
@@ -13,25 +13,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-// import &#39;./ERC20.sol&#39;;
+// import './ERC20.sol';
 contract ERC20 {
   uint256 public totalSupply;
   function transferFrom(address from, address to, uint256 value) returns (bool);
@@ -43,12 +43,12 @@ contract ERC20 {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 
-// import &#39;./helpers/BasicToken.sol&#39;;
+// import './helpers/BasicToken.sol';
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
 /**
   * @dev transfer token for a specified address
@@ -56,7 +56,7 @@ contract BasicToken is ERC20 {
   * @param _value The amount to be transferred.
   */
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -73,7 +73,7 @@ contract BasicToken is ERC20 {
    * @param _value uint256 the amout of tokens to be transfered
    */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -120,13 +120,13 @@ contract BasicToken is ERC20 {
 
 }
 
-// import &#39;./BiQToken.sol&#39;;
+// import './BiQToken.sol';
 contract BiQToken is BasicToken {
 
   using SafeMath for uint256;
 
-  string public name = &quot;BurstIQ Token&quot;;              //name of the token
-  string public symbol = &quot;BiQ&quot;;                      // symbol of the token
+  string public name = "BurstIQ Token";              //name of the token
+  string public symbol = "BiQ";                      // symbol of the token
   uint8 public decimals = 18;                        // decimals
   uint256 public totalSupply = 1000000000 * 10**18;  // total supply of BiQ Tokens
 
@@ -234,7 +234,7 @@ contract BiQToken is BasicToken {
 
   // function to transfer market Incentives fund
   function transferMarketIncentivesFund(address _to, uint _value) onlyFounders nonZeroAddress(_to)  returns (bool) {
-    if (marketIncentivesAllocation &gt;= _value) {
+    if (marketIncentivesAllocation >= _value) {
       marketIncentivesAllocation = marketIncentivesAllocation.sub(_value);
       balances[_to] = balances[_to].add(_value);
       totalAllocatedTokens = totalAllocatedTokens.add(_value);
@@ -247,7 +247,7 @@ contract BiQToken is BasicToken {
 
   // fund transferred to vesting Founders address after 6 months
   function getVestedFounderTokens() onlyVestingFounderAddress returns (bool) {
-    if (now &gt;= preAllocatedTokensVestingTime &amp;&amp; vestingFounderAllocation &gt; 0) {
+    if (now >= preAllocatedTokensVestingTime && vestingFounderAllocation > 0) {
       balances[vestingFounderAddress] = balances[vestingFounderAddress].add(vestingFounderAllocation);
       totalAllocatedTokens = totalAllocatedTokens.add(vestingFounderAllocation);
       vestingFounderAllocation = 0;
@@ -259,7 +259,7 @@ contract BiQToken is BasicToken {
 
   // fund transferred to vesting advisor address after 6 months
   function getVestedAdvisorTokens() onlyAdvisorAddress returns (bool) {
-    if (now &gt;= preAllocatedTokensVestingTime &amp;&amp; advisorsAllocation &gt; 0) {
+    if (now >= preAllocatedTokensVestingTime && advisorsAllocation > 0) {
       balances[advisorAddress] = balances[advisorAddress].add(advisorsAllocation);
       totalAllocatedTokens = totalAllocatedTokens.add(advisorsAllocation);
       advisorsAllocation = 0;
@@ -324,7 +324,7 @@ contract BiQCrowdFund {
     address public authorizerAddress;                      // Address of Authorizer who will authorize the investor
 
     // mapping
-    mapping (address =&gt; uint256) auth;                     // KYC authentication
+    mapping (address => uint256) auth;                     // KYC authentication
 
     enum State { PreSale, CrowdFund }
 
@@ -339,7 +339,7 @@ contract BiQCrowdFund {
         _;
     }
      modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -415,7 +415,7 @@ contract BiQCrowdFund {
     // Buy token function call only in duration of crowdfund active
     function buyTokens(address beneficiary) nonZeroEth tokenIsDeployed onlyPublic nonZeroAddress(beneficiary) payable returns(bool) {
         // Only allow a certain amount for every investor
-        if (auth[beneficiary] &lt; msg.value) {
+        if (auth[beneficiary] < msg.value) {
             revert();
         }
         auth[beneficiary] = auth[beneficiary].sub(msg.value);
@@ -426,7 +426,7 @@ contract BiQCrowdFund {
             }
             revert();
         } else {
-            require(now &lt; crowdfundEndTime &amp;&amp; isCrowdFundActive);
+            require(now < crowdfundEndTime && isCrowdFundActive);
             fundTransfer(msg.value);
 
             uint256 amount = getNoOfTokens(exchangeRate, msg.value);
@@ -451,7 +451,7 @@ contract BiQCrowdFund {
 
     // function to get the current state of the crowdsale
    function getState() public constant returns(State) {
-        if (!isCrowdFundActive &amp;&amp; !hasCrowdFundStarted) {
+        if (!isCrowdFundActive && !hasCrowdFundStarted) {
             return State.PreSale;
         }
         return State.CrowdFund;
@@ -483,7 +483,7 @@ contract BiQCrowdFund {
     // function to buy the tokens at presale with minimum investment = 10k USD
     function buyPreSaleTokens(address beneficiary) internal returns(bool) {
        // check the minimum investment should be 10k USD
-        if (msg.value &lt; minAmount) {
+        if (msg.value < minAmount) {
           revert();
         } else {
             fundTransfer(msg.value);
@@ -507,13 +507,13 @@ contract BiQCrowdFund {
     }
 
     function getPreSaleBonusRate(uint256 _ethAmount) internal returns (uint8) {
-        if ( _ethAmount &gt;= minAmount.mul(5) &amp;&amp; _ethAmount &lt; minAmount.mul(10)) {
+        if ( _ethAmount >= minAmount.mul(5) && _ethAmount < minAmount.mul(10)) {
             return 30;
         }
-        if (_ethAmount &gt;= minAmount.mul(10)) {
+        if (_ethAmount >= minAmount.mul(10)) {
             return 35;
         }
-        if (_ethAmount &gt;= minAmount) {
+        if (_ethAmount >= minAmount) {
             return 25;
         }
     }
@@ -521,7 +521,7 @@ contract BiQCrowdFund {
 
     // Starts the crowdfund, can only be called once
     function startCrowdfund(uint256 _exchangeRate) onlyFounders tokenIsDeployed inState(State.PreSale) {
-        if (_exchangeRate &gt; 0 &amp;&amp; !hasCrowdFundStarted) {
+        if (_exchangeRate > 0 && !hasCrowdFundStarted) {
             exchangeRate = _exchangeRate;
             crowdfundStartTime = now;
             crowdfundEndTime = crowdfundStartTime + 5 * 1 weeks; // end date is 5 weeks after the starting date
@@ -535,10 +535,10 @@ contract BiQCrowdFund {
     // function call after crowdFundEndTime.
     // It transfers the remaining tokens to remainingTokenHolder address
     function endCrowdfund() onlyFounders returns (bool) {
-        require(now &gt; crowdfundEndTime);
+        require(now > crowdfundEndTime);
         uint256 remainingToken = token.balanceOf(this);  // remaining tokens
 
-        if (remainingToken != 0 &amp;&amp; token.transfer(remainingTokenHolder, remainingToken)) {
+        if (remainingToken != 0 && token.transfer(remainingTokenHolder, remainingToken)) {
           return true;
         } else {
             return false;
@@ -555,19 +555,19 @@ contract BiQCrowdFund {
 
     // function provide the current bonus rate
     function getCurrentBonusRate() internal returns (uint8) {
-        if (now &gt; crowdfundStartTime + 4 weeks) {
+        if (now > crowdfundStartTime + 4 weeks) {
             return 0;
         }
-        if (now &gt; crowdfundStartTime + 3 weeks) {
+        if (now > crowdfundStartTime + 3 weeks) {
             return 5;
         }
-        if (now &gt; crowdfundStartTime + 2 weeks) {
+        if (now > crowdfundStartTime + 2 weeks) {
             return 10;
         }
-        if (now &gt; crowdfundStartTime + 1 weeks) {
+        if (now > crowdfundStartTime + 1 weeks) {
             return 15;
         }
-        if (now &gt; crowdfundStartTime) {
+        if (now > crowdfundStartTime) {
             return 20;
         }
     }

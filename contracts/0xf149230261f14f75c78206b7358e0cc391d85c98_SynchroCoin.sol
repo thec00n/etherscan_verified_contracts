@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -208,10 +208,10 @@ contract SYNVault {
         unlockedAtBlockNumber = SafeMath.add(block.number, numBlocksLocked); // 345 days of blocks later
     }
 
-    /// @notice Transfer locked tokens to Synchrolife&#39;s wallet
+    /// @notice Transfer locked tokens to Synchrolife's wallet
     function unlock() external {
         // Wait your turn!
-        require(block.number &gt; unlockedAtBlockNumber);
+        require(block.number > unlockedAtBlockNumber);
         // Will fail if allocation (and therefore toTransfer) is 0.
         if (!synchroCoin.transfer(businessAddress, synchroCoin.balanceOf(this))) revert();
     }
@@ -222,8 +222,8 @@ contract SYNVault {
 
 contract SynchroCoin is Ownable, StandardToken {
 
-    string public constant symbol = &quot;SYC&quot;;
-    string public constant name = &quot;SynchroCoin&quot;;
+    string public constant symbol = "SYC";
+    string public constant name = "SynchroCoin";
     uint8 public constant decimals = 18;
     uint256 public constant initialSupply = 100000000e18;    //100000000000000000000000000
     
@@ -311,25 +311,25 @@ contract SynchroCoin is Ownable, StandardToken {
     }
     
     function getBonusMultiplierAt(uint256 _timestamp) public constant returns (uint256) {
-        if (_timestamp &gt;= firstPresaleStart &amp;&amp; _timestamp &lt; firstPresaleEnd) {
+        if (_timestamp >= firstPresaleStart && _timestamp < firstPresaleEnd) {
             return 140;
         }
-        else if (_timestamp &gt;= secondPresaleStart &amp;&amp; _timestamp &lt; secondPresaleEnd) {
+        else if (_timestamp >= secondPresaleStart && _timestamp < secondPresaleEnd) {
             return 130;
         }
-        else if (_timestamp &lt; (startDate + 1 days)) {
+        else if (_timestamp < (startDate + 1 days)) {
             return 120;
         }
-        else if (_timestamp &lt; (startDate + 7 days)) {
+        else if (_timestamp < (startDate + 7 days)) {
             return 115;
         }
-        else if (_timestamp &lt; (startDate + 14 days)) {
+        else if (_timestamp < (startDate + 14 days)) {
             return 110;
         }
-        else if (_timestamp &lt; (startDate + 21 days)) {
+        else if (_timestamp < (startDate + 21 days)) {
             return 105;
         }
-        else if (_timestamp &lt;= endDate) {
+        else if (_timestamp <= endDate) {
             return 100;
         }
         else {
@@ -339,13 +339,13 @@ contract SynchroCoin is Ownable, StandardToken {
 
     function distributeCrowdsaleTokens(address _to, uint256 _ether, uint256 _timestamp) public onlyOwner returns (uint256) {
         require(_to != 0x0);
-        require(_ether &gt;= 100 finney);
-        require(_timestamp &gt;= firstPresaleStart);
-        require(_timestamp &lt;= endDate);
+        require(_ether >= 100 finney);
+        require(_timestamp >= firstPresaleStart);
+        require(_timestamp <= endDate);
         
-        //Calculate participant&#39;s bonus
+        //Calculate participant's bonus
         uint256 consideredFundedEther = SafeMath.div(SafeMath.mul(_ether, getBonusMultiplierAt(_timestamp)), 100);
-        //Calculate participant&#39;s token share
+        //Calculate participant's token share
         uint256 share = SafeMath.div(SafeMath.mul(consideredFundedEther, crowdSaleTokens), totalConsideredFundedEther);
         balances[_to] = SafeMath.add(balances[_to], share);
         Transfer(0, _to, share);
@@ -356,7 +356,7 @@ contract SynchroCoin is Ownable, StandardToken {
         require(_to.length == _values.length);
         
         uint256 i = 0;
-        while (i &lt; _to.length) {
+        while (i < _to.length) {
             bountyTokens = SafeMath.sub(bountyTokens, _values[i]);
             balances[_to[i]] = SafeMath.add(balances[_to[i]], _values[i]);
             Transfer(0, _to[i], _values[i]);

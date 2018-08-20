@@ -36,20 +36,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -239,9 +239,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SimpleTokenCoin is MintableToken {
     
-    string public constant name = &quot;Global Business System&quot;;
+    string public constant name = "Global Business System";
     
-    string public constant symbol = &quot;GBT&quot;;
+    string public constant symbol = "GBT";
     
     uint32 public constant decimals = 18;
     
@@ -278,17 +278,17 @@ contract GlobalBusinessSystem is Ownable {
     }
     
     modifier saleIsOn(){
-        require(now &lt; start + period * 1 days);
+        require(now < start + period * 1 days);
         _;
     }
     
     modifier isUnderHardCap() {
-        require(multisig.balance &lt;= hardcap);
+        require(multisig.balance <= hardcap);
         _;
     }
     
     modifier isMinMax() {
-        require(msg.value*100&gt;=1 &amp;&amp; msg.value&lt;=maxValue);
+        require(msg.value*100>=1 && msg.value<=maxValue);
         _;
     }
     
@@ -296,7 +296,7 @@ contract GlobalBusinessSystem is Ownable {
         multisig.transfer(msg.value);
         uint tokens = rate.mul(msg.value).div(1 ether);
         uint bonusTokens = 0;
-        if(now &lt; start + (period1 * 1 days)) {
+        if(now < start + (period1 * 1 days)) {
           bonusTokens = tokens.div(5); //20%
           token.addBonus(bonusTokens);
         }

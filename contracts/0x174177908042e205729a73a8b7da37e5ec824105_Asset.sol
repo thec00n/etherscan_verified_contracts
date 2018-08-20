@@ -5,7 +5,7 @@ Token Contract with batch assignments
 ERC-20 Token Standar Compliant - ConsenSys
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="44226a252a302b2a2d2b6a252f2128042329252d286a272b29">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="44226a252a302b2a2d2b6a252f2128042329252d286a272b29">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -16,13 +16,13 @@ MIT PGP KEY ID: 078E41CB
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,15 +56,15 @@ contract admined { //This token contract is administered
 contract Token is admined {
 
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //Balances mapping
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //Allowance mapping
+    mapping (address => uint256) balances; //Balances mapping
+    mapping (address => mapping (address => uint256)) allowed; //Allowance mapping
 
     function balanceOf(address _owner) public constant returns (uint256 bal) {
         return balances[_owner];
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -72,7 +72,7 @@ contract Token is admined {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         balances[_from] = SafeMath.sub(balances[_from], _value);
         allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -95,7 +95,7 @@ contract Token is admined {
     //It mint the tokens to distribute
     function batch(address[] data,uint256 amount) onlyAdmin public { //It takes an array of addresses and an amount
         uint256 length = data.length;
-        for (uint i=0; i&lt;length; i++) { //It moves over the array
+        for (uint i=0; i<length; i++) { //It moves over the array
             transfer(data[i],amount); //Add an amount to the target address
         }
     }
@@ -110,7 +110,7 @@ contract Asset is admined, Token {
     string public name;
     uint8 public decimals = 18;
     string public symbol;
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
 
     function Asset(
         string _tokenName,

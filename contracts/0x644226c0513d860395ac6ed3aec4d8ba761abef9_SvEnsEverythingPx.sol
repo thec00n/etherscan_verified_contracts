@@ -56,7 +56,7 @@ contract SvEnsRegistry is SvEns {
         uint64 ttl;
     }
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     // Permits modifications only by the owner of the specified node.
     modifier only_owner(bytes32 node) {
@@ -170,13 +170,13 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
     }
 
     ENS ens;
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -236,7 +236,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) public only_owner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) &amp; contentType) == 0);
+        require(((contentType - 1) & contentType) == 0);
 
         records[node].abis[contentType] = data;
         emit ABIChanged(node, contentType);
@@ -295,8 +295,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes data) {
         Record storage record = records[node];
-        for (contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -353,8 +353,8 @@ contract PublicResolver {
 contract SvEnsRegistrar {
     SvEns public ens;
     bytes32 public rootNode;
-    mapping (bytes32 =&gt; bool) knownNodes;
-    mapping (address =&gt; bool) admins;
+    mapping (bytes32 => bool) knownNodes;
+    mapping (address => bool) admins;
     address public owner;
 
 
@@ -381,7 +381,7 @@ contract SvEnsRegistrar {
     }
 
     function remAdmin(address oldAdmin) req(admins[msg.sender]) external {
-        require(oldAdmin != msg.sender &amp;&amp; oldAdmin != owner);
+        require(oldAdmin != msg.sender && oldAdmin != owner);
         admins[oldAdmin] = false;
     }
 
@@ -394,7 +394,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */
@@ -403,7 +403,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnodeStr The label to register.
      * @param _owner The address of the new owner.
      */
@@ -414,7 +414,7 @@ contract SvEnsRegistrar {
     }
 
     /**
-     * INTERNAL - Register a name that&#39;s not currently registered
+     * INTERNAL - Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */
@@ -427,7 +427,7 @@ contract SvEnsRegistrar {
 
 contract SvEnsEverythingPx {
     address public owner;
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
     address[] public adminLog;
 
     SvEnsRegistrar public registrar;
@@ -460,7 +460,7 @@ contract SvEnsEverythingPx {
     }
 
     function remAdmin(address a) only_admin() external {
-        require(a != owner &amp;&amp; a != msg.sender);
+        require(a != owner && a != msg.sender);
         admins[a] = false;
     }
 

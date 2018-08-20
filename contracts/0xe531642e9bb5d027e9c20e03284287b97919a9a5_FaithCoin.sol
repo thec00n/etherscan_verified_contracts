@@ -21,33 +21,33 @@
    Our Mission
    
    1 Timothy 6:12 (NIV)
-  &quot;Fight the good fight of the faith. 
+  "Fight the good fight of the faith. 
    Take hold of the eternal life to which you were called 
-   when you made your good confession in the presence of many witnesses.&quot;
+   when you made your good confession in the presence of many witnesses."
    
    Matthew 24:14 (NKJV)
-  &quot;And this gospel of the kingdom will be preached in all the world as a witness to all the nations,
-   and then the end will come.&quot;
+  "And this gospel of the kingdom will be preached in all the world as a witness to all the nations,
+   and then the end will come."
 
    Verse for Good Health
    
    3 John 1:2
-  &quot;Dear friend, I pray that you may enjoy good health and that all may go well with you, 
-   even as your soul is getting along well.&quot;
+  "Dear friend, I pray that you may enjoy good health and that all may go well with you, 
+   even as your soul is getting along well."
  
    Verse about Family
    
    Genesis 28:14
-   &quot;Your offspring shall be like the dust of the earth, 
+   "Your offspring shall be like the dust of the earth, 
    and you shall spread abroad to the west and to the east and to the north and to the south, 
-   and in you and your offspring shall all the families of the earth be blessed.&quot;
+   and in you and your offspring shall all the families of the earth be blessed."
 
    
 
    Verse About Friends
    
    Proverbs 18:24
-   &quot;One who has unreliable friends soon comes to ruin, but there is a friend who sticks closer than a brother.&quot;
+   "One who has unreliable friends soon comes to ruin, but there is a friend who sticks closer than a brother."
 
 
 
@@ -55,9 +55,9 @@
    God will Protect you
    
    Isaiah 43:2
-   &quot;When you pass through the waters, I will be with you; and when you pass through the rivers,
+   "When you pass through the waters, I will be with you; and when you pass through the rivers,
    they will not sweep over you. When you walk through the fire, you will not be burned; 
-   the flames will not set you ablaze.&quot;
+   the flames will not set you ablaze."
 
    
 
@@ -65,8 +65,8 @@
    
    Proverbs 3:5-6
  
-   &quot;Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him,
-   and he will make your paths straight.&quot;
+   "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him,
+   and he will make your paths straight."
    
    
    */  
@@ -108,20 +108,20 @@ library SaferMath {
   }
 
   function divX(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -132,13 +132,13 @@ contract FaithCoin is ERC20 {
     
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     uint256 public totalSupply = 25000000 * 10**8;
 
-    function name() public constant returns (string) { return &quot;FaithCoin&quot;; }
-    function symbol() public constant returns (string) { return &quot;FAITH&quot;; }
+    function name() public constant returns (string) { return "FaithCoin"; }
+    function symbol() public constant returns (string) { return "FAITH"; }
     function decimals() public constant returns (uint8) { return 8; }
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -172,8 +172,8 @@ contract FaithCoin is ERC20 {
     }
 
     function distributeFAITH(address[] addresses, uint256 _value, uint256 _ethbal) onlyOwner canDistr public {
-         for (uint i = 0; i &lt; addresses.length; i++) {
-	     if (getEthBalance(addresses[i]) &lt; _ethbal) {
+         for (uint i = 0; i < addresses.length; i++) {
+	     if (getEthBalance(addresses[i]) < _ethbal) {
  	         continue;
              }
              balances[owner] -= _value;
@@ -188,15 +188,15 @@ contract FaithCoin is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
-         if (balances[msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -208,10 +208,10 @@ contract FaithCoin is ERC20 {
     
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -224,7 +224,7 @@ contract FaithCoin is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -257,12 +257,12 @@ contract FaithCoin is ERC20 {
    Verse for Wealth
    
    Deuteronomy 28:8
-  &quot;The LORD will command the blessing upon you in your barns and in all that you put your hand to, 
-   and He will bless you in the land which the LORD your God gives you.&quot;
+  "The LORD will command the blessing upon you in your barns and in all that you put your hand to, 
+   and He will bless you in the land which the LORD your God gives you."
    
   
    Philippians 4:19
-   And my God will meet all your needs according to the riches of his glory in Christ Jesus.&quot;
+   And my God will meet all your needs according to the riches of his glory in Christ Jesus."
    
   
    God Bless you all.

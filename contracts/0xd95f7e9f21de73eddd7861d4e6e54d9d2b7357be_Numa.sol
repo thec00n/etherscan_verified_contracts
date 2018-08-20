@@ -1,7 +1,7 @@
 pragma solidity ^0.4.2;
 
 contract Numa {
-    mapping(address =&gt; bytes32) public users;
+    mapping(address => bytes32) public users;
     Message[] public messages;
 
     struct Message {
@@ -43,7 +43,7 @@ contract Numa {
     }
 
     function updateMessage(uint id, bytes32 ipfsHash) public {
-        require(messages.length &gt; id);
+        require(messages.length > id);
         require(messages[id].sender == msg.sender);
         
         messages[id].ipfsHash = ipfsHash;

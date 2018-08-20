@@ -25,8 +25,8 @@ contract StandardToken is ERC20 {
     uint8   internal _decimals;
     uint256 internal _totalSupply;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /// @dev Returns name of tokens.
     function name() public view returns (string) {
@@ -54,11 +54,11 @@ contract StandardToken is ERC20 {
         return balances[_owner];
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -70,7 +70,7 @@ contract StandardToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -96,7 +96,7 @@ contract StandardToken is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -167,11 +167,11 @@ contract EthereumGAS is Mintable, Ownable {
     }
     
     uint256 addPrice = 10 ether;
-    mapping (address =&gt; bool) public listContracts;
+    mapping (address => bool) public listContracts;
     
     constructor() public {
-        _name = &quot;Ethereum GAS&quot;;  
-        _symbol = &quot;EGAS&quot;;
+        _name = "Ethereum GAS";  
+        _symbol = "EGAS";
         _decimals = 18;
         _totalSupply = 1000000000*(10**uint256(_decimals));
         balances[msg.sender] = _totalSupply;
@@ -213,17 +213,17 @@ contract EthereumGAS is Mintable, Ownable {
         public
         validContract(contractAddress)
     {
-        if(!contractAddress.call(data)) revert(&quot;request error, not valid data sent&quot;);
+        if(!contractAddress.call(data)) revert("request error, not valid data sent");
         EthereumGAS.mintEGAS();
     }
     
     modifier validAdd() {
-        require(msg.sender == owner || msg.value &gt;= addPrice);
+        require(msg.sender == owner || msg.value >= addPrice);
         _;
     }
     
     modifier validContract(address _input) {
-        require(listContracts[_input] != false, &quot;contract not found&quot;);
+        require(listContracts[_input] != false, "contract not found");
         _;
     }
     

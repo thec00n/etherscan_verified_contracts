@@ -6,7 +6,7 @@ ERC-20 Token Standar Compliant
 EIP-621 Compliant
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="f395dd929d879c9d9a9cdd9298969fb3949e929a9fdd909c9e">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="f395dd929d879c9d9a9cdd9298969fb3949e929a9fdd909c9e">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -17,13 +17,13 @@ MIT PGP KEY ID: 078E41CB
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -95,8 +95,8 @@ contract ERC20TokenInterface {
 contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an ERC20Token
     using SafeMath for uint256;
     uint256 totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -113,7 +113,7 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -127,7 +127,7 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -183,10 +183,10 @@ contract ERC20Token is admined, ERC20TokenInterface { //Standar definition of an
 }
 
 contract AssetMoira is admined, ERC20Token {
-    string public name = &#39;Moira&#39;;
+    string public name = 'Moira';
     uint8 public decimals = 18;
-    string public symbol = &#39;Moi&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'Moi';
+    string public version = '1';
 
     function AssetMoira(address _team) public {
         totalSupply = 666000000 * (10**uint256(decimals));

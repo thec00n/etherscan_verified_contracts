@@ -43,13 +43,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,7 +98,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -108,7 +108,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -123,13 +123,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -170,8 +170,8 @@ contract TIX is StandardToken, Ownable {
 
   using SafeMath for uint256;
 
-  string public constant name = &quot;Tixguru Token&quot;;
-  string public constant symbol = &quot;TIX&quot;;
+  string public constant name = "Tixguru Token";
+  string public constant symbol = "TIX";
   uint256 public constant decimals = 3;
   uint256 internal constant wei_to_token = 10 ** 15;
 
@@ -227,7 +227,7 @@ contract TIX is StandardToken, Ownable {
     balances[0x8b26E715fF12B0Bf37D504f7Bf0ee918Cd83C67B] = totalSupply_.mul(3).div(10);
     balances[owner] = totalSupply_.mul(7).div(10);
 
-    for (uint256 i = 0; i &lt; discount_period.length; i++) {
+    for (uint256 i = 0; i < discount_period.length; i++) {
       period = period.add(discount_period[i]);
     }
   }
@@ -237,7 +237,7 @@ contract TIX is StandardToken, Ownable {
   }
 
   modifier validArray(uint[] array) {
-    require(array.length &gt; 0);
+    require(array.length > 0);
     _;
   }
 
@@ -273,7 +273,7 @@ contract TIX is StandardToken, Ownable {
     discount = _discount;
 
     period = 0;
-    for (uint256 i = 0; i &lt; discount_period.length; i++) {
+    for (uint256 i = 0; i < discount_period.length; i++) {
       period = period.add(discount_period[i]);
     }
 
@@ -283,7 +283,7 @@ contract TIX is StandardToken, Ownable {
       end_time = time_point + period;
 
       uint256 tmp_time = time_point;
-      for (i = 0; i &lt; discount_period.length; i++) {
+      for (i = 0; i < discount_period.length; i++) {
         tmp_time = tmp_time.add(discount_period[i]);
         discount_period[i] = tmp_time;
       }
@@ -294,13 +294,13 @@ contract TIX is StandardToken, Ownable {
   }
 
   function getTokenAmount(uint256 _value) public view returns (uint256) {
-    require(_value &gt;= minimum);
+    require(_value >= minimum);
 
     uint256 buy_time = now;
     uint256 numerator = 0;
 
-    for (uint256 i = 0; i &lt; discount_period.length; i++) {
-      if (buy_time &lt;= discount_period[i]) {
+    for (uint256 i = 0; i < discount_period.length; i++) {
+      if (buy_time <= discount_period[i]) {
         numerator = discount[i];
         break;
       }
@@ -334,7 +334,7 @@ contract TIX is StandardToken, Ownable {
     start_time = time_point;
     end_time = time_point + period;
 
-    for (uint256 i = 0; i &lt; discount_period.length; i++) {
+    for (uint256 i = 0; i < discount_period.length; i++) {
       time_point = time_point.add(discount_period[i]);
       discount_period[i] = time_point;
     }
@@ -372,11 +372,11 @@ contract TIX is StandardToken, Ownable {
 
 
   function canIssue(uint256 tokens) internal returns (bool){
-    if (start_time == 0 || end_time &lt;= now) {
+    if (start_time == 0 || end_time <= now) {
       issuable = false;
       return false;
     }
-    if (token_issued.add(tokens) &gt; balances[owner]) {
+    if (token_issued.add(tokens) > balances[owner]) {
       issuable = false;
       return false;
     }

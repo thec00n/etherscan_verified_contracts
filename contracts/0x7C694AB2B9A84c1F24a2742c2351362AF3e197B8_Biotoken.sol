@@ -8,17 +8,17 @@ interface tokenRecipient {
 }
 
 contract Biotoken  {
-    string public constant symbol = &quot;BIOB&quot;;
-    string public constant name = &quot;Biobeans&quot;;
+    string public constant symbol = "BIOB";
+    string public constant name = "Biobeans";
     uint8 public constant decimals = 1;
 	// Owner of the contract
 	address public owner;
 	// Total supply of tokens
 	uint256 _totalSupply = 100000;
 	// Ledger of the balance of the account
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 	// Owner of account approuves the transfert of an account to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     // Events can be trigger when certain actions happens
     // Triggered when tokens are transferred
@@ -39,9 +39,9 @@ contract Biotoken  {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender

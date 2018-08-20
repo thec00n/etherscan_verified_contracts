@@ -46,7 +46,7 @@ contract FastRealisticPyramid {
                 }
 
 
-                if (balance &gt; person[payoutIdx].amount * 7/5) {
+                if (balance > person[payoutIdx].amount * 7/5) {
                         uint transactionAmount = 7/5 * (person[payoutIdx].amount - person[payoutIdx].amount / 10);
                         person[payoutIdx].etherAddress.send(transactionAmount);
 

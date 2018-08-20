@@ -16,7 +16,7 @@ contract AirDrop {
 	}
 
 	function drop() public {
-	    for (uint256 i = 0; i &lt; recipients.length; i++) {
+	    for (uint256 i = 0; i < recipients.length; i++) {
 	    	UUU.transfer(recipients[i], value * 10 ** 18);
 	    }
 	}

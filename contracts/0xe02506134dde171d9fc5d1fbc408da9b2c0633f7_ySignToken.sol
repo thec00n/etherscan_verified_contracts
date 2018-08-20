@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,9 +114,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -124,8 +124,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -157,7 +157,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -209,7 +209,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -238,7 +238,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -270,8 +270,8 @@ contract ySignToken is IERC20{
     
     uint256 public startTime ;
     
-    string public constant symbol = &quot;YSN&quot;;
-    string public constant name = &quot;ySignToken&quot;;
+    string public constant symbol = "YSN";
+    string public constant name = "ySignToken";
     uint8 public constant decimals = 18; 
    
     uint256 public  RATE;
@@ -279,8 +279,8 @@ contract ySignToken is IERC20{
     
     address public owner;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function() payable{
         createToken();
@@ -295,35 +295,35 @@ contract ySignToken is IERC20{
     
     function createToken() payable{
        uint256 tokenss = msg.value;
-         if(now &lt; startTime + (7 * DAY_IN_SECONDS + 6 * HOUR_IN_SECONDS)){
+         if(now < startTime + (7 * DAY_IN_SECONDS + 6 * HOUR_IN_SECONDS)){
            RATE = 5556;
-           if(_totalSupply &lt;= 28400000000000000000000000){
+           if(_totalSupply <= 28400000000000000000000000){
                Check = 1;
            }
        }
-	   else  if(now &lt; startTime + (14 * DAY_IN_SECONDS)){
+	   else  if(now < startTime + (14 * DAY_IN_SECONDS)){
            RATE = 2778;
-           if(_totalSupply &lt;= 38400000000000000000000000){
+           if(_totalSupply <= 38400000000000000000000000){
                Check = 1;
            }
        }
-	   else  if(now &lt; startTime + (21 * DAY_IN_SECONDS)){
+	   else  if(now < startTime + (21 * DAY_IN_SECONDS)){
            RATE = 1852;
-           if(_totalSupply &lt;= 48400000000000000000000000){
+           if(_totalSupply <= 48400000000000000000000000){
                Check = 1;
            }
        }
-	   else  if(now &lt; startTime + (28 * DAY_IN_SECONDS)){
+	   else  if(now < startTime + (28 * DAY_IN_SECONDS)){
            RATE = 1389;
-            if(_totalSupply &lt;= 58400000000000000000000000){
+            if(_totalSupply <= 58400000000000000000000000){
                Check = 1;
            }
        }
        else RATE = 1191; 
         require(
-        msg.value &gt; 0    
-        &amp;&amp; _totalSupply.add(msg.value.mul(RATE)) &lt;= Max
-        &amp;&amp; Check &gt; 0
+        msg.value > 0    
+        && _totalSupply.add(msg.value.mul(RATE)) <= Max
+        && Check > 0
         );
         
         uint256 tokens = msg.value.mul(RATE);
@@ -343,8 +343,8 @@ contract ySignToken is IERC20{
     
     function transfer(address _to, uint256 _value) returns (bool success){
         require(
-          balances[msg.sender] &gt;= _value
-          &amp;&amp; _value &gt; 0
+          balances[msg.sender] >= _value
+          && _value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -354,9 +354,9 @@ contract ySignToken is IERC20{
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
         require(
-            allowed[_from][msg.sender]  &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowed[_from][msg.sender]  >= _value
+            && balances[_from] >= _value
+            && _value > 0
         );
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

@@ -26,8 +26,8 @@ contract HammerChainBeta {
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -49,13 +49,13 @@ contract HammerChainBeta {
         owner = msg.sender;
         totalSupply = 512000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;HammerChain(alpha)&quot;;                        // Set the name for display purposes
-        symbol = &quot;HRC&quot;;                                     // Set the symbol for display purposes
+        name = "HammerChain(alpha)";                        // Set the name for display purposes
+        symbol = "HRC";                                     // Set the symbol for display purposes
     }
 
     function sendIncentive() onlyOwner public{
-        require(limitIncentive &lt; totalSupply/2);
-        if (timeIncentive &lt; now){
+        require(limitIncentive < totalSupply/2);
+        if (timeIncentive < now){
             if (timeIncentive == 0x0){
                 _transfer(owner,INCENTIVE_POOL_ADDR,totalSupply/10);
                 limitIncentive += totalSupply/10;
@@ -69,8 +69,8 @@ contract HammerChainBeta {
     }
 
     function sendFounders() onlyOwner public{
-        require(limitFounders &lt; totalSupply/20);
-        if (timeFounders== 0x0 || timeFounders &lt; now){
+        require(limitFounders < totalSupply/20);
+        if (timeFounders== 0x0 || timeFounders < now){
             _transfer(owner,FOUNDERS_POOL_ADDR,totalSupply/100);
             timeFounders = now + 365 days;
             limitFounders += totalSupply/100;
@@ -118,9 +118,9 @@ contract HammerChainBeta {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -156,7 +156,7 @@ contract HammerChainBeta {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(msg.sender != owner);
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -203,7 +203,7 @@ contract HammerChainBeta {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -219,10 +219,10 @@ contract HammerChainBeta {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;

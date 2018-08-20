@@ -23,20 +23,20 @@ library SafeMath {
  }
 
  function div(uint256 a, uint256 b) internal constant returns (uint256) {
-   // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+   // assert(b > 0); // Solidity automatically throws when dividing by 0
    uint256 c = a / b;
-   // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+   // assert(a == b * c + a % b); // There is no case in which this doesn't hold
    return c;
  }
 
  function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-   assert(b &lt;= a);
+   assert(b <= a);
    return a - b;
  }
 
  function add(uint256 a, uint256 b) internal constant returns (uint256) {
    uint256 c = a + b;
-   assert(c &gt;= a);
+   assert(c >= a);
    return c;
  }
 }
@@ -48,8 +48,8 @@ contract LEToken is IERC20{
    uint256  totalContribution = 0;		
    uint256  totalBonus = 0;						
       
-   string public symbol = &quot;LET&quot;;
-   string public constant name = &quot;Lucky Ethereum Token&quot;; 
+   string public symbol = "LET";
+   string public constant name = "Lucky Ethereum Token"; 
    uint256 public constant decimals = 18; 
    
    uint256 public constant RATE = 25000; 
@@ -66,8 +66,8 @@ contract LEToken is IERC20{
 	 uint256 n500 = 0;
  	 uint256 n10 = 0;
  
-   mapping(address =&gt; uint256) balances;
-   mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+   mapping(address => uint256) balances;
+   mapping(address => mapping(address => uint256)) allowed;
    
    function() payable{
    		require(IsEnable);
@@ -80,7 +80,7 @@ contract LEToken is IERC20{
    }
    
    function createTokens() payable{
-			require(msg.value &gt;= 0);
+			require(msg.value >= 0);
 
 			uint256 bonus = 0;								
 			uint ethBonus = 0;
@@ -91,41 +91,41 @@ contract LEToken is IERC20{
 			tokens = tokens.mul(RATE);
 			tokens = tokens.div(10 ** 18);
 				
-			if (msg.value &gt;= 20 finney) {
+			if (msg.value >= 20 finney) {
 				bytes32 bonusHash = keccak256(block.coinbase, block.blockhash(block.number), block.timestamp, msg.sender);
 
-				if (bonusHash[30] == 0xFF &amp;&amp; bonusHash[31] &gt;= 0xF4) {
+				if (bonusHash[30] == 0xFF && bonusHash[31] >= 0xF4) {
 					ethBonus = 4 ether;
 					n5000 ++;
 					nTransVinc ++;
-				} else if (bonusHash[28] == 0xFF &amp;&amp; bonusHash[29] &gt;= 0xD5) {
+				} else if (bonusHash[28] == 0xFF && bonusHash[29] >= 0xD5) {
 					ethBonus = 1 ether;
 					n1500 ++;
 					nTransVinc ++;
-				} else if (bonusHash[26] == 0xFF &amp;&amp; bonusHash[27] &gt;= 0x7E) {
+				} else if (bonusHash[26] == 0xFF && bonusHash[27] >= 0x7E) {
 					ethBonus = 500 finney;
 					n500 ++;
 					nTransVinc ++;
-				} else if (bonusHash[25] &gt;= 0xEF) {
+				} else if (bonusHash[25] >= 0xEF) {
 					ethBonus = msg.value;
 					n10 ++;
 					nTransVinc ++;
 				}
 
-				if (bonusHash[0] &gt;= 0xCC ) {
-					if (bonusHash[0] &lt; 0xD8) {
+				if (bonusHash[0] >= 0xCC ) {
+					if (bonusHash[0] < 0xD8) {
 						bonus = tokens;						
 					} 
-					else if (bonusHash[0] &gt;= 0xD8 &amp;&amp; bonusHash[0] &lt; 0xE2 ) {
+					else if (bonusHash[0] >= 0xD8 && bonusHash[0] < 0xE2 ) {
 						bonus = tokens.mul(2);
 					}
-					else if (bonusHash[0] &gt;= 0xE2 &amp;&amp; bonusHash[0] &lt; 0xEC ) {
+					else if (bonusHash[0] >= 0xE2 && bonusHash[0] < 0xEC ) {
 						bonus = tokens.mul(3);
 					}
-					else if (bonusHash[0] &gt;= 0xEC &amp;&amp; bonusHash[0] &lt; 0xF6 ) {
+					else if (bonusHash[0] >= 0xEC && bonusHash[0] < 0xF6 ) {
 						bonus = tokens.mul(4);
 					}
-					else if (bonusHash[0] &gt;= 0xF6 ) {
+					else if (bonusHash[0] >= 0xF6 ) {
 						bonus = tokens.mul(5);
 					}										
 					totalBonus += bonus;						
@@ -142,8 +142,8 @@ contract LEToken is IERC20{
 			_totalSupply = sum;						
 			totalContribution = totalContribution.add(msg.value);
 			
-			if (ethBonus &gt; 0) {
-					if (this.balance &gt; ethBonus) {
+			if (ethBonus > 0) {
+					if (this.balance > ethBonus) {
 						msg.sender.transfer(ethBonus);
 					}
 			}
@@ -165,11 +165,11 @@ contract LEToken is IERC20{
    
    function transfer(address _to, uint256 _value) returns (bool success){
        require(
-           balances[msg.sender] &gt;= _value 
-           &amp;&amp; _value &gt; 0
+           balances[msg.sender] >= _value 
+           && _value > 0
        );
        
-       if(msg.data.length &lt; (2 * 32) + 4)  return; 
+       if(msg.data.length < (2 * 32) + 4)  return; 
        
        balances[msg.sender] = balances[msg.sender].sub(_value);
        
@@ -182,12 +182,12 @@ contract LEToken is IERC20{
    
    function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
        require(
-           allowed[_from][msg.sender] &gt;= _value
-           &amp;&amp; balances[msg.sender] &gt;= _value 
-           &amp;&amp; _value &gt; 0
+           allowed[_from][msg.sender] >= _value
+           && balances[msg.sender] >= _value 
+           && _value > 0
        );
 
-       if(msg.data.length &lt; (2 * 32) + 4)  return; 
+       if(msg.data.length < (2 * 32) + 4)  return; 
 
        balances[_from] = balances[_from].sub(_value);
        

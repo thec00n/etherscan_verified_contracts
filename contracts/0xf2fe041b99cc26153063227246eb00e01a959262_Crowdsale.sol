@@ -11,20 +11,20 @@ library SafeMath { //standart library for uint
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -130,7 +130,7 @@ contract Crowdsale is Ownable{
 
   //check is now preICO
   function isPreIco(uint _time) public view returns (bool){
-    if((preIcoStart &lt;= _time) &amp;&amp; (_time &lt;= preIcoFinish)){
+    if((preIcoStart <= _time) && (_time <= preIcoFinish)){
       return true;
     }
     return false;
@@ -138,7 +138,7 @@ contract Crowdsale is Ownable{
 
   //check is now ICO
   function isIco(uint _time) public view returns (bool){
-    if((icoStart &lt;= _time) &amp;&amp; (_time &lt;= icoFinish)){
+    if((icoStart <= _time) && (_time <= icoFinish)){
       return true;
     }
     return false;
@@ -151,15 +151,15 @@ contract Crowdsale is Ownable{
   uint public ethCollected = 0;
 
   //investors ether balance contains here
-  mapping (address =&gt; uint) investorBalances;
+  mapping (address => uint) investorBalances;
 
   //fallback function (when investor send ether to contract)
   function() public payable{
-    if (now &gt; icoFinish){
+    if (now > icoFinish){
       finishCrowdsale();
     }
     require(isIco(now) || isPreIco(now));
-    require(msg.value &gt;= minDeposit);
+    require(msg.value >= minDeposit);
     require(buy(msg.sender,msg.value,now)); //redirect to func buy
   }
 
@@ -176,24 +176,24 @@ contract Crowdsale is Ownable{
   
   //function buy Tokens
   function buy(address _address, uint _value, uint _time/*, bool _manual*/) internal returns (bool){
-    require(token.getCrowdsaleTokens() &gt; 0);
+    require(token.getCrowdsaleTokens() > 0);
 
     uint tokensForSend = 0;
 
     if (isPreIco(_time)){
-      require (preIcoMaxCap &gt; preIcoTokensSold);
+      require (preIcoMaxCap > preIcoTokensSold);
       tokensForSend = etherToTokens(_value);
       preIcoTokensSold = preIcoTokensSold.add(tokensForSend);
       owner.transfer(this.balance);
     }
 
     if (isIco(_time)){
-      // Token contract will automatically throws if Crowdsale balance &lt; tokensForSend
-      // require (icoMaxCap &gt; icoTokensSold);
+      // Token contract will automatically throws if Crowdsale balance < tokensForSend
+      // require (icoMaxCap > icoTokensSold);
       tokensForSend = etherToTokens(_value);
 
       //If user cant buy all tokens we need to give ether back for him 
-      if(tokensForSend.add(tokensSold) &gt; token.getCrowdsaleTokens()){
+      if(tokensForSend.add(tokensSold) > token.getCrowdsaleTokens()){
         tokensForSend = token.getCrowdsaleTokens();
         uint ethToTake = tokensForSend.mul(tokenPrice).div(pow(10,decimals));
 
@@ -230,22 +230,22 @@ contract Crowdsale is Ownable{
   function etherToTokens(uint _value) public view returns(uint) {
     uint res = _value.mul(pow(10,decimals)).div(tokenPrice);
 
-    if (now &lt; preIcoStart || isPreIco(now)){
+    if (now < preIcoStart || isPreIco(now)){
       return res.add(res*40/100);
     }
 
-    if (now &gt; preIcoFinish &amp;&amp; now &lt; icoStart){
+    if (now > preIcoFinish && now < icoStart){
       return res.add(res*30/100);
     }
 
     if (isIco(now)){
-      if(icoStart + 7 days &lt;= now){
+      if(icoStart + 7 days <= now){
         return res.add(res*30/100);
       }
-      if(icoStart + 14 days &lt;= now){
+      if(icoStart + 14 days <= now){
         return res.add(res*20/100);
       }
-      if(icoStart + 21 days &lt;= now){
+      if(icoStart + 21 days <= now){
         return res.add(res*10/100);
       }
     return res;
@@ -256,7 +256,7 @@ contract Crowdsale is Ownable{
 
   //function check is ICO complete (minCap exceeded)
   function isIcoTrue() public view returns (bool){
-    if (tokensSold &gt;= icoMinCap){
+    if (tokensSold >= icoMinCap){
       return true;
     }
   return false;
@@ -267,10 +267,10 @@ contract Crowdsale is Ownable{
   bool public isBurnActive = false;
 
   function finishCrowdsale () public {
-    require (now &gt; icoFinish);
+    require (now > icoFinish);
 
     if(!isTryedFinishCrowdsale){
-      if(tokensSold &gt;= 610000000*pow(10,decimals)){
+      if(tokensSold >= 610000000*pow(10,decimals)){
         isBurnActive = true;  
       }else{
         icoFinish = icoFinish + 7 days;
@@ -290,7 +290,7 @@ contract Crowdsale is Ownable{
   //if ICO failed and now = ICO finished date +3 days then investor can withdrow his ether
   function refund() public{
     require (!isIcoTrue());
-    require (icoFinish + 3 days &lt;= now);
+    require (icoFinish + 3 days <= now);
 
     token.burnTokens(msg.sender);
     msg.sender.transfer(investorBalances[msg.sender]);

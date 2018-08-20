@@ -9,13 +9,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -62,14 +62,14 @@ contract Token is SafeMath {
 //StdToken
 contract StdToken is Token {
     // Fields:
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     uint public supply = 0;
 
     // Functions:
     function transferTo(address _to, uint256 _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -79,9 +79,9 @@ contract StdToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool){
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -120,9 +120,9 @@ contract StdToken is Token {
 contract EvoNineToken is StdToken
 {
     /// Fields:
-    string public name = &quot;&quot;;
-    string public symbol = &quot;EVG&quot;;
-    string public website = &quot;https://evonine.co&quot;;
+    string public name = "";
+    string public symbol = "EVG";
+    string public website = "https://evonine.co";
     uint public decimals = 18;
 
     uint public constant TOTAL_SUPPLY = 19000000 * (1 ether / 1 wei);
@@ -154,7 +154,7 @@ contract EvoNineToken is StdToken
     // functions on this contract.
     address public tokenManagerAddress = 0;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrowAddress = 0;
 
     // Team bonus address
@@ -220,7 +220,7 @@ contract EvoNineToken is StdToken
 
     function buyTokens() public payable returns (uint256)
     {
-        require(msg.value &gt;= ((1 ether / 1 wei) / 100));
+        require(msg.value >= ((1 ether / 1 wei) / 100));
         uint newTokens = msg.value * getPrice();
         balances[msg.sender] += newTokens;
         supply += newTokens;
@@ -232,25 +232,25 @@ contract EvoNineToken is StdToken
 
     function getPrice() public constant returns (uint)
     {
-        if (icoSoldTokens &lt; (4100000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (4100000 * (1 ether / 1 wei))) {
             return ICO_PRICE1;
         }
-        if (icoSoldTokens &lt; (4300000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (4300000 * (1 ether / 1 wei))) {
             return ICO_PRICE2;
         }
-        if (icoSoldTokens &lt; (4700000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (4700000 * (1 ether / 1 wei))) {
             return ICO_PRICE3;
         }
-        if (icoSoldTokens &lt; (5200000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (5200000 * (1 ether / 1 wei))) {
             return ICO_PRICE4;
         }
-        if (icoSoldTokens &lt; (6000000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (6000000 * (1 ether / 1 wei))) {
             return ICO_PRICE5;
         }
-        if (icoSoldTokens &lt; (7000000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (7000000 * (1 ether / 1 wei))) {
             return ICO_PRICE6;
         }
-        if (icoSoldTokens &lt; (8000000 * (1 ether / 1 wei))) {
+        if (icoSoldTokens < (8000000 * (1 ether / 1 wei))) {
             return ICO_PRICE7;
         }
         return ICO_PRICE8;
@@ -258,7 +258,7 @@ contract EvoNineToken is StdToken
 
     function setState(State _nextState) public onlytokenManagerAddress
     {
-        //setState() method call shouldn&#39;t be entertained after ICOFinished
+        //setState() method call shouldn't be entertained after ICOFinished
         require(currentState != State.ICOFinished);
 
         currentState = _nextState;
@@ -280,7 +280,7 @@ contract EvoNineToken is StdToken
 
     function withdrawEther() public onlytokenManagerAddress
     {
-        if (this.balance &gt; 0)
+        if (this.balance > 0)
         {
             escrowAddress.transfer(this.balance);
         }

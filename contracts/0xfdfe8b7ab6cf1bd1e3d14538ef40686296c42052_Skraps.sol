@@ -30,7 +30,7 @@ contract Owned {
 
 // Support accounts using for change Ether price, manual migration and sending tokens during ICO, see endOfFreeze field
 contract Support is Owned {
-    mapping (address =&gt; bool) public supportAccounts;
+    mapping (address => bool) public supportAccounts;
 
     event SupportAdded(address indexed _who);
     event SupportRemoved(address indexed _who);
@@ -59,14 +59,14 @@ contract Support is Owned {
 library SafeMath {
     // Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     // Adds two numbers, throws on overflow.
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -95,7 +95,7 @@ contract AdvancedToken is ERC20, Support {
     uint internal MAX_SUPPLY = 110000000 * 1 ether;
     address public migrationAgent;
 
-    mapping (address =&gt; uint) internal balances;
+    mapping (address => uint) internal balances;
 
     enum State { Waiting, ICO, Running, Migration }
     State public state = State.Waiting;
@@ -105,7 +105,7 @@ contract AdvancedToken is ERC20, Support {
 
     /**
      * The migration process to transfer tokens to the new token contract, when in the contract, a sufficiently large
-     * number of investors that the company can&#39;t cover a miner fees to transfer all tokens, this will
+     * number of investors that the company can't cover a miner fees to transfer all tokens, this will
      * be used in the following cases:
      * 1. If a critical error is found in the contract
      * 2. When will be released and approved a new standard for digital identification ERC-725 or similar
@@ -137,7 +137,7 @@ contract AdvancedToken is ERC20, Support {
     function manualMigrate(address _who) public supportOrOwner {
         require(state == State.Migration);
         require(_who != address(this));
-        require(balances[_who] &gt; 0);
+        require(balances[_who] > 0);
         uint value = balances[_who];
         balances[_who] = balances[_who].sub(value);
         totalSupply = totalSupply.sub(value);
@@ -145,10 +145,10 @@ contract AdvancedToken is ERC20, Support {
         MigrationAgent(migrationAgent).migrateFrom(_who, value);
     }
 
-    // Migrate the holder&#39;s tokens to a new contract and burn the holder&#39;s tokens on the current contract
+    // Migrate the holder's tokens to a new contract and burn the holder's tokens on the current contract
     function migrate() public {
         require(state == State.Migration);
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         uint value = balances[msg.sender];
         balances[msg.sender] = balances[msg.sender].sub(value);
         totalSupply = totalSupply.sub(value);
@@ -159,7 +159,7 @@ contract AdvancedToken is ERC20, Support {
     // The withdraw of Tokens from the contract after the end of ICO
     function withdrawTokens(uint _value) public onlyOwner {
         require(state == State.Running || state == State.Migration);
-        require(balances[address(this)] &gt; 0 &amp;&amp; balances[address(this)] &gt;= _value);
+        require(balances[address(this)] > 0 && balances[address(this)] >= _value);
         balances[address(this)] = balances[address(this)].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         Transfer(address(this), msg.sender, _value);
@@ -167,7 +167,7 @@ contract AdvancedToken is ERC20, Support {
 
     // The withdraw of Ether from the contract
     function withdrawEther(uint256 _value) public onlyOwner {
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
         owner.transfer(_value);
     }
 }
@@ -200,7 +200,7 @@ contract Crowdsale is AdvancedToken {
     // Setting the number of tokens to buy for 1 Ether, changes automatically by owner or support account
     function setTokensPerEther(uint _tokens) public supportOrOwner {
         require(state == State.ICO || state == State.Waiting);
-        require(_tokens &gt; 100 ether); // Min 100 tokens ^ 18
+        require(_tokens > 100 ether); // Min 100 tokens ^ 18
         tokensPerEther = _tokens;
     }
 
@@ -210,10 +210,10 @@ contract Crowdsale is AdvancedToken {
         require(state == State.ICO || state == State.Migration);
         if (state == State.ICO) {
             // The minimum ether to participate
-            require(msg.value &gt;= 0.01 ether);
+            require(msg.value >= 0.01 ether);
             // Counting and sending tokens to the investor
             uint _tokens = msg.value * tokensPerEther / 1 ether;
-            require(balances[address(this)] &gt;= _tokens);
+            require(balances[address(this)] >= _tokens);
             balances[address(this)] = balances[address(this)].sub(_tokens);
             balances[msg.sender] = balances[msg.sender].add(_tokens);
             Transfer(address(this), msg.sender, _tokens);
@@ -244,7 +244,7 @@ contract Crowdsale is AdvancedToken {
     // Anti-scam function, if the tokens are obtained by dishonest means, can be used only during ICO
     function refundTokens(address _from, uint _value) public onlyOwner {
         require(state == State.ICO);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[address(this)] = balances[address(this)].add(_value);
         Transfer(_from, address(this), _value);
@@ -258,11 +258,11 @@ contract Crowdsale is AdvancedToken {
 contract Skraps is Crowdsale {
     using SafeMath for uint;
 
-    string public name = &quot;Skraps&quot;;
-    string public symbol = &quot;SKRP&quot;;
+    string public name = "Skraps";
+    string public symbol = "SKRP";
     uint8 public decimals = 18;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) private allowed;
+    mapping (address => mapping (address => uint)) private allowed;
 
     function balanceOf(address _who) public constant returns (uint) {
         return balances[_who];
@@ -274,8 +274,8 @@ contract Skraps is Crowdsale {
 
     function transfer(address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
-        require(now &gt; endOfFreeze || msg.sender == owner || supportAccounts[msg.sender]);
+        require(balances[msg.sender] >= _value);
+        require(now > endOfFreeze || msg.sender == owner || supportAccounts[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -285,8 +285,8 @@ contract Skraps is Crowdsale {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -296,9 +296,9 @@ contract Skraps is Crowdsale {
     }
 
     function approve(address _spender, uint _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(_spender != address(0));
-        require(now &gt; endOfFreeze || msg.sender == owner || supportAccounts[msg.sender]);
+        require(now > endOfFreeze || msg.sender == owner || supportAccounts[msg.sender]);
         require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 
         allowed[msg.sender][_spender] = _value;

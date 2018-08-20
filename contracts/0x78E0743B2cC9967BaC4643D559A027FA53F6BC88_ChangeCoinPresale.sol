@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,7 +88,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
 
  contract StandardToken is ERC20, BasicToken {
 
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
 
 
    /**
@@ -140,7 +140,7 @@ contract ERC20 is ERC20Basic {
      var _allowance = allowed[_from][msg.sender];
 
      // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-     // require (_value &lt;= _allowance);
+     // require (_value <= _allowance);
 
      balances[_to] = balances[_to].add(_value);
      balances[_from] = balances[_from].sub(_value);
@@ -215,8 +215,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract ChangeCoin is MintableToken {
-  string public name = &quot;Change COIN&quot;;
-  string public symbol = &quot;CAG&quot;;
+  string public name = "Change COIN";
+  string public symbol = "CAG";
   uint256 public decimals = 18;
 
   bool public tradingStarted = false;
@@ -297,8 +297,8 @@ contract ChangeCoinPresale is Ownable {
     minContribution = 9.9 ether;
     hardcap = 50000 ether;
 
-    require(startTimestamp &gt;= now);
-    require(endTimestamp &gt;= startTimestamp);
+    require(startTimestamp >= now);
+    require(endTimestamp >= startTimestamp);
   }
 
   /**
@@ -308,7 +308,7 @@ contract ChangeCoinPresale is Ownable {
    */
   function bonusAmmount(uint256 tokens) internal returns(uint256) {
     // first 500 get extra 30%
-    if (numberOfPurchasers &lt; 501) {
+    if (numberOfPurchasers < 501) {
       return tokens * 3 / 10;
     } else {
       return tokens /4;
@@ -317,17 +317,17 @@ contract ChangeCoinPresale is Ownable {
 
   // check if valid purchase
   modifier validPurchase {
-    require(now &gt;= startTimestamp);
-    require(now &lt;= endTimestamp);
-    require(msg.value &gt;= minContribution);
-    require(weiRaised.add(msg.value) &lt;= hardcap);
+    require(now >= startTimestamp);
+    require(now <= endTimestamp);
+    require(msg.value >= minContribution);
+    require(weiRaised.add(msg.value) <= hardcap);
     _;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool timeLimitReached = now &gt; endTimestamp;
-    bool capReached = weiRaised &gt;= hardcap;
+    bool timeLimitReached = now > endTimestamp;
+    bool capReached = weiRaised >= hardcap;
     return timeLimitReached || capReached;
   }
 

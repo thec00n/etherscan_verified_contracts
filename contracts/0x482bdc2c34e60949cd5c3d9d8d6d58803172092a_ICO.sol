@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="ef89c18e819b80818680c18e848a83af88828e8683c18c8082">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="ef89c18e819b80818680c18e848a83af88828e8683c18c8082">[email protected]</span>
 */
 
 /**
@@ -24,7 +24,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,7 +78,7 @@ contract ICO {
     address public creator;
     address public beneficiary;
     string public campaignUrl;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -119,7 +119,7 @@ contract ICO {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt;= startTime);
+        require(now >= startTime);
 
         uint256 tokenBought = 0;
 
@@ -129,47 +129,47 @@ contract ICO {
         if (state == State.preSale){
 
             tokenBought = msg.value.mul(rates[0]);
-            require(stageDistributed.add(tokenBought) &lt;= 2000000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 2000000 * (10**18));
         
         } else if (state == State.stage1a){
         
             tokenBought = msg.value.mul(rates[1]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage1b){
         
             tokenBought = msg.value.mul(rates[2]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage2a){
         
             tokenBought = msg.value.mul(rates[3]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage2b){
         
             tokenBought = msg.value.mul(rates[4]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage3a){
         
             tokenBought = msg.value.mul(rates[5]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage3b){
         
             tokenBought = msg.value.mul(rates[6]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage4a){
         
             tokenBought = msg.value.mul(rates[7]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.stage4b){
         
             tokenBought = msg.value.mul(rates[8]);
-            require(stageDistributed.add(tokenBought) &lt;= 1500000 * (10**18));
+            require(stageDistributed.add(tokenBought) <= 1500000 * (10**18));
         
         } else if (state == State.finishing){
 
@@ -193,70 +193,70 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(state == State.preSale &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,4,30,23,59)){ // Apr 30 2018
+        if(state == State.preSale && now > dateTimeContract.toTimestamp(2018,4,30,23,59)){ // Apr 30 2018
 
             emit LogStageDistributed(stageDistributed,state);
 
             state = State.stage1a;
             stageDistributed = 0;
 
-        } else if(state == State.stage1a &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,5,7,23,59)){ // May 7 2018
+        } else if(state == State.stage1a && now > dateTimeContract.toTimestamp(2018,5,7,23,59)){ // May 7 2018
 
             emit LogStageDistributed(stageDistributed,state);
 
             state = State.stage1b;
             stageDistributed = 0;
             
-        } else if(state == State.stage1b &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,5,14,23,59)){ // May 14 2018
+        } else if(state == State.stage1b && now > dateTimeContract.toTimestamp(2018,5,14,23,59)){ // May 14 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage2a;
             stageDistributed = 0;
             
-        } else if(state == State.stage2a &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,5,21,23,59)){ // May 21 2018
+        } else if(state == State.stage2a && now > dateTimeContract.toTimestamp(2018,5,21,23,59)){ // May 21 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage2b;
             stageDistributed = 0;
             
-        } else if(state == State.stage2b &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,5,28,23,59)){ // May 28 2018
+        } else if(state == State.stage2b && now > dateTimeContract.toTimestamp(2018,5,28,23,59)){ // May 28 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage3a;
             stageDistributed = 0;
             
-        } else if(state == State.stage3a &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,4,23,59)){ // Jun 4 2018
+        } else if(state == State.stage3a && now > dateTimeContract.toTimestamp(2018,6,4,23,59)){ // Jun 4 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage3b;
             stageDistributed = 0;
             
-        } else if(state == State.stage3b &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,11,23,59)){ // Jun 11 2018
+        } else if(state == State.stage3b && now > dateTimeContract.toTimestamp(2018,6,11,23,59)){ // Jun 11 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage4a;
             stageDistributed = 0;
             
-        } else if(state == State.stage4a &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,18,23,59)){ // Jun 18 2018
+        } else if(state == State.stage4a && now > dateTimeContract.toTimestamp(2018,6,18,23,59)){ // Jun 18 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.stage4b;
             stageDistributed = 0;
             
-        } else if(state == State.stage4b &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,25,23,59)){ // Jun 25 2018
+        } else if(state == State.stage4b && now > dateTimeContract.toTimestamp(2018,6,25,23,59)){ // Jun 25 2018
 
             emit LogStageDistributed(stageDistributed,state);
             
             state = State.finishing;
             stageDistributed = 0;
             
-        } else if(state == State.finishing &amp;&amp; now &gt; ICOdeadline &amp;&amp; state!=State.Successful){ // ICOdeadline is Jun 30
+        } else if(state == State.finishing && now > ICOdeadline && state!=State.Successful){ // ICOdeadline is Jun 30
 
             emit LogStageDistributed(stageDistributed,state);
             

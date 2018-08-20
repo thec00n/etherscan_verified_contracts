@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -152,7 +152,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -199,7 +199,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -217,8 +217,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -232,7 +232,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -301,7 +301,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -322,8 +322,8 @@ contract CryptualProjectToken is StandardToken, Ownable {
   using SafeMath for uint256;
 
   // ERC20 optional details
-  string public constant name = &quot;Cryptual Project Token&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;CPT&quot;; // solium-disable-line uppercase
+  string public constant name = "Cryptual Project Token"; // solium-disable-line uppercase
+  string public constant symbol = "CPT"; // solium-disable-line uppercase
   uint8 public constant decimals = 0; // solium-disable-line uppercase
 
   // Token constants, variables
@@ -350,7 +350,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
   uint256[] public crowdsaleRates = [135000, 120000, 100000];
   uint256[] public crowdsaleMinElapsedTimeLevels = [0, 12 * 3600, 18 * 3600, 21 * 3600, 22 * 3600];
   uint256[] public crowdsaleUserCaps = [1 ether, 2 ether, 4 ether, 8 ether, CROWDSALE_WEI_CAP];
-  mapping(address =&gt; uint256) public crowdsaleContributions;
+  mapping(address => uint256) public crowdsaleContributions;
 
   // Amount of wei raised for each token sale stage
   uint256 public presaleWeiRaised;
@@ -395,14 +395,14 @@ contract CryptualProjectToken is StandardToken, Ownable {
     uint256 weiAmount = msg.value;
     require(_beneficiary != address(0));
     require(weiAmount != 0);
-    bool isPresale = block.timestamp &gt;= PRESALE_OPENING_TIME &amp;&amp; block.timestamp &lt;= PRESALE_CLOSING_TIME;
-    bool isCrowdsale = block.timestamp &gt;= CROWDSALE_OPENING_TIME &amp;&amp; block.timestamp &lt;= CROWDSALE_CLOSING_TIME;
+    bool isPresale = block.timestamp >= PRESALE_OPENING_TIME && block.timestamp <= PRESALE_CLOSING_TIME;
+    bool isCrowdsale = block.timestamp >= CROWDSALE_OPENING_TIME && block.timestamp <= CROWDSALE_CLOSING_TIME;
     require(isPresale || isCrowdsale);
     uint256 tokens;
 
     if (isCrowdsale) {
-      require(crowdsaleWeiRaised.add(weiAmount) &lt;= CROWDSALE_WEI_CAP);
-      require(crowdsaleContributions[_beneficiary].add(weiAmount) &lt;= getCrowdsaleUserCap());
+      require(crowdsaleWeiRaised.add(weiAmount) <= CROWDSALE_WEI_CAP);
+      require(crowdsaleContributions[_beneficiary].add(weiAmount) <= getCrowdsaleUserCap());
       
       // calculate token amount to be created
       tokens = _getCrowdsaleTokenAmount(weiAmount);
@@ -411,7 +411,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
       // update state
       crowdsaleWeiRaised = crowdsaleWeiRaised.add(weiAmount);
     } else if (isPresale) {
-      require(presaleWeiRaised.add(weiAmount) &lt;= PRESALE_WEI_CAP);
+      require(presaleWeiRaised.add(weiAmount) <= PRESALE_WEI_CAP);
       require(whitelist[_beneficiary]);
       
       // calculate token amount to be created
@@ -440,15 +440,15 @@ contract CryptualProjectToken is StandardToken, Ownable {
    * @return The maximum wei a user may contribute in total
    */
   function getCrowdsaleUserCap() public view returns (uint256) {
-    require(block.timestamp &gt;= CROWDSALE_OPENING_TIME &amp;&amp; block.timestamp &lt;= CROWDSALE_CLOSING_TIME);
+    require(block.timestamp >= CROWDSALE_OPENING_TIME && block.timestamp <= CROWDSALE_CLOSING_TIME);
     // solium-disable-next-line security/no-block-members
     uint256 elapsedTime = block.timestamp.sub(CROWDSALE_OPENING_TIME);
     uint256 currentMinElapsedTime = 0;
     uint256 currentCap = 0;
 
-    for (uint i = 0; i &lt; crowdsaleUserCaps.length; i++) {
-      if (elapsedTime &lt; crowdsaleMinElapsedTimeLevels[i]) continue;
-      if (crowdsaleMinElapsedTimeLevels[i] &lt; currentMinElapsedTime) continue;
+    for (uint i = 0; i < crowdsaleUserCaps.length; i++) {
+      if (elapsedTime < crowdsaleMinElapsedTimeLevels[i]) continue;
+      if (crowdsaleMinElapsedTimeLevels[i] < currentMinElapsedTime) continue;
       currentCap = crowdsaleUserCaps[i];
     }
 
@@ -465,17 +465,17 @@ contract CryptualProjectToken is StandardToken, Ownable {
     uint256 uncountedWeiAmount = _weiAmount;
     uint256 tokenAmount = 0;
 
-    for (uint i = 0; i &lt; crowdsaleWeiAvailableLevels.length; i++) {
+    for (uint i = 0; i < crowdsaleWeiAvailableLevels.length; i++) {
       uint256 weiAvailable = crowdsaleWeiAvailableLevels[i];
       uint256 rate = crowdsaleRates[i];
       
-      if (uncountedWeiRaised &lt; weiAvailable) {
-        if (uncountedWeiRaised &gt; 0) {
+      if (uncountedWeiRaised < weiAvailable) {
+        if (uncountedWeiRaised > 0) {
           weiAvailable = weiAvailable.sub(uncountedWeiRaised);
           uncountedWeiRaised = 0;
         }
 
-        if (uncountedWeiAmount &lt;= weiAvailable) {
+        if (uncountedWeiAmount <= weiAvailable) {
           tokenAmount = tokenAmount.add(uncountedWeiAmount.mul(rate));
           break;
         } else {
@@ -502,7 +502,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
   }
   
   // Private presale buyer whitelist
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Adds single address to whitelist.
@@ -517,7 +517,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToPresaleWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -532,7 +532,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
 
   // Crowdsale finalization/refunding variables
   bool public isCrowdsaleFinalized = false;
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
 
   // Crowdsale finalization/refunding events
   event CrowdsaleFinalized();
@@ -541,11 +541,11 @@ contract CryptualProjectToken is StandardToken, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization (forwarding/refunding)
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalizeCrowdsale() external {
     require(!isCrowdsaleFinalized);
-    require(block.timestamp &gt; CROWDSALE_CLOSING_TIME || (block.timestamp &gt; PRESALE_CLOSING_TIME &amp;&amp; presaleWeiRaised &lt; PRESALE_WEI_GOAL));
+    require(block.timestamp > CROWDSALE_CLOSING_TIME || (block.timestamp > PRESALE_CLOSING_TIME && presaleWeiRaised < PRESALE_WEI_GOAL));
 
     if (combinedGoalReached()) {
       wallet.transfer(address(this).balance);
@@ -563,7 +563,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
   function claimRefund() external {
     require(isCrowdsaleFinalized);
     require(!combinedGoalReached());
-    require(deposited[msg.sender] &gt; 0);
+    require(deposited[msg.sender] > 0);
 
     uint256 depositedValue = deposited[msg.sender];
     deposited[msg.sender] = 0;
@@ -576,7 +576,7 @@ contract CryptualProjectToken is StandardToken, Ownable {
    * @return Whether funding goal was reached
    */
   function combinedGoalReached() public view returns (bool) {
-    return presaleWeiRaised.add(crowdsaleWeiRaised) &gt;= COMBINED_WEI_GOAL;
+    return presaleWeiRaised.add(crowdsaleWeiRaised) >= COMBINED_WEI_GOAL;
   }
 
 }

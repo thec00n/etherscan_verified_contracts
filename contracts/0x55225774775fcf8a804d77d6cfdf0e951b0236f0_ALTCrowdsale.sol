@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -135,7 +135,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,7 +151,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -168,12 +168,12 @@ contract BurnableToken is StandardToken {
     - Верхная граница сборов 5 500 000 USD (если граница достигнута токены больше не продаются, контракт дает сдачу если сумма больше)
     - ICO ограничено по времени дата начала 17.10.2017 продолжительность 45 дней.
     - Цена эфира 1 ETH = 300 USD, минимальная сумма инвестиций 0.03 USD
-    - Закрытие ICO происходит с помощью функции &quot;withdraw()&quot;, управление токеном передаются бенефициару, не раскупленные токены сгорают, токены не участвующие в продаже отправляются бенефициару
+    - Закрытие ICO происходит с помощью функции "withdraw()", управление токеном передаются бенефициару, не раскупленные токены сгорают, токены не участвующие в продаже отправляются бенефициару
 */
 
 contract ALTToken is BurnableToken, Ownable {
-    string public name = &quot;Altyn Token&quot;;
-    string public symbol = &quot;ALT&quot;;
+    string public name = "Altyn Token";
+    string public symbol = "ALT";
     uint256 public decimals = 18;
     
     uint256 public INITIAL_SUPPLY = 100000000 * 1 ether;                                        // Amount tokens
@@ -217,8 +217,8 @@ contract ALTCrowdsale is Pausable {
     event NewContribution(address indexed holder, uint256 tokenAmount, uint256 etherAmount);
     event Withdraw();
 
-    modifier onlyAfter(uint time) { require(now &gt; time); _; }
-    modifier onlyBefore(uint time) {  require(now &lt; time);  _; }
+    modifier onlyAfter(uint time) { require(now > time); _; }
+    modifier onlyBefore(uint time) {  require(now < time);  _; }
 
     function ALTCrowdsale() {
         token = new ALTToken();
@@ -235,18 +235,18 @@ contract ALTCrowdsale is Pausable {
     
     function purchase() onlyAfter(startTime) onlyBefore(endTime) whenNotPaused payable {
         require(!crowdsaleFinished);
-        require(msg.value &gt;= 0.001 * 1 ether &amp;&amp; msg.value &lt;= 10000 * 1 ether);
-        require(tokensSold &lt; maxTokensSold);
+        require(msg.value >= 0.001 * 1 ether && msg.value <= 10000 * 1 ether);
+        require(tokensSold < maxTokensSold);
 
         uint amount = 0;
         uint sum = 0;
-        for(uint i = 0; i &lt; steps.length; i++) {
-            if(tokensSold.add(amount) &lt; steps[i].amountTokens * 1 ether) {
+        for(uint i = 0; i < steps.length; i++) {
+            if(tokensSold.add(amount) < steps[i].amountTokens * 1 ether) {
                 uint avail = (steps[i].amountTokens * 1 ether) - tokensSold.add(amount);
                 uint nece = (msg.value - sum) * priceETH / steps[i].priceUSD * 100;
                 uint buy = nece;
 
-                if(buy &gt; avail) buy = avail;
+                if(buy > avail) buy = avail;
                 
                 amount += buy;
                 sum += buy / (priceETH / steps[i].priceUSD * 100);
@@ -255,9 +255,9 @@ contract ALTCrowdsale is Pausable {
             }
         }
         
-        require(tokensSold.add(amount) &lt;= maxTokensSold);
+        require(tokensSold.add(amount) <= maxTokensSold);
 
-        if(collected &lt; softCap &amp;&amp; collected.add(sum) &gt;= softCap) {
+        if(collected < softCap && collected.add(sum) >= softCap) {
             SoftCapReached(collected.add(sum));
         }
 
@@ -266,11 +266,11 @@ contract ALTCrowdsale is Pausable {
         tokensSold = tokensSold.add(amount);
         
         require(token.transfer(msg.sender, amount));
-        if(sum &lt; msg.value) require(msg.sender.send(msg.value - sum));
+        if(sum < msg.value) require(msg.sender.send(msg.value - sum));
 
         NewContribution(msg.sender, amount, sum);
 
-        if(collected &gt;= hardCap) {
+        if(collected >= hardCap) {
             HardCapReached(collected);
         }
     }
@@ -280,7 +280,7 @@ contract ALTCrowdsale is Pausable {
 
         beneficiary.transfer(collected);
 
-        if(tokensSold &lt; maxTokensSold) token.burn(maxTokensSold - tokensSold);
+        if(tokensSold < maxTokensSold) token.burn(maxTokensSold - tokensSold);
         token.transfer(beneficiary, token.balanceOf(this));
         
         token.transferOwnership(beneficiary);

@@ -38,8 +38,8 @@ contract HammerChain is Token {
     uint8 public decimals;              //token decimals with HRC
     string public symbol;               //token symbol with HRC
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyOwner { 
         require(msg.sender == owner);
@@ -53,14 +53,14 @@ contract HammerChain is Token {
         totalSupply = 512000000 * 10 ** uint256(_decimalUnits); // iniliatized total supply token
         balances[msg.sender] = totalSupply; 
 
-        name = &quot;HammerChain&quot;;
+        name = "HammerChain";
         decimals = _decimalUnits;
-        symbol = &quot;HRC&quot;;
+        symbol = "HRC";
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         // default is totalSupply not of out (2^256 - 1).
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         require(_to != 0x0);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -70,7 +70,7 @@ contract HammerChain is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
@@ -94,8 +94,8 @@ contract HammerChain is Token {
     }
 
     function sendIncentive() onlyOwner public{
-        require(limitIncentive &lt; totalSupply/2);
-        if (timeIncentive &lt; now){
+        require(limitIncentive < totalSupply/2);
+        if (timeIncentive < now){
             if (timeIncentive == 0x0){
                 transfer(INCENTIVE_POOL_ADDR,totalSupply/10);
                 limitIncentive += totalSupply/10;
@@ -109,8 +109,8 @@ contract HammerChain is Token {
     }
 
     function sendFounders() onlyOwner public{
-        require(limitFounders &lt; totalSupply/20);
-        if (timeFounders== 0x0 || timeFounders &lt; now){
+        require(limitFounders < totalSupply/20);
+        if (timeFounders== 0x0 || timeFounders < now){
             transfer(FOUNDERS_POOL_ADDR,totalSupply/100);
             timeFounders = now + 365 days;
             limitFounders += totalSupply/100;
@@ -139,7 +139,7 @@ contract HammerChain is Token {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -147,10 +147,10 @@ contract HammerChain is Token {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowed
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowed
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;

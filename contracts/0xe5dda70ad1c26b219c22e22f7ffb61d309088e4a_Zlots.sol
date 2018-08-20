@@ -12,9 +12,9 @@ pragma solidity ^0.4.24;
 *   35.64%	Two Matching Icons
 *       - 5.09% : 2x    Multiplier [Two White Pyramids]
 *       - 5.09% : 2.5x  Multiplier [Two Gold  Pyramids]
-*       - 5.09% : 2.32x Multiplier [Two &#39;T&#39; Symbols]
-*       - 5.09% : 2.32x Multiplier [Two &#39;H&#39; Symbols]
-*       - 5.09% : 2.32x Multiplier [Two &#39;T&#39; Symbols]
+*       - 5.09% : 2.32x Multiplier [Two 'T' Symbols]
+*       - 5.09% : 2.32x Multiplier [Two 'H' Symbols]
+*       - 5.09% : 2.32x Multiplier [Two 'T' Symbols]
 *       - 5.09% : 3.5x  Multiplier [Two Green Pyramids]
 *       - 5.09% : 3.75x Multiplier [Two Ether Icons]
 *   6.79%	One Of Each Pyramid
@@ -24,9 +24,9 @@ pragma solidity ^0.4.24;
 *   1.98%	Three Matching Icons
 *       - 0.28% : 20x   Multiplier [Three White Pyramids]
 *       - 0.28% : 20x   Multiplier [Three Gold  Pyramids]
-*       - 0.28% : 25x   Multiplier [Three &#39;Z&#39; Symbols]
-*       - 0.28% : 25x   Multiplier [Three &#39;T&#39; Symbols]
-*       - 0.28% : 25x   Multiplier [Three &#39;H&#39; Symbols]
+*       - 0.28% : 25x   Multiplier [Three 'Z' Symbols]
+*       - 0.28% : 25x   Multiplier [Three 'T' Symbols]
+*       - 0.28% : 25x   Multiplier [Three 'H' Symbols]
 *       - 0.28% : 40x   Multiplier [Three Green Pyramids]
 *       - 0.28% : 50x   Multiplier [Three Ether Icons]
 *   0.28%	Z T H Prize
@@ -67,7 +67,7 @@ contract Zlots is ZTHReceivingContract {
     address private ZTHBANKROLL;
     ZTHInterface private     ZTHTKN;
 
-    mapping (uint =&gt; bool) validTokenBet;
+    mapping (uint => bool) validTokenBet;
 
     // Might as well notify everyone when the house takes its cut out.
     event HouseRetrievedTake(
@@ -147,7 +147,7 @@ contract Zlots is ZTHReceivingContract {
 
     constructor(address ZethrAddress, address BankrollAddress) public {
 
-        // Set Zethr &amp; Bankroll address from constructor params
+        // Set Zethr & Bankroll address from constructor params
         ZTHTKNADDR = ZethrAddress;
         ZTHBANKROLL = BankrollAddress;
 
@@ -155,7 +155,7 @@ contract Zlots is ZTHReceivingContract {
         owner         = msg.sender;
         bankroll      = ZTHBANKROLL;
 
-        // Approve &quot;infinite&quot; token transfer to the bankroll, as part of Zethr game requirements.
+        // Approve "infinite" token transfer to the bankroll, as part of Zethr game requirements.
         ZTHTKN = ZTHInterface(ZTHTKNADDR);
         ZTHTKN.approve(ZTHBANKROLL, 2**256 - 1);
         
@@ -196,7 +196,7 @@ contract Zlots is ZTHReceivingContract {
     }
 
     // Mapping because a player can do one spin at a time
-    mapping(address =&gt; playerSpin) public playerSpins;
+    mapping(address => playerSpin) public playerSpins;
 
     // Execute spin.
     function _spinTokens(TKN _tkn) private {
@@ -206,8 +206,8 @@ contract Zlots is ZTHReceivingContract {
         require(validTokenBet[_tkn.value]);
         require(jackpotGuard(_tkn.value));
 
-        require(_tkn.value &lt; ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
-        require(block.number &lt; ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
+        require(_tkn.value < ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
+        require(block.number < ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
 
         address _customerAddress = _tkn.sender;
         uint    _wagered         = _tkn.value;
@@ -257,17 +257,17 @@ contract Zlots is ZTHReceivingContract {
     {
         playerSpin memory spin = playerSpins[target];
 
-        require(spin.tokenValue &gt; 0); // No re-entrancy
+        require(spin.tokenValue > 0); // No re-entrancy
         require(spin.blockn != block.number);
 
         uint profit = 0;
         uint category = 0;
 
-        // If the block is more than 255 blocks old, we can&#39;t get the result
+        // If the block is more than 255 blocks old, we can't get the result
         // Also, if the result has already happened, fail as well
         uint result;
-        if (block.number - spin.blockn &gt; 255) {
-          result = 9999; // Can&#39;t win: default to largest number
+        if (block.number - spin.blockn > 255) {
+          result = 9999; // Can't win: default to largest number
         } else {
 
           // Generate a result - random based ONLY on a past block (future when submitted).
@@ -275,115 +275,115 @@ contract Zlots is ZTHReceivingContract {
           result = random(1000000, spin.blockn, target);
         }
 
-        if (result &gt; 476661) {
+        if (result > 476661) {
           // Player has lost.
           emit Loss(target, spin.blockn);
           emit LogResult(target, result, profit, spin.tokenValue, category, false);
         } else {
-            if (result &lt; 1) {
+            if (result < 1) {
                 // Player has won the three-moon mega jackpot!
                 profit = SafeMath.mul(spin.tokenValue, 500);
                 category = 1;
                 emit ThreeMoonJackpot(target, spin.blockn);
             } else {
-                if (result &lt; 298) {
+                if (result < 298) {
                     // Player has won a two-moon prize!
                     profit = SafeMath.mul(spin.tokenValue, 232);
                     category = 2;
                     emit TwoMoonPrize(target, spin.blockn);
             } else {
-                if (result &lt; 3127) {
+                if (result < 3127) {
                     // Player has won the Z T H jackpot!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 232), 10);
                     category = 3;
                     emit ZTHJackpot(target, spin.blockn);
                     
             } else {
-                if (result &lt; 5956) {
+                if (result < 5956) {
                     // Player has won a three Z symbol prize
                     profit = SafeMath.mul(spin.tokenValue, 25);
                     category = 4;
                     emit ThreeZSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 8785) {
+                if (result < 8785) {
                     // Player has won a three T symbol prize
                     profit = SafeMath.mul(spin.tokenValue, 25);
                     category = 5;
                     emit ThreeTSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 11614) {
+                if (result < 11614) {
                     // Player has won a three H symbol prize
                     profit = SafeMath.mul(spin.tokenValue, 25);
                     category = 6;
                     emit ThreeHSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 14443) {
+                if (result < 14443) {
                     // Player has won a three Ether icon prize
                     profit = SafeMath.mul(spin.tokenValue, 50);
                     category = 7;
                     emit ThreeEtherIcons(target, spin.blockn);
             } else {
-                if (result &lt; 17272) {
+                if (result < 17272) {
                     // Player has won a three green pyramid prize
                     profit = SafeMath.mul(spin.tokenValue, 40);
                     category = 8;
                     emit ThreeGreenPyramids(target, spin.blockn);
             } else {
-                if (result &lt; 20101) {
+                if (result < 20101) {
                     // Player has won a three gold pyramid prize
                     profit = SafeMath.mul(spin.tokenValue, 20);
                     category = 9;
                     emit ThreeGoldPyramids(target, spin.blockn);
             } else {
-                if (result &lt; 22929) {
+                if (result < 22929) {
                     // Player has won a three white pyramid prize
                     profit = SafeMath.mul(spin.tokenValue, 20);
                     category = 10;
                     emit ThreeWhitePyramids(target, spin.blockn);
             } else {
-                if (result &lt; 52332) {
+                if (result < 52332) {
                     // Player has won a one moon prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 125),10);
                     category = 11;
                     emit OneMoonPrize(target, spin.blockn);
             } else {
-                if (result &lt; 120225) {
+                if (result < 120225) {
                     // Player has won a each-coloured-pyramid prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 15),10);
                     category = 12;
                     emit OneOfEachPyramidPrize(target, spin.blockn);
             } else {
-                if (result &lt; 171146) {
+                if (result < 171146) {
                     // Player has won a two Z symbol prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 232),100);
                     category = 13;
                     emit TwoZSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 222067) {
+                if (result < 222067) {
                     // Player has won a two T symbol prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 232),100);
                     category = 14;
                     emit TwoTSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 272988) {
+                if (result < 272988) {
                     // Player has won a two H symbol prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 232),100);
                     category = 15;
                     emit TwoHSymbols(target, spin.blockn);
             } else {
-                if (result &lt; 323909) {
+                if (result < 323909) {
                     // Player has won a two Ether icon prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 375),100);
                     category = 16;
                     emit TwoEtherIcons(target, spin.blockn);
             } else {
-                if (result &lt; 374830) {
+                if (result < 374830) {
                     // Player has won a two green pyramid prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 35),10);
                     category = 17;
                     emit TwoGreenPyramids(target, spin.blockn);
             } else {
-                if (result &lt; 425751) {
+                if (result < 425751) {
                     // Player has won a two gold pyramid prize!
                     profit = SafeMath.div(SafeMath.mul(spin.tokenValue, 225),100);
                     category = 18;
@@ -407,9 +407,9 @@ contract Zlots is ZTHReceivingContract {
     }   
 
     // This sounds like a draconian function, but it actually just ensures that the contract has enough to pay out
-    // a jackpot at the rate you&#39;ve selected (i.e. 5,000 ZTH for three-moon jackpot on a 10 ZTH roll).
+    // a jackpot at the rate you've selected (i.e. 5,000 ZTH for three-moon jackpot on a 10 ZTH roll).
     // We do this by making sure that 25* your wager is no less than 90% of the amount currently held by the contract.
-    // If not, you&#39;re going to have to use lower betting amounts, we&#39;re afraid!
+    // If not, you're going to have to use lower betting amounts, we're afraid!
     function jackpotGuard(uint _wager)
         private
         view
@@ -417,7 +417,7 @@ contract Zlots is ZTHReceivingContract {
     {
         uint maxProfit = SafeMath.mul(_wager, 500);
         uint ninetyContractBalance = SafeMath.mul(SafeMath.div(contractBalance, 10), 9);
-        return (maxProfit &lt;= ninetyContractBalance);
+        return (maxProfit <= ninetyContractBalance);
     }
 
     // Returns a random number using a specified block number
@@ -490,7 +490,7 @@ contract Zlots is ZTHReceivingContract {
     }
 }
 
-// And here&#39;s the boring bit.
+// And here's the boring bit.
 
 /**
  * @title SafeMath
@@ -514,9 +514,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -524,7 +524,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -533,7 +533,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

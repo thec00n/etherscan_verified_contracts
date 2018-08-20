@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract AirDropPromo {
 
-	string public url = &quot;https://McFLY.aero&quot;;
+	string public url = "https://McFLY.aero";
 	string public name;
 	string public symbol;
 	address owner;
@@ -54,7 +54,7 @@ contract AirDropPromo {
 
 		require(msg.sender == owner);
 
-		for(uint256 i = 0; i &lt; _recipients.length; i++){
+		for(uint256 i = 0; i < _recipients.length; i++){
 
 			_recipients[i].transfer(7777777777);
 			emit Transfer(address(this), _recipients[i], 777);

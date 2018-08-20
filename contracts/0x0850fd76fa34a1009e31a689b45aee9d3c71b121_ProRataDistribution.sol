@@ -16,37 +16,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -60,7 +60,7 @@ contract NTRYToken{
 contract ProRataDistribution {
  
   /* Pre ICO participants */
-  mapping(address =&gt; uint) investors;
+  mapping(address => uint) investors;
   
   using SafeMath for uint;
   
@@ -73,7 +73,7 @@ contract ProRataDistribution {
   
   // Time limit for Investment
   uint public deadline = now + (7200 * 1 minutes);
-  modifier afterDeadline() { if (now &gt;= deadline) throw; _;}
+  modifier afterDeadline() { if (now >= deadline) throw; _;}
   
   
   NTRYToken private notaryToken;
@@ -137,8 +137,8 @@ contract ProRataDistribution {
   }
   
   function setEndsAt(uint time) public onlyOwner {
-    if(now &gt; time) {
-      throw; // Don&#39;t change past
+    if(now > time) {
+      throw; // Don't change past
     }
     deadline = time;
     EndsAtChanged(deadline);

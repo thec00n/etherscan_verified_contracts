@@ -73,20 +73,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a); 
+    assert(c >= a); 
     return c;
   }
 }
@@ -111,14 +111,14 @@ contract TokenERC20Standart is TokenERC20, Pausable{
             
             
         // create array with all blances    
-        mapping(address =&gt; uint) public balances;
-        mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+        mapping(address => uint) public balances;
+        mapping(address => mapping(address => uint)) public allowed;
         
         /**
         * @dev Fix for the ERC20 short address attack.
         */
         modifier onlyPayloadSize(uint size) {
-            require(msg.data.length &gt;= size + 4) ;
+            require(msg.data.length >= size + 4) ;
             _;
         }
             
@@ -140,11 +140,11 @@ contract TokenERC20Standart is TokenERC20, Pausable{
         }
  
         function transferFrom(address from, address to, uint tokens) public whenNotPaused onlyPayloadSize(3*32) returns (bool success) {
-            assert(tokens &gt; 0);
+            assert(tokens > 0);
             require (to != 0x0);    
-            require(balances[from] &gt;= tokens);
-            require(balances[to] + tokens &gt;= balances[to]); // overflow
-            require(allowed[from][msg.sender] &gt;= tokens);
+            require(balances[from] >= tokens);
+            require(balances[to] + tokens >= balances[to]); // overflow
+            require(allowed[from][msg.sender] >= tokens);
             balances[from] = balances[from].sub(tokens);
             allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
             balances[to] = balances[to].add(tokens);
@@ -157,10 +157,10 @@ contract TokenERC20Standart is TokenERC20, Pausable{
         }
 
         function _transfer(address _from, address _to, uint _value) internal {
-            assert(_value &gt; 0);
+            assert(_value > 0);
             require (_to != 0x0);                              
-            require (balances[_from] &gt;= _value);               
-            require (balances[_to] + _value &gt;= balances[_to]);
+            require (balances[_from] >= _value);               
+            require (balances[_to] + _value >= balances[_to]);
             balances[_from] = balances[_from].sub(_value);                        
             balances[_to] = balances[_to].add(_value);                           
             emit Transfer(_from, _to, _value);
@@ -201,11 +201,11 @@ contract BeringiaContract is TokenERC20Standart{
     uint256 private depositorsTokens;                   // tokens for depositors
     
     constructor () public {
-        name = &quot;Beringia&quot;;                                          // Set the name for display purposes
+        name = "Beringia";                                          // Set the name for display purposes
         decimals = 0;                                               // Amount of decimals for display purposes
-        symbol = &quot;BER&quot;;                                             // Set the symbol for display purposes
+        symbol = "BER";                                             // Set the symbol for display purposes
         owner = 0xdc889afED1ab326966c51E58abBEdC98b4d0DF64;         // Set contract owner
-        version = &quot;1.0&quot;;                                            // Set contract version 
+        version = "1.0";                                            // Set contract version 
         tokenCreationCap = 510000000 * 10 ** uint256(decimals);
         balances[owner] = tokenCreationCap;                         // Give the creator all initial tokens
         emit Transfer(address(0x0), owner, tokenCreationCap);
@@ -218,8 +218,8 @@ contract BeringiaContract is TokenERC20Standart{
     }
 
     function transferFounderTokens(address _to, uint _value) public onlyOwner whenNotPaused returns (bool){
-        require(foundersTokens &gt; 0);
-        require(foundersTokens.sub(_value) &gt;= 0);
+        require(foundersTokens > 0);
+        require(foundersTokens.sub(_value) >= 0);
         foundersTokens = foundersTokens.sub(_value);
         _totalSupply = _totalSupply.add(_value);
         return super.transfer(_to, _value);
@@ -234,20 +234,20 @@ contract BeringiaContract is TokenERC20Standart{
     }
     
     function createTokens(address _sender, uint256 _value) public whenNotPaused { 
-        require(_value &gt; 0);
-        require(depositorsTokens &gt; 0);
-        require(now &lt;= fundingEndTime);
-        require(_value &gt;= minContribution);
+        require(_value > 0);
+        require(depositorsTokens > 0);
+        require(now <= fundingEndTime);
+        require(_value >= minContribution);
         uint256 tokens = (_value * RATE) / oneTokenInWei;
-        require(tokens &gt; 0);
-        if (now &lt;= firstPeriodEND){
+        require(tokens > 0);
+        if (now <= firstPeriodEND){
             tokens =  ((tokens * 100) * (firstPeriodDis + 100))/10000;
-        }else if (now &gt; firstPeriodEND &amp;&amp; now &lt;= secondPeriodEND){
+        }else if (now > firstPeriodEND && now <= secondPeriodEND){
             tokens =  ((tokens * 100) *(secondPeriodDis + 100))/10000;
-        }else if (now &gt; secondPeriodEND &amp;&amp; now &lt;= thirdPeriodEND){
+        }else if (now > secondPeriodEND && now <= thirdPeriodEND){
             tokens = ((tokens * 100) * (thirdPeriodDis + 100))/10000;
         }
-        require(depositorsTokens.sub(tokens) &gt;= 0);
+        require(depositorsTokens.sub(tokens) >= 0);
         depositorsTokens = depositorsTokens.sub(tokens);
         _totalSupply = _totalSupply.add(tokens);
         require(sell(_sender, tokens)); 
@@ -266,17 +266,17 @@ contract BeringiaContract is TokenERC20Standart{
      * @param _value must be in wei (1ETH = 1e18 wei) 
      */
     function isLeftTokens(uint256 _value) public view returns (bool) { 
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 tokens = (_value * RATE) / oneTokenInWei;
-        require(tokens &gt; 0);
-        if (now &lt;= firstPeriodEND){
+        require(tokens > 0);
+        if (now <= firstPeriodEND){
             tokens =  ((tokens * 100) * (firstPeriodDis + 100))/10000;
-        }else if (now &gt; firstPeriodEND &amp;&amp; now &lt;= secondPeriodEND){
+        }else if (now > firstPeriodEND && now <= secondPeriodEND){
             tokens =  ((tokens * 100) *(secondPeriodDis + 100))/10000;
-        }else if (now &gt; secondPeriodEND &amp;&amp; now &lt;= thirdPeriodEND){
+        }else if (now > secondPeriodEND && now <= thirdPeriodEND){
             tokens = ((tokens * 100) * (thirdPeriodDis + 100))/10000;
         }
-        return depositorsTokens.sub(tokens) &gt;= 0;
+        return depositorsTokens.sub(tokens) >= 0;
     }
 
     function sell(address _recipient, uint256 _value) internal whenNotPaused returns (bool success) {
@@ -293,8 +293,8 @@ contract BeringiaContract is TokenERC20Standart{
     }
     
     function increaseTotalSupply(uint256 _value) public whenNotPaused onlyOwner returns (bool success) {
-        require(_value &gt; 0);
-        require(_totalSupply.add(_value) &lt;= tokenCreationCap);
+        require(_value > 0);
+        require(_totalSupply.add(_value) <= tokenCreationCap);
         _totalSupply = _totalSupply.add(_value);
         return true;
     }

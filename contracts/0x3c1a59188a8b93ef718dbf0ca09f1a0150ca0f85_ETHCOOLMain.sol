@@ -13,8 +13,8 @@ contract ETHCOOLMain {
     uint public main_balance;
     uint public next;
 
-    mapping (address =&gt; uint) public user_balances;
-    mapping (address =&gt; address) public user_referrals;
+    mapping (address => uint) public user_balances;
+    mapping (address => address) public user_referrals;
     
     Deposit[] public deposits;
     
@@ -40,7 +40,7 @@ contract ETHCOOLMain {
     function userWithdraw() public {
         userPayout();
         
-        if (user_balances[msg.sender] &gt; 0) {
+        if (user_balances[msg.sender] > 0) {
             uint amount = user_balances[msg.sender];
             user_balances[msg.sender] = 0;
             msg.sender.transfer(amount);
@@ -48,9 +48,9 @@ contract ETHCOOLMain {
     }
 
     function userDeposit(address referral) public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             if(user_referrals[msg.sender] == address(0)) {
-                user_referrals[msg.sender] = (referral != address(0) &amp;&amp; referral != msg.sender) ? referral : owner;
+                user_referrals[msg.sender] = (referral != address(0) && referral != msg.sender) ? referral : owner;
             }
 
             Deposit memory deposit = Deposit(msg.sender, msg.value);
@@ -67,7 +67,7 @@ contract ETHCOOLMain {
     }
 
     function userReinvest() public {
-        if (user_balances[msg.sender] &gt; 0) {
+        if (user_balances[msg.sender] > 0) {
             Deposit memory deposit = Deposit(msg.sender, user_balances[msg.sender]);
             deposits.push(deposit);
 
@@ -81,9 +81,9 @@ contract ETHCOOLMain {
     }
 
     function userPayout() public {
-        if (next &lt; deposits.length) {
+        if (next < deposits.length) {
             uint next_payout = deposits[next].amount.mul(120).div(100);
-            if (main_balance &gt;= next_payout) {
+            if (main_balance >= next_payout) {
                 user_balances[deposits[next].user] = user_balances[deposits[next].user].add(next_payout);
                 main_balance = main_balance.sub(next_payout);
                 next = next.add(1);
@@ -92,7 +92,7 @@ contract ETHCOOLMain {
     }
 
     function contractBoost(uint share) public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint owner_cut = msg.value.mul(share).div(100);
             user_balances[owner] = user_balances[owner].add(owner_cut);
             main_balance = main_balance.add(msg.value).sub(owner_cut);
@@ -116,13 +116,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

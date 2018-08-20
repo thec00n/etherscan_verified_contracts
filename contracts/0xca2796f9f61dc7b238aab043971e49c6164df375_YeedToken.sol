@@ -17,7 +17,7 @@ contract ERC20 {
 
 /**
  * @title Lockable Token
- * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec7c0c8c1eed7c9c9cadccfddc680c7c1">[email&#160;protected]</a>
+ * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec7c0c8c1eed7c9c9cadccfddc680c7c1">[email protected]</a>
  */
 contract Lockable {
     bool public tokenTransfer;
@@ -26,12 +26,12 @@ contract Lockable {
     /**
      * @dev They can transfer even if tokenTranser flag is false.
      */
-    mapping(address =&gt; bool) public unlockAddress;
+    mapping(address => bool) public unlockAddress;
 
     /**
      * @dev They cannot transfer even if tokenTransfer flag is true.
      */
-    mapping(address =&gt; bool) public lockAddress;
+    mapping(address => bool) public lockAddress;
 
     event Locked(address lockAddress, bool status);
     event Unlocked(address unlockedAddress, bool status);
@@ -101,8 +101,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -117,9 +117,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -127,7 +127,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -136,21 +136,21 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 /**
  * @title YGGDRASH Token Contract.
- * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40292e262f0039272724322133286e292f">[email&#160;protected]</a>
+ * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40292e262f0039272724322133286e292f">[email protected]</a>
  * @notice This contract is the updated version that fixes the unlocking bug.
  * This source code is audited by external auditors.
  */
 contract YeedToken is ERC20, Lockable {
 
-    string public constant name = &quot;YGGDRASH&quot;;
-    string public constant symbol = &quot;YEED&quot;;
+    string public constant name = "YGGDRASH";
+    string public constant symbol = "YEED";
     uint8 public constant decimals = 18;
 
     /**
@@ -160,8 +160,8 @@ contract YeedToken is ERC20, Lockable {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) internal _balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal _approvals;
+    mapping(address => uint256) internal _balances;
+    mapping(address => mapping(address => uint256)) internal _approvals;
     uint256 internal _supply;
 
     event TokenBurned(address burnAddress, uint256 amountOfTokens);
@@ -203,7 +203,7 @@ contract YeedToken is ERC20, Lockable {
     checkLock
     returns (bool) {
         require(to != address(0));
-        require(_balances[msg.sender] &gt;= value);
+        require(_balances[msg.sender] >= value);
 
         _balances[msg.sender] = _balances[msg.sender].sub(value);
         _balances[to] = _balances[to].add(value);
@@ -224,8 +224,8 @@ contract YeedToken is ERC20, Lockable {
     checkLock
     returns (bool success) {
         require(!lockAddress[from]);
-        require(_balances[from] &gt;= value);
-        require(_approvals[from][msg.sender] &gt;= value);
+        require(_balances[from] >= value);
+        require(_approvals[from][msg.sender] >= value);
         _balances[from] = _balances[from].sub(value);
         _balances[to] = _balances[to].add(value);
         _approvals[from][msg.sender] = _approvals[from][msg.sender].sub(value);
@@ -237,7 +237,7 @@ contract YeedToken is ERC20, Lockable {
      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param spender The address which will spend the funds.
      * @param value The amount of tokens to be spent.
@@ -284,7 +284,7 @@ contract YeedToken is ERC20, Lockable {
     checkLock
     returns (bool) {
         uint256 oldValue = _approvals[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             _approvals[msg.sender][_spender] = 0;
         } else {
             _approvals[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,7 +301,7 @@ contract YeedToken is ERC20, Lockable {
     isAdminMode
     isOwner
     {
-        require(_balances[msg.sender] &gt;= tokensAmount);
+        require(_balances[msg.sender] >= tokensAmount);
 
         _balances[msg.sender] = _balances[msg.sender].sub(tokensAmount);
         _supply = _supply.sub(tokensAmount);
@@ -314,7 +314,7 @@ contract YeedToken is ERC20, Lockable {
      * - unregistered lockAddress can transfer()
      * - registered lockAddress can not transfer()
      * If false, 
-     * - registered unlockAddress &amp; unregistered lockAddress 
+     * - registered unlockAddress & unregistered lockAddress 
      * - can transfer(), unregistered unlockAddress can not transfer()
      */
     function setTokenTransfer(bool _tokenTransfer)
@@ -336,7 +336,7 @@ contract YeedToken is ERC20, Lockable {
 
     /**
      * @dev In emergency situation, 
-     * admin can use emergencyTransfer() for protecting user&#39;s token.
+     * admin can use emergencyTransfer() for protecting user's token.
      */
     function emergencyTransfer(address emergencyAddress)
     public

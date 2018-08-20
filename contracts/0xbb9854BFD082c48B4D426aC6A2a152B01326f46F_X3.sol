@@ -29,7 +29,7 @@ contract X3 {
         }
 
         function enter() {
-                if (msg.value &lt; 1 ether) {
+                if (msg.value < 1 ether) {
                         msg.sender.send(msg.value);
                         return;
                 }
@@ -51,7 +51,7 @@ contract X3 {
                 }
 
                 // if there are enough ether on the balance X3 will payout three time your initial investement
-                if (balance &gt; participants[payoutIdx].amount * 3) {
+                if (balance > participants[payoutIdx].amount * 3) {
                         uint transactionAmount = 3 * (participants[payoutIdx].amount - participants[payoutIdx].amount / 3);
                         participants[payoutIdx].etherAddress.send(transactionAmount);
 

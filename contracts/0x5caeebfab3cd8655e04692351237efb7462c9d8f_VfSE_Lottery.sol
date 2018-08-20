@@ -10,18 +10,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+// assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+// assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,13 +66,13 @@ contract VfSE_Lottery is Ownable {
   address public SecondAddressBalance = 0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98;
   address public ThirdAddressBalance = 0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE;
   address public FourthAddressBalance = 0x267be1C1D684F78cb4F6a176C4911b741E4Ffdc0;
-  mapping (address =&gt; uint256) public payOuts;
+  mapping (address => uint256) public payOuts;
   uint256 private _seed;
   
   function bitSlice(uint256 n, uint256 bits, uint256 slot) private pure returns(uint256) {
     uint256 offset = slot * bits;
-    uint256 mask = uint256((2**bits) - 1) &lt;&lt; offset;
-    return uint256((n &amp; mask) &gt;&gt; offset);
+    uint256 mask = uint256((2**bits) - 1) << offset;
+    return uint256((n & mask) >> offset);
   }
 
   function maxRandom() private returns (uint256 randomNumber) {
@@ -129,15 +129,15 @@ contract VfSE_Lottery is Ownable {
   }
 
   function draw() private {
-    require(now &gt; roundEnds);
+    require(now > roundEnds);
     uint256 howMuchBets = players.length;
     uint256 k;
     lastWinner = players[produceRandom(howMuchBets)];
     lastPayOut = getPayOutAmount();
     
     winners.push(lastWinner);
-    if (winners.length &gt; 9) {
-      for (uint256 i = (winners.length - 10); i &lt; winners.length; i++) {
+    if (winners.length > 9) {
+      for (uint256 i = (winners.length - 10); i < winners.length; i++) {
         last10Winners[k] = winners[i];
         k += 1;
       }
@@ -164,8 +164,8 @@ contract VfSE_Lottery is Ownable {
     require (msg.value == playValue);
     require (!stopped);
 
-    if (now &gt; roundEnds) {
-      if (players.length &lt; 2) {
+    if (now > roundEnds) {
+      if (players.length < 2) {
         roundEnds = now + roundDuration;
       } else {
         draw();
@@ -215,7 +215,7 @@ contract VfSE_Lottery is Ownable {
     return FourthAddressBalance.balance;
   }
   function last10() public view returns (address[]) {
-    if (winners.length &lt; 11) {
+    if (winners.length < 11) {
       return winners;
     } else {
       return last10Winners;

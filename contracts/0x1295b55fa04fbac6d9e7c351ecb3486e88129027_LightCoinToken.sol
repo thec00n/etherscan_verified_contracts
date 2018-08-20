@@ -21,7 +21,7 @@ contract BaseSafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -32,7 +32,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -56,7 +56,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 		
         uint256 c = a / b;
 
@@ -69,7 +69,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -78,7 +78,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -98,7 +98,7 @@ contract BaseSafeMath {
 
         uint128 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -109,7 +109,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -133,7 +133,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 	
         uint128 c = a / b;
 
@@ -146,7 +146,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -155,7 +155,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -175,7 +175,7 @@ contract BaseSafeMath {
 
         uint64 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -186,7 +186,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -210,7 +210,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-	    assert( b &gt; 0 );
+	    assert( b > 0 );
 	
         uint64 c = a / b;
 
@@ -223,7 +223,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -232,7 +232,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -256,8 +256,8 @@ contract BaseERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -304,7 +304,7 @@ contract BaseERC20 {
    * @title Ownable 
    * @dev The Ownable contract has an owner address, and provides basic authorization control 
    * functions, this simplifies the implementation of 
-   &quot;user permissions&quot;. 
+   "user permissions". 
 */ 
 
 contract Ownable { 
@@ -406,8 +406,8 @@ contract LightCoinToken is BaseERC20, BaseSafeMath, Pausable {
 		owner = 0x55ae8974743DB03761356D703A9cfc0F24045ebb;
 		lockOwner = 0x07d4C8CC52BB7c4AB46A1A65DCEEdC1ab29aBDd6;
 		startTime = 1515686400;
-        name = &quot;Lightcoin&quot;;
-        symbol = &quot;Light&quot;;
+        name = "Lightcoin";
+        symbol = "Light";
         decimals = 8;
         ///totalSupply = 21000000000000000000;
         totalSupply = 2.1e19;
@@ -471,11 +471,11 @@ contract LightCoinToken is BaseERC20, BaseSafeMath, Pausable {
 	
 	function releaseToken() public{
 	   uint256 releaseBegin = add(startTime,  2 * 365 * 86400);
-	   require(now &gt;= releaseBegin );
+	   require(now >= releaseBegin );
 	   
 	   uint256 interval = sub(now, releaseBegin);
        uint256 i = div(interval, (0.5 * 365 * 86400));
-       if (i &gt; 3) 
+       if (i > 3) 
        {
             i = 3;
        }
@@ -483,7 +483,7 @@ contract LightCoinToken is BaseERC20, BaseSafeMath, Pausable {
 	   uint256 releasevalue = div(totalSupply, 40);
 	   uint256 remainInterval = sub(3, i);
 	   
-	   require(lockAmount &gt; mul(remainInterval, releasevalue));
+	   require(lockAmount > mul(remainInterval, releasevalue));
 	   lockAmount = sub(lockAmount, releasevalue);
 	   
 	   balanceOf[lockOwner] = add( balanceOf[lockOwner],  releasevalue);

@@ -18,10 +18,10 @@ contract EthereumBlack {
     uint256 public epoch;
     uint256 public retentionMax;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
@@ -35,8 +35,8 @@ contract EthereumBlack {
 
     function EthereumBlack() public {
         director = msg.sender;
-        name = &quot;Ethereum Black Token&quot;;
-        symbol = &quot;ETBT&quot;;
+        name = "Ethereum Black Token";
+        symbol = "ETBT";
         decimals = 18;
         saleClosed = false;
         directorLock = false;
@@ -49,7 +49,7 @@ contract EthereumBlack {
         // Reserves: (37%)
         totalSupply += 1295000 * 10 ** uint256(decimals);
         
-        // Marketing &amp; Community outreach: (8%)
+        // Marketing & Community outreach: (8%)
         totalSupply += 280000 * 10 ** uint256(decimals);
 		
         // Team: (5%)
@@ -162,10 +162,10 @@ contract EthereumBlack {
         require(!buried[msg.sender]);
         
         // An address must have at least claimAmount to be buried
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
         // Prevent addresses with large balances from getting buried
-        require(balances[msg.sender] &lt;= retentionMax);
+        require(balances[msg.sender] <= retentionMax);
         
         // Set buried state to true
         buried[msg.sender] = true;
@@ -193,10 +193,10 @@ contract EthereumBlack {
         require(msg.sender != _fee);
         
         // It must be either the first time this address is being claimed or atleast epoch in time has passed
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= epoch);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= epoch);
         
         // Check if the buried address has enough
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(balances[msg.sender] >= claimAmount);
         
         // Reset the claim clock to the current block time
         claimed[msg.sender] = block.timestamp;
@@ -231,13 +231,13 @@ contract EthereumBlack {
         require(!saleClosed);
         
         // Minimum amount is 1 finney
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         
         // Price is 1 ETH = 10000 ETBT
         uint256 amount = msg.value * 10000;
         
         // totalSupply limit is 4 million ETBT
-        require(totalSupply + amount &lt;= (4000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (4000000 * 10 ** uint256(decimals)));
         
         // Increases the total supply
         totalSupply += amount;
@@ -258,14 +258,14 @@ contract EthereumBlack {
         
         // If the receiving address is buried, it cannot exceed retentionMax
         if (buried[_to]) {
-            require(balances[_to] + _value &lt;= retentionMax);
+            require(balances[_to] + _value <= retentionMax);
         }
         
         require(_to != 0x0);
         
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         uint256 previousBalances = balances[_from] + balances[_to];
         
@@ -285,7 +285,7 @@ contract EthereumBlack {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -316,7 +316,7 @@ contract EthereumBlack {
         require(!buried[msg.sender]);
         
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         // Subtract from the sender
         balances[msg.sender] -= _value;
@@ -333,15 +333,15 @@ contract EthereumBlack {
         require(!buried[_from]);
         
         // Check if the targeted balance is enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         // Subtract from the targeted balance
         balances[_from] -= _value;
         
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
         
         // Update totalSupply

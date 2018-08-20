@@ -8,8 +8,8 @@ pragma solidity ^0.4.18;
  */
 contract StandardToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -29,7 +29,7 @@ contract StandardToken {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] -= _value;
@@ -55,8 +55,8 @@ contract StandardToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -70,7 +70,7 @@ contract StandardToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -119,7 +119,7 @@ contract StandardToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -134,11 +134,11 @@ contract StandardToken {
  * @title TiValue token
  *
  * For more information about TiValue, please visit http://t.top
- * @author Yangyu - &lt;<span class="__cf_email__" data-cfemail="3a435b545d434f7a4a4f56495b48">[email&#160;protected]</span>&gt;
+ * @author Yangyu - <<span class="__cf_email__" data-cfemail="3a435b545d434f7a4a4f56495b48">[email protected]</span>>
  */
 contract TiValueToken is StandardToken {
-    string public constant NAME = &quot;TiValue&quot;;
-    string public constant SYMBOL = &quot;TV&quot;;
+    string public constant NAME = "TiValue";
+    string public constant SYMBOL = "TV";
     uint public constant DECIMALS = 5;
     uint256 public constant INITIAL_SUPPLY = 21000000000000;
 

@@ -5,7 +5,7 @@ contract BlockmaticsGraduationCertificate_022218 {
     bool public certIssued = false;
 
     function publishGraduatingClass(string cert) public {
-        require (msg.sender == owner &amp;&amp; !certIssued);
+        require (msg.sender == owner && !certIssued);
         certIssued = true;
         certificate = cert;
     }

@@ -18,7 +18,7 @@ contract ERC20 {
 
 contract CoinDashBuyer {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
   // Bounty for executing buy.
   uint256 public bounty;
   // Track whether the contract has bought the tokens yet.
@@ -55,28 +55,28 @@ contract CoinDashBuyer {
   // Allows the developer or anyone with the password to shut down everything except withdrawals in emergencies.
   function activate_kill_switch(string password) {
     // Only activate the kill switch if the sender is the developer or the password is correct.
-    if (msg.sender != developer &amp;&amp; sha3(password) != password_hash) throw;
+    if (msg.sender != developer && sha3(password) != password_hash) throw;
     // Irreversibly activate the kill switch.
     kill_switch = true;
   }
   
   // Withdraws all ETH deposited or tokens purchased by the user.
-  // &quot;internal&quot; means this function is not externally callable.
+  // "internal" means this function is not externally callable.
   function withdraw(address user, bool has_fee) internal {
-    // If called before the ICO, cancel user&#39;s participation in the sale.
+    // If called before the ICO, cancel user's participation in the sale.
     if (!bought_tokens) {
-      // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+      // Store the user's balance prior to withdrawal in a temporary variable.
       uint256 eth_to_withdraw = balances[user];
-      // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+      // Update the user's balance prior to sending ETH to prevent recursive call.
       balances[user] = 0;
-      // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+      // Return the user's funds.  Throws on failure to prevent loss of funds.
       user.transfer(eth_to_withdraw);
     }
-    // Withdraw the user&#39;s tokens if the contract has already purchased them.
+    // Withdraw the user's tokens if the contract has already purchased them.
     else {
-      // Store the user&#39;s token balance in a temporary variable.
+      // Store the user's token balance in a temporary variable.
       uint256 tokens_to_withdraw = balances[user] * tokens_per_eth;
-      // Update the user&#39;s balance prior to sending to prevent recursive call.
+      // Update the user's balance prior to sending to prevent recursive call.
       balances[user] = 0;
       // No fee if the user withdraws their own funds manually.
       uint256 fee = 0;
@@ -91,11 +91,11 @@ contract CoinDashBuyer {
     }
   }
   
-  // Automatically withdraws on users&#39; behalves (less a 1% fee on tokens).
+  // Automatically withdraws on users' behalves (less a 1% fee on tokens).
   function auto_withdraw(address user){
     // Only allow automatic withdrawals after users have had a chance to manually withdraw.
-    if (!bought_tokens || now &lt; time_bought + 1 hours) throw;
-    // Withdraw the user&#39;s funds for them.
+    if (!bought_tokens || now < time_bought + 1 hours) throw;
+    // Withdraw the user's funds for them.
     withdraw(user, true);
   }
   
@@ -117,16 +117,16 @@ contract CoinDashBuyer {
     if (bought_tokens) return;
     // Short circuit to save gas if kill switch is active.
     if (kill_switch) return;
-    // Short circuit to save gas if the earliest buy time hasn&#39;t been reached.
-    if (now &lt; earliest_buy_time) return;
-    // Disallow buying in if the developer hasn&#39;t set the sale address yet.
+    // Short circuit to save gas if the earliest buy time hasn't been reached.
+    if (now < earliest_buy_time) return;
+    // Disallow buying in if the developer hasn't set the sale address yet.
     if (sale == 0x0) throw;
     // Record that the contract has bought the tokens.
     bought_tokens = true;
     // Record the time the contract bought the tokens.
     time_bought = now;
     // Transfer all the funds (less the bounty) to the crowdsale address
-    // to buy tokens.  Throws if the crowdsale hasn&#39;t started yet or has
+    // to buy tokens.  Throws if the crowdsale hasn't started yet or has
     // already completed, preventing loss of funds.
     if(!sale.call.value(this.balance - bounty)()) throw;
     // Send the caller their bounty for buying tokens for the contract.
@@ -136,15 +136,15 @@ contract CoinDashBuyer {
   // A helper function for the default function, allowing contracts to interact.
   function default_helper() payable {
     // Treat near-zero ETH transactions as withdrawal requests.
-    if (msg.value &lt;= 1 finney) {
+    if (msg.value <= 1 finney) {
       // No fee on manual withdrawals.
       withdraw(msg.sender, false);
     }
-    // Deposit the user&#39;s funds for use in purchasing tokens.
+    // Deposit the user's funds for use in purchasing tokens.
     else {
       // Disallow deposits if kill switch is active.
       if (kill_switch) throw;
-      // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+      // Only allow deposits if the contract hasn't already purchased the tokens.
       if (bought_tokens) throw;
       // Update records of deposited ETH to include the received amount.
       balances[msg.sender] += msg.value;

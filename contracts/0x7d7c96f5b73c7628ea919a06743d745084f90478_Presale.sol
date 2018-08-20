@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -37,7 +37,7 @@ pragma solidity ^0.4.10;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -106,7 +106,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   bool transferable = false;
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -160,7 +160,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -171,8 +171,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -186,7 +186,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -235,7 +235,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,9 +262,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -276,8 +276,8 @@ contract BurnableToken is BasicToken {
 
 contract PapushaToken is BurnableToken {
 
-    string public constant name = &quot;Papusha Rocket Token&quot;;
-    string public constant symbol = &quot;PRT&quot;;
+    string public constant name = "Papusha Rocket Token";
+    string public constant symbol = "PRT";
     uint32 public constant decimals = 18;
     uint256 public INITIAL_SUPPLY = 100000000 * 1 ether;
 
@@ -330,7 +330,7 @@ contract Presale is Ownable {
     }
 
     modifier isUnderHardcap {
-        require(weiRaised &lt; hardcap);
+        require(weiRaised < hardcap);
         _;
     }
 
@@ -344,10 +344,10 @@ contract Presale is Ownable {
 
     function createTokens() isUnderHardcap payable public {
         uint256 weiAmount = msg.value;
-        require(weiAmount &lt;= hardcap - weiRaised);
+        require(weiAmount <= hardcap - weiRaised);
         weiRaised = weiRaised.add(weiAmount);
         uint256 tokens = weiAmount.div(rate);
-        require(saleSupply &gt;= tokens);
+        require(saleSupply >= tokens);
         saleSupply = saleSupply.sub(tokens);
         token.transfer(msg.sender, tokens);
         forwardFunds(msg.value);
@@ -402,7 +402,7 @@ contract Crowdsale is Ownable {
     }
 
     function stopSale() onlyOwner public returns(bool) {
-        if (saleSupply &gt; 0) {
+        if (saleSupply > 0) {
             token.burn(saleSupply);
             saleSupply = 0;
         }
@@ -411,13 +411,13 @@ contract Crowdsale is Ownable {
     }
 
     function createTokens() payable public {
-        if (saledSupply &lt; BONUS_SUPPLY) {
+        if (saledSupply < BONUS_SUPPLY) {
             rate = 360000000000000;
         } else {
             rate = 410000000000000;
         }
         uint256 tokens = msg.value.div(rate);
-        require(saleSupply &gt;= tokens);
+        require(saleSupply >= tokens);
         saleSupply = saleSupply.sub(tokens);
         saledSupply = saledSupply.add(tokens);
         token.transfer(msg.sender, tokens);
@@ -425,7 +425,7 @@ contract Crowdsale is Ownable {
     }
 
     function adminSendTokens(address _to, uint256 _value) onlyOwner saleNoStopped public returns(bool) {
-        require(saleSupply &gt;= _value);
+        require(saleSupply >= _value);
         saleSupply = saleSupply.sub(_value);
         saledSupply = saledSupply.add(_value);
         return token.transfer(_to, _value);

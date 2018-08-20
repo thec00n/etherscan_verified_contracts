@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,7 +78,7 @@ contract ObirumCrowdsale{
     ];
 
     // Investor contributions
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 public weiRaised;
     uint8 public currentStage = 0;
@@ -132,8 +132,8 @@ contract ObirumCrowdsale{
      * @param _owner Address of the owner of the smart contract who can execute restricted functions
      */
     function ObirumCrowdsale(uint256 _startTime, uint256 _endTime, address _wallet, address _token, address _owner)  public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_wallet != address(0));
         require(_token != address(0));
         require(_owner != address(0));
@@ -158,7 +158,7 @@ contract ObirumCrowdsale{
      */
     function () external payable {
         if(msg.sender == wallet) {
-            require(hasEnded() &amp;&amp; tokensSold &lt; softCap);
+            require(hasEnded() && tokensSold < softCap);
         } else {
             buyTokens(msg.sender);
         }
@@ -171,7 +171,7 @@ contract ObirumCrowdsale{
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != address(0));
         require(validPurchase());
-        require(currentStage &lt; getStageCount());
+        require(currentStage < getStageCount());
         
         uint256 value = msg.value;
         weiRaised = weiRaised.add(value);
@@ -179,7 +179,7 @@ contract ObirumCrowdsale{
         uint256 dif = 0;
         uint256 returnToSender = 0;
     
-        if(weiRaised &gt; limit){
+        if(weiRaised > limit){
             dif = weiRaised.sub(limit);
             value = value.sub(dif);
             
@@ -192,7 +192,7 @@ contract ObirumCrowdsale{
         
         mintTokens(value, beneficiary);
         
-        if(dif &gt; 0){
+        if(dif > 0){
             currentStage = currentStage + 1;
             mintTokens(dif, beneficiary);
         }
@@ -203,7 +203,7 @@ contract ObirumCrowdsale{
         }
 
         // // Return funds that are over hard cap
-        if(returnToSender &gt; 0) {
+        if(returnToSender > 0) {
             msg.sender.transfer(returnToSender);
         }
     }
@@ -229,17 +229,17 @@ contract ObirumCrowdsale{
      * @return True if the transaction can buy tokens
      */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool nonZeroPurchase = msg.value != 0 &amp;&amp; msg.value &gt;= kMinStake &amp;&amp; msg.value &lt;= kMaxStake;
-        bool hardCapNotReached = tokensSold &lt; hardCap;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hardCapNotReached;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool nonZeroPurchase = msg.value != 0 && msg.value >= kMinStake && msg.value <= kMaxStake;
+        bool hardCapNotReached = tokensSold < hardCap;
+        return withinPeriod && nonZeroPurchase && hardCapNotReached;
     }
 
     /**
      * @return True if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || tokensSold &gt;= hardCap;
+        return now > endTime || tokensSold >= hardCap;
     }
 
     /**
@@ -247,13 +247,13 @@ contract ObirumCrowdsale{
      */
     function claimRefund() external {
         require(hasEnded());
-        require(tokensSold &lt; softCap);
+        require(tokensSold < softCap);
 
         uint256 amount = balances[msg.sender];
 
-        if(address(this).balance &gt;= amount) {
+        if(address(this).balance >= amount) {
             balances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 msg.sender.transfer(amount);
                 Refund(msg.sender, amount);
             }

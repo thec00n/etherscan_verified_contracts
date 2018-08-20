@@ -60,20 +60,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,9 +81,9 @@ contract WEE is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;WITEE TOKEN&quot;;
-	string public constant symbol=&quot;WEE&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="WITEE TOKEN";
+	string public constant symbol="WEE";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 
@@ -106,8 +106,8 @@ contract WEE is ERC20,Ownable{
 
 	uint256 public rate;
 
-	mapping(address=&gt;uint256) public publicFundingWhiteList;
-	mapping(address=&gt;uint256) public  userPublicFundingEthCountMap;
+	mapping(address=>uint256) public publicFundingWhiteList;
+	mapping(address=>uint256) public  userPublicFundingEthCountMap;
 	
 	uint256 public publicFundingPersonalEthLimit;
 
@@ -126,10 +126,10 @@ contract WEE is ERC20,Ownable{
         uint256 lockAmount;
     }
 
-    mapping(address=&gt;epoch[]) public lockEpochsMap;
+    mapping(address=>epoch[]) public lockEpochsMap;
 	 
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
 	function WEE(){
@@ -148,17 +148,17 @@ contract WEE is ERC20,Ownable{
 
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachPublicFundingSupply(uint256 _value,uint256 _rate){
-		assert(MAX_PUBLIC_FUNDING_SUPPLY&gt;=totalPublicFundingSupply.add(_value.mul(_rate)));
+		assert(MAX_PUBLIC_FUNDING_SUPPLY>=totalPublicFundingSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachCommonWithdrawSupply(uint256 _value,uint256 _rate){
-		assert(COMMON_WITHDRAW_SUPPLY&gt;=totalCommonWithdrawSupply.add(_value.mul(_rate)));
+		assert(COMMON_WITHDRAW_SUPPLY>=totalCommonWithdrawSupply.add(_value.mul(_rate)));
 		_;
 	}
 
@@ -168,12 +168,12 @@ contract WEE is ERC20,Ownable{
 	}
 
 	modifier notBeforeTime(uint256 targetTime){
-		assert(now&gt;targetTime);
+		assert(now>targetTime);
 		_;
 	}
 
 	modifier notAfterTime(uint256 targetTime){
-		assert(now&lt;=targetTime);
+		assert(now<=targetTime);
 		_;
 	}
 	function etherProceeds() external
@@ -224,7 +224,7 @@ contract WEE is ERC20,Ownable{
 	{
 		require(publicFundingWhiteList[msg.sender]==1);
 
-		require(userPublicFundingEthCountMap[msg.sender].add(msg.value)&lt;=publicFundingPersonalEthLimit);
+		require(userPublicFundingEthCountMap[msg.sender].add(msg.value)<=publicFundingPersonalEthLimit);
 
 		processFunding(msg.sender,msg.value,rate);
 		uint256 amount=msg.value.mul(rate);
@@ -242,15 +242,15 @@ contract WEE is ERC20,Ownable{
 		//计算锁仓份额
 		epoch[] epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i;i&lt;epochs.length;i++)
+		for(uint256 i;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -271,15 +271,15 @@ contract WEE is ERC20,Ownable{
 
 		epoch[] epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i;i&lt;epochs.length;i++)
+		for(uint256 i;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 
 		uint256 _allowance = allowed[_from][msg.sender];
 
@@ -313,7 +313,7 @@ contract WEE is ERC20,Ownable{
     	onlyOwner
     {
         uint256 count = _list.length;
-        for (uint256 i = 0; i &lt; count; i++) {
+        for (uint256 i = 0; i < count; i++) {
         	publicFundingWhiteList[_list [i]] = 1;
         }    	
     }

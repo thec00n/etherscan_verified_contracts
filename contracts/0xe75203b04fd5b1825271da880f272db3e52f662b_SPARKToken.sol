@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,13 +62,13 @@ contract SPARKToken is IERC20 {
     using SafeMath for uint256;
     
     uint256 public constant _totalSupply = 1000000000; // One billion
-    mapping (address =&gt; uint256) _balances;
-    // Tracks who can spend money on another&#39;s behalf.
+    mapping (address => uint256) _balances;
+    // Tracks who can spend money on another's behalf.
     //       owner               spender    limit
-    mapping (address =&gt; mapping (address =&gt; uint256)) _allowed;
+    mapping (address => mapping (address => uint256)) _allowed;
 
-    string public constant symbol = &quot;SPARK&quot;;
-    string public constant name = &quot;SPARK Token&quot;;
+    string public constant symbol = "SPARK";
+    string public constant name = "SPARK Token";
     uint8 public decimals = 0;
     
     function SPARKToken() public {
@@ -85,8 +85,8 @@ contract SPARKToken is IERC20 {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(
-            _balances[msg.sender] &gt;= _value &amp;&amp; 
-            _value &gt; 0);
+            _balances[msg.sender] >= _value && 
+            _value > 0);
         _balances[msg.sender] = _balances[msg.sender].sub(_value);
         _balances[_to] = _balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -95,9 +95,9 @@ contract SPARKToken is IERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(
-            _balances[_from] &gt;= _value &amp;&amp; 
-            _allowed[_from][msg.sender] &gt;= _value &amp;&amp;
-            _value &gt; 0);
+            _balances[_from] >= _value && 
+            _allowed[_from][msg.sender] >= _value &&
+            _value > 0);
         _balances[_from] = _balances[_from].sub(_value);
         _allowed[_from][msg.sender] = _allowed[_from][msg.sender].sub(_value);
         _balances[_to] = _balances[_to].add(_value);

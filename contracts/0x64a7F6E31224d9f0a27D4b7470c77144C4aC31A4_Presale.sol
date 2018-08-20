@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 contract Presale {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
 
   // Minimum amount of wei required for presale to be successful.  If not successful, refunds are provided.
   uint256 public minGoal;
@@ -56,9 +56,9 @@ contract Presale {
 
   function transferToProjectWallet() {
     // only allow transfers if there is balance
-    require(this.balance &gt; 0);
+    require(this.balance > 0);
     // only allow transfers if minimum goal is met
-    require(totalRaised &gt;= minGoal);
+    require(totalRaised >= minGoal);
     if(!projectWallet.send(this.balance)) {
       revert();
     }
@@ -66,14 +66,14 @@ contract Presale {
 
   function refund() {
     // only allow refund if the presale has ended
-    require(now &gt; endTime);
+    require(now > endTime);
     // only allow refund if the minGoal has not been reached
-    require(totalRaised &lt; minGoal);
+    require(totalRaised < minGoal);
     // only allow refund during a 60 day window after presale ends
-    require(now &lt; (endTime + 60 days));
+    require(now < (endTime + 60 days));
     uint256 amount = balances[msg.sender];
     // only allow refund if investor has invested
-    require(amount &gt; 0);
+    require(amount > 0);
     // after refunding, zero out balance
     balances[msg.sender] = 0;
     msg.sender.transfer(amount);
@@ -81,21 +81,21 @@ contract Presale {
 
   function transferRemaining() {
     // only allow transfer if presale has failed
-    require(totalRaised &lt; minGoal);
+    require(totalRaised < minGoal);
     // only allow transfer after refund window has passed
-    require(now &gt;= (endTime + 60 days));
+    require(now >= (endTime + 60 days));
     // only allow transfer if there is remaining balance
-    require(this.balance &gt; 0);
+    require(this.balance > 0);
     projectWallet.transfer(this.balance);
   }
 
   function () payable {
     // only allow payments greater than 0
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     // only allow payments after presale has started
-    require(now &gt;= startTime);
+    require(now >= startTime);
     // only allow payments before presale has ended
-    require(now &lt;= endTime);
+    require(now <= endTime);
     // if all checks pass, then add amount to balance of the sender
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     totalRaised = totalRaised.add(msg.value);

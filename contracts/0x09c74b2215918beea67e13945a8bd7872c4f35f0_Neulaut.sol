@@ -4,10 +4,10 @@ contract Neulaut {
 
     uint256 public totalSupply = 7*10**27;
     address owner;
-    string public name = &quot;Neulaut&quot;;
+    string public name = "Neulaut";
     uint8 public decimals = 18;
-    string public symbol = &quot;NUA&quot;;
-    mapping (address =&gt; uint256) balances;
+    string public symbol = "NUA";
+    mapping (address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
 
@@ -21,7 +21,7 @@ contract Neulaut {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);

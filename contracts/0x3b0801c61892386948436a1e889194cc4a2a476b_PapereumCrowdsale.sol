@@ -8,13 +8,13 @@ contract PapereumTokenBridge {
 
 contract PapereumToken {
 
-    string public name = &quot;Papereum&quot;;
-    string public symbol = &quot;PPRM&quot;;
+    string public name = "Papereum";
+    string public symbol = "PPRM";
     uint8 public decimals = 0; // Papereum tokens are not divisible
     uint256 public totalSupply = 100000; // Only 100 000 Non-divisable pieces of Art
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -42,8 +42,8 @@ contract PapereumToken {
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(isTradable || msg.sender == owner);
         require(_to != address(0));
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         if (_to == address(bridge)) {
@@ -56,9 +56,9 @@ contract PapereumToken {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(isTradable);
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -76,7 +76,7 @@ contract PapereumToken {
     }
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
-        require(allowance[msg.sender][_spender] + _addedValue &gt;= allowance[msg.sender][_spender]);
+        require(allowance[msg.sender][_spender] + _addedValue >= allowance[msg.sender][_spender]);
         allowance[msg.sender][_spender] = allowance[msg.sender][_spender] + _addedValue;
         Approval(msg.sender, _spender, allowance[msg.sender][_spender]);
         return true;
@@ -84,7 +84,7 @@ contract PapereumToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -162,19 +162,19 @@ contract PapereumCrowdsale {
 
     function assignTokens(address[] _receivers, uint256[] _amounts) external {
         require(msg.sender == tokenMinter || msg.sender == owner);
-        require(_receivers.length &gt; 0 &amp;&amp; _receivers.length &lt;= 100);
+        require(_receivers.length > 0 && _receivers.length <= 100);
         require(_receivers.length == _amounts.length);
         require(!isFinalized);
-        for (uint256 i = 0; i &lt; _receivers.length; i++) {
+        for (uint256 i = 0; i < _receivers.length; i++) {
             address receiver = _receivers[i];
             uint256 amount = _amounts[i];
 
             require(receiver != address(0));
-            require(amount &gt; 0);
+            require(amount > 0);
 
             uint256 excess = appendContribution(receiver, amount);
 
-            if (excess &gt; 0) {
+            if (excess > 0) {
                 ManualTokenMintRequiresRefund(receiver, excess);
             }
         }
@@ -192,13 +192,13 @@ contract PapereumCrowdsale {
         (tokens, refund) = calculateTokens(weiReceived);
 
         uint256 excess = appendContribution(beneficiary, tokens);
-        refund += (excess &gt; 0 ? ((excess * weiReceived) / tokens) : 0);
+        refund += (excess > 0 ? ((excess * weiReceived) / tokens) : 0);
 
         tokens -= excess;
         weiReceived -= refund;
         weiRaised += weiReceived;
 
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
 
@@ -208,12 +208,12 @@ contract PapereumCrowdsale {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() public {
         require(msg.sender == owner);
         require(!isFinalized);
-        require(getNow() &gt; END_TIME || icoBalance == 0);
+        require(getNow() > END_TIME || icoBalance == 0);
         isFinalized = true;
 
         uint256 totalSoldTokens = ICO_TOKENS - icoBalance;
@@ -244,30 +244,30 @@ contract PapereumCrowdsale {
         uint256 now_ = getNow();
         uint256 bonus = 0;
 
-        if (now_ &lt; 1519603200) { // 26-02-2018
-            if (tokens &gt;= 2000) bonus = 30;
-            else if (tokens &gt;= 500) bonus = 25;
-            else if (tokens &gt;= 50) bonus = 20;
-            else if (tokens &gt;= 10) bonus = 10;
-        } else if (now_ &lt; 1521417600) { // 19-03-2018
-            if (tokens &gt;= 10) bonus = 7;
-        } else if (now_ &lt; 1522627200) { // 02-04-2018
-            if (tokens &gt;= 10) bonus = 5;
-        } else if (now_ &lt; 1523232000) { // 09-04-2018
-            if (tokens &gt;= 10) bonus = 3;
+        if (now_ < 1519603200) { // 26-02-2018
+            if (tokens >= 2000) bonus = 30;
+            else if (tokens >= 500) bonus = 25;
+            else if (tokens >= 50) bonus = 20;
+            else if (tokens >= 10) bonus = 10;
+        } else if (now_ < 1521417600) { // 19-03-2018
+            if (tokens >= 10) bonus = 7;
+        } else if (now_ < 1522627200) { // 02-04-2018
+            if (tokens >= 10) bonus = 5;
+        } else if (now_ < 1523232000) { // 09-04-2018
+            if (tokens >= 10) bonus = 3;
         }
 
-        tokens += (tokens * bonus) / 100; // with totalSupply &lt;= 100000 and decimals=0 no need in SafeMath
+        tokens += (tokens * bonus) / 100; // with totalSupply <= 100000 and decimals=0 no need in SafeMath
     }
 
     function appendContribution(address _beneficiary, uint256 _tokens) internal returns (uint256 excess) {
         excess = 0;
-        require(_tokens &gt;= 10);
-        if (_tokens &gt; icoBalance) {
+        require(_tokens >= 10);
+        if (_tokens > icoBalance) {
             excess = icoBalance - _tokens;
             _tokens = icoBalance;
         }
-        if (_tokens &gt; 0) {
+        if (_tokens > 0) {
             icoBalance -= _tokens;
             token.transfer(_beneficiary, _tokens);
         }
@@ -275,10 +275,10 @@ contract PapereumCrowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = getNow() &gt;= START_TIME &amp;&amp; getNow() &lt;= END_TIME;
+        bool withinPeriod = getNow() >= START_TIME && getNow() <= END_TIME;
         bool nonZeroPurchase = msg.value != 0;
-        bool canTransfer = icoBalance &gt; 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; canTransfer;
+        bool canTransfer = icoBalance > 0;
+        return withinPeriod && nonZeroPurchase && canTransfer;
     }
 
     function transferOwnership(address newOwner) public {

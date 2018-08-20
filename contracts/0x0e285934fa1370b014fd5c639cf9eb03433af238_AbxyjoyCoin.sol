@@ -7,8 +7,8 @@ contract AbxyjoyCoin {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -16,8 +16,8 @@ contract AbxyjoyCoin {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function AbxyjoyCoin() {
       owner = msg.sender;
-      name = &#39;Abxyjoy Coin&#39;;
-      symbol = &#39;AOY&#39;;
+      name = 'Abxyjoy Coin';
+      symbol = 'AOY';
       decimals = 18;
       totalSupply = 210000000000000000000000000;  // 2.1e26
       balanceOf[owner] = 210000000000000000000000000;
@@ -25,7 +25,7 @@ contract AbxyjoyCoin {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
@@ -41,8 +41,8 @@ contract AbxyjoyCoin {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
-      require(allowance[_from][msg.sender] &gt;= _value);
+      require(balanceOf[_from] >= _value);
+      require(allowance[_from][msg.sender] >= _value);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;

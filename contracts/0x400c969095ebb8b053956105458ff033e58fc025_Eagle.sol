@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,8 +44,8 @@ contract ERC20 {
 contract Eagle is ERC20 {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Eagle&quot;;
-    string public constant symbol = &quot;EGL&quot;;
+    string public constant name = "Eagle";
+    string public constant symbol = "EGL";
     
     // 18 decimal places, the same as ETH.
     uint256 public constant decimals = 18;
@@ -57,10 +57,10 @@ contract Eagle is ERC20 {
     address public owner;
 
      // Maintain balance in a mapping
-    mapping(address =&gt; uint256)  balances;
+    mapping(address => uint256)  balances;
 
     // Allowances index-1 = Owner account   index-2 = spender account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping(address => mapping (address => uint256)) allowances;
 
     // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() {
@@ -100,11 +100,11 @@ contract Eagle is ERC20 {
     */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     
-        if(_value &lt;= 0) return false;
+        if(_value <= 0) return false;
 
-        if(allowances[_from][msg.sender] &lt; _value) return false;
+        if(allowances[_from][msg.sender] < _value) return false;
 
-        if(balances[_from] &lt; _value) return false;
+        if(balances[_from] < _value) return false;
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

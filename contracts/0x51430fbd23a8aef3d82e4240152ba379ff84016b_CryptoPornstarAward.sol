@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f692938293b6978e9f999b8c9398d89599">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f692938293b6978e9f999b8c9398d89599">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -50,8 +50,8 @@ contract PornSceneToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoPornScenes&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;PornSceneToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoPornScenes"; // solhint-disable-line
+  string public constant SYMBOL = "PornSceneToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 10000;
@@ -62,19 +62,19 @@ contract PornSceneToken is ERC721 {
 
   /// @dev A mapping from scene IDs to the address that owns them. All scenes have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public sceneIndexToOwner;
+  mapping (uint256 => address) public sceneIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from SceneIDs to an address that has been approved to call
   ///  transferFrom(). Each Scene can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public sceneIndexToApproved;
+  mapping (uint256 => address) public sceneIndexToApproved;
 
   // @dev A mapping from SceneIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private sceneIndexToPrice;
+  mapping (uint256 => uint256) private sceneIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -152,14 +152,14 @@ contract PornSceneToken is ERC721 {
   
   /// @dev Creates a new promo Scene with the given name, with given _price and assignes it to an address.
   function createPromoScene(address _owner, string _name, uint[] _stars, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address sceneOwner = _owner;
     if (sceneOwner == address(0)) {
       sceneOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -226,7 +226,7 @@ contract PornSceneToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 80), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
@@ -235,16 +235,16 @@ contract PornSceneToken is ERC721 {
     // Get Scene Star Length
     Scene memory _scene = scenes[_tokenId];
     
-    require(_scene.stars.length &gt; 0); //Make sure have stars in the scene
+    require(_scene.stars.length > 0); //Make sure have stars in the scene
 
     uint256 holderFee = uint256(SafeMath.div(SafeMath.div(SafeMath.mul(sellingPrice, 10), 100), _scene.stars.length));
     uint256 awardOwnerFee = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 4), 100));
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       sceneIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       sceneIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
@@ -268,7 +268,7 @@ contract PornSceneToken is ERC721 {
   }
   
   function _paySceneStarOwners(Scene _scene, uint256 fee) private {
-    for (uint i = 0; i &lt; _scene.stars.length; i++) {
+    for (uint i = 0; i < _scene.stars.length; i++) {
         address _pornstarOwner;
         (_pornstarOwner) = pornstarsContract.ownerOf(_scene.stars[i]);
         
@@ -345,7 +345,7 @@ contract PornSceneToken is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire scenes array looking for scenes belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -360,7 +360,7 @@ contract PornSceneToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 sceneId;
-      for (sceneId = 0; sceneId &lt;= totalscenes; sceneId++) {
+      for (sceneId = 0; sceneId <= totalscenes; sceneId++) {
         if (sceneIndexToOwner[sceneId] == _owner) {
           result[resultIndex] = sceneId;
           resultIndex++;
@@ -421,9 +421,9 @@ contract PornSceneToken is ERC721 {
   /// For creating Scene
   function _createScene(string _name, uint[] _stars,address _owner, uint256 _price) private {
     // Require Stars Exists
-    require(_stars.length &gt; 0);
+    require(_stars.length > 0);
     
-    for (uint i = 0; i &lt; _stars.length; i++) {
+    for (uint i = 0; i < _stars.length; i++) {
         address _pornstarOwner;
         (_pornstarOwner) = pornstarsContract.ownerOf(_stars[i]);
         require(_pornstarOwner != address(0) || _pornstarOwner != address(0x0));
@@ -435,8 +435,8 @@ contract PornSceneToken is ERC721 {
     });
     uint256 newSceneId = scenes.push(_scene) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newSceneId == uint256(uint32(newSceneId)));
 
     Birth(newSceneId, _name, _stars, _owner);
@@ -464,12 +464,12 @@ contract PornSceneToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Scene to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of scenes is capped to 2^32 we can&#39;t overflow this
+    // Since the number of scenes is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     sceneIndexToOwner[_tokenId] = _to;
 
-    // When creating new scenes _from is 0x0, but we can&#39;t account that address.
+    // When creating new scenes _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -493,7 +493,7 @@ contract CryptoPornstarAward is PornSceneToken{
     }
     
     function _isTime() internal view returns (bool) {
-        return (awardTime &lt;= now);
+        return (awardTime <= now);
     }
     
     function rand(uint min, uint max) internal returns (uint) {
@@ -502,7 +502,7 @@ contract CryptoPornstarAward is PornSceneToken{
     }
 
     function setCooldown(uint _newCooldown) public onlyCOO {
-        require (_newCooldown &gt; 0);
+        require (_newCooldown > 0);
         cooldownTime = _newCooldown;
         _triggerCooldown();
     } 
@@ -519,7 +519,7 @@ contract CryptoPornstarAward is PornSceneToken{
         uint256 _totalPornstars;
         (_totalPornstars) = pornstarsContract.totalSupply();
         
-        require(_totalPornstars &gt; 0);
+        require(_totalPornstars > 0);
         require(_isTime());
         
         currentAwardWinner = rand(0, _totalPornstars);
@@ -552,9 +552,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -562,7 +562,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -571,7 +571,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

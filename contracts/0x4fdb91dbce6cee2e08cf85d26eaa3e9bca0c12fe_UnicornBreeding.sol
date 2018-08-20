@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -230,8 +230,8 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     // Mapping from unicorn ID to Hybridization struct
-    mapping (uint =&gt; Hybridization) public hybridizations;
-    mapping(uint =&gt; uint) public hybridizationList;
+    mapping (uint => Hybridization) public hybridizations;
+    mapping(uint => uint) public hybridizationList;
     uint public hybridizationListSize = 0;
 
 
@@ -269,10 +269,10 @@ contract UnicornBreeding is UnicornAccessControl {
     function acceptHybridization(uint _firstUnicornId, uint _secondUnicornId) whenNotPaused public payable {
         require(unicornToken.owns(msg.sender, _secondUnicornId));
         require(_secondUnicornId != _firstUnicornId);
-        require(unicornToken.isUnfreezed(_firstUnicornId) &amp;&amp; unicornToken.isUnfreezed(_secondUnicornId));
+        require(unicornToken.isUnfreezed(_firstUnicornId) && unicornToken.isUnfreezed(_secondUnicornId));
         require(hybridizations[_firstUnicornId].exists);
         require(msg.value == unicornManagement.oraclizeFee());
-        if (hybridizations[_firstUnicornId].price &gt; 0) {
+        if (hybridizations[_firstUnicornId].price > 0) {
             require(candyToken.transferFrom(msg.sender, this, getHybridizationPrice(_firstUnicornId)));
         }
 
@@ -280,7 +280,7 @@ contract UnicornBreeding is UnicornAccessControl {
         uint256 newUnicornId = unicornToken.createUnicorn(msg.sender);
         blackBox.geneCore.value(unicornManagement.oraclizeFee())(newUnicornId, _firstUnicornId, _secondUnicornId);
         emit CreateUnicorn(msg.sender, newUnicornId, _firstUnicornId, _secondUnicornId);
-        if (hybridizations[_firstUnicornId].price &gt; 0) {
+        if (hybridizations[_firstUnicornId].price > 0) {
             candyToken.transfer(unicornToken.ownerOf(_firstUnicornId), hybridizations[_firstUnicornId].price);
         }
         emit HybridizationAccept(_firstUnicornId, _secondUnicornId, newUnicornId);
@@ -321,10 +321,10 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     function createPresaleUnicorns(uint _count, address _owner) public payable onlyManager whenPaused returns(bool) {
-        require(gen0PresaleCount.add(_count) &lt;= gen0PresaleLimit);
+        require(gen0PresaleCount.add(_count) <= gen0PresaleLimit);
         uint256 newUnicornId;
         address owner = _owner == address(0) ? msg.sender : _owner;
-        for (uint i = 0; i &lt; _count; i++){
+        for (uint i = 0; i < _count; i++){
             newUnicornId = unicornToken.createUnicorn(owner);
             blackBox.createGen0(newUnicornId);
             emit CreateUnicorn(owner, newUnicornId, 0, 0);
@@ -335,7 +335,7 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     function _createUnicorn(address _owner) private returns(uint256) {
-        require(gen0Count &lt; gen0Limit);
+        require(gen0Count < gen0Limit);
         uint256 newUnicornId = unicornToken.createUnicorn(_owner);
         blackBox.createGen0.value(unicornManagement.oraclizeFee())(newUnicornId);
         emit CreateUnicorn(_owner, newUnicornId, 0, 0);
@@ -382,18 +382,18 @@ contract UnicornBreeding is UnicornAccessControl {
 
 
     function withdrawTokens() onlyManager public {
-        require(candyToken.balanceOf(this) &gt; 0 || candyPowerToken.balanceOf(this) &gt; 0);
-        if (candyToken.balanceOf(this) &gt; 0) {
+        require(candyToken.balanceOf(this) > 0 || candyPowerToken.balanceOf(this) > 0);
+        if (candyToken.balanceOf(this) > 0) {
             candyToken.transfer(unicornManagement.walletAddress(), candyToken.balanceOf(this));
         }
-        if (candyPowerToken.balanceOf(this) &gt; 0) {
+        if (candyPowerToken.balanceOf(this) > 0) {
             candyPowerToken.transfer(unicornManagement.walletAddress(), candyPowerToken.balanceOf(this));
         }
     }
 
 
     function transferEthersToDividendManager(uint _value) onlyManager public {
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
         DividendManagerInterface dividendManager = DividendManagerInterface(unicornManagement.dividendManagerAddress());
         dividendManager.payDividend.value(_value)();
         emit FundsTransferred(unicornManagement.dividendManagerAddress(), _value);
@@ -423,9 +423,9 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     // Mapping from unicorn ID to Offer struct
-    mapping (uint =&gt; Offer) public offers;
-    // market index =&gt; offerId
-    mapping(uint =&gt; uint) public market;
+    mapping (uint => Offer) public offers;
+    // market index => offerId
+    mapping(uint => uint) public market;
     uint public marketSize = 0;
 
 

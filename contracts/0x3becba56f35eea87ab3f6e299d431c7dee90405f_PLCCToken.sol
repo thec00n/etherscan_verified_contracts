@@ -1,11 +1,11 @@
 contract PLCCToken {
 
-    string public name = &quot;Picture Library Copyright Coin&quot;;          //  token name
-    string public symbol = &quot;PLCC&quot;;           //  token symbol
+    string public name = "Picture Library Copyright Coin";          //  token name
+    string public symbol = "PLCC";           //  token symbol
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
 
@@ -24,8 +24,8 @@ contract PLCCToken {
     }
 
     function transfer(address _to, uint256 _value) validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -33,9 +33,9 @@ contract PLCCToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -51,8 +51,8 @@ contract PLCCToken {
     }
 
     function burn(uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(totalSupply &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
+        require(totalSupply >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);

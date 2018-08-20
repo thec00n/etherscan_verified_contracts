@@ -26,37 +26,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -65,7 +65,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -126,11 +126,11 @@ contract BasicToken is ERC20Basic {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -189,11 +189,11 @@ contract StandardToken is ERC20, BasicToken {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -259,7 +259,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -331,15 +331,15 @@ contract Pausable is Ownable {
 contract DmlToken is StandardToken, Pausable{
 	using SafeMath for uint;
 
- 	string public constant name = &quot;DML Token&quot;;
+ 	string public constant name = "DML Token";
 	uint8 public constant decimals = 18;
-	string public constant symbol = &#39;DML&#39;;
+	string public constant symbol = 'DML';
 
 	uint public constant MAX_TOTAL_TOKEN_AMOUNT = 330000000 ether;
 	address public minter;
 	uint public endTime;
 
-	mapping (address =&gt; uint) public lockedBalances;
+	mapping (address => uint) public lockedBalances;
 
 	modifier onlyMinter {
     	  assert(msg.sender == minter);
@@ -347,7 +347,7 @@ contract DmlToken is StandardToken, Pausable{
     }
 
     modifier maxDmlTokenAmountNotReached (uint amount){
-    	  assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+    	  assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
     	  _;
     }
 
@@ -372,7 +372,7 @@ contract DmlToken is StandardToken, Pausable{
         maxDmlTokenAmountNotReached(amount)
         returns (bool)
     {
-        require(now &lt;= endTime);
+        require(now <= endTime);
       	lockedBalances[receipent] = lockedBalances[receipent].add(amount);
       	totalSupply = totalSupply.add(amount);
       	return true;

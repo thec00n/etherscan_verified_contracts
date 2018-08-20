@@ -29,8 +29,8 @@ contract owned {
 
 contract ECR20HoneycombToken is owned {
     // Public variables of the token
-    string public name = &quot;Honeycomb&quot;;
-    string public symbol = &quot;COMB&quot;;
+    string public name = "Honeycomb";
+    string public symbol = "COMB";
     uint8 public decimals = 18;
     
     // used for buyPrice
@@ -48,8 +48,8 @@ contract ECR20HoneycombToken is owned {
     uint256 public buyPrice;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -92,7 +92,7 @@ contract ECR20HoneycombToken is owned {
 	function buy() payable public returns (uint256 amountToken){
         amountToken = msg.value * buyPrice / tokenFactor;                       // calculates the amount of token
         uint256 newPrice = _newPrice(balanceOf[this] - amountToken);            // calc new price after transfer
-        require( (2*newPrice) &gt; sellPrice);                                     // check whether new price is not lower than sqrt(2) of old one
+        require( (2*newPrice) > sellPrice);                                     // check whether new price is not lower than sqrt(2) of old one
         _transfer(this, msg.sender, amountToken);                               // transfer token from contract to buyer
         _setPrices( newPrice );                                                 // update prices after transfer
         return amountToken;
@@ -114,9 +114,9 @@ contract ECR20HoneycombToken is owned {
      **/
     function sell(uint256 amountToken) public returns (uint256 revenue){
         revenue = amountToken * tokenFactor / sellPrice;                        // calulate the revenue in Wei
-        require( revenue &gt;= minimumPayout );									// check whether selling get more ether than the minimum payout
+        require( revenue >= minimumPayout );									// check whether selling get more ether than the minimum payout
         uint256 newPrice = _newPrice(balanceOf[this] + amountToken);            // calc new price after transfer
-        require( newPrice &lt; sellPrice );                                        // check whether new price is more than sell price
+        require( newPrice < sellPrice );                                        // check whether new price is more than sell price
         _transfer(msg.sender, this, amountToken);                               // transfer token back to contract
         _setPrices( newPrice );                                                 // update prices after transfer
         msg.sender.transfer(revenue);                                           // send ether to seller
@@ -152,7 +152,7 @@ contract ECR20HoneycombToken is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -204,7 +204,7 @@ contract ECR20HoneycombToken is owned {
      * @param amount amount in Wei
      */
 		function save(uint256 amount) public onlyOwner {
-        require( amount &gt;= minimumPayout );	
+        require( amount >= minimumPayout );	
         owner.transfer( amount);
     }
 		
@@ -226,9 +226,9 @@ contract ECR20HoneycombToken is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender

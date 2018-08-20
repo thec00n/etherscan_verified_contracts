@@ -37,10 +37,10 @@ contract ApproveAndCallFallBack {
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -48,14 +48,14 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Owned {
     address public owner;
@@ -83,14 +83,14 @@ contract CpublicGold is ERC20Interface, Owned, SafeMath {
     string public  name;
     uint8 public decimals;
     uint public _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     /**
      * Constructor
      */
     function CpublicGold() public {
-        symbol = &quot;CPG&quot;;
-        name = &quot;Cpublic Gold&quot;;
+        symbol = "CPG";
+        name = "Cpublic Gold";
         decimals = 18;
         _totalSupply = 6000000000000000000000000000;
         balances[0xA031d2564caf3327d5688cA559dDcF8e6f75C6C3] = _totalSupply;
@@ -108,8 +108,8 @@ contract CpublicGold is ERC20Interface, Owned, SafeMath {
     function balanceOf(address tokenOwner) public constant returns (uint balance) {
         return balances[tokenOwner];
     }
-    /** Transfer the balance from token owner&#39;s account to to account
-    * - Owner&#39;s account must have sufficient balance to transfer
+    /** Transfer the balance from token owner's account to to account
+    * - Owner's account must have sufficient balance to transfer
     * - 0 value transfers are allowed
     */
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -120,7 +120,7 @@ contract CpublicGold is ERC20Interface, Owned, SafeMath {
     }
     /** 
      * Token owner can approve for spender to transferFrom(...) tokens
-     * from the token owner&#39;s account
+     * from the token owner's account
      */
     function approve(address spender, uint tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -143,14 +143,14 @@ contract CpublicGold is ERC20Interface, Owned, SafeMath {
     }
     /** 
     * Returns the amount of tokens approved by the owner that can be
-    * transferred to the spender&#39;s account
+    * transferred to the spender's account
     */
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
     /** 
      * Token owner can approve for spender to transferFrom(...) tokens
-     * from the token owner&#39;s account. The spender contract function
+     * from the token owner's account. The spender contract function
      * receiveApproval(...) is then executed
      */
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -160,7 +160,7 @@ contract CpublicGold is ERC20Interface, Owned, SafeMath {
         return true;
     }
     /**
-     * Don&#39;t accept ETH
+     * Don't accept ETH
      */
     function () public payable {
         revert();

@@ -49,7 +49,7 @@ contract Registry is Ownable {
 	bytes32[] public namelist;
 
 	// publicly available register
-	mapping (bytes32 =&gt; Record) public registry;
+	mapping (bytes32 => Record) public registry;
 
 	// event for update function
 	event RegistryUpdated(bytes32 _name, address _address, bytes32 _ipfsHash);
@@ -78,7 +78,7 @@ contract Registry is Ownable {
 		return record.ipfsHash;
 	}
 
-	// update address for name, or create new name-&gt;address mapping
+	// update address for name, or create new name->address mapping
 	function updateRegistry(bytes32 _name, address _address, bytes32 _ipfsHash) public onlyOwner {
 		require(_address != address(0x0));
 		if (registry[keccak256(_name)].contractAddress == 0) {

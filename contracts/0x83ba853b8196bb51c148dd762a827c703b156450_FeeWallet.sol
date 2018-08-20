@@ -2,14 +2,14 @@
 
   Copyright 2018 Dexdex.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -75,7 +75,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -85,7 +85,7 @@ library SafeMath {
         returns (uint256)
     {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -94,7 +94,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b)
@@ -102,7 +102,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b)
@@ -110,7 +110,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b)
@@ -118,13 +118,13 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 contract Members is Ownable {
 
-  mapping(address =&gt; bool) public members; // Mappings of addresses of allowed addresses
+  mapping(address => bool) public members; // Mappings of addresses of allowed addresses
 
   modifier onlyMembers() {
     require(isValidMember(msg.sender));
@@ -162,7 +162,7 @@ contract FeeWallet is IFeeWallet, Ownable, Members {
   uint public servicePercentage; // Percentage times (1 ether)
   uint public affiliatePercentage; // Percentage times (1 ether)
 
-  mapping (address =&gt; uint) public pendingWithdrawals; // Balances
+  mapping (address => uint) public pendingWithdrawals; // Balances
 
   function FeeWallet(
     address _serviceAccount,

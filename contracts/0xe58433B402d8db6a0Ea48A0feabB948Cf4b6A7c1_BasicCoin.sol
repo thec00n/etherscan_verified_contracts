@@ -52,31 +52,31 @@ contract TokenReg {
 
 // BasicCoin, ECR20 tokens that all belong to the owner for sending around
 contract BasicCoin is Owned, Token {
-  // this is as basic as can be, only the associated balance &amp; allowances
+  // this is as basic as can be, only the associated balance & allowances
   struct Account {
     uint balance;
-    mapping (address =&gt; uint) allowanceOf;
+    mapping (address => uint) allowanceOf;
   }
 
   // the balance should be available
   modifier when_owns(address _owner, uint _amount) {
-    if (accounts[_owner].balance &lt; _amount) throw;
+    if (accounts[_owner].balance < _amount) throw;
     _;
   }
 
   // an allowance should be available
   modifier when_has_allowance(address _owner, address _spender, uint _amount) {
-    if (accounts[_owner].allowanceOf[_spender] &lt; _amount) throw;
+    if (accounts[_owner].allowanceOf[_spender] < _amount) throw;
     _;
   }
 
   // no ETH should be sent with the transaction
   modifier when_no_eth {
-    if (msg.value &gt; 0) throw;
+    if (msg.value > 0) throw;
     _;
   }
 
-  // a value should be &gt; 0
+  // a value should be > 0
   modifier when_non_zero(uint _value) {
     if (_value == 0) throw;
     _;
@@ -88,8 +88,8 @@ contract BasicCoin is Owned, Token {
   // available token supply
   uint public totalSupply;
 
-  // storage and mapping of all balances &amp; allowances
-  mapping (address =&gt; Account) accounts;
+  // storage and mapping of all balances & allowances
+  mapping (address => Account) accounts;
 
   // constructor sets the parameters of execution, _totalSupply is all units
   function BasicCoin(uint _totalSupply, address _owner) when_no_eth when_non_zero(_totalSupply) {
@@ -141,7 +141,7 @@ contract BasicCoin is Owned, Token {
   }
 }
 
-// Manages BasicCoin instances, including the deployment &amp; registration
+// Manages BasicCoin instances, including the deployment & registration
 contract BasicCoinManager is Owned {
   // a structure wrapping a deployed BasicCoin
   struct Coin {
@@ -157,7 +157,7 @@ contract BasicCoinManager is Owned {
   Coin[] coins;
 
   // all BasicCoins for a specific owner
-  mapping (address =&gt; uint[]) ownedCoins;
+  mapping (address => uint[]) ownedCoins;
 
   // the base, tokens denoted in micros (matches up with BasicCoin interface above)
   uint constant public base = 1000000;

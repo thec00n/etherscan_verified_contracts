@@ -10,13 +10,13 @@ library MathUtils {
             return result;
         }
 
-        require(result &gt; a &amp;&amp; result &gt; b);
+        require(result > a && result > b);
 
         return result;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(a &gt;= b);
+        require(a >= b);
 
         return a - b;
     }
@@ -136,26 +136,26 @@ contract CryptoPoliceCrowdsale is Ownable {
     /**
      * Crowdsale participants that have made payments
      */
-    mapping(address =&gt; Participant) public participants;
+    mapping(address => Participant) public participants;
 
     /**
      * Map external payment reference hash to that payment description
      */
-    mapping(bytes32 =&gt; string) public externalPaymentDescriptions;
+    mapping(bytes32 => string) public externalPaymentDescriptions;
 
     /**
      * Map participants to list of their external payment reference hashes
      */
-    mapping(address =&gt; bytes32[]) public participantExternalPaymentChecksums;
+    mapping(address => bytes32[]) public participantExternalPaymentChecksums;
 
-    mapping(address =&gt; bytes32[]) public participantSuspendedExternalPaymentChecksums;
+    mapping(address => bytes32[]) public participantSuspendedExternalPaymentChecksums;
 
     /**
      * Map external payment checksum to payment amount
      */
-    mapping(bytes32 =&gt; uint) public suspendedExternalPayments;
+    mapping(bytes32 => uint) public suspendedExternalPayments;
 
-    mapping(address =&gt; bool) public bannedParticipants;
+    mapping(address => bool) public bannedParticipants;
 
     bool public revertSuspendedPayment = false;
 
@@ -168,8 +168,8 @@ contract CryptoPoliceCrowdsale is Ownable {
             msg.sender.transfer(msg.value);
             refundParticipant(msg.sender);
         } else {
-            require(state == CrowdsaleState.Started, &quot;Crowdsale currently inactive&quot;);
-            processPayment(msg.sender, msg.value, &quot;&quot;);
+            require(state == CrowdsaleState.Started, "Crowdsale currently inactive");
+            processPayment(msg.sender, msg.value, "");
         }
     }
 
@@ -204,12 +204,12 @@ contract CryptoPoliceCrowdsale is Ownable {
         }
 
         uint requestedPortions = _paymentReminder / currentExchangeRate.price;
-        uint portions = requestedPortions &gt; availablePortions ? availablePortions : requestedPortions;
+        uint portions = requestedPortions > availablePortions ? availablePortions : requestedPortions;
         uint newProcessedTokenCount = _processedTokenCount + portions * currentExchangeRate.tokens;
         uint newPaymentReminder = _paymentReminder - portions * currentExchangeRate.price;
         uint newSalePosition = salePosition + newProcessedTokenCount;
 
-        if (newPaymentReminder &lt; currentExchangeRate.price) {
+        if (newPaymentReminder < currentExchangeRate.price) {
             return (newPaymentReminder, newProcessedTokenCount, false);
         }
         
@@ -217,8 +217,8 @@ contract CryptoPoliceCrowdsale is Ownable {
     }
 
     function processPayment(address participant, uint payment, bytes32 externalPaymentChecksum) internal {
-        require(payment &gt;= minSale, &quot;Payment must be greather or equal to sale minimum&quot;);
-        require(bannedParticipants[participant] == false, &quot;Participant is banned&quot;);
+        require(payment >= minSale, "Payment must be greather or equal to sale minimum");
+        require(bannedParticipants[participant] == false, "Participant is banned");
 
         uint paymentReminder;
         uint processedTokenCount;
@@ -228,19 +228,19 @@ contract CryptoPoliceCrowdsale is Ownable {
 
         // how much was actually spent from this payment
         uint spent = payment - paymentReminder;
-        bool directPayment = externalPaymentChecksum == &quot;&quot;;
+        bool directPayment = externalPaymentChecksum == "";
 
         if (participants[participant].identified == false) {
             // how much participant has spent in crowdsale so far
             uint spendings = participants[participant].processedDirectWeiAmount
                 .add(participants[participant].processedExternalWeiAmount).add(spent);
 
-            bool hasSuspendedPayments = participants[participant].suspendedDirectWeiAmount &gt; 0 || participants[participant].suspendedExternalWeiAmount &gt; 0;
+            bool hasSuspendedPayments = participants[participant].suspendedDirectWeiAmount > 0 || participants[participant].suspendedExternalWeiAmount > 0;
 
             // due to fluctuations of unidentified payment limit, it might not be reached
             // suspend current payment if participant currently has suspended payments or limit reached
-            if (hasSuspendedPayments || spendings &gt; unidentifiedSaleLimit) {
-                require(revertSuspendedPayment == false, &quot;Participant does not comply with KYC&quot;);
+            if (hasSuspendedPayments || spendings > unidentifiedSaleLimit) {
+                require(revertSuspendedPayment == false, "Participant does not comply with KYC");
 
                 suspendedPayments = suspendedPayments + payment;
 
@@ -259,7 +259,7 @@ contract CryptoPoliceCrowdsale is Ownable {
         }
 
         // unspent reminder must be returned back to participant
-        if (paymentReminder &gt; 0) {
+        if (paymentReminder > 0) {
             if (directPayment) {
                 participant.transfer(paymentReminder);
             } else {
@@ -273,7 +273,7 @@ contract CryptoPoliceCrowdsale is Ownable {
             participants[participant].processedExternalWeiAmount = participants[participant].processedExternalWeiAmount.add(spent);
         }
 
-        require(token.transfer(participant, processedTokenCount), &quot;Failed to transfer tokens&quot;);
+        require(token.transfer(participant, processedTokenCount), "Failed to transfer tokens");
         
         if (soldOut) {
             state = CrowdsaleState.SoldOut;
@@ -291,11 +291,11 @@ contract CryptoPoliceCrowdsale is Ownable {
     function proxyExchange(address beneficiary, uint payment, string description, bytes32 checksum)
     public grantOwnerOrAdmin
     {
-        require(beneficiary != address(0), &quot;Beneficiary not specified&quot;);
-        require(bytes(description).length &gt; 0, &quot;Description not specified&quot;);
-        require(checksum.length &gt; 0, &quot;Checksum not specified&quot;);
+        require(beneficiary != address(0), "Beneficiary not specified");
+        require(bytes(description).length > 0, "Description not specified");
+        require(checksum.length > 0, "Checksum not specified");
         // make sure that payment has not been processed yet
-        require(bytes(externalPaymentDescriptions[checksum]).length == 0, &quot;Payment already processed&quot;);
+        require(bytes(externalPaymentDescriptions[checksum]).length == 0, "Payment already processed");
 
         processPayment(beneficiary, payment, checksum);
         
@@ -333,7 +333,7 @@ contract CryptoPoliceCrowdsale is Ownable {
 
         uint balance = address(this).balance;
 
-        if (success &amp;&amp; balance &gt; 0) {
+        if (success && balance > 0) {
             uint amount = balance.sub(suspendedPayments);
             owner.transfer(amount);
         }
@@ -342,15 +342,15 @@ contract CryptoPoliceCrowdsale is Ownable {
     function markParticipantIdentifiend(address participant) public grantOwnerOrAdmin notEnded {
         participants[participant].identified = true;
 
-        if (participants[participant].suspendedDirectWeiAmount &gt; 0) {
-            processPayment(participant, participants[participant].suspendedDirectWeiAmount, &quot;&quot;);
+        if (participants[participant].suspendedDirectWeiAmount > 0) {
+            processPayment(participant, participants[participant].suspendedDirectWeiAmount, "");
             suspendedPayments = suspendedPayments.sub(participants[participant].suspendedDirectWeiAmount);
             participants[participant].suspendedDirectWeiAmount = 0;
         }
 
-        if (participants[participant].suspendedExternalWeiAmount &gt; 0) {
+        if (participants[participant].suspendedExternalWeiAmount > 0) {
             bytes32[] storage checksums = participantSuspendedExternalPaymentChecksums[participant];
-            for (uint i = 0; i &lt; checksums.length; i++) {
+            for (uint i = 0; i < checksums.length; i++) {
                 processPayment(participant, suspendedExternalPayments[checksums[i]], checksums[i]);
                 suspendedExternalPayments[checksums[i]] = 0;
             }
@@ -393,19 +393,19 @@ contract CryptoPoliceCrowdsale is Ownable {
 
     function burnLeftoverTokens(uint8 percentage) public grantOwner {
         require(state == CrowdsaleState.Ended);
-        require(percentage &lt;= 100 &amp;&amp; percentage &gt; 0);
+        require(percentage <= 100 && percentage > 0);
 
         uint balance = token.balanceOf(address(this));
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             uint amount = balance / (100 / percentage);
             token.burn(amount);
         }
     }
 
     function updateExchangeRate(uint8 idx, uint tokens, uint price) public grantOwnerOrAdmin {
-        require(tokens &gt; 0 &amp;&amp; price &gt; 0);
-        require(idx &gt;= 0 &amp;&amp; idx &lt;= 3);
+        require(tokens > 0 && price > 0);
+        require(idx >= 0 && idx <= 3);
 
         exchangeRates[idx] = ExchangeRate({
             tokens: tokens,
@@ -426,22 +426,22 @@ contract CryptoPoliceCrowdsale is Ownable {
 
         ExchangeRate storage rate = exchangeRates[idx];
 
-        require(rate.tokens &gt; 0 &amp;&amp; rate.price &gt; 0, &quot;Exchange rate not set&quot;);
+        require(rate.tokens > 0 && rate.price > 0, "Exchange rate not set");
 
         return rate;
     }
 
     function getTreshold(uint salePosition) internal pure returns (uint) {
-        if (salePosition &lt; THRESHOLD1) {
+        if (salePosition < THRESHOLD1) {
             return THRESHOLD1;
         }
-        if (salePosition &lt; THRESHOLD2) {
+        if (salePosition < THRESHOLD2) {
             return THRESHOLD2;
         }
-        if (salePosition &lt; THRESHOLD3) {
+        if (salePosition < THRESHOLD3) {
             return THRESHOLD3;
         }
-        if (salePosition &lt; THRESHOLD4) {
+        if (salePosition < THRESHOLD4) {
             return THRESHOLD4;
         }
 
@@ -477,12 +477,12 @@ contract CryptoPoliceCrowdsale is Ownable {
      * @param suspended Whether or not suspended payments should be included
      */
     function returnDirectPayments(address participant, bool processed, bool suspended) internal {
-        if (processed &amp;&amp; participants[participant].processedDirectWeiAmount &gt; 0) {
+        if (processed && participants[participant].processedDirectWeiAmount > 0) {
             participant.transfer(participants[participant].processedDirectWeiAmount);
             participants[participant].processedDirectWeiAmount = 0;
         }
 
-        if (suspended &amp;&amp; participants[participant].suspendedDirectWeiAmount &gt; 0) {
+        if (suspended && participants[participant].suspendedDirectWeiAmount > 0) {
             participant.transfer(participants[participant].suspendedDirectWeiAmount);
             participants[participant].suspendedDirectWeiAmount = 0;
         }
@@ -496,11 +496,11 @@ contract CryptoPoliceCrowdsale is Ownable {
      * @param suspended Whether or not suspended payments should be included
      */
     function returnExternalPayments(address participant, bool processed, bool suspended) internal {
-        if (processed &amp;&amp; participants[participant].processedExternalWeiAmount &gt; 0) {
+        if (processed && participants[participant].processedExternalWeiAmount > 0) {
             participants[participant].processedExternalWeiAmount = 0;
         }
         
-        if (suspended &amp;&amp; participants[participant].suspendedExternalWeiAmount &gt; 0) {
+        if (suspended && participants[participant].suspendedExternalWeiAmount > 0) {
             participants[participant].suspendedExternalWeiAmount = 0;
         }
     }
@@ -511,12 +511,12 @@ contract CryptoPoliceCrowdsale is Ownable {
     }
 
     function transwerFunds(uint amount) public grantOwner {
-        require(RELEASE_THRESHOLD &lt;= tokensSold, &quot;There are not enaugh tokens sold&quot;);
+        require(RELEASE_THRESHOLD <= tokensSold, "There are not enaugh tokens sold");
         
         uint transferAmount = amount;
         uint balance = address(this).balance;
 
-        if (balance &lt; amount) {
+        if (balance < amount) {
             transferAmount = balance;
         }
 
@@ -528,15 +528,15 @@ contract CryptoPoliceCrowdsale is Ownable {
     }
 
     function isAdmin() internal view returns(bool) {
-        return isAdminSet() &amp;&amp; msg.sender == admin;
+        return isAdminSet() && msg.sender == admin;
     }
 
     function isCrowdsaleSuccessful() public view returns(bool) {
-        return state == CrowdsaleState.Ended &amp;&amp; crowdsaleEndedSuccessfully;
+        return state == CrowdsaleState.Ended && crowdsaleEndedSuccessfully;
     }
 
     modifier notEnded {
-        require(state != CrowdsaleState.Ended, &quot;Crowdsale ended&quot;);
+        require(state != CrowdsaleState.Ended, "Crowdsale ended");
         _;
     }
 

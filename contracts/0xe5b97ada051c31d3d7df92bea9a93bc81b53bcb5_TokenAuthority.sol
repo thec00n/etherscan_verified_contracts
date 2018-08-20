@@ -13,7 +13,7 @@ pragma solidity ^0.4.23;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with The Colony Network. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -29,7 +29,7 @@ pragma solidity ^0.4.23;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
@@ -90,12 +90,12 @@ contract DSAuth is DSAuthEvents {
 
 contract TokenAuthority is DSAuthority {
   address public token;
-  mapping(address =&gt; mapping(bytes4 =&gt; bool)) authorizations;
+  mapping(address => mapping(bytes4 => bool)) authorizations;
   
   constructor(address _token, address _vesting) public {
     token = _token;
-    bytes4 transferSig = bytes4(keccak256(&quot;transfer(address,uint256)&quot;));
-    bytes4 transferFromSig = bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;));
+    bytes4 transferSig = bytes4(keccak256("transfer(address,uint256)"));
+    bytes4 transferFromSig = bytes4(keccak256("transferFrom(address,address,uint256)"));
 
     authorizations[_vesting][transferSig] = true;
     authorizations[_vesting][transferFromSig] = true;

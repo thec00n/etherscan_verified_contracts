@@ -58,7 +58,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -86,9 +86,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -96,7 +96,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -105,7 +105,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,15 +113,15 @@ library SafeMath {
 contract SBIToken is Owned, CrowdsaleParameters {
     using SafeMath for uint256;
     /* Public variables of the token */
-    string public standard = &#39;ERC20/SBI&#39;;
-    string public name = &#39;Subsoil Blockchain Investitions&#39;;
-    string public symbol = &#39;SBI&#39;;
+    string public standard = 'ERC20/SBI';
+    string public name = 'Subsoil Blockchain Investitions';
+    string public symbol = 'SBI';
     uint8 public decimals = 18;
 
     /* Arrays of all balances */
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
-    mapping (address =&gt; mapping (address =&gt; bool)) private allowanceUsed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
+    mapping (address => mapping (address => bool)) private allowanceUsed;
 
     /* This generates a public event on the blockchain that will notify clients */
 
@@ -157,7 +157,7 @@ contract SBIToken is Owned, CrowdsaleParameters {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -203,7 +203,7 @@ contract SBIToken is Owned, CrowdsaleParameters {
     }
 
     /**
-    *  Send coins from sender&#39;s address to address specified in parameters
+    *  Send coins from sender's address to address specified in parameters
     *
     * @param _to - address to send to
     * @param _value - amount to send in Wei
@@ -211,7 +211,7 @@ contract SBIToken is Owned, CrowdsaleParameters {
 
     function transfer(address _to, uint256 _value) public transfersAllowed onlyPayloadSize(2*32) returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -263,8 +263,8 @@ contract SBIToken is Owned, CrowdsaleParameters {
     */
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed onlyPayloadSize(3*32) returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -302,7 +302,7 @@ contract SBIToken is Owned, CrowdsaleParameters {
 
 contract SBIBank is Owned, CrowdsaleParameters {
     using SafeMath for uint256;
-    string public name = &#39;Subsoil Blockchain Investitions Bank&#39;;
+    string public name = 'Subsoil Blockchain Investitions Bank';
     SBIToken private token;
     uint256 public currentVotingDate = 0;
     uint public currentVotingAmount = 0;
@@ -319,11 +319,11 @@ contract SBIBank is Owned, CrowdsaleParameters {
     address sbiBank = this;
 
     // investors votes
-    mapping(address =&gt; uint8) public votes;
+    mapping(address => uint8) public votes;
     // investors votes dates
-    mapping(address =&gt; uint256) public voteDates;
+    mapping(address => uint256) public voteDates;
     // investors refunded amounts of voting
-    mapping(address =&gt; uint256) public alreadyRefunded;
+    mapping(address => uint256) public alreadyRefunded;
 
     event NewIncomingFunds(uint indexed amount, address indexed sender);
     event NewVoting(uint256 indexed date, uint indexed amount);
@@ -345,9 +345,9 @@ contract SBIBank is Owned, CrowdsaleParameters {
    * @param _amount The amount of the funds requested to transfer.
    */
   function addVoting(uint _amount) public onlyOwner {
-    require(sbiBank.balance &gt;= _amount);
+    require(sbiBank.balance >= _amount);
     // can add only if previouse voiting closed
-    require(currentVotingDate == 0 &amp;&amp; currentVotingAmount == 0);
+    require(currentVotingDate == 0 && currentVotingAmount == 0);
     currentVotingDate = now;
     currentVotingAmount = _amount;
     NewVoting(now, _amount);
@@ -363,8 +363,8 @@ contract SBIBank is Owned, CrowdsaleParameters {
    * @dev vote for only sbi tokens owners
    */
   function vote(uint8 proposal) public returns(uint8 prop) {
-      require(token.balanceOf(msg.sender) &gt; 0);
-      require(now &gt;= currentVotingDate &amp;&amp; now &lt;= currentVotingDate + 3 days);
+      require(token.balanceOf(msg.sender) > 0);
+      require(now >= currentVotingDate && now <= currentVotingDate + 3 days);
       require(proposal == 1 || proposal == 2 || proposal == 3);
       // you can vote only once for current voiting
       require(voteDates[msg.sender] != currentVotingDate);
@@ -390,20 +390,20 @@ contract SBIBank is Owned, CrowdsaleParameters {
    * @dev End current voting with 3 scenarios - toAllow, toCancel or toRefund
    */
   function endVoting() public onlyOwner {
-      require(currentVotingDate &gt; 0 &amp;&amp; now &gt;= currentVotingDate + 3 days);
-      if (toAllow &gt; toCancel &amp;&amp; toAllow &gt; toRefund) {
+      require(currentVotingDate > 0 && now >= currentVotingDate + 3 days);
+      if (toAllow > toCancel && toAllow > toRefund) {
           // toAllow withdraw
           AllowVote(currentVotingDate, toAllow);
           allowedWithdraw = currentVotingAmount;
           allowedRefund = 0;
       }
-      if (toCancel &gt; toAllow &amp;&amp; toCancel &gt; toRefund) {
+      if (toCancel > toAllow && toCancel > toRefund) {
           // toCancel voiting
           CancelVote(currentVotingDate, toCancel);
           allowedWithdraw = 0;
           allowedRefund = 0;
       }
-      if (toRefund &gt; toAllow &amp;&amp; toRefund &gt; toCancel) {
+      if (toRefund > toAllow && toRefund > toCancel) {
           // toCancel voiting
           RefundVote(currentVotingDate, toRefund);
           allowedRefund = currentVotingAmount;
@@ -421,7 +421,7 @@ contract SBIBank is Owned, CrowdsaleParameters {
    */
   function withdraw() public onlyOwner {
       require(currentVotingDate == 0);
-      require(allowedWithdraw &gt; 0);
+      require(allowedWithdraw > 0);
       owner.transfer(allowedWithdraw);
       Withdraw(now, allowedWithdraw);
       allowedWithdraw = 0;
@@ -431,10 +431,10 @@ contract SBIBank is Owned, CrowdsaleParameters {
    * @dev End current voting with 3 scenarios - toAllow, toCancel or refund
    */
   function refund() public {
-      require(allowedRefund &gt; 0);
+      require(allowedRefund > 0);
       // allows refund only once thrue the voiting
       require(alreadyRefunded[msg.sender] == 0);
-      require(token.balanceOf(msg.sender) &gt; 0);
+      require(token.balanceOf(msg.sender) > 0);
       // total supply tokens is 40 000 000
       uint256 tokensPercent = token.balanceOf(msg.sender).div(40000000).div(1000000000000000);
       uint256 refundedAmount = tokensPercent.mul(sbiBank.balance).div(1000);

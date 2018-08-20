@@ -22,7 +22,7 @@ contract ProxyCrop {
       owner = _owner;
 
       // plant some seeds
-      if (msg.value &gt; 0) {
+      if (msg.value > 0) {
         P3D(0xB3775fB83F7D12A36E0475aBdD1FCA35c091efBe).buy.value(msg.value)(_referrer);
       }
     }
@@ -35,7 +35,7 @@ contract ProxyCrop {
         calldatacopy(0, 0, calldatasize)
 
         // Call the implementation.
-        // out and outsize are 0 because we don&#39;t know the size yet.
+        // out and outsize are 0 because we don't know the size yet.
         let result := delegatecall(gas, 0x0D6C969d0004B431189f834203CE0f5530e06259, 0, calldatasize, 0, 0)
 
         // Copy the returned data.
@@ -50,8 +50,8 @@ contract ProxyCrop {
 }
 
 contract Farm {
-  // address mapping for owner =&gt; crop
-  mapping (address =&gt; address) public crops;
+  // address mapping for owner => crop
+  mapping (address => address) public crops;
 
   // event for creating a new crop
   event CreateCrop(address indexed owner, address indexed crop);

@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) pure internal  returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) pure internal  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,11 +87,11 @@ contract Token {
 
 // File: contracts/Disbursement.sol
 
-// NOTE: ORIGINALLY THIS WAS &quot;TOKENS/ABSTRACTTOKEN.SOL&quot;... CHECK THAT
+// NOTE: ORIGINALLY THIS WAS "TOKENS/ABSTRACTTOKEN.SOL"... CHECK THAT
 
 
 /// @title Disbursement contract - allows to distribute tokens over time
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5a6a1b0b3b4bb95b2bbbaa6bca6fba5b8">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5a6a1b0b3b4bb95b2bbbaa6bca6fba5b8">[email protected]</a>>
 contract Disbursement {
 
     /*
@@ -149,7 +149,7 @@ contract Disbursement {
             startDate = now;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses
+    /// @dev Setup function sets external contracts' addresses
     /// @param _token Token address
     function setup(Token _token)
         public
@@ -170,7 +170,7 @@ contract Disbursement {
         isSetUp
     {
         uint maxTokens = calcMaxWithdraw();
-        if (_value &gt; maxTokens)
+        if (_value > maxTokens)
             revert();
         withdrawnTokens = SafeMath.add(withdrawnTokens, _value);
         token.transfer(_to, _value);
@@ -185,9 +185,9 @@ contract Disbursement {
     {
         uint maxTokens = SafeMath.mul(SafeMath.add(token.balanceOf(this), withdrawnTokens), SafeMath.sub(now,startDate)) / disbursementPeriod;
         //uint maxTokens = (token.balanceOf(this) + withdrawnTokens) * (now - startDate) / disbursementPeriod;
-        if (withdrawnTokens &gt;= maxTokens || startDate &gt; now)
+        if (withdrawnTokens >= maxTokens || startDate > now)
             return 0;
-        if (SafeMath.sub(maxTokens, withdrawnTokens) &gt; token.totalSupply())
+        if (SafeMath.sub(maxTokens, withdrawnTokens) > token.totalSupply())
             return token.totalSupply();
         return SafeMath.sub(maxTokens, withdrawnTokens);
     }
@@ -201,7 +201,7 @@ contract Owned {
   event OwnerRemoval(address indexed owner);
 
   // owner address to enable admin functions
-  mapping (address =&gt; bool) public isOwner;
+  mapping (address => bool) public isOwner;
 
   address[] public owners;
 
@@ -224,9 +224,9 @@ contract Owned {
   }
 
   function removeOwner(address _owner) public onlyOwner {
-    require(owners.length &gt; 1);
+    require(owners.length > 1);
     isOwner[_owner] = false;
-    for (uint i = 0; i &lt; owners.length - 1; i++) {
+    for (uint i = 0; i < owners.length - 1; i++) {
       if (owners[i] == _owner) {
         owners[i] = owners[SafeMath.sub(owners.length, 1)];
         break;
@@ -245,7 +245,7 @@ contract Owned {
   }
 
   function setOwners(address[] _owners) internal {
-    for (uint i = 0; i &lt; _owners.length; i++) {
+    for (uint i = 0; i < _owners.length; i++) {
       require(_owners[i] != address(0));
       isOwner[_owners[i]] = true;
       OwnerAddition(_owners[i]);
@@ -263,8 +263,8 @@ contract Owned {
 
 /**
 this contract should be the address for disbursement contract.
-It should not allow to disburse any token for a given time &quot;initialLockTime&quot;
-lock &quot;50%&quot; of tokens for 10 years.
+It should not allow to disburse any token for a given time "initialLockTime"
+lock "50%" of tokens for 10 years.
 transfer 50% of tokens to a given address.
 */
 contract TokenLock is Owned {
@@ -288,9 +288,9 @@ contract TokenLock is Owned {
   }
 
   function TokenLock(address[] _owners, uint _shortLock, uint _longLock, uint _shortShare) public {
-    require(_longLock &gt; _shortLock);
-    require(_shortLock &gt; 0);
-    require(_shortShare &lt;= 100);
+    require(_longLock > _shortLock);
+    require(_shortLock > 0);
+    require(_shortShare <= 100);
     setOwners(_owners);
     shortLock = block.timestamp.add(_shortLock);
     longLock = block.timestamp.add(_longLock);
@@ -305,19 +305,19 @@ contract TokenLock is Owned {
   }
 
   function transferShortTermTokens(address _wallet) public validAddress(_wallet) onlyOwner {
-    require(now &gt; shortLock);
+    require(now > shortLock);
     uint256 tokenBalance = Token(levAddress).balanceOf(disbursement);
     // long term tokens can be set only once.
     if (longTermTokens == 0) {
       longTermTokens = tokenBalance.mul(100 - shortShare).div(100);
     }
-    require(tokenBalance &gt; longTermTokens);
+    require(tokenBalance > longTermTokens);
     uint256 amountToSend = tokenBalance.sub(longTermTokens);
     Disbursement(disbursement).withdraw(_wallet, amountToSend);
   }
 
   function transferLongTermTokens(address _wallet) public validAddress(_wallet) onlyOwner {
-    require(now &gt; longLock);
+    require(now > longLock);
     // 1. Get how many tokens this contract has with a token instance and check this token balance
     uint256 tokenBalance = Token(levAddress).balanceOf(disbursement);
 

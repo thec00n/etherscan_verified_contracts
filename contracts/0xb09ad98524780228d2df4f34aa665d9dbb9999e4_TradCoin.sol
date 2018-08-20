@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -102,20 +102,20 @@ contract TradCoin is Ownable, AbstractERC20 {
     // Current value is July 30, 2018 23:59:59 Eastern Time.
     uint256 becomesTransferable = 1533009599;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     // balances allowed to transfer during locking
-    mapping (address =&gt; uint256) internal balancesAllowedToTransfer;
-    //mapping to show person is investor or team/project, true=&gt;investor, false=&gt;team/project
-    mapping (address =&gt; bool) public isInvestor;
+    mapping (address => uint256) internal balancesAllowedToTransfer;
+    //mapping to show person is investor or team/project, true=>investor, false=>team/project
+    mapping (address => bool) public isInvestor;
 
     event DistributorTransferred(address indexed _from, address indexed _to);
     event Allocated(address _owner, address _investor, uint256 _tokenAmount);
 
     constructor(address _distributor) public {
         require (_distributor != address(0x0));
-        name = &quot;TradCoin&quot;;
-        symbol = &quot;TRADCoin&quot;;
+        name = "TradCoin";
+        symbol = "TRADCoin";
         decimals = 18 ;
         totalSupply = 300e6 * 10**18;    // 300 million tokens
         owner = msg.sender;
@@ -127,7 +127,7 @@ contract TradCoin is Ownable, AbstractERC20 {
     /// manually send tokens to investor
     function allocateTokensToInvestors(address _to, uint256 _value) public onlyOwner returns (bool success) {
         require(_to != address(0x0));
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 unlockValue = (_value.mul(30)).div(100);
         // SafeMath.sub will throw if there is not enough balance.
         balances[distributor] = balances[distributor].sub(_value);
@@ -141,7 +141,7 @@ contract TradCoin is Ownable, AbstractERC20 {
     /// manually send tokens to investor
     function allocateTokensToTeamAndProjects(address _to, uint256 _value) public onlyOwner returns (bool success) {
         require(_to != address(0x0));
-        require(_value &gt; 0);
+        require(_value > 0);
         // SafeMath.sub will throw if there is not enough balance.
         balances[distributor] = balances[distributor].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -162,19 +162,19 @@ contract TradCoin is Ownable, AbstractERC20 {
     * @dev transfer token for a specified address (written due to backward compatibility)
     * @param to address to which token is transferred
     * @param value amount of tokens to transfer
-    * return bool true=&gt; transfer is succesful
+    * return bool true=> transfer is succesful
     */
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0x0));
-        require(value &lt;= balances[msg.sender]);
+        require(value <= balances[msg.sender]);
         uint256 valueAllowedToTransfer;
         if(isInvestor[msg.sender]){
-            if (now &gt;= becomesTransferable){
+            if (now >= becomesTransferable){
                 valueAllowedToTransfer = balances[msg.sender];
-                assert(value &lt;= valueAllowedToTransfer);
+                assert(value <= valueAllowedToTransfer);
             }else{
                 valueAllowedToTransfer = balancesAllowedToTransfer[msg.sender];
-                assert(value &lt;= valueAllowedToTransfer);
+                assert(value <= valueAllowedToTransfer);
                 balancesAllowedToTransfer[msg.sender] = balancesAllowedToTransfer[msg.sender].sub(value);
             }
         }
@@ -189,20 +189,20 @@ contract TradCoin is Ownable, AbstractERC20 {
     * @param from address from which token is transferred 
     * @param to address to which token is transferred
     * @param value amount of tokens to transfer
-    * @return bool true=&gt; transfer is succesful
+    * @return bool true=> transfer is succesful
     */
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
         require(to != address(0x0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowed[from][msg.sender]);
         uint256 valueAllowedToTransfer;
         if(isInvestor[from]){
-            if (now &gt;= becomesTransferable){
+            if (now >= becomesTransferable){
                 valueAllowedToTransfer = balances[from];
-                assert(value &lt;= valueAllowedToTransfer);
+                assert(value <= valueAllowedToTransfer);
             }else{
                 valueAllowedToTransfer = balancesAllowedToTransfer[from];
-                assert(value &lt;= valueAllowedToTransfer);
+                assert(value <= valueAllowedToTransfer);
                 balancesAllowedToTransfer[from] = balancesAllowedToTransfer[from].sub(value);
             }
         }
@@ -222,7 +222,7 @@ contract TradCoin is Ownable, AbstractERC20 {
     * @dev Approve function will delegate spender to spent tokens on msg.sender behalf
     * @param spender ddress which is delegated
     * @param value tokens amount which are delegated
-    * @return bool true=&gt; approve is succesful
+    * @return bool true=> approve is succesful
     */
     function approve(address spender, uint256 value) public returns (bool) {
         allowed[msg.sender][spender] = value;
@@ -244,7 +244,7 @@ contract TradCoin is Ownable, AbstractERC20 {
     * @dev increment the spender delegated tokens
     * @param spender address which is delegated
     * @param valueToAdd tokens amount to increment
-    * @return bool true=&gt; operation is succesful
+    * @return bool true=> operation is succesful
     */
     function increaseApproval(address spender, uint valueToAdd) public returns (bool) {
         allowed[msg.sender][spender] = allowed[msg.sender][spender].add(valueToAdd);
@@ -256,11 +256,11 @@ contract TradCoin is Ownable, AbstractERC20 {
     * @dev deccrement the spender delegated tokens
     * @param spender address which is delegated
     * @param valueToSubstract tokens amount to decrement
-    * @return bool true=&gt; operation is succesful
+    * @return bool true=> operation is succesful
     */
     function decreaseApproval(address spender, uint valueToSubstract) public returns (bool) {
         uint oldValue = allowed[msg.sender][spender];
-        if (valueToSubstract &gt; oldValue) {
+        if (valueToSubstract > oldValue) {
           allowed[msg.sender][spender] = 0;
         } else {
           allowed[msg.sender][spender] = oldValue.sub(valueToSubstract);

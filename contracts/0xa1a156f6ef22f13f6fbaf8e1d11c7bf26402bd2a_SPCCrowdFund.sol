@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,8 +44,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -54,7 +54,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -73,7 +73,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -127,8 +127,8 @@ contract SPCToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;SecurityPlusCloud Token&quot;;              //name of the token
-string public symbol = &quot;SPC&quot;;                                // symbol of the token
+string public name = "SecurityPlusCloud Token";              //name of the token
+string public symbol = "SPC";                                // symbol of the token
 uint8 public decimals = 18;                                  // decimals
 uint256 public totalSupply = 500000000 * 10**18;             // total supply of SPC Tokens  
 
@@ -258,7 +258,7 @@ contract SPCCrowdFund {
         _;
     }
     modifier nonZeroEth() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -308,7 +308,7 @@ contract SPCCrowdFund {
     // function call after crowdFundEndTime.
     // It transfers the remaining tokens to remainingTokenHolder address
     function endCrowdfund() onlyFounders inState(State.Finish) returns (bool) {
-        require(now &gt; crowdfundEndDate);
+        require(now > crowdfundEndDate);
         uint256 remainingToken = token.balanceOf(this);  // remaining tokens
 
         if (remainingToken != 0) 
@@ -326,7 +326,7 @@ contract SPCCrowdFund {
     payable 
     returns(bool) 
     {
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
 
         if (getState() == State.PreSale) {
             if (buyPreSaleTokens(beneficiary)) {
@@ -334,7 +334,7 @@ contract SPCCrowdFund {
             }
             return false;
         } else {
-            require(now &gt;= crowdfundStartDate &amp;&amp; now &lt;= crowdfundEndDate);
+            require(now >= crowdfundStartDate && now <= crowdfundEndDate);
             fundTransfer(msg.value);
 
             uint256 amount = getNoOfTokens(exchangeRateForETH, msg.value);
@@ -377,7 +377,7 @@ contract SPCCrowdFund {
     function getTokensForPreSale(uint256 _exchangeRate, uint256 _amount) internal constant returns (uint256) {
         uint256 noOfToken = _amount.mul(_exchangeRate);
         uint256 noOfTokenWithBonus = ((100 + getCurrentBonusRate()) * noOfToken ).div(100);
-        if (noOfTokenWithBonus + tokenSoldInPresale &gt; (50000000 * 10 ** 18) ) {
+        if (noOfTokenWithBonus + tokenSoldInPresale > (50000000 * 10 ** 18) ) {
             revert();
         }
         return noOfTokenWithBonus;
@@ -393,10 +393,10 @@ contract SPCCrowdFund {
 
     // function to get the current state of the crowdsale
     function getState() public constant returns(State) {
-        if (now &gt;= preSaleStartTime &amp;&amp; now &lt;= preSaleEndTime) {
+        if (now >= preSaleStartTime && now <= preSaleEndTime) {
             return State.PreSale;
         }
-        if (now &gt;= crowdfundStartDate &amp;&amp; now &lt;= crowdfundEndDate) {
+        if (now >= crowdfundStartDate && now <= crowdfundEndDate) {
             return State.Crowdfund;
         } 
         return State.Finish;
@@ -410,10 +410,10 @@ contract SPCCrowdFund {
            return 50;
         } 
         if (getState() == State.Crowdfund) {
-           if (tokenSoldInCrowdsale &lt;= (100000000 * 10 ** 18) ) {
+           if (tokenSoldInCrowdsale <= (100000000 * 10 ** 18) ) {
                return 30;
            }
-           if (tokenSoldInCrowdsale &gt; (100000000 * 10 ** 18) &amp;&amp; tokenSoldInCrowdsale &lt;= (175000000 * 10 ** 18)) {
+           if (tokenSoldInCrowdsale > (100000000 * 10 ** 18) && tokenSoldInCrowdsale <= (175000000 * 10 ** 18)) {
                return 10;
            } else {
                return 0;

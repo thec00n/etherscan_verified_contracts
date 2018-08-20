@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -160,7 +160,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -178,7 +178,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -207,7 +207,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -218,8 +218,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -282,7 +282,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -346,7 +346,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -357,7 +357,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -404,9 +404,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -418,15 +418,15 @@ contract BurnableToken is BasicToken {
 
 /*
   HardcapToken is PausableToken and on the creation it is paused.
-  It is made so because you don&#39;t want token to be transferable etc,
+  It is made so because you don't want token to be transferable etc,
   while your ico is not over.
 */
 contract HardcapToken is CappedToken, PausableToken, BurnableToken {
 
   uint256 private constant TOKEN_CAP = 100 * 10**24;
 
-  string public constant name = &quot;Welltrado token&quot;;
-  string public constant symbol = &quot;WTL&quot;;
+  string public constant name = "Welltrado token";
+  string public constant symbol = "WTL";
   uint8 public constant decimals = 18;
 
   function HardcapToken() public CappedToken(TOKEN_CAP) {
@@ -471,7 +471,7 @@ contract HardcapCrowdsale is Ownable {
   uint256 public closingTime = 1525089600;
   uint256 public finalizedTime;
 
-  mapping (uint256 =&gt; Phase) private phases;
+  mapping (uint256 => Phase) private phases;
 
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event TokenAssigned(address indexed purchaser, address indexed beneficiary, uint256 amount);
@@ -533,7 +533,7 @@ contract HardcapCrowdsale is Ownable {
   */
   function assignTokensToMultipleInvestors(address[] _beneficiaries, uint256[] _tokensAmount) onlyAssginer public {
     require(_beneficiaries.length == _tokensAmount.length);
-    for (uint i = 0; i &lt; _tokensAmount.length; i++) {
+    for (uint i = 0; i < _tokensAmount.length; i++) {
       _processTokensAssgin(_beneficiaries[i], _tokensAmount[i]);
     }
   }
@@ -574,7 +574,7 @@ contract HardcapCrowdsale is Ownable {
   }
 
   function _hasClosed() internal view returns (bool) {
-    return _getTime() &gt; FINAL_CLOSING_TIME || token.totalSupply() &gt;= ICO_TOKENS_CAP;
+    return _getTime() > FINAL_CLOSING_TIME || token.totalSupply() >= ICO_TOKENS_CAP;
   }
 
   function _processTokensAssgin(address _beneficiary, uint256 _tokenAmount) internal {
@@ -587,10 +587,10 @@ contract HardcapCrowdsale is Ownable {
     bool _phaseChanged = false;
     Phase memory _phase = phases[phase];
 
-    while (_tokenAmount &gt; 0 &amp;&amp; _currentSupply &lt; ICO_TOKENS_CAP) {
+    while (_tokenAmount > 0 && _currentSupply < ICO_TOKENS_CAP) {
       _leftowers = _phase.capTo.sub(_currentSupply);
       // check if it is possible to assign more than there is available in this phase
-      if (_leftowers &lt; _tokenAmount) {
+      if (_leftowers < _tokenAmount) {
          _tokens = _tokens.add(_leftowers);
          _tokenAmount = _tokenAmount.sub(_leftowers);
          phase = phase + 1;
@@ -604,7 +604,7 @@ contract HardcapCrowdsale is Ownable {
       _phase = phases[phase];
     }
 
-    require(_tokens &gt;= MIN_TOKENS_TO_PURCHASE || _currentSupply == ICO_TOKENS_CAP);
+    require(_tokens >= MIN_TOKENS_TO_PURCHASE || _currentSupply == ICO_TOKENS_CAP);
 
     // if phase changes forward the date of the next phase change by 7 days
     if (_phaseChanged) {
@@ -627,11 +627,11 @@ contract HardcapCrowdsale is Ownable {
     bool _phaseChanged = false;
     Phase memory _phase = phases[phase];
 
-    while (_weiAmount &gt; 0 &amp;&amp; _currentSupply &lt; ICO_TOKENS_CAP) {
+    while (_weiAmount > 0 && _currentSupply < ICO_TOKENS_CAP) {
       _leftowers = _phase.capTo.sub(_currentSupply);
       _weiReq = _leftowers.div(_phase.rate);
       // check if it is possible to purchase more than there is available in this phase
-      if (_weiReq &lt; _weiAmount) {
+      if (_weiReq < _weiAmount) {
          _tokens = _tokens.add(_leftowers);
          _weiAmount = _weiAmount.sub(_weiReq);
          _weiSpent = _weiSpent.add(_weiReq);
@@ -647,7 +647,7 @@ contract HardcapCrowdsale is Ownable {
       _phase = phases[phase];
     }
 
-    require(_tokens &gt;= MIN_TOKENS_TO_PURCHASE || _currentSupply == ICO_TOKENS_CAP);
+    require(_tokens >= MIN_TOKENS_TO_PURCHASE || _currentSupply == ICO_TOKENS_CAP);
 
     // if phase changes forward the date of the next phase change by 7 days
     if (_phaseChanged) {
@@ -655,7 +655,7 @@ contract HardcapCrowdsale is Ownable {
     }
 
     // return leftovers to investor if tokens are over but he sent more ehters.
-    if (msg.value &gt; _weiSpent) {
+    if (msg.value > _weiSpent) {
       uint256 _overflowAmount = msg.value.sub(_weiSpent);
       _beneficiary.transfer(_overflowAmount);
     }
@@ -666,33 +666,33 @@ contract HardcapCrowdsale is Ownable {
     TokenPurchase(msg.sender, _beneficiary, _weiSpent, _tokens);
 
     // You can access this method either buying tokens or assigning tokens to
-    // someone. In the previous case you won&#39;t be sending any ehter to contract
+    // someone. In the previous case you won't be sending any ehter to contract
     // so no need to forward any funds to wallet.
-    if (msg.value &gt; 0) {
+    if (msg.value > 0) {
       wallet.transfer(_weiSpent);
     }
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     // if the phase time ended calculate next phase end time and set new phase
-    if (closingTime &lt; _getTime() &amp;&amp; closingTime &lt; FINAL_CLOSING_TIME &amp;&amp; phase &lt; 8) {
+    if (closingTime < _getTime() && closingTime < FINAL_CLOSING_TIME && phase < 8) {
       phase = phase.add(_calcPhasesPassed());
       _changeClosingTime();
 
     }
-    require(_getTime() &gt; INITIAL_START_DATE);
-    require(_getTime() &gt;= openingTime &amp;&amp; _getTime() &lt;= closingTime);
+    require(_getTime() > INITIAL_START_DATE);
+    require(_getTime() >= openingTime && _getTime() <= closingTime);
     require(_beneficiary != address(0));
     require(_weiAmount != 0);
-    require(phase &lt;= 8);
+    require(phase <= 8);
 
-    require(token.totalSupply() &lt; ICO_TOKENS_CAP);
+    require(token.totalSupply() < ICO_TOKENS_CAP);
     require(!isFinalized);
   }
 
   function _preValidateAssign(address _beneficiary, uint256 _tokenAmount) internal {
     // if the phase time ended calculate next phase end time and set new phase
-    if (closingTime &lt; _getTime() &amp;&amp; closingTime &lt; FINAL_CLOSING_TIME &amp;&amp; phase &lt; 8) {
+    if (closingTime < _getTime() && closingTime < FINAL_CLOSING_TIME && phase < 8) {
       phase = phase.add(_calcPhasesPassed());
       _changeClosingTime();
 
@@ -703,18 +703,18 @@ contract HardcapCrowdsale is Ownable {
     require(_beneficiary != wallet);
     require(_beneficiary != teamTokenHolder);
 
-    require(_getTime() &gt;= openingTime &amp;&amp; _getTime() &lt;= closingTime);
+    require(_getTime() >= openingTime && _getTime() <= closingTime);
     require(_beneficiary != address(0));
-    require(_tokenAmount &gt; 0);
-    require(phase &lt;= 8);
+    require(_tokenAmount > 0);
+    require(phase <= 8);
 
-    require(token.totalSupply() &lt; ICO_TOKENS_CAP);
+    require(token.totalSupply() < ICO_TOKENS_CAP);
     require(!isFinalized);
   }
 
   function _changeClosingTime() internal {
     closingTime = _getTime() + 7 days;
-    if (closingTime &gt; FINAL_CLOSING_TIME) {
+    if (closingTime > FINAL_CLOSING_TIME) {
       closingTime = FINAL_CLOSING_TIME;
     }
   }
@@ -753,13 +753,13 @@ contract TeamTokenHolder is Ownable {
 
     uint256 finalizedTime = crowdsale.finalizedTime();
 
-    require(finalizedTime &gt; 0 &amp;&amp; getTime() &gt;= finalizedTime.add(months(3)));
+    require(finalizedTime > 0 && getTime() >= finalizedTime.add(months(3)));
 
     uint256 canExtract = total.mul(getTime().sub(finalizedTime)).div(months(LOCKUP_TIME));
 
     canExtract = canExtract.sub(collectedTokens);
 
-    if (canExtract &gt; balance) {
+    if (canExtract > balance) {
       canExtract = balance;
     }
 

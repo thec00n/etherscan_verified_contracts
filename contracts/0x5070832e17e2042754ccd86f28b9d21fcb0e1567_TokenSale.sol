@@ -5,7 +5,7 @@
  
 /** 
 	Ties.Network TokenSale contract
-	@author Dmitry Kochin &lt;<span class="__cf_email__" data-cfemail="cda68db9a4a8bee3a3a8b9baa2bfa6">[email&#160;protected]</span>&gt;
+	@author Dmitry Kochin <<span class="__cf_email__" data-cfemail="cda68db9a4a8bee3a3a8b9baa2bfa6">[email protected]</span>>
 */
 
 
@@ -13,21 +13,21 @@ pragma solidity ^0.4.14;
 
 
 /*************************************************************************
- * import &quot;./include/MintableToken.sol&quot; : start
+ * import "./include/MintableToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;zeppelin/contracts/token/StandardToken.sol&quot; : start
- *************************************************************************/
-
-
-/*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "zeppelin/contracts/token/StandardToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./BasicToken.sol" : start
+ *************************************************************************/
+
+
+/*************************************************************************
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -43,10 +43,10 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : start
+ * import "../math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -62,25 +62,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : end
+ * import "../math/SafeMath.sol" : end
  *************************************************************************/
 
 
@@ -91,7 +91,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -116,10 +116,10 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -137,7 +137,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 
@@ -150,7 +150,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -202,17 +202,17 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;zeppelin/contracts/token/StandardToken.sol&quot; : end
+ * import "zeppelin/contracts/token/StandardToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;zeppelin/contracts/ownership/Ownable.sol&quot; : start
+ * import "zeppelin/contracts/ownership/Ownable.sol" : start
  *************************************************************************/
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -248,7 +248,7 @@ contract Ownable {
 
 }
 /*************************************************************************
- * import &quot;zeppelin/contracts/ownership/Ownable.sol&quot; : end
+ * import "zeppelin/contracts/ownership/Ownable.sol" : end
  *************************************************************************/
 
 /**
@@ -275,7 +275,7 @@ contract MintableToken is StandardToken, Ownable {
     }
 }
 /*************************************************************************
- * import &quot;./include/MintableToken.sol&quot; : end
+ * import "./include/MintableToken.sol" : end
  *************************************************************************/
 
 
@@ -334,9 +334,9 @@ contract TokenSale is Ownable {
     * Gets the bonus for the specified total supply
     */
     function getBonus(uint totalSupply) constant returns (uint){
-        bytes10 bonuses = &quot;\x14\x11\x0F\x0C\x0A\x08\x06\x04\x02\x00&quot;;
+        bytes10 bonuses = "\x14\x11\x0F\x0C\x0A\x08\x06\x04\x02\x00";
         uint level = totalSupply/BONUS_STEP;
-        if(level &lt; bonuses.length)
+        if(level < bonuses.length)
             return uint(bonuses[level]);
         return 0;
     }
@@ -355,7 +355,7 @@ contract TokenSale is Ownable {
             uint bonus = 100 + getBonus(totalSupply);
             //The cost of the entire remainder of this interval
             uint gapCost = gap*(price*100)/fractions/bonus;
-            if(gapCost &gt;= etherVal){
+            if(gapCost >= etherVal){
                 //If the gap is large enough just sell the necessary amount of tokens
                 tokens += etherVal.mul(bonus).mul(fractions)/(price*100);
                 break;
@@ -424,7 +424,7 @@ contract TokenSale is Ownable {
 
     function setPrice(uint etherPerTie) onlyAuthority {
         //Ether is not expected to rate less than $96 and more than $480 during token sale
-        require(0.0005 ether &lt;= etherPerTie &amp;&amp; etherPerTie &lt;= 0.0025 ether);
+        require(0.0005 ether <= etherPerTie && etherPerTie <= 0.0025 ether);
         price = etherPerTie;
         PriceSet(price);
     }
@@ -438,7 +438,7 @@ contract TokenSale is Ownable {
 
     function finalize() onlyAuthority {
         uint diff = CAP.sub(token.totalSupply());
-        if(diff &gt; 0) //The unsold capacity moves to team
+        if(diff > 0) //The unsold capacity moves to team
             token.mint(owner, diff);
         selfdestruct(owner);
         FinishSale();
@@ -452,8 +452,8 @@ contract TokenSale is Ownable {
     */
     function getTokensAmountUnderCap(uint etherAmount) private constant returns (uint){
         uint tokens = getTokensAmount(etherAmount);
-        require(tokens &gt; 0);
-        require(tokens.add(token.totalSupply()) &lt;= SALE_CAP);
+        require(tokens > 0);
+        require(tokens.add(token.totalSupply()) <= SALE_CAP);
         return tokens;
     }
 

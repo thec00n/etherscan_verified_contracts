@@ -14,10 +14,10 @@ pragma solidity ^0.4.17;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -25,7 +25,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -81,8 +81,8 @@ contract NVCTToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     event Burn(address indexed burner, uint256 value);
     
@@ -90,8 +90,8 @@ contract NVCTToken is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     function NVCTToken() public {
-        symbol = &quot;NVCT&quot;;
-        name = &quot;nVision Cash token&quot;;
+        symbol = "NVCT";
+        name = "nVision Cash token";
         decimals = 18;
         _totalSupply = 850000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -119,12 +119,12 @@ contract NVCTToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        if(balances[msg.sender] &gt;= tokens &amp;&amp; tokens &gt; 0 &amp;&amp; to!=address(0)) {
+        if(balances[msg.sender] >= tokens && tokens > 0 && to!=address(0)) {
             balances[msg.sender] = balances[msg.sender].sub(tokens);
             balances[to] = balances[to].add(tokens);
             emit Transfer(msg.sender, to, tokens);
@@ -135,14 +135,14 @@ contract NVCTToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
-        if(tokens &gt; 0 &amp;&amp; spender != address(0)) {
+        if(tokens > 0 && spender != address(0)) {
             allowed[msg.sender][spender] = tokens;
             emit Approval(msg.sender, spender, tokens);
             return true;
@@ -160,7 +160,7 @@ contract NVCTToken is ERC20Interface, Owned {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        if (balances[from] &gt;= tokens &amp;&amp; allowed[from][msg.sender] &gt;= tokens &amp;&amp; tokens &gt; 0) {
+        if (balances[from] >= tokens && allowed[from][msg.sender] >= tokens && tokens > 0) {
             balances[from] = balances[from].sub(tokens);
             allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
             balances[to] = balances[to].add(tokens);
@@ -172,7 +172,7 @@ contract NVCTToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -184,8 +184,8 @@ contract NVCTToken is ERC20Interface, Owned {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) onlyOwner public {
-      require(_value &gt; 0);
-      require(_value &lt;= balances[msg.sender]);
+      require(_value > 0);
+      require(_value <= balances[msg.sender]);
       address burner = msg.sender;
       balances[burner] = balances[burner].sub(_value);
       _totalSupply = _totalSupply.sub(_value);

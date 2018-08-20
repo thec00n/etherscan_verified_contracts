@@ -26,14 +26,14 @@ contract mortal is owned() {
 }
  
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -42,7 +42,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -104,35 +104,35 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork() internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -154,12 +154,12 @@ contract usingOraclize {
 
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
 
@@ -187,7 +187,7 @@ contract usingOraclize {
     }
         
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 /** @title DSParser. */
 contract DSParser{
@@ -203,19 +203,19 @@ contract DSParser{
 			constant 
 			returns (uint) { 
 		/** @dev Turns a string into a number with _b places
-          * @param _a String to be processed, e.g. &quot;0.002&quot;
+          * @param _a String to be processed, e.g. "0.002"
           * @param _b number of decimal places
           * @return uint of the decimal representation
         */
 			bytes memory bresult = bytes(_a);
             uint mint = 0;
             bool decimals = false;
-            for (uint i=0; i&lt;bresult.length; i++){
-                if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+            for (uint i=0; i<bresult.length; i++){
+                if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                     if (decimals){
                        if (_b == 0){
                         //Round up if next value is 5 or greater
-                        if(uint(bresult[i])- 48&gt;4){
+                        if(uint(bresult[i])- 48>4){
                             mint = mint+1;
                         }    
                         break;
@@ -228,7 +228,7 @@ contract DSParser{
                     decimals = true;
                 }
             }
-            if (_b &gt; 0) mint *= 10**_b;
+            if (_b > 0) mint *= 10**_b;
            return mint;
     }
 	
@@ -260,8 +260,8 @@ contract I_Pricer {
     uint128 public lastPrice;
     uint public constant DELAY = 1 days;// this needs to be a day on the mainnet
     I_minter public mint;
-    string public sURL;//=&quot;json(https://api.kraken.com/0/public/Ticker?pair=ETHEUR).result.XETHZEUR.p.1&quot;;
-    mapping (bytes32 =&gt; uint) RevTransaction;
+    string public sURL;//="json(https://api.kraken.com/0/public/Ticker?pair=ETHEUR).result.XETHZEUR.p.1";
+    mapping (bytes32 => uint) RevTransaction;
     function setMinter(address _newAddress) {}
     function __callback(bytes32 myid, string result) {}
     function queryCost() constant returns (uint128 _value) {}
@@ -279,16 +279,16 @@ contract Pricer is I_Pricer,
 	mortal, 
 	usingOraclize, 
 	DSParser {
-	// &lt;pair_name&gt; = pair name
-    // a = ask array(&lt;price&gt;, &lt;whole lot volume&gt;, &lt;lot volume&gt;),
-    // b = bid array(&lt;price&gt;, &lt;whole lot volume&gt;, &lt;lot volume&gt;),
-    // c = last trade closed array(&lt;price&gt;, &lt;lot volume&gt;),
-    // v = volume array(&lt;today&gt;, &lt;last 24 hours&gt;),
-    // p = volume weighted average price array(&lt;today&gt;, &lt;last 24 hours&gt;),
-    // t = number of trades array(&lt;today&gt;, &lt;last 24 hours&gt;),
-    // l = low array(&lt;today&gt;, &lt;last 24 hours&gt;),
-    // h = high array(&lt;today&gt;, &lt;last 24 hours&gt;),
-    // o = today&#39;s opening price
+	// <pair_name> = pair name
+    // a = ask array(<price>, <whole lot volume>, <lot volume>),
+    // b = bid array(<price>, <whole lot volume>, <lot volume>),
+    // c = last trade closed array(<price>, <lot volume>),
+    // v = volume array(<today>, <last 24 hours>),
+    // p = volume weighted average price array(<today>, <last 24 hours>),
+    // t = number of trades array(<today>, <last 24 hours>),
+    // l = low array(<today>, <last 24 hours>),
+    // h = high array(<today>, <last 24 hours>),
+    // o = today's opening price
 	
     function Pricer(string _URL) {
 		/** @dev Constructor, allows the pricer URL to be set
@@ -320,7 +320,7 @@ contract Pricer is I_Pricer,
           * @param _newAddress Address of the minter
           * @return nothing
         */
-		return cast(oraclize_getPrice(&quot;URL&quot;)); 
+		return cast(oraclize_getPrice("URL")); 
     }
 
     function QuickPrice() 
@@ -328,7 +328,7 @@ contract Pricer is I_Pricer,
 		/** @dev Gets the latest price.  Be careful, All eth sent is kept by the contract.
           * @return nothing, but the new price will be stored in variable lastPrice
         */
-        bytes32 TrasID =oraclize_query(1, &quot;URL&quot;, sURL);
+        bytes32 TrasID =oraclize_query(1, "URL", sURL);
         RevTransaction[TrasID]=0;
     }
 	
@@ -345,7 +345,7 @@ contract Pricer is I_Pricer,
         } else {
             lastPrice =  parseInt128(result);  //convert the string into a 18 decimal place number
         }
-        if(RevTransaction[myid]&gt;0){  //if it&#39;s not from QuickPrice
+        if(RevTransaction[myid]>0){  //if it's not from QuickPrice
             mint.PriceReturn(RevTransaction[myid],lastPrice);  //Call the minter
         }
         delete RevTransaction[myid]; // free up the memory
@@ -386,7 +386,7 @@ contract Pricer is I_Pricer,
         */
         // 
         bytes32 TrasID;
-        TrasID=oraclize_query(DELAY, &quot;URL&quot;, sURL);
+        TrasID=oraclize_query(DELAY, "URL", sURL);
         RevTransaction[TrasID]=_actionID;
 		_TrasID=uint(TrasID);
     }

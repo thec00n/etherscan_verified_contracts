@@ -38,7 +38,7 @@ library SafeMath
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) 
   {
-     assert(b &lt;= a);
+     assert(b <= a);
      return a - b;
   }
 
@@ -49,7 +49,7 @@ library SafeMath
   function add(uint256 a, uint256 b) internal pure returns(uint256 c) 
   {
      c = a + b;
-     assert(c &gt;= a);
+     assert(c >= a);
      return c;
   }
 }
@@ -76,8 +76,8 @@ contract PLTC is ERC20Interface
     using SafeMath for uint256;
    
     uint256 constant public TOKEN_DECIMALS = 10 ** 18;
-    string public constant name            = &quot;PlatonCoin&quot;;
-    string public constant symbol          = &quot;PLTC&quot;;
+    string public constant name            = "PlatonCoin";
+    string public constant symbol          = "PLTC";
     uint256 public totalTokenSupply        = 21000000 * TOKEN_DECIMALS;
 
     uint256 public totalSaleSupply         = 13860000 * TOKEN_DECIMALS; // Pre-sale + Sale 
@@ -96,8 +96,8 @@ contract PLTC is ERC20Interface
     event OwnershipRenounced(address indexed _previousOwner);
 
     /** mappings **/ 
-    mapping(address =&gt; uint256) public  balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal  allowed;
+    mapping(address => uint256) public  balances;
+    mapping(address => mapping(address => uint256)) internal  allowed;
  
     /**
      * @dev Throws if called by any account other than the owner.
@@ -148,7 +148,7 @@ contract PLTC is ERC20Interface
     function initWallets(address _teamWallet, address _advisorWallet, address _bountyWallet, address _earlyInvWallet) public onlyOwner
     {
        require(!stopped);
-       require( _teamWallet != address(0x0) &amp;&amp; _advisorWallet != address(0x0) &amp;&amp; _bountyWallet != address(0x0) &amp;&amp; _earlyInvWallet != address(0x0));
+       require( _teamWallet != address(0x0) && _advisorWallet != address(0x0) && _bountyWallet != address(0x0) && _earlyInvWallet != address(0x0));
 
        balances[_teamWallet]     = totalTeamSupply;
        balances[_advisorWallet]  = totalAdvisorsSupply;
@@ -169,7 +169,7 @@ contract PLTC is ERC20Interface
      function burn(uint256 _value) onlyOwner public returns (bool) 
      {
         require(!stopped);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
 
@@ -222,7 +222,7 @@ contract PLTC is ERC20Interface
        }
 
        require(_to != address(0x0));
-       require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0);
+       require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value >= 0);
 
        balances[_from] = balances[_from].sub(_value);
        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -237,7 +237,7 @@ contract PLTC is ERC20Interface
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds
      * @param _tokens The amount of tokens to be spent
@@ -264,7 +264,7 @@ contract PLTC is ERC20Interface
     function allowance(address _owner, address _spender) public view returns(uint256)
     {
        require(!stopped);
-       require(_owner != address(0x0) &amp;&amp; _spender != address(0x0));
+       require(_owner != address(0x0) && _spender != address(0x0));
 
        return allowed[_owner][_spender];
     }
@@ -286,7 +286,7 @@ contract PLTC is ERC20Interface
        }
 
        require(_address != address(0x0));
-       require(balances[msg.sender] &gt;= _tokens);
+       require(balances[msg.sender] >= _tokens);
 
        balances[msg.sender] = (balances[msg.sender]).sub(_tokens);
        balances[_address] = (balances[_address]).add(_tokens);
@@ -364,7 +364,7 @@ contract PLTC is ERC20Interface
 
       require(!stopped);
 
-      if (_subtractedValue &gt; oldValue) 
+      if (_subtractedValue > oldValue) 
       {
          allowed[msg.sender][_spender] = 0;
       }

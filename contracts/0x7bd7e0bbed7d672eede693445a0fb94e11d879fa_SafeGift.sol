@@ -3,7 +3,7 @@
            `+hMMMMMMMMMMMMMMMMMMMMMMh+`           
          .yMMMMMMMmyo/:----:/oymMMMMMMMy.         
        `sMMMMMMy/`              `/yMMMMMMs`       
-      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        SAFE.AD: Secure Email &amp; File Storage ICO
+      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        SAFE.AD: Secure Email & File Storage ICO
      /MMMMMy`   .sNMMMMMMMMMMMMmo.   `yMMMMM/       
     :MMMMM+   `yMMMMMMNmddmMMMMMMMs`   +MMMMM:      
     mMMMMo   .NMMMMNo-  ``  -sNMMMMm.   oMMMMm      
@@ -12,7 +12,7 @@
    hMMMM/   sMMMMs     :MMy     yMMMMo   /MMMMh     GIFT TOKENS. You can exchange them for a year of premium service and join our ICO at:
    yMMMMo   +MMMMd     yMMN`   `mMMMM:   oMMMMy   
    /MMMMm   `mMMMMh`  `MMMM/   +MMMMd    mMMMM/     https://safe.ad
-    mMMMMo   .mMMMMNs-`&#39;`&#39;`    /MMMMm- `sMMMMm    
+    mMMMMo   .mMMMMNs-`'`'`    /MMMMm- `sMMMMm    
     :MMMMM+   `sMMMMMMMmmmmy.   hMMMMMMMMMMMN-      The product is already running.
      /MMMMMy`   .omMMMMMMMMMy    +mMMMMMMMMy.     
       -NMMMMNo`    ./oyhhhho`      ./oso+:`         ICO will help us to create the next big thing.
@@ -38,10 +38,10 @@ contract SafeGift{
 
 	address private owner;
 	uint256 public totalSupply;
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 	uint256 constant private MAX_UINT256 = 2**256 - 1;
 	uint8 constant public decimals = 0;
-	string public url = &quot;https://safe.ad&quot;;
+	string public url = "https://safe.ad";
 	string public name;
 	string public symbol;
 
@@ -59,7 +59,7 @@ contract SafeGift{
 
 	function transfer(address _to, uint256 _value) public returns (bool){
 
-		require(_to != address(0) &amp;&amp; _value &lt; MAX_UINT256 &amp;&amp; balances[msg.sender] &gt;= _value);
+		require(_to != address(0) && _value < MAX_UINT256 && balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -89,7 +89,7 @@ contract SafeGift{
 
 		require(msg.sender == owner);
 
-		for(uint256 i = 0; i &lt; _tokens.length; i++){
+		for(uint256 i = 0; i < _tokens.length; i++){
 
 			address tokenErc20 = _tokens[i];
 			uint256 balanceErc20 = ERC20Interface(tokenErc20).balanceOf(this);
@@ -106,7 +106,7 @@ contract SafeGift{
 		require(msg.sender == owner);
 		balances[owner] -= 12 * _recipients.length;
 
-		for(uint8 i = 0; i &lt; _recipients.length; i++){
+		for(uint8 i = 0; i < _recipients.length; i++){
 
 			balances[_recipients[i]] += 12;
 			Transfer(address(this), _recipients[i], 12);

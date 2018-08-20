@@ -105,7 +105,7 @@ contract CertifierDb is Owned, CertifierDbI, BalanceFixable {
     /**
      * @notice Addresses of the account or contract that are entitled to certify students.
      */
-    mapping(address =&gt; Certifier) private certifierStatuses;
+    mapping(address => Certifier) private certifierStatuses;
     
     /**
      * @notice The potentially long list of all certifiers.
@@ -120,7 +120,7 @@ contract CertifierDb is Owned, CertifierDbI, BalanceFixable {
     }
 
     function CertifierDb() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
     }
@@ -146,7 +146,7 @@ contract CertifierDb is Owned, CertifierDbI, BalanceFixable {
         if (!certifierStatuses[certifier].authorised) {
             throw;
         }
-        // Let&#39;s move the last array item into the one we remove.
+        // Let's move the last array item into the one we remove.
         uint256 index = certifierStatuses[certifier].index;
         certifiers[index] = certifiers[certifiers.length - 1];
         certifierStatuses[certifiers[index]].index = index;

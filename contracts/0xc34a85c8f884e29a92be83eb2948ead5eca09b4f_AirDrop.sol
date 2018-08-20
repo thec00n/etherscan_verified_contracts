@@ -13,14 +13,14 @@
 // 저희는 호텔, 사무실, 쇼핑몰에 독점 계약을 맺고 전기차가 이용할 수 있는 eCharge 충전소 50,000개를 더 설치하고 소유, 운영할 계획이며, 이로써 수익을 창출할 것입니다. 백엔드와 결제 시스템은 블록체인을 바탕으로 운영되며, 차 소유주는 본 시스템을 이용하여 배터리 충전에 사용되는 에너지를 저렴한 
 // 가격에 구입하고, 비싼 값으로 판매할 수 있습니다.
 //
-// F&#233;licitations! Voici votre token airdrop gratuit. Pour en savoir plus sur le projet: https://echarge.io, Tableau des bonus et dates de l&#39;ICO.
-// Nous installerons, poss&#232;derons et g&#233;rerons plus de 50 000 bornes de recharge pour voitures &#233;lectriques sur la base d&#39;un contrat exclusif d&#233;butant en h&#244;tels, bureaux et centres commerciaux pour g&#233;n&#233;rer des recettes gr&#226;ce &#224; l&#39;usage de ces
-// bornes. Le syst&#232;me logiciel et de paiement est bas&#233; sur la blockchain pour permettre au propri&#233;taire de la voiture
-// d&#39;utiliser sa voiture comme une batterie pour acheter de l&#39;&#233;nergie &#224; bas prix et vendre de l&#39;&#233;nergie &#224; un prix &#233;lev&#233;. 
+// Félicitations! Voici votre token airdrop gratuit. Pour en savoir plus sur le projet: https://echarge.io, Tableau des bonus et dates de l'ICO.
+// Nous installerons, possèderons et gérerons plus de 50 000 bornes de recharge pour voitures électriques sur la base d'un contrat exclusif débutant en hôtels, bureaux et centres commerciaux pour générer des recettes grâce à l'usage de ces
+// bornes. Le système logiciel et de paiement est basé sur la blockchain pour permettre au propriétaire de la voiture
+// d'utiliser sa voiture comme une batterie pour acheter de l'énergie à bas prix et vendre de l'énergie à un prix élevé. 
 //
-// &#161;Felicidades! Estos son sus tokens gratuitos recibidos por Airdrop. Para m&#225;s informaci&#243;n acerca del proyecto visite: https://echarge.io, Tabla de Bonos y Fechas de los ICO
-// Adquiriremos, instalaremos y operaremos m&#225;s de 50 000 estaciones de carga para coches el&#233;ctricos, firmaremos contratos exclusivos con hoteles, oficinas y centros comerciales, para as&#237; obtener ingresos por el consumo. 
-// El sistema de soporte y pago est&#225; basado en la cadena de bloques, lo que permitir&#225; a los due&#241;os de coches el&#233;ctricos utilizar su veh&#237;culo como una bater&#237;a sobre ruedas, con la cual podr&#225;n adquirir energ&#237;a a precios m&#243;dicos y venderla
+// ¡Felicidades! Estos son sus tokens gratuitos recibidos por Airdrop. Para más información acerca del proyecto visite: https://echarge.io, Tabla de Bonos y Fechas de los ICO
+// Adquiriremos, instalaremos y operaremos más de 50 000 estaciones de carga para coches eléctricos, firmaremos contratos exclusivos con hoteles, oficinas y centros comerciales, para así obtener ingresos por el consumo. 
+// El sistema de soporte y pago está basado en la cadena de bloques, lo que permitirá a los dueños de coches eléctricos utilizar su vehículo como una batería sobre ruedas, con la cual podrán adquirir energía a precios módicos y venderla
 // a precios altos. 
                                                                                                               
 pragma solidity 0.4.18;
@@ -46,7 +46,7 @@ contract Ownable {
 contract Withdrawable is Ownable {
     function withdrawEther(address _to, uint _value) onlyOwner public returns(bool) {
         require(_to != address(0));
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
 
         _to.transfer(_value);
 
@@ -87,7 +87,7 @@ contract AirDrop is Withdrawable {
     function tokenTransfer(ERC20 _token, uint _value, address[] _to) onlyOwner public {
         require(_token != address(0));
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             require(_token.transfer(_to[i], _value));
         }
     }
@@ -95,13 +95,13 @@ contract AirDrop is Withdrawable {
     function tokenTransferFrom(ERC20 _token, address spender, uint _value, address[] _to) onlyOwner public {
         require(_token != address(0));
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             require(_token.transferFrom(spender, _to[i], _value));
         }
     }
 
     function etherTransfer(uint _value, address[] _to) onlyOwner payable public {
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             _to[i].transfer(_value);
             TransferEther(_to[i], _value);
         }

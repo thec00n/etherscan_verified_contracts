@@ -23,12 +23,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -124,7 +124,7 @@ contract ZipFlaxICO is Owned{
     // ----------------------------------------------------------------------------
     // Function to handle eth transfers
     // It invokes when someone sends ETH to this contract address.
-    // Requires enough gas for the execution otherwise it&#39;ll throw out of gas error.
+    // Requires enough gas for the execution otherwise it'll throw out of gas error.
     // tokens are transferred to user
     // ETH are transferred to current owner
     // ----------------------------------------------------------------------------
@@ -159,7 +159,7 @@ contract ZipFlaxICO is Owned{
         tokenBought = tokenBought.add(bonus); // Adding bonus
         
         // this smart contract should have enough tokens to distribute
-        require(tokenReward.balanceOf(this) &gt;= tokenBought);
+        require(tokenReward.balanceOf(this) >= tokenBought);
         
         totalRaised = totalRaised.add(msg.value); //Save the total eth totalRaised (in wei)
         totalDistributed = totalDistributed.add(tokenBought); //Save to total tokens distributed
@@ -201,7 +201,7 @@ contract ZipFlaxICO is Owned{
         uint256 remainder = tokenReward.balanceOf(this); //Remaining tokens on contract
         
         //Funds send to creator if any
-        if(address(this).balance &gt; 0) {
+        if(address(this).balance > 0) {
             owner.transfer(address(this).balance);
             emit LogBeneficiaryPaid(owner);
         }
@@ -218,7 +218,7 @@ contract ZipFlaxICO is Owned{
     // tokens is the amount to transfer tokens to the owner
     // ----------------------------------------------------------------------------
     function claimTokens(uint256 tokens) onlyOwner public {
-        require(tokenReward.balanceOf(this) &gt;= tokens); // should have enough tokens
+        require(tokenReward.balanceOf(this) >= tokens); // should have enough tokens
         tokenReward.transfer(owner,tokens); // Transfer tokens to owner
     }
 

@@ -24,9 +24,9 @@ contract SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ contract SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ contract SafeMath {
   */
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,7 +81,7 @@ Origin: the origin address from whose balance the tokens are sent
 Value is the amount of tokens sent
 Data is arbitrary data sent with the token transfer. Simulates ether tx.data
 
-From, origin and value shouldn&#39;t be trusted unless the token contract is trusted.
+From, origin and value shouldn't be trusted unless the token contract is trusted.
 If sender == tx.origin, it is safe to trust it regardless of the token.
 */
 
@@ -100,8 +100,8 @@ contract Standard223Receiver is ERC223Receiver {
 //contract WeSingCoin223Token_8 is ERC20, ERC223, Standard223Receiver, SafeMath {
 contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
 
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
   
     string public name;                   //fancy name: eg Simon Bucks
     uint8 public decimals;                //How many decimals to show.
@@ -111,7 +111,7 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     address /*public*/ thisContract;
     bool /*public*/ isTokenSupport;
   
-    mapping(address =&gt; bool) isSendingLocked;
+    mapping(address => bool) isSendingLocked;
     bool isAllTransfersLocked;
   
     uint oneTransferLimit;
@@ -127,11 +127,11 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     }
 
     struct TransferInfos {
-        mapping (uint =&gt; TransferInfo) ti;
+        mapping (uint => TransferInfo) ti;
         uint tc;
     }
   
-    mapping (address =&gt; TransferInfos) transferInfo;
+    mapping (address => TransferInfos) transferInfo;
 
 //-------------------------------------------------------------------------------------
 //from ExampleToken
@@ -139,10 +139,10 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     constructor(/*uint initialBalance*/) public {
     
         decimals    = 6;                                // Amount of decimals for display purposes
-//      name        = &quot;WeSingCoin&quot;;                     // Set the name for display purposes
-//      symbol      = &#39;WSC&#39;;                            // Set the symbol for display purposes
-        name        = &quot;LiveBoxCoin&quot;;                     // Set the name for display purposes
-        symbol      = &#39;LBC&#39;;                            // Set the symbol for display purposes
+//      name        = "WeSingCoin";                     // Set the name for display purposes
+//      symbol      = 'WSC';                            // Set the symbol for display purposes
+        name        = "LiveBoxCoin";                     // Set the name for display purposes
+        symbol      = 'LBC';                            // Set the symbol for display purposes
 
         uint initialBalance  = (10 ** uint256(decimals)) * 5000*1000*1000;
     
@@ -167,14 +167,14 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     function super_transfer(address _to, uint _value) /*public*/ internal returns (bool success) {
 
         require(!isSendingLocked[msg.sender]);
-        require(_value &lt;= oneTransferLimit);
-        require(balances[msg.sender] &gt;= _value);
+        require(_value <= oneTransferLimit);
+        require(balances[msg.sender] >= _value);
 
         if(msg.sender == contrInitiator) {
             //no restricton
         } else {
             require(!isAllTransfersLocked);  
-            require(safeAdd(getLast24hSendingValue(msg.sender), _value) &lt;= oneDayTransferLimit);
+            require(safeAdd(getLast24hSendingValue(msg.sender), _value) <= oneDayTransferLimit);
         }
 
 
@@ -193,16 +193,16 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     function super_transferFrom(address _from, address _to, uint _value) /*public*/ internal returns (bool success) {
         
         require(!isSendingLocked[_from]);
-        require(_value &lt;= oneTransferLimit);
-        require(balances[_from] &gt;= _value);
+        require(_value <= oneTransferLimit);
+        require(balances[_from] >= _value);
 
-        if(msg.sender == contrInitiator &amp;&amp; _from == thisContract) {
+        if(msg.sender == contrInitiator && _from == thisContract) {
             // no restriction
         } else {
             require(!isAllTransfersLocked);  
-            require(safeAdd(getLast24hSendingValue(_from), _value) &lt;= oneDayTransferLimit);
+            require(safeAdd(getLast24hSendingValue(_from), _value) <= oneDayTransferLimit);
             uint allowance = allowed[_from][msg.sender];
-            require(allowance &gt;= _value);
+            require(allowance >= _value);
             allowed[_from][msg.sender] = safeSub(allowance, _value);
         }
 
@@ -272,7 +272,7 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
         // retrieve the size of the code on target address, this needs assembly
         uint length;
         assembly { length := extcodesize(_addr) }
-        return length &gt; 0;
+        return length > 0;
     }
 
 //-------------------------------------------------------------------------------------
@@ -305,8 +305,8 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
     }
 
     function getSig(bytes _data) private pure returns (bytes4 sig) {
-        uint l = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; l; i++) {
+        uint l = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < l; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (l - 1 - i))));
         }
     }
@@ -338,7 +338,7 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
       function supportsToken(address token) public view returns (bool) {
         //do not need to to anything with that token address?
         //if (token == 0) { //attila addition
-        if (token != thisContract) { //attila addition, support only our own token, not others&#39; token
+        if (token != thisContract) { //attila addition, support only our own token, not others' token
             return false;
         }
         if(!isTokenSupport) {  //attila addition
@@ -405,11 +405,11 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
         totVal = 0;  //declared above;
         uint tc = transferInfo[_from].tc;
       
-        if(tc &gt; 0) {
-            for(uint i = tc-1 ; i &gt;= 0 ; i--) {
-//              if(now - transferInfo[_from].ti[i].time &lt; 10 minutes) {
-//              if(now - transferInfo[_from].ti[i].time &lt; 1 hours) {
-                if(now - transferInfo[_from].ti[i].time &lt; 1 days) {
+        if(tc > 0) {
+            for(uint i = tc-1 ; i >= 0 ; i--) {
+//              if(now - transferInfo[_from].ti[i].time < 10 minutes) {
+//              if(now - transferInfo[_from].ti[i].time < 1 hours) {
+                if(now - transferInfo[_from].ti[i].time < 1 days) {
                     totVal = safeAdd(totVal, transferInfo[_from].ti[i].value );
                 } else {
                     break;
@@ -425,13 +425,13 @@ contract LiveBox223Token is ERC20, ERC223, Standard223Receiver, SafeMath {
         require(_values.length == _elemCount); 
         
         uint256 totalValue = 0;
-        for(uint i = 0; i&lt; _recipients.length; i++) {
+        for(uint i = 0; i< _recipients.length; i++) {
             totalValue = safeAdd(totalValue, _values[i]);
         }
         
         require(totalValue == _totalValue);
         
-        for(i = 0; i&lt; _recipients.length; i++) {
+        for(i = 0; i< _recipients.length; i++) {
             transfer(_recipients[i], _values[i]);
         }
         return true;

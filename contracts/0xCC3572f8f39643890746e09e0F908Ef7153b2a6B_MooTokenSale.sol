@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -75,18 +75,18 @@ library SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -98,7 +98,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -143,8 +143,8 @@ contract StandardToken is ERC20, BasicToken {
    */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -158,7 +158,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -207,7 +207,7 @@ contract StandardToken is ERC20, BasicToken {
    */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
     } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -263,8 +263,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract MooToken is MintableToken {
   // Coin Properties
-    string public name = &quot;MOO token&quot;;
-    string public symbol = &quot;XMOO&quot;;
+    string public name = "MOO token";
+    string public symbol = "XMOO";
     uint256 public decimals = 18;
 
     event EmergencyERC20DrainWasCalled(address tokenaddress, uint256 _amount);
@@ -385,8 +385,8 @@ contract MooTokenSale is Ownable {
     bool public suspended;
  
 
-    mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
-    mapping (address =&gt; uint) adminCallMintToTeamCount; // count to admin only once can call MintToTeamAndAdvisors
+    mapping (address => bool) public authorised; // just to annoy the heck out of americans
+    mapping (address => uint) adminCallMintToTeamCount; // count to admin only once can call MintToTeamAndAdvisors
 
     event TokenPurchase(address indexed purchaser, uint256 amount, uint256 _tokens);
     event TokenPlaced(address indexed beneficiary, uint256 _tokens);
@@ -436,15 +436,15 @@ contract MooTokenSale is Ownable {
     */
     function getCurrentRate() public view returns (uint256) {
     
-        if (currentTime() &lt;= PRESALE_ENDTIMESTAMP) {
+        if (currentTime() <= PRESALE_ENDTIMESTAMP) {
             return basicRate * 5/4;
         }
 
-        if (tokenRaised &lt;= 10000000 * oneCoin) {
+        if (tokenRaised <= 10000000 * oneCoin) {
             return basicRate * 11/10;
-    } else if (tokenRaised &lt;= 20000000 * oneCoin) {
+    } else if (tokenRaised <= 20000000 * oneCoin) {
         return basicRate * 1075/1000;
-    } else if (tokenRaised &lt;= 30000000 * oneCoin) {
+    } else if (tokenRaised <= 30000000 * oneCoin) {
         return basicRate * 105/100;
     } else {
         return basicRate ;
@@ -454,9 +454,9 @@ contract MooTokenSale is Ownable {
 
   // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        if (currentTime() &gt; PUBLICSALE_ENDTIMESTAMP)
+        if (currentTime() > PUBLICSALE_ENDTIMESTAMP)
             return true; // if  the time is over
-        if (tokenRaised &gt;= tokensForSale)
+        if (tokenRaised >= tokensForSale)
             return true; // if we reach the tokensForSale 
         return false;
     }
@@ -498,12 +498,12 @@ contract MooTokenSale is Ownable {
   */
     modifier onlyAuthorised() {
         require (authorised[msg.sender]);
-        require ((currentTime() &gt;= PRESALE_STARTTIMESTAMP &amp;&amp; currentTime() &lt;= PRESALE_ENDTIMESTAMP ) || (currentTime() &gt;= PUBLICSALE_STARTTIMESTAMP &amp;&amp; currentTime() &lt;= PUBLICSALE_ENDTIMESTAMP ));
+        require ((currentTime() >= PRESALE_STARTTIMESTAMP && currentTime() <= PRESALE_ENDTIMESTAMP ) || (currentTime() >= PUBLICSALE_STARTTIMESTAMP && currentTime() <= PUBLICSALE_ENDTIMESTAMP ));
         require (!(hasEnded()));
         require (multiSig != 0x0);
-        require (msg.value &gt; 1 finney);
+        require (msg.value > 1 finney);
         require(!suspended);
-        require(tokensForSale &gt; tokenRaised); // check we are not over the number of tokensForSale
+        require(tokensForSale > tokenRaised); // check we are not over the number of tokensForSale
         _;
     }
 
@@ -522,8 +522,8 @@ contract MooTokenSale is Ownable {
   * @dev authorise a lot of accounts in one go
   */
     function authoriseManyAccounts(address[] many) onlyCSorAdmin public returns(bool) {
-        require(many.length &gt; 0);  
-        for (uint256 i = 0; i &lt; many.length; i++) {
+        require(many.length > 0);  
+        for (uint256 i = 0; i < many.length; i++) {
             require(many[i] != address(0));
             require(many[i] != address(this));  
             authorised[many[i]] = true;
@@ -568,16 +568,16 @@ contract MooTokenSale is Ownable {
     }
 
   /**
-  * @dev set a new Rate BE CAREFULL: when we calculate the bonus better if we have&#39;nt remainder 
+  * @dev set a new Rate BE CAREFULL: when we calculate the bonus better if we have'nt remainder 
   */
     function setBasicRate(uint newRate) onlyAdmin public returns (bool){
-        require(0 &lt; newRate &amp;&amp; newRate &lt; 5000);
+        require(0 < newRate && newRate < 5000);
         basicRate = newRate;
         return true;
     }
 
     function setMaxTokenCap(uint _newMaxTokenCap) onlyAdmin public returns (bool){
-        require(0 &lt; _newMaxTokenCap &amp;&amp; _newMaxTokenCap &lt; tokensForSale);
+        require(0 < _newMaxTokenCap && _newMaxTokenCap < tokensForSale);
         maxTokenCap = _newMaxTokenCap;
         return true;
     }
@@ -612,7 +612,7 @@ contract MooTokenSale is Ownable {
     function placeTokens(address beneficiary, uint256 _tokens) onlyAdmin public returns(bool){
 
     // *************************************************************************************************************  
-        require(tokenRaised.add(_tokens) &lt;= tokensForSale); // we dont want to overmint ********************************
+        require(tokenRaised.add(_tokens) <= tokensForSale); // we dont want to overmint ********************************
     // *************************************************************************************************************
 
         require(_tokens != 0);
@@ -631,7 +631,7 @@ contract MooTokenSale is Ownable {
       
         rate = getCurrentRate();
       // check we are in pre sale , bonus 25%
-        if (currentTime() &lt;= PRESALE_ENDTIMESTAMP) {
+        if (currentTime() <= PRESALE_ENDTIMESTAMP) {
             minContribution = 50 ether;
             maxContribution = 1000 ether;
     // we are in publicsale bonus depends on the sold out tokens. we set the rate in the setTier
@@ -641,17 +641,17 @@ contract MooTokenSale is Ownable {
         }
 
     //check minimum and maximum amount
-        require(msg.value &gt;= minContribution);
-        require(msg.value &lt;= maxContribution);
+        require(msg.value >= minContribution);
+        require(msg.value <= maxContribution);
     
     // Calculate token amount to be purchased    
         uint256 tokens = amount.mul(rate);
    
    
     // *************************************************************************************************************
-        require(tokenRaised.add(tokens) &lt;= tokensForSale); //if dont want to overmint ******************************
+        require(tokenRaised.add(tokens) <= tokensForSale); //if dont want to overmint ******************************
     // *************************************************************************************************************
-        require(token.balanceOf(beneficiary) + tokens &lt;= maxTokenCap); // limit of tokens what a buyer can buy *****
+        require(token.balanceOf(beneficiary) + tokens <= maxTokenCap); // limit of tokens what a buyer can buy *****
     //  ************************************************************************************************************
 
 
@@ -672,7 +672,7 @@ contract MooTokenSale is Ownable {
         require(hasEnded());
     // assign the rest of the 300 M tokens to the reserve
         uint unassigned;    
-        if(tokensForSale &gt; tokenRaised) {
+        if(tokensForSale > tokenRaised) {
             unassigned = tokensForSale.sub(tokenRaised);
             tokenRaised = tokenRaised.add(unassigned);
             token.mint(multiSig,unassigned);
@@ -699,7 +699,7 @@ contract MooTokenSale is Ownable {
     function mintToTeamAndAdvisors() public onlyAdmin {
         require(hasEnded());
         require(adminCallMintToTeamCount[msg.sender] == 0); // count to admin only once can call MintToTeamAndAdvisors
-        require(1535644800 &lt;= currentTime() &amp;&amp; currentTime() &lt;= 1535731200);  // Admin have 24h to call this function
+        require(1535644800 <= currentTime() && currentTime() <= 1535731200);  // Admin have 24h to call this function
       //1535644800 converts to Friday August 31, 2018 00:00:00 (am) in time zone Asia/Singapore (+08)
       //1535731200 converts to Saturday September 01, 2018 00:00:00 (am) in time zone Asia/Singapore (+08)
         adminCallMintToTeamCount[msg.sender]++; 
@@ -710,7 +710,7 @@ contract MooTokenSale is Ownable {
  /**
 *****************************************************************************************
 *****************************************************************************************
-  * @dev only Admin can mint from &quot;SaleClosed&quot; to &quot;Closed&quot; 
+  * @dev only Admin can mint from "SaleClosed" to "Closed" 
   * _tokens given by client (limit if we reach the maxTokens)
   * multiSig was given by client
 *****************************************************************************************
@@ -720,7 +720,7 @@ contract MooTokenSale is Ownable {
         require(hasEnded());
         uint limit = maxTokens.sub(tokensOfTeamAndAdvisors); 
      // we dont want to mint the reserved tokens for Team and Advisors
-        require(tokenRaised.add(_tokens) &lt;= limit);  
+        require(tokenRaised.add(_tokens) <= limit);  
         tokenRaised = tokenRaised.add(_tokens);
         token.mint(multiSig,_tokens);
         TokenPlaced(multiSig, _tokens);
@@ -736,9 +736,9 @@ contract MooTokenSale is Ownable {
 *****************************************************************************************
  */
     function close() public onlyOwner {
-        require(1535731200 &lt;= currentTime());  // only after the Aug31
+        require(1535731200 <= currentTime());  // only after the Aug31
         uint unassigned;
-        if( maxTokens &gt; tokenRaised) {
+        if( maxTokens > tokenRaised) {
             unassigned = maxTokens.sub(tokenRaised);
             tokenRaised = tokenRaised.add(unassigned);
             token.mint(multiSig,unassigned);

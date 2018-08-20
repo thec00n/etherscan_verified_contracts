@@ -4,12 +4,12 @@ contract SafeMath {
 
 function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
 uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -37,7 +37,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -48,7 +48,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -73,17 +73,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Faceblock is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Faceblock&quot;;
-    string public constant symbol = &quot;FBL&quot;;
+    string public constant name = "Faceblock";
+    string public constant symbol = "FBL";
     uint256 public constant decimals = 2;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address ethFundDeposit;      // deposit address for ETH for FBL
@@ -101,9 +101,9 @@ contract Faceblock is StandardToken, SafeMath {
     // constructor
     function Faceblock()
     {
-      FBLFounder = &#39;0x3A1F12A15f3159903f2EEbe1a2949A780911f695&#39;;
-      FBLFundDeposit1 = &#39;0x2E109b1c58625F0770d885ADA419Df16621350bB&#39;;
-      FBLFundDeposit2 = &#39;0xAeD77852D6810E5c36ED85Ad1beC9c2368F5400F&#39;;
+      FBLFounder = '0x3A1F12A15f3159903f2EEbe1a2949A780911f695';
+      FBLFundDeposit1 = '0x2E109b1c58625F0770d885ADA419Df16621350bB';
+      FBLFundDeposit2 = '0xAeD77852D6810E5c36ED85Ad1beC9c2368F5400F';
       totalSupply = safeMult(FBLFund,1);
       totalSupply = safeAdd(totalSupply,FBLFounderFund);
       balances[FBLFundDeposit1] = FBLFund;    // works with deposit

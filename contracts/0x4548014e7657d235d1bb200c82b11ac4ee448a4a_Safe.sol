@@ -21,15 +21,15 @@ contract Safe {
 
     function lock(uint256 timestamp) returns (bool) {
         require(msg.sender == owner);
-        require(timestamp &gt; lock);
-        require(timestamp &gt; block.timestamp);
+        require(timestamp > lock);
+        require(timestamp > block.timestamp);
         lock = timestamp;
         return true;
     }
 
     function withdrawal(Token token, address to, uint value) returns (bool) {
         require(msg.sender == owner);
-        require(block.timestamp &gt;= lock);
+        require(block.timestamp >= lock);
         require(to != address(0));
         return token.transfer(to, value);
     }

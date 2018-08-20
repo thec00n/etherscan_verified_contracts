@@ -11,17 +11,17 @@ pragma solidity ^0.4.24;
  *                            (__ /          (_/ (, /                                      /)™ 
  *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
  * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
- * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+ * ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
  * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
- *          ______      .-./`)  ,---.  ,---. .-./`)      .-&#39;&#39;-.      .-&#39;&#39;&#39;-.   .---.  
- *=========|    _ `&#39;&#39;.  \ .-.&#39;) |   /  |   | \ .-.&#39;)   .&#39;_ _   \    / _     \  \   /=========*
- *         | _ | ) _  \ / `-&#39; \ |  |   |  .&#39; / `-&#39; \  / ( ` )   &#39;  (`&#39; )/`--&#39;  |   |  
- *         |( &#39;&#39;_&#39;  ) |  `-&#39;`&quot;` |  | _ |  |   `-&#39;`&quot;` . (_ o _)  | (_ o _).      \ /   
- *         | . (_) `. |  .---.  |  _( )_  |   .---.  |  (_,_)___|  (_,_). &#39;.     v    
- *         |(_    ._) &#39;  |   |  \ (_ o._) /   |   |  &#39;  \   .---. .---.  \  :   _ _   
- *         |  (_.\.&#39; /   |   |   \ (_,_) /    |   |   \  `-&#39;    / \    `-&#39;  |  (_I_)  
- *=========|       .&#39;    |   |    \     /     |   |    \       /   \       /  (_(=)_)========* 
- *         &#39;-----&#39;`      &#39;---&#39;     `---`      &#39;---&#39;     `&#39;-..-&#39;     `-...-&#39;    (_I_)  
+ *          ______      .-./`)  ,---.  ,---. .-./`)      .-''-.      .-'''-.   .---.  
+ *=========|    _ `''.  \ .-.') |   /  |   | \ .-.')   .'_ _   \    / _     \  \   /=========*
+ *         | _ | ) _  \ / `-' \ |  |   |  .' / `-' \  / ( ` )   '  (`' )/`--'  |   |  
+ *         |( ''_'  ) |  `-'`"` |  | _ |  |   `-'`"` . (_ o _)  | (_ o _).      \ /   
+ *         | . (_) `. |  .---.  |  _( )_  |   .---.  |  (_,_)___|  (_,_). '.     v    
+ *         |(_    ._) '  |   |  \ (_ o._) /   |   |  '  \   .---. .---.  \  :   _ _   
+ *         |  (_.\.' /   |   |   \ (_,_) /    |   |   \  `-'    / \    `-'  |  (_I_)  
+ *=========|       .'    |   |    \     /     |   |    \       /   \       /  (_(=)_)========* 
+ *         '-----'`      '---'     `---`      '---'     `'-..-'     `-...-'    (_I_)  
  * ╔═╗┌─┐┌┐┌┌┬┐┬─┐┌─┐┌─┐┌┬┐  ╔═╗┌─┐┌┬┐┌─┐ ┌──────────┐
  * ║  │ ││││ │ ├┬┘├─┤│   │   ║  │ │ ││├┤  │ Inventor │
  * ╚═╝└─┘┘└┘ ┴ ┴└─┴ ┴└─┘ ┴   ╚═╝└─┘─┴┘└─┘ └──────────┘
@@ -34,7 +34,7 @@ pragma solidity ^0.4.24;
  *                                └────────────────────┘
  * (Step 1) import this contracts interface into your contract
  * 
- *    import &quot;./DiviesInterface.sol&quot;;
+ *    import "./DiviesInterface.sol";
  * 
  * (Step 2) set up the interface and point it to this contract
  * 
@@ -67,7 +67,7 @@ contract Divies {
     HourglassInterface constant P3Dcontract_ = HourglassInterface(0x5aa487635b1c2bb10550c5c1fd39be943d43aa01);
     
     uint256 public pusherTracker_ = 100;
-    mapping (address =&gt; Pusher) public pushers_;
+    mapping (address => Pusher) public pushers_;
     struct Pusher
     {
         uint256 tracker;
@@ -84,7 +84,7 @@ contract Divies {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     
@@ -110,7 +110,7 @@ contract Divies {
         
     }
     
-    // used so the distribute function can call hourglass&#39;s withdraw
+    // used so the distribute function can call hourglass's withdraw
     function() external payable {}
     
     
@@ -140,17 +140,17 @@ contract Divies {
         isHuman()
     {
         // make sure _percent is within boundaries
-        require(_percent &gt; 0 &amp;&amp; _percent &lt; 100, &quot;please pick a percent between 1 and 99&quot;);
+        require(_percent > 0 && _percent < 100, "please pick a percent between 1 and 99");
         
         // data setup
         address _pusher = msg.sender;
         uint256 _bal = address(this).balance;
         uint256 _compressedData;
         
-        // limit pushers greed (use &quot;if&quot; instead of require for level 42 top kek)
+        // limit pushers greed (use "if" instead of require for level 42 top kek)
         if (
-            pushers_[_pusher].tracker &lt;= pusherTracker_.sub(100) &amp;&amp; // pusher is greedy: wait your turn
-            pushers_[_pusher].time.add(1 hours) &lt; now               // pusher is greedy: its not even been 1 hour
+            pushers_[_pusher].tracker <= pusherTracker_.sub(100) && // pusher is greedy: wait your turn
+            pushers_[_pusher].time.add(1 hours) < now               // pusher is greedy: its not even been 1 hour
         )
         {
             // update pushers wait que 
@@ -160,7 +160,7 @@ contract Divies {
             // setup _stop.  this will be used to tell the loop to stop
             uint256 _stop = (_bal.mul(100 - _percent)) / 100;
             
-            // buy &amp; sell    
+            // buy & sell    
             P3Dcontract_.buy.value(_bal)(address(0));
             P3Dcontract_.sell(P3Dcontract_.balanceOf(address(this)));
             
@@ -168,7 +168,7 @@ contract Divies {
             uint256 _tracker = P3Dcontract_.dividendsOf(address(this));
     
             // reinvest/sell loop
-            while (_tracker &gt;= _stop) 
+            while (_tracker >= _stop) 
             {
                 // lets burn some tokens to distribute dividends to p3d holders
                 P3Dcontract_.reinvest();
@@ -184,7 +184,7 @@ contract Divies {
             _compressedData = _compressedData.insert(1, 47, 47);
         }
         
-        // update pushers timestamp  (do outside of &quot;if&quot; for super saiyan level top kek)
+        // update pushers timestamp  (do outside of "if" for super saiyan level top kek)
         pushers_[_pusher].time = now;
     
         // prep event compression data 
@@ -212,7 +212,7 @@ contract Divies {
 *                            (__ /          (_/ (, /                                      /)™ 
 *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
 * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
-* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
 * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
 *    _  _   __   __ _  ____     ___   __   _  _  ____  ____  ____  ____  ____   __   ____ 
 *===/ )( \ (  ) (  ( \(_  _)===/ __) /  \ ( \/ )(  _ \(  _ \(  __)/ ___)/ ___) /  \ (  _ \===*
@@ -233,18 +233,18 @@ library UintCompressor {
         returns(uint256)
     {
         // check conditions 
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
         _start = exponent(_start);
         
         // check that the include data fits into its segment 
-        require(_include &lt; (_end / _start));
+        require(_include < (_end / _start));
         
         // build middle
-        if (_include &gt; 0)
+        if (_include > 0)
             _include = _include.mul(_start);
         
         return((_var.sub((_var / _start).mul(_start))).add(_include).add((_var / _end).mul(_end)));
@@ -256,8 +256,8 @@ library UintCompressor {
 	    returns(uint256)
     {
         // check conditions
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
@@ -300,7 +300,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -312,7 +312,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -325,7 +325,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -339,7 +339,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -372,7 +372,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

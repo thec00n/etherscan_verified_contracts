@@ -3,10 +3,10 @@ pragma solidity ^0.4.11;
 interface tokenRecipient { function receiveApproval(address from, uint256 value, address token, bytes extraData) public; }
 
 contract VKCoin {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
-    string public name = &#39;VKCoin&#39;;
-    string public symbol = &#39;VKC&#39;;
+    string public name = 'VKCoin';
+    string public symbol = 'VKC';
     uint8 public decimals = 6;
     
     function transfer(address _to, uint256 _value) public {

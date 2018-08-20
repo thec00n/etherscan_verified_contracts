@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -103,16 +103,16 @@ contract DatumTokenSale is  Ownable {
   address public whiteListControllerAddress;
 
   //lookup addresses for whitelist
-  mapping (address =&gt; bool) public whiteListAddresses;
+  mapping (address => bool) public whiteListAddresses;
 
   //lookup addresses for special bonuses
-  mapping (address =&gt; uint) public bonusAddresses;
+  mapping (address => uint) public bonusAddresses;
 
   //loopup for max token amount per user allowed
-  mapping(address =&gt; uint256) public maxAmountAddresses;
+  mapping(address => uint256) public maxAmountAddresses;
 
   //loopup for balances
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   // start and end date where investments are allowed (both inclusive)
   uint256 public startDate = 1509282000;//29 Oct 2017 13:00:00 +00:00 UTC
@@ -290,7 +290,7 @@ contract DatumTokenSale is  Ownable {
   {
       require(msg.sender == whiteListControllerAddress);
 
-      for (uint256 i = 0; i &lt; _addressesToAdd.length;i++) 
+      for (uint256 i = 0; i < _addressesToAdd.length;i++) 
       {
         whiteListAddresses[_addressesToAdd[i]] = true;
       }
@@ -329,52 +329,52 @@ contract DatumTokenSale is  Ownable {
         uint diffInHours = (diffInSeconds/60)/60;
         
         // 10/29/2017 - 11/1/2017
-        if(diffInHours &lt; 72){
+        if(diffInHours < 72){
             return bonus1Rate;
         }
 
         // 11/1/2017 - 11/4/2017
-        if(diffInHours &gt;= 72 &amp;&amp; diffInHours &lt; 144){
+        if(diffInHours >= 72 && diffInHours < 144){
             return bonus2Rate;
         }
 
         // 11/4/2017 - 11/7/2017
-        if(diffInHours &gt;= 144 &amp;&amp; diffInHours &lt; 216){
+        if(diffInHours >= 144 && diffInHours < 216){
             return bonus3Rate;
         }
 
         // 11/7/2017 - 11/10/2017
-        if(diffInHours &gt;= 216 &amp;&amp; diffInHours &lt; 288){
+        if(diffInHours >= 216 && diffInHours < 288){
             return bonus4Rate;
         }
 
          // 11/10/2017 - 11/13/2017
-        if(diffInHours &gt;= 288 &amp;&amp; diffInHours &lt; 360){
+        if(diffInHours >= 288 && diffInHours < 360){
             return bonus5Rate;
         }
 
          // 11/13/2017 - 11/16/2017
-        if(diffInHours &gt;= 360 &amp;&amp; diffInHours &lt; 432){
+        if(diffInHours >= 360 && diffInHours < 432){
             return bonus6Rate;
         }
 
          // 11/16/2017 - 11/19/2017
-        if(diffInHours &gt;= 432 &amp;&amp; diffInHours &lt; 504){
+        if(diffInHours >= 432 && diffInHours < 504){
             return bonus7Rate;
         }
 
          // 11/19/2017 - 11/22/2017
-        if(diffInHours &gt;= 504 &amp;&amp; diffInHours &lt; 576){
+        if(diffInHours >= 504 && diffInHours < 576){
             return bonus8Rate;
         }
 
           // 11/22/2017 - 11/25/2017
-        if(diffInHours &gt;= 576 &amp;&amp; diffInHours &lt; 648){
+        if(diffInHours >= 576 && diffInHours < 648){
             return bonus9Rate;
         }
 
           // 11/25/2017 - 11/28/2017
-        if(diffInHours &gt;= 648 &amp;&amp; diffInHours &lt; 720){
+        if(diffInHours >= 648 && diffInHours < 720){
             return bonus10Rate;
         }
 
@@ -385,25 +385,25 @@ contract DatumTokenSale is  Ownable {
   // check for valid time period, min amount and within cap
   function validPurchase() internal constant returns (bool) {
     uint256 tokenAmount = getTokenAmount(msg.value);
-    bool withinPeriod = startDate &lt;= now &amp;&amp; endDate &gt;= now;
+    bool withinPeriod = startDate <= now && endDate >= now;
     bool nonZeroPurchase = msg.value != 0;
-    bool minAmount = msg.value &gt;= minimumParticipationAmount;
-    bool maxAmount = msg.value &lt;= maximalParticipationAmount;
-    bool withTokensSupply = tokensInWeiSold.add(tokenAmount) &lt;= totalTokenSupply;
-    //bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    bool withMaxAmountForAddress = maxAmountAddresses[msg.sender] == 0 || balances[msg.sender].add(tokenAmount) &lt;= maxAmountAddresses[msg.sender];
+    bool minAmount = msg.value >= minimumParticipationAmount;
+    bool maxAmount = msg.value <= maximalParticipationAmount;
+    bool withTokensSupply = tokensInWeiSold.add(tokenAmount) <= totalTokenSupply;
+    //bool withinCap = weiRaised.add(msg.value) <= cap;
+    bool withMaxAmountForAddress = maxAmountAddresses[msg.sender] == 0 || balances[msg.sender].add(tokenAmount) <= maxAmountAddresses[msg.sender];
 
     if(maxAmountAddresses[msg.sender] != 0)
     {
-      maxAmount = balances[msg.sender].add(tokenAmount) &lt;= maxAmountAddresses[msg.sender];
+      maxAmount = balances[msg.sender].add(tokenAmount) <= maxAmountAddresses[msg.sender];
     }
 
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; minAmount &amp;&amp; !isFinalized &amp;&amp; withTokensSupply &amp;&amp; withMaxAmountForAddress &amp;&amp; maxAmount;
+    return withinPeriod && nonZeroPurchase && minAmount && !isFinalized && withTokensSupply && withMaxAmountForAddress && maxAmount;
   }
 
     // @return true if the goal is reached
   function capReached() public constant returns (bool) {
-    return tokensInWeiSold &gt;= totalTokenSupply;
+    return tokensInWeiSold >= totalTokenSupply;
   }
 
   // @return true if crowdsale event has ended

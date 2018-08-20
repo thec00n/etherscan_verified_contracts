@@ -1,13 +1,13 @@
 pragma solidity ^0.4.11;
 
 contract LOTT {
-    string public name = &#39;LOTT&#39;;
-    string public symbol = &#39;LOTT&#39;;
+    string public name = 'LOTT';
+    string public symbol = 'LOTT';
     uint8 public decimals = 18;
     uint256 public totalSupply = 1000000000000000000000000;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     address public owner;
     uint public price = 10000000000000000000;
@@ -24,8 +24,8 @@ contract LOTT {
     uint public rand1;
     uint8 public rand2;
     
-    mapping (uint =&gt; mapping (uint8 =&gt; address)) public map;
-    mapping (address =&gt; uint256) public gameBalanceOf;
+    mapping (uint => mapping (uint8 => address)) public map;
+    mapping (address => uint256) public gameBalanceOf;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     
@@ -42,8 +42,8 @@ contract LOTT {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -56,7 +56,7 @@ contract LOTT {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -68,7 +68,7 @@ contract LOTT {
     }
     
     function withdraw() external {
-        require(gameBalanceOf[msg.sender] &gt; 0);
+        require(gameBalanceOf[msg.sender] > 0);
         
         _transfer(this, msg.sender, gameBalanceOf[msg.sender]);
         
@@ -84,7 +84,7 @@ contract LOTT {
         Place(currentRound, cell, msg.sender);
         rand1 += uint(msg.sender) + block.timestamp;
         rand2 -= uint8(msg.sender);
-        if (placesSold &lt; 255) {
+        if (placesSold < 255) {
             placesSold++;
         } else {
             placesSold = 0;

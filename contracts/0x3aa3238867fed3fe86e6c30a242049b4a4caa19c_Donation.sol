@@ -13,7 +13,7 @@ library SafeMath {
     internal
     pure
     returns (uint) {
-        assert(_value &lt;= _base);
+        assert(_value <= _base);
         return _base - _value;
     }
 
@@ -22,14 +22,14 @@ library SafeMath {
     pure
     returns (uint _ret) {
         _ret = _base + _value;
-        assert(_ret &gt;= _base);
+        assert(_ret >= _base);
     }
 
     function div(uint _base, uint _value)
     internal
     pure
     returns (uint) {
-        assert(_value &gt; 0 &amp;&amp; (_base % _value) == 0);
+        assert(_value > 0 && (_base % _value) == 0);
         return _base / _value;
     }
 
@@ -77,13 +77,13 @@ contract Donation  {
     }
     // There have at least to be 25000000000 Loca tokens in balance to allow a valid donation
     modifier allowDonation(){
-        require(_tokenDonation &gt;= 25000000000);
+        require(_tokenDonation >= 25000000000);
         _;
     }
     // Donation amount has to be between 0.02 and 0.03 ETH
     // regardless the donation amount,  250 LOCAs will be send 
     modifier validDonation {
-        require (msg.value &gt;= 20000000000000000 &amp;&amp; msg.value &lt;= 30000000000000000);                                                                                        
+        require (msg.value >= 20000000000000000 && msg.value <= 30000000000000000);                                                                                        
         _;
     }
 

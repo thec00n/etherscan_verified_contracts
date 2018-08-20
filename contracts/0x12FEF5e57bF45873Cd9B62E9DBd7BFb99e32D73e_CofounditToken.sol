@@ -62,18 +62,18 @@ contract IERC20Token {
 contract CofounditToken is IERC20Token, owned{         
 
 	/* Public variables of the token */     
-	string public standard = &quot;Cofoundit token v1.0&quot;;     
-	string public name = &quot;Cofoundit&quot;;     
-	string public symbol = &quot;CFI&quot;;     
+	string public standard = "Cofoundit token v1.0";     
+	string public name = "Cofoundit";     
+	string public symbol = "CFI";     
 	uint8 public decimals = 18;     
 	address public icoContractAddress;     
 	uint256 public tokenFrozenUntilBlock;     
 
 	/* Private variables of the token */     
 	uint256 supply = 0;     
-	mapping (address =&gt; uint256) balances;     
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowances;     
-	mapping (address =&gt; bool) restrictedAddresses;     
+	mapping (address => uint256) balances;     
+	mapping (address => mapping (address => uint256)) allowances;     
+	mapping (address => bool) restrictedAddresses;     
 
 	/* Events */       
 	event Mint(address indexed _to, uint256 _value);     
@@ -99,10 +99,10 @@ contract CofounditToken is IERC20Token, owned{
 
 	/* Send coins */     
 	function transfer(address _to, uint256 _value) returns (bool success) {     	
-		if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
+		if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
 		if (restrictedAddresses[_to]) throw;                // Prevent transfer to restricted addresses         
-		if (balances[msg.sender] &lt; _value) throw;           // Check if the sender has enough         
-		if (balances[_to] + _value &lt; balances[_to]) throw;  // Check for overflows         
+		if (balances[msg.sender] < _value) throw;           // Check if the sender has enough         
+		if (balances[_to] + _value < balances[_to]) throw;  // Check for overflows         
 		balances[msg.sender] -= _value;                     // Subtract from the sender         
 		balances[_to] += _value;                            // Add the same to the recipient         
 		Transfer(msg.sender, _to, _value);                  // Notify anyone listening that this transfer took place         
@@ -111,7 +111,7 @@ contract CofounditToken is IERC20Token, owned{
 
 	/* Allow another contract to spend some tokens in your behalf */     
 	function approve(address _spender, uint256 _value) returns (bool success) {     	
-		if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
+		if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
 		allowances[msg.sender][_spender] = _value;          // Set allowance         
 		Approval(msg.sender, _spender, _value);             // Raise Approval event         
 		return true;     
@@ -127,11 +127,11 @@ contract CofounditToken is IERC20Token, owned{
 
 	/* A contract attempts to get the coins */     
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {     	
-		if (block.number &lt; tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
+		if (block.number < tokenFrozenUntilBlock) throw;	// Throw is token is frozen in case of emergency         
 		if (restrictedAddresses[_to]) throw;                // Prevent transfer to restricted addresses         
-		if (balances[_from] &lt; _value) throw;                // Check if the sender has enough         
-		if (balances[_to] + _value &lt; balances[_to]) throw;  // Check for overflows         
-		if (_value &gt; allowances[_from][msg.sender]) throw;  // Check allowance         
+		if (balances[_from] < _value) throw;                // Check if the sender has enough         
+		if (balances[_to] + _value < balances[_to]) throw;  // Check for overflows         
+		if (_value > allowances[_from][msg.sender]) throw;  // Check allowance         
 		balances[_from] -= _value;                          // Subtract from the sender         
 		balances[_to] += _value;                            // Add the same to the recipient         
 		allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address         
@@ -148,8 +148,8 @@ contract CofounditToken is IERC20Token, owned{
 	function mintTokens(address _to, uint256 _amount, string _reason) {         
 		if (msg.sender != icoContractAddress) throw;			// Check if minter is ico Contract address         
 		if (restrictedAddresses[_to]) throw;                    // Prevent transfer to restricted addresses         
-		if (_amount == 0 || sha3(_reason) == sha3(&quot;&quot;)) throw;   // Check if values are not null;         
-		if (balances[_to] + _amount &lt; balances[_to]) throw;     // Check for overflows         
+		if (_amount == 0 || sha3(_reason) == sha3("")) throw;   // Check if values are not null;         
+		if (balances[_to] + _amount < balances[_to]) throw;     // Check for overflows         
 		supply += _amount;                                      // Update total supply         
 		balances[_to] += _amount;                    		    // Set minted coins to target         
 		Mint(_to, _amount);                          		    // Create Mint event         

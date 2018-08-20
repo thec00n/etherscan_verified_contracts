@@ -24,8 +24,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,8 +38,8 @@ contract TokenERC20 {
     function TokenERC20() public {
         totalSupply = 10000000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;Talentum&quot;;                                   // Set the name for display purposes
-        symbol = &quot;Talent&quot;;                               // Set the symbol for display purposes
+        name = "Talentum";                                   // Set the name for display purposes
+        symbol = "Talent";                               // Set the symbol for display purposes
     }
 
     /**
@@ -49,9 +49,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -85,7 +85,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -131,10 +131,10 @@ contract  Talentum is owned, TokenERC20 {
     
     address maker_corp;
 
-    mapping (address =&gt; bool) public Writers;
+    mapping (address => bool) public Writers;
     
-    mapping (uint16 =&gt; mapping(uint16 =&gt; mapping (uint16 =&gt; mapping (uint16 =&gt; string)))) public HolyBible;
-    mapping (uint16 =&gt; string) public Country_code;
+    mapping (uint16 => mapping(uint16 => mapping (uint16 => mapping (uint16 => string)))) public HolyBible;
+    mapping (uint16 => string) public Country_code;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function Talentum() TokenERC20()  public 
@@ -195,7 +195,7 @@ contract  Talentum is owned, TokenERC20 {
                     
         amount = msg.value * nowprice; 
             
-        require(balanceOf[maker_corp]&gt;=amount);
+        require(balanceOf[maker_corp]>=amount);
         
         balanceOf[maker_corp] -= amount;
         balanceOf[msg.sender] += amount;                
@@ -208,7 +208,7 @@ contract  Talentum is owned, TokenERC20 {
     {
         uint256 amount = coin_amount * 10 ** uint256(decimals);
 
-        require(balanceOf[msg.sender] &gt;= amount);         
+        require(balanceOf[msg.sender] >= amount);         
         balanceOf[msg.sender] -= amount;                 
         balanceOf[_to] += amount;                 
         Transfer(msg.sender, _to, amount);               
@@ -220,7 +220,7 @@ contract  Talentum is owned, TokenERC20 {
 
         require(_from != 0x0);
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= coin_amount);         
+        require(balanceOf[_from] >= coin_amount);         
 
         balanceOf[_from] -= coin_amount;                 
         balanceOf[_to] += coin_amount;                

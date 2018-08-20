@@ -36,9 +36,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -55,7 +55,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -63,12 +63,12 @@ library SafeMath {
 
 contract WhoVote {
 
-    mapping (address =&gt; bytes32) public voteHash;
+    mapping (address => bytes32) public voteHash;
     address public parentContract;
     uint public deadline;
 
     modifier isActive {
-        require(now &lt; deadline);
+        require(now < deadline);
         _;
     }
 
@@ -116,14 +116,14 @@ contract StandardToken is ERC20Interface {
 
     address public owner;
 
-    mapping(address =&gt; uint) public balances;
-    mapping (address =&gt; uint) public permissonedAccounts;
+    mapping(address => uint) public balances;
+    mapping (address => uint) public permissonedAccounts;
 
     /**
     * @dev Checks if last mint is 3 weeks in past
     */
     modifier onlyAfter() {
-        require(now &gt;= timestampMint + 3 weeks);
+        require(now >= timestampMint + 3 weeks);
         _;
     }
 
@@ -131,8 +131,8 @@ contract StandardToken is ERC20Interface {
     * @dev Checks if account has staff-level
     */
     modifier hasPermission(uint _level) {
-        require(permissonedAccounts[msg.sender] &gt; 0);
-        require(permissonedAccounts[msg.sender] &lt;= _level);
+        require(permissonedAccounts[msg.sender] > 0);
+        require(permissonedAccounts[msg.sender] <= _level);
         _;
     }
 
@@ -159,7 +159,7 @@ contract StandardToken is ERC20Interface {
     */
     function transfer(address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         TransferEvent(msg.sender, _to, _value);
@@ -175,8 +175,8 @@ contract StandardToken is ERC20Interface {
  */
 contract Who is StandardToken {
 
-    mapping (address =&gt; uint) public votings_;
-    mapping (address =&gt; uint8) public icoAccounts;
+    mapping (address => uint) public votings_;
+    mapping (address => uint8) public icoAccounts;
     address public prizePool;
     uint public icoPool;
     uint public raisedIcoValue;
@@ -188,9 +188,9 @@ contract Who is StandardToken {
     event ParticipatedInVoting(address _sender, address _votingContract, bytes32 _hash, uint _voteAmount);
 
     modifier icoPhase() {
-        require(now &gt;= timestampRelease);
-        require(now &lt;= 32 days + timestampRelease);
-        require(msg.value &gt;= 2*(10**16));
+        require(now >= timestampRelease);
+        require(now <= 32 days + timestampRelease);
+        require(msg.value >= 2*(10**16));
         _;
 
     }
@@ -198,8 +198,8 @@ contract Who is StandardToken {
     function Who() public {
         owner = 0x4c556b28A7D62D3b7A84481521308fbb9687f38F;
 
-        name = &quot;WhoHas&quot;;
-        symbol = &quot;WHO&quot;;
+        name = "WhoHas";
+        symbol = "WHO";
         decimals = 18;
 
         permissonedAccounts[owner] = 1;
@@ -221,7 +221,7 @@ contract Who is StandardToken {
         raisedIcoValue = raisedIcoValue.add(msg.value);
         uint256 tokenAmount = calculateTokenAmountICO(msg.value);
 
-        require(icoPool &gt;= tokenAmount);
+        require(icoPool >= tokenAmount);
 
         icoPool = icoPool.sub(tokenAmount);
         balances[msg.sender] += tokenAmount;
@@ -235,7 +235,7 @@ contract Who is StandardToken {
     function calculateTokenAmountICO(uint256 _etherAmount) public icoPhase constant returns(uint256) {
           // ICO standard rate: 1 ETH : 3315 WHO - 0,20 Euro
           // ICO Phase 1:   1 ETH : 4420 WHO - 0,15 Euro
-        if (now &lt;= 10 days + timestampRelease) {
+        if (now <= 10 days + timestampRelease) {
             require(icoAccounts[msg.sender] == 1);
             return _etherAmount.mul(4420);
         } else {
@@ -250,12 +250,12 @@ contract Who is StandardToken {
     * @param _level Permission-Level: 7:none, 1: owner, 2: admin, 3: pyFactory
     */
     function updatePermissions(address _account, uint _level) public hasPermission(1) {
-        require(_level != 1 &amp;&amp; msg.sender != _account);
+        require(_level != 1 && msg.sender != _account);
         permissonedAccounts[_account] = _level;
     }
 
     /**
-    * @dev Update Address recieving &amp; distributing tokens in votings
+    * @dev Update Address recieving & distributing tokens in votings
     * @param _account Address of the new prize Pool
     */
     function updatePrizePool(address _account) public hasPermission(1) {
@@ -267,15 +267,15 @@ contract Who is StandardToken {
     * @param _mintAmount Amount of increase, must be smaller than 100000000
     */
     function mint(uint _mintAmount) public onlyAfter hasPermission(2) {
-        require(_mintAmount &lt;= maxMint);
-        require(circulatingSupply_ + _mintAmount &lt;= maxSupply_);
+        require(_mintAmount <= maxMint);
+        require(circulatingSupply_ + _mintAmount <= maxSupply_);
         balances[owner] = balances[owner].add(_mintAmount);
         circulatingSupply_ = circulatingSupply_.add(_mintAmount);
         timestampMint = now;
     }
 
     function registerForICO(address[] _icoAddresses, uint8 _level) public hasPermission(3) {
-        for (uint i = 0; i &lt; _icoAddresses.length; i++) {
+        for (uint i = 0; i < _icoAddresses.length; i++) {
             icoAccounts[_icoAddresses[i]] = _level;
         }
     }
@@ -286,7 +286,7 @@ contract Who is StandardToken {
     * @param _votePrice Price in Who(x10^18) per Vote
     */
     function gernerateVoting(uint _timespan, uint _votePrice) public hasPermission(3) {
-        require(_votePrice &gt; 0 &amp;&amp; _timespan &gt; 0);
+        require(_votePrice > 0 && _timespan > 0);
         address generatedVoting = new WhoVote(this, _timespan);
         votings_[generatedVoting] = _votePrice;
         VotingStarted(generatedVoting, _timespan, _votePrice);
@@ -316,7 +316,7 @@ contract Who is StandardToken {
     * @param _votingAddress Address of the Voting-Contract
     */
     function payout(address[] _winner, uint _payoutValue, address _votingAddress) public hasPermission(3) {
-        for (uint i = 0; i &lt; _winner.length; i++) {
+        for (uint i = 0; i < _winner.length; i++) {
             transfer(_winner[i], _payoutValue);
         }
         WinningEvent(_winner, _votingAddress, _payoutValue);
@@ -329,9 +329,9 @@ contract Who is StandardToken {
     * @param _quantity Quantity of Votes
     */
     function payForVote(address _votingContract, bytes32 _hash, uint _quantity) public {
-        require(_quantity &gt;= 1 &amp;&amp; _quantity &lt;= 5);
+        require(_quantity >= 1 && _quantity <= 5);
         uint votePrice = votings_[_votingContract];
-        require(votePrice &gt; 0);
+        require(votePrice > 0);
         transfer(prizePool, _quantity.mul(votePrice));
         sendVote(_votingContract, msg.sender, _hash);
         ParticipatedInVoting(msg.sender, _votingContract, _hash, _quantity);

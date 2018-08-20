@@ -9,37 +9,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -81,7 +81,7 @@ contract ERC20 {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     address public walletTeam = 0x35cCaeD05CE27739579502B3424364774f18980e;
     uint256 public fundForTeam =  5*10**6 * (10 ** 18);
 
@@ -110,7 +110,7 @@ contract BasicToken is ERC20Basic {
         if (msg.sender == walletTeam) {
             checkVesting(_value, now);
         }
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(transfersEnabled);
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -130,22 +130,22 @@ contract BasicToken is ERC20Basic {
     }
 
     function checkVesting(uint256 _value, uint256 _currentTime) public view returns(uint8 period) {
-        require(firstRelease &lt;= _currentTime);
-        if (firstRelease &lt;= _currentTime &amp;&amp; _currentTime &lt; secondRelease) {
+        require(firstRelease <= _currentTime);
+        if (firstRelease <= _currentTime && _currentTime < secondRelease) {
             period = 1;
-            require(balances[walletTeam].sub(_value) &gt; fundForTeam.mul(3).div(4));
+            require(balances[walletTeam].sub(_value) > fundForTeam.mul(3).div(4));
         }
-        if (secondRelease &lt;= _currentTime &amp;&amp; _currentTime &lt; thirdRelease) {
+        if (secondRelease <= _currentTime && _currentTime < thirdRelease) {
             period = 2;
-            require(balances[walletTeam].sub(_value) &gt; fundForTeam.mul(2).div(4));
+            require(balances[walletTeam].sub(_value) > fundForTeam.mul(2).div(4));
         }
-        if (thirdRelease &lt;= _currentTime &amp;&amp; _currentTime &lt; fourthRelease) {
+        if (thirdRelease <= _currentTime && _currentTime < fourthRelease) {
             period = 3;
-            require(balances[walletTeam].sub(_value) &gt; fundForTeam.mul(1).div(4));
+            require(balances[walletTeam].sub(_value) > fundForTeam.mul(1).div(4));
         }
-        if (fourthRelease &lt;= _currentTime) {
+        if (fourthRelease <= _currentTime) {
             period = 4;
-            require(balances[walletTeam].sub(_value) &gt;= 0);
+            require(balances[walletTeam].sub(_value) >= 0);
         }
     }
 
@@ -154,7 +154,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -164,8 +164,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(transfersEnabled);
 
         balances[_from] = balances[_from].sub(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -215,7 +215,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -231,7 +231,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -268,8 +268,8 @@ contract Ownable {
  */
 
 contract MintableToken is StandardToken, Ownable {
-    string public constant name = &quot;BlockGain Fund Token&quot;;
-    string public constant symbol = &quot;BGF&quot;;
+    string public constant name = "BlockGain Fund Token";
+    string public constant symbol = "BGF";
     uint8 public constant decimals = 18;
 
     event Mint(address indexed to, uint256 amount);
@@ -307,7 +307,7 @@ contract MintableToken is StandardToken, Ownable {
     }
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokens(address _token) public onlyOwner {
@@ -353,12 +353,12 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
     State public state;
 
     // https://www.coingecko.com/en/coins/ethereum
-    //$0.09 = 1 token =&gt; $ 1,000 = 1.332019074513147 ETH =&gt;
-    //11,111.11 token = 1.5863699097355521 ETH =&gt; 1 ETH = 11,111.1/1.332019074513147 = 8342
+    //$0.09 = 1 token => $ 1,000 = 1.332019074513147 ETH =>
+    //11,111.11 token = 1.5863699097355521 ETH => 1 ETH = 11,111.1/1.332019074513147 = 8342
     uint256 public rate  = 8342;
 
-    mapping (address =&gt; uint256) public deposited;
-    mapping(address =&gt; bool) public whitelist;
+    mapping (address => uint256) public deposited;
+    mapping(address => bool) public whitelist;
 
     uint256 public constant INITIAL_SUPPLY = 166666667 * (10 ** uint256(decimals));
     uint256 public fundForSale = 161666667 * (10 ** uint256(decimals));
@@ -376,7 +376,7 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
     {
         require(_owner != address(0));
         owner = _owner;
-        //owner = msg.sender; // for test&#39;s
+        //owner = msg.sender; // for test's
         transfersEnabled = true;
         mintingFinished = false;
         state = State.Active;
@@ -415,10 +415,10 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function getTotalAmountOfTokens(uint256 _weiAmount) internal view returns (uint256) {
         uint256 currentDate = now;
-        //currentDate = 1533513600; // (06 Aug 2018 00:00:00 GMT) for test&#39;s
+        //currentDate = 1533513600; // (06 Aug 2018 00:00:00 GMT) for test's
         uint256 currentPeriod = getPeriod(currentDate);
         uint256 amountOfTokens = 0;
-        if(currentPeriod &lt; 5){
+        if(currentPeriod < 5){
             if(whitelist[msg.sender]){
                 if(currentPeriod == 0){
                     amountOfTokens = _weiAmount.mul(rate);
@@ -441,19 +441,19 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
     }
 
     function getPeriod(uint256 _currentDate) public view returns (uint) {
-        if( startTime &lt;= _currentDate &amp;&amp; _currentDate &lt;= startTime + 7 days){
+        if( startTime <= _currentDate && _currentDate <= startTime + 7 days){
             return 0;
         }
-        if( startTime + 7 days &lt;= _currentDate &amp;&amp; _currentDate &lt;= startTime + 14 days){
+        if( startTime + 7 days <= _currentDate && _currentDate <= startTime + 14 days){
             return 1;
         }
-        if( startTime + 14 days &lt;= _currentDate &amp;&amp; _currentDate &lt;= startTime + 21 days){
+        if( startTime + 14 days <= _currentDate && _currentDate <= startTime + 21 days){
             return 2;
         }
-        if( startTime + 21 days &lt;= _currentDate &amp;&amp; _currentDate &lt;= startTime + 28 days){
+        if( startTime + 21 days <= _currentDate && _currentDate <= startTime + 28 days){
             return 3;
         }
-        if( startTime + 28 days &lt;= _currentDate &amp;&amp; _currentDate &lt;= startTime + 35 days){
+        if( startTime + 28 days <= _currentDate && _currentDate <= startTime + 35 days){
             return 4;
         }
         return 10;
@@ -478,11 +478,11 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function validPurchaseTokens(uint256 _weiAmount) public inState(State.Active) returns (uint256) {
         uint256 addTokens = getTotalAmountOfTokens(_weiAmount);
-        if (_weiAmount &lt; 0.05 ether) {
+        if (_weiAmount < 0.05 ether) {
             emit MinWeiLimitReached(msg.sender, _weiAmount);
             return 0;
         }
-        if (tokenAllocated.add(addTokens) &gt; fundForSale) {
+        if (tokenAllocated.add(addTokens) > fundForSale) {
             emit TokenLimitReached(tokenAllocated, addTokens);
             return 0;
         }
@@ -499,7 +499,7 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
     }
 
     function setRate(uint256 _newRate) external onlyOwner returns (bool){
-        require(_newRate &gt; 0);
+        require(_newRate > 0);
         rate = _newRate;
         return true;
     }
@@ -517,8 +517,8 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
      * @param _beneficiaries Addresses to be added to the whitelist
      */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-        require(_beneficiaries.length &lt; 101);
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        require(_beneficiaries.length < 101);
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
@@ -536,10 +536,10 @@ contract BGFCrowdsale is Ownable, Crowdsale, MintableToken {
      * @param _value amount of burnt tokens
      */
     function ownerBurnToken(uint _value) public onlyOwner {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[owner]);
-        require(_value &lt;= totalSupply);
-        require(_value &lt;= fundForSale);
+        require(_value > 0);
+        require(_value <= balances[owner]);
+        require(_value <= totalSupply);
+        require(_value <= fundForSale);
 
         balances[owner] = balances[owner].sub(_value);
         totalSupply = totalSupply.sub(_value);

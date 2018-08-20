@@ -81,20 +81,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -126,7 +126,7 @@ contract BasicToken is ERC20Basic, Ownable {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -189,11 +189,11 @@ contract BurnableToken is StandardToken, Pausable {
     }
 
     /**
-     * @dev Burns a specified amount of tokens from messager sender&#39;s account.
+     * @dev Burns a specified amount of tokens from messager sender's account.
      * @param _value The amount of tokens to burn.
      */
     function burn(uint256 _value) whenNotPaused public {
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);  // reduce total supply after burn
         Burn(msg.sender, _value);
@@ -202,8 +202,8 @@ contract BurnableToken is StandardToken, Pausable {
 
 contract SECToken is BurnableToken {
 
-    string public constant symbol = &quot;SEC&quot;;
-    string public name = &quot;Erised(SEC)&quot;;
+    string public constant symbol = "SEC";
+    string public name = "Erised(SEC)";
     uint8 public constant decimals = 18;
 
     function SECToken() {
@@ -250,7 +250,7 @@ contract SecCrowdSale is Pausable{
     bool public crowdSaleClosed;
 
     modifier respectTimeFrame() {
-        require((now &gt;= startTime) || (now &lt;= endTime ));_;
+        require((now >= startTime) || (now <= endTime ));_;
     }
 
     event LogReceivedETH(address addr, uint value);
@@ -276,9 +276,9 @@ contract SecCrowdSale is Pausable{
 
     /// Receives a donation in Etherose, send SEC token immediately
     function BuyTokenSafe(address beneficiary) internal {
-        require(msg.value &gt;= MIN_INVEST_ETHER); // Don&#39;t accept funding under a predefined threshold
+        require(msg.value >= MIN_INVEST_ETHER); // Don't accept funding under a predefined threshold
         uint SecToSend = msg.value.mul(SEC_PER_ETHER).div(1 ether); // Compute the number of SECCoin to send
-        require(SecToSend.add(SECCoinSold) &lt;= MAX_CAP);
+        require(SecToSend.add(SECCoinSold) <= MAX_CAP);
         SECCoin.transfer(beneficiary, SecToSend); // Transfer SEC Coins right now
         etherReceived = etherReceived.add(msg.value); // Update the total wei collected during the crowdfunding
         SECCoinSold = SECCoinSold.add(SecToSend);
@@ -290,10 +290,10 @@ contract SecCrowdSale is Pausable{
     /// Close the crowdsale, should be called after the refund period
     function finishSafe(address burner) onlyOwner external{
         require(burner!=address(0));
-        require(now &gt; endTime || SECCoinSold == MAX_CAP); // end time or sold out
+        require(now > endTime || SECCoinSold == MAX_CAP); // end time or sold out
         owner.send(this.balance); // Move the remaining Ether to contract founder address
         uint remains = SECCoin.balanceOf(this);
-        if (remains &gt; 0) { // Burn the rest of SECCoins
+        if (remains > 0) { // Burn the rest of SECCoins
             SECCoin.transfer(burner, remains);
         }
         crowdSaleClosed = true;

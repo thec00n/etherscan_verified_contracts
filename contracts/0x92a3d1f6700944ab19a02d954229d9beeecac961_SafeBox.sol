@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -47,12 +47,12 @@ contract SafeBoxCoin is ERC20 {
     uint8 internal _decimals;
     uint256 internal _totalSupply;
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function SafeBoxCoin() public {
-        _symbol = &quot;SBC&quot;;
-        _name = &quot;SafeBoxCoin&quot;;
+        _symbol = "SBC";
+        _name = "SafeBoxCoin";
         _decimals = 18;
         _totalSupply = 252000000;
         balances[msg.sender] = _totalSupply;
@@ -60,7 +60,7 @@ contract SafeBoxCoin is ERC20 {
 
     function transfer(address _to, uint256 _value) external returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
       balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
       balances[_to] = SafeMath.add(balances[_to], _value);
       emit Transfer(msg.sender, _to, _value);
@@ -73,8 +73,8 @@ contract SafeBoxCoin is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = SafeMath.sub(balances[_from], _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
@@ -101,7 +101,7 @@ contract SafeBoxCoin is ERC20 {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = SafeMath.sub(oldValue, _subtractedValue);
@@ -114,14 +114,14 @@ contract SafeBoxCoin is ERC20 {
 
 contract SafeBox is SafeBoxCoin {
     
-    mapping (address =&gt; user) private users;
+    mapping (address => user) private users;
     user private user_object;
     address private owner;
     address private account_1;
     address private account_2;
     uint256 private divided_value;
     Safe safe_object;
-    mapping (address =&gt;  mapping (string =&gt; Safe)) private map_data_safe_benefited;
+    mapping (address =>  mapping (string => Safe)) private map_data_safe_benefited;
     Prices public prices;
     
     struct Prices {
@@ -155,7 +155,7 @@ contract SafeBox is SafeBoxCoin {
 
     function _transfer(uint256 _value) private returns (bool) {
       require(owner != address(0));
-      require(_value &lt;= SafeBoxCoin.balances[msg.sender]);
+      require(_value <= SafeBoxCoin.balances[msg.sender]);
       SafeBoxCoin.balances[msg.sender] = SafeMath.sub(SafeBoxCoin.balances[msg.sender], _value);
       divided_value = _value / 2;
       SafeBoxCoin.balances[owner] = SafeMath.add(SafeBoxCoin.balances[owner], divided_value);

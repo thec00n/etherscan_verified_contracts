@@ -5,7 +5,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -97,11 +97,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -111,8 +111,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -135,8 +135,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -197,42 +197,42 @@ contract ERC20nator is StandardToken, Ownable {
     // from https://ethereum.stackexchange.com/a/13658/16
     function hexStrToBytes(string _hexString) constant returns (bytes) {
         //Check hex string is valid
-        if (bytes(_hexString)[0]!=&#39;0&#39; ||
-            bytes(_hexString)[1]!=&#39;x&#39; ||
+        if (bytes(_hexString)[0]!='0' ||
+            bytes(_hexString)[1]!='x' ||
             bytes(_hexString).length%2!=0 ||
-            bytes(_hexString).length&lt;4) {
+            bytes(_hexString).length<4) {
                 throw;
             }
 
         bytes memory bytes_array = new bytes((bytes(_hexString).length-2)/2);
         uint len = bytes(_hexString).length;
         
-        for (uint i=2; i&lt;len; i+=2) {
+        for (uint i=2; i<len; i+=2) {
             uint tetrad1=16;
             uint tetrad2=16;
 
             //left digit
-            if (uint(bytes(_hexString)[i])&gt;=48 &amp;&amp;uint(bytes(_hexString)[i])&lt;=57)
+            if (uint(bytes(_hexString)[i])>=48 &&uint(bytes(_hexString)[i])<=57)
                 tetrad1=uint(bytes(_hexString)[i])-48;
 
             //right digit
-            if (uint(bytes(_hexString)[i+1])&gt;=48 &amp;&amp;uint(bytes(_hexString)[i+1])&lt;=57)
+            if (uint(bytes(_hexString)[i+1])>=48 &&uint(bytes(_hexString)[i+1])<=57)
                 tetrad2=uint(bytes(_hexString)[i+1])-48;
 
-            //left A-&gt;F
-            if (uint(bytes(_hexString)[i])&gt;=65 &amp;&amp;uint(bytes(_hexString)[i])&lt;=70)
+            //left A->F
+            if (uint(bytes(_hexString)[i])>=65 &&uint(bytes(_hexString)[i])<=70)
                 tetrad1=uint(bytes(_hexString)[i])-65+10;
 
-            //right A-&gt;F
-            if (uint(bytes(_hexString)[i+1])&gt;=65 &amp;&amp;uint(bytes(_hexString)[i+1])&lt;=70)
+            //right A->F
+            if (uint(bytes(_hexString)[i+1])>=65 &&uint(bytes(_hexString)[i+1])<=70)
                 tetrad2=uint(bytes(_hexString)[i+1])-65+10;
 
-            //left a-&gt;f
-            if (uint(bytes(_hexString)[i])&gt;=97 &amp;&amp;uint(bytes(_hexString)[i])&lt;=102)
+            //left a->f
+            if (uint(bytes(_hexString)[i])>=97 &&uint(bytes(_hexString)[i])<=102)
                 tetrad1=uint(bytes(_hexString)[i])-97+10;
 
-            //right a-&gt;f
-            if (uint(bytes(_hexString)[i+1])&gt;=97 &amp;&amp;uint(bytes(_hexString)[i+1])&lt;=102)
+            //right a->f
+            if (uint(bytes(_hexString)[i+1])>=97 &&uint(bytes(_hexString)[i+1])<=102)
                 tetrad2=uint(bytes(_hexString)[i+1])-97+10;
 
             //Check all symbols are allowed

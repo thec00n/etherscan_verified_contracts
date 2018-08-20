@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -100,7 +100,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -192,20 +192,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -229,7 +229,7 @@ contract Proxy {
  * Features: transfers, allowances, supply adjustments, lost wallet access recovery.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract BMCPlatform is Object, BMCPlatformEmitter {
 
@@ -258,39 +258,39 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
 
     // Structure of a particular asset.
     struct Asset {
-        uint owner;                       // Asset&#39;s owner id.
-        uint totalSupply;                 // Asset&#39;s total supply.
-        string name;                      // Asset&#39;s name, for information purposes.
-        string description;               // Asset&#39;s description, for information purposes.
+        uint owner;                       // Asset's owner id.
+        uint totalSupply;                 // Asset's total supply.
+        string name;                      // Asset's name, for information purposes.
+        string description;               // Asset's description, for information purposes.
         bool isReissuable;                // Indicates if asset have dynamic or fixed supply.
         uint8 baseUnit;                   // Proposed number of decimals.
-        mapping(uint =&gt; Wallet) wallets;  // Holders wallets.
+        mapping(uint => Wallet) wallets;  // Holders wallets.
     }
 
     // Structure of an asset holder wallet for particular asset.
     struct Wallet {
         uint balance;
-        mapping(uint =&gt; uint) allowance;
+        mapping(uint => uint) allowance;
     }
 
     // Structure of an asset holder.
     struct Holder {
         address addr;                    // Current address of the holder.
-        mapping(address =&gt; bool) trust;  // Addresses that are trusted with recovery proocedure.
+        mapping(address => bool) trust;  // Addresses that are trusted with recovery proocedure.
     }
 
     // Iterable mapping pattern is used for holders.
     uint public holdersCount;
-    mapping(uint =&gt; Holder) public holders;
+    mapping(uint => Holder) public holders;
 
     // This is an access address mapping. Many addresses may have access to a single holder.
-    mapping(address =&gt; uint) holderIndex;
+    mapping(address => uint) holderIndex;
 
     // Asset symbol to asset mapping.
-    mapping(bytes32 =&gt; Asset) public assets;
+    mapping(bytes32 => Asset) public assets;
 
     // Asset symbol to asset proxy mapping.
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
 
     // Should use interface of the emitter, but address of events history.
     address public eventsHistory;
@@ -322,7 +322,7 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         if (errorCode != OK) {
             return errorCode;
         }
-        if (eventsHistory != 0x0 &amp;&amp; eventsHistory != _eventsHistory) {
+        if (eventsHistory != 0x0 && eventsHistory != _eventsHistory) {
             return BMC_PLATFORM_INVALID_INVOCATION;
         }
         eventsHistory = _eventsHistory;
@@ -348,7 +348,7 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
     }
 
     /**
-     * Emits Error if _from doesn&#39;t trust _to.
+     * Emits Error if _from doesn't trust _to.
      */
     modifier checkTrust(address _from, address _to) {
         if (shouldBeTrusted(_from, _to) == OK) {
@@ -360,21 +360,21 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         if (isOwner(msg.sender, _symbol)) {
             return OK;
         }
-        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_OWNER, &quot;Only owner: access denied&quot;);
+        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_OWNER, "Only owner: access denied");
     }
 
     function checkIsOnlyProxy(bytes32 _symbol) internal constant returns(uint errorCode) {
         if (proxies[_symbol] == msg.sender) {
             return OK;
         }
-        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_PROXY, &quot;Only proxy: access denied&quot;);
+        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_PROXY, "Only proxy: access denied");
     }
 
     function shouldBeTrusted(address _from, address _to) internal constant returns(uint errorCode) {
         if (isTrusted(_from, _to)) {
             return OK;
         }
-        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_TRUSTED, &quot;Only trusted: access denied&quot;);
+        return _error(BMC_PLATFORM_ACCESS_DENIED_ONLY_TRUSTED, "Only trusted: access denied");
     }
 
     /**
@@ -452,7 +452,7 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
      * @return owner rights availability.
      */
     function isOwner(address _owner, bytes32 _symbol) constant returns(bool) {
-        return isCreated(_symbol) &amp;&amp; (assets[_symbol].owner == getHolderId(_owner));
+        return isCreated(_symbol) && (assets[_symbol].owner == getHolderId(_owner));
     }
 
     /**
@@ -536,33 +536,33 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         uint senderId = _createHolderId(msg.sender);
 
         uint success = 0;
-        for(uint idx = 0; idx &lt; addresses.length &amp;&amp; msg.gas &gt; 110000; idx++) {
+        for(uint idx = 0; idx < addresses.length && msg.gas > 110000; idx++) {
             uint value = values[idx];
 
             if (value == 0) {
-                _error(BMC_PLATFORM_INVALID_VALUE, &quot;Cannot send 0 value&quot;);
+                _error(BMC_PLATFORM_INVALID_VALUE, "Cannot send 0 value");
                 continue;
             }
 
-            if (getHolderId(addresses[idx]) &gt; 0) {
-                _error(BMC_PLATFORM_HOLDER_EXISTS, &quot;Already transfered&quot;);
+            if (getHolderId(addresses[idx]) > 0) {
+                _error(BMC_PLATFORM_HOLDER_EXISTS, "Already transfered");
                 continue;
             }
 
-            if (_balanceOf(senderId, _symbol) &lt; value) {
-                _error(BMC_PLATFORM_INSUFFICIENT_BALANCE, &quot;Insufficient balance&quot;);
+            if (_balanceOf(senderId, _symbol) < value) {
+                _error(BMC_PLATFORM_INSUFFICIENT_BALANCE, "Insufficient balance");
                 continue;
             }
 
             if (msg.sender == addresses[idx]) {
-                _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, &quot;Cannot send to oneself&quot;);
+                _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, "Cannot send to oneself");
                 continue;
             }
 
             uint holderId = _createHolderId(addresses[idx]);
 
             _transferDirect(senderId, holderId, value, _symbol);
-            BMCPlatformEmitter(eventsHistory).emitTransfer(msg.sender, addresses[idx], _symbol, value, &quot;&quot;);
+            BMCPlatformEmitter(eventsHistory).emitTransfer(msg.sender, addresses[idx], _symbol, value, "");
             
             success++;
         }
@@ -600,19 +600,19 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
     function _transfer(uint _fromId, uint _toId, uint _value, bytes32 _symbol, string _reference, uint _senderId) internal returns(uint) {
         // Should not allow to send to oneself.
         if (_fromId == _toId) {
-            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, &quot;Cannot send to oneself&quot;);
+            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, "Cannot send to oneself");
         }
         // Should have positive value.
         if (_value == 0) {
-            return _error(BMC_PLATFORM_INVALID_VALUE, &quot;Cannot send 0 value&quot;);
+            return _error(BMC_PLATFORM_INVALID_VALUE, "Cannot send 0 value");
         }
         // Should have enough balance.
-        if (_balanceOf(_fromId, _symbol) &lt; _value) {
-            return _error(BMC_PLATFORM_INSUFFICIENT_BALANCE, &quot;Insufficient balance&quot;);
+        if (_balanceOf(_fromId, _symbol) < _value) {
+            return _error(BMC_PLATFORM_INSUFFICIENT_BALANCE, "Insufficient balance");
         }
         // Should have enough allowance.
-        if (_fromId != _senderId &amp;&amp; _allowance(_fromId, _senderId, _symbol) &lt; _value) {
-            return _error(BMC_PLATFORM_NOT_ENOUGH_ALLOWANCE, &quot;Not enough allowance&quot;);
+        if (_fromId != _senderId && _allowance(_fromId, _senderId, _symbol) < _value) {
+            return _error(BMC_PLATFORM_NOT_ENOUGH_ALLOWANCE, "Not enough allowance");
         }
 
         _transferDirect(_fromId, _toId, _value, _symbol);
@@ -717,12 +717,12 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
             return errorCode;
         }
         // Should have positive value if supply is going to be fixed.
-        if (_value == 0 &amp;&amp; !_isReissuable) {
-            return _error(BMC_PLATFORM_CANNOT_ISSUE_FIXED_ASSET_WITH_INVALID_VALUE, &quot;Cannot issue 0 value fixed asset&quot;);
+        if (_value == 0 && !_isReissuable) {
+            return _error(BMC_PLATFORM_CANNOT_ISSUE_FIXED_ASSET_WITH_INVALID_VALUE, "Cannot issue 0 value fixed asset");
         }
         // Should not be issued yet.
         if (isCreated(_symbol)) {
-            return _error(BMC_PLATFORM_ASSET_ALREADY_ISSUED, &quot;Asset already issued&quot;);
+            return _error(BMC_PLATFORM_ASSET_ALREADY_ISSUED, "Asset already issued");
         }
         uint holderId = _createHolderId(msg.sender);
 
@@ -753,16 +753,16 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         }
         // Should have positive value.
         if (_value == 0) {
-            return _error(BMC_PLATFORM_INVALID_VALUE, &quot;Cannot reissue 0 value&quot;);
+            return _error(BMC_PLATFORM_INVALID_VALUE, "Cannot reissue 0 value");
         }
         Asset asset = assets[_symbol];
         // Should have dynamic supply.
         if (!asset.isReissuable) {
-            return _error(BMC_PLATFORM_CANNOT_REISSUE_FIXED_ASSET, &quot;Cannot reissue fixed asset&quot;);
+            return _error(BMC_PLATFORM_CANNOT_REISSUE_FIXED_ASSET, "Cannot reissue fixed asset");
         }
         // Resulting total supply should not overflow.
-        if (asset.totalSupply + _value &lt; asset.totalSupply) {
-            return _error(BMC_PLATFORM_SUPPLY_OVERFLOW, &quot;Total supply overflow&quot;);
+        if (asset.totalSupply + _value < asset.totalSupply) {
+            return _error(BMC_PLATFORM_SUPPLY_OVERFLOW, "Total supply overflow");
         }
         uint holderId = getHolderId(msg.sender);
         asset.wallets[holderId].balance = asset.wallets[holderId].balance.add(_value);
@@ -786,13 +786,13 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
     function revokeAsset(bytes32 _symbol, uint _value) returns(uint) {
         // Should have positive value.
         if (_value == 0) {
-            return _error(BMC_PLATFORM_INVALID_VALUE, &quot;Cannot revoke 0 value&quot;);
+            return _error(BMC_PLATFORM_INVALID_VALUE, "Cannot revoke 0 value");
         }
         Asset asset = assets[_symbol];
         uint holderId = getHolderId(msg.sender);
         // Should have enough tokens.
-        if (asset.wallets[holderId].balance &lt; _value) {
-            return _error(BMC_PLATFORM_NOT_ENOUGH_TOKENS, &quot;Not enough tokens to revoke&quot;);
+        if (asset.wallets[holderId].balance < _value) {
+            return _error(BMC_PLATFORM_NOT_ENOUGH_TOKENS, "Not enough tokens to revoke");
         }
         asset.wallets[holderId].balance = asset.wallets[holderId].balance.sub(_value);
         asset.totalSupply = asset.totalSupply.sub(_value);
@@ -822,14 +822,14 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         }
 
         if (_newOwner == 0x0) {
-            return _error(BMC_PLATFORM_INVALID_NEW_OWNER, &quot;Can&#39;t change ownership to 0x0&quot;);
+            return _error(BMC_PLATFORM_INVALID_NEW_OWNER, "Can't change ownership to 0x0");
         }
 
         Asset asset = assets[_symbol];
         uint newOwnerId = _createHolderId(_newOwner);
         // Should pass ownership to another holder.
         if (asset.owner == newOwnerId) {
-            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, &quot;Cannot pass ownership to oneself&quot;);
+            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, "Cannot pass ownership to oneself");
         }
         address oldOwner = _address(asset.owner);
         asset.owner = newOwnerId;
@@ -863,11 +863,11 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         uint fromId = _createHolderId(msg.sender);
         // Should trust to another address.
         if (fromId == getHolderId(_to)) {
-            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, &quot;Cannot trust to oneself&quot;);
+            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, "Cannot trust to oneself");
         }
         // Should trust to yet untrusted.
         if (isTrusted(msg.sender, _to)) {
-            return _error(BMC_PLATFORM_ALREADY_TRUSTED, &quot;Already trusted&quot;);
+            return _error(BMC_PLATFORM_ALREADY_TRUSTED, "Already trusted");
         }
 
         holders[fromId].trust[_to] = true;
@@ -909,7 +909,7 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
         }
         // Should recover to previously unused address.
         if (getHolderId(_to) != 0) {
-            return _error(BMC_PLATFORM_SHOULD_RECOVER_TO_NEW_ADDRESS, &quot;Should recover to new address&quot;);
+            return _error(BMC_PLATFORM_SHOULD_RECOVER_TO_NEW_ADDRESS, "Should recover to new address");
         }
         // We take current holder address because it might not equal _from.
         // It is possible to recover from any old holder address, but event should have the current one.
@@ -938,11 +938,11 @@ contract BMCPlatform is Object, BMCPlatformEmitter {
     function _approve(uint _spenderId, uint _value, bytes32 _symbol, uint _senderId) internal returns(uint) {
         // Asset should exist.
         if (!isCreated(_symbol)) {
-            return _error(BMC_PLATFORM_ASSET_IS_NOT_ISSUED, &quot;Asset is not issued&quot;);
+            return _error(BMC_PLATFORM_ASSET_IS_NOT_ISSUED, "Asset is not issued");
         }
         // Should allow to another holder.
         if (_senderId == _spenderId) {
-            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, &quot;Cannot approve to oneself&quot;);
+            return _error(BMC_PLATFORM_CANNOT_APPLY_TO_ONESELF, "Cannot approve to oneself");
         }
         assets[_symbol].wallets[_senderId].allowance[_spenderId] = _value;
         // Internal Out Of Gas/Throw: revert this transaction too;

@@ -2,7 +2,7 @@ pragma solidity 0.4.20;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="0b6d256a657f64656264256a606e674b6c666a626725686466">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="0b6d256a657f64656264256a606e674b6c666a626725686466">[email protected]</span>
 */
 
 /**
@@ -25,12 +25,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -78,10 +78,10 @@ contract ICO {
     token public tokenReward;
     address public creator;
     address public beneficiary;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
-    mapping(address =&gt; bool) public airdropClaimed;
-    mapping(address =&gt; uint) public icoTokensReceived;
+    mapping(address => bool) public airdropClaimed;
+    mapping(address => uint) public icoTokensReceived;
 
     uint public constant TOKEN_SUPPLY_ICO   = 130000000 * 10 ** 18; // 130 Million tokens
 
@@ -119,8 +119,8 @@ contract ICO {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt;= startTime);
-        require(msg.value &gt; 50 finney);
+        require(now >= startTime);
+        require(msg.value > 50 finney);
 
         uint256 tokenBought = 0;
 
@@ -165,7 +165,7 @@ contract ICO {
     function doAirdrop(address _participant) internal {
         uint airdrop = computeAirdrop(_participant);
 
-        require( airdrop &gt; 0 );
+        require( airdrop > 0 );
 
         // update balances and token issue volume
         airdropClaimed[_participant] = true;
@@ -201,19 +201,19 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(state == State.stage1 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,3,9,12)) { //Till March 9 12:00 UTC
+        if(state == State.stage1 && now > dateTimeContract.toTimestamp(2018,3,9,12)) { //Till March 9 12:00 UTC
 
             state = State.stage2;
 
-        } else if(state == State.stage2 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,3,16,12)) { //Till March 16 12:00 UTC
+        } else if(state == State.stage2 && now > dateTimeContract.toTimestamp(2018,3,16,12)) { //Till March 16 12:00 UTC
 
             state = State.stage3;
             
-        } else if(state == State.stage3 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,3,23,12)) { //From March 23 12:00 UTC
+        } else if(state == State.stage3 && now > dateTimeContract.toTimestamp(2018,3,23,12)) { //From March 23 12:00 UTC
 
             state = State.stage4;
             
-        } else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful) { //if we reach ico deadline and its not Successful yet
+        } else if(now > ICOdeadline && state!=State.Successful) { //if we reach ico deadline and its not Successful yet
 
         state = State.Successful; //ico becomes Successful
         completedAt = now; //ICO is complete

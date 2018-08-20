@@ -40,13 +40,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,7 +56,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(
         address _from,
@@ -94,8 +94,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -146,7 +146,7 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -159,8 +159,8 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract IGTToken is StandardToken {
-    string public constant name = &quot;IGT Token&quot;;
-    string public constant symbol = &quot;IGTT&quot;;
+    string public constant name = "IGT Token";
+    string public constant symbol = "IGTT";
     uint32 public constant decimals = 18;
     uint256 public INITIAL_SUPPLY = 21000000 * 1 ether;
     address public CrowdsaleAddress;
@@ -191,7 +191,7 @@ contract IGTToken is StandardToken {
     }
 
     function acceptTokens(address _from, uint256 _value) public onlyOwner returns (bool){
-        require (balances[_from] &gt;= _value);
+        require (balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[CrowdsaleAddress] = balances[CrowdsaleAddress].add(_value);
         emit Transfer(_from, CrowdsaleAddress, _value);
@@ -202,7 +202,7 @@ contract IGTToken is StandardToken {
      // Override
     function transfer(address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited&quot;);
+            require(!lockTransfers, "Transfers are prohibited");
         }
         return super.transfer(_to,_value);
     }
@@ -210,7 +210,7 @@ contract IGTToken is StandardToken {
      // Override
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
         if (msg.sender != CrowdsaleAddress){
-            require(!lockTransfers, &quot;Transfers are prohibited&quot;);
+            require(!lockTransfers, "Transfers are prohibited");
         }
         return super.transferFrom(_from,_to,_value);
     }
@@ -307,7 +307,7 @@ contract Crowdsale is Ownable {
         // the function take tokens from teamAddress to contract
         // the sum is entered in whole tokens (1 = 1 token)
         uint256 value = _value;
-        require (value &gt;= 1);
+        require (value >= 1);
         value = value.mul(1 ether);
         token.acceptTokens(address(teamAddress), value);    
     } 
@@ -347,22 +347,22 @@ contract Crowdsale is Ownable {
         uint256 amountToken = token.getSoldTokens();
         uint256 actualBonus = 0;
         
-        if (amountToken &lt; 2240000 * (1 ether)){ 
+        if (amountToken < 2240000 * (1 ether)){ 
             actualBonus = 12;    
         }
-        if (amountToken &gt;= 2240000 * (1 ether) &amp;&amp; amountToken &lt; 4400000 * (1 ether)){
+        if (amountToken >= 2240000 * (1 ether) && amountToken < 4400000 * (1 ether)){
             actualBonus = 8;
         }
-        if (amountToken &gt;= 4400000 * (1 ether) &amp;&amp; amountToken &lt; 6520000 * (1 ether)){
+        if (amountToken >= 4400000 * (1 ether) && amountToken < 6520000 * (1 ether)){
             actualBonus = 6;
         }
-        if (amountToken &gt;= 6520000 * (1 ether) &amp;&amp; amountToken &lt; 8600000 * (1 ether)){
+        if (amountToken >= 6520000 * (1 ether) && amountToken < 8600000 * (1 ether)){
             actualBonus = 4;
         }
-        if (amountToken &gt;= 8600000 * (1 ether) &amp;&amp; amountToken &lt; 10640000 * (1 ether)){
+        if (amountToken >= 8600000 * (1 ether) && amountToken < 10640000 * (1 ether)){
             actualBonus = 2;
         }
-        if (now &lt; endTimeAddBonus){
+        if (now < endTimeAddBonus){
             actualBonus = actualBonus.add(additionalBonus);
         }
         return actualBonus;
@@ -373,7 +373,7 @@ contract Crowdsale is Ownable {
         // the sum is entered in whole tokens (1 = 1 token)
         require(currentState != State.Migrate);
         require (_newInvestor != address(0));
-        require (_value &gt;= 1);
+        require (_value >= 1);
 
         uint256 mySoldTokens = token.getSoldTokens();
         uint256 value = _value;
@@ -382,7 +382,7 @@ contract Crowdsale is Ownable {
         if (currentState != State.PreTune){
             uint256 myBonus = calcBonus();
             // Add Bonus
-            if (myBonus &gt; 0){
+            if (myBonus > 0){
                 value = value + value.mul(myBonus).div(100);            
             }
             mySoldTokens = mySoldTokens.add(value);

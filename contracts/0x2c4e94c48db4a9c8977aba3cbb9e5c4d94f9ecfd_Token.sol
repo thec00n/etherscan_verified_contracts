@@ -11,12 +11,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,8 +48,8 @@ contract StandardToken is ERC20{
     string public name;
     string public symbol;
     uint8 public decimals;
-    mapping(address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function StandardToken(string _name, string _symbol, uint8 _decimals) public {
         name = _name;
@@ -62,7 +62,7 @@ contract StandardToken is ERC20{
 
 function transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(this));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
 		emit Transfer(msg.sender, _to, _value);
@@ -70,15 +70,15 @@ function transfer(address _to, uint256 _value) public returns(bool) {
 }
 function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         require(_to.length == _value.length);
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             transfer(_to[i], _value[i]);
         }
         return true;
 }
 function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(this));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -100,7 +100,7 @@ function transferFrom(address _from, address _to, uint256 _value) public returns
     }
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -130,11 +130,11 @@ contract MintableToken is StandardToken, Ownable{
 contract CappedToken is MintableToken {
     uint256 public cap;
     function CappedToken(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns(bool) {
-        require(totalSupply.add(_amount) &lt;= cap);
+        require(totalSupply.add(_amount) <= cap);
         return super.mint(_to, _amount);
     }
 }
@@ -142,7 +142,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -155,23 +155,23 @@ contract RewardToken is StandardToken, Ownable {
         uint amount;
     }
     Payment[] public repayments;
-    mapping(address =&gt; Payment[]) public rewards;
+    mapping(address => Payment[]) public rewards;
 
     event Reward(address indexed to, uint256 amount);
 
     function repayment() onlyOwner payable public {
-        require(msg.value &gt;= 0.000085 * 1 ether);
+        require(msg.value >= 0.000085 * 1 ether);
         repayments.push(Payment({time : now, amount : msg.value}));
     }
     function _reward(address _to) private returns(bool) {
-        if(rewards[_to].length &lt; repayments.length) {
+        if(rewards[_to].length < repayments.length) {
             uint sum = 0;
-            for(uint i = rewards[_to].length; i &lt; repayments.length; i++) {
-                uint amount = balances[_to] &gt; 0 ? (repayments[i].amount * balances[_to] / totalSupply) : 0;
+            for(uint i = rewards[_to].length; i < repayments.length; i++) {
+                uint amount = balances[_to] > 0 ? (repayments[i].amount * balances[_to] / totalSupply) : 0;
                 rewards[_to].push(Payment({time : now, amount : amount}));
                 sum += amount;
             }
-            if(sum &gt; 0) {
+            if(sum > 0) {
                 _to.transfer(sum);
                 emit Reward(_to, sum);
             }
@@ -189,7 +189,7 @@ contract RewardToken is StandardToken, Ownable {
     }
     function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         _reward(msg.sender);
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             _reward(_to[i]);
         }
         return super.multiTransfer(_to, _value);
@@ -201,7 +201,7 @@ contract RewardToken is StandardToken, Ownable {
     }
 }
 contract Token is CappedToken, BurnableToken, RewardToken {
-    function Token() CappedToken(1000000000 * 1 ether) StandardToken(&quot;JULLAR&quot;, &quot;JUL&quot;, 18) public {
+    function Token() CappedToken(1000000000 * 1 ether) StandardToken("JULLAR", "JUL", 18) public {
         
     }
 }
@@ -214,9 +214,9 @@ contract JullarCrowdsale is Ownable{
     address private JullarPartnersAdr = 0x3d6D84c26a11Ed1123dB68791c80aa7F7ce767C8; // Partner
     uint public collectedWei;
 	address[] public JullarTeamAdr;
-	string public ActiveSalesPhase = &quot;Super PreICO&quot;; // Stage Name
+	string public ActiveSalesPhase = "Super PreICO"; // Stage Name
 	
-    string public TokenPriceETH = &quot;0.000085&quot;;  
+    string public TokenPriceETH = "0.000085";  
 	uint public tokensSold = 0; 
 	uint private tokensForSale = 20000000 * 1 ether; 
 	uint public priceTokenWei = 85000000000000;  // 0.000085 ETH = 1 JUL superPreICO
@@ -259,12 +259,12 @@ contract JullarCrowdsale is Ownable{
 	function purchase() payable public {		
 		require(pausestatus != 0);
         require(!crowdsaleClosed);
-        require(tokensSold &lt; tokensForSale);
-        require(msg.value &gt;= 0.000085 * 1 ether); 
+        require(tokensSold < tokensForSale);
+        require(msg.value >= 0.000085 * 1 ether); 
         uint sum = msg.value;         
         uint amount = sum.mul(1 ether).div(priceTokenWei);
         uint retSum = 0;
-        if(tokensSold.add(amount) &gt; tokensForSale) {
+        if(tokensSold.add(amount) > tokensForSale) {
             uint retAmount = tokensSold.add(amount).sub(tokensForSale);
             retSum = retAmount.mul(priceTokenWei).div(1 ether);
             amount = amount.sub(retAmount);
@@ -273,7 +273,7 @@ contract JullarCrowdsale is Ownable{
 		tokensSold = tokensSold.add(amount);
         collectedWei = collectedWei.add(sum);
         token.mint(msg.sender, amount);
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
         emit Rurchase(msg.sender, amount, sum);		
@@ -297,12 +297,12 @@ contract JullarCrowdsale is Ownable{
 	}
 	
 	function AddAdrJullarTeam(address _address) onlyOwner public{
-		require(JullarTeamAdr.length &lt; 6);
+		require(JullarTeamAdr.length < 6);
 		JullarTeamAdr.push(_address);
 	}
 	
 	function WithdrawalofFunds(uint _arraynum) onlyOwner public {
-		require(_arraynum / 1 ether &lt; 6);
+		require(_arraynum / 1 ether < 6);
         JullarTeamAdr[_arraynum].transfer(address(this).balance);
 	}
 

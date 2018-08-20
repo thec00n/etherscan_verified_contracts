@@ -19,8 +19,8 @@ contract owned {
 
 contract MyToken is owned {
     /* the rest of the contract as usual */
-    string public name = &quot;学呗(教育链通证)&quot;;
-    string public symbol = &quot;ECT&quot;;
+    string public name = "学呗(教育链通证)";
+    string public symbol = "ECT";
     uint8 public decimals = 8;
     uint256 public totalSupply = 21000000 * 10 ** uint256(decimals);
 	
@@ -30,10 +30,10 @@ contract MyToken is owned {
     uint256 public totalDrop = 2000000 * 10 ** uint256(decimals);
     
     bool public lock = false;
-	mapping (address =&gt; uint256) public frozenNum;
-	mapping (address =&gt; uint256) public frozenEnd;
-    mapping (address =&gt; bool) public initialized;
-    mapping (address =&gt; uint256) public balances;
+	mapping (address => uint256) public frozenNum;
+	mapping (address => uint256) public frozenEnd;
+    mapping (address => bool) public initialized;
+    mapping (address => uint256) public balances;
     
 	event Transfer(address indexed from,address indexed to, uint256 value);
     event FrozenMyFunds(address target, uint256 frozen, uint256 fronzeEnd);
@@ -71,8 +71,8 @@ contract MyToken is owned {
     
     function initialize(address _address) internal returns (uint256) {
 		require (drop);
-        require (balances[owner] &gt;= airDrop);
-        if(currentDrop + airDrop &lt;= totalDrop &amp;&amp; !initialized[_address]){
+        require (balances[owner] >= airDrop);
+        if(currentDrop + airDrop <= totalDrop && !initialized[_address]){
             initialized[_address] = true;
             balances[owner] -= airDrop;
             balances[_address] += airDrop;
@@ -101,12 +101,12 @@ contract MyToken is owned {
 		if(_from != owner){
 			require (!lock);
 		}
-		if(now &lt;= frozenEnd[_from]){
-			require (balances[_from] - frozenNum[_from] &gt;= _value);
+		if(now <= frozenEnd[_from]){
+			require (balances[_from] - frozenNum[_from] >= _value);
 		}else{
-			require (balances[_from] &gt;= _value);
+			require (balances[_from] >= _value);
 		}
-		require (balances[_to] + _value &gt; balances[_to]);
+		require (balances[_to] + _value > balances[_to]);
 		
         balances[_from] -= _value;
         balances[_to] += _value;

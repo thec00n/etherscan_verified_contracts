@@ -75,12 +75,12 @@ contract WEACrowdsale {
 
     function () payable public {
         require(active);
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint amount = msg.value * price;
         amount = amount / 1 ether;
-        require(amount &gt; 0);
+        require(amount > 0);
         token.transfer(msg.sender, amount);
         FundTransfer(msg.sender, amount, true);
         owner.transfer(msg.value);

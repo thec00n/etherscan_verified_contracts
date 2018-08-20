@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -117,15 +117,15 @@ contract ExtendedToken is ERC20, Pausable {
   using SafeMath for uint;
 
   /// Mapping for balances
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
   /// Mapping for allowance
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   /// @dev Any unsold tokens from ICO will be sent to owner address and burned
   /// @param _amount Amount of tokens to be burned from owner address
   /// @return True if successfully burned
   function burn(uint _amount) public onlyOwner returns (bool) {
-	  require(balances[msg.sender] &gt;= _amount);     
+	  require(balances[msg.sender] >= _amount);     
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     totalSupply = totalSupply.sub(_amount);
     Burn(msg.sender, _amount);
@@ -150,7 +150,7 @@ contract ExtendedToken is ERC20, Pausable {
   }
   
   function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     _transfer(_from, _to, _value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     return true;
@@ -181,7 +181,7 @@ contract ExtendedToken is ERC20, Pausable {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -190,7 +190,7 @@ contract ExtendedToken is ERC20, Pausable {
     return true;
   }
 
-  /// @dev Don&#39;t accept ether
+  /// @dev Don't accept ether
   function () public payable {
     revert();
   }
@@ -217,10 +217,10 @@ contract ExtendedToken is ERC20, Pausable {
 
 /// @title Cultural Coin Token contract
 contract CulturalCoinToken is ExtendedToken {
-  string public constant name = &quot;Cultural Coin Token&quot;;
-  string public constant symbol = &quot;CC&quot;;
+  string public constant name = "Cultural Coin Token";
+  string public constant symbol = "CC";
   uint8 public constant decimals = 18;
-  string public constant version = &quot;v1&quot;;
+  string public constant version = "v1";
 
   function CulturalCoinToken() public { 
     totalSupply = 1500 * 10**24;    // 1500m tokens

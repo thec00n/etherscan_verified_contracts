@@ -14,12 +14,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -29,7 +29,7 @@ contract BaseGame {
 	function canSetBanker() view public returns (bool _result);
     function setBanker(address _banker, uint256 _beginTime, uint256 _endTime) public returns(bool _result);
     
-    string public gameName = &quot;NO.1&quot;;
+    string public gameName = "NO.1";
     uint public gameType = 1004;
     string public officialGameUrl;
 
@@ -39,7 +39,7 @@ contract BaseGame {
 	uint public bankerEndTime;
 	address public currentBanker;
 	
-	mapping (address =&gt; uint256) public userEtherOf;
+	mapping (address => uint256) public userEtherOf;
 }
 
 
@@ -84,7 +84,7 @@ contract Base is BaseGame{
         require (_to != 0x0);
         lock();
         uint256 amount = userEtherOf[msg.sender];
-        if(amount &gt; 0){
+        if(amount > 0){
             userEtherOf[msg.sender] = 0;
             _to.transfer(amount);
             _result = true;
@@ -132,14 +132,14 @@ contract SoccerBet is Base
 	
     modifier onlyBanker {
         require(msg.sender == currentBanker);
-        require(bankerBeginTime &lt;= now);
-        require(now &lt; bankerEndTime);
+        require(bankerBeginTime <= now);
+        require(now < bankerEndTime);
         _;
     }    
 	
 	function canSetBanker() public view returns (bool _result){
         _result =  false;
-		if(now &lt; bankerEndTime){
+		if(now < bankerEndTime){
 			return;
 		}
 		if(userEtherOf[this] == 0){
@@ -154,22 +154,22 @@ contract SoccerBet is Base
         _result = false;
         require(_banker != 0x0);
 
-        if(now &lt; bankerEndTime){
+        if(now < bankerEndTime){
             emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 1, now, getEventId());
             return;
         }
 		
-		if(userEtherOf[this] &gt; 0){
+		if(userEtherOf[this] > 0){
 			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 5, now, getEventId());
 			return;
 		}
         
-        if(_beginTime &gt; now){
+        if(_beginTime > now){
 			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 3, now, getEventId());
             return;
         }
 
-        if(_endTime &lt;= now){
+        if(_endTime <= now){
 			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 4, now, getEventId());
             return;
         }
@@ -232,8 +232,8 @@ contract SoccerBet is Base
     }
 	function setGameResult(uint _gameResult) public onlyDecider{
 		require(!gameOver);
-		require(betLastTime + 90 minutes &lt; now);
-		require(now &lt; betLastTime + 30 days);
+		require(betLastTime + 90 minutes < now);
+		require(now < betLastTime + 30 days);
 		require(gameResult == 9);
 		require( _gameResult == loseNum || _gameResult == winNum || _gameResult == sameNum);
 		gameResult = _gameResult;
@@ -250,19 +250,19 @@ contract SoccerBet is Base
 	event OnGameInfo(uint indexed _gameID, string _team1, string _team2, uint _loseOdd, uint _winOdd, uint _sameOdd, uint _eventTime, uint eventId);
 	
     function newGame(string _team1, string _team2, uint _loseOdd, uint _winOdd, uint _sameOdd,  uint _betLastTime, uint256 _gameMinBetAmount, uint256 _gameMaxBetAmount) public onlyBanker payable returns(bool _result){
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
 
-        require(bytes(_team1).length &lt; 100);
-		require(bytes(_team2).length &lt; 100);
+        require(bytes(_team1).length < 100);
+		require(bytes(_team2).length < 100);
 		
 		require(gameOver);
-        require(now &gt; bankerBeginTime);
-        require(_gameMinBetAmount &gt;= 100000000000000);
-        require(_gameMaxBetAmount &gt;= _gameMinBetAmount);
-		require(now &lt; _betLastTime);
-		require(_betLastTime+ 1 days &lt; bankerEndTime);
+        require(now > bankerBeginTime);
+        require(_gameMinBetAmount >= 100000000000000);
+        require(_gameMaxBetAmount >= _gameMinBetAmount);
+		require(now < _betLastTime);
+		require(_betLastTime+ 1 days < bankerEndTime);
 			
 		
         _result = _newGame(_team1, _team2, _loseOdd, _winOdd, _sameOdd, _betLastTime, _gameMinBetAmount,  _gameMaxBetAmount);
@@ -317,11 +317,11 @@ contract SoccerBet is Base
 		uint ResultNO;
     }
 
-    mapping (uint =&gt; betInfo) public playerBetInfoOf;
+    mapping (uint => betInfo) public playerBetInfoOf;
 
     event OnPlay( uint indexed _gameID, uint indexed _playNo, address indexed _player, string _gameName, uint odd, string _team1, uint _betNum, uint256 _betAmount,  uint _eventTime, uint eventId);
     function play(uint _betNum, uint256 _betAmount) public payable  returns(bool _result){
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
 		_result = _play(_betNum, _betAmount);
@@ -334,10 +334,10 @@ contract SoccerBet is Base
         require( loseNum == _betNum || _betNum == winNum || _betNum == sameNum);
         require(msg.sender != currentBanker);
 
-        require(now &lt; betLastTime);
+        require(now < betLastTime);
 		
-		require(_betAmount &gt;= gameMinBetAmount);
-        if (_betAmount &gt; gameMaxBetAmount){
+		require(_betAmount >= gameMinBetAmount);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
 		
@@ -345,7 +345,7 @@ contract SoccerBet is Base
 		
 		uint _odd = _seekOdd(_betNum, _betAmount);
 		
-        require(userEtherOf[msg.sender] &gt;= _betAmount);
+        require(userEtherOf[msg.sender] >= _betAmount);
 
         betInfo memory bi= betInfo({
             Odd :_odd,
@@ -362,9 +362,9 @@ contract SoccerBet is Base
 		userEtherOf[this] = userEtherOf[this].add(_betAmount);
 		
 		uint _maxpooling = _getMaxPooling();
-		if(userEtherOf[this] &lt; _maxpooling){
+		if(userEtherOf[this] < _maxpooling){
 			uint BankerAmount = _maxpooling.sub(userEtherOf[this]);
-			require(userEtherOf[currentBanker] &gt;= BankerAmount);
+			require(userEtherOf[currentBanker] >= BankerAmount);
 			userEtherOf[currentBanker] = userEtherOf[currentBanker].sub(BankerAmount);
 			userEtherOf[this] = userEtherOf[this].add(BankerAmount);
 			bankerAllDeposit = bankerAllDeposit.add(BankerAmount);
@@ -395,10 +395,10 @@ contract SoccerBet is Base
 	
 	function _getMaxPooling() private view returns(uint maxpooling){
 		maxpooling = winPooling;
-		if(maxpooling &lt; losePooling){
+		if(maxpooling < losePooling){
 			maxpooling = losePooling;
 		}
-		if(maxpooling &lt; samePooling){
+		if(maxpooling < samePooling){
 			maxpooling = samePooling;
 		}
 	}
@@ -414,7 +414,7 @@ contract SoccerBet is Base
         _result = false;
         _checkOpenGame();
 		uint256 allAmount = 0;
-		for(uint i = 0; nextRewardPlayNo &lt; playNo &amp;&amp; i &lt; currentRewardNum; i++ ){
+		for(uint i = 0; nextRewardPlayNo < playNo && i < currentRewardNum; i++ ){
 			betInfo storage p = playerBetInfoOf[nextRewardPlayNo];
 			if(!p.IsReturnAward){
 				_cashPrize(p, allAmount,nextRewardPlayNo);
@@ -435,7 +435,7 @@ contract SoccerBet is Base
 
     function _openGamePlayNo(uint _playNo) private returns(bool _result){
         _result = false;
-		require(_playNo &gt;= gameBeginPlayNo &amp;&amp; _playNo &lt; playNo);
+		require(_playNo >= gameBeginPlayNo && _playNo < playNo);
 		_checkOpenGame();
 		
 		betInfo storage p = playerBetInfoOf[_playNo];
@@ -460,9 +460,9 @@ contract SoccerBet is Base
         _checkOpenGame();
 		
 		uint256 allAmount = 0;
-		for (uint _index = 0; _index &lt; _playNos.length; _index++) {
+		for (uint _index = 0; _index < _playNos.length; _index++) {
 			uint _playNo = _playNos[_index];
-			if(_playNo &gt;= gameBeginPlayNo &amp;&amp; _playNo &lt; playNo){
+			if(_playNo >= gameBeginPlayNo && _playNo < playNo){
 				betInfo storage p = playerBetInfoOf[_playNo];
 				if(!p.IsReturnAward){
 					_cashPrize(p, allAmount,_playNo);
@@ -484,13 +484,13 @@ contract SoccerBet is Base
 	
     function _openGameRange(uint _beginPlayNo, uint _endPlayNo) private returns(bool _result){
         _result = false;
-		require(_beginPlayNo &lt; _endPlayNo);
-		require(_beginPlayNo &gt;= gameBeginPlayNo &amp;&amp; _endPlayNo &lt; playNo);
+		require(_beginPlayNo < _endPlayNo);
+		require(_beginPlayNo >= gameBeginPlayNo && _endPlayNo < playNo);
 		
 		_checkOpenGame();
 		
 		uint256 allAmount = 0;
-		for (uint _indexPlayNo = _beginPlayNo; _indexPlayNo &lt;= _endPlayNo; _indexPlayNo++) {
+		for (uint _indexPlayNo = _beginPlayNo; _indexPlayNo <= _endPlayNo; _indexPlayNo++) {
 			betInfo storage p = playerBetInfoOf[_indexPlayNo];
 			if(!p.IsReturnAward){
 				_cashPrize(p, allAmount,_indexPlayNo);
@@ -503,7 +503,7 @@ contract SoccerBet is Base
 	function _checkOpenGame() private view{
 		require(!gameOver);
 		require( gameResult == loseNum || gameResult == winNum || gameResult == sameNum);
-		require(betLastTime + 90 minutes &lt; now);
+		require(betLastTime + 90 minutes < now);
 	}
 	
 	function _cashPrize(betInfo storage _p, uint256 _allAmount,uint _playNo) private{
@@ -542,7 +542,7 @@ contract SoccerBet is Base
 	}
 	
 	function _setGameOver() private{
-		if(unpayPooling == 0 &amp;&amp; _canSetGameOver()){
+		if(unpayPooling == 0 && _canSetGameOver()){
 			userEtherOf[currentBanker] = userEtherOf[currentBanker].add(userEtherOf[this]);
 			userEtherOf[this] = 0;
 			gameOver = true;
@@ -550,17 +550,17 @@ contract SoccerBet is Base
 	}
 	
 	function _canSetGameOver() private view returns(bool){
-		return winPooling&lt;100 &amp;&amp; losePooling&lt;100 &amp;&amp; samePooling&lt;100;
+		return winPooling<100 && losePooling<100 && samePooling<100;
 	}
 	
 	function failUserRefund(uint[] _playNos) public returns (bool _result) {
         _result = false;
         require(!gameOver);
 		require(gameResult == 9);
-        require(betLastTime + 31 days &lt; now);
-		for (uint _index = 0; _index &lt; _playNos.length; _index++) {
+        require(betLastTime + 31 days < now);
+		for (uint _index = 0; _index < _playNos.length; _index++) {
 			uint _playNo = _playNos[_index];
-			if(_playNo &gt;= gameBeginPlayNo &amp;&amp; _playNo &lt; playNo){
+			if(_playNo >= gameBeginPlayNo && _playNo < playNo){
 				betInfo storage p = playerBetInfoOf[_playNo];
 				if(!p.IsReturnAward){
 					p.IsReturnAward = true;
@@ -570,7 +570,7 @@ contract SoccerBet is Base
 				}
 			}
 		}
-		if(msg.sender == currentBanker &amp;&amp; bankerAllDeposit&gt;0){
+		if(msg.sender == currentBanker && bankerAllDeposit>0){
 			userEtherOf[this] = userEtherOf[this].sub(bankerAllDeposit);
 			userEtherOf[currentBanker] =  userEtherOf[currentBanker].add(bankerAllDeposit);
 			bankerAllDeposit = 0;
@@ -588,7 +588,7 @@ contract SoccerBet is Base
 		require(_to != currentBanker || gameOver);
 		lock();
 		uint256 amount = userEtherOf[_to];
-		if(amount &gt; 0){
+		if(amount > 0){
 			userEtherOf[msg.sender] = 0;
 			_to.transfer(amount);
 			_result = true;
@@ -601,13 +601,13 @@ contract SoccerBet is Base
     }
 	
 	function playEtherOf() public payable {
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);                  
         }
     }
 	
 	function () public payable {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
 			
         }

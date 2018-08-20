@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f684979f988fb69a9f809385829784d895999b">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b4164656572254d7e4b67627d6e787f6a7925686466">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f684979f988fb69a9f809385829784d895999b">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b4164656572254d7e4b67627d6e787f6a7925686466">[email protected]</a>
 /*                 
 /* ==================================================================== */
 /// This Random is inspired by https://github.com/axiomzen/eth-random
@@ -22,7 +22,7 @@ contract Random {
 
     
     function _randByRange(uint256 _min, uint256 _max) internal returns (uint256) {
-        if (_min &gt;= _max) {
+        if (_min >= _max) {
             return _min;
         }
         return (_rand() % (_max - _min +1)) + _min;
@@ -63,10 +63,10 @@ contract CaptainPreSell is Random {
   event BuyToken(uint256 tokenId, uint256 oldPrice, address prevOwner, address winner);
   
   //mapping
-  mapping(uint32 =&gt; uint256) captainToCount;
-  mapping(address =&gt; uint32[]) captainUserMap; 
+  mapping(uint32 => uint256) captainToCount;
+  mapping(address => uint32[]) captainUserMap; 
   /// @notice No tipping!
-  /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+  /// @dev Reject all Ether from being sent here, unless it's from one of the
   ///  two auction contracts. (Hopefully, we can prevent user accidents.)
   function() external payable {
   }
@@ -96,13 +96,13 @@ contract CaptainPreSell is Random {
     (color,atk,,,defense,price,captainCount) = config.getCardInfo(_captainId);
     require(config.getSellable(_captainId) == true);
     SellCount += 1;
-    require(SellCount&lt;=captainCount);
+    require(SellCount<=captainCount);
     uint256 rdm = _randByRange(90,110) % 10000;
     // Safety check to prevent against an unexpected 0x0 default.
     require(msg.sender != address(0));
     require(!captains.checkCaptain(msg.sender,_captainId));
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= price);
+    require(msg.value >= price);
      //get the config
     uint32 atk_min;
     uint32 atk_max; 
@@ -132,7 +132,7 @@ contract CaptainPreSell is Random {
 
   //@notice withraw all by dev
   function withdraw() external onlyOwner {
-    require(this.balance&gt;0);
+    require(this.balance>0);
     msg.sender.transfer(this.balance);
   }
 }
@@ -164,16 +164,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function div32(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -181,12 +181,12 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function sub32(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -195,13 +195,13 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function add32(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

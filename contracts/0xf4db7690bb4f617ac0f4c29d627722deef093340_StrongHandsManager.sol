@@ -14,12 +14,12 @@ contract StrongHandsManager {
     event CreateStrongHand(address indexed owner, address indexed strongHand);
     event MintToken(address indexed owner, uint256 indexed amount);
     
-    mapping (address =&gt; address) public strongHands;
-    mapping (address =&gt; uint256) public ownerToBalance;
+    mapping (address => address) public strongHands;
+    mapping (address => uint256) public ownerToBalance;
     
     //ERC20
-    string public constant name = &quot;Stronghands3D&quot;;
-    string public constant symbol = &quot;S3D&quot;;
+    string public constant name = "Stronghands3D";
+    string public constant symbol = "S3D";
     uint8 public constant decimals = 18;
     
     uint256 internal tokenSupply = 0;
@@ -27,7 +27,7 @@ contract StrongHandsManager {
     function getStrong()
         public
     {
-        require(strongHands[msg.sender] == address(0), &quot;you already became a Stronghand&quot;);
+        require(strongHands[msg.sender] == address(0), "you already became a Stronghand");
         
         strongHands[msg.sender] = new StrongHand(msg.sender);
         

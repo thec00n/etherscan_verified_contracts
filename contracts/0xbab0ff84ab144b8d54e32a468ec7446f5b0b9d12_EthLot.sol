@@ -16,8 +16,8 @@ contract EthLot {
     uint public rand1;
     uint8 public rand2;
     
-    mapping (uint =&gt; mapping (uint8 =&gt; address)) public map;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (uint => mapping (uint8 => address)) public map;
+    mapping (address => uint256) public balanceOf;
     
     event FundTransfer(address backer, uint amount, bool isContribution);
     
@@ -31,7 +31,7 @@ contract EthLot {
     }
     
     function withdraw() external {
-        require(balanceOf[msg.sender] &gt; 0);
+        require(balanceOf[msg.sender] > 0);
         
         msg.sender.transfer(balanceOf[msg.sender]);
         FundTransfer(msg.sender, balanceOf[msg.sender], false);
@@ -41,13 +41,13 @@ contract EthLot {
     }
     
     function place(uint8 cell) external payable {
-        require(map[currentRound][cell] == 0x0 &amp;&amp; msg.value == price);
+        require(map[currentRound][cell] == 0x0 && msg.value == price);
         
         map[currentRound][cell] = msg.sender;
         Placed(currentRound, cell, msg.sender);
         rand1 += uint(msg.sender) + block.timestamp;
         rand2 -= uint8(msg.sender);
-        if (placesSold &lt; 255) {
+        if (placesSold < 255) {
             placesSold++;
         } else {
             placesSold = 0;

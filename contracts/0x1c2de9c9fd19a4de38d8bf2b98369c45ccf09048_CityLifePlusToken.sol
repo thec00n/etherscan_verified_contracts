@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 /** ----------------------------------------------------------------------------
-  * &#39;CL+&#39; &#39;CITYLIFE PLUS Token&#39; token contract
+  * 'CL+' 'CITYLIFE PLUS Token' token contract
   *
   * Symbol      : CL+
   * Name        : CITYLIFE PLUS Token
@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
   * Decimals    : 18
   *
   *
-  *  &#169; 2018 City Life. All rights reserved.
+  *  © 2018 City Life. All rights reserved.
   * ----------------------------------------------------------------------------
   */
 
@@ -20,10 +20,10 @@ pragma solidity ^0.4.21;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -31,7 +31,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -65,7 +65,7 @@ contract ApproveAndCallFallBack {
 /**
  * @title Owned
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Owned {
     address public owner;
@@ -153,15 +153,15 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     /**
      * @dev Constructor
      */
     function CityLifePlusToken() public {
-        symbol = &quot;CL+&quot;;
-        name = &quot;CITYLIFE PLUS Token&quot;;
+        symbol = "CL+";
+        name = "CITYLIFE PLUS Token";
         decimals = 18;
         _totalSupply = 1000000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -191,7 +191,7 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
       */
     function transfer(address to, uint tokens) public whenNotPaused returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -209,7 +209,7 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
      * @param tokens The amount of tokens to be spent.
      */
     function approve(address spender, uint tokens) public returns (bool success) {
-        /** To change the approve amount you first have to reduce the addresses&#180;
+        /** To change the approve amount you first have to reduce the addresses´
           *  allowance to zero by calling `approve(_spender,0)` if it is not
           *  already 0 to mitigate the race condition described here:
           *  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -237,7 +237,7 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
      */
     function decreaseApproval(address spender, uint subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][spender];
-        if (subtractedValue &gt; oldValue) {
+        if (subtractedValue > oldValue) {
             allowed[msg.sender][spender] = 0;
         } else {
             allowed[msg.sender][spender] = oldValue.sub(subtractedValue);
@@ -254,8 +254,8 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
      */
     function transferFrom(address from, address to, uint tokens) public whenNotPaused returns (bool success) {
         require(to != address(0));
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
 
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -276,7 +276,7 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
 
     /**
      * Token owner can approve for `spender` to transferFrom(...) `tokens`
-     * from the token owner&#39;s account. The `spender` contract function
+     * from the token owner's account. The `spender` contract function
      * `receiveApproval(...)` is then executed
      */
     function approveAndCall(address spender, uint tokens, bytes data) public whenNotPaused returns (bool success) {
@@ -290,7 +290,7 @@ contract CityLifePlusToken is ERC20Interface, Pausable {
 
 
     /**
-      * @dev Don&#39;t accept ETH.
+      * @dev Don't accept ETH.
       */
     function () public payable {
         revert();

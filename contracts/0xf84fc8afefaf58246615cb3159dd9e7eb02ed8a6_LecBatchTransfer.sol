@@ -95,8 +95,8 @@ contract LecBatchTransfer is  Owned,LecStop{
     
     function batchTransfer(ERC223 _token,address[] _to,uint256 _amountOfEach) public 
     ownerOnly stoppable validAddress(_token){
-        require(_to.length &gt; 0 &amp;&amp; _amountOfEach &gt; 0 &amp;&amp; _to.length * _amountOfEach &lt;=  _token.balanceOf(this) &amp;&amp; _to.length &lt; 10000);
-        for(uint16 i = 0; i &lt; _to.length ;i++){
+        require(_to.length > 0 && _amountOfEach > 0 && _to.length * _amountOfEach <=  _token.balanceOf(this) && _to.length < 10000);
+        for(uint16 i = 0; i < _to.length ;i++){
           assert(_token.transfer(_to[i],_amountOfEach));
         }
     }
@@ -105,7 +105,7 @@ contract LecBatchTransfer is  Owned,LecStop{
         public ownerOnly stoppable
         notThis(_to)
     {   
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         _to.transfer(_amount); // send the amount to the target account
     }
     

@@ -1,6 +1,6 @@
 /* 		
 		https://mycryptochamp.io/
-		<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325a575e5e5d725f4b51404b42465d515a535f421c5b5d">[email&#160;protected]</a>
+		<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325a575e5e5d725f4b51404b42465d515a535f421c5b5d">[email protected]</a>
 */
 
 pragma solidity 0.4.24;
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,21 +82,21 @@ contract MyCryptoChampCore {
         uint defencePower;
         uint cooldownReduction;
         uint price;
-        uint onChampId; //can not be used to decide if item is on champ, because champ&#39;s id can be 0, &#39;bool onChamp&#39; solves it.
+        uint onChampId; //can not be used to decide if item is on champ, because champ's id can be 0, 'bool onChamp' solves it.
         bool onChamp; 
         bool forSale; //is item for sale?
     }
     
     Champ[] public champs;
     Item[] public items;
-    mapping (uint =&gt; uint) public leaderboard;
-    mapping (address =&gt; bool) private trusted;
-    mapping (address =&gt; AddressInfo) public addressInfo;
-    mapping (bool =&gt; mapping(address =&gt; mapping (address =&gt; bool))) public tokenOperatorApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenToOwner;
-    mapping (uint =&gt; string) public champToName;
-    mapping (bool =&gt; uint) public tokensForSaleCount;
+    mapping (uint => uint) public leaderboard;
+    mapping (address => bool) private trusted;
+    mapping (address => AddressInfo) public addressInfo;
+    mapping (bool => mapping(address => mapping (address => bool))) public tokenOperatorApprovals;
+    mapping (bool => mapping(uint => address)) public tokenApprovals;
+    mapping (bool => mapping(uint => address)) public tokenToOwner;
+    mapping (uint => string) public champToName;
+    mapping (bool => uint) public tokensForSaleCount;
     uint public pendingWithdrawal = 0;
     address private contractOwner;
     Controller internal controller;
@@ -117,7 +117,7 @@ contract MyCryptoChampCore {
 
     modifier isPaid(uint _price)
     {
-        require(msg.value &gt;= _price);
+        require(msg.value >= _price);
         _;
     }
 
@@ -175,8 +175,8 @@ contract MyCryptoChampCore {
         _addWithdrawal(contractOwner, ((msg.value / 100) * 60)); // 60%
 
         //affiliate
-        //checks if _affiliateAddress is set &amp; if affiliate address is not buying player
-        if(_affiliateAddress != address(0) &amp;&amp; _affiliateAddress != msg.sender){
+        //checks if _affiliateAddress is set & if affiliate address is not buying player
+        if(_affiliateAddress != address(0) && _affiliateAddress != msg.sender){
             _addWithdrawal(_affiliateAddress, ((msg.value / 100) * 25)); //provision is 25%
             
         }
@@ -444,9 +444,9 @@ contract MyCryptoChampCore {
         address playerAddress = _address;
         if(playerAddress == address(0)){ playerAddress = msg.sender; }
         uint share = addressInfo[playerAddress].withdrawal; //gets pending funds
-        require(share &gt; 0); //is it more than 0?
+        require(share > 0); //is it more than 0?
 
-        addressInfo[playerAddress].withdrawal = 0; //set player&#39;s withdrawal pendings to 0 
+        addressInfo[playerAddress].withdrawal = 0; //set player's withdrawal pendings to 0 
         pendingWithdrawal = pendingWithdrawal.sub(share); //subtract share from total pendings 
         
         playerAddress.transfer(share); //transfer
@@ -457,7 +457,7 @@ contract MyCryptoChampCore {
     function getChampsByOwner(address _owner) external view returns(uint256[]) {
         uint256[] memory result = new uint256[](addressInfo[_owner].champsCount);
         uint256 counter = 0;
-        for (uint256 i = 0; i &lt; champs.length; i++) {
+        for (uint256 i = 0; i < champs.length; i++) {
             if (tokenToOwner[true][i] == _owner) {
                 result[counter] = i;
                 counter++;
@@ -468,17 +468,17 @@ contract MyCryptoChampCore {
 
     function getTokensForSale(bool _isTokenChamp) view external returns(uint256[]){
         uint256[] memory result = new uint256[](tokensForSaleCount[_isTokenChamp]);
-        if(tokensForSaleCount[_isTokenChamp] &gt; 0){
+        if(tokensForSaleCount[_isTokenChamp] > 0){
             uint256 counter = 0;
             if(_isTokenChamp){
-                for (uint256 i = 0; i &lt; champs.length; i++) {
+                for (uint256 i = 0; i < champs.length; i++) {
                     if (champs[i].forSale == true) {
                         result[counter]=i;
                         counter++;
                     }
                 }
             }else{
-                for (uint256 n = 0; n &lt; items.length; n++) {
+                for (uint256 n = 0; n < items.length; n++) {
                     if (items[n].forSale == true) {
                         result[counter]=n;
                         counter++;
@@ -505,7 +505,7 @@ contract MyCryptoChampCore {
     function getItemsByOwner(address _owner) external view returns(uint256[]) {
         uint256[] memory result = new uint256[](addressInfo[_owner].itemsCount);
         uint256 counter = 0;
-        for (uint256 i = 0; i &lt; items.length; i++) {
+        for (uint256 i = 0; i < items.length; i++) {
             if (tokenToOwner[false][i] == _owner) {
                 result[counter] = i;
                 counter++;

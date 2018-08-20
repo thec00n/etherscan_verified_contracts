@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,8 +124,8 @@ contract ForeignToken {
   contract Eurno is ERC20Basic, Ownable, ForeignToken {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Eurno&quot;;
-    string public constant symbol = &quot;ENO&quot;;
+    string public constant name = "Eurno";
+    string public constant symbol = "ENO";
     uint public constant decimals = 8;
     uint256 public totalSupply = 28e14;
     uint256 internal functAttempts;
@@ -133,20 +133,20 @@ contract ForeignToken {
     event Transfer(address indexed _from, address indexed _to, uint256 _value); // Define the transfer event
     event Burn(address indexed burner, uint256 value);
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
    
     /**
      * @dev modifier to limit the number of times a function can be called to once. 
      */
     modifier onlyOnce(){
-        require(functAttempts &lt;= 0);
+        require(functAttempts <= 0);
         _;
     }
 
   /**
   * @dev Constructor function to start the Eurno token chain.
-  * Transfer&#39;s the owner&#39;s wallet with the development fund of 5 million tokens.
+  * Transfer's the owner's wallet with the development fund of 5 million tokens.
   */
   constructor() public {
     balances[msg.sender] = balances[msg.sender].add(totalSupply); // Update balances on the Ledger.
@@ -169,7 +169,7 @@ contract ForeignToken {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -185,7 +185,7 @@ contract ForeignToken {
    * @param _value is the amount of ENO to send to it.
    */
   function distAirdrop(address _to, uint256 _value) onlyOwner onlyOnce public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
@@ -243,9 +243,9 @@ contract ForeignToken {
    * @param _value is the number of tokens burned.
    */
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply = totalSupply.sub(_value);

@@ -138,12 +138,12 @@ contract SpaceCoin is IERC20Token{
     uint public defaultClaimPercentage;
     uint public claimTreshold;
 
-    string public name = &#39;SpaceCoin&#39;;
-    string public symbol = &#39;SCT&#39;;
+    string public name = 'SpaceCoin';
+    string public symbol = 'SCT';
     uint8 public decimals = 8;
 
-    mapping (address =&gt; account) accounts;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => account) accounts;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //
     /* Events */
@@ -176,8 +176,8 @@ contract SpaceCoin is IERC20Token{
     }
 
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if(accounts[msg.sender].avaliableBalance &lt; _amount) throw;
-        if(accounts[_to].avaliableBalance + _amount &lt;= accounts[_to].avaliableBalance) throw;
+        if(accounts[msg.sender].avaliableBalance < _amount) throw;
+        if(accounts[_to].avaliableBalance + _amount <= accounts[_to].avaliableBalance) throw;
         if(lockdown) throw;
 
         accounts[msg.sender].avaliableBalance -= _amount;
@@ -187,9 +187,9 @@ contract SpaceCoin is IERC20Token{
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        if(accounts[_from].avaliableBalance &lt; _amount) throw;
-        if(accounts[_to].avaliableBalance + _amount &lt;= accounts[_to].avaliableBalance) throw;
-        if(_amount &gt; allowed[_from][msg.sender]) throw;
+        if(accounts[_from].avaliableBalance < _amount) throw;
+        if(accounts[_to].avaliableBalance + _amount <= accounts[_to].avaliableBalance) throw;
+        if(_amount > allowed[_from][msg.sender]) throw;
         if(lockdown) throw;
 
         accounts[_from].avaliableBalance -= _amount;
@@ -211,21 +211,21 @@ contract SpaceCoin is IERC20Token{
 
     function claimHeldBalance(){
       if (accounts[msg.sender].heldBalance == 0) throw;
-      if (accounts[msg.sender].lastClaimed + blocksPerMonth &gt;= block.number) throw; 
+      if (accounts[msg.sender].lastClaimed + blocksPerMonth >= block.number) throw; 
 
       uint valueToClaim = 0;
       if (accounts[msg.sender].amountToClaim == 0){
           valueToClaim = (accounts[msg.sender].heldBalance * defaultClaimPercentage) / 100;
           if (valueToClaim == 0) throw;
       }else{
-          if (accounts[msg.sender].amountToClaim &lt;= accounts[msg.sender].heldBalance){
+          if (accounts[msg.sender].amountToClaim <= accounts[msg.sender].heldBalance){
               valueToClaim = accounts[msg.sender].amountToClaim;
           }else{
               valueToClaim = accounts[msg.sender].heldBalance;
           }
       }
       
-      if (accounts[msg.sender].heldBalance &lt; claimTreshold){
+      if (accounts[msg.sender].heldBalance < claimTreshold){
           valueToClaim = accounts[msg.sender].heldBalance; 
       }
 
@@ -242,8 +242,8 @@ contract SpaceCoin is IERC20Token{
 
     function issueNewCoins(address _destination, uint _amount){
         if (msg.sender != creationAddress) throw;
-        if(accounts[_destination].avaliableBalance + _amount &lt; accounts[_destination].avaliableBalance) throw;
-        if(totalSupply + _amount &lt; totalSupply) throw;
+        if(accounts[_destination].avaliableBalance + _amount < accounts[_destination].avaliableBalance) throw;
+        if(totalSupply + _amount < totalSupply) throw;
 
         totalSupply += _amount;
         accounts[_destination].avaliableBalance += _amount;
@@ -253,8 +253,8 @@ contract SpaceCoin is IERC20Token{
 
     function issueNewHeldCoins(address _destination, uint _amount){
       if (msg.sender != creationAddress) throw;
-      if(accounts[_destination].heldBalance + _amount &lt; accounts[_destination].heldBalance) throw;
-      if(totalSupply + totalHeldSupply + _amount &lt; totalSupply + totalHeldSupply) throw;
+      if(accounts[_destination].heldBalance + _amount < accounts[_destination].heldBalance) throw;
+      if(totalSupply + totalHeldSupply + _amount < totalSupply + totalHeldSupply) throw;
 
       if(accounts[_destination].lastClaimed == 0){
           accounts[_destination].lastClaimed = block.number;
@@ -267,7 +267,7 @@ contract SpaceCoin is IERC20Token{
 
     function destroyOldCoins(address _destination, uint _amount){
         if (msg.sender != destructionAddress) throw;
-        if (accounts[_destination].avaliableBalance &lt; _amount) throw;
+        if (accounts[_destination].avaliableBalance < _amount) throw;
 
         totalSupply -= _amount;
         accounts[_destination].avaliableBalance -= _amount;
@@ -279,7 +279,7 @@ contract SpaceCoin is IERC20Token{
         if (msg.sender != curator) throw;
         if (_accounts.length != _amountsToClaim.length) throw;
 
-        for (uint cnt = 0; cnt &lt; _accounts.length; cnt++){
+        for (uint cnt = 0; cnt < _accounts.length; cnt++){
           accounts[_accounts[cnt]].amountToClaim = _amountsToClaim[cnt];
         }
     }
@@ -310,13 +310,13 @@ contract SpaceCoin is IERC20Token{
 
     function setDefaultClaimPercentage(uint _percentage){
         if (msg.sender != curator) throw;
-        if (_percentage &gt; 100) throw;
+        if (_percentage > 100) throw;
 
         defaultClaimPercentage = _percentage;
     }
 
     function emergencyLock(){
-        if (msg.sender != curator &amp;&amp; msg.sender != dev) throw;
+        if (msg.sender != curator && msg.sender != dev) throw;
 
         lockdown = !lockdown;
     }
@@ -340,8 +340,8 @@ contract SpaceCoin is IERC20Token{
     function getMiningReward() {
         require(msg.sender == block.coinbase);
         uint amount = (block.number - lastBlockClaimed) * blockReward;
-        if(accounts[msg.sender].avaliableBalance + amount &lt; accounts[msg.sender].avaliableBalance) throw;
-        if(totalSupply + amount &lt; totalSupply) throw;
+        if(accounts[msg.sender].avaliableBalance + amount < accounts[msg.sender].avaliableBalance) throw;
+        if(totalSupply + amount < totalSupply) throw;
 
         totalSupply += amount;
         accounts[msg.sender].avaliableBalance += amount;

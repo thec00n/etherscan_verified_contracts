@@ -13,7 +13,7 @@ contract SatoshiDice {
 
     address owner;
     uint public counter = 0;
-    mapping(uint =&gt; Bet) public bets;
+    mapping(uint => Bet) public bets;
 
     event BetPlaced(uint id, address user, uint cap, uint amount);
     event Roll(uint id, uint rolled);
@@ -23,8 +23,8 @@ contract SatoshiDice {
     }
 
     function wager (uint cap) public payable {
-        require(cap &lt;= MAXIMUM_CAP);
-        require(msg.value &lt;= MAXIMUM_BET_SIZE);
+        require(cap <= MAXIMUM_CAP);
+        require(msg.value <= MAXIMUM_BET_SIZE);
 
         counter++;
         bets[counter] = Bet(msg.sender, block.number + 3, cap, msg.value);
@@ -34,11 +34,11 @@ contract SatoshiDice {
     function roll(uint id) public {
         Bet storage bet = bets[id];
         require(msg.sender == bet.user);
-        require(block.number &gt;= bet.block);
+        require(block.number >= bet.block);
 
         bytes32 random = keccak256(block.blockhash(bet.block), id);
         uint rolled = uint(random) % MAXIMUM_CAP;
-        if (rolled &lt; bet.cap) {
+        if (rolled < bet.cap) {
             uint payout = bet.amount * MAXIMUM_CAP / bet.cap;
             uint fee = payout * FEE_NUMERATOR / FEE_DENOMINATOR;
             payout -= fee;

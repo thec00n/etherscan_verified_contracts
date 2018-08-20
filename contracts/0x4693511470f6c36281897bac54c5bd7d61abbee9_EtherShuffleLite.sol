@@ -23,7 +23,7 @@ contract Ownable {
 
 contract TokenAware is Ownable {
   function withdrawToken (address addressOfToken, uint256 amount) public onlyOwner returns (bool) {
-    bytes4 hashOfTransfer = bytes4(keccak256(&#39;transfer(address,uint256)&#39;));
+    bytes4 hashOfTransfer = bytes4(keccak256('transfer(address,uint256)'));
 
     return addressOfToken.call(hashOfTransfer, owner, amount);
   }
@@ -67,7 +67,7 @@ contract Operable is Pausable {
   }
 
   modifier restricted () {
-    if (owner != msg.sender &amp;&amp;
+    if (owner != msg.sender &&
         !containsOperator(msg.sender)) revert();
     _;
   }
@@ -78,7 +78,7 @@ contract Operable is Pausable {
   }
 
   function containsOperator (address candidate) public constant returns (bool) {
-    for (uint256 x = 0; x &lt; operators.length; x++) {
+    for (uint256 x = 0; x < operators.length; x++) {
       address operator = operators[x];
       if (candidate == operator) {
         return true;
@@ -89,7 +89,7 @@ contract Operable is Pausable {
   }
 
   function indexOfOperator (address candidate) public constant returns (int256) {
-    for (uint256 x = 0; x &lt; operators.length; x++) {
+    for (uint256 x = 0; x < operators.length; x++) {
       address operator = operators[x];
       if (candidate == operator) {
         return int256(x);
@@ -108,7 +108,7 @@ contract Operable is Pausable {
   function removeOperator (address operator) public onlyOwner {
     int256 indexOf = indexOfOperator(operator);
 
-    if (indexOf &lt; 0) revert();
+    if (indexOf < 0) revert();
 
     // overwrite operator with last operator in the array
     if (uint256(indexOf) != operators.length - 1) {
@@ -136,9 +136,9 @@ contract EtherShuffleLite is Operable {
   uint8 public constant countOfParticipants = 5;
   uint256 public gamePrice = 15 finney;
 
-  mapping (uint256 =&gt; Shuffle) public games;
-  mapping (address =&gt; uint256[]) public gamesByPlayer;
-  mapping (address =&gt; uint256) public balances;
+  mapping (uint256 => Shuffle) public games;
+  mapping (address => uint256[]) public gamesByPlayer;
+  mapping (address => uint256) public balances;
 
   struct Shuffle {
     uint256 id;
@@ -165,7 +165,7 @@ contract EtherShuffleLite is Operable {
     uint size;
     address addr = msg.sender;
     assembly { size := extcodesize(addr) }
-    if (size &gt; 0) revert();
+    if (size > 0) revert();
     _;
   }
 
@@ -196,7 +196,7 @@ contract EtherShuffleLite is Operable {
     uint256 balanceOf = balances[msg.sender];
     Shuffle storage game = games[gameId];
 
-    if (balanceOf &lt; game.price) revert();
+    if (balanceOf < game.price) revert();
 
     balances[msg.sender] -= game.price;
     joinGameInternal(game, msg.sender, game.price);
@@ -209,7 +209,7 @@ contract EtherShuffleLite is Operable {
 
     if (value != game.price) revert();
     game.value += gamePrice;
-    if (game.value &lt; gamePrice) revert();
+    if (game.value < gamePrice) revert();
 
     game.players.push(player);
     gamesByPlayer[player].push(game.id);
@@ -277,7 +277,7 @@ contract EtherShuffleLite is Operable {
 
   function reveal (uint256 gameId, uint8[5] result, bytes32 secret) public whenNotPaused restricted {
     Shuffle storage game = games[gameId];
-    if (game.players.length &lt; uint256(countOfParticipants)) revert();
+    if (game.players.length < uint256(countOfParticipants)) revert();
     if (game.secret != bytes32(0)) revert();
 
     bytes32 hash = keccak256(result, secret);
@@ -293,7 +293,7 @@ contract EtherShuffleLite is Operable {
 
     uint256 totalValue = game.value;
 
-    for (uint8 x = 0; x &lt; game.result.length; x++) {
+    for (uint8 x = 0; x < game.result.length; x++) {
       uint256 indexOfDistribution = game.result[x];
       address player = game.players[x];
       uint256 playerDistribution = distributions[indexOfDistribution];
@@ -302,7 +302,7 @@ contract EtherShuffleLite is Operable {
 
       game.value -= disbursement;
       playerBalance += disbursement;
-      if (playerBalance &lt; disbursement) revert();
+      if (playerBalance < disbursement) revert();
       balances[player] = playerBalance;
     }
 
@@ -326,7 +326,7 @@ contract EtherShuffleLite is Operable {
 
   // anyone can withdraw on behalf of someone (when the player lacks the gas, for instance)
   function withdrawToMany (address[] players) public {
-    for (uint8 x = 0; x &lt; players.length; x++) {
+    for (uint8 x = 0; x < players.length; x++) {
       address player = players[x];
 
       withdrawTo(player);
@@ -340,7 +340,7 @@ contract EtherShuffleLite is Operable {
   function withdrawTo (address player) public {
     uint256 playerBalance = balances[player];
 
-    if (playerBalance &gt; 0) {
+    if (playerBalance > 0) {
       balances[player] = 0;
 
       player.transfer(playerBalance);
@@ -355,7 +355,7 @@ contract EtherShuffleLite is Operable {
   }
 
   function contains (Shuffle storage game, address candidate) private constant returns (bool) {
-    for (uint256 x = 0; x &lt; game.players.length; x++) {
+    for (uint256 x = 0; x < game.players.length; x++) {
       address player = game.players[x];
       if (candidate == player) {
         return true;

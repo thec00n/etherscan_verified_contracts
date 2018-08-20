@@ -54,8 +54,8 @@ contract CryptonToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;Cryptons&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CRYPTON&quot;; // solhint-disable-line
+  string public constant NAME = "Cryptons"; // solhint-disable-line
+  string public constant SYMBOL = "CRYPTON"; // solhint-disable-line
 
   uint256 private startingPrice = 0.1 ether;
   uint256 private defaultMarkup = 2 ether;
@@ -76,21 +76,21 @@ contract CryptonToken is ERC721 {
 
   /// @dev A mapping from crypton IDs to the address that owns them. All cryptons have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public cryptonIndexToOwner;
+  mapping (uint256 => address) public cryptonIndexToOwner;
 
-  mapping (uint256 =&gt; bool) public cryptonIndexToProtected;
+  mapping (uint256 => bool) public cryptonIndexToProtected;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from CryptonIDs to an address that has been approved to call
   ///  transferFrom(). Each Crypton can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public cryptonIndexToApproved;
+  mapping (uint256 => address) public cryptonIndexToApproved;
 
   // @dev A mapping from CryptonIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private cryptonIndexToPrice;
+  mapping (uint256 => uint256) private cryptonIndexToPrice;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -144,7 +144,7 @@ contract CryptonToken is ERC721 {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause()
         external
@@ -163,7 +163,7 @@ contract CryptonToken is ERC721 {
         onlyCEO
         whenPaused
     {
-        // can&#39;t unpause if contract was forked
+        // can't unpause if contract was forked
         paused = false;
         emit ContractIsPaused(paused);
     }
@@ -215,7 +215,7 @@ contract CryptonToken is ERC721 {
           cryptonOwner = address(this);
       }
 
-      if (_markup &lt;= 0) {
+      if (_markup <= 0) {
           _markup = defaultMarkup;
       }
         
@@ -223,7 +223,7 @@ contract CryptonToken is ERC721 {
         _markup = 0;  
       }
 
-      if (_startingPrice &lt;= 0) {
+      if (_startingPrice <= 0) {
         _startingPrice = startingPrice;
       }
 
@@ -273,7 +273,7 @@ contract CryptonToken is ERC721 {
     require(owner != address(0));
   }
 
-  /// @dev This function withdraws the contract owner&#39;s cut.
+  /// @dev This function withdraws the contract owner's cut.
   /// Any amount may be withdrawn as there is no user funds.
   /// User funds are immediately sent to the old owner in `purchase`
   function payout(address _to) public onlyCLevel {
@@ -286,7 +286,7 @@ contract CryptonToken is ERC721 {
     address newOwner = msg.sender;                    // person requesting change
     require(oldOwner == newOwner); // Only current owner can update the price
     require(cryptonIndexToProtected[_tokenId]); // Make sure Crypton is protected
-    require(newSellingPrice &gt; 0);  // Make sure the price is not zero
+    require(newSellingPrice > 0);  // Make sure the price is not zero
     cryptonIndexToPrice[_tokenId] = newSellingPrice;
     emit ProtectedCryptonSellingPriceChanged(_tokenId, newSellingPrice);
  }
@@ -297,13 +297,13 @@ contract CryptonToken is ERC721 {
     address newOwner = msg.sender;                    // person requesting change
     uint256 markup = cryptons[_tokenId].markup;
     if (cryptons[_tokenId].category != PROMO) {
-      require(markup &gt; 0); // if this is NOT a promotional crypton, the markup should be &gt; zero
+      require(markup > 0); // if this is NOT a promotional crypton, the markup should be > zero
     }
     
     require(oldOwner == newOwner); // Only current owner can buy protection for existing crypton
     require(! cryptonIndexToProtected[_tokenId]); // Make sure Crypton is NOT already protected
-    require(newSellingPrice &gt; 0);  // Make sure the sellingPrice is more than zero
-    require(msg.value &gt;= markup);   // Make sure to collect the markup
+    require(newSellingPrice > 0);  // Make sure the sellingPrice is more than zero
+    require(msg.value >= markup);   // Make sure to collect the markup
     
     cryptonIndexToPrice[_tokenId] = newSellingPrice;
     cryptonIndexToProtected[_tokenId] = true;
@@ -317,7 +317,7 @@ contract CryptonToken is ERC721 {
 
   /// @dev This function allows the contract owner to adjust the markup value
   function setMarkup(uint256 _tokenId, uint256 newMarkup) public onlyCLevel {
-    require(newMarkup &gt;= 0);
+    require(newMarkup >= 0);
     cryptons[_tokenId].markup = newMarkup;
     emit MarkupChanged(cryptons[_tokenId].name, newMarkup);
   }
@@ -332,7 +332,7 @@ contract CryptonToken is ERC721 {
     uint256 markup = cryptons[_tokenId].markup;
     
     if (cryptons[_tokenId].category != PROMO) {
-      require(markup &gt; 0); // if this is NOT a promotional crypton, the markup should be &gt; zero
+      require(markup > 0); // if this is NOT a promotional crypton, the markup should be > zero
     }
 
     // Make sure token owner is not sending to self
@@ -342,9 +342,9 @@ contract CryptonToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Make sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice); // this is redundant - as we are checking this below
+    require(msg.value >= sellingPrice); // this is redundant - as we are checking this below
 
-    if (newSellingPrice &gt; 0) { // if we are called with a new selling price, then the buyer is paying the markup or purchasing a protected crypton
+    if (newSellingPrice > 0) { // if we are called with a new selling price, then the buyer is paying the markup or purchasing a protected crypton
         uint256 purchasePrice = sellingPrice; //assume it is protected
         if (! cryptonIndexToProtected[_tokenId] ) { // Crypton is not protected,
             purchasePrice = sellingPrice + markup;  // apply markup
@@ -352,7 +352,7 @@ contract CryptonToken is ERC721 {
 
         // If the Crypton is not already protected, make sure that the buyer is paying markup more than the current selling price
         // If the buyer is not paying the markup - then he cannot set the new selling price- bailout
-        require(msg.value &gt;= purchasePrice); 
+        require(msg.value >= purchasePrice); 
 
         // Ok - the buyer paid the markup or the crypton was already protected.
         cryptonIndexToPrice[_tokenId] = newSellingPrice;  // Set the selling price that the buyer wants
@@ -363,13 +363,13 @@ contract CryptonToken is ERC721 {
         // Compute next listing price.
         // Handle XPROMO case first...
         if (
-          (oldOwner == address(this)) &amp;&amp;                // first transaction only`
+          (oldOwner == address(this)) &&                // first transaction only`
           (cryptons[_tokenId].category == XPROMO)      // Only for XPROMO category
           ) 
         {
           cryptonIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, XPROMO_MULTIPLIER), NET_PRICE_PERCENT);            
         } else {
-          if (sellingPrice &lt; FIRST_STEP_LIMIT) {
+          if (sellingPrice < FIRST_STEP_LIMIT) {
             // first stage
             cryptonIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, FIRST_STEP_MULTIPLIER), NET_PRICE_PERCENT);
           } else {
@@ -387,7 +387,7 @@ contract CryptonToken is ERC721 {
 
     bool isReservedToken = (cryptons[_tokenId].category == RESERVED);
   
-    if (isReservedToken &amp;&amp; isAlreadyProtected) {
+    if (isReservedToken && isAlreadyProtected) {
       oldOwner.transfer(payment); //(1-CRYPTON_CUT/100)
       emit PaymentTransferredToPreviousOwner(_tokenId, sellingPrice, cryptonIndexToPrice[_tokenId], oldOwner, newOwner, cname);
       emit TokenSold(_tokenId, sellingPrice, cryptonIndexToPrice[_tokenId], oldOwner, newOwner, cname);
@@ -395,7 +395,7 @@ contract CryptonToken is ERC721 {
     }
 
     // Pay seller of the Crypton if they are not this contract or if this is a Reserved token
-    if ((oldOwner != address(this)) &amp;&amp; !isReservedToken ) // Not a Reserved token and not owned by the contract
+    if ((oldOwner != address(this)) && !isReservedToken ) // Not a Reserved token and not owned by the contract
     {
       oldOwner.transfer(payment); //(1-CRYPTON_CUT/100)
       emit PaymentTransferredToPreviousOwner(_tokenId, sellingPrice, cryptonIndexToPrice[_tokenId], oldOwner, newOwner, cname);
@@ -447,7 +447,7 @@ contract CryptonToken is ERC721 {
   }
 
   /// @param _owner The owner whose Cryptons we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Cryptons array looking for cryptons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -462,7 +462,7 @@ contract CryptonToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 cryptonId;
-      for (cryptonId = 0; cryptonId &lt;= totalCryptons; cryptonId++) {
+      for (cryptonId = 0; cryptonId <= totalCryptons; cryptonId++) {
         if (cryptonIndexToOwner[cryptonId] == _owner) {
           result[resultIndex] = cryptonId;
           resultIndex++;
@@ -529,8 +529,8 @@ contract CryptonToken is ERC721 {
     });
     uint256 newCryptonId = cryptons.push(_crypton) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newCryptonId == uint256(uint32(newCryptonId)));
 
     emit Birth(newCryptonId, _name, _owner, _isProtected, _category);
@@ -561,12 +561,12 @@ contract CryptonToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Crypton to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of cryptons is capped to 2^32 we can&#39;t overflow this
+    // Since the number of cryptons is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     cryptonIndexToOwner[_tokenId] = _to;
 
-    // When creating new cryptons _from is 0x0, but we can&#39;t account that address.
+    // When creating new cryptons _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -580,7 +580,7 @@ contract CryptonToken is ERC721 {
 //various getter/setter methods
 
   function setFIRST_STEP_LIMIT(uint256 newLimit) public onlyCLevel {
-    require(newLimit &gt; 0 &amp;&amp; newLimit &lt; 100 ether);
+    require(newLimit > 0 && newLimit < 100 ether);
     FIRST_STEP_LIMIT = newLimit;
   }
   function getFIRST_STEP_LIMIT() public view returns (uint256 value) {
@@ -588,7 +588,7 @@ contract CryptonToken is ERC721 {
   }
 
   function setFIRST_STEP_MULTIPLIER(uint16 newValue) public onlyCLevel {
-    require(newValue &gt;= 110 &amp;&amp; newValue &lt;= 200);
+    require(newValue >= 110 && newValue <= 200);
     FIRST_STEP_MULTIPLIER = newValue;
   }
   function getFIRST_STEP_MULTIPLIER() public view returns (uint16 value) {
@@ -596,7 +596,7 @@ contract CryptonToken is ERC721 {
   }
 
   function setSECOND_STEP_MULTIPLIER(uint16 newValue) public onlyCLevel {
-    require(newValue &gt;= 110 &amp;&amp; newValue &lt;= 200);
+    require(newValue >= 110 && newValue <= 200);
     SECOND_STEP_MULTIPLIER = newValue;
   }
   function getSECOND_STEP_MULTIPLIER() public view returns (uint16 value) {
@@ -604,7 +604,7 @@ contract CryptonToken is ERC721 {
   }
 
   function setXPROMO_MULTIPLIER(uint16 newValue) public onlyCLevel {
-    require(newValue &gt;= 100 &amp;&amp; newValue &lt;= 10000); // between 0 and 100x
+    require(newValue >= 100 && newValue <= 10000); // between 0 and 100x
     XPROMO_MULTIPLIER = newValue;
   }
   function getXPROMO_MULTIPLIER() public view returns (uint16 value) {
@@ -612,7 +612,7 @@ contract CryptonToken is ERC721 {
   }
 
   function setCRYPTON_CUT(uint16 newValue) public onlyCLevel {
-    require(newValue &gt; 0 &amp;&amp; newValue &lt; 10);
+    require(newValue > 0 && newValue < 10);
     CRYPTON_CUT = newValue;
   }
   function getCRYPTON_CUT() public view returns (uint16 value) {
@@ -639,9 +639,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -649,7 +649,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -658,7 +658,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

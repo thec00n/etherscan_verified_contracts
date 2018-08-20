@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the BREMP Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the BREMP Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="94fdbae7e2fde6fdfad4fafbe6f0f5e2fdfaf0bae6e1">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="94fdbae7e2fde6fdfad4fafbe6f0f5e2fdfaf0bae6e1">[email protected]</span>>
 IF YOU ARE ENJOYED IT DONATE TO 0x3Ad38D1060d1c350aF29685B2b8Ec3eDE527452B ! :)
 */
 
@@ -59,19 +59,19 @@ contract Crowdsale is owned {
     uint constant totalLimitUSD  = 500000;
     
     uint                         public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     address                      public neurodao;
     uint                         public etherPrice;
 
-    mapping (address =&gt; bool)    public holders;
-    mapping (uint =&gt; address)    public holdersIter;
+    mapping (address => bool)    public holders;
+    mapping (uint => address)    public holdersIter;
     uint                         public numberOfHolders;
     
     uint                         public collectedUSD;
     address                      public presaleOwner;
     uint                         public collectedNDAO;
     
-    mapping (address =&gt; bool)    public gotBonus;
+    mapping (address => bool)    public gotBonus;
     
     enum State {Disabled, Presale, Bonuses, Enabled}
     State                        public state;
@@ -121,11 +121,11 @@ contract Crowdsale is owned {
         uint tokens;
         address tokensSource;
         if (state == State.Presale) {
-            require(balanceOf[this] &gt; 0);
-            require(collectedUSD &lt; totalLimitUSD);
+            require(balanceOf[this] > 0);
+            require(collectedUSD < totalLimitUSD);
             uint valueWei = msg.value;
             uint valueUSD = valueWei * etherPrice / 1 ether;
-            if (collectedUSD + valueUSD &gt; totalLimitUSD) {
+            if (collectedUSD + valueUSD > totalLimitUSD) {
                 valueUSD = totalLimitUSD - collectedUSD;
                 valueWei = valueUSD * 1 ether / etherPrice;
                 require(msg.sender.call.gas(3000000).value(msg.value - valueWei)());
@@ -134,17 +134,17 @@ contract Crowdsale is owned {
                 collectedUSD += valueUSD;
             }
             uint centsForToken;
-            if (now &lt;= 1506815999) {        // 30/09/2017 11:59pm (UTC)
+            if (now <= 1506815999) {        // 30/09/2017 11:59pm (UTC)
                 centsForToken = 50;
-            } else if (now &lt;= 1507247999) { // 05/10/2017 11:59pm (UTC)
+            } else if (now <= 1507247999) { // 05/10/2017 11:59pm (UTC)
                 centsForToken = 50;
-            } else if (now &lt;= 1507766399) { // 11/10/2017 11:59pm (UTC)
+            } else if (now <= 1507766399) { // 11/10/2017 11:59pm (UTC)
                 centsForToken = 65;
             } else {
                 centsForToken = 70;
             }
             tokens = valueUSD * 100 / centsForToken;
-            if (NeuroDAO(neurodao).balanceOf(msg.sender) &gt;= 1000) {
+            if (NeuroDAO(neurodao).balanceOf(msg.sender) >= 1000) {
                 collectedNDAO += tokens;
             }
             tokensSource = this;
@@ -152,14 +152,14 @@ contract Crowdsale is owned {
             require(gotBonus[msg.sender] != true);
             gotBonus[msg.sender] = true;
             uint freezedBalance = NeuroDAO(neurodao).freezedBalanceOf(msg.sender);
-            if (freezedBalance &gt;= 1000) {
+            if (freezedBalance >= 1000) {
                 tokens = (neurodaoTokens / 10) * freezedBalance / 21000000 + (9 * neurodaoTokens / 10) * balanceOf[msg.sender] / collectedNDAO;                
             }
             tokensSource = owner;
         }        
-        require(tokens &gt; 0);
-        require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]);
-        require(balanceOf[tokensSource] &gt;= tokens);        
+        require(tokens > 0);
+        require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]);
+        require(balanceOf[tokensSource] >= tokens);        
         if (holders[msg.sender] != true) {
             holders[msg.sender] = true;
             holdersIter[numberOfHolders++] = msg.sender;
@@ -172,17 +172,17 @@ contract Crowdsale is owned {
 
 contract Token is Crowdsale {
     
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;BREMP&#39;;
-    string  public symbol      = &quot;BREMP&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'BREMP';
+    string  public symbol      = "BREMP";
     uint8   public decimals    = 0;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
     event Approval(address indexed owner, address indexed spender, uint value);
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -191,8 +191,8 @@ contract Token is Crowdsale {
 
     function transfer(address _to, uint256 _value)
         public enabledState onlyPayloadSize(2 * 32) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         if (holders[_to] != true) {
             holders[_to] = true;
             holdersIter[numberOfHolders++] = _to;
@@ -204,9 +204,9 @@ contract Token is Crowdsale {
     
     function transferFrom(address _from, address _to, uint _value)
         public enabledState onlyPayloadSize(3 * 32) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         if (holders[_to] != true) {
             holders[_to] = true;
             holdersIter[numberOfHolders++] = _to;

@@ -1,14 +1,14 @@
 // A name registry in Ethereum
 
-// &quot;Real&quot; attempts to a name registry with Ethereum:
-// &lt;http://etherid.org/&gt; &lt;https://github.com/sinking-point/dns2/&gt;
+// "Real" attempts to a name registry with Ethereum:
+// <http://etherid.org/> <https://github.com/sinking-point/dns2/>
 
 // TODO: use the registry interface described in
-// &lt;https://github.com/ethereum/wiki/wiki/Standardized_Contract_APIs&gt;?
+// <https://github.com/ethereum/wiki/wiki/Standardized_Contract_APIs>?
 
 // Standard strings are poor, we need an extension library,
 // github.com/Arachnid/solidity-stringutils/strings.sol TODO: use it as soon as https://github.com/Arachnid/solidity-stringutils/issues/1 is solved.
-// import &quot;strings.sol&quot;;
+// import "strings.sol";
 
 contract Registry {
 
@@ -24,8 +24,8 @@ contract Registry {
     bool exists; // Or a more detailed state, with an enum?
     uint idx;
   }
-  mapping (string =&gt; Record) records;
-  mapping (uint =&gt; string) index;
+  mapping (string => Record) records;
+  mapping (uint => string) index;
   
   // TODO define accessors instead
   uint public maxRecords;
@@ -35,9 +35,9 @@ contract Registry {
   event created(string indexed label, string indexed name, address holder, uint block);
   event deleted(string indexed label, string indexed name, address holder, uint block);
   
-  // &quot;value&quot; should be a comma-separated list of values. Solidity
+  // "value" should be a comma-separated list of values. Solidity
   // public functions cannot use arrays of strings :-( TODO: solve it
-  // when we&#39;ll have strings.
+  // when we'll have strings.
   function register(string name, string value) {
     /* TODO: pay the price */
     uint i;
@@ -59,7 +59,7 @@ contract Registry {
     records[name].exists = true;
     currentRecords++;
     index[i] = name;
-    created(&quot;CREATION&quot;, name, msg.sender, block.number);	  
+    created("CREATION", name, msg.sender, block.number);	  
   }
 
   function transfer(string name, address to) {
@@ -88,7 +88,7 @@ contract Registry {
     nic = msg.sender;
     currentRecords = 0;
     maxRecords = 0;
-    register(&quot;NIC&quot;, &quot;Automatically created by for the registry&quot;); // TODO may fail if not
+    register("NIC", "Automatically created by for the registry"); // TODO may fail if not
     // enough gas in the creating transaction?
   }
   
@@ -118,21 +118,21 @@ contract Registry {
     }
     records[name].exists = false;
     currentRecords--;
-    deleted(&quot;DELETION&quot;, name, msg.sender, block.number);	  
+    deleted("DELETION", name, msg.sender, block.number);	  
   }
 
   function download() returns(string all) {
     if (msg.sender != nic) {
 	throw;
       }
-    all = &quot;NOT YET IMPLEMENTED&quot;;
+    all = "NOT YET IMPLEMENTED";
     // Looping over all the records is easy:
-    //for uint (i = 0; i &lt; maxRecords; i++) {
+    //for uint (i = 0; i < maxRecords; i++) {
     //	if (records[index[i]].exists) {
     
     // Or we could use an iterable mapping may
     // be this library
-    // &lt;https://github.com/ethereum/dapp-bin/blob/master/library/iterable_mapping.sol&gt;
+    // <https://github.com/ethereum/dapp-bin/blob/master/library/iterable_mapping.sol>
 
     // The difficult part is to construct an answer, since Solidity
     // does not provide string concatenation, or the ability to return

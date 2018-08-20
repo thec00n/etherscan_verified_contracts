@@ -4,7 +4,7 @@ pragma solidity ^0.4.16;
 // HODLwin2Eth_exchanger
 //  This HODL2eth exchanger contract created by the www.HODLwin.com team
 //  is heavily based on the tokentraderfactory created by
-//  JonnyLatte &amp; BokkyPooBah 2017. released under The MIT licence.
+//  JonnyLatte & BokkyPooBah 2017. released under The MIT licence.
 //  big appreciation and respect to those two
 //
 //  This is a Decentralised trustless contract and when launched will only accept 
@@ -23,7 +23,7 @@ pragma solidity ^0.4.16;
 //  to store for exchanging for HODLwin tokens.
 //
 //  original code licensed under:
-//   Enjoy. (c) JonnyLatte &amp; BokkyPooBah 2017. The MIT licence.
+//   Enjoy. (c) JonnyLatte & BokkyPooBah 2017. The MIT licence.
 //  modified code by www.HODLwin.com team
 // ------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ contract Owned {
     }
 
     modifier checkpermission{
-       require(msg.sender == owner &amp;&amp; HODLwin2Eth(msg.sender).owner() == owner);
+       require(msg.sender == owner && HODLwin2Eth(msg.sender).owner() == owner);
         _;
     }
 
@@ -115,7 +115,7 @@ contract HODLwin2Eth is Owned {
     //                          the taker
     //
     // The HODLrSoldWin() event is logged with the following parameters
-    //   seller                  is the seller&#39;s address
+    //   seller                  is the seller's address
     //   amountOfTokensToSell    is the amount of the asset tokens being
     //                           sold by the taker
     //   tokensSold              is the number of the asset tokens sold
@@ -124,14 +124,14 @@ contract HODLwin2Eth is Owned {
     
     function HODLrSellWin(uint256 amountOfTokensToSell) public {
                 // Maximum number of token the contract can buy
-            // Note that mktValue has already been validated as &gt; 0
+            // Note that mktValue has already been validated as > 0
             uint256 can_buy = this.balance / mktValue;
             // Token lots available
-            // Note that units has already been validated as &gt; 0
+            // Note that units has already been validated as > 0
             uint256 order = amountOfTokensToSell / units;
             // Adjust order for funds available
-            if(order &gt; can_buy) order = can_buy;
-           if(order &gt; 0){
+            if(order > can_buy) order = can_buy;
+           if(order > 0){
             // Extract user tokens
            
              require (ERC20(HODLaddress).transferFrom(msg.sender, address(this), order * units));
@@ -145,7 +145,7 @@ contract HODLwin2Eth is Owned {
 
 function updatemktValue(uint _mktValue) public onlyOwner {
 	
-    require(_mktValue &gt;= origMktValue);
+    require(_mktValue >= origMktValue);
 	mktValue = _mktValue;
    mktValueupdated(_mktValue);
   }
@@ -163,7 +163,7 @@ contract HODLwin2EthExchanger is Owned {
         address indexed HODLaddress, uint256 mktValue, uint256 units, uint256 origMktValue);
  
 
-    mapping(address =&gt; bool) _verify;
+    mapping(address => bool) _verify;
 
     // Anyone can call this method to verify the settings of a
     // HODLwin2Eth contract. The parameters are:
@@ -212,7 +212,7 @@ contract HODLwin2EthExchanger is Owned {
     //   units        1*e18
     //  
     // The TradeListing() event is logged with the following parameters
-    //   ownerAddress        is the Maker&#39;s address
+    //   ownerAddress        is the Maker's address
     //   HODLwin2EthAddress  is the address of the newly created HODLwin2Eth contract
     //   HODLaddress         is the ERC20 HODLaddress address
     //   mktValue            is the buy price in ethers per `units` of HODLaddress tokens
@@ -236,10 +236,10 @@ contract HODLwin2EthExchanger is Owned {
         uint256 allowance = ERC20(HODLaddress).allowance(msg.sender, this);
         allowance= allowance;
         // Cannot set zero or negative price
-        require(mktValue &gt; 0);
+        require(mktValue > 0);
         // Must make profit on spread
        // Cannot buy or sell zero or negative units
-        require(units &gt; 0);
+        require(units > 0);
 
         trader = new HODLwin2Eth(
             HODLaddress,

@@ -14,7 +14,7 @@ contract BTCRelay {
     uint32 height;
   }
 
-  mapping(bytes32 =&gt; Header) public blockHeaders; // Maps block hashes to headers
+  mapping(bytes32 => Header) public blockHeaders; // Maps block hashes to headers
 
   event partialFlip(bytes32 data);
   // storeBlockHeader(header) pareses a length 80 bytes and stores the resulting
@@ -31,7 +31,7 @@ contract BTCRelay {
     uint256 proofLen = siblings.length;
 
     uint256 i = 0;
-    while (i &lt; proofLen){
+    while (i < proofLen){
       bytes32 proofHex = siblings[i];
 
       uint256 sideOfSibling = txIndex % 2;
@@ -50,11 +50,11 @@ contract BTCRelay {
     return merkleRoot;
   }
 
-  // Computes the target from the compressed &quot;bits&quot; form
+  // Computes the target from the compressed "bits" form
   // https://bitcoin.org/en/developer-reference#target-nbits
   function targetFromBits(uint32 nBits) public pure returns (bytes32 target){
-    uint exp = uint(nBits) &gt;&gt; 24;
-    uint c = uint(nBits) &amp; 0xffffff;
+    uint exp = uint(nBits) >> 24;
+    uint c = uint(nBits) & 0xffffff;
     bytes32 result = bytes32(c * 2**(8*(exp - 3)));
 
     return result;}
@@ -62,8 +62,8 @@ contract BTCRelay {
   // Converts the input to the opposite endianness
   function flip32(bytes32 le) public pure returns (bytes32 be) {
       be = 0x0;
-      for (uint256 i = 0; i &lt; 32; i++){
-        be &gt;&gt;= 8;
+      for (uint256 i = 0; i < 32; i++){
+        be >>= 8;
         be |= le[i];
       }
   }
@@ -89,7 +89,7 @@ contract BTCRelay {
     assembly {
       tmp := mload(add(header, 100))
     }
-    return uint(flip32(bytes32(tmp)) &amp; 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
+    return uint(flip32(bytes32(tmp)) & 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
   }
 
   function getVersionNo(bytes header) public constant returns (uint){
@@ -97,7 +97,7 @@ contract BTCRelay {
     assembly {
       tmp := mload(add(header, 32))
     }
-    return uint(flip32(bytes32(tmp)) &amp; 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
+    return uint(flip32(bytes32(tmp)) & 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
   }
 
   function getNbits(bytes header) public constant returns (uint){
@@ -105,7 +105,7 @@ contract BTCRelay {
     assembly {
       tmp := mload(add(header, 104))
     }
-    return uint(flip32(bytes32(tmp)) &amp; 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
+    return uint(flip32(bytes32(tmp)) & 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
   }
 
   function getMerkleRoot(bytes header) public constant returns (uint){
@@ -121,14 +121,14 @@ contract BTCRelay {
     assembly{
       tmp := mload(add(header, 108))
     }
-    return uint(flip32(bytes32(tmp)) &amp; 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
+    return uint(flip32(bytes32(tmp)) & 0x00000000000000000000000000000000000000000000000000000000FFFFFFFF);
   }
 
   function initChain(bytes header, uint32 height) public {
     uint32 bits = uint32(getNbits(header));
     bytes32 target = targetFromBits(bits);
     bytes32 hash = dblShaFlip(header);
-    if (hash &lt;= target){
+    if (hash <= target){
         uint32 nonce = uint32(getNonce(header));
         bytes32 merkleRoot = bytes32(getMerkleRoot(header));
         uint32 timestamp = uint32(getTimestamp(header));
@@ -147,7 +147,7 @@ contract BTCRelay {
         if (blockHeaders[hash].version == 0){
             uint32 bits = uint32(getNbits(header));
             bytes32 target = targetFromBits(bits);
-            if (hash &lt;= target){
+            if (hash <= target){
                 uint32 nonce = uint32(getNonce(header));
                 bytes32 merkleRoot = bytes32(getMerkleRoot(header));
                 uint32 timestamp = uint32(getTimestamp(header));

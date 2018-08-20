@@ -1,6 +1,6 @@
 pragma solidity ^0.4.2;
 
-//import &quot;./SafeMathLib.sol&quot;;
+//import "./SafeMathLib.sol";
 /**
  * Safe unsigned safe math.
  *
@@ -20,13 +20,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c&gt;=a);
+    require(c>=a);
     return c;
   }
   function mul(uint a, uint b) internal pure returns (uint) {
@@ -36,20 +36,20 @@ library SafeMathLib {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c&gt;=a &amp;&amp; c&gt;=b);
+    require(c>=a && c>=b);
     return c;
   }
 
@@ -84,37 +84,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c&gt;=a &amp;&amp; c&gt;=b);
+    require(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal  pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   //function assert(bool assertion) internal pure{
@@ -136,10 +136,10 @@ contract StandardToken is ERC20, SafeMath {
    event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public pure returns (bool weAre) {
@@ -153,12 +153,12 @@ contract StandardToken is ERC20, SafeMath {
    * http://vessenes.com/the-erc20-short-address-attack-explained/
    */
   modifier onlyPayloadSize(uint size) {
-     //require(msg.data.length &lt; size + 4);
+     //require(msg.data.length < size + 4);
      _;
   }
 
   function transfer(address _to, uint _value) public onlyPayloadSize(2 * 32) returns (bool success) {
-    require(_value &gt;= 0);
+    require(_value >= 0);
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     emit Transfer(msg.sender, _to, _value);
@@ -169,8 +169,8 @@ contract StandardToken is ERC20, SafeMath {
     uint _allowance = allowed[_from][msg.sender];
 
     //requre the alloced greater than _value
-    require(_allowance &gt;= _value);
-    require(_value &gt;= 0);
+    require(_allowance >= _value);
+    require(_value >= 0);
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -189,8 +189,8 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    //if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
-    require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+    //if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
+    require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)));
 
     allowed[msg.sender][_spender] = _value;
     emit Approval(msg.sender, _spender, _value);
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, SafeMath {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -219,9 +219,9 @@ contract StandardToken is ERC20, SafeMath {
  */
 contract Ownable {
   address public owner;
-  mapping (address =&gt; bool) private admins;
-  mapping (address =&gt; bool) private developers;
-  mapping (address =&gt; bool) private founds;
+  mapping (address => bool) private admins;
+  mapping (address => bool) private developers;
+  mapping (address => bool) private founds;
 
   function Ownable()  internal{
     owner = msg.sender;
@@ -319,7 +319,7 @@ contract DistributeToken is StandardToken, Ownable{
      
      require(addr != address(0));
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     distAgent = addr;
   }
 
@@ -345,7 +345,7 @@ contract DistributeToken is StandardToken, Ownable{
  /**发token给基金会*/
  function distributeToFound(address receiver, uint amount) onlyOwner() public  returns (uint actual){ 
   
-    require((amount+havedDistFoundCoin) &lt; totalFoundCoin);
+    require((amount+havedDistFoundCoin) < totalFoundCoin);
   
     balances[owner] = balances[owner].sub(amount);
     balances[receiver] = balances[receiver].plus(amount);
@@ -363,7 +363,7 @@ contract DistributeToken is StandardToken, Ownable{
  /**发token给开发者*/
  function  distributeToDev(address receiver, uint amount) onlyOwner()  public  returns (uint actual){
 
-    require((amount+havedDistDevCoin) &lt; totalDevCoin);
+    require((amount+havedDistDevCoin) < totalDevCoin);
 
     balances[owner] = balances[owner].sub(amount);
     balances[receiver] = balances[receiver].plus(amount);
@@ -381,8 +381,8 @@ contract DistributeToken is StandardToken, Ownable{
  function airDrop(address transmitter, address receiver, uint amount) public  returns (uint actual){
 
     require(receiver != address(0));
-    require(amount &lt;= maxAirDrop);
-    require((amount+havedAirDrop) &lt; totalAirDrop);
+    require(amount <= maxAirDrop);
+    require((amount+havedAirDrop) < totalAirDrop);
     require(transmitter == distAgent);
 
     balances[owner] = balances[owner].sub(amount);
@@ -402,7 +402,7 @@ contract DistributeToken is StandardToken, Ownable{
     require(msg.sender != address(0));
     require(!isContract(msg.sender));
     require(msg.value != 0);
-    require(totalCrowdCoin &gt; havedCrowdCoin);
+    require(totalCrowdCoin > havedCrowdCoin);
     require(finishCrowdCoin == false);
     
     uint actualAmount = calculateCrowdAmount(msg.value);
@@ -424,23 +424,23 @@ contract DistributeToken is StandardToken, Ownable{
 
  function  switchCrowdState () internal{
 
-    if (havedCrowdCoin &lt; totalCrowdCoin.mul(10).div(100) ){
+    if (havedCrowdCoin < totalCrowdCoin.mul(10).div(100) ){
        crowState = 0;
 
-    }else  if (havedCrowdCoin &lt; totalCrowdCoin.mul(20).div(100) ){
+    }else  if (havedCrowdCoin < totalCrowdCoin.mul(20).div(100) ){
        crowState = 1;
     
-    } else if (havedCrowdCoin &lt; totalCrowdCoin.mul(30).div(100) ){
+    } else if (havedCrowdCoin < totalCrowdCoin.mul(30).div(100) ){
        crowState = 2;
 
-    } else if (havedCrowdCoin &lt; totalCrowdCoin.mul(40).div(100) ){
+    } else if (havedCrowdCoin < totalCrowdCoin.mul(40).div(100) ){
        crowState = 3;
 
-    } else if (havedCrowdCoin &lt; totalCrowdCoin.mul(50).div(100) ){
+    } else if (havedCrowdCoin < totalCrowdCoin.mul(50).div(100) ){
        crowState = 4;
     }
       
-    if (havedCrowdCoin &gt;= totalCrowdCoin) {
+    if (havedCrowdCoin >= totalCrowdCoin) {
        finishCrowdCoin = true;
   }
  }
@@ -485,7 +485,7 @@ contract ReleasableToken is ERC20, Ownable {
   uint private maxTransfer = 0;//other user is not limited.
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -497,13 +497,13 @@ contract ReleasableToken is ERC20, Ownable {
     if(_sender != owner){
       
       if(isDeveloper()){
-        require(_value &lt; maxTransferForDev);
+        require(_value < maxTransferForDev);
 
       }else if(isFounder()){
-        require(_value &lt; maxTransferFoFounds);
+        require(_value < maxTransferFoFounds);
 
       }else if(maxTransfer != 0){
-        require(_value &lt; maxTransfer);
+        require(_value < maxTransfer);
       }
 
       if(!released) {
@@ -516,9 +516,9 @@ contract ReleasableToken is ERC20, Ownable {
 
  function setMaxTranferLimit(uint dev, uint found, uint other) onlyOwner  public {
 
-      require(dev &lt; totalSupply);
-      require(found &lt; totalSupply);
-      require(other &lt; totalSupply);
+      require(dev < totalSupply);
+      require(found < totalSupply);
+      require(other < totalSupply);
 
       maxTransferForDev = dev;
       maxTransferFoFounds = found;
@@ -533,7 +533,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -588,7 +588,7 @@ contract RecycleToken is StandardToken, Ownable {
   function recycle(address from, uint amount) onlyAdmins public {
   
     require(from != address(0));
-    require(balances[from] &gt;=  amount);
+    require(balances[from] >=  amount);
 
     balances[owner] = balances[owner].add(amount);
     balances[from]  = balances[from].sub(amount);
@@ -615,7 +615,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
 
@@ -697,8 +697,8 @@ contract TTGCoin is ReleasableToken, MintableToken , DistributeToken, RecycleTok
 
     addAdmin(owner);
 
-    name  = &quot;TotalGame Coin&quot;;
-    symbol = &quot;TGC&quot;;
+    name  = "TotalGame Coin";
+    symbol = "TGC";
     totalSupply = 2000000000*10**18;
     decimals = 18;
 

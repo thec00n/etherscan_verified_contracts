@@ -105,7 +105,7 @@ contract IController {
 
 contract FeeWindowFactory {
     function createFeeWindow(IController _controller, IUniverse _universe, uint256 _feeWindowId) public returns (IFeeWindow) {
-        Delegator _delegator = new Delegator(_controller, &quot;FeeWindow&quot;);
+        Delegator _delegator = new Delegator(_controller, "FeeWindow");
         IFeeWindow _feeWindow = IFeeWindow(_delegator);
         _feeWindow.initialize(_universe, _feeWindowId);
         return _feeWindow;
@@ -114,7 +114,7 @@ contract FeeWindowFactory {
 
 contract MarketFactory {
     function createMarket(IController _controller, IUniverse _universe, uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, address _sender, uint256 _numOutcomes, uint256 _numTicks) public payable returns (IMarket _market) {
-        Delegator _delegator = new Delegator(_controller, &quot;Market&quot;);
+        Delegator _delegator = new Delegator(_controller, "Market");
         _market = IMarket(_delegator);
         IReputationToken _reputationToken = _universe.getReputationToken();
         require(_reputationToken.transfer(_market, _reputationToken.balanceOf(this)));
@@ -125,7 +125,7 @@ contract MarketFactory {
 
 contract ReputationTokenFactory {
     function createReputationToken(IController _controller, IUniverse _universe) public returns (IReputationToken) {
-        Delegator _delegator = new Delegator(_controller, &quot;ReputationToken&quot;);
+        Delegator _delegator = new Delegator(_controller, "ReputationToken");
         IReputationToken _reputationToken = IReputationToken(_delegator);
         _reputationToken.initialize(_universe);
         return _reputationToken;
@@ -143,7 +143,7 @@ contract Delegator is DelegationTarget {
     }
 
     function() external payable {
-        // Do nothing if we haven&#39;t properly set up the delegator to delegate calls
+        // Do nothing if we haven't properly set up the delegator to delegate calls
         if (controllerLookupName == 0) {
             return;
         }
@@ -154,9 +154,9 @@ contract Delegator is DelegationTarget {
         assembly {
             //0x40 is the address where the next free memory slot is stored in Solidity
             let _calldataMemoryOffset := mload(0x40)
-            // new &quot;memory end&quot; including padding. The bitwise operations here ensure we get rounded up to the nearest 32 byte boundary
+            // new "memory end" including padding. The bitwise operations here ensure we get rounded up to the nearest 32 byte boundary
             let _size := and(add(calldatasize, 0x1f), not(0x1f))
-            // Update the pointer at 0x40 to point at new free memory location so any theoretical allocation doesn&#39;t stomp our memory in this call
+            // Update the pointer at 0x40 to point at new free memory location so any theoretical allocation doesn't stomp our memory in this call
             mstore(0x40, add(_calldataMemoryOffset, _size))
             // Copy method signature and parameters of this call into memory
             calldatacopy(_calldataMemoryOffset, 0x0, calldatasize)
@@ -169,7 +169,7 @@ contract Delegator is DelegationTarget {
             } default {
                 // If the call succeeded return the return data from the delegate call
                 let _returndataMemoryOffset := mload(0x40)
-                // Update the pointer at 0x40 again to point at new free memory location so any theoretical allocation doesn&#39;t stomp our memory in this call
+                // Update the pointer at 0x40 again to point at new free memory location so any theoretical allocation doesn't stomp our memory in this call
                 mstore(0x40, add(_returndataMemoryOffset, returndatasize))
                 returndatacopy(_returndataMemoryOffset, 0x0, returndatasize)
                 return(_returndataMemoryOffset, returndatasize)
@@ -218,25 +218,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -244,7 +244,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -492,22 +492,22 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     uint256 private forkReputationGoal;
     uint256 private disputeThresholdForFork;
     uint256 private initialReportMinValue;
-    mapping(uint256 =&gt; IFeeWindow) private feeWindows;
-    mapping(address =&gt; bool) private markets;
-    mapping(bytes32 =&gt; IUniverse) private childUniverses;
+    mapping(uint256 => IFeeWindow) private feeWindows;
+    mapping(address => bool) private markets;
+    mapping(bytes32 => IUniverse) private childUniverses;
     uint256 private openInterestInAttoEth;
 
-    mapping (address =&gt; uint256) private validityBondInAttoeth;
-    mapping (address =&gt; uint256) private targetReporterGasCosts;
-    mapping (address =&gt; uint256) private designatedReportStakeInAttoRep;
-    mapping (address =&gt; uint256) private designatedReportNoShowBondInAttoRep;
-    mapping (address =&gt; uint256) private shareSettlementFeeDivisor;
+    mapping (address => uint256) private validityBondInAttoeth;
+    mapping (address => uint256) private targetReporterGasCosts;
+    mapping (address => uint256) private designatedReportStakeInAttoRep;
+    mapping (address => uint256) private designatedReportNoShowBondInAttoRep;
+    mapping (address => uint256) private shareSettlementFeeDivisor;
 
     function initialize(IUniverse _parentUniverse, bytes32 _parentPayoutDistributionHash) external onlyInGoodTimes beforeInitialized returns (bool) {
         endInitialization();
         parentUniverse = _parentUniverse;
         parentPayoutDistributionHash = _parentPayoutDistributionHash;
-        reputationToken = ReputationTokenFactory(controller.lookup(&quot;ReputationTokenFactory&quot;)).createReputationToken(controller, this);
+        reputationToken = ReputationTokenFactory(controller.lookup("ReputationTokenFactory")).createReputationToken(controller, this);
         updateForkValues();
         require(reputationToken != address(0));
         return true;
@@ -531,7 +531,7 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     }
 
     function getTypeName() public view returns (bytes32) {
-        return &quot;Universe&quot;;
+        return "Universe";
     }
 
     function getParentUniverse() public view returns (IUniverse) {
@@ -589,7 +589,7 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     function getOrCreateFeeWindowByTimestamp(uint256 _timestamp) public onlyInGoodTimes returns (IFeeWindow) {
         uint256 _windowId = getFeeWindowId(_timestamp);
         if (feeWindows[_windowId] == address(0)) {
-            IFeeWindow _feeWindow = FeeWindowFactory(controller.lookup(&quot;FeeWindowFactory&quot;)).createFeeWindow(controller, this, _windowId);
+            IFeeWindow _feeWindow = FeeWindowFactory(controller.lookup("FeeWindowFactory")).createFeeWindow(controller, this, _windowId);
             feeWindows[_windowId] = _feeWindow;
             controller.getAugur().logFeeWindowCreated(_feeWindow, _windowId);
         }
@@ -652,10 +652,10 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
             _currentTentativeWinningChildUniverseRepMigrated = _tentativeWinningUniverse.getReputationToken().getTotalMigrated();
         }
         uint256 _updatedUniverseRepMigrated = _updatedUniverse.getReputationToken().getTotalMigrated();
-        if (_updatedUniverseRepMigrated &gt; _currentTentativeWinningChildUniverseRepMigrated) {
+        if (_updatedUniverseRepMigrated > _currentTentativeWinningChildUniverseRepMigrated) {
             tentativeWinningChildUniversePayoutDistributionHash = _parentPayoutDistributionHash;
         }
-        if (_updatedUniverseRepMigrated &gt;= forkReputationGoal) {
+        if (_updatedUniverseRepMigrated >= forkReputationGoal) {
             forkingMarket.finalizeFork();
         }
         return true;
@@ -666,7 +666,7 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
         require(tentativeWinningChildUniversePayoutDistributionHash != bytes32(0));
         IUniverse _tentativeWinningUniverse = getChildUniverse(tentativeWinningChildUniversePayoutDistributionHash);
         uint256 _winningAmount = _tentativeWinningUniverse.getReputationToken().getTotalMigrated();
-        require(_winningAmount &gt;= forkReputationGoal || controller.getTimestamp() &gt; forkEndTime);
+        require(_winningAmount >= forkReputationGoal || controller.getTimestamp() > forkEndTime);
         return _tentativeWinningUniverse;
     }
 
@@ -760,7 +760,7 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     }
 
     function getRepMarketCapInAttoeth() public view returns (uint256) {
-        uint256 _attorepPerEth = IRepPriceOracle(controller.lookup(&quot;RepPriceOracle&quot;)).getRepPriceInAttoEth();
+        uint256 _attorepPerEth = IRepPriceOracle(controller.lookup("RepPriceOracle")).getRepPriceInAttoEth();
         uint256 _repMarketCapInAttoeth = getReputationToken().totalSupply().mul(_attorepPerEth);
         return _repMarketCapInAttoeth;
     }
@@ -825,8 +825,8 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
         }
 
         // Modify the amount based on the previous amount and the number of markets fitting the failure criteria. We want the amount to be somewhere in the range of 0.5 to 2 times its previous value where ALL markets with the condition results in 2x and 0 results in 0.5x.
-        // Safe math div is redundant so we avoid here as we&#39;re at the stack limit.
-        if (_badMarkets &lt;= _totalMarkets / _targetDivisor) {
+        // Safe math div is redundant so we avoid here as we're at the stack limit.
+        if (_badMarkets <= _totalMarkets / _targetDivisor) {
             // FXP formula: previous_amount * actual_percent / (2 * target_percent) + 0.5;
             _newValue = _badMarkets
                 .mul(_previousValue)
@@ -884,22 +884,22 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     }
 
     function createYesNoMarket(uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, bytes32 _topic, string _description, string _extraInfo) public onlyInGoodTimes afterInitialized payable returns (IMarket _newMarket) {
-        require(bytes(_description).length &gt; 0);
+        require(bytes(_description).length > 0);
         _newMarket = createMarketInternal(_endTime, _feePerEthInWei, _denominationToken, _designatedReporterAddress, msg.sender, 2, 10000);
         controller.getAugur().logMarketCreated(_topic, _description, _extraInfo, this, _newMarket, msg.sender, 0, 1 ether, IMarket.MarketType.YES_NO);
         return _newMarket;
     }
 
     function createCategoricalMarket(uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, bytes32[] _outcomes, bytes32 _topic, string _description, string _extraInfo) public onlyInGoodTimes afterInitialized payable returns (IMarket _newMarket) {
-        require(bytes(_description).length &gt; 0);
+        require(bytes(_description).length > 0);
         _newMarket = createMarketInternal(_endTime, _feePerEthInWei, _denominationToken, _designatedReporterAddress, msg.sender, uint256(_outcomes.length), 10000);
         controller.getAugur().logMarketCreated(_topic, _description, _extraInfo, this, _newMarket, msg.sender, _outcomes, 0, 1 ether, IMarket.MarketType.CATEGORICAL);
         return _newMarket;
     }
 
     function createScalarMarket(uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, int256 _minPrice, int256 _maxPrice, uint256 _numTicks, bytes32 _topic, string _description, string _extraInfo) public onlyInGoodTimes afterInitialized payable returns (IMarket _newMarket) {
-        require(bytes(_description).length &gt; 0);
-        require(_minPrice &lt; _maxPrice);
+        require(bytes(_description).length > 0);
+        require(_minPrice < _maxPrice);
         require(_numTicks.isMultipleOf(2));
         _newMarket = createMarketInternal(_endTime, _feePerEthInWei, _denominationToken, _designatedReporterAddress, msg.sender, 2, _numTicks);
         controller.getAugur().logMarketCreated(_topic, _description, _extraInfo, this, _newMarket, msg.sender, _minPrice, _maxPrice, IMarket.MarketType.SCALAR);
@@ -907,7 +907,7 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     }
 
     function createMarketInternal(uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, address _sender, uint256 _numOutcomes, uint256 _numTicks) private onlyInGoodTimes afterInitialized returns (IMarket _newMarket) {
-        MarketFactory _marketFactory = MarketFactory(controller.lookup(&quot;MarketFactory&quot;));
+        MarketFactory _marketFactory = MarketFactory(controller.lookup("MarketFactory"));
         getReputationToken().trustedUniverseTransfer(_sender, _marketFactory, getOrCacheDesignatedReportNoShowBond());
         _newMarket = _marketFactory.createMarket.value(msg.value)(controller, this, _endTime, _feePerEthInWei, _denominationToken, _designatedReporterAddress, _sender, _numOutcomes, _numTicks);
         markets[address(_newMarket)] = true;
@@ -915,11 +915,11 @@ contract Universe is DelegationTarget, ITyped, Initializable, IUniverse {
     }
 
     function redeemStake(IReportingParticipant[] _reportingParticipants, IFeeWindow[] _feeWindows) public onlyInGoodTimes returns (bool) {
-        for (uint256 i=0; i &lt; _reportingParticipants.length; i++) {
+        for (uint256 i=0; i < _reportingParticipants.length; i++) {
             _reportingParticipants[i].redeem(msg.sender);
         }
 
-        for (uint256 k=0; k &lt; _feeWindows.length; k++) {
+        for (uint256 k=0; k < _feeWindows.length; k++) {
             _feeWindows[k].redeem(msg.sender);
         }
 
@@ -1016,10 +1016,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -1040,7 +1040,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -1084,7 +1084,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -1092,17 +1092,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -1120,14 +1120,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }

@@ -50,7 +50,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -160,14 +160,14 @@ contract Claimable is Ownable {
 
 /// @title Admin functionality for TRVLToken.sol contracts.
 contract Admin is Claimable{
-    mapping(address =&gt; bool) public admins;
+    mapping(address => bool) public admins;
 
     event AdminAdded(address added);
     event AdminRemoved(address removed);
 
     /// @dev Verifies the msg.sender is a member of the admins mapping. Owner is by default an admin.
     modifier onlyAdmin() {
-        require(admins[msg.sender] || msg.sender == owner, &quot;msg.sender is not an admin!&quot;);
+        require(admins[msg.sender] || msg.sender == owner, "msg.sender is not an admin!");
         _;
     }
 
@@ -175,10 +175,10 @@ contract Admin is Claimable{
     /// @dev Requires that the msg.sender is the Owner. Emits an event on success.
     /// @param _admins The list of addresses to add to the admins mapping.
     function addAddressesToAdmins(address[] _admins) external onlyOwner {
-        require(_admins.length &gt; 0, &quot;Cannot add an empty list to admins!&quot;);
-        for (uint256 i = 0; i &lt; _admins.length; ++i) {
+        require(_admins.length > 0, "Cannot add an empty list to admins!");
+        for (uint256 i = 0; i < _admins.length; ++i) {
             address user = _admins[i];
-            require(user != address(0), &quot;Cannot add the zero address to admins!&quot;);
+            require(user != address(0), "Cannot add the zero address to admins!");
 
             if (!admins[user]) {
                 admins[user] = true;
@@ -194,8 +194,8 @@ contract Admin is Claimable{
     /// TravelBlock is processing payments. Emits an event on success.
     /// @param _admins The list of addresses to remove from the admins mapping.
     function removeAddressesFromAdmins(address[] _admins) external onlyOwner {
-        require(_admins.length &gt; 0, &quot;Cannot remove an empty list to admins!&quot;);
-        for (uint256 i = 0; i &lt; _admins.length; ++i) {
+        require(_admins.length > 0, "Cannot remove an empty list to admins!");
+        for (uint256 i = 0; i < _admins.length; ++i) {
             address user = _admins[i];
 
             if (admins[user]) {
@@ -211,14 +211,14 @@ contract Admin is Claimable{
 
 /// @title Whitelist configurations for the TRVL Token contract.
 contract Whitelist is Admin {
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     event WhitelistAdded(address added);
     event WhitelistRemoved(address removed);
 
     /// @dev Verifies the user is whitelisted.
     modifier isWhitelisted(address _user) {
-        require(whitelist[_user] != false, &quot;User is not whitelisted!&quot;);
+        require(whitelist[_user] != false, "User is not whitelisted!");
         _;
     }
 
@@ -226,10 +226,10 @@ contract Whitelist is Admin {
     /// @dev Requires that the msg.sender is the Admin. Emits an event on success.
     /// @param _users The list of addresses to add to the whitelist.
     function addAddressesToWhitelist(address[] _users) external onlyAdmin {
-        require(_users.length &gt; 0, &quot;Cannot add an empty list to whitelist!&quot;);
-        for (uint256 i = 0; i &lt; _users.length; ++i) {
+        require(_users.length > 0, "Cannot add an empty list to whitelist!");
+        for (uint256 i = 0; i < _users.length; ++i) {
             address user = _users[i];
-            require(user != address(0), &quot;Cannot add the zero address to whitelist!&quot;);
+            require(user != address(0), "Cannot add the zero address to whitelist!");
 
             if (!whitelist[user]) {
                 whitelist[user] = true;
@@ -243,8 +243,8 @@ contract Whitelist is Admin {
     /// @dev Requires that the msg.sender is an Admin. Emits an event on success.
     /// @param _users The list of addresses to remove from the whitelist.
     function removeAddressesFromWhitelist(address[] _users) external onlyAdmin {
-        require(_users.length &gt; 0, &quot;Cannot remove an empty list to whitelist!&quot;);
-        for (uint256 i = 0; i &lt; _users.length; ++i) {
+        require(_users.length > 0, "Cannot remove an empty list to whitelist!");
+        for (uint256 i = 0; i < _users.length; ++i) {
             address user = _users[i];
 
             if (whitelist[user]) {
@@ -283,8 +283,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -299,9 +299,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -309,7 +309,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -318,7 +318,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -332,7 +332,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -350,7 +350,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -404,7 +404,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -422,8 +422,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -437,7 +437,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -506,7 +506,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -668,7 +668,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d0c7cfc1cde290">[email protected]</a>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -695,7 +695,7 @@ contract HasNoTokens is CanReclaimToken {
 /// @title Reward Token contract that contains all reward token configurations.
 contract RewardToken is PausableToken, Whitelist, HasNoTokens{
     /// @dev Any token balances added here must be removed from the balances map.
-    mapping(address =&gt; uint256) public rewardBalances;
+    mapping(address => uint256) public rewardBalances;
 
     uint256[] public rewardPercentage;
     uint256 public rewardPercentageDecimals;
@@ -705,13 +705,13 @@ contract RewardToken is PausableToken, Whitelist, HasNoTokens{
 
     /// @dev Verifies the reward index is valid.
     modifier isValidRewardIndex(uint256 _index) {
-        require(_index &lt; rewardPercentage.length, &quot;The reward percentage index does not exist!&quot;);
+        require(_index < rewardPercentage.length, "The reward percentage index does not exist!");
         _;
     }
 
     /// @dev Verifies the reward percentage is valid.
     modifier isValidRewardPercentage(uint256 _percentage) {
-        require(_percentage &lt;= rewardPercentageDivisor, &quot;Cannot have a reward percentage greater than 100%!&quot;);
+        require(_percentage <= rewardPercentageDivisor, "Cannot have a reward percentage greater than 100%!");
         _;
     }
 
@@ -724,7 +724,7 @@ contract RewardToken is PausableToken, Whitelist, HasNoTokens{
     /// @dev To achieve an affective 5% bonus, the sender needs to use 5 x 10^18.
     /// Requires:
     ///     - Msg.sender is an admin
-    ///     - Percentage is &lt;= 100%
+    ///     - Percentage is <= 100%
     /// @param _percentage The new percentage specific to 18 decimals.
     /// @return The index of the percentage added in the rewardPercentage array.
     function addRewardPercentage(uint256 _percentage) public onlyAdmin isValidRewardPercentage(_percentage) returns (uint256 _index) {
@@ -739,7 +739,7 @@ contract RewardToken is PausableToken, Whitelist, HasNoTokens{
     /// Requires:
     ///     - Msg.sender is an admin
     ///     - The index must be within the bounds of the rewardPercentage array
-    ///     - The new percentage must be &lt;= 100%
+    ///     - The new percentage must be <= 100%
     /// @param _index The index of the percentage to be edited.
     /// @param _percentage The new percentage to be used for the given index.
     function updateRewardPercentageByIndex(uint256 _index, uint256 _percentage)
@@ -773,8 +773,8 @@ contract RewardToken is PausableToken, Whitelist, HasNoTokens{
 
 /// @title TRVLToken smart contract
 contract TRVLToken is RewardToken {
-    string public constant name = &quot;TRVL Token&quot;;
-    string public constant symbol = &quot;TRVL&quot;;
+    string public constant name = "TRVL Token";
+    string public constant symbol = "TRVL";
     uint8 public constant decimals = 18;
     uint256 public constant TOTAL_CAP = 600000000 * (10 ** uint256(decimals));
 
@@ -782,14 +782,14 @@ contract TRVLToken is RewardToken {
 
     /// @dev Verifies the user has enough tokens to cover the payment.
     modifier senderHasEnoughTokens(uint256 _regularTokens, uint256 _rewardTokens) {
-        require(rewardBalances[msg.sender] &gt;= _rewardTokens, &quot;User does not have enough reward tokens!&quot;);
-        require(balances[msg.sender] &gt;= _regularTokens, &quot;User does not have enough regular tokens!&quot;);
+        require(rewardBalances[msg.sender] >= _rewardTokens, "User does not have enough reward tokens!");
+        require(balances[msg.sender] >= _regularTokens, "User does not have enough regular tokens!");
         _;
     }
 
-    /// @dev Verifies the amount is &gt; 0.
+    /// @dev Verifies the amount is > 0.
     modifier validAmount(uint256 _amount) {
-        require(_amount &gt; 0, &quot;The amount specified is 0!&quot;);
+        require(_amount > 0, "The amount specified is 0!");
         _;
     }
 
@@ -811,11 +811,11 @@ contract TRVLToken is RewardToken {
     function paymentRegularTokensPriority (uint256 _amount, uint256 _rewardPercentageIndex) public {
         uint256 regularTokensAvailable = balances[msg.sender];
 
-        if (regularTokensAvailable &gt;= _amount) {
+        if (regularTokensAvailable >= _amount) {
             paymentRegularTokens(_amount, _rewardPercentageIndex);
 
         } else {
-            if (regularTokensAvailable &gt; 0) {
+            if (regularTokensAvailable > 0) {
                 uint256 amountOfRewardsTokens = _amount.sub(regularTokensAvailable);
                 paymentMixed(regularTokensAvailable, amountOfRewardsTokens, _rewardPercentageIndex);
             } else {
@@ -831,10 +831,10 @@ contract TRVLToken is RewardToken {
     function paymentRewardTokensPriority (uint256 _amount, uint256 _rewardPercentageIndex) public {
         uint256 rewardTokensAvailable = rewardBalances[msg.sender];
 
-        if (rewardTokensAvailable &gt;= _amount) {
+        if (rewardTokensAvailable >= _amount) {
             paymentRewardTokens(_amount);
         } else {
-            if (rewardTokensAvailable &gt; 0) {
+            if (rewardTokensAvailable > 0) {
                 uint256 amountOfRegularTokens = _amount.sub(rewardTokensAvailable);
                 paymentMixed(amountOfRegularTokens, rewardTokensAvailable, _rewardPercentageIndex);
             } else {

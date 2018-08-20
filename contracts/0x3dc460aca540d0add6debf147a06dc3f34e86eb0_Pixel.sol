@@ -47,11 +47,11 @@ contract Token {
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -61,8 +61,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -85,8 +85,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract HumanStandardToken is StandardToken {
@@ -98,7 +98,7 @@ contract HumanStandardToken is StandardToken {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;H0.1&#39;;
+    string public version = 'H0.1';
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -116,7 +116,7 @@ contract HumanStandardToken is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }
@@ -161,14 +161,14 @@ contract Pixel is Owned, HumanStandardToken {
   uint32 public size = 1000;
   uint32 public size2 = size*size;
 
-  mapping (uint32 =&gt; uint24) public pixels;
-  mapping (uint32 =&gt; address) public owners;
+  mapping (uint32 => uint24) public pixels;
+  mapping (uint32 => address) public owners;
 
   event Set(address indexed _from, uint32[] _xys, uint24[] _rgbs);
   event Unset(address indexed _from, uint32[] _xys);
 
   // Constructor.
-  function Pixel() HumanStandardToken(size2, &quot;Pixel&quot;, 0, &quot;PXL&quot;) {
+  function Pixel() HumanStandardToken(size2, "Pixel", 0, "PXL") {
   }
 
   // Public interface.
@@ -176,14 +176,14 @@ contract Pixel is Owned, HumanStandardToken {
     address _from = msg.sender;
 
     require(_xys.length == _rgbs.length);
-    require(balances[_from] &gt;= _xys.length);
+    require(balances[_from] >= _xys.length);
 
     uint32 _xy; uint24 _rgb;
-    for (uint i = 0; i &lt; _xys.length; i++) {
+    for (uint i = 0; i < _xys.length; i++) {
       _xy = _xys[i];
       _rgb = _rgbs[i];
 
-      require(_xy &lt; size2);
+      require(_xy < size2);
       require(owners[_xy] == 0);
 
       owners[_xy] = _from;
@@ -199,7 +199,7 @@ contract Pixel is Owned, HumanStandardToken {
     address _from = msg.sender;
 
     uint32 _xy;
-    for (uint i = 0; i &lt; _xys.length; i++) {
+    for (uint i = 0; i < _xys.length; i++) {
       _xy = _xys[i];
 
       require(owners[_xy] == _from);
@@ -219,7 +219,7 @@ contract Pixel is Owned, HumanStandardToken {
     uint24[1000] memory rgbs;
     address[1000] memory addrs;
 
-    for (uint32 i = 0; i &lt; 1000; i++) {
+    for (uint32 i = 0; i < 1000; i++) {
       rgbs[i] = pixels[_start + i];
       addrs[i] = owners[_start + i];
     }

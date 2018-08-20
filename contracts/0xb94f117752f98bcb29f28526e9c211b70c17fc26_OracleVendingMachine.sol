@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
 /// @title Proxied - indicates that a contract will be proxied. Also defines storage requirements for Proxy.
-/// @author Alan Lu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="42232e232c02252c2d312b316c322f">[email&#160;protected]</a>&gt;
+/// @author Alan Lu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="42232e232c02252c2d312b316c322f">[email protected]</a>>
 contract Proxied {
     address public masterCopy;
 }
 
 /// @title Proxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="196a6d7c7f7877597e77766a706a376974">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="196a6d7c7f7877597e77766a706a376974">[email protected]</a>>
 contract Proxy is Proxied {
     /// @dev Constructor function sets address of master copy contract.
     /// @param _masterCopy Master copy address.
@@ -95,9 +95,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -105,7 +105,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -114,7 +114,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -240,11 +240,11 @@ contract OracleVendingMachine {
   bool public open;
 
 
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; bool) public balanceChecked;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public oracleIndexes;
-  mapping (address =&gt; mapping (address =&gt; mapping (uint256 =&gt; proposal))) public oracleProposed;
-  mapping (address =&gt; mapping (address =&gt; mapping (uint256 =&gt; address))) public oracleDeployed;
+  mapping (address => uint256) public balances;
+  mapping (address => bool) public balanceChecked;
+  mapping (address => mapping (address => uint256)) public oracleIndexes;
+  mapping (address => mapping (address => mapping (uint256 => proposal))) public oracleProposed;
+  mapping (address => mapping (address => mapping (uint256 => address))) public oracleDeployed;
 
   struct proposal {
     bytes hash;
@@ -343,7 +343,7 @@ contract OracleVendingMachine {
     @return A deployed oracle contract
   **/
   function confirmOracle(address maker, uint index) public returns(Oracle oracle) {
-    require(oracleProposed[maker][msg.sender][index].fee &gt; 0);
+    require(oracleProposed[maker][msg.sender][index].fee > 0);
 
     if(!balanceChecked[msg.sender]) checkBalance(msg.sender);
     balances[msg.sender] = balances[msg.sender].sub(fee);
@@ -398,10 +398,10 @@ contract OracleVendingMachine {
     @param index The index of the proposed to be revoked
   **/
   function revokeOracle(address taker, uint256 index) public {
-    require(oracleProposed[msg.sender][taker][index].fee &gt;  0);
+    require(oracleProposed[msg.sender][taker][index].fee >  0);
     require(oracleDeployed[msg.sender][taker][index] == address(0));
     proposal memory oracleProposal = oracleProposed[msg.sender][taker][index];
-    oracleProposed[msg.sender][taker][index].hash = &quot;&quot;;
+    oracleProposed[msg.sender][taker][index].hash = "";
     oracleProposed[msg.sender][taker][index].fee = 0;
     oracleProposed[msg.sender][taker][index].oracleMasterCopy = address(0);
 

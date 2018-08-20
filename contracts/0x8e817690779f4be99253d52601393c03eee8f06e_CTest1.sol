@@ -13,13 +13,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -83,7 +83,7 @@ contract StandardToken is Token {
      * - Interger overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -92,7 +92,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -115,9 +115,9 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -133,8 +133,8 @@ contract StandardToken is Token {
  */
 contract CTest1 is StandardToken, SafeMath {
 
-    string public name = &quot;CTest1 Token&quot;;
-    string public symbol = &quot;CTest1&quot;;
+    string public name = "CTest1 Token";
+    string public symbol = "CTest1";
     uint public decimals = 18;
     
     uint256 public totalSupply = 1000000;
@@ -177,7 +177,7 @@ contract CTest1 is StandardToken, SafeMath {
         
         
         //If all the tokens are gone, stop!
-        if (totalSupply &lt; 1)
+        if (totalSupply < 1)
         {
             throw;
         }
@@ -189,28 +189,28 @@ contract CTest1 is StandardToken, SafeMath {
         
         //Set the price to 0.0003 ETH/CTest1
         //$0.10 per
-        if (totalSupply &gt; 975000)
+        if (totalSupply > 975000)
         {
             rate = 3340;
         }
         
         //Set the price to 0.0015 ETH/CTest1
         //$0.50 per
-        if (totalSupply &lt; 975001)
+        if (totalSupply < 975001)
         {
             rate = 668;
         }
         
         //Set the price to 0.0030 ETH/CTest1
         //$1.00 per
-        if (totalSupply &lt; 875001)
+        if (totalSupply < 875001)
         {
             rate = 334;
         }
         
         //Set the price to 0.0075 ETH/CTest1
         //$2.50 per
-        if (totalSupply &lt; 475001)
+        if (totalSupply < 475001)
         {
             rate = 134;
         }
@@ -224,41 +224,41 @@ contract CTest1 is StandardToken, SafeMath {
         
         
         //Make sure they send enough to buy atleast 1 token.
-        if (tokens &lt; 1)
+        if (tokens < 1)
         {
             throw;
         }
         
         
-        //Make sure someone isn&#39;t buying more than the remaining supply
+        //Make sure someone isn't buying more than the remaining supply
         uint256 check = safeSub(totalSupply, tokens);
-        if (check &lt; 0)
+        if (check < 0)
         {
             throw;
         }
         
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 975000 &amp;&amp; check &lt; 975000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 975000 && check < 975000)
         {
             throw;
         }
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 875000 &amp;&amp; check &lt; 875000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 875000 && check < 875000)
         {
             throw;
         }
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 475000 &amp;&amp; check &lt; 475000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 475000 && check < 475000)
         {
             throw;
         }
         
         
         //Prevent any ETH address from buying more than 50 CTest1 during the pre-sale
-        if ((balances[recipient] + tokens) &gt; 50 &amp;&amp; totalSupply &gt; 975000)
+        if ((balances[recipient] + tokens) > 50 && totalSupply > 975000)
         {
             throw;
         }
@@ -283,7 +283,7 @@ contract CTest1 is StandardToken, SafeMath {
     //Only contract creator can do this.
     function Burn () {
         
-        if (msg.sender == owner &amp;&amp; totalSupply &gt; 0)
+        if (msg.sender == owner && totalSupply > 0)
         {
             totalSupply = 0;
         } else {throw;}

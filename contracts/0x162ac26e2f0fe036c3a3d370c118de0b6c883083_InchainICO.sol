@@ -1,26 +1,26 @@
 pragma solidity ^0.4.3;
 
-// &#169; 2016 Ambisafe Inc. No reuse without written permission is allowed.
+// © 2016 Ambisafe Inc. No reuse without written permission is allowed.
 
 contract InchainICO {
     struct PendingOperation {
-        mapping(address =&gt; bool) hasConfirmed;
+        mapping(address => bool) hasConfirmed;
         uint yetNeeded;
     }
 
-    mapping(bytes32 =&gt; PendingOperation) pending;
+    mapping(bytes32 => PendingOperation) pending;
     uint public required;
-    mapping(address =&gt; bool) public isOwner;
+    mapping(address => bool) public isOwner;
     address[] public owners;
 
     event Confirmation(address indexed owner, bytes32 indexed operation, bool completed);
 
     function InchainICO(address[] _owners, uint _required) {
-        if (_owners.length == 0 || _required == 0 || _required &gt; _owners.length) {
+        if (_owners.length == 0 || _required == 0 || _required > _owners.length) {
             selfdestruct(msg.sender);
         }
         required = _required;
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             owners.push(_owners[i]);
             isOwner[_owners[i]] = true;
         }
@@ -61,7 +61,7 @@ contract InchainICO {
             pendingOperation.yetNeeded = required;
         }
 
-        if (pendingOperation.yetNeeded &lt;= 1) {
+        if (pendingOperation.yetNeeded <= 1) {
             Confirmation(msg.sender, _operation, true);
             _removeOperation(_operation);
             return true;
@@ -76,7 +76,7 @@ contract InchainICO {
 
     function _removeOperation(bytes32 _operation) internal {
         var pendingOperation = pending[_operation];
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (pendingOperation.hasConfirmed[owners[i]]) {
                 pendingOperation.hasConfirmed[owners[i]] = false;
             }
@@ -91,7 +91,7 @@ contract InchainICO {
     // Accept all incoming ETH till the limit ~$10M.
     uint public totalRaised;
     function () payable {
-        if (totalRaised + msg.value &gt; 833000 ether) {
+        if (totalRaised + msg.value > 833000 ether) {
             throw;
         }
         totalRaised += msg.value;

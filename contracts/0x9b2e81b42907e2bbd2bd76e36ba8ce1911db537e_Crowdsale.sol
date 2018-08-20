@@ -13,20 +13,20 @@ pragma solidity ^0.4.11;
       }
 
       function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
       }
 
       function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
       }
 
       function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     }
@@ -61,7 +61,7 @@ pragma solidity ^0.4.11;
     contract BasicToken is ERC20Basic {
       using SafeMath for uint256;
 
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
 
       /**
       * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ pragma solidity ^0.4.11;
      */
     contract StandardToken is ERC20, BasicToken {
 
-      mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping (address => mapping (address => uint256)) allowed;
 
 
       /**
@@ -113,7 +113,7 @@ pragma solidity ^0.4.11;
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -166,7 +166,7 @@ pragma solidity ^0.4.11;
       function decreaseApproval (address _spender, uint _subtractedValue) 
         returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -180,7 +180,7 @@ pragma solidity ^0.4.11;
     /**
      * @title Ownable
      * @dev The Ownable contract has an owner address, and provides basic authorization control
-     * functions, this simplifies the implementation of &quot;user permissions&quot;.
+     * functions, this simplifies the implementation of "user permissions".
      */
     contract Ownable {
       address public owner;
@@ -222,7 +222,7 @@ pragma solidity ^0.4.11;
 
 contract RewardToken is StandardToken, Ownable {
     bool public payments = false;
-    mapping(address =&gt; uint256) public rewards;
+    mapping(address => uint256) public rewards;
     uint public payment_time = 0;
     uint public payment_amount = 0;
 
@@ -230,7 +230,7 @@ contract RewardToken is StandardToken, Ownable {
 
     function payment() payable onlyOwner {
         require(payments);
-        require(msg.value &gt;= 0.01 * 1 ether);
+        require(msg.value >= 0.01 * 1 ether);
 
         payment_time = now;
         payment_amount = this.balance;
@@ -238,9 +238,9 @@ contract RewardToken is StandardToken, Ownable {
 
     function _reward(address _to) private returns (bool) {
         require(payments);
-        require(rewards[_to] &lt; payment_time);
+        require(rewards[_to] < payment_time);
 
-        if(balances[_to] &gt; 0) {
+        if(balances[_to] > 0) {
 			uint amount = payment_amount * balances[_to] / totalSupply;
 
 			require(_to.send(amount));
@@ -259,8 +259,8 @@ contract RewardToken is StandardToken, Ownable {
 
     function transfer(address _to, uint256 _value) returns (bool) {
 		if(payments) {
-			if(rewards[msg.sender] &lt; payment_time) require(_reward(msg.sender));
-			if(rewards[_to] &lt; payment_time) require(_reward(_to));
+			if(rewards[msg.sender] < payment_time) require(_reward(msg.sender));
+			if(rewards[_to] < payment_time) require(_reward(_to));
 		}
 
         return super.transfer(_to, _value);
@@ -268,8 +268,8 @@ contract RewardToken is StandardToken, Ownable {
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 		if(payments) {
-			if(rewards[_from] &lt; payment_time) require(_reward(_from));
-			if(rewards[_to] &lt; payment_time) require(_reward(_to));
+			if(rewards[_from] < payment_time) require(_reward(_from));
+			if(rewards[_to] < payment_time) require(_reward(_to));
 		}
 
         return super.transferFrom(_from, _to, _value);
@@ -279,8 +279,8 @@ contract RewardToken is StandardToken, Ownable {
 contract LoriToken is RewardToken {
     using SafeMath for uint;
 
-    string public name = &quot;LORI Invest Token&quot;;
-    string public symbol = &quot;LORI&quot;;
+    string public name = "LORI Invest Token";
+    string public symbol = "LORI";
     uint256 public decimals = 18;
 
     bool public mintingFinished = false;
@@ -316,8 +316,8 @@ contract LoriToken is RewardToken {
     }
 
     function commandMintBonus(address _to) onlyOwner {
-        require(mintingFinished &amp;&amp; !commandGetBonus);
-        require(now &gt; commandGetBonusTime);
+        require(mintingFinished && !commandGetBonus);
+        require(now > commandGetBonusTime);
 
         commandGetBonus = true;
 
@@ -352,11 +352,11 @@ contract Crowdsale is Ownable {
     }
 
     function doPurchase() payable {
-        assert((now &gt; preICOstartTime &amp;&amp; now &lt; preICOendTime) || (now &gt; ICOstartTime &amp;&amp; now &lt; ICOendTime));
-        require(msg.value &gt;= 0.01 * 1 ether);
+        assert((now > preICOstartTime && now < preICOendTime) || (now > ICOstartTime && now < ICOendTime));
+        require(msg.value >= 0.01 * 1 ether);
         require(!crowdsaleFinished);
 
-        uint tokens = msg.value * (now &gt;= ICOstartTime ? 100 : 120);
+        uint tokens = msg.value * (now >= ICOstartTime ? 100 : 120);
 
         require(token.mint(msg.sender, tokens));
         require(beneficiary.send(msg.value));

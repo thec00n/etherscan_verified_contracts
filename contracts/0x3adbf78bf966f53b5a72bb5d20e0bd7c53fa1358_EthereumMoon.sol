@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
         string public symbol;
         uint8 public decimals;
         /* This creates an array with all balances */
-        mapping (address =&gt; uint256) public balanceOf;
+        mapping (address => uint256) public balanceOf;
         
         event Transfer(address indexed from, address indexed to, uint256 value);
     
@@ -18,7 +18,7 @@ pragma solidity ^0.4.18;
 
 	function transfer(address _to, uint256 _value) public {
 	    
-	    require(balanceOf[msg.sender] &gt;= _value &amp;&amp; balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
 	    
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;

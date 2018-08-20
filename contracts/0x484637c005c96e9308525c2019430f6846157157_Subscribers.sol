@@ -12,7 +12,7 @@ contract Subscribers {
         address addy;
     }
 
-    mapping (bytes32 =&gt; Subscriber) public subs;
+    mapping (bytes32 => Subscriber) public subs;
 
     event Subscribed(bytes32 emailHash, uint8 mode, address subber);
 
@@ -51,7 +51,7 @@ contract Subscribers {
         }
 
         uint256 requiredPrice = (_monthOrYear == 1) ? monthlyPrice : annualPrice;
-        require(msg.value &gt;= requiredPrice);
+        require(msg.value >= requiredPrice);
         
         uint256 requiredDuration = (_monthOrYear == 1) ? 2629746 : 31556952;
         subs[_email] = Subscriber(from + requiredDuration, _subscriber);

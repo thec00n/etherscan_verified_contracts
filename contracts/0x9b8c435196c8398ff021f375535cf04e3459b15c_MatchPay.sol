@@ -33,18 +33,18 @@ contract MatchPay {
 
     bool is_payday ;
     uint dividends;
-    mapping (address =&gt; dividend_right) dividends_redeemed;
+    mapping (address => dividend_right) dividends_redeemed;
 
     // -------------------------------------------------------------------------------------------
 
     // Only owner modifier
-    modifier only_owner_once(address _who) { require(_who == master &amp;&amp; token == address(0)); _; }
+    modifier only_owner_once(address _who) { require(_who == master && token == address(0)); _; }
 
     // Is window open (first month after each genesis anniversary)
-    modifier is_window_open() { require( (now - genesis_date) % 31536000 &lt;= 2592000); _; }
+    modifier is_window_open() { require( (now - genesis_date) % 31536000 <= 2592000); _; }
 
     // Is window close
-    modifier is_window_close() { require( (now - genesis_date) % 31536000 &gt; 2592000); _; }
+    modifier is_window_close() { require( (now - genesis_date) % 31536000 > 2592000); _; }
 
     // -------------------------------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ contract MatchPay {
 
     // Redeem dividends
     function redeem(uint _amount) is_window_open() returns (bool) {
-      // If payday isn&#39;t flagged, flag it and freeze the dividends
+      // If payday isn't flagged, flag it and freeze the dividends
       if (!is_payday) {
         is_payday = true;
         dividends = this.balance;
@@ -92,7 +92,7 @@ contract MatchPay {
       dividends_redeemed[msg.sender]._total_owed += _amount;
 
       // If proposed amount is viable, then give it to the owner
-      if (dividends_redeemed[msg.sender]._total_owed * tokenSupply &lt;= dividends * tokenBalance) {
+      if (dividends_redeemed[msg.sender]._total_owed * tokenSupply <= dividends * tokenBalance) {
         if (!msg.sender.send(_amount)) {
           dividends_redeemed[msg.sender]._total_owed -= _amount;
           return false;

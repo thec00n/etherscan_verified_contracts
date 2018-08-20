@@ -5,10 +5,10 @@ pragma solidity ^0.4.20;
 
 contract SafeMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
@@ -24,7 +24,7 @@ contract BitFrank is SafeMath {
     
     address public admin;
     
-    string public constant name = &quot;BitFrank v1&quot;;
+    string public constant name = "BitFrank v1";
     bool public suspendDeposit = false; // if we are upgrading to a new contract, deposit will be suspended, but you can still withdraw / trade
  
     // market details for each TOKEN
@@ -36,11 +36,11 @@ contract BitFrank is SafeMath {
     uint public marketDefaultFeeLow = 2000; // 0.2%
     uint public marketDefaultFeeHigh = 8000; // 0.8%
     
-    mapping (address =&gt; TOKEN_DETAIL) public tokenMarket; // registered token details
+    mapping (address => TOKEN_DETAIL) public tokenMarket; // registered token details
     address[] public tokenList; // list of registered tokens
     
-    mapping (address =&gt; mapping (address =&gt; uint)) public balance; // balance[tokenAddr][userAddr]
-    mapping (address =&gt; mapping (address =&gt; uint)) public balanceLocked; // token locked in orders
+    mapping (address => mapping (address => uint)) public balance; // balance[tokenAddr][userAddr]
+    mapping (address => mapping (address => uint)) public balanceLocked; // token locked in orders
     
     uint public globalOrderSerial = 100000; // always increasing
     uint public PRICE_FACTOR = 10 ** 18; // all prices are multiplied by PRICE_FACTOR
@@ -55,7 +55,7 @@ contract BitFrank is SafeMath {
         uint listPosition; // position in orderList, useful when updating orderList
     }
     
-    mapping (uint =&gt; ORDER) public order; // [orderID] =&gt; ORDER
+    mapping (uint => ORDER) public order; // [orderID] => ORDER
     uint[] public orderList; // list of orderIDs
 
     //============== EVENTS ==============
@@ -69,7 +69,7 @@ contract BitFrank is SafeMath {
     event ORDER_FILL(address indexed userTaker, address userMaker, address indexed token, bool isOriginalOrderBuy, uint fillAmt, uint price, uint indexed id);
     event ORDER_DONE(address indexed userTaker, address userMaker, address indexed token, bool isOriginalOrderBuy, uint fillAmt, uint price, uint indexed id);
     
-    //============== ORDER PLACEMENT &amp; TRADE ==============
+    //============== ORDER PLACEMENT & TRADE ==============
     
     // get order list count
     
@@ -84,11 +84,11 @@ contract BitFrank is SafeMath {
         uint newLocked;
         if (isBuy) { // buy token, lock ETH
             newLocked = add(balanceLocked[0][msg.sender], mul(wad, price) / PRICE_FACTOR);
-            require(balance[0][msg.sender] &gt;= newLocked);
+            require(balance[0][msg.sender] >= newLocked);
             balanceLocked[0][msg.sender] = newLocked;
         } else { // sell token, lock token
             newLocked = add(balanceLocked[token][msg.sender], wad);
-            require(balance[token][msg.sender] &gt;= newLocked);
+            require(balance[token][msg.sender] >= newLocked);
             balanceLocked[token][msg.sender] = newLocked;
         }
         
@@ -120,7 +120,7 @@ contract BitFrank is SafeMath {
         
         // fill amt
         uint fillAmt = sub(o.wad, o.wadFilled);
-        if (fillAmt &gt; wad) fillAmt = wad;
+        if (fillAmt > wad) fillAmt = wad;
         
         // fill ETH and fee
         uint fillETH = mul(fillAmt, price) / PRICE_FACTOR;
@@ -132,7 +132,7 @@ contract BitFrank is SafeMath {
             
             // remove token from taker (check balance first)
             newTakerBalance = sub(balance[o.token][msg.sender], fillAmt);
-            require(newTakerBalance &gt;= balanceLocked[o.token][msg.sender]);
+            require(newTakerBalance >= balanceLocked[o.token][msg.sender]);
             balance[o.token][msg.sender] = newTakerBalance;
             
             // remove ETH from maker
@@ -149,7 +149,7 @@ contract BitFrank is SafeMath {
         
             // remove ETH (with fee) from taker (check balance first)
             newTakerBalance = sub(balance[0][msg.sender], add(fillETH, fee));
-            require(newTakerBalance &gt;= balanceLocked[0][msg.sender]);
+            require(newTakerBalance >= balanceLocked[0][msg.sender]);
             balance[0][msg.sender] = newTakerBalance;
 
             // remove token from maker
@@ -169,7 +169,7 @@ contract BitFrank is SafeMath {
         o.wadFilled = add(o.wadFilled, fillAmt);
         
         // remove filled order
-        if (o.wadFilled &gt;= o.wad) {
+        if (o.wadFilled >= o.wad) {
 
             // update order list
             orderList[o.listPosition] = orderList[orderList.length - 1];
@@ -215,18 +215,18 @@ contract BitFrank is SafeMath {
         // make sure the order is correct
         ORDER storage o = order[orderID]; // o is modified
         require(o.user == msg.sender);
-        require(o.wadFilled == 0); // for simplicity, you can&#39;t change filled orders
+        require(o.wadFilled == 0); // for simplicity, you can't change filled orders
         
         // change amount of locked assets
         
         uint newLocked;
         if (o.isBuy) { // lock ETH
             newLocked = sub(add(balanceLocked[0][msg.sender], mul(new_wad, new_price) / PRICE_FACTOR), mul(o.wad, o.price) / PRICE_FACTOR);
-            require(balance[0][msg.sender] &gt;= newLocked);
+            require(balance[0][msg.sender] >= newLocked);
             balanceLocked[0][msg.sender] = newLocked;
         } else { // lock token
             newLocked = sub(add(balanceLocked[o.token][msg.sender], new_wad), o.wad);
-            require(balance[o.token][msg.sender] &gt;= newLocked);
+            require(balance[o.token][msg.sender] >= newLocked);
             balanceLocked[o.token][msg.sender] = newLocked;
         }
     
@@ -248,7 +248,7 @@ contract BitFrank is SafeMath {
     // set admin
     function adminSetAdmin(address newAdmin) public {
         require(msg.sender == admin);
-        require(balance[0][newAdmin] &gt; 0); // newAdmin must have deposits
+        require(balance[0][newAdmin] > 0); // newAdmin must have deposits
         admin = newAdmin;
     }
     
@@ -262,7 +262,7 @@ contract BitFrank is SafeMath {
     function adminSetMarket(address token, uint8 level_, uint fee_) public {
         require(msg.sender == admin);
         require(level_ != 0);
-        require(level_ &lt;= 9);
+        require(level_ <= 9);
         if (tokenMarket[token].level == 0) {
             tokenList.push(token);
         }
@@ -284,12 +284,12 @@ contract BitFrank is SafeMath {
         marketDefaultFeeHigh = marketDefaultFeeHigh_;
     }
     
-    //============== MARKET REGISTRATION &amp; HELPER ==============
+    //============== MARKET REGISTRATION & HELPER ==============
 
     // register token
     function marketRegisterToken(address token) public payable {
         require(tokenMarket[token].level == 1);
-        require(msg.value &gt;= marketRegisterCost); // register cost
+        require(msg.value >= marketRegisterCost); // register cost
         balance[0][admin] = add(balance[0][admin], msg.value);
         
         tokenMarket[token].level = 2;
@@ -302,7 +302,7 @@ contract BitFrank is SafeMath {
         return tokenList.length;
     }
   
-    //============== DEPOSIT &amp; WITHDRAW ==============
+    //============== DEPOSIT & WITHDRAW ==============
   
     function depositETH() public payable {
         require(!suspendDeposit);
@@ -329,7 +329,7 @@ contract BitFrank is SafeMath {
 
     function withdrawETH(uint wad) public {
         balance[0][msg.sender] = sub(balance[0][msg.sender], wad); // set amt first
-        require(balance[0][msg.sender] &gt;= balanceLocked[0][msg.sender]); // can&#39;t withdraw locked ETH
+        require(balance[0][msg.sender] >= balanceLocked[0][msg.sender]); // can't withdraw locked ETH
         msg.sender.transfer(wad); // send ETH
         WITHDRAW(msg.sender, 0, wad, balance[0][msg.sender]);
     }
@@ -337,7 +337,7 @@ contract BitFrank is SafeMath {
     function withdrawToken(address token, uint wad) public {
         require(token != 0); // not for withdrawing ETH
         balance[token][msg.sender] = sub(balance[token][msg.sender], wad);
-        require(balance[token][msg.sender] &gt;= balanceLocked[token][msg.sender]); // can&#39;t withdraw locked token
+        require(balance[token][msg.sender] >= balanceLocked[token][msg.sender]); // can't withdraw locked token
         require(ERC20(token).transfer(msg.sender, wad)); // send token
         WITHDRAW(msg.sender, token, wad, balance[token][msg.sender]);
     }

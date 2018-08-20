@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 contract token {function transfer(address receiver, uint amount){ }}
 
 contract Crowdsale {
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     uint public amountRaised; uint public tokensCounter; uint tokensForSending;
 
@@ -18,7 +18,7 @@ contract Crowdsale {
 
     function () payable {
         uint amount = msg.value;
-        if (crowdsaleClosed || amount &lt; 0.1 ether) throw;
+        if (crowdsaleClosed || amount < 0.1 ether) throw;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
         tokensForSending = amount / price;

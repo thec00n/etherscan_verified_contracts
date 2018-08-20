@@ -2,10 +2,10 @@ pragma solidity ^0.4.4;
 
 contract EthereumDIDRegistry {
 
-  mapping(address =&gt; address) public owners;
-  mapping(address =&gt; mapping(bytes32 =&gt; mapping(address =&gt; uint))) public delegates;
-  mapping(address =&gt; uint) public changed;
-  mapping(address =&gt; uint) public nonce;
+  mapping(address => address) public owners;
+  mapping(address => mapping(bytes32 => mapping(address => uint))) public delegates;
+  mapping(address => uint) public changed;
+  mapping(address => uint) public nonce;
 
   modifier onlyOwner(address identity, address actor) {
     require (actor == identityOwner(identity));
@@ -54,7 +54,7 @@ contract EthereumDIDRegistry {
 
   function validDelegate(address identity, string delegateType, address delegate) public view returns(bool) {
     uint validity = delegates[identity][keccak256(delegateType)][delegate];
-    return (validity &gt;= block.timestamp);
+    return (validity >= block.timestamp);
   }
 
   function validDelegateSignature(address identity, string delegateType, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 hash) public returns(address) {
@@ -75,7 +75,7 @@ contract EthereumDIDRegistry {
   }
 
   function changeOwnerSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, address newOwner) public {
-    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, &quot;changeOwner&quot;, newOwner); 
+    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, "changeOwner", newOwner); 
     changeOwner(identity, checkSignature(identity, sigV, sigR, sigS, hash), newOwner);
   }
 
@@ -90,7 +90,7 @@ contract EthereumDIDRegistry {
   }
 
   function addDelegateSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, string delegateType, address delegate, uint validity) public {
-    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, &quot;addDelegate&quot;, delegateType, delegate, validity); 
+    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, "addDelegate", delegateType, delegate, validity); 
     addDelegate(identity, checkSignature(identity, sigV, sigR, sigS, hash), delegateType, delegate, validity);
   }
 
@@ -105,7 +105,7 @@ contract EthereumDIDRegistry {
   }
 
   function revokeDelegateSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, string delegateType, address delegate) public {
-    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, &quot;revokeDelegate&quot;, delegateType, delegate); 
+    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identityOwner(identity)], identity, "revokeDelegate", delegateType, delegate); 
     revokeDelegate(identity, checkSignature(identity, sigV, sigR, sigS, hash), delegateType, delegate);
   }
 
@@ -119,7 +119,7 @@ contract EthereumDIDRegistry {
   }
 
   function setAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, string name, bytes value, uint validity) public {
-    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identity], identity, &quot;setAttribute&quot;, name, value, validity); 
+    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identity], identity, "setAttribute", name, value, validity); 
     setAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, value, validity);
   }
 
@@ -133,7 +133,7 @@ contract EthereumDIDRegistry {
   }
 
  function revokeAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, string name, bytes value) public {
-    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identity], identity, &quot;revokeAttribute&quot;, name, value); 
+    bytes32 hash = keccak256(byte(0x19), byte(0), this, nonce[identity], identity, "revokeAttribute", name, value); 
     revokeAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, value);
   }
 

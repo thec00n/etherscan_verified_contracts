@@ -45,8 +45,8 @@ contract CryptoStamps is ERC721 {
 
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoStamps&quot;; // 
-  string public constant SYMBOL = &quot;CS&quot;; // 
+  string public constant NAME = "CryptoStamps"; // 
+  string public constant SYMBOL = "CS"; // 
   
   // @dev firstStepLimit for the change in rate of price increase
   uint256 private firstStepLimit =  1.28 ether;
@@ -61,25 +61,25 @@ contract CryptoStamps is ERC721 {
 
   /// @dev A mapping from stamp IDs to the address that owns them. All stamps have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public stampIndexToOwner;
+  mapping (uint256 => address) public stampIndexToOwner;
   
 
   // @dev A mapping from owner address to count of stamps that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from stamp IDs to an address that has been approved to call
   ///  transferFrom(). Each stamp can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public stampIndexToApproved;
+  mapping (uint256 => address) public stampIndexToApproved;
 
   // @dev A mapping from stamp IDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private stampIndexToPrice;
+  mapping (uint256 => uint256) private stampIndexToPrice;
   
   
   
   //@dev A mapping from stamp IDs to the number of transactions that the stamp has gone through. 
-  mapping(uint256 =&gt; uint256) public stampIndextotransactions;
+  mapping(uint256 => uint256) public stampIndextotransactions;
   
   //@dev To calculate the total ethers transacted in the game.
   uint256 public totaletherstransacted;
@@ -98,12 +98,12 @@ contract CryptoStamps is ERC721 {
  
  //@dev A mapping from stamp IDs to their dissolved status.
   //Initially all values are set to false by default
-  mapping (uint256 =&gt; bool) public stampIndextodissolved;
+  mapping (uint256 => bool) public stampIndextodissolved;
  
  
  //@dev A mapping from dissolved stamp IDs to their approval status.
   //Initially all values are set to false by default
- mapping (uint256 =&gt; address) public dissolvedIndexToApproved;
+ mapping (uint256 => address) public dissolvedIndexToApproved;
  
   
   
@@ -250,7 +250,7 @@ contract CryptoStamps is ERC721 {
       stampOwner = cooAddress;
     }
 
-    require(_price &gt;= 0);
+    require(_price >= 0);
 
     stampCreatedCount++;
     _createStamp( stampOwner, _price);
@@ -353,13 +353,13 @@ contract CryptoStamps is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, cut), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       stampIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), cut);
     } 
@@ -394,7 +394,7 @@ contract CryptoStamps is ERC721 {
   function nextpriceOf(uint256 _tokenId) public view returns (uint256 price) {
     uint256 currentsellingPrice = stampIndexToPrice[_tokenId];
     
-    if (currentsellingPrice &lt; firstStepLimit) {
+    if (currentsellingPrice < firstStepLimit) {
       // first stage
       return SafeMath.div(SafeMath.mul(currentsellingPrice, 200), cut);
     } 
@@ -440,7 +440,7 @@ contract CryptoStamps is ERC721 {
   
   
   /// @param _owner The owner of the stamp
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Stamps array looking for stamps belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -458,7 +458,7 @@ contract CryptoStamps is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 stampId;
-      for (stampId = 0; stampId &lt;= totalStamps; stampId++) {
+      for (stampId = 0; stampId <= totalStamps; stampId++) {
         if (stampIndexToOwner[stampId] == _owner) {
           result[resultIndex] = stampId;
           resultIndex++;
@@ -566,7 +566,7 @@ contract CryptoStamps is ERC721 {
   function dissolve(uint256 _tokenId) public
   {   require(paused == false);
       require(stampIndexToOwner[_tokenId] == msg.sender);
-      require(priceOf(_tokenId)&gt;= priceatdissolution );
+      require(priceOf(_tokenId)>= priceatdissolution );
       require(stampIndextodissolved[_tokenId] == false);
       address reciever = stampIndexToOwner[_tokenId];
       
@@ -578,7 +578,7 @@ contract CryptoStamps is ERC721 {
       stampIndextodissolved[_tokenId] = true;
       
       uint256 i;
-      for(i = 0; i&lt;num; i++)
+      for(i = 0; i<num; i++)
       {
       _createStamp( reciever, newprice);
           
@@ -650,8 +650,8 @@ contract CryptoStamps is ERC721 {
     });
     uint256 newStampId = stamps.push(_stamp) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newStampId == uint256(uint32(newStampId)));
 
     stampBirth(newStampId, _owner);
@@ -704,7 +704,7 @@ contract CryptoStamps is ERC721 {
     stampIndexToOwner[_tokenId] = _to;
     
 
-    // When creating new stamps _from is 0x0, but we can&#39;t account that address.
+    // When creating new stamps _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -733,7 +733,7 @@ contract CryptoStamps is ERC721 {
     totaltransactions++;
     
 
-    // When creating new stamp _from is 0x0, but we can&#39;t account that address.
+    // When creating new stamp _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -768,9 +768,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -778,7 +778,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -787,7 +787,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

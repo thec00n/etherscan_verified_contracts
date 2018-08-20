@@ -14,30 +14,30 @@ contract SafeMath {
     function div(uint a, uint b) constant internal returns (uint) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) constant internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) constant internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     // Volume bonus calculation
     function volumeBonus(uint etherValue) constant internal returns (uint) {
 
-        if(etherValue &gt;=  500000000000000000000) return 10; // 500 ETH +10% tokens
-        if(etherValue &gt;=  300000000000000000000) return 7;  // 300 ETH +7% tokens
-        if(etherValue &gt;=  100000000000000000000) return 5;  // 100 ETH +5% tokens
-        if(etherValue &gt;=   50000000000000000000) return 3;  // 50 ETH +3% tokens
-        if(etherValue &gt;=   20000000000000000000) return 2;  // 20 ETH +2% tokens
-        if(etherValue &gt;=   10000000000000000000) return 1;  // 10 ETH +1% tokens
+        if(etherValue >=  500000000000000000000) return 10; // 500 ETH +10% tokens
+        if(etherValue >=  300000000000000000000) return 7;  // 300 ETH +7% tokens
+        if(etherValue >=  100000000000000000000) return 5;  // 100 ETH +5% tokens
+        if(etherValue >=   50000000000000000000) return 3;  // 50 ETH +3% tokens
+        if(etherValue >=   20000000000000000000) return 2;  // 20 ETH +2% tokens
+        if(etherValue >=   10000000000000000000) return 1;  // 10 ETH +1% tokens
 
         return 0;
     }
@@ -49,7 +49,7 @@ contract SafeMath {
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint) {}
     function balanceOf(address owner) constant returns (uint balance);
     function transfer(address to, uint value) returns (bool success);
@@ -73,7 +73,7 @@ contract IcoLimits {
     uint constant publicSaleEnd    = 1521158399; // 03/15/2018 @ 11:59pm (UTC)
 
     modifier afterPublicSale() {
-        require(now &gt; publicSaleEnd);
+        require(now > publicSaleEnd);
         _;
     }
 
@@ -90,9 +90,9 @@ contract StandardToken is AbstractToken, IcoLimits {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; bool) ownerAppended;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => bool) ownerAppended;
+    mapping (address => mapping (address => uint)) allowed;
 
     uint public totalSupply;
 
@@ -101,11 +101,11 @@ contract StandardToken is AbstractToken, IcoLimits {
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint _value) afterPublicSale returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             if(!ownerAppended[_to]) {
@@ -125,7 +125,7 @@ contract StandardToken is AbstractToken, IcoLimits {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint _value) afterPublicSale returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -175,8 +175,8 @@ contract ExoTownToken is StandardToken, SafeMath {
      * Token meta data
      */
 
-    string public constant name = &quot;ExoTown token&quot;;
-    string public constant symbol = &quot;SNEK&quot;;
+    string public constant name = "ExoTown token";
+    string public constant symbol = "SNEK";
     uint public constant decimals = 18;
 
     address public icoContract = 0x0;
@@ -208,7 +208,7 @@ contract ExoTownToken is StandardToken, SafeMath {
     /// @param _from Address of account, from which will be burned tokens
     /// @param _value Amount of tokens, that will be burned
     function burnTokens(address _from, uint _value) onlyIcoContract {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_from] = sub(balances[_from], _value);
         totalSupply -= _value;
@@ -218,7 +218,7 @@ contract ExoTownToken is StandardToken, SafeMath {
     /// @param _to Address of account to which the tokens will pass
     /// @param _value Amount of tokens
     function emitTokens(address _to, uint _value) onlyIcoContract {
-        require(totalSupply + _value &gt;= totalSupply);
+        require(totalSupply + _value >= totalSupply);
         balances[_to] = add(balances[_to], _value);
         totalSupply += _value;
 
@@ -278,7 +278,7 @@ contract ExoTownIco is SafeMath, IcoLimits {
 
     address public bountyOwner;
 
-    // Mediator wallet is used for tracking user payments and reducing users&#39; fee
+    // Mediator wallet is used for tracking user payments and reducing users' fee
     address public mediatorWallet;
 
     bool public sentTokensToBountyOwner = false;
@@ -292,7 +292,7 @@ contract ExoTownIco is SafeMath, IcoLimits {
 
     modifier whenInitialized() {
         // only when contract is initialized
-        require(currentState &gt;= State.Running);
+        require(currentState >= State.Running);
         _;
     }
 
@@ -313,15 +313,15 @@ contract ExoTownIco is SafeMath, IcoLimits {
     }
 
     function isPrivateSale() constant internal returns (bool) {
-        return now &gt;= privateSaleStart &amp;&amp; now &lt;= privateSaleEnd;
+        return now >= privateSaleStart && now <= privateSaleEnd;
     }
 
     function isPreSale() constant internal returns (bool) {
-        return now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd;
+        return now >= presaleStart && now <= presaleEnd;
     }
 
     function isPublicSale() constant internal returns (bool) {
-        return now &gt;= publicSaleStart &amp;&amp; now &lt;= publicSaleEnd;
+        return now >= publicSaleStart && now <= publicSaleEnd;
     }
 
 
@@ -479,19 +479,19 @@ contract ExoTownIco is SafeMath, IcoLimits {
     /// @param _buyer Address of account which will receive tokens
     function buyTokens(address _buyer) private {
         require(_buyer != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint tokensToEmit = msg.value * getPrice();
         uint volumeBonusPercent = volumeBonus(msg.value);
 
-        if (volumeBonusPercent &gt; 0) {
+        if (volumeBonusPercent > 0) {
             tokensToEmit = mul(tokensToEmit, 100 + volumeBonusPercent) / 100;
         }
 
         uint stageSupplyLimit = getStageSupplyLimit();
         uint stageSoldTokens = getStageSoldTokens();
 
-        require(add(stageSoldTokens, tokensToEmit) &lt;= stageSupplyLimit);
+        require(add(stageSoldTokens, tokensToEmit) <= stageSupplyLimit);
 
         exotownToken.emitTokens(_buyer, tokensToEmit);
 
@@ -521,7 +521,7 @@ contract ExoTownIco is SafeMath, IcoLimits {
         uint _prAmount = _balance_div * 25;
 
         uint total = _devAmount + _prAmount;
-        if (total &gt; 0) {
+        if (total > 0) {
             // Top up Mediator wallet with 1% of Development amount = 0.65% of contribution amount.
             // It will cover tracking transaction fee (if any).
             // See White Paper for more information about payment tracking
@@ -538,8 +538,8 @@ contract ExoTownIco is SafeMath, IcoLimits {
 
     /// @dev Partial withdraw. Only manager can do it
     function withdrawEther(uint _value) onlyManager {
-        require(_value &gt; 0);
-        require(_value &lt;= this.balance);
+        require(_value > 0);
+        require(_value <= this.balance);
         // send 1234 to get 1.234
         icoManager.transfer(_value * 1000000000000000); // 10^15
     }

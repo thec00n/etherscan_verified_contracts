@@ -110,7 +110,7 @@ contract Object is Owned {
     uint constant OK = 1;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -177,20 +177,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -220,7 +220,7 @@ contract AssetOwningListener {
  * Features: transfers, allowances, supply adjustments, lost wallet access recovery.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     using SafeMath for uint;
@@ -244,46 +244,46 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
 
     // Structure of a particular asset.
     struct Asset {
-        uint owner;                       // Asset&#39;s owner id.
-        uint totalSupply;                 // Asset&#39;s total supply.
-        string name;                      // Asset&#39;s name, for information purposes.
-        string description;               // Asset&#39;s description, for information purposes.
+        uint owner;                       // Asset's owner id.
+        uint totalSupply;                 // Asset's total supply.
+        string name;                      // Asset's name, for information purposes.
+        string description;               // Asset's description, for information purposes.
         bool isReissuable;                // Indicates if asset have dynamic or fixed supply.
         uint8 baseUnit;                   // Proposed number of decimals.
-        mapping(uint =&gt; Wallet) wallets;  // Holders wallets.
-        mapping(uint =&gt; bool) partowners; // Part-owners of an asset; have less access rights than owner
+        mapping(uint => Wallet) wallets;  // Holders wallets.
+        mapping(uint => bool) partowners; // Part-owners of an asset; have less access rights than owner
     }
 
     // Structure of an asset holder wallet for particular asset.
     struct Wallet {
         uint balance;
-        mapping(uint =&gt; uint) allowance;
+        mapping(uint => uint) allowance;
     }
 
     // Structure of an asset holder.
     struct Holder {
         address addr;                    // Current address of the holder.
-        mapping(address =&gt; bool) trust;  // Addresses that are trusted with recovery proocedure.
+        mapping(address => bool) trust;  // Addresses that are trusted with recovery proocedure.
     }
 
     // Iterable mapping pattern is used for holders.
     uint public holdersCount;
-    mapping(uint =&gt; Holder) public holders;
+    mapping(uint => Holder) public holders;
 
     // This is an access address mapping. Many addresses may have access to a single holder.
-    mapping(address =&gt; uint) holderIndex;
+    mapping(address => uint) holderIndex;
 
     // List of symbols that exist in a platform
     bytes32[] public symbols;
 
     // Asset symbol to asset mapping.
-    mapping(bytes32 =&gt; Asset) public assets;
+    mapping(bytes32 => Asset) public assets;
 
     // Asset symbol to asset proxy mapping.
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
 
     /** Co-owners of a platform. Has less access rights than a root contract owner */
-    mapping(address =&gt; bool) public partowners;
+    mapping(address => bool) public partowners;
 
     // Should use interface of the emitter, but address of events history.
     address public eventsHistory;
@@ -322,7 +322,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     }
 
     /**
-    * @dev UNAUTHORIZED if called not by one of symbol&#39;s partowners or owner
+    * @dev UNAUTHORIZED if called not by one of symbol's partowners or owner
     */
     modifier onlyOneOfOwners(bytes32 _symbol) {
         if (hasAssetRights(msg.sender, _symbol)) {
@@ -331,7 +331,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     }
 
     /**
-    * @dev UNAUTHORIZED if called not by one of partowners or contract&#39;s owner
+    * @dev UNAUTHORIZED if called not by one of partowners or contract's owner
     */
     modifier onlyOneOfContractOwners() {
         if (contractOwner == msg.sender || partowners[msg.sender]) {
@@ -349,7 +349,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     }
 
     /**
-     * Emits Error if _from doesn&#39;t trust _to.
+     * Emits Error if _from doesn't trust _to.
      */
     modifier checkTrust(address _from, address _to) {
         if (isTrusted(_from, _to)) {
@@ -503,7 +503,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
      * @return owner rights availability.
      */
     function isOwner(address _owner, bytes32 _symbol) constant returns(bool) {
-        return isCreated(_symbol) &amp;&amp; (assets[_symbol].owner == getHolderId(_owner));
+        return isCreated(_symbol) && (assets[_symbol].owner == getHolderId(_owner));
     }
 
     /**
@@ -516,7 +516,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     */
     function hasAssetRights(address _owner, bytes32 _symbol) constant returns (bool) {
         uint holderId = getHolderId(_owner);
-        return isCreated(_symbol) &amp;&amp; (assets[_symbol].owner == holderId || assets[_symbol].partowners[holderId]);
+        return isCreated(_symbol) && (assets[_symbol].owner == holderId || assets[_symbol].partowners[holderId]);
     }
 
     /**
@@ -569,7 +569,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     * Adds a co-owner for an asset with provided symbol.
     * @dev Should be performed by a contract owner or its co-owners
     *
-    * @param _symbol asset&#39;s symbol
+    * @param _symbol asset's symbol
     * @param _partowner a co-owner of an asset
     *
     * @return errorCode result code of an operation
@@ -586,7 +586,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     * Removes a co-owner for an asset with provided symbol.
     * @dev Should be performed by a contract owner or its co-owners
     *
-    * @param _symbol asset&#39;s symbol
+    * @param _symbol asset's symbol
     * @param _partowner a co-owner of an asset
     *
     * @return errorCode result code of an operation
@@ -655,11 +655,11 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
             return _error(CHRONOBANK_PLATFORM_INVALID_VALUE);
         }
         // Should have enough balance.
-        if (_balanceOf(_fromId, _symbol) &lt; _value) {
+        if (_balanceOf(_fromId, _symbol) < _value) {
             return _error(CHRONOBANK_PLATFORM_INSUFFICIENT_BALANCE);
         }
         // Should have enough allowance.
-        if (_fromId != _senderId &amp;&amp; _allowance(_fromId, _senderId, _symbol) &lt; _value) {
+        if (_fromId != _senderId && _allowance(_fromId, _senderId, _symbol) < _value) {
             return _error(CHRONOBANK_PLATFORM_NOT_ENOUGH_ALLOWANCE);
         }
 
@@ -775,7 +775,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
      */
     function issueAsset(bytes32 _symbol, uint _value, string _name, string _description, uint8 _baseUnit, bool _isReissuable, address _account) onlyOneOfContractOwners public returns(uint) {
         // Should have positive value if supply is going to be fixed.
-        if (_value == 0 &amp;&amp; !_isReissuable) {
+        if (_value == 0 && !_isReissuable) {
             return _error(CHRONOBANK_PLATFORM_CANNOT_ISSUE_FIXED_ASSET_WITH_INVALID_VALUE);
         }
         // Should not be issued yet.
@@ -818,7 +818,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
             return _error(CHRONOBANK_PLATFORM_CANNOT_REISSUE_FIXED_ASSET);
         }
         // Resulting total supply should not overflow.
-        if (asset.totalSupply + _value &lt; asset.totalSupply) {
+        if (asset.totalSupply + _value < asset.totalSupply) {
             return _error(CHRONOBANK_PLATFORM_SUPPLY_OVERFLOW);
         }
         uint holderId = getHolderId(msg.sender);
@@ -848,7 +848,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         Asset storage asset = assets[_symbol];
         uint holderId = getHolderId(msg.sender);
         // Should have enough tokens.
-        if (asset.wallets[holderId].balance &lt; _value) {
+        if (asset.wallets[holderId].balance < _value) {
             return _error(CHRONOBANK_PLATFORM_NOT_ENOUGH_TOKENS);
         }
         asset.wallets[holderId].balance = asset.wallets[holderId].balance.sub(_value);
@@ -992,7 +992,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         }
 
         // Double Spend Attack checkpoint
-        if (assets[_symbol].wallets[_senderId].allowance[_spenderId] != 0 &amp;&amp; _value != 0) {
+        if (assets[_symbol].wallets[_senderId].allowance[_spenderId] != 0 && _value != 0) {
             return _error(CHRONOBANK_PLATFORM_INVALID_INVOCATION);
         }
 

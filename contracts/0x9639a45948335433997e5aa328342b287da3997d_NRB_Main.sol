@@ -59,7 +59,7 @@ contract WhiteListAccess {
     }
     
     address public owner;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     modifier onlyBy(address who) { require(msg.sender == who); _; }
     modifier onlyOwner {require(msg.sender == owner); _;}
@@ -79,7 +79,7 @@ contract WhiteListAccess {
 // CNTCommon contract
 // ----------------------------------------------------------------------------
 contract NRB_Common is WhiteListAccess {
-    string public name;             // contract&#39;s name
+    string public name;             // contract's name
     function NRB_Common() public { ETH_address = 0x1; }
 
     // Deployment
@@ -103,12 +103,12 @@ contract NRB_Common is WhiteListAccess {
 // ----------------------------------------------------------------------------
 
 contract NRB_Main is NRB_Common {
-    mapping(address =&gt; uint) raisedAmount;
+    mapping(address => uint) raisedAmount;
     bool _init;
 
     function NRB_Main() public {
         _init = false;
-        name = &quot;NRB_Main&quot;;
+        name = "NRB_Main";
     }
 
     function init(address _tokens, address _users, address _flc) public {
@@ -189,7 +189,7 @@ contract NRB_Main is NRB_Common {
         (_time, _userid, _userindex, _paid, _user) = NRB_Users(USERS_address).getUserNumbersOnToken(_token, _index);
         uint _balance = _paid * 10;
         uint _userbalance = getUserBalanceOnToken(_token, _user);
-        if (_userbalance &lt; _balance) {
+        if (_userbalance < _balance) {
             _balance = _userbalance;
         }
         return (_time, _balance, _paid, _userid, _userindex);
@@ -219,7 +219,7 @@ contract NRB_Main is NRB_Common {
     // recover tokens sent accidentally
     function _withdrawal(address _token) public {
         uint _balance =  ERC20Interface(_token).balanceOf(address(this));
-        if (_balance &gt; 0) {
+        if (_balance > 0) {
             ERC20Interface(_token).transfer(owner, _balance);
         }
         owner.transfer(this.balance);

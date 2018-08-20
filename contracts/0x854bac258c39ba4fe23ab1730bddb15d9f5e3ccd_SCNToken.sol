@@ -11,20 +11,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -41,12 +41,12 @@ contract TokenERC20 {
 }
 
 contract SCNToken is SafeMath, TokenERC20{ 
-    string public name = &quot;SCN&quot;;
-    string public symbol = &quot;SCN&quot;;
+    string public name = "SCN";
+    string public symbol = "SCN";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 	address public owner = 0x0;
-	string  public version = &quot;1.0&quot;;	
+	string  public version = "1.0";	
 	
     bool public stopped = false;	
     bool public locked = false;	
@@ -55,9 +55,9 @@ contract SCNToken is SafeMath, TokenERC20{
     uint256 public tokenExchangeRate = 146700; 
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public freezeOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public freezeOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
@@ -116,7 +116,7 @@ contract SCNToken is SafeMath, TokenERC20{
 
     /* Allow another contract to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) isRunning validAddress unlocked returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         allowance[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
         return true;
@@ -138,11 +138,11 @@ contract SCNToken is SafeMath, TokenERC20{
     function _transfer(address _from, address _to, uint _value) internal {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);   // Subtract from the sender
@@ -154,16 +154,16 @@ contract SCNToken is SafeMath, TokenERC20{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress unlocked returns (bool success) {	
-        require(_value &lt;= allowance[_from][msg.sender]);     		// Check allowance
-        require(_value &gt; 0);
+        require(_value <= allowance[_from][msg.sender]);     		// Check allowance
+        require(_value > 0);
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value);
         _transfer(_from, _to, _value);
         return true;
     }
 
     function burn(uint256 _value) isRunning validAddress unlocked returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   							  // Check if the sender has enough
-        require(_value &gt; 0);   
+        require(balanceOf[msg.sender] >= _value);   							  // Check if the sender has enough
+        require(_value > 0);   
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);  // Subtract from the sender
         totalSupply = SafeMath.safeSub(totalSupply,_value);                       // Updates totalSupply
         currentSupply = SafeMath.safeSub(currentSupply,_value);                   // Updates currentSupply
@@ -172,8 +172,8 @@ contract SCNToken is SafeMath, TokenERC20{
     }
 	
 	function freeze(uint256 _value) isRunning validAddress unlocked returns (bool success) {	
-        require(balanceOf[msg.sender] &gt;= _value);   		 					 // Check if the sender has enough
-        require(_value &gt; 0);   
+        require(balanceOf[msg.sender] >= _value);   		 					 // Check if the sender has enough
+        require(_value > 0);   
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value); // Subtract from the sender
         freezeOf[msg.sender] = SafeMath.safeAdd(freezeOf[msg.sender], _value);   // Updates totalSupply
         Freeze(msg.sender, _value);
@@ -181,8 +181,8 @@ contract SCNToken is SafeMath, TokenERC20{
     }
 	
 	function unfreeze(uint256 _value) isRunning validAddress unlocked returns (bool success) {
-        require(freezeOf[msg.sender] &gt;= _value);   		 						   // Check if the sender has enough
-        require(_value &gt; 0);   
+        require(freezeOf[msg.sender] >= _value);   		 						   // Check if the sender has enough
+        require(_value > 0);   
         freezeOf[msg.sender] = SafeMath.safeSub(freezeOf[msg.sender], _value);     // Subtract from the sender
 		balanceOf[msg.sender] = SafeMath.safeAdd(balanceOf[msg.sender], _value);   // Updates totalSupply
         Unfreeze(msg.sender, _value);
@@ -190,7 +190,7 @@ contract SCNToken is SafeMath, TokenERC20{
     }
 	
 	function setTokenExchangeRate(uint256 _tokenExchangeRate) onlyOwner external {
-        require(_tokenExchangeRate &gt; 0);   
+        require(_tokenExchangeRate > 0);   
         require(_tokenExchangeRate != tokenExchangeRate);   
         tokenExchangeRate = _tokenExchangeRate;
     } 

@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -140,7 +140,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -181,8 +181,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -245,7 +245,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -285,7 +285,7 @@ contract KanadeCoin is StandardToken, Ownable {
     }
 
     struct RandomItemStruct {
-        mapping(bytes32 =&gt; uint256[]) values;
+        mapping(bytes32 => uint256[]) values;
     }
 
 
@@ -298,17 +298,17 @@ contract KanadeCoin is StandardToken, Ownable {
     uint public constant atto = 100000000;
     uint public constant decimals = 8;
 
-    string public constant name   = &quot;KanadeCoin&quot;;
-    string public constant symbol = &quot;KNDC&quot;;
+    string public constant name   = "KanadeCoin";
+    string public constant symbol = "KNDC";
 
     uint public contractStartTime;
 
     uint64 public constant lockupSeconds = 60 * 60 * 24 * 365 * 3;
 
-    mapping(bytes32 =&gt; QuestionStruct) questions;
-    mapping(address =&gt; string) saveData;
-    mapping(bytes32 =&gt; RandomBoxStruct) randomBoxes;
-    mapping(address =&gt; RandomItemStruct) randomItems;
+    mapping(bytes32 => QuestionStruct) questions;
+    mapping(address => string) saveData;
+    mapping(bytes32 => RandomBoxStruct) randomBoxes;
+    mapping(address => RandomItemStruct) randomItems;
 
     constructor() public {
     }
@@ -337,7 +337,7 @@ contract KanadeCoin is StandardToken, Ownable {
     ////////////////////////////////////////////////////////////////////////
 
     function unLockup() onlyOwner public {
-        require(uint256(now).sub(lockupSeconds) &gt; contractStartTime);
+        require(uint256(now).sub(lockupSeconds) > contractStartTime);
         uint _amount = balances[addrLockUp];
         balances[addrLockUp] = balances[addrLockUp].sub(_amount);
         balances[addrDevTeam] = balances[addrDevTeam].add(_amount);
@@ -372,11 +372,11 @@ contract KanadeCoin is StandardToken, Ownable {
     function vote(string _id_max32, uint128 _number, uint _amount) public {
         bytes32 _idByte = keccak256(_id_max32);
         require(
-            questions[_idByte].isStarted == 1 &amp;&amp;
-            questions[_idByte].under &lt;= _amount &amp;&amp;
-            questions[_idByte].finish &gt;= uint128(now));
+            questions[_idByte].isStarted == 1 &&
+            questions[_idByte].under <= _amount &&
+            questions[_idByte].finish >= uint128(now));
 
-        if (_amount &gt; 0) {
+        if (_amount > 0) {
             transfer(questions[_idByte].recipient, _amount);
         }
 
@@ -412,7 +412,7 @@ contract KanadeCoin is StandardToken, Ownable {
     ////////////////////////////////////////////////////////////////////////
 
     function createRandomBox(string _id_max32, address _recipient, uint64 _volume, uint256 _amount, uint128 _finish) public {
-        require(_volume &gt; 0);
+        require(_volume > 0);
 
         bytes32 _idByte = keccak256(_id_max32);
         require(randomBoxes[_idByte].isStarted == 0);
@@ -438,17 +438,17 @@ contract KanadeCoin is StandardToken, Ownable {
     }
 
     function drawRandomItem(string _id_max32, uint _count) public {
-        require(_count &gt; 0 &amp;&amp; _count &lt;= 1000);
+        require(_count > 0 && _count <= 1000);
 
         bytes32 _idByte = keccak256(_id_max32);
         uint _totalAmount = randomBoxes[_idByte].amount.mul(_count);
         require(
-            randomBoxes[_idByte].isStarted == 1 &amp;&amp;
-            randomBoxes[_idByte].finish &gt;= uint128(now));
+            randomBoxes[_idByte].isStarted == 1 &&
+            randomBoxes[_idByte].finish >= uint128(now));
 
         transfer(randomBoxes[_idByte].recipient, _totalAmount);
 
-        for (uint i = 0; i &lt; _count; i++) {
+        for (uint i = 0; i < _count; i++) {
             uint randomVal = uint(
                 keccak256(blockhash(block.number-1), randomItems[msg.sender].values[_idByte].length))
                 % randomBoxes[_idByte].volume;
@@ -472,15 +472,15 @@ contract KanadeCoin is StandardToken, Ownable {
     }
 
     function distribute(address _from, address[] _recipients, uint[] _values) internal returns (bool) {
-        require(_recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require(_recipients.length > 0 && _recipients.length == _values.length);
 
         uint total = 0;
-        for(uint i = 0; i &lt; _values.length; i++) {
+        for(uint i = 0; i < _values.length; i++) {
             total = total.add(_values[i]);
         }
-        require(total &lt;= balances[_from]);
+        require(total <= balances[_from]);
 
-        for(uint j = 0; j &lt; _recipients.length; j++) {
+        for(uint j = 0; j < _recipients.length; j++) {
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             Transfer(_from, _recipients[j], _values[j]);
         }

@@ -405,38 +405,38 @@ pragma solidity 		^0.4.21	;
 												
 												
 //	Descriptif :											
-//	Relev&#233; &#171;&#160;Teneur de Compte&#160;&#187; positions &#171;&#160;OTC-LLV&#160;&#187;											
+//	Relevé « Teneur de Compte » positions « OTC-LLV »											
 //	Edition initiale :											
 //	19.01.2017											
 //												
-//	Teneur de Compte Interm&#233;diaire :											
-//	&#171;&#160;C****** * P******* S********** Soci&#233;t&#233; Autonome et d&#233;centralis&#233;e (D.A.C.)&#160;&#187;											
+//	Teneur de Compte Intermédiaire :											
+//	« C****** * P******* S********** Société Autonome et décentralisée (D.A.C.) »											
 //	Titulaire des comptes (principal) / Groupe											
-//	&#171;&#160;S***** Soci&#233;t&#233; par Actions Simplifi&#233;e&#160;&#187;											
+//	« S***** Société par Actions Simplifiée »											
 //												
 //	Titulaire effectif de chaque compte :											
-//	confer  fonction &#171;&#160;getTitulaire_Compte_(i)&#160;&#187;											
-//	Ayan-droit-&#233;conomique de chaque compte :											
-//	confer  fonction &#171;&#160;getAyantDroitEconomique_Compte_(j)&#160;&#187;											
+//	confer  fonction « getTitulaire_Compte_(i) »											
+//	Ayan-droit-économique de chaque compte :											
+//	confer  fonction « getAyantDroitEconomique_Compte_(j) »											
 //												
-//	Place de march&#233; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	Teneur de march&#233; (sans obligation contractuelle) :											
-//	&#171;&#160;C****** * P******* S********** Soci&#233;t&#233; Autonome et d&#233;centralis&#233;e (D.A.C.)&#160;&#187;											
+//	Place de marché :											
+//	« LLV_v30_12 »											
+//	Teneur de marché (sans obligation contractuelle) :											
+//	« C****** * P******* S********** Société Autonome et décentralisée (D.A.C.) »											
 //	Courtier / Distributeur :											
 //	-											
 //	Contrepartie centrale :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	D&#233;positaire :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
+//	Dépositaire :											
+//	« LLV_v30_12 »											
 //	Teneur de compte (principal) / Holding :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
 //	Garant :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	&#171;&#160;Chambre de Compensation&#160;&#187; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
-//	Op&#233;rateur &#171;&#160;R&#232;glement-Livraison&#160;&#187; :											
-//	&#171;&#160;LLV_v30_12&#160;&#187;											
+//	« LLV_v30_12 »											
+//	« Chambre de Compensation » :											
+//	« LLV_v30_12 »											
+//	Opérateur « Règlement-Livraison » :											
+//	« LLV_v30_12 »											
 //												
 //												
 //												

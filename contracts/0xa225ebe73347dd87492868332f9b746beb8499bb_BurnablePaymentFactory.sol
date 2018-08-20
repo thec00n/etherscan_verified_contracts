@@ -1,4 +1,4 @@
-//A BurnablePayment is instantiated with one &quot;opening agent&quot; (Payer or Worker), a title, an initial deposit, a commitThreshold, and an autoreleaseInterval.
+//A BurnablePayment is instantiated with one "opening agent" (Payer or Worker), a title, an initial deposit, a commitThreshold, and an autoreleaseInterval.
 //If the opening agent is the payer:
 //    The contract starts in the PayerOpened state.
 //    Payer is expected to request some service via the title and additional statements.
@@ -16,7 +16,7 @@
 //    Anyone can enter the contract as the open role by contributing the commitThreshold with commit();
 //        this changes the state to Committed.
 
-//Upon changing from either Open state -&gt; Committed:
+//Upon changing from either Open state -> Committed:
 //    AutoreleaseTime is set to (now + autoreleaseInterval).
 
 //In the Committed state:
@@ -162,7 +162,7 @@ contract BurnablePayment {
     {
         Created(this, payerIsOpening, creator, _commitThreshold, autoreleaseInterval, title);
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             //Here we use tx.origin instead of msg.sender (msg.sender is just the factory contract)
             FundsAdded(tx.origin, msg.value);
             amountDeposited += msg.value;
@@ -181,7 +181,7 @@ contract BurnablePayment {
         commitThreshold = _commitThreshold;
         autoreleaseInterval = _autoreleaseInterval;
 
-        if (bytes(initialStatement).length &gt; 0) {
+        if (bytes(initialStatement).length > 0) {
             if (payerIsOpening) {
                 PayerStatement(initialStatement);
             } else {
@@ -195,7 +195,7 @@ contract BurnablePayment {
     payable
     onlyPayerOrWorker()
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         FundsAdded(msg.sender, msg.value);
         amountDeposited += msg.value;
@@ -225,7 +225,7 @@ contract BurnablePayment {
     {
         require(msg.value == commitThreshold);
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             FundsAdded(msg.sender, msg.value);
             amountDeposited += msg.value;
         }
@@ -313,7 +313,7 @@ contract BurnablePayment {
     onlyWorker()
     inState(State.Committed) 
     {
-        require(now &gt;= autoreleaseTime);
+        require(now >= autoreleaseTime);
 
         AutoreleaseTriggered();
         internalRelease(this.balance);

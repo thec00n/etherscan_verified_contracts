@@ -147,25 +147,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -173,7 +173,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -214,7 +214,7 @@ contract BasicToken is ERC20Basic {
     using SafeMathUint256 for uint256;
 
     uint256 internal supply;
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     /**
     * @dev transfer token for a specified address
@@ -269,7 +269,7 @@ contract StandardToken is ERC20, BasicToken {
     // Approvals of this amount are simply considered an everlasting approval which is not decremented when transfers occur
     uint256 public constant ETERNAL_APPROVAL_VALUE = 2 ** 256 - 1;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -328,7 +328,7 @@ contract StandardToken is ERC20, BasicToken {
    */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             approveInternal(msg.sender, _spender, 0);
         } else {
             approveInternal(msg.sender, _spender, oldValue.sub(_subtractedValue));
@@ -538,19 +538,19 @@ contract ICash is ERC20 {
 
 contract Cash is DelegationTarget, ITyped, VariableSupplyToken, ICash {
 
-    string constant public name = &quot;Cash&quot;;
-    string constant public symbol = &quot;CASH&quot;;
+    string constant public name = "Cash";
+    string constant public symbol = "CASH";
     uint8 constant public decimals = 18;
 
     function depositEther() external payable onlyInGoodTimes returns(bool) {
         mint(msg.sender, msg.value);
-        assert(this.balance &gt;= totalSupply());
+        assert(this.balance >= totalSupply());
         return true;
     }
 
     function depositEtherFor(address _to) external payable onlyInGoodTimes returns(bool) {
         mint(_to, msg.value);
-        assert(this.balance &gt;= totalSupply());
+        assert(this.balance >= totalSupply());
         return true;
     }
 
@@ -565,26 +565,26 @@ contract Cash is DelegationTarget, ITyped, VariableSupplyToken, ICash {
     }
 
     function withdrawEtherInternal(address _from, address _to, uint256 _amount) private returns(bool) {
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= balances[_from]);
+        require(_amount > 0 && _amount <= balances[_from]);
         burn(_from, _amount);
         _to.transfer(_amount);
-        assert(this.balance &gt;= totalSupply());
+        assert(this.balance >= totalSupply());
         return true;
     }
 
     function withdrawEtherToIfPossible(address _to, uint256 _amount) external returns (bool) {
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= balances[msg.sender]);
+        require(_amount > 0 && _amount <= balances[msg.sender]);
         if (_to.send(_amount)) {
             burn(msg.sender, _amount);
         } else {
             internalTransfer(msg.sender, _to, _amount);
         }
-        assert(this.balance &gt;= totalSupply());
+        assert(this.balance >= totalSupply());
         return true;
     }
 
     function getTypeName() public view returns (bytes32) {
-        return &quot;Cash&quot;;
+        return "Cash";
     }
 
     function onMint(address, uint256) internal returns (bool) {
@@ -675,10 +675,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -699,7 +699,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -743,7 +743,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -751,17 +751,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -779,14 +779,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }

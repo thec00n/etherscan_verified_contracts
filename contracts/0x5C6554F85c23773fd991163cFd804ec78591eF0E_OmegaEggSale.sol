@@ -82,7 +82,7 @@ contract OmegaEggSale is Owned {
      * 
      * This is initially set to ten for each time slot.
      */
-    mapping (uint8 =&gt; uint8) remainingEggs;
+    mapping (uint8 => uint8) remainingEggs;
     
     /**
      * Omega egg owners.
@@ -91,7 +91,7 @@ contract OmegaEggSale is Owned {
      * not prevent people from using multiple addresses to buy multiple omega
      * eggs, it does increase the difficulty slightly.
      */
-    mapping (address =&gt; bool) eggOwners;
+    mapping (address => bool) eggOwners;
 
     /**
      * Omega egg sale event.
@@ -118,7 +118,7 @@ contract OmegaEggSale is Owned {
             secondsInSalePeriod / SLOT_DURATION_IN_SECONDS
         );
 
-        for (uint8 i = 0; i &lt; timeSlotCount; i++) {
+        for (uint8 i = 0; i < timeSlotCount; i++) {
             remainingEggs[i] = 10;
         }
     }
@@ -140,13 +140,13 @@ contract OmegaEggSale is Owned {
      *  5. The sender must not already have bought an omega egg.
      */
     function buyOmegaEgg() payable external {
-        require(msg.value &gt;= 0.09 ether);
-        require(START_DATE &lt;= now &amp;&amp; now &lt; END_DATE);
+        require(msg.value >= 0.09 ether);
+        require(START_DATE <= now && now < END_DATE);
         require(eggOwners[msg.sender] == false);
 
         uint8 currentTimeSlot = getTimeSlot(now);
 
-        require(remainingEggs[currentTimeSlot] &gt; 0);
+        require(remainingEggs[currentTimeSlot] > 0);
 
         remainingEggs[currentTimeSlot] -= 1;
         eggOwners[msg.sender] = true;
@@ -154,7 +154,7 @@ contract OmegaEggSale is Owned {
         LogOmegaEggSale(msg.sender, now);
         
         // Send back any remaining value
-        if (msg.value &gt; 0.09 ether) {
+        if (msg.value > 0.09 ether) {
             msg.sender.transfer(msg.value - 0.09 ether);
         }
     }
@@ -220,7 +220,7 @@ contract OmegaEggSale is Owned {
      * its course.
      */
     function withdraw() onlyOwner external {
-        require(now &gt;= END_DATE);
+        require(now >= END_DATE);
 
         owner.transfer(this.balance);
     }
@@ -229,7 +229,7 @@ contract OmegaEggSale is Owned {
      * Calculate the time slot corresponding to the given UNIX timestamp.
      *
      * The time slot is calculated by subtracting the current date and time in
-     * seconds from the contract&#39;s starting date and time in seconds. The result
+     * seconds from the contract's starting date and time in seconds. The result
      * is then divided by the number of seconds within a time slot, and rounded
      * down to get the correct time slot.
      *

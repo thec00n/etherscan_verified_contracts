@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,9 +66,9 @@ contract T_Token_11 {
   address private tprFundDeposit;
   address private founderCoinsDeposit;
 
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -76,8 +76,8 @@ contract T_Token_11 {
   
   function T_Token_11 () public {
       
-      name = &quot;T_Token_11&quot;;
-      symbol = &quot;T_TPR_T11&quot;;
+      name = "T_Token_11";
+      symbol = "T_TPR_T11";
       decimals = 18;
       
       tprFund = 260000000 * (10**decimals);
@@ -105,7 +105,7 @@ contract T_Token_11 {
    */
    
   function releaseTprFund() public {
-    require(now &gt;= tprFundReleaseTime);
+    require(now >= tprFundReleaseTime);
     require(!tprFundUnlocked);
 
     balances[tprFundDeposit] = tprFund;
@@ -117,7 +117,7 @@ contract T_Token_11 {
   }
   
   function releaseFounderCoins() public {
-    require(now &gt;= founderCoinsReleaseTime);
+    require(now >= founderCoinsReleaseTime);
     require(!founderCoinsUnlocked);
 
     balances[founderCoinsDeposit] = founderCoins;
@@ -135,8 +135,8 @@ contract T_Token_11 {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(_value &gt; 0);
+    require(_value <= balances[msg.sender]);
+    require(_value > 0);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -161,9 +161,9 @@ contract T_Token_11 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_value &gt; 0);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_value > 0);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -179,8 +179,8 @@ contract T_Token_11 {
    * @param _value The amount of tokens to be spent.
    */
   function approve(address _spender, uint256 _value) public returns (bool) {
-    require(_value&gt;0);
-    require(balances[msg.sender]&gt;_value);
+    require(_value>0);
+    require(balances[msg.sender]>_value);
     allowed[msg.sender][_spender] = 0;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -203,7 +203,7 @@ contract T_Token_11 {
      * @param _value The amount of tokens to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

@@ -31,13 +31,13 @@ contract BalToken is owned {
     }
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // This creates an array with all allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This creates and array with all Frozen accounts with time limit
-    mapping (address =&gt; frozenInfo) public frozenAccount;
+    mapping (address => frozenInfo) public frozenAccount;
     
     // This generates a public event on the blockchain that will notify clients
     event FrozenFunds(address target, bool frozen, uint till);
@@ -75,8 +75,8 @@ contract BalToken is owned {
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                                           // Prevent transfer to 0x0 address.
         require (_to != address(this));                                 // Prevent transfer back to this contract
-        require (balanceOf[_from] &gt;= _value);                           // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);             // Check for overflows
+        require (balanceOf[_from] >= _value);                           // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]);             // Check for overflows
         require(!(frozenAccount[_from].frozen));                        // Check if sender is frozen
         require(!(frozenAccount[_to].frozen));                          // Check if recipient is frozen
         uint previousBalances = balanceOf[_from] + balanceOf[_to];      // Save this value for assertion
@@ -109,7 +109,7 @@ contract BalToken is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value; // Subtract from the 
         _transfer(_from, _to, _value);
         return true;
@@ -145,7 +145,7 @@ contract BalToken is owned {
         }
     }
 
-    /// @notice `freeze? Prevent` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param till Timestamp frozen till
     function freezeAccount(address target, uint till) onlyOwner public {
@@ -157,11 +157,11 @@ contract BalToken is owned {
 
     }
 
-    /// @notice `unfreeze? Allows` `target` from sending &amp; receiving tokens
+    /// @notice `unfreeze? Allows` `target` from sending & receiving tokens
     /// @param target Address to be unfrozen
     function unfreezeAccount(address target) onlyOwner public {
         require(frozenAccount[target].frozen);
-        require(frozenAccount[target].till &lt; now);
+        require(frozenAccount[target].till < now);
         
         frozenInfo memory fi = frozenInfo(false, 0);
         frozenAccount[target] = fi;

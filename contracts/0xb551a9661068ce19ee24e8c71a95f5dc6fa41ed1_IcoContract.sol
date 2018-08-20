@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -133,8 +133,8 @@ contract ERC20BasicToken is Pausable{
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -144,7 +144,7 @@ contract ERC20BasicToken is Pausable{
 
     //Fix for the ERC20 short address attack.
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4) ;
+        require(msg.data.length >= size + 4) ;
         _;
     }
 
@@ -155,9 +155,9 @@ contract ERC20BasicToken is Pausable{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -180,7 +180,7 @@ contract ERC20BasicToken is Pausable{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused onlyPayloadSize(2 * 32) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -251,7 +251,7 @@ contract ERC20BasicToken is Pausable{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -267,10 +267,10 @@ contract ERC20BasicToken is Pausable{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -297,15 +297,15 @@ contract ERC20BasicToken is Pausable{
 contract JWCToken is ERC20BasicToken {
 	using SafeMath for uint256;
 
-	string public constant name      = &quot;JWC&quot;; //tokens name
-	string public constant symbol    = &quot;JWC&quot;; //token symbol
+	string public constant name      = "JWC"; //tokens name
+	string public constant symbol    = "JWC"; //token symbol
 	uint256 public constant decimals = 18;    //token decimal
-	string public constant version   = &quot;1.0&quot;; //tokens version
+	string public constant version   = "1.0"; //tokens version
 
 	uint256 public constant tokenPreSale         = 100000000 * 10**decimals;//tokens for pre-sale
 	uint256 public constant tokenPublicSale      = 400000000 * 10**decimals;//tokens for public-sale
 	uint256 public constant tokenReserve         = 300000000 * 10**decimals;//tokens for reserve
-	uint256 public constant tokenTeamSupporter   = 120000000 * 10**decimals;//tokens for Team &amp; Supporter
+	uint256 public constant tokenTeamSupporter   = 120000000 * 10**decimals;//tokens for Team & Supporter
 	uint256 public constant tokenAdvisorPartners = 80000000  * 10**decimals;//tokens for Advisor
 
 	address public icoContract;
@@ -331,7 +331,7 @@ contract JWCToken is ERC20BasicToken {
 	 * @param _value - amount of ETHs
 	 */
 	function sell(address _recipient, uint256 _value) public whenNotPaused returns (bool success) {
-		assert(_value &gt; 0);
+		assert(_value > 0);
 		require(msg.sender == icoContract);
 
 		balances[_recipient] = balances[_recipient].add(_value);
@@ -341,12 +341,12 @@ contract JWCToken is ERC20BasicToken {
 	}
 
 	/**
-	 * Pay bonus &amp; affiliate to address
-	 * @param _recipient - address to receive bonus &amp; affiliate
-	 * @param _value - value bonus &amp; affiliate to give
+	 * Pay bonus & affiliate to address
+	 * @param _recipient - address to receive bonus & affiliate
+	 * @param _value - value bonus & affiliate to give
 	 */
 	function payBonusAffiliate(address _recipient, uint256 _value) public returns (bool success) {
-		assert(_value &gt; 0);
+		assert(_value > 0);
 		require(msg.sender == icoContract);
 
 		balances[_recipient] = balances[_recipient].add(_value);
@@ -386,13 +386,13 @@ contract Affiliate is Ownable {
 	uint256 public affiliateLevel = 1;
 
 	//Each user will have different rate
-	mapping(uint256 =&gt; uint256) public affiliateRate;
+	mapping(uint256 => uint256) public affiliateRate;
 
 	//Keep balance of user
-	mapping(address =&gt; uint256) public referralBalance;//referee=&gt;value
+	mapping(address => uint256) public referralBalance;//referee=>value
 
-	mapping(address =&gt; address) public referral;//referee=&gt;referrer
-	mapping(uint256 =&gt; address) public referralIndex;//index=&gt;referee
+	mapping(address => address) public referral;//referee=>referrer
+	mapping(uint256 => address) public referralIndex;//index=>referee
 
 	uint256 public referralCount;
 
@@ -470,7 +470,7 @@ contract Affiliate is Ownable {
 		address[] memory refereeTemp = new address[](referralCount);
 		uint count = 0;
 		uint i;
-		for (i=0; i&lt;referralCount; i++){
+		for (i=0; i<referralCount; i++){
 			if(referral[referralIndex[i]] == _referrer){
 				refereeTemp[count] = referralIndex[i];
 
@@ -479,7 +479,7 @@ contract Affiliate is Ownable {
 		}
 
 		_referee = new address[](count);
-		for (i=0; i&lt;count; i++)
+		for (i=0; i<count; i++)
 			_referee[i] = refereeTemp[i];
 	}
 
@@ -550,8 +550,8 @@ contract Bonus is IcoPhase, Ownable {
 	bool public isBonus;
 
 	//storage
-	mapping(address =&gt; uint256) public bonusAccountBalances;
-	mapping(uint256 =&gt; address) public bonusAccountIndex;
+	mapping(address => uint256) public bonusAccountBalances;
+	mapping(uint256 => address) public bonusAccountIndex;
 	uint256 public bonusAccountCount;
 
 	uint256 public indexPaidBonus;//amount of accounts have been paid bonus
@@ -586,13 +586,13 @@ contract Bonus is IcoPhase, Ownable {
 	function getTimeBonus() public constant returns(uint256) {
 		uint256 bonus = 0;
 
-		if(now&gt;=phasePresale_From &amp;&amp; now&lt;phasePresale_To){
+		if(now>=phasePresale_From && now<phasePresale_To){
 			bonus = 20;
-		} else if (now&gt;=phasePublicSale1_From &amp;&amp; now&lt;phasePublicSale1_To) {
+		} else if (now>=phasePublicSale1_From && now<phasePublicSale1_To) {
 			bonus = 10;
-		} else if (now&gt;=phasePublicSale2_From &amp;&amp; now&lt;phasePublicSale2_To) {
+		} else if (now>=phasePublicSale2_From && now<phasePublicSale2_To) {
 			bonus = 6;
-		} else if (now&gt;=phasePublicSale3_From &amp;&amp; now&lt;phasePublicSale3_To) {
+		} else if (now>=phasePublicSale3_From && now<phasePublicSale3_To) {
 			bonus = 3;
 		}
 
@@ -657,7 +657,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 */
 	function changeETH2Token(uint256 _value) public constant returns(uint256) {
 		uint256 etherRecev = _value + maxGasRefund;
-		require (etherRecev &gt;= minContribution);
+		require (etherRecev >= minContribution);
 
 		uint256 rate = getTokenExchangeRate();
 
@@ -672,7 +672,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 			tokenRemain = tokenRemainPublicSale;
 		}
 
-		if (tokenRemain &lt; tokens) {
+		if (tokenRemain < tokens) {
 			tokens=tokenRemain;
 		}
 
@@ -687,7 +687,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 		require (msg.sender != address(0));
 
 		uint256 etherRecev = msg.value + maxGasRefund;
-		require (etherRecev &gt;= minContribution);
+		require (etherRecev >= minContribution);
 
 		//get current token exchange rate
 		tokenExchangeRate = getTokenExchangeRate();
@@ -707,9 +707,9 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 		}
 
 		//throw if tokenRemain==0
-		require(tokenRemain&gt;0);
+		require(tokenRemain>0);
 
-		if (tokenRemain &lt; tokens) {
+		if (tokenRemain < tokens) {
 			//if tokens is not enough to buy
 
 			uint256 tokensToRefund = tokens.sub(tokenRemain);
@@ -754,7 +754,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 		//affiliate
 		if(isAffiliate){
 			address child=msg.sender;
-			for(uint256 i=0; i&lt;affiliateLevel; i++){
+			for(uint256 i=0; i<affiliateLevel; i++){
 				uint256 giftToken=affiliateRate[i].mul(tokens)/100;
 
 				address parent = referral[child];
@@ -772,13 +772,13 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 */
 	function payAffiliate() public onlyOwner returns (bool success) {
 		uint256 toIndex = indexPaidAffiliate + 15;
-		if(referralCount &lt; toIndex)
+		if(referralCount < toIndex)
 			toIndex = referralCount;
 
-		for(uint256 i=indexPaidAffiliate; i&lt;toIndex; i++) {
+		for(uint256 i=indexPaidAffiliate; i<toIndex; i++) {
 			address referee = referralIndex[i];
 
-			if(referralBalance[referee]&gt;0)
+			if(referralBalance[referee]>0)
 				payAffiliate1Address(referee);
 		}
 
@@ -802,12 +802,12 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 */
 	function payBonus() public onlyOwner returns (bool success) {
 		uint256 toIndex = indexPaidBonus + 15;
-		if(bonusAccountCount &lt; toIndex)
+		if(bonusAccountCount < toIndex)
 			toIndex = bonusAccountCount;
 
-		for(uint256 i=indexPaidBonus; i&lt;toIndex; i++)
+		for(uint256 i=indexPaidBonus; i<toIndex; i++)
 		{
-			if(bonusAccountBalances[bonusAccountIndex[i]]&gt;0)
+			if(bonusAccountBalances[bonusAccountIndex[i]]>0)
 				payBonus1Address(bonusAccountIndex[i]);
 		}
 
@@ -838,10 +838,10 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 */
 	function getTokenExchangeRate() public constant returns(uint256 rate) {
 		rate = tokenExchangeRate;
-		if(now&lt;phasePresale_To){
-			if(now&gt;=phasePresale_From)
+		if(now<phasePresale_To){
+			if(now>=phasePresale_From)
 				rate = 10000;
-		} else if(now&lt;phasePublicSale3_To){
+		} else if(now<phasePublicSale3_To){
 			rate = 7000;
 		}
 	}
@@ -851,13 +851,13 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 */
 	function getCurrentICOPhase() public constant returns(uint256 phase) {
 		phase = 0;
-		if(now&gt;=phasePresale_From &amp;&amp; now&lt;phasePresale_To){
+		if(now>=phasePresale_From && now<phasePresale_To){
 			phase = 1;
-		} else if (now&gt;=phasePublicSale1_From &amp;&amp; now&lt;phasePublicSale1_To) {
+		} else if (now>=phasePublicSale1_From && now<phasePublicSale1_To) {
 			phase = 2;
-		} else if (now&gt;=phasePublicSale2_From &amp;&amp; now&lt;phasePublicSale2_To) {
+		} else if (now>=phasePublicSale2_From && now<phasePublicSale2_To) {
 			phase = 3;
-		} else if (now&gt;=phasePublicSale3_From &amp;&amp; now&lt;phasePublicSale3_To) {
+		} else if (now>=phasePublicSale3_From && now<phasePublicSale3_To) {
 			phase = 4;
 		}
 	}
@@ -881,7 +881,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 * @param _tokenExchangeRate - rate of eth-token
 	 */
 	function setTokenExchangeRate(uint256 _tokenExchangeRate) public onlyOwner returns (bool) {
-		require(_tokenExchangeRate&gt;0);
+		require(_tokenExchangeRate>0);
 		tokenExchangeRate=_tokenExchangeRate;
 		return true;
 	}
@@ -891,7 +891,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 * @param _minContribution - min eth to contribute
 	 */
 	function setMinContribution(uint256 _minContribution) public onlyOwner returns (bool) {
-		require(_minContribution&gt;0);
+		require(_minContribution>0);
 		minContribution=_minContribution;
 		return true;
 	}
@@ -911,7 +911,7 @@ contract IcoContract is IcoPhase, Ownable, Pausable, Affiliate, Bonus {
 	 * @param _maxGasRefund - max gas
 	 */
 	function setMaxGasRefund(uint256 _maxGasRefund) public onlyOwner returns (bool) {
-		require(_maxGasRefund &gt; 0);
+		require(_maxGasRefund > 0);
 		maxGasRefund = _maxGasRefund;
 		return true;
 	}

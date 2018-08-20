@@ -19,7 +19,7 @@ contract iEthealSale {
     bool public paused;
     uint256 public minContribution;
     uint256 public whitelistThreshold;
-    mapping (address =&gt; uint256) public stakes;
+    mapping (address => uint256) public stakes;
     function setPromoBonus(address _investor, uint256 _value) public;
     function buyTokens(address _beneficiary) public payable;
     function depositEth(address _beneficiary, uint256 _time, bytes _whitelistSign) public payable;
@@ -31,7 +31,7 @@ contract iEthealSale {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,20 +85,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -168,12 +168,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -194,7 +194,7 @@ contract EthealWhitelist is Ownable {
     address public signer;
 
     // storing whitelisted addresses
-    mapping(address =&gt; bool) public isWhitelisted;
+    mapping(address => bool) public isWhitelisted;
 
     event WhitelistSet(address indexed _address, bool _state);
 
@@ -218,23 +218,23 @@ contract EthealWhitelist is Ownable {
     // Whitelisting: only owner
     ////////////////
 
-    ///&#160;@notice Set whitelist state for an address.
+    /// @notice Set whitelist state for an address.
     function setWhitelist(address _addr, bool _state) public onlyOwner {
         require(_addr != address(0));
         isWhitelisted[_addr] = _state;
         WhitelistSet(_addr, _state);
     }
 
-    ///&#160;@notice Set whitelist state for multiple addresses
+    /// @notice Set whitelist state for multiple addresses
     function setManyWhitelist(address[] _addr, bool _state) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addr.length; i++) {
+        for (uint256 i = 0; i < _addr.length; i++) {
             setWhitelist(_addr[i], _state);
         }
     }
 
     /// @notice offchain whitelist check
     function isOffchainWhitelisted(address _addr, bytes _sig) public view returns (bool) {
-        bytes32 hash = keccak256(&quot;\x19Ethereum Signed Message:\n20&quot;,_addr);
+        bytes32 hash = keccak256("\x19Ethereum Signed Message:\n20",_addr);
         return hash.recover(_sig) == signer;
     }
 }
@@ -257,8 +257,8 @@ contract EthealDeposit is Ownable, HasNoTokens {
     }
     uint256 public transactionCount;
     uint256 public pendingCount;
-    mapping (uint256 =&gt; Deposit) public transactions;    // store transactions
-    mapping (address =&gt; uint256[]) public addressTransactions;  // store transaction ids for addresses
+    mapping (uint256 => Deposit) public transactions;    // store transactions
+    mapping (address => uint256[]) public addressTransactions;  // store transaction ids for addresses
     
     // sale contract to which we forward funds
     iEthealSale public sale;
@@ -309,23 +309,23 @@ contract EthealDeposit is Ownable, HasNoTokens {
     }
 
     modifier saleNotEnded() {
-        require(address(sale) != address(0) &amp;&amp; !sale.hasEnded());
+        require(address(sale) != address(0) && !sale.hasEnded());
         _;
     }
 
     modifier saleNotPaused() {
-        require(address(sale) != address(0) &amp;&amp; !sale.paused());
+        require(address(sale) != address(0) && !sale.paused());
         _;
     }
 
     modifier saleEnded() {
-        require(address(sale) != address(0) &amp;&amp; sale.hasEnded());
+        require(address(sale) != address(0) && sale.hasEnded());
         _;
     }
 
     /// @notice payable fallback calls the deposit function
     function() public payable {
-        deposit(msg.sender, &quot;&quot;);
+        deposit(msg.sender, "");
     }
 
     /// @notice depositing for investor, return transaction Id
@@ -333,15 +333,15 @@ contract EthealDeposit is Ownable, HasNoTokens {
     /// @param _whitelistSign offchain whitelist signiture for address, optional
     function deposit(address _investor, bytes _whitelistSign) public payable whitelistSet saleNotEnded returns (uint256) {
         require(_investor != address(0));
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= sale.minContribution());
+        require(msg.value > 0);
+        require(msg.value >= sale.minContribution());
 
         uint256 transactionId = addTransaction(_investor, msg.value);
 
         // forward transaction automatically if whitelist is okay, so the transaction doesnt revert
         if (whitelist.isWhitelisted(_investor) 
             || whitelist.isOffchainWhitelisted(_investor, _whitelistSign) 
-            || sale.whitelistThreshold() &gt;= sale.stakes(_investor).add(msg.value)
+            || sale.whitelistThreshold() >= sale.stakes(_investor).add(msg.value)
         ) {
             // only forward if sale is not paused
             if (!sale.paused()) {
@@ -361,12 +361,12 @@ contract EthealDeposit is Ownable, HasNoTokens {
     function forwardManyTransaction(uint256[] _ids) public whitelistSet saleNotEnded saleNotPaused {
         uint256 _threshold = sale.whitelistThreshold();
 
-        for (uint256 i=0; i&lt;_ids.length; i++) {
+        for (uint256 i=0; i<_ids.length; i++) {
             // only forward if it is within threshold or whitelisted, so the transaction doesnt revert
             if ( whitelist.isWhitelisted(transactions[_ids[i]].beneficiary) 
-                || _threshold &gt;= sale.stakes(transactions[_ids[i]].beneficiary).add(transactions[_ids[i]].amount )
+                || _threshold >= sale.stakes(transactions[_ids[i]].beneficiary).add(transactions[_ids[i]].amount )
             ) {
-                forwardTransactionInternal(_ids[i],&quot;&quot;);
+                forwardTransactionInternal(_ids[i],"");
             }
         }
     }
@@ -377,10 +377,10 @@ contract EthealDeposit is Ownable, HasNoTokens {
         uint256 _amount = sale.stakes(_investor);
         uint256 _threshold = sale.whitelistThreshold();
 
-        for (uint256 i=0; i&lt;addressTransactions[_investor].length; i++) {
+        for (uint256 i=0; i<addressTransactions[_investor].length; i++) {
             _amount = _amount.add(transactions[ addressTransactions[_investor][i] ].amount);
             // only forward if it is within threshold or whitelisted, so the transaction doesnt revert
-            if (_whitelisted || _threshold &gt;= _amount) {
+            if (_whitelisted || _threshold >= _amount) {
                 forwardTransactionInternal(addressTransactions[_investor][i], _whitelistSign);
             }
         }
@@ -393,14 +393,14 @@ contract EthealDeposit is Ownable, HasNoTokens {
 
     /// @notice refunding multiple transactions
     function refundManyTransaction(uint256[] _ids) public saleEnded {
-        for (uint256 i=0; i&lt;_ids.length; i++) {
+        for (uint256 i=0; i<_ids.length; i++) {
             refundTransactionInternal(_ids[i]);
         }
     }
 
     /// @notice refunding an investor
     function refundInvestor(address _investor) public saleEnded {
-        for (uint256 i=0; i&lt;addressTransactions[_investor].length; i++) {
+        for (uint256 i=0; i<addressTransactions[_investor].length; i++) {
             refundTransactionInternal(addressTransactions[_investor][i]);
         }
     }
@@ -432,21 +432,21 @@ contract EthealDeposit is Ownable, HasNoTokens {
         return transactionId;
     }
 
-    /// @notice Forwarding a transaction, internal function, doesn&#39;t check sale status for speed up mass actions.
+    /// @notice Forwarding a transaction, internal function, doesn't check sale status for speed up mass actions.
     /// @return whether forward was successful or not
     function forwardTransactionInternal(uint256 _id, bytes memory _whitelistSign) internal returns (bool) {
-        require(_id &lt; transactionCount);
+        require(_id < transactionCount);
 
         // if already cleared then return false
         if (transactions[_id].cleared) {
             return false;
         }
 
-        // fixing bytes data to argument call data: data -&gt; {data position}{data length}data
+        // fixing bytes data to argument call data: data -> {data position}{data length}data
         bytes memory _whitelistCall = bytesToArgument(_whitelistSign, 96);
 
         // forwarding transaction to sale contract
-        if (! sale.call.value(transactions[_id].amount)(bytes4(keccak256(&#39;depositEth(address,uint256,bytes)&#39;)), transactions[_id].beneficiary, uint256(transactions[_id].time), _whitelistCall) ) {
+        if (! sale.call.value(transactions[_id].amount)(bytes4(keccak256('depositEth(address,uint256,bytes)')), transactions[_id].beneficiary, uint256(transactions[_id].time), _whitelistCall) ) {
             return false;
         }
         transactions[_id].cleared = true;
@@ -475,7 +475,7 @@ contract EthealDeposit is Ownable, HasNoTokens {
 
     /// @notice Send back non-cleared transactions after sale is over, not checking status for speeding up mass actions
     function refundTransactionInternal(uint256 _id) internal returns (bool) {
-        require(_id &lt; transactionCount);
+        require(_id < transactionCount);
 
         // if already cleared then return false
         if (transactions[_id].cleared) {
@@ -504,15 +504,15 @@ contract EthealDeposit is Ownable, HasNoTokens {
         uint256[] memory _ids = new uint256[](transactionCount);
 
         // search in contributors
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (_cleared &amp;&amp; transactions[i].cleared || _nonCleared &amp;&amp; !transactions[i].cleared) {
+        for (i = 0; i < transactionCount; i++) {
+            if (_cleared && transactions[i].cleared || _nonCleared && !transactions[i].cleared) {
                 _ids[results] = i;
                 results++;
             }
         }
 
         ids = new uint256[](results);
-        for (i = from; i &lt;= to &amp;&amp; i &lt; results; i++) {
+        for (i = from; i <= to && i < results; i++) {
             ids[i] = _ids[i];
         }
 

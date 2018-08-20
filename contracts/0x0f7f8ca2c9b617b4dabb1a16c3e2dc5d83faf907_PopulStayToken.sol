@@ -8,7 +8,7 @@ library SafeMath {
     returns (uint c)
   {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
 
   function sub(uint a, uint b)
@@ -16,7 +16,7 @@ library SafeMath {
     pure
     returns (uint c)
   {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
     pure
     returns (uint c)
   {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 
@@ -103,14 +103,14 @@ contract PopulStayToken is ERC20Interface, Owned {
   uint8 public decimals;
   uint public _totalSupply;
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
   function PopulStayToken()
     public
   {
-    symbol = &quot;PPS&quot;;
-    name = &quot;PopulStay Token&quot;;
+    symbol = "PPS";
+    name = "PopulStay Token";
     decimals = 0;
     _totalSupply = 5000000000;
     balances[owner] = _totalSupply;
@@ -169,7 +169,7 @@ contract PopulStayToken is ERC20Interface, Owned {
 
   // ------------------------------------------------------------------------
   // Returns the amount of tokens approved by the owner that can be
-  // transferred to the spender&#39;s account
+  // transferred to the spender's account
   // ------------------------------------------------------------------------
   function allowance(address tokenOwner, address spender)
     public
@@ -182,10 +182,10 @@ contract PopulStayToken is ERC20Interface, Owned {
 
   // ------------------------------------------------------------------------
   // Token owner can approve for `spender` to transferFrom(...) `tokens`
-  // from the token owner&#39;s account. The `spender` contract function
+  // from the token owner's account. The `spender` contract function
   // `receiveApproval(...)` is then executed
   // ------------------------------------------------------------------------
-  //&quot;0x1439818dd11823c45fff01af0cd6c50934e27ac0&quot;,180,&quot;0x14723a09acff6d2a60dcdf7aa4aff308fddc160c&quot;,&quot;0x7465737400000000000000000000000000000000000000000000000000000000&quot;,20,22,2
+  //"0x1439818dd11823c45fff01af0cd6c50934e27ac0",180,"0x14723a09acff6d2a60dcdf7aa4aff308fddc160c","0x7465737400000000000000000000000000000000000000000000000000000000",20,22,2
   function approveAndCall(address spender, uint tokens, address _owneraddress, bytes32 _houseinfo, uint _from, uint _to ,uint _days)
      public
     returns (address _preorder)
@@ -197,7 +197,7 @@ contract PopulStayToken is ERC20Interface, Owned {
 
 
   // ------------------------------------------------------------------------
-  // Don&#39;t accept ETH
+  // Don't accept ETH
   // ------------------------------------------------------------------------
   function ()
     public
@@ -267,24 +267,24 @@ contract HouseInfoListing{
   
   }
   
-  mapping ( address =&gt; bytes32[] ) private hostRoomList;//every house info has one uuid,find house info by host address
+  mapping ( address => bytes32[] ) private hostRoomList;//every house info has one uuid,find house info by host address
                                                       
   
   
-  mapping ( bytes32 =&gt; HouseInfo ) private houseInfo;   //describ the house information
-  mapping ( bytes32 =&gt; bytes32[] ) private uuids;       //every house info has one uuid,find house info by districtcode
+  mapping ( bytes32 => HouseInfo ) private houseInfo;   //describ the house information
+  mapping ( bytes32 => bytes32[] ) private uuids;       //every house info has one uuid,find house info by districtcode
                                                         //should add find house info by city street 
                                                         
                                                         
   //通过房屋信息uuid确定预定合约信息                                                        
-  mapping ( bytes32 =&gt; address[] ) private PreOrders;   
+  mapping ( bytes32 => address[] ) private PreOrders;   
                                                         //find preorders lists by house info uuid 
                                                         //find preOrder or order infomation from this connection 
   //通过房客address找到合约信息
-  mapping (address =&gt; address[]) private GuestOrders;   //find guest orders by guest address
+  mapping (address => address[]) private GuestOrders;   //find guest orders by guest address
   
   //通过房东address找到合约信息
-  mapping (address =&gt; address[]) private HouseOwnerOrders;//find house owner orders by house owner address
+  mapping (address => address[]) private HouseOwnerOrders;//find house owner orders by house owner address
   
   
   
@@ -316,7 +316,7 @@ contract HouseInfoListing{
       return ;
       
   }
-  //&quot;test&quot;,9,&quot;roominfo&quot;,&quot;test&quot;,&quot;0x3333322d30303332000000000000000000000000000000000000000000000000&quot;
+  //"test",9,"roominfo","test","0x3333322d30303332000000000000000000000000000000000000000000000000"
    function setHouseInfo(bytes32 _uuid,uint _price,string _roominfo,bytes32 _districtcode) 
    public 
    returns(bool success)
@@ -471,7 +471,7 @@ contract PreOrder{
     public
     returns(bool success)
     {
-       if( msg.sender == guestaddress &amp;&amp; status == 0)   
+       if( msg.sender == guestaddress && status == 0)   
        {
             if(Token(tokenAddress).transfer(owneraddress,price))//transfer token to contract address
          {

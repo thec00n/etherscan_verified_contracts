@@ -13,12 +13,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract bjTest is Ownable {
         uint256 CoincidNum;   
         uint256 Winning; 
     }
-    mapping(uint256 =&gt; mapping(uint256 =&gt; BJJtab)) public BJJtable; 
+    mapping(uint256 => mapping(uint256 => BJJtab)) public BJJtable; 
     struct BJJraundHis{
         uint256 JoustNum; 
         uint256 CapAmouth; 
@@ -58,7 +58,7 @@ contract bjTest is Ownable {
         string Cap2;
         string Cap3;
     }
-    mapping(uint256 =&gt; BJJraundHis) public BJJhis;
+    mapping(uint256 => BJJraundHis) public BJJhis;
     uint256 public AllCaptcha = 0; 
     uint256 public BetOverlap = 0; 
     event BJJraund (uint256 UserNum, address User, uint256 CoincidNum, uint256 Winning);
@@ -91,7 +91,7 @@ contract bjTest is Ownable {
     function substring(string str, uint startIndex, uint endIndex, uint256 Jnum, uint256 Usnum) public returns (string) {
     bytes memory strBytes = bytes(str);
     bytes memory result = new bytes(endIndex-startIndex);
-    for(uint i = startIndex; i &lt; endIndex; i++) {
+    for(uint i = startIndex; i < endIndex; i++) {
         result[i-startIndex] = strBytes[i];
         if(keccak256(strBytes[i]) == keccak256(Ast) || keccak256(strBytes[i]) == keccak256(Bst) || keccak256(strBytes[i]) == keccak256(Cst)){ 
             BJJtable[Jnum][Usnum].CoincidNum += 1; 
@@ -111,7 +111,7 @@ contract bjTest is Ownable {
         BJJhis[JoustNum].Cap2 = Bst;
         BJJhis[JoustNum].Cap3 = Cst;        
         emit BJJhist(JoustNum, AllCaptcha, BetOverlap, Ast, Bst, Cst);         
-        for(uint i = 1; i&lt;9; i++){
+        for(uint i = 1; i<9; i++){
             BJJtable[JoustNum][i].Winning = BJJtable[JoustNum][i].CoincidNum * BetOverlap;
             Winn = BJJtable[JoustNum][i].Winning;
             emit BJJraund(BJJtable[JoustNum][i].UserNumber, BJJtable[JoustNum][i].UserAddress, BJJtable[JoustNum][i].CoincidNum, Winn);
@@ -119,10 +119,10 @@ contract bjTest is Ownable {
     }
     function toAsciiString() public returns (string) {
     Random();
-    for(uint a = 1; a &lt; 9; a++){  
+    for(uint a = 1; a < 9; a++){  
     address x = BJJtable[JoustNum][a].UserAddress; 
     bytes memory s = new bytes(40);
-    for (uint i = 0; i &lt; 20; i++) {
+    for (uint i = 0; i < 20; i++) {
         byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
         byte hi = byte(uint8(b) / 16);
         byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -136,11 +136,11 @@ contract bjTest is Ownable {
     }
 
     function char(byte b) public pure returns(byte c) {
-        if (b &lt; 10){ return byte(uint8(b) + 0x30); } else {
+        if (b < 10){ return byte(uint8(b) + 0x30); } else {
             return byte(uint8(b) + 0x57); }
     }
-    string[] public arrint = [&quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;,&quot;6&quot;,&quot;7&quot;,&quot;8&quot;,&quot;9&quot;];
-    string[] public arrstr = [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,&quot;e&quot;,&quot;f&quot;];
+    string[] public arrint = ["0","1","2","3","4","5","6","7","8","9"];
+    string[] public arrstr = ["a","b","c","d","e","f"];
     uint256 public randomA;
     uint256 public randomB;
     uint256 public randomC;

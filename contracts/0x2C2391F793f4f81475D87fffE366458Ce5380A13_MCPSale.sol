@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -55,7 +55,7 @@ contract Beneficiary is Ownable {
     }
 
     function withdrawal(uint256 amount) public onlyOwner {
-        if (amount &gt; address(this).balance) {
+        if (amount > address(this).balance) {
             revert();
         }
 
@@ -69,12 +69,12 @@ contract Beneficiary is Ownable {
 
 contract MCPSale is Beneficiary {
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(int32 =&gt; mapping(int32 =&gt; uint256)) public zone;
-    mapping(uint256 =&gt; Coordinates) public zone_reverse;
-    mapping(uint16 =&gt; Region) public regions;
-    mapping(uint16 =&gt; RegionBid) public region_bids;
+    mapping(address => uint256) public balances;
+    mapping(uint256 => address) public approved;
+    mapping(int32 => mapping(int32 => uint256)) public zone;
+    mapping(uint256 => Coordinates) public zone_reverse;
+    mapping(uint16 => Region) public regions;
+    mapping(uint16 => RegionBid) public region_bids;
 
     bool public constant implementsERC721 = true;
 
@@ -124,7 +124,7 @@ contract MCPSale is Beneficiary {
     modifier isTokenOwner(uint256 _tokenId) {
         if (tokens[_tokenId].owner != msg.sender) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
@@ -138,7 +138,7 @@ contract MCPSale is Beneficiary {
     modifier onlyRegionOwner(uint16 _regionId) {
         if (regions[_regionId].owner != msg.sender) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
@@ -170,10 +170,10 @@ contract MCPSale is Beneficiary {
     }
 
     modifier canMakeBid(uint16 regionId) {
-        if ((region_bids[regionId].activeTill != 0 &amp;&amp; region_bids[regionId].activeTill &lt; now)
+        if ((region_bids[regionId].activeTill != 0 && region_bids[regionId].activeTill < now)
         || regions[regionId].owner != address(0) || !regions[regionId].onSale
         ) {
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
             return;
@@ -203,7 +203,7 @@ contract MCPSale is Beneficiary {
     }
 
     function setRegionTax(uint16 regionId, uint8 tax) public onlyRegionOwner(regionId) onlyOnActiveSale {
-        require(tax &lt;= 100 &amp;&amp; tax &gt;= 0);
+        require(tax <= 100 && tax >= 0);
         regions[regionId].tax = tax;
 
         emit TaxUpdate(regionId, regions[regionId].tax);
@@ -227,7 +227,7 @@ contract MCPSale is Beneficiary {
     }
 
     function setRegionPrice(uint16 regionId, uint256 price) public onlyOwner {
-        if(regions[regionId].owner == address(0) &amp;&amp; !regions[regionId].onSale) {
+        if(regions[regionId].owner == address(0) && !regions[regionId].onSale) {
             regions[regionId].startPrice = price;
             emit UpdateRegionPrice(regionId, price);
         }
@@ -265,9 +265,9 @@ contract MCPSale is Beneficiary {
             minimal_bid = regions[regionId].startPrice;
         }
 
-        if (minimal_bid &gt; msg.value) {
+        if (minimal_bid > msg.value) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
@@ -298,7 +298,7 @@ contract MCPSale is Beneficiary {
             return;
         }
 
-        if (region_bids[regionId].activeTill &gt; now || region_bids[regionId].activeTill == 0) {
+        if (region_bids[regionId].activeTill > now || region_bids[regionId].activeTill == 0) {
             return;
         }
 
@@ -308,7 +308,7 @@ contract MCPSale is Beneficiary {
     function takeRegion(uint16 regionId) public {
         require(regions[regionId].owner == address(0));
         require(region_bids[regionId].currentBuyer == msg.sender);
-        require(region_bids[regionId].activeTill &lt; now);
+        require(region_bids[regionId].activeTill < now);
 
         transferRegion(regionId, region_bids[regionId].currentBuyer);
     }
@@ -347,17 +347,17 @@ contract MCPSale is Beneficiary {
     }
 
     function activateZone(int32[] x, int32[] y, uint8[] region, uint8[] resources) public onlyMapMaster {
-        for (uint index = 0; index &lt; x.length; index++) {
+        for (uint index = 0; index < x.length; index++) {
             _activateZoneLand(x[index], y[index], region[index], resources[index]);
         }
     }
 
     function buyLand(int32 x, int32 y) payable public onlyOnActiveSale {
         MapLand storage token = tokens[zone[x][y]];
-        if (zone[x][y] == 0 || token.buyPrice &gt; 0 || token.owner != address(0)
+        if (zone[x][y] == 0 || token.buyPrice > 0 || token.owner != address(0)
         || !regions[token.region].allowSaleLands) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
@@ -368,7 +368,7 @@ contract MCPSale is Beneficiary {
 
         if (buyPrice == 0) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
@@ -380,14 +380,14 @@ contract MCPSale is Beneficiary {
         uint8 tokenBought;
 
 
-        if (buyPrice &gt; msg.value) {
+        if (buyPrice > msg.value) {
 
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.transfer(msg.value);
             }
 
             return;
-        } else if (buyPrice &lt; msg.value) {
+        } else if (buyPrice < msg.value) {
             msg.sender.transfer(msg.value - buyPrice);
         }
 
@@ -402,7 +402,7 @@ contract MCPSale is Beneficiary {
 
         uint256 tax = getRegionTax(token.region);
 
-        if (regions[token.region].owner != address(0) &amp;&amp; tax &gt; 100) {
+        if (regions[token.region].owner != address(0) && tax > 100) {
             uint256 taxValue = ((basePrice * (tax - 100) + ((tokenBought ** 2) * minMargin * (tax - 100))) / 100);
             regions[token.region].owner.transfer(taxValue);
             emit RegionPayout(regions[token.region].owner, taxValue);
@@ -413,7 +413,7 @@ contract MCPSale is Beneficiary {
     }
 
     function doPayouts(uint256[49] payouts, address[49] addresses, uint256 fullValue) internal returns (uint256){
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             if (addresses[i] == address(0)) {
                 continue;
             }
@@ -428,14 +428,14 @@ contract MCPSale is Beneficiary {
 
     function getPayouts(int32 x, int32 y) public view returns (uint256[49] payouts, address[49] addresses, uint8 tokenBought) {
 
-        for (int32 xi = x - 3; xi &lt;= x + 3; xi++) {
-            for (int32 yi = y - 3; yi &lt;= y + 3; yi++) {
-                if (x == xi &amp;&amp; y == yi) {
+        for (int32 xi = x - 3; xi <= x + 3; xi++) {
+            for (int32 yi = y - 3; yi <= y + 3; yi++) {
+                if (x == xi && y == yi) {
                     continue;
                 }
                 MapLand memory token = tokens[zone[xi][yi]];
 
-                if (token.buyPrice &gt; 0) {
+                if (token.buyPrice > 0) {
                     payouts[tokenBought] = (token.buyPrice / divider);
                     addresses[tokenBought] = (token.owner);
                     tokenBought++;
@@ -460,13 +460,13 @@ contract MCPSale is Beneficiary {
         start[0] = x - 3;
         start[1] = y - 3;
         uint256[2] memory counters = [uint256(0), 0];
-        for (int32 xi = x - 3; xi &lt;= x + 3; xi++) {
-            for (int32 yi = y - 3; yi &lt;= y + 3; yi++) {
-                if (x == xi &amp;&amp; y == yi) {
+        for (int32 xi = x - 3; xi <= x + 3; xi++) {
+            for (int32 yi = y - 3; yi <= y + 3; yi++) {
+                if (x == xi && y == yi) {
                     continue;
                 }
 
-                if (tokens[zone[xi][yi]].buyPrice &gt; 0) {
+                if (tokens[zone[xi][yi]].buyPrice > 0) {
                     counters[1] += tokens[zone[xi][yi]].buyPrice;
                     counters[0]++;
                 }
@@ -498,7 +498,7 @@ contract MCPSale is Beneficiary {
     }
 
     function setRegionOwner(uint16 regionId, address owner, uint256 viewPrice) public onlyOwner {
-        require(regions[regionId].owner == address(0) &amp;&amp; !regions[regionId].onSale);
+        require(regions[regionId].owner == address(0) && !regions[regionId].onSale);
 
         regions[regionId].owner = owner;
 

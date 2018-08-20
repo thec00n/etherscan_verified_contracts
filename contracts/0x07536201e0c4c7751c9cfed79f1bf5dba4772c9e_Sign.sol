@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 contract Sign {
 
 	address public AddAuthority;	
-	mapping (uint32 =&gt; bytes32) Cert;	
+	mapping (uint32 => bytes32) Cert;	
 	
 	// =============================================
 	

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;UNC&#39; &#39;Uncloak&#39; token contract
+// 'UNC' 'Uncloak' token contract
 // Symbol      : UNC
 // Name        : Uncloak
 // Total supply: 4,200,000,000
@@ -15,10 +15,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -26,7 +26,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -96,16 +96,16 @@ contract Uncloak is ERC20, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function Uncloak() public {
-        symbol = &quot;UNC&quot;;
-        name = &quot;Uncloak&quot;;
+        symbol = "UNC";
+        name = "Uncloak";
         decimals = 18;
         _totalSupply = 4200000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -130,16 +130,16 @@ contract Uncloak is ERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(to != address(this)); //make sure we&#39;re not transfering to this contract
+        require(to != address(this)); //make sure we're not transfering to this contract
         
         //check edge cases
-        if (balances[msg.sender] &gt;= tokens
-            &amp;&amp; tokens &gt; 0) {
+        if (balances[msg.sender] >= tokens
+            && tokens > 0) {
         
                 //update balances
                 balances[msg.sender] = safeSub(balances[msg.sender], tokens);
@@ -157,7 +157,7 @@ contract Uncloak is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -179,9 +179,9 @@ contract Uncloak is ERC20, Owned, SafeMath {
         require(to != address(this));
         
         //check edge cases
-        if (allowed[from][msg.sender] &gt;= tokens
-            &amp;&amp; balances[from] &gt;= tokens
-            &amp;&amp; tokens &gt; 0) {
+        if (allowed[from][msg.sender] >= tokens
+            && balances[from] >= tokens
+            && tokens > 0) {
 
             //update balances and allowances
             balances[from] = safeSub(balances[from], tokens);
@@ -201,7 +201,7 @@ contract Uncloak is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -210,7 +210,7 @@ contract Uncloak is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -222,7 +222,7 @@ contract Uncloak is ERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Doesn&#39;t Accept Eth
+    // Doesn't Accept Eth
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -12,11 +12,11 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -40,7 +40,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -53,7 +53,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -73,7 +73,7 @@ contract Utils {
 }
 
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public pure returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -124,7 +124,7 @@ contract Owned is IOwned {
 
 
 contract IToken {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public pure returns (string) {}
     function symbol() public pure returns (string) {}
     function decimals() public pure returns (uint8) {}
@@ -142,15 +142,15 @@ contract IToken {
 
 contract Token is IToken, Owned, Utils {
     /* 公共变量 */
-    string public standard = &#39;&#39;;
-    string public name = &#39;&#39;; //代币名称
-    string public symbol = &#39;&#39;; //代币符号比如&#39;$&#39;
+    string public standard = '';
+    string public name = ''; //代币名称
+    string public symbol = ''; //代币符号比如'$'
     uint8 public decimals = 0;  //代币单位
     uint256 public totalSupply = 0; //代币总量
 
     /*记录所有余额的映射*/
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* 在区块链上创建一个事件，用以通知客户端*/
     event Transfer(address indexed from, address indexed to, uint256 value);  //转帐通知事件
@@ -158,8 +158,8 @@ contract Token is IToken, Owned, Utils {
 
     function Token() public 
     {
-        name = &#39;YaoDun Chain&#39;;
-        symbol = &#39;YAODUN&#39;;
+        name = 'YaoDun Chain';
+        symbol = 'YAODUN';
         decimals = 8;
         totalSupply = 2000000000 * 10 ** uint256(decimals);
 
@@ -181,10 +181,10 @@ contract Token is IToken, Owned, Utils {
 
 
       //检查发送者是否拥有足够余额
-      require(balanceOf[_from] &gt;= _value);
+      require(balanceOf[_from] >= _value);
 
       //检查是否溢出
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+      require(balanceOf[_to] + _value > balanceOf[_to]);
 
       //保存数据用于后面的判断
       uint previousBalances = safeAdd(balanceOf[_from], balanceOf[_to]);
@@ -234,7 +234,7 @@ contract Token is IToken, Owned, Utils {
         returns (bool)
     {
         //检查发送者是否拥有足够余额支出的设置
-        require(_value &lt;= allowance[_from][msg.sender]);   // Check allowance
+        require(_value <= allowance[_from][msg.sender]);   // Check allowance
 
         allowance[_from][msg.sender] -= safeSub(allowance[_from][msg.sender], _value);
 
@@ -278,7 +278,7 @@ contract IYaoDun {
 
 contract SmartToken is Owned, Token {
 
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
 
     // triggered when a smart token is deployed - the _token address is defined for forward compatibility, in case we want to trigger the event from a factory
     event NewSmartToken(address _token);
@@ -308,7 +308,7 @@ contract YaoDun is IYaoDun, Token {
     uint256 public buyPrice;
 
     //是否冻结帐户的列表
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     //定义一个事件，当有资产被冻结的时候，通知正在监听事件的客户端
     event FrozenFunds(address target, bool frozen);
@@ -333,10 +333,10 @@ contract YaoDun is IYaoDun, Token {
         internal
     {
         //检查发送者是否拥有足够余额
-        require (balanceOf[_from] &gt; _value);
+        require (balanceOf[_from] > _value);
 
         //检查是否溢出
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
 
         //检查 冻结帐户
         require(!frozenAccount[_from]);
@@ -421,7 +421,7 @@ contract YaoDun is IYaoDun, Token {
     function sell(uint256 amount) public {
 
         //检查合约的余额是否充足
-        require(balanceOf[address(this)] &gt;= amount * sellPrice);
+        require(balanceOf[address(this)] >= amount * sellPrice);
 
         _transfer(msg.sender, this, amount);
 

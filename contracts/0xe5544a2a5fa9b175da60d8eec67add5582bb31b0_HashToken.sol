@@ -40,8 +40,8 @@ contract TokenInterface {
 
 contract HashToken is TokenInterface {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     bytes32 public prev_hash;
@@ -56,13 +56,13 @@ contract HashToken is TokenInterface {
         prev_hash = sha3(block.blockhash(block.number));
         max_value = 2 ** 255;
         // Meta info
-        name = &#39;HashToken&#39;;
+        name = 'HashToken';
         decimals = 16;
-        symbol = &#39;HTK&#39;;
+        symbol = 'HTK';
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -71,7 +71,7 @@ contract HashToken is TokenInterface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -97,7 +97,7 @@ contract HashToken is TokenInterface {
     event Mint(address indexed minter);
 
     function mint(bytes32 value) {
-        if (uint(sha3(value, prev_hash)) &gt; max_value) {
+        if (uint(sha3(value, prev_hash)) > max_value) {
             throw;
         }
         balances[msg.sender] += 10 ** 16;

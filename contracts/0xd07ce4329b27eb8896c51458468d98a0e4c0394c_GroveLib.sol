@@ -2,7 +2,7 @@
 
 
 /// @title GroveLib - Library for queriable indexed ordered data.
-/// @author PiperMerriam - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90e0f9e0f5e2fdf5e2e2f9f1fdd0f7fdf1f9fcbef3fffd">[email&#160;protected]</a>&gt;
+/// @author PiperMerriam - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90e0f9e0f5e2fdf5e2e2f9f1fdd0f7fdf1f9fcbef3fffd">[email protected]</a>>
 library GroveLib {
         /*
          *  Indexes for ordered data
@@ -13,7 +13,7 @@ library GroveLib {
                 bytes32 id;
                 bytes32 name;
                 bytes32 root;
-                mapping (bytes32 =&gt; Node) nodes;
+                mapping (bytes32 => Node) nodes;
         }
 
         struct Node {
@@ -42,7 +42,7 @@ library GroveLib {
         }
 
         function max(uint a, uint b) internal returns (uint) {
-            if (a &gt;= b) {
+            if (a >= b) {
                 return a;
             }
             return b;
@@ -125,7 +125,7 @@ library GroveLib {
 
             if (currentNode.parent != 0x0) {
                 // Now we trace back up through parent relationships, looking
-                // for a link where the child is the right child of it&#39;s
+                // for a link where the child is the right child of it's
                 // parent.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -171,7 +171,7 @@ library GroveLib {
             }
 
             if (currentNode.parent != 0x0) {
-                // if the node is the left child of it&#39;s parent, then the
+                // if the node is the left child of it's parent, then the
                 // parent is the next one.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -199,7 +199,7 @@ library GroveLib {
         /// @dev Updates or Inserts the id into the index at its appropriate location based on the value provided.
         /// @param index The index that the node is part of.
         /// @param id The unique identifier of the data element the index node will represent.
-        /// @param value The value of the data element that represents it&#39;s total ordering with respect to other elementes.
+        /// @param value The value of the data element that represents it's total ordering with respect to other elementes.
         function insert(Index storage index, bytes32 id, int value) public {
                 bytes32 nodeId = computeNodeId(index.id, id);
 
@@ -242,7 +242,7 @@ library GroveLib {
                     previousNodeId = currentNode.nodeId;
 
                     // The new node belongs in the right subtree
-                    if (value &gt;= currentNode.value) {
+                    if (value >= currentNode.value) {
                         if (currentNode.right == 0x0) {
                             currentNode.right = nodeId;
                         }
@@ -289,7 +289,7 @@ library GroveLib {
 
             if (nodeToDelete.left != 0x0 || nodeToDelete.right != 0x0) {
                 // This node is not a leaf node and thus must replace itself in
-                // it&#39;s tree by either the previous or next node.
+                // it's tree by either the previous or next node.
                 if (nodeToDelete.left != 0x0) {
                     // This node is guaranteed to not have a right child.
                     replacementNode = index.nodes[getPreviousNode(index, nodeToDelete.nodeId)];
@@ -356,7 +356,7 @@ library GroveLib {
                 }
             }
             else if (nodeToDelete.parent != 0x0) {
-                // The node being deleted is a leaf node so we only erase it&#39;s
+                // The node being deleted is a leaf node so we only erase it's
                 // parent linkage.
                 parent = index.nodes[nodeToDelete.parent];
 
@@ -391,24 +391,24 @@ library GroveLib {
             }
         }
 
-        bytes2 constant GT = &quot;&gt;&quot;;
-        bytes2 constant LT = &quot;&lt;&quot;;
-        bytes2 constant GTE = &quot;&gt;=&quot;;
-        bytes2 constant LTE = &quot;&lt;=&quot;;
-        bytes2 constant EQ = &quot;==&quot;;
+        bytes2 constant GT = ">";
+        bytes2 constant LT = "<";
+        bytes2 constant GTE = ">=";
+        bytes2 constant LTE = "<=";
+        bytes2 constant EQ = "==";
 
         function _compare(int left, bytes2 operator, int right) internal returns (bool) {
             if (operator == GT) {
-                return (left &gt; right);
+                return (left > right);
             }
             if (operator == LT) {
-                return (left &lt; right);
+                return (left < right);
             }
             if (operator == GTE) {
-                return (left &gt;= right);
+                return (left >= right);
             }
             if (operator == LTE) {
-                return (left &lt;= right);
+                return (left <= right);
             }
             if (operator == EQ) {
                 return (left == right);
@@ -442,12 +442,12 @@ library GroveLib {
 
 
         /** @dev Query the index for the edge-most node that satisfies the
-         *  given query.  For &gt;, &gt;=, and ==, this will be the left-most node
-         *  that satisfies the comparison.  For &lt; and &lt;= this will be the
+         *  given query.  For >, >=, and ==, this will be the left-most node
+         *  that satisfies the comparison.  For < and <= this will be the
          *  right-most node that satisfies the comparison.
          */
         /// @param index The index that should be queried
-        /** @param operator One of &#39;&gt;&#39;, &#39;&gt;=&#39;, &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39; to specify what
+        /** @param operator One of '>', '>=', '<', '<=', '==' to specify what
          *  type of comparison operator should be used.
          */
         function query(Index storage index, bytes2 operator, int value) public returns (bytes32) {
@@ -514,7 +514,7 @@ library GroveLib {
                     }
 
                     if (operator == EQ) {
-                        if (currentNode.value &lt; value) {
+                        if (currentNode.value < value) {
                             if (currentNode.right == 0x0) {
                                 return 0x0;
                             }
@@ -522,7 +522,7 @@ library GroveLib {
                             continue;
                         }
 
-                        if (currentNode.value &gt; value) {
+                        if (currentNode.value > value) {
                             if (currentNode.left == 0x0) {
                                 return 0x0;
                             }
@@ -563,7 +563,7 @@ library GroveLib {
                     _rotateLeft(index, currentNode.nodeId);
                 }
 
-                if ((-1 &lt;= balanceFactor) &amp;&amp; (balanceFactor &lt;= 1)) {
+                if ((-1 <= balanceFactor) && (balanceFactor <= 1)) {
                     _updateNodeHeight(index, currentNode.nodeId);
                 }
 
@@ -599,11 +599,11 @@ library GroveLib {
             }
 
             // The right child is the new root, so it gets the original
-            // `originalRoot.parent` as it&#39;s parent.
+            // `originalRoot.parent` as it's parent.
             Node storage newRoot = index.nodes[originalRoot.right];
             newRoot.parent = originalRoot.parent;
 
-            // The original root needs to have it&#39;s right child nulled out.
+            // The original root needs to have it's right child nulled out.
             originalRoot.right = 0x0;
 
             if (originalRoot.parent != 0x0) {
@@ -611,7 +611,7 @@ library GroveLib {
                 // the newRoot which is rotating into the place where `node` was.
                 Node storage parent = index.nodes[originalRoot.parent];
 
-                // figure out if we&#39;re a left or right child and have the
+                // figure out if we're a left or right child and have the
                 // parent point to the new node.
                 if (parent.left == originalRoot.nodeId) {
                     parent.left = newRoot.nodeId;
@@ -630,7 +630,7 @@ library GroveLib {
                 leftChild.parent = originalRoot.nodeId;
             }
 
-            // Update the newRoot&#39;s left node to point at the original node.
+            // Update the newRoot's left node to point at the original node.
             originalRoot.parent = newRoot.nodeId;
             newRoot.left = originalRoot.nodeId;
 
@@ -652,7 +652,7 @@ library GroveLib {
                 throw;
             }
 
-            // The left child is taking the place of node, so we update it&#39;s
+            // The left child is taking the place of node, so we update it's
             // parent to be the original parent of the node.
             Node storage newRoot = index.nodes[originalRoot.left];
             newRoot.parent = originalRoot.parent;
@@ -679,7 +679,7 @@ library GroveLib {
                 rightChild.parent = originalRoot.nodeId;
             }
 
-            // Update the new root&#39;s right node to point to the original node.
+            // Update the new root's right node to point to the original node.
             originalRoot.parent = newRoot.nodeId;
             newRoot.right = originalRoot.nodeId;
 
@@ -695,7 +695,7 @@ library GroveLib {
 
 
 /// @title Grove - queryable indexes for ordered data.
-/// @author Piper Merriam &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55253c253027383027273c3438153238343c397b363a38">[email&#160;protected]</a>&gt;
+/// @author Piper Merriam <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55253c253027383027273c3438153238343c397b363a38">[email protected]</a>>
 contract Grove {
         /*
          *  Indexes for ordered data
@@ -703,10 +703,10 @@ contract Grove {
          *  Address: 0x8017f24a47c889b1ee80501ff84beb3c017edf0b
          */
         // Map index_id to index
-        mapping (bytes32 =&gt; GroveLib.Index) index_lookup;
+        mapping (bytes32 => GroveLib.Index) index_lookup;
 
         // Map node_id to index_id.
-        mapping (bytes32 =&gt; bytes32) node_to_index;
+        mapping (bytes32 => bytes32) node_to_index;
 
         /// @notice Computes the id for a Grove index which is sha3(owner, indexName)
         /// @param owner The address of the index owner.
@@ -807,7 +807,7 @@ contract Grove {
                 var index = index_lookup[indexId];
 
                 if (index.name != indexName) {
-                        // If this is a new index, store it&#39;s name and id
+                        // If this is a new index, store it's name and id
                         index.name = indexName;
                         index.id = indexId;
                 }
@@ -833,12 +833,12 @@ contract Grove {
         }
 
         /** @dev Query the index for the edge-most node that satisfies the
-         * given query.  For &gt;, &gt;=, and ==, this will be the left-most node
-         * that satisfies the comparison.  For &lt; and &lt;= this will be the
+         * given query.  For >, >=, and ==, this will be the left-most node
+         * that satisfies the comparison.  For < and <= this will be the
          * right-most node that satisfies the comparison.
          */
         /// @param indexId The id of the index that should be queried
-        /** @param operator One of &#39;&gt;&#39;, &#39;&gt;=&#39;, &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39; to specify what
+        /** @param operator One of '>', '>=', '<', '<=', '==' to specify what
          *  type of comparison operator should be used.
          */
         function query(bytes32 indexId, bytes2 operator, int value) public returns (bytes32) {

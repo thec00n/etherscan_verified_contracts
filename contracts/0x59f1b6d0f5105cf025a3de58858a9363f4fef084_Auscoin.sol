@@ -18,26 +18,26 @@ contract ERC20Basic {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -96,9 +96,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -115,7 +115,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,7 +127,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -185,7 +185,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -196,8 +196,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -211,7 +211,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -260,7 +260,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -273,9 +273,9 @@ contract StandardToken is ERC20, BasicToken {
 
 contract Auscoin is StandardToken, Ownable {
   // Publicly listed name
-  string public name = &quot;AUSCOIN COIN&quot;;
+  string public name = "AUSCOIN COIN";
   // Symbol under which token will be trading
-  string public symbol = &quot;AUSC&quot;;
+  string public symbol = "AUSC";
   // 1 ETH consists of 10^18 Wei, which is the smallest ETH unit
   uint8 public decimals = 18;
   // Defining the value of a million for easy calculations - order of declaration matters (hoisting)
@@ -309,10 +309,10 @@ contract Auscoin is StandardToken, Ownable {
 
   // Whitelisted mapping - the addresses which have participated in the ICO and are allowed to transact after the ICO.
   // ICO Participants need to be verify their identity before they can use AusCoin
-  mapping (address =&gt; bool) public whiteListed;
+  mapping (address => bool) public whiteListed;
 
   // ICO Participant
-  mapping (address =&gt; bool) isICOParticipant;
+  mapping (address => bool) isICOParticipant;
 
   // Constants
   uint256 numberOfMillisecsPerYear = 365 * 24 * 60 * 60 * 1000;
@@ -372,9 +372,9 @@ contract Auscoin is StandardToken, Ownable {
     uint256 totalAvailableDuringICO = totalSupply - (bonusAllocation + ausGroupAllocation + bountyAllocation + preSeedAllocation);
     uint256 sold = totalAvailableDuringICO - balances[fundsWallet];
 
-    uint256 amountForThirtyBonusBracket = int256((10 * million) - sold) &gt; 0 ? (10 * million) - sold : 0;
-    uint256 amountForTwentyBonusBracket = int256((20 * million) - sold) &gt; 0 ? (20 * million) - sold : 0;
-    uint256 amountForTenBonusBracket = int256((30 * million) - sold) &gt; 0 ? (30 * million) - sold : 0;
+    uint256 amountForThirtyBonusBracket = int256((10 * million) - sold) > 0 ? (10 * million) - sold : 0;
+    uint256 amountForTwentyBonusBracket = int256((20 * million) - sold) > 0 ? (20 * million) - sold : 0;
+    uint256 amountForTenBonusBracket = int256((30 * million) - sold) > 0 ? (30 * million) - sold : 0;
 
     uint256 thirtyBonusBracket = Math.min256(Math.max256(0, amountForThirtyBonusBracket), Math.min256(amount, (10 * million)));
     uint256 twentyBonusBracket = Math.min256(Math.max256(0, amountForTwentyBonusBracket), Math.min256(amount - thirtyBonusBracket, (10 * million)));
@@ -386,7 +386,7 @@ contract Auscoin is StandardToken, Ownable {
   }
 
   // Payable functions. Fall out and low level buy
-  // isIcoOpen modifier ensures ETH payments can only be made if the ICO is &#39;open&#39;, after start and before end date (or if all tokens are sold)
+  // isIcoOpen modifier ensures ETH payments can only be made if the ICO is 'open', after start and before end date (or if all tokens are sold)
   // payable is needed on the fallback function in order to receive Ether
   // Reference: http://solidity.readthedocs.io/en/develop/contracts.html
   function() isIcoOpen payable public {
@@ -399,9 +399,9 @@ contract Auscoin is StandardToken, Ownable {
     // Calculate the bonus the sender will receive based on which Tier the current Smart Contract is sitting on
     uint256 bonusAmount = calculateBonusAmount(tokenAmount);
     // Ensure that the tokenAmount is greater than the total funds currently present
-    require(balances[fundsWallet] &gt;= tokenAmount);
+    require(balances[fundsWallet] >= tokenAmount);
     // Ensure that the bonusAmount is greater than the total bonus currently availbale in the bonusWallet
-    require(balances[bonusWallet] &gt;= bonusAmount);
+    require(balances[bonusWallet] >= bonusAmount);
 
     // Add to the state level ETH raised value
     totalEthRaised = totalEthRaised.add(msg.value);
@@ -409,7 +409,7 @@ contract Auscoin is StandardToken, Ownable {
     // Deduct the said amount from the relevant wallet addresses in the balance map
     balances[bonusWallet] = balances[bonusWallet].sub(bonusAmount);
     balances[fundsWallet] = balances[fundsWallet].sub(tokenAmount);
-    // Add the sold tokens to the sender&#39;s wallet address in the balance map for them to claim after ICO
+    // Add the sold tokens to the sender's wallet address in the balance map for them to claim after ICO
     balances[msg.sender] = balances[msg.sender].add(tokenAmount.add(bonusAmount));
 
     // Add them to the isICOParticipant mapping
@@ -441,7 +441,7 @@ contract Auscoin is StandardToken, Ownable {
 
   function ausgroupTransfer(address _to, uint _value) timeRestrictedAccess isValidAusGroupTransfer(_value) public returns (bool success) {
     require(msg.sender == ausGroup);
-    require(balances[ausGroup] &gt;= _value);
+    require(balances[ausGroup] >= _value);
     return super.transfer(_to, _value);
   }
 
@@ -466,18 +466,18 @@ contract Auscoin is StandardToken, Ownable {
 
   // Modifiers
   modifier isIcoOpen() {
-    require(currentTime() &gt;= startTime);
-    require(currentTime() &lt; endTime);
+    require(currentTime() >= startTime);
+    require(currentTime() < endTime);
     _;
   }
 
   modifier isIcoClosed() {
-    require(currentTime() &gt;= endTime);
+    require(currentTime() >= endTime);
     _;
   }
 
   modifier timeRestrictedAccess() {
-    require(currentTime() &gt;= ausGroupReleaseDate);
+    require(currentTime() >= ausGroupReleaseDate);
     _;
   }
 
@@ -489,10 +489,10 @@ contract Auscoin is StandardToken, Ownable {
   modifier isValidAusGroupTransfer(uint256 _value) {
     uint256 yearsAfterRelease = ((currentTime() - ausGroupReleaseDate) / numberOfMillisecsPerYear) + 1;
     uint256 cumulativeTotalAvailable = yearsAfterRelease * amountPerYearAvailableToAusGroup;
-    require(cumulativeTotalAvailable &gt; 0);
+    require(cumulativeTotalAvailable > 0);
     uint256 amountAlreadyTransferred = ausGroupAllocation - balances[ausGroup];
     uint256 amountAvailable = cumulativeTotalAvailable - amountAlreadyTransferred;
-    require(_value &lt;= amountAvailable);
+    require(_value <= amountAvailable);
     _;
   }
 }

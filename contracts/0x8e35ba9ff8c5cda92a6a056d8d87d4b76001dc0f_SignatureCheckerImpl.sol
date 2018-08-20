@@ -42,12 +42,12 @@ contract SignatureCheckerImpl {
     }
 
     bytes32 transferDelegatedHash = keccak256(
-        &quot;address contract&quot;,
-        &quot;string method&quot;,
-        &quot;address to&quot;,
-        &quot;uint256 value&quot;,
-        &quot;uint256 maxReward&quot;,
-        &quot;uint256 nonce&quot;
+        "address contract",
+        "string method",
+        "address to",
+        "uint256 value",
+        "uint256 maxReward",
+        "uint256 nonce"
     );
 
     function checkTransferDelegated(
@@ -60,20 +60,20 @@ contract SignatureCheckerImpl {
     ) public constant returns (bool) {
         bytes32 hash = keccak256(
             transferDelegatedHash,
-            keccak256(msg.sender, &quot;transferDelegated&quot;, _to, _value, _maxReward, _nonce)
+            keccak256(msg.sender, "transferDelegated", _to, _value, _maxReward, _nonce)
         );
         var (v, r, s) = _bytesToSignature(_signature);
         return ecrecover(hash, v, r, s) == _from;
     }
 
     bytes32 transferAndCallDelegatedHash = keccak256(
-        &quot;address contract&quot;,
-        &quot;string method&quot;,
-        &quot;address to&quot;,
-        &quot;uint256 value&quot;,
-        &quot;bytes data&quot;,
-        &quot;uint256 maxReward&quot;,
-        &quot;uint256 nonce&quot;
+        "address contract",
+        "string method",
+        "address to",
+        "uint256 value",
+        "bytes data",
+        "uint256 maxReward",
+        "uint256 nonce"
     );
 
     function checkTransferAndCallDelegated(
@@ -87,19 +87,19 @@ contract SignatureCheckerImpl {
     ) public constant returns (bool) {
         bytes32 hash = keccak256(
             transferAndCallDelegatedHash,
-            keccak256(msg.sender, &quot;transferAndCallDelegated&quot;, _to, _value, _data, _maxReward, _nonce)
+            keccak256(msg.sender, "transferAndCallDelegated", _to, _value, _data, _maxReward, _nonce)
         );
         var (v, r, s) = _bytesToSignature(_signature);
         return ecrecover(hash, v, r, s) == _from;
     }
 
     bytes32 transferMultipleDelegatedHash = keccak256(
-        &quot;address contract&quot;,
-        &quot;string method&quot;,
-        &quot;address[] addrs&quot;,
-        &quot;uint256[] values&quot;,
-        &quot;uint256 maxReward&quot;,
-        &quot;uint256 nonce&quot;
+        "address contract",
+        "string method",
+        "address[] addrs",
+        "uint256[] values",
+        "uint256 maxReward",
+        "uint256 nonce"
     );
 
     function checkTransferMultipleDelegated(
@@ -112,7 +112,7 @@ contract SignatureCheckerImpl {
     ) public constant returns (bool) {
         bytes32 hash = keccak256(
             transferMultipleDelegatedHash,
-            keccak256(msg.sender, &quot;transferMultipleDelegated&quot;, _addrs, _values, _maxReward, _nonce)
+            keccak256(msg.sender, "transferMultipleDelegated", _addrs, _values, _maxReward, _nonce)
         );
         var (v, r, s) = _bytesToSignature(_signature);
         return ecrecover(hash, v, r, s) == _from;

@@ -10,7 +10,7 @@ contract Crowdsale {
     uint public deadline;
     uint public rateOfEther;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -59,7 +59,7 @@ function changeCrowdsale(bool isClose) public {
 
     function buyToken() payable public {
         require(!crowdsaleClosed);
-        require(now &lt;= deadline);
+        require(now <= deadline);
         uint amount = msg.value;
         amountRaised += amount;
         uint tokens = amount * rateOfEther;

@@ -73,9 +73,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -83,7 +83,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -92,7 +92,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -100,7 +100,7 @@ library SafeMath {
 
 /**
  * @title TokenVesting
- * @dev Modifier by Rolong &lt;rolong at vip.qq.com&gt;
+ * @dev Modifier by Rolong <rolong at vip.qq.com>
  */
 contract TokenVesting {
     using SafeMath for uint256;
@@ -126,11 +126,11 @@ contract TokenVesting {
     }
 
     function() payable public {
-        if (msg.value &gt; 0) { revert();  }
+        if (msg.value > 0) { revert();  }
 
         uint256 unreleased = releasableAmount();
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         uint256 unreleasedHalf = unreleased.div(2);
 
@@ -145,7 +145,7 @@ contract TokenVesting {
     function releasableAmount() public view returns (uint256) {
         uint256 amount = vestedAmount().sub(released);
         uint256 currentBalance = token.balanceOf(this);
-        if (amount &gt; currentBalance) {
+        if (amount > currentBalance) {
             return currentBalance;
         }
         return amount;
@@ -155,13 +155,13 @@ contract TokenVesting {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released);
 
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             return 0;
-        } else if (block.timestamp &gt;= start.add(duration)) {
+        } else if (block.timestamp >= start.add(duration)) {
             return totalBalance;
         } else {
             uint256 timeGap = block.timestamp.sub(start);
-            if (timeGap &lt; month) {
+            if (timeGap < month) {
                 return 0;
             } else {
                 uint256 sec = timeGap.div(month).mul(month);

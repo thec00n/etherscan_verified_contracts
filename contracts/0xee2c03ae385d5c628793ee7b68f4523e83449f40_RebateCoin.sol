@@ -8,18 +8,18 @@ contract SafeMath {
   0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
   function safeAdd (uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
   function safeSub (uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
   function safeMul (uint256 x, uint256 y)  constant internal  returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
   
@@ -120,16 +120,16 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
 	uint256 public hardcap = 22800 ether;
 	uint256 public softcap = 62250 ether;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function RebateCoin() public {
-        symbol = &quot;RBC&quot;;
-        name = &quot;Rebate Coin&quot;;
+        symbol = "RBC";
+        name = "Rebate Coin";
     }
 
 
@@ -150,8 +150,8 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -164,7 +164,7 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -188,7 +188,7 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         balances[from] = safeSub(balances[from], tokens);
-		if (tokens &gt; 0 &amp;&amp; from != to) {
+		if (tokens > 0 && from != to) {
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
         Transfer(from, to, tokens);
@@ -199,7 +199,7 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -208,7 +208,7 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -222,19 +222,19 @@ contract RebateCoin is ERC20Interface, Owned, SafeMath {
     // RBC Tokens per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &gt;= SaleStage3_start) {
+        if (now >= SaleStage3_start) {
             tokens = safeDiv(msg.value * (10**18),SaleStage3_tokenPrice);
 			_supply = safeAdd(SaleStage3_supply,safeAdd(SaleStage2_supply,SaleStage1_supply));
-        } else if(now &gt;= SaleStage2_start) {
+        } else if(now >= SaleStage2_start) {
             tokens = safeDiv(msg.value * (10**18),SaleStage2_tokenPrice);
 			_supply = safeAdd(SaleStage2_supply,SaleStage1_supply);
-        } else if(now &gt;= SaleStage1_start) {
+        } else if(now >= SaleStage1_start) {
             tokens = safeDiv(msg.value * (10**18),SaleStage1_tokenPrice);
 			_supply = SaleStage1_supply;
 		} else {}
-		require( _totalSupply &lt; _supply);
+		require( _totalSupply < _supply);
         balances[msg.sender] = safeAdd(balances[msg.sender], tokens);
         _totalSupply = safeAdd(_totalSupply, tokens);
         Transfer(address(0), msg.sender, tokens);

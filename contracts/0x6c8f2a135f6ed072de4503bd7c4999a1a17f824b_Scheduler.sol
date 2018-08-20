@@ -11,7 +11,7 @@ library GroveLib {
          */
         struct Index {
                 bytes32 root;
-                mapping (bytes32 =&gt; Node) nodes;
+                mapping (bytes32 => Node) nodes;
         }
 
         struct Node {
@@ -24,7 +24,7 @@ library GroveLib {
         }
 
         function max(uint a, uint b) internal returns (uint) {
-            if (a &gt;= b) {
+            if (a >= b) {
                 return a;
             }
             return b;
@@ -100,7 +100,7 @@ library GroveLib {
 
             if (currentNode.parent != 0x0) {
                 // Now we trace back up through parent relationships, looking
-                // for a link where the child is the right child of it&#39;s
+                // for a link where the child is the right child of it's
                 // parent.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -146,7 +146,7 @@ library GroveLib {
             }
 
             if (currentNode.parent != 0x0) {
-                // if the node is the left child of it&#39;s parent, then the
+                // if the node is the left child of it's parent, then the
                 // parent is the next one.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -174,7 +174,7 @@ library GroveLib {
         /// @dev Updates or Inserts the id into the index at its appropriate location based on the value provided.
         /// @param index The index that the node is part of.
         /// @param id The unique identifier of the data element the index node will represent.
-        /// @param value The value of the data element that represents it&#39;s total ordering with respect to other elementes.
+        /// @param value The value of the data element that represents it's total ordering with respect to other elementes.
         function insert(Index storage index, bytes32 id, int value) public {
                 if (index.nodes[id].id == id) {
                     // A node with this id already exists.  If the value is
@@ -210,7 +210,7 @@ library GroveLib {
                     previousNodeId = currentNode.id;
 
                     // The new node belongs in the right subtree
-                    if (value &gt;= currentNode.value) {
+                    if (value >= currentNode.value) {
                         if (currentNode.right == 0x0) {
                             currentNode.right = id;
                         }
@@ -233,7 +233,7 @@ library GroveLib {
         /// @param index The index that should be searched
         /// @param id The unique identifier of the data element to check for.
         function exists(Index storage index, bytes32 id) constant returns (bool) {
-            return (index.nodes[id].height &gt; 0);
+            return (index.nodes[id].height > 0);
         }
 
         /// @dev Remove the node for the given unique identifier from the index.
@@ -254,7 +254,7 @@ library GroveLib {
 
             if (nodeToDelete.left != 0x0 || nodeToDelete.right != 0x0) {
                 // This node is not a leaf node and thus must replace itself in
-                // it&#39;s tree by either the previous or next node.
+                // it's tree by either the previous or next node.
                 if (nodeToDelete.left != 0x0) {
                     // This node is guaranteed to not have a right child.
                     replacementNode = index.nodes[getPreviousNode(index, nodeToDelete.id)];
@@ -321,7 +321,7 @@ library GroveLib {
                 }
             }
             else if (nodeToDelete.parent != 0x0) {
-                // The node being deleted is a leaf node so we only erase it&#39;s
+                // The node being deleted is a leaf node so we only erase it's
                 // parent linkage.
                 parent = index.nodes[nodeToDelete.parent];
 
@@ -355,24 +355,24 @@ library GroveLib {
             }
         }
 
-        bytes2 constant GT = &quot;&gt;&quot;;
-        bytes2 constant LT = &quot;&lt;&quot;;
-        bytes2 constant GTE = &quot;&gt;=&quot;;
-        bytes2 constant LTE = &quot;&lt;=&quot;;
-        bytes2 constant EQ = &quot;==&quot;;
+        bytes2 constant GT = ">";
+        bytes2 constant LT = "<";
+        bytes2 constant GTE = ">=";
+        bytes2 constant LTE = "<=";
+        bytes2 constant EQ = "==";
 
         function _compare(int left, bytes2 operator, int right) internal returns (bool) {
             if (operator == GT) {
-                return (left &gt; right);
+                return (left > right);
             }
             if (operator == LT) {
-                return (left &lt; right);
+                return (left < right);
             }
             if (operator == GTE) {
-                return (left &gt;= right);
+                return (left >= right);
             }
             if (operator == LTE) {
-                return (left &lt;= right);
+                return (left <= right);
             }
             if (operator == EQ) {
                 return (left == right);
@@ -406,12 +406,12 @@ library GroveLib {
 
 
         /** @dev Query the index for the edge-most node that satisfies the
-         *  given query.  For &gt;, &gt;=, and ==, this will be the left-most node
-         *  that satisfies the comparison.  For &lt; and &lt;= this will be the
+         *  given query.  For >, >=, and ==, this will be the left-most node
+         *  that satisfies the comparison.  For < and <= this will be the
          *  right-most node that satisfies the comparison.
          */
         /// @param index The index that should be queried
-        /** @param operator One of &#39;&gt;&#39;, &#39;&gt;=&#39;, &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39; to specify what
+        /** @param operator One of '>', '>=', '<', '<=', '==' to specify what
          *  type of comparison operator should be used.
          */
         function query(Index storage index, bytes2 operator, int value) public returns (bytes32) {
@@ -478,7 +478,7 @@ library GroveLib {
                     }
 
                     if (operator == EQ) {
-                        if (currentNode.value &lt; value) {
+                        if (currentNode.value < value) {
                             if (currentNode.right == 0x0) {
                                 return 0x0;
                             }
@@ -486,7 +486,7 @@ library GroveLib {
                             continue;
                         }
 
-                        if (currentNode.value &gt; value) {
+                        if (currentNode.value > value) {
                             if (currentNode.left == 0x0) {
                                 return 0x0;
                             }
@@ -527,7 +527,7 @@ library GroveLib {
                     _rotateLeft(index, currentNode.id);
                 }
 
-                if ((-1 &lt;= balanceFactor) &amp;&amp; (balanceFactor &lt;= 1)) {
+                if ((-1 <= balanceFactor) && (balanceFactor <= 1)) {
                     _updateNodeHeight(index, currentNode.id);
                 }
 
@@ -563,11 +563,11 @@ library GroveLib {
             }
 
             // The right child is the new root, so it gets the original
-            // `originalRoot.parent` as it&#39;s parent.
+            // `originalRoot.parent` as it's parent.
             Node storage newRoot = index.nodes[originalRoot.right];
             newRoot.parent = originalRoot.parent;
 
-            // The original root needs to have it&#39;s right child nulled out.
+            // The original root needs to have it's right child nulled out.
             originalRoot.right = 0x0;
 
             if (originalRoot.parent != 0x0) {
@@ -575,7 +575,7 @@ library GroveLib {
                 // the newRoot which is rotating into the place where `node` was.
                 Node storage parent = index.nodes[originalRoot.parent];
 
-                // figure out if we&#39;re a left or right child and have the
+                // figure out if we're a left or right child and have the
                 // parent point to the new node.
                 if (parent.left == originalRoot.id) {
                     parent.left = newRoot.id;
@@ -594,7 +594,7 @@ library GroveLib {
                 leftChild.parent = originalRoot.id;
             }
 
-            // Update the newRoot&#39;s left node to point at the original node.
+            // Update the newRoot's left node to point at the original node.
             originalRoot.parent = newRoot.id;
             newRoot.left = originalRoot.id;
 
@@ -616,7 +616,7 @@ library GroveLib {
                 throw;
             }
 
-            // The left child is taking the place of node, so we update it&#39;s
+            // The left child is taking the place of node, so we update it's
             // parent to be the original parent of the node.
             Node storage newRoot = index.nodes[originalRoot.left];
             newRoot.parent = originalRoot.parent;
@@ -643,7 +643,7 @@ library GroveLib {
                 rightChild.parent = originalRoot.id;
             }
 
-            // Update the new root&#39;s right node to point to the original node.
+            // Update the new root's right node to point to the original node.
             originalRoot.parent = newRoot.id;
             newRoot.right = originalRoot.id;
 
@@ -667,7 +667,7 @@ library AccountingLib {
          *  Address: 0x89efe605e9ecbe22849cd85d5449cc946c26f8f3
          */
         struct Bank {
-            mapping (address =&gt; uint) accountBalances;
+            mapping (address => uint) accountBalances;
         }
 
         /// @dev Low level method for adding funds to an account.  Protects against overflow.
@@ -675,7 +675,7 @@ library AccountingLib {
         /// @param accountAddress The address of the account the funds should be added to.
         /// @param value The amount that should be added to the account.
         function addFunds(Bank storage self, address accountAddress, uint value) public {
-                if (self.accountBalances[accountAddress] + value &lt; self.accountBalances[accountAddress]) {
+                if (self.accountBalances[accountAddress] + value < self.accountBalances[accountAddress]) {
                         // Prevent Overflow.
                         throw;
                 }
@@ -730,7 +730,7 @@ library AccountingLib {
                  *  account funds.  It has error checking to prevent
                  *  underflowing the account balance which would be REALLY bad.
                  */
-                if (value &gt; self.accountBalances[accountAddress]) {
+                if (value > self.accountBalances[accountAddress]) {
                         // Prevent Underflow.
                         throw;
                 }
@@ -745,7 +745,7 @@ library AccountingLib {
                 /*
                  *  Public API for withdrawing funds.
                  */
-                if (self.accountBalances[accountAddress] &gt;= value) {
+                if (self.accountBalances[accountAddress] >= value) {
                         deductFunds(self, accountAddress, value);
                         if (!accountAddress.send(value)) {
                                 // Potentially sending money to a contract that
@@ -765,14 +765,14 @@ library AccountingLib {
         uint constant DEFAULT_SEND_GAS = 100000;
 
         function sendRobust(address toAddress, uint value) public returns (bool) {
-                if (msg.gas &lt; DEFAULT_SEND_GAS) {
+                if (msg.gas < DEFAULT_SEND_GAS) {
                     return sendRobust(toAddress, value, msg.gas);
                 }
                 return sendRobust(toAddress, value, DEFAULT_SEND_GAS);
         }
 
         function sendRobust(address toAddress, uint value, uint maxGas) public returns (bool) {
-                if (value &gt; 0 &amp;&amp; !toAddress.send(value)) {
+                if (value > 0 && !toAddress.send(value)) {
                         // Potentially sending money to a contract that
                         // has a fallback function.  So instead, try
                         // tranferring the funds with the call api.
@@ -824,8 +824,8 @@ library CallLib {
 
         var call = FutureBlockCall(this);
 
-        if (block.number + CLAIM_GROWTH_WINDOW + MAXIMUM_CLAIM_WINDOW + BEFORE_CALL_FREEZE_WINDOW &lt; call.targetBlock()) return State.Pending;
-        if (block.number + BEFORE_CALL_FREEZE_WINDOW &lt; call.targetBlock()) {
+        if (block.number + CLAIM_GROWTH_WINDOW + MAXIMUM_CLAIM_WINDOW + BEFORE_CALL_FREEZE_WINDOW < call.targetBlock()) return State.Pending;
+        if (block.number + BEFORE_CALL_FREEZE_WINDOW < call.targetBlock()) {
             if (self.claimer == 0x0) {
                 return State.Unclaimed;
             }
@@ -833,8 +833,8 @@ library CallLib {
                 return State.Claimed;
             }
         }
-        if (block.number &lt; call.targetBlock()) return State.Frozen;
-        if (block.number &lt; call.targetBlock() + call.gracePeriod()) return State.Callable;
+        if (block.number < call.targetBlock()) return State.Frozen;
+        if (block.number < call.targetBlock() + call.gracePeriod()) return State.Callable;
         return State.Missed;
     }
 
@@ -846,8 +846,8 @@ library CallLib {
 
     function extractCallData(Call storage call, bytes data) public {
         call.callData.length = data.length - 4;
-        if (data.length &gt; 4) {
-                for (uint i = 0; i &lt; call.callData.length; i++) {
+        if (data.length > 4) {
+                for (uint i = 0; i < call.callData.length; i++) {
                         call.callData[i] = data[i + 4];
                 }
         }
@@ -857,14 +857,14 @@ library CallLib {
 
     function checkDepth(uint n) constant returns (bool) {
         if (n == 0) return true;
-        return address(this).call.gas(GAS_PER_DEPTH * n)(bytes4(sha3(&quot;__dig(uint256)&quot;)), n - 1);
+        return address(this).call.gas(GAS_PER_DEPTH * n)(bytes4(sha3("__dig(uint256)")), n - 1);
     }
 
     function sendSafe(address to_address, uint value) public returns (uint) {
-        if (value &gt; address(this).balance) {
+        if (value > address(this).balance) {
             value = address(this).balance;
         }
-        if (value &gt; 0) {
+        if (value > 0) {
             AccountingLib.sendRobust(to_address, value);
             return value;
         }
@@ -887,7 +887,7 @@ library CallLib {
         *  for the executing transaction, the higher the payout to the
         *  caller.
         */
-        if (gas_price &gt; base_gas_price) {
+        if (gas_price > base_gas_price) {
             return 100 * base_gas_price / gas_price;
         }
         else {
@@ -912,7 +912,7 @@ library CallLib {
         self.wasCalled = true;
 
         // Make the call
-        if (self.abiSignature == EMPTY_SIGNATURE &amp;&amp; self.callData.length == 0) {
+        if (self.abiSignature == EMPTY_SIGNATURE && self.callData.length == 0) {
             self.wasSuccessful = self.contractAddress.call.value(self.callValue).gas(msg.gas - overhead)();
         }
         else if (self.abiSignature == EMPTY_SIGNATURE) {
@@ -925,7 +925,7 @@ library CallLib {
             self.wasSuccessful = self.contractAddress.call.value(self.callValue).gas(msg.gas - overhead)(self.abiSignature, self.callData);
         }
 
-        call.origin().call(bytes4(sha3(&quot;updateDefaultPayment()&quot;)));
+        call.origin().call(bytes4(sha3("updateDefaultPayment()")));
 
         // Compute the scalar (0 - 200) for the donation.
         uint gasScalar = getGasScalar(self.anchorGasPrice, tx.gasprice);
@@ -960,7 +960,7 @@ library CallLib {
 
     function cancel(Call storage self, address sender) public {
         Cancelled(sender);
-        if (self.claimerDeposit &gt;= 0) {
+        if (self.claimerDeposit >= 0) {
             sendSafe(self.claimer, self.claimerDeposit);
         }
         var call = FutureCall(this);
@@ -985,7 +985,7 @@ library CallLib {
     // remain open.
     uint constant MAXIMUM_CLAIM_WINDOW = 15;
 
-    // The duration (in blocks) before the call&#39;s target block during which
+    // The duration (in blocks) before the call's target block during which
     // all actions are frozen.  This includes claiming, cancellation,
     // registering call data.
     uint constant BEFORE_CALL_FREEZE_WINDOW = 10;
@@ -1008,16 +1008,16 @@ library CallLib {
         uint cutoff = call.targetBlock() - BEFORE_CALL_FREEZE_WINDOW;
 
         // claim window has closed
-        if (block_number &gt; cutoff) return call.basePayment();
+        if (block_number > cutoff) return call.basePayment();
 
         cutoff -= MAXIMUM_CLAIM_WINDOW;
 
         // in the maximum claim window.
-        if (block_number &gt; cutoff) return call.basePayment();
+        if (block_number > cutoff) return call.basePayment();
 
         cutoff -= CLAIM_GROWTH_WINDOW;
 
-        if (block_number &gt; cutoff) {
+        if (block_number > cutoff) {
             uint x = block_number - cutoff;
 
             return call.basePayment() * x / CLAIM_GROWTH_WINDOW;
@@ -1046,7 +1046,7 @@ library CallLib {
          *  done at the contract level.
          */
         // Insufficient Deposit
-        if (deposit_amount &lt; 2 * basePayment) return false;
+        if (deposit_amount < 2 * basePayment) return false;
 
         self.claimAmount = getClaimAmountForBlock(block.number);
         self.claimer = executor;
@@ -1065,11 +1065,11 @@ library CallLib {
         uint targetBlock = call.targetBlock();
 
         // Invalid, not in call window.
-        if (block_number &lt; targetBlock || block_number &gt; targetBlock + call.gracePeriod()) throw;
+        if (block_number < targetBlock || block_number > targetBlock + call.gracePeriod()) throw;
 
         // Within the reserved call window so if there is a claimer, the
         // executor must be the claimdor.
-        if (block_number - targetBlock &lt; CALL_WINDOW_SIZE) {
+        if (block_number - targetBlock < CALL_WINDOW_SIZE) {
         return (self.claimer == 0x0 || self.claimer == executor);
         }
 
@@ -1081,7 +1081,7 @@ library CallLib {
         var _state = state(self);
         var call = FutureBlockCall(this);
 
-        if (_state == State.Pending &amp;&amp; caller == call.schedulerAddress()) {
+        if (_state == State.Pending && caller == call.schedulerAddress()) {
             return true;
         }
 
@@ -1095,25 +1095,25 @@ library CallLib {
 
         var call = FutureBlockCall(this);
 
-        if (startGas &lt; self.requiredGas) {
+        if (startGas < self.requiredGas) {
             // The executor has not provided sufficient gas
-            reason = &quot;NOT_ENOUGH_GAS&quot;;
+            reason = "NOT_ENOUGH_GAS";
         }
         else if (self.wasCalled) {
             // Not being called within call window.
-            reason = &quot;ALREADY_CALLED&quot;;
+            reason = "ALREADY_CALLED";
         }
-        else if (block.number &lt; call.targetBlock() || block.number &gt; call.targetBlock() + call.gracePeriod()) {
+        else if (block.number < call.targetBlock() || block.number > call.targetBlock() + call.gracePeriod()) {
             // Not being called within call window.
-            reason = &quot;NOT_IN_CALL_WINDOW&quot;;
+            reason = "NOT_IN_CALL_WINDOW";
         }
         else if (!checkExecutionAuthorization(self, executor, block.number)) {
             // Someone has claimed this call and they currently have exclusive
             // rights to execute it.
-            reason = &quot;NOT_AUTHORIZED&quot;;
+            reason = "NOT_AUTHORIZED";
         }
-        else if (self.requiredStackDepth &gt; 0 &amp;&amp; executor != tx.origin &amp;&amp; !checkDepth(self.requiredStackDepth)) {
-            reason = &quot;STACK_TOO_DEEP&quot;;
+        else if (self.requiredStackDepth > 0 && executor != tx.origin && !checkDepth(self.requiredStackDepth)) {
+            reason = "STACK_TOO_DEEP";
         }
 
         if (reason != 0x0) {
@@ -1266,10 +1266,10 @@ contract FutureCall {
         // only scheduler can register call data.
         if (msg.sender != schedulerAddress) return false;
         // cannot write over call data
-        if (call.callData.length &gt; 0) return false;
+        if (call.callData.length > 0) return false;
 
         var _state = state();
-        if (_state != State.Pending &amp;&amp; _state != State.Unclaimed &amp;&amp; _state != State.Claimed) return false;
+        if (_state != State.Pending && _state != State.Unclaimed && _state != State.Claimed) return false;
 
         call.callData = msg.data;
         return true;
@@ -1279,10 +1279,10 @@ contract FutureCall {
         // only scheduler can register call data.
         if (msg.sender != schedulerAddress) return false;
         // cannot write over call data
-        if (call.callData.length &gt; 0) return false;
+        if (call.callData.length > 0) return false;
 
         var _state = state();
-        if (_state != State.Pending &amp;&amp; _state != State.Unclaimed &amp;&amp; _state != State.Claimed) return false;
+        if (_state != State.Pending && _state != State.Unclaimed && _state != State.Claimed) return false;
 
         CallLib.extractCallData(call, msg.data);
     }
@@ -1365,7 +1365,7 @@ contract FutureBlockCall is FutureCall {
 
     function __dig(uint n) constant returns (bool) {
         if (n == 0) return true;
-        if (!address(this).callcode(bytes4(sha3(&quot;__dig(uint256)&quot;)), n - 1)) throw;
+        if (!address(this).callcode(bytes4(sha3("__dig(uint256)")), n - 1)) throw;
     }
 
 
@@ -1566,28 +1566,28 @@ library SchedulerLib {
         *
         * - No sooner than MIN_BLOCKS_IN_FUTURE
         * - Grace Period must be longer than the minimum grace period.
-        * - msg.value must be &gt;= MIN_GAS * tx.gasprice + 2 * (baseDonation + basePayment)
+        * - msg.value must be >= MIN_GAS * tx.gasprice + 2 * (baseDonation + basePayment)
         */
         bytes32 reason;
 
-        if (callConfig.targetBlock &lt; block.number + MIN_BLOCKS_IN_FUTURE) {
-            // Don&#39;t allow scheduling further than
+        if (callConfig.targetBlock < block.number + MIN_BLOCKS_IN_FUTURE) {
+            // Don't allow scheduling further than
             // MIN_BLOCKS_IN_FUTURE
-            reason = &quot;TOO_SOON&quot;;
+            reason = "TOO_SOON";
         }
-        else if (getMinimumStackCheck() &gt; callConfig.requiredStackDepth || callConfig.requiredStackDepth &gt; getMaximumStackCheck()) {
+        else if (getMinimumStackCheck() > callConfig.requiredStackDepth || callConfig.requiredStackDepth > getMaximumStackCheck()) {
             // Cannot require stack depth greater than MAXIMUM_STACK_CHECK or
             // less than MINIMUM_STACK_CHECK
-            reason = &quot;STACK_CHECK_OUT_OF_RANGE&quot;;
+            reason = "STACK_CHECK_OUT_OF_RANGE";
         }
-        else if (callConfig.gracePeriod &lt; getMinimumGracePeriod()) {
-            reason = &quot;GRACE_TOO_SHORT&quot;;
+        else if (callConfig.gracePeriod < getMinimumGracePeriod()) {
+            reason = "GRACE_TOO_SHORT";
         }
-        else if (callConfig.requiredGas &lt; getMinimumCallGas() || callConfig.requiredGas &gt; getMaximumCallGas()) {
-            reason = &quot;REQUIRED_GAS_OUT_OF_RANGE&quot;;
+        else if (callConfig.requiredGas < getMinimumCallGas() || callConfig.requiredGas > getMaximumCallGas()) {
+            reason = "REQUIRED_GAS_OUT_OF_RANGE";
         }
-        else if (callConfig.endowment &lt; getMinimumEndowment(callConfig.basePayment, callConfig.baseDonation, callConfig.callValue, callConfig.requiredGas)) {
-            reason = &quot;INSUFFICIENT_FUNDS&quot;;
+        else if (callConfig.endowment < getMinimumEndowment(callConfig.basePayment, callConfig.baseDonation, callConfig.callValue, callConfig.requiredGas)) {
+            reason = "INSUFFICIENT_FUNDS";
         }
 
         if (reason != 0x0) {
@@ -1657,14 +1657,14 @@ contract Scheduler {
         var call = FutureBlockCall(msg.sender);
         var basePayment = call.basePayment();
 
-        if (call.wasCalled() &amp;&amp; call.claimer() != 0x0 &amp;&amp; basePayment &gt; 0 &amp;&amp; defaultPayment &gt; 1) {
+        if (call.wasCalled() && call.claimer() != 0x0 && basePayment > 0 && defaultPayment > 1) {
             var index = call.claimAmount() * 100 / basePayment;
 
-            if (index &gt; 66 &amp;&amp; defaultPayment &lt;= basePayment) {
+            if (index > 66 && defaultPayment <= basePayment) {
                 // increase by 0.01%
                 defaultPayment = defaultPayment * 10001 / 10000;
             }
-            else if (index &lt; 33 &amp;&amp; defaultPayment &gt;= basePayment) {
+            else if (index < 33 && defaultPayment >= basePayment) {
                 // decrease by 0.01%
                 defaultPayment = defaultPayment * 9999 / 10000;
             }
@@ -1731,7 +1731,7 @@ contract Scheduler {
         return SchedulerLib.getDefaultGracePeriod();
     }
 
-    bytes constant EMPTY_CALL_DATA = &quot;&quot;;
+    bytes constant EMPTY_CALL_DATA = "";
     uint constant DEFAULT_CALL_VALUE = 0;
     bytes4 constant DEFAULT_FN_SIGNATURE = 0x0000;
 
@@ -2148,7 +2148,7 @@ contract Scheduler {
     }
 
     function getNextCall(uint blockNumber) constant returns (address) {
-            return address(GroveLib.query(callIndex, &quot;&gt;=&quot;, int(blockNumber)));
+            return address(GroveLib.query(callIndex, ">=", int(blockNumber)));
     }
 
     function getNextCallSibling(address callAddress) constant returns (address) {

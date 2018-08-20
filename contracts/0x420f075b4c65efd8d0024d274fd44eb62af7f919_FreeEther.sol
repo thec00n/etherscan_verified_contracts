@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 
 contract FreeEther {
     
-    // This contract has free Ether for anyone to withdraw. This is just a fun test to see if anyone looks at this. If there&#39;s any Ether in this contract, go ahead and take it! Just call the gimmeEther() function. If there&#39;s no Ether in this contract, someone&#39;s already taken it.
+    // This contract has free Ether for anyone to withdraw. This is just a fun test to see if anyone looks at this. If there's any Ether in this contract, go ahead and take it! Just call the gimmeEther() function. If there's no Ether in this contract, someone's already taken it.
     
     // Visit ETH93.com
     

@@ -8,13 +8,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -43,9 +43,9 @@ contract CONEGTY is owned, SafeMath {
     uint public decimals = 8;
     uint public totalSupply;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-    mapping (address =&gt; uint) public lockInfo;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => uint) public lockInfo;
 
     uint constant valueTotal = 20 * 10000 * 10000 * 10 ** 8;
     uint constant valueSale = valueTotal / 100 * 15;  // sell 15%
@@ -71,7 +71,7 @@ contract CONEGTY is owned, SafeMath {
     }
 
     modifier validEth {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.value &lt;= maxEth);
+        assert(msg.value >= minEth && msg.value <= maxEth);
         _;
     }
 
@@ -81,7 +81,7 @@ contract CONEGTY is owned, SafeMath {
     }
 
     modifier validQuantity {
-        assert(valueSale &gt;= saleQuantity);
+        assert(valueSale >= saleQuantity);
         _;
     }
 
@@ -95,14 +95,14 @@ contract CONEGTY is owned, SafeMath {
         // owner
         balanceOf[msg.sender] = valueTeam;
         Transfer(0x0, msg.sender, valueTeam);
-    	name = &#39;EgtyChain&#39;;
-    	symbol = &#39;EGTY&#39;; 
+    	name = 'EgtyChain';
+    	symbol = 'EGTY'; 
     }
 
     function transfer(address _to, uint _value) public validAddress(_to) returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(validTransfer(msg.sender, _value));
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -121,9 +121,9 @@ contract CONEGTY is owned, SafeMath {
 
     function transferFrom(address _from, address _to, uint _value) public validAddress(_from) validAddress(_to) returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         require(validTransfer(_from, _value));
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
@@ -142,8 +142,8 @@ contract CONEGTY is owned, SafeMath {
 
     function lock(address _to, uint _value) private validAddress(_to)
     {
-        require(_value &gt; 0);
-        require(lockInfo[_to] + _value &lt;= balanceOf[_to]);
+        require(_value > 0);
+        require(lockInfo[_to] + _value <= balanceOf[_to]);
         lockInfo[_to] += _value;
     }
 
@@ -152,7 +152,7 @@ contract CONEGTY is owned, SafeMath {
         if (_value == 0)
             return false;
 
-        return lockInfo[_from] + _value &lt;= balanceOf[_from];
+        return lockInfo[_from] + _value <= balanceOf[_from];
     }
 
 
@@ -168,7 +168,7 @@ contract CONEGTY is owned, SafeMath {
         uint quantity = eth * buyPrice / 10 ** 10;
 
         uint leftQuantity = safeSub(valueSale, saleQuantity);
-        if (quantity &gt; leftQuantity) {
+        if (quantity > leftQuantity) {
             quantity = leftQuantity;
         }
 
@@ -185,14 +185,14 @@ contract CONEGTY is owned, SafeMath {
 
     function sell(uint256 amount) public {
 		if(sellTradeConfir){
-			require(this.balance &gt;= amount * sellPrice / 10000);
+			require(this.balance >= amount * sellPrice / 10000);
 			transferFrom(msg.sender, this, amount);
 			msg.sender.transfer(amount * sellPrice / 10000);
 		}
     }
     
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);

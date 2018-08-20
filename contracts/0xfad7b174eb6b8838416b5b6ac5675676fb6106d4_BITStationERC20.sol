@@ -14,9 +14,9 @@ contract BITStationERC20  {
 	//uint private lockTime;
 	//uint public lockDays;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-	mapping (address =&gt; bool) public whiteList;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+	mapping (address => bool) public whiteList;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -31,8 +31,8 @@ contract BITStationERC20  {
         totalSupply = 120000000000000000;  // Update total supply with the decimal amount
         balanceOf[msg.sender] = 120000000000000000;                // Give the creator all initial tokens
 		owner = msg.sender;
-        name = &quot;BIT Station&quot;;                                   // Set the name for display purposes
-        symbol = &quot;BSTN&quot;;                               // Set the symbol for display purposes
+        name = "BIT Station";                                   // Set the name for display purposes
+        symbol = "BSTN";                               // Set the symbol for display purposes
         isLocked=true;
 		//lockTime=now;
 		//lockDays=lockdays;
@@ -52,7 +52,7 @@ contract BITStationERC20  {
 	/*
 	modifier disableLock() 
 	{ 
-		if (now &gt;= lockTime+ lockDays *1 days )
+		if (now >= lockTime+ lockDays *1 days )
 		{
 			if(isLocked)
 				isLocked=!isLocked;
@@ -68,9 +68,9 @@ contract BITStationERC20  {
         require(!isLocked||whiteList[msg.sender]);
 		require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -107,7 +107,7 @@ contract BITStationERC20  {
     function transferFrom(address _from, address _to, uint256 _value) public 
 	returns (bool success) {
 		require(!isLocked||whiteList[msg.sender]);
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

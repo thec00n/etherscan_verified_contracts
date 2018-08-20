@@ -98,26 +98,26 @@ contract DSStop is DSNote, DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -136,10 +136,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -183,13 +183,13 @@ contract ERC20 is ERC20Events {
 
 contract IOVTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     uint256  public  airdropBSupply = 5*10**6*10**8; // airdrop total supply = 500W
     uint256  public  currentAirdropAmount = 0;
     uint256  airdropNum  =  10*10**8;                // 10IOV each time for airdrop
-    mapping (address =&gt; bool) touched;               //records whether an address has received an airdrop;
+    mapping (address => bool) touched;               //records whether an address has received an airdrop;
 
     constructor(uint supply) public {
         _balances[msg.sender] = sub(supply, airdropBSupply);
@@ -215,10 +215,10 @@ contract IOVTokenBase is ERC20, DSMath {
         public
         returns (bool)
     {
-        require(_balances[src] &gt;= wad);
+        require(_balances[src] >= wad);
 
         if (src != msg.sender) {
-            require(_approvals[src][msg.sender] &gt;= wad);
+            require(_approvals[src][msg.sender] >= wad);
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -240,7 +240,7 @@ contract IOVTokenBase is ERC20, DSMath {
 
     //
     function getBalance(address src) internal constant returns(uint) {
-        if( currentAirdropAmount &lt; airdropBSupply &amp;&amp; !touched[src]) {
+        if( currentAirdropAmount < airdropBSupply && !touched[src]) {
             return add(_balances[src], airdropNum);
         } else {
             return _balances[src];
@@ -251,7 +251,7 @@ contract IOVTokenBase is ERC20, DSMath {
 contract ContractLock is DSStop {
 
     uint  public  unlockTime;         // Start time for token transferring
-    mapping (address =&gt; bool) public isAdmin;  // Admin accounts
+    mapping (address => bool) public isAdmin;  // Admin accounts
 
     event LogAddAdmin(address whoAdded, address newAdmin);
     event LogRemoveAdmin(address whoRemoved, address admin);
@@ -297,7 +297,7 @@ contract ContractLock is DSStop {
 
 
     modifier isUnlocked {
-        require( now &gt; unlockTime || isAdmin[msg.sender]);
+        require( now > unlockTime || isAdmin[msg.sender]);
         _;
     }
 
@@ -326,16 +326,16 @@ contract IOVToken is IOVTokenBase(10*10**9*10**8), ContractLock(1527782400) {
 
     function transferFrom(address src, address dst, uint wad) public stoppable isUnlocked returns (bool)
     {
-        require(_balances[src] &gt;= wad);
+        require(_balances[src] >= wad);
 
-        if(!touched[src] &amp;&amp; currentAirdropAmount &lt; airdropBSupply) {
+        if(!touched[src] && currentAirdropAmount < airdropBSupply) {
             _balances[src] = add( _balances[src], airdropNum );
             touched[src] = true;
             currentAirdropAmount = add(currentAirdropAmount, airdropNum);
         }
 
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
-            require(_approvals[src][msg.sender] &gt;= wad);
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
+            require(_approvals[src][msg.sender] >= wad);
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -358,7 +358,7 @@ contract IOVToken is IOVTokenBase(10*10**9*10**8), ContractLock(1527782400) {
     }
 
     // Optional token name
-    string   public  name = &quot;CarLive Chain&quot;;
+    string   public  name = "CarLive Chain";
 
     function setName(string name_) public auth {
         name = name_;
@@ -394,8 +394,8 @@ contract IOVTokenVesting is DSAuth, DSMath {
   }
 
   IOVToken  public  IOV;
-  mapping (address =&gt; Allocation) public beneficiaries;
-  mapping (address =&gt; bool) public isVestingAdmin;  // community Admin accounts
+  mapping (address => Allocation) public beneficiaries;
+  mapping (address => bool) public isVestingAdmin;  // community Admin accounts
 
   // constructor function
   constructor(IOVToken iov) public {
@@ -429,9 +429,9 @@ contract IOVTokenVesting is DSAuth, DSMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -449,17 +449,17 @@ contract IOVTokenVesting is DSAuth, DSMath {
   */
   function setAllocation(address _recipient, uint256 _totalAllocated, uint256 _start, uint256 _cliff, uint256 _period) public onlyVestingAdmin {
     require(_recipient != address(0));
-    require(beneficiaries[_recipient].totalAllocated == 0 &amp;&amp; _totalAllocated &gt; 0);
-    require(_start &gt; 0 &amp;&amp; _start &lt; 32503680000);
-    require(_cliff &gt;= _start);
-    require(_period &gt; 0);
+    require(beneficiaries[_recipient].totalAllocated == 0 && _totalAllocated > 0);
+    require(_start > 0 && _start < 32503680000);
+    require(_cliff >= _start);
+    require(_period > 0);
 
     beneficiaries[_recipient] = Allocation(_start, _cliff, _period, _totalAllocated, 0, false);
     emit LogNewAllocation(_recipient, _totalAllocated);
   }
 
   function setDisable(address _recipient, bool disable) public onlyVestingAdmin {
-    require(beneficiaries[_recipient].totalAllocated &gt; 0);
+    require(beneficiaries[_recipient].totalAllocated > 0);
     beneficiaries[_recipient].disable = disable;
     emit LogDisable(_recipient, disable);
   }
@@ -469,12 +469,12 @@ contract IOVTokenVesting is DSAuth, DSMath {
    * @param _recipient The address to withdraw tokens for
    */
   function transferTokens(address _recipient) public {
-    require(beneficiaries[_recipient].amountClaimed &lt; beneficiaries[_recipient].totalAllocated);
-    require( now &gt;= beneficiaries[_recipient].cliff );
+    require(beneficiaries[_recipient].amountClaimed < beneficiaries[_recipient].totalAllocated);
+    require( now >= beneficiaries[_recipient].cliff );
     require(!beneficiaries[_recipient].disable);
 
     uint256 unreleased = releasableAmount(_recipient);
-    require( unreleased &gt; 0);
+    require( unreleased > 0);
 
     IOV.transfer(_recipient, unreleased);
 
@@ -485,12 +485,12 @@ contract IOVTokenVesting is DSAuth, DSMath {
 
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param _recipient The address which is being vested
    */
   function releasableAmount(address _recipient) public view returns (uint256) {
-    require( vestedAmount(_recipient) &gt;= beneficiaries[_recipient].amountClaimed );
-    require( vestedAmount(_recipient) &lt;= beneficiaries[_recipient].totalAllocated );
+    require( vestedAmount(_recipient) >= beneficiaries[_recipient].amountClaimed );
+    require( vestedAmount(_recipient) <= beneficiaries[_recipient].totalAllocated );
     return sub( vestedAmount(_recipient), beneficiaries[_recipient].amountClaimed );
   }
 
@@ -499,9 +499,9 @@ contract IOVTokenVesting is DSAuth, DSMath {
   //  * @param _recipient The address which is being vested
   //  */
   // function vestedAmount(address _recipient) public view returns (uint256) {
-  //   if( block.timestamp &lt; add(beneficiaries[_recipient].start, beneficiaries[_recipient].cliff) ) {
+  //   if( block.timestamp < add(beneficiaries[_recipient].start, beneficiaries[_recipient].cliff) ) {
   //     return 0;
-  //   } else if( block.timestamp &gt;= add( beneficiaries[_recipient].start, beneficiaries[_recipient].duration) ) {
+  //   } else if( block.timestamp >= add( beneficiaries[_recipient].start, beneficiaries[_recipient].duration) ) {
   //     return beneficiaries[_recipient].totalAllocated;
   //   } else {
   //     return div( mul(beneficiaries[_recipient].totalAllocated, sub(block.timestamp, beneficiaries[_recipient].start)), beneficiaries[_recipient].duration );
@@ -513,13 +513,13 @@ contract IOVTokenVesting is DSAuth, DSMath {
    * @param _recipient The address which is being vested
    */
   function vestedAmount(address _recipient) public view returns (uint256) {
-    if( block.timestamp &lt; beneficiaries[_recipient].cliff ) {
+    if( block.timestamp < beneficiaries[_recipient].cliff ) {
       return 0;
-    }else if( block.timestamp &gt;= add( beneficiaries[_recipient].cliff, (30 days)*beneficiaries[_recipient].periods ) ) {
+    }else if( block.timestamp >= add( beneficiaries[_recipient].cliff, (30 days)*beneficiaries[_recipient].periods ) ) {
       return beneficiaries[_recipient].totalAllocated;
     }else {
-      for(uint i = 0; i &lt; beneficiaries[_recipient].periods; i++) {
-        if( block.timestamp &gt;= add( beneficiaries[_recipient].cliff, (30 days)*i ) &amp;&amp; block.timestamp &lt; add( beneficiaries[_recipient].cliff, (30 days)*(i+1) ) ) {
+      for(uint i = 0; i < beneficiaries[_recipient].periods; i++) {
+        if( block.timestamp >= add( beneficiaries[_recipient].cliff, (30 days)*i ) && block.timestamp < add( beneficiaries[_recipient].cliff, (30 days)*(i+1) ) ) {
           return div( mul(i, beneficiaries[_recipient].totalAllocated), beneficiaries[_recipient].periods );
         }
       }

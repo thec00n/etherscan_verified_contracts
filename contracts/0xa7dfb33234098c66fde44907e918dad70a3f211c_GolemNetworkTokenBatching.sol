@@ -34,7 +34,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -52,7 +52,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -81,9 +81,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -118,9 +118,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -128,7 +128,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -137,14 +137,14 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -155,8 +155,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -220,7 +220,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -235,7 +235,7 @@ contract TokenProxy is StandardToken, BurnableToken {
 
     ERC20Basic public TOKEN;
 
-    mapping(address =&gt; address) private gates;
+    mapping(address => address) private gates;
 
 
     event GateOpened(address indexed gate, address indexed user);
@@ -271,7 +271,7 @@ contract TokenProxy is StandardToken, BurnableToken {
 
         address gate = gates[user];
 
-        // Make sure the User&#39;s Gate exists.
+        // Make sure the User's Gate exists.
         require(gate != 0);
 
         uint256 value = TOKEN.balanceOf(gate);
@@ -291,7 +291,7 @@ contract TokenProxy is StandardToken, BurnableToken {
     }
 
     function withdrawTo(uint256 _value, address _destination) public {
-        require(_value &gt; 0 &amp;&amp; _destination != address(0));
+        require(_value > 0 && _destination != address(0));
         burn(_value);
         TOKEN.transfer(_destination, _value);
     }
@@ -299,8 +299,8 @@ contract TokenProxy is StandardToken, BurnableToken {
 
 contract GolemNetworkTokenBatching is TokenProxy {
 
-    string public constant name = &quot;Golem Network Token Batching&quot;;
-    string public constant symbol = &quot;GNTB&quot;;
+    string public constant name = "Golem Network Token Batching";
+    string public constant symbol = "GNTB";
     uint8 public constant decimals = 18;
 
 
@@ -311,19 +311,19 @@ contract GolemNetworkTokenBatching is TokenProxy {
     }
 
     function batchTransfer(bytes32[] payments, uint64 closureTime) external {
-        require(block.timestamp &gt;= closureTime);
+        require(block.timestamp >= closureTime);
 
         uint balance = balances[msg.sender];
 
-        for (uint i = 0; i &lt; payments.length; ++i) {
+        for (uint i = 0; i < payments.length; ++i) {
             // A payment contains compressed data:
             // first 96 bits (12 bytes) is a value,
             // following 160 bits (20 bytes) is an address.
             bytes32 payment = payments[i];
             address addr = address(payment);
-            require(addr != address(0) &amp;&amp; addr != msg.sender);
+            require(addr != address(0) && addr != msg.sender);
             uint v = uint(payment) / 2**160;
-            require(v &lt;= balance);
+            require(v <= balance);
             balances[addr] += v;
             balance -= v;
             emit BatchTransfer(msg.sender, addr, v, closureTime);

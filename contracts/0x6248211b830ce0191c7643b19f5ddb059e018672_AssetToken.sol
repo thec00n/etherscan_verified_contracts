@@ -20,7 +20,7 @@ contract admined {
 
 contract BitRS {
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	string public name;
 	string public symbol;
 	uint8 public decimal; 
@@ -35,13 +35,13 @@ contract BitRS {
 		balanceOf[msg.sender] = intialSupply;
 		totalSupply = intialSupply;
 		decimal = 0;
-		symbol = &quot;BitRS&quot;;
-		name = &quot;BitRS&quot;;
+		symbol = "BitRS";
+		name = "BitRS";
 	}
 
 	function transfer(address _to, uint256 _value){
-		require(balanceOf[msg.sender] &gt; _value);
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
+		require(balanceOf[msg.sender] > _value);
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
 		
 
 		balanceOf[msg.sender] -= _value;
@@ -52,7 +52,7 @@ contract BitRS {
 }
 
 contract AssetToken is admined, BitRS{
-	mapping (address =&gt; bool) public frozenAccount;
+	mapping (address => bool) public frozenAccount;
 
 	event FrozenFund(address target, bool frozen);
 
@@ -72,9 +72,9 @@ contract AssetToken is admined, BitRS{
 
 	function transfer(address _to, uint256 _value){
 	    require(!frozenAccount[_to]);
-		require(balanceOf[msg.sender] &gt; 0);
-		require(balanceOf[msg.sender] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+		require(balanceOf[msg.sender] > 0);
+		require(balanceOf[msg.sender] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]);
 		
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;
@@ -85,9 +85,9 @@ contract AssetToken is admined, BitRS{
 		
 		require(!frozenAccount[_from]);
 		
-		require(balanceOf[_from] &gt;= _value);
+		require(balanceOf[_from] >= _value);
 		
-		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+		require(balanceOf[_to] + _value >= balanceOf[_to]);
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += _value;
 		Transfer(_from, _to, _value);
@@ -97,7 +97,7 @@ contract AssetToken is admined, BitRS{
 	
 	
 	function destroyCoins(address _from, address _to, uint256 _value) onlyAdmin{
-		require(balanceOf[_from] &gt;= _value);
+		require(balanceOf[_from] >= _value);
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += _value;
 	}

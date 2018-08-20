@@ -26,20 +26,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); 
+    // assert(b > 0); 
     uint256 c = a / b;
     // assert(a == b * c + a % b); 
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -94,10 +94,10 @@ contract Crowdsale is Ownable {
   
   uint public investorCount = 0;
     
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
  
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
  
 
   
@@ -106,8 +106,8 @@ contract Crowdsale is Ownable {
         uint EndTime;
     }
  
- mapping (address =&gt; Promo) PromoList;
- mapping (uint=&gt;uint) amountBonus;
+ mapping (address => Promo) PromoList;
+ mapping (uint=>uint) amountBonus;
  uint public level_1_amount=50 ether;
  uint public level_2_amount=100 ether;
  uint public level_3_amount=250 ether;
@@ -144,7 +144,7 @@ contract Crowdsale is Ownable {
 
   
     function setEndTime(uint _endTime) public onlyOwner{
-         require(_endTime&gt;=now&amp;&amp;_endTime&gt;=startTime);
+         require(_endTime>=now&&_endTime>=startTime);
         endTime=_endTime;
     }
     
@@ -234,13 +234,13 @@ contract Crowdsale is Ownable {
     
     
     modifier saleIsOn(){
-         require(now &gt; startTime &amp;&amp; now &lt;= endTime);
+         require(now > startTime && now <= endTime);
          _;
     }
     
     modifier isUnderHardCap() {
    
-       require(tokensSold &lt;= hardcap);
+       require(tokensSold <= hardcap);
         _;
     }
     
@@ -256,54 +256,54 @@ contract Crowdsale is Ownable {
          uint bonus;
         uint256  tokens=0;
          bonus=bonusPercent;
-       if (PromoList[msg.sender].EndTime &gt;=now)
+       if (PromoList[msg.sender].EndTime >=now)
         {
            bonus += PromoList[msg.sender].bonus; 
         }
        
         
            
-            if (msg.value&gt;=level_1_amount &amp;&amp; msg.value&lt;level_2_amount )
+            if (msg.value>=level_1_amount && msg.value<level_2_amount )
             {
             bonus+=level_1_percent;
             }
             else
-             if (msg.value&gt;=level_2_amount &amp;&amp; msg.value&lt;level_3_amount )
+             if (msg.value>=level_2_amount && msg.value<level_3_amount )
             {
             bonus+=level_2_percent;
             }
              else
-             if (msg.value&gt;=level_3_amount &amp;&amp; msg.value&lt;level_4_amount )
+             if (msg.value>=level_3_amount && msg.value<level_4_amount )
             {
             bonus+=level_3_percent;
             }
              else
-             if (msg.value&gt;=level_4_amount &amp;&amp; msg.value&lt;level_5_amount )
+             if (msg.value>=level_4_amount && msg.value<level_5_amount )
             {
             bonus+=level_4_percent;
             }
              else
-             if (msg.value&gt;=level_5_amount &amp;&amp; msg.value&lt;level_6_amount )
+             if (msg.value>=level_5_amount && msg.value<level_6_amount )
             {
             bonus+=level_5_percent;
             }
          else
-             if (msg.value&gt;=level_6_amount &amp;&amp; msg.value&lt;level_7_amount )
+             if (msg.value>=level_6_amount && msg.value<level_7_amount )
             {
             bonus+=level_6_percent;
             }
             else
-             if (msg.value&gt;=level_7_amount &amp;&amp; msg.value&lt;level_8_amount )
+             if (msg.value>=level_7_amount && msg.value<level_8_amount )
             {
             bonus+=level_7_percent;
             }
              else
-             if (msg.value&gt;=level_8_amount &amp;&amp; msg.value&lt;level_9_amount )
+             if (msg.value>=level_8_amount && msg.value<level_9_amount )
             {
             bonus+=level_8_percent;
             }
        else
-             if (msg.value&gt;=level_9_amount)
+             if (msg.value>=level_9_amount)
             {
             bonus+=level_9_percent;
             }
@@ -334,7 +334,7 @@ contract Crowdsale is Ownable {
       uint256 tokens=calcToken();
         
          
-        assert (tokens &gt;= 10000);
+        assert (tokens >= 10000);
     
         
        

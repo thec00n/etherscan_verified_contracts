@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 // Aethia CHI sell contract. Not affiliated with the game developers. Use at your own risk.
 //
 // BUYERS: to protect against scams:
-// 1) check the price by clicking on &quot;Read smart contract&quot; in etherscan. Two prices are published
+// 1) check the price by clicking on "Read smart contract" in etherscan. Two prices are published
 //     a) price for 1 Chi in wei (1 wei = 10^-18 ETH), and b) number of Chi you get for 1 ETH
 // 2) Make sure you use high enough gas price that your TX confirms within 1 hour, to avoid the scam
 //    detailed below*
@@ -18,7 +18,7 @@ pragma solidity ^0.4.19;
 // Sellers need to set allowance and call the setup() function using MEW, which is a little more involved.
 // Buyers can use Metamask to send and receive Chi tokens.
 //
-// You are welcome to clone this contract as much as you want, as long as you dont&#39; try to scam anyone.
+// You are welcome to clone this contract as much as you want, as long as you dont' try to scam anyone.
 //
 // To use the contract:
 // 1) Call approve on the Chi ERC20 address for this contract. That will allow the contract
@@ -41,8 +41,8 @@ pragma solidity ^0.4.19;
 // *) There is a cooldown period of 1 hour after the contract is reset, before it can be used again.
 //    This is to avoid possible scams where the seller sees a pending TX on the contract, then resets
 //    the contract and call setup() is a much higher price. If the seller does that with very high gas price,
-//    they could change the price for the buyer&#39;s pending TX. A cooldown of 1 hour prevents this attac, as long
-//    as the buyer&#39;s TX confirms within the hour.
+//    they could change the price for the buyer's pending TX. A cooldown of 1 hour prevents this attac, as long
+//    as the buyer's TX confirms within the hour.
 
 
 interface ChiToken {
@@ -70,15 +70,15 @@ contract ChiTrader {
 
     // convenience is_empty function. Sellers should check this before using the contract
     function is_empty() public view returns (bool) {
-        return (now - cooldown_start_time &gt; 1 hours) &amp;&amp; (this.balance==0) &amp;&amp; (Chi.balanceOf(this) == 0);
+        return (now - cooldown_start_time > 1 hours) && (this.balance==0) && (Chi.balanceOf(this) == 0);
     }
     
     // Before calling setup, the sender must call Approve() on the Chi token 
-    // That sets allowance for this contract to sell the tokens on sender&#39;s behalf
+    // That sets allowance for this contract to sell the tokens on sender's behalf
     function setup(uint256 chi_amount, uint256 price_in_wei) public {
         require(is_empty()); // must not be in cooldown
-        require(Chi.allowance(msg.sender, this) &gt;= chi_amount); // contract needs enough allowance
-        require(price_in_wei &gt; 1000); // to avoid mistakes, require price to be more than 1000 wei
+        require(Chi.allowance(msg.sender, this) >= chi_amount); // contract needs enough allowance
+        require(price_in_wei > 1000); // to avoid mistakes, require price to be more than 1000 wei
         
         price = price_in_wei;
         Chi_available = chi_amount;
@@ -98,14 +98,14 @@ contract ChiTrader {
             Amount_of_Chi_for_One_ETH = 0; // reset price
             cooldown_start_time = now; // start cooldown timer
 
-            if(eth_balance &gt; 0) msg.sender.transfer(eth_balance); // withdraw all ETH
-            if(chi_balance &gt; 0) require(Chi.transfer(msg.sender, chi_balance)); // withdraw all Chi
+            if(eth_balance > 0) msg.sender.transfer(eth_balance); // withdraw all ETH
+            if(chi_balance > 0) require(Chi.transfer(msg.sender, chi_balance)); // withdraw all Chi
         }        
         else{
-            require(msg.value &gt; 0); // must send some ETH to buy Chi
-            require(price &gt; 0); // cannot divide by zero
+            require(msg.value > 0); // must send some ETH to buy Chi
+            require(price > 0); // cannot divide by zero
             uint256 num_chi = msg.value / price; // calculate number of Chi tokens for the ETH amount sent
-            require(chi_balance &gt;= num_chi); // must have enough Chi in the contract
+            require(chi_balance >= num_chi); // must have enough Chi in the contract
             Chi_available = chi_balance - num_chi; // recalculate available Chi
 
             require(Chi.transfer(msg.sender, num_chi)); // send Chi to buyer

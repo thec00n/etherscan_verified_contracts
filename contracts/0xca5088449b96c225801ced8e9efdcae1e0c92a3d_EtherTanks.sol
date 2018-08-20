@@ -3,23 +3,23 @@ pragma solidity ^0.4.0;
 contract EtherTanks {
     
     struct TankHull {
-        uint32 armor; // Hull&#39;s armor value
-        uint32 speed; // Hull&#39;s speed value
+        uint32 armor; // Hull's armor value
+        uint32 speed; // Hull's speed value
         uint8 league; // The battle league which allows to play with this hull type
     }
     
     struct TankWeapon {
         uint32 minDamage; // Weapon minimal damage value
         uint32 maxDamage; // Weapon maximum damage value
-        uint32 attackSpeed; // Weapon&#39;s attack speed value
+        uint32 attackSpeed; // Weapon's attack speed value
         uint8 league; // The battle league which allows to play with this weapon type
     }
     
     struct TankProduct {
-        string name; // Tank&#39;s name
-        uint32 hull; // Hull&#39;s ID
-        uint32 weapon; // Weapon&#39;s ID
-        // Unfortunately, it&#39;s imposible to define the variable inside the struct as constant.
+        string name; // Tank's name
+        uint32 hull; // Hull's ID
+        uint32 weapon; // Weapon's ID
+        // Unfortunately, it's imposible to define the variable inside the struct as constant.
         // However, you can read this smart-contract and see that there are no changes at all related to the start prices.
         uint256 startPrice;
         uint256 currentPrice; // The current price. Changes every time someone buys this kind of tank
@@ -33,9 +33,9 @@ contract EtherTanks {
         address owner; // The address of the owner of this tank
         address earner; // The address of the earner of this tank who get paid
         bool selling; // Is this tank on the auction now?
-        uint256 auctionEntity; // If it&#39;s on the auction,
+        uint256 auctionEntity; // If it's on the auction,
         uint256 earned; // Total funds earned with this tank
-        uint32 exp; // Tank&#39;s experience
+        uint32 exp; // Tank's experience
     }
     
 
@@ -114,7 +114,7 @@ contract EtherTanks {
     address public AuctionMaster; // Earns fees for producing auctions (3%)
     address public TankSellMaster; // Earns fees for selling tanks (start price)
     // No modifiers were needed, because each access is checked no more than one time in the whole code,
-    // So calling &quot;require(msg.sender == UpgradeMaster);&quot; is enough.
+    // So calling "require(msg.sender == UpgradeMaster);" is enough.
     
     function ChangeUpgradeMaster (address _newMaster) public {
         require(msg.sender == UpgradeMaster);
@@ -164,30 +164,30 @@ contract EtherTanks {
         newTankWeapon(72, 108, 4, 3);
         
         // Creating first 11 tank types
-        newTankProduct(&quot;LT-1&quot;, 1, 1, 10000000000000000, 100000000000000, now);
-        newTankProduct(&quot;LT-2&quot;, 2, 2, 50000000000000000, 500000000000000, now);
-        newTankProduct(&quot;MT-1&quot;, 3, 3, 100000000000000000, 1000000000000000, now);
-        newTankProduct(&quot;HT-1&quot;, 4, 4, 500000000000000000, 5000000000000000, now);
-        newTankProduct(&quot;SPG-1&quot;, 5, 5, 500000000000000000, 5000000000000000, now);
-        newTankProduct(&quot;MT-2&quot;, 6, 6, 700000000000000000, 7000000000000000, now+(60*60*2));
-        newTankProduct(&quot;HT-2&quot;, 7, 7, 1500000000000000000, 15000000000000000, now+(60*60*5));
-        newTankProduct(&quot;LT-3&quot;, 8, 8, 300000000000000000, 3000000000000000, now+(60*60*8));
-        newTankProduct(&quot;MT-3&quot;, 9, 9, 1500000000000000000, 15000000000000000, now+(60*60*24));
-        newTankProduct(&quot;SPG-2&quot;, 10, 10, 2000000000000000000, 20000000000000000, now+(60*60*24*2));
-        newTankProduct(&quot;HT-3&quot;, 11, 11, 2500000000000000000, 25000000000000000, now+(60*60*24*3));
+        newTankProduct("LT-1", 1, 1, 10000000000000000, 100000000000000, now);
+        newTankProduct("LT-2", 2, 2, 50000000000000000, 500000000000000, now);
+        newTankProduct("MT-1", 3, 3, 100000000000000000, 1000000000000000, now);
+        newTankProduct("HT-1", 4, 4, 500000000000000000, 5000000000000000, now);
+        newTankProduct("SPG-1", 5, 5, 500000000000000000, 5000000000000000, now);
+        newTankProduct("MT-2", 6, 6, 700000000000000000, 7000000000000000, now+(60*60*2));
+        newTankProduct("HT-2", 7, 7, 1500000000000000000, 15000000000000000, now+(60*60*5));
+        newTankProduct("LT-3", 8, 8, 300000000000000000, 3000000000000000, now+(60*60*8));
+        newTankProduct("MT-3", 9, 9, 1500000000000000000, 15000000000000000, now+(60*60*24));
+        newTankProduct("SPG-2", 10, 10, 2000000000000000000, 20000000000000000, now+(60*60*24*2));
+        newTankProduct("HT-3", 11, 11, 2500000000000000000, 25000000000000000, now+(60*60*24*3));
     }
     
     function cashOut (uint256 _amount) public payable {
-        require (_amount &gt;= 0); //just in case
+        require (_amount >= 0); //just in case
         require (_amount == uint256(uint128(_amount))); // Just some magic stuff
-        require (this.balance &gt;= _amount); // Checking if this contract has enought money to pay
-        require (balances[msg.sender] &gt;= _amount); // Checking if player has enough funds on his balance
+        require (this.balance >= _amount); // Checking if this contract has enought money to pay
+        require (balances[msg.sender] >= _amount); // Checking if player has enough funds on his balance
         if (_amount == 0){
             _amount = balances[msg.sender];
             // If the requested amount is 0, it means that player wants to cashout the whole amount of balance
         }
         if (msg.sender.send(_amount)){ // Sending funds and if the transaction is successful
-            balances[msg.sender] -= _amount; // Changing the amount of funds on the player&#39;s in-game balance
+            balances[msg.sender] -= _amount; // Changing the amount of funds on the player's in-game balance
         }
         
         EventCashOut (msg.sender, _amount);
@@ -202,11 +202,11 @@ contract EtherTanks {
     //upgrade tank
     // @_upgradeChoice: 0 is for armor, 1 is for damage, 2 is for speed, 3 is for attack speed
     function upgradeTank (uint32 _tankID, uint8 _upgradeChoice) public payable {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank); // Checking if the tank exists
+        require (_tankID > 0 && _tankID < newIdTank); // Checking if the tank exists
         require (tanks[_tankID].owner == msg.sender); // Checking if sender owns this tank
-        require (_upgradeChoice &gt;= 0 &amp;&amp; _upgradeChoice &lt; 4); // Has to be between 0 and 3
-        require (tanks[_tankID].upgrades[_upgradeChoice] &lt; 5); // Only 5 upgrades are allowed for each type of tank&#39;s parametres
-        require (msg.value &gt;= upgradePrice); // Checking if there is enough amount of money for the upgrade
+        require (_upgradeChoice >= 0 && _upgradeChoice < 4); // Has to be between 0 and 3
+        require (tanks[_tankID].upgrades[_upgradeChoice] < 5); // Only 5 upgrades are allowed for each type of tank's parametres
+        require (msg.value >= upgradePrice); // Checking if there is enough amount of money for the upgrade
         tanks[_tankID].upgrades[_upgradeChoice]++; // Upgrading
         balances[msg.sender] += msg.value-upgradePrice; // Returning the rest amount of money back to the tank owner
         balances[UpgradeMaster] += upgradePrice; // Sending the amount of money spent on the upgrade to the contract creator
@@ -218,32 +218,32 @@ contract EtherTanks {
     
     // Transfer. Using for sending tanks to another players
     function _transfer (uint32 _tankID, address _receiver) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank); // Checking if the tank exists
+        require (_tankID > 0 && _tankID < newIdTank); // Checking if the tank exists
         require (tanks[_tankID].owner == msg.sender); //Checking if sender owns this tank
         require (msg.sender != _receiver); // Checking that the owner is not sending the tank to himself
         require (tanks[_tankID].selling == false); //Making sure that the tank is not on the auction now
-        tanks[_tankID].owner = _receiver; // Changing the tank&#39;s owner
-        tanks[_tankID].earner = _receiver; // Changing the tank&#39;s earner address
+        tanks[_tankID].owner = _receiver; // Changing the tank's owner
+        tanks[_tankID].earner = _receiver; // Changing the tank's earner address
 
         EventTransfer (msg.sender, _receiver, _tankID);
         return;
     }
     
-    // Transfer Action. Using for sending tanks to EtherTanks&#39; contracts. For example, the battle-area contract.
+    // Transfer Action. Using for sending tanks to EtherTanks' contracts. For example, the battle-area contract.
     function _transferAction (uint32 _tankID, address _receiver, uint8 _ActionType) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank); // Checking if the tank exists
+        require (_tankID > 0 && _tankID < newIdTank); // Checking if the tank exists
         require (tanks[_tankID].owner == msg.sender); // Checking if sender owns this tank
         require (msg.sender != _receiver); // Checking that the owner is not sending the tank to himself
         require (tanks[_tankID].selling == false); // Making sure that the tank is not on the auction now
-        tanks[_tankID].owner = _receiver; // Changing the tank&#39;s owner
+        tanks[_tankID].owner = _receiver; // Changing the tank's owner
         
         // As you can see, we do not change the earner here.
-        // It means that technically speaking, the tank&#39;s owner is still getting his earnings.
-        // It&#39;s logically that this method (transferAction) will be used for sending tanks to the battle area contract or some other contracts which will be interacting with tanks
+        // It means that technically speaking, the tank's owner is still getting his earnings.
+        // It's logically that this method (transferAction) will be used for sending tanks to the battle area contract or some other contracts which will be interacting with tanks
         // Be careful with this method! Do not call it to transfer tanks to another player!
-        // The reason you should not do this is that the method called &quot;transfer&quot; changes the owner and earner, so it is possible to change the earner address to the current owner address any time.
+        // The reason you should not do this is that the method called "transfer" changes the owner and earner, so it is possible to change the earner address to the current owner address any time.
         // However, for our special contracts like battle area, you are able to read this contract and make sure that your tank will not be sent to anyone else, only back to you.
-        // So, please, do not use this method to send your tanks to other players. Use it just for interacting with EtherTanks&#39; contracts, which will be listed on EtherTanks.com
+        // So, please, do not use this method to send your tanks to other players. Use it just for interacting with EtherTanks' contracts, which will be listed on EtherTanks.com
         
         EventTransferAction (msg.sender, _receiver, _tankID, _ActionType);
         return;
@@ -251,12 +251,12 @@ contract EtherTanks {
     
     //selling
     function sellTank (uint32 _tankID, uint256 _startPrice, uint256 _finishPrice, uint256 _duration) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank);
+        require (_tankID > 0 && _tankID < newIdTank);
         require (tanks[_tankID].owner == msg.sender);
         require (tanks[_tankID].selling == false); // Making sure that the tank is not on the auction already
-        require (_startPrice &gt;= _finishPrice);
-        require (_startPrice &gt; 0 &amp;&amp; _finishPrice &gt;= 0);
-        require (_duration &gt; 0);
+        require (_startPrice >= _finishPrice);
+        require (_startPrice > 0 && _finishPrice >= 0);
+        require (_duration > 0);
         require (_startPrice == uint256(uint128(_startPrice))); // Just some magic stuff
         require (_finishPrice == uint256(uint128(_finishPrice))); // Just some magic stuff
         
@@ -269,25 +269,25 @@ contract EtherTanks {
     
     //bidding function, people use this to buy tanks
     function bid (uint32 _tankID) public payable {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank); // Checking if the tank exists
+        require (_tankID > 0 && _tankID < newIdTank); // Checking if the tank exists
         require (tanks[_tankID].selling == true); // Checking if this tanks is on the auction now
         AuctionEntity memory currentAuction = auctions[tanks[_tankID].auctionEntity]; // The auction entity for this tank. Just to make the line below easier to read
         uint256 currentPrice = currentAuction.startPrice-(((currentAuction.startPrice-currentAuction.finishPrice)/(currentAuction.duration))*(now-currentAuction.startTime));
         // The line above calculates the current price using the formula StartPrice-(((StartPrice-FinishPrice)/Duration)*(CurrentTime-StartTime)
-        if (currentPrice &lt; currentAuction.finishPrice){ // If the auction duration time has been expired
+        if (currentPrice < currentAuction.finishPrice){ // If the auction duration time has been expired
             currentPrice = currentAuction.finishPrice;  // Setting the current price as finishPrice 
         }
-        require (currentPrice &gt;= 0); // Who knows :)
-        require (msg.value &gt;= currentPrice); // Checking if the buyer sent the amount of money which is more or equal the current price
+        require (currentPrice >= 0); // Who knows :)
+        require (msg.value >= currentPrice); // Checking if the buyer sent the amount of money which is more or equal the current price
         
-        // All is fine, changing balances and changing tank&#39;s owner
+        // All is fine, changing balances and changing tank's owner
         uint256 marketFee = (currentPrice/100)*3; // Calculating 3% of the current price as a fee
         balances[tanks[_tankID].owner] += currentPrice-marketFee; // Giving [current price]-[fee] amount to seller
-        balances[AuctionMaster] += marketFee; // Sending the fee amount to the contract creator&#39;s balance
+        balances[AuctionMaster] += marketFee; // Sending the fee amount to the contract creator's balance
         balances[msg.sender] += msg.value-currentPrice; //Return the rest amount to buyer
         tanks[_tankID].owner = msg.sender; // Changing the owner of the tank
-        tanks[_tankID].selling = false; // Change the tank status to &quot;not selling now&quot;
-        delete auctions[tanks[_tankID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don&#39;t need it anymore
+        tanks[_tankID].selling = false; // Change the tank status to "not selling now"
+        delete auctions[tanks[_tankID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don't need it anymore
         tanks[_tankID].auctionEntity = 0; // Not necessary, but deleting the ID of auction entity which was deleted in the operation above
         
         EventBid (_tankID);
@@ -295,11 +295,11 @@ contract EtherTanks {
     
     //cancel auction
     function cancelAuction (uint32 _tankID) public {
-        require (_tankID &gt; 0 &amp;&amp; _tankID &lt; newIdTank); // Checking if the tank exists
+        require (_tankID > 0 && _tankID < newIdTank); // Checking if the tank exists
         require (tanks[_tankID].selling == true); // Checking if this tanks is on the auction now
         require (tanks[_tankID].owner == msg.sender); // Checking if sender owns this tank
-        tanks[_tankID].selling = false; // Change the tank status to &quot;not selling now&quot;
-        delete auctions[tanks[_tankID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don&#39;t need it anymore
+        tanks[_tankID].selling = false; // Change the tank status to "not selling now"
+        delete auctions[tanks[_tankID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don't need it anymore
         tanks[_tankID].auctionEntity = 0; // Not necessary, but deleting the ID of auction entity which was deleted in the operation above
         
         EventCancelAuction (_tankID);
@@ -321,27 +321,27 @@ contract EtherTanks {
     }
     
     function buyTank (uint32 _tankproductID) public payable {
-        require (tankProducts[_tankproductID].currentPrice &gt; 0 &amp;&amp; msg.value &gt; 0); //value is more than 0, price is more than 0
-        require (msg.value &gt;= tankProducts[_tankproductID].currentPrice); //value is higher than price
-        require (tankProducts[_tankproductID].releaseTime &lt;= now); //checking if this tank was released.
+        require (tankProducts[_tankproductID].currentPrice > 0 && msg.value > 0); //value is more than 0, price is more than 0
+        require (msg.value >= tankProducts[_tankproductID].currentPrice); //value is higher than price
+        require (tankProducts[_tankproductID].releaseTime <= now); //checking if this tank was released.
         // Basically, the releaseTime was implemented just to give a chance to get the new tank for as many players as possible.
         // It prevents the using of bots.
         
-        if (msg.value &gt; tankProducts[_tankproductID].currentPrice){
+        if (msg.value > tankProducts[_tankproductID].currentPrice){
             // If player payed more, put the rest amount of money on his balance
             balances[msg.sender] += msg.value-tankProducts[_tankproductID].currentPrice;
         }
         
         tankProducts[_tankproductID].currentPrice += tankProducts[_tankproductID].earning;
         
-        for (uint32 index = 1; index &lt; newIdTank; index++){
+        for (uint32 index = 1; index < newIdTank; index++){
             if (tanks[index].productID == _tankproductID){
                 balances[tanks[index].earner] += tankProducts[_tankproductID].earning;
                 tanks[index].earned += tankProducts[_tankproductID].earning;
             }
         }
         
-        if (tanksBeforeTheNewTankType() == 0 &amp;&amp; newIdTankProduct &lt;= 121){
+        if (tanksBeforeTheNewTankType() == 0 && newIdTankProduct <= 121){
             newTankType();
         }
         
@@ -357,11 +357,11 @@ contract EtherTanks {
     
     // This is the tricky method which creates the new type tank.
     function newTankType () public {
-        if (newIdTankProduct &gt; 121){
+        if (newIdTankProduct > 121){
             return;
         }
         //creating new tank type!
-        if (createNewTankHull &lt; newIdTankHull - 1 &amp;&amp; createNewTankWeapon &gt;= newIdTankWeapon - 1) {
+        if (createNewTankHull < newIdTankHull - 1 && createNewTankWeapon >= newIdTankWeapon - 1) {
             createNewTankWeapon = 1;
             createNewTankHull++;
         } else {
@@ -370,7 +370,7 @@ contract EtherTanks {
                 createNewTankWeapon++;
             }
         }
-        newTankProduct (&quot;Tank&quot;, uint32(createNewTankHull), uint32(createNewTankWeapon), 200000000000000000, 3000000000000000, now+(60*60));
+        newTankProduct ("Tank", uint32(createNewTankHull), uint32(createNewTankWeapon), 200000000000000000, 3000000000000000, now+(60*60));
         return;
     }
     
@@ -385,12 +385,12 @@ contract EtherTanks {
     uint32 public createNewTankWeapon = 0; // For newTankType()
     uint256 public newIdAuctionEntity = 1; // The next ID for the new auction entity
 
-    mapping (uint32 =&gt; TankEntity) tanks; // The storage 
-    mapping (uint32 =&gt; TankProduct) tankProducts;
-    mapping (uint32 =&gt; TankHull) tankHulls;
-    mapping (uint32 =&gt; TankWeapon) tankWeapons;
-    mapping (uint256 =&gt; AuctionEntity) auctions;
-    mapping (address =&gt; uint) balances;
+    mapping (uint32 => TankEntity) tanks; // The storage 
+    mapping (uint32 => TankProduct) tankProducts;
+    mapping (uint32 => TankHull) tankHulls;
+    mapping (uint32 => TankWeapon) tankWeapons;
+    mapping (uint256 => AuctionEntity) auctions;
+    mapping (address => uint) balances;
 
     uint256 public constant upgradePrice = 50000000000000000; // The fee which the UgradeMaster earns for upgrading tanks
 
@@ -438,7 +438,7 @@ contract EtherTanks {
         require (getTankSell(_ID));
         AuctionEntity memory currentAuction = auctions[tanks[_ID].auctionEntity]; // The auction entity for this tank. Just to make the line below easier to read
         uint256 currentPrice = currentAuction.startPrice-(((currentAuction.startPrice-currentAuction.finishPrice)/(currentAuction.duration))*(now-currentAuction.startTime));
-        if (currentPrice &lt; currentAuction.finishPrice){ // If the auction duration time has been expired
+        if (currentPrice < currentAuction.finishPrice){ // If the auction duration time has been expired
             currentPrice = currentAuction.finishPrice;  // Setting the current price as finishPrice 
         }
         return currentPrice;

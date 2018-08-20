@@ -40,7 +40,7 @@ interface Token {
 }
 
 contract Utils {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
     /// @notice Check if a contract exists
     /// @param channel The address to check whether a contract is deployed or not
     /// @return True if a contract exists, false otherwise
@@ -51,7 +51,7 @@ contract Utils {
             size := extcodesize(channel)
         }
 
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -59,7 +59,7 @@ contract Utils {
 
 
 library NettingChannelLibrary {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
     struct Participant
     {
@@ -84,7 +84,7 @@ library NettingChannelLibrary {
         uint64 nonce;
 
         // A mapping to keep track of locks that have been withdrawn.
-        mapping(bytes32 =&gt; bool) withdrawn_locks;
+        mapping(bytes32 => bool) withdrawn_locks;
     }
 
     struct Data {
@@ -95,23 +95,23 @@ library NettingChannelLibrary {
         address closing_address;
         Token token;
         Participant[2] participants;
-        mapping(address =&gt; uint8) participant_index;
+        mapping(address => uint8) participant_index;
         bool updated;
     }
 
 
     modifier notSettledButClosed(Data storage self) {
-        require(self.settled &lt;= 0 &amp;&amp; self.closed &gt; 0);
+        require(self.settled <= 0 && self.closed > 0);
         _;
     }
 
     modifier stillTimeout(Data storage self) {
-        require(self.closed + self.settle_timeout &gt;= block.number);
+        require(self.closed + self.settle_timeout >= block.number);
         _;
     }
 
     modifier timeoutOver(Data storage self) {
-        require(self.closed + self.settle_timeout &lt;= block.number);
+        require(self.closed + self.settle_timeout <= block.number);
         _;
     }
 
@@ -131,9 +131,9 @@ library NettingChannelLibrary {
     {
         uint8 index;
 
-        require(self.opened &gt; 0);
+        require(self.opened > 0);
         require(self.closed == 0);
-        require(self.token.balanceOf(msg.sender) &gt;= amount);
+        require(self.token.balanceOf(msg.sender) >= amount);
 
         index = index_or_throw(self, msg.sender);
         Participant storage participant = self.participants[index];
@@ -301,7 +301,7 @@ library NettingChannelLibrary {
 
         // The lock must not have expired, it does not matter how far in the
         // future it would have expired
-        require(expiration &gt;= block.number);
+        require(expiration >= block.number);
         require(hashlock == sha3(secret));
 
         h = computeMerkleRoot(locked_encoded, merkle_proof);
@@ -309,7 +309,7 @@ library NettingChannelLibrary {
         require(counterparty.locksroot == h);
 
         // This implementation allows for each transfer to be set only once, so
-        // it&#39;s safe to update the transferred_amount in place.
+        // it's safe to update the transferred_amount in place.
         //
         // Once third parties are allowed to update the counter party transfer
         // (#293, #182) the locksroot may change, if the locksroot change the
@@ -317,7 +317,7 @@ library NettingChannelLibrary {
         // this is also safe.
         //
         // This may be problematic if an update changes the transferred_amount
-        // but not the locksroot, since the locks don&#39;t need to be
+        // but not the locksroot, since the locks don't need to be
         // re-withdrawn, the difference in the transferred_amount must be
         // accounted for.
         counterparty.transferred_amount += amount;
@@ -335,12 +335,12 @@ library NettingChannelLibrary {
         bytes32 el;
 
         h = sha3(lock);
-        for (i = 32; i &lt;= merkle_proof.length; i += 32) {
+        for (i = 32; i <= merkle_proof.length; i += 32) {
             assembly {
                 el := mload(add(merkle_proof, i))
             }
 
-            if (h &lt; el) {
+            if (h < el) {
                 h = sha3(h, el);
             } else {
                 h = sha3(el, h);
@@ -398,11 +398,11 @@ library NettingChannelLibrary {
         // is safe.
         closer_amount = total_deposit - counter_amount;
 
-        if (counter_amount &gt; 0) {
+        if (counter_amount > 0) {
             require(self.token.transfer(counter_party.node_address, counter_amount));
         }
 
-        if (closer_amount &gt; 0) {
+        if (closer_amount > 0) {
             require(self.token.transfer(closing_party.node_address, closer_amount));
         }
 
@@ -473,10 +473,10 @@ library NettingChannelLibrary {
             r := mload(add(signature, 32))
             s := mload(add(signature, 64))
             // Here we are loading the last 32 bytes, including 31 bytes
-            // of &#39;s&#39;. There is no &#39;mload8&#39; to do this.
+            // of 's'. There is no 'mload8' to do this.
             //
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             v := and(mload(add(signature, 65)), 0xff)
         }
 
@@ -492,11 +492,11 @@ library NettingChannelLibrary {
     }
 
     function min(uint a, uint b) constant internal returns (uint) {
-        return a &gt; b ? b : a;
+        return a > b ? b : a;
     }
 
     function max(uint a, uint b) constant internal returns (uint) {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 
     function kill(Data storage self) channelSettled(self) {
@@ -505,7 +505,7 @@ library NettingChannelLibrary {
 }
 
 contract NettingChannelContract {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
     using NettingChannelLibrary for NettingChannelLibrary.Data;
     NettingChannelLibrary.Data public data;
@@ -517,7 +517,7 @@ contract NettingChannelContract {
     event ChannelSecretRevealed(bytes32 secret, address receiver_address);
 
     modifier settleTimeoutNotTooLow(uint t) {
-        assert(t &gt;= 6);
+        assert(t >= 6);
         _;
     }
 
@@ -671,16 +671,16 @@ contract NettingChannelContract {
 }
 
 library ChannelManagerLibrary {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
     struct Data {
         Token token;
 
         address[] all_channels;
-        mapping(bytes32 =&gt; uint) partyhash_to_channelpos;
+        mapping(bytes32 => uint) partyhash_to_channelpos;
 
-        mapping(address =&gt; address[]) nodeaddress_to_channeladdresses;
-        mapping(address =&gt; mapping(address =&gt; uint)) node_index;
+        mapping(address => address[]) nodeaddress_to_channeladdresses;
+        mapping(address => mapping(address => uint)) node_index;
     }
 
     /// @notice Get the address of channel with a partner
@@ -748,10 +748,10 @@ library ChannelManagerLibrary {
     /// @param address_two of the other party
     /// @return The sha3 hash of both parties sorted by size of address
     function partyHash(address address_one, address address_two) internal constant returns (bytes32) {
-        if (address_one &lt; address_two) {
+        if (address_one < address_two) {
             return sha3(address_one, address_two);
         } else {
-            // The two participants can&#39;t be the same here due to this check in
+            // The two participants can't be the same here due to this check in
             // the netting channel constructor:
             // https://github.com/raiden-network/raiden/blob/e17d96db375d31b134ae7b4e2ad2c1f905b47857/raiden/smart_contracts/NettingChannelContract.sol#L27
             return sha3(address_two, address_one);
@@ -759,7 +759,7 @@ library ChannelManagerLibrary {
     }
 
     /// TODO: Find a way to remove this function duplication from Utils.sol here
-    ///       At the moment libraries can&#39;t inherit so we need to add this here
+    ///       At the moment libraries can't inherit so we need to add this here
     ///       explicitly.
     /// @notice Check if a contract exists
     /// @param channel The address to check whether a contract is deployed or not
@@ -771,7 +771,7 @@ library ChannelManagerLibrary {
             size := extcodesize(channel)
         }
 
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -779,7 +779,7 @@ library ChannelManagerLibrary {
 // deployment the logic is moved into a library and this contract will work
 // only as a proxy/state container.
 contract ChannelManagerContract is Utils {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
     using ChannelManagerLibrary for ChannelManagerLibrary.Data;
     ChannelManagerLibrary.Data data;
@@ -815,7 +815,7 @@ contract ChannelManagerContract is Utils {
         NettingChannelContract channel;
 
         uint open_channels_num = 0;
-        for (i = 0; i &lt; data.all_channels.length; i++) {
+        for (i = 0; i < data.all_channels.length; i++) {
             if (contractExists(data.all_channels[i])) {
                 open_channels_num += 1;
             }
@@ -823,7 +823,7 @@ contract ChannelManagerContract is Utils {
         result = new address[](open_channels_num * 2);
 
         pos = 0;
-        for (i = 0; i &lt; data.all_channels.length; i++) {
+        for (i = 0; i < data.all_channels.length; i++) {
             if (!contractExists(data.all_channels[i])) {
                 continue;
             }
@@ -842,7 +842,7 @@ contract ChannelManagerContract is Utils {
 
     /// @notice Get all channels that an address participates in.
     /// @param node_address The address of the node
-    /// @return The channel&#39;s addresses that node_address participates in.
+    /// @return The channel's addresses that node_address participates in.
     function nettingContractsByAddress(address node_address) constant returns (address[]) {
         return data.nodeaddress_to_channeladdresses[node_address];
     }
@@ -879,9 +879,9 @@ contract ChannelManagerContract is Utils {
 }
 
 contract Registry {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
-    mapping(address =&gt; address) public registry;
+    mapping(address => address) public registry;
     address[] public tokens;
 
     event TokenAdded(address token_address, address channel_manager_address);
@@ -892,8 +892,8 @@ contract Registry {
     }
 
     modifier doesNotExist(address _address) {
-        // Check if it&#39;s already registered or token contract is invalid.
-        // We assume if it has a valid totalSupply() function it&#39;s a valid Token contract
+        // Check if it's already registered or token contract is invalid.
+        // We assume if it has a valid totalSupply() function it's a valid Token contract
         require(registry[_address] == 0x0);
         Token token = Token(_address);
         token.totalSupply();
@@ -951,7 +951,7 @@ contract Registry {
 
         result = new address[](tokens.length);
 
-        for (i = 0; i &lt; tokens.length; i++) {
+        for (i = 0; i < tokens.length; i++) {
             token_address = tokens[i];
             result[i] = registry[token_address];
         }

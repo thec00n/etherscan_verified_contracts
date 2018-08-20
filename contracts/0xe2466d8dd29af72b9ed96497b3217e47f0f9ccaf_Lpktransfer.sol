@@ -8,13 +8,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure  returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure  returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 }
@@ -40,7 +40,7 @@ contract Ownable {
 
 contract Lpktransfer is Ownable {
   using SafeMath for uint;
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   event Transfer(address indexed from, address indexed to, uint value);
 
   function Lpktransfer() public {
@@ -48,7 +48,7 @@ contract Lpktransfer is Ownable {
   }
 
   function transferFrom(address _from, address _to, uint _tokens) external onlyOwner() returns (bool success) {
-    require(balances[_from] &gt;= _tokens); // Check if the sender has enough
+    require(balances[_from] >= _tokens); // Check if the sender has enough
     balances[_from] = balances[_from].sub(_tokens);
     balances[_to] = balances[_to].add(_tokens);
     Transfer(_from, _to, _tokens);

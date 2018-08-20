@@ -9,11 +9,11 @@ How it works:
     - An initial prize is held in the Contract
     - Anyone may overthrow the Monarch by paying a small fee.
         - They become the Monarch
-        - The &quot;reign&quot; timer is reset to N.
+        - The "reign" timer is reset to N.
         - The prize may be increased or decreased
     - If nobody overthrows the new Monarch in N blocks, the Monarch wins.
 
-For fairness, an &quot;overthrow&quot; is refunded if:
+For fairness, an "overthrow" is refunded if:
     - The incorrect amount is sent.
     - The game is already over.
     - The overthrower is already the Monarch.
@@ -21,7 +21,7 @@ For fairness, an &quot;overthrow&quot; is refunded if:
         - Note: Here, default gas is used for refund. On failure, fee is kept.
 
 Other notes:
-    - .sendFees(): Sends accrued fees to &quot;collector&quot;, at any time.
+    - .sendFees(): Sends accrued fees to "collector", at any time.
     - .sendPrize(): If game is ended, sends prize to the Monarch.
 */
 contract MonarchyGame {
@@ -29,7 +29,7 @@ contract MonarchyGame {
     // int64: 2^63 GWei is ~ 9 billion Ether, so no overflow risk.
     //
     // For blocks, we use uint32, which has a max value of 4.3 billion
-    // At a 1 second block time, there&#39;s a risk of overflow in 120 years.
+    // At a 1 second block time, there's a risk of overflow in 120 years.
     //
     // We put these variables together because they are all written to
     // on each bid. This should save some gas when we write.
@@ -46,14 +46,14 @@ contract MonarchyGame {
         bytes23 decree;         // 23 leftover bytes for decree
     }
 
-    // These values are set on construction and don&#39;t change.
+    // These values are set on construction and don't change.
     // We store in a struct for gas-efficient reading/writing.
     struct Settings {
         // [first 256-bit segment]
         address collector;       // address that fees get sent to
-        uint64 initialPrizeGwei; // (Gwei &gt; 0) amt initially staked
+        uint64 initialPrizeGwei; // (Gwei > 0) amt initially staked
         // [second 256-bit segment]
-        uint64 feeGwei;          // (Gwei &gt; 0) cost to become the Monarch
+        uint64 feeGwei;          // (Gwei > 0) cost to become the Monarch
         int64 prizeIncrGwei;     // amount added/removed to prize on overthrow
         uint32 reignBlocks;      // number of blocks Monarch must reign to win
     }
@@ -82,21 +82,21 @@ contract MonarchyGame {
         public
         payable
     {
-        require(_initialPrize &gt;= 1e9);                // min value of 1 GWei
-        require(_initialPrize &lt; 1e6 * 1e18);          // max value of a million ether
+        require(_initialPrize >= 1e9);                // min value of 1 GWei
+        require(_initialPrize < 1e6 * 1e18);          // max value of a million ether
         require(_initialPrize % 1e9 == 0);            // even amount of GWei
-        require(_fee &gt;= 1e6);                         // min value of 1 GWei
-        require(_fee &lt; 1e6 * 1e18);                   // max value of a million ether
+        require(_fee >= 1e6);                         // min value of 1 GWei
+        require(_fee < 1e6 * 1e18);                   // max value of a million ether
         require(_fee % 1e9 == 0);                     // even amount of GWei
-        require(_prizeIncr &lt;= int(_fee));             // max value of _bidPrice
-        require(_prizeIncr &gt;= -1*int(_initialPrize)); // min value of -1*initialPrize
+        require(_prizeIncr <= int(_fee));             // max value of _bidPrice
+        require(_prizeIncr >= -1*int(_initialPrize)); // min value of -1*initialPrize
         require(_prizeIncr % 1e9 == 0);               // even amount of GWei
-        require(_reignBlocks &gt;= 1);                   // minimum of 1 block
-        require(_initialBlocks &gt;= 1);                 // minimum of 1 block
-        require(msg.value == _initialPrize);          // must&#39;ve sent the prize amount
+        require(_reignBlocks >= 1);                   // minimum of 1 block
+        require(_initialBlocks >= 1);                 // minimum of 1 block
+        require(msg.value == _initialPrize);          // must've sent the prize amount
 
         // Set instance variables. these never change.
-        // These can be safely cast to int64 because they are each &lt; 1e24 (see above),
+        // These can be safely cast to int64 because they are each < 1e24 (see above),
         // 1e24 divided by 1e9 is 1e15. Max int64 val is ~1e19, so plenty of room.
         // For block numbers, uint32 is good up to ~4e12, a long time from now.
         settings.collector = _collector;
@@ -159,11 +159,11 @@ contract MonarchyGame {
         payable
     {
         if (isEnded())
-            return errorAndRefund(&quot;Game has already ended.&quot;);
+            return errorAndRefund("Game has already ended.");
         if (msg.sender == vars.monarch)
-            return errorAndRefund(&quot;You are already the Monarch.&quot;);
+            return errorAndRefund("You are already the Monarch.");
         if (msg.value != fee())
-            return errorAndRefund(&quot;Value sent must match fee.&quot;);
+            return errorAndRefund("Value sent must match fee.");
 
         // compute new values. hopefully optimizer reads from vars/settings just once.
         int _newPrizeGwei = int(vars.prizeGwei) + settings.prizeIncrGwei;
@@ -172,9 +172,9 @@ contract MonarchyGame {
         address _prevMonarch = vars.monarch;
         bool _isClean = (block.number != vars.prevBlock);
 
-        // Refund if _newPrize would end up being &lt; 0.
-        if (_newPrizeGwei &lt; 0)
-            return errorAndRefund(&quot;Overthrowing would result in a negative prize.&quot;);
+        // Refund if _newPrize would end up being < 0.
+        if (_newPrizeGwei < 0)
+            return errorAndRefund("Overthrowing would result in a negative prize.");
 
         // Attempt refund, if necessary. Use minimum gas.
         bool _wasRefundSuccess;
@@ -193,13 +193,13 @@ contract MonarchyGame {
             vars.prevBlock = uint32(block.number);
             vars.decree = _decree;
         }
-        if (!_isClean &amp;&amp; _wasRefundSuccess){
+        if (!_isClean && _wasRefundSuccess){
             // when a refund occurs, we just swap winners.
             // overthrow count and prize do not get reset.
             vars.monarch = msg.sender;
             vars.decree = _decree;
         }
-        if (!_isClean &amp;&amp; !_wasRefundSuccess){
+        if (!_isClean && !_wasRefundSuccess){
             vars.monarch = msg.sender;   
             vars.prizeGwei = uint64(_newPrizeGwei);
             vars.numOverthrows = _newNumOverthrows;
@@ -209,9 +209,9 @@ contract MonarchyGame {
         // Emit the proper events.
         if (!_isClean){
             if (_wasRefundSuccess)
-                emit OverthrowRefundSuccess(now, &quot;Another overthrow occurred on the same block.&quot;, _prevMonarch, msg.value);
+                emit OverthrowRefundSuccess(now, "Another overthrow occurred on the same block.", _prevMonarch, msg.value);
             else
-                emit OverthrowRefundFailure(now, &quot;.send() failed.&quot;, _prevMonarch, msg.value);
+                emit OverthrowRefundFailure(now, ".send() failed.", _prevMonarch, msg.value);
         }
         emit OverthrowOccurred(now, msg.sender, _decree, _prevMonarch, msg.value);
     }
@@ -236,11 +236,11 @@ contract MonarchyGame {
     {
         // make sure game has ended, and is not paid
         if (!isEnded()) {
-            emit SendPrizeError(now, &quot;The game has not ended.&quot;);
+            emit SendPrizeError(now, "The game has not ended.");
             return (false, 0);
         }
         if (vars.isPaid) {
-            emit SendPrizeError(now, &quot;The prize has already been paid.&quot;);
+            emit SendPrizeError(now, "The prize has already been paid.");
             return (false, 0);
         }
 
@@ -340,7 +340,7 @@ contract MonarchyGame {
 
     // The following are computed /////////////////////////////
     function isEnded() public view returns (bool) {
-        return block.number &gt; vars.blockEnded;
+        return block.number > vars.blockEnded;
     }
     function getBlocksRemaining() public view returns (uint) {
         if (isEnded()) return 0;

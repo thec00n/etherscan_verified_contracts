@@ -26,7 +26,7 @@ contract LoveToken is Ownable{
 }
 
 contract PiaoPiaoToken is LoveToken {
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     string public name;                   
     uint8 public decimals;               
     string public symbol;
@@ -35,9 +35,9 @@ contract PiaoPiaoToken is LoveToken {
     function PiaoPiaoToken() {
         balances[msg.sender] = 5201314; 
         totalSupply = 5201314;         
-        name = &quot;PiaoPiao Token&quot;;                   
+        name = "PiaoPiao Token";                   
         decimals = 0;          
-        symbol = &quot;PPT&quot;;  
+        symbol = "PPT";  
     }
     
     function setLoveUrl(string _loveUrl) onlyOwner public returns (bool success) {
@@ -46,7 +46,7 @@ contract PiaoPiaoToken is LoveToken {
     }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);

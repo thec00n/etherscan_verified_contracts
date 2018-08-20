@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,10 +56,10 @@ contract KYC is Ownable {
   // check the address is registered for token sale
   // first boolean is true if presale else false
   // second boolean is true if registered else false
-  mapping (address =&gt; mapping (bool =&gt; bool)) public registeredAddress;
+  mapping (address => mapping (bool => bool)) public registeredAddress;
 
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
 
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
@@ -128,7 +128,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    require(_addr != address(0) &amp;&amp; registeredAddress[_addr][_isPresale] == false);
+    require(_addr != address(0) && registeredAddress[_addr][_isPresale] == false);
 
     registeredAddress[_addr][_isPresale] = true;
 
@@ -144,7 +144,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       register(_addrs[i], _isPresale);
     }
   }
@@ -173,7 +173,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       unregister(_addrs[i], _isPresale);
     }
   }

@@ -60,20 +60,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,9 +82,9 @@ contract WTE is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;WITEE&quot;;
-	string public constant symbol=&quot;WTE&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="WITEE";
+	string public constant symbol="WTE";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 
@@ -117,9 +117,9 @@ contract WTE is ERC20,Ownable{
 	uint256 public rate;
 
 
-	mapping(address=&gt;uint256) public publicFundingWhiteList;
+	mapping(address=>uint256) public publicFundingWhiteList;
 
-	mapping(address=&gt;uint256) public  userPublicFundingEthCountMap;
+	mapping(address=>uint256) public  userPublicFundingEthCountMap;
 
 	uint256 public publicFundingPersonalEthLimit;
 
@@ -143,11 +143,11 @@ contract WTE is ERC20,Ownable{
         uint256 lockAmount;
     }
 
-    mapping(address=&gt;epoch[]) public lockEpochsMap;
+    mapping(address=>epoch[]) public lockEpochsMap;
 	 
 
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
 	function WTE(){
@@ -168,23 +168,23 @@ contract WTE is ERC20,Ownable{
 
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachPublicFundingSupply(uint256 _value,uint256 _rate){
-		assert(MAX_PUBLIC_FUNDING_SUPPLY&gt;=totalPublicFundingSupply.add(_value.mul(_rate)));
+		assert(MAX_PUBLIC_FUNDING_SUPPLY>=totalPublicFundingSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachCommonWithdrawSupply(uint256 _value,uint256 _rate){
-		assert(COMMON_WITHDRAW_SUPPLY&gt;=totalCommonWithdrawSupply.add(_value.mul(_rate)));
+		assert(COMMON_WITHDRAW_SUPPLY>=totalCommonWithdrawSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 
 	modifier notReachPartnerWithdrawSupply(uint256 _value,uint256 _rate){
-		assert(PARTNER_SUPPLY&gt;=totalPartnerWithdrawSupply.add(_value.mul(_rate)));
+		assert(PARTNER_SUPPLY>=totalPartnerWithdrawSupply.add(_value.mul(_rate)));
 		_;
 	}
 
@@ -195,12 +195,12 @@ contract WTE is ERC20,Ownable{
 	}
 
 	modifier notBeforeTime(uint256 targetTime){
-		assert(now&gt;targetTime);
+		assert(now>targetTime);
 		_;
 	}
 
 	modifier notAfterTime(uint256 targetTime){
-		assert(now&lt;=targetTime);
+		assert(now<=targetTime);
 		_;
 	}
 
@@ -263,7 +263,7 @@ contract WTE is ERC20,Ownable{
 		notReachPublicFundingSupply(msg.value,rate)
 	{
 		require(publicFundingWhiteList[msg.sender]==1);
-		require(userPublicFundingEthCountMap[msg.sender].add(msg.value)&lt;=publicFundingPersonalEthLimit);
+		require(userPublicFundingEthCountMap[msg.sender].add(msg.value)<=publicFundingPersonalEthLimit);
 
 		processFunding(msg.sender,msg.value,rate);
 
@@ -281,15 +281,15 @@ contract WTE is ERC20,Ownable{
 
 		epoch[] epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -310,15 +310,15 @@ contract WTE is ERC20,Ownable{
 
 		epoch[] epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 
 		uint256 _allowance = allowed[_from][msg.sender];
 
@@ -353,7 +353,7 @@ contract WTE is ERC20,Ownable{
     	onlyOwner
     {
         uint256 count = _list.length;
-        for (uint256 i = 0; i &lt; count; i++) {
+        for (uint256 i = 0; i < count; i++) {
         	publicFundingWhiteList[_list [i]] = 1;
         }    	
     }

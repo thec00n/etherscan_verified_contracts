@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,9 +78,9 @@ contract Bet {
         bool claimed;
     }
 
-    //mapping(uint =&gt; address) public betToOwner;
-    mapping(uint16 =&gt; uint[]) public roundBets; // roundId =&gt; betId[]
-    //mapping(address =&gt; uint) public ownerBetCount;
+    //mapping(uint => address) public betToOwner;
+    mapping(uint16 => uint[]) public roundBets; // roundId => betId[]
+    //mapping(address => uint) public ownerBetCount;
     Bet[] public bets;
     Round[] public rounds;
     uint16 public roundsCount;
@@ -149,7 +149,7 @@ contract Bet {
     greaterThan(msg.value, MINIMUM_BET_VALUE)
     isNotExpired(_roundId)
     payable {
-        Debug(_roundId, rounds[_roundId].expireAt, now, now &gt;= rounds[_roundId].expireAt);
+        Debug(_roundId, rounds[_roundId].expireAt, now, now >= rounds[_roundId].expireAt);
         uint id = bets.push(Bet(_roundId, msg.sender, msg.value, _status, false)) - 1;
         roundBets[_roundId].push(id);
         rounds[_roundId].nbBets++;
@@ -165,12 +165,12 @@ contract Bet {
         uint totalRewardsOnBet = 0;
         uint totalBetOnWinResult = 0;
         uint amountBetOnResultForOwner = 0;
-        for (uint i = 0; i &lt; betIds.length; i++) {
+        for (uint i = 0; i < betIds.length; i++) {
             Bet storage bet = bets[betIds[i]];
 
             if (bet.status == myRound.resultStatus) {
                 totalBetOnWinResult = SafeMath.add(totalBetOnWinResult, bet.amount);
-                if (bet.claimed == false &amp;&amp; bet.owner == _owner) {
+                if (bet.claimed == false && bet.owner == _owner) {
                     amountBetOnResultForOwner = SafeMath.add(amountBetOnResultForOwner, bet.amount);
                     bet.claimed = true;
                 }
@@ -196,10 +196,10 @@ contract Bet {
         uint[] memory betIds = getRoundBets(_roundId);
 
         amountToClaimBack = 0;
-        for (uint i = 0; i &lt; betIds.length; i++) {
+        for (uint i = 0; i < betIds.length; i++) {
             Bet storage bet = bets[betIds[i]];
 
-            if (bet.owner == _owner &amp;&amp; bet.claimed != true) {
+            if (bet.owner == _owner && bet.claimed != true) {
                 amountToClaimBack = SafeMath.add(amountToClaimBack, bet.amount);
                 bet.claimed = true;
             }
@@ -209,13 +209,13 @@ contract Bet {
     }
 
     function claimRewards(uint16[] _roundsToClaim, address _owner) public {
-        for (uint i = 0; i &lt; _roundsToClaim.length; i++) {
+        for (uint i = 0; i < _roundsToClaim.length; i++) {
             claimRoundReward(_roundsToClaim[i], _owner);
         }
     }
 
     function payout(address _to, uint _amount) public onlyOwner {
-        require(fees &gt;= _amount);
+        require(fees >= _amount);
         fees = SafeMath.sub(fees, _amount);
         _to.transfer(_amount);
     }
@@ -231,17 +231,17 @@ contract Bet {
     }
 
     modifier greaterThan(uint _value, uint _expect) {
-        require(_value &gt;= _expect);
+        require(_value >= _expect);
         _;
     }
 
     modifier isNotExpired(uint16 _roundId) {
-        require(rounds[_roundId].expireAt == 0 || now &lt; rounds[_roundId].expireAt);
+        require(rounds[_roundId].expireAt == 0 || now < rounds[_roundId].expireAt);
         _;
     }
 
     modifier betStatusPossible(uint16 _roundId, bytes32 _status) {
-        //require(_status &lt; rounds[_roundId].statusPossibility);
+        //require(_status < rounds[_roundId].statusPossibility);
         _;
     }
 

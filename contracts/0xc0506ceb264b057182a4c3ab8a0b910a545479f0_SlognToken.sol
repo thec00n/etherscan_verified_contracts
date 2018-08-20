@@ -9,8 +9,8 @@ contract Token {
     uint256 public _totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* ERC20 Events */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,10 +38,10 @@ contract Token {
      * @param _value The amount to be transferred.
      */
     function transferInternal(address _from, address _to, uint256 _value) internal returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 
         balanceOf[_from] -= _value;
 
@@ -70,7 +70,7 @@ contract Token {
      * @param _value uint256 the amout of tokens to be transfered
      */
     function transferFromInternal(address _from, address _to, uint256 _value) internal returns (bool success) {
-        require(_value &gt;= allowance[_from][msg.sender]);   // Check allowance
+        require(_value >= allowance[_from][msg.sender]);   // Check allowance
 
         allowance[_from][msg.sender] -= _value;
 
@@ -109,7 +109,7 @@ contract ICO {
         }
         else if(icoStep == 2) {
             // ico
-            if(totalSoldSlogns &gt; ICO_BONUS1_SLGN_LESS + ICO_BONUS2_SLGN_LESS) {
+            if(totalSoldSlogns > ICO_BONUS1_SLGN_LESS + ICO_BONUS2_SLGN_LESS) {
                 return 0;
             }
 
@@ -120,8 +120,8 @@ contract ICO {
 
             uint256 tokensForBonus1 = 0;
 
-            if(availableForBonus1 &gt; 0 &amp;&amp; availableForBonus1 &lt;= ICO_BONUS1_SLGN_LESS) {
-                tokensForBonus1 = tmp &gt; availableForBonus1 ? availableForBonus1 : tmp;
+            if(availableForBonus1 > 0 && availableForBonus1 <= ICO_BONUS1_SLGN_LESS) {
+                tokensForBonus1 = tmp > availableForBonus1 ? availableForBonus1 : tmp;
 
                 bonus += tokensForBonus1 / 100 * ICO_BONUS1_RATE;
                 tmp -= tokensForBonus1;
@@ -131,8 +131,8 @@ contract ICO {
 
             uint256 tokensForBonus2 = 0;
 
-            if(availableForBonus2 &gt; 0 &amp;&amp; availableForBonus2 &lt;= ICO_BONUS2_SLGN_LESS) {
-                tokensForBonus2 = tmp &gt; availableForBonus2 ? availableForBonus2 : tmp;
+            if(availableForBonus2 > 0 && availableForBonus2 <= ICO_BONUS2_SLGN_LESS) {
+                tokensForBonus2 = tmp > availableForBonus2 ? availableForBonus2 : tmp;
 
                 bonus += tokensForBonus2 / 100 * ICO_BONUS2_RATE;
                 tmp -= tokensForBonus2;
@@ -153,8 +153,8 @@ contract EscrowICO is Token, ICO {
 
     uint256 public totalSoldSlogns;
 
-    mapping (address =&gt; uint256) public preIcoEthers;
-    mapping (address =&gt; uint256) public icoEthers;
+    mapping (address => uint256) public preIcoEthers;
+    mapping (address => uint256) public icoEthers;
 
     event RefundEth(address indexed owner, uint256 value);
     event IcoFinished();
@@ -164,12 +164,12 @@ contract EscrowICO is Token, ICO {
     }
 
     function getIcoStep(uint256 time) returns (uint8 step) {
-        if(time &gt;=  PRE_ICO_SINCE &amp;&amp; time &lt;= PRE_ICO_TILL) {
+        if(time >=  PRE_ICO_SINCE && time <= PRE_ICO_TILL) {
             return 1;
         }
-        else if(time &gt;= ICO_SINCE &amp;&amp; time &lt;= ICO_TILL) {
+        else if(time >= ICO_SINCE && time <= ICO_TILL) {
             // ico shoud fail if collected less than 1000 slogns during pre ico
-            if(totalSoldSlogns &gt;= MIN_PRE_ICO_SLOGN_COLLECTED) {
+            if(totalSoldSlogns >= MIN_PRE_ICO_SLOGN_COLLECTED) {
                 return 2;
             }
         }
@@ -181,11 +181,11 @@ contract EscrowICO is Token, ICO {
      * officially finish ICO, only allowed after ICO is ended
      */
     function icoFinishInternal(uint256 time) internal returns (bool) {
-        if(time &lt;= ICO_TILL) {
+        if(time <= ICO_TILL) {
             return false;
         }
 
-        if(totalSoldSlogns &gt;= MIN_ICO_SLOGN_COLLECTED) {
+        if(totalSoldSlogns >= MIN_ICO_SLOGN_COLLECTED) {
             // burn tokens assigned to smart contract
 
             _totalSupply = _totalSupply - balanceOf[this];
@@ -207,11 +207,11 @@ contract EscrowICO is Token, ICO {
      * refund ico method
      */
     function refundInternal(uint256 time) internal returns (bool) {
-        if(time &lt;= PRE_ICO_TILL) {
+        if(time <= PRE_ICO_TILL) {
             return false;
         }
 
-        if(totalSoldSlogns &gt;= MIN_PRE_ICO_SLOGN_COLLECTED) {
+        if(totalSoldSlogns >= MIN_PRE_ICO_SLOGN_COLLECTED) {
             return false;
         }
 
@@ -219,7 +219,7 @@ contract EscrowICO is Token, ICO {
 
         transferedEthers = preIcoEthers[msg.sender];
 
-        if(transferedEthers &gt; 0) {
+        if(transferedEthers > 0) {
             preIcoEthers[msg.sender] = 0;
 
             balanceOf[msg.sender] = 0;
@@ -236,9 +236,9 @@ contract EscrowICO is Token, ICO {
 }
 
 contract SlognToken is Token, EscrowICO {
-    string public constant STANDARD = &#39;Slogn v0.1&#39;;
-    string public constant NAME = &#39;SLOGN&#39;;
-    string public constant SYMBOL = &#39;SLGN&#39;;
+    string public constant STANDARD = 'Slogn v0.1';
+    string public constant NAME = 'SLOGN';
+    string public constant SYMBOL = 'SLGN';
     uint8 public constant PRECISION = 14;
 
     uint256 public constant TOTAL_SUPPLY = 800000 ether; // initial total supply equals to 8.000.000.000 slogns or 800.000 eths
@@ -289,7 +289,7 @@ contract SlognToken is Token, EscrowICO {
         // transfer tokens to core team
         uint256 tokensPerMember = CORE_TEAM_TOKENS / coreTeam.length;
 
-        for(uint8 i = 0; i &lt; coreTeam.length; i++) {
+        for(uint8 i = 0; i < coreTeam.length; i++) {
             transferInternal(this, coreTeam[i], tokensPerMember);
         }
 
@@ -307,14 +307,14 @@ contract SlognToken is Token, EscrowICO {
     }
 
     function buyFor(address _user, uint256 ethers, uint time) internal returns (bool success) {
-        require(ethers &gt; 0);
+        require(ethers > 0);
 
         uint8 icoStep = getIcoStep(time);
 
         require(icoStep == 1 || icoStep == 2);
 
         // maximum collected amount for preico is 5000 ether
-        if(icoStep == 1 &amp;&amp; (totalSoldSlogns + ethers) &gt; 5000 ether) {
+        if(icoStep == 1 && (totalSoldSlogns + ethers) > 5000 ether) {
             throw;
         }
 
@@ -323,9 +323,9 @@ contract SlognToken is Token, EscrowICO {
         uint256 bonus = calculateBonus(icoStep, totalSoldSlogns, slognAmount);
 
         // check for available slogns
-        require(balanceOf[this] &gt;= slognAmount + bonus);
+        require(balanceOf[this] >= slognAmount + bonus);
 
-        if(bonus &gt; 0) {
+        if(bonus > 0) {
             BonusEarned(_user, bonus);
         }
 
@@ -360,11 +360,11 @@ contract SlognToken is Token, EscrowICO {
             return false;
         }
 
-        if(totalSoldSlogns &lt; MIN_PRE_ICO_SLOGN_COLLECTED) {
+        if(totalSoldSlogns < MIN_PRE_ICO_SLOGN_COLLECTED) {
             return false;
         }
 
-        if(this.balance &lt; value) {
+        if(this.balance < value) {
             return false;
         }
 

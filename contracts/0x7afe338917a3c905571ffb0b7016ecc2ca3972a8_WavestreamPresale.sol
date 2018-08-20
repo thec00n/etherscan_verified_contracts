@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,7 +78,7 @@ contract ERC20 is ERC20Basic {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -112,7 +112,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -237,7 +237,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -246,7 +246,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -256,7 +256,7 @@ contract CappedCrowdsale is Crowdsale {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -264,7 +264,7 @@ contract CappedCrowdsale is Crowdsale {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -350,8 +350,8 @@ contract WavestreamPresale is CappedCrowdsale, Ownable {
     CappedCrowdsale(_cap)
     Ownable()
   {
-    require(_priorityCap &gt; 0);
-    require(_priorityCap &lt; _cap);
+    require(_priorityCap > 0);
+    require(_priorityCap < _cap);
     require(_priorityWallet != address(0));
     require(_priorityWallet != _wallet);
 
@@ -368,7 +368,7 @@ contract WavestreamPresale is CappedCrowdsale, Ownable {
     isClosed = true;
 
     uint256 tokenBalance = token.balanceOf(address(this));
-    if (tokenBalance &gt; 0) {
+    if (tokenBalance > 0) {
       token.transfer(owner, tokenBalance);
     }
 
@@ -380,12 +380,12 @@ contract WavestreamPresale is CappedCrowdsale, Ownable {
    * internal interface.
    */
   function _forwardFunds() internal {
-    if (weiRaised &lt;= priorityCap) {
+    if (weiRaised <= priorityCap) {
       priorityWallet.transfer(msg.value);
     } else {
       uint256 weiRaisedBefore = weiRaised.sub(msg.value);
 
-      if (weiRaisedBefore &lt; priorityCap) {
+      if (weiRaisedBefore < priorityCap) {
         uint256 transferToPriorityWallet = priorityCap.sub(weiRaisedBefore);
         uint256 transferToWallet = weiRaised.sub(priorityCap);
         priorityWallet.transfer(transferToPriorityWallet);

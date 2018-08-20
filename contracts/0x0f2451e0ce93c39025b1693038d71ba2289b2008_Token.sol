@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,8 +49,8 @@ contract SmartToken is Ownable {
   using SafeMath for uint256;
 
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   bool public mintingFinished = false;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -79,8 +79,8 @@ contract SmartToken is Ownable {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
     uint256 _allowance = allowed[_from][msg.sender];
-    require(_allowance &gt; 0);
-    require(_allowance &gt;= _value);
+    require(_allowance > 0);
+    require(_allowance >= _value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -106,7 +106,7 @@ contract SmartToken is Ownable {
 
   function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -116,7 +116,7 @@ contract SmartToken is Ownable {
   }
 
   function burn(uint256 _value) public {
-      require(_value &gt; 0);
+      require(_value > 0);
 
       address burner = msg.sender;
       balances[burner] = balances[burner].sub(_value);
@@ -143,8 +143,8 @@ contract SmartToken is Ownable {
 contract Token is SmartToken {
 
   using SafeMath for uint256;
-  string public name = &quot;Ponscoin&quot;;
-  string public symbol = &quot;PONS&quot;;
+  string public name = "Ponscoin";
+  string public symbol = "PONS";
   uint public decimals = 6;
   uint256 public INITIAL_SUPPLY = 10000000;
 
@@ -170,12 +170,12 @@ contract Token is SmartToken {
   }
 
   function withdrawSome(uint _value) onlyOwner {
-    require(_value &lt;= this.balance);
+    require(_value <= this.balance);
     msg.sender.transfer(_value);
   }
 
   function killContract(uint256 _value) onlyOwner {
-    require(_value &gt; 0);
+    require(_value > 0);
     selfdestruct(owner);
   }
 }

@@ -12,7 +12,7 @@ pragma solidity ^0.4.18;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 contract Controlled {
@@ -48,7 +48,7 @@ contract SignalToken is Controlled {
     string public name;                     // Full token name
     uint8 public decimals;                  // Number of decimal places (usually 18)
     string public symbol;                   // Token ticker symbol
-    string public version = &quot;STV_0.1&quot;;      // Arbitrary versioning scheme
+    string public version = "STV_0.1";      // Arbitrary versioning scheme
     address public peg;                     // Address of peg contract (to reject direct transfers)
 
     struct Checkpoint {
@@ -59,8 +59,8 @@ contract SignalToken is Controlled {
     SignalToken public parentToken;
     uint public parentSnapShotBlock;
     uint public creationBlock;
-    mapping (address =&gt; Checkpoint[]) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => Checkpoint[]) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     Checkpoint[] totalSupplyHistory;
     bool public transfersEnabled;
     SignalTokenFactory public tokenFactory;
@@ -105,7 +105,7 @@ contract SignalToken is Controlled {
             require(transfersEnabled);
 
             if (msg.sender != peg || _to != peg) {
-                require(allowed[_from][msg.sender] &gt;= _amount);
+                require(allowed[_from][msg.sender] >= _amount);
                 allowed[_from][msg.sender] -= _amount;
             }
         }
@@ -119,12 +119,12 @@ contract SignalToken is Controlled {
                return;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            if (isContract(controller)) {
                require(TokenController(controller).onTransfer(_from, _to, _amount));
@@ -133,7 +133,7 @@ contract SignalToken is Controlled {
            updateValueAtNow(balances[_from], previousBalanceFrom - _amount);
 
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+           require(previousBalanceTo + _amount >= previousBalanceTo);
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            if (isContract(_to)) {
@@ -184,7 +184,7 @@ contract SignalToken is Controlled {
     }
 
     function balanceOfAt(address _owner, uint _blockNumber) public constant returns (uint) {
-        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -196,7 +196,7 @@ contract SignalToken is Controlled {
     }
 
     function totalSupplyAt(uint _blockNumber) public constant returns(uint) {
-        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -238,9 +238,9 @@ contract SignalToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply);
+        require(curTotalSupply + _amount >= curTotalSupply);
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+        require(previousBalanceTo + _amount >= previousBalanceTo);
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -250,9 +250,9 @@ contract SignalToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -269,18 +269,18 @@ contract SignalToken is Controlled {
 			return 0;
 		}
 
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock) {
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock) {
             return checkpoints[checkpoints.length-1].value;
 		}
-        if (_block &lt; checkpoints[0].fromBlock) {
+        if (_block < checkpoints[0].fromBlock) {
 			return 0;
 		}
 
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -291,7 +291,7 @@ contract SignalToken is Controlled {
 
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -309,11 +309,11 @@ contract SignalToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function () public payable {

@@ -15,7 +15,7 @@ contract DepositMasterContract {
 	address myAddress;
 	address dedeAddress;
 	address dedeStorageAddress;
-	mapping (address =&gt; bool) isOurContract;
+	mapping (address => bool) isOurContract;
 
 	event ContractCreated(address contractAddress);
 	event Deposited(address indexed contractAddress, address indexed receivingAddress, address indexed token, uint256 value);
@@ -47,7 +47,7 @@ contract DepositMasterContract {
 	function sweep(address contractAddress, address token, uint256 mininumValue) onlyDeDe {
 		require(isOurContract[contractAddress]);
 		uint256 result = DepositContract(contractAddress).sweep(token, dedeStorageAddress, mininumValue);
-		if(result &gt; 0){
+		if(result > 0){
 			Deposited(contractAddress, dedeStorageAddress, token, result);
 		}
 	}
@@ -80,7 +80,7 @@ contract DepositContract {
 		uint256 sendingValue;
 		if(token == address(0)){ // ether
 			sendingValue = this.balance;
-			if(mininumValue &gt; sendingValue){
+			if(mininumValue > sendingValue){
 				return 0;
 			}
 			success = dedeStorageAddress.send(this.balance);
@@ -88,7 +88,7 @@ contract DepositContract {
 		}
 		else{ // token
 			sendingValue = ERC20Interface(token).balanceOf(this);
-			if(mininumValue &gt; sendingValue){
+			if(mininumValue > sendingValue){
 				return 0;
 			}
 			success = ERC20Interface(token).transfer(dedeStorageAddress, sendingValue);

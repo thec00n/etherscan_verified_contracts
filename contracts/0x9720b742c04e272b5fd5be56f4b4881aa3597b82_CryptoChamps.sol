@@ -32,15 +32,15 @@ contract CryptoChamps is Ownable{
     event Transfer(address indexed _from, address indexed _to, uint32 _id);
     
     uint public totalSupply = 0;
-    string public name = &quot;CryptoChamps&quot;;
-    string public symbol = &quot;CCH&quot;;
+    string public name = "CryptoChamps";
+    string public symbol = "CCH";
     address store;
-    mapping (uint32 =&gt; Person) private people;
-    mapping (uint32 =&gt; address) private personToOwner;
-    mapping (uint32 =&gt; uint256) public personToPrice;
-    mapping (uint32 =&gt; uint256) public personToOldPrice;
-    mapping (address =&gt; uint) private noOfPersonsOwned;
-    mapping (address =&gt; bool) private isUserAdded;
+    mapping (uint32 => Person) private people;
+    mapping (uint32 => address) private personToOwner;
+    mapping (uint32 => uint256) public personToPrice;
+    mapping (uint32 => uint256) public personToOldPrice;
+    mapping (address => uint) private noOfPersonsOwned;
+    mapping (address => bool) private isUserAdded;
     
     address[] private users;
     
@@ -76,12 +76,12 @@ contract CryptoChamps is Ownable{
         
         require(msg.sender != 0x0);
         require(msg.sender != personOwner);
-        require(price &lt;= msg.value);
+        require(price <= msg.value);
         
         
         Person storage person = people[_id];
         
-        if(price &lt; msg.value){
+        if(price < msg.value){
             msg.sender.transfer(msg.value - price);
         }
         
@@ -98,7 +98,7 @@ contract CryptoChamps is Ownable{
     
     function discount(uint32 _id, uint _newPrice) external ownsPerson(_id) returns (bool){
         uint price = personToPrice[_id];
-        require(price &gt; _newPrice);
+        require(price > _newPrice);
         
         Person storage person = people[_id];
         person.discounted = true;
@@ -147,13 +147,13 @@ contract CryptoChamps is Ownable{
         uint currentPrice = personToPrice[_person.id];
         uint percent = 0;
         
-        if(currentPrice &gt;= 6.25 ether){
+        if(currentPrice >= 6.25 ether){
             percent = TWENTY_ABOVE;
-        }else if(currentPrice &gt;= 2.5 ether){
+        }else if(currentPrice >= 2.5 ether){
             percent = BELOW_TWENTY;
-        }else if(currentPrice &gt;=  1 ether){
+        }else if(currentPrice >=  1 ether){
             percent = BELOW_FIFTEEN;
-        }else if(currentPrice &gt;= 0.1 ether){
+        }else if(currentPrice >= 0.1 ether){
             percent = BELOW_TEN;
         }else{
             percent = BELOW_FIVE;

@@ -35,8 +35,8 @@ pragma solidity ^0.4.18;
 
    //继承接口后的实例
    contract HDCToken is ERC20Interface {
-      string public constant symbol = &quot;HDCT&quot;; //单位
-      string public constant name = &quot;Health Data Chain Token&quot;; //名称
+      string public constant symbol = "HDCT"; //单位
+      string public constant name = "Health Data Chain Token"; //名称
       uint8 public constant decimals = 18; //小数点后的位数
       uint256 _totalSupply = 10000000000000000000000000000; //发行总量
 
@@ -44,10 +44,10 @@ pragma solidity ^0.4.18;
       address public owner;
 
       // 每个账户的余额
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
 
       // 帐户的所有者批准将金额转入另一个帐户。从上面的说明我们可以得知allowed[被转移的账户][转移钱的账户]
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       // 只能通过智能合约的所有者才能调用的方法
       modifier onlyOwner() {
@@ -106,9 +106,9 @@ pragma solidity ^0.4.18;
       function transfer(address _to, uint256 _amount) public whenNotPaused returns (bool success) {
           require(_to != address(0x0) );
 
-          require (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]); 
+          require (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]); 
               
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -124,10 +124,10 @@ pragma solidity ^0.4.18;
       ) public whenNotPaused returns (bool success) {
           require(_to != address(0x0) );
           
-          require (balances[_from] &gt;= _amount
-              &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]);
+          require (balances[_from] >= _amount
+              && allowed[_from][msg.sender] >= _amount
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]);
               
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;

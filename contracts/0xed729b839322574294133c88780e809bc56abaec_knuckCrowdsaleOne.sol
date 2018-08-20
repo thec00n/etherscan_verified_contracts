@@ -9,7 +9,7 @@ contract knuckCrowdsaleOne {
     uint public amountRaised;
     uint public price;
     token public knuckReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 

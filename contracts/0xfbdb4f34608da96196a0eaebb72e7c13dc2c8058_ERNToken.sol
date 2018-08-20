@@ -13,13 +13,13 @@ library SafeMath {
   }
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,8 +38,8 @@ contract owned {
 }
 contract ERNToken is owned {
     using SafeMath for uint256;
-    string public constant name = &quot;ERNToken&quot;;
-    string public constant symbol = &quot;ERN&quot;;
+    string public constant name = "ERNToken";
+    string public constant symbol = "ERN";
     uint public constant decimals = 8;
     uint constant ONETOKEN = 10 ** uint256(decimals);
     uint constant MILLION = 1000000; 
@@ -63,19 +63,19 @@ contract ERNToken is owned {
     
     constructor() public {
         totalSupply = 1000 * MILLION * ONETOKEN;                        //1 Billion Total Supply
-        Dev_Supply = totalSupply.mul(3).div(100);                       //3% of Supply -&gt; locked until 01/01/2020
-        GrowthPool_Supply = totalSupply.mul(2).div(100);                //2% of Supply -&gt; locked until 01/01/2019
-        Rewards_Supply = totalSupply.mul(45).div(100);                  //45% of Supply -&gt; use for rewards, bounty, mining, etc
+        Dev_Supply = totalSupply.mul(3).div(100);                       //3% of Supply -> locked until 01/01/2020
+        GrowthPool_Supply = totalSupply.mul(2).div(100);                //2% of Supply -> locked until 01/01/2019
+        Rewards_Supply = totalSupply.mul(45).div(100);                  //45% of Supply -> use for rewards, bounty, mining, etc
         totalSupply -= Dev_Supply + GrowthPool_Supply + Rewards_Supply; //50% less for initial token supply 
         Total_ICOSupply = totalSupply;                                  //500M ICO supply
         balanceOf[msg.sender] = totalSupply;                            
     }
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt; uint256) public PrivateSale_Cap;
-    mapping (address =&gt; uint256) public PreIco_Cap;
-    mapping (address =&gt; uint256) public MainIco_Cap;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public whitelist;
+    mapping (address => uint256) public PrivateSale_Cap;
+    mapping (address => uint256) public PreIco_Cap;
+    mapping (address => uint256) public MainIco_Cap;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -97,38 +97,38 @@ contract ERNToken is owned {
         if(ICO_Tier == 2)                                       
         {
             require(whitelist[msg.sender]);
-            require(PrivateSale_Cap[msg.sender] + msg.value &lt;= 5 ether); //private sale -&gt; 5 Eth Limit
+            require(PrivateSale_Cap[msg.sender] + msg.value <= 5 ether); //private sale -> 5 Eth Limit
         }
         if(ICO_Tier == 3)                                       
         {
             require(whitelist[msg.sender]);
-            require(PreIco_Cap[msg.sender] + msg.value &lt;= 15 ether);    //pre-ico -&gt; 15 Eth Limit
+            require(PreIco_Cap[msg.sender] + msg.value <= 15 ether);    //pre-ico -> 15 Eth Limit
         }
         if(ICO_Tier == 4)                                       
         {
             require(whitelist[msg.sender]);
-            require(MainIco_Cap[msg.sender] + msg.value &lt;= 15 ether);   //main-ico -&gt; 15 Eth Limit
+            require(MainIco_Cap[msg.sender] + msg.value <= 15 ether);   //main-ico -> 15 Eth Limit
         }
         _;
     }
     function unlockDevTokenSupply() onlyOwner public {
-        require(now &gt; 1577836800);                              //can be unlocked only on 1/1/2020
+        require(now > 1577836800);                              //can be unlocked only on 1/1/2020
         require(DevSupply_Released == false);       
         balanceOf[owner] += Dev_Supply;
         totalSupply += Dev_Supply;          
         emit Transfer(0, this, Dev_Supply);
         emit Transfer(this, owner, Dev_Supply);
-        Dev_Supply = 0;                                         //clear dev supply -&gt; 0
+        Dev_Supply = 0;                                         //clear dev supply -> 0
         DevSupply_Released = true;                              //to avoid next execution
     }
     function unlockGrowthPoolTokenSupply() onlyOwner public {
-        require(now &gt; 1546300800);                              //can be unlocked only on 1/1/2019
+        require(now > 1546300800);                              //can be unlocked only on 1/1/2019
         require(GrowthPool_Released == false);      
         balanceOf[owner] += GrowthPool_Supply;
         totalSupply += GrowthPool_Supply;
         emit Transfer(0, this, GrowthPool_Supply);
         emit Transfer(this, owner, GrowthPool_Supply);
-        GrowthPool_Supply = 0;                                  //clear growthpool supply -&gt; 0
+        GrowthPool_Supply = 0;                                  //clear growthpool supply -> 0
         GrowthPool_Released = true;                             //to avoid next execution
     }
     function sendUnsoldTokenToRewardSupply() onlyOwner public {
@@ -138,7 +138,7 @@ contract ERNToken is owned {
         Total_SoldToken += totalUnsold;
     }
     function giveReward(address target, uint256 reward) onlyOwner public {
-        require(Rewards_Supply &gt;= reward);
+        require(Rewards_Supply >= reward);
         balanceOf[target] += reward;
         totalSupply += reward;
         emit Transfer(0, this, reward);
@@ -147,8 +147,8 @@ contract ERNToken is owned {
     }
     function _transferToken(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -159,7 +159,7 @@ contract ERNToken is owned {
         _transferToken(msg.sender, _to, _value);
     }
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                 
         emit Burn(msg.sender, _value);
@@ -167,8 +167,8 @@ contract ERNToken is owned {
     }
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt;= _value); 
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require (balanceOf[_from] >= _value); 
+        require (balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -176,7 +176,7 @@ contract ERNToken is owned {
     function() payable buyingToken public {
         uint totalToken = (msg.value.mul(ICO_TokenValue)).div(10 ** 18);
         totalToken = totalToken.mul(ONETOKEN);
-        require(ICO_Supply &gt;= totalToken);
+        require(ICO_Supply >= totalToken);
         if(ICO_Tier == 2)
         {
             PrivateSale_Cap[msg.sender] += msg.value;
@@ -224,25 +224,25 @@ contract ERNToken is owned {
         owner.transfer(this.balance);
     }
     function setIcoTier(uint256 newTokenValue) onlyOwner public {
-        require(ICO_Finished == false &amp;&amp; ICO_Tier &lt; 4);
+        require(ICO_Finished == false && ICO_Tier < 4);
         ICO_Tier += 1;
         ICO_AllowPayment = true;
         ICO_TokenValue = newTokenValue;
         if(ICO_Tier == 1){
-            ICO_Supply = 62500000 * ONETOKEN;               //62.5M supply -&gt; x private sale 
+            ICO_Supply = 62500000 * ONETOKEN;               //62.5M supply -> x private sale 
         }
         if(ICO_Tier == 2){
-            ICO_Supply = 100 * MILLION * ONETOKEN;          //100M supply -&gt; private sale
+            ICO_Supply = 100 * MILLION * ONETOKEN;          //100M supply -> private sale
         }
         if(ICO_Tier == 3){
-            ICO_Supply = 150 * MILLION * ONETOKEN;          //150M supply -&gt; pre-ico
+            ICO_Supply = 150 * MILLION * ONETOKEN;          //150M supply -> pre-ico
         }
         if(ICO_Tier == 4){
-            ICO_Supply = 187500000 * ONETOKEN;              //187.5M supply -&gt; main-ico
+            ICO_Supply = 187500000 * ONETOKEN;              //187.5M supply -> main-ico
         }
     }
     function FinishIco() onlyOwner public {
-        require(ICO_Tier &gt;= 4);
+        require(ICO_Tier >= 4);
         ICO_Supply = 0;
         ICO_Tier = 0;
         ICO_TokenValue = 0;

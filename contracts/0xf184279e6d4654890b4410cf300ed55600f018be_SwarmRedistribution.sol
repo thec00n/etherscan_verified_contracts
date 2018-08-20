@@ -10,7 +10,7 @@ contract RES {
     uint public totalSupply;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -25,8 +25,8 @@ contract RES {
     /* Initializes contract with name, symbol and decimals */
 
     function RES() {
-        name = &quot;RES&quot;;     
-        symbol = &quot;RES&quot;;
+        name = "RES";     
+        symbol = "RES";
         decimals = 18;
     }
 
@@ -50,9 +50,9 @@ contract SwarmRedistribution is RES {
       uint timeStamp;
     }
 
-    mapping(address =&gt; dividendPathway[]) public dividendPathways;
+    mapping(address => dividendPathway[]) public dividendPathways;
     
-    mapping(address =&gt; uint256) public totalBasicIncome;
+    mapping(address => uint256) public totalBasicIncome;
 
     uint taxRate;
 
@@ -65,7 +65,7 @@ contract SwarmRedistribution is RES {
     /* Generate a swarm tree */
     Node[] public swarmTree;
     
-    mapping(address =&gt; bool) inSwarmTree;
+    mapping(address => bool) inSwarmTree;
     
     bool JohanInSwarm;
 
@@ -102,7 +102,7 @@ contract SwarmRedistribution is RES {
     }
 
     function sell(uint256 _value) public {
-      if(balanceOf[msg.sender] &lt; _value) throw;
+      if(balanceOf[msg.sender] < _value) throw;
       balanceOf[msg.sender] -= _value;
 
       totalSupply -= _value;
@@ -116,8 +116,8 @@ contract SwarmRedistribution is RES {
         if(_to == msg.sender) throw;
         
         /* if the sender doenst have enough balance then stop */
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         /* Calculate tax */
         uint256 taxCollected = _value * taxRate / 1000;
@@ -158,11 +158,11 @@ contract SwarmRedistribution is RES {
 
     function iterateThroughSwarm(address _node, uint _timeStamp) internal {
       if(dividendPathways[_node].length != 0) {
-        for(uint i = 0; i &lt; dividendPathways[_node].length; i++) {
+        for(uint i = 0; i < dividendPathways[_node].length; i++) {
           if(inSwarmTree[dividendPathways[_node][i].from] == false) { 
             
             uint timeStamp = dividendPathways[_node][i].timeStamp;
-            if(timeStamp &lt;= _timeStamp) {
+            if(timeStamp <= _timeStamp) {
                 
               if(dividendPathways[_node][i].from == JohanNygren) JohanInSwarm = true;
     
@@ -186,7 +186,7 @@ contract SwarmRedistribution is RES {
       if(JohanInSwarm) share = _taxCollected;
       else share = 0;
     
-      for(uint i = 0; i &lt; swarmTree.length; i++) {
+      for(uint i = 0; i < swarmTree.length; i++) {
         
         address node = swarmTree[i].node;
         address parent = swarmTree[i].parent;
@@ -200,7 +200,7 @@ contract SwarmRedistribution is RES {
         totalBasicIncome[node] += share;
         }
           
-        if(dividendPathways[parent][index].amount - _taxCollected &gt; 0) {
+        if(dividendPathways[parent][index].amount - _taxCollected > 0) {
           dividendPathways[parent][index].amount -= _taxCollected; 
         }
         else removeDividendPathway(parent, index);
@@ -218,7 +218,7 @@ contract SwarmRedistribution is RES {
     
     function removeDividendPathway(address node, uint index) internal {
                 delete dividendPathways[node][index];
-                for (uint i = index; i &lt; dividendPathways[node].length - 1; i++) {
+                for (uint i = index; i < dividendPathways[node].length - 1; i++) {
                         dividendPathways[node][i] = dividendPathways[node][i + 1];
                 }
                 dividendPathways[node].length--;

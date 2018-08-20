@@ -27,10 +27,10 @@ contract SimpleMarket is owned, WithdrawalContract {
 		bytes32[] productKeys;
 		bytes32 userEmail;
 		bytes32 userName;
-		mapping(bytes32 =&gt; uint) productKeyPointers;
+		mapping(bytes32 => uint) productKeyPointers;
 	}
 
-	mapping(bytes32 =&gt; UserStruct) public userStructs;
+	mapping(bytes32 => UserStruct) public userStructs;
 	bytes32[] public userList;
 
 	struct ProductStruct {
@@ -45,7 +45,7 @@ contract SimpleMarket is owned, WithdrawalContract {
 		uint[] historyPrice;
 	}
 
-	mapping(bytes32 =&gt; ProductStruct) public productStructs;
+	mapping(bytes32 => ProductStruct) public productStructs;
 	bytes32[] public productList;
 
 	event LogNewUser(address sender, bytes32 userId);
@@ -122,8 +122,8 @@ contract SimpleMarket is owned, WithdrawalContract {
 		
 		require(msg.sender != 0);
         require(startPrice != 0);
-        require(msg.value  &gt;= startPrice);
-        require(productList.length &lt;= 100);
+        require(msg.value  >= startPrice);
+        require(productList.length <= 100);
         
 		bytes32 userId    = bytes32(msg.sender);
 		uint productCount = productList.length + 1;
@@ -167,7 +167,7 @@ contract SimpleMarket is owned, WithdrawalContract {
 	function deleteUser(bytes32 userId) public onlyOwner returns(bool succes) {
 
 		require(isUser(userId));
-		require(userStructs[userId].productKeys.length &lt;= 0);
+		require(userStructs[userId].productKeys.length <= 0);
 
 		uint rowToDelete  = userStructs[userId].userListPointer;
 		bytes32 keyToMove = userList[userList.length-1];
@@ -224,7 +224,7 @@ contract SimpleMarket is owned, WithdrawalContract {
 
 	    require(isProduct(_productId));
 	    require(isUser(_oldOwner));
-	    require(msg.value &gt;= productStructs[_productId].productPrice);
+	    require(msg.value >= productStructs[_productId].productPrice);
 
 	    if(isUserProduct(_productId, _newOwner)) return false;
 
@@ -246,7 +246,7 @@ contract SimpleMarket is owned, WithdrawalContract {
 
         bool start = false;
 
-    	for(uint i=0;i&lt;userStructs[_oldOwner].productKeys.length;i++) {
+    	for(uint i=0;i<userStructs[_oldOwner].productKeys.length;i++) {
     	    if((i+1) == userStructs[_oldOwner].productKeys.length){
     	        userStructs[_oldOwner].productKeys[i] = 0x0;
     	    }else{

@@ -34,12 +34,12 @@ contract Lottery {
         if (!enabled)
             throw;
             
-        if (msg.value &lt; ticketPrice)
+        if (msg.value < ticketPrice)
             throw;
             
-        for (uint i = 0; i &lt; msg.value / ticketPrice; i++) {
+        for (uint i = 0; i < msg.value / ticketPrice; i++) {
             if (participants.length == maxParticipants) {
-                if (pendingParticipants.length &gt;= MAX_PENDING_PARTICIPANTS)
+                if (pendingParticipants.length >= MAX_PENDING_PARTICIPANTS)
                     if (msg.sender.send(msg.value - (i * TICKET_PRICE))) 
                         return;
                     else
@@ -52,13 +52,13 @@ contract Lottery {
             totalTicketsSold++;
         }
 
-        if (msg.value % ticketPrice &gt; 0)
+        if (msg.value % ticketPrice > 0)
             if (!msg.sender.send(msg.value % ticketPrice))
                 throw;
     }
 
     function conclude () public returns (bool) {
-        if (block.number &lt; targetBlock)
+        if (block.number < targetBlock)
             return false;
 
         totalRoundsPassed++;
@@ -70,15 +70,15 @@ contract Lottery {
 
         delete participants;
         
-        uint m = pendingParticipants.length &gt; maxParticipants ? maxParticipants : pendingParticipants.length;
+        uint m = pendingParticipants.length > maxParticipants ? maxParticipants : pendingParticipants.length;
         
-        for (uint i = 0; i &lt; m; i++)
+        for (uint i = 0; i < m; i++)
             participants.push(pendingParticipants[i]);
         
         if (m == pendingParticipants.length) {
             delete pendingParticipants;
         } else {
-            for (i = m; i &lt; pendingParticipants.length; i++) {
+            for (i = m; i < pendingParticipants.length; i++) {
                 pendingParticipants[i-m] == pendingParticipants[i];
                 delete pendingParticipants[i];
             }
@@ -104,7 +104,7 @@ contract Lottery {
     }
 
     function increaseBlockTarget() private {
-        if (block.number &lt; targetBlock)
+        if (block.number < targetBlock)
             return;
 
         targetBlock = block.number + ROUND_PER_BLOCK;

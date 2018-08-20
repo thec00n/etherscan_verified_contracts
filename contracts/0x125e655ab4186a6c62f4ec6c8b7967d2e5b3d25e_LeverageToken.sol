@@ -31,7 +31,7 @@ event Approval(address indexed _owner, address indexed _spender, uint256 _value)
 
 contract StandardToken is Token {
 function transfer(address _to, uint256 _value) returns (bool success) {
-if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+if (balances[msg.sender] >= _value && _value > 0) {
 balances[msg.sender] -= _value;
 balances[_to] += _value;
 Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ return true;
 } else { return false; }
 }
 function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 balances[_to] += _value;
 balances[_from] -= _value;
 allowed[_from][msg.sender] -= _value;
@@ -58,8 +58,8 @@ return true;
 function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
 return allowed[_owner][_spender];
 }
-mapping (address =&gt; uint256) balances;
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping (address => uint256) balances;
+mapping (address => mapping (address => uint256)) allowed;
 uint256 public totalSupply;
 }
 
@@ -71,24 +71,24 @@ throw;
 }
 
 /* Public variables of the token */
-string public name = &#39;Leverage Platform Token&#39;; 
+string public name = 'Leverage Platform Token'; 
 uint8 public decimals;//Decimals
-string public symbol = &#39;LVP&#39;;//TICKER
-string public version = &#39;1.0.2&#39;;
+string public symbol = 'LVP';//TICKER
+string public version = '1.0.2';
 
 function LeverageToken(
 ) {
 balances[msg.sender] = 50000000;
 totalSupply = 50000000;
-name = &quot;LEVERAGE PLATFORM&quot;;
+name = "LEVERAGE PLATFORM";
 decimals = 0;// Amount of decimals for display purposes
-symbol = &quot;LVP&quot;;//TICKER
+symbol = "LVP";//TICKER
 }
 
 function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
 allowed[msg.sender][_spender] = _value;
 Approval(msg.sender, _spender, _value);
-if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
 return true;
 }
 }

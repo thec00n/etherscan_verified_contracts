@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 // similar as other games, with two changes:
 // A. half of your kebabs expiry date is over when you sell them so they are thrown away
-// B. the &quot;free&quot; 150 initial cost 0.001 eth (in line with the mining fee)
+// B. the "free" 150 initial cost 0.001 eth (in line with the mining fee)
 
 // bots should have a harder time
 
@@ -14,16 +14,16 @@ contract EtherKebab{
     bool public initialized=false;
     address public ceoAddress = 0xdf4703369ecE603a01e049e34e438ff74Cd96D66;
     uint public ceoEtherBalance;
-    mapping (address =&gt; uint256) public workingKebaber;
-    mapping (address =&gt; uint256) public claimedKebabs;
-    mapping (address =&gt; uint256) public lastKebab;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public workingKebaber;
+    mapping (address => uint256) public claimedKebabs;
+    mapping (address => uint256) public lastKebab;
+    mapping (address => address) public referrals;
     uint256 public marketKebabs;
    
     function makeKebabs(address ref) public
     {
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender)
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender)
         {
             referrals[msg.sender]=ref;
         }
@@ -45,7 +45,7 @@ contract EtherKebab{
         uint256 hasKebabs=getMyKebabs();
         uint256 kebabValue=calculateKebabSell(hasKebabs);
         uint256 fee=calculatePercentage(kebabValue,10);
-        // kill one half of the owner&#39;s snails on egg sale
+        // kill one half of the owner's snails on egg sale
         workingKebaber[msg.sender] = SafeMath.div(workingKebaber[msg.sender],2);
         claimedKebabs[msg.sender]=0;
         lastKebab[msg.sender]=now;
@@ -136,7 +136,7 @@ contract EtherKebab{
 
     function min(uint256 a, uint256 b) private pure returns (uint256) 
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -160,9 +160,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -170,7 +170,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -179,7 +179,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

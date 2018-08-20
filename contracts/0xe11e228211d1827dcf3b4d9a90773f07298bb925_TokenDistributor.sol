@@ -35,7 +35,7 @@ contract TokenDistributor is Ownable {
     
   function mintBatch(address[] wallets, uint[] tokens) public onlyOwner {
     require(wallets.length == tokens.length);
-    for(uint i=0; i&lt;wallets.length; i++) crowdsale.mintTokensExternal(wallets[i], tokens[i]);
+    for(uint i=0; i<wallets.length; i++) crowdsale.mintTokensExternal(wallets[i], tokens[i]);
   }
     
 }

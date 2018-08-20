@@ -7,7 +7,7 @@ contract Contract {
     uint256 fee;
     bool whitelisted;
   }
-  mapping (address =&gt; Contributor) public contributors;
+  mapping (address => Contributor) public contributors;
   uint256 public contract_eth_value;
   uint256 public contract_eth_value_fee;
 }
@@ -35,14 +35,14 @@ contract HybridProxy {
   //============================
   address constant public DEVELOPER1 = 0xEE06BdDafFA56a303718DE53A5bc347EfbE4C68f;
   address constant public DEVELOPER2 = 0x63F7547Ac277ea0B52A0B060Be6af8C5904953aa;
-  uint256 constant public FEE_DEV = 500; //0.2% fee per dev -&gt; so 0.4% fee in total
+  uint256 constant public FEE_DEV = 500; //0.2% fee per dev -> so 0.4% fee in total
   //============================
 
   Contract contr;
   uint256 public eth_balance;
   uint256 public fee_balance;
   ERC20 public token;
-  mapping (address =&gt; uint8) public contributor_rounds;
+  mapping (address => uint8) public contributor_rounds;
   Snapshot[] public snapshots;
   address owner;
   uint8 public rounds;
@@ -68,7 +68,7 @@ contract HybridProxy {
   function withdraw()  {
     uint256 contract_token_balance = token.balanceOf(address(this));
 		var (balance, balance_bonus, fee, whitelisted) = contr.contributors(msg.sender);
-		if (contributor_rounds[msg.sender] &lt; rounds) {
+		if (contributor_rounds[msg.sender] < rounds) {
 			Snapshot storage snapshot = snapshots[contributor_rounds[msg.sender]];
       uint256 tokens_to_withdraw = (balance * snapshot.tokens_balance) / snapshot.eth_balance;
 			snapshot.tokens_balance -= tokens_to_withdraw;
@@ -87,7 +87,7 @@ contract HybridProxy {
     require(msg.sender == owner);
     uint256 previous_balance;
     uint256 tokens_this_round;
-    for (uint8 i = 0; i &lt; snapshots.length; i++) {
+    for (uint8 i = 0; i < snapshots.length; i++) {
       previous_balance += snapshots[i].tokens_balance;
     }
     tokens_this_round = token.balanceOf(address(this)) - previous_balance;
@@ -98,7 +98,7 @@ contract HybridProxy {
   }
 
   function set_token_address(address _token) {
-    require(msg.sender == owner &amp;&amp; _token != 0x0);
+    require(msg.sender == owner && _token != 0x0);
     token = ERC20(_token);
   }
 }

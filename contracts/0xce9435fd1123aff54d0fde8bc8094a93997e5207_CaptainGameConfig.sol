@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cebcafa7a0b78ea2a7b8abbdbaafbce0ada1a3">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6006010e0e194e1a08050e07200c091605131401124e030f0d">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cebcafa7a0b78ea2a7b8abbdbaafbce0ada1a3">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6006010e0e194e1a08050e07200c091605131401124e030f0d">[email protected]</a>
 /*                 
 /* ==================================================================== */
 contract CaptainGameConfig {
@@ -19,10 +19,10 @@ contract CaptainGameConfig {
   }
 
   /** mapping**/
-  mapping(uint256 =&gt; Card) private cardInfo;  //normal card
-  mapping(uint32 =&gt; uint256) public captainIndxToCount;
-  mapping(uint32 =&gt; uint32) private calfactor;
-  mapping(uint32 =&gt; bool) private unitSellable;
+  mapping(uint256 => Card) private cardInfo;  //normal card
+  mapping(uint32 => uint256) public captainIndxToCount;
+  mapping(uint32 => uint32) private calfactor;
+  mapping(uint32 => bool) private unitSellable;
 
   function CaptainGameConfig() public {
     owner = msg.sender;
@@ -46,7 +46,7 @@ contract CaptainGameConfig {
     captainIndxToCount[8] = 40;
     captainIndxToCount[9] = 60;
 
-    calfactor[1] = 80; //for atk_min &amp; atk_max calculate
+    calfactor[1] = 80; //for atk_min & atk_max calculate
     calfactor[2] = 85;
     calfactor[3] = 90;
     calfactor[4] = 95;
@@ -110,7 +110,7 @@ contract CaptainGameConfig {
     if (level==2) {
       atk = atk * 150/100;
       defense = defense * 150/100;
-    } else if (level&gt;=3) {
+    } else if (level>=3) {
       atk = atk * (level-1)*2 - atk * (level-2)* 150/100 - atk*50/100;
       defense = defense * (level-1)*2 - (level-2) * defense * 150/100 - defense*50/100;
     }

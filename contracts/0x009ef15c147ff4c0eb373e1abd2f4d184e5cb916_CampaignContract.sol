@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,10 +57,10 @@ contract CampaignContract {
 		bytes32 addressTwo;
 	}
 	
-	mapping (address =&gt; KYCObject) internal contributionKYC;
+	mapping (address => KYCObject) internal contributionKYC;
 
-	mapping (address =&gt; uint256) internal amountAttempted;
-	mapping (address =&gt; uint256) internal amountContributed;
+	mapping (address => uint256) internal amountAttempted;
+	mapping (address => uint256) internal amountContributed;
 
 	uint256 public amountRaised; //Value strictly increases and tracks total raised.
 	uint256 public amountRemaining; //Value represents amount that can be withdrawn.
@@ -117,19 +117,19 @@ contract CampaignContract {
 	}
 
 	modifier hasKYCInfo(address addr) {
-		require(contributionKYC[addr].phone != &quot;&quot;);
-		require(contributionKYC[addr].name != &quot;&quot;);
+		require(contributionKYC[addr].phone != "");
+		require(contributionKYC[addr].name != "");
 		_;
 	}
 	
 	function verifyKYC(bytes32 phone, bytes32 name, bytes32 occupation, bytes32 addrOne, bytes32 addrTwo) external {
-		require(contributionKYC[msg.sender].phone == &quot;&quot;);
-		require(contributionKYC[msg.sender].name == &quot;&quot;);
-		require(phone != &quot;&quot;);
-		require(name != &quot;&quot;);
-		require(occupation != &quot;&quot;);
-		require(addrOne != &quot;&quot;);
-		require(addrTwo != &quot;&quot;);
+		require(contributionKYC[msg.sender].phone == "");
+		require(contributionKYC[msg.sender].name == "");
+		require(phone != "");
+		require(name != "");
+		require(occupation != "");
+		require(addrOne != "");
+		require(addrTwo != "");
 	
 		contributionKYC[msg.sender].phone = phone;
 		contributionKYC[msg.sender].name = name;
@@ -161,21 +161,21 @@ contract CampaignContract {
 	}
 
 	function contribute() external hasKYCInfo(msg.sender) payable {
-		//Make sure they&#39;re not attempting to submit more than max.
+		//Make sure they're not attempting to submit more than max.
 		uint256 finalAttempted = amountAttempted[msg.sender].add(msg.value);
-		require(finalAttempted &lt;= maxContribution);
+		require(finalAttempted <= maxContribution);
 	
-		//Make sure the attempt added with the already submitted amount isn&#39;t more than max.
+		//Make sure the attempt added with the already submitted amount isn't more than max.
 		uint256 finalAmount = amountContributed[msg.sender].add(finalAttempted);
-		require(finalAmount &gt;= minContribution);
-		require(finalAmount &lt;= maxContribution);
+		require(finalAmount >= minContribution);
+		require(finalAmount <= maxContribution);
 	
 		amountAttempted[msg.sender] = finalAttempted;
 		emit ContributionReceived(msg.sender, msg.value);
 	}
 	
 	function withdrawContribution() external hasKYCInfo(msg.sender) {
-		require(amountAttempted[msg.sender] &gt; 0);
+		require(amountAttempted[msg.sender] > 0);
 		uint256 amount = amountAttempted[msg.sender];
 		amountAttempted[msg.sender] = 0;
 	
@@ -196,24 +196,24 @@ contract CampaignContract {
 	}
 
 	function resetKYC(address addr) external onlyOwner hasKYCInfo(addr) {
-		//Cant reset KYC for someone who you&#39;ve accepted from already.
+		//Cant reset KYC for someone who you've accepted from already.
 		require(amountContributed[addr] == 0);
 	
 		//Someone having their KYC reset must have withdrawn their attempts.
 		require(amountAttempted[addr] == 0);
 	
-		contributionKYC[addr].phone = &quot;&quot;;
-		contributionKYC[addr].name = &quot;&quot;;
-		contributionKYC[addr].occupation = &quot;&quot;;
-		contributionKYC[addr].addressOne = &quot;&quot;;
-		contributionKYC[addr].addressTwo = &quot;&quot;;
+		contributionKYC[addr].phone = "";
+		contributionKYC[addr].name = "";
+		contributionKYC[addr].occupation = "";
+		contributionKYC[addr].addressOne = "";
+		contributionKYC[addr].addressTwo = "";
 	
 		emit KYCReset(msg.sender, addr);
 	}
 	
 	function acceptContribution(address addr) external onlyOwner hasKYCInfo(addr) {
-		require(amountAttempted[addr] &gt;= minContribution);
-		require(amountContributed[addr].add(amountAttempted[addr]) &lt;= maxContribution);
+		require(amountAttempted[addr] >= minContribution);
+		require(amountContributed[addr].add(amountAttempted[addr]) <= maxContribution);
 	
 		uint256 amount = amountAttempted[addr];
 		amountAttempted[addr] = 0;
@@ -226,7 +226,7 @@ contract CampaignContract {
 	}
 	
 	function rejectContribution(address addr) external onlyOwner {
-		require(amountAttempted[addr] &gt; 0);
+		require(amountAttempted[addr] > 0);
 	
 		uint256 amount = amountAttempted[addr];
 		amountAttempted[addr] = 0;
@@ -236,7 +236,7 @@ contract CampaignContract {
 	}
 	
 	function withdrawToWallet(uint256 amount) external onlyOwner {
-		require(amount &lt;= amountRemaining);
+		require(amount <= amountRemaining);
 	
 		amountRemaining = amountRemaining.sub(amount);
 		msg.sender.transfer(amount);

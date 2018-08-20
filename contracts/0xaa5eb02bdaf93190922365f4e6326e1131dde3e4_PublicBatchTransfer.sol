@@ -90,7 +90,7 @@ contract WalletUsage is HasWallet {
 
     function withdrawEth2Wallet(uint256 weiAmount) public onlyOwner {
         require(wallet != address(0));
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
         wallet.transfer(weiAmount);
     }
 
@@ -113,11 +113,11 @@ contract PublicBatchTransfer is WalletUsage {
     }
 
     function batchTransfer(address tokenAddress, address[] beneficiaries, uint256[] tokenAmount) payable public returns (bool) {
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
         require(tokenAddress != address(0));
-        require(beneficiaries.length &gt; 0 &amp;&amp; beneficiaries.length == tokenAmount.length);
+        require(beneficiaries.length > 0 && beneficiaries.length == tokenAmount.length);
         ERC20 ERC20Contract = ERC20(tokenAddress);
-        for (uint256 i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint256 i = 0; i < beneficiaries.length; i++) {
             ERC20Contract.safeTransferFrom(msg.sender, beneficiaries[i], tokenAmount[i]);
         }
         if (!keepEth) {

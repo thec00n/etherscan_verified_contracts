@@ -30,12 +30,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,10 +53,10 @@ contract ERC20 is ERC20Basic {
 }
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -67,11 +67,11 @@ contract BasicToken is ERC20Basic {
   }
 }
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, BasicToken {
   }
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -106,8 +106,8 @@ contract StandardToken is ERC20, BasicToken {
 contract BurnableToken is StandardToken {
   event Burn(address indexed burner, uint256 value);
   function burn(uint256 _value) public {
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -115,8 +115,8 @@ contract BurnableToken is StandardToken {
   }
 }
 contract SpaceTRUMPToken is BurnableToken {
-  string public constant name = &quot;Space TRUMP Token&quot;;
-  string public constant symbol = &quot;TRUMP&quot;;
+  string public constant name = "Space TRUMP Token";
+  string public constant symbol = "TRUMP";
   uint32 public constant decimals = 0;
   uint256 public constant INITIAL_SUPPLY = 38440000;
   function SpaceKIMToken() public {
@@ -154,7 +154,7 @@ contract Crowdsale is Ownable {
 
   modifier saleIsOn() {
     uint curState = getStatus();
-    require(curState != 0 &amp;&amp; curState != 5 &amp;&amp; curState != 3);
+    require(curState != 0 && curState != 5 && curState != 3);
     _;
   }
 
@@ -162,12 +162,12 @@ contract Crowdsale is Ownable {
     uint _availableTokens = token.balanceOf(this);
     uint _tokens = calculateTokens(msg.value);
     uint _minTokens = holdTokensOnStage();
-    require(_availableTokens.sub(_tokens) &gt;= _minTokens);
+    require(_availableTokens.sub(_tokens) >= _minTokens);
     _;
   }
 
   modifier checkMinAmount() {
-    require(msg.value &gt;= minAmount);
+    require(msg.value >= minAmount);
     _;
   }
   function Crowdsale() public {
@@ -206,15 +206,15 @@ contract Crowdsale is Ownable {
   // 4 - Olympic games
   // 5 - Bounty Second
   function getStatus() internal constant returns (uint8) {
-    if(now &gt; endCrowdsaleDate) {
+    if(now > endCrowdsaleDate) {
       return 0;
-    } else if(now &gt; olympEndDate &amp;&amp; now &lt; endCrowdsaleDate) {
+    } else if(now > olympEndDate && now < endCrowdsaleDate) {
       return 5;
-    } else if(now &gt; olympStartDate &amp;&amp; now &lt; olympEndDate) {
+    } else if(now > olympStartDate && now < olympEndDate) {
       return 4;
-    } else if(now &gt; saleFinishDate &amp;&amp; now &lt; olympStartDate) {
+    } else if(now > saleFinishDate && now < olympStartDate) {
       return 3;
-    } else if(now &gt; saleStartDate &amp;&amp; now &lt; saleFinishDate) {
+    } else if(now > saleStartDate && now < saleFinishDate) {
       return 2;
     } else if(statusPreSale == 1){
       return 1;
@@ -253,20 +253,20 @@ contract Crowdsale is Ownable {
 
   function getStatusInfo() public view returns (string) {
     uint curState = getStatus();
-    if(now &gt; endCrowdsaleDate) {
-      return &quot;Crowdsale is over&quot;;
+    if(now > endCrowdsaleDate) {
+      return "Crowdsale is over";
     } else if(curState == 5) {
-      return &quot;Now Bounty #2 token distribution is active&quot;;
+      return "Now Bounty #2 token distribution is active";
     } else if(curState == 4) {
-      return &quot;Now Olympic Special (ICO #2) is active&quot;;
+      return "Now Olympic Special (ICO #2) is active";
     } else if(curState == 3) {
-      return &quot;Now Bounty #1 token distribution is active&quot;;
+      return "Now Bounty #1 token distribution is active";
     } else if(curState == 2) {
-      return &quot;Now ICO #1 is active&quot;;
+      return "Now ICO #1 is active";
     } else if(curState == 1) {
-      return &quot;Now Pre-ICO is active&quot;;
+      return "Now Pre-ICO is active";
     } else {
-      return &quot;The sale of tokens is stopped&quot;;
+      return "The sale of tokens is stopped";
     }
   }
 
@@ -276,7 +276,7 @@ contract Crowdsale is Ownable {
   }
 
   function burnTokens() public onlyOwner {
-    require(now &gt; endCrowdsaleDate);
+    require(now > endCrowdsaleDate);
     uint _totalSupply = token.totalSupply();
     uint _teamTokens = _totalSupply.mul(percentsTeamTokens).div(100);
     token.transfer(restricted, _teamTokens);
@@ -288,7 +288,7 @@ contract Crowdsale is Ownable {
     uint curState = getStatus();
     require(curState == 5 || curState == 3);
     uint _minTokens = holdTokensOnStage();
-    require(token.balanceOf(this).sub(tokens) &gt;=  _minTokens);
+    require(token.balanceOf(this).sub(tokens) >=  _minTokens);
     token.transfer(to, tokens);
   }
 

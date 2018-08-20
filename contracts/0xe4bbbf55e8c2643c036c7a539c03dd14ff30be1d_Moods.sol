@@ -4,18 +4,18 @@ contract Moods{
 
 address public owner;
 string public currentMood;
-mapping(string =&gt; bool) possibleMoods;
+mapping(string => bool) possibleMoods;
 string[] public listMoods;
 
 constructor() public{
     owner = msg.sender;
-    possibleMoods[&#39;&#128528;&#39;] = true;
-    possibleMoods[&#39;&#128515;&#39;] = true;
-    possibleMoods[&#39;&#128532;&#39;] = true;
-    listMoods.push(&#39;&#128528;&#39;);
-    listMoods.push(&#39;&#128515;&#39;);
-    listMoods.push(&#39;&#128532;&#39;);
-    currentMood = &#39;&#128528;&#39;;
+    possibleMoods['😐'] = true;
+    possibleMoods['😃'] = true;
+    possibleMoods['😔'] = true;
+    listMoods.push('😐');
+    listMoods.push('😃');
+    listMoods.push('😔');
+    currentMood = '😐';
 }
 
 event moodChanged(address _sender, string _moodChange);

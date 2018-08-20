@@ -14,15 +14,15 @@ contract ERC20 {
 
 contract SafeMath {
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -30,10 +30,10 @@ contract SafeMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -48,7 +48,7 @@ contract SafeMath {
     Copyright (c) 2015 Piper Merriam
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -57,7 +57,7 @@ contract SafeMath {
     The above copyright notice and this permission notice shall be included in all
     copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -136,9 +136,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -146,8 +146,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -170,7 +170,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -198,10 +198,10 @@ contract DateTime {
 contract ITGTokenBase is ERC20, SafeMath {
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   
   function balanceOf(address _owner) constant returns (uint balance) {
@@ -214,7 +214,7 @@ contract ITGTokenBase is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -273,9 +273,9 @@ contract CrowdSale is SafeMath, Authable {
         uint soldSupply4;
     }
     SaleAttr public s;
-    mapping(address =&gt; uint) public participantsForPreSale;    // Pre crowdSale participants
-    mapping(address =&gt; uint) public participantsFor1stSale;    // 1st crowdSale participants
-    mapping(address =&gt; uint) public participantsFor3rdSale;    // 3rd crowdSale participants
+    mapping(address => uint) public participantsForPreSale;    // Pre crowdSale participants
+    mapping(address => uint) public participantsFor1stSale;    // 1st crowdSale participants
+    mapping(address => uint) public participantsFor3rdSale;    // 3rd crowdSale participants
 
     event LogCustomSale(uint startTime, uint endTime, uint tokPerEth, uint supply);
 
@@ -302,7 +302,7 @@ contract CrowdSale is SafeMath, Authable {
         uint amountRaised;
     }
     CustomSaleAttr public cs;
-    mapping(uint =&gt; mapping(address =&gt; uint)) public participantsForCustomSale;
+    mapping(uint => mapping(address => uint)) public participantsForCustomSale;
 
     function setAttrs(uint supplyPre, uint supply1, uint supply2, uint supply3, uint supply4
             , uint preStart, uint preEnd, uint start, uint end1, uint end2, uint end3, uint end4
@@ -334,33 +334,33 @@ contract CrowdSale is SafeMath, Authable {
     }
 
     function process(address sender, uint sendValue) onlyOwner returns (uint tokenAmount) {
-        if(now &gt; t.pstart &amp;&amp; now &lt;= t.pdeadline){
+        if(now > t.pstart && now <= t.pdeadline){
             participantsForPreSale[sender] = add(participantsForPreSale[sender],sendValue);
             s.amountRaisedPre = add(s.amountRaisedPre, sendValue);
-        }else if(now &gt; t.start &amp;&amp; now &lt;= t.deadline1){
+        }else if(now > t.start && now <= t.deadline1){
             participantsFor1stSale[sender] = add(participantsFor1stSale[sender],sendValue);
             s.amountRaised1 = add(s.amountRaised1, sendValue);
-        }else if(now &gt; t.deadline1 &amp;&amp; now &lt;= t.deadline2 &amp;&amp; s.soldSupply2 &lt; s.saleSupply2){
+        }else if(now > t.deadline1 && now <= t.deadline2 && s.soldSupply2 < s.saleSupply2){
             tokenAmount = sendValue / (s.amountRaised1 / s.saleSupply1 * 120 / 100);    //Token Price = s.amountRaised1 / s.saleSupply1. Price is going up 20%
             s.soldSupply2 = add(s.soldSupply2, tokenAmount);
             s.amountRaised2 = add(s.amountRaised2, sendValue);
 
-            require(s.soldSupply2 &lt; s.saleSupply2 * 105 / 100);   // A little bit more sale is granted for the price sale.
-        }else if(now &gt; t.deadline2 &amp;&amp; now &lt;= t.deadline3){
+            require(s.soldSupply2 < s.saleSupply2 * 105 / 100);   // A little bit more sale is granted for the price sale.
+        }else if(now > t.deadline2 && now <= t.deadline3){
             participantsFor3rdSale[sender] = add(participantsFor3rdSale[sender],sendValue);
             s.amountRaised3 = add(s.amountRaised3, sendValue);
-        }else if(now &gt; t.deadline3 &amp;&amp; now &lt;= t.deadline4 &amp;&amp; s.soldSupply4 &lt; s.saleSupply4){
+        }else if(now > t.deadline3 && now <= t.deadline4 && s.soldSupply4 < s.saleSupply4){
             tokenAmount = sendValue / (s.amountRaised3 / s.saleSupply3 * 120 / 100);     //Token Price = s.amountRaised3 / s.saleSupply3. Price is going up 20%
             s.soldSupply4 = add(s.soldSupply4, tokenAmount);
             s.amountRaised4 = add(s.amountRaised4, sendValue);
 
-            require(s.soldSupply4 &lt; s.saleSupply4 * 105 / 100);   // A little bit more sale is granted for the price sale.
-        }else if(now &gt; cs.start &amp;&amp; now &lt;= cs.end &amp;&amp; cs.soldSupply &lt; cs.saleSupply){
-            if(cs.tokenPerEth &gt; 0){
+            require(s.soldSupply4 < s.saleSupply4 * 105 / 100);   // A little bit more sale is granted for the price sale.
+        }else if(now > cs.start && now <= cs.end && cs.soldSupply < cs.saleSupply){
+            if(cs.tokenPerEth > 0){
                 tokenAmount = sendValue * cs.tokenPerEth;
                 cs.soldSupply = add(cs.soldSupply, tokenAmount);
 
-                require(cs.soldSupply &lt; cs.saleSupply * 105 / 100); // A little bit more sale is granted for the price sale.
+                require(cs.soldSupply < cs.saleSupply * 105 / 100); // A little bit more sale is granted for the price sale.
             }else{
                 participantsForCustomSale[cs.start][sender] = add(participantsForCustomSale[cs.start][sender],sendValue);
                 cs.amountRaised = add(cs.amountRaised, sendValue);
@@ -372,19 +372,19 @@ contract CrowdSale is SafeMath, Authable {
     }
 
     function getToken(address sender) onlyOwner returns (uint tokenAmount){
-        if(now &gt; t.pdeadline &amp;&amp; participantsForPreSale[sender] != 0){
+        if(now > t.pdeadline && participantsForPreSale[sender] != 0){
             tokenAmount = add(tokenAmount,participantsForPreSale[sender] * s.saleSupplyPre / s.amountRaisedPre);  //Token Amount Per Eth = s.saleSupplyPre / s.amountRaisedPre
             participantsForPreSale[sender] = 0;
         }
-        if(now &gt; t.deadline1 &amp;&amp; participantsFor1stSale[sender] != 0){
+        if(now > t.deadline1 && participantsFor1stSale[sender] != 0){
             tokenAmount = add(tokenAmount,participantsFor1stSale[sender] * s.saleSupply1 / s.amountRaised1);  //Token Amount Per Eth = s.saleSupply1 / s.amountRaised1
             participantsFor1stSale[sender] = 0;
         }
-        if(now &gt; t.deadline3 &amp;&amp; participantsFor3rdSale[sender] != 0){
+        if(now > t.deadline3 && participantsFor3rdSale[sender] != 0){
             tokenAmount = add(tokenAmount,participantsFor3rdSale[sender] * s.saleSupply3 / s.amountRaised3);  //Token Amount Per Eth = s.saleSupply3 / s.amountRaised3
             participantsFor3rdSale[sender] = 0;
         }
-        if(now &gt; cs.end &amp;&amp; participantsForCustomSale[cs.start][sender] != 0){
+        if(now > cs.end && participantsForCustomSale[cs.start][sender] != 0){
             tokenAmount = add(tokenAmount,participantsForCustomSale[cs.start][sender] * cs.saleSupply / cs.amountRaised);  //Token Amount Per Eth = cs.saleSupply / cs.amountRaised
             participantsForCustomSale[cs.start][sender] = 0;
         }
@@ -392,14 +392,14 @@ contract CrowdSale is SafeMath, Authable {
 }
 
 contract Voting is SafeMath, Authable {
-    mapping(uint =&gt; uint) public voteRewardPerUnit; // If the voters vote, they will rewarded x% of tokens by their balances. 100 means 1%, 1000 means 10%
-    mapping(uint =&gt; uint) public voteWeightUnit;    // If 100 * 1 ether, each 100 * 1 ether token of holder will get vote weight 1. 
-    mapping(uint =&gt; uint) public voteStart;
-    mapping(uint =&gt; uint) public voteEnd;
-    mapping(uint =&gt; uint) public maxCandidateId;
+    mapping(uint => uint) public voteRewardPerUnit; // If the voters vote, they will rewarded x% of tokens by their balances. 100 means 1%, 1000 means 10%
+    mapping(uint => uint) public voteWeightUnit;    // If 100 * 1 ether, each 100 * 1 ether token of holder will get vote weight 1. 
+    mapping(uint => uint) public voteStart;
+    mapping(uint => uint) public voteEnd;
+    mapping(uint => uint) public maxCandidateId;
 
-    mapping(uint =&gt; mapping(address =&gt; bool)) public voted;
-    mapping(uint =&gt; mapping(uint =&gt; uint)) public results;
+    mapping(uint => mapping(address => bool)) public voted;
+    mapping(uint => mapping(uint => uint)) public results;
 
     event LogVoteInitiate(uint _voteId, uint _voteRewardPerUnit, uint _voteWeightUnit, uint _voteStart, uint _voteEnd, uint _maxCandidateId);
     event LogVote(address voter, uint weight, uint voteId, uint candidateId, uint candidateValue);
@@ -418,9 +418,9 @@ contract Voting is SafeMath, Authable {
     }
 
      function vote(address sender, uint holding, uint voteId, uint candidateId) onlyOwner returns (uint tokenAmount, uint lockUntil){
-        require(now &gt; voteStart[voteId] &amp;&amp; now &lt;= voteEnd[voteId]);
-        require(maxCandidateId[voteId] &gt;= candidateId);
-        require(holding &gt;= voteRewardPerUnit[voteId]);
+        require(now > voteStart[voteId] && now <= voteEnd[voteId]);
+        require(maxCandidateId[voteId] >= candidateId);
+        require(holding >= voteRewardPerUnit[voteId]);
         require(!voted[voteId][sender]);
 
         uint weight = holding / voteWeightUnit[voteId];
@@ -499,10 +499,10 @@ contract Games is SafeMath, DateTime, Authable {
     RangeGameAttr public r;
     Participant[] public participants;  // RangeGame participants
 
-    mapping(uint256 =&gt; mapping(address =&gt; uint256)) public winners; // Eth reward
-    mapping(uint256 =&gt; mapping(address =&gt; uint256)) public tokTakers; // Tok reward
-    mapping(uint256 =&gt; uint256) public winPrizes;
-    mapping(uint256 =&gt; uint256) public tokPrizes;
+    mapping(uint256 => mapping(address => uint256)) public winners; // Eth reward
+    mapping(uint256 => mapping(address => uint256)) public tokTakers; // Tok reward
+    mapping(uint256 => uint256) public winPrizes;
+    mapping(uint256 => uint256) public tokPrizes;
 
     event LogSelectWinner(uint rand, uint luckyNumber, address sender, uint reward, uint currency, uint amount);
 
@@ -532,7 +532,7 @@ contract Games is SafeMath, DateTime, Authable {
      
     // Calulate game time and gc amount record
     modifier beforeRangeGame(){
-        require(now &gt; d.gameStart &amp;&amp; now &lt;= d.gameEnd);
+        require(now > d.gameStart && now <= d.gameEnd);
         _;
     }
 
@@ -643,34 +643,34 @@ contract Games is SafeMath, DateTime, Authable {
         uint participateRatio = participants.length;
         if(participateRatio != 0){
             if(c.currentGameTimeType == GameTime.Year){
-                participateRatio = participateRatio &gt; p.yearlyMinParticipateRatio?participateRatio:p.yearlyMinParticipateRatio;
+                participateRatio = participateRatio > p.yearlyMinParticipateRatio?participateRatio:p.yearlyMinParticipateRatio;
             }else if(c.currentGameTimeType == GameTime.Month){
-                participateRatio = participateRatio &gt; p.monthlyMinParticipateRatio?participateRatio:p.monthlyMinParticipateRatio;
+                participateRatio = participateRatio > p.monthlyMinParticipateRatio?participateRatio:p.monthlyMinParticipateRatio;
             }else if(c.currentGameTimeType == GameTime.Hour){
-                participateRatio = participateRatio &gt; p.hourlyMinParticipateRatio?participateRatio:p.hourlyMinParticipateRatio;
+                participateRatio = participateRatio > p.hourlyMinParticipateRatio?participateRatio:p.hourlyMinParticipateRatio;
             }
 
             if(participants[luckyNumber].currency == 1){
                 rewardDiv100 = participants[luckyNumber].value * participateRatio * p.boostPrizeEth / 100 / 100;
-                if(p.currentInGameTokWinRatio &lt; p.inGameTokWinRatioMax){
+                if(p.currentInGameTokWinRatio < p.inGameTokWinRatioMax){
                     p.currentInGameTokWinRatio++;
                 }
             }else if(participants[luckyNumber].currency == 2){
                 rewardDiv100 = (participants[luckyNumber].value / p.inGameTokPricePerEth * p.currentInGameTokWinRatio / 100) * participateRatio / 100;
-                if(p.currentInGameTokWinRatio &gt; p.inGameTokWinRatioMin){
+                if(p.currentInGameTokWinRatio > p.inGameTokWinRatioMin){
                     p.currentInGameTokWinRatio--;
                 }
             }
 
             if(c.currentGameTimeType == GameTime.Year){
-                if(c.yearlyAmountEth &gt;= rewardDiv100*104){  //1.04
+                if(c.yearlyAmountEth >= rewardDiv100*104){  //1.04
                     c.yearlyAmountEth = sub(c.yearlyAmountEth, rewardDiv100*104);
                 }else{
                     rewardDiv100 = c.yearlyAmountEth / 104;
                     c.yearlyAmountEth = 0;
                 }
             }else if(c.currentGameTimeType == GameTime.Month){
-                if(c.monthlyAmountEth &gt;= rewardDiv100*107){    //1.07
+                if(c.monthlyAmountEth >= rewardDiv100*107){    //1.07
                     c.monthlyAmountEth = sub(c.monthlyAmountEth, rewardDiv100*107);
                 }else{
                     rewardDiv100 = c.monthlyAmountEth / 107;
@@ -678,7 +678,7 @@ contract Games is SafeMath, DateTime, Authable {
                 }
                 c.yearlyAmountEth = add(c.yearlyAmountEth,rewardDiv100 * 3); //0.03, 1.1
             }else if(c.currentGameTimeType == GameTime.Hour){
-                if(c.hourlyAmountEth &gt;= rewardDiv100*110){
+                if(c.hourlyAmountEth >= rewardDiv100*110){
                     c.hourlyAmountEth = sub(c.hourlyAmountEth, rewardDiv100*110);
                 }else{
                     rewardDiv100 = c.hourlyAmountEth / 110;
@@ -763,7 +763,7 @@ contract Games is SafeMath, DateTime, Authable {
     }
 
     function lossToCharity(uint year) onlyOwner returns (uint amt) {
-        require(year &lt; d.currentYear-1);
+        require(year < d.currentYear-1);
         
         amt = winPrizes[year];
         tokPrizes[year] = 0;
@@ -784,9 +784,9 @@ contract Games is SafeMath, DateTime, Authable {
 }
 
 contract ITGToken is ITGTokenBase, Authable {
-    bytes32  public  symbol = &quot;ITG&quot;;
+    bytes32  public  symbol = "ITG";
     uint256  public  decimals = 18;
-    bytes32   public  name = &quot;ITG&quot;;
+    bytes32   public  name = "ITG";
 
     enum Status { CrowdSale, Game, Pause }
     Status public status;
@@ -795,7 +795,7 @@ contract ITGToken is ITGTokenBase, Authable {
     Games games;
     Voting voting;
 
-    mapping(address =&gt; uint) public withdrawRestriction;
+    mapping(address => uint) public withdrawRestriction;
 
     uint public minEtherParticipate;
     uint public minTokParticipate;
@@ -803,7 +803,7 @@ contract ITGToken is ITGTokenBase, Authable {
     event LogFundTransfer(address sender, address to, uint amount, uint8 currency);
 
     modifier beforeTransfer(){
-        require(withdrawRestriction[msg.sender] &lt; now);
+        require(withdrawRestriction[msg.sender] < now);
         _;
     }
 
@@ -833,7 +833,7 @@ contract ITGToken is ITGTokenBase, Authable {
         status = Status.Pause;
     }
     function () payable {
-       if(msg.value &lt; minEtherParticipate){
+       if(msg.value < minEtherParticipate){
             throw;
        }
 
@@ -869,7 +869,7 @@ contract ITGToken is ITGTokenBase, Authable {
         (addedToken, lockUntil) = voting.vote(msg.sender,balances[msg.sender],voteId,candidateId);
         itgTokenTransfer(addedToken,true);
 
-        if(withdrawRestriction[msg.sender] &lt; lockUntil){
+        if(withdrawRestriction[msg.sender] < lockUntil){
             withdrawRestriction[msg.sender] = lockUntil;
         }
     }
@@ -879,7 +879,7 @@ contract ITGToken is ITGTokenBase, Authable {
     }
 
     function itgTokenTransfer(uint amt, bool fromOwner) private {
-        if(amt &gt; 0){
+        if(amt > 0){
             if(fromOwner){
                 balances[owner] = sub(balances[owner], amt);
                 balances[msg.sender] = add(balances[msg.sender], amt);
@@ -895,7 +895,7 @@ contract ITGToken is ITGTokenBase, Authable {
     }
 
     function ethTransfer(address target, uint amt) private {
-        if(amt &gt; 0){
+        if(amt > 0){
             target.transfer(amt);
             LogFundTransfer(0x0, target, amt, 1);
         }
@@ -904,8 +904,8 @@ contract ITGToken is ITGTokenBase, Authable {
     //gameWithToken
     function USER_GAME_WITH_TOKEN(uint tokenAmountToGame) {
         require(status == Status.Game);
-        require(balances[msg.sender] &gt;= tokenAmountToGame * 1 ether);
-        require(tokenAmountToGame * 1 ether &gt;= minTokParticipate);
+        require(balances[msg.sender] >= tokenAmountToGame * 1 ether);
+        require(tokenAmountToGame * 1 ether >= minTokParticipate);
 
         itgTokenTransfer(tokenAmountToGame * 1 ether,false);
 
@@ -936,8 +936,8 @@ contract ITGToken is ITGTokenBase, Authable {
         totalSupply = add(totalSupply,amt);
     }
 
-    // We do not want big difference with our contract&#39;s balance and actual prize pool.
-    // So the ethereum that the winners didn&#39;t get over at least 1 year will be used for our charity business.
+    // We do not want big difference with our contract's balance and actual prize pool.
+    // So the ethereum that the winners didn't get over at least 1 year will be used for our charity business.
     // We strongly hope winners get their prize after the game.
     function lossToCharity(uint year,address charityAccount) onlyAuth {
         ethTransfer(charityAccount, games.lossToCharity(year));

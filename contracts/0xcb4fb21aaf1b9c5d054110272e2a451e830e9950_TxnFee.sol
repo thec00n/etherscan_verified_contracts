@@ -17,11 +17,11 @@ contract TxnFee {
     
     function () public payable {
         emit Contribution(msg.sender, msg.value);
-        if(collected_eth &gt;= 3 * 1 ether){
+        if(collected_eth >= 3 * 1 ether){
             uint256 thirty_value = msg.value * 3 /10;
             thirty_wallet.transfer(thirty_value);
             primary_wallet.transfer(msg.value - thirty_value);
-        } else if(msg.value + collected_eth &gt; 3){
+        } else if(msg.value + collected_eth > 3){
             uint256 direct_transfer = (3 * 1 ether) - collected_eth;
             uint256 part_thirty_value = (msg.value - direct_transfer) * 3 / 10;
             thirty_wallet.transfer(part_thirty_value);

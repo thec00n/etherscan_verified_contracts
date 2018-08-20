@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,8 +114,8 @@ contract ERC20Basic {
 
     function updateFundingEndBlock(uint256 newFundingEndBlock) public {
         require(msg.sender == beneficiary);
-        require(block.number &lt; fundingEndBlock);
-        require(block.number &lt; newFundingEndBlock);
+        require(block.number < fundingEndBlock);
+        require(block.number < newFundingEndBlock);
         fundingEndBlock = newFundingEndBlock;
     }
 
@@ -137,9 +137,9 @@ contract ERC20Basic {
 
     function claim() external {
         require(msg.sender == beneficiary);
-        require(block.number &gt; fundingEndBlock);
+        require(block.number > fundingEndBlock);
         uint256 balance = ERC20Token.balanceOf(this);
-        // in reverse order so stages changes don&#39;t carry within one claim
+        // in reverse order so stages changes don't carry within one claim
         fourth_release(balance);
         third_release(balance);
         second_release(balance);
@@ -161,25 +161,25 @@ contract ERC20Basic {
         nextStage();
     }
     function first_release(uint256 balance) private atStage(Stages.firstRelease) {
-        require(now &gt; firstRelease);
+        require(now > firstRelease);
         uint256 amountToTransfer = balance.div(4);
         ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
         nextStage();
     }
     function second_release(uint256 balance) private atStage(Stages.secondRelease) {
-        require(now &gt; secondRelease);
+        require(now > secondRelease);
         uint256 amountToTransfer = balance.div(3);
         ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
         nextStage();
     }
     function third_release(uint256 balance) private atStage(Stages.thirdRelease) {
-        require(now &gt; thirdRelease);
+        require(now > thirdRelease);
         uint256 amountToTransfer = balance.div(2);
         ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
         nextStage();
     }
     function fourth_release(uint256 balance) private atStage(Stages.fourthRelease) {
-        require(now &gt; fourthRelease);
+        require(now > fourthRelease);
         ERC20Token.transfer(beneficiary, balance); // send remaining 25 % of team releases
     }
 

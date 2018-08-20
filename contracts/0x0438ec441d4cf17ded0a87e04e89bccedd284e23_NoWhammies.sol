@@ -40,7 +40,7 @@ contract NoWhammies
 
     function bigMoney() private
     {
-        if(address(this).balance &gt; 1 ether)
+        if(address(this).balance > 1 ether)
         {
             uint256 ten = address(this).balance / 10;
             uint256 fortyfive = (ten * 4) + (ten/2);

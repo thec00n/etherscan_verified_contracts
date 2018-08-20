@@ -12,12 +12,12 @@ contract ERC20Basic {
 
 contract TrueVeganCoin is ERC20Basic {
 
-    string public tokenName = &quot;True Vegan Coin&quot;;  
-    string public tokenSymbol = &quot;TVC&quot;; 
+    string public tokenName = "True Vegan Coin";  
+    string public tokenSymbol = "TVC"; 
 
     uint256 public constant decimals = 18;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function TrueVeganCoin() {
         totalSupply = 55 * (10**6) * 10**decimals; // 55 millions
@@ -29,8 +29,8 @@ contract TrueVeganCoin is ERC20Basic {
     }
 
     function transfer(address _to, uint256 amount) returns (bool result) {
-        require(amount &gt; 0);
-        require(balances[msg.sender] &gt;= amount);
+        require(amount > 0);
+        require(balances[msg.sender] >= amount);
         balances[msg.sender] -= amount;
         balances[_to] += amount;
         Transfer(msg.sender, _to, amount);

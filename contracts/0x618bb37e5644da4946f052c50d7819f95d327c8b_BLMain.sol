@@ -66,7 +66,7 @@ contract BLStorage is BLAccess {
     }
 
     function getKey(uint x, uint y) internal pure returns(bytes32 key) {
-        key = keccak256(x, &quot;:&quot;, y);
+        key = keccak256(x, ":", y);
     }
 }
 
@@ -80,33 +80,33 @@ contract BLBalances is BLStorage {
 
     // get the balance for a given account
     function getBalance() public view returns (uint) {
-        return s.getUInt(keccak256(msg.sender, &quot;balance&quot;));
+        return s.getUInt(keccak256(msg.sender, "balance"));
     }
 
     // get the balance for a given account
     function getAccountBalance(address _account) public view onlyPrimary returns (uint) {
-        return s.getUInt(keccak256(_account, &quot;balance&quot;));
+        return s.getUInt(keccak256(_account, "balance"));
     }
 
     function getAccountAllowance(address _account) public view onlyPrimary returns (uint) {
-        return s.getUInt(keccak256(_account, &quot;promoAllowance&quot;));
+        return s.getUInt(keccak256(_account, "promoAllowance"));
     }
 
     function getMyAllowance() public view returns (uint) {
-        return s.getUInt(keccak256(msg.sender, &quot;promoAllowance&quot;));
+        return s.getUInt(keccak256(msg.sender, "promoAllowance"));
     }
 
     // allow a block allowance for promo and early beta users
     function grantAllowance(address beneficiary, uint allowance) public onlyPrimary {
-        uint existingAllowance = s.getUInt(keccak256(beneficiary, &quot;promoAllowance&quot;));
+        uint existingAllowance = s.getUInt(keccak256(beneficiary, "promoAllowance"));
         existingAllowance += allowance;
-        s.setUInt(keccak256(beneficiary, &quot;promoAllowance&quot;), existingAllowance);
+        s.setUInt(keccak256(beneficiary, "promoAllowance"), existingAllowance);
         AllowanceGranted(beneficiary, allowance);
     }
 
     // withdraw the current balance
     function withdraw() public {
-        uint balance = s.getUInt(keccak256(msg.sender, &quot;balance&quot;));
+        uint balance = s.getUInt(keccak256(msg.sender, "balance"));
         s.withdraw(msg.sender);
         WithdrawBalance(msg.sender, balance);
     }
@@ -120,9 +120,9 @@ contract BLBalances is BLStorage {
 
     // contract commissions
     function rewardContract (uint fee) internal {
-        uint mainBalance = s.getUInt(keccak256(mainAddress, &quot;balance&quot;));
+        uint mainBalance = s.getUInt(keccak256(mainAddress, "balance"));
         mainBalance += fee;
-        s.setUInt(keccak256(mainAddress, &quot;balance&quot;), mainBalance);
+        s.setUInt(keccak256(mainAddress, "balance"), mainBalance);
         SentFeeToPlatform(fee);
     }
 
@@ -130,14 +130,14 @@ contract BLBalances is BLStorage {
     function rewardPreviousOwner (address owner, uint amount) internal {
         uint rewardBalance;
         if (owner == address(0)) {
-            rewardBalance = s.getUInt(keccak256(mainAddress, &quot;balance&quot;));
+            rewardBalance = s.getUInt(keccak256(mainAddress, "balance"));
             rewardBalance += amount;
-            s.setUInt(keccak256(mainAddress, &quot;balance&quot;), rewardBalance);
+            s.setUInt(keccak256(mainAddress, "balance"), rewardBalance);
             SentAmountToOwner(amount, mainAddress);
         } else {
-            rewardBalance = s.getUInt(keccak256(owner, &quot;balance&quot;));
+            rewardBalance = s.getUInt(keccak256(owner, "balance"));
             rewardBalance += amount;
-            s.setUInt(keccak256(owner, &quot;balance&quot;), rewardBalance);
+            s.setUInt(keccak256(owner, "balance"), rewardBalance);
             SentAmountToOwner(amount, owner);
         }
     }
@@ -192,7 +192,7 @@ contract BLBlocks is BLBalances {
         bytes32 imageURL,
         address indexed owner);
 
-    // Create a block if it doesn&#39;t exist
+    // Create a block if it doesn't exist
     function createBlock(
         uint x,
         uint y,
@@ -202,28 +202,28 @@ contract BLBlocks is BLBalances {
         bytes32 imageURL
     ) public payable {
         bytes32 key = getKey(x, y);
-        uint initialPrice = s.getUInt(&quot;initialPrice&quot;);
-        address owner = s.getAdd(keccak256(key, &quot;owner&quot;));
-        uint allowance = s.getUInt(keccak256(msg.sender, &quot;promoAllowance&quot;));
-        require(msg.value &gt;= initialPrice || allowance &gt; 0);
+        uint initialPrice = s.getUInt("initialPrice");
+        address owner = s.getAdd(keccak256(key, "owner"));
+        uint allowance = s.getUInt(keccak256(msg.sender, "promoAllowance"));
+        require(msg.value >= initialPrice || allowance > 0);
         require(owner == address(0));
-        uint feePercentage = s.getUInt(&quot;buyOutFeePercentage&quot;);
-        if (msg.value &gt;= initialPrice) {
+        uint feePercentage = s.getUInt("buyOutFeePercentage");
+        if (msg.value >= initialPrice) {
             rewardParties(owner, feePercentage);
-            s.setUInt(keccak256(key, &quot;price&quot;), msg.value);
+            s.setUInt(keccak256(key, "price"), msg.value);
         } else {
             allowance--;
-            s.setUInt(keccak256(msg.sender, &quot;promoAllowance&quot;), allowance);
-            s.setUInt(keccak256(key, &quot;price&quot;), initialPrice);
+            s.setUInt(keccak256(msg.sender, "promoAllowance"), allowance);
+            s.setUInt(keccak256(key, "price"), initialPrice);
         }
-        s.setBytes32(keccak256(key, &quot;name&quot;), name);
-        s.setBytes32(keccak256(key, &quot;description&quot;), description);
-        s.setBytes32(keccak256(key, &quot;url&quot;), url);
-        s.setBytes32(keccak256(key, &quot;imageURL&quot;), imageURL);
-        s.setAdd(keccak256(key, &quot;owner&quot;), msg.sender);
-        uint blockCount = s.getUInt(&quot;blockCount&quot;);
+        s.setBytes32(keccak256(key, "name"), name);
+        s.setBytes32(keccak256(key, "description"), description);
+        s.setBytes32(keccak256(key, "url"), url);
+        s.setBytes32(keccak256(key, "imageURL"), imageURL);
+        s.setAdd(keccak256(key, "owner"), msg.sender);
+        uint blockCount = s.getUInt("blockCount");
         blockCount++;
-        s.setUInt(&quot;blockCount&quot;, blockCount);
+        s.setUInt("blockCount", blockCount);
         storageAddress.transfer(msg.value);
         CreatedBlock(x,
             y,
@@ -247,31 +247,31 @@ contract BLBlocks is BLBalances {
         address owner
     ) {
         bytes32 key = getKey(x, y);
-        price = s.getUInt(keccak256(key, &quot;price&quot;));
-        name = s.getBytes32(keccak256(key, &quot;name&quot;));
-        description = s.getBytes32(keccak256(key, &quot;description&quot;));
-        url = s.getBytes32(keccak256(key, &quot;url&quot;));
-        imageURL = s.getBytes32(keccak256(key, &quot;imageURL&quot;));
-        forSale = s.getUInt(keccak256(key, &quot;forSale&quot;));
-        pricePerDay = s.getUInt(keccak256(key, &quot;pricePerDay&quot;));
-        owner = s.getAdd(keccak256(key, &quot;owner&quot;));
+        price = s.getUInt(keccak256(key, "price"));
+        name = s.getBytes32(keccak256(key, "name"));
+        description = s.getBytes32(keccak256(key, "description"));
+        url = s.getBytes32(keccak256(key, "url"));
+        imageURL = s.getBytes32(keccak256(key, "imageURL"));
+        forSale = s.getUInt(keccak256(key, "forSale"));
+        pricePerDay = s.getUInt(keccak256(key, "pricePerDay"));
+        owner = s.getAdd(keccak256(key, "owner"));
     }
 
     // Sets a block up for sale
     function sellBlock(uint x, uint y, uint price) public {
         bytes32 key = getKey(x, y);
-        uint basePrice = s.getUInt(keccak256(key, &quot;price&quot;));
-        require(s.getAdd(keccak256(key, &quot;owner&quot;)) == msg.sender);
-        require(price &lt; basePrice * 2);
-        s.setUInt(keccak256(key, &quot;forSale&quot;), price);
+        uint basePrice = s.getUInt(keccak256(key, "price"));
+        require(s.getAdd(keccak256(key, "owner")) == msg.sender);
+        require(price < basePrice * 2);
+        s.setUInt(keccak256(key, "forSale"), price);
         SetBlockForSale(x, y, price, msg.sender);
     }
 
     // Sets a block not for sale
     function cancelSellBlock(uint x, uint y) public {
         bytes32 key = getKey(x, y);
-        require(s.getAdd(keccak256(key, &quot;owner&quot;)) == msg.sender);
-        s.setUInt(keccak256(key, &quot;forSale&quot;), 0);
+        require(s.getAdd(keccak256(key, "owner")) == msg.sender);
+        s.setUInt(keccak256(key, "forSale"), 0);
         UnsetBlockForSale(x, y, msg.sender);
     }
 
@@ -285,21 +285,21 @@ contract BLBlocks is BLBalances {
         bytes32 imageURL
     ) public payable {
         bytes32 key = getKey(x, y);
-        uint price = s.getUInt(keccak256(key, &quot;price&quot;));
-        uint forSale = s.getUInt(keccak256(key, &quot;forSale&quot;));
-        address owner = s.getAdd(keccak256(key, &quot;owner&quot;));
+        uint price = s.getUInt(keccak256(key, "price"));
+        uint forSale = s.getUInt(keccak256(key, "forSale"));
+        address owner = s.getAdd(keccak256(key, "owner"));
         require(owner != address(0));
-        require((forSale &gt; 0 &amp;&amp; msg.value &gt;= forSale) || msg.value &gt;= price * 2);
-        uint feePercentage = s.getUInt(&quot;buyOutFeePercentage&quot;);
+        require((forSale > 0 && msg.value >= forSale) || msg.value >= price * 2);
+        uint feePercentage = s.getUInt("buyOutFeePercentage");
         rewardParties(owner, feePercentage);
-        s.setUInt(keccak256(key, &quot;price&quot;), msg.value);
-        s.setBytes32(keccak256(key, &quot;name&quot;), name);
-        s.setBytes32(keccak256(key, &quot;description&quot;), description);
-        s.setBytes32(keccak256(key, &quot;url&quot;), url);
-        s.setBytes32(keccak256(key, &quot;imageURL&quot;), imageURL);
-        s.setAdd(keccak256(key, &quot;owner&quot;), msg.sender);
-        s.setUInt(keccak256(key, &quot;forSale&quot;), 0);
-        s.setUInt(keccak256(key, &quot;pricePerDay&quot;), 0);
+        s.setUInt(keccak256(key, "price"), msg.value);
+        s.setBytes32(keccak256(key, "name"), name);
+        s.setBytes32(keccak256(key, "description"), description);
+        s.setBytes32(keccak256(key, "url"), url);
+        s.setBytes32(keccak256(key, "imageURL"), imageURL);
+        s.setAdd(keccak256(key, "owner"), msg.sender);
+        s.setUInt(keccak256(key, "forSale"), 0);
+        s.setUInt(keccak256(key, "pricePerDay"), 0);
         storageAddress.transfer(msg.value);
         BoughtBlock(x, y, msg.value, msg.sender,
             name, description, url, imageURL);
@@ -316,12 +316,12 @@ contract BLBlocks is BLBalances {
         bytes32 imageURL
     )  public {
         bytes32 key = getKey(x, y);
-        address owner = s.getAdd(keccak256(key, &quot;owner&quot;));
+        address owner = s.getAdd(keccak256(key, "owner"));
         require(msg.sender == owner);
-        s.setBytes32(keccak256(key, &quot;name&quot;), name);
-        s.setBytes32(keccak256(key, &quot;description&quot;), description);
-        s.setBytes32(keccak256(key, &quot;url&quot;), url);
-        s.setBytes32(keccak256(key, &quot;imageURL&quot;), imageURL);
+        s.setBytes32(keccak256(key, "name"), name);
+        s.setBytes32(keccak256(key, "description"), description);
+        s.setBytes32(keccak256(key, "url"), url);
+        s.setBytes32(keccak256(key, "imageURL"), imageURL);
         UpdatedBlock(x, y, name, description, url, imageURL, msg.sender);
     }
 
@@ -365,10 +365,10 @@ contract BLTenancies is BLBlocks {
         uint pricePerDay
     ) public {
         bytes32 key = getKey(x, y);
-        uint price = s.getUInt(keccak256(key, &quot;price&quot;));
-        require(s.getAdd(keccak256(key, &quot;owner&quot;)) == msg.sender);
-        require(pricePerDay &gt;= price / 10);
-        s.setUInt(keccak256(key, &quot;pricePerDay&quot;), pricePerDay);
+        uint price = s.getUInt(keccak256(key, "price"));
+        require(s.getAdd(keccak256(key, "owner")) == msg.sender);
+        require(pricePerDay >= price / 10);
+        s.setUInt(keccak256(key, "pricePerDay"), pricePerDay);
         ToRent(x, y, pricePerDay, msg.sender);
     }
 
@@ -378,9 +378,9 @@ contract BLTenancies is BLBlocks {
         uint y
     ) public {
         bytes32 key = getKey(x, y);
-        address owner = s.getAdd(keccak256(key, &quot;owner&quot;));
+        address owner = s.getAdd(keccak256(key, "owner"));
         require(owner == msg.sender);
-        s.setUInt(keccak256(key, &quot;pricePerDay&quot;), 0);
+        s.setUInt(keccak256(key, "pricePerDay"), 0);
         NotToRent(x, y, msg.sender);
     }
 
@@ -395,19 +395,19 @@ contract BLTenancies is BLBlocks {
         bytes32 tenantImageURL
     ) public payable {
         bytes32 key = getKey(x, y);
-        uint pricePerDay = s.getUInt(keccak256(key, &quot;pricePerDay&quot;));
-        require(pricePerDay &gt; 0);
-        require(msg.value &gt;= pricePerDay * duration);
-        require(now &gt;= s.getUInt(keccak256(key, &quot;expiry&quot;)));
-        address owner = s.getAdd(keccak256(key, &quot;owner&quot;));
-        uint feePercentage = s.getUInt(&quot;buyOutFeePercentage&quot;);
+        uint pricePerDay = s.getUInt(keccak256(key, "pricePerDay"));
+        require(pricePerDay > 0);
+        require(msg.value >= pricePerDay * duration);
+        require(now >= s.getUInt(keccak256(key, "expiry")));
+        address owner = s.getAdd(keccak256(key, "owner"));
+        uint feePercentage = s.getUInt("buyOutFeePercentage");
         rewardParties(owner, feePercentage);
         uint expiry = now + 86400 * duration;
-        s.setUInt(keccak256(key, &quot;expiry&quot;), expiry);
-        s.setBytes32(keccak256(key, &quot;tenantName&quot;), tenantName);
-        s.setBytes32(keccak256(key, &quot;tenantDescription&quot;), tenantDescription);
-        s.setBytes32(keccak256(key, &quot;tenantURL&quot;), tenantURL);
-        s.setBytes32(keccak256(key, &quot;tenantImageURL&quot;), tenantImageURL);
+        s.setUInt(keccak256(key, "expiry"), expiry);
+        s.setBytes32(keccak256(key, "tenantName"), tenantName);
+        s.setBytes32(keccak256(key, "tenantDescription"), tenantDescription);
+        s.setBytes32(keccak256(key, "tenantURL"), tenantURL);
+        s.setBytes32(keccak256(key, "tenantImageURL"), tenantImageURL);
         storageAddress.transfer(msg.value);
         RentedBlock(x, y, msg.value, feePercentage, owner);
         LeasedBlock(x, y, msg.value, expiry, tenantName, tenantDescription, tenantURL, tenantImageURL, msg.sender);
@@ -422,11 +422,11 @@ contract BLTenancies is BLBlocks {
         bytes32 tenantImageURL
     ) {
         bytes32 key = getKey(x, y);
-        expiry = s.getUInt(keccak256(key, &quot;tenantExpiry&quot;));
-        tenantName = s.getBytes32(keccak256(key, &quot;tenantName&quot;));
-        tenantDescription = s.getBytes32(keccak256(key, &quot;tenantDescription&quot;));
-        tenantURL = s.getBytes32(keccak256(key, &quot;tenantURL&quot;));
-        tenantImageURL = s.getBytes32(keccak256(key, &quot;tenantImageURL&quot;));
+        expiry = s.getUInt(keccak256(key, "tenantExpiry"));
+        tenantName = s.getBytes32(keccak256(key, "tenantName"));
+        tenantDescription = s.getBytes32(keccak256(key, "tenantDescription"));
+        tenantURL = s.getBytes32(keccak256(key, "tenantURL"));
+        tenantImageURL = s.getBytes32(keccak256(key, "tenantImageURL"));
     }
 }
 
@@ -441,29 +441,29 @@ contract BLMain is BLTenancies {
 
     // provides the total number of purchased blocks
     function totalSupply() public view returns (uint count) {
-        count = s.getUInt(&quot;blockCount&quot;);
+        count = s.getUInt("blockCount");
         return count;
     }
 
     // allows to change the price of an empty block
     function setInitialPrice(uint price) public onlyPrimary {
-        s.setUInt(&quot;initialPrice&quot;, price);
+        s.setUInt("initialPrice", price);
         ChangedInitialPrice(price);
     }
 
     // allows to change the platform fee percentage
     function setFeePercentage(uint feePercentage) public onlyPrimary {
-        s.setUInt(&quot;buyOutFeePercentage&quot;, feePercentage);
+        s.setUInt("buyOutFeePercentage", feePercentage);
         ChangedFeePercentage(feePercentage);
     }
 
     // provides the starting price for an empty block
     function getInitialPrice() public view returns (uint) {
-        return s.getUInt(&quot;initialPrice&quot;);
+        return s.getUInt("initialPrice");
     }
 
     // provides the price of an empty block
     function getFeePercentage() public view returns (uint) {
-        return s.getUInt(&quot;buyOutFeePercentage&quot;);
+        return s.getUInt("buyOutFeePercentage");
     }
 }

@@ -5,7 +5,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,9 +112,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -122,7 +122,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -131,7 +131,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -159,7 +159,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -177,7 +177,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -220,7 +220,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -231,8 +231,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -246,7 +246,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -295,7 +295,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -354,8 +354,8 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts\lib\PreSignedContract.sol
 
 contract PreSignedContract is Ownable {
-  mapping (uint8 =&gt; bytes) internal _prefixPreSignedFirst;
-  mapping (uint8 =&gt; bytes) internal _prefixPreSignedSecond;
+  mapping (uint8 => bytes) internal _prefixPreSignedFirst;
+  mapping (uint8 => bytes) internal _prefixPreSignedSecond;
 
   function upgradePrefixPreSignedFirst(uint8 _version, bytes _prefix) public onlyOwner {
     _prefixPreSignedFirst[_version] = _prefix;
@@ -391,12 +391,12 @@ contract PreSignedContract is Ownable {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -413,7 +413,7 @@ contract PreSignedContract is Ownable {
     uint256 _nonce,
     uint8 _version
   ) public view returns (bytes32 hash) {
-    if (_version &lt;= 2) {
+    if (_version <= 2) {
       hash = keccak256(
         _mode,
         _token,
@@ -455,24 +455,24 @@ contract PreSignedContract is Ownable {
       _version
     );
 
-    if (_version &lt;= 2) {
+    if (_version <= 2) {
       if (_version == 0) {
         return hash;
       } else if (_version == 1) {
         return keccak256(
-          &#39;\x19Ethereum Signed Message:\n32&#39;,
+          '\x19Ethereum Signed Message:\n32',
           hash
         );
       } else {
         // Support Standard Prefix (Trezor)
         return keccak256(
-          &#39;\x19Ethereum Signed Message:\n\x20&#39;,
+          '\x19Ethereum Signed Message:\n\x20',
           hash
         );
       }
     } else {
       // Support SignTypedData flexibly
-      if (_prefixPreSignedSecond[_version].length &gt; 0) {
+      if (_prefixPreSignedSecond[_version].length > 0) {
         return keccak256(
           _prefixPreSignedSecond[_version],
           hash
@@ -518,7 +518,7 @@ contract PreSignedContract is Ownable {
     uint8 _version,
     bytes _sig
   ) external view returns (address) {
-    return preSignedCheck(&#39;Transfer&#39;, _token, _to, _value, _fee, _nonce, _version, _sig);
+    return preSignedCheck('Transfer', _token, _to, _value, _fee, _nonce, _version, _sig);
   }
 
   function approvePreSignedCheck(
@@ -530,7 +530,7 @@ contract PreSignedContract is Ownable {
     uint8 _version,
     bytes _sig
   ) external view returns (address) {
-    return preSignedCheck(&#39;Approval&#39;, _token, _to, _value, _fee, _nonce, _version, _sig);
+    return preSignedCheck('Approval', _token, _to, _value, _fee, _nonce, _version, _sig);
   }
 
   function increaseApprovalPreSignedCheck(
@@ -542,7 +542,7 @@ contract PreSignedContract is Ownable {
     uint8 _version,
     bytes _sig
   ) external view returns (address) {
-    return preSignedCheck(&#39;IncApprv&#39;, _token, _to, _value, _fee, _nonce, _version, _sig);
+    return preSignedCheck('IncApprv', _token, _to, _value, _fee, _nonce, _version, _sig);
   }
 
   function decreaseApprovalPreSignedCheck(
@@ -554,15 +554,15 @@ contract PreSignedContract is Ownable {
     uint8 _version,
     bytes _sig
   ) external view returns (address) {
-    return preSignedCheck(&#39;DecApprv&#39;, _token, _to, _value, _fee, _nonce, _version, _sig);
+    return preSignedCheck('DecApprv', _token, _to, _value, _fee, _nonce, _version, _sig);
   }
 }
 
 // File: contracts\token\MuzikaCoin.sol
 
 contract MuzikaCoin is MintableToken, Pausable {
-  string public name = &#39;MUZIKA COIN&#39;;
-  string public symbol = &#39;MZK&#39;;
+  string public name = 'MUZIKA COIN';
+  string public symbol = 'MZK';
   uint8 public decimals = 18;
 
   event Burn(address indexed burner, uint256 value);
@@ -585,9 +585,9 @@ contract MuzikaCoin is MintableToken, Pausable {
     uint256 fee
   );
 
-  mapping (address =&gt; bool) public frozenAddress;
+  mapping (address => bool) public frozenAddress;
 
-  mapping (bytes =&gt; bool) internal _signatures;
+  mapping (bytes => bool) internal _signatures;
 
   PreSignedContract internal _preSignedContract = PreSignedContract(0xE55b5f4fAd5cD3923C392e736F58dEF35d7657b8);
 
@@ -646,9 +646,9 @@ contract MuzikaCoin is MintableToken, Pausable {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -752,7 +752,7 @@ contract MuzikaCoin is MintableToken, Pausable {
     require(!frozenAddress[_from]);
 
     uint256 _burden = _value.add(_fee);
-    require(_burden &lt;= balances[_from]);
+    require(_burden <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_burden);
     balances[_to] = balances[_to].add(_value);
@@ -792,12 +792,12 @@ contract MuzikaCoin is MintableToken, Pausable {
     );
 
     require(!frozenAddress[_from]);
-    require(_fee &lt;= balances[_from]);
+    require(_fee <= balances[_from]);
 
     allowed[_from][_to] = _value;
     emit Approval(_from, _to, _value);
 
-    if (_fee &gt; 0) {
+    if (_fee > 0) {
       balances[_from] = balances[_from].sub(_fee);
       balances[msg.sender] = balances[msg.sender].add(_fee);
       emit Transfer(_from, msg.sender, _fee);
@@ -835,12 +835,12 @@ contract MuzikaCoin is MintableToken, Pausable {
     );
 
     require(!frozenAddress[_from]);
-    require(_fee &lt;= balances[_from]);
+    require(_fee <= balances[_from]);
 
     allowed[_from][_to] = allowed[_from][_to].add(_value);
     emit Approval(_from, _to, allowed[_from][_to]);
 
-    if (_fee &gt; 0) {
+    if (_fee > 0) {
       balances[_from] = balances[_from].sub(_fee);
       balances[msg.sender] = balances[msg.sender].add(_fee);
       emit Transfer(_from, msg.sender, _fee);
@@ -878,10 +878,10 @@ contract MuzikaCoin is MintableToken, Pausable {
     );
     require(!frozenAddress[_from]);
 
-    require(_fee &lt;= balances[_from]);
+    require(_fee <= balances[_from]);
 
     uint256 oldValue = allowed[_from][_to];
-    if (_value &gt; oldValue) {
+    if (_value > oldValue) {
       oldValue = 0;
     } else {
       oldValue = oldValue.sub(_value);
@@ -890,7 +890,7 @@ contract MuzikaCoin is MintableToken, Pausable {
     allowed[_from][_to] = oldValue;
     emit Approval(_from, _to, oldValue);
 
-    if (_fee &gt; 0) {
+    if (_fee > 0) {
       balances[_from] = balances[_from].sub(_fee);
       balances[msg.sender] = balances[msg.sender].add(_fee);
       emit Transfer(_from, msg.sender, _fee);

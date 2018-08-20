@@ -8,8 +8,8 @@ contract Burner {
 contract StandardToken {
 
     /* *  Data structures */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /* *  Events */
@@ -17,11 +17,11 @@ contract StandardToken {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     /* *  Read and write storage functions */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -37,7 +37,7 @@ contract StandardToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -76,13 +76,13 @@ contract StandardToken {
 
 contract ILF is StandardToken {
 
-    mapping(address =&gt; bool) public previousMinters;
-    mapping(address =&gt; bool) public previousBurners;
+    mapping(address => bool) public previousMinters;
+    mapping(address => bool) public previousBurners;
     bool public minterChangeable = true;
     bool public burnerChangeable = true;
     bool public manualEmissionEnabled = true;
-    string public constant symbol = &quot;ILF&quot;;
-    string public constant name = &quot;ICO Lab Fund Token&quot;;
+    string public constant symbol = "ILF";
+    string public constant name = "ICO Lab Fund Token";
     uint8 public constant decimals = 8;
     address public burnerAddress;
     address public minterAddress;
@@ -104,8 +104,8 @@ contract ILF is StandardToken {
     /// @param emitTo Emission destination address.
     /// @param amount Amount to emit.
     function emitToken(address emitTo, uint amount) {
-        assert(amount&gt;0);
-        assert(msg.sender == minterAddress || (msg.sender == ILFManager &amp;&amp; manualEmissionEnabled));
+        assert(amount>0);
+        assert(msg.sender == minterAddress || (msg.sender == ILFManager && manualEmissionEnabled));
         balances[emitTo] += amount;
         totalSupply += amount;
         Emission(emitTo, amount);
@@ -115,20 +115,20 @@ contract ILF is StandardToken {
     /// @param burnFrom Address to burn tokens from.
     /// @param amount Amount to burn.
     function burnToken(address burnFrom, uint amount) external onlyBurner {
-        assert(amount &lt;= balances[burnFrom] &amp;&amp; amount &lt;= totalSupply);
+        assert(amount <= balances[burnFrom] && amount <= totalSupply);
         balances[burnFrom] -= amount;
         totalSupply -= amount;
         Burn(burnFrom, amount);
     }
 
     //Overloading the original ERC20 transfer function to handle token burn
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        assert(!previousBurners[_to] &amp;&amp; !previousMinters[_to] &amp;&amp; _to != minterAddress);
+        assert(!previousBurners[_to] && !previousMinters[_to] && _to != minterAddress);
         
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0) &amp;&amp; _to != address(this)) {//The last two checks are done for preventing sending tokens to zero address or token address (this contract).
+        if (balances[msg.sender] >= _value && _value > 0 && _to != address(0) && _to != address(this)) {//The last two checks are done for preventing sending tokens to zero address or token address (this contract).
             if (_to == burnerAddress) {
                 burner.burnILF(msg.sender, _value);
             }
@@ -145,9 +145,9 @@ contract ILF is StandardToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        assert(!previousBurners[_to] &amp;&amp; !previousMinters[_to] &amp;&amp; _to != minterAddress);
+        assert(!previousBurners[_to] && !previousMinters[_to] && _to != minterAddress);
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0) &amp;&amp; _to != address(this)) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && _to != address(0) && _to != address(this)) {
             if (_to == burnerAddress) {
                 burner.burnILF(_from, _value);
             }

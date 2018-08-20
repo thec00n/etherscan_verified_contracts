@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 // Minimal required STAKE token interface
 contract StakeToken
 {
@@ -48,7 +48,7 @@ contract StakeDiceGame
     ///////////////////////////////
     /////// GAME FUNCTIONALITY
     
-    // If we receive approval to transfer a gambler&#39;s tokens
+    // If we receive approval to transfer a gambler's tokens
     /*function receiveApproval(address _gambler, uint256 _amount, address _tokenContract, bytes) external returns (bool)
     {
         // Make sure that we are receiving STAKE tokens, and not some other token
@@ -56,10 +56,10 @@ contract StakeDiceGame
         require(msg.sender == _tokenContract);
         
         // Make sure the bet is within the current limits
-        require(_amount &gt;= stakeDice.minimumBet());
-        require(_amount &lt;= maximumBet());
+        require(_amount >= stakeDice.minimumBet());
+        require(_amount <= maximumBet());
         
-        // Tranfer the STAKE tokens from the user&#39;s account to the StakeDice contract
+        // Tranfer the STAKE tokens from the user's account to the StakeDice contract
         stakeDice.stakeTokenContract().transferFrom(_gambler, stakeDice, _amount);
         
         // Notify the StakeDice contract that a bet has been placed
@@ -74,8 +74,8 @@ contract StakeDiceGame
     constructor(StakeDice _stakeDice, uint256 _winningChance) public
     {
         // Ensure the parameters are sane
-        require(_winningChance &gt; 0);
-        require(_winningChance &lt; 10000);
+        require(_winningChance > 0);
+        require(_winningChance < 10000);
         require(_stakeDice != address(0x0));
         require(msg.sender == address(_stakeDice));
         
@@ -87,8 +87,8 @@ contract StakeDiceGame
     function setWinningChance(uint256 _newWinningChance) external
     {
         require(msg.sender == stakeDice.owner());
-        require(_newWinningChance &gt; 0);
-        require(_newWinningChance &lt; 10000);
+        require(_newWinningChance > 0);
+        require(_newWinningChance < 10000);
         winningChance = _newWinningChance;
     }
     
@@ -109,7 +109,7 @@ contract StakeDice
     /////// GAME PARAMETERS
     
     StakeToken public stakeTokenContract;
-    mapping(address =&gt; bool) public addressIsStakeDiceGameContract;
+    mapping(address => bool) public addressIsStakeDiceGameContract;
     StakeDiceGame[] public allGames;
     uint256 public houseEdge;
     uint256 public minimumBet;
@@ -118,8 +118,8 @@ contract StakeDice
     /////// PLAYER STATISTICS
     
     address[] public allPlayers;
-    mapping(address =&gt; uint256) public playersToTotalBets;
-    mapping(address =&gt; uint256[]) public playersToBetIndices;
+    mapping(address => uint256) public playersToTotalBets;
+    mapping(address => uint256[]) public playersToBetIndices;
     function playerAmountOfBets(address _player) external view returns (uint256)
     {
         return playersToBetIndices[_player].length;
@@ -160,7 +160,7 @@ contract StakeDice
     
     Bet[] public bets;
     uint public betsLength = 0;
-    mapping(bytes32 =&gt; uint256) public oraclizeQueryIdsToBetIndices;
+    mapping(bytes32 => uint256) public oraclizeQueryIdsToBetIndices;
     
     function betPlaced(address gameContract, uint256 _amount) external
     {
@@ -168,10 +168,10 @@ contract StakeDice
         require(addressIsStakeDiceGameContract[gameContract] == true);
         
          // Make sure the bet is within the current limits
-        require(_amount &gt;= minimumBet);
-        require(_amount &lt;= StakeDiceGame(gameContract).maximumBet());
+        require(_amount >= minimumBet);
+        require(_amount <= StakeDiceGame(gameContract).maximumBet());
         
-        // Tranfer the STAKE tokens from the user&#39;s account to the StakeDice contract
+        // Tranfer the STAKE tokens from the user's account to the StakeDice contract
         stakeTokenContract.transferFrom(msg.sender, this, _amount);
         
         
@@ -193,18 +193,18 @@ contract StakeDice
         uint256 betIndex = betsLength;
         Bet storage bet = bets[betIndex];
         require(bet.status == BetStatus.IN_PROGRESS);
-        // Now that we have generated a random number, let&#39;s use it..
+        // Now that we have generated a random number, let's use it..
         uint randomNumber = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty)))%100);
        
         // Store the roll in the blockchain permanently
         bet.roll = randomNumber;
         
         // If the random number is smaller than the winningChance, the gambler won!
-        if (randomNumber &lt; bet.winningChance/100)
+        if (randomNumber < bet.winningChance/100)
         {
-            // If we somehow don&#39;t have enough tokens to payout their winnings,
+            // If we somehow don't have enough tokens to payout their winnings,
             // cancel the bet and refund the gambler automatically
-            if (stakeTokenContract.balanceOf(this) &lt; bet.potentialRevenue)
+            if (stakeTokenContract.balanceOf(this) < bet.potentialRevenue)
             {
                 _cancelBet(betIndex);
             }
@@ -280,7 +280,7 @@ contract StakeDice
         owner = msg.sender;
         
         // Ensure that the arguments are sane
-        require(_houseEdge &lt; 10000);
+        require(_houseEdge < 10000);
         require(_stakeTokenContract != address(0x0));
         
         // Store the initializing arguments
@@ -315,7 +315,7 @@ contract StakeDice
         addNewStakeDiceGame(9500); // 95% chance
     }
     
-    // Allow the owner to cancel a bet when it&#39;s in progress.
+    // Allow the owner to cancel a bet when it's in progress.
     // This will probably never be needed, but it might some day be needed
     // to refund people if oraclize is not responding.
     function cancelBet(uint256 _betIndex) public
@@ -342,7 +342,7 @@ contract StakeDice
     function setHouseEdge(uint256 _newHouseEdge) external
     {
         require(msg.sender == owner);
-        require(_newHouseEdge &lt; 10000);
+        require(_newHouseEdge < 10000);
         houseEdge = _newHouseEdge;
     }
     

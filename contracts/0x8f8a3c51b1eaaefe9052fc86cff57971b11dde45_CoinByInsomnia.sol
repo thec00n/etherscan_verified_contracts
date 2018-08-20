@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 
 contract CoinByInsomnia {
-    string  public name = &quot;CoinByInsomnia&quot;;
-    string  public symbol = &quot;CBI&quot;;
-    string  public standard = &quot;CoinByInsomnia v1.0&quot;;
+    string  public name = "CoinByInsomnia";
+    string  public symbol = "CBI";
+    string  public standard = "CoinByInsomnia v1.0";
     uint256 public totalSupply;
 
     event Transfer(
@@ -18,8 +18,8 @@ contract CoinByInsomnia {
         uint256 _value
     );
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     constructor (uint256 _initialSupply) public {
         balanceOf[msg.sender] = _initialSupply;
@@ -27,7 +27,7 @@ contract CoinByInsomnia {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -46,8 +46,8 @@ contract CoinByInsomnia {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;

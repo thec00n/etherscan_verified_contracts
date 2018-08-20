@@ -8,9 +8,9 @@ contract Target {
 
 contract PRECOE {
 
-    string public name = &quot;Premined Coeval&quot;;
+    string public name = "Premined Coeval";
     uint8 public decimals = 18;
-    string public symbol = &quot;PRECOE&quot;;
+    string public symbol = "PRECOE";
 
     address public owner;
     address public devFeesAddr = 0x36Bdc3B60dC5491fbc7d74a05709E94d5b554321;
@@ -32,12 +32,12 @@ contract PRECOE {
     bool public initialTiers = false;
 
     // Storage
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; bool) public exchangePartners;
+    mapping (address => uint256) public balances;
+    mapping (address => bool) public exchangePartners;
 
     // mining schedule
-    mapping(uint =&gt; uint256) public scheduleTokens;
-    mapping(uint =&gt; uint256) public scheduleRates;
+    mapping(uint => uint256) public scheduleTokens;
+    mapping(uint => uint256) public scheduleRates;
 
     // events (ERC20)
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -56,7 +56,7 @@ contract PRECOE {
     }
 
     function populateTierTokens() public {
-        require((msg.sender == owner) &amp;&amp; (initialTiers == false));
+        require((msg.sender == owner) && (initialTiers == false));
         scheduleTokens[1] = 1E20;
         scheduleTokens[2] = 1E20;
         scheduleTokens[3] = 1E20;
@@ -100,7 +100,7 @@ contract PRECOE {
     }
 
     function populateTierRates() public {
-        //require((msg.sender == owner) &amp;&amp; (initialTiers == false));
+        //require((msg.sender == owner) && (initialTiers == false));
         //require(msg.sender == owner);
         scheduleRates[1] = 3.85E23;
         scheduleRates[2] = 6.1E23;
@@ -146,7 +146,7 @@ contract PRECOE {
     }
 
     function () payable public {
-        require((msg.value &gt; 0) &amp;&amp; (receiveEth));
+        require((msg.value > 0) && (receiveEth));
 
         if(payFees) {
             devFees = add(devFees, ((msg.value * fees) / 10000));
@@ -161,11 +161,11 @@ contract PRECOE {
     function allocateTokens(uint256 _submitted, uint256 _tokenCount) internal {
         uint256 _tokensAfforded = 0;
 
-        if(tierLevel &lt;= maxTier) {
+        if(tierLevel <= maxTier) {
             _tokensAfforded = div(_submitted, scheduleRates[tierLevel]);
         }
 
-        if(_tokensAfforded &gt;= scheduleTokens[tierLevel]) {
+        if(_tokensAfforded >= scheduleTokens[tierLevel]) {
             _submitted = sub(_submitted, mul(scheduleTokens[tierLevel], scheduleRates[tierLevel]));
             _tokenCount = add(_tokenCount, scheduleTokens[tierLevel]);
             circulatingSupply = add(circulatingSupply, _tokensAfforded);
@@ -174,7 +174,7 @@ contract PRECOE {
             tierLevel++;
             allocateTokens(_submitted, _tokenCount);
         }
-        else if((scheduleTokens[tierLevel] &gt;= _tokensAfforded) &amp;&amp; (_tokensAfforded &gt; 0)) {
+        else if((scheduleTokens[tierLevel] >= _tokensAfforded) && (_tokensAfforded > 0)) {
             scheduleTokens[tierLevel] = sub(scheduleTokens[tierLevel], _tokensAfforded);
             _tokenCount = add(_tokenCount, _tokensAfforded);
             circulatingSupply = add(circulatingSupply, _tokensAfforded);
@@ -189,7 +189,7 @@ contract PRECOE {
     }
 
     function transfer(address _to, uint _value) public {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         if(_to == address(this)) {
             // WARNING: if you transfer tokens back to the contract you will lose them
@@ -301,14 +301,14 @@ contract PRECOE {
     function safeWithdrawal(address _receiver, uint256 _value) public {
         require(msg.sender == owner);
         withdrawDevFees();
-        require(_value &lt;= this.balance);
+        require(_value <= this.balance);
         _receiver.transfer(_value);
     }
 
     // enables fee update - must be between 0 and 100 (%)
     function updateFeeAmount(uint _newFee) public {
         require(msg.sender == owner);
-        require((_newFee &gt;= 0) &amp;&amp; (_newFee &lt;= 100));
+        require((_newFee >= 0) && (_newFee <= 100));
         fees = _newFee * 100;
     }
 
@@ -346,12 +346,12 @@ contract PRECOE {
     }
 
     function addTierRateAndTokens(uint256 _level, uint256 _tokens, uint256 _rate) public {
-        require(((msg.sender == owner) || (msg.sender == tierAdmin)) &amp;&amp; (addTiers == true));
+        require(((msg.sender == owner) || (msg.sender == tierAdmin)) && (addTiers == true));
         scheduleTokens[_level] = _tokens;
         scheduleRates[_level] = _rate;
     }
 
-    // not really needed as we fix the max tiers on contract creation but just for completeness&#39; sake we&#39;ll call this
+    // not really needed as we fix the max tiers on contract creation but just for completeness' sake we'll call this
     // when all tiers have been added to the contract (not possible to deploy with all of them)
     function closeTierAddition() public {
         require(msg.sender == owner);
@@ -366,20 +366,20 @@ contract PRECOE {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }

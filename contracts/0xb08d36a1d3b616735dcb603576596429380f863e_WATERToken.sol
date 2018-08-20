@@ -25,19 +25,19 @@ contract WATERToken is ERC20Interface {
 	string public name;
 	uint8 public decimals;
 	string public symbol;
-	string public version = &#39;H1.0&#39;;
+	string public version = 'H1.0';
 	uint256 public _totalSupply;
 
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function WATERToken() public {
 		decimals = 8;
 		_totalSupply = 21000000 * 10 ** uint256(decimals);
 		balances[msg.sender] = _totalSupply;
 		//Transfer(address(0), msg.sender, _totalSupply);
-		name = &quot;WATER TOKEN&quot;;
-		symbol = &quot;WAT&quot;;
+		name = "WATER TOKEN";
+		symbol = "WAT";
 	}
 
 	function totalSupply() public view returns (uint256) {
@@ -45,8 +45,8 @@ contract WATERToken is ERC20Interface {
 	}
 
 	function transfer(address _to, uint256 _value) public returns (bool success) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
-		//if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		require(balances[msg.sender] >= _value && _value > 0);
+		//if (balances[msg.sender] >= _value && _value > 0) {
 			balances[msg.sender] -= _value;
 			balances[_to] += _value;
 			Transfer(msg.sender, _to, _value);
@@ -55,8 +55,8 @@ contract WATERToken is ERC20Interface {
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
-		//if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
+		//if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 			balances[_to] += _value;
 			balances[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;

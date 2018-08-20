@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 /// @title Multisignature wallet - Allows multiple parties to agree on send ERC20 token transactions before execution.
-/// @author Based on code by Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a595e4f4c4b44044d4f45584d4f6a494544594f4459535904444f5e">[email&#160;protected]</a>&gt;
+/// @author Based on code by Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a595e4f4c4b44044d4f45584d4f6a494544594f4459535904444f5e">[email protected]</a>>
 
 /*
  * ERC20 interface
@@ -27,7 +27,7 @@ library SafeMath
     pure 
     returns (uint) 
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath
     returns (uint) 
   {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,14 +81,14 @@ contract MultiSigWalletTokenLimit
   /*
   *  Storage
   */
-  mapping (uint =&gt; Transaction) public transactions;
-  mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-  mapping (address =&gt; bool) public is_owner;
+  mapping (uint => Transaction) public transactions;
+  mapping (uint => mapping (address => bool)) public confirmations;
+  mapping (address => bool) public is_owner;
   address[] public owners;
   uint public required;
   uint public transaction_count;
   ERC20 public erc20_contract;  //address of the ERC20 tokens contract
-  mapping (uint =&gt; Period) public periods;
+  mapping (uint => Period) public periods;
   uint public period_count;
   uint public current_period;
   uint public current_transferred;  //amount of transferred tokens in the current period
@@ -138,7 +138,7 @@ contract MultiSigWalletTokenLimit
     _;
   }
 
-  /// @dev Fallback function: don&#39;t accept ETH
+  /// @dev Fallback function: don't accept ETH
   function()
     public
     payable
@@ -149,7 +149,7 @@ contract MultiSigWalletTokenLimit
   /*
   * Public functions
   */
-  /// @dev Contract constructor sets initial owners, required number of confirmations, initial periods&#39; parameters and token address.
+  /// @dev Contract constructor sets initial owners, required number of confirmations, initial periods' parameters and token address.
   /// @param _owners List of initial owners.
   /// @param _required Number of required confirmations.
   /// @param _timestamps Timestamps of initial periods.
@@ -158,9 +158,9 @@ contract MultiSigWalletTokenLimit
   function MultiSigWalletTokenLimit(address[] _owners, uint _required, uint[] _timestamps, uint[] _limits, ERC20 _erc20_contract)
     public
   {
-    for (uint i = 0; i &lt; _owners.length; i++)
+    for (uint i = 0; i < _owners.length; i++)
     {
-      require(!is_owner[_owners[i]] &amp;&amp; _owners[i] != 0);
+      require(!is_owner[_owners[i]] && _owners[i] != 0);
       is_owner[_owners[i]] = true;
     }
     owners = _owners;
@@ -169,7 +169,7 @@ contract MultiSigWalletTokenLimit
     periods[0].timestamp = 2**256 - 1;
     periods[0].limit = 2**256 - 1;
     uint total_limit = 0;
-    for (i = 0; i &lt; _timestamps.length; i++)
+    for (i = 0; i < _timestamps.length; i++)
     {
       periods[i + 1].timestamp = _timestamps[i];
       periods[i + 1].current_limit = _limits[i];
@@ -178,7 +178,7 @@ contract MultiSigWalletTokenLimit
     }
     period_count = 1 + _timestamps.length;
     current_period = 0;
-    if (_timestamps.length &gt; 0)
+    if (_timestamps.length > 0)
       current_period = 1;
     current_transferred = 0;
 
@@ -252,11 +252,11 @@ contract MultiSigWalletTokenLimit
     returns (bool)
   {
     uint count = 0;
-    for (uint i = 0; i &lt; owners.length; i++)
+    for (uint i = 0; i < owners.length; i++)
     {
       if (confirmations[transaction_id][owners[i]])
         ++count;
-    if (count &gt;= required)
+    if (count >= required)
       return true;
     }
   }
@@ -293,7 +293,7 @@ contract MultiSigWalletTokenLimit
     view
     returns (uint count)
   {
-    for (uint i = 0; i &lt; owners.length; i++)
+    for (uint i = 0; i < owners.length; i++)
       if (confirmations[transaction_id][owners[i]])
         ++count;
   }
@@ -307,9 +307,9 @@ contract MultiSigWalletTokenLimit
     view
     returns (uint count)
   {
-    for (uint i = 0; i &lt; transaction_count; i++)
-      if (pending &amp;&amp; !transactions[i].executed
-        || executed &amp;&amp; transactions[i].executed)
+    for (uint i = 0; i < transaction_count; i++)
+      if (pending && !transactions[i].executed
+        || executed && transactions[i].executed)
         ++count;
   }
 
@@ -334,14 +334,14 @@ contract MultiSigWalletTokenLimit
     address[] memory confirmations_temp = new address[](owners.length);
     uint count = 0;
     uint i;
-    for (i = 0; i &lt; owners.length; i++)
+    for (i = 0; i < owners.length; i++)
       if (confirmations[transaction_id][owners[i]])
       {
         confirmations_temp[count] = owners[i];
         ++count;
       }
       _confirmations = new address[](count);
-      for (i = 0; i &lt; count; i++)
+      for (i = 0; i < count; i++)
         _confirmations[i] = confirmations_temp[i];
   }
 
@@ -359,15 +359,15 @@ contract MultiSigWalletTokenLimit
     uint[] memory transaction_ids_temp = new uint[](transaction_count);
     uint count = 0;
     uint i;
-    for (i = 0; i &lt; transaction_count; i++)
-      if (pending &amp;&amp; !transactions[i].executed
-        || executed &amp;&amp; transactions[i].executed)
+    for (i = 0; i < transaction_count; i++)
+      if (pending && !transactions[i].executed
+        || executed && transactions[i].executed)
       {
         transaction_ids_temp[count] = i;
         ++count;
       }
       _transaction_ids = new uint[](to - from);
-      for (i = from; i &lt; to; i++)
+      for (i = from; i < to; i++)
         _transaction_ids[i - from] = transaction_ids_temp[i];
   }
 
@@ -396,8 +396,8 @@ contract MultiSigWalletTokenLimit
     ownerOrWallet(msg.sender)
   {
     uint new_period = 0;
-    for (uint i = 1; i &lt; period_count; i++)
-      if (periods[i].timestamp &gt; now &amp;&amp; periods[i].timestamp &lt; periods[new_period].timestamp)
+    for (uint i = 1; i < period_count; i++)
+      if (periods[i].timestamp > now && periods[i].timestamp < periods[new_period].timestamp)
         new_period = i;
     if (new_period != current_period)
     {
@@ -414,7 +414,7 @@ contract MultiSigWalletTokenLimit
     returns (bool)
   {
     updateCurrentPeriod();
-    require(value &lt;= getWalletBalance() &amp;&amp; current_transferred.add(value) &lt;= periods[current_period].limit);
+    require(value <= getWalletBalance() && current_transferred.add(value) <= periods[current_period].limit);
 
     if (erc20_contract.transfer(to, value)) 
     {

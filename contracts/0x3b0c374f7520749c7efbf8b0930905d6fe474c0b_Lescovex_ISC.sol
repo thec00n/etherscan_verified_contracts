@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /*
-    Copyright 2018, Vicent Nos &amp; Enrique Santos
+    Copyright 2018, Vicent Nos & Enrique Santos
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@ pragma solidity ^0.4.24;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -29,20 +29,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -81,11 +81,11 @@ contract LescovexERC20 is Ownable {
     using SafeMath for uint256;
 
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
-    mapping (address =&gt; timeHold) holded;
+    mapping (address => timeHold) holded;
 
     struct timeHold{
         uint256[] amount;
@@ -96,7 +96,7 @@ contract LescovexERC20 is Ownable {
 
 
     /* Public variables for the ERC20 token */
-    string public constant standard = &quot;ERC20 Lescovex ISC Income Smart Contract&quot;;
+    string public constant standard = "ERC20 Lescovex ISC Income Smart Contract";
     uint8 public constant decimals = 8; // hardcoded to be a constant
     uint256 public totalSupply;
     uint256 public holdTime;
@@ -117,7 +117,7 @@ contract LescovexERC20 is Ownable {
         uint256 len = holded[_owner].length;
         uint256 maxHoldStart = block.number - holdTime;
 
-        while (i &lt; len &amp;&amp; holded[_owner].time[i] &lt; maxHoldStart){
+        while (i < len && holded[_owner].time[i] < maxHoldStart){
                tokenAmount += holded[_owner].amount[i];
                i++;
         }
@@ -133,7 +133,7 @@ contract LescovexERC20 is Ownable {
     function transfer(address _to, uint256 _value) public returns (bool) {
 
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -152,8 +152,8 @@ contract LescovexERC20 is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -187,7 +187,7 @@ contract LescovexERC20 is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,7 +256,7 @@ contract Lescovex_ISC is LescovexERC20 {
     
         uint256 ethAmount = (holdedOf(msg.sender) * contractBalance) / totalSupply;
 
-        require(ethAmount &gt; 0);
+        require(ethAmount > 0);
 
 
         //executes event to register the changes

@@ -11,18 +11,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ contract LockToken is Ownable {
 
   function lock(uint256 lockTime) public onlyOwner returns (bool){
   	require(!isLocked);
-  	require(tokenBalance() &gt; 0);
+  	require(tokenBalance() > 0);
   	start_time = now;
   	end_time = lockTime;
   	isLocked = true;
@@ -93,7 +93,7 @@ contract LockToken is Ownable {
 
   function lockOver() constant public returns (bool){
   	uint256 current_time = now;
-	return current_time &gt; end_time;
+	return current_time > end_time;
   }
 
 	function release() onlyOwner public{

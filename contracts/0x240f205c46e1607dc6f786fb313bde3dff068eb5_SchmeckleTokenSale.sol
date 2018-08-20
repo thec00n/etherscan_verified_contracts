@@ -26,27 +26,27 @@ contract SchmeckleTokenSale {
   function () payable {
       uint amount = msg.value;
 
-      if (amount &lt; 1 finney) revert();
+      if (amount < 1 finney) revert();
 
       uint tokens = amount * decimalBase / priceInWei;
 
-      if (tokens &gt; availableTokensOnCurrentStage * decimalBase) revert();
+      if (tokens > availableTokensOnCurrentStage * decimalBase) revert();
 
-      if (currentStage &gt; 21) revert();
+      if (currentStage > 21) revert();
 
       totalAmount += amount;
       availableTokensOnCurrentStage -= tokens / decimalBase + 1;
-      if (totalAmount &gt;= 3 ether &amp;&amp; currentStage == -3) {
+      if (totalAmount >= 3 ether && currentStage == -3) {
           currentStage = -2;
           priceInWei = 500 szabo;
           SaleStageUp(currentStage, priceInWei);
       }
-      if (totalAmount &gt;= 42 ether &amp;&amp; currentStage == -2) {
+      if (totalAmount >= 42 ether && currentStage == -2) {
           currentStage = -1;
           priceInWei = 1000 szabo;
           SaleStageUp(currentStage, priceInWei);
       }
-      if (availableTokensOnCurrentStage &lt; 1000 &amp;&amp; currentStage &gt;= 0) {
+      if (availableTokensOnCurrentStage < 1000 && currentStage >= 0) {
           currentStage++;
           priceInWei = priceInWei * 2;
           availableTokensOnCurrentStage = 1000000;
@@ -67,7 +67,7 @@ contract SchmeckleTokenSale {
  }
 
  function launchSale() onlyBeneficiary () {
-      if (currentStage &gt; -1) revert();
+      if (currentStage > -1) revert();
       currentStage = 0;
       priceInWei = priceInWei * 2;
       availableTokensOnCurrentStage = 2100000;

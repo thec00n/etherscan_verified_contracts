@@ -5,8 +5,8 @@ contract AuthAdmin {
     address[] admins_array;
     address[] users_array;
     
-    mapping (address =&gt; bool) admin_addresses;
-    mapping (address =&gt; bool) user_addresses;
+    mapping (address => bool) admin_addresses;
+    mapping (address => bool) user_addresses;
 
     event NewAdmin(address addedBy, address admin);
     event RemoveAdmin(address removedBy, address admin);
@@ -58,7 +58,7 @@ contract AuthAdmin {
     }
 
     function isCurrentOrPastAdmin(address _address) public constant returns (bool) {
-        for (uint256 i = 0; i &lt; admins_array.length; i++)
+        for (uint256 i = 0; i < admins_array.length; i++)
             require (admins_array[i] == _address);
                 return true;
         return false;
@@ -69,7 +69,7 @@ contract AuthAdmin {
     }
 
     function isCurrentOrPastUser(address _address) public constant returns (bool) {
-        for (uint256 i = 0; i &lt; users_array.length; i++)
+        for (uint256 i = 0; i < users_array.length; i++)
             require (users_array[i] == _address);
                 return true;
         return false;

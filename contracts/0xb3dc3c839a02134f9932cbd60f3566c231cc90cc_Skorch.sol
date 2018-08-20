@@ -9,7 +9,7 @@ pragma solidity ^0.4.18;
 // /(_))((_)((_)\  /(_)|((_)((_)\  
 //(_)) |_ ((_)((_)(_)) )\___ _((_) 
 /// __|| |/ // _ \| _ ((/ __| || | 
-//\__ \  &#39; &lt;| (_) |   /| (__| __ | 
+//\__ \  ' <| (_) |   /| (__| __ | 
 //|___/ _|\_\\___/|_|_\ \___|_||_| 
 //--------------------------------
 
@@ -27,7 +27,7 @@ pragma solidity ^0.4.18;
 
 // Skorch is the first PoW+PoS mineable ERC20 token using Keccak256 (Sha3) algorithm
 // 210 Million Total Supply 
-// 21 Million available for Proof of Work mining based on Bitcoin&#39;s SHA256 Algorithm
+// 21 Million available for Proof of Work mining based on Bitcoin's SHA256 Algorithm
 // 21k (21,000) SKO Required to be held in your wallet to gain Proof of Stake Rewards
 // 189 Million of 210 Million total supply will be minted by the smart contract for PoS rewards 
 // 30% PoS rewards for the first year but decreases each year after until 0 
@@ -43,11 +43,11 @@ library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -57,7 +57,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -67,7 +67,7 @@ library SafeMath {
 library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
-        if(a &gt; b) return b;
+        if(a > b) return b;
         return a;
     }
 }
@@ -151,21 +151,21 @@ contract Skorch is ERC20Interface, Owned {
 
     bool locked = false;
 
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
 
     uint public tokensMinted;
     
     uint internal GLOBAL_START_TIMER;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
     
-    mapping(address =&gt; uint256) timer; // timer to check PoS 
+    mapping(address => uint256) timer; // timer to check PoS 
     
     // how to calculate doubleUnit: 
     // specify how much percent increase you want per year 
-    // e.g. 130% -&gt; 2.3 multiplier every year 
+    // e.g. 130% -> 2.3 multiplier every year 
     // now divide (1 years) by LOG(2.3) where LOG is the natural logarithm (not LOG10)
     // in this case LOG(2.3) is 0.83290912293
     // hence multiplying by 1/0.83290912293 is the same 
@@ -188,8 +188,8 @@ contract Skorch is ERC20Interface, Owned {
         public 
         onlyOwner()
     {
-        symbol = &quot;SKO&quot;;
-        name = &quot;Skorch&quot;;
+        symbol = "SKO";
+        name = "Skorch";
         decimals = 8;
         // uncomment this to test 
         //balances[msg.sender] = (21000) * (10 ** uint(decimals)); // change 21000 to some lower number than 21000 
@@ -436,7 +436,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
             bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
             if (digest != challenge_digest) revert();
-            if(uint256(digest) &gt; miningTarget) revert();
+            if(uint256(digest) > miningTarget) revert();
              bytes32 solution = solutionForChallenge[challengeNumber];
              solutionForChallenge[challengeNumber] = digest;
              if(solution != 0x0) revert();  //prevent the same answer from awarding twice
@@ -445,7 +445,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
             uint reward_amount = getMiningReward();
             balances[msg.sender] = balances[msg.sender].add(reward_amount);
             tokensMinted = tokensMinted.add(reward_amount);
-            assert(tokensMinted &lt;= maxSupplyForEra);
+            assert(tokensMinted <= maxSupplyForEra);
             lastRewardTo = msg.sender;
             lastRewardAmount = reward_amount;
             lastRewardEthBlockNumber = block.number;
@@ -456,7 +456,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         }
 
     function _startNewMiningEpoch() internal {
-      if( tokensMinted.add(getMiningReward()) &gt; maxSupplyForEra &amp;&amp; rewardEra &lt; 39)
+      if( tokensMinted.add(getMiningReward()) > maxSupplyForEra && rewardEra < 39)
       {
         rewardEra = rewardEra + 1;
       }
@@ -473,7 +473,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
         uint epochsMined = _BLOCKS_PER_READJUSTMENT; 
         uint targetEthBlocksPerDiffPeriod = epochsMined * 60; //should be 60 times slower than ethereum
-        if( ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod )
+        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod )
         {
           uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div( ethBlocksSinceLastDifficultyPeriod );
           uint excess_block_pct_extra = excess_block_pct.sub(100).limitLessThan(1000);
@@ -484,11 +484,11 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
           miningTarget = miningTarget.add(miningTarget.div(2000).mul(shortage_block_pct_extra));   //by up to 50 %
         }
         latestDifficultyPeriodStarted = block.number;
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -517,7 +517,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
       
       function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testTarget) public view returns (bool success) {
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
           return (digest == challenge_digest);
         }
 
@@ -585,7 +585,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         if (timer[target] == 0){
             // russian hackers BTFO
 
-            if (balances[target] &gt; 0){
+            if (balances[target] > 0){
                 // timer is handled in _getPoS 
             }
             else{
@@ -599,7 +599,7 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         }
         
         uint256 totalTkn = _getPoS(target);
-        if (totalTkn &gt; 0){
+        if (totalTkn > 0){
             balances[target] = balances[target].add(totalTkn);
             //_totalSupply.add(totalTkn); total supply is fixed 
             emit PoS(target, totalTkn);
@@ -652,11 +652,11 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         if (TIME == 0){
             TIME = GLOBAL_START_TIMER;
         }
-        if (balances[target] &lt; getStakingRequirementTime(target, TIME)){
+        if (balances[target] < getStakingRequirementTime(target, TIME)){
             // staking requirement was too low at update 
             // maybe it has since surpassed the requirement? 
             uint flipTime = getRequirementTime(target);
-            if ( now &gt; flipTime ){
+            if ( now > flipTime ){
                 TIME = flipTime;
             }
             else{
@@ -703,20 +703,20 @@ emit Transfer(address(0x0), 0xbede88c495132efb90b5039bc2942042e07814df, 40513641
         int256 R = ((int256)(2) * one) +
             (z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
         exp = (uint256) (((R + a) * one) / (R - a));
-        if (scale &gt;= 0)
-            exp &lt;&lt;= scale;
+        if (scale >= 0)
+            exp <<= scale;
         else
-            exp &gt;&gt;= -scale;
+            exp >>= -scale;
         return exp;
     }
 
     function fixedLog(uint256 a) internal pure returns (int256 log) {
         int32 scale = 0;
-        while (a &gt; sqrt2) {
+        while (a > sqrt2) {
             a /= 2;
             scale++;
         }
-        while (a &lt;= sqrtdot5) {
+        while (a <= sqrtdot5) {
             a *= 2;
             scale--;
         }

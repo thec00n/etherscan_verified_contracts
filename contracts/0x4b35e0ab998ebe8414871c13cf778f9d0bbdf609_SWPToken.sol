@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -38,7 +38,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -74,16 +74,16 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract SWPToken is StandardToken, SafeMath {
 
-    string public constant name = &quot;SWAP&quot;;
-    string public constant symbol = &quot;SWP&quot;;
+    string public constant name = "SWAP";
+    string public constant symbol = "SWP";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     address public ethFundDeposit;
     address public swpFundDeposit;
@@ -94,8 +94,8 @@ contract SWPToken is StandardToken, SafeMath {
     uint256 public constant swpFund = 75000000 * 10**decimals;
 
     function tokenRate() constant returns(uint) {
-        if (block.number&gt;=fundingStartBlock &amp;&amp; block.number&lt;fundingStartBlock+2 days) return 3500;
-        if (block.number&gt;=fundingStartBlock &amp;&amp; block.number&lt;fundingStartBlock+5 days) return 2700;
+        if (block.number>=fundingStartBlock && block.number<fundingStartBlock+2 days) return 3500;
+        if (block.number>=fundingStartBlock && block.number<fundingStartBlock+5 days) return 2700;
         return 2200;
     }
 
@@ -125,15 +125,15 @@ contract SWPToken is StandardToken, SafeMath {
 
     function makeTokens() payable  {
       if (isFinalized) revert();
-      if (block.number &lt; fundingStartBlock) revert();
-      if (block.number &gt; fundingEndBlock) revert();
+      if (block.number < fundingStartBlock) revert();
+      if (block.number > fundingEndBlock) revert();
       if (msg.value == 0) revert();
 
       uint256 tokens = safeMult(msg.value, tokenRate());
 
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-      if (tokenCreationCap &lt; checkedSupply) revert();
+      if (tokenCreationCap < checkedSupply) revert();
 
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;
@@ -148,7 +148,7 @@ contract SWPToken is StandardToken, SafeMath {
       if (isFinalized) revert();
       if (msg.sender != ethFundDeposit) revert();
 
-      if(block.number &lt;= fundingEndBlock &amp;&amp; totalSupply != tokenCreationCap) revert();
+      if(block.number <= fundingEndBlock && totalSupply != tokenCreationCap) revert();
 
       isFinalized = true;
       if(!ethFundDeposit.send(this.balance)) revert();

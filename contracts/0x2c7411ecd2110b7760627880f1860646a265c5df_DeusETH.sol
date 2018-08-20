@@ -56,7 +56,7 @@ contract DeusETH {
     uint256 public totalSupply = 0;
     uint256 public livingSupply = 0;
 
-    mapping(uint256 =&gt; Citizen) public citizens;
+    mapping(uint256 => Citizen) public citizens;
 
     //using for userFinalize
     uint256 public timestamp = 0;
@@ -154,7 +154,7 @@ contract DeusETH {
         require(!started);
         require(!gameOver);
         require(!gameOverByUser);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(citizens[_id].isExist == false);
 
         require(msg.value == rate);
@@ -180,8 +180,8 @@ contract DeusETH {
         require(started);
         require(!gameOver);
         require(!gameOverByUser);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
-        require(_state &lt;= 1);
+        require(_id > 0 && _id <= cap);
+        require(_state <= 1);
         require(citizens[_id].state != _state);
 
         citizens[_id].state = _state;
@@ -197,7 +197,7 @@ contract DeusETH {
     }
 
     function changeHolder(uint256 _id, address _newholder) public returns (bool) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require((citizens[_id].holder == msg.sender) || (stock == msg.sender));
         require(_newholder != address(0));
         citizens[_id].holder = _newholder;
@@ -209,8 +209,8 @@ contract DeusETH {
         require(started);
         require(!gameOver);
         require(!gameOverByUser);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
-        require(_branch &gt; 0);
+        require(_id > 0 && _id <= cap);
+        require(_branch > 0);
         citizens[_id].branch = _branch;
         TokenBranch(_id, _branch);
         return true;
@@ -227,7 +227,7 @@ contract DeusETH {
     }
 
     function userFinalize() public {
-        require(now &gt;= (timestamp + timeWithoutUpdate));
+        require(now >= (timestamp + timeWithoutUpdate));
         require(!gameOver);
         gameOverByUser = true;
     }
@@ -247,17 +247,17 @@ contract DeusETH {
     }
 
     function getState(uint256 _id) public view returns (uint256) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         return citizens[_id].state;
     }
 
     function getHolder(uint256 _id) public view returns (address) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         return citizens[_id].holder;
     }
 
     function getBranch(uint256 _id) public view returns (uint256) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         return citizens[_id].branch;
     }
 
@@ -274,7 +274,7 @@ contract DeusETH {
         address[] memory b = new address[](50);
         uint256[] memory c = new uint256[](50);
 
-        for (uint i = 0; i &lt; a.length; i++) {
+        for (uint i = 0; i < a.length; i++) {
             a[i] = citizens[i+1].state;
             b[i] = citizens[i+1].holder;
             c[i] = citizens[i+1].branch;
@@ -285,14 +285,14 @@ contract DeusETH {
 
     //for test only
     function deleteCitizen(uint256 _id) public onlyOwner returns (uint256) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(citizens[_id].isExist == true);
         delete citizens[_id];
         return _id;
     }
 
     function nextStage() public onlyOwner returns (bool) {
-        require(stage &lt; Stages.Finish);
+        require(stage < Stages.Finish);
         stage = Stages(uint(stage) + 1);
         return true;
     }
@@ -305,7 +305,7 @@ contract DeusETH {
 
     function createCitizen(uint256 _id, address _holder) internal returns (uint256) {
         require(!started);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(_holder != address(0));
         citizens[_id].state = 1;
         citizens[_id].holder = _holder;
@@ -329,13 +329,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

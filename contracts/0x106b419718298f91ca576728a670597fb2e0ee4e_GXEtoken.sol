@@ -5,7 +5,7 @@ pragma solidity ^0.4.15;
  *
  * Name of the project: Genevieve GX Token
  * Contract name: GXEToken
- * Author: Juan Livingston &amp; Fatima @ Ethernity.live
+ * Author: Juan Livingston & Fatima @ Ethernity.live
  * Developed for: Genevieve Co.
  * GXE is an ERC223 Token
  *
@@ -43,7 +43,7 @@ contract GXEtoken {
     string public name;
     string public symbol;
     uint8 public decimals; 
-    string public version = &#39;v0.2&#39;;
+    string public version = 'v0.2';
     uint256 public totalSupply;
     bool locked;
 
@@ -52,9 +52,9 @@ contract GXEtoken {
     uint multiplier = 10000000000; // For 10 decimals
     address swapperAddress; // Can bypass a lock
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) freezed; 
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) freezed; 
 
 
     event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
@@ -63,7 +63,7 @@ contract GXEtoken {
     // Modifiers
 
     modifier onlyOwner() {
-        if ( msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+        if ( msg.sender != rootAddress && msg.sender != Owner ) revert();
         _;
     }
 
@@ -73,7 +73,7 @@ contract GXEtoken {
     }
 
     modifier isUnlocked() {
-    	if ( locked &amp;&amp; msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+    	if ( locked && msg.sender != rootAddress && msg.sender != Owner ) revert();
 		_;    	
     }
 
@@ -85,10 +85,10 @@ contract GXEtoken {
 
     // Safe math
     function safeAdd(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function safeSub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
 
@@ -96,8 +96,8 @@ contract GXEtoken {
     function GXEtoken() {        
         locked = true;
         totalSupply = 100000000 * multiplier; // 100,000,000 tokens * 10 decimals
-        name = &#39;Genevieve Exchange&#39;; 
-        symbol = &#39;GXE&#39;;
+        name = 'Genevieve Exchange'; 
+        symbol = 'GXE';
         decimals = 10;
         rootAddress = 0x24350803BFcE6E9D1f4baE0940E43af186A6D12C;        
         Owner = msg.sender;       
@@ -165,7 +165,7 @@ contract GXEtoken {
 
     function burn(uint256 _value) onlyOwner returns(bool) {
     	bytes memory empty;
-        if ( balances[msg.sender] &lt; _value ) revert();
+        if ( balances[msg.sender] < _value ) revert();
         balances[msg.sender] = safeSub( balances[msg.sender] , _value );
         totalSupply = safeSub( totalSupply,  _value );
         Transfer(msg.sender, 0x0, _value , empty);
@@ -191,7 +191,7 @@ contract GXEtoken {
     isUnlocked isUnfreezed(_to) returns (bool success) {
       
     if(isContract(_to)) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] = safeSub( balances[msg.sender] , _value );
         balances[_to] = safeAdd( balances[_to] , _value );
         ContractReceiver receiver = ContractReceiver(_to);
@@ -236,12 +236,12 @@ contract GXEtoken {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
   }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -250,7 +250,7 @@ contract GXEtoken {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender] , _value);
     balances[_to] = safeAdd(balances[_to] , _value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -262,10 +262,10 @@ contract GXEtoken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
 
-        if ( locked &amp;&amp; msg.sender != swapperAddress ) return false; 
+        if ( locked && msg.sender != swapperAddress ) return false; 
         if ( freezed[_from] || freezed[_to] ) return false; // Check if destination address is freezed
-        if ( balances[_from] &lt; _value ) return false; // Check if the sender has enough
-		if ( _value &gt; allowed[_from][msg.sender] ) return false; // Check allowance
+        if ( balances[_from] < _value ) return false; // Check if the sender has enough
+		if ( _value > allowed[_from][msg.sender] ) return false; // Check allowance
 
         balances[_from] = safeSub(balances[_from] , _value); // Subtract from the sender
         balances[_to] = safeAdd(balances[_to] , _value); // Add the same to the recipient

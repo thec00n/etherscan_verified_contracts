@@ -4,16 +4,16 @@ pragma solidity ^0.4.18;
 
 contract AimiToken {
     //---------------------------------------变量---------------------------------------- 
-    string public name = &quot;艾米币&quot;;//代币名字
-    string public symbol = &quot;AT&quot;; //代币符号
+    string public name = "艾米币";//代币名字
+    string public symbol = "AT"; //代币符号
     uint8 public decimals = 8; //代币小数位
     uint256 public _totalSupply ; //代币总量10亿
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
     //用一个映射类型的变量，来记录被冻结的账户
-    mapping(address=&gt;bool) public frozenATAccount;
+    mapping(address=>bool) public frozenATAccount;
     event Approval(address indexed owner, address indexed spender, uint256 value);
     bool  transfersEnabled = false ;//是否激活代币交易 ，true为激活，默认不激活 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     address public owner;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -25,8 +25,8 @@ contract AimiToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(frozenATAccount[_to]==false);
     require(frozenATAccount[msg.sender]==false);
     require(transfersEnabled==true);
@@ -42,7 +42,7 @@ contract AimiToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -91,7 +91,7 @@ contract AimiToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = sub(oldValue,_subtractedValue);
@@ -108,7 +108,7 @@ contract AimiToken {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(frozenATAccount[_to]==false);
     require(frozenATAccount[msg.sender]==false);
     require(transfersEnabled==true);
@@ -170,9 +170,9 @@ contract AimiToken {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -180,7 +180,7 @@ contract AimiToken {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -189,7 +189,7 @@ contract AimiToken {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   

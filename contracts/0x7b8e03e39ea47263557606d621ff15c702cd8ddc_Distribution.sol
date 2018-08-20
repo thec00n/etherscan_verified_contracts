@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -146,9 +146,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -183,10 +183,10 @@ contract Distribution is Ownable {
   uint256 public cap;
   uint256 public stageCap;
 
-  mapping (address =&gt; mapping (uint16 =&gt; uint256)) public contributions;
-  mapping (uint16 =&gt; uint256) public sold;
-  mapping (uint16 =&gt; bool) public burned;
-  mapping (address =&gt; mapping (uint16 =&gt; bool)) public claimed;
+  mapping (address => mapping (uint16 => uint256)) public contributions;
+  mapping (uint16 => uint256) public sold;
+  mapping (uint16 => bool) public burned;
+  mapping (address => mapping (uint16 => bool)) public claimed;
 
   event NewPurchase(
     address indexed purchaser,
@@ -216,15 +216,15 @@ contract Distribution is Ownable {
    */
   function () external payable {
     require(isActive);
-    require(weiUsdRate &gt; 0);
-    require(getStage() &lt; stages);
+    require(weiUsdRate > 0);
+    require(getStage() < stages);
 
     uint256 usd = msg.value / weiUsdRate;
     uint256 tokens = computeTokens(usd);
     uint16 stage = getStage();
 
     sold[stage] = sold[stage].add(tokens);
-    require(sold[stage] &lt; stageCap);
+    require(sold[stage] < stageCap);
 
     contributions[msg.sender][stage] = contributions[msg.sender][stage].add(tokens);
     soldTokens = soldTokens.add(tokens);
@@ -242,7 +242,7 @@ contract Distribution is Ownable {
   function init(uint256 _cap, uint256 _startTime) public onlyOwner {
     require(!isActive);
     require(token.balanceOf(this) == _cap);
-    require(_startTime &gt; block.timestamp);
+    require(_startTime > block.timestamp);
 
     startTime = _startTime;
     cap = _cap;
@@ -256,7 +256,7 @@ contract Distribution is Ownable {
    */
   function claimBonus(uint16 _stage) public {
     require(!claimed[msg.sender][_stage]);
-    require(getStage() &gt; _stage);
+    require(getStage() > _stage);
 
     if (!burned[_stage]) {
       token.burn(stageCap.sub(sold[_stage]).sub(sold[_stage].mul(computeBonus(_stage)).div(1 ether)));
@@ -276,7 +276,7 @@ contract Distribution is Ownable {
    * @param _rate uint256 The new exchange rate
    */
   function setWeiUsdRate(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     weiUsdRate = _rate;
   }
 
@@ -303,7 +303,7 @@ contract Distribution is Ownable {
    * @dev current stage
    */
   function getStage() public view returns(uint16) {
-    require(block.timestamp &gt;= startTime);
+    require(block.timestamp >= startTime);
     return uint16(uint256(block.timestamp).sub(startTime).div(stageDuration));
   }
 

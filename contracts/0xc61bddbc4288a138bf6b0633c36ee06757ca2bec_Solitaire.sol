@@ -44,7 +44,7 @@ contract Solitaire is Ownable {
     Asset[] queue;
 
     function init(address _nft,uint256 _id,address _owner,string _url,string _memo) public onlyOwner{
-        require(queue.length&lt;=1);
+        require(queue.length<=1);
         Asset memory a = Asset({
             nft: _nft,
             tokenId: _id,
@@ -68,7 +68,7 @@ contract Solitaire is Ownable {
     }
     
     function setfee(uint256 _fee) public onlyOwner{
-        require(_fee&gt;=0);
+        require(_fee>=0);
         fee = _fee;
     }
     
@@ -77,7 +77,7 @@ contract Solitaire is Ownable {
     }
     
     function getAsset(uint256 _index) public view returns(address _nft,uint256 _id,address _owner,string _url,string _memo){
-        require(_index&lt;queue.length);
+        require(_index<queue.length);
         Asset memory _a = queue[_index];
         _nft = _a.nft;
         _id = _a.tokenId;
@@ -87,7 +87,7 @@ contract Solitaire is Ownable {
     }
     
     function addLayer(address _nft,uint256 _id,string _url,string _memo) public payable{
-        require(msg.value &gt;=fee);
+        require(msg.value >=fee);
         require(_nft != address(0));
         SimpleERC721 se = SimpleERC721(_nft);
         require(se.ownerOf(_id) == msg.sender);

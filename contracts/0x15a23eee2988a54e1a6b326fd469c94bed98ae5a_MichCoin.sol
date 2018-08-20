@@ -14,8 +14,8 @@ contract ERC20 {
 
 contract MichCoin is ERC20 {
 
-    string public constant name = &quot;Mich Coin&quot;;
-    string public constant symbol = &quot;MCH&quot;;
+    string public constant name = "Mich Coin";
+    string public constant symbol = "MCH";
     uint public constant decimals = 8;
 
     uint public tokenToEtherRate;
@@ -32,17 +32,17 @@ contract MichCoin is ERC20 {
     address reserve;
     address main;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) incomes;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) incomes;
+    mapping(address => mapping(address => uint256)) allowed;
 
     uint public tokenSold;
 
     function MichCoin(uint _tokenCount, uint _minTokenCount, uint _tokenToEtherRate,
                       uint _beginDurationInSec, uint _durationInSec, uint _bonusDurationInSec,
                       address _mainAddress, address _reserveAddress) {
-        require(_minTokenCount &lt;= _tokenCount);
-        require(_bonusDurationInSec &lt;= _durationInSec);
+        require(_minTokenCount <= _tokenCount);
+        require(_bonusDurationInSec <= _durationInSec);
         require(_mainAddress != _reserveAddress);
 
         tokenToEtherRate = _tokenToEtherRate;
@@ -76,13 +76,13 @@ contract MichCoin is ERC20 {
     }
 
     modifier waitForICO {
-        require(now &gt;= startTime);
+        require(now >= startTime);
         _;
     }
 
     modifier afterICO {
         //if ico period over or all token sold
-        require(now &gt; endTime || balances[this] &lt;= totalSupply - maxTokens);
+        require(now > endTime || balances[this] <= totalSupply - maxTokens);
         _;
     }
 
@@ -103,8 +103,8 @@ contract MichCoin is ERC20 {
     }
 
     function transfer(address _to, uint _value) canFreeze returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -115,9 +115,9 @@ contract MichCoin is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) canFreeze returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(allowed[_from][_to] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(allowed[_from][_to] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -144,15 +144,15 @@ contract MichCoin is ERC20 {
         uint tokenAmount = weiToToken(msg.value);
         uint bonusAmount = 0;
         //add bonus token if bought on bonus period
-        if (now &lt; bonusEndTime) {
+        if (now < bonusEndTime) {
             bonusAmount = tokenAmount / 10;
             tokenAmount += bonusAmount;
         }
 
-        require(now &lt; endTime);
-        require(balances[this] &gt;= tokenAmount);
-        require(balances[this] - tokenAmount &gt;= totalSupply - maxTokens);
-        require(balances[msg.sender] + tokenAmount &gt; balances[msg.sender]);
+        require(now < endTime);
+        require(balances[this] >= tokenAmount);
+        require(balances[this] - tokenAmount >= totalSupply - maxTokens);
+        require(balances[msg.sender] + tokenAmount > balances[msg.sender]);
 
         balances[this] -= tokenAmount;
         balances[msg.sender] += tokenAmount;
@@ -161,8 +161,8 @@ contract MichCoin is ERC20 {
     }
 
     function refund(address _sender) canFreeze afterICO {
-        require(balances[this] &gt;= totalSupply - minTokens);
-        require(incomes[_sender] &gt; 0);
+        require(balances[this] >= totalSupply - minTokens);
+        require(incomes[_sender] > 0);
 
         balances[_sender] = 0;
         _sender.transfer(incomes[_sender]);
@@ -170,8 +170,8 @@ contract MichCoin is ERC20 {
     }
 
     function withdraw() canFreeze afterICO {
-        require(balances[this] &lt; totalSupply - minTokens);
-        require(this.balance &gt; 0);
+        require(balances[this] < totalSupply - minTokens);
+        require(this.balance > 0);
 
         balances[reserve] = (totalSupply - balances[this]) * 15 / 85;
         balances[this] = 0;
@@ -190,7 +190,7 @@ contract MichCoin is ERC20 {
 
     function tokenAvailable() constant returns (uint) {
         uint available = balances[this] - (totalSupply - maxTokens);
-        if (balances[this] &lt; (totalSupply - maxTokens)) {
+        if (balances[this] < (totalSupply - maxTokens)) {
             available = 0;
         }
         return available;

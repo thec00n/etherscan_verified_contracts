@@ -9,7 +9,7 @@ Token implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/
 
 Smart City Coin Test Net is as the name implies Test Network - it was deployed in order to test functionalities, options, user interface, liquidity, price fluctuation, type of users, 
 market research and get first-hand feedback from all involved. We ask all users to be aware of test nature of the token - have patience and preferably 
-report all errors, opinions, shortcomings to our email address <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="127b7c747d52617f736066717b666b717d7b7c3c717d7f3c">[email&#160;protected]</a> Ask for bounty program for reporting shortcomings and improvement of functionalities. 
+report all errors, opinions, shortcomings to our email address <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="127b7c747d52617f736066717b666b717d7b7c3c717d7f3c">[email protected]</a> Ask for bounty program for reporting shortcomings and improvement of functionalities. 
 
 Smart City Coin Test Network is life real-world test with the goal to gather inputs for the Smart City Coin project.
 
@@ -21,7 +21,7 @@ Smart City AG does not assume any liability for damages or losses occurred due t
 
 You can find all about the project on http://www.smartcitycointest.net
 You can use your coins in https://www.smartcityshop.net/  
-You can contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f69f989099b6859b978482959f828f95999f98d895999b">[email&#160;protected]</a> 
+You can contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f69f989099b6859b978482959f828f95999f98d895999b">[email protected]</a> 
 */
 
 pragma solidity ^0.4.24;
@@ -70,7 +70,7 @@ This implements implements ERC 20 Token standard: https://github.com/ethereum/EI
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public payable returns (bool ) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -79,7 +79,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public payable returns (bool ) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -102,8 +102,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -114,7 +114,7 @@ This Token will be deployed, and then used by humans - members of Smart City Com
 
 This token specify
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
 .*/
@@ -130,14 +130,14 @@ contract SmartCityCoinTestNet is StandardToken {
 
     /*
     NOTE:
-    We&#39;ve inlcuded the following variables as OPTIONAL vanities. 
+    We've inlcuded the following variables as OPTIONAL vanities. 
     They in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     constructor (
         uint256 _initialAmount,
@@ -157,10 +157,10 @@ contract SmartCityCoinTestNet is StandardToken {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }

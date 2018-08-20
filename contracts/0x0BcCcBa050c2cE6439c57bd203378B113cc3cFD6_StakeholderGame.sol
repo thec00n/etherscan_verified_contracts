@@ -20,7 +20,7 @@ contract StakeholderGame is Ownable {
 
     function purchaseStake() public payable {
         // if you own a largest stake in a company, you own a company
-        if (msg.value &gt; largestStake) {
+        if (msg.value > largestStake) {
             owner = msg.sender;
             largestStake = msg.value;
         }

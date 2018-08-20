@@ -4,7 +4,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,13 +100,13 @@ contract SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,12 +116,12 @@ contract Denaro is Pausable, SafeMath {
 
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balances;
+  mapping (address => mapping (address => uint)) public allowed;
 
   // ERC20 properties
-  string public constant name = &quot;Denaro&quot;;
-  string public constant symbol = &quot;DNO&quot;;
+  string public constant name = "Denaro";
+  string public constant symbol = "DNO";
   uint8 public constant decimals = 7;
   
   // custom properties
@@ -184,7 +184,7 @@ contract Denaro is Pausable, SafeMath {
 
   function mint(address _to, uint256 _amount) public onlyOwner canMint {
     totalSupply = add(totalSupply, _amount);
-    require(totalSupply &lt;= MINTING_LIMIT);
+    require(totalSupply <= MINTING_LIMIT);
     
     balances[_to] = add(balances[_to], _amount);
     Mint(_to, _amount);

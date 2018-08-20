@@ -19,7 +19,7 @@ contract MTCOsale is MyOwned {
     uint public amountRaised;
     token public tokenReward;
     address public beneficiary;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event TakeBackToken(uint amount);
     event FundTransfer(address sender, uint amount, bool isSuccessful);
 
@@ -44,13 +44,13 @@ contract MTCOsale is MyOwned {
     }
 
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt;= stopDate);
+        return (now >= startDate && now <= stopDate);
     }
 
     function () public payable {
         require(saleActive());
-        require(msg.value &gt;= 0.1 ether);
-        require(balanceOf[msg.sender] &lt;= 0);
+        require(msg.value >= 0.1 ether);
+        require(balanceOf[msg.sender] <= 0);
         uint amount = msg.value;
         amountRaised += amount/10000000000000000;
         tokenReward.transfer(msg.sender, 5000000000);
@@ -60,7 +60,7 @@ contract MTCOsale is MyOwned {
 
     function saleEnd(uint restAmount) public onlyOwner {
         require(!saleActive());
-        require(now &gt; stopDate );
+        require(now > stopDate );
         uint weiRest = restAmount*100000000;       
         tokenReward.transfer(beneficiary, weiRest);
         TakeBackToken(restAmount);

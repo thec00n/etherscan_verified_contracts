@@ -15,8 +15,8 @@ contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -26,7 +26,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -142,37 +142,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -188,8 +188,8 @@ contract TokenHolder is Ownable {
 contract BlokToken is Ownable, BasicToken, TokenHolder {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Blok&quot;;
-    string public constant symbol = &quot;BLO&quot;;
+    string public constant name = "Blok";
+    string public constant symbol = "BLO";
 
     // Using same decimal value as ETH (makes ETH-BLO conversion much easier).
     uint8 public constant decimals = 18;
@@ -296,10 +296,10 @@ contract BlokTokenSale is Ownable, TokenHolder {
     uint256 public constant TIER_1_CAP = 20000 ether; // Maximum uint256 value
 
     // Accumulated amount each participant has contributed so far.
-    mapping (address =&gt; uint256) public participationHistory;
+    mapping (address => uint256) public participationHistory;
 
     // Maximum amount that each participant is allowed to contribute (in WEI).
-    mapping (address =&gt; uint256) public participationCaps;
+    mapping (address => uint256) public participationCaps;
 
     // Maximum amount ANYBODY is currently allowed to contribute.
     uint256 public hardParticipationCap = uint256(-1);
@@ -315,7 +315,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
     }
 
     address[] public tokenGrantees;
-    mapping (address =&gt; TokenGrant) public tokenGrants;
+    mapping (address => TokenGrant) public tokenGrants;
     uint256 public lastGrantedIndex = 0;
     uint256 public constant MAX_TOKEN_GRANTEES = 100;
     uint256 public constant GRANT_BATCH_SIZE = 10;
@@ -328,7 +328,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
 
     /// @dev Reverts if called when not during sale.
     modifier onlyDuringSale() {
-        require(!saleEnded() &amp;&amp; now &gt;= startTime);
+        require(!saleEnded() && now >= startTime);
 
         _;
     }
@@ -345,7 +345,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @param _startTime uint256 The start time of the token sale.
     function BlokTokenSale(address _fundingRecipient, uint256 _startTime) {
         require(_fundingRecipient != address(0));
-        require(_startTime &gt; now);
+        require(_startTime > now);
 
         // Deploy new BlokToken contract.
         blok = new BlokToken();
@@ -378,12 +378,12 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @param _value uint256 The value of the grant.
     function addTokenGrant(address _grantee, uint256 _value) external onlyOwner {
         require(_grantee != address(0));
-        require(_value &gt; 0);
-        require(tokenGrantees.length + 1 &lt;= MAX_TOKEN_GRANTEES);
+        require(_value > 0);
+        require(tokenGrantees.length + 1 <= MAX_TOKEN_GRANTEES);
 
-        // Verify the grant doesn&#39;t already exist.
+        // Verify the grant doesn't already exist.
         require(tokenGrants[_grantee].value == 0);
-        for (uint i = 0; i &lt; tokenGrantees.length; i++) {
+        for (uint i = 0; i < tokenGrantees.length; i++) {
             require(tokenGrantees[i] != _grantee);
         }
 
@@ -398,7 +398,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
         require(_grantee != address(0));
 
         // Delete the grant from the keys array.
-        for (uint i = 0; i &lt; tokenGrantees.length; i++) {
+        for (uint i = 0; i < tokenGrantees.length; i++) {
             if (tokenGrantees[i] == _grantee) {
                 delete tokenGrantees[i];
 
@@ -414,7 +414,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @param _participants address[] The list of participant addresses.
     /// @param _cap uint256 The cap amount (in ETH).
     function setParticipationCap(address[] _participants, uint256 _cap) private onlyOwner {
-        for (uint i = 0; i &lt; _participants.length; i++) {
+        for (uint i = 0; i < _participants.length; i++) {
             participationCaps[_participants[i]] = _cap;
         }
     }
@@ -428,7 +428,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @dev Set hard participation cap for all participants.
     /// @param _cap uint256 The hard cap amount.
     function setHardParticipationCap(uint256 _cap) external onlyOwner {
-        require(_cap &gt; 0);
+        require(_cap > 0);
 
         hardParticipationCap = _cap;
     }
@@ -447,7 +447,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
         uint256 weiAlreadyParticipated = participationHistory[msg.sender];
         uint256 participationCap = SafeMath.min256(TOKEN_UNIT.mul(15).add(participationCaps[msg.sender]), hardParticipationCap);
         uint256 cappedWeiReceived = SafeMath.min256(msg.value, participationCap.sub(weiAlreadyParticipated));
-        require(cappedWeiReceived &gt; 0);
+        require(cappedWeiReceived > 0);
 
         // Accept funds and transfer to funding recipient.
         uint256 weiLeftInSale = MAX_TOKENS_SOLD.sub(tokensSold).div(BLO_PER_WEI);
@@ -458,7 +458,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
         // Issue tokens and transfer to recipient.
         uint256 tokensLeftInSale = MAX_TOKENS_SOLD.sub(tokensSold);
         uint256 tokensToIssue = weiToParticipate.mul(BLO_PER_WEI);
-        if (tokensLeftInSale.sub(tokensToIssue) &lt; BLO_PER_WEI) {
+        if (tokensLeftInSale.sub(tokensToIssue) < BLO_PER_WEI) {
             // If purchase would cause less than BLO_PER_WEI tokens left then nobody could ever buy them.
             // So, gift them to the last buyer.
             tokensToIssue = tokensLeftInSale;
@@ -469,7 +469,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
         // Partial refund if full participation not possible
         // e.g. due to cap being reached.
         uint256 refund = msg.value.sub(weiToParticipate);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }
@@ -486,12 +486,12 @@ contract BlokTokenSale is Ownable, TokenHolder {
         blok.endMinting();
     }
 
-    /// @dev Grants pre-configured token grants in batches. When the method is called, it&#39;ll resume from the last grant,
+    /// @dev Grants pre-configured token grants in batches. When the method is called, it'll resume from the last grant,
     /// from its previous run, and will finish either after granting GRANT_BATCH_SIZE grants or finishing the whole list
     /// of grants.
     function grantTokens() external onlyAfterSale onlyOwner {
         uint endIndex = SafeMath.min256(tokenGrantees.length, lastGrantedIndex + GRANT_BATCH_SIZE);
-        for (uint i = lastGrantedIndex; i &lt; endIndex; i++) {
+        for (uint i = lastGrantedIndex; i < endIndex; i++) {
             address grantee = tokenGrantees[i];
 
             // Calculate how many tokens have been granted, vested, and issued such that: granted = vested + issued.
@@ -501,12 +501,12 @@ contract BlokTokenSale is Ownable, TokenHolder {
             uint256 tokensIssued = tokensGranted.sub(tokensVesting);
 
             // Transfer issued tokens that have yet to be transferred to grantee.
-            if (tokensIssued &gt; 0) {
+            if (tokensIssued > 0) {
                 issueTokens(grantee, tokensIssued);
             }
 
             // Transfer vested tokens that have yet to be transferred to vesting trustee, and initialize grant.
-            if (tokensVesting &gt; 0) {
+            if (tokensVesting > 0) {
                 issueTokens(trustee, tokensVesting);
                 trustee.grant(grantee, tokensVesting, now.add(tokenGrant.startOffset), now.add(tokenGrant.cliffOffset),
                     now.add(tokenGrant.endOffset), tokenGrant.installmentLength, true);
@@ -529,14 +529,14 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @dev Returns whether the sale has ended.
     /// @return bool Whether the sale has ended or not.
     function saleEnded() private constant returns (bool) {
-        return tokensSold &gt;= MAX_TOKENS_SOLD || now &gt;= endTime;
+        return tokensSold >= MAX_TOKENS_SOLD || now >= endTime;
     }
 
     /// @dev Requests to transfer control of the Blok token contract to a new owner.
     /// @param _newOwnerCandidate address The address to transfer ownership to.
     ///
     /// NOTE:
-    ///   1. The new owner will need to call Blok token contract&#39;s acceptOwnership directly in order to accept the ownership.
+    ///   1. The new owner will need to call Blok token contract's acceptOwnership directly in order to accept the ownership.
     ///   2. Calling this method during the token sale will prevent the token sale to continue, since only the owner of
     ///      the Blok token contract can issue new tokens.
     function requestBlokTokenOwnershipTransfer(address _newOwnerCandidate) external onlyOwner {
@@ -553,7 +553,7 @@ contract BlokTokenSale is Ownable, TokenHolder {
     /// @param _newOwnerCandidate address The address to transfer ownership to.
     ///
     /// NOTE:
-    ///   1. The new owner will need to call VestingTrustee&#39;s acceptOwnership directly in order to accept the ownership.
+    ///   1. The new owner will need to call VestingTrustee's acceptOwnership directly in order to accept the ownership.
     ///   2. Calling this method during the token sale will prevent the token sale from finalizaing, since only the owner
     ///      of the VestingTrustee contract can issue new token grants.
     function requestVestingTrusteeOwnershipTransfer(address _newOwnerCandidate) external onlyOwner {
@@ -585,7 +585,7 @@ contract VestingTrustee is Ownable {
     }
 
     // Holder to grant information mapping.
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     // Total tokens available for vesting.
     uint256 public totalVesting;
@@ -615,20 +615,20 @@ contract VestingTrustee is Ownable {
         external onlyOwner {
 
         require(_to != address(0));
-        require(_to != address(this)); // Don&#39;t allow holder to be this contract.
-        require(_value &gt; 0);
+        require(_to != address(this)); // Don't allow holder to be this contract.
+        require(_value > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(_value) &lt;= blok.balanceOf(address(this)));
+        require(totalVesting.add(_value) <= blok.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -672,7 +672,7 @@ contract VestingTrustee is Ownable {
     /// @dev Calculate the total amount of vested tokens of a holder at a given time.
     /// @param _holder address The address of the holder.
     /// @param _time uint256 The specific time to calculate against.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function vestedTokens(address _holder, uint256 _time) external constant returns (uint256) {
         Grant memory grant = grants[_holder];
         if (grant.value == 0) {
@@ -687,13 +687,13 @@ contract VestingTrustee is Ownable {
     /// @param _time uint256 The time to be checked
     /// @return a uint256 Representing the amount of vested tokens of a specific grant.
     function calculateVestedTokens(Grant _grant, uint256 _time) private constant returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return 0;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested;
-        if (_time &gt;= _grant.end) {
+        // If we're after the end of the vesting period - everything is vested;
+        if (_time >= _grant.end) {
             return _grant.value;
         }
 
@@ -723,7 +723,7 @@ contract VestingTrustee is Ownable {
             return;
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             return;

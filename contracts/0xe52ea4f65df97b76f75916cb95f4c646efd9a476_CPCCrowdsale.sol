@@ -45,23 +45,23 @@ contract CPCCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 amount;
         
         // pre ico
-        if (now &gt; 1523311200 &amp;&amp; now &lt; 1525125600) {
+        if (now > 1523311200 && now < 1525125600) {
             amount = msg.value * 11000;
             amount += amount / 5;
         }
         
         // stage 1
-        if (now &gt; 1525125599 &amp;&amp; now &lt; 1527717600) {
+        if (now > 1525125599 && now < 1527717600) {
             amount = msg.value * 7000;
             amount += amount / 5;
         }
 
         // stage 2
-        if (now &gt; 1527717599 &amp;&amp; now &lt; 1530482400) {
+        if (now > 1527717599 && now < 1530482400) {
             amount = msg.value * 5800;
             amount += amount / 5;
         }

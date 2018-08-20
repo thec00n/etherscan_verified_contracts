@@ -1,14 +1,14 @@
 pragma solidity ^0.4.19;
 
 contract WorldWarFree {
-string public constant symbol =&quot;WXW&quot;;
-  string public constant name =&quot;WorldWarFree&quot;;
+string public constant symbol ="WXW";
+  string public constant name ="WorldWarFree";
   uint8 public constant decimals = 2;
   uint256 public totalSupply = 100000000 * 10 ** uint256(decimals);
   address public owner;
   uint256 public RATE_ETH_WXW = 10000;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
   modifier onlyOwner {
         require(msg.sender == owner);
         _;
@@ -23,7 +23,7 @@ function () public payable {
 }
 function create(address beneficiary)public payable{
     uint256 amount = msg.value;
-    if(amount &gt; 0){
+    if(amount > 0){
       balances[beneficiary] += amount/RATE_ETH_WXW;
       totalSupply += amount/RATE_ETH_WXW;
     }
@@ -35,9 +35,9 @@ function collect(uint256 amount) onlyOwner public{
   msg.sender.transfer(amount);
 }
 function transfer(address _to, uint256 _amount) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -51,10 +51,10 @@ function transferFrom(
     address _to,
     uint256 _amount
 ) public returns (bool success) {
-    if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;

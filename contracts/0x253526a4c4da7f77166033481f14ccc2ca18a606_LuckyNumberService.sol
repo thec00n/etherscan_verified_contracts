@@ -1,29 +1,29 @@
 pragma solidity ^0.4.11;//MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOkOKWMMMMMM //
 // MMMMWKkk0KNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOkOKWMMMMMM //
 // MMMMXl.....,cdOXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXOo:,.....dNMMMM //
-// MMMWd.        .&#39;cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:&#39;.        .xMMMM //
+// MMMWd.        .'cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:'.        .xMMMM //
 // MMMK,   ......   ..:xXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMWKd;.    .....    :XMMM //
-// MMWd.   .;;;,,&#39;..   .&#39;lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...&#39;,;;;,.   .kMMM //
-// MMNc   .,::::::;,&#39;..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..&#39;;;::::::&#39;.  .lWMM //
-// MM0&#39;   .;:::::::;;&#39;..        ;0MMMMMMMMMMMWO&#39;        ..,;;:::::::;.   ;KMM //
-// MMx.  .&#39;;::::;,&#39;...        .:0MMMMMMMMMMMMMWO;.        ...&#39;;;::::;..  .OMM //
-// MWd.  .,:::;&#39;..          .,xNMMMMMMMMMMMMMMMMXd&#39;.          ..,;:::&#39;.  .xMM //
-// MNl.  .,:;&#39;..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc&#39;.         ..&#39;;:,.  .dWM //
-// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,&#39;.  .oWM //
+// MMWd.   .;;;,,'..   .'lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...',;;;,.   .kMMM //
+// MMNc   .,::::::;,'..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..';;::::::'.  .lWMM //
+// MM0'   .;:::::::;;'..        ;0MMMMMMMMMMMWO'        ..,;;:::::::;.   ;KMM //
+// MMx.  .';::::;,'...        .:0MMMMMMMMMMMMMWO;.        ...';;::::;..  .OMM //
+// MWd.  .,:::;'..          .,xNMMMMMMMMMMMMMMMMXd'.          ..,;:::'.  .xMM //
+// MNl.  .,:;'..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc'.         ..';:,.  .dWM //
+// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,'.  .oWM //
 // MNc   ...     .oWMMMNXNMW0odXMMMMMMMMMMMMMMMMKooKWMNXNMMMNc.     ...  .oWM //
 // MNc.          ;KMMMMNkokNMXlcKMMMMMMMMMMMMMM0coNMNxoOWMMMM0,          .oWM //
 // MNc         .;0MMMMMMWO:dNMNoxWMMMMMMMMMMMMNddNMNocKMMMMMMWO,         .oWM //
 // MX:        .lXMMMMMMMMM0lOMMNXWMMMMMMMMMMMMWXNMMklKMMMMMMMMM0:.       .lNM //
 // MX;      .;kWMMMMMMMMMMMXNMMMMMMMMMMMMMMMMMMMMMMNNMMMMMMMMMMMNx,.      cNM //
 // MO.    .:kNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNx:.  . ,0M //
-// Wl..&#39;:dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
+// Wl..':dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
 // NxdOXWMMMMMMMW0olcc::;,,cxXWMMMMMMMMMMMMMMMMMMWKd:,,;::ccld0WMMMMMMMWKkokW //
-// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,&#39;cxKNWWWXOdcl0MMMMMMMMMMMM //
+// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,'cxKNWWWXOdcl0MMMMMMMMMMMM //
 // MMMMMMMMMMMWKKWMMMMMMMMMWK0XMMMMMMMMMMMMMMMMMMXOXWMMMMMMMMMN0XMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWK0OOOO0KWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......&#39;xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......'xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMNKOkkkk0XNMMMMMMMMMMMMMMMMMMWO;.    .:0WMMMMMMMMMMMMMMMMMWNKOkkkkOKNMMM //
-// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...&#39;dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
+// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...'dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
 // MMMMMMMMMMMMWNKKNMMMMMMMMMMMMMMMMWOc,,c0WMMMMMMMMMMMMMMMMXKKNWMMMMMMMMMMMM //
 // MMMMMMMMWXKKXXNWMMMMMMMMMMWWWWWX0xcclc:cxKNWWWWWMMMMMMMMMMWNXXKKXWMMMMMMMM //
 // MMMWXOxdoooddxkO0NMMMMMMMWKkfoahheitNX0GlikkdakXMMMMMMMWX0OkxddooddxOXWMMM //
@@ -31,12 +31,12 @@ pragma solidity ^0.4.11;//MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOkOKWMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Lucky* MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// MMM&gt; *~+&gt; we are the MMMMMMMMMMMM Number MMMMMMM&gt; we are the &lt;+~* &lt;MMMMMMM //
-// MMMMMMMMMM&gt; music &lt;MMMMMMMMMMMMMM ------ MMMMMMMMMM&gt; dreamer &lt;MMMMMMMMMMMM //
-// MMMMMMMM&gt; *~+&gt; makers &lt;MMMMM&lt;MMMM Random MMMMMMMMMMMMM&gt; of &lt;MMMMMMMMMMMMMM //
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Ledger MMMMMMMMMMMMMM&gt; dreams. &lt;+~* &lt;MMM //
-// M&gt; palimpsest by &lt;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// ~&gt; arkimedes.eth &lt;~+~+~+~~+~+~+~~+~+~+~~+~+~+~~+~+~+~~&gt; VIII*XII*MMXVII &lt;~ //
+// MMM> *~+> we are the MMMMMMMMMMMM Number MMMMMMM> we are the <+~* <MMMMMMM //
+// MMMMMMMMMM> music <MMMMMMMMMMMMMM ------ MMMMMMMMMM> dreamer <MMMMMMMMMMMM //
+// MMMMMMMM> *~+> makers <MMMMM<MMMM Random MMMMMMMMMMMMM> of <MMMMMMMMMMMMMM //
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Ledger MMMMMMMMMMMMMM> dreams. <+~* <MMM //
+// M> palimpsest by <MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
+// ~> arkimedes.eth <~+~+~+~~+~+~+~~+~+~+~~+~+~+~~+~+~+~~> VIII*XII*MMXVII <~ //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 
 /**
@@ -84,9 +84,9 @@ contract SafeMath {
   internal
   constant
   returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -94,7 +94,7 @@ contract SafeMath {
   internal
   constant
   returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ contract SafeMath {
   constant
   returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -135,11 +135,11 @@ contract Random is SafeMath {
  *         this is required to create the Events which generate the Ledger. 
  */
 contract LuckyNumber is Owned {
-    // ~&gt; cost to generate a random number in Wei.
+    // ~> cost to generate a random number in Wei.
     uint256 public cost;
-    // ~&gt; waitTime is the number of blocks before random is generated.
+    // ~> waitTime is the number of blocks before random is generated.
     uint8 public waitTime;
-    // ~&gt; set default max
+    // ~> set default max
     uint256 public max;
 
     // PendingNumber represents one number.
@@ -158,15 +158,15 @@ contract LuckyNumber is Owned {
     event EventLuckyNumberRequested(address indexed requestor, uint256 max, uint256 originBlock, uint8 waitTime, address indexed requestProxy);
     event EventLuckyNumberRevealed(address indexed requestor, uint256 originBlock, uint256 renderedNumber, address indexed requestProxy);
     
-    mapping (address =&gt; PendingNumber) public pendingNumbers;
-    mapping (address =&gt; bool) public whiteList;
+    mapping (address => PendingNumber) public pendingNumbers;
+    mapping (address => bool) public whiteList;
 
     function requestNumber(address _requestor, uint256 _max, uint8 _waitTime) payable public;
     function revealNumber(address _requestor) payable public;
 }
 
 /**
- * Lucky Number Service *~+&gt;
+ * Lucky Number Service *~+>
  * Any contract or address can make a request from this implementation
  * on behalf of any other address as a requestProxy.
  */
@@ -244,7 +244,7 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
         requestNumber(msg.sender, max, waitTime);
     }
     
-    // Request a Number ... *~&gt;
+    // Request a Number ... *~>
     function requestNumber(address _requestor, uint256 _max, uint8 _waitTime)
     payable 
     public {
@@ -252,7 +252,7 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
         // value must exceed cost
         // unless address is whitelisted
         if (!whiteList[msg.sender]) {
-            require(!(msg.value &lt; cost));
+            require(!(msg.value < cost));
         }
 
         // internal requirement: 
@@ -266,26 +266,26 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
             originBlock: block.number,
             waitTime: waitTime
         });
-        if (_max &gt; 1) {
+        if (_max > 1) {
             pendingNumbers[_requestor].max = _max;
         }
         // max 250 wait to leave a few blocks
         // for the reveal transction to occur
         // and write from the pending numbers block
         // before it expires
-        if (_waitTime &gt; 0 &amp;&amp; _waitTime &lt; 250) {
+        if (_waitTime > 0 && _waitTime < 250) {
             pendingNumbers[_requestor].waitTime = _waitTime;
         }
         EventLuckyNumberRequested(_requestor, pendingNumbers[_requestor].max, pendingNumbers[_requestor].originBlock, pendingNumbers[_requestor].waitTime, pendingNumbers[_requestor].requestProxy);
     }
 
-    // Reveal your number ... *~&gt;
+    // Reveal your number ... *~>
     // Only requestor or proxy can generate the number
     function revealNumber(address _requestor)
     public
     payable {
         assert(_canReveal(_requestor, msg.sender));
-        // waitTime has passed, render this requestor&#39;s number.
+        // waitTime has passed, render this requestor's number.
         _revealNumber(_requestor);
     }
 
@@ -294,9 +294,9 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
     internal {
         uint256 luckyBlock = _revealBlock(_requestor);
         // 
-        // TIME LIMITATION ~&gt; should handle in user interface
+        // TIME LIMITATION ~> should handle in user interface
         // blocks older than (currentBlock - 256) 
-        // &quot;expire&quot; and read the same hash as most recent valid block
+        // "expire" and read the same hash as most recent valid block
         // 
         uint256 luckyNumber = getRandomFromBlockHash(luckyBlock, pendingNumbers[_requestor].max);
 
@@ -339,7 +339,7 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
     returns (uint) {
         uint256 revealBlock = add(pendingNumbers[_requestor].originBlock, pendingNumbers[_requestor].waitTime);
         uint256 remainingBlocks = 0;
-        if (revealBlock &gt; block.number) {
+        if (revealBlock > block.number) {
             remainingBlocks = sub(revealBlock, block.number);
         }
         return remainingBlocks;
@@ -368,10 +368,10 @@ contract LuckyNumberService is LuckyNumber, Mortal, Random {
     public
     constant
     returns (bool) {
-        if (pendingNumbers[_requestor].renderedNumber == 0 &amp;&amp; pendingNumbers[_requestor].waitTime &gt; 0) {
+        if (pendingNumbers[_requestor].renderedNumber == 0 && pendingNumbers[_requestor].waitTime > 0) {
             return true;
         }
         return false;
     }
-// 0xMMWKkk0KN/&gt;HBBi/MASSa/DANTi/LANTen.MI.MI.MI.M+.+.+.M-&gt;MMWNKOkOKWJ.J.J.M*~+&gt;
+// 0xMMWKkk0KN/>HBBi/MASSa/DANTi/LANTen.MI.MI.MI.M+.+.+.M->MMWNKOkOKWJ.J.J.M*~+>
 }

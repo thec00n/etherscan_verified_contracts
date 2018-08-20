@@ -6,8 +6,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,7 +56,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -74,7 +74,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -128,8 +128,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -143,7 +143,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -212,7 +212,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -224,11 +224,11 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract WfmToken is StandardToken {
-    string public constant name = &quot;WFM Token&quot;;
-    string public constant symbol = &quot;WFM&quot;;
+    string public constant name = "WFM Token";
+    string public constant symbol = "WFM";
     uint8 public constant decimals = 18;
     uint256 constant denomination = 10 ** uint(decimals);
-    uint256 constant totalTokens = 100000000 * denomination;  // 100&#39;000&#39;000 tokens total
+    uint256 constant totalTokens = 100000000 * denomination;  // 100'000'000 tokens total
     uint256 constant ownerPart = 35000000 * denomination;     // marketing + team parts
     uint256 constant crowdsaleRate = 16000;
     uint256 constant icoRate = 11250;
@@ -241,7 +241,7 @@ contract WfmToken is StandardToken {
 
     address public owner = initialOwner;
     uint256 public raisedEther;
-    mapping(address =&gt; uint256) public investment;
+    mapping(address => uint256) public investment;
 
     constructor() public {
         totalSupply_ = totalTokens;
@@ -256,27 +256,27 @@ contract WfmToken is StandardToken {
     }
 
     function softCapReached() public view returns (bool) {
-        return raisedEther &gt;= softCapEther;
+        return raisedEther >= softCapEther;
     }
 
     function hardCapReached() public view returns (bool) {
-        return raisedEther &gt;= hardCapEther;
+        return raisedEther >= hardCapEther;
     }
 
     function saleStarted() public view returns (bool) {
-        return now &gt;= crowdsaleBeginTime;
+        return now >= crowdsaleBeginTime;
     }
 
     function icoStarted() public view returns (bool) {
-        return now &gt;= icoBeginTime;
+        return now >= icoBeginTime;
     }
 
     function icoFinished() public view returns (bool) {
-        return now &gt;= icoFinishTime;
+        return now >= icoFinishTime;
     }
 
     function () public payable {
-        require(saleStarted() &amp;&amp; !icoFinished() &amp;&amp; !hardCapReached());
+        require(saleStarted() && !icoFinished() && !hardCapReached());
         uint tokens = msg.value.mul(rate());
         investment[msg.sender] = investment[msg.sender].add(msg.value);
         raisedEther = raisedEther.add(msg.value);
@@ -289,7 +289,7 @@ contract WfmToken is StandardToken {
         if (!softCapReached()) {
             require(icoStarted());
             uint256 amount = investment[msg.sender];
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 investment[msg.sender] = 0;
                 emit Transfer(msg.sender, address(0), balances[msg.sender]);
                 balances[msg.sender] = 0;

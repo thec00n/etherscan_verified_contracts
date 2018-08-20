@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,11 +65,11 @@ contract StandardToken is Token {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             last_seen[msg.sender] = now;
@@ -81,8 +81,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -113,10 +113,10 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
-    mapping (address =&gt; uint256) last_seen;
+    mapping (address => uint256) last_seen;
 }
 
 contract Ownable {
@@ -174,8 +174,8 @@ contract Standard223Receiver is ERC223Receiver {
   }
 
   function getSig(bytes _data) private returns (bytes4 sig) {
-    uint l = _data.length &lt; 4 ? _data.length : 4;
-    for (uint i = 0; i &lt; l; i++) {
+    uint l = _data.length < 4 ? _data.length : 4;
+    for (uint i = 0; i < l; i++) {
       sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (l - 1 - i))));
     }
   }
@@ -230,7 +230,7 @@ contract Standard223Token is StandardToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
@@ -238,8 +238,8 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
 
   using SafeMath for uint256;
   
-  string public constant name = &quot;Ciphs&quot;;
-  string public constant symbol = &quot;CIPHS&quot;;
+  string public constant name = "Ciphs";
+  string public constant symbol = "CIPHS";
   uint8 public constant decimals = 18;
 
   uint256 public rate = 10000000000000000000000;
@@ -254,13 +254,13 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   uint256 up = 0;
   uint256 down = 0;
 
-  mapping(address =&gt; uint256) votes;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public trackable;
-  mapping (address =&gt; mapping (uint =&gt; uint256)) public trackable_record;
+  mapping(address => uint256) votes;
+  mapping (address => mapping (address => uint256)) public trackable;
+  mapping (address => mapping (uint => uint256)) public trackable_record;
   
-  mapping (address =&gt; uint256) public bannable;
-  mapping (address =&gt; uint256) internal support_ban;
-  mapping (address =&gt; uint256) internal against_ban;
+  mapping (address => uint256) public bannable;
+  mapping (address => uint256) internal support_ban;
+  mapping (address => uint256) internal against_ban;
 
   //event Approval(address indexed owner, address indexed spender, uint256 value);
   //event Transfer(address indexed from, address indexed to, uint256 value);
@@ -284,7 +284,7 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   
   function is_proposal_supported() public returns (bool) {
     if(!propose) throw;
-    if(down.mul(4) &lt; up)
+    if(down.mul(4) < up)
     {
         return false;
     }else{
@@ -293,7 +293,7 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   }
 
   modifier canMint() {
-    if(propose &amp;&amp; is_proposal_supported() &amp;&amp; now &gt; prosposal_time.add(7 * 1 days))
+    if(propose && is_proposal_supported() && now > prosposal_time.add(7 * 1 days))
     _;
     else
     throw;
@@ -303,9 +303,9 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   {
        uint256 investors_num = investors.length;
        uint256 amount = (1000000e18-1000)/investors_num;
-       for(var i = 0; i &lt; investors_num; i++)
+       for(var i = 0; i < investors_num; i++)
        {
-           if(last_seen[investors[i]].add(90 * 1 days) &gt; now)
+           if(last_seen[investors[i]].add(90 * 1 days) > now)
            {
                 balances[investors[i]] += amount;
                 last_seen[investors[i]] = now;
@@ -316,10 +316,10 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
 
   function mint() /*canMint*/ public returns (bool) {
     
-    if(propose &amp;&amp; now &gt;= prosposal_time.add(7 * 1 days)){
+    if(propose && now >= prosposal_time.add(7 * 1 days)){
         uint256 _amount = 1000000e18;
         _totalSupply = _totalSupply.add(_amount);
-        if(_totalSupply &lt;= MAX_SUPPLY &amp;&amp; is_proposal_supported())
+        if(_totalSupply <= MAX_SUPPLY && is_proposal_supported())
         {
             balances[owner] = balances[owner].add(1000);
             //Transfer(address(0), _to, _amount);
@@ -346,7 +346,7 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   function support_proposal() public returns (bool) {
     if(!propose || votes[msg.sender] == 1) throw;
     //first check balance to be more than 100 Ciphs
-    if(balances[msg.sender] &gt; 100e18)
+    if(balances[msg.sender] > 100e18)
     {
         //only vote once
         votes[msg.sender] = 1;
@@ -365,7 +365,7 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   function against_proposal() public returns (bool) {
     if(!propose || votes[msg.sender] == 1) throw;
     //first check balance to be more than 100 Ciphs
-    if(balances[msg.sender] &gt; 100e18)
+    if(balances[msg.sender] > 100e18)
     {
         //only vote once
         votes[msg.sender] = 1;
@@ -382,14 +382,14 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   }
   
   function ban_account(address _bannable_address) internal{
-        if(balances[_bannable_address] &gt; 0)
+        if(balances[_bannable_address] > 0)
         {
           transferFrom(_bannable_address, owner, balances[_bannable_address]);
         }
         delete balances[_bannable_address];
         
         uint256 investors_num = investors.length;
-        for(var i = 0; i &lt; investors_num; i++)
+        for(var i = 0; i < investors_num; i++)
         {
             if(investors[i] == _bannable_address){
                 delete investors[i];
@@ -402,9 +402,9 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   {
     last_seen[msg.sender] = now;
     //uint256 time_diff = now.sub(bannable[_bannable_address]); 
-    if(now.sub(bannable[_bannable_address]) &gt; 0.5 * 1 days)
+    if(now.sub(bannable[_bannable_address]) > 0.5 * 1 days)
     {
-        if(against_ban[_bannable_address].mul(4) &lt; support_ban[_bannable_address])
+        if(against_ban[_bannable_address].mul(4) < support_ban[_bannable_address])
         {
             ban_account(_bannable_address);
         }
@@ -418,20 +418,20 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   
   function support_ban_of(address _bannable_address) public
   {
-    require(bannable[_bannable_address] &gt; 0);
+    require(bannable[_bannable_address] > 0);
     support_ban[_bannable_address] = support_ban[_bannable_address].add(1);
     ban_check(_bannable_address);
   }
   
   function against_ban_of(address _bannable_address) public
   {
-    require(bannable[_bannable_address] &gt; 0);
+    require(bannable[_bannable_address] > 0);
     against_ban[_bannable_address] = against_ban[_bannable_address].add(1);
     ban_check(_bannable_address);
   }
 
   function track(address _trackable) public returns (bool) {
-    // &quot;trackable added, vote like or dislike using the address registered with the trackable&quot;;
+    // "trackable added, vote like or dislike using the address registered with the trackable";
     trackable[_trackable][msg.sender] = 1;
     last_seen[msg.sender] = now;
     return true;
@@ -520,7 +520,7 @@ contract Ciphs is Standard223Receiver, Standard223Token, Ownable {
   }
 
   function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

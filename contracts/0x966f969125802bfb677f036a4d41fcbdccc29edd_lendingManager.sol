@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -117,29 +117,29 @@ function loanCompleted(uint256 index, uint256 amount) private {
 
     loans[index].paidBackBlock=block.number;
     
-    if (block.number&gt;SafeMath.add(loans[index].startBlock,loans[index].loanLength)) {
+    if (block.number>SafeMath.add(loans[index].startBlock,loans[index].loanLength)) {
         loans[index].borrowerPaidLate=true;
         emit LoanPaidLateAtIndex(index,amount); 
     }
 
     loans[index].status=COMPLETION_STATUS; 
     emit LoanCompletedWithFinalPortion(index, amount); 
-    if(amount &gt; 0){ 
+    if(amount > 0){ 
         if (! elixir(ELIX_ADDRESS).transferFrom(loans[index].borrower,loans[index].lender, amount)) revert();
     }
 
 }
 
 function adjustLoanParams(uint256 newPrincipal, uint256 newInterest, uint256 index) public {
-    require(newPrincipal &gt; 0);
+    require(newPrincipal > 0);
     require(msg.sender == loans[index].volAddress);
     require(loans[index].status == REQUESTED_STATUS || loans[index].status == ACTIVE_STATUS);
-    require(newPrincipal &lt;= MAX_LOAN_AMOUNT);
-    require(newInterest &lt;= MAX_INTEREST_AMOUNT);
+    require(newPrincipal <= MAX_LOAN_AMOUNT);
+    require(newInterest <= MAX_INTEREST_AMOUNT);
 
     if (block.number==loans[index].startBlock) revert(); 
 
-    if( SafeMath.add(newPrincipal,newInterest) &gt; loans[index].amountPaidBackSoFar){  
+    if( SafeMath.add(newPrincipal,newInterest) > loans[index].amountPaidBackSoFar){  
         
         emit LoanUpdatedByVolAddress(index,loans[index].amount,loans[index].interest,newPrincipal,newInterest);
         loans[index].amount = newPrincipal;
@@ -158,11 +158,11 @@ function requestLoan(address lender, address volAddress, uint256 amount,uint256 
     if (msg.sender==lender) revert(); 
     
     
-    if (amount==0 || length&lt;4 || length&gt;225257143) revert(); 
+    if (amount==0 || length<4 || length>225257143) revert(); 
     
    
-    require(amount &lt;= MAX_LOAN_AMOUNT);
-    require(interest &lt;= MAX_INTEREST_AMOUNT);    
+    require(amount <= MAX_LOAN_AMOUNT);
+    require(interest <= MAX_INTEREST_AMOUNT);    
 
     loans.push(loan(msg.sender,lender, volAddress,0,amount,0,REQUESTED_STATUS,0,length,interest,false,false,loanMessage));
     
@@ -173,7 +173,7 @@ function requestLoan(address lender, address volAddress, uint256 amount,uint256 
 
 
 function cancelLoanRequestAtIndexByLender(uint256 index) public {
-  if (loans[index].status==REQUESTED_STATUS &amp;&amp; loans[index].lender==msg.sender)    {
+  if (loans[index].status==REQUESTED_STATUS && loans[index].lender==msg.sender)    {
         
         loans[index].status=REQUEST_CANCELED_BY_LENDER_STATUS; 
         emit LoanRequestCanceledByLenderAtIndex(index); 
@@ -182,7 +182,7 @@ function cancelLoanRequestAtIndexByLender(uint256 index) public {
 
 
 function cancelLoanRequestAtIndexByBorrower(uint256 index) public {
-  if (loans[index].status==REQUESTED_STATUS &amp;&amp; loans[index].borrower==msg.sender)    {
+  if (loans[index].status==REQUESTED_STATUS && loans[index].borrower==msg.sender)    {
        
         loans[index].status=REQUEST_CANCELED_BY_BORROWER_STATUS; 
         emit LoanCanceledByBorrowerAtIndex(index); 
@@ -191,7 +191,7 @@ function cancelLoanRequestAtIndexByBorrower(uint256 index) public {
 
 
 function cancelActiveLoanAtIndex(uint256 index) public  {
-  if (loans[index].status==ACTIVE_STATUS &amp;&amp; loans[index].lender==msg.sender)   {
+  if (loans[index].status==ACTIVE_STATUS && loans[index].lender==msg.sender)   {
 
       loans[index].status = ACTIVE_LOAN_CANCELED_BY_LENDER_STATUS;
       emit LoanCanceledByLenderAtIndex(index); 
@@ -200,8 +200,8 @@ function cancelActiveLoanAtIndex(uint256 index) public  {
 
 
 function stateBorrowerDefaulted(uint256 index) public  {
-  if (loans[index].status==ACTIVE_STATUS &amp;&amp; loans[index].lender==msg.sender)   {
-    if (block.number&gt;SafeMath.add(loans[index].startBlock,loans[index].loanLength)){
+  if (loans[index].status==ACTIVE_STATUS && loans[index].lender==msg.sender)   {
+    if (block.number>SafeMath.add(loans[index].startBlock,loans[index].loanLength)){
       emit Defaulted(index,msg.sender); 
       loans[index].status=DEFAULTED_STATUS;
     }
@@ -210,7 +210,7 @@ function stateBorrowerDefaulted(uint256 index) public  {
 
 
 function declareDefaultAsBorrower(uint256 index) public  {
-  if (loans[index].status==ACTIVE_STATUS &amp;&amp; loans[index].borrower==msg.sender)   {
+  if (loans[index].status==ACTIVE_STATUS && loans[index].borrower==msg.sender)   {
       emit Defaulted(index,msg.sender); 
       loans[index].status=DEFAULTED_STATUS;
   }
@@ -243,9 +243,9 @@ function attemptBeginLoanAtIndex(uint256 index) public returns(bool) {
 
 function payAmountForLoanAtIndex(uint256 amount,uint256 index) public {
 
-    if (loans[index].status==ACTIVE_STATUS &amp;&amp; msg.sender==loans[index].borrower &amp;&amp; amount&gt;0)    {
-        require(amount &lt;= SafeMath.add(MAX_LOAN_AMOUNT,MAX_INTEREST_AMOUNT));
-        require( SafeMath.add(amount, loans[index].amountPaidBackSoFar) &lt;= SafeMath.add(loans[index].amount, loans[index].interest) );
+    if (loans[index].status==ACTIVE_STATUS && msg.sender==loans[index].borrower && amount>0)    {
+        require(amount <= SafeMath.add(MAX_LOAN_AMOUNT,MAX_INTEREST_AMOUNT));
+        require( SafeMath.add(amount, loans[index].amountPaidBackSoFar) <= SafeMath.add(loans[index].amount, loans[index].interest) );
     
         if (block.number==loans[index].startBlock) revert();
     	        

@@ -16,13 +16,13 @@ contract Omnipurse {
     uint8 status;
     uint numContributions;
     uint totalContributed;
-    mapping (uint =&gt; Contribution) contributions;
+    mapping (uint => Contribution) contributions;
   }
 
   uint public numPurse;
-  mapping (uint =&gt; Purse) purses;
-  mapping (address =&gt; uint[]) pursesByCreator;
-  mapping (address =&gt; string) nicknames;
+  mapping (uint => Purse) purses;
+  mapping (address => uint[]) pursesByCreator;
+  mapping (address => string) nicknames;
 
   function searchPursesByAddress(address creator) constant returns (uint[] ids) {
     ids = pursesByCreator[creator];
@@ -77,14 +77,14 @@ contract Omnipurse {
 
   function dissmisPurse(uint purseId) {
     Purse p = purses[purseId];
-    if (p.creator != msg.sender || (p.status != 1 &amp;&amp; p.status != 4)) { throw; }
+    if (p.creator != msg.sender || (p.status != 1 && p.status != 4)) { throw; }
     bool success = true;
-    for (uint i=0; i&lt;p.numContributions; i++) {
+    for (uint i=0; i<p.numContributions; i++) {
       Contribution c = p.contributions[i];
       if(!c.refunded) {
         c.refunded = c.sender.send(c.value);
       }
-      success = success &amp;&amp; c.refunded;
+      success = success && c.refunded;
     }
     p.status = success ? 3 : 4;
   }

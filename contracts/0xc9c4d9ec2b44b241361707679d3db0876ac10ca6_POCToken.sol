@@ -5,10 +5,10 @@ contract POCToken{
 
     // -------------------------SafeMath Start-----------------------------------------------
     //
-    function safeAdd(uint a, uint b) private pure returns (uint c) { c = a + b; require(c &gt;= a); }
-    function safeSub(uint a, uint b) private pure returns (uint c) { require(b &lt;= a); c = a - b; }
+    function safeAdd(uint a, uint b) private pure returns (uint c) { c = a + b; require(c >= a); }
+    function safeSub(uint a, uint b) private pure returns (uint c) { require(b <= a); c = a - b; }
     function safeMul(uint a, uint b) private pure returns (uint c) { c = a * b; require(a == 0 || c / a == b);}
-    function safeDiv(uint a, uint b) private pure returns (uint c) { require(b &gt; 0); c = a / b; }
+    function safeDiv(uint a, uint b) private pure returns (uint c) { require(b > 0); c = a / b; }
     //
     // -------------------------SafeMath End-------------------------------------------------
 
@@ -34,8 +34,8 @@ contract POCToken{
 
     // -------------------------ERC20Interface Start-----------------------------------------------
     //
-    string public symbol = &quot;POC&quot;;
-    string public name = &quot;Power Candy&quot;;
+    string public symbol = "POC";
+    string public name = "Power Candy";
     uint8 public decimals = 18;
     uint public totalSupply = 1e28;//总量100亿
 
@@ -50,9 +50,9 @@ contract POCToken{
     bool public allowTransfer = true;//是否允许交易
     bool public allowAirdrop = true;//是否允许领取空投
 
-    mapping(address =&gt; uint) private balances;
-    mapping(address =&gt; uint) public airdropTotal;
-    mapping(address =&gt; address) public airdropRecord;
+    mapping(address => uint) private balances;
+    mapping(address => uint) public airdropTotal;
+    mapping(address => address) public airdropRecord;
 
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
@@ -71,7 +71,7 @@ contract POCToken{
     }
     function balanceOf(address tokenOwner) public view returns (uint balance) {
         require(specialAddress(tokenOwner) == false);
-        if(airdrop &gt;= fadd &amp;&amp; airdropRecord[tokenOwner] == address(0) &amp;&amp; tokenOwner != retentionAddress){//如果还有足够的空投额度，没激活，不是保留地址
+        if(airdrop >= fadd && airdropRecord[tokenOwner] == address(0) && tokenOwner != retentionAddress){//如果还有足够的空投额度，没激活，不是保留地址
             balance = balances[tokenOwner] + fadd;
         }else{
             balance = balances[tokenOwner];
@@ -85,7 +85,7 @@ contract POCToken{
     }
     function activation(uint bounus, address addr) private {
         uint airdropBounus = safeAdd(airdropTotal[addr], bounus);
-        if(airdrop &gt;= bounus &amp;&amp; airdropBounus &lt;= airdropLimit &amp;&amp; addr != retentionAddress){//如果还有足够的空投额度并且没有达到个人领取上限，不是保留地址
+        if(airdrop >= bounus && airdropBounus <= airdropLimit && addr != retentionAddress){//如果还有足够的空投额度并且没有达到个人领取上限，不是保留地址
             balances[addr] = safeAdd(balances[addr], bounus);
             airdropTotal[addr] = airdropBounus;
             airdrop = safeSub(airdrop, bounus);
@@ -93,11 +93,11 @@ contract POCToken{
         }
     }
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(allowTransfer &amp;&amp; tokens &gt; 0);
+        require(allowTransfer && tokens > 0);
         require(to != msg.sender);
         require(specialAddress(to) == false);
 
-        if (allowAirdrop &amp;&amp; airdropRecord[msg.sender] == address(0) &amp;&amp; airdropRecord[to] != address(0)) {//没有激活过的，发给任意多个币给已经激活过的，视为邀请
+        if (allowAirdrop && airdropRecord[msg.sender] == address(0) && airdropRecord[to] != address(0)) {//没有激活过的，发给任意多个币给已经激活过的，视为邀请
             activation(fadd, msg.sender);
             activation(fshare, to);
             airdropRecord[msg.sender] = to;//记录激活数据
@@ -109,13 +109,13 @@ contract POCToken{
         success = true;
     }
     function approve(address spender, uint tokens) public pure returns (bool success) {
-        require(tokens  &gt; 0);
+        require(tokens  > 0);
         require(specialAddress(spender) == false);
         //------do nothing------
         success = false;
     }
     function transferFrom(address from, address to, uint tokens) public pure returns (bool success) {
-        require(tokens  &gt; 0);
+        require(tokens  > 0);
         require(specialAddress(from) == false);
         require(specialAddress(to) == false);
         //------do nothing------
@@ -125,7 +125,7 @@ contract POCToken{
     // -------------------------ERC20Interface End-------------------------------------------------
 
     function offlineExchange(address to, uint tokens) public onlyOwner {
-        require(offline &gt;= tokens);
+        require(offline >= tokens);
         balances[to] = safeAdd(balances[to], tokens);
         offline = safeSub(offline, tokens);
         emit Transfer(address(1), to, tokens);

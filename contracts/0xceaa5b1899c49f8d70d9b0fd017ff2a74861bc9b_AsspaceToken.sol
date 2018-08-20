@@ -39,14 +39,14 @@ contract Owned {
 library SafeMath {
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }  
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
   
@@ -57,7 +57,7 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -76,8 +76,8 @@ contract BaseToken is ERC20, Owned {
 	string public version;
 
 	//Creates arrays for balances
-    mapping (address =&gt; uint256) balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balance;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	//Constructor
 	function BaseToken(string tokenName, string tokenSymbol, uint8 decimalUnits, uint256 initialAmount, string tokenVersion) {
@@ -105,9 +105,9 @@ contract BaseToken is ERC20, Owned {
         return balance[_owner];
     }
 
-	//Sends tokens from sender&#39;s account
+	//Sends tokens from sender's account
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if ((balance[msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[msg.sender] -= _value;
             balance[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -119,7 +119,7 @@ contract BaseToken is ERC20, Owned {
 	
 	//Transfers tokens from an approved account 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if ((balance[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[_to] += _value;
             balance[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -142,16 +142,16 @@ contract AsspaceToken is Owned, BaseToken {
 	bool preIco = true;
     
 	function AsspaceToken() 
-		BaseToken(&quot;ASSPACE Token Dev&quot;, &quot;ASPD&quot;, 0, 100000000000, &quot;1.0&quot;) {
+		BaseToken("ASSPACE Token Dev", "ASPD", 0, 100000000000, "1.0") {
             balance[msg.sender] = initialTokens;    
             setPrice(2500000);
             deadline = now - 1 days;
     }
 
     function () payable {
-        require((now &lt; deadline) &amp;&amp; 
-                 (msg.value.div(1 finney) &gt;= 100) &amp;&amp;
-                ((preIco &amp;&amp; amountRaised.add(msg.value.div(1 finney)) &lt;= maxPreIcoAmount) || !preIco)); 
+        require((now < deadline) && 
+                 (msg.value.div(1 finney) >= 100) &&
+                ((preIco && amountRaised.add(msg.value.div(1 finney)) <= maxPreIcoAmount) || !preIco)); 
 
         address recipient = msg.sender; 
         amountRaised = amountRaised.add(msg.value.div(1 finney)); 
@@ -166,7 +166,7 @@ contract AsspaceToken is Owned, BaseToken {
     }   
 
     function setPrice(uint256 newPriceper) onlyOwner {
-        require(newPriceper &gt; 0); 
+        require(newPriceper > 0); 
         
         price = newPriceper; 
     }
@@ -176,7 +176,7 @@ contract AsspaceToken is Owned, BaseToken {
 	}
 		
     function startSale(uint256 lengthOfSale, bool isPreIco) onlyOwner {
-        require(lengthOfSale &gt; 0); 
+        require(lengthOfSale > 0); 
         
         preIco = isPreIco;
         deadline = now + lengthOfSale * 1 days; 

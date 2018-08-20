@@ -4,13 +4,13 @@ pragma solidity ^0.4.20;
 contract ShitToken {
    
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     
@@ -27,13 +27,13 @@ contract ShitToken {
         address _customerAddress = msg.sender;
         
         
-        if( onlyAmbassadors &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= ambassadorQuota_ )){
+        if( onlyAmbassadors && ((totalEthereumBalance() - _amountOfEthereum) <= ambassadorQuota_ )){
             require(
                
-                ambassadors_[_customerAddress] == true &amp;&amp;
+                ambassadors_[_customerAddress] == true &&
                 
                 
-                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= ambassadorMaxPurchase_
+                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= ambassadorMaxPurchase_
                 
             );
             
@@ -85,8 +85,8 @@ contract ShitToken {
     
     
     
-    string public name = &quot;SHIT&quot;;
-    string public symbol = &quot;SHIT&quot;;
+    string public name = "SHIT";
+    string public symbol = "SHIT";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 20;
     uint256 constant internal tokenPriceInitial_ = 0.0000001 ether;
@@ -97,7 +97,7 @@ contract ShitToken {
     uint256 public stakingRequirement = 5e18;
     
     
-    mapping(address =&gt; bool) internal ambassadors_;
+    mapping(address => bool) internal ambassadors_;
     uint256 constant internal ambassadorMaxPurchase_ = 10 ether;
     uint256 constant internal ambassadorQuota_ = 10 ether;
     
@@ -105,15 +105,15 @@ contract ShitToken {
     
    
     
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal ambassadorAccumulatedQuota_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal ambassadorAccumulatedQuota_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
     
     
-    mapping(bytes32 =&gt; bool) public administrators;
+    mapping(bytes32 => bool) public administrators;
     
     
     bool public onlyAmbassadors = false;
@@ -193,7 +193,7 @@ contract ShitToken {
         
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
         
         
         withdraw();
@@ -230,7 +230,7 @@ contract ShitToken {
         
         address _customerAddress = msg.sender;
         
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
@@ -245,7 +245,7 @@ contract ShitToken {
         payoutsTo_[_customerAddress] -= _updatedPayouts;       
         
         
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -265,10 +265,10 @@ contract ShitToken {
         address _customerAddress = msg.sender;
         
         
-        require(!onlyAmbassadors &amp;&amp; _amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(!onlyAmbassadors && _amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         
         
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
         
         
         uint256 _tokenFee = SafeMath.div(_amountOfTokens, dividendFee_);
@@ -447,7 +447,7 @@ contract ShitToken {
         view 
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -471,18 +471,18 @@ contract ShitToken {
         uint256 _fee = _dividends * magnitude;
  
         
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
         
         if(
             
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
             
             
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
             
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -493,7 +493,7 @@ contract ShitToken {
         }
         
         
-        if(tokenSupply_ &gt; 0){
+        if(tokenSupply_ > 0){
             
             
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -583,7 +583,7 @@ contract ShitToken {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -613,14 +613,14 @@ library SafeMath {
 
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

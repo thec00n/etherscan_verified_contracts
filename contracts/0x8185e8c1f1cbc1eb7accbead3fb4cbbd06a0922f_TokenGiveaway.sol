@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
 
@@ -131,18 +131,18 @@ contract TokenGiveaway is Managed {
     uint    private tokenAmount     = 500;
     uint    private decimals        = 10**18;
     
-    mapping (address =&gt; mapping (address =&gt; bool)) private receivers;
+    mapping (address => mapping (address => bool)) private receivers;
 
     event Airdropped(address indexed tokenContract, address receiver, uint tokenReceived);
 
-    function TokenGiveaway () Managed(&quot;1.0.0&quot;) public { }
+    function TokenGiveaway () Managed("1.0.0") public { }
 
     /**
      *
      */
     function transferBatch(address[] _addresses) onlyOwner external {
         uint length = _addresses.length;
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             if (isOpenFor(_addresses[i])) {
                 transferTokens(_addresses[i], tokenAmount * decimals);
             }            
@@ -160,20 +160,20 @@ contract TokenGiveaway is Managed {
      *
      */
     function isOpen() public view returns (bool open) {
-        return TokenERC20(tokenContract).allowance(donor, this) &gt;= tokenAmount * decimals;
+        return TokenERC20(tokenContract).allowance(donor, this) >= tokenAmount * decimals;
     }
 
     /**
      *
      */
     function isOpenFor(address _receiver) public view returns (bool open) {
-        return !receivers[tokenContract][_receiver] &amp;&amp; isOpen();
+        return !receivers[tokenContract][_receiver] && isOpen();
     }
 
     /**
      */
     function () external payable {
-        require(msg.value &gt;= etherAmount &amp;&amp; isOpenFor(msg.sender));
+        require(msg.value >= etherAmount && isOpenFor(msg.sender));
         transferTokens(msg.sender, tokenAmount * decimals);     
     }
 

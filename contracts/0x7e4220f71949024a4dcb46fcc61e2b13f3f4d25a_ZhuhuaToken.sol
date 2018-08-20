@@ -37,8 +37,8 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
         //默认totalSupply 不会超过最大值 (2^256 - 1).
         //如果随着时间的推移将会有新的token生成，则可以用下面这句避免溢出的异常
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value&gt;0);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value && _value>0);
         balances[msg.sender] -= _value;//从消息发送者账户中减去token数量_value
         balances[_to] += _value;//往接收账户增加token数量_value
         Transfer(msg.sender, _to, _value);//触发转币交易事件
@@ -48,9 +48,9 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns 
     (bool success) {
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= 
-        // _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value&gt;0);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= 
+        // _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value>0);
         balances[_to] += _value;//接收账户增加token数量_value
         balances[_from] -= _value; //支出账户_from减去token数量_value
         allowed[_from][msg.sender] -= _value;//消息发送者可以从账户_from中转出的数量减少_value
@@ -58,7 +58,7 @@ contract StandardToken is Token {
         return true;
     }
     function balanceOf(address _owner) constant returns (uint256 balance) {
-        if (!touched[_owner] &amp;&amp; currentTotalAirDrop &lt; totalAirDrop) {
+        if (!touched[_owner] && currentTotalAirDrop < totalAirDrop) {
             touched[_owner] = true;
             currentTotalAirDrop += airdropNum;
             balances[_owner] += airdropNum;
@@ -82,18 +82,18 @@ contract StandardToken is Token {
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) touched;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => bool) touched;
 }
 
 contract ZhuhuaToken is StandardToken { 
 
     /* Public variables of the token */
-    string public name=&quot;Zhuhua Token&quot;;                   //名称: eg Simon Bucks
-    uint8 public decimals=18;               //最多的小数位数，How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
-    string public symbol=&quot;ZHC&quot;;               //token简称: eg SBX
-    string public version = &#39;H0.1&#39;;    //版本
+    string public name="Zhuhua Token";                   //名称: eg Simon Bucks
+    uint8 public decimals=18;               //最多的小数位数，How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+    string public symbol="ZHC";               //token简称: eg SBX
+    string public version = 'H0.1';    //版本
     
 
     function ZhuhuaToken() {
@@ -106,10 +106,10 @@ contract ZhuhuaToken is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

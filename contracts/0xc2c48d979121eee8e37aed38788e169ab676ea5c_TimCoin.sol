@@ -16,7 +16,7 @@ contract ERC20Interface {
 contract StandardToken is ERC20Interface {
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+		require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -24,7 +24,7 @@ contract StandardToken is ERC20Interface {
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-		require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+		require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
 		balances[_to] += _value;
 		balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
@@ -50,15 +50,15 @@ contract StandardToken is ERC20Interface {
 		return totalTokens;
 	}
 
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	uint256 public totalTokens;
 	
 	// Optional vanity variables
 	uint8 public decimals;
 	string public name;
 	string public symbol;
-	string public version = &#39;0.1&#39;;
+	string public version = '0.1';
 }
 
 
@@ -74,12 +74,12 @@ contract TimCoin is StandardToken {
 	
 	function() public payable {
 		uint256 amount = msg.value;
-		require(amount &gt; 0 &amp;&amp; etherBalance + amount &gt; etherBalance);
+		require(amount > 0 && etherBalance + amount > etherBalance);
 		etherBalance += amount;
 	}
 	
 	function collect(uint256 amount) public {
-		require(msg.sender == owner &amp;&amp; amount &lt;= etherBalance);
+		require(msg.sender == owner && amount <= etherBalance);
 		owner.transfer(amount);
 		etherBalance -= amount;
 	}
@@ -91,12 +91,12 @@ contract TimCoin is StandardToken {
 		decimals = 18;
 		totalTokens = uint(10)**(decimals + 9);
 		balances[owner] = totalTokens;
-		name = &quot;Tim Coin&quot;;
-		symbol = &quot;TIM&quot;;
+		name = "Tim Coin";
+		symbol = "TIM";
 	}
 	
 	function increaseSupply(uint value, address to) public returns (bool) {
-		require(value &gt; 0 &amp;&amp; totalTokens + value &gt; totalTokens &amp;&amp; msg.sender == owner);
+		require(value > 0 && totalTokens + value > totalTokens && msg.sender == owner);
 		totalTokens += value;
 		balances[to] += value;
 		Transfer(0, to, value);
@@ -104,7 +104,7 @@ contract TimCoin is StandardToken {
 	}
 	
 	function decreaseSupply(uint value, address from) public returns (bool) {
-		require(value &gt; 0 &amp;&amp; balances[from] &gt;= value &amp;&amp; msg.sender == owner);
+		require(value > 0 && balances[from] >= value && msg.sender == owner);
 		balances[from] -= value;
 		totalTokens -= value;
 		Transfer(from, 0, value);

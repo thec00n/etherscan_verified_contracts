@@ -48,9 +48,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -67,7 +67,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -123,10 +123,10 @@ contract Sale is Ownable {
     bool isActive = false;
     bool onlyWhitelist = false;
 
-    mapping(address =&gt; uint) balance;
-    mapping(address =&gt; uint) balanceWithdrawn;
+    mapping(address => uint) balance;
+    mapping(address => uint) balanceWithdrawn;
     address[] investors;
-    mapping(address =&gt; bool) whitelist;
+    mapping(address => bool) whitelist;
 
 
     function Sale() public{
@@ -136,12 +136,12 @@ contract Sale is Ownable {
       require(isActive);
       require(tokenAddr != address(0));
       require(msg.sender != address(0));
-      require(msg.value &gt;=  mincap );
+      require(msg.value >=  mincap );
       require(!onlyWhitelist || whitelist[msg.sender]);
       uint256 amt = msg.value.mul(rate);
 
       ERC20 token = ERC20(tokenAddr);
-      require(token.balanceOf(this) &gt;= amt);
+      require(token.balanceOf(this) >= amt);
       
       if(balance[msg.sender] == 0){
         investors.push(msg.sender);
@@ -168,7 +168,7 @@ contract Sale is Ownable {
       tokenAddr = _tokenAddr;
     }
     function addWhitelist(address[] addr_list) public onlyOwner{
-      for(uint i=0;i&lt;addr_list.length;i++){
+      for(uint i=0;i<addr_list.length;i++){
         whitelist[addr_list[i]] = true;
       }
     }
@@ -183,7 +183,7 @@ contract Sale is Ownable {
     }    
     function drainToken() public onlyOwner{
         uint cantWithdrawAmt = 0;
-        for(uint i = 0;i&lt;investors.length;i++){
+        for(uint i = 0;i<investors.length;i++){
           cantWithdrawAmt += balance[investors[i]];
         }      
         ERC20 token = ERC20(tokenAddr);
@@ -191,10 +191,10 @@ contract Sale is Ownable {
     }
     function giveTokens(uint percent) public onlyOwner{
         ERC20 token = ERC20(tokenAddr);
-        for(uint i = 0;i&lt;investors.length;i++){
+        for(uint i = 0;i<investors.length;i++){
           uint bal = balance[investors[i]];
           uint canWithdrawAmt = (bal.div(100)).mul(percent);
-          if(canWithdrawAmt &gt; 0 &amp;&amp; balanceWithdrawn[investors[i]] + canWithdrawAmt &lt;= bal){
+          if(canWithdrawAmt > 0 && balanceWithdrawn[investors[i]] + canWithdrawAmt <= bal){
             balanceWithdrawn[investors[i]] += canWithdrawAmt;
             token.transfer(investors[i], canWithdrawAmt);
           }

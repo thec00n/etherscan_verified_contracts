@@ -40,7 +40,7 @@ contract Pot {
 	
 	function bytesToString (bytes32 data) returns (string) {
         bytes memory bytesString = new bytes(32);
-        for (uint j=0; j&lt;32; j++) {
+        for (uint j=0; j<32; j++) {
             byte char = byte(bytes32(uint(data) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[j] = char;
@@ -52,9 +52,9 @@ contract Pot {
 	//1 ether = 1 spot
 	function joinPot() public payable {
 	    
-	    assert(now &lt; endTime);
+	    assert(now < endTime);
         //for each ether sent, reserve a spot
-	    for(uint i = msg.value; i &gt;= minBetSize; i-= minBetSize) {
+	    for(uint i = msg.value; i >= minBetSize; i-= minBetSize) {
 	        potMembers.push(msg.sender);
 	        totalBet+= minBetSize;
 	        potSize += 1;
@@ -76,12 +76,12 @@ contract Pot {
     function rewardWinner() public payable {
         
         //assert time
-        debug(&quot;assert now &gt; end time&quot;);
-        assert(now &gt; endTime);
+        debug("assert now > end time");
+        assert(now > endTime);
         if(!locked) {
             locked = true;
-            debug(&quot;locked&quot;);
-            if(potSize &gt; 0) {
+            debug("locked");
+            if(potSize > 0) {
             	//if only one member entered the pot, then they automatically win
             	if(potMembers.length == 1) 
             		random_number = 0;

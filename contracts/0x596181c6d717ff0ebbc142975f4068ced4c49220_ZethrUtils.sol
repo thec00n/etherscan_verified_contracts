@@ -43,15 +43,15 @@ contract ZethrUtils {
 
     uint tokensMintedDuringICO = ZETHR.tokensMintedDuringICO();
 
-    if (tokenSupply &lt;= tokensMintedDuringICO) {
+    if (tokenSupply <= tokensMintedDuringICO) {
       // Option One: All the tokens sell at the ICO price.
       tokensToSellAtICOPrice = _tokens;
 
-    } else if (tokenSupply &gt; tokensMintedDuringICO &amp;&amp; tokenSupply - _tokens &gt;= tokensMintedDuringICO) {
+    } else if (tokenSupply > tokensMintedDuringICO && tokenSupply - _tokens >= tokensMintedDuringICO) {
       // Option Two: All the tokens sell at the variable price.
       tokensToSellAtVariablePrice = _tokens;
 
-    } else if (tokenSupply &gt; tokensMintedDuringICO &amp;&amp; tokenSupply - _tokens &lt; tokensMintedDuringICO) {
+    } else if (tokenSupply > tokensMintedDuringICO && tokenSupply - _tokens < tokensMintedDuringICO) {
       // Option Three: Some tokens sell at the ICO price, and some sell at the variable price.
       tokensToSellAtVariablePrice = tokenSupply.sub(tokensMintedDuringICO);
       tokensToSellAtICOPrice      = _tokens.sub(tokensToSellAtVariablePrice);
@@ -79,9 +79,9 @@ contract ZethrUtils {
 
     if (tokensToSellAtICOPrice != 0) {
 
-      /* Here, unlike the sister equation in ethereumToTokens, we DON&#39;T need to multiply by 1e18, since
-         we will be passed in an amount of tokens to sell that&#39;s already at the 18-decimal precision.
-         We need to divide by 1e18 or we&#39;ll have too much Ether. */
+      /* Here, unlike the sister equation in ethereumToTokens, we DON'T need to multiply by 1e18, since
+         we will be passed in an amount of tokens to sell that's already at the 18-decimal precision.
+         We need to divide by 1e18 or we'll have too much Ether. */
 
       ethFromICOPriceTokens = tokensToSellAtICOPrice.mul(tokenPriceInitial_).div(1e18);
     }
@@ -101,9 +101,9 @@ contract ZethrUtils {
 
     if (tokensToSellAtVariablePrice != 0) {
 
-      /* Note: Unlike the sister function in ethereumToTokens, we don&#39;t have to calculate any &quot;virtual&quot; token count.
+      /* Note: Unlike the sister function in ethereumToTokens, we don't have to calculate any "virtual" token count.
          This is because in sells, we sell the variable price tokens **first**, and then we sell the ICO-price tokens.
-         Thus there isn&#39;t any weird stuff going on with the token supply.
+         Thus there isn't any weird stuff going on with the token supply.
 
          We have the equations for total investment above; note that this is for TOTAL.
          To get the eth received from this sell, we calculate the new total investment after this sell.
@@ -124,16 +124,16 @@ contract ZethrUtils {
   view
   returns(uint)
   {
-    require (_tokens &gt;= MIN_TOKEN_SELL_AMOUNT, &quot;Tried to sell too few tokens.&quot;);
+    require (_tokens >= MIN_TOKEN_SELL_AMOUNT, "Tried to sell too few tokens.");
 
     /*
      *  i = investment, p = price, t = number of tokens
      *
-     *  i_current = p_initial * t_current                   (for t_current &lt;= t_initial)
-     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current &gt;  t_initial)
+     *  i_current = p_initial * t_current                   (for t_current <= t_initial)
+     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current >  t_initial)
      *
-     *  t_current = i_current / p_initial                   (for i_current &lt;= i_initial)
-     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current &gt;  i_initial)
+     *  t_current = i_current / p_initial                   (for i_current <= i_initial)
+     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current >  i_initial)
      */
 
     uint tokensToSellAtICOPrice;
@@ -146,7 +146,7 @@ contract ZethrUtils {
 
     uint totalEthReceived = ethFromVarPriceTokens + ethFromICOPriceTokens;
 
-    assert(totalEthReceived &gt; 0);
+    assert(totalEthReceived > 0);
     return totalEthReceived;
   }
 
@@ -169,7 +169,7 @@ contract ZethrUtils {
   function sqrt(uint x) public pure returns (uint y) {
     uint z = (x + 1) / 2;
     y = x;
-    while (z &lt; y) {
+    while (z < y) {
       y = z;
       z = (x / z + z) / 2;
     }
@@ -178,7 +178,7 @@ contract ZethrUtils {
   function cbrt(uint x) public pure returns (uint y) {
     uint z = (x + 1) / 3;
     y = x;
-    while (z &lt; y) {
+    while (z < y) {
       y = z;
       z = (x / (z*z) + 2 * z) / 3;
     }
@@ -194,7 +194,7 @@ contract Zethr {
   uint public                          tokensMintedDuringICO;
 }
 
-// Think it&#39;s safe to say y&#39;all know what this is.
+// Think it's safe to say y'all know what this is.
 
 library SafeMath {
 
@@ -208,20 +208,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

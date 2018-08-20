@@ -7,10 +7,10 @@ pragma solidity ^0.4.20;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -18,7 +18,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -70,19 +70,19 @@ contract StandardToken is Token {
     
     using SafeMath for uint;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     
     
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         require(to != address(0));
-        require(tokens &gt; 0);
-        require(balances[msg.sender] &gt;= tokens); 
+        require(tokens > 0);
+        require(balances[msg.sender] >= tokens); 
         
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -93,7 +93,7 @@ contract StandardToken is Token {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -101,7 +101,7 @@ contract StandardToken is Token {
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         require(spender != address(0));
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
@@ -120,9 +120,9 @@ contract StandardToken is Token {
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         require(from != address(0));
         require(to != address(0));
-        require(tokens &gt; 0);
-        require(balances[from] &gt;= tokens);
-        require(allowed[from][msg.sender] &gt;= tokens);
+        require(tokens > 0);
+        require(balances[from] >= tokens);
+        require(allowed[from][msg.sender] >= tokens);
         
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -149,7 +149,7 @@ contract StandardToken is Token {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -164,23 +164,23 @@ contract KillerWhale is StandardToken { // CHANGE THIS. Update the contract name
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   // Token Name
     uint8 public decimals;                // How many decimals to show. To be standard complicant keep it 18
     string public symbol;                 // An identifier: eg SBX, XPR etc..
-    string public version = &#39;H1.0&#39;; 
+    string public version = 'H1.0'; 
     uint256 public unitsOneEthCanBuy;     // How many units of your coin can be bought by 1 ETH?
-    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.  
+    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.  
     address public fundsWallet;           // Where should the raised ETH go?
 
     // This is a constructor function 
     // which means the following function name has to match the contract name declared above
     function KillerWhale() {
-        name = &quot;KillerWhale&quot;;                                          // Set the name for display purposes (CHANGE THIS)
+        name = "KillerWhale";                                          // Set the name for display purposes (CHANGE THIS)
         decimals = 18;                                               // Amount of decimals for display purposes (CHANGE THIS)
-        symbol = &quot;KWT&quot;;                                             // Set the symbol for display purposes (CHANGE THIS)
+        symbol = "KWT";                                             // Set the symbol for display purposes (CHANGE THIS)
         unitsOneEthCanBuy = 100;                                      // Set the price of your token for the ICO (CHANGE THIS)
         fundsWallet = 0x3f17dE50F2D1CA4209c2028677B328E34581d4Dc;                                    // The owner of the contract gets ETH
         totalSupply = 88000000 * 10 ** uint256(decimals);                        // Update total supply (1000 for example) (CHANGE THIS)
@@ -195,7 +195,7 @@ contract KillerWhale is StandardToken { // CHANGE THIS. Update the contract name
         uint256 amount = msg.value * unitsOneEthCanBuy;
 
         // wallet should have enough tokens to fund
-        require(balances[fundsWallet] &gt;= amount);
+        require(balances[fundsWallet] >= amount);
 
         balances[fundsWallet] = balances[fundsWallet].sub(amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
@@ -212,10 +212,10 @@ contract KillerWhale is StandardToken { // CHANGE THIS. Update the contract name
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }

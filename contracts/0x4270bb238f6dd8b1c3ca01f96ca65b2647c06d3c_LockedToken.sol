@@ -28,8 +28,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -60,9 +60,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -97,7 +97,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -145,7 +145,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -161,10 +161,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -179,20 +179,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal  pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -206,11 +206,11 @@ contract LockedToken is owned, TokenERC20, SafeMath {
         uint256 batches;
     }
 
-    mapping (address =&gt; TokenLocked) internal lockedTokenOf;
-    mapping (address =&gt; bool) internal isLocked;
+    mapping (address => TokenLocked) internal lockedTokenOf;
+    mapping (address => bool) internal isLocked;
 
     modifier canTransfer(address _sender, uint256 _value) {
-        require(_value &lt;= spendableBalanceOf(_sender));
+        require(_value <= spendableBalanceOf(_sender));
         _;
     }   
 
@@ -243,8 +243,8 @@ contract LockedToken is owned, TokenERC20, SafeMath {
             onlyOwner public {
         //doLock
         require(_to != 0x0);
-        require(_startDate &lt; _lastDate);
-        require(_batches &gt; 0);
+        require(_startDate < _lastDate);
+        require(_batches > 0);
         TokenLocked memory tokenLocked = TokenLocked(_value, _startDate, _lastDate, _batches);
         lockedTokenOf[_to] = tokenLocked;
         isLocked[_to] = true;
@@ -268,8 +268,8 @@ contract LockedToken is owned, TokenERC20, SafeMath {
         uint256 lastDate = tokenLocked.lastDate;
         uint256 batches = tokenLocked.batches;
 
-        if (time &lt; startDate) return 0;
-        if (time &gt;= lastDate) return balanceOf[holder]; 
+        if (time < startDate) return 0;
+        if (time >= lastDate) return balanceOf[holder]; 
 
         //caculate transferableTokens     
         uint256 originalTransferableTokens = safeMul(safeDiv(amount, batches), 
@@ -280,7 +280,7 @@ contract LockedToken is owned, TokenERC20, SafeMath {
 
         uint256 lockedAmount = safeSub(amount, originalTransferableTokens);
 
-        if (balanceOf[holder] &lt;= lockedAmount) return 0;
+        if (balanceOf[holder] <= lockedAmount) return 0;
 
         uint256 actualTransferableTokens = safeSub(balanceOf[holder], lockedAmount);                             
 

@@ -43,12 +43,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -65,7 +65,7 @@ contract SafeMath {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -76,7 +76,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -101,17 +101,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract HouseCouponToken is StandardToken, SafeMath {
 
     // metadata
-    string  public constant name = &quot;House Coupon Token&quot;;
-    string  public constant symbol = &quot;HCT&quot;;
+    string  public constant name = "House Coupon Token";
+    string  public constant symbol = "HCT";
     uint256 public constant decimals = 18;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
 
     // contracts
     address public ethFundDeposit;          // deposit address for ETH for UnlimitedIP Team.
@@ -149,33 +149,33 @@ contract HouseCouponToken is StandardToken, SafeMath {
 
         currentSupply = formatDecimals(0);
         totalSupply = formatDecimals(20000000);
-        require(currentSupply &lt;= totalSupply);
+        require(currentSupply <= totalSupply);
         balances[ethFundDeposit] = totalSupply-currentSupply;
     }
 
     modifier isOwner()  { require(msg.sender == ethFundDeposit); _; }
 
-    /// @dev set the token&#39;s tokenExchangeRate,
+    /// @dev set the token's tokenExchangeRate,
     function setTokenExchangeRate(uint256 _tokenExchangeRate) isOwner external {
-        require(_tokenExchangeRate &gt; 0);
+        require(_tokenExchangeRate > 0);
         require(_tokenExchangeRate != tokenExchangeRate);
         tokenExchangeRate = _tokenExchangeRate;
     }
 
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        require (value + currentSupply &lt;= totalSupply);
-        require (balances[msg.sender] &gt;= value &amp;&amp; value&gt;0);
+        require (value + currentSupply <= totalSupply);
+        require (balances[msg.sender] >= value && value>0);
         balances[msg.sender] -= value;
         currentSupply = safeAdd(currentSupply, value);
         IncreaseSupply(value);
     }
 
-    /// @dev decrease the token&#39;s supply
+    /// @dev decrease the token's supply
     function decreaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        require (value + tokenRaised &lt;= currentSupply);
+        require (value + tokenRaised <= currentSupply);
         currentSupply = safeSubtract(currentSupply, value);
         balances[msg.sender] += value;
         DecreaseSupply(value);
@@ -184,8 +184,8 @@ contract HouseCouponToken is StandardToken, SafeMath {
     /// @dev turn on the funding state
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) isOwner external {
         require(!isFunding);
-        require(_fundingStartBlock &lt; _fundingStopBlock);
-        require(block.number &lt; _fundingStartBlock) ;
+        require(_fundingStartBlock < _fundingStopBlock);
+        require(block.number < _fundingStartBlock) ;
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
         isFunding = true;
@@ -215,7 +215,7 @@ contract HouseCouponToken is StandardToken, SafeMath {
         require(newContractAddr != address(0x0));
 
         uint256 tokens = balances[msg.sender];
-        require (tokens &gt; 0);
+        require (tokens > 0);
 
         balances[msg.sender] = 0;
         tokenMigrated = safeAdd(tokenMigrated, tokens);
@@ -228,13 +228,13 @@ contract HouseCouponToken is StandardToken, SafeMath {
 
     /// @dev withdraw ETH from contract to UnlimitedIP team address
     function transferETH() isOwner external {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         require(ethFundDeposit.send(this.balance));
     }
 
     function burn(uint256 _value) isOwner returns (bool success){
         uint256 value = formatDecimals(_value);
-        require(balances[msg.sender] &gt;= value &amp;&amp; value&gt;0);
+        require(balances[msg.sender] >= value && value>0);
         balances[msg.sender] -= value;
         totalSupply -= value;
         Burn(msg.sender,value);
@@ -244,13 +244,13 @@ contract HouseCouponToken is StandardToken, SafeMath {
     /// buys the tokens
     function () payable {
         require (isFunding);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingStopBlock);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingStopBlock);
 
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);
-        require(tokens + tokenRaised &lt;= currentSupply);
+        require(tokens + tokenRaised <= currentSupply);
 
         tokenRaised = safeAdd(tokenRaised, tokens);
         balances[msg.sender] += tokens;

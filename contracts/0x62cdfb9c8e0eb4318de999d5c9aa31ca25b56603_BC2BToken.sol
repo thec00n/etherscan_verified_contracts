@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,8 +49,8 @@ contract ERC20Token is IERC20Token {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     modifier validAddress(address _address) {
         require(_address != 0x0);
@@ -129,8 +129,8 @@ contract BC2BToken is ERC20Token, Owned {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;BC2B&quot;;
-    string public constant symbol = &quot;BC2B&quot;;
+    string public constant name = "BC2B";
+    string public constant symbol = "BC2B";
     uint32 public constant decimals = 18;
 
     // SET current initial token supply
@@ -151,7 +151,7 @@ contract BC2BToken is ERC20Token, Owned {
     // List wallets to allow transactions tokens
     uint[256] private nWallets;
     // Index on the list of wallets to allow reverse lookup
-    mapping(uint =&gt; uint) private iWallets;
+    mapping(uint => uint) private iWallets;
 
     event Finalize();
     event DisableTransfers();
@@ -164,7 +164,7 @@ contract BC2BToken is ERC20Token, Owned {
 
         totalSupply = initialSupply;
         // Initializing 60% of tokens for sale
-        // maxSaleToken = initialSupply * 60 / 100 (60% this is maxSaleToken &amp; 100% this is initialSupply)
+        // maxSaleToken = initialSupply * 60 / 100 (60% this is maxSaleToken & 100% this is initialSupply)
         // totalProjectToken will be calculated in function finalize()
         // 
         // |------------maxSaleToken------totalProjectToken|
@@ -183,7 +183,7 @@ contract BC2BToken is ERC20Token, Owned {
         nWallets[1] = uint(msg.sender);
         iWallets[uint(msg.sender)] = 1;
 
-        for (uint index = 0; index &lt; wallets.length; index++) {
+        for (uint index = 0; index < wallets.length; index++) {
             nWallets[2 + index] = uint(wallets[index]);
             iWallets[uint(wallets[index])] = index + 2;
         }
@@ -219,8 +219,8 @@ contract BC2BToken is ERC20Token, Owned {
 
         uint256 soldTokens = maxSaleToken;
 
-        for (uint index = 1; index &lt; nWallets.length; index++) {
-            if (balances[address(nWallets[index])] &gt; 0) {
+        for (uint index = 1; index < nWallets.length; index++) {
+            if (balances[address(nWallets[index])] > 0) {
                 // Get total sold tokens on the funding wallets
                 // totalSoldTokens is 60% of the total number of tokens
                 soldTokens = soldTokens.sub(balances[address(nWallets[index])]);
@@ -233,7 +233,7 @@ contract BC2BToken is ERC20Token, Owned {
 
         totalSoldTokens = soldTokens;
 
-        // totalProjectToken = totalSoldTokens * 40 / 60 (40% this is BC2B Project &amp; 60% this is totalSoldTokens)
+        // totalProjectToken = totalSoldTokens * 40 / 60 (40% this is BC2B Project & 60% this is totalSoldTokens)
         //
         // |----------totalSoldTokens-----totalProjectToken|
         // |================60%================|====40%====|

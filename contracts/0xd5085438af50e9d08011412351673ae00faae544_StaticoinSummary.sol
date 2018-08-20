@@ -24,7 +24,7 @@ contract I_Pricer {
     uint128 public lastPrice;
     I_minter public mint;
     string public sURL;
-    mapping (bytes32 =&gt; uint) RevTransaction;
+    mapping (bytes32 => uint) RevTransaction;
     function __callback(bytes32 myid, string result) {}
     function queryCost() constant returns (uint128 _value) {}
     function QuickPrice() payable {}
@@ -44,9 +44,9 @@ contract I_coin {
 
 	I_minter public mint;
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals=18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = '';       //human 0.1 standard. Just an arbitrary versioning scheme.
 	
     function mintCoin(address target, uint256 mintedAmount) returns (bool success) {}
     function meltCoin(address target, uint256 meltedAmount) returns (bool success) {}
@@ -89,8 +89,8 @@ contract I_coin {
     // @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
 	
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	// @return total amount of tokens
     uint256 public totalSupply;
@@ -131,7 +131,7 @@ contract StaticoinSummary is owned{
 	address[] public pricers;
 
     function SetAddresses(address[] _mints, address[] _staticoins, address[] _riskcoins,  address[] _pricers) onlyOwner external {
-		require(_mints.length &gt; 0);
+		require(_mints.length > 0);
 		require(_staticoins.length == _mints.length);
         require(_riskcoins.length == _mints.length);
 		require(_pricers.length == _mints.length);
@@ -158,11 +158,11 @@ contract StaticoinSummary is owned{
 	}
 	
     function balances(address user,  address[] _coins) view public returns (uint[]) {
-        require(_coins.length &gt; 0);
+        require(_coins.length > 0);
         uint[] memory balances = new uint[](_coins.length);
 
-        //as this is a call() function, we don&#39;t really care about gas cost, just dont make the array too large
-        for(uint i = 0; i&lt; _coins.length; i++){ 
+        //as this is a call() function, we don't really care about gas cost, just dont make the array too large
+        for(uint i = 0; i< _coins.length; i++){ 
             I_coin coin = I_coin(_coins[i]);
             balances[i] = coin.balanceOf(user);
         }    
@@ -174,11 +174,11 @@ contract StaticoinSummary is owned{
 	}  
     
     function Totalbalance(address[] _mints) view public returns (uint) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint balance;
 
-        //as this is a call() function, we don&#39;t really care about gas cost, just dont make the array too large
-        for(uint i = 0; i&lt; _mints.length; i++){ 
+        //as this is a call() function, we don't really care about gas cost, just dont make the array too large
+        for(uint i = 0; i< _mints.length; i++){ 
             I_minter coin = I_minter(_mints[i]);
             balance += coin.balance;
         }    
@@ -194,10 +194,10 @@ contract StaticoinSummary is owned{
 	}
 	
     function totalSupplys(address[] _coins) view public returns (uint[]) {
-        require(_coins.length &gt; 0);
+        require(_coins.length > 0);
         uint[] memory totalSupplys = new uint[](_coins.length);
 
-        for(uint i = 0; i&lt; _coins.length; i++){
+        for(uint i = 0; i< _coins.length; i++){
             I_coin coin = I_coin(_coins[i]);
             totalSupplys[i] = coin.totalSupply();
         }    
@@ -209,10 +209,10 @@ contract StaticoinSummary is owned{
 	}
  
     function Leverages(address[] _mints) view public returns (uint128[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint128[] memory Leverages = new uint128[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             Leverages[i] = mint.Leverage();
         }    
@@ -224,10 +224,10 @@ contract StaticoinSummary is owned{
 	}
 	
     function Strikes(address[] _mints) view public returns (uint128[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint128[] memory Strikes = new uint128[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             Strikes[i] = mint.Strike();
         }    
@@ -239,10 +239,10 @@ contract StaticoinSummary is owned{
 	}
 	
     function StaticEthAvailables(address[] _mints) view public returns (uint128[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint128[] memory StaticEthAvailables = new uint128[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             StaticEthAvailables[i] = mint.StaticEthAvailable();
         }    
@@ -254,10 +254,10 @@ contract StaticoinSummary is owned{
 	}
 	
     function PendingETHs(address[] _mints) view public returns (uint128[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint128[] memory PendingETHs = new uint128[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             PendingETHs[i] = mint.PendingETH();
         }    
@@ -269,11 +269,11 @@ contract StaticoinSummary is owned{
 	}
 	
     function RiskPrices(address[] _mints, uint128[] prices) view public returns (uint[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         require(_mints.length == prices.length);
         uint[] memory RiskPrices = new uint[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             RiskPrices[i] = mint.RiskPrice(prices[i]);
         }    
@@ -285,10 +285,10 @@ contract StaticoinSummary is owned{
 	}
 
     function TransCompleteds(address[] _mints) view public returns (uint[]) {
-        require(_mints.length &gt; 0);
+        require(_mints.length > 0);
         uint[] memory TransCompleteds = new uint[](_mints.length);
 
-        for(uint i = 0; i&lt; _mints.length; i++){
+        for(uint i = 0; i< _mints.length; i++){
             I_minter mint = I_minter(_mints[i]);
             TransCompleteds[i] = mint.TransCompleted();
         }    
@@ -300,10 +300,10 @@ contract StaticoinSummary is owned{
     }
 
     function queryCost(address[] _pricers) view public returns (uint[]) {
-        require(_pricers.length &gt; 0);
+        require(_pricers.length > 0);
         uint[] memory queryCosts = new uint[](_pricers.length);
 
-        for(uint i = 0; i&lt; _pricers.length; i++){
+        for(uint i = 0; i< _pricers.length; i++){
             I_Pricer Pricer = I_Pricer(_pricers[i]);
             queryCosts[i] = Pricer.queryCost();
         }    
@@ -317,7 +317,7 @@ contract StaticoinSummary is owned{
 	function TotalFee(address[] _pricers) view returns(uint) {
 		uint size = (_pricers.length);
 		uint fee;
-		for(uint i = 0; i&lt; size; i++){
+		for(uint i = 0; i< size; i++){
 			I_Pricer pricer = I_Pricer(_pricers[i]);
 			fee += pricer.balance;
 		}
@@ -331,9 +331,9 @@ contract StaticoinSummary is owned{
 	function collectFee(address[] _pricers) onlyOwner returns(bool) {
 		uint size = (_pricers.length);
 		bool ans = true;
-		for(uint i = 0; i&lt; size; i++){
+		for(uint i = 0; i< size; i++){
 			I_Pricer pricer = I_Pricer(_pricers[i]);
-			ans = ans &amp;&amp; pricer.collectFee();
+			ans = ans && pricer.collectFee();
 		}
 		return ans;
 	}
@@ -344,7 +344,7 @@ contract StaticoinSummary is owned{
     
     function Summary(address user, address[] _mints, address[] _staticoins, address[] _riskcoins, uint128[] _prices) view public returns (uint[]) {
         uint size = (_mints.length);
-		require(size &gt; 0);
+		require(size > 0);
         require(_staticoins.length == size);
         require(_riskcoins.length == size);
         require(_prices.length == size);
@@ -353,7 +353,7 @@ contract StaticoinSummary is owned{
         I_Pricer pricer = I_Pricer(pricers[0]);
 		Summarys[0] = pricer.queryCost(); //can only pass in 4 arrays to the function.  This now assumes that all pricers have the same query cost
 
-        for(uint i = 0; i&lt; size; i++){
+        for(uint i = 0; i< size; i++){
             I_coin staticoin = I_coin(_staticoins[i]);
             I_coin riskcoin = I_coin(_riskcoins[i]);
             I_minter mint = I_minter(_mints[i]);

@@ -1,15 +1,15 @@
 pragma solidity ^0.4.11;
 contract FundariaToken {
-    string public constant name = &quot;Fundaria Token&quot;;
-    string public constant symbol = &quot;RI&quot;;
+    string public constant name = "Fundaria Token";
+    string public constant symbol = "RI";
     
     uint public totalSupply; // how many tokens supplied at the moment
     uint public supplyLimit; // how many tokens can be supplied    
     uint public course; // course wei for token
  
-    mapping(address=&gt;uint256) public balanceOf; // owned tokens
-    mapping(address=&gt;mapping(address=&gt;uint256)) public allowance; // allowing third parties to transfer tokens 
-    mapping(address=&gt;bool) public allowedAddresses; // allowed addresses to manage some functions    
+    mapping(address=>uint256) public balanceOf; // owned tokens
+    mapping(address=>mapping(address=>uint256)) public allowance; // allowing third parties to transfer tokens 
+    mapping(address=>bool) public allowedAddresses; // allowed addresses to manage some functions    
 
     address public fundariaPoolAddress; // ether source for Fundaria development
     address creator; // creator address of this contract
@@ -83,7 +83,7 @@ contract FundariaToken {
     
     // transfer tokens to another address (owner)    
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (_to == 0x0 || balanceOf[msg.sender] &lt; _value || balanceOf[_to] + _value &lt; balanceOf[_to]) 
+        if (_to == 0x0 || balanceOf[msg.sender] < _value || balanceOf[_to] + _value < balanceOf[_to]) 
             return false; 
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
@@ -94,7 +94,7 @@ contract FundariaToken {
     // setting of availability of tokens transference for third party
     function transferFrom(address _from, address _to, uint256 _value) 
         returns (bool success) {
-        if(_to == 0x0 || balanceOf[_from] &lt; _value || _value &gt; allowance[_from][msg.sender]) 
+        if(_to == 0x0 || balanceOf[_from] < _value || _value > allowance[_from][msg.sender]) 
             return false;                                
         balanceOf[_from] -= _value;                           
         balanceOf[_to] += _value;                             

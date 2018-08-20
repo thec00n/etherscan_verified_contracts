@@ -33,7 +33,7 @@ contract FlightDelayDatabaseModel {
     //					        customer by the oracle.
     // 03 = PaidOut:	  The flight has ended with delay.
     //					        The oracle has checked and payed out.
-    // 04 = Expired:	  The flight has endet with &lt;15min. delay.
+    // 04 = Expired:	  The flight has endet with <15min. delay.
     //					        No payout.
     // 05 = Declined:	  The application was invalid.
     //					        The premium minus cancellation fee is payed back to the
@@ -251,7 +251,7 @@ contract FlightDelayConstants {
     * General events
     */
 
-// --&gt; test-mode
+// --> test-mode
 //        event LogUint(string _message, uint _uint);
 //        event LogUintEth(string _message, uint ethUint);
 //        event LogUintTime(string _message, uint timeUint);
@@ -263,7 +263,7 @@ contract FlightDelayConstants {
 //        event LogString(string _message, string _string);
 //        event LogBool(string _message, bool _bool);
 //        event Log(address);
-// &lt;-- test-mode
+// <-- test-mode
 
     event LogPolicyApplied(
         uint _policyId,
@@ -365,7 +365,7 @@ contract FlightDelayConstants {
     // reserve for tail risks
     uint8 constant RESERVE_PERCENT = 1;
     // the weight pattern; in future versions this may become part of the policy struct.
-    // currently can&#39;t be constant because of compiler restrictions
+    // currently can't be constant because of compiler restrictions
     // WEIGHT_PATTERN[0] is not used, just to be consistent
     uint8[6] WEIGHT_PATTERN = [
         0,
@@ -376,21 +376,21 @@ contract FlightDelayConstants {
         50
     ];
 
-// --&gt; prod-mode
+// --> prod-mode
     // DEFINITIONS FOR ROPSTEN AND MAINNET
     // minimum time before departure for applying
     uint constant MIN_TIME_BEFORE_DEPARTURE	= 24 hours; // for production
     // check for delay after .. minutes after scheduled arrival
     uint constant CHECK_PAYOUT_OFFSET = 15 minutes; // for production
-// &lt;-- prod-mode
+// <-- prod-mode
 
-// --&gt; test-mode
+// --> test-mode
 //        // DEFINITIONS FOR LOCAL TESTNET
 //        // minimum time before departure for applying
 //        uint constant MIN_TIME_BEFORE_DEPARTURE = 1 seconds; // for testing
 //        // check for delay after .. minutes after scheduled arrival
 //        uint constant CHECK_PAYOUT_OFFSET = 1 seconds; // for testing
-// &lt;-- test-mode
+// <-- test-mode
 
     // maximum duration of flight
     uint constant MAX_FLIGHT_DURATION = 2 days;
@@ -409,36 +409,36 @@ contract FlightDelayConstants {
     * URLs and query strings for oraclize
     */
 
-// --&gt; prod-mode
+// --> prod-mode
     // DEFINITIONS FOR ROPSTEN AND MAINNET
     string constant ORACLIZE_RATINGS_BASE_URL =
         // ratings api is v1, see https://developer.flightstats.com/api-docs/ratings/v1
-        &quot;[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/&quot;;
+        "[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/";
     string constant ORACLIZE_RATINGS_QUERY =
-        &quot;?${[decrypt] &lt;!--PUT ENCRYPTED_QUERY HERE--&gt; }).ratings[0][&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;,&#39;arrivalAirportFsCode&#39;]&quot;;
+        "?${[decrypt] <!--PUT ENCRYPTED_QUERY HERE--> }).ratings[0]['observations','late15','late30','late45','cancelled','diverted','arrivalAirportFsCode']";
     string constant ORACLIZE_STATUS_BASE_URL =
         // flight status api is v2, see https://developer.flightstats.com/api-docs/flightstatus/v2/flight
-        &quot;[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/&quot;;
+        "[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/";
     string constant ORACLIZE_STATUS_QUERY =
         // pattern:
-        &quot;?${[decrypt] &lt;!--PUT ENCRYPTED_QUERY HERE--&gt; }&amp;utc=true).flightStatuses[0][&#39;status&#39;,&#39;delays&#39;,&#39;operationalTimes&#39;]&quot;;
-// &lt;-- prod-mode
+        "?${[decrypt] <!--PUT ENCRYPTED_QUERY HERE--> }&utc=true).flightStatuses[0]['status','delays','operationalTimes']";
+// <-- prod-mode
 
-// --&gt; test-mode
+// --> test-mode
 //        // DEFINITIONS FOR LOCAL TESTNET
 //        string constant ORACLIZE_RATINGS_BASE_URL =
 //            // ratings api is v1, see https://developer.flightstats.com/api-docs/ratings/v1
-//            &quot;[URL] json(https://api-test.etherisc.com/flex/ratings/rest/v1/json/flight/&quot;;
+//            "[URL] json(https://api-test.etherisc.com/flex/ratings/rest/v1/json/flight/";
 //        string constant ORACLIZE_RATINGS_QUERY =
 //            // for testrpc:
-//            &quot;).ratings[0][&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;,&#39;arrivalAirportFsCode&#39;]&quot;;
+//            ").ratings[0]['observations','late15','late30','late45','cancelled','diverted','arrivalAirportFsCode']";
 //        string constant ORACLIZE_STATUS_BASE_URL =
 //            // flight status api is v2, see https://developer.flightstats.com/api-docs/flightstatus/v2/flight
-//            &quot;[URL] json(https://api-test.etherisc.com/flex/flightstatus/rest/v2/json/flight/status/&quot;;
+//            "[URL] json(https://api-test.etherisc.com/flex/flightstatus/rest/v2/json/flight/status/";
 //        string constant ORACLIZE_STATUS_QUERY =
 //            // for testrpc:
-//            &quot;?utc=true).flightStatuses[0][&#39;status&#39;,&#39;delays&#39;,&#39;operationalTimes&#39;]&quot;;
-// &lt;-- test-mode
+//            "?utc=true).flightStatuses[0]['status','delays','operationalTimes']";
+// <-- test-mode
 }
 
 contract FlightDelayLedger is FlightDelayControlledContract, FlightDelayLedgerInterface, FlightDelayConstants {
@@ -451,27 +451,27 @@ contract FlightDelayLedger is FlightDelayControlledContract, FlightDelayLedgerIn
     }
 
     function setContracts() onlyController {
-        FD_AC = FlightDelayAccessControllerInterface(getContract(&quot;FD.AccessController&quot;));
-        FD_DB = FlightDelayDatabaseInterface(getContract(&quot;FD.Database&quot;));
+        FD_AC = FlightDelayAccessControllerInterface(getContract("FD.AccessController"));
+        FD_DB = FlightDelayDatabaseInterface(getContract("FD.Database"));
 
-        FD_AC.setPermissionById(101, &quot;FD.NewPolicy&quot;);
-        FD_AC.setPermissionById(101, &quot;FD.Controller&quot;); // todo: check!
+        FD_AC.setPermissionById(101, "FD.NewPolicy");
+        FD_AC.setPermissionById(101, "FD.Controller"); // todo: check!
 
-        FD_AC.setPermissionById(102, &quot;FD.Payout&quot;);
-        FD_AC.setPermissionById(102, &quot;FD.NewPolicy&quot;);
-        FD_AC.setPermissionById(102, &quot;FD.Controller&quot;); // todo: check!
-        FD_AC.setPermissionById(102, &quot;FD.Underwrite&quot;);
-        FD_AC.setPermissionById(102, &quot;FD.Owner&quot;);
+        FD_AC.setPermissionById(102, "FD.Payout");
+        FD_AC.setPermissionById(102, "FD.NewPolicy");
+        FD_AC.setPermissionById(102, "FD.Controller"); // todo: check!
+        FD_AC.setPermissionById(102, "FD.Underwrite");
+        FD_AC.setPermissionById(102, "FD.Owner");
 
-        FD_AC.setPermissionById(103, &quot;FD.Funder&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Underwrite&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Payout&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Ledger&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.NewPolicy&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Controller&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Owner&quot;);
+        FD_AC.setPermissionById(103, "FD.Funder");
+        FD_AC.setPermissionById(103, "FD.Underwrite");
+        FD_AC.setPermissionById(103, "FD.Payout");
+        FD_AC.setPermissionById(103, "FD.Ledger");
+        FD_AC.setPermissionById(103, "FD.NewPolicy");
+        FD_AC.setPermissionById(103, "FD.Controller");
+        FD_AC.setPermissionById(103, "FD.Owner");
 
-        FD_AC.setPermissionById(104, &quot;FD.Funder&quot;);
+        FD_AC.setPermissionById(104, "FD.Funder");
     }
 
     /*
@@ -496,7 +496,7 @@ contract FlightDelayLedger is FlightDelayControlledContract, FlightDelayLedgerIn
     function sendFunds(address _recipient, Acc _from, uint _amount) returns (bool _success) {
         require(FD_AC.checkPermission(102, msg.sender));
 
-        if (this.balance &lt; _amount) {
+        if (this.balance < _amount) {
             return false; // unsufficient funds
         }
 
@@ -518,7 +518,7 @@ contract FlightDelayLedger is FlightDelayControlledContract, FlightDelayLedgerIn
         require(FD_AC.checkPermission(103, msg.sender));
 
         // check against type cast overflow
-        assert(int256(_amount) &gt; 0);
+        assert(int256(_amount) > 0);
 
         // overflow check is done in FD_DB
         FD_DB.setLedger(uint8(_from), -int(_amount));

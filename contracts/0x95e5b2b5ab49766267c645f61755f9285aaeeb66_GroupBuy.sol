@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -42,7 +42,7 @@ contract GroupBuy {
 
     address private tokenAddr;
     address private owner;
-    mapping(address =&gt; uint256) private amounts;
+    mapping(address => uint256) private amounts;
     uint256 private totalEth;
     uint256 private totalToken;
     Phase private currentPhase;
@@ -76,7 +76,7 @@ contract GroupBuy {
         
         ERC20Token tok = ERC20Token(tokenAddr);
         totalToken = tok.balanceOf(this);
-        require(totalToken &gt; 0);
+        require(totalToken > 0);
         return totalToken;
     }
 
@@ -96,7 +96,7 @@ contract GroupBuy {
     }
 
     function setTotalToken(uint _total) isOwner public {
-        require(_total &gt; 0);
+        require(_total > 0);
         totalToken = _total;
     }
 
@@ -116,24 +116,24 @@ contract GroupBuy {
     function info() public view returns (uint phase, uint userEth, uint userToken, uint allEth, uint allToken) {
         phase = uint(currentPhase);
         userEth = amounts[msg.sender];
-        userToken = totalEth &gt; 0 ? totalToken.mul(userEth).div(totalEth) : 0;
+        userToken = totalEth > 0 ? totalToken.mul(userEth).div(totalEth) : 0;
         allEth = totalEth;
         allToken = totalToken;
     }
 
     function contribute() public payable returns (uint _value) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(currentPhase == Phase.Contribute);
         uint cur = amounts[msg.sender];
-        require(cur &lt; MAX_EACH &amp;&amp; totalEth &lt; MAX_TOTAL);
+        require(cur < MAX_EACH && totalEth < MAX_TOTAL);
 
-        _value = msg.value &gt; MAX_EACH.sub(cur) ? MAX_EACH.sub(cur) : msg.value;
-        _value = _value &gt; MAX_TOTAL.sub(totalEth) ? MAX_TOTAL.sub(totalEth) : _value;
+        _value = msg.value > MAX_EACH.sub(cur) ? MAX_EACH.sub(cur) : msg.value;
+        _value = _value > MAX_TOTAL.sub(totalEth) ? MAX_TOTAL.sub(totalEth) : _value;
         amounts[msg.sender] = cur.add(_value);
         totalEth = totalEth.add(_value);
 
         // return redundant eth to user
-        if (msg.value.sub(_value) &gt; 0) {
+        if (msg.value.sub(_value) > 0) {
             msg.sender.transfer(msg.value.sub(_value));
         }
     }
@@ -141,9 +141,9 @@ contract GroupBuy {
     function claim() public returns (uint amountToken) {
         require(currentPhase == Phase.Claim);
         uint contributed = amounts[msg.sender];
-        amountToken = totalEth &gt; 0 ? totalToken.mul(contributed).div(totalEth) : 0;
+        amountToken = totalEth > 0 ? totalToken.mul(contributed).div(totalEth) : 0;
 
-        require(amountToken &gt; 0);
+        require(amountToken > 0);
         require(ERC20Token(tokenAddr).transfer(msg.sender, amountToken));
         amounts[msg.sender] = 0;
     }

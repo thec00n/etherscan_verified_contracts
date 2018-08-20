@@ -28,7 +28,7 @@ contract Transfiere2018Database {
   function deleteOrg(string _codigo) public {
     require(msg.sender == owner);
 
-    for (uint i = 0; i &lt; availableOrgs.length; i++) {
+    for (uint i = 0; i < availableOrgs.length; i++) {
       if (keccak256(availableOrgs[i].codigo) == keccak256(_codigo)) {
         delete availableOrgs[i];
       }
@@ -40,13 +40,13 @@ contract Transfiere2018Database {
   }
   
   function checkCode(string _codigo) public view returns (string, string) {
-    for (uint i = 0; i &lt; availableOrgs.length; i++) {
+    for (uint i = 0; i < availableOrgs.length; i++) {
       if (keccak256(availableOrgs[i].codigo) == keccak256(_codigo)) {
           return (availableOrgs[i].nombre, availableOrgs[i].tipo);
       }
     }
     
-    return (_codigo,&quot;The codigo no existe.&quot;);
+    return (_codigo,"The codigo no existe.");
   }
   
   function destroy() public {

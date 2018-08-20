@@ -18,19 +18,19 @@ contract RegaUtils {
   // Overflow checked math
   function safeAdd( uint256 x, uint256 y ) internal returns( uint256 ) {
     uint256 z = x + y;
-    assert( z &gt;= x );
+    assert( z >= x );
     return z;
   }
 
   function safeSub( uint256 x, uint256 y ) internal returns( uint256 ) {
-    assert( x &gt;= y);
+    assert( x >= y);
     return x - y;
   }
 }
 contract ERC20Token is IERC20Token, RegaUtils {
   uint256 public totalSupply = 0;
-  mapping( address =&gt; uint256 ) public balanceOf;
-  mapping( address =&gt; mapping( address =&gt; uint256 ) ) public allowance;
+  mapping( address => uint256 ) public balanceOf;
+  mapping( address => mapping( address => uint256 ) ) public allowance;
 
   event Transfer( address indexed _from, address indexed _to, uint256 _value );
   event Approval( address indexed _owner, address indexed _spender, uint256 _value );
@@ -109,9 +109,9 @@ contract FeesControllerBase is RSTBase {
   function setRepayment( ) payable public;
 }
 contract RiskSharingToken is RSTBase {
-  string public constant version = &quot;0.1&quot;;
-  string public constant name = &quot;REGA Risk Sharing Token&quot;;
-  string public constant symbol = &quot;RST&quot;;
+  string public constant version = "0.1";
+  string public constant name = "REGA Risk Sharing Token";
+  string public constant symbol = "RST";
   uint8 public constant decimals = 10;
 
   TokenControllerBase public tokenController;
@@ -154,7 +154,7 @@ contract RiskSharingToken is RSTBase {
     if( _tokenData != address(0) )
       tokenData = _tokenData;
     if( tokenController != TokenControllerBase(0) )
-      if( !tokenController.delegatecall(bytes4(sha3(&quot;init()&quot;))) )
+      if( !tokenController.delegatecall(bytes4(sha3("init()"))) )
         revert();
   }
 
@@ -201,7 +201,7 @@ contract RiskSharingToken is RSTBase {
 
 // some amount ma be not the reserve
   function withdraw( uint256 amount ) public boardOnly {
-    require(safeSub(this.balance, amount) &gt;= reserve);
+    require(safeSub(this.balance, amount) >= reserve);
     board.transfer( amount );
   }
 
@@ -219,7 +219,7 @@ contract RiskSharingToken is RSTBase {
 
   function setFeesController( FeesControllerBase fc ) public boardOnly {
     feesController = fc;
-    if( !feesController.delegatecall(bytes4(sha3(&quot;init()&quot;))) )
+    if( !feesController.delegatecall(bytes4(sha3("init()"))) )
       revert();
   }
 

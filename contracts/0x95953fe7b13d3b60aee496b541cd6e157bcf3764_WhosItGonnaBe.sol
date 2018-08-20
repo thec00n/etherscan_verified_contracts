@@ -11,7 +11,7 @@ contract WhosItGonnaBe {
 
     // Will happen 200 blocks after contract creation
     // 100000000000000000 is .1 eth, minimum payout
-    if (block.number &gt;= expirationBlock &amp;&amp; totalWei &gt; 100000000000000000) {
+    if (block.number >= expirationBlock && totalWei > 100000000000000000) {
       // Make sure you have some eth in your wallet to cover gas
       lastSender.transfer(totalWei);
     }

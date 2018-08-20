@@ -4,9 +4,9 @@ contract ERC20 {
 
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     function transfer(address to, uint256 value) returns (bool success);
 
@@ -39,7 +39,7 @@ contract BondkickBondToken is ERC20 {
         decimals = _decimals;
         owner = msg.sender;
         
-        if (_initialMint &gt; 0) {
+        if (_initialMint > 0) {
             totalSupply += _initialMint;
             balanceOf[msg.sender] += _initialMint;
                         
@@ -49,7 +49,7 @@ contract BondkickBondToken is ERC20 {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(_to != address(0));
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         
         _transfer(msg.sender, _to, _value);
         
@@ -58,8 +58,8 @@ contract BondkickBondToken is ERC20 {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(allowance[_from][msg.sender] >= _value);
         
         allowance[_from][msg.sender] -= _value;
         
@@ -79,7 +79,7 @@ contract BondkickBondToken is ERC20 {
     }
 
     function mint(uint256 _value) onlyOwner returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; (totalSupply + _value) &gt;= totalSupply);
+        require(_value > 0 && (totalSupply + _value) >= totalSupply);
         
         totalSupply += _value;
         balanceOf[msg.sender] += _value;
@@ -90,7 +90,7 @@ contract BondkickBondToken is ERC20 {
     }
     
     function mintTo (uint256 _value, address _to) onlyOwner returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; (totalSupply + _value) &gt;= totalSupply);
+        require(_value > 0 && (totalSupply + _value) >= totalSupply);
         
         totalSupply += _value;
         balanceOf[_to] += _value;
@@ -101,7 +101,7 @@ contract BondkickBondToken is ERC20 {
     }
 
     function unmint(uint256 _value) onlyOwner returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; balanceOf[msg.sender] &gt;= _value);
+        require(_value > 0 && balanceOf[msg.sender] >= _value);
 
         totalSupply -= _value;
         balanceOf[msg.sender] -= _value;

@@ -20,9 +20,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -39,7 +39,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -147,7 +147,7 @@ contract BasicToken is ERC20Basic, Lockable {
     using SafeMath for uint256;
 
     uint8 public constant decimals = 18; // solium-disable-line uppercase
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     uint256 actualCap_;
 
@@ -174,7 +174,7 @@ contract BasicToken is ERC20Basic, Lockable {
         require(!locked || msg.sender == owner);
         //owner can do even locked
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -203,7 +203,7 @@ contract BasicToken is ERC20Basic, Lockable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -214,8 +214,8 @@ contract StandardToken is ERC20, BasicToken {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(!locked || msg.sender == owner);
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -280,7 +280,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         require(!locked || msg.sender == owner);
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -345,9 +345,9 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) whenNotLocked public returns (bool)  {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -402,17 +402,17 @@ contract DropableToken is MintableToken {
 
     /*batch airdrop functions*/
     function airdropWithAmount(address [] _recipients, uint256 _value) onlyOwner canMint whenDropable external {
-        for (uint i = 0; i &lt; _recipients.length; i++) {
+        for (uint i = 0; i < _recipients.length; i++) {
             address recipient = _recipients[i];
-            require(totalSupply_.add(_value) &lt;= actualCap_);
+            require(totalSupply_.add(_value) <= actualCap_);
             mint(recipient, _value);
         }
     }
 
     function airdrop(address [] _recipients) onlyOwner canMint whenDropable external {
-        for (uint i = 0; i &lt; _recipients.length; i++) {
+        for (uint i = 0; i < _recipients.length; i++) {
             address recipient = _recipients[i];
-            require(totalSupply_.add(dropAmount_) &lt;= actualCap_);
+            require(totalSupply_.add(dropAmount_) <= actualCap_);
             mint(recipient, dropAmount_);
         }
     }
@@ -420,7 +420,7 @@ contract DropableToken is MintableToken {
     /*get airdrop function*/
     //one can get airdrop by themselves as long as they are willing to pay gas
     function getAirdrop() whenNotLocked canMint whenDropable external returns (bool) {
-        require(totalSupply_.add(dropAmount_) &lt;= actualCap_);
+        require(totalSupply_.add(dropAmount_) <= actualCap_);
         mint(msg.sender, dropAmount_);
         return true;
     }
@@ -452,7 +452,7 @@ contract PurchasableToken is StandardToken {
     function purchase() whenNotLocked canPurchase public payable returns (bool) {
         uint256 ethAmount = msg.value;
         uint256 tokenAmount = ethAmount.div(tokenPrice_).mul(10 ** uint256(decimals));
-        require(totalSupply_.add(tokenAmount) &lt;= actualCap_);
+        require(totalSupply_.add(tokenAmount) <= actualCap_);
         totalSupply_ = totalSupply_.add(tokenAmount);
         balances[msg.sender] = balances[msg.sender].add(tokenAmount);
         etherAmount_ = etherAmount_.add(ethAmount);
@@ -491,7 +491,7 @@ contract PurchasableToken is StandardToken {
      */
     function withdraw(uint256 _amountOfEthers) onlyOwner public returns (bool){
         address ownerAddress = msg.sender;
-        require(etherAmount_&gt;=_amountOfEthers);
+        require(etherAmount_>=_amountOfEthers);
         ownerAddress.transfer(_amountOfEthers);
         etherAmount_ = etherAmount_.sub(_amountOfEthers);
         emit onWithdraw(ownerAddress, _amountOfEthers);
@@ -500,10 +500,10 @@ contract PurchasableToken is StandardToken {
 }
 
 contract RBTToken is DropableToken, BurnableToken, PurchasableToken {
-    string public name = &quot;RBT - a flexible token which can be rebranded&quot;;
-    string public symbol = &quot;RBT&quot;;
-    string public version = &#39;1.0&#39;;
-    string public desc = &quot;&quot;;
+    string public name = "RBT - a flexible token which can be rebranded";
+    string public symbol = "RBT";
+    string public version = '1.0';
+    string public desc = "";
     uint256 constant CAP = 100000000000 * (10 ** uint256(decimals)); // total
     uint256 constant STARTUP = 100000000 * (10 ** uint256(decimals)); // 0.1% startup
 
@@ -516,7 +516,7 @@ contract RBTToken is DropableToken, BurnableToken, PurchasableToken {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH, fallback function
+    // Don't accept ETH, fallback function
     // ------------------------------------------------------------------------
     function() public payable {
         revert();
@@ -553,10 +553,10 @@ contract RBTToken is DropableToken, BurnableToken, PurchasableToken {
     /* Approves and then calls the receiving contract */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         if (approve(_spender, _value)) {
-            //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+            //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
             //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
             //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-            if (!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {revert();}
+            if (!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {revert();}
             return true;
         }
     }

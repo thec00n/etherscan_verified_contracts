@@ -16,11 +16,11 @@ contract EthDig
     uint public FreezedCash;
     
     uint16 UsersLength = 0;
-    mapping (uint16 =&gt; User) Users;
+    mapping (uint16 => User) Users;
     struct User{
         address Address;
         uint16 ContributionsLength;
-        mapping (uint16 =&gt; Contribution) Contributions;
+        mapping (uint16 => Contribution) Contributions;
     }
     struct Contribution{
         uint CashInHarware;
@@ -56,7 +56,7 @@ contract EthDig
         Users[userId].ContributionsLength++;
     }
     function ContributeWithSender (bool reuseCashInHarware,uint8 freezeCoeff,address sender) {
-        if (msg.value == 0 || freezeCoeff&gt;100 ||ContributedAmount + msg.value &gt; ContributedLimit)
+        if (msg.value == 0 || freezeCoeff>100 ||ContributedAmount + msg.value > ContributedLimit)
         {
             sender.send(msg.value);
             return;
@@ -96,26 +96,26 @@ contract EthDig
         uint MinedTillLastPayment = this.balance - CashForHardwareReturn - FreezedCash;
         bool NotEnoughCash = false;
         
-        for(uint16 i=0;i&lt;UsersLength;i++)
+        for(uint16 i=0;i<UsersLength;i++)
         {
-            for(uint16 j=0;j&lt;Users[i].ContributionsLength;j++)
+            for(uint16 j=0;j<Users[i].ContributionsLength;j++)
             {
                 Contribution contribution = Users[i].Contributions[j];
-                if (contribution.Finished || now - contribution.DateLastCheck &lt; 1 days) continue;
+                if (contribution.Finished || now - contribution.DateLastCheck < 1 days) continue;
                 
                 if (contribution.AlreadyPaid != contribution.NeedPayByDay * LifeTime)
                 {
                     uint8 daysToPay = uint8((now - contribution.DateCreated)/1 days);
-                    if (daysToPay&gt;LifeTime) daysToPay = uint8(LifeTime);
+                    if (daysToPay>LifeTime) daysToPay = uint8(LifeTime);
                     uint needToPay = (daysToPay * contribution.NeedPayByDay) - contribution.AlreadyPaid;
                     
-                    if (MinedTillLastPayment &lt; needToPay)
+                    if (MinedTillLastPayment < needToPay)
                     {
                         NotEnoughCash = true;
                     }
                     else
                     {
-                        if (needToPay &gt; 100 finney || daysToPay == LifeTime)
+                        if (needToPay > 100 finney || daysToPay == LifeTime)
                         {
                             MinedTillLastPayment -= needToPay;
                             Users[i].Address.send(needToPay);
@@ -125,7 +125,7 @@ contract EthDig
                     contribution.DateLastCheck = now;
                 }
 
-                if (now &gt; contribution.DateCreated + (LifeTime * 1 days) &amp;&amp; !contribution.ReturnedHardwareCash)
+                if (now > contribution.DateCreated + (LifeTime * 1 days) && !contribution.ReturnedHardwareCash)
                 {
                     if (contribution.ReuseCashInHarware)
                     {
@@ -139,7 +139,7 @@ contract EthDig
                     }
                     else
                     {
-                        if (CashForHardwareReturn &gt;= contribution.CashInHarware)
+                        if (CashForHardwareReturn >= contribution.CashInHarware)
                         {
                             CashForHardwareReturn -= contribution.CashInHarware;
                             FreezedCash -= contribution.CashFreezed;
@@ -150,7 +150,7 @@ contract EthDig
                     }
                 }
                 
-                if (contribution.ReturnedHardwareCash &amp;&amp; contribution.AlreadyPaid == contribution.NeedPayByDay * LifeTime)
+                if (contribution.ReturnedHardwareCash && contribution.AlreadyPaid == contribution.NeedPayByDay * LifeTime)
                 {
                     contribution.Finished = true;
                 }
@@ -177,12 +177,12 @@ contract EthDig
         CashForHardwareReturn += msg.value;
     }
     function WithdrawCashForHardwareReturn(uint amount){
-        if (Owner != msg.sender || CashForHardwareReturn &lt; amount) return;
+        if (Owner != msg.sender || CashForHardwareReturn < amount) return;
         Owner.send(amount);
     }
     
     function GetUserIdByAddress (address userAddress) returns (uint16){
-        for(uint16 i=0; i&lt;UsersLength;i++)
+        for(uint16 i=0; i<UsersLength;i++)
         {
             if (Users[i].Address == userAddress)
                 return i;

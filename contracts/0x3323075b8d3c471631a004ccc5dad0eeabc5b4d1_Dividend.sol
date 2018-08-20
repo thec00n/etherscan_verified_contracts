@@ -52,15 +52,15 @@ contract Dividend{
     
     function Buy() payable{
         var val = msg.value; 
-        require(val &gt;= price);
+        require(val >= price);
         //excess
-        if (val &gt; price){
+        if (val > price){
             msg.sender.transfer(val-price);
         }
         
         _withdraw(false);
         
-        if ((current_start_divholder != divholder) &amp;&amp; divpaid &lt; ((previousprice * (10000 + minprofit))/10000)){
+        if ((current_start_divholder != divholder) && divpaid < ((previousprice * (10000 + minprofit))/10000)){
             uint256 nmake =  ((previousprice * (10000 + minprofit))/10000) - divpaid;
             t(nmake / (1 finney));
             divholder.transfer(nmake);

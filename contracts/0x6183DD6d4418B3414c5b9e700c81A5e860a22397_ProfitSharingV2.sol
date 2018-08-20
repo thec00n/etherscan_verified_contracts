@@ -20,19 +20,19 @@ contract BalanceHistoryToken is FullERC20 {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -47,20 +47,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -171,7 +171,7 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
     BalanceHistoryToken public token;
     uint256 public periodDuration;
     Period public currentPeriod;
-    mapping(address =&gt; mapping(uint =&gt; bool)) public payments;
+    mapping(address => mapping(uint => bool)) public payments;
 
     // internal
 
@@ -198,7 +198,7 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
     /// @dev Allows someone to call withdraw on behalf of someone else. 
     /// Useful if we expose via web3 but metamask account is different than owner of tokens.
     function withdrawFor(address tokenOwner) public whenNotPaused {
-        // Ensure that this address hasn&#39;t been previously paid out for this period.
+        // Ensure that this address hasn't been previously paid out for this period.
         require(!payments[tokenOwner][currentPeriod.block]);
         
         // Check if it is time to calculate the next payout period.
@@ -206,8 +206,8 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
 
         // Calculate the amount of the current payout period
         uint payment = getPaymentTotal(tokenOwner);
-        require(payment &gt; 0);
-        assert(this.balance &gt;= payment);
+        require(payment > 0);
+        assert(this.balance >= payment);
 
         payments[tokenOwner][currentPeriod.block] = true;
         PaymentCompleted(tokenOwner, currentPeriod.block, payment);
@@ -217,7 +217,7 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
     /// @dev Resets the period given the duration of the current period
     function resetPeriod() public {
         uint nowTime = getNow();
-        if (currentPeriod.endTime &lt; nowTime) {
+        if (currentPeriod.endTime < nowTime) {
             currentPeriod.endTime = uint128(nowTime.add(periodDuration)); 
             currentPeriod.block = uint128(block.number);
             currentPeriod.balance = uint128(this.balance);
@@ -234,7 +234,7 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
         }
 
         uint nowTime = getNow();
-        uint tokenOwnerBalance = currentPeriod.endTime &lt; nowTime ?  
+        uint tokenOwnerBalance = currentPeriod.endTime < nowTime ?  
             // This will never hit while withdrawing, but will be used in the case where the period
             // has ended, but is awaiting the first withrawl. It will avoid the case where the current period
             // reports an amount greater than the next period withdrawl amount.
@@ -267,7 +267,7 @@ contract ProfitSharingV2 is Ownable, Destructible, Pausable {
 
     /// @dev Updates the period duration
     function updatePeriodDuration(uint newPeriodDuration) public onlyOwner {
-        require(newPeriodDuration &gt; 0);
+        require(newPeriodDuration > 0);
         periodDuration = newPeriodDuration;
     }
 

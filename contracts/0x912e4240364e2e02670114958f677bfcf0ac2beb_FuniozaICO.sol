@@ -37,26 +37,26 @@ contract Owned {
 library SafeMath {
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function mul(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a * b;
@@ -64,7 +64,7 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -79,11 +79,11 @@ contract Funioza is ERC20, Owned {
     //Variables
     uint256 multiplier;
     //Creates arrays for balances
-    mapping (address =&gt; uint256) balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balance;
+    mapping (address => mapping (address => uint256)) allowed;
     //Creates modifier to prevent short address attack
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) revert();
+        if(msg.data.length < size + 4) revert();
         _;
     }
     //Constructor
@@ -109,16 +109,16 @@ contract Funioza is ERC20, Owned {
     }
     //Allows contract owner to mint new tokens, prevents numerical overflow
     function mintToken(address target, uint256 mintedAmount) onlyOwner returns (bool success) {
-        require(mintedAmount &gt; 0);
+        require(mintedAmount > 0);
         uint256 addTokens = mintedAmount;
         balance[target] += addTokens;
         totalSupply += addTokens;
         Transfer(0, target, addTokens);
         return true;
     }
-    //Sends tokens from sender&#39;s account
+    //Sends tokens from sender's account
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if ((balance[msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[msg.sender] -= _value;
             balance[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -129,7 +129,7 @@ contract Funioza is ERC20, Owned {
     }
     //Transfers tokens from an approved account
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
-        if ((balance[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[_to] += _value;
             balance[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -152,8 +152,8 @@ contract FuniozaICO is Owned, Funioza {
     uint256 public price;
     //Variables
     bool crowdsaleClosed = true;
-    string tokenName = &quot;Funioza&quot;;
-    string tokenSymbol = &quot;FNZ&quot;;
+    string tokenName = "Funioza";
+    string tokenSymbol = "FNZ";
     uint8 decimalUnits = 8;
     uint256 multiplier = 100000000;
 
@@ -172,8 +172,8 @@ contract FuniozaICO is Owned, Funioza {
     //Fallback function creates tokens and sends to investor when crowdsale is open
     function () payable {
         require(!crowdsaleClosed
-            &amp;&amp; (now &lt; stopTime)
-            &amp;&amp; (totalSupply.add(msg.value.mul(getPrice()).mul(multiplier).div(1 ether)) &lt;= hardcap));
+            && (now < stopTime)
+            && (totalSupply.add(msg.value.mul(getPrice()).mul(multiplier).div(1 ether)) <= hardcap));
         address recipient = msg.sender;
         amountRaised = amountRaised.add(msg.value.div(1 ether));
         uint256 tokens = msg.value.mul(getPrice()).mul(multiplier).div(1 ether);
@@ -203,13 +203,13 @@ contract FuniozaICO is Owned, Funioza {
     }
     //Sets the token price
     function setPrice(uint256 newPriceperEther) onlyOwner returns (uint256) {
-        require(newPriceperEther &gt; 0);
+        require(newPriceperEther > 0);
         price = newPriceperEther;
         return price;
     }
     //Allows owner to start the crowdsale from the time of execution until a specified stopTime
     function startSale(uint256 saleStart, uint256 saleStop, uint256 salePrice, address setBeneficiary) onlyOwner returns (bool success) {
-        require(saleStop &gt; now);
+        require(saleStop > now);
         //startTime = 1502881261; // 16 August 2017, 11:01 AM GMT
         //stopTime = 1504263601;  // 1 September 2017, 11:00 AM GMT
 

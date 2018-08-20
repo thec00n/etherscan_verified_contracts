@@ -19,20 +19,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,17 +95,17 @@ contract Buyers{
         string   b_address;
         string   mobile;  
     }
-    mapping(address=&gt;Buyer) public registerbuyer;
+    mapping(address=>Buyer) public registerbuyer;
     event BuyerAdded(address  from, string name,string country,string city,string b_address,string mobile);
     
     
       
     function registerBuyer(string _name,string _country,string _city,string _address,string _mobile) public returns(bool){
       
-         require(bytes(_name).length!=0 &amp;&amp;
-             bytes(_country).length!=0 &amp;&amp;
-             bytes(_city).length!=0 &amp;&amp;
-             bytes(_address).length!=0 &amp;&amp;
+         require(bytes(_name).length!=0 &&
+             bytes(_country).length!=0 &&
+             bytes(_city).length!=0 &&
+             bytes(_address).length!=0 &&
              bytes(_mobile).length!=0  
              
         );
@@ -160,7 +160,7 @@ contract OrderInterface{
          
     }
     uint256 public order_counter;
-    mapping (uint =&gt; Order) public orders;
+    mapping (uint => Order) public orders;
      
     function placeorder(  uint256   quantity,uint256   product_index)  public returns(uint256);
     event OrderPlace(uint256 indexed id, uint256   quantity,uint256   product_index,string   name,address  buyer, address  seller );
@@ -174,9 +174,9 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    using SafeMath for uint256;
    //------------------------------------------------------------------------
     uint256 public counter=0;
-    mapping (uint =&gt; Product) public seller_products;
-    mapping (uint =&gt; uint) public products_price;
-    mapping (address=&gt; uint) public seller_total_products;
+    mapping (uint => Product) public seller_products;
+    mapping (uint => uint) public products_price;
+    mapping (address=> uint) public seller_total_products;
    //------------------------------------------------------------------------
    string public name;
    string public symbol;
@@ -184,18 +184,18 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
 
    uint256 public _totalSupply;
    uint256 order_counter=0;
-   mapping(address =&gt; uint256) tokenBalances;
+   mapping(address => uint256) tokenBalances;
    address ownerWallet;
    // Owner of account approves the transfer of an amount to another account
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
    
-   mapping (address=&gt;uint) privateSaleBuyerTokens;
+   mapping (address=>uint) privateSaleBuyerTokens;
    address[] privateSaleBuyers;
    
-   mapping (address=&gt;uint) preSaleBuyerTokens;
+   mapping (address=>uint) preSaleBuyerTokens;
    address[] preSaleBuyers;
    
-   mapping(address=&gt;uint) teamMembers;
+   mapping(address=>uint) teamMembers;
    
    uint privateSaleEndDate;
    uint preSaleEndDate;
@@ -205,8 +205,8 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    */
     constructor(address wallet) public {
         owner = wallet;
-        name  = &quot;Feed&quot;;
-        symbol = &quot;FEED&quot;;
+        name  = "Feed";
+        symbol = "FEED";
         decimals = 18;
         _totalSupply = 1000000000 * 10 ** uint(decimals);
         tokenBalances[ msg.sender] = _totalSupply;   //Since we divided the token into 10^18 parts
@@ -217,10 +217,10 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
          return tokenBalances[tokenOwner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address to, uint tokens) public returns (bool success) {
          require(to != address(0));
-         require(tokens &lt;= tokenBalances[msg.sender]);
+         require(tokens <= tokenBalances[msg.sender]);
          checkTokenVesting(msg.sender, tokens);
          tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(tokens);
          tokenBalances[to] = tokenBalances[to].add(tokens);
@@ -230,26 +230,26 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
      function checkUser() public constant returns(string ){
          require(bytes(registerbuyer[msg.sender].name).length!=0);
           
-             return &quot;Register User&quot;;
+             return "Register User";
      }
      
      function checkTokenVesting(address sender, uint tokens) internal {
          uint lockupTime;
          uint daysPassedSinceEndDate;
          uint lockedTokens;
-         if (preSaleBuyerTokens[sender] &gt; 0 || privateSaleBuyerTokens[sender]&gt;0 || teamMembers[sender]&gt;0)
+         if (preSaleBuyerTokens[sender] > 0 || privateSaleBuyerTokens[sender]>0 || teamMembers[sender]>0)
          {
-             if (teamMembers[sender]&gt;0)
+             if (teamMembers[sender]>0)
              {
                 lockupTime = uint(24).mul(uint(30)).mul(1 days);
-                if (now&lt;icoEndDate.add(lockupTime))
+                if (now<icoEndDate.add(lockupTime))
                 {
                     lockedTokens = teamMembers[sender];
-                    if (lockedTokens.add(tokens)&gt;tokenBalances[sender])
+                    if (lockedTokens.add(tokens)>tokenBalances[sender])
                         revert();
                 }   
              }
-             else if (privateSaleBuyerTokens[sender]&gt;0)
+             else if (privateSaleBuyerTokens[sender]>0)
              {
                 lockupTime = uint(12).mul(uint(30)).mul(1 days);
                 uint daysPassedSincePrivateSaleEnd = now.sub(privateSaleEndDate);
@@ -257,17 +257,17 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
                 uint monthsPassedSinceICOEnd = daysPassedSincePrivateSaleEnd.div(30);
                 uint unlockedTokens = privateSaleBuyerTokens[sender].div(12).mul(monthsPassedSinceICOEnd);
                 lockedTokens = privateSaleBuyerTokens[sender].sub(unlockedTokens);
-                if (lockedTokens.add(tokens)&gt;tokenBalances[sender])
+                if (lockedTokens.add(tokens)>tokenBalances[sender])
                     revert();
                 
              }
-             else if (preSaleBuyerTokens[sender]&gt;0)
+             else if (preSaleBuyerTokens[sender]>0)
              {
                lockupTime = uint(3).mul(uint(30)).mul(1 days);
-               if (now&lt;preSaleEndDate.add(lockupTime))
+               if (now<preSaleEndDate.add(lockupTime))
                 {
                     lockedTokens = preSaleBuyerTokens[sender];
-                    if (lockedTokens.add(tokens)&gt;tokenBalances[sender])
+                    if (lockedTokens.add(tokens)>tokenBalances[sender])
                         revert();
                 }   
              }
@@ -282,8 +282,8 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokenBalances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= tokenBalances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     checkTokenVesting(_from,_value);
     tokenBalances[_from] = tokenBalances[_from].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
@@ -315,7 +315,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
      
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -341,7 +341,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -352,7 +352,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
 
      
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -369,7 +369,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
     
      function placeorder( uint256   quantity,uint256   product_index)  public  returns(uint256) {
          
-        require(counter&gt;=product_index &amp;&amp; product_index&gt;0);
+        require(counter>=product_index && product_index>0);
         require(bytes(registerbuyer[msg.sender].name).length!=0);//to place order you first register yourself
          
         transfer(seller_products[product_index]._seller,seller_products[product_index].price*quantity);
@@ -386,8 +386,8 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    
    
     function addproduct(string _name,string _image,uint256 _price,string _detail)   public   returns (bool success){
-          require(bytes(_name).length!=0 &amp;&amp;
-             bytes(_image).length!=0 &amp;&amp;
+          require(bytes(_name).length!=0 &&
+             bytes(_image).length!=0 &&
              bytes(_detail).length!=0 
             
              
@@ -416,7 +416,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
    {
        uint256[] memory price = new uint256[](counter);
         
-        for (uint i = 0; i &lt;counter; i++) {
+        for (uint i = 0; i <counter; i++) {
            
             price[i]=products_price[i+1];
              
@@ -444,7 +444,7 @@ contract FeedToken is  ProductsInterface,OrderInterface, ERC20Interface,Ownable,
     {
         uint totalTeamShare = uint(100000000).mul(10**uint(decimals));
         uint oneTeamMemberShare = totalTeamShare.div(members.length);
-        for (uint i=0;i&lt;members.length;i++)
+        for (uint i=0;i<members.length;i++)
         {
             teamMembers[members[i]] = oneTeamMemberShare;
             tokenBalances[owner] = tokenBalances[owner].sub(oneTeamMemberShare);

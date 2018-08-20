@@ -8,8 +8,8 @@ contract Etherandom {
   uint execPrice;
   uint gasPrice;
   uint minimumGasLimit;
-  mapping(address =&gt; uint) seedc;
-  mapping(address =&gt; uint) execc;
+  mapping(address => uint) seedc;
+  mapping(address => uint) execc;
 
   address constant AmIOnTheForkAddress = 0x2bd2326c993dfaef84f696526064ff22eba5b362;
 
@@ -80,9 +80,9 @@ contract Etherandom {
   }
 
   modifier costs(uint cost) {
-    if (msg.value &gt;= cost) {
+    if (msg.value >= cost) {
       uint diff = msg.value - cost;
-      if (diff &gt; 0) msg.sender.send(diff);
+      if (diff > 0) msg.sender.send(diff);
       _
     } else throw;
   }
@@ -92,7 +92,7 @@ contract Etherandom {
   }
 
   function seedWithGasLimit(uint _gasLimit) costs(getSeedCost(_gasLimit)) returns (bytes32 _id) {
-    if (_gasLimit &gt; block.gaslimit || _gasLimit &lt; getMinimumGasLimit()) throw;
+    if (_gasLimit > block.gaslimit || _gasLimit < getMinimumGasLimit()) throw;
     bool forkFlag = AmIOnTheFork(AmIOnTheForkAddress).forked();
     _id = sha3(forkFlag, this, msg.sender, seedc[msg.sender]);
     seedc[msg.sender]++;
@@ -105,7 +105,7 @@ contract Etherandom {
   }
 
   function execWithGasLimit(bytes32 _serverSeedHash, bytes32 _clientSeed, uint _cardinality, uint _gasLimit) costs(getExecCost(_gasLimit)) returns (bytes32 _id) {
-    if (_gasLimit &gt; block.gaslimit || _gasLimit &lt; getMinimumGasLimit()) throw;
+    if (_gasLimit > block.gaslimit || _gasLimit < getMinimumGasLimit()) throw;
     bool forkFlag = AmIOnTheFork(AmIOnTheForkAddress).forked();
     _id = sha3(forkFlag, this, msg.sender, execc[msg.sender]);
     execc[msg.sender]++;

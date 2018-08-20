@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-// Created by LLC &quot;Uinkey&quot; <span class="__cf_email__" data-cfemail="1f7d7a7e6d7c7776745f78727e7673317c7072">[email&#160;protected]</span>
+// Created by LLC "Uinkey" <span class="__cf_email__" data-cfemail="1f7d7a7e6d7c7776745f78727e7673317c7072">[email protected]</span>
 
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ contract HardcodedCrowdsale {
     address public owner = msg.sender;
     ManagedToken public managedTokenLedger;
 
-    string public name = &quot;Coinplace&quot;;
-    string public symbol = &quot;CPL&quot;;
+    string public name = "Coinplace";
+    string public symbol = "CPL";
 
     bool public halted = false;
      
@@ -71,11 +71,11 @@ contract HardcodedCrowdsale {
     uint256[4] public ICOamountBonusMultipierInPercent = [103, 105, 107, 110]; // count bonus
     uint256[5] public ICOweekBonus = [130, 125, 120, 115, 110]; // time bonus
 
-    mapping(address =&gt; uint256) public weiForRefundICO;
+    mapping(address => uint256) public weiForRefundICO;
 
-    mapping(address =&gt; uint256) public weiToRecoverICO;
+    mapping(address => uint256) public weiToRecoverICO;
 
-    mapping(address =&gt; uint256) public balancesForICO;
+    mapping(address => uint256) public balancesForICO;
 
     event Purchased(address indexed _from, uint256 _value);
 
@@ -85,16 +85,16 @@ contract HardcodedCrowdsale {
     }
 
     function transitionState() internal {
-        if (now &gt;= ICOstart) {
+        if (now >= ICOstart) {
             if (ICOstate == ICOStateEnum.NotStarted) {
                 ICOstate = ICOStateEnum.Started;
             }
-            if (Hardcap &gt; 0 &amp;&amp; ICOcollected &gt;= Hardcap) {
+            if (Hardcap > 0 && ICOcollected >= Hardcap) {
                 ICOstate = ICOStateEnum.Successful;
             }
-        } if (now &gt;= ICOend) {
+        } if (now >= ICOend) {
             if (ICOstate == ICOStateEnum.Started) {
-                if (ICOcollected &gt;= Softcap) {
+                if (ICOcollected >= Softcap) {
                     ICOstate = ICOStateEnum.Successful;
                 } else {
                     ICOstate = ICOStateEnum.Refunded;
@@ -145,8 +145,8 @@ contract HardcodedCrowdsale {
     }
 
     function setNameAndTicker(string _name, string _symbol) onlyOwner public returns (bool success) {
-        require(bytes(_name).length &gt; 1);
-        require(bytes(_symbol).length &gt; 1);
+        require(bytes(_name).length > 1);
+        require(bytes(_symbol).length > 1);
         name = _name;
         symbol = _symbol;
         return true;
@@ -160,7 +160,7 @@ contract HardcodedCrowdsale {
     }
 
     function () payable stateTransition notHalted external {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(ICOstate == ICOStateEnum.Started);
         assert(ICOBuy());
     }
@@ -194,8 +194,8 @@ contract HardcodedCrowdsale {
 
     function getBonusMultipierInPercents(uint256 _sentAmount) public view returns (uint256 _multi) {
         uint256 bonusMultiplier = 100;
-        for (uint8 i = 0; i &lt; ICOamountBonusLimits.length; i++) {
-            if (_sentAmount &lt; ICOamountBonusLimits[i]) {
+        for (uint8 i = 0; i < ICOamountBonusLimits.length; i++) {
+            if (_sentAmount < ICOamountBonusLimits[i]) {
                 break;
             } else {
                 bonusMultiplier = ICOamountBonusMultipierInPercent[i];
@@ -207,13 +207,13 @@ contract HardcodedCrowdsale {
     function getWeekBonus(uint256 amountTokens) internal view returns(uint256 count) {
         uint256 countCoints = 0;
         uint256 bonusMultiplier = 100;
-        if(block.timestamp &lt;= (ICOstart + 1 weeks)) {
+        if(block.timestamp <= (ICOstart + 1 weeks)) {
             countCoints = amountTokens.mul(ICOweekBonus[0] );
-        } else if (block.timestamp &lt;= (ICOstart + 2 weeks) &amp;&amp; block.timestamp &lt;= (ICOstart + 3 weeks)) {
+        } else if (block.timestamp <= (ICOstart + 2 weeks) && block.timestamp <= (ICOstart + 3 weeks)) {
             countCoints = amountTokens.mul(ICOweekBonus[1] );
-        } else if (block.timestamp &lt;= (ICOstart + 4 weeks) &amp;&amp; block.timestamp &lt;= (ICOstart + 5 weeks)) {
+        } else if (block.timestamp <= (ICOstart + 4 weeks) && block.timestamp <= (ICOstart + 5 weeks)) {
             countCoints = amountTokens.mul(ICOweekBonus[2] );
-        } else if (block.timestamp &lt;= (ICOstart + 6 weeks) &amp;&amp; block.timestamp &lt;= (ICOstart + 7 weeks)) {
+        } else if (block.timestamp <= (ICOstart + 6 weeks) && block.timestamp <= (ICOstart + 7 weeks)) {
             countCoints = amountTokens.mul(ICOweekBonus[3] );
         } else {
             countCoints = amountTokens.mul(ICOweekBonus[4] );
@@ -226,7 +226,7 @@ contract HardcodedCrowdsale {
         address _for = msg.sender;
         uint256 amountBonus = getBonusMultipierInPercents(msg.value);
         var (tokensBought, fundsLeftScaled) = calculateAmountBoughtICO(weisSentScaled, amountBonus);
-        if (tokensBought &lt; minTokensToBuy.mul(DECIMAL_MULTIPLIER)) {
+        if (tokensBought < minTokensToBuy.mul(DECIMAL_MULTIPLIER)) {
             revert();
         }
         uint256 fundsLeft = fundsLeftScaled.div(DECIMAL_MULTIPLIER);
@@ -264,7 +264,7 @@ contract HardcodedCrowdsale {
     }
     
     function withdrawFunds() onlyOwner public returns (bool success) {
-        require(Softcap &lt;= ICOcollected);
+        require(Softcap <= ICOcollected);
         owner.transfer(ICOcollected - TakedFunds);
         TakedFunds = ICOcollected;
         return true;

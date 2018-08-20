@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 contract R256 {
 
-    mapping(uint =&gt; uint) public record;
+    mapping(uint => uint) public record;
 
     event R(uint z);
 
@@ -15,7 +15,7 @@ contract R256 {
     }
 
     function addMultipleRecords(uint[] zz) public {
-        for (uint i; i &lt; zz.length; i++) {
+        for (uint i; i < zz.length; i++) {
             addRecord(zz[i]);
         }
     }

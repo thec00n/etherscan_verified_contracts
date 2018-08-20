@@ -24,8 +24,8 @@ contract Token {
 
 /**
  * Allows one to lock EIP-20 tokens until certain time arrives.
- * Copyright &#169; 2018 by Oleksii Vynogradov
- * Author: Oleksii Vynogradov &lt;alex[at]cfc.io&gt;
+ * Copyright © 2018 by Oleksii Vynogradov
+ * Author: Oleksii Vynogradov <alex[at]cfc.io>
  */
 contract CradTimeLock {
     /**
@@ -53,7 +53,7 @@ contract CradTimeLock {
     function lock (
         Token _token, address _beneficiary, uint256 _amount,
         uint256 _unlockTime) public returns (uint256) {
-        require (_amount &gt; 0);
+        require (_amount > 0);
         require (msg.sender == owner);
 
         uint256 id = nextLockID++;
@@ -82,8 +82,8 @@ contract CradTimeLock {
         TokenTimeLockInfo memory lockInfo = locks [_id];
         delete locks [_id];
 
-        require (lockInfo.amount &gt; 0);
-        require (lockInfo.unlockTime &lt;= block.timestamp);
+        require (lockInfo.amount > 0);
+        require (lockInfo.unlockTime <= block.timestamp);
         require (msg.sender == owner);
 
         emit Unlock (_id);
@@ -108,7 +108,7 @@ contract CradTimeLock {
      * Maps time lock ID to TokenTimeLockInfo structure encapsulating time lock
      * information.
      */
-    mapping (uint256 =&gt; TokenTimeLockInfo) public locks;
+    mapping (uint256 => TokenTimeLockInfo) public locks;
 
     /**
      * Encapsulates information abount time lock.

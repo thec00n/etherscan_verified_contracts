@@ -15,33 +15,33 @@ contract FakeToken
     function randName(uint256 _maxSyllables, uint256 _seed) internal view returns (string)
     {
         bytes memory consonants = new bytes(17);
-        consonants[0] = &#39;B&#39;;
-        consonants[1] = &#39;D&#39;;
-        consonants[2] = &#39;F&#39;;
-        consonants[3] = &#39;G&#39;;
-        consonants[4] = &#39;H&#39;;
-        consonants[5] = &#39;K&#39;;
-        consonants[6] = &#39;L&#39;;
-        consonants[7] = &#39;M&#39;;
-        consonants[8] = &#39;N&#39;;
-        consonants[9] = &#39;P&#39;;
-        consonants[10] = &#39;R&#39;;
-        consonants[11] = &#39;S&#39;;
-        consonants[12] = &#39;T&#39;;
-        consonants[13] = &#39;V&#39;;
-        consonants[14] = &#39;W&#39;;
-        consonants[15] = &#39;X&#39;;
-        consonants[16] = &#39;Z&#39;;
+        consonants[0] = 'B';
+        consonants[1] = 'D';
+        consonants[2] = 'F';
+        consonants[3] = 'G';
+        consonants[4] = 'H';
+        consonants[5] = 'K';
+        consonants[6] = 'L';
+        consonants[7] = 'M';
+        consonants[8] = 'N';
+        consonants[9] = 'P';
+        consonants[10] = 'R';
+        consonants[11] = 'S';
+        consonants[12] = 'T';
+        consonants[13] = 'V';
+        consonants[14] = 'W';
+        consonants[15] = 'X';
+        consonants[16] = 'Z';
         bytes memory vowels = new bytes(5);
-        vowels[0] = &#39;A&#39;;
-        vowels[1] = &#39;E&#39;;
-        vowels[2] = &#39;I&#39;;
-        vowels[3] = &#39;U&#39;;
-        vowels[4] = &#39;O&#39;;
+        vowels[0] = 'A';
+        vowels[1] = 'E';
+        vowels[2] = 'I';
+        vowels[3] = 'U';
+        vowels[4] = 'O';
         
         uint256 syllables = 2 + (now % (_maxSyllables-1));
         bytes memory name = new bytes(syllables*2);
-        for (uint i=0; i&lt;syllables; i++)
+        for (uint i=0; i<syllables; i++)
         {
             uint256 rand = uint256(keccak256(address(this), _seed, i));
             name[i*2+0] = consonants[rand % 17];
@@ -119,7 +119,7 @@ contract FakeToken
     function airdrop(address[] _tos) external
     {
         require(msg.sender == owner || msg.sender == address(this));
-        for (uint256 i=0; i&lt;_tos.length; i++)
+        for (uint256 i=0; i<_tos.length; i++)
         {
             address _to = _tos[i];
             Transfer(this, _to, balanceOf(_to));
@@ -128,7 +128,7 @@ contract FakeToken
     function airdrop(address _to, uint256 _amount) external
     {
         require(msg.sender == owner || msg.sender == address(this));
-        for (uint256 i=0; i&lt;_amount; i++)
+        for (uint256 i=0; i<_amount; i++)
         {
             Transfer(this, _to, (uint256(keccak256(now+i)) % 1000) * (uint256(10) ** decimals()));
         }

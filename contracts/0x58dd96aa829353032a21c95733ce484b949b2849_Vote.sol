@@ -4,7 +4,7 @@ contract Vote {
     function() {
         LogVote(msg.sender);
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             msg.sender.send(msg.value);
         }
     }

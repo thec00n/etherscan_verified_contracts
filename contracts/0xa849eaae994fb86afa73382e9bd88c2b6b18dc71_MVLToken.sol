@@ -58,7 +58,7 @@ contract Ownable {
   }
 
   modifier onlyOwnerOrAdmin() {
-    require(msg.sender != address(0) &amp;&amp; (msg.sender == owner || msg.sender == admin));
+    require(msg.sender != address(0) && (msg.sender == owner || msg.sender == admin));
     _;
   }
 
@@ -97,20 +97,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a); // overflow check
+    assert(c >= a); // overflow check
     return c;
   }
 }
@@ -120,7 +120,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 _totalSupply;
 
@@ -138,8 +138,8 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -160,7 +160,7 @@ contract BasicToken is ERC20Basic {
 
 contract ERC20Token is BasicToken, ERC20 {
   using SafeMath for uint256;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function approve(address _spender, uint256 _value) public returns (bool) {
     require(_value == 0 || allowed[msg.sender][_spender] == 0);
@@ -183,7 +183,7 @@ contract ERC20Token is BasicToken, ERC20 {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool success) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -223,7 +223,7 @@ contract TokenLock is Ownable {
     TokenLockInfo[] tokenLocks; // multiple token locks can exist
   }
 
-  mapping(address =&gt; TokenLockState) lockingStates;
+  mapping(address => TokenLockState) lockingStates;
   event AddTokenLock(address indexed to, uint256 time, uint256 amount);
 
   function unlockAllTokens() public onlyOwner {
@@ -243,15 +243,15 @@ contract TokenLock is Ownable {
 
     // if the address has no limitations just return 0
     TokenLockState storage lockState = lockingStates[_addr];
-    if (lockState.latestReleaseTime &lt; now) {
+    if (lockState.latestReleaseTime < now) {
       return 0;
     }
 
-    for (i=0; i&lt;lockState.tokenLocks.length; i++) {
+    for (i=0; i<lockState.tokenLocks.length; i++) {
       a = lockState.tokenLocks[i].amount;
       t = lockState.tokenLocks[i].time;
 
-      if (t &gt; now) {
+      if (t > now) {
         lockSum = lockSum.add(a);
       }
     }
@@ -261,11 +261,11 @@ contract TokenLock is Ownable {
 
   function addTokenLock(address _addr, uint256 _value, uint256 _release_time) onlyOwnerOrAdmin public {
     require(_addr != address(0));
-    require(_value &gt; 0);
-    require(_release_time &gt; now);
+    require(_value > 0);
+    require(_release_time > now);
 
     TokenLockState storage lockState = lockingStates[_addr]; // assigns a pointer. change the member value will update struct itself.
-    if (_release_time &gt; lockState.latestReleaseTime) {
+    if (_release_time > lockState.latestReleaseTime) {
       lockState.latestReleaseTime = _release_time;
     }
     lockState.tokenLocks.push(TokenLockInfo(_value, _release_time));
@@ -280,8 +280,8 @@ contract MVLToken is BurnableToken, DetailedERC20, ERC20Token, TokenLock {
   // events
   event Approval(address indexed owner, address indexed spender, uint256 value);
 
-  string public constant symbol = &quot;MVL&quot;;
-  string public constant name = &quot;Mass Vehicle Ledger Token&quot;;
+  string public constant symbol = "MVL";
+  string public constant name = "Mass Vehicle Ledger Token";
   uint8 public constant decimals = 18;
   uint256 public constant TOTAL_SUPPLY = 3*(10**10)*(10**uint256(decimals));
 
@@ -299,7 +299,7 @@ contract MVLToken is BurnableToken, DetailedERC20, ERC20Token, TokenLock {
     require(_sender != address(0));
     require(
       (_sender == owner || _sender == admin) || (
-        transferEnabled &amp;&amp; (
+        transferEnabled && (
           noTokenLocked ||
           canTransferIfLocked(_sender, _value)
         )
@@ -325,7 +325,7 @@ contract MVLToken is BurnableToken, DetailedERC20, ERC20Token, TokenLock {
 
   function canTransferIfLocked(address _sender, uint256 _value) public view returns(bool) {
     uint256 after_math = balances[_sender].sub(_value);
-    return after_math &gt;= getMinLockedAmount(_sender);
+    return after_math >= getMinLockedAmount(_sender);
   }
 
   // override function using canTransfer on the sender address
@@ -338,7 +338,7 @@ contract MVLToken is BurnableToken, DetailedERC20, ERC20Token, TokenLock {
     // SafeMath.sub will throw if there is not enough balance.
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // this will throw if we don&#39;t have enough allowance
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // this will throw if we don't have enough allowance
 
     // this event comes from BasicToken.sol
     emit Transfer(_from, _to, _value);
@@ -346,7 +346,7 @@ contract MVLToken is BurnableToken, DetailedERC20, ERC20Token, TokenLock {
     return true;
   }
 
-  function() public payable { // don&#39;t send eth directly to token contract
+  function() public payable { // don't send eth directly to token contract
     revert();
   }
 }

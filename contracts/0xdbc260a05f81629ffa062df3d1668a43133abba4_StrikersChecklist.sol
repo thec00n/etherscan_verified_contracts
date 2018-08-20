@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -52,9 +52,9 @@ contract StrikersPlayerList is Ownable {
   // We only use playerIds in StrikersChecklist.sol (to
   // indicate which player features on instances of a
   // given ChecklistItem), and nowhere else in the app.
-  // While it&#39;s not explictly necessary for any of our
+  // While it's not explictly necessary for any of our
   // contracts to know that playerId 0 corresponds to
-  // Lionel Messi, we think that it&#39;s nice to have
+  // Lionel Messi, we think that it's nice to have
   // a canonical source of truth for who the playerIds
   // actually refer to. Storing strings (player names)
   // is expensive, so we just use Events to prove that,
@@ -63,8 +63,8 @@ contract StrikersPlayerList is Ownable {
   /// @dev The event we fire when we add a player.
   event PlayerAdded(uint8 indexed id, string name);
 
-  /// @dev How many players we&#39;ve added so far
-  ///   (max 255, though we don&#39;t plan on getting close)
+  /// @dev How many players we've added so far
+  ///   (max 255, though we don't plan on getting close)
   uint8 public playerCount;
 
   /// @dev Here we add the players we are launching with on Day 1.
@@ -72,114 +72,114 @@ contract StrikersPlayerList is Ownable {
   ///   number of Instagram followers, and opinions of CryptoStrikers
   ///   team members. Feel free to yell at us on Twitter.
   constructor() public {
-    addPlayer(&quot;Lionel Messi&quot;); // 0
-    addPlayer(&quot;Cristiano Ronaldo&quot;); // 1
-    addPlayer(&quot;Neymar&quot;); // 2
-    addPlayer(&quot;Mohamed Salah&quot;); // 3
-    addPlayer(&quot;Robert Lewandowski&quot;); // 4
-    addPlayer(&quot;Kevin De Bruyne&quot;); // 5
-    addPlayer(&quot;Luka Modrić&quot;); // 6
-    addPlayer(&quot;Eden Hazard&quot;); // 7
-    addPlayer(&quot;Sergio Ramos&quot;); // 8
-    addPlayer(&quot;Toni Kroos&quot;); // 9
-    addPlayer(&quot;Luis Su&#225;rez&quot;); // 10
-    addPlayer(&quot;Harry Kane&quot;); // 11
-    addPlayer(&quot;Sergio Ag&#252;ero&quot;); // 12
-    addPlayer(&quot;Kylian Mbapp&#233;&quot;); // 13
-    addPlayer(&quot;Gonzalo Higua&#237;n&quot;); // 14
-    addPlayer(&quot;David de Gea&quot;); // 15
-    addPlayer(&quot;Antoine Griezmann&quot;); // 16
-    addPlayer(&quot;N&#39;Golo Kant&#233;&quot;); // 17
-    addPlayer(&quot;Edinson Cavani&quot;); // 18
-    addPlayer(&quot;Paul Pogba&quot;); // 19
-    addPlayer(&quot;Isco&quot;); // 20
-    addPlayer(&quot;Marcelo&quot;); // 21
-    addPlayer(&quot;Manuel Neuer&quot;); // 22
-    addPlayer(&quot;Dries Mertens&quot;); // 23
-    addPlayer(&quot;James Rodr&#237;guez&quot;); // 24
-    addPlayer(&quot;Paulo Dybala&quot;); // 25
-    addPlayer(&quot;Christian Eriksen&quot;); // 26
-    addPlayer(&quot;David Silva&quot;); // 27
-    addPlayer(&quot;Gabriel Jesus&quot;); // 28
-    addPlayer(&quot;Thiago&quot;); // 29
-    addPlayer(&quot;Thibaut Courtois&quot;); // 30
-    addPlayer(&quot;Philippe Coutinho&quot;); // 31
-    addPlayer(&quot;Andr&#233;s Iniesta&quot;); // 32
-    addPlayer(&quot;Casemiro&quot;); // 33
-    addPlayer(&quot;Romelu Lukaku&quot;); // 34
-    addPlayer(&quot;Gerard Piqu&#233;&quot;); // 35
-    addPlayer(&quot;Mats Hummels&quot;); // 36
-    addPlayer(&quot;Diego God&#237;n&quot;); // 37
-    addPlayer(&quot;Mesut &#214;zil&quot;); // 38
-    addPlayer(&quot;Son Heung-min&quot;); // 39
-    addPlayer(&quot;Raheem Sterling&quot;); // 40
-    addPlayer(&quot;Hugo Lloris&quot;); // 41
-    addPlayer(&quot;Radamel Falcao&quot;); // 42
-    addPlayer(&quot;Ivan Rakitić&quot;); // 43
-    addPlayer(&quot;Leroy San&#233;&quot;); // 44
-    addPlayer(&quot;Roberto Firmino&quot;); // 45
-    addPlayer(&quot;Sadio Man&#233;&quot;); // 46
-    addPlayer(&quot;Thomas M&#252;ller&quot;); // 47
-    addPlayer(&quot;Dele Alli&quot;); // 48
-    addPlayer(&quot;Keylor Navas&quot;); // 49
-    addPlayer(&quot;Thiago Silva&quot;); // 50
-    addPlayer(&quot;Rapha&#235;l Varane&quot;); // 51
-    addPlayer(&quot;&#193;ngel Di Mar&#237;a&quot;); // 52
-    addPlayer(&quot;Jordi Alba&quot;); // 53
-    addPlayer(&quot;Medhi Benatia&quot;); // 54
-    addPlayer(&quot;Timo Werner&quot;); // 55
-    addPlayer(&quot;Gylfi Sigur&#240;sson&quot;); // 56
-    addPlayer(&quot;Nemanja Matić&quot;); // 57
-    addPlayer(&quot;Kalidou Koulibaly&quot;); // 58
-    addPlayer(&quot;Bernardo Silva&quot;); // 59
-    addPlayer(&quot;Vincent Kompany&quot;); // 60
-    addPlayer(&quot;Jo&#227;o Moutinho&quot;); // 61
-    addPlayer(&quot;Toby Alderweireld&quot;); // 62
-    addPlayer(&quot;Emil Forsberg&quot;); // 63
-    addPlayer(&quot;Mario Mandžukić&quot;); // 64
-    addPlayer(&quot;Sergej Milinković-Savić&quot;); // 65
-    addPlayer(&quot;Shinji Kagawa&quot;); // 66
-    addPlayer(&quot;Granit Xhaka&quot;); // 67
-    addPlayer(&quot;Andreas Christensen&quot;); // 68
-    addPlayer(&quot;Piotr Zieliński&quot;); // 69
-    addPlayer(&quot;Fyodor Smolov&quot;); // 70
-    addPlayer(&quot;Xherdan Shaqiri&quot;); // 71
-    addPlayer(&quot;Marcus Rashford&quot;); // 72
-    addPlayer(&quot;Javier Hern&#225;ndez&quot;); // 73
-    addPlayer(&quot;Hirving Lozano&quot;); // 74
-    addPlayer(&quot;Hakim Ziyech&quot;); // 75
-    addPlayer(&quot;Victor Moses&quot;); // 76
-    addPlayer(&quot;Jefferson Farf&#225;n&quot;); // 77
-    addPlayer(&quot;Mohamed Elneny&quot;); // 78
-    addPlayer(&quot;Marcus Berg&quot;); // 79
-    addPlayer(&quot;Guillermo Ochoa&quot;); // 80
-    addPlayer(&quot;Igor Akinfeev&quot;); // 81
-    addPlayer(&quot;Sardar Azmoun&quot;); // 82
-    addPlayer(&quot;Christian Cueva&quot;); // 83
-    addPlayer(&quot;Wahbi Khazri&quot;); // 84
-    addPlayer(&quot;Keisuke Honda&quot;); // 85
-    addPlayer(&quot;Tim Cahill&quot;); // 86
-    addPlayer(&quot;John Obi Mikel&quot;); // 87
-    addPlayer(&quot;Ki Sung-yueng&quot;); // 88
-    addPlayer(&quot;Bryan Ruiz&quot;); // 89
-    addPlayer(&quot;Maya Yoshida&quot;); // 90
-    addPlayer(&quot;Nawaf Al Abed&quot;); // 91
-    addPlayer(&quot;Lee Chung-yong&quot;); // 92
-    addPlayer(&quot;Gabriel G&#243;mez&quot;); // 93
-    addPlayer(&quot;Na&#239;m Sliti&quot;); // 94
-    addPlayer(&quot;Reza Ghoochannejhad&quot;); // 95
-    addPlayer(&quot;Mile Jedinak&quot;); // 96
-    addPlayer(&quot;Mohammad Al-Sahlawi&quot;); // 97
-    addPlayer(&quot;Aron Gunnarsson&quot;); // 98
-    addPlayer(&quot;Blas P&#233;rez&quot;); // 99
-    addPlayer(&quot;Dani Alves&quot;); // 100
-    addPlayer(&quot;Zlatan Ibrahimović&quot;); // 101
+    addPlayer("Lionel Messi"); // 0
+    addPlayer("Cristiano Ronaldo"); // 1
+    addPlayer("Neymar"); // 2
+    addPlayer("Mohamed Salah"); // 3
+    addPlayer("Robert Lewandowski"); // 4
+    addPlayer("Kevin De Bruyne"); // 5
+    addPlayer("Luka Modrić"); // 6
+    addPlayer("Eden Hazard"); // 7
+    addPlayer("Sergio Ramos"); // 8
+    addPlayer("Toni Kroos"); // 9
+    addPlayer("Luis Suárez"); // 10
+    addPlayer("Harry Kane"); // 11
+    addPlayer("Sergio Agüero"); // 12
+    addPlayer("Kylian Mbappé"); // 13
+    addPlayer("Gonzalo Higuaín"); // 14
+    addPlayer("David de Gea"); // 15
+    addPlayer("Antoine Griezmann"); // 16
+    addPlayer("N'Golo Kanté"); // 17
+    addPlayer("Edinson Cavani"); // 18
+    addPlayer("Paul Pogba"); // 19
+    addPlayer("Isco"); // 20
+    addPlayer("Marcelo"); // 21
+    addPlayer("Manuel Neuer"); // 22
+    addPlayer("Dries Mertens"); // 23
+    addPlayer("James Rodríguez"); // 24
+    addPlayer("Paulo Dybala"); // 25
+    addPlayer("Christian Eriksen"); // 26
+    addPlayer("David Silva"); // 27
+    addPlayer("Gabriel Jesus"); // 28
+    addPlayer("Thiago"); // 29
+    addPlayer("Thibaut Courtois"); // 30
+    addPlayer("Philippe Coutinho"); // 31
+    addPlayer("Andrés Iniesta"); // 32
+    addPlayer("Casemiro"); // 33
+    addPlayer("Romelu Lukaku"); // 34
+    addPlayer("Gerard Piqué"); // 35
+    addPlayer("Mats Hummels"); // 36
+    addPlayer("Diego Godín"); // 37
+    addPlayer("Mesut Özil"); // 38
+    addPlayer("Son Heung-min"); // 39
+    addPlayer("Raheem Sterling"); // 40
+    addPlayer("Hugo Lloris"); // 41
+    addPlayer("Radamel Falcao"); // 42
+    addPlayer("Ivan Rakitić"); // 43
+    addPlayer("Leroy Sané"); // 44
+    addPlayer("Roberto Firmino"); // 45
+    addPlayer("Sadio Mané"); // 46
+    addPlayer("Thomas Müller"); // 47
+    addPlayer("Dele Alli"); // 48
+    addPlayer("Keylor Navas"); // 49
+    addPlayer("Thiago Silva"); // 50
+    addPlayer("Raphaël Varane"); // 51
+    addPlayer("Ángel Di María"); // 52
+    addPlayer("Jordi Alba"); // 53
+    addPlayer("Medhi Benatia"); // 54
+    addPlayer("Timo Werner"); // 55
+    addPlayer("Gylfi Sigurðsson"); // 56
+    addPlayer("Nemanja Matić"); // 57
+    addPlayer("Kalidou Koulibaly"); // 58
+    addPlayer("Bernardo Silva"); // 59
+    addPlayer("Vincent Kompany"); // 60
+    addPlayer("João Moutinho"); // 61
+    addPlayer("Toby Alderweireld"); // 62
+    addPlayer("Emil Forsberg"); // 63
+    addPlayer("Mario Mandžukić"); // 64
+    addPlayer("Sergej Milinković-Savić"); // 65
+    addPlayer("Shinji Kagawa"); // 66
+    addPlayer("Granit Xhaka"); // 67
+    addPlayer("Andreas Christensen"); // 68
+    addPlayer("Piotr Zieliński"); // 69
+    addPlayer("Fyodor Smolov"); // 70
+    addPlayer("Xherdan Shaqiri"); // 71
+    addPlayer("Marcus Rashford"); // 72
+    addPlayer("Javier Hernández"); // 73
+    addPlayer("Hirving Lozano"); // 74
+    addPlayer("Hakim Ziyech"); // 75
+    addPlayer("Victor Moses"); // 76
+    addPlayer("Jefferson Farfán"); // 77
+    addPlayer("Mohamed Elneny"); // 78
+    addPlayer("Marcus Berg"); // 79
+    addPlayer("Guillermo Ochoa"); // 80
+    addPlayer("Igor Akinfeev"); // 81
+    addPlayer("Sardar Azmoun"); // 82
+    addPlayer("Christian Cueva"); // 83
+    addPlayer("Wahbi Khazri"); // 84
+    addPlayer("Keisuke Honda"); // 85
+    addPlayer("Tim Cahill"); // 86
+    addPlayer("John Obi Mikel"); // 87
+    addPlayer("Ki Sung-yueng"); // 88
+    addPlayer("Bryan Ruiz"); // 89
+    addPlayer("Maya Yoshida"); // 90
+    addPlayer("Nawaf Al Abed"); // 91
+    addPlayer("Lee Chung-yong"); // 92
+    addPlayer("Gabriel Gómez"); // 93
+    addPlayer("Naïm Sliti"); // 94
+    addPlayer("Reza Ghoochannejhad"); // 95
+    addPlayer("Mile Jedinak"); // 96
+    addPlayer("Mohammad Al-Sahlawi"); // 97
+    addPlayer("Aron Gunnarsson"); // 98
+    addPlayer("Blas Pérez"); // 99
+    addPlayer("Dani Alves"); // 100
+    addPlayer("Zlatan Ibrahimović"); // 101
   }
 
   /// @dev Fires an event, proving that we said a player corresponds to a given ID.
   /// @param _name The name of the player we are adding.
   function addPlayer(string _name) public onlyOwner {
-    require(playerCount &lt; 255, &quot;You&#39;ve already added the maximum amount of players.&quot;);
+    require(playerCount < 255, "You've already added the maximum amount of players.");
     emit PlayerAdded(playerCount, _name);
     playerCount++;
   }
@@ -197,7 +197,7 @@ contract StrikersChecklist is StrikersPlayerList {
   //  - RarityTier tier (more info below)
   //
   // Two things to note: the checklistId is not explicitly stored
-  // on the checklistItem struct, and it&#39;s composed of two parts.
+  // on the checklistItem struct, and it's composed of two parts.
   // (For the following, assume it is left padded with zeros to reach
   // three digits, such that checklistId 0 becomes 000)
   //  - the first digit represents the setId
@@ -211,9 +211,9 @@ contract StrikersChecklist is StrikersPlayerList {
   //  digits = 00 = first index of array)
   //
   // Because checklistId is represented as a uint8 throughout the app, the highest
-  // value it can take is 255, which means we can&#39;t add more than 56 items to our
-  // Unreleased Set&#39;s unreleasedChecklistItems array (setId 2). Also, once we&#39;ve initialized
-  // this contract, it&#39;s impossible for us to add more checklist items to the Originals
+  // value it can take is 255, which means we can't add more than 56 items to our
+  // Unreleased Set's unreleasedChecklistItems array (setId 2). Also, once we've initialized
+  // this contract, it's impossible for us to add more checklist items to the Originals
   // and Iconics set -- what you see here is what you get.
   //
   // Simple enough right?
@@ -229,7 +229,7 @@ contract StrikersChecklist is StrikersPlayerList {
   }
 
   /// @dev Enum containing all our rarity tiers, just because
-  ///   it&#39;s cleaner dealing with these values than with uint8s.
+  ///   it's cleaner dealing with these values than with uint8s.
   enum RarityTier {
     IconicReferral,
     IconicInsert,
@@ -246,7 +246,7 @@ contract StrikersChecklist is StrikersPlayerList {
   ///   we give away as part of our referral program.
   uint16[] public tierLimits = [
     0,    // Iconic - Referral Bonus (uncapped)
-    100,  // Iconic Inserts (&quot;Card of the Day&quot;)
+    100,  // Iconic Inserts ("Card of the Day")
     1000, // Diamond
     1664, // Gold
     3328, // Silver
@@ -262,7 +262,7 @@ contract StrikersChecklist is StrikersPlayerList {
     RarityTier tier;
   }
 
-  /// @dev The deploy step we&#39;re at. Defaults to WaitingForStepOne.
+  /// @dev The deploy step we're at. Defaults to WaitingForStepOne.
   DeployStep public deployStep;
 
   /// @dev Array containing all the Originals checklist items (000 - 099)
@@ -276,7 +276,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Internal function to add a checklist item to the Originals set.
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function _addOriginalChecklistItem(uint8 _playerId, RarityTier _tier) internal {
     originalChecklistItems.push(ChecklistItem({
       playerId: _playerId,
@@ -286,7 +286,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Internal function to add a checklist item to the Iconics set.
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function _addIconicChecklistItem(uint8 _playerId, RarityTier _tier) internal {
     iconicChecklistItems.push(ChecklistItem({
       playerId: _playerId,
@@ -295,30 +295,30 @@ contract StrikersChecklist is StrikersPlayerList {
   }
 
   /// @dev External function to add a checklist item to our mystery set.
-  ///   Must have completed initial deploy, and can&#39;t add more than 56 items (because checklistId is a uint8).
+  ///   Must have completed initial deploy, and can't add more than 56 items (because checklistId is a uint8).
   /// @param _playerId The player represented by this checklist item. (see StrikersPlayerList.sol)
-  /// @param _tier This checklist item&#39;s rarity tier. (see Rarity Tier enum and corresponding tierLimits)
+  /// @param _tier This checklist item's rarity tier. (see Rarity Tier enum and corresponding tierLimits)
   function addUnreleasedChecklistItem(uint8 _playerId, RarityTier _tier) external onlyOwner {
-    require(deployStep == DeployStep.DoneInitialDeploy, &quot;Finish deploying the Originals and Iconics sets first.&quot;);
-    require(unreleasedCount() &lt; 56, &quot;You can&#39;t add any more checklist items.&quot;);
-    require(_playerId &lt; playerCount, &quot;This player doesn&#39;t exist in our player list.&quot;);
+    require(deployStep == DeployStep.DoneInitialDeploy, "Finish deploying the Originals and Iconics sets first.");
+    require(unreleasedCount() < 56, "You can't add any more checklist items.");
+    require(_playerId < playerCount, "This player doesn't exist in our player list.");
     unreleasedChecklistItems.push(ChecklistItem({
       playerId: _playerId,
       tier: _tier
     }));
   }
 
-  /// @dev Returns how many Original checklist items we&#39;ve added.
+  /// @dev Returns how many Original checklist items we've added.
   function originalsCount() external view returns (uint256) {
     return originalChecklistItems.length;
   }
 
-  /// @dev Returns how many Iconic checklist items we&#39;ve added.
+  /// @dev Returns how many Iconic checklist items we've added.
   function iconicsCount() public view returns (uint256) {
     return iconicChecklistItems.length;
   }
 
-  /// @dev Returns how many Unreleased checklist items we&#39;ve added.
+  /// @dev Returns how many Unreleased checklist items we've added.
   function unreleasedCount() public view returns (uint256) {
     return unreleasedChecklistItems.length;
   }
@@ -338,7 +338,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #000 through #032.
   function deployStepOne() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepOne, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepOne, "You're not following the steps in order...");
 
     /* ORIGINALS - DIAMOND */
     _addOriginalChecklistItem(0, RarityTier.Diamond); // 000 Messi
@@ -353,14 +353,14 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(7, RarityTier.Gold); // 007 Hazard
     _addOriginalChecklistItem(8, RarityTier.Gold); // 008 Ramos
     _addOriginalChecklistItem(9, RarityTier.Gold); // 009 Kroos
-    _addOriginalChecklistItem(10, RarityTier.Gold); // 010 Su&#225;rez
+    _addOriginalChecklistItem(10, RarityTier.Gold); // 010 Suárez
     _addOriginalChecklistItem(11, RarityTier.Gold); // 011 Kane
-    _addOriginalChecklistItem(12, RarityTier.Gold); // 012 Ag&#252;ero
-    _addOriginalChecklistItem(13, RarityTier.Gold); // 013 Mbapp&#233;
-    _addOriginalChecklistItem(14, RarityTier.Gold); // 014 Higua&#237;n
+    _addOriginalChecklistItem(12, RarityTier.Gold); // 012 Agüero
+    _addOriginalChecklistItem(13, RarityTier.Gold); // 013 Mbappé
+    _addOriginalChecklistItem(14, RarityTier.Gold); // 014 Higuaín
     _addOriginalChecklistItem(15, RarityTier.Gold); // 015 de Gea
     _addOriginalChecklistItem(16, RarityTier.Gold); // 016 Griezmann
-    _addOriginalChecklistItem(17, RarityTier.Gold); // 017 Kant&#233;
+    _addOriginalChecklistItem(17, RarityTier.Gold); // 017 Kanté
     _addOriginalChecklistItem(18, RarityTier.Gold); // 018 Cavani
     _addOriginalChecklistItem(19, RarityTier.Gold); // 019 Pogba
 
@@ -385,35 +385,35 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #033 through #065.
   function deployStepTwo() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepTwo, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepTwo, "You're not following the steps in order...");
 
     /* ORIGINALS - SILVER (033 to 049) */
     _addOriginalChecklistItem(33, RarityTier.Silver); // 033 Casemiro
     _addOriginalChecklistItem(34, RarityTier.Silver); // 034 Lukaku
-    _addOriginalChecklistItem(35, RarityTier.Silver); // 035 Piqu&#233;
+    _addOriginalChecklistItem(35, RarityTier.Silver); // 035 Piqué
     _addOriginalChecklistItem(36, RarityTier.Silver); // 036 Hummels
-    _addOriginalChecklistItem(37, RarityTier.Silver); // 037 God&#237;n
-    _addOriginalChecklistItem(38, RarityTier.Silver); // 038 &#214;zil
+    _addOriginalChecklistItem(37, RarityTier.Silver); // 037 Godín
+    _addOriginalChecklistItem(38, RarityTier.Silver); // 038 Özil
     _addOriginalChecklistItem(39, RarityTier.Silver); // 039 Son
     _addOriginalChecklistItem(40, RarityTier.Silver); // 040 Sterling
     _addOriginalChecklistItem(41, RarityTier.Silver); // 041 Lloris
     _addOriginalChecklistItem(42, RarityTier.Silver); // 042 Falcao
     _addOriginalChecklistItem(43, RarityTier.Silver); // 043 Rakitić
-    _addOriginalChecklistItem(44, RarityTier.Silver); // 044 San&#233;
+    _addOriginalChecklistItem(44, RarityTier.Silver); // 044 Sané
     _addOriginalChecklistItem(45, RarityTier.Silver); // 045 Firmino
-    _addOriginalChecklistItem(46, RarityTier.Silver); // 046 Man&#233;
-    _addOriginalChecklistItem(47, RarityTier.Silver); // 047 M&#252;ller
+    _addOriginalChecklistItem(46, RarityTier.Silver); // 046 Mané
+    _addOriginalChecklistItem(47, RarityTier.Silver); // 047 Müller
     _addOriginalChecklistItem(48, RarityTier.Silver); // 048 Alli
     _addOriginalChecklistItem(49, RarityTier.Silver); // 049 Navas
 
     /* ORIGINALS - BRONZE (050 to 065) */
     _addOriginalChecklistItem(50, RarityTier.Bronze); // 050 Thiago Silva
     _addOriginalChecklistItem(51, RarityTier.Bronze); // 051 Varane
-    _addOriginalChecklistItem(52, RarityTier.Bronze); // 052 Di Mar&#237;a
+    _addOriginalChecklistItem(52, RarityTier.Bronze); // 052 Di María
     _addOriginalChecklistItem(53, RarityTier.Bronze); // 053 Alba
     _addOriginalChecklistItem(54, RarityTier.Bronze); // 054 Benatia
     _addOriginalChecklistItem(55, RarityTier.Bronze); // 055 Werner
-    _addOriginalChecklistItem(56, RarityTier.Bronze); // 056 Sigur&#240;sson
+    _addOriginalChecklistItem(56, RarityTier.Bronze); // 056 Sigurðsson
     _addOriginalChecklistItem(57, RarityTier.Bronze); // 057 Matić
     _addOriginalChecklistItem(58, RarityTier.Bronze); // 058 Koulibaly
     _addOriginalChecklistItem(59, RarityTier.Bronze); // 059 Bernardo Silva
@@ -430,7 +430,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys Originals #066 through #099.
   function deployStepThree() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepThree, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepThree, "You're not following the steps in order...");
 
     /* ORIGINALS - BRONZE (066 to 099) */
     _addOriginalChecklistItem(66, RarityTier.Bronze); // 066 Kagawa
@@ -440,11 +440,11 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(70, RarityTier.Bronze); // 070 Smolov
     _addOriginalChecklistItem(71, RarityTier.Bronze); // 071 Shaqiri
     _addOriginalChecklistItem(72, RarityTier.Bronze); // 072 Rashford
-    _addOriginalChecklistItem(73, RarityTier.Bronze); // 073 Hern&#225;ndez
+    _addOriginalChecklistItem(73, RarityTier.Bronze); // 073 Hernández
     _addOriginalChecklistItem(74, RarityTier.Bronze); // 074 Lozano
     _addOriginalChecklistItem(75, RarityTier.Bronze); // 075 Ziyech
     _addOriginalChecklistItem(76, RarityTier.Bronze); // 076 Moses
-    _addOriginalChecklistItem(77, RarityTier.Bronze); // 077 Farf&#225;n
+    _addOriginalChecklistItem(77, RarityTier.Bronze); // 077 Farfán
     _addOriginalChecklistItem(78, RarityTier.Bronze); // 078 Elneny
     _addOriginalChecklistItem(79, RarityTier.Bronze); // 079 Berg
     _addOriginalChecklistItem(80, RarityTier.Bronze); // 080 Ochoa
@@ -460,13 +460,13 @@ contract StrikersChecklist is StrikersPlayerList {
     _addOriginalChecklistItem(90, RarityTier.Bronze); // 090 Yoshida
     _addOriginalChecklistItem(91, RarityTier.Bronze); // 091 Al Abed
     _addOriginalChecklistItem(92, RarityTier.Bronze); // 092 Chung-yong
-    _addOriginalChecklistItem(93, RarityTier.Bronze); // 093 G&#243;mez
+    _addOriginalChecklistItem(93, RarityTier.Bronze); // 093 Gómez
     _addOriginalChecklistItem(94, RarityTier.Bronze); // 094 Sliti
     _addOriginalChecklistItem(95, RarityTier.Bronze); // 095 Ghoochannejhad
     _addOriginalChecklistItem(96, RarityTier.Bronze); // 096 Jedinak
     _addOriginalChecklistItem(97, RarityTier.Bronze); // 097 Al-Sahlawi
     _addOriginalChecklistItem(98, RarityTier.Bronze); // 098 Gunnarsson
-    _addOriginalChecklistItem(99, RarityTier.Bronze); // 099 P&#233;rez
+    _addOriginalChecklistItem(99, RarityTier.Bronze); // 099 Pérez
 
     // Move to the next deploy step.
     deployStep = DeployStep.WaitingForStepFour;
@@ -474,7 +474,7 @@ contract StrikersChecklist is StrikersPlayerList {
 
   /// @dev Deploys all Iconics and marks the deploy as complete!
   function deployStepFour() external onlyOwner {
-    require(deployStep == DeployStep.WaitingForStepFour, &quot;You&#39;re not following the steps in order...&quot;);
+    require(deployStep == DeployStep.WaitingForStepFour, "You're not following the steps in order...");
 
     /* ICONICS */
     _addIconicChecklistItem(0, RarityTier.IconicInsert); // 100 Messi
@@ -487,12 +487,12 @@ contract StrikersChecklist is StrikersPlayerList {
     _addIconicChecklistItem(7, RarityTier.IconicInsert); // 107 Hazard
     _addIconicChecklistItem(8, RarityTier.IconicInsert); // 108 Ramos
     _addIconicChecklistItem(9, RarityTier.IconicInsert); // 109 Kroos
-    _addIconicChecklistItem(10, RarityTier.IconicInsert); // 110 Su&#225;rez
+    _addIconicChecklistItem(10, RarityTier.IconicInsert); // 110 Suárez
     _addIconicChecklistItem(11, RarityTier.IconicInsert); // 111 Kane
-    _addIconicChecklistItem(12, RarityTier.IconicInsert); // 112 Ag&#252;ero
+    _addIconicChecklistItem(12, RarityTier.IconicInsert); // 112 Agüero
     _addIconicChecklistItem(15, RarityTier.IconicInsert); // 113 de Gea
     _addIconicChecklistItem(16, RarityTier.IconicInsert); // 114 Griezmann
-    _addIconicChecklistItem(17, RarityTier.IconicReferral); // 115 Kant&#233;
+    _addIconicChecklistItem(17, RarityTier.IconicReferral); // 115 Kanté
     _addIconicChecklistItem(18, RarityTier.IconicReferral); // 116 Cavani
     _addIconicChecklistItem(19, RarityTier.IconicInsert); // 117 Pogba
     _addIconicChecklistItem(21, RarityTier.IconicInsert); // 118 Marcelo
@@ -500,12 +500,12 @@ contract StrikersChecklist is StrikersPlayerList {
     _addIconicChecklistItem(26, RarityTier.IconicInsert); // 120 Eriksen
     _addIconicChecklistItem(29, RarityTier.IconicReferral); // 121 Thiago
     _addIconicChecklistItem(36, RarityTier.IconicReferral); // 122 Hummels
-    _addIconicChecklistItem(38, RarityTier.IconicReferral); // 123 &#214;zil
+    _addIconicChecklistItem(38, RarityTier.IconicReferral); // 123 Özil
     _addIconicChecklistItem(39, RarityTier.IconicInsert); // 124 Son
-    _addIconicChecklistItem(46, RarityTier.IconicInsert); // 125 Man&#233;
+    _addIconicChecklistItem(46, RarityTier.IconicInsert); // 125 Mané
     _addIconicChecklistItem(48, RarityTier.IconicInsert); // 126 Alli
     _addIconicChecklistItem(49, RarityTier.IconicReferral); // 127 Navas
-    _addIconicChecklistItem(73, RarityTier.IconicInsert); // 128 Hern&#225;ndez
+    _addIconicChecklistItem(73, RarityTier.IconicInsert); // 128 Hernández
     _addIconicChecklistItem(85, RarityTier.IconicInsert); // 129 Honda
     _addIconicChecklistItem(100, RarityTier.IconicReferral); // 130 Alves
     _addIconicChecklistItem(101, RarityTier.IconicReferral); // 131 Zlatan
@@ -520,15 +520,15 @@ contract StrikersChecklist is StrikersPlayerList {
   function limitForChecklistId(uint8 _checklistId) external view returns (uint16) {
     RarityTier rarityTier;
     uint8 index;
-    if (_checklistId &lt; 100) { // Originals = #000 to #099
+    if (_checklistId < 100) { // Originals = #000 to #099
       rarityTier = originalChecklistItems[_checklistId].tier;
-    } else if (_checklistId &lt; 200) { // Iconics = #100 to #131
+    } else if (_checklistId < 200) { // Iconics = #100 to #131
       index = _checklistId - 100;
-      require(index &lt; iconicsCount(), &quot;This Iconics checklist item doesn&#39;t exist.&quot;);
+      require(index < iconicsCount(), "This Iconics checklist item doesn't exist.");
       rarityTier = iconicChecklistItems[index].tier;
     } else { // Unreleased = #200 to max #255
       index = _checklistId - 200;
-      require(index &lt; unreleasedCount(), &quot;This Unreleased checklist item doesn&#39;t exist.&quot;);
+      require(index < unreleasedCount(), "This Unreleased checklist item doesn't exist.");
       rarityTier = unreleasedChecklistItems[index].tier;
     }
     return tierLimits[uint8(rarityTier)];

@@ -28,13 +28,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -44,7 +44,7 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -78,7 +78,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -90,7 +90,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -188,8 +188,8 @@ contract Configurable is Ownable {
 
 contract DLCToken is StandardToken, Configurable {
 
-    string public constant name = &quot;DoubleLand Coin&quot;;
-    string public constant symbol = &quot;DC&quot;;
+    string public constant name = "DoubleLand Coin";
+    string public constant symbol = "DC";
     uint32 public constant decimals = 18;
 
     uint256 public priceOfToken;
@@ -259,10 +259,10 @@ contract DLCToken is StandardToken, Configurable {
     }
 
     function init() public notInit onlyConfigurer{
-        require(totalSupply &gt; 0);
-        require(foundersTokensPercent &gt; 0);
-        require(bountyTokensPercent &gt; 0);
-        require(developmentAuditPromotionTokensPercent &gt; 0);
+        require(totalSupply > 0);
+        require(foundersTokensPercent > 0);
+        require(bountyTokensPercent > 0);
+        require(developmentAuditPromotionTokensPercent > 0);
         require(foundersWallet != address(0));
         require(bountyWallet != address(0));
         require(developmentAuditPromotionWallet != address(0));
@@ -283,8 +283,8 @@ contract DLCToken is StandardToken, Configurable {
     function purchase(address beneficiary, uint256 qty) public {
         require(msg.sender == saleAgent || msg.sender == owner);
         require(beneficiary != address(0));
-        require(qty &gt; 0);
-        require((getRestTokenBalance().sub(qty)) &gt; 0);
+        require(qty > 0);
+        require((getRestTokenBalance().sub(qty)) > 0);
 
         balances[beneficiary] = balances[beneficiary].add(qty);
         balances[toSaleWallet] = balances[toSaleWallet].sub(qty);
@@ -305,7 +305,7 @@ contract Bonuses {
     uint256 public startTime;
     uint256 public endTime;
 
-    mapping(uint =&gt; uint256) public bonusOfDay;
+    mapping(uint => uint256) public bonusOfDay;
 
     bool public bonusInited = false;
 
@@ -314,13 +314,13 @@ contract Bonuses {
         bonusInited = true;
         bytes32 preset = keccak256(_preset);
 
-        if(preset == keccak256(&#39;privatesale&#39;)){
+        if(preset == keccak256('privatesale')){
             bonusOfDay[0] = 313;
         } else
-        if(preset == keccak256(&#39;presale&#39;)){
+        if(preset == keccak256('presale')){
             bonusOfDay[0] = 210;
         } else
-        if(preset == keccak256(&#39;generalsale&#39;)){
+        if(preset == keccak256('generalsale')){
             bonusOfDay[0] = 60;
             bonusOfDay[7] = 38;
             bonusOfDay[14] = 10;
@@ -332,8 +332,8 @@ contract Bonuses {
         uint currentBonus = 0;
         int i;
 
-        for (i = dayOfStart; i &gt;= 0; i--) {
-            if (bonusOfDay[uint(i)] &gt; 0) {
+        for (i = dayOfStart; i >= 0; i--) {
+            if (bonusOfDay[uint(i)] > 0) {
                 currentBonus = bonusOfDay[uint(i)];
                 break;
             }
@@ -372,8 +372,8 @@ contract Sale is Configurable, Bonuses{
         address _multisigWallet
     ) public onlyConfigurer {
         require(!saleInited);
-        require(_endTime &gt;= _startTime);
-        require(_tokensLimit &gt; 0);
+        require(_endTime >= _startTime);
+        require(_tokensLimit > 0);
         require(_multisigWallet != address(0));
 
         saleInited = true;
@@ -417,7 +417,7 @@ contract Sale is Configurable, Bonuses{
             amount: amount
             });
 
-        require(tokensTransferred.add(tokens) &lt; tokensLimit);
+        require(tokensTransferred.add(tokens) < tokensLimit);
 
         tokensTransferred = tokensTransferred.add(tokens);
         collected = collected.add(amount);
@@ -433,18 +433,18 @@ contract Sale is Configurable, Bonuses{
     }
 
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool minimalPriceChecked = msg.value &gt;= minimalPrice;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; minimalPriceChecked &amp;&amp; activated &amp;&amp; !closed;
+        bool minimalPriceChecked = msg.value >= minimalPrice;
+        return withinPeriod && nonZeroPurchase && minimalPriceChecked && activated && !closed;
     }
 
     function isStarted() public constant returns (bool) {
-        return now &gt; startTime;
+        return now > startTime;
     }
 
     function isEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 }
 
@@ -467,9 +467,9 @@ contract DoubleLandICO is Ownable {
     bool public isDeployed = false;
 
     function createSale(string _bonusPreset, uint256 _startTime, uint256 _endTime,  uint256 _tokensLimit, uint256 _minimalPrice) public onlyOwner{
-        require(activatedSalesTotalCount &lt; maxActivatedSalesTotalCount);
-        require(getTotalCollected() &lt; hardCap );
-        require(token.getRestTokenBalance() &gt;= _tokensLimit);
+        require(activatedSalesTotalCount < maxActivatedSalesTotalCount);
+        require(getTotalCollected() < hardCap );
+        require(token.getRestTokenBalance() >= _tokensLimit);
         require(sales.length == 0 || sales[sales.length - 1].activated());
         Sale newSale = new Sale();
 
@@ -488,7 +488,7 @@ contract DoubleLandICO is Ownable {
     }
 
     function activateLastSale() public onlyOwner {
-        require(activatedSalesTotalCount &lt; maxActivatedSalesTotalCount);
+        require(activatedSalesTotalCount < maxActivatedSalesTotalCount);
         require(!sales[sales.length - 1].activated());
         activatedSalesTotalCount ++;
         sales[sales.length - 1].activate();
@@ -501,14 +501,14 @@ contract DoubleLandICO is Ownable {
     }
 
     function closeAllSales() public onlyOwner {
-        for (uint i = 0; i &lt; sales.length; i++) {
+        for (uint i = 0; i < sales.length; i++) {
             sales[i].close();
         }
     }
 
     function setGlobalMultisigWallet(address _multisigWallet) public onlyOwner {
         multisigWallet = _multisigWallet;
-        for (uint i = 0; i &lt; sales.length; i++) {
+        for (uint i = 0; i < sales.length; i++) {
             if (!sales[i].closed()) {
                 sales[i].setMultisigWallet(multisigWallet);
             }
@@ -517,7 +517,7 @@ contract DoubleLandICO is Ownable {
 
     function getTotalCollected() public constant returns(uint256) {
         uint256 _totalCollected = 0;
-        for (uint i = 0; i &lt; sales.length; i++) {
+        for (uint i = 0; i < sales.length; i++) {
             _totalCollected = _totalCollected + sales[i].collected();
         }
         return _totalCollected;
@@ -551,7 +551,7 @@ contract DoubleLandICO is Ownable {
         token.init();
 
         createSale({
-            _bonusPreset: &#39;privatesale&#39;,
+            _bonusPreset: 'privatesale',
             _startTime: 1526331600, // 15.05.2018 00:00:00
             _endTime:   1527714000, // 31.05.2018 00:00:00
             _tokensLimit: 80000000 * 1 ether,
@@ -560,7 +560,7 @@ contract DoubleLandICO is Ownable {
         activateLastSale();
 
         createSale({
-            _bonusPreset: &#39;presale&#39;,
+            _bonusPreset: 'presale',
             _startTime: 1529010000, // 15.06.2018 00:00:00
             _endTime:   1530306000, // 30.06.2018 00:00:00
             _tokensLimit: 75000000 * 1 ether,

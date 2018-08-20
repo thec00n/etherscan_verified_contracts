@@ -31,7 +31,7 @@ contract CRTLotto is Owned {
     uint public ticketPrice;
     uint public totalTickets;
 
-    mapping(uint =&gt; address) public tickets;
+    mapping(uint => address) public tickets;
 
     constructor() public {
         ticketPrice = 0.01 * 10 ** 18;
@@ -44,7 +44,7 @@ contract CRTLotto is Owned {
     
     function() payable external {
         uint ethSent = msg.value;
-        require(ethSent &gt;= ticketPrice);
+        require(ethSent >= ticketPrice);
         
         tickets[totalTickets] = msg.sender;
         totalTickets += 1;

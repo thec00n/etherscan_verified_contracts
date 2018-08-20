@@ -7,7 +7,7 @@ contract BCFSafe {
  lockTime = now + 30 minutes;
     }
     function returnMyMoney(uint amount){
-        if (msg.sender==owner &amp;&amp; now &gt; lockTime) {
+        if (msg.sender==owner && now > lockTime) {
             owner.send(amount);
         }
     }

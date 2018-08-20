@@ -3,7 +3,7 @@ pragma solidity ^0.4.4;
 contract RaffleStrangeLoop {
     address owner;
     address public winner;
-    mapping(uint =&gt; address) public tickets;
+    mapping(uint => address) public tickets;
 
     uint public numTickets;
     uint public ethereumFoundationTickets;
@@ -34,7 +34,7 @@ contract RaffleStrangeLoop {
 
     function getRaffleTimeLeft() constant returns (uint) {
         int timeLeft = int(chooseWinnerDeadline) - int(block.timestamp);
-        if (timeLeft &gt; 0) {
+        if (timeLeft > 0) {
             return uint(timeLeft);
         } else {
             return 0;
@@ -47,10 +47,10 @@ contract RaffleStrangeLoop {
 
         // Allow a period of 24 hours to choose a winner
         int timeLeft = int(chooseWinnerDeadline) - int(block.timestamp);
-        require(timeLeft &lt; 0 &amp;&amp; timeLeft &gt; -86400);
+        require(timeLeft < 0 && timeLeft > -86400);
 
         // Require that at least one person bought the ticket
-        require(numTickets &gt; 0);
+        require(numTickets > 0);
 
         // Choose winner
         bytes32 serverClientHash = sha3(seed, clientSeed);
@@ -61,7 +61,7 @@ contract RaffleStrangeLoop {
 
         // Send donation to ethereum foundation
         uint donation = ethereumFoundationTickets * 10000000000000000;
-        if (donation &gt; 0) {
+        if (donation > 0) {
             // See https://www.ethereum.org/donate
             address ethereumTipJar = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359;
             ethereumTipJar.transfer(donation);
@@ -73,7 +73,7 @@ contract RaffleStrangeLoop {
 
     function buyTickets(bytes32 beneficiary) payable notFinished {
         // only allow if there is time left
-        require(getRaffleTimeLeft() &gt; 0);
+        require(getRaffleTimeLeft() > 0);
 
         // ticket value = 0.01 ETH
         uint ticketsBought = msg.value / 10000000000000000;
@@ -88,22 +88,22 @@ contract RaffleStrangeLoop {
         lastBlock = block.number;
 
         // Buy tickets
-        for (uint i = 0; i &lt; ticketsBought; i++) {
+        for (uint i = 0; i < ticketsBought; i++) {
             tickets[numTickets++] = msg.sender;
         }
 
-        if (beneficiary == &quot;ethereum-foundation&quot;) {
+        if (beneficiary == "ethereum-foundation") {
             ethereumFoundationTickets += ticketsBought;
         }
     }
 
     function getRefund() notFinished {
-        // Can only refund when it&#39;s been 24 hours after the deadline
+        // Can only refund when it's been 24 hours after the deadline
         int timeLeft = int(chooseWinnerDeadline) - int(block.timestamp);
-        require(timeLeft &lt; -86400);
+        require(timeLeft < -86400);
 
         uint amountToRefund = 0;
-        for (uint i = 0; i &lt; numTickets; i++) {
+        for (uint i = 0; i < numTickets; i++) {
             if(tickets[i] == msg.sender) {
                 amountToRefund += 10000000000000000;
                 tickets[i] = 0x0;
@@ -114,6 +114,6 @@ contract RaffleStrangeLoop {
     }
 
     function () payable notFinished {
-        buyTickets(&quot;owner&quot;);
+        buyTickets("owner");
     }
 }

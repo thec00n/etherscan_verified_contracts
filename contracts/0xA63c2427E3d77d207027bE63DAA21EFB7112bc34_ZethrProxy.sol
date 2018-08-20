@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /** Proxy contract to buy tokens on Zethr,
  *  because we forgot to add the onTokenBuy event to Zethr.
- *  So we&#39;re proxying Zethr buys through this contract so that our website
+ *  So we're proxying Zethr buys through this contract so that our website
  *  can properly track and display Zethr token buys.
 **/
 contract ZethrProxy {
@@ -18,11 +18,11 @@ contract ZethrProxy {
 
     
     function buyTokensWithProperEvent(address _referredBy, uint8 divChoice) public payable {
-        // Query token balance before &amp; after to see how much we bought
+        // Query token balance before & after to see how much we bought
         uint balanceBefore = zethr.balanceOf(msg.sender);
         
         // Buy tokens with selected div rate
-        zethr.buyAndTransfer.value(msg.value)(_referredBy, msg.sender, &quot;&quot;, divChoice);
+        zethr.buyAndTransfer.value(msg.value)(_referredBy, msg.sender, "", divChoice);
         
         // Query balance after
         uint balanceAfter = zethr.balanceOf(msg.sender);

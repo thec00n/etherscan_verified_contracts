@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -327,8 +327,8 @@ contract SeeleToken is PausableToken {
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public constant name = &quot;SeeleToken&quot;;
-    string public constant symbol = &quot;Seele&quot;;
+    string public constant name = "SeeleToken";
+    string public constant symbol = "Seele";
     uint public constant decimals = 18;
 
     /// seele total tokens supply
@@ -339,7 +339,7 @@ contract SeeleToken is PausableToken {
     address public minter; 
 
     /// Fields that can be changed by functions
-    mapping (address =&gt; uint) public lockedBalances;
+    mapping (address => uint) public lockedBalances;
 
     /// claim flag
     bool public claimedFlag;  
@@ -358,7 +358,7 @@ contract SeeleToken is PausableToken {
     }
 
     modifier maxTokenAmountNotReached (uint amount){
-        require(currentSupply.add(amount) &lt;= totalSupply);
+        require(currentSupply.add(amount) <= totalSupply);
         _;
     }
 
@@ -428,7 +428,7 @@ contract SeeleToken is PausableToken {
         public
         canClaimed
     {        
-        for (uint i = 0; i &lt; receipents.length; i++) {
+        for (uint i = 0; i < receipents.length; i++) {
             address receipent = receipents[i];
             balances[receipent] = balances[receipent].add(lockedBalances[receipent]);
             lockedBalances[receipent] = 0;
@@ -491,10 +491,10 @@ contract SeeleCrowdSale is Pausable {
     SeeleToken public seeleToken; 
 
     /// tags show address can join in open sale
-    mapping (address =&gt; bool) public fullWhiteList;
+    mapping (address => bool) public fullWhiteList;
 
-    mapping (address =&gt; uint) public firstStageFund;
-    mapping (address =&gt; uint) public secondStageFund;
+    mapping (address => uint) public firstStageFund;
+    mapping (address => uint) public secondStageFund;
 
     /*
      * EVENTS
@@ -503,22 +503,22 @@ contract SeeleCrowdSale is Pausable {
     event NewWallet(address onwer, address oldWallet, address newWallet);
 
     modifier notEarlierThan(uint x) {
-        require(now &gt;= x);
+        require(now >= x);
         _;
     }
 
     modifier earlierThan(uint x) {
-        require(now &lt; x);
+        require(now < x);
         _;
     }
 
     modifier ceilingNotReached() {
-        require(openSoldTokens &lt; MAX_OPEN_SOLD);
+        require(openSoldTokens < MAX_OPEN_SOLD);
         _;
     }  
 
     modifier isSaleEnded() {
-        require(now &gt; endTime || openSoldTokens &gt;= MAX_OPEN_SOLD);
+        require(now > endTime || openSoldTokens >= MAX_OPEN_SOLD);
         _;
     }
 
@@ -567,21 +567,21 @@ contract SeeleCrowdSale is Pausable {
     }
 
     /// @dev batch set quota for user admin
-    /// if openTag &lt;=0, removed 
+    /// if openTag <=0, removed 
     function setWhiteList(address[] users, bool openTag)
         external
         onlyOwner
         earlierThan(endTime)
     {
         require(saleNotEnd());
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             fullWhiteList[users[i]] = openTag;
         }
     }
 
 
     /// @dev batch set quota for early user quota
-    /// if openTag &lt;=0, removed 
+    /// if openTag <=0, removed 
     function addWhiteList(address user, bool openTag)
         external
         onlyOwner
@@ -600,7 +600,7 @@ contract SeeleCrowdSale is Pausable {
 
     /// @return true if sale not ended, false otherwise.
     function saleNotEnd() constant internal returns (bool) {
-        return now &lt; endTime &amp;&amp; openSoldTokens &lt; MAX_OPEN_SOLD;
+        return now < endTime && openSoldTokens < MAX_OPEN_SOLD;
     }
 
     /**
@@ -628,23 +628,23 @@ contract SeeleCrowdSale is Pausable {
     {
         // Do not allow contracts to game the system
         require(!isContract(msg.sender));    
-        require(tx.gasprice &lt;= 100000000000 wei);
-        require(msg.value &gt;= MIN_LIMIT);
+        require(tx.gasprice <= 100000000000 wei);
+        require(msg.value >= MIN_LIMIT);
 
         bool inWhiteListTag = fullWhiteList[receipient];       
         require(inWhiteListTag == true);
 
         uint stage = STAGE_3;
-        if ( startTime &lt;= now &amp;&amp; now &lt; startTime + STAGE_1_TIME ) {
+        if ( startTime <= now && now < startTime + STAGE_1_TIME ) {
             stage = STAGE_1;
-            require(msg.value &lt;= MAX_STAGE_1_LIMIT);
+            require(msg.value <= MAX_STAGE_1_LIMIT);
             uint fund1 = firstStageFund[receipient];
-            require (fund1 &lt; MAX_STAGE_1_LIMIT );
-        }else if ( startTime + STAGE_1_TIME &lt;= now &amp;&amp; now &lt; startTime + STAGE_2_TIME ) {
+            require (fund1 < MAX_STAGE_1_LIMIT );
+        }else if ( startTime + STAGE_1_TIME <= now && now < startTime + STAGE_2_TIME ) {
             stage = STAGE_2;
-            require(msg.value &lt;= MAX_STAGE_2_LIMIT);
+            require(msg.value <= MAX_STAGE_2_LIMIT);
             uint fund2 = secondStageFund[receipient];
-            require (fund2 &lt; MAX_STAGE_2_LIMIT );
+            require (fund2 < MAX_STAGE_2_LIMIT );
         }
 
         doBuy(receipient, stage);
@@ -661,7 +661,7 @@ contract SeeleCrowdSale is Pausable {
         if ( stage == STAGE_1 ) {
             uint fund1 = firstStageFund[receipient];
             fund1 = fund1.add(value);
-            if (fund1 &gt; MAX_STAGE_1_LIMIT ) {
+            if (fund1 > MAX_STAGE_1_LIMIT ) {
                 uint refund1 = fund1.sub(MAX_STAGE_1_LIMIT);
                 value = value.sub(refund1);
                 msg.sender.transfer(refund1);
@@ -669,7 +669,7 @@ contract SeeleCrowdSale is Pausable {
         }else if ( stage == STAGE_2 ) {
             uint fund2 = secondStageFund[receipient];
             fund2 = fund2.add(value);
-            if (fund2 &gt; MAX_STAGE_2_LIMIT) {
+            if (fund2 > MAX_STAGE_2_LIMIT) {
                 uint refund2 = fund2.sub(MAX_STAGE_2_LIMIT);
                 value = value.sub(refund2);
                 msg.sender.transfer(refund2);
@@ -677,11 +677,11 @@ contract SeeleCrowdSale is Pausable {
         }
 
         uint tokenAvailable = MAX_OPEN_SOLD.sub(openSoldTokens);
-        require(tokenAvailable &gt; 0);
+        require(tokenAvailable > 0);
         uint toFund;
         uint toCollect;
         (toFund, toCollect) = costAndBuyTokens(tokenAvailable, value);
-        if (toFund &gt; 0) {
+        if (toFund > 0) {
             require(seeleToken.mint(receipient, toCollect,true));         
             wallet.transfer(toFund);
             openSoldTokens = openSoldTokens.add(toCollect);
@@ -690,7 +690,7 @@ contract SeeleCrowdSale is Pausable {
 
         // not enough token sale, just return eth
         uint toReturn = value.sub(toFund);
-        if (toReturn &gt; 0) {
+        if (toReturn > 0) {
             msg.sender.transfer(toReturn);
         }
 
@@ -706,7 +706,7 @@ contract SeeleCrowdSale is Pausable {
         // all conditions has checked in the caller functions
         getTokens = exchangeRate * value;
 
-        if (availableToken &gt;= getTokens) {
+        if (availableToken >= getTokens) {
             costValue = value;
         } else {
             costValue = availableToken / exchangeRate;
@@ -726,6 +726,6 @@ contract SeeleCrowdSale is Pausable {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }

@@ -8,12 +8,12 @@ contract Prover {
     // storage vars
     address owner;
     Sets.addressSet users;
-    mapping(address =&gt; Account) internal accounts;
+    mapping(address => Account) internal accounts;
 
     // structs
     struct Account {
         Sets.bytes32Set entries;
-        mapping(bytes32 =&gt; Entry) values;
+        mapping(bytes32 => Entry) values;
     }
 
     struct Entry {
@@ -88,7 +88,7 @@ contract Prover {
     
     // allow owner to delete contract if no accounts exist
     function selfDestruct() {
-        if ((msg.sender == owner) &amp;&amp; (users.length() == 0)) {
+        if ((msg.sender == owner) && (users.length() == 0)) {
             selfdestruct(owner);
         }
     }
@@ -112,12 +112,12 @@ contract Prover {
         // update user account
         delete accounts[msg.sender].values[dataHash];
         accounts[msg.sender].entries.remove(dataHash);
-        // delete from users if this was the user&#39;s last entry
+        // delete from users if this was the user's last entry
         if (accounts[msg.sender].entries.length() == 0) {
             users.remove(msg.sender);
         }
         // send the rebate
-        if (rebate &gt; 0) msg.sender.transfer(rebate);
+        if (rebate > 0) msg.sender.transfer(rebate);
     }
 
     // return status of arbitrary address and dataHash
@@ -138,7 +138,7 @@ library Sets {
     // address set
     struct addressSet {
         address[] members;
-        mapping(address =&gt; uint) memberIndices;
+        mapping(address => uint) memberIndices;
     }
 
     function insert(addressSet storage self, address other) {
@@ -165,7 +165,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(addressSet storage self) constant returns (uint) {
@@ -176,7 +176,7 @@ library Sets {
     // uint set
     struct uintSet {
         uint[] members;
-        mapping(uint =&gt; uint) memberIndices;
+        mapping(uint => uint) memberIndices;
     }
 
     function insert(uintSet storage self, uint other) {
@@ -203,7 +203,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(uintSet storage self) constant returns (uint) {
@@ -214,7 +214,7 @@ library Sets {
     // uint8 set
     struct uint8Set {
         uint8[] members;
-        mapping(uint8 =&gt; uint) memberIndices;
+        mapping(uint8 => uint) memberIndices;
     }
 
     function insert(uint8Set storage self, uint8 other) {
@@ -241,7 +241,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(uint8Set storage self) constant returns (uint) {
@@ -252,7 +252,7 @@ library Sets {
     // int set
     struct intSet {
         int[] members;
-        mapping(int =&gt; uint) memberIndices;
+        mapping(int => uint) memberIndices;
     }
 
     function insert(intSet storage self, int other) {
@@ -279,7 +279,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(intSet storage self) constant returns (uint) {
@@ -290,7 +290,7 @@ library Sets {
     // int8 set
     struct int8Set {
         int8[] members;
-        mapping(int8 =&gt; uint) memberIndices;
+        mapping(int8 => uint) memberIndices;
     }
 
     function insert(int8Set storage self, int8 other) {
@@ -317,7 +317,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(int8Set storage self) constant returns (uint) {
@@ -328,7 +328,7 @@ library Sets {
     // byte set
     struct byteSet {
         byte[] members;
-        mapping(byte =&gt; uint) memberIndices;
+        mapping(byte => uint) memberIndices;
     }
 
     function insert(byteSet storage self, byte other) {
@@ -355,7 +355,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(byteSet storage self) constant returns (uint) {
@@ -366,7 +366,7 @@ library Sets {
     // bytes32 set
     struct bytes32Set {
         bytes32[] members;
-        mapping(bytes32 =&gt; uint) memberIndices;
+        mapping(bytes32 => uint) memberIndices;
     }
 
     function insert(bytes32Set storage self, bytes32 other) {
@@ -393,7 +393,7 @@ library Sets {
         constant
         returns (bool)
     {
-        return self.memberIndices[other] &gt; 0;
+        return self.memberIndices[other] > 0;
     }
 
     function length(bytes32Set storage self) constant returns (uint) {

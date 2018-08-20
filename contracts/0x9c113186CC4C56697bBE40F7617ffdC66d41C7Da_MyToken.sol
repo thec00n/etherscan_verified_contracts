@@ -3,15 +3,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract MyToken {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -23,16 +23,16 @@ contract MyToken {
     function MyToken() {
         balanceOf[msg.sender] = 9123000000000;              // Give the creator all initial tokens
         totalSupply = 9123000000000;                        // Update total supply
-        name = &#39;Scrypto&#39;;                                   // Set the name for display purposes
-        symbol = &#39;SCT&#39;;                                     // Set the symbol for display purposes
+        name = 'Scrypto';                                   // Set the name for display purposes
+        symbol = 'SCT';                                     // Set the symbol for display purposes
         decimals = 6;                                       // Amount of decimals for display purposes
     }
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         require(_to != 0x0);                                 // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[msg.sender] &gt; _value);             // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);   // Check for overflows
+        require(balanceOf[msg.sender] > _value);             // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);   // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -58,9 +58,9 @@ contract MyToken {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt; _value);                 // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // Check for overflows
-        require(_value &lt; allowance[_from][msg.sender]);     // Check allowance
+        require(balanceOf[_from] > _value);                 // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // Check for overflows
+        require(_value < allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -69,7 +69,7 @@ contract MyToken {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt; _value);            // Check if the sender has enough
+        require(balanceOf[msg.sender] > _value);            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                    // Subtract from the sender
         totalSupply -= _value;                              // Updates totalSupply
         Burn(msg.sender, _value);
@@ -77,8 +77,8 @@ contract MyToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt; _value);                // Check if the sender has enough
-        require(_value &lt; allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] > _value);                // Check if the sender has enough
+        require(_value < allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                        // Subtract from the sender
         totalSupply -= _value;                             // Updates totalSupply
         Burn(_from, _value);

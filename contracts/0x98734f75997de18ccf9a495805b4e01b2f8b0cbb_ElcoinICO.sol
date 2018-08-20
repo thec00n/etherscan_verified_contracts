@@ -44,7 +44,7 @@ contract ElcoinICO {
   // Public functions
   // ================
 
-  // Here you can buy some tokens (just don&#39;t forget to provide enough gas).
+  // Here you can buy some tokens (just don't forget to provide enough gas).
   function() external payable {
     buyFor(msg.sender);
   }
@@ -52,34 +52,34 @@ contract ElcoinICO {
 
   function buyFor(address _investor) public payable {
     require(icoState == IcoState.Running);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     buy(_investor, msg.value);
   }
 
 
   function getPresaleTotal(uint256 _value) public constant returns (uint256) {
-     if(_value &lt; 10 ether) {
+     if(_value < 10 ether) {
       return _value * tokensPerEth;
     }
 
-    if(_value &gt;= 10 ether &amp;&amp; _value &lt; 100 ether) {
+    if(_value >= 10 ether && _value < 100 ether) {
       return calcPresaleDiscount(_value, 3);
     }
 
-    if(_value &gt;= 100 ether &amp;&amp; _value &lt; 1000 ether) {
+    if(_value >= 100 ether && _value < 1000 ether) {
       return calcPresaleDiscount(_value, 5);
     }
 
-    if(_value &gt;= 1000 ether) {
+    if(_value >= 1000 ether) {
       return calcPresaleDiscount(_value, 10);
     }
   }
 
 function getTimeBonus(uint time) public constant returns (uint) {
-        if (time &lt; startTime + 1 weeks) return 200;
-        if (time &lt; startTime + 2 weeks) return 150;
-        if (time &lt; startTime + 3 weeks) return 100;
-        if (time &lt; startTime + 4 weeks) return 50;
+        if (time < startTime + 1 weeks) return 200;
+        if (time < startTime + 2 weeks) return 150;
+        if (time < startTime + 3 weeks) return 100;
+        if (time < startTime + 4 weeks) return 50;
         return 0;
     }
 
@@ -96,10 +96,10 @@ function getTimeBonus(uint time) public constant returns (uint) {
     uint256 _step = (tokensForSale - presaleSold) / 10;
     uint256 _bonus = 0;
 
-    for(uint8 i = 0; i &lt; _bonusPattern.length; ++i) {
+    for(uint8 i = 0; i < _bonusPattern.length; ++i) {
       uint256 _min = _step * i;
       uint256 _max = _step * (i + 1);
-      if(_sold &gt;= _min &amp;&amp; _sold &lt; _max) {
+      if(_sold >= _min && _sold < _max) {
         uint256 _bonusPart = min(_elcValue, _max - _sold);
         _bonus += _bonusPart * _bonusPattern[i] / 1000;
         _elcValue -= _bonusPart;
@@ -116,7 +116,7 @@ function getTimeBonus(uint time) public constant returns (uint) {
 
   function mintForEarlyInvestors(address[] _investors, uint256[] _values) external teamOnly {
     require(_investors.length == _values.length);
-    for (uint256 i = 0; i &lt; _investors.length; ++i) {
+    for (uint256 i = 0; i < _investors.length; ++i) {
       mintPresaleTokens(_investors[i], _values[i]);
     }
   }
@@ -124,7 +124,7 @@ function getTimeBonus(uint time) public constant returns (uint) {
 
   function mintFor(address _investor, uint256 _elcValue) external teamOnly {
     require(icoState != IcoState.Finished);
-    require(elc.totalSupply() + _elcValue &lt;= tokensForSale);
+    require(elc.totalSupply() + _elcValue <= tokensForSale);
 
     elc.mint(_investor, _elcValue);
   }
@@ -187,7 +187,7 @@ function getTimeBonus(uint time) public constant returns (uint) {
 
   function mintPresaleTokens(address _investor, uint256 _value) internal {
     require(icoState == IcoState.Presale);
-    require(_value &gt; 0);
+    require(_value > 0);
 
     uint256 _elcValue = getPresaleTotal(_value);
 
@@ -195,7 +195,7 @@ function getTimeBonus(uint time) public constant returns (uint) {
 
      _elcValue += timeBonusAmount;
 
-    require(elc.totalSupply() + _elcValue &lt;= tokensForSale);
+    require(elc.totalSupply() + _elcValue <= tokensForSale);
 
     elc.mint(_investor, _elcValue);
     presaleSold += _elcValue;
@@ -207,13 +207,13 @@ function getTimeBonus(uint time) public constant returns (uint) {
   }
 
   function min(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function buy(address _investor, uint256 _value) internal {
     uint256 _total = getTotal(_value);
 
-    require(elc.totalSupply() + _total &lt;= tokensForSale);
+    require(elc.totalSupply() + _total <= tokensForSale);
 
     elc.mint(_investor, _total);
   }
@@ -221,19 +221,19 @@ function getTimeBonus(uint time) public constant returns (uint) {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -248,20 +248,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -290,7 +290,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // @dev transfer token for a specified address   * @param _to The address to transfer to.   * @param _value The amount to be transferred.
   
@@ -322,7 +322,7 @@ contract BasicToken is ERC20Basic {
  
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
    //
@@ -337,7 +337,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -351,7 +351,7 @@ contract StandardToken is ERC20, BasicToken {
    //
    // Beware that changing an allowance with this method brings the risk that someone may use both the old
    // and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   // race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   // race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    // @param _spender The address which will spend the funds.
    // @param _value The amount of tokens to be spent.
@@ -389,7 +389,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -405,8 +405,8 @@ contract ELC is StandardToken {
   // Constants
   // =========
 
-  string public constant name = &quot;Elcoin Token&quot;;
-  string public constant symbol = &quot;ELC&quot;;
+  string public constant name = "Elcoin Token";
+  string public constant symbol = "ELC";
   uint8 public constant decimals = 18;
   uint256 public tokenLimit;
 
@@ -437,7 +437,7 @@ contract ELC is StandardToken {
   function mint(address _holder, uint256 _value) external icoOnly {
     require(_holder != address(0));
     require(_value != 0);
-    require(totalSupply + _value &lt;= tokenLimit);
+    require(totalSupply + _value <= tokenLimit);
 
     balances[_holder] += _value;
     totalSupply += _value;

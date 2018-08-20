@@ -10,12 +10,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -45,7 +45,7 @@ contract Token {
 contract StandardToken is Token {
   //默认token发行量不能超过(2^256 - 1)
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -56,7 +56,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -81,17 +81,17 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract UnityToken is StandardToken, SafeMath {
 
     // metadata
-    string  public constant name = &quot;Ping&quot;;
-    string  public constant symbol = &quot;PIN&quot;;
+    string  public constant name = "Ping";
+    string  public constant symbol = "PIN";
     uint256 public constant decimals = 3;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
 
     // contracts
     address public ethFundDeposit;          // ETH存放地址
@@ -133,7 +133,7 @@ contract UnityToken is StandardToken, SafeMath {
         currentSupply = formatDecimals(_currentSupply);
         totalSupply = formatDecimals(10000000);
         balances[msg.sender] = totalSupply;
-        if(currentSupply &gt; totalSupply) throw;
+        if(currentSupply > totalSupply) throw;
     }
 
     modifier isOwner()  { require(msg.sender == ethFundDeposit); _; }
@@ -149,7 +149,7 @@ contract UnityToken is StandardToken, SafeMath {
     /// @dev 超发token处理
     function increaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        if (value + currentSupply &gt; totalSupply) throw;
+        if (value + currentSupply > totalSupply) throw;
         currentSupply = safeAdd(currentSupply, value);
         IncreaseSupply(value);
     }
@@ -157,7 +157,7 @@ contract UnityToken is StandardToken, SafeMath {
     /// @dev 被盗token处理
     function decreaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        if (value + tokenRaised &gt; currentSupply) throw;
+        if (value + tokenRaised > currentSupply) throw;
 
         currentSupply = safeSubtract(currentSupply, value);
         DecreaseSupply(value);
@@ -166,8 +166,8 @@ contract UnityToken is StandardToken, SafeMath {
     ///  启动区块检测 异常的处理
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) isOwner external {
         if (isFunding) throw;
-        if (_fundingStartBlock &gt;= _fundingStopBlock) throw;
-        if (block.number &gt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock >= _fundingStopBlock) throw;
+        if (block.number >= _fundingStartBlock) throw;
 
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
@@ -222,7 +222,7 @@ contract UnityToken is StandardToken, SafeMath {
 
         uint256 tokens = safeMult(formatDecimals(_fin), tokenExchangeRate);
 
-        if (tokens + tokenRaised &gt; currentSupply) throw;
+        if (tokens + tokenRaised > currentSupply) throw;
 
         tokenRaised = safeAdd(tokenRaised, tokens);
 
@@ -236,11 +236,11 @@ contract UnityToken is StandardToken, SafeMath {
         if (!isFunding) throw;
         if (msg.value == 0) throw;
 
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingStopBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingStopBlock) throw;
 
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);
-        if (tokens + tokenRaised &gt; currentSupply) throw;
+        if (tokens + tokenRaised > currentSupply) throw;
 
         tokenRaised = safeAdd(tokenRaised, tokens);
         balances[msg.sender] += tokens;

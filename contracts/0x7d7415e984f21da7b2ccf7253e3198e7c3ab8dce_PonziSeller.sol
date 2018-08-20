@@ -18,20 +18,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract PonziSeller {
   uint256 private m_rewardDen;
   uint256 private m_discountNum;
   uint256 private m_discountDen;
-  mapping(address =&gt; AccessRank) private m_admins;
+  mapping(address => AccessRank) private m_admins;
 
   event PriceChanged(address indexed who, uint256 newPrice);
   event RewardRef(address indexed refAddr, uint256 ponziAmount);
@@ -127,7 +127,7 @@ contract PonziSeller {
   }
 
   function provideAccess(address adminAddr, uint8 rank) public onlyAdmin(AccessRank.Full) {
-    require(rank &lt;= uint8(AccessRank.Full));
+    require(rank <= uint8(AccessRank.Full));
     require(m_admins[adminAddr] != AccessRank.Full);
     m_admins[adminAddr] = AccessRank(rank);
   }
@@ -145,13 +145,13 @@ contract PonziSeller {
   }
 
   function byPonzi(address refAddr) public payable {
-    require(m_ponziPriceInWei &gt; 0 &amp;&amp; msg.value &gt; m_ponziPriceInWei);
+    require(m_ponziPriceInWei > 0 && msg.value > m_ponziPriceInWei);
 
     uint256 refAmount = 0;
     uint256 senderAmount = weiToPonzi(msg.value, m_ponziPriceInWei);
 
     // check if ref addres is valid and calc reward and discount
-    if (refAddr != msg.sender &amp;&amp; refAddr != address(0) &amp;&amp; refAddr != address(this)) {
+    if (refAddr != msg.sender && refAddr != address(0) && refAddr != address(this)) {
       // ref reward
       refAmount = senderAmount.mul(m_rewardNum).div(m_rewardDen);
       // sender discount
@@ -160,7 +160,7 @@ contract PonziSeller {
       // senderAmount = senderAmount.add(senderAmount.mul(m_discountNum).div(m_discountDen));
     }
     // check if we have enough ponzi on balance
-    if (availablePonzi() &lt; senderAmount.add(refAmount)) {
+    if (availablePonzi() < senderAmount.add(refAmount)) {
       emit NotEnoughPonzi(msg.sender, msg.value, m_ponziPriceInWei, availablePonzi());
       revert();
     }
@@ -168,7 +168,7 @@ contract PonziSeller {
     // transfer ponzi to sender
     require(m_ponzi.transfer(msg.sender, senderAmount));
     // transfer ponzi to ref if needed
-    if (refAmount &gt; 0) {
+    if (refAmount > 0) {
       require(m_ponzi.transfer(refAddr, refAmount));
       emit RewardRef(refAddr, refAmount);
     }
@@ -181,17 +181,17 @@ contract PonziSeller {
 
   function withdrawETH() public onlyAdmin(AccessRank.Withdraw) {
     uint256 amountWei = address(this).balance;
-    require(amountWei &gt; 0);
+    require(amountWei > 0);
     msg.sender.transfer(amountWei);
-    assert(address(this).balance &lt; amountWei);
+    assert(address(this).balance < amountWei);
     emit WithdrawalETH(msg.sender, amountWei);
   }
 
   function withdrawPonzi(uint256 amount) public onlyAdmin(AccessRank.Withdraw) {
     uint256 pt = availablePonzi();
-    require(pt &gt; 0 &amp;&amp; amount &gt; 0 &amp;&amp; pt &gt;= amount);
+    require(pt > 0 && amount > 0 && pt >= amount);
     require(m_ponzi.transfer(msg.sender, amount));
-    assert(availablePonzi() &lt; pt);
+    assert(availablePonzi() < pt);
     emit WithdrawalPonzi(msg.sender, pt);
   }
 

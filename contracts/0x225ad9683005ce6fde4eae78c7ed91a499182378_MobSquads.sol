@@ -41,8 +41,8 @@ contract MobSquads is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;MobSquads&quot;; //
-  string public constant SYMBOL = &quot;MOBS&quot;; //
+  string public constant NAME = "MobSquads"; //
+  string public constant SYMBOL = "MOBS"; //
 
   uint256 public precision = 1000000000000; //0.000001 Eth
 
@@ -52,19 +52,19 @@ contract MobSquads is ERC721 {
 
   /// @dev A mapping from mobster IDs to the address that owns them. All villians have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public mobsterIndexToOwner;
+  mapping (uint256 => address) public mobsterIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from mobsters to an address that has been approved to call
   ///  transferFrom(). Each mobster can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public mobsterIndexToApproved;
+  mapping (uint256 => address) public mobsterIndexToApproved;
 
   // @dev A mapping from mobsters to the price of the token.
-  mapping (uint256 =&gt; uint256) private mobsterIndexToPrice;
+  mapping (uint256 => uint256) private mobsterIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -92,9 +92,9 @@ contract MobSquads is ERC721 {
 
 
   // @dev A mapping from mobsters to the price of the token.
-  mapping (uint256 =&gt; uint256) private bossIndexToGang;
+  mapping (uint256 => uint256) private bossIndexToGang;
 
-  mapping (address =&gt; uint256) public mobsterBalances;
+  mapping (address => uint256) public mobsterBalances;
 
 
   /*** ACCESS MODIFIERS ***/
@@ -125,7 +125,7 @@ contract MobSquads is ERC721 {
     cooAddress = msg.sender;
     leadingHitCount = 0;
      gangHits.length++;
-  //  _createMobster(&quot;The Godfather&quot;,address(this),2000000000000000,0);
+  //  _createMobster("The Godfather",address(this),2000000000000000,0);
   }
 
   /*** PUBLIC FUNCTIONS ***/
@@ -178,7 +178,7 @@ contract MobSquads is ERC721 {
     sellingPrice =mobsterIndexToPrice[_tokenId];
     owner = mobsterIndexToOwner[_tokenId];
     state = mobster.state;
-    if (mobster.state==1 &amp;&amp; now&gt;mobster.dazedExipryTime){
+    if (mobster.state==1 && now>mobster.dazedExipryTime){
         state=0; // time expired so say they are armed
     }
     dazedExipryTime=mobster.dazedExipryTime;
@@ -198,11 +198,11 @@ contract MobSquads is ERC721 {
   /// hit a mobster
   function hitMobster(uint256 _victim  , uint256 _hitter) public payable returns (bool){
     address mobsterOwner = mobsterIndexToOwner[_victim];
-    require(msg.sender != mobsterOwner); // it doesn&#39;t make sense, but hey
+    require(msg.sender != mobsterOwner); // it doesn't make sense, but hey
     require(msg.sender==mobsterIndexToOwner[_hitter]); // they must be a hitter owner
 
     // Godfather cannot be hit
-    if (msg.value&gt;=hitPrice &amp;&amp; _victim!=0 &amp;&amp; _hitter!=0){
+    if (msg.value>=hitPrice && _victim!=0 && _hitter!=0){
         // zap mobster
         mobsters[_victim].state=1;
         mobsters[_victim].dazedExipryTime = now + (2 * 1 minutes);
@@ -212,7 +212,7 @@ contract MobSquads is ERC721 {
         gangHits[gangNumber]++; // increase the hit count for this gang
         currentHitTotal++;
 
-        if  (gangHits[gangNumber]&gt;leadingHitCount){
+        if  (gangHits[gangNumber]>leadingHitCount){
             leadingHitCount=gangHits[gangNumber];
             leadingGang=gangNumber;
         }
@@ -223,8 +223,8 @@ contract MobSquads is ERC721 {
 
          // each of the 6 members of the gang with the most hits receives 10% of the Hit Pool
          uint256 winningMobsterIndex  = (6*(leadingGang-1))+1; // include the boss
-         for (uint256 x = winningMobsterIndex;x&lt;6+winningMobsterIndex;x++){
-             if(mobsterIndexToOwner[x]!=0 &amp;&amp; mobsterIndexToOwner[x]!=address(this)){
+         for (uint256 x = winningMobsterIndex;x<6+winningMobsterIndex;x++){
+             if(mobsterIndexToOwner[x]!=0 && mobsterIndexToOwner[x]!=address(this)){
                          mobsterBalances[ mobsterIndexToOwner[x]]+=lethalBonus; // available for withdrawal
               }
          } // end for this gang
@@ -232,7 +232,7 @@ contract MobSquads is ERC721 {
          currentHitTotal=0; // reset the counter
 
          // need to reset the gangHits
-         for (uint256 y = 0 ; y&lt;gangHits.length;y++){
+         for (uint256 y = 0 ; y<gangHits.length;y++){
            gangHits[y]=0;
            leadingHitCount=0;
            leadingGang=0;
@@ -279,7 +279,7 @@ contract MobSquads is ERC721 {
 
     uint256 sellingPrice = mobsterIndexToPrice[_tokenId];
     // no sales until we reach a minimum amount
-    require(totalSupply()&gt;=minimumTokensBeforeSale);
+    require(totalSupply()>=minimumTokensBeforeSale);
 
     // Making sure token owner is not sending to self
     require(oldOwner != msg.sender);
@@ -288,7 +288,7 @@ contract MobSquads is ERC721 {
     require(_addressNotNull(msg.sender));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
 // Godfather when sold will raise by 17% (10% previous owner , 3.5% to contract, 3,5% to pool for mobsters)
 // Bosses when sold will raise by 17% (10% previous owner , 3.5% to contract , 3.5% to Godfather owner)
@@ -301,16 +301,16 @@ contract MobSquads is ERC721 {
         // each of the 5 members of the gang with the most hits receives 20% of the mobsterPool
 
         //leadingGang 0,1,2,3,4 = gangs
-        // leaders are  always 1,7,13,19,25 ,,,, so mobsters are (6*leadingGang)+2; --&gt;
+        // leaders are  always 1,7,13,19,25 ,,,, so mobsters are (6*leadingGang)+2; -->
         uint256 winningMobsterIndex  = (6*(leadingGang-1))+2; // boss not included in mobster payments
-        for (uint256 x = winningMobsterIndex;x&lt;5+winningMobsterIndex;x++){
-            if(mobsterIndexToOwner[x]!=0 &amp;&amp;  mobsterIndexToOwner[x]!=address(this)){
+        for (uint256 x = winningMobsterIndex;x<5+winningMobsterIndex;x++){
+            if(mobsterIndexToOwner[x]!=0 &&  mobsterIndexToOwner[x]!=address(this)){
                         mobsterBalances[ mobsterIndexToOwner[x]]+=poolPayment; // available for withdrawal
              }
         }
 
         // need to reset the gangHits
-        for (uint256 y = 0 ; y&lt;gangHits.length;y++){
+        for (uint256 y = 0 ; y<gangHits.length;y++){
           gangHits[y]=0;
           leadingHitCount=0;
           leadingGang=0;
@@ -326,16 +326,16 @@ contract MobSquads is ERC721 {
     }
     // mobster
     uint256 bossFee = 0;
-    if (mobsters[_tokenId].boss!=_tokenId &amp;&amp; _tokenId!=0){
+    if (mobsters[_tokenId].boss!=_tokenId && _tokenId!=0){
         bossFee =  roundIt(uint256(SafeMath.div(mobsters[_tokenId].buyPrice,20))); // 5%
     }
     // pay the godfather if not owned by contract
-    if (godFatherFee&gt;0 &amp;&amp; mobsterIndexToOwner[0]!=address(this)){
+    if (godFatherFee>0 && mobsterIndexToOwner[0]!=address(this)){
         mobsterIndexToOwner[0].transfer(godFatherFee);
     }
 
      // pay the bossFee if not owned by the contract
-    if (_tokenId!=0 &amp;&amp; bossFee&gt;0 &amp;&amp; mobsterIndexToOwner[mobsters[_tokenId].boss]!=address(this)){
+    if (_tokenId!=0 && bossFee>0 && mobsterIndexToOwner[mobsters[_tokenId].boss]!=address(this)){
         mobsterIndexToOwner[mobsters[_tokenId].boss].transfer(bossFee);
     }
 
@@ -354,7 +354,7 @@ contract MobSquads is ERC721 {
 
     TokenSold(_tokenId, sellingPrice, mobsterIndexToPrice[_tokenId], oldOwner, msg.sender);
 
-    if(SafeMath.sub(msg.value, sellingPrice)&gt;0){
+    if(SafeMath.sub(msg.value, sellingPrice)>0){
              msg.sender.transfer(SafeMath.sub(msg.value, sellingPrice)); // return any additional amount
     }
 
@@ -372,7 +372,7 @@ contract MobSquads is ERC721 {
     function claimMobsterFunds() public {
       if (mobsterBalances[msg.sender]==0) revert();
       uint256 amount = mobsterBalances[msg.sender];
-      if (amount&gt;0){
+      if (amount>0){
         mobsterBalances[msg.sender] = 0;
         msg.sender.transfer(amount);
       }
@@ -390,7 +390,7 @@ contract MobSquads is ERC721 {
    }
    // level 1
     //Bosses when sold will raise by 17%
-  if (mobsters[_tokenId].boss==_tokenId &amp;&amp; _tokenId!=0){
+  if (mobsters[_tokenId].boss==_tokenId && _tokenId!=0){
         newPrice = roundIt(SafeMath.div(SafeMath.mul(sellingPrice, 117), 100));
    }
    // level 2
@@ -450,7 +450,7 @@ contract MobSquads is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 mobsterId;
-      for (mobsterId = 0; mobsterId &lt;= totalmobsters; mobsterId++) {
+      for (mobsterId = 0; mobsterId <= totalmobsters; mobsterId++) {
         if (mobsterIndexToOwner[mobsterId] == _owner) {
           result[resultIndex] = mobsterId;
           resultIndex++;
@@ -529,8 +529,8 @@ contract MobSquads is ERC721 {
         gangHits.length++;
     }
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newMobsterId == uint256(uint32(newMobsterId)));
 
     Birth(newMobsterId, _name, _owner);
@@ -558,12 +558,12 @@ contract MobSquads is ERC721 {
 
   /// @dev Assigns ownership of a specific mobster to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of mobsters is capped to 2^32 we can&#39;t overflow this
+    // Since the number of mobsters is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     mobsterIndexToOwner[_tokenId] = _to;
 
-    // When creating new mobsters _from is 0x0, but we can&#39;t account that address.
+    // When creating new mobsters _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -604,9 +604,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -614,7 +614,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -623,7 +623,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

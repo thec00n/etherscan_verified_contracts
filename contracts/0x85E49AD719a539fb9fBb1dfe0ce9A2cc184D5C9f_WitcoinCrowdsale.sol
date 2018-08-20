@@ -146,11 +146,11 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
 
     uint256 c = a / b;
 
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
     return c;
 
@@ -160,7 +160,7 @@ library SafeMath {
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
 
-    assert(b &lt;= a);
+    assert(b <= a);
 
     return a - b;
 
@@ -172,7 +172,7 @@ library SafeMath {
 
     uint256 c = a + b;
 
-    assert(c &gt;= a);
+    assert(c >= a);
 
     return c;
 
@@ -440,13 +440,13 @@ contract WitcoinCrowdsale is Ownable {
 
         if (presale()) {
 
-            if (tokensSold &lt;= 250000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(130)/100;
+            if (tokensSold <= 250000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(130)/100;
 
-            else if (tokensSold &lt;= 500000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(125)/100;
+            else if (tokensSold <= 500000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(125)/100;
 
-            else if (tokensSold &lt;= 750000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(120)/100;
+            else if (tokensSold <= 750000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(120)/100;
 
-            else if (tokensSold &lt;= 1000000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(115)/100;
+            else if (tokensSold <= 1000000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(115)/100;
 
         }
 
@@ -456,13 +456,13 @@ contract WitcoinCrowdsale is Ownable {
 
         if (sale()) {
 
-            if (bonusedTokens &gt; 2500 * (10 ** decimals)) {
+            if (bonusedTokens > 2500 * (10 ** decimals)) {
 
-                if (bonusedTokens &lt;= 80000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(105)/100;
+                if (bonusedTokens <= 80000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(105)/100;
 
-                else if (bonusedTokens &lt;= 800000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(110)/100;
+                else if (bonusedTokens <= 800000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(110)/100;
 
-                else if (bonusedTokens &gt; 800000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(120)/100;
+                else if (bonusedTokens > 800000 * (10 ** decimals)) bonusedTokens = bonusedTokens.mul(120)/100;
 
             }
 
@@ -482,11 +482,11 @@ contract WitcoinCrowdsale is Ownable {
 
         bool withinPeriod = presale() || sale();
 
-        bool underLimits = (presale() &amp;&amp; tokensSold + tokens &lt;= totalTokensPresale) || (sale() &amp;&amp; tokensSold + tokens &lt;= totalTokensSale);
+        bool underLimits = (presale() && tokensSold + tokens <= totalTokensPresale) || (sale() && tokensSold + tokens <= totalTokensSale);
 
-        bool overMinimum = tokens &gt;= minimumWitcoins;
+        bool overMinimum = tokens >= minimumWitcoins;
 
-        return withinPeriod &amp;&amp; underLimits &amp;&amp; overMinimum;
+        return withinPeriod && underLimits && overMinimum;
 
     }
 
@@ -506,7 +506,7 @@ contract WitcoinCrowdsale is Ownable {
 
     function presale() public returns(bool) {
 
-        return now &gt;= startPresale &amp;&amp; now &lt; startTime;
+        return now >= startPresale && now < startTime;
 
     }
 
@@ -516,7 +516,7 @@ contract WitcoinCrowdsale is Ownable {
 
     function sale() public returns(bool) {
 
-        return now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        return now >= startTime && now <= endTime;
 
     }
 
@@ -526,11 +526,11 @@ contract WitcoinCrowdsale is Ownable {
 
     function finalize() onlyOwner public {
 
-        require(now &gt; endTime);
+        require(now > endTime);
 
 
 
-        if (tokensSold &lt; goal) {
+        if (tokensSold < goal) {
 
             vault.enableRefunds();
 
@@ -564,7 +564,7 @@ contract WitcoinCrowdsale is Ownable {
 
     function finalizeRefunding() onlyOwner public {
 
-        require(now &gt; endRefundingingTime);
+        require(now > endRefundingingTime);
 
 
 
@@ -588,9 +588,9 @@ contract WitcoinCrowdsale is Ownable {
 
     function distributeTokens() onlyOwner public {
 
-        require(tokensSold &gt;= goal);
+        require(tokensSold >= goal);
 
-        require(tokensSold - tokensDistributed &gt; 100);
+        require(tokensSold - tokensDistributed > 100);
 
 
 
@@ -646,7 +646,7 @@ contract RefundVault is Ownable {
 
 
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
 
   address public wallet;
 
@@ -762,7 +762,7 @@ contract ERC20BasicToken is ERC20Basic {
 
 
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 public totalSupply;
 
@@ -830,7 +830,7 @@ contract ERC20Token is ERC20, ERC20BasicToken {
 
 
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
 
@@ -858,7 +858,7 @@ contract ERC20Token is ERC20, ERC20BasicToken {
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
 
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
 
 
@@ -886,7 +886,7 @@ contract ERC20Token is ERC20, ERC20BasicToken {
 
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
 
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -960,7 +960,7 @@ contract ERC20Token is ERC20, ERC20BasicToken {
 
     uint oldValue = allowed[msg.sender][_spender];
 
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
 
       allowed[msg.sender][_spender] = 0;
 
@@ -1080,7 +1080,7 @@ contract ERC223Token is ERC223, ERC20Token {
 
         }
 
-        return (length &gt; 0);
+        return (length > 0);
 
     }
 
@@ -1142,9 +1142,9 @@ contract WitCoin is KnowledgeToken{
 
         totalSupply = 0;
 
-        name = &quot;Witcoin&quot;;
+        name = "Witcoin";
 
-        symbol = &quot;WIT&quot;;
+        symbol = "WIT";
 
         decimals = 8;
 

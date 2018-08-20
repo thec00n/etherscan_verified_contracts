@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 contract OwnedByWinsome {
 
   address public owner;
-  mapping (address =&gt; bool) allowedWorker;
+  mapping (address => bool) allowedWorker;
 
   function initOwnership(address _owner, address _worker) internal{
     owner = _owner;
@@ -49,37 +49,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -97,14 +97,14 @@ library SafeMath {
 contract BasicToken {
   using SafeMath for uint;
   event Transfer(address indexed from, address indexed to, uint value);
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   uint public     totalSupply =    0;    			 // Total supply of 500 million Tokens
   
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -128,13 +128,13 @@ contract StandardToken is BasicToken{
   event Approval(address indexed owner, address indexed spender, uint value);
 
   
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,11 +156,11 @@ contract StandardToken is BasicToken{
 
 contract WinToken is StandardToken, OwnedByWinsome{
 
-  string public   name =           &quot;Winsome.io Token&quot;;
-  string public   symbol =         &quot;WIN&quot;;
+  string public   name =           "Winsome.io Token";
+  string public   symbol =         "WIN";
   uint public     decimals =       18;
   
-  mapping (address =&gt; bool) allowedMinter;
+  mapping (address => bool) allowedMinter;
 
   function WinToken(address _owner){
     allowedMinter[_owner] = true;

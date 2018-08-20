@@ -24,7 +24,7 @@ contract Owned {
 
 contract Notarize is Owned {
     
-    mapping(bytes32 =&gt; uint) public notaryBook;
+    mapping(bytes32 => uint) public notaryBook;
     uint public notaryBookSize;
 
     event RecordAdded(bytes32 hash, uint timestamp);
@@ -37,7 +37,7 @@ contract Notarize is Owned {
     }
 
     function isNotarized(bytes32 _hash) public view returns(bool) {
-        return (notaryBook[_hash] &gt; 0);
+        return (notaryBook[_hash] > 0);
     }
 
     function getTimestamp(bytes32 _hash) public view returns(uint) {

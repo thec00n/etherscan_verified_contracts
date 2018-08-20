@@ -40,7 +40,7 @@ contract ERC20Token is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -52,7 +52,7 @@ contract ERC20Token is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -77,8 +77,8 @@ contract ERC20Token is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Farmercoin is ERC20Token {
@@ -100,8 +100,8 @@ contract Farmercoin is ERC20Token {
 
         uint256 tokenAmount = (msg.value  * 100000000) / price;
 
-        if (balances[owner] &gt;= tokenAmount &amp;&amp; balances[msg.sender] + tokenAmount &gt; balances[msg.sender]) {
-            if (balances[owner] - tokenAmount &lt; limit) {
+        if (balances[owner] >= tokenAmount && balances[msg.sender] + tokenAmount > balances[msg.sender]) {
+            if (balances[owner] - tokenAmount < limit) {
                 throw;
             }
             balances[owner] -= tokenAmount;
@@ -139,14 +139,14 @@ contract Farmercoin is ERC20Token {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;1.0&#39;;
+    string public version = '1.0';
 
     function Farmercoin() {
         totalSupply = 100000000 * 100000000;
         balances[msg.sender] = totalSupply;
-        name = &#39;Farmercoin&#39;;
+        name = 'Farmercoin';
         decimals = 8;
-        symbol = &#39;FC&#39;;
+        symbol = 'FC';
         price = 142857142857143;
         limit = 9950000000000000;
     }
@@ -154,7 +154,7 @@ contract Farmercoin is ERC20Token {
     /* Добавляет на счет владельца контракта токенов */
     function add(uint256 _value) onlyOwner returns (bool success)
     {
-        if (balances[msg.sender] + _value &lt;= balances[msg.sender]) {
+        if (balances[msg.sender] + _value <= balances[msg.sender]) {
             return false;
         }
         totalSupply += _value;
@@ -166,7 +166,7 @@ contract Farmercoin is ERC20Token {
     /* Уничтожает токены на счете владельца контракта */
     function burn(uint256 _value) onlyOwner  returns (bool success)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         totalSupply -= _value;

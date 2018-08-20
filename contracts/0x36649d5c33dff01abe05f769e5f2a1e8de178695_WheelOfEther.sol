@@ -52,11 +52,11 @@ pragma solidity ^0.4.23;
                                 `.-::::::::::::::-.`
 
 ---Design---
-J&#246;rmungandr
+Jörmungandr
 
 ---Contract and Frontend---
 Mr Fahrenheit
-J&#246;rmungandr
+Jörmungandr
 
 ---Contract Auditor---
 8 ฿ł₮ ₮Ɽł₱
@@ -125,8 +125,8 @@ contract WheelOfEther {
 
     uint256 internal globalFactor = 10e21;
     uint256 constant internal constantFactor = 10e21 * 10e21;
-    mapping(address =&gt; uint256) internal personalFactorLedger_;
-    mapping(address =&gt; uint256) internal balanceLedger_;
+    mapping(address => uint256) internal personalFactorLedger_;
+    mapping(address => uint256) internal balanceLedger_;
 
 
     constructor()
@@ -153,7 +153,7 @@ contract WheelOfEther {
     {
         address _customerAddress = msg.sender;
         // User must buy at least 0.02 eth
-        require(msg.value &gt;= (minBet * 2));
+        require(msg.value >= (minBet * 2));
 
         // Add 2% fee of the buy to devFeeBalance
         uint256 devFee = msg.value / 50;
@@ -173,8 +173,8 @@ contract WheelOfEther {
     {
         address _customerAddress = msg.sender;
         // User must have enough eth and cannot sell 0
-        require(sellEth &lt;= ethBalanceOf(_customerAddress));
-        require(sellEth &gt; 0);
+        require(sellEth <= ethBalanceOf(_customerAddress));
+        require(sellEth > 0);
         // Transfer balance and update user ledgers
         _customerAddress.transfer(sellEth);
         balanceLedger_[_customerAddress] = ethBalanceOf(_customerAddress).sub(sellEth);
@@ -189,9 +189,9 @@ contract WheelOfEther {
         nonContract
     {
         address _customerAddress = msg.sender;
-        // Set the sell amount to the user&#39;s full balance, don&#39;t sell if empty
+        // Set the sell amount to the user's full balance, don't sell if empty
         uint256 sellEth = ethBalanceOf(_customerAddress);
-        require(sellEth &gt; 0);
+        require(sellEth > 0);
         // Transfer balance and update user ledgers
         _customerAddress.transfer(sellEth);
         balanceLedger_[_customerAddress] = 0;
@@ -219,15 +219,15 @@ contract WheelOfEther {
     {
         address _customerAddress = msg.sender;
         // User must have enough eth
-        require(ethBalanceOf(_customerAddress) &gt;= betEth);
+        require(ethBalanceOf(_customerAddress) >= betEth);
         // User must bet at least the minimum
-        require(betEth &gt;= minBet);
+        require(betEth >= minBet);
         // If the user bets more than maximum...they just bet the maximum
-        if (betEth &gt; maxBet){
+        if (betEth > maxBet){
             betEth = maxBet;
         }
         // User cannot bet more than 10% of available pool
-        if (betEth &gt; betPool(_customerAddress)/10) {
+        if (betEth > betPool(_customerAddress)/10) {
             betEth = betPool(_customerAddress)/10;
         }
         // Execute the bet and return the outcome
@@ -242,16 +242,16 @@ contract WheelOfEther {
         returns (uint256 resultNum)
     {
         address _customerAddress = msg.sender;
-        // set the bet amount to the user&#39;s full balance
+        // set the bet amount to the user's full balance
         uint256 betEth = ethBalanceOf(_customerAddress);
         // User cannot bet more than 10% of available pool
-        if (betEth &gt; betPool(_customerAddress)/10) {
+        if (betEth > betPool(_customerAddress)/10) {
             betEth = betPool(_customerAddress)/10;
         }
         // User must bet more than the minimum
-        require(betEth &gt;= minBet);
+        require(betEth >= minBet);
         // If the user bets more than maximum...they just bet the maximum
-        if (betEth &gt;= maxBet){
+        if (betEth >= maxBet){
             betEth = maxBet;
         }
         // Execute the bet and return the outcome
@@ -271,7 +271,7 @@ contract WheelOfEther {
 
         // All eth is converted into tokens before the bet
         // User must buy at least 0.02 eth
-        require(betEth &gt;= (minBet * 2));
+        require(betEth >= (minBet * 2));
 
         // Add 2% fee of the buy to devFeeBalance
         uint256 devFee = betEth / 50;
@@ -279,7 +279,7 @@ contract WheelOfEther {
         betEth = betEth.sub(devFee);
 
         // If the user bets more than maximum...they just bet the maximum
-        if (betEth &gt;= maxBet){
+        if (betEth >= maxBet){
             betEth = maxBet;
         }
 
@@ -288,7 +288,7 @@ contract WheelOfEther {
 		personalFactorLedger_[_customerAddress] = constantFactor / globalFactor;
 
         // User cannot bet more than 10% of available pool
-        if (betEth &gt; betPool(_customerAddress)/10) {
+        if (betEth > betPool(_customerAddress)/10) {
             betEth = betPool(_customerAddress)/10;
         }
 
@@ -362,7 +362,7 @@ contract WheelOfEther {
 
         uint256 returnedEth;
 
-		if (result &lt; 5)                                             // &lt; 5 = WIN
+		if (result < 5)                                             // < 5 = WIN
 		{
 			uint256 wonEth;
 			if (result == 0){                                       // Grand Jackpot
@@ -381,7 +381,7 @@ contract WheelOfEther {
         } else if (result == 5){                                    // 5 = Refund
             returnedEth = betEth;
 		}
-		else {                                                      // &gt; 5 = LOSE
+		else {                                                      // > 5 = LOSE
 			uint256 lostEth;
 			if (result == 6){                                		// Minor Loss
 				lostEth = betEth / 10;                    		    // -10% of original bet
@@ -392,7 +392,7 @@ contract WheelOfEther {
 			} else if (result == 9){                                // Total Loss
 				lostEth = betEth;                                   // -100% of original bet
 			}
-			loseEth(_customerAddress, lostEth);                     // &quot;Award&quot; the user their loss
+			loseEth(_customerAddress, lostEth);                     // "Award" the user their loss
             returnedEth = betEth.sub(lostEth);
 		}
         uint256 newBal = ethBalanceOf(_customerAddress);
@@ -428,8 +428,8 @@ contract WheelOfEther {
         returns (uint256 resultNum)
     {
         // Loop until the result bracket is determined
-        for (uint8 i=0;i&lt;=9;i++){
-            if (result &lt;= brackets[i]){
+        for (uint8 i=0;i<=9;i++){
+            if (result <= brackets[i]){
                 return i;
             }
         }
@@ -484,9 +484,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -494,7 +494,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -503,7 +503,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
  */
 contract WhiteListRegistry is Ownable {
 
-    mapping (address =&gt; WhiteListInfo) public whitelist;
+    mapping (address => WhiteListInfo) public whitelist;
 
     struct WhiteListInfo {
         bool whiteListed;
@@ -72,6 +72,6 @@ contract WhiteListRegistry is Ownable {
     }
 
     function isAmountAllowed(address _contributor, uint _amount) public view returns(bool) {
-        return whitelist[_contributor].minCap &lt;= _amount &amp;&amp; isWhiteListed(_contributor);
+        return whitelist[_contributor].minCap <= _amount && isWhiteListed(_contributor);
     }
 }

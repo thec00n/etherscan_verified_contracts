@@ -78,23 +78,23 @@ contract clientOfdAppBridge {
 
     
     function setGas(uint256 new_gas) internal {
-        require(new_gas &gt; 0);
+        require(new_gas > 0);
         current_gas = new_gas;
     }
 
     function setCallbackGas(uint256 new_callback_gas) internal {
-        require(new_callback_gas &gt; 0);
+        require(new_callback_gas > 0);
         user_callback_gas = new_callback_gas;
     }
 
     
 
     function callURL(string callback_method, string external_url, string external_params) internal dAppBridgeClient returns(bytes32) {
-        uint256 _reward = dAppBridge.getMinReward(&#39;callURL&#39;)+user_callback_gas;
-        return dAppBridge.callURL.value(_reward).gas(current_gas)(callback_method, external_url, external_params, &quot;&quot;);
+        uint256 _reward = dAppBridge.getMinReward('callURL')+user_callback_gas;
+        return dAppBridge.callURL.value(_reward).gas(current_gas)(callback_method, external_url, external_params, "");
     }
     function callURL(string callback_method, string external_url, string external_params, string json_extract_elemen) internal dAppBridgeClient returns(bytes32) {
-        uint256 _reward = dAppBridge.getMinReward(&#39;callURL&#39;)+user_callback_gas;
+        uint256 _reward = dAppBridge.getMinReward('callURL')+user_callback_gas;
         return dAppBridge.callURL.value(_reward).gas(current_gas)(callback_method, external_url, external_params, json_extract_elemen);
     }
 
@@ -112,13 +112,13 @@ contract clientOfdAppBridge {
     }
 
     function char(byte b) internal pure returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
     
     function bytes32string(bytes32 b32) internal pure returns (string out) {
         bytes memory s = new bytes(64);
-        for (uint8 i = 0; i &lt; 32; i++) {
+        for (uint8 i = 0; i < 32; i++) {
             byte b = byte(b32[i]);
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -138,8 +138,8 @@ contract clientOfdAppBridge {
         string memory length_ab = new string(bytes_a.length + bytes_b.length);
         bytes memory bytes_c = bytes(length_ab);
         uint k = 0;
-        for (uint i = 0; i &lt; bytes_a.length; i++) bytes_c[k++] = bytes_a[i];
-        for (i = 0; i &lt; bytes_b.length; i++) bytes_c[k++] = bytes_b[i];
+        for (uint i = 0; i < bytes_a.length; i++) bytes_c[k++] = bytes_a[i];
+        for (i = 0; i < bytes_b.length; i++) bytes_c[k++] = bytes_b[i];
         return string(bytes_c);
     }
 }
@@ -153,20 +153,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -199,8 +199,8 @@ contract DiceRoll is clientOfdAppBridge {
     }
     
 
-    mapping (bytes32 =&gt; playerDiceRoll) public playerRolls;
-    mapping (address =&gt; uint256) playerPendingWithdrawals;
+    mapping (bytes32 => playerDiceRoll) public playerRolls;
+    mapping (address => uint256) playerPendingWithdrawals;
 
     address public owner;
     uint256 public contractBalance;
@@ -224,7 +224,7 @@ contract DiceRoll is clientOfdAppBridge {
     uint256 public oracleFee;
     
     
-    mapping(uint256 =&gt; bool) public permittedRolls;
+    mapping(uint256 => bool) public permittedRolls;
     
     uint public maxPendingPayouts; // Max potential payments
 
@@ -267,28 +267,28 @@ contract DiceRoll is clientOfdAppBridge {
         _;
     }
     modifier validBet(uint256 betSize, uint256 rollUnder) {
-        require(rollUnder &gt; minRoll);
-        require(rollUnder &lt; maxRoll);
-        require(betSize &lt;= maxBet);
-        require(betSize &gt;= minBet);
+        require(rollUnder > minRoll);
+        require(rollUnder < maxRoll);
+        require(betSize <= maxBet);
+        require(betSize >= minBet);
         require(permittedRolls[rollUnder] == true);
         
         uint256 potential_profit = (msg.value * (houseEdge / rollUnder)) - msg.value;
-        require(maxPendingPayouts.add(potential_profit) &lt;= address(this).balance);
+        require(maxPendingPayouts.add(potential_profit) <= address(this).balance);
         
         _;
     }
     
     modifier validBetMulti(uint256 betSize, uint256 rollUnder, uint256 number_of_rolls) {
-        require(rollUnder &gt; minRoll);
-        require(rollUnder &lt; maxRoll);
-        require(betSize &lt;= maxBet);
-        require(betSize &gt;= minBet);
-        require(number_of_rolls &lt;= maxMultiRolls);
+        require(rollUnder > minRoll);
+        require(rollUnder < maxRoll);
+        require(betSize <= maxBet);
+        require(betSize >= minBet);
+        require(number_of_rolls <= maxMultiRolls);
         require(permittedRolls[rollUnder] == true);
         
         uint256 potential_profit = (msg.value * (houseEdge / rollUnder)) - msg.value;
-        require(maxPendingPayouts.add(potential_profit) &lt;= address(this).balance);
+        require(maxPendingPayouts.add(potential_profit) <= address(this).balance);
         
         _;
     }
@@ -299,7 +299,7 @@ contract DiceRoll is clientOfdAppBridge {
         uint256 currentAvailBankRoll = address(this).balance.sub(maxPendingPayouts);
         uint256 divisor = houseEdge.div(minRollUnder); // will be 4
         uint256 liveMaxBet = currentAvailBankRoll.div(divisor); // 0.627852
-        if(liveMaxBet &gt; maxBet)
+        if(liveMaxBet > maxBet)
             liveMaxBet = maxBet;
         return liveMaxBet;
     }
@@ -346,9 +346,9 @@ contract DiceRoll is clientOfdAppBridge {
         maxRoll = 100;
         minBet = 15000000000000000; //200000000000000;
         maxBet = 300000000000000000; //200000000000000000;
-        randomAPI_url = &quot;https://api.random.org/json-rpc/1/invoke&quot;;
-        randomAPI_key = &quot;7d4ab655-e778-4d9f-815a-98fd518908bd&quot;;
-        randomAPI_extract = &quot;result.random.data&quot;;
+        randomAPI_url = "https://api.random.org/json-rpc/1/invoke";
+        randomAPI_key = "7d4ab655-e778-4d9f-815a-98fd518908bd";
+        randomAPI_extract = "result.random.data";
         //permittedRolls[10] = true;
         permittedRolls[20] = true;
         permittedRolls[30] = true;
@@ -391,14 +391,14 @@ contract DiceRoll is clientOfdAppBridge {
     // This is called from dAppBridge.com with the random number with secure proof
     function callback(bytes32 key, string callbackData) external payable only_dAppBridge {
         require(playerRolls[key].playerAddr != address(0x0));
-        require(playerRolls[key].win == 2); // we&#39;ve already process it if so!
+        require(playerRolls[key].win == 2); // we've already process it if so!
 
         playerRolls[key].result = parseInt(callbackData);
         
         uint256 _totalWin = playerRolls[key].stake.add(playerRolls[key].profit); // total we send back to playerRolls
         
         
-        if(maxPendingPayouts &lt; playerRolls[key].profit){
+        if(maxPendingPayouts < playerRolls[key].profit){
             //force refund as game failed...
             playerRolls[key].result == 0;
             
@@ -439,7 +439,7 @@ contract DiceRoll is clientOfdAppBridge {
             
         } else {
         
-            if(playerRolls[key].result &lt; playerRolls[key].rollUnder) {
+            if(playerRolls[key].result < playerRolls[key].rollUnder) {
 
                 contractBalance = contractBalance.sub(playerRolls[key].profit.add(oracleFee)); // how much we have won/lost
                 totalUserProfit = totalUserProfit.add(_totalWin); // game stats
@@ -500,7 +500,7 @@ contract DiceRoll is clientOfdAppBridge {
 
         // This is the actual call to dAppBridge - using their callURL function to easily access an external API
         // such as random.org        
-        bytes32 betID = callURL(&quot;callback&quot;, randomAPI_url, 
+        bytes32 betID = callURL("callback", randomAPI_url, 
         constructAPIParam(), 
         randomAPI_extract);
 
@@ -518,7 +518,7 @@ contract DiceRoll is clientOfdAppBridge {
         
         playerRolls[betID] = playerDiceRoll(betID, msg.sender, rollUnder, msg.value, _player_profit, 2, false, 0, now);
 
-        maxPendingPayouts = maxPendingPayouts.add(_player_profit); // don&#39;t add it to contractBalance yet until its a loss
+        maxPendingPayouts = maxPendingPayouts.add(_player_profit); // don't add it to contractBalance yet until its a loss
 
         emit DiceRollResult(betID, msg.sender, rollUnder, 0,
             msg.value, _player_profit, 2, false, now);
@@ -529,7 +529,7 @@ contract DiceRoll is clientOfdAppBridge {
     function rollDice(uint rollUnder, uint number_of_rolls) public payable gameActive validBetMulti(msg.value, rollUnder, number_of_rolls) returns (bytes32) {
 
         uint c = 0;
-        for(c; c&lt; number_of_rolls; c++) {
+        for(c; c< number_of_rolls; c++) {
             rollDice(rollUnder);
         }
 
@@ -562,9 +562,9 @@ contract DiceRoll is clientOfdAppBridge {
     
     function constructAPIParam() internal view returns(string){
         return strConcat(
-            strConcat(&quot;{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\&quot;method\&quot;:\&quot;generateIntegers\&quot;,\&quot;params\&quot;:{\&quot;apiKey\&quot;:\&quot;&quot;,
-        randomAPI_key, &quot;\&quot;,\&quot;n\&quot;:1,\&quot;min\&quot;:&quot;, uint2str(minRoll), &quot;,\&quot;max\&quot;:&quot;, uint2str(maxRoll), &quot;,\&quot;replacement\&quot;:true,\&quot;base\&quot;:10},\&quot;id\&quot;:&quot;),
-        uint2str(gameNumber), &quot;}&quot; 
+            strConcat("{\"jsonrpc\":\"2.0\",\"method\":\"generateIntegers\",\"params\":{\"apiKey\":\"",
+        randomAPI_key, "\",\"n\":1,\"min\":", uint2str(minRoll), ",\"max\":", uint2str(maxRoll), ",\"replacement\":true,\"base\":10},\"id\":"),
+        uint2str(gameNumber), "}" 
         ); // Add in gameNumber to the params to avoid clashes
     }
     
@@ -613,23 +613,23 @@ contract DiceRoll is clientOfdAppBridge {
         randomAPI_extract = newRandomAPI_extract;
     }
     function private_setminRoll(uint256 newMinRoll) public onlyOwner {
-        require(newMinRoll&gt;0);
-        require(newMinRoll&lt;maxRoll);
+        require(newMinRoll>0);
+        require(newMinRoll<maxRoll);
         minRoll = newMinRoll;
     }
     function private_setmaxRoll(uint256 newMaxRoll) public onlyOwner {
-        require(newMaxRoll&gt;0);
-        require(newMaxRoll&gt;minRoll);
+        require(newMaxRoll>0);
+        require(newMaxRoll>minRoll);
         maxRoll = newMaxRoll;
     }
     function private_setminBet(uint256 newMinBet) public onlyOwner {
-        require(newMinBet &gt; 0);
-        require(newMinBet &lt; maxBet);
+        require(newMinBet > 0);
+        require(newMinBet < maxBet);
         minBet = newMinBet;
     }
     function private_setmaxBet(uint256 newMaxBet) public onlyOwner {
-        require(newMaxBet &gt; 0);
-        require(newMaxBet &gt; minBet);
+        require(newMaxBet > 0);
+        require(newMaxBet > minBet);
         maxBet = newMaxBet;
     }
     function private_setPauseState(bool newState) public onlyOwner {
@@ -647,8 +647,8 @@ contract DiceRoll is clientOfdAppBridge {
     }
     function private_withdraw(uint256 amount, address send_to) external onlyOwner returns(bool) {
         address myAddress = this;
-        require(amount &lt;= myAddress.balance);
-        require(amount &gt;0);
+        require(amount <= myAddress.balance);
+        require(amount >0);
         return send_to.send(amount);
     }
     // show how much profit has been made (houseEdge)
@@ -678,8 +678,8 @@ contract DiceRoll is clientOfdAppBridge {
         bytes memory bresult = bytes(_a);
         uint256 mint = 0;
         bool decimals = false;
-        for (uint256 i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint256 i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                     if (_b == 0) break;
                     else _b--;
@@ -688,7 +688,7 @@ contract DiceRoll is clientOfdAppBridge {
                 mint += uint256(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
     
@@ -704,9 +704,9 @@ contract DiceRoll is clientOfdAppBridge {
         string memory abc = new string(_ba.length + _bb.length + _bc.length);
         bytes memory babc = bytes(abc);
         uint256 k = 0;
-        for (uint256 i = 0; i &lt; _ba.length; i++) babc[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babc[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babc[k++] = _bc[i];
+        for (uint256 i = 0; i < _ba.length; i++) babc[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babc[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babc[k++] = _bc[i];
 
         return strConcat(string(babc), strConcat(_d, _e, _f));
     }
@@ -719,25 +719,25 @@ contract DiceRoll is clientOfdAppBridge {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     function uint2str(uint i) internal pure returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){

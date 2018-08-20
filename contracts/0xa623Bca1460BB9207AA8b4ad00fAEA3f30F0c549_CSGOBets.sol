@@ -30,22 +30,22 @@ contract CSGOBets {
         function enter() {
                 // if less than 0.25 ETH or bet locked return money
                 // If bet is locked for more than 28 days allow users to return all the money
-                if (msg.value &lt; 250 finney ||
-                        (block.number &gt;= betLockTime &amp;&amp; betLockTime != 0 &amp;&amp; block.number &lt; betLockTime + 161280)) {
+                if (msg.value < 250 finney ||
+                        (block.number >= betLockTime && betLockTime != 0 && block.number < betLockTime + 161280)) {
                         msg.sender.send(msg.value);
                         return;
                 }
 
                 uint amount;
                 // max 100 ETH
-                if (msg.value &gt; 100 ether) {
+                if (msg.value > 100 ether) {
                         msg.sender.send(msg.value - 100 ether);
                         amount = 100 ether;
                 } else {
                         amount = msg.value;
                 }
 
-                if (lastTransactionRec + 161280 &lt; block.number) { // 28 days after last transaction
+                if (lastTransactionRec + 161280 < block.number) { // 28 days after last transaction
                         returnAll();
                         betLockTime = block.number;
                         lastTransactionRec = block.number;
@@ -83,12 +83,12 @@ contract CSGOBets {
                 uint losePot = losePot_ * (100 - house_edge) / 100; // substract housecut
                 uint collectedFees = losePot_ * house_edge / 100;
                 var winners = (winner == 0) ? voteA : voteB;
-                for (uint idx = 0; idx &lt; winners.length; idx += 1) {
+                for (uint idx = 0; idx < winners.length; idx += 1) {
                         uint winAmount = winners[idx].amount + (winners[idx].amount * losePot / winPot);
                         winners[idx].etherAddress.send(winAmount);
                 }
 
-                // pay housecut &amp; reset for next bet
+                // pay housecut & reset for next bet
                 if (collectedFees != 0) {
                         owner.send(collectedFees);
                 }
@@ -98,10 +98,10 @@ contract CSGOBets {
         // basically private (only called if last transaction was 4 weeks ago)
         // If a match is fixed or a party cheated, I will return all transactions manually.
         function returnAll() onlyowner {
-                for (uint idx = 0; idx &lt; voteA.length; idx += 1) {
+                for (uint idx = 0; idx < voteA.length; idx += 1) {
                         voteA[idx].etherAddress.send(voteA[idx].amount);
                 }
-                for (uint idxB = 0; idxB &lt; voteB.length; idxB += 1) {
+                for (uint idxB = 0; idxB < voteB.length; idxB += 1) {
                         voteB[idxB].etherAddress.send(voteB[idxB].amount);
                 }
                 clear();
@@ -118,7 +118,7 @@ contract CSGOBets {
 
         function changeHouseedge(uint8 cut) onlyowner {
                 // houseedge boundaries
-                if (cut &lt;= 20 &amp;&amp; cut &gt; 0)
+                if (cut <= 20 && cut > 0)
                         house_edge = cut;
         }
 

@@ -12,22 +12,22 @@ library SafeMath {
     }
     //divide
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     //subtract
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     //addition
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -61,7 +61,7 @@ contract NatminVesting is Ownable {
         uint256 amount;
         uint256 endTime;
     }
-    mapping(address =&gt; Vesting) internal vestings;
+    mapping(address => Vesting) internal vestings;
 
     function addVesting(address _user, uint256 _amount) public ;
     function getVestedAmount(address _user) public view returns (uint256 _amount);
@@ -108,14 +108,14 @@ contract BurnToken is Ownable {
 contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, BurnToken {
     using SafeMath for uint256;
 
-    string _name = &quot;Natmin&quot;;
-    string _symbol = &quot;NAT&quot;;
-    string _standard = &quot;ERC20 / ERC223&quot;;
+    string _name = "Natmin";
+    string _symbol = "NAT";
+    string _standard = "ERC20 / ERC223";
     uint256 _decimals = 18; // same value as wei
     uint256 _totalSupply;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     constructor(uint256 _supply) public {
         require(_supply != 0);
@@ -181,12 +181,12 @@ contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, B
             _codeLength := extcodesize(_to)
         }
 
-        return _codeLength &gt; 0;
+        return _codeLength > 0;
     }
 
     // This function to be used if the target is a contract address
     function transferToContract(address _to, uint256 _value, bytes _data) internal returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(vestingEnded(msg.sender));
         
         // This will override settings and allow contract owner to send to contract
@@ -205,7 +205,7 @@ contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, B
 
     // This function to be used if the target is a normal eth/wallet address 
     function transferToAddress(address _to, uint256 _value, bytes _data) internal returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(vestingEnded(msg.sender));
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -218,8 +218,8 @@ contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, B
 
     // ERC20 standard function
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(_value &lt;= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
         require(vestingEnded(_from));
 
         balances[_from] = balances[_from].sub(_value);
@@ -258,7 +258,7 @@ contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, B
 
     // Burn the specified amount of tokens by the owner
     function _burn(address _user, uint256 _value) internal ownerOnly {
-        require(balances[_user] &gt;= _value);
+        require(balances[_user] >= _value);
 
         balances[_user] = balances[_user].sub(_value);
         _totalSupply = _totalSupply.sub(_value);
@@ -290,7 +290,7 @@ contract NatminToken is ERC20Standard, ERC223Standard, Ownable, NatminVesting, B
 
     // Checks if the venting period is over for a specified user
     function vestingEnded(address _user) public view returns (bool) {
-        if(vestings[_user].endTime &lt;= now) {
+        if(vestings[_user].endTime <= now) {
             return true;
         }
         else {

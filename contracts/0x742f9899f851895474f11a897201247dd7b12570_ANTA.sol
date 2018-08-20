@@ -22,20 +22,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,11 +43,11 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -63,13 +63,13 @@ contract BasicToken is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -96,7 +96,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -152,7 +152,7 @@ contract MintableToken is StandardToken, Ownable {
 contract BurnableToken is StandardToken {
 
   function burn(uint _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -166,9 +166,9 @@ contract BurnableToken is StandardToken {
 
 contract ANTA is MintableToken, BurnableToken {
     
-    string public constant name = &quot;ANTA Coin&quot;;
+    string public constant name = "ANTA Coin";
     
-    string public constant symbol = &quot;ANTA&quot;;
+    string public constant symbol = "ANTA";
     
     uint32 public constant decimals = 18;
     
@@ -201,8 +201,8 @@ contract Crowdsale is Ownable {
     uint hardcapTokens;
     uint oneTokenInWei;
 
-    mapping (address =&gt; bool) refunded;
-    mapping (address =&gt; uint256) saleBalances ;  
+    mapping (address => bool) refunded;
+    mapping (address => uint256) saleBalances ;  
     function Crowdsale() public{
         owner = msg.sender;
 		start0 = 1511600400;//25nov 0900
@@ -224,25 +224,25 @@ contract Crowdsale is Ownable {
     }
     
     function() external payable {
-        require((now &gt; start0 &amp;&amp; now &lt; start0 + 30 days)||(now &gt; start1 &amp;&amp; now &lt; start1 + 60 days));
-        require(this.balance + msg.value &lt;= hardcap);
+        require((now > start0 && now < start0 + 30 days)||(now > start1 && now < start1 + 60 days));
+        require(this.balance + msg.value <= hardcap);
         uint tokenAdd;
         uint bonus = 0;
         tokenAdd = msg.value.mul(10**18).div(oneTokenInWei);
-        if (now &gt; start0 &amp;&amp; now &lt; start0 + 30 days) {                
+        if (now > start0 && now < start0 + 30 days) {                
             bonus = tokenAdd.div(100).mul(20);
             }
-        if (now &gt; start1 &amp;&amp; now &lt; start1 + 7 days) {                
+        if (now > start1 && now < start1 + 7 days) {                
             bonus = tokenAdd.div(100).mul(15);
             }
-        if (now &gt; start1 + 7 days &amp;&amp; now &lt; start1 + 14 days) {                
+        if (now > start1 + 7 days && now < start1 + 14 days) {                
             bonus = tokenAdd.div(100).mul(10);
             }
-        if (now &gt; start1 + 14 days &amp;&amp; now &lt; start1 + 21 days) {                
+        if (now > start1 + 14 days && now < start1 + 21 days) {                
             bonus = tokenAdd.div(100).mul(5);
             } 
         tokenAdd += bonus;
-        require(token.totalSupply() + tokenAdd &lt; hardcapTokens);
+        require(token.totalSupply() + tokenAdd < hardcapTokens);
         saleBalances[msg.sender] = saleBalances[msg.sender].add(msg.value);
         token.mint(msg.sender, tokenAdd);
     }
@@ -252,13 +252,13 @@ contract Crowdsale is Ownable {
     }
     
     function mint(address _to, uint _value) public onlyOwner {
-        require(_value &gt; 0);
-        //require(_value + token.totalSupply() &lt; hardcap2 + 3000000);
+        require(_value > 0);
+        //require(_value + token.totalSupply() < hardcap2 + 3000000);
         token.mint(_to, _value*10**18);
     }
 
     function refund() public {
-        require ((now &gt; start0 + 30 days &amp;&amp; this.balance &lt; softcap0)||(now &gt; start1 + 60 days &amp;&amp; this.balance &lt; softcap1));
+        require ((now > start0 + 30 days && this.balance < softcap0)||(now > start1 + 60 days && this.balance < softcap1));
         require (!refunded[msg.sender]);
         require (saleBalances[msg.sender] != 0) ;
         uint refund = saleBalances[msg.sender];

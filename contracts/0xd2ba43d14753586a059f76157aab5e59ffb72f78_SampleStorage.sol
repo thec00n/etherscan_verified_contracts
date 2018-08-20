@@ -27,7 +27,7 @@ contract SampleStorage is Ownable {
         uint rarity;
     }
     
-    mapping (uint =&gt; Sample) sampleTypes;
+    mapping (uint => Sample) sampleTypes;
     
     uint public numOfSampleTypes;
     
@@ -59,11 +59,11 @@ contract SampleStorage is Ownable {
     function getType(uint _randomNum) public view returns (uint) {
         uint range = 0;
         
-        if (_randomNum &gt; 0 &amp;&amp; _randomNum &lt; 600) {
+        if (_randomNum > 0 && _randomNum < 600) {
             range = 600 / numOfCommon;
             return _randomNum / range;
             
-        } else if(_randomNum &gt;= 600 &amp;&amp; _randomNum &lt; 900) {
+        } else if(_randomNum >= 600 && _randomNum < 900) {
             range = 300 / numOfRare;
             return _randomNum / range;
         } else {

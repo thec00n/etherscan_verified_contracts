@@ -53,11 +53,11 @@ contract AbstractSingularDTVToken is Token {
 
 
 /// @title Token Creation contract - Implements token creation functionality.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="1063647576717e3e77757f62777550737f7e63757e6369633e7e7564">[email&#160;protected]</span>&gt;
-/// @author Razvan Pop - &lt;<span class="__cf_email__" data-cfemail="4331223935222d6d332c3303202c2d30262d303a306d2d2637">[email&#160;protected]</span>&gt;
-/// @author Milad Mostavi - &lt;<span class="__cf_email__" data-cfemail="91fcf8fdf0f5bffcfee2e5f0e7f8d1f2feffe2f4ffe2e8e2bffff4e5">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="1063647576717e3e77757f62777550737f7e63757e6369633e7e7564">[email protected]</span>>
+/// @author Razvan Pop - <<span class="__cf_email__" data-cfemail="4331223935222d6d332c3303202c2d30262d303a306d2d2637">[email protected]</span>>
+/// @author Milad Mostavi - <<span class="__cf_email__" data-cfemail="91fcf8fdf0f5bffcfee2e5f0e7f8d1f2feffe2f4ffe2e8e2bffff4e5">[email protected]</span>>
 contract SingularDTVLaunch {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     event Contributed(address indexed contributor, uint contribution, uint tokens);
 
@@ -96,11 +96,11 @@ contract SingularDTVLaunch {
     uint public valuePerToken; //in wei
     uint public tokensSent;
 
-    // participant address =&gt; value in Wei
-    mapping (address =&gt; uint) public contributions;
+    // participant address => value in Wei
+    mapping (address => uint) public contributions;
 
-    // participant address =&gt; token amount in wei scale
-    mapping (address =&gt; uint) public sentTokens;
+    // participant address => token amount in wei scale
+    mapping (address => uint) public sentTokens;
 
     // Initialize stage
     Stages public stage = Stages.Deployed;
@@ -121,7 +121,7 @@ contract SingularDTVLaunch {
     }
 
     modifier atStageOR(Stages _stage1, Stages _stage2) {
-        if (stage != _stage1 &amp;&amp; stage != _stage2) {
+        if (stage != _stage1 && stage != _stage2) {
             revert();
         }
         _;
@@ -130,7 +130,7 @@ contract SingularDTVLaunch {
     modifier timedTransitions() {
         uint timeElapsed = now - startDate;
 
-        if (timeElapsed &gt;= DURATION) {
+        if (timeElapsed >= DURATION) {
             if (stage == Stages.GoingAndGoalNotReached) {
                 stage = Stages.EndedAndGoalNotReached;
             } else if (stage == Stages.GoingAndGoalReached) {
@@ -145,7 +145,7 @@ contract SingularDTVLaunch {
      */
     /// dev Validates invariants.
     function checkInvariants() constant internal {
-        if (fundBalance &gt; this.balance) {
+        if (fundBalance > this.balance) {
             revert();
         }
     }
@@ -155,8 +155,8 @@ contract SingularDTVLaunch {
         public
         returns (bool)
     {
-        if (fundBalance &gt; this.balance) {
-            if (this.balance &gt; 0 &amp;&amp; !SingularDTVWorkshop.send(this.balance)) {
+        if (fundBalance > this.balance) {
+            if (this.balance > 0 && !SingularDTVWorkshop.send(this.balance)) {
                 revert();
             }
             return true;
@@ -173,8 +173,8 @@ contract SingularDTVLaunch {
         returns (uint)
     {
         uint tokenCount = (msg.value * (10**18)) / valuePerToken; // Token count in wei is rounded down. Sent ETH should be multiples of valuePerToken.
-        require(tokenCount &gt; 0);
-        if (tokensSent + tokenCount &gt; CAP) {
+        require(tokenCount > 0);
+        if (tokensSent + tokenCount > CAP) {
             // User wants to create more tokens than available. Set tokens to possible maximum.
             tokenCount = CAP - tokensSent;
         }
@@ -182,10 +182,10 @@ contract SingularDTVLaunch {
 
         uint contribution = (tokenCount * valuePerToken) / (10**18); // Ether spent by user.
         // Send change back to user.
-        if (msg.value &gt; contribution &amp;&amp; !msg.sender.send(msg.value - contribution)) {
+        if (msg.value > contribution && !msg.sender.send(msg.value - contribution)) {
             revert();
         }
-        // Update fund and user&#39;s balance and total supply of tokens.
+        // Update fund and user's balance and total supply of tokens.
         fundBalance += contribution;
         contributions[msg.sender] += contribution;
         sentTokens[msg.sender] += tokenCount;
@@ -195,7 +195,7 @@ contract SingularDTVLaunch {
         }
         // Update stage
         if (stage == Stages.GoingAndGoalNotReached) {
-            if (tokensSent &gt;= TOKEN_TARGET) {
+            if (tokensSent >= TOKEN_TARGET) {
                 stage = Stages.GoingAndGoalReached;
             }
         }
@@ -226,12 +226,12 @@ contract SingularDTVLaunch {
             revert();
         }
 
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         uint contribution = contributions[msg.sender];
         contributions[msg.sender] = 0;
         fundBalance -= contribution;
         // Send ETH back to user.
-        if (contribution &gt; 0) {
+        if (contribution > 0) {
             msg.sender.transfer(contribution);
         }
         checkInvariants();
@@ -248,14 +248,14 @@ contract SingularDTVLaunch {
         uint value = fundBalance;
         fundBalance = 0;
 
-        require(value &gt; 0);
+        require(value > 0);
 
         uint networkFee = value * SingularDTVWorkshopFee / 100;
         workshop.transfer(value - networkFee);
         SingularDTVWorkshop.transfer(networkFee);
 
         uint remainingTokens = CAP - tokensSent;
-        if (remainingTokens &gt; 0 &amp;&amp; !singularDTVToken.transfer(owner, remainingTokens)) {
+        if (remainingTokens > 0 && !singularDTVToken.transfer(owner, remainingTokens)) {
             revert();
         }
 
@@ -271,7 +271,7 @@ contract SingularDTVLaunch {
         returns (uint)
     {
         uint remainingTokens = CAP - tokensSent;
-        if (remainingTokens &gt; 0 &amp;&amp; !singularDTVToken.transfer(owner, remainingTokens)) {
+        if (remainingTokens > 0 && !singularDTVToken.transfer(owner, remainingTokens)) {
             revert();
         }
 

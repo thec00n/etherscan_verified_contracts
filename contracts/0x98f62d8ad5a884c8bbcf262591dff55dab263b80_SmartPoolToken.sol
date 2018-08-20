@@ -33,13 +33,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -62,8 +62,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -122,13 +122,13 @@ contract Lockable is Ownable {
 }
 
 contract SmartPoolToken is StandardToken, Lockable {
-    string public name = &quot;SmartPool&quot;;
-    string public symbol = &quot;SPT&quot;;
+    string public name = "SmartPool";
+    string public symbol = "SPT";
     uint public decimals = 0;
 
     address public beneficial;
-    mapping(address =&gt; uint) public donationAmountInWei;
-    mapping(uint =&gt; address) public donors;
+    mapping(address => uint) public donationAmountInWei;
+    mapping(uint => address) public donors;
     uint public donorCount;
     uint public totalFundRaised;
     uint _rate;
@@ -149,7 +149,7 @@ contract SmartPoolToken is StandardToken, Lockable {
     function mintTokens(address newTokenHolder, uint weiAmount) internal returns (uint){
         uint tokensAmount = safeMul(_rate, weiAmount) / ETHER;
 
-        if (tokensAmount &gt;= 1) {
+        if (tokensAmount >= 1) {
             balances[newTokenHolder] = safeAdd(
                 balances[newTokenHolder], tokensAmount);
             totalSupply = safeAdd(totalSupply, tokensAmount);
@@ -162,7 +162,7 @@ contract SmartPoolToken is StandardToken, Lockable {
 
     function () payable onlyWhenDonationOpen {
         uint weiAmount = msg.value;
-        if (weiAmount &lt;= 0) throw;
+        if (weiAmount <= 0) throw;
 
         if (donationAmountInWei[msg.sender] == 0) {
             donors[donorCount] = msg.sender;

@@ -7,7 +7,7 @@ contract SimpleBet {
 
 	function bet() payable
 	{
-		if ((random()%2==1) &amp;&amp; (msg.value == 1 ether) &amp;&amp; (!locked))
+		if ((random()%2==1) && (msg.value == 1 ether) && (!locked))
 		{
 			if (!msg.sender.call.value(2 ether)())
 				throw;

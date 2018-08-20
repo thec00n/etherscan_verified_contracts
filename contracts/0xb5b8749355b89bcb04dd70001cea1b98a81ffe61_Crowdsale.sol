@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 contract token {function transfer(address receiver, uint amount){ }}
 
 contract Crowdsale {
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     uint public amountRaised; uint public tokensCounter; uint tokensForSending; uint public price;
 
@@ -16,20 +16,20 @@ contract Crowdsale {
 
 
     function discount() returns (uint) {
-        if (amountRaised &gt; 70000 ether) {
+        if (amountRaised > 70000 ether) {
             return 0.000000067 ether;
-        } else if (amountRaised &gt; 30000 ether) {
+        } else if (amountRaised > 30000 ether) {
             return 0.000000050 ether;
-        } else if (amountRaised &gt; 10000 ether) {
+        } else if (amountRaised > 10000 ether) {
             return 0.000000040 ether;
         }
         return 0.0000000333 ether;
     }
 
     function allTimeDiscount(uint msg_value) returns (uint) {
-        if (msg_value &gt;= 300 ether) {
+        if (msg_value >= 300 ether) {
             return 80;
-        } else if (msg_value &gt;= 100 ether) {
+        } else if (msg_value >= 100 ether) {
             return 85;
         }
         return 100;
@@ -37,7 +37,7 @@ contract Crowdsale {
 
     function () payable {
         uint amount = msg.value;
-        if (crowdsaleClosed || amount &lt; 0.1 ether) throw;
+        if (crowdsaleClosed || amount < 0.1 ether) throw;
         price = discount();
         balanceOf[msg.sender] += amount;
         amountRaised += amount;

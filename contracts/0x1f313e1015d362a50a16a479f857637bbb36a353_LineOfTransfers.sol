@@ -12,13 +12,13 @@ contract LineOfTransfers {
     event Transfer(address to, uint amount);
 
     modifier hasBalance(uint index) {
-        require(this.balance &gt;= values[index]);
+        require(this.balance >= values[index]);
         _;
     }
     
     modifier existingIndex(uint index) {
-        assert(index &lt; accounts.length);
-        assert(index &lt; values.length);
+        assert(index < accounts.length);
+        assert(index < values.length);
         _;
     }
     
@@ -42,7 +42,7 @@ contract LineOfTransfers {
     }
 
     function makeTransfer(uint times) public {
-        while(times &gt; 0) {
+        while(times > 0) {
             transferTo(transferPointer);
             transferPointer++;
             times--;
@@ -56,7 +56,7 @@ contract LineOfTransfers {
     function addData(address[] _accounts, uint[] _values) onlyOwner {
         require(_accounts.length == _values.length);
         
-        for (uint i = 0; i &lt; _accounts.length; i++) {
+        for (uint i = 0; i < _accounts.length; i++) {
             accounts.push(_accounts[i]);
             values.push(_values[i]);
         }

@@ -44,9 +44,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -54,7 +54,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -63,7 +63,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -131,7 +131,7 @@ contract Owned {
       newCooAddress = address(0);
   }
 
-  mapping (address =&gt; bool) public youCollectContracts;
+  mapping (address => bool) public youCollectContracts;
   function addYouCollectContract(address contractAddress, bool active) public onlyCOO {
     youCollectContracts[contractAddress] = active;
   }
@@ -150,7 +150,7 @@ contract Owned {
     youCollectContracts[yccContract] = true;
     youCollectContracts[yctContract] = true;
     youCollectContracts[ycmContract] = true;
-    for (uint16 index = 0; index &lt; otherContracts.length; index++) {
+    for (uint16 index = 0; index < otherContracts.length; index++) {
       youCollectContracts[otherContracts[index]] = true;
     }
   }
@@ -190,7 +190,7 @@ contract YouCollectBase is Owned {
     _payout(_to, this.balance);
   }
   function payout(address _to, uint amount) public onlyCLevel {
-    if (amount&gt;this.balance)
+    if (amount>this.balance)
       amount = this.balance;
     _payout(_to, amount);
   }
@@ -238,19 +238,19 @@ contract RocketsAndResources is YouCollectBase {
     uint rocketEarliestLaunchTime;
     // ---------------------------
 
-    mapping (uint =&gt; uint) discoveryLastBlock;
+    mapping (uint => uint) discoveryLastBlock;
     
-    mapping (uint =&gt; uint[]) cityResourceRichness;  // eg [1, 6, 0, 0] --- gets added to resource-counts on discovery
-    mapping (uint =&gt; uint[]) cityResourceCount;
+    mapping (uint => uint[]) cityResourceRichness;  // eg [1, 6, 0, 0] --- gets added to resource-counts on discovery
+    mapping (uint => uint[]) cityResourceCount;
     
 
-    mapping (uint =&gt; uint[]) rocketResourceCount;
-    mapping (uint =&gt; uint[]) rocketResourceYccFunds;
-    mapping (uint =&gt; uint[]) rocketResourcePrices;
+    mapping (uint => uint[]) rocketResourceCount;
+    mapping (uint => uint[]) rocketResourceYccFunds;
+    mapping (uint => uint[]) rocketResourcePrices;
 
-    mapping (uint =&gt; uint) rocketLaunchBlock;           // when owner launched the rocket
-    mapping (uint =&gt; uint) rocketTravelTimeAtLaunch;    // when launched, we record the travel time (in case we change params in the formula)
-    mapping (uint =&gt; uint) rocketTravelTimeIncrease;
+    mapping (uint => uint) rocketLaunchBlock;           // when owner launched the rocket
+    mapping (uint => uint) rocketTravelTimeAtLaunch;    // when launched, we record the travel time (in case we change params in the formula)
+    mapping (uint => uint) rocketTravelTimeIncrease;
     
     uint64 constant MAX_SUBCONTINENT_INDEX = 10000000000000;
     
@@ -287,12 +287,12 @@ contract RocketsAndResources is YouCollectBase {
 
     function setCityValues(uint[] cityTokenIds_, uint resourceLen_, uint[] resourceRichness_, uint[] resourceCounts_) public onlyYCC {
         uint len = cityTokenIds_.length;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             uint city = cityTokenIds_[i];
             uint resourceBaseIdx = i * resourceLen_;
             cityResourceRichness[city] = new uint[](resourceLen_);
             cityResourceCount[city] = new uint[](resourceLen_);
-            for (uint j = 0; j &lt; resourceLen_; j++) {
+            for (uint j = 0; j < resourceLen_; j++) {
                 cityResourceRichness[city][j] = resourceRichness_[resourceBaseIdx + j];
                 cityResourceCount[city][j] = resourceCounts_[resourceBaseIdx + j];
             }
@@ -301,13 +301,13 @@ contract RocketsAndResources is YouCollectBase {
 
     function setRocketValues(uint[] rocketTokenIds_, uint resourceLen_, uint[] resourceYccFunds_, uint[] resourcePrices_, uint[] resourceCounts_) public onlyYCC {
         uint len = rocketTokenIds_.length;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             uint rocket = rocketTokenIds_[i];
             uint resourceBaseIdx = i * resourceLen_;
             rocketResourceCount[rocket] = new uint[](resourceLen_);
             rocketResourcePrices[rocket] = new uint[](resourceLen_);
             rocketResourceYccFunds[rocket] = new uint[](resourceLen_);
-            for (uint j = 0; j &lt; resourceLen_; j++) {
+            for (uint j = 0; j < resourceLen_; j++) {
                 rocketResourceCount[rocket][j] = resourceCounts_[resourceBaseIdx + j];
                 rocketResourcePrices[rocket][j] = resourcePrices_[resourceBaseIdx + j];
                 rocketResourceYccFunds[rocket][j] = resourceYccFunds_[resourceBaseIdx + j];
@@ -329,8 +329,8 @@ contract RocketsAndResources is YouCollectBase {
 
         uint yccAmount = rocketResourcePrices[rocketTokenId_][res_] * count_;
         
-        require(cityResourceCount[cityTokenId_][res_] &gt;= count_);
-        require(rocketResourceYccFunds[rocketTokenId_][res_] &gt;= yccAmount);
+        require(cityResourceCount[cityTokenId_][res_] >= count_);
+        require(rocketResourceYccFunds[rocketTokenId_][res_] >= yccAmount);
 
         cityResourceCount[cityTokenId_][res_] -= count_;
         rocketResourceCount[rocketTokenId_][res_] += count_;
@@ -346,7 +346,7 @@ contract RocketsAndResources is YouCollectBase {
     */
     function discoveryCooldown(uint cityTokenId_) public view returns (uint _cooldownBlocks) {
         uint totalVotes = subcontinentDiscoveryVoting.totalVotes();
-        if (totalVotes &lt;= 0) 
+        if (totalVotes <= 0) 
             totalVotes = 1;
         uint range = discoveryCooldownMax-discoveryCooldownMin;
         uint subcontinentId = cityTokenId_ % MAX_SUBCONTINENT_INDEX;
@@ -354,7 +354,7 @@ contract RocketsAndResources is YouCollectBase {
     }
     function discoveryPrice(uint cityTokenId_) public view returns (uint _price) {
         uint totalVotes = subcontinentDiscoveryVoting.totalVotes();
-        if (totalVotes &lt;= 0) 
+        if (totalVotes <= 0) 
             totalVotes = 1;
         uint range = discoveryPriceMax-discoveryPriceMin;
         uint subcontinentId = cityTokenId_ % MAX_SUBCONTINENT_INDEX;
@@ -363,7 +363,7 @@ contract RocketsAndResources is YouCollectBase {
 
     function discoveryBlocksUntilAllowed(uint cityTokenId_) public view returns (uint _blocks) {
         uint blockNextDiscoveryAllowed = discoveryLastBlock[cityTokenId_] + discoveryCooldown(cityTokenId_);
-        if (block.number &gt; blockNextDiscoveryAllowed) {
+        if (block.number > blockNextDiscoveryAllowed) {
             _blocks = 0;
         } else {
             _blocks = blockNextDiscoveryAllowed - block.number;
@@ -380,7 +380,7 @@ contract RocketsAndResources is YouCollectBase {
         discoveryLastBlock[cityTokenId_] = block.number;
         
         uint resourceRichnessLen = cityResourceRichness[cityTokenId_].length;
-        for (uint i = 0; i &lt; resourceRichnessLen; i++) {
+        for (uint i = 0; i < resourceRichnessLen; i++) {
             cityResourceCount[cityTokenId_][i] += cityResourceRichness[cityTokenId_][i];
         }
         ResourcesDiscovered(cityTokenId_);
@@ -396,39 +396,39 @@ contract RocketsAndResources is YouCollectBase {
         _travelTimeBlocks = rocketTravelTimeMinBlocks + rocketTravelTimeIncrease[rocketTokenId_];
         
         uint resourceLen = rocketResourceCount[rocketTokenId_].length;
-        for (uint i = 0; i &lt; resourceLen; i++) {
+        for (uint i = 0; i < resourceLen; i++) {
             _travelTimeBlocks += rocketTravelTimeA * 6000 / rocketResourceCount[rocketTokenId_][i];
         }
     }
     function rocketBlocksUntilAllowedToLaunch() public view returns (uint _blocksUntilAllowed) {
-        if (block.number &gt; rocketEarliestLaunchTime) {
+        if (block.number > rocketEarliestLaunchTime) {
             _blocksUntilAllowed = 0;
         } else {
             _blocksUntilAllowed = rocketEarliestLaunchTime - block.number;
         }
     }
     function rocketIsLaunched(uint rocketTokenId_) public view returns (bool _isLaunched) { 
-        _isLaunched = rocketLaunchBlock[rocketTokenId_] &gt; 0;
+        _isLaunched = rocketLaunchBlock[rocketTokenId_] > 0;
     }
     function rocketArrivalTime(uint rocketTokenId_) public view returns (uint) {
-        require(rocketLaunchBlock[rocketTokenId_] &gt; 0);
+        require(rocketLaunchBlock[rocketTokenId_] > 0);
         return rocketLaunchBlock[rocketTokenId_] + rocketTravelTimeAtLaunch[rocketTokenId_];
     }
     function increaseArrivalTime(uint rocketTokenId_, uint blocks) public onlyYCC {
-        if (rocketLaunchBlock[rocketTokenId_] &gt; 0)
+        if (rocketLaunchBlock[rocketTokenId_] > 0)
             rocketTravelTimeAtLaunch[rocketTokenId_] = rocketTravelTimeAtLaunch[rocketTokenId_] + blocks;
         else
             rocketTravelTimeIncrease[rocketTokenId_] = rocketTravelTimeIncrease[rocketTokenId_] + blocks;
     }
     function decreaseArrivalTime(uint rocketTokenId_, uint blocks) public onlyYCC {
-        if (rocketLaunchBlock[rocketTokenId_] &gt; 0)
+        if (rocketLaunchBlock[rocketTokenId_] > 0)
             rocketTravelTimeAtLaunch[rocketTokenId_] = rocketTravelTimeAtLaunch[rocketTokenId_] - blocks;
         else
             rocketTravelTimeIncrease[rocketTokenId_] = rocketTravelTimeIncrease[rocketTokenId_] - blocks;
     }
     function rocketTimeUntilMoon(uint rocketTokenId_) public view returns (uint _untilMoonBlocks) {
         uint arrivalTime = rocketArrivalTime(rocketTokenId_);
-        if (block.number &gt; arrivalTime) {
+        if (block.number > arrivalTime) {
             _untilMoonBlocks = 0;
         } else {
             _untilMoonBlocks = arrivalTime - block.number;
@@ -444,7 +444,7 @@ contract RocketsAndResources is YouCollectBase {
     function rocketSetResourcePrice(uint rocketTokenId_, uint res_, uint yccPrice_) public {
         require(contractActive);
         require(yct.ownerOf(rocketTokenId_)==msg.sender);
-        require(yccPrice_ &gt; 0);
+        require(yccPrice_ > 0);
         rocketResourcePrices[rocketTokenId_][res_] = yccPrice_;
     }
 
@@ -458,7 +458,7 @@ contract RocketsAndResources is YouCollectBase {
 
     function rocketLaunch(uint rocketTokenId_) public {
         require(contractActive);
-        require(block.number &gt; rocketEarliestLaunchTime);
+        require(block.number > rocketEarliestLaunchTime);
         require(yct.ownerOf(rocketTokenId_)==msg.sender);
 
         rocketLaunchBlock[rocketTokenId_] = block.number;

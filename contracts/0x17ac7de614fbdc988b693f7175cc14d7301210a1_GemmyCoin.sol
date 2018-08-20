@@ -1,5 +1,5 @@
 pragma solidity ^0.4.24;
-// Made By Yoondae - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d9a0bdaeb0b7b1b899beb4b8b0b5f7bab6b4">[email&#160;protected]</a> - https://blog.naver.com/ydwinha
+// Made By Yoondae - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d9a0bdaeb0b7b1b899beb4b8b0b5f7bab6b4">[email protected]</a> - https://blog.naver.com/ydwinha
 
 library SafeMath
 {
@@ -20,7 +20,7 @@ library SafeMath
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -28,7 +28,7 @@ library SafeMath
     function add(uint256 a, uint256 b) internal pure returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -130,16 +130,16 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     uint public advisorFirstLockTime;
     uint public advisorSecondLockTime;
     
-    mapping (address =&gt; uint) internal balances;
-    mapping (address =&gt; mapping ( address =&gt; uint )) internal approvals;
+    mapping (address => uint) internal balances;
+    mapping (address => mapping ( address => uint )) internal approvals;
 
-    mapping (address =&gt; bool) internal personalLocks;
-    mapping (address =&gt; bool) internal gemmyMusicLocks;
+    mapping (address => bool) internal personalLocks;
+    mapping (address => bool) internal gemmyMusicLocks;
     
-    mapping (address =&gt; uint) internal advisorFirstLockBalances;
-    mapping (address =&gt; uint) internal advisorSecondLockBalances;
+    mapping (address => uint) internal advisorFirstLockBalances;
+    mapping (address => uint) internal advisorSecondLockBalances;
     
-    mapping (address =&gt; uint) internal  icoEtherContributeds;
+    mapping (address => uint) internal  icoEtherContributeds;
     
     event CoinIssuedSale(address indexed _who, uint _coins, uint _balances, uint _ether, uint _saleTime);
     event RemoveTotalCoinLock();
@@ -160,9 +160,9 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
 
     constructor() public
     {
-        name = &quot;GemmyMusicCoin&quot;;
+        name = "GemmyMusicCoin";
         decimals = 18;
-        symbol = &quot;GMC&quot;;
+        symbol = "GMC";
         totalSupply = 0;
         
         owner = msg.sender;
@@ -183,7 +183,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function () payable public
     {
-        require(saleSupply &gt; coinIssuedSale);
+        require(saleSupply > coinIssuedSale);
         buyCoin();
     }
     
@@ -198,44 +198,44 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
         
         uint nowTime = atNow();
         
-        if( nowTime &gt;= firstPreSaleDate1 &amp;&amp; nowTime &lt; firstPreSaleEndDate1 )
+        if( nowTime >= firstPreSaleDate1 && nowTime < firstPreSaleEndDate1 )
         {
             ethPerCoin = 50000;
             saleTime = 1;
             coinBonus = 20;
         }
-        else if( nowTime &gt;= firstPreSaleDate2 &amp;&amp; nowTime &lt; firstPreSaleEndDate2 )
+        else if( nowTime >= firstPreSaleDate2 && nowTime < firstPreSaleEndDate2 )
         {
             ethPerCoin = 50000;
             saleTime = 2;
             coinBonus = 20;
         }
-        else if( nowTime &gt;= secondPreSaleDate &amp;&amp; nowTime &lt; secondPreSaleEndDate )
+        else if( nowTime >= secondPreSaleDate && nowTime < secondPreSaleEndDate )
         {
             ethPerCoin = 26000;
             saleTime = 3;
             coinBonus = 15;
         }
-        else if( nowTime &gt;= thirdPreSaleDate &amp;&amp; nowTime &lt; thirdPreSaleEndDate )
+        else if( nowTime >= thirdPreSaleDate && nowTime < thirdPreSaleEndDate )
         {
             ethPerCoin = 18000;
             saleTime = 4;
             coinBonus = 10;
         }
-        else if( nowTime &gt;= mainSaleDate &amp;&amp; nowTime &lt; mainSaleEndDate )
+        else if( nowTime >= mainSaleDate && nowTime < mainSaleEndDate )
         {
             ethPerCoin = 12000;
             saleTime = 5;
             coinBonus = 0;
         }
         
-        require(saleTime &gt;= 1 &amp;&amp; saleTime &lt;= 5);
-        require(msg.value &gt;= minEth &amp;&amp; icoEtherContributeds[msg.sender].add(msg.value) &lt;= maxEth);
+        require(saleTime >= 1 && saleTime <= 5);
+        require(msg.value >= minEth && icoEtherContributeds[msg.sender].add(msg.value) <= maxEth);
 
         uint coins = ethPerCoin.mul(msg.value);
         coins = coins.mul(100 + coinBonus) / 100;
         
-        require(saleSupply &gt;= coinIssuedSale.add(coins));
+        require(saleSupply >= coinIssuedSale.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedSale = coinIssuedSale.add(coins);
@@ -303,7 +303,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function removePersonalLockMultiple(address[] _addresses) onlyOwner public
     {
-        for(uint i = 0; i &lt; _addresses.length; i++)
+        for(uint i = 0; i < _addresses.length; i++)
         {
         
             require(personalLocks[_addresses[i]] == true);
@@ -316,7 +316,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function removeGemmyMusicLock(address _who) onlyOwner public
     {
-        require(atNow() &gt; gemmyMusicLockTime);
+        require(atNow() > gemmyMusicLockTime);
         require(gemmyMusicLocks[_who] == true);
         
         gemmyMusicLocks[_who] = false;
@@ -326,8 +326,8 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function removeFirstAdvisorLock(address _who) onlyOwner public
     {
-        require(atNow() &gt; advisorFirstLockTime);
-        require(advisorFirstLockBalances[_who] &gt; 0);
+        require(atNow() > advisorFirstLockTime);
+        require(advisorFirstLockBalances[_who] > 0);
         
         balances[_who] = balances[_who].add(advisorFirstLockBalances[_who]);
         advisorFirstLockBalances[_who] = 0;
@@ -337,8 +337,8 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function removeSecondAdvisorLock(address _who) onlyOwner public
     {
-        require(atNow() &gt; advisorSecondLockTime);
-        require(advisorSecondLockBalances[_who] &gt; 0);
+        require(atNow() > advisorSecondLockTime);
+        require(advisorSecondLockBalances[_who] > 0);
         
         balances[_who] = balances[_who].add(advisorSecondLockBalances[_who]);
         advisorSecondLockBalances[_who] = 0;
@@ -358,7 +358,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function transfer(address _to, uint _value) public returns (bool) 
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(isTransferLock(msg.sender, _to) == false);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -375,10 +375,10 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
         
         uint value = 0;
         
-        for(uint i = 0; i &lt; _addresses.length; i++)
+        for(uint i = 0; i < _addresses.length; i++)
         {
             value = _values[i] * E18;
-            require(balances[msg.sender] &gt;= value);
+            require(balances[msg.sender] >= value);
             require(isTransferLock(msg.sender, _addresses[i]) == false);
             
             balances[msg.sender] = balances[msg.sender].sub(value);
@@ -391,7 +391,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function approve(address _spender, uint _value) public returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(isTransferLock(msg.sender, _spender) == false);
         
         approvals[msg.sender][_spender] = _value;
@@ -408,8 +408,8 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool) 
     {
-        require(balances[_from] &gt;= _value);
-        require(approvals[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(approvals[_from][msg.sender] >= _value);
         require(isTransferLock(msg.sender, _to) == false);
         
         approvals[_from][msg.sender] = approvals[_from][msg.sender].sub(_value);
@@ -425,7 +425,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(rewardPoolSupply &gt;= coinIssuedRewardPool.add(coins));
+        require(rewardPoolSupply >= coinIssuedRewardPool.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedRewardPool = coinIssuedRewardPool.add(coins);
@@ -442,7 +442,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(foundationSupply &gt;= coinIssuedFoundation.add(coins));
+        require(foundationSupply >= coinIssuedFoundation.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedFoundation = coinIssuedFoundation.add(coins);
@@ -459,7 +459,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(gemmyMusicSupply &gt;= coinIssuedGemmyMusic.add(coins));
+        require(gemmyMusicSupply >= coinIssuedGemmyMusic.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedGemmyMusic = coinIssuedGemmyMusic.add(coins);
@@ -476,7 +476,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(advisorSupply &gt;= coinIssuedAdvisor.add(coins));
+        require(advisorSupply >= coinIssuedAdvisor.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedAdvisor = coinIssuedAdvisor.add(coins);
@@ -495,7 +495,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(mktSupply &gt;= coinIssuedMkt.add(coins));
+        require(mktSupply >= coinIssuedMkt.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedMkt = coinIssuedMkt.add(coins);
@@ -512,7 +512,7 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     {
         uint coins = _value * E18;
         
-        require(etcSupply &gt;= coinIssuedEtc.add(coins));
+        require(etcSupply >= coinIssuedEtc.add(coins));
 
         totalSupply = totalSupply.add(coins);
         coinIssuedEtc = coinIssuedEtc.add(coins);
@@ -527,8 +527,8 @@ contract GemmyCoin is ERC20Interface, OwnerHelper
     
     function burnCoin() onlyOwner public
     {
-        require(atNow() &gt; mainSaleEndDate);
-        require(saleSupply - coinIssuedSale &gt; 0);
+        require(atNow() > mainSaleEndDate);
+        require(saleSupply - coinIssuedSale > 0);
 
         uint coins = saleSupply - coinIssuedSale;
         

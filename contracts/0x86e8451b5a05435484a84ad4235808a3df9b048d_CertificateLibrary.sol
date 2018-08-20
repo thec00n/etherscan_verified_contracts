@@ -35,7 +35,7 @@ library CertificateLibrary {
         bytes storage ipfsHash = self.ipfsHash;
         bytes32 contentHash = self.contentHash;
         bytes32 transcriptHash = self.transcriptHash;
-        return contentHash == _contentHash &amp;&amp; keccak256(ipfsHash) == keccak256(_ipfsHash) &amp;&amp; transcriptHash == _transcriptHash;
+        return contentHash == _contentHash && keccak256(ipfsHash) == keccak256(_ipfsHash) && transcriptHash == _transcriptHash;
     }
     
     /**

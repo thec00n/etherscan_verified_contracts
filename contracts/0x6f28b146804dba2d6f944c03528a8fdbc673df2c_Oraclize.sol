@@ -10,9 +10,9 @@ Oraclize Connector v1.1.0
 pragma solidity ^0.4.11;
 
 contract Oraclize {
-    mapping (address =&gt; uint) reqc;
+    mapping (address => uint) reqc;
 
-    mapping (address =&gt; byte) public cbAddresses;
+    mapping (address => byte) public cbAddresses;
 
     event Log1(address sender, bytes32 cid, uint timestamp, string datasource, string arg, uint gaslimit, byte proofType, uint gasPrice);
     event Log2(address sender, bytes32 cid, uint timestamp, string datasource, string arg1, string arg2, uint gaslimit, byte proofType, uint gasPrice);
@@ -41,7 +41,7 @@ contract Oraclize {
 
     function addCbAddress(address newCbAddress, byte addressType)
     onlyadmin {
-        bytes memory nil = &#39;&#39;;
+        bytes memory nil = '';
         addCbAddress(newCbAddress, addressType, nil);
     }
 
@@ -68,11 +68,11 @@ contract Oraclize {
     }
 
     function multisetProofType(uint[] _proofType, address[] _addr) onlyadmin {
-        for (uint i=0; i&lt;_addr.length; i++) addr_proofType[_addr[i]] = byte(_proofType[i]);
+        for (uint i=0; i<_addr.length; i++) addr_proofType[_addr[i]] = byte(_proofType[i]);
     }
 
     function multisetCustomGasPrice(uint[] _gasPrice, address[] _addr) onlyadmin {
-        for (uint i=0; i&lt;_addr.length; i++) addr_gasPrice[_addr[i]] = _gasPrice[i];
+        for (uint i=0; i<_addr.length; i++) addr_gasPrice[_addr[i]] = _gasPrice[i];
     }
 
     uint gasprice = 20000000000;
@@ -85,13 +85,13 @@ contract Oraclize {
     function setBasePrice(uint new_baseprice)
     onlyadmin { //0.001 usd in ether
         baseprice = new_baseprice;
-        for (uint i=0; i&lt;dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
+        for (uint i=0; i<dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
     }
 
     function setBasePrice(uint new_baseprice, bytes proofID)
     onlyadmin { //0.001 usd in ether
         baseprice = new_baseprice;
-        for (uint i=0; i&lt;dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
+        for (uint i=0; i<dsources.length; i++) price[dsources[i]] = new_baseprice*price_multiplier[dsources[i]];
     }
 
     function withdrawFunds(address _addr)
@@ -107,25 +107,25 @@ contract Oraclize {
 
     modifier costs(string datasource, uint gaslimit) {
         uint price = getPrice(datasource, gaslimit, msg.sender);
-        if (msg.value &gt;= price){
+        if (msg.value >= price){
             uint diff = msg.value - price;
-            if (diff &gt; 0) msg.sender.send(diff);
+            if (diff > 0) msg.sender.send(diff);
            _;
         } else throw;
     }
 
-    mapping (address =&gt; byte) addr_proofType;
-    mapping (address =&gt; uint) addr_gasPrice;
+    mapping (address => byte) addr_proofType;
+    mapping (address => uint) addr_gasPrice;
     uint public baseprice;
-    mapping (bytes32 =&gt; uint) price;
-    mapping (bytes32 =&gt; uint) price_multiplier;
+    mapping (bytes32 => uint) price;
+    mapping (bytes32 => uint) price_multiplier;
     bytes32[] dsources;
 
     bytes32[] public randomDS_sessionPubKeysHash;
 
     function randomDS_updateSessionPubKeysHash(bytes32[] _newSessionPubKeysHash) onlyadmin {
         randomDS_sessionPubKeysHash.length = 0;
-        for (uint i=0; i&lt;_newSessionPubKeysHash.length; i++) randomDS_sessionPubKeysHash.push(_newSessionPubKeysHash[i]);
+        for (uint i=0; i<_newSessionPubKeysHash.length; i++) randomDS_sessionPubKeysHash.push(_newSessionPubKeysHash[i]);
     }
 
     function randomDS_getSessionPubKeyHash() constant returns (bytes32) {
@@ -163,7 +163,7 @@ contract Oraclize {
     private
     returns (uint _dsprice) {
         uint gasprice_ = addr_gasPrice[_addr];
-        if ((_gaslimit &lt;= 200000)&amp;&amp;(reqc[_addr] == 0)&amp;&amp;(gasprice_ &lt;= gasprice)&amp;&amp;(tx.origin != cbAddress())) return 0;
+        if ((_gaslimit <= 200000)&&(reqc[_addr] == 0)&&(gasprice_ <= gasprice)&&(tx.origin != cbAddress())) return 0;
         if (gasprice_ == 0) gasprice_ = gasprice;
         _dsprice = price[sha3(_datasource, addr_proofType[_addr])];
         _dsprice += _gaslimit*gasprice_;
@@ -260,7 +260,7 @@ contract Oraclize {
     function query1(uint _timestamp, string _datasource, string _arg, uint _gaslimit) costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-    	if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)) throw;
+    	if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -272,7 +272,7 @@ contract Oraclize {
     costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-    	if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)) throw;
+    	if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -283,7 +283,7 @@ contract Oraclize {
     function queryN(uint _timestamp, string _datasource, bytes _args, uint _gaslimit) costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-    	if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)) throw;
+    	if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -295,7 +295,7 @@ contract Oraclize {
     costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-        if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)||address(_fnc) != msg.sender) throw;
+        if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)||address(_fnc) != msg.sender) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -307,7 +307,7 @@ contract Oraclize {
     costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-        if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)||address(_fnc) != msg.sender) throw;
+        if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)||address(_fnc) != msg.sender) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;
@@ -319,7 +319,7 @@ contract Oraclize {
     costs(_datasource, _gaslimit)
     payable
     returns (bytes32 _id) {
-        if ((_timestamp &gt; now+3600*24*60)||(_gaslimit &gt; block.gaslimit)||address(_fnc) != msg.sender) throw;
+        if ((_timestamp > now+3600*24*60)||(_gaslimit > block.gaslimit)||address(_fnc) != msg.sender) throw;
 
         _id = sha3(this, msg.sender, reqc[msg.sender]);
         reqc[msg.sender]++;

@@ -77,10 +77,10 @@ contract TokenLocker is Ownable {
     uint public TeamAmount = 4650000 ether;
     
     function unlockFund () public onlyOwner {
-        require(releaseTimeFund &lt;= block.timestamp);
-        require(ReserveFundAmount &gt; 0);
+        require(releaseTimeFund <= block.timestamp);
+        require(ReserveFundAmount > 0);
         uint tokenBalance = token.balanceOf(this);
-        require(tokenBalance &gt;= ReserveFundAmount);
+        require(tokenBalance >= ReserveFundAmount);
         
         if (token.transfer(ReserveFund, ReserveFundAmount)) {
             ReserveFundAmount = 0;
@@ -88,11 +88,11 @@ contract TokenLocker is Ownable {
     }
     
     function unlockTeamAdvisorsPartnersTokens () public onlyOwner {
-        require(releaseTimeTeamAdvisorsPartners &lt;= block.timestamp);
-        require(AdvisorsPartnersAmount &gt; 0);
-        require(TeamAmount &gt; 0);
+        require(releaseTimeTeamAdvisorsPartners <= block.timestamp);
+        require(AdvisorsPartnersAmount > 0);
+        require(TeamAmount > 0);
         uint tokenBalance = token.balanceOf(this);
-        require(tokenBalance &gt;= AdvisorsPartnersAmount + TeamAmount);
+        require(tokenBalance >= AdvisorsPartnersAmount + TeamAmount);
         
         if (token.transfer(AdvisorsPartners, AdvisorsPartnersAmount)) {
             AdvisorsPartnersAmount = 0;

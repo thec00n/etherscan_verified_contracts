@@ -37,7 +37,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -55,7 +55,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -80,7 +80,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -139,7 +139,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -150,8 +150,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -282,7 +282,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -293,7 +293,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -318,9 +318,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -333,8 +333,8 @@ contract BurnableToken is BasicToken {
 //CCH is a capped token with a max supply of 145249999 tokenSupply
 //It is a burnable token as well
 contract CareerChainToken is CappedToken(145249999000000000000000000), BurnableToken  {
-    string public name = &quot;CareerChain Token&quot;;
-    string public symbol = &quot;CCH&quot;;
+    string public name = "CareerChain Token";
+    string public symbol = "CCH";
     uint8 public decimals = 18;
 
     //only the owner is allowed to burn tokens
@@ -370,9 +370,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -380,7 +380,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -389,7 +389,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -405,7 +405,7 @@ library SafeMath {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -438,7 +438,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -563,7 +563,7 @@ contract Crowdsale {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -586,7 +586,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -631,7 +631,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -642,8 +642,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -655,7 +655,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -699,10 +699,10 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
     uint256[6] public lockupEndTime;
 
     //balances in the lock-ups
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     //released from lock-ups
-    mapping(address =&gt; uint256) public released;
+    mapping(address => uint256) public released;
 
     //vesting levels
     uint256 public firstVestedLockUpAmount;
@@ -726,12 +726,12 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
         TimedCrowdsale(_openingTime, _closingTime)
         {
             // solium-disable-next-line security/no-block-members
-            require(_lockupEndTime[0] &gt;= block.timestamp);
-            require(_lockupEndTime[1] &gt;= _lockupEndTime[0]);
-            require(_lockupEndTime[2] &gt;= _lockupEndTime[1]);
-            require(_lockupEndTime[3] &gt;= _lockupEndTime[2]);
-            require(_lockupEndTime[4] &gt;= _lockupEndTime[3]);
-            require(_lockupEndTime[5] &gt;= _lockupEndTime[4]);
+            require(_lockupEndTime[0] >= block.timestamp);
+            require(_lockupEndTime[1] >= _lockupEndTime[0]);
+            require(_lockupEndTime[2] >= _lockupEndTime[1]);
+            require(_lockupEndTime[3] >= _lockupEndTime[2]);
+            require(_lockupEndTime[4] >= _lockupEndTime[3]);
+            require(_lockupEndTime[5] >= _lockupEndTime[4]);
 
             lockupEndTime = _lockupEndTime;
 
@@ -746,7 +746,7 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
 
         uint256 newTokensSold = tokensStillInLockup.add(_tokenAmount);
-        require(newTokensSold &lt;= token.balanceOf(address(this)));
+        require(newTokensSold <= token.balanceOf(address(this)));
         tokensStillInLockup = newTokensSold;
 
         //add tokens to contract token balance (due to lock-up)
@@ -764,7 +764,7 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
         token.transfer(_beneficiary, unSoldTokens);
     }
 
-    //when sale isn&#39;t ended, issue tokens to investors paid with fiat currency
+    //when sale isn't ended, issue tokens to investors paid with fiat currency
     // @param _beneficiary Token purchaser (with fiat)
     // @param _tokenAmount Amount of tokens purchased
     function IssueTokensToInvestors(address _beneficiary, uint256 _amount) public onlyOwner onlyWhileOpen{
@@ -775,11 +775,11 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
 
     //owner is able to change rate in case of big price fluctuations of ether (on the market)
     function _changeRate(uint256 _rate) public onlyOwner {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
-    //Calculates the amount that has already vested but hasn&#39;t been released yet.
+    //Calculates the amount that has already vested but hasn't been released yet.
     function releasableAmount() private view returns (uint256) {
       return vestedAmount().sub(released[msg.sender]);
     }
@@ -791,14 +791,14 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
 
       //determine current lock-up phase
       uint256 i=0;
-      while (i &lt; lockupEndTime.length &amp;&amp; lockupEndTime[i]&lt;=now)
+      while (i < lockupEndTime.length && lockupEndTime[i]<=now)
       {
         lockupStage = lockupStage.add(1);
         i = i.add(1);
       }
 
       //if lockupStage == 0 then all tokens are still in lock-up (first lock-up period not ended yet)
-      if(lockupStage&gt;0)
+      if(lockupStage>0)
       {
         //calculate the releasable amount depending on the current lock-up stage
         releasable = (lockupStage.sub(1).mul(stagedVestedLockUpAmounts)).add(firstVestedLockUpAmount);
@@ -812,7 +812,7 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
       uint256 unreleased = releasableAmount();
 
       //max amount to be withdrawn is the releasable amount, excess stays in lock-up, unless all lock-ups have ended
-      if(balances[msg.sender] &gt;= unreleased &amp;&amp; lockupEndTime[lockupEndTime.length-1] &gt; now)
+      if(balances[msg.sender] >= unreleased && lockupEndTime[lockupEndTime.length-1] > now)
       {
         tobeReleased = unreleased;
       }
@@ -822,7 +822,7 @@ contract CareerChainPrivateSale is TimedCrowdsale, WhitelistedCrowdsale  {
       }
 
       //revert transaction when nothing to be withdrawn
-      require(tobeReleased &gt; 0);
+      require(tobeReleased > 0);
 
       balances[msg.sender] = balances[msg.sender].sub(tobeReleased);
       tokensStillInLockup = tokensStillInLockup.sub(tobeReleased);

@@ -22,9 +22,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function division(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function subtract(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
      */
     function plus(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -104,7 +104,7 @@ contract BasicToken is ERC20Basic {
     using SafeMath
     for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -124,7 +124,7 @@ contract BasicToken is ERC20Basic {
     /*
     function _transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].subtract(_value);
@@ -143,9 +143,9 @@ contract BasicToken is ERC20Basic {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to].plus(_value) &gt; balances[_to]);
+        require(balances[_to].plus(_value) > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from].plus(balances[_to]);
         // Subtract from the sender
@@ -192,7 +192,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -202,8 +202,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].subtract(_value);
         balances[_to] = balances[_to].plus(_value);
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -266,7 +266,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.subtract(_subtractedValue);
@@ -292,7 +292,7 @@ contract LBCoinJ is owned, StandardToken {
 
     bool public emergencyStop;
 
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -315,8 +315,8 @@ contract LBCoinJ is owned, StandardToken {
     
     /*
     function LBCoinJ() public {
-        name = &quot;LBCoinTest2&quot;;
-        symbol = &quot;LBCTS&quot;;
+        name = "LBCoinTest2";
+        symbol = "LBCTS";
         totalSupply_ = 10000 * 10 ** uint256(decimals);
         balances[msg.sender] = totalSupply_;
         emit Transfer(0x0, msg.sender, totalSupply_);
@@ -328,8 +328,8 @@ contract LBCoinJ is owned, StandardToken {
     /// Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balances[_from] &gt;= _value); // Check if the sender has enough
-        require(balances[_to].plus(_value) &gt;= balances[_to]); // Check for overflows
+        require(balances[_from] >= _value); // Check if the sender has enough
+        require(balances[_to].plus(_value) >= balances[_to]); // Check for overflows
         require(!frozenAccount[_from]); // Check if sender is frozen
         require(!frozenAccount[_to]); // Check if recipient is frozen
         require(!emergencyStop); // Check Emergency
@@ -354,14 +354,14 @@ contract LBCoinJ is owned, StandardToken {
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) public returns(bool success) {
-        require(balances[msg.sender] &gt;= _value); // Check if the sender has enough
+        require(balances[msg.sender] >= _value); // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].subtract(_value); // Subtract from the sender
         totalSupply_ = totalSupply_.subtract(_value); // Updates totalSupply
         emit Burn(msg.sender, _value);
         return true;
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {

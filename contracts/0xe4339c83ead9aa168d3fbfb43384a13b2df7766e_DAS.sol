@@ -42,18 +42,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -65,8 +65,8 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
       Storage of the contract
     */
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     string public name;
     string public symbol;
@@ -132,7 +132,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool _success) {
-        if (allowances[_from][msg.sender] &lt; _value) throw;
+        if (allowances[_from][msg.sender] < _value) throw;
 
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender], _value);
         bytes memory emptyMetadata;
@@ -144,7 +144,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
     {
         if (_from == _to) throw;
         if (_value == 0) throw;
-        if (balanceOf(_from) &lt; _value) throw;
+        if (balanceOf(_from) < _value) throw;
 
         balances[_from] = safeSub(balanceOf(_from), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
@@ -171,14 +171,14 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 }
 
 
 // ERC223 token with the ability for the owner to block any account
 contract DASToken is ERC223Token {
-    mapping (address =&gt; bool) blockedAccounts;
+    mapping (address => bool) blockedAccounts;
     address public secretaryGeneral;
 
 
@@ -265,7 +265,7 @@ contract DAS is ERC223ContractInterface {
 
     /* Contract Variables */
 
-    string name = &quot;Decentralized Autonomous State&quot;;
+    string name = "Decentralized Autonomous State";
     // Source of democracy
     DASToken public dasToken;
     ABCToken public abcToken;
@@ -273,11 +273,11 @@ contract DAS is ERC223ContractInterface {
     uint256 public congressMemberThreshold; // User must have more than this amount of tokens to be included into congress
     uint256 public minimumQuorum;           // The minimum number of tokens that must participate in a vote to achieve a quorum
     uint256 public debatingPeriod;          // Min time to vote for an proposal [sec]
-    uint256 public marginForMajority;       // Min superiority of votes &quot;for&quot; to pass the proposal [number of tokens]
+    uint256 public marginForMajority;       // Min superiority of votes "for" to pass the proposal [number of tokens]
     // Proposals
     Proposal[] public proposals;
     uint256 public proposalsNumber = 0;
-    mapping (address =&gt; uint32) tokensLocks;         // congress member =&gt; number of locks (recursive mutex)
+    mapping (address => uint32) tokensLocks;         // congress member => number of locks (recursive mutex)
 
     /* Contract Events */
     event ProposalAddedEvent(uint256 proposalID, address beneficiary, uint256 etherAmount, string description);
@@ -306,7 +306,7 @@ contract DAS is ERC223ContractInterface {
         uint256 votingDeadline;
         Vote[] votes;
         uint256 votesNumber;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Vote {
@@ -318,7 +318,7 @@ contract DAS is ERC223ContractInterface {
 
     /* modifier that allows only congress members to vote and create new proposals */
     modifier onlyCongressMembers {
-        if (dasToken.balanceOf(msg.sender) &lt; congressMemberThreshold) throw;
+        if (dasToken.balanceOf(msg.sender) < congressMemberThreshold) throw;
         _;
     }
 
@@ -331,8 +331,8 @@ contract DAS is ERC223ContractInterface {
         address _congressLeader
     ) payable {
         // create a source of democracy
-        dasToken = new DASToken(&#39;DA$&#39;, &#39;DA$&#39;, 18, 1000000000 * (10 ** 18), _congressLeader);
-        abcToken = new ABCToken(&#39;Alphabit&#39;, &#39;ABC&#39;, 18, 210000000 * (10 ** 18), _congressLeader);
+        dasToken = new DASToken('DA$', 'DA$', 18, 1000000000 * (10 ** 18), _congressLeader);
+        abcToken = new ABCToken('Alphabit', 'ABC', 18, 210000000 * (10 ** 18), _congressLeader);
 
         // setup rules
         congressMemberThreshold = _congressMemberThreshold;
@@ -370,7 +370,7 @@ contract DAS is ERC223ContractInterface {
 
     // block tokens of an voter
     function blockTokens(address _voter) internal {
-        if (tokensLocks[_voter] + 1 &lt; tokensLocks[_voter]) throw;
+        if (tokensLocks[_voter] + 1 < tokensLocks[_voter]) throw;
 
         tokensLocks[_voter] += 1;
         if (tokensLocks[_voter] == 1) {
@@ -380,7 +380,7 @@ contract DAS is ERC223ContractInterface {
 
     // unblock tokens of an voter
     function unblockTokens(address _voter) internal {
-        if (tokensLocks[_voter] &lt;= 0) throw;
+        if (tokensLocks[_voter] <= 0) throw;
 
         tokensLocks[_voter] -= 1;
         if (tokensLocks[_voter] == 0) {
@@ -442,13 +442,13 @@ contract DAS is ERC223ContractInterface {
     function finishProposalVoting(uint256 _proposalID) onlyCongressMembers {
         Proposal p = proposals[_proposalID];
 
-        if (now &lt; p.votingDeadline) throw;
+        if (now < p.votingDeadline) throw;
         if (p.state != ProposalState.Proposed) throw;
 
         var _votesNumber = p.votes.length;
         uint256 tokensFor = 0;
         uint256 tokensAgainst = 0;
-        for (uint256 i = 0; i &lt; _votesNumber; i++) {
+        for (uint256 i = 0; i < _votesNumber; i++) {
             if (p.votes[i].inSupport) {
                 tokensFor += p.votes[i].voterTokens;
             }
@@ -459,12 +459,12 @@ contract DAS is ERC223ContractInterface {
             unblockTokens(p.votes[i].voter);
         }
 
-        if ((tokensFor + tokensAgainst) &lt; minimumQuorum) {
+        if ((tokensFor + tokensAgainst) < minimumQuorum) {
             p.state = ProposalState.NoQuorum;
             ProposalTalliedEvent(_proposalID, false, false);
             return;
         }
-        if ((tokensFor - tokensAgainst) &lt; marginForMajority) {
+        if ((tokensFor - tokensAgainst) < marginForMajority) {
             p.state = ProposalState.Rejected;
             ProposalTalliedEvent(_proposalID, true, false);
             return;

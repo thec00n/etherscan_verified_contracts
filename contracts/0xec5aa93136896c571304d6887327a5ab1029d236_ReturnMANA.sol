@@ -70,7 +70,7 @@ contract ReturnMANA is Ownable {
    * @param _amount Amount of MANA to burn from terraform
    */
   function burnMana(uint256 _amount) onlyOwner public {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(token.transferFrom(terraformReserve, this, _amount));
     token.burn(_amount);
   }
@@ -82,7 +82,7 @@ contract ReturnMANA is Ownable {
    */
   function transferBackMANA(address _address, uint256 _amount) onlyOwner public {
     require(_address != address(0));
-    require(_amount &gt; 0);
+    require(_amount > 0);
 
     address returnAddress = _address;
 
@@ -106,7 +106,7 @@ contract ReturnMANA is Ownable {
   function transferBackMANAMany(address[] _addresses, uint256[] _amounts) onlyOwner public {
     require(_addresses.length == _amounts.length);
 
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       transferBackMANA(_addresses[i], _amounts[i]);
     }
   }
@@ -114,7 +114,7 @@ contract ReturnMANA is Ownable {
 
 contract ReturnVestingRegistry is Ownable {
 
-  mapping (address =&gt; address) public returnAddress;
+  mapping (address => address) public returnAddress;
 
   function record(address from, address to) onlyOwner public {
     require(from != 0);

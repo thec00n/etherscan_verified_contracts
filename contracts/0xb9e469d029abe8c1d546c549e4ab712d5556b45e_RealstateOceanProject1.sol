@@ -26,7 +26,7 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeDiv(uint a, uint b) internal returns (uint) {
-	    assert(b &gt; 0);
+	    assert(b > 0);
 	    uint c = a / b;
 	    assert(a == b * c + a % b);
 	    return c;
@@ -34,35 +34,35 @@ pragma solidity ^0.4.18;
 	
 
 	  function safeSub(uint a, uint b) internal returns (uint) {
-	    assert(b &lt;= a);
+	    assert(b <= a);
 	    return a - b;
 	  }
 	
 
 	  function safeAdd(uint a, uint b) internal returns (uint) {
 	    uint c = a + b;
-	    assert(c&gt;=a &amp;&amp; c&gt;=b);
+	    assert(c>=a && c>=b);
 	    return c;
 	  }
 	
 
 	  function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	
 
 	  function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &gt;= b ? a : b;
+	    return a >= b ? a : b;
 	  }
 	
 
 	  function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-	    return a &lt; b ? a : b;
+	    return a < b ? a : b;
 	  }
 	}
 	
@@ -75,11 +75,11 @@ pragma solidity ^0.4.18;
 	
 
 	  /* Actual balances of token holders */
-	  mapping(address =&gt; uint) balances;
+	  mapping(address => uint) balances;
 	
 
 	  /* approve() allowances */
-	  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	  mapping (address => mapping (address => uint)) allowed;
 	
 
 	  /* Interface declaration */
@@ -133,8 +133,8 @@ pragma solidity ^0.4.18;
 	contract RealstateOceanProject1 is StandardToken {
 	
 
-	    string public name = &quot;Realstate Ocean Project 1&quot;;
-	    string public symbol = &quot;RSO-P1&quot;;
+	    string public name = "Realstate Ocean Project 1";
+	    string public symbol = "RSO-P1";
 	    uint public decimals = 18;
 	    uint EthPrice = 385;
 	 
@@ -225,15 +225,15 @@ pragma solidity ^0.4.18;
 	        // Buy allowed if contract is not on halt
 	        require(!halted);
 	        // Amount of wei should be more that 0
-	        require(msg.value&gt;0);
+	        require(msg.value>0);
 	
 
 	        // Count expected tokens price
 	        uint tokens = msg.value * 10**18 / price();
 	
 
-	        // Total tokens should be more than user want&#39;s to buy
-	        require(balances[owner]&gt;tokens);
+	        // Total tokens should be more than user want's to buy
+	        require(balances[owner]>tokens);
 	
 
 	        // ICO Token Price
@@ -245,7 +245,7 @@ pragma solidity ^0.4.18;
 	        // Check how much tokens already sold
 	        if (ICO) {
 	            // Check that required tokens count are less than tokens already sold on ICO
-	            require(safeAdd(presaleTokenSupply, tokens) &lt; ICOCap);
+	            require(safeAdd(presaleTokenSupply, tokens) < ICOCap);
 	        } 
 
 	        // Send wei to founder address
@@ -340,7 +340,7 @@ pragma solidity ^0.4.18;
 	
 
 	    modifier isAvailable() {
-	        require(!halted &amp;&amp; !freeze);
+	        require(!halted && !freeze);
 	        _;
 	    }
 	

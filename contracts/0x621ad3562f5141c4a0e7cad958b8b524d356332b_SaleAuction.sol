@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,16 +98,16 @@ interface ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeeds()&#39;)) ^
-    //     bytes4(keccak256(&#39;countOfDeedsByOwner(address)&#39;)) ^
-    //     bytes4(keccak256(&#39;deedOfOwnerByIndex(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    //     bytes4(keccak256(&#39;takeOwnership(uint256)&#39;));
+    //     bytes4(keccak256('ownerOf(uint256)')) ^
+    //     bytes4(keccak256('countOfDeeds()')) ^
+    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
+    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
+    //     bytes4(keccak256('approve(address,uint256)')) ^
+    //     bytes4(keccak256('takeOwnership(uint256)'));
 
     /// @notice Query a contract to see if it supports a certain interface
     /// @dev Returns `true` the interface is supported and `false` otherwise,
@@ -137,7 +137,7 @@ interface ERC721 {
     function countOfDeedsByOwner(address _owner) public view returns (uint256 _count);
 
     /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` &gt;= `countOfDeedsByOwner(_owner)` or if
+    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
     ///  `_owner` is the zero address, representing destroyed deeds.
     /// @param _owner An address where we are interested in deeds owned by them
     /// @param _index A counter between zero and `countOfDeedsByOwner(_owner)`,
@@ -186,7 +186,7 @@ interface ERC721 {
 
 
 /// @title The internal clock auction functionality.
-/// Inspired by CryptoKitties&#39; clock auction
+/// Inspired by CryptoKitties' clock auction
 contract ClockAuctionBase {
 
     // Address of the ERC721 contract this auction is linked to.
@@ -199,7 +199,7 @@ contract ClockAuctionBase {
     uint256 public outstandingEther = 0 ether;
     
     // Amount of ether yet to be paid per beneficiary.
-    mapping (address =&gt; uint256) public addressToEtherOwed;
+    mapping (address => uint256) public addressToEtherOwed;
     
     /// @dev Represents a deed auction.
     /// Care has been taken to ensure the auction fits in
@@ -212,7 +212,7 @@ contract ClockAuctionBase {
         uint64 startedAt;
     }
 
-    mapping (uint256 =&gt; Auction) identifierToAuction;
+    mapping (uint256 => Auction) identifierToAuction;
     
     // Events
     event AuctionCreated(address indexed seller, uint256 indexed deedId, uint256 startPrice, uint256 endPrice, uint256 duration);
@@ -238,14 +238,14 @@ contract ClockAuctionBase {
         require(deedContract.supportsInterface(0xda671b9b));
         
         // Fee must be between 0 and 100%.
-        require(0 &lt;= _fee &amp;&amp; _fee &lt;= 100000);
+        require(0 <= _fee && _fee <= 100000);
         fee = _fee;
     }
     
     /// @dev Checks whether the given auction is active.
     /// @param auction The auction to check for activity.
     function _activeAuction(Auction storage auction) internal view returns (bool) {
-        return auction.startedAt &gt; 0;
+        return auction.startedAt > 0;
     }
     
     /// @dev Put the deed into escrow, thereby taking ownership of it.
@@ -276,22 +276,22 @@ contract ClockAuctionBase {
         // The auction must be active.
         require(_activeAuction(auction));
         
-        // Calculate the auction&#39;s current price.
+        // Calculate the auction's current price.
         uint256 price = _currentPrice(auction);
         
         // Make sure enough funds were sent.
-        require(_value &gt;= price);
+        require(_value >= price);
         
         address seller = auction.seller;
     
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 totalFee = _calculateFee(price);
             uint256 proceeds = price - totalFee;
             
             // Assign the proceeds to the seller.
             // We do not send the proceeds directly, as to prevent
             // malicious sellers from denying auctions (and burning
-            // the buyer&#39;s gas).
+            // the buyer's gas).
             _assignProceeds(seller, proceeds);
         }
         
@@ -355,11 +355,11 @@ contract ClockAuctionBase {
     
     /// @dev Calculate the current price of an auction.
     function _currentPrice(Auction storage _auction) internal view returns (uint256) {
-        require(now &gt;= _auction.startedAt);
+        require(now >= _auction.startedAt);
         
         uint256 secondsPassed = now - _auction.startedAt;
         
-        if (secondsPassed &gt;= _auction.duration) {
+        if (secondsPassed >= _auction.duration) {
             return _auction.endPrice;
         } else {
             // Negative if the end price is higher than the start price!
@@ -376,7 +376,7 @@ contract ClockAuctionBase {
             int256 price = int256(_auction.startPrice) + currentPriceChange;
             
             // This never throws.
-            assert(price &gt;= 0);
+            assert(price >= 0);
             
             return uint256(price);
         }
@@ -401,7 +401,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
     /// @notice Update the auction fee.
     /// @param _fee The new fee.
     function setFee(uint256 _fee) external onlyOwner {
-        require(0 &lt;= _fee &amp;&amp; _fee &lt;= 100000);
+        require(0 <= _fee && _fee <= 100000);
     
         fee = _fee;
     }
@@ -455,7 +455,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
         );
     
         // The duration of the auction must be at least 60 seconds.
-        require(_duration &gt;= 60);
+        require(_duration >= 60);
     
         // Throws if placing the deed in escrow fails (the contract requires
         // transfer approval prior to creating the auction).
@@ -517,7 +517,7 @@ contract ClockAuction is ClockAuctionBase, Pausable {
         uint256 etherOwed = addressToEtherOwed[beneficiary];
         
         // Ensure ether is owed to the beneficiary.
-        require(etherOwed &gt; 0);
+        require(etherOwed > 0);
          
         // Set ether owed to 0   
         delete addressToEtherOwed[beneficiary];

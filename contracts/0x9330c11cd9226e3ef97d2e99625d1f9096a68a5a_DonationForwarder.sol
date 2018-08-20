@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /*
     DonationForwarder v1.0
     
-    When you&#39;re feeling generous, you can send ether to this contract to have
+    When you're feeling generous, you can send ether to this contract to have
      it forwarded to someone else.
      
     You can buy or override a previous redirect by paying a higher price (note:
@@ -42,7 +42,7 @@ contract DonationForwarder {
     );
     
     function DonationForwarder() public {
-        // The default redirect address will be the contract creator&#39;s.
+        // The default redirect address will be the contract creator's.
         owner = msg.sender;
         redirect = owner;
         
@@ -63,7 +63,7 @@ contract DonationForwarder {
     function buyRedirectFor(address newRedirect) payable public {
         // Any new redirect is going to cost more than the previous.
         // One can pay a higher price to ensure it would be harder to change.
-        require(msg.value &gt; lastPrice);
+        require(msg.value > lastPrice);
         
         // The new redirect address must be different from the previous one.
         require(newRedirect != redirect);

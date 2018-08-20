@@ -13,20 +13,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -75,9 +75,9 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
 
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public freezeOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public freezeOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed _from,address indexed _to,uint256 _value,bytes _data);
@@ -98,8 +98,8 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
         
         totalSupply = 1000000000 *10**uint256(decimals);    // Update total supply
         balanceOf[msg.sender] = totalSupply; 
-        name = &quot;CYPHERX&quot;;                                   // Set the name for display purposes
-        symbol = &quot;CYX&quot;;                                  // Set the symbol for display purposes
+        name = "CYPHERX";                                   // Set the name for display purposes
+        symbol = "CYX";                                  // Set the symbol for display purposes
         soldToken=0;                                    // Amount of decimals for display purposes
 
     }
@@ -114,12 +114,12 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
             // Retrieve the size of the code on target address, this needs assembly .
             codeLength := extcodesize(_to)
         }
-        if (_value &lt;= 0) throw;
-        if(balanceOf[msg.sender] &lt; _value) revert();
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (_value <= 0) throw;
+        if(balanceOf[msg.sender] < _value) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
 	
             receiver.tokenFallback(msg.sender, _value, empty);
@@ -131,7 +131,7 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
      /* Allow another contract to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) returns (bool success) 
     {
-		if (_value &lt;= 0) throw; 
+		if (_value <= 0) throw; 
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -139,10 +139,10 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
     {
-        if (_value &lt;= 0) throw; 
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (_value <= 0) throw; 
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);          // Subtract from the sender
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);           // Add the same to the recipient
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value);
@@ -153,8 +153,8 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
 
     function burn(uint256 _value) returns (bool success) 
     {
-        if (balanceOf[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw; 
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);                      // Subtract from the sender
         totalSupply = SafeMath.safeSub(totalSupply,_value);                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -163,8 +163,8 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
 	
 	function freeze(address _freeze,uint256 _value) onlyOwner returns (bool success) 
 	{
-        if (balanceOf[_freeze] &lt; _value) throw;            // Check if the sender has enough
-	    if (_value &lt;= 0) throw; 
+        if (balanceOf[_freeze] < _value) throw;            // Check if the sender has enough
+	    if (_value <= 0) throw; 
         balanceOf[_freeze] = SafeMath.safeSub(balanceOf[_freeze], _value);                      // Subtract from the sender
         freezeOf[_freeze] = SafeMath.safeAdd(freezeOf[_freeze], _value);                                // Updates totalSupply
         Freeze(_freeze, _value);
@@ -173,8 +173,8 @@ contract CYPHERX is SafeMath,owned,ERC223Interface{
     
     function unfreeze(address _unfreeze,uint256 _value) onlyOwner returns (bool success)
     {
-        if (freezeOf[_unfreeze] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (freezeOf[_unfreeze] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw; 
         freezeOf[_unfreeze] = SafeMath.safeSub(freezeOf[_unfreeze], _value);                      // Subtract from the sender
 		balanceOf[_unfreeze] = SafeMath.safeAdd(balanceOf[_unfreeze], _value);
         Unfreeze(_unfreeze, _value);

@@ -43,11 +43,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -57,8 +57,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -81,13 +81,13 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract FarmCoin is StandardToken {
 
     function () {
@@ -100,27 +100,27 @@ contract FarmCoin is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string public name = &#39;FarmCoin&#39;;                   //fancy name: eg Simon Bucks
-    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
-    string public symbol = &#39;FARM&#39;;                 //An identifier: eg SBX
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public name = 'FarmCoin';                   //fancy name: eg Simon Bucks
+    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+    string public symbol = 'FARM';                 //An identifier: eg SBX
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
 //
 // CHANGE THESE VALUES FOR YOUR TOKEN
 //
 
-//make sure this function name matches the contract name above. So if you&#39;re token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
+//make sure this function name matches the contract name above. So if you're token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
 
     function FarmCoin(
         ) {
         balances[msg.sender] = 5000000000000000000000000;               // Give the creator all initial tokens (100000 for example)
         totalSupply = 5000000000000000000000000;                        // Update total supply (100000 for example)
-        name = &quot;FarmCoin&quot;;                                   // Set the name for display purposes
+        name = "FarmCoin";                                   // Set the name for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
-        symbol = &quot;FARM&quot;;                               // Set the symbol for display purposes
+        symbol = "FARM";                               // Set the symbol for display purposes
     }
 
     /* Approves and then calls the receiving contract */
@@ -128,10 +128,10 @@ contract FarmCoin is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }
@@ -153,8 +153,8 @@ contract FarmCoinSale is FarmCoin {
     bool private configSet;
     address public creator;
 
-    mapping (address =&gt; uint256) public heldTokens;
-    mapping (address =&gt; uint) public heldTimeline;
+    mapping (address => uint256) public heldTokens;
+    mapping (address => uint) public heldTimeline;
 
     event Contribution(address from, uint256 amount);
     event ReleaseTokens(address from, uint256 amount);
@@ -179,11 +179,11 @@ contract FarmCoinSale is FarmCoin {
 // @return the rate in FARM per 1 ETH according to the time of the tx and the FARM pricing program.
     // @Override
   function getRate() constant returns (uint256 rate) {
-    if      (now &lt; START)            return rate = 840; // presale, 40% bonus
-    else if (now &lt;= START +  6 days) return rate = 810; // day 1 to 6, 35% bonus
-    else if (now &lt;= START + 13 days) return rate = 780; // day 7 to 13, 30% bonus
-    else if (now &lt;= START + 20 days) return rate = 750; // day 14 to 20, 25% bonus
-    else if (now &lt;= START + 28 days) return rate = 720; // day 21 to 28, 20% bonus
+    if      (now < START)            return rate = 840; // presale, 40% bonus
+    else if (now <= START +  6 days) return rate = 810; // day 1 to 6, 35% bonus
+    else if (now <= START + 13 days) return rate = 780; // day 7 to 13, 30% bonus
+    else if (now <= START + 20 days) return rate = 750; // day 14 to 20, 25% bonus
+    else if (now <= START + 28 days) return rate = 720; // day 21 to 28, 20% bonus
     return rate = 600; // no bonus
   }
 
@@ -204,12 +204,12 @@ contract FarmCoinSale is FarmCoin {
     // CONTRIBUTE FUNCTION
     // converts ETH to TOKEN and sends new TOKEN to the sender
     function contribute() external payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Contribution(msg.sender, amount);
@@ -255,8 +255,8 @@ contract FarmCoinSale is FarmCoin {
         uint256 held = heldTokens[msg.sender];
         uint heldBlock = heldTimeline[msg.sender];
         require(!isFunding);
-        require(held &gt;= 0);
-        require(block.number &gt;= heldBlock);
+        require(held >= 0);
+        require(block.number >= heldBlock);
         heldTokens[msg.sender] = 0;
         heldTimeline[msg.sender] = 0;
         ReleaseTokens(msg.sender, held);

@@ -104,31 +104,31 @@ contract SaddleShopOwner is SaddleControl, ERC721 {
     
 
     
-    mapping (uint256 =&gt; address) public SaddleShopO;
+    mapping (uint256 => address) public SaddleShopO;
     
-    mapping (uint256 =&gt; uint256) public SaddleShopPrice;
+    mapping (uint256 => uint256) public SaddleShopPrice;
     
-    mapping (uint256 =&gt; bool) public SaddleShopForSale;
-    mapping (uint256 =&gt; bool) public SaddleShopForBiding;
+    mapping (uint256 => bool) public SaddleShopForSale;
+    mapping (uint256 => bool) public SaddleShopForBiding;
     
-    mapping (address =&gt; uint256) SaddleShopOwnCount;
+    mapping (address => uint256) SaddleShopOwnCount;
     
      uint256 public SaddleShopSaleFee = 20;
    
   
-        mapping (uint256 =&gt; uint256)  startBlock;
+        mapping (uint256 => uint256)  startBlock;
       
-    mapping (uint256 =&gt; uint256) startPrice;
-    mapping (uint256 =&gt; uint256) public shopPriceDecreaseRate;
+    mapping (uint256 => uint256) startPrice;
+    mapping (uint256 => uint256) public shopPriceDecreaseRate;
     
 
       function getCurrentItemPrice(uint256 _id) public view returns (uint256)  {
           
         uint256  currentPrice =startPrice[_id] - shopPriceDecreaseRate[_id]*(block.number - startBlock[_id]);
           
-           if(currentPrice &lt;=0 ){
+           if(currentPrice <=0 ){
       return 0;
-  }else if(currentPrice&gt;startPrice[_id]){
+  }else if(currentPrice>startPrice[_id]){
       
       return 0;
   }else{
@@ -164,7 +164,7 @@ contract SaddleShopOwner is SaddleControl, ERC721 {
          
               uint256 price = SaddleShopPrice[id];
             
-            require(price&lt;=msg.value);
+            require(price<=msg.value);
             
          uint256 Fee = price / SaddleShopSaleFee ;
             
@@ -226,11 +226,11 @@ contract SaddleShopOwner is SaddleControl, ERC721 {
         
         
         uint256 priceNow = getCurrentItemPrice(_id);
-        require(msg.value&gt;=priceNow);
+        require(msg.value>=priceNow);
         
         require(SaddleShopForBiding[_id]==true);
         
-          if(priceNow&lt;=0||priceNow&gt;=startPrice[_id]){
+          if(priceNow<=0||priceNow>=startPrice[_id]){
         SaddleShopForBiding[_id]=false;
               _to.transfer( msg.value);
               
@@ -297,27 +297,27 @@ contract SaddleBasis is  SaddleShopOwner {
 
     SaddleAttr[] Saddles;
 
-    mapping (uint256 =&gt; address) SaddleOwnerIndex;
+    mapping (uint256 => address) SaddleOwnerIndex;
     
-    mapping (uint256 =&gt; uint256) public saddleIndexPrice;
+    mapping (uint256 => uint256) public saddleIndexPrice;
     
-    mapping (uint256 =&gt; uint256) public saddleQuality;
+    mapping (uint256 => uint256) public saddleQuality;
     
     
     
-    mapping (uint256 =&gt; bool) SaddleIndexForSale;
+    mapping (uint256 => bool) SaddleIndexForSale;
 
-    mapping (address =&gt; uint256) tokenOwnershipCount;
+    mapping (address => uint256) tokenOwnershipCount;
     
-    mapping (uint256 =&gt; bool)  raceListed;
+    mapping (uint256 => bool)  raceListed;
     
-    mapping (uint256 =&gt; bool) public DutchAListed;
+    mapping (uint256 => bool) public DutchAListed;
     
-    mapping (uint256 =&gt; uint256)  startDutchABlock;
+    mapping (uint256 => uint256)  startDutchABlock;
       
-    mapping (uint256 =&gt; uint256) startDutchAPrice;
+    mapping (uint256 => uint256) startDutchAPrice;
     
-    mapping (uint256 =&gt; uint256) public DutchADecreaseRate;
+    mapping (uint256 => uint256) public DutchADecreaseRate;
     
     
 
@@ -404,7 +404,7 @@ contract SaddleBasis is  SaddleShopOwner {
          
      if(SaddleIndexForSale[_tokenId]==true){
           
-            require(price&lt;=value);
+            require(price<=value);
             
             
             
@@ -431,19 +431,19 @@ contract SaddleBasis is  SaddleShopOwner {
             uint256 saddleQ = saddleQuality[_tokenId]/10;
              address SaddleSOwner;
              
-              if(saddleQ&gt;=0&amp;&amp;saddleQ&lt;=2){
+              if(saddleQ>=0&&saddleQ<=2){
               SaddleSOwner= SaddleShopO[5];
                  
-             }else  if(saddleQ&gt;=2&amp;&amp;saddleQ&lt;=4){
+             }else  if(saddleQ>=2&&saddleQ<=4){
               SaddleSOwner= SaddleShopO[4];
                  
-             } else  if(saddleQ&gt;=4&amp;&amp;saddleQ&lt;=6){
+             } else  if(saddleQ>=4&&saddleQ<=6){
              SaddleSOwner=  SaddleShopO[3];
                  
-             } else  if(saddleQ&gt;=6&amp;&amp;saddleQ&lt;=8){
+             } else  if(saddleQ>=6&&saddleQ<=8){
              SaddleSOwner=  SaddleShopO[2];
                  
-             }else  if(saddleQ&gt;=8&amp;&amp;saddleQ&lt;=10){
+             }else  if(saddleQ>=8&&saddleQ<=10){
              SaddleSOwner=  SaddleShopO[1];
                  
              }else{
@@ -484,9 +484,9 @@ contract SaddleBasis is  SaddleShopOwner {
       function getCurrentSaddlePrice(uint256 _id) public view returns (uint256)  {
           
       uint256     currentPrice= startDutchAPrice[_id] - DutchADecreaseRate[_id]*(block.number - startDutchABlock[_id]);
-  if(currentPrice &lt;=0 ){
+  if(currentPrice <=0 ){
       return 0;
-  }else if(currentPrice&gt;startDutchAPrice[_id]){
+  }else if(currentPrice>startDutchAPrice[_id]){
       
       return 0;
   }else{
@@ -585,8 +585,8 @@ contract SaddleBasis is  SaddleShopOwner {
 
 contract SaddleOwnership is SaddleBasis{
 
-  string public constant  name = &quot;CryptoSaddle&quot;;
-    string public constant symbol = &quot;CSD&quot;;
+  string public constant  name = "CryptoSaddle";
+    string public constant symbol = "CSD";
      uint8 public constant decimals = 0; 
 
     function SaddleForSale(uint256 _tokenId, uint256 price) external { 
@@ -816,7 +816,7 @@ contract SaddleMinting is SaddleOwnership {
         function createSaddle1(   uint256 _genes1, uint256 _genes2,uint256 _genes3, address _owner) external onlyC {
         address SaddleOwner = _owner;
         
-   require(Saddles.length+1 &lt; Saddle_Limit);
+   require(Saddles.length+1 < Saddle_Limit);
 
               _newSaddle(_genes1, _genes2, _genes3,true, SaddleOwner);
             
@@ -838,7 +838,7 @@ contract SaddleMinting is SaddleOwnership {
     ) external onlyC {
         address SaddleOwner = _owner;
         
-   require(Saddles.length+6 &lt; Saddle_Limit);
+   require(Saddles.length+6 < Saddle_Limit);
 
 
              

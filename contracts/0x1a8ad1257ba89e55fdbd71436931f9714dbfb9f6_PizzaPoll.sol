@@ -1,9 +1,9 @@
 pragma solidity ^0.4.13;
 
 contract PizzaPoll {
-    mapping (address =&gt; bool) pizzaIsLiked;
-    mapping (address =&gt; uint) likeCount;
-    mapping (address =&gt; uint) dislikeCount;
+    mapping (address => bool) pizzaIsLiked;
+    mapping (address => uint) likeCount;
+    mapping (address => uint) dislikeCount;
 
     function PizzaPoll() { 
         likeCount[msg.sender] = 0;

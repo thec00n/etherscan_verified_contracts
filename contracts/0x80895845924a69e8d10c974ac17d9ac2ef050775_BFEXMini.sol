@@ -4,7 +4,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -71,8 +71,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -87,9 +87,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -97,7 +97,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -131,10 +131,10 @@ contract BFEXMini is Ownable {
   // timeLimitEnable Enable
   bool public timeLimitEnable;
 
-  mapping (address =&gt; bool) public whitelist;
-  mapping (address =&gt; uint256) public bfexAmount; // 18 digits
-  mapping (address =&gt; uint256) public weiParticipate;
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => bool) public whitelist;
+  mapping (address => uint256) public bfexAmount; // 18 digits
+  mapping (address => uint256) public weiParticipate;
+  mapping (address => uint256) public balances;
 
   // Amount of wei raised
   uint256 public weiRaised = 0;
@@ -230,7 +230,7 @@ contract BFEXMini is Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -265,7 +265,7 @@ contract BFEXMini is Ownable {
 
     _preApprove(_participant);
     require(_participant != address(0));
-    require(weiAmount &gt;= minimum);
+    require(weiAmount >= minimum);
 
     // calculate bfex token _participant will recieve
     uint256 bfexToken = _getTokenAmount(weiAmount);
@@ -293,9 +293,9 @@ contract BFEXMini is Ownable {
   */
   function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
     uint256 _rate;
-    if (_weiAmount &gt;= 0.1 ether &amp;&amp; _weiAmount &lt; 1 ether ) {
+    if (_weiAmount >= 0.1 ether && _weiAmount < 1 ether ) {
       _rate = rate;
-    } else if (_weiAmount &gt;= 1 ether ) {
+    } else if (_weiAmount >= 1 ether ) {
       _rate = rateSecondTier;
     }
     uint256 bfex = _weiAmount.mul(_rate);
@@ -308,9 +308,9 @@ contract BFEXMini is Ownable {
   * @param _participant address
   */
   function _preApprove(address _participant) internal view {
-    require (maxContributor &gt;= contributor);
+    require (maxContributor >= contributor);
     if (timeLimitEnable == true) {
-      require (now &gt;= startTime &amp;&amp; now &lt;= startTime + 1 days);
+      require (now >= startTime && now <= startTime + 1 days);
     }
     if (whitelistEnable == true) {
       require(isWhitelist(_participant));
@@ -341,7 +341,7 @@ contract BFEXMini is Ownable {
   }
 
   function withdraw(uint _value) public returns (bool success) {
-    require(balances[msg.sender] &lt;= _value);
+    require(balances[msg.sender] <= _value);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     msg.sender.transfer(_value);

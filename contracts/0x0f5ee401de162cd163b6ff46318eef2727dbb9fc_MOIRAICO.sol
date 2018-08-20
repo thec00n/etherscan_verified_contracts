@@ -5,7 +5,7 @@ Moira ICO Contract
 MOI is an ERC-20 Token Standar Compliant
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="690f4708071d060700064708020c05290e04080005470a0604">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="690f4708071d060700064708020c05290e04080005470a0604">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -23,7 +23,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ contract MOIRAICO {
     32200
     ];
 
-    mapping (address =&gt; uint) balances; //balances mapping
+    mapping (address => uint) balances; //balances mapping
     //public variables
     uint public totalRaised;
     uint public currentBalance;
@@ -107,7 +107,7 @@ contract MOIRAICO {
 
     function contribute() public notFinished payable {
 
-        require(msg.value &gt; 1 finney); //minimun contribution
+        require(msg.value > 1 finney); //minimun contribution
 
         uint tokenBought;
         totalRaised =SafeMath.add(totalRaised, msg.value);
@@ -116,7 +116,7 @@ contract MOIRAICO {
         if(state == State.Preico){
             tokenBought = SafeMath.mul(msg.value,tablePrices[0]);
         }
-        else if(state == State.Preico &amp;&amp; now &lt; (startTime + 1 days)) {
+        else if(state == State.Preico && now < (startTime + 1 days)) {
             tokenBought = SafeMath.mul(msg.value,tablePrices[1]);
         }
         else{
@@ -133,12 +133,12 @@ contract MOIRAICO {
 
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &lt; ICOdeadline &amp;&amp; state!=State.Successful){
-            if(now &gt; preICODeadline &amp;&amp; state==State.Preico){
+        if(now < ICOdeadline && state!=State.Successful){
+            if(now > preICODeadline && state==State.Preico){
                 state = State.Ico;    
             }
         }
-        else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful) {
+        else if(now > ICOdeadline && state!=State.Successful) {
             state = State.Successful;
             completedAt = now;
             LogFundingSuccessful(totalRaised);
@@ -161,7 +161,7 @@ contract MOIRAICO {
     }
 
     function () public payable {
-        require(msg.value &gt; 1 finney);
+        require(msg.value > 1 finney);
         contribute();
     }
 }

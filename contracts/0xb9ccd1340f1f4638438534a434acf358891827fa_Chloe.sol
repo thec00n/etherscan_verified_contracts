@@ -111,7 +111,7 @@ II+++?IZ8D88DDNNNNNNNNDDD888O$ZZ$???+==~~~~~~~~~~~~~~~~~:::~:~:~~:~:::~~~~~~~~~:
 /**
  * Created on 2018-08-16 03:50
  * @summary
- * Don&#39;t let &#39;em say you ain&#39;t beautiful.
+ * Don't let 'em say you ain't beautiful.
  * They can all get fucked.
  * Just stay true to you.
  * @author yong
@@ -136,13 +136,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -190,8 +190,8 @@ contract ERC20 is Ownable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -206,7 +206,7 @@ contract ERC20 is Ownable {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -227,8 +227,8 @@ contract ERC20 is Ownable {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -275,7 +275,7 @@ contract ERC20 is Ownable {
         returns (bool)
     {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -304,7 +304,7 @@ contract ERC223 is ERC20 {
         public
         returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         bytes memory empty;
         uint256 codeLength;
@@ -315,7 +315,7 @@ contract ERC223 is ERC20 {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -330,8 +330,8 @@ contract ERC223 is ERC20 {
         public
         returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         bytes memory empty;
         uint256 codeLength;
@@ -342,7 +342,7 @@ contract ERC223 is ERC20 {
 
         balances[_from] = balances[_from].sub(_value);
 
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -366,8 +366,8 @@ contract ERC223 is ERC20 {
  */
 contract Chloe is ERC223 {
 
-    string public constant name = &quot;Shuhan Liao&quot;;
-    string public constant symbol = &quot;Chloe&quot;;
+    string public constant name = "Shuhan Liao";
+    string public constant symbol = "Chloe";
     uint8 public constant decimals = 0;
     string public message;
 
@@ -379,6 +379,6 @@ contract Chloe is ERC223 {
         balances[owner] = totalSupply_;
         emit Transfer(0x0, owner, totalSupply_);
 
-        message = &quot;Happy Valentines Day!&quot;;
+        message = "Happy Valentines Day!";
     }
 }

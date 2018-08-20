@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 contract BrandsRefundFond {
-  mapping (address =&gt; uint256) public people;
+  mapping (address => uint256) public people;
   uint256 claim_amount = 16129032250000000;
 
   address public ceoAddress;
@@ -80,7 +80,7 @@ contract BrandsRefundFond {
 
   function claim() public payable {
     require(msg.sender != address(0));
-    require(this.balance &gt; claim_amount);
+    require(this.balance > claim_amount);
     require(people[msg.sender] == 1);
     people[msg.sender] = 0;
     msg.sender.transfer(claim_amount);

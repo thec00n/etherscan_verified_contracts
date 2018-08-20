@@ -20,7 +20,7 @@ library SafeMath {
   * Division
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); 
+    assert(b > 0); 
     uint256 c = a / b;
     return c;
   }
@@ -29,7 +29,7 @@ library SafeMath {
   * Soustraction
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract SafeERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -78,7 +78,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // ERROR if not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract BurnableToken is BasicToken {
    * Amount of token burn
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -110,8 +110,8 @@ contract BurnableToken is BasicToken {
 }
 
 contract CCXToken is  BurnableToken{
-    string public constant name = &quot;CCX&quot;;
-    string public constant symbol = &quot;CCX&quot;;
+    string public constant name = "CCX";
+    string public constant symbol = "CCX";
     uint8 public constant decimals = 18;
     uint256 public totalSupply;
 
@@ -164,7 +164,7 @@ contract CCXCrowdsale is Ownable{
     uint256 public balance;
     uint256 public tokens;
 
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
      function CCXCrowdsale(address _token,address _wallet) public{
         token = CCXToken(_token);
@@ -224,7 +224,7 @@ contract CCXCrowdsale is Ownable{
 
     function () public payable{
             require(msg.sender != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         buyTokens();
     }
   
@@ -246,12 +246,12 @@ contract CCXCrowdsale is Ownable{
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);

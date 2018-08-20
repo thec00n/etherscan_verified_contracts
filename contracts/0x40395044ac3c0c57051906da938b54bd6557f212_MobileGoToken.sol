@@ -5,7 +5,7 @@ pragma solidity ^0.4.11;
 The MobileGo [MGO] Token Smart Contract
 
 Credit:
-Stefan Crnojević <span class="__cf_email__" data-cfemail="acdfcfdec2c3c6c9dac5cfecdcdec3d8c3c2c1cdc5c082cfc4">[email&#160;protected]</span>
+Stefan Crnojević <span class="__cf_email__" data-cfemail="acdfcfdec2c3c6c9dac5cfecdcdec3d8c3c2c1cdc5c082cfc4">[email protected]</span>
 MobileGo Inc, Game Credits Inc
 
 ERC20: https://github.com/ethereum/EIPs/issues/20
@@ -31,8 +31,8 @@ contract ContractReceiver {
 
 contract MobileGoToken {
     /* Contract Constants */
-    string public constant _name = &quot;MobileGo Token&quot;;
-    string public constant _symbol = &quot;MGO&quot;;
+    string public constant _name = "MobileGo Token";
+    string public constant _symbol = "MGO";
     uint8 public constant _decimals = 8;
 
     /* The supply is initially 100,000,000MGO to the precision of 8 decimals */
@@ -41,10 +41,10 @@ contract MobileGoToken {
     /* Contract Variables */
     address public owner;
     uint256 public _currentSupply;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping (address => uint256)) public allowed;
 
-    /* Constructor initializes the owner&#39;s balance and the supply  */
+    /* Constructor initializes the owner's balance and the supply  */
     function MobileGoToken() {
         owner = msg.sender;
         _currentSupply = _initialSupply;
@@ -72,11 +72,11 @@ contract MobileGoToken {
         return balances[_address];
     }
 
-    /* Transfer the balance from the sender&#39;s address to the address _to */
+    /* Transfer the balance from the sender's address to the address _to */
     function transfer(address _to, uint _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             bytes memory empty;
             if(isContract(_to)) {
                 return transferToContract(_to, _value, empty);
@@ -90,10 +90,10 @@ contract MobileGoToken {
 
     /* Withdraws to address _to form the address _from up to the amount _value */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
@@ -106,7 +106,7 @@ contract MobileGoToken {
 
     /* Allows _spender to withdraw the _allowance amount form sender */
     function approve(address _spender, uint256 _allowance) returns (bool success) {
-        if (_allowance &lt;= _currentSupply) {
+        if (_allowance <= _currentSupply) {
             allowed[msg.sender][_spender] = _allowance;
             Approval(msg.sender, _spender, _allowance);
             return true;
@@ -136,11 +136,11 @@ contract MobileGoToken {
         return _decimals;
     }
 
-    /* Transfer the balance from the sender&#39;s address to the address _to with data _data */
+    /* Transfer the balance from the sender's address to the address _to with data _data */
     function transfer(address _to, uint _value, bytes _data) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             if(isContract(_to)) {
                 return transferToContract(_to, _value, _data);
             } else {
@@ -179,7 +179,7 @@ contract MobileGoToken {
         assembly {
             length := extcodesize(_address)
         }
-        if(length &gt; 0) {
+        if(length > 0) {
             return true;
         } else {
             return false;
@@ -189,8 +189,8 @@ contract MobileGoToken {
     /* Non-ERC Functions */
     /* Remove the specified amount of the tokens from the supply permanently */
     function burn(uint256 _value, bytes _data) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value
+            && _value > 0) {
             balances[msg.sender] -= _value;
             _currentSupply -= _value;
             Burn(msg.sender, _value, _currentSupply, _data);

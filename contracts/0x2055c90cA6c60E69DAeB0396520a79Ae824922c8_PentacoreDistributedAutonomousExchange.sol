@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -133,7 +133,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -144,8 +144,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -228,8 +228,8 @@ contract StandardToken is ERC20, BasicToken {
 contract PentacoreToken is StandardToken {
   using SafeMath for uint256;
 
-  string public name = &#39;PentacoreToken&#39;;
-  string public symbol = &#39;PENT&#39;;
+  string public name = 'PentacoreToken';
+  string public symbol = 'PENT';
   uint256 public constant million = 1000000;
   uint256 public constant tokenCap = 1000 * million; // one billion tokens
   bool public isPaused = true;
@@ -238,7 +238,7 @@ contract PentacoreToken is StandardToken {
   // the PentacoreToken does these tests itself.  This is mandated by legal
   // issues, as follows:
   // - The exchange can be anywhere and it should not be concerned with
-  //   Pentacore&#39;s whitelisting methods.  If the exchange desires, it can
+  //   Pentacore's whitelisting methods.  If the exchange desires, it can
   //   perform its own KYC.
   // - Even after the Crowdsale / ICO if a whitelisted owner tries to sell
   //   their tokens to a non-whitelisted buyer (address), the seller shall be
@@ -247,7 +247,7 @@ contract PentacoreToken is StandardToken {
   // - If the seller is removed from the whitelist prior to the sale attempt,
   //   the corresponding sale should be reported to the authorities instead of
   //   allowing the seller to proceed.  This is subject of further discussion.
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   // If set to true, allow transfers between any addresses regardless of whitelist.
   // However, sale and/or redemption would still be not allowed regardless of this flag.
@@ -258,7 +258,7 @@ contract PentacoreToken is StandardToken {
   uint256 public tokenNAVMicroUSD; // Net Asset Value per token in MicroUSD (millionths of 1 US$)
   uint256 public weiPerUSD; // How many Wei is one US$
 
-  // Who&#39;s Who
+  // Who's Who
   address public owner; // The owner of this contract.
   address public kycAdmin; // The address of the caller which can update the KYC status of an address.
   address public navAdmin; // The address of the caller which can update the NAV/USD and ETH/USD values.
@@ -438,7 +438,7 @@ contract PentacoreToken is StandardToken {
    * @param _beneficiaries List of addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyBy(kycAdmin) {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) addToWhitelist(_beneficiaries[i]);
+    for (uint256 i = 0; i < _beneficiaries.length; i++) addToWhitelist(_beneficiaries[i]);
   }
 
   /**
@@ -455,7 +455,7 @@ contract PentacoreToken is StandardToken {
    * @param _beneficiaries List of addresses to be removed to the whitelist
    */
   function removeManyFromWhitelist(address[] _beneficiaries) external onlyBy(kycAdmin) {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) removeFromWhitelist(_beneficiaries[i]);
+    for (uint256 i = 0; i < _beneficiaries.length; i++) removeFromWhitelist(_beneficiaries[i]);
   }
 
   /**
@@ -469,7 +469,7 @@ contract PentacoreToken is StandardToken {
     // Should run even when the token is paused.
     require(tokenNAVMicroUSD != uint256(0));
     require(weiPerUSD != uint256(0));
-    require(totalSupply_.add(_amount) &lt;= tokenCap);
+    require(totalSupply_.add(_amount) <= tokenCap);
     totalSupply_ = totalSupply_.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount);
@@ -483,8 +483,8 @@ contract PentacoreToken is StandardToken {
    */
   function burn(uint256 _amount) public onlyBy(redemption) returns (bool) {
     // Should run even when the token is paused.
-    require(balances[redemption].sub(_amount) &gt;= uint256(0));
-    require(totalSupply_.sub(_amount) &gt;= uint256(0));
+    require(balances[redemption].sub(_amount) >= uint256(0));
+    require(totalSupply_.sub(_amount) >= uint256(0));
     balances[redemption] = balances[redemption].sub(_amount);
     totalSupply_ = totalSupply_.sub(_amount);
     emit Burn(_amount);
@@ -507,7 +507,7 @@ contract PentacoreToken is StandardToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -540,7 +540,7 @@ contract PentacoreToken is StandardToken {
    * From MonolithDAO Token.sol
    *
    * @dev The sender does not need to be whitelisted.  This is in case they are removed from white list and no longer agree to sell at an exchange.
-   * @dev This function stays untouched (directly inherited), but it&#39;s re-defined for clarity:
+   * @dev This function stays untouched (directly inherited), but it's re-defined for clarity:
    *
    * @param _spender The address which will spend the funds.
    * @param _subtractedValue The amount of tokens to decrease the allowance by.
@@ -572,7 +572,7 @@ contract PentacoreToken is StandardToken {
  * offer which names the seller.  If the amounts match and the amount of Wei sent
  * matches the amount of tokens offered multiplied by the price, the buyer and
  * the seller of the tokens complete the transaction.
- * Q &amp; A:
+ * Q & A:
  * Q: What is the commission?
  * A: There is no commission.  The buyer and the seller just pay for the gas
  *    they use.
@@ -598,7 +598,7 @@ contract PentacoreDistributedAutonomousExchange {
     uint256 priceWeiPerToken;
   }
 
-  mapping (address =&gt; mapping (address =&gt; Offer)) public offers;
+  mapping (address => mapping (address => Offer)) public offers;
 
   /**
    * @param _token address of the PENT token Smart Contract.
@@ -617,7 +617,7 @@ contract PentacoreDistributedAutonomousExchange {
    * @dev Subsequent calls override the previous offers.
    */
   function offer(address _buyer, uint256 _amountTokens, uint256 _priceWeiPerToken) external {
-    require (token.allowance(msg.sender, address(this)) &gt;= _amountTokens); // Exchange must have allowance
+    require (token.allowance(msg.sender, address(this)) >= _amountTokens); // Exchange must have allowance
     if (_amountTokens == uint256(0)) delete offers[msg.sender][_buyer]; // Retract offer
     else offers[msg.sender][_buyer] = Offer(_amountTokens, _priceWeiPerToken); // Make offer
   }
@@ -629,7 +629,7 @@ contract PentacoreDistributedAutonomousExchange {
    * @dev If the payment does not match the exact amount this function reverts.
    */
   function buy(address _seller, uint256 _amountTokens) external payable /* implicitly in transferFrom: isWhitelisted(msg.sender) */ {
-    require (token.allowance(_seller, address(this)) &gt;= _amountTokens); // Exchange must have allowance
+    require (token.allowance(_seller, address(this)) >= _amountTokens); // Exchange must have allowance
     require(_amountTokens == offers[_seller][msg.sender].amountTokens); // Must match amounts
     require (_amountTokens.mul(offers[_seller][msg.sender].priceWeiPerToken) == msg.value); // Must send exact amount
     if (! token.transferFrom(_seller, msg.sender, _amountTokens)) revert();

@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,13 +61,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -129,9 +129,9 @@ contract BaseFixedERC20Token is Lockable {
   /// @dev ERC20 Total supply
   uint public totalSupply;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
-  mapping(address =&gt; mapping (address =&gt; uint)) private allowed;
+  mapping(address => mapping (address => uint)) private allowed;
 
   /// @dev Fired if Token transfered accourding to ERC20
   event Transfer(address indexed from, address indexed to, uint value);
@@ -154,7 +154,7 @@ contract BaseFixedERC20Token is Lockable {
    * @param value_ The amount to be transferred.
    */
   function transfer(address to_, uint value_) whenNotLocked public returns (bool) {
-    require(to_ != address(0) &amp;&amp; value_ &lt;= balances[msg.sender]);
+    require(to_ != address(0) && value_ <= balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(value_);
     balances[to_] = balances[to_].add(value_);
@@ -169,7 +169,7 @@ contract BaseFixedERC20Token is Lockable {
    * @param value_ uint the amount of tokens to be transferred
    */
   function transferFrom(address from_, address to_, uint value_) whenNotLocked public returns (bool) {
-    require(to_ != address(0) &amp;&amp; value_ &lt;= balances[from_] &amp;&amp; value_ &lt;= allowed[from_][msg.sender]);
+    require(to_ != address(0) && value_ <= balances[from_] && value_ <= allowed[from_][msg.sender]);
     balances[from_] = balances[from_].sub(value_);
     balances[to_] = balances[to_].add(value_);
     allowed[from_][msg.sender] = allowed[from_][msg.sender].sub(value_);
@@ -192,7 +192,7 @@ contract BaseFixedERC20Token is Lockable {
    * @param value_ The amount of tokens to be spent.
    */
   function approve(address spender_, uint value_) whenNotLocked public returns (bool) {
-    if (value_ != 0 &amp;&amp; allowed[msg.sender][spender_] != 0) {
+    if (value_ != 0 && allowed[msg.sender][spender_] != 0) {
       revert();
     }
     allowed[msg.sender][spender_] = value_;
@@ -235,7 +235,7 @@ contract BaseICOToken is BaseFixedERC20Token {
    * @param totalSupply_ Total tokens supply.
    */
   function BaseICOToken(uint totalSupply_) public {
-    locked = true; // Audit: I&#39;d call lock() for better readability
+    locked = true; // Audit: I'd call lock() for better readability
     totalSupply = totalSupply_;
     availableSupply = totalSupply_;
   }
@@ -253,7 +253,7 @@ contract BaseICOToken is BaseFixedERC20Token {
   // Audit: Keep the sender logic separated from the input validation
   // Audit Create modifier onlyICOAddress -  and use it in the icoInvestment method
   function isValidICOInvestment(address to_, uint amount_) internal view returns(bool) {
-    return msg.sender == ico &amp;&amp; to_ != address(0) &amp;&amp; amount_ &lt;= availableSupply;
+    return msg.sender == ico && to_ != address(0) && amount_ <= availableSupply;
   }
 
   /**
@@ -311,17 +311,17 @@ contract BaseICO is Ownable {
   uint public endAt;
 
   /// @dev Minimal amount of investments in wei needed for successfull ICO
-  uint public lowCapWei; // Audit: I&#39;d name this softCapWei
+  uint public lowCapWei; // Audit: I'd name this softCapWei
 
   /// @dev Maximal amount of investments in wei for this ICO.
   /// If reached ICO will be in `Completed` state.
   uint public hardCapWei;
 
   /// @dev Minimal amount of investments in wei per investor.
-  uint public lowCapTxWei; // Audit: I&#39;d name this minimalContributionWei
+  uint public lowCapTxWei; // Audit: I'd name this minimalContributionWei
 
   /// @dev Maximal amount of investments in wei per investor.
-  uint public hardCapTxWei; // Audit: I&#39;d name this maximumContributionWei
+  uint public hardCapTxWei; // Audit: I'd name this maximumContributionWei
 
   /// @dev Number of investments collected by this ICO
   uint public collectedWei;
@@ -333,7 +333,7 @@ contract BaseICO is Ownable {
   bool public whitelistEnabled = true;
 
   /// @dev ICO whitelist
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   // ICO state transition events
   event ICOStarted(uint indexed endAt, uint lowCapWei, uint hardCapWei, uint lowCapTxWei, uint hardCapTxWei);
@@ -404,7 +404,7 @@ contract BaseICO is Ownable {
    * @param endAt_ ICO end date, seconds since epoch.
    */
   function start(uint endAt_) onlyOwner public {
-    require(endAt_ &gt; block.timestamp &amp;&amp; state == State.Inactive);
+    require(endAt_ > block.timestamp && state == State.Inactive);
     endAt = endAt_;
     startAt = block.timestamp;
     state = State.Active;
@@ -427,8 +427,8 @@ contract BaseICO is Ownable {
    * ICO goals are not reached, ICO terminated and cannot be resumed.
    */
   function terminate() onlyOwner public {
-    require(state != State.Terminated &amp;&amp;
-            state != State.NotCompleted &amp;&amp;
+    require(state != State.Terminated &&
+            state != State.NotCompleted &&
             state != State.Completed);
     state = State.Terminated;
     ICOTerminated();
@@ -448,22 +448,22 @@ contract BaseICO is Ownable {
                 uint hardCapWei_,
                 uint lowCapTxWei_,
                 uint hardCapTxWei_) onlyOwner isSuspended public {
-    if (endAt_ &gt; block.timestamp) {
+    if (endAt_ > block.timestamp) {
       endAt = endAt_;
     }
-    if (lowCapWei_ &gt; 0) {
+    if (lowCapWei_ > 0) {
       lowCapWei = lowCapWei_;
     }
-    if (hardCapWei_ &gt; 0) {
+    if (hardCapWei_ > 0) {
       hardCapWei = hardCapWei_;
     }
-    if (lowCapTxWei_ &gt; 0) {
+    if (lowCapTxWei_ > 0) {
       lowCapTxWei = lowCapTxWei_;
     }
-    if (hardCapTxWei_ &gt; 0) {
+    if (hardCapTxWei_ > 0) {
       hardCapTxWei = hardCapTxWei_;
     }
-    require(lowCapWei &lt;= hardCapWei &amp;&amp; lowCapTxWei &lt;= hardCapTxWei);
+    require(lowCapWei <= hardCapWei && lowCapTxWei <= hardCapTxWei);
     touch();
   }
 
@@ -524,7 +524,7 @@ contract OTCPreICO is BaseICO {
                      uint hardCapWei_,
                      uint lowCapTxWei_,
                      uint hardCapTxWei_) public {
-    require(icoToken_ != address(0) &amp;&amp; teamWallet_ != address(0));
+    require(icoToken_ != address(0) && teamWallet_ != address(0));
     token = BaseICOToken(icoToken_); 
     teamWallet = teamWallet_;
     state = State.Inactive;
@@ -539,15 +539,15 @@ contract OTCPreICO is BaseICO {
    * Should be called periodically by ICO owner.
    */
   function touch() public {
-    if (state != State.Active &amp;&amp; state != State.Suspended) {
+    if (state != State.Active && state != State.Suspended) {
       return;
     }
-    if (collectedWei &gt;= hardCapWei) {
+    if (collectedWei >= hardCapWei) {
       state = State.Completed;
       endAt = block.timestamp;
       ICOCompleted(collectedWei);
-    } else if (block.timestamp &gt;= endAt) {
-      if (collectedWei &lt; lowCapWei) {
+    } else if (block.timestamp >= endAt) {
+      if (collectedWei < lowCapWei) {
         state = State.NotCompleted;
         ICONotCompleted();
       } else {
@@ -558,15 +558,15 @@ contract OTCPreICO is BaseICO {
   }
 
   function buyTokens() public payable {
-    require(state == State.Active &amp;&amp;
-            block.timestamp &lt;= endAt &amp;&amp;
-            msg.value &gt;= lowCapTxWei &amp;&amp;
-            msg.value &lt;= hardCapTxWei &amp;&amp;
-            collectedWei + msg.value &lt;= hardCapWei &amp;&amp;
+    require(state == State.Active &&
+            block.timestamp <= endAt &&
+            msg.value >= lowCapTxWei &&
+            msg.value <= hardCapTxWei &&
+            collectedWei + msg.value <= hardCapWei &&
             whitelisted(msg.sender) );
     uint amountWei = msg.value;
-    uint8 bonus = (block.timestamp - startAt &gt;= 1 weeks) ? 10 : 20;
-    uint iwei = bonus &gt; 0 ? amountWei.mul(100 + bonus).div(100) : amountWei;
+    uint8 bonus = (block.timestamp - startAt >= 1 weeks) ? 10 : 20;
+    uint iwei = bonus > 0 ? amountWei.mul(100 + bonus).div(100) : amountWei;
     uint itokens = iwei * ETH_TOKEN_EXCHANGE_RATIO;
     token.icoInvestment(msg.sender, itokens); // Transfer tokens to investor
     collectedWei = collectedWei.add(amountWei);

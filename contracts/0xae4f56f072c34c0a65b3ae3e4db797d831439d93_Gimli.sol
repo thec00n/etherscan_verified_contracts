@@ -23,37 +23,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -96,7 +96,7 @@ contract Administrable is Ownable {
     event AdminstratorAdded(address adminAddress);
     event AdminstratorRemoved(address adminAddress);
 
-    mapping (address =&gt; bool) public administrators;
+    mapping (address => bool) public administrators;
 
     modifier onlyAdministrator() {
         require(administrators[msg.sender] || owner == msg.sender); // owner is an admin by default
@@ -127,21 +127,21 @@ contract GimliToken is ERC20, SafeMath, Ownable {
     *************************/
 
     uint8 public constant decimals = 8;
-    string public constant name = &quot;Gimli Token&quot;;
-    string public constant symbol = &quot;GIM&quot;;
-    string public constant version = &#39;v1&#39;;
+    string public constant name = "Gimli Token";
+    string public constant symbol = "GIM";
+    string public constant version = 'v1';
 
     /// total amount of tokens
     uint256 public constant UNIT = 10**uint256(decimals);
-    uint256 constant MILLION_GML = 10**6 * UNIT; // can&#39;t use `safeMul` with constant
+    uint256 constant MILLION_GML = 10**6 * UNIT; // can't use `safeMul` with constant
     /// Should include CROWDSALE_AMOUNT and VESTING_X_AMOUNT
-    uint256 public constant TOTAL_SUPPLY = 150 * MILLION_GML; // can&#39;t use `safeMul` with constant;
+    uint256 public constant TOTAL_SUPPLY = 150 * MILLION_GML; // can't use `safeMul` with constant;
 
     /// balances indexed by address
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /// allowances indexed by owner and spender
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     bool public transferable = false;
 
@@ -157,7 +157,7 @@ contract GimliToken is ERC20, SafeMath, Ownable {
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(transferable);
 
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt;=0);
+        require(balances[msg.sender] >= _value && _value >=0);
 
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -175,7 +175,7 @@ contract GimliToken is ERC20, SafeMath, Ownable {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(transferable);
 
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value >= 0);
 
         balances[_from] = safeSub(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -247,13 +247,13 @@ contract GimliCrowdsale is SafeMath, GimliToken {
     function() payable {
         require(!crowdsaleCanceled);
 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         // check date
-        require(block.timestamp &gt;= START_DATE &amp;&amp; block.timestamp &lt;= END_DATE);
+        require(block.timestamp >= START_DATE && block.timestamp <= END_DATE);
 
         // calculate and check quantity
         uint256 quantity = safeDiv(safeMul(msg.value, CROWDSALE_PRICE), 10**(18-uint256(decimals)));
-        require(safeSub(balances[this], quantity) &gt;= 0);
+        require(safeSub(balances[this], quantity) >= 0);
 
         require(MULTISIG_WALLET_ADDRESS.send(msg.value));
 
@@ -269,13 +269,13 @@ contract GimliCrowdsale is SafeMath, GimliToken {
     /// @notice returns non-sold tokens to owner
     function  closeCrowdsale() onlyOwner {
         // check if closable
-        require(block.timestamp &gt; END_DATE || crowdsaleCanceled || balances[this] == 0);
+        require(block.timestamp > END_DATE || crowdsaleCanceled || balances[this] == 0);
 
         // enable token transfer
         transferable = true;
 
         // update balances
-        if (balances[this] &gt; 0) {
+        if (balances[this] > 0) {
             uint256 amount = balances[this];
             balances[MULTISIG_WALLET_ADDRESS] = safeAdd(balances[MULTISIG_WALLET_ADDRESS], amount);
             balances[this] = 0;
@@ -293,7 +293,7 @@ contract GimliCrowdsale is SafeMath, GimliToken {
     /// @param _value The amount of token to be allocated
     /// @param _price ETH paid for these tokens
     function preAllocate(address _to, uint256 _value, uint256 _price) onlyOwner {
-        require(block.timestamp &lt; START_DATE);
+        require(block.timestamp < START_DATE);
 
         balances[this] = safeSub(balances[this], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -307,14 +307,14 @@ contract GimliCrowdsale is SafeMath, GimliToken {
     /// @param _destination The address of the recipient
     /// @return Whether the release was successful or not
     function releaseVesting(address _destination) onlyOwner returns (bool success) {
-        if (block.timestamp &gt; VESTING_1_DATE &amp;&amp; vesting1Withdrawn == false) {
+        if (block.timestamp > VESTING_1_DATE && vesting1Withdrawn == false) {
             balances[LOCKED_ADDRESS] = safeSub(balances[LOCKED_ADDRESS], VESTING_1_AMOUNT);
             balances[_destination] = safeAdd(balances[_destination], VESTING_1_AMOUNT);
             vesting1Withdrawn = true;
             Transfer(LOCKED_ADDRESS, _destination, VESTING_1_AMOUNT);
             return true;
         }
-        if (block.timestamp &gt; VESTING_2_DATE &amp;&amp; vesting2Withdrawn == false) {
+        if (block.timestamp > VESTING_2_DATE && vesting2Withdrawn == false) {
             balances[LOCKED_ADDRESS] = safeSub(balances[LOCKED_ADDRESS], VESTING_2_AMOUNT);
             balances[_destination] = safeAdd(balances[_destination], VESTING_2_AMOUNT);
             vesting2Withdrawn = true;
@@ -330,7 +330,7 @@ contract GimliCrowdsale is SafeMath, GimliToken {
     function transferOtherERC20Token(address tokenAddress, uint256 amount)
       onlyOwner returns (bool success)
     {
-        // can&#39;t be used for GIM token
+        // can't be used for GIM token
         require(tokenAddress != address(this) || transferable);
         return ERC20(tokenAddress).transfer(owner, amount);
     }
@@ -380,9 +380,9 @@ contract Gimli is GimliCrowdsale, Administrable {
     function transferGIM(address _from, address _to, uint256 _amount) returns (bool success) {
         require(msg.sender == streamerContract);
         require(tx.origin == _from);
-        require(_amount &lt;= streamerContractMaxAmount);
+        require(_amount <= streamerContractMaxAmount);
 
-        if (balances[_from] &lt; _amount || _amount &lt;= 0)
+        if (balances[_from] < _amount || _amount <= 0)
             return false;
 
         balances[_from] = safeSub(balances[_from], _amount);

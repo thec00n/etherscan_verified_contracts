@@ -1,7 +1,7 @@
 pragma solidity ^0.4.20;
 
-// JohnVerToken Made By PinkCherry - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4cdcad7c5cacdd0ddd7cfc5cae4c3c9c5cdc88ac7cbc9">[email&#160;protected]</a>
-// JohnVerToken Request Question - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98f3f7eafdf9fbf7f1f6ebf7f4edecf1f7f6d8fff5f9f1f4b6fbf7f5">[email&#160;protected]</a>
+// JohnVerToken Made By PinkCherry - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4cdcad7c5cacdd0ddd7cfc5cae4c3c9c5cdc88ac7cbc9">[email protected]</a>
+// JohnVerToken Request Question - <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98f3f7eafdf9fbf7f1f6ebf7f4edecf1f7f6d8fff5f9f1f4b6fbf7f5">[email protected]</a>
 
 library SafeMath
 {
@@ -22,7 +22,7 @@ library SafeMath
 
   	function sub(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		assert(b &lt;= a);
+		assert(b <= a);
 
 		return a - b;
   	}
@@ -30,7 +30,7 @@ library SafeMath
   	function add(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 
 		return c;
   	}
@@ -86,8 +86,8 @@ contract ERC20Token is ERC20Interface, OwnerHelper
   	uint public tokensIssuedTotal = 0;
   	address public constant burnAddress = 0;
 
-  	mapping(address =&gt; uint) balances;
-  	mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+  	mapping(address => uint) balances;
+  	mapping(address => mapping (address => uint)) allowed;
 
   	function totalSupply() public constant returns (uint)
 	{
@@ -101,7 +101,7 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
 	function transfer(address _to, uint _amount) public returns (bool success)
 	{
-		require( balances[msg.sender] &gt;= _amount );
+		require( balances[msg.sender] >= _amount );
 
 	    balances[msg.sender] = balances[msg.sender].sub(_amount);
 		balances[_to]        = balances[_to].add(_amount);
@@ -113,7 +113,7 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
   	function approve(address _spender, uint _amount) public returns (bool success)
 	{
-		require ( balances[msg.sender] &gt;= _amount );
+		require ( balances[msg.sender] >= _amount );
 
 		allowed[msg.sender][_spender] = _amount;
     		
@@ -124,8 +124,8 @@ contract ERC20Token is ERC20Interface, OwnerHelper
 
   	function transferFrom(address _from, address _to, uint _amount) public returns (bool success)
 	{
-		require( balances[_from] &gt;= _amount );
-		require( allowed[_from][msg.sender] &gt;= _amount );
+		require( balances[_from] >= _amount );
+		require( allowed[_from][msg.sender] >= _amount );
 		balances[_from]            = balances[_from].sub(_amount);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
 		balances[_to]              = balances[_to].add(_amount);
@@ -144,8 +144,8 @@ contract JohnVerToken is ERC20Token
 {
 	uint constant E18 = 10**18;
 
-  	string public constant name 	= &quot;JohnVerToken&quot;;
-  	string public constant symbol 	= &quot;JVT&quot;;
+  	string public constant name 	= "JohnVerToken";
+  	string public constant symbol 	= "JVT";
   	uint public constant decimals 	= 18;
 
 	address public wallet;
@@ -204,9 +204,9 @@ contract JohnVerToken is ERC20Token
 	uint public tokenIssuedAirDrop      = 0;
 	uint public tokenIssuedLockUp       = 0;
 
-  	mapping(address =&gt; uint) public icoEtherContributed;
-  	mapping(address =&gt; uint) public icoTokenReceived;
-  	mapping(address =&gt; bool) public refundClaimed;
+  	mapping(address => uint) public icoEtherContributed;
+  	mapping(address => uint) public icoTokenReceived;
+  	mapping(address => bool) public refundClaimed;
   	
  	event WalletChange(address _newWallet);
   	event AdminWalletChange(address _newAdminWallet);
@@ -251,7 +251,7 @@ contract JohnVerToken is ERC20Token
 
 		uint mainSaleDay = 0;
 		
-		if (nowTime &gt; privateSaleStartDate &amp;&amp; nowTime &lt; privateSaleEndDate)
+		if (nowTime > privateSaleStartDate && nowTime < privateSaleEndDate)
 		{
 			saleTime = 1;
 			minEth = privateSaleMinEth;
@@ -260,7 +260,7 @@ contract JohnVerToken is ERC20Token
 			maxEth = privateSaleEtherCap;
 		}
 
-		if (nowTime &gt; preSaleFirstStartDate &amp;&amp; nowTime &lt; preSaleFirstEndDate)
+		if (nowTime > preSaleFirstStartDate && nowTime < preSaleFirstEndDate)
 		{
 			saleTime = 2;
 			minEth = preSaleMinEth;
@@ -269,7 +269,7 @@ contract JohnVerToken is ERC20Token
 			maxEth = preSaleFirstEtherCap;
 		}
 
-		if (nowTime &gt; preSaleSecondStartDate &amp;&amp; nowTime &lt; preSaleSecondEndDate)
+		if (nowTime > preSaleSecondStartDate && nowTime < preSaleSecondEndDate)
 		{
 			saleTime = 3;
 			minEth = preSaleMinEth;
@@ -278,14 +278,14 @@ contract JohnVerToken is ERC20Token
 			maxEth = preSaleSecondEtherCap;
 		}
 
-		if (nowTime &gt; mainSaleStartDate &amp;&amp; nowTime &lt; mainSaleEndDate)
+		if (nowTime > mainSaleStartDate && nowTime < mainSaleEndDate)
 		{
 			saleTime = 4;
 			minEth = mainSaleMinEth;
 			uint dateStartTime = 0;
 			uint dateEndTime = 0;
 			
-		    for (uint i = 1; i &lt;= 108; i++)
+		    for (uint i = 1; i <= 108; i++)
 		    {
 		        dateStartTime = 0;
 		        dateStartTime = dateStartTime.add(i.sub(1));
@@ -297,7 +297,7 @@ contract JohnVerToken is ERC20Token
 		        dateEndTime = dateEndTime.mul(dayToDate);
 		        dateEndTime = dateEndTime.add(mainSaleEndDate);
 		        
-  			    if (nowTime &gt; dateStartTime &amp;&amp; nowTime &lt; dateEndTime) 
+  			    if (nowTime > dateStartTime && nowTime < dateEndTime) 
 			    {
 			    	mainSaleDay = i;
 			    }
@@ -311,9 +311,9 @@ contract JohnVerToken is ERC20Token
 		    tokenMinusPerEther = tokenMinusPerEther.mul(mainSaleDay.sub(1));
 		}
 		
-		require( saleTime &gt;= 1 &amp;&amp; saleTime &lt;= 4 );
-		require( msg.value &gt;= minEth );
-		require( icoEtherContributed[msg.sender].add(msg.value) &lt;= maxEth );
+		require( saleTime >= 1 && saleTime <= 4 );
+		require( msg.value >= minEth );
+		require( icoEtherContributed[msg.sender].add(msg.value) <= maxEth );
 
 		tokens = tokenPerEth.mul(msg.value) / 1 ether;
 		tokenMinusPerEther = tokenMinusPerEther.mul(msg.value) / 1 ether;
@@ -322,36 +322,36 @@ contract JohnVerToken is ERC20Token
 
 		if(saleTime == 1)
 		{
-		    require( icoEtherReceivedPrivateSale.add(msg.value) &lt;= etherCap );
+		    require( icoEtherReceivedPrivateSale.add(msg.value) <= etherCap );
     
 		    icoEtherReceivedPrivateSale = icoEtherReceivedPrivateSale.add(msg.value);
 		    tokenIssuedPrivateIco = tokenIssuedPrivateIco.add(tokens);
 		}
 		else if(saleTime == 2)
 		{
-		    require( icoEtherReceivedPreFirstSale.add(msg.value) &lt;= etherCap );
+		    require( icoEtherReceivedPreFirstSale.add(msg.value) <= etherCap );
     
 		    icoEtherReceivedPreFirstSale = icoEtherReceivedPreFirstSale.add(msg.value);
 		    tokenIssuedPreFirstIco = tokenIssuedPreFirstIco.add(tokens);
 		}
 		else if(saleTime == 3)
 		{
-		    require( icoEtherReceivedPreSecondSale.add(msg.value) &lt;= etherCap );
+		    require( icoEtherReceivedPreSecondSale.add(msg.value) <= etherCap );
     
 		    icoEtherReceivedPreSecondSale = icoEtherReceivedPreSecondSale.add(msg.value);
 		    tokenIssuedPreSecondIco = tokenIssuedPreSecondIco.add(tokens);
 		}
 		else if(saleTime == 4)
 		{
-		    require( msg.value &lt;= etherCap );
+		    require( msg.value <= etherCap );
 		    
-		    if(tokenIssuedToday &lt; mainSaleDay)
+		    if(tokenIssuedToday < mainSaleDay)
 		    {
 		        tokenIssuedToday = mainSaleDay;
 		        icoEtherReceivedMainSaleDay = 0;
 		    }
 		    
-		    require( icoEtherReceivedMainSaleDay.add(msg.value) &lt;= etherCap );
+		    require( icoEtherReceivedMainSaleDay.add(msg.value) <= etherCap );
     
 		    icoEtherReceivedMainSale = icoEtherReceivedMainSale.add(msg.value);
 		    icoEtherReceivedMainSaleDay = icoEtherReceivedMainSaleDay.add(msg.value);
@@ -371,7 +371,7 @@ contract JohnVerToken is ERC20Token
 
  	function isTransferable() public constant returns (bool transferable)
 	{
-		if ( atNow() &lt; preSaleSecondEndDate )
+		if ( atNow() < preSaleSecondEndDate )
 		{
 			return false;
 		}
@@ -408,7 +408,7 @@ contract JohnVerToken is ERC20Token
 
   	function mintLockUpTokens(address _participant) onlyOwner public
 	{
-		require ( atNow() &gt;= mainSaleEndDate );
+		require ( atNow() >= mainSaleEndDate );
 		
 		uint tokens = totalTokenCap.sub(tokenIssuedTotal);
 		
@@ -440,7 +440,7 @@ contract JohnVerToken is ERC20Token
 		
   	    uint tokens = 0;
   	    
-		for (uint i = 0; i &lt; _addresses.length; i++)
+		for (uint i = 0; i < _addresses.length; i++)
 		{
 		        tokens = _amounts[i] * E18;
 				
@@ -458,7 +458,7 @@ contract JohnVerToken is ERC20Token
   	{
   	    uint tokens = _amount * E18;
   	    
-		for (uint i = 0; i &lt; _addresses.length; i++)
+		for (uint i = 0; i < _addresses.length; i++)
 		{
 		        balances[_addresses[i]] = balances[_addresses[i]].add(tokens);
 		
@@ -501,7 +501,7 @@ contract JohnVerToken is ERC20Token
 		require( isTransferable() );
 		require( _addresses.length == _amounts.length );
 		
-		for (uint i = 0; i &lt; _addresses.length; i++)
+		for (uint i = 0; i < _addresses.length; i++)
 		{
 			super.transfer(_addresses[i], _amounts[i]);
 		}
@@ -512,9 +512,9 @@ contract JohnVerToken is ERC20Token
 		uint tokens;
 		uint amount;
 
-		require( atNow() &gt; preSaleSecondEndDate );
+		require( atNow() > preSaleSecondEndDate );
 		require( !refundClaimed[msg.sender] );
-		require( icoEtherContributed[msg.sender] &gt; 0 );
+		require( icoEtherContributed[msg.sender] > 0 );
 
 		tokens = icoTokenReceived[msg.sender];
 		amount = icoEtherContributed[msg.sender];

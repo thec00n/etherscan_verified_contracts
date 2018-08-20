@@ -9,8 +9,8 @@ contract ERC20 {
     string public symbol;
     uint8 public decimals = 18;
     uint public totalSupply;
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Created(uint time);
     event Transfer(address indexed from, address indexed to, uint amount);
@@ -48,7 +48,7 @@ contract ERC20 {
         returns (bool success)
     {
         address _spender = msg.sender;
-        require(allowance[_from][_spender] &gt;= _value);
+        require(allowance[_from][_spender] >= _value);
         allowance[_from][_spender] -= _value;
         emit AllowanceUsed(_from, _spender, _value);
         return _transfer(_from, _to, _value);
@@ -60,8 +60,8 @@ contract ERC20 {
         private
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -97,7 +97,7 @@ contract ERC667 is ERC20 {
 UI: https://www.pennyether.com/status/tokens
 
 An ERC20 token that can accept Ether and distribute it
-perfectly to all Token Holders relative to each account&#39;s
+perfectly to all Token Holders relative to each account's
 balance at the time the dividend is received.
 
 The Token is owned by the creator, and can be frozen,
@@ -110,7 +110,7 @@ Notes:
     - Per above, upon transfers, dividends are not
       transferred. They are kept by the original sender, and
       not credited to the receiver.
-    - Uses &quot;pull&quot; instead of &quot;push&quot;. Token holders must pull
+    - Uses "pull" instead of "push". Token holders must pull
       their own dividends.
 
 Comptroller Permissions:
@@ -130,7 +130,7 @@ contract DividendToken is ERC667
 
     // How dividends work:
     //
-    // - A &quot;point&quot; is a fraction of a Wei (1e-32), it&#39;s used to reduce rounding errors.
+    // - A "point" is a fraction of a Wei (1e-32), it's used to reduce rounding errors.
     //
     // - totalPointsPerToken represents how many points each token is entitled to
     //   from all the dividends ever received. Each time a new deposit is made, it
@@ -149,15 +149,15 @@ contract DividendToken is ERC667
     // - .collectOwedDividends() calls .updateCreditedPoints(account), converts points
     //   to wei and pays account, then resets creditedPoints[account] to 0.
     //
-    // - &quot;Credit&quot; goes to Nick Johnson for the concept.
+    // - "Credit" goes to Nick Johnson for the concept.
     //
     uint constant POINTS_PER_WEI = 1e32;
     uint public dividendsTotal;
     uint public dividendsCollected;
     uint public totalPointsPerToken;
     uint public totalBurned;
-    mapping (address =&gt; uint) public creditedPoints;
-    mapping (address =&gt; uint) public lastPointsPerToken;
+    mapping (address => uint) public creditedPoints;
+    mapping (address => uint) public lastPointsPerToken;
 
     // Events
     event Frozen(uint time);
@@ -179,7 +179,7 @@ contract DividendToken is ERC667
     {
         if (msg.value == 0) return;
         // POINTS_PER_WEI is 1e32.
-        // So, no multiplication overflow unless msg.value &gt; 1e45 wei (1e27 ETH)
+        // So, no multiplication overflow unless msg.value > 1e45 wei (1e27 ETH)
         totalPointsPerToken += (msg.value * POINTS_PER_WEI) / totalSupply;
         dividendsTotal += msg.value;
         emit DividendReceived(now, msg.sender, msg.value);
@@ -204,7 +204,7 @@ contract DividendToken is ERC667
         onlyComptroller
         public
     {
-        require(balanceOf[_account] &gt;= _amount);
+        require(balanceOf[_account] >= _amount);
         _updateCreditedPoints(_account);
         balanceOf[_account] -= _amount;
         totalSupply -= _amount;
@@ -282,9 +282,9 @@ contract DividendToken is ERC667
     /*************************************************************/
     /********** PRIVATE METHODS / VIEWS **************************/
     /*************************************************************/
-    // Credits _account with whatever dividend points they haven&#39;t yet been credited.
-    //  This needs to be called before any user&#39;s balance changes to ensure their
-    //  &quot;lastPointsPerToken&quot; credits their current balance, and not an altered one.
+    // Credits _account with whatever dividend points they haven't yet been credited.
+    //  This needs to be called before any user's balance changes to ensure their
+    //  "lastPointsPerToken" credits their current balance, and not an altered one.
     function _updateCreditedPoints(address _account)
         private
     {
@@ -292,7 +292,7 @@ contract DividendToken is ERC667
         lastPointsPerToken[_account] = totalPointsPerToken;
     }
 
-    // For a given account, returns how many Wei they haven&#39;t yet been credited.
+    // For a given account, returns how many Wei they haven't yet been credited.
     function _getUncreditedPoints(address _account)
         private
         view
@@ -301,7 +301,7 @@ contract DividendToken is ERC667
         uint _pointsPerToken = totalPointsPerToken - lastPointsPerToken[_account];
         // The upper bound on this number is:
         //   ((1e32 * TOTAL_DIVIDEND_AMT) / totalSupply) * balances[_account]
-        // Since totalSupply &gt;= balances[_account], this will overflow only if
+        // Since totalSupply >= balances[_account], this will overflow only if
         //   TOTAL_DIVIDEND_AMT is around 1e45 wei. Not ever going to happen.
         return _pointsPerToken * balanceOf[_account];
     }

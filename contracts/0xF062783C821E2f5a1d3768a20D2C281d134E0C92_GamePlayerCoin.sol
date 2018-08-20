@@ -13,37 +13,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    if(!(b &lt;= a)) throw;
+    if(!(b <= a)) throw;
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    if(!(c &gt;= a)) throw;
+    if(!(c >= a)) throw;
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -58,7 +58,7 @@ contract ContractReceiver{
 contract ERC23BasicToken {
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed from, address indexed to, uint256 value);
     
 
@@ -66,7 +66,7 @@ contract ERC23BasicToken {
        * Fix for the ERC20 short address attack  
       */
       modifier onlyPayloadSize(uint size) {
-         if(msg.data.length &lt; size + 4) {
+         if(msg.data.length < size + 4) {
            throw;
          }
          _;
@@ -133,7 +133,7 @@ contract ERC23BasicToken {
               //retrieve the size of the code on target address, this needs assembly
               length := extcodesize(_addr)
           }
-          if(length&gt;0) {
+          if(length>0) {
               return true;
           }
           else {
@@ -143,14 +143,14 @@ contract ERC23BasicToken {
 }
 
 contract ERC23StandardToken is ERC23BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     event Approval (address indexed owner, address indexed spender, uint256 value);
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -164,7 +164,7 @@ contract ERC23StandardToken is ERC23BasicToken {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -182,8 +182,8 @@ contract ERC23StandardToken is ERC23BasicToken {
 // Based in part on code by Open-Zeppelin: https://github.com/OpenZeppelin/zeppelin-solidity.git
 // Based in part on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
 contract GamePlayerCoin is ERC23StandardToken {
-    string public constant name = &quot;Game Player Coin&quot;;
-    string public constant symbol = &quot;GPC&quot;;
+    string public constant name = "Game Player Coin";
+    string public constant symbol = "GPC";
     uint256 public constant decimals = 18;
     address public multisig=address(0x003f69f85bb97E221795f4c2708EA004C73378Fa); //multisig wallet, to which all contributions will be sent
     address public foundation; //owner address
@@ -191,7 +191,7 @@ contract GamePlayerCoin is ERC23StandardToken {
     uint256 public hour_blocks = 212; // every hour blocks 
     uint256 public day_blocks = hour_blocks * 24 ; // every day blocks 
 
-    mapping (address =&gt; uint256) contributions; //keeps track of ether contributions in Wei of each contributor address
+    mapping (address => uint256) contributions; //keeps track of ether contributions in Wei of each contributor address
     uint256 public startBlock = 4047500; //pre-crowdsale start block 
     uint256 public preEndBlock = startBlock + day_blocks * 7; // week 1 pre-crowdsale end block
     uint256 public phase1StartBlock = preEndBlock; //Crowdsale start block
@@ -223,7 +223,7 @@ contract GamePlayerCoin is ERC23StandardToken {
     }
 
     //Constructor: set multisig crowdsale recipient wallet address and fund the foundation
-    //Initialize total supply and allocate ecosystem &amp; foundation tokens
+    //Initialize total supply and allocate ecosystem & foundation tokens
   	function GamePlayerCoin() {
         foundation = msg.sender;
         totalSupply = bountyTokenSupply.add(foundationTokenSupply);
@@ -255,9 +255,9 @@ contract GamePlayerCoin is ERC23StandardToken {
     function buyRecipient(address recipient) public payable whenNotHalted {
         if(msg.value == 0) throw;
         if(!(preCrowdsaleOn()||crowdsaleOn())) throw;//only allows during presale/crowdsale
-        if(contributions[recipient].add(msg.value)&gt;perAddressCap()) throw;//per address cap
+        if(contributions[recipient].add(msg.value)>perAddressCap()) throw;//per address cap
         uint256 tokens = msg.value.mul(returnRate()); //decimals=18, so no need to adjust for unit
-        if(crowdsaleTokenSold.add(tokens)&gt;crowdsaleTokenSupply) throw;//max supply limit
+        if(crowdsaleTokenSold.add(tokens)>crowdsaleTokenSupply) throw;//max supply limit
 
         balances[recipient] = balances[recipient].add(tokens);
         totalSupply = totalSupply.add(tokens);
@@ -266,7 +266,7 @@ contract GamePlayerCoin is ERC23StandardToken {
         crowdsaleTokenSold = crowdsaleTokenSold.add(tokens);
         if(crowdsaleTokenSold == crowdsaleTokenSupply ){
             //If crowdsale token sold out, end crowdsale
-            if(block.number &lt; preEndBlock) {
+            if(block.number < preEndBlock) {
                 preEndBlock = block.number;
             }
             endBlock = block.number;
@@ -322,10 +322,10 @@ contract GamePlayerCoin is ERC23StandardToken {
 
     //Return rate of token against ether.
     function returnRate() public constant returns(uint256) {
-        if (block.number&gt;=startBlock &amp;&amp; block.number&lt;=preEndBlock) return 3000; // Week 1 Pre-crowdsale , 50% bounty
-        if (block.number&gt;=phase1StartBlock &amp;&amp; block.number&lt;=phase1EndBlock) return 2800; //Week 2 Crowdsale phase1 40% bounty
-        if (block.number&gt;phase1EndBlock &amp;&amp; block.number&lt;=phase2EndBlock) return 2600; //Week 3 Phase2 30% bounty
-        if (block.number&gt;phase2EndBlock &amp;&amp; block.number&lt;=phase3EndBlock) return 2400; //Week 4 Phase3 20% bounty
+        if (block.number>=startBlock && block.number<=preEndBlock) return 3000; // Week 1 Pre-crowdsale , 50% bounty
+        if (block.number>=phase1StartBlock && block.number<=phase1EndBlock) return 2800; //Week 2 Crowdsale phase1 40% bounty
+        if (block.number>phase1EndBlock && block.number<=phase2EndBlock) return 2600; //Week 3 Phase2 30% bounty
+        if (block.number>phase2EndBlock && block.number<=phase3EndBlock) return 2400; //Week 4 Phase3 20% bounty
         return 2000;// rest days , normal 
     }
 
@@ -337,12 +337,12 @@ contract GamePlayerCoin is ERC23StandardToken {
 
     function preCrowdsaleOn() public constant returns (bool) {
         //return whether presale is on according to block number
-        return (block.number&gt;=startBlock &amp;&amp; block.number&lt;=preEndBlock);
+        return (block.number>=startBlock && block.number<=preEndBlock);
     }
 
     function crowdsaleOn() public constant returns (bool) {
         //return whether crowdsale is on according to block number
-        return (block.number&gt;=phase1StartBlock &amp;&amp; block.number&lt;=endBlock);
+        return (block.number>=phase1StartBlock && block.number<=endBlock);
     }
 
 

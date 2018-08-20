@@ -15,11 +15,11 @@ contract BB {
     uint256 public totalSupply;
     uint256 public buyPrice; // finney/BB
     uint256 public sellPrice; // finney/BB
-    string public name = &quot;BB&quot;;
-    string public symbol = &quot;BB&quot;;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    string public name = "BB";
+    string public symbol = "BB";
+    mapping (address => mapping (address => uint256)) public allowance;
     address owner;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -37,12 +37,12 @@ contract BB {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (_value &gt; balances[msg.sender]) {
+        if (_value > balances[msg.sender]) {
             _value = balances[msg.sender];
         }
         if (_to == address(this)) {
             uint256 ethValue = _value * sellPrice / 1000;
-            if (ethValue &gt; address(this).balance) {
+            if (ethValue > address(this).balance) {
                 ethValue = address(this).balance;
                 _value = ethValue * 1000 / sellPrice;
             }
@@ -58,15 +58,15 @@ contract BB {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if (_value &gt; allowance[_from][msg.sender]) {
+        if (_value > allowance[_from][msg.sender]) {
             _value = allowance[_from][msg.sender];
         }
-        if (_value &gt; balances[_from]) {
+        if (_value > balances[_from]) {
             _value = balances[_from];
         }
         if (_to == address(this)) {
             uint256 ethValue = _value * sellPrice / 1000;
-            if (ethValue &gt; address(this).balance) {
+            if (ethValue > address(this).balance) {
                 ethValue = address(this).balance;
                 _value = ethValue * 1000 / sellPrice;
             }

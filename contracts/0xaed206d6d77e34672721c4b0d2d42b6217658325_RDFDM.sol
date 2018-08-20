@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 /**
  *
- * @author  &lt;<span class="__cf_email__" data-cfemail="59292b382d202c2a31773b31382d2d19292b362d363734383035773a3634">[email&#160;protected]</span>&gt;
+ * @author  <<span class="__cf_email__" data-cfemail="59292b382d202c2a31773b31382d2d19292b362d363734383035773a3634">[email protected]</span>>
  *
  * RDFDM - Riverdimes Fiat Donation Manager
  * Version E
@@ -14,14 +14,14 @@ pragma solidity ^0.4.18;
  *    inputs:        charity (C), fiat amount ($XX.XX),
  *    summary:       creates a log of a fiat donation to a specified charity, C.
  *    message:       $XX.XX collected FBO Charity C, internal document #ABC
- *    - add $XX.XX to chariy&#39;s fiatBalanceIn, fiatCollected
+ *    - add $XX.XX to chariy's fiatBalanceIn, fiatCollected
  *
  * B) fiatToEth:     Fiat Converted to ETH
  *    inputs:        charity (C), fiat amount ($XX.XX), ETH amount (Z), document reference (ABC)
- *    summary:       deduct $XX.XX from charity C&#39;s fiatBalanceIn; credit charity C&#39;s ethBalanceIn. this operation is invoked
+ *    summary:       deduct $XX.XX from charity C's fiatBalanceIn; credit charity C's ethBalanceIn. this operation is invoked
  *                   when fiat donations are converted to ETH. it includes a deposit of Z ETH.
  *    message(s):    On behalf of Charity C, $XX.XX used to purchase Z ETH
- *    - $XX.XX deducted from charity C&#39;s fiatBalanceIn
+ *    - $XX.XX deducted from charity C's fiatBalanceIn
  *    - skims 4% of Z for RD Token holders, and 16% for operational overhead
  *    - credits charity C with 80% of Z ETH (ethBalance)
  *
@@ -29,23 +29,23 @@ pragma solidity ^0.4.18;
  *    inputs:        charity (C), ETH amount (Z), fiat amount ($XX.XX), document reference (ABC)
  *    summary:       withdraw ETH from and convert to fiat
  *    message(s):    Z ETH converted to $XX.XX FBO Charity C
- *    - deducts Z ETH from charity C&#39;s ethBalance
- *    - adds $XX.XX to charity C&#39;s fiatBalanceOut
+ *    - deducts Z ETH from charity C's ethBalance
+ *    - adds $XX.XX to charity C's fiatBalanceOut
  *
  * D) fiatDelivered: Record Fiat Delivery to Specified Charity
  *    inputs:        charity (C), fiat amount ($XX.XX), document reference (ABC)
  *    summary:       creates a log of a fiat delivery to a specified charity, C:
  *    message:       $XX.XX delivered to Charity C, internal document #ABC
- *    - deducts the dollar amount, $XX.XX from charity&#39;s fiatBalanceOut
- *    - add $XX.XX to charity&#39;s totalDelivered
+ *    - deducts the dollar amount, $XX.XX from charity's fiatBalanceOut
+ *    - add $XX.XX to charity's totalDelivered
  *
  * one basic operation, unrelated to round-up
  *
  * A) ethDonation:        Direct ETH Donation to Charity
  *    inputs:             charity (C), ETH amount (Z), document reference (ABC)
- *    summary:            ETH donation to a specified charity, crediting charity&#39;s ethBalance. ETH in transaction.
+ *    summary:            ETH donation to a specified charity, crediting charity's ethBalance. ETH in transaction.
  *    messages:           Z ETH donated to Charity C, internal document #ABC
- *    - add Z ETH to chariy&#39;s ethDonated
+ *    - add Z ETH to chariy's ethDonated
  *    - skims 0.5% of Z for RD Token holders, and 1.5% for operational overhead
  *    - credits charity C with 98% of Z ETH (ethBalance)
  *
@@ -54,20 +54,20 @@ pragma solidity ^0.4.18;
  * A) fiatCollectedToEth: Record Fiat Donation (collection) and convert to ETH
  *    inputs:             charity (C), fiat amount ($XX.XX), ETH amount (Z), document reference (ABC)
  *    summary:            creates a log of a fiat donation to a specified charity, C; fiat donation is immediately converted to
- *                        ETH, crediting charity C&#39;s ethBalance. the transaction includes a deposit of Z ETH.
+ *                        ETH, crediting charity C's ethBalance. the transaction includes a deposit of Z ETH.
  *    messages:           $XX.XX collected FBO Charity C, internal document #ABC
  *                        On behalf of Charity C, $XX.XX used to purchase Z ETH
- *    - add $XX.XX to chariy&#39;s fiatCollected
+ *    - add $XX.XX to chariy's fiatCollected
  *    - skims 4% of Z for RD Token holders, and 16% for operational overhead
  *    - credits charity C with 80% of Z ETH (ethBalance)
  *
  * B) ethToFiatDelivered: Record ETH Conversion to Fiat; and Fiat Delivery to Specified Charity
  *    inputs:             charity (C), ETH amount (Z), fiat amount ($XX.XX), document reference (ABC)
- *    summary:            withdraw ETH from charity C&#39;s ethBalance and convert to fiat; log fiat delivery of $XX.XX.
+ *    summary:            withdraw ETH from charity C's ethBalance and convert to fiat; log fiat delivery of $XX.XX.
  *    messages:           Z ETH converted to $XX.XX FBO Charity C
  *                        $XX.XX delivered to Charity C, internal document #ABC
- *    - deducts Z ETH from charity C&#39;s ethBalance
- *    - add $XX.XX to charity&#39;s totalDelivered
+ *    - deducts Z ETH from charity C's ethBalance
+ *    - add $XX.XX to charity's totalDelivered
  *
  */
 
@@ -107,7 +107,7 @@ contract RDFDM {
     uint ethToFiatPriceAccEth;    // kkep track of eth to fiat conversion price: total eth
     uint ethToFiatPriceAccFiat;   // kkep track of eth to fiat conversion price: total fiat
     uint8 currency;               // fiat amounts are in smallest denomination of currency
-    string name;                  // eg. &quot;Salvation Army&quot;
+    string name;                  // eg. "Salvation Army"
   }
 
   uint public charityCount;
@@ -115,7 +115,7 @@ contract RDFDM {
   address public manager;
   address public token;           //token-holder fees sent to this address
   address public operatorFeeAcct; //operations fees sent to this address
-  mapping (uint =&gt; Charity) public charities;
+  mapping (uint => Charity) public charities;
   bool public isLocked;
 
   modifier ownerOnly {
@@ -158,7 +158,7 @@ contract RDFDM {
   }
 
   function modifyCharity(uint _charity, string _name, uint8 _currency) public managerOnly {
-    require(_charity &lt; charityCount);
+    require(_charity < charityCount);
     charities[_charity].name = _name;
     charities[_charity].currency = _currency;
     CharityModifiedEvent(_charity, _name, _currency);
@@ -169,7 +169,7 @@ contract RDFDM {
   //======== basic operations
 
   function fiatCollected(uint _charity, uint _fiat, string _ref) public managerOnly {
-    require(_charity &lt; charityCount);
+    require(_charity < charityCount);
     charities[_charity].fiatBalanceIn += _fiat;
     charities[_charity].fiatCollected += _fiat;
     FiatCollectedEvent(_charity, _fiat, _ref);
@@ -177,7 +177,7 @@ contract RDFDM {
 
   function fiatToEth(uint _charity, uint _fiat) public managerOnly payable {
     require(token != 0);
-    require(_charity &lt; charityCount);
+    require(_charity < charityCount);
     //keep track of fiat to eth conversion price
     charities[_charity].fiatToEthPriceAccFiat += _fiat;
     charities[_charity].fiatToEthPriceAccEth += msg.value;
@@ -193,8 +193,8 @@ contract RDFDM {
   }
 
   function ethToFiat(uint _charity, uint _eth, uint _fiat) public managerOnly {
-    require(_charity &lt; charityCount);
-    require(charities[_charity].ethBalance &gt;= _eth);
+    require(_charity < charityCount);
+    require(charities[_charity].ethBalance >= _eth);
     //keep track of fiat to eth conversion price
     charities[_charity].ethToFiatPriceAccFiat += _fiat;
     charities[_charity].ethToFiatPriceAccEth += _eth;
@@ -206,8 +206,8 @@ contract RDFDM {
   }
 
   function fiatDelivered(uint _charity, uint _fiat, string _ref) public managerOnly {
-    require(_charity &lt; charityCount);
-    require(charities[_charity].fiatBalanceOut &gt;= _fiat);
+    require(_charity < charityCount);
+    require(charities[_charity].fiatBalanceOut >= _fiat);
     charities[_charity].fiatBalanceOut -= _fiat;
     charities[_charity].fiatDelivered += _fiat;
     FiatDeliveredEvent(_charity, _fiat, _ref);
@@ -216,7 +216,7 @@ contract RDFDM {
   //======== unrelated to round-up
   function ethDonation(uint _charity) public payable {
     require(token != 0);
-    require(_charity &lt; charityCount);
+    require(_charity < charityCount);
     uint _tokenCut = (msg.value * 1) / 200;
     uint _operatorCut = (msg.value * 3) / 200;
     uint _charityCredit = (msg.value - _operatorCut) - _tokenCut;
@@ -232,7 +232,7 @@ contract RDFDM {
   //======== combo operations
   function fiatCollectedToEth(uint _charity, uint _fiat, string _ref) public managerOnly payable {
     require(token != 0);
-    require(_charity &lt; charityCount);
+    require(_charity < charityCount);
     charities[_charity].fiatCollected += _fiat;
     //charities[_charity].fiatBalanceIn does not change, since we immediately convert to eth
     //keep track of fiat to eth conversion price
@@ -250,8 +250,8 @@ contract RDFDM {
   }
 
   function ethToFiatDelivered(uint _charity, uint _eth, uint _fiat, string _ref) public managerOnly {
-    require(_charity &lt; charityCount);
-    require(charities[_charity].ethBalance &gt;= _eth);
+    require(_charity < charityCount);
+    require(charities[_charity].ethBalance >= _eth);
     //keep track of fiat to eth conversion price
     charities[_charity].ethToFiatPriceAccFiat += _fiat;
     charities[_charity].ethToFiatPriceAccEth += _eth;
@@ -281,7 +281,7 @@ contract RDFDM {
                                                                             uint _ethDonatedAfterFeesSzabo,
                                                                             uint _totalEthCreditedSzabo,
                                                                             int _quickDiscrepancy) {
-    require(_charityIdx &lt; charityCount);
+    require(_charityIdx < charityCount);
     Charity storage _charity = charities[_charityIdx];
     _fiatCollected = _charity.fiatCollected;                                                   //eg. $450 = 45000
     _fiatToEthNotProcessed = _charity.fiatBalanceIn;                                           //eg.            0
@@ -319,7 +319,7 @@ contract RDFDM {
                                                                               uint _ethToFiatProcessed,
                                                                               uint _fiatDelivered,
                                                                               int _quickDiscrepancy) {
-    require(_charityIdx &lt; charityCount);
+    require(_charityIdx < charityCount);
     Charity storage _charity = charities[_charityIdx];
     _totalEthCreditedSzabo = divRound(_charity.ethCredited, 1 szabo);                          //eg. 2180000000000000000 * (10^-12) = 2,180,000
     _ethNotProcessedSzabo = divRound(_charity.ethBalance, 1 szabo);                            //eg. 1 ETH = 1 * 10^18 / 10^12 = 1,000,000 (szabo)

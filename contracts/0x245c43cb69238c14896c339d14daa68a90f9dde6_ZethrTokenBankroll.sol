@@ -16,9 +16,9 @@ pragma solidity ^0.4.23;
 .------..------.     .------..------..------.     .------..------..------..------..------.
 |B.--. ||E.--. |.-.  |T.--. ||H.--. ||E.--. |.-.  |H.--. ||O.--. ||U.--. ||S.--. ||E.--. |
 | :(): || (\/) (( )) | :/\: || :/\: || (\/) (( )) | :/\: || :/\: || (\/) || :/\: || (\/) |
-| ()() || :\/: |&#39;-.-.| (__) || (__) || :\/: |&#39;-.-.| (__) || :\/: || :\/: || :\/: || :\/: |
-| &#39;--&#39;B|| &#39;--&#39;E| (( )) &#39;--&#39;T|| &#39;--&#39;H|| &#39;--&#39;E| (( )) &#39;--&#39;H|| &#39;--&#39;O|| &#39;--&#39;U|| &#39;--&#39;S|| &#39;--&#39;E|
-`------&#39;`------&#39;  &#39;-&#39;`------&#39;`------&#39;`------&#39;  &#39;-&#39;`------&#39;`------&#39;`------&#39;`------&#39;`------&#39;
+| ()() || :\/: |'-.-.| (__) || (__) || :\/: |'-.-.| (__) || :\/: || :\/: || :\/: || :\/: |
+| '--'B|| '--'E| (( )) '--'T|| '--'H|| '--'E| (( )) '--'H|| '--'O|| '--'U|| '--'S|| '--'E|
+`------'`------'  '-'`------'`------'`------'  '-'`------'`------'`------'`------'`------'
 
 An interactive, variable-dividend rate contract with an ICO-capped price floor and collectibles.
 
@@ -68,7 +68,7 @@ contract ERC223Receiving {
 // Interface of master bankroll
 contract ZethrBankroll {
     address public stakeAddress;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (address => bool) public isOwner;
     function changeAllocation(address what, int delta) public;
 }
 
@@ -81,27 +81,27 @@ library ZethrTierLibrary{
     function getTier(uint divRate) internal pure returns (uint){
         
         // Divide the average dividned rate by magnitude
-        // Remainder doesn&#39;t matter because of the below logic
+        // Remainder doesn't matter because of the below logic
         uint actualDiv = divRate / magnitude; 
-        if (actualDiv &gt;= 30){
+        if (actualDiv >= 30){
             return 7;
         }
-        else if (actualDiv &gt;= 25){
+        else if (actualDiv >= 25){
             return 6;
         }
-        else if (actualDiv &gt;= 20){
+        else if (actualDiv >= 20){
             return 5;
         }
-        else if (actualDiv &gt;= 15){
+        else if (actualDiv >= 15){
             return 4;
         }
-        else if (actualDiv &gt;= 10){
+        else if (actualDiv >= 10){
             return 3; 
         }
-        else if (actualDiv &gt;= 5){
+        else if (actualDiv >= 5){
             return 2;
         }
-        else if (actualDiv &gt;= 2){
+        else if (actualDiv >= 2){
             return 1;
         }
         else{
@@ -133,17 +133,17 @@ contract ZethrTokenBankroll is ERC223Receiving {
     */
     
     // Mapping of whitelisted contracts
-    mapping(address =&gt; bool) public whitelistedContract; 
+    mapping(address => bool) public whitelistedContract; 
   
     // Daily allocation mapping is master bankroll
-    // mapping(address =&gt; uint) public dailyAllocation;
+    // mapping(address => uint) public dailyAllocation;
     
-    mapping (address =&gt; uint) public tokenVolumeInput; // tokens in per game 
-    mapping (address =&gt; uint) public tokenVolumeOutput; // tokens out per  game 
-    mapping (address =&gt; uint) public gameTokenAmount; // track tokens per game
-    mapping (address =&gt; uint) public gameTokenAllocation; // game token allocation 
+    mapping (address => uint) public tokenVolumeInput; // tokens in per game 
+    mapping (address => uint) public tokenVolumeOutput; // tokens out per  game 
+    mapping (address => uint) public gameTokenAmount; // track tokens per game
+    mapping (address => uint) public gameTokenAllocation; // game token allocation 
     
-    // &quot;free&quot; tokens in the contract, can be allocated to games
+    // "free" tokens in the contract, can be allocated to games
     uint public freeTokens;
     
     // List of all games
@@ -161,7 +161,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
     // Dividend rate of this tokenBankroll
     uint public divRate;
 
-    // &quot;tier&quot; of this tokeknBankroll (1-7)
+    // "tier" of this tokeknBankroll (1-7)
     uint public tier;
     
     // Magnitude for calculating average div rate
@@ -203,10 +203,10 @@ contract ZethrTokenBankroll is ERC223Receiving {
         
         // Dev addresses are pulled from the bankroll
         
-        // Set this tokenBankroll&#39;s dividend rate
+        // Set this tokenBankroll's dividend rate
         divRate = ctrDivRate;
 
-        // Set this token&#39;s dividend tier (1-7)
+        // Set this token's dividend tier (1-7)
         tier = ZethrTierLibrary.getTier(divRate * magnitude);
     }
 
@@ -289,7 +289,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
                 // yup - thats the number of bytes in data (data.length) minus 32 as defined above 
                 mstore(out_b, len)
                 // now we will actually fill this bytes 
-                // for loop: for(uint i=0; i&lt;len; i++)
+                // for loop: for(uint i=0; i<len; i++)
                 for { let i := 0 } lt(i, div(len, 0x20)) { i := add(i, 0x1) } {
                     // calculate the memory slot we want to dump data in: 
                     // take the out_b pointer 
@@ -308,7 +308,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
         //assembly{
           //  codelen := extcodesize(out_a)
         //}
-        // require(codelen &gt; 0); // sanity check we are delegate of a contract 
+        // require(codelen > 0); // sanity check we are delegate of a contract 
         return (out_a, out_b);
     }
 
@@ -319,7 +319,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
         assembly{
             codelen := extcodesize(ctr)
         }
-        return (codelen &gt; 0);
+        return (codelen > 0);
     }
 
   // Token fallback - gets entered when users transfer tokens to this contract 
@@ -328,11 +328,11 @@ contract ZethrTokenBankroll is ERC223Receiving {
 			// Can only be called from Zethr
 	    require(msg.sender == Zethr); 
 
-			// Get the user&#39;s dividend rate
+			// Get the user's dividend rate
 			// This is a big nasty number
 	    uint userDivRate = ZethrContract.getUserAverageDividendRate(_from);
 
-			// Calculate the user&#39;s tier, and make sure it is appropriate for this contract
+			// Calculate the user's tier, and make sure it is appropriate for this contract
 			// (sanity check)
 	    require(ZethrTierLibrary.getTier(userDivRate) == tier); 
 
@@ -342,16 +342,16 @@ contract ZethrTokenBankroll is ERC223Receiving {
 	    // Grab the data we want to forward (target is the game address)
 	    (target, remaining_data) = getData(_data);
 
-	    // Sanity check to make sure we&#39;re calling a contract
+	    // Sanity check to make sure we're calling a contract
 	    require(isContract(target));
 
 	    // Sanity check to make sure this game is actually one which can use the bankroll 
 	    require(whitelistedContract[target]);
 	    
-			// Add tokens the game&#39;s token amount counter (for this contract only)
+			// Add tokens the game's token amount counter (for this contract only)
 	    gameTokenAmount[target] = SafeMath.add(gameTokenAmount[target], _amountOfTokens);
 
-			// Add tokens the game&#39;s token volume counter (for this contract only)
+			// Add tokens the game's token volume counter (for this contract only)
 	    tokenVolumeInput[target] = SafeMath.add(tokenVolumeInput[target], _amountOfTokens);
 	    
 	    // EXECUTE the actual game! 
@@ -365,8 +365,8 @@ contract ZethrTokenBankroll is ERC223Receiving {
 	    public 
 	    contractIsWhiteListed(msg.sender)
     {
-			// Don&#39;t sent more tokens than the game owns
-	    require(gameTokenAmount[msg.sender] &gt;= tokens);  
+			// Don't sent more tokens than the game owns
+	    require(gameTokenAmount[msg.sender] >= tokens);  
 
 			// Subtract the amount of tokens the game owns
 	    gameTokenAmount[msg.sender] = gameTokenAmount[msg.sender] - tokens; 
@@ -389,27 +389,27 @@ contract ZethrTokenBankroll is ERC223Receiving {
 				// Set the token allocation
         gameTokenAllocation[game] = allocated; 
 
-				// If we have enough &quot;free&quot; tokens, allocate them
-        if (freeTokens &gt;= allocated){ 
+				// If we have enough "free" tokens, allocate them
+        if (freeTokens >= allocated){ 
             freeTokens = SafeMath.sub(freeTokens, allocated);
             gameTokenAmount[game] = allocated;
         }
 
-        // Change this tokenbankroll&#39;s allocation
+        // Change this tokenbankroll's allocation
         ZethrBankroll(ZethrMainBankroll).changeAllocation(address(this), int(allocated));
 
 				// Ad the game to the whitelisted addresses
         whitelistedContract[game] = true; 
     }
     
-    // Remove the game from the list &amp; dewhitelist it
+    // Remove the game from the list & dewhitelist it
     function removeGame(address game)
         public
         onlyDevOrBankroll
         contractIsWhiteListed(game) // Only remove games which are added 
     {
         // Loop over games to find the actual index to remove 
-        for (uint i=0; i &lt; games.length; i++){
+        for (uint i=0; i < games.length; i++){
             if (games[i] == game){
                 games[i] = address(0x0); // Delete it 
                 if (i != games.length){ // If its NOT at the end remove the last game address into the array TO this position
@@ -420,7 +420,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
             }
         }
 
-        // Add remaining tokens from game to the &quot;free&quot; list 
+        // Add remaining tokens from game to the "free" list 
         freeTokens = SafeMath.add(freeTokens, gameTokenAmount[game]);
 
         // Aint got no tokens 
@@ -429,7 +429,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
         // Aint whitelisted 
         whitelistedContract[game] = false;
 
-        // Change this tokenBankroll&#39;s allocation
+        // Change this tokenBankroll's allocation
         ZethrBankroll(ZethrMainBankroll).changeAllocation(address(this), int(-gameTokenAllocation[game]));
 
         // No allocate 
@@ -437,41 +437,41 @@ contract ZethrTokenBankroll is ERC223Receiving {
     }
 	
 	// Callable from games to change their own token allocation 
-  // The game must have &quot;free&quot; tokens
-  // Triggers a change in the tokenBankroll&#39;s allocation amount on the master bankroll
+  // The game must have "free" tokens
+  // Triggers a change in the tokenBankroll's allocation amount on the master bankroll
 	function changeAllocation(int delta)
 	    public
 	    contractIsWhiteListed(msg.sender)
 	{
 	    uint newAlloc;
       // We need to INCREASE token allocation:
-	    if (delta &gt; 0){
+	    if (delta > 0){
 	        // Calculate new allocation 
 	        newAlloc = SafeMath.add(gameTokenAllocation[msg.sender], uint(delta));
 
 	        // It SHOULD have enough tokens
-	        require(gameTokenAmount[msg.sender] &gt;= newAlloc);
+	        require(gameTokenAmount[msg.sender] >= newAlloc);
 
-	        // Set the game&#39;s token allocation
+	        // Set the game's token allocation
 	        gameTokenAllocation[msg.sender] = newAlloc;
 
-          // Set this tokenBankroll&#39;s allocation (increase it)
+          // Set this tokenBankroll's allocation (increase it)
           ZethrBankroll(ZethrMainBankroll).changeAllocation(address(this), delta);
 	    } else {
       // We need to DECREASE token allocation:
 	        // Calculate the new allocation 
 	        newAlloc = SafeMath.sub(gameTokenAllocation[msg.sender], uint(-delta));
 
-	        // Set the game&#39;s token allocation
+	        // Set the game's token allocation
 	        gameTokenAllocation[msg.sender] = newAlloc;
 
-          // Set this tokenBankroll&#39;s allocation (decrease it)
+          // Set this tokenBankroll's allocation (decrease it)
           ZethrBankroll(ZethrMainBankroll).changeAllocation(address(this), delta);
 	    }
 	}
 	
 	// Allocates tokens to games
-	// Also buys in if balance &gt;= 0.1 ETH
+	// Also buys in if balance >= 0.1 ETH
 	function allocateTokens()
 	    onlyDevOrBankroll
 	    public
@@ -479,24 +479,24 @@ contract ZethrTokenBankroll is ERC223Receiving {
 	    // Withdraw divs first
 	    ZethrContract.withdraw(address(this));
 
-			// Buy in, but only if balance &gt;= 0.1 ETH
-	    if (address(this).balance &gt;= (0.1 ether)){
+			// Buy in, but only if balance >= 0.1 ETH
+	    if (address(this).balance >= (0.1 ether)){
 	        zethrBuyIn(); 
 	    }
 
       // Store current game address for loop
       address gameAddress;    
-      // Stoe game&#39;s balance for loop
+      // Stoe game's balance for loop
       uint gameBalance;
-      // Store game&#39;s allotment for loop 
+      // Store game's allotment for loop 
       uint gameAllotment;
-      // Store game&#39;s difference (positive or negative) in tokenBalance vs tokenAllotment
+      // Store game's difference (positive or negative) in tokenBalance vs tokenAllotment
       int difference;
 
       // Loop over each game
-      // Remove any &quot;free&quot; tokens (auto-withdraw) over its allotment
-      for (uint i=0; i &lt; games.length; i++) {
-        // Grab the info about this game&#39;s token amounts
+      // Remove any "free" tokens (auto-withdraw) over its allotment
+      for (uint i=0; i < games.length; i++) {
+        // Grab the info about this game's token amounts
         gameAddress = games[i];
         gameBalance = gameTokenAmount[gameAddress];
         gameAllotment = gameTokenAllocation[gameAddress];   
@@ -504,24 +504,24 @@ contract ZethrTokenBankroll is ERC223Receiving {
         // Calculate deltaTokens (positive if it has more than it needs, negative if it needs tokens)
         difference = int(gameBalance) - int(gameAllotment);
 
-        // If the game has extra tokens, re-allocate them to the &quot;free&quot; balance
+        // If the game has extra tokens, re-allocate them to the "free" balance
         // This reminds me of when I had to write malloc() for my C class
         // I hated that shit
-        if (difference &gt; 0) {
+        if (difference > 0) {
           // Game now has exactly the amount of tokens it needs
           gameTokenAmount[gameAddress] = gameAllotment;
  
-          // &quot;Free&quot; the extra
+          // "Free" the extra
           freeTokens = freeTokens + uint(difference);
         } else {
-          // This means it needs tokenks. We&#39;ll address that in the next for loop.
+          // This means it needs tokenks. We'll address that in the next for loop.
         } 
       } 
 
       // Now that all games have had their excess removed, loop through the games again and allocated them tokens
       // We /will/ have enough tokens to allocate - because we bought in ETH.
-      for (uint j=0; j &lt; games.length; j++) {
-        // Grab the info about this game&#39;s token amounts
+      for (uint j=0; j < games.length; j++) {
+        // Grab the info about this game's token amounts
         gameAddress = games[i];
         gameBalance = gameTokenAmount[gameAddress];
         gameAllotment = gameTokenAllocation[gameAddress];
@@ -531,9 +531,9 @@ contract ZethrTokenBankroll is ERC223Receiving {
 
         // Game either has zero or negative tokens
         // If it has negative tokens, allocate it tokens out of the free balance
-        if (difference &lt; 0) {
+        if (difference < 0) {
           // Sanity check
-          require(freeTokens &gt;= uint(-difference));
+          require(freeTokens >= uint(-difference));
 
           // Subtract from free tokens
           freeTokens = freeTokens - uint(-difference);
@@ -545,7 +545,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
 
       // After the above two for loops, every game has
       //  a) no excess tokens
-      //  b) exactly it&#39;s allotment of tokens
+      //  b) exactly it's allotment of tokens
 
       // There will probably be some free tokens left over due to the 1% extra ETH deposit.
 	}
@@ -555,8 +555,8 @@ contract ZethrTokenBankroll is ERC223Receiving {
     // First, allocate tokens    
     allocateTokens();
 
-    // Don&#39;t transfer tokens if we have less than 1 free token
-    if (freeTokens &lt; 1e18) { return 0; }
+    // Don't transfer tokens if we have less than 1 free token
+    if (freeTokens < 1e18) { return 0; }
 
     // Transfer free tokens to bankroll
     ZethrContract.transfer(stakeAddress, freeTokens);
@@ -577,7 +577,7 @@ contract ZethrTokenBankroll is ERC223Receiving {
 	{
 	    uint currentBalance = gameTokenAmount[ctr];
 	    uint allocated = gameTokenAllocation[ctr];
-	    if ( SafeMath.sub(currentBalance, amount) &gt; allocated){
+	    if ( SafeMath.sub(currentBalance, amount) > allocated){
 	        gameTokenAmount[ctr] = gameTokenAmount[ctr] - amount;
 	        freeTokens = SafeMath.add(freeTokens, amount);
 	    }
@@ -592,14 +592,14 @@ contract ZethrTokenBankroll is ERC223Receiving {
 	    onlyDevOrBankroll
 	    public
 	{
-      // Only buy in if balance &gt;= 0.1 ETH
-      if (address(this).balance &lt; 0.1 ether) { return; } 
+      // Only buy in if balance >= 0.1 ETH
+      if (address(this).balance < 0.1 ether) { return; } 
 
-      // Grab the tokenBankroll&#39;s token balance
+      // Grab the tokenBankroll's token balance
 	    uint cBal = ZethrContract.balanceOf(address(this)); 
 
       // Buy in with entire balance (divs go to bankroll)
-	    ZethrContract.buyAndSetDivPercentage.value(address(this).balance)(ZethrMainBankroll, uint8(divRate), &quot;&quot;);
+	    ZethrContract.buyAndSetDivPercentage.value(address(this).balance)(ZethrMainBankroll, uint8(divRate), "");
 
       // Calculate and increment freeTokens
 	    freeTokens = freeTokens + (ZethrContract.balanceOf(address(this)) - cBal); 
@@ -648,9 +648,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -658,7 +658,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -667,7 +667,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

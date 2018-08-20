@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -133,7 +133,7 @@ contract Ownable {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract XDMCCrowdsale is Ownable {
@@ -181,12 +181,12 @@ contract XDMCCrowdsale is Ownable {
   uint256 public ico1receivedTotal = 0;
   uint256 public ico2receivedTotal = 0;
   uint256 public ico3receivedTotal = 0;
-  mapping(address =&gt; uint256) ico1amount;
-  mapping(address =&gt; uint256) ico2amount;
-  mapping(address =&gt; uint256) ico3amount;
-  mapping(address =&gt; uint256) ico1received;
-  mapping(address =&gt; uint256) ico2received;
-  mapping(address =&gt; uint256) ico3received;
+  mapping(address => uint256) ico1amount;
+  mapping(address => uint256) ico2amount;
+  mapping(address => uint256) ico3amount;
+  mapping(address => uint256) ico1received;
+  mapping(address => uint256) ico2received;
+  mapping(address => uint256) ico3received;
 
   // Amount of wei raised
   uint256 public weiRaised;
@@ -253,8 +253,8 @@ contract XDMCCrowdsale is Ownable {
     uint256 _bonus5
   ) public onlyOwner returns (bool) {
     require(currentStage == Stages.Pause);
-    require(token.balanceOf(address(this)) &gt;= uint256(865461673).mul(1 ether));
-    require(_rate &gt; 0);
+    require(token.balanceOf(address(this)) >= uint256(865461673).mul(1 ether));
+    require(_rate > 0);
     currentStage = Stages.Ico1;
     icoRate = _rate;
     icoOver1 = _over1.mul(1 ether);
@@ -293,7 +293,7 @@ contract XDMCCrowdsale is Ownable {
   ) public onlyOwner returns (bool) {
     require(currentStage == Stages.Ico1End);
     currentStage = Stages.Ico2;
-    if (_rate &gt; 0) icoRate = _rate;
+    if (_rate > 0) icoRate = _rate;
     icoOver1 = _over1.mul(1 ether);
     icoBonus1 = _bonus1;
     icoOver2 = _over2.mul(1 ether);
@@ -330,7 +330,7 @@ contract XDMCCrowdsale is Ownable {
   ) public onlyOwner returns (bool) {
     require(currentStage == Stages.Ico2End);
     currentStage = Stages.Ico3;
-    if (_rate &gt; 0) icoRate = _rate;
+    if (_rate > 0) icoRate = _rate;
     icoOver1 = _over1.mul(1 ether);
     icoBonus1 = _bonus1;
     icoOver2 = _over2.mul(1 ether);
@@ -367,14 +367,14 @@ contract XDMCCrowdsale is Ownable {
   }
 
   function getStageName() public view returns (string) {
-    if (currentStage == Stages.Pause) return &#39;ICO is not started yet&#39;;
-    else if (currentStage == Stages.Ico1) return &#39;ICO 1&#39;;
-    else if (currentStage == Stages.Ico1End) return &#39;ICO 1 end&#39;;
-    else if (currentStage == Stages.Ico2) return &#39;ICO 2&#39;;
-    else if (currentStage == Stages.Ico2End) return &#39;ICO 2 end&#39;;
-    else if (currentStage == Stages.Ico3) return &#39;ICO 3&#39;;
-    else if (currentStage == Stages.Ico3End) return &#39;ICO 3 end&#39;;
-    return &#39;Undefined&#39;;
+    if (currentStage == Stages.Pause) return 'ICO is not started yet';
+    else if (currentStage == Stages.Ico1) return 'ICO 1';
+    else if (currentStage == Stages.Ico1End) return 'ICO 1 end';
+    else if (currentStage == Stages.Ico2) return 'ICO 2';
+    else if (currentStage == Stages.Ico2End) return 'ICO 2 end';
+    else if (currentStage == Stages.Ico3) return 'ICO 3';
+    else if (currentStage == Stages.Ico3End) return 'ICO 3 end';
+    return 'Undefined';
   }
 
   function getPrice() public view returns (uint256) {
@@ -394,11 +394,11 @@ contract XDMCCrowdsale is Ownable {
         currentStage == Stages.Ico2 || 
         currentStage == Stages.Ico3
       ) {
-      if (_wei &gt;= icoOver1) return icoBonus1;
-      else if (_wei &gt;= icoOver2) return icoBonus2;
-      else if (_wei &gt;= icoOver3) return icoBonus3;
-      else if (_wei &gt;= icoOver4) return icoBonus4;
-      else if (_wei &gt;= icoOver5) return icoBonus5;
+      if (_wei >= icoOver1) return icoBonus1;
+      else if (_wei >= icoOver2) return icoBonus2;
+      else if (_wei >= icoOver3) return icoBonus3;
+      else if (_wei >= icoOver4) return icoBonus4;
+      else if (_wei >= icoOver5) return icoBonus5;
       return 0;
     }
     return 0;
@@ -411,14 +411,14 @@ contract XDMCCrowdsale is Ownable {
 
   function getTeamToken() public {
     uint256 vestingPeriodNumber = getVestingPeriodNumber();
-    require(vestingPeriodNumber &gt; 1);
-    require(teamTokensReleased &lt; teamTokens);
+    require(vestingPeriodNumber > 1);
+    require(teamTokensReleased < teamTokens);
     uint256 toRelease;
-    if (vestingPeriodNumber &gt;= 6) toRelease = teamTokens;
+    if (vestingPeriodNumber >= 6) toRelease = teamTokens;
     else toRelease = vestingPeriodNumber.mul(teamTokensPerPeriod);
-    if (toRelease &gt; teamTokens) toRelease = teamTokens;
+    if (toRelease > teamTokens) toRelease = teamTokens;
     toRelease = toRelease.sub(teamTokensReleased);
-    require(toRelease &gt; 0);
+    require(toRelease > 0);
     teamTokensReleased = teamTokensReleased.add(toRelease);
     require(token.transfer(teamAddress, toRelease));
   }
@@ -465,18 +465,18 @@ contract XDMCCrowdsale is Ownable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view {
     require(_beneficiary != address(0));
-    require(_weiAmount &gt;= 100 finney);
-    if (currentStage == Stages.Ico1) require(_weiAmount &lt;= 1000 ether);
-    else if (currentStage == Stages.Ico2) require(_weiAmount &lt;= 500 ether);
-    else if (currentStage == Stages.Ico3) require(_weiAmount &lt;= 500 ether);
+    require(_weiAmount >= 100 finney);
+    if (currentStage == Stages.Ico1) require(_weiAmount <= 1000 ether);
+    else if (currentStage == Stages.Ico2) require(_weiAmount <= 500 ether);
+    else if (currentStage == Stages.Ico3) require(_weiAmount <= 500 ether);
     else revert();
   }
 
   function _validateTokensAmount(uint256 _tokens) internal view {
-    require(_tokens &gt; 0);
-    if (currentStage == Stages.Ico1) require(_tokens &lt;= ico1cap);
-    else if (currentStage == Stages.Ico2) require(_tokens &lt;= ico2cap);
-    else if (currentStage == Stages.Ico3) require(_tokens &lt;= ico3cap);
+    require(_tokens > 0);
+    if (currentStage == Stages.Ico1) require(_tokens <= ico1cap);
+    else if (currentStage == Stages.Ico2) require(_tokens <= ico2cap);
+    else if (currentStage == Stages.Ico3) require(_tokens <= ico3cap);
   }
 
   /**
@@ -507,7 +507,7 @@ contract XDMCCrowdsale is Ownable {
     uint256 basePrice = icoRate;
     uint256 tokens = _weiAmount.mul(basePrice);
     uint256 bonuses = _getBonus(_weiAmount);
-    if (bonuses &gt; 0) {
+    if (bonuses > 0) {
       uint256 bonusTokens = tokens.mul(bonuses).div(100);
       tokens = tokens.add(bonusTokens);
     }
@@ -528,34 +528,34 @@ contract XDMCCrowdsale is Ownable {
     uint256 unsoldTokensRemains = 0;
     uint256 stageRemains;
     if (
-      ico1endTime &gt; 0 &amp;&amp; 
-      now.sub(ico1endTime) &gt; getUnsoldPeriod &amp;&amp; 
-      ico1receivedTotal &lt; ico1cap.sub(ico1total)
+      ico1endTime > 0 && 
+      now.sub(ico1endTime) > getUnsoldPeriod && 
+      ico1receivedTotal < ico1cap.sub(ico1total)
     ) {
       stageRemains = ico1cap.sub(ico1total).sub(ico1receivedTotal);
       unsoldTokensRemains = unsoldTokensRemains.add(stageRemains);
       ico1receivedTotal = ico1cap.sub(ico1total);
     }
     if (
-      ico2endTime &gt; 0 &amp;&amp; 
-      now.sub(ico2endTime) &gt; getUnsoldPeriod &amp;&amp; 
-      ico2receivedTotal &lt; ico2cap.sub(ico1total)
+      ico2endTime > 0 && 
+      now.sub(ico2endTime) > getUnsoldPeriod && 
+      ico2receivedTotal < ico2cap.sub(ico1total)
     ) {
       stageRemains = ico2cap.sub(ico2total).sub(ico2receivedTotal);
       unsoldTokensRemains = unsoldTokensRemains.add(stageRemains);
       ico2receivedTotal = ico2cap.sub(ico2total);
     }
     if (
-      ico3endTime &gt; 0 &amp;&amp; 
-      now.sub(ico3endTime) &gt; getUnsoldPeriod &amp;&amp; 
-      ico3receivedTotal &lt; ico3cap.sub(ico3total)
+      ico3endTime > 0 && 
+      now.sub(ico3endTime) > getUnsoldPeriod && 
+      ico3receivedTotal < ico3cap.sub(ico3total)
     ) {
       stageRemains = ico3cap.sub(ico3total).sub(ico3receivedTotal);
       unsoldTokensRemains = unsoldTokensRemains.add(stageRemains);
       ico3receivedTotal = ico3cap.sub(ico3total);
     }
 
-    require(unsoldTokensRemains &gt; 0);
+    require(unsoldTokensRemains > 0);
     require(token.transfer(owner, unsoldTokensRemains));
 
     return true;
@@ -568,10 +568,10 @@ contract XDMCCrowdsale is Ownable {
     uint256 stageRemains;
 
     if (
-      ico1endTime &gt; 0 &amp;&amp; 
-      now.sub(ico1endTime) &lt; getUnsoldPeriod &amp;&amp; 
-      ico1received[msg.sender] == 0 &amp;&amp;
-      tokenBalance &gt;= ico1amount[msg.sender]
+      ico1endTime > 0 && 
+      now.sub(ico1endTime) < getUnsoldPeriod && 
+      ico1received[msg.sender] == 0 &&
+      tokenBalance >= ico1amount[msg.sender]
     ) {
       tokenBalance = tokenBalance.sub(ico1amount[msg.sender]);
       stageRemains = ico1cap.sub(ico1total);
@@ -579,14 +579,14 @@ contract XDMCCrowdsale is Ownable {
       unsoldTokensShare = unsoldTokensShare.add(stageShare);
       ico1received[msg.sender] = stageShare;
       ico1receivedTotal = ico1receivedTotal.add(stageShare);
-      require(ico1receivedTotal &lt;= ico1cap.sub(ico1total));
+      require(ico1receivedTotal <= ico1cap.sub(ico1total));
     }
 
     if (
-      ico2endTime &gt; 0 &amp;&amp; 
-      now.sub(ico2endTime) &lt; getUnsoldPeriod &amp;&amp; 
-      ico2received[msg.sender] == 0 &amp;&amp;
-      tokenBalance &gt;= ico2amount[msg.sender]
+      ico2endTime > 0 && 
+      now.sub(ico2endTime) < getUnsoldPeriod && 
+      ico2received[msg.sender] == 0 &&
+      tokenBalance >= ico2amount[msg.sender]
     ) {
       tokenBalance = tokenBalance.sub(ico2amount[msg.sender]);
       stageRemains = ico2cap.sub(ico2total);
@@ -594,24 +594,24 @@ contract XDMCCrowdsale is Ownable {
       unsoldTokensShare = unsoldTokensShare.add(stageShare);
       ico2received[msg.sender] = stageShare;
       ico2receivedTotal = ico2receivedTotal.add(stageShare);
-      require(ico2receivedTotal &lt;= ico2cap.sub(ico2total));
+      require(ico2receivedTotal <= ico2cap.sub(ico2total));
     }
 
     if (
-      ico3endTime &gt; 0 &amp;&amp; 
-      now.sub(ico3endTime) &lt; getUnsoldPeriod &amp;&amp; 
-      ico3received[msg.sender] == 0 &amp;&amp;
-      tokenBalance &gt;= ico3amount[msg.sender]
+      ico3endTime > 0 && 
+      now.sub(ico3endTime) < getUnsoldPeriod && 
+      ico3received[msg.sender] == 0 &&
+      tokenBalance >= ico3amount[msg.sender]
     ) {
       stageRemains = ico3cap.sub(ico3total);
       stageShare = stageRemains.mul(ico3amount[msg.sender]).div(ico3total);
       unsoldTokensShare = unsoldTokensShare.add(stageShare);
       ico3received[msg.sender] = stageShare;
       ico3receivedTotal = ico3receivedTotal.add(stageShare);
-      require(ico3receivedTotal &lt;= ico3cap.sub(ico3total));
+      require(ico3receivedTotal <= ico3cap.sub(ico3total));
     }
 
-    require(unsoldTokensShare &gt; 0);
+    require(unsoldTokensShare > 0);
     require(token.transfer(msg.sender, unsoldTokensShare));
 
     return true;

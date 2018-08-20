@@ -3,7 +3,7 @@ pragma solidity ^0.4.2;
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 contract Token {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -21,7 +21,7 @@ contract HumaniqToken is Token {
 }
 
 /// @title HumaniqICO contract - Takes funds from users and issues tokens.
-/// @author Evgeny Yurtaev - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2a39282a21360f2a3b272a3d262021232e2d612c2022">[email&#160;protected]</a>&gt;
+/// @author Evgeny Yurtaev - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2a39282a21360f2a3b272a3d262021232e2d612c2022">[email protected]</a>>
 contract HumaniqICO {
 
     /*
@@ -47,8 +47,8 @@ contract HumaniqICO {
     uint public discountedPrice = baseTokenPrice;
     bool public isICOActive = false;
 
-    // participant address =&gt; value in Wei
-    mapping (address =&gt; uint) public investments;
+    // participant address => value in Wei
+    mapping (address => uint) public investments;
 
     /*
      *  Modifiers
@@ -63,7 +63,7 @@ contract HumaniqICO {
 
     modifier minInvestment() {
         // User has to send at least the ether value of one token.
-        if (msg.value &lt; baseTokenPrice) {
+        if (msg.value < baseTokenPrice) {
             throw;
         }
         _;
@@ -78,19 +78,19 @@ contract HumaniqICO {
 
     modifier applyBonus() {
         uint icoDuration = now - startDate;
-        if (icoDuration &gt;= 248 hours) {
+        if (icoDuration >= 248 hours) {
             discountedPrice = baseTokenPrice;
         }
-        else if (icoDuration &gt;= 176 hours) {
+        else if (icoDuration >= 176 hours) {
             discountedPrice = (baseTokenPrice * 100) / 107;
         }
-        else if (icoDuration &gt;= 104 hours) {
+        else if (icoDuration >= 104 hours) {
             discountedPrice = (baseTokenPrice * 100) / 120;
         }
-        else if (icoDuration &gt;= 32 hours) {
+        else if (icoDuration >= 32 hours) {
             discountedPrice = (baseTokenPrice * 100) / 142;
         }
-        else if (icoDuration &gt;= 12 hours) {
+        else if (icoDuration >= 12 hours) {
             discountedPrice = (baseTokenPrice * 100) / 150;
         }
         else {
@@ -114,10 +114,10 @@ contract HumaniqICO {
         // Ether spent by user.
         uint investment = tokenCount * discountedPrice;
         // Send change back to user.
-        if (msg.value &gt; investment &amp;&amp; !msg.sender.send(msg.value - investment)) {
+        if (msg.value > investment && !msg.sender.send(msg.value - investment)) {
             throw;
         }
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         icoBalance += investment;
         investments[msg.sender] += investment;
         // Send funds to founders.
@@ -144,7 +144,7 @@ contract HumaniqICO {
     {
         // Approximate ether spent.
         uint investment = _tokenCount * discountedPrice;
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         icoBalance += investment;
         investments[beneficiary] += investment;
         if (!humaniqToken.issueTokens(beneficiary, _tokenCount)) {
@@ -188,7 +188,7 @@ contract HumaniqICO {
         external
         onlyFounder
     {
-        if (isICOActive == false &amp;&amp; startDate == 0) {
+        if (isICOActive == false && startDate == 0) {
           // Start ICO
           isICOActive = true;
           // Set start-date of token creation

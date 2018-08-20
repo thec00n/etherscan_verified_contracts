@@ -69,13 +69,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
     bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
     /**
     * 0x01ffc9a7 ===
-    *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+    *   bytes4(keccak256('supportsInterface(bytes4)'))
     */
 
     /**
-    * @dev a mapping of interface id to whether or not it&#39;s supported
+    * @dev a mapping of interface id to whether or not it's supported
     */
-    mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+    mapping(bytes4 => bool) internal supportedInterfaces;
 
     /**
     * @dev A contract implementing SupportsInterfaceWithLookup
@@ -190,7 +190,7 @@ contract CardProto is CardBase {
     }
 
     // limits for mythic cards
-    mapping(uint16 =&gt; Limit) public limits;
+    mapping(uint16 => Limit) public limits;
 
     // can only set limits once
     function setLimit(uint16 id, uint64 limit) public onlyGovernor {
@@ -209,8 +209,8 @@ contract CardProto is CardBase {
 
     // could make these arrays to save gas
     // not really necessary - will be update a very limited no of times
-    mapping(uint8 =&gt; bool) public seasonTradable;
-    mapping(uint8 =&gt; bool) public seasonTradabilityLocked;
+    mapping(uint8 => bool) public seasonTradable;
+    mapping(uint8 => bool) public seasonTradabilityLocked;
     uint8 public currentSeason;
 
     function makeTradable(uint8 season) public onlyGovernor {
@@ -232,8 +232,8 @@ contract CardProto is CardBase {
     }
 
     function nextSeason() public onlyGovernor {
-        //Seasons shouldn&#39;t go to 0 if there is more than the uint8 should hold, the governor should know this &#175;\_(ツ)_/&#175; -M
-        require(currentSeason &lt;= 255); 
+        //Seasons shouldn't go to 0 if there is more than the uint8 should hold, the governor should know this ¯\_(ツ)_/¯ -M
+        require(currentSeason <= 255); 
 
         currentSeason++;
         mythic.length = 0;
@@ -270,13 +270,13 @@ contract CardProto is CardBase {
 
     // there is a particular design decision driving this:
     // need to be able to iterate over mythics only for card generation
-    // don&#39;t store 5 different arrays: have to use 2 ids
+    // don't store 5 different arrays: have to use 2 ids
     // better to bear this cost (2 bytes per proto card)
     // rather than 1 byte per instance
 
     uint16 public protoCount;
     
-    mapping(uint16 =&gt; ProtoCard) protos;
+    mapping(uint16 => ProtoCard) protos;
 
     uint16[] public mythic;
     uint16[] public legendary;
@@ -289,7 +289,7 @@ contract CardProto is CardBase {
         uint8[] healths, uint8[] cardTypes, uint8[] tribes, bool[] packable
     ) public onlyGovernor returns(uint16) {
 
-        for (uint i = 0; i &lt; externalIDs.length; i++) {
+        for (uint i = 0; i < externalIDs.length; i++) {
 
             ProtoCard memory card = ProtoCard({
                 exists: true,
@@ -448,10 +448,10 @@ contract CardProto is CardBase {
             uint16 id;
             uint64 limit;
             bool set;
-            for (uint i = 0; i &lt; mythic.length; i++) {
+            for (uint i = 0; i < mythic.length; i++) {
                 id = mythic[(random + i) % mythic.length];
                 (limit, set) = getLimit(id);
-                if (set &amp;&amp; limit &gt; 0){
+                if (set && limit > 0){
                     return id;
                 }
             }
@@ -463,7 +463,7 @@ contract CardProto is CardBase {
     }
 
     // can never adjust tradable cards
-    // each season gets a &#39;balancing beta&#39;
+    // each season gets a 'balancing beta'
     // totally immutable: season, rarity
     function replaceProto(
         uint16 index, uint8 god, uint8 cardType, uint8 mana, uint8 attack, uint8 health, uint8 tribe
@@ -488,7 +488,7 @@ contract CardProto is CardBase {
 contract ERC721Receiver {
     /**
     * @dev Magic value to be returned upon successful reception of an NFT
-    *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+    *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     */
     bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -504,7 +504,7 @@ contract ERC721Receiver {
     * @param _from The address which previously owned the token
     * @param _tokenId The NFT identifier which is being transfered
     * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     */
     function onERC721Received(
         address _operator,
@@ -535,7 +535,7 @@ library AddressUtils {
         // contracts then.
         // solium-disable-next-line security/no-inline-assembly
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -546,8 +546,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -562,9 +562,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -572,7 +572,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -581,7 +581,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -591,41 +591,41 @@ contract ERC721BasicToken is CardProto, SupportsInterfaceWithLookup, ERC721Basic
     bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
     /*
     * 0x80ac58cd ===
-    *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-    *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-    *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+    *   bytes4(keccak256('balanceOf(address)')) ^
+    *   bytes4(keccak256('ownerOf(uint256)')) ^
+    *   bytes4(keccak256('approve(address,uint256)')) ^
+    *   bytes4(keccak256('getApproved(uint256)')) ^
+    *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+    *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+    *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+    *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
     */
 
     bytes4 private constant InterfaceId_ERC721Exists = 0x4f558e79;
     /*
     * 0x4f558e79 ===
-    *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+    *   bytes4(keccak256('exists(uint256)'))
     */
 
     using SafeMath for uint256;
     using AddressUtils for address;
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    // mapping (address =&gt; uint256) internal ownedTokensCount;
+    // mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /**
     * @dev Guarantees msg.sender is owner of the given token
@@ -766,7 +766,7 @@ contract ERC721BasicToken is CardProto, SupportsInterfaceWithLookup, ERC721Basic
     * @dev Safely transfers the ownership of a given token ID to another address
     * If the target address is a contract, it must implement `onERC721Received`,
     * which is called upon a safe transfer, and return the magic value
-    * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+    * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
     * the transfer is reverted.
     *
     * Requires the msg sender to be the owner, approved, or operator
@@ -783,14 +783,14 @@ contract ERC721BasicToken is CardProto, SupportsInterfaceWithLookup, ERC721Basic
         canTransfer(_tokenId)
     {
         // solium-disable-next-line arg-overflow
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
     * @dev Safely transfers the ownership of a given token ID to another address
     * If the target address is a contract, it must implement `onERC721Received`,
     * which is called upon a safe transfer, and return the magic value
-    * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+    * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
     * the transfer is reverted.
     * Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -970,28 +970,28 @@ library Strings {
       string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
       bytes memory babcde = bytes(abcde);
       uint k = 0;
-      for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-      for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-      for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-      for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-      for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+      for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+      for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+      for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+      for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+      for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
       return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     function uint2str(uint i) internal pure returns (string) {
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -1015,28 +1015,28 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     bytes4 private constant InterfaceId_ERC721Enumerable = 0x780e9d63;
     /**
     * 0x780e9d63 ===
-    *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-    *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+    *   bytes4(keccak256('totalSupply()')) ^
+    *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+    *   bytes4(keccak256('tokenByIndex(uint256)'))
     */
 
     bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
     /**
     * 0x5b5e139f ===
-    *   bytes4(keccak256(&#39;name()&#39;)) ^
-    *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-    *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+    *   bytes4(keccak256('name()')) ^
+    *   bytes4(keccak256('symbol()')) ^
+    *   bytes4(keccak256('tokenURI(uint256)'))
     */
 
     /*** Constants ***/
     // Configure these for your own deployment
-    string public constant NAME = &quot;Gods Unchained&quot;;
-    string public constant SYMBOL = &quot;GODS&quot;;
-    string public tokenMetadataBaseURI = &quot;https://api.godsunchained.com/card/&quot;;
+    string public constant NAME = "Gods Unchained";
+    string public constant SYMBOL = "GODS";
+    string public tokenMetadataBaseURI = "https://api.godsunchained.com/card/";
 
     // Mapping from owner to list of owned token IDs
     // EDITED: limit to 2^40 (around 1T)
-    mapping(address =&gt; uint40[]) internal ownedTokens;
+    mapping(address => uint40[]) internal ownedTokens;
 
     uint32[] ownedTokensIndex;
 
@@ -1092,7 +1092,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
         view
         returns (uint256)
     {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -1111,7 +1111,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     * @return uint256 token ID at the given index of the tokens list
     */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return _index;
     }
 
@@ -1210,7 +1210,7 @@ contract CardOwnershipTwo is ERC721Token {
     * @param ids : the ids of the cards to be transferred
     */
     function transferAll(address to, uint[] ids) public payable {
-        for (uint i = 0; i &lt; ids.length; i++) {
+        for (uint i = 0; i < ids.length; i++) {
             transfer(to, ids[i]);
         }
     }
@@ -1221,8 +1221,8 @@ contract CardOwnershipTwo is ERC721Token {
     * @return whether proposed owns all of the cards 
     */
     function ownsAll(address proposed, uint[] ids) public view returns (bool) {
-        require(ids.length &gt; 0);
-        for (uint i = 0; i &lt; ids.length; i++) {
+        require(ids.length > 0);
+        for (uint i = 0; i < ids.length; i++) {
             if (!owns(proposed, ids[i])) {
                 return false;
             }
@@ -1248,7 +1248,7 @@ contract CardOwnershipTwo is ERC721Token {
     * @param ids : the indices of the tokens to burn
     */
     function burnAll(uint[] ids) public {
-        for (uint i = 0; i &lt; ids.length; i++){
+        for (uint i = 0; i < ids.length; i++){
             burn(ids[i]);
         }
     }
@@ -1267,7 +1267,7 @@ contract CardOwnershipTwo is ERC721Token {
     * @param ids : the indices of the cards to be approved
     */
     function approveAll(address to, uint[] ids) public {
-        for (uint i = 0; i &lt; ids.length; i++) {
+        for (uint i = 0; i < ids.length; i++) {
             approve(to, ids[i]);
         }
     }
@@ -1286,7 +1286,7 @@ contract CardOwnershipTwo is ERC721Token {
     * @param ids : the indices of the tokens to transfer
     */
     function transferAllFrom(address from, address to, uint[] ids) public {
-        for (uint i = 0; i &lt; ids.length; i++) {
+        for (uint i = 0; i < ids.length; i++) {
             transferFrom(from, to, ids[i]);
         }
     }
@@ -1316,7 +1316,7 @@ contract CardIntegrationTwo is CardOwnershipTwo {
     }
 
     function _isApprovedPack() private view returns (bool) {
-        for (uint i = 0; i &lt; packs.length; i++) {
+        for (uint i = 0; i < packs.length; i++) {
             if (msg.sender == address(packs[i])) {
                 return true;
             }
@@ -1331,7 +1331,7 @@ contract CardIntegrationTwo is CardOwnershipTwo {
             uint64 limit;
             bool exists;
             (limit, exists) = getLimit(proto);
-            require(!exists || limit &gt; 0);
+            require(!exists || limit > 0);
             limits[proto].limit--;
         }
         return _createCard(owner, proto, purity);
@@ -1358,10 +1358,10 @@ contract CardIntegrationTwo is CardOwnershipTwo {
         Card memory first = cards[ids[0]];
         uint16 proto = first.proto;
         uint8 shine = _getShine(first.purity);
-        require(shine &lt; shineLimit);
+        require(shine < shineLimit);
         uint16 puritySum = first.purity - (shine * 1000);
         burn(ids[0]);
-        for (uint i = 1; i &lt; ids.length; i++) {
+        for (uint i = 1; i < ids.length; i++) {
             Card memory next = cards[ids[i]];
             require(next.proto == proto);
             require(_getShine(next.purity) == shine);
@@ -1375,7 +1375,7 @@ contract CardIntegrationTwo is CardOwnershipTwo {
 
     // PURITY NOTES
     // currently, we only
-    // however, to protect rarity, you&#39;ll never be abl
+    // however, to protect rarity, you'll never be abl
     // this is enforced by the restriction in the create-card function
     // no cards above this point can be found in packs
 
@@ -1404,7 +1404,7 @@ contract CardMigration is CardIntegrationTwo {
     // use interface to lower deployment cost
     PreviousInterface old;
 
-    mapping(uint =&gt; bool) public migrated;
+    mapping(uint => bool) public migrated;
 
     function migrate(uint id) public {
 
@@ -1424,7 +1424,7 @@ contract CardMigration is CardIntegrationTwo {
 
     function migrateAll(uint[] ids) public {
 
-        for (uint i = 0; i &lt; ids.length; i++){
+        for (uint i = 0; i < ids.length; i++){
             migrate(ids[i]);
         }
 

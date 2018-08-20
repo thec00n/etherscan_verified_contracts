@@ -17,8 +17,8 @@ contract GenTokens {
     uint public tip = 0.00077 ether;
     
     function create(address token, uint numberOfNewAddresses) payable {
-        require(msg.value &gt;= tip); 
-        for (uint i = 0; i &lt; numberOfNewAddresses; i++)
+        require(msg.value >= tip); 
+        for (uint i = 0; i < numberOfNewAddresses; i++)
             address t = new GenTokenAddress(token, msg.sender);
     }
     
@@ -28,7 +28,7 @@ contract GenTokens {
     
     function withdrawToken(address token) onlyOwner {
         uint bal = I(token).balanceOf(address(this));
-        if (bal &gt; 0) I(token).transfer(owner, bal);
+        if (bal > 0) I(token).transfer(owner, bal);
     }
     
     function setTip(uint val) onlyOwner { tip = val; }

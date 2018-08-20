@@ -8,8 +8,8 @@ pragma solidity ^0.4.24;
 library SafeMath {
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256) { if (_a == 0) { return 0; } uint256 c = _a * _b; assert(c / _a == _b); return c; }
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) { uint256 c = _a / _b; return c; }
-  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) { assert(_b &lt;= _a); uint256 c = _a - _b; return c;}
-  function add(uint256 _a, uint256 _b) internal pure returns (uint256) { uint256 c = _a + _b; assert(c &gt;= _a); return c;}
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) { assert(_b <= _a); uint256 c = _a - _b; return c;}
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256) { uint256 c = _a + _b; assert(c >= _a); return c;}
 }
 
 /** @title ERC20 interface */
@@ -40,8 +40,8 @@ contract HeapX is OwnerHeapX, ERC20 {
     address public owner;
 
     constructor() public {
-        name = &quot;HeapX&quot;;
-        symbol = &quot;HEAP&quot;;
+        name = "HeapX";
+        symbol = "HEAP";
         decimals = 9;
         totalSupply_ = 500000000000000000;
         owner = msg.sender;
@@ -50,10 +50,10 @@ contract HeapX is OwnerHeapX, ERC20 {
     }
 
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner,address indexed spender,uint256 value);
@@ -73,7 +73,7 @@ contract HeapX is OwnerHeapX, ERC20 {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(_to != address(0));
         require(!frozenAccount[_to]);
         require(!frozenAccount[msg.sender]);
@@ -90,7 +90,7 @@ contract HeapX is OwnerHeapX, ERC20 {
     }
 
     function transferFrom( address _from, address _to, uint256 _value) public returns (bool){
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
         require(!frozenAccount[_to]);
         require(!frozenAccount[_from]);
@@ -110,7 +110,7 @@ contract HeapX is OwnerHeapX, ERC20 {
 
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool){
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -125,7 +125,7 @@ contract HeapX is OwnerHeapX, ERC20 {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply_ -= _value;
         emit Burn(msg.sender, _value);

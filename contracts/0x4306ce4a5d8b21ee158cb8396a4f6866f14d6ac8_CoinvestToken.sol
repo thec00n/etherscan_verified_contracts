@@ -21,18 +21,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -52,14 +52,14 @@ contract CoinvestToken is SafeMath {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed _from, address indexed _spender, uint indexed _amount);
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
   
 
-    string public constant symbol = &quot;COIN&quot;;
-    string public constant name = &quot;Coinvest COIN Token&quot;;
+    string public constant symbol = "COIN";
+    string public constant name = "Coinvest COIN Token";
     
     uint8 public constant decimals = 18;
     uint256 public totalSupply = 107142857 * (10 ** 18);
@@ -81,7 +81,7 @@ contract CoinvestToken is SafeMath {
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) transferable returns (bool success) {
       
         if(isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) throw;
+            if (balanceOf(msg.sender) < _value) throw;
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
             balances[_to] = safeAdd(balanceOf(_to), _value);
             assert(_to.call.value(0)(bytes4(sha3(_custom_fallback)), msg.sender, _value, _data));
@@ -141,12 +141,12 @@ contract CoinvestToken is SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) throw;
+        if (balanceOf(msg.sender) < _value) throw;
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         if(Transfer_data_enabled)
@@ -166,7 +166,7 @@ contract CoinvestToken is SafeMath {
   
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) throw;
+        if (balanceOf(msg.sender) < _value) throw;
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -196,7 +196,7 @@ contract CoinvestToken is SafeMath {
     }
 
     /**
-     * @dev An allowed address can transfer tokens from another&#39;s address.
+     * @dev An allowed address can transfer tokens from another's address.
      * @param _from The owner of the tokens to be transferred.
      * @param _to The address to which the tokens will be transferred.
      * @param _amount The amount of tokens to be transferred.
@@ -206,7 +206,7 @@ contract CoinvestToken is SafeMath {
       transferable
     returns (bool success)
     {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount);
 
         allowed[_from][msg.sender] -= _amount;
         balances[_from] -= _amount;
@@ -218,7 +218,7 @@ contract CoinvestToken is SafeMath {
     }
 
     /**
-     * @dev Approves a wallet to transfer tokens on one&#39;s behalf.
+     * @dev Approves a wallet to transfer tokens on one's behalf.
      * @param _spender The wallet approved to spend tokens.
      * @param _amount The amount of tokens approved to spend.
     **/
@@ -226,7 +226,7 @@ contract CoinvestToken is SafeMath {
       external
       transferable // Protect from unlikely maintainer-receiver trickery
     {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         
         allowed[msg.sender][_spender] = _amount;
         Approval(msg.sender, _spender, _amount);
@@ -257,7 +257,7 @@ contract CoinvestToken is SafeMath {
     }
 
     /**
-     * @dev Allowed amount for a user to spend of another&#39;s tokens.
+     * @dev Allowed amount for a user to spend of another's tokens.
      * @param _owner The owner of the tokens approved to spend.
      * @param _spender The address of the user allowed to spend the tokens.
     **/
@@ -301,7 +301,7 @@ contract CoinvestToken is SafeMath {
     
     modifier transferable
     {
-        if (block.timestamp &lt; lockupEndTime) {
+        if (block.timestamp < lockupEndTime) {
             require(msg.sender == maintainer || msg.sender == icoContract);
         }
         _;

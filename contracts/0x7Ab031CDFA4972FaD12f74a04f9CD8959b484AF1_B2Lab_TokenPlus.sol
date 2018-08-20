@@ -19,7 +19,7 @@ contract IdentityBase{
     }
     
 	//Identity Map
-	mapping(address =&gt; Data) identities;
+	mapping(address => Data) identities;
    
     /*
 	 * Params: address
@@ -37,7 +37,7 @@ contract IdentityBase{
      */   
     function setMyIdentity(bytes32 _biometricData, string _name, string _surname) public returns(bool){
     
-		if(identities[msg.sender].biometricData == &quot;&quot;){
+		if(identities[msg.sender].biometricData == ""){
 			
 			Data storage identity = identities[msg.sender];
 			identity.biometricData = _biometricData;
@@ -92,7 +92,7 @@ contract IdentityExtended is IdentityBase{
     }
     
 	//Map of Extended Data Identities
-    mapping(address =&gt; DataExtended) identitiesExtended;    
+    mapping(address => DataExtended) identitiesExtended;    
    
 	/*
 	 *Params: bool, bool, bool
@@ -114,8 +114,8 @@ contract IdentityExtended is IdentityBase{
 contract B2Lab_TokenPlus{
 
 	//Token Data
-	string constant public tokenName = &quot;NFT B2LAB&quot;;
-	string constant public tokenSymbol = &quot;B2L&quot;;
+	string constant public tokenName = "NFT B2LAB";
+	string constant public tokenSymbol = "B2L";
 	address public contractOwner;
 	uint256 constant public totalTokens = 1000000;
 	uint256 public issuedTokens = 0;
@@ -125,10 +125,10 @@ contract B2Lab_TokenPlus{
 	address public identityEthAddress;
    
 	//Balances Map
-	mapping(address =&gt; uint256) public balances;
+	mapping(address => uint256) public balances;
    
 	//Owners Map
-	mapping(uint256 =&gt; address) public tokenOwners;
+	mapping(uint256 => address) public tokenOwners;
 	
 	//Additional Data
 	struct TokenData{
@@ -141,7 +141,7 @@ contract B2Lab_TokenPlus{
 	}
 	
 	//Data Token Map
-	mapping(uint256 =&gt; TokenData) public tokenInfo;
+	mapping(uint256 => TokenData) public tokenInfo;
 	
 	//Constructor: Set the Contract Owner and IdentityEthAddress
 	function B2Lab_TokenPlus(address _ethAddress) public {
@@ -169,7 +169,7 @@ contract B2Lab_TokenPlus{
 		
     }
     
-    //Check if &quot;address _a&quot; is an identity in the IdentityEthAddress Contract
+    //Check if "address _a" is an identity in the IdentityEthAddress Contract
 	modifier checkIsIdentity(address _a){
        
         IdentityBase i = IdentityBase(identityEthAddress);
@@ -181,18 +181,18 @@ contract B2Lab_TokenPlus{
    
   	/*
      *Params: null
-     *Return: Error (if the sender doesn&#39;t meet the requirements) or Tokens (otherwise)
+     *Return: Error (if the sender doesn't meet the requirements) or Tokens (otherwise)
      */
 	function buyTokens() payable public checkIsIdentity(msg.sender){
 	
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		uint256 numberTokens = msg.value / price;
 		uint256 redelivery =  msg.value % price;
 		require(numberTokens != 0);
-		require(numberTokens &lt;= 100);
-		require((issuedTokens+numberTokens) &lt;= totalTokens);
+		require(numberTokens <= 100);
+		require((issuedTokens+numberTokens) <= totalTokens);
 		
-		for(uint256 i = 0; i &lt; numberTokens; i++){
+		for(uint256 i = 0; i < numberTokens; i++){
 		
 			issuedTokens++;
 			tokenOwners[issuedTokens] = msg.sender;
@@ -207,16 +207,16 @@ contract B2Lab_TokenPlus{
    
 	/*
      *Params: address, uint256[]
-     *Return: Error (if the sender and the recipient doesn&#39;t meet the requirements) or Token Transfer (otherwise)
+     *Return: Error (if the sender and the recipient doesn't meet the requirements) or Token Transfer (otherwise)
      */
     function transferTokens(address _to, uint256[] _tokenId) public checkIsIdentity(msg.sender) checkIsIdentity(_to){
 		
 		require(msg.sender != _to);
 		require(_tokenId.length != 0);
-        require(_tokenId.length &lt;= 10);
+        require(_tokenId.length <= 10);
         require(_to != address(0));
 		
-        for(uint256 i = 0; i &lt; _tokenId.length; i++){
+        for(uint256 i = 0; i < _tokenId.length; i++){
 		
             require(tokenOwners[_tokenId[i]] == msg.sender);
 			tokenOwners[_tokenId[i]] = _to;

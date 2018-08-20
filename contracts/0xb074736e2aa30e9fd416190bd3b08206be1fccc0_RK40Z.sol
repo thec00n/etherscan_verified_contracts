@@ -13,10 +13,10 @@ contract RK40Z {
     bool public tokenCreated = false;
 	uint public DateCreateToken;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) public frozenAccount;
-	mapping(address =&gt; bool) public SmartContract_Allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => bool) public frozenAccount;
+	mapping(address => bool) public SmartContract_Allowed;
 
 	// ERC20 Event 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -33,8 +33,8 @@ contract RK40Z {
 
         owner = msg.sender;
         
-		name = &quot;RK40Z&quot;;
-        symbol = &quot;RK40Z&quot;;
+		name = "RK40Z";
+        symbol = "RK40Z";
         decimals = 5;
         totalSupply = 500000000 * 10 ** uint256(decimals);
         balances[owner] = totalSupply;
@@ -43,7 +43,7 @@ contract RK40Z {
         tokenCreated = true;
 
         // Final sanity check to ensure owner balance is greater than zero
-        require(balances[owner] &gt; 0);
+        require(balances[owner] > 0);
 
 		// Date Deploy Contract
 		DateCreateToken = now;
@@ -90,18 +90,18 @@ contract RK40Z {
     }
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 
@@ -147,12 +147,12 @@ contract RK40Z {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -163,7 +163,7 @@ contract RK40Z {
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
         require(SmartContract_Allowed[_to]);
 		
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -181,12 +181,12 @@ contract RK40Z {
 		require(!frozenAccount[_to]);
 		
         // Protect against wrapping uints.
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][owner];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         balances[_from] = safeSub(balanceOf(_from), _value);
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
         }
         emit Transfer(_from, _to, _value);
@@ -231,7 +231,7 @@ contract RK40Z {
 	
 	 /// Destroy tokens amount (Caution!!! the operation is destructive and you can not go back)
     function OWN_burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -240,8 +240,8 @@ contract RK40Z {
 
     /// Destroy tokens amount from another account (Caution!!! the operation is destructive and you can not go back)
     function OWN_burnAddress(address _from, uint256 _value)  onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowed[_from][owner]);
+        require(balances[_from] >= _value);
+        require(_value <= allowed[_from][owner]);
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;             
         totalSupply -= _value;
@@ -287,7 +287,7 @@ contract RK40Z {
 	
 	/// Distribution Token from Admin
 	function OWN_DistributeTokenAdmin_Multi(address[] addresses, uint256 _value, bool freeze) onlyOwner public{
-		for (uint i = 0; i &lt; addresses.length; i++) {
+		for (uint i = 0; i < addresses.length; i++) {
 			//Block / Unlock address handling tokens
 			frozenAccount[addresses[i]] = freeze;
 			emit FrozenFunds(addresses[i], freeze);

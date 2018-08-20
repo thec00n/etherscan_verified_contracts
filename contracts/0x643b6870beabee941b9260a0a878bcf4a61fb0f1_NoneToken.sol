@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 /**
  * @title NoneToken - ERC-20 token with a totalSupply of 0
- * @author ligi &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117d78767851746579746374647c3f7e6376">[email&#160;protected]</a>&gt;
+ * @author ligi <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117d78767851746579746374647c3f7e6376">[email protected]</a>>
  *
  * Source + Context:
  * https://github.com/walleth/contracts/NoneToken
@@ -43,12 +43,12 @@ contract NoneToken {
 
     /// @return the name of the token
     function name() public pure returns (string) {
-      return &quot;None&quot;;
+      return "None";
     }
 
     /// @return the symbol of the token
     function symbol() public pure returns (string) {
-      return &quot;NONE&quot;;
+      return "NONE";
     }
 
     /// @return the amount of decimals for the token (0 in our case)

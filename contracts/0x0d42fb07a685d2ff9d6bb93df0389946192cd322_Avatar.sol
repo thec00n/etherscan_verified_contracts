@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -204,7 +204,7 @@ contract Pausable is Ownable {
     }
 
     /**
-     * @dev Modifier to make a function callable only when the contract is paused.db.getCollection(&#39;transactions&#39;).find({})
+     * @dev Modifier to make a function callable only when the contract is paused.db.getCollection('transactions').find({})
      */
     modifier whenPaused() {
         require(paused);
@@ -261,7 +261,7 @@ contract MintableToken is StandardToken, Ownable, Pausable {
     }
 
     function mintInternal(address _to, uint256 _amount) internal canMint returns (bool) {
-        require(totalSupply.add(_amount) &lt;= maxTokensToMint);
+        require(totalSupply.add(_amount) <= maxTokensToMint);
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
@@ -272,9 +272,9 @@ contract MintableToken is StandardToken, Ownable, Pausable {
 
 contract Avatar is MintableToken {
 
-    string public constant name = &quot;AvataraCoin&quot;;
+    string public constant name = "AvataraCoin";
 
-    string public constant symbol = &quot;VTR&quot;;
+    string public constant symbol = "VTR";
 
     bool public transferEnabled = false;
 
@@ -305,7 +305,7 @@ contract Avatar is MintableToken {
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint _value) whenNotPaused canTransfer returns (bool) {
-        require(_to != address(this) &amp;&amp; _to != address(0));
+        require(_to != address(this) && _to != address(0));
         return super.transfer(_to, _value);
     }
 
@@ -316,7 +316,7 @@ contract Avatar is MintableToken {
     * @param _value uint256 the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint _value) whenNotPaused canTransfer returns (bool) {
-        require(_to != address(this) &amp;&amp; _to != address(0));
+        require(_to != address(this) && _to != address(0));
         return super.transferFrom(_from, _to, _value);
     }
 
@@ -357,7 +357,7 @@ contract Avatar is MintableToken {
     }
 
     modifier canBuyTokens() {
-        require(!icoFinished &amp;&amp; weiFounded &lt;= hardCap);
+        require(!icoFinished && weiFounded <= hardCap);
         _;
     }
 
@@ -369,7 +369,7 @@ contract Avatar is MintableToken {
 
 
     function changeRate(uint256 _rate) onlyOwnerOrApproved returns (bool) {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
         return true;
     }
@@ -380,36 +380,36 @@ contract Avatar is MintableToken {
 
     function buyTokens(address beneficiary) canBuyTokens whenNotPaused payable {
         require(beneficiary != 0x0);
-        require(msg.value &gt;= 100 finney);
+        require(msg.value >= 100 finney);
 
         uint256 weiAmount = msg.value;
         uint256 bonus = 0;
         uint256 totalWei = weiAmount.add(weiFounded);
-        if(totalWei &lt;= 600 ether){
-            require(weiAmount &gt;= 1500 finney);
+        if(totalWei <= 600 ether){
+            require(weiAmount >= 1500 finney);
             bonus = 51;
-        }else if (totalWei &lt;= 3000 ether){
-            require(weiAmount &gt;= 1500 finney);
+        }else if (totalWei <= 3000 ether){
+            require(weiAmount >= 1500 finney);
             bonus = 30;
-            if(weiAmount &gt;= 33 ether){
+            if(weiAmount >= 33 ether){
                 bonus = 51;
             }
-        }else if (totalWei &lt;= 12000 ether){
-            require(weiAmount &gt;= 1000 finney);
+        }else if (totalWei <= 12000 ether){
+            require(weiAmount >= 1000 finney);
             bonus = 21;
-            if(weiAmount &gt;= 33 ether){
+            if(weiAmount >= 33 ether){
                 bonus = 42;
             }
-        }else if (totalWei &lt;= 21000 ether){
-            require(weiAmount &gt;= 510 finney);
+        }else if (totalWei <= 21000 ether){
+            require(weiAmount >= 510 finney);
             bonus = 18;
-            if(weiAmount &gt;= 33 ether){
+            if(weiAmount >= 33 ether){
                 bonus = 39;
             }
-        }else if (totalWei &lt;= 30000 ether){
-            require(weiAmount &gt;= 300 finney);
+        }else if (totalWei <= 30000 ether){
+            require(weiAmount >= 300 finney);
             bonus = 12;
-            if(weiAmount &gt;= 33 ether){
+            if(weiAmount >= 33 ether){
                 bonus = 33;
             }
         }
@@ -419,11 +419,11 @@ contract Avatar is MintableToken {
 
 
 
-        if(bonus &gt; 0){
+        if(bonus > 0){
             tokens += tokens.mul(bonus).div(100);
         }
 
-        require(totalSupply.add(tokens) &lt;= maxTokenToBuy);
+        require(totalSupply.add(tokens) <= maxTokenToBuy);
 
         mintInternal(beneficiary, tokens);
         weiFounded = totalWei;

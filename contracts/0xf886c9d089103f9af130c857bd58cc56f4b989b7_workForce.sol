@@ -23,7 +23,7 @@ contract workForce
 
     modifier onlyEmployee()
     {
-        require(workcrew[ employeeAddressIndex[msg.sender] ].yearlySalaryUSD &gt; 0);
+        require(workcrew[ employeeAddressIndex[msg.sender] ].yearlySalaryUSD > 0);
          _;
     }
 
@@ -47,14 +47,14 @@ contract workForce
     }
 
     
-    /* Using a dynamic array because can&#39;t iterate mappings, or use push,length,delete cmds? */
+    /* Using a dynamic array because can't iterate mappings, or use push,length,delete cmds? */
     Employee[] workcrew;
     uint employeeIndex;
-    mapping( uint =&gt; uint ) employeeIdIndex;
-    mapping( string =&gt; uint ) employeeNameIndex;
-    mapping( address =&gt; uint ) employeeAddressIndex;
+    mapping( uint => uint ) employeeIdIndex;
+    mapping( string => uint ) employeeNameIndex;
+    mapping( address => uint ) employeeAddressIndex;
     
-    mapping( address =&gt; uint ) public exchangeRates;
+    mapping( address => uint ) public exchangeRates;
     address owner;
     uint creationDate;
 
@@ -81,7 +81,7 @@ contract workForce
 
     function indexTheWorkcrew() private
     {
-        for( uint x = 0; x &lt; workcrew.length; x++ )
+        for( uint x = 0; x < workcrew.length; x++ )
         {
             employeeIdIndex[ workcrew[x].employeeId ] = x;
             employeeNameIndex[ workcrew[x].employeeName ] = x;
@@ -92,7 +92,7 @@ contract workForce
     function incompletePercent(uint[3] _distribution) internal returns (bool)
     {
         uint sum;
-        for( uint x = 0; x &lt; 3; x++ ){ sum += _distribution[x]; }
+        for( uint x = 0; x < 3; x++ ){ sum += _distribution[x]; }
         if( sum != 100 ){ return true; }
         else{ return false; }
     }
@@ -170,7 +170,7 @@ contract workForce
     function calculatePayrollBurnrate() constant returns (uint)
     {
         uint monthlyPayout;
-        for( uint x = 0; x &lt; workcrew.length; x++ )
+        for( uint x = 0; x < workcrew.length; x++ )
         {
             monthlyPayout += workcrew[x].yearlySalaryUSD / 12;
         }
@@ -196,7 +196,7 @@ contract workForce
         uint x = employeeAddressIndex[msg.sender];
 
         /* change from 1 hours to 24 weeks */
-        if( now &lt; workcrew[x].lastTokenConfigDay + 1 hours ){revert;}
+        if( now < workcrew[x].lastTokenConfigDay + 1 hours ){revert;}
         workcrew[x].lastTokenConfigDay = now;
         workcrew[x].usdEthAntTokenDistribution[0] = _usdTokens;
         workcrew[x].usdEthAntTokenDistribution[1] = _ethTokens;
@@ -209,7 +209,7 @@ contract workForce
         uint x = employeeIdIndex[_employeeId];
 
         /* Change to 4 weeks for monthly pay period */
-        if( now &lt; workcrew[x].lastPayday + 15 minutes ){ revert; }
+        if( now < workcrew[x].lastPayday + 15 minutes ){ revert; }
         if( msg.sender != workcrew[x].employeeAddress ){ revert; }
         workcrew[x].lastPayday = now;
 

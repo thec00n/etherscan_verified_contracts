@@ -10,8 +10,8 @@ contract DealerRights {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -26,8 +26,8 @@ contract DealerRights {
     function DealerRights() public {
         totalSupply = 21000000 ether;                        // Update total supply
         balanceOf[msg.sender] = totalSupply;              // Give the creator all initial tokens
-        name = &quot;Dealer Rights&quot;;                                   // Set the name for display purposes
-        symbol = &quot;DRS&quot;;                               // Set the symbol for display purposes
+        name = "Dealer Rights";                                   // Set the name for display purposes
+        symbol = "DRS";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
     }
 
@@ -36,8 +36,8 @@ contract DealerRights {
      */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         uint previousBalances = balanceOf[_from] + balanceOf[_to];  //Save this for an assertion in the future
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
@@ -67,7 +67,7 @@ contract DealerRights {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -98,10 +98,10 @@ contract DealerRights {
      */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
        if (approve(_spender, _value)) {
-           //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+           //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
            //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
            //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-           require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+           require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
            return true;
        }
     }

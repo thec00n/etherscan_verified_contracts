@@ -8,13 +8,13 @@ pragma solidity ^0.4.24;
  * See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  * for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  * to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -91,7 +91,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -112,7 +112,7 @@ contract RBAC {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -125,7 +125,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -160,7 +160,7 @@ library Roles {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -222,10 +222,10 @@ contract Ownable {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * This simplifies the implementation of &quot;user permissions&quot;.
+ * This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable, RBAC {
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
    * @dev Throws if operator is not whitelisted.
@@ -269,7 +269,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
     }
   }
@@ -278,7 +278,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param _operator address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
     onlyOwner
@@ -291,13 +291,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param _operators addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
     }
   }
@@ -396,7 +396,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2755424a44486715">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2755424a44486715">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be sent to this contract by:
@@ -433,7 +433,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7002151d131f3042">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7002151d131f3042">[email protected]</a>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -457,7 +457,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1163747c727e5123">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1163747c727e5123">[email protected]</a>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -466,53 +466,53 @@ contract NoOwner is HasNoEther, HasNoTokens, HasNoContracts {
 
 /**
  * @title InAndOut
- * @dev InAndOut est un contract simulant le processus de vente d&#39;un bien immobilier.
- * Le propri&#233;taire du contrat (eg le notaire du vendeur) est charg&#233; de signifier l&#39;avancement du processus de vente
- * ainsi que de whitelister les diff&#233;rents intervenants qui pourront ancrer les documents n&#233;cessaires &#224; la vente.
- * Chacun peut librement suivre l&#39;avancement du processus.
+ * @dev InAndOut est un contract simulant le processus de vente d'un bien immobilier.
+ * Le propriétaire du contrat (eg le notaire du vendeur) est chargé de signifier l'avancement du processus de vente
+ * ainsi que de whitelister les différents intervenants qui pourront ancrer les documents nécessaires à la vente.
+ * Chacun peut librement suivre l'avancement du processus.
  */
 contract InAndOut is Whitelist, NoOwner {
 
     /**
-     * Le propri&#233;taire du contrat trace le processus de vente en incr&#233;mentant la variable `processStep` de 0 jusqu&#39;&#224; 6 selon la table suivante
+     * Le propriétaire du contrat trace le processus de vente en incrémentant la variable `processStep` de 0 jusqu'à 6 selon la table suivante
      * Step 0: Initialisation
-     * Step 1: Remise d&#39;offres
+     * Step 1: Remise d'offres
      * Step 2: Due diligence
-     * Step 3: N&#233;gociation
-     * Step 4: P&#233;riode sous promesse
+     * Step 3: Négociation
+     * Step 4: Période sous promesse
      * Step 5: Vente du bien
-     * Step 6: Transaction termin&#233;e
+     * Step 6: Transaction terminée
      */
     uint8 public processStep;
 
-    // Mapping utilis&#233; pour ancrer l&#39;empreinte de documents lors du processus de vente
-    mapping(bytes32 =&gt; bool) public anchors;
+    // Mapping utilisé pour ancrer l'empreinte de documents lors du processus de vente
+    mapping(bytes32 => bool) public anchors;
 
-    // &#201;v&#232;nement &#233;mis lors de l&#39;ancrage de documents
+    // Évènement émis lors de l'ancrage de documents
     event NewAnchor(bytes32 merkleRoot);
 
     /**
-     * @dev Fonction appel&#233;s par le propri&#233;taire du contrat pour passer &#224; l&#39;&#233;tape suivante du processus de vente
+     * @dev Fonction appelés par le propriétaire du contrat pour passer à l'étape suivante du processus de vente
      */
     function goToNextStep() onlyOwner public {
-        require(processStep &lt; 6);
+        require(processStep < 6);
         processStep++;
     }
 
     /**
-     * @dev V&#233;rifier si la vente est valid&#233;e
-     * @return Vrai si et seulement si la vente est valid&#233;e
+     * @dev Vérifier si la vente est validée
+     * @return Vrai si et seulement si la vente est validée
      */
     function isClosedAndValid() public view returns (bool) {
         return processStep == 6;
     }
 
     /**
-     * @dev Sauvegarder un document ou un ensemble de documents identifi&#233;(s) par le hash de la racine de l&#39;arbre de Merkle associ&#233;
-     * @param _merkleRoot bytes32 Empreinte &#224; ancrer
+     * @dev Sauvegarder un document ou un ensemble de documents identifié(s) par le hash de la racine de l'arbre de Merkle associé
+     * @param _merkleRoot bytes32 Empreinte à ancrer
      */
     function saveNewAnchor(bytes32 _merkleRoot) onlyIfWhitelisted(msg.sender) public {
-        require(processStep &lt; 6);
+        require(processStep < 6);
         anchors[_merkleRoot] = true;
         emit NewAnchor(_merkleRoot);
     }

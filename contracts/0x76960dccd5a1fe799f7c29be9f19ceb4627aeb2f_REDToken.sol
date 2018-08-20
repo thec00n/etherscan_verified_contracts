@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,14 +106,14 @@ contract REDToken is ERC20, Ownable {
 
 /*----------------- Token Information -----------------*/
 
-    string public constant name = &quot;Red Community Token&quot;;
-    string public constant symbol = &quot;RED&quot;;
+    string public constant name = "Red Community Token";
+    string public constant symbol = "RED";
 
     uint8 public decimals = 18;                            // (ERC20 API) Decimal precision, factor is 1e18
 
-    mapping (address =&gt; uint256) angels;                   // Angels accounts table (during locking period only)
-    mapping (address =&gt; uint256) accounts;                 // User&#39;s accounts table
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; // User&#39;s allowances table
+    mapping (address => uint256) angels;                   // Angels accounts table (during locking period only)
+    mapping (address => uint256) accounts;                 // User's accounts table
+    mapping (address => mapping (address => uint256)) allowed; // User's allowances table
 
 /*----------------- ICO Information -----------------*/
 
@@ -122,13 +122,13 @@ contract REDToken is ERC20, Ownable {
     uint256 public publicSupply;                           // Open round supply
     uint256 public foundationSupply;                       // Red Foundation/Community supply
     uint256 public redTeamSupply;                          // Red team supply
-    uint256 public marketingSupply;                        // Marketing &amp; strategic supply
+    uint256 public marketingSupply;                        // Marketing & strategic supply
 
     uint256 public angelAmountRemaining;                   // Amount of private angels tokens remaining at a given time
     uint256 public icoStartsAt;                            // Crowdsale ending timestamp
     uint256 public icoEndsAt;                              // Crowdsale ending timestamp
-    uint256 public redTeamLockingPeriod;                   // Locking period for Red team&#39;s supply
-    uint256 public angelLockingPeriod;                     // Locking period for Angel&#39;s supply
+    uint256 public redTeamLockingPeriod;                   // Locking period for Red team's supply
+    uint256 public angelLockingPeriod;                     // Locking period for Angel's supply
 
     address public crowdfundAddress;                       // Crowdfunding contract address
     address public redTeamAddress;                         // Red team address
@@ -138,7 +138,7 @@ contract REDToken is ERC20, Ownable {
     bool public unlock20Done = false;                      // Allows the 20% unlocking for angels only once
 
     enum icoStages {
-        Ready,                                             // Initial state on contract&#39;s creation
+        Ready,                                             // Initial state on contract's creation
         EarlyBirds,                                        // Early birds state
         PublicSale,                                        // Public crowdsale state
         Done                                               // Ending state after ICO
@@ -158,32 +158,32 @@ contract REDToken is ERC20, Ownable {
     }
 
     modifier nonZeroAmount(uint _amount) {                 // Ensures a non-zero amount
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier nonZeroValue() {                              // Ensures a non-zero value is passed
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
     modifier onlyDuringCrowdfund(){                   // Ensures actions can only happen after crowdfund ends
-        require((now &gt;= icoStartsAt) &amp;&amp; (now &lt; icoEndsAt));
+        require((now >= icoStartsAt) && (now < icoEndsAt));
         _;
     }
 
     modifier notBeforeCrowdfundEnds(){                     // Ensures actions can only happen after crowdfund ends
-        require(now &gt;= icoEndsAt);
+        require(now >= icoEndsAt);
         _;
     }
 
     modifier checkRedTeamLockingPeriod() {                 // Ensures locking period is over
-        require(now &gt;= redTeamLockingPeriod);
+        require(now >= redTeamLockingPeriod);
         _;
     }
 
     modifier checkAngelsLockingPeriod() {                  // Ensures locking period is over
-        require(now &gt;= angelLockingPeriod);
+        require(now >= angelLockingPeriod);
         _;
     }
 
@@ -198,7 +198,7 @@ contract REDToken is ERC20, Ownable {
     // Transfers amount to address
     // -------------------------------------------------
     function transfer(address _to, uint256 _amount) public notBeforeCrowdfundEnds returns (bool success) {
-        require(accounts[msg.sender] &gt;= _amount);         // check amount of balance can be tranfered
+        require(accounts[msg.sender] >= _amount);         // check amount of balance can be tranfered
         addToBalance(_to, _amount);
         decrementBalance(msg.sender, _amount);
         Transfer(msg.sender, _to, _amount);
@@ -209,7 +209,7 @@ contract REDToken is ERC20, Ownable {
     // Transfers from one address to another (need allowance to be called first)
     // -------------------------------------------------
     function transferFrom(address _from, address _to, uint256 _amount) public notBeforeCrowdfundEnds returns (bool success) {
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
         decrementBalance(_from, _amount);
         addToBalance(_to, _amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -228,7 +228,7 @@ contract REDToken is ERC20, Ownable {
     }
 
     // -------------------------------------------------
-    // Gets an address&#39;s RED allowance
+    // Gets an address's RED allowance
     // -------------------------------------------------
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
@@ -245,7 +245,7 @@ contract REDToken is ERC20, Ownable {
 /*----------------- Token API -----------------*/
 
     // -------------------------------------------------
-    // Contract&#39;s constructor
+    // Contract's constructor
     // -------------------------------------------------
     function REDToken() public {
         totalSupply         = 200000000 * 1e18;             // 100% - 200 million total RED with 18 decimals
@@ -301,7 +301,7 @@ contract REDToken is ERC20, Ownable {
     // Function for the Crowdfund to transfer tokens
     // -------------------------------------------------
     function transferFromCrowdfund(address _to, uint256 _amount) external onlyCrowdfund nonZeroAmount(_amount) nonZeroAddress(_to) returns (bool success) {
-        require(balanceOf(crowdfundAddress) &gt;= _amount);
+        require(balanceOf(crowdfundAddress) >= _amount);
         decrementBalance(crowdfundAddress, _amount);
         addToBalance(_to, _amount);
         Transfer(0x0, _to, _amount);
@@ -312,7 +312,7 @@ contract REDToken is ERC20, Ownable {
     // Releases Red team supply after locking period is passed
     // -------------------------------------------------
     function releaseRedTeamTokens() external checkRedTeamLockingPeriod onlyOwner returns(bool success) {
-        require(redTeamSupply &gt; 0);
+        require(redTeamSupply > 0);
         addToBalance(redTeamAddress, redTeamSupply);
         Transfer(0x0, redTeamAddress, redTeamSupply);
         redTeamSupply = 0;
@@ -320,10 +320,10 @@ contract REDToken is ERC20, Ownable {
     }
 
     // -------------------------------------------------
-    // Releases Marketing &amp; strategic supply
+    // Releases Marketing & strategic supply
     // -------------------------------------------------
     function releaseMarketingTokens() external onlyOwner returns(bool success) {
-        require(marketingSupply &gt; 0);
+        require(marketingSupply > 0);
         addToBalance(marketingAddress, marketingSupply);
         Transfer(0x0, marketingAddress, marketingSupply);
         marketingSupply = 0;
@@ -348,7 +348,7 @@ contract REDToken is ERC20, Ownable {
     function finalizeCrowdfund() external onlyCrowdfund {
         require(stage == icoStages.PublicSale);
         uint256 amount = balanceOf(crowdfundAddress);
-        if (amount &gt; 0) {
+        if (amount > 0) {
             accounts[crowdfundAddress] = 0;
             addToBalance(foundationAddress, amount);
             Transfer(crowdfundAddress, foundationAddress, amount);
@@ -365,7 +365,7 @@ contract REDToken is ERC20, Ownable {
     }
 
     // -------------------------------------------------
-    // Changes Marketing&amp;Strategic wallet
+    // Changes Marketing&Strategic wallet
     // -------------------------------------------------
     function changeMarketingAddress(address _wallet) external onlyOwner {
         marketingAddress = _wallet;
@@ -378,7 +378,7 @@ contract REDToken is ERC20, Ownable {
         require(unlock20Done == false);
         uint256 amount;
         address holder;
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             holder = _batchOfAddresses[i];
             amount = angels[holder].mul(20).div(100);
             angels[holder] = angels[holder].sub(amount);
@@ -394,7 +394,7 @@ contract REDToken is ERC20, Ownable {
     function fullUnlockAngelsAccounts(address[] _batchOfAddresses) external onlyOwner checkAngelsLockingPeriod returns (bool success) {
         uint256 amount;
         address holder;
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             holder = _batchOfAddresses[i];
             amount = angels[holder];
             angels[holder] = 0;
@@ -408,7 +408,7 @@ contract REDToken is ERC20, Ownable {
     // the amount of RED is in Wei
     // -------------------------------------------------
     function deliverAngelsREDAccounts(address[] _batchOfAddresses, uint[] _amountOfRED) external onlyOwner onlyDuringCrowdfund returns (bool success) {
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             deliverAngelsREDBalance(_batchOfAddresses[i], _amountOfRED[i]);
         }
         return true;
@@ -419,7 +419,7 @@ contract REDToken is ERC20, Ownable {
     // the contributions will be aggregated
     // -------------------------------------------------
     function deliverAngelsREDBalance(address _accountHolder, uint _amountOfBoughtRED) internal onlyOwner {
-        require(angelAmountRemaining &gt; 0);
+        require(angelAmountRemaining > 0);
         angels[_accountHolder] = angels[_accountHolder].add(_amountOfBoughtRED);
         Transfer(0x0, _accountHolder, _amountOfBoughtRED);
         angelAmountRemaining = angelAmountRemaining.sub(_amountOfBoughtRED);

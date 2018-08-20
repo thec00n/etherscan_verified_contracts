@@ -22,7 +22,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -96,9 +96,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -115,7 +115,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -144,7 +144,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -162,7 +162,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -216,7 +216,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -234,8 +234,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -249,7 +249,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -318,7 +318,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -412,7 +412,7 @@ contract MineableToken is MintableToken {
     int256 onBlockReward;
   }
 
-  mapping( address =&gt; Commitment ) miners;
+  mapping( address => Commitment ) miners;
 
   /**
   * @dev commit _value for minning
@@ -423,14 +423,14 @@ contract MineableToken is MintableToken {
   * @return the commit value: _value OR prevCommit + reward + _value
   */
   function commit(uint256 _value) public returns (uint256 commitmentValue) {
-    require(0 &lt; _value);
-    require(_value &lt;= balances[msg.sender]);
+    require(0 < _value);
+    require(_value <= balances[msg.sender]);
     
     commitmentValue = _value;
     uint256 prevCommit = miners[msg.sender].value;
     //In case user already commited, withdraw and recommit 
     // new commitment value: prevCommit + reward + _value
-    if (0 &lt; prevCommit) {
+    if (0 < prevCommit) {
       // withdraw Will revert if reward is negative
       uint256 prevReward;
       (prevReward, prevCommit) = withdraw();
@@ -458,12 +458,12 @@ contract MineableToken is MintableToken {
   /**
   * @dev withdraw reward
   * @return {
-    &quot;uint256 reward&quot;: the new supply
-    &quot;uint256 commitmentValue&quot;: the commitment to be returned
+    "uint256 reward": the new supply
+    "uint256 commitmentValue": the commitment to be returned
     }
   */
   function withdraw() public returns (uint256 reward, uint256 commitmentValue) {
-    require(miners[msg.sender].value &gt; 0); 
+    require(miners[msg.sender].value > 0); 
 
     //will revert if reward is negative:
     reward = getReward(msg.sender);
@@ -502,7 +502,7 @@ contract MineableToken is MintableToken {
 
     int256 averageBlockReward = signedAverage(commitment.onBlockReward, blockReward_);
     
-    require(0 &lt;= averageBlockReward);
+    require(0 <= averageBlockReward);
     
     uint256 effectiveBlockReward = uint256(averageBlockReward);
     
@@ -532,10 +532,10 @@ contract MineableToken is MintableToken {
   function signedAverage(int256 a, int256 b) public pure returns (int256) {
     int256 ans = a + b;
 
-    if (a &gt; 0 &amp;&amp; b &gt; 0 &amp;&amp; ans &lt;= 0) {
+    if (a > 0 && b > 0 && ans <= 0) {
       require(false);
     }
-    if (a &lt; 0 &amp;&amp; b &lt; 0 &amp;&amp; ans &gt;= 0) {
+    if (a < 0 && b < 0 && ans >= 0) {
       require(false);
     }
 
@@ -555,10 +555,10 @@ contract MineableToken is MintableToken {
   * @dev Gets the all fields for the commitment of the specified address.
   * @param _miner The address to query the the commitment Of
   * @return {
-    &quot;uint256 value&quot;: the amount commited.
-    &quot;uint256 onBlockNumber&quot;: block number of commitment.
-    &quot;uint256 atStake&quot;: stake when commited.
-    &quot;int256 onBlockReward&quot;: block reward when commited.
+    "uint256 value": the amount commited.
+    "uint256 onBlockNumber": block number of commitment.
+    "uint256 atStake": stake when commited.
+    "int256 onBlockReward": block reward when commited.
     }
   */
   function getCommitment(address _miner) public view 
@@ -626,8 +626,8 @@ contract MCoinDistribution is Ownable {
   uint256 public startTimestamp;
   uint256 public windowLength;         // in seconds
 
-  mapping (uint256 =&gt; uint256) public totals;
-  mapping (address =&gt; mapping (uint256 =&gt; uint256)) public commitment;
+  mapping (uint256 => uint256) public totals;
+  mapping (address => mapping (uint256 => uint256)) public commitment;
   
   constructor(
     uint256 _firstPeriodWindows,
@@ -639,12 +639,12 @@ contract MCoinDistribution is Ownable {
     uint256 _windowLength
   ) public 
   {
-    require(0 &lt; _firstPeriodWindows);
-    require(0 &lt; _firstPeriodSupply);
-    require(0 &lt; _secondPeriodWindows);
-    require(0 &lt; _secondPeriodSupply);
-    require(0 &lt; _startTimestamp);
-    require(0 &lt; _windowLength);
+    require(0 < _firstPeriodWindows);
+    require(0 < _firstPeriodSupply);
+    require(0 < _secondPeriodWindows);
+    require(0 < _secondPeriodSupply);
+    require(0 < _startTimestamp);
+    require(0 < _windowLength);
     require(_foundationWallet != address(0));
     
     firstPeriodWindows = _firstPeriodWindows;
@@ -686,9 +686,9 @@ contract MCoinDistribution is Ownable {
   * @return the number of tokens to distribute in the given window
   */
   function allocationFor(uint256 window) view public returns (uint256) {
-    require(window &lt; totalWindows);
+    require(window < totalWindows);
     
-    return (window &lt; firstPeriodWindows) 
+    return (window < firstPeriodWindows) 
       ? firstPeriodSupply.div(firstPeriodWindows) 
       : secondPeriodSupply.div(secondPeriodWindows);
   }
@@ -700,7 +700,7 @@ contract MCoinDistribution is Ownable {
   * zero will be returned before distribution start and during the first window.
   */
   function windowOf(uint256 timestamp) view public returns (uint256) {
-    return (startTimestamp &lt; timestamp) 
+    return (startTimestamp < timestamp) 
       ? timestamp.sub(startTimestamp).div(windowLength) 
       : 0;
   }
@@ -709,12 +709,12 @@ contract MCoinDistribution is Ownable {
   * @dev Return information about the selected window
   * @param window number: [0-totalWindows)
   * @return {
-    &quot;uint256 start&quot;: window start timestamp
-    &quot;uint256 end&quot;: window end timestamp
-    &quot;uint256 remainingTime&quot;: remaining time (sec), zero if ended
-    &quot;uint256 allocation&quot;: number of tokens to be distributed
-    &quot;uint256 totalEth&quot;: total eth commited this window
-    &quot;uint256 number&quot;: # of requested window
+    "uint256 start": window start timestamp
+    "uint256 end": window end timestamp
+    "uint256 remainingTime": remaining time (sec), zero if ended
+    "uint256 allocation": number of tokens to be distributed
+    "uint256 totalEth": total eth commited this window
+    "uint256 number": # of requested window
     }
   */
   function detailsOf(uint256 window) view public 
@@ -727,10 +727,10 @@ contract MCoinDistribution is Ownable {
       uint256 number         // # of requested window
     ) 
     {
-    require(window &lt; totalWindows);
+    require(window < totalWindows);
     start = startTimestamp.add(windowLength.mul(window));
     end = start.add(windowLength);
-    remainingTime = (block.timestamp &lt; end) // solium-disable-line
+    remainingTime = (block.timestamp < end) // solium-disable-line
       ? end.sub(block.timestamp)            // solium-disable-line
       : 0; 
 
@@ -742,12 +742,12 @@ contract MCoinDistribution is Ownable {
   /**
   * @dev Return information for the current window
   * @return {
-    &quot;uint256 start&quot;: window start timestamp
-    &quot;uint256 end&quot;: window end timestamp
-    &quot;uint256 remainingTime&quot;: remaining time (sec), zero if ended
-    &quot;uint256 allocation&quot;: number of tokens to be distributed
-    &quot;uint256 totalEth&quot;: total eth commited this window
-    &quot;uint256 number&quot;: # of requested window
+    "uint256 start": window start timestamp
+    "uint256 end": window end timestamp
+    "uint256 remainingTime": remaining time (sec), zero if ended
+    "uint256 allocation": number of tokens to be distributed
+    "uint256 totalEth": total eth commited this window
+    "uint256 number": # of requested window
     }
   */
   function detailsOfWindow() view public
@@ -780,14 +780,14 @@ contract MCoinDistribution is Ownable {
   * @param window to commit [0-totalWindows)
   */
   function commitOn(uint256 window) public payable {
-    // Distribution didn&#39;t ended
-    require(currentWindow() &lt; totalWindows);
+    // Distribution didn't ended
+    require(currentWindow() < totalWindows);
     // Commit only for present or future windows
-    require(currentWindow() &lt;= window);
-    // Don&#39;t commit after distribution is finished
-    require(window &lt; totalWindows);
+    require(currentWindow() <= window);
+    // Don't commit after distribution is finished
+    require(window < totalWindows);
     // Minimum commitment
-    require(0.01 ether &lt;= msg.value);
+    require(0.01 ether <= msg.value);
 
     // Add commitment for user on given window
     commitment[msg.sender][window] = commitment[msg.sender][window].add(msg.value);
@@ -811,8 +811,8 @@ contract MCoinDistribution is Ownable {
   */
   function withdraw(uint256 window) public returns (uint256 reward) {
     // Requested window already been closed
-    require(window &lt; currentWindow());
-    // The sender hasn&#39;t made a commitment for requested window
+    require(window < currentWindow());
+    // The sender hasn't made a commitment for requested window
     if (commitment[msg.sender][window] == 0) {
       return 0;
     }
@@ -838,7 +838,7 @@ contract MCoinDistribution is Ownable {
   * @dev get the reward from all closed windows
   */
   function withdrawAll() public {
-    for (uint256 i = 0; i &lt; currentWindow(); i++) {
+    for (uint256 i = 0; i < currentWindow(); i++) {
       withdraw(i);
     }
   }
@@ -852,8 +852,8 @@ contract MCoinDistribution is Ownable {
   function getAllRewards() public view returns (uint256[]) {
     uint256[] memory rewards = new uint256[](totalWindows);
     // lastClosedWindow = min(currentWindow(),totalWindows);
-    uint256 lastWindow = currentWindow() &lt; totalWindows ? currentWindow() : totalWindows;
-    for (uint256 i = 0; i &lt; lastWindow; i++) {
+    uint256 lastWindow = currentWindow() < totalWindows ? currentWindow() : totalWindows;
+    for (uint256 i = 0; i < lastWindow; i++) {
       rewards[i] = withdraw(i);
     }
     return rewards;
@@ -866,7 +866,7 @@ contract MCoinDistribution is Ownable {
   */
   function getCommitmentsOf(address from) public view returns (uint256[]) {
     uint256[] memory commitments = new uint256[](totalWindows);
-    for (uint256 i = 0; i &lt; totalWindows; i++) {
+    for (uint256 i = 0; i < totalWindows; i++) {
       commitments[i] = commitment[from][i];
     }
     return commitments;
@@ -879,7 +879,7 @@ contract MCoinDistribution is Ownable {
   */
   function getTotals() public view returns (uint256[]) {
     uint256[] memory ethTotals = new uint256[](totalWindows);
-    for (uint256 i = 0; i &lt; totalWindows; i++) {
+    for (uint256 i = 0; i < totalWindows; i++) {
       ethTotals[i] = totals[i];
     }
     return ethTotals;
@@ -891,7 +891,7 @@ contract MCoinDistribution is Ownable {
   */
   function moveFunds() public onlyOwner returns (uint256 value) {
     value = address(this).balance;
-    require(0 &lt; value);
+    require(0 < value);
 
     foundationWallet.transfer(value);
     

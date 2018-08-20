@@ -5,13 +5,13 @@ pragma solidity ^0.4.18;
 contract InsightsNetwork1 {
   address public owner; // Creator
   address public successor; // May deactivate contract
-  mapping (address =&gt; uint) public balances;    // Who has what
-  mapping (address =&gt; uint) public unlockTimes; // When balances unlock
+  mapping (address => uint) public balances;    // Who has what
+  mapping (address => uint) public unlockTimes; // When balances unlock
   bool public active;
   uint256 _totalSupply; // Sum of minted tokens
 
-  string public constant name = &quot;INS&quot;;
-  string public constant symbol = &quot;INS&quot;;
+  string public constant name = "INS";
+  string public constant symbol = "INS";
   uint8 public constant decimals = 0;
 
   function InsightsNetwork1() {
@@ -27,13 +27,13 @@ contract InsightsNetwork1 {
     _totalSupply += issueAmount;
     Mint(newTokenHolder, issueAmount);  // Trigger event
 
-    require(balances[newTokenHolder] &lt; (balances[newTokenHolder] + issueAmount));   // Overflow check
+    require(balances[newTokenHolder] < (balances[newTokenHolder] + issueAmount));   // Overflow check
     balances[newTokenHolder] += issueAmount;
     Transfer(address(0), newTokenHolder, issueAmount);  // Trigger event
 
     uint currentTime = block.timestamp; // seconds since the Unix epoch
     uint unlockTime = currentTime + 365*24*60*60; // one year out from the current time
-    assert(unlockTime &gt; currentTime); // check for overflow
+    assert(unlockTime > currentTime); // check for overflow
     unlockTimes[newTokenHolder] = unlockTime;
   }
 
@@ -78,7 +78,7 @@ contract InsightsNetwork1 {
 
   function deactivate() {
     require(active);
-    require(msg.sender == owner || (successor != address(0) &amp;&amp; msg.sender == successor));   // Called by creator or successor
+    require(msg.sender == owner || (successor != address(0) && msg.sender == successor));   // Called by creator or successor
     active = false;
   }
 }
@@ -88,7 +88,7 @@ contract InsightsNetwork1 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -150,9 +150,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -160,7 +160,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -169,7 +169,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -197,7 +197,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -215,7 +215,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -259,7 +259,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -270,8 +270,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -285,7 +285,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -334,7 +334,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -401,7 +401,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -412,7 +412,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -510,7 +510,7 @@ contract PausableToken is StandardToken, Pausable {
 
 // File: contracts/InsightsNetwork2Base.sol
 
-contract InsightsNetwork2Base is DetailedERC20(&quot;Insights Network&quot;, &quot;INSTAR&quot;, 18), PausableToken, CappedToken{
+contract InsightsNetwork2Base is DetailedERC20("Insights Network", "INSTAR", 18), PausableToken, CappedToken{
 
     uint256 constant ATTOTOKEN_FACTOR = 10**18;
 
@@ -518,9 +518,9 @@ contract InsightsNetwork2Base is DetailedERC20(&quot;Insights Network&quot;, &qu
     address public successor;
 
     uint constant MAX_PURCHASES = 64;
-    mapping (address =&gt; uint256[]) public lockedBalances;
-    mapping (address =&gt; uint256[]) public unlockTimes;
-    mapping (address =&gt; bool) public imported;
+    mapping (address => uint256[]) public lockedBalances;
+    mapping (address => uint256[]) public unlockTimes;
+    mapping (address => bool) public imported;
 
     event Import(address indexed account, uint256 amount, uint256 unlockTime);    
 
@@ -540,15 +540,15 @@ contract InsightsNetwork2Base is DetailedERC20(&quot;Insights Network&quot;, &qu
 
     function lockedBalanceOf(address account) public view returns (uint256 balance) {
         uint256 amount;
-        for (uint256 index = 0; index &lt; lockedBalances[account].length; index++)
-            if (unlockTimes[account][index] &gt; now)
+        for (uint256 index = 0; index < lockedBalances[account].length; index++)
+            if (unlockTimes[account][index] > now)
                 amount += lockedBalances[account][index];
         return amount;
     }
 
     function mintUnlockTime(address account, uint256 amount, uint256 unlockTime) public onlyOwner canMint returns (bool) {
-        require(unlockTime &gt; now);
-        require(lockedBalances[account].length &lt; MAX_PURCHASES);
+        require(unlockTime > now);
+        require(lockedBalances[account].length < MAX_PURCHASES);
         lockedBalances[account].push(amount);
         unlockTimes[account].push(unlockTime);
         return super.mint(account, amount);
@@ -565,19 +565,19 @@ contract InsightsNetwork2Base is DetailedERC20(&quot;Insights Network&quot;, &qu
     function importBalanceOf(address account) public onlyOwner canMint returns (bool);
 
     function importBalancesOf(address[] accounts) public onlyOwner canMint returns (bool) {
-        require(accounts.length &lt;= 1024);
-        for (uint index = 0; index &lt; accounts.length; index++)
+        require(accounts.length <= 1024);
+        for (uint index = 0; index < accounts.length; index++)
             require(importBalanceOf(accounts[index]));
         return true;
     }
 
     function transfer(address to, uint256 value) public returns (bool) {
-        require(value &lt;= balances[msg.sender] - lockedBalanceOf(msg.sender));
+        require(value <= balances[msg.sender] - lockedBalanceOf(msg.sender));
         return super.transfer(to, value);
     }
 
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(value &lt;= balances[from] - lockedBalanceOf(from));
+        require(value <= balances[from] - lockedBalanceOf(from));
         return super.transferFrom(from, to, value);
     }
 
@@ -598,7 +598,7 @@ contract InsightsNetwork2 is InsightsNetwork2Base {
     function importBalanceOf(address account) public onlyOwner canMint returns (bool) {
         require(!imported[account]);
         uint256 amount = InsightsNetwork1(predecessor).balances(account)*ATTOTOKEN_FACTOR;
-        require(amount &gt; 0);
+        require(amount > 0);
         uint256 unlockTime = InsightsNetwork1(predecessor).unlockTimes(account);
         imported[account] = true;
         Import(account, amount, unlockTime);
@@ -607,10 +607,10 @@ contract InsightsNetwork2 is InsightsNetwork2Base {
 
     function relock(address account, uint256 amount, uint256 oldUnlockTime, int256 lockPeriod) public onlyOwner canMint returns (bool) {
         // Relock tokens for given period, defaulting to 1 year
-        if (lockPeriod &lt; 0)
+        if (lockPeriod < 0)
             lockPeriod = 1 years;
-        for (uint index = 0; index &lt; lockedBalances[account].length; index++)
-            if (lockedBalances[account][index] == amount &amp;&amp; unlockTimes[account][index] == oldUnlockTime) {
+        for (uint index = 0; index < lockedBalances[account].length; index++)
+            if (lockedBalances[account][index] == amount && unlockTimes[account][index] == oldUnlockTime) {
                 unlockTimes[account][index] = now + uint256(lockPeriod);
                 return true;
             }
@@ -619,12 +619,12 @@ contract InsightsNetwork2 is InsightsNetwork2Base {
 
     function relockPart(address account, uint256 amount, uint256 unlockTime, uint256 partAmount, int256 partLockPeriod) public onlyOwner canMint returns (bool) {
         // Relock part of matching token balance for given period, defaulting to 1 year
-        require(partAmount &gt; 0);
-        require(partAmount &lt; amount);
-        if (partLockPeriod &lt; 0)
+        require(partAmount > 0);
+        require(partAmount < amount);
+        if (partLockPeriod < 0)
             partLockPeriod = 1 years;
-        for (uint index = 0; index &lt; lockedBalances[account].length; index++)
-            if (lockedBalances[account][index] == amount &amp;&amp; unlockTimes[account][index] == unlockTime) {
+        for (uint index = 0; index < lockedBalances[account].length; index++)
+            if (lockedBalances[account][index] == amount && unlockTimes[account][index] == unlockTime) {
                 lockedBalances[account][index] -= partAmount;
                 lockedBalances[account].push(partAmount);
                 unlockTimes[account].push(now + uint256(partLockPeriod));

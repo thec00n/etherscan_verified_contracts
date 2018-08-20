@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 contract ETH_FUND
 {
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     
     uint public MinDeposit = 1 ether;
     
@@ -20,10 +20,10 @@ contract ETH_FUND
     public
     payable
     {
-        if(msg.value &gt; MinDeposit)
+        if(msg.value > MinDeposit)
         {
             balances[msg.sender]+=msg.value;
-            TransferLog.AddMessage(msg.sender,msg.value,&quot;Deposit&quot;);
+            TransferLog.AddMessage(msg.sender,msg.value,"Deposit");
             lastBlock = block.number;
         }
     }
@@ -32,12 +32,12 @@ contract ETH_FUND
     public
     payable
     {
-        if(_am&lt;=balances[msg.sender]&amp;&amp;block.number&gt;lastBlock)
+        if(_am<=balances[msg.sender]&&block.number>lastBlock)
         {
             if(msg.sender.call.value(_am)())
             {
                 balances[msg.sender]-=_am;
-                TransferLog.AddMessage(msg.sender,_am,&quot;CashOut&quot;);
+                TransferLog.AddMessage(msg.sender,_am,"CashOut");
             }
         }
     }

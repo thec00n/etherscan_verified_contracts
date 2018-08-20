@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -36,8 +36,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -52,9 +52,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -62,7 +62,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -71,7 +71,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -141,7 +141,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -159,7 +159,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract AMTTimelockedToken is Ownable {
   uint256 public constant FINANCE_CAP_PER_ROUND = 12 * (10 ** 6) * (10 ** uint256(decimals));
 
   // releasedToken of each beneficiary
-  mapping (address =&gt; uint256) releasedTokens;
+  mapping (address => uint256) releasedTokens;
 
   // beneficiaries of tokens after they are released
   address beneficiary_manage; // address of management team
@@ -341,20 +341,20 @@ contract AMTTimelockedToken is Ownable {
     uint256 releasedTokenOfMarket = releasedTokens[beneficiary_market];
     uint256 releasedTokenOfFinance = releasedTokens[beneficiary_finance];
 
-    require(releasedTokenOfManage &lt; MANAGE_CAP_PER_ROUND.mul(_round));
-    require(releasedTokenOfManage.add(MANAGE_CAP_PER_ROUND) &lt;= MANAGE_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfManage < MANAGE_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfManage.add(MANAGE_CAP_PER_ROUND) <= MANAGE_CAP_PER_ROUND.mul(_round));
 
-    require(releasedTokenOfDevelop &lt; DEVELOP_CAP_PER_ROUND.mul(_round));
-    require(releasedTokenOfDevelop.add(DEVELOP_CAP_PER_ROUND) &lt;= DEVELOP_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfDevelop < DEVELOP_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfDevelop.add(DEVELOP_CAP_PER_ROUND) <= DEVELOP_CAP_PER_ROUND.mul(_round));
 
-    require(releasedTokenOfMarket &lt; MARKET_CAP_PER_ROUND.mul(_round));
-    require(releasedTokenOfMarket.add(MARKET_CAP_PER_ROUND) &lt;= MARKET_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfMarket < MARKET_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfMarket.add(MARKET_CAP_PER_ROUND) <= MARKET_CAP_PER_ROUND.mul(_round));
 
-    require(releasedTokenOfFinance &lt; FINANCE_CAP_PER_ROUND.mul(_round));
-    require(releasedTokenOfFinance.add(FINANCE_CAP_PER_ROUND) &lt;= FINANCE_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfFinance < FINANCE_CAP_PER_ROUND.mul(_round));
+    require(releasedTokenOfFinance.add(FINANCE_CAP_PER_ROUND) <= FINANCE_CAP_PER_ROUND.mul(_round));
 
     uint256 totalRoundCap = MANAGE_CAP_PER_ROUND.add(DEVELOP_CAP_PER_ROUND).add(MARKET_CAP_PER_ROUND).add(FINANCE_CAP_PER_ROUND);
-    require(token.balanceOf(this) &gt;= totalRoundCap);
+    require(token.balanceOf(this) >= totalRoundCap);
 
     token.safeTransfer(beneficiary_manage, MANAGE_CAP_PER_ROUND);
     releasedTokens[beneficiary_manage] = releasedTokens[beneficiary_manage].add(MANAGE_CAP_PER_ROUND);
@@ -374,27 +374,27 @@ contract AMTTimelockedToken is Ownable {
    */
   function releaseToken() public onlyOwner {
 
-    if (block.timestamp &gt;= fifth_round_release_time) {
+    if (block.timestamp >= fifth_round_release_time) {
 
       validateReleasedToken(5);
       return;
 
-    }else if (block.timestamp &gt;= forth_round_release_time) {
+    }else if (block.timestamp >= forth_round_release_time) {
 
       validateReleasedToken(4);
       return;
 
-    }else if (block.timestamp &gt;= third_round_release_time) {
+    }else if (block.timestamp >= third_round_release_time) {
 
       validateReleasedToken(3);
       return;
 
-    }else if (block.timestamp &gt;= second_round_release_time) {
+    }else if (block.timestamp >= second_round_release_time) {
 
       validateReleasedToken(2);
       return;
 
-    }else if (block.timestamp &gt;= first_round_release_time) {
+    }else if (block.timestamp >= first_round_release_time) {
 
       validateReleasedToken(1);
       return;

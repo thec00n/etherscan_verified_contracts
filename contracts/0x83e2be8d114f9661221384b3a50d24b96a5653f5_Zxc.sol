@@ -168,8 +168,8 @@ library SafeMath {
     returns (uint256)
   {
     uint256 c = _a / _b;
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -186,7 +186,7 @@ library SafeMath {
     pure
     returns (uint256)
   {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -204,7 +204,7 @@ library SafeMath {
     returns (uint256)
   {
     uint256 c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 
@@ -244,12 +244,12 @@ contract Token is
   /**
    * Balance information map.
    */
-  mapping (address =&gt; uint256) internal balances;
+  mapping (address => uint256) internal balances;
 
   /**
    * Token allowance mapping.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Trigger when tokens are transferred, including zero value transfers.
@@ -340,7 +340,7 @@ contract Token is
     public
     returns (bool _success)
   {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -401,8 +401,8 @@ contract Token is
     public
     returns (bool _success)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -491,7 +491,7 @@ contract Claimable is Ownable {
 
   /**
    * @dev Allows the current owner to give new owner ability to claim the ownership of the contract.
-   * This differs from the Owner&#39;s function in that it allows setting pedingOwner address to 0x0,
+   * This differs from the Owner's function in that it allows setting pedingOwner address to 0x0,
    * which effectively cancels an active claim.
    * @param _newOwner The address which can claim ownership of the contract.
    */
@@ -581,8 +581,8 @@ contract Zxc is
   constructor()
     public
   {
-    tokenName = &quot;0xcert Protocol Token&quot;;
-    tokenSymbol = &quot;ZXC&quot;;
+    tokenName = "0xcert Protocol Token";
+    tokenSymbol = "ZXC";
     tokenDecimals = 18;
     tokenTotalSupply = 500000000000000000000000000;
     transferEnabled = false;
@@ -649,7 +649,7 @@ contract Zxc is
     onlyOwner()
     external
   {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[owner] = balances[owner].sub(_value);
     tokenTotalSupply = tokenTotalSupply.sub(_value);

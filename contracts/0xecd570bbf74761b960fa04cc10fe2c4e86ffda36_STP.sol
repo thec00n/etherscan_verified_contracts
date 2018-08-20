@@ -30,20 +30,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract Ownable {
 
 contract Freezable is Ownable {
 
-    mapping (address =&gt; bool) public frozenAccount;      
+    mapping (address => bool) public frozenAccount;      
     
     modifier onlyUnfrozen(address _target) {
         assert(!isFrozen(_target));
@@ -94,9 +94,9 @@ contract Token is ERC20Token, Freezable {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances; 
-    mapping (address =&gt; string) public data;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances; 
+    mapping (address => string) public data;
     uint    public totalSupply;
     uint    public timeTransferbleUntil = 1538262000;                        // Transferable until 29/09/2018 23:00 pm UTC
     bool    public stopped = false;
@@ -112,7 +112,7 @@ contract Token is ERC20Token, Freezable {
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param _to Address of token receiver
     /// @param _value Number of tokens to transfer
     /// @return Returns success of function call
@@ -123,7 +123,7 @@ contract Token is ERC20Token, Freezable {
         returns (bool)        
     {                         
         assert(_to != 0x0);                                                // Prevent transfer to 0x0 address. Use burn() instead
-        assert(balances[msg.sender] &gt;= _value);                            // Check if the sender has enough
+        assert(balances[msg.sender] >= _value);                            // Check if the sender has enough
         assert(!isFrozen(_to));                                            // Do not allow transfers to frozen accounts
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value); // Subtract from the sender
         balances[_to] = SafeMath.add(balances[_to], _value);               // Add the same to the recipient
@@ -143,8 +143,8 @@ contract Token is ERC20Token, Freezable {
         returns (bool)
     {        
         assert(_to != 0x0);                                               // Prevent transfer to 0x0 address. Use burn() instead
-        assert(balances[_from] &gt;= _value);                                // Check if the sender has enough
-        assert(_value &lt;= allowances[_from][msg.sender]);                  // Check allowance
+        assert(balances[_from] >= _value);                                // Check if the sender has enough
+        assert(_value <= allowances[_from][msg.sender]);                  // Check allowance
         assert(!isFrozen(_to));                                           // Do not allow transfers to frozen accounts
         balances[_from] = SafeMath.sub(balances[_from], _value);          // Subtract from the sender
         balances[_to] = SafeMath.add(balances[_to], _value);              // Add the same to the recipient
@@ -196,8 +196,8 @@ contract Token is ERC20Token, Freezable {
         public 
         returns (bool success) 
     {
-        assert(_value &gt; 0);                                                // Amount must be greater than zero
-        assert(balances[msg.sender] &gt;= _value);                            // Check if the sender has enough
+        assert(_value > 0);                                                // Amount must be greater than zero
+        assert(balances[msg.sender] >= _value);                            // Check if the sender has enough
         uint previousTotal = totalSupply;                                  // Start integrity check
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value); // Subtract from the sender
         data[msg.sender] = _data;                                          // Additional data
@@ -211,7 +211,7 @@ contract Token is ERC20Token, Freezable {
     function stop() 
         public
     {
-        assert(now &gt; timeTransferbleUntil);
+        assert(now > timeTransferbleUntil);
         stopped = true;
         LogStop();
     }
@@ -235,13 +235,13 @@ contract Token is ERC20Token, Freezable {
 
 // Contract Owner 0xb42db275AdCCd23e2cB52CfFc2D4Fe984fbF53B2     
 contract STP is Token {
-    string  public name = &quot;STASHPAY&quot;;
-    string  public symbol = &quot;STP&quot;;
+    string  public name = "STASHPAY";
+    string  public symbol = "STP";
     uint8   public decimals = 8;
     uint8   public publicKeySize = 65;
     address public sale = 0xB155c16c13FC1eD2F015e24D6C7Ae8Cc38cea74E;
     address public adviserAndBounty = 0xf40bF198eD3bE9d3E1312d2717b964b377135728;    
-    mapping (address =&gt; string) public publicKeys;
+    mapping (address => string) public publicKeys;
     uint256 constant D160 = 0x0010000000000000000000000000000000000000000;    
 
     event RegisterKey(address indexed _from, string _publicKey);
@@ -302,8 +302,8 @@ contract STP is Token {
             Founders are provably frozen for duration of contract            
         */
         uint assignedTokens = balances[sale] + balances[adviserAndBounty];
-        for (uint i = 0; i &lt; owners.length; i++) {
-            address addr = address(owners[i] &amp; (D160 - 1));                    // get address
+        for (uint i = 0; i < owners.length; i++) {
+            address addr = address(owners[i] & (D160 - 1));                    // get address
             uint256 amount = owners[i] / D160;                                 // get amount
             balances[addr] = SafeMath.add(balances[addr], amount);             // update balance            
             assignedTokens = SafeMath.add(assignedTokens, amount);             // keep track of total assigned
@@ -320,8 +320,8 @@ contract STP is Token {
     public
     transferable
     { 
-        assert(balances[msg.sender] &gt; 0);
-        assert(bytes(publicKey).length &lt;= publicKeySize);
+        assert(balances[msg.sender] > 0);
+        assert(bytes(publicKey).length <= publicKeySize);
               
         publicKeys[msg.sender] = publicKey; 
         RegisterKey(msg.sender, publicKey);    
@@ -339,8 +339,8 @@ contract STP is Token {
     onlyUnfrozen(sale)
     onlyOwner 
     {
-      for (uint256 i = 0; i &lt; data.length; i++) {
-        address addr = address(data[i] &amp; (D160 - 1));
+      for (uint256 i = 0; i < data.length; i++) {
+        address addr = address(data[i] & (D160 - 1));
         uint256 amount = data[i] / D160;
         balances[sale] -= amount;                        
         balances[addr] += amount;                                       
@@ -352,8 +352,8 @@ contract STP is Token {
     public
     onlyOwner
     {
-        for (uint256 i = 0; i &lt; data.length; i++) {
-            address addr = address(data[i] &amp; (D160 - 1));
+        for (uint256 i = 0; i < data.length; i++) {
+            address addr = address(data[i] & (D160 - 1));
             uint256 amount = data[i] / D160;
             distributeAdviserBounty(addr, amount, freeze);
         }
@@ -364,7 +364,7 @@ contract STP is Token {
     onlyOwner 
     {   
         // can only freeze when no balance exists        
-        frozenAccount[addr] = freeze &amp;&amp; balances[addr] == 0;
+        frozenAccount[addr] = freeze && balances[addr] == 0;
 
         balances[addr] = SafeMath.add(balances[addr], amount);
         balances[adviserAndBounty] = SafeMath.sub(balances[adviserAndBounty], amount);

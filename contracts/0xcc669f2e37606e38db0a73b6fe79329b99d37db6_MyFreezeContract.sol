@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,7 +74,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -82,7 +82,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -222,7 +222,7 @@ contract MyFreezeContract is Ownable,FreezeAdmin{
     uint256 amount;//锁仓总额
     uint256 unFreezeCount;//已解锁次数 
   }
-  mapping (address =&gt; FreezeData) public freezeDatas;
+  mapping (address => FreezeData) public freezeDatas;
   
  
   struct UnFreezeRule{
@@ -263,11 +263,11 @@ contract MyFreezeContract is Ownable,FreezeAdmin{
   //锁仓
   function freeze(address _investor,uint256 _value) onlyFreezeAdmin public returns (bool) {
   
-    require(_investor != 0x0 &amp;&amp; !AddressUtils.isContract(_investor));
+    require(_investor != 0x0 && !AddressUtils.isContract(_investor));
 	
-    require(_value &gt; 0 );
+    require(_value > 0 );
 	
-    require(totalAllowedFreeze &gt;= totalFreezed.add(_value));//锁仓总额不能超过上限
+    require(totalAllowedFreeze >= totalFreezed.add(_value));//锁仓总额不能超过上限
 	
     FreezeData storage freezeData =  freezeDatas[_investor];
 	
@@ -289,19 +289,19 @@ contract MyFreezeContract is Ownable,FreezeAdmin{
   //已经到了解锁时间节点，按照指定的比例进行释放
   function unFreeze(address _investor) onlyFreezeAdmin public returns(bool){
       
-    require(freezeDatas[_investor].balance &gt; 0);
+    require(freezeDatas[_investor].balance > 0);
     
-    require(freezeDatas[_investor].unFreezeCount &lt; unFreezeRules.length);
+    require(freezeDatas[_investor].unFreezeCount < unFreezeRules.length);
     
     uint256 unfreezetime = unFreezeRules[freezeDatas[_investor].unFreezeCount].unfreezetime;
     
     uint256 percentage =  unFreezeRules[freezeDatas[_investor].unFreezeCount].percentage;
     
-    require(block.timestamp &gt;= unfreezetime);
+    require(block.timestamp >= unfreezetime);
     
     uint256  currentUnFreezeAmount = freezeDatas[_investor].amount.mul(percentage).div(100);
     
-    require(token.balanceOf(address(this)) &gt;= currentUnFreezeAmount);
+    require(token.balanceOf(address(this)) >= currentUnFreezeAmount);
     
     freezeDatas[_investor].balance = freezeDatas[_investor].balance.sub(currentUnFreezeAmount);
     

@@ -27,20 +27,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
 contract ERC223BasicToken is ERC223Basic{
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Standard function transfer similar to ERC20 transfer with no _data .
     // Added due to backwards compatibility reasons .
@@ -67,7 +67,7 @@ contract ERC223BasicToken is ERC223Basic{
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -82,10 +82,10 @@ contract ERC223BasicToken is ERC223Basic{
 
 contract GoldBank is ERC223BasicToken{
 	address admin;
-	string public name = &quot;DinarCoin&quot;;
-    string public symbol = &quot;DNC&quot;;
+	string public name = "DinarCoin";
+    string public symbol = "DNC";
     uint public decimals = 18;
-	mapping (address =&gt; bool) public mintable;
+	mapping (address => bool) public mintable;
 
 	event Minted(address indexed recipient, uint256 value);
 	event Burned(address indexed user, uint256 value);

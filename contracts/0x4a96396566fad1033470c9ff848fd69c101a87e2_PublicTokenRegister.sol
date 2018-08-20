@@ -1,5 +1,5 @@
 /// @title Public Token Register - Allows to register coins and get it from another contract.
-/// @author Global Group - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5433383b3635383d3a223127202438353731143339353d387a373b39">[email&#160;protected]</a>&gt;
+/// @author Global Group - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5433383b3635383d3a223127202438353731143339353d387a373b39">[email protected]</a>>
 pragma solidity ^0.4.24;
 
 contract IPublicTokenRegister {
@@ -38,8 +38,8 @@ contract Ownable {
 }
 
 contract PublicTokenRegister is IPublicTokenRegister, Ownable {
-	mapping(string =&gt; Coin) internal coin;
-	mapping(address =&gt; bool) internal registeredSecurity;
+	mapping(string => Coin) internal coin;
+	mapping(address => bool) internal registeredSecurity;
 	address[] internal registeredCoins;
 	
 	modifier onlySecurity {
@@ -79,7 +79,7 @@ contract PublicTokenRegister is IPublicTokenRegister, Ownable {
 	function removeCoin(string _name) public onlyOwner {
 		require(coin[_name].isReg == true);
 		coin[_name] = Coin({
-			symbol: &quot;&quot;,
+			symbol: "",
 			coinTokenContract: 0x0,
 			hexSymbol: 0x0,
 			isReg: false

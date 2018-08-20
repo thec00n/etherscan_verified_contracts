@@ -3,8 +3,8 @@ pragma solidity ^0.4.1;
 contract FipsNotary {
 
     address admin;
-    mapping(bytes20 =&gt; address) ledger;
-    mapping(address =&gt; bool) registrants;
+    mapping(bytes20 => address) ledger;
+    mapping(address => bool) registrants;
 
     event FipsData(bytes20 indexed fips, address indexed publisher, bytes data);
     event FipsRegistration(bytes20 indexed fips, address indexed owner);
@@ -42,7 +42,7 @@ contract FipsNotary {
     }
 
     function fipsPublishDataMulti(bytes20[] fips, bytes data) {
-        for (uint i = 0; i &lt; fips.length; i++) {
+        for (uint i = 0; i < fips.length; i++) {
             fipsPublishData(fips[i], data);
         }
     }
@@ -51,7 +51,7 @@ contract FipsNotary {
         if (!fipsIsRegistered(fips)) {
             ledger[fips] = owner;
             FipsRegistration(fips, owner);
-            if (data.length &gt; 0) {
+            if (data.length > 0) {
                 FipsData(fips, owner, data);
             }
         }
@@ -73,7 +73,7 @@ contract FipsNotary {
 
     function fipsLegacyRegisterMulti(bytes20[] fips, address owner, bytes data) {
         if (registrants[msg.sender] == true) {
-            for (uint i = 0; i &lt; fips.length; i++) {
+            for (uint i = 0; i < fips.length; i++) {
                 fipsAddToLedger(fips[i], owner, data);
             }
         }
@@ -87,8 +87,8 @@ contract FipsNotary {
 
     function fipsRegisterMulti(uint count, address owner, bytes data) {
         if (registrants[msg.sender] == true) {
-            if ((count &gt; 0) &amp;&amp; (count &lt;= 100)) {
-                for (uint i = 0; i &lt; count; i++) {
+            if ((count > 0) && (count <= 100)) {
+                for (uint i = 0; i < count; i++) {
                     fipsAddToLedger(fipsGenerate(), owner, data);
                 }
             }
@@ -103,7 +103,7 @@ contract FipsNotary {
     }
 
     function fipsTransferMulti(bytes20[] fips, address new_owner) {
-        for (uint i = 0; i &lt; fips.length; i++) {
+        for (uint i = 0; i < fips.length; i++) {
             fipsTransfer(fips[i], new_owner);
         }
     }

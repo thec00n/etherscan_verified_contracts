@@ -14,7 +14,7 @@ contract StrikersMetadata {
 
   /// @dev Returns the API URL for a given token Id.
   ///   ex: https://us-central1-cryptostrikers-api.cloudfunctions.net/cards/22
-  ///   Right now, this endpoint returns a JSON blob conforming to OpenSea&#39;s spec.
+  ///   Right now, this endpoint returns a JSON blob conforming to OpenSea's spec.
   ///   see: https://docs.opensea.io/docs/2-adding-metadata
   function tokenURI(uint256 _tokenId) external view returns (string) {
     string memory _id = uint2str(_tokenId);
@@ -30,13 +30,13 @@ contract StrikersMetadata {
     string memory ab = new string(_ba.length + _bb.length);
     bytes memory bab = bytes(ab);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+    for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
     return string(bab);
   }
 
   function uint2str(uint i) internal pure returns (string) {
-    if (i == 0) return &quot;0&quot;;
+    if (i == 0) return "0";
     uint j = i;
     uint len;
     while (j != 0) {

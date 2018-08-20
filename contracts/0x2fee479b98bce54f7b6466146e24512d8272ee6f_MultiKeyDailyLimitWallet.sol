@@ -13,12 +13,12 @@ interface ERC20Token {
 contract MultiKeyDailyLimitWallet {
 	uint constant LIMIT_PRECISION = 1000000;
 	// Fractional daily limits per key. In units of 1/LIMIT_PRECISION.
-	mapping(address=&gt;uint) public credentials;
+	mapping(address=>uint) public credentials;
 	// Timestamp of last withdrawal, by token (0x0 is ether).
-	mapping(address=&gt;uint) public lastWithdrawalTime;
+	mapping(address=>uint) public lastWithdrawalTime;
 	// Total withdrawn in last 24-hours, by token (0x0 is ether).
 	// Resets if 24 hours passes with no activity.
-	mapping(address=&gt;uint) public dailyCount;
+	mapping(address=>uint) public dailyCount;
 	uint public nonce;
 
 	event OnWithdrawTo(
@@ -32,10 +32,10 @@ contract MultiKeyDailyLimitWallet {
 			payable public {
 		
 		require(keys.length == limits.length);
-		for (uint i = 0; i &lt; keys.length; i++) {
+		for (uint i = 0; i < keys.length; i++) {
 			var limit = limits[i];
 			// limit should be in range 1-LIMIT_PRECISION
-			require (limit &gt; 0 &amp;&amp; limit &lt;= LIMIT_PRECISION);
+			require (limit > 0 && limit <= LIMIT_PRECISION);
 			credentials[keys[i]] = limit;
 		}
 	}
@@ -51,7 +51,7 @@ contract MultiKeyDailyLimitWallet {
 
 	function getDailyCount(address token) public view returns (uint) {
 		var _dailyCount = dailyCount[token];
-		if ((block.timestamp - lastWithdrawalTime[token]) &gt;= 1 days)
+		if ((block.timestamp - lastWithdrawalTime[token]) >= 1 days)
 			_dailyCount = 0;
 		return _dailyCount;
 	}
@@ -66,9 +66,9 @@ contract MultiKeyDailyLimitWallet {
 		var _dailyCount = getDailyCount(token);
 		var balance = getBalance(token);
 		var amt = ((balance + _dailyCount) * pct) / LIMIT_PRECISION;
-		if (amt == 0 &amp;&amp; balance &gt; 0)
+		if (amt == 0 && balance > 0)
 			amt = 1;
-		if (_dailyCount &gt;= amt)
+		if (_dailyCount >= amt)
 			return 0;
 		return amt - _dailyCount;
 	}
@@ -79,16 +79,16 @@ contract MultiKeyDailyLimitWallet {
 			address to,
 			bytes signature) external {
 
-		require(amount &gt; 0 &amp;&amp; to != address(this));
-		assert(block.timestamp &gt;= lastWithdrawalTime[token]);
+		require(amount > 0 && to != address(this));
+		assert(block.timestamp >= lastWithdrawalTime[token]);
 
 		var limit = getSignatureRemainingLimit(
 			signature,
 			keccak256(address(this), token, nonce, amount, to),
 			token);
 
-		require(limit &gt;= amount);
-		require(getBalance(token) &gt;= amount);
+		require(limit >= amount);
+		require(getBalance(token) >= amount);
 
 		dailyCount[token] = getDailyCount(token) + amount;
 		lastWithdrawalTime[token] = block.timestamp;
@@ -129,7 +129,7 @@ contract MultiKeyDailyLimitWallet {
 	function extractSignatureAddress(bytes signature, bytes32 payload)
 			private pure returns (address) {
 
-		payload = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, payload);
+		payload = keccak256("\x19Ethereum Signed Message:\n32", payload);
 		bytes32 r;
 		bytes32 s;
 		uint8 v;
@@ -138,7 +138,7 @@ contract MultiKeyDailyLimitWallet {
 			s := mload(add(signature, 64))
 			v := and(mload(add(signature, 65)), 255)
 		}
-		if (v &lt; 27)
+		if (v < 27)
 			v += 27;
 		require(v == 27 || v == 28);
 		return ecrecover(payload, v, r, s);

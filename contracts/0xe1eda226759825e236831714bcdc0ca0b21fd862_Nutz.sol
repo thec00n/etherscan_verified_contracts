@@ -51,7 +51,7 @@ contract ControllerInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -119,14 +119,14 @@ contract Nutz is Ownable, ERC20 {
 
   event Sell(address indexed seller, uint256 value);
 
-  string public name = &quot;Acebusters Nutz&quot;;
+  string public name = "Acebusters Nutz";
   // acebusters units:
   // 10^12 - Nutz   (NTZ)
   // 10^9 - Jonyz
   // 10^6 - Helcz
   // 10^3 - Pascalz
   // 10^0 - Babz
-  string public symbol = &quot;NTZ&quot;;
+  string public symbol = "NTZ";
   uint256 public decimals = 12;
 
   // returns balances of active holders
@@ -172,7 +172,7 @@ contract Nutz is Ownable, ERC20 {
     assembly {
       codeLength := extcodesize(_to)
     }
-    if(codeLength&gt;0) {
+    if(codeLength>0) {
       ERC223ReceivingContract untrustedReceiver = ERC223ReceivingContract(_to);
       // untrusted contract call
       untrustedReceiver.tokenFallback(_from, _value, _data);
@@ -188,13 +188,13 @@ contract Nutz is Ownable, ERC20 {
   function powerDown(address powerAddr, address _holder, uint256 _amountBabz) public onlyOwner {
     bytes memory empty;
     _checkDestination(powerAddr, _holder, _amountBabz, empty);
-    // NTZ transfered from power pool to user&#39;s balance
+    // NTZ transfered from power pool to user's balance
     Transfer(powerAddr, _holder, _amountBabz);
   }
 
 
   function asyncSend(address _pullAddr, address _dest, uint256 _amountWei) public onlyOwner {
-    assert(_amountWei &lt;= this.balance);
+    assert(_amountWei <= this.balance);
     PullPayInterface(_pullAddr).asyncSend.value(_amountWei)(_dest);
   }
 
@@ -239,11 +239,11 @@ contract Nutz is Ownable, ERC20 {
   function () public payable {
     uint256 price = ControllerInterface(owner).ceiling();
     purchase(price);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
   }
 
   function purchase(uint256 _price) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 amountBabz = ControllerInterface(owner).purchase(msg.sender, msg.value, _price);
     Transfer(owner, msg.sender, amountBabz);
     bytes memory empty;

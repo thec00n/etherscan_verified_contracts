@@ -42,7 +42,7 @@ contract ThreeQueens {
     internal
     view
     returns(uint8) {
-        for (uint8 i=0; i&lt;3; i++) {
+        for (uint8 i=0; i<3; i++) {
             if (msg.sender == Queens[i]) {
                 return i;
             }
@@ -73,7 +73,7 @@ contract ThreeQueens {
         colonies[playerID].food -= number * getAntCost(spawnType);
         
         // Currently this is probably still vulnerable to attacks relating to overflow...
-        assert(colonies[playerID].food &lt;= prevFood);// this won&#39;t really fix it completely, but might help??
+        assert(colonies[playerID].food <= prevFood);// this won't really fix it completely, but might help??
         
         if (spawnType == AntType.Worker) colonies[playerID].workers += number;
         if (spawnType == AntType.Warrior) colonies[playerID].warriors += number;
@@ -92,7 +92,7 @@ contract ThreeQueens {
         uint maxSpawnFoodConstraint = colonies[playerID].food / getAntCost(colonies[playerID].spawningType);
         
         uint spawnNumber;
-        if (maxSpawnTimeConstraint &lt; maxSpawnFoodConstraint) spawnNumber = maxSpawnTimeConstraint;
+        if (maxSpawnTimeConstraint < maxSpawnFoodConstraint) spawnNumber = maxSpawnTimeConstraint;
         else spawnNumber = maxSpawnFoodConstraint;
         
         spawnAnts(playerID, spawnNumber, colonies[playerID].spawningType);

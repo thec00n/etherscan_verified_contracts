@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -132,11 +132,11 @@ contract FundRequestPrivateSeed is Pausable {
   // amount of raised money in wei
   uint public weiRaised;
 
-  mapping(address =&gt; uint) public deposits;
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public deposits;
+  mapping(address => uint) public balances;
   address[] public investors;
   uint public investorCount;
-  mapping(address =&gt; bool) public allowed;
+  mapping(address => bool) public allowed;
   /**
    * event for token purchase logging
    * @param purchaser who paid for the tokens
@@ -147,7 +147,7 @@ contract FundRequestPrivateSeed is Pausable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
 
   function FundRequestPrivateSeed(uint _rate, address _wallet) {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     rate = _rate;
@@ -158,7 +158,7 @@ contract FundRequestPrivateSeed is Pausable {
     require(validBeneficiary(beneficiary));
     require(validPurchase());
     require(validPurchaseSize());
-    bool existing = deposits[beneficiary] &gt; 0;
+    bool existing = deposits[beneficiary] > 0;
     uint weiAmount = msg.value;
     uint updatedWeiRaised = weiRaised.add(weiAmount);
     // calculate token amount to be created
@@ -187,7 +187,7 @@ contract FundRequestPrivateSeed is Pausable {
   }
   // @return true if the amount is higher then 25ETH
   function validPurchaseSize() internal constant returns (bool) {
-    return msg.value &gt;=25000000000000000000;
+    return msg.value >=25000000000000000000;
   }
   function balanceOf(address _owner) constant returns (uint balance) {
     return balances[_owner];

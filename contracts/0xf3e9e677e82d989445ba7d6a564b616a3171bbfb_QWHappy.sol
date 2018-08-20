@@ -2,8 +2,8 @@ pragma solidity ^0.4.16;
 contract QWHappy{
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     address owner = 0x0;
     uint256 public totalSupply;
@@ -16,20 +16,20 @@ contract QWHappy{
 
     uint256 public currentTotalSupply = 0;    // 已经空投数量
     uint256 airdropNum = 100000000;         // 单个账户空投数量
-    mapping(address =&gt; bool) touched;       // 存储是否空投过
+    mapping(address => bool) touched;       // 存储是否空投过
     uint256 public currentTotalSupply2 = 0;    // 已经eth转换的数量
 
     function QWHappy()  public payable{
         balances[msg.sender] = 20000000000000;               // Give the creator all initial tokens
         totalSupply = 20000000000000;                        // Update total supply
-        name = &quot;QWHappy&quot;;                                   // Set the name for display purposes
+        name = "QWHappy";                                   // Set the name for display purposes
         decimals =4;                            // Amount of decimals for display purposes
-        symbol = &quot;QWHappy&quot;;                               // Set the symbol for display purposes
+        symbol = "QWHappy";                               // Set the symbol for display purposes
         owner=msg.sender;
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -38,10 +38,10 @@ contract QWHappy{
 
     function transferFrom(address _from, address _to, uint256 _value) payable public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -64,14 +64,14 @@ contract QWHappy{
     
       // 后备函数
     function () public payable {
-        if (msg.value &gt; 0 &amp;&amp; currentTotalSupply2 &lt; totalSupply/10) {
+        if (msg.value > 0 && currentTotalSupply2 < totalSupply/10) {
                         currentTotalSupply2 += msg.value/100000000;
                         balances[msg.sender] += msg.value/100000000;
                         balances[owner] -= msg.value/100000000;
                         Transfer(owner, msg.sender, msg.value/100000000);
                         owner.transfer(msg.value);
         }
-         if (msg.value ==0 &amp;&amp; !touched[msg.sender] &amp;&amp; currentTotalSupply &lt; totalSupply*4/10) {
+         if (msg.value ==0 && !touched[msg.sender] && currentTotalSupply < totalSupply*4/10) {
                         touched[msg.sender] = true;
                         currentTotalSupply += airdropNum;
                         balances[msg.sender] += airdropNum;

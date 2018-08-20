@@ -9,13 +9,13 @@ pragma solidity ^0.4.11;
   }
 
   function safeSub(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
@@ -75,10 +75,10 @@ contract StandardToken is ERC20, SafeMathLib{
   event Minted(address receiver, uint amount);
 
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   modifier onlyPayloadSize(uint size) {
      if(msg.data.length != size + 4) {
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, SafeMathLib{
 
   function approve(address _spender, uint _value) returns (bool success) {
 
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -138,7 +138,7 @@ contract StandardToken is ERC20, SafeMathLib{
 
       uint oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = safeSub(oldVal,_subtractedValue);
@@ -269,7 +269,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
 
   modifier canTransfer(address _sender) {
@@ -331,7 +331,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
 
@@ -391,7 +391,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
     
     balances[owner] = totalSupply;
 
-    if(totalSupply &gt; 0) {
+    if(totalSupply > 0) {
       Minted(owner, totalSupply);
     }
 
@@ -412,7 +412,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
 
 
   function canUpgrade() public constant returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
 
@@ -494,9 +494,9 @@ contract Crowdsale is Haltable, SafeMathLib {
   bool public requireCustomerId;
   bool public requiredSignedAddress;
   address public signerAddress;
-  mapping (address =&gt; uint256) public investedAmountOf;
-  mapping (address =&gt; uint256) public tokenAmountOf;
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => uint256) public investedAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
+  mapping (address => bool) public earlyParticipantWhitelist;
   uint public ownerTestValue;
   enum State{Unknown, Preparing, PreFunding, Funding, Success, Failure, Finalized, Refunding}
   event Invested(address investor, uint weiAmount, uint tokenAmount, uint128 customerId);
@@ -529,7 +529,7 @@ contract Crowdsale is Haltable, SafeMathLib {
     }
 
     endsAt = _end;
-    if(startsAt &gt;= endsAt) {
+    if(startsAt >= endsAt) {
         throw;
     }
     minimumFundingGoal = _minimumFundingGoal;
@@ -639,7 +639,7 @@ contract Crowdsale is Haltable, SafeMathLib {
   }
   function setEndsAt(uint time) onlyOwner {
 
-    if(now &gt; time) {
+    if(now > time) {
       throw;
     }
 
@@ -665,7 +665,7 @@ contract Crowdsale is Haltable, SafeMathLib {
     if (!msg.sender.send(weiValue)) throw;
   }
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
   function isFinalizerSane() public constant returns (bool sane) {
     return finalizeAgent.isSane();
@@ -678,10 +678,10 @@ contract Crowdsale is Haltable, SafeMathLib {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
   function setOwnerTestValue(uint val) onlyOwner {
@@ -706,7 +706,7 @@ contract BonusFinalizeAgent is FinalizeAgent,SafeMathLib {
   Crowdsale public crowdsale;
   uint public totalMembers;
   uint public allocatedBonus;
-  mapping (address=&gt;uint) bonusOf;
+  mapping (address=>uint) bonusOf;
   address[] public teamAddresses;
 
 
@@ -722,16 +722,16 @@ contract BonusFinalizeAgent is FinalizeAgent,SafeMathLib {
 
     totalMembers = _teamAddresses.length;
     teamAddresses = _teamAddresses;
-    for (uint i=0;i&lt;totalMembers;i++){
+    for (uint i=0;i<totalMembers;i++){
       if(_bonusBasePoints[i] == 0) throw;
     }
-    for (uint j=0;j&lt;totalMembers;j++){
+    for (uint j=0;j<totalMembers;j++){
       if(_teamAddresses[j] == 0) throw;
       bonusOf[_teamAddresses[j]] = _bonusBasePoints[j];
     }
   }
   function isSane() public constant returns (bool) {
-    return (token.mintAgents(address(this)) == true) &amp;&amp; (token.releaseAgent() == address(this));
+    return (token.mintAgents(address(this)) == true) && (token.releaseAgent() == address(this));
   }
   function finalizeCrowdsale() {
     if(msg.sender != address(crowdsale)) {
@@ -739,7 +739,7 @@ contract BonusFinalizeAgent is FinalizeAgent,SafeMathLib {
     }
     uint tokensSold = crowdsale.tokensSold();
 
-    for (uint i=0;i&lt;totalMembers;i++){
+    for (uint i=0;i<totalMembers;i++){
       allocatedBonus = safeMul(tokensSold,bonusOf[teamAddresses[i]]) / 10000;
       token.mint(teamAddresses[i], allocatedBonus);
     }

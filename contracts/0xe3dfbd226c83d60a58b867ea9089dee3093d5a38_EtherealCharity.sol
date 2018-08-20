@@ -31,11 +31,11 @@ contract EtherealFoundationOwned {
 }
 
 contract EtherealCharity  is EtherealFoundationOwned{
-    string public constant CONTRACT_NAME = &quot;EtherealCharity&quot;;
-    string public constant CONTRACT_VERSION = &quot;A&quot;;
-    string public constant CAUSE = &quot;EtherealCharity Creation&quot;;
-    string public constant URL = &quot;none&quot;;
-    string public constant QUOTE = &quot;&#39;A man who procrastinates in his choosing will inevitably have his choice made for him by circumstance.&#39; -Hunter S. Thompson&quot;;
+    string public constant CONTRACT_NAME = "EtherealCharity";
+    string public constant CONTRACT_VERSION = "A";
+    string public constant CAUSE = "EtherealCharity Creation";
+    string public constant URL = "none";
+    string public constant QUOTE = "'A man who procrastinates in his choosing will inevitably have his choice made for him by circumstance.' -Hunter S. Thompson";
     
     
     event RecievedDonation(address indexed from, uint256 value, string note);
@@ -51,9 +51,9 @@ contract EtherealCharity  is EtherealFoundationOwned{
 	
 	event TransferedEth(address indexed to, uint256 value);
 	function TransferEth(address to, uint256 value) public onlyOwner{
-	    require(this.balance &gt;= value);
+	    require(this.balance >= value);
 	    
-        if(value &gt;0)
+        if(value >0)
 		{
 			to.transfer(value);
 			TransferedEth(to, value);

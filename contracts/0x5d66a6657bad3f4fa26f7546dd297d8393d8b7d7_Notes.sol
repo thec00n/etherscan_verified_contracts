@@ -1,7 +1,7 @@
 pragma solidity ^0.4.10;
 
-// The NOTES ERC20 Token. There is a delay before addresses that are not added to the &quot;activeGroup&quot; can transfer tokens. 
-// That delay ends when admin calls the &quot;activate()&quot;&quot; function, or when &quot;activateDate&quot; is reached.
+// The NOTES ERC20 Token. There is a delay before addresses that are not added to the "activeGroup" can transfer tokens. 
+// That delay ends when admin calls the "activate()"" function, or when "activateDate" is reached.
 // Otherwise a generic ERC20 standard token.
 
 contract SafeMath {
@@ -14,12 +14,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -53,18 +53,18 @@ contract Notes is Token {
     uint256 public constant nFund = 80 * (10**6) * 10**decimals;
 
     // Token Metadata
-    string public constant name = &quot;NOTES&quot;;
-    string public constant symbol = &quot;NTS&quot;;
+    string public constant name = "NOTES";
+    string public constant symbol = "NTS";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     //// PROPERTIES
 
     address admin;
     bool public activated = false;
-    mapping (address =&gt; bool) public activeGroup;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => bool) public activeGroup;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //// MODIFIERS
 
@@ -103,7 +103,7 @@ contract Notes is Token {
     //// TOKEN FUNCTIONS    
 
     function transfer(address _to, uint256 _value) active returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -114,7 +114,7 @@ contract Notes is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) active returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;

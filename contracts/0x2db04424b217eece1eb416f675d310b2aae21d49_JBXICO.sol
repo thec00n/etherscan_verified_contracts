@@ -1,5 +1,5 @@
 //
-// compiler: solcjs -o ./build/contracts --optimize --abi --bin &lt;this file&gt;
+// compiler: solcjs -o ./build/contracts --optimize --abi --bin <this file>
 //  version: 0.4.15+commit.bbb8e64f.Emscripten.clang
 //
 pragma solidity ^0.4.15;
@@ -23,7 +23,7 @@ contract owned {
   }
 }
 
-// &quot;extern&quot; declare functions from token contract
+// "extern" declare functions from token contract
 interface JBX {
   function transfer(address to, uint256 value);
   function balanceOf( address owner ) constant returns (uint);
@@ -44,7 +44,7 @@ contract JBXICO is owned {
   }
 
   function() payable {
-    if (now &lt; STARTTIME || now &gt; ENDTIME)
+    if (now < STARTTIME || now > ENDTIME)
       revert();
 
     // (amountinwei/weipereth * jbx/eth) * ( (100 + bonuspercent)/100 )
@@ -52,7 +52,7 @@ contract JBXICO is owned {
     uint qty =
       div(mul(div(mul(msg.value, JBXPERETH),1000000000000000000),(bonus()+100)),100);
 
-    if (qty &gt; tokenSC.balanceOf(address(this)) || qty &lt; 1)
+    if (qty > tokenSC.balanceOf(address(this)) || qty < 1)
       revert();
 
     tokenSC.transfer( msg.sender, qty );
@@ -60,14 +60,14 @@ contract JBXICO is owned {
 
   // unsold tokens can be claimed by owner after sale ends
   function claimUnsold() onlyOwner {
-    if ( now &lt; ENDTIME )
+    if ( now < ENDTIME )
       revert();
 
     tokenSC.transfer( owner, tokenSC.balanceOf(address(this)) );
   }
 
   function withdraw( uint amount ) onlyOwner returns (bool) {
-    if (amount &lt;= this.balance)
+    if (amount <= this.balance)
       return owner.send( amount );
 
     return false;
@@ -76,10 +76,10 @@ contract JBXICO is owned {
   function bonus() constant returns(uint) {
     uint elapsed = now - STARTTIME;
 
-    if (elapsed &lt; 48 hours) return 50;
-    if (elapsed &lt; 2 weeks) return 20;
-    if (elapsed &lt; 3 weeks) return 10;
-    if (elapsed &lt; 4 weeks) return 5;
+    if (elapsed < 48 hours) return 50;
+    if (elapsed < 2 weeks) return 20;
+    if (elapsed < 3 weeks) return 10;
+    if (elapsed < 4 weeks) return 5;
     return 0;
   }
 

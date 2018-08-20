@@ -8,27 +8,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract ContributorApprover {
     KyberContributorWhitelist public list;
-    mapping(address=&gt;uint)    public participated;
+    mapping(address=>uint)    public participated;
 
     uint                      public cappedSaleStartTime;
     uint                      public openSaleStartTime;
@@ -47,8 +47,8 @@ contract ContributorApprover {
         openSaleEndTime = _openSaleEndTime;
 
         require( list != KyberContributorWhitelist(0x0) );
-        require( cappedSaleStartTime &lt; openSaleStartTime );
-        require(  openSaleStartTime &lt; openSaleEndTime );
+        require( cappedSaleStartTime < openSaleStartTime );
+        require(  openSaleStartTime < openSaleEndTime );
     }
 
     // this is a seperate function so user could query it before crowdsale starts
@@ -57,16 +57,16 @@ contract ContributorApprover {
     }
 
     function eligible( address contributor, uint amountInWei ) constant returns(uint) {
-        if( now &lt; cappedSaleStartTime ) return 0;
-        if( now &gt;= openSaleEndTime ) return 0;
+        if( now < cappedSaleStartTime ) return 0;
+        if( now >= openSaleEndTime ) return 0;
 
         uint cap = contributorCap( contributor );
 
         if( cap == 0 ) return 0;
-        if( now &lt; openSaleStartTime ) {
+        if( now < openSaleStartTime ) {
             uint remainedCap = cap.sub( participated[ contributor ] );
 
-            if( remainedCap &gt; amountInWei ) return amountInWei;
+            if( remainedCap > amountInWei ) return amountInWei;
             else return remainedCap;
         }
         else {
@@ -82,11 +82,11 @@ contract ContributorApprover {
     }
 
     function saleEnded() constant returns(bool) {
-        return now &gt; openSaleEndTime;
+        return now > openSaleEndTime;
     }
 
     function saleStarted() constant returns(bool) {
-        return now &gt;= cappedSaleStartTime;
+        return now >= cappedSaleStartTime;
     }
 }
 
@@ -97,7 +97,7 @@ contract KyberNetworkTokenSale is ContributorApprover {
     uint                public raisedWei;
     bool                public haltSale;
 
-    mapping(bytes32=&gt;uint) public proxyPurchases;
+    mapping(bytes32=>uint) public proxyPurchases;
 
     function KyberNetworkTokenSale( address _admin,
                                     address _kyberMultiSigWallet,
@@ -145,7 +145,7 @@ contract KyberNetworkTokenSale is ContributorApprover {
 
     event Buy( address _buyer, uint _tokens, uint _payedWei );
     function buy( address recipient ) payable returns(uint){
-        require( tx.gasprice &lt;= 50000000000 wei );
+        require( tx.gasprice <= 50000000000 wei );
 
         require( ! haltSale );
         require( saleStarted() );
@@ -153,10 +153,10 @@ contract KyberNetworkTokenSale is ContributorApprover {
 
         uint weiPayment = eligibleTestAndIncrement( recipient, msg.value );
 
-        require( weiPayment &gt; 0 );
+        require( weiPayment > 0 );
 
         // send to msg.sender, not to recipient
-        if( msg.value &gt; weiPayment ) {
+        if( msg.value > weiPayment ) {
             msg.sender.transfer( msg.value.sub( weiPayment ) );
         }
 
@@ -195,7 +195,7 @@ contract KyberNetworkTokenSale is ContributorApprover {
         require( msg.sender == admin );
         require( saleEnded() );
 
-        if( this.balance &gt; 0 ) {
+        if( this.balance > 0 ) {
             sendETHToMultiSig( this.balance );
         }
 
@@ -252,7 +252,7 @@ contract KyberContributorWhitelist is Ownable {
     // cap is in wei. The value of 7 is just a stub.
     // after kyc registration ends, we change it to the actual value with setSlackUsersCap
     uint public slackUsersCap = 7;
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function KyberContributorWhitelist() {}
 
@@ -268,7 +268,7 @@ contract KyberContributorWhitelist is Ownable {
     // an optimization in case of network congestion
     function listAddresses( address[] _users, uint[] _cap ) onlyOwner {
         require(_users.length == _cap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _cap[i] );
         }
     }
@@ -302,7 +302,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -339,7 +339,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -352,7 +352,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     // KYBER-NOTE! code changed to comply with ERC20 standard
     balances[_from] = balances[_from].sub(_value);
@@ -394,8 +394,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract KyberNetworkCrystal is StandardToken, Ownable {
-    string  public  constant name = &quot;Kyber Network Crystal&quot;;
-    string  public  constant symbol = &quot;KNC&quot;;
+    string  public  constant name = "Kyber Network Crystal";
+    string  public  constant symbol = "KNC";
     uint    public  constant decimals = 18;
 
     uint    public  saleStartTime;
@@ -404,7 +404,7 @@ contract KyberNetworkCrystal is StandardToken, Ownable {
     address public  tokenSaleContract;
 
     modifier onlyWhenTransferEnabled() {
-        if( now &lt;= saleEndTime &amp;&amp; now &gt;= saleStartTime ) {
+        if( now <= saleEndTime && now >= saleStartTime ) {
             require( msg.sender == tokenSaleContract );
         }
         _;

@@ -9,7 +9,7 @@ contract EthGraffiti {
     
     address owner;
     uint public constant MESSAGE_PRICE = 69 wei;
-    mapping (uint =&gt; string) public messages;
+    mapping (uint => string) public messages;
     uint public messageNumber;
     
     constructor () public {

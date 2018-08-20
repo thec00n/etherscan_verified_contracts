@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -62,7 +62,7 @@ library AddressUtils {
         // contracts then.
         assembly {size := extcodesize(addr)}
         // solium-disable-line security/no-inline-assembly
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -240,7 +240,7 @@ contract PullPayment is Pausable {
     using SafeMath for uint256;
 
 
-    mapping(address =&gt; uint256) public payments;
+    mapping(address => uint256) public payments;
     uint256 public totalPayments;
 
     /**
@@ -251,7 +251,7 @@ contract PullPayment is Pausable {
         uint256 payment = payments[payee];
 
         require(payment != 0);
-        require(address(this).balance &gt;= payment);
+        require(address(this).balance >= payment);
 
         totalPayments = totalPayments.sub(payment);
         payments[payee] = 0;
@@ -300,26 +300,26 @@ contract FootballPlayerBase is PullPayment, ERC721 {
 
     FootballPlayer[] players;
 
-    mapping(uint256 =&gt; address) playerIndexToOwner;
+    mapping(uint256 => address) playerIndexToOwner;
 
-    mapping(address =&gt; uint256) addressToPlayerCount;
+    mapping(address => uint256) addressToPlayerCount;
 
-    mapping(uint256 =&gt; address) public playerIndexToApproved;
+    mapping(uint256 => address) public playerIndexToApproved;
 
-    mapping(uint256 =&gt; bool) dnaExists;
+    mapping(uint256 => bool) dnaExists;
 
-    mapping(uint256 =&gt; bool) tokenIsFreezed;
+    mapping(uint256 => bool) tokenIsFreezed;
 
     function GetPlayer(uint256 _playerId) external view returns (bytes32, uint8, uint8, uint256, uint256) {
-        require(_playerId &lt; players.length);
-        require(_playerId &gt; 0);
+        require(_playerId < players.length);
+        require(_playerId > 0);
         FootballPlayer memory _player = players[_playerId];
         return (_player.name, _player.position, _player.star, _player.level, _player.dna);
     }
 
     function ToggleFreezeToken(uint256 _tokenId) public returns (bool){
-        require(_tokenId &lt; players.length);
-        require(_tokenId &gt; 0);
+        require(_tokenId < players.length);
+        require(_tokenId > 0);
 
         tokenIsFreezed[_tokenId] = !tokenIsFreezed[_tokenId];
 
@@ -327,8 +327,8 @@ contract FootballPlayerBase is PullPayment, ERC721 {
     }
 
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
-        require(_to != address(0), &quot;to address is invalid&quot;);
-        require(tokenIsFreezed[_tokenId] == false, &quot;token is freezed&quot;);
+        require(_to != address(0), "to address is invalid");
+        require(tokenIsFreezed[_tokenId] == false, "token is freezed");
 
         addressToPlayerCount[_to]++;
 
@@ -345,7 +345,7 @@ contract FootballPlayerBase is PullPayment, ERC721 {
     function CreateSpecialPlayer(bytes32 _name, uint8 _position, uint8 _star, uint256 _dna, uint256 _level,
         address _owner) external whenNotPaused onlyMarketingAdmin returns (uint256)
     {
-        require(dnaExists[_dna] == false, &quot;DNA exists&quot;);
+        require(dnaExists[_dna] == false, "DNA exists");
 
         FootballPlayer memory _player = FootballPlayer(
             _name,
@@ -368,7 +368,7 @@ contract FootballPlayerBase is PullPayment, ERC721 {
     function CreateDummyPlayer(bytes32 _name, uint8 _position, uint256 _dna,
         address _owner) external whenNotPaused onlyAdmins returns (uint256)
     {
-        require(dnaExists[_dna] == false, &quot;DNA exists!&quot;);
+        require(dnaExists[_dna] == false, "DNA exists!");
 
         FootballPlayer memory _player = FootballPlayer(
             _name,
@@ -396,17 +396,17 @@ contract ERC721Metadata {
 
     function getMetadata(uint256 _tokenId, string) public pure returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello Football! :D&quot;;
+            buffer[0] = "Hello Football! :D";
             count = 18;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -414,26 +414,26 @@ contract ERC721Metadata {
 
 contract FootballPlayerOwnership is FootballPlayerBase {
 
-    string public constant name = &quot;CryptoFantasyFootball&quot;;
-    string public constant symbol = &quot;CFF&quot;; // Crypto Fantasy Football
+    string public constant name = "CryptoFantasyFootball";
+    string public constant symbol = "CFF"; // Crypto Fantasy Football
     uint256 public version;
 
     ERC721Metadata public erc721Metadata;
 
     bytes4 constant InterfaceSignature_ERC165 =
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-    bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('tokensOfOwner(address)')) ^
+    bytes4(keccak256('tokenMetadata(uint256,string)'));
 
 
     constructor(uint256 _currentVersion) public {
@@ -446,7 +446,7 @@ contract FootballPlayerOwnership is FootballPlayerBase {
     function supportsInterface(bytes4 _interfaceID) external view returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
@@ -484,10 +484,10 @@ contract FootballPlayerOwnership is FootballPlayerBase {
         require(_to != address(0));
         // Disallow transfers to this contract to prevent accidental misuse.
         // The contract should never own any players 
-        require(_to != address(this), &quot;you can not transfer player to this contract&quot;);
+        require(_to != address(this), "you can not transfer player to this contract");
 
         // You can only send your own player.
-        require(_owns(msg.sender, _tokenId), &quot;You do not own this player&quot;);
+        require(_owns(msg.sender, _tokenId), "You do not own this player");
 
         // Reassign ownership, clear pending approvals, emit Transfer event.
         _transfer(msg.sender, _to, _tokenId);
@@ -515,10 +515,10 @@ contract FootballPlayerOwnership is FootballPlayerBase {
         require(_to != address(0));
         // Disallow transfers to this contract to prevent accidental misuse.
         // The contract should never own any players.
-        require(_to != address(this) , &quot;You can not send players to this contract&quot;);
+        require(_to != address(this) , "You can not send players to this contract");
         // Check for approval and valid ownership
-        require(_approvedFor(msg.sender, _tokenId) , &quot;You don&#39;t have permission to transfer this player&quot;);
-        require(_owns(_from, _tokenId) , &quot;from address doesn&#39;t have this player&quot;);
+        require(_approvedFor(msg.sender, _tokenId) , "You don't have permission to transfer this player");
+        require(_owns(_from, _tokenId) , "from address doesn't have this player");
 
         // Reassign ownership (also clears pending approvals and emits Transfer event).
         _transfer(_from, _to, _tokenId);
@@ -554,7 +554,7 @@ contract FootballPlayerOwnership is FootballPlayerBase {
             // sequentially up to the total players count.
             uint256 playerId;
 
-            for (playerId = 1; playerId &lt;= totalPlayers; playerId++) {
+            for (playerId = 1; playerId <= totalPlayers; playerId++) {
                 if (playerIndexToOwner[playerId] == _owner) {
                     result[resultIndex] = playerId;
                     resultIndex++;

@@ -28,7 +28,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -71,7 +71,7 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     
     /**
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Basic {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     event Burn(address _address, uint256 _value);
     
@@ -126,8 +126,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -203,7 +203,7 @@ contract StandardToken is ERC20, BasicToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);                 // Check if the sender has enough
+        require(balances[msg.sender] >= _value);                 // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value); // Subtract from the sender
         totalSupply_ = totalSupply_.sub(_value);                 // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -217,10 +217,10 @@ contract StandardToken is ERC20, BasicToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply_ = totalSupply_.sub(_value);                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -268,19 +268,19 @@ contract VTest is StandardToken, Ownable {
     address public icoAccount       = address(0x8Df21F9e41Dd7Bd681fcB6d49248f897595a5304);  // ICO Token holder
 	address public marketingAccount = address(0x83313B9c27668b41151509a46C1e2a8140187362);  // Marketing Token holder
 	address public advisorAccount   = address(0xB6763FeC658338A7574a796Aeda45eb6D81E69B9);  // Advisor Token holder
-	mapping(address =&gt; bool) public owners;
+	mapping(address => bool) public owners;
 	
-	string public name   = &quot;VTest&quot;;  // set Token name
-	string public symbol = &quot;VT&quot;;       // set Token symbol
+	string public name   = "VTest";  // set Token name
+	string public symbol = "VT";       // set Token symbol
 	uint public decimals = 18;
 	uint public INITIAL_SUPPLY = 10000000000 * (10 ** uint256(decimals));  // set Token total supply
 	
-	mapping(address =&gt; bool) public icoProceeding; // ico manage
+	mapping(address => bool) public icoProceeding; // ico manage
 	
 	bool public released      = false;   // all lock
     uint8 public transferStep = 0;       // avail step
 	bool public stepLockCheck = true;    // step lock
-    mapping(uint8 =&gt; mapping(address =&gt; bool)) public holderStep; // holder step
+    mapping(uint8 => mapping(address => bool)) public holderStep; // holder step
 	
 	event ReleaseToken(address _owner, bool released);
 	event ChangeTransferStep(address _owner, uint8 newStep);
@@ -339,7 +339,7 @@ contract VTest is StandardToken, Ownable {
 	}	
 	function changeTransferStep(uint8 _changeStep) onlyOwner public {
 	    require(transferStep != _changeStep);
-	    require(_changeStep &gt;= 0 &amp;&amp; _changeStep &lt; 10);
+	    require(_changeStep >= 0 && _changeStep < 10);
         transferStep = _changeStep;
         emit ChangeTransferStep(msg.sender, _changeStep);
 	}
@@ -369,7 +369,7 @@ contract VTest is StandardToken, Ownable {
      */
     function registHolderStep(address _contractAddr, uint8 _icoStep, address _funderAddr) public returns (bool) {
 		require(icoProceeding[_contractAddr]);
-		require(_icoStep &gt; 0);
+		require(_icoStep > 0);
         holderStep[_icoStep][_funderAddr] = true;
         
         return true;
@@ -379,7 +379,7 @@ contract VTest is StandardToken, Ownable {
      */
 	function checkHolderStep(address _funderAddr) public view returns (bool) {
 		bool returnBool = false;        
-        for (uint8 i = transferStep; i &gt;= 1; i--) {
+        for (uint8 i = transferStep; i >= 1; i--) {
             if (holderStep[i][_funderAddr]) {
                 returnBool = true;
                 break;
@@ -415,21 +415,21 @@ contract VTest is StandardToken, Ownable {
 	
     function transferSoldToken(address _contractAddr, address _to, uint256 _value) public returns(bool) {
 	    require(icoProceeding[_contractAddr]);
-	    require(balances[icoAccount] &gt;= _value);
+	    require(balances[icoAccount] >= _value);
 	    balances[icoAccount] = balances[icoAccount].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(icoAccount, _to, _value);
         return true;
 	}
 	function transferBonusToken(address _to, uint256 _value) public onlyOwner returns(bool) {
-	    require(balances[icoAccount] &gt;= _value);
+	    require(balances[icoAccount] >= _value);
 	    balances[icoAccount] = balances[icoAccount].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(icoAccount, _to, _value);
 		return true;
 	}
 	function transferAdvisorToken(address _to, uint256 _value)  public onlyOwner returns (bool) {
-	    require(balances[advisorAccount] &gt;= _value);
+	    require(balances[advisorAccount] >= _value);
 	    balances[advisorAccount] = balances[advisorAccount].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		emit Transfer(advisorAccount, _to, _value);

@@ -6,7 +6,7 @@ pragma solidity ^0.4.24;
 * Copyright CENTRE SECZ 2018
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy 
-* of this software and associated documentation files (the &quot;Software&quot;), to deal 
+* of this software and associated documentation files (the "Software"), to deal 
 * in the Software without restriction, including without limitation the rights 
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
 * copies of the Software, and to permit persons to whom the Software is furnished to 
@@ -15,7 +15,7 @@ pragma solidity ^0.4.24;
 * The above copyright notice and this permission notice shall be included in all 
 * copies or substantial portions of the Software.
 *
-* THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
@@ -92,7 +92,7 @@ contract Ownable {
 * Copyright CENTRE SECZ 2018
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy 
-* of this software and associated documentation files (the &quot;Software&quot;), to deal 
+* of this software and associated documentation files (the "Software"), to deal 
 * in the Software without restriction, including without limitation the rights 
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
 * copies of the Software, and to permit persons to whom the Software is furnished to 
@@ -101,7 +101,7 @@ contract Ownable {
 * The above copyright notice and this permission notice shall be included in all 
 * copies or substantial portions of the Software.
 *
-* THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
@@ -114,12 +114,12 @@ pragma solidity ^0.4.24;
 
 /**
  * @title Blacklistable Token
- * @dev Allows accounts to be blacklisted by a &quot;blacklister&quot; role
+ * @dev Allows accounts to be blacklisted by a "blacklister" role
 */
 contract Blacklistable is Ownable {
 
     address public blacklister;
-    mapping(address =&gt; bool) internal blacklisted;
+    mapping(address => bool) internal blacklisted;
 
     event Blacklisted(address indexed _account);
     event UnBlacklisted(address indexed _account);
@@ -181,7 +181,7 @@ contract Blacklistable is Ownable {
 * Copyright CENTRE SECZ 2018
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy 
-* of this software and associated documentation files (the &quot;Software&quot;), to deal 
+* of this software and associated documentation files (the "Software"), to deal 
 * in the Software without restriction, including without limitation the rights 
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
 * copies of the Software, and to permit persons to whom the Software is furnished to 
@@ -190,7 +190,7 @@ contract Blacklistable is Ownable {
 * The above copyright notice and this permission notice shall be included in all 
 * copies or substantial portions of the Software.
 *
-* THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
@@ -276,8 +276,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -292,9 +292,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -302,7 +302,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -311,7 +311,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -357,7 +357,7 @@ contract ERC20 is ERC20Basic {
 * Copyright CENTRE SECZ 2018
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy 
-* of this software and associated documentation files (the &quot;Software&quot;), to deal 
+* of this software and associated documentation files (the "Software"), to deal 
 * in the Software without restriction, including without limitation the rights 
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
 * copies of the Software, and to permit persons to whom the Software is furnished to 
@@ -366,7 +366,7 @@ contract ERC20 is ERC20Basic {
 * The above copyright notice and this permission notice shall be included in all 
 * copies or substantial portions of the Software.
 *
-* THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
@@ -395,11 +395,11 @@ contract FiatTokenV1 is Ownable, ERC20, Pausable, Blacklistable {
     address public masterMinter;
     bool internal initialized;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
     uint256 internal totalSupply_ = 0;
-    mapping(address =&gt; bool) internal minters;
-    mapping(address =&gt; uint256) internal minterAllowed;
+    mapping(address => bool) internal minters;
+    mapping(address => uint256) internal minterAllowed;
 
     event Mint(address indexed minter, address indexed to, uint256 amount);
     event Burn(address indexed burner, uint256 amount);
@@ -450,10 +450,10 @@ contract FiatTokenV1 is Ownable, ERC20, Pausable, Blacklistable {
     */
     function mint(address _to, uint256 _amount) whenNotPaused onlyMinters notBlacklisted(msg.sender) notBlacklisted(_to) public returns (bool) {
         require(_to != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         uint256 mintingAllowedAmount = minterAllowed[msg.sender];
-        require(_amount &lt;= mintingAllowedAmount);
+        require(_amount <= mintingAllowedAmount);
 
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -530,8 +530,8 @@ contract FiatTokenV1 is Ownable, ERC20, Pausable, Blacklistable {
     */
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused notBlacklisted(_to) notBlacklisted(msg.sender) notBlacklisted(_from) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -548,7 +548,7 @@ contract FiatTokenV1 is Ownable, ERC20, Pausable, Blacklistable {
     */
     function transfer(address _to, uint256 _value) whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_to) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -584,13 +584,13 @@ contract FiatTokenV1 is Ownable, ERC20, Pausable, Blacklistable {
     /**
      * @dev allows a minter to burn some of its own tokens
      * Validates that caller is a minter and that sender is not blacklisted
-     * amount is less than or equal to the minter&#39;s account balance
+     * amount is less than or equal to the minter's account balance
      * @param _amount uint256 the amount of tokens to be burned
     */
     function burn(uint256 _amount) whenNotPaused onlyMinters notBlacklisted(msg.sender) public {
         uint256 balance = balances[msg.sender];
-        require(_amount &gt; 0);
-        require(balance &gt;= _amount);
+        require(_amount > 0);
+        require(balance >= _amount);
 
         totalSupply_ = totalSupply_.sub(_amount);
         balances[msg.sender] = balance.sub(_amount);

@@ -46,9 +46,9 @@ contract StandardToken is Token {
         //prevent transfer to 0x0 address.
         require(_to != 0x0);
         //check if sender has enough tokens
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         //check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         uint256 previousBalances = balances[_from]+balances[_to];
         //subtract value from sender
@@ -61,14 +61,14 @@ contract StandardToken is Token {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
+        //Default assumes totalSupply can't be over max (2^256 - 1).
         
         _transfer(msg.sender,_to,_value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] -= _value;
         _transfer(_from,_to,_value);
         return true;
@@ -92,8 +92,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -110,9 +110,9 @@ contract XRTStandards is Owned,StandardToken
         //prevent transfer to 0x0 address.
         require(_to != 0x0);
         //check if sender has enough tokens
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         //check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         //subtract value from sender
         balances[_from] -= _value;
         //add value to receiver
@@ -130,7 +130,7 @@ contract XRTToken is XRTStandards {
     string public symbol;                 // An identifier: eg SBX, XPR etc..
     string public version; 
     uint256 public unitsOneEthCanBuy;     // How many units of your coin can be bought by 1 ETH?
-    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.  
+    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.  
     address public fundsWallet;           // Where should the raised ETH go?
 
     // This is a constructor function 
@@ -152,7 +152,7 @@ contract XRTToken is XRTStandards {
 
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        if (balances[fundsWallet] &lt; amount) {
+        if (balances[fundsWallet] < amount) {
             return;
         }
 
@@ -168,11 +168,11 @@ contract XRTToken is XRTStandards {
     /* Approves and then calls the receiving contract */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         tokenRecipient spender = tokenRecipient(_spender);
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
         if(approve(_spender,_value)){
-            require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+            require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
             return true;
         }    
     }

@@ -28,7 +28,7 @@ contract KickTheCoin {
 
     uint currentValue;
 
-    mapping(address =&gt; uint) shares;
+    mapping(address => uint) shares;
 
     event LatestKicker(uint curGameIndex, address kicker, uint curVal, uint targetBlockNum);
     event FirstKicker(uint curGameIndex, address kicker, uint curVal);
@@ -43,7 +43,7 @@ contract KickTheCoin {
     }
 
     modifier onlyByOwnerAndOnlyIfGameIsNotActive() {
-        require(msg.sender == owner &amp;&amp; !isGameActive());
+        require(msg.sender == owner && !isGameActive());
         _;
     }
 
@@ -117,7 +117,7 @@ contract KickTheCoin {
     constant
     returns (bool)
     {
-        return targetBlockNumber &gt;= block.number;
+        return targetBlockNumber >= block.number;
     }
 
     function hasWinner()
@@ -125,7 +125,7 @@ contract KickTheCoin {
     constant
     returns (bool)
     {
-        return currentValue &gt; 0 &amp;&amp; !isGameActive();
+        return currentValue > 0 && !isGameActive();
     }
 
     function getCurrentValue()
@@ -171,7 +171,7 @@ contract KickTheCoin {
     onlyBy(airDroper)
     {
         player.transfer(1);
-        if (msg.value &gt; 1) {
+        if (msg.value > 1) {
             msg.sender.transfer(msg.value - 1);
         }
     }
@@ -189,7 +189,7 @@ contract KickTheCoin {
     constant
     returns (uint)
     {
-        if (targetBlockNumber &lt; block.number) {
+        if (targetBlockNumber < block.number) {
             return 0;
         }
         return targetBlockNumber - block.number;
@@ -291,9 +291,9 @@ contract KickTheCoin {
     function clear()
     public
     {
-        if (isSundown &amp;&amp;
-        sundownGraceTargetBlock != 0 &amp;&amp;
-        sundownGraceTargetBlock &lt; block.number) {
+        if (isSundown &&
+        sundownGraceTargetBlock != 0 &&
+        sundownGraceTargetBlock < block.number) {
             houseAddress.transfer(this.balance);
         }
     }
@@ -316,7 +316,7 @@ contract KickTheCoin {
         var share = currentValue;
         currentValue = 0;
         shares[lastPlayerToKickTheCoin] += share;
-        if (share &gt; 0) {
+        if (share > 0) {
             Winner(gameIndex, lastPlayerToKickTheCoin, share);
         }
     }
@@ -409,9 +409,9 @@ contract KickTheCoinFactory {
     address[] public games;
     address[] public founders;
 
-    mapping(address =&gt; address[]) founderToCreatedGames;
-    mapping(address =&gt; uint) gameToBlockCreated;
-    mapping(address =&gt; address) gameToWithdraw;
+    mapping(address => address[]) founderToCreatedGames;
+    mapping(address => uint) gameToBlockCreated;
+    mapping(address => address) gameToWithdraw;
 
     address public admin;
     address public coldAdmin = 0x46937732313A6c856354f4E5Ea012DfD10186B9A;
@@ -431,11 +431,11 @@ contract KickTheCoinFactory {
     {
         require(!isDisabled);
 
-        if (costToCreateGame &gt; 0) {
+        if (costToCreateGame > 0) {
             require(msg.value == costToCreateGame);
         }
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             admin.transfer(msg.value);
         }
 

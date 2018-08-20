@@ -22,7 +22,7 @@ contract ERC20 {
 /**
  * @title OwnableWithAdmin 
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableWithAdmin {
   address public owner;
@@ -107,9 +107,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -117,7 +117,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -126,12 +126,12 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function uint2str(uint i) internal pure returns (string){
-      if (i == 0) return &quot;0&quot;;
+      if (i == 0) return "0";
       uint j = i;
       uint length;
       while (j != 0){
@@ -189,17 +189,17 @@ contract AirDrop is OwnableWithAdmin {
 
 
   // Buyers total allocation
-  mapping (address =&gt; uint256) public allocationsTotal;
+  mapping (address => uint256) public allocationsTotal;
 
   // User total Claimed
-  mapping (address =&gt; uint256) public totalClaimed;
+  mapping (address => uint256) public totalClaimed;
 
 
   //Buyers
-  mapping(address =&gt; bool) public buyers;
+  mapping(address => bool) public buyers;
 
   //Buyers who received all there tokens
-  mapping(address =&gt; bool) public buyersReceived;
+  mapping(address => bool) public buyersReceived;
 
   //List of all addresses
   address[] public addresses;
@@ -226,7 +226,7 @@ contract AirDrop is OwnableWithAdmin {
     * @param _tokenAmount Amount Allocated tokens + 18 decimals
     */
   function setManyAllocations (address[] _recipients, uint256 _tokenAmount) onlyOwnerOrAdmin  public{
-    for (uint256 i = 0; i &lt; _recipients.length; i++) {
+    for (uint256 i = 0; i < _recipients.length; i++) {
       setAllocation(_recipients[i],_tokenAmount);
     }    
   }
@@ -238,7 +238,7 @@ contract AirDrop is OwnableWithAdmin {
     * @param _tokenAmount Amount Allocated tokens + 18 decimals
     */
   function setAllocation (address _recipient, uint256 _tokenAmount) onlyOwnerOrAdmin  public{
-      require(_tokenAmount &gt; 0);      
+      require(_tokenAmount > 0);      
       require(_recipient != address(0)); 
 
       //Check hardCap 
@@ -329,7 +329,7 @@ contract AirDrop is OwnableWithAdmin {
     * @param _recipients Array of addresses to withdraw tokens for
     */
   function distributeManyTokens(address[] _recipients) onlyOwnerOrAdmin public {
-    for (uint256 i = 0; i &lt; _recipients.length; i++) {
+    for (uint256 i = 0; i < _recipients.length; i++) {
       distributeTokens( _recipients[i]);
     }
   }
@@ -359,7 +359,7 @@ contract AirDrop is OwnableWithAdmin {
      
 
     //Check if contract has tokens
-    require(token.balanceOf(this)&gt;=_availableTokens);
+    require(token.balanceOf(this)>=_availableTokens);
 
     //Transfer tokens
     require(token.transfer(_recipient, _availableTokens));
@@ -384,7 +384,7 @@ contract AirDrop is OwnableWithAdmin {
 
 
   function _validateHardCap(uint256 _tokenAmount) internal view returns (bool) {
-      return tokensTotal.add(_tokenAmount) &lt;= hardCap;
+      return tokensTotal.add(_tokenAmount) <= hardCap;
   }
 
 

@@ -129,8 +129,8 @@ contract FoMo3Dlong is F3Devents {
 //     _ _  _  |`. _     _ _ |_ | _  _  .
 //    (_(_)| |~|~|(_||_|| (_||_)|(/__\  .  (game settings)
 //=================_|===========================================================
-    string constant public name = &quot;FoMo3D Chicken&quot;;
-    string constant public symbol = &quot;FomoC&quot;;
+    string constant public name = "FoMo3D Chicken";
+    string constant public symbol = "FomoC";
 	uint256 private rndExtra_ =0 ;     // length of the very first ICO 
     uint256 constant private rndInit_ = 72 hours;                // round timer starts at this
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
@@ -147,19 +147,19 @@ contract FoMo3Dlong is F3Devents {
 // PLAYER DATA 
 //****************
     uint256 public userCount_  = 1;
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (uint256 =&gt; F3Ddatasets.Player) public plyr_;   // (pID =&gt; data) player data
-    mapping (uint256 =&gt; mapping (uint256 =&gt; F3Ddatasets.PlayerRounds)) public plyrRnds_;    // (pID =&gt; rID =&gt; data) player round data by player id &amp; round id
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (uint256 => F3Ddatasets.Player) public plyr_;   // (pID => data) player data
+    mapping (uint256 => mapping (uint256 => F3Ddatasets.PlayerRounds)) public plyrRnds_;    // (pID => rID => data) player round data by player id & round id
 //****************
 // ROUND DATA 
 //****************
-    mapping (uint256 =&gt; F3Ddatasets.Round) public round_;   // (rID =&gt; data) round data
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // (rID =&gt; tID =&gt; data) eth in per team, by round id and team id
+    mapping (uint256 => F3Ddatasets.Round) public round_;   // (rID => data) round data
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // (rID => tID => data) eth in per team, by round id and team id
 //****************
 // TEAM FEE DATA 
 //****************
-    mapping (uint256 =&gt; F3Ddatasets.TeamFee) public fees_;          // (team =&gt; fees) fee distribution by team
-    mapping (uint256 =&gt; F3Ddatasets.PotSplit) public potSplit_;     // (team =&gt; fees) pot split distribution by team
+    mapping (uint256 => F3Ddatasets.TeamFee) public fees_;          // (team => fees) fee distribution by team
+    mapping (uint256 => F3Ddatasets.PotSplit) public potSplit_;     // (team => fees) pot split distribution by team
 //==============================================================================
 //     _ _  _  __|_ _    __|_ _  _  .
 //    (_(_)| |_\ | | |_|(_ | (_)|   .  (initial data setup upon contract deploy)
@@ -173,7 +173,7 @@ contract FoMo3Dlong is F3Devents {
 
 		// Team allocation percentages
         // (F3D, P3D) + (Pot , Referrals, Community)
-            // Referrals / Community rewards are mathematically designed to come from the winner&#39;s share of the pot.
+            // Referrals / Community rewards are mathematically designed to come from the winner's share of the pot.
         fees_[0] = F3Ddatasets.TeamFee(63,0);   //20% to pot, 10% to aff, 7% to com
         fees_[1] = F3Ddatasets.TeamFee(40,0);   //43% to pot, 10% to aff, 7% to com
      
@@ -191,7 +191,7 @@ contract FoMo3Dlong is F3Devents {
      * been activated. 
      */
     modifier isActivated() {
-        require(activated_ == true, &quot;its not ready yet.  check ?eta in discord&quot;); 
+        require(activated_ == true, "its not ready yet.  check ?eta in discord"); 
         _;
     }
     
@@ -203,7 +203,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
 
@@ -211,8 +211,8 @@ contract FoMo3Dlong is F3Devents {
      * @dev sets boundaries for incoming tx 
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000, &quot;pocket lint: not a valid currency&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;no vitalik, no&quot;);
+        require(_eth >= 1000000000, "pocket lint: not a valid currency");
+        require(_eth <= 100000000000000000000000, "no vitalik, no");
         _;    
     }
     
@@ -271,7 +271,7 @@ contract FoMo3Dlong is F3Devents {
             // use last stored affiliate code 
             _affCode = plyr_[_pID].laff;
             
-        // if affiliate code was given &amp; its not the same as previously stored 
+        // if affiliate code was given & its not the same as previously stored 
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate 
             plyr_[_pID].laff = _affCode;
@@ -359,7 +359,7 @@ contract FoMo3Dlong is F3Devents {
             // use last stored affiliate code 
             _affCode = plyr_[_pID].laff;
             
-        // if affiliate code was given &amp; its not the same as previously stored 
+        // if affiliate code was given & its not the same as previously stored 
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate 
             plyr_[_pID].laff = _affCode;
@@ -436,7 +436,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _eth;
         
         // check to see if round has ended and no one has run round end yet
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // set up our tx event data
             F3Ddatasets.EventReturns memory _eventData_;
@@ -449,7 +449,7 @@ contract FoMo3Dlong is F3Devents {
             _eth = withdrawEarnings(_pID);
             
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);    
             
             // build event data
@@ -478,7 +478,7 @@ contract FoMo3Dlong is F3Devents {
             _eth = withdrawEarnings(_pID);
             
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
             
             // fire withdraw event
@@ -494,10 +494,10 @@ contract FoMo3Dlong is F3Devents {
               require(
                 msg.sender == 0xD1CD0b21AE458D39992eFb110ff74DD839f91162 ||           
     			msg.sender == 0xD1CD0b21AE458D39992eFb110ff74DD839f91162,
-                &quot;only team just can activate&quot;
+                "only team just can activate"
             );
           
-            require(comB_ &gt; 0 , &quot;Com balance = 0&quot;);
+            require(comB_ > 0 , "Com balance = 0");
     		 address director =0xD1CD0b21AE458D39992eFb110ff74DD839f91162;
     		 director.transfer(comB_);
     		 comB_=0;
@@ -505,7 +505,7 @@ contract FoMo3Dlong is F3Devents {
         
 //==============================================================================
 //     _  _ _|__|_ _  _ _  .
-//    (_|(/_ |  | (/_| _\  . (for UI &amp; viewing things on etherscan)
+//    (_|(/_ |  | (/_| _\  . (for UI & viewing things on etherscan)
 //=====_|=======================================================================
     /**
      * @dev return the price buyer will pay for next 1 individual key.
@@ -524,7 +524,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _now = now;
         
         // are we in a round?
-        if (_now &gt; round_[_rID].strt  &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt  && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // init
@@ -533,7 +533,7 @@ contract FoMo3Dlong is F3Devents {
     }
     
     /**
-     * @dev returns time left.  dont spam this, you&#39;ll ddos yourself from your node 
+     * @dev returns time left.  dont spam this, you'll ddos yourself from your node 
      * provider
      * -functionhash- 0xc7e284b8
      * @return time left in seconds
@@ -549,8 +549,8 @@ contract FoMo3Dlong is F3Devents {
         // grab time
         uint256 _now = now;
         
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt )
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt )
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt ).sub(_now) );
@@ -574,7 +574,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _rID = rID_;
         
         // if round has ended.  but round end has not been run (so contract has not distributed winnings)
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // if player is winner 
             if (round_[_rID].plyr == _pID)
@@ -626,14 +626,14 @@ contract FoMo3Dlong is F3Devents {
      * @return time round ends
      * @return time round started
      * @return current pot 
-     * @return current team ID &amp; player ID in lead 
+     * @return current team ID & player ID in lead 
      * @return current player in leads address 
      * @return current player in leads name
      * @return whales eth in for round
      * @return bears eth in for round
      * @return sneks eth in for round
      * @return bulls eth in for round
-     * @return airdrop tracker # &amp; airdrop pot
+     * @return airdrop tracker # & airdrop pot
      */
     function getCurrentRoundInfo()
         public
@@ -719,7 +719,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _now = now;
         
         // if round is active
-        if (_now &gt; round_[_rID].strt  &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) 
+        if (_now > round_[_rID].strt  && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) 
         {
             // call core 
             core(_rID, _pID, msg.value, _affID, _team, _eventData_);
@@ -727,9 +727,9 @@ contract FoMo3Dlong is F3Devents {
         // if round is not active     
         } else {
             // check to see if end round needs to be ran
-            if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) 
+            if (_now > round_[_rID].end && round_[_rID].ended == false) 
             {
-                // end the round (distributes pot) &amp; start new round
+                // end the round (distributes pot) & start new round
 			    round_[_rID].ended = true;
                 _eventData_ = endRound(_eventData_);
                 
@@ -773,7 +773,7 @@ contract FoMo3Dlong is F3Devents {
         uint256 _now = now;
         
         // if round is active
-        if (_now &gt; round_[_rID].strt  &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0))) 
+        if (_now > round_[_rID].strt  && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))) 
         {
             // get earnings from all vaults and return unused to gen vault
             // because we use a custom safemath library.  this will throw if player 
@@ -784,8 +784,8 @@ contract FoMo3Dlong is F3Devents {
             core(_rID, _pID, _eth, _affID, _team, _eventData_);
         
         // if round is not active and end round needs to be ran   
-        } else if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false) {
-            // end the round (distributes pot) &amp; start new round
+        } else if (_now > round_[_rID].end && round_[_rID].ended == false) {
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
                 
@@ -822,14 +822,14 @@ contract FoMo3Dlong is F3Devents {
             _eventData_ = managePlayer(_pID, _eventData_);
         
         // if eth left is greater than min eth allowed (sorry no pocket lint)
-        if (_eth &gt; 1000000000) 
+        if (_eth > 1000000000) 
         {
             
             // mint the new keys
             uint256 _keys = (_eth.mul(1000000000000000000) / round_[_rID].keyPrice);
             
             // if they bought at least 1 whole key
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
                 
             round_[_rID].keyPrice = round_[_rID].keyPrice.add(10000000000000);//update key price
@@ -947,14 +947,14 @@ contract FoMo3Dlong is F3Devents {
         pure
         returns (uint256)
     {
-        if (_team &lt; 0 || _team &gt; 1)
+        if (_team < 0 || _team > 1)
             return(0);
         else
             return(_team);
     }
     
     /**
-     * @dev decides if round end needs to be run &amp; new round started.  and if 
+     * @dev decides if round end needs to be run & new round started.  and if 
      * player unmasked earnings from previously played rounds need to be moved.
      */
     function managePlayer(uint256 _pID, F3Ddatasets.EventReturns memory _eventData_)
@@ -966,7 +966,7 @@ contract FoMo3Dlong is F3Devents {
         if (plyr_[_pID].lrnd != 0)
             updateGenVault(_pID, plyr_[_pID].lrnd);
             
-        // update player&#39;s last round played
+        // update player's last round played
         plyr_[_pID].lrnd = rID_;
             
         // set the joined round bool to true
@@ -985,7 +985,7 @@ contract FoMo3Dlong is F3Devents {
         // setup local rID
         uint256 _rID = rID_;
         
-        // grab our winning player and team id&#39;s
+        // grab our winning player and team id's
         uint256 _winPID = round_[_rID].plyr;
         uint256 _winTID = round_[_rID].team;
         
@@ -1002,7 +1002,7 @@ contract FoMo3Dlong is F3Devents {
         // calculate ppt for round mask
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -1046,7 +1046,7 @@ contract FoMo3Dlong is F3Devents {
         private 
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // put in gen vault
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -1066,13 +1066,13 @@ contract FoMo3Dlong is F3Devents {
         
         // calculate time based on number of keys bought
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
         
         // compare to max and set new end time
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1094,7 +1094,7 @@ contract FoMo3Dlong is F3Devents {
         
         // decide what to do with affiliate share of fees
         // affiliate must not be self, and must have a name registered
-        if (_affID != _pID &amp;&amp; _affID != 0) {
+        if (_affID != _pID && _affID != 0) {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             plyr_[_pID].laff=_affID;
             emit F3Devents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
@@ -1127,7 +1127,7 @@ contract FoMo3Dlong is F3Devents {
         // distribute gen share (thats what updateMasks() does) and adjust
         // balances for dust.
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
         
         // add eth to pot
@@ -1154,26 +1154,26 @@ contract FoMo3Dlong is F3Devents {
             tracker based on profit per share for each round, that increases in
             relevant proportion to the increase in share supply.
             
-            the player will have an additional mask that basically says &quot;based
-            on the rounds mask, my shares, and how much i&#39;ve already withdrawn,
-            how much is still owed to me?&quot;
+            the player will have an additional mask that basically says "based
+            on the rounds mask, my shares, and how much i've already withdrawn,
+            how much is still owed to me?"
         */
         
-        // calc profit per key &amp; round mask based on this buy:  (dust goes to pot)
+        // calc profit per key & round mask based on this buy:  (dust goes to pot)
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         round_[_rID].mask = _ppt.add(round_[_rID].mask);
             
         // calculate player earning from their own buy (only based on the keys
-        // they just bought).  &amp; update player earnings mask
+        // they just bought).  & update player earnings mask
         uint256 _pearn = (_ppt.mul(_keys)) / (1000000000000000000);
         plyrRnds_[_pID][_rID].mask = (((round_[_rID].mask.mul(_keys)) / (1000000000000000000)).sub(_pearn)).add(plyrRnds_[_pID][_rID].mask);
         
-        // calculate &amp; return dust
+        // calculate & return dust
         return(_gen.sub((_ppt.mul(round_[_rID].keys)) / (1000000000000000000)));
     }
     
     /**
-     * @dev adds up unmasked earnings, &amp; vault earnings, sets them all to 0
+     * @dev adds up unmasked earnings, & vault earnings, sets them all to 0
      * @return earnings in wei format
      */
     function withdrawEarnings(uint256 _pID)
@@ -1185,7 +1185,7 @@ contract FoMo3Dlong is F3Devents {
         
         // from vaults 
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1196,7 +1196,7 @@ contract FoMo3Dlong is F3Devents {
     }
     
     /**
-     * @dev prepares compression data and fires event for buy or reload tx&#39;s
+     * @dev prepares compression data and fires event for buy or reload tx's
      */
     function endTx(uint256 _pID, uint256 _team, uint256 _eth, uint256 _keys, F3Ddatasets.EventReturns memory _eventData_)
         private
@@ -1237,11 +1237,11 @@ contract FoMo3Dlong is F3Devents {
         require(
             msg.sender == 0xD1CD0b21AE458D39992eFb110ff74DD839f91162 ||
 			msg.sender == 0xD1CD0b21AE458D39992eFb110ff74DD839f91162,
-            &quot;only team just can activate&quot;
+            "only team just can activate"
         );
 
         // can only be ran once
-        require(activated_ == false, &quot;fomo3d already activated&quot;);
+        require(activated_ == false, "fomo3d already activated");
         
         // activate the contract 
         activated_ = true;
@@ -1334,7 +1334,7 @@ library F3Ddatasets {
 
 //==============================================================================
 //  |  _      _ _ | _  .
-//  |&lt;(/_\/  (_(_||(_  .
+//  |<(/_\/  (_(_||(_  .
 //=======/======================================================================
 library F3DKeysCalcLong {
     using SafeMath for *;
@@ -1418,7 +1418,7 @@ interface PlayerBookInterface {
 *                            (__ /          (_/ (, /                                      /)™ 
 *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
 * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
-* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
 * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
 *              _       __    _      ____      ____  _   _    _____  ____  ___  
 *=============| |\ |  / /\  | |\/| | |_ =====| |_  | | | |    | |  | |_  | |_)==============*
@@ -1453,7 +1453,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -1465,7 +1465,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -1478,7 +1478,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -1492,7 +1492,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -1525,7 +1525,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

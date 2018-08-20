@@ -10,7 +10,7 @@ contract MarbleEarth {
     uint timeAdded;
     MoonType moonType;
     uint64 votes;
-    mapping (address =&gt; bool) supportMap;
+    mapping (address => bool) supportMap;
 
   }
 
@@ -23,9 +23,9 @@ contract MarbleEarth {
 
   address[] addresses;
   bytes32[] identities;
-  mapping (address =&gt; bytes32) voterMap;
+  mapping (address => bytes32) voterMap;
 
-  mapping (address =&gt; NewMoon) public proposedMoons;
+  mapping (address => NewMoon) public proposedMoons;
   address[] public proposedMoonsIndex;
 
   address public verificationAddress;
@@ -45,14 +45,14 @@ contract MarbleEarth {
 
   function proposeNewMoon(address mAddress, MoonType moonType) public  {
     
-    if ((block.timestamp - proposedMoons[proposedMoonsIndex[0]].timeAdded) &gt; 172800) {
+    if ((block.timestamp - proposedMoons[proposedMoonsIndex[0]].timeAdded) > 172800) {
 
       delete proposedMoons[proposedMoonsIndex[0]];
       delete proposedMoonsIndex[0];
 
       }
 
-    if (proposedMoonsIndex.length &gt;= 1000) {
+    if (proposedMoonsIndex.length >= 1000) {
       return;
       }
 
@@ -74,7 +74,7 @@ contract MarbleEarth {
 
     uint quotient = (newMoon.votes*100)/addresses.length;
 
-    if (quotient &gt;= 67) {
+    if (quotient >= 67) {
     
       replaceNewMoon(newMoon, newMoonAddress);
     }
@@ -139,7 +139,7 @@ contract MarbleEarth {
 
   function newVoterAllocation() internal returns (uint) {
             uint contractBalance = getBalance();
-           if (addresses.length &lt; 1000000) {runLottery(contractBalance); }
+           if (addresses.length < 1000000) {runLottery(contractBalance); }
 
       return (-contractBalance*addresses.length/100000000000 + 2*contractBalance/10000000000)*4/5;
 
@@ -151,11 +151,11 @@ contract MarbleEarth {
             bytes32 randomHash = keccak256(lastVerified, blockHash);
             uint hashNumber = uint(randomHash);
      
-        if (addresses.length &lt; 1000 &amp;&amp; hashNumber &lt; 2**246) {
+        if (addresses.length < 1000 && hashNumber < 2**246) {
              tokenContract = MRBLToken(tokenAddress);
              tokenContract.transfer(lastVerified, contractBalance/5);
         }
-        else if (hashNumber &lt; 2**236)  {
+        else if (hashNumber < 2**236)  {
              tokenContract = MRBLToken(tokenAddress);
              tokenContract.transfer(lastVerified, contractBalance/5);
        }
@@ -187,13 +187,13 @@ contract VerificationMoon {
       uint timeAdded;
       uint64 votes;
       bytes32 argument;
-      mapping (address =&gt; bool) supportMap;
+      mapping (address => bool) supportMap;
 
 
   }
 
   address public marbleEarthAddress;
-  mapping (address =&gt; NewVoter) public proposedVoters;
+  mapping (address => NewVoter) public proposedVoters;
   uint16 public numberOfProposed;
   address[] public voterAddresses;
   bytes32[] public voterIdentities;
@@ -229,14 +229,14 @@ contract VerificationMoon {
 
   function supportNewVoter(address _address) public {
 
-    if ((block.timestamp - proposedVoters[0].timeAdded) &gt; 604800) {
+    if ((block.timestamp - proposedVoters[0].timeAdded) > 604800) {
 
       delete proposedVoters[0];
       numberOfProposed--;
 
       }
 
-    if (numberOfProposed &gt;= 1000) {
+    if (numberOfProposed >= 1000) {
 
       return;
 
@@ -249,7 +249,7 @@ contract VerificationMoon {
 
     }
 
-    if (proposedVoters[_address].votes*100 / voterAddresses.length &gt; 50) {
+    if (proposedVoters[_address].votes*100 / voterAddresses.length > 50) {
 
         addVoter(_address, msg.sender, proposedVoters[_address].argument);
         delete proposedVoters[_address];
@@ -266,12 +266,12 @@ contract PurgeMoon {
       uint timeAdded;
       uint64 votes;
       bytes32 argument;
-      mapping (address =&gt; bool) supportMap;
+      mapping (address => bool) supportMap;
 
   }
 
   address public marbleEarthAddress;
-  mapping (address =&gt; NewPurge) public proposedPurges;
+  mapping (address => NewPurge) public proposedPurges;
   uint16 public numberOfProposed;
   address[] public voterAddresses;
   bytes32[] public voterIdentities;
@@ -300,14 +300,14 @@ contract PurgeMoon {
 
   function supportNewPurge(address _address, uint arrayIndex) public {
 
-    if ((block.timestamp - proposedPurges[0].timeAdded) &gt; 604800) {
+    if ((block.timestamp - proposedPurges[0].timeAdded) > 604800) {
 
       delete proposedPurges[0];
       numberOfProposed--;
 
       }
 
-    if (numberOfProposed &gt;= 1000) {
+    if (numberOfProposed >= 1000) {
 
       return;
 
@@ -320,7 +320,7 @@ contract PurgeMoon {
 
     }
 
-    if (proposedPurges[_address].votes*100 / voterAddresses.length &gt; 50) {
+    if (proposedPurges[_address].votes*100 / voterAddresses.length > 50) {
 
         purgeVoter(_address, arrayIndex);
         delete proposedPurges[_address];
@@ -334,13 +334,13 @@ contract PurgeMoon {
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
 contract MRBLToken {
-    string public name = &quot;Marble&quot;;
-    string public symbol = &quot;MRBL&quot;;
+    string public name = "Marble";
+    string public symbol = "MRBL";
     uint256 public decimals = 18;
     uint256 public totalSupply = 100*1000*1000*1000*10**decimals;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -353,8 +353,8 @@ contract MRBLToken {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -371,7 +371,7 @@ contract MRBLToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -396,7 +396,7 @@ contract MRBLToken {
 
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         emit Burn(msg.sender, _value);
@@ -405,8 +405,8 @@ contract MRBLToken {
 
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              

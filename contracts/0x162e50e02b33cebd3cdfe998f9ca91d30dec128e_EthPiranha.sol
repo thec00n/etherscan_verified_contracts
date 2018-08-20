@@ -25,7 +25,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f3b3a2b3a1f3e27363032253a31713c30">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f3b3a2b3a1f3e27363032253a31713c30">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function balanceOf(address _owner) public view returns (uint256 balance);
@@ -50,12 +50,12 @@ contract EthPiranha is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;Piranha&quot;;
-  string public constant SYMBOL = &quot;PiranhaToken&quot;;
+  string public constant NAME = "Piranha";
+  string public constant SYMBOL = "PiranhaToken";
 
-  mapping (uint256 =&gt; address) private piranhaIdToOwner;
+  mapping (uint256 => address) private piranhaIdToOwner;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
   
    /*** DATATYPES ***/
   struct Piranha {
@@ -109,7 +109,7 @@ contract EthPiranha is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice &amp;&amp; sellingPrice &gt; 0);
+    require(msg.value >= sellingPrice && sellingPrice > 0);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 97), 100)); //97% to previous owner, 3% dev tax
 
@@ -126,27 +126,27 @@ contract EthPiranha is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, 0, oldOwner, newOwner, piranhas[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
   }
   
   function changePiranhaName(uint256 _tokenId, string _name) public payable {
-	require (piranhaIdToOwner[_tokenId] == msg.sender &amp;&amp; msg.value == biteCost);
-	require(bytes(_name).length &lt;= 15);
+	require (piranhaIdToOwner[_tokenId] == msg.sender && msg.value == biteCost);
+	require(bytes(_name).length <= 15);
 	
 	Piranha storage piranha = piranhas[_tokenId];
 	piranha.name = _name;
   }
   
   function changeBeedingCost(uint256 _newCost) public onlyContractOwner {
-    require(_newCost &gt; 0);
+    require(_newCost > 0);
 	breedingCost=_newCost;
   }  
 
   function changeBiteCost(uint256 _newCost) public onlyContractOwner {
-    require(_newCost &gt; 0);
+    require(_newCost > 0);
 	biteCost=_newCost;
   }    
   
@@ -161,7 +161,7 @@ contract EthPiranha is ERC721, Ownable {
 	require (piranhaIdToOwner[_tokenId] == msg.sender);
 
 	Piranha storage piranha = piranhas[_tokenId];
-	require (piranha.sellPrice &gt; 0);
+	require (piranha.sellPrice > 0);
 	
 	piranha.sellPrice = 0;
   }  
@@ -174,7 +174,7 @@ contract EthPiranha is ERC721, Ownable {
 	
 	uint8 piranhaSize=uint8(piranha.size+(now-piranha.growthStartTime)/300);
 
-	require (piranhaSize &lt; 240);
+	require (piranhaSize < 240);
 	
 	piranha.hungry = 1;
   }   
@@ -194,15 +194,15 @@ contract EthPiranha is ERC721, Ownable {
 	
 	Piranha storage piranha = piranhas[_tokenId];
 	Piranha storage victimPiranha = piranhas[_victimTokenId];
-	require (piranha.hungry == 1 &amp;&amp; victimPiranha.hungry == 1);
+	require (piranha.hungry == 1 && victimPiranha.hungry == 1);
 
 	uint8 vitimPiranhaSize=uint8(victimPiranha.size+(now-victimPiranha.growthStartTime)/300);
 	
-	require (vitimPiranhaSize&gt;40); // don&#39;t bite a small
+	require (vitimPiranhaSize>40); // don't bite a small
 
 	uint8 piranhaSize=uint8(piranha.size+(now-piranha.growthStartTime)/300)+10;
 	
-	if (piranhaSize&gt;240) { 
+	if (piranhaSize>240) { 
 	    piranha.size = 240; //maximum
 		piranha.hungry = 0;
 	} else {
@@ -210,7 +210,7 @@ contract EthPiranha is ERC721, Ownable {
 	}
      
 	//decrease victim size 
-	if (vitimPiranhaSize&gt;=50) {
+	if (vitimPiranhaSize>=50) {
 	    vitimPiranhaSize-=10;
 	    victimPiranha.size = vitimPiranhaSize;
 	}
@@ -225,32 +225,32 @@ contract EthPiranha is ERC721, Ownable {
   
   function breeding(uint256 _maleTokenId, uint256 _femaleTokenId) public payable {
   
-    require (piranhaIdToOwner[_maleTokenId] ==  msg.sender &amp;&amp; piranhaIdToOwner[_femaleTokenId] == msg.sender);
+    require (piranhaIdToOwner[_maleTokenId] ==  msg.sender && piranhaIdToOwner[_femaleTokenId] == msg.sender);
 	require (msg.value == breedingCost);
 
 	Piranha storage piranhaMale = piranhas[_maleTokenId];
 	Piranha storage piranhaFemale = piranhas[_femaleTokenId];
 	
 	uint8 maleSize=uint8(piranhaMale.size+(now-piranhaMale.growthStartTime)/300);
-	if (maleSize&gt;240)
+	if (maleSize>240)
 	   piranhaMale.size=240;
 	else 
 	   piranhaMale.size=maleSize;
 
 	uint8 femaleSize=uint8(piranhaFemale.size+(now-piranhaFemale.growthStartTime)/300);
-	if (femaleSize&gt;240)
+	if (femaleSize>240)
 	   piranhaFemale.size=240;
 	else 
 	   piranhaFemale.size=femaleSize;
 	   
-	require (piranhaMale.size &gt; 150 &amp;&amp; piranhaFemale.size &gt; 150);
+	require (piranhaMale.size > 150 && piranhaFemale.size > 150);
 	
 	uint8 newbornSize = uint8(SafeMath.div(SafeMath.add(piranhaMale.size, piranhaMale.size),4));
 	
 	uint256 maxGen=piranhaFemale.gen;
 	uint256 minGen=piranhaMale.gen;
 	
-	if (piranhaMale.gen &gt; piranhaFemale.gen) {
+	if (piranhaMale.gen > piranhaFemale.gen) {
 		maxGen=piranhaMale.gen;
 		minGen=piranhaFemale.gen;
 	} 
@@ -268,7 +268,7 @@ contract EthPiranha is ERC721, Ownable {
 	}
 	
 	// 5% chance to get rare piranhas for each gen
-	if (newbornUnique &gt; 5) 
+	if (newbornUnique > 5) 
 		newbornUnique = 0;
 		
      //initiate new size, cancel selling
@@ -281,7 +281,7 @@ contract EthPiranha is ERC721, Ownable {
 	 piranhaMale.sellPrice = 0;	 
 	 piranhaFemale.sellPrice = 0;	 
 		
-	_createPiranha(&quot;EthPiranha&quot;, msg.sender, 0, newbornSize, newbornGen, newbornUnique, 0);
+	_createPiranha("EthPiranha", msg.sender, 0, newbornSize, newbornGen, newbornUnique, 0);
   
   }
   
@@ -290,12 +290,12 @@ contract EthPiranha is ERC721, Ownable {
 	Piranha storage piranha;
 	uint256 indexTo = totalSupply();
 	
-    if (indexTo == 0 || _startPiranhaId &gt;= indexTo) {
+    if (indexTo == 0 || _startPiranhaId >= indexTo) {
         // Return an empty array
       return (new address[](0), new uint256[](0), new uint8[](0), new uint256[](0));
     }
 
-	if (indexTo &gt; _startPiranhaId+1000)
+	if (indexTo > _startPiranhaId+1000)
 		indexTo = _startPiranhaId + 1000;
 		
     uint256 totalResultPiranhas = indexTo - _startPiranhaId;		
@@ -305,7 +305,7 @@ contract EthPiranha is ERC721, Ownable {
 	uint8[] memory hungry_res = new uint8[](totalResultPiranhas);
 	uint256[] memory prices_res = new uint256[](totalResultPiranhas);
 	
-	for (uint256 piranhaId = _startPiranhaId; piranhaId &lt; indexTo; piranhaId++) {
+	for (uint256 piranhaId = _startPiranhaId; piranhaId < indexTo; piranhaId++) {
 	  piranha = piranhas[piranhaId];
 	  
 	  owners_res[piranhaId - _startPiranhaId] = piranhaIdToOwner[piranhaId];
@@ -362,7 +362,7 @@ contract EthPiranha is ERC721, Ownable {
     ownershipTokenCount[_to]++;
     piranhaIdToOwner[_tokenId] = _to;
 
-    // When creating new piranhas _from is 0x0, but we can&#39;t account that address.
+    // When creating new piranhas _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
     }
@@ -384,20 +384,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

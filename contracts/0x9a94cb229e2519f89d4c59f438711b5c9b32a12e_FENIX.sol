@@ -24,20 +24,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,10 +58,10 @@ contract FENIX is ERC20
 {
     using SafeMath for uint256;
         // Name of the token
-    string public constant name = &quot;FENIX&quot;;
+    string public constant name = "FENIX";
 
     // Symbol of token
-    string public constant symbol = &quot;FNX&quot;;
+    string public constant symbol = "FNX";
     uint8 public constant decimals = 18;
     uint public _totalsupply = 1000000000 * 10 ** 18; // 1 Billion FNX Coins
     address public owner;
@@ -76,8 +76,8 @@ contract FENIX is ERC20
     bool public icoRunningStatus;
     bool public lockstatus; 
   
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     address public ethFundMain = 0xBe80a978364649422708470c979435f43e027209; // address to receive ether from smart contract
     uint256 public ethreceived;
     uint bonusCalculationFactor;
@@ -86,7 +86,7 @@ contract FENIX is ERC20
  
  
     uint public priceFactor;
-    mapping(address =&gt; uint256) availTokens;
+    mapping(address => uint256) availTokens;
 
     enum Stages {
         NOTSTARTED,
@@ -122,14 +122,14 @@ contract FENIX is ERC20
     function () public payable
     {
         require(stage != Stages.ENDED);
-        require(!stopped &amp;&amp; msg.sender != owner);
-        if (stage == Stages.PREICO &amp;&amp; now &lt;= preico_enddate){
-             require((msg.value).mul(priceFactor.mul(100)) &gt;= (pre_minContribution.mul(10 ** 18)));
+        require(!stopped && msg.sender != owner);
+        if (stage == Stages.PREICO && now <= preico_enddate){
+             require((msg.value).mul(priceFactor.mul(100)) >= (pre_minContribution.mul(10 ** 18)));
 
           y();
 
     }
-    else  if (stage == Stages.ICO &amp;&amp; now &lt;= ico_enddate){
+    else  if (stage == Stages.ICO && now <= ico_enddate){
   
           _price_tokn= getCurrentTokenPrice();
        
@@ -149,13 +149,13 @@ contract FENIX is ERC20
         bonusCalculationFactor = (block.timestamp.sub(ico_startdate)).div(3600); //time period in seconds
         if (bonusCalculationFactor== 0) 
             price_tokn = 65;                     //35 % Discount
-        else if (bonusCalculationFactor &gt;= 1 &amp;&amp; bonusCalculationFactor &lt; 24) 
+        else if (bonusCalculationFactor >= 1 && bonusCalculationFactor < 24) 
             price_tokn = 70;                     //30 % Discount
-        else if (bonusCalculationFactor &gt;= 24 &amp;&amp; bonusCalculationFactor &lt; 168) 
+        else if (bonusCalculationFactor >= 24 && bonusCalculationFactor < 168) 
             price_tokn = 80;                      //20 % Discount
-        else if (bonusCalculationFactor &gt;= 168 &amp;&amp; bonusCalculationFactor &lt; 336) 
+        else if (bonusCalculationFactor >= 168 && bonusCalculationFactor < 336) 
             price_tokn = 90;                     //10 % Discount
-        else if (bonusCalculationFactor &gt;= 336) 
+        else if (bonusCalculationFactor >= 336) 
             price_tokn = 100;                  //0 % Discount
             
             return price_tokn;
@@ -165,7 +165,7 @@ contract FENIX is ERC20
          function y() private {
             
              no_of_tokens = ((msg.value).mul(priceFactor.mul(100))).div(_price_tokn);
-             if(_price_tokn &gt;=80){
+             if(_price_tokn >=80){
                  availTokens[msg.sender] = availTokens[msg.sender].add(no_of_tokens);
              }
              ethreceived = ethreceived.add(msg.value);
@@ -223,7 +223,7 @@ contract FENIX is ERC20
 
     function end_ICO() external onlyOwner atStage(Stages.ICO)
     {
-        require(now &gt; ico_enddate);
+        require(now > ico_enddate);
         stage = Stages.ENDED;
         icoRunningStatus = false;
         uint256 x = balances[address(this)];
@@ -266,13 +266,13 @@ contract FENIX is ERC20
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from, address _to, uint256 _amount)public returns(bool success) {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
         balances[_from] = (balances[_from]).sub(_amount);
         allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
@@ -284,8 +284,8 @@ contract FENIX is ERC20
     // If this function is called again it overwrites the current allowance with _value.
     function approve(address _spender, uint256 _amount)public returns(bool success) {
         require(_spender != 0x0);
-        if (!icoRunningStatus &amp;&amp; lockstatus) {
-            require(_amount &lt;= availTokens[msg.sender]);
+        if (!icoRunningStatus && lockstatus) {
+            require(_amount <= availTokens[msg.sender]);
         }
         allowed[msg.sender][_spender] = _amount;
         emit Approval(msg.sender, _spender, _amount);
@@ -293,14 +293,14 @@ contract FENIX is ERC20
     }
 
     function allowance(address _owner, address _spender)public view returns(uint256 remaining) {
-        require(_owner != 0x0 &amp;&amp; _spender != 0x0);
+        require(_owner != 0x0 && _spender != 0x0);
         return allowed[_owner][_spender];
     }
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) public returns(bool success) {
        
        if ( msg.sender == owner) {
-            require(balances[owner] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+            require(balances[owner] >= _amount && _amount >= 0);
             balances[owner] = balances[owner].sub(_amount);
             balances[_to] += _amount;
             availTokens[_to] += _amount;
@@ -308,8 +308,8 @@ contract FENIX is ERC20
             return true;
         }
         else
-        if (!icoRunningStatus &amp;&amp; lockstatus &amp;&amp; msg.sender != owner) {
-            require(availTokens[msg.sender] &gt;= _amount);
+        if (!icoRunningStatus && lockstatus && msg.sender != owner) {
+            require(availTokens[msg.sender] >= _amount);
             availTokens[msg.sender] -= _amount;
             balances[msg.sender] -= _amount;
             availTokens[_to] += _amount;
@@ -320,7 +320,7 @@ contract FENIX is ERC20
 
           else if(!lockstatus)
          {
-           require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+           require(balances[msg.sender] >= _amount && _amount >= 0);
            balances[msg.sender] = (balances[msg.sender]).sub(_amount);
            balances[_to] = (balances[_to]).add(_amount);
            emit Transfer(msg.sender, _to, _amount);

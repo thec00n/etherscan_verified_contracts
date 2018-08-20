@@ -28,7 +28,7 @@ contract PhoenixLite {
         uint lastUserUpdateRound;
     }
     
-    mapping (address =&gt; Account) private accounts;
+    mapping (address => Account) private accounts;
 
 
     function PhoenixLite() public {
@@ -66,15 +66,15 @@ contract PhoenixLite {
     function calculateUpdateProfit(address user) private view returns (Account) {
         Account memory acc = accounts[user];
         
-        for(uint r = acc.lastUserUpdateRound; r &lt; currentRound; r++) {
+        for(uint r = acc.lastUserUpdateRound; r < currentRound; r++) {
             acc.profitTotal *= 2;
 
-            if(acc.moneyHidden &gt; 0) {
+            if(acc.moneyHidden > 0) {
                 acc.profitTotal += acc.moneyHidden * 2;
                 acc.moneyHidden = 0;
             }
             
-            if(acc.moneyNew &gt; 0) {
+            if(acc.moneyNew > 0) {
                 acc.moneyHidden = acc.moneyNew;
                 acc.moneyNew = 0;
             }
@@ -94,7 +94,7 @@ contract PhoenixLite {
     // That function returns canceled status.
     // If round lasts for more than 1 year - cancel mode is on
     function canceled() public view returns(bool isCanceled) {
-        return block.timestamp &gt;= (currentRoundStartTime + MAX_ROUND_TIME) || isForceCanceled;
+        return block.timestamp >= (currentRoundStartTime + MAX_ROUND_TIME) || isForceCanceled;
     }
     
     // Fallback function for handling money sending directly to contract
@@ -117,7 +117,7 @@ contract PhoenixLite {
 
         uint money2add = msg.value;
         totalCollected += msg.value;
-        while(currentRoundCollected + money2add &gt;= currentLimit) {
+        while(currentRoundCollected + money2add >= currentLimit) {
             accounts[msg.sender].moneyNew += currentLimit - 
                 currentRoundCollected;
             money2add -= currentLimit - currentRoundCollected;
@@ -180,7 +180,7 @@ contract PhoenixLite {
         acc.profitTotal = 0;
         acc.profitTaken += money2send;
 
-        if(money2send &lt;= this.balance) {
+        if(money2send <= this.balance) {
             msg.sender.transfer(money2send);
         }
         else {
@@ -205,7 +205,7 @@ contract PhoenixLite {
         acc.profitTaken += money2send;
         accounts[msg.sender] = acc;
 
-        if(money2send &gt; 0) {
+        if(money2send > 0) {
             msg.sender.transfer(money2send);
         }
     }

@@ -21,9 +21,9 @@ contract Ownable {
 
 contract IamKokinToken is Ownable {
     
-    string public  name  = &quot;GitHubs cherry&quot;;
+    string public  name  = "GitHubs cherry";
     
-    string public  symbol = &quot;GHC&quot;;
+    string public  symbol = "GHC";
     
     uint32 public  decimals = 8 ;
     
@@ -47,9 +47,9 @@ contract IamKokinToken is Ownable {
     
     address[] tempArray;
 
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
-    mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping (address => mapping(address => uint)) allowed;
     
     function IamKokinToken() public {
         balances[commandAddress] = forCommand;
@@ -61,7 +61,7 @@ contract IamKokinToken is Ownable {
     }
 
     function transfer(address _to, uint _value) public returns (bool success) {
-            if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+            if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
                 balances[msg.sender] -= _value; 
                 balances[_to] += _value;
                 Transfer(msg.sender, _to, _value);
@@ -71,9 +71,9 @@ contract IamKokinToken is Ownable {
     }
     
     function multisend(address[] temp) public onlyOwner returns (bool success){
-         if((now &gt; startEtap1 &amp;&amp; now &lt; endEtap1)||(now &gt; startEtap2 &amp;&amp; now &lt; endEtap2)){
-                if(temp.length &gt; 0) {
-                    for(uint i = 0; i &lt; temp.length; i++)
+         if((now > startEtap1 && now < endEtap1)||(now > startEtap2 && now < endEtap2)){
+                if(temp.length > 0) {
+                    for(uint i = 0; i < temp.length; i++)
                     {
                         balances[owner] -= sendCount;
                         balances[temp[i]] += sendCount;
@@ -87,11 +87,11 @@ contract IamKokinToken is Ownable {
     
     
     function burn() onlyOwner public {
-        require (now&gt;=endEtap1 &amp;&amp; now &lt;=startEtap2 || now &gt;= endEtap2);
+        require (now>=endEtap1 && now <=startEtap2 || now >= endEtap2);
         uint _value;
-        if (now&gt;=endEtap1 &amp;&amp; now &lt;=startEtap2) {
+        if (now>=endEtap1 && now <=startEtap2) {
             _value = balances[owner] - etap;
-            require(_value &gt; 0);
+            require(_value > 0);
         }
         else _value = balances[owner];
         balances[owner] -= _value;
@@ -102,7 +102,7 @@ contract IamKokinToken is Ownable {
     event Burn(address indexed burner, uint indexed value);
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if( allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if( allowed[_from][msg.sender] >= _value && balances[_from] >= _value && balances[_to] + _value >= balances[_to]) {
             allowed[_from][msg.sender] -= _value;
             balances[_from] -= _value; 
             balances[_to] += _value;

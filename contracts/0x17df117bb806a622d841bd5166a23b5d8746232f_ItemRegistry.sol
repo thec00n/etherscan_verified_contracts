@@ -13,10 +13,10 @@ contract ItemRegistry {
   uint256 cutDenominator = 100;
 
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private startingPriceOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (uint256 =&gt; ItemClass) private classOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private startingPriceOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (uint256 => ItemClass) private classOfItem;
 
   function ItemRegistry () public {
     owner = msg.sender;
@@ -43,10 +43,10 @@ contract ItemRegistry {
   }
 
   function listItem (uint256 _itemId, uint256 _price, ItemClass _class) onlyOwner() public {
-    require(_price &gt; 0);
+    require(_price > 0);
     require(priceOfItem[_itemId] == 0);
     require(ownerOfItem[_itemId] == address(0));
-    require(_class &lt;= ItemClass.TIER4);
+    require(_class <= ItemClass.TIER4);
 
     ownerOfItem[_itemId] = owner;
     priceOfItem[_itemId] = _price;
@@ -56,7 +56,7 @@ contract ItemRegistry {
   }
 
   function listMultipleItems (uint256[] _itemIds, uint256 _price, ItemClass _class) onlyOwner() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       listItem(_itemIds[i], _price, _class);
     }
   }
@@ -65,7 +65,7 @@ contract ItemRegistry {
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         counter++;
       }
@@ -102,7 +102,7 @@ contract ItemRegistry {
     uint256[] memory items = new uint256[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -119,7 +119,7 @@ contract ItemRegistry {
   function itemsForSaleLimit (uint256 _from, uint256 _take) public view returns (uint256[] _items) {
     uint256[] memory items = new uint256[](_take);
 
-    for (uint256 i = 0; i &lt; _take; i++) {
+    for (uint256 i = 0; i < _take; i++) {
       items[i] = listedItems[_from + i];
     }
 
@@ -133,9 +133,9 @@ contract ItemRegistry {
   /* Next price */
   function calculateNextPrice (uint256 _currentPrice, ItemClass _class) public pure returns (uint256 _newPrice) {
     if (_class == ItemClass.TIER1) {
-      if (_currentPrice &lt;= 0.05 ether) {
+      if (_currentPrice <= 0.05 ether) {
         return _currentPrice.mul(2); // 2
-      } else if (_currentPrice &lt;= 0.5 ether) {
+      } else if (_currentPrice <= 0.5 ether) {
         return _currentPrice.mul(117).div(100); // 1.17
       } else {
         return _currentPrice.mul(112).div(100); // 1.12
@@ -143,9 +143,9 @@ contract ItemRegistry {
     }
 
     if (_class == ItemClass.TIER2) {
-      if (_currentPrice &lt;= 0.1 ether) {
+      if (_currentPrice <= 0.1 ether) {
         return _currentPrice.mul(2); // 2
-      } else if (_currentPrice &lt;= 0.5 ether) {
+      } else if (_currentPrice <= 0.5 ether) {
         return _currentPrice.mul(118).div(100); // 1.18
       } else {
         return _currentPrice.mul(113).div(100); // 1.13
@@ -153,9 +153,9 @@ contract ItemRegistry {
     }
 
     if (_class == ItemClass.TIER3) {
-      if (_currentPrice &lt;= 0.15 ether) {
+      if (_currentPrice <= 0.15 ether) {
         return _currentPrice * 2; // 2
-      } else if (_currentPrice &lt;= 0.5 ether) {
+      } else if (_currentPrice <= 0.5 ether) {
         return _currentPrice.mul(119).div(100); // 1.19
       } else {
         return _currentPrice.mul(114).div(100); // 1.14
@@ -163,9 +163,9 @@ contract ItemRegistry {
     }
 
     if (_class == ItemClass.TIER4) {
-      if (_currentPrice &lt;= 0.2 ether) {
+      if (_currentPrice <= 0.2 ether) {
         return _currentPrice.mul(2); // 2
-      } else if (_currentPrice &lt;= 0.5 ether) {
+      } else if (_currentPrice <= 0.5 ether) {
         return _currentPrice.mul(120).div(100); // 1.2
       } else {
         return  _currentPrice.mul(115).div(100); // 1.15
@@ -175,7 +175,7 @@ contract ItemRegistry {
 
   /* Buy */
   function buy (uint256 _itemId) payable public {
-    require(priceOf(_itemId) &gt; 0);
+    require(priceOf(_itemId) > 0);
     require(ownerOf(_itemId) != address(0));
     require(msg.value == priceOf(_itemId));
     require(ownerOf(_itemId) != msg.sender);
@@ -192,7 +192,7 @@ contract ItemRegistry {
     Sold(_itemId, oldOwner, price);
 
     uint256 cut = 0;
-    if (cutDenominator &gt; 0 &amp;&amp; cutNumerator &gt; 0) {
+    if (cutDenominator > 0 && cutNumerator > 0) {
       cut = price.mul(cutNumerator).div(cutDenominator);
     }
 
@@ -203,7 +203,7 @@ contract ItemRegistry {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -225,9 +225,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -235,7 +235,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -244,7 +244,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

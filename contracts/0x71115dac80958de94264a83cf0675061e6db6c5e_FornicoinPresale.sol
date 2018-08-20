@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 
 /*
  * This contract allows the deposit of funds during the presale of a tokens
- * It can supply a mapping of addresses of participants =&gt; amount contributed
+ * It can supply a mapping of addresses of participants => amount contributed
  */
 
 contract FornicoinPresale {
@@ -71,7 +71,7 @@ contract FornicoinPresale {
   uint256 public endPresale;
 
   // Mapping of contributor addresses to the resective amounts contributed as FXX tokens
-  mapping (address =&gt; uint256) contributors;
+  mapping (address => uint256) contributors;
 
   // address where funds are collected
   address public wallet;
@@ -90,7 +90,7 @@ contract FornicoinPresale {
   event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
 
   function FornicoinPresale(address _wallet, uint256 _startTime, address _admin) {
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(_wallet != 0x0);
 
     admin = _admin;
@@ -112,7 +112,7 @@ contract FornicoinPresale {
 
   // low level token purchase function
   function buyTokens() public payable {
-    require(tx.gasprice &lt;= 50000000000 wei);
+    require(tx.gasprice <= 50000000000 wei);
     require(!haltSale);
     require(!hasEnded());
     require(validPurchase());
@@ -142,9 +142,9 @@ contract FornicoinPresale {
   // @return true if the transaction can buy tokens
   // Purchases must be greater than 2 ETH
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startPresale &amp;&amp; now &lt;= endPresale;
-    bool nonZeroPurchase = msg.value &gt;= 2 ether;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    bool withinPeriod = now >= startPresale && now <= endPresale;
+    bool nonZeroPurchase = msg.value >= 2 ether;
+    return withinPeriod && nonZeroPurchase;
   }
 
 // ETH balance is always expected to be 0.
@@ -153,7 +153,7 @@ function emergencyDrain(ERC20 anyToken) returns(bool){
     require(msg.sender == admin);
     require(hasEnded());
 
-    if(this.balance &gt; 0) {
+    if(this.balance > 0) {
         wallet.transfer(this.balance);
     }
 
@@ -166,6 +166,6 @@ function emergencyDrain(ERC20 anyToken) returns(bool){
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endPresale;
+    return now > endPresale;
   }
 }

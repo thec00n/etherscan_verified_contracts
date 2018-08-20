@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -229,7 +229,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
     address public publisher;
 
 
@@ -366,7 +366,7 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
     bool public refundAllowed = false;
 
     // need for refund
-    mapping(address =&gt; uint256) public received_ethers;
+    mapping(address => uint256) public received_ethers;
 
 
     // Hard possible cap - soft cap in wei for phase two
@@ -388,13 +388,13 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
     modifier validPurchase() {
         bool nonZeroPurchase = msg.value != 0;
 
-        require(withinPeriod() &amp;&amp; nonZeroPurchase);
+        require(withinPeriod() && nonZeroPurchase);
 
         _;        
     }
 
     modifier isExpired() {
-        require(now &gt; periodITO_endTime);
+        require(now > periodITO_endTime);
 
         _;        
     }
@@ -403,8 +403,8 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @return true if in period or false if not
      */
     function withinPeriod() constant returns(bool res) {
-        bool withinPeriodPreITO = (now &gt;= periodPreITO_startTime &amp;&amp; now &lt;= periodPreITO_endTime);
-        bool withinPeriodITO = (now &gt;= periodITO_startTime &amp;&amp; now &lt;= periodITO_endTime);
+        bool withinPeriodPreITO = (now >= periodPreITO_startTime && now <= periodPreITO_endTime);
+        bool withinPeriodITO = (now >= periodITO_startTime && now <= periodITO_endTime);
         return (withinPeriodPreITO || withinPeriodITO);
     }
     
@@ -415,8 +415,8 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @param _wallet destination fund address (i hope it will be multi-sig)
      */
     function TripleAlphaCrowdsale(uint256 _periodPreITO_startTime, uint256 _periodITO_startTime, address _wallet) {
-        require(_periodPreITO_startTime &gt;= now);
-        require(_periodITO_startTime &gt; _periodPreITO_startTime);
+        require(_periodPreITO_startTime >= now);
+        require(_periodITO_startTime > _periodPreITO_startTime);
         require(_wallet != 0x0);
 
         token = new TripleAlphaToken();
@@ -431,28 +431,28 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @return current stage name
      */
     function stageName() constant public returns (string) {
-        bool beforePreITO = (now &lt; periodPreITO_startTime);
-        bool withinPreITO = (now &gt;= periodPreITO_startTime &amp;&amp; now &lt;= periodPreITO_endTime);
-        bool betweenPreITOAndITO = (now &gt;= periodPreITO_endTime &amp;&amp; now &lt;= periodITO_startTime);
-        bool withinITO = (now &gt;= periodITO_startTime &amp;&amp; now &lt;= periodITO_endTime);
+        bool beforePreITO = (now < periodPreITO_startTime);
+        bool withinPreITO = (now >= periodPreITO_startTime && now <= periodPreITO_endTime);
+        bool betweenPreITOAndITO = (now >= periodPreITO_endTime && now <= periodITO_startTime);
+        bool withinITO = (now >= periodITO_startTime && now <= periodITO_endTime);
 
         if(beforePreITO) {
-            return &#39;Not started&#39;;
+            return 'Not started';
         }
 
         if(withinPreITO) {
-            return &#39;Pre-ITO&#39;;
+            return 'Pre-ITO';
         } 
 
         if(betweenPreITOAndITO) {
-            return &#39;Between Pre-ITO and ITO&#39;;
+            return 'Between Pre-ITO and ITO';
         }
 
         if(withinITO) {
-            return &#39;ITO&#39;;
+            return 'ITO';
         }
 
-        return &#39;Finished&#39;;
+        return 'Finished';
     }
 
     /**
@@ -472,9 +472,9 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @param _at new start date
      */
     function setPeriodPreITO_startTime(uint256 _at) onlyOwner {
-        require(periodPreITO_startTime == 0 || block.timestamp &lt; periodPreITO_startTime); // forbid change time when first phase is active
-        require(block.timestamp &lt; _at); // should be great than current block timestamp
-        require(periodITO_startTime == 0 || _at &lt; periodITO_startTime); // should be lower than start of second phase
+        require(periodPreITO_startTime == 0 || block.timestamp < periodPreITO_startTime); // forbid change time when first phase is active
+        require(block.timestamp < _at); // should be great than current block timestamp
+        require(periodITO_startTime == 0 || _at < periodITO_startTime); // should be lower than start of second phase
 
         periodPreITO_startTime = _at;
         periodPreITO_endTime = periodPreITO_startTime.add(periodPreITO_period);
@@ -486,9 +486,9 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @param _at new start date
      */
     function setPeriodITO_startTime(uint256 _at) onlyOwner {
-        require(periodITO_startTime == 0 || block.timestamp &lt; periodITO_startTime); // forbid change time when second phase is active
-        require(block.timestamp &lt; _at); // should be great than current block timestamp
-        require(periodPreITO_endTime &lt; _at); // should be great than end first phase
+        require(periodITO_startTime == 0 || block.timestamp < periodITO_startTime); // forbid change time when second phase is active
+        require(block.timestamp < _at); // should be great than current block timestamp
+        require(periodPreITO_endTime < _at); // should be great than end first phase
 
         periodITO_startTime = _at;
         periodITO_endTime = periodITO_startTime.add(periodITO_period);
@@ -496,7 +496,7 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
     }
 
     function periodITO_softCapReached() internal returns (bool) {
-        return periodITO_wei &gt;= periodITO_softCapInWei;
+        return periodITO_wei >= periodITO_softCapInWei;
     }
 
     /*
@@ -515,20 +515,20 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
         uint256 estimate;
         uint256 odd;
 
-        if(_at &lt; periodPreITO_endTime) {
-            if(_value.add(periodPreITO_wei) &gt; periodPreITO_hardCapInWei) {
+        if(_at < periodPreITO_endTime) {
+            if(_value.add(periodPreITO_wei) > periodPreITO_hardCapInWei) {
                 odd = _value.add(periodPreITO_wei).sub(periodPreITO_hardCapInWei);
                 _value = periodPreITO_hardCapInWei.sub(periodPreITO_wei);
             } 
             estimate = _value.mul(1 ether).div(periodPreITO_weiPerToken);
-            require(_value + periodPreITO_wei &lt;= periodPreITO_hardCapInWei);
+            require(_value + periodPreITO_wei <= periodPreITO_hardCapInWei);
         } else {
-            if(_value.add(periodITO_wei) &gt; periodITO_hardCapInWei) {
+            if(_value.add(periodITO_wei) > periodITO_hardCapInWei) {
                 odd = _value.add(periodITO_wei).sub(periodITO_hardCapInWei);
                 _value = periodITO_hardCapInWei.sub(periodITO_wei);
             }             
             estimate = _value.mul(1 ether).div(periodITO_weiPerToken);
-            require(_value + periodITO_wei &lt;= periodITO_hardCapInWei);
+            require(_value + periodITO_wei <= periodITO_hardCapInWei);
         }
 
         return (estimate, odd);
@@ -546,12 +546,12 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
         (amount, odd_ethers) = calcAmountAt(msg.value, now);
   
         require(contributor != 0x0) ;
-        require(minimalTokens &lt;= amount);
+        require(minimalTokens <= amount);
 
         token.mint(contributor, amount);
         TokenPurchase(contributor, msg.value, amount);
 
-        if(now &lt; periodPreITO_endTime) {
+        if(now < periodPreITO_endTime) {
             // Pre-ITO
             periodPreITO_wei = periodPreITO_wei.add(msg.value);
 
@@ -559,7 +559,7 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
             // ITO
             if(periodITO_softCapReached()) {
                 periodITO_wei = periodITO_wei.add(msg.value).sub(odd_ethers);
-            } else if(this.balance &gt;= periodITO_softCapInWei) {
+            } else if(this.balance >= periodITO_softCapInWei) {
                 periodITO_wei = this.balance.sub(odd_ethers);
             } else {
                 received_ethers[contributor] = received_ethers[contributor].add(msg.value);
@@ -567,8 +567,8 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
             }
         }
 
-        if(odd_ethers &gt; 0) {
-            require(odd_ethers &lt; msg.value);
+        if(odd_ethers > 0) {
+            require(odd_ethers < msg.value);
             OddMoney(contributor, odd_ethers);
             contributor.transfer(odd_ethers);
         }
@@ -585,8 +585,8 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
     function refund() isExpired public {
         require(refundAllowed);
         require(!periodITO_softCapReached());
-        require(received_ethers[msg.sender] &gt; 0);
-        require(token.balanceOf(msg.sender) &gt; 0);
+        require(received_ethers[msg.sender] > 0);
+        require(token.balanceOf(msg.sender) > 0);
 
         uint256 current_balance = received_ethers[msg.sender];
         received_ethers[msg.sender] = 0;
@@ -598,7 +598,7 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
      * @dev finish crowdsale
      */
     function finishCrowdsale() onlyOwner public {
-        require(now &gt; periodITO_endTime || periodITO_wei == periodITO_hardCapInWei);
+        require(now > periodITO_endTime || periodITO_wei == periodITO_hardCapInWei);
         require(!token.mintingFinished());
 
         if(periodITO_softCapReached()) {
@@ -611,14 +611,14 @@ contract TripleAlphaCrowdsale is MultiOwners, Haltable {
 
     // @return true if crowdsale event has ended
     function running() constant public returns (bool) {
-        return withinPeriod() &amp;&amp; !token.mintingFinished();
+        return withinPeriod() && !token.mintingFinished();
     }
 }
 
 contract TripleAlphaToken is MintableToken {
 
-    string public constant name = &#39;Triple Alpha Token&#39;;
-    string public constant symbol = &#39;TRIA&#39;;
+    string public constant name = 'Triple Alpha Token';
+    string public constant symbol = 'TRIA';
     uint8 public constant decimals = 18;
     bool public transferAllowed;
 
@@ -626,7 +626,7 @@ contract TripleAlphaToken is MintableToken {
     event TransferAllowed(bool);
 
     modifier canTransfer() {
-        require(mintingFinished &amp;&amp; transferAllowed);
+        require(mintingFinished && transferAllowed);
         _;        
     }
 

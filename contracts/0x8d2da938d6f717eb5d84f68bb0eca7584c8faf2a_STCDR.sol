@@ -8,20 +8,20 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   // mitigate short address attack
   // thanks to https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34.
   modifier onlyPayloadSize(uint numWords) {
-     assert(msg.data.length &gt;= numWords * 32 + 4);
+     assert(msg.data.length >= numWords * 32 + 4);
      _;
   }
 }
@@ -42,7 +42,7 @@ contract StandardToken is Token, SafeMath {
 
     function transfer(address _to, uint256 _value) public  onlyPayloadSize(2) returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         emit Transfer(msg.sender, _to, _value);
@@ -51,7 +51,7 @@ contract StandardToken is Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3) returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
         balances[_from] = safeSub(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -63,8 +63,8 @@ contract StandardToken is Token, SafeMath {
         return balances[_owner];
     }
 
-    // To change the approve amount you first have to reduce the addresses&#39;
-    //  allowance to zero by calling &#39;approve(_spender, 0)&#39; if it is not
+    // To change the approve amount you first have to reduce the addresses'
+    //  allowance to zero by calling 'approve(_spender, 0)' if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     function approve(address _spender, uint256 _value) public onlyPayloadSize(2) returns (bool success) {
@@ -85,22 +85,22 @@ contract StandardToken is Token, SafeMath {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256)  balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  allowed;
+    mapping (address => uint256)  balances;
+    mapping (address => mapping (address => uint256))  allowed;
 }
 
 contract STCDR is StandardToken {
-	string public name = &quot;STCDR&quot;;
-	string public symbol = &quot;STCDR&quot;;
+	string public name = "STCDR";
+	string public symbol = "STCDR";
 	uint256 public decimals = 8;
-	string public version = &quot;1.0&quot;;
+	string public version = "1.0";
 	uint256 public tokenCap = 1000000000 * 10**8;
 	uint256 public tokenBurned = 0;
 	uint256 public tokenAllocated = 0;
   // root control
 	address public fundWallet;
 	// maps addresses
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
 	event Whitelist(address indexed participant);
 
@@ -122,12 +122,12 @@ contract STCDR is StandardToken {
 		uint256 thisamountTokens = amountTokens;
 		uint256 newtokenAllocated =  safeAdd(tokenAllocated, thisamountTokens);
 
-    if(newtokenAllocated &gt; tokenCap){
+    if(newtokenAllocated > tokenCap){
 			thisamountTokens = safeSub(tokenCap,thisamountTokens);
 			newtokenAllocated = safeAdd(tokenAllocated, thisamountTokens);
 		}
 
-		require(newtokenAllocated &lt;= tokenCap);
+		require(newtokenAllocated <= tokenCap);
 
 		tokenAllocated = newtokenAllocated;
 		whitelist[participant] = true;
@@ -148,12 +148,12 @@ contract STCDR is StandardToken {
 		uint256 newTokValue = amountTokens;
 		address thisparticipant = participant;
 
-		if (balances[thisparticipant] &lt; newTokValue) {
+		if (balances[thisparticipant] < newTokValue) {
       newTokValue = balances[thisparticipant];
     }
 
 		uint256 newtokenBurned = safeAdd(tokenBurned, newTokValue);
-		require(newtokenBurned &lt;= tokenCap);
+		require(newtokenBurned <= tokenCap);
 		tokenBurned = newtokenBurned;
 		balances[thisparticipant] = safeSub(balances[thisparticipant], newTokValue);
 		totalSupply = safeSub(totalSupply, newTokValue);
@@ -163,12 +163,12 @@ contract STCDR is StandardToken {
 		uint256 newTokValue = amountTokens;
 		address thisparticipant = msg.sender;
 
-    if (balances[thisparticipant] &lt; newTokValue) {
+    if (balances[thisparticipant] < newTokValue) {
       newTokValue = balances[thisparticipant];
     }
 
 		uint256 newtokenBurned = safeAdd(tokenBurned, newTokValue);
-		require(newtokenBurned &lt;= tokenCap);
+		require(newtokenBurned <= tokenCap);
 		tokenBurned = newtokenBurned;
 		balances[msg.sender] = safeSub(balances[thisparticipant],newTokValue );
 		totalSupply = safeSub(totalSupply, newTokValue);

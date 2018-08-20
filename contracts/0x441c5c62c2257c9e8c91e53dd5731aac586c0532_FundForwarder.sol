@@ -13,7 +13,7 @@ pragma solidity ^0.4.15;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -48,10 +48,10 @@ contract ERC20 {
 }
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="e8898c9a8189a88b878c8d8b87869c8d909cc68187">[email&#160;protected]</span>&gt;
+/// @author Adrià Massanet <<span class="__cf_email__" data-cfemail="e8898c9a8189a88b878c8d8b87869c8d909cc68187">[email protected]</span>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
-///  &quot;user permissions&quot;
+///  authorization control functions, this simplifies & the implementation of
+///  "user permissions"
 contract Owned {
 
     address public owner;
@@ -123,7 +123,7 @@ contract Owned {
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist;
+    mapping (address=>bool) private escapeBlacklist;
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -207,7 +207,7 @@ contract Campaign {
 ///  The escapeHatch allows removal of any other tokens deposited by accident.
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="d0b1b4a2b9b190b3bfb4b5b3bfbea4b5a8a4feb9bf">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="d0b1b4a2b9b190b3bfb4b5b3bfbea4b5a8a4feb9bf">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -220,7 +220,7 @@ contract Campaign {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @dev The main contract which forwards funds sent to contract.

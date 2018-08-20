@@ -11,19 +11,19 @@ library QuickMafs {
     }
 
     function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(_b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = _a / _b;
         return c;
     }
 
     function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        assert(_b &lt;= _a);
+        assert(_b <= _a);
         return _a - _b;
     }
 
     function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
         uint256 c = _a + _b;
-        assert(c &gt;= _a);
+        assert(c >= _a);
         return c;
     }
 }
@@ -121,8 +121,8 @@ contract CTNToken is ERC20, Ownable {
 
 using QuickMafs for uint256;
 
-string public constant SYMBOL = &quot;CTN&quot;;
-string public constant NAME = &quot;Crypto Trust Network&quot;;
+string public constant SYMBOL = "CTN";
+string public constant NAME = "Crypto Trust Network";
 uint8 public constant DECIMALS = 18;
 
 /**
@@ -138,12 +138,12 @@ uint256 initialSupply;
 /**
 * Balances for each account
 */
-mapping(address =&gt; uint256) balances;
+mapping(address => uint256) balances;
 
 /**
 * Whos allowed to withdrawl funds from which accounts
 */
-mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping(address => mapping (address => uint256)) allowed;
 
 /**
  * If the token is tradable
@@ -235,7 +235,7 @@ function transfer(address _to, uint256 _amount) public isTradable returns (bool)
   /**
   * Send _amount of tokens from address _from to address _to
   * The transferFrom method is used for a withdraw workflow, allowing contracts to send
-  * tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+  * tokens on your behalf, for example to "deposit" to a contract address and/or to charge
   * fees in sub-currencies; the command should fail unless the _from account has
   * deliberately authorized the sender of the message via some mechanism; we propose
   * these standardized APIs for approval:
@@ -260,7 +260,7 @@ function transfer(address _to, uint256 _amount) public isTradable returns (bool)
 
 /**
 * Allows an address to transfer money out this is administered by the contract owner who can specify how many coins an account can take.
-* Needs to be called to feault the amount to 0 first -&gt; https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+* Needs to be called to feault the amount to 0 first -> https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 */
 function approve(address _spender, uint256 _amount) public returns (bool) {
     /**
@@ -340,20 +340,20 @@ uint256 bonusCap;
 uint256 tokensPerETH;
 
 /** 
-* //the start time of the sale (new Date(&quot;Dec 15 2017 18:00:00 GMT&quot;).getTime() / 1000)
+* //the start time of the sale (new Date("Dec 15 2017 18:00:00 GMT").getTime() / 1000)
 */
 uint256 public start = 1513360800;
 
 
 /**
- * The end time of the sale (new Date(&quot;Jan 15 2018 18:00:00 GMT&quot;).getTime() / 1000)
+ * The end time of the sale (new Date("Jan 15 2018 18:00:00 GMT").getTime() / 1000)
  */ 
 uint256 public end = 1516039200;
 
 
 
 /**
- * Two months after the sale ends used to retrieve unclaimed refunds (new Date(&quot;Mar 15 2018 18:00:00 GMT&quot;).getTime() / 1000)
+ * Two months after the sale ends used to retrieve unclaimed refunds (new Date("Mar 15 2018 18:00:00 GMT").getTime() / 1000)
  */
 uint256 public twoMonthsLater = 1521136800;
 
@@ -372,7 +372,7 @@ address public vault;
 /**
 * How much ETH each user has sent to this contract. For softcap unmet refunds
 */
-mapping(address =&gt; uint256) investments;
+mapping(address => uint256) investments;
 
 
 /**
@@ -390,7 +390,7 @@ event PriceUpdated(uint256 amount);
 * Only make certain changes before the sale starts
 */
 modifier isPreSale(){
-     require(now &lt; start);
+     require(now < start);
     _;
 }
 
@@ -398,7 +398,7 @@ modifier isPreSale(){
 * Is the sale still on
 */
 modifier isSaleOn() {
-    require(now &gt;= start &amp;&amp; now &lt;= end);
+    require(now >= start && now <= end);
     _;
 }
 
@@ -407,8 +407,8 @@ modifier isSaleOn() {
 */
 modifier isSaleFinished() {
     
-    bool hitHardCap = token.totalSupply().sub(token.baseSupply()) &gt;= hardCap;
-    require(now &gt; end || hitHardCap);
+    bool hitHardCap = token.totalSupply().sub(token.baseSupply()) >= hardCap;
+    require(now > end || hitHardCap);
     
     _;
 }
@@ -417,7 +417,7 @@ modifier isSaleFinished() {
 * Has the sale completed
 */
 modifier isTwoMonthsLater() {
-    require(now &gt; twoMonthsLater);
+    require(now > twoMonthsLater);
     _;
 }
 
@@ -426,7 +426,7 @@ modifier isTwoMonthsLater() {
 */
 modifier isUnderHardCap() {
 
-    bool underHard = token.totalSupply().sub(token.baseSupply()) &lt;= hardCap;
+    bool underHard = token.totalSupply().sub(token.baseSupply()) <= hardCap;
     require(underHard);
     _;
 }
@@ -435,7 +435,7 @@ modifier isUnderHardCap() {
 * Make sure we are over the soft cap
 */
 modifier isOverSoftCap() {
-    bool overSoft = token.totalSupply().sub(token.baseSupply()) &gt;= softCap;
+    bool overSoft = token.totalSupply().sub(token.baseSupply()) >= softCap;
     require(overSoft);
     _;
 }
@@ -444,7 +444,7 @@ modifier isOverSoftCap() {
 * Make sure we are over the soft cap
 */
 modifier isUnderSoftCap() {
-    bool underSoft = token.totalSupply().sub(token.baseSupply()) &lt; softCap;
+    bool underSoft = token.totalSupply().sub(token.baseSupply()) < softCap;
     require(underSoft);
     _;
 }
@@ -479,7 +479,7 @@ function createTokens(address recipient) public isUnderHardCap isSaleOn payable 
     uint256 tokens = tokensPerETH.mul(amount);
     bool bonus = false;
     
-    if (token.totalSupply().sub(token.baseSupply()) &lt; bonusCap) {
+    if (token.totalSupply().sub(token.baseSupply()) < bonusCap) {
         bonus = true;
         tokens = tokens.add(tokens.div(5));
     }

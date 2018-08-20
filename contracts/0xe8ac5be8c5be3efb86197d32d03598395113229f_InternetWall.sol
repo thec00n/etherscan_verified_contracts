@@ -39,15 +39,15 @@ contract InternetWall {
     }
     
     function getMessage(uint index) constant returns(string) {
-        assert(index &lt; messagesIndex);
+        assert(index < messagesIndex);
         return messages[index].message;
     }
     function getMessageSender(uint index) constant returns(address) {
-        assert(index &lt; messagesIndex);
+        assert(index < messagesIndex);
         return messages[index].from;
     }
     function getMessageTimestamp(uint index) constant returns(uint) {
-        assert(index &lt; messagesIndex);
+        assert(index < messagesIndex);
         return messages[index].timestamp;
     }
     

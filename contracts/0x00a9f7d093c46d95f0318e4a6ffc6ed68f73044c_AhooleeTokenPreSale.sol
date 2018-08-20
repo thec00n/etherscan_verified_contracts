@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -140,13 +140,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -183,7 +183,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -196,7 +196,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -215,7 +215,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -241,8 +241,8 @@ contract StandardToken is BasicToken, ERC20 {
  */
 contract AhooleeToken is StandardToken {
 
-  string public name = &quot;Ahoolee Token&quot;;
-  string public symbol = &quot;AHT&quot;;
+  string public name = "Ahoolee Token";
+  string public symbol = "AHT";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 100000000 * 1 ether;
 
@@ -260,7 +260,7 @@ contract AhooleeToken is StandardToken {
 contract AhooleeTokenPreSale is Haltable {
     using SafeMath for uint;
 
-    string public name = &quot;Ahoolee Token PreSale&quot;;
+    string public name = "Ahoolee Token PreSale";
 
     AhooleeToken public token;
     address public beneficiary;
@@ -282,7 +282,7 @@ contract AhooleeTokenPreSale is Haltable {
     bool public softCapReached = false;
     bool public crowdsaleFinished = false;
 
-    mapping (address =&gt; bool) refunded;
+    mapping (address => bool) refunded;
 
     event GoalReached(uint amountRaised);
     event SoftCapReached(uint softCap);
@@ -290,12 +290,12 @@ contract AhooleeTokenPreSale is Haltable {
     event Refunded(address indexed holder, uint256 amount);
 
     modifier onlyAfter(uint time) {
-        if (now &lt; time) throw;
+        if (now < time) throw;
         _;
     }
 
     modifier onlyBefore(uint time) {
-        if (now &gt; time) throw;
+        if (now > time) throw;
         _;
     }
 
@@ -324,7 +324,7 @@ contract AhooleeTokenPreSale is Haltable {
     }
 
     function () payable stopInEmergency{
-        if (msg.value &lt; 0.01 * 1 ether) throw;
+        if (msg.value < 0.01 * 1 ether) throw;
         doPurchase(msg.sender);
     }
 
@@ -336,7 +336,7 @@ contract AhooleeTokenPreSale is Haltable {
         if (balance == 0) throw;
 
         uint refund = balance / price;
-        if (refund &gt; this.balance) {
+        if (refund > this.balance) {
             refund = this.balance;
         }
 
@@ -357,15 +357,15 @@ contract AhooleeTokenPreSale is Haltable {
         
         assert(crowdsaleFinished == false);
 
-        if (collected.add(msg.value) &gt; hardCap) throw;
+        if (collected.add(msg.value) > hardCap) throw;
 
-        if (!softCapReached &amp;&amp; collected &lt; softCap &amp;&amp; collected.add(msg.value) &gt;= softCap) {
+        if (!softCapReached && collected < softCap && collected.add(msg.value) >= softCap) {
             softCapReached = true;
             SoftCapReached(softCap);
         }
 
         uint tokens = msg.value * price;
-        if (token.balanceOf(msg.sender) + tokens &gt; purchaseLimit) throw;
+        if (token.balanceOf(msg.sender) + tokens > purchaseLimit) throw;
 
         if (token.balanceOf(msg.sender) == 0) investorCount++;
       

@@ -2,26 +2,26 @@ pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -40,10 +40,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -179,8 +179,8 @@ contract ERC20 {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) public {
         _balances[msg.sender] = supply;
@@ -228,7 +228,7 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract DSToken is DSTokenBase(0), DSStop {
 
-    mapping (address =&gt; mapping (address =&gt; bool)) _trusted;
+    mapping (address => mapping (address => bool)) _trusted;
 
     bytes32  public  symbol;
     uint256  public  decimals = 18; // standard token precision. override to customize
@@ -257,7 +257,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; !_trusted[src][msg.sender]) {
+        if (src != msg.sender && !_trusted[src][msg.sender]) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -291,7 +291,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; !_trusted[guy][msg.sender]) {
+        if (guy != msg.sender && !_trusted[guy][msg.sender]) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -301,7 +301,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) public auth {
         name = name_;
@@ -327,9 +327,9 @@ contract ViewlySeedSale is DSAuth, DSMath {
     uint public totalEthRefunded;     // total eth refunded after a failed sale
 
     // buyers ether deposits
-    mapping (address =&gt; uint) public ethDeposits;
+    mapping (address => uint) public ethDeposits;
     // ether refunds after a failed sale
-    mapping (address =&gt; uint) public ethRefunds;
+    mapping (address => uint) public ethRefunds;
 
     enum State {
         Pending,
@@ -375,12 +375,12 @@ contract ViewlySeedSale is DSAuth, DSMath {
 
     // check current block is inside closed interval [startBlock, endBlock]
     modifier inRunningBlock() {
-        require(block.number &gt;= startBlock);
-        require(block.number &lt; endBlock);
+        require(block.number >= startBlock);
+        require(block.number < endBlock);
         _;
     }
     // check sender has sent some ethers
-    modifier ethSent() { require(msg.value &gt; 0); _; }
+    modifier ethSent() { require(msg.value > 0); _; }
 
 
     // PUBLIC //
@@ -400,8 +400,8 @@ contract ViewlySeedSale is DSAuth, DSMath {
         totalEthDeposited = add(msg.value, totalEthDeposited);
         totalTokensBought = add(tokensBought, totalTokensBought);
 
-        require(totalEthDeposited &lt;= MAX_FUNDING);
-        require(totalTokensBought &lt;= MAX_TOKENS);
+        require(totalEthDeposited <= MAX_FUNDING);
+        require(totalTokensBought <= MAX_TOKENS);
 
         viewToken.mint(msg.sender, tokensBought);
 
@@ -409,7 +409,7 @@ contract ViewlySeedSale is DSAuth, DSMath {
     }
 
     function claimRefund() saleIn(State.Failed) {
-      require(ethDeposits[msg.sender] &gt; 0);
+      require(ethDeposits[msg.sender] > 0);
       require(ethRefunds[msg.sender] == 0);
 
       uint ethRefund = ethDeposits[msg.sender];
@@ -424,8 +424,8 @@ contract ViewlySeedSale is DSAuth, DSMath {
     // AUTH REQUIRED //
 
     function startSale(uint duration, uint blockOffset) auth saleIn(State.Pending) {
-        require(duration &gt; 0);
-        require(blockOffset &gt;= 0);
+        require(duration > 0);
+        require(blockOffset >= 0);
 
         startBlock = add(block.number, blockOffset);
         endBlock   = add(startBlock, duration);
@@ -435,7 +435,7 @@ contract ViewlySeedSale is DSAuth, DSMath {
     }
 
     function endSale() auth saleIn(State.Running) {
-        if (totalEthDeposited &gt;= MIN_FUNDING)
+        if (totalEthDeposited >= MIN_FUNDING)
           state = State.Succeeded;
         else
           state = State.Failed;
@@ -445,15 +445,15 @@ contract ViewlySeedSale is DSAuth, DSMath {
     }
 
     function extendSale(uint blocks) auth saleIn(State.Running) {
-        require(blocks &gt; 0);
+        require(blocks > 0);
 
         endBlock = add(endBlock, blocks);
         LogExtendSale(blocks);
     }
 
     function collectEth() auth {
-        require(totalEthDeposited &gt;= MIN_FUNDING);
-        require(this.balance &gt; 0);
+        require(totalEthDeposited >= MIN_FUNDING);
+        require(this.balance > 0);
 
         uint ethToCollect = this.balance;
         totalEthCollected = add(totalEthCollected, ethToCollect);
@@ -467,8 +467,8 @@ contract ViewlySeedSale is DSAuth, DSMath {
     uint constant averageTokensPerEth = wdiv(MAX_TOKENS, MAX_FUNDING);
     uint constant endingTokensPerEth = wdiv(2 * averageTokensPerEth, 2 ether + BONUS);
 
-    // calculate number of tokens buyer get when sending &#39;ethSent&#39; ethers
-    // after &#39;ethDepostiedSoFar` already reeived in the sale
+    // calculate number of tokens buyer get when sending 'ethSent' ethers
+    // after 'ethDepostiedSoFar` already reeived in the sale
     function calcTokensForPurchase(uint ethSent, uint ethDepositedSoFar)
         private view
         returns (uint tokens)
@@ -481,7 +481,7 @@ contract ViewlySeedSale is DSAuth, DSMath {
         return wmul(ethSent, averageTokensPerEth);
     }
 
-    // return tokensPerEth for &#39;nthEther&#39; of total contribution (MAX_FUNDING)
+    // return tokensPerEth for 'nthEther' of total contribution (MAX_FUNDING)
     function calcTokensPerEth(uint nthEther)
         private view
         returns (uint)

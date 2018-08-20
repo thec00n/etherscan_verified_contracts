@@ -30,24 +30,24 @@ contract Owned {
 contract Greedy is Owned {
     //A scam Game, 资金盘, 老鼠會, Ponzi scheme.
     //The Game like Fomo3D, But more simple and more short time.
-    //Audit &amp; be responsible for yourself.
-    //The code is really simple, so don&#39;t ask idiot question.
+    //Audit & be responsible for yourself.
+    //The code is really simple, so don't ask idiot question.
     
     //Round Global Info
     uint public Round = 1;
-    mapping(uint =&gt; uint) public RoundHeart;
-    mapping(uint =&gt; uint) public RoundETH; // Pot
-    mapping(uint =&gt; uint) public RoundTime;
-    mapping(uint =&gt; uint) public RoundPayMask;
-    mapping(uint =&gt; address) public RoundLastGreedyMan;
+    mapping(uint => uint) public RoundHeart;
+    mapping(uint => uint) public RoundETH; // Pot
+    mapping(uint => uint) public RoundTime;
+    mapping(uint => uint) public RoundPayMask;
+    mapping(uint => address) public RoundLastGreedyMan;
     
     //Globalinfo
     uint256 public Luckybuy;
     
     //Round Personal Info
-    mapping(uint =&gt; mapping(address =&gt; uint)) public RoundMyHeart;
-    mapping(uint =&gt; mapping(address =&gt; uint)) public RoundMyPayMask;
-    mapping(address =&gt; uint) public MyreferredRevenue;
+    mapping(uint => mapping(address => uint)) public RoundMyHeart;
+    mapping(uint => mapping(address => uint)) public RoundMyPayMask;
+    mapping(address => uint) public MyreferredRevenue;
     
     //Lucky Buy Tracker
     uint256 public luckybuyTracker_ = 0;
@@ -85,7 +85,7 @@ contract Greedy is Owned {
     //Get Time Left
     function getTimeLeft() public view returns(uint256)
     {
-        if(RoundTime[Round] == 0 || RoundTime[Round] &lt; now) 
+        if(RoundTime[Round] == 0 || RoundTime[Round] < now) 
             return 0;
         else 
             return( (RoundTime[Round]).sub(now) );
@@ -99,7 +99,7 @@ contract Greedy is Owned {
         uint _newTime = (((_hearts) / (1000000000000000000)).mul(RoundIncrease)).add(RoundTime[Round]);
         
         // compare to max and set new end time
-        if (_newTime &lt; (RoundMaxTime).add(now))
+        if (_newTime < (RoundMaxTime).add(now))
             RoundTime[Round] = _newTime;
         else
             RoundTime[Round] = RoundMaxTime.add(now);
@@ -108,27 +108,27 @@ contract Greedy is Owned {
     //Buy some greedy heart
     function buyHeart(address referred) public payable {
         
-        require(msg.value &gt;= 1000000000, &quot;pocket lint: not a valid currency&quot;);
-        require(msg.value &lt;= 100000000000000000000000, &quot;no vitalik, no&quot;);
+        require(msg.value >= 1000000000, "pocket lint: not a valid currency");
+        require(msg.value <= 100000000000000000000000, "no vitalik, no");
         
         address _addr = msg.sender;
         uint256 _codeLength;
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
 
         //bought at least 1 whole key
         uint256 _hearts = (RoundETH[Round]).keysRec(msg.value);
         uint256 _pearn;
-        require(_hearts &gt;= 1000000000000000000);
+        require(_hearts >= 1000000000000000000);
         
-        require(RoundTime[Round] &gt; now || RoundTime[Round] == 0);
+        require(RoundTime[Round] > now || RoundTime[Round] == 0);
         
         updateTimer(_hearts);
         
         RoundHeart[Round] += _hearts;
         RoundMyHeart[Round][msg.sender] += _hearts;
 
-        if (referred != address(0) &amp;&amp; referred != msg.sender)
+        if (referred != address(0) && referred != msg.sender)
         {
              _pearn = (((msg.value.mul(30) / 100).mul(1000000000000000000)) / (RoundHeart[Round])).mul(_hearts)/ (1000000000000000000);
 
@@ -154,7 +154,7 @@ contract Greedy is Owned {
         }
         
         // manage airdrops
-        if (msg.value &gt;= 100000000000000000){
+        if (msg.value >= 100000000000000000){
             luckybuyTracker_++;
             if (luckyBuy() == true)
             {
@@ -170,7 +170,7 @@ contract Greedy is Owned {
     }
     
     function win() public {
-        require(now &gt; RoundTime[Round] &amp;&amp; RoundTime[Round] != 0);
+        require(now > RoundTime[Round] && RoundTime[Round] != 0);
         //Round End 
         RoundLastGreedyMan[Round].transfer(RoundETH[Round]);
         emit winnerEvent(RoundLastGreedyMan[Round], RoundETH[Round], Round);
@@ -212,7 +212,7 @@ contract Greedy is Owned {
             
         )));
         
-        if((seed - ((seed / 1000) * 1000)) &lt; luckybuyTracker_)
+        if((seed - ((seed / 1000) * 1000)) < luckybuyTracker_)
             return(true);
         else
             return(false);
@@ -225,7 +225,7 @@ contract Greedy is Owned {
         uint[] memory myMoney = new uint[](Round);
         uint counter = 0;
 
-        for (uint i = 1; i &lt;= Round; i++) {
+        for (uint i = 1; i <= Round; i++) {
             whichRound[counter] = i;
             totalPool[counter] = RoundETH[i];
             winner[counter] = RoundLastGreedyMan[i];
@@ -269,7 +269,7 @@ library GreedyHeartCalcLong {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth) 
@@ -282,7 +282,7 @@ library GreedyHeartCalcLong {
     
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot; 
+     * @param _keys number of keys "in contract" 
      * @return eth that would exists
      */
     function eth(uint256 _keys) 
@@ -318,7 +318,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -330,7 +330,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -343,7 +343,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -357,7 +357,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -390,7 +390,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

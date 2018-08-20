@@ -16,8 +16,8 @@ contract ERC20 {
 }
 
 contract TestCoin is ERC20 {
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	uint8 public decimals;
 	string public name;
 	string public symbol;
@@ -45,13 +45,13 @@ contract TestCoin is ERC20 {
 		decimals = 18;
 		totalSupply = 2 * uint(10)**(decimals + 9);
 		balances[owner] = totalSupply;
-		name = &quot;TESTCOIN&quot;;
-		symbol = &quot;TSC&quot;;
+		name = "TESTCOIN";
+		symbol = "TSC";
 		emit Transfer(address(0), owner, totalSupply);
 	}
 	
 	function transfer(address _to, uint256 _value) public isRunning returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+		require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		emit Transfer(msg.sender, _to, _value);
@@ -59,7 +59,7 @@ contract TestCoin is ERC20 {
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) public isRunning returns (bool) {
-		require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+		require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
 		balances[_to] += _value;
 		balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;

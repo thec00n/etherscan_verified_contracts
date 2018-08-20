@@ -41,11 +41,11 @@ contract PublicResolver {
         address addr;
         bytes32 content;
         PublicKey pubkey;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(uint256=>bytes) abis;
     }
 
     AbstractENS ens;
-    mapping(bytes32=&gt;Record) records;
+    mapping(bytes32=>Record) records;
 
     modifier only_owner(bytes32 node) {
         if(ens.owner(node) != msg.sender) throw;
@@ -124,8 +124,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) constant returns (uint256 contentType, bytes data) {
         var record = records[node];
-        for(contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for(contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -143,7 +143,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) only_owner(node) {
         // Content types must be powers of 2
-        if(((contentType - 1) &amp; contentType) != 0) throw;
+        if(((contentType - 1) & contentType) != 0) throw;
         
         records[node].abis[contentType] = data;
     }

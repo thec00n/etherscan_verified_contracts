@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -65,8 +65,8 @@ contract Garlicoin is ERC20Interface, Owned {
     string public  name;
     uint8 public decimals;
     uint public _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     uint etherCost1;
     uint etherCost2;
     uint etherCost3;
@@ -77,8 +77,8 @@ contract Garlicoin is ERC20Interface, Owned {
     bool burnt = false;
 
     function Garlicoin() public {
-        symbol = &quot;GLC&quot;;
-        name = &quot;Garlicoin&quot;;
+        symbol = "GLC";
+        name = "Garlicoin";
         decimals = 18;
         etherCost1 = 0.1 finney;
         etherCost2 = 0.15 finney;
@@ -143,32 +143,32 @@ contract Garlicoin is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // If you&#39;ve made it this far in the code, I probably don&#39;t have to tell you
-    // how dogshit this crypto is. You might tell yourself that it&#39;s obviously 
-    // a bad investment because of this. But what if it wasn&#39;t? What if its
+    // If you've made it this far in the code, I probably don't have to tell you
+    // how dogshit this crypto is. You might tell yourself that it's obviously 
+    // a bad investment because of this. But what if it wasn't? What if its
     // useless, pathetic nature makes it not only special, but legendary? What
     // if years, even decades from now, when economists discuss the network of 
     // manic crazed millenials fueling the great cryptocurrency bubble, they 
-    // all use the same example, the epitome of hype, the hobo&#39;s puddle of urine
-    // that was Garlicoin? They&#39;d give lectures on how within days it had 
+    // all use the same example, the epitome of hype, the hobo's puddle of urine
+    // that was Garlicoin? They'd give lectures on how within days it had 
     // reached fifteen times its original value, and in a year it was the world
     // cryptocurrency standard to replace Bitcoin.
     
-    // I&#39;m not going to tell you that any of this is going to happen, but what 
+    // I'm not going to tell you that any of this is going to happen, but what 
     // I will tell you is this is a chance for you to be part of history, 
     // forever engraved into the immutable, pseudo-eternal Ethereum blockchain.
     
     // Now please buy my shitcoin so I can afford dinner tonight.
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &lt;= deadline3);
-        if (now &gt; deadline3) {
+        require(now <= deadline3);
+        if (now > deadline3) {
             revert();
-        } else if (now &lt;= deadline1) {
+        } else if (now <= deadline1) {
             etherCostOfEachToken = etherCost1;
-        } else if (now &lt;= deadline2) {
+        } else if (now <= deadline2) {
             etherCostOfEachToken = etherCost2;
-        } else if (now &lt;= deadline3) {
+        } else if (now <= deadline3) {
             etherCostOfEachToken = etherCost3;
         }
         uint weiAmount = msg.value;
@@ -182,7 +182,7 @@ contract Garlicoin is ERC20Interface, Owned {
         if (burnt == true) {
             return;
         } else {
-            if (now &lt;= deadline3) {
+            if (now <= deadline3) {
                 return;
             }
             burnt = true;

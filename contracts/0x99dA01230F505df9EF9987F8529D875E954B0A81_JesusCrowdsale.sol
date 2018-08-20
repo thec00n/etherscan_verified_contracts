@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -108,7 +108,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -272,7 +272,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /** 
  * @title TokenDestructible:
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="ff8d9a929c90bfcd">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="ff8d9a929c90bfcd">[email protected]</span>π.com>
  * @dev Base contract that can be destroyed by owner. All funds in contract including
  * listed tokens will be sent to the owner.
  */
@@ -290,7 +290,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner {
 
     // Transfer tokens to owner
-    for (uint256 i = 0; i &lt; tokens.length; i++) {
+    for (uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -310,10 +310,10 @@ contract TokenDestructible is Ownable {
  
 contract JesusCoin is StandardToken, Ownable, TokenDestructible {
 
-  string public name = &quot;Jesus Coin&quot;;
+  string public name = "Jesus Coin";
   uint8 public decimals = 18;
-  string public symbol = &quot;JC&quot;;
-  string public version = &quot;0.2&quot;;
+  string public symbol = "JC";
+  string public version = "0.2";
 
   event Mint(address indexed to, uint256 amount);
   event MintFinished();
@@ -371,14 +371,14 @@ contract JesusCrowdsale is Ownable, Pausable, TokenDestructible {
   // function to get the price of the token
   // returns how many token units a buyer gets per wei, needs to be divided by 10
   function getRate() constant returns (uint8) {
-    if      (block.timestamp &lt; START)            return 166; // presale, 40% bonus
-    else if (block.timestamp &lt;= START +  6 days) return 162; // day 1 to 6, 35% bonus
-    else if (block.timestamp &lt;= START + 13 days) return 156; // day 7 to 13, 30% bonus
-    else if (block.timestamp &lt;= START + 20 days) return 150; // day 14 to 20, 25% bonus
-    else if (block.timestamp &lt;= START + 27 days) return 144; // day 21 to 27, 20% bonus
-    else if (block.timestamp &lt;= START + 34 days) return 138; // day 28 to 34, 15% bonus
-    else if (block.timestamp &lt;= START + 41 days) return 132; // day 35 to 41, 10% bonus
-    else if (block.timestamp &lt;= START + 48 days) return 126; // day 42 to 48, 5% bonus
+    if      (block.timestamp < START)            return 166; // presale, 40% bonus
+    else if (block.timestamp <= START +  6 days) return 162; // day 1 to 6, 35% bonus
+    else if (block.timestamp <= START + 13 days) return 156; // day 7 to 13, 30% bonus
+    else if (block.timestamp <= START + 20 days) return 150; // day 14 to 20, 25% bonus
+    else if (block.timestamp <= START + 27 days) return 144; // day 21 to 27, 20% bonus
+    else if (block.timestamp <= START + 34 days) return 138; // day 28 to 34, 15% bonus
+    else if (block.timestamp <= START + 41 days) return 132; // day 35 to 41, 10% bonus
+    else if (block.timestamp <= START + 48 days) return 126; // day 42 to 48, 5% bonus
     return 120; // no bonus
   }
 
@@ -390,7 +390,7 @@ contract JesusCrowdsale is Ownable, Pausable, TokenDestructible {
   function buyTokens(address beneficiary) whenNotPaused() payable {
     require(beneficiary != 0x0);
     require(msg.value != 0);
-    require(block.timestamp &lt;= END);
+    require(block.timestamp <= END);
 
     uint256 weiAmount = msg.value;
     weiRaised = weiRaised.add(weiAmount);
@@ -403,7 +403,7 @@ contract JesusCrowdsale is Ownable, Pausable, TokenDestructible {
 
   function distributeBounty() onlyOwner {
     require(!bountyDistributed);
-    require(block.timestamp &gt;= END);
+    require(block.timestamp >= END);
 
     // calculate token amount to be minted for bounty
     uint256 amount = weiRaised.div(100).mul(2); // 2% of all tokens
@@ -418,7 +418,7 @@ contract JesusCrowdsale is Ownable, Pausable, TokenDestructible {
    */
   function finishMinting() onlyOwner returns (bool) {
     require(bountyDistributed);
-    require(block.timestamp &gt;= END);
+    require(block.timestamp >= END);
 
     return token.finishMinting();
   }

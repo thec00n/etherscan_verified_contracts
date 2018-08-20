@@ -3,20 +3,20 @@ pragma solidity ^0.4.24;
 contract FoMo3Dlong { 
     using SafeMath for *;
     
-    string constant public name = &quot;FoMo3D Long Official&quot;;
-    string constant public symbol = &quot;F3D&quot;;
+    string constant public name = "FoMo3D Long Official";
+    string constant public symbol = "F3D";
 	uint256 public airDropPot_;
     uint256 public airDropTracker_ = 0;
-    mapping (address =&gt; uint256) public pIDxAddr_;
-    mapping (bytes32 =&gt; uint256) public pIDxName_;
-    mapping (uint256 =&gt; F3Ddatasets.Player) public plyr_;
-    mapping (uint256 =&gt; mapping (uint256 =&gt; F3Ddatasets.PlayerRounds)) public plyrRnds_;
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_;
-    mapping (uint256 =&gt; F3Ddatasets.Round) public round_;
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;
+    mapping (address => uint256) public pIDxAddr_;
+    mapping (bytes32 => uint256) public pIDxName_;
+    mapping (uint256 => F3Ddatasets.Player) public plyr_;
+    mapping (uint256 => mapping (uint256 => F3Ddatasets.PlayerRounds)) public plyrRnds_;
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_;
+    mapping (uint256 => F3Ddatasets.Round) public round_;
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;
 
-    mapping (uint256 =&gt; F3Ddatasets.TeamFee) public fees_;
-    mapping (uint256 =&gt; F3Ddatasets.PotSplit) public potSplit_;
+    mapping (uint256 => F3Ddatasets.TeamFee) public fees_;
+    mapping (uint256 => F3Ddatasets.PotSplit) public potSplit_;
 
 	function() public  payable{} //直接往里面转钱
 	  
@@ -221,7 +221,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -233,7 +233,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -246,7 +246,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -260,7 +260,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -293,7 +293,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

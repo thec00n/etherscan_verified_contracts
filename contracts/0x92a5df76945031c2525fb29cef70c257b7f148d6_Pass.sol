@@ -14,8 +14,8 @@ contract Pass {
         string [] passwords;        /// 密码列表
     }
 
-    mapping (address =&gt; PasswordBook) private userbook;   /// 用户地址 映射密码本
-    mapping (address =&gt; uint) private registerUsers;     /// 拥有密码本的用户地址
+    mapping (address => PasswordBook) private userbook;   /// 用户地址 映射密码本
+    mapping (address => uint) private registerUsers;     /// 拥有密码本的用户地址
 
     event BookUpdated(address _sender, bool _success);
     /// 增加密码
@@ -23,7 +23,7 @@ contract Pass {
         checkLength(platform);
         checkLength(account);
         checkLength(password);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         admin.transfer(msg.value);
         registerUsers[msg.sender] += 1;
         userbook[msg.sender].platforms.push(platform);
@@ -37,8 +37,8 @@ contract Pass {
     }
 
     function getBook(uint _index) public view returns (string, string, string){
-        require(_index&gt;=0);
-        require(_index &lt; registerUsers[msg.sender]);
+        require(_index>=0);
+        require(_index < registerUsers[msg.sender]);
         return (userbook[msg.sender].platforms[_index], userbook[msg.sender].accounts[_index], userbook[msg.sender].passwords[_index]);
     }
 
@@ -46,8 +46,8 @@ contract Pass {
         checkLength(platform);
         checkLength(account);
         checkLength(password);
-        if(_index &gt;= registerUsers[msg.sender]) revert();
-        require(msg.value &gt;= price);
+        if(_index >= registerUsers[msg.sender]) revert();
+        require(msg.value >= price);
         admin.transfer(msg.value);
         userbook[msg.sender].platforms[_index] = platform;
         userbook[msg.sender].accounts[_index] = account;
@@ -66,7 +66,7 @@ contract Pass {
 
     function checkLength(string str) private pure {
         bytes memory strBytes = bytes(str);
-        if (strBytes.length &gt; 100)
+        if (strBytes.length > 100)
             revert();
     }
 }

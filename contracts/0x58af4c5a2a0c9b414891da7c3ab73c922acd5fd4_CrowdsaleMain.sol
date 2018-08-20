@@ -8,31 +8,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal pure returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal pure returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal  pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal  pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal  pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -54,7 +54,7 @@ contract BasicToken is ERC20Basic {
   
   using SafeMath for uint;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   function transfer(address _to, uint _value) public{
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
 
 
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) public {
     balances[_to] = balances[_to].add(_value);
@@ -110,8 +110,8 @@ contract Ownable {
 
 
 contract TTC is StandardToken, Ownable {
-  string public constant name = &quot;TTC&quot;;
-  string public constant symbol = &quot;TTC&quot;;
+  string public constant name = "TTC";
+  string public constant symbol = "TTC";
   uint public constant decimals = 18;
 
 
@@ -185,11 +185,11 @@ contract CrowdsaleMain is Ownable{
   uint public mainCoinSentToEther;
 
   /* Backers Ether indexed by their Ethereum address */
-  mapping(address =&gt; Backer) public mainBackers;
+  mapping(address => Backer) public mainBackers;
   address[] internal mainReadyToSendAddress;
 
   /* White List */
-  mapping(address =&gt; bool) public whiteList;
+  mapping(address => bool) public whiteList;
   address private whiteListOwner;
 
     /* Current Phase */
@@ -200,7 +200,7 @@ contract CrowdsaleMain is Ownable{
   */
 
   modifier respectTimeFrame() {
-    require((now &gt;= mainStartTime) &amp;&amp; (now &lt; mainEndTime ));
+    require((now >= mainStartTime) && (now < mainEndTime ));
     _;
   }
 
@@ -283,16 +283,16 @@ contract CrowdsaleMain is Ownable{
    *  Receives a donation in Ether
   */
   function receiveETH(address _beneficiary) internal {
-    require(msg.value &gt;= MIN_INVEST_ETHER) ; 
+    require(msg.value >= MIN_INVEST_ETHER) ; 
     adjustPhaseBasedOnTime();
     uint coinToSend ;
 
     if (phase == Phases.MainIco){
       Backer storage mainBacker = mainBackers[_beneficiary];
-      require(mainBacker.weiReceived.add(msg.value) &lt;= maximumCoinsPerAddress);
+      require(mainBacker.weiReceived.add(msg.value) <= maximumCoinsPerAddress);
 
       coinToSend = msg.value.mul(MAIN_COIN_PER_ETHER_ICO).div(1 ether);   
-      require(coinToSend.add(mainCoinSentToEther) &lt;= MAIN_MAX_CAP) ;
+      require(coinToSend.add(mainCoinSentToEther) <= MAIN_MAX_CAP) ;
 
       mainBacker.coinSent = mainBacker.coinSent.add(coinToSend);
       mainBacker.weiReceived = mainBacker.weiReceived.add(msg.value);   
@@ -313,11 +313,11 @@ contract CrowdsaleMain is Ownable{
   */
     function adjustPhaseBasedOnTime() internal {
 
-        if (now &lt; mainStartTime ) {
+        if (now < mainStartTime ) {
             if (phase != Phases.PreStart) {
                 phase = Phases.PreStart;
             }
-        } else if (now &gt;= mainStartTime &amp;&amp; now &lt; mainEndTime) {
+        } else if (now >= mainStartTime && now < mainEndTime) {
             if (phase != Phases.MainIco) {
                 phase = Phases.MainIco;
             }
@@ -333,10 +333,10 @@ contract CrowdsaleMain is Ownable{
   * Durign the main ico, should be called by owner to send TTC to beneficiary address
   */
   function mainSendTTC() onlyOwner public{
-    for(uint i=0; i &lt; mainReadyToSendAddress.length ; i++){
+    for(uint i=0; i < mainReadyToSendAddress.length ; i++){
       address backerAddress = mainReadyToSendAddress[i];
       uint coinReadyToSend = mainBackers[backerAddress].coinReadyToSend;
-      if ( coinReadyToSend &gt; 0) {
+      if ( coinReadyToSend > 0) {
         mainBackers[backerAddress].coinReadyToSend = 0;
         coin.transfer(backerAddress, coinReadyToSend);
         LogCoinsEmited(backerAddress, coinReadyToSend);
@@ -352,7 +352,7 @@ contract CrowdsaleMain is Ownable{
   */
   function addWhiteList(address[] _whiteList) public {
     require(msg.sender == whiteListOwner);
-    for (uint i =0;i&lt;_whiteList.length;i++){
+    for (uint i =0;i<_whiteList.length;i++){
       whiteList[_whiteList[i]] = true;
     } 
   }
@@ -361,7 +361,7 @@ contract CrowdsaleMain is Ownable{
   */
   function removeWhiteList(address[] _whiteList) public {
     require(msg.sender == whiteListOwner);
-    for (uint i =0;i&lt;_whiteList.length;i++){
+    for (uint i =0;i<_whiteList.length;i++){
       whiteList[_whiteList[i]] = false;
     }
   }
@@ -372,10 +372,10 @@ contract CrowdsaleMain is Ownable{
   function finalize() onlyOwner public {
     adjustPhaseBasedOnTime();
     require(phase == Phases.AfterIco);
-    require(this.balance &gt; 0);
+    require(this.balance > 0);
     require(mainMultisigEther.send(this.balance)) ; 
     uint remains = coin.balanceOf(this);
-    if (remains &gt; 0) { 
+    if (remains > 0) { 
       coin.transfer(owner,remains);
     }
   }
@@ -407,7 +407,7 @@ contract CrowdsaleMain is Ownable{
   function refund(address _beneficiary) onlyOwner public {
     uint valueToSend = 0;
     Backer storage mainBacker = mainBackers[_beneficiary];
-    if (mainBacker.coinReadyToSend &gt; 0){ 
+    if (mainBacker.coinReadyToSend > 0){ 
       uint mainValueToSend = mainBacker.coinReadyToSend.mul(1 ether).div(MAIN_COIN_PER_ETHER_ICO);
       mainBacker.coinSent = mainBacker.coinSent.sub(mainBacker.coinReadyToSend);
       mainBacker.weiReceived = mainBacker.weiReceived.sub(mainValueToSend);   
@@ -417,7 +417,7 @@ contract CrowdsaleMain is Ownable{
       valueToSend = valueToSend + mainValueToSend;
 
     }
-    if (valueToSend &gt; 0){
+    if (valueToSend > 0){
       require(_beneficiary.send(valueToSend));
     }
     
@@ -429,7 +429,7 @@ contract CrowdsaleMain is Ownable{
   */  
   function refundAll() onlyOwner public {
     
-    for(uint j=0; j &lt; mainReadyToSendAddress.length ; j++){
+    for(uint j=0; j < mainReadyToSendAddress.length ; j++){
       refund(mainReadyToSendAddress[j]);
 
     }

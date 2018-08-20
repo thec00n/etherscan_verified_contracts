@@ -2,17 +2,17 @@ pragma solidity ^0.4.10;
 
 contract DickButtCoin {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.69&#39;;
-    string public name = &quot;Dick Butt Coin&quot;;
-    string public symbol = &quot;DBC&quot;;
+    string public standard = 'Token 0.69';
+    string public name = "Dick Butt Coin";
+    string public symbol = "DBC";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) _balance;
-    mapping (address =&gt; bool) _used;
+    mapping (address => uint256) _balance;
+    mapping (address => bool) _used;
      
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -24,11 +24,11 @@ contract DickButtCoin {
     uint public deactivateTime;
     
     function updateActivation() {
-        active = (now &lt; deactivateTime);
+        active = (now < deactivateTime);
     }
     
     function balanceOf(address addr) constant returns(uint) {
-        if(active &amp;&amp; _used[addr] == false) {
+        if(active && _used[addr] == false) {
             return _balance[addr] +1;
         }
         return _balance[addr];
@@ -42,7 +42,7 @@ contract DickButtCoin {
     }
     
     modifier checkInit(address addr) {
-        if(active &amp;&amp; _used[addr] == false) {
+        if(active && _used[addr] == false) {
            _used[addr] = true;
            _balance[addr] ++; 
         }
@@ -52,8 +52,8 @@ contract DickButtCoin {
     /* Send coins */
     function transfer(address _to, uint256 _value) checkInit(msg.sender) {
         if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (_balance[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (_balance[_to] + _value &lt; _balance[_to]) throw; // Check for overflows
+        if (_balance[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (_balance[_to] + _value < _balance[_to]) throw; // Check for overflows
         _balance[msg.sender] -= _value;                     // Subtract from the sender
         _balance[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -69,9 +69,9 @@ contract DickButtCoin {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (_balance[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (_balance[_to] + _value &lt; _balance[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (_balance[_from] < _value) throw;                 // Check if the sender has enough
+        if (_balance[_to] + _value < _balance[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         _balance[_from] -= _value;                           // Subtract from the sender
         _balance[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;

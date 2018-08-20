@@ -35,7 +35,7 @@ contract ICreator{
 
 contract IRightAndRoles {
     address[][] public wallets;
-    mapping(address =&gt; uint16) public roles;
+    mapping(address => uint16) public roles;
 
     event WalletChanged(address indexed newWallet, address indexed oldWallet, uint8 indexed role);
     event CloneChanged(address indexed wallet, uint8 indexed role, bool indexed mod);
@@ -59,7 +59,7 @@ contract GuidedByRoles {
 
 contract Pausable is GuidedByRoles {
 
-    mapping (address =&gt; bool) public unpausedWallet;
+    mapping (address => bool) public unpausedWallet;
 
     event Pause();
     event Unpause();
@@ -79,7 +79,7 @@ contract Pausable is GuidedByRoles {
         require(rightAndRoles.onlyRoles(msg.sender,3));
     }
 
-    // Add a wallet ignoring the &quot;Exchange pause&quot;. Available to the owner of the contract.
+    // Add a wallet ignoring the "Exchange pause". Available to the owner of the contract.
     function setUnpausedWallet(address _wallet, bool mode) public {
         onlyAdmin();
         unpausedWallet[_wallet] = mode;
@@ -90,11 +90,11 @@ contract Pausable is GuidedByRoles {
      */
     function setPause(bool mode)  public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        if (!paused &amp;&amp; mode) {
+        if (!paused && mode) {
             paused = true;
             emit Pause();
         }else
-        if (paused &amp;&amp; !mode) {
+        if (paused && !mode) {
             paused = false;
             emit Unpause();
         }
@@ -119,7 +119,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -186,7 +186,7 @@ contract MigratableToken is BasicToken,GuidedByRoles {
 
     function migrateAll(address[] _holders) public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        for(uint i = 0; i &lt; _holders.length; i++){
+        for(uint i = 0; i < _holders.length; i++){
             migrateInternal(_holders[i]);
         }
     }
@@ -194,7 +194,7 @@ contract MigratableToken is BasicToken,GuidedByRoles {
     // Reissue your tokens.
     function migrate() public
     {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         migrateInternal(msg.sender);
     }
 
@@ -210,9 +210,9 @@ contract BurnableToken is BasicToken, GuidedByRoles {
      */
     function burn(address _beneficiary, uint256 _value) public {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        require(_value &lt;= balances[_beneficiary]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_beneficiary]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_beneficiary] = balances[_beneficiary].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -235,23 +235,23 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function minus(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b&gt;=a) return 0;
+        if (b>=a) return 0;
         return a - b;
     }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -262,8 +262,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -277,7 +277,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -326,7 +326,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -392,17 +392,17 @@ contract FreezingToken is PausableToken {
     }
 
 
-    mapping (address =&gt; freeze) freezedTokens;
+    mapping (address => freeze) freezedTokens;
 
     function freezedTokenOf(address _beneficiary) public view returns (uint256 amount){
         freeze storage _freeze = freezedTokens[_beneficiary];
-        if(_freeze.when &lt; now) return 0;
+        if(_freeze.when < now) return 0;
         return _freeze.amount;
     }
 
     function defrostDate(address _beneficiary) public view returns (uint256 Date) {
         freeze storage _freeze = freezedTokens[_beneficiary];
-        if(_freeze.when &lt; now) return 0;
+        if(_freeze.when < now) return 0;
         return _freeze.when;
     }
 
@@ -415,8 +415,8 @@ contract FreezingToken is PausableToken {
 
     function masFreezedTokens(address[] _beneficiary, uint256[] _amount, uint256[] _when) public {
         onlyAdmin();
-        require(_beneficiary.length == _amount.length &amp;&amp; _beneficiary.length == _when.length);
-        for(uint16 i = 0; i &lt; _beneficiary.length; i++){
+        require(_beneficiary.length == _amount.length && _beneficiary.length == _when.length);
+        for(uint16 i = 0; i < _beneficiary.length; i++){
             freeze storage _freeze = freezedTokens[_beneficiary[i]];
             _freeze.amount = _amount[i];
             _freeze.when = _when[i];
@@ -427,7 +427,7 @@ contract FreezingToken is PausableToken {
     function transferAndFreeze(address _to, uint256 _value, uint256 _when) external {
         require(unpausedWallet[msg.sender]);
         require(freezedTokenOf(_to) == 0);
-        if(_when &gt; 0){
+        if(_when > 0){
             freeze storage _freeze = freezedTokens[_to];
             _freeze.amount = _value;
             _freeze.when = _when;
@@ -436,19 +436,19 @@ contract FreezingToken is PausableToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(balanceOf(msg.sender) &gt;= freezedTokenOf(msg.sender).add(_value));
+        require(balanceOf(msg.sender) >= freezedTokenOf(msg.sender).add(_value));
         return super.transfer(_to,_value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(balanceOf(_from) &gt;= freezedTokenOf(_from).add(_value));
+        require(balanceOf(_from) >= freezedTokenOf(_from).add(_value));
         return super.transferFrom( _from,_to,_value);
     }
 }
 
 contract Token is IToken, FreezingToken, MintableToken, MigratableToken, BurnableToken{
     function Token(ICreator _creator) GuidedByRoles(_creator.rightAndRoles()) public {}
-    string public constant name = &quot;Imigize&quot;;
-    string public constant symbol = &quot;IMGZ&quot;;
+    string public constant name = "Imigize";
+    string public constant symbol = "IMGZ";
     uint8 public constant decimals = 18;
 }

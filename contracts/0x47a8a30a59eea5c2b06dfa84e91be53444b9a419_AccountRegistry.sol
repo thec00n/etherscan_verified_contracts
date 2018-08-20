@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ library SafeERC20 {
 }
 
 contract AccountRegistry is Ownable {
-  mapping(address =&gt; bool) public accounts;
+  mapping(address => bool) public accounts;
 
   // Inviter + recipient pair
   struct Invite {
@@ -104,7 +104,7 @@ contract AccountRegistry is Ownable {
   // NOTE: the address keys here are NOT Ethereum addresses, we just happen
   // to work with the public keys in terms of Ethereum address strings because
   // this is what `ecrecover` produces when working with signed text.
-  mapping(address =&gt; Invite) public invites;
+  mapping(address => Invite) public invites;
 
   InviteCollateralizer public inviteCollateralizer;
   ERC20 public blt;
@@ -130,7 +130,7 @@ contract AccountRegistry is Ownable {
   }
 
   /**
-   * @dev Create an account instantly. Reserved for the &quot;invite admin&quot; which is managed by the Bloom team
+   * @dev Create an account instantly. Reserved for the "invite admin" which is managed by the Bloom team
    * @param _newUser Address of the user receiving an account
    */
   function createAccount(address _newUser) public onlyInviteAdmin {
@@ -158,7 +158,7 @@ contract AccountRegistry is Ownable {
    */
   function acceptInvite(bytes _sig) public onlyNonUser {
     address signer = recoverSigner(_sig);
-    require(inviteExists(signer) &amp;&amp; inviteHasNotBeenAccepted(signer));
+    require(inviteExists(signer) && inviteHasNotBeenAccepted(signer));
 
     invites[signer].recipient = msg.sender;
     createAccountFor(msg.sender);
@@ -166,14 +166,14 @@ contract AccountRegistry is Ownable {
   }
 
   /**
-   * @dev Check if an invite has not been set on the struct meaning it hasn&#39;t been accepted
+   * @dev Check if an invite has not been set on the struct meaning it hasn't been accepted
    */
   function inviteHasNotBeenAccepted(address _signer) internal view returns (bool) {
     return invites[_signer].recipient == address(0);
   }
 
   /**
-   * @dev Check that an invite hasn&#39;t already been created with this signer
+   * @dev Check that an invite hasn't already been created with this signer
    */
   function inviteDoesNotExist(address _signer) internal view returns (bool) {
     return !inviteExists(_signer);
@@ -250,7 +250,7 @@ library ECRecovery {
       return (address(0));
     }
 
-    // Extracting these values isn&#39;t possible without assembly
+    // Extracting these values isn't possible without assembly
     // solhint-disable no-inline-assembly
     // Divide the signature in r, s and v variables
     assembly {
@@ -260,12 +260,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -284,7 +284,7 @@ contract InviteCollateralizer is Ownable {
 
   ERC20 public blt;
   address public seizedTokensWallet;
-  mapping (address =&gt; Collateralization[]) public collateralizations;
+  mapping (address => Collateralization[]) public collateralizations;
   uint256 public collateralAmount = 1e17;
   uint64 public lockupDuration = 1 years;
 
@@ -318,14 +318,14 @@ contract InviteCollateralizer is Ownable {
   }
 
   function reclaim() public returns (bool) {
-    require(collateralizations[msg.sender].length &gt; 0);
+    require(collateralizations[msg.sender].length > 0);
 
     uint256 reclaimableAmount = 0;
 
-    for (uint256 i = 0; i &lt; collateralizations[msg.sender].length; i++) {
+    for (uint256 i = 0; i < collateralizations[msg.sender].length; i++) {
       if (collateralizations[msg.sender][i].claimed) {
         continue;
-      } else if (collateralizations[msg.sender][i].releaseDate &gt; now) {
+      } else if (collateralizations[msg.sender][i].releaseDate > now) {
         break;
       }
 
@@ -333,13 +333,13 @@ contract InviteCollateralizer is Ownable {
       collateralizations[msg.sender][i].claimed = true;
     }
 
-    require(reclaimableAmount &gt; 0);
+    require(reclaimableAmount > 0);
 
     return blt.transfer(msg.sender, reclaimableAmount);
   }
 
   function seize(address _subject, uint256 _collateralId) public onlyCollateralSeizer {
-    require(collateralizations[_subject].length &gt;= _collateralId + 1);
+    require(collateralizations[_subject].length >= _collateralId + 1);
     require(!collateralizations[_subject][_collateralId].claimed);
 
     collateralizations[_subject][_collateralId].claimed = true;
@@ -356,7 +356,7 @@ contract InviteCollateralizer is Ownable {
   }
 
   function changeCollateralAmount(uint256 _newAmount) public onlyOwner {
-    require(_newAmount &gt; 0);
+    require(_newAmount > 0);
     collateralAmount = _newAmount;
   }
 

@@ -3,7 +3,7 @@ pragma solidity 0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,9 +72,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-	// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+	// assert(b > 0); // Solidity automatically throws when dividing by 0
 	uint256 c = a / b;
-	// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+	// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 	return c;
   }
 
@@ -82,7 +82,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-	assert(b &lt;= a);
+	assert(b <= a);
 	return a - b;
   }
 
@@ -91,7 +91,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
 	uint256 c = a + b;
-	assert(c &gt;= a);
+	assert(c >= a);
 	return c;
   }
 }
@@ -129,38 +129,38 @@ contract EthernalCup is Ownable {
 
 	bool public paused = false;
 
-	// 0 &quot;Russia&quot;
-	// 1 &quot;Saudi Arabia
-	// 2 &quot;Egypt&quot;
-	// 3 &quot;Uruguay&quot;
-	// 4 &quot;Morocco&quot;
-	// 5 &quot;Iran&quot;
-	// 6 &quot;Portugal&quot;
-	// 7 &quot;Spain&quot;
-	// 8 &quot;France&quot;
-	// 9 &quot;Australia&quot;
-	// 10 &quot;Peru&quot;
-	// 11 &quot;Denmark&quot;
-	// 12 &quot;Argentina&quot;
-	// 13 &quot;Iceland&quot;
-	// 14 &quot;Croatia&quot;
-	// 15 &quot;Nigeria&quot;
-	// 16 &quot;Costa Rica
-	// 17 &quot;Serbia&quot;
-	// 18 &quot;Brazil&quot;
-	// 19 &quot;Switzerland&quot;
-	// 20 &quot;Germany&quot;
-	// 21 &quot;Mexico&quot;
-	// 22 &quot;Sweden&quot;
-	// 23 &quot;Korea Republic
-	// 24 &quot;Belgium&quot;
-	// 25 &quot;Panama&quot;
-	// 26 &quot;Tunisia&quot;
-	// 27 &quot;England&quot;
-	// 28 &quot;Poland&quot;
-	// 29 &quot;Senegal&quot;
-	// 30 &quot;Colombia&quot;
-	// 31 &quot;Japan&quot;
+	// 0 "Russia"
+	// 1 "Saudi Arabia
+	// 2 "Egypt"
+	// 3 "Uruguay"
+	// 4 "Morocco"
+	// 5 "Iran"
+	// 6 "Portugal"
+	// 7 "Spain"
+	// 8 "France"
+	// 9 "Australia"
+	// 10 "Peru"
+	// 11 "Denmark"
+	// 12 "Argentina"
+	// 13 "Iceland"
+	// 14 "Croatia"
+	// 15 "Nigeria"
+	// 16 "Costa Rica
+	// 17 "Serbia"
+	// 18 "Brazil"
+	// 19 "Switzerland"
+	// 20 "Germany"
+	// 21 "Mexico"
+	// 22 "Sweden"
+	// 23 "Korea Republic
+	// 24 "Belgium"
+	// 25 "Panama"
+	// 26 "Tunisia"
+	// 27 "England"
+	// 28 "Poland"
+	// 29 "Senegal"
+	// 30 "Colombia"
+	// 31 "Japan"
 
 	struct Country {
 		address owner;
@@ -175,8 +175,8 @@ contract EthernalCup is Ownable {
 
 	EthCup public cup;
 
-	mapping (address =&gt; uint) public balances;
-	mapping (uint8 =&gt; Country) public countries;
+	mapping (address => uint) public balances;
+	mapping (uint8 => Country) public countries;
 
 	/// withdrawWallet is the fixed destination of funds to withdraw. It might
 	/// differ from owner address to allow for a cold storage address.
@@ -194,7 +194,7 @@ contract EthernalCup is Ownable {
 	}
 
 	modifier unlocked() {
-		require(getTime() &lt; LOCK_START || getTime() &gt; LOCK_END);
+		require(getTime() < LOCK_START || getTime() > LOCK_END);
 		_;
 	}
 
@@ -224,7 +224,7 @@ contract EthernalCup is Ownable {
 
 	function addCountries() external onlyOwner {
 
-		for(uint8 i = 0; i &lt; 32; i++) {
+		for(uint8 i = 0; i < 32; i++) {
 			countries[i] = Country(withdrawWallet, i, startPrice);
 		}			
 	}
@@ -248,12 +248,12 @@ contract EthernalCup is Ownable {
 	///	@param id - The country id
 	function buy(uint8 id) external payable buyAvailable unlocked {
 
-		require(id &lt; 32);
+		require(id < 32);
 		
 		uint price = getPrice(countries[id].price);
 
-		require(msg.value &gt; startPrice);
-		require(msg.value &gt;= price);
+		require(msg.value > startPrice);
+		require(msg.value >= price);
 
 		uint fee = msg.value.mul(DEV_FEE).div(100);
 
@@ -278,7 +278,7 @@ contract EthernalCup is Ownable {
 
 		uint price = getPrice(cup.price);
 
-		require(msg.value &gt;= price);
+		require(msg.value >= price);
 
 		uint fee = msg.value.mul(DEV_FEE).div(100);
 
@@ -309,7 +309,7 @@ contract EthernalCup is Ownable {
 
 		uint amount = balances[msg.sender];
 
-		require(amount &gt; 0);
+		require(amount > 0);
 
 		balances[msg.sender] = 0;
 
@@ -367,7 +367,7 @@ contract EthernalCup is Ownable {
 
 		address owner = countries[id].owner;
 
-		require(getTime() &gt; TOURNAMENT_ENDS);
+		require(getTime() > TOURNAMENT_ENDS);
 		require(cup.owner == address(0));
 		require(cup.price == 0);
 		require(owner != address(0));

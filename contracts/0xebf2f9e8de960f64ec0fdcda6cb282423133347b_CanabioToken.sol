@@ -1,15 +1,15 @@
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract CanabioToken {
-    string public version = &#39;0.1&#39;;
+    string public version = '0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     address public owner;
     uint256 public _totalSupply;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Burn(address indexed from, uint256 value);
@@ -18,8 +18,8 @@ contract CanabioToken {
     function CanabioToken() {
         balances[msg.sender] = 10000000000000000;
         _totalSupply = 10000000000000000;
-        name = &#39;Canabio&#39;;
-        symbol = &#39;CNB&#39;;
+        name = 'Canabio';
+        symbol = 'CNB';
         decimals = 8;
         owner = msg.sender;
     }
@@ -38,8 +38,8 @@ contract CanabioToken {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) return false;
-        if (balances[msg.sender] &lt; _value) return false;
-        if (balances[_to] + _value &lt; balances[_to]) return false;
+        if (balances[msg.sender] < _value) return false;
+        if (balances[_to] + _value < balances[_to]) return false;
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -62,9 +62,9 @@ contract CanabioToken {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) return false;
-        if (balances[_from] &lt; _value) return false;
-        if (balances[_to] + _value &lt; balances[_to]) return false;
-        if (_value &gt; allowances[_from][msg.sender]) return false;
+        if (balances[_from] < _value) return false;
+        if (balances[_to] + _value < balances[_to]) return false;
+        if (_value > allowances[_from][msg.sender]) return false;
         balances[_from] -= _value;
         balances[_to] += _value;
         allowances[_from][msg.sender] -= _value;
@@ -73,7 +73,7 @@ contract CanabioToken {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] -= _value;
         _totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -81,8 +81,8 @@ contract CanabioToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value) return false;
-        if (_value &gt; allowances[_from][msg.sender]) return false;
+        if (balances[_from] < _value) return false;
+        if (_value > allowances[_from][msg.sender]) return false;
         balances[_from] -= _value;
         _totalSupply -= _value;
         Burn(_from, _value);

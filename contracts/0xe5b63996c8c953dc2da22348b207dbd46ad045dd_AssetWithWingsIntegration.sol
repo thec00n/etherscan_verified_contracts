@@ -26,7 +26,7 @@ contract AssetProxy {
  * Receives calls from the proxy, and calls back immediatly without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Asset is AssetInterface {
     // Assigned asset proxy contract, immutable.
@@ -227,7 +227,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -249,7 +249,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -260,7 +260,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
 
 contract AssetWithAmbi is Asset, Ambi2EnabledFull {
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; (ambi2.hasRole(this, _role, _sender()))) {
+        if (address(ambi2) != 0x0 && (ambi2.hasRole(this, _role, _sender()))) {
             _;
         }
     }
@@ -269,7 +269,7 @@ contract AssetWithAmbi is Asset, Ambi2EnabledFull {
 /**
  * @title EToken2 Asset with posibility to set totalCollected value, which is used by Wings integration.
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 
 contract AssetWithWingsIntegration is AssetWithAmbi {
@@ -288,9 +288,9 @@ contract AssetWithWingsIntegration is AssetWithAmbi {
      *
      * @return success.
      */
-    function setTotalCollected(uint _totalCollected) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setTotalCollected(uint _totalCollected) onlyRole('admin') returns(bool) {
         if (totalCollected != 0) {
-            Error(&#39;Total collected already set&#39;);
+            Error('Total collected already set');
             return false;
         }
 

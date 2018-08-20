@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -62,9 +62,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -72,7 +72,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -81,7 +81,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,7 +116,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -173,8 +173,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -308,9 +308,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -320,8 +320,8 @@ contract BurnableToken is BasicToken {
 }
 
 contract XRT is MintableToken, BurnableToken {
-    string public constant name     = &quot;Robonomics Alpha&quot;;
-    string public constant symbol   = &quot;XRT&quot;;
+    string public constant name     = "Robonomics Alpha";
+    string public constant symbol   = "XRT";
     uint   public constant decimals = 9;
 
     uint256 public constant INITIAL_SUPPLY = 5 * (10 ** uint256(decimals));
@@ -350,9 +350,9 @@ contract LightContract {
 
 contract LighthouseAPI {
     address[] public members;
-    mapping(address =&gt; uint256) indexOf;
+    mapping(address => uint256) indexOf;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     uint256 public minimalFreeze;
     uint256 public timeoutBlocks;
@@ -472,14 +472,14 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
         bytes multihash;
     }
 
     ENS ens;
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -550,7 +550,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) public only_owner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) &amp; contentType) == 0);
+        require(((contentType - 1) & contentType) == 0);
         
         records[node].abis[contentType] = data;
         ABIChanged(node, contentType);
@@ -609,8 +609,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes data) {
         Record storage record = records[node];
-        for (contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }
@@ -731,18 +731,18 @@ contract LiabilityFactory {
     /**
      * @dev GAS utilized by liability contracts
      */
-    mapping(address =&gt; uint256) public gasUtilizing;
+    mapping(address => uint256) public gasUtilizing;
 
 
     /**
      * @dev Used market orders accounting
      */
-    mapping(bytes32 =&gt; bool) public usedHash;
+    mapping(bytes32 => bool) public usedHash;
 
     /**
      * @dev Lighthouse accounting
      */
-    mapping(address =&gt; bool) public isLighthouse;
+    mapping(address => bool) public isLighthouse;
 
     /**
      * @dev Robot liability shared code smart contract
@@ -762,15 +762,15 @@ contract LiabilityFactory {
         uint256 wn = _gas;
 
         /* Additional emission table
-        if (totalGasUtilizing &lt; 347 * (10 ** 10)) {
+        if (totalGasUtilizing < 347 * (10 ** 10)) {
             wn *= 6;
-        } else if (totalGasUtilizing &lt; 2 * 347 * (10 ** 10)) {
+        } else if (totalGasUtilizing < 2 * 347 * (10 ** 10)) {
             wn *= 4;
-        } else if (totalGasUtilizing &lt; 3 * 347 * (10 ** 10)) {
+        } else if (totalGasUtilizing < 3 * 347 * (10 ** 10)) {
             wn = wn * 2667 / 1000;
-        } else if (totalGasUtilizing &lt; 4 * 347 * (10 ** 10)) {
+        } else if (totalGasUtilizing < 4 * 347 * (10 ** 10)) {
             wn = wn * 1778 / 1000;
-        } else if (totalGasUtilizing &lt; 5 * 347 * (10 ** 10)) {
+        } else if (totalGasUtilizing < 5 * 347 * (10 ** 10)) {
             wn = wn * 1185 / 1000;
         } */
 
@@ -833,7 +833,7 @@ contract LiabilityFactory {
                                    liability.cost()));
 
         // Transfer validator fee and hold on contract
-        if (address(liability.validator()) != 0 &amp;&amp; liability.validatorFee() &gt; 0)
+        if (address(liability.validator()) != 0 && liability.validatorFee() > 0)
             require(xrt.transferFrom(liability.promisee(),
                                      liability,
                                      liability.validatorFee()));
@@ -849,7 +849,7 @@ contract LiabilityFactory {
      * @param _minimalFreeze Minimal freeze value of XRT token
      * @param _timeoutBlocks Max time of lighthouse silence in blocks
      * @param _name Lighthouse subdomain,
-     *              example: for &#39;my-name&#39; will created &#39;my-name.lighthouse.0.robonomics.eth&#39; domain
+     *              example: for 'my-name' will created 'my-name.lighthouse.0.robonomics.eth' domain
      */
     function createLighthouse(
         uint256 _minimalFreeze,
@@ -886,7 +886,7 @@ contract LiabilityFactory {
         external
         returns (bool)
     {
-        require(gasUtilizing[msg.sender] &gt; 0);
+        require(gasUtilizing[msg.sender] > 0);
 
         uint256 gas = _gas - gasleft();
         totalGasUtilizing        += gas;

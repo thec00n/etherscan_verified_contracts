@@ -11,37 +11,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert_ex(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert_ex(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert_ex(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert_ex(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert_ex(b &lt;= a);
+        assert_ex(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert_ex(c &gt;= a);
+        assert_ex(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal   pure  returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert_ex(bool assert_exion) internal pure{
@@ -79,8 +79,8 @@ contract ERC20Interface {
     uint8 public decimals;
 
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint value, bytes data);
     event Transfer(address indexed from, address indexed to, uint value);
@@ -117,7 +117,7 @@ contract ERC20Interface {
         //  allowed to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
           revert();
         }
 
@@ -156,7 +156,7 @@ contract ERC20Interface {
      */
     function subApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -207,7 +207,7 @@ contract StanderdToken is ERC20Interface, ERC223ReceivingContract, Owned {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -225,8 +225,8 @@ contract StanderdToken is ERC20Interface, ERC223ReceivingContract, Owned {
 
     function transferFrom(address _from,address _to, uint _value) public returns (bool) {
         //require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -241,8 +241,8 @@ contract PreviligedToken is Owned {
 
     using SafeMath for uint;
 
-    mapping (address =&gt; uint) previligedBalances;
-    mapping (address =&gt; mapping (address =&gt; uint)) previligedallowed;
+    mapping (address => uint) previligedBalances;
+    mapping (address => mapping (address => uint)) previligedallowed;
 
     event PreviligedLock(address indexed from, address indexed to, uint value);
     event PreviligedUnLock(address indexed from, address indexed to, uint value);
@@ -258,7 +258,7 @@ contract PreviligedToken is Owned {
         //  allowed to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (previligedallowed[_owner][_spender] != 0)) {
+        if ((_value != 0) && (previligedallowed[_owner][_spender] != 0)) {
           revert();
         }
 
@@ -279,7 +279,7 @@ contract PreviligedToken is Owned {
 
     function previligedSubApproval(address _owner, address _spender, uint _subtractedValue) onlyOwner public returns (bool) {
         uint oldValue = previligedallowed[_owner][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           previligedallowed[_owner][_spender] = 0;
         } else {
           previligedallowed[_owner][_spender] = oldValue.sub(_subtractedValue);
@@ -303,8 +303,8 @@ contract MitToken is StanderdToken, PreviligedToken {
         decimals = 18;
         _totalSupply = initialSupply * 10 ** uint(decimals);  // Update total supply with the decimal amount
         balances[msg.sender] = _totalSupply;                // Give the creator all initial tokens
-        name = &quot;MitCoin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;MITC&quot;;                               // Set the symbol for display purposes3
+        name = "MitCoin";                                   // Set the name for display purposes
+        symbol = "MITC";                               // Set the symbol for display purposes3
     }
 
     /**
@@ -341,8 +341,8 @@ contract MitToken is StanderdToken, PreviligedToken {
     function previligedUnLock(address _from, uint _value) public returns (bool) {
         address to = msg.sender; // we force the address_to to be the the caller
         require(to != address(0));
-        require(_value &lt;= previligedBalances[_from]);
-        require(_value &lt;= previligedallowed[_from][msg.sender]);
+        require(_value <= previligedBalances[_from]);
+        require(_value <= previligedallowed[_from][msg.sender]);
 
         previligedBalances[_from] = previligedBalances[_from].sub(_value);
         balances[to] = balances[to].add(_value);

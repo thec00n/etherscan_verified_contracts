@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -200,17 +200,17 @@ contract Timelock is Ownable {
   /**
    * @dev mapping to keep track of what amount of tokens have been allocated to what address.
    */
-  mapping (address =&gt; uint256) public allocatedTokens;
+  mapping (address => uint256) public allocatedTokens;
 
   /**
    * @dev mapping to keep track of what amount of tokens have been withdrawn by what address.
    */
-  mapping (address =&gt; uint256) public withdrawnTokens;
+  mapping (address => uint256) public withdrawnTokens;
 
   /**
    * @dev mapping to keep track of if withdrawls are paused for a given address.
    */
-  mapping (address =&gt; bool) public withdrawalPaused;
+  mapping (address => bool) public withdrawalPaused;
 
   /**
    * @dev constructor
@@ -224,8 +224,8 @@ contract Timelock is Ownable {
   function Timelock(ERC20Basic _token, uint256 _startTime, uint256 _cliffDuration, uint256 _cliffReleasePercent, uint256 _slopeDuration, uint256 _slopeReleasePercentage) public {
 
     // sanity checks
-    require(_cliffReleasePercent.add(_slopeReleasePercentage) &lt;= 100);
-    require(_startTime &gt; now);
+    require(_cliffReleasePercent.add(_slopeReleasePercentage) <= 100);
+    require(_startTime > now);
     require(_token != address(0));
 
     // defaults
@@ -249,7 +249,7 @@ contract Timelock is Ownable {
    * solution based on this blog post https://blog.coinfabrik.com/smart-contract-short-address-attack-mitigation-failure
    */
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -300,9 +300,9 @@ contract Timelock is Ownable {
    * @return uint256 number indicating the number of tokens available for withdrawl.
    */
   function availableForWithdrawal(address _address) public view returns (uint256) {
-    if (now &lt; cliffTime) {
+    if (now < cliffTime) {
       return 0;
-    } else if (now &lt; timelockEndTime) {
+    } else if (now < timelockEndTime) {
       uint256 cliffTokens = (cliffReleasePercentage.mul(allocatedTokens[_address])).div(100);
       uint256 slopeTokens = (allocatedTokens[_address].mul(slopeReleasePercentage)).div(100);
       uint256 timeAtSlope = now.sub(cliffTime);
@@ -322,7 +322,7 @@ contract Timelock is Ownable {
     require(!withdrawalPaused[msg.sender]);
 
     uint256 availableTokens = availableForWithdrawal(msg.sender);
-    require (availableTokens &gt; 0);
+    require (availableTokens > 0);
     withdrawnTokens[msg.sender] = withdrawnTokens[msg.sender].add(availableTokens);
     token.safeTransfer(msg.sender, availableTokens);
     return true;

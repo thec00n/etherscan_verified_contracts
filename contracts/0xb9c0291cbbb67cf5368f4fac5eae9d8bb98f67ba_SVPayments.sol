@@ -4,18 +4,18 @@ contract safeSend {
     bool private txMutex3847834;
 
     // we want to be able to call outside contracts (e.g. the admin proxy contract)
-    // but reentrency is bad, so here&#39;s a mutex.
+    // but reentrency is bad, so here's a mutex.
     function doSafeSend(address toAddr, uint amount) internal {
-        doSafeSendWData(toAddr, &quot;&quot;, amount);
+        doSafeSendWData(toAddr, "", amount);
     }
 
     function doSafeSendWData(address toAddr, bytes data, uint amount) internal {
-        require(txMutex3847834 == false, &quot;ss-guard&quot;);
+        require(txMutex3847834 == false, "ss-guard");
         txMutex3847834 = true;
         // we need to use address.call.value(v)() because we want
         // to be able to send to other contracts, even with no data,
         // which might use more than 2300 gas in their fallback function.
-        require(toAddr.call.value(amount)(data), &quot;ss-failed&quot;);
+        require(toAddr.call.value(amount)(data), "ss-failed");
         txMutex3847834 = false;
     }
 }
@@ -63,12 +63,12 @@ contract owned {
     event OwnerChanged(address newOwner);
 
     modifier only_owner() {
-        require(msg.sender == owner, &quot;only_owner: forbidden&quot;);
+        require(msg.sender == owner, "only_owner: forbidden");
         _;
     }
 
     modifier owner_or(address addr) {
-        require(msg.sender == addr || msg.sender == owner, &quot;!owner-or&quot;);
+        require(msg.sender == addr || msg.sender == owner, "!owner-or");
         _;
     }
 
@@ -100,7 +100,7 @@ contract controlledIface {
 }
 
 contract hasAdmins is owned {
-    mapping (uint =&gt; mapping (address =&gt; bool)) admins;
+    mapping (uint => mapping (address => bool)) admins;
     uint public currAdminEpoch = 0;
     bool public adminsDisabledForever = false;
     address[] adminLog;
@@ -111,8 +111,8 @@ contract hasAdmins is owned {
     event AdminDisabledForever();
 
     modifier only_admin() {
-        require(adminsDisabledForever == false, &quot;admins must not be disabled&quot;);
-        require(isAdmin(msg.sender), &quot;only_admin: forbidden&quot;);
+        require(adminsDisabledForever == false, "admins must not be disabled");
+        require(isAdmin(msg.sender), "only_admin: forbidden");
         _;
     }
 
@@ -134,13 +134,13 @@ contract hasAdmins is owned {
 
     function upgradeMeAdmin(address newAdmin) only_admin() external {
         // note: already checked msg.sender has admin with `only_admin` modifier
-        require(msg.sender != owner, &quot;owner cannot upgrade self&quot;);
+        require(msg.sender != owner, "owner cannot upgrade self");
         _setAdmin(msg.sender, false);
         _setAdmin(newAdmin, true);
     }
 
     function setAdmin(address a, bool _givePerms) only_admin() external {
-        require(a != msg.sender &amp;&amp; a != owner, &quot;cannot change your own (or owner&#39;s) permissions&quot;);
+        require(a != msg.sender && a != owner, "cannot change your own (or owner's) permissions");
         _setAdmin(a, _givePerms);
     }
 
@@ -171,7 +171,7 @@ contract hasAdmins is owned {
 }
 
 contract permissioned is owned, hasAdmins {
-    mapping (address =&gt; bool) editAllowed;
+    mapping (address => bool) editAllowed;
     bool public adminLockdown = false;
 
     event PermissionError(address editAddr);
@@ -182,12 +182,12 @@ contract permissioned is owned, hasAdmins {
     event AdminLockdown();
 
     modifier only_editors() {
-        require(editAllowed[msg.sender], &quot;only_editors: forbidden&quot;);
+        require(editAllowed[msg.sender], "only_editors: forbidden");
         _;
     }
 
     modifier no_lockdown() {
-        require(adminLockdown == false, &quot;no_lockdown: check failed&quot;);
+        require(adminLockdown == false, "no_lockdown: check failed");
         _;
     }
 
@@ -232,7 +232,7 @@ contract upgradePtr {
     address ptr = address(0);
 
     modifier not_upgraded() {
-        require(ptr == address(0), &quot;upgrade pointer is non-zero&quot;);
+        require(ptr == address(0), "upgrade pointer is non-zero");
         _;
     }
 
@@ -275,7 +275,7 @@ interface ERC20Interface {
 
 library SafeMath {
     function subToZero(uint a, uint b) internal pure returns (uint) {
-        if (a &lt; b) {  // then (a - b) would overflow
+        if (a < b) {  // then (a - b) would overflow
             return 0;
         }
         return a - b;
@@ -374,7 +374,7 @@ contract SVPayments is IxPaymentsIface {
         uint _ethValue;
     }
 
-    // this is an address that&#39;s only allowed to make minor edits
+    // this is an address that's only allowed to make minor edits
     // e.g. setExchangeRate, setDenyPremium, giveTimeToDemoc
     address public minorEditsAddr;
 
@@ -386,13 +386,13 @@ contract SVPayments is IxPaymentsIface {
 
     uint minWeiForDInit = 1;  // minimum 1 wei - match existing behaviour in SVIndex
 
-    mapping (bytes32 =&gt; Account) accounts;
+    mapping (bytes32 => Account) accounts;
     PaymentLog[] payments;
 
     // can set this on freeExtension democs to deny them premium upgrades
-    mapping (bytes32 =&gt; bool) denyPremium;
+    mapping (bytes32 => bool) denyPremium;
     // this is used for non-profits or organisations that have perpetual licenses, etc
-    mapping (bytes32 =&gt; bool) freeExtension;
+    mapping (bytes32 => bool) freeExtension;
 
 
     /* BREAK GLASS IN CASE OF EMERGENCY */
@@ -401,7 +401,7 @@ contract SVPayments is IxPaymentsIface {
     // contracts are compromised? (e.g. by a leaked privkey)
     address public emergencyAdmin;
     function emergencySetOwner(address newOwner) external {
-        require(msg.sender == emergencyAdmin, &quot;!emergency-owner&quot;);
+        require(msg.sender == emergencyAdmin, "!emergency-owner");
         owner = newOwner;
     }
     /* END BREAK GLASS */
@@ -424,7 +424,7 @@ contract SVPayments is IxPaymentsIface {
 
     function _modAccountBalance(bytes32 democHash, uint additionalSeconds) internal {
         uint prevPaidTill = accounts[democHash].paidUpTill;
-        if (prevPaidTill &lt; now) {
+        if (prevPaidTill < now) {
             prevPaidTill = now;
         }
 
@@ -454,7 +454,7 @@ contract SVPayments is IxPaymentsIface {
     /* account management */
 
     function payForDemocracy(bytes32 democHash) external payable {
-        require(msg.value &gt; 0, &quot;need to send some ether to make payment&quot;);
+        require(msg.value > 0, "need to send some ether to make payment");
 
         uint additionalSeconds = weiBuysHowManySeconds(msg.value);
 
@@ -462,7 +462,7 @@ contract SVPayments is IxPaymentsIface {
             additionalSeconds /= premiumMultiplier;
         }
 
-        if (additionalSeconds &gt;= 1) {
+        if (additionalSeconds >= 1) {
             _modAccountBalance(democHash, additionalSeconds);
         }
         payments.push(PaymentLog(false, democHash, additionalSeconds, msg.value));
@@ -472,23 +472,23 @@ contract SVPayments is IxPaymentsIface {
     }
 
     function doFreeExtension(bytes32 democHash) external {
-        require(freeExtension[democHash], &quot;!free&quot;);
+        require(freeExtension[democHash], "!free");
         uint newPaidUpTill = now + 60 days;
         accounts[democHash].paidUpTill = newPaidUpTill;
         emit FreeExtension(democHash);
     }
 
     function downgradeToBasic(bytes32 democHash) only_editors() external {
-        require(accounts[democHash].isPremium, &quot;!premium&quot;);
+        require(accounts[democHash].isPremium, "!premium");
         accounts[democHash].isPremium = false;
         // convert premium minutes to basic
         uint paidTill = accounts[democHash].paidUpTill;
         uint timeRemaining = SafeMath.subToZero(paidTill, now);
         // if we have time remaining: convert it
-        if (timeRemaining &gt; 0) {
+        if (timeRemaining > 0) {
             // prevent accounts from downgrading if they have time remaining
             // and upgraded less than 24hrs ago
-            require(accounts[democHash].lastUpgradeTs &lt; (now - 24 hours), &quot;downgrade-too-soon&quot;);
+            require(accounts[democHash].lastUpgradeTs < (now - 24 hours), "downgrade-too-soon");
             timeRemaining *= premiumMultiplier;
             accounts[democHash].paidUpTill = now + timeRemaining;
         }
@@ -496,14 +496,14 @@ contract SVPayments is IxPaymentsIface {
     }
 
     function upgradeToPremium(bytes32 democHash) only_editors() external {
-        require(denyPremium[democHash] == false, &quot;upgrade-denied&quot;);
-        require(!accounts[democHash].isPremium, &quot;!basic&quot;);
+        require(denyPremium[democHash] == false, "upgrade-denied");
+        require(!accounts[democHash].isPremium, "!basic");
         accounts[democHash].isPremium = true;
         // convert basic minutes to premium minutes
         uint paidTill = accounts[democHash].paidUpTill;
         uint timeRemaining = SafeMath.subToZero(paidTill, now);
-        // if we have time remaning then convert it - otherwise don&#39;t need to do anything
-        if (timeRemaining &gt; 0) {
+        // if we have time remaning then convert it - otherwise don't need to do anything
+        if (timeRemaining > 0) {
             timeRemaining /= premiumMultiplier;
             accounts[democHash].paidUpTill = now + timeRemaining;
         }
@@ -514,7 +514,7 @@ contract SVPayments is IxPaymentsIface {
     /* account status - getters */
 
     function accountInGoodStanding(bytes32 democHash) external view returns (bool) {
-        return accounts[democHash].paidUpTill &gt;= now;
+        return accounts[democHash].paidUpTill >= now;
     }
 
     function getSecondsRemaining(bytes32 democHash) external view returns (uint) {

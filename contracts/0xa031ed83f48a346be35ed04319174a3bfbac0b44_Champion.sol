@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,18 +57,18 @@ contract Champion is Ownable {
     
     uint256[] public allGames;
     
-    mapping(uint256 =&gt; uint256[]) internal games;
+    mapping(uint256 => uint256[]) internal games;
     
-    mapping(uint256 =&gt; Rules) internal gamesRules;
+    mapping(uint256 => Rules) internal gamesRules;
     
-    mapping(uint256 =&gt; address[]) internal gamePlayers;
+    mapping(uint256 => address[]) internal gamePlayers;
     
-    /** game =&gt; user **/
-    mapping(uint256 =&gt; address) public winners;
+    /** game => user **/
+    mapping(uint256 => address) public winners;
     
-    mapping(uint256 =&gt; mapping(address =&gt; uint256[])) internal playerNumbersInGame;
+    mapping(uint256 => mapping(address => uint256[])) internal playerNumbersInGame;
 
-    mapping(uint256 =&gt; uint256) gamePrize;
+    mapping(uint256 => uint256) gamePrize;
     
     struct Rules {
         uint8 right;
@@ -168,7 +168,7 @@ contract Champion is Ownable {
         uint hi = uint8(b) / 16;
         uint lo = uint8(b) - 16 * uint8(hi);
         
-        if (lo &lt;= 9) {
+        if (lo <= 9) {
             return true;
         }
         
@@ -202,18 +202,18 @@ contract Champion is Ownable {
 
         uint256 steps = getCurrentGameSteps();
         uint256 startBlock = getStartBlock(currentGameBlockNumber);
-        require(startBlock + steps &lt; block.number);
+        require(startBlock + steps < block.number);
         
         uint256 lMin = 1;
         uint256 lMax = 2;
         uint256 rMin = 3;
         uint256 rMax = 4;
         
-        for (uint8 i = 1; i &lt;= steps; i++) {
+        for (uint8 i = 1; i <= steps; i++) {
             require(block.blockhash(_game + i) != 0x0);
             (lMin, lMax, rMin, rMax) = processSteps(currentGameBlockNumber, i);
         
-            if (lMin == lMax &amp;&amp; rMin == rMax &amp;&amp; lMin == rMin) {
+            if (lMin == lMax && rMin == rMax && lMin == rMin) {
                 address winner = gamePlayers[currentGameBlockNumber][rMax];
                 
                 setWinner(
@@ -271,7 +271,7 @@ contract Champion is Ownable {
     function processSteps(uint256 _gameBlock, uint256 step) 
             constant returns (uint256, uint256, uint256, uint256) {
         require(_gameBlock != 0);
-        require((getStartBlock(_gameBlock) + i) &lt; block.number);
+        require((getStartBlock(_gameBlock) + i) < block.number);
         // TODO check 
         
         uint256 lMin = 0;
@@ -291,11 +291,11 @@ contract Champion is Ownable {
             return (lMin, lMax, rMin, rMax);
         } 
         
-        for (uint i = 1; i &lt;= step; i++) {
+        for (uint i = 1; i <= step; i++) {
             bool isNumberRes = isNumber(getStartBlock(_gameBlock) + i);
             
-            if ((isNumberRes &amp;&amp; leftSideRule(_gameBlock) == NUMBER) ||
-                (!isNumberRes &amp;&amp; leftSideRule(_gameBlock) == STRING)
+            if ((isNumberRes && leftSideRule(_gameBlock) == NUMBER) ||
+                (!isNumberRes && leftSideRule(_gameBlock) == STRING)
             ) {
                 if (lMin == lMax) {
                     rMin = lMin;
@@ -304,8 +304,8 @@ contract Champion is Ownable {
                 }
                 
                 rMax = lMax;
-            } else if (isNumberRes &amp;&amp; rightSideRule(_gameBlock) == NUMBER ||
-                (!isNumberRes &amp;&amp; rightSideRule(_gameBlock) == STRING)
+            } else if (isNumberRes && rightSideRule(_gameBlock) == NUMBER ||
+                (!isNumberRes && rightSideRule(_gameBlock) == STRING)
             ) {
                 if (rMin == rMax) {
                     lMin = rMin;
@@ -316,7 +316,7 @@ contract Champion is Ownable {
                 lMin = rMin;
             }
             
-            if ((rMax - lMin != 1) &amp;&amp; isEvenNumber(rMax)) {
+            if ((rMax - lMin != 1) && isEvenNumber(rMax)) {
                 lMax = rMax / 2;
                 rMin = rMax / 2 + 1;
             } else if (rMax - lMin != 1) {
@@ -346,7 +346,7 @@ contract Champion is Ownable {
         return true;
     }
     
-    /** buy ticket &amp;&amp; start game | init game by conditions **/
+    /** buy ticket && start game | init game by conditions **/
     function buyTicket(address _player) onlyOwner 
             returns (uint256 playerNumber, uint256 gameNumber) {
         if (currentGameStatus == GS_NOT_STARTED) {

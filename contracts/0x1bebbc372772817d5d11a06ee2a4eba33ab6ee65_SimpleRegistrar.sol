@@ -6,9 +6,9 @@
  * fee (initially 0.01 ether, but adjustable over time; call fee() to get the
  * current price). For example, in a web3 console:
  * 
- *     var simpleRegistrarContract = web3.eth.contract([{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;fee&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;name&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;name&quot;:&quot;register&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;}]);
- *     var simpleRegistrar = simpleRegistrarContract.at(&quot;0x1bebbc372772817d5d11a06ee2a4eba33ab6ee65&quot;);
- *     simpleRegistrar.register(&#39;myname&#39;, {from: accounts[0], value: simpleRegistrar.fee(), gas: 150000});
+ *     var simpleRegistrarContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"fee","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"}],"name":"register","outputs":[],"payable":true,"type":"function"}]);
+ *     var simpleRegistrar = simpleRegistrarContract.at("0x1bebbc372772817d5d11a06ee2a4eba33ab6ee65");
+ *     simpleRegistrar.register('myname', {from: accounts[0], value: simpleRegistrar.fee(), gas: 150000});
  * 
  * SimpleRegistrar will take care of everything: registering your subdomain,
  * setting up a resolver, and pointing that resolver at the account that called
@@ -23,7 +23,7 @@
  * updated one as ENS best practices change. You have only my word that I will
  * never interfere with a properly registered subdomain of gimmethe.eth.
  * 
- * Author: Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c7c0cac2e9c8dbc8cac1c7c0cdc5c8cbda87cac6c4">[email&#160;protected]</a>&gt;
+ * Author: Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c7c0cac2e9c8dbc8cac1c7c0cdc5c8cbda87cac6c4">[email protected]</a>>
  * Copyright 2017, Nick Johnson
  * Licensed under the Apache Public License, version 2.0.
  */
@@ -65,7 +65,7 @@ contract ReverseRegistrar {
 }
 
 contract SimpleRegistrar is owned {
-    // namehash(&#39;addr.reverse&#39;)
+    // namehash('addr.reverse')
     bytes32 constant RR_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
     event HashRegistered(bytes32 indexed hash, address indexed owner);
@@ -99,7 +99,7 @@ contract SimpleRegistrar is owned {
     }
     
     modifier can_register(bytes32 label) {
-        if(ens.owner(label) != 0 || msg.value &lt; fee) throw;
+        if(ens.owner(label) != 0 || msg.value < fee) throw;
         _;
     }
     
@@ -120,7 +120,7 @@ contract SimpleRegistrar is owned {
         HashRegistered(label, msg.sender);
         
         // Send any excess ether back
-        if(msg.value &gt; fee) {
+        if(msg.value > fee) {
             if(!msg.sender.send(msg.value - fee)) throw;
         }
     }

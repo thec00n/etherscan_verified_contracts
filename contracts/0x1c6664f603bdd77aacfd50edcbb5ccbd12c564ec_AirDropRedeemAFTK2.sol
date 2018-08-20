@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -57,7 +57,7 @@ interface Token {
 contract AirDropRedeemAFTK2 is Ownable {
 
   Token token;
-  mapping(address =&gt; uint256) public redeemBalanceOf; 
+  mapping(address => uint256) public redeemBalanceOf; 
   event BalanceSet(address indexed beneficiary, uint256 value);
   event Redeemed(address indexed beneficiary, uint256 value);
   event BalanceCleared(address indexed beneficiary, uint256 value);
@@ -72,12 +72,12 @@ contract AirDropRedeemAFTK2 is Ownable {
 
   /**
   * @dev admin can allocate tokens for redemption
-  * @param dests -&gt; array of addresses to which tokens will be allocated
-  * @param values -&gt; array of number of tokens to be allocated for the index above
+  * @param dests -> array of addresses to which tokens will be allocated
+  * @param values -> array of number of tokens to be allocated for the index above
   */
   function setBalances(address[] dests, uint256[] values) onlyOwner public {
     uint256 i = 0; 
-    while (i &lt; dests.length){
+    while (i < dests.length){
         if(dests[i] != address(0)) 
         {
             uint256 toSend = values[i] * 10**18;
@@ -91,8 +91,8 @@ contract AirDropRedeemAFTK2 is Ownable {
  
  /**
   * @dev Send approved tokens to one address
-  * @param dests -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToOne(address dests, uint256 quantity)  public payable onlyOwner returns (uint) {
     
@@ -105,9 +105,9 @@ contract AirDropRedeemAFTK2 is Ownable {
   
  /**
   * @dev Send approved tokens to two addresses
-  * @param dests1 -&gt; address where you want to send tokens
-  * @param dests2 -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests1 -> address where you want to send tokens
+  * @param dests2 -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToTwo(address dests1, address dests2, uint256 quantity)  public payable onlyOwner returns (uint) {
     
@@ -126,12 +126,12 @@ contract AirDropRedeemAFTK2 is Ownable {
   
  /**
   * @dev Send approved tokens to five addresses
-  * @param dests1 -&gt; address where you want to send tokens
-  * @param dests2 -&gt; address where you want to send tokens
-  * @param dests3 -&gt; address where you want to send tokens
-  * @param dests4 -&gt; address where you want to send tokens
-  * @param dests5 -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests1 -> address where you want to send tokens
+  * @param dests2 -> address where you want to send tokens
+  * @param dests3 -> address where you want to send tokens
+  * @param dests4 -> address where you want to send tokens
+  * @param dests5 -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToFive(address dests1, address dests2, address dests3, address dests4, address dests5, uint256 quantity)  public payable onlyOwner returns (uint) {
     
@@ -164,14 +164,14 @@ contract AirDropRedeemAFTK2 is Ownable {
   
  /**
   * @dev Send approved tokens to seven addresses
-  * @param dests1 -&gt; address where you want to send tokens
-  * @param dests2 -&gt; address where you want to send tokens
-  * @param dests3 -&gt; address where you want to send tokens
-  * @param dests4 -&gt; address where you want to send tokens
-  * @param dests5 -&gt; address where you want to send tokens
-  * @param dests6 -&gt; address where you want to send tokens
-  * @param dests7 -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests1 -> address where you want to send tokens
+  * @param dests2 -> address where you want to send tokens
+  * @param dests3 -> address where you want to send tokens
+  * @param dests4 -> address where you want to send tokens
+  * @param dests5 -> address where you want to send tokens
+  * @param dests6 -> address where you want to send tokens
+  * @param dests7 -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToSeven(address dests1, address dests2, address dests3, address dests4, address dests5, 
  address dests6, address dests7,  uint256 quantity)  public payable onlyOwner returns (uint) {
@@ -215,14 +215,14 @@ contract AirDropRedeemAFTK2 is Ownable {
   
  /**
   * @dev users redeem already allocated tokens manually
-  * @param quantity -&gt; number of tokens to redeem
+  * @param quantity -> number of tokens to redeem
   */
   function redeem(uint256 quantity) external{
       uint256 baseUnits = quantity * 10**18;
       uint256 senderEligibility = redeemBalanceOf[msg.sender];
       uint256 tokensAvailable = token.balanceOf(this);
-      require(senderEligibility &gt;= baseUnits);
-      require( tokensAvailable &gt;= baseUnits);
+      require(senderEligibility >= baseUnits);
+      require( tokensAvailable >= baseUnits);
       if(token.transferFrom(owner, msg.sender,baseUnits)){
         redeemBalanceOf[msg.sender] -= baseUnits;
         Redeemed(msg.sender,quantity);
@@ -231,16 +231,16 @@ contract AirDropRedeemAFTK2 is Ownable {
 
   /**
   * @dev admin can remove the allocated tokens
-  * @param dests -&gt; array of addresses from where token allocation has to be removed
-  * @param values -&gt; array of number of tokens to be removed for the index above
+  * @param dests -> array of addresses from where token allocation has to be removed
+  * @param values -> array of number of tokens to be removed for the index above
   */
   function removeBalances(address[] dests, uint256[] values) onlyOwner public {
     uint256 i = 0; 
-    while (i &lt; dests.length){
+    while (i < dests.length){
         if(dests[i] != address(0)) 
         {
             uint256 toRevoke = values[i] * 10**18;
-            if(redeemBalanceOf[dests[i]]&gt;=toRevoke)
+            if(redeemBalanceOf[dests[i]]>=toRevoke)
             {
                 redeemBalanceOf[dests[i]] -= toRevoke;
                 BalanceCleared(dests[i],values[i]);
@@ -254,5 +254,5 @@ contract AirDropRedeemAFTK2 is Ownable {
  /**
   * @dev admin can destroy this contract
   */
-  function destroy() onlyOwner public { uint256 tokensAvailable = token.balanceOf(this); require (tokensAvailable &gt; 0); token.transfer(owner, tokensAvailable);  selfdestruct(owner);  } 
+  function destroy() onlyOwner public { uint256 tokensAvailable = token.balanceOf(this); require (tokensAvailable > 0); token.transfer(owner, tokensAvailable);  selfdestruct(owner);  } 
 }

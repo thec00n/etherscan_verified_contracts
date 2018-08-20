@@ -126,20 +126,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -147,7 +147,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -174,7 +174,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function batchTransfer(address[] _to, uint256[] _bonus) returns(bool) {
-        for(uint i = 0; i &lt; _to.length; i++){
+        for(uint i = 0; i < _to.length; i++){
             require(transfer(_to[i], _bonus[i]));
         }
         return true;
@@ -241,7 +241,7 @@ contract LockableToken is StandardToken, ReentrancyGuard {
         uint256 releaseTime;
     }
 
-    mapping (uint =&gt; LockedBalance) public lockedBalances;
+    mapping (uint => LockedBalance) public lockedBalances;
     uint public lockedBalanceCount;
 
     event TransferLockedToken(address indexed from, address indexed to, uint256 value, uint256 releaseTime);
@@ -249,8 +249,8 @@ contract LockableToken is StandardToken, ReentrancyGuard {
 
     
     function transferLockedToken(address _to, uint256 _value, uint256 _releaseTime) nonReentrant returns (bool) {
-        require(_releaseTime &gt; now);
-        require(_releaseTime.sub(1 years) &lt; now);
+        require(_releaseTime > now);
+        require(_releaseTime.sub(1 years) < now);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         lockedBalances[lockedBalanceCount] = LockedBalance({owner: _to, value: _value, releaseTime: _releaseTime});
         lockedBalanceCount++;
@@ -260,7 +260,7 @@ contract LockableToken is StandardToken, ReentrancyGuard {
 
     
     function lockedBalanceOf(address _owner) constant returns (uint256 value) {
-        for (uint i = 0; i &lt; lockedBalanceCount; i++) {
+        for (uint i = 0; i < lockedBalanceCount; i++) {
             LockedBalance lockedBalance = lockedBalances[i];
             if (_owner == lockedBalance.owner) {
                 value = value.add(lockedBalance.value);
@@ -272,8 +272,8 @@ contract LockableToken is StandardToken, ReentrancyGuard {
     
     function releaseLockedBalance () returns (uint256 releaseAmount) {
         uint index = 0;
-        while (index &lt; lockedBalanceCount) {
-            if (now &gt;= lockedBalances[index].releaseTime) {
+        while (index < lockedBalanceCount) {
+            if (now >= lockedBalances[index].releaseTime) {
                 releaseAmount += lockedBalances[index].value;
                 unlockBalanceByIndex(index);
             } else {
@@ -365,9 +365,9 @@ library DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -375,8 +375,8 @@ library DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -409,7 +409,7 @@ library DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -449,7 +449,7 @@ library DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -478,7 +478,7 @@ library DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -517,7 +517,7 @@ contract ReleaseableToken is Operational, LockableToken {
         uint256 unfreezeTime; 
     }
 
-    mapping (uint =&gt; FrozenRecord) public frozenRecords;
+    mapping (uint => FrozenRecord) public frozenRecords;
     uint public frozenRecordsCount = 0;
 
     function ReleaseableToken(
@@ -533,13 +533,13 @@ contract ReleaseableToken is Operational, LockableToken {
 
     
     function releaseSupply(uint256 releaseAmount, uint256 timestamp) onlyOperator returns(uint256 _actualRelease) {
-        require(timestamp &gt;= createTime &amp;&amp; timestamp &lt;= now);
+        require(timestamp >= createTime && timestamp <= now);
         require(!judgeReleaseRecordExist(timestamp));
-        require(releaseAmount &lt;= dailyLimit);
+        require(releaseAmount <= dailyLimit);
         updateLimit();
-        require(limitSupplyPerYear &gt; 0);
-        if (releaseAmount &gt; limitSupplyPerYear) {
-            if (releasedSupply.add(limitSupplyPerYear) &gt; totalSupply) {
+        require(limitSupplyPerYear > 0);
+        if (releaseAmount > limitSupplyPerYear) {
+            if (releasedSupply.add(limitSupplyPerYear) > totalSupply) {
                 releasedSupply = totalSupply;
                 releaseAmount = totalSupply.sub(releasedSupply);
             } else {
@@ -548,7 +548,7 @@ contract ReleaseableToken is Operational, LockableToken {
             }
             limitSupplyPerYear = 0;
         } else {
-            if (releasedSupply.add(releaseAmount) &gt; totalSupply) {
+            if (releasedSupply.add(releaseAmount) > totalSupply) {
                 releasedSupply = totalSupply;
                 releaseAmount = totalSupply.sub(releasedSupply);
             } else {
@@ -565,11 +565,11 @@ contract ReleaseableToken is Operational, LockableToken {
     
     function judgeReleaseRecordExist(uint256 timestamp) internal returns(bool _exist) {
         bool exist = false;
-        if (frozenRecordsCount &gt; 0) {
-            for (uint index = 0; index &lt; frozenRecordsCount; index++) {
+        if (frozenRecordsCount > 0) {
+            for (uint index = 0; index < frozenRecordsCount; index++) {
                 if ((frozenRecords[index].unfreezeTime.parseTimestamp().year == (timestamp.add(26 * 1 weeks)).parseTimestamp().year)
-                    &amp;&amp; (frozenRecords[index].unfreezeTime.parseTimestamp().month == (timestamp.add(26 * 1 weeks)).parseTimestamp().month)
-                    &amp;&amp; (frozenRecords[index].unfreezeTime.parseTimestamp().day == (timestamp.add(26 * 1 weeks)).parseTimestamp().day)) {
+                    && (frozenRecords[index].unfreezeTime.parseTimestamp().month == (timestamp.add(26 * 1 weeks)).parseTimestamp().month)
+                    && (frozenRecords[index].unfreezeTime.parseTimestamp().day == (timestamp.add(26 * 1 weeks)).parseTimestamp().day)) {
                     exist = true;
                 }
             }
@@ -579,12 +579,12 @@ contract ReleaseableToken is Operational, LockableToken {
 
     
     function updateLimit() internal {
-        if (createTime.add(1 years) &lt; now &amp;&amp; !secondYearUpdate) {
+        if (createTime.add(1 years) < now && !secondYearUpdate) {
             limitSupplyPerYear = standardDecimals.mul(120000000);
             secondYearUpdate = true;
         }
-        if (createTime.add(2 * 1 years) &lt; now) {
-            if (releasedSupply &lt; totalSupply) {
+        if (createTime.add(2 * 1 years) < now) {
+            if (releasedSupply < totalSupply) {
                 limitSupplyPerYear = totalSupply.sub(releasedSupply);
             }
         }
@@ -594,8 +594,8 @@ contract ReleaseableToken is Operational, LockableToken {
     function unfreeze() onlyOperator returns(uint256 _unfreezeAmount) {
         uint256 unfreezeAmount = 0;
         uint index = 0;
-        while (index &lt; frozenRecordsCount) {
-            if (frozenRecords[index].unfreezeTime &lt; now) {
+        while (index < frozenRecordsCount) {
+            if (frozenRecords[index].unfreezeTime < now) {
                 unfreezeAmount += frozenRecords[index].amount;
                 unfreezeByIndex(index);
             } else {
@@ -621,9 +621,9 @@ contract ReleaseableToken is Operational, LockableToken {
 }
 
 contract Snetwork is ReleaseableToken {
-    string public standard = &#39;2018011701&#39;;
-    string public name = &#39;Snetwork&#39;;
-    string public symbol = &#39;SNET&#39;;
+    string public standard = '2018011701';
+    string public name = 'Snetwork';
+    string public symbol = 'SNET';
     uint8 public decimals = 8;
 
     function Snetwork(

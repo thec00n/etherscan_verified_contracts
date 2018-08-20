@@ -20,9 +20,9 @@ contract KittenRegistry is AssetStorage {
        uint timestamp;
    }
 
-   mapping(address =&gt; KittenAuthority) authorities;
-   mapping(uint =&gt; KittenFact[]) facts;
-   mapping(uint =&gt; uint) factCounts; 
+   mapping(address => KittenAuthority) authorities;
+   mapping(uint => KittenFact[]) facts;
+   mapping(uint => uint) factCounts; 
    uint totalKittens;
 
    function KittenRegistry() {

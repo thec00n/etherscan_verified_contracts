@@ -2,29 +2,29 @@ pragma solidity ^0.4.15;
 
 // MMMMWKkk0KNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOkOKWMMMMMM //
 // MMMMXl.....,cdOXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXOo:,.....dNMMMM //
-// MMMWd.        .&#39;cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:&#39;.        .xMMMM //
+// MMMWd.        .'cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:'.        .xMMMM //
 // MMMK,   ......   ..:xXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMWKd;.    .....    :XMMM //
-// MMWd.   .;;;,,&#39;..   .&#39;lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...&#39;,;;;,.   .kMMM //
-// MMNc   .,::::::;,&#39;..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..&#39;;;::::::&#39;.  .lWMM //
-// MM0&#39;   .;:::::::;;&#39;..        ;0MMMMMMMMMMMWO&#39;        ..,;;:::::::;.   ;KMM //
-// MMx.  .&#39;;::::;,&#39;...        .:0MMMMMMMMMMMMMWO;.        ...&#39;;;::::;..  .OMM //
-// MWd.  .,:::;&#39;..          .,xNMMMMMMMMMMMMMMMMXd&#39;.          ..,;:::&#39;.  .xMM //
-// MNl.  .,:;&#39;..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc&#39;.         ..&#39;;:,.  .dWM //
-// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,&#39;.  .oWM //
+// MMWd.   .;;;,,'..   .'lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...',;;;,.   .kMMM //
+// MMNc   .,::::::;,'..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..';;::::::'.  .lWMM //
+// MM0'   .;:::::::;;'..        ;0MMMMMMMMMMMWO'        ..,;;:::::::;.   ;KMM //
+// MMx.  .';::::;,'...        .:0MMMMMMMMMMMMMWO;.        ...';;::::;..  .OMM //
+// MWd.  .,:::;'..          .,xNMMMMMMMMMMMMMMMMXd'.          ..,;:::'.  .xMM //
+// MNl.  .,:;'..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc'.         ..';:,.  .dWM //
+// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,'.  .oWM //
 // MNc   ...     .oWMMMNXNMW0odXMMMMMMMMMMMMMMMMKooKWMNXNMMMNc.     ...  .oWM //
 // MNc.          ;KMMMMNkokNMXlcKMMMMMMMMMMMMMM0coNMNxoOWMMMM0,          .oWM //
 // MNc         .;0MMMMMMWO:dNMNoxWMMMMMMMMMMMMNddNMNocKMMMMMMWO,         .oWM //
 // MX:        .lXMMMMMMMMM0lOMMNXWMMMMMMMMMMMMWXNMMklKMMMMMMMMM0:.       .lNM //
 // MX;      .;kWMMMMMMMMMMMXNMMMMMMMMMMMMMMMMMMMMMMNNMMMMMMMMMMMNx,.      cNM //
 // MO.    .:kNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNx:.  . ,0M //
-// Wl..&#39;:dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
+// Wl..':dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
 // NxdOXWMMMMMMMW0olcc::;,,cxXWMMMMMMMMMMMMMMMMMMWKd:,,;::ccld0WMMMMMMMWKkokW //
-// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,&#39;cxKNWWWXOdcl0MMMMMMMMMMMM //
+// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,'cxKNWWWXOdcl0MMMMMMMMMMMM //
 // MMMMMMMMMMMWKKWMMMMMMMMMWK0XMMMMMMMMMMMMMMMMMMXOXWMMMMMMMMMN0XMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWK0OOOO0KWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......&#39;xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......'xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMNKOkkkk0XNMMMMMMMMMMMMMMMMMMWO;.    .:0WMMMMMMMMMMMMMMMMMWNKOkkkkOKNMMM //
-// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...&#39;dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
+// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...'dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
 // MMMMMMMMMMMMWNKKNMMMMMMMMMMMMMMMMWOc,,c0WMMMMMMMMMMMMMMMMXKKNWMMMMMMMMMMMM //
 // MMMMMMMMWXKKXXNWMMMMMMMMMMWWWWWX0xcclc:cxKNWWWWWMMMMMMMMMMWNXXKKXWMMMMMMMM //
 // MMMWXOxdoooddxkO0NMMMMMMMWKkxxdlloxKNX0dolodxxkXMMMMMMMWX0OkxddooddxOXWMMM //
@@ -36,7 +36,7 @@ pragma solidity ^0.4.15;
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM ------ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Random MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MM Contract design by MMMMMMMMMMM Ledger MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// =&gt; 0x7C601D5DCd97B680dd623ff816D233898e6AD8dC &lt;=MMMMMMM +.+.+. -&gt; MMXVII M //
+// => 0x7C601D5DCd97B680dd623ff816D233898e6AD8dC <=MMMMMMM +.+.+. -> MMXVII M //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 
 
@@ -66,11 +66,11 @@ contract Mortal is Owned {
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -128,8 +128,8 @@ contract LuckyNumber is Owned {
     event EventLuckyNumberRequested(address requestor, uint256 max, uint256 creationBlockNumber, uint8 waitTime);
     event EventLuckyNumberRevealed(address requestor, uint256 max, uint256 renderedNumber);
     
-    mapping (address =&gt; PendingNumber) public pendingNumbers;
-    mapping (address =&gt; bool) public whiteList;
+    mapping (address => PendingNumber) public pendingNumbers;
+    mapping (address => bool) public whiteList;
 
     function requestNumber(address _requestor, uint256 _max, uint8 _waitTime) payable public;
     function revealNumber(address _requestor) payable public;
@@ -222,7 +222,7 @@ contract LuckyNumberImp is LuckyNumber, Mortal, Random {
         // value must exceed cost
         // unless address is whitelisted
         if (!whiteList[msg.sender]) {
-            require(!(msg.value &lt; cost));
+            require(!(msg.value < cost));
         }
 
         // internal requirement: 
@@ -236,14 +236,14 @@ contract LuckyNumberImp is LuckyNumber, Mortal, Random {
             creationBlockNumber: block.number,
             waitTime: waitTime
         });
-        if (_max &gt; 1) {
+        if (_max > 1) {
             pendingNumbers[_requestor].max = _max;
         }
         // max 250 wait to leave a few blocks
         // for the reveal transction to occur
         // and write from the pending numbers block
         // before it expires
-        if (_waitTime &gt; 0 &amp;&amp; _waitTime &lt; 250) {
+        if (_waitTime > 0 && _waitTime < 250) {
             pendingNumbers[_requestor].waitTime = _waitTime;
         }
         EventLuckyNumberRequested(_requestor, pendingNumbers[_requestor].max, pendingNumbers[_requestor].creationBlockNumber, pendingNumbers[_requestor].waitTime);
@@ -260,12 +260,12 @@ contract LuckyNumberImp is LuckyNumber, Mortal, Random {
     // Internal implementation of revealNumber().
     function _revealNumber(address _requestor) 
     internal {
-        // waitTime has passed, render this requestor&#39;s number.
+        // waitTime has passed, render this requestor's number.
         uint256 luckyBlock = _revealBlock(_requestor);
         // 
         // TIME LIMITATION:
         // blocks older than (currentBlock - 256) 
-        // &quot;expire&quot; and read the same hash as most recent valid block
+        // "expire" and read the same hash as most recent valid block
         // 
         uint256 luckyNumber = getRand(luckyBlock, pendingNumbers[_requestor].max);
 
@@ -310,7 +310,7 @@ contract LuckyNumberImp is LuckyNumber, Mortal, Random {
     returns (uint) {
         uint256 revealBlock = safeAdd(pendingNumbers[_requestor].creationBlockNumber, pendingNumbers[_requestor].waitTime);
         uint256 remainingBlocks = 0;
-        if (revealBlock &gt; block.number) {
+        if (revealBlock > block.number) {
             remainingBlocks = safeSubtract(revealBlock, block.number);
         }
         return remainingBlocks;
@@ -342,10 +342,10 @@ contract LuckyNumberImp is LuckyNumber, Mortal, Random {
     public
     constant
     returns (bool) {
-        if (pendingNumbers[_requestor].renderedNumber == 0 &amp;&amp; pendingNumbers[_requestor].waitTime &gt; 0) {
+        if (pendingNumbers[_requestor].renderedNumber == 0 && pendingNumbers[_requestor].waitTime > 0) {
             return true;
         }
         return false;
     }
-// 0xMMWKkk0KNM&gt;HBBi\MASSa\DANTi\LANTen.MI.MI.MI.M+.+.+.M-&gt;MMMWNKOkOKWJ.J.J.M //
+// 0xMMWKkk0KNM>HBBi\MASSa\DANTi\LANTen.MI.MI.MI.M+.+.+.M->MMMWNKOkOKWJ.J.J.M //
 }

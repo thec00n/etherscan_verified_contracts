@@ -41,12 +41,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -56,7 +56,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -67,7 +67,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)
+      abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
     );
   }
 }
@@ -84,8 +84,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -100,9 +100,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -110,7 +110,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -119,7 +119,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -129,7 +129,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -243,7 +243,7 @@ contract BookingPoC is Ownable {
 
   // A mapping of the rooms booked by night, it saves the guest address by
   // room/night
-  // RoomType =&gt; Night =&gt; Room =&gt; Booking
+  // RoomType => Night => Room => Booking
   struct Booking {
     address guest;
     bytes32 bookingHash;
@@ -252,9 +252,9 @@ contract BookingPoC is Ownable {
   }
   struct RoomType {
     uint256 totalRooms;
-    mapping(uint256 =&gt; mapping(uint256 =&gt; Booking)) nights;
+    mapping(uint256 => mapping(uint256 => Booking)) nights;
   }
-  mapping(string =&gt; RoomType) rooms;
+  mapping(string => RoomType) rooms;
 
   // An array of the refund polices, it has to be ordered by beforeTime
   struct Refund {
@@ -298,8 +298,8 @@ contract BookingPoC is Ownable {
   ) public {
     require(_offerSigner != address(0));
     require(_lifToken != address(0));
-    require(_totalNights &gt; 0);
-    require(_endBookings &gt; now);
+    require(_totalNights > 0);
+    require(_endBookings > now);
     offerSigner = _offerSigner;
     lifToken = ERC20(_lifToken);
     totalNights = _totalNights;
@@ -324,8 +324,8 @@ contract BookingPoC is Ownable {
    * @param _dividedBy The divisor of the payment value
    */
   function addRefund(uint256 _beforeTime, uint8 _dividedBy) onlyOwner public {
-    if (refunds.length &gt; 0)
-      require(refunds[refunds.length-1].beforeTime &gt; _beforeTime);
+    if (refunds.length > 0)
+      require(refunds[refunds.length-1].beforeTime > _beforeTime);
     refunds.push(Refund(_beforeTime, _dividedBy));
   }
 
@@ -337,8 +337,8 @@ contract BookingPoC is Ownable {
   function changeRefund(
     uint8 _refundIndex, uint256 _beforeTime, uint8 _dividedBy
   ) onlyOwner public {
-    if (_refundIndex &gt; 0)
-      require(refunds[_refundIndex-1].beforeTime &gt; _beforeTime);
+    if (_refundIndex > 0)
+      require(refunds[_refundIndex-1].beforeTime > _beforeTime);
     refunds[_refundIndex].beforeTime = _beforeTime;
     refunds[_refundIndex].dividedBy = _dividedBy;
   }
@@ -364,7 +364,7 @@ contract BookingPoC is Ownable {
     string roomType, uint256[] _nights, uint256 room,
     address guest, bytes32 bookingHash, uint256 weiPerNight, bool isEther
   ) internal {
-    for (uint i = 0; i &lt; _nights.length; i ++) {
+    for (uint i = 0; i < _nights.length; i ++) {
       rooms[roomType].nights[_nights[i]][room].guest = guest;
       rooms[roomType].nights[_nights[i]][room].bookingHash = bookingHash;
       rooms[roomType].nights[_nights[i]][room].payed = weiPerNight;
@@ -388,7 +388,7 @@ contract BookingPoC is Ownable {
 
     // Check the booking and delete it
     uint256 totalPayed = 0;
-    for (uint i = 0; i &lt; _nights.length; i ++) {
+    for (uint i = 0; i < _nights.length; i ++) {
       require(rooms[roomType].nights[_nights[i]][room].guest == msg.sender);
       require(rooms[roomType].nights[_nights[i]][room].isEther == isEther);
       require(rooms[roomType].nights[_nights[i]][room].bookingHash == bookingHash);
@@ -400,8 +400,8 @@ contract BookingPoC is Ownable {
 
     // Calculate refund amount
     uint256 refundAmount = 0;
-    for (i = 0; i &lt; refunds.length; i ++) {
-      if (now &lt; endBookings.sub(refunds[i].beforeTime)){
+    for (i = 0; i < refunds.length; i ++) {
+      if (now < endBookings.sub(refunds[i].beforeTime)){
         refundAmount = totalPayed.div(refunds[i].dividedBy);
         break;
       }
@@ -420,7 +420,7 @@ contract BookingPoC is Ownable {
    * @dev Withdraw tokens and eth, only from owner contract
    */
   function withdraw() public onlyOwner {
-    require(now &gt; endBookings);
+    require(now > endBookings);
     lifToken.transfer(owner, lifToken.balanceOf(address(this)));
     owner.transfer(address(this).balance);
   }
@@ -442,19 +442,19 @@ contract BookingPoC is Ownable {
     bytes32 bookingHash
   ) public payable {
     // Check that the offer is still valid
-    require(offerTimestamp &lt; now);
-    require(now &lt; endBookings);
+    require(offerTimestamp < now);
+    require(now < endBookings);
 
     // Check the eth sent
-    require(pricePerNight.mul(_nights.length) &lt;= msg.value);
+    require(pricePerNight.mul(_nights.length) <= msg.value);
 
     // Check if there is at least one room available
     uint256 available = firstRoomAvailable(roomType, _nights);
-    require(available &gt; 0);
+    require(available > 0);
 
     // Check the signer of the offer is the right address
     bytes32 priceSigned = keccak256(abi.encodePacked(
-      roomType, pricePerNight, offerTimestamp, &quot;eth&quot;, bookingHash
+      roomType, pricePerNight, offerTimestamp, "eth", bookingHash
     )).toEthSignedMessageHash();
     require(offerSigner == priceSigned.recover(offerSignature));
 
@@ -482,19 +482,19 @@ contract BookingPoC is Ownable {
     bytes32 bookingHash
   ) public {
     // Check that the offer is still valid
-    require(offerTimestamp &lt; now);
+    require(offerTimestamp < now);
 
     // Check the amount of lifTokens allowed to be spent by this contract
     uint256 lifTokenAllowance = lifToken.allowance(msg.sender, address(this));
-    require(pricePerNight.mul(_nights.length) &lt;= lifTokenAllowance);
+    require(pricePerNight.mul(_nights.length) <= lifTokenAllowance);
 
     // Check if there is at least one room available
     uint256 available = firstRoomAvailable(roomType, _nights);
-    require(available &gt; 0);
+    require(available > 0);
 
     // Check the signer of the offer is the right address
     bytes32 priceSigned = keccak256(abi.encodePacked(
-      roomType, pricePerNight, offerTimestamp, &quot;lif&quot;, bookingHash
+      roomType, pricePerNight, offerTimestamp, "lif", bookingHash
     )).toEthSignedMessageHash();
     require(offerSigner == priceSigned.recover(offerSignature));
 
@@ -543,9 +543,9 @@ contract BookingPoC is Ownable {
   function roomAvailable(
     string roomType, uint256[] _nights, uint256 room
   ) view public returns (bool) {
-    require(room &lt;= rooms[roomType].totalRooms);
-    for (uint i = 0; i &lt; _nights.length; i ++) {
-      require(_nights[i] &lt;= totalNights);
+    require(room <= rooms[roomType].totalRooms);
+    for (uint i = 0; i < _nights.length; i ++) {
+      require(_nights[i] <= totalNights);
       if (rooms[roomType].nights[_nights[i]][room].guest != address(0))
         return false;
       }
@@ -561,11 +561,11 @@ contract BookingPoC is Ownable {
   function roomsAvailable(
     string roomType, uint256[] _nights
   ) view public returns (uint256[]) {
-    require(_nights[i] &lt;= totalNights);
+    require(_nights[i] <= totalNights);
     uint256[] memory available = new uint256[](rooms[roomType].totalRooms);
-    for (uint z = 1; z &lt;= rooms[roomType].totalRooms; z ++) {
+    for (uint z = 1; z <= rooms[roomType].totalRooms; z ++) {
       available[z-1] = z;
-      for (uint i = 0; i &lt; _nights.length; i ++)
+      for (uint i = 0; i < _nights.length; i ++)
         if (rooms[roomType].nights[_nights[i]][z].guest != address(0)) {
           available[z-1] = 0;
           break;
@@ -583,12 +583,12 @@ contract BookingPoC is Ownable {
   function firstRoomAvailable(
     string roomType, uint256[] _nights
   ) internal returns (uint256) {
-    require(_nights[i] &lt;= totalNights);
+    require(_nights[i] <= totalNights);
     uint256 available = 0;
     bool isAvailable;
-    for (uint z = rooms[roomType].totalRooms; z &gt;= 1 ; z --) {
+    for (uint z = rooms[roomType].totalRooms; z >= 1 ; z --) {
       isAvailable = true;
-      for (uint i = 0; i &lt; _nights.length; i ++) {
+      for (uint i = 0; i < _nights.length; i ++) {
         if (rooms[roomType].nights[_nights[i]][z].guest != address(0))
           isAvailable = false;
           break;

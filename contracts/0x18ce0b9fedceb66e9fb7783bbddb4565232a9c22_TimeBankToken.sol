@@ -13,16 +13,16 @@ contract TimeBankToken {
     uint256 numTokens;
     }
 
-    mapping (address =&gt; mapping(address =&gt; tokenDeposit)) tokenBalances;
+    mapping (address => mapping(address => tokenDeposit)) tokenBalances;
 
     function getInfo(address _tokenAddress, address _holder) constant returns(uint, uint, uint){
         return(tokenBalances[_tokenAddress][_holder].timeToWithdraw,tokenBalances[_tokenAddress][_holder].numTokens, block.timestamp);
     }
 
     function depositTokens(ERC20 _token, uint256 _time, uint256 _amount) returns (bool){
-        require(_amount &gt; 0 &amp;&amp; _time &gt; block.timestamp &amp;&amp; _time &lt; block.timestamp + 157680000);
+        require(_amount > 0 && _time > block.timestamp && _time < block.timestamp + 157680000);
 
-        if (!(tokenBalances[_token][msg.sender].timeToWithdraw &gt; 0)) tokenBalances[_token][msg.sender].timeToWithdraw = _time;
+        if (!(tokenBalances[_token][msg.sender].timeToWithdraw > 0)) tokenBalances[_token][msg.sender].timeToWithdraw = _time;
 
         tokenBalances[_token][msg.sender].numTokens += _amount;
 
@@ -36,7 +36,7 @@ contract TimeBankToken {
         uint tokens = tokenBalances[_token][msg.sender].numTokens;
         tokenBalances[_token][msg.sender].numTokens = 0;
 
-        require(tokenBalances[_token][msg.sender].timeToWithdraw &lt; block.timestamp &amp;&amp; tokens &gt; 0);
+        require(tokenBalances[_token][msg.sender].timeToWithdraw < block.timestamp && tokens > 0);
 
         tokenBalances[_token][msg.sender].timeToWithdraw = 0;
 

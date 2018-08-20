@@ -1,5 +1,5 @@
 // Appics tokensale smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="d0b9beb6bf90a0b8b5bebfbdfea4b5b1bd">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="d0b9beb6bf90a0b8b5bebfbdfea4b5b1bd">[email protected]</span>>
 
 pragma solidity ^ 0.4.15;
 
@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -40,8 +40,8 @@ library SafeMath {
  */
 contract ERC20 {
     uint256 public totalSupply = 0;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     function balanceOf(address _owner) public constant returns(uint256);
     function transfer(address _to, uint256 _value) public returns(bool);
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool);
@@ -58,7 +58,7 @@ contract AppicsICO {
     // XAP - Appics token contract
     AppicsToken public XAP = new AppicsToken(this);
     using SafeMath for uint256;
-    mapping (address =&gt; string) public  keys;
+    mapping (address => string) public  keys;
 
     // Token price parameters
     // These parametes can be changed only by manager of contract
@@ -458,7 +458,7 @@ contract AppicsICO {
     *   @dev Issues tokens for users who made purchases in other cryptocurrencies
     *   @param _investor     address the tokens will be issued to
     *   @param _xapValue     number of Appics tokens
-    *   @param _txHash       transaction hash of investor&#39;s payment
+    *   @param _txHash       transaction hash of investor's payment
     */
     function buyForInvestor(
         address _investor,
@@ -479,28 +479,28 @@ contract AppicsICO {
     *   @param _xapValue     number of Appics tokens
     */
     function buyTokens(address _investor, uint256 _xapValue) internal startedOnly {
-        require(_xapValue &gt; 0);
+        require(_xapValue > 0);
         uint256 bonus = getBonus(_xapValue);
         uint256 total = _xapValue.add(bonus);
         if (statusICO == StatusICO.PreSaleStarted) {
-            require (PreSaleSold.add(total) &lt;= PreSaleHardCap);
-            require(_xapValue &gt; TENTHOUSENDLIMIT);
+            require (PreSaleSold.add(total) <= PreSaleHardCap);
+            require(_xapValue > TENTHOUSENDLIMIT);
             PreSaleSold = PreSaleSold.add(total);
         }
         if (statusICO == StatusICO.RoundAStarted) {
-            require (RoundASold.add(total) &lt;= RoundAHardCap);
+            require (RoundASold.add(total) <= RoundAHardCap);
             RoundASold = RoundASold.add(total);
         }
         if (statusICO == StatusICO.RoundBStarted) {
-            require (RoundBSold.add(total) &lt;= RoundBHardCap);
+            require (RoundBSold.add(total) <= RoundBHardCap);
             RoundBSold = RoundBSold.add(total);
         }
         if (statusICO == StatusICO.RoundCStarted) {
-            require (RoundCSold.add(total) &lt;= RoundCHardCap);
+            require (RoundCSold.add(total) <= RoundCHardCap);
             RoundCSold = RoundCSold.add(total);
         }
         if (statusICO == StatusICO.RoundDStarted) {
-            require (RoundDSold.add(total) &lt;= RoundDHardCap);
+            require (RoundDSold.add(total) <= RoundDHardCap);
             RoundDSold = RoundDSold.add(total);
         }
         XAP.mintTokens(_investor, total);
@@ -554,8 +554,8 @@ contract AppicsICO {
  */
 contract AppicsToken is ERC20 {
     using SafeMath for uint256;
-    string public name = &quot;Appics&quot;;
-    string public symbol = &quot;XAP&quot;;
+    string public name = "Appics";
+    string public symbol = "XAP";
     uint256 public decimals = 18;
 
     // Ico contract address
@@ -585,7 +585,7 @@ contract AppicsToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint256 _value) external icoOnly {
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[_holder] = balances[_holder].add(_value);
         totalSupply = totalSupply.add(_value);
         Transfer(0x0, _holder, _value);
@@ -611,7 +611,7 @@ contract AppicsToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _investor, uint256 _value) external icoOnly {
-        require(balances[_investor] &gt; 0);
+        require(balances[_investor] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_investor] = balances[_investor].sub(_value);
         Burn(_investor, _value);
@@ -619,7 +619,7 @@ contract AppicsToken is ERC20 {
 
    /**
     *   @dev Get balance of investor
-    *   @param _owner        investor&#39;s address
+    *   @param _owner        investor's address
     *   @return              balance of investor
     */
     function balanceOf(address _owner) public constant returns(uint256) {

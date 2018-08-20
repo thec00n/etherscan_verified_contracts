@@ -11,7 +11,7 @@ contract BountyBG {
     uint256 public bountyBeneficiariesCount = 2;
     uint256 public bountyDuration = 30 hours;
 
-    mapping(uint256 =&gt; Bounty) bountyAt;
+    mapping(uint256 => Bounty) bountyAt;
 
     event BountyStatus(string _msg, uint256 _id, address _from, uint256 _amount);
     event RewardStatus(string _msg, uint256 _id, address _to, uint256 _amount);
@@ -40,7 +40,7 @@ contract BountyBG {
     // BLOCKGEEKS ACTIONS
 
     function withdrawFee(uint256 _amount) external onlyOwner {
-        require(_amount &lt;= bountyFeeCount);
+        require(_amount <= bountyFeeCount);
         bountyFeeCount -= _amount;
         owner.transfer(_amount);
     }
@@ -60,11 +60,11 @@ contract BountyBG {
     function rewardUsers(uint256 _bountyId, address[] _users, uint256[] _rewards) external onlyOwner {
         Bounty storage bounty = bountyAt[_bountyId];
         require(
-            !bounty.ended &amp;&amp;
-            !bounty.retracted &amp;&amp;
-            bounty.startTime + bountyDuration &gt; block.timestamp &amp;&amp;
-            _users.length &gt; 0 &amp;&amp;
-            _users.length &lt;= bountyBeneficiariesCount &amp;&amp;
+            !bounty.ended &&
+            !bounty.retracted &&
+            bounty.startTime + bountyDuration > block.timestamp &&
+            _users.length > 0 &&
+            _users.length <= bountyBeneficiariesCount &&
             _users.length == _rewards.length
         );
 
@@ -75,7 +75,7 @@ contract BountyBG {
         bounty.ended = true;
         bounty.endTime = block.timestamp;
         uint256 currentRewards = 0;
-        for (uint8 i = 0; i &lt; _rewards.length; i++) {
+        for (uint8 i = 0; i < _rewards.length; i++) {
             currentRewards += _rewards[i];
         }
 
@@ -83,37 +83,37 @@ contract BountyBG {
 
 
 
-        require(bounty.bounty &gt;= currentRewards);
+        require(bounty.bounty >= currentRewards);
 
-        for (i = 0; i &lt; _users.length; i++) {
+        for (i = 0; i < _users.length; i++) {
             _users[i].transfer(_rewards[i]);
-            RewardStatus(&quot;Reward sent&quot;, bounty.id, _users[i], _rewards[i]);
+            RewardStatus("Reward sent", bounty.id, _users[i], _rewards[i]);
             /* if (_users[i].send(_rewards[i])) {
                 bounty.remainingBounty -= _rewards[i];
-                RewardStatus(&#39;Reward sent&#39;, bounty.id, _users[i], _rewards[i]);
+                RewardStatus('Reward sent', bounty.id, _users[i], _rewards[i]);
             } else {
-                ErrorStatus(&#39;Error in reward&#39;, bounty.id, _users[i], _rewards[i]);
+                ErrorStatus('Error in reward', bounty.id, _users[i], _rewards[i]);
             } */
         }
     }
 
     function rewardUser(uint256 _bountyId, address _user, uint256 _reward) external onlyOwner {
         Bounty storage bounty = bountyAt[_bountyId];
-        require(bounty.remainingBounty &gt;= _reward);
+        require(bounty.remainingBounty >= _reward);
         bounty.remainingBounty -= _reward;
 
         bounty.ended = true;
         bounty.endTime = block.timestamp;
         
         _user.transfer(_reward);
-        RewardStatus(&#39;Reward sent&#39;, bounty.id, _user, _reward);
+        RewardStatus('Reward sent', bounty.id, _user, _reward);
     }
 
     // USER ACTIONS TRIGGERED BY METAMASK
 
     function createBounty(uint256 _bountyId) external payable {
         require(
-            msg.value &gt;= minBounty + bountyFee
+            msg.value >= minBounty + bountyFee
         );
         Bounty storage bounty = bountyAt[_bountyId];
         require(bounty.id == 0);
@@ -124,22 +124,22 @@ contract BountyBG {
         bountyFeeCount += bountyFee;
         bounty.startTime = block.timestamp;
         bounty.owner = msg.sender;
-        BountyStatus(&#39;Bounty submitted&#39;, bounty.id, msg.sender, msg.value);
+        BountyStatus('Bounty submitted', bounty.id, msg.sender, msg.value);
     }
 
     function cancelBounty(uint256 _bountyId) external {
         Bounty storage bounty = bountyAt[_bountyId];
         require(
-            msg.sender == bounty.owner &amp;&amp;
-            !bounty.ended &amp;&amp;
-            !bounty.retracted &amp;&amp;
-            bounty.owner == msg.sender &amp;&amp;
-            bounty.startTime + bountyDuration &lt; block.timestamp
+            msg.sender == bounty.owner &&
+            !bounty.ended &&
+            !bounty.retracted &&
+            bounty.owner == msg.sender &&
+            bounty.startTime + bountyDuration < block.timestamp
         );
         bounty.ended = true;
         bounty.retracted = true;
         bounty.owner.transfer(bounty.bounty);
-        BountyStatus(&#39;Bounty was canceled&#39;, bounty.id, msg.sender, bounty.bounty);
+        BountyStatus('Bounty was canceled', bounty.id, msg.sender, bounty.bounty);
     }
 
 

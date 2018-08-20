@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,7 +115,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -142,7 +142,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     uint256 _allowance = allowed[_from][msg.sender];
-    require (_value &lt;= _allowance);
+    require (_value <= _allowance);
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -211,7 +211,7 @@ contract MintableToken is StandardToken, Ownable {
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
     totalSupply = totalSupply.add(_amount);
-    require(totalSupply &lt;= maxSupply);
+    require(totalSupply <= maxSupply);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
     return true;
@@ -243,8 +243,8 @@ contract PausableToken is StandardToken, Pausable {
 
 //FinalToken included in this file for test purpose
 contract FinalToken is PausableToken, MintableToken {
-	string public constant name = &quot;Truxen&quot;;
-    string public constant symbol = &quot;TXE&quot;;
+	string public constant name = "Truxen";
+    string public constant symbol = "TXE";
     uint8 public decimals = 18;
 	function FinalToken(address _mintTo, uint256 _initialSupply) public {
 	    mint(_mintTo, _initialSupply);

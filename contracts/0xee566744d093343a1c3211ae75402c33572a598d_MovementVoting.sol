@@ -6,7 +6,7 @@
 pragma solidity ^0.4.18;
 
 contract MovementVoting {
-    mapping(address =&gt; int256) public votes;
+    mapping(address => int256) public votes;
     address[] public voters;
     uint256 public endBlock;
 	address public admin;
@@ -27,8 +27,8 @@ contract MovementVoting {
     function vote(int256 proposalId) {
 
         require(msg.sender != address(0));
-        require(proposalId &gt; 0);
-        require(endBlock == 0 || block.number &lt;= endBlock);
+        require(proposalId > 0);
+        require(endBlock == 0 || block.number <= endBlock);
         if (votes[msg.sender] == 0) {
             voters.push(msg.sender);
         }
@@ -41,7 +41,7 @@ contract MovementVoting {
     function unVote() {
 
         require(msg.sender != address(0));
-        require(votes[msg.sender] &gt; 0);
+        require(votes[msg.sender] > 0);
         int256 proposalId = votes[msg.sender];
 		votes[msg.sender] = -1;
         onUnVote(msg.sender, proposalId);
@@ -57,19 +57,19 @@ contract MovementVoting {
     constant
     returns(address[] _voters, int256[] _proposalIds) {
 
-        if (offset &lt; voters.length) {
+        if (offset < voters.length) {
             uint256 resultLength = limit;
             uint256 index = 0;
 
          
-            if (voters.length - offset &lt; limit) {
+            if (voters.length - offset < limit) {
                 resultLength = voters.length - offset;
             }
 
             _voters = new address[](resultLength);
             _proposalIds = new int256[](resultLength);
 
-            for(uint256 i = offset; i &lt; offset + resultLength; i++) {
+            for(uint256 i = offset; i < offset + resultLength; i++) {
                 _voters[index] = voters[i];
                 _proposalIds[index] = votes[voters[i]];
                 index++;

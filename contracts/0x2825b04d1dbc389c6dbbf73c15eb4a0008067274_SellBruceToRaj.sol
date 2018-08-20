@@ -23,13 +23,13 @@ contract SellBruceToRaj {
         address(0xa57F0CecEdE74CbE0675c31AFAbF06E61a9A3C14).transfer(1200000000000000000);
         
         // If Raj sent too much, return the rest to him.
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             address(0x9A2Bd3D08d648b4721Ef41B8D21a69C2BD7Ba17d).transfer(this.balance);
         }
     }
 
     function payout() public {
-        // If Raj doesn&#39;t want to do it anymore (or somebody has already bought Bruce), 
+        // If Raj doesn't want to do it anymore (or somebody has already bought Bruce), 
         // Armadillo can withdraw what he deposited to this contract.
         address(0xa57F0CecEdE74CbE0675c31AFAbF06E61a9A3C14).transfer(this.balance);
     }

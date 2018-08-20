@@ -2,10 +2,10 @@ pragma solidity ^0.4.8;
 
 contract Token {
     uint256 public totalSupply;
-    string public name = &quot;Arcblock Token&quot;;              
+    string public name = "Arcblock Token";              
     uint8 public decimals = 18;        
-    string public symbol = &quot;ABT&quot;;
-    mapping (address =&gt; uint256) balances;
+    string public symbol = "ABT";
+    mapping (address => uint256) balances;
     address owner;
     
     function Token() {
@@ -34,7 +34,7 @@ contract Token {
     
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[_to] += _value;
         return true;
     }

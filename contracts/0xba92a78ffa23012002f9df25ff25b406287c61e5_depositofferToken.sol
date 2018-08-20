@@ -12,7 +12,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 */
 
@@ -29,8 +29,8 @@ pragma solidity ^0.4.18;
 contract depositofferTokenConfig
 {
     // ERC20 trade name and symbol
-    string public           name            = &quot;Depositoffer.com USPat7376612&quot;;
-    string public           symbol          = &quot;DOT&quot;;
+    string public           name            = "Depositoffer.com USPat7376612";
+    string public           symbol          = "DOT";
 
     // Owner has power to abort, discount addresses, sweep successful funds,
     // change owner, sweep alien tokens.
@@ -71,10 +71,10 @@ contract depositofferTokenConfig
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -82,7 +82,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -125,10 +125,10 @@ contract ERC20Token
     string public symbol;
     
     // Token ownership mapping
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
     // Allowances mapping
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
 /* Events */
 
@@ -181,7 +181,7 @@ contract ERC20Token
         public
         returns (bool)
     {
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         return xfer(_from, _to, _amount);
@@ -192,7 +192,7 @@ contract ERC20Token
         internal
         returns (bool)
     {
-        require(_amount &lt;= balances[_from]);
+        require(_amount <= balances[_from]);
 
         Transfer(_from, _to, _amount);
         
@@ -229,7 +229,7 @@ Conditional Entry Table (functions must throw on F conditions)
 renetry prevention on all public mutating functions
 Reentry mutex set in moveFundsToWallet(), refund()
 
-|function                |&lt;START_DATE|&lt;END_DATE |fundFailed  |fundSucceeded|icoSucceeded
+|function                |<START_DATE|<END_DATE |fundFailed  |fundSucceeded|icoSucceeded
 |------------------------|:---------:|:--------:|:----------:|:-----------:|:---------:|
 |()                      |KYC        |T         |F           |T            |F          |
 |abort()                 |T          |T         |T           |T            |F          |
@@ -288,11 +288,11 @@ contract depositofferTokenAbstract
     uint public etherRaised;
     
     // Preauthorized tranch discount addresses
-    // holder =&gt; discount
-    mapping (address =&gt; bool) public kycAddresses;
+    // holder => discount
+    mapping (address => bool) public kycAddresses;
     
     // Record of ether paid per address
-    mapping (address =&gt; uint) public etherContributed;
+    mapping (address => uint) public etherContributed;
 
     // Return `true` if MIN_FUNDS were raised
     function fundSucceeded() public constant returns (bool);
@@ -362,7 +362,7 @@ contract depositofferToken is
     uint public constant MAX_ETH_FUND   = 1 ether * MAX_USD_FUND / USD_PER_ETH;
     uint public constant KYC_ETH_LMT    = 1 ether * KYC_USD_LMT  / USD_PER_ETH;
 
-    // General funding opens LEAD_IN_PERIOD after deployment (timestamps can&#39;t be constant)
+    // General funding opens LEAD_IN_PERIOD after deployment (timestamps can't be constant)
     uint public END_DATE  = START_DATE + FUNDING_PERIOD;
 
 //
@@ -383,16 +383,16 @@ contract depositofferToken is
     {
         // ICO parameters are set in depositofferTSConfig
         // Invalid configuration catching here
-        require(bytes(symbol).length &gt; 0);
-        require(bytes(name).length &gt; 0);
+        require(bytes(symbol).length > 0);
+        require(bytes(name).length > 0);
         require(owner != 0x0);
         require(fundWallet != 0x0);
-        require(TOKENS_PER_USD &gt; 0);
-        require(USD_PER_ETH &gt; 0);
-        require(MIN_USD_FUND &gt; 0);
-        require(MAX_USD_FUND &gt; MIN_USD_FUND);
-        require(START_DATE &gt; 0);
-        require(FUNDING_PERIOD &gt; 0);
+        require(TOKENS_PER_USD > 0);
+        require(USD_PER_ETH > 0);
+        require(MIN_USD_FUND > 0);
+        require(MAX_USD_FUND > MIN_USD_FUND);
+        require(START_DATE > 0);
+        require(FUNDING_PERIOD > 0);
         
         // Setup and allocate token supply to 18 decimal places
         totalSupply = MAX_TOKENS * 1e18;
@@ -417,14 +417,14 @@ contract depositofferToken is
     function fundFailed() public constant returns (bool)
     {
         return !__abortFuse
-            || (now &gt; END_DATE &amp;&amp; etherRaised &lt; MIN_ETH_FUND);
+            || (now > END_DATE && etherRaised < MIN_ETH_FUND);
     }
     
     // Funding succeeds if not aborted, minimum funds are raised before end date
     function fundSucceeded() public constant returns (bool)
     {
         return !fundFailed()
-            &amp;&amp; etherRaised &gt;= MIN_ETH_FUND;
+            && etherRaised >= MIN_ETH_FUND;
     }
 
     // Returns the USD value of ether at the set USD/ETH rate
@@ -452,13 +452,13 @@ contract depositofferToken is
         
         // Percent bonus funding tiers for USD funding
         uint bonus = 0;
-    //        usd &gt;= 2000000 ? 35 :
-    //        usd &gt;= 500000  ? 30 :
-    //        usd &gt;= 100000  ? 20 :
-    //        usd &gt;= 25000   ? 15 :
-    //        usd &gt;= 10000   ? 10 :
-    //        usd &gt;= 5000    ? 5  :
-    //        usd &gt;= 1000    ? 1  :                    
+    //        usd >= 2000000 ? 35 :
+    //        usd >= 500000  ? 30 :
+    //        usd >= 100000  ? 20 :
+    //        usd >= 25000   ? 15 :
+    //        usd >= 10000   ? 10 :
+    //        usd >= 5000    ? 5  :
+    //        usd >= 1000    ? 1  :                    
         
         // using n.2 fixed point decimal for whole number percentage.
         return _wei.mul(TOKENS_PER_ETH).mul(bonus + 100).div(100);
@@ -490,14 +490,14 @@ contract depositofferToken is
     {
         require(!fundFailed());
         require(!icoSuccessful);
-        require(now &lt;= END_DATE);
-        require(msg.value &gt; 0);
+        require(now <= END_DATE);
+        require(msg.value > 0);
         
-        // Non-KYC&#39;ed funders can only contribute up to $10000 after prefund period
+        // Non-KYC'ed funders can only contribute up to $10000 after prefund period
         if(!kycAddresses[_addr])
         {
-            require(now &gt;= START_DATE);
-            require((etherContributed[_addr].add(msg.value)) &lt;= KYC_ETH_LMT);
+            require(now >= START_DATE);
+            require((etherContributed[_addr].add(msg.value)) <= KYC_ETH_LMT);
         }
 
         // Get ether to token conversion
@@ -514,7 +514,7 @@ contract depositofferToken is
         etherRaised = etherRaised.add(msg.value);
         
         // Bail if this pushes the fund over the USD cap or Token cap
-        require(etherRaised &lt;= MAX_ETH_FUND);
+        require(etherRaised <= MAX_ETH_FUND);
 
         return true;
     }
@@ -573,7 +573,7 @@ contract depositofferToken is
         delete kycAddresses[_addr];
         
         Refunded(_addr, value);
-        if (value &gt; 0) {
+        if (value > 0) {
             _addr.transfer(value);
         }
         return true;

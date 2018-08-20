@@ -30,8 +30,8 @@ contract TokenERC20 {
     uint256 public constant TOKEN_UNIT = 10 ** 18;
 
     uint256 internal _totalSupply;
-    mapping (address =&gt; uint256) internal _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowance;
+    mapping (address => uint256) internal _balanceOf;
+    mapping (address => mapping (address => uint256)) internal _allowance;
 
 
     // This generates a public event on the blockchain that will notify clients
@@ -76,9 +76,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         // Check for overflows
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]);
+        require(_balanceOf[_to] + _value > _balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = _balanceOf[_from] + _balanceOf[_to];
         // Subtract from the sender
@@ -112,7 +112,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= _allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= _allowance[_from][msg.sender]);     // Check allowance
         _allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -161,7 +161,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(_balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         _balanceOf[msg.sender] -= _value;            // Subtract from the sender
         _totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -177,10 +177,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= _allowance[_from][msg.sender]);    // Check allowance
+        require(_balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= _allowance[_from][msg.sender]);    // Check allowance
         _balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         _totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -199,37 +199,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -240,8 +240,8 @@ contract PeralToken is Owned, TokenERC20 {
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
     
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) private allowMint;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) private allowMint;
     bool _closeSale = false;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -252,8 +252,8 @@ contract PeralToken is Owned, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (_balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (_balanceOf[_to].add(_value) &gt; _balanceOf[_to]); // Check for overflows
+        require (_balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (_balanceOf[_to].add(_value) > _balanceOf[_to]); // Check for overflows
         require(_closeSale);
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
@@ -287,7 +287,7 @@ contract PeralToken is Owned, TokenERC20 {
 
 
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {

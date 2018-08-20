@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 //solc --bin --abi --optimize  --optimize-runs 20000 -o . Testpool.sol 
 
 
-//import &quot;./SHA3_512.sol&quot;;
+//import "./SHA3_512.sol";
 
 contract SHA3_512 {
     function SHA3_512() {}
@@ -42,9 +42,9 @@ contract SHA3_512 {
                    0x0000000080000001,
                    0x8000000080008008 ];
         
-        for( uint i = 0 ; i &lt; 24 ; i++ ) {
+        for( uint i = 0 ; i < 24 ; i++ ) {
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
+            for( x = 0 ; x < 5 ; x++ ) {
                 C[x] = A[5*x]^A[5*x+1]^A[5*x+2]^A[5*x+3]^A[5*x+4];                
             }*/
                        
@@ -55,20 +55,20 @@ contract SHA3_512 {
             C[4]=A[20]^A[21]^A[22]^A[23]^A[24];
 
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                D[x] = C[(x+4)%5]^((C[(x+1)%5] * 2)&amp;0xffffffffffffffff | (C[(x+1)%5]/(2**63)));
+            for( x = 0 ; x < 5 ; x++ ) {
+                D[x] = C[(x+4)%5]^((C[(x+1)%5] * 2)&0xffffffffffffffff | (C[(x+1)%5]/(2**63)));
             }*/
                         
             
-            D[0]=C[4] ^ ((C[1] * 2)&amp;0xffffffffffffffff | (C[1] / (2 ** 63)));
-            D[1]=C[0] ^ ((C[2] * 2)&amp;0xffffffffffffffff | (C[2] / (2 ** 63)));
-            D[2]=C[1] ^ ((C[3] * 2)&amp;0xffffffffffffffff | (C[3] / (2 ** 63)));
-            D[3]=C[2] ^ ((C[4] * 2)&amp;0xffffffffffffffff | (C[4] / (2 ** 63)));
-            D[4]=C[3] ^ ((C[0] * 2)&amp;0xffffffffffffffff | (C[0] / (2 ** 63)));
+            D[0]=C[4] ^ ((C[1] * 2)&0xffffffffffffffff | (C[1] / (2 ** 63)));
+            D[1]=C[0] ^ ((C[2] * 2)&0xffffffffffffffff | (C[2] / (2 ** 63)));
+            D[2]=C[1] ^ ((C[3] * 2)&0xffffffffffffffff | (C[3] / (2 ** 63)));
+            D[3]=C[2] ^ ((C[4] * 2)&0xffffffffffffffff | (C[4] / (2 ** 63)));
+            D[4]=C[3] ^ ((C[0] * 2)&0xffffffffffffffff | (C[0] / (2 ** 63)));
 
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                for( y = 0 ; y &lt; 5 ; y++ ) {
+            for( x = 0 ; x < 5 ; x++ ) {
+                for( y = 0 ; y < 5 ; y++ ) {
                     A[5*x+y] = A[5*x+y] ^ D[x];
                 }            
             }*/
@@ -103,65 +103,65 @@ contract SHA3_512 {
 
             /*Rho and pi steps*/            
             B[0]=A[0];
-            B[8]=((A[1] * (2 ** 36))&amp;0xffffffffffffffff | (A[1] / (2 ** 28)));
-            B[11]=((A[2] * (2 ** 3))&amp;0xffffffffffffffff | (A[2] / (2 ** 61)));
-            B[19]=((A[3] * (2 ** 41))&amp;0xffffffffffffffff | (A[3] / (2 ** 23)));
-            B[22]=((A[4] * (2 ** 18))&amp;0xffffffffffffffff | (A[4] / (2 ** 46)));
-            B[2]=((A[5] * (2 ** 1))&amp;0xffffffffffffffff | (A[5] / (2 ** 63)));
-            B[5]=((A[6] * (2 ** 44))&amp;0xffffffffffffffff | (A[6] / (2 ** 20)));
-            B[13]=((A[7] * (2 ** 10))&amp;0xffffffffffffffff | (A[7] / (2 ** 54)));
-            B[16]=((A[8] * (2 ** 45))&amp;0xffffffffffffffff | (A[8] / (2 ** 19)));
-            B[24]=((A[9] * (2 ** 2))&amp;0xffffffffffffffff | (A[9] / (2 ** 62)));
-            B[4]=((A[10] * (2 ** 62))&amp;0xffffffffffffffff | (A[10] / (2 ** 2)));
-            B[7]=((A[11] * (2 ** 6))&amp;0xffffffffffffffff | (A[11] / (2 ** 58)));
-            B[10]=((A[12] * (2 ** 43))&amp;0xffffffffffffffff | (A[12] / (2 ** 21)));
-            B[18]=((A[13] * (2 ** 15))&amp;0xffffffffffffffff | (A[13] / (2 ** 49)));
-            B[21]=((A[14] * (2 ** 61))&amp;0xffffffffffffffff | (A[14] / (2 ** 3)));
-            B[1]=((A[15] * (2 ** 28))&amp;0xffffffffffffffff | (A[15] / (2 ** 36)));
-            B[9]=((A[16] * (2 ** 55))&amp;0xffffffffffffffff | (A[16] / (2 ** 9)));
-            B[12]=((A[17] * (2 ** 25))&amp;0xffffffffffffffff | (A[17] / (2 ** 39)));
-            B[15]=((A[18] * (2 ** 21))&amp;0xffffffffffffffff | (A[18] / (2 ** 43)));
-            B[23]=((A[19] * (2 ** 56))&amp;0xffffffffffffffff | (A[19] / (2 ** 8)));
-            B[3]=((A[20] * (2 ** 27))&amp;0xffffffffffffffff | (A[20] / (2 ** 37)));
-            B[6]=((A[21] * (2 ** 20))&amp;0xffffffffffffffff | (A[21] / (2 ** 44)));
-            B[14]=((A[22] * (2 ** 39))&amp;0xffffffffffffffff | (A[22] / (2 ** 25)));
-            B[17]=((A[23] * (2 ** 8))&amp;0xffffffffffffffff | (A[23] / (2 ** 56)));
-            B[20]=((A[24] * (2 ** 14))&amp;0xffffffffffffffff | (A[24] / (2 ** 50)));
+            B[8]=((A[1] * (2 ** 36))&0xffffffffffffffff | (A[1] / (2 ** 28)));
+            B[11]=((A[2] * (2 ** 3))&0xffffffffffffffff | (A[2] / (2 ** 61)));
+            B[19]=((A[3] * (2 ** 41))&0xffffffffffffffff | (A[3] / (2 ** 23)));
+            B[22]=((A[4] * (2 ** 18))&0xffffffffffffffff | (A[4] / (2 ** 46)));
+            B[2]=((A[5] * (2 ** 1))&0xffffffffffffffff | (A[5] / (2 ** 63)));
+            B[5]=((A[6] * (2 ** 44))&0xffffffffffffffff | (A[6] / (2 ** 20)));
+            B[13]=((A[7] * (2 ** 10))&0xffffffffffffffff | (A[7] / (2 ** 54)));
+            B[16]=((A[8] * (2 ** 45))&0xffffffffffffffff | (A[8] / (2 ** 19)));
+            B[24]=((A[9] * (2 ** 2))&0xffffffffffffffff | (A[9] / (2 ** 62)));
+            B[4]=((A[10] * (2 ** 62))&0xffffffffffffffff | (A[10] / (2 ** 2)));
+            B[7]=((A[11] * (2 ** 6))&0xffffffffffffffff | (A[11] / (2 ** 58)));
+            B[10]=((A[12] * (2 ** 43))&0xffffffffffffffff | (A[12] / (2 ** 21)));
+            B[18]=((A[13] * (2 ** 15))&0xffffffffffffffff | (A[13] / (2 ** 49)));
+            B[21]=((A[14] * (2 ** 61))&0xffffffffffffffff | (A[14] / (2 ** 3)));
+            B[1]=((A[15] * (2 ** 28))&0xffffffffffffffff | (A[15] / (2 ** 36)));
+            B[9]=((A[16] * (2 ** 55))&0xffffffffffffffff | (A[16] / (2 ** 9)));
+            B[12]=((A[17] * (2 ** 25))&0xffffffffffffffff | (A[17] / (2 ** 39)));
+            B[15]=((A[18] * (2 ** 21))&0xffffffffffffffff | (A[18] / (2 ** 43)));
+            B[23]=((A[19] * (2 ** 56))&0xffffffffffffffff | (A[19] / (2 ** 8)));
+            B[3]=((A[20] * (2 ** 27))&0xffffffffffffffff | (A[20] / (2 ** 37)));
+            B[6]=((A[21] * (2 ** 20))&0xffffffffffffffff | (A[21] / (2 ** 44)));
+            B[14]=((A[22] * (2 ** 39))&0xffffffffffffffff | (A[22] / (2 ** 25)));
+            B[17]=((A[23] * (2 ** 8))&0xffffffffffffffff | (A[23] / (2 ** 56)));
+            B[20]=((A[24] * (2 ** 14))&0xffffffffffffffff | (A[24] / (2 ** 50)));
 
             /*Xi state*/
             /*
-            for( x = 0 ; x &lt; 5 ; x++ ) {
-                for( y = 0 ; y &lt; 5 ; y++ ) {
-                    A[5*x+y] = B[5*x+y]^((~B[5*((x+1)%5)+y]) &amp; B[5*((x+2)%5)+y]);
+            for( x = 0 ; x < 5 ; x++ ) {
+                for( y = 0 ; y < 5 ; y++ ) {
+                    A[5*x+y] = B[5*x+y]^((~B[5*((x+1)%5)+y]) & B[5*((x+2)%5)+y]);
                 }
             }*/
             
             
-            A[0]=B[0]^((~B[5]) &amp; B[10]);
-            A[1]=B[1]^((~B[6]) &amp; B[11]);
-            A[2]=B[2]^((~B[7]) &amp; B[12]);
-            A[3]=B[3]^((~B[8]) &amp; B[13]);
-            A[4]=B[4]^((~B[9]) &amp; B[14]);
-            A[5]=B[5]^((~B[10]) &amp; B[15]);
-            A[6]=B[6]^((~B[11]) &amp; B[16]);
-            A[7]=B[7]^((~B[12]) &amp; B[17]);
-            A[8]=B[8]^((~B[13]) &amp; B[18]);
-            A[9]=B[9]^((~B[14]) &amp; B[19]);
-            A[10]=B[10]^((~B[15]) &amp; B[20]);
-            A[11]=B[11]^((~B[16]) &amp; B[21]);
-            A[12]=B[12]^((~B[17]) &amp; B[22]);
-            A[13]=B[13]^((~B[18]) &amp; B[23]);
-            A[14]=B[14]^((~B[19]) &amp; B[24]);
-            A[15]=B[15]^((~B[20]) &amp; B[0]);
-            A[16]=B[16]^((~B[21]) &amp; B[1]);
-            A[17]=B[17]^((~B[22]) &amp; B[2]);
-            A[18]=B[18]^((~B[23]) &amp; B[3]);
-            A[19]=B[19]^((~B[24]) &amp; B[4]);
-            A[20]=B[20]^((~B[0]) &amp; B[5]);
-            A[21]=B[21]^((~B[1]) &amp; B[6]);
-            A[22]=B[22]^((~B[2]) &amp; B[7]);
-            A[23]=B[23]^((~B[3]) &amp; B[8]);
-            A[24]=B[24]^((~B[4]) &amp; B[9]);
+            A[0]=B[0]^((~B[5]) & B[10]);
+            A[1]=B[1]^((~B[6]) & B[11]);
+            A[2]=B[2]^((~B[7]) & B[12]);
+            A[3]=B[3]^((~B[8]) & B[13]);
+            A[4]=B[4]^((~B[9]) & B[14]);
+            A[5]=B[5]^((~B[10]) & B[15]);
+            A[6]=B[6]^((~B[11]) & B[16]);
+            A[7]=B[7]^((~B[12]) & B[17]);
+            A[8]=B[8]^((~B[13]) & B[18]);
+            A[9]=B[9]^((~B[14]) & B[19]);
+            A[10]=B[10]^((~B[15]) & B[20]);
+            A[11]=B[11]^((~B[16]) & B[21]);
+            A[12]=B[12]^((~B[17]) & B[22]);
+            A[13]=B[13]^((~B[18]) & B[23]);
+            A[14]=B[14]^((~B[19]) & B[24]);
+            A[15]=B[15]^((~B[20]) & B[0]);
+            A[16]=B[16]^((~B[21]) & B[1]);
+            A[17]=B[17]^((~B[22]) & B[2]);
+            A[18]=B[18]^((~B[23]) & B[3]);
+            A[19]=B[19]^((~B[24]) & B[4]);
+            A[20]=B[20]^((~B[0]) & B[5]);
+            A[21]=B[21]^((~B[1]) & B[6]);
+            A[22]=B[22]^((~B[2]) & B[7]);
+            A[23]=B[23]^((~B[3]) & B[8]);
+            A[24]=B[24]^((~B[4]) & B[9]);
 
             /*Last step*/
             A[0]=A[0]^RC[i];            
@@ -184,10 +184,10 @@ contract SHA3_512 {
         uint[25] memory S;
         uint i; uint y; uint x;
         /*Absorbing Phase*/
-        for( i = 0 ; i &lt; size/r ; i++ ) {
-            for( y = 0 ; y &lt; 5 ; y++ ) {
-                for( x = 0 ; x &lt; 5 ; x++ ) {
-                    if( (x+5*y) &lt; (r/w) ) {
+        for( i = 0 ; i < size/r ; i++ ) {
+            for( y = 0 ; y < 5 ; y++ ) {
+                for( x = 0 ; x < 5 ; x++ ) {
+                    if( (x+5*y) < (r/w) ) {
                         S[5*x+y] = S[5*x+y] ^ M[i*9 + x + 5*y];
                     }
                 }
@@ -198,11 +198,11 @@ contract SHA3_512 {
         /*Squeezing phase*/
         uint[16] memory result;
         uint b = 0;
-        while( b &lt; 16 ) {
-            for( y = 0 ; y &lt; 5 ; y++ ) {
-                for( x = 0 ; x &lt; 5 ; x++ ) {
-                    if( (x+5*y)&lt;(r/w) &amp;&amp; (b&lt;16) ) {
-                        result[b] = S[5*x+y] &amp; 0xFFFFFFFF; 
+        while( b < 16 ) {
+            for( y = 0 ; y < 5 ; y++ ) {
+                for( x = 0 ; x < 5 ; x++ ) {
+                    if( (x+5*y)<(r/w) && (b<16) ) {
+                        result[b] = S[5*x+y] & 0xFFFFFFFF; 
                         result[b+1] = S[5*x+y] / 0x100000000;
                         b+=2;
                     }
@@ -219,7 +219,7 @@ contract SHA3_512 {
 
 contract Ethash is SHA3_512 {
     
-    mapping(address=&gt;bool) public owners;
+    mapping(address=>bool) public owners;
     
     function Ethash(address[3] _owners) {
         owners[_owners[0]] = true;
@@ -228,7 +228,7 @@ contract Ethash is SHA3_512 {
     }
      
     function fnv( uint v1, uint v2 ) constant internal returns(uint) {
-        return ((v1*0x01000193) ^ v2) &amp; 0xFFFFFFFF;
+        return ((v1*0x01000193) ^ v2) & 0xFFFFFFFF;
     }
 
 
@@ -240,12 +240,12 @@ contract Ethash is SHA3_512 {
                                uint branchSize ) constant private returns(uint) {
  
                        
-        uint leaf = computeLeaf(elements, indexInElementsArray) &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+        uint leaf = computeLeaf(elements, indexInElementsArray) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
         uint left;
         uint right;
         uint node;
-        bool oddBranchSize = (branchSize % 2) &gt; 0;
+        bool oddBranchSize = (branchSize % 2) > 0;
          
         assembly {
             branchSize := div(branchSize,2)
@@ -254,35 +254,35 @@ contract Ethash is SHA3_512 {
         uint witnessIndex = indexInElementsArray * branchSize;
         if( oddBranchSize ) witnessIndex += indexInElementsArray;  
 
-        for( uint depth = 0 ; depth &lt; branchSize ; depth++ ) {
+        for( uint depth = 0 ; depth < branchSize ; depth++ ) {
             assembly {
                 node := mload(add(add(witness,0x20),mul(add(depth,witnessIndex),0x20)))
             }
-            //node  = witness[witnessIndex + depth] &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
-            if( index &amp; 0x1 == 0 ) {
+            //node  = witness[witnessIndex + depth] & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+            if( index & 0x1 == 0 ) {
                 left = leaf;
                 assembly{
-                    //right = node &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
+                    //right = node & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
                     right := and(node,0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 }
                 
             }
             else {
                 assembly{
-                    //left = node &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+                    //left = node & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
                     left := and(node,0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 }
                 right = leaf;
             }
             
-            leaf = uint(sha3(left,right)) &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+            leaf = uint(sha3(left,right)) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
             assembly {
                 index := div(index,2) 
             }
             //index = index / 2;
 
             //node  = witness[witnessIndex + depth] / (2**128);
-            if( index &amp; 0x1 == 0 ) {
+            if( index & 0x1 == 0 ) {
                 left = leaf;
                 assembly{
                     right := div(node,0x100000000000000000000000000000000)
@@ -297,7 +297,7 @@ contract Ethash is SHA3_512 {
                 right = leaf;
             }
             
-            leaf = uint(sha3(left,right)) &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+            leaf = uint(sha3(left,right)) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
             assembly {
                 index := div(index,2) 
             }
@@ -309,24 +309,24 @@ contract Ethash is SHA3_512 {
                 node := mload(add(add(witness,0x20),mul(add(depth,witnessIndex),0x20)))
             }
         
-            //node  = witness[witnessIndex + depth] &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
-            if( index &amp; 0x1 == 0 ) {
+            //node  = witness[witnessIndex + depth] & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+            if( index & 0x1 == 0 ) {
                 left = leaf;
                 assembly{
-                    //right = node &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
+                    //right = node & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
                     right := and(node,0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 }                
             }
             else {
                 assembly{
-                    //left = node &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
+                    //left = node & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;                
                     left := and(node,0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 }
             
                 right = leaf;
             }
             
-            leaf = uint(sha3(left,right)) &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;        
+            leaf = uint(sha3(left,right)) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;        
         }
         
         
@@ -336,9 +336,9 @@ contract Ethash is SHA3_512 {
     
     function toBE( uint x ) constant internal returns(uint) {
         uint y = 0;
-        for( uint i = 0 ; i &lt; 32 ; i++ ) {
+        for( uint i = 0 ; i < 32 ; i++ ) {
             y = y * 256;
-            y += (x &amp; 0xFF);
+            y += (x & 0xFF);
             x = x / 256;            
         }
         
@@ -375,13 +375,13 @@ contract Ethash is SHA3_512 {
         
         header = reverseBytes(header);
         
-        M[0] = uint(header) &amp; 0xFFFFFFFFFFFFFFFF;
+        M[0] = uint(header) & 0xFFFFFFFFFFFFFFFF;
         header = header / 2**64;
-        M[1] = uint(header) &amp; 0xFFFFFFFFFFFFFFFF;
+        M[1] = uint(header) & 0xFFFFFFFFFFFFFFFF;
         header = header / 2**64;
-        M[2] = uint(header) &amp; 0xFFFFFFFFFFFFFFFF;
+        M[2] = uint(header) & 0xFFFFFFFFFFFFFFFF;
         header = header / 2**64;
-        M[3] = uint(header) &amp; 0xFFFFFFFFFFFFFFFF;
+        M[3] = uint(header) & 0xFFFFFFFFFFFFFFFF;
 
         // make little endian nonce
         M[4] = nonceLe;
@@ -390,9 +390,9 @@ contract Ethash is SHA3_512 {
     
     function reverseBytes( uint input ) constant internal returns(uint) {
         uint result = 0;
-        for(uint i = 0 ; i &lt; 32 ; i++ ) {
+        for(uint i = 0 ; i < 32 ; i++ ) {
             result = result * 256;
-            result += input &amp; 0xff;
+            result += input & 0xff;
             
             input /= 256;
         }
@@ -406,7 +406,7 @@ contract Ethash is SHA3_512 {
         uint         branchDepth;
     }
     
-    mapping(uint=&gt;EthashCacheOptData) epochData;
+    mapping(uint=>EthashCacheOptData) epochData;
     
     function getEpochData( uint epochIndex, uint nodeIndex ) constant returns(uint[3]) {
         return [epochData[epochIndex].merkleNodes[nodeIndex],
@@ -428,14 +428,14 @@ contract Ethash is SHA3_512 {
                            uint numElems ) {
 
         if( ! owners[msg.sender] ) {
-            //ErrorLog( &quot;setEpochData: only owner can set data&quot;, uint(msg.sender) );
+            //ErrorLog( "setEpochData: only owner can set data", uint(msg.sender) );
             SetEpochData( msg.sender, 0x82000000, uint(msg.sender) );
             return;        
         }                           
                            
-        for( uint i = 0 ; i &lt; numElems ; i++ ) {
-            if( epochData[epoch].merkleNodes[start+i] &gt; 0 ) {
-                //ErrorLog(&quot;epoch already set&quot;, epoch[i]);
+        for( uint i = 0 ; i < numElems ; i++ ) {
+            if( epochData[epoch].merkleNodes[start+i] > 0 ) {
+                //ErrorLog("epoch already set", epoch[i]);
                 SetEpochData( msg.sender, 0x82000001, epoch * (2**128) + start + i );
                 return;            
 
@@ -449,9 +449,9 @@ contract Ethash is SHA3_512 {
     }
 
     function getMerkleLeave( uint epochIndex, uint p ) constant internal returns(uint) {        
-        uint rootIndex = p &gt;&gt; epochData[epochIndex].branchDepth;
+        uint rootIndex = p >> epochData[epochIndex].branchDepth;
         uint expectedRoot = epochData[epochIndex].merkleNodes[(rootIndex/2)];
-        if( (rootIndex % 2) == 0 ) expectedRoot = expectedRoot &amp; 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+        if( (rootIndex % 2) == 0 ) expectedRoot = expectedRoot & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
         else expectedRoot = expectedRoot / (2**128);
         
         return expectedRoot;
@@ -482,7 +482,7 @@ contract Ethash is SHA3_512 {
 
         
         s = computeS(uint(header), uint(nonceLe));
-        for( i = 0 ; i &lt; 16 ; i++ ) {            
+        for( i = 0 ; i < 16 ; i++ ) {            
             assembly {
                 let offset := mul(i,0x20)
                 
@@ -494,7 +494,7 @@ contract Ethash is SHA3_512 {
             }
         }
 
-        for( i = 0 ; i &lt; 64 ; i++ ) {
+        for( i = 0 ; i < 64 ; i++ ) {
             uint p = fnv( i ^ s[0], mix[i % 32]) % depthAndFullSize[1];
             
             
@@ -504,60 +504,60 @@ contract Ethash is SHA3_512 {
                 return 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
             }       
 
-            for( j = 0 ; j &lt; 8 ; j++ ) {
+            for( j = 0 ; j < 8 ; j++ ) {
 
                 assembly{
-                    //mix[j] = fnv(mix[j], dataSetLookup[4*i] &amp; varFFFFFFFF );
+                    //mix[j] = fnv(mix[j], dataSetLookup[4*i] & varFFFFFFFF );
                     let dataOffset := add(mul(0x80,i),add(dataSetLookup,0x20))
                     let dataValue   := and(mload(dataOffset),0xFFFFFFFF)
                     
                     let mixOffset := add(mix,mul(0x20,j))
                     let mixValue  := mload(mixOffset)
                     
-                    // fnv = return ((v1*0x01000193) ^ v2) &amp; 0xFFFFFFFF;
+                    // fnv = return ((v1*0x01000193) ^ v2) & 0xFFFFFFFF;
                     let fnvValue := and(xor(mul(mixValue,0x01000193),dataValue),0xFFFFFFFF)                    
                     mstore(mixOffset,fnvValue)
                     
-                    //mix[j+8] = fnv(mix[j+8], dataSetLookup[4*i + 1] &amp; 0xFFFFFFFF );
+                    //mix[j+8] = fnv(mix[j+8], dataSetLookup[4*i + 1] & 0xFFFFFFFF );
                     dataOffset := add(dataOffset,0x20)
                     dataValue   := and(mload(dataOffset),0xFFFFFFFF)
                     
                     mixOffset := add(mixOffset,0x100)
                     mixValue  := mload(mixOffset)
                     
-                    // fnv = return ((v1*0x01000193) ^ v2) &amp; 0xFFFFFFFF;
+                    // fnv = return ((v1*0x01000193) ^ v2) & 0xFFFFFFFF;
                     fnvValue := and(xor(mul(mixValue,0x01000193),dataValue),0xFFFFFFFF)                    
                     mstore(mixOffset,fnvValue)
 
-                    //mix[j+16] = fnv(mix[j+16], dataSetLookup[4*i + 2] &amp; 0xFFFFFFFF );
+                    //mix[j+16] = fnv(mix[j+16], dataSetLookup[4*i + 2] & 0xFFFFFFFF );
                     dataOffset := add(dataOffset,0x20)
                     dataValue   := and(mload(dataOffset),0xFFFFFFFF)
                     
                     mixOffset := add(mixOffset,0x100)
                     mixValue  := mload(mixOffset)
                     
-                    // fnv = return ((v1*0x01000193) ^ v2) &amp; 0xFFFFFFFF;
+                    // fnv = return ((v1*0x01000193) ^ v2) & 0xFFFFFFFF;
                     fnvValue := and(xor(mul(mixValue,0x01000193),dataValue),0xFFFFFFFF)                    
                     mstore(mixOffset,fnvValue)
 
-                    //mix[j+24] = fnv(mix[j+24], dataSetLookup[4*i + 3] &amp; 0xFFFFFFFF );
+                    //mix[j+24] = fnv(mix[j+24], dataSetLookup[4*i + 3] & 0xFFFFFFFF );
                     dataOffset := add(dataOffset,0x20)
                     dataValue   := and(mload(dataOffset),0xFFFFFFFF)
                     
                     mixOffset := add(mixOffset,0x100)
                     mixValue  := mload(mixOffset)
                     
-                    // fnv = return ((v1*0x01000193) ^ v2) &amp; 0xFFFFFFFF;
+                    // fnv = return ((v1*0x01000193) ^ v2) & 0xFFFFFFFF;
                     fnvValue := and(xor(mul(mixValue,0x01000193),dataValue),0xFFFFFFFF)                    
                     mstore(mixOffset,fnvValue)                    
                                         
                 }
 
                 
-                //mix[j] = fnv(mix[j], dataSetLookup[4*i] &amp; 0xFFFFFFFF );
-                //mix[j+8] = fnv(mix[j+8], dataSetLookup[4*i + 1] &amp; 0xFFFFFFFF );
-                //mix[j+16] = fnv(mix[j+16], dataSetLookup[4*i + 2] &amp; 0xFFFFFFFF );                
-                //mix[j+24] = fnv(mix[j+24], dataSetLookup[4*i + 3] &amp; 0xFFFFFFFF );
+                //mix[j] = fnv(mix[j], dataSetLookup[4*i] & 0xFFFFFFFF );
+                //mix[j+8] = fnv(mix[j+8], dataSetLookup[4*i + 1] & 0xFFFFFFFF );
+                //mix[j+16] = fnv(mix[j+16], dataSetLookup[4*i + 2] & 0xFFFFFFFF );                
+                //mix[j+24] = fnv(mix[j+24], dataSetLookup[4*i + 3] & 0xFFFFFFFF );
                 
                 
                 //dataSetLookup[4*i    ] = dataSetLookup[4*i    ]/(2**32);
@@ -586,7 +586,7 @@ contract Ethash is SHA3_512 {
         }
         
         
-        for( i = 0 ; i &lt; 32 ; i += 4) {
+        for( i = 0 ; i < 32 ; i += 4) {
             cmix[i/4] = (fnv(fnv(fnv(mix[i], mix[i+1]), mix[i+2]), mix[i+3]));
         }
         

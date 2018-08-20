@@ -10,20 +10,20 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,10 +38,10 @@ contract Freeze {
     }
     struct deposit_list{
         uint256[] list_key;
-        mapping(uint256=&gt;deposit_st) deposits;
+        mapping(uint256=>deposit_st) deposits;
     }
     address public service_founder;
-    mapping (address =&gt;deposit_list) depositors;
+    mapping (address =>deposit_list) depositors;
     event Deposit(address account,uint256 amount,uint256 term);
     event Withdrawal(address account,uint index);
     event Transfer(address account,address to,uint256 amount,uint256 term);
@@ -60,7 +60,7 @@ contract Freeze {
     function deposit(uint256 term) public payable {
         uint256 amount=msg.value;
         require(msg.sender != 0x0);
-        require(amount&gt;0);
+        require(amount>0);
         uint256 fee=amount.div(200);
         uint256 amount_of_deposit=amount.sub(fee);
         service_founder.transfer(fee);
@@ -69,10 +69,10 @@ contract Freeze {
     }
     function withdrawal(uint index) public {
         //validate deposit available
-        require(index&lt;depositors[msg.sender].list_key.length);
+        require(index<depositors[msg.sender].list_key.length);
         uint256 createtime=depositors[msg.sender].list_key[index];
-        require(depositors[msg.sender].deposits[createtime].amount&gt;0);
-        require(depositors[msg.sender].deposits[createtime].term&lt;now);
+        require(depositors[msg.sender].deposits[createtime].amount>0);
+        require(depositors[msg.sender].deposits[createtime].term<now);
         //return ethereum to depositors
         msg.sender.transfer(depositors[msg.sender].deposits[createtime].amount);
         //remove deposit
@@ -82,10 +82,10 @@ contract Freeze {
     }
     function transfer(address to,uint index) public{
         //validate deposit available
-        require(index&lt;depositors[msg.sender].list_key.length);
+        require(index<depositors[msg.sender].list_key.length);
         uint256 createtime=depositors[msg.sender].list_key[index];
-        require(depositors[msg.sender].deposits[createtime].amount&gt;0);
-        require(depositors[msg.sender].deposits[createtime].term&lt;now);
+        require(depositors[msg.sender].deposits[createtime].amount>0);
+        require(depositors[msg.sender].deposits[createtime].term<now);
         //
         uint256 _amount=depositors[msg.sender].deposits[createtime].amount;
         uint256 _term=depositors[msg.sender].deposits[createtime].term;
@@ -98,7 +98,7 @@ contract Freeze {
     }
      function deposit_to_address(address account,uint256 _amount,uint256 _term) private{
         uint256 currenttime=now;
-        while(depositors[account].deposits[currenttime].amount&gt;0){
+        while(depositors[account].deposits[currenttime].amount>0){
             currenttime++;
         }
         depositors[account].deposits[currenttime]=deposit_st({amount:_amount,term:_term});

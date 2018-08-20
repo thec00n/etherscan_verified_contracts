@@ -11,7 +11,7 @@ contract Manifesto {
   uint public votesSupport;
   uint public votesDecline;
 
-  mapping(address =&gt; Vote) public votesArr;
+  mapping(address => Vote) public votesArr;
   
   event Voted(address _sender, bool _vote, string _message);
 

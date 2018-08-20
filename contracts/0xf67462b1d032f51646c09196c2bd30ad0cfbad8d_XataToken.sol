@@ -31,8 +31,8 @@ contract ForeignTokenProvider is Ownable {
 contract XataToken is ForeignTokenProvider {
     bool public purchasingAllowed = false;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalBonusTokensIssued = 0;
@@ -41,9 +41,9 @@ contract XataToken is ForeignTokenProvider {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    function name() public pure returns (string) {return &quot;Sobirayu na Xatu&quot;;}
+    function name() public pure returns (string) {return "Sobirayu na Xatu";}
 
-    function symbol() public pure returns (string) {return &quot;XATA&quot;;}
+    function symbol() public pure returns (string) {return "XATA";}
 
     function decimals() public pure returns (uint32) {return 18;}
 
@@ -59,8 +59,8 @@ contract XataToken is ForeignTokenProvider {
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
 
         if (!sufficientFunds || overflowed) {
           return false;
@@ -82,11 +82,11 @@ contract XataToken is ForeignTokenProvider {
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
 
@@ -102,7 +102,7 @@ contract XataToken is ForeignTokenProvider {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) {
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) {
             return false;
         }
 
@@ -140,14 +140,14 @@ contract XataToken is ForeignTokenProvider {
 
     function() external payable {
         require(purchasingAllowed);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         owner.transfer(msg.value);
         totalContribution += msg.value;
 
         uint256 tokensIssued = (msg.value * 100);
 
-        if (msg.value &gt;= 10 finney) {
+        if (msg.value >= 10 finney) {
             tokensIssued += totalContribution;
             totalBonusTokensIssued += totalContribution;
         }

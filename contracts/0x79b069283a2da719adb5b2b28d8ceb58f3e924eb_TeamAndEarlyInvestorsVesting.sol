@@ -24,20 +24,20 @@ library SafeMath {
     }
     
     function div (uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
     
     function sub (uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add (uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -51,10 +51,10 @@ library SafeMath {
  *      Teams and Tournament Organizers: 15%
  *      Team and Early Investors: 10%
  *
- * The DreamTeam &quot;Vesting&quot; smart contract should be in place to ensure meeting the token sale commitments.
+ * The DreamTeam "Vesting" smart contract should be in place to ensure meeting the token sale commitments.
  *
  * Two instances of contract will be deployed for holding tokens. 
- * First instance for &quot;Teams and Tournament Organizers&quot; tokens and second for &quot;Team and Early Investors&quot;
+ * First instance for "Teams and Tournament Organizers" tokens and second for "Team and Early Investors"
  */
 contract DreamTokensVesting {
 
@@ -139,7 +139,7 @@ contract DreamTokensVesting {
     function getAvailableTokensToWithdraw () public view returns (uint256 tokensToSend) {
         uint256 tokensUnlockedPercentage = getTokensUnlockedPercentage();
         // In case of stuck tokens we allowing to widthraw them all after vesting period ends.
-        if (tokensUnlockedPercentage &gt;= 100) {
+        if (tokensUnlockedPercentage >= 100) {
             tokensToSend = dreamToken.balanceOf(this);
         } else {
             tokensToSend = getTokensAmountAllowedToWithdraw(tokensUnlockedPercentage);
@@ -153,8 +153,8 @@ contract DreamTokensVesting {
      * @param index Vesting stage number. Ordered by ascending date and starting from zero.
      *
      * @return {
-     *    &quot;date&quot;: &quot;Date of stage in unix timestamp format.&quot;,
-     *    &quot;tokensUnlockedPercentage&quot;: &quot;Percent of tokens allowed to be withdrawn.&quot;
+     *    "date": "Date of stage in unix timestamp format.",
+     *    "tokensUnlockedPercentage": "Percent of tokens allowed to be withdrawn."
      * }
      */
     function getStageAttributes (uint8 index) public view returns (uint256 date, uint256 tokensUnlockedPercentage) {
@@ -203,7 +203,7 @@ contract DreamTokensVesting {
      * @param tokensToSend Amount of tokens will be sent.
      */
     function sendTokens (uint256 tokensToSend) private {
-        if (tokensToSend &gt; 0) {
+        if (tokensToSend > 0) {
             // Updating tokens sent counter
             tokensSent = tokensSent.add(tokensToSend);
             // Sending allowed tokens amount
@@ -234,8 +234,8 @@ contract DreamTokensVesting {
     function getTokensUnlockedPercentage () private view returns (uint256) {
         uint256 allowedPercent;
         
-        for (uint8 i = 0; i &lt; stages.length; i++) {
-            if (now &gt;= stages[i].date) {
+        for (uint8 i = 0; i < stages.length; i++) {
+            if (now >= stages[i].date) {
                 allowedPercent = stages[i].tokensUnlockedPercentage;
             }
         }

@@ -3,11 +3,11 @@ pragma solidity ^0.4.11;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -17,7 +17,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -25,11 +25,11 @@ library SafeMath {
 contract Queue {
     using SafeMath for uint256;
     address[] users;
-    mapping(address =&gt; bool) usersExist;
-    mapping(address =&gt; address) users2users;
-    mapping(address =&gt; uint256) collectBalances;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) balancesTotal;
+    mapping(address => bool) usersExist;
+    mapping(address => address) users2users;
+    mapping(address => uint256) collectBalances;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) balancesTotal;
     uint256 nextForwardUserId = 0;
     uint256 nextBackUserId = 0;
     uint256 cyles = 50;
@@ -58,7 +58,7 @@ contract Queue {
     }
     
     function serchIndexByAddress(address a) public view returns (uint256 index) {
-        for(index=0; index&lt;users.length; index++) {
+        for(index=0; index<users.length; index++) {
             if(a == users[index]){
                 return index;
             }
@@ -66,9 +66,9 @@ contract Queue {
     }
     
     function _removeIndex(uint256 indexToRemove) internal {
-        if (indexToRemove &gt;= users.length) return;
+        if (indexToRemove >= users.length) return;
 
-        for (uint i = indexToRemove; i&lt;users.length-1; i++){
+        for (uint i = indexToRemove; i<users.length-1; i++){
             users[i] = users[i+1];
         }
         delete users[users.length-1];
@@ -85,7 +85,7 @@ contract Queue {
         users2users[user]=parentUser;
         emit QueueStart(user, parentUser, now);
         
-        if (collectBalances[parentUser].add(referalBonus) &gt;= collect){
+        if (collectBalances[parentUser].add(referalBonus) >= collect){
             reminder = collectBalances[parentUser].add(referalBonus) - collect;
             balancesTotal[parentUser] = balancesTotal[parentUser].add(interes);
             balances[parentUser] = balances[parentUser].add(interes);
@@ -98,7 +98,7 @@ contract Queue {
             collectBalances[parentUser] = collectBalances[parentUser].add(referalBonus);
         }
         
-        if (collectBalances[users2users[parentUser]].add(referalBonus) &gt;= collect){
+        if (collectBalances[users2users[parentUser]].add(referalBonus) >= collect){
             reminder = collectBalances[users2users[parentUser]].add(referalBonus) - collect;
             balancesTotal[users2users[parentUser]] = balancesTotal[users2users[parentUser]].add(interes);
             balances[users2users[parentUser]] = balances[users2users[parentUser]].add(interes);
@@ -127,8 +127,8 @@ contract Queue {
                 secondHalfStart  = length.div(2);
             }
             
-            for (uint i = 1; i &lt;= cyles; i++) {
-                if(collectBalances[users[nextForwardUserId]].add(queueInteres) &gt;= collect){
+            for (uint i = 1; i <= cyles; i++) {
+                if(collectBalances[users[nextForwardUserId]].add(queueInteres) >= collect){
                     reminder = collectBalances[users[nextForwardUserId]].add(queueInteres) - collect;
                     balancesTotal[users[nextForwardUserId]] = balancesTotal[users[nextForwardUserId]].add(interes);
                     balances[users[nextForwardUserId]] = balances[users[nextForwardUserId]].add(interes);
@@ -167,7 +167,7 @@ contract Queue {
     }
     
     function getMyMoney() public {
-        require(balances[msg.sender]&gt;0);
+        require(balances[msg.sender]>0);
         msg.sender.transfer(balances[msg.sender]);
         emit GetMyMoney(msg.sender, balances[msg.sender], now);
         balances[msg.sender]=0;

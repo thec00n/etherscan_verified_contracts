@@ -158,7 +158,7 @@ interface ICrowdsale {
     /**
      * Receive ether and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -247,10 +247,10 @@ contract Dispatchable {
 
 
 /**
- * The dispatcher is a minimal &#39;shim&#39; that dispatches calls to a targeted
+ * The dispatcher is a minimal 'shim' that dispatches calls to a targeted
  * contract without returning any data. 
  *
- * Calls are made using &#39;delegatecall&#39;, meaning all storage and value
+ * Calls are made using 'delegatecall', meaning all storage and value
  * is kept on the dispatcher.
  */
 contract SimpleDispatcher {
@@ -330,7 +330,7 @@ interface ICrowdsaleProxy {
     /**
      * Receive ether and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -384,7 +384,7 @@ contract CrowdsaleProxy is ICrowdsaleProxy {
     /**
      * Receive contribution and forward to the crowdsale
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      */

@@ -6,7 +6,7 @@ contract ProofOfExistence {
 
   address public owner = msg.sender;
 
-  mapping (bytes32 =&gt; uint256) hashesById;
+  mapping (bytes32 => uint256) hashesById;
 
   modifier onlyOwner() {
     require(msg.sender == owner);

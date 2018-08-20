@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /*
 *
-*  Blockonix Tokens are governed by the Terms &amp; Conditions separately notified to each existing token holder
+*  Blockonix Tokens are governed by the Terms & Conditions separately notified to each existing token holder
 *  of Bitindia, and available on https://blockonix.com and https://blockonix.com/tokenswap
 *
 */
@@ -32,7 +32,7 @@ library SafeMathLib {
 * Issue: Change to internal pure
 **/
   function minus(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMathLib {
 **/
   function plus(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -50,7 +50,7 @@ library SafeMathLib {
 /**
  * @title Ownable
  * @notice The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -108,7 +108,7 @@ contract VestingPeriods{
 
 contract Vestable {
 
-    mapping(address =&gt; uint) vestedAddresses ;    // Addresses vested till date
+    mapping(address => uint) vestedAddresses ;    // Addresses vested till date
     bool isVestingOver = false;
     event AddVestingAddress(address vestingAddress, uint maturityTimestamp);
 
@@ -123,8 +123,8 @@ contract Vestable {
 
     function checkVestingCondition(address sender) internal view returns(bool) {
         uint vestingTimestamp = vestedAddresses[sender];
-        if(vestingTimestamp &gt; 0) {
-            return (now &gt; vestingTimestamp);
+        if(vestingTimestamp > 0) {
+            return (now > vestingTimestamp);
         }
         else {
             return true;
@@ -154,12 +154,12 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
 
     uint256 public burntTokens;
 
-    string public constant name = &quot;Blockonix&quot;;    // Blockonix
-    string public constant symbol = &quot;BDT&quot;;  // BDT
+    string public constant name = "Blockonix";    // Blockonix
+    string public constant symbol = "BDT";  // BDT
     uint8 public constant decimals = 18;            
 
-    mapping (address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) approved;
+    mapping (address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) approved;
     
     event Upgraded(address _owner, uint256 amount); 
     constructor() public {
@@ -203,7 +203,7 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
     }
 
     function burn(uint256 _value) public {
-        require (balances[msg.sender] &gt;= _value);                 // Check if the sender has enough
+        require (balances[msg.sender] >= _value);                 // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].minus(_value);
         burntTokens += _value;
         emit BurnToken(msg.sender, _value);
@@ -221,8 +221,8 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                 // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                 // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         balances[_from] = balances[_from].minus(_value);    // Subtract from the sender
         balances[_to] = balances[_to].plus(_value);         // Add the same to the recipient
         emit Transfer(_from, _to, _value);
@@ -247,7 +247,7 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(checkVestingCondition(_from));
-        require (_value &lt;= approved[_from][msg.sender]);     // Check allowance
+        require (_value <= approved[_from][msg.sender]);     // Check allowance
         approved[_from][msg.sender] = approved[_from][msg.sender].minus(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -260,7 +260,7 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
      */
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require(checkVestingCondition(_spender));
-        if(balances[msg.sender] &gt;= _value) {
+        if(balances[msg.sender] >= _value) {
             approved[msg.sender][_spender] = _value;
             emit Approval(msg.sender, _spender, _value);
             return true;
@@ -288,9 +288,9 @@ contract BlockonixToken is IERC20, Ownable, Vestable, HasAddresses, VestingPerio
      *
      */
     function upgrade() external {
-        require(now &lt;=upgradeDeadline);
+        require(now <=upgradeDeadline);
         uint256 balance = oldToken.balanceOf(msg.sender);
-        require(balance&gt;0);
+        require(balance>0);
         oldToken.transferFrom(msg.sender, oldTokenBurnAddress, balance);
         balances[msg.sender] += balance;
         emit Transfer(this, msg.sender, balance);

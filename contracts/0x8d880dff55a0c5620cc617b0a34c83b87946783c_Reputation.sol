@@ -3,8 +3,8 @@ pragma solidity ^0.4.23;
 contract Reputation {
 
   address owner;
-  mapping(address =&gt; bool) whitelist;
-  mapping(address =&gt; int) ratings;
+  mapping(address => bool) whitelist;
+  mapping(address => int) ratings;
 
   constructor () public {
     owner = msg.sender;
@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns(uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns(uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,9 +76,9 @@ contract EthTokenToSmthSwaps {
     uint256 balance;
   }
 
-  // ETH Owner =&gt; BTC Owner =&gt; Swap
-  mapping(address =&gt; mapping(address =&gt; Swap)) public swaps;
-  mapping(address =&gt; mapping(address =&gt; uint)) public participantSigns;
+  // ETH Owner => BTC Owner => Swap
+  mapping(address => mapping(address => Swap)) public swaps;
+  mapping(address => mapping(address => uint)) public participantSigns;
 
   constructor () public {
     owner = msg.sender;
@@ -110,8 +110,8 @@ contract EthTokenToSmthSwaps {
   // ETH Owner creates Swap with secretHash
   // ETH Owner make token deposit
   function createSwap(bytes20 _secretHash, address _participantAddress, uint256 _value, address _token) public {
-    require(_value &gt; 0);
-    require(participantSigns[msg.sender][_participantAddress].add(SafeTime) &gt; now);
+    require(_value > 0);
+    require(participantSigns[msg.sender][_participantAddress].add(SafeTime) > now);
     require(swaps[msg.sender][_participantAddress].balance == uint256(0));
     require(ERC20(_token).transferFrom(msg.sender, this, _value));
 
@@ -138,8 +138,8 @@ contract EthTokenToSmthSwaps {
     Swap memory swap = swaps[_ownerAddress][msg.sender];
     
     require(swap.secretHash == ripemd160(_secret));
-    require(swap.balance &gt; uint256(0));
-    require(swap.createdAt.add(SafeTime) &gt; now);
+    require(swap.balance > uint256(0));
+    require(swap.createdAt.add(SafeTime) > now);
 
     Reputation(ratingContractAddress).change(msg.sender, 1);
     ERC20(swap.token).transfer(msg.sender, swap.balance);
@@ -175,8 +175,8 @@ contract EthTokenToSmthSwaps {
   function refund(address _participantAddress) public {
     Swap memory swap = swaps[msg.sender][_participantAddress];
 
-    require(swap.balance &gt; uint256(0));
-    require(swap.createdAt.add(SafeTime) &lt; now);
+    require(swap.balance > uint256(0));
+    require(swap.createdAt.add(SafeTime) < now);
     
     ERC20(swap.token).transfer(msg.sender, swap.balance);
     // TODO it looks like ETH Owner can create as many swaps as possible and refund them to decrease someone reputation
@@ -189,12 +189,12 @@ contract EthTokenToSmthSwaps {
   event Abort();
 
   // BTC Owner closes Swap
-  // If ETH Owner don&#39;t create swap after init in in safeTime
+  // If ETH Owner don't create swap after init in in safeTime
   // ETH Owner -1 reputation
   function abort(address _ownerAddress) public {
     require(swaps[_ownerAddress][msg.sender].balance == uint256(0));
     require(participantSigns[_ownerAddress][msg.sender] != uint(0));
-    require(participantSigns[_ownerAddress][msg.sender].add(SafeTime) &lt; now);
+    require(participantSigns[_ownerAddress][msg.sender].add(SafeTime) < now);
     
     Reputation(ratingContractAddress).change(_ownerAddress, -1);
     clean(_ownerAddress, msg.sender);

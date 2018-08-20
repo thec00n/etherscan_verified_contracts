@@ -11,7 +11,7 @@ contract AddressReg{
         owner = msg.sender;
     }
 
-    mapping (address=&gt;bool) isVerifiedMap;
+    mapping (address=>bool) isVerifiedMap;
 
     function verify(address addr){
         if(msg.sender==owner)

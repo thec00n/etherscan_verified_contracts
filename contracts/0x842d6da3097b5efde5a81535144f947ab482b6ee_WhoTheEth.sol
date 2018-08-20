@@ -5,8 +5,8 @@ contract WhoTheEth {
     
     address owner;
     uint public numberOfNames;
-    mapping(address =&gt; string) public names;
-    mapping(address =&gt; uint) public bank;
+    mapping(address => string) public names;
+    mapping(address => uint) public bank;
 
     event AddedName(
         address indexed _address,
@@ -21,14 +21,14 @@ contract WhoTheEth {
     }
     
     function pullFunds() public {
-        require (bank[msg.sender] &gt; 0);
+        require (bank[msg.sender] > 0);
         uint value = bank[msg.sender];
         bank[msg.sender] = 0;
         msg.sender.transfer(value);
     }
     
     function setName(string newName) payable public {
-        require(msg.value &gt;= 1 finney || numberOfNames &lt; 500);
+        require(msg.value >= 1 finney || numberOfNames < 500);
         numberOfNames++;
         names[msg.sender] = newName;
         bank[owner] += msg.value;
@@ -37,7 +37,7 @@ contract WhoTheEth {
     
         
     function setNameRefer(string newName, address ref) payable public {
-        require(msg.value &gt;= 1 finney || numberOfNames &lt; 500);
+        require(msg.value >= 1 finney || numberOfNames < 500);
         require(msg.sender != ref);
         numberOfNames++;
         names[msg.sender] = newName;

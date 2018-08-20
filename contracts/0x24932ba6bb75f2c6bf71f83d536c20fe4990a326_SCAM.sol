@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
  
 /* 
-  &#169; SCAM
+  © SCAM
  */
 contract ERC20Basic {
   uint256 public totalSupply;
@@ -33,20 +33,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -60,7 +60,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
  function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -85,7 +85,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   /*
     Transfer tokens from one address to another
@@ -97,7 +97,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
  
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
  
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
   /*
   Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
    param _spender The address which will spend the funds.
-   param _value The amount of Roman Lanskoj&#39;s tokens to be spent.
+   param _value The amount of Roman Lanskoj's tokens to be spent.
    */
   function approve(address _spender, uint256 _value) returns (bool) {
  
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
  
 /*
 The Ownable contract has an owner address, and provides basic authorization control
- functions, this simplifies the implementation of &quot;user permissions&quot;.
+ functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -165,8 +165,8 @@ contract Ownable {
 
     
 contract SCAM is StandardToken, Ownable {
-  string public constant name = &quot;SCAM&quot;;
-  string public constant symbol = &quot;SCAM&quot;;
+  string public constant name = "SCAM";
+  string public constant symbol = "SCAM";
   uint public constant decimals = 3;
   uint256 public initialSupply;
     
@@ -180,7 +180,7 @@ contract SCAM is StandardToken, Ownable {
  function distribute(address[] addresses) onlyOwner {
     // 10 000 000 * (10**3)
     uint _value;
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
       balances[owner] -= _value;
       balances[addresses[i]] += _value;
       Transfer(owner, addresses[i], _value);

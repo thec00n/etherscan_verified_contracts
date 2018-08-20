@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 
 contract KeyValueStorage {
 
-  mapping(address =&gt; mapping(bytes32 =&gt; uint256)) _uintStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; address)) _addressStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; bool)) _boolStorage;
-  mapping(address =&gt; mapping(bytes32 =&gt; bytes32)) _bytes32Storage;
+  mapping(address => mapping(bytes32 => uint256)) _uintStorage;
+  mapping(address => mapping(bytes32 => address)) _addressStorage;
+  mapping(address => mapping(bytes32 => bool)) _boolStorage;
+  mapping(address => mapping(bytes32 => bytes32)) _bytes32Storage;
 
   /**** Get Methods ***********/
 

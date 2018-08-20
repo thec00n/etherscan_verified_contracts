@@ -6,7 +6,7 @@ contract UnionPay {
     
     address public owner;  
     address public platform;
-    mapping(bytes32 =&gt; uint8)  userReceipts;
+    mapping(bytes32 => uint8)  userReceipts;
 
     constructor() public {
       owner = msg.sender;
@@ -25,7 +25,7 @@ contract UnionPay {
     }
 
     function safePay(uint256 _transId,uint256 _feePercentage,address _to, bytes _sig) payable public returns(bool) {
-        require(_feePercentage&gt;=0 &amp;&amp; _feePercentage&lt;=100);
+        require(_feePercentage>=0 && _feePercentage<=100);
         require(_to != address(0));
         require(userReceipts[getReceiptId(msg.sender,_to,_transId)] == 0);
         require(platform!=address(0));
@@ -36,7 +36,7 @@ contract UnionPay {
         userReceipts[getReceiptId(msg.sender,_to,_transId)] = 1;
         
         if (_feePercentage == 0){
-            if (msg.value &gt; 0){
+            if (msg.value > 0){
                 _to.transfer(msg.value);
             }
             emit UserPay(msg.sender,_to,msg.value,msg.value,_transId);
@@ -45,7 +45,7 @@ contract UnionPay {
         uint256 val = _feePercentage * msg.value;
         assert(val/_feePercentage == msg.value);
         val = val/100;
-        if (msg.value&gt;val){
+        if (msg.value>val){
             _to.transfer(msg.value - val);
         }
         emit UserPay(msg.sender,_to,msg.value,msg.value - val,_transId);
@@ -123,6 +123,6 @@ contract UnionPay {
 
     // Builds a prefixed hash to mimic the behavior of eth_sign.
     function prefixed(bytes32 hash) internal pure returns(bytes32) {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
 }

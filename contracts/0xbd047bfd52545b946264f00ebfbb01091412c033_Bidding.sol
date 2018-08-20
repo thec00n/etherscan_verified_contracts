@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -114,7 +114,7 @@ contract Bidding is Pausable
     Auction[] public auctions;
 
     // Allowed withdrawals of previous bids
-    mapping(address =&gt; uint) public pendingReturns;
+    mapping(address => uint) public pendingReturns;
     uint public totalReturns;
 
     event Bid(address indexed bidder, address indexed prevBider, uint256 value, uint256 addedValue, uint40 auction);
@@ -131,7 +131,7 @@ contract Bidding is Pausable
         _pendingReturn = pendingReturns[bidder];
 
         uint16 j = 0;
-        for (uint16 i = 0; i &lt; auctions.length; i++)
+        for (uint16 i = 0; i < auctions.length; i++)
         {
             if (isActive(i))
             {
@@ -141,7 +141,7 @@ contract Bidding is Pausable
                 _highestBidder[j] = auctions[i].highestBidder;
                 _auctionIndex[j] = i;
                 j++;
-                if (j &gt;= 5)
+                if (j >= 5)
                 {
                     break;
                 }
@@ -152,7 +152,7 @@ contract Bidding is Pausable
     /// Withdraw a bid that was overbid.
     function withdraw() public {
         uint amount = pendingReturns[msg.sender];
-        require (amount &gt; 0);
+        require (amount > 0);
 
         // It is important to set this to zero because the recipient
         // can call this function again as part of the receiving call
@@ -177,12 +177,12 @@ contract Bidding is Pausable
 
     function isEnded(uint16 auction) public view returns (bool)
     {
-        return auctions[auction].timeEnd &lt; now;
+        return auctions[auction].timeEnd < now;
     }
 
     function isActive(uint16 auction) public view returns (bool)
     {
-        return auctions[auction].timeStart &lt;= now &amp;&amp; now &lt;= auctions[auction].timeEnd;
+        return auctions[auction].timeStart <= now && now <= auctions[auction].timeEnd;
     }
 
     function bid(uint16 auctionIndex, uint256 useFromPendingReturn) public payable whenNotPaused
@@ -191,7 +191,7 @@ contract Bidding is Pausable
         address prevBidder = auction.highestBidder;
         uint256 returnValue = auction.highestBid;
 
-        require (useFromPendingReturn &lt;= pendingReturns[msg.sender]);
+        require (useFromPendingReturn <= pendingReturns[msg.sender]);
 
         uint256 bank = useFromPendingReturn;
         pendingReturns[msg.sender] -= bank;
@@ -199,17 +199,17 @@ contract Bidding is Pausable
 
         uint256 currentBid = bank + msg.value;
 
-        require(currentBid &gt;= auction.highestBid + minBid ||
-                currentBid &gt;= auction.highestBid &amp;&amp; prevBidder == address(0));
+        require(currentBid >= auction.highestBid + minBid ||
+                currentBid >= auction.highestBid && prevBidder == address(0));
         require(isActive(auctionIndex));
 
         auction.highestBid = uint128(currentBid);
         auction.highestBidder = msg.sender;
         auction.lastBidTime = uint40(now);
 
-        for (uint16 i = 0; i &lt; auctions.length; i++)
+        for (uint16 i = 0; i < auctions.length; i++)
         {
-            if (isActive(i) &amp;&amp;  auctions[i].timeEnd &lt; now + minTime)
+            if (isActive(i) &&  auctions[i].timeEnd < now + minTime)
             {
                 auctions[i].timeEnd = uint40(now) + minTime;
             }
@@ -265,6 +265,6 @@ contract Bidding is Pausable
     function isContract(address addr) public view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
 
 contract EthTermDeposits{
- mapping(address =&gt; uint) public deposits;
- mapping(address =&gt; uint) public depositEndTime;
+ mapping(address => uint) public deposits;
+ mapping(address => uint) public depositEndTime;
 	
 	function EthTermDeposits(){
 
@@ -18,7 +18,7 @@ contract EthTermDeposits{
 		uint amount = msg.value;
 		uint _time = block.timestamp + numberOfWeeks * 1 weeks;
 
-		if(deposits[owner] &gt; 0){
+		if(deposits[owner] > 0){
 			_time = depositEndTime[owner] + numberOfWeeks * 1 weeks;
 		}
 		depositEndTime[owner] = _time;
@@ -32,9 +32,9 @@ contract EthTermDeposits{
 
 	function Withdraw() returns(bool){
 		address owner = msg.sender;
-		if(depositEndTime[owner] &gt; 0 &amp;&amp;
-		   block.timestamp &gt; depositEndTime[owner] &amp;&amp;
-		   deposits[owner] &gt; 0){
+		if(depositEndTime[owner] > 0 &&
+		   block.timestamp > depositEndTime[owner] &&
+		   deposits[owner] > 0){
 			uint amount = deposits[owner];
 			deposits[owner] = 0;
 			msg.sender.transfer(amount);

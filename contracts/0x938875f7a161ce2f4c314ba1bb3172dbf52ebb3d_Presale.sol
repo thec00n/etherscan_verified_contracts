@@ -34,7 +34,7 @@ contract Presale {
         if (!presaleGoing) return;
         
         if (msg.sender != master) return false; 
-        if (expectedWRG &lt; 0) return false;
+        if (expectedWRG < 0) return false;
         
         presaleAmount -= centiWRG;
         entry.ethID = adr;
@@ -65,8 +65,8 @@ contract Presale {
     
      function getPresale(uint i) returns (string,address,uint,uint,string,string){
          uint max = entries.length;
-         if (i &gt;= max) {
-             return (&quot;NotFound&quot;,0,0,0,&quot;&quot;,&quot;&quot;);
+         if (i >= max) {
+             return ("NotFound",0,0,0,"","");
          }
          return (entries[i].email,entries[i].ethID, entries[i].satoshis, entries[i].centiWRG,entries[i].bitcoinSRC,entries[i].bitcoinDEST);
      }

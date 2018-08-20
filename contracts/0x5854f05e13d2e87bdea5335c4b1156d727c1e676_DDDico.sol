@@ -8,7 +8,7 @@ contract SafeMath {
     // @notice SafeMath multiply function
     // @param a Variable 1
     // @param b Variable 2
-    // @result { &quot;&quot; : &quot;result of safe multiply&quot;}
+    // @result { "" : "result of safe multiply"}
     function mul(uint256 a, uint256 b) internal  returns (uint256) {
         uint256 c = a * b;
         assert(a == 0 || c / a == b);
@@ -18,9 +18,9 @@ contract SafeMath {
     // @notice SafeMath divide function
     // @param a Variable 1
     // @param b Variable 2
-    // @result { &quot;&quot; : &quot;result of safe multiply&quot;}
+    // @result { "" : "result of safe multiply"}
     function div(uint256 a, uint256 b) internal  returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         return c;
     }
@@ -29,7 +29,7 @@ contract SafeMath {
     // @param a Variable 1
     // @param b Variable 2
     function sub(uint256 a, uint256 b) internal   returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ contract SafeMath {
     // @param b Variable 2
     function add(uint256 a, uint256 b) internal  returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -74,16 +74,16 @@ contract ERC20Token is owned, SafeMath{
 
     // Token Definitions
     bool public tokenState;
-    string public name = &quot;DropDeck&quot;;
-    string public symbol = &quot;DDD&quot;;
+    string public name = "DropDeck";
+    string public symbol = "DDD";
     uint256 public decimals = 8;
     uint256 public totalSupply = 380000000000000000;
     address public ico;
     bool public blockState = true;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) public userBanned;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => bool) public userBanned;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -112,7 +112,7 @@ contract ERC20Token is owned, SafeMath{
     returns ( bool ) {
         require(tokenState == true);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(blockState == false);
         require(userBanned[msg.sender] == false);
         balances[msg.sender] = sub(balances[msg.sender],_value);
@@ -128,8 +128,8 @@ contract ERC20Token is owned, SafeMath{
         public
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = sub(balances[_from],_value);
         balances[_to] = add(balances[_to],_value);
@@ -146,7 +146,7 @@ contract ERC20Token is owned, SafeMath{
     returns ( bool ) {
         require(tokenState == true);
         require(_to != address(0));
-        require(_value &lt;= balances[this]);
+        require(_value <= balances[this]);
         require(ico == msg.sender);
         balances[this] = sub(balances[this],_value);
         balances[_to] = add(balances[_to],_value);
@@ -328,35 +328,35 @@ contract DDDico is SafeMath {
 
     // @notice Validates the purchase
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = block.number &gt;= block0 &amp;&amp; block.number &lt;= block6;
+        bool withinPeriod = block.number >= block0 && block.number <= block6;
         bool nonZeroPurchase = msg.value != 0;
-        bool cap = weiRaised &lt;= hardCap;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; cap;
+        bool cap = weiRaised <= hardCap;
+        return withinPeriod && nonZeroPurchase && cap;
     }
 
     // @notice Calculates the rate based on slabs
     function fetchRate() constant returns (uint256){
-        if( block0 &lt;= block.number &amp;&amp; block1 &gt; block.number ){
+        if( block0 <= block.number && block1 > block.number ){
             applicableRate = 1500000000000;
             return applicableRate;
         }
-        if ( block1 &lt;= block.number &amp;&amp; block2 &gt; block.number ){
+        if ( block1 <= block.number && block2 > block.number ){
             applicableRate = 1400000000000;
             return applicableRate;
         }
-        if ( block2 &lt;= block.number &amp;&amp; block3 &gt; block.number ){
+        if ( block2 <= block.number && block3 > block.number ){
             applicableRate = 1300000000000;
             return applicableRate;
         }
-        if ( block3 &lt;= block.number &amp;&amp; block4 &gt; block.number ){
+        if ( block3 <= block.number && block4 > block.number ){
             applicableRate = 1200000000000;
             return applicableRate;
         }
-        if ( block4 &lt;= block.number &amp;&amp; block5 &gt; block.number ){
+        if ( block4 <= block.number && block5 > block.number ){
             applicableRate = 1100000000000;
             return applicableRate;
         }
-        if ( block5 &lt;= block.number &amp;&amp; block6 &gt; block.number ){
+        if ( block5 <= block.number && block6 > block.number ){
             applicableRate = 1000000000000;
             return applicableRate;
         }
@@ -365,6 +365,6 @@ contract DDDico is SafeMath {
     // @notice Checks weather ICO has ended or not
     function hasEnded() public constant returns (bool)
     {
-        return block.number &gt; block6;
+        return block.number > block6;
     }
 }

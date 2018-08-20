@@ -78,10 +78,10 @@ contract EtherSpace {
     
     uint64 public newIdShip = 0; // The next ID for the new ship
     uint16 public newModelShipProduct = 0; // The next model when creating ships
-    mapping (uint64 =&gt; ShipEntity) public ships; // The storage 
-    mapping (uint16 =&gt; ShipProduct) shipProducts;
-    mapping (address =&gt; uint64[]) shipOwners;
-    mapping (address =&gt; uint) balances;
+    mapping (uint64 => ShipEntity) public ships; // The storage 
+    mapping (uint16 => ShipProduct) shipProducts;
+    mapping (address => uint64[]) shipOwners;
+    mapping (address => uint) balances;
     
     function newShipProduct (uint16 _class, uint256 _price, uint256 _earning) private {
         shipProducts[newModelShipProduct++] = ShipProduct(_class, _price, _price, _earning, 0);
@@ -92,7 +92,7 @@ contract EtherSpace {
     function cashOut () public payable { // shouldnt be payable
         uint _balance = balances[msg.sender];
         
-        for (uint64 index=0; index&lt;shipOwners[msg.sender].length; index++) {
+        for (uint64 index=0; index<shipOwners[msg.sender].length; index++) {
             uint64 id = shipOwners[msg.sender][index]; // entity id
             uint16 model = ships[id].model; // product model id
             
@@ -101,7 +101,7 @@ contract EtherSpace {
             ships[id].lastCashoutIndex = shipProducts[model].amount;
         }
         
-        require (this.balance &gt;= _balance); // Checking if this contract has enought money to pay
+        require (this.balance >= _balance); // Checking if this contract has enought money to pay
         
         balances[msg.sender] = 0;
         msg.sender.transfer(_balance);
@@ -111,10 +111,10 @@ contract EtherSpace {
     }
     
     function buyShip (uint16 _shipModel) public payable {
-        require (msg.value &gt;= shipProducts[_shipModel].currentPrice); //value is higher than price
-        require (shipOwners[msg.sender].length &lt;= 10); // max 10 ships allowed per player
+        require (msg.value >= shipProducts[_shipModel].currentPrice); //value is higher than price
+        require (shipOwners[msg.sender].length <= 10); // max 10 ships allowed per player
 
-        if (msg.value &gt; shipProducts[_shipModel].currentPrice){
+        if (msg.value > shipProducts[_shipModel].currentPrice){
             // If player payed more, put the rest amount of money on his balance
             balances[msg.sender] += msg.value - shipProducts[_shipModel].currentPrice;
         }
@@ -236,7 +236,7 @@ contract EtherSpace {
     function getPlayerBalance(address _player) public constant returns (uint256) {
         uint _balance = balances[_player];
         
-        for (uint64 index=0; index&lt;shipOwners[_player].length; index++) {
+        for (uint64 index=0; index<shipOwners[_player].length; index++) {
             uint64 id = shipOwners[_player][index]; // entity id
             uint16 model = ships[id].model; // product model id
 

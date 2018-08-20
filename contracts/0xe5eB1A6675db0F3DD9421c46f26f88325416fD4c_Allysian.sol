@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -29,7 +29,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,16 +92,16 @@ contract Allysian is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _maxSupply;
     uint public _circulatingSupply;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function Allysian() public {
-        symbol = &quot;ALN&quot;;
-        name = &quot;Allysian Token&quot;;
+        symbol = "ALN";
+        name = "Allysian Token";
         decimals = 8;
         _maxSupply = 1000000000 * 10**uint(decimals); //1 billion
         _circulatingSupply = 10000000 * 10**uint(decimals); //10 million
@@ -124,7 +124,7 @@ contract Allysian is ERC20Interface, Owned {
     }
 
     function mint(address _to, uint256 amount) public onlyOwner returns (bool) {
-        require( _circulatingSupply.add(amount) &lt;= _maxSupply &amp;&amp; _to != address(0));
+        require( _circulatingSupply.add(amount) <= _maxSupply && _to != address(0));
         _circulatingSupply = _circulatingSupply.add(amount);
         balances[_to] = balances[_to].add(amount);
         emit Mint(amount, _to);
@@ -140,8 +140,8 @@ contract Allysian is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -178,14 +178,14 @@ contract Allysian is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

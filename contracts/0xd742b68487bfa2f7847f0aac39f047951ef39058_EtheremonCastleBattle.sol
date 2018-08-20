@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="74171b1a001517003431001c110611191b1a5a171b19">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="74171b1a001517003431001c110611191b1a5a171b19">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -108,7 +108,7 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     uint8 constant public NO_BATTLE_LOG = 4;
     
     struct CastleData {
-        uint index; // in active castle if &gt; 0
+        uint index; // in active castle if > 0
         string name;
         address owner;
         uint32 totalWin;
@@ -137,10 +137,10 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32 totalBrick;
     }
     
-    mapping(uint64 =&gt; BattleDataLog) battles;
-    mapping(address =&gt; uint32) trainerCastle;
-    mapping(address =&gt; TrainerBattleLog) trannerBattleLog;
-    mapping(uint32 =&gt; CastleData) castleData;
+    mapping(uint64 => BattleDataLog) battles;
+    mapping(address => uint32) trainerCastle;
+    mapping(address => TrainerBattleLog) trannerBattleLog;
+    mapping(uint32 => CastleData) castleData;
     uint32[] activeCastleList;
 
     uint32 public totalCastle = 0;
@@ -155,7 +155,7 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function addCastle(address _trainer, string _name, uint64 _a1, uint64 _a2, uint64 _a3, uint64 _s1, uint64 _s2, uint64 _s3, uint32 _brickNumber) onlyModerators external returns(uint32 currentCastleId){
         currentCastleId = trainerCastle[_trainer];
-        if (currentCastleId &gt; 0)
+        if (currentCastleId > 0)
             return currentCastleId;
 
         totalCastle += 1;
@@ -189,7 +189,7 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             return;
         
         trainerCastle[castle.owner] = 0;
-        if (castle.index &lt;= activeCastleList.length) {
+        if (castle.index <= activeCastleList.length) {
             // Move an existing element into the vacated key slot.
             castleData[activeCastleList[activeCastleList.length-1]].index = castle.index;
             activeCastleList[castle.index-1] = activeCastleList[activeCastleList.length-1];
@@ -257,7 +257,7 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     // read access 
     function isCastleActive(uint32 _castleId) constant external returns(bool){
         CastleData storage castle = castleData[_castleId];
-        return (castle.index &gt; 0);
+        return (castle.index > 0);
     }
     
     function countActiveCastle() constant external returns(uint) {
@@ -325,8 +325,8 @@ contract EtheremonCastleBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function isOnCastle(uint32 _castleId, uint64 _objId) constant external returns(bool) {
         CastleData storage castle = castleData[_castleId];
-        if (castle.index &gt; 0) {
-            for (uint i = 0; i &lt; castle.monsters.length; i++)
+        if (castle.index > 0) {
+            for (uint i = 0; i < castle.monsters.length; i++)
                 if (castle.monsters[i] == _objId)
                     return true;
             return false;

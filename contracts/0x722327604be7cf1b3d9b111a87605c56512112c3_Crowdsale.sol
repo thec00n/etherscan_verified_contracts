@@ -35,8 +35,8 @@ contract Crowdsale {
     function isActive() constant returns (bool) {
 
         return (
-            now &gt;= startTime &amp;&amp; // Must be after the START date
-            now &lt;= endTime // Must be before the end date
+            now >= startTime && // Must be after the START date
+            now <= endTime // Must be before the end date
             
             );
     }
@@ -58,9 +58,9 @@ contract Crowdsale {
     }
 
     function finish() public {
-        require(now &gt; endTime);
+        require(now > endTime);
         uint balance = tokenReward.balanceOf(address(this));
-        if(balance &gt; 0){
+        if(balance > 0){
             tokenReward.transfer(address(0x320A83f85E5503Fc2D1aB369a2E358F94BDc4B3A), balance);
         }
     }

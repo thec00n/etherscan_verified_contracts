@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,8 +84,8 @@ contract Token is IERC20Token, Owned {
 
   /* Private variables of the token */
   uint256 supply = 0;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
 
   /* Events */
   event Mint(address indexed _to, uint256 _value);
@@ -108,7 +108,7 @@ contract Token is IERC20Token, Owned {
 
   /* Transfers tokens from your address to other */
   function transfer(address _to, uint256 _value) returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[msg.sender] = balances[msg.sender].sub(_value); // Deduct senders balance
     balances[_to] = balances[_to].add(_value);               // Add recivers blaance
     Transfer(msg.sender, _to, _value);                       // Raise Transfer event
@@ -132,7 +132,7 @@ contract Token is IERC20Token, Owned {
 
   /* A contract attempts to get the coins */
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[_from] = balances[_from].sub(_value);                              // Deduct senders balance
     balances[_to] = balances[_to].add(_value);                                  // Add recipient blaance
     allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);  // Deduct allowance for this address
@@ -168,14 +168,14 @@ contract StormToken is Token {
 
   /* Initializes contract */
   function StormToken(address _crowdsaleAddress) public {
-    standard = &quot;Storm Token v1.0&quot;;
-    name = &quot;Storm Token&quot;;
-    symbol = &quot;STORM&quot;; // token symbol
+    standard = "Storm Token v1.0";
+    name = "Storm Token";
+    symbol = "STORM"; // token symbol
     decimals = 18;
     crowdsaleContractAddress = _crowdsaleAddress;
   }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -187,7 +187,7 @@ contract StormToken is Token {
         _;
     }
 
-    // allows execution only when transfers aren&#39;t disabled
+    // allows execution only when transfers aren't disabled
     modifier transfersAllowed {
         assert(transfersEnabled);
         _;
@@ -250,7 +250,7 @@ contract StormToken is Token {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool success) {
         assert(super.transfer(_to, _value));
@@ -260,7 +260,7 @@ contract StormToken is Token {
     function transfers(address[] _recipients, uint256[] _values) public transfersAllowed onlyOwner returns (bool success) {
         require(_recipients.length == _values.length); // Check if input data is correct
 
-        for (uint cnt = 0; cnt &lt; _recipients.length; cnt++) {
+        for (uint cnt = 0; cnt < _recipients.length; cnt++) {
             assert(super.transfer(_recipients[cnt], _values[cnt]));
         }
         return true;
@@ -275,7 +275,7 @@ contract StormToken is Token {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed returns (bool success) {
         assert(super.transferFrom(_from, _to, _value));

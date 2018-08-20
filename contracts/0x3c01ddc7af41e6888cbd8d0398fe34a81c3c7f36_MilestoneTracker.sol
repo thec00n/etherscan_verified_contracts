@@ -5,7 +5,7 @@ pragma solidity ^0.4.6;
 *
 * RLPReader is used to read and parse RLP encoded data in memory.
 *
-* @author Andreas Olofsson (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6e616b7d6063603e36373f4f68626e6663216c6062">[email&#160;protected]</a>)
+* @author Andreas Olofsson (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6e616b7d6063603e36373f4f68626e6663216c6062">[email protected]</a>)
 */
 library RLP {
 
@@ -24,7 +24,7 @@ library RLP {
  }
 
  struct Iterator {
-     RLPItem _unsafe_item;   // Item that&#39;s being iterated over.
+     RLPItem _unsafe_item;   // Item that's being iterated over.
      uint _unsafe_nextPtr;   // Position of the next item in the list.
  }
 
@@ -44,14 +44,14 @@ library RLP {
 
  function next(Iterator memory self, bool strict) internal constant returns (RLPItem memory subItem) {
      subItem = next(self);
-     if(strict &amp;&amp; !_validate(subItem))
+     if(strict && !_validate(subItem))
          throw;
      return;
  }
 
  function hasNext(Iterator memory self) internal constant returns (bool) {
      var item = self._unsafe_item;
-     return self._unsafe_nextPtr &lt; item._unsafe_memPtr + item._unsafe_length;
+     return self._unsafe_nextPtr < item._unsafe_memPtr + item._unsafe_length;
  }
 
  /* RLPItem */
@@ -79,7 +79,7 @@ library RLP {
      var item = toRLPItem(self);
      if(strict) {
          uint len = self.length;
-         if(_payloadOffset(item) &gt; len)
+         if(_payloadOffset(item) > len)
              throw;
          if(_itemLength(item._unsafe_memPtr) != len)
              throw;
@@ -91,14 +91,14 @@ library RLP {
 
  /// @dev Check if the RLP item is null.
  /// @param self The RLP item.
- /// @return &#39;true&#39; if the item is null.
+ /// @return 'true' if the item is null.
  function isNull(RLPItem memory self) internal constant returns (bool ret) {
      return self._unsafe_length == 0;
  }
 
  /// @dev Check if the RLP item is a list.
  /// @param self The RLP item.
- /// @return &#39;true&#39; if the item is a list.
+ /// @return 'true' if the item is a list.
  function isList(RLPItem memory self) internal constant returns (bool ret) {
      if (self._unsafe_length == 0)
          return false;
@@ -110,7 +110,7 @@ library RLP {
 
  /// @dev Check if the RLP item is data.
  /// @param self The RLP item.
- /// @return &#39;true&#39; if the item is data.
+ /// @return 'true' if the item is data.
  function isData(RLPItem memory self) internal constant returns (bool ret) {
      if (self._unsafe_length == 0)
          return false;
@@ -122,7 +122,7 @@ library RLP {
 
  /// @dev Check if the RLP item is empty (string or list).
  /// @param self The RLP item.
- /// @return &#39;true&#39; if the item is null.
+ /// @return 'true' if the item is null.
  function isEmpty(RLPItem memory self) internal constant returns (bool ret) {
      if(isNull(self))
          return false;
@@ -148,7 +148,7 @@ library RLP {
      uint pos = memPtr + _payloadOffset(self);
      uint last = memPtr + self._unsafe_length - 1;
      uint itms;
-     while(pos &lt;= last) {
+     while(pos <= last) {
          pos += _itemLength(pos);
          itms++;
      }
@@ -157,7 +157,7 @@ library RLP {
 
  /// @dev Create an iterator.
  /// @param self The RLP item.
- /// @return An &#39;Iterator&#39; over the item.
+ /// @return An 'Iterator' over the item.
  function iterator(RLPItem memory self) internal constant returns (Iterator memory it) {
      if (!isList(self))
          throw;
@@ -227,7 +227,7 @@ library RLP {
      if(!isData(self))
          throw;
      var (rStartPos, len) = _decode(self);
-     if (len &gt; 32 || len == 0)
+     if (len > 32 || len == 0)
          throw;
      assembly {
          data := div(mload(rStartPos), exp(256, sub(32, len)))
@@ -248,7 +248,7 @@ library RLP {
      assembly {
          temp := byte(0, mload(rStartPos))
      }
-     if (temp &gt; 1)
+     if (temp > 1)
          throw;
      return temp == 1 ? true : false;
  }
@@ -310,11 +310,11 @@ library RLP {
      assembly {
          b0 := byte(0, mload(memPtr))
      }
-     if(b0 &lt; DATA_SHORT_START)
+     if(b0 < DATA_SHORT_START)
          return 0;
-     if(b0 &lt; DATA_LONG_START || (b0 &gt;= LIST_SHORT_START &amp;&amp; b0 &lt; LIST_LONG_START))
+     if(b0 < DATA_LONG_START || (b0 >= LIST_SHORT_START && b0 < LIST_LONG_START))
          return 1;
-     if(b0 &lt; LIST_SHORT_START)
+     if(b0 < LIST_SHORT_START)
          return b0 - DATA_LONG_OFFSET + 1;
      return b0 - LIST_LONG_OFFSET + 1;
  }
@@ -325,18 +325,18 @@ library RLP {
      assembly {
          b0 := byte(0, mload(memPtr))
      }
-     if (b0 &lt; DATA_SHORT_START)
+     if (b0 < DATA_SHORT_START)
          len = 1;
-     else if (b0 &lt; DATA_LONG_START)
+     else if (b0 < DATA_LONG_START)
          len = b0 - DATA_SHORT_START + 1;
-     else if (b0 &lt; LIST_SHORT_START) {
+     else if (b0 < LIST_SHORT_START) {
          assembly {
              let bLen := sub(b0, 0xB7) // bytes length (DATA_LONG_OFFSET)
              let dLen := div(mload(add(memPtr, 1)), exp(256, sub(32, bLen))) // data length
              len := add(1, add(bLen, dLen)) // total length
          }
      }
-     else if (b0 &lt; LIST_LONG_START)
+     else if (b0 < LIST_LONG_START)
          len = b0 - LIST_SHORT_START + 1;
      else {
          assembly {
@@ -356,12 +356,12 @@ library RLP {
      assembly {
          b0 := byte(0, mload(start))
      }
-     if (b0 &lt; DATA_SHORT_START) {
+     if (b0 < DATA_SHORT_START) {
          memPtr = start;
          len = 1;
          return;
      }
-     if (b0 &lt; DATA_LONG_START) {
+     if (b0 < DATA_LONG_START) {
          len = self._unsafe_length - 1;
          memPtr = start + 1;
      } else {
@@ -377,7 +377,7 @@ library RLP {
 
  // Assumes that enough memory has been allocated to store in target.
  function _copyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) private constant {
-     // Exploiting the fact that &#39;tgt&#39; was the last thing to be allocated,
+     // Exploiting the fact that 'tgt' was the last thing to be allocated,
      // we can write entire words, and just overwrite any excess.
      assembly {
          {
@@ -409,7 +409,7 @@ library RLP {
              b0 := byte(0, mload(memPtr))
              b1 := byte(1, mload(memPtr))
          }
-         if(b0 == DATA_SHORT_START + 1 &amp;&amp; b1 &lt; DATA_SHORT_START)
+         if(b0 == DATA_SHORT_START + 1 && b1 < DATA_SHORT_START)
              return false;
          return true;
      }
@@ -429,7 +429,7 @@ library RLP {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MilestoneTracker Contract
@@ -445,7 +445,7 @@ library RLP {
 /// @dev We use the RLP library to decode RLP so that the donor can approve one
 ///  set of milestone changes at a time.
 ///  https://github.com/androlo/standard-contracts/blob/master/contracts/src/codec/RLP.sol
-// import &quot;RLP.sol&quot;;
+// import "RLP.sol";
 
 
 
@@ -602,7 +602,7 @@ contract MilestoneTracker {
     }
 
     /// @notice `onlyDonor` Approves the proposed milestone list
-    /// @param _hashProposals The sha3() of the proposed milestone list&#39;s
+    /// @param _hashProposals The sha3() of the proposed milestone list's
     ///  bytecode; this confirms that the `donor` knows the set of milestones
     ///  they are approving
     function acceptProposedMilestones(bytes32 _hashProposals
@@ -614,7 +614,7 @@ contract MilestoneTracker {
         if (sha3(proposedMilestones) != _hashProposals) throw;
 
         // Cancel all the unfinished milestones
-        for (i=0; i&lt;milestones.length; i++) {
+        for (i=0; i<milestones.length; i++) {
             if (milestones[i].status != MilestoneStatus.Paid) {
                 milestones[i].status = MilestoneStatus.Canceled;
             }
@@ -660,7 +660,7 @@ contract MilestoneTracker {
     /// @notice `onlyReviewer` Approves a specific milestone
     /// @param _idMilestone ID of the milestone that is approved
     function approveCompletedMilestone(uint _idMilestone) campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
         if ((msg.sender != milestone.reviewer) ||
             (milestone.status != MilestoneStatus.Completed)) throw;
@@ -668,11 +668,11 @@ contract MilestoneTracker {
         doPayment(_idMilestone);
     }
 
-    /// @notice `onlyReviewer` Rejects a specific milestone&#39;s completion and
+    /// @notice `onlyReviewer` Rejects a specific milestone's completion and
     ///  reverts the `milestone.status` back to the `AcceptedAndInProgress` state
     /// @param _idMilestone ID of the milestone that is being rejected
     function rejectMilestone(uint _idMilestone) campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
         if ((msg.sender != milestone.reviewer) ||
             (milestone.status != MilestoneStatus.Completed)) throw;
@@ -684,11 +684,11 @@ contract MilestoneTracker {
     /// @notice `onlyRecipient` Marks a milestone as DONE and ready for review
     /// @param _idMilestone ID of the milestone that has been completed
     function milestoneCompleted(uint _idMilestone) onlyRecipient campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
         if (milestone.status != MilestoneStatus.AcceptedAndInProgress) throw;
-        if (now &lt; milestone.minCompletionDate) throw;
-        if (now &gt; milestone.maxCompletionDate) throw;
+        if (now < milestone.minCompletionDate) throw;
+        if (now > milestone.maxCompletionDate) throw;
         milestone.status = MilestoneStatus.Completed;
         milestone.doneTime = now;
         ProposalStatusChanged(_idMilestone, milestone.status);
@@ -700,10 +700,10 @@ contract MilestoneTracker {
     /// @param _idMilestone ID of the milestone to be paid out
     function collectMilestonePayment(uint _idMilestone
         ) onlyRecipient campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
         if  ((milestone.status != MilestoneStatus.Completed) ||
-             (now &lt; milestone.doneTime + milestone.reviewTime))
+             (now < milestone.doneTime + milestone.reviewTime))
             throw;
 
         doPayment(_idMilestone);
@@ -712,9 +712,9 @@ contract MilestoneTracker {
     /// @notice `onlyRecipient` Cancels a previously accepted milestone
     /// @param _idMilestone ID of the milestone to be canceled
     function cancelMilestone(uint _idMilestone) onlyRecipient campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
-        if  ((milestone.status != MilestoneStatus.AcceptedAndInProgress) &amp;&amp;
+        if  ((milestone.status != MilestoneStatus.AcceptedAndInProgress) &&
              (milestone.status != MilestoneStatus.Completed))
             throw;
 
@@ -727,9 +727,9 @@ contract MilestoneTracker {
     /// @param _idMilestone ID of the milestone to be paid out
     function arbitrateApproveMilestone(uint _idMilestone
     ) onlyArbitrator campaignNotCanceled notChanging {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
-        if  ((milestone.status != MilestoneStatus.AcceptedAndInProgress) &amp;&amp;
+        if  ((milestone.status != MilestoneStatus.AcceptedAndInProgress) &&
              (milestone.status != MilestoneStatus.Completed))
            throw;
         doPayment(_idMilestone);
@@ -744,7 +744,7 @@ contract MilestoneTracker {
 
     // @dev This internal function is executed when the milestone is paid out
     function doPayment(uint _idMilestone) internal {
-        if (_idMilestone &gt;= milestones.length) throw;
+        if (_idMilestone >= milestones.length) throw;
         Milestone milestone = milestones[_idMilestone];
         // Recheck again to not pay twice
         if (milestone.status == MilestoneStatus.Paid) throw;

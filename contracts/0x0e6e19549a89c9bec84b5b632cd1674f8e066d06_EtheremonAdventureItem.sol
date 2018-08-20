@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -79,7 +79,7 @@ interface ERC165 {
 
 contract SupportsInterface is ERC165 {
     
-    mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+    mapping(bytes4 => bool) internal supportedInterfaces;
 
     constructor() public {
         supportedInterfaces[0x01ffc9a7] = true; // ERC165
@@ -130,20 +130,20 @@ contract NFToken is ERC721, SupportsInterface {
     using AddressUtils for address;
     
     // A mapping from NFT ID to the address that owns it.
-    mapping (uint256 =&gt; address) internal idToOwner;
+    mapping (uint256 => address) internal idToOwner;
     
     // Mapping from NFT ID to approved address.
-    mapping (uint256 =&gt; address) internal idToApprovals;
+    mapping (uint256 => address) internal idToApprovals;
     
     // Mapping from owner address to count of his tokens.
-    mapping (address =&gt; uint256) internal ownerToNFTokenCount;
+    mapping (address => uint256) internal ownerToNFTokenCount;
     
     // Mapping from owner address to mapping of operator addresses.
-    mapping (address =&gt; mapping (address =&gt; bool)) internal ownerToOperators;
+    mapping (address => mapping (address => bool)) internal ownerToOperators;
     
     /**
     * @dev Magic value of a smart contract that can recieve NFT.
-    * Equal to: bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;)).
+    * Equal to: bytes4(keccak256("onERC721Received(address,address,uint256,bytes)")).
     */
     bytes4 constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
 
@@ -190,7 +190,7 @@ contract NFToken is ERC721, SupportsInterface {
     }
 
     function safeTransferFrom(address _from, address _to, uint256 _tokenId) external {
-        _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        _safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     function transferFrom(address _from, address _to, uint256 _tokenId) external canTransfer(_tokenId) validNFToken(_tokenId) {
@@ -270,7 +270,7 @@ contract NFToken is ERC721, SupportsInterface {
 
     function removeNFToken(address _from, uint256 _tokenId) internal {
         require(idToOwner[_tokenId] == _from);
-        assert(ownerToNFTokenCount[_from] &gt; 0);
+        assert(ownerToNFTokenCount[_from] > 0);
         ownerToNFTokenCount[_from] = ownerToNFTokenCount[_from] - 1;
         delete idToOwner[_tokenId];
     }
@@ -290,13 +290,13 @@ contract NFTokenEnumerable is NFToken, ERC721Enumerable {
     uint256[] internal tokens;
 
     // Mapping from token ID its index in global tokens array.
-    mapping(uint256 =&gt; uint256) internal idToIndex;
+    mapping(uint256 => uint256) internal idToIndex;
 
     // Mapping from owner to list of owned NFT IDs.
-    mapping(address =&gt; uint256[]) internal ownerToIds;
+    mapping(address => uint256[]) internal ownerToIds;
 
     // Mapping from NFT ID to its index in the owner tokens list.
-    mapping(uint256 =&gt; uint256) internal idToOwnerIndex;
+    mapping(uint256 => uint256) internal idToOwnerIndex;
 
     constructor() public {
         supportedInterfaces[0x780e9d63] = true; // ERC721Enumerable
@@ -310,7 +310,7 @@ contract NFTokenEnumerable is NFToken, ERC721Enumerable {
 
     function _burn(address _owner, uint256 _tokenId) internal {
         super._burn(_owner, _tokenId);
-        assert(tokens.length &gt; 0);
+        assert(tokens.length > 0);
 
         uint256 tokenIndex = idToIndex[_tokenId];
         // Sanity check. This could be removed in the future.
@@ -329,7 +329,7 @@ contract NFTokenEnumerable is NFToken, ERC721Enumerable {
     function removeNFToken(address _from, uint256 _tokenId) internal
     {
         super.removeNFToken(_from, _tokenId);
-        assert(ownerToIds[_from].length &gt; 0);
+        assert(ownerToIds[_from].length > 0);
 
         uint256 tokenToRemoveIndex = idToOwnerIndex[_tokenId];
         uint256 lastTokenIndex = ownerToIds[_from].length - 1;
@@ -355,14 +355,14 @@ contract NFTokenEnumerable is NFToken, ERC721Enumerable {
     }
 
     function tokenByIndex(uint256 _index) external view returns (uint256) {
-        require(_index &lt; tokens.length);
+        require(_index < tokens.length);
         // Sanity check. This could be removed in the future.
         assert(idToIndex[tokens[_index]] == _index);
         return tokens[_index];
     }
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
-        require(_index &lt; ownerToIds[_owner].length);
+        require(_index < ownerToIds[_owner].length);
         return ownerToIds[_owner][_index];
     }
 
@@ -372,7 +372,7 @@ contract NFTStandard is NFTokenEnumerable, ERC721Metadata {
     string internal nftName;
     string internal nftSymbol;
     
-    mapping (uint256 =&gt; string) internal idToUri;
+    mapping (uint256 => string) internal idToUri;
     
     constructor(string _name, string _symbol) public {
         nftName = _name;
@@ -408,7 +408,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     constructor() public {
@@ -461,7 +461,7 @@ interface EtheremonAdventureHandler {
     function handleMultipleItems(address _sender, uint _classId1, uint _classId2, uint _classId3, uint _target, uint _param) external;
 }
 
-contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &quot;EMOND&quot;), BasicAccessControl {
+contract EtheremonAdventureItem is NFTStandard("EtheremonAdventure", "EMOND"), BasicAccessControl {
     uint constant public MAX_OWNER_PERS_SITE = 10;
     uint constant public MAX_SITE_ID = 108;
     uint constant public MAX_SITE_TOKEN_ID = 1080;
@@ -469,7 +469,7 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
     // smartcontract
     address public adventureHandler;
     
-    // class sites: 1 -&gt; 108
+    // class sites: 1 -> 108
     // shard: 109 - 126
     // level, exp
     struct Item {
@@ -478,7 +478,7 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
     }
     
     uint public totalItem = MAX_SITE_TOKEN_ID;
-    mapping (uint =&gt; Item) public items; // token id =&gt; info
+    mapping (uint => Item) public items; // token id => info
     
     modifier requireAdventureHandler {
         require(adventureHandler != address(0));
@@ -495,7 +495,7 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
     
     function spawnSite(uint _classId, uint _tokenId, address _owner) onlyModerators external {
         if (_owner == address(0)) revert();
-        if (_classId &gt; MAX_SITE_ID || _classId == 0 || _tokenId &gt; MAX_SITE_TOKEN_ID || _tokenId == 0) revert();
+        if (_classId > MAX_SITE_ID || _classId == 0 || _tokenId > MAX_SITE_TOKEN_ID || _tokenId == 0) revert();
         
         Item storage item = items[_tokenId];
         if (item.classId != 0) revert(); // token existed
@@ -506,7 +506,7 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
     
     function spawnItem(uint _classId, uint _value, address _owner) onlyModerators external returns(uint) {
         if (_owner == address(0)) revert();
-        if (_classId &lt; MAX_SITE_ID) revert();
+        if (_classId < MAX_SITE_ID) revert();
         
         totalItem += 1;
         Item storage item = items[totalItem];
@@ -531,9 +531,9 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
     }
     
     function useMultipleItem(uint _token1, uint _token2, uint _token3, uint _target, uint _param) isActive requireAdventureHandler public {
-        if (_token1 &gt; 0 &amp;&amp; idToOwner[_token1] != msg.sender) revert();
-        if (_token2 &gt; 0 &amp;&amp; idToOwner[_token2] != msg.sender) revert();
-        if (_token3 &gt; 0 &amp;&amp; idToOwner[_token3] != msg.sender) revert();
+        if (_token1 > 0 && idToOwner[_token1] != msg.sender) revert();
+        if (_token2 > 0 && idToOwner[_token2] != msg.sender) revert();
+        if (_token3 > 0 && idToOwner[_token3] != msg.sender) revert();
         
         Item storage item1 = items[_token1];
         Item storage item2 = items[_token2];
@@ -542,9 +542,9 @@ contract EtheremonAdventureItem is NFTStandard(&quot;EtheremonAdventure&quot;, &
         EtheremonAdventureHandler handler = EtheremonAdventureHandler(adventureHandler);
         handler.handleMultipleItems(msg.sender, item1.classId, item2.classId, item3.classId, _target, _param);
         
-        if (_token1 &gt; 0) _burn(msg.sender, _token1);
-        if (_token2 &gt; 0) _burn(msg.sender, _token2);
-        if (_token3 &gt; 0) _burn(msg.sender, _token3);
+        if (_token1 > 0) _burn(msg.sender, _token1);
+        if (_token2 > 0) _burn(msg.sender, _token2);
+        if (_token3 > 0) _burn(msg.sender, _token3);
     }
     
     

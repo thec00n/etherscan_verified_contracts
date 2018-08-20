@@ -23,9 +23,9 @@ library safemath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library safemath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library safemath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library safemath {
 /**
  * @title ownable
  * @dev The ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract ownable {
   address public owner;
@@ -164,10 +164,10 @@ contract KTfactory is ownable, KTaccess {
     uint256 id;
   }
 
-  mapping (uint256 =&gt; KT) public KTs;
+  mapping (uint256 => KT) public KTs;
 
-  mapping (uint =&gt; address) public KTToOwner;
-  mapping (address =&gt; uint) ownerKTCount;
+  mapping (uint => address) public KTToOwner;
+  mapping (address => uint) ownerKTCount;
 
   modifier onlyOwnerOf(uint token_id) {
     require(msg.sender == KTToOwner[token_id]);
@@ -180,12 +180,12 @@ contract KTfactory is ownable, KTaccess {
   }
 
   modifier decomposeAllowed(uint token_id){
-    require(KTs[token_id].level &gt;= 1);
+    require(KTs[token_id].level >= 1);
     _;
   }
 
   modifier withinTotal() {
-    require(curr_number&lt;= initial_supply);
+    require(curr_number<= initial_supply);
     _;
   }
 
@@ -232,7 +232,7 @@ contract KTownership is KTfactory, erc721 {
 
   using safemath for uint256;
 
-  mapping (uint =&gt; address) KTApprovals;
+  mapping (uint => address) KTApprovals;
 
   //event Transfer(address from, address to, uint256 tokenId);
   //event Approval(address from, address to, uint256 tokenId);
@@ -311,8 +311,8 @@ contract KTownership is KTfactory, erc721 {
     token1.level = (token1.level).add(1);
 
     KT memory toDelete = KT ({
-      officialNote: &quot;&quot;,
-      personalNote: &quot;&quot;,
+      officialNote: "",
+      personalNote: "",
       paused: false,
       gene: 0,
       level: 0,

@@ -1,6 +1,6 @@
 contract Nicks {
-    mapping(address =&gt; string) private nickOfOwner;
-    mapping(string =&gt; address) private ownerOfNick;
+    mapping(address => string) private nickOfOwner;
+    mapping(string => address) private ownerOfNick;
 
     event NickSet (string _nick, address _owner);
     event NickUnset (string _nick, address _owner);
@@ -17,13 +17,13 @@ contract Nicks {
     }
 
     function saveNick(string _nick) public {
-        require(bytes(_nick).length &gt; 2);
+        require(bytes(_nick).length > 2);
         require(ownerOf(_nick) == address(0));
 
         address owner = msg.sender;
         string storage oldNick = nickOfOwner[owner];
 
-        if (bytes(oldNick).length &gt; 0) {
+        if (bytes(oldNick).length > 0) {
             delete ownerOfNick[oldNick];
         }
 
@@ -33,7 +33,7 @@ contract Nicks {
     }
 
     function deleteNick() public {
-        require(bytes(nickOfOwner[msg.sender]).length &gt; 0);
+        require(bytes(nickOfOwner[msg.sender]).length > 0);
 
         address owner = msg.sender;
         string storage oldNick = nickOfOwner[owner];

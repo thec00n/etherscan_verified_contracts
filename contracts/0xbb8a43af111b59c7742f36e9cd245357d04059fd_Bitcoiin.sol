@@ -26,20 +26,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,18 +47,18 @@ library SafeMath {
 contract Bitcoiin is ERC20
 {
     using SafeMath for uint256;
-    string public constant symbol = &quot;B2G&quot;;
-    string public constant name = &quot;Bitcoiin&quot;;
+    string public constant symbol = "B2G";
+    string public constant name = "Bitcoiin";
     uint8 public constant decimals = 10;
      // muliplies dues to decimal precision
     uint256 public _totalSupply = 50000000 * 10 **10;     // 50 million supply           
     // Balances for each account
-    mapping(address =&gt; uint256) balances;   
+    mapping(address => uint256) balances;   
     // Owner of this contract
     address public owner;
 
     
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
     
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -89,12 +89,12 @@ contract Bitcoiin is ERC20
          return balances[_owner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
          require( _to != 0x0);
-         require(balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[msg.sender] >= _amount 
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
              balances[msg.sender] = balances[msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);
              Transfer(msg.sender, _to, _amount);
@@ -103,7 +103,7 @@ contract Bitcoiin is ERC20
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -113,10 +113,10 @@ contract Bitcoiin is ERC20
          uint256 _amount
      )public returns (bool success) {
         require(_to != 0x0); 
-         require(balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
              balances[_from] = balances[_from].sub(_amount);
              allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);

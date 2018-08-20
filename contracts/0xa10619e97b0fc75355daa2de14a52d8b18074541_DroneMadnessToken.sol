@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -73,8 +73,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -89,9 +89,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -99,7 +99,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -108,7 +108,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,7 +136,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -154,7 +154,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -223,8 +223,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -307,7 +307,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -387,7 +387,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -406,7 +406,7 @@ contract CappedToken is MintableToken {
     public
     returns (bool)
   {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -535,8 +535,8 @@ contract PausableToken is StandardToken, Pausable {
  */
 contract DroneMadnessToken is CappedToken, PausableToken {
 
-    string public constant name                 = &quot;Drone Madness Token&quot;;
-    string public constant symbol               = &quot;DRNMD&quot;;
+    string public constant name                 = "Drone Madness Token";
+    string public constant symbol               = "DRNMD";
     uint public constant decimals               = 18;
 
     constructor(uint256 _totalSupply) 
@@ -607,8 +607,8 @@ contract TokenPool is Ownable {
      * @param _amounts uint256[] amounts for each beneficiary
      */
     function allocate(address[] _beneficiaries, uint256[] _amounts) public onlyOwner {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i ++) {
-            require(totalAllocated.add(_amounts[i]) &lt;= cap);
+        for (uint256 i = 0; i < _beneficiaries.length; i ++) {
+            require(totalAllocated.add(_amounts[i]) <= cap);
             token.safeTransfer(_beneficiaries[i], _amounts[i]);
             totalAllocated.add(_amounts[i]);
         }
@@ -621,10 +621,10 @@ contract TokenPool is Ownable {
      */
     function allocateEqual(address[] _beneficiaries, uint256 _amounts) public onlyOwner {
         uint256 totalAmount = _amounts.mul(_beneficiaries.length);
-        require(totalAllocated.add(totalAmount) &lt;= cap);
-        require(token.balanceOf(this) &gt;= totalAmount);
+        require(totalAllocated.add(totalAmount) <= cap);
+        require(token.balanceOf(this) >= totalAmount);
 
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i ++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i ++) {
             token.safeTransfer(_beneficiaries[i], _amounts);
             totalAllocated.add(_amounts);
         }
@@ -642,7 +642,7 @@ contract TokenPool is Ownable {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -683,7 +683,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -843,7 +843,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -854,8 +854,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   constructor(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -867,7 +867,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -903,7 +903,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -938,7 +938,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -994,7 +994,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -1010,7 +1010,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @param _goal Funding goal
    */
   constructor(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -1030,7 +1030,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /**
@@ -1095,7 +1095,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -1104,7 +1104,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -1119,7 +1119,7 @@ contract CappedCrowdsale is Crowdsale {
     internal
   {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -1132,7 +1132,7 @@ contract CappedCrowdsale is Crowdsale {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -1155,7 +1155,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -1212,7 +1212,7 @@ contract TokenTimelock {
     public
   {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime &gt; block.timestamp);
+    require(_releaseTime > block.timestamp);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -1223,10 +1223,10 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= releaseTime);
+    require(block.timestamp >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -1273,10 +1273,10 @@ contract DroneMadnessCrowdsale is
     uint256 public initialRate;
     uint256[4] public bonuses = [30,20,10,0];
     uint256[4] public stages = [
-        1535792400, // 1st of Sep - 30rd of Sep -&gt; 30% Bonus
-        1538384400, // 1st of Oct - 31st of Oct -&gt; 20% Bonus
-        1541066400, // 1st of Nov - 30rd of Oct -&gt; 10% Bonus
-        1543658400  // 1st of Dec - 31st of Dec -&gt; 0% Bonus
+        1535792400, // 1st of Sep - 30rd of Sep -> 30% Bonus
+        1538384400, // 1st of Oct - 31st of Oct -> 20% Bonus
+        1541066400, // 1st of Nov - 30rd of Oct -> 10% Bonus
+        1543658400  // 1st of Dec - 31st of Dec -> 0% Bonus
     ];
     
     // Min investment
@@ -1284,7 +1284,7 @@ contract DroneMadnessCrowdsale is
     // Max individual investment
     uint256 public maxInvestmentInWei;
     
-    mapping (address =&gt; uint256) internal invested;
+    mapping (address => uint256) internal invested;
 
     TokenTimelock public teamWallet;
     TokenTimelock public reservePool;
@@ -1325,7 +1325,7 @@ contract DroneMadnessCrowdsale is
         CappedCrowdsale(_cap)
         TimedCrowdsale(_openingTime, _closingTime)
         RefundableCrowdsale(_goal) public {
-        require(_goal &lt;= _cap);
+        require(_goal <= _cap);
         initialRate = _rate;
         minInvestmentInWei = _minInvestmentInWei;
         maxInvestmentInWei = _maxInvestmentInWei;
@@ -1366,15 +1366,15 @@ contract DroneMadnessCrowdsale is
 
     /**
     * @dev Update the current rate based on the scheme
-    * 1st of Sep - 30rd of Sep -&gt; 30% Bonus
-    * 1st of Oct - 31st of Oct -&gt; 20% Bonus
-    * 1st of Nov - 30rd of Oct -&gt; 10% Bonus
-    * 1st of Dec - 31st of Dec -&gt; 0% Bonus
+    * 1st of Sep - 30rd of Sep -> 30% Bonus
+    * 1st of Oct - 31st of Oct -> 20% Bonus
+    * 1st of Nov - 30rd of Oct -> 10% Bonus
+    * 1st of Dec - 31st of Dec -> 0% Bonus
     */
     function updateRate() external onlyOwner {
         uint256 i = stages.length;
-        while (i-- &gt; 0) {
-            if (block.timestamp &gt;= stages[i]) {
+        while (i-- > 0) {
+            if (block.timestamp >= stages[i]) {
                 rate = initialRate.add(initialRate.mul(bonuses[i]).div(100));
                 emit CurrentRateChange(rate);
                 break;
@@ -1394,7 +1394,7 @@ contract DroneMadnessCrowdsale is
     }
 
     /**
-    * @dev Transfer tokens to advisors from the advisor&#39;s pool
+    * @dev Transfer tokens to advisors from the advisor's pool
     * @param _beneficiaries address[] list of beneficiaries
     * @param _amounts uint256[] amounts to airdrop
     */
@@ -1419,8 +1419,8 @@ contract DroneMadnessCrowdsale is
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
-        require(_weiAmount &gt;= minInvestmentInWei);
-        require(invested[_beneficiary].add(_weiAmount) &lt;= maxInvestmentInWei);
+        require(_weiAmount >= minInvestmentInWei);
+        require(invested[_beneficiary].add(_weiAmount) <= maxInvestmentInWei);
         require(!paused);
     }
 
@@ -1473,7 +1473,7 @@ contract DroneMadnessPresale is
     uint256 public minInvestmentInWei;
     
     // Investments
-    mapping (address =&gt; uint256) internal invested;
+    mapping (address => uint256) internal invested;
 
     /**
      * @dev Contract constructor
@@ -1505,7 +1505,7 @@ contract DroneMadnessPresale is
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
-        require(_weiAmount &gt;= minInvestmentInWei);
+        require(_weiAmount >= minInvestmentInWei);
     }
 
     /**

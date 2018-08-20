@@ -43,7 +43,7 @@ contract Ownable {
   * This contract only defines a modifier but does not use it
   * it will be used in derived contracts.
   * The function body is inserted where the special symbol
-  * &quot;_;&quot; in the definition of a modifier appears.
+  * "_;" in the definition of a modifier appears.
   * This means that if the owner calls this function, the
   * function is executed and otherwise, an exception is  thrown.
   */
@@ -79,8 +79,8 @@ contract PeonyToken is Ownable, ERC20 {
   string public symbol;
   uint256 public decimals;
   address public peony;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
   uint256 public totalSupply;
   uint256 public totalSupplyLimit;
 
@@ -101,7 +101,7 @@ contract PeonyToken is Ownable, ERC20 {
     uint8 decimalUnits,
     string tokenSymbol
     ) {
-    require(totalSupplyLimit_ == 0 || totalSupplyLimit_ &gt;= initialSupply);
+    require(totalSupplyLimit_ == 0 || totalSupplyLimit_ >= initialSupply);
     version = _version;
     balances[msg.sender] = initialSupply;
     totalSupply = initialSupply;
@@ -115,7 +115,7 @@ contract PeonyToken is Ownable, ERC20 {
   * This contract only defines a modifier but does not use it
   * it will be used in derived contracts.
   * The function body is inserted where the special symbol
-  * &quot;_;&quot; in the definition of a modifier appears.
+  * "_;" in the definition of a modifier appears.
   * This means that if the owner calls this function, the
   * function is executed and otherwise, an exception is  thrown.
   */
@@ -129,12 +129,12 @@ contract PeonyToken is Ownable, ERC20 {
   * This contract only defines a modifier but does not use it
   * it will be used in derived contracts.
   * The function body is inserted where the special symbol
-  * &quot;_;&quot; in the definition of a modifier appears.
+  * "_;" in the definition of a modifier appears.
   * This means that if the owner calls this function, the
   * function is executed and otherwise, an exception is  thrown.
   */
   modifier isOwnerOrPeonyContract() {
-    require(msg.sender != address(0) &amp;&amp; (msg.sender == peony || msg.sender == owner));
+    require(msg.sender != address(0) && (msg.sender == peony || msg.sender == owner));
     _;
   }
 
@@ -144,7 +144,7 @@ contract PeonyToken is Ownable, ERC20 {
   * @return Whether or not producing was successful
   */
   function produce(uint256 amount) isPeonyContract returns (bool) {
-    require(totalSupplyLimit == 0 || totalSupply.add(amount) &lt;= totalSupplyLimit);
+    require(totalSupplyLimit == 0 || totalSupply.add(amount) <= totalSupplyLimit);
 
     balances[owner] = balances[owner].add(amount);
     totalSupply = totalSupply.add(amount);
@@ -157,8 +157,8 @@ contract PeonyToken is Ownable, ERC20 {
   * @param amount consume token amount
   */
   function consume(uint256 amount) isPeonyContract returns (bool) {
-    require(balances[owner].sub(amount) &gt;= 0);
-    require(totalSupply.sub(amount) &gt;= 0);
+    require(balances[owner].sub(amount) >= 0);
+    require(totalSupply.sub(amount) >= 0);
     balances[owner] = balances[owner].sub(amount);
     totalSupply = totalSupply.sub(amount);
 
@@ -217,7 +217,7 @@ contract PeonyToken is Ownable, ERC20 {
   * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
   * Beware that changing an allowance with this method brings the risk that someone may use both the old
   * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-  * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+  * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
   * @param _spender The address which will spend the funds.
   * @param _value The amount of tokens to be spent.
@@ -268,7 +268,7 @@ contract PeonyToken is Ownable, ERC20 {
     }
 
     uint256 count = _value.div(10**decimals);
-    for (uint256 i = 0; i &lt; count; i++) {
+    for (uint256 i = 0; i < count; i++) {
       record.record(_from, _to);
     }
   }
@@ -290,13 +290,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

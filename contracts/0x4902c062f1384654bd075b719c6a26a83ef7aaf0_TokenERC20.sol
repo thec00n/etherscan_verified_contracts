@@ -13,7 +13,7 @@ contract TokenERC20 {
      address public addressC = 0xf193c2EC62466fd338710afab04574E7Eeb6C0e2;
      address public addressD = 0x3105889390F894F8ee1d3f8f75E2c4dde57735bA;
      
-function founder() private {  // contract&#39;s constructor function
+function founder() private {  // contract's constructor function
         owner = msg.sender;
         }
 function change_owner (address newOwner) public{
@@ -24,7 +24,7 @@ function change_owner (address newOwner) public{
     
 function setfees (uint256 _value1, uint256 _value2, uint256 _value3, uint256 _value4) public {
       require(owner == msg.sender);
-      if (_value1&gt;0 &amp;&amp; _value2&gt;0 &amp;&amp; _value3&gt;0 &amp;&amp;_value4&gt;0){
+      if (_value1>0 && _value2>0 && _value3>0 &&_value4>0){
       feesA = _value1;
       feesB = _value2;
       feesC = _value3;
@@ -54,8 +54,8 @@ function setaddress (address _address1, address _address2, address _address3, ad
     
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -98,9 +98,9 @@ function setaddress (address _address1, address _address2, address _address3, ad
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -131,7 +131,7 @@ function setaddress (address _address1, address _address2, address _address3, ad
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -177,7 +177,7 @@ function setaddress (address _address1, address _address2, address _address3, ad
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -192,10 +192,10 @@ function setaddress (address _address1, address _address2, address _address3, ad
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;

@@ -4,10 +4,10 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract RoundToken {
 
-  string public constant name = &quot;ROUND&quot;;
-  string public constant symbol = &quot;ROUND&quot;;
+  string public constant name = "ROUND";
+  string public constant symbol = "ROUND";
   uint8 public constant decimals = 18;
-  string public constant version = &#39;0.1&#39;;
+  string public constant version = '0.1';
   uint256 public constant totalSupply = 1000000000 * 1000000000000000000;
 
   address public owner;
@@ -22,8 +22,8 @@ contract RoundToken {
     }
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function RoundToken() {
     owner = msg.sender;
@@ -42,7 +42,7 @@ contract RoundToken {
   }
 
   function transfer(address _to, uint256 _value) checkIfToContract(_to) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -53,7 +53,7 @@ contract RoundToken {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) checkIfToContract(_to) returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -135,7 +135,7 @@ contract BidGame is Owned {
     bool refunded;
   }
 
-  mapping(uint =&gt; Game) games;
+  mapping(uint => Game) games;
 
   // ---------------------------------------------------------------------------
   // modifiers
@@ -169,14 +169,14 @@ contract BidGame is Owned {
     uint _userId = i - _gameId*10000;
 
 	//check game bid amount and force bidding the same amount of ROUNDs
-	if (games[_gameId].gameId &gt; 0){
+	if (games[_gameId].gameId > 0){
 		uint amountToBid = games[_gameId].bidAmt;
-		for (uint k = 0; k &lt; games[_gameId].bids.length; k++) {
-			if(!games[_gameId].bids[k].refunded &amp;&amp; _userId==games[_gameId].bids[k].userId) {
+		for (uint k = 0; k < games[_gameId].bids.length; k++) {
+			if(!games[_gameId].bids[k].refunded && _userId==games[_gameId].bids[k].userId) {
 				amountToBid-=games[_gameId].bids[k].bid;
 			}	
 		}
-		if(amountToBid&gt;0)
+		if(amountToBid>0)
 			_value = amountToBid;
 		else
 			throw;
@@ -193,9 +193,9 @@ contract BidGame is Owned {
 	}
 
     games[_gameId].totalGameBid += _value;
-    games[_gameId].bids.push(Bid(_from, _value, _userId, &#39;&#39;, false));
+    games[_gameId].bids.push(Bid(_from, _value, _userId, '', false));
 
-    GameBidAccepted(_from, _value, _gameId, _userId, &#39;&#39;, state);
+    GameBidAccepted(_from, _value, _gameId, _userId, '', state);
   }
 
   function gameResult(uint _gameId, uint _userId) onlyGameOracle() {
@@ -205,11 +205,11 @@ contract BidGame is Owned {
 
     address winnerAddress;
     uint commission = games[_gameId].totalGameBid*commissionPercent/100;
-    // if (commission &lt; 1) commission = 1;
+    // if (commission < 1) commission = 1;
     uint winnerAmount = games[_gameId].totalGameBid - commission;
 
-    for (uint i = 0; i &lt; games[_gameId].bids.length; i++) {
-      if(!games[_gameId].bids[i].refunded &amp;&amp; _userId==games[_gameId].bids[i].userId) {
+    for (uint i = 0; i < games[_gameId].bids.length; i++) {
+      if(!games[_gameId].bids[i].refunded && _userId==games[_gameId].bids[i].userId) {
         winnerAddress = games[_gameId].bids[i].bidderAddress;
         break;
       }
@@ -225,7 +225,7 @@ contract BidGame is Owned {
     games[_gameId].winnerUserId = _userId;
     games[_gameId].state = 200;
 
-    GameFinished(_gameId, _userId, &#39;&#39;, winnerAmount, winnerAddress);
+    GameFinished(_gameId, _userId, '', winnerAmount, winnerAddress);
   }
 
   function gameStart(uint _gameId) onlyGameOracle() {
@@ -240,10 +240,10 @@ contract BidGame is Owned {
     if (games[_gameId].winnerUserId != 0) throw;
     if (games[_gameId].totalGameBid == 0) throw;
 
-    for (uint i = 0; i &lt; games[_gameId].bids.length; i++) {
+    for (uint i = 0; i < games[_gameId].bids.length; i++) {
       if(!games[_gameId].bids[i].refunded) {
         uint penalty = games[_gameId].bids[i].bid*refundPenalty/100;
-        // if (penalty &lt; 1) penalty = 1;
+        // if (penalty < 1) penalty = 1;
         uint refundAmount = games[_gameId].bids[i].bid - penalty;
 
         RoundToken token = RoundToken(contractRoundTokenAddress);
@@ -262,11 +262,11 @@ contract BidGame is Owned {
     if (games[_gameId].gameId == 0) throw;
     if (games[_gameId].winnerUserId != 0) throw;
     if (games[_gameId].totalGameBid == 0) throw;
-    for (uint i = 0; i &lt; games[_gameId].bids.length; i++) {
+    for (uint i = 0; i < games[_gameId].bids.length; i++) {
       if(!games[_gameId].bids[i].refunded) {
         if (games[_gameId].bids[i].userId == _userId) {
           uint penalty = games[_gameId].bids[i].bid*refundPenalty/100;
-          // if (penalty &lt; 1) penalty = 1;
+          // if (penalty < 1) penalty = 1;
           uint refundAmount = games[_gameId].bids[i].bid - penalty;
 
           RoundToken token = RoundToken(contractRoundTokenAddress);
@@ -338,9 +338,9 @@ contract BidGame is Owned {
   // utils
   function bytesToUint2(bytes b) returns (uint) {
     uint result = 0;
-    for (uint i=1; i &lt; b.length; i++) {
+    for (uint i=1; i < b.length; i++) {
       uint x = uint(uint(b[i]));
-      if (x &gt; 0)
+      if (x > 0)
         x = x - 48;
       result = result + x*(10**(b.length-i-1));
     }

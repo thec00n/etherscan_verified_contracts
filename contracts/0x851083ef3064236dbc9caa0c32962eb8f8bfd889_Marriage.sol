@@ -7,15 +7,15 @@ library StrUtil {
     string memory ab = new string(_ba.length + _bb.length);
     bytes memory bab = bytes(ab);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+    for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
     return string(bab);
   }
 
   function bytes32ToString(bytes32 x) internal pure returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
         byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
         if (char != 0) {
             bytesString[charCount] = char;
@@ -23,7 +23,7 @@ library StrUtil {
         }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
         bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);
@@ -31,10 +31,10 @@ library StrUtil {
 
   function uintToBytes(uint v) internal pure returns (bytes32 ret) {
     if (v == 0) {
-      ret = &#39;0&#39;;
+      ret = '0';
     }
     else {
-      while (v &gt; 0) {
+      while (v > 0) {
         ret = bytes32(uint(ret) / (2 ** 8));
         ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
         v /= 10;
@@ -117,9 +117,9 @@ library DateTime {
 
     // Month
     uint secondsInMonth;
-    for (i = 1; i &lt;= 12; i++) {
+    for (i = 1; i <= 12; i++) {
       secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-      if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+      if (secondsInMonth + secondsAccountedFor > timestamp) {
         dt.month = i;
         break;
       }
@@ -127,8 +127,8 @@ library DateTime {
     }
 
     // Day
-    for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-      if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+    for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+      if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
         dt.day = i;
         break;
       }
@@ -148,7 +148,7 @@ library DateTime {
     secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
     secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-    while (secondsAccountedFor &gt; timestamp) {
+    while (secondsAccountedFor > timestamp) {
       if (isLeapYear(uint16(year - 1))) {
         secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
       }
@@ -171,18 +171,18 @@ library DateTime {
   function monthStr(uint timestamp) internal pure returns (string ret) {
     uint8 month = getMonth(timestamp);
 
-    if (month == 1) { ret = &quot;Jan&quot;; }
-    if (month == 2) { ret = &quot;Feb&quot;; }
-    if (month == 3) { ret = &quot;Mar&quot;; }
-    if (month == 4) { ret = &quot;Apr&quot;; }
-    if (month == 5) { ret = &quot;May&quot;; }
-    if (month == 6) { ret = &quot;Jun&quot;; }
-    if (month == 7) { ret = &quot;Jul&quot;; }
-    if (month == 8) { ret = &quot;Aug&quot;; }
-    if (month == 9) { ret = &quot;Sept&quot;; }
-    if (month == 10) { ret = &quot;Oct&quot;; }
-    if (month == 11) { ret = &quot;Nov&quot;; }
-    if (month == 12) { ret = &quot;Dec&quot;; }
+    if (month == 1) { ret = "Jan"; }
+    if (month == 2) { ret = "Feb"; }
+    if (month == 3) { ret = "Mar"; }
+    if (month == 4) { ret = "Apr"; }
+    if (month == 5) { ret = "May"; }
+    if (month == 6) { ret = "Jun"; }
+    if (month == 7) { ret = "Jul"; }
+    if (month == 8) { ret = "Aug"; }
+    if (month == 9) { ret = "Sept"; }
+    if (month == 10) { ret = "Oct"; }
+    if (month == 11) { ret = "Nov"; }
+    if (month == 12) { ret = "Dec"; }
   }
 
   function toString(uint timestamp) internal pure returns (string ret) {
@@ -191,9 +191,9 @@ library DateTime {
     string memory year  = StrUtil.uintToString(getYear(timestamp));
 
     ret = ret.concat(day)
-             .concat(&quot; &quot;)
+             .concat(" ")
              .concat(month)
-             .concat(&quot; &quot;)
+             .concat(" ")
              .concat(year);
   }
 }
@@ -231,18 +231,18 @@ contract Marriage {
     bride = _bride;
 
     groomVow = groomVow
-                    .concat(&quot;I, &quot;)
+                    .concat("I, ")
                     .concat(_groom)
-                    .concat(&quot;, take thee, &quot;)
+                    .concat(", take thee, ")
                     .concat(_bride)
-                    .concat(&quot;, to be my wedded Wife, to have and to hold from this day forward, for better for worse, for richer for poorer, in sickness and in health, to love and to cherish, till death us do part.&quot;);
+                    .concat(", to be my wedded Wife, to have and to hold from this day forward, for better for worse, for richer for poorer, in sickness and in health, to love and to cherish, till death us do part.");
 
     brideVow = brideVow
-                    .concat(&quot;I, &quot;)
+                    .concat("I, ")
                     .concat(_bride)
-                    .concat(&quot;, take thee, &quot;)
+                    .concat(", take thee, ")
                     .concat(_groom)
-                    .concat(&quot;, to be my wedded Husband, to have and to hold from this day forward, for better for worse, for richer for poorer, in sickness and in health, to love, cherish, and to obey, till death us do part.&quot;);
+                    .concat(", to be my wedded Husband, to have and to hold from this day forward, for better for worse, for richer for poorer, in sickness and in health, to love, cherish, and to obey, till death us do part.");
   }
 
   function () external payable {
@@ -263,8 +263,8 @@ contract Marriage {
     require(status == Status.Affianced);
     
     // groom has to deposite at least a half of his balance to initiate marriage
-    require(msg.value &gt; 0);
-    require(msg.value &gt;= groomAddr.balance);
+    require(msg.value > 0);
+    require(msg.value >= groomAddr.balance);
     
     deposite = msg.value;
     groomSignedAt = now;
@@ -278,13 +278,13 @@ contract Marriage {
     status = Status.Married;
 
     // just in case if bride sent some funds
-    // it&#39;s gonna be added to the family budget :)
+    // it's gonna be added to the family budget :)
     groomAddr.transfer(deposite + msg.value);
   }
 
   function cancel() external onlyGroom {
     require(status == Status.SignedByGroom);
-    require(now - groomSignedAt &gt;= 1 minutes);
+    require(now - groomSignedAt >= 1 minutes);
 
     status = Status.Affianced;
 
@@ -294,17 +294,17 @@ contract Marriage {
   function getStatus() public view returns (string ret) {
     if (status == Status.Affianced) {
       ret = ret.concat(groom)
-         .concat(&quot; and &quot;)
+         .concat(" and ")
          .concat(bride)
-         .concat(&quot; are affianced&quot;);
+         .concat(" are affianced");
     } else if (status == Status.SignedByGroom) {
       ret = ret.concat(groom)
-         .concat(&quot; has signed&quot;);
+         .concat(" has signed");
     } else {
       ret = ret.concat(groom)
-         .concat(&quot; and &quot;)
+         .concat(" and ")
          .concat(bride)
-         .concat(&quot; got married on &quot;)
+         .concat(" got married on ")
          .concat(DateTime.toString(marriedAt));
     }
   }
